@@ -5,7 +5,7 @@
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief 
+ * \brief 数据拼接工厂接口定义
  */
 #pragma once
 #include <stdint.h>

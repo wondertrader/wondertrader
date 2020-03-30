@@ -5,7 +5,7 @@
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief 
+ * \brief 指标工接口定义
  */
 #pragma once
 #include "WTSMarcos.h"
