@@ -16,12 +16,8 @@
 #include "../Share/StdUtils.hpp"
 #include "../Share/JsonToVariant.hpp"
 
-#include "../Common/mdump.h"
-
 int main()
 {
-	CMiniDumper::Enable("WtBtRunner.exe", true);
-
 	WTSLogger::init("logcfg.json");
 
 	std::string filename = "config.json";
