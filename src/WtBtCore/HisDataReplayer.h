@@ -11,9 +11,10 @@
 #include <string>
 #include <unordered_map>
 
+#include "DataDefine.h"
+
 #include "../Share/WTSMarcos.h"
 #include "../Share/WTSTypes.h"
-#include "../WtDataWriter/DataDefine.h"
 
 #include "../WTSTools/WTSHotMgr.h"
 #include "../WTSTools/WTSBaseDataMgr.h"
