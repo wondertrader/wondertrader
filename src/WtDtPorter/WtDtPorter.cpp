@@ -20,6 +20,8 @@ char PLATFORM_NAME[] = "X64";
 #else
 char PLATFORM_NAME[] = "WIN32";
 #endif
+#else
+char PLATFORM_NAME[] = "UNIX";
 #endif
 
 WtDtRunner& getRunner()
