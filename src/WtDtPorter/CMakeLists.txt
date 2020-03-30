@@ -3,9 +3,12 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.0.0)
 
 #2. 确定工程名
-PROJECT(QuoteFactory LANGUAGES CXX)
+PROJECT(WtDtPorter LANGUAGES CXX)
 SET(CMAKE_CXX_STANDARD 11)
 
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+
+#3. 环境判断
 IF (WIN32)
 	IF("${CMAKE_GENERATOR}" MATCHES "(Win64|IA64)")
 		SET(INCS $ENV{MyX64Deps12}/include)
@@ -20,28 +23,31 @@ ELSE (UNIX)
 	SET(LNKS ${MyDeps}/lib)
 ENDIF ()
 
-SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../build/bin/QuoteFactory)
+SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../build/bin)
 
 #7. 添加源码
-FILE( GLOB SRCS *.cpp)
+file(GLOB SRCS *.cpp)
+file(GLOB HDRS *.h)
 
 INCLUDE_DIRECTORIES(${INCS})
 LINK_DIRECTORIES(${LNKS})
+ADD_LIBRARY(WtDtPorter SHARED ${SRCS} ${HDRS})
 
 SET(LIBS
+	${PROJECT_SOURCE_DIR}/../build/libs/libWtDtCore.a
 	${PROJECT_SOURCE_DIR}/../build/libs/libWTSTools.a
 	${PROJECT_SOURCE_DIR}/../build/libs/libWTSUtils.a
-	${PROJECT_SOURCE_DIR}/../build/libs/libWtDtCore.a
 	
-	boost_thread
-	boost_filesystem
-	
-	pthread
 	dl
+	pthread
+	boost_filesystem	
 )
 
-#9. 生成可执行文件
-ADD_EXECUTABLE(QuoteFactory ${SRCS})
-TARGET_LINK_LIBRARIES(QuoteFactory ${LIBS})
-
+TARGET_LINK_LIBRARIES(WtDtPorter ${LIBS})
+IF (WIN32)
+ELSE (UNIX)
+	SET_TARGET_PROPERTIES(WtDtPorter PROPERTIES
+		CXX_VISIBILITY_PRESET hidden
+		VISIBILITY_INLINES_HIDDEN 1)
+ENDIF ()
 

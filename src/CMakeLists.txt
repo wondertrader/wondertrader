@@ -26,6 +26,8 @@ ADD_SUBDIRECTORY(CTPLoader)
 
 #parser for quote date from ctp channel
 ADD_SUBDIRECTORY(ParserCTP)
+ADD_SUBDIRECTORY(WtDtCore)
+ADD_SUBDIRECTORY(WtDtPorter)
 #quote date processor
 ADD_SUBDIRECTORY(QuoteFactory)
 
