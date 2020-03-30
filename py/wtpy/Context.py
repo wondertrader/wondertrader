@@ -17,7 +17,7 @@ class Context:
     3、下单接口（设置目标仓位、直接下单等），接口格式如：stra_xxx\n
     '''
 
-    def __init__(self, id, stra:BaseStrategy, wrapper: WtWrapper, env):
+    def __init__(self, id, stra:BaseStrategy, wrapper: WtWrapper, engine):
         self.__stra_info__ = stra   #策略对象，对象基类BaseStrategy.py
         self.__user_data__ = dict() #用户数据
         self.__wrapper__ = wrapper  #底层接口转换器
@@ -25,12 +25,12 @@ class Context:
         self.__bar_cache__ = dict() #K线缓存
         self.__tick_cache__ = dict()    #tTick缓存，每次都重新去拉取，这个只做中转用，不在python里维护副本
         self.__sname__ = stra.name()    
-        self.__env__ = env          #交易环境
+        self.__engine__ = engine          #交易环境
         self.__ud_mtx__ = Lock()    #用户数据锁
         self.__ud_mod__ = False     #用户数据修改标记
 
     def write_indicator(self, tag, time, data):
-        self.__env__.write_indicator(self.__stra_info__.name(), tag, time, data)
+        self.__engine__.write_indicator(self.__stra_info__.name(), tag, time, data)
 
     def on_init(self):
         '''
@@ -317,6 +317,6 @@ class Context:
         @code   合约代码如SHFE.ag.HOT，或者品种代码如SHFE.ag\n
         @return 品种信息，结构请参考ProductMgr中的ProductInfo
         '''
-        if self.__env__ is None:
+        if self.__engine__ is None:
             return None
-        return self.__env__.getProductInfo(code)
+        return self.__engine__.getProductInfo(code)

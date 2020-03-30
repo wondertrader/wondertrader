@@ -1,8 +1,8 @@
 from .BaseDefs import BaseStrategy
-from .WtEnv import WtEnv
+from .WtEngine import WtEngine
 from .Context import Context
-from .WtBtEnv import WtBtEnv
+from .WtBtEngine import WtBtEngine
 from .IndexWriter import MysqlIndexWriter
 from .DataReporter import DataReporter
 
-__all__ = ["BaseStrategy", "WtEnv", "Context", "WtBtEnv", "MysqlIndexWriter", "DataReporter"]
+__all__ = ["BaseStrategy", "WtEngine", "Context", "WtBtEngine", "MysqlIndexWriter", "DataReporter"]

@@ -4,7 +4,7 @@ import platform
 import os
 import sys
 
-theEnv = None
+theEngine = None
 
 def isPythonX64():
     ret = platform.architecture()
@@ -18,15 +18,15 @@ def isWindows():
 
 #回调函数
 def on_strategy_init(id):
-    env = theEnv
-    ctx = env.get_context()
+    engine = theEngine
+    ctx = engine.get_context()
     if ctx is not None:
         ctx.on_init()
     return
 
 def on_strategy_tick(id, code, newTick):
-    env = theEnv
-    ctx = env.get_context()
+    engine = theEngine
+    ctx = engine.get_context()
 
     realTick = newTick.contents
     tick = dict()
@@ -41,16 +41,16 @@ def on_strategy_tick(id, code, newTick):
     return
 
 def on_strategy_calc(id):
-    env = theEnv
-    ctx = env.get_context()
+    engine = theEngine
+    ctx = engine.get_context()
     if ctx is not None:
         ctx.on_calculate()
     return
 
 def on_strategy_bar(id, code, period, newBar):
     period = bytes.decode(period)
-    env = theEnv
-    ctx = env.get_context()
+    engine = theEngine
+    ctx = engine.get_context()
     newBar = newBar.contents
     curBar = dict()
     if period[0] == 'd':
@@ -77,8 +77,8 @@ def on_strategy_get_bar(id, code, period, curBar, isLast):
     @curBar 最新一条K线\n
     @isLast 是否是最后一条
     '''
-    env = theEnv
-    ctx = env.get_context()
+    engine = theEngine
+    ctx = engine.get_context()
     realBar = None
     if curBar:
         realBar = curBar.contents
@@ -111,8 +111,8 @@ def on_strategy_get_tick(id, code, curTick, isLast):
     @isLast     是否是最后一条
     '''
 
-    env = theEnv
-    ctx = env.get_context()
+    engine = theEngine
+    ctx = engine.get_context()
     realTick = None
     if curTick:
         realTick = curTick.contents
@@ -203,12 +203,12 @@ class WtBtWrapper:
     def config_backtest(self, cfgfile:str = 'config.json'):
         self.api.config_backtest(bytes(cfgfile, encoding = "utf8"))
 
-    def initialize(self, env, logProfile:str = "logcfgbt.json"):
+    def initialize(self, engine, logProfile:str = "logcfgbt.json"):
         '''
         C接口初始化
         '''
-        global theEnv
-        theEnv = env
+        global theEngine
+        theEngine = engine
         try:
             self.api.register_callbacks(cb_strategy_init, cb_strategy_tick, cb_strategy_calc, cb_strategy_bar)
             self.api.init_backtest(bytes(logProfile, encoding = "utf8"))

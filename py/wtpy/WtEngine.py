@@ -20,7 +20,7 @@ def singleton(cls):
 
 
 @singleton
-class WtEnv:
+class WtEngine:
 
     def __init__(self):
         self.__wrapper__ = WtWrapper()  #api接口转换器

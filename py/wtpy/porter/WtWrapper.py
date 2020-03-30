@@ -9,7 +9,7 @@ EVENT_SESSION_BEGIN = 2	    #交易日开始
 EVENT_SESSION_END	= 3	    #交易日结束
 EVENT_ENGINE_SCHDL	= 4	    #框架调度
 
-theEnv = None
+theEngine = None
 
 def isPythonX64():
     ret = platform.architecture()
@@ -22,28 +22,28 @@ def isWindows():
     return False
 
 def on_engine_event(evtid, evtDate, evtTime):
-    env = theEnv
+    engine = theEngine
     if evtid == EVENT_ENGINE_INIT:
-        env.on_init()
+        engine.on_init()
     elif evtid == EVENT_ENGINE_SCHDL:
-        env.on_schedule(evtDate, evtTime)
+        engine.on_schedule(evtDate, evtTime)
     elif evtid == EVENT_SESSION_BEGIN:
-        env.on_session_begin(evtDate)
+        engine.on_session_begin(evtDate)
     elif evtid == EVENT_SESSION_END:
-        env.on_session_end(evtDate)
+        engine.on_session_end(evtDate)
     return
 
 #回调函数
 def on_strategy_init(id):
-    env = theEnv
-    ctx = env.get_context(id)
+    engine = theEngine
+    ctx = engine.get_context(id)
     if ctx is not None:
         ctx.on_init()
     return
 
 def on_strategy_tick(id, code, newTick):
-    env = theEnv
-    ctx = env.get_context(id)
+    engine = theEngine
+    ctx = engine.get_context(id)
 
     realTick = newTick.contents
     tick = dict()
@@ -58,16 +58,16 @@ def on_strategy_tick(id, code, newTick):
     return
 
 def on_strategy_calc(id):
-    env = theEnv
-    ctx = env.get_context(id)
+    engine = theEngine
+    ctx = engine.get_context(id)
     if ctx is not None:
         ctx.on_calculate()
     return
 
 def on_strategy_bar(id, code, period, newBar):
     period = bytes.decode(period)
-    env = theEnv
-    ctx = env.get_context(id)
+    engine = theEngine
+    ctx = engine.get_context(id)
     newBar = newBar.contents
     curBar = dict()
     if period[0] == 'd':
@@ -94,8 +94,8 @@ def on_strategy_get_bar(id, code, period, curBar, isLast):
     @curBar 最新一条K线\n
     @isLast 是否是最后一条
     '''
-    env = theEnv
-    ctx = env.get_context(id)
+    engine = theEngine
+    ctx = engine.get_context(id)
     realBar = None
     if curBar:
         realBar = curBar.contents
@@ -128,8 +128,8 @@ def on_strategy_get_tick(id, code, curTick, isLast):
     @isLast     是否是最后一条
     '''
 
-    env = theEnv
-    ctx = env.get_context(id)
+    engine = theEngine
+    ctx = engine.get_context(id)
     realTick = None
     if curTick:
         realTick = curTick.contents
@@ -213,12 +213,12 @@ class WtWrapper:
     def config(self, cfgfile:str = 'config.json'):
         self.api.config_porter(bytes(cfgfile, encoding = "utf8"))
 
-    def initialize(self, env, logProfile:str = "logcfg.json"):
+    def initialize(self, engine, logProfile:str = "logcfg.json"):
         '''
         C接口初始化
         '''
-        global theEnv
-        theEnv = env
+        global theEngine
+        theEngine = engine
         try:
             self.api.register_callbacks(cb_strategy_init, cb_strategy_tick, cb_strategy_calc, cb_strategy_bar, cb_engine_event)
             self.api.init_porter(bytes(logProfile, encoding = "utf8"))

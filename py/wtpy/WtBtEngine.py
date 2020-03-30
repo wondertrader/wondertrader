@@ -19,7 +19,7 @@ def singleton(cls):
 
 
 @singleton
-class WtBtEnv:
+class WtBtEngine:
 
     def __init__(self):
         self.__wrapper__ = WtBtWrapper()  #api接口转换器
