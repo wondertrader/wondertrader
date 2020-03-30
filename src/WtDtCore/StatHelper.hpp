@@ -1,3 +1,12 @@
+/*!
+ * \file StatHelper.hpp
+ * \project	WonderTrader
+ *
+ * \author Wesley
+ * \date 2020/03/30
+ * 
+ * \brief 数据统计辅助类
+ */
 #pragma once
 #include <boost/atomic.hpp>
 #include <boost/interprocess/detail/atomic.hpp>

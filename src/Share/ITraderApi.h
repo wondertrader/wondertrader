@@ -1,3 +1,12 @@
+/*!
+ * \file ITraderApi.h
+ * \project	WonderTrader
+ *
+ * \author Wesley
+ * \date 2020/03/30
+ * 
+ * \brief 交易通道对接接口定义文件
+ */
 #pragma once
 #include <set>
 #include <map>

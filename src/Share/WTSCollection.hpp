@@ -1,3 +1,12 @@
+/*!
+ * \file WTSCollection.hpp
+ * \project	WonderTrader
+ *
+ * \author Wesley
+ * \date 2020/03/30
+ * 
+ * \brief Wt集合组件定义文件
+ */
 #pragma once
 #include "WTSObject.hpp"
 #include <vector>

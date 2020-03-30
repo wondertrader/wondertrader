@@ -1,3 +1,11 @@
+/*!
+ * \file WtSimpRiskMon.h
+ *
+ * \author Wesley
+ * \date 2020/03/30
+ *
+ * 
+ */
 #pragma once
 #include <thread>
 #include <memory>

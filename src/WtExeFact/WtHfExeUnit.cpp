@@ -1,3 +1,11 @@
+/*!
+ * \file WtHfExeUnit.cpp
+ *
+ * \author Wesley
+ * \date 2020/03/30
+ *
+ * 
+ */
 #include "WtHfExeUnit.h"
 #include <math.h>
 

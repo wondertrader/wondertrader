@@ -1,3 +1,12 @@
+/*!
+ * \file WTSHotMgr.h
+ * \project	WonderTrader
+ *
+ * \author Wesley
+ * \date 2020/03/30
+ * 
+ * \brief 主力合约管理器实现
+ */
 #pragma once
 #include "../Share/IHotMgr.h"
 #include "../Share/WTSCollection.hpp"

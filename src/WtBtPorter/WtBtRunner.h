@@ -1,3 +1,12 @@
+/*!
+ * \file WtBtRunner.h
+ * \project	WonderTrader
+ *
+ * \author Wesley
+ * \date 2020/03/30
+ * 
+ * \brief 
+ */
 #pragma once
 #include "PorterDefs.h"
 #include "../WtBtCore/HisDataReplayer.h"

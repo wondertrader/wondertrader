@@ -1,3 +1,12 @@
+/*!
+ * \file WTSParamParser.h
+ * \project	WonderTrader
+ *
+ * \author Wesley
+ * \date 2020/03/30
+ * 
+ * \brief 参数解析器定义
+ */
 #pragma once
 #include "../WTSUtils/pugixml/pugixml.hpp"
 

@@ -1,3 +1,12 @@
+/*!
+ * \file WtCtaEngine.cpp
+ * \project	WonderTrader
+ *
+ * \author Wesley
+ * \date 2020/03/30
+ * 
+ * \brief 
+ */
 #define WIN32_LEAN_AND_MEAN
 
 #include "WtCtaEngine.h"

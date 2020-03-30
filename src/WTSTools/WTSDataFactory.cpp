@@ -1,3 +1,12 @@
+/*!
+ * \file WTSDataFactory.cpp
+ * \project	WonderTrader
+ *
+ * \author Wesley
+ * \date 2020/03/30
+ * 
+ * \brief 
+ */
 #include "WTSDataFactory.h"
 #include "../Share/WTSDataDef.hpp"
 #include "../Share/WTSContractInfo.hpp"

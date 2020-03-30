@@ -1,3 +1,12 @@
+/*!
+ * \file ITrdNotifySink.h
+ * \project	WonderTrader
+ *
+ * \author Wesley
+ * \date 2020/03/30
+ * 
+ * \brief 
+ */
 #pragma once
 #include <stdint.h>
 #include "../Share/WTSMarcos.h"

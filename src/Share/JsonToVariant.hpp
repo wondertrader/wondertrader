@@ -1,3 +1,12 @@
+/*!
+ * \file JsonToVariant.hpp
+ * \project	WonderTrader
+ *
+ * \author Wesley
+ * \date 2020/03/30
+ * 
+ * \brief rapidjson×ªWTSVariantµÄ¸¨Öúº¯Êý
+ */
 #pragma once
 
 #include "WTSVariant.hpp"

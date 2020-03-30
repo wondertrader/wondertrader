@@ -1,3 +1,12 @@
+/*!
+ * \file ExecMocker.cpp
+ * \project	WonderTrader
+ *
+ * \author Wesley
+ * \date 2020/03/30
+ * 
+ * \brief 
+ */
 #include "ExecMocker.h"
 #include "HisDataReplayer.h"
 #include "WtHelper.h"

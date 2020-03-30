@@ -1,3 +1,12 @@
+/*!
+ * \file WTSBaseDataMgr.h
+ * \project	WonderTrader
+ *
+ * \author Wesley
+ * \date 2020/03/30
+ * 
+ * \brief 基础数据管理器实现
+ */
 #pragma once
 #include <unordered_set>
 #include <unordered_map>

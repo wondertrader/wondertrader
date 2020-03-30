@@ -1,3 +1,11 @@
+/*!
+ * \file WtSimpExeUnit.cpp
+ *
+ * \author Wesley
+ * \date 2020/03/30
+ *
+ * 
+ */
 #include "WtSimpExeUnit.h"
 
 #include "../Share/WTSVariant.hpp"

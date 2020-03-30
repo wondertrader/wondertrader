@@ -1,3 +1,12 @@
+/*!
+ * \file CtaMocker.cpp
+ * \project	WonderTrader
+ *
+ * \author Wesley
+ * \date 2020/03/30
+ * 
+ * \brief 
+ */
 #include "CtaMocker.h"
 #include "WtHelper.h"
 #include "HisDataReplayer.h"

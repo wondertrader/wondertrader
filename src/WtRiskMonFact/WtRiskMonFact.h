@@ -1,3 +1,11 @@
+/*!
+ * \file WtRiskMonFact.h
+ *
+ * \author Wesley
+ * \date 2020/03/30
+ *
+ * 
+ */
 #pragma once
 #include "../WtCore/RiskMonDefs.h"
 

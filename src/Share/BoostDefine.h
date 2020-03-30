@@ -1,3 +1,12 @@
+/*!
+ * \file BoostDefine.h
+ * \project	WonderTrader
+ *
+ * \author Wesley
+ * \date 2020/03/30
+ * 
+ * \brief boost相关组件的typedef，方便使用
+ */
 #pragma once
 
 #include <boost/thread/shared_mutex.hpp>

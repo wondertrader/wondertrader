@@ -1,3 +1,12 @@
+/*!
+ * \file IDataStore.h
+ * \project	WonderTrader
+ *
+ * \author Wesley
+ * \date 2020/03/30
+ * 
+ * \brief 
+ */
 #pragma once
 #include <unordered_set>
 #include <stdint.h>

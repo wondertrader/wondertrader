@@ -1,3 +1,12 @@
+/*!
+ * \file WTSTypes.h
+ * \project	WonderTrader
+ *
+ * \author Wesley
+ * \date 2020/03/30
+ * 
+ * \brief WonderTrader基本数据类型定义文件
+ */
 #pragma once
 #include "WTSMarcos.h"
 

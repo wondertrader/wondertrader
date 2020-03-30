@@ -1,3 +1,11 @@
+/*!
+ * \file WtRiskMonFact.cpp
+ *
+ * \author Wesley
+ * \date 2020/03/30
+ *
+ * 
+ */
 #include "WtRiskMonFact.h"
 #include "WtSimpRiskMon.h"
 

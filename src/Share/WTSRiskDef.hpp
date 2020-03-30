@@ -1,3 +1,12 @@
+/*!
+ * \file WTSRiskDef.hpp
+ * \project	WonderTrader
+ *
+ * \author Wesley
+ * \date 2020/03/30
+ * 
+ * \brief WT风控相关数据定义
+ */
 #pragma once
 #include "WTSObject.hpp"
 

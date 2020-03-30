@@ -1,3 +1,12 @@
+/*!
+ * \file StdUtils.hpp
+ * \project	WonderTrader
+ *
+ * \author Wesley
+ * \date 2020/03/30
+ * 
+ * \brief C++标准库一些定义的简单封装，方便调用
+ */
 #pragma once
 
 #include <memory>

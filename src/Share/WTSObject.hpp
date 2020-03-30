@@ -1,3 +1,12 @@
+/*!
+ * \file WTSObject.hpp
+ * \project	WonderTrader
+ *
+ * \author Wesley
+ * \date 2020/03/30
+ * 
+ * \brief Wt»ù´¡Object¶¨Òå
+ */
 #pragma once
 #include <stdint.h>
 #include <atomic>

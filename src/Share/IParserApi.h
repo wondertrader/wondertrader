@@ -1,3 +1,12 @@
+/*!
+ * \file IParserApi.h
+ * \project	WonderTrader
+ *
+ * \author Wesley
+ * \date 2020/03/30
+ * 
+ * \brief 行情解析模块接口定义文件
+ */
 #pragma once
 
 #include <unordered_set>

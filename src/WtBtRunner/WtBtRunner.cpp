@@ -1,5 +1,12 @@
-// WtBtRunner.cpp : 定义控制台应用程序的入口点。
-//
+/*!
+ * \file WtBtRunner.cpp
+ * \project	WonderTrader
+ *
+ * \author Wesley
+ * \date 2020/03/30
+ * 
+ * \brief 
+ */
 #include "../WtBtCore/HisDataReplayer.h"
 #include "../WtBtCore/CtaMocker.h"
 #include "../WtBtCore/ExecMocker.h"

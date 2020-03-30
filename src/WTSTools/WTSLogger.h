@@ -1,3 +1,12 @@
+/*!
+ * \file WTSLogger.h
+ * \project	WonderTrader
+ *
+ * \author Wesley
+ * \date 2020/03/30
+ * 
+ * \brief 日志模块定义
+ */
 #pragma once
 #include "../Share/WTSTypes.h"
 #include "../Share/WTSCollection.hpp"

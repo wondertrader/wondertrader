@@ -1,3 +1,12 @@
+/*!
+ * \file WTSStruct.h
+ * \project	WonderTrader
+ *
+ * \author Wesley
+ * \date 2020/03/30
+ * 
+ * \brief Wt基础结构体定义
+ */
 #pragma once
 #include <memory>
 #include <stdint.h>

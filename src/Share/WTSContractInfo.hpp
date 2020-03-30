@@ -1,3 +1,12 @@
+/*!
+ * \file WTSContractInfo.hpp
+ * \project	WonderTrader
+ *
+ * \author Wesley
+ * \date 2020/03/30
+ * 
+ * \brief Wt品种信息、合约信息定义文件
+ */
 #pragma once
 #include "WTSObject.hpp"
 #include "WTSTypes.h"

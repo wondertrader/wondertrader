@@ -1,3 +1,12 @@
+/*!
+ * \file IHotMgr.h
+ * \project	WonderTrader
+ *
+ * \author Wesley
+ * \date 2020/03/30
+ * 
+ * \brief 主力合约管理器接口定义
+ */
 #pragma once
 #include "WTSMarcos.h"
 #include <vector>

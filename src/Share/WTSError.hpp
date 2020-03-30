@@ -1,3 +1,12 @@
+/*!
+ * \file WTSError.hpp
+ * \project	WonderTrader
+ *
+ * \author Wesley
+ * \date 2020/03/30
+ * 
+ * \brief Wt错误对象定义
+ */
 #pragma once
 #include "WTSObject.hpp"
 #include "WTSTypes.h"

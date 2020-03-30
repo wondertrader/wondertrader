@@ -1,3 +1,12 @@
+/*!
+ * \file DataManager.cpp
+ * \project	WonderTrader
+ *
+ * \author Wesley
+ * \date 2020/03/30
+ * 
+ * \brief 
+ */
 #include "DataManager.h"
 #include "StateMonitor.h"
 #include "UDPCaster.h"

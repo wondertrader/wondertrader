@@ -1,5 +1,12 @@
-// WtRunner.cpp : 定义控制台应用程序的入口点。
-//
+/*!
+ * \file main.cpp
+ * \project	WonderTrader
+ *
+ * \author Wesley
+ * \date 2020/03/30
+ * 
+ * \brief 
+ */
 
 #include "stdafx.h"
 #include "WtRunner.h"

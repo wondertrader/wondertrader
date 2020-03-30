@@ -1,4 +1,13 @@
-﻿#pragma once
+﻿/*!
+ * \file WTSDataDef.hpp
+ * \project	WonderTrader
+ *
+ * \author Wesley
+ * \date 2020/03/30
+ * 
+ * \brief Wt行情数据定义文件，包括tick、bar、orderqueue、orderdetail、transaction等数据
+ */
+#pragma once
 #include <stdlib.h>
 #include <vector>
 #include <deque>

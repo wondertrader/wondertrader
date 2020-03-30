@@ -1,3 +1,12 @@
+/*!
+ * \file ParserAdapter.h
+ * \project	WonderTrader
+ *
+ * \author Wesley
+ * \date 2020/03/30
+ * 
+ * \brief 行情解析模块适配类定义
+ */
 #pragma once
 #include <set>
 #include <boost/core/noncopyable.hpp>

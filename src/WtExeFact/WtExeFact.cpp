@@ -1,3 +1,11 @@
+/*!
+ * \file WtExeFact.cpp
+ *
+ * \author Wesley
+ * \date 2020/03/30
+ *
+ * 
+ */
 #include "WtExeFact.h"
 
 #include "WtSimpExeUnit.h"

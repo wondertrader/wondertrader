@@ -1,3 +1,12 @@
+/*!
+ * \file ParserUDP.cpp
+ * \project	WonderTrader
+ *
+ * \author Wesley
+ * \date 2020/03/30
+ * 
+ * \brief 
+ */
 #include "ParserUDP.h"
 #include "../Share/WTSParams.hpp"
 #include "../Share/WTSDataDef.hpp"

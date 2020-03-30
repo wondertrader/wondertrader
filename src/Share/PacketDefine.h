@@ -1,3 +1,12 @@
+/*!
+ * \file PacketDefine.h
+ * \project	WonderTrader
+ *
+ * \author Wesley
+ * \date 2020/03/30
+ * 
+ * \brief WT系统网络通讯包的通用包头部定义
+ */
 #pragma once
 
 #pragma pack(push ,1)

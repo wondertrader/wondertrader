@@ -1,3 +1,12 @@
+/*!
+ * \file CodeHelper.hpp
+ * \project	WonderTrader
+ *
+ * \author Wesley
+ * \date 2020/03/30
+ * 
+ * \brief 代码辅助类，封装到一起方便使用
+ */
 #pragma once
 #include "StrUtil.hpp"
 

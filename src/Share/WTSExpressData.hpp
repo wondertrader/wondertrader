@@ -1,3 +1,12 @@
+/*!
+ * \file WTSExpressData.hpp
+ * \project	WonderTrader
+ *
+ * \author Wesley
+ * \date 2020/03/30
+ * 
+ * \brief Wt指标数据定义文件
+ */
 #pragma once
 #include <stdint.h>
 #include "WTSDataDef.hpp"

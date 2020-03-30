@@ -1,3 +1,12 @@
+/*!
+ * \file StateMonitor.h
+ * \project	WonderTrader
+ *
+ * \author Wesley
+ * \date 2020/03/30
+ * 
+ * \brief ×´Ì¬¿ØÖÆÆ÷¶¨Òå
+ */
 #pragma once
 #include <unordered_map>
 

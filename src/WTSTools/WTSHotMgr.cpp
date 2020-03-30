@@ -1,3 +1,12 @@
+/*!
+ * \file WTSHotMgr.cpp
+ * \project	WonderTrader
+ *
+ * \author Wesley
+ * \date 2020/03/30
+ * 
+ * \brief 
+ */
 #include "WTSHotMgr.h"
 #include "../Share/WTSHotItem.hpp"
 #include "../Share/StrUtil.hpp"

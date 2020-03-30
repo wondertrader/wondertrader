@@ -1,3 +1,12 @@
+/*!
+ * \file TraderAdapter.cpp
+ * \project	WonderTrader
+ *
+ * \author Wesley
+ * \date 2020/03/30
+ * 
+ * \brief 
+ */
 #include "WtExecuter.h"
 #include "TraderAdapter.h"
 #include "ActionPolicyMgr.h"

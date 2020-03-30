@@ -1,3 +1,12 @@
+/*!
+ * \file WTSSessionInfo.hpp
+ * \project	WonderTrader
+ *
+ * \author Wesley
+ * \date 2020/03/30
+ * 
+ * \brief Wt交易时间模板对象定义
+ */
 #pragma once
 #include <vector>
 

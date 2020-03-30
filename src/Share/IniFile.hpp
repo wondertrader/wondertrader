@@ -1,3 +1,12 @@
+/*!
+ * \file IniFile.hpp
+ * \project	WonderTrader
+ *
+ * \author Wesley
+ * \date 2020/03/30
+ * 
+ * \brief Ini文件辅助工具，仅适用于windows平台
+ */
 #pragma once
 #include <string>
 #include <vector>

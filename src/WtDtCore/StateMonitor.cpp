@@ -1,3 +1,12 @@
+/*!
+ * \file StateMonitor.cpp
+ * \project	WonderTrader
+ *
+ * \author Wesley
+ * \date 2020/03/30
+ * 
+ * \brief 
+ */
 #include "StateMonitor.h"
 #include "DataManager.h"
 
