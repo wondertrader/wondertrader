@@ -1,0 +1,237 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="pugixml">
+      <UniqueIdentifier>{fe2dd16f-22dd-44c8-9ea2-18c3694d58f8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="zstdlib">
+      <UniqueIdentifier>{363bbb4a-b6cb-414d-b708-002e75ed7d56}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pugixml\pugiconfig.hpp">
+      <Filter>pugixml</Filter>
+    </ClInclude>
+    <ClInclude Include="pugixml\pugixml.hpp">
+      <Filter>pugixml</Filter>
+    </ClInclude>
+    <ClInclude Include="base64.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="MD5Sum.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="zstdlib\bitstream.h">
+      <Filter>zstdlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zstdlib\compiler.h">
+      <Filter>zstdlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zstdlib\cover.h">
+      <Filter>zstdlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zstdlib\cpu.h">
+      <Filter>zstdlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zstdlib\debug.h">
+      <Filter>zstdlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zstdlib\divsufsort.h">
+      <Filter>zstdlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zstdlib\error_private.h">
+      <Filter>zstdlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zstdlib\fse.h">
+      <Filter>zstdlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zstdlib\hist.h">
+      <Filter>zstdlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zstdlib\huf.h">
+      <Filter>zstdlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zstdlib\mem.h">
+      <Filter>zstdlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zstdlib\pool.h">
+      <Filter>zstdlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zstdlib\threading.h">
+      <Filter>zstdlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zstdlib\xxhash.h">
+      <Filter>zstdlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zstdlib\zdict.h">
+      <Filter>zstdlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zstdlib\zstd.h">
+      <Filter>zstdlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zstdlib\zstd_compress_internal.h">
+      <Filter>zstdlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zstdlib\zstd_compress_literals.h">
+      <Filter>zstdlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zstdlib\zstd_compress_sequences.h">
+      <Filter>zstdlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zstdlib\zstd_cwksp.h">
+      <Filter>zstdlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zstdlib\zstd_ddict.h">
+      <Filter>zstdlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zstdlib\zstd_decompress_block.h">
+      <Filter>zstdlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zstdlib\zstd_decompress_internal.h">
+      <Filter>zstdlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zstdlib\zstd_double_fast.h">
+      <Filter>zstdlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zstdlib\zstd_errors.h">
+      <Filter>zstdlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zstdlib\zstd_fast.h">
+      <Filter>zstdlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zstdlib\zstd_internal.h">
+      <Filter>zstdlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zstdlib\zstd_lazy.h">
+      <Filter>zstdlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zstdlib\zstd_ldm.h">
+      <Filter>zstdlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zstdlib\zstd_opt.h">
+      <Filter>zstdlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zstdlib\zstdmt_compress.h">
+      <Filter>zstdlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zstdlib\zbuff.h">
+      <Filter>zstdlib</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="pugixml\pugixml.cpp">
+      <Filter>pugixml</Filter>
+    </ClCompile>
+    <ClCompile Include="base64.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="MD5Sum.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="zstdlib\cover.c">
+      <Filter>zstdlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zstdlib\debug.c">
+      <Filter>zstdlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zstdlib\divsufsort.c">
+      <Filter>zstdlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zstdlib\entropy_common.c">
+      <Filter>zstdlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zstdlib\error_private.c">
+      <Filter>zstdlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zstdlib\fastcover.c">
+      <Filter>zstdlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zstdlib\fse_compress.c">
+      <Filter>zstdlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zstdlib\fse_decompress.c">
+      <Filter>zstdlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zstdlib\hist.c">
+      <Filter>zstdlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zstdlib\huf_compress.c">
+      <Filter>zstdlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zstdlib\huf_decompress.c">
+      <Filter>zstdlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zstdlib\pool.c">
+      <Filter>zstdlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zstdlib\threading.c">
+      <Filter>zstdlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zstdlib\xxhash.c">
+      <Filter>zstdlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zstdlib\zdict.c">
+      <Filter>zstdlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zstdlib\zstd_common.c">
+      <Filter>zstdlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zstdlib\zstd_compress.c">
+      <Filter>zstdlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zstdlib\zstd_compress_literals.c">
+      <Filter>zstdlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zstdlib\zstd_compress_sequences.c">
+      <Filter>zstdlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zstdlib\zstd_ddict.c">
+      <Filter>zstdlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zstdlib\zstd_decompress.c">
+      <Filter>zstdlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zstdlib\zstd_decompress_block.c">
+      <Filter>zstdlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zstdlib\zstd_double_fast.c">
+      <Filter>zstdlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zstdlib\zstd_fast.c">
+      <Filter>zstdlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zstdlib\zstd_lazy.c">
+      <Filter>zstdlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zstdlib\zstd_ldm.c">
+      <Filter>zstdlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zstdlib\zstd_opt.c">
+      <Filter>zstdlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zstdlib\zstdmt_compress.c">
+      <Filter>zstdlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zstdlib\zbuff_common.c">
+      <Filter>zstdlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zstdlib\zbuff_compress.c">
+      <Filter>zstdlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zstdlib\zbuff_decompress.c">
+      <Filter>zstdlib</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

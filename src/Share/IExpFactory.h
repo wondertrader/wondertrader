@@ -1,0 +1,16 @@
+#pragma once
+#include "WTSMarcos.h"
+
+NS_OTP_BEGIN
+class WTSKlineData;
+class WTSExpressParams;
+class WTSExpressData;
+class WTSHisTrendData;
+
+class IExpFactory
+{
+public:
+	virtual WTSExpressData *calcKlineExpress(const char* expName, WTSKlineData* klineData, WTSExpressParams* params) = 0;
+	virtual WTSExpressData *calcTrendExpress(const char* expName, WTSHisTrendData* trendData, WTSExpressParams* params) = 0;
+};
+NS_OTP_END

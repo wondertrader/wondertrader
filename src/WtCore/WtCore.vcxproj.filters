@@ -1,0 +1,165 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Defs">
+      <UniqueIdentifier>{cb28796e-2033-4f99-8c5e-378ac575c33b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Datas">
+      <UniqueIdentifier>{d0a3fbad-c6a2-420e-a58d-e98b65776dd8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CTA">
+      <UniqueIdentifier>{f86469b8-8ab8-440a-ab01-2ce3eaf51442}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="HFT">
+      <UniqueIdentifier>{f4b72665-a037-41d6-9b24-30deaa6dbe4e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common">
+      <UniqueIdentifier>{a7b2a95c-537d-468f-ba75-6d04db988e6a}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="WtExecuter.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="TraderAdapter.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ParserAdapter.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ExecuteDefs.h">
+      <Filter>Defs</Filter>
+    </ClInclude>
+    <ClInclude Include="WtDataManager.h">
+      <Filter>Datas</Filter>
+    </ClInclude>
+    <ClInclude Include="WtHelper.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="WtCtaEngine.h">
+      <Filter>CTA</Filter>
+    </ClInclude>
+    <ClInclude Include="CtaStrategyMgr.h">
+      <Filter>CTA</Filter>
+    </ClInclude>
+    <ClInclude Include="CtaStraContext.h">
+      <Filter>CTA</Filter>
+    </ClInclude>
+    <ClInclude Include="ICtaStraCtx.h">
+      <Filter>CTA</Filter>
+    </ClInclude>
+    <ClInclude Include="CtaStraBaseCtx.h">
+      <Filter>CTA</Filter>
+    </ClInclude>
+    <ClInclude Include="WtCtaTicker.h">
+      <Filter>CTA</Filter>
+    </ClInclude>
+    <ClInclude Include="IHftStraCtx.h">
+      <Filter>HFT</Filter>
+    </ClInclude>
+    <ClInclude Include="WtHftEngine.h">
+      <Filter>HFT</Filter>
+    </ClInclude>
+    <ClInclude Include="CtaStrategyDefs.h">
+      <Filter>CTA</Filter>
+    </ClInclude>
+    <ClInclude Include="HftStrategyDefs.h">
+      <Filter>HFT</Filter>
+    </ClInclude>
+    <ClInclude Include="HftStraBaseCtx.h">
+      <Filter>HFT</Filter>
+    </ClInclude>
+    <ClInclude Include="HftStraContext.h">
+      <Filter>HFT</Filter>
+    </ClInclude>
+    <ClInclude Include="ITrdNotifySink.h">
+      <Filter>Defs</Filter>
+    </ClInclude>
+    <ClInclude Include="HftStrategyMgr.h">
+      <Filter>HFT</Filter>
+    </ClInclude>
+    <ClInclude Include="ActionPolicyMgr.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="WtEngine.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="WtHftTicker.h">
+      <Filter>HFT</Filter>
+    </ClInclude>
+    <ClInclude Include="RiskMonDefs.h">
+      <Filter>Defs</Filter>
+    </ClInclude>
+    <ClInclude Include="IDataReader.h">
+      <Filter>Defs</Filter>
+    </ClInclude>
+    <ClInclude Include="IDataStore.h">
+      <Filter>Defs</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="WtExecuter.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="TraderAdapter.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ParserAdapter.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="WtDataManager.cpp">
+      <Filter>Datas</Filter>
+    </ClCompile>
+    <ClCompile Include="WtHelper.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="WtCtaEngine.cpp">
+      <Filter>CTA</Filter>
+    </ClCompile>
+    <ClCompile Include="CtaStrategyMgr.cpp">
+      <Filter>CTA</Filter>
+    </ClCompile>
+    <ClCompile Include="CtaStraContext.cpp">
+      <Filter>CTA</Filter>
+    </ClCompile>
+    <ClCompile Include="CtaStraBaseCtx.cpp">
+      <Filter>CTA</Filter>
+    </ClCompile>
+    <ClCompile Include="WtCtaTicker.cpp">
+      <Filter>CTA</Filter>
+    </ClCompile>
+    <ClCompile Include="WtHftEngine.cpp">
+      <Filter>HFT</Filter>
+    </ClCompile>
+    <ClCompile Include="HftStraBaseCtx.cpp">
+      <Filter>HFT</Filter>
+    </ClCompile>
+    <ClCompile Include="HftStraContext.cpp">
+      <Filter>HFT</Filter>
+    </ClCompile>
+    <ClCompile Include="HftStrategyMgr.cpp">
+      <Filter>HFT</Filter>
+    </ClCompile>
+    <ClCompile Include="ActionPolicyMgr.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="WtEngine.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="WtHftTicker.cpp">
+      <Filter>HFT</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

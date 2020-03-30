@@ -1,0 +1,271 @@
+#include "ParserAdapter.h"
+#include "WtEngine.h"
+#include "WtCtaTicker.h"
+#include "WtHelper.h"
+
+#include "../Share/DLLHelper.hpp"
+#include "../Share/CodeHelper.hpp"
+#include "../Share/TimeUtils.hpp"
+#include "../Share/WTSContractInfo.hpp"
+#include "../Share/WTSDataDef.hpp"
+#include "../Share/WTSVariant.hpp"
+#include "../Share/IBaseDataMgr.h"
+#include "../Share/IHotMgr.h"
+
+#include "../WTSTools/WTSLogger.h"
+
+USING_NS_OTP;
+
+//////////////////////////////////////////////////////////////////////////
+//ParserAdapter
+ParserAdapter::ParserAdapter()
+	: _parser_api(NULL)
+	, _remover(NULL)
+	, _stopped(false)
+	, _bd_mgr(NULL)
+	, _engine(NULL)
+	, _cfg(NULL)
+{
+}
+
+
+ParserAdapter::~ParserAdapter()
+{
+}
+
+bool ParserAdapter::init(const char* id, WTSVariant* cfg, WtEngine* engine)
+{
+	if (cfg == NULL)
+		return false;
+
+	_engine = engine;
+	_bd_mgr = _engine->get_basedata_mgr();;
+	_id = id;
+
+	if (_cfg != NULL)
+		return false;
+
+	_cfg = cfg;
+	_cfg->retain();
+
+	{
+		//加载模块
+		if (cfg->getString("module").empty())
+			return false;
+
+		const char* module = cfg->getCString("module");
+
+		std::string dllpath = WtHelper::getParserModule(module);
+		DllHandle hInst = DLLHelper::load_library(dllpath.c_str());
+		if (hInst == NULL)
+		{
+			WTSLogger::log_dyn("parser", _id.c_str(), LL_ERROR, "[%s]行情模块%s加载失败", _id.c_str(), dllpath.c_str());
+			return false;
+		}
+
+		FuncCreateParser pFuncCreateParser = (FuncCreateParser)DLLHelper::get_symbol(hInst, "createParser");
+		if (NULL == pFuncCreateParser)
+		{
+			WTSLogger::log_dyn("parser", _id.c_str(), LL_FATAL, "[%s]交易接口创建函数读取失败", _id.c_str());
+			return false;
+		}
+
+		_parser_api = pFuncCreateParser();
+		if (NULL == _parser_api)
+		{
+			WTSLogger::log_dyn("parser", _id.c_str(), LL_FATAL, "[%s]行情接口创建失败", _id.c_str());
+			return false;
+		}
+
+		_remover = (FuncDeleteParser)DLLHelper::get_symbol(hInst, "deleteParser");
+	}
+	
+
+	const std::string& strFilter = cfg->getString("filter");
+	if (!strFilter.empty())
+	{
+		const StringVector &ayFilter = StrUtil::split(strFilter, ",");
+		auto it = ayFilter.begin();
+		for (; it != ayFilter.end(); it++)
+		{
+			_exchg_filter.insert(*it);
+		}
+	}
+
+	if (_parser_api)
+	{
+		_parser_api->registerListener(this);
+
+		WTSParams* params = cfg->toParams();
+		if (_parser_api->init(params))
+		{
+			ContractSet contractSet;
+			if (!_exchg_filter.empty())
+			{
+				ExchgFilter::iterator it = _exchg_filter.begin();
+				for (; it != _exchg_filter.end(); it++)
+				{
+					WTSArray* ayContract =_bd_mgr->getContracts((*it).c_str());
+					WTSArray::Iterator it = ayContract->begin();
+					for (; it != ayContract->end(); it++)
+					{
+						WTSContractInfo* contract = STATIC_CONVERT(*it, WTSContractInfo*);
+						WTSCommodityInfo* pCommInfo =_bd_mgr->getCommodity(contract);
+						if (pCommInfo->getCategoty() == CC_Future || pCommInfo->getCategoty() == CC_Option)
+							contractSet.insert(contract->getCode());
+					}
+
+					ayContract->release();
+				}
+			}
+			else
+			{
+				WTSArray* ayContract =_bd_mgr->getContracts();
+				WTSArray::Iterator it = ayContract->begin();
+				for (; it != ayContract->end(); it++)
+				{
+					WTSContractInfo* contract = STATIC_CONVERT(*it, WTSContractInfo*);
+					WTSCommodityInfo* pCommInfo =_bd_mgr->getCommodity(contract);
+					if (pCommInfo->getCategoty() == CC_Future || pCommInfo->getCategoty() == CC_Option)
+						contractSet.insert(contract->getCode());
+				}
+
+				ayContract->release();
+			}
+
+			_parser_api->subscribe(contractSet);
+			contractSet.clear();
+		}
+		else
+		{
+			WTSLogger::log_dyn("parser", _id.c_str(), LL_ERROR, "[%s]行情模块初始化失败,模块接口初始化失败...", _id.c_str());
+		}
+
+		params->release();
+	}
+	else
+	{
+		WTSLogger::log_dyn("parser", _id.c_str(), LL_ERROR, "[%s]行情模块初始化失败,获取模块接口失败...", _id.c_str());
+	}
+
+	return true;
+}
+
+void ParserAdapter::release()
+{
+	_stopped = true;
+	if (_parser_api)
+	{
+		_parser_api->release();
+	}
+
+	_remover(_parser_api);
+}
+
+bool ParserAdapter::run()
+{
+	if (_parser_api == NULL)
+		return false;
+
+	_parser_api->connect();
+	return true;
+}
+
+void ParserAdapter::handleSymbolList(const WTSArray* aySymbols)
+{
+
+}
+
+void ParserAdapter::handleQuote(WTSTickData *quote, bool bPreProc)
+{
+	if (_stopped)
+		return;
+
+	if (!_exchg_filter.empty() && (_exchg_filter.find(quote->exchg()) == _exchg_filter.end()))
+		return;
+
+	if (quote->actiondate() == 0 || quote->tradingdate() == 0)
+		return;
+
+	std::string hotCode = _engine->get_hot_mgr()->getHotCode(quote->exchg(), quote->code(), quote->tradingdate());
+
+	WTSContractInfo* cInfo = _bd_mgr->getContract(quote->code());
+	WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(cInfo);
+	std::string stdCode;
+	if (commInfo->getCategoty() == CC_Future)
+		stdCode = CodeHelper::bscFutCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
+	else
+		stdCode = CodeHelper::bscStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
+	quote->setCode(stdCode.c_str());
+
+	_engine->handle_push_quote(quote, !hotCode.empty());
+
+}
+
+void ParserAdapter::handleParserLog(WTSLogLevel ll, const char* format, ...)
+{
+	if (_stopped)
+		return;
+
+	va_list args;
+	va_start(args, format);
+	WTSLogger::log_dyn_direct("parser", _id.c_str(), ll, format, args);
+	va_end(args);
+}
+
+IBaseDataMgr* ParserAdapter::getBaseDataMgr()
+{
+	return _bd_mgr;
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+//ParserAdapterMgr
+void ParserAdapterMgr::release()
+{
+	for (auto it = _adapters.begin(); it != _adapters.end(); it++)
+	{
+		it->second->release();
+	}
+
+	_adapters.clear();
+}
+
+bool ParserAdapterMgr::addAdapter(const char* id, ParserAdapterPtr& adapter)
+{
+	if (adapter == NULL || strlen(id) == 0)
+		return false;
+
+	auto it = _adapters.find(id);
+	if (it != _adapters.end())
+	{
+		WTSLogger::error("行情通道名称相同: %s", id);
+		return false;
+	}
+
+	_adapters[id] = adapter;
+
+	return true;
+}
+
+
+ParserAdapterPtr ParserAdapterMgr::getAdapter(const char* tname)
+{
+	auto it = _adapters.find(tname);
+	if (it != _adapters.end())
+	{
+		return it->second;
+	}
+
+	return ParserAdapterPtr();
+}
+
+void ParserAdapterMgr::run()
+{
+	for (auto it = _adapters.begin(); it != _adapters.end(); it++)
+	{
+		it->second->run();
+	}
+
+	WTSLogger::info("%u个行情通道已启动", _adapters.size());
+}
