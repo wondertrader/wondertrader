@@ -58,7 +58,7 @@ bool ParserAdapter::initAdapter(WTSParams* params, FuncCreateParser funcCreate, 
 	m_funcCreate = funcCreate;
 	m_funcDelete = funcDelete;
 
-	const std::string& strFilter = params->getString("filter");
+	std::string strFilter = params->getString("filter");
 	if(!strFilter.empty())
 	{
 		const StringVector &ayFilter = StrUtil::split(strFilter, ",");
@@ -69,7 +69,7 @@ bool ParserAdapter::initAdapter(WTSParams* params, FuncCreateParser funcCreate, 
 		}
 	}
 	
-	std::string& strCodes = params->getString("code");
+	std::string strCodes = params->getString("code");
 	if (!strCodes.empty())
 	{
 		const StringVector &ayCodes = StrUtil::split(strCodes, ",");

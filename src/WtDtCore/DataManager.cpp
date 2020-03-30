@@ -80,7 +80,7 @@ bool DataManager::init(WTSVariant* params, WTSBaseDataMgr* bdMgr, StateMonitor* 
 	}
 	else
 	{
-		WTSLogger::info("数据落地模块初始化失败,加载模块%s失败...", path);
+		WTSLogger::info("数据落地模块初始化失败,加载模块%s失败...",  module.c_str());
 	}
 
 	return _writer->init(params, this);
