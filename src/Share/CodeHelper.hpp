@@ -9,13 +9,36 @@
  */
 #pragma once
 #include "StrUtil.hpp"
+#include "WTSTypes.h"
 
 #include <boost/xpressive/xpressive_dynamic.hpp>
+
+USING_NS_OTP;
 
 class CodeHelper
 {
 public:
+	typedef struct _CodeInfo
+	{
+		char _code[MAX_INSTRUMENT_LENGTH];		//合约代码
+		char _exchg[MAX_INSTRUMENT_LENGTH];		//交易所代码
+		char _product[MAX_INSTRUMENT_LENGTH];	//品种代码
 
+		ContractCategory	_category;		//合约类型
+		union
+		{
+			bool	_hot;		//是否是主力合约
+			bool	_exright;	//是否是复权代码，如SH600000Q
+		};
+
+		_CodeInfo()
+		{
+			memset(this, 0, sizeof(_CodeInfo));
+			_category = CC_Future;
+		}
+	} CodeInfo;
+
+public:
 	static bool	isSimpleStkCode(const char* code)
 	{
 		using namespace boost::xpressive;
@@ -184,48 +207,130 @@ public:
 			return stdFutCodeToBscCode(stdCode);
 	}
 
-	static void extractStdFutCode(const char* stdCode, std::string& exchg, std::string& bscCode, std::string& commID, bool& isHot)
+	//static void extractStdFutCode(const char* stdCode, std::string& exchg, std::string& bscCode, std::string& commID, bool& isHot)
+	//{
+	//	isHot = StrUtil::endsWith(stdCode, ".HOT", false);
+	//	StringVector ay = StrUtil::split(stdCode, ".");
+	//	exchg = ay[0];
+	//	bscCode = ay[1];
+	//	if (!isHot)
+	//	{
+	//		if (exchg.compare("CZCE") == 0 && ay[2].size() == 4)
+	//			bscCode += ay[2].substr(1);
+	//		else
+	//			bscCode += ay[2];
+	//	}
+	//	commID = ay[1];
+	//}
+
+	static void extractStdFutCode(const char* stdCode, CodeInfo& codeInfo)
 	{
-		isHot = StrUtil::endsWith(stdCode, ".HOT", false);
+		codeInfo._hot = StrUtil::endsWith(stdCode, ".HOT", false);
 		StringVector ay = StrUtil::split(stdCode, ".");
-		exchg = ay[0];
-		bscCode = ay[1];
-		if (!isHot)
+		strcpy(codeInfo._exchg, ay[0].c_str());
+		strcpy(codeInfo._code, ay[1].c_str());
+		codeInfo._category = CC_Future;
+		if (!codeInfo._hot)
 		{
-			if (exchg.compare("CZCE") == 0 && ay[2].size() == 4)
-				bscCode += ay[2].substr(1);
+			if (strcmp(codeInfo._exchg, "CZCE") == 0 && ay[2].size() == 4)
+			{
+				//bscCode += ay[2].substr(1);
+				strcat(codeInfo._code + strlen(codeInfo._code), ay[2].substr(1).c_str());
+			}
 			else
-				bscCode += ay[2];
+			{
+				//bscCode += ay[2];
+				strcat(codeInfo._code + strlen(codeInfo._code), ay[2].c_str());
+			}
 		}
-		commID = ay[1];
+		//commID = ay[1];
+		strcpy(codeInfo._product, ay[1].c_str());
 	}
 
-	static void extractStdStkCode(const char* stdCode, std::string& exchg, std::string& bscCode, std::string& commID)
+	//static void extractStdStkCode(const char* stdCode, std::string& exchg, std::string& bscCode, std::string& commID)
+	//{
+	//	StringVector ay = StrUtil::split(stdCode, ".");
+	//	exchg = ay[0];
+	//	if(ay.size() > 2)
+	//	{
+	//		commID = ay[1];
+	//		bscCode = ay[2];
+	//	}
+	//	else
+	//	{
+	//		commID = "STK";
+	//		bscCode = ay[1];
+	//	}
+	//}
+
+	static void extractStdStkCode(const char* stdCode, CodeInfo& codeInfo)
 	{
 		StringVector ay = StrUtil::split(stdCode, ".");
-		exchg = ay[0];
-		if(ay.size() > 2)
+		codeInfo._category = CC_Stock;
+		//exchg = ay[0];
+		strcpy(codeInfo._exchg, ay[0].c_str());
+		if (ay.size() > 2)
 		{
-			commID = ay[1];
-			bscCode = ay[2];
+			//commID = ay[1];
+			strcpy(codeInfo._product, ay[1].c_str());
+			//bscCode = ay[2];
+			if (ay[2].back() == 'Q')
+			{
+				strcpy(codeInfo._code, ay[2].substr(0, ay[2].size() - 1).c_str());
+				codeInfo._exright = true;
+			}
+			else
+			{
+				strcpy(codeInfo._code, ay[2].c_str());
+				codeInfo._exright = false;
+			}
 		}
 		else
 		{
-			commID = "STK";
-			bscCode = ay[1];
+			//commID = "STK";
+			strcpy(codeInfo._product, "STK");
+			//bscCode = ay[1];
+			if (ay[1].back() == 'Q')
+			{
+				strcpy(codeInfo._code, ay[1].substr(0, ay[1].size() - 1).c_str());
+				codeInfo._exright = true;
+			}
+			else
+			{
+				strcpy(codeInfo._code, ay[1].c_str());
+				codeInfo._exright = false;
+			}
 		}
 	}
 
 	static void extractStdCode(const char* stdCode, std::string& exchg, std::string& bscCode, std::string& commID, bool& isHot)
 	{
+		CodeInfo codeInfo;
 		if(isStdStkCode(stdCode))
 		{
-			extractStdStkCode(stdCode, exchg, bscCode, commID);
+			extractStdStkCode(stdCode, codeInfo);
 			isHot = false;
 		}
 		else
 		{
-			extractStdFutCode(stdCode, exchg, bscCode, commID, isHot);
+			extractStdFutCode(stdCode, codeInfo);
+		}
+
+		exchg = codeInfo._exchg;
+		bscCode = codeInfo._code;
+		commID = codeInfo._product;
+		isHot = codeInfo._hot;
+	}
+
+	static void extractStdCode(const char* stdCode, CodeInfo& codeInfo)
+	{
+		if (isStdStkCode(stdCode))
+		{
+			extractStdStkCode(stdCode, codeInfo);
+		}
+		else
+		{
+			extractStdFutCode(stdCode, codeInfo);
 		}
 	}
 
