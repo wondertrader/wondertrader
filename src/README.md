@@ -1,6 +1,12 @@
 # wt > src
 这是wondertrader的C++底层源码
 
+## 开发环境
++ Windows	
+	> `Visual Studio 2013` + `Windows 7`
++ Linux	
+	> `Gcc v7.5.0` + `Ubuntu 18.04.3 LTS` + `cmake 3.10.2`
+
 ## 依赖库
 + boost 1.72
 + rapidjson
