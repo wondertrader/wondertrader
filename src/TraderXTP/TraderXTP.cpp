@@ -62,9 +62,9 @@ inline WTSDirectionType wrapPosDirection(XTP_POSITION_DIRECTION_TYPE dirType)
 {
 	switch (dirType)
 	{
-	case XTP_POSITION_DIRECTION_LONG: return WDT_LONG;
+	case XTP_POSITION_DIRECTION_SHORT: return WDT_SHORT;
 	default:
-		return WDT_SHORT;
+		return WDT_LONG;
 	}
 }
 
@@ -434,20 +434,28 @@ void TraderXTP::OnQueryPosition(XTPQueryStkPositionRsp *position, XTPRI *error_i
 	//	triggerQuery();
 	//}
 
-	if (!IsErrorInfo(error_info) && position && (position->position_direction == XTP_POSITION_DIRECTION_LONG || position->position_direction == XTP_POSITION_DIRECTION_SHORT))
+	if (!IsErrorInfo(error_info) && position )
 	{
 		if (NULL == _positions)
 			_positions = PositionMap::create();
 
-		WTSContractInfo* contract = _bd_mgr->getContract(position->ticker);
+		std::string code;
+		if (position->market == XTP_MKT_SH_A)
+			code += "SH";
+		else
+			code += "SZ";
+
+		code += position->ticker;
+
+		WTSContractInfo* contract = _bd_mgr->getContract(code.c_str());
 		WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(contract);
 		if (contract)
 		{
-			std::string key = StrUtil::printf("%s-%d", position->ticker, position->position_direction);
+			std::string key = StrUtil::printf("%s-%d", code.c_str(), position->position_direction);
 			WTSPositionItem* pos = (WTSPositionItem*)_positions->get(key);
 			if (pos == NULL)
 			{
-				pos = WTSPositionItem::create(position->ticker, commInfo->getCurrency(), commInfo->getExchg());
+				pos = WTSPositionItem::create(code.c_str(), commInfo->getCurrency(), commInfo->getExchg());
 				_positions->add(key, pos, false);
 			}
 			pos->setDirection(wrapPosDirection(position->position_direction));
@@ -543,7 +551,7 @@ bool TraderXTP::init(WTSParams *params)
 
 	_client = params->getInt32("client");
 
-	_quick = params->getBoolean("client");	
+	_quick = params->getBoolean("quick");	
 
 	return true;
 }

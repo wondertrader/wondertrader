@@ -7,7 +7,6 @@
  * 
  * \brief 
  */
-#include "StdAfx.h"
 #include "ParserXTP.h"
 #include "..\Share\StrUtil.hpp"
 #include "..\Share\TimeUtils.hpp"
@@ -307,61 +306,61 @@ void ParserXTP::DoSubscribeMD()
 	CodeSet codeFilter = m_fitSHSubs;
 	if(!codeFilter.empty())
 	{
-		//char ** subscribe = new char*[codeFilter.size()];
-		//int nCount = 0;
-		//CodeSet::iterator it = codeFilter.begin();
-		//for (; it != codeFilter.end(); it++)
-		//{
-		//	subscribe[nCount++] = (char*)(*it).c_str();
-		//}
+		char ** subscribe = new char*[codeFilter.size()];
+		int nCount = 0;
+		CodeSet::iterator it = codeFilter.begin();
+		for (; it != codeFilter.end(); it++)
+		{
+			subscribe[nCount++] = (char*)(*it).c_str();
+		}
 
-		//if (m_pUserAPI && nCount > 0)
-		//{
-		//	int iResult = m_pUserAPI->SubscribeMarketData(subscribe, nCount, XTP_EXCHANGE_SH);
-		//	if (iResult != 0)
-		//	{
-		//		if (m_parserSink)
-		//			m_parserSink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserXTP]上证行情订阅请求发送失败, 错误码:%d", iResult).c_str());
-		//	}
-		//	else
-		//	{
-		//		if (m_parserSink)
-		//			m_parserSink->handleParserLog(LL_INFO, StrUtil::printf("[ParserXTP]一共订阅上证 %d 个品种行情", nCount).c_str());
-		//	}
-		//}
-		//codeFilter.clear();
-		//delete[] subscribe;
-		int iResult = m_pUserAPI->SubscribeAllMarketData(XTP_EXCHANGE_SH);
+		if (m_pUserAPI && nCount > 0)
+		{
+			int iResult = m_pUserAPI->SubscribeMarketData(subscribe, nCount, XTP_EXCHANGE_SH);
+			if (iResult != 0)
+			{
+				if (m_parserSink)
+					m_parserSink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserXTP]上证行情订阅请求发送失败, 错误码:%d", iResult).c_str());
+			}
+			else
+			{
+				if (m_parserSink)
+					m_parserSink->handleParserLog(LL_INFO, StrUtil::printf("[ParserXTP]一共订阅上证 %d 个品种行情", nCount).c_str());
+			}
+		}
+		codeFilter.clear();
+		delete[] subscribe;
+		//int iResult = m_pUserAPI->SubscribeAllMarketData(XTP_EXCHANGE_SH);
 	}
 
 	codeFilter = m_fitSZSubs;
 	if (!codeFilter.empty())
 	{
-		//char ** subscribe = new char*[codeFilter.size()];
-		//int nCount = 0;
-		//CodeSet::iterator it = codeFilter.begin();
-		//for (; it != codeFilter.end(); it++)
-		//{
-		//	subscribe[nCount++] = (char*)(*it).c_str();
-		//}
+		char ** subscribe = new char*[codeFilter.size()];
+		int nCount = 0;
+		CodeSet::iterator it = codeFilter.begin();
+		for (; it != codeFilter.end(); it++)
+		{
+			subscribe[nCount++] = (char*)(*it).c_str();
+		}
 
-		//if (m_pUserAPI && nCount > 0)
-		//{
-		//	int iResult = m_pUserAPI->SubscribeMarketData(subscribe, nCount, XTP_EXCHANGE_SZ);
-		//	if (iResult != 0)
-		//	{
-		//		if (m_parserSink)
-		//			m_parserSink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserXTP]深证行情订阅请求发送失败, 错误码:%d", iResult).c_str());
-		//	}
-		//	else
-		//	{
-		//		if (m_parserSink)
-		//			m_parserSink->handleParserLog(LL_INFO, StrUtil::printf("[ParserXTP]一共订阅深证 %d 个品种行情", nCount).c_str());
-		//	}
-		//}
-		//codeFilter.clear();
-		//delete[] subscribe;
-		int iResult = m_pUserAPI->SubscribeAllMarketData(XTP_EXCHANGE_SZ);
+		if (m_pUserAPI && nCount > 0)
+		{
+			int iResult = m_pUserAPI->SubscribeMarketData(subscribe, nCount, XTP_EXCHANGE_SZ);
+			if (iResult != 0)
+			{
+				if (m_parserSink)
+					m_parserSink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserXTP]深证行情订阅请求发送失败, 错误码:%d", iResult).c_str());
+			}
+			else
+			{
+				if (m_parserSink)
+					m_parserSink->handleParserLog(LL_INFO, StrUtil::printf("[ParserXTP]一共订阅深证 %d 个品种行情", nCount).c_str());
+			}
+		}
+		codeFilter.clear();
+		delete[] subscribe;
+		//int iResult = m_pUserAPI->SubscribeAllMarketData(XTP_EXCHANGE_SZ);
 	}
 }
 
