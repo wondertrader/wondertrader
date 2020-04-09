@@ -26,7 +26,7 @@ ENDIF ()
 SET(LIBRARY_OUTPUT_PATH  ${PROJECT_SOURCE_DIR}/../build/libs)
 
 #7. 添加源码
-file(GLOB SRCS *.cpp)
+FILE(GLOB SRCS *.cpp)
 FILE( GLOB HDRS *.h *.hpp)
 
 INCLUDE_DIRECTORIES(${INCS})

@@ -329,10 +329,9 @@ void WtExecuter::on_position(const char* stdCode, bool isLong, uint32_t prevol, 
 	IHotMgr* hotMgr = _engine->get_hot_mgr();
 	if(CodeHelper::isStdFutHotCode(stdCode))
 	{
-		std::string exchg, pid, code;
-		bool isHot = false;
-		CodeHelper::extractStdFutCode(stdCode, exchg, code, pid, isHot);
-		code = hotMgr->getPrevRawCode(exchg.c_str(), pid.c_str(), _engine->get_trading_date());
+		CodeHelper::CodeInfo cInfo;
+		CodeHelper::extractStdFutCode(stdCode, cInfo);
+		std::string code = hotMgr->getPrevRawCode(cInfo._exchg, cInfo._product, _engine->get_trading_date());
 		if (code == stdCode)
 		{
 			//上期主力合约，需要清理仓位

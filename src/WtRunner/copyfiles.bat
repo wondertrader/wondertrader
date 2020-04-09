@@ -13,3 +13,4 @@ if not exist %folder% md %folder%
 xcopy ..\%plat%\%env%\ParserUDP.dll ..\%plat%\%env%\WtRunner\parsers\ /C /Y
 xcopy ..\%plat%\%env%\TraderCTP.dll ..\%plat%\%env%\WtRunner\traders\ /C /Y
 xcopy ..\%plat%\%env%\WtExeFact.dll ..\%plat%\%env%\WtRunner\executer\ /C /Y
+xcopy ..\%plat%\%env%\WtDataReader.dll ..\%plat%\%env%\WtRunner\executer\ /C /Y

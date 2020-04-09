@@ -630,23 +630,29 @@ double WtEngine::get_cur_price(const char* stdCode)
 
 void WtEngine::sub_tick(uint32_t sid, const char* stdCode)
 {
-	SIDSet& sids = _tick_sub_map[stdCode];
-	sids.insert(sid);
-
 	//如果是主力合约代码, 如SHFE.ag.HOT, 那么要转换成原合约代码, SHFE.ag.1912
 	//因为执行器只识别原合约代码
 	if (CodeHelper::isStdFutHotCode(stdCode))
 	{
-		std::string exchg, pid, code;
-		bool isHot = false;
-		CodeHelper::extractStdFutCode(stdCode, exchg, code, pid, isHot);
-		std::string rawCode = _hot_mgr->getRawCode(exchg.c_str(), pid.c_str(), _cur_tdate);
-		std::string stdRawCode = CodeHelper::bscFutCodeToStdCode(rawCode.c_str(), exchg.c_str());
+		SIDSet& sids = _tick_sub_map[stdCode];
+		sids.insert(sid);
+
+		CodeHelper::CodeInfo cInfo;
+		CodeHelper::extractStdFutCode(stdCode, cInfo);
+		std::string rawCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
+		std::string stdRawCode = CodeHelper::bscFutCodeToStdCode(rawCode.c_str(), cInfo._exchg);
 		_subed_raw_codes.insert(stdRawCode);
 	}
 	else
 	{
-		_subed_raw_codes.insert(stdCode);
+		std::size_t length = strlen(stdCode);
+		if (stdCode[length - 1] == 'Q')
+			length--;
+
+		SIDSet& sids = _tick_sub_map[std::string(stdCode, length)];
+		sids.insert(sid);
+
+		_subed_raw_codes.insert(std::string(stdCode, length));
 	}
 }
 

@@ -119,8 +119,8 @@ bool ParserAdapter::init(const char* id, WTSVariant* cfg, WtEngine* engine)
 					for (; it != ayContract->end(); it++)
 					{
 						WTSContractInfo* contract = STATIC_CONVERT(*it, WTSContractInfo*);
-						WTSCommodityInfo* pCommInfo =_bd_mgr->getCommodity(contract);
-						if (pCommInfo->getCategoty() == CC_Future || pCommInfo->getCategoty() == CC_Option)
+						WTSCommodityInfo* pCommInfo = _bd_mgr->getCommodity(contract);
+						if (pCommInfo->getCategoty() == CC_Future || pCommInfo->getCategoty() == CC_Option || pCommInfo->getCategoty() == CC_Stock)
 							contractSet.insert(contract->getCode());
 					}
 
@@ -135,7 +135,7 @@ bool ParserAdapter::init(const char* id, WTSVariant* cfg, WtEngine* engine)
 				{
 					WTSContractInfo* contract = STATIC_CONVERT(*it, WTSContractInfo*);
 					WTSCommodityInfo* pCommInfo =_bd_mgr->getCommodity(contract);
-					if (pCommInfo->getCategoty() == CC_Future || pCommInfo->getCategoty() == CC_Option)
+					if (pCommInfo->getCategoty() == CC_Future || pCommInfo->getCategoty() == CC_Option || pCommInfo->getCategoty() == CC_Stock)
 						contractSet.insert(contract->getCode());
 				}
 

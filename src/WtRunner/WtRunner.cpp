@@ -14,8 +14,6 @@
 #include "..\WtCore\CtaStraContext.h"
 #include "..\WtCore\HftStraContext.h"
 
-#include "..\WtCore\WtDataStorage.h"
-
 #include "..\Share\WTSVariant.hpp"
 #include "..\Share\StdUtils.hpp"
 #include "..\WTSTools\WTSLogger.h"
@@ -41,7 +39,7 @@ WtRunner::~WtRunner()
 
 bool WtRunner::init()
 {
-	std::string path = WtHelper::getCWD() + "log4cxx.prop";
+	std::string path = WtHelper::getCWD() + "logcfg.json";
 	WTSLogger::init(path.c_str());
 
 	return true;
@@ -212,22 +210,11 @@ bool WtRunner::initActionPolicy()
 
 bool WtRunner::initDataMgr()
 {
-	WTSVariant* cfg = _config->get("store");
+	WTSVariant*cfg = _config->get("data");
 	if (cfg == NULL)
 		return false;
 
-	IDataStore* pStore = NULL;
-	{
-		_data_store = new WtDataStorage();
-		_data_store->init(cfg, _engine, &_bd_mgr, &_hot_mgr);
-		pStore = _data_store;
-	}
-
-	cfg = _config->get("data");
-	if (cfg == NULL)
-		return false;
-
-	_data_mgr.init(cfg, pStore, _engine);
+	_data_mgr.init(cfg, _engine);
 
 	return true;
 }
