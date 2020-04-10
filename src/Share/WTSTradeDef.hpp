@@ -73,7 +73,7 @@ public:
 	double getPrice() const{ return m_iPrice; }
 
 	const char* getCode() const{return m_strCode.c_str();}
-	const char* getMarket() const{return m_strExchg.c_str();}
+	const char* getExchg() const{return m_strExchg.c_str();}
 
 	void setEntrustID(const char* eid){m_strEntrustID = eid;}
 	const char* getEntrustID() const{return m_strEntrustID.c_str();}
@@ -201,7 +201,7 @@ public:
 
 		if(entrust != NULL)
 		{
-			pRet->m_strExchg = entrust->getMarket();
+			pRet->m_strExchg = entrust->getExchg();
 			pRet->m_iPrice = entrust->getPrice();
 			pRet->m_strCode = entrust->getCode();
 			pRet->m_uVolumn = entrust->getVolumn();

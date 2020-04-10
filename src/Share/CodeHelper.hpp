@@ -39,14 +39,6 @@ public:
 	} CodeInfo;
 
 public:
-	static bool	isSimpleStkCode(const char* code)
-	{
-		using namespace boost::xpressive;
-		/* 定义正则表达式 */
-		auto reg_stk = cregex::compile("^(SH|SZ)\\d{6}Q?$");
-		return 	regex_match(code, reg_stk);
-	}
-
 	static bool	isStdStkCode(const char* code)
 	{
 		using namespace boost::xpressive;

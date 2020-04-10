@@ -11,6 +11,10 @@
 
 typedef boost::shared_ptr<BoostMappingFile> BoostMFPtr;
 
+NS_OTP_BEGIN
+class WTSContractInfo;
+NS_OTP_END
+
 USING_NS_OTP;
 
 class WtDataWriter : public IDataWriter
@@ -44,7 +48,7 @@ public:
 	
 	virtual bool isSessionProceeded(const char* sid) override;
 
-	virtual WTSTickData* getCurTick(const char* code) override;
+	virtual WTSTickData* getCurTick(const char* code, const char* exchg = "") override;
 
 private:
 	IDataWriterSink*	_sink;
@@ -182,18 +186,18 @@ private:
 private:
 	void loadCache();
 
-	bool updateCache(WTSTickData* curTick, bool bNeedProc = true);
+	bool updateCache(WTSContractInfo* ct, WTSTickData* curTick, bool bNeedProc = true);
 
-	void pipeToTicks(WTSTickData* curTick);
+	void pipeToTicks(WTSContractInfo* ct, WTSTickData* curTick);
 
-	void pipeToKlines(WTSTickData* curTick);
+	void pipeToKlines(WTSContractInfo* ct, WTSTickData* curTick);
 
-	KBlockPair* getKlineBlock(const char* code, WTSKlinePeriod period, bool bAutoCreate = true);
+	KBlockPair* getKlineBlock(WTSContractInfo* ct, WTSKlinePeriod period, bool bAutoCreate = true);
 
-	TickBlockPair* getTickBlock(const char* code, uint32_t curDate, bool bAutoCreate = true);
-	TransBlockPair* getTransBlock(const char* code, uint32_t curDate, bool bAutoCreate = true);
-	OrdDtlBlockPair* getOrdDtlBlock(const char* code, uint32_t curDate, bool bAutoCreate = true);
-	OrdQueBlockPair* getOrdQueBlock(const char* code, uint32_t curDate, bool bAutoCreate = true);
+	TickBlockPair* getTickBlock(WTSContractInfo* ct, uint32_t curDate, bool bAutoCreate = true);
+	TransBlockPair* getTransBlock(WTSContractInfo* ct, uint32_t curDate, bool bAutoCreate = true);
+	OrdDtlBlockPair* getOrdDtlBlock(WTSContractInfo* ct, uint32_t curDate, bool bAutoCreate = true);
+	OrdQueBlockPair* getOrdQueBlock(WTSContractInfo* ct, uint32_t curDate, bool bAutoCreate = true);
 
 	template<typename T>
 	void	releaseBlock(T* block);

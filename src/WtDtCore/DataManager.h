@@ -50,7 +50,7 @@ public:
 	
 	bool isSessionProceeded(const char* sid);
 
-	WTSTickData* getCurTick(const char* code);
+	WTSTickData* getCurTick(const char* code, const char* exchg = "");
 
 public:
 	//////////////////////////////////////////////////////////////////////////

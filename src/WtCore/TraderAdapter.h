@@ -121,8 +121,8 @@ private:
 
 	inline void	printPosition(const char* stdCode, const PosItem& pItem);
 
-	WTSContractInfo* getContract(const char* stdCode);
-	WTSCommodityInfo* getCommodify(const char* stdCommID);
+	inline WTSContractInfo* getContract(const char* stdCode);
+	inline WTSCommodityInfo* getCommodify(const char* stdCommID);
 
 
 	const RiskParams* getRiskParams(const char* stdCode);

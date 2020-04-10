@@ -890,11 +890,10 @@ void HisDataReplayer::sub_tick(uint32_t sid, const char* stdCode)
 	//因为执行器只识别原合约代码
 	if (CodeHelper::isStdFutHotCode(stdCode))
 	{
-		std::string exchg, pid, code;
-		bool isHot = false;
-		CodeHelper::extractStdFutCode(stdCode, exchg, code, pid, isHot);
-		std::string rawCode = _hot_mgr.getRawCode(exchg.c_str(), pid.c_str(), _cur_tdate);
-		std::string stdRawCode = CodeHelper::bscFutCodeToStdCode(rawCode.c_str(), exchg.c_str(), false);
+		CodeHelper::CodeInfo cInfo;
+		CodeHelper::extractStdFutCode(stdCode, cInfo);
+		std::string rawCode = _hot_mgr.getRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
+		std::string stdRawCode = CodeHelper::bscFutCodeToStdCode(rawCode.c_str(), cInfo._exchg, false);
 		_subed_raw_codes.insert(stdRawCode);
 	}
 	else
@@ -930,7 +929,12 @@ uint32_t strToDate(const char* strDate)
 		ay = StrUtil::split(strDate, "-");
 	std::stringstream ss;
 	if (ay.size() > 1)
+	{
+		auto pos = ay[2].find(" ");
+		if (pos != std::string::npos)
+			ay[2] = ay[2].substr(0, pos);
 		ss << ay[0] << (ay[1].size() == 1 ? "0" : "") << ay[1] << (ay[2].size() == 1 ? "0" : "") << ay[2];
+	}
 	else
 		ss << ay[0];
 
@@ -939,19 +943,18 @@ uint32_t strToDate(const char* strDate)
 
 bool HisDataReplayer::cacheRawTicks(const std::string& key, const char* stdCode, uint32_t uDate)
 {
-	std::string exchg, code, pid;
-	bool isHot = false;
-	CodeHelper::extractStdFutCode(stdCode, exchg, code, pid, isHot);
-	std::string stdPID = StrUtil::printf("%s.%s", exchg.c_str(), pid.c_str());
+	CodeHelper::CodeInfo cInfo;
+	CodeHelper::extractStdFutCode(stdCode, cInfo);
+	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
 	
-	std::string rawCode = code;
-	if(isHot)
+	std::string rawCode = cInfo._code;
+	if (cInfo._hot)
 	{
-		rawCode = _hot_mgr.getRawCode(exchg.c_str(), pid.c_str(), uDate);
+		rawCode = _hot_mgr.getRawCode(cInfo._exchg, cInfo._product, uDate);
 	}
 
 	std::stringstream ss;
-	ss << _base_dir << "his/ticks/" << exchg << "/" << uDate << "/" << rawCode << ".dsb";
+	ss << _base_dir << "his/ticks/" << cInfo._exchg << "/" << uDate << "/" << rawCode << ".dsb";
 
 	std::string filename = ss.str();
 	if (!StdFile::exists(filename.c_str()))
@@ -1240,10 +1243,9 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 
 bool HisDataReplayer::cacheRawBars(const std::string& key, const char* stdCode, WTSKlinePeriod period)
 {
-	std::string exchg, code, pid;
-	bool isHot = false;
-	CodeHelper::extractStdFutCode(stdCode, exchg, code, pid, isHot);
-	std::string stdPID = StrUtil::printf("%s.%s", exchg.c_str(), pid.c_str());
+	CodeHelper::CodeInfo cInfo;
+	CodeHelper::extractStdFutCode(stdCode, cInfo);
+	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
 
 	uint32_t curDate = TimeUtils::getCurDate();
 	uint32_t curTime = TimeUtils::getCurMin() / 100;
@@ -1265,10 +1267,10 @@ bool HisDataReplayer::cacheRawBars(const std::string& key, const char* stdCode, 
 	std::vector<std::vector<WTSBarStruct>*> barsSections;
 
 	uint32_t realCnt = 0;
-	if (isHot)
+	if (cInfo._hot)
 	{
 		HotSections secs;
-		if (!_hot_mgr.splitHotSecions(exchg.c_str(), pid.c_str(), 19900102, endTDate, secs))
+		if (!_hot_mgr.splitHotSecions(cInfo._exchg, cInfo._product, 19900102, endTDate, secs))
 			return false;
 
 		if (secs.empty())
@@ -1280,7 +1282,7 @@ bool HisDataReplayer::cacheRawBars(const std::string& key, const char* stdCode, 
 		for (;;)
 		{
 			std::stringstream ss;
-			ss << _base_dir << "his/" << pname << "/" << exchg << "/" << exchg << "." << pid << "_HOT.dsb";
+			ss << _base_dir << "his/" << pname << "/" << cInfo._exchg << "/" << cInfo._exchg << "." << cInfo._product << "_HOT.dsb";
 			std::string filename = ss.str();
 			if (!StdFile::exists(filename.c_str()))
 				break;
@@ -1387,7 +1389,7 @@ bool HisDataReplayer::cacheRawBars(const std::string& key, const char* stdCode, 
 			}
 
 			std::stringstream ss;
-			ss << _base_dir << "his/" << pname << "/" << exchg << "/" << curCode << ".dsb";
+			ss << _base_dir << "his/" << pname << "/" << cInfo._exchg << "/" << curCode << ".dsb";
 			std::string filename = ss.str();
 			if (!StdFile::exists(filename.c_str()))
 				continue;
@@ -1494,7 +1496,7 @@ bool HisDataReplayer::cacheRawBars(const std::string& key, const char* stdCode, 
 	{
 		//读取历史的
 		std::stringstream ss;
-		ss << _base_dir << "his/" << pname << "/" << exchg << "/" << code << ".dsb";
+		ss << _base_dir << "his/" << pname << "/" << cInfo._exchg << "/" << cInfo._code << ".dsb";
 		std::string filename = ss.str();
 		if (StdFile::exists(filename.c_str()))
 		{

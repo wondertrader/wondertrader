@@ -15,6 +15,7 @@
 #include "../Share/WTSParams.hpp"
 #include "../Share/WTSContractInfo.hpp"
 #include "../Share/WTSDataDef.hpp"
+#include "../Share/CodeHelper.hpp"
 
 #include "../WTSTools/WTSBaseDataMgr.h"
 #include "../WTSTools/WTSLogger.h"
@@ -45,9 +46,11 @@ bool ParserAdapter::isExchgValid(const char* exchg)
 	return true;
 }
 
-bool ParserAdapter::isCodeValid(const char* code)
+bool ParserAdapter::isCodeValid(const char* code, const char* exchg)
 {
-	if (!m_codeFilter.empty() && (m_codeFilter.find(code) == m_codeFilter.end()))
+	static char fullcode[MAX_INSTRUMENT_LENGTH] = { 0 };
+	sprintf(fullcode, "%s.%s", exchg, code);
+	if (!m_codeFilter.empty() && (m_codeFilter.find(fullcode) == m_codeFilter.end()))
 		return false;
 
 	return true;
@@ -94,11 +97,21 @@ bool ParserAdapter::initAdapter(WTSParams* params, FuncCreateParser funcCreate, 
 				ExchgFilter::iterator it = m_codeFilter.begin();
 				for (; it != m_codeFilter.end(); it++)
 				{
-					WTSContractInfo* contract = m_bdMgr->getContract((*it).c_str());
+					//全代码，形式如SSE.600000，期货代码为CFFEX.IF2005
+					std::string code, exchg;
+					auto ay = StrUtil::split((*it).c_str(), ".");
+					if (ay.size() == 1)
+						code = ay[0];
+					else
+					{
+						exchg = ay[0];
+						code = ay[1];
+					}
+					WTSContractInfo* contract = m_bdMgr->getContract(code.c_str(), exchg.c_str());
 					WTSCommodityInfo* pCommInfo = m_bdMgr->getCommodity(contract);
 					if (pCommInfo->getCategoty() == CC_Future || pCommInfo->getCategoty() == CC_Option || pCommInfo->getCategoty() == CC_Stock)
 					{
-						contractSet.insert(contract->getCode());
+						contractSet.insert(contract->getFullCode());
 					}
 				}
 			}
@@ -115,7 +128,7 @@ bool ParserAdapter::initAdapter(WTSParams* params, FuncCreateParser funcCreate, 
 						WTSCommodityInfo* pCommInfo = m_bdMgr->getCommodity(contract);
 						if (pCommInfo->getCategoty() == CC_Future || pCommInfo->getCategoty() == CC_Option || pCommInfo->getCategoty() == CC_Stock)
 						{
-							contractSet.insert(contract->getCode());
+							contractSet.insert(contract->getFullCode());
 						}
 					}
 
@@ -132,7 +145,7 @@ bool ParserAdapter::initAdapter(WTSParams* params, FuncCreateParser funcCreate, 
 					WTSCommodityInfo* pCommInfo = m_bdMgr->getCommodity(contract);
 					if (pCommInfo->getCategoty() == CC_Future || pCommInfo->getCategoty() == CC_Option || pCommInfo->getCategoty() == CC_Stock)
 					{
-						contractSet.insert(contract->getCode());
+						contractSet.insert(contract->getFullCode());
 					}
 				}
 
@@ -176,13 +189,13 @@ void ParserAdapter::handleTransaction(WTSTransData* transData)
 	if (m_bStopped)
 		return;
 
-	if (!isExchgValid(transData->exchg()) || !isCodeValid(transData->code()))
+	if (!isExchgValid(transData->exchg()) || !isCodeValid(transData->code(), transData->exchg()))
 		return;
 
 	if (transData->actiondate() == 0 || transData->tradingdate() == 0)
 		return;
 
-	WTSContractInfo* contract = m_bdMgr->getContract(transData->code());
+	WTSContractInfo* contract = m_bdMgr->getContract(transData->code(), transData->exchg());
 	if (contract == NULL)
 		return;
 
@@ -199,13 +212,13 @@ void ParserAdapter::handleOrderDetail(WTSOrdDtlData* ordDetailData)
 	if (m_bStopped)
 		return;
 
-	if (!isExchgValid(ordDetailData->exchg()) || !isCodeValid(ordDetailData->code()))
+	if (!isExchgValid(ordDetailData->exchg()) || !isCodeValid(ordDetailData->code(), ordDetailData->exchg()))
 		return;
 
 	if (ordDetailData->actiondate() == 0 || ordDetailData->tradingdate() == 0)
 		return;
 
-	WTSContractInfo* contract = m_bdMgr->getContract(ordDetailData->code());
+	WTSContractInfo* contract = m_bdMgr->getContract(ordDetailData->code(), ordDetailData->exchg());
 	if (contract == NULL)
 		return;
 
@@ -222,13 +235,13 @@ void ParserAdapter::handleOrderQueue(WTSOrdQueData* ordQueData)
 	if (m_bStopped)
 		return;
 
-	if (!isExchgValid(ordQueData->exchg()) || !isCodeValid(ordQueData->code()))
+	if (!isExchgValid(ordQueData->exchg()) || !isCodeValid(ordQueData->code(), ordQueData->exchg()))
 		return;
 
 	if (ordQueData->actiondate() == 0 || ordQueData->tradingdate() == 0)
 		return;
 
-	WTSContractInfo* contract = m_bdMgr->getContract(ordQueData->code());
+	WTSContractInfo* contract = m_bdMgr->getContract(ordQueData->code(), ordQueData->exchg());
 	if (contract == NULL)
 		return;
 
@@ -245,13 +258,13 @@ void ParserAdapter::handleQuote( WTSTickData *quote, bool bPreProc )
 	if (m_bStopped)
 		return;
 
-	if (!isExchgValid(quote->exchg()) || !isCodeValid(quote->code()))
+	if (!isExchgValid(quote->exchg()) || !isCodeValid(quote->code(), quote->exchg()))
 		return;
 
 	if (quote->actiondate() == 0 || quote->tradingdate() == 0)
 		return;
 
-	WTSContractInfo* contract = m_bdMgr->getContract(quote->code());
+	WTSContractInfo* contract = m_bdMgr->getContract(quote->code(), quote->exchg());
 	if (contract == NULL)
 		return;
 

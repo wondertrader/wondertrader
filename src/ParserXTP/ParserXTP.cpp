@@ -185,15 +185,13 @@ void ParserXTP::OnDepthMarketData(XTPMD *market_data, int64_t bid1_qty[], int32_
 	std::string code, exchg;
 	if (market_data->exchange_id == XTP_EXCHANGE_SH)
 	{
-		code = "SH";
 		exchg = "SSE";
 	}
 	else
 	{
-		code = "SZ";
 		exchg = "SZSE";
 	}
-	code += market_data->ticker;
+	code = market_data->ticker;
 
 	WTSContractInfo* ct = m_pBaseDataMgr->getContract(code.c_str(), exchg.c_str());
 	if(ct == NULL)
@@ -259,7 +257,7 @@ void ParserXTP::OnSubMarketData(XTPST *ticker, XTPRI *error_info, bool is_last)
 	else
 	{
 		if(m_parserSink)
-			m_parserSink->handleParserLog(LL_ERROR, "[ParserXTP]实时行情订阅失败,代码:%s%s", ticker->exchange_id == XTP_EXCHANGE_SH ? "SH" : "SZ", ticker->ticker);
+			m_parserSink->handleParserLog(LL_ERROR, "[ParserXTP]实时行情订阅失败,代码:%s%s", ticker->exchange_id == XTP_EXCHANGE_SH ? "SSE." : "SZSE.", ticker->ticker);
 	}
 }
 
@@ -378,13 +376,13 @@ void ParserXTP::subscribe(const CodeSet &vecSymbols)
 	{
 		for(auto& code : vecSymbols)
 		{
-			if (strncmp(code.c_str(), "SH", 2) == 0)
+			if (strncmp(code.c_str(), "SSE.", 4) == 0)
 			{
-				m_fitSHSubs.insert(code.substr(2));
+				m_fitSHSubs.insert(code.substr(4));
 			}
-			else if (strncmp(code.c_str(), "SZ", 2) == 0)
+			else if (strncmp(code.c_str(), "SZSE.", 5) == 0)
 			{
-				m_fitSZSubs.insert(code.substr(2));
+				m_fitSZSubs.insert(code.substr(5));
 			}
 		}
 	}
@@ -393,15 +391,15 @@ void ParserXTP::subscribe(const CodeSet &vecSymbols)
 		CodeSet setSH, setSZ;
 		for (auto& code : vecSymbols)
 		{
-			if (strncmp(code.c_str(), "SH", 2) == 0)
+			if (strncmp(code.c_str(), "SSE.", 4) == 0)
 			{
-				m_fitSHSubs.insert(code.substr(2));
-				setSH.insert(code.substr(2));
+				m_fitSHSubs.insert(code.substr(4));
+				setSH.insert(code.substr(4));
 			}
-			else if (strncmp(code.c_str(), "SZ", 2) == 0)
+			else if (strncmp(code.c_str(), "SZSE.", 5) == 0)
 			{
-				m_fitSZSubs.insert(code.substr(2));
-				setSZ.insert(code.substr(2));
+				m_fitSZSubs.insert(code.substr(5));
+				setSZ.insert(code.substr(5));
 			}
 		}
 

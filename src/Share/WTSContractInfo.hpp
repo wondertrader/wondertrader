@@ -12,6 +12,7 @@
 #include "WTSTypes.h"
 #include <string>
 #include <unordered_set>
+#include <sstream>
 
 NS_OTP_BEGIN
 
@@ -27,6 +28,10 @@ public:
 		ret->m_strCurrency = currency;
 		ret->m_strSession = session;
 		ret->m_strTrdTpl = trdtpl;
+
+		std::stringstream ss;
+		ss << exchg << "." << pid;
+		ret->m_strFullPid = ss.str();
 
 		return ret;
 	}
@@ -44,6 +49,7 @@ public:
 	const char* getCurrency()	const{ return m_strCurrency.c_str(); }
 	const char* getSession()	const{ return m_strSession.c_str(); }
 	const char* getTradingTpl()	const{ return m_strTrdTpl.c_str(); }
+	const char* getFullPid()	const{ return m_strFullPid.c_str(); }
 
 	uint32_t	getVolScale()	const{ return m_uVolScale; }
 	double		getPriceTick()	const{ return m_fPriceTick; }
@@ -63,6 +69,7 @@ private:
 	std::string	m_strCurrency;
 	std::string m_strSession;
 	std::string m_strTrdTpl;
+	std::string m_strFullPid;
 
 	uint32_t	m_uVolScale;
 	double		m_fPriceTick;
@@ -86,6 +93,14 @@ public:
 		ret->m_strProduct = pid;
 		ret->m_strExchg = exchg;
 
+		std::stringstream ss;
+		ss << exchg << "." << code;
+		ret->m_strFullCode = ss.str();
+
+		std::stringstream sss;
+		sss << exchg << "." << pid;
+		ret->m_strFullPid = sss.str();
+
 		return ret;
 	}
 
@@ -101,9 +116,11 @@ public:
 	const char* getName()	const{return m_strName.c_str();}
 	const char* getProduct()	const{return m_strProduct.c_str();}
 
+	const char* getFullCode()	const{ return m_strFullCode.c_str(); }
+	const char* getFullPid()	const{ return m_strFullPid.c_str(); }
+
 	uint32_t	getMaxMktVol() const{ return m_maxMktQty; }
 	uint32_t	getMaxLmtVol() const{ return m_maxLmtQty; }
-
 
 protected:
 	WTSContractInfo(){}
@@ -114,6 +131,9 @@ private:
 	std::string	m_strExchg;
 	std::string	m_strName;
 	std::string	m_strProduct;
+
+	std::string m_strFullPid;
+	std::string m_strFullCode;
 
 
 	uint32_t	m_maxMktQty;

@@ -118,6 +118,7 @@
     <ClInclude Include="BoostDefine.h" />
     <ClInclude Include="BoostFile.hpp" />
     <ClInclude Include="BoostMappingFile.hpp" />
+    <ClInclude Include="charconv.hpp" />
     <ClInclude Include="CodeHelper.hpp" />
     <ClInclude Include="DecimalHelper.h" />
     <ClInclude Include="DLLHelper.hpp" />

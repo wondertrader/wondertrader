@@ -354,7 +354,6 @@ void QuoteParser_CTP::ReqUserLogin()
 
 void QuoteParser_CTP::SubscribeMarketData()
 {
-	
 	CodeSet codeFilter = m_filterSubs;
 	if(codeFilter.empty())
 	{//如果订阅礼包只空的,则取出全部合约列表
@@ -363,10 +362,13 @@ void QuoteParser_CTP::SubscribeMarketData()
 
 	char ** subscribe = new char*[codeFilter.size()];
 	int nCount = 0;
-	CodeSet::iterator it = codeFilter.begin();
-	for(;it != codeFilter.end(); it++)
+	for(auto& code : codeFilter)
 	{
-		subscribe[nCount++] = (char*)(*it).c_str();
+		std::size_t pos = code.find(".");
+		if (pos != std::string::npos)
+			subscribe[nCount++] = (char*)code.c_str() + pos + 1;
+		else
+			subscribe[nCount++] = (char*)code.c_str();
 	}
 
 	if(m_pUserAPI && nCount > 0)
@@ -403,10 +405,13 @@ void QuoteParser_CTP::subscribe(const CodeSet &vecSymbols)
 		m_filterSubs = vecSymbols;
 		char * subscribe[500] = {NULL};
 		int nCount = 0;
-		CodeSet::const_iterator it = vecSymbols.begin();
-		for(;it != vecSymbols.end(); it++)
+		for (auto& code  : vecSymbols)
 		{
-			subscribe[nCount++] = (char*)(*it).c_str();
+			std::size_t pos = code.find(".");
+			if (pos != std::string::npos)
+				subscribe[nCount++] = (char*)code.c_str() + pos + 1;
+			else
+				subscribe[nCount++] = (char*)code.c_str();
 		}
 
 		if(m_pUserAPI && nCount > 0)

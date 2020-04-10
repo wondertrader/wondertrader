@@ -387,14 +387,14 @@ void ParserUT::rsp_market_data(ut_data *arg)
 WTSTickData* ParserUT::makeTickData(ut_data* pMktData)
 {
 	StringVector ay = StrUtil::split(pMktData->xyzq_code, ".");
-	std::string code;
+	std::string code = ay[0];
+	std::string exchg;
 	if (ay[1].compare("SSE") == 0)
-		code += "SH";
+		exchg = "SSE";
 	else
-		code += "SZ";
-	code += ay[0];
+		exchg = "SZSE";
 
-	WTSContractInfo* contract = m_pBaseDataMgr->getContract(code.c_str(), ay[1].c_str());
+	WTSContractInfo* contract = m_pBaseDataMgr->getContract(code.c_str(), exchg.c_str());
 	if (contract == NULL)
 	{
 		//if (m_ignoreCodes.find(code) == m_ignoreCodes.end())
@@ -563,14 +563,14 @@ void ParserUT::SubscribeMDs(bool isAll /* = false */)
 
 		for (const std::string& code : m_filterSubs)
 		{
-			std::string s = code.substr(2);
-			if (strncmp(code.c_str(), "SH", 2) == 0)
+			std::string s;
+			if (strncmp(code.c_str(), "SSE.", 4) == 0)
 			{
-				s += ".SSE";
+				s = code.substr(4) + ".SSE";
 			}
-			else
+			else //if (strncmp(code.c_str(), "SZSE.", 5) == 0)
 			{
-				s += ".SZE";
+				s += code.substr(5) + ".SZE";
 			}
 			codes.push_back(s);
 		}
@@ -614,14 +614,14 @@ void ParserUT::subscribe(const CodeSet &vecSymbols)
 		code_list codes;
 		for (const std::string& code : vecSymbols)
 		{
-			std::string s = code.substr(2);
-			if (strncmp(code.c_str(), "SH", 2) == 0)
+			std::string s;
+			if (strncmp(code.c_str(), "SSE.", 4) == 0)
 			{
-				s += ".SSE";
+				s = code.substr(4) + ".SSE";
 			}
-			else
+			else //if (strncmp(code.c_str(), "SZSE.", 5) == 0)
 			{
-				s += ".SZE";
+				s += code.substr(5) + ".SZE";
 			}
 			codes.push_back(s);
 		}
@@ -644,14 +644,14 @@ void ParserUT::unsubscribe(const CodeSet &vecSymbols)
 	unsub stru;
 	for (const std::string& code : vecSymbols)
 	{
-		std::string s = code.substr(2);
-		if (strncmp(code.c_str(), "SH", 2) == 0)
+		std::string s;
+		if (strncmp(code.c_str(), "SSE.", 4) == 0)
 		{
-			s += ".SSE";
+			s = code.substr(4) + ".SSE";
 		}
-		else
+		else //if (strncmp(code.c_str(), "SZSE.", 5) == 0)
 		{
-			s += ".SZE";
+			s += code.substr(5) + ".SZE";
 		}
 		stru.codes.push_back(s);
 	}

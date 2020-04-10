@@ -66,7 +66,7 @@ public:
 
 	virtual bool isSessionProceeded(const char* sid) = 0;
 
-	virtual WTSTickData* getCurTick(const char* code) = 0;
+	virtual WTSTickData* getCurTick(const char* code, const char* exchg = "") = 0;
 };
 
 NS_OTP_END

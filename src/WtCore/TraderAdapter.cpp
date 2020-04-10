@@ -266,8 +266,9 @@ uint32_t TraderAdapter::doEntrust(WTSEntrust* entrust)
 
 WTSContractInfo* TraderAdapter::getContract(const char* stdCode)
 {
-	std::string bscCode = CodeHelper::stdCodeToBscCode(stdCode);
-	return _bd_mgr->getContract(bscCode.c_str());
+	CodeHelper::CodeInfo cInfo;
+	CodeHelper::extractStdCode(stdCode, cInfo);
+	return _bd_mgr->getContract(cInfo._code, cInfo._exchg);
 }
 
 WTSCommodityInfo* TraderAdapter::getCommodify(const char* stdCode)
@@ -904,7 +905,7 @@ bool TraderAdapter::doCancel(WTSOrderInfo* ordInfo)
 	if (ordInfo == NULL || !ordInfo->isAlive())
 		return false;
 
-	WTSContractInfo* cInfo = _bd_mgr->getContract(ordInfo->getCode());
+	WTSContractInfo* cInfo = _bd_mgr->getContract(ordInfo->getCode(), ordInfo->getExchg());
 	WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(cInfo);
 	std::string stdCode;
 	if (commInfo->getCategoty() == CC_Future)
@@ -1110,7 +1111,7 @@ void TraderAdapter::onRspEntrust(WTSEntrust* entrust, WTSError *err)
 	if (err && err->getErrorCode() != WEC_NONE)
 	{
 		WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR,err->getMessage());
-		WTSContractInfo* cInfo = _bd_mgr->getContract(entrust->getCode());
+		WTSContractInfo* cInfo = _bd_mgr->getContract(entrust->getCode(), entrust->getExchg());
 		WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(cInfo);
 		std::string stdCode;
 		if (commInfo->getCategoty() == CC_Future)

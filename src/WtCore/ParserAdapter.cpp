@@ -121,7 +121,7 @@ bool ParserAdapter::init(const char* id, WTSVariant* cfg, WtEngine* engine)
 						WTSContractInfo* contract = STATIC_CONVERT(*it, WTSContractInfo*);
 						WTSCommodityInfo* pCommInfo = _bd_mgr->getCommodity(contract);
 						if (pCommInfo->getCategoty() == CC_Future || pCommInfo->getCategoty() == CC_Option || pCommInfo->getCategoty() == CC_Stock)
-							contractSet.insert(contract->getCode());
+							contractSet.insert(contract->getFullCode());
 					}
 
 					ayContract->release();
@@ -136,7 +136,7 @@ bool ParserAdapter::init(const char* id, WTSVariant* cfg, WtEngine* engine)
 					WTSContractInfo* contract = STATIC_CONVERT(*it, WTSContractInfo*);
 					WTSCommodityInfo* pCommInfo =_bd_mgr->getCommodity(contract);
 					if (pCommInfo->getCategoty() == CC_Future || pCommInfo->getCategoty() == CC_Option || pCommInfo->getCategoty() == CC_Stock)
-						contractSet.insert(contract->getCode());
+						contractSet.insert(contract->getFullCode());
 				}
 
 				ayContract->release();
@@ -198,7 +198,7 @@ void ParserAdapter::handleQuote(WTSTickData *quote, bool bPreProc)
 
 	std::string hotCode = _engine->get_hot_mgr()->getHotCode(quote->exchg(), quote->code(), quote->tradingdate());
 
-	WTSContractInfo* cInfo = _bd_mgr->getContract(quote->code());
+	WTSContractInfo* cInfo = _bd_mgr->getContract(quote->code(), quote->exchg());
 	WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(cInfo);
 	std::string stdCode;
 	if (commInfo->getCategoty() == CC_Future)

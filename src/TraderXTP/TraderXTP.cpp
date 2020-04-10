@@ -749,8 +749,8 @@ int TraderXTP::orderInsert(WTSEntrust* entrust)
 	memset(&req, 0, sizeof(req));
 	
 	req.order_client_id = _client;
-	strcpy(req.ticker, entrust->getCode() + 2);
-	req.market = _stricmp(entrust->getMarket(), "SSE") == 0 ? XTP_MKT_SH_A : XTP_MKT_SZ_A;
+	strcpy(req.ticker, entrust->getCode());
+	req.market = _stricmp(entrust->getExchg(), "SSE") == 0 ? XTP_MKT_SH_A : XTP_MKT_SZ_A;
 	req.price = entrust->getPrice();
 	req.quantity = entrust->getVolumn();
 	req.price_type = XTP_PRICE_LIMIT;

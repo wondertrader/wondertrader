@@ -359,7 +359,7 @@ int TraderCTP::orderInsert(WTSEntrust* entrust)
 	///合约代码
 	strcpy(req.InstrumentID, entrust->getCode());
 
-	strcpy(req.ExchangeID, entrust->getMarket());
+	strcpy(req.ExchangeID, entrust->getExchg());
 
 	if (strlen(entrust->getUserTag()) == 0)
 	{
@@ -385,7 +385,7 @@ int TraderCTP::orderInsert(WTSEntrust* entrust)
 		m_iniHelper.save();
 	}
 
-	WTSContractInfo* ct = m_bdMgr->getContract(entrust->getCode());
+	WTSContractInfo* ct = m_bdMgr->getContract(entrust->getCode(), entrust->getExchg());
 	WTSCommodityInfo* commInfo = m_bdMgr->getCommodity(ct);
 
 	///用户代码

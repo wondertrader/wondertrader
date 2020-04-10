@@ -307,7 +307,7 @@ int TraderFemas::orderInsert(WTSEntrust* entrust)
 	///ºÏÔ¼´úÂë
 	strcpy(req.InstrumentID, entrust->getCode());
 
-	WTSContractInfo* ct = m_bdMgr->getContract(entrust->getCode());
+	WTSContractInfo* ct = m_bdMgr->getContract(entrust->getCode(), entrust->getExchg());
 	WTSCommodityInfo* commInfo = m_bdMgr->getCommodity(ct);
 	strcpy(req.ExchangeID, wrapExchg(commInfo->getExchg()));
 

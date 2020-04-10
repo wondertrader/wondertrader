@@ -47,7 +47,7 @@ public:
 
 private:
 	inline bool isExchgValid(const char* exchg);
-	inline bool isCodeValid(const char* code);
+	inline bool isCodeValid(const char* code, const char* exchg);
 
 private:
 	IParserApi*			m_pParser;

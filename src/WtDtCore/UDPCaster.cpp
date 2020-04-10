@@ -143,13 +143,22 @@ void UDPCaster::do_receive()
 			if (req->_type == UDP_MSG_SUBSCRIBE)
 			{
 				const StringVector& ay = StrUtil::split(req->_data, ",");
-				for(const std::string& code : ay)
+				std::string code, exchg;
+				for(const std::string& fullcode : ay)
 				{
-					WTSContractInfo* ct = m_bdMgr->getContract(code.c_str());
+					auto pos = fullcode.find(".");
+					if (pos == std::string::npos)
+						code = fullcode;
+					else
+					{
+						code = fullcode.substr(pos + 1);
+						exchg = fullcode.substr(0, pos);
+					}
+					WTSContractInfo* ct = m_bdMgr->getContract(code.c_str(), exchg.c_str());
 					if (ct == NULL)
 						continue;
 
-					WTSTickData* curTick = m_dtMgr->getCurTick(code.c_str());
+					WTSTickData* curTick = m_dtMgr->getCurTick(code.c_str(), exchg.c_str());
 					if(curTick == NULL)
 						continue;
 

@@ -127,12 +127,12 @@ bool DataManager::writeTransaction(WTSTransData* curTrans)
 	return _writer->writeTransaction(curTrans);
 }
 
-WTSTickData* DataManager::getCurTick(const char* code)
+WTSTickData* DataManager::getCurTick(const char* code, const char* exchg/* = ""*/)
 {
 	if (_writer == NULL)
 		return NULL;
 
-	return _writer->getCurTick(code);
+	return _writer->getCurTick(code, exchg);
 }
 
 void DataManager::transHisData(const char* sid)
