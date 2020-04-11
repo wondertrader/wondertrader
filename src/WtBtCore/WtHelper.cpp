@@ -36,20 +36,6 @@ std::string WtHelper::getCWD()
 	return _cwd;
 }
 
-std::string WtHelper::getTraderModule(const char* moduleName)
-{
-	std::stringstream ss;
-	ss << getCWD() << "traders/" << moduleName;
-	return StrUtil::standardisePath(ss.str());
-}
-
-std::string WtHelper::getParserModule(const char* moduleName)
-{
-	std::stringstream ss;
-	ss << getCWD() << "parsers/" << moduleName;
-	return StrUtil::standardisePath(ss.str());
-}
-
 const char* WtHelper::getOutputDir()
 {
 	const char* folder = "./outputs_bt/";

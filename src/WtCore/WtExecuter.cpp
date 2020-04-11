@@ -363,8 +363,13 @@ bool WtExecuterFactory::loadFactories(const char* path)
 		if (boost::filesystem::is_directory(iter->path()))
 			continue;
 
+#ifdef _WIN32
 		if (iter->path().extension() != ".dll")
 			continue;
+#else //_UNIX
+		if (iter->path().extension() != ".so")
+			continue;
+#endif
 
 		const std::string& path = iter->path().string();
 

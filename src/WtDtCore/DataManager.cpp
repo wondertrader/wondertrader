@@ -10,6 +10,7 @@
 #include "DataManager.h"
 #include "StateMonitor.h"
 #include "UDPCaster.h"
+#include "WtHelper.h"
 
 #include "../Share/WTSVariant.hpp"
 #include "../Share/DLLHelper.hpp"
@@ -48,14 +49,18 @@ bool DataManager::init(WTSVariant* params, WTSBaseDataMgr* bdMgr, StateMonitor* 
 	std::string module = params->getCString("module");
 	if (module.empty())
 	{
-
+		module = WtHelper::get_module_dir();
 #ifdef _WIN32
-		module = "WtDataWriter.dll";
+#ifdef _WIN64
+		module += "WtDataWriter64.dll";
 #else
-		module = "libWtDataWriter.so";
+		module += "WtDataWriter32.dll";
+#endif
+#else
+		module += "libWtDataWriter.so";
 #endif
 	}
-	//boost::dll::shared_library libParser(path);
+	
 	DllHandle libParser = DLLHelper::load_library(module.c_str());
 	if (libParser)
 	{

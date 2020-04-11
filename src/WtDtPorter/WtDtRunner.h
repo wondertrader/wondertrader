@@ -29,7 +29,7 @@ public:
 	~WtDtRunner();
 
 public:
-	void	initialize(const char* cfgFile, const char* logCfg);
+	void	initialize(const char* cfgFile, const char* logCfg, const char* modDir = "");
 	void	start();
 
 private:

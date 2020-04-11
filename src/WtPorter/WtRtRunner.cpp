@@ -26,6 +26,7 @@
 #define my_stricmp strcasecmp
 #endif
 
+extern const char* getBinDir();
 
 WtRtRunner::WtRtRunner()
 	: _data_store(NULL)
@@ -47,6 +48,8 @@ bool WtRtRunner::init(const char* logProfile /* = "log4cxx.prop" */)
 {
 	std::string path = WtHelper::getCWD() + logProfile;
 	WTSLogger::init(path.c_str());
+
+	WtHelper::setInstDir(getBinDir());
 	return true;
 }
 
@@ -308,7 +311,8 @@ bool WtRtRunner::initExecuters()
 	if (cfg == NULL || cfg->type() != WTSVariant::VT_Array)
 		return false;
 
-	std::string path = WtHelper::getCWD() + "executer//";
+	//先加载自带的执行器工厂
+	std::string path = WtHelper::getInstDir() + "executer//";
 	_exe_factory.loadFactories(path.c_str());
 
 	uint32_t count = 0;

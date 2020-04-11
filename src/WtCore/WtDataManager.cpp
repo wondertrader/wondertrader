@@ -9,6 +9,7 @@
  */
 #include "WtDataManager.h"
 #include "WtEngine.h"
+#include "WtHelper.h"
 
 #include "../Share/StrUtil.hpp"
 #include "../Share/WTSDataDef.hpp"
@@ -51,11 +52,15 @@ bool WtDataManager::initStore(WTSVariant* cfg)
 	std::string module = cfg->getCString("module");
 	if (module.empty())
 	{
-
+		module = WtHelper::getInstDir();
 #ifdef _WIN32
-		module = "WtDataReader.dll";
+#ifdef _WIN64
+		module += "WtDataReader64.dll";
 #else
-		module = "libWtDataReader.so";
+		module += "WtDataReader32.dll";
+#endif
+#else
+		module += "libWtDataReader.so";
 #endif
 	}
 	DllHandle hInst = DLLHelper::load_library(module.c_str());

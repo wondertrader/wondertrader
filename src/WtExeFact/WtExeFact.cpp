@@ -9,7 +9,6 @@
 #include "WtExeFact.h"
 
 #include "WtSimpExeUnit.h"
-#include "WtHfExeUnit.h"
 
 const char* FACT_NAME = "WtExeFact";
 
@@ -55,8 +54,6 @@ ExecuteUnit* WtExeFact::createExeUnit(const char* name)
 {
 	if (strcmp(name, "WtSimpExeUnit") == 0)
 		return new WtSimpExeUnit();
-	else if (strcmp(name, "WtHfExeUnit") == 0)
-		return new WtHfExeUnit();
 
 	return NULL;
 }

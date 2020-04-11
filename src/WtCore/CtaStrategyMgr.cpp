@@ -40,8 +40,13 @@ bool CtaStrategyMgr::loadFactories(const char* path)
 		if (boost::filesystem::is_directory(iter->path()))
 			continue;
 
+#ifdef _WIN32
 		if (iter->path().extension() != ".dll")
 			continue;
+#else //_UNIX
+		if (iter->path().extension() != ".so")
+			continue;
+#endif
 
 		DllHandle hInst = DLLHelper::load_library(iter->path().string().c_str());
 		if (hInst == NULL)

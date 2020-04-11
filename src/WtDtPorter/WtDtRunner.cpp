@@ -8,6 +8,7 @@
  * \brief 
  */
 #include "WtDtRunner.h"
+#include "../WtDtCore/WtHelper.h"
 
 #include "../Share/WTSSessionInfo.hpp"
 #include "../Share/DLLHelper.hpp"
@@ -37,9 +38,10 @@ void WtDtRunner::start()
 	m_asyncIO.run();
 }
 
-void WtDtRunner::initialize(const char* cfgFile, const char* logCfg)
+void WtDtRunner::initialize(const char* cfgFile, const char* logCfg, const char* modDir /* = "" */)
 {
 	WTSLogger::init(logCfg);
+	WtHelper::set_module_dir(modDir);
 
 	std::string json;
 	StdFile::read_file_content(cfgFile, json);

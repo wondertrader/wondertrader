@@ -1033,12 +1033,12 @@ class WTSTickData : public WTSObject
 public:
 	/*
 	 *	创建一个tick数据对象
-	 *	@stkCode 合约代码
+	 *	@stdCode 合约代码
 	 */
-	static WTSTickData* create(const char* stkCode)
+	static WTSTickData* create(const char* stdCode)
 	{
 		WTSTickData* pRet = new WTSTickData;
-		strcpy(pRet->m_tickStruct.code, stkCode);
+		strcpy(pRet->m_tickStruct.code, stdCode);
 
 		return pRet;
 	}
@@ -1302,8 +1302,8 @@ private:
 };
 
 /*
- *	历史Tick数据数组
- *	内部使用WTSArray作为容器
+ *	@brief 历史Tick数据数组
+ *	@details 内部使用WTSArray作为容器
  */
 class WTSHisTickData : public WTSObject
 {
@@ -1316,25 +1316,16 @@ protected:
 
 public:
 	/*
-	 *	释放tick数组
+	 *	@brief 创建指定大小的tick数组对象
+	 *	@details 内部的数组预先分配大小
+	 *
+	 *	@param stdCode 合约代码
+	 *	@param nSize 预先分配的大小
 	 */
-	virtual void release()
-	{
-
-		WTSObject::release();
-	}
-
-public:
-	/*
-	 *	创建指定大小的tick数组对象
-	 *	内部的数组预先分配大小
-	 *	@stkCode 合约代码
-	 *	@nSize 预先分配的大小
-	 */
-	static WTSHisTickData* create(const char* stkCode, unsigned int nSize = 0, bool bValidOnly = false)
+	static WTSHisTickData* create(const char* stdCode, unsigned int nSize = 0, bool bValidOnly = false)
 	{
 		WTSHisTickData *pRet = new WTSHisTickData;
-		strcpy(pRet->m_strCode, stkCode);
+		strcpy(pRet->m_strCode, stdCode);
 		pRet->m_ayTicks.resize(nSize);
 		pRet->m_bValidOnly = bValidOnly;
 
@@ -1342,14 +1333,15 @@ public:
 	}
 
 	/*
-	 *	根据tick数组对象创建历史tick数据对象
-	 *	内部的tick数组不用再分配了
-	 *	@ayTicks tick数组对象指针
+	 *	@brief 根据tick数组对象创建历史tick数据对象
+	 *	@details 内部的tick数组不用再分配了
+
+	 *	@param ayTicks tick数组对象指针
 	 */
-	static WTSHisTickData* create(const char* stkCode, const std::vector<WTSTickStruct>& ayTicks, bool bValidOnly = false)
+	static WTSHisTickData* create(const char* stdCode, const std::vector<WTSTickStruct>& ayTicks, bool bValidOnly = false)
 	{
 		WTSHisTickData *pRet = new WTSHisTickData;
-		strcpy(pRet->m_strCode, stkCode);
+		strcpy(pRet->m_strCode, stdCode);
 		pRet->m_ayTicks = ayTicks;
 		pRet->m_bValidOnly = bValidOnly;
 
@@ -1389,9 +1381,11 @@ public:
 };
 
 //////////////////////////////////////////////////////////////////////////
-//Tick数据切片，从连续的tick缓存中做的切片
-//切片并没有真实的复制内存，而只是取了开始和结尾的下标
-//这样使用虽然更快，但是使用场景要非常小心，因为他依赖于基础数据对象
+/*
+ *	@brief Tick数据切片，从连续的tick缓存中做的切片
+ *	@details 切片并没有真实的复制内存，而只是取了开始和结尾的下标
+ *	这样使用虽然更快，但是使用场景要非常小心，因为他依赖于基础数据对象
+ */
 class WTSTickSlice : public WTSObject
 {
 private:

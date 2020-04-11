@@ -24,6 +24,7 @@ uint32_t WtHelper::_cur_date = 0;
 uint32_t WtHelper::_cur_time = 0;
 uint32_t WtHelper::_cur_secs = 0;
 uint32_t WtHelper::_cur_tdate = 0;
+std::string WtHelper::_inst_dir;
 
 
 std::string WtHelper::getCWD()
@@ -42,17 +43,10 @@ std::string WtHelper::getCWD()
 	return _cwd;
 }
 
-std::string WtHelper::getTraderModule(const char* moduleName)
+std::string WtHelper::getModulePath(const char* moduleName, const char* subDir, bool isCWD /* = true */)
 {
 	std::stringstream ss;
-	ss << getCWD() << "traders/" << moduleName;
-	return ss.str();
-}
-
-std::string WtHelper::getParserModule(const char* moduleName)
-{
-	std::stringstream ss;
-	ss << getCWD() << "parsers/" << moduleName;
+	ss << (isCWD?getCWD():getInstDir()) << subDir << "/" << moduleName;
 	return ss.str();
 }
 

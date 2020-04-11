@@ -81,6 +81,29 @@ const char* getModuleName()
 	return MODULE_NAME;
 }
 
+const char* getBinDir()
+{
+	static std::string _bin_dir;
+	if (_bin_dir.empty())
+	{
+
+
+#ifdef _WIN32
+		char strPath[MAX_PATH];
+		GetModuleFileName(g_dllModule, strPath, MAX_PATH);
+
+		_bin_dir = StrUtil::standardisePath(strPath, false);
+#else
+		_bin_dir = g_moduleName;
+#endif
+
+		uint32_t nPos = _bin_dir.find_last_of('/');
+		_bin_dir = _bin_dir.substr(0, nPos + 1);
+	}
+
+	return _bin_dir.c_str();
+}
+
 void register_callbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar, FuncEventCallback cbEvt)
 {
 	getRunner().registerCallbacks(cbInit, cbTick, cbCalc, cbBar, cbEvt);

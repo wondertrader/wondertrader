@@ -16,8 +16,7 @@ class WtHelper
 public:
 	static std::string getCWD();
 
-	static std::string getTraderModule(const char* moduleName);
-	static std::string getParserModule(const char* moduleName);
+	static std::string getModulePath(const char* moduleName, const char* subDir, bool isCWD = true);
 
 	static const char* getBaseDir();
 	static const char* getOutputDir();
@@ -40,10 +39,14 @@ public:
 	static uint32_t getSecs(){ return _cur_secs; }
 	static uint32_t getTradingDate(){ return _cur_tdate; }
 
+	static const std::string& getInstDir() { return _inst_dir; }
+	static void setInstDir(const char* inst_dir){ _inst_dir = inst_dir; }
+
 private:
 	static uint32_t		_cur_date;	//当前日期
 	static uint32_t		_cur_time;	//当前时间, 以分钟为准
 	static uint32_t		_cur_secs;	//当前秒数, 包含毫秒
-	static uint32_t		_cur_tdate;	//当前交易日
+	static uint32_t		_cur_tdate;	//当前交易日private:
+	static std::string	_inst_dir;
 };
 

@@ -20,6 +20,7 @@
 #include "../Share/WTSVariant.hpp"
 #include "../Share/IBaseDataMgr.h"
 #include "../Share/IHotMgr.h"
+#include "../Share/StdUtils.hpp"
 
 #include "../WTSTools/WTSLogger.h"
 
@@ -64,7 +65,12 @@ bool ParserAdapter::init(const char* id, WTSVariant* cfg, WtEngine* engine)
 
 		const char* module = cfg->getCString("module");
 
-		std::string dllpath = WtHelper::getParserModule(module);
+		//先看工作目录下是否有行情模块
+		std::string dllpath = WtHelper::getModulePath(module, "parsers", true);
+		//如果没有，则再看模块目录，即dll同目录下
+		if(!StdFile::exists(dllpath.c_str()))
+			dllpath = WtHelper::getModulePath(module, "parsers", false);
+
 		DllHandle hInst = DLLHelper::load_library(dllpath.c_str());
 		if (hInst == NULL)
 		{

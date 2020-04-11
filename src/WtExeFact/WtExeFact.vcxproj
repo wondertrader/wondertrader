@@ -155,12 +155,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="WtExeFact.cpp" />
-    <ClCompile Include="WtHfExeUnit.cpp" />
     <ClCompile Include="WtSimpExeUnit.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WtExeFact.h" />
-    <ClInclude Include="WtHfExeUnit.h" />
     <ClInclude Include="WtSimpExeUnit.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

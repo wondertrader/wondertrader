@@ -1086,6 +1086,11 @@ bool WtEngine::init_riskmon(WTSVariant* cfg)
 		return false;
 
 	const char* module = cfg->getCString("module");
+	//先看工作目录下是否有对应模块
+	std::string dllpath = WtHelper::getCWD() + module;
+	//如果没有，则再看模块目录，即dll同目录下
+	if (!StdFile::exists(dllpath.c_str()))
+		dllpath = WtHelper::getInstDir() + module;
 
 	DllHandle hInst = DLLHelper::load_library(module);
 	if (hInst == NULL)

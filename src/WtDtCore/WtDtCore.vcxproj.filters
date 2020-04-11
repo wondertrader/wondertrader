@@ -27,6 +27,9 @@
     <ClCompile Include="UDPCaster.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="WtHelper.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataManager.h">
@@ -42,6 +45,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="UDPCaster.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="WtHelper.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
