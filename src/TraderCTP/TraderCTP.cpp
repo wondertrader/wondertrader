@@ -158,7 +158,11 @@ bool TraderCTP::init(WTSParams* params)
 	else
 	{
 #ifdef _WIN32
-		m_strModule = getBinDir() + "thosttraderapi_se.dll";
+#ifdef _WIN64
+		m_strModule = getBinDir() + "thosttraderapi_se64.dll";
+#else
+		m_strModule = getBinDir() + "thosttraderapi_se32.dll";
+#endif
 #else
 		m_strModule =  getBinDir() + "libthosttraderapi_se.so";
 #endif

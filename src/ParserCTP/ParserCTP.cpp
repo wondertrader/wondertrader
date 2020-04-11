@@ -27,17 +27,71 @@
 
 #ifdef _WIN32
 #ifdef _WIN64
-#pragma comment(lib, "./ThostTraderApi/thostmduserapi.lib")
+#pragma comment(lib, "./ThostTraderApi/thostmduserapi64.lib")
 #else
 #pragma comment(lib, "./ThostTraderApi/thostmduserapi32.lib")
 #endif
+#include <wtypes.h>
+HMODULE	g_dllModule = NULL;
+
+BOOL APIENTRY DllMain(
+	HANDLE hModule,
+	DWORD  ul_reason_for_call,
+	LPVOID lpReserved
+	)
+{
+	switch (ul_reason_for_call)
+	{
+	case DLL_PROCESS_ATTACH:
+		g_dllModule = (HMODULE)hModule;
+		break;
+	}
+	return TRUE;
+}
+#else
+#include <dlfcn.h>
+
+char PLATFORM_NAME[] = "UNIX";
+
+std::string	g_moduleName;
+
+__attribute__((constructor))
+void on_load(void) {
+	Dl_info dl_info;
+	dladdr((void *)on_load, &dl_info);
+	g_moduleName = dl_info.dli_fname;
+}
 #endif
+
+
+std::string getBinDir()
+{
+	static std::string _bin_dir;
+	if (_bin_dir.empty())
+	{
+
+
+#ifdef _WIN32
+		char strPath[MAX_PATH];
+		GetModuleFileName(g_dllModule, strPath, MAX_PATH);
+
+		_bin_dir = StrUtil::standardisePath(strPath, false);
+#else
+		_bin_dir = g_moduleName;
+#endif
+
+		uint32_t nPos = _bin_dir.find_last_of('/');
+		_bin_dir = _bin_dir.substr(0, nPos + 1);
+	}
+
+	return _bin_dir;
+}
 
 extern "C"
 {
 	EXPORT_FLAG IParserApi* createParser()
 	{
-		QuoteParser_CTP* parser = new QuoteParser_CTP();
+		ParserCTP* parser = new ParserCTP();
 		return parser;
 	}
 
@@ -76,7 +130,7 @@ inline double checkValid(double val)
 	return val;
 }
 
-QuoteParser_CTP::QuoteParser_CTP()
+ParserCTP::ParserCTP()
 	:m_pUserAPI(NULL)
 	,m_iRequestID(0)
 	,m_uTradingDate(0)
@@ -84,27 +138,34 @@ QuoteParser_CTP::QuoteParser_CTP()
 }
 
 
-QuoteParser_CTP::~QuoteParser_CTP()
+ParserCTP::~ParserCTP()
 {
 	m_pUserAPI = NULL;
 }
 
-bool QuoteParser_CTP::init(WTSParams* config)
+bool ParserCTP::init(WTSParams* config)
 {
-	m_strFrontAddr	= config->getCString("front");
+	m_strFrontAddr = config->getCString("front");
 	m_strBroker = config->getCString("broker");
 	m_strUserID = config->getCString("user");
 	m_strPassword = config->getCString("pass");
 
-#ifdef _WIN32
-#else
-	const char* module = config->getCString("module");
-	if (strlen(module) == 0)
-		DLLHelper::load_library("libthostmduserapi_se.so");
-	else
-		DLLHelper::load_library(module);
-#endif
+	std::string module = config->getCString("ctpmodule");
+	if (module.empty())
+	{
 
+#ifdef _WIN32
+#ifdef _WIN64
+		module = "thostmduserapi_se64.dll";
+#else
+		module = "thostmduserapi_se32.dll";
+#endif
+#else
+		module = "libthostmduserapi_se.so";
+#endif
+	}
+	std::string dllpath = getBinDir() + module;
+	DLLHelper::load_library(dllpath.c_str());
 	std::string path = StrUtil::printf("CTPParserFlow/%s/%s/", m_strBroker.c_str(), m_strUserID.c_str());
 	if (!StdFile::exists(path.c_str()))
 	{
@@ -117,12 +178,12 @@ bool QuoteParser_CTP::init(WTSParams* config)
 	return true;
 }
 
-void QuoteParser_CTP::release()
+void ParserCTP::release()
 {
 	disconnect();
 }
 
-bool QuoteParser_CTP::connect()
+bool ParserCTP::connect()
 {
 	if(m_pUserAPI)
 	{
@@ -132,7 +193,7 @@ bool QuoteParser_CTP::connect()
 	return true;
 }
 
-bool QuoteParser_CTP::disconnect()
+bool ParserCTP::disconnect()
 {
 	if(m_pUserAPI)
 	{
@@ -144,12 +205,12 @@ bool QuoteParser_CTP::disconnect()
 	return true;
 }
 
-void QuoteParser_CTP::OnRspError( CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast )
+void ParserCTP::OnRspError( CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast )
 {
 	IsErrorRspInfo(pRspInfo);
 }
 
-void QuoteParser_CTP::OnFrontConnected()
+void ParserCTP::OnFrontConnected()
 {
 	if(m_parserSink)
 	{
@@ -160,7 +221,7 @@ void QuoteParser_CTP::OnFrontConnected()
 	ReqUserLogin();
 }
 
-void QuoteParser_CTP::OnRspUserLogin( CThostFtdcRspUserLoginField *pRspUserLogin, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast )
+void ParserCTP::OnRspUserLogin( CThostFtdcRspUserLoginField *pRspUserLogin, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast )
 {
 	if(bIsLast && !IsErrorRspInfo(pRspInfo))
 	{
@@ -176,7 +237,7 @@ void QuoteParser_CTP::OnRspUserLogin( CThostFtdcRspUserLoginField *pRspUserLogin
 	}
 }
 
-void QuoteParser_CTP::OnRspUserLogout(CThostFtdcUserLogoutField *pUserLogout, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
+void ParserCTP::OnRspUserLogout(CThostFtdcUserLogoutField *pUserLogout, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
 	if(m_parserSink)
 	{
@@ -184,7 +245,7 @@ void QuoteParser_CTP::OnRspUserLogout(CThostFtdcUserLogoutField *pUserLogout, CT
 	}
 }
 
-void QuoteParser_CTP::OnFrontDisconnected( int nReason )
+void ParserCTP::OnFrontDisconnected( int nReason )
 {
 	if(m_parserSink)
 	{
@@ -193,12 +254,12 @@ void QuoteParser_CTP::OnFrontDisconnected( int nReason )
 	}
 }
 
-void QuoteParser_CTP::OnRspUnSubMarketData( CThostFtdcSpecificInstrumentField *pSpecificInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast )
+void ParserCTP::OnRspUnSubMarketData( CThostFtdcSpecificInstrumentField *pSpecificInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast )
 {
 
 }
 
-void QuoteParser_CTP::OnRtnDepthMarketData( CThostFtdcDepthMarketDataField *pDepthMarketData )
+void ParserCTP::OnRtnDepthMarketData( CThostFtdcDepthMarketDataField *pDepthMarketData )
 {	
 	if(m_pBaseDataMgr == NULL)
 	{
@@ -312,7 +373,7 @@ void QuoteParser_CTP::OnRtnDepthMarketData( CThostFtdcDepthMarketDataField *pDep
 	tick->release();
 }
 
-void QuoteParser_CTP::OnRspSubMarketData( CThostFtdcSpecificInstrumentField *pSpecificInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast )
+void ParserCTP::OnRspSubMarketData( CThostFtdcSpecificInstrumentField *pSpecificInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast )
 {
 	if(!IsErrorRspInfo(pRspInfo))
 	{
@@ -326,13 +387,13 @@ void QuoteParser_CTP::OnRspSubMarketData( CThostFtdcSpecificInstrumentField *pSp
 	}
 }
 
-void QuoteParser_CTP::OnHeartBeatWarning( int nTimeLapse )
+void ParserCTP::OnHeartBeatWarning( int nTimeLapse )
 {
 	if(m_parserSink)
 		m_parserSink->handleParserLog(LL_INFO, StrUtil::printf("[CTPParser]心跳包, 时长: %d...", nTimeLapse).c_str());
 }
 
-void QuoteParser_CTP::ReqUserLogin()
+void ParserCTP::ReqUserLogin()
 {
 	if(m_pUserAPI == NULL)
 	{
@@ -352,7 +413,7 @@ void QuoteParser_CTP::ReqUserLogin()
 	}
 }
 
-void QuoteParser_CTP::SubscribeMarketData()
+void ParserCTP::SubscribeMarketData()
 {
 	CodeSet codeFilter = m_filterSubs;
 	if(codeFilter.empty())
@@ -389,12 +450,12 @@ void QuoteParser_CTP::SubscribeMarketData()
 	delete[] subscribe;
 }
 
-bool QuoteParser_CTP::IsErrorRspInfo(CThostFtdcRspInfoField *pRspInfo)
+bool ParserCTP::IsErrorRspInfo(CThostFtdcRspInfoField *pRspInfo)
 {
 	return false;
 }
 
-void QuoteParser_CTP::subscribe(const CodeSet &vecSymbols)
+void ParserCTP::subscribe(const CodeSet &vecSymbols)
 {
 	if(m_uTradingDate == 0)
 	{
@@ -431,16 +492,16 @@ void QuoteParser_CTP::subscribe(const CodeSet &vecSymbols)
 	}
 }
 
-void QuoteParser_CTP::unsubscribe(const CodeSet &vecSymbols)
+void ParserCTP::unsubscribe(const CodeSet &vecSymbols)
 {
 }
 
-bool QuoteParser_CTP::isConnected()
+bool ParserCTP::isConnected()
 {
 	return m_pUserAPI!=NULL;
 }
 
-void QuoteParser_CTP::registerListener(IParserApiListener* listener)
+void ParserCTP::registerListener(IParserApiListener* listener)
 {
 	m_parserSink = listener;
 

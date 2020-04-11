@@ -8,14 +8,15 @@
  * \brief 
  */
 #include "ParserXTP.h"
-#include "..\Share\StrUtil.hpp"
-#include "..\Share\TimeUtils.hpp"
-#include "..\Share\WTSDataDef.hpp"
-#include "..\Share\BoostFile.hpp"
-#include "..\Share\WTSContractInfo.hpp"
-#include "..\Share\WTSParams.hpp"
-#include "..\Share\StrUtil.hpp"
-#include "..\Share\IBaseDataMgr.h"
+#include "../Share/StrUtil.hpp"
+#include "../Share/TimeUtils.hpp"
+#include "../Share/WTSDataDef.hpp"
+#include "../Share/BoostFile.hpp"
+#include "../Share/WTSContractInfo.hpp"
+#include "../Share/WTSParams.hpp"
+#include "../Share/StrUtil.hpp"
+#include "../Share/IBaseDataMgr.h"
+#include "../Share/DLLHelper.hpp"
 
 #ifdef _WIN32
 #ifdef _WIN64
@@ -23,7 +24,59 @@
 #else
 #pragma comment(lib, "./XTPQuoteApi/xtpquoteapi32.lib")
 #endif
+#include <wtypes.h>
+HMODULE	g_dllModule = NULL;
+
+BOOL APIENTRY DllMain(
+	HANDLE hModule,
+	DWORD  ul_reason_for_call,
+	LPVOID lpReserved
+	)
+{
+	switch (ul_reason_for_call)
+	{
+	case DLL_PROCESS_ATTACH:
+		g_dllModule = (HMODULE)hModule;
+		break;
+	}
+	return TRUE;
+}
+#else
+#include <dlfcn.h>
+
+std::string	g_moduleName;
+
+__attribute__((constructor))
+void on_load(void) {
+	Dl_info dl_info;
+	dladdr((void *)on_load, &dl_info);
+	g_moduleName = dl_info.dli_fname;
+}
 #endif
+
+
+std::string getBinDir()
+{
+	static std::string _bin_dir;
+	if (_bin_dir.empty())
+	{
+
+
+#ifdef _WIN32
+		char strPath[MAX_PATH];
+		GetModuleFileName(g_dllModule, strPath, MAX_PATH);
+
+		_bin_dir = StrUtil::standardisePath(strPath, false);
+#else
+		_bin_dir = g_moduleName;
+#endif
+
+		uint32_t nPos = _bin_dir.find_last_of('/');
+		_bin_dir = _bin_dir.substr(0, nPos + 1);
+	}
+
+	return _bin_dir;
+}
 
 extern "C"
 {
@@ -90,6 +143,23 @@ bool ParserXTP::init(WTSParams* config)
 	m_uClientID = config->getUInt32("clientid");
 	m_uHBInterval = config->getUInt32("hbinterval");
 	m_uBuffSize = config->getUInt32("buffsize");
+
+	std::string module = config->getCString("xtpmodule");
+	if (module.empty())
+	{
+
+#ifdef _WIN32
+#ifdef _WIN64
+		module = "xtpquoteap64.dll";
+#else
+		module = "xtpquoteap32.dll";
+#endif
+#else
+		module = "libxtpquoteapi.so";
+#endif
+	}
+	std::string dllpath = getBinDir() + module;
+	DLLHelper::load_library(dllpath.c_str());
 
 	std::string path = StrUtil::printf("XTPParserFlow/%s/",m_strUser.c_str());
 	BoostFile::create_directories(path.c_str());

@@ -24,6 +24,9 @@
     <ClInclude Include="WtDtRunner.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\Common\mdump.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WtDtPorter.cpp">
@@ -32,5 +35,13 @@
     <ClCompile Include="WtDtRunner.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\Common\mdump.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="copyfiles.bat">
+      <Filter>源文件</Filter>
+    </None>
   </ItemGroup>
 </Project>

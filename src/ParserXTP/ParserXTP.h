@@ -8,8 +8,8 @@
  * \brief 
  */
 #pragma once
-#include "..\Share\IParserApi.h"
-#include ".\XTPQuoteApi\xtp_quote_api.h"
+#include "../Share/IParserApi.h"
+#include "./XTPQuoteApi/xtp_quote_api.h"
 #include <map>
 
 NS_OTP_BEGIN

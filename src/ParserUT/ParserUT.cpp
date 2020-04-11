@@ -32,7 +32,59 @@
 #else
 #pragma comment(lib, "./UTApi/xyzq_ut_api32.lib")
 #endif
+#include <wtypes.h>
+HMODULE	g_dllModule = NULL;
+
+BOOL APIENTRY DllMain(
+	HANDLE hModule,
+	DWORD  ul_reason_for_call,
+	LPVOID lpReserved
+	)
+{
+	switch (ul_reason_for_call)
+	{
+	case DLL_PROCESS_ATTACH:
+		g_dllModule = (HMODULE)hModule;
+		break;
+	}
+	return TRUE;
+}
+#else
+#include <dlfcn.h>
+
+std::string	g_moduleName;
+
+__attribute__((constructor))
+void on_load(void) {
+	Dl_info dl_info;
+	dladdr((void *)on_load, &dl_info);
+	g_moduleName = dl_info.dli_fname;
+}
 #endif
+
+
+std::string getBinDir()
+{
+	static std::string _bin_dir;
+	if (_bin_dir.empty())
+	{
+
+
+#ifdef _WIN32
+		char strPath[MAX_PATH];
+		GetModuleFileName(g_dllModule, strPath, MAX_PATH);
+
+		_bin_dir = StrUtil::standardisePath(strPath, false);
+#else
+		_bin_dir = g_moduleName;
+#endif
+
+		uint32_t nPos = _bin_dir.find_last_of('/');
+		_bin_dir = _bin_dir.substr(0, nPos + 1);
+	}
+
+	return _bin_dir;
+}
 
 extern "C"
 {
@@ -91,6 +143,23 @@ bool ParserUT::init(WTSParams* config)
 	m_bHasOrder = config->getBoolean("order");
 	m_bHasOrdQue = config->getBoolean("order_queue");
 	m_bHasTrans = config->getBoolean("transaction");
+
+	std::string module = config->getCString("utmodule");
+	if (module.empty())
+	{
+
+#ifdef _WIN32
+#ifdef _WIN64
+		module = "XYZQ_UT_API64.dll";
+#else
+		module = "XYZQ_UT_API32.dll";
+#endif
+#else
+		module = "libxyzq_ut_api.so";
+#endif
+	}
+	std::string dllpath = getBinDir() + module;
+	DLLHelper::load_library(dllpath.c_str());
 
 	m_pUserAPI = xyzq_ut_api::create_ut_api();
 	m_pUserAPI->init();

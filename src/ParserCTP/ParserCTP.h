@@ -18,11 +18,11 @@ NS_OTP_END
 
 USING_NS_OTP;
 
-class QuoteParser_CTP :	public IParserApi, public CThostFtdcMdSpi
+class ParserCTP :	public IParserApi, public CThostFtdcMdSpi
 {
 public:
-	QuoteParser_CTP();
-	virtual ~QuoteParser_CTP();
+	ParserCTP();
+	virtual ~ParserCTP();
 
 public:
 	enum LoginStatus
