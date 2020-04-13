@@ -72,7 +72,7 @@
     <IncludePath>$(MyDepends12)\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(MyDepends12)\lib;$(LibraryPath)</LibraryPath>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
-    <TargetName>$(ProjectName)32</TargetName>
+    <TargetName>$(ProjectName)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -87,14 +87,14 @@
     <LibraryPath>$(MyDepends12)\lib;$(LibraryPath)</LibraryPath>
     <IncludePath>$(MyDepends12)\include;$(IncludePath)</IncludePath>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
-    <TargetName>$(ProjectName)32</TargetName>
+    <TargetName>$(ProjectName)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\$(ProjectName)\</OutDir>
     <LibraryPath>$(MyX64Deps12)\lib;$(LibraryPath)</LibraryPath>
     <IncludePath>$(MyX64Deps12)\include;$(IncludePath)</IncludePath>
-    <TargetName>$(ProjectName)64</TargetName>
+    <TargetName>$(ProjectName)</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -158,10 +158,12 @@
       </DelayLoadDLLs>
     </Link>
     <PreBuildEvent>
-      <Command>versiongen.bat</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
     <PreBuildEvent>
-      <Message>生成版本信息</Message>
+      <Message>
+      </Message>
     </PreBuildEvent>
     <PostBuildEvent>
       <Command>copyfiles.bat $(Configuration) $(PlatformName)</Command>
@@ -190,10 +192,12 @@
       </DelayLoadDLLs>
     </Link>
     <PreBuildEvent>
-      <Command>versiongen.bat</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
     <PreBuildEvent>
-      <Message>生成版本信息</Message>
+      <Message>
+      </Message>
     </PreBuildEvent>
     <PostBuildEvent>
       <Command>copyfiles.bat $(Configuration) $(PlatformName)</Command>
@@ -225,7 +229,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="copyfiles.bat" />
-    <None Include="versiongen.bat" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

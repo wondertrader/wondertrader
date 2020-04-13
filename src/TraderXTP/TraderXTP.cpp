@@ -613,11 +613,6 @@ bool TraderXTP::init(WTSParams *params)
 	{
 
 #ifdef _WIN32
-#ifdef _WIN64
-		module = "xtptraderapi64.dll";
-#else
-		module = "xtptraderapi32.dll";
-#endif
 #else
 		module = "libxtptraderapi.so";
 #endif

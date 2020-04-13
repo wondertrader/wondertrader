@@ -46,9 +46,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="versiongen.bat">
-      <Filter>源文件</Filter>
-    </None>
     <None Include="copyfiles.bat">
       <Filter>源文件</Filter>
     </None>

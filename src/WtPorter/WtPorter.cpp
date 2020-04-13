@@ -10,7 +10,7 @@
 #include "WtPorter.h"
 #include "WtRtRunner.h"
 
-#include "version.h"
+#include "../Common/version.h"
 
 #include "../WTSTools/WTSLogger.h"
 #include "../Share/DecimalHelper.h"

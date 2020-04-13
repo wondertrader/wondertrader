@@ -149,11 +149,6 @@ bool ParserXTP::init(WTSParams* config)
 	{
 
 #ifdef _WIN32
-#ifdef _WIN64
-		module = "xtpquoteap64.dll";
-#else
-		module = "xtpquoteap32.dll";
-#endif
 #else
 		module = "libxtpquoteapi.so";
 #endif

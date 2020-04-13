@@ -72,7 +72,7 @@
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <IncludePath>$(MyDepends12)\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(MyDepends12)\lib;$(LibraryPath)</LibraryPath>
-    <TargetName>$(ProjectName)32</TargetName>
+    <TargetName>$(ProjectName)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -80,7 +80,7 @@
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <IncludePath>$(MyDepends12X64)\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(MyDepends12X64)\lib;$(LibraryPath)</LibraryPath>
-    <TargetName>$(ProjectName)64</TargetName>
+    <TargetName>$(ProjectName)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -88,7 +88,7 @@
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <IncludePath>$(MyDepends12)\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(MyDepends12)\lib;$(LibraryPath)</LibraryPath>
-    <TargetName>$(ProjectName)32</TargetName>
+    <TargetName>$(ProjectName)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -96,7 +96,7 @@
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <IncludePath>$(MyX64Deps12)\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(MyX64Deps12)\lib;$(LibraryPath)</LibraryPath>
-    <TargetName>$(ProjectName)64</TargetName>
+    <TargetName>$(ProjectName)</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -110,10 +110,12 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PreBuildEvent>
-      <Command>versiongen.bat</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
     <PreBuildEvent>
-      <Message>生成版本信息</Message>
+      <Message>
+      </Message>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -150,10 +152,12 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <PreBuildEvent>
-      <Command>versiongen.bat</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
     <PreBuildEvent>
-      <Message>生成版本信息</Message>
+      <Message>
+      </Message>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -172,15 +176,14 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <PreBuildEvent>
-      <Command>versiongen.bat</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
     <PreBuildEvent>
-      <Message>生成版本信息</Message>
+      <Message>
+      </Message>
     </PreBuildEvent>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <None Include="versiongen.bat" />
-  </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Common\mdump.cpp" />
     <ClCompile Include="PyCtaMocker.cpp" />
