@@ -54,11 +54,7 @@ bool WtDataManager::initStore(WTSVariant* cfg)
 	{
 		module = WtHelper::getInstDir();
 #ifdef _WIN32
-#ifdef _WIN64
-		module += "WtDataReader64.dll";
-#else
-		module += "WtDataReader32.dll";
-#endif
+		module += "WtDataReader.dll";
 #else
 		module += "libWtDataReader.so";
 #endif

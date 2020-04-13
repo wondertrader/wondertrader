@@ -149,11 +149,7 @@ bool ParserUT::init(WTSParams* config)
 	{
 
 #ifdef _WIN32
-#ifdef _WIN64
-		module = "XYZQ_UT_API64.dll";
-#else
-		module = "XYZQ_UT_API32.dll";
-#endif
+		module = "XYZQ_UT_API.dll";
 #else
 		module = "libxyzq_ut_api.so";
 #endif

@@ -51,11 +51,7 @@ bool DataManager::init(WTSVariant* params, WTSBaseDataMgr* bdMgr, StateMonitor* 
 	{
 		module = WtHelper::get_module_dir();
 #ifdef _WIN32
-#ifdef _WIN64
-		module += "WtDataWriter64.dll";
-#else
-		module += "WtDataWriter32.dll";
-#endif
+		module += "WtDataWriter.dll";
 #else
 		module += "libWtDataWriter.so";
 #endif

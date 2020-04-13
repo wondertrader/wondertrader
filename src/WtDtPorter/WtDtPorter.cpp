@@ -110,7 +110,7 @@ void initialize(WtString cfgFile, WtString logCfg)
 #ifdef _WIN32
 	CMiniDumper::Enable(getModuleName(), true);
 #endif
-	getRunner().initialize(cfgFile, logCfg);
+	getRunner().initialize(cfgFile, logCfg, getBinDir());
 }
 
 void start()

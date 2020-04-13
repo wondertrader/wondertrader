@@ -147,8 +147,8 @@ bool ParserXTP::init(WTSParams* config)
 	std::string module = config->getCString("xtpmodule");
 	if (module.empty())
 	{
-
 #ifdef _WIN32
+		module = "xtpquoteapi.dll";
 #else
 		module = "libxtpquoteapi.so";
 #endif

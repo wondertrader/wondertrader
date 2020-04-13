@@ -155,11 +155,7 @@ bool ParserCTP::init(WTSParams* config)
 	{
 
 #ifdef _WIN32
-#ifdef _WIN64
-		module = "thostmduserapi_se64.dll";
-#else
-		module = "thostmduserapi_se32.dll";
-#endif
+		module = "thostmduserapi_se.dll";
 #else
 		module = "libthostmduserapi_se.so";
 #endif
