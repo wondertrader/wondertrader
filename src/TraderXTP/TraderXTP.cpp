@@ -530,7 +530,7 @@ void TraderXTP::OnQueryPosition(XTPQueryStkPositionRsp *position, XTPRI *error_i
 			pos->setAvgPrice(position->avg_price);
 
 			pos->setAvailNewPos(0);
-			pos->setAvailNewPos((uint32_t)position->sellable_qty);
+			pos->setAvailPrePos((uint32_t)position->sellable_qty);
 		}
 	}
 
