@@ -23,12 +23,17 @@
 #include <boost/filesystem.hpp>
 
 #ifdef _WIN32
+#define my_stricmp _stricmp
+#else
+#define my_stricmp strcasecmp
+#endif
+
+#ifdef _WIN32
 #ifdef _WIN64
 #pragma comment(lib, "./XTPApi/xtptraderapi64.lib")
 #else
 #pragma comment(lib, "./XTPApi/xtptraderapi32.lib")
 #endif
-
 #include <wtypes.h>
 HMODULE	g_dllModule = NULL;
 
@@ -730,7 +735,7 @@ bool TraderXTP::makeEntrustID(char* buffer, int length)
 	{
 		memset(buffer, 0, length);
 		uint32_t orderref = _ordref.fetch_add(1) + 1;
-		sprintf(buffer, "%s#%u#%s#%u", _user.c_str(), _tradingday, StrUtil::fmtUInt64(_sessionid), orderref);
+		sprintf(buffer, "%s#%u#%s#%u", _user.c_str(), _tradingday, StrUtil::fmtUInt64(_sessionid).c_str(), orderref);
 		return true;
 	}
 	catch (...)
@@ -817,7 +822,7 @@ int TraderXTP::orderInsert(WTSEntrust* entrust)
 	
 	req.order_client_id = _client;
 	strcpy(req.ticker, entrust->getCode());
-	req.market = _stricmp(entrust->getExchg(), "SSE") == 0 ? XTP_MKT_SH_A : XTP_MKT_SZ_A;
+	req.market = my_stricmp(entrust->getExchg(), "SSE") == 0 ? XTP_MKT_SH_A : XTP_MKT_SZ_A;
 	req.price = entrust->getPrice();
 	req.quantity = entrust->getVolumn();
 	req.price_type = XTP_PRICE_LIMIT;

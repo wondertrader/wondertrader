@@ -20,6 +20,10 @@
 #define DBL_MAX 1.7976931348623158e+308
 #endif
 
+#ifndef FLT_MAX
+#define FLT_MAX 3.402823466e+38F        /* max value */
+#endif
+
 #ifdef _WIN32
 #define INVALID_DOUBLE		DBL_MAX
 #define INVALID_INT32		INT_MAX
