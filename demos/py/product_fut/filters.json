@@ -1,0 +1,18 @@
+{
+    "strategy_filters":
+    {
+        "Q3LS00_if":
+        {
+            "action":"redirect",
+            "target":0
+        }
+    },
+    "code_filters":
+    {
+        "CFFEX.IF":
+        {
+            "action":"ignore",
+            "target":0
+        }
+    }
+}

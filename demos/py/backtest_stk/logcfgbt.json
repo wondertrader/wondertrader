@@ -1,0 +1,56 @@
+{
+    "root":{
+        "level":"debug",
+        "async":false,
+        "sinks":[
+            {
+                "type":"basic_file_sink",
+                "filename":"BtLogs/Runner.log",
+                "pattern":"[%Y.%m.%d %H:%M:%S - %-5l] %v",
+                "truncate":true
+            },
+            {
+                "type":"console_sink",
+                "pattern":"[%m.%d %H:%M:%S - %^%-5l%$] %v"
+            }
+        ]
+    },
+    "dyn_pattern":{
+        "strategy":{
+            "level":"debug",
+            "async":false,
+            "sinks":[
+                {
+                    "type":"basic_file_sink",
+                    "filename":"BtLogs/Strategy_%s.log",
+                    "pattern":"[%Y.%m.%d %H:%M:%S - %-5l] %v",
+                    "truncate":true
+                }
+            ]
+        },
+        "trader":{
+            "level":"debug",
+            "async":false,
+            "sinks":[
+                {
+                    "type":"basic_file_sink",
+                    "filename":"BtLogs/Trader_%s.log",
+                    "pattern":"[%Y.%m.%d %H:%M:%S - %-5l] %v",
+                    "truncate":true
+                }
+            ]
+        },
+        "executer":{
+            "level":"debug",
+            "async":false,
+            "sinks":[
+                {
+                    "type":"basic_file_sink",
+                    "filename":"BtLogs/Executer_%s.log",
+                    "pattern":"[%Y.%m.%d %H:%M:%S - %-5l] %v",
+                    "truncate":true
+                }
+            ]
+        }
+    }
+}

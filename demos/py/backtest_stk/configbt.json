@@ -1,0 +1,18 @@
+{
+    "replayer":{
+        "mode":"csv",
+        "path":"./storage/",
+        "stime":201909010900,
+        "etime":201912011500,
+        "basefiles":{
+            "session":"./common/stk_sessions.json",
+            "commodity":"./common/stk_comms.json",
+            "contract":"./common/stocks.json",
+            "holiday":"./common/holidays.json"
+        },
+        "fees":"fees_stk.json"
+    },
+    "env":{
+        "mocker":"cta"
+    }
+}

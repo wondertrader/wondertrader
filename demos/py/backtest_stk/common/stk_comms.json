@@ -1,0 +1,60 @@
+{
+	"SSE" : 
+	{
+		"STK" : 
+		{
+			"category" : 0,
+			"covermode" : 0,
+			"exchg" : "SSE",
+			"holiday" : "CHINA",
+			"name" : "上证股票",
+			"precision" : 2,
+			"pricemode" : 1,
+			"pricetick" : 0.01,
+			"session" : "SD0930",
+			"volscale" : 1
+		},
+		"IDX" : 
+		{
+			"category" : 0,
+			"covermode" : 0,
+			"exchg" : "SSE",
+			"holiday" : "CHINA",
+			"name" : "上证指数",
+			"precision" : 2,
+			"pricemode" : 1,
+			"pricetick" : 0.01,
+			"session" : "SD0930",
+			"volscale" : 1
+		}
+	},
+	"SZSE" : 
+	{
+		"STK" : 
+		{
+			"category" : 0,
+			"covermode" : 0,
+			"exchg" : "SZSE",
+			"holiday" : "CHINA",
+			"name" : "深证股票",
+			"precision" : 2,
+			"pricemode" : 1,
+			"pricetick" : 0.01,
+			"session" : "SD0930",
+			"volscale" : 1
+		},
+		"IDX" : 
+		{
+			"category" : 0,
+			"covermode" : 0,
+			"exchg" : "SZSE",
+			"holiday" : "CHINA",
+			"name" : "深证指数",
+			"precision" : 2,
+			"pricemode" : 1,
+			"pricetick" : 0.01,
+			"session" : "SD0930",
+			"volscale" : 1
+		}
+	}
+}

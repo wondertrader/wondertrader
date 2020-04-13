@@ -1,0 +1,97 @@
+{
+    "basefiles":{
+        "session":"./common/sessions.json",
+        "commodity":"./common/stk_comms.json",
+        "contract":"./common/stocks.json",
+        "holiday":"./common/holidays.json"
+    },
+    "env":{
+        "name":"cta",
+        "mode": "product",
+        "product":{
+            "session":"SD0930"
+        },
+        "filters":"filters.json",
+        "fees":"fees_stk.json",
+        "riskmon":{
+            "active":true,
+            "module":"WtRiskMonFact.dll",
+            "name":"SimpleRiskMon",
+            "calc_span":5,
+            "risk_span": 30,
+            "risk_scale": 0.3,
+            "basic_ratio": 101,
+            "inner_day_fd":20.0,
+            "inner_day_active":true,
+            "multi_day_fd":60.0,
+            "multi_day_active":false,
+            "base_amount": 5000000
+        }
+    },
+    "data":{
+        "store":{
+            "path":"./STK_Data/"
+        }
+    },
+    "executers":[
+        {
+            "active":true,
+            "id":"exe0",
+            "scale": 1,
+            "policy":
+            {
+                "default":{
+                    "name":"WtExeFact.WtSimpExeUnit",
+                    "offset": 0,
+                    "expire": 40,
+                    "opposite": true
+                }
+            },
+            "trader":"simnow"
+        }
+    ],
+    "traders":[
+        {
+            "active":true,
+            "id":"simnow",
+            "module":"TraderXTP.dll",
+            "host":"120.27.164.69",
+            "port":"6001",
+            "user":"********",
+            "pass":"********",
+			"protocol":1,
+			"clientid":1,
+			"hbinterval":15,
+			"buffsize":128,
+            "quick":true,
+            "riskmon":
+            {
+                "active":true,
+                "policy":
+                {
+                    "default":
+                    {
+                        "order_times_boundary": 20,
+                        "order_stat_timespan": 10,
+                        
+                        "cancel_times_boundary": 20,
+                        "cancel_stat_timespan": 10,
+                        "cancel_total_limits": 470
+                    }
+                }
+            }
+        }
+    ],
+    "parsers":[
+        {
+            "active":true,
+            "id":"parser1",
+            "module":"ParserUDP.dll",
+            "host":"127.0.0.1",
+            "bport":9001,
+            "sport":3997,
+            "filter":""
+        }
+    ],
+    "bspolicy":"actpolicy.json"
+}

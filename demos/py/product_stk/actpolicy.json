@@ -1,0 +1,14 @@
+{
+    "default":{
+        "order":[
+            {
+                "action":"closeyestoday",
+                "limit":0
+            },
+            {
+                "action":"open",
+                "limit":0
+            }
+        ]
+    }
+}
