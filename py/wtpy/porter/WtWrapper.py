@@ -171,13 +171,19 @@ class WtWrapper:
     # 构造函数，传入动态库名
     def __init__(self):
         paths = os.path.split(__file__)
-        if isPythonX64():
-            dllname = "WtPorter64.dll"
-            a = (paths[:-1] + (dllname,))
-            _path = os.path.join(*a)
-            self.api = cdll.LoadLibrary(_path)
-        else:
-            dllname = "WtPorter32.dll"
+        if isWindows(): #windows平台
+            if isPythonX64():
+                dllname = "x64/WtPorter.dll"
+                a = (paths[:-1] + (dllname,))
+                _path = os.path.join(*a)
+                self.api = cdll.LoadLibrary(_path)
+            else:
+                dllname = "x86/WtPorter.dll"
+                a = (paths[:-1] + (dllname,))
+                _path = os.path.join(*a)
+                self.api = cdll.LoadLibrary(_path)
+        else:#Linux平台
+            dllname = "linux/libWtPorter.so"
             a = (paths[:-1] + (dllname,))
             _path = os.path.join(*a)
             self.api = cdll.LoadLibrary(_path)

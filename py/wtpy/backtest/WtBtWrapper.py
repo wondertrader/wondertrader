@@ -155,17 +155,17 @@ class WtBtWrapper:
         paths = os.path.split(__file__)
         if isWindows(): #windows平台
             if isPythonX64():
-                dllname = "WtBtPorter64.dll"
+                dllname = "x64/WtBtPorter.dll"
                 a = (paths[:-1] + (dllname,))
                 _path = os.path.join(*a)
                 self.api = cdll.LoadLibrary(_path)
             else:
-                dllname = "WtBtPorter32.dll"
+                dllname = "x86/WtBtPorter.dll"
                 a = (paths[:-1] + (dllname,))
                 _path = os.path.join(*a)
                 self.api = cdll.LoadLibrary(_path)
         else:#Linux平台
-            dllname = "libWtBtPorter.so"
+            dllname = "linux/libWtBtPorter.so"
             a = (paths[:-1] + (dllname,))
             _path = os.path.join(*a)
             print(_path)

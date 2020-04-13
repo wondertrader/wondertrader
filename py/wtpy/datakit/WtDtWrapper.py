@@ -27,17 +27,17 @@ class WtDtWrapper:
         paths = os.path.split(__file__)
         if isWindows(): #windows平台
             if isPythonX64():
-                dllname = "WtDtPorter64.dll"
+                dllname = "x64/WtDtPorter.dll"
                 a = (paths[:-1] + (dllname,))
                 _path = os.path.join(*a)
                 self.api = cdll.LoadLibrary(_path)
             else:
-                dllname = "WtDtPorter32.dll"
+                dllname = "x86/WtDtPorter.dll"
                 a = (paths[:-1] + (dllname,))
                 _path = os.path.join(*a)
                 self.api = cdll.LoadLibrary(_path)
         else:#Linux平台
-            dllname = "libWtDtPorter.so"
+            dllname = "linux/libWtDtPorter.so"
             a = (paths[:-1] + (dllname,))
             _path = os.path.join(*a)
             print(_path)
