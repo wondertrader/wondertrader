@@ -6,7 +6,7 @@
         "holiday":"./common/holidays.json"
     },
     "writer":{
-        "path":"E:/STK_Data",
+        "path":"./STK_Data",
         "savelog":false,
         "async":true,
         "groupsize":20
@@ -17,8 +17,8 @@
             "module":"ParserXTP.dll",
             "host":"120.27.164.138",
             "port":"6002",
-            "user":"********",
-            "pass":"********",
+            "user":"53191000161",
+            "pass":"M2B5xtrw",
 			"protocol":1,
 			"clientid":1,
 			"hbinterval":15,
