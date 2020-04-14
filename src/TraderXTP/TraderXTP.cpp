@@ -235,13 +235,13 @@ TraderXTP::~TraderXTP()
 
 WTSEntrust* TraderXTP::makeEntrust(XTPOrderInfo* order_info)
 {
-	std::string code;
+	std::string code, exchg;
 	if (order_info->market == XTP_MKT_SH_A)
-		code += "SH";
+		exchg = "SSE";
 	else
-		code += "SZ";
-	code += order_info->ticker;
-	WTSContractInfo* ct = _bd_mgr->getContract(code.c_str());
+		exchg = "SZSE";
+	code = order_info->ticker;
+	WTSContractInfo* ct = _bd_mgr->getContract(code.c_str(), exchg.c_str());
 	if (ct == NULL)
 		return NULL;
 
@@ -267,13 +267,13 @@ WTSEntrust* TraderXTP::makeEntrust(XTPOrderInfo* order_info)
 
 WTSOrderInfo* TraderXTP::makeOrderInfo(XTPQueryOrderRsp* order_info)
 {
-	std::string code;
+	std::string code, exchg;
 	if (order_info->market == XTP_MKT_SH_A)
-		code += "SH";
+		exchg = "SSE";
 	else
-		code += "SZ";
-	code += order_info->ticker;
-	WTSContractInfo* contract = _bd_mgr->getContract(code.c_str());
+		exchg = "SZSE";
+	code = order_info->ticker;
+	WTSContractInfo* contract = _bd_mgr->getContract(code.c_str(), exchg.c_str());
 	if (contract == NULL)
 		return NULL;
 
@@ -325,13 +325,13 @@ WTSOrderInfo* TraderXTP::makeOrderInfo(XTPQueryOrderRsp* order_info)
 
 WTSTradeInfo* TraderXTP::makeTradeInfo(XTPQueryTradeRsp* trade_info)
 {
-	std::string code;
+	std::string code, exchg;
 	if (trade_info->market == XTP_MKT_SH_A)
-		code += "SH";
+		exchg = "SSE";
 	else
-		code += "SZ";
-	code += trade_info->ticker;
-	WTSContractInfo* contract = _bd_mgr->getContract(code.c_str());
+		exchg = "SZSE";
+	code = trade_info->ticker;
+	WTSContractInfo* contract = _bd_mgr->getContract(code.c_str(), exchg.c_str());
 	if (contract == NULL)
 		return NULL;
 
@@ -499,15 +499,13 @@ void TraderXTP::OnQueryPosition(XTPQueryStkPositionRsp *position, XTPRI *error_i
 		if (NULL == _positions)
 			_positions = PositionMap::create();
 
-		std::string code;
+		std::string code, exchg;
 		if (position->market == XTP_MKT_SH_A)
-			code += "SH";
+			exchg = "SSE";
 		else
-			code += "SZ";
-
+			exchg = "SZSE";
 		code += position->ticker;
-
-		WTSContractInfo* contract = _bd_mgr->getContract(code.c_str());
+		WTSContractInfo* contract = _bd_mgr->getContract(code.c_str(), exchg.c_str());
 		WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(contract);
 		if (contract)
 		{
