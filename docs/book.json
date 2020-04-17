@@ -1,0 +1,38 @@
+{
+    "title":"WonderTrader-组合盘管理的利器",
+    "author": "WonderTrader",
+    "description": "Documents of WonderTrader",
+    "language": "zh-hans",
+    "gitbook": "3.2.3",
+    "styles": {
+        "website": "./styles/website.css"
+    },
+    "structure": {
+        
+    },
+    "links": {
+        "sidebar": {
+            "官网": "https://wondertrader.github.io"
+        }
+    },
+    "plugins": [ 
+        "-search",
+        "github",
+        "github-buttons"
+    ],
+    "pluginsConfig": {
+        "github": {
+            "url": "https://github.com/wondertrader/wondertrader"
+        },
+        "github-buttons": {
+            "buttons": [{
+                "user": "wondertrader",
+                "repo": "wondertrader",
+                "type": "star",
+                "size": "small",
+                "count": true
+                }
+            ]
+        }
+    }
+}
