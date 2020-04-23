@@ -5,7 +5,6 @@ import json
 from multiprocessing import Lock
 
 from wtpy.porter import WtWrapper
-from wtpy.BaseDefs import BaseStrategy
 
 class Context:
     '''
@@ -17,7 +16,7 @@ class Context:
     3、下单接口（设置目标仓位、直接下单等），接口格式如：stra_xxx\n
     '''
 
-    def __init__(self, id, stra:BaseStrategy, wrapper: WtWrapper, engine):
+    def __init__(self, id, stra, wrapper: WtWrapper, engine):
         self.__stra_info__ = stra   #策略对象，对象基类BaseStrategy.py
         self.__user_data__ = dict() #用户数据
         self.__wrapper__ = wrapper  #底层接口转换器
@@ -77,7 +76,7 @@ class Context:
             self.__bar_cache__[key] = localBars
 
 
-    def on_tick(self, code, newTick):
+    def on_tick(self, code:str, newTick):
         self.__stra_info__.on_tick(self, code, newTick)
 
 
