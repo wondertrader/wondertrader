@@ -13,7 +13,7 @@
 
 #include "../Share/WTSVariant.hpp"
 #include "../Share/TimeUtils.hpp"
-#include "../Share/DecimalHelper.h"
+#include "../Share/decimal.h"
 #include "../Share/BoostFile.hpp"
 
 #include "../WTSTools/WTSLogger.h"
@@ -208,13 +208,13 @@ void ExecMocker::match_orders(WTSTickData* curTick, OrderIDs& to_erase)
 				volumn = curTick->volumn();
 			}
 
-			if (DecimalHelper::le(price, ordInfo._limit))
+			if (decimal::le(price, ordInfo._limit))
 			{
 				uint64_t sigUnixTime = TimeUtils::makeTime((uint32_t)(_sig_time / 10000), _sig_time % 10000 * 100000);
 				uint64_t ordUnixTime = TimeUtils::makeTime((uint32_t)(ordInfo._time / 1000000000), ordInfo._time % 1000000000);
 
 				//如果价格相等，需要先看排队位置，如果价格不等说明已经全部被大单吃掉了
-				if (!ordInfo._positive && DecimalHelper::equal(price, ordInfo._limit))
+				if (!ordInfo._positive && decimal::eq(price, ordInfo._limit))
 				{
 					uint32_t& quepos = ordInfo._queue;
 
@@ -265,7 +265,7 @@ void ExecMocker::match_orders(WTSTickData* curTick, OrderIDs& to_erase)
 			}
 		}
 
-		if (!ordInfo._buy && DecimalHelper::ge(curTick->price(), ordInfo._limit))
+		if (!ordInfo._buy && decimal::ge(curTick->price(), ordInfo._limit))
 		{
 			double price;
 			uint32_t volumn;
@@ -282,13 +282,13 @@ void ExecMocker::match_orders(WTSTickData* curTick, OrderIDs& to_erase)
 				volumn = curTick->volumn();
 			}
 
-			if (DecimalHelper::le(price, ordInfo._limit))
+			if (decimal::le(price, ordInfo._limit))
 			{
 				uint64_t sigUnixTime = TimeUtils::makeTime((uint32_t)(_sig_time / 10000), _sig_time % 10000 * 100000);
 				uint64_t ordUnixTime = TimeUtils::makeTime((uint32_t)(ordInfo._time / 1000000000), ordInfo._time % 1000000000);
 
 				//如果价格相等，需要先看排队位置，如果价格不等说明已经全部被大单吃掉了
-				if (!ordInfo._positive && DecimalHelper::equal(price, ordInfo._limit))
+				if (!ordInfo._positive && decimal::eq(price, ordInfo._limit))
 				{
 					uint32_t& quepos = ordInfo._queue;
 
@@ -452,11 +452,11 @@ OrderIDs ExecMocker::buy(const char* stdCode, double price, uint32_t qty)
 
 	//订单排队，如果是对手价，则按照对手价的挂单量来排队
 	//如果是最新价，则按照买一卖一的加权平均
-	if (DecimalHelper::ge(price, _last_tick->askprice(0)))
+	if (decimal::ge(price, _last_tick->askprice(0)))
 		ordInfo._positive = true;
-	else if (DecimalHelper::equal(price, _last_tick->bidprice(0)))
+	else if (decimal::eq(price, _last_tick->bidprice(0)))
 		ordInfo._queue = _last_tick->bidqty(0);
-	if (DecimalHelper::equal(price, _last_tick->price()))
+	if (decimal::eq(price, _last_tick->price()))
 		ordInfo._queue = (uint32_t)round((_last_tick->askqty(0)*_last_tick->askprice(0) + _last_tick->bidqty(0)*_last_tick->bidprice(0)) / (_last_tick->askprice(0) + _last_tick->bidprice(0)));
 
 	//排队位置按照平均撤单率，撤销掉部分
@@ -488,11 +488,11 @@ OrderIDs ExecMocker::sell(const char* stdCode, double price, uint32_t qty)
 
 	//订单排队，如果是对手价，则按照对手价的挂单量来排队
 	//如果是最新价，则按照买一卖一的加权平均
-	if (DecimalHelper::equal(price, _last_tick->askprice(0)))
+	if (decimal::eq(price, _last_tick->askprice(0)))
 		ordInfo._queue = _last_tick->askqty(0);
-	else if (DecimalHelper::le(price, _last_tick->bidprice(0)))
+	else if (decimal::le(price, _last_tick->bidprice(0)))
 		ordInfo._positive = true;
-	if (DecimalHelper::equal(price, _last_tick->price()))
+	if (decimal::eq(price, _last_tick->price()))
 		ordInfo._queue = (uint32_t)round((_last_tick->askqty(0)*_last_tick->askprice(0) + _last_tick->bidqty(0)*_last_tick->bidprice(0)) / (_last_tick->askprice(0) + _last_tick->bidprice(0)));
 
 	ordInfo._queue -= (uint32_t)round(ordInfo._queue*_cancelrate);

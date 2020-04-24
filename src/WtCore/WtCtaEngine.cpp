@@ -22,7 +22,7 @@
 #include "../Share/IHotMgr.h"
 #include "../Share/WTSContractInfo.hpp"
 #include "../Share/WTSRiskDef.hpp"
-#include "../Share/DecimalHelper.h"
+#include "../Share/decimal.h"
 #include "../Share/StdUtils.hpp"
 
 #include "../WTSTools/WTSLogger.h"
@@ -229,7 +229,7 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 	}
 
 	bool bRiskEnabled = false;
-	if(!DecimalHelper::equal(_risk_volscale, 1.0) && _risk_date == _cur_tdate)
+	if(!decimal::eq(_risk_volscale, 1.0) && _risk_date == _cur_tdate)
 	{
 		WTSLogger::info2("risk", "组合盘仓位风控系数为%.2f", _risk_volscale);
 		bRiskEnabled = true;
@@ -306,7 +306,7 @@ void WtCtaEngine::handle_pos_change(const char* stdCode, int32_t diffQty)
 	int32_t targetPos = pItem._volumn + diffQty;
 
 	bool bRiskEnabled = false;
-	if (!DecimalHelper::equal(_risk_volscale, 1.0) && _risk_date == _cur_tdate)
+	if (!decimal::eq(_risk_volscale, 1.0) && _risk_date == _cur_tdate)
 	{
 		WTSLogger::info2("risk", "组合盘仓位风控系数为%.2f", _risk_volscale);
 		bRiskEnabled = true;

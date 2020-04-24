@@ -19,7 +19,7 @@
 #include "../Share/WTSContractInfo.hpp"
 #include "../Share/WTSSessionInfo.hpp"
 #include "../Share/WTSTradeDef.hpp"
-#include "../Share/DecimalHelper.h"
+#include "../Share/decimal.h"
 #include "../Share/WTSVariant.hpp"
 
 #include "../WTSTools/WTSLogger.h"
@@ -339,7 +339,7 @@ void CtaMocker::on_tick(const char* stdCode, WTSTickData* newTick, bool bEmitStr
 			{
 				const SigInfo& sInfo = it->second;
 				double price;
-				if (DecimalHelper::equal(sInfo._desprice, 0.0))
+				if (decimal::eq(sInfo._desprice, 0.0))
 					price = newTick->price();
 				else
 					price = sInfo._desprice;
@@ -369,19 +369,19 @@ void CtaMocker::on_tick(const char* stdCode, WTSTickData* newTick, bool bEmitStr
 			switch (entrust._alg)
 			{
 			case WCT_Equal:
-				isMatched = DecimalHelper::equal(curVal, entrust._target);
+				isMatched = decimal::eq(curVal, entrust._target);
 				break;
 			case WCT_Larger:
-				isMatched = DecimalHelper::gt(curVal, entrust._target);
+				isMatched = decimal::gt(curVal, entrust._target);
 				break;
 			case WCT_LargerOrEqual:
-				isMatched = DecimalHelper::ge(curVal, entrust._target);
+				isMatched = decimal::ge(curVal, entrust._target);
 				break;
 			case WCT_Smaller:
-				isMatched = DecimalHelper::lt(curVal, entrust._target);
+				isMatched = decimal::lt(curVal, entrust._target);
 				break;
 			case WCT_SmallerOrEqual:
-				isMatched = DecimalHelper::le(curVal, entrust._target);
+				isMatched = decimal::le(curVal, entrust._target);
 				break;
 			default:
 				break;
@@ -617,7 +617,7 @@ CondList& CtaMocker::get_cond_entrusts(const char* stdCode)
 //策略接口
 void CtaMocker::stra_enter_long(const char* stdCode, int32_t qty, const char* userTag /* = "" */, double limitprice, double stopprice)
 {
-	if (DecimalHelper::equal(limitprice, 0.0) && DecimalHelper::equal(stopprice, 0.0))	//如果不是动态下单模式，则直接触发
+	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式，则直接触发
 	{
 		int32_t curQty = stra_get_position(stdCode);
 		if (curQty < 0)
@@ -637,12 +637,12 @@ void CtaMocker::stra_enter_long(const char* stdCode, int32_t qty, const char* us
 
 		entrust._qty = qty;
 		entrust._field = WCF_NEWPRICE;
-		if (!DecimalHelper::equal(limitprice))
+		if (!decimal::eq(limitprice))
 		{
 			entrust._target = limitprice;
 			entrust._alg = WCT_SmallerOrEqual;
 		}
-		else if (!DecimalHelper::equal(stopprice))
+		else if (!decimal::eq(stopprice))
 		{
 			entrust._target = stopprice;
 			entrust._alg = WCT_LargerOrEqual;
@@ -656,7 +656,7 @@ void CtaMocker::stra_enter_long(const char* stdCode, int32_t qty, const char* us
 
 void CtaMocker::stra_enter_short(const char* stdCode, int32_t qty, const char* userTag /* = "" */, double limitprice, double stopprice)
 {
-	if (DecimalHelper::equal(limitprice, 0.0) && DecimalHelper::equal(stopprice, 0.0))	//如果不是动态下单模式，则直接触发
+	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式，则直接触发
 	{
 		int32_t curQty = stra_get_position(stdCode);
 		if (curQty > 0)
@@ -677,12 +677,12 @@ void CtaMocker::stra_enter_short(const char* stdCode, int32_t qty, const char* u
 
 		entrust._qty = qty;
 		entrust._field = WCF_NEWPRICE;
-		if (!DecimalHelper::equal(limitprice))
+		if (!decimal::eq(limitprice))
 		{
 			entrust._target = limitprice;
 			entrust._alg = WCT_LargerOrEqual;
 		}
-		else if (!DecimalHelper::equal(stopprice))
+		else if (!decimal::eq(stopprice))
 		{
 			entrust._target = stopprice;
 			entrust._alg = WCT_SmallerOrEqual;
@@ -696,7 +696,7 @@ void CtaMocker::stra_enter_short(const char* stdCode, int32_t qty, const char* u
 
 void CtaMocker::stra_exit_long(const char* stdCode, int32_t qty, const char* userTag /* = "" */, double limitprice, double stopprice)
 {
-	if (DecimalHelper::equal(limitprice, 0.0) && DecimalHelper::equal(stopprice, 0.0))	//如果不是动态下单模式，则直接触发
+	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式，则直接触发
 	{
 		int32_t curQty = stra_get_position(stdCode);
 		if (curQty <= 0)
@@ -716,12 +716,12 @@ void CtaMocker::stra_exit_long(const char* stdCode, int32_t qty, const char* use
 
 		entrust._qty = qty;
 		entrust._field = WCF_NEWPRICE;
-		if (!DecimalHelper::equal(limitprice))
+		if (!decimal::eq(limitprice))
 		{
 			entrust._target = limitprice;
 			entrust._alg = WCT_LargerOrEqual;
 		}
-		else if (!DecimalHelper::equal(stopprice))
+		else if (!decimal::eq(stopprice))
 		{
 			entrust._target = stopprice;
 			entrust._alg = WCT_SmallerOrEqual;
@@ -735,7 +735,7 @@ void CtaMocker::stra_exit_long(const char* stdCode, int32_t qty, const char* use
 
 void CtaMocker::stra_exit_short(const char* stdCode, int32_t qty, const char* userTag /* = "" */, double limitprice, double stopprice)
 {
-	if (DecimalHelper::equal(limitprice, 0.0) && DecimalHelper::equal(stopprice, 0.0))	//如果不是动态下单模式，则直接触发
+	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式，则直接触发
 	{
 		int32_t curQty = stra_get_position(stdCode);
 		if (curQty >= 0)
@@ -755,12 +755,12 @@ void CtaMocker::stra_exit_short(const char* stdCode, int32_t qty, const char* us
 
 		entrust._qty = qty;
 		entrust._field = WCF_NEWPRICE;
-		if (!DecimalHelper::equal(limitprice))
+		if (!decimal::eq(limitprice))
 		{
 			entrust._target = limitprice;
 			entrust._alg = WCT_SmallerOrEqual;
 		}
-		else if (!DecimalHelper::equal(stopprice))
+		else if (!decimal::eq(stopprice))
 		{
 			entrust._target = stopprice;
 			entrust._alg = WCT_LargerOrEqual;
@@ -782,7 +782,7 @@ double CtaMocker::stra_get_price(const char* stdCode)
 
 void CtaMocker::stra_set_position(const char* stdCode, int32_t qty, const char* userTag /* = "" */, double limitprice /* = 0.0 */, double stopprice /* = 0.0 */)
 {
-	if (DecimalHelper::equal(limitprice, 0.0) && DecimalHelper::equal(stopprice, 0.0))	//如果不是动态下单模式，则直接触发
+	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式，则直接触发
 	{
 		//do_set_position(stdCode, qty, userTag, !_is_in_schedule);
 		append_signal(stdCode, qty, userTag);
@@ -797,12 +797,12 @@ void CtaMocker::stra_set_position(const char* stdCode, int32_t qty, const char* 
 
 		entrust._qty = qty;
 		entrust._field = WCF_NEWPRICE;
-		if (!DecimalHelper::equal(limitprice))
+		if (!decimal::eq(limitprice))
 		{
 			entrust._target = limitprice;
 			entrust._alg = WCT_SmallerOrEqual;
 		}
-		else if (!DecimalHelper::equal(stopprice))
+		else if (!decimal::eq(stopprice))
 		{
 			entrust._target = stopprice;
 			entrust._alg = WCT_LargerOrEqual;
@@ -835,7 +835,7 @@ void CtaMocker::do_set_position(const char* stdCode, int32_t qty, double price /
 {
 	PosInfo& pInfo = _pos_map[stdCode];
 	double curPx = price;
-	if (DecimalHelper::equal(price, 0.0))
+	if (decimal::eq(price, 0.0))
 		curPx = _price_map[stdCode];
 	uint64_t curTm = (uint64_t)_replayer->get_date() * 10000 + _replayer->get_min_time();
 	uint32_t curTDate = _replayer->get_trading_date();

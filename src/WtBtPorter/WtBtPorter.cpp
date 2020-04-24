@@ -15,7 +15,7 @@
 #include "../WtBtCore/CtaMocker.h"
 
 #include "../WTSTools/WTSLogger.h"
-#include "../Share/DecimalHelper.h"
+#include "../Share/decimal.h"
 #include "../Share/WTSTradeDef.hpp"
 
 

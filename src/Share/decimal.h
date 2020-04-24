@@ -1,5 +1,5 @@
 /*!
- * \file DecimalHelper.h
+ * \file decimal.h
  * \project	WonderTrader
  *
  * \author Wesley
@@ -10,11 +10,11 @@
 #pragma once
 #include <math.h>
 
-namespace DecimalHelper
+namespace decimal
 {
 	const double EPSINON = 1e-6;
 
-	inline bool equal(double a, double b = 0.0)
+	inline bool eq(double a, double b = 0.0)
 	{
 		return(fabs(a - b) < EPSINON);
 	}
@@ -31,12 +31,12 @@ namespace DecimalHelper
 
 	inline bool ge(double a, double b)
 	{
-		return gt(a, b) || equal(a, b);
+		return gt(a, b) || eq(a, b);
 	}
 
 	inline bool le(double a, double b)
 	{
-		return lt(a, b) || equal(a, b);
+		return lt(a, b) || eq(a, b);
 	}
 	
 };

@@ -20,7 +20,7 @@
 #include "../Share/WTSSessionInfo.hpp"
 
 #include "../Share/BoostFile.hpp"
-#include "../Share/DecimalHelper.h"
+#include "../Share/decimal.h"
 
 #include "../WTSTools/WTSLogger.h"
 #include "../WTSTools/WTSDataFactory.h"
@@ -282,10 +282,10 @@ void HisDataReplayer::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTD
 								curTS.volumn = nextBar.vol;
 
 								//更新开高低三个字段
-								if (DecimalHelper::equal(curTS.open, 0))
+								if (decimal::eq(curTS.open, 0))
 									curTS.open = curTS.price;
 								curTS.high = max(curTS.price, curTS.high);
-								if (DecimalHelper::equal(curTS.low, 0))
+								if (decimal::eq(curTS.low, 0))
 									curTS.low = curTS.price;
 								else
 									curTS.low = min(curTS.price, curTS.low);

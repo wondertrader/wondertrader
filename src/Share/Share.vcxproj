@@ -120,7 +120,7 @@
     <ClInclude Include="BoostMappingFile.hpp" />
     <ClInclude Include="charconv.hpp" />
     <ClInclude Include="CodeHelper.hpp" />
-    <ClInclude Include="DecimalHelper.h" />
+    <ClInclude Include="decimal.h" />
     <ClInclude Include="DLLHelper.hpp" />
     <ClInclude Include="IBaseDataMgr.h" />
     <ClInclude Include="IDataFactory.h" />

@@ -117,9 +117,6 @@
     <ClInclude Include="IniHelper.hpp">
       <Filter>Utils</Filter>
     </ClInclude>
-    <ClInclude Include="DecimalHelper.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
     <ClInclude Include="JsonToVariant.hpp">
       <Filter>Utils</Filter>
     </ClInclude>
@@ -139,6 +136,9 @@
       <Filter>Interfaces</Filter>
     </ClInclude>
     <ClInclude Include="charconv.hpp">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="decimal.h">
       <Filter>Utils</Filter>
     </ClInclude>
   </ItemGroup>

@@ -12,7 +12,7 @@
 #include "../Share/WTSRiskDef.hpp"
 #include "../Share/WTSVariant.hpp"
 #include "../Share/TimeUtils.hpp"
-#include "../Share/DecimalHelper.h"
+#include "../Share/decimal.h"
 
 extern const char* FACT_NAME;
 
@@ -74,7 +74,7 @@ void WtSimpleRiskMon::run()
 					double curBal = fs._balance + fs._dynprofit + _base_amount;
 
 					double rate = 0.0;
-					if(!DecimalHelper::equal(maxBal, predynbal))
+					if(!decimal::eq(maxBal, predynbal))
 						rate = (maxBal - curBal) * 100 / (maxBal - predynbal);
 
 					if (curBal > (_basic_ratio*predynbal / 100.0))

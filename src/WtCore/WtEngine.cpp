@@ -16,7 +16,7 @@
 #include "../Share/StdUtils.hpp"
 #include "../Share/BoostFile.hpp"
 #include "../Share/JsonToVariant.hpp"
-#include "../Share/DecimalHelper.h"
+#include "../Share/decimal.h"
 #include "../Share/CodeHelper.hpp"
 
 #include "../Share/IBaseDataMgr.h"
@@ -179,26 +179,26 @@ void WtEngine::update_fund_dynprofit()
 
 	fundInfo._dynprofit = profit;
 	double dynbal = fundInfo._balance + profit;
-	if (fundInfo._max_dyn_bal == DBL_MAX || DecimalHelper::gt(dynbal, fundInfo._max_dyn_bal))
+	if (fundInfo._max_dyn_bal == DBL_MAX || decimal::gt(dynbal, fundInfo._max_dyn_bal))
 	{
 		fundInfo._max_dyn_bal = dynbal;
 		fundInfo._max_time = _cur_raw_time * 100000 + _cur_secs;
 	}
 
-	if (fundInfo._min_dyn_bal == DBL_MAX || DecimalHelper::lt(dynbal, fundInfo._min_dyn_bal))
+	if (fundInfo._min_dyn_bal == DBL_MAX || decimal::lt(dynbal, fundInfo._min_dyn_bal))
 	{
 		fundInfo._min_dyn_bal = dynbal;
 		fundInfo._min_time = _cur_raw_time * 100000 + _cur_secs;;
 	}
 
 	double dynbalance = fundInfo._balance + profit;
-	if (fundInfo._max_md_dyn_bal._date == 0 || DecimalHelper::gt(dynbalance, fundInfo._max_md_dyn_bal._dyn_balance))
+	if (fundInfo._max_md_dyn_bal._date == 0 || decimal::gt(dynbalance, fundInfo._max_md_dyn_bal._dyn_balance))
 	{
 		fundInfo._max_md_dyn_bal._dyn_balance = dynbalance;
 		fundInfo._max_md_dyn_bal._date = _cur_tdate;
 	}
 
-	if (fundInfo._min_md_dyn_bal._date == 0 || DecimalHelper::lt(dynbalance, fundInfo._min_md_dyn_bal._dyn_balance))
+	if (fundInfo._min_md_dyn_bal._date == 0 || decimal::lt(dynbalance, fundInfo._min_md_dyn_bal._dyn_balance))
 	{
 		fundInfo._min_md_dyn_bal._dyn_balance = dynbalance;
 		fundInfo._min_md_dyn_bal._date = _cur_tdate;
@@ -919,7 +919,7 @@ double WtEngine::calc_fee(const char* stdCode, double price, int32_t qty, uint32
 void WtEngine::append_signal(const char* stdCode, int32_t qty)
 {
 	double curPx = get_cur_price(stdCode);
-	if(DecimalHelper::equal(curPx, 0.0))
+	if(decimal::eq(curPx, 0.0))
 	{
 		SigInfo& sInfo = _sig_map[stdCode];
 		sInfo._volumn = qty;
