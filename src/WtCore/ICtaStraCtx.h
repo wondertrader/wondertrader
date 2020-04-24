@@ -18,7 +18,6 @@ class WTSKlineData;
 class WTSHisTickData;
 class WTSTickData;
 struct WTSBarStruct;
-class WTSEntrustCondition;
 class WTSKlineSlice;
 class WTSTickSlice;
 
