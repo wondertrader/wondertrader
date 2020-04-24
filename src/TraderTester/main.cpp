@@ -88,7 +88,7 @@ public:
 			return;
 		}
 
-		log("[%s-%s]开始连接服务端：%s", m_pParams->getCString("broker"), m_pParams->getCString("user"), m_pParams->getCString("front"));
+		log("[%s]开始连接服务端：%s", m_pParams->getCString("user"), m_pParams->getCString("front"));
 		m_pTraderApi->connect();
 	}
 
@@ -121,7 +121,7 @@ public:
 
 	bool qryFund()
 	{
-		log("[%s-%s]正在查询资金……", m_pParams->getCString("broker"), m_pParams->getCString("user"));
+		log("[%s]正在查询资金……", m_pParams->getCString("user"));
 		m_pTraderApi->queryAccount();
 
 		return true;
@@ -129,7 +129,7 @@ public:
 
 	bool qryOrders()
 	{
-		log("[%s-%s]正在查询当日委托……", m_pParams->getCString("broker"), m_pParams->getCString("user"));
+		log("[%s]正在查询当日委托……", m_pParams->getCString("user"));
 		m_pTraderApi->queryOrders();
 
 		return true;
@@ -137,7 +137,7 @@ public:
 
 	bool qryTrades()
 	{
-		log("[%s-%s]正在查询当日成交……", m_pParams->getCString("broker"), m_pParams->getCString("user"));
+		log("%s]正在查询当日成交……", m_pParams->getCString("user"));
 		m_pTraderApi->queryTrades();
 
 		return true;
@@ -145,7 +145,7 @@ public:
 
 	bool qryPosition()
 	{
-		log("[%s-%s]正在查询持仓……", m_pParams->getCString("broker"), m_pParams->getCString("user"));
+		log("[%s]正在查询持仓……",  m_pParams->getCString("user"));
 		m_pTraderApi->queryPositions();
 
 		return true;
@@ -154,7 +154,7 @@ public:
 	bool qrySettle()
 	{
 		uint32_t uDate = TimeUtils::getNextDate(TimeUtils::getCurDate(), -1);
-		log("[%s-%s]正在查询%u的结算单……", m_pParams->getCString("broker"), m_pParams->getCString("user"), uDate);
+		log("[%s]正在查询%u的结算单……", m_pParams->getCString("user"), uDate);
 		m_pTraderApi->querySettlement(uDate);
 
 		return true;
@@ -163,13 +163,17 @@ public:
 	bool entrustLmt()
 	{
 		char code[32] = { 0 };
+		char exchg[32] = { 0 };
 		double price = 0.0;
 		uint32_t qty = 0;
 
 		for (;;)
 		{
-			printf("请输入合约代码: ");
+			printf("请输入品种代码: ");
 			std::cin >> code;
+
+			printf("请输入交易所代码: ");
+			std::cin >> exchg;
 
 			printf("请输入委托价格: ");
 			std::cin >> price;
@@ -177,14 +181,14 @@ public:
 			printf("请输入手数: ");
 			std::cin >> qty;
 
-			printf("合约：%s，价格：%f，手数：%u，确认y/n? ", code, price, qty);
+			printf("品种：%s.%s，价格：%f，手数：%u，确认y/n? ", exchg, code, price, qty);
 			char c;
 			std::cin >> c;
 			if(c == 'y')
 				break;
 		}
 
-		WTSEntrust* entrust = WTSEntrust::create(code, qty, price, "SHFE");
+		WTSEntrust* entrust = WTSEntrust::create(code, qty, price, exchg);
 		entrust->setDirection(WDT_LONG);
 		entrust->setOffsetType(WOT_OPEN);
 		entrust->setPriceType(WPT_LIMITPRICE);
@@ -194,7 +198,7 @@ public:
 		m_pTraderApi->makeEntrustID(entrustid, 64);
 		entrust->setEntrustID(entrustid);
 
-		log("[%s-%s]开始下单，合约: %s，价格: %f，手数: %d，动作: 开多", m_pParams->getCString("broker"), m_pParams->getCString("user"), entrust->getCode(), entrust->getPrice(), entrust->getVolumn());
+		log("[%s]开始下单，品种: %s.%s，价格: %f，手数: %d，动作: 开多", m_pParams->getCString("user"), exchg, code, price, qty);
 
 		m_pTraderApi->orderInsert(entrust);
 		entrust->release();
@@ -205,24 +209,28 @@ public:
 	bool entrustMkt()
 	{
 		char code[32] = { 0 };
+		char exchg[32] = { 0 };
 		uint32_t qty = 0;
 
 		for (;;)
 		{
-			printf("请输入合约代码: ");
+			printf("请输入品种代码: ");
 			std::cin >> code;
+
+			printf("请输入交易所代码: ");
+			std::cin >> exchg;
 
 			printf("请输入手数: ");
 			std::cin >> qty;
 
-			printf("合约：%s，手数：%u，确认y/n? ", code, qty);
+			printf("品种：%s.%s，手数：%u，确认y/n? ", exchg, code, qty);
 			char c;
 			std::cin >> c;
 			if (c == 'y')
 				break;
 		}
 
-		WTSEntrust* entrust = WTSEntrust::create(code, qty, 0, "SZSE");
+		WTSEntrust* entrust = WTSEntrust::create(code, qty, 0, exchg);
 		entrust->setDirection(WDT_LONG);
 		entrust->setOffsetType(WOT_OPEN);
 		entrust->setPriceType(WPT_ANYPRICE);
@@ -232,7 +240,7 @@ public:
 		m_pTraderApi->makeEntrustID(entrustid, 64);
 		entrust->setEntrustID(entrustid);
 
-		log("[%s-%s]开始下单，合约: %s，价格: 市价，手数: %d，动作: 开多", m_pParams->getCString("broker"), m_pParams->getCString("user"), entrust->getCode(), entrust->getVolumn());
+		log("[%s]开始下单，品种: %s.%s，价格: 市价，手数: %d，动作: 开多", m_pParams->getCString("user"), exchg, code, qty);
 
 		m_pTraderApi->orderInsert(entrust);
 		entrust->release();
@@ -267,7 +275,7 @@ public:
 		}
 
 
-		log("[%s-%s]开始撤单[%s]……", m_pParams->getCString("broker"), m_pParams->getCString("user"), orderid);
+		log("[%s]开始撤单[%s]……", m_pParams->getCString("user"), orderid);
 		WTSEntrustAction* action = WTSEntrustAction::create(ordInfo->getCode());
 		action->setEntrustID(ordInfo->getEntrustID());
 		action->setOrderID(orderid);
@@ -286,7 +294,7 @@ public:
 		{
 			if (ec == 0)
 			{
-				log("[%s-%s]连接成功", m_pParams->getCString("broker"), m_pParams->getCString("user"));
+				log("[%s]连接成功", m_pParams->getCString("user"));
 				m_pTraderApi->login(m_pParams->getCString("user"), m_pParams->getCString("pass"), "");
 			}
 			else
@@ -310,12 +318,12 @@ public:
 	{
 		if(bSucc)
 		{
-			log("[%s-%s]登录成功" , m_pParams->getCString("broker"), m_pParams->getCString("user"));	
+			log("[%s]登录成功" , m_pParams->getCString("user"));	
 			m_bLogined = true;
 		}
 		else
 		{
-			log("[%s-%s]登录失败：%s", m_pParams->getCString("broker"), m_pParams->getCString("user"), msg);
+			log("[%s]登录失败：%s", m_pParams->getCString("user"), msg);
 			g_exitNow = true;
 		}
 
@@ -327,7 +335,7 @@ public:
 	{
 		if(err)
 		{
-			log("[%s-%s]下单失败：%s", m_pParams->getCString("broker"), m_pParams->getCString("user"), err->getMessage());
+			log("[%s]下单失败：%s", m_pParams->getCString("user"), err->getMessage());
 			StdUniqueLock lock(g_mtxOpt);
 			g_condOpt.notify_all();
 		}
@@ -341,7 +349,7 @@ public:
 			WTSAccountInfo* accInfo = (WTSAccountInfo*)ayAccounts->at(0);
 			if(accInfo)
 			{
-				log("[%s-%s]资金数据更新, 当前静态权益: %.2f", m_pParams->getCString("broker"), m_pParams->getCString("user"), accInfo->getBalance());
+				log("[%s]资金数据更新, 当前静态权益: %.2f", m_pParams->getCString("user"), accInfo->getBalance());
 			}
 		}
 
@@ -355,7 +363,7 @@ public:
 		if (ayPositions != NULL)
 			cnt = ayPositions->size();
 
-		log("[%s-%s]持仓数据已更新, 当日共有%u笔持仓", m_pParams->getCString("broker"), m_pParams->getCString("user"), cnt);
+		log("[%s]持仓数据已更新, 当日共有%u笔持仓", m_pParams->getCString("user"), cnt);
 		StdUniqueLock lock(g_mtxOpt);
 		g_condOpt.notify_all();
 	}
@@ -377,7 +385,7 @@ public:
 				m_mapOrds->add(ordInfo->getOrderID(), ordInfo, true);
 		}
 
-		log("[%s-%s]委托列表已更新, 当日共有%u笔委托, 未完成%u笔", m_pParams->getCString("broker"), m_pParams->getCString("user"), cnt, m_mapOrds->size());
+		log("[%s]委托列表已更新, 当日共有%u笔委托, 未完成%u笔", m_pParams->getCString("user"), cnt, m_mapOrds->size());
 
 		StdUniqueLock lock(g_mtxOpt);
 		g_condOpt.notify_all();
@@ -389,14 +397,14 @@ public:
 		if (ayTrades != NULL)
 			cnt = ayTrades->size();
 
-		log("[%s-%s]成交明细已更新, 当日共有%u笔成交", m_pParams->getCString("broker"), m_pParams->getCString("user"), cnt);
+		log("[%s]成交明细已更新, 当日共有%u笔成交", m_pParams->getCString("user"), cnt);
 		StdUniqueLock lock(g_mtxOpt);
 		g_condOpt.notify_all();
 	}
 
 	virtual void onRspSettlementInfo(uint32_t uDate, const char* content)
 	{
-		log("[%s-%s]%u结算单已接收", m_pParams->getCString("broker"), m_pParams->getCString("user"), uDate);
+		log("[%s]%u结算单已接收", m_pParams->getCString("user"), uDate);
 		log_raw(content);
 		StdUniqueLock lock(g_mtxOpt);
 		g_condOpt.notify_all();
@@ -413,7 +421,7 @@ public:
 
 				if (m_mapOrds->find(orderInfo->getOrderID()) == m_mapOrds->end())
 				{
-					log("[%s-%s]下单成功，订单ID: %s", m_pParams->getCString("broker"), m_pParams->getCString("user"), orderInfo->getOrderID());
+					log("[%s]下单成功，订单ID: %s",  m_pParams->getCString("user"), orderInfo->getOrderID());
 					m_mapOrds->add(orderInfo->getOrderID(), orderInfo, true);
 				}
 
@@ -428,27 +436,27 @@ public:
 
 			if (strlen(orderInfo->getOrderID()) == 0)
 			{
-				log("[%s-%s]订单%s提交失败被撤销:%s", m_pParams->getCString("broker"), m_pParams->getCString("user"), orderInfo->getEntrustID(), orderInfo->getStateMsg());
+				log("[%s]订单%s提交失败被撤销:%s", m_pParams->getCString("user"), orderInfo->getEntrustID(), orderInfo->getStateMsg());
 				StdUniqueLock lock(g_mtxOpt);
 				g_condOpt.notify_all();
 			}
 			else
 			{
-				log("[%s-%s]订单%s已撤销:%s", m_pParams->getCString("broker"), m_pParams->getCString("user"), orderInfo->getOrderID(), orderInfo->getStateMsg());
+				log("[%s]订单%s已撤销:%s", m_pParams->getCString("user"), orderInfo->getOrderID(), orderInfo->getStateMsg());
 			}			
 		}
 	}
 
 	virtual void onPushTrade(WTSTradeInfo* tradeRecord)
 	{
-		log("[%s-%s]收到成交回报，合约%s，成交价：%f，成交手数：%u", m_pParams->getCString("broker"), m_pParams->getCString("user"), tradeRecord->getCode(), tradeRecord->getPrice(), tradeRecord->getVolumn());
+		log("[%s]收到成交回报，合约%s，成交价：%f，成交手数：%u", m_pParams->getCString("user"), tradeRecord->getCode(), tradeRecord->getPrice(), tradeRecord->getVolumn());
 	}
 
 	virtual void onTraderError(WTSError*	err)
 	{
 		if(err && err->getErrorCode() == WEC_ORDERCANCEL)
 		{
-			log("[%s-%s]撤单失败: %s", m_pParams->getCString("broker"), m_pParams->getCString("user"), err->getMessage());
+			log("[%s]撤单失败: %s", m_pParams->getCString("user"), err->getMessage());
 			StdUniqueLock lock(g_mtxOpt);
 			g_condOpt.notify_all();
 		}
@@ -601,6 +609,7 @@ void main()
 			break;
 	}
 	
-	trader->release();
-	delete trader;
+	exit(9);
+	//trader->release();
+	//delete trader;
 }

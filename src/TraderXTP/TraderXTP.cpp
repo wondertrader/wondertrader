@@ -762,6 +762,7 @@ int TraderXTP::login(const char* user, const char* pass, const char* productInfo
 		auto error_info = _api->GetApiLastError();
 		_sink->handleTraderLog(LL_ERROR, "[TraderXTP]登录失败:%s", error_info->error_msg);
 		std::string msg = error_info->error_msg;
+		_state = TS_LOGINFAILED;
 		_asyncio.post([this, msg]{
 			_sink->onLoginResult(false, msg.c_str(), 0);
 		});
@@ -792,8 +793,10 @@ int TraderXTP::login(const char* user, const char* pass, const char* productInfo
 
 		_sink->handleTraderLog(LL_INFO, "[%s]账户登录成功，交易日：%u……", _user.c_str(), _tradingday);
 
+		_state = TS_LOGINED;
 		_asyncio.post([this]{
 			_sink->onLoginResult(true, 0, _tradingday);
+			_state = TS_ALLREADY;
 		});
 	}
 	return 0;
@@ -836,7 +839,7 @@ int TraderXTP::orderInsert(WTSEntrust* entrust)
 	}
 
 	uint64_t iResult = _api->InsertOrder(&req, _sessionid);
-	if (iResult != 0)
+	if (iResult == 0)
 	{
 		auto error_info = _api->GetApiLastError();
 		_sink->handleTraderLog(LL_ERROR, "[TraderXTP]插入订单失败:%s", error_info->error_msg);
