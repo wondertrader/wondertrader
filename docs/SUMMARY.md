@@ -5,7 +5,13 @@
     * [快速入门](tutorial.md)
     * [如何编译和安装](install.md)
     * [历史数据的处理](histdata.md)
-    * [回测自己的策略](dualthrust.md)
+    * [回测自己的策略](mystrategy.md)
+* API详解
+    * [策略模块详解](api/structure.md)
+    * [基本数据接口](api/basicdata.md)
+    * [交易数据接口](api/tradedata.md)
+    * [交易接口](api/signal.md)
+    * [其他接口](api/other.md)
 * 使用进阶
     * [数据组件简介](datakit.md)
     * [编写自己的执行单元](execunit.md)

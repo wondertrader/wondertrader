@@ -131,3 +131,23 @@ csv文件名采用固定的格式：合约代码_周期.csv，如股指期货主
     > 网易财经 <https://money.163.com/>
 
     参考文章：[数据接口-免费版（股票数据API）](https://blog.csdn.net/llingmiao/article/details/79941066)
+
+* 购买专业全面的数据源
+    很多数据公司如`大智慧`、`万得`、`聚源`等，都提供全面的数据服。购买这类数据源的好处就是，数据质量有保证，因为上游数据服务商有专职的人员来维护和保证数据质量。
+
+### `wtpy`中`StockToolkit.py`模块
+---
+StockToolkit模块是为了方便用户拉取股票相关数据而增加的一个简单的工具模块。主要功能就是从互联网拉取相关的股票数据，包括：历史K线、股票列表、除权因子等。
+StockToolkit模块目前功能相对简单，但是在后续的更新中，将会逐渐增加更多功能，希望能对广大用户有所帮助。
+目前StockToolkit模块用的功能如下：
+* StockToolkit.dmpStksFromTS
+    从`tushare`拉取股票列表并保存到文件。
+
+* StockToolkit.dmpStkDaysFromTS
+    从`tushare`拉取股票历史K线数据(日线，5分钟线)。
+
+* StockToolkit.dmpStkDaysFrom163
+    从`163`拉取股票历史K线数据。只支持日线数据，而且成交量是以手为单位的。
+
+* StockToolkit.dmpAdjFromSINA
+    从`新浪`拉取股票的除权因子数据

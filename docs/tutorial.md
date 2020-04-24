@@ -1,12 +1,12 @@
 #### 安装wtpy
 ---
 * 安装python3.6以上的版本（32位、64位），安装完成以后输入以下命令，可以检查python的版本号
-    ```
+    ``` shell
     $ python
     ```
 
 * 打开命令行，输入以下指令直接安装
-    ```
+    ``` shell
     $ pip install wtpy
     ```
     或者直接下载whl文件到本地进行安装
@@ -14,7 +14,7 @@
     pipy地址：<https://pypi.org/project/wtpy/#files>
 
 * 安装完成以后，输入以下命令，可以查看wtpy的版本号
-    ```
+    ``` shell
     $ pip show wtpy
     ```
 
