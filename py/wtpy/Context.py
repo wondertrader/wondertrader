@@ -194,7 +194,7 @@ class Context:
         '''
         return self.__wrapper__.ctx_str_get_position(self.__id__, code, usertag)
 
-    def stra_set_positions(self, code:str, qty:int, usertag:str = "", limitprice:float = 0.0, stopprice:float = 0.0):
+    def stra_set_positions(self, code:str, qty:float, usertag:str = "", limitprice:float = 0.0, stopprice:float = 0.0):
         '''
         设置仓位\n
         @code   合约/股票代码\n
@@ -204,7 +204,7 @@ class Context:
         self.__wrapper__.ctx_str_set_position(self.__id__, code, qty, usertag, limitprice, stopprice)
         
 
-    def stra_enter_long(self, code:str, qty:int, usertag:str = "", limitprice:float = 0.0, stopprice:float = 0.0):
+    def stra_enter_long(self, code:str, qty:float, usertag:str = "", limitprice:float = 0.0, stopprice:float = 0.0):
         '''
         多仓进场，如果有空仓，则平空再开多\n
         @code   品种代码\n
@@ -214,7 +214,7 @@ class Context:
         '''
         self.__wrapper__.ctx_str_enter_long(self.__id__, code, qty, usertag, limitprice, stopprice)
 
-    def stra_exit_long(self, code:str, qty:int, usertag:str = "", limitprice:float = 0.0, stopprice:float = 0.0):
+    def stra_exit_long(self, code:str, qty:float, usertag:str = "", limitprice:float = 0.0, stopprice:float = 0.0):
         '''
         多仓出场，如果剩余多仓不够，则全部平掉即可\n
         @code   品种代码\n
@@ -224,7 +224,7 @@ class Context:
         '''
         self.__wrapper__.ctx_str_exit_long(self.__id__, code, qty, usertag, limitprice, stopprice)
 
-    def stra_enter_short(self, code:str, qty:int, usertag:str = "", limitprice:float = 0.0, stopprice:float = 0.0):
+    def stra_enter_short(self, code:str, qty:float, usertag:str = "", limitprice:float = 0.0, stopprice:float = 0.0):
         '''
         空仓进场，如果有多仓，则平多再开空\n
         @code   品种代码\n
@@ -234,7 +234,7 @@ class Context:
         '''
         self.__wrapper__.ctx_str_enter_short(self.__id__, code, qty, usertag, limitprice, stopprice)
 
-    def stra_exit_short(self, code:str, qty:int, usertag:str = "", limitprice:float = 0.0, stopprice:float = 0.0):
+    def stra_exit_short(self, code:str, qty:float, usertag:str = "", limitprice:float = 0.0, stopprice:float = 0.0):
         '''
         空仓出场，如果剩余空仓不够，则全部平掉即可\n
         @code   品种代码\n

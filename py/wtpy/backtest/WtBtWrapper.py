@@ -175,17 +175,18 @@ class WtBtWrapper:
         self.api.ctx_str_get_last_entertime.restype = c_uint64
         self.api.ctx_str_get_first_entertime.restype = c_uint64
         self.api.ctx_str_get_detail_entertime.restype = c_uint64
-        self.api.ctx_str_enter_long.argtypes = [c_ulong, c_char_p, c_int, c_char_p, c_double, c_double]
-        self.api.ctx_str_enter_short.argtypes = [c_ulong, c_char_p, c_int, c_char_p, c_double, c_double]
-        self.api.ctx_str_exit_long.argtypes = [c_ulong, c_char_p, c_int, c_char_p, c_double, c_double]
-        self.api.ctx_str_exit_short.argtypes = [c_ulong, c_char_p, c_int, c_char_p, c_double, c_double]
-        self.api.ctx_str_set_position.argtypes = [c_ulong, c_char_p, c_int, c_char_p, c_double, c_double]
+        self.api.ctx_str_enter_long.argtypes = [c_ulong, c_char_p, c_double, c_char_p, c_double, c_double]
+        self.api.ctx_str_enter_short.argtypes = [c_ulong, c_char_p, c_double, c_char_p, c_double, c_double]
+        self.api.ctx_str_exit_long.argtypes = [c_ulong, c_char_p, c_double, c_char_p, c_double, c_double]
+        self.api.ctx_str_exit_short.argtypes = [c_ulong, c_char_p, c_double, c_char_p, c_double, c_double]
+        self.api.ctx_str_set_position.argtypes = [c_ulong, c_char_p, c_double, c_char_p, c_double, c_double]
         self.ver = bytes.decode(self.api.get_version())
 
         self.api.ctx_str_save_userdata.argtypes = [c_ulong, c_char_p, c_char_p]
         self.api.ctx_str_load_userdata.argtypes = [c_ulong, c_char_p, c_char_p]
         self.api.ctx_str_load_userdata.restype = c_char_p
 
+        self.api.ctx_str_get_position.restype = c_double
         self.api.ctx_str_get_position_profit.restype = c_double
         self.api.ctx_str_get_position_avgpx.restype = c_double
         self.api.ctx_str_get_detail_cost.restype = c_double
@@ -231,7 +232,7 @@ class WtBtWrapper:
         '''
         return self.api.init_cta_mocker(bytes(name, encoding = "utf8") )
 
-    def ctx_str_enter_long(self, id:int, code:str, qty:int, usertag:str, limitprice:float = 0.0, stopprice:float = 0.0):
+    def ctx_str_enter_long(self, id:int, code:str, qty:float, usertag:str, limitprice:float = 0.0, stopprice:float = 0.0):
         '''
         开多\n
         @id     策略id\n
@@ -240,7 +241,7 @@ class WtBtWrapper:
         '''
         self.api.ctx_str_enter_long(id, bytes(code, encoding = "utf8"), qty, bytes(usertag, encoding = "utf8"), limitprice, stopprice)
 
-    def ctx_str_exit_long(self, id:int, code:str, qty:int, usertag:str, limitprice:float = 0.0, stopprice:float = 0.0):
+    def ctx_str_exit_long(self, id:int, code:str, qty:float, usertag:str, limitprice:float = 0.0, stopprice:float = 0.0):
         '''
         平多\n
         @id     策略id\n
@@ -249,7 +250,7 @@ class WtBtWrapper:
         '''
         self.api.ctx_str_exit_long(id, bytes(code, encoding = "utf8"), qty, bytes(usertag, encoding = "utf8"), limitprice, stopprice)
 
-    def ctx_str_enter_short(self, id:int, code:str, qty:int, usertag:str, limitprice:float = 0.0, stopprice:float = 0.0):
+    def ctx_str_enter_short(self, id:int, code:str, qty:float, usertag:str, limitprice:float = 0.0, stopprice:float = 0.0):
         '''
         开空\n
         @id     策略id\n
@@ -258,7 +259,7 @@ class WtBtWrapper:
         '''
         self.api.ctx_str_enter_short(id, bytes(code, encoding = "utf8"), qty, bytes(usertag, encoding = "utf8"), limitprice, stopprice)
 
-    def ctx_str_exit_short(self, id:int, code:str, qty:int, usertag:str, limitprice:float = 0.0, stopprice:float = 0.0):
+    def ctx_str_exit_short(self, id:int, code:str, qty:float, usertag:str, limitprice:float = 0.0, stopprice:float = 0.0):
         '''
         平空\n
         @id     策略id\n
@@ -322,7 +323,7 @@ class WtBtWrapper:
         '''
         return self.api.ctx_str_get_price(bytes(code, encoding = "utf8"))
 
-    def ctx_str_set_position(self, id:int, code:str, qty:int, usertag:str = "", limitprice:float = 0.0, stopprice:float = 0.0):
+    def ctx_str_set_position(self, id:int, code:str, qty:float, usertag:str = "", limitprice:float = 0.0, stopprice:float = 0.0):
         '''
         设置目标仓位\n
         @id     策略id
