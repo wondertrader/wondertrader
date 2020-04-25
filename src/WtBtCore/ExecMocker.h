@@ -47,19 +47,19 @@ public:
 
 	virtual WTSTickData* grabLastTick(const char* stdCode) override;
 
-	virtual int32_t getPosition(const char* stdCode, int32_t flag = 3) override;
+	virtual double getPosition(const char* stdCode, int32_t flag = 3) override;
 
 	virtual OrderMap* getOrders(const char* stdCode) override;
 
-	virtual int32_t getUndoneQty(const char* stdCode) override;
+	virtual double getUndoneQty(const char* stdCode) override;
 
-	virtual OrderIDs buy(const char* stdCode, double price, uint32_t qty) override;
+	virtual OrderIDs buy(const char* stdCode, double price, double qty) override;
 
-	virtual OrderIDs sell(const char* stdCode, double price, uint32_t qty) override;
+	virtual OrderIDs sell(const char* stdCode, double price, double qty) override;
 
 	virtual bool cancel(uint32_t localid) override;
 
-	virtual OrderIDs cancel(const char* stdCode, bool isBuy, uint32_t qty = 0) override;
+	virtual OrderIDs cancel(const char* stdCode, bool isBuy, double qty = 0) override;
 
 	virtual void writeLog(const char* fmt, ...) override;
 
@@ -101,8 +101,8 @@ private:
 	int32_t			_volunit;
 	double			_cancelrate;
 
-	int32_t			_position;
-	int32_t			_undone;
+	double			_position;
+	double			_undone;
 	WTSTickData*	_last_tick;
 	double			_sig_px;
 	uint64_t		_sig_time;
@@ -111,9 +111,9 @@ private:
 	{
 		char		_code[32];
 		bool		_buy;
-		int32_t		_qty;
-		int32_t		_left;
-		int32_t		_traded;
+		double		_qty;
+		double		_left;
+		double		_traded;
 		double		_limit;
 		double		_price;
 		uint32_t	_state;
@@ -132,9 +132,9 @@ private:
 
 	std::ofstream	_trade_logs;
 	uint32_t	_ord_cnt;
-	uint32_t	_ord_qty;
+	double		_ord_qty;
 	uint32_t	_cacl_cnt;
-	uint32_t	_cacl_qty;
+	double		_cacl_qty;
 	uint32_t	_sig_cnt;
 
 	std::string	_id;

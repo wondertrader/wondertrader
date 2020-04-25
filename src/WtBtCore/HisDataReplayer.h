@@ -123,7 +123,7 @@ public:
 	uint32_t get_secs() const{ return _cur_secs; }
 	uint32_t get_trading_date() const{ return _cur_tdate; }
 
-	double calc_fee(const char* stdCode, double price, int32_t qty, uint32_t offset);
+	double calc_fee(const char* stdCode, double price, double qty, uint32_t offset);
 	WTSSessionInfo*		get_session_info(const char* sid, bool isCode = false);
 	WTSCommodityInfo*	get_commodity_info(const char* stdCode);
 	double get_cur_price(const char* stdCode);

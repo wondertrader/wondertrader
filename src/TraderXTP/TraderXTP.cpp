@@ -19,6 +19,7 @@
 #include "../Share/WTSParams.hpp"
 #include "../Share/StdUtils.hpp"
 #include "../Share/DLLHelper.hpp"
+#include "../Share/decimal.h"
 
 #include <boost/filesystem.hpp>
 
@@ -518,8 +519,8 @@ void TraderXTP::OnQueryPosition(XTPQueryStkPositionRsp *position, XTPRI *error_i
 			}
 			pos->setDirection(wrapPosDirection(position->position_direction));
 
-			pos->setNewPosition((uint32_t)(position->total_qty - position->yesterday_position));
-			pos->setPrePosition((uint32_t)position->yesterday_position);
+			pos->setNewPosition((double)(position->total_qty - position->yesterday_position));
+			pos->setPrePosition((double)position->yesterday_position);
 
 			pos->setMargin(position->total_qty*position->avg_price);
 			pos->setDynProfit(0);
@@ -528,7 +529,7 @@ void TraderXTP::OnQueryPosition(XTPQueryStkPositionRsp *position, XTPRI *error_i
 			pos->setAvgPrice(position->avg_price);
 
 			pos->setAvailNewPos(0);
-			pos->setAvailPrePos((uint32_t)position->sellable_qty);
+			pos->setAvailPrePos((double)position->sellable_qty);
 		}
 	}
 
@@ -825,7 +826,7 @@ int TraderXTP::orderInsert(WTSEntrust* entrust)
 	strcpy(req.ticker, entrust->getCode());
 	req.market = my_stricmp(entrust->getExchg(), "SSE") == 0 ? XTP_MKT_SH_A : XTP_MKT_SZ_A;
 	req.price = entrust->getPrice();
-	req.quantity = entrust->getVolumn();
+	req.quantity = (int64_t)entrust->getVolumn();
 	req.price_type = XTP_PRICE_LIMIT;
 	req.side = wrapDirectionType(entrust->getDirection(), entrust->getOffsetType());
 	req.business_type = XTP_BUSINESS_TYPE_CASH;

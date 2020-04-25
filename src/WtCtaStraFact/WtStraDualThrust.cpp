@@ -5,6 +5,7 @@
 #include "../Share/WTSContractInfo.hpp"
 #include "../Share/WTSVariant.hpp"
 #include "../Share/WTSDataDef.hpp"
+#include "../Share/decimal.h"
 
 extern const char* FACT_NAME;
 
@@ -89,8 +90,8 @@ void WtStraDualThrust::on_schedule(ICtaStraCtx* ctx, uint32_t curDate, uint32_t 
 
 	WTSCommodityInfo* commInfo = ctx->stra_get_comminfo(_code.c_str());
 
-	int32_t curPos = ctx->stra_get_position(_code.c_str()) / trdUnit;
-	if(curPos == 0)
+	double curPos = ctx->stra_get_position(_code.c_str()) / trdUnit;
+	if(decimal::eq(curPos,0))
 	{
 		if(highPx >= upper_bound)
 		{
@@ -105,7 +106,8 @@ void WtStraDualThrust::on_schedule(ICtaStraCtx* ctx, uint32_t curDate, uint32_t 
 			ctx->stra_log_text("向下突破%.2f<=%.2f，空仓进场", lowPx, lower_bound);
 		}
 	}
-	else if(curPos > 0)
+	//else if(curPos > 0)
+	else if (decimal::gt(curPos, 0))
 	{
 		if(lowPx <= lower_bound)
 		{
@@ -114,7 +116,8 @@ void WtStraDualThrust::on_schedule(ICtaStraCtx* ctx, uint32_t curDate, uint32_t 
 			ctx->stra_log_text("向下突破%.2f<=%.2f，多仓出场", lowPx, lower_bound);
 		}
 	}
-	else if(curPos < 0)
+	//else if(curPos < 0)
+	else if (decimal::lt(curPos, 0))
 	{
 		if (highPx >= upper_bound && !_isstk)
 		{

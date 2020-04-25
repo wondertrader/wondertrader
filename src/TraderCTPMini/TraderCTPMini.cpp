@@ -8,19 +8,22 @@
  * \brief 
  */
 #include "TraderCTPMini.h"
-#include "..\Share\WTSError.hpp"
-#include "..\Share\WTSContractInfo.hpp"
-#include "..\Share\WTSSessionInfo.hpp"
-#include "..\Share\WTSTradeDef.hpp"
-#include "..\Share\WTSDataDef.hpp"
-#include "..\Share\WTSParams.hpp"
-#include "..\Share\StdUtils.hpp"
-#include "..\Share\TimeUtils.hpp"
-#include "..\Share\IBaseDataMgr.h"
+#include "../Share/WTSError.hpp"
+#include "../Share/WTSContractInfo.hpp"
+#include "../Share/WTSSessionInfo.hpp"
+#include "../Share/WTSTradeDef.hpp"
+#include "../Share/WTSDataDef.hpp"
+#include "../Share/WTSParams.hpp"
+#include "../Share/StdUtils.hpp"
+#include "../Share/TimeUtils.hpp"
+#include "../Share/IBaseDataMgr.h"
+
+#include "../Share/BoostFile.hpp"
+#include "../Share/decimal.h"
 
 
 #ifdef _WIN64
-#pragma comment(lib, "./ThostTraderApi/thosttraderapi.lib")
+#pragma comment(lib, "./ThostTraderApi/thosttraderapi64.lib")
 #else
 #pragma comment(lib, "./ThostTraderApi/thosttraderapi32.lib")
 #endif
@@ -133,7 +136,7 @@ void TraderCTPMini::connect()
 	path += "/";
 	path += m_strUser;
 	path += "/";
-	StdFile::create_directories(path.c_str());
+	BoostFile::create_directories(path.c_str());
 	m_pUserAPI = m_funcCreator(path.c_str());
 	m_pUserAPI->RegisterSpi(this);
 	if (m_bQuickStart)
@@ -386,7 +389,7 @@ int TraderCTPMini::orderAction(WTSEntrustAction* action)
 
 	req.LimitPrice = action->getPrice();
 
-	req.VolumeChange = action->getVolumn();
+	req.VolumeChange = (int32_t)action->getVolumn();
 
 	strcpy(req.OrderSysID, action->getOrderID());
 	strcpy(req.ExchangeID, action->getExchg());
@@ -726,7 +729,7 @@ void TraderCTPMini::OnRspQryInvestorPosition(CThostFtdcInvestorPositionField *pI
 					availNew = 0;
 				pos->setAvailNewPos(availNew);
 
-				int availPre = pos->getNewPosition() + pos->getPrePosition()
+				double availPre = pos->getNewPosition() + pos->getPrePosition()
 					- pInvestorPosition->LongFrozen - pInvestorPosition->ShortFrozen
 					- pos->getAvailNewPos();
 				pos->setAvailPrePos(availPre);
@@ -736,7 +739,7 @@ void TraderCTPMini::OnRspQryInvestorPosition(CThostFtdcInvestorPositionField *pI
 
 			}
 
-			if (pos->getTotalPosition() > 0 && pos->getMargin() == 0)
+			if (decimal::lt(pos->getTotalPosition(), 0.0) && decimal::eq(pos->getMargin(), 0.0))
 			{
 				//有仓位，但是保证金为0，则说明是套利合约，单个合约的可用持仓全部置为0
 				pos->setAvailNewPos(0);

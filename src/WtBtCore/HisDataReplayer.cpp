@@ -833,7 +833,7 @@ void HisDataReplayer::loadFees(const char* filename)
 }
 
 
-double HisDataReplayer::calc_fee(const char* stdCode, double price, int32_t qty, uint32_t offset)
+double HisDataReplayer::calc_fee(const char* stdCode, double price, double qty, uint32_t offset)
 {
 	std::string stdPID = CodeHelper::stdCodeToStdCommID(stdCode);
 	auto it = _fee_map.find(stdPID);

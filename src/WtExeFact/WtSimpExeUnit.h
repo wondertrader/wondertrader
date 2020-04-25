@@ -48,7 +48,7 @@ public:
 	 *	price	委托价格
 	 *	isCanceled	是否已撤销
 	 */
-	virtual void on_order(uint32_t localid, const char* stdCode, bool isBuy, uint32_t leftover, double price, bool isCanceled) override;
+	virtual void on_order(uint32_t localid, const char* stdCode, bool isBuy, double leftover, double price, bool isCanceled) override;
 
 	/*
 	 *	tick数据回调
@@ -63,7 +63,7 @@ public:
 	 *	vol		成交手数，这里没有正负，通过isBuy确定买入还是卖出
 	 *	price	成交价格
 	 */
-	virtual void on_trade(const char* stdCode, bool isBuy, uint32_t vol, double price) override;
+	virtual void on_trade(const char* stdCode, bool isBuy, double vol, double price) override;
 
 	/*
 	 *	下单结果回报
@@ -75,7 +75,7 @@ public:
 	 *	code	合约代码
 	 *	newVol	新的目标仓位
 	 */
-	virtual void set_position(const char* stdCode, int32_t newVol) override;
+	virtual void set_position(const char* stdCode, double newVol) override;
 
 	/*
 	 *	交易通道就绪回调
@@ -89,8 +89,8 @@ public:
 
 private:
 	WTSTickData* _last_tick;	//上一笔行情
-	int32_t		_target_pos;	//目标仓位
-	int32_t		_unsent_qty;	//未发送手数
+	double		_target_pos;	//目标仓位
+	double		_unsent_qty;	//未发送手数
 
 
 	WTSCommodityInfo*	_comm_info;

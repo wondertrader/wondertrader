@@ -55,7 +55,7 @@ public:
 public:
 	void on_schedule(uint32_t curDate, uint32_t curTime);	
 
-	void handle_pos_change(const char* stdCode, int32_t diffQty);
+	void handle_pos_change(const char* stdCode, double diffQty);
 
 	void addContext(CtaContextPtr ctx);
 	

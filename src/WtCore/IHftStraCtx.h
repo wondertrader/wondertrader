@@ -40,18 +40,18 @@ public:
 
 	//²ßÂÔ½Ó¿Ú
 	virtual bool		stra_cancel(uint32_t localid) = 0;
-	virtual OrderIDs	stra_cancel(const char* code, bool isBuy, uint32_t qty) = 0;
-	virtual OrderIDs	stra_buy(const char* stdCode, double price, uint32_t qty) = 0;
-	virtual OrderIDs	stra_sell(const char* stdCode, double price, uint32_t qty) = 0;
+	virtual OrderIDs	stra_cancel(const char* code, bool isBuy, double qty) = 0;
+	virtual OrderIDs	stra_buy(const char* stdCode, double price, double qty) = 0;
+	virtual OrderIDs	stra_sell(const char* stdCode, double price, double qty) = 0;
 
 	virtual WTSCommodityInfo* stra_get_comminfo(const char* code) = 0;
 	virtual WTSKlineSlice*	stra_get_bars(const char* code, const char* period, uint32_t count) = 0;
 	virtual WTSTickSlice*	stra_get_ticks(const char* code, uint32_t count) = 0;
 	virtual WTSTickData*	stra_get_last_tick(const char* code) = 0;
 
-	virtual int32_t stra_get_position(const char* code) = 0;
+	virtual double stra_get_position(const char* code) = 0;
 	virtual double stra_get_price(const char* code) = 0;
-	virtual int32_t stra_get_undone(const char* stdCode) = 0;
+	virtual double stra_get_undone(const char* stdCode) = 0;
 
 	virtual uint32_t stra_get_date() = 0;
 	virtual uint32_t stra_get_time() = 0;

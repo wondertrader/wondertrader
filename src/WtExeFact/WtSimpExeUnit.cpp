@@ -10,6 +10,7 @@
 
 #include "../Share/WTSVariant.hpp"
 #include "../Share/WTSContractInfo.hpp"
+#include "../Share/decimal.h"
 
 extern const char* FACT_NAME;
 
@@ -60,7 +61,7 @@ void WtSimpExeUnit::init(ExecuteContext* ctx, const char* stdCode, WTSVariant* c
 	ctx->writeLog("执行单元 %s 初始化完成，委托价 %s ± %d 跳，订单超时 %u 秒", stdCode, _use_opposite?"对手价":"最新价", _price_offset, _expire_secs);
 }
 
-void WtSimpExeUnit::on_order(uint32_t localid, const char* stdCode, bool isBuy, uint32_t leftover, double price, bool isCanceled)
+void WtSimpExeUnit::on_order(uint32_t localid, const char* stdCode, bool isBuy, double leftover, double price, bool isCanceled)
 {
 	{
 		std::unique_lock<std::mutex> lck(_mtx_ords);
@@ -88,8 +89,8 @@ void WtSimpExeUnit::on_order(uint32_t localid, const char* stdCode, bool isBuy, 
 
 void WtSimpExeUnit::on_channel_ready()
 {
-	int32_t undone = _ctx->getUndoneQty(_code.c_str());
-	if(undone != 0 && _orders.empty())
+	double undone = _ctx->getUndoneQty(_code.c_str());
+	if(!decimal::eq(undone, 0) && _orders.empty())
 	{
 		//这说明有未完成单不在监控之中，先撤掉
 		_ctx->writeLog("%s有不在管理中的未完成单 %d 手，全部撤销", _code.c_str(), undone);
@@ -138,13 +139,14 @@ void WtSimpExeUnit::on_tick(WTSTickData* newTick)
 
 	if(isFirstTick)	//如果是第一笔tick，则检查目标仓位，不符合则下单
 	{
-		int32_t newVol = _target_pos;
+		double newVol = _target_pos;
 		const char* stdCode = _code.c_str();
 
-		int32_t undone = _ctx->getUndoneQty(stdCode);
-		int32_t realPos = _ctx->getPosition(stdCode);
+		double undone = _ctx->getUndoneQty(stdCode);
+		double realPos = _ctx->getPosition(stdCode);
 
-		if (newVol != undone + realPos)
+		//if (newVol != undone + realPos)
+		if (!decimal::eq(newVol, undone + realPos))
 		{
 			doCalculate();
 		}
@@ -168,7 +170,7 @@ void WtSimpExeUnit::on_tick(WTSTickData* newTick)
 	}
 }
 
-void WtSimpExeUnit::on_trade(const char* stdCode, bool isBuy, uint32_t vol, double price)
+void WtSimpExeUnit::on_trade(const char* stdCode, bool isBuy, double vol, double price)
 {
 	//不用触发，这里在ontick里触发吧
 	//_ctx->writeLog("%s合约%s%u手，重新触发执行逻辑", stdCode, isBuy?"买入":"卖出", vol);
@@ -195,17 +197,17 @@ void WtSimpExeUnit::doCalculate()
 	if (_cancel_cnt != 0)
 		return;
 
-	int32_t newVol = _target_pos;
+	double newVol = _target_pos;
 	const char* stdCode = _code.c_str();
 
-	int32_t undone = _ctx->getUndoneQty(stdCode);
-	int32_t realPos = _ctx->getPosition(stdCode);
+	double undone = _ctx->getUndoneQty(stdCode);
+	double realPos = _ctx->getPosition(stdCode);
 
 	//如果有反向未完成单，则直接撤销
 	//如果目标仓位为0，且当前持仓为0，则撤销全部挂单
-	if (newVol * undone < 0 )
+	if (decimal::lt(newVol * undone, 0))
 	{
-		bool isBuy = (undone > 0);
+		bool isBuy = decimal::gt(undone, 0);
 		//_cancel_cnt += _ctx->cancel(stdCode, isBuy);
 		OrderIDs ids = _ctx->cancel(stdCode, isBuy);
 		for (auto localid : ids)
@@ -216,14 +218,16 @@ void WtSimpExeUnit::doCalculate()
 		_ctx->writeLog("@ %d cancelcnt -> %u", __LINE__, _cancel_cnt);
 		return;
 	}
-	else if(newVol == 0 && undone != 0)
+	//else if(newVol == 0 && undone != 0)
+	else if (decimal::eq(newVol,0) && !decimal::eq(undone, 0))
 	{
 		//如果目标仓位为0，且未完成不为0
 		//那么当目前仓位为0，或者 目前仓位和未完成手数方向相同
 		//这样也要全部撤销
-		if (realPos == 0 || (realPos * undone > 0))
+		//if (realPos == 0 || (realPos * undone > 0))
+		if (decimal::eq(realPos, 0) || decimal::gt(realPos * undone, 0))
 		{
-			bool isBuy = (undone > 0);
+			bool isBuy = decimal::gt(undone, 0);
 			//_cancel_cnt += _ctx->cancel(stdCode, isBuy);
 			OrderIDs ids = _ctx->cancel(stdCode, isBuy);
 			for (auto localid : ids)
@@ -237,8 +241,9 @@ void WtSimpExeUnit::doCalculate()
 	}
 
 	//如果都是同向的，则纳入计算
-	int32_t curPos = realPos + undone;
-	if (curPos == newVol)
+	double curPos = realPos + undone;
+	//if (curPos == newVol)
+	if (decimal::eq(curPos, newVol))
 		return;
 
 	if(_last_tick == NULL)
@@ -261,7 +266,8 @@ void WtSimpExeUnit::doCalculate()
 	double buyPx = _last_tick->price() + _comm_info->getPriceTick() * _price_offset;
 	double sellPx = _last_tick->price() - _comm_info->getPriceTick() * _price_offset;
 
-	if (newVol > curPos)
+	//if (newVol > curPos)
+	if (decimal::gt(newVol, curPos))
 	{
 		OrderIDs ids = _ctx->buy(stdCode, buyPx, newVol - curPos);
 
@@ -287,7 +293,7 @@ void WtSimpExeUnit::doCalculate()
 	}
 }
 
-void WtSimpExeUnit::set_position(const char* stdCode, int32_t newVol)
+void WtSimpExeUnit::set_position(const char* stdCode, double newVol)
 {
 	if (_code.compare(stdCode) != 0)
 		return;

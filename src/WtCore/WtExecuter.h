@@ -52,8 +52,7 @@ typedef std::shared_ptr<ExeUnitWrapper>	ExecuteUnitPtr;
 class WtExecuterFactory;
 
 class WtExecuter : public ExecuteContext,
-		public ITrdNotifySink,
-		private boost::noncopyable
+		public ITrdNotifySink
 {
 public:
 	typedef std::unordered_map<std::string, ExecuteUnitPtr> ExecuteUnitMap;
@@ -89,14 +88,14 @@ public:
 
 	virtual WTSTickData*	grabLastTick(const char* code) override;
 
-	virtual int32_t		getPosition(const char* code, int32_t flag = 3) override;
+	virtual double		getPosition(const char* code, int32_t flag = 3) override;
 	virtual OrderMap*	getOrders(const char* code) override;
-	virtual int32_t		getUndoneQty(const char* code) override;
+	virtual double		getUndoneQty(const char* code) override;
 
-	virtual OrderIDs	buy(const char* code, double price, uint32_t qty) override;
-	virtual OrderIDs	sell(const char* code, double price, uint32_t qty) override;
+	virtual OrderIDs	buy(const char* code, double price, double qty) override;
+	virtual OrderIDs	sell(const char* code, double price, double qty) override;
 	virtual bool		cancel(uint32_t localid) override;
-	virtual OrderIDs	cancel(const char* code, bool isBuy, uint32_t qty) override;
+	virtual OrderIDs	cancel(const char* code, bool isBuy, double qty) override;
 	virtual void		writeLog(const char* fmt, ...) override;
 
 	virtual WTSCommodityInfo*	getCommodityInfo(const char* stdCode) override;
@@ -107,13 +106,13 @@ public:
 	/*
 	 *	设置目标仓位
 	 */
-	void set_position(const std::unordered_map<std::string, int32_t>& targets);
+	void set_position(const std::unordered_map<std::string, double>& targets);
 
 
 	/*
 	 *	合约仓位变动
 	 */
-	void on_position_changed(const char* stdCode, int32_t targetPos);
+	void on_position_changed(const char* stdCode, double targetPos);
 
 	/*
 	 *	实时行情回调
@@ -123,17 +122,17 @@ public:
 	/*
 	 *	成交回报
 	 */
-	virtual void on_trade(const char* stdCode, bool isBuy, uint32_t vol, double price) override;
+	virtual void on_trade(const char* stdCode, bool isBuy, double vol, double price) override;
 
 	/*
 	 *	订单回报
 	 */
-	virtual void on_order(uint32_t localid, const char* stdCode, bool isBuy, uint32_t totalQty, uint32_t leftQty, double price, bool isCanceled = false) override;
+	virtual void on_order(uint32_t localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled = false) override;
 
 	/*
 	 *	
 	 */
-	virtual void on_position(const char* stdCode, bool isLong, uint32_t prevol, uint32_t preavail, uint32_t newvol, uint32_t newavail) override;
+	virtual void on_position(const char* stdCode, bool isLong, double prevol, double preavail, double newvol, double newavail) override;
 
 	/*
 	 *	
@@ -165,7 +164,7 @@ private:
 
 	std::unordered_set<std::string>			_clear_codes;
 
-	std::unordered_map<std::string, int32_t> _target_pos;
+	std::unordered_map<std::string, double> _target_pos;
 };
 
 typedef std::shared_ptr<WtExecuter> WtExecuterPtr;

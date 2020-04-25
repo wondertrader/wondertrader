@@ -138,23 +138,23 @@ void CtaStraBaseCtx::init_outputs()
 	}
 }
 
-void CtaStraBaseCtx::log_signal(const char* stdCode, int32_t target, double price, uint64_t gentime, const char* usertag /* = "" */)
+void CtaStraBaseCtx::log_signal(const char* stdCode, double target, double price, uint64_t gentime, const char* usertag /* = "" */)
 {
 	if (_sig_logs)
-		_sig_logs->write_file(StrUtil::printf("%s,%d,%f,%s,%s\n", stdCode, target, price, StrUtil::fmtUInt64(gentime).c_str(), usertag));
+		_sig_logs->write_file(StrUtil::printf("%s,%f,%f,%s,%s\n", stdCode, target, price, StrUtil::fmtUInt64(gentime).c_str(), usertag));
 }
 
-void CtaStraBaseCtx::log_trade(const char* stdCode, bool isLong, bool isOpen, uint64_t curTime, double price, int32_t qty, const char* userTag, double fee)
+void CtaStraBaseCtx::log_trade(const char* stdCode, bool isLong, bool isOpen, uint64_t curTime, double price, double qty, const char* userTag, double fee)
 {
 	if (_trade_logs)
-		_trade_logs->write_file(StrUtil::printf("%s,%s,%s,%s,%f,%d,%s,%.2f\n", stdCode, StrUtil::fmtUInt64(curTime).c_str(), isLong ? "LONG" : "SHORT", isOpen ? "OPEN" : "CLOSE", price, qty, userTag, fee));
+		_trade_logs->write_file(StrUtil::printf("%s,%s,%s,%s,%f,%f,%s,%.2f\n", stdCode, StrUtil::fmtUInt64(curTime).c_str(), isLong ? "LONG" : "SHORT", isOpen ? "OPEN" : "CLOSE", price, qty, userTag, fee));
 }
 
-void CtaStraBaseCtx::log_close(const char* stdCode, bool isLong, uint64_t openTime, double openpx, uint64_t closeTime, double closepx, int32_t qty, 
+void CtaStraBaseCtx::log_close(const char* stdCode, bool isLong, uint64_t openTime, double openpx, uint64_t closeTime, double closepx, double qty,
 	double profit, double totalprofit /* = 0 */, const char* enterTag /* = "" */, const char* exitTag /* = "" */)
 {
 	if (_close_logs)
-		_close_logs->write_file(StrUtil::printf("%s,%s,%s,%f,%s,%f,%d,%.2f,%.2f,%s,%s\n", 
+		_close_logs->write_file(StrUtil::printf("%s,%s,%s,%f,%s,%f,%f,%.2f,%.2f,%s,%s\n", 
 		stdCode, isLong ? "LONG" : "SHORT", StrUtil::fmtUInt64(openTime).c_str(), openpx, StrUtil::fmtUInt64(closeTime).c_str(), closepx, qty, profit, totalprofit, enterTag, exitTag));
 }
 
@@ -269,7 +269,7 @@ void CtaStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 				}
 				PosInfo& pInfo = _pos_map[stdCode];
 				pInfo._closeprofit = pItem["closeprofit"].GetDouble();
-				pInfo._volumn = pItem["volumn"].GetInt();
+				pInfo._volumn = pItem["volumn"].GetDouble();
 				if (pInfo._volumn == 0)
 					pInfo._dynprofit = 0;
 				else
@@ -290,7 +290,7 @@ void CtaStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 					DetailInfo& dInfo = pInfo._details[i];
 					dInfo._long = dItem["long"].GetBool();
 					dInfo._price = dItem["price"].GetDouble();
-					dInfo._volumn = dItem["volumn"].GetInt();
+					dInfo._volumn = dItem["volumn"].GetDouble();
 					dInfo._opentime = dItem["opentime"].GetUint64();
 					if(dItem.HasMember("opentdate"))
 						dInfo._opentdate = dItem["opentdate"].GetUint();
@@ -340,7 +340,7 @@ void CtaStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 					condInfo._field = (WTSCompareField)cItem["field"].GetUint();
 					condInfo._alg = (WTSCompareType)cItem["alg"].GetUint();
 					condInfo._target = cItem["target"].GetDouble();
-					condInfo._qty = cItem["qty"].GetInt();
+					condInfo._qty = cItem["qty"].GetDouble();
 					condInfo._action = (char)cItem["action"].GetUint();
 
 					condList.push_back(condInfo);
@@ -373,7 +373,7 @@ void CtaStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 
 				SigInfo& sInfo = _sig_map[stdCode];
 				sInfo._usertag = jItem["usertag"].GetString();
-				sInfo._volumn = jItem["volumn"].GetInt();
+				sInfo._volumn = jItem["volumn"].GetDouble();
 				sInfo._sigprice = jItem["sigprice"].GetDouble();
 				sInfo._gentime = jItem["gentime"].GetUint64();
 				
@@ -619,8 +619,8 @@ void CtaStraBaseCtx::on_tick(const char* stdCode, WTSTickData* newTick, bool bEm
 				case COND_ACTION_OL:
 				{
 					//stra_enter_long(code, entrust._qty, entrust._usertag);
-					int32_t curQty = stra_get_position(stdCode);
-					if (curQty < 0)
+					double curQty = stra_get_position(stdCode);
+					if (decimal::lt(curQty, 0))
 						do_set_position(stdCode, entrust._qty, entrust._usertag, true);
 					else
 						do_set_position(stdCode, curQty + entrust._qty, entrust._usertag, true);
@@ -629,19 +629,20 @@ void CtaStraBaseCtx::on_tick(const char* stdCode, WTSTickData* newTick, bool bEm
 				case COND_ACTION_CL:
 				{
 					//stra_exit_long(code, entrust._qty, entrust._usertag);
-					int32_t curQty = stra_get_position(stdCode);
-					if (curQty <= 0)
+					double curQty = stra_get_position(stdCode);
+					if (decimal::le(curQty, 0))
 						return;
 
-					int32_t maxQty = min(curQty, entrust._qty);
+					double maxQty = min(curQty, entrust._qty);
 					do_set_position(stdCode, curQty - maxQty, entrust._usertag, true);
 				}
 				break;
 				case COND_ACTION_OS:
 				{
 					//stra_enter_short(code, entrust._qty, entrust._usertag);
-					int32_t curQty = stra_get_position(stdCode);
-					if (curQty > 0)
+					double curQty = stra_get_position(stdCode);
+					//if (curQty > 0)
+					if(decimal::gt(curQty, 0))
 						do_set_position(stdCode, -entrust._qty, entrust._usertag, true);
 					else
 						do_set_position(stdCode, curQty - entrust._qty, entrust._usertag, true);
@@ -650,11 +651,12 @@ void CtaStraBaseCtx::on_tick(const char* stdCode, WTSTickData* newTick, bool bEm
 				case COND_ACTION_CS:
 				{
 					//stra_exit_short(code, entrust._qty, entrust._usertag);
-					int32_t curQty = stra_get_position(stdCode);
-					if (curQty >= 0)
+					double curQty = stra_get_position(stdCode);
+					//if (curQty >= 0)
+					if (decimal::ge(curQty, 0))
 						return;
 
-					int32_t maxQty = min(abs(curQty), entrust._qty);
+					double maxQty = min(abs(curQty), entrust._qty);
 					do_set_position(stdCode, curQty + maxQty, entrust._usertag, true);
 				}
 				break;
@@ -758,7 +760,7 @@ void CtaStraBaseCtx::on_session_begin()
 
 void CtaStraBaseCtx::enum_position(FuncEnumPositionCallBack cb)
 {
-	std::unordered_map<std::string, int32_t> desPos;
+	std::unordered_map<std::string, double> desPos;
 	for (auto it:_pos_map)
 	{
 		const char* stdCode = it.first.c_str();
@@ -822,12 +824,13 @@ CondList& CtaStraBaseCtx::get_cond_entrusts(const char* stdCode)
 
 //////////////////////////////////////////////////////////////////////////
 //策略接口
-void CtaStraBaseCtx::stra_enter_long(const char* stdCode, int32_t qty, const char* userTag /* = "" */, double limitprice, double stopprice)
+void CtaStraBaseCtx::stra_enter_long(const char* stdCode, double qty, const char* userTag /* = "" */, double limitprice, double stopprice)
 {
 	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式, 则直接触发
 	{
-		int32_t curQty = stra_get_position(stdCode);
-		if (curQty < 0)
+		double curQty = stra_get_position(stdCode);
+		//if (curQty < 0)
+		if(decimal::lt(curQty, 0))
 			//do_set_position(stdCode, qty, userTag, !_is_in_schedule);
 			append_signal(stdCode, qty, userTag);
 		else
@@ -861,12 +864,13 @@ void CtaStraBaseCtx::stra_enter_long(const char* stdCode, int32_t qty, const cha
 	}
 }
 
-void CtaStraBaseCtx::stra_enter_short(const char* stdCode, int32_t qty, const char* userTag /* = "" */, double limitprice, double stopprice)
+void CtaStraBaseCtx::stra_enter_short(const char* stdCode, double qty, const char* userTag /* = "" */, double limitprice, double stopprice)
 {
 	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式, 则直接触发
 	{
-		int32_t curQty = stra_get_position(stdCode);
-		if (curQty > 0)
+		double curQty = stra_get_position(stdCode);
+		//if (curQty > 0)
+		if (decimal::gt(curQty, 0))
 			//do_set_position(stdCode, -qty, userTag, !_is_in_schedule);
 			append_signal(stdCode, -qty, userTag);
 		else
@@ -901,15 +905,16 @@ void CtaStraBaseCtx::stra_enter_short(const char* stdCode, int32_t qty, const ch
 	}
 }
 
-void CtaStraBaseCtx::stra_exit_long(const char* stdCode, int32_t qty, const char* userTag /* = "" */, double limitprice, double stopprice)
+void CtaStraBaseCtx::stra_exit_long(const char* stdCode, double qty, const char* userTag /* = "" */, double limitprice, double stopprice)
 {
 	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式, 则直接触发
 	{
-		int32_t curQty = stra_get_position(stdCode);
-		if (curQty <= 0)
+		double curQty = stra_get_position(stdCode);
+		//if (curQty <= 0)
+		if (decimal::le(curQty, 0))
 			return;
 
-		int32_t maxQty = min(curQty, qty);
+		double maxQty = min(curQty, qty);
 		//do_set_position(stdCode, curQty - maxQty, userTag, !_is_in_schedule);
 		append_signal(stdCode, curQty - qty, userTag);
 	}
@@ -940,15 +945,16 @@ void CtaStraBaseCtx::stra_exit_long(const char* stdCode, int32_t qty, const char
 	}
 }
 
-void CtaStraBaseCtx::stra_exit_short(const char* stdCode, int32_t qty, const char* userTag /* = "" */, double limitprice, double stopprice)
+void CtaStraBaseCtx::stra_exit_short(const char* stdCode, double qty, const char* userTag /* = "" */, double limitprice, double stopprice)
 {
 	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式, 则直接触发
 	{
-		int32_t curQty = stra_get_position(stdCode);
-		if (curQty >= 0)
+		double curQty = stra_get_position(stdCode);
+		//if (curQty >= 0)
+		if (decimal::ge(curQty, 0))
 			return ;
 
-		int32_t maxQty = min(abs(curQty), qty);
+		double maxQty = min(abs(curQty), qty);
 		//do_set_position(stdCode, curQty + maxQty, userTag, !_is_in_schedule);
 		append_signal(stdCode, curQty + maxQty, userTag);
 	}
@@ -987,7 +993,7 @@ double CtaStraBaseCtx::stra_get_price(const char* stdCode)
 	return 0.0;
 }
 
-void CtaStraBaseCtx::stra_set_position(const char* stdCode, int32_t qty, const char* userTag /* = "" */, double limitprice /* = 0.0 */, double stopprice /* = 0.0 */)
+void CtaStraBaseCtx::stra_set_position(const char* stdCode, double qty, const char* userTag /* = "" */, double limitprice /* = 0.0 */, double stopprice /* = 0.0 */)
 {
 	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式, 则直接触发
 	{
@@ -1021,7 +1027,7 @@ void CtaStraBaseCtx::stra_set_position(const char* stdCode, int32_t qty, const c
 	}
 }
 
-void CtaStraBaseCtx::append_signal(const char* stdCode, int32_t qty, const char* userTag /* = "" */)
+void CtaStraBaseCtx::append_signal(const char* stdCode, double qty, const char* userTag /* = "" */)
 {
 	double curPx = _price_map[stdCode];
 
@@ -1037,26 +1043,26 @@ void CtaStraBaseCtx::append_signal(const char* stdCode, int32_t qty, const char*
 	save_data();
 }
 
-void CtaStraBaseCtx::do_set_position(const char* stdCode, int32_t qty, const char* userTag /* = "" */, bool bTriggered /* = false */)
+void CtaStraBaseCtx::do_set_position(const char* stdCode, double qty, const char* userTag /* = "" */, bool bTriggered /* = false */)
 {
 	PosInfo& pInfo = _pos_map[stdCode];
 	double curPx = _price_map[stdCode];
 	uint64_t curTm = (uint64_t)_engine->get_date() * 10000 + _engine->get_min_time();
 	uint32_t curTDate = _engine->get_trading_date();
 
-	if (pInfo._volumn == qty)
+	if (decimal::eq(pInfo._volumn, qty))
 		return;
 
-	int32_t diff = qty - pInfo._volumn;
+	double diff = qty - pInfo._volumn;
 
 	WTSCommodityInfo* commInfo = _engine->get_commodity_info(stdCode);
 
-	if (pInfo._volumn*diff > 0)//当前持仓和目标仓位方向一致, 增加一条明细, 增加手数即可
+	if (decimal::gt(pInfo._volumn*diff, 0))//当前持仓和目标仓位方向一致, 增加一条明细, 增加手数即可
 	{
 		pInfo._volumn = qty;
 
 		DetailInfo dInfo;
-		dInfo._long = qty > 0;
+		dInfo._long = decimal::gt(qty, 0);
 		dInfo._price = curPx;
 		dInfo._volumn = abs(diff);
 		dInfo._opentime = curTm;
@@ -1067,27 +1073,28 @@ void CtaStraBaseCtx::do_set_position(const char* stdCode, int32_t qty, const cha
 		double fee = _engine->calc_fee(stdCode, curPx, abs(qty), 0);
 		_fund_info._total_fees += fee;
 		//_engine->mutate_fund(fee, FFT_Fee);
-		log_trade(stdCode, qty > 0, true, curTm, curPx, abs(qty), userTag, fee);
+		log_trade(stdCode, dInfo._long, true, curTm, curPx, abs(qty), userTag, fee);
 	}
 	else
 	{//持仓方向和目标仓位方向不一致, 需要平仓
-		int32_t left = abs(diff);
+		double left = abs(diff);
 
 		pInfo._volumn = qty;
-		if (pInfo._volumn == 0)
+		if (decimal::eq(pInfo._volumn, 0))
 			pInfo._dynprofit = 0;
 		uint32_t count = 0;
 		for (auto it = pInfo._details.begin(); it != pInfo._details.end(); it++)
 		{
 			DetailInfo& dInfo = *it;
-			int32_t maxQty = min(dInfo._volumn, left);
-			if (maxQty == 0)
+			double maxQty = min(dInfo._volumn, left);
+			//if (maxQty == 0)
+			if (decimal::eq(maxQty, 0))
 				continue;
 
 			dInfo._volumn -= maxQty;
 			left -= maxQty;
 
-			if (dInfo._volumn == 0)
+			if (decimal::eq(dInfo._volumn, 0)) //dInfo._volumn == 0
 				count++;
 
 			double profit = (curPx - dInfo._price) * maxQty * commInfo->getVolScale();
@@ -1106,7 +1113,8 @@ void CtaStraBaseCtx::do_set_position(const char* stdCode, int32_t qty, const cha
 			//这里写平仓记录
 			log_close(stdCode, dInfo._long, dInfo._opentime, dInfo._price, curTm, curPx, maxQty, profit, pInfo._closeprofit, dInfo._opentag, userTag);
 
-			if (left == 0)
+			//if (left == 0)
+			if (decimal::eq(left,0))
 				break;
 		}
 
@@ -1119,12 +1127,13 @@ void CtaStraBaseCtx::do_set_position(const char* stdCode, int32_t qty, const cha
 		}
 
 		//最后, 如果还有剩余的, 则需要反手了
-		if (left > 0)
+		//if (left > 0)
+		if (decimal::gt(left, 0))
 		{
 			left = left * qty / abs(qty);
 
 			DetailInfo dInfo;
-			dInfo._long = qty > 0;
+			dInfo._long = decimal::gt(qty, 0);
 			dInfo._price = curPx;
 			dInfo._volumn = abs(left);
 			dInfo._opentime = curTm;
@@ -1137,7 +1146,7 @@ void CtaStraBaseCtx::do_set_position(const char* stdCode, int32_t qty, const cha
 			double fee = _engine->calc_fee(stdCode, curPx, abs(qty), 0);
 			_fund_info._total_fees += fee;
 			//_engine->mutate_fund(fee, FFT_Fee);
-			log_trade(stdCode, qty > 0, true, curTm, curPx, abs(left), userTag, fee);
+			log_trade(stdCode, dInfo._long, true, curTm, curPx, abs(left), userTag, fee);
 		}
 	}
 
@@ -1290,7 +1299,7 @@ double CtaStraBaseCtx::stra_get_last_enterprice(const char* stdCode)
 	return pInfo._details[pInfo._details.size() - 1]._price;
 }
 
-int32_t CtaStraBaseCtx::stra_get_position(const char* stdCode, const char* userTag /* = "" */)
+double CtaStraBaseCtx::stra_get_position(const char* stdCode, const char* userTag /* = "" */)
 {
 	auto it = _pos_map.find(stdCode);
 	if (it == _pos_map.end())

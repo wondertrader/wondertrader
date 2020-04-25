@@ -119,7 +119,7 @@ void WtEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 			if (sInfo->isInTradingTime(_cur_raw_time, true))
 			{
 				const SigInfo& sInfo = it->second;
-				int32_t pos = sInfo._volumn;
+				double pos = sInfo._volumn;
 				std::string code = stdCode;
 				push_task([this, code, pos](){
 					do_set_position(code.c_str(), pos);
@@ -772,7 +772,7 @@ const char* FLTACT_NAMEs[] =
 	"重定向"
 };
 
-bool WtEngine::is_filtered(const char* sname, const char* stdCode, int32_t& targetPos)
+bool WtEngine::is_filtered(const char* sname, const char* stdCode, double& targetPos)
 {
 	auto it = _stra_filters.find(sname);
 	if(it != _stra_filters.end())
@@ -881,7 +881,7 @@ void WtEngine::load_fees(const char* filename)
 	WTSLogger::info("共加载%u条手续费模板", _fee_map.size());
 }
 
-double WtEngine::calc_fee(const char* stdCode, double price, int32_t qty, uint32_t offset)
+double WtEngine::calc_fee(const char* stdCode, double price, double qty, uint32_t offset)
 {
 	std::string stdPID = CodeHelper::stdCodeToStdCommID(stdCode);
 	auto it = _fee_map.find(stdPID);
@@ -916,7 +916,7 @@ double WtEngine::calc_fee(const char* stdCode, double price, int32_t qty, uint32
 	return (int32_t)(ret * 100 + 0.5) / 100.0;
 }
 
-void WtEngine::append_signal(const char* stdCode, int32_t qty)
+void WtEngine::append_signal(const char* stdCode, double qty)
 {
 	double curPx = get_cur_price(stdCode);
 	if(decimal::eq(curPx, 0.0))
@@ -931,28 +931,28 @@ void WtEngine::append_signal(const char* stdCode, int32_t qty)
 	}
 }
 
-void WtEngine::do_set_position(const char* stdCode, int32_t qty)
+void WtEngine::do_set_position(const char* stdCode, double qty)
 {
 	PosInfo& pInfo = _pos_map[stdCode];
 	double curPx = get_cur_price(stdCode);
 	uint64_t curTm = (uint64_t)_cur_date * 10000 + _cur_time;
 	uint32_t curTDate = _cur_tdate;
 
-	if (pInfo._volumn == qty)
+	if (decimal::eq(pInfo._volumn, qty))
 		return;
 
-	int32_t diff = qty - pInfo._volumn;
+	double diff = qty - pInfo._volumn;
 
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(CodeHelper::stdCodeToStdCommID(stdCode).c_str());
 
 	WTSFundStruct& fundInfo = _port_fund->fundInfo();
 
-	if (pInfo._volumn*diff > 0)//当前持仓和目标仓位方向一致, 增加一条明细, 增加手数即可
+	if (decimal::gt(pInfo._volumn*diff, 0))//当前持仓和目标仓位方向一致, 增加一条明细, 增加手数即可
 	{
 		pInfo._volumn = qty;
 
 		DetailInfo dInfo;
-		dInfo._long = qty > 0;
+		dInfo._long = decimal::gt(qty, 0);
 		dInfo._price = curPx;
 		dInfo._volumn = abs(diff);
 		dInfo._opentime = curTm;
@@ -965,23 +965,24 @@ void WtEngine::do_set_position(const char* stdCode, int32_t qty)
 	}
 	else
 	{//持仓方向和目标仓位方向不一致, 需要平仓
-		int32_t left = abs(diff);
+		double left = abs(diff);
 
 		pInfo._volumn = qty;
-		if (pInfo._volumn == 0)
+		if (decimal::eq(pInfo._volumn, 0))
 			pInfo._dynprofit = 0;
 		uint32_t count = 0;
 		for (auto it = pInfo._details.begin(); it != pInfo._details.end(); it++)
 		{
 			DetailInfo& dInfo = *it;
-			int32_t maxQty = min(dInfo._volumn, left);
-			if (maxQty == 0)
+			double maxQty = min(dInfo._volumn, left);
+			if (decimal::eq(maxQty, 0))
 				continue;
 
 			dInfo._volumn -= maxQty;
 			left -= maxQty;
 
-			if (dInfo._volumn == 0)
+			//if (dInfo._volumn == 0)
+			if (decimal::eq(dInfo._volumn, 0))
 				count++;
 
 			double profit = (curPx - dInfo._price) * maxQty * commInfo->getVolScale();
@@ -1009,7 +1010,8 @@ void WtEngine::do_set_position(const char* stdCode, int32_t qty)
 		}
 
 		//最后, 如果还有剩余的, 则需要反手了
-		if (left > 0)
+		//if (left > 0)
+		if(decimal::gt(left, 0))
 		{
 			left = left * qty / abs(qty);
 

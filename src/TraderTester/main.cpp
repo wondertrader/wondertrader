@@ -499,6 +499,10 @@ std::string getBaseFolder()
 
 void main()
 {
+	double x = 3467.40;
+	printf("%d\r\n", x);
+	printf("%f\r\n", x);
+	printf("%u\r\n", x);
 	WTSLogger::init();
 
 	std::string cfg = getBaseFolder() + "config.ini";

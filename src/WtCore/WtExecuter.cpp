@@ -102,12 +102,12 @@ WTSTickData* WtExecuter::grabLastTick(const char* stdCode)
 	return _data_mgr->grab_last_tick(stdCode);
 }
 
-int32_t WtExecuter::getPosition(const char* stdCode, int32_t flag /* = 3 */)
+double WtExecuter::getPosition(const char* stdCode, int32_t flag /* = 3 */)
 {
 	return _trader->getPosition(stdCode, flag);
 }
 
-int32_t WtExecuter::getUndoneQty(const char* stdCode)
+double WtExecuter::getUndoneQty(const char* stdCode)
 {
 	return _trader->getUndoneQty(stdCode);
 }
@@ -117,14 +117,14 @@ OrderMap* WtExecuter::getOrders(const char* stdCode)
 	return _trader->getOrders(stdCode);
 }
 
-OrderIDs WtExecuter::buy(const char* stdCode, double price, uint32_t qty)
+OrderIDs WtExecuter::buy(const char* stdCode, double price, double qty)
 {
 	if (!_channel_ready)
 		return OrderIDs();
 	return _trader->buy(stdCode, price, qty);
 }
 
-OrderIDs WtExecuter::sell(const char* stdCode, double price, uint32_t qty)
+OrderIDs WtExecuter::sell(const char* stdCode, double price, double qty)
 {
 	if (!_channel_ready)
 		return OrderIDs();
@@ -140,7 +140,7 @@ bool WtExecuter::cancel(uint32_t localid)
 	return _trader->cancel(localid);
 }
 
-OrderIDs WtExecuter::cancel(const char* stdCode, bool isBuy, uint32_t qty)
+OrderIDs WtExecuter::cancel(const char* stdCode, bool isBuy, double qty)
 {
 	if (!_channel_ready)
 		return OrderIDs();
@@ -175,7 +175,7 @@ uint64_t WtExecuter::getCurTime()
 
 
 #pragma region 外部接口
-void WtExecuter::on_position_changed(const char* stdCode, int32_t targetPos)
+void WtExecuter::on_position_changed(const char* stdCode, double targetPos)
 {
 	ExecuteUnitPtr unit = getUnit(stdCode);
 	if (unit == NULL)
@@ -183,11 +183,11 @@ void WtExecuter::on_position_changed(const char* stdCode, int32_t targetPos)
 
 	targetPos *= _scale;
 
-	int32_t oldVol = _target_pos[stdCode];
+	double oldVol = _target_pos[stdCode];
 	//int32_t targetPos = oldVol + diffQty;
 	_target_pos[stdCode] = targetPos;
 
-	writeLog("%s目标仓位更新: %d -> %d", stdCode, oldVol, targetPos);	
+	writeLog("%s目标仓位更新: %f -> %f", stdCode, oldVol, targetPos);	
 
 	if (_trader && !_trader->checkOrderLimits(stdCode))
 	{
@@ -221,22 +221,22 @@ void WtExecuter::on_position_changed(const char* stdCode, int32_t targetPos)
 //	unit->self()->set_position(stdCode, targetPos);
 //}
 
-void WtExecuter::set_position(const std::unordered_map<std::string, int32_t>& targets)
+void WtExecuter::set_position(const std::unordered_map<std::string, double>& targets)
 {
 	for (auto it = targets.begin(); it != targets.end(); it++)
 	{
 		const char* stdCode = it->first.c_str();		
-		int32_t newVol = it->second;
+		double newVol = it->second;
 		ExecuteUnitPtr unit = getUnit(stdCode);
 		if (unit == NULL)
 			continue;
 
 		newVol *= _scale;
-		int32_t oldVol = _target_pos[stdCode];
+		double oldVol = _target_pos[stdCode];
 		_target_pos[stdCode] = newVol;
 		if(newVol != oldVol)
 		{
-			writeLog("%s目标仓位更新: %d -> %d", stdCode, oldVol, newVol);
+			writeLog("%s目标仓位更新: %f -> %f", stdCode, oldVol, newVol);
 		}
 
 		if (_trader && !_trader->checkOrderLimits(stdCode))
@@ -275,7 +275,7 @@ void WtExecuter::on_tick(const char* stdCode, WTSTickData* newTick)
 	unit->self()->on_tick(newTick);
 }
 
-void WtExecuter::on_trade(const char* stdCode, bool isBuy, uint32_t vol, double price)
+void WtExecuter::on_trade(const char* stdCode, bool isBuy, double vol, double price)
 {
 	ExecuteUnitPtr unit = getUnit(stdCode, false);
 	if (unit == NULL)
@@ -284,7 +284,7 @@ void WtExecuter::on_trade(const char* stdCode, bool isBuy, uint32_t vol, double 
 	unit->self()->on_trade(stdCode, isBuy, vol, price);
 }
 
-void WtExecuter::on_order(uint32_t localid, const char* stdCode, bool isBuy, uint32_t totalQty, uint32_t leftQty, double price, bool isCanceled /* = false */)
+void WtExecuter::on_order(uint32_t localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled /* = false */)
 {
 	ExecuteUnitPtr unit = getUnit(stdCode, false);
 	if (unit == NULL)
@@ -324,7 +324,7 @@ void WtExecuter::on_channel_lost()
 	}
 }
 
-void WtExecuter::on_position(const char* stdCode, bool isLong, uint32_t prevol, uint32_t preavail, uint32_t newvol, uint32_t newavail)
+void WtExecuter::on_position(const char* stdCode, bool isLong, double prevol, double preavail, double newvol, double newavail)
 {
 	IHotMgr* hotMgr = _engine->get_hot_mgr();
 	if(CodeHelper::isStdFutHotCode(stdCode))

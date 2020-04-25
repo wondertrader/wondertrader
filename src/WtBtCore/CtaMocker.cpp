@@ -163,23 +163,23 @@ void CtaMocker::init_outputs()
 	}
 }
 
-void CtaMocker::log_signal(const char* stdCode, int32_t target, double price, uint64_t gentime, const char* usertag /* = "" */)
+void CtaMocker::log_signal(const char* stdCode, double target, double price, uint64_t gentime, const char* usertag /* = "" */)
 {
 	if (_sig_logs)
-		_sig_logs->write_file(StrUtil::printf("%s,%d,%f,%s,%s\n", stdCode, target, price, StrUtil::fmtUInt64(gentime).c_str(), usertag));
+		_sig_logs->write_file(StrUtil::printf("%s,%f,%f,%s,%s\n", stdCode, target, price, StrUtil::fmtUInt64(gentime).c_str(), usertag));
 }
 
-void CtaMocker::log_trade(const char* stdCode, bool isLong, bool isOpen, uint64_t curTime, double price, int32_t qty, const char* userTag, double fee)
+void CtaMocker::log_trade(const char* stdCode, bool isLong, bool isOpen, uint64_t curTime, double price, double qty, const char* userTag, double fee)
 {
 	if (_trade_logs)
-		_trade_logs->write_file(StrUtil::printf("%s,%s,%s,%s,%f,%d,%s,%.2f\n", stdCode, StrUtil::fmtUInt64(curTime).c_str(), isLong ? "LONG" : "SHORT", isOpen ? "OPEN" : "CLOSE", price, qty, userTag, fee));
+		_trade_logs->write_file(StrUtil::printf("%s,%s,%s,%s,%f,%f,%s,%.2f\n", stdCode, StrUtil::fmtUInt64(curTime).c_str(), isLong ? "LONG" : "SHORT", isOpen ? "OPEN" : "CLOSE", price, qty, userTag, fee));
 }
 
-void CtaMocker::log_close(const char* stdCode, bool isLong, uint64_t openTime, double openpx, uint64_t closeTime, double closepx, int32_t qty,
+void CtaMocker::log_close(const char* stdCode, bool isLong, uint64_t openTime, double openpx, uint64_t closeTime, double closepx, double qty,
 	double profit, double totalprofit /* = 0 */, const char* enterTag /* = "" */, const char* exitTag /* = "" */)
 {
 	if (_close_logs)
-		_close_logs->write_file(StrUtil::printf("%s,%s,%s,%f,%s,%f,%d,%.2f,%.2f,%s,%s\n",
+		_close_logs->write_file(StrUtil::printf("%s,%s,%s,%f,%s,%f,%f,%.2f,%.2f,%s,%s\n",
 		stdCode, isLong ? "LONG" : "SHORT", StrUtil::fmtUInt64(openTime).c_str(), openpx, 
 		StrUtil::fmtUInt64(closeTime).c_str(), closepx, qty, profit, totalprofit, enterTag, exitTag));
 }
@@ -395,8 +395,9 @@ void CtaMocker::on_tick(const char* stdCode, WTSTickData* newTick, bool bEmitStr
 				case COND_ACTION_OL:
 				{
 					double price = _replayer->is_tick_enabled() ? newTick->price() : entrust._target;	//如果开启了tick回测，则用tick数据的价格，如果没有开启，则只能用条件单价格
-					int32_t curQty = stra_get_position(stdCode);
-					if (curQty < 0)
+					double curQty = stra_get_position(stdCode);
+					//if (curQty < 0)
+					if(decimal::lt(curQty, 0))
 						//do_set_position(stdCode, entrust._qty, price, entrust._usertag, true);
 						append_signal(stdCode, entrust._qty, entrust._usertag, price);
 					else
@@ -407,11 +408,12 @@ void CtaMocker::on_tick(const char* stdCode, WTSTickData* newTick, bool bEmitStr
 				case COND_ACTION_CL:
 				{
 					double price = _replayer->is_tick_enabled() ? newTick->price() : entrust._target;	//如果开启了tick回测，则用tick数据的价格，如果没有开启，则只能用条件单价格
-					int32_t curQty = stra_get_position(stdCode);
-					if (curQty <= 0)
+					double curQty = stra_get_position(stdCode);
+					//if (curQty <= 0)
+					if(decimal::le(curVal, 0))
 						return;
 
-					int32_t maxQty = min(curQty, entrust._qty);
+					double maxQty = min(curQty, entrust._qty);
 					//do_set_position(stdCode, curQty - maxQty, price, entrust._usertag, true);
 					append_signal(stdCode, curQty - maxQty, entrust._usertag, price);
 				}
@@ -419,8 +421,9 @@ void CtaMocker::on_tick(const char* stdCode, WTSTickData* newTick, bool bEmitStr
 				case COND_ACTION_OS:
 				{
 					double price = _replayer->is_tick_enabled() ? newTick->price() : entrust._target;	//如果开启了tick回测，则用tick数据的价格，如果没有开启，则只能用条件单价格
-					int32_t curQty = stra_get_position(stdCode);
-					if (curQty > 0)
+					double curQty = stra_get_position(stdCode);
+					//if (curQty > 0)
+					if(decimal::gt(curQty, 0))
 						//do_set_position(stdCode, -entrust._qty, price, entrust._usertag, true);
 						append_signal(stdCode, -entrust._qty, entrust._usertag, price);
 					else
@@ -431,11 +434,12 @@ void CtaMocker::on_tick(const char* stdCode, WTSTickData* newTick, bool bEmitStr
 				case COND_ACTION_CS:
 				{
 					double price = _replayer->is_tick_enabled() ? newTick->price() : entrust._target;	//如果开启了tick回测，则用tick数据的价格，如果没有开启，则只能用条件单价格
-					int32_t curQty = stra_get_position(stdCode);
-					if (curQty >= 0)
+					double curQty = stra_get_position(stdCode);
+					//if (curQty >= 0)
+					if(decimal::ge(curQty, 0))
 						return;
 
-					int32_t maxQty = min(abs(curQty), entrust._qty);
+					double maxQty = min(abs(curQty), entrust._qty);
 					//do_set_position(stdCode, curQty + maxQty, price, entrust._usertag, true);
 					append_signal(stdCode, curQty + maxQty, entrust._usertag, price);
 				}
@@ -551,7 +555,7 @@ void CtaMocker::on_session_begin()
 
 void CtaMocker::enum_position(FuncEnumPositionCallBack cb)
 {
-	std::unordered_map<std::string, int32_t> desPos;
+	std::unordered_map<std::string, double> desPos;
 	for (auto it : _pos_map)
 	{
 		const char* stdCode = it.first.c_str();
@@ -615,12 +619,13 @@ CondList& CtaMocker::get_cond_entrusts(const char* stdCode)
 
 //////////////////////////////////////////////////////////////////////////
 //策略接口
-void CtaMocker::stra_enter_long(const char* stdCode, int32_t qty, const char* userTag /* = "" */, double limitprice, double stopprice)
+void CtaMocker::stra_enter_long(const char* stdCode, double qty, const char* userTag /* = "" */, double limitprice, double stopprice)
 {
 	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式，则直接触发
 	{
-		int32_t curQty = stra_get_position(stdCode);
-		if (curQty < 0)
+		double curQty = stra_get_position(stdCode);
+		//if (curQty < 0)
+		if(decimal::lt(curQty, 0))
 			//do_set_position(stdCode, qty, userTag, !_is_in_schedule);
 			append_signal(stdCode, qty, userTag);
 		else
@@ -654,12 +659,13 @@ void CtaMocker::stra_enter_long(const char* stdCode, int32_t qty, const char* us
 	}
 }
 
-void CtaMocker::stra_enter_short(const char* stdCode, int32_t qty, const char* userTag /* = "" */, double limitprice, double stopprice)
+void CtaMocker::stra_enter_short(const char* stdCode, double qty, const char* userTag /* = "" */, double limitprice, double stopprice)
 {
 	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式，则直接触发
 	{
-		int32_t curQty = stra_get_position(stdCode);
-		if (curQty > 0)
+		double curQty = stra_get_position(stdCode);
+		//if (curQty > 0)
+		if(decimal::gt(curQty, 0))
 			//do_set_position(stdCode, -qty, userTag, !_is_in_schedule);
 			append_signal(stdCode, -qty, userTag);
 		else
@@ -694,15 +700,16 @@ void CtaMocker::stra_enter_short(const char* stdCode, int32_t qty, const char* u
 	}
 }
 
-void CtaMocker::stra_exit_long(const char* stdCode, int32_t qty, const char* userTag /* = "" */, double limitprice, double stopprice)
+void CtaMocker::stra_exit_long(const char* stdCode, double qty, const char* userTag /* = "" */, double limitprice, double stopprice)
 {
 	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式，则直接触发
 	{
-		int32_t curQty = stra_get_position(stdCode);
-		if (curQty <= 0)
+		double curQty = stra_get_position(stdCode);
+		//if (curQty <= 0)
+		if(decimal::le(curQty, 0))
 			return;
 
-		int32_t maxQty = min(curQty, qty);
+		double maxQty = min(curQty, qty);
 		//do_set_position(stdCode, curQty - maxQty, userTag, !_is_in_schedule);
 		append_signal(stdCode, curQty - qty, userTag);
 	}
@@ -733,15 +740,16 @@ void CtaMocker::stra_exit_long(const char* stdCode, int32_t qty, const char* use
 	}
 }
 
-void CtaMocker::stra_exit_short(const char* stdCode, int32_t qty, const char* userTag /* = "" */, double limitprice, double stopprice)
+void CtaMocker::stra_exit_short(const char* stdCode, double qty, const char* userTag /* = "" */, double limitprice, double stopprice)
 {
 	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式，则直接触发
 	{
-		int32_t curQty = stra_get_position(stdCode);
-		if (curQty >= 0)
+		double curQty = stra_get_position(stdCode);
+		//if (curQty >= 0)
+		if(decimal::ge(curQty, 0))
 			return;
 
-		int32_t maxQty = min(abs(curQty), qty);
+		double maxQty = min(abs(curQty), qty);
 		//do_set_position(stdCode, curQty + maxQty, userTag, !_is_in_schedule);
 		append_signal(stdCode, curQty + maxQty, userTag);
 	}
@@ -780,7 +788,7 @@ double CtaMocker::stra_get_price(const char* stdCode)
 	return 0.0;
 }
 
-void CtaMocker::stra_set_position(const char* stdCode, int32_t qty, const char* userTag /* = "" */, double limitprice /* = 0.0 */, double stopprice /* = 0.0 */)
+void CtaMocker::stra_set_position(const char* stdCode, double qty, const char* userTag /* = "" */, double limitprice /* = 0.0 */, double stopprice /* = 0.0 */)
 {
 	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式，则直接触发
 	{
@@ -814,7 +822,7 @@ void CtaMocker::stra_set_position(const char* stdCode, int32_t qty, const char* 
 	}
 }
 
-void CtaMocker::append_signal(const char* stdCode, int32_t qty, const char* userTag /* = "" */, double price/* = 0.0*/)
+void CtaMocker::append_signal(const char* stdCode, double qty, const char* userTag /* = "" */, double price/* = 0.0*/)
 {
 	double curPx = _price_map[stdCode];
 
@@ -831,7 +839,7 @@ void CtaMocker::append_signal(const char* stdCode, int32_t qty, const char* user
 	//save_data();
 }
 
-void CtaMocker::do_set_position(const char* stdCode, int32_t qty, double price /* = 0.0 */, const char* userTag /* = "" */, bool bTriggered /* = false */)
+void CtaMocker::do_set_position(const char* stdCode, double qty, double price /* = 0.0 */, const char* userTag /* = "" */, bool bTriggered /* = false */)
 {
 	PosInfo& pInfo = _pos_map[stdCode];
 	double curPx = price;
@@ -840,20 +848,20 @@ void CtaMocker::do_set_position(const char* stdCode, int32_t qty, double price /
 	uint64_t curTm = (uint64_t)_replayer->get_date() * 10000 + _replayer->get_min_time();
 	uint32_t curTDate = _replayer->get_trading_date();
 
-	if (pInfo._volumn == qty)
+	if (decimal::eq(pInfo._volumn, qty))
 		return;
 
-	int32_t diff = qty - pInfo._volumn;
+	double diff = qty - pInfo._volumn;
 
 	WTSCommodityInfo* commInfo = _replayer->get_commodity_info(stdCode);
 
-	if (pInfo._volumn*qty > 0)//当前持仓和目标仓位方向一致，增加一条明细，增加手数即可
+	if (decimal::gt(pInfo._volumn*qty, 0))//当前持仓和目标仓位方向一致，增加一条明细，增加手数即可
 	{
-		int32_t diff = abs(qty - pInfo._volumn);
+		double diff = abs(qty - pInfo._volumn);
 		pInfo._volumn = qty;
 
 		DetailInfo dInfo;
-		dInfo._long = qty > 0;
+		dInfo._long = decimal::gt(qty, 0);
 		dInfo._price = curPx;
 		dInfo._volumn = diff;
 		dInfo._opentime = curTm;
@@ -864,27 +872,28 @@ void CtaMocker::do_set_position(const char* stdCode, int32_t qty, double price /
 		double fee = _replayer->calc_fee(stdCode, curPx, abs(qty), 0);
 		_fund_info._total_fees += fee;
 		//_engine->mutate_fund(fee, FFT_Fee);
-		log_trade(stdCode, qty > 0, true, curTm, curPx, abs(qty), userTag, fee);
+		log_trade(stdCode, dInfo._long, true, curTm, curPx, abs(qty), userTag, fee);
 	}
 	else
 	{//持仓方向和目标仓位方向不一致，需要平仓
-		int32_t left = abs(pInfo._volumn) + abs(qty);
+		double left = abs(pInfo._volumn) + abs(qty);
 
 		pInfo._volumn = qty;
-		if (pInfo._volumn == 0)
+		if (decimal::eq(pInfo._volumn, 0))
 			pInfo._dynprofit = 0;
 		uint32_t count = 0;
 		for (auto it = pInfo._details.begin(); it != pInfo._details.end(); it++)
 		{
 			DetailInfo& dInfo = *it;
-			int32_t maxQty = min(dInfo._volumn, left);
-			if (maxQty == 0)
+			double maxQty = min(dInfo._volumn, left);
+			if (decimal::eq(maxQty, 0))
 				continue;
 
 			dInfo._volumn -= maxQty;
 			left -= maxQty;
 
-			if (dInfo._volumn == 0)
+			//if (dInfo._volumn == 0)
+			if (decimal::eq(dInfo._volumn, 0))
 				count++;
 
 			double profit = (curPx - dInfo._price) * maxQty * commInfo->getVolScale();
@@ -921,7 +930,7 @@ void CtaMocker::do_set_position(const char* stdCode, int32_t qty, double price /
 			left = left * qty / abs(qty);
 
 			DetailInfo dInfo;
-			dInfo._long = qty > 0;
+			dInfo._long = decimal::gt(qty, 0);
 			dInfo._price = curPx;
 			dInfo._volumn = abs(left);
 			dInfo._opentime = curTm;
@@ -934,7 +943,7 @@ void CtaMocker::do_set_position(const char* stdCode, int32_t qty, double price /
 			double fee = _replayer->calc_fee(stdCode, curPx, abs(qty), 0);
 			_fund_info._total_fees += fee;
 			//_engine->mutate_fund(fee, FFT_Fee);
-			log_trade(stdCode, qty > 0, true, curTm, curPx, abs(left), userTag, fee);
+			log_trade(stdCode, dInfo._long, true, curTm, curPx, abs(left), userTag, fee);
 		}
 	}
 }
@@ -1068,7 +1077,7 @@ double CtaMocker::stra_get_last_enterprice(const char* stdCode)
 	return pInfo._details[pInfo._details.size() - 1]._price;
 }
 
-int32_t CtaMocker::stra_get_position(const char* stdCode, const char* userTag /* = "" */)
+double CtaMocker::stra_get_position(const char* stdCode, const char* userTag /* = "" */)
 {
 	auto it = _pos_map.find(stdCode);
 	if (it == _pos_map.end())

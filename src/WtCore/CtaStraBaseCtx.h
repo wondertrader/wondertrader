@@ -32,7 +32,7 @@ typedef struct _CondEntrust
 	WTSCompareType	_alg;
 	double			_target;
 
-	int32_t			_qty;
+	double			_qty;
 
 	char			_action;	//0-开多, 1-平多, 2-开空, 3-平空
 
@@ -59,9 +59,9 @@ public:
 
 private:
 	void	init_outputs();
-	inline void log_signal(const char* stdCode, int32_t target, double price, uint64_t gentime, const char* usertag = "");
-	inline void	log_trade(const char* stdCode, bool isLong, bool isOpen, uint64_t curTime, double price, int32_t qty, const char* userTag = "", double fee = 0.0);
-	inline void	log_close(const char* stdCode, bool isLong, uint64_t openTime, double openpx, uint64_t closeTime, double closepx, int32_t qty,
+	inline void log_signal(const char* stdCode, double target, double price, uint64_t gentime, const char* usertag = "");
+	inline void	log_trade(const char* stdCode, bool isLong, bool isOpen, uint64_t curTime, double price, double qty, const char* userTag = "", double fee = 0.0);
+	inline void	log_close(const char* stdCode, bool isLong, uint64_t openTime, double openpx, uint64_t closeTime, double closepx, double qty,
 		double profit, double totalprofit = 0, const char* enterTag = "", const char* exitTag = "");
 
 	void	save_data(uint32_t flag = 0xFFFFFFFF);
@@ -72,8 +72,8 @@ private:
 
 	void	update_dyn_profit(const char* stdCode, double price);
 
-	void	do_set_position(const char* stdCode, int32_t qty, const char* userTag = "", bool bTriggered = false);
-	void	append_signal(const char* stdCode, int32_t qty, const char* userTag = "");
+	void	do_set_position(const char* stdCode, double qty, const char* userTag = "", bool bTriggered = false);
+	void	append_signal(const char* stdCode, double qty, const char* userTag = "");
 
 	inline CondList& get_cond_entrusts(const char* stdCode);
 	
@@ -94,13 +94,13 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	//策略接口
-	virtual void stra_enter_long(const char* stdCode, int32_t qty, const char* userTag = "", double limitprice = 0.0, double stopprice = 0.0) override;
-	virtual void stra_enter_short(const char* stdCode, int32_t qty, const char* userTag = "", double limitprice = 0.0, double stopprice = 0.0) override;
-	virtual void stra_exit_long(const char* stdCode, int32_t qty, const char* userTag = "", double limitprice = 0.0, double stopprice = 0.0) override;
-	virtual void stra_exit_short(const char* stdCode, int32_t qty, const char* userTag = "", double limitprice = 0.0, double stopprice = 0.0) override;
+	virtual void stra_enter_long(const char* stdCode, double qty, const char* userTag = "", double limitprice = 0.0, double stopprice = 0.0) override;
+	virtual void stra_enter_short(const char* stdCode, double qty, const char* userTag = "", double limitprice = 0.0, double stopprice = 0.0) override;
+	virtual void stra_exit_long(const char* stdCode, double qty, const char* userTag = "", double limitprice = 0.0, double stopprice = 0.0) override;
+	virtual void stra_exit_short(const char* stdCode, double qty, const char* userTag = "", double limitprice = 0.0, double stopprice = 0.0) override;
 
-	virtual int32_t stra_get_position(const char* stdCode, const char* userTag = "") override;
-	virtual void stra_set_position(const char* stdCode, int32_t qty, const char* userTag = "", double limitprice = 0.0, double stopprice = 0.0) override;
+	virtual double stra_get_position(const char* stdCode, const char* userTag = "") override;
+	virtual void stra_set_position(const char* stdCode, double qty, const char* userTag = "", double limitprice = 0.0, double stopprice = 0.0) override;
 	virtual double stra_get_price(const char* stdCode) override;
 
 	virtual uint32_t stra_get_date() override;
@@ -155,7 +155,7 @@ protected:
 	{
 		bool		_long;
 		double		_price;
-		int32_t		_volumn;
+		double		_volumn;
 		uint64_t	_opentime;
 		uint32_t	_opentdate;
 		double		_max_profit;
@@ -171,7 +171,7 @@ protected:
 
 	typedef struct _PosInfo
 	{
-		int32_t		_volumn;
+		double		_volumn;
 		double		_closeprofit;
 		double		_dynprofit;
 
@@ -189,7 +189,7 @@ protected:
 
 	typedef struct _SigInfo
 	{
-		int32_t		_volumn;
+		double		_volumn;
 		std::string	_usertag;
 		double		_sigprice;
 		bool		_triggered;

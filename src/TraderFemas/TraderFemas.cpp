@@ -19,6 +19,8 @@
 #include "../Share/TimeUtils.hpp"
 #include "../Share/BoostFile.hpp"
 
+#include "../Share/decimal.h"
+
 #ifdef _WIN32
 #ifdef _WIN64
 #pragma comment(lib, "./ustptraderapi/USTPtraderapiAF64.lib")
@@ -361,7 +363,7 @@ int TraderFemas::orderAction( WTSEntrustAction* action )
 	req.ActionFlag = wrapActionFlag(action->getActionFlag());
 	req.LimitPrice = action->getPrice();
 
-	req.VolumeChange = action->getVolumn();
+	req.VolumeChange = (int32_t)action->getVolumn();
 
 	strcpy(req.OrderSysID, action->getOrderID());
 	strcpy(req.ExchangeID, wrapExchg(action->getExchg()));
@@ -648,7 +650,7 @@ void TraderFemas::OnRspQryInvestorPosition(CUstpFtdcRspInvestorPositionField *pR
 
 			if (pos->getTotalPosition() != 0)
 			{
-				pos->setAvgPrice((uint32_t)(pos->getPositionCost() / pos->getTotalPosition() / commInfo->getVolScale()));
+				pos->setAvgPrice(pos->getPositionCost() / pos->getTotalPosition() / commInfo->getVolScale());
 			}
 			else
 			{
@@ -664,7 +666,7 @@ void TraderFemas::OnRspQryInvestorPosition(CUstpFtdcRspInvestorPositionField *pR
 					availNew = 0;
 				pos->setAvailNewPos(availNew);
 
-				int availPre = pos->getNewPosition() + pos->getPrePosition()
+				double availPre = pos->getNewPosition() + pos->getPrePosition()
 					- pRspInvestorPosition->FrozenPosition - pos->getAvailNewPos();
 				pos->setAvailPrePos(availPre);
 			}
@@ -673,7 +675,8 @@ void TraderFemas::OnRspQryInvestorPosition(CUstpFtdcRspInvestorPositionField *pR
 
 			}
 
-			if (pos->getTotalPosition() > 0 && pos->getMargin() == 0)
+			//if (pos->getTotalPosition() > 0 && pos->getMargin() == 0)
+			if (decimal::lt(pos->getTotalPosition(), 0.0) && decimal::eq(pos->getMargin(), 0.0))
 			{
 				//有仓位，但是保证金为0，则说明是套利合约，单个合约的可用持仓全部置为0
 				pos->setAvailNewPos(0);

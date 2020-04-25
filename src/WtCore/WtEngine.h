@@ -95,7 +95,7 @@ public:
 
 	double get_cur_price(const char* stdCode);
 
-	double calc_fee(const char* stdCode, double price, int32_t qty, uint32_t offset);
+	double calc_fee(const char* stdCode, double price, double qty, uint32_t offset);
 
 	inline void setRiskMonitor(WtRiskMonPtr& monitor)
 	{
@@ -148,7 +148,7 @@ protected:
 	 *	
 	 *	return		是否过滤掉了, 如果过滤掉了, 该持仓就不加入最终组合目标仓位
 	 */
-	bool		is_filtered(const char* sname, const char* stdCode, int32_t& targetPos);
+	bool		is_filtered(const char* sname, const char* stdCode, double& targetPos);
 
 	void		load_fees(const char* filename);
 
@@ -156,9 +156,9 @@ protected:
 
 	void		save_datas();
 
-	void		append_signal(const char* stdCode, int32_t qty);
+	void		append_signal(const char* stdCode, double qty);
 
-	void		do_set_position(const char* stdCode, int32_t qty);
+	void		do_set_position(const char* stdCode, double qty);
 
 	void		task_loop();
 
@@ -191,7 +191,7 @@ protected:
 	//
 	typedef struct _SigInfo
 	{
-		int32_t		_volumn;
+		double		_volumn;
 		uint64_t	_gentime;
 
 		_SigInfo()
@@ -253,7 +253,7 @@ protected:
 	{
 		bool		_long;
 		double		_price;
-		int32_t		_volumn;
+		double		_volumn;
 		uint64_t	_opentime;
 		uint32_t	_opentdate;
 		double		_profit;
@@ -266,7 +266,7 @@ protected:
 
 	typedef struct _PosInfo
 	{
-		int32_t		_volumn;
+		double		_volumn;
 		double		_closeprofit;
 		double		_dynprofit;
 

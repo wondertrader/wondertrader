@@ -54,7 +54,7 @@ void HftStraContext::on_schedule(uint32_t uDate, uint32_t uTime)
 		_strategy->on_schedule(this, uDate, uTime);
 }
 
-void HftStraContext::on_trade(const char* stdCode, bool isBuy, uint32_t vol, double price)
+void HftStraContext::on_trade(const char* stdCode, bool isBuy, double vol, double price)
 {
 	HftStraBaseCtx::on_trade(stdCode, isBuy, vol, price);
 
@@ -62,7 +62,7 @@ void HftStraContext::on_trade(const char* stdCode, bool isBuy, uint32_t vol, dou
 		_strategy->on_trade(this, get_inner_code(stdCode), isBuy, vol, price);
 }
 
-void HftStraContext::on_order(uint32_t localid, const char* stdCode, bool isBuy, uint32_t totalQty, uint32_t leftQty, double price, bool isCanceled /* = false */)
+void HftStraContext::on_order(uint32_t localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled /* = false */)
 {
 	HftStraBaseCtx::on_order(localid, stdCode, isBuy, totalQty, leftQty, price, isCanceled);
 
@@ -70,7 +70,7 @@ void HftStraContext::on_order(uint32_t localid, const char* stdCode, bool isBuy,
 		_strategy->on_order(this, localid, get_inner_code(stdCode), isBuy, totalQty, leftQty, price, isCanceled);
 }
 
-void HftStraContext::on_position(const char* stdCode, bool isLong, uint32_t prevol, uint32_t preavail, uint32_t newvol, uint32_t newavail)
+void HftStraContext::on_position(const char* stdCode, bool isLong, double prevol, double preavail, double newvol, double newavail)
 {
 	HftStraBaseCtx::on_position(stdCode, isLong, prevol, preavail, newvol, newavail);
 

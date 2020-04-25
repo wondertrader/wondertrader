@@ -54,7 +54,7 @@ public:
 	 *	
 	 *	返回值	轧平后的仓位: 多仓>0, 空仓<0
 	 */
-	virtual int32_t getPosition(const char* stdCode, int32_t flag = 3) = 0;
+	virtual double getPosition(const char* stdCode, int32_t flag = 3) = 0;
 
 	/*
 	 *	获取未完成订单
@@ -70,7 +70,7 @@ public:
 	 *	
 	 *	返回值	买卖轧平以后的未完成手数
 	 */
-	virtual int32_t getUndoneQty(const char* stdCode) = 0;
+	virtual double getUndoneQty(const char* stdCode) = 0;
 
 	/*
 	 *	买入接口
@@ -80,7 +80,7 @@ public:
 	 *
 	 *	返回值	本地订单号数组: 一个买入操作可能会拆成最多3个订单发出
 	 */
-	virtual OrderIDs buy(const char* stdCode, double price, uint32_t qty) = 0;
+	virtual OrderIDs buy(const char* stdCode, double price, double qty) = 0;
 
 	/*
 	*	卖出接口
@@ -90,7 +90,7 @@ public:
 	*
 	*	返回值	本地订单号数组: 一个买入操作可能会拆成最多3个订单发出
 	*/
-	virtual OrderIDs sell(const char* stdCode, double price, uint32_t qty) = 0;
+	virtual OrderIDs sell(const char* stdCode, double price, double qty) = 0;
 
 	/*
 	 *	根据本地订单号撤单
@@ -109,7 +109,7 @@ public:
 	 *	
 	 *	返回值 返回实际发送了撤单指令的手数
 	 */
-	virtual OrderIDs cancel(const char* stdCode, bool isBuy, uint32_t qty = 0) = 0;
+	virtual OrderIDs cancel(const char* stdCode, bool isBuy, double qty = 0) = 0;
 
 	/*
 	 *	写日志
@@ -168,7 +168,7 @@ public:
 	 *	code	合约代码
 	 *	newVol	新的目标仓位
 	 */
-	virtual void set_position(const char* stdCode, int32_t newVol) = 0;
+	virtual void set_position(const char* stdCode, double newVol) = 0;
 
 	/*
 	 *	tick数据回调
@@ -183,7 +183,7 @@ public:
 	 *	vol		成交手数, 这里没有正负, 通过isBuy确定买入还是卖出
 	 *	price	成交价格
 	 */
-	virtual void on_trade(const char* stdCode, bool isBuy, uint32_t vol, double price) = 0;
+	virtual void on_trade(const char* stdCode, bool isBuy, double vol, double price) = 0;
 
 	/*
 	 *	订单回报
@@ -194,7 +194,7 @@ public:
 	 *	price	委托价格
 	 *	isCanceled	是否已撤销
 	 */
-	virtual void on_order(uint32_t localid, const char* stdCode, bool isBuy, uint32_t leftover, double price, bool isCanceled) = 0;
+	virtual void on_order(uint32_t localid, const char* stdCode, bool isBuy, double leftover, double price, bool isCanceled) = 0;
 
 	/*
 	 *	

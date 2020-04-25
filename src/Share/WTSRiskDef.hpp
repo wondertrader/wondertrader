@@ -15,30 +15,30 @@ typedef struct _TradeStatInfo
 {
 	char		_code[MAX_INSTRUMENT_LENGTH];
 	//开平统计
-	uint32_t	l_openvol;	//当日开多仓量
-	uint32_t	l_closevol;	//当日平多仓量
-	uint32_t	l_closetvol;//当日平今多仓量
-	uint32_t	s_openvol;	//当日开空仓量
-	uint32_t	s_closevol;	//当日平空仓量
-	uint32_t	s_closetvol;//当日平今空仓量
+	double	l_openvol;	//当日开多仓量
+	double	l_closevol;	//当日平多仓量
+	double	l_closetvol;//当日平今多仓量
+	double	s_openvol;	//当日开空仓量
+	double	s_closevol;	//当日平空仓量
+	double	s_closetvol;//当日平今空仓量
 
 	//挂单统计
-	uint32_t	b_orders;	//委买笔数
-	uint32_t	b_ordqty;	//委买手数
-	uint32_t	s_orders;	//委卖笔数
-	uint32_t	s_ordqty;	//委卖手数
+	double	b_orders;	//委买笔数
+	double	b_ordqty;	//委买手数
+	double	s_orders;	//委卖笔数
+	double	s_ordqty;	//委卖手数
 
 	//撤单统计
-	uint32_t	b_cancels;	//撤买笔数
-	uint32_t	b_canclqty;	//撤买手数
-	uint32_t	s_cancels;	//撤卖笔数
-	uint32_t	s_canclqty;	//撤卖手数
+	double	b_cancels;	//撤买笔数
+	double	b_canclqty;	//撤买手数
+	double	s_cancels;	//撤卖笔数
+	double	s_canclqty;	//撤卖手数
 
 	//错单统计
-	uint32_t	b_wrongs;	//错单笔数
-	uint32_t	b_wrongqty;	//错单手数
-	uint32_t	s_wrongs;	//错单笔数
-	uint32_t	s_wrongqty;	//错单手数
+	double	b_wrongs;	//错单笔数
+	double	b_wrongqty;	//错单手数
+	double	s_wrongs;	//错单笔数
+	double	s_wrongqty;	//错单手数
 
 	_TradeStatInfo()
 	{
@@ -65,24 +65,24 @@ public:
 
 	const char* code() const{ return _trd_stat_info._code; }
 
-	uint32_t open_volumn_long() const{ return _trd_stat_info.l_openvol; }
-	uint32_t close_volumn_long() const{ return _trd_stat_info.l_closevol; }
-	uint32_t closet_volumn_long() const{ return _trd_stat_info.l_closetvol; }
-	uint32_t open_volumn_short() const{ return _trd_stat_info.s_openvol; }
-	uint32_t close_volumn_short() const{ return _trd_stat_info.s_closevol; }
-	uint32_t closet_volumn_short() const{ return _trd_stat_info.s_closetvol; }
+	double open_volumn_long() const{ return _trd_stat_info.l_openvol; }
+	double close_volumn_long() const{ return _trd_stat_info.l_closevol; }
+	double closet_volumn_long() const{ return _trd_stat_info.l_closetvol; }
+	double open_volumn_short() const{ return _trd_stat_info.s_openvol; }
+	double close_volumn_short() const{ return _trd_stat_info.s_closevol; }
+	double closet_volumn_short() const{ return _trd_stat_info.s_closetvol; }
 
-	uint32_t orders_buy() const{ return _trd_stat_info.b_orders; }
-	uint32_t ordqty_buy() const{ return _trd_stat_info.b_ordqty; }
-	uint32_t orders_sell() const{ return _trd_stat_info.s_orders; }
-	uint32_t ordqty_sell() const{ return _trd_stat_info.s_ordqty; }
+	double orders_buy() const{ return _trd_stat_info.b_orders; }
+	double ordqty_buy() const{ return _trd_stat_info.b_ordqty; }
+	double orders_sell() const{ return _trd_stat_info.s_orders; }
+	double ordqty_sell() const{ return _trd_stat_info.s_ordqty; }
 
-	uint32_t cancels_buy() const{ return _trd_stat_info.b_cancels; }
-	uint32_t cancelqty_buy() const{ return _trd_stat_info.b_canclqty; }
-	uint32_t cancels_sell() const{ return _trd_stat_info.s_cancels; }
-	uint32_t cancelqty_sell() const{ return _trd_stat_info.s_canclqty; }
+	double cancels_buy() const{ return _trd_stat_info.b_cancels; }
+	double cancelqty_buy() const{ return _trd_stat_info.b_canclqty; }
+	double cancels_sell() const{ return _trd_stat_info.s_cancels; }
+	double cancelqty_sell() const{ return _trd_stat_info.s_canclqty; }
 
-	uint32_t total_cancels() const{ return _trd_stat_info.b_cancels + _trd_stat_info.s_cancels; }
+	double total_cancels() const{ return _trd_stat_info.b_cancels + _trd_stat_info.s_cancels; }
 
 private:
 	TradeStatInfo	_trd_stat_info;

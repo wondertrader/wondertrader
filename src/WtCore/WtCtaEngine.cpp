@@ -122,13 +122,13 @@ CtaContextPtr WtCtaEngine::getContext(uint32_t id)
 
 void WtCtaEngine::on_init()
 {
-	std::unordered_map<std::string, int32_t> target_pos;
+	std::unordered_map<std::string, double> target_pos;
 	for (auto it = _ctx_map.begin(); it != _ctx_map.end(); it++)
 	{
 		CtaContextPtr& ctx = it->second;
 		ctx->on_init();
 
-		ctx->enum_position([this, &target_pos](const char* stdCode, int32_t qty){
+		ctx->enum_position([this, &target_pos](const char* stdCode, double qty){
 			std::string realCode = stdCode;
 			if (StrUtil::endsWith(realCode, ".HOT", false))
 			{
@@ -139,7 +139,7 @@ void WtCtaEngine::on_init()
 				realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), exchg.c_str());
 			}
 
-			int32_t& vol = target_pos[realCode];
+			double& vol = target_pos[realCode];
 			vol += qty;
 
 			_subed_raw_codes.insert(realCode);
@@ -189,15 +189,15 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 	//去检查一下过滤器
 	load_filters();
 
-	std::unordered_map<std::string, int32_t> target_pos;
+	std::unordered_map<std::string, double> target_pos;
 
 	for (auto it = _ctx_map.begin(); it != _ctx_map.end(); it++)
 	{
 		CtaContextPtr& ctx = it->second;
 		ctx->on_schedule(curDate, curTime);
-		ctx->enum_position([this, &target_pos, ctx](const char* stdCode, int32_t qty){
+		ctx->enum_position([this, &target_pos, ctx](const char* stdCode, double qty){
 
-			int32_t oldQty = qty;
+			double oldQty = qty;
 			bool bFilterd = is_filtered(ctx->name(), stdCode, qty);
 			if(!bFilterd)
 			{
@@ -217,7 +217,7 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 					realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), exchg.c_str());
 				}
 
-				int32_t& vol = target_pos[realCode];
+				double& vol = target_pos[realCode];
 				vol += qty;
 			}
 			else
@@ -239,11 +239,11 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 	for (auto it = target_pos.begin(); it != target_pos.end(); it++)
 	{
 		std::string stdCode = it->first;
-		int32_t& pos = it->second;
+		double& pos = it->second;
 		if (bRiskEnabled && pos != 0)
 		{
-			int32_t symbol = pos / abs(pos);
-			pos = (int32_t)round(abs(pos)*_risk_volscale)*symbol;
+			double symbol = pos / abs(pos);
+			pos = abs(pos)*_risk_volscale*symbol;
 		}
 		
 		push_task([this, stdCode, pos](){
@@ -290,7 +290,7 @@ void WtCtaEngine::handle_push_quote(WTSTickData* newTick, bool isHot)
 		_tm_ticker->on_tick(newTick, isHot);
 }
 
-void WtCtaEngine::handle_pos_change(const char* stdCode, int32_t diffQty)
+void WtCtaEngine::handle_pos_change(const char* stdCode, double diffQty)
 {
 	std::string realCode = stdCode;
 	if (CodeHelper::isStdFutHotCode(stdCode))
@@ -303,7 +303,7 @@ void WtCtaEngine::handle_pos_change(const char* stdCode, int32_t diffQty)
 	}
 
 	PosInfo& pItem = _pos_map[realCode];
-	int32_t targetPos = pItem._volumn + diffQty;
+	double targetPos = pItem._volumn + diffQty;
 
 	bool bRiskEnabled = false;
 	if (!decimal::eq(_risk_volscale, 1.0) && _risk_date == _cur_tdate)
@@ -313,8 +313,8 @@ void WtCtaEngine::handle_pos_change(const char* stdCode, int32_t diffQty)
 	}
 	if (bRiskEnabled && targetPos != 0)
 	{
-		int32_t symbol = targetPos / abs(targetPos);
-		targetPos = (int32_t)round(abs(targetPos)*_risk_volscale) * symbol;
+		double symbol = targetPos / abs(targetPos);
+		targetPos = abs(targetPos)*_risk_volscale*symbol;
 	}
 
 	push_task([this, realCode, targetPos](){

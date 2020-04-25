@@ -41,11 +41,11 @@ public:
 
 	virtual bool stra_cancel(uint32_t localid) override;
 
-	virtual OrderIDs stra_cancel(const char* code, bool isBuy, uint32_t qty) override;
+	virtual OrderIDs stra_cancel(const char* code, bool isBuy, double qty) override;
 
-	virtual OrderIDs stra_buy(const char* stdCode, double price, uint32_t qty) override;
+	virtual OrderIDs stra_buy(const char* stdCode, double price, double qty) override;
 
-	virtual OrderIDs stra_sell(const char* stdCode, double price, uint32_t qty) override;
+	virtual OrderIDs stra_sell(const char* stdCode, double price, double qty) override;
 
 	virtual WTSCommodityInfo* stra_get_comminfo(const char* code) override;
 
@@ -57,9 +57,9 @@ public:
 
 	virtual void stra_log_text(const char* fmt, ...) override;
 
-	virtual int32_t stra_get_position(const char* code) override;
+	virtual double stra_get_position(const char* code) override;
 	virtual double stra_get_price(const char* code) override;
-	virtual int32_t stra_get_undone(const char* stdCode) override;
+	virtual double stra_get_undone(const char* stdCode) override;
 
 	virtual uint32_t stra_get_date() override;
 	virtual uint32_t stra_get_time() override;
@@ -68,11 +68,11 @@ public:
 	virtual void sub_ticks(const char* code) override;
 
 	//////////////////////////////////////////////////////////////////////////
-	virtual void on_trade(const char* stdCode, bool isBuy, uint32_t vol, double price) override;
+	virtual void on_trade(const char* stdCode, bool isBuy, double vol, double price) override;
 
-	virtual void on_order(uint32_t localid, const char* stdCode, bool isBuy, uint32_t totalQty, uint32_t leftQty, double price, bool isCanceled = false) override;
+	virtual void on_order(uint32_t localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled = false) override;
 
-	virtual void on_position(const char* stdCode, bool isLong, uint32_t prevol, uint32_t preavail, uint32_t newvol, uint32_t newavail) override;
+	virtual void on_position(const char* stdCode, bool isLong, double prevol, double preavail, double newvol, double newavail) override;
 
 	virtual void on_channel_ready() override;
 

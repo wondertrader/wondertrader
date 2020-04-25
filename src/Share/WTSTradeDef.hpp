@@ -26,7 +26,7 @@ protected:
 	WTSEntrust()
 		:m_iPrice(0)
 		,m_strCode("")
-		,m_uVolumn(0)
+		,m_dVolumn(0)
 		,m_strExchg("")
 	{
 		m_direction = WDT_LONG;
@@ -38,14 +38,14 @@ protected:
 	virtual ~WTSEntrust(){}
 
 public:
-	static WTSEntrust* create(const char* code, uint32_t vol, double price, const char* exchg = "")
+	static WTSEntrust* create(const char* code, double vol, double price, const char* exchg = "")
 	{
 		WTSEntrust* pRet = new WTSEntrust;
 		if(pRet)
 		{
 			pRet->m_strExchg = exchg;
 			pRet->m_strCode = code;
-			pRet->m_uVolumn = vol;
+			pRet->m_dVolumn = vol;
 			pRet->m_iPrice = price;
 			return pRet;
 		}
@@ -66,10 +66,10 @@ public:
 	WTSTimeCondition	getTimeCondition() const{return m_timeCond;}
 	WTSOffsetType	getOffsetType() const{return m_offsetType;}
 
-	void setVolumn(uint32_t volumn){m_uVolumn = volumn;}
+	void setVolumn(double volumn){ m_dVolumn = volumn; }
 	void setPrice(double price){ m_iPrice = price; }
 
-	uint32_t getVolumn() const{return m_uVolumn;}
+	double getVolumn() const{ return m_dVolumn; }
 	double getPrice() const{ return m_iPrice; }
 
 	const char* getCode() const{return m_strCode.c_str();}
@@ -84,7 +84,7 @@ public:
 protected:
 	std::string		m_strExchg;
 	std::string		m_strCode;
-	uint32_t		m_uVolumn;
+	double			m_dVolumn;
 	double			m_iPrice;
 
 	WTSDirectionType	m_direction;
@@ -105,7 +105,7 @@ protected:
 	WTSEntrustAction()
 		:m_iPrice(0)
 		,m_strCode("")
-		,m_uVolumn(0)
+		,m_dVolumn(0)
 		,m_actionFlag(WAF_CANCEL)
 	{
 
@@ -114,14 +114,14 @@ protected:
 	virtual ~WTSEntrustAction(){}
 
 public:
-	static WTSEntrustAction* create(const char* code, const char* exchg = "", uint32_t vol = 0, uint32_t price = 0)
+	static WTSEntrustAction* create(const char* code, const char* exchg = "", double vol = 0, double price = 0)
 	{
 		WTSEntrustAction* pRet = new WTSEntrustAction;
 		if(pRet)
 		{
 			pRet->m_strExchg = exchg;
 			pRet->m_strCode = code;
-			pRet->m_uVolumn = vol;
+			pRet->m_dVolumn = vol;
 			pRet->m_iPrice = price;
 			return pRet;
 		}
@@ -143,10 +143,10 @@ public:
 	}
 
 public:
-	void setVolumn(uint32_t volumn){m_uVolumn = volumn;}
+	void setVolumn(double volumn){ m_dVolumn = volumn; }
 	void setPrice(double price){ m_iPrice = price; }
 
-	uint32_t getVolumn() const{return m_uVolumn;}
+	double getVolumn() const{ return m_dVolumn; }
 	double getPrice() const{ return m_iPrice; }
 
 	const char* getCode() const{return m_strCode.c_str();}
@@ -166,7 +166,7 @@ public:
 protected:
 	std::string		m_strExchg;
 	std::string		m_strCode;
-	uint32_t		m_uVolumn;
+	double			m_dVolumn;
 	double			m_iPrice;
 
 	std::string		m_strEnturstID;
@@ -185,8 +185,8 @@ protected:
 		,m_orderType(WORT_Normal)
 		,m_uInsertDate(0)
 		,m_uInsertTime(0)
-		,m_uVolTraded(0)
-		,m_uVolLeft(0)
+		,m_dVolTraded(0)
+		,m_dVolLeft(0)
 		,m_bIsError(false)
 	{
 
@@ -204,7 +204,7 @@ public:
 			pRet->m_strExchg = entrust->getExchg();
 			pRet->m_iPrice = entrust->getPrice();
 			pRet->m_strCode = entrust->getCode();
-			pRet->m_uVolumn = entrust->getVolumn();
+			pRet->m_dVolumn = entrust->getVolumn();
 
 			pRet->m_direction = entrust->getDirection();
 			pRet->m_offsetType = entrust->getOffsetType();
@@ -213,7 +213,7 @@ public:
 			pRet->m_strEntrustID = entrust->getEntrustID();
 			pRet->m_strUserTag = entrust->getUserTag();
 
-			pRet->m_uVolLeft = entrust->getVolumn();
+			pRet->m_dVolLeft = entrust->getVolumn();
 		}
 
 		return pRet;
@@ -221,8 +221,8 @@ public:
 
 	void	setOrderDate(uint32_t uDate){m_uInsertDate = uDate;}
 	void	setOrderTime(uint64_t uTime){m_uInsertTime = uTime;}
-	void	setVolTraded(uint32_t vol){m_uVolTraded = vol;}
-	void	setVolLeft(uint32_t vol){m_uVolLeft = vol;}
+	void	setVolTraded(double vol){ m_dVolTraded = vol; }
+	void	setVolLeft(double vol){ m_dVolLeft = vol; }
 	
 	void	setOrderID(const char* oid){m_strOrderID = oid;/*StrUtil::trim(m_strOrderID);*/}
 	void	setOrderState(WTSOrderState os){m_orderState = os;}
@@ -230,9 +230,9 @@ public:
 
 	uint32_t getOrderDate() const{return m_uInsertDate;}
 	uint64_t getOrderTime() const{return m_uInsertTime;}
-	uint32_t getVolTraded() const{return m_uVolTraded;}
-	uint32_t getVolLeft() const{return m_uVolLeft;}
-	uint32_t getVolumn() const{return m_uVolLeft+m_uVolTraded;}
+	double getVolTraded() const{ return m_dVolTraded; }
+	double getVolLeft() const{ return m_dVolLeft; }
+	double getVolumn() const{ return m_dVolLeft + m_dVolTraded; }
     
 	WTSOrderState		getOrderState() const{return m_orderState;}
 	WTSOrderType			getOrderType() const{return m_orderType;}
@@ -262,8 +262,8 @@ public:
 private:
 	uint32_t	m_uInsertDate;
 	uint64_t	m_uInsertTime;
-	uint32_t	m_uVolTraded;
-	uint32_t	m_uVolLeft;
+	double		m_dVolTraded;
+	double		m_dVolLeft;
 	bool		m_bIsError;
 
 	WTSOrderState	m_orderState;
@@ -316,7 +316,7 @@ public:
 	WTSOrderType		getOrderType() const{return m_orderType;}
 	WTSTradeType		getTradeType() const{return m_tradeType;}
 
-	uint32_t getVolumn() const{return m_uVolumn;}
+	double getVolumn() const{ return m_uVolumn; }
 	double getPrice() const{ return m_uPrice; }
 
 	const char*	getCode() const{return m_strCode.c_str();}
@@ -368,27 +368,27 @@ public:
 	}
 
 	void setDirection(WTSDirectionType dType){m_direction = dType;}
-	void setPrePosition(uint32_t prePos){m_uPrePosition = prePos;}
-	void setNewPosition(uint32_t newPos){m_uNewPosition = newPos;}
-	void setAvailPrePos(uint32_t availPos){m_uAvailPrePos = availPos;}
-	void setAvailNewPos(uint32_t availPos){m_uAvailNewPos = availPos;}
+	void setPrePosition(double prePos){ m_dPrePosition = prePos; }
+	void setNewPosition(double newPos){ m_dNewPosition = newPos; }
+	void setAvailPrePos(double availPos){ m_dAvailPrePos = availPos; }
+	void setAvailNewPos(double availPos){ m_dAvailNewPos = availPos; }
 	void setPositionCost(double cost){m_dTotalPosCost = cost;}
 	void setMargin(double margin){ m_dMargin = margin; }
 	void setAvgPrice(double avgPrice){ m_dAvgPrice = avgPrice; }
 	void setDynProfit(double profit){ m_dDynProfit = profit; }
 
 	WTSDirectionType getDirection() const{return m_direction;}
-	uint32_t	getPrePosition() const{return m_uPrePosition;}
-	uint32_t	getNewPosition() const{return m_uNewPosition;}
-	uint32_t	getAvailPrePos() const{return m_uAvailPrePos;}
-	uint32_t	getAvailNewPos() const{return m_uAvailNewPos;}
+	double	getPrePosition() const{ return m_dPrePosition; }
+	double	getNewPosition() const{ return m_dNewPosition; }
+	double	getAvailPrePos() const{ return m_dAvailPrePos; }
+	double	getAvailNewPos() const{ return m_dAvailNewPos; }
 
-	uint32_t	getTotalPosition() const{return m_uPrePosition + m_uNewPosition;}
-	uint32_t	getAvailPosition() const{return m_uAvailPrePos + m_uAvailNewPos;}
+	double	getTotalPosition() const{ return m_dPrePosition + m_dNewPosition; }
+	double	getAvailPosition() const{ return m_dAvailPrePos + m_dAvailNewPos; }
 
-	uint32_t	getFrozenPosition() const{return getTotalPosition()-getAvailPosition();}
-	uint32_t	getFrozenNewPos() const{return m_uNewPosition-m_uAvailNewPos;}
-	uint32_t	getFrozenPrePos() const{return m_uPrePosition-m_uAvailPrePos;}
+	double	getFrozenPosition() const{ return getTotalPosition() - getAvailPosition(); }
+	double	getFrozenNewPos() const{ return m_dNewPosition - m_dAvailNewPos; }
+	double	getFrozenPrePos() const{ return m_dPrePosition - m_dAvailPrePos; }
 
 	double		getPositionCost() const{ return m_dTotalPosCost; }
 	double		getMargin() const{ return m_dMargin; }
@@ -402,10 +402,10 @@ public:
 protected:
 	WTSPositionItem()
 		: m_direction(WDT_LONG)
-		, m_uPrePosition(0)
-		, m_uNewPosition(0)
-		, m_uAvailPrePos(0)
-		, m_uAvailNewPos(0)
+		, m_dPrePosition(0)
+		, m_dNewPosition(0)
+		, m_dAvailPrePos(0)
+		, m_dAvailNewPos(0)
 		, m_dMargin(0)
 		, m_dAvgPrice(0)
 		, m_dDynProfit(0)
@@ -419,10 +419,10 @@ protected:
 	std::string		m_strCurrency;
 
 	WTSDirectionType	m_direction;//多空方向
-	uint32_t	m_uPrePosition;		//昨仓
-	uint32_t	m_uNewPosition;		//今仓
-	uint32_t	m_uAvailPrePos;		//可平昨仓
-	uint32_t	m_uAvailNewPos;		//可平今仓
+	double		m_dPrePosition;		//昨仓
+	double		m_dNewPosition;		//今仓
+	double		m_dAvailPrePos;		//可平昨仓
+	double		m_dAvailNewPos;		//可平今仓
 	double		m_dTotalPosCost;	//持仓总成本
 	double		m_dMargin;			//占用保证金
 	double		m_dAvgPrice;		//持仓均价
@@ -453,14 +453,14 @@ public:
 	void setOpenDate(uint32_t uDate){m_uOpenDate = uDate;}
 	void setOpenTime(uint64_t uTime){m_uOpenTime = uTime;}
 
-	void setVolumn(uint32_t vol){m_uVolumn = vol;}
-	void setOpenPrice(double openpx){ m_uOpenPrice = openpx; }
-	void setMargin(double margin){ m_uMargin = margin; }
-	void setCloseVol(uint32_t closevol){m_uCloseVol = closevol;}
-	void setCloseAmount(double closeamount){ m_uCloseAmount = closeamount; }
-	void setCloseProfitByDate(double profitbydate){ m_iCloseProfitByDate = profitbydate; }
-	void setCloseProfitByTrade(double profitbytrade){ m_iCloseProfitByTrade = profitbytrade; }
-	void setPreSettlePx(double preSettlePx){ m_uPreSettlePx = preSettlePx; }
+	void setVolumn(double vol){ m_dVolumn = vol; }
+	void setOpenPrice(double openpx){ m_dOpenPrice = openpx; }
+	void setMargin(double margin){ m_dMargin = margin; }
+	void setCloseVol(double closevol){ m_dCloseVol = closevol; }
+	void setCloseAmount(double closeamount){ m_dCloseAmount = closeamount; }
+	void setCloseProfitByDate(double profitbydate){ m_dCloseProfitByDate = profitbydate; }
+	void setCloseProfitByTrade(double profitbytrade){ m_dCloseProfitByTrade = profitbytrade; }
+	void setPreSettlePx(double preSettlePx){ m_dPreSettlePx = preSettlePx; }
 
 	const char* getCode() const{return m_strCode.c_str();}
 	const char* getTradeID() const{return m_strTradeID.c_str();}
@@ -473,13 +473,13 @@ public:
 	uint32_t getOpenDate() const{return m_uOpenDate;}
 	uint64_t getOpenTime() const{return m_uOpenTime;}
 
-	double		getOpenPrice() const{ return m_uOpenPrice; }
-	uint32_t	getVolumn() const{return m_uVolumn;}
-	double		getMargin() const{ return m_uMargin; }
-	uint32_t	getCloseVol() const{return m_uCloseVol;}
-	double		getCloseAmount() const{ return m_uCloseAmount; }
-	double		getCloseProfitByDate() const{ return m_iCloseProfitByDate; }
-	double		getCloseProfitByTrade() const{ return m_iCloseProfitByTrade; }
+	double		getOpenPrice() const{ return m_dOpenPrice; }
+	double		getVolumn() const{ return m_dVolumn; }
+	double		getMargin() const{ return m_dMargin; }
+	double		getCloseVol() const{ return m_dCloseVol; }
+	double		getCloseAmount() const{ return m_dCloseAmount; }
+	double		getCloseProfitByDate() const{ return m_dCloseProfitByDate; }
+	double		getCloseProfitByTrade() const{ return m_dCloseProfitByTrade; }
 
 
 protected:
@@ -487,14 +487,14 @@ protected:
 		: m_direction(WDT_LONG)
 		, m_uOpenDate(0)
 		, m_uOpenTime(0)
-		, m_uVolumn(0)
-		, m_uOpenPrice(0)
-		, m_uMargin(0)
-		, m_uCloseVol(0)
-		, m_uCloseAmount(0)
-		, m_iCloseProfitByDate(0)
-		, m_iCloseProfitByTrade(0)
-		, m_uPreSettlePx(0)
+		, m_dVolumn(0)
+		, m_dOpenPrice(0)
+		, m_dMargin(0)
+		, m_dCloseVol(0)
+		, m_dCloseAmount(0)
+		, m_dCloseProfitByDate(0)
+		, m_dCloseProfitByTrade(0)
+		, m_dPreSettlePx(0)
 	{}
 	virtual ~WTSPositionDetail(){}
 
@@ -506,14 +506,14 @@ protected:
 	WTSDirectionType	m_direction;//多空方向
 	uint32_t	m_uOpenDate;
 	uint64_t	m_uOpenTime;
-	uint32_t	m_uVolumn;
-	double		m_uOpenPrice;
-	double		m_uMargin;
-	uint32_t	m_uCloseVol;
-	double		m_uCloseAmount;
-	double		m_iCloseProfitByDate;
-	double		m_iCloseProfitByTrade;
-	double		m_uPreSettlePx;
+	double		m_dVolumn;
+	double		m_dOpenPrice;
+	double		m_dMargin;
+	double		m_dCloseVol;
+	double		m_dCloseAmount;
+	double		m_dCloseProfitByDate;
+	double		m_dCloseProfitByTrade;
+	double		m_dPreSettlePx;
 };
 
 

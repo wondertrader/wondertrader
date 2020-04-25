@@ -39,13 +39,13 @@ extern "C"
 	/*
 	 *	Context×¨Êô½Ó¿Ú
 	 */
-	EXPORT_FLAG	void		ctx_str_enter_long(CtxHandler cHandle, const char* code, int qty, const char* userTag, double limitprice, double stopprice);
+	EXPORT_FLAG	void		ctx_str_enter_long(CtxHandler cHandle, const char* code, double qty, const char* userTag, double limitprice, double stopprice);
 
-	EXPORT_FLAG	void		ctx_str_exit_long(CtxHandler cHandle, const char* code, int qty, const char* userTag, double limitprice, double stopprice);
+	EXPORT_FLAG	void		ctx_str_exit_long(CtxHandler cHandle, const char* code, double qty, const char* userTag, double limitprice, double stopprice);
 
-	EXPORT_FLAG	void		ctx_str_enter_short(CtxHandler cHandle, const char* code, int qty, const char* userTag, double limitprice, double stopprice);
+	EXPORT_FLAG	void		ctx_str_enter_short(CtxHandler cHandle, const char* code, double qty, const char* userTag, double limitprice, double stopprice);
 
-	EXPORT_FLAG	void		ctx_str_exit_short(CtxHandler cHandle, const char* code, int qty, const char* userTag, double limitprice, double stopprice);
+	EXPORT_FLAG	void		ctx_str_exit_short(CtxHandler cHandle, const char* code, double qty, const char* userTag, double limitprice, double stopprice);
 
 	EXPORT_FLAG	double		ctx_str_get_position_profit(CtxHandler cHandle, const char* code);
 
@@ -57,9 +57,9 @@ extern "C"
 
 	EXPORT_FLAG	double		ctx_str_get_position_avgpx(CtxHandler cHandle, const char* code);
 
-	EXPORT_FLAG	int			ctx_str_get_position(CtxHandler cHandle, const char* code, const char* openTag);
+	EXPORT_FLAG	double		ctx_str_get_position(CtxHandler cHandle, const char* code, const char* openTag);
 
-	EXPORT_FLAG	void		ctx_str_set_position(CtxHandler cHandle, const char* code, int qty, const char* uesrTag, double limitprice, double stopprice);
+	EXPORT_FLAG	void		ctx_str_set_position(CtxHandler cHandle, const char* code, double qty, const char* uesrTag, double limitprice, double stopprice);
 
 	EXPORT_FLAG	double 		ctx_str_get_price(const char* code);
 

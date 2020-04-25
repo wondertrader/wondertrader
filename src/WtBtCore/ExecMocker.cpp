@@ -194,7 +194,7 @@ void ExecMocker::match_orders(WTSTickData* curTick, OrderIDs& to_erase)
 		if (ordInfo._buy)
 		{
 			double price;
-			uint32_t volumn;
+			double volumn;
 
 			//主动订单就按照对手价
 			if(ordInfo._positive)
@@ -221,7 +221,7 @@ void ExecMocker::match_orders(WTSTickData* curTick, OrderIDs& to_erase)
 					//如果成交量小于排队位置，则不能成交
 					if (volumn <= quepos)
 					{
-						quepos -= volumn;
+						quepos -= (uint32_t)volumn;
 						continue;
 					}
 					else if (quepos != 0)
@@ -236,7 +236,7 @@ void ExecMocker::match_orders(WTSTickData* curTick, OrderIDs& to_erase)
 					volumn = ordInfo._left;
 				}
 
-				int32_t qty = min((int32_t)volumn, ordInfo._left);
+				double qty = min(volumn, ordInfo._left);
 				_exec_unit->on_trade(ordInfo._code, ordInfo._buy, qty, price);
 				_trade_logs << localid << ","
 					<< _sig_time << ","
@@ -268,7 +268,7 @@ void ExecMocker::match_orders(WTSTickData* curTick, OrderIDs& to_erase)
 		if (!ordInfo._buy && decimal::ge(curTick->price(), ordInfo._limit))
 		{
 			double price;
-			uint32_t volumn;
+			double volumn;
 
 			//主动订单就按照对手价
 			if (ordInfo._positive)
@@ -295,7 +295,7 @@ void ExecMocker::match_orders(WTSTickData* curTick, OrderIDs& to_erase)
 					//如果成交量小于排队位置，则不能成交
 					if (volumn <= quepos)
 					{
-						quepos -= volumn;
+						quepos -= (uint32_t)volumn;
 						continue;
 					}
 					else if (quepos != 0)
@@ -310,7 +310,7 @@ void ExecMocker::match_orders(WTSTickData* curTick, OrderIDs& to_erase)
 					volumn = ordInfo._left;
 				}
 
-				int32_t qty = min((int32_t)volumn, ordInfo._left);
+				double qty = min(volumn, ordInfo._left);
 				_exec_unit->on_trade(ordInfo._code, ordInfo._buy, qty, price);
 				_trade_logs << localid << ","
 					<< _sig_time << ","
@@ -424,7 +424,7 @@ WTSTickData* ExecMocker::grabLastTick(const char* stdCode)
 	return _replayer->get_last_tick(stdCode);
 }
 
-int32_t ExecMocker::getPosition(const char* stdCode, int32_t flag /*= 3*/)
+double ExecMocker::getPosition(const char* stdCode, int32_t flag /*= 3*/)
 {
 	return _position;
 }
@@ -434,12 +434,12 @@ OrderMap* ExecMocker::getOrders(const char* stdCode)
 	return NULL;
 }
 
-int32_t ExecMocker::getUndoneQty(const char* stdCode)
+double ExecMocker::getUndoneQty(const char* stdCode)
 {
 	return _undone;
 }
 
-OrderIDs ExecMocker::buy(const char* stdCode, double price, uint32_t qty)
+OrderIDs ExecMocker::buy(const char* stdCode, double price, double qty)
 {
 	uint32_t localid = makeLocalOrderID();
 	OrderInfo& ordInfo = _orders[localid];
@@ -475,7 +475,7 @@ OrderIDs ExecMocker::buy(const char* stdCode, double price, uint32_t qty)
 	return ret;
 }
 
-OrderIDs ExecMocker::sell(const char* stdCode, double price, uint32_t qty)
+OrderIDs ExecMocker::sell(const char* stdCode, double price, double qty)
 {
 	uint32_t localid = makeLocalOrderID();
 	OrderInfo& ordInfo = _orders[localid];
@@ -526,7 +526,7 @@ bool ExecMocker::cancel(uint32_t localid)
 	return true;
 }
 
-OrderIDs ExecMocker::cancel(const char* stdCode, bool isBuy, uint32_t qty /*= 0*/)
+OrderIDs ExecMocker::cancel(const char* stdCode, bool isBuy, double qty /*= 0*/)
 {
 	OrderIDs ret;
 	for(auto& v : _orders)
@@ -535,7 +535,7 @@ OrderIDs ExecMocker::cancel(const char* stdCode, bool isBuy, uint32_t qty /*= 0*
 		if(ordInfo._state != 1)
 			continue;
 
-		uint32_t left = qty;
+		double left = qty;
 		if(ordInfo._buy == isBuy)
 		{
 			uint32_t localid = v.first;

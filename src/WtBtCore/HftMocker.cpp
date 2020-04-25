@@ -15,35 +15,7 @@
 #include "../Share/WTSVariant.hpp"
 #include "../Share/TimeUtils.hpp"
 #include "../Share/WTSContractInfo.hpp"
-
-namespace decimal
-{
-	const double MINMUM_DIFF = 0.0002;
-	inline bool equal(double a, double b = 0.0)
-	{
-		return(fabs(a - b) < MINMUM_DIFF);
-	}
-
-	inline bool gt(double a, double b)
-	{
-		return a - b > MINMUM_DIFF;
-	}
-
-	inline bool lt(double a, double b)
-	{
-		return b - a > MINMUM_DIFF;
-	}
-
-	inline bool ge(double a, double b)
-	{
-		return gt(a, b) || equal(a, b);
-	}
-
-	inline bool le(double a, double b)
-	{
-		return lt(a, b) || equal(a, b);
-	}
-};
+#include "../Share/decimal.h"
 
 uint32_t makeLocalOrderID()
 {
@@ -259,7 +231,7 @@ void HftMocker::on_init()
 		_strategy->on_init(this);
 }
 
-int32_t HftMocker::stra_get_undone(const char* stdCode)
+double HftMocker::stra_get_undone(const char* stdCode)
 {
 	int32_t ret = 0;
 	for (auto it = _orders.begin(); it != _orders.end(); it++)
@@ -292,7 +264,7 @@ bool HftMocker::stra_cancel(uint32_t localid)
 	return true;
 }
 
-OrderIDs HftMocker::stra_cancel(const char* code, bool isBuy, uint32_t qty /* = 0 */)
+OrderIDs HftMocker::stra_cancel(const char* code, bool isBuy, double qty /* = 0 */)
 {
 	OrderIDs ret;
 	uint32_t cnt = 0;
@@ -301,7 +273,7 @@ OrderIDs HftMocker::stra_cancel(const char* code, bool isBuy, uint32_t qty /* = 
 		OrderInfo& ordInfo = it->second;
 		if(ordInfo._isBuy == isBuy && strcmp(ordInfo._code, code) == 0)
 		{
-			uint32_t left = ordInfo._left;
+			double left = ordInfo._left;
 			stra_cancel(it->first);
 			ret.push_back(it->first);
 			cnt++;
@@ -315,7 +287,7 @@ OrderIDs HftMocker::stra_cancel(const char* code, bool isBuy, uint32_t qty /* = 
 	return ret;
 }
 
-otp::OrderIDs HftMocker::stra_buy(const char* stdCode, double price, uint32_t qty)
+otp::OrderIDs HftMocker::stra_buy(const char* stdCode, double price, double qty)
 {
 	//logger.log("买入%s合约%u手，价格：%f", stdCode, qty, price);
 	uint32_t localid = makeLocalOrderID();
@@ -398,8 +370,8 @@ void HftMocker::procOrder(uint32_t localid)
 	 *	下面就要模拟成交了
 	 */
 
-	uint32_t maxQty = min(orderQty, ordInfo._total);
-	auto vols = splitVolumn(maxQty);
+	double maxQty = min(orderQty, ordInfo._total);
+	auto vols = splitVolumn((uint32_t)maxQty);
 	for(uint32_t curQty : vols)
 	{
 		_strategy->on_trade(this, ordInfo._code, ordInfo._isBuy, curQty, curPx);
@@ -407,7 +379,7 @@ void HftMocker::procOrder(uint32_t localid)
 		ordInfo._left -= curQty;
 		_strategy->on_order(this, localid, ordInfo._code, ordInfo._isBuy, ordInfo._total, ordInfo._left, ordInfo._price, false);
 
-		int32_t& curPos = _positions[ordInfo._code];
+		double& curPos = _positions[ordInfo._code];
 		curPos += curQty * (ordInfo._isBuy ? 1 : -1);
 
 		_ofs_signals << _replayer->get_date() << "." << _replayer->get_raw_time() << "." << _replayer->get_secs() << ","
@@ -420,7 +392,7 @@ void HftMocker::procOrder(uint32_t localid)
 	}
 }
 
-otp::OrderIDs HftMocker::stra_sell(const char* stdCode, double price, uint32_t qty)
+otp::OrderIDs HftMocker::stra_sell(const char* stdCode, double price, double qty)
 {
 	//logger.log("卖出%s合约%u手，价格：%f", stdCode, qty, price);
 	uint32_t localid = makeLocalOrderID();
@@ -475,7 +447,7 @@ WTSTickData* HftMocker::stra_get_last_tick(const char* code)
 	return _replayer->get_last_tick(code);
 }
 
-int32_t HftMocker::stra_get_position(const char* code)
+double HftMocker::stra_get_position(const char* code)
 {
 	return _positions[code];
 }

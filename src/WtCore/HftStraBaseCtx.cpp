@@ -68,7 +68,7 @@ bool HftStraBaseCtx::stra_cancel(uint32_t localid)
 	return _trader->cancel(localid);
 }
 
-OrderIDs HftStraBaseCtx::stra_cancel(const char* code, bool isBuy, uint32_t qty)
+OrderIDs HftStraBaseCtx::stra_cancel(const char* code, bool isBuy, double qty)
 {
 	return _trader->cancel(code, isBuy, qty);
 }
@@ -82,7 +82,7 @@ const char* HftStraBaseCtx::get_inner_code(const char* stdCode)
 	return it->second.c_str();
 }
 
-OrderIDs HftStraBaseCtx::stra_buy(const char* stdCode, double price, uint32_t qty)
+OrderIDs HftStraBaseCtx::stra_buy(const char* stdCode, double price, double qty)
 {
 	if(CodeHelper::isStdFutHotCode(stdCode))
 	{
@@ -102,7 +102,7 @@ OrderIDs HftStraBaseCtx::stra_buy(const char* stdCode, double price, uint32_t qt
 	}
 }
 
-OrderIDs HftStraBaseCtx::stra_sell(const char* stdCode, double price, uint32_t qty)
+OrderIDs HftStraBaseCtx::stra_sell(const char* stdCode, double price, double qty)
 {
 	if (CodeHelper::isStdFutHotCode(stdCode))
 	{
@@ -160,17 +160,17 @@ void HftStraBaseCtx::stra_log_text(const char* fmt, ...)
 	va_end(args);
 }
 
-void HftStraBaseCtx::on_trade(const char* stdCode, bool isBuy, uint32_t vol, double price)
+void HftStraBaseCtx::on_trade(const char* stdCode, bool isBuy, double vol, double price)
 {
 
 }
 
-void HftStraBaseCtx::on_order(uint32_t localid, const char* stdCode, bool isBuy, uint32_t totalQty, uint32_t leftQty, double price, bool isCanceled /* = false */)
+void HftStraBaseCtx::on_order(uint32_t localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled /* = false */)
 {
 
 }
 
-void HftStraBaseCtx::on_position(const char* stdCode, bool isLong, uint32_t prevol, uint32_t preavail, uint32_t newvol, uint32_t newavail)
+void HftStraBaseCtx::on_position(const char* stdCode, bool isLong, double prevol, double preavail, double newvol, double newavail)
 {
 
 }
@@ -190,7 +190,7 @@ void HftStraBaseCtx::on_entrust(uint32_t localid, const char* stdCode, bool bSuc
 {
 }
 
-int32_t HftStraBaseCtx::stra_get_position(const char* stdCode)
+double HftStraBaseCtx::stra_get_position(const char* stdCode)
 {
 	if (CodeHelper::isStdFutHotCode(stdCode))
 	{
@@ -210,7 +210,7 @@ int32_t HftStraBaseCtx::stra_get_position(const char* stdCode)
 	}
 }
 
-int32_t HftStraBaseCtx::stra_get_undone(const char* stdCode)
+double HftStraBaseCtx::stra_get_undone(const char* stdCode)
 {
 	if (CodeHelper::isStdFutHotCode(stdCode))
 	{

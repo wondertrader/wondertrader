@@ -18,6 +18,7 @@
 #include "../Share/TimeUtils.hpp"
 #include "../Share/IBaseDataMgr.h"
 #include "../Share/DLLHelper.hpp"
+#include "../Share/decimal.h"
 
 #ifdef _WIN32
 #ifdef _WIN64
@@ -463,7 +464,7 @@ int TraderCTP::orderAction(WTSEntrustAction* action)
 
 	req.LimitPrice = action->getPrice();
 
-	req.VolumeChange = action->getVolumn();
+	req.VolumeChange = (int32_t)action->getVolumn();
 
 	strcpy(req.OrderSysID, action->getOrderID());
 	strcpy(req.ExchangeID, action->getExchg());
@@ -819,7 +820,7 @@ void TraderCTP::OnRspQryInvestorPosition(CThostFtdcInvestorPositionField *pInves
 
 			if (pos->getTotalPosition() != 0)
 			{
-				pos->setAvgPrice((uint32_t)(pos->getPositionCost() / pos->getTotalPosition() / commInfo->getVolScale()));
+				pos->setAvgPrice(pos->getPositionCost() / pos->getTotalPosition() / commInfo->getVolScale());
 			}
 			else
 			{
@@ -876,7 +877,7 @@ void TraderCTP::OnRspQryInvestorPosition(CThostFtdcInvestorPositionField *pInves
 						availNew = 0;
 					pos->setAvailNewPos(availNew);
 
-					int availPre = pos->getNewPosition() + pos->getPrePosition()
+					double availPre = pos->getNewPosition() + pos->getPrePosition()
 						- pInvestorPosition->LongFrozen - pInvestorPosition->ShortFrozen
 						- pos->getAvailNewPos();
 					pos->setAvailPrePos(availPre);
@@ -887,7 +888,7 @@ void TraderCTP::OnRspQryInvestorPosition(CThostFtdcInvestorPositionField *pInves
 
 			}
 
-			if (pos->getTotalPosition() > 0 && pos->getMargin() == 0)
+			if (decimal::lt(pos->getTotalPosition(), 0.0) && decimal::eq(pos->getMargin(), 0.0))
 			{
 				//有仓位，但是保证金为0，则说明是套利合约，单个合约的可用持仓全部置为0
 				pos->setAvailNewPos(0);

@@ -154,7 +154,7 @@ CtxHandler init_cta_mocker(const char* name)
 	return getRunner().initCtaMocker(name);
 }
 
-void ctx_str_enter_long(CtxHandler cHandle, const char* code, int qty, const char* userTag, double limitprice, double stopprice)
+void ctx_str_enter_long(CtxHandler cHandle, const char* code, double qty, const char* userTag, double limitprice, double stopprice)
 {
 	CtaMocker* ctx = getRunner().cta_mocker();
 	if (ctx == NULL)
@@ -163,7 +163,7 @@ void ctx_str_enter_long(CtxHandler cHandle, const char* code, int qty, const cha
 	ctx->stra_enter_long(code, qty, userTag, limitprice, stopprice);
 }
 
-void ctx_str_exit_long(CtxHandler cHandle, const char* code, int qty, const char* userTag, double limitprice, double stopprice)
+void ctx_str_exit_long(CtxHandler cHandle, const char* code, double qty, const char* userTag, double limitprice, double stopprice)
 {
 	CtaMocker* ctx = getRunner().cta_mocker();
 	if (ctx == NULL)
@@ -172,7 +172,7 @@ void ctx_str_exit_long(CtxHandler cHandle, const char* code, int qty, const char
 	ctx->stra_exit_long(code, qty, userTag, limitprice, stopprice);
 }
 
-void ctx_str_enter_short(CtxHandler cHandle, const char* code, int qty, const char* userTag, double limitprice, double stopprice)
+void ctx_str_enter_short(CtxHandler cHandle, const char* code, double qty, const char* userTag, double limitprice, double stopprice)
 {
 	CtaMocker* ctx = getRunner().cta_mocker();
 	if (ctx == NULL)
@@ -181,7 +181,7 @@ void ctx_str_enter_short(CtxHandler cHandle, const char* code, int qty, const ch
 	ctx->stra_enter_short(code, qty, userTag, limitprice, stopprice);
 }
 
-void ctx_str_exit_short(CtxHandler cHandle, const char* code, int qty, const char* userTag, double limitprice, double stopprice)
+void ctx_str_exit_short(CtxHandler cHandle, const char* code, double qty, const char* userTag, double limitprice, double stopprice)
 {
 	CtaMocker* ctx = getRunner().cta_mocker();
 	if (ctx == NULL)
@@ -319,7 +319,7 @@ double ctx_str_get_position_avgpx(CtxHandler cHandle, const char* code)
 	return ctx->stra_get_position_avgpx(code);
 }
 
-int ctx_str_get_position(CtxHandler cHandle, const char* code, const char* openTag)
+double ctx_str_get_position(CtxHandler cHandle, const char* code, const char* openTag)
 {
 	CtaMocker* ctx = getRunner().cta_mocker();
 	if (ctx == NULL)
@@ -328,7 +328,7 @@ int ctx_str_get_position(CtxHandler cHandle, const char* code, const char* openT
 	return ctx->stra_get_position(code, openTag);
 }
 
-void ctx_str_set_position(CtxHandler cHandle, const char* code, int qty, const char* userTag, double limitprice, double stopprice)
+void ctx_str_set_position(CtxHandler cHandle, const char* code, double qty, const char* userTag, double limitprice, double stopprice)
 {
 	CtaMocker* ctx = getRunner().cta_mocker();
 	if (ctx == NULL)

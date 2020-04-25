@@ -49,11 +49,11 @@ public:
 
 	virtual bool stra_cancel(uint32_t localid) override;
 
-	virtual OrderIDs stra_cancel(const char* code, bool isBuy, uint32_t qty = 0) override;
+	virtual OrderIDs stra_cancel(const char* code, bool isBuy, double qty = 0) override;
 
-	virtual OrderIDs stra_buy(const char* stdCode, double price, uint32_t qty) override;
+	virtual OrderIDs stra_buy(const char* stdCode, double price, double qty) override;
 
-	virtual OrderIDs stra_sell(const char* stdCode, double price, uint32_t qty) override;
+	virtual OrderIDs stra_sell(const char* stdCode, double price, double qty) override;
 
 	virtual WTSCommodityInfo* stra_get_comminfo(const char* code) override;
 
@@ -63,9 +63,9 @@ public:
 
 	virtual WTSTickData* stra_get_last_tick(const char* code) override;
 
-	virtual int32_t stra_get_position(const char* code) override;
+	virtual double stra_get_position(const char* code) override;
 
-	virtual int32_t stra_get_undone(const char* stdCode) override;
+	virtual double stra_get_undone(const char* stdCode) override;
 
 	virtual double stra_get_price(const char* code) override;
 
@@ -131,8 +131,8 @@ private:
 		bool	_isBuy;
 		char	_code[32];
 		double	_price;
-		uint32_t	_total;
-		uint32_t	_left;
+		double	_total;
+		double	_left;
 		
 		uint32_t	_localid;
 
@@ -149,7 +149,7 @@ private:
 	typedef WTSHashMap<std::string> CommodityMap;
 	CommodityMap*	_commodities;
 
-	std::unordered_map<std::string, int32_t> _positions;
+	std::unordered_map<std::string, double> _positions;
 
 	std::ofstream	_ofs_signals;
 };
