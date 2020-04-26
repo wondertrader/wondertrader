@@ -69,3 +69,5 @@
 
 * WonderTrader是经过多年检验的成熟量化交易框架，从2013年开始搭建第一个版本到现在，经历过几次全部重构，最终形成如今的WonderTrader
 * 关注公众号wondertrader，可以收到wondertrader的实时资讯
+
+![WonderTrader2.png](http://q92ex9g0c.bkt.clouddn.com/wt/logo_qcode_ad.jpg)

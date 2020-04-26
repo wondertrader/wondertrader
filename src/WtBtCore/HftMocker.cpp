@@ -345,13 +345,14 @@ void HftMocker::procOrder(uint32_t localid)
 	if (!_use_newpx)
 	{
 		curPx = ordInfo._isBuy ? curTick->askprice(0) : curTick->bidprice(0);
-		if (curPx == 0.0)
+		//if (curPx == 0.0)
+		if(decimal::eq(curPx, 0.0))
 			return;
 	}
 	curTick->release();
 
 	//如果没有成交条件，则退出逻辑
-	if(ordInfo._price != 0.0)
+	if(!decimal::eq(ordInfo._price, 0.0))
 	{
 		if(ordInfo._isBuy && decimal::gt(curPx, ordInfo._price))
 		{
@@ -386,7 +387,8 @@ void HftMocker::procOrder(uint32_t localid)
 			<< (ordInfo._isBuy ? "+" : "-") << curQty << "," << curPos << "," << curPx << std::endl;
 	}
 
-	if(ordInfo._left == 0)
+	//if(ordInfo._left == 0)
+	if(decimal::eq(ordInfo._left, 0.0))
 	{
 		_orders.erase(it);
 	}
