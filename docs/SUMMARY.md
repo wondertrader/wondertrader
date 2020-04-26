@@ -6,6 +6,7 @@
     * [如何编译和安装](install.md)
     * [历史数据的处理](histdata.md)
     * [回测自己的策略](mystrategy.md)
+    * [实盘完整攻略](product.md)
 * API详解
     * [策略模块详解](api/structure.md)
     * [基本数据接口](api/basicdata.md)
