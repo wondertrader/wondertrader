@@ -414,12 +414,18 @@ OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty)
 	//	return ret;
 	//}
 
-	WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO, "[%s]买入 %s 合约%f手", _id.c_str(), stdCode, qty);
+	//WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO, "[%s]买入 %s 合约%f手", _id.c_str(), stdCode, qty);
+	{
+		StreamLogger(LL_INFO, _id.c_str(), "trader").self() << "[" << _id << "]" << "买入 " << stdCode << " " << qty << "手";
+	}
 
 	double oldQty = _undone_qty[stdCode];
 	double newQty = oldQty + qty;
 	_undone_qty[stdCode] = newQty;
-	WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO, "[%s]合约 %s 未完成订单手数更新, %f -> %f", _id.c_str(), stdCode, oldQty, newQty);
+	//WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO, "[%s]合约 %s 未完成订单手数更新, %f -> %f", _id.c_str(), stdCode, oldQty, newQty);
+	{
+		StreamLogger(LL_INFO, _id.c_str(), "trader").self() << "[" << _id << "]" << stdCode << " 未完成订单手数更新, " << oldQty << " -> " << newQty;
+	}
 
 	const PosItem& pItem = _positions[stdCode];
 	WTSTradeStateInfo* statInfo = (WTSTradeStateInfo*)_stat_map->get(stdCode);
@@ -674,12 +680,18 @@ OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty)
 	//	return ret;
 	//}
 
-	WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO,"[%s]卖出 %s 合约%f手", _id.c_str(), stdCode, qty);
+	//WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO,"[%s]卖出 %s 合约%f手", _id.c_str(), stdCode, qty);
+	{
+		StreamLogger(LL_INFO, _id.c_str(), "trader").self() << "[" << _id << "]" << "卖出 " << stdCode << " " << qty << "手";
+	}
 
 	double oldQty = _undone_qty[stdCode];
 	double newQty = oldQty - qty;
 	_undone_qty[stdCode] = newQty;
-	WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO,"[%s]合约 %s 未完成订单手数更新, %f -> %f", _id.c_str(), stdCode, oldQty, newQty);
+	//WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO,"[%s]合约 %s 未完成订单手数更新, %f -> %f", _id.c_str(), stdCode, oldQty, newQty);
+	{
+		StreamLogger(LL_INFO, _id.c_str(), "trader").self() << "[" << _id << "]" << stdCode << " 未完成订单手数更新, " << oldQty << " -> " << newQty;
+	}
 
 	const PosItem& pItem = _positions[stdCode];	
 	WTSTradeStateInfo* statInfo = (WTSTradeStateInfo*)_stat_map->get(stdCode);
@@ -1170,7 +1182,10 @@ void TraderAdapter::onRspEntrust(WTSEntrust* entrust, WTSError *err)
 		double newQty = oldQty - qty*(isBuy ? 1 : -1);
 		_undone_qty[stdCode] = newQty;
 
-		WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO,"[%s]合约 %s 未完成订单手数更新, %f -> %f", _id.c_str(), stdCode.c_str(), oldQty, newQty);
+		//WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO,"[%s]合约 %s 未完成订单手数更新, %f -> %f", _id.c_str(), stdCode.c_str(), oldQty, newQty);
+		{
+			StreamLogger(LL_INFO, _id.c_str(), "trader").self() << "[" << _id << "]" << stdCode << " 未完成订单手数更新, " << oldQty << " -> " << newQty;
+		}
 
 
 		if (strlen(entrust->getUserTag()) > 0)
@@ -1532,7 +1547,10 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 		double oldQty = _undone_qty[stdCode];
 		double newQty = oldQty - qty*(isBuy ? 1 : -1);
 		_undone_qty[stdCode] = newQty;
-		WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO,"[%s]合约 %s 未完成订单手数更新, %f -> %f", _id.c_str(), stdCode.c_str(), oldQty, newQty);
+		//WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO,"[%s]合约 %s 未完成订单手数更新, %f -> %f", _id.c_str(), stdCode.c_str(), oldQty, newQty);
+		{
+			StreamLogger(LL_INFO, _id.c_str(), "trader").self() << "[" << _id << "]" << stdCode << " 未完成订单手数更新, " << oldQty << " -> " << newQty;
+		}
 
 		//WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR,"[%s]下单失败: %s, 合约: %s, 操作: %s, 手数: %d", _id.c_str(), stdCode.c_str(), err->getMessage(), entrust->getCode(), action.c_str(), qty);
 		std::string action;
@@ -1722,7 +1740,10 @@ void TraderAdapter::onPushTrade(WTSTradeInfo* tradeRecord)
 		double oldQty = _undone_qty[stdCode];
 		double newQty = oldQty - tradeRecord->getVolumn()*(isBuy ? 1 : -1);
 		_undone_qty[stdCode] = newQty;
-		WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO,"[%s]合约 %s 未完成订单手数更新, %f -> %f", _id.c_str(), stdCode.c_str(), oldQty, newQty);
+		//WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO,"[%s]合约 %s 未完成订单手数更新, %f -> %f", _id.c_str(), stdCode.c_str(), oldQty, newQty);
+		{
+			StreamLogger(LL_INFO, _id.c_str(), "trader").self() << "[" << _id << "]" << stdCode << " 未完成订单手数更新, " << oldQty << " -> " << newQty;
+		}
 	}
 
 	PosItem& pItem = _positions[stdCode];
