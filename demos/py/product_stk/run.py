@@ -6,7 +6,7 @@ if __name__ == "__main__":
     engine = WtEngine()
     engine.init('.\\Common\\', "config.json")
     
-    straInfo = StraDualThrust(name='pydt_SH600000', code="SSE.600000Q", barCnt=50, period="d1", days=30, k1=0.1, k2=0.1, isForStk=True)
+    straInfo = StraDualThrust(name='pydt_SH600000', code="SSE.600000", barCnt=50, period="d1", days=30, k1=0.1, k2=0.1, isForStk=True)
     engine.add_strategy(straInfo)
     
     engine.run()

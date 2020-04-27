@@ -1,5 +1,5 @@
 from wtpy import BaseStrategy
-
+from wtpy import Context
 
 class StraDualThrust(BaseStrategy):
     
@@ -16,7 +16,7 @@ class StraDualThrust(BaseStrategy):
 
         self.__is_stk__ = isForStk
 
-    def on_init(self, context):
+    def on_init(self, context:Context):
         code = self.__code__    #品种代码
         if self.__is_stk__:
             code = code + "Q"
@@ -32,7 +32,7 @@ class StraDualThrust(BaseStrategy):
         self.xxx = context.user_load_data('xxx',1)
 
     
-    def on_calculate(self, context):
+    def on_calculate(self, context:Context):
         code = self.__code__    #品种代码
 
         trdUnit = 1
@@ -107,6 +107,6 @@ class StraDualThrust(BaseStrategy):
                 return
 
 
-    def on_tick(self, context, stdCode, newTick):
+    def on_tick(self, context:Context, stdCode:str, newTick:dict):
         #context.stra_log_text ("on tick fired")
         return
