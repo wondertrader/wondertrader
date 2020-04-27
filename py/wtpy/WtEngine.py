@@ -1,8 +1,8 @@
 from wtpy.porter import WtWrapper
 from wtpy.Context import Context
 from wtpy.BaseDefs import BaseStrategy
-from wtpy.IndexWriter import BaseIndexWriter
-from wtpy.DataReporter import DataReporter
+from wtpy.ExtDefs import BaseIndexWriter
+from wtpy.ExtDefs import BaseDataReporter
 
 from .ProductMgr import ProductMgr
 from .SessionMgr import SessionMgr
@@ -66,7 +66,7 @@ class WtEngine:
         if self.__writer__ is not None:
             self.__writer__.write_indicator(id, tag, time, data)
 
-    def set_data_reporter(self, reporter:DataReporter):
+    def set_data_reporter(self, reporter:BaseDataReporter):
         '''
         设置数据报告器
         '''
