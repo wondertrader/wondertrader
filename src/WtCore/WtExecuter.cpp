@@ -19,6 +19,7 @@
 #include "../Share/BoostFile.hpp"
 #include "../Share/TimeUtils.hpp"
 #include "../Share/IHotMgr.h"
+#include "../Share/decimal.h"
 
 #include "../WTSTools/WTSLogger.h"
 
@@ -187,7 +188,11 @@ void WtExecuter::on_position_changed(const char* stdCode, double targetPos)
 	//int32_t targetPos = oldVol + diffQty;
 	_target_pos[stdCode] = targetPos;
 
-	writeLog("%s目标仓位更新: %f -> %f", stdCode, oldVol, targetPos);	
+	//writeLog("%s目标仓位更新: %f -> %f", stdCode, oldVol, targetPos);
+	if(!decimal::eq(oldVol, targetPos))
+	{
+		StreamLogger(LL_INFO, _name.c_str(), "executer").self() << "[" << _name << "]" << stdCode << "目标仓位更新: " << oldVol << " -> " << targetPos << "";
+	}
 
 	if (_trader && !_trader->checkOrderLimits(stdCode))
 	{
@@ -197,29 +202,6 @@ void WtExecuter::on_position_changed(const char* stdCode, double targetPos)
 
 	unit->self()->set_position(stdCode, targetPos);
 }
-
-//void WtExecuter::set_position(const char* stdCode, int32_t targetPos)
-//{
-//	ExecuteUnitPtr unit = getUnit(stdCode);
-//	if (unit == NULL)
-//		return;
-//
-//	targetPos *= _scale;
-//	int32_t oldVol = _target_pos[stdCode];
-//	_target_pos[stdCode] = targetPos;
-//	if (targetPos != oldVol)
-//	{
-//		writeLog("%s目标仓位更新: %d -> %d", stdCode, oldVol, targetPos);
-//	}
-//
-//	if (_trader && !_trader->checkOrderLimits(stdCode))
-//	{
-//		writeLog("合约 %s 已被禁止交易", stdCode);
-//		return;
-//	}
-//
-//	unit->self()->set_position(stdCode, targetPos);
-//}
 
 void WtExecuter::set_position(const std::unordered_map<std::string, double>& targets)
 {
@@ -234,9 +216,10 @@ void WtExecuter::set_position(const std::unordered_map<std::string, double>& tar
 		newVol *= _scale;
 		double oldVol = _target_pos[stdCode];
 		_target_pos[stdCode] = newVol;
-		if(newVol != oldVol)
+		if(!decimal::eq(oldVol, newVol))
 		{
-			writeLog("%s目标仓位更新: %f -> %f", stdCode, oldVol, newVol);
+			//writeLog("%s目标仓位更新: %f -> %f", stdCode, oldVol, newVol);
+			StreamLogger(LL_INFO, _name.c_str(), "executer").self() << "[" << _name << "]" << stdCode << "目标仓位更新: " << oldVol << " -> " << newVol << "";
 		}
 
 		if (_trader && !_trader->checkOrderLimits(stdCode))
@@ -259,7 +242,6 @@ void WtExecuter::set_position(const std::unordered_map<std::string, double>& tar
 		if (unit == NULL)
 			continue;
 
-		//WTSLogger::info2("executer", "[%s]目标仓位更新: %s -> %d", _name.c_str(), code, 0);
 		unit->self()->set_position(code, 0);
 
 		it->second = 0;

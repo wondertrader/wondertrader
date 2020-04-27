@@ -123,7 +123,7 @@ void HisDataReplayer::run()
 
 			if (nextBarTime > _end_time)
 			{
-				WTSLogger::info("%s超过结束时间%s，回放结束", StrUtil::fmtUInt64(nextBarTime).c_str(), StrUtil::fmtUInt64(_end_time).c_str());
+				StreamLogger(LL_INFO).self() << nextBarTime << "超过结束时间" << _end_time << "，回放结束";
 				break;
 			}
 

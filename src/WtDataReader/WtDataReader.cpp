@@ -1095,7 +1095,7 @@ WTSKlineSlice* WtDataReader::readKlineSlice(const char* stdCode, WTSKlinePeriod 
 
 	if (cInfo._hot && cInfo._category == CC_Future)
 	{
-		_bars_cache[key]._raw_code = _hot_mgr->getRawCode(cInfo._exchg, cInfo._exchg, curTDate);
+		_bars_cache[key]._raw_code = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, curTDate);
 		if (_sink) _sink->reader_log(LL_INFO, "主力合约映射确认: %s -> %s", stdCode, _bars_cache[key]._raw_code.c_str());
 	}
 	else

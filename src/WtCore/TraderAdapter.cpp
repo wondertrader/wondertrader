@@ -1357,9 +1357,12 @@ void TraderAdapter::onRspOrders(const WTSArray* ayOrders)
 
 void TraderAdapter::printPosition(const char* code, const PosItem& pItem)
 {
-	WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO,"[%s]%s持仓更新, 多:%u[%u]|%u[%u], 空:%u[%u]|%u[%u]", 
-		_id.c_str(), code, pItem.l_prevol, pItem.l_preavail, pItem.l_newvol, pItem.l_newavail, 
-		pItem.s_prevol, pItem.s_preavail, pItem.s_newvol, pItem.s_newavail);
+	//WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO,"[%s]%s持仓更新, 多:%f[%f]|%f[%f], 空:%f[%f]|%f[%f]", 
+	//	_id.c_str(), code, pItem.l_prevol, pItem.l_preavail, pItem.l_newvol, pItem.l_newavail, 
+	//	pItem.s_prevol, pItem.s_preavail, pItem.s_newvol, pItem.s_newavail);
+
+	StreamLogger(LL_INFO, _id.c_str(), "trader").self() << "[" << _id << "]" << code << "持仓更新, 多:" << pItem.l_prevol << "[" << pItem.l_preavail << "]|" << pItem.l_newvol
+		<< "[" << pItem.l_newavail << "], 空:" << pItem.s_prevol << "[" << pItem.s_preavail << "]|" << pItem.s_newvol << "[" << pItem.s_newavail << "]";
 }
 
 void TraderAdapter::onRspTrades(const WTSArray* ayTrades)
@@ -1418,9 +1421,13 @@ void TraderAdapter::onRspTrades(const WTSArray* ayTrades)
 		{
 			const char* stdCode = it->first.c_str();
 			WTSTradeStateInfo* pItem = (WTSTradeStateInfo*)it->second;
-			WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO,"[%s]合约%s开平统计更新, 开多%f手, 平多%u手, 平今多%f手, 开空%f手, 平空%f手, 平今空%f手",
-				_id.c_str(), stdCode, pItem->open_volumn_long(), pItem->close_volumn_long(), pItem->closet_volumn_long(), 
-				pItem->open_volumn_short(), pItem->close_volumn_short(), pItem->closet_volumn_short());
+			//WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO,"[%s]合约%s开平统计更新, 开多%f手, 平多%u手, 平今多%f手, 开空%f手, 平空%f手, 平今空%f手",
+			//	_id.c_str(), stdCode, pItem->open_volumn_long(), pItem->close_volumn_long(), pItem->closet_volumn_long(), 
+			//	pItem->open_volumn_short(), pItem->close_volumn_short(), pItem->closet_volumn_short());
+
+			StreamLogger(LL_INFO, _id.c_str(), "trader").self() << "[" << _id << "]" << stdCode << "开平统计更新, 开多" << pItem->open_volumn_long() 
+				<< "手, 平多" << pItem->close_volumn_long() << "手, 平今多" << pItem->closet_volumn_long() << "手, 开空" << pItem->open_volumn_short()
+				<< "手, 平空" << pItem->close_volumn_short() << "手, 平今空" << pItem->closet_volumn_short() << "手";
 		}
 	}
 

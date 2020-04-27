@@ -201,8 +201,11 @@ void WTSLogger::debug(const char* format, ...)
 
 	va_list args;
 	va_start(args, format);
-	debug_imp(m_rootLogger, format, args);
+	char szBuf[MAX_BUFFER_LENGTH] = { 0 };
+	vsprintf(szBuf, format, args);
 	va_end(args);
+
+	debug_imp(m_rootLogger, szBuf);
 }
 
 void WTSLogger::info(const char* format, ...)
@@ -212,8 +215,11 @@ void WTSLogger::info(const char* format, ...)
 
 	va_list args;
 	va_start(args, format);
-	info_imp(m_rootLogger, format, args);
+	char szBuf[MAX_BUFFER_LENGTH] = { 0 };
+	vsprintf(szBuf, format, args);
 	va_end(args);
+
+	info_imp(m_rootLogger, szBuf);
 }
 
 void WTSLogger::warn(const char* format, ...)
@@ -223,8 +229,11 @@ void WTSLogger::warn(const char* format, ...)
 
 	va_list args;
 	va_start(args, format);
-	warn_imp(m_rootLogger, format, args);
+	char szBuf[MAX_BUFFER_LENGTH] = { 0 };
+	vsprintf(szBuf, format, args);
 	va_end(args);
+
+	warn_imp(m_rootLogger, szBuf);
 }
 
 void WTSLogger::error(const char* format, ...)
@@ -234,8 +243,11 @@ void WTSLogger::error(const char* format, ...)
 
 	va_list args;
 	va_start(args, format);
-	error_imp(m_rootLogger, format, args);
+	char szBuf[MAX_BUFFER_LENGTH] = { 0 };
+	vsprintf(szBuf, format, args);
 	va_end(args);
+
+	error_imp(m_rootLogger, szBuf);
 }
 
 void WTSLogger::fatal(const char* format, ...)
@@ -245,8 +257,11 @@ void WTSLogger::fatal(const char* format, ...)
 
 	va_list args;
 	va_start(args, format);
-	fatal_imp(m_rootLogger, format, args);
+	char szBuf[MAX_BUFFER_LENGTH] = { 0 };
+	vsprintf(szBuf, format, args);
 	va_end(args);
+
+	fatal_imp(m_rootLogger, szBuf);
 }
 
 void WTSLogger::log(WTSLogLevel ll, const char* format, ...)
@@ -256,104 +271,90 @@ void WTSLogger::log(WTSLogLevel ll, const char* format, ...)
 
 	va_list args;
 	va_start(args, format);
+	char szBuf[MAX_BUFFER_LENGTH] = { 0 };
+	vsprintf(szBuf, format, args);
+	va_end(args);
 
 	switch(ll)
 	{
 	case LL_DEBUG:
-		debug_imp(m_rootLogger, format, args);
+		debug_imp(m_rootLogger, szBuf);
 		break;
 	case LL_INFO:
-		info_imp(m_rootLogger, format, args);
+		info_imp(m_rootLogger, szBuf);
 		break;
 	case LL_WARN:
-		warn_imp(m_rootLogger, format, args);
+		warn_imp(m_rootLogger, szBuf);
 		break;
 	case LL_ERROR:
-		error_imp(m_rootLogger, format, args);
+		error_imp(m_rootLogger, szBuf);
 		break;
 	case LL_FATAL:
-		fatal_imp(m_rootLogger, format, args);
+		fatal_imp(m_rootLogger, szBuf);
 		break;
 	default:
 		break;
 	}
-
-	va_end(args);
 }
 
-void WTSLogger::debug_imp(SpdLoggerPtr logger, const char* format, va_list args)
+void WTSLogger::debug_imp(SpdLoggerPtr logger, const char* message)
 {
-	char szBuf[MAX_BUFFER_LENGTH] = { 0 };
-	vsprintf(szBuf, format, args);
-
 	if (logger)
-		logger->debug(szBuf);
+		logger->debug(message);
 
 	if (logger != m_rootLogger)
-		m_rootLogger->debug(szBuf);
+		m_rootLogger->debug(message);
 
 	if (m_logHandler)
-		m_logHandler->handleLogAppend(LL_DEBUG, szBuf);
+		m_logHandler->handleLogAppend(LL_DEBUG, message);
 }
 
-void WTSLogger::info_imp(SpdLoggerPtr logger, const char* format, va_list args)
+void WTSLogger::info_imp(SpdLoggerPtr logger, const char* message)
 {
-	char szBuf[MAX_BUFFER_LENGTH] = { 0 };
-	vsprintf(szBuf, format, args);
-
 	if (logger)
-		logger->info(szBuf);
+		logger->info(message);
 
 	if (logger != m_rootLogger)
-		m_rootLogger->info(szBuf);
+		m_rootLogger->info(message);
 
 	if (m_logHandler)
-		m_logHandler->handleLogAppend(LL_INFO, szBuf);
+		m_logHandler->handleLogAppend(LL_INFO, message);
 }
 
-void WTSLogger::warn_imp(SpdLoggerPtr logger, const char* format, va_list args)
+void WTSLogger::warn_imp(SpdLoggerPtr logger, const char* message)
 {
-	char szBuf[MAX_BUFFER_LENGTH] = { 0 };
-	vsprintf(szBuf, format, args);
-
 	if (logger)
-		logger->warn(szBuf);
+		logger->warn(message);
 
 	if (logger != m_rootLogger)
-		m_rootLogger->warn(szBuf);
+		m_rootLogger->warn(message);
 
 	if (m_logHandler)
-		m_logHandler->handleLogAppend(LL_WARN, szBuf);
+		m_logHandler->handleLogAppend(LL_WARN, message);
 }
 
-void WTSLogger::error_imp(SpdLoggerPtr logger, const char* format, va_list args)
+void WTSLogger::error_imp(SpdLoggerPtr logger, const char* message)
 {
-	char szBuf[MAX_BUFFER_LENGTH] = { 0 };
-	vsprintf(szBuf, format, args);
-
 	if (logger)
-		logger->error(szBuf);
+		logger->error(message);
 
 	if (logger != m_rootLogger)
-		m_rootLogger->error(szBuf);
+		m_rootLogger->error(message);
 
 	if (m_logHandler)
-		m_logHandler->handleLogAppend(LL_ERROR, szBuf);
+		m_logHandler->handleLogAppend(LL_ERROR, message);
 }
 
-void WTSLogger::fatal_imp(SpdLoggerPtr logger, const char* format, va_list args)
+void WTSLogger::fatal_imp(SpdLoggerPtr logger, const char* message)
 {
-	char szBuf[MAX_BUFFER_LENGTH] = { 0 };
-	vsprintf(szBuf, format, args);
-
 	if (logger)
-		logger->critical(szBuf);
+		logger->critical(message);
 
 	if (logger != m_rootLogger)
-		m_rootLogger->critical(szBuf);
+		m_rootLogger->critical(message);
 
 	if (m_logHandler)
-		m_logHandler->handleLogAppend(LL_FATAL, szBuf);
+		m_logHandler->handleLogAppend(LL_FATAL, message);
 }
 
 void WTSLogger::log_raw(WTSLogLevel ll, const char* message)
@@ -368,27 +369,27 @@ void WTSLogger::log_raw(WTSLogLevel ll, const char* message)
 		switch (ll)
 		{
 		case LL_DEBUG:
-			logger->debug(message);
+			debug_imp(logger, message);
 			if (m_logHandler)
 				m_logHandler->handleLogAppend(LL_DEBUG, message);
 			break;
 		case LL_INFO:
-			logger->info(message);
+			info_imp(logger, message);
 			if (m_logHandler)
 				m_logHandler->handleLogAppend(LL_INFO, message);
 			break;
 		case LL_WARN:
-			logger->warn(message);
+			warn_imp(logger, message);
 			if (m_logHandler)
 				m_logHandler->handleLogAppend(LL_WARN, message);
 			break;
 		case LL_ERROR:
-			logger->error(message);
+			error_imp(logger, message);
 			if (m_logHandler)
 				m_logHandler->handleLogAppend(LL_ERROR, message);
 			break;
 		case LL_FATAL:
-			logger->critical(message);
+			fatal_imp(logger, message);
 			if (m_logHandler)
 				m_logHandler->handleLogAppend(LL_FATAL, message);
 			break;
@@ -404,22 +405,25 @@ void WTSLogger::log_direct(WTSLogLevel ll, const char* format, va_list args)
 	if (m_logLevel > ll || m_bStopped)
 		return;
 
+	char szBuf[MAX_BUFFER_LENGTH] = { 0 };
+	vsprintf(szBuf, format, args);
+
 	switch (ll)
 	{
 	case LL_DEBUG:
-		debug_imp(m_rootLogger, format, args);
+		debug_imp(m_rootLogger, szBuf);
 		break;
 	case LL_INFO:
-		info_imp(m_rootLogger, format, args);
+		info_imp(m_rootLogger, szBuf);
 		break;
 	case LL_WARN:
-		warn_imp(m_rootLogger, format, args);
+		warn_imp(m_rootLogger, szBuf);
 		break;
 	case LL_ERROR:
-		error_imp(m_rootLogger, format, args);
+		error_imp(m_rootLogger, szBuf);
 		break;
 	case LL_FATAL:
-		fatal_imp(m_rootLogger, format, args);
+		fatal_imp(m_rootLogger, szBuf);
 		break;
 	default:
 		break;
@@ -434,8 +438,11 @@ void WTSLogger::debug2(const char* catName, const char* format, ...)
 	va_list args;
 	va_start(args, format);  
 	auto logger = getLogger(catName);
-	debug_imp(logger, format, args);
+	char szBuf[MAX_BUFFER_LENGTH] = { 0 };
+	vsprintf(szBuf, format, args);
 	va_end(args);
+
+	debug_imp(logger, szBuf);
 }
 
 void WTSLogger::info2(const char* catName, const char* format, ...)
@@ -446,8 +453,11 @@ void WTSLogger::info2(const char* catName, const char* format, ...)
 	va_list args;
 	va_start(args, format);
 	auto logger = getLogger(catName);
-	info_imp(logger, format, args);
+	char szBuf[MAX_BUFFER_LENGTH] = { 0 };
+	vsprintf(szBuf, format, args);
 	va_end(args);
+
+	info_imp(logger, szBuf);
 }
 
 void WTSLogger::warn2(const char* catName, const char* format, ...)
@@ -458,8 +468,11 @@ void WTSLogger::warn2(const char* catName, const char* format, ...)
 	va_list args;
 	va_start(args, format);
 	auto logger = getLogger(catName);
-	warn_imp(logger, format, args);
+	char szBuf[MAX_BUFFER_LENGTH] = { 0 };
+	vsprintf(szBuf, format, args);
 	va_end(args);
+
+	warn_imp(logger, szBuf);
 }
 
 void WTSLogger::error2(const char* catName, const char* format, ...)
@@ -470,8 +483,11 @@ void WTSLogger::error2(const char* catName, const char* format, ...)
 	va_list args;
 	va_start(args, format);
 	auto logger = getLogger(catName);
-	error_imp(logger, format, args);
+	char szBuf[MAX_BUFFER_LENGTH] = { 0 };
+	vsprintf(szBuf, format, args);
 	va_end(args);
+
+	error_imp(logger, szBuf);
 }
 
 void WTSLogger::fatal2(const char* catName, const char* format, ...)
@@ -482,8 +498,11 @@ void WTSLogger::fatal2(const char* catName, const char* format, ...)
 	va_list args;
 	va_start(args, format);
 	auto logger = getLogger(catName);
-	fatal_imp(logger, format, args);
+	char szBuf[MAX_BUFFER_LENGTH] = { 0 };
+	vsprintf(szBuf, format, args);
 	va_end(args);
+
+	fatal_imp(logger, szBuf);
 }
 
 void WTSLogger::log2(const char* catName, WTSLogLevel ll, const char* format, ...)
@@ -548,22 +567,25 @@ void WTSLogger::log2_direct(const char* catName, WTSLogLevel ll, const char* for
 
 	auto logger = getLogger(catName);
 
+	char szBuf[MAX_BUFFER_LENGTH] = { 0 };
+	vsprintf(szBuf, format, args);
+
 	switch (ll)
 	{
 	case LL_DEBUG:
-		debug_imp(logger, format, args);
+		debug_imp(logger, szBuf);
 		break;
 	case LL_INFO:
-		info_imp(logger, format, args);
+		info_imp(logger, szBuf);
 		break;
 	case LL_WARN:
-		warn_imp(logger, format, args);
+		warn_imp(logger, szBuf);
 		break;
 	case LL_ERROR:
-		error_imp(logger, format, args);
+		error_imp(logger, szBuf);
 		break;
 	case LL_FATAL:
-		fatal_imp(logger, format, args);
+		fatal_imp(logger, szBuf);
 		break;
 	default:
 		break;
@@ -590,22 +612,25 @@ void WTSLogger::log_dyn_direct(const char* patttern, const char* catName, WTSLog
 
 	auto logger = getLogger(catName, patttern);
 
+	char szBuf[MAX_BUFFER_LENGTH] = { 0 };
+	vsprintf(szBuf, format, args);
+
 	switch (ll)
 	{
 	case LL_DEBUG:
-		debug_imp(logger, format, args);
+		debug_imp(logger, szBuf);
 		break;
 	case LL_INFO:
-		info_imp(logger, format, args);
+		info_imp(logger, szBuf);
 		break;
 	case LL_WARN:
-		warn_imp(logger, format, args);
+		warn_imp(logger, szBuf);
 		break;
 	case LL_ERROR:
-		error_imp(logger, format, args);
+		error_imp(logger, szBuf);
 		break;
 	case LL_FATAL:
-		fatal_imp(logger, format, args);
+		fatal_imp(logger, szBuf);
 		break;
 	default:
 		break;
@@ -624,29 +649,19 @@ void WTSLogger::log_dyn_raw(const char* patttern, const char* catName, WTSLogLev
 		switch (ll)
 		{
 		case LL_DEBUG:
-			logger->debug(message);
-			if (m_logHandler)
-				m_logHandler->handleLogAppend(LL_DEBUG, message);
+			debug_imp(logger, message);
 			break;
 		case LL_INFO:
-			logger->info(message);
-			if (m_logHandler)
-				m_logHandler->handleLogAppend(LL_INFO, message);
+			info_imp(logger, message);
 			break;
 		case LL_WARN:
-			logger->warn(message);
-			if (m_logHandler)
-				m_logHandler->handleLogAppend(LL_WARN, message);
+			warn_imp(logger, message);
 			break;
 		case LL_ERROR:
-			logger->error(message);
-			if (m_logHandler)
-				m_logHandler->handleLogAppend(LL_ERROR, message);
+			error_imp(logger, message);
 			break;
 		case LL_FATAL:
-			logger->critical(message);
-			if (m_logHandler)
-				m_logHandler->handleLogAppend(LL_FATAL, message);
+			fatal_imp(logger, message);
 			break;
 		default:
 			break;

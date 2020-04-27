@@ -141,21 +141,39 @@ void CtaStraBaseCtx::init_outputs()
 void CtaStraBaseCtx::log_signal(const char* stdCode, double target, double price, uint64_t gentime, const char* usertag /* = "" */)
 {
 	if (_sig_logs)
-		_sig_logs->write_file(StrUtil::printf("%s,%f,%f,%s,%s\n", stdCode, target, price, StrUtil::fmtUInt64(gentime).c_str(), usertag));
+	{
+		std::stringstream ss;
+		ss << stdCode << "," << target << "," << price << "," << gentime << "," << usertag << "\n";
+		_sig_logs->write_file(ss.str());
+		//_sig_logs->write_file(StrUtil::printf("%s,%f,%f,%s,%s\n", stdCode, target, price, StrUtil::fmtUInt64(gentime).c_str(), usertag));
+	}
 }
 
 void CtaStraBaseCtx::log_trade(const char* stdCode, bool isLong, bool isOpen, uint64_t curTime, double price, double qty, const char* userTag, double fee)
 {
 	if (_trade_logs)
-		_trade_logs->write_file(StrUtil::printf("%s,%s,%s,%s,%f,%f,%s,%.2f\n", stdCode, StrUtil::fmtUInt64(curTime).c_str(), isLong ? "LONG" : "SHORT", isOpen ? "OPEN" : "CLOSE", price, qty, userTag, fee));
+	{
+		std::stringstream ss;
+		ss << stdCode << "," << curTime << "," << (isLong ? "LONG" : "SHORT") << "," << (isOpen ? "OPEN" : "CLOSE") << "," << price << "," << qty << "," << userTag << "," << fee << "\n";
+		_trade_logs->write_file(ss.str());
+		//_trade_logs->write_file(StrUtil::printf("%s,%s,%s,%s,%f,%f,%s,%.2f\n", stdCode, StrUtil::fmtUInt64(curTime).c_str(), isLong ? "LONG" : "SHORT", isOpen ? "OPEN" : "CLOSE", price, qty, userTag, fee));
+	}
 }
 
 void CtaStraBaseCtx::log_close(const char* stdCode, bool isLong, uint64_t openTime, double openpx, uint64_t closeTime, double closepx, double qty,
 	double profit, double totalprofit /* = 0 */, const char* enterTag /* = "" */, const char* exitTag /* = "" */)
 {
 	if (_close_logs)
-		_close_logs->write_file(StrUtil::printf("%s,%s,%s,%f,%s,%f,%f,%.2f,%.2f,%s,%s\n", 
-		stdCode, isLong ? "LONG" : "SHORT", StrUtil::fmtUInt64(openTime).c_str(), openpx, StrUtil::fmtUInt64(closeTime).c_str(), closepx, qty, profit, totalprofit, enterTag, exitTag));
+	{
+		std::stringstream ss;
+		ss << stdCode << "," << (isLong ? "LONG" : "SHORT") << "," << openTime << "," << openpx
+			<< "," << closeTime << "," << closepx << "," << qty << "," << profit << "," 
+			<< totalprofit << "," << enterTag << "," << exitTag << "\n";
+		_trade_logs->write_file(ss.str());
+
+		//_close_logs->write_file(StrUtil::printf("%s,%s,%s,%f,%s,%f,%f,%.2f,%.2f,%s,%s\n",
+		//	stdCode, isLong ? "LONG" : "SHORT", StrUtil::fmtUInt64(openTime).c_str(), openpx, StrUtil::fmtUInt64(closeTime).c_str(), closepx, qty, profit, totalprofit, enterTag, exitTag));
+	}
 }
 
 void CtaStraBaseCtx::save_userdata()
