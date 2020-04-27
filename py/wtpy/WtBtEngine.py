@@ -1,7 +1,7 @@
 from wtpy.backtest import WtBtWrapper
 from wtpy.Context import Context
 from wtpy.BaseDefs import BaseStrategy
-from wtpy.IndexWriter import BaseIndexWriter
+from wtpy.ExtDefs import BaseIndexWriter
 
 from .ProductMgr import ProductMgr
 from .SessionMgr import SessionMgr
