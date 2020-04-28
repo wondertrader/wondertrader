@@ -96,12 +96,12 @@ void DataManager::release()
 	}
 }
 
-bool DataManager::writeTick(WTSTickData* curTick, bool bNeedProc /* = true */)
+bool DataManager::writeTick(WTSTickData* curTick, bool bNeedSlice /* = true */)
 {
 	if (_writer == NULL)
 		return false;
 
-	return _writer->writeTick(curTick);
+	return _writer->writeTick(curTick, bNeedSlice);
 }
 
 bool DataManager::writeOrderQueue(WTSOrdQueData* curOrdQue)

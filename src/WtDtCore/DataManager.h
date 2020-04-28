@@ -38,7 +38,7 @@ public:
 	bool init(WTSVariant* params, WTSBaseDataMgr* bdMgr, StateMonitor* stMonitor, UDPCaster* caster = NULL);
 	void release();
 
-	bool writeTick(WTSTickData* curTick, bool bNeedProc = true);
+	bool writeTick(WTSTickData* curTick, bool bNeedSlice = true);
 
 	bool writeOrderQueue(WTSOrdQueData* curOrdQue);
 

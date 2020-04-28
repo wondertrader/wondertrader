@@ -47,9 +47,9 @@ public:
 	/*
 	 *	处理实时行情
 	 *	@quote		实时行情
-	 *	@bPreProc	是否需要预处理，该选项主要用于外部行情源，即CTP等，行情数据中心过来的数据，该选项一定是false
+	 *	@bNeedSlice	是否需要切片，如果是从外部接入的快照行情数据，则需要切片，如果是内部广播的就不需要切片
 	 */
-	virtual void handleQuote(WTSTickData *quote, bool bPreProc)		= 0;
+	virtual void handleQuote(WTSTickData *quote, bool bNeedSlice)	= 0;
 
 	/*
 	 *	处理委托队列数据（股票level2）

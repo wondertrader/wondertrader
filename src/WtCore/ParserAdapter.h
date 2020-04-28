@@ -39,7 +39,7 @@ public:
 public:
 	virtual void handleSymbolList(const WTSArray* aySymbols) override;
 
-	virtual void handleQuote(WTSTickData *quote, bool bPreProc) override;
+	virtual void handleQuote(WTSTickData *quote, bool bNeedSlice) override;
 
 	virtual void handleParserLog(WTSLogLevel ll, const char* format, ...) override;
 

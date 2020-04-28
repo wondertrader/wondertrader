@@ -36,7 +36,7 @@ public:
 	virtual bool init(WTSVariant* params, IDataWriterSink* sink) override;
 	virtual void release() override;
 
-	virtual bool writeTick(WTSTickData* curTick, bool bNeedProc = true) override;
+	virtual bool writeTick(WTSTickData* curTick, bool bNeedSlice = true) override;
 
 	virtual bool writeOrderQueue(WTSOrdQueData* curOrdQue) override;
 
@@ -186,7 +186,7 @@ private:
 private:
 	void loadCache();
 
-	bool updateCache(WTSContractInfo* ct, WTSTickData* curTick, bool bNeedProc = true);
+	bool updateCache(WTSContractInfo* ct, WTSTickData* curTick, bool bNeedSlice = true);
 
 	void pipeToTicks(WTSContractInfo* ct, WTSTickData* curTick);
 

@@ -54,7 +54,7 @@ public:
 	virtual void release() = 0;
 
 public:
-	virtual bool writeTick(WTSTickData* curTick, bool bNeedProc = true) = 0;
+	virtual bool writeTick(WTSTickData* curTick, bool bNeedSlice = true) = 0;
 
 	virtual bool writeOrderQueue(WTSOrdQueData* curOrdQue) = 0;
 

@@ -310,13 +310,13 @@ void* DataManager::resizeTCache(BoostMFPtr& mfPtr, uint32_t nCount)
 }
 */
 
-bool WtDataWriter::writeTick(WTSTickData* curTick, bool bNeedProc /* = true */)
+bool WtDataWriter::writeTick(WTSTickData* curTick, bool bNeedSlice /* = true */)
 {
 	if (curTick == NULL)
 		return false;
 
 	curTick->retain();
-	pushTask([this, curTick, bNeedProc](){
+	pushTask([this, curTick, bNeedSlice](){
 
 		do
 		{
@@ -328,7 +328,7 @@ bool WtDataWriter::writeTick(WTSTickData* curTick, bool bNeedProc /* = true */)
 				break;
 
 			//先更新缓存
-			if (!updateCache(ct, curTick, bNeedProc))
+			if (!updateCache(ct, curTick, bNeedSlice))
 				break;
 
 			//写到tick缓存
@@ -1241,7 +1241,7 @@ WTSTickData* WtDataWriter::getCurTick(const char* code, const char* exchg/* = ""
 	return WTSTickData::create(item._tick);
 }
 
-bool WtDataWriter::updateCache(WTSContractInfo* ct, WTSTickData* curTick, bool bNeedProc /* = true */)
+bool WtDataWriter::updateCache(WTSContractInfo* ct, WTSTickData* curTick, bool bNeedSlice /* = true */)
 {
 	if (curTick == NULL || _tick_cache_block == NULL)
 	{
@@ -1283,7 +1283,7 @@ bool WtDataWriter::updateCache(WTSContractInfo* ct, WTSTickData* curTick, bool b
 		//新数据交易日大于老数据，则认为是新一天的数据
 		item._date = curTick->tradingdate();
 		memcpy(&item._tick, &newTick, sizeof(WTSTickStruct));
-		if (bNeedProc)
+		if (bNeedSlice)
 		{
 			item._tick.volumn = item._tick.total_volumn;
 			item._tick.turn_over = item._tick.total_turnover;
@@ -1321,7 +1321,7 @@ bool WtDataWriter::updateCache(WTSContractInfo* ct, WTSTickData* curTick, bool b
 		}
 
 		//这里就要看需不需要预处理了
-		if(!bNeedProc)
+		if(!bNeedSlice)
 		{
 			memcpy(&item._tick, &newTick, sizeof(WTSTickStruct));
 		}

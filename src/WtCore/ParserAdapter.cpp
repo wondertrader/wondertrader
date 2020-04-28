@@ -191,7 +191,7 @@ void ParserAdapter::handleSymbolList(const WTSArray* aySymbols)
 
 }
 
-void ParserAdapter::handleQuote(WTSTickData *quote, bool bPreProc)
+void ParserAdapter::handleQuote(WTSTickData *quote, bool bNeedSlice)
 {
 	if (_stopped)
 		return;
