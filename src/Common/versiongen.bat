@@ -5,5 +5,5 @@ set timestr=%time:~0,8%
 echo #pragma once > version.h
 echo static const char* GetVersionStr() >> version.h
 echo { >> version.h
-echo     return "v0.3.0 Build@%datestr% %timestr%"; >> version.h
+echo     return "v0.3.5 Build@%datestr% %timestr%"; >> version.h
 echo } >> version.h
