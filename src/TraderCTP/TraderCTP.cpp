@@ -21,12 +21,6 @@
 #include "../Share/decimal.h"
 
 #ifdef _WIN32
-#ifdef _WIN64
-#pragma comment(lib, "./ThostTraderApi/thosttraderapi.lib")
-#else
-#pragma comment(lib, "./ThostTraderApi/thosttraderapi32.lib")
-#endif
-
 #include <wtypes.h>
 HMODULE	g_dllModule = NULL;
 
