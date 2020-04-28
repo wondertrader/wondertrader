@@ -615,8 +615,8 @@ bool TraderXTP::init(WTSParams *params)
 	std::string module = params->getCString("xtpmodule");
 	if (module.empty())
 	{
-
 #ifdef _WIN32
+		module = "xtptraderapi.dll";
 #else
 		module = "libxtptraderapi.so";
 #endif

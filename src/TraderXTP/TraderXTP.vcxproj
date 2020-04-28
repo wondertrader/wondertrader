@@ -112,8 +112,7 @@
       <ModuleDefinitionFile>
       </ModuleDefinitionFile>
       <ImportLibrary>$(OutDir)$(TargetName).lib</ImportLibrary>
-      <DelayLoadDLLs>
-      </DelayLoadDLLs>
+      <DelayLoadDLLs>xtptraderapi.dll</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -151,8 +150,7 @@
       <ModuleDefinitionFile>
       </ModuleDefinitionFile>
       <ImportLibrary>$(OutDir)$(TargetName).lib</ImportLibrary>
-      <DelayLoadDLLs>
-      </DelayLoadDLLs>
+      <DelayLoadDLLs>xtptraderapi.dll</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
