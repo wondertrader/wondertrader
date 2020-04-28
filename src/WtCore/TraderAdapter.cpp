@@ -405,7 +405,10 @@ OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty)
 
 	if (!sInfo->isInTradingTime(WtHelper::getTime(), true))
 	{
-		WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR, "[%s]买入 %s 合约%f手, %04u 不在交易时间", _id.c_str(), stdCode, qty, WtHelper::getTime());
+		//WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR, "[%s]买入 %s 合约%f手, %04u 不在交易时间", _id.c_str(), stdCode, qty, WtHelper::getTime());
+
+		StreamLogger(LL_INFO, _id.c_str(), "trader").self() << "[" << _id << "]买入 " << stdCode << " 合约" << qty << "手, " << setw(3) << setfill('0') << WtHelper::getTime() << " 不在交易时间";
+
 		return ret;
 	}
 
@@ -687,7 +690,8 @@ OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty)
 
 	if(!sInfo->isInTradingTime(WtHelper::getTime(), true))
 	{
-		WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR,"[%s]卖出 %s 合约%f手, %04u 不在交易时间", _id.c_str(), stdCode, qty, WtHelper::getTime());
+		//WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR,"[%s]卖出 %s 合约%f手, %04u 不在交易时间", _id.c_str(), stdCode, qty, WtHelper::getTime());
+		StreamLogger(LL_INFO, _id.c_str(), "trader").self() << "[" << _id << "]卖出 " << stdCode << " 合约" << qty << "手, " << setw(3) << setfill('0') << WtHelper::getTime() << " 不在交易时间";
 		return ret;
 	}
 
