@@ -9,7 +9,7 @@
         "name":"cta",
         "mode": "product",
         "product":{
-            "session":"SD0930"
+            "session":"TRADING"
         },
         "filters":"filters.json",
         "fees":"fees_stk.json",
@@ -57,12 +57,10 @@
             "module":"TraderXTP.dll",
             "host":"120.27.164.69",
             "port":"6001",
-            "user":"********",
-            "pass":"********",
-			"protocol":1,
-			"clientid":1,
-			"hbinterval":15,
-			"buffsize":128,
+            "user":"你的XTP仿真账号",
+            "pass":"你的XTP仿真密码",
+            "acckey":"你的XTP仿真key",
+			"client":1,
             "quick":true,
             "riskmon":
             {

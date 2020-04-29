@@ -1,0 +1,30 @@
+{
+    "root":{
+        "level":"debug",
+        "async":false,
+        "sinks":[
+            {
+                "type":"daily_file_sink",
+                "filename":"DtLogs/QuoteFact.log",
+                "pattern":"[%Y.%m.%d %H:%M:%S - %-5l] %v",
+                "truncate":false
+            },
+            {
+                "type":"console_sink",
+                "pattern":"[%m.%d %H:%M:%S - %^%-5l%$] %v"
+            }
+        ]
+    },
+    "parser":{
+        "level":"debug",
+        "async":false,
+        "sinks":[
+            {
+                "type":"daily_file_sink",
+                "filename":"DtLogs/Parser.log",
+                "pattern":"[%Y.%m.%d %H:%M:%S - %-5l] %v",
+                "truncate":false
+            }
+        ]
+    }
+}

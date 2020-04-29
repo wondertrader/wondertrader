@@ -1,10 +1,10 @@
 {
     "basefiles":{
-        "session":"D:/WFP/common/sessions.json",
-        "commodity":"D:/WFP/common/commodities.json",
-        "contract":"D:/WFP/common/contracts.json",
-        "holiday":"D:/WFP/common/holidays.json",
-        "hot":"D:/WFP/common/hots.json"
+        "session":"./common/sessions.json",
+        "commodity":"./common/commodities.json",
+        "contract":"./common/contracts.json",
+        "holiday":"./common/holidays.json",
+        "hot":"./common/hots.json"
     },
     "env":{
         "name":"cta",
@@ -31,8 +31,7 @@
     },
     "data":{
         "store":{
-            "module":"WtDataReader.dll",
-            "path":"E:\\WTP_Data\\"
+            "path":"./FUT_Data/"
         }
     },
     "executers":[
@@ -59,8 +58,8 @@
             "module":"TraderCTP.dll",
             "front":"tcp://180.168.146.187:10101",
             "broker":"9999",
-            "user":"153498",
-            "pass":"hx2019",
+            "user":"你的SIMNOW账号",
+            "pass":"你的SIMNOW密码",
             "appid":"simnow_client_test",
             "authcode":"0000000000000000",
             "quick":true,
