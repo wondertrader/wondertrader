@@ -41,11 +41,6 @@ class WtEngine:
         if "basefiles" not in self.__config__:
             self.__config__["basefiles"] = dict()
 
-        if "store" not in self.__config__:
-            self.__config__["store"] = dict()
-            self.__config__["store"]["mode"] = "csv"
-            self.__config__["store"]["path"] = ".\\storage\\"
-
         if "env" not in self.__config__:
             self.__config__["env"] = dict()
             self.__config__["env"]["name"] = "cta"
@@ -92,7 +87,7 @@ class WtEngine:
         self.__config__["basefiles"]["hot"] = folder + "hots.json"
 
         self.productMgr = ProductMgr()
-        self.productMgr.load(folder + "commodities.json")
+        self.productMgr.load(folder + commfile)
 
         self.sessionMgr = SessionMgr()
         self.sessionMgr.load(folder + "sessions.json")
@@ -129,22 +124,6 @@ class WtEngine:
 
         params["id"] = id
         self.__config__["strategies"]["hft"].append(params)
-
-
-    def configBacktest(self, stime:int, etime:int, period:str="M", session:str="TRADING", times:int = 1):
-        '''
-        配置回测设置项\n
-        @stime  开始时间\n
-        @etime  结束时间\n
-        @period 回测单步周期\n
-        @session    回测用的会话ID\n
-        @time   周期倍数
-        '''
-        self.__config__["env"]["backtest"]["stime"] = int(stime)
-        self.__config__["env"]["backtest"]["etime"] = int(etime)
-        self.__config__["env"]["backtest"]["period"] = period
-        self.__config__["env"]["backtest"]["session"] = session
-        self.__config__["env"]["backtest"]["times"] = int(times)
 
     def configStorage(self, mode:str, path:str):
         '''
