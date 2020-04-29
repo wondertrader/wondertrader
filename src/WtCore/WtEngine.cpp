@@ -1094,7 +1094,7 @@ bool WtEngine::init_riskmon(WTSVariant* cfg)
 	if (!StdFile::exists(dllpath.c_str()))
 		dllpath = WtHelper::getInstDir() + module;
 
-	DllHandle hInst = DLLHelper::load_library(module);
+	DllHandle hInst = DLLHelper::load_library(dllpath.c_str());
 	if (hInst == NULL)
 	{
 		WTSLogger::info2("risk", "·ç¿ØÄ£¿é%s¼ÓÔØÊ§°Ü", module);
