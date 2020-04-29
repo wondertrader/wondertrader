@@ -34,7 +34,7 @@
             "sinks":[
                 {
                     "type":"daily_file_sink",
-                    "filename":"Logs/Parser_%s.log",
+                    "filename":"Logs/Parser[%s].log",
                     "pattern":"[%Y.%m.%d %H:%M:%S - %-5l] %v",
                     "truncate":true
                 }
@@ -46,7 +46,7 @@
             "sinks":[
                 {
                     "type":"daily_file_sink",
-                    "filename":"Logs/Trader_%s.log",
+                    "filename":"Logs/Trader[%s].log",
                     "pattern":"[%Y.%m.%d %H:%M:%S - %-5l] %v",
                     "truncate":true
                 }
@@ -58,7 +58,7 @@
             "sinks":[
                 {
                     "type":"daily_file_sink",
-                    "filename":"Logs/Executer_%s.log",
+                    "filename":"Logs/Executer[%s].log",
                     "pattern":"[%Y.%m.%d %H:%M:%S - %-5l] %v",
                     "truncate":true
                 }
