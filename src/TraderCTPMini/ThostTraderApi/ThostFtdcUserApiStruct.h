@@ -146,6 +146,8 @@ struct CThostFtdcAuthenticationInfoField
 	TThostFtdcBoolType	IsResult;
 	// App代码
 	TThostFtdcClientAppIDType AppID;
+	// 版本信息
+    UtpCipherVersionType    VerInfo;
 };
 
 ///银期转帐报文头

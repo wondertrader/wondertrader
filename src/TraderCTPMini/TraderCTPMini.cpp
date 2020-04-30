@@ -1,5 +1,5 @@
 /*!
- * \file TraderCTPMini.cpp
+ * \file TraderCTP.cpp
  * \project	WonderTrader
  *
  * \author Wesley
@@ -17,16 +17,68 @@
 #include "../Share/StdUtils.hpp"
 #include "../Share/TimeUtils.hpp"
 #include "../Share/IBaseDataMgr.h"
-
-#include "../Share/BoostFile.hpp"
+#include "../Share/DLLHelper.hpp"
 #include "../Share/decimal.h"
 
+#ifdef _WIN32
+#include <wtypes.h>
+HMODULE	g_dllModule = NULL;
 
-#ifdef _WIN64
-#pragma comment(lib, "./ThostTraderApi/thosttraderapi64.lib")
+BOOL APIENTRY DllMain(
+	HANDLE hModule,
+	DWORD  ul_reason_for_call,
+	LPVOID lpReserved
+	)
+{
+	switch (ul_reason_for_call)
+	{
+	case DLL_PROCESS_ATTACH:
+		g_dllModule = (HMODULE)hModule;
+		break;
+	}
+	return TRUE;
+}
 #else
-#pragma comment(lib, "./ThostTraderApi/thosttraderapi32.lib")
+#include <dlfcn.h>
+
+char PLATFORM_NAME[] = "UNIX";
+
+std::string	g_moduleName;
+
+__attribute__((constructor))
+void on_load(void) {
+	Dl_info dl_info;
+	dladdr((void *)on_load, &dl_info);
+	g_moduleName = dl_info.dli_fname;
+}
 #endif
+
+std::string getBinDir()
+{
+	static std::string _bin_dir;
+	if (_bin_dir.empty())
+	{
+
+
+#ifdef _WIN32
+		char strPath[MAX_PATH];
+		GetModuleFileName(g_dllModule, strPath, MAX_PATH);
+
+		_bin_dir = StrUtil::standardisePath(strPath, false);
+#else
+		_bin_dir = g_moduleName;
+#endif
+
+		uint32_t nPos = _bin_dir.find_last_of('/');
+		_bin_dir = _bin_dir.substr(0, nPos + 1);
+	}
+
+	return _bin_dir;
+}
+
+const char* ENTRUST_SECTION = "entrusts";
+const char* ORDER_SECTION = "orders";
+
 
 uint32_t strToTime(const char* strTime)
 {
@@ -44,24 +96,27 @@ uint32_t strToTime(const char* strTime)
 	return strtoul(str.c_str(), NULL, 10);
 }
 
-ITraderApi* createTrader()
+extern "C"
 {
-	TraderCTPMini *instance = new TraderCTPMini();
-	return instance;
-}
-
-void deleteTrader(ITraderApi* &trader)
-{
-	if (NULL != trader)
+	EXPORT_FLAG ITraderApi* createTrader()
 	{
-		delete trader;
-		trader = NULL;
+		TraderCTPMini *instance = new TraderCTPMini();
+		return instance;
+	}
+
+	EXPORT_FLAG void deleteTrader(ITraderApi* &trader)
+	{
+		if (NULL != trader)
+		{
+			delete trader;
+			trader = NULL;
+		}
 	}
 }
 
 TraderCTPMini::TraderCTPMini()
 	: m_pUserAPI(NULL)
-	, m_ayPosition(NULL)
+	, m_mapPosition(NULL)
 	, m_ayOrders(NULL)
 	, m_ayTrades(NULL)
 	, m_ayPosDetail(NULL)
@@ -69,7 +124,7 @@ TraderCTPMini::TraderCTPMini()
 	, m_uLastQryTime(0)
 	, m_iRequestID(0)
 	, m_bQuickStart(false)
-	, m_hInstCTP(NULL)
+	//, m_hInstCTP(NULL)
 	, m_bInQuery(false)
 	, m_strandIO(NULL)
 	, m_lastQryTime(0)
@@ -91,17 +146,26 @@ bool TraderCTPMini::init(WTSParams* params)
 	m_strAppID = params->getCString("appid");
 	m_strAuthCode = params->getCString("authcode");
 
-	WTSParams* param = params->get("module");
+
+	WTSParams* param = params->get("ctpmodule");
 	if (param != NULL)
-		m_strModule = param->asCString();
+		m_strModule = getBinDir() + param->asCString();
 	else
-		m_strModule = "thosttraderapi_se.dll";
+	{
+#ifdef _WIN32
+		m_strModule = getBinDir() + "thosttraderapi_mini.dll";
+#else
+		m_strModule =  getBinDir() + "libthosttraderapi_mini.so";
+#endif
+	}
 
-	m_hInstCTP = LoadLibrary(m_strModule.c_str());
-	if (m_hInstCTP == NULL)
-		return false;
-
-	m_funcCreator = (CTPCreator)GetProcAddress(m_hInstCTP, "?CreateFtdcTraderApi@CThostFtdcTraderApi@@SAPAV1@PBD@Z");
+	m_hInstCTP = DLLHelper::load_library(m_strModule.c_str());
+#ifdef _WIN32
+	const char* creatorName = "?CreateFtdcTraderApi@CThostFtdcTraderApi@@SAPAV1@PBD@Z";
+#else
+	const char* creatorName = "_ZN19CThostFtdcTraderApi19CreateFtdcTraderApiEPKc";
+#endif
+	m_funcCreator = (CTPCreator)DLLHelper::get_symbol(m_hInstCTP, creatorName);
 
 	m_bQuickStart = params->getBoolean("quick");
 
@@ -123,8 +187,8 @@ void TraderCTPMini::release()
 	if (m_ayPosDetail)
 		m_ayPosDetail->clear();
 
-	if (m_ayPosition)
-		m_ayPosition->clear();
+	if (m_mapPosition)
+		m_mapPosition->clear();
 
 	if (m_ayTrades)
 		m_ayTrades->clear();
@@ -132,12 +196,10 @@ void TraderCTPMini::release()
 
 void TraderCTPMini::connect()
 {
-	std::string path = m_strBroker;
-	path += "/";
-	path += m_strUser;
-	path += "/";
-	BoostFile::create_directories(path.c_str());
-	m_pUserAPI = m_funcCreator(path.c_str());
+	std::stringstream ss;
+	ss << "./ctpdata/flows/" << m_strBroker << "/" << m_strUser << "/";
+	boost::filesystem::create_directories(ss.str().c_str());
+	m_pUserAPI = m_funcCreator(ss.str().c_str());
 	m_pUserAPI->RegisterSpi(this);
 	if (m_bQuickStart)
 	{
@@ -197,8 +259,8 @@ bool TraderCTPMini::makeEntrustID(char* buffer, int length)
 	try
 	{
 		memset(buffer, 0, length);
-		uint32_t orderref = InterlockedIncrement(&m_orderRef);
-		sprintf(buffer, "%06u.%010u.%06u", m_frontID, m_sessionID, orderref);
+		uint32_t orderref = m_orderRef.fetch_add(1) + 1;
+		sprintf(buffer, "%06u#%010u#%06u", m_frontID, m_sessionID, orderref);
 		return true;
 	}
 	catch (...)
@@ -292,10 +354,12 @@ int TraderCTPMini::orderInsert(WTSEntrust* entrust)
 	///合约代码
 	strcpy(req.InstrumentID, entrust->getCode());
 
+	strcpy(req.ExchangeID, entrust->getExchg());
+
 	if (strlen(entrust->getUserTag()) == 0)
 	{
 		///报单引用
-		sprintf(req.OrderRef, "%u", m_orderRef);
+		sprintf(req.OrderRef, "%u", m_orderRef.fetch_add(0));
 
 		//生成本地委托单号
 		//entrust->setEntrustID(generateEntrustID(m_frontID, m_sessionID, m_orderRef++).c_str());	
@@ -303,7 +367,7 @@ int TraderCTPMini::orderInsert(WTSEntrust* entrust)
 	else
 	{
 		uint32_t fid, sid, orderref;
-		extractEntrustID(entrust->getUserTag(), fid, sid, orderref);
+		extractEntrustID(entrust->getEntrustID(), fid, sid, orderref);
 		//entrust->setEntrustID(entrust->getUserTag());
 		///报单引用
 		sprintf(req.OrderRef, "%d", orderref);
@@ -311,13 +375,18 @@ int TraderCTPMini::orderInsert(WTSEntrust* entrust)
 
 	if (strlen(entrust->getUserTag()) > 0)
 	{
-		m_mapEntrustTag[entrust->getEntrustID()] = entrust->getUserTag();
+		//m_mapEntrustTag[entrust->getEntrustID()] = entrust->getUserTag();
+		m_iniHelper.writeString(ENTRUST_SECTION, entrust->getEntrustID(), entrust->getUserTag());
+		m_iniHelper.save();
 	}
+
+	WTSContractInfo* ct = m_bdMgr->getContract(entrust->getCode(), entrust->getExchg());
+	WTSCommodityInfo* commInfo = m_bdMgr->getCommodity(ct);
 
 	///用户代码
 	//	TThostFtdcUserIDType	UserID;
 	///报单价格条件: 限价
-	req.OrderPriceType = wrapPriceType(entrust->getPriceType());
+	req.OrderPriceType = wrapPriceType(entrust->getPriceType(), strcmp(commInfo->getExchg(), "CFFEX") == 0);
 	///买卖方向: 
 	req.Direction = wrapDirectionType(entrust->getDirection(), entrust->getOffsetType());
 	///组合开平标志: 开仓
@@ -538,7 +607,30 @@ void TraderCTPMini::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, C
 		///获取当前交易日
 		m_lDate = atoi(m_pUserAPI->GetTradingDay());
 
-		m_traderSink->handleTraderLog(LL_INFO, "[%s-%s]账户登录成功……", m_strBroker.c_str(), m_strUser.c_str());
+		m_traderSink->handleTraderLog(LL_INFO, "[%s-%s]账户登录成功，AppID:%s, Sessionid: %u, 登录时间: %s……",
+			m_strBroker.c_str(), m_strUser.c_str(), m_strAppID.c_str(), m_sessionID, pRspUserLogin->LoginTime);
+
+		std::stringstream ss;
+		ss << "./ctpdata/local/" << m_strBroker << "/";
+		std::string path = StrUtil::standardisePath(ss.str());
+		if (!StdFile::exists(path.c_str()))
+			boost::filesystem::create_directories(path.c_str());
+		ss << m_strUser << ".dat";
+
+		m_iniHelper.load(ss.str().c_str());
+		uint32_t lastDate = m_iniHelper.readUInt("marker", "date", 0);
+		if(lastDate != m_lDate)
+		{
+			//交易日不同，清理掉原来的数据
+			m_iniHelper.removeSection(ENTRUST_SECTION);
+			m_iniHelper.removeSection(ORDER_SECTION);
+			m_iniHelper.writeUInt("marker", "date", m_lDate);
+			m_iniHelper.save();
+
+			m_traderSink->handleTraderLog(LL_INFO, "[%s-%s]交易日已切换[%u -> %u]，清空本地数据缓存……", m_strBroker.c_str(), m_strUser.c_str(), lastDate, m_lDate);
+		}
+
+		m_traderSink->handleTraderLog(LL_INFO, "[%s-%s]账户登录成功，交易日：%u……", m_strBroker.c_str(), m_strUser.c_str(), m_lDate);
 
 		m_traderSink->handleTraderLog(LL_INFO, "[%s-%s]正在查询结算确认信息……", m_strBroker.c_str(), m_strUser.c_str());
 		queryConfirm();
@@ -688,26 +780,41 @@ void TraderCTPMini::OnRspQryInvestorPosition(CThostFtdcInvestorPositionField *pI
 
 	if (!IsErrorRspInfo(pRspInfo) && pInvestorPosition)
 	{
-		if (NULL == m_ayPosition)
-			m_ayPosition = WTSArray::create();
+		if (NULL == m_mapPosition)
+			m_mapPosition = PositionMap::create();
 
 		WTSContractInfo* contract = m_bdMgr->getContract(pInvestorPosition->InstrumentID);
 		WTSCommodityInfo* commInfo = m_bdMgr->getCommodity(contract);
 		if (contract)
 		{
-			//ReqQryInvestorPositionDetail();
-			WTSPositionItem *pos = WTSPositionItem::create(pInvestorPosition->InstrumentID, commInfo->getCurrency(), commInfo->getExchg());
+			std::string key = StrUtil::printf("%s-%d", pInvestorPosition->InstrumentID, pInvestorPosition->PosiDirection);
+			WTSPositionItem* pos = (WTSPositionItem*)m_mapPosition->get(key);
+			if(pos == NULL)
+			{
+				pos = WTSPositionItem::create(pInvestorPosition->InstrumentID, commInfo->getCurrency(), commInfo->getExchg());
+				m_mapPosition->add(key, pos, false);
+			}
 			pos->setDirection(wrapPosDirection(pInvestorPosition->PosiDirection));
-			pos->setNewPosition(pInvestorPosition->TodayPosition);
-			pos->setPrePosition(pInvestorPosition->Position - pInvestorPosition->TodayPosition);
+			if(commInfo->getCoverMode() == CM_CoverToday)
+			{
+				if (pInvestorPosition->PositionDate == THOST_FTDC_PSD_Today)
+					pos->setNewPosition(pInvestorPosition->Position);
+				else
+					pos->setPrePosition(pInvestorPosition->Position);
+			}
+			else
+			{
+				pos->setNewPosition(pInvestorPosition->TodayPosition);
+				pos->setPrePosition(pInvestorPosition->Position - pInvestorPosition->TodayPosition);
+			}
 
-			pos->setMargin(pInvestorPosition->UseMargin + pInvestorPosition->PreMargin);
-			pos->setDynProfit(pInvestorPosition->PositionProfit);
-			pos->setPositionCost(pInvestorPosition->PositionCost);
+			pos->setMargin(pos->getMargin() + pInvestorPosition->UseMargin);
+			pos->setDynProfit(pos->getDynProfit() + pInvestorPosition->PositionProfit);
+			pos->setPositionCost(pos->getPositionCost() + pInvestorPosition->PositionCost);
 
 			if (pos->getTotalPosition() != 0)
 			{
-				pos->setAvgPrice((uint32_t)(pos->getPositionCost() / pos->getTotalPosition() / commInfo->getVolScale()));
+				pos->setAvgPrice(pos->getPositionCost() / pos->getTotalPosition() / commInfo->getVolScale());
 			}
 			else
 			{
@@ -716,23 +823,59 @@ void TraderCTPMini::OnRspQryInvestorPosition(CThostFtdcInvestorPositionField *pI
 
 			if (commInfo->getCategoty() != CC_Combination)
 			{
-				int availNew = pInvestorPosition->TodayPosition;
-				if (pInvestorPosition->PosiDirection == THOST_FTDC_PD_Long)
+				if (commInfo->getCoverMode() == CM_CoverToday)
 				{
-					availNew -= pInvestorPosition->LongFrozen;
+					if (pInvestorPosition->PositionDate == THOST_FTDC_PSD_Today)
+					{
+						int availNew = pInvestorPosition->Position;
+						if (pInvestorPosition->PosiDirection == THOST_FTDC_PD_Long)
+						{
+							availNew -= pInvestorPosition->LongFrozen;
+						}
+						else
+						{
+							availNew -= pInvestorPosition->ShortFrozen;
+						}
+						if (availNew < 0)
+							availNew = 0;
+						pos->setAvailNewPos(availNew);
+					}
+					else
+					{
+						int availPre = pInvestorPosition->Position;
+						if (pInvestorPosition->PosiDirection == THOST_FTDC_PD_Long)
+						{
+							availPre -= pInvestorPosition->LongFrozen;
+						}
+						else
+						{
+							availPre -= pInvestorPosition->ShortFrozen;
+						}
+						if (availPre < 0)
+							availPre = 0;
+						pos->setAvailPrePos(availPre);
+					}
 				}
 				else
 				{
-					availNew -= pInvestorPosition->ShortFrozen;
-				}
-				if (availNew < 0)
-					availNew = 0;
-				pos->setAvailNewPos(availNew);
+					int availNew = pInvestorPosition->TodayPosition;
+					if (pInvestorPosition->PosiDirection == THOST_FTDC_PD_Long)
+					{
+						availNew -= pInvestorPosition->LongFrozen;
+					}
+					else
+					{
+						availNew -= pInvestorPosition->ShortFrozen;
+					}
+					if (availNew < 0)
+						availNew = 0;
+					pos->setAvailNewPos(availNew);
 
-				double availPre = pos->getNewPosition() + pos->getPrePosition()
-					- pInvestorPosition->LongFrozen - pInvestorPosition->ShortFrozen
-					- pos->getAvailNewPos();
-				pos->setAvailPrePos(availPre);
+					double availPre = pos->getNewPosition() + pos->getPrePosition()
+						- pInvestorPosition->LongFrozen - pInvestorPosition->ShortFrozen
+						- pos->getAvailNewPos();
+					pos->setAvailPrePos(availPre);
+				}
 			}
 			else
 			{
@@ -745,21 +888,32 @@ void TraderCTPMini::OnRspQryInvestorPosition(CThostFtdcInvestorPositionField *pI
 				pos->setAvailNewPos(0);
 				pos->setAvailPrePos(0);
 			}
-
-			m_ayPosition->append(pos, false);
 		}
 	}
 
 	if (bIsLast)
 	{
-		if (m_traderSink)
-			m_traderSink->onRspPosition(m_ayPosition);
 
-		if (m_ayPosition)
+		WTSArray* ayPos = WTSArray::create();
+
+		if(m_mapPosition && m_mapPosition->size() > 0)
 		{
-			m_ayPosition->release();
-			m_ayPosition = NULL;
+			for (auto it = m_mapPosition->begin(); it != m_mapPosition->end(); it++)
+			{
+				ayPos->append(it->second, true);
+			}
 		}
+
+		if (m_traderSink)
+			m_traderSink->onRspPosition(ayPos);
+
+		if (m_mapPosition)
+		{
+			m_mapPosition->release();
+			m_mapPosition = NULL;
+		}
+
+		ayPos->release();
 	}
 }
 
@@ -916,10 +1070,10 @@ WTSOffsetType TraderCTPMini::wrapOffsetType(TThostFtdcOffsetFlagType offType)
 		return WOT_FORCECLOSE;
 }
 
-int TraderCTPMini::wrapPriceType(WTSPriceType priceType)
+int TraderCTPMini::wrapPriceType(WTSPriceType priceType, bool isCFFEX /* = false */)
 {
 	if (WPT_ANYPRICE == priceType)
-		return THOST_FTDC_OPT_AnyPrice;
+		return isCFFEX ? THOST_FTDC_OPT_FiveLevelPrice : THOST_FTDC_OPT_AnyPrice;
 	else if (WPT_LIMITPRICE == priceType)
 		return THOST_FTDC_OPT_LimitPrice;
 	else if (WPT_BESTPRICE == priceType)
@@ -928,9 +1082,9 @@ int TraderCTPMini::wrapPriceType(WTSPriceType priceType)
 		return THOST_FTDC_OPT_LastPrice;
 }
 
-WTSPriceType TraderCTPMini::wrapPriceType(TThostFtdcPriceType priceType)
+WTSPriceType TraderCTPMini::wrapPriceType(TThostFtdcOrderPriceTypeType priceType)
 {
-	if (THOST_FTDC_OPT_AnyPrice == priceType)
+	if (THOST_FTDC_OPT_AnyPrice == priceType || THOST_FTDC_OPT_FiveLevelPrice == priceType)
 		return WPT_ANYPRICE;
 	else if (THOST_FTDC_OPT_LimitPrice == priceType)
 		return WPT_LIMITPRICE;
@@ -995,29 +1149,38 @@ WTSOrderInfo* TraderCTPMini::makeOrderInfo(CThostFtdcOrderField* orderField)
 	pRet->setVolLeft(orderField->VolumeTotal);
 
 	pRet->setCode(orderField->InstrumentID);
+	pRet->setExchange(contract->getExchg());
 
 	pRet->setOrderDate(strtoul(orderField->InsertDate, NULL, 10));
 	std::string strTime = orderField->InsertTime;
 	StrUtil::replace(strTime, ":", "");
 	uint32_t uTime = strtoul(strTime.c_str(), NULL, 10);
 	pRet->setOrderTime(TimeUtils::makeTime(pRet->getOrderDate(), strtoul(strTime.c_str(), NULL, 10) * 1000));
+
 	pRet->setOrderState(wrapOrderState(orderField->OrderStatus));
+	if (orderField->OrderSubmitStatus >= THOST_FTDC_OSS_InsertRejected)
+		pRet->setError(true);		
 
 	pRet->setEntrustID(generateEntrustID(orderField->FrontID, orderField->SessionID, atoi(orderField->OrderRef)).c_str());
 	pRet->setOrderID(orderField->OrderSysID);
 
 	pRet->setStateMsg(orderField->StatusMsg);
 
-	StringMap::iterator it = m_mapEntrustTag.find(pRet->getEntrustID());
-	if (it != m_mapEntrustTag.end())
-	{
-		pRet->setUserTag(it->second.c_str());
 
-		m_mapOrderTag[pRet->getOrderID()] = it->second;
+	std::string usertag = m_iniHelper.readString(ENTRUST_SECTION, pRet->getEntrustID(), "");
+	if(usertag.empty())
+	{
+		pRet->setUserTag(pRet->getEntrustID());
 	}
 	else
 	{
-		pRet->setUserTag(pRet->getEntrustID());
+		pRet->setUserTag(usertag.c_str());
+
+		if (strlen(pRet->getOrderID()) > 0)
+		{
+			m_iniHelper.writeString(ORDER_SECTION, StrUtil::trim(pRet->getOrderID()).c_str(), usertag.c_str());
+			m_iniHelper.save();
+		}
 	}
 
 	return pRet;
@@ -1025,10 +1188,15 @@ WTSOrderInfo* TraderCTPMini::makeOrderInfo(CThostFtdcOrderField* orderField)
 
 WTSEntrust* TraderCTPMini::makeEntrust(CThostFtdcInputOrderField *entrustField)
 {
+	WTSContractInfo* ct = m_bdMgr->getContract(entrustField->InstrumentID);
+	if (ct == NULL)
+		return NULL;
+
 	WTSEntrust* pRet = WTSEntrust::create(
 		entrustField->InstrumentID,
 		entrustField->VolumeTotalOriginal,
-		entrustField->LimitPrice);
+		entrustField->LimitPrice,
+		ct->getExchg());
 
 	pRet->setDirection(wrapDirectionType(entrustField->Direction, entrustField->CombOffsetFlag[0]));
 	pRet->setPriceType(wrapPriceType(entrustField->OrderPriceType));
@@ -1037,11 +1205,14 @@ WTSEntrust* TraderCTPMini::makeEntrust(CThostFtdcInputOrderField *entrustField)
 
 	pRet->setEntrustID(generateEntrustID(m_frontID, m_sessionID, atoi(entrustField->OrderRef)).c_str());
 
-	StringMap::iterator it = m_mapEntrustTag.find(pRet->getEntrustID());
-	if (it != m_mapEntrustTag.end())
-	{
-		pRet->setUserTag(it->second.c_str());
-	}
+	//StringMap::iterator it = m_mapEntrustTag.find(pRet->getEntrustID());
+	//if (it != m_mapEntrustTag.end())
+	//{
+	//	pRet->setUserTag(it->second.c_str());
+	//}
+	std::string usertag = m_iniHelper.readString(ENTRUST_SECTION, pRet->getEntrustID());
+	if (!usertag.empty())
+		pRet->setUserTag(usertag.c_str());
 
 	return pRet;
 }
@@ -1061,7 +1232,7 @@ WTSTradeInfo* TraderCTPMini::makeTradeRecord(CThostFtdcTradeField *tradeField)
 	WTSCommodityInfo* commInfo = m_bdMgr->getCommodity(contract);
 	WTSSessionInfo* sInfo = m_bdMgr->getSession(commInfo->getSession());
 
-	WTSTradeInfo *pRet = WTSTradeInfo::create(tradeField->InstrumentID);
+	WTSTradeInfo *pRet = WTSTradeInfo::create(tradeField->InstrumentID, commInfo->getExchg());
 	pRet->setVolumn(tradeField->Volume);
 	pRet->setPrice(tradeField->Price);
 	pRet->setTradeID(tradeField->TradeID);
@@ -1100,24 +1271,27 @@ WTSTradeInfo* TraderCTPMini::makeTradeRecord(CThostFtdcTradeField *tradeField)
 	double amount = commInfo->getVolScale()*tradeField->Volume*pRet->getPrice();
 	pRet->setAmount(amount);
 
-	StringMap::iterator it = m_mapOrderTag.find(pRet->getRefOrder());
-	if (it != m_mapOrderTag.end())
-	{
-		pRet->setUserTag(it->second.c_str());
-	}
+	//StringMap::iterator it = m_mapOrderTag.find(pRet->getRefOrder());
+	//if (it != m_mapOrderTag.end())
+	//{
+	//	pRet->setUserTag(it->second.c_str());
+	//}
+	std::string usertag = m_iniHelper.readString(ORDER_SECTION, StrUtil::trim(pRet->getRefOrder()).c_str());
+	if (!usertag.empty())
+		pRet->setUserTag(usertag.c_str());
 
 	return pRet;
 }
 
 std::string TraderCTPMini::generateEntrustID(uint32_t frontid, uint32_t sessionid, uint32_t orderRef)
 {
-	return StrUtil::printf("%06u.%010u.%06u", frontid, sessionid, orderRef);
+	return StrUtil::printf("%06u#%010u#%06u", frontid, sessionid, orderRef);
 }
 
 bool TraderCTPMini::extractEntrustID(const char* entrustid, uint32_t &frontid, uint32_t &sessionid, uint32_t &orderRef)
 {
 	//Market.FrontID.SessionID.OrderRef
-	StringVector &vecString = StrUtil::split(entrustid, ".");
+	const StringVector &vecString = StrUtil::split(entrustid, "#");
 	if (vecString.size() != 3)
 		return false;
 
@@ -1138,7 +1312,16 @@ bool TraderCTPMini::IsErrorRspInfo(CThostFtdcRspInfoField *pRspInfo)
 
 void TraderCTPMini::OnErrRtnOrderInsert(CThostFtdcInputOrderField *pInputOrder, CThostFtdcRspInfoField *pRspInfo)
 {
-
+	WTSEntrust* entrust = makeEntrust(pInputOrder);
+	if (entrust)
+	{
+		WTSError *err = makeError(pRspInfo);
+		//g_orderMgr.onRspEntrust(entrust, err);
+		if (m_traderSink)
+			m_traderSink->onRspEntrust(entrust, err);
+		entrust->release();
+		err->release();
+	}
 }
 
 bool TraderCTPMini::isConnected()
@@ -1206,7 +1389,7 @@ int TraderCTPMini::authenticate()
 	strcpy(req.UserID, m_strUser.c_str());
 	//strcpy(req.UserProductInfo, m_strProdInfo.c_str());
 	strcpy(req.AuthCode, m_strAuthCode.c_str());
-	strcpy(req.AppID, m_strAppID.c_str());
+	//strcpy(req.AppID, m_strAppID.c_str());
 	m_pUserAPI->ReqAuthenticate(&req, genRequestID());
 
 	return 0;

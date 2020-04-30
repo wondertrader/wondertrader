@@ -36,9 +36,4 @@
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="TraderCTPMini.def">
-      <Filter>源文件</Filter>
-    </None>
-  </ItemGroup>
 </Project>
