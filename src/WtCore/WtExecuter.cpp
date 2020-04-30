@@ -38,6 +38,8 @@ WtExecuter::WtExecuter(WtExecuterFactory* factory, const char* name, WtDataManag
 
 WtExecuter::~WtExecuter()
 {
+	if (_pool)
+		_pool->wait();
 }
 
 bool WtExecuter::init(WTSVariant* params)
@@ -49,6 +51,12 @@ bool WtExecuter::init(WTSVariant* params)
 	_config->retain();
 
 	_scale = params->getUInt32("scale");
+	uint32_t poolsize = params->getUInt32("poolsize");
+	if(poolsize > 0)
+	{
+		_pool.reset(new boost::threadpool::pool(poolsize));
+	}
+
 	return true;
 }
 
@@ -228,7 +236,17 @@ void WtExecuter::set_position(const std::unordered_map<std::string, double>& tar
 			continue;
 		}
 
-		unit->self()->set_position(stdCode, newVol);
+		if (_pool)
+		{
+			std::string code = stdCode;
+			_pool->schedule([unit, code, newVol](){
+				unit->self()->set_position(code.c_str(), newVol);
+			});
+		}
+		else
+		{
+			unit->self()->set_position(stdCode, newVol);
+		}
 	}
 
 	for (auto it = _target_pos.begin(); it != _target_pos.end(); it++)
@@ -242,7 +260,17 @@ void WtExecuter::set_position(const std::unordered_map<std::string, double>& tar
 		if (unit == NULL)
 			continue;
 
-		unit->self()->set_position(code, 0);
+		//unit->self()->set_position(code, 0);
+		if (_pool)
+		{
+			_pool->schedule([unit, code](){
+				unit->self()->set_position(code, 0);
+			});
+		}
+		else
+		{
+			unit->self()->set_position(code, 0);
+		}
 
 		it->second = 0;
 	}
@@ -254,7 +282,19 @@ void WtExecuter::on_tick(const char* stdCode, WTSTickData* newTick)
 	if (unit == NULL)
 		return;
 
-	unit->self()->on_tick(newTick);
+	//unit->self()->on_tick(newTick);
+	if (_pool)
+	{
+		newTick->retain();
+		_pool->schedule([unit, newTick](){
+			unit->self()->on_tick(newTick);
+			newTick->release();
+		});
+	}
+	else
+	{
+		unit->self()->on_tick(newTick);
+	}
 }
 
 void WtExecuter::on_trade(const char* stdCode, bool isBuy, double vol, double price)
@@ -263,7 +303,18 @@ void WtExecuter::on_trade(const char* stdCode, bool isBuy, double vol, double pr
 	if (unit == NULL)
 		return;
 
-	unit->self()->on_trade(stdCode, isBuy, vol, price);
+	//unit->self()->on_trade(stdCode, isBuy, vol, price);
+	if (_pool)
+	{
+		std::string code = stdCode;
+		_pool->schedule([unit, code, isBuy, vol, price](){
+			unit->self()->on_trade(code.c_str(), isBuy, vol, price);
+		});
+	}
+	else
+	{
+		unit->self()->on_trade(stdCode, isBuy, vol, price);
+	}
 }
 
 void WtExecuter::on_order(uint32_t localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled /* = false */)
@@ -272,7 +323,18 @@ void WtExecuter::on_order(uint32_t localid, const char* stdCode, bool isBuy, dou
 	if (unit == NULL)
 		return;
 
-	unit->self()->on_order(localid, stdCode, isBuy, leftQty, price, isCanceled);
+	//unit->self()->on_order(localid, stdCode, isBuy, leftQty, price, isCanceled);
+	if (_pool)
+	{
+		std::string code = stdCode;
+		_pool->schedule([unit, code, isBuy, leftQty, price, isCanceled](){
+			unit->self()->on_trade(code.c_str(), isBuy, leftQty, price);
+		});
+	}
+	else
+	{
+		unit->self()->on_order(localid, stdCode, isBuy, leftQty, price, isCanceled);
+	}
 }
 
 void WtExecuter::on_entrust(uint32_t localid, const char* stdCode, bool bSuccess, const char* message)
@@ -281,7 +343,19 @@ void WtExecuter::on_entrust(uint32_t localid, const char* stdCode, bool bSuccess
 	if (unit == NULL)
 		return;
 
-	unit->self()->on_entrust(localid, stdCode, bSuccess, message);
+	//unit->self()->on_entrust(localid, stdCode, bSuccess, message);
+	if (_pool)
+	{
+		std::string code = stdCode;
+		std::string msg = message;
+		_pool->schedule([unit, localid, code, bSuccess, msg](){
+			unit->self()->on_entrust(localid, code.c_str(), bSuccess, msg.c_str());
+		});
+	}
+	else
+	{
+		unit->self()->on_entrust(localid, stdCode, bSuccess, message);
+	}
 }
 
 void WtExecuter::on_channel_ready()
@@ -291,7 +365,19 @@ void WtExecuter::on_channel_ready()
 	{
 		ExecuteUnitPtr& unitPtr = it->second;
 		if (unitPtr)
-			unitPtr->self()->on_channel_ready();
+		{
+			//unitPtr->self()->on_channel_ready();
+			if (_pool)
+			{
+				_pool->schedule([unitPtr](){
+					unitPtr->self()->on_channel_ready();
+				});
+			}
+			else
+			{
+				unitPtr->self()->on_channel_ready();
+			}
+		}
 	}
 }
 
@@ -302,7 +388,19 @@ void WtExecuter::on_channel_lost()
 	{
 		ExecuteUnitPtr& unitPtr = it->second;
 		if (unitPtr)
-			unitPtr->self()->on_channel_lost();
+		{
+			//unitPtr->self()->on_channel_lost();
+			if (_pool)
+			{
+				_pool->schedule([unitPtr](){
+					unitPtr->self()->on_channel_lost();
+				});
+			}
+			else
+			{
+				unitPtr->self()->on_channel_lost();
+			}
+		}
 	}
 }
 
@@ -320,7 +418,20 @@ void WtExecuter::on_position(const char* stdCode, bool isLong, double prevol, do
 			writeLog("合约 %s 为上一期主力合约，仓位即将自动清理");
 			ExecuteUnitPtr unit = getUnit(stdCode);
 			if (unit)
-				unit->self()->set_position(stdCode, 0);
+			{
+				//unit->self()->set_position(stdCode, 0);
+				if (_pool)
+				{
+					std::string code = stdCode;
+					_pool->schedule([unit, code](){
+						unit->self()->set_position(code.c_str(), 0);
+					});
+				}
+				else
+				{
+					unit->self()->set_position(stdCode, 0);
+				}
+			}
 		}
 	}
 }
