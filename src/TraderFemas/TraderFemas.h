@@ -29,6 +29,8 @@
 #include "../Share/WTSVariant.hpp"
 #include "./ustptraderapi/USTPFtdcTraderApi.h"
 
+#include "../Share/DLLHelper.hpp"
+
 USING_NS_OTP;
 
 typedef std::unordered_map<std::string, std::string>	StringMap;
@@ -227,5 +229,10 @@ protected:
 	bool					m_bInQuery;
 	BoostUniqueMutex		m_mtxQuery;
 	uint64_t				m_lastQryTime;
+
+	std::string		m_strModule;
+	DllHandle		m_hInstCTP;
+	typedef CUstpFtdcTraderApi* (*APICreator)(const char *);
+	APICreator		m_funcCreator;
 };
 
