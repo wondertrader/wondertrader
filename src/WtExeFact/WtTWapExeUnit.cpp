@@ -1,8 +1,11 @@
 #include "WtTWapExeUnit.h"
 
-#include "..\Share\TimeUtils.hpp"
-#include "..\Share\WTSVariant.hpp"
-#include "..\Share\WTSContractInfo.hpp"
+#include "../Share/TimeUtils.hpp"
+#include "../Share/WTSVariant.hpp"
+#include "../Share/WTSContractInfo.hpp"
+
+#include <math.h>
+
 
 extern const char* FACT_NAME;
 

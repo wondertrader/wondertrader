@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <stdint.h>
+#include <string.h>
 
 #include "../Share/WTSTypes.h"
 #include "../Share/ITraderApi.h"
@@ -265,9 +266,9 @@ protected:
 
 	std::string		m_strModule;
 	DllHandle		m_hInstESF;
-	typedef ITapTradeAPI* (__cdecl *ESFCreator)(const ITapTrade::TapAPIApplicationInfo *appInfo, ITapTrade::TAPIINT32 &iResult);
-	typedef void(__cdecl *ESFDeleter)(ITapTradeAPI*);
-	typedef const char*(__cdecl *ESFGetErrorDesc)(TAPIINT32);
+	typedef ITapTradeAPI* ( *ESFCreator)(const ITapTrade::TapAPIApplicationInfo *appInfo, ITapTrade::TAPIINT32 &iResult);
+	typedef void( *ESFDeleter)(ITapTradeAPI*);
+	typedef const char*( *ESFGetErrorDesc)(TAPIINT32);
 
 
 	ESFCreator		m_funcCreator;
@@ -292,6 +293,8 @@ protected:
 	std::string		m_strBaseCurrency;
 
 	IBaseDataMgr*	m_bdMgr;
+
+	std::atomic<uint32_t> m_orderId;
 
 
 	//交易所、品种映射

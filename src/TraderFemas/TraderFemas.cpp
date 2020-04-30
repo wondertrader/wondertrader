@@ -168,7 +168,7 @@ bool TraderFemas::init(WTSParams* params)
 #ifdef _WIN32
 	const char* creatorName = "?CreateFtdcTraderApi@CUstpFtdcTraderApi@@SAPAV1@PBD@Z";
 #else
-	const char* creatorName = "_ZN19CThostFtdcTraderApi19CreateFtdcTraderApiEPKc";
+	const char* creatorName = "_ZN18CUstpFtdcTraderApi19CreateFtdcTraderApiEPKc";
 #endif
 	m_funcCreator = (APICreator)DLLHelper::get_symbol(m_hInstCTP, creatorName);
 

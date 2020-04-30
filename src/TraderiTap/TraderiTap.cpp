@@ -1,5 +1,3 @@
-#include <Windows.h>
-#include <time.h>
 #include "TraderiTap.h"
 #include "HttpClient.h"
 
@@ -87,7 +85,7 @@ uint64_t extractOrdTime(const char* dateTime, uint32_t& curDate)
 	std::string sDtTm = dateTime;
 	if(sDtTm.find('-') == -1)
 	{
-		StringVector &ay = StrUtil::split(dateTime, ".");
+		const StringVector &ay = StrUtil::split(dateTime, ".");
 
 		std::string sDate = "20";
 		sDate += ay[0].substr(0, 6);
@@ -99,7 +97,7 @@ uint64_t extractOrdTime(const char* dateTime, uint32_t& curDate)
 	}
 	else
 	{
-		StringVector &ay = StrUtil::split(dateTime, " ");
+		StringVector ay = StrUtil::split(dateTime, " ");
 		StrUtil::replace(ay[0], "-", "");
 		curDate = strtoul(ay[0].c_str(), NULL, 10);
 		return TimeUtils::makeTime(curDate, strToTime(ay[1].c_str()));
@@ -136,6 +134,7 @@ TraderiTap::TraderiTap()
 	, m_bReconnect(false)
 {
 	memset(m_strContract, 0, 41);
+	m_orderId = 0;
 }
 
 
@@ -408,9 +407,8 @@ bool TraderiTap::makeEntrustID(char* buffer, int length)
 	try
 	{
 		memset(buffer, 0, length);
-		static std::atomic<uint32_t> orderid = 0;
-		uint32_t thisid = orderid.fetch_add(1) + 1;
-		sprintf(buffer, "#%s#.%I64d.%06u", m_strUser.c_str(), m_uLoginTime, thisid);
+		uint32_t thisid = m_orderId.fetch_add(1) + 1;
+		sprintf(buffer, "#%s#.%s.%06u", m_strUser.c_str(), StrUtil::fmtUInt64(m_uLoginTime).c_str(), thisid);
 		return true;
 	}
 	catch(...)
@@ -743,7 +741,7 @@ void TAP_CDECL TraderiTap::OnRspQryPosition(ITapTrade::TAPIUINT32 sessionID, ITa
 		if (NULL == m_mapPosition)
 			m_mapPosition = PositionMap::create();
 
-		std::string& code = StrUtil::printf("%s%s", productO2I(info->CommodityNo), info->ContractNo);
+		std::string code = StrUtil::printf("%s%s", productO2I(info->CommodityNo), info->ContractNo);
 		const char* exchg = exchgO2I(info->ExchangeNo);
 		WTSContractInfo* contract = m_bdMgr->getContract(code.c_str(), exchg);
 		WTSCommodityInfo* commInfo = m_bdMgr->getCommodity(contract);
@@ -933,7 +931,7 @@ WTSOrderState TraderiTap::wrapOrderState(TAPIOrderStateType orderState)
 
 WTSOrderInfo* TraderiTap::makeOrderInfo(const TapAPIOrderInfo* orderField)
 {
-	std::string& code = StrUtil::printf("%s%s", productO2I(orderField->CommodityNo), orderField->ContractNo);
+	std::string code = StrUtil::printf("%s%s", productO2I(orderField->CommodityNo), orderField->ContractNo);
 	const char* exchg = exchgO2I(orderField->ExchangeNo);
 	WTSContractInfo* contract = m_bdMgr->getContract(code.c_str(), exchg);
 	if(contract == NULL)
@@ -992,7 +990,7 @@ WTSOrderInfo* TraderiTap::makeOrderInfo(const TapAPIOrderInfoNotice* noticeField
 
 WTSEntrust* TraderiTap::makeEntrust(const TapAPIOrderLocalInputRsp *entrustField)
 {
-	std::string& code = StrUtil::printf("%s%s", productO2I(entrustField->CommodityNo), entrustField->ContractNo);
+	std::string code = StrUtil::printf("%s%s", productO2I(entrustField->CommodityNo), entrustField->ContractNo);
 	const char* exchg = exchgO2I(entrustField->ExchangeNo);
 
 	WTSEntrust* pRet = WTSEntrust::create(code.c_str(),entrustField->OrderQty, entrustField->OrderPrice, exchg);
@@ -1015,7 +1013,7 @@ WTSError* TraderiTap::makeErrorInfo(WTSErroCode errCode, const char* msg)
 
 WTSTradeInfo* TraderiTap::makeTradeRecord(const TapAPIFillInfo* tradeField)
 {
-	std::string& code = StrUtil::printf("%s%s", productO2I(tradeField->CommodityNo), tradeField->ContractNo);
+	std::string code = StrUtil::printf("%s%s", productO2I(tradeField->CommodityNo), tradeField->ContractNo);
 	const char* exchg = exchgO2I(tradeField->ExchangeNo);
 	WTSContractInfo* contract = m_bdMgr->getContract(code.c_str(), exchg);
 	if(contract == NULL)
@@ -1026,7 +1024,7 @@ WTSTradeInfo* TraderiTap::makeTradeRecord(const TapAPIFillInfo* tradeField)
 	pRet->setPrice(tradeField->MatchPrice);
 	pRet->setTradeID(StrUtil::printf("%s.Trd.%s", m_strUser.c_str(), tradeField->MatchNo).c_str());
 
-	StringVector &ay = StrUtil::split(tradeField->MatchDateTime, " ");
+	StringVector ay = StrUtil::split(tradeField->MatchDateTime, " ");
 	StrUtil::replace(ay[0], "-", "");
 	pRet->setTradeDate(strtoul(ay[0].c_str(), NULL, 10));
 	pRet->setTradeTime(TimeUtils::makeTime(pRet->getTradeDate(), strToTime(ay[1].c_str())*1000));
