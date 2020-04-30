@@ -19,11 +19,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{928EA8C5-C7E2-4B51-942B-D17BB6CE5AA4}</ProjectGuid>
+    <ProjectGuid>{A2F22260-2689-4AFA-A8B6-B0549CEB1784}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>TraderiTap</RootNamespace>
+    <RootNamespace>ParseriTap</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
-    <ProjectName>TraderiTap</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -71,8 +70,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
-    <IncludePath>$(MyDepends12)\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(MyDepends12)\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(MyDepends12Bak)\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(MyDepends12Bak)\lib;$(LibraryPath)</LibraryPath>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -83,20 +82,18 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
-    <IncludePath>$(MyDepends12)\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(MyDepends12)\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(MyDepends12Bak)\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(MyDepends12Bak)\lib;$(LibraryPath)</LibraryPath>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>$(MyDepends12Bak)\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(MyDepends12Bak)\lib;$(LibraryPath)</LibraryPath>
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
-    <IncludePath>$(MyX64Deps12)\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(MyX64Deps12)\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -108,15 +105,11 @@
       <ModuleDefinitionFile>
       </ModuleDefinitionFile>
       <ImportLibrary>$(OutDir)$(TargetName).lib</ImportLibrary>
-      <IgnoreSpecificDefaultLibraries>LIBCMT.lib</IgnoreSpecificDefaultLibraries>
-      <DelayLoadDLLs>
-      </DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -128,14 +121,12 @@
       <ModuleDefinitionFile>
       </ModuleDefinitionFile>
       <ImportLibrary>$(OutDir)$(TargetName).lib</ImportLibrary>
-      <IgnoreSpecificDefaultLibraries>LIBCMT.lib</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -150,16 +141,12 @@
       <ModuleDefinitionFile>
       </ModuleDefinitionFile>
       <ImportLibrary>$(OutDir)$(TargetName).lib</ImportLibrary>
-      <DelayLoadDLLs>
-      </DelayLoadDLLs>
-      <IgnoreSpecificDefaultLibraries>libcmt</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -174,21 +161,17 @@
       <ModuleDefinitionFile>
       </ModuleDefinitionFile>
       <ImportLibrary>$(OutDir)$(TargetName).lib</ImportLibrary>
-      <DelayLoadDLLs>
-      </DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="HttpClient.h" />
-    <ClInclude Include="iTapTradeApi\iTapAPICommDef.h" />
-    <ClInclude Include="iTapTradeApi\iTapAPIError.h" />
-    <ClInclude Include="iTapTradeApi\iTapTradeAPI.h" />
-    <ClInclude Include="iTapTradeApi\iTapTradeAPIDataType.h" />
-    <ClInclude Include="TraderiTap.h" />
+    <ClInclude Include="ParseriTap.h" />
+    <ClInclude Include="TapQuote\TapAPICommDef.h" />
+    <ClInclude Include="TapQuote\TapAPIError.h" />
+    <ClInclude Include="TapQuote\TapQuoteAPI.h" />
+    <ClInclude Include="TapQuote\TapQuoteAPIDataType.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="HttpClient.cpp" />
-    <ClCompile Include="TraderiTap.cpp" />
+    <ClCompile Include="ParseriTap.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
