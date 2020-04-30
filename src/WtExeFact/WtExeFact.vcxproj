@@ -159,10 +159,12 @@
   <ItemGroup>
     <ClCompile Include="WtExeFact.cpp" />
     <ClCompile Include="WtSimpExeUnit.cpp" />
+    <ClCompile Include="WtTWapExeUnit.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WtExeFact.h" />
     <ClInclude Include="WtSimpExeUnit.h" />
+    <ClInclude Include="WtTWapExeUnit.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -21,12 +21,18 @@
     <ClCompile Include="WtSimpExeUnit.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="WtTWapExeUnit.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WtExeFact.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="WtSimpExeUnit.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="WtTWapExeUnit.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
