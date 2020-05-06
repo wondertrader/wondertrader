@@ -2,14 +2,18 @@
 
 #include "../Share/StrUtil.hpp"
 
-#pragma comment(lib, "libcurl.lib")
-#pragma comment(lib, "Ws2_32.lib")
-#pragma comment(lib, "Wldap32.lib")
-
 #define CURL_STATICLIB
 #include <curl/curl.h>
 #include <string>
 #include <stdint.h>
+
+#ifdef _DEBUG
+#pragma comment(lib, "libcurl-mdd.lib")
+#else
+#pragma comment(lib, "libcurl-md.lib")
+#endif
+#pragma comment(lib, "Ws2_32.lib")
+#pragma comment(lib, "Wldap32.lib")
 
 CHttpClient::CHttpClient(void) : 
 m_bDebug(false)

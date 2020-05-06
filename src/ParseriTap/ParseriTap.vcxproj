@@ -70,25 +70,25 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
-    <IncludePath>$(MyDepends12Bak)\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(MyDepends12Bak)\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(MyDepends12)\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(MyDepends12)\lib;$(LibraryPath)</LibraryPath>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(MyDepends12Bak)\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(MyDepends12Bak)\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(MyDepends12)\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(MyDepends12)\lib;$(LibraryPath)</LibraryPath>
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
-    <IncludePath>$(MyDepends12Bak)\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(MyDepends12Bak)\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(MyDepends12)\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(MyDepends12)\lib;$(LibraryPath)</LibraryPath>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(MyDepends12Bak)\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(MyDepends12Bak)\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(MyDepends12)\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(MyDepends12)\lib;$(LibraryPath)</LibraryPath>
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
