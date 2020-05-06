@@ -197,7 +197,7 @@ void TraderCTPMini::release()
 void TraderCTPMini::connect()
 {
 	std::stringstream ss;
-	ss << "./ctpdata/flows/" << m_strBroker << "/" << m_strUser << "/";
+	ss << "./ctpminidata/flows/" << m_strBroker << "/" << m_strUser << "/";
 	boost::filesystem::create_directories(ss.str().c_str());
 	m_pUserAPI = m_funcCreator(ss.str().c_str());
 	m_pUserAPI->RegisterSpi(this);
@@ -312,7 +312,7 @@ int TraderCTPMini::doLogin()
 	int iResult = m_pUserAPI->ReqUserLogin(&req, genRequestID());
 	if (iResult != 0)
 	{
-		m_traderSink->handleTraderLog(LL_ERROR, "[CTPTrader]µÇÂ¼ÇëÇó·¢ËÍÊ§°Ü, ´íÎóÂë:%d", iResult);
+		m_traderSink->handleTraderLog(LL_ERROR, "[CTPMiniTrader]µÇÂ¼ÇëÇó·¢ËÍÊ§°Ü, ´íÎóÂë:%d", iResult);
 	}
 
 	return 0;
@@ -332,7 +332,7 @@ int TraderCTPMini::logout()
 	int iResult = m_pUserAPI->ReqUserLogout(&req, genRequestID());
 	if (iResult != 0)
 	{
-		m_traderSink->handleTraderLog(LL_ERROR, "[CTPTrader]×¢ÏúÇëÇó·¢ËÍÊ§°Ü, ´íÎóÂë:%d", iResult);
+		m_traderSink->handleTraderLog(LL_ERROR, "[CTPMiniTrader]×¢ÏúÇëÇó·¢ËÍÊ§°Ü, ´íÎóÂë:%d", iResult);
 	}
 
 	return 0;
@@ -423,7 +423,7 @@ int TraderCTPMini::orderInsert(WTSEntrust* entrust)
 	int iResult = m_pUserAPI->ReqOrderInsert(&req, genRequestID());
 	if (iResult != 0)
 	{
-		m_traderSink->handleTraderLog(LL_ERROR, "[CTPTrader]²åÈë¶©µ¥Ê§°Ü, ´íÎóÂë:%d", iResult);
+		m_traderSink->handleTraderLog(LL_ERROR, "[CTPMiniTrader]²åÈë¶©µ¥Ê§°Ü, ´íÎóÂë:%d", iResult);
 	}
 
 	return 0;
@@ -466,7 +466,7 @@ int TraderCTPMini::orderAction(WTSEntrustAction* action)
 	int iResult = m_pUserAPI->ReqOrderAction(&req, genRequestID());
 	if (iResult != 0)
 	{
-		m_traderSink->handleTraderLog(LL_ERROR, "[CTPTrader]³·µ¥ÇëÇó·¢ËÍÊ§°Ü, ´íÎóÂë:%d", iResult);
+		m_traderSink->handleTraderLog(LL_ERROR, "[CTPMiniTrader]³·µ¥ÇëÇó·¢ËÍÊ§°Ü, ´íÎóÂë:%d", iResult);
 	}
 
 	return 0;
@@ -566,7 +566,7 @@ void TraderCTPMini::OnFrontConnected()
 
 void TraderCTPMini::OnFrontDisconnected(int nReason)
 {
-	//m_traderSink->handleTraderLog(LL_ERROR, "[CTPTrader]CTP½»Ò×·þÎñÆ÷ÒÑ¶Ï¿ª");
+	//m_traderSink->handleTraderLog(LL_ERROR, "[CTPMiniTrader]CTP½»Ò×·þÎñÆ÷ÒÑ¶Ï¿ª");
 	m_wrapperState = WS_NOTLOGIN;
 	if (m_traderSink)
 		m_traderSink->handleEvent(WTE_Close, nReason);
