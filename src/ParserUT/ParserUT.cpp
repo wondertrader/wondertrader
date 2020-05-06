@@ -195,15 +195,13 @@ void ParserUT::rsp_error(error_msg *arg)
 	bool isError = IsErrorRspInfo(arg);
 	if(isError)
 	{
-		std::string s = UTF8toChar(arg->msg);
 		if (m_parserSink)
-			m_parserSink->handleParserLog(LL_ERROR, "[ParserUT]%s(%d)", s.c_str(), arg->err_code);
+			m_parserSink->handleParserLog(LL_ERROR, "[ParserUT]%s(%d)", UTF8toChar(arg->msg).c_str(), arg->err_code);
 	}
 	else
 	{
-		std::string s = UTF8toChar(arg->msg);
 		if (m_parserSink)
-			m_parserSink->handleParserLog(LL_INFO, "[ParserUT]%s", s.c_str());
+			m_parserSink->handleParserLog(LL_INFO, "[ParserUT]%s", UTF8toChar(arg->msg).c_str());
 	}
 }
 
