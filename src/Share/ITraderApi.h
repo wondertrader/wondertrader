@@ -33,10 +33,59 @@ class IBaseDataMgr;
 
 typedef std::function<void()>	CommonExecuter;
 
+#pragma region "Stock Trading API definations"
+/*
+ *	股票交易接口回调
+ *	Added By Wesley @ 2020/05/06
+ */
+class IStkTraderApiListener
+{
+
+};
+
+/*
+ *	股票交易接口
+ *	Added By Wesley @ 2020/05/06
+ *	预留起来以后使用，先把接口的相互框架搭建起来
+ */
+class IStkTraderApi
+{
+
+};
+#pragma endregion
+
+#pragma region "Option Trading API definations"
+/*
+ *	期权交易接口回调
+ *	Added By Wesley @ 2020/05/06
+ */
+class IOptTraderApiListener
+{
+
+};
+
+/*
+ *	期权交易接口
+ *	Added By Wesley @ 2020/05/06
+ *	预留起来以后使用，先把接口的相互框架搭建起来
+ */
+class IOptTraderApi
+{
+
+};
+#pragma endregion
+
 
 //委托回调接口
 class ITraderApiListener
 {
+public:
+	virtual IBaseDataMgr*	getBaseDataMgr() = 0;
+	virtual void handleTraderLog(WTSLogLevel ll, const char* format, ...){}
+
+	virtual IStkTraderApiListener* getStkListener(){ return NULL; }
+	virtual IOptTraderApiListener* getOptListener(){ return NULL; }
+
 public:
 	virtual void handleEvent(WTSTraderEvent e, int32_t ec) = 0;
 	virtual void onLoginResult(bool bSucc, const char* msg, uint32_t tradingdate) = 0;
@@ -52,10 +101,6 @@ public:
 	virtual void onPushTrade(WTSTradeInfo* tradeRecord){}
 
 	virtual void onTraderError(WTSError*	err){}
-
-public:
-	virtual IBaseDataMgr*	getBaseDataMgr() = 0;
-	virtual void handleTraderLog(WTSLogLevel ll, const char* format, ...){}
 };
 
 //下单接口管理接口
@@ -63,6 +108,9 @@ class ITraderApi
 {
 public:
 	virtual ~ITraderApi(){}
+
+	virtual IStkTraderApi* getStkTrader() { return NULL; }
+	virtual IOptTraderApi* getOptTrader() { return NULL; }
 
 public:
 	/*
