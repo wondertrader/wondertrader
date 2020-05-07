@@ -47,10 +47,10 @@ class IStkTraderApiListener
  *	股票交易接口
  *	Added By Wesley @ 2020/05/06
  *	预留起来以后使用，先把接口的相互框架搭建起来
+ *	主要提供融资融券等股票特有接口
  */
 class IStkTraderApi
 {
-
 };
 #pragma endregion
 
@@ -68,6 +68,7 @@ class IOptTraderApiListener
  *	期权交易接口
  *	Added By Wesley @ 2020/05/06
  *	预留起来以后使用，先把接口的相互框架搭建起来
+ *	主要提供报价、行权等期权特有接口
  */
 class IOptTraderApi
 {

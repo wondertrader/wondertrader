@@ -95,12 +95,12 @@ ExecuteUnitPtr WtExecuter::getUnit(const char* code, bool bAutoCreate /* = true 
 //////////////////////////////////////////////////////////////////////////
 //ExecuteContext
 #pragma region Context回调接口
-WTSHisTickData* WtExecuter::getTicks(const char* stdCode, uint32_t count, uint64_t etime /* = 0 */)
+WTSTickSlice* WtExecuter::getTicks(const char* stdCode, uint32_t count, uint64_t etime /* = 0 */)
 {
 	if (_data_mgr == NULL)
 		return NULL;
 
-	return _data_mgr->get_ticks(stdCode, count);
+	return _data_mgr->get_tick_slice(stdCode, count);
 }
 
 WTSTickData* WtExecuter::grabLastTick(const char* stdCode)

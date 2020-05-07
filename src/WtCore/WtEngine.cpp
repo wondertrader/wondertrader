@@ -538,11 +538,6 @@ void WtEngine::load_datas()
 	}
 }
 
-WTSHisTickData* WtEngine::get_ticks(uint32_t sid, const char* stdCode, uint32_t count)
-{
-	return _data_mgr->get_ticks(stdCode, count);
-}
-
 WTSTickSlice* WtEngine::get_tick_slice(uint32_t sid, const char* code, uint32_t count)
 {
 	return _data_mgr->get_tick_slice(code, count);
