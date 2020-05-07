@@ -1,5 +1,6 @@
 #pragma once
 #include <stdlib.h>
+#include <string>
 #ifdef _WIN32
 #include <windows.h>
 #else
@@ -40,8 +41,8 @@ public :
 			needFree = true;
 
 			// Convert to Unicode (2 bytes)
-			int string_len = (int)strlen(utf8_string);
-			int dst_len = string_len * 2 + 2;
+			std::size_t string_len = strlen(utf8_string);
+			std::size_t dst_len = string_len * 2 + 2;
 #ifdef _WIN32
 			wchar_t *buffer = new wchar_t[string_len + 1];
 			MultiByteToWideChar(CP_UTF8, 0, utf8_string, -1, buffer, string_len + 1);
@@ -56,13 +57,13 @@ public :
 			t_string = new char[dst_len];
 
 			cd = iconv_open("gbk", "utf8");
-			if (cd == 0)
-				return -1;
-			memset(t_string, 0, dst_len);
-			if (iconv(cd, &utf8_string, &string_len, &t_string, &dst_len) == -1)
-				return -1;
-			iconv_close(cd);
-			*t_string = '\0';
+			if (cd != 0)
+			{
+				memset(t_string, 0, dst_len);
+				iconv(cd, (char**)&utf8_string, &string_len, &t_string, &dst_len);
+				iconv_close(cd);
+				t_string[dst_len] = '\0';
+			}
 #endif
 		}
 	}
@@ -133,8 +134,8 @@ public :
 
 			needFree = true;
 
-			int string_len = (int)strlen(t_string);
-			int dst_len = string_len * 3 + 1;
+			std::size_t string_len = strlen(t_string);
+			std::size_t dst_len = string_len * 3 + 1;
 #ifdef _WIN32
 			
 
@@ -155,13 +156,13 @@ public :
 			utf8_string = new char[dst_len];
 
 			cd = iconv_open("utf8", "gbk");
-			if (cd == 0)
-				return -1;
-			memset(utf8_string, 0, dst_len);
-			if (iconv(cd, &t_string, &string_len, &utf8_string, &dst_len) == -1)
-				return -1;
-			iconv_close(cd);
-			*t_string = '\0';
+			if (cd != 0)
+			{
+				memset(utf8_string, 0, dst_len);
+				iconv(cd, (char**)&t_string, &string_len, &utf8_string, &dst_len);
+				iconv_close(cd);
+				utf8_string[dst_len] = '\0';
+			}
 #endif
 		}
 	}
@@ -200,59 +201,6 @@ private :
 	ChartoUTF8 &operator=(const ChartoUTF8 &rhs);
 };
 
-
-class WcsToMbs
-{
-public:
-	WcsToMbs(const wchar_t* wcs_string)
-	{
-		int lengthOfMbs = WideCharToMultiByte( CP_ACP, 0, wcs_string, -1, NULL, 0, NULL, NULL);
-		mbs_string = new char[ lengthOfMbs ];
-		WideCharToMultiByte( CP_ACP, 0, wcs_string, -1, mbs_string, lengthOfMbs, NULL, NULL);
-	}
-
-	~WcsToMbs()
-	{
-		delete[] mbs_string;
-	}
-
-	operator const char*()
-	{
-		return mbs_string;
-	}
-
-	const char* c_str() const
-	{
-		return mbs_string;
-	}
-
-private:
-	char* mbs_string;
-};
-
-class MbsToWcs
-{
-public:
-	MbsToWcs(const char* mbs_string)
-	{
-		int lengthOfMbs = MultiByteToWideChar( CP_ACP, 0, mbs_string, -1, NULL, 0);
-		wcs_string = new wchar_t[ lengthOfMbs ];
-		MultiByteToWideChar( CP_ACP, 0, mbs_string, -1, wcs_string, lengthOfMbs);
-	}
-
-	~MbsToWcs()
-	{
-		delete[] wcs_string;
-	}
-
-	operator const wchar_t*()
-	{
-		return wcs_string;
-	}
-
-private:
-	wchar_t* wcs_string;
-};
 
 class URLEncode
 {
