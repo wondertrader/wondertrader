@@ -160,6 +160,24 @@ void DataManager::broadcastTick(WTSTickData* curTick)
 		_udp_caster->broadcast(curTick);
 }
 
+void DataManager::broadcastOrdDtl(WTSOrdDtlData* curOrdDtl)
+{
+	if (_udp_caster)
+		_udp_caster->broadcast(curOrdDtl);
+}
+
+void DataManager::broadcastOrdQue(WTSOrdQueData* curOrdQue)
+{
+	if (_udp_caster)
+		_udp_caster->broadcast(curOrdQue);
+}
+
+void DataManager::broadcastTrans(WTSTransData* curTrans)
+{
+	if (_udp_caster)
+		_udp_caster->broadcast(curTrans);
+}
+
 CodeSet* DataManager::getSessionComms(const char* sid)
 {
 	return  _bd_mgr->getSessionComms(sid);

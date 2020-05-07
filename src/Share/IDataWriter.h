@@ -32,6 +32,12 @@ public:
 
 	virtual void broadcastTick(WTSTickData* curTick) = 0;
 
+	virtual void broadcastOrdQue(WTSOrdQueData* curOrdQue) = 0;
+
+	virtual void broadcastOrdDtl(WTSOrdDtlData* curOrdDtl) = 0;
+
+	virtual void broadcastTrans(WTSTransData* curTrans) = 0;
+
 	virtual CodeSet* getSessionComms(const char* sid) = 0;
 
 	virtual uint32_t getTradingDate(const char* pid) = 0;

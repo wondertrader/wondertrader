@@ -22,6 +22,9 @@
 
 #define UDP_MSG_SUBSCRIBE	0x100
 #define UDP_MSG_PUSHTICK	0x200
+#define UDP_MSG_PUSHORDQUE	0x201	//委托队列
+#define UDP_MSG_PUSHORDDTL	0x202	//委托明细
+#define UDP_MSG_PUSHTRANS	0x203	//逐笔成交
 
 #pragma pack(push,1)
 //UDP请求包
@@ -32,16 +35,20 @@ typedef struct _UDPReqPacket
 } UDPReqPacket;
 
 //UDPTick数据包
-typedef struct _UDPTickPacket
+template <typename T>
+struct UDPDataPacket
 {
-	uint32_t		_type;
-	WTSTickStruct	_tick;
-} UDPTickPacket;
+	uint32_t	_type;
+	T			_data;
+};
 #pragma pack(pop)
+typedef UDPDataPacket<WTSTickStruct>	UDPTickPacket;
+typedef UDPDataPacket<WTSOrdQueStruct>	UDPOrdQuePacket;
+typedef UDPDataPacket<WTSOrdDtlStruct>	UDPOrdDtlPacket;
+typedef UDPDataPacket<WTSTransStruct>	UDPTransPacket;
 
 UDPCaster::UDPCaster()
-	: m_tickQue(NULL)
-	, m_bTerminated(false)
+	: m_bTerminated(false)
 	, m_bdMgr(NULL)
 	, m_dtMgr(NULL)
 {
@@ -166,7 +173,7 @@ void UDPCaster::do_receive()
 					data->resize(sizeof(UDPTickPacket), 0);
 					UDPTickPacket* pkt = (UDPTickPacket*)data->data();
 					pkt->_type = req->_type;
-					memcpy(&pkt->_tick, &curTick->getTickStruct(), sizeof(WTSTickStruct));
+					memcpy(&pkt->_data, &curTick->getTickStruct(), sizeof(WTSTickStruct));
 					curTick->release();
 					m_sktSubscribe->async_send_to(
 						boost::asio::buffer(*data, data->size()), m_senderEP,
@@ -248,15 +255,31 @@ bool UDPCaster::addMRecver(const char* remote, int port, int sendport, int type 
 
 void UDPCaster::broadcast(WTSTickData* curTick)
 {
-	if(m_sktBroadcast == NULL || curTick == NULL || m_bTerminated)
+	broadcast(curTick, UDP_MSG_PUSHTICK);
+}
+
+void UDPCaster::broadcast(WTSOrdDtlData* curOrdDtl)
+{
+	broadcast(curOrdDtl, UDP_MSG_PUSHORDDTL);
+}
+
+void UDPCaster::broadcast(WTSOrdQueData* curOrdQue)
+{
+	broadcast(curOrdQue, UDP_MSG_PUSHORDQUE);
+}
+
+void UDPCaster::broadcast(WTSTransData* curTrans)
+{
+	broadcast(curTrans, UDP_MSG_PUSHTRANS);
+}
+
+void UDPCaster::broadcast(WTSObject* data, uint32_t dataType)
+{
+	if(m_sktBroadcast == NULL || data == NULL || m_bTerminated)
 		return;
 
 	{
-		BoostUniqueLock lock(m_mtxCast);
-		if (m_tickQue == NULL)
-			m_tickQue = WTSQueue::create();
-
-		m_tickQue->push(curTick, true);
+		m_dataQue.push(CastData(data, dataType));
 	}
 
 	if(m_thrdCast == NULL)
@@ -265,48 +288,81 @@ void UDPCaster::broadcast(WTSTickData* curTick)
 
 			while (!m_bTerminated)
 			{
-				if(m_tickQue == NULL || m_tickQue->empty())
+				if(m_dataQue.empty())
 				{
 					BoostUniqueLock lock(m_mtxCast);
 					m_condCast.wait(lock);
 					continue;
-				}
+				}	
 
-				WTSTickData* curTick = NULL;
+				do 
+				{
+					const CastData& castData = m_dataQue.front();
+
+					if (castData._data == NULL)
+						break;
+
+					//直接广播
+					if (!m_listRawGroup.empty() || !m_listRawRecver.empty())
+					{
+						std::string buf_raw;
+						if (castData._datatype == UDP_MSG_PUSHTICK)
+						{
+							buf_raw.resize(sizeof(UDPTickPacket));
+							UDPTickPacket* pack = (UDPTickPacket*)buf_raw.data();
+							pack->_type = castData._datatype;
+							WTSTickData* curObj = (WTSTickData*)castData._data;
+							memcpy(&pack->_data, &curObj->getTickStruct(), sizeof(WTSTickStruct));
+						}
+						else if (castData._datatype == UDP_MSG_PUSHORDDTL)
+						{
+							buf_raw.resize(sizeof(UDPOrdDtlPacket));
+							UDPOrdDtlPacket* pack = (UDPOrdDtlPacket*)buf_raw.data();
+							pack->_type = castData._datatype;
+							WTSOrdDtlData* curObj = (WTSOrdDtlData*)castData._data;
+							memcpy(&pack->_data, &curObj->getOrdDtlStruct(), sizeof(WTSOrdDtlStruct));
+						}
+						else if (castData._datatype == UDP_MSG_PUSHORDQUE)
+						{
+							buf_raw.resize(sizeof(UDPOrdQuePacket));
+							UDPOrdQuePacket* pack = (UDPOrdQuePacket*)buf_raw.data();
+							pack->_type = castData._datatype;
+							WTSOrdQueData* curObj = (WTSOrdQueData*)castData._data;
+							memcpy(&pack->_data, &curObj->getOrdQueStruct(), sizeof(WTSOrdQueStruct));
+						}
+						else if (castData._datatype == UDP_MSG_PUSHTRANS)
+						{
+							buf_raw.resize(sizeof(UDPTransPacket));
+							UDPTransPacket* pack = (UDPTransPacket*)buf_raw.data();
+							pack->_type = castData._datatype;
+							WTSTransData* curObj = (WTSTransData*)castData._data;
+							memcpy(&pack->_data, &curObj->getTransStruct(), sizeof(WTSTransStruct));
+						}
+						else
+						{
+							break;
+						}
+
+						//广播
+						for (auto it = m_listRawRecver.begin(); it != m_listRawRecver.end(); it++)
+						{
+							const UDPReceiverPtr& receiver = (*it);
+							m_sktBroadcast->send_to(boost::asio::buffer(buf_raw), receiver->_ep);
+						}
+
+						//组播
+						for (auto it = m_listRawGroup.begin(); it != m_listRawGroup.end(); it++)
+						{
+							const MulticastPair& item = *it;
+							it->first->send_to(boost::asio::buffer(buf_raw), item.second->_ep);
+						}
+					}
+				} while (false);
+				
 				{
 					BoostUniqueLock lock(m_mtxCast);
-					curTick = (WTSTickData*)m_tickQue->front(true);
-					m_tickQue->pop();
+					m_dataQue.pop();
 				}
-
-				if(curTick == NULL)
-					continue;
-
-				//直接广播
-				if (!m_listRawGroup.empty() || !m_listRawRecver.empty())
-				{
-					std::string buf_raw;
-					buf_raw.resize(sizeof(UDPTickPacket));
-					UDPTickPacket* pack = (UDPTickPacket*)buf_raw.data();
-					pack->_type = UDP_MSG_PUSHTICK;
-					memcpy(&pack->_tick, &curTick->getTickStruct(), sizeof(WTSTickStruct));
-					//memcpy((void*)buf_raw.data(), &curTick->getTickStruct(), sizeof(WTSTickStruct));
-					//广播
-					for (auto it = m_listRawRecver.begin(); it != m_listRawRecver.end(); it++)
-					{
-						const UDPReceiverPtr& receiver = (*it);
-						m_sktBroadcast->send_to(boost::asio::buffer(buf_raw), receiver->_ep);
-					}
-
-					//组播
-					for (auto it = m_listRawGroup.begin(); it != m_listRawGroup.end(); it++)
-					{
-						const MulticastPair& item = *it;
-						it->first->send_to(boost::asio::buffer(buf_raw), item.second->_ep);
-					}
-				}
-
-				curTick->release();
 			}
 		}));
 	}
