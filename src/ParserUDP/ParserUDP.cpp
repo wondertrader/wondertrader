@@ -14,21 +14,33 @@
 
 #define UDP_MSG_SUBSCRIBE	0x100
 #define UDP_MSG_PUSHTICK	0x200
+#define UDP_MSG_PUSHORDQUE	0x201	//委托队列
+#define UDP_MSG_PUSHORDDTL	0x202	//委托明细
+#define UDP_MSG_PUSHTRANS	0x203	//逐笔成交
 
 #pragma pack(push,1)
-//UDP请求包
-typedef struct _UDPReqPacket
+
+typedef struct UDPPacketHead
 {
 	uint32_t		_type;
+} UDPPacketHead;
+//UDP请求包
+typedef struct _UDPReqPacket : UDPPacketHead
+{
 	char			_data[1020];
 } UDPReqPacket;
 
 //UDPTick数据包
-typedef struct _UDPTickPacket
+template <typename T>
+struct UDPDataPacket : UDPPacketHead
 {
-	uint32_t		_type;
-	WTSTickStruct	_tick;
-} UDPTickPacket;
+	T			_data;
+};
+#pragma pack(pop)
+typedef UDPDataPacket<WTSTickStruct>	UDPTickPacket;
+typedef UDPDataPacket<WTSOrdQueStruct>	UDPOrdQuePacket;
+typedef UDPDataPacket<WTSOrdDtlStruct>	UDPOrdDtlPacket;
+typedef UDPDataPacket<WTSTransStruct>	UDPTransPacket;
 #pragma pack(pop)
 
 
@@ -300,21 +312,48 @@ void ParserUDP::extract_buffer(uint32_t length, bool isBroad /* = true */)
 	if (length != sizeof(UDPTickPacket))
 		return;
 
-	UDPTickPacket* packet = NULL;
+	UDPPacketHead* header = NULL;
 	if(isBroad)
-		packet = (UDPTickPacket*)_b_buffer.data();
+		header = (UDPTickPacket*)_b_buffer.data();
 	else
-		packet = (UDPTickPacket*)_s_buffer.data();
-	WTSTickStruct& ts = packet->_tick;
-	bool isPush = false;
-	if (packet->_type == UDP_MSG_PUSHTICK)
-		isPush = true;
-		
-	WTSTickData* curTick = WTSTickData::create(packet->_tick);
-	if (_sink)
-		_sink->handleQuote(curTick, false);
+		header = (UDPTickPacket*)_s_buffer.data();
 
-	curTick->release();
+	if (header->_type == UDP_MSG_PUSHTICK || header->_type == UDP_MSG_SUBSCRIBE)
+	{
+		UDPTickPacket* packet = (UDPTickPacket*)header;
+		WTSTickData* curTick = WTSTickData::create(packet->_data);
+		if (_sink)
+			_sink->handleQuote(curTick, false);
+
+		curTick->release();
+	}
+	else if (header->_type == UDP_MSG_PUSHORDDTL)
+	{
+		UDPOrdDtlPacket* packet = (UDPOrdDtlPacket*)header;
+		WTSOrdDtlData* curData = WTSOrdDtlData::create(packet->_data);
+		if (_sink)
+			_sink->handleOrderDetail(curData);
+
+		curData->release();
+	}
+	else if (header->_type == UDP_MSG_PUSHORDQUE)
+	{
+		UDPOrdQuePacket* packet = (UDPOrdQuePacket*)header;
+		WTSOrdQueData* curData = WTSOrdQueData::create(packet->_data);
+		if (_sink)
+			_sink->handleOrderQueue(curData);
+
+		curData->release();
+	}
+	else if (header->_type == UDP_MSG_PUSHTRANS)
+	{
+		UDPTransPacket* packet = (UDPTransPacket*)header;
+		WTSTransData* curData = WTSTransData::create(packet->_data);
+		if (_sink)
+			_sink->handleTransaction(curData);
+
+		curData->release();
+	}
 }
 
 void ParserUDP::doOnConnected()
