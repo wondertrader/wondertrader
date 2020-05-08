@@ -309,9 +309,6 @@ void ParserUDP::handle_read(const boost::system::error_code& e, std::size_t byte
 
 void ParserUDP::extract_buffer(uint32_t length, bool isBroad /* = true */)
 {
-	if (length != sizeof(UDPTickPacket))
-		return;
-
 	UDPPacketHead* header = NULL;
 	if(isBroad)
 		header = (UDPTickPacket*)_b_buffer.data();
