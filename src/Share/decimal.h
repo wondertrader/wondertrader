@@ -38,5 +38,10 @@ namespace decimal
 	{
 		return lt(a, b) || eq(a, b);
 	}
+
+	inline double mod(double a, double b)
+	{
+		return a / b - round(a / b);
+	}
 	
 };
