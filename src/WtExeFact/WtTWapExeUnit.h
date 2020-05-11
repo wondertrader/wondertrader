@@ -12,9 +12,8 @@ public:
 	virtual ~WtTWapExeUnit();
 
 private:
-	void	doCalculate();
-
-	void	check_orders();
+	void	do_calc();
+	void	fire_at_once(double qty);
 
 public:
 	/*
@@ -86,7 +85,6 @@ public:
 private:
 	WTSTickData* _last_tick;	//上一笔行情
 	double		_target_pos;	//目标仓位
-	double		_unsent_qty;	//未发送手数
 	bool		_channel_ready;
 
 
@@ -98,26 +96,21 @@ private:
 	Orders			_orders;
 	StdRecurMutex	_mtx_ords;
 	uint32_t		_cancel_cnt;
+
 	//////////////////////////////////////////////////////////////////////////
 	//参数
-	int32_t			_twap_times;
-	uint32_t		_exec_secs;	//执行总时间，单位s
-	uint32_t		_exec_tail;	//执行尾部时间
-	uint32_t		_sticky;	//挂单时限，单位s
+	uint32_t		_total_secs;	//执行总时间，单位s
+	uint32_t		_total_times;	//总执行次数
+	uint32_t		_tail_secs;		//执行尾部时间
+	uint32_t		_ord_sticky;	//挂单时限，单位s
+	uint32_t		_price_mode;	//价格模式：0-最新价，1-最优价，2-对手价
+	uint32_t		_price_offset;		//挂单价格偏移，相对于几乎价格偏移，买+卖-
 
 	//////////////////////////////////////////////////////////////////////////
 	//临时变量
-	uint32_t		_fire_span;	//发单间隔
-	bool			_show_hand;	//兜底时间中
-	uint64_t		_exec_begin_time;
+	double			_this_target;	//本轮目标仓位
+	uint32_t		_fire_span;		//发单间隔
+	uint32_t		_fired_times;	//已执行次数
 	uint64_t		_last_fire_time;
-	uint64_t        _exeSecondTime; //TWAP总时间
-
-	//////////////////////////////////////////////////////////////////////////
-	//拆单逻辑变量
-	int32_t			_total_s;
-	double			_alpha_tickbias;
-	double			_old_alpha_tickbias;
-	uint64_t        _last_tickbias_cal_time;
 };
 
