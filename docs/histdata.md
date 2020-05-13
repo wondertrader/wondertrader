@@ -40,7 +40,7 @@ root
   |——bin
 ```
 csv文件名采用固定的格式：合约代码_周期.csv，如股指期货主力合约5分钟历史K线对应的csv数据文件名为`CFFEX.IF.HOT_m5.csv`。
-![alt  csv回测数据](http://q92ex9g0c.bkt.clouddn.com/snapshots/csv_hisdata.png)
+![alt  csv回测数据](http://wt.f-sailors.cn/snapshots/csv_hisdata.png)
 
 
 另外一种，就是WonderTrader的数据组件落地的数据文件，不需要做任何修改，只需要配置要根目录，就可以直接使用。
@@ -92,13 +92,13 @@ csv文件名采用固定的格式：合约代码_周期.csv，如股指期货主
     如上所示，是从2019年12月20日到2020年3月底的主力合约映射规则。在缓存IF主力合约历史数据的时候，就会根据这个切换规则表，读取对应的分月合约，然后缓存到一起，提供给系统使用。
     但是这个时候有一个新的问题产生了：分月合约的历史数据太多太繁琐，如果要一个一个合约去处理历史数据，会很繁琐，而且容易出错。那么有没有更简便的办法来处理更多的主力合约的历史数据呢？针对这个问题，`WonderTrader`提供了一种机制：用户可以从第三方软件中导出主力连续的历史数据，提供给`WonderTrader`使用。
     `WonderTrader`在处理主力合约数据加载的指令的时候，会优先检查是否有直接的主力合约连续数据，然后在这个数据的基础上，再根据换月规则加载分月合约的数据进行拼接。这样的话，用户只需要在第一次提供一下主力连续的历史数据，以后就只需要维护主力换月规则表，就能够完成主力合约的数据处理了。
-    ![alt  期货主力数据](http://q92ex9g0c.bkt.clouddn.com/snapshots/fut_hot.png)
+    ![alt  期货主力数据](http://wt.f-sailors.cn/snapshots/fut_hot.png)
     
 * 股票的历史数据处理
     股票和期货不同：期货有主力合约的概念，而股票有复权数据的概念。两个不同的机制，导致在历史数据的处理上也有所不同。
     一般来说，除权除息会导致股票数据的跳空，所以只有复权以后的数据才能减少这种因为除权除息导致的跳空。`WonderTrader`只考虑前复权的方式：即最新数据不变，只需要用除权因子修正历史数据。前复权的好处是：最新价格和实时行情一致，不需要修正，方便处理；坏处是：每次除权除息，历史数据必须要重新修正。
     不管前复权的优缺点，`WonderTrader`既然采用了这样的机制，也提供了相对简便的解决方案。`WonderTrader`中股票代码的格式为“市场ID.股票代码”，如`SSE.600000`，在获取复权数据的时候，我们只需要传递`SSE.600000Q`，就表示要读取复权数据，而如果直接传递`SSE.600000`则表示要读取不复权的数据。股票历史复权数据的拼接规则也是一样，先读取历史复权数据，数据文件名为`“600000Q.dsb”`，然后再读取未复权的最新数据文件`"600000.dsb"`。
-    ![alt  股票复权数据](http://q92ex9g0c.bkt.clouddn.com/snapshots/stk_qfq.png)
+    ![alt  股票复权数据](http://wt.f-sailors.cn/snapshots/stk_qfq.png)
 
 ### 如何获取历史数据
 ---
@@ -110,9 +110,9 @@ csv文件名采用固定的格式：合约代码_周期.csv，如股指期货主
     `Multicharts`不是免费软件，需要向Broker申请开通MC交易，而MC则从客户的佣金上加成25%作为使用费。
     由于`Multicharts`运营比较成熟，所以MC里面提供的行情数据质量还是非常高的。所以这里推荐需要历史数据的用户可以考虑从MC里导出历史数据。
     导出期货主力合约数据
-    ![alt  股票复权数据](http://q92ex9g0c.bkt.clouddn.com/snapshots/mc_export_fut.jpg)
+    ![alt  股票复权数据](http://wt.f-sailors.cn/snapshots/mc_export_fut.jpg)
     导出股票复权数据
-    ![alt  导出股票复权数据](http://q92ex9g0c.bkt.clouddn.com/snapshots/mc_export_stk.jpg)
+    ![alt  导出股票复权数据](http://wt.f-sailors.cn/snapshots/mc_export_stk.jpg)
 
 * `tushare`库获取数据
     tushare提供了很多类型的行情数据接口，包括股票列表、历史行情、财务数据、板块数据等。新版本的tusahre还提供了期货、期权、债券等更多市场更多品种的相关数据。老版本的tushare数据是免费的，但是已经停止维护接口了；新版本的tushare，设置了积分的门槛。
