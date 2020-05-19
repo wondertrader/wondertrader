@@ -254,9 +254,9 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 	for(auto& m : _pos_map)
 	{
 		std::string stdCode = m.first;
-		if(target_pos.find(m.first) == target_pos.end())
+		if (target_pos.find(stdCode) == target_pos.end())
 		{
-			if(m.second._volumn != 0)
+			if(!decimal::eq(m.second._volumn, 0))
 			{
 				push_task([this, stdCode](){
 					append_signal(stdCode.c_str(), 0);
@@ -264,6 +264,8 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 
 				WTSLogger::error("品种%s不在目标仓位内，自动设置为0", stdCode.c_str());
 			}
+
+			target_pos[stdCode] = 0;
 		}
 	}
 

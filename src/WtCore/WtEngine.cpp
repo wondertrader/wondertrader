@@ -378,23 +378,26 @@ void WtEngine::save_datas()
 			pItem.AddMember("closeprofit", pInfo._closeprofit, allocator);
 			pItem.AddMember("dynprofit", pInfo._dynprofit, allocator);
 
-			rj::Value details(rj::kArrayType);
-			for (auto dit = pInfo._details.begin(); dit != pInfo._details.end(); dit++)
+			if (!decimal::eq(pInfo._volumn, 0))
 			{
-				const DetailInfo& dInfo = *dit;
-				rj::Value dItem(rj::kObjectType);
-				dItem.AddMember("long", dInfo._long, allocator);
-				dItem.AddMember("price", dInfo._price, allocator);
-				dItem.AddMember("volumn", dInfo._volumn, allocator);
-				dItem.AddMember("opentime", dInfo._opentime, allocator);
-				dItem.AddMember("opentdate", dInfo._opentdate, allocator);
+				rj::Value details(rj::kArrayType);
+				for (auto dit = pInfo._details.begin(); dit != pInfo._details.end(); dit++)
+				{
+					const DetailInfo& dInfo = *dit;
+					rj::Value dItem(rj::kObjectType);
+					dItem.AddMember("long", dInfo._long, allocator);
+					dItem.AddMember("price", dInfo._price, allocator);
+					dItem.AddMember("volumn", dInfo._volumn, allocator);
+					dItem.AddMember("opentime", dInfo._opentime, allocator);
+					dItem.AddMember("opentdate", dInfo._opentdate, allocator);
 
-				dItem.AddMember("profit", dInfo._profit, allocator);
+					dItem.AddMember("profit", dInfo._profit, allocator);
 
-				details.PushBack(dItem, allocator);
-			}
+					details.PushBack(dItem, allocator);
+				}
 
-			pItem.AddMember("details", details, allocator);
+				pItem.AddMember("details", details, allocator);
+			}			
 
 			jPos.PushBack(pItem, allocator);
 		}
