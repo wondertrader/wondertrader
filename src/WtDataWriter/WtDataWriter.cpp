@@ -428,11 +428,10 @@ void WtDataWriter::pushTask(TaskInfo task)
 					continue;
 				}
 
-				TaskInfo& curTask = _tasks.front();
-				curTask();
-
 				{
 					BoostUniqueLock lck(_task_mtx);
+					TaskInfo& curTask = _tasks.front();
+					curTask();
 					_tasks.pop();
 				}
 			}
