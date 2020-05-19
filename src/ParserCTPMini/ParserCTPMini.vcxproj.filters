@@ -36,14 +36,4 @@
       <Filter>CTPApi</Filter>
     </ClInclude>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="ThostTraderApi\error.dtd">
-      <Filter>CTPApi</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Xml Include="ThostTraderApi\error.xml">
-      <Filter>CTPApi</Filter>
-    </Xml>
-  </ItemGroup>
 </Project>

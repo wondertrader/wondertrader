@@ -150,6 +150,7 @@
     <ClInclude Include="threadpool\shutdown_policies.hpp" />
     <ClInclude Include="threadpool\size_policies.hpp" />
     <ClInclude Include="threadpool\task_adaptors.hpp" />
+    <ClInclude Include="WTSAllocator.hpp" />
     <ClInclude Include="WTSHotItem.hpp" />
     <ClInclude Include="WTSRiskDef.hpp" />
     <ClInclude Include="WTSSessionInfo.hpp" />

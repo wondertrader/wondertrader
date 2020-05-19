@@ -186,5 +186,8 @@
     <ClInclude Include="threadpool.hpp">
       <Filter>ThreadPool</Filter>
     </ClInclude>
+    <ClInclude Include="WTSAllocator.hpp">
+      <Filter>Objects</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
