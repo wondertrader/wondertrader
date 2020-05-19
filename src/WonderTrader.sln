@@ -110,8 +110,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ParserFemas", "ParserFemas\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TraderMocker", "TraderMocker\TraderMocker.vcxproj", "{711F8640-BBF0-4601-8278-46752890071A}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MyTest", "MyTest\MyTest.vcxproj", "{FFC9905C-D835-48AB-99F0-2867F1900CD9}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -369,12 +367,6 @@ Global
 		{711F8640-BBF0-4601-8278-46752890071A}.Release|Win32.Build.0 = Release|Win32
 		{711F8640-BBF0-4601-8278-46752890071A}.Release|x64.ActiveCfg = Release|x64
 		{711F8640-BBF0-4601-8278-46752890071A}.Release|x64.Build.0 = Release|x64
-		{FFC9905C-D835-48AB-99F0-2867F1900CD9}.Debug|Win32.ActiveCfg = Debug|Win32
-		{FFC9905C-D835-48AB-99F0-2867F1900CD9}.Debug|Win32.Build.0 = Debug|Win32
-		{FFC9905C-D835-48AB-99F0-2867F1900CD9}.Debug|x64.ActiveCfg = Debug|Win32
-		{FFC9905C-D835-48AB-99F0-2867F1900CD9}.Release|Win32.ActiveCfg = Release|Win32
-		{FFC9905C-D835-48AB-99F0-2867F1900CD9}.Release|Win32.Build.0 = Release|Win32
-		{FFC9905C-D835-48AB-99F0-2867F1900CD9}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
