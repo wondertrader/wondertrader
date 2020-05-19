@@ -71,10 +71,10 @@ public:
 	bool	addBRecver(const char* remote, int port, int type = 0);
 	bool	addMRecver(const char* remote, int port, int sendport, int type = 0);
 
-	inline void	broadcast(WTSTickData* curTick);
-	inline void	broadcast(WTSOrdQueData* curOrdQue);
-	inline void	broadcast(WTSOrdDtlData* curOrdDtl);
-	inline void	broadcast(WTSTransData* curTrans);
+	void	broadcast(WTSTickData* curTick);
+	void	broadcast(WTSOrdQueData* curOrdQue);
+	void	broadcast(WTSOrdDtlData* curOrdDtl);
+	void	broadcast(WTSTransData* curTrans);
 
 private:
 	typedef boost::asio::ip::udp::socket	UDPSocket;
