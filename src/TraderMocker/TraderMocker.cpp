@@ -66,6 +66,7 @@ TraderMocker::TraderMocker()
 	, _listener(NULL)
 	, _ticks(NULL)
 	, _orders(NULL)
+	, _awaits(NULL)
 	, _trades(NULL)
 	, _b_socket(NULL)
 	, _max_tick_time(0)
@@ -253,7 +254,7 @@ int TraderMocker::orderInsert(WTSEntrust* entrust)
 			ordInfo->setExchange(entrust->getExchg());
 			ordInfo->setDirection(entrust->getDirection());
 			ordInfo->setOffsetType(entrust->getOffsetType());
-			ordInfo->setUserTag(entrust->getEntrustID());
+			ordInfo->setUserTag(entrust->getUserTag());
 			ordInfo->setPrice(entrust->getPrice());
 			char str[64];
 			sprintf(str, "mo.%u.%u", _mocker_id, makeOrderID());
@@ -274,11 +275,16 @@ int TraderMocker::orderInsert(WTSEntrust* entrust)
 
 			_codes.insert(ct->getFullCode());
 
+			if(_listener)
+			{
+				_listener->handleTraderLog(LL_INFO, "共有%u个品种有待撮合订单", _codes.size());
+			}
+
 			if (_orders == NULL)
 				_orders = WTSArray::create();
 			_orders->append(ordInfo, false);
 
-			if (_awaits)
+			if (_awaits == NULL)
 				_awaits = OrderCache::create();
 
 			_awaits->add(ordInfo->getOrderID(), ordInfo, true);
@@ -327,7 +333,7 @@ int32_t TraderMocker::match_once()
 		{
 			BoostUniqueLock lock(_mtx_awaits);
 			uint64_t tickTime = (uint64_t)curTick->actiondate() * 1000000000 + curTick->actiontime();
-			if (decimal::gt(curTick->price(), 0) && tickTime >= _last_match_time)
+			if (decimal::gt(curTick->price(), 0) /*&& tickTime >= _last_match_time*/)
 			{
 				//开始处理订单
 				//处理记录
@@ -390,6 +396,7 @@ int32_t TraderMocker::match_once()
 						trade->setTradeID(str);
 
 						trade->setTradeTime(TimeUtils::getLocalTimeNow());
+						trade->setUserTag(ordInfo->getUserTag());
 
 						//更新订单数据
 						ordInfo->setVolLeft(ordInfo->getVolLeft() - curVol);
@@ -478,368 +485,12 @@ int32_t TraderMocker::match_once()
 
 	_last_match_time = _max_tick_time;
 
+	_ticks->clear();
+
 	if(count > 0)
 		save_positions();
 
 	return count;
-}
-
-int32_t TraderMocker::procOrdersOpenLong(WTSContractInfo* ct, WTSTickData* tick)
-{
-	//处理买单,读取卖一价和卖一量
-	double uPrice = tick->askprice(0);
-	double uVolumn = tick->askqty(0);
-	if (decimal::eq(uVolumn,0))
-		return 0;
-
-	if (_use_newpx)
-	{
-		uPrice = tick->price();
-	}
-
-	if(decimal::eq(uPrice, 0))
-		return 0;
-
-	//处理记录
-	int32_t iCount = 0;
-	std::vector<std::string> to_erase;
-
-	for (auto it = _awaits->begin(); it != _awaits->end(); it++)
-	{
-		WTSOrderInfo* ordInfo = (WTSOrderInfo*)it->second;
-		if (ordInfo->getVolLeft() == 0 || strcmp(ordInfo->getCode(), tick->code()) == 0)
-			continue;
-
-		iCount++;
-
-		double maxVolumn = min(uVolumn, ordInfo->getVolLeft());
-		std::vector<uint32_t> ayVol = splitVolumn((uint32_t)maxVolumn, (uint32_t)_min_qty, (uint32_t)_max_qty);
-		for (uint32_t curVol : ayVol)
-		{
-
-			WTSTradeInfo* trade = WTSTradeInfo::create(tick->code(), tick->exchg());
-			trade->setDirection(ordInfo->getDirection());
-			trade->setOffsetType(ordInfo->getOffsetType());
-
-			trade->setPrice(uPrice);
-			trade->setVolumn(curVol);
-			
-			trade->setRefOrder(ordInfo->getOrderID());
-
-			char str[64];
-			sprintf(str, "mt.%u.%u", _mocker_id, makeTradeID());
-			trade->setTradeID(str);
-
-			trade->setTradeTime(TimeUtils::getLocalTimeNow());
-
-			//更新订单数据
-			ordInfo->setVolLeft(ordInfo->getVolLeft() - curVol);
-			ordInfo->setVolTraded(ordInfo->getVolTraded() - curVol);
-			if(decimal::eq(ordInfo->getVolLeft(), 0))
-			{
-				ordInfo->setOrderState(WOS_AllTraded);
-				ordInfo->setStateMsg("全部成交");
-				to_erase.push_back(ordInfo->getOrderID());
-			}
-			else
-			{
-				ordInfo->setOrderState(WOS_PartTraded_Queuing);
-				ordInfo->setStateMsg("部分成交");
-			}
-
-			if(_listener)
-			{
-				BoostUniqueLock lock(_mutex_api);
-				_listener->onPushOrder(ordInfo);
-				_listener->onPushTrade(trade);
-			}
-
-			if (_trades == NULL)
-				_trades = WTSArray::create();
-
-			_trades->append(trade, false);
-		}
-	}
-
-	if (iCount > 0)
-	{
-		_listener->handleTraderLog(LL_INFO, "[TraderMocker]触发 %s.%s 开多 %u 条,价格:%u", tick->exchg(), tick->code(), iCount, uPrice);
-		for (const std::string& oid : to_erase)
-		{
-			_awaits->remove(oid);
-		}
-	}
-
-	return iCount;
-}
-
-int32_t TraderMocker::procOrdersCloseShort(WTSContractInfo* ct, WTSTickData* tick)
-{
-	//处理买单,读取卖一价和卖一量
-	double price = tick->askprice(0);
-	double volumn = tick->askqty(0);
-	if (decimal::eq(volumn,0))
-		return 0;
-
-	if (_use_newpx)
-	{
-		price = tick->price();
-	}
-
-	if(decimal::eq(price, 0))
-		return 0;
-
-	//处理记录
-	int32_t iCount = 0;
-	std::vector<std::string> to_erase;
-
-	for (auto it = _awaits->begin(); it != _awaits->end(); it++)
-	{
-		WTSOrderInfo* ordInfo = (WTSOrderInfo*)it->second;
-		if (ordInfo->getVolLeft() == 0 || strcmp(ordInfo->getCode(), tick->code()) == 0)
-			continue;
-
-		iCount++;
-
-		double maxVolumn = min(volumn, ordInfo->getVolLeft());
-		std::vector<uint32_t> ayVol = splitVolumn((uint32_t)maxVolumn, (uint32_t)_min_qty, (uint32_t)_max_qty);
-		for (uint32_t curVol : ayVol)
-		{
-
-			WTSTradeInfo* trade = WTSTradeInfo::create(tick->code(), tick->exchg());
-			trade->setDirection(ordInfo->getDirection());
-			trade->setOffsetType(ordInfo->getOffsetType());
-
-			trade->setPrice(price);
-			trade->setVolumn(curVol);
-
-			trade->setRefOrder(ordInfo->getOrderID());
-
-			char str[64];
-			sprintf(str, "mt.%u.%u", _mocker_id, makeTradeID());
-			trade->setTradeID(str);
-
-			trade->setTradeTime(TimeUtils::getLocalTimeNow());
-
-			//更新订单数据
-			ordInfo->setVolLeft(ordInfo->getVolLeft() - curVol);
-			ordInfo->setVolTraded(ordInfo->getVolTraded() - curVol);
-			if(decimal::eq(ordInfo->getVolLeft(), 0))
-			{
-				ordInfo->setOrderState(WOS_AllTraded);
-				ordInfo->setStateMsg("全部成交");
-				to_erase.push_back(ordInfo->getOrderID());
-			}
-			else
-			{
-				ordInfo->setOrderState(WOS_PartTraded_Queuing);
-				ordInfo->setStateMsg("部分成交");
-			}
-
-			if(_listener)
-			{
-				BoostUniqueLock lock(_mutex_api);
-				_listener->onPushOrder(ordInfo);
-				_listener->onPushTrade(trade);
-			}
-
-			if (_trades == NULL)
-				_trades = WTSArray::create();
-
-			_trades->append(trade, false);
-		}
-	}
-
-	if (iCount > 0)
-	{
-		_listener->handleTraderLog(LL_INFO, "触发 %s.%s 平空 %u 条,价格:%u", tick->exchg(), tick->code(), iCount, price);
-		for (const std::string& oid : to_erase)
-		{
-			_awaits->remove(oid);
-		}
-	}
-
-	return iCount;
-}
-
-int32_t TraderMocker::procOrdersOpenShort(WTSContractInfo* ct, WTSTickData* tick)
-{
-	//处理买单,读取卖一价和卖一量
-	double uPrice = tick->bidprice(0);
-	double uVolumn = tick->bidqty(0);
-	if (decimal::eq(uVolumn,0))
-		return 0;
-
-	if(_use_newpx)
-	{
-		uPrice = tick->price();
-	}
-
-	if(decimal::eq(uPrice, 0))
-		return 0;
-
-	//处理记录
-	int32_t iCount = 0;
-	std::vector<std::string> to_erase;
-
-	for (auto it = _awaits->begin(); it != _awaits->end(); it++)
-	{
-		WTSOrderInfo* ordInfo = (WTSOrderInfo*)it->second;
-		if (ordInfo->getVolLeft() == 0 || strcmp(ordInfo->getCode(), tick->code()) == 0)
-			continue;
-
-		iCount++;
-
-		double maxVolumn = min(uVolumn, ordInfo->getVolLeft());
-		std::vector<uint32_t> ayVol = splitVolumn((uint32_t)maxVolumn, (uint32_t)_min_qty, (uint32_t)_max_qty);
-		for (uint32_t curVol : ayVol)
-		{
-
-			WTSTradeInfo* trade = WTSTradeInfo::create(tick->code(), tick->exchg());
-			trade->setDirection(ordInfo->getDirection());
-			trade->setOffsetType(ordInfo->getOffsetType());
-
-			trade->setPrice(uPrice);
-			trade->setVolumn(curVol);
-
-			trade->setRefOrder(ordInfo->getOrderID());
-
-			char str[64];
-			sprintf(str, "mt.%u.%u", _mocker_id, makeTradeID());
-			trade->setTradeID(str);
-
-			trade->setTradeTime(TimeUtils::getLocalTimeNow());
-
-			//更新订单数据
-			ordInfo->setVolLeft(ordInfo->getVolLeft() - curVol);
-			ordInfo->setVolTraded(ordInfo->getVolTraded() - curVol);
-			if(decimal::eq(ordInfo->getVolLeft(), 0))
-			{
-				ordInfo->setOrderState(WOS_AllTraded);
-				ordInfo->setStateMsg("全部成交");
-				to_erase.push_back(ordInfo->getOrderID());
-			}
-			else
-			{
-				ordInfo->setOrderState(WOS_PartTraded_Queuing);
-				ordInfo->setStateMsg("部分成交");
-			}
-
-			if (_listener)
-			{
-				BoostUniqueLock lock(_mutex_api);
-				_listener->onPushOrder(ordInfo);
-				_listener->onPushTrade(trade);
-			}
-
-			if (_trades == NULL)
-				_trades = WTSArray::create();
-
-			_trades->append(trade, false);
-		}
-	}
-
-	if (iCount > 0)
-	{
-		_listener->handleTraderLog(LL_INFO, "触发 %s.%s 开空 %u 条,价格:%u", tick->exchg(), tick->code(), iCount, uPrice);
-		for (const std::string& oid : to_erase)
-		{
-			_awaits->remove(oid);
-		}
-	}
-
-	return iCount;
-}
-
-int32_t TraderMocker::procOrdersCloseLong(WTSContractInfo* ct, WTSTickData* tick)
-{
-	//处理买单,读取卖一价和卖一量
-	double uPrice = tick->bidprice(0);
-	double uVolumn = tick->bidqty(0);
-	if (decimal::eq(uVolumn,0))
-		return 0;
-
-	if (_use_newpx)
-	{
-		uPrice = tick->price();
-	}
-
-	if(decimal::eq(uPrice, 0))
-		return 0;
-
-	//处理记录
-	int32_t iCount = 0;
-
-	std::vector<std::string> to_erase;
-
-	for (auto it = _awaits->begin(); it != _awaits->end(); it++)
-	{
-		WTSOrderInfo* ordInfo = (WTSOrderInfo*)it->second;
-		if (ordInfo->getVolLeft() == 0 || strcmp(ordInfo->getCode(), tick->code()) == 0)
-			continue;
-
-		iCount++;
-
-		double maxVolumn = min(uVolumn, ordInfo->getVolLeft());
-		std::vector<uint32_t> ayVol = splitVolumn((uint32_t)maxVolumn, (uint32_t)_min_qty, (uint32_t)_max_qty);
-		for (uint32_t curVol : ayVol)
-		{
-
-			WTSTradeInfo* trade = WTSTradeInfo::create(tick->code(), tick->exchg());
-			trade->setDirection(ordInfo->getDirection());
-			trade->setOffsetType(ordInfo->getOffsetType());
-
-			trade->setPrice(uPrice);
-			trade->setVolumn(curVol);
-
-			trade->setRefOrder(ordInfo->getOrderID());
-
-			char str[64];
-			sprintf(str, "mt.%u.%u", _mocker_id, makeTradeID());
-			trade->setTradeID(str);
-
-			trade->setTradeTime(TimeUtils::getLocalTimeNow());
-
-			//更新订单数据
-			ordInfo->setVolLeft(ordInfo->getVolLeft() - curVol);
-			ordInfo->setVolTraded(ordInfo->getVolTraded() - curVol);
-			if(decimal::eq(ordInfo->getVolLeft(), 0))
-			{
-				ordInfo->setOrderState(WOS_AllTraded);
-				ordInfo->setStateMsg("全部成交");
-				to_erase.push_back(ordInfo->getOrderID());
-			}
-			else
-			{
-				ordInfo->setOrderState(WOS_PartTraded_Queuing);
-				ordInfo->setStateMsg("部分成交");
-			}
-
-			if (_listener)
-			{
-				BoostUniqueLock lock(_mutex_api);
-				_listener->onPushOrder(ordInfo);
-				_listener->onPushTrade(trade);
-			}
-
-			if (_trades == NULL)
-				_trades = WTSArray::create();
-
-			_trades->append(trade, false);
-		}
-	}
-
-	if (iCount > 0)
-	{
-		_listener->handleTraderLog(LL_INFO, "触发 %s.%s 平多 %u 条,价格:%u", tick->exchg(), tick->code(), iCount, uPrice);
-
-		for(const std::string& oid : to_erase)
-		{
-			_awaits->remove(oid);
-		}
-	}
-
-	return iCount;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -871,8 +522,6 @@ bool TraderMocker::init(WTSParams *params)
 
 	_pos_file = path;
 	_pos_file += "positions.json";
-
-	load_positions();
 
 	return true;
 }
@@ -915,6 +564,9 @@ void TraderMocker::load_positions()
 			}
 		}
 	}
+
+	if (_listener)
+		_listener->handleTraderLog(LL_INFO, "[TraderMocker]共加载%u条持仓数据", _positions.size());
 }
 
 void TraderMocker::save_positions()
@@ -1027,6 +679,8 @@ void TraderMocker::connect()
 	_io_service.post([this](){
 		BoostUniqueLock lock(_mutex_api);
 
+		load_positions();
+
 		if (_listener)
 			_listener->handleEvent(WTE_Connect, 0);
 	});
@@ -1084,8 +738,7 @@ int TraderMocker::orderAction(WTSEntrustAction* action)
 	_io_service.post([this, action](){
 		BoostUniqueLock lck(_mtx_awaits);	//一定要把awaits锁起来，不然可能会导致一边撮合一边撤单
 		WTSOrderInfo* ordInfo = (WTSOrderInfo*)_awaits->grab(action->getOrderID());
-		WTSContractInfo* ct = _bd_mgr->getContract(ordInfo->getCode(), ordInfo->getExchg());
-		WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(ct);
+
 		/*
 		 *	撤单也要考虑几个问题
 		 *	1、是否处于可以撤销的状态
@@ -1094,12 +747,16 @@ int TraderMocker::orderAction(WTSEntrustAction* action)
 		 */
 		if(ordInfo == NULL)
 		{
+			_listener->handleTraderLog(LL_ERROR, "订单%s不存在或者已完成", action->getOrderID());
 			WTSError* err = WTSError::create(WEC_ORDERCANCEL, "订单不存在或者处于不可撤销状态");
 			if (_listener)
 				_listener->onTraderError(err);
 			err->release();
 			return;
 		}
+
+		WTSContractInfo* ct = _bd_mgr->getContract(ordInfo->getCode(), ordInfo->getExchg());
+		WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(ct);
 
 		bool bPass = false;
 		do 
@@ -1135,7 +792,7 @@ int TraderMocker::orderAction(WTSEntrustAction* action)
 
 		ordInfo->setStateMsg("撤单成功");
 		ordInfo->setOrderState(WOS_Canceled);
-		ordInfo->setVolLeft(0);	
+		//ordInfo->setVolLeft(0);	
 
 		if (_listener)
 		{
@@ -1145,6 +802,8 @@ int TraderMocker::orderAction(WTSEntrustAction* action)
 
 		ordInfo->release();
 		action->release();
+
+		_awaits->remove(action->getOrderID());
 
 		save_positions();
 	});

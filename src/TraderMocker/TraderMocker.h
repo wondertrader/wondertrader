@@ -32,11 +32,6 @@ private:
 	*/
 	int32_t		match_once();
 
-	int32_t		procOrdersOpenLong(WTSContractInfo* ct, WTSTickData* tick);
-	int32_t		procOrdersCloseLong(WTSContractInfo* ct, WTSTickData* tick);
-	int32_t		procOrdersOpenShort(WTSContractInfo* ct, WTSTickData* tick);
-	int32_t		procOrdersCloseShort(WTSContractInfo* ct, WTSTickData* tick);
-
 	uint32_t	makeTradeID();
 	uint32_t	makeOrderID();
 
