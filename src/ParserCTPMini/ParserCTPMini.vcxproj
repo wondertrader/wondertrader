@@ -178,12 +178,6 @@
     <ClInclude Include="ThostTraderApi\ThostFtdcUserApiDataType.h" />
     <ClInclude Include="ThostTraderApi\ThostFtdcUserApiStruct.h" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="ThostTraderApi\error.dtd" />
-  </ItemGroup>
-  <ItemGroup>
-    <Xml Include="ThostTraderApi\error.xml" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
