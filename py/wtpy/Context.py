@@ -2,7 +2,6 @@ from pandas import DataFrame as df
 import pandas as pd
 import os
 import json
-from multiprocessing import Lock
 
 from wtpy.porter import WtWrapper
 
@@ -18,17 +17,20 @@ class Context:
 
     def __init__(self, id, stra, wrapper: WtWrapper, engine):
         self.__stra_info__ = stra   #策略对象，对象基类BaseStrategy.py
-        self.__user_data__ = dict() #用户数据
         self.__wrapper__ = wrapper  #底层接口转换器
         self.__id__ = id            #策略ID
         self.__bar_cache__ = dict() #K线缓存
         self.__tick_cache__ = dict()    #tTick缓存，每次都重新去拉取，这个只做中转用，不在python里维护副本
         self.__sname__ = stra.name()    
         self.__engine__ = engine          #交易环境
-        self.__ud_mtx__ = Lock()    #用户数据锁
-        self.__ud_mod__ = False     #用户数据修改标记
 
     def write_indicator(self, tag, time, data):
+        '''
+        输出指标数据
+        @tag    指标标签
+        @time   输出时间
+        @data   输出的指标数据，dict类型，会转成json以后保存
+        '''
         self.__engine__.write_indicator(self.__stra_info__.name(), tag, time, data)
 
     def on_init(self):
@@ -120,7 +122,7 @@ class Context:
         '''
         return self.__wrapper__.ctx_str_get_date()
 
-    def stra_get_position_avgpx(self, code:str):
+    def stra_get_position_avgpx(self, code:str = ""):
         '''
         获取当前持仓均价\n
         @code   合约代码
@@ -189,12 +191,13 @@ class Context:
     def stra_get_position(self, code:str = "", usertag:str = ""):
         '''
         读取当前仓位\n
-        @code   合约/股票代码\n
-        @return int，正为多仓，负为空仓
+        @code       合约/股票代码\n
+        @usertag    入场标记
+        @return     正为多仓，负为空仓
         '''
         return self.__wrapper__.ctx_str_get_position(self.__id__, code, usertag)
 
-    def stra_set_positions(self, code:str, qty:float, usertag:str = "", limitprice:float = 0.0, stopprice:float = 0.0):
+    def stra_set_position(self, code:str, qty:float, usertag:str = "", limitprice:float = 0.0, stopprice:float = 0.0):
         '''
         设置仓位\n
         @code   合约/股票代码\n
