@@ -491,13 +491,11 @@ WTSKlineSlice* HisDataReplayer::get_kline_slice(const char* stdCode, const char*
 		WTSSessionInfo* sInfo = get_session_info(stdCode, true);
 
 		std::string rawKey = StrUtil::printf("%s#%s#%u", stdCode, period, 1);
-		const BarsList& rawBars = _bars_cache[rawKey];
+		BarsList& rawBars = _bars_cache[rawKey];
 
-		WTSKlineData* rawKline = WTSKlineData::create(stdCode, rawBars._bars.size());
+		WTSKlineSlice* rawKline = WTSKlineSlice::create(stdCode, kp, realTimes, &rawBars._bars[0], rawBars._bars.size());
 		rawKline->setCode(stdCode);
-		rawKline->setPeriod(kp);
-		rawKline->setClosed(true);
-		memcpy(rawKline->getDataRef().data(), rawBars._bars.data(), sizeof(WTSBarStruct)*rawBars._bars.size());
+		//memcpy(rawKline->getDataRef().data(), rawBars._bars.data(), sizeof(WTSBarStruct)*rawBars._bars.size());
 
 		static WTSDataFactory dataFact;
 		WTSKlineData* kData = dataFact.extractKlineData(rawKline, kp, realTimes, sInfo, true);
@@ -608,7 +606,7 @@ WTSKlineSlice* HisDataReplayer::get_kline_slice(const char* stdCode, const char*
 	return kline;
 }
 
-WTSTickSlice* HisDataReplayer::get_tick_slice(const char* stdCode, uint32_t count)
+WTSTickSlice* HisDataReplayer::get_tick_slice(const char* stdCode, uint32_t count, uint64_t etime)
 {
 	if (!checkTicks(stdCode, _cur_tdate))
 		return NULL;
@@ -621,6 +619,12 @@ WTSTickSlice* HisDataReplayer::get_tick_slice(const char* stdCode, uint32_t coun
 	{
 		uint32_t uDate = _cur_date;
 		uint32_t uTime = _cur_time * 100000 + _cur_secs;
+
+		if (etime != 0)
+		{
+			uDate = (uint32_t)(etime / 10000);
+			uTime = (uint32_t)(etime % 10000 * 100000);
+		}
 
 		WTSTickStruct curTick;
 		curTick.action_date = uDate;
@@ -650,7 +654,8 @@ WTSTickSlice* HisDataReplayer::get_tick_slice(const char* stdCode, uint32_t coun
 	return ticks;
 }
 
-WTSHisTickData* HisDataReplayer::get_ticks(const char* stdCode, uint32_t count, uint64_t etime/* = 0*/)
+/*
+WTSHisTickData* HisDataReplayer::get_ticks(const char* stdCode, uint32_t count, uint64_t etime)
 {
 	if (!checkTicks(stdCode, _cur_tdate))
 		return NULL;
@@ -697,6 +702,7 @@ WTSHisTickData* HisDataReplayer::get_ticks(const char* stdCode, uint32_t count, 
 	memcpy(ticks->getDataRef().data(), tickList._ticks.data() + sIdx, sizeof(WTSTickStruct)*realCnt);
 	return ticks;
 }
+*/
 
 bool HisDataReplayer::checkTicks(const char* stdCode, uint32_t uDate)
 {

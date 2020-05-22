@@ -75,8 +75,8 @@
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(MyDepends12)\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(MyDepends12)\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(MyX64Deps12)\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(MyX64Deps12)\lib;$(LibraryPath)</LibraryPath>
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -87,8 +87,8 @@
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(MyDepends12)\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(MyDepends12)\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(MyX64Deps12)\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(MyX64Deps12)\lib;$(LibraryPath)</LibraryPath>
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

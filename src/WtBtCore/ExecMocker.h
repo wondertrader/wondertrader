@@ -43,7 +43,7 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	//ExecuteContext
-	virtual WTSHisTickData* getTicks(const char* stdCode, uint32_t count, uint64_t etime = 0) override;
+	virtual WTSTickSlice* getTicks(const char* stdCode, uint32_t count, uint64_t etime = 0) override;
 
 	virtual WTSTickData* grabLastTick(const char* stdCode) override;
 
