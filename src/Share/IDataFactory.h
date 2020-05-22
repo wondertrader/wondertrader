@@ -18,7 +18,8 @@ class WTSKlineData;
 class WTSHisTrendData;
 class WTSTickData;
 class WTSSessionInfo;
-class WTSArray;
+class WTSKlineSlice;
+class WTSTickSlice;
 class WTSContractInfo;
 struct WTSBarStruct;
 
@@ -39,9 +40,9 @@ public:
 	virtual WTSBarStruct*	updateKlineData(WTSKlineData* klineData, WTSTickData* tick, WTSSessionInfo* sInfo)						= 0;
 	virtual WTSBarStruct*	updateKlineData(WTSKlineData* klineData, WTSBarStruct* newBasicBar, WTSSessionInfo* sInfo)				= 0;
 
-	virtual WTSKlineData*	extractKlineData(WTSKlineData* baseKline, WTSKlinePeriod period, uint32_t times, WTSSessionInfo* sInfo, bool bIncludeOpen = true)	= 0;
+	virtual WTSKlineData*	extractKlineData(WTSKlineSlice* baseKline, WTSKlinePeriod period, uint32_t times, WTSSessionInfo* sInfo, bool bIncludeOpen = true) = 0;
 
-	virtual WTSKlineData*	extractKlineData(WTSArray* ayTicks, uint32_t seconds, WTSSessionInfo* sInfo, bool bUnixTime = false)	= 0;
+	virtual WTSKlineData*	extractKlineData(WTSTickSlice* ayTicks, uint32_t seconds, WTSSessionInfo* sInfo, bool bUnixTime = false) = 0;
 
 	virtual bool			mergeKlineData(WTSKlineData* klineData, WTSKlineData* newKline)											= 0;
 

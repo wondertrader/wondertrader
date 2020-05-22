@@ -39,7 +39,7 @@ public:
 
 	void	handle_push_quote(const char* stdCode, WTSTickData* newTick);
 
-	WTSHisTickData* get_ticks(const char* code, uint32_t count);
+	//WTSHisTickData* get_ticks(const char* code, uint32_t count);
 	//WTSKlineData*	get_bars(const char* code, WTSKlinePeriod period, uint32_t times, uint32_t count);
 
 	WTSTickSlice*	get_tick_slice(const char* code, uint32_t count);

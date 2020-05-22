@@ -1,5 +1,5 @@
 /*!
- * \file TraderCTPMini.h
+ * \file TraderCTP.h
  * \project	WonderTrader
  *
  * \author Wesley
@@ -9,34 +9,33 @@
  */
 #pragma once
 
-#define WINVER			0x0501
-#define _WIN32_WINNT	0x0501
-#define _WIN32_IE		0x0501
-
 #include <string>
 #include <queue>
 #include <unordered_set>
 #include <unordered_map>
 #include <stdint.h>
 
-#include <boost\asio\io_service.hpp>
-#include <boost\asio\strand.hpp>
+#include <boost/asio/io_service.hpp>
+#include <boost/asio/strand.hpp>
 
-#include "..\Share\WTSTypes.h"
-#include "..\Share\ITraderApi.h"
-#include "..\Share\BoostDefine.h"
-#include ".\ThostTraderApi\ThostFtdcTraderApi.h"
+#include "../Share/WTSTypes.h"
+#include "../Share/ITraderApi.h"
+#include "../Share/WTSCollection.hpp"
+#include "../Share/IniHelper.hpp"
+#include "./ThostTraderApi/ThostFtdcTraderApi.h"
 
+#include "../Share/BoostDefine.h"
+#include "../Share/DLLHelper.hpp"
 
 USING_NS_OTP;
-
-typedef std::unordered_map<std::string, std::string>	StringMap;
 
 class TraderCTPMini : public ITraderApi, public CThostFtdcTraderSpi
 {
 public:
 	TraderCTPMini();
 	virtual ~TraderCTPMini();
+
+	typedef std::unordered_map<std::string, std::string>	StringMap;
 
 public:
 	typedef enum
@@ -64,76 +63,76 @@ private:
 	//////////////////////////////////////////////////////////////////////////
 	//ITraderApi接口
 public:
-	virtual bool init(WTSParams* params);
+	virtual bool init(WTSParams* params) override;
 
-	virtual void release();
+	virtual void release() override;
 
-	virtual void registerListener(ITraderApiListener *listener);
+	virtual void registerListener(ITraderApiListener *listener) override;
 
-	virtual bool makeEntrustID(char* buffer, int length);
+	virtual bool makeEntrustID(char* buffer, int length) override;
 
-	virtual void connect();
+	virtual void connect() override;
 
-	virtual void disconnect();
+	virtual void disconnect() override;
 
-	virtual bool isConnected();
+	virtual bool isConnected() override;
 
-	virtual int login(const char* user, const char* pass, const char* productInfo);
+	virtual int login(const char* user, const char* pass, const char* productInfo) override;
 
-	virtual int logout();
+	virtual int logout() override;
 
-	virtual int orderInsert(WTSEntrust* eutrust);
+	virtual int orderInsert(WTSEntrust* eutrust) override;
 
-	virtual int orderAction(WTSEntrustAction* action);
+	virtual int orderAction(WTSEntrustAction* action) override;
 
-	virtual int queryAccount();
+	virtual int queryAccount() override;
 
-	virtual int queryPositions();
+	virtual int queryPositions() override;
 
-	virtual int queryOrders();
+	virtual int queryOrders() override;
 
-	virtual int queryTrades();
+	virtual int queryTrades() override;
 
 
 	//////////////////////////////////////////////////////////////////////////
 	//CTP交易接口实现
 public:
-	virtual void OnFrontConnected();
+	virtual void OnFrontConnected() override;
 
-	virtual void OnFrontDisconnected(int nReason);
+	virtual void OnFrontDisconnected(int nReason) override;
 
-	virtual void OnHeartBeatWarning(int nTimeLapse);
+	virtual void OnHeartBeatWarning(int nTimeLapse) override;
 
-	virtual void OnRspAuthenticate(CThostFtdcRspAuthenticateField *pRspAuthenticateField, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
+	virtual void OnRspAuthenticate(CThostFtdcRspAuthenticateField *pRspAuthenticateField, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) override;
 
-	virtual void OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
+	virtual void OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) override;
 
-	virtual void OnRspUserLogout(CThostFtdcUserLogoutField *pUserLogout, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
+	virtual void OnRspUserLogout(CThostFtdcUserLogoutField *pUserLogout, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) override;
 
-	virtual void OnRspSettlementInfoConfirm(CThostFtdcSettlementInfoConfirmField *pSettlementInfoConfirm, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
+	virtual void OnRspSettlementInfoConfirm(CThostFtdcSettlementInfoConfirmField *pSettlementInfoConfirm, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) override;
 
-	virtual void OnRspQrySettlementInfoConfirm(CThostFtdcSettlementInfoConfirmField *pSettlementInfoConfirm, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
+	virtual void OnRspQrySettlementInfoConfirm(CThostFtdcSettlementInfoConfirmField *pSettlementInfoConfirm, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) override;
 
-	virtual void OnRspQryTradingAccount(CThostFtdcTradingAccountField *pTradingAccount, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
+	virtual void OnRspQryTradingAccount(CThostFtdcTradingAccountField *pTradingAccount, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) override;
 
-	virtual void OnRspOrderInsert(CThostFtdcInputOrderField *pInputOrder, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
+	virtual void OnRspOrderInsert(CThostFtdcInputOrderField *pInputOrder, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) override;
 
-	virtual void OnRspOrderAction(CThostFtdcInputOrderActionField *pInputOrderAction, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
+	virtual void OnRspOrderAction(CThostFtdcInputOrderActionField *pInputOrderAction, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) override;
 
-	virtual void OnRspQryInvestorPosition(CThostFtdcInvestorPositionField *pInvestorPosition, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
+	virtual void OnRspQryInvestorPosition(CThostFtdcInvestorPositionField *pInvestorPosition, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) override;
 
 	///请求查询成交响应
-	virtual void OnRspQryTrade(CThostFtdcTradeField *pTrade, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
+	virtual void OnRspQryTrade(CThostFtdcTradeField *pTrade, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) override;
 
-	virtual void OnRspQryOrder(CThostFtdcOrderField *pOrder, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
+	virtual void OnRspQryOrder(CThostFtdcOrderField *pOrder, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) override;
 
-	virtual void OnRspError(CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
+	virtual void OnRspError(CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) override;
 
-	virtual void OnRtnOrder(CThostFtdcOrderField *pOrder);
+	virtual void OnRtnOrder(CThostFtdcOrderField *pOrder) override;
 
-	virtual void OnRtnTrade(CThostFtdcTradeField *pTrade);
+	virtual void OnRtnTrade(CThostFtdcTradeField *pTrade) override;
 
-	virtual void OnErrRtnOrderInsert(CThostFtdcInputOrderField *pInputOrder, CThostFtdcRspInfoField *pRspInfo);
+	virtual void OnErrRtnOrderInsert(CThostFtdcInputOrderField *pInputOrder, CThostFtdcRspInfoField *pRspInfo) override;
 
 protected:
 	/*
@@ -141,13 +140,13 @@ protected:
 	*/
 	bool IsErrorRspInfo(CThostFtdcRspInfoField *pRspInfo);
 
-	int wrapPriceType(WTSPriceType priceType);
+	int wrapPriceType(WTSPriceType priceType, bool isCFFEX = false);
 	int wrapDirectionType(WTSDirectionType dirType, WTSOffsetType offType);
 	int wrapOffsetType(WTSOffsetType offType);
 	int	wrapTimeCondition(WTSTimeCondition timeCond);
 	int wrapActionFlag(WTSActionFlag actionFlag);
 
-	WTSPriceType		wrapPriceType(TThostFtdcPriceType priceType);
+	WTSPriceType		wrapPriceType(TThostFtdcOrderPriceTypeType priceType);
 	WTSDirectionType	wrapDirectionType(TThostFtdcDirectionType dirType, TThostFtdcOffsetFlagType offType);
 	WTSDirectionType	wrapPosDirection(TThostFtdcPosiDirectionType dirType);
 	WTSOffsetType		wrapOffsetType(TThostFtdcOffsetFlagType offType);
@@ -193,17 +192,15 @@ protected:
 	uint32_t					m_lDate;
 	TThostFtdcFrontIDType		m_frontID;		//前置编号
 	TThostFtdcSessionIDType		m_sessionID;	//会话编号
-	uint32_t					m_orderRef;		//报单引用
+	std::atomic<uint32_t>		m_orderRef;		//报单引用
 
 	WrapperState				m_wrapperState;
 
 	CThostFtdcTraderApi*		m_pUserAPI;
 	std::atomic<uint32_t>		m_iRequestID;
 
-	StringMap					m_mapEntrustTag;
-	StringMap					m_mapOrderTag;
-
-	WTSArray*					m_ayPosition;
+	typedef WTSHashMap<std::string> PositionMap;
+	PositionMap*				m_mapPosition;
 	WTSArray*					m_ayTrades;
 	WTSArray*					m_ayOrders;
 	WTSArray*					m_ayPosDetail;
@@ -221,8 +218,10 @@ protected:
 	BoostThreadPtr			m_thrdWorker;
 
 	std::string		m_strModule;
-	HINSTANCE		m_hInstCTP;
-	typedef CThostFtdcTraderApi* (__cdecl *CTPCreator)(const char *);
+	DllHandle		m_hInstCTP;
+	typedef CThostFtdcTraderApi* (*CTPCreator)(const char *);
 	CTPCreator		m_funcCreator;
+
+	IniHelper		m_iniHelper;
 };
 

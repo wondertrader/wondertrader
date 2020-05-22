@@ -1167,7 +1167,8 @@ WTSKlineSlice* WtDataReader::readKlineSlice(const char* stdCode, WTSKlinePeriod 
 	return NULL;
 }
 
-WTSKlineData* WtDataReader::readBars(const char* stdCode, WTSKlinePeriod period, uint32_t count, uint64_t etime /* = 0 */)
+/*
+WTSKlineData* WtDataReader::readBars(const char* stdCode, WTSKlinePeriod period, uint32_t count, uint64_t etime)
 {
 	CodeHelper::CodeInfo cInfo;
 	CodeHelper::extractStdCode(stdCode, cInfo);
@@ -1285,74 +1286,72 @@ WTSKlineData* WtDataReader::readBars(const char* stdCode, WTSKlinePeriod period,
 		barsSections.push_back(tempAy);
 	}
 
-	/*
-	if(isHot)
-	{
-		_bars_cache[key]._raw_code = _hot_mgr->getRawCode(exchg.c_str(), pid.c_str(), curTDate);
-		if (_sink) _sink->reader_log(LL_INFO, "主力合约映射确认: %s -> %s", stdCode, _bars_cache[key]._raw_code.c_str());		
+	//if(isHot)
+	//{
+	//	_bars_cache[key]._raw_code = _hot_mgr->getRawCode(exchg.c_str(), pid.c_str(), curTDate);
+	//	if (_sink) _sink->reader_log(LL_INFO, "主力合约映射确认: %s -> %s", stdCode, _bars_cache[key]._raw_code.c_str());		
 
-		
+	//	
 
-		if (left > 0 && bHasHisData)
-		{
-			std::vector<WTSBarStruct>* tempAy = new std::vector<WTSBarStruct>();
-			uint32_t curCnt = readBarsFromCache(key, etime, left, *tempAy, period == KP_DAY);
-			realCnt += curCnt;
-			barsSections.push_back(tempAy);
-		}
-	}
-	else
-	{
-		_bars_cache[key]._raw_code = code;
+	//	if (left > 0 && bHasHisData)
+	//	{
+	//		std::vector<WTSBarStruct>* tempAy = new std::vector<WTSBarStruct>();
+	//		uint32_t curCnt = readBarsFromCache(key, etime, left, *tempAy, period == KP_DAY);
+	//		realCnt += curCnt;
+	//		barsSections.push_back(tempAy);
+	//	}
+	//}
+	//else
+	//{
+	//	_bars_cache[key]._raw_code = code;
 
-		if (bHasToday)
-		{
-			WTSBarStruct bar;
-			bar.date = curDate;
-			bar.time = (curDate - 19900000) * 10000 + curTime;
+	//	if (bHasToday)
+	//	{
+	//		WTSBarStruct bar;
+	//		bar.date = curDate;
+	//		bar.time = (curDate - 19900000) * 10000 + curTime;
 
-			//读取实时的
-			RTKBlockPair* kPair = getRTKBlock(exchg.c_str(), code.c_str(), period);
-			if (kPair != NULL)
-			{
-				//读取当日的数据
-				WTSBarStruct* pBar = std::lower_bound(kPair->_block->_bars, kPair->_block->_bars + (kPair->_block->_size - 1), bar, [](const WTSBarStruct& a, const WTSBarStruct& b){
-					if (a.date != b.date)
-						return a.date < b.date;
-					else
-						return a.time < b.time;
-				});
-				uint32_t idx = pBar - kPair->_block->_bars;
-				_bars_cache[key]._rt_cursor = idx;
+	//		//读取实时的
+	//		RTKBlockPair* kPair = getRTKBlock(exchg.c_str(), code.c_str(), period);
+	//		if (kPair != NULL)
+	//		{
+	//			//读取当日的数据
+	//			WTSBarStruct* pBar = std::lower_bound(kPair->_block->_bars, kPair->_block->_bars + (kPair->_block->_size - 1), bar, [](const WTSBarStruct& a, const WTSBarStruct& b){
+	//				if (a.date != b.date)
+	//					return a.date < b.date;
+	//				else
+	//					return a.time < b.time;
+	//			});
+	//			uint32_t idx = pBar - kPair->_block->_bars;
+	//			_bars_cache[key]._rt_cursor = idx;
 
-				uint32_t sIdx = 0;
-				if (count <= idx + 1)
-				{
-					sIdx = idx - count + 1;
-				}
+	//			uint32_t sIdx = 0;
+	//			if (count <= idx + 1)
+	//			{
+	//				sIdx = idx - count + 1;
+	//			}
 
-				uint32_t curCnt = (idx - sIdx + 1);
-				left -= curCnt;
+	//			uint32_t curCnt = (idx - sIdx + 1);
+	//			left -= curCnt;
 
-				std::vector<WTSBarStruct>* tempAy = new std::vector<WTSBarStruct>();
-				tempAy->resize(curCnt);
-				memcpy(tempAy->data(), &kPair->_block->_bars[sIdx], sizeof(WTSBarStruct)*curCnt);
-				realCnt += curCnt;
+	//			std::vector<WTSBarStruct>* tempAy = new std::vector<WTSBarStruct>();
+	//			tempAy->resize(curCnt);
+	//			memcpy(tempAy->data(), &kPair->_block->_bars[sIdx], sizeof(WTSBarStruct)*curCnt);
+	//			realCnt += curCnt;
 
-				barsSections.push_back(tempAy);
-			}
-		}
+	//			barsSections.push_back(tempAy);
+	//		}
+	//	}
 
-		//读取历史的
-		if(left > 0 && bHasHisData)
-		{
-			std::vector<WTSBarStruct>* tempAy = new std::vector<WTSBarStruct>();
-			uint32_t curCnt = readBarsFromCache(key, etime, left, *tempAy, period == KP_DAY);
-			realCnt += curCnt;
-			barsSections.push_back(tempAy);
-		}
-	}
-	*/
+	//	//读取历史的
+	//	if(left > 0 && bHasHisData)
+	//	{
+	//		std::vector<WTSBarStruct>* tempAy = new std::vector<WTSBarStruct>();
+	//		uint32_t curCnt = readBarsFromCache(key, etime, left, *tempAy, period == KP_DAY);
+	//		realCnt += curCnt;
+	//		barsSections.push_back(tempAy);
+	//	}
+	//}
 
 	if (realCnt > 0)
 	{
@@ -1373,6 +1372,7 @@ WTSKlineData* WtDataReader::readBars(const char* stdCode, WTSKlinePeriod period,
 
 	return kData;
 }
+*/
 
 WtDataReader::TBlockPair* WtDataReader::getRTTBlock(const char* exchg, const char* code)
 {

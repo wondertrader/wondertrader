@@ -37,7 +37,7 @@ public:
 	 *	
 	 *	返回值	历史数据封装类指针
 	 */
-	virtual WTSHisTickData* getTicks(const char* stdCode, uint32_t count, uint64_t etime = 0) = 0;
+	virtual WTSTickSlice*	getTicks(const char* stdCode, uint32_t count, uint64_t etime = 0) = 0;
 
 	/*
 	 *	读取最近一笔Tick数据

@@ -326,6 +326,12 @@ public:
 	inline int32_t	size() const{ return m_iHisCnt + m_iRtCnt; }
 	inline bool	empty() const{ return (m_iHisCnt + m_iRtCnt) == 0; }
 
+	/*
+	*	返回K线对象的合约代码
+	*/
+	inline const char*	code() const{ return m_strCode; }
+	inline void		setCode(const char* code){ strcpy(m_strCode, code); }
+
 
 	/*
 	*	读取指定位置的开盘价

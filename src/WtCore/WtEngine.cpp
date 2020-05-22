@@ -382,6 +382,8 @@ void WtEngine::save_datas()
 			for (auto dit = pInfo._details.begin(); dit != pInfo._details.end(); dit++)
 			{
 				const DetailInfo& dInfo = *dit;
+				if(decimal::eq(dInfo._volumn, 0))
+					continue;
 				rj::Value dItem(rj::kObjectType);
 				dItem.AddMember("long", dInfo._long, allocator);
 				dItem.AddMember("price", dInfo._price, allocator);
@@ -536,11 +538,6 @@ void WtEngine::load_datas()
 			_risk_volscale = jRisk["scale"].GetDouble();
 		}
 	}
-}
-
-WTSHisTickData* WtEngine::get_ticks(uint32_t sid, const char* stdCode, uint32_t count)
-{
-	return _data_mgr->get_ticks(stdCode, count);
 }
 
 WTSTickSlice* WtEngine::get_tick_slice(uint32_t sid, const char* code, uint32_t count)

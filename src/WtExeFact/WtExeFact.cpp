@@ -9,6 +9,7 @@
 #include "WtExeFact.h"
 
 #include "WtSimpExeUnit.h"
+#include "WtTWapExeUnit.h"
 
 const char* FACT_NAME = "WtExeFact";
 
@@ -47,13 +48,15 @@ const char* WtExeFact::getName()
 void WtExeFact::enumExeUnit(FuncEnumUnitCallback cb)
 {
 	cb(FACT_NAME, "WtSimpExeUnit", false);
-	cb(FACT_NAME, "WtHfExeUnit", true);
+	cb(FACT_NAME, "WtTWapExeUnit", true);
 }
 
 ExecuteUnit* WtExeFact::createExeUnit(const char* name)
 {
 	if (strcmp(name, "WtSimpExeUnit") == 0)
 		return new WtSimpExeUnit();
+	else if (strcmp(name, "WtTWapExeUnit") == 0)
+		return new WtTWapExeUnit();
 
 	return NULL;
 }

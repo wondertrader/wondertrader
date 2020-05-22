@@ -61,6 +61,12 @@ public:
 
 	virtual void broadcastTick(WTSTickData* curTick) override;
 
+	virtual void broadcastOrdQue(WTSOrdQueData* curOrdQue) override;
+
+	virtual void broadcastOrdDtl(WTSOrdDtlData* curOrdDtl) override;
+
+	virtual void broadcastTrans(WTSTransData* curTrans) override;
+
 	virtual CodeSet* getSessionComms(const char* sid) override;
 
 	virtual uint32_t getTradingDate(const char* pid) override;

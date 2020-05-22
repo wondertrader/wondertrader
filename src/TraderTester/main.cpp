@@ -443,13 +443,15 @@ public:
 			else
 			{
 				log("[%s]订单%s已撤销:%s", m_pParams->getCString("user"), orderInfo->getOrderID(), orderInfo->getStateMsg());
+				StdUniqueLock lock(g_mtxOpt);
+				g_condOpt.notify_all();
 			}			
 		}
 	}
 
 	virtual void onPushTrade(WTSTradeInfo* tradeRecord)
 	{
-		log("[%s]收到成交回报，合约%s，成交价：%f，成交手数：%u", m_pParams->getCString("user"), tradeRecord->getCode(), tradeRecord->getPrice(), tradeRecord->getVolumn());
+		log("[%s]收到成交回报，合约%s，成交价：%.4f，成交手数：%.4f", m_pParams->getCString("user"), tradeRecord->getCode(), tradeRecord->getPrice(), tradeRecord->getVolumn());
 	}
 
 	virtual void onTraderError(WTSError*	err)
@@ -499,10 +501,6 @@ std::string getBaseFolder()
 
 void main()
 {
-	double x = 3467.40;
-	printf("%d\r\n", x);
-	printf("%f\r\n", x);
-	printf("%u\r\n", x);
 	WTSLogger::init();
 
 	std::string cfg = getBaseFolder() + "config.ini";
@@ -613,7 +611,7 @@ void main()
 			break;
 	}
 	
-	exit(9);
-	//trader->release();
-	//delete trader;
+	//exit(9);
+	trader->release();
+	delete trader;
 }

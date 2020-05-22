@@ -38,13 +38,13 @@
     $ MyX64Deps12=E:\vc12depsX64
     ```
     在依赖库文件根目录下，建立两个子目录`include`、`lib`，将头文件全部放到`include`里，将预编译的lib全部放到`lib`里，如下图所示
-    ![alt 依赖库目录结构](http://q92ex9g0c.bkt.clouddn.com/snapshots/deps_snap.png)
+    ![alt 依赖库目录结构](http://wt.f-sailors.cn/snapshots/deps_snap.png)
     linux下，WonderTrader将依赖库文件统一放到/home/mydeps目录下，目录结构同上
 
 * Windows下编译WonderTrader
     WonderTrader在Windows下的开发环境是`Win7` + `vs2013`，WonderTrader直接提供了vs的解决方案文件，当然也可以用CMakelists生成解决方案。
     解决方案结构如图
-    ![alt 解决方案结构图](http://q92ex9g0c.bkt.clouddn.com/snapshots/wt_vs_snap.png)
+    ![alt 解决方案结构图](http://wt.f-sailors.cn/snapshots/wt_vs_snap.png)
 
 * Linux下编译WonderTrader
     Linux下编译通过一个shell脚本直接执行

@@ -194,9 +194,9 @@
     ```
 
 * 双击运行runBT.py执行回测
-    ![alt 回测执行截图](http://q92ex9g0c.bkt.clouddn.com/snapshots/bt_rbreaker_fut.png)
+    ![alt 回测执行截图](http://wt.f-sailors.cn/snapshots/bt_rbreaker_fut.png)
 
 * 查看绩效分析
-    ![alt 回测执行截图](http://q92ex9g0c.bkt.clouddn.com/snapshots/bt_rbreaker_pnl_summary.png)
+    ![alt 回测执行截图](http://wt.f-sailors.cn/snapshots/bt_rbreaker_pnl_summary.png)
 
 * 根据回测结果，重新调整参数，继续回测……

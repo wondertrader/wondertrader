@@ -466,7 +466,7 @@ uint32_t WTSDataFactory::getPrevMinute(uint32_t curMinute, int period /* = 1 */)
 	}
 }
 
-WTSKlineData* WTSDataFactory::extractKlineData(WTSKlineData* baseKline, WTSKlinePeriod period, uint32_t times, WTSSessionInfo* sInfo, bool bIncludeOpen /* = true */)
+WTSKlineData* WTSDataFactory::extractKlineData(WTSKlineSlice* baseKline, WTSKlinePeriod period, uint32_t times, WTSSessionInfo* sInfo, bool bIncludeOpen /* = true */)
 {
 	if(baseKline == NULL || baseKline->size() == 0)
 		return NULL;
@@ -474,8 +474,7 @@ WTSKlineData* WTSDataFactory::extractKlineData(WTSKlineData* baseKline, WTSKline
 	//一倍，则不需要转换
 	if(times <= 1 || period == KP_Tick)
 	{
-		baseKline->retain();
-		return baseKline;
+		return NULL;
 	}
 
 	if(period == KP_DAY)
@@ -494,7 +493,7 @@ WTSKlineData* WTSDataFactory::extractKlineData(WTSKlineData* baseKline, WTSKline
 	return NULL;
 }
 
-WTSKlineData* WTSDataFactory::extractMin1Data(WTSKlineData* baseKline, uint32_t times, WTSSessionInfo* sInfo, bool bIncludeOpen /* = true */)
+WTSKlineData* WTSDataFactory::extractMin1Data(WTSKlineSlice* baseKline, uint32_t times, WTSSessionInfo* sInfo, bool bIncludeOpen /* = true */)
 {
 	//根据合约代码获取市场信息
 	if(sInfo == NULL)
@@ -506,12 +505,12 @@ WTSKlineData* WTSDataFactory::extractMin1Data(WTSKlineData* baseKline, uint32_t 
 	WTSKlineData* ret = WTSKlineData::create(baseKline->code(), 0);
 	ret->setPeriod(KP_Minute1, times);
 
-	int count = 0;
-	WTSKlineData::WTSBarList& bars = baseKline->getDataRef();
-	WTSKlineData::WTSBarList::const_iterator it = bars.begin();
-	for(; it != bars.end(); it++,count++)
+	//WTSKlineData::WTSBarList& bars = baseKline->getDataRef();
+	//WTSKlineData::WTSBarList::const_iterator it = bars.begin();
+	//for(; it != bars.end(); it++,count++)
+	for (auto i = 0; i < baseKline->size(); i++)
 	{
-		const WTSBarStruct& curBar = *it;
+		const WTSBarStruct& curBar = *baseKline->at(i);
 
 		uint32_t uTradingDate = curBar.date;
 		uint32_t uDate = TimeUtils::minBarToDate(curBar.time);
@@ -591,7 +590,7 @@ WTSKlineData* WTSDataFactory::extractMin1Data(WTSKlineData* baseKline, uint32_t 
 	return ret;
 }
 
-WTSKlineData* WTSDataFactory::extractMin5Data(WTSKlineData* baseKline, uint32_t times, WTSSessionInfo* sInfo, bool bIncludeOpen /* = true */)
+WTSKlineData* WTSDataFactory::extractMin5Data(WTSKlineSlice* baseKline, uint32_t times, WTSSessionInfo* sInfo, bool bIncludeOpen /* = true */)
 {
 	if(sInfo == NULL)
 		return NULL;
@@ -602,11 +601,12 @@ WTSKlineData* WTSDataFactory::extractMin5Data(WTSKlineData* baseKline, uint32_t 
 	WTSKlineData* ret = WTSKlineData::create(baseKline->code(), 0);
 	ret->setPeriod(KP_Minute5, times);
 
-	WTSKlineData::WTSBarList& bars = baseKline->getDataRef();
-	WTSKlineData::WTSBarList::const_iterator it = bars.begin();
-	for(; it != bars.end(); it++)
+	//WTSKlineData::WTSBarList& bars = baseKline->getDataRef();
+	//WTSKlineData::WTSBarList::const_iterator it = bars.begin();
+	//for (; it != bars.end(); it++)
+	for (auto i = 0; i < baseKline->size(); i++)
 	{
-		const WTSBarStruct& curBar = *it;
+		const WTSBarStruct& curBar = *baseKline->at(i);
 
 		uint32_t uTradingDate = curBar.date;
 		uint32_t uDate = TimeUtils::minBarToDate(curBar.time);
@@ -681,7 +681,7 @@ WTSKlineData* WTSDataFactory::extractMin5Data(WTSKlineData* baseKline, uint32_t 
 	return ret;
 }
 
-WTSKlineData* WTSDataFactory::extractDayData(WTSKlineData* baseKline, uint32_t times, bool bIncludeOpen /* = true */)
+WTSKlineData* WTSDataFactory::extractDayData(WTSKlineSlice* baseKline, uint32_t times, bool bIncludeOpen /* = true */)
 {
 	//计算时间步长
 	uint32_t steplen = times;
@@ -690,11 +690,12 @@ WTSKlineData* WTSDataFactory::extractDayData(WTSKlineData* baseKline, uint32_t t
 	ret->setPeriod(KP_DAY, times);
 
 	uint32_t count = 0;
-	WTSKlineData::WTSBarList& bars = baseKline->getDataRef();
-	WTSKlineData::WTSBarList::const_iterator it = bars.begin();
-	for(; it != bars.end(); it++,count++)
+	//WTSKlineData::WTSBarList& bars = baseKline->getDataRef();
+	//WTSKlineData::WTSBarList::const_iterator it = bars.begin();
+	//for(; it != bars.end(); it++,count++)
+	for (auto i = 0; i < baseKline->size(); i++, count++)
 	{
-		const WTSBarStruct& curBar = *it;
+		const WTSBarStruct& curBar = *baseKline->at(i);
 
 		uint32_t uDate = curBar.date;
 
@@ -741,22 +742,23 @@ WTSKlineData* WTSDataFactory::extractDayData(WTSKlineData* baseKline, uint32_t t
 	return ret;
 }
 
-WTSKlineData* WTSDataFactory::extractKlineData(WTSArray* ayTicks, uint32_t seconds, WTSSessionInfo* sInfo, bool bUnixTime /* = false */)
+WTSKlineData* WTSDataFactory::extractKlineData(WTSTickSlice* ayTicks, uint32_t seconds, WTSSessionInfo* sInfo, bool bUnixTime /* = false */)
 {
 	if(ayTicks == NULL || ayTicks->size() == 0)
 		return NULL;
 	
-	WTSTickData* firstTick = STATIC_CONVERT(ayTicks->at(0), WTSTickData*);
+	const WTSTickStruct& firstTick = *(ayTicks->at(0));
 
 	if(sInfo == NULL)
 		return NULL;
 
-	WTSKlineData* ret = WTSKlineData::create(firstTick->code(),0);
+	WTSKlineData* ret = WTSKlineData::create(firstTick.code,0);
 	ret->setPeriod(KP_Tick, seconds);
 	ret->setUnixTime(bUnixTime);
 
-	WTSArray::Iterator it = ayTicks->begin();
-	for(; it != ayTicks->end(); it++)
+	//WTSArray::Iterator it = ayTicks->begin();
+	//for(; it != ayTicks->end(); it++)
+	for (auto i = 0; i < ayTicks->size(); i++)
 	{
 		WTSBarStruct* lastBar = NULL;
 		if(ret->size() > 0)
@@ -764,17 +766,17 @@ WTSKlineData* WTSDataFactory::extractKlineData(WTSArray* ayTicks, uint32_t secon
 			lastBar = ret->at(ret->size()-1);
 		}
 
-		WTSTickData* curTick = STATIC_CONVERT(*it, WTSTickData*);
-		uint32_t uDate = curTick->tradingdate();
-		uint32_t curSeconds = sInfo->timeToSeconds(curTick->actiontime()/1000);
+		const WTSTickStruct* curTick = ayTicks->at(i);
+		uint32_t uDate = curTick->trading_date;
+		uint32_t curSeconds = sInfo->timeToSeconds(curTick->action_time/1000);
 		uint32_t barSeconds = (curSeconds/seconds)*seconds + seconds;
 		uint32_t barTime = sInfo->secondsToTime(barSeconds);
 
 		//如果计算出来的K线时间戳小于tick数据的时间戳
 		if(bUnixTime)
 		{
-			uint32_t actDt = curTick->actiondate();
-			if (barTime < curTick->actiontime() / 1000)
+			uint32_t actDt = curTick->action_date;
+			if (barTime < curTick->action_time / 1000)
 			{
 				actDt = TimeUtils::getNextDate(actDt);
 			}
@@ -790,24 +792,24 @@ WTSKlineData* WTSDataFactory::extractKlineData(WTSArray* ayTicks, uint32_t secon
 			lastBar->date = uDate;
 			lastBar->time = barTime;
 
-			lastBar->open = curTick->price();
-			lastBar->high = curTick->price();
-			lastBar->low = curTick->price();
-			lastBar->close = curTick->price();
-			lastBar->vol = curTick->volumn();
-			lastBar->money = curTick->turnover();
-			lastBar->hold = curTick->openinterest();
-			lastBar->add = curTick->additional();
+			lastBar->open = curTick->price;
+			lastBar->high = curTick->price;
+			lastBar->low = curTick->price;
+			lastBar->close = curTick->price;
+			lastBar->vol = curTick->volumn;
+			lastBar->money = curTick->turn_over;
+			lastBar->hold = curTick->open_interest;
+			lastBar->add = curTick->diff_interest;
 		}
 		else
 		{
-			lastBar->close = curTick->price();
-			lastBar->high = max(lastBar->high,curTick->price());
-			lastBar->low = min(lastBar->low,curTick->price());
-			lastBar->vol += curTick->volumn();
-			lastBar->money += curTick->turnover();
-			lastBar->hold = curTick->openinterest();
-			lastBar->add += curTick->additional();
+			lastBar->close = curTick->price;
+			lastBar->high = max(lastBar->high,curTick->price);
+			lastBar->low = min(lastBar->low,curTick->price);
+			lastBar->vol += curTick->volumn;
+			lastBar->money += curTick->turn_over;
+			lastBar->hold = curTick->open_interest;
+			lastBar->add += curTick->diff_interest;
 		}
 
 		if(bNewBar)

@@ -22,6 +22,12 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
+    <Filter Include="ThreadPool">
+      <UniqueIdentifier>{20be0f2d-5671-43a3-abcf-9b377bf16480}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ThreadPool\detail">
+      <UniqueIdentifier>{dd81da78-3aec-40b3-a9b4-8dc70d9eb065}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BoostDefine.h">
@@ -140,6 +146,45 @@
     </ClInclude>
     <ClInclude Include="decimal.h">
       <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="threadpool\future.hpp">
+      <Filter>ThreadPool</Filter>
+    </ClInclude>
+    <ClInclude Include="threadpool\pool.hpp">
+      <Filter>ThreadPool</Filter>
+    </ClInclude>
+    <ClInclude Include="threadpool\pool_adaptors.hpp">
+      <Filter>ThreadPool</Filter>
+    </ClInclude>
+    <ClInclude Include="threadpool\scheduling_policies.hpp">
+      <Filter>ThreadPool</Filter>
+    </ClInclude>
+    <ClInclude Include="threadpool\shutdown_policies.hpp">
+      <Filter>ThreadPool</Filter>
+    </ClInclude>
+    <ClInclude Include="threadpool\size_policies.hpp">
+      <Filter>ThreadPool</Filter>
+    </ClInclude>
+    <ClInclude Include="threadpool\task_adaptors.hpp">
+      <Filter>ThreadPool</Filter>
+    </ClInclude>
+    <ClInclude Include="threadpool\detail\future.hpp">
+      <Filter>ThreadPool\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="threadpool\detail\locking_ptr.hpp">
+      <Filter>ThreadPool\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="threadpool\detail\pool_core.hpp">
+      <Filter>ThreadPool\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="threadpool\detail\scope_guard.hpp">
+      <Filter>ThreadPool\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="threadpool\detail\worker_thread.hpp">
+      <Filter>ThreadPool\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="threadpool.hpp">
+      <Filter>ThreadPool</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

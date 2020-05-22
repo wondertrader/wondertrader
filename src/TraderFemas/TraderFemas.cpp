@@ -22,12 +22,60 @@
 #include "../Share/decimal.h"
 
 #ifdef _WIN32
-#ifdef _WIN64
-#pragma comment(lib, "./ustptraderapi/USTPtraderapiAF64.lib")
+#include <wtypes.h>
+HMODULE	g_dllModule = NULL;
+
+BOOL APIENTRY DllMain(
+	HANDLE hModule,
+	DWORD  ul_reason_for_call,
+	LPVOID lpReserved
+	)
+{
+	switch (ul_reason_for_call)
+	{
+	case DLL_PROCESS_ATTACH:
+		g_dllModule = (HMODULE)hModule;
+		break;
+	}
+	return TRUE;
+}
 #else
-#pragma comment(lib, "./ustptraderapi/USTPtraderapiAF32.lib")
+#include <dlfcn.h>
+
+char PLATFORM_NAME[] = "UNIX";
+
+std::string	g_moduleName;
+
+__attribute__((constructor))
+void on_load(void) {
+	Dl_info dl_info;
+	dladdr((void *)on_load, &dl_info);
+	g_moduleName = dl_info.dli_fname;
+}
 #endif
+
+std::string getBinDir()
+{
+	static std::string _bin_dir;
+	if (_bin_dir.empty())
+	{
+
+
+#ifdef _WIN32
+		char strPath[MAX_PATH];
+		GetModuleFileName(g_dllModule, strPath, MAX_PATH);
+
+		_bin_dir = StrUtil::standardisePath(strPath, false);
+#else
+		_bin_dir = g_moduleName;
 #endif
+
+		uint32_t nPos = _bin_dir.find_last_of('/');
+		_bin_dir = _bin_dir.substr(0, nPos + 1);
+	}
+
+	return _bin_dir;
+}
 
 extern "C"
 {
@@ -104,6 +152,26 @@ bool TraderFemas::init(WTSParams* params)
 	if (m_strQryFront.empty())
 		m_bQryOnline = true;
 
+	WTSParams* param = params->get("ctpmodule");
+	if (param != NULL)
+		m_strModule = getBinDir() + param->asCString();
+	else
+	{
+#ifdef _WIN32
+		m_strModule = getBinDir() + "USTPtraderapiAF.dll";
+#else
+		m_strModule = getBinDir() + "libUSTPtraderapiAF.so";
+#endif
+	}
+
+	m_hInstCTP = DLLHelper::load_library(m_strModule.c_str());
+#ifdef _WIN32
+	const char* creatorName = "?CreateFtdcTraderApi@CUstpFtdcTraderApi@@SAPAV1@PBD@Z";
+#else
+	const char* creatorName = "_ZN18CUstpFtdcTraderApi19CreateFtdcTraderApiEPKc";
+#endif
+	m_funcCreator = (APICreator)DLLHelper::get_symbol(m_hInstCTP, creatorName);
+
 	return true;
 }
 
@@ -138,12 +206,11 @@ void TraderFemas::release()
 
 void TraderFemas::connect()
 {
-	std::string path = m_strBroker;
-	path += "_femas/";
-	path += m_strUser;
-	path += "/";
+	std::stringstream ss;
+	ss << "./fmsdata/flows/" << m_strBroker << "/" << m_strUser << "/";
+	std::string path = ss.str();
 	BoostFile::create_directories(path.c_str());
-	m_pUserAPI = CUstpFtdcTraderApi::CreateFtdcTraderApi(path.c_str());
+	m_pUserAPI = m_funcCreator(path.c_str());
 	m_pUserAPI->RegisterSpi(this);
 	if(m_bQuickStart)
 	{

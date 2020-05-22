@@ -12,14 +12,19 @@
 #include "../WTSUtils/pugixml/pugixml.hpp"
 
 #include "../Share/WTSMarcos.h"
+#include "../Share/WTSObject.hpp"
 #include "../Share/BoostDefine.h"
 
 #include <boost/asio.hpp>
+#include <queue>
 
 NS_OTP_BEGIN
 	class WTSTickData;
 	class WTSQueue;
 	class WTSVariant;
+	class WTSOrdDtlData;
+	class WTSOrdQueData;
+	class WTSTransData;
 NS_OTP_END
 
 USING_NS_OTP;
@@ -56,6 +61,8 @@ private:
 	void do_receive();
 	void do_send();
 
+	void broadcast(WTSObject* data, uint32_t dataType);
+
 public:
 	bool	init(WTSVariant* cfg, WTSBaseDataMgr* bdMgr, DataManager* dtMgr);
 	void	start(int bport);
@@ -65,6 +72,9 @@ public:
 	bool	addMRecver(const char* remote, int port, int sendport, int type = 0);
 
 	void	broadcast(WTSTickData* curTick);
+	void	broadcast(WTSOrdQueData* curOrdQue);
+	void	broadcast(WTSOrdDtlData* curOrdDtl);
+	void	broadcast(WTSTransData* curTrans);
 
 private:
 	typedef boost::asio::ip::udp::socket	UDPSocket;
@@ -93,7 +103,6 @@ private:
 	boost::asio::io_service		m_ioservice;
 	BoostThreadPtr	m_thrdIO;
 
-	WTSQueue*		m_tickQue;
 	BoostThreadPtr	m_thrdCast;
 	BoostCondition	m_condCast;
 	BoostUniqueMutex	m_mtxCast;
@@ -101,4 +110,28 @@ private:
 
 	WTSBaseDataMgr*	m_bdMgr;
 	DataManager*	m_dtMgr;
+
+	typedef struct _CastData
+	{
+		uint32_t	_datatype;
+		WTSObject*	_data;
+
+		_CastData(WTSObject* obj = NULL, uint32_t dataType = 0)
+			: _data(obj), _datatype(dataType)
+		{
+			if (_data)
+				_data->retain();
+		}
+
+		~_CastData()
+		{
+			if (_data)
+			{
+				_data->release();
+				_data = NULL;
+			}
+		}
+	} CastData;
+
+	std::queue<CastData>		m_dataQue;
 };

@@ -1,6 +1,6 @@
 {
     "basefiles":{
-        "session":"./common/sessions.json",
+        "session":"./common/stk_sessions.json",
         "commodity":"./common/stk_comms.json",
         "contract":"./common/stocks.json",
         "holiday":"./common/holidays.json"
@@ -17,8 +17,8 @@
             "module":"ParserXTP.dll",
             "host":"120.27.164.138",
             "port":"6002",
-            "user":"ä½ çš„XTPä»¿çœŸè´¦å·",
-            "pass":"ä½ çš„XTPä»¿çœŸå¯†ç ",
+            "user":"ÄãµÄXTP·ÂÕæÕËºÅ",
+            "pass":"ÄãµÄXTP·ÂÕæÃÜÂë",
 			"protocol":1,
 			"clientid":1,
 			"hbinterval":15,

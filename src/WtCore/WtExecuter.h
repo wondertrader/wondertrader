@@ -15,8 +15,10 @@
 
 #include "ITrdNotifySink.h"
 #include "ExecuteDefs.h"
+
 #include "../Share/BoostDefine.h"
 #include "../Share/DLLHelper.hpp"
+#include "../Share/threadpool.hpp"
 
 NS_OTP_BEGIN
 class WTSVariant;
@@ -84,7 +86,7 @@ private:
 public:
 	//////////////////////////////////////////////////////////////////////////
 	//ExecuteContext
-	virtual WTSHisTickData* getTicks(const char* code, uint32_t count, uint64_t etime = 0) override;
+	virtual WTSTickSlice* getTicks(const char* code, uint32_t count, uint64_t etime = 0) override;
 
 	virtual WTSTickData*	grabLastTick(const char* code) override;
 
@@ -165,6 +167,9 @@ private:
 	std::unordered_set<std::string>			_clear_codes;
 
 	std::unordered_map<std::string, double> _target_pos;
+
+	typedef boost::shared_ptr<boost::threadpool::pool> ThreadPoolPtr;
+	ThreadPoolPtr		_pool;
 };
 
 typedef std::shared_ptr<WtExecuter> WtExecuterPtr;

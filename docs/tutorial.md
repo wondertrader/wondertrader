@@ -100,18 +100,18 @@
         engine.release_backtest()
     ```
 * 然后启动runBT.py进行回测，回测的执行如下
-    ![alt 回测示例图](http://q92ex9g0c.bkt.clouddn.com/snapshots/bt_fut_snapshot.jpg)
+    ![alt 回测示例图](http://wt.f-sailors.cn/snapshots/bt_fut_snapshot.jpg)
 
 * 回测完成以后，打开生成的绩效分析报表(xxxx.xlsx)，则可以查看策略的回测绩效
     回测绩效概览
-    ![alt 回测绩效概览](http://q92ex9g0c.bkt.clouddn.com/snapshots/bt_fut_pnl_summary.png)
+    ![alt 回测绩效概览](http://wt.f-sailors.cn/snapshots/bt_fut_pnl_summary.png)
     回测收益详情
-    ![alt 回测绩效详情](http://q92ex9g0c.bkt.clouddn.com/snapshots/ana_fut_snapshot.jpg)
+    ![alt 回测绩效详情](http://wt.f-sailors.cn/snapshots/ana_fut_snapshot.jpg)
     从上图的绩效分析可以看出，DualThrust策略，针对股指期货主力合约，在20190919到20191201这段时间内，这组参数下进行回测，一直处于回撤的状态，累计亏损达20%。可见，这不是一组好的参数。
 
 * 接下来我们调整参数，将K1和K2改成0.5和0.3，再进行回测和分析，得到如下结果
     调整后的回测绩效总览
-    ![alt 回测绩效概览](http://q92ex9g0c.bkt.clouddn.com/snapshots/bt_fut_pnl_summary2.png)
+    ![alt 回测绩效概览](http://wt.f-sailors.cn/snapshots/bt_fut_pnl_summary2.png)
     从上图可以看出，参数调整过以后的绩效远远好于调整之前。
 
 * 最后进行回测分析总结

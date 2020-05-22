@@ -85,9 +85,7 @@ public:
 	WTSCommodityInfo*	get_commodity_info(const char* stdCode);
 	WTSContractInfo*	get_contract_info(const char* stdCode);
 
-	WTSHisTickData* get_ticks(uint32_t sid, const char* stdCode, uint32_t count);
 	WTSTickData*	get_last_tick(uint32_t sid, const char* stdCode);
-
 	WTSTickSlice*	get_tick_slice(uint32_t sid, const char* stdCode, uint32_t count);
 	WTSKlineSlice*	get_kline_slice(uint32_t sid, const char* stdCode, const char* period, uint32_t count, uint32_t times = 1);
 

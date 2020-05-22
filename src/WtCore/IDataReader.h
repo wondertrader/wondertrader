@@ -127,7 +127,7 @@ public:
 	 *	@param	count	要读取的K线条数
 	 *	@param	etime	结束时间，如果是日线数据，则格式为yyyyMMdd，如果是分钟线，则为yyyyMMddhhmm
 	 */
-	virtual WTSKlineData*	readBars(const char* stdCode, WTSKlinePeriod period, uint32_t count, uint64_t etime = 0) = 0;
+	//virtual WTSKlineData*	readBars(const char* stdCode, WTSKlinePeriod period, uint32_t count, uint64_t etime = 0) = 0;
 
 	/*
 	 *	@brief	读取tick数据切片
