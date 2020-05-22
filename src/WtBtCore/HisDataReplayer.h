@@ -111,9 +111,9 @@ public:
 
 	WTSKlineSlice* get_kline_slice(const char* stdCode, const char* period, uint32_t count, uint32_t times = 1, bool isMain = false);
 
-	WTSHisTickData* get_ticks(const char* stdCode, uint32_t count, uint64_t etime);
+	//WTSHisTickData* get_ticks(const char* stdCode, uint32_t count, uint64_t etime);
 
-	WTSTickSlice* get_tick_slice(const char* stdCode, uint32_t count);
+	WTSTickSlice* get_tick_slice(const char* stdCode, uint32_t count, uint64_t etime = 0);
 
 	WTSTickData* get_last_tick(const char* stdCode);
 

@@ -414,9 +414,9 @@ void ExecMocker::handle_schedule(uint32_t uDate, uint32_t uTime)
 	_sig_cnt++;
 }
 
-WTSHisTickData* ExecMocker::getTicks(const char* stdCode, uint32_t count, uint64_t etime /*= 0*/)
+WTSTickSlice* ExecMocker::getTicks(const char* stdCode, uint32_t count, uint64_t etime /*= 0*/)
 {
-	return _replayer->get_ticks(stdCode, count, etime);
+	return _replayer->get_tick_slice(stdCode, count, etime);
 }
 
 WTSTickData* ExecMocker::grabLastTick(const char* stdCode)
