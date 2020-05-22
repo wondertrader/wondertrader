@@ -1,4 +1,4 @@
-![WonderTrader2.png](http://q92ex9g0c.bkt.clouddn.com/wt/logo_qcode_ad.jpg)
+![WonderTrader2.png](http://wt.f-sailors.cn/wt/logo_qcode_ad.jpg)
 
 #### *What* - 什么是*WonderTrader*
 
@@ -13,7 +13,7 @@
     从核心来说，要达到开放、高可用、高度可定制的设计目标，核心的设计遵循**核心逻辑+功能模块**的原则进行解耦，将各个直接功能模块全部放到外部功能模块来实现。这样策略开发者不需要关心信号的执行，而各个功能开发者也不需要考虑跟策略交互的问题。因为交互的逻辑都放到了核心里。  
 
 * *WonderTrader*的基本架构图
-    ![WonderTrader基本架构.jpg](http://q92ex9g0c.bkt.clouddn.com/wt/structure.jpg)
+    ![WonderTrader基本架构.jpg](http://wt.f-sailors.cn/wt/structure.jpg)
 
 #### *Why* - 为什么要用*WonderTrader*
 
@@ -70,4 +70,4 @@
 * WonderTrader是经过多年检验的成熟量化交易框架，从2013年开始搭建第一个版本到现在，经历过几次全部重构，最终形成如今的WonderTrader
 * 关注公众号wondertrader，可以收到wondertrader的实时资讯
 
-![WonderTrader2.png](http://q92ex9g0c.bkt.clouddn.com/wt/logo_qcode_ad.jpg)
+![WonderTrader2.png](http://wt.f-sailors.cn/wt/logo_qcode_ad.jpg)
