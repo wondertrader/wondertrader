@@ -55,6 +55,7 @@ bool WtExecuter::init(WTSVariant* params)
 	if(poolsize > 0)
 	{
 		_pool.reset(new boost::threadpool::pool(poolsize));
+		writeLog("执行器线程池大小%u", poolsize);
 	}
 
 	return true;

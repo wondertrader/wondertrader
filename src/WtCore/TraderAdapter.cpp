@@ -1582,7 +1582,7 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 		bool isLong = (orderInfo->getDirection() == WDT_LONG);
 		bool isOpen = (orderInfo->getOffsetType() == WOT_OPEN);
 		bool isToday = (orderInfo->getOffsetType() == WOT_CLOSETODAY);
-		double qty = orderInfo->getVolLeft();
+		double qty = orderInfo->getVolumn() - orderInfo->getVolTraded();
 
 		bool isBuy = (isLong&&isOpen) || (!isLong&&!isOpen);
 		double oldQty = _undone_qty[stdCode];

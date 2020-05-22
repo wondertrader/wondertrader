@@ -382,6 +382,8 @@ void WtEngine::save_datas()
 			for (auto dit = pInfo._details.begin(); dit != pInfo._details.end(); dit++)
 			{
 				const DetailInfo& dInfo = *dit;
+				if(decimal::eq(dInfo._volumn, 0))
+					continue;
 				rj::Value dItem(rj::kObjectType);
 				dItem.AddMember("long", dInfo._long, allocator);
 				dItem.AddMember("price", dInfo._price, allocator);
