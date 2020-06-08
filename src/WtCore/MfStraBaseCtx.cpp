@@ -1,0 +1,878 @@
+/*!
+* \file MfStraBaseCtx.cpp
+* \project	WonderTrader
+*
+* \author Wesley
+* \date 2020/03/30
+*
+* \brief
+*/
+#include "MfStraBaseCtx.h"
+#include "WtMfEngine.h"
+#include "WtHelper.h"
+
+#include <exception>
+#include <rapidjson/document.h>
+#include <rapidjson/prettywriter.h>
+
+#include "../Share/StrUtil.hpp"
+#include "../Share/StdUtils.hpp"
+#include "../Share/WTSContractInfo.hpp"
+#include "../Share/WTSSessionInfo.hpp"
+#include "../Share/WTSTradeDef.hpp"
+#include "../Share/decimal.h"
+#include "../Share/CodeHelper.hpp"
+
+#include "../WTSTools/WTSLogger.h"
+
+namespace rj = rapidjson;
+
+inline uint32_t makeMfCtxId()
+{
+	static std::atomic<uint32_t> _auto_context_id{ 3000 };
+	return _auto_context_id.fetch_add(1);
+}
+
+
+MfStraBaseCtx::MfStraBaseCtx(WtMfEngine* engine, const char* name)
+	: IMfStraCtx(name)
+	, _engine(engine)
+	, _total_calc_time(0)
+	, _emit_times(0)
+	, _is_in_schedule(false)
+	, _ud_modified(false)
+{
+	_context_id = makeMfCtxId();
+}
+
+
+MfStraBaseCtx::~MfStraBaseCtx()
+{
+}
+
+void MfStraBaseCtx::init_outputs()
+{
+	std::string folder = WtHelper::getOutputDir();
+	folder += _name;
+	folder += "//";
+	BoostFile::create_directories(folder.c_str());
+
+	std::string filename = folder + "trades.csv";
+	_trade_logs.reset(new BoostFile());
+	{
+		bool isNewFile = !BoostFile::exists(filename.c_str());
+		_trade_logs->create_or_open_file(filename.c_str());
+		if (isNewFile)
+		{
+			_trade_logs->write_file("code,time,direct,action,price,qty,tag,fee\n");
+		}
+		else
+		{
+			_trade_logs->seek_to_end();
+		}
+	}
+
+	filename = folder + "closes.csv";
+	_close_logs.reset(new BoostFile());
+	{
+		bool isNewFile = !BoostFile::exists(filename.c_str());
+		_close_logs->create_or_open_file(filename.c_str());
+		if (isNewFile)
+		{
+			_close_logs->write_file("code,direct,opentime,openprice,closetime,closeprice,qty,profit,totalprofit,entertag,exittag\n");
+		}
+		else
+		{
+			_close_logs->seek_to_end();
+		}
+	}
+
+	filename = folder + "funds.csv";
+	_fund_logs.reset(new BoostFile());
+	{
+		bool isNewFile = !BoostFile::exists(filename.c_str());
+		_fund_logs->create_or_open_file(filename.c_str());
+		if (isNewFile)
+		{
+			_fund_logs->write_file("date,closeprofit,positionprofit,dynbalance,fee\n");
+		}
+		else
+		{
+			_fund_logs->seek_to_end();
+		}
+	}
+
+	filename = folder + "signals.csv";
+	_sig_logs.reset(new BoostFile());
+	{
+		bool isNewFile = !BoostFile::exists(filename.c_str());
+		_sig_logs->create_or_open_file(filename.c_str());
+		if (isNewFile)
+		{
+			_sig_logs->write_file("code,target,sigprice,gentime,usertag\n");
+		}
+		else
+		{
+			_sig_logs->seek_to_end();
+		}
+	}
+}
+
+void MfStraBaseCtx::log_signal(const char* stdCode, double target, double price, uint64_t gentime, const char* usertag /* = "" */)
+{
+	if (_sig_logs)
+	{
+		std::stringstream ss;
+		ss << stdCode << "," << target << "," << price << "," << gentime << "," << usertag << "\n";
+		_sig_logs->write_file(ss.str());
+		//_sig_logs->write_file(StrUtil::printf("%s,%f,%f,%s,%s\n", stdCode, target, price, StrUtil::fmtUInt64(gentime).c_str(), usertag));
+	}
+}
+
+void MfStraBaseCtx::log_trade(const char* stdCode, bool isLong, bool isOpen, uint64_t curTime, double price, double qty, const char* userTag, double fee)
+{
+	if (_trade_logs)
+	{
+		std::stringstream ss;
+		ss << stdCode << "," << curTime << "," << (isLong ? "LONG" : "SHORT") << "," << (isOpen ? "OPEN" : "CLOSE") << "," << price << "," << qty << "," << userTag << "," << fee << "\n";
+		_trade_logs->write_file(ss.str());
+		//_trade_logs->write_file(StrUtil::printf("%s,%s,%s,%s,%f,%f,%s,%.2f\n", stdCode, StrUtil::fmtUInt64(curTime).c_str(), isLong ? "LONG" : "SHORT", isOpen ? "OPEN" : "CLOSE", price, qty, userTag, fee));
+	}
+}
+
+void MfStraBaseCtx::log_close(const char* stdCode, bool isLong, uint64_t openTime, double openpx, uint64_t closeTime, double closepx, double qty,
+	double profit, double totalprofit /* = 0 */, const char* enterTag /* = "" */, const char* exitTag /* = "" */)
+{
+	if (_close_logs)
+	{
+		std::stringstream ss;
+		ss << stdCode << "," << (isLong ? "LONG" : "SHORT") << "," << openTime << "," << openpx
+			<< "," << closeTime << "," << closepx << "," << qty << "," << profit << ","
+			<< totalprofit << "," << enterTag << "," << exitTag << "\n";
+		_trade_logs->write_file(ss.str());
+
+		//_close_logs->write_file(StrUtil::printf("%s,%s,%s,%f,%s,%f,%f,%.2f,%.2f,%s,%s\n",
+		//	stdCode, isLong ? "LONG" : "SHORT", StrUtil::fmtUInt64(openTime).c_str(), openpx, StrUtil::fmtUInt64(closeTime).c_str(), closepx, qty, profit, totalprofit, enterTag, exitTag));
+	}
+}
+
+void MfStraBaseCtx::save_userdata()
+{
+	//ini.save(filename.c_str());
+	rj::Document root(rj::kObjectType);
+	rj::Document::AllocatorType &allocator = root.GetAllocator();
+	for (auto it = _user_datas.begin(); it != _user_datas.end(); it++)
+	{
+		root.AddMember(rj::Value(it->first.c_str(), allocator), rj::Value(it->second.c_str(), allocator), allocator);
+	}
+
+	{
+		std::string filename = WtHelper::getStraUsrDatDir();
+		filename += "ud_";
+		filename += _name;
+		filename += ".json";
+
+		BoostFile bf;
+		if (bf.create_new_file(filename.c_str()))
+		{
+			rj::StringBuffer sb;
+			rj::PrettyWriter<rj::StringBuffer> writer(sb);
+			root.Accept(writer);
+			bf.write_file(sb.GetString());
+			bf.close_file();
+		}
+	}
+}
+
+void MfStraBaseCtx::load_userdata()
+{
+	std::string filename = WtHelper::getStraUsrDatDir();
+	filename += "ud_";
+	filename += _name;
+	filename += ".json";
+
+	if (!StdFile::exists(filename.c_str()))
+	{
+		return;
+	}
+
+	std::string content;
+	StdFile::read_file_content(filename.c_str(), content);
+	if (content.empty())
+		return;
+
+	rj::Document root;
+	root.Parse(content.c_str());
+
+	if (root.HasParseError())
+		return;
+
+	for (auto& m : root.GetObject())
+	{
+		const char* key = m.name.GetString();
+		const char* val = m.value.GetString();
+		_user_datas[key] = val;
+	}
+}
+
+void MfStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
+{
+	std::string filename = WtHelper::getStraDataDir();
+	filename += _name;
+	filename += ".json";
+
+	if (!StdFile::exists(filename.c_str()))
+	{
+		return;
+	}
+
+	std::string content;
+	StdFile::read_file_content(filename.c_str(), content);
+	if (content.empty())
+		return;
+
+	rj::Document root;
+	root.Parse(content.c_str());
+
+	if (root.HasParseError())
+		return;
+
+	if (root.HasMember("fund"))
+	{
+		//读取资金
+		const rj::Value& jFund = root["fund"];
+		if (!jFund.IsNull() && jFund.IsObject())
+		{
+			_fund_info._total_profit = jFund["total_profit"].GetDouble();
+			_fund_info._total_dynprofit = jFund["total_dynprofit"].GetDouble();
+			uint32_t tdate = jFund["tdate"].GetUint();
+			if (tdate == _engine->get_trading_date())
+				_fund_info._total_fees = jFund["total_fees"].GetDouble();
+		}
+	}
+
+	{//读取仓位
+		double total_profit = 0;
+		double total_dynprofit = 0;
+		const rj::Value& jPos = root["positions"];
+		if (!jPos.IsNull() && jPos.IsArray())
+		{
+			for (const rj::Value& pItem : jPos.GetArray())
+			{
+				const char* stdCode = pItem["code"].GetString();
+				if (!CodeHelper::isStdFutHotCode(stdCode) && _engine->get_contract_info(stdCode) == NULL)
+				{
+					stra_log_text("合约%s不存在或者已过期，持仓数据已忽略", stdCode);
+					continue;
+				}
+				PosInfo& pInfo = _pos_map[stdCode];
+				pInfo._closeprofit = pItem["closeprofit"].GetDouble();
+				pInfo._volumn = pItem["volumn"].GetDouble();
+				if (pInfo._volumn == 0)
+					pInfo._dynprofit = 0;
+				else
+					pInfo._dynprofit = pItem["dynprofit"].GetDouble();
+
+				total_profit += pInfo._closeprofit;
+				total_dynprofit += pInfo._dynprofit;
+
+				const rj::Value& details = pItem["details"];
+				if (details.IsNull() || !details.IsArray() || details.Size() == 0)
+					continue;
+
+				pInfo._details.resize(details.Size());
+
+				for (uint32_t i = 0; i < details.Size(); i++)
+				{
+					const rj::Value& dItem = details[i];
+					DetailInfo& dInfo = pInfo._details[i];
+					dInfo._long = dItem["long"].GetBool();
+					dInfo._price = dItem["price"].GetDouble();
+					dInfo._volumn = dItem["volumn"].GetDouble();
+					dInfo._opentime = dItem["opentime"].GetUint64();
+					if (dItem.HasMember("opentdate"))
+						dInfo._opentdate = dItem["opentdate"].GetUint();
+
+					dInfo._profit = dItem["profit"].GetDouble();
+					dInfo._max_profit = dItem["maxprofit"].GetDouble();
+					dInfo._max_loss = dItem["maxloss"].GetDouble();
+
+					strcpy(dInfo._opentag, dItem["opentag"].GetString());
+				}
+
+				stra_log_text("策略仓位确认,%s -> %d", stdCode, pInfo._volumn);
+			}
+		}
+
+		_fund_info._total_profit = total_profit;
+		_fund_info._total_dynprofit = total_dynprofit;
+	}
+
+	if (root.HasMember("signals"))
+	{
+		//读取信号
+		const rj::Value& jSignals = root["signals"];
+		if (!jSignals.IsNull() && jSignals.IsObject())
+		{
+			for (auto& m : jSignals.GetObject())
+			{
+				const char* stdCode = m.name.GetString();
+				if (!CodeHelper::isStdFutHotCode(stdCode) && _engine->get_contract_info(stdCode) == NULL)
+				{
+					stra_log_text("合约%s不存在或者已过期，信号已忽略", stdCode);
+					continue;
+				}
+
+				const rj::Value& jItem = m.value;
+
+				SigInfo& sInfo = _sig_map[stdCode];
+				sInfo._usertag = jItem["usertag"].GetString();
+				sInfo._volumn = jItem["volumn"].GetDouble();
+				sInfo._sigprice = jItem["sigprice"].GetDouble();
+				sInfo._gentime = jItem["gentime"].GetUint64();
+
+				stra_log_text("未触发信号恢复, 合约: %s, 目标部位: %d手", stdCode, sInfo._volumn);
+			}
+		}
+	}
+}
+
+void MfStraBaseCtx::save_data(uint32_t flag /* = 0xFFFFFFFF */)
+{
+	rj::Document root(rj::kObjectType);
+
+	{//持仓数据保存
+		rj::Value jPos(rj::kArrayType);
+
+		rj::Document::AllocatorType &allocator = root.GetAllocator();
+
+		for (auto it = _pos_map.begin(); it != _pos_map.end(); it++)
+		{
+			const char* stdCode = it->first.c_str();
+			const PosInfo& pInfo = it->second;
+
+			rj::Value pItem(rj::kObjectType);
+			pItem.AddMember("code", rj::Value(stdCode, allocator), allocator);
+			pItem.AddMember("volumn", pInfo._volumn, allocator);
+			pItem.AddMember("closeprofit", pInfo._closeprofit, allocator);
+			pItem.AddMember("dynprofit", pInfo._dynprofit, allocator);
+
+			rj::Value details(rj::kArrayType);
+			for (auto dit = pInfo._details.begin(); dit != pInfo._details.end(); dit++)
+			{
+				const DetailInfo& dInfo = *dit;
+				rj::Value dItem(rj::kObjectType);
+				dItem.AddMember("long", dInfo._long, allocator);
+				dItem.AddMember("price", dInfo._price, allocator);
+				dItem.AddMember("volumn", dInfo._volumn, allocator);
+				dItem.AddMember("opentime", dInfo._opentime, allocator);
+				dItem.AddMember("opentdate", dInfo._opentdate, allocator);
+
+				dItem.AddMember("profit", dInfo._profit, allocator);
+				dItem.AddMember("maxprofit", dInfo._max_profit, allocator);
+				dItem.AddMember("maxloss", dInfo._max_loss, allocator);
+				dItem.AddMember("opentag", rj::Value(dInfo._opentag, allocator), allocator);
+
+				details.PushBack(dItem, allocator);
+			}
+
+			pItem.AddMember("details", details, allocator);
+
+			jPos.PushBack(pItem, allocator);
+		}
+
+		root.AddMember("positions", jPos, allocator);
+	}
+
+	{//资金保存
+		rj::Value jFund(rj::kObjectType);
+		rj::Document::AllocatorType &allocator = root.GetAllocator();
+
+		jFund.AddMember("total_profit", _fund_info._total_profit, allocator);
+		jFund.AddMember("total_dynprofit", _fund_info._total_dynprofit, allocator);
+		jFund.AddMember("total_fees", _fund_info._total_fees, allocator);
+		jFund.AddMember("tdate", _engine->get_trading_date(), allocator);
+
+		root.AddMember("fund", jFund, allocator);
+	}
+
+	{//信号保存
+		rj::Value jSigs(rj::kObjectType);
+		rj::Document::AllocatorType &allocator = root.GetAllocator();
+
+		for (auto it : _sig_map)
+		{
+			const char* stdCode = it.first.c_str();
+			const SigInfo& sInfo = it.second;
+
+			rj::Value jItem(rj::kObjectType);
+			jItem.AddMember("usertag", rj::Value(sInfo._usertag.c_str(), allocator), allocator);
+
+			jItem.AddMember("volumn", sInfo._volumn, allocator);
+			jItem.AddMember("sigprice", sInfo._sigprice, allocator);
+			jItem.AddMember("gentime", sInfo._gentime, allocator);
+
+			jSigs.AddMember(rj::Value(stdCode, allocator), jItem, allocator);
+		}
+
+		root.AddMember("signals", jSigs, allocator);
+	}
+
+	{
+		std::string filename = WtHelper::getStraDataDir();
+		filename += _name;
+		filename += ".json";
+
+		BoostFile bf;
+		if (bf.create_new_file(filename.c_str()))
+		{
+			rj::StringBuffer sb;
+			rj::PrettyWriter<rj::StringBuffer> writer(sb);
+			root.Accept(writer);
+			bf.write_file(sb.GetString());
+			bf.close_file();
+		}
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////
+//回调函数
+void MfStraBaseCtx::on_bar(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar)
+{
+	if (newBar == NULL)
+		return;
+
+	std::string realPeriod;
+	if (period[0] == 'd')
+		realPeriod = StrUtil::printf("%s%u", period, times);
+	else
+		realPeriod = StrUtil::printf("m%u", times);
+
+	std::string key = StrUtil::printf("%s#%s", stdCode, realPeriod.c_str());
+	KlineTag& tag = _kline_tags[key];
+	tag._closed = true;
+
+	on_bar_close(stdCode, realPeriod.c_str(), newBar);
+
+	//stra_log_text("K线%s @ %u已闭合", key.c_str(), period[0] == 'd' ? newBar->date : newBar->time);
+}
+
+void MfStraBaseCtx::on_init()
+{
+	init_outputs();
+
+	//读取数据
+	load_data();
+
+	load_userdata();
+}
+
+void MfStraBaseCtx::update_dyn_profit(const char* stdCode, double price)
+{
+	auto it = _pos_map.find(stdCode);
+	if (it != _pos_map.end())
+	{
+		PosInfo& pInfo = it->second;
+		if (pInfo._volumn == 0)
+		{
+			pInfo._dynprofit = 0;
+		}
+		else
+		{
+			WTSCommodityInfo* commInfo = _engine->get_commodity_info(stdCode);
+			double dynprofit = 0;
+			for (auto pit = pInfo._details.begin(); pit != pInfo._details.end(); pit++)
+			{
+				DetailInfo& dInfo = *pit;
+				dInfo._profit = dInfo._volumn*(price - dInfo._price)*commInfo->getVolScale()*(dInfo._long ? 1 : -1);
+				if (dInfo._profit > 0)
+					dInfo._max_profit = max(dInfo._profit, dInfo._max_profit);
+				else if (dInfo._profit < 0)
+					dInfo._max_loss = min(dInfo._profit, dInfo._max_loss);
+
+				dynprofit += dInfo._profit;
+			}
+
+			pInfo._dynprofit = dynprofit;
+		}
+	}
+
+	double total_dynprofit = 0;
+	for (auto v : _pos_map)
+	{
+		const PosInfo& pInfo = v.second;
+		total_dynprofit += pInfo._dynprofit;
+	}
+
+	_fund_info._total_dynprofit = total_dynprofit;
+}
+
+void MfStraBaseCtx::on_tick(const char* stdCode, WTSTickData* newTick, bool bEmitStrategy /* = true */)
+{
+	_price_map[stdCode] = newTick->price();
+
+	//先检查是否要信号要触发
+	{
+		auto it = _sig_map.find(stdCode);
+		if (it != _sig_map.end())
+		{
+			WTSSessionInfo* sInfo = _engine->get_session_info(stdCode, true);
+
+			if (sInfo->isInTradingTime(_engine->get_raw_time(), true))
+			{
+				const SigInfo& sInfo = it->second;
+				do_set_position(stdCode, sInfo._volumn, sInfo._usertag.c_str(), sInfo._triggered);
+				_sig_map.erase(it);
+			}
+
+		}
+	}
+
+	update_dyn_profit(stdCode, newTick->price());
+
+	if (bEmitStrategy)
+		on_tick_updated(stdCode, newTick);
+
+	if (_ud_modified)
+	{
+		save_userdata();
+		_ud_modified = false;
+	}
+}
+
+bool MfStraBaseCtx::on_schedule(uint32_t curDate, uint32_t curTime)
+{
+	_is_in_schedule = true;//开始调度, 修改标记
+
+	//主要用于保存浮动盈亏的
+	save_data();
+
+	TimeUtils::Ticker ticker;
+	on_strategy_schedule(curDate, curTime);
+	stra_log_text("策略已重新调度 @ %u", curTime);
+
+	_emit_times++;
+	_total_calc_time += ticker.micro_seconds();
+
+	if (_emit_times % 20 == 0)
+		stra_log_text("策略共触发%u次, 共耗时%s微秒, 平均耗时%s微秒",
+		_emit_times, StrUtil::fmtUInt64(_total_calc_time).c_str(), StrUtil::fmtUInt64(_total_calc_time / _emit_times).c_str());
+
+	if (_ud_modified)
+	{
+		save_userdata();
+		_ud_modified = false;
+	}
+
+	_is_in_schedule = false;//调度结束, 修改标记
+	return true;
+}
+
+void MfStraBaseCtx::on_session_begin()
+{
+
+}
+
+void MfStraBaseCtx::enum_position(FuncEnumMfPositionCallBack cb)
+{
+	std::unordered_map<std::string, double> desPos;
+	for (auto it : _pos_map)
+	{
+		const char* stdCode = it.first.c_str();
+		const PosInfo& pInfo = it.second;
+		//cb(stdCode, pInfo._volumn);
+		desPos[stdCode] = pInfo._volumn;
+	}
+
+	for (auto sit : _sig_map)
+	{
+		const char* stdCode = sit.first.c_str();
+		const SigInfo& sInfo = sit.second;
+		desPos[stdCode] = sInfo._volumn;
+	}
+
+	for (auto v : desPos)
+	{
+		cb(v.first.c_str(), v.second);
+	}
+}
+
+void MfStraBaseCtx::on_session_end()
+{
+	uint32_t curDate = _engine->get_trading_date();
+
+	double total_profit = 0;
+	double total_dynprofit = 0;
+
+	for (auto it = _pos_map.begin(); it != _pos_map.end(); it++)
+	{
+		const char* stdCode = it->first.c_str();
+		const PosInfo& pInfo = it->second;
+		total_profit += pInfo._closeprofit;
+		total_dynprofit += pInfo._dynprofit;
+	}
+
+	//TODO:
+	//这里要把当日结算的数据写到日志文件里
+	//而且这里回测和实盘写法不同, 先留着, 后面来做
+	if (_fund_logs)
+		_fund_logs->write_file(StrUtil::printf("%d,%.2f,%.2f,%.2f,%.2f\n", curDate,
+		_fund_info._total_profit, _fund_info._total_dynprofit,
+		_fund_info._total_profit + _fund_info._total_dynprofit - _fund_info._total_fees, _fund_info._total_fees));
+
+	save_data();
+}
+
+
+//////////////////////////////////////////////////////////////////////////
+//策略接口
+#pragma region "策略接口"
+double MfStraBaseCtx::stra_get_price(const char* stdCode)
+{
+	if (_engine)
+		return _engine->get_cur_price(stdCode);
+
+	return 0.0;
+}
+
+void MfStraBaseCtx::stra_set_position(const char* stdCode, double qty, const char* userTag /* = "" */)
+{
+	append_signal(stdCode, qty, userTag);
+}
+
+void MfStraBaseCtx::append_signal(const char* stdCode, double qty, const char* userTag /* = "" */)
+{
+	double curPx = _price_map[stdCode];
+
+	SigInfo& sInfo = _sig_map[stdCode];
+	sInfo._volumn = qty;
+	sInfo._sigprice = curPx;
+	sInfo._usertag = userTag;
+	sInfo._gentime = (uint64_t)_engine->get_date() * 1000000000 + (uint64_t)_engine->get_raw_time() * 100000 + _engine->get_secs();
+	sInfo._triggered = !_is_in_schedule;
+
+	log_signal(stdCode, qty, curPx, sInfo._gentime, userTag);
+
+	save_data();
+}
+
+void MfStraBaseCtx::do_set_position(const char* stdCode, double qty, const char* userTag /* = "" */, bool bTriggered /* = false */)
+{
+	PosInfo& pInfo = _pos_map[stdCode];
+	double curPx = _price_map[stdCode];
+	uint64_t curTm = (uint64_t)_engine->get_date() * 10000 + _engine->get_min_time();
+	uint32_t curTDate = _engine->get_trading_date();
+
+	if (decimal::eq(pInfo._volumn, qty))
+		return;
+
+	double diff = qty - pInfo._volumn;
+
+	WTSCommodityInfo* commInfo = _engine->get_commodity_info(stdCode);
+
+	if (decimal::gt(pInfo._volumn*diff, 0))//当前持仓和目标仓位方向一致, 增加一条明细, 增加手数即可
+	{
+		pInfo._volumn = qty;
+
+		DetailInfo dInfo;
+		dInfo._long = decimal::gt(qty, 0);
+		dInfo._price = curPx;
+		dInfo._volumn = abs(diff);
+		dInfo._opentime = curTm;
+		dInfo._opentdate = curTDate;
+		strcpy(dInfo._opentag, userTag);
+		pInfo._details.push_back(dInfo);
+
+		double fee = _engine->calc_fee(stdCode, curPx, abs(qty), 0);
+		_fund_info._total_fees += fee;
+		//_engine->mutate_fund(fee, FFT_Fee);
+		log_trade(stdCode, dInfo._long, true, curTm, curPx, abs(qty), userTag, fee);
+	}
+	else
+	{//持仓方向和目标仓位方向不一致, 需要平仓
+		double left = abs(diff);
+
+		pInfo._volumn = qty;
+		if (decimal::eq(pInfo._volumn, 0))
+			pInfo._dynprofit = 0;
+		uint32_t count = 0;
+		for (auto it = pInfo._details.begin(); it != pInfo._details.end(); it++)
+		{
+			DetailInfo& dInfo = *it;
+			double maxQty = min(dInfo._volumn, left);
+			//if (maxQty == 0)
+			if (decimal::eq(maxQty, 0))
+				continue;
+
+			dInfo._volumn -= maxQty;
+			left -= maxQty;
+
+			if (decimal::eq(dInfo._volumn, 0)) //dInfo._volumn == 0
+				count++;
+
+			double profit = (curPx - dInfo._price) * maxQty * commInfo->getVolScale();
+			if (!dInfo._long)
+				profit *= -1;
+			pInfo._closeprofit += profit;
+			pInfo._dynprofit = pInfo._dynprofit*dInfo._volumn / (dInfo._volumn + maxQty);//浮盈也要做等比缩放
+			_fund_info._total_profit += profit;
+
+			double fee = _engine->calc_fee(stdCode, curPx, maxQty, dInfo._opentdate == curTDate ? 2 : 1);
+			_fund_info._total_fees += fee;
+			//这里写成交记录
+			log_trade(stdCode, dInfo._long, false, curTm, curPx, maxQty, userTag, fee);
+			//这里写平仓记录
+			log_close(stdCode, dInfo._long, dInfo._opentime, dInfo._price, curTm, curPx, maxQty, profit, pInfo._closeprofit, dInfo._opentag, userTag);
+
+			//if (left == 0)
+			if (decimal::eq(left, 0))
+				break;
+		}
+
+		//需要清理掉已经平仓完的明细
+		while (count > 0)
+		{
+			auto it = pInfo._details.begin();
+			pInfo._details.erase(it);
+			count--;
+		}
+
+		//最后, 如果还有剩余的, 则需要反手了
+		//if (left > 0)
+		if (decimal::gt(left, 0))
+		{
+			left = left * qty / abs(qty);
+
+			DetailInfo dInfo;
+			dInfo._long = decimal::gt(qty, 0);
+			dInfo._price = curPx;
+			dInfo._volumn = abs(left);
+			dInfo._opentime = curTm;
+			dInfo._opentdate = curTDate;
+			strcpy(dInfo._opentag, userTag);
+			pInfo._details.push_back(dInfo);
+
+			//TODO: 
+			//这里还需要写一笔成交记录
+			double fee = _engine->calc_fee(stdCode, curPx, abs(qty), 0);
+			_fund_info._total_fees += fee;
+			//_engine->mutate_fund(fee, FFT_Fee);
+			log_trade(stdCode, dInfo._long, true, curTm, curPx, abs(left), userTag, fee);
+		}
+	}
+
+	//存储数据
+	save_data();
+}
+
+WTSKlineSlice* MfStraBaseCtx::stra_get_bars(const char* stdCode, const char* period, uint32_t count)
+{
+	std::string key = StrUtil::printf("%s#%s", stdCode, period);
+
+	std::string basePeriod = "";
+	uint32_t times = 1;
+	if (strlen(period) > 1)
+	{
+		basePeriod.append(period, 1);
+		times = strtoul(period + 1, NULL, 10);
+	}
+	else
+	{
+		basePeriod = period;
+	}
+
+	WTSKlineSlice* kline = _engine->get_kline_slice(_context_id, stdCode, basePeriod.c_str(), count, times);
+
+	KlineTag& tag = _kline_tags[key];
+	tag._closed = false;
+
+	if (kline)
+	{
+		double lastClose = kline->close(-1);
+		_price_map[stdCode] = lastClose;
+
+		_engine->sub_tick(id(), stdCode);
+	}
+
+	return kline;
+}
+
+WTSTickSlice* MfStraBaseCtx::stra_get_ticks(const char* stdCode, uint32_t count)
+{
+	return _engine->get_tick_slice(_context_id, stdCode, count);
+}
+
+WTSTickData* MfStraBaseCtx::stra_get_last_tick(const char* stdCode)
+{
+	return _engine->get_last_tick(_context_id, stdCode);
+}
+
+void MfStraBaseCtx::sub_ticks(const char* code)
+{
+	_engine->sub_tick(_context_id, code);
+}
+
+WTSCommodityInfo* MfStraBaseCtx::stra_get_comminfo(const char* stdCode)
+{
+	return _engine->get_commodity_info(stdCode);
+}
+
+uint32_t MfStraBaseCtx::stra_get_date()
+{
+	return _engine->get_date();
+}
+
+uint32_t MfStraBaseCtx::stra_get_time()
+{
+	return _engine->get_min_time();
+}
+
+void MfStraBaseCtx::stra_log_text(const char* fmt, ...)
+{
+	char szBuf[256] = { 0 };
+	uint32_t length = sprintf(szBuf, "[%s]", _name.c_str());
+	strcat(szBuf, fmt);
+	va_list args;
+	va_start(args, fmt);
+	WTSLogger::log_dyn_direct("strategy", _name.c_str(), LL_INFO, szBuf, args);
+	va_end(args);
+}
+
+const char* MfStraBaseCtx::stra_load_user_data(const char* key, const char* defVal /*= ""*/)
+{
+	auto it = _user_datas.find(key);
+	if (it != _user_datas.end())
+		return it->second.c_str();
+
+	return defVal;
+}
+
+void MfStraBaseCtx::stra_save_user_data(const char* key, const char* val)
+{
+	_user_datas[key] = val;
+	_ud_modified = true;
+}
+
+double MfStraBaseCtx::stra_get_position(const char* stdCode, const char* userTag /* = "" */)
+{
+	auto it = _pos_map.find(stdCode);
+	if (it == _pos_map.end())
+		return 0;
+
+	const PosInfo& pInfo = it->second;
+	if (strlen(userTag) == 0)
+		return pInfo._volumn;
+
+	for (auto it = pInfo._details.begin(); it != pInfo._details.end(); it++)
+	{
+		const DetailInfo& dInfo = (*it);
+		if (strcmp(dInfo._opentag, userTag) != 0)
+			continue;
+
+		return dInfo._volumn;
+	}
+
+	return 0;
+}
+
+#pragma endregion 
