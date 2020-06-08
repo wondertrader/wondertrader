@@ -13,6 +13,7 @@
 #include "../Common/version.h"
 
 #include "../WtBtCore/CtaMocker.h"
+#include "../WtBtCore/MfMocker.h"
 
 #include "../WTSTools/WTSLogger.h"
 #include "../Share/decimal.h"
@@ -76,9 +77,14 @@ const char* getModuleName()
 }
 #endif
 
-void register_callbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar)
+void register_cta_callbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar)
 {
-	getRunner().registerCallbacks(cbInit, cbTick, cbCalc, cbBar);
+	getRunner().registerCtaCallbacks(cbInit, cbTick, cbCalc, cbBar);
+}
+
+void register_mf_callbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar)
+{
+	getRunner().registerMfCallbacks(cbInit, cbTick, cbCalc, cbBar);
 }
 
 void init_backtest(const char* logProfile)
@@ -154,7 +160,13 @@ CtxHandler init_cta_mocker(const char* name)
 	return getRunner().initCtaMocker(name);
 }
 
-void ctx_str_enter_long(CtxHandler cHandle, const char* code, double qty, const char* userTag, double limitprice, double stopprice)
+CtxHandler init_mf_mocker(const char* name, uint32_t date, uint32_t time, const char* period)
+{
+	return getRunner().initMfMocker(name, date, time, period);
+}
+
+#pragma region "CTA策略接口"
+void cta_enter_long(CtxHandler cHandle, const char* code, double qty, const char* userTag, double limitprice, double stopprice)
 {
 	CtaMocker* ctx = getRunner().cta_mocker();
 	if (ctx == NULL)
@@ -163,7 +175,7 @@ void ctx_str_enter_long(CtxHandler cHandle, const char* code, double qty, const 
 	ctx->stra_enter_long(code, qty, userTag, limitprice, stopprice);
 }
 
-void ctx_str_exit_long(CtxHandler cHandle, const char* code, double qty, const char* userTag, double limitprice, double stopprice)
+void cta_exit_long(CtxHandler cHandle, const char* code, double qty, const char* userTag, double limitprice, double stopprice)
 {
 	CtaMocker* ctx = getRunner().cta_mocker();
 	if (ctx == NULL)
@@ -172,7 +184,7 @@ void ctx_str_exit_long(CtxHandler cHandle, const char* code, double qty, const c
 	ctx->stra_exit_long(code, qty, userTag, limitprice, stopprice);
 }
 
-void ctx_str_enter_short(CtxHandler cHandle, const char* code, double qty, const char* userTag, double limitprice, double stopprice)
+void cta_enter_short(CtxHandler cHandle, const char* code, double qty, const char* userTag, double limitprice, double stopprice)
 {
 	CtaMocker* ctx = getRunner().cta_mocker();
 	if (ctx == NULL)
@@ -181,7 +193,7 @@ void ctx_str_enter_short(CtxHandler cHandle, const char* code, double qty, const
 	ctx->stra_enter_short(code, qty, userTag, limitprice, stopprice);
 }
 
-void ctx_str_exit_short(CtxHandler cHandle, const char* code, double qty, const char* userTag, double limitprice, double stopprice)
+void cta_exit_short(CtxHandler cHandle, const char* code, double qty, const char* userTag, double limitprice, double stopprice)
 {
 	CtaMocker* ctx = getRunner().cta_mocker();
 	if (ctx == NULL)
@@ -190,7 +202,7 @@ void ctx_str_exit_short(CtxHandler cHandle, const char* code, double qty, const 
 	ctx->stra_exit_short(code, qty, userTag, limitprice, stopprice);
 }
 
-WtUInt32 ctx_str_get_bars(CtxHandler cHandle, const char* code, const char* period, unsigned int barCnt, bool isMain, FuncGetBarsCallback cb)
+WtUInt32 cta_get_bars(CtxHandler cHandle, const char* code, const char* period, unsigned int barCnt, bool isMain, FuncGetBarsCallback cb)
 {
 	//printf("%s(%s,%s,%u)\r\n", __FUNCTION__, code, period, barCnt);
 	CtaMocker* ctx = getRunner().cta_mocker();
@@ -232,7 +244,7 @@ WtUInt32 ctx_str_get_bars(CtxHandler cHandle, const char* code, const char* peri
 	}
 }
 
-WtUInt32	ctx_str_get_ticks(CtxHandler cHandle, const char* code, unsigned int tickCnt, bool isMain, FuncGetTicksCallback cb)
+WtUInt32	cta_get_ticks(CtxHandler cHandle, const char* code, unsigned int tickCnt, bool isMain, FuncGetTicksCallback cb)
 {
 	//printf("%s(%s,%s,%u)\r\n", __FUNCTION__, code, period, barCnt);
 	CtaMocker* ctx = getRunner().cta_mocker();
@@ -274,7 +286,7 @@ WtUInt32	ctx_str_get_ticks(CtxHandler cHandle, const char* code, unsigned int ti
 	}
 }
 
-double ctx_str_get_position_profit(CtxHandler cHandle, const char* code)
+double cta_get_position_profit(CtxHandler cHandle, const char* code)
 {
 	CtaMocker* ctx = getRunner().cta_mocker();
 	if (ctx == NULL)
@@ -283,7 +295,7 @@ double ctx_str_get_position_profit(CtxHandler cHandle, const char* code)
 	return ctx->stra_get_position_profit(code);
 }
 
-WtUInt64 ctx_str_get_detail_entertime(CtxHandler cHandle, const char* code, const char* openTag)
+WtUInt64 cta_get_detail_entertime(CtxHandler cHandle, const char* code, const char* openTag)
 {
 	CtaMocker* ctx = getRunner().cta_mocker();
 	if (ctx == NULL)
@@ -292,7 +304,7 @@ WtUInt64 ctx_str_get_detail_entertime(CtxHandler cHandle, const char* code, cons
 	return ctx->stra_get_detail_entertime(code, openTag);
 }
 
-double ctx_str_get_detail_cost(CtxHandler cHandle, const char* code, const char* openTag)
+double cta_get_detail_cost(CtxHandler cHandle, const char* code, const char* openTag)
 {
 	CtaMocker* ctx = getRunner().cta_mocker();
 	if (ctx == NULL)
@@ -301,7 +313,7 @@ double ctx_str_get_detail_cost(CtxHandler cHandle, const char* code, const char*
 	return ctx->stra_get_detail_cost(code, openTag);
 }
 
-double ctx_str_get_detail_profit(CtxHandler cHandle, const char* code, const char* openTag, int flag)
+double cta_get_detail_profit(CtxHandler cHandle, const char* code, const char* openTag, int flag)
 {
 	CtaMocker* ctx = getRunner().cta_mocker();
 	if (ctx == NULL)
@@ -310,7 +322,7 @@ double ctx_str_get_detail_profit(CtxHandler cHandle, const char* code, const cha
 	return ctx->stra_get_detail_profit(code, openTag, flag);
 }
 
-double ctx_str_get_position_avgpx(CtxHandler cHandle, const char* code)
+double cta_get_position_avgpx(CtxHandler cHandle, const char* code)
 {
 	CtaMocker* ctx = getRunner().cta_mocker();
 	if (ctx == NULL)
@@ -319,7 +331,7 @@ double ctx_str_get_position_avgpx(CtxHandler cHandle, const char* code)
 	return ctx->stra_get_position_avgpx(code);
 }
 
-double ctx_str_get_position(CtxHandler cHandle, const char* code, const char* openTag)
+double cta_get_position(CtxHandler cHandle, const char* code, const char* openTag)
 {
 	CtaMocker* ctx = getRunner().cta_mocker();
 	if (ctx == NULL)
@@ -328,7 +340,7 @@ double ctx_str_get_position(CtxHandler cHandle, const char* code, const char* op
 	return ctx->stra_get_position(code, openTag);
 }
 
-void ctx_str_set_position(CtxHandler cHandle, const char* code, double qty, const char* userTag, double limitprice, double stopprice)
+void cta_set_position(CtxHandler cHandle, const char* code, double qty, const char* userTag, double limitprice, double stopprice)
 {
 	CtaMocker* ctx = getRunner().cta_mocker();
 	if (ctx == NULL)
@@ -337,7 +349,7 @@ void ctx_str_set_position(CtxHandler cHandle, const char* code, double qty, cons
 	ctx->stra_set_position(code, qty, userTag, limitprice, stopprice);
 }
 
-WtUInt64 ctx_str_get_first_entertime(CtxHandler cHandle, const char* code)
+WtUInt64 cta_get_first_entertime(CtxHandler cHandle, const char* code)
 {
 	CtaMocker* ctx = getRunner().cta_mocker();
 	if (ctx == NULL)
@@ -346,7 +358,7 @@ WtUInt64 ctx_str_get_first_entertime(CtxHandler cHandle, const char* code)
 	return ctx->stra_get_first_entertime(code);
 }
 
-WtUInt64 ctx_str_get_last_entertime(CtxHandler cHandle, const char* code)
+WtUInt64 cta_get_last_entertime(CtxHandler cHandle, const char* code)
 {
 	CtaMocker* ctx = getRunner().cta_mocker();
 	if (ctx == NULL)
@@ -355,7 +367,7 @@ WtUInt64 ctx_str_get_last_entertime(CtxHandler cHandle, const char* code)
 	return ctx->stra_get_last_entertime(code);
 }
 
-double ctx_str_get_last_enterprice(CtxHandler cHandle, const char* code)
+double cta_get_last_enterprice(CtxHandler cHandle, const char* code)
 {
 	CtaMocker* ctx = getRunner().cta_mocker();
 	if (ctx == NULL)
@@ -364,22 +376,22 @@ double ctx_str_get_last_enterprice(CtxHandler cHandle, const char* code)
 	return ctx->stra_get_last_enterprice(code);
 }
 
-double ctx_str_get_price(const char* code)
+double cta_get_price(const char* code)
 {
 	return getRunner().replayer().get_cur_price(code);
 }
 
-WtUInt32 ctx_str_get_date()
+WtUInt32 cta_get_date()
 {
 	return getRunner().replayer().get_date();
 }
 
-WtUInt32 ctx_str_get_time()
+WtUInt32 cta_get_time()
 {
 	return getRunner().replayer().get_min_time();
 }
 
-void ctx_str_log_text(CtxHandler cHandle, const char* message)
+void cta_log_text(CtxHandler cHandle, const char* message)
 {
 	CtaMocker* ctx = getRunner().cta_mocker();
 	if (ctx == NULL)
@@ -388,7 +400,7 @@ void ctx_str_log_text(CtxHandler cHandle, const char* message)
 	ctx->stra_log_text(message);
 }
 
-void ctx_str_save_userdata(CtxHandler cHandle, const char* key, const char* val)
+void cta_save_userdata(CtxHandler cHandle, const char* key, const char* val)
 {
 	CtaMocker* ctx = getRunner().cta_mocker();
 	if (ctx == NULL)
@@ -397,7 +409,7 @@ void ctx_str_save_userdata(CtxHandler cHandle, const char* key, const char* val)
 	ctx->stra_save_user_data(key, val);
 }
 
-WtString ctx_str_load_userdata(CtxHandler cHandle, const char* key, const char* defVal)
+WtString cta_load_userdata(CtxHandler cHandle, const char* key, const char* defVal)
 {
 	CtaMocker* ctx = getRunner().cta_mocker();
 	if (ctx == NULL)
@@ -405,3 +417,149 @@ WtString ctx_str_load_userdata(CtxHandler cHandle, const char* key, const char* 
 
 	return ctx->stra_load_user_data(key, defVal);
 }
+#pragma endregion
+
+#pragma region "多因子策略接口"
+void mf_save_userdata(CtxHandler cHandle, const char* key, const char* val)
+{
+	MfMocker* ctx = getRunner().mf_mocker();
+	if (ctx == NULL)
+		return;
+
+	ctx->stra_save_user_data(key, val);
+}
+
+WtString mf_load_userdata(CtxHandler cHandle, const char* key, const char* defVal)
+{
+	MfMocker* ctx = getRunner().mf_mocker();
+	if (ctx == NULL)
+		return defVal;
+
+	return ctx->stra_load_user_data(key, defVal);
+}
+
+void mf_log_text(CtxHandler cHandle, const char* message)
+{
+	MfMocker* ctx = getRunner().mf_mocker();
+	if (ctx == NULL)
+		return;
+
+	ctx->stra_log_text(message);
+}
+
+double mf_get_price(const char* code)
+{
+	return getRunner().replayer().get_cur_price(code);
+}
+
+WtUInt32 mf_get_date()
+{
+	return getRunner().replayer().get_date();
+}
+
+WtUInt32 mf_get_time()
+{
+	return getRunner().replayer().get_min_time();
+}
+
+double mf_get_position(CtxHandler cHandle, const char* code, const char* openTag)
+{
+	MfMocker* ctx = getRunner().mf_mocker();
+	if (ctx == NULL)
+		return 0;
+
+	return ctx->stra_get_position(code, openTag);
+}
+
+WtUInt32 mf_get_bars(CtxHandler cHandle, const char* code, const char* period, unsigned int barCnt, FuncGetBarsCallback cb)
+{
+	MfMocker* ctx = getRunner().mf_mocker();
+	if (ctx == NULL)
+		return 0;
+	try
+	{
+		WTSKlineSlice* kData = ctx->stra_get_bars(code, period, barCnt);
+		if (kData)
+		{
+			//printf("K线条数%u\r\n", kData->size());
+			uint32_t left = barCnt;
+			uint32_t reaCnt = 0;
+			for (int32_t idx = 0; idx < kData->size() && left > 0; idx++, left--)
+			{
+				WTSBarStruct* curBar = kData->at(idx);
+				cb(cHandle, code, period, curBar, false);
+				reaCnt += 1;
+			}
+
+			//printf("数据已读完\r\n");
+			cb(cHandle, code, period, NULL, true);
+
+			kData->release();
+			return reaCnt;
+		}
+		else
+		{
+			//printf("K线条数0\r\n");
+			cb(cHandle, code, period, NULL, true);
+			return 0;
+		}
+	}
+	catch (...)
+	{
+		printf("K线读取异常\r\n");
+		cb(cHandle, code, period, NULL, true);
+		return 0;
+	}
+}
+
+void mf_set_position(CtxHandler cHandle, const char* code, double qty, const char* userTag)
+{
+	MfMocker* ctx = getRunner().mf_mocker();
+	if (ctx == NULL)
+		return;
+
+	//多因子引擎，限价和止价都无效
+	ctx->stra_set_position(code, qty, userTag);
+}
+
+WtUInt32	mf_get_ticks(CtxHandler cHandle, const char* code, unsigned int tickCnt, bool isMain, FuncGetTicksCallback cb)
+{
+	MfMocker* ctx = getRunner().mf_mocker();
+	if (ctx == NULL)
+		return 0;
+	try
+	{
+		WTSTickSlice* tData = ctx->stra_get_ticks(code, tickCnt);
+		if (tData)
+		{
+			//printf("K线条数%u\r\n", kData->size());
+			uint32_t left = tickCnt + 1;
+			uint32_t reaCnt = 0;
+			for (uint32_t idx = 0; idx < tData->size() && left > 0; idx++, left--)
+			{
+				WTSTickStruct* curTick = (WTSTickStruct*)tData->at(idx);
+				cb(cHandle, code, curTick, false);
+				reaCnt += 1;
+			}
+
+			//printf("数据已读完\r\n");
+			cb(cHandle, code, NULL, true);
+
+			tData->release();
+			return reaCnt;
+		}
+		else
+		{
+			//printf("K线条数0\r\n");
+			cb(cHandle, code, NULL, true);
+			return 0;
+		}
+	}
+	catch (...)
+	{
+		printf("tick读取异常\r\n");
+		cb(cHandle, code, NULL, true);
+		return 0;
+	}
+}
+#pragma endregion

@@ -47,10 +47,10 @@ void PyCtaContext::on_tick_updated(const char* stdCode, WTSTickData* newTick)
 	getRunner().ctx_on_tick(_context_id, stdCode, newTick);
 }
 
-void PyCtaContext::on_bar_close(const char* code, const char* period, WTSBarStruct* newBar)
+void PyCtaContext::on_bar_close(const char* stdCode, const char* period, WTSBarStruct* newBar)
 {
 	//要向外部回调
-	getRunner().ctx_on_bar(_context_id, code, period, newBar);
+	getRunner().ctx_on_bar(_context_id, stdCode, period, newBar);
 }
 
 void PyCtaContext::on_mainkline_updated(uint32_t curDate, uint32_t curTime)

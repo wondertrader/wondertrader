@@ -27,6 +27,9 @@
     <ClCompile Include="..\Common\mdump.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="PyMfMocker.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PorterDefs.h">
@@ -42,6 +45,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\Common\mdump.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="PyMfMocker.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

@@ -28,6 +28,9 @@
     <Filter Include="Common">
       <UniqueIdentifier>{a7b2a95c-537d-468f-ba75-6d04db988e6a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="MF">
+      <UniqueIdentifier>{d60a1661-ccd3-4142-9777-3ab97f08856a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WtExecuter.h">
@@ -108,6 +111,21 @@
     <ClInclude Include="IDataStore.h">
       <Filter>Defs</Filter>
     </ClInclude>
+    <ClInclude Include="WtMfEngine.h">
+      <Filter>MF</Filter>
+    </ClInclude>
+    <ClInclude Include="IMfStraCtx.h">
+      <Filter>MF</Filter>
+    </ClInclude>
+    <ClInclude Include="MfStraBaseCtx.h">
+      <Filter>MF</Filter>
+    </ClInclude>
+    <ClInclude Include="MfStrategyDefs.h">
+      <Filter>MF</Filter>
+    </ClInclude>
+    <ClInclude Include="WtMfTicker.h">
+      <Filter>MF</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WtExecuter.cpp">
@@ -160,6 +178,15 @@
     </ClCompile>
     <ClCompile Include="WtHftTicker.cpp">
       <Filter>HFT</Filter>
+    </ClCompile>
+    <ClCompile Include="WtMfEngine.cpp">
+      <Filter>MF</Filter>
+    </ClCompile>
+    <ClCompile Include="MfStraBaseCtx.cpp">
+      <Filter>MF</Filter>
+    </ClCompile>
+    <ClCompile Include="WtMfTicker.cpp">
+      <Filter>MF</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

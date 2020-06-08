@@ -17,6 +17,7 @@
 #include "../WtCore/HftStrategyMgr.h"
 #include "../WtCore/WtCtaEngine.h"
 #include "../WtCore/WtHftEngine.h"
+#include "../WtCore/WtMfEngine.h"
 #include "../WtCore/WtExecuter.h"
 #include "../WtCore/TraderAdapter.h"
 #include "../WtCore/ParserAdapter.h"
@@ -33,7 +34,7 @@ NS_OTP_END
 
 USING_NS_OTP;
 
-class WtRtRunner : public ICtaEventListener
+class WtRtRunner : public IEngineEvtListener
 {
 public:
 	WtRtRunner();
@@ -51,12 +52,17 @@ public:
 
 	void release();
 
-	void registerCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar, FuncEventCallback cbEvt);
+	void registerCtaCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar);
+	void registerMfCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar);
+
+	void registerEvtCallback(FuncEventCallback cbEvt);
 
 	uint32_t		createContext(const char* name);
+	uint32_t		createMfContext(const char* name, uint32_t date, uint32_t time, const char* period, const char* trdtpl = "CHINA");
 
 	CtaContextPtr	getContext(uint32_t id);
-	WtCtaEngine&	getEnv(){ return _cta_engine; }
+	MfContextPtr	getMfContext(uint32_t id);
+	WtEngine*		getEngine(){ return _engine; }
 
 //////////////////////////////////////////////////////////////////////////
 //ICtaEventListener
@@ -80,10 +86,10 @@ public:
 	}
 
 public:
-	void ctx_on_init(uint32_t id);
-	void ctx_on_tick(uint32_t id, const char* stdCode, WTSTickData* newTick);
-	void ctx_on_calc(uint32_t id);
-	void ctx_on_bar(uint32_t id, const char* stdCode, const char* period, WTSBarStruct* newBar);
+	void ctx_on_init(uint32_t id, bool isCta = true);
+	void ctx_on_tick(uint32_t id, const char* stdCode, WTSTickData* newTick, bool isCta = true);
+	void ctx_on_calc(uint32_t id, bool isCta = true);
+	void ctx_on_bar(uint32_t id, const char* stdCode, const char* period, WTSBarStruct* newBar, bool isCta = true);
 
 	bool addExeFactories(const char* folder);
 	bool addCtaFactories(const char* folder);
@@ -98,13 +104,19 @@ private:
 	bool initHftStrategies();
 	bool initActionPolicy();
 
-	bool initEnv();
+	bool initEngine();
 
 private:
-	FuncStraInitCallback	_cb_init;
-	FuncStraTickCallback	_cb_tick;
-	FuncStraCalcCallback	_cb_calc;
-	FuncStraBarCallback		_cb_bar;
+	FuncStraInitCallback	_cb_cta_init;
+	FuncStraTickCallback	_cb_cta_tick;
+	FuncStraCalcCallback	_cb_cta_calc;
+	FuncStraBarCallback		_cb_cta_bar;
+
+	FuncStraInitCallback	_cb_mf_init;
+	FuncStraTickCallback	_cb_mf_tick;
+	FuncStraCalcCallback	_cb_mf_calc;
+	FuncStraBarCallback		_cb_mf_bar;
+
 	FuncEventCallback		_cb_evt;
 
 	WTSVariant*			_config;
@@ -114,6 +126,7 @@ private:
 
 	WtCtaEngine			_cta_engine;
 	WtHftEngine			_hft_engine;
+	WtMfEngine			_mf_engine;
 	WtEngine*			_engine;
 
 	WtDataStorage*		_data_store;
@@ -128,5 +141,6 @@ private:
 	ActionPolicyMgr		_act_policy;
 
 	bool				_is_hft;
+	bool				_is_mf;
 };
 

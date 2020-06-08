@@ -44,4 +44,6 @@ typedef void(PORTER_FLAG *FuncStraInitCallback)(CtxHandler cHandle);
 typedef void(PORTER_FLAG *FuncStraTickCallback)(CtxHandler cHandle, const char* stdCode, WTSTickStruct* tick);
 typedef void(PORTER_FLAG *FuncStraCalcCallback)(CtxHandler cHandle);
 typedef void(PORTER_FLAG *FuncStraBarCallback)(CtxHandler cHandle, const char* code, const char* period, WTSBarStruct* newBar);
+
+
 typedef void(PORTER_FLAG *FuncEventCallback)(WtUInt32 evtId, WtUInt32 curDate, WtUInt32 curTime);

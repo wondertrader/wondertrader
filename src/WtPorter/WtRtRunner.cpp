@@ -9,6 +9,7 @@
  */
 #include "WtRtRunner.h"
 #include "PyCtaContext.h"
+#include "PyMfContext.h"
 
 #include "../WtCore/WtHelper.h"
 #include "../WtCore/CtaStraContext.h"
@@ -30,11 +31,17 @@ extern const char* getBinDir();
 
 WtRtRunner::WtRtRunner()
 	: _data_store(NULL)
-	, _cb_init(NULL)
-	, _cb_tick(NULL)
-	, _cb_calc(NULL)
-	, _cb_bar(NULL)
+	, _cb_cta_init(NULL)
+	, _cb_cta_tick(NULL)
+	, _cb_cta_calc(NULL)
+	, _cb_cta_bar(NULL)
+	, _cb_mf_init(NULL)
+	, _cb_mf_tick(NULL)
+	, _cb_mf_calc(NULL)
+	, _cb_mf_bar(NULL)
 	, _cb_evt(NULL)
+	, _is_hft(false)
+	, _is_mf(false)
 {
 
 }
@@ -53,15 +60,29 @@ bool WtRtRunner::init(const char* logProfile /* = "log4cxx.prop" */)
 	return true;
 }
 
-void WtRtRunner::registerCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar, FuncEventCallback cbEvt)
+void WtRtRunner::registerEvtCallback(FuncEventCallback cbEvt)
 {
-	_cb_init = cbInit;
-	_cb_tick = cbTick;
-	_cb_calc = cbCalc;
-	_cb_bar = cbBar;
 	_cb_evt = cbEvt;
 
 	_cta_engine.regEventListener(this);
+	_hft_engine.regEventListener(this);
+	_mf_engine.regEventListener(this);
+}
+
+void WtRtRunner::registerCtaCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar)
+{
+	_cb_cta_init = cbInit;
+	_cb_cta_tick = cbTick;
+	_cb_cta_calc = cbCalc;
+	_cb_cta_bar = cbBar;
+}
+
+void WtRtRunner::registerMfCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar)
+{
+	_cb_mf_init = cbInit;
+	_cb_mf_tick = cbTick;
+	_cb_mf_calc = cbCalc;
+	_cb_mf_bar = cbBar;
 }
 
 uint32_t WtRtRunner::createContext(const char* name)
@@ -71,33 +92,67 @@ uint32_t WtRtRunner::createContext(const char* name)
 	return ctx->id();
 }
 
+uint32_t WtRtRunner::createMfContext(const char* name, uint32_t date, uint32_t time, const char* period, const char* trdtpl/* ="CHINA" */)
+{
+	TaskPeriodType ptype;
+	if (my_stricmp(period, "d") == 0)
+		ptype = TPT_Daily;
+	else if (my_stricmp(period, "w") == 0)
+		ptype = TPT_Weekly;
+	else if (my_stricmp(period, "m") == 0)
+		ptype = TPT_Monthly;
+	else if (my_stricmp(period, "y") == 0)
+		ptype = TPT_Yearly;
+	else
+		ptype = TPT_None;
+
+	PyMfContext* ctx = new PyMfContext(&_mf_engine, name);
+
+	_mf_engine.addContext(MfContextPtr(ctx), date, time, ptype, true, trdtpl);
+
+	return ctx->id();
+}
+
 CtaContextPtr WtRtRunner::getContext(uint32_t id)
 {
 	return _cta_engine.getContext(id);
 }
 
-void WtRtRunner::ctx_on_bar(uint32_t id, const char* code, const char* period, WTSBarStruct* newBar)
+MfContextPtr WtRtRunner::getMfContext(uint32_t id)
 {
-	if (_cb_bar)
-		_cb_bar(id, code, period, newBar);
+	return _mf_engine.getContext(id);
 }
 
-void WtRtRunner::ctx_on_calc(uint32_t id)
+void WtRtRunner::ctx_on_bar(uint32_t id, const char* code, const char* period, WTSBarStruct* newBar, bool isCta/* = true*/)
 {
-	if (_cb_calc)
-		_cb_calc(id);
+	if (_cb_cta_bar && isCta)
+		_cb_cta_bar(id, code, period, newBar);
+	else if(!isCta && _cb_mf_bar)
+		_cb_mf_bar(id, code, period, newBar);
 }
 
-void WtRtRunner::ctx_on_init(uint32_t id)
+void WtRtRunner::ctx_on_calc(uint32_t id, bool isCta/* = true*/)
 {
-	if (_cb_init)
-		_cb_init(id);
+	if (_cb_cta_calc && isCta)
+		_cb_cta_calc(id);
+	else if (!isCta && _cb_mf_calc)
+		_cb_mf_calc(id);
 }
 
-void WtRtRunner::ctx_on_tick(uint32_t id, const char* stdCode, WTSTickData* newTick)
+void WtRtRunner::ctx_on_init(uint32_t id, bool isCta/* = true*/)
 {
-	if (_cb_tick)
-		_cb_tick(id, stdCode, &newTick->getTickStruct());
+	if (_cb_cta_init && isCta)
+		_cb_cta_init(id);
+	else if (!isCta && _cb_mf_init)
+		_cb_mf_init(id);
+}
+
+void WtRtRunner::ctx_on_tick(uint32_t id, const char* stdCode, WTSTickData* newTick, bool isCta/* = true*/)
+{
+	if (_cb_cta_tick && isCta)
+		_cb_cta_tick(id, stdCode, &newTick->getTickStruct());
+	else if (!isCta && _cb_mf_tick)
+		_cb_mf_tick(id, stdCode, &newTick->getTickStruct());
 }
 
 bool WtRtRunner::config(const char* cfgFile)
@@ -143,7 +198,7 @@ bool WtRtRunner::config(const char* cfgFile)
 	}
 
 	//初始化运行环境
-	initEnv();
+	initEngine();
 
 	//初始化数据管理
 	initDataMgr();
@@ -231,7 +286,7 @@ bool WtRtRunner::initHftStrategies()
 	return true;
 }
 
-bool WtRtRunner::initEnv()
+bool WtRtRunner::initEngine()
 {
 	WTSVariant* cfg = _config->get("env");
 	if (cfg == NULL)
@@ -242,11 +297,15 @@ bool WtRtRunner::initEnv()
 	if (strlen(name) == 0 || my_stricmp(name, "cta") == 0)
 	{
 		_is_hft = false;
+		_is_mf = false;
 	}
-	else
+	else if (my_stricmp(name, "mltfct") == 0)
+	{
+		_is_mf = true;
+	}
+	else //if (my_stricmp(name, "hft") == 0)
 	{
 		_is_hft = true;
-
 	}
 
 	if (_is_hft)
@@ -254,6 +313,12 @@ bool WtRtRunner::initEnv()
 		WTSLogger::info("交易环境初始化完成，交易引擎：HFT");
 		_hft_engine.init(cfg, &_bd_mgr, &_data_mgr, &_hot_mgr);
 		_engine = &_hft_engine;
+	}
+	else if (_is_mf)
+	{
+		WTSLogger::info("交易环境初始化完成，交易引擎：MultiFactros");
+		_mf_engine.init(cfg, &_bd_mgr, &_data_mgr, &_hot_mgr);
+		_engine = &_mf_engine;
 	}
 	else
 	{

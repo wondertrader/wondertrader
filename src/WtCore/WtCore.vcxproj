@@ -29,8 +29,11 @@
     <ClInclude Include="CtaStrategyMgr.h" />
     <ClInclude Include="CtaStraBaseCtx.h" />
     <ClInclude Include="IDataStore.h" />
+    <ClInclude Include="IMfStraCtx.h" />
     <ClInclude Include="IHftStraCtx.h" />
     <ClInclude Include="ITrdNotifySink.h" />
+    <ClInclude Include="MfStraBaseCtx.h" />
+    <ClInclude Include="MfStrategyDefs.h" />
     <ClInclude Include="RiskMonDefs.h" />
     <ClInclude Include="ExecuteDefs.h" />
     <ClInclude Include="ParserAdapter.h" />
@@ -45,6 +48,8 @@
     <ClInclude Include="CtaStrategyDefs.h" />
     <ClInclude Include="WtHftEngine.h" />
     <ClInclude Include="WtHftTicker.h" />
+    <ClInclude Include="WtMfEngine.h" />
+    <ClInclude Include="WtMfTicker.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ActionPolicyMgr.cpp" />
@@ -53,6 +58,7 @@
     <ClCompile Include="HftStraBaseCtx.cpp" />
     <ClCompile Include="HftStraContext.cpp" />
     <ClCompile Include="HftStrategyMgr.cpp" />
+    <ClCompile Include="MfStraBaseCtx.cpp" />
     <ClCompile Include="ParserAdapter.cpp" />
     <ClCompile Include="TraderAdapter.cpp" />
     <ClCompile Include="WtEngine.cpp" />
@@ -64,6 +70,8 @@
     <ClCompile Include="WtCtaEngine.cpp" />
     <ClCompile Include="WtHftEngine.cpp" />
     <ClCompile Include="WtHftTicker.cpp" />
+    <ClCompile Include="WtMfEngine.cpp" />
+    <ClCompile Include="WtMfTicker.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{C2086CB3-F8F7-455F-83C8-B806B58E52A8}</ProjectGuid>

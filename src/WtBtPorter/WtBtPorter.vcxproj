@@ -187,6 +187,7 @@
   <ItemGroup>
     <ClCompile Include="..\Common\mdump.cpp" />
     <ClCompile Include="PyCtaMocker.cpp" />
+    <ClCompile Include="PyMfMocker.cpp" />
     <ClCompile Include="WtBtPorter.cpp" />
     <ClCompile Include="WtBtRunner.cpp" />
   </ItemGroup>
@@ -194,6 +195,7 @@
     <ClInclude Include="..\Common\mdump.h" />
     <ClInclude Include="PorterDefs.h" />
     <ClInclude Include="PyCtaMocker.h" />
+    <ClInclude Include="PyMfMocker.h" />
     <ClInclude Include="WtBtPorter.h" />
     <ClInclude Include="WtBtRunner.h" />
   </ItemGroup>

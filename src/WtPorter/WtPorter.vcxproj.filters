@@ -21,10 +21,13 @@
     <ClCompile Include="PyCtaContext.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\Common\mdump.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
     <ClCompile Include="WtRtRunner.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\Common\mdump.cpp">
+    <ClCompile Include="PyMfContext.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -38,10 +41,13 @@
     <ClInclude Include="PyCtaContext.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\Common\mdump.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
     <ClInclude Include="WtRtRunner.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\Common\mdump.h">
+    <ClInclude Include="PyMfContext.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
