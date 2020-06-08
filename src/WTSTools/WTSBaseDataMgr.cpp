@@ -177,6 +177,10 @@ WTSSessionInfo* WTSBaseDataMgr::getSessionByCode(const char* code, const char* e
 
 bool WTSBaseDataMgr::isHoliday(const char* pid, uint32_t uDate, bool isTpl /* = false */)
 {
+	uint32_t wd = TimeUtils::getWeekDay(uDate);
+	if (wd == 0 || wd == 6)
+		return true;
+
 	std::string tplid = pid;
 	if (!isTpl)
 		tplid = getTplIDByPID(pid);

@@ -38,7 +38,6 @@ boost::asio::io_service g_asyncIO;
 
 WtCtaEngine::WtCtaEngine()
 	: _tm_ticker(NULL)
-	, _evt_listener(NULL)
 {
 	
 }

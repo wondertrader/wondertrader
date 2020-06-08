@@ -64,6 +64,14 @@ private:
 };
 typedef std::shared_ptr<WtRiskMonWrapper>	WtRiskMonPtr;
 
+class IEngineEvtListener
+{
+public:
+	virtual void on_initialize_event() {}
+	virtual void on_schedule_event(uint32_t uDate, uint32_t uTime) {}
+	virtual void on_session_event(uint32_t uDate, bool isBegin = true) {}
+};
+
 class WtEngine : public WtPortContext
 {
 public:
@@ -98,6 +106,11 @@ public:
 	inline void setRiskMonitor(WtRiskMonPtr& monitor)
 	{
 		_risk_mon = monitor;
+	}
+
+	inline void regEventListener(IEngineEvtListener* listener)
+	{
+		_evt_listener = listener;
 	}
 
 	//////////////////////////////////////////////////////////////////////////
@@ -177,6 +190,7 @@ protected:
 	IBaseDataMgr*	_base_data_mgr;	//基础数据管理器
 	IHotMgr*		_hot_mgr;		//主力管理器
 	WtDataManager*	_data_mgr;		//数据管理器
+	IEngineEvtListener*	_evt_listener;
 
 	typedef std::unordered_set<uint32_t> SIDSet;
 	typedef std::unordered_map<std::string, SIDSet>	StraSubMap;

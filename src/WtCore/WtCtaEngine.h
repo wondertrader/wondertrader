@@ -18,14 +18,6 @@ typedef boost::shared_ptr<ICtaStraCtx> CtaContextPtr;
 
 class WtCtaRtTicker;
 
-class ICtaEventListener
-{
-public:
-	virtual void on_initialize_event() {}
-	virtual void on_schedule_event(uint32_t uDate, uint32_t uTime) {}
-	virtual void on_session_event(uint32_t uDate, bool isBegin = true) {}
-};
-
 class WtCtaEngine : public WtEngine
 {
 public:
@@ -67,17 +59,11 @@ public:
 		executer->setEngine(this);
 	}
 
-	inline void regEventListener(ICtaEventListener* listener)
-	{
-		_evt_listener = listener;
-	}
-
 private:
 	typedef std::unordered_map<uint32_t, CtaContextPtr> ContextMap;
 	ContextMap		_ctx_map;
 
 	WtCtaRtTicker*	_tm_ticker;
-	ICtaEventListener*	_evt_listener;
 
 	typedef std::vector<WtExecuterPtr> ExecuterList;
 	ExecuterList	_executers;
