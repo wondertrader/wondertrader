@@ -55,7 +55,9 @@ void main()
 	//trans_mc_bars("E:\\LocalSource\\WTSOptSvr\\Win32\\Debug\\WtRunner\\storage\\csv\\", "E:\\LocalSource\\WTSOptSvr\\Win32\\Debug\\WtRunner\\storage\\test\\", "m5");
 	//return;
 	HINSTANCE hInst = LoadLibrary("WtPorter.dll");
-	register_callbacks(on_init, on_tick, on_calc, on_bar, on_event);
+	register_evt_callback(on_event);
+	//register_cta_callbacks(on_init, on_tick, on_calc, on_bar);
+	register_mf_callbacks(on_init, on_tick, on_calc, on_bar);
 
 	init_porter("log4cxx.prop");
 
