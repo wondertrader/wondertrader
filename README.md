@@ -67,7 +67,8 @@
 
 * * *
 
-* WonderTrader是经过多年检验的成熟量化交易框架，从2013年开始搭建第一个版本到现在，经历过几次全部重构，最终形成如今的WonderTrader
-* 关注公众号wondertrader，可以收到wondertrader的实时资讯
+* `WonderTrader`是经过多年检验的成熟量化交易框架，从2013年开始搭建第一个版本到现在，经历过几次全部重构，最终形成如今的`WonderTrader`
+* 关注公众号`wondertrader`，可以收到`WonderTrader`的实时资讯
+* 用户交流QQ群上线：610730738(加入前请先`star`一下, 然后提供`github`用户名)
 
 ![WonderTrader2.png](http://wt.f-sailors.cn/wt/logo_qcode_ad.jpg)
