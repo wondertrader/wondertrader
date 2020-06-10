@@ -126,6 +126,12 @@
     <ClInclude Include="WtMfTicker.h">
       <Filter>MF</Filter>
     </ClInclude>
+    <ClInclude Include="MfStraContext.h">
+      <Filter>MF</Filter>
+    </ClInclude>
+    <ClInclude Include="MfStrategyMgr.h">
+      <Filter>MF</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WtExecuter.cpp">
@@ -186,6 +192,12 @@
       <Filter>MF</Filter>
     </ClCompile>
     <ClCompile Include="WtMfTicker.cpp">
+      <Filter>MF</Filter>
+    </ClCompile>
+    <ClCompile Include="MfStraContext.cpp">
+      <Filter>MF</Filter>
+    </ClCompile>
+    <ClCompile Include="MfStrategyMgr.cpp">
       <Filter>MF</Filter>
     </ClCompile>
   </ItemGroup>

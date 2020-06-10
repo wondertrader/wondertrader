@@ -103,7 +103,7 @@ public:
 	virtual bool deleteStrategy(MfStrategy* stra) = 0;
 };
 
-//创建执行工厂
+//创建工厂
 typedef IMfStrategyFact* (*FuncCreateMfStraFact)();
-//删除执行工厂
+//删除工厂
 typedef void(*FuncDeleteMfStraFact)(IMfStrategyFact* &fact);
