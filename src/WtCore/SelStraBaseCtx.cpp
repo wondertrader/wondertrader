@@ -7,8 +7,8 @@
 *
 * \brief
 */
-#include "MfStraBaseCtx.h"
-#include "WtMfEngine.h"
+#include "SelStraBaseCtx.h"
+#include "WtSelEngine.h"
 #include "WtHelper.h"
 
 #include <exception>
@@ -34,8 +34,8 @@ inline uint32_t makeMfCtxId()
 }
 
 
-MfStraBaseCtx::MfStraBaseCtx(WtMfEngine* engine, const char* name)
-	: IMfStraCtx(name)
+SelStraBaseCtx::SelStraBaseCtx(WtSelEngine* engine, const char* name)
+	: ISelStraCtx(name)
 	, _engine(engine)
 	, _total_calc_time(0)
 	, _emit_times(0)
@@ -46,11 +46,11 @@ MfStraBaseCtx::MfStraBaseCtx(WtMfEngine* engine, const char* name)
 }
 
 
-MfStraBaseCtx::~MfStraBaseCtx()
+SelStraBaseCtx::~SelStraBaseCtx()
 {
 }
 
-void MfStraBaseCtx::init_outputs()
+void SelStraBaseCtx::init_outputs()
 {
 	std::string folder = WtHelper::getOutputDir();
 	folder += _name;
@@ -118,7 +118,7 @@ void MfStraBaseCtx::init_outputs()
 	}
 }
 
-void MfStraBaseCtx::log_signal(const char* stdCode, double target, double price, uint64_t gentime, const char* usertag /* = "" */)
+void SelStraBaseCtx::log_signal(const char* stdCode, double target, double price, uint64_t gentime, const char* usertag /* = "" */)
 {
 	if (_sig_logs)
 	{
@@ -129,7 +129,7 @@ void MfStraBaseCtx::log_signal(const char* stdCode, double target, double price,
 	}
 }
 
-void MfStraBaseCtx::log_trade(const char* stdCode, bool isLong, bool isOpen, uint64_t curTime, double price, double qty, const char* userTag, double fee)
+void SelStraBaseCtx::log_trade(const char* stdCode, bool isLong, bool isOpen, uint64_t curTime, double price, double qty, const char* userTag, double fee)
 {
 	if (_trade_logs)
 	{
@@ -140,7 +140,7 @@ void MfStraBaseCtx::log_trade(const char* stdCode, bool isLong, bool isOpen, uin
 	}
 }
 
-void MfStraBaseCtx::log_close(const char* stdCode, bool isLong, uint64_t openTime, double openpx, uint64_t closeTime, double closepx, double qty,
+void SelStraBaseCtx::log_close(const char* stdCode, bool isLong, uint64_t openTime, double openpx, uint64_t closeTime, double closepx, double qty,
 	double profit, double totalprofit /* = 0 */, const char* enterTag /* = "" */, const char* exitTag /* = "" */)
 {
 	if (_close_logs)
@@ -156,7 +156,7 @@ void MfStraBaseCtx::log_close(const char* stdCode, bool isLong, uint64_t openTim
 	}
 }
 
-void MfStraBaseCtx::save_userdata()
+void SelStraBaseCtx::save_userdata()
 {
 	//ini.save(filename.c_str());
 	rj::Document root(rj::kObjectType);
@@ -184,7 +184,7 @@ void MfStraBaseCtx::save_userdata()
 	}
 }
 
-void MfStraBaseCtx::load_userdata()
+void SelStraBaseCtx::load_userdata()
 {
 	std::string filename = WtHelper::getStraUsrDatDir();
 	filename += "ud_";
@@ -215,7 +215,7 @@ void MfStraBaseCtx::load_userdata()
 	}
 }
 
-void MfStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
+void SelStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 {
 	std::string filename = WtHelper::getStraDataDir();
 	filename += _name;
@@ -337,7 +337,7 @@ void MfStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 	}
 }
 
-void MfStraBaseCtx::save_data(uint32_t flag /* = 0xFFFFFFFF */)
+void SelStraBaseCtx::save_data(uint32_t flag /* = 0xFFFFFFFF */)
 {
 	rj::Document root(rj::kObjectType);
 
@@ -437,7 +437,7 @@ void MfStraBaseCtx::save_data(uint32_t flag /* = 0xFFFFFFFF */)
 
 //////////////////////////////////////////////////////////////////////////
 //回调函数
-void MfStraBaseCtx::on_bar(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar)
+void SelStraBaseCtx::on_bar(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar)
 {
 	if (newBar == NULL)
 		return;
@@ -457,7 +457,7 @@ void MfStraBaseCtx::on_bar(const char* stdCode, const char* period, uint32_t tim
 	//stra_log_text("K线%s @ %u已闭合", key.c_str(), period[0] == 'd' ? newBar->date : newBar->time);
 }
 
-void MfStraBaseCtx::on_init()
+void SelStraBaseCtx::on_init()
 {
 	init_outputs();
 
@@ -467,7 +467,7 @@ void MfStraBaseCtx::on_init()
 	load_userdata();
 }
 
-void MfStraBaseCtx::update_dyn_profit(const char* stdCode, double price)
+void SelStraBaseCtx::update_dyn_profit(const char* stdCode, double price)
 {
 	auto it = _pos_map.find(stdCode);
 	if (it != _pos_map.end())
@@ -507,7 +507,7 @@ void MfStraBaseCtx::update_dyn_profit(const char* stdCode, double price)
 	_fund_info._total_dynprofit = total_dynprofit;
 }
 
-void MfStraBaseCtx::on_tick(const char* stdCode, WTSTickData* newTick, bool bEmitStrategy /* = true */)
+void SelStraBaseCtx::on_tick(const char* stdCode, WTSTickData* newTick, bool bEmitStrategy /* = true */)
 {
 	_price_map[stdCode] = newTick->price();
 
@@ -540,7 +540,7 @@ void MfStraBaseCtx::on_tick(const char* stdCode, WTSTickData* newTick, bool bEmi
 	}
 }
 
-bool MfStraBaseCtx::on_schedule(uint32_t curDate, uint32_t curTime)
+bool SelStraBaseCtx::on_schedule(uint32_t curDate, uint32_t curTime, uint32_t fireTime)
 {
 	_is_in_schedule = true;//开始调度, 修改标记
 
@@ -548,8 +548,25 @@ bool MfStraBaseCtx::on_schedule(uint32_t curDate, uint32_t curTime)
 	save_data();
 
 	TimeUtils::Ticker ticker;
-	on_strategy_schedule(curDate, curTime);
+	on_strategy_schedule(curDate, fireTime);
 	stra_log_text("策略已重新调度 @ %u", curTime);
+
+	std::unordered_set<std::string> to_clear;
+	for (auto& v : _pos_map)
+	{
+		const PosInfo& pInfo = v.second;
+		const char* code = v.first.c_str();
+		if (_sig_map.find(code) == _sig_map.end() && !decimal::eq(pInfo._volumn, 0.0))
+		{
+			//新的信号中没有该持仓，则要清空
+			to_clear.insert(code);
+		}
+	}
+
+	for (const std::string& code : to_clear)
+	{
+		append_signal(code.c_str(), 0, "autoexit");
+	}
 
 	_emit_times++;
 	_total_calc_time += ticker.micro_seconds();
@@ -568,12 +585,12 @@ bool MfStraBaseCtx::on_schedule(uint32_t curDate, uint32_t curTime)
 	return true;
 }
 
-void MfStraBaseCtx::on_session_begin()
+void SelStraBaseCtx::on_session_begin()
 {
 
 }
 
-void MfStraBaseCtx::enum_position(FuncEnumMfPositionCallBack cb)
+void SelStraBaseCtx::enum_position(FuncEnumSelPositionCallBack cb)
 {
 	std::unordered_map<std::string, double> desPos;
 	for (auto it : _pos_map)
@@ -597,7 +614,7 @@ void MfStraBaseCtx::enum_position(FuncEnumMfPositionCallBack cb)
 	}
 }
 
-void MfStraBaseCtx::on_session_end()
+void SelStraBaseCtx::on_session_end()
 {
 	uint32_t curDate = _engine->get_trading_date();
 
@@ -627,7 +644,7 @@ void MfStraBaseCtx::on_session_end()
 //////////////////////////////////////////////////////////////////////////
 //策略接口
 #pragma region "策略接口"
-double MfStraBaseCtx::stra_get_price(const char* stdCode)
+double SelStraBaseCtx::stra_get_price(const char* stdCode)
 {
 	if (_engine)
 		return _engine->get_cur_price(stdCode);
@@ -635,12 +652,12 @@ double MfStraBaseCtx::stra_get_price(const char* stdCode)
 	return 0.0;
 }
 
-void MfStraBaseCtx::stra_set_position(const char* stdCode, double qty, const char* userTag /* = "" */)
+void SelStraBaseCtx::stra_set_position(const char* stdCode, double qty, const char* userTag /* = "" */)
 {
 	append_signal(stdCode, qty, userTag);
 }
 
-void MfStraBaseCtx::append_signal(const char* stdCode, double qty, const char* userTag /* = "" */)
+void SelStraBaseCtx::append_signal(const char* stdCode, double qty, const char* userTag /* = "" */)
 {
 	double curPx = _price_map[stdCode];
 
@@ -656,7 +673,7 @@ void MfStraBaseCtx::append_signal(const char* stdCode, double qty, const char* u
 	save_data();
 }
 
-void MfStraBaseCtx::do_set_position(const char* stdCode, double qty, const char* userTag /* = "" */, bool bTriggered /* = false */)
+void SelStraBaseCtx::do_set_position(const char* stdCode, double qty, const char* userTag /* = "" */, bool bTriggered /* = false */)
 {
 	PosInfo& pInfo = _pos_map[stdCode];
 	double curPx = _price_map[stdCode];
@@ -763,9 +780,11 @@ void MfStraBaseCtx::do_set_position(const char* stdCode, double qty, const char*
 
 	//存储数据
 	save_data();
+
+	_engine->handle_pos_change(stdCode, diff);
 }
 
-WTSKlineSlice* MfStraBaseCtx::stra_get_bars(const char* stdCode, const char* period, uint32_t count)
+WTSKlineSlice* SelStraBaseCtx::stra_get_bars(const char* stdCode, const char* period, uint32_t count)
 {
 	std::string key = StrUtil::printf("%s#%s", stdCode, period);
 
@@ -797,37 +816,37 @@ WTSKlineSlice* MfStraBaseCtx::stra_get_bars(const char* stdCode, const char* per
 	return kline;
 }
 
-WTSTickSlice* MfStraBaseCtx::stra_get_ticks(const char* stdCode, uint32_t count)
+WTSTickSlice* SelStraBaseCtx::stra_get_ticks(const char* stdCode, uint32_t count)
 {
 	return _engine->get_tick_slice(_context_id, stdCode, count);
 }
 
-WTSTickData* MfStraBaseCtx::stra_get_last_tick(const char* stdCode)
+WTSTickData* SelStraBaseCtx::stra_get_last_tick(const char* stdCode)
 {
 	return _engine->get_last_tick(_context_id, stdCode);
 }
 
-void MfStraBaseCtx::sub_ticks(const char* code)
+void SelStraBaseCtx::sub_ticks(const char* code)
 {
 	_engine->sub_tick(_context_id, code);
 }
 
-WTSCommodityInfo* MfStraBaseCtx::stra_get_comminfo(const char* stdCode)
+WTSCommodityInfo* SelStraBaseCtx::stra_get_comminfo(const char* stdCode)
 {
 	return _engine->get_commodity_info(stdCode);
 }
 
-uint32_t MfStraBaseCtx::stra_get_date()
+uint32_t SelStraBaseCtx::stra_get_date()
 {
 	return _engine->get_date();
 }
 
-uint32_t MfStraBaseCtx::stra_get_time()
+uint32_t SelStraBaseCtx::stra_get_time()
 {
 	return _engine->get_min_time();
 }
 
-void MfStraBaseCtx::stra_log_text(const char* fmt, ...)
+void SelStraBaseCtx::stra_log_text(const char* fmt, ...)
 {
 	char szBuf[256] = { 0 };
 	uint32_t length = sprintf(szBuf, "[%s]", _name.c_str());
@@ -838,7 +857,7 @@ void MfStraBaseCtx::stra_log_text(const char* fmt, ...)
 	va_end(args);
 }
 
-const char* MfStraBaseCtx::stra_load_user_data(const char* key, const char* defVal /*= ""*/)
+const char* SelStraBaseCtx::stra_load_user_data(const char* key, const char* defVal /*= ""*/)
 {
 	auto it = _user_datas.find(key);
 	if (it != _user_datas.end())
@@ -847,13 +866,13 @@ const char* MfStraBaseCtx::stra_load_user_data(const char* key, const char* defV
 	return defVal;
 }
 
-void MfStraBaseCtx::stra_save_user_data(const char* key, const char* val)
+void SelStraBaseCtx::stra_save_user_data(const char* key, const char* val)
 {
 	_user_datas[key] = val;
 	_ud_modified = true;
 }
 
-double MfStraBaseCtx::stra_get_position(const char* stdCode, const char* userTag /* = "" */)
+double SelStraBaseCtx::stra_get_position(const char* stdCode, const char* userTag /* = "" */)
 {
 	auto it = _pos_map.find(stdCode);
 	if (it == _pos_map.end())

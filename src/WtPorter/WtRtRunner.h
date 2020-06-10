@@ -15,9 +15,10 @@
 
 #include "../WtCore/CtaStrategyMgr.h"
 #include "../WtCore/HftStrategyMgr.h"
+#include "../WtCore/SelStrategyMgr.h"
 #include "../WtCore/WtCtaEngine.h"
 #include "../WtCore/WtHftEngine.h"
-#include "../WtCore/WtMfEngine.h"
+#include "../WtCore/WtSelEngine.h"
 #include "../WtCore/WtExecuter.h"
 #include "../WtCore/TraderAdapter.h"
 #include "../WtCore/ParserAdapter.h"
@@ -53,15 +54,15 @@ public:
 	void release();
 
 	void registerCtaCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar);
-	void registerMfCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar);
+	void registerSelCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar);
 
 	void registerEvtCallback(FuncEventCallback cbEvt);
 
-	uint32_t		createContext(const char* name);
-	uint32_t		createMfContext(const char* name, uint32_t date, uint32_t time, const char* period, const char* trdtpl = "CHINA");
+	uint32_t		createCtaContext(const char* name);
+	uint32_t		createSelContext(const char* name, uint32_t date, uint32_t time, const char* period, const char* trdtpl = "CHINA");
 
-	CtaContextPtr	getContext(uint32_t id);
-	MfContextPtr	getMfContext(uint32_t id);
+	CtaContextPtr	getCtaContext(uint32_t id);
+	SelContextPtr	getSelContext(uint32_t id);
 	WtEngine*		getEngine(){ return _engine; }
 
 //////////////////////////////////////////////////////////////////////////
@@ -94,6 +95,7 @@ public:
 	bool addExeFactories(const char* folder);
 	bool addCtaFactories(const char* folder);
 	bool addHftFactories(const char* folder);
+	bool addSelFactories(const char* folder);
 
 private:
 	bool initTraders();
@@ -102,6 +104,7 @@ private:
 	bool initDataMgr();
 	bool initCtaStrategies();
 	bool initHftStrategies();
+	bool initSelStrategies();
 	bool initActionPolicy();
 
 	bool initEngine();
@@ -112,10 +115,10 @@ private:
 	FuncStraCalcCallback	_cb_cta_calc;
 	FuncStraBarCallback		_cb_cta_bar;
 
-	FuncStraInitCallback	_cb_mf_init;
-	FuncStraTickCallback	_cb_mf_tick;
-	FuncStraCalcCallback	_cb_mf_calc;
-	FuncStraBarCallback		_cb_mf_bar;
+	FuncStraInitCallback	_cb_sel_init;
+	FuncStraTickCallback	_cb_sel_tick;
+	FuncStraCalcCallback	_cb_sel_calc;
+	FuncStraBarCallback		_cb_sel_bar;
 
 	FuncEventCallback		_cb_evt;
 
@@ -126,7 +129,7 @@ private:
 
 	WtCtaEngine			_cta_engine;
 	WtHftEngine			_hft_engine;
-	WtMfEngine			_mf_engine;
+	WtSelEngine			_sel_engine;
 	WtEngine*			_engine;
 
 	WtDataStorage*		_data_store;
@@ -138,9 +141,10 @@ private:
 
 	CtaStrategyMgr		_cta_mgr;
 	HftStrategyMgr		_hft_mgr;
+	SelStrategyMgr		_sel_mgr;
 	ActionPolicyMgr		_act_policy;
 
 	bool				_is_hft;
-	bool				_is_mf;
+	bool				_is_sel;
 };
 

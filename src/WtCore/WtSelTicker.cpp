@@ -7,8 +7,8 @@
 *
 * \brief
 */
-#include "WtMfTicker.h"
-#include "WtMfEngine.h"
+#include "WtSelTicker.h"
+#include "WtSelEngine.h"
 #include "IDataReader.h"
 
 #include "../Share/TimeUtils.hpp"
@@ -23,7 +23,7 @@
 USING_NS_OTP;
 
 
-WtMfRtTicker::WtMfRtTicker(WtMfEngine* engine)
+WtSelRtTicker::WtSelRtTicker(WtSelEngine* engine)
 	: _engine(engine)
 	, _stopped(false)
 	, _date(0)
@@ -35,11 +35,11 @@ WtMfRtTicker::WtMfRtTicker(WtMfEngine* engine)
 }
 
 
-WtMfRtTicker::~WtMfRtTicker()
+WtSelRtTicker::~WtSelRtTicker()
 {
 }
 
-void WtMfRtTicker::init(IDataReader* store, const char* sessionID)
+void WtSelRtTicker::init(IDataReader* store, const char* sessionID)
 {
 	_store = store;
 	_s_info = _engine->get_session_info(sessionID);
@@ -47,7 +47,7 @@ void WtMfRtTicker::init(IDataReader* store, const char* sessionID)
 	TimeUtils::getDateTime(_date, _time);
 }
 
-void WtMfRtTicker::trigger_price(WTSTickData* curTick, bool isHot/* = false*/)
+void WtSelRtTicker::trigger_price(WTSTickData* curTick, bool isHot/* = false*/)
 {
 	if (_engine)
 	{
@@ -65,7 +65,7 @@ void WtMfRtTicker::trigger_price(WTSTickData* curTick, bool isHot/* = false*/)
 	}
 }
 
-void WtMfRtTicker::on_tick(WTSTickData* curTick, bool isHot /* = false */)
+void WtSelRtTicker::on_tick(WTSTickData* curTick, bool isHot /* = false */)
 {
 	if (_thrd == NULL)
 	{
@@ -152,7 +152,7 @@ void WtMfRtTicker::on_tick(WTSTickData* curTick, bool isHot /* = false */)
 	_next_check_time = TimeUtils::getLocalTimeNow() + left_ticks;
 }
 
-void WtMfRtTicker::run()
+void WtSelRtTicker::run()
 {
 	if (_thrd)
 		return;
@@ -230,7 +230,7 @@ void WtMfRtTicker::run()
 	}));
 }
 
-void WtMfRtTicker::stop()
+void WtSelRtTicker::stop()
 {
 	_stopped = true;
 	if (_thrd)

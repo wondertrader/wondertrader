@@ -20,7 +20,7 @@ NS_OTP_END
 
 USING_NS_OTP;
 
-class MfMocker;
+class SelMocker;
 class CtaMocker;
 class ExecMocker;
 
@@ -32,10 +32,10 @@ public:
 
 public:
 	void	registerCtaCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar);
-	void	registerMfCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar);
+	void	registerSelCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar);
 
 	uint32_t	initCtaMocker(const char* name);
-	uint32_t	initMfMocker(const char* name, uint32_t date, uint32_t time, const char* period);
+	uint32_t	initSelMocker(const char* name, uint32_t date, uint32_t time, const char* period);
 
 	void	ctx_on_init(uint32_t id, bool isCta = true);
 	void	ctx_on_tick(uint32_t id, const char* stdCode, WTSTickData* newTick, bool isCta = true);
@@ -50,7 +50,7 @@ public:
 	void	dump_bars(const char* code, const char* period, const char* filename);
 
 	CtaMocker*			cta_mocker() { return _cta_mocker; }
-	MfMocker*			mf_mocker() { return _mf_mocker; }
+	SelMocker*			sel_mocker() { return _sel_mocker; }
 	HisDataReplayer&	replayer() { return _replayer; }
 
 
@@ -62,13 +62,13 @@ private:
 	FuncStraCalcCallback	_cb_cta_calc;
 	FuncStraBarCallback		_cb_cta_bar;
 
-	FuncStraInitCallback	_cb_mf_init;
-	FuncStraTickCallback	_cb_mf_tick;
-	FuncStraCalcCallback	_cb_mf_calc;
-	FuncStraBarCallback		_cb_mf_bar;
+	FuncStraInitCallback	_cb_sel_init;
+	FuncStraTickCallback	_cb_sel_tick;
+	FuncStraCalcCallback	_cb_sel_calc;
+	FuncStraBarCallback		_cb_sel_bar;
 
 	CtaMocker*		_cta_mocker;
-	MfMocker*		_mf_mocker;
+	SelMocker*		_sel_mocker;
 	ExecMocker*		_exec_mocker;
 	HisDataReplayer	_replayer;
 };

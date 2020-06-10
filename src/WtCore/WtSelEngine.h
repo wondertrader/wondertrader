@@ -1,6 +1,6 @@
 #pragma once
 #include "WtEngine.h"
-#include "IMfStraCtx.h"
+#include "ISelStraCtx.h"
 #include "WtExecuter.h"
 
 #include <unordered_map>
@@ -33,15 +33,15 @@ typedef struct _TaskInfo
 
 typedef std::shared_ptr<TaskInfo> TaskInfoPtr;
 
-typedef boost::shared_ptr<IMfStraCtx> MfContextPtr;
-class WtMfRtTicker;
+typedef boost::shared_ptr<ISelStraCtx> SelContextPtr;
+class WtSelRtTicker;
 
 
-class WtMfEngine : public WtEngine
+class WtSelEngine : public WtEngine
 {
 public:
-	WtMfEngine();
-	~WtMfEngine();
+	WtSelEngine();
+	~WtSelEngine();
 
 public:
 	//////////////////////////////////////////////////////////////////////////
@@ -64,9 +64,9 @@ public:
 
 public:
 	//uint32_t	register_task(const char* name, uint32_t date, uint32_t time, TaskPeriodType period, bool bStrict = true, const char* trdtpl = "CHINA");
-	void			addContext(MfContextPtr ctx, uint32_t date, uint32_t time, TaskPeriodType period, bool bStrict = true, const char* trdtpl = "CHINA");
+	void			addContext(SelContextPtr ctx, uint32_t date, uint32_t time, TaskPeriodType period, bool bStrict = true, const char* trdtpl = "CHINA");
 
-	MfContextPtr	getContext(uint32_t id);
+	SelContextPtr	getContext(uint32_t id);
 
 	inline void addExecuter(WtExecuterPtr& executer)
 	{
@@ -76,10 +76,12 @@ public:
 
 	void	on_minute_end(uint32_t uDate, uint32_t uTime);
 
+	void	handle_pos_change(const char* stdCode, double diffQty);
+
 private:
 	std::unordered_map<uint32_t, TaskInfoPtr>	_tasks;
 
-	typedef std::unordered_map<uint32_t, MfContextPtr> ContextMap;
+	typedef std::unordered_map<uint32_t, SelContextPtr> ContextMap;
 	ContextMap		_ctx_map;
 
 	typedef std::vector<WtExecuterPtr> ExecuterList;
@@ -87,7 +89,7 @@ private:
 
 	bool	_terminated;
 
-	WtMfRtTicker*	_tm_ticker;
+	WtSelRtTicker*	_tm_ticker;
 	WTSVariant*		_cfg;
 };
 

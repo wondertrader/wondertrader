@@ -30,7 +30,7 @@
     <ClCompile Include="ExecMocker.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="MfMocker.cpp">
+    <ClCompile Include="SelMocker.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -50,7 +50,7 @@
     <ClInclude Include="ExecMocker.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="MfMocker.h">
+    <ClInclude Include="SelMocker.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

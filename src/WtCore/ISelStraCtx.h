@@ -22,13 +22,13 @@ class WTSKlineSlice;
 class WTSTickSlice;
 
 //typedef void(*FuncEnumPositionCallBack)(const char* stdCode, int32_t qty);
-typedef std::function<void(const char*, double)> FuncEnumMfPositionCallBack;
+typedef std::function<void(const char*, double)> FuncEnumSelPositionCallBack;
 
-class IMfStraCtx
+class ISelStraCtx
 {
 public:
-	IMfStraCtx(const char* name) :_name(name){}
-	virtual ~IMfStraCtx(){}
+	ISelStraCtx(const char* name) :_name(name){}
+	virtual ~ISelStraCtx(){}
 
 	inline const char* name() const{ return _name.c_str(); }
 
@@ -41,13 +41,13 @@ public:
 	virtual void on_session_end() = 0;
 	virtual void on_tick(const char* stdCode, WTSTickData* newTick, bool bEmitStrategy = true) = 0;
 	virtual void on_bar(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar) = 0;
-	virtual bool on_schedule(uint32_t curDate, uint32_t curTime) = 0;
+	virtual bool on_schedule(uint32_t curDate, uint32_t curTime, uint32_t fireTime) = 0;
 
 	virtual void on_bar_close(const char* stdCode, const char* period, WTSBarStruct* newBar) = 0;
 	virtual void on_tick_updated(const char* stdCode, WTSTickData* newTick){}
 	virtual void on_strategy_schedule(uint32_t curDate, uint32_t curTime) {}
 
-	virtual void enum_position(FuncEnumMfPositionCallBack cb) = 0;
+	virtual void enum_position(FuncEnumSelPositionCallBack cb) = 0;
 
 	//²ßÂÔ½Ó¿Ú
 	virtual double stra_get_position(const char* stdCode, const char* userTag = "") = 0;

@@ -208,7 +208,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Common\mdump.cpp" />
-    <ClCompile Include="PyMfContext.cpp" />
+    <ClCompile Include="PySelContext.cpp" />
     <ClCompile Include="WtPorter.cpp" />
     <ClCompile Include="PyCtaContext.cpp" />
     <ClCompile Include="WtRtRunner.cpp" />
@@ -216,7 +216,7 @@
   <ItemGroup>
     <ClInclude Include="..\Common\mdump.h" />
     <ClInclude Include="PorterDefs.h" />
-    <ClInclude Include="PyMfContext.h" />
+    <ClInclude Include="PySelContext.h" />
     <ClInclude Include="WtPorter.h" />
     <ClInclude Include="PyCtaContext.h" />
     <ClInclude Include="WtRtRunner.h" />

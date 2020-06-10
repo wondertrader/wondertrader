@@ -1,11 +1,11 @@
 #pragma once
-#include "../WtBtCore/MfMocker.h"
+#include "../WtBtCore/SelMocker.h"
 
-class PyMfMocker : public MfMocker
+class PySelMocker : public SelMocker
 {
 public:
-	PyMfMocker(HisDataReplayer* replayer, const char* name);
-	virtual ~PyMfMocker();
+	PySelMocker(HisDataReplayer* replayer, const char* name);
+	virtual ~PySelMocker();
 
 public:
 	virtual void on_init() override;

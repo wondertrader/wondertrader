@@ -13,7 +13,7 @@
 #include "../Common/version.h"
 
 #include "../WtBtCore/CtaMocker.h"
-#include "../WtBtCore/MfMocker.h"
+#include "../WtBtCore/SelMocker.h"
 
 #include "../WTSTools/WTSLogger.h"
 #include "../Share/decimal.h"
@@ -82,9 +82,9 @@ void register_cta_callbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cb
 	getRunner().registerCtaCallbacks(cbInit, cbTick, cbCalc, cbBar);
 }
 
-void register_mf_callbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar)
+void register_sel_callbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar)
 {
-	getRunner().registerMfCallbacks(cbInit, cbTick, cbCalc, cbBar);
+	getRunner().registerSelCallbacks(cbInit, cbTick, cbCalc, cbBar);
 }
 
 void init_backtest(const char* logProfile)
@@ -160,9 +160,9 @@ CtxHandler init_cta_mocker(const char* name)
 	return getRunner().initCtaMocker(name);
 }
 
-CtxHandler init_mf_mocker(const char* name, uint32_t date, uint32_t time, const char* period)
+CtxHandler init_sel_mocker(const char* name, uint32_t date, uint32_t time, const char* period)
 {
-	return getRunner().initMfMocker(name, date, time, period);
+	return getRunner().initSelMocker(name, date, time, period);
 }
 
 #pragma region "CTA策略接口"
@@ -420,60 +420,60 @@ WtString cta_load_userdata(CtxHandler cHandle, const char* key, const char* defV
 #pragma endregion
 
 #pragma region "多因子策略接口"
-void mf_save_userdata(CtxHandler cHandle, const char* key, const char* val)
+void sel_save_userdata(CtxHandler cHandle, const char* key, const char* val)
 {
-	MfMocker* ctx = getRunner().mf_mocker();
+	SelMocker* ctx = getRunner().sel_mocker();
 	if (ctx == NULL)
 		return;
 
 	ctx->stra_save_user_data(key, val);
 }
 
-WtString mf_load_userdata(CtxHandler cHandle, const char* key, const char* defVal)
+WtString sel_load_userdata(CtxHandler cHandle, const char* key, const char* defVal)
 {
-	MfMocker* ctx = getRunner().mf_mocker();
+	SelMocker* ctx = getRunner().sel_mocker();
 	if (ctx == NULL)
 		return defVal;
 
 	return ctx->stra_load_user_data(key, defVal);
 }
 
-void mf_log_text(CtxHandler cHandle, const char* message)
+void sel_log_text(CtxHandler cHandle, const char* message)
 {
-	MfMocker* ctx = getRunner().mf_mocker();
+	SelMocker* ctx = getRunner().sel_mocker();
 	if (ctx == NULL)
 		return;
 
 	ctx->stra_log_text(message);
 }
 
-double mf_get_price(const char* code)
+double sel_get_price(const char* code)
 {
 	return getRunner().replayer().get_cur_price(code);
 }
 
-WtUInt32 mf_get_date()
+WtUInt32 sel_get_date()
 {
 	return getRunner().replayer().get_date();
 }
 
-WtUInt32 mf_get_time()
+WtUInt32 sel_get_time()
 {
 	return getRunner().replayer().get_min_time();
 }
 
-double mf_get_position(CtxHandler cHandle, const char* code, const char* openTag)
+double sel_get_position(CtxHandler cHandle, const char* code, const char* openTag)
 {
-	MfMocker* ctx = getRunner().mf_mocker();
+	SelMocker* ctx = getRunner().sel_mocker();
 	if (ctx == NULL)
 		return 0;
 
 	return ctx->stra_get_position(code, openTag);
 }
 
-WtUInt32 mf_get_bars(CtxHandler cHandle, const char* code, const char* period, unsigned int barCnt, FuncGetBarsCallback cb)
+WtUInt32 sel_get_bars(CtxHandler cHandle, const char* code, const char* period, unsigned int barCnt, FuncGetBarsCallback cb)
 {
-	MfMocker* ctx = getRunner().mf_mocker();
+	SelMocker* ctx = getRunner().sel_mocker();
 	if (ctx == NULL)
 		return 0;
 	try
@@ -512,9 +512,9 @@ WtUInt32 mf_get_bars(CtxHandler cHandle, const char* code, const char* period, u
 	}
 }
 
-void mf_set_position(CtxHandler cHandle, const char* code, double qty, const char* userTag)
+void sel_set_position(CtxHandler cHandle, const char* code, double qty, const char* userTag)
 {
-	MfMocker* ctx = getRunner().mf_mocker();
+	SelMocker* ctx = getRunner().sel_mocker();
 	if (ctx == NULL)
 		return;
 
@@ -522,9 +522,9 @@ void mf_set_position(CtxHandler cHandle, const char* code, double qty, const cha
 	ctx->stra_set_position(code, qty, userTag);
 }
 
-WtUInt32	mf_get_ticks(CtxHandler cHandle, const char* code, unsigned int tickCnt, bool isMain, FuncGetTicksCallback cb)
+WtUInt32	sel_get_ticks(CtxHandler cHandle, const char* code, unsigned int tickCnt, bool isMain, FuncGetTicksCallback cb)
 {
-	MfMocker* ctx = getRunner().mf_mocker();
+	SelMocker* ctx = getRunner().sel_mocker();
 	if (ctx == NULL)
 		return 0;
 	try

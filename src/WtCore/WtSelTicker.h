@@ -20,13 +20,13 @@ class WTSSessionInfo;
 class IDataReader;
 class WTSTickData;
 
-class WtMfEngine;
+class WtSelEngine;
 
-class WtMfRtTicker
+class WtSelRtTicker
 {
 public:
-	WtMfRtTicker(WtMfEngine* engine);
-	~WtMfRtTicker();
+	WtSelRtTicker(WtSelEngine* engine);
+	~WtSelRtTicker();
 
 public:
 	void	init(IDataReader* store, const char* sessionID);
@@ -40,7 +40,7 @@ private:
 
 private:
 	WTSSessionInfo*	_s_info;
-	WtMfEngine*	_engine;
+	WtSelEngine*	_engine;
 	IDataReader*		_store;
 
 	uint32_t	_date;

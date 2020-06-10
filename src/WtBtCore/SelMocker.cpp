@@ -7,7 +7,7 @@
 *
 * \brief
 */
-#include "MfMocker.h"
+#include "SelMocker.h"
 #include "WtHelper.h"
 #include "HisDataReplayer.h"
 
@@ -33,8 +33,8 @@ inline uint32_t makeMfCtxId()
 }
 
 
-MfMocker::MfMocker(HisDataReplayer* replayer, const char* name)
-	: IMfStraCtx(name)
+SelMocker::SelMocker(HisDataReplayer* replayer, const char* name)
+	: ISelStraCtx(name)
 	, _replayer(replayer)
 	, _total_calc_time(0)
 	, _emit_times(0)
@@ -46,11 +46,11 @@ MfMocker::MfMocker(HisDataReplayer* replayer, const char* name)
 }
 
 
-MfMocker::~MfMocker()
+SelMocker::~SelMocker()
 {
 }
 
-void MfMocker::init_outputs()
+void SelMocker::init_outputs()
 {
 	bool isBt = true;
 
@@ -144,7 +144,7 @@ void MfMocker::init_outputs()
 	}
 }
 
-void MfMocker::log_signal(const char* stdCode, double target, double price, uint64_t gentime, const char* usertag /* = "" */)
+void SelMocker::log_signal(const char* stdCode, double target, double price, uint64_t gentime, const char* usertag /* = "" */)
 {
 	//if (_sig_logs)
 	//	_sig_logs->write_file(StrUtil::printf("%s,%f,%f,%s,%s\n", stdCode, target, price, StrUtil::fmtUInt64(gentime).c_str(), usertag));
@@ -157,7 +157,7 @@ void MfMocker::log_signal(const char* stdCode, double target, double price, uint
 	}
 }
 
-void MfMocker::log_trade(const char* stdCode, bool isLong, bool isOpen, uint64_t curTime, double price, double qty, const char* userTag, double fee)
+void SelMocker::log_trade(const char* stdCode, bool isLong, bool isOpen, uint64_t curTime, double price, double qty, const char* userTag, double fee)
 {
 	//if (_trade_logs)
 	//	_trade_logs->write_file(StrUtil::printf("%s,%s,%s,%s,%f,%f,%s,%.2f\n", stdCode, StrUtil::fmtUInt64(curTime).c_str(), isLong ? "LONG" : "SHORT", isOpen ? "OPEN" : "CLOSE", price, qty, userTag, fee));
@@ -169,7 +169,7 @@ void MfMocker::log_trade(const char* stdCode, bool isLong, bool isOpen, uint64_t
 	}
 }
 
-void MfMocker::log_close(const char* stdCode, bool isLong, uint64_t openTime, double openpx, uint64_t closeTime, double closepx, double qty,
+void SelMocker::log_close(const char* stdCode, bool isLong, uint64_t openTime, double openpx, uint64_t closeTime, double closepx, double qty,
 	double profit, double totalprofit /* = 0 */, const char* enterTag /* = "" */, const char* exitTag /* = "" */)
 {
 	//if (_close_logs)
@@ -187,7 +187,7 @@ void MfMocker::log_close(const char* stdCode, bool isLong, uint64_t openTime, do
 	}
 }
 
-bool MfMocker::initMfFactory(WTSVariant* cfg)
+bool SelMocker::initMfFactory(WTSVariant* cfg)
 {
 	if (cfg == NULL)
 		return false;
@@ -198,7 +198,7 @@ bool MfMocker::initMfFactory(WTSVariant* cfg)
 	if (hInst == NULL)
 		return false;
 
-	FuncCreateMfStraFact creator = (FuncCreateMfStraFact)DLLHelper::get_symbol(hInst, "createMfStrategyFact");
+	FuncCreateSelStraFact creator = (FuncCreateSelStraFact)DLLHelper::get_symbol(hInst, "createSelStrategyFact");
 	if (creator == NULL)
 	{
 		DLLHelper::free_library(hInst);
@@ -208,7 +208,7 @@ bool MfMocker::initMfFactory(WTSVariant* cfg)
 	_factory._module_inst = hInst;
 	_factory._module_path = module;
 	_factory._creator = creator;
-	_factory._remover = (FuncDeleteMfStraFact)DLLHelper::get_symbol(hInst, "deleteMfStrategyFact");
+	_factory._remover = (FuncDeleteSelStraFact)DLLHelper::get_symbol(hInst, "deleteSelStrategyFact");
 	_factory._fact = _factory._creator();
 
 	WTSVariant* cfgStra = cfg->get("strategy");
@@ -228,35 +228,35 @@ bool MfMocker::initMfFactory(WTSVariant* cfg)
 
 //////////////////////////////////////////////////////////////////////////
 //IDataSink
-void MfMocker::handle_init()
+void SelMocker::handle_init()
 {
 	this->on_init();
 }
 
-void MfMocker::handle_bar_close(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar)
+void SelMocker::handle_bar_close(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar)
 {
 	this->on_bar(stdCode, period, times, newBar);
 }
 
-void MfMocker::handle_schedule(uint32_t uDate, uint32_t uTime)
+void SelMocker::handle_schedule(uint32_t uDate, uint32_t uTime)
 {
 	uint32_t nextTime = TimeUtils::getNextMinute(uTime, 1);
 	if (nextTime < uTime)
 		uDate = TimeUtils::getNextDate(uDate);
-	this->on_schedule(uDate, nextTime);
+	this->on_schedule(uDate, uTime, nextTime);
 }
 
-void MfMocker::handle_session_begin()
+void SelMocker::handle_session_begin()
 {
 	this->on_session_begin();
 }
 
-void MfMocker::handle_session_end()
+void SelMocker::handle_session_end()
 {
 	this->on_session_end();
 }
 
-void MfMocker::handle_tick(const char* stdCode, WTSTickData* curTick)
+void SelMocker::handle_tick(const char* stdCode, WTSTickData* curTick)
 {
 	this->on_tick(stdCode, curTick, true);
 }
@@ -264,7 +264,7 @@ void MfMocker::handle_tick(const char* stdCode, WTSTickData* curTick)
 
 //////////////////////////////////////////////////////////////////////////
 //回调函数
-void MfMocker::on_bar(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar)
+void SelMocker::on_bar(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar)
 {
 	if (newBar == NULL)
 		return;
@@ -282,7 +282,7 @@ void MfMocker::on_bar(const char* stdCode, const char* period, uint32_t times, W
 	on_bar_close(stdCode, realPeriod.c_str(), newBar);
 }
 
-void MfMocker::on_init()
+void SelMocker::on_init()
 {
 	init_outputs();
 
@@ -292,7 +292,7 @@ void MfMocker::on_init()
 	WTSLogger::info("策略初始化完成");
 }
 
-void MfMocker::update_dyn_profit(const char* stdCode, double price)
+void SelMocker::update_dyn_profit(const char* stdCode, double price)
 {
 	auto it = _pos_map.find(stdCode);
 	if (it != _pos_map.end())
@@ -332,7 +332,7 @@ void MfMocker::update_dyn_profit(const char* stdCode, double price)
 	_fund_info._total_dynprofit = total_dynprofit;
 }
 
-void MfMocker::on_tick(const char* stdCode, WTSTickData* newTick, bool bEmitStrategy /* = true */)
+void SelMocker::on_tick(const char* stdCode, WTSTickData* newTick, bool bEmitStrategy /* = true */)
 {
 	_price_map[stdCode].first = newTick->price();
 	_price_map[stdCode].second = (uint64_t)newTick->actiondate() * 1000000000 + newTick->actiontime();
@@ -363,26 +363,26 @@ void MfMocker::on_tick(const char* stdCode, WTSTickData* newTick, bool bEmitStra
 		on_tick_updated(stdCode, newTick);
 }
 
-void MfMocker::on_bar_close(const char* code, const char* period, WTSBarStruct* newBar)
+void SelMocker::on_bar_close(const char* code, const char* period, WTSBarStruct* newBar)
 {
 	if (_strategy)
 		_strategy->on_bar(this, code, period, newBar);
 }
 
-void MfMocker::on_tick_updated(const char* code, WTSTickData* newTick)
+void SelMocker::on_tick_updated(const char* code, WTSTickData* newTick)
 {
 	if (_strategy)
 		_strategy->on_tick(this, code, newTick);
 }
 
-void MfMocker::on_strategy_schedule(uint32_t curDate, uint32_t curTime)
+void SelMocker::on_strategy_schedule(uint32_t curDate, uint32_t curTime)
 {
 	if (_strategy)
 		_strategy->on_schedule(this, curDate, curTime);
 }
 
 
-bool MfMocker::on_schedule(uint32_t curDate, uint32_t curTime)
+bool SelMocker::on_schedule(uint32_t curDate, uint32_t curTime, uint32_t fireTime)
 {
 	_is_in_schedule = true;//开始调度，修改标记
 
@@ -391,7 +391,7 @@ bool MfMocker::on_schedule(uint32_t curDate, uint32_t curTime)
 
 	TimeUtils::Ticker ticker;
 	on_strategy_schedule(curDate, curTime);
-	stra_log_text("策略已重新调度 @ %u.%u", curDate, curTime);
+	stra_log_text("策略已重新调度 @ %u.%u", curDate, fireTime);
 
 	std::unordered_set<std::string> to_clear;
 	for(auto& v : _pos_map)
@@ -421,11 +421,11 @@ bool MfMocker::on_schedule(uint32_t curDate, uint32_t curTime)
 	return true;
 }
 
-void MfMocker::on_session_begin()
+void SelMocker::on_session_begin()
 {
 }
 
-void MfMocker::enum_position(FuncEnumMfPositionCallBack cb)
+void SelMocker::enum_position(FuncEnumSelPositionCallBack cb)
 {
 	std::unordered_map<std::string, double> desPos;
 	for (auto it : _pos_map)
@@ -449,7 +449,7 @@ void MfMocker::enum_position(FuncEnumMfPositionCallBack cb)
 	}
 }
 
-void MfMocker::on_session_end()
+void SelMocker::on_session_end()
 {
 	uint32_t curDate = _replayer->get_trading_date();
 
@@ -477,7 +477,7 @@ void MfMocker::on_session_end()
 
 //////////////////////////////////////////////////////////////////////////
 //策略接口
-double MfMocker::stra_get_price(const char* stdCode)
+double SelMocker::stra_get_price(const char* stdCode)
 {
 	if (_replayer)
 		return _replayer->get_cur_price(stdCode);
@@ -485,12 +485,12 @@ double MfMocker::stra_get_price(const char* stdCode)
 	return 0.0;
 }
 
-void MfMocker::stra_set_position(const char* stdCode, double qty, const char* userTag /* = "" */)
+void SelMocker::stra_set_position(const char* stdCode, double qty, const char* userTag /* = "" */)
 {
 	append_signal(stdCode, qty, userTag);
 }
 
-void MfMocker::append_signal(const char* stdCode, double qty, const char* userTag /* = "" */, double price/* = 0.0*/)
+void SelMocker::append_signal(const char* stdCode, double qty, const char* userTag /* = "" */, double price/* = 0.0*/)
 {
 	double curPx = _price_map[stdCode].first;
 
@@ -507,7 +507,7 @@ void MfMocker::append_signal(const char* stdCode, double qty, const char* userTa
 	//save_data();
 }
 
-void MfMocker::do_set_position(const char* stdCode, double qty, double price /* = 0.0 */, const char* userTag /* = "" */, bool bTriggered /* = false */)
+void SelMocker::do_set_position(const char* stdCode, double qty, double price /* = 0.0 */, const char* userTag /* = "" */, bool bTriggered /* = false */)
 {
 	PosInfo& pInfo = _pos_map[stdCode];
 	double curPx = price;
@@ -616,7 +616,7 @@ void MfMocker::do_set_position(const char* stdCode, double qty, double price /* 
 	}
 }
 
-WTSKlineSlice* MfMocker::stra_get_bars(const char* stdCode, const char* period, uint32_t count)
+WTSKlineSlice* SelMocker::stra_get_bars(const char* stdCode, const char* period, uint32_t count)
 {
 	std::string key = StrUtil::printf("%s#%s", stdCode, period);
 
@@ -667,37 +667,37 @@ WTSKlineSlice* MfMocker::stra_get_bars(const char* stdCode, const char* period, 
 	return kline;
 }
 
-WTSTickSlice* MfMocker::stra_get_ticks(const char* stdCode, uint32_t count)
+WTSTickSlice* SelMocker::stra_get_ticks(const char* stdCode, uint32_t count)
 {
 	return _replayer->get_tick_slice(stdCode, count);
 }
 
-WTSTickData* MfMocker::stra_get_last_tick(const char* stdCode)
+WTSTickData* SelMocker::stra_get_last_tick(const char* stdCode)
 {
 	return _replayer->get_last_tick(stdCode);
 }
 
-void MfMocker::sub_ticks(const char* code)
+void SelMocker::sub_ticks(const char* code)
 {
 	_replayer->sub_tick(_context_id, code);
 }
 
-WTSCommodityInfo* MfMocker::stra_get_comminfo(const char* stdCode)
+WTSCommodityInfo* SelMocker::stra_get_comminfo(const char* stdCode)
 {
 	return _replayer->get_commodity_info(stdCode);
 }
 
-uint32_t MfMocker::stra_get_date()
+uint32_t SelMocker::stra_get_date()
 {
 	return _replayer->get_date();
 }
 
-uint32_t MfMocker::stra_get_time()
+uint32_t SelMocker::stra_get_time()
 {
 	return _replayer->get_min_time();
 }
 
-void MfMocker::stra_log_text(const char* fmt, ...)
+void SelMocker::stra_log_text(const char* fmt, ...)
 {
 	va_list args;
 	va_start(args, fmt);
@@ -705,7 +705,7 @@ void MfMocker::stra_log_text(const char* fmt, ...)
 	va_end(args);
 }
 
-const char* MfMocker::stra_load_user_data(const char* key, const char* defVal /*= ""*/)
+const char* SelMocker::stra_load_user_data(const char* key, const char* defVal /*= ""*/)
 {
 	auto it = _user_datas.find(key);
 	if (it != _user_datas.end())
@@ -714,13 +714,13 @@ const char* MfMocker::stra_load_user_data(const char* key, const char* defVal /*
 	return defVal;
 }
 
-void MfMocker::stra_save_user_data(const char* key, const char* val)
+void SelMocker::stra_save_user_data(const char* key, const char* val)
 {
 	_user_datas[key] = val;
 	_ud_modified = true;
 }
 
-double MfMocker::stra_get_position(const char* stdCode, const char* userTag /* = "" */)
+double SelMocker::stra_get_position(const char* stdCode, const char* userTag /* = "" */)
 {
 	auto it = _pos_map.find(stdCode);
 	if (it == _pos_map.end())

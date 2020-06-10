@@ -7,7 +7,7 @@
 *
 * \brief
 */
-#include "MfStrategyMgr.h"
+#include "SelStrategyMgr.h"
 
 #include "../Share/StrUtil.hpp"
 #include "../Share/StdUtils.hpp"
@@ -15,16 +15,16 @@
 #include "../WTSTools/WTSLogger.h"
 
 
-MfStrategyMgr::MfStrategyMgr()
+SelStrategyMgr::SelStrategyMgr()
 {
 }
 
 
-MfStrategyMgr::~MfStrategyMgr()
+SelStrategyMgr::~SelStrategyMgr()
 {
 }
 
-bool MfStrategyMgr::loadFactories(const char* path)
+bool SelStrategyMgr::loadFactories(const char* path)
 {
 	if (!StdFile::exists(path))
 	{
@@ -52,21 +52,21 @@ bool MfStrategyMgr::loadFactories(const char* path)
 		if (hInst == NULL)
 			continue;
 
-		FuncCreateMfStraFact creator = (FuncCreateMfStraFact)DLLHelper::get_symbol(hInst, "createMfStrategyFact");
+		FuncCreateSelStraFact creator = (FuncCreateSelStraFact)DLLHelper::get_symbol(hInst, "createMfStrategyFact");
 		if (creator == NULL)
 		{
 			DLLHelper::free_library(hInst);
 			continue;
 		}
 
-		IMfStrategyFact* fact = creator();
+		ISelStrategyFact* fact = creator();
 		if (fact != NULL)
 		{
 			StraFactInfo& fInfo = _factories[fact->getName()];
 			fInfo._module_inst = hInst;
 			fInfo._module_path = iter->path().string();
 			fInfo._creator = creator;
-			fInfo._remover = (FuncDeleteMfStraFact)DLLHelper::get_symbol(hInst, "deleteMfStrategyFact");
+			fInfo._remover = (FuncDeleteSelStraFact)DLLHelper::get_symbol(hInst, "deleteMfStrategyFact");
 			fInfo._fact = fact;
 
 			WTSLogger::info("CTA策略工厂[%s]加载成功", fact->getName());
@@ -86,42 +86,42 @@ bool MfStrategyMgr::loadFactories(const char* path)
 	return true;
 }
 
-MfStrategyPtr MfStrategyMgr::createStrategy(const char* factname, const char* unitname, const char* id)
+SelStrategyPtr SelStrategyMgr::createStrategy(const char* factname, const char* unitname, const char* id)
 {
 	auto it = _factories.find(factname);
 	if (it == _factories.end())
-		return MfStrategyPtr();
+		return SelStrategyPtr();
 
 	StraFactInfo& fInfo = it->second;
-	MfStrategyPtr ret(new MfStraWrapper(fInfo._fact->createStrategy(unitname, id), fInfo._fact));
+	SelStrategyPtr ret(new SelStraWrapper(fInfo._fact->createStrategy(unitname, id), fInfo._fact));
 	_strategies[id] = ret;
 	return ret;
 }
 
-MfStrategyPtr MfStrategyMgr::createStrategy(const char* name, const char* id)
+SelStrategyPtr SelStrategyMgr::createStrategy(const char* name, const char* id)
 {
 	StringVector ay = StrUtil::split(name, ".");
 	if (ay.size() < 2)
-		return MfStrategyPtr();
+		return SelStrategyPtr();
 
 	const char* factname = ay[0].c_str();
 	const char* unitname = ay[1].c_str();
 
 	auto it = _factories.find(factname);
 	if (it == _factories.end())
-		return MfStrategyPtr();
+		return SelStrategyPtr();
 
 	StraFactInfo& fInfo = it->second;
-	MfStrategyPtr ret(new MfStraWrapper(fInfo._fact->createStrategy(unitname, id), fInfo._fact));
+	SelStrategyPtr ret(new SelStraWrapper(fInfo._fact->createStrategy(unitname, id), fInfo._fact));
 	_strategies[id] = ret;
 	return ret;
 }
 
-MfStrategyPtr MfStrategyMgr::getStrategy(const char* id)
+SelStrategyPtr SelStrategyMgr::getStrategy(const char* id)
 {
 	auto it = _strategies.find(id);
 	if (it == _strategies.end())
-		return MfStrategyPtr();
+		return SelStrategyPtr();
 
 	return it->second;
 }

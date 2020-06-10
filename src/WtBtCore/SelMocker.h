@@ -11,24 +11,24 @@
 #include <unordered_map>
 #include "HisDataReplayer.h"
 
-#include "../WtCore/IMfStraCtx.h"
-#include "../WtCore/MfStrategyDefs.h"
+#include "../WtCore/ISelStraCtx.h"
+#include "../WtCore/SelStrategyDefs.h"
 
 #include "../Share/WTSDataDef.hpp"
 #include "../Share/BoostFile.hpp"
 #include "../Share/DLLHelper.hpp"
 
-class MfStrategy;
+class SelStrategy;
 
 USING_NS_OTP;
 
 class HisDataReplayer;
 
-class MfMocker : public IMfStraCtx, public IDataSink
+class SelMocker : public ISelStraCtx, public IDataSink
 {
 public:
-	MfMocker(HisDataReplayer* replayer, const char* name);
-	virtual ~MfMocker();
+	SelMocker(HisDataReplayer* replayer, const char* name);
+	virtual ~SelMocker();
 
 private:
 	void	init_outputs();
@@ -66,8 +66,8 @@ public:
 	virtual void on_session_end() override;
 	virtual void on_tick(const char* stdCode, WTSTickData* newTick, bool bEmitStrategy = true) override;
 	virtual void on_bar(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar) override;
-	virtual bool on_schedule(uint32_t curDate, uint32_t curTime) override;
-	virtual void enum_position(FuncEnumMfPositionCallBack cb) override;
+	virtual bool on_schedule(uint32_t curDate, uint32_t curTime, uint32_t fireTime) override;
+	virtual void enum_position(FuncEnumSelPositionCallBack cb) override;
 
 	virtual void on_tick_updated(const char* stdCode, WTSTickData* newTick) override;
 	virtual void on_bar_close(const char* stdCode, const char* period, WTSBarStruct* newBar) override;
@@ -207,9 +207,9 @@ protected:
 	{
 		std::string		_module_path;
 		DllHandle		_module_inst;
-		IMfStrategyFact*		_fact;
-		FuncCreateMfStraFact	_creator;
-		FuncDeleteMfStraFact	_remover;
+		ISelStrategyFact*		_fact;
+		FuncCreateSelStraFact	_creator;
+		FuncDeleteSelStraFact	_remover;
 
 		_StraFactInfo()
 		{
@@ -225,5 +225,5 @@ protected:
 	} StraFactInfo;
 	StraFactInfo	_factory;
 
-	MfStrategy*	_strategy;
+	SelStrategy*	_strategy;
 };

@@ -17,7 +17,7 @@ extern "C"
 #endif
 	EXPORT_FLAG	void		register_cta_callbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar);
 
-	EXPORT_FLAG	void		register_mf_callbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar);
+	EXPORT_FLAG	void		register_sel_callbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar);
 
 	EXPORT_FLAG	void		init_backtest(const char* logProfile);
 
@@ -25,7 +25,7 @@ extern "C"
 
 	EXPORT_FLAG	CtxHandler	init_cta_mocker(const char* name);
 
-	EXPORT_FLAG	CtxHandler	init_mf_mocker(const char* name, uint32_t date, uint32_t time, const char* period);
+	EXPORT_FLAG	CtxHandler	init_sel_mocker(const char* name, uint32_t date, uint32_t time, const char* period);
 
 	EXPORT_FLAG	void		run_backtest();
 
@@ -89,25 +89,25 @@ extern "C"
 
 	//////////////////////////////////////////////////////////////////////////
 	//多因子策略接口
-	EXPORT_FLAG	double		mf_get_position(CtxHandler cHandle, const char* code, const char* openTag);
+	EXPORT_FLAG	double		sel_get_position(CtxHandler cHandle, const char* code, const char* openTag);
 
-	EXPORT_FLAG	void		mf_set_position(CtxHandler cHandle, const char* code, double qty, const char* uesrTag);
+	EXPORT_FLAG	void		sel_set_position(CtxHandler cHandle, const char* code, double qty, const char* uesrTag);
 
-	EXPORT_FLAG	double 		mf_get_price(const char* code);
+	EXPORT_FLAG	double 		sel_get_price(const char* code);
 
-	EXPORT_FLAG	WtUInt32 	mf_get_date();
+	EXPORT_FLAG	WtUInt32 	sel_get_date();
 
-	EXPORT_FLAG	WtUInt32 	mf_get_time();
+	EXPORT_FLAG	WtUInt32 	sel_get_time();
 
-	EXPORT_FLAG	WtUInt32	mf_get_bars(CtxHandler cHandle, const char* code, const char* period, unsigned int barCnt,FuncGetBarsCallback cb);
+	EXPORT_FLAG	WtUInt32	sel_get_bars(CtxHandler cHandle, const char* code, const char* period, unsigned int barCnt,FuncGetBarsCallback cb);
 
-	EXPORT_FLAG	WtUInt32	mf_get_ticks(CtxHandler cHandle, const char* code, unsigned int tickCnt, bool isMain, FuncGetTicksCallback cb);
+	EXPORT_FLAG	WtUInt32	sel_get_ticks(CtxHandler cHandle, const char* code, unsigned int tickCnt, bool isMain, FuncGetTicksCallback cb);
 
-	EXPORT_FLAG	void		mf_log_text(CtxHandler cHandle, const char* message);
+	EXPORT_FLAG	void		sel_log_text(CtxHandler cHandle, const char* message);
 
-	EXPORT_FLAG	void		mf_save_userdata(CtxHandler cHandle, const char* key, const char* val);
+	EXPORT_FLAG	void		sel_save_userdata(CtxHandler cHandle, const char* key, const char* val);
 
-	EXPORT_FLAG	WtString	mf_load_userdata(CtxHandler cHandle, const char* key, const char* defVal);
+	EXPORT_FLAG	WtString	sel_load_userdata(CtxHandler cHandle, const char* key, const char* defVal);
 
 
 #ifdef __cplusplus

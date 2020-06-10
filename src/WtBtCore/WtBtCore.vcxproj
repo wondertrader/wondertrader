@@ -23,7 +23,7 @@
     <ClCompile Include="ExecMocker.cpp" />
     <ClCompile Include="HftMocker.cpp" />
     <ClCompile Include="HisDataReplayer.cpp" />
-    <ClCompile Include="MfMocker.cpp" />
+    <ClCompile Include="SelMocker.cpp" />
     <ClCompile Include="WtHelper.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -31,7 +31,7 @@
     <ClInclude Include="ExecMocker.h" />
     <ClInclude Include="HftMocker.h" />
     <ClInclude Include="HisDataReplayer.h" />
-    <ClInclude Include="MfMocker.h" />
+    <ClInclude Include="SelMocker.h" />
     <ClInclude Include="WtHelper.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

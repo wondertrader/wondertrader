@@ -114,9 +114,9 @@ void register_cta_callbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cb
 	getRunner().registerCtaCallbacks(cbInit, cbTick, cbCalc, cbBar);
 }
 
-void register_mf_callbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar)
+void register_sel_callbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar)
 {
-	getRunner().registerMfCallbacks(cbInit, cbTick, cbCalc, cbBar);
+	getRunner().registerSelCallbacks(cbInit, cbTick, cbCalc, cbBar);
 }
 
 void init_porter(const char* logProfile)
@@ -181,6 +181,11 @@ bool reg_cta_factories(const char* factFolder)
 	return getRunner().addCtaFactories(factFolder);
 }
 
+bool reg_sel_factories(const char* factFolder)
+{
+	return getRunner().addSelFactories(factFolder);
+}
+
 bool reg_hft_factories(const char* factFolder)
 {
 	return getRunner().addHftFactories(factFolder);
@@ -191,15 +196,15 @@ bool reg_exe_factories(const char* factFolder)
 	return getRunner().addExeFactories(factFolder);
 }
 
-CtxHandler create_mf_context(const char* name, uint32_t date, uint32_t time, const char* period)
+CtxHandler create_sel_context(const char* name, uint32_t date, uint32_t time, const char* period)
 {
-	return getRunner().createMfContext(name, date, time, period);
+	return getRunner().createSelContext(name, date, time, period);
 }
 
 #pragma region "CTA策略接口"
 void cta_enter_long(CtxHandler cHandle, const char* code, double qty, const char* userTag, double limitprice, double stopprice)
 {
-	CtaContextPtr ctx = getRunner().getContext(cHandle);
+	CtaContextPtr ctx = getRunner().getCtaContext(cHandle);
 	if (ctx == NULL)
 		return;
 
@@ -208,7 +213,7 @@ void cta_enter_long(CtxHandler cHandle, const char* code, double qty, const char
 
 void cta_exit_long(CtxHandler cHandle, const char* code, double qty, const char* userTag, double limitprice, double stopprice)
 {
-	CtaContextPtr ctx = getRunner().getContext(cHandle);
+	CtaContextPtr ctx = getRunner().getCtaContext(cHandle);
 	if (ctx == NULL)
 		return;
 
@@ -217,7 +222,7 @@ void cta_exit_long(CtxHandler cHandle, const char* code, double qty, const char*
 
 void cta_enter_short(CtxHandler cHandle, const char* code, double qty, const char* userTag, double limitprice, double stopprice)
 {
-	CtaContextPtr ctx = getRunner().getContext(cHandle);
+	CtaContextPtr ctx = getRunner().getCtaContext(cHandle);
 	if (ctx == NULL)
 		return;
 
@@ -226,7 +231,7 @@ void cta_enter_short(CtxHandler cHandle, const char* code, double qty, const cha
 
 void cta_exit_short(CtxHandler cHandle, const char* code, double qty, const char* userTag, double limitprice, double stopprice)
 {
-	CtaContextPtr ctx = getRunner().getContext(cHandle);
+	CtaContextPtr ctx = getRunner().getCtaContext(cHandle);
 	if (ctx == NULL)
 		return;
 
@@ -235,7 +240,7 @@ void cta_exit_short(CtxHandler cHandle, const char* code, double qty, const char
 
 WtUInt32 cta_get_bars(CtxHandler cHandle, const char* code, const char* period, unsigned int barCnt, bool isMain, FuncGetBarsCallback cb)
 {
-	CtaContextPtr ctx = getRunner().getContext(cHandle);
+	CtaContextPtr ctx = getRunner().getCtaContext(cHandle);
 	if (ctx == NULL)
 		return 0;
 	try
@@ -276,7 +281,7 @@ WtUInt32 cta_get_bars(CtxHandler cHandle, const char* code, const char* period, 
 
 WtUInt32	cta_get_ticks(CtxHandler cHandle, const char* code, unsigned int tickCnt, bool isMain, FuncGetTicksCallback cb)
 {
-	CtaContextPtr ctx = getRunner().getContext(cHandle);
+	CtaContextPtr ctx = getRunner().getCtaContext(cHandle);
 	if (ctx == NULL)
 		return 0;
 	try
@@ -317,7 +322,7 @@ WtUInt32	cta_get_ticks(CtxHandler cHandle, const char* code, unsigned int tickCn
 
 double cta_get_position_profit(CtxHandler cHandle, const char* code)
 {
-	CtaContextPtr ctx = getRunner().getContext(cHandle);
+	CtaContextPtr ctx = getRunner().getCtaContext(cHandle);
 	if (ctx == NULL)
 		return 0;
 
@@ -326,7 +331,7 @@ double cta_get_position_profit(CtxHandler cHandle, const char* code)
 
 WtUInt64 cta_get_detail_entertime(CtxHandler cHandle, const char* code, const char* openTag)
 {
-	CtaContextPtr ctx = getRunner().getContext(cHandle);
+	CtaContextPtr ctx = getRunner().getCtaContext(cHandle);
 	if (ctx == NULL)
 		return 0;
 
@@ -335,7 +340,7 @@ WtUInt64 cta_get_detail_entertime(CtxHandler cHandle, const char* code, const ch
 
 double cta_get_detail_cost(CtxHandler cHandle, const char* code, const char* openTag)
 {
-	CtaContextPtr ctx = getRunner().getContext(cHandle);
+	CtaContextPtr ctx = getRunner().getCtaContext(cHandle);
 	if (ctx == NULL)
 		return 0;
 
@@ -344,7 +349,7 @@ double cta_get_detail_cost(CtxHandler cHandle, const char* code, const char* ope
 
 double cta_get_detail_profit(CtxHandler cHandle, const char* code, const char* openTag, int flag)
 {
-	CtaContextPtr ctx = getRunner().getContext(cHandle);
+	CtaContextPtr ctx = getRunner().getCtaContext(cHandle);
 	if (ctx == NULL)
 		return 0;
 
@@ -353,7 +358,7 @@ double cta_get_detail_profit(CtxHandler cHandle, const char* code, const char* o
 
 double cta_get_position_avgpx(CtxHandler cHandle, const char* code)
 {
-	CtaContextPtr ctx = getRunner().getContext(cHandle);
+	CtaContextPtr ctx = getRunner().getCtaContext(cHandle);
 	if (ctx == NULL)
 		return 0;
 
@@ -362,7 +367,7 @@ double cta_get_position_avgpx(CtxHandler cHandle, const char* code)
 
 double cta_get_position(CtxHandler cHandle, const char* code, const char* openTag)
 {
-	CtaContextPtr ctx = getRunner().getContext(cHandle);
+	CtaContextPtr ctx = getRunner().getCtaContext(cHandle);
 	if (ctx == NULL)
 		return 0;
 
@@ -372,7 +377,7 @@ double cta_get_position(CtxHandler cHandle, const char* code, const char* openTa
 
 void cta_set_position(CtxHandler cHandle, const char* code, double qty, const char* userTag, double limitprice, double stopprice)
 {
-	CtaContextPtr ctx = getRunner().getContext(cHandle);
+	CtaContextPtr ctx = getRunner().getCtaContext(cHandle);
 	if (ctx == NULL)
 		return;
 
@@ -382,7 +387,7 @@ void cta_set_position(CtxHandler cHandle, const char* code, double qty, const ch
 
 WtUInt64 cta_get_first_entertime(CtxHandler cHandle, const char* code)
 {
-	CtaContextPtr ctx = getRunner().getContext(cHandle);
+	CtaContextPtr ctx = getRunner().getCtaContext(cHandle);
 	if (ctx == NULL)
 		return 0;
 
@@ -391,7 +396,7 @@ WtUInt64 cta_get_first_entertime(CtxHandler cHandle, const char* code)
 
 WtUInt64 cta_get_last_entertime(CtxHandler cHandle, const char* code)
 {
-	CtaContextPtr ctx = getRunner().getContext(cHandle);
+	CtaContextPtr ctx = getRunner().getCtaContext(cHandle);
 	if (ctx == NULL)
 		return 0;
 
@@ -400,7 +405,7 @@ WtUInt64 cta_get_last_entertime(CtxHandler cHandle, const char* code)
 
 double cta_get_last_enterprice(CtxHandler cHandle, const char* code)
 {
-	CtaContextPtr ctx = getRunner().getContext(cHandle);
+	CtaContextPtr ctx = getRunner().getCtaContext(cHandle);
 	if (ctx == NULL)
 		return 0;
 
@@ -424,7 +429,7 @@ WtUInt32 cta_get_time()
 
 void cta_log_text(CtxHandler cHandle, const char* message)
 {
-	CtaContextPtr ctx = getRunner().getContext(cHandle);
+	CtaContextPtr ctx = getRunner().getCtaContext(cHandle);
 	if (ctx == NULL)
 		return;
 
@@ -433,7 +438,7 @@ void cta_log_text(CtxHandler cHandle, const char* message)
 
 void cta_save_userdata(CtxHandler cHandle, const char* key, const char* val)
 {
-	CtaContextPtr ctx = getRunner().getContext(cHandle);
+	CtaContextPtr ctx = getRunner().getCtaContext(cHandle);
 	if (ctx == NULL)
 		return;
 
@@ -442,7 +447,7 @@ void cta_save_userdata(CtxHandler cHandle, const char* key, const char* val)
 
 WtString cta_load_userdata(CtxHandler cHandle, const char* key, const char* defVal)
 {
-	CtaContextPtr ctx = getRunner().getContext(cHandle);
+	CtaContextPtr ctx = getRunner().getCtaContext(cHandle);
 	if (ctx == NULL)
 		return defVal;
 
@@ -452,60 +457,60 @@ WtString cta_load_userdata(CtxHandler cHandle, const char* key, const char* defV
 #pragma endregion
 
 #pragma region "多因子策略接口"
-void mf_save_userdata(CtxHandler cHandle, const char* key, const char* val)
+void sel_save_userdata(CtxHandler cHandle, const char* key, const char* val)
 {
-	MfContextPtr ctx = getRunner().getMfContext(cHandle);
+	SelContextPtr ctx = getRunner().getSelContext(cHandle);
 	if (ctx == NULL)
 		return;
 
 	ctx->stra_save_user_data(key, val);
 }
 
-WtString mf_load_userdata(CtxHandler cHandle, const char* key, const char* defVal)
+WtString sel_load_userdata(CtxHandler cHandle, const char* key, const char* defVal)
 {
-	MfContextPtr ctx = getRunner().getMfContext(cHandle);
+	SelContextPtr ctx = getRunner().getSelContext(cHandle);
 	if (ctx == NULL)
 		return defVal;
 
 	return ctx->stra_load_user_data(key, defVal);
 }
 
-void mf_log_text(CtxHandler cHandle, const char* message)
+void sel_log_text(CtxHandler cHandle, const char* message)
 {
-	MfContextPtr ctx = getRunner().getMfContext(cHandle);
+	SelContextPtr ctx = getRunner().getSelContext(cHandle);
 	if (ctx == NULL)
 		return;
 
 	ctx->stra_log_text(message);
 }
 
-double mf_get_price(const char* code)
+double sel_get_price(const char* code)
 {
 	return getRunner().getEngine()->get_cur_price(code);
 }
 
-WtUInt32 mf_get_date()
+WtUInt32 sel_get_date()
 {
 	return getRunner().getEngine()->get_date();
 }
 
-WtUInt32 mf_get_time()
+WtUInt32 sel_get_time()
 {
 	return getRunner().getEngine()->get_min_time();
 }
 
-double mf_get_position(CtxHandler cHandle, const char* code, const char* openTag)
+double sel_get_position(CtxHandler cHandle, const char* code, const char* openTag)
 {
-	MfContextPtr ctx = getRunner().getMfContext(cHandle);
+	SelContextPtr ctx = getRunner().getSelContext(cHandle);
 	if (ctx == NULL)
 		return 0;
 
 	return ctx->stra_get_position(code, openTag);
 }
 
-WtUInt32 mf_get_bars(CtxHandler cHandle, const char* code, const char* period, unsigned int barCnt, FuncGetBarsCallback cb)
+WtUInt32 sel_get_bars(CtxHandler cHandle, const char* code, const char* period, unsigned int barCnt, FuncGetBarsCallback cb)
 {
-	MfContextPtr ctx = getRunner().getMfContext(cHandle);
+	SelContextPtr ctx = getRunner().getSelContext(cHandle);
 	if (ctx == NULL)
 		return 0;
 	try
@@ -544,9 +549,9 @@ WtUInt32 mf_get_bars(CtxHandler cHandle, const char* code, const char* period, u
 	}
 }
 
-void mf_set_position(CtxHandler cHandle, const char* code, double qty, const char* userTag)
+void sel_set_position(CtxHandler cHandle, const char* code, double qty, const char* userTag)
 {
-	MfContextPtr ctx = getRunner().getMfContext(cHandle);
+	SelContextPtr ctx = getRunner().getSelContext(cHandle);
 	if (ctx == NULL)
 		return;
 
@@ -554,9 +559,9 @@ void mf_set_position(CtxHandler cHandle, const char* code, double qty, const cha
 	ctx->stra_set_position(code, qty, userTag);
 }
 
-WtUInt32	mf_get_ticks(CtxHandler cHandle, const char* code, unsigned int tickCnt, bool isMain, FuncGetTicksCallback cb)
+WtUInt32	sel_get_ticks(CtxHandler cHandle, const char* code, unsigned int tickCnt, bool isMain, FuncGetTicksCallback cb)
 {
-	MfContextPtr ctx = getRunner().getMfContext(cHandle);
+	SelContextPtr ctx = getRunner().getSelContext(cHandle);
 	if (ctx == NULL)
 		return 0;
 	try

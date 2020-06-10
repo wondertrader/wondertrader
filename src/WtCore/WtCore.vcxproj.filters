@@ -111,25 +111,28 @@
     <ClInclude Include="IDataStore.h">
       <Filter>Defs</Filter>
     </ClInclude>
-    <ClInclude Include="WtMfEngine.h">
+    <ClInclude Include="WtExecuterMgr.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ISelStraCtx.h">
       <Filter>MF</Filter>
     </ClInclude>
-    <ClInclude Include="IMfStraCtx.h">
+    <ClInclude Include="SelStraBaseCtx.h">
       <Filter>MF</Filter>
     </ClInclude>
-    <ClInclude Include="MfStraBaseCtx.h">
+    <ClInclude Include="SelStraContext.h">
       <Filter>MF</Filter>
     </ClInclude>
-    <ClInclude Include="MfStrategyDefs.h">
+    <ClInclude Include="SelStrategyDefs.h">
       <Filter>MF</Filter>
     </ClInclude>
-    <ClInclude Include="WtMfTicker.h">
+    <ClInclude Include="SelStrategyMgr.h">
       <Filter>MF</Filter>
     </ClInclude>
-    <ClInclude Include="MfStraContext.h">
+    <ClInclude Include="WtSelEngine.h">
       <Filter>MF</Filter>
     </ClInclude>
-    <ClInclude Include="MfStrategyMgr.h">
+    <ClInclude Include="WtSelTicker.h">
       <Filter>MF</Filter>
     </ClInclude>
   </ItemGroup>
@@ -185,19 +188,22 @@
     <ClCompile Include="WtHftTicker.cpp">
       <Filter>HFT</Filter>
     </ClCompile>
-    <ClCompile Include="WtMfEngine.cpp">
+    <ClCompile Include="WtExecuterMgr.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SelStraBaseCtx.cpp">
       <Filter>MF</Filter>
     </ClCompile>
-    <ClCompile Include="MfStraBaseCtx.cpp">
+    <ClCompile Include="SelStraContext.cpp">
       <Filter>MF</Filter>
     </ClCompile>
-    <ClCompile Include="WtMfTicker.cpp">
+    <ClCompile Include="SelStrategyMgr.cpp">
       <Filter>MF</Filter>
     </ClCompile>
-    <ClCompile Include="MfStraContext.cpp">
+    <ClCompile Include="WtSelEngine.cpp">
       <Filter>MF</Filter>
     </ClCompile>
-    <ClCompile Include="MfStrategyMgr.cpp">
+    <ClCompile Include="WtSelTicker.cpp">
       <Filter>MF</Filter>
     </ClCompile>
   </ItemGroup>

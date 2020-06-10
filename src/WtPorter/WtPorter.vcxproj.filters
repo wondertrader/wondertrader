@@ -27,7 +27,7 @@
     <ClCompile Include="WtRtRunner.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="PyMfContext.cpp">
+    <ClCompile Include="PySelContext.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -47,7 +47,7 @@
     <ClInclude Include="WtRtRunner.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="PyMfContext.h">
+    <ClInclude Include="PySelContext.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,13 +1,13 @@
 #pragma once
-#include "../WtCore/MfStraBaseCtx.h"
+#include "../WtCore/SelStraBaseCtx.h"
 
 USING_NS_OTP;
 
-class PyMfContext : public MfStraBaseCtx
+class PySelContext : public SelStraBaseCtx
 {
 public:
-	PyMfContext(WtMfEngine* env, const char* name);
-	virtual ~PyMfContext();
+	PySelContext(WtSelEngine* env, const char* name);
+	virtual ~PySelContext();
 
 public:
 	virtual void on_init() override;

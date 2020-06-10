@@ -15,18 +15,18 @@
 
 NS_OTP_BEGIN
 class WTSVariant;
-class IMfStraCtx;
+class ISelStraCtx;
 class WTSTickData;
 struct WTSBarStruct;
 NS_OTP_END
 
 USING_NS_OTP;
 
-class MfStrategy
+class SelStrategy
 {
 public:
-	MfStrategy(const char* id) :_id(id){}
-	virtual ~MfStrategy(){}
+	SelStrategy(const char* id) :_id(id){}
+	virtual ~SelStrategy(){}
 
 public:
 	/*
@@ -49,22 +49,22 @@ public:
 	/*
 	*	初始化回调
 	*/
-	virtual void on_init(IMfStraCtx* ctx){}
+	virtual void on_init(ISelStraCtx* ctx){}
 
 	/*
 	*	主体逻辑执行入口
 	*/
-	virtual void on_schedule(IMfStraCtx* ctx, uint32_t uDate, uint32_t uTime){}
+	virtual void on_schedule(ISelStraCtx* ctx, uint32_t uDate, uint32_t uTime){}
 
 	/*
 	*	tick数据
 	*/
-	virtual void on_tick(IMfStraCtx* ctx, const char* stdCode, WTSTickData* newTick){}
+	virtual void on_tick(ISelStraCtx* ctx, const char* stdCode, WTSTickData* newTick){}
 
 	/*
 	*	K线闭合
 	*/
-	virtual void on_bar(IMfStraCtx* ctx, const char* stdCode, const char* period, WTSBarStruct* newBar){}
+	virtual void on_bar(ISelStraCtx* ctx, const char* stdCode, const char* period, WTSBarStruct* newBar){}
 
 protected:
 	std::string _id;
@@ -72,13 +72,13 @@ protected:
 
 //////////////////////////////////////////////////////////////////////////
 //策略工厂接口
-typedef void(*FuncEnumMfStrategyCallback)(const char* factName, const char* straName, bool isLast);
+typedef void(*FuncEnumSelStrategyCallback)(const char* factName, const char* straName, bool isLast);
 
-class IMfStrategyFact
+class ISelStrategyFact
 {
 public:
-	IMfStrategyFact(){}
-	virtual ~IMfStrategyFact(){}
+	ISelStrategyFact(){}
+	virtual ~ISelStrategyFact(){}
 
 public:
 	/*
@@ -89,21 +89,21 @@ public:
 	/*
 	*	枚举策略
 	*/
-	virtual void enumStrategy(FuncEnumMfStrategyCallback cb) = 0;
+	virtual void enumStrategy(FuncEnumSelStrategyCallback cb) = 0;
 
 	/*
 	*	根据名称创建K线级别策略
 	*/
-	virtual MfStrategy* createStrategy(const char* name, const char* id) = 0;
+	virtual SelStrategy* createStrategy(const char* name, const char* id) = 0;
 
 
 	/*
 	*	删除策略
 	*/
-	virtual bool deleteStrategy(MfStrategy* stra) = 0;
+	virtual bool deleteStrategy(SelStrategy* stra) = 0;
 };
 
 //创建工厂
-typedef IMfStrategyFact* (*FuncCreateMfStraFact)();
+typedef ISelStrategyFact* (*FuncCreateSelStraFact)();
 //删除工厂
-typedef void(*FuncDeleteMfStraFact)(IMfStrategyFact* &fact);
+typedef void(*FuncDeleteSelStraFact)(ISelStrategyFact* &fact);

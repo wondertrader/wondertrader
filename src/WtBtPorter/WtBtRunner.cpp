@@ -9,7 +9,7 @@
  */
 #include "WtBtRunner.h"
 #include "PyCtaMocker.h"
-#include "PyMfMocker.h"
+#include "PySelMocker.h"
 
 #include <iomanip>
 
@@ -30,7 +30,7 @@
 
 WtBtRunner::WtBtRunner()
 	: _cta_mocker(NULL)
-	, _mf_mocker(NULL)
+	, _sel_mocker(NULL)
 {
 }
 
@@ -47,12 +47,12 @@ void WtBtRunner::registerCtaCallbacks(FuncStraInitCallback cbInit, FuncStraTickC
 	_cb_cta_bar = cbBar;
 }
 
-void WtBtRunner::registerMfCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar)
+void WtBtRunner::registerSelCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar)
 {
-	_cb_mf_init = cbInit;
-	_cb_mf_tick = cbTick;
-	_cb_mf_calc = cbCalc;
-	_cb_mf_bar = cbBar;
+	_cb_sel_init = cbInit;
+	_cb_sel_tick = cbTick;
+	_cb_sel_calc = cbCalc;
+	_cb_sel_bar = cbBar;
 }
 
 uint32_t WtBtRunner::initCtaMocker(const char* name)
@@ -62,45 +62,45 @@ uint32_t WtBtRunner::initCtaMocker(const char* name)
 	return _cta_mocker->id();
 }
 
-uint32_t WtBtRunner::initMfMocker(const char* name, uint32_t date, uint32_t time, const char* period)
+uint32_t WtBtRunner::initSelMocker(const char* name, uint32_t date, uint32_t time, const char* period)
 {
-	_mf_mocker = new PyMfMocker(&_replayer, name);
-	_replayer.register_sink(_mf_mocker);
+	_sel_mocker = new PySelMocker(&_replayer, name);
+	_replayer.register_sink(_sel_mocker);
 
-	_replayer.register_task(_mf_mocker->id(), date, time, period);
-	return _mf_mocker->id();
+	_replayer.register_task(_sel_mocker->id(), date, time, period);
+	return _sel_mocker->id();
 }
 
 void WtBtRunner::ctx_on_bar(uint32_t id, const char* code, const char* period, WTSBarStruct* newBar, bool isCta /*= true*/)
 {
 	if (isCta && _cb_cta_bar)
 		_cb_cta_bar(id, code, period, newBar);
-	else if(!isCta && _cb_mf_bar)
-		_cb_mf_bar(id, code, period, newBar);
+	else if(!isCta && _cb_sel_bar)
+		_cb_sel_bar(id, code, period, newBar);
 }
 
 void WtBtRunner::ctx_on_calc(uint32_t id, bool isCta /*= true*/)
 {
 	if (isCta && _cb_cta_calc)
 		_cb_cta_calc(id);
-	else if (!isCta && _cb_mf_calc)
-		_cb_mf_calc(id);
+	else if (!isCta && _cb_sel_calc)
+		_cb_sel_calc(id);
 }
 
 void WtBtRunner::ctx_on_init(uint32_t id, bool isCta /*= true*/)
 {
 	if (isCta && _cb_cta_init)
 		_cb_cta_init(id);
-	else if (!isCta && _cb_mf_init)
-		_cb_mf_init(id);
+	else if (!isCta && _cb_sel_init)
+		_cb_sel_init(id);
 }
 
 void WtBtRunner::ctx_on_tick(uint32_t id, const char* stdCode, WTSTickData* newTick, bool isCta /*= true*/)
 {
 	if (isCta && _cb_cta_tick)
 		_cb_cta_tick(id, stdCode, &newTick->getTickStruct());
-	else if (!isCta && _cb_mf_tick)
-		_cb_mf_tick(id, stdCode, &newTick->getTickStruct());
+	else if (!isCta && _cb_sel_tick)
+		_cb_sel_tick(id, stdCode, &newTick->getTickStruct());
 }
 
 void WtBtRunner::init(const char* logProfile /* = "" */)
@@ -136,9 +136,9 @@ void WtBtRunner::config(const char* cfgFile)
 	}
 	else if (strcmp(mode, "mf") == 0 && cfgMode)
 	{
-		_mf_mocker = new PyMfMocker(&_replayer, "mf");
-		_mf_mocker->initMfFactory(cfgMode);
-		_replayer.register_sink(_mf_mocker);
+		_sel_mocker = new PySelMocker(&_replayer, "mf");
+		_sel_mocker->initMfFactory(cfgMode);
+		_replayer.register_sink(_sel_mocker);
 	}
 	else if (strcmp(mode, "exec") == 0 && cfgMode)
 	{

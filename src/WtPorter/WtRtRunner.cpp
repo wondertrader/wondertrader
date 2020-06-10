@@ -9,11 +9,12 @@
  */
 #include "WtRtRunner.h"
 #include "PyCtaContext.h"
-#include "PyMfContext.h"
+#include "PySelContext.h"
 
 #include "../WtCore/WtHelper.h"
 #include "../WtCore/CtaStraContext.h"
 #include "../WtCore/HftStraContext.h"
+#include "../WtCore/SelStraContext.h"
 
 #include "../WTSTools/WTSLogger.h"
 #include "../Share/JsonToVariant.hpp"
@@ -35,13 +36,13 @@ WtRtRunner::WtRtRunner()
 	, _cb_cta_tick(NULL)
 	, _cb_cta_calc(NULL)
 	, _cb_cta_bar(NULL)
-	, _cb_mf_init(NULL)
-	, _cb_mf_tick(NULL)
-	, _cb_mf_calc(NULL)
-	, _cb_mf_bar(NULL)
+	, _cb_sel_init(NULL)
+	, _cb_sel_tick(NULL)
+	, _cb_sel_calc(NULL)
+	, _cb_sel_bar(NULL)
 	, _cb_evt(NULL)
 	, _is_hft(false)
-	, _is_mf(false)
+	, _is_sel(false)
 {
 
 }
@@ -66,7 +67,7 @@ void WtRtRunner::registerEvtCallback(FuncEventCallback cbEvt)
 
 	_cta_engine.regEventListener(this);
 	_hft_engine.regEventListener(this);
-	_mf_engine.regEventListener(this);
+	_sel_engine.regEventListener(this);
 }
 
 void WtRtRunner::registerCtaCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar)
@@ -77,22 +78,22 @@ void WtRtRunner::registerCtaCallbacks(FuncStraInitCallback cbInit, FuncStraTickC
 	_cb_cta_bar = cbBar;
 }
 
-void WtRtRunner::registerMfCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar)
+void WtRtRunner::registerSelCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar)
 {
-	_cb_mf_init = cbInit;
-	_cb_mf_tick = cbTick;
-	_cb_mf_calc = cbCalc;
-	_cb_mf_bar = cbBar;
+	_cb_sel_init = cbInit;
+	_cb_sel_tick = cbTick;
+	_cb_sel_calc = cbCalc;
+	_cb_sel_bar = cbBar;
 }
 
-uint32_t WtRtRunner::createContext(const char* name)
+uint32_t WtRtRunner::createCtaContext(const char* name)
 {
 	PyCtaContext* ctx = new PyCtaContext(&_cta_engine, name);
 	_cta_engine.addContext(CtaContextPtr(ctx));
 	return ctx->id();
 }
 
-uint32_t WtRtRunner::createMfContext(const char* name, uint32_t date, uint32_t time, const char* period, const char* trdtpl/* ="CHINA" */)
+uint32_t WtRtRunner::createSelContext(const char* name, uint32_t date, uint32_t time, const char* period, const char* trdtpl/* ="CHINA" */)
 {
 	TaskPeriodType ptype;
 	if (my_stricmp(period, "d") == 0)
@@ -106,53 +107,53 @@ uint32_t WtRtRunner::createMfContext(const char* name, uint32_t date, uint32_t t
 	else
 		ptype = TPT_None;
 
-	PyMfContext* ctx = new PyMfContext(&_mf_engine, name);
+	PySelContext* ctx = new PySelContext(&_sel_engine, name);
 
-	_mf_engine.addContext(MfContextPtr(ctx), date, time, ptype, true, trdtpl);
+	_sel_engine.addContext(SelContextPtr(ctx), date, time, ptype, true, trdtpl);
 
 	return ctx->id();
 }
 
-CtaContextPtr WtRtRunner::getContext(uint32_t id)
+CtaContextPtr WtRtRunner::getCtaContext(uint32_t id)
 {
 	return _cta_engine.getContext(id);
 }
 
-MfContextPtr WtRtRunner::getMfContext(uint32_t id)
+SelContextPtr WtRtRunner::getSelContext(uint32_t id)
 {
-	return _mf_engine.getContext(id);
+	return _sel_engine.getContext(id);
 }
 
 void WtRtRunner::ctx_on_bar(uint32_t id, const char* code, const char* period, WTSBarStruct* newBar, bool isCta/* = true*/)
 {
 	if (_cb_cta_bar && isCta)
 		_cb_cta_bar(id, code, period, newBar);
-	else if(!isCta && _cb_mf_bar)
-		_cb_mf_bar(id, code, period, newBar);
+	else if(!isCta && _cb_sel_bar)
+		_cb_sel_bar(id, code, period, newBar);
 }
 
 void WtRtRunner::ctx_on_calc(uint32_t id, bool isCta/* = true*/)
 {
 	if (_cb_cta_calc && isCta)
 		_cb_cta_calc(id);
-	else if (!isCta && _cb_mf_calc)
-		_cb_mf_calc(id);
+	else if (!isCta && _cb_sel_calc)
+		_cb_sel_calc(id);
 }
 
 void WtRtRunner::ctx_on_init(uint32_t id, bool isCta/* = true*/)
 {
 	if (_cb_cta_init && isCta)
 		_cb_cta_init(id);
-	else if (!isCta && _cb_mf_init)
-		_cb_mf_init(id);
+	else if (!isCta && _cb_sel_init)
+		_cb_sel_init(id);
 }
 
 void WtRtRunner::ctx_on_tick(uint32_t id, const char* stdCode, WTSTickData* newTick, bool isCta/* = true*/)
 {
 	if (_cb_cta_tick && isCta)
 		_cb_cta_tick(id, stdCode, &newTick->getTickStruct());
-	else if (!isCta && _cb_mf_tick)
-		_cb_mf_tick(id, stdCode, &newTick->getTickStruct());
+	else if (!isCta && _cb_sel_tick)
+		_cb_sel_tick(id, stdCode, &newTick->getTickStruct());
 }
 
 bool WtRtRunner::config(const char* cfgFile)
@@ -253,6 +254,48 @@ bool WtRtRunner::initCtaStrategies()
 	return true;
 }
 
+bool WtRtRunner::initSelStrategies()
+{
+	WTSVariant* cfg = _config->get("strategies");
+	if (cfg == NULL || cfg->type() != WTSVariant::VT_Object)
+		return false;
+
+	cfg = cfg->get("cta");
+	if (cfg == NULL || cfg->type() != WTSVariant::VT_Array)
+		return false;
+
+	for (uint32_t idx = 0; idx < cfg->size(); idx++)
+	{
+		WTSVariant* cfgItem = cfg->get(idx);
+		const char* id = cfgItem->getCString("id");
+		const char* name = cfgItem->getCString("name");
+
+		uint32_t date = cfgItem->getUInt32("date");
+		uint32_t time = cfgItem->getUInt32("time");
+		const char* period = cfgItem->getCString("period");
+
+		TaskPeriodType ptype;
+		if (my_stricmp(period, "d") == 0)
+			ptype = TPT_Daily;
+		else if (my_stricmp(period, "w") == 0)
+			ptype = TPT_Weekly;
+		else if (my_stricmp(period, "m") == 0)
+			ptype = TPT_Monthly;
+		else if (my_stricmp(period, "y") == 0)
+			ptype = TPT_Yearly;
+		else
+			ptype = TPT_None;
+
+		SelStrategyPtr stra = _sel_mgr.createStrategy(name, id);
+		stra->self()->init(cfgItem->get("params"));
+		SelStraContext* ctx = new SelStraContext(&_sel_engine, id);
+		ctx->set_strategy(stra->self());
+		_sel_engine.addContext(SelContextPtr(ctx), date, time, ptype);
+	}
+
+	return true;
+}
+
 bool WtRtRunner::initHftStrategies()
 {
 	WTSVariant* cfg = _config->get("strategies");
@@ -297,11 +340,11 @@ bool WtRtRunner::initEngine()
 	if (strlen(name) == 0 || my_stricmp(name, "cta") == 0)
 	{
 		_is_hft = false;
-		_is_mf = false;
+		_is_sel = false;
 	}
-	else if (my_stricmp(name, "mltfct") == 0)
+	else if (my_stricmp(name, "sel") == 0)
 	{
-		_is_mf = true;
+		_is_sel = true;
 	}
 	else //if (my_stricmp(name, "hft") == 0)
 	{
@@ -314,11 +357,11 @@ bool WtRtRunner::initEngine()
 		_hft_engine.init(cfg, &_bd_mgr, &_data_mgr, &_hot_mgr);
 		_engine = &_hft_engine;
 	}
-	else if (_is_mf)
+	else if (_is_sel)
 	{
-		WTSLogger::info("交易环境初始化完成，交易引擎：MultiFactros");
-		_mf_engine.init(cfg, &_bd_mgr, &_data_mgr, &_hot_mgr);
-		_engine = &_mf_engine;
+		WTSLogger::info("交易环境初始化完成，交易引擎：SelStk");
+		_sel_engine.init(cfg, &_bd_mgr, &_data_mgr, &_hot_mgr);
+		_engine = &_sel_engine;
 	}
 	else
 	{
@@ -460,6 +503,11 @@ bool WtRtRunner::initActionPolicy()
 bool WtRtRunner::addCtaFactories(const char* folder)
 {
 	return _cta_mgr.loadFactories(folder);
+}
+
+bool WtRtRunner::addSelFactories(const char* folder)
+{
+	return _sel_mgr.loadFactories(folder);
 }
 
 bool WtRtRunner::addExeFactories(const char* folder)

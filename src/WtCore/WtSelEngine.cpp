@@ -1,15 +1,18 @@
-#include "WtMfEngine.h"
+#include "WtSelEngine.h"
 #include "WtDataManager.h"
-#include "WtMfTicker.h"
+#include "WtSelTicker.h"
 
 #include "../WTSTools/WTSLogger.h"
 #include "../Share/TimeUtils.hpp"
 #include "../Share/IBaseDataMgr.h"
+#include "../Share/IHotMgr.h"
 #include "../Share/StrUtil.hpp"
 #include "../Share/WTSVariant.hpp"
 #include "../Share/WTSSessionInfo.hpp"
 #include "../Share/WTSDataDef.hpp"
 #include "../Share/CodeHelper.hpp"
+#include "../Share/StdUtils.hpp"
+#include "../Share/decimal.h"
 
 #include <atomic>
 
@@ -22,42 +25,42 @@ inline uint32_t makeTaskId()
 }
 
 
-WtMfEngine::WtMfEngine()
+WtSelEngine::WtSelEngine()
 	: _terminated(false)
 	, _cfg(NULL)
 {
 }
 
 
-WtMfEngine::~WtMfEngine()
+WtSelEngine::~WtSelEngine()
 {
 }
 
-void WtMfEngine::on_session_end()
+void WtSelEngine::on_session_end()
 {
 	if (_evt_listener)
 		_evt_listener->on_session_event(_cur_tdate, false);
 }
 
-void WtMfEngine::on_session_begin()
+void WtSelEngine::on_session_begin()
 {
 	if (_evt_listener)
 		_evt_listener->on_session_event(_cur_tdate, true);
 }
 
-void WtMfEngine::on_init()
+void WtSelEngine::on_init()
 {
 	if (_evt_listener)
 		_evt_listener->on_initialize_event();
 }
 
-void WtMfEngine::handle_push_quote(WTSTickData* curTick, bool isHot)
+void WtSelEngine::handle_push_quote(WTSTickData* curTick, bool isHot)
 {
 	if (_tm_ticker)
 		_tm_ticker->on_tick(curTick, isHot);
 }
 
-void WtMfEngine::on_bar(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar)
+void WtSelEngine::on_bar(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar)
 {
 	std::string key = StrUtil::printf("%s-%s-%u", stdCode, period, times);
 	const SIDSet& sids = _bar_sub_map[key];
@@ -67,7 +70,7 @@ void WtMfEngine::on_bar(const char* stdCode, const char* period, uint32_t times,
 		auto cit = _ctx_map.find(sid);
 		if (cit != _ctx_map.end())
 		{
-			MfContextPtr& ctx = cit->second;
+			SelContextPtr& ctx = cit->second;
 			ctx->on_bar(stdCode, period, times, newBar);
 		}
 	}
@@ -75,7 +78,7 @@ void WtMfEngine::on_bar(const char* stdCode, const char* period, uint32_t times,
 	WTSLogger::info("K线 [%s#%s%d] @ %u已闭合", stdCode, period, times, period[0] == 'd' ? newBar->date : newBar->time);
 }
 
-void WtMfEngine::on_tick(const char* stdCode, WTSTickData* curTick)
+void WtSelEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 {
 	WtEngine::on_tick(stdCode, curTick);
 
@@ -103,14 +106,14 @@ void WtMfEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 			auto cit = _ctx_map.find(sid);
 			if (cit != _ctx_map.end() && curTick->volumn())
 			{
-				MfContextPtr& ctx = cit->second;
+				SelContextPtr& ctx = cit->second;
 				ctx->on_tick(stdCode, curTick);
 			}
 		}
 	}
 }
 
-void WtMfEngine::on_minute_end(uint32_t curDate, uint32_t curTime)
+void WtSelEngine::on_minute_end(uint32_t curDate, uint32_t curTime)
 {
 	//要比较下一分钟的时间
 	uint32_t nextTime = TimeUtils::getNextMinute(curTime, 1);
@@ -202,26 +205,26 @@ void WtMfEngine::on_minute_end(uint32_t curDate, uint32_t curTime)
 			continue;
 
 		//TODO: 回调任务
-		//if (_evt_listener)
-		//	_evt_listener->on_schedule_event(curDate, nextTime, tInfo->_id);
-		MfContextPtr ctx = getContext(tInfo->_id);
-		if (ctx)
-			ctx->on_schedule(curDate, nextTime);
+		SelContextPtr ctx = getContext(tInfo->_id);
+		StdThreadPtr thrd(new StdThread([ctx, curDate, curTime, nextTime](){
+			if (ctx)
+				ctx->on_schedule(curDate, curTime, nextTime);
+		}));	
 
 		tInfo->_last_exe_time = now;
 	}
 }
 
-void WtMfEngine::run(bool bAsync /*= false*/)
+void WtSelEngine::run(bool bAsync /*= false*/)
 {
 	WTSVariant* cfgProd = _cfg->get("product");
-	_tm_ticker = new WtMfRtTicker(this);
+	_tm_ticker = new WtSelRtTicker(this);
 	_tm_ticker->init(_data_mgr->reader(), cfgProd->getCString("session"));
 
 	_tm_ticker->run();
 }
 
-void WtMfEngine::init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtDataManager* dataMgr, IHotMgr* hotMgr)
+void WtSelEngine::init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtDataManager* dataMgr, IHotMgr* hotMgr)
 {
 	WtEngine::init(cfg, bdMgr, dataMgr, hotMgr);
 
@@ -229,7 +232,7 @@ void WtMfEngine::init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtDataManager* dataM
 	_cfg->retain();
 }
 
-void WtMfEngine::addContext(MfContextPtr ctx, uint32_t date, uint32_t time, TaskPeriodType period, bool bStrict /* = true */, const char* trdtpl /* = "CHINA" */)
+void WtSelEngine::addContext(SelContextPtr ctx, uint32_t date, uint32_t time, TaskPeriodType period, bool bStrict /* = true */, const char* trdtpl /* = "CHINA" */)
 {
 	if (ctx == NULL)
 		return;
@@ -256,12 +259,49 @@ void WtMfEngine::addContext(MfContextPtr ctx, uint32_t date, uint32_t time, Task
 	_ctx_map[sid] = ctx;
 }
 
-MfContextPtr WtMfEngine::getContext(uint32_t id)
+SelContextPtr WtSelEngine::getContext(uint32_t id)
 {
 	auto it = _ctx_map.find(id);
 	if (it == _ctx_map.end())
-		return MfContextPtr();
+		return SelContextPtr();
 
 	return it->second;
 }
 
+void WtSelEngine::handle_pos_change(const char* stdCode, double diffQty)
+{
+	std::string realCode = stdCode;
+	if (CodeHelper::isStdFutHotCode(stdCode))
+	{
+		std::string exchg, pid, code;
+		bool isHot = false;
+		CodeHelper::extractStdCode(stdCode, exchg, code, pid, isHot);
+		code = _hot_mgr->getRawCode(exchg.c_str(), pid.c_str(), _cur_tdate);
+		realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), exchg.c_str());
+	}
+
+	PosInfo& pItem = _pos_map[realCode];
+	double targetPos = pItem._volumn + diffQty;
+
+	bool bRiskEnabled = false;
+	if (!decimal::eq(_risk_volscale, 1.0) && _risk_date == _cur_tdate)
+	{
+		WTSLogger::info2("risk", "组合盘仓位风控系数为%.2f", _risk_volscale);
+		bRiskEnabled = true;
+	}
+	if (bRiskEnabled && targetPos != 0)
+	{
+		double symbol = targetPos / abs(targetPos);
+		targetPos = abs(targetPos)*_risk_volscale*symbol;
+	}
+
+	push_task([this, realCode, targetPos](){
+		append_signal(realCode.c_str(), targetPos);
+	});
+
+	for (auto it = _executers.begin(); it != _executers.end(); it++)
+	{
+		WtExecuterPtr& executer = (*it);
+		executer->on_position_changed(realCode.c_str(), targetPos);
+	}
+}

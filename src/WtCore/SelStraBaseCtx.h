@@ -9,21 +9,21 @@
 */
 #pragma once
 #include <unordered_map>
-#include "IMfStraCtx.h"
+#include "ISelStraCtx.h"
 
 #include "../Share/WTSDataDef.hpp"
 #include "../Share/BoostFile.hpp"
 
 NS_OTP_BEGIN
 
-class WtMfEngine;
+class WtSelEngine;
 
 
-class MfStraBaseCtx : public IMfStraCtx
+class SelStraBaseCtx : public ISelStraCtx
 {
 public:
-	MfStraBaseCtx(WtMfEngine* engine, const char* name);
-	virtual ~MfStraBaseCtx();
+	SelStraBaseCtx(WtSelEngine* engine, const char* name);
+	virtual ~SelStraBaseCtx();
 
 private:
 	void	init_outputs();
@@ -52,9 +52,9 @@ public:
 	virtual void on_session_end() override;
 	virtual void on_tick(const char* stdCode, WTSTickData* newTick, bool bEmitStrategy = true) override;
 	virtual void on_bar(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar) override;
-	virtual bool on_schedule(uint32_t curDate, uint32_t curTime) override;
+	virtual bool on_schedule(uint32_t curDate, uint32_t curTime, uint32_t fireTime) override;
 
-	virtual void enum_position(FuncEnumMfPositionCallBack cb) override;
+	virtual void enum_position(FuncEnumSelPositionCallBack cb) override;
 
 
 	//////////////////////////////////////////////////////////////////////////
@@ -81,7 +81,7 @@ public:
 
 protected:
 	uint32_t		_context_id;
-	WtMfEngine*	_engine;
+	WtSelEngine*	_engine;
 
 	uint64_t		_total_calc_time;	//总计算时间
 	uint32_t		_emit_times;		//总计算次数
