@@ -115,7 +115,8 @@ protected:
 	typedef std::unordered_map<std::string, KlineTag> KlineTags;
 	KlineTags	_kline_tags;
 
-	typedef std::unordered_map<std::string, double> PriceMap;
+	typedef std::pair<double, uint64_t>	PriceInfo;
+	typedef std::unordered_map<std::string, PriceInfo> PriceMap;
 	PriceMap		_price_map;
 
 	typedef struct _DetailInfo

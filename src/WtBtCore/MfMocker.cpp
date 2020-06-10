@@ -183,7 +183,7 @@ void MfMocker::log_close(const char* stdCode, bool isLong, uint64_t openTime, do
 		ss << stdCode << "," << (isLong ? "LONG" : "SHORT") << "," << openTime << "," << openpx
 			<< "," << closeTime << "," << closepx << "," << qty << "," << profit << ","
 			<< totalprofit << "," << enterTag << "," << exitTag << "\n";
-		_trade_logs->write_file(ss.str());
+		_close_logs->write_file(ss.str());
 	}
 }
 
@@ -334,7 +334,8 @@ void MfMocker::update_dyn_profit(const char* stdCode, double price)
 
 void MfMocker::on_tick(const char* stdCode, WTSTickData* newTick, bool bEmitStrategy /* = true */)
 {
-	_price_map[stdCode] = newTick->price();
+	_price_map[stdCode].first = newTick->price();
+	_price_map[stdCode].second = (uint64_t)newTick->actiondate() * 1000000000 + newTick->actiontime();
 
 	//先检查是否要信号要触发
 	{
@@ -391,6 +392,23 @@ bool MfMocker::on_schedule(uint32_t curDate, uint32_t curTime)
 	TimeUtils::Ticker ticker;
 	on_strategy_schedule(curDate, curTime);
 	stra_log_text("策略已重新调度 @ %u.%u", curDate, curTime);
+
+	std::unordered_set<std::string> to_clear;
+	for(auto& v : _pos_map)
+	{
+		const PosInfo& pInfo = v.second;
+		const char* code = v.first.c_str();
+		if(_sig_map.find(code) == _sig_map.end() && !decimal::eq(pInfo._volumn, 0.0))
+		{
+			//新的信号中没有该持仓，则要清空
+			to_clear.insert(code);
+		}
+	}
+
+	for(const std::string& code : to_clear)
+	{
+		append_signal(code.c_str(), 0, "autoexit");
+	}
 
 	_emit_times++;
 	_total_calc_time += ticker.micro_seconds();
@@ -474,7 +492,7 @@ void MfMocker::stra_set_position(const char* stdCode, double qty, const char* us
 
 void MfMocker::append_signal(const char* stdCode, double qty, const char* userTag /* = "" */, double price/* = 0.0*/)
 {
-	double curPx = _price_map[stdCode];
+	double curPx = _price_map[stdCode].first;
 
 	SigInfo& sInfo = _sig_map[stdCode];
 	sInfo._volumn = qty;
@@ -494,7 +512,7 @@ void MfMocker::do_set_position(const char* stdCode, double qty, double price /* 
 	PosInfo& pInfo = _pos_map[stdCode];
 	double curPx = price;
 	if (decimal::eq(price, 0.0))
-		curPx = _price_map[stdCode];
+		curPx = _price_map[stdCode].first;
 	uint64_t curTm = (uint64_t)_replayer->get_date() * 10000 + _replayer->get_min_time();
 	uint32_t curTDate = _replayer->get_trading_date();
 
@@ -622,6 +640,27 @@ WTSKlineSlice* MfMocker::stra_get_bars(const char* stdCode, const char* period, 
 	if (kline)
 	{
 		double lastClose = kline->close(-1);
+		uint64_t lastTime = 0;
+		if(basePeriod[0] == 'd')
+		{
+			lastTime = kline->date(-1);
+			WTSSessionInfo* sInfo = _replayer->get_session_info(stdCode, true);
+			lastTime *= 1000000000;
+			lastTime += (uint64_t)sInfo->getCloseTime() * 100000;
+		}
+		else
+		{
+			lastTime = kline->time(-1);
+			lastTime += 199000000000;
+			lastTime *= 100000;
+		}
+
+		if(lastTime > _price_map[stdCode].second)
+		{
+			_price_map[stdCode].second = lastTime;
+			_price_map[stdCode].first = lastClose;
+		}
+
 		_replayer->sub_tick(id(), stdCode);
 	}
 
