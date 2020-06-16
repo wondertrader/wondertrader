@@ -1,14 +1,9 @@
 // TestPorter.cpp : 定义控制台应用程序的入口点。
 //
-
-#include "stdafx.h"
 #include "..\WtPorter\WtPorter.h"
 
 #include "..\Share\WTSStruct.h"
-
-#define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
-
+#include "../Share/DLLHelper.hpp"
 
 void _cdecl on_init(CtxHandler ctxid)
 {
@@ -54,18 +49,24 @@ void main()
 
 	//trans_mc_bars("E:\\LocalSource\\WTSOptSvr\\Win32\\Debug\\WtRunner\\storage\\csv\\", "E:\\LocalSource\\WTSOptSvr\\Win32\\Debug\\WtRunner\\storage\\test\\", "m5");
 	//return;
-	HINSTANCE hInst = LoadLibrary("WtPorter.dll");
+#ifdef _WIN32
+	DLLHelper::load_library("WtPorter.dll");
+#else
+	DLLHelper::load_library("libWtPorter.so");
+#endif
 	register_evt_callback(on_event);
 	//register_cta_callbacks(on_init, on_tick, on_calc, on_bar);
-	register_mf_callbacks(on_init, on_tick, on_calc, on_bar);
+	register_sel_callbacks(on_init, on_tick, on_calc, on_bar);
 
 	init_porter("log4cxx.prop");
 
-	reg_cta_factories("./cta/");
+	//reg_cta_factories("./cta/");
+
+	reg_sel_factories("./sel/");
 
 	config_porter("config.json");
 
-	//CtxHandler ctx = create_context("test");
+	//CtxHandler ctx = create_sel_context("test", 0, 1600, "d");
 	//ctx_str_get_bars(ctx, "DCE.pp.HOT", "m5", 220, true, on_getbar);
 	//dump_bars("DCE.a.HOT", "m5", "CZCE.a.HOT_m5.csv");
 

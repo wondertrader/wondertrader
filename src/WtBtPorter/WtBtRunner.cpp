@@ -134,10 +134,10 @@ void WtBtRunner::config(const char* cfgFile)
 		_cta_mocker->initCtaFactory(cfgMode);
 		_replayer.register_sink(_cta_mocker);
 	}
-	else if (strcmp(mode, "mf") == 0 && cfgMode)
+	else if (strcmp(mode, "sel") == 0 && cfgMode)
 	{
-		_sel_mocker = new PySelMocker(&_replayer, "mf");
-		_sel_mocker->initMfFactory(cfgMode);
+		_sel_mocker = new PySelMocker(&_replayer, "sel");
+		_sel_mocker->initSelFactory(cfgMode);
 		_replayer.register_sink(_sel_mocker);
 	}
 	else if (strcmp(mode, "exec") == 0 && cfgMode)

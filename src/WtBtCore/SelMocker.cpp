@@ -187,7 +187,7 @@ void SelMocker::log_close(const char* stdCode, bool isLong, uint64_t openTime, d
 	}
 }
 
-bool SelMocker::initMfFactory(WTSVariant* cfg)
+bool SelMocker::initSelFactory(WTSVariant* cfg)
 {
 	if (cfg == NULL)
 		return false;
@@ -487,6 +487,7 @@ double SelMocker::stra_get_price(const char* stdCode)
 
 void SelMocker::stra_set_position(const char* stdCode, double qty, const char* userTag /* = "" */)
 {
+	_replayer->sub_tick(id(), stdCode);
 	append_signal(stdCode, qty, userTag);
 }
 
@@ -660,8 +661,6 @@ WTSKlineSlice* SelMocker::stra_get_bars(const char* stdCode, const char* period,
 			_price_map[stdCode].second = lastTime;
 			_price_map[stdCode].first = lastClose;
 		}
-
-		_replayer->sub_tick(id(), stdCode);
 	}
 
 	return kline;

@@ -26,7 +26,7 @@ void on_tick(CtxHandler ctxid, const char* stdCode, WTSTickStruct* newTick)
 void on_calc(CtxHandler ctxid)
 {
 	printf("on_calc\r\n");
-	mf_get_bars(ctxid, "SSE.600009Q", "d1", 10, on_getbar);
+	sel_get_bars(ctxid, "SSE.600009Q", "d1", 10, on_getbar);
 }
 
 void on_bar(CtxHandler ctxid, const char* code, const char* period, WTSBarStruct* newBar)
@@ -43,13 +43,13 @@ int main()
 #else
 	DLLHelper::load_library("libWtBtPorter.so");
 #endif
-	register_mf_callbacks(on_init, on_tick, on_calc, on_bar);
+	register_sel_callbacks(on_init, on_tick, on_calc, on_bar);
 
 	init_backtest("logcfg.json");
 
 	config_backtest("configbt.json");
 
-	init_mf_mocker("mf", 1, 1600, "d");	//every money 09:26
+	init_sel_mocker("sel", 1, 1600, "d");	//every money 09:26
 
 	run_backtest();
 	getchar();

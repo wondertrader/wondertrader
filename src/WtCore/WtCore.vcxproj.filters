@@ -28,7 +28,7 @@
     <Filter Include="Common">
       <UniqueIdentifier>{a7b2a95c-537d-468f-ba75-6d04db988e6a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="MF">
+    <Filter Include="SEL">
       <UniqueIdentifier>{d60a1661-ccd3-4142-9777-3ab97f08856a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -115,25 +115,25 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="ISelStraCtx.h">
-      <Filter>MF</Filter>
+      <Filter>SEL</Filter>
     </ClInclude>
     <ClInclude Include="SelStraBaseCtx.h">
-      <Filter>MF</Filter>
+      <Filter>SEL</Filter>
     </ClInclude>
     <ClInclude Include="SelStraContext.h">
-      <Filter>MF</Filter>
+      <Filter>SEL</Filter>
     </ClInclude>
     <ClInclude Include="SelStrategyDefs.h">
-      <Filter>MF</Filter>
+      <Filter>SEL</Filter>
     </ClInclude>
     <ClInclude Include="SelStrategyMgr.h">
-      <Filter>MF</Filter>
+      <Filter>SEL</Filter>
     </ClInclude>
     <ClInclude Include="WtSelEngine.h">
-      <Filter>MF</Filter>
+      <Filter>SEL</Filter>
     </ClInclude>
     <ClInclude Include="WtSelTicker.h">
-      <Filter>MF</Filter>
+      <Filter>SEL</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -192,19 +192,19 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="SelStraBaseCtx.cpp">
-      <Filter>MF</Filter>
+      <Filter>SEL</Filter>
     </ClCompile>
     <ClCompile Include="SelStraContext.cpp">
-      <Filter>MF</Filter>
+      <Filter>SEL</Filter>
     </ClCompile>
     <ClCompile Include="SelStrategyMgr.cpp">
-      <Filter>MF</Filter>
+      <Filter>SEL</Filter>
     </ClCompile>
     <ClCompile Include="WtSelEngine.cpp">
-      <Filter>MF</Filter>
+      <Filter>SEL</Filter>
     </ClCompile>
     <ClCompile Include="WtSelTicker.cpp">
-      <Filter>MF</Filter>
+      <Filter>SEL</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
