@@ -6,8 +6,3 @@
 
 // TODO:  在 STDAFX.H 中
 // 引用任何所需的附加头文件，而不是在此文件中引用
-#ifdef _DEBUG
-#pragma comment(lib, "jsoncpp-mdd.lib")
-#else
-#pragma comment(lib, "jsoncpp-md.lib")
-#endif

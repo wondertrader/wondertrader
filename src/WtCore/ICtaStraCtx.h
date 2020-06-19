@@ -8,6 +8,7 @@
  * \brief 
  */
 #pragma once
+#include<string>
 #include <stdint.h>
 #include <functional>
 #include "../Share/WTSMarcos.h"

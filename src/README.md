@@ -3,7 +3,7 @@
 
 ## 开发环境
 + Windows	
-	> `Visual Studio 2013` + `Windows 7`
+	> `Visual Studio 2019` + `Windows 7`
 + Linux	
 	> `Gcc v7.5.0` + `Ubuntu 18.04.3 LTS` + `cmake 3.10.2`
 
