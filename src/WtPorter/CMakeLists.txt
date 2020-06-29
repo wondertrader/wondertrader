@@ -24,7 +24,7 @@ ELSE (UNIX)
 	SET(LNKS ${MyDeps}/lib)
 ENDIF ()
 
-SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../build/bin)
+SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../build/bin/WtPorter)
 
 #7. 添加源码
 file(GLOB SRCS *.cpp)
@@ -51,4 +51,7 @@ ELSE (UNIX)
 		CXX_VISIBILITY_PRESET hidden
 		VISIBILITY_INLINES_HIDDEN 1)
 ENDIF ()
+
+file(COPY ${PROJECT_SOURCE_DIR}/../build/bin/libParserUDP.so ${LIBRARY_OUTPUT_PATH}/Parsers/)
+
 

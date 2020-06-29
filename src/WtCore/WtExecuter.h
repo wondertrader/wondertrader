@@ -58,7 +58,7 @@ class IExecuterStub
 public:
 	virtual uint64_t get_real_time() = 0;
 	virtual WTSCommodityInfo* get_comm_info(const char* stdCode) = 0;
-	virtual IHotMgr* get_hot_mgr() = 0;
+	virtual IHotMgr* get_hot_mon() = 0;
 	virtual uint32_t get_trading_day() = 0;
 };
 

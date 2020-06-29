@@ -52,6 +52,6 @@ SET(LIBS
 	pthread
 	dl
 )
-ADD_EXECUTABLE(TestBtPorter TestBtPorter.cpp)
+ADD_EXECUTABLE(TestBtPorter ../TestBtPorter/TestBtPorter.cpp)
 TARGET_LINK_LIBRARIES(TestBtPorter ${LIBS})
 

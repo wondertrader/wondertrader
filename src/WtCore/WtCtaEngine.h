@@ -48,7 +48,7 @@ public:
 	//IExecuterStub ½Ó¿Ú
 	virtual uint64_t get_real_time() override;
 	virtual WTSCommodityInfo* get_comm_info(const char* stdCode) override;
-	virtual IHotMgr* IExecuterStub::get_hot_mgr() { return _hot_mgr; }
+	virtual IHotMgr* get_hot_mon() { return _hot_mgr; }
 	virtual uint32_t get_trading_day() { return _cur_tdate; }
 
 
