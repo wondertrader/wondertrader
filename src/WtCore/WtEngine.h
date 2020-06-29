@@ -15,6 +15,7 @@
 #include <unordered_map>
 
 #include "RiskMonDefs.h"
+#include "ParserAdapter.h"
 
 #include "../Share/WTSMarcos.h"
 #include "../Share/BoostDefine.h"
@@ -72,7 +73,7 @@ public:
 	virtual void on_session_event(uint32_t uDate, bool isBegin = true) {}
 };
 
-class WtEngine : public WtPortContext
+class WtEngine : public WtPortContext, public IParserStub
 {
 public:
 	WtEngine();
@@ -128,6 +129,10 @@ public:
 	virtual uint32_t	getTradingDate() override;
 	virtual uint32_t	transTimeToMin(uint32_t uTime) override{ return 0; }
 
+	//////////////////////////////////////////////////////////////////////////
+	/// IParserStub½Ó¿Ú
+	virtual void handle_push_quote(WTSTickData* newTick, bool isHot) override;
+
 public:
 	virtual void init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtDataManager* dataMgr, IHotMgr* hotMgr);
 
@@ -137,11 +142,10 @@ public:
 
 	virtual void on_bar(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar) = 0;
 
-	virtual void handle_push_quote(WTSTickData* newTick, bool isHot);
-
 	virtual void on_init(){}
 	virtual void on_session_begin();
 	virtual void on_session_end();
+
 
 protected:
 	/*

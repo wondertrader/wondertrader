@@ -145,11 +145,12 @@ void WtCtaEngine::on_init()
 		});
 	}
 
-	for (auto it = _executers.begin(); it != _executers.end(); it++)
-	{
-		WtExecuterPtr& executer = (*it);
-		executer->set_position(target_pos);
-	}
+	//for (auto it = _executers.begin(); it != _executers.end(); it++)
+	//{
+	//	WtExecuterPtr& executer = (*it);
+	//	executer->set_position(target_pos);
+	//}
+	_exec_mgr.set_positions(target_pos);
 
 	if (_evt_listener)
 		_evt_listener->on_initialize_event();
@@ -272,11 +273,12 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 		update_fund_dynprofit();
 	});
 
-	for (auto it = _executers.begin(); it != _executers.end(); it++)
-	{
-		WtExecuterPtr& executer = (*it);
-		executer->set_position(target_pos);
-	}
+	//for (auto it = _executers.begin(); it != _executers.end(); it++)
+	//{
+	//	WtExecuterPtr& executer = (*it);
+	//	executer->set_position(target_pos);
+	//}
+	_exec_mgr.set_positions(target_pos);
 
 	save_datas();
 
@@ -322,11 +324,12 @@ void WtCtaEngine::handle_pos_change(const char* stdCode, double diffQty)
 		append_signal(realCode.c_str(), targetPos);
 	});
 		
-	for (auto it = _executers.begin(); it != _executers.end(); it++)
-	{
-		WtExecuterPtr& executer = (*it);
-		executer->on_position_changed(realCode.c_str(), targetPos);
-	}
+	//for (auto it = _executers.begin(); it != _executers.end(); it++)
+	//{
+	//	WtExecuterPtr& executer = (*it);
+	//	executer->on_position_changed(realCode.c_str(), targetPos);
+	//}
+	_exec_mgr.handle_pos_change(realCode.c_str(), targetPos);
 }
 
 void WtCtaEngine::on_tick(const char* stdCode, WTSTickData* curTick)
@@ -340,11 +343,7 @@ void WtCtaEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 	if (it != _subed_raw_codes.end())
 	{
 		//是否主力合约代码的标记, 主要用于给执行器发数据的
-		for (auto it = _executers.begin(); it != _executers.end(); it++)
-		{
-			WtExecuterPtr& executer = (*it);
-			executer->on_tick(stdCode, curTick);
-		}
+		_exec_mgr.handle_tick(stdCode, curTick);
 	}
 
 	auto sit = _tick_sub_map.find(stdCode);
@@ -413,4 +412,14 @@ bool WtCtaEngine::isInTrading()
 uint32_t WtCtaEngine::transTimeToMin(uint32_t uTime)
 {
 	return _tm_ticker->time_to_mins(uTime);
+}
+
+WTSCommodityInfo* WtCtaEngine::get_comm_info(const char* stdCode)
+{
+	return _base_data_mgr->getCommodity(CodeHelper::stdCodeToStdCommID(stdCode).c_str());
+}
+
+uint64_t WtCtaEngine::get_real_time()
+{
+	return TimeUtils::makeTime(_cur_date, _cur_raw_time * 100000 + _cur_secs);
 }

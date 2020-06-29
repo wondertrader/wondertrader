@@ -9,7 +9,7 @@
  */
 #include "WtExecuter.h"
 #include "TraderAdapter.h"
-#include "WtDataManager.h"
+#include "IDataManager.h"
 #include "WtEngine.h"
 
 #include "../Share/CodeHelper.hpp"
@@ -26,12 +26,11 @@
 USING_NS_OTP;
 
 
-WtExecuter::WtExecuter(WtExecuterFactory* factory, const char* name, WtDataManager* dataMgr)
+WtExecuter::WtExecuter(WtExecuterFactory* factory, const char* name, IDataManager* dataMgr)
 	: _factory(factory)
 	, _name(name)
 	, _data_mgr(dataMgr)
 	, _channel_ready(false)
-	, _engine(NULL)
 {
 }
 
@@ -171,12 +170,13 @@ void WtExecuter::writeLog(const char* fmt, ...)
 
 WTSCommodityInfo* WtExecuter::getCommodityInfo(const char* stdCode)
 {
-	return _engine->get_commodity_info(stdCode);
+	return _stub->get_comm_info(stdCode);
 }
 
 uint64_t WtExecuter::getCurTime()
 {
-	return TimeUtils::makeTime(_engine->get_date(), _engine->get_raw_time() * 100000 + _engine->get_secs());
+	return _stub->get_real_time();
+	//return TimeUtils::makeTime(_stub->get_date(), _stub->get_raw_time() * 100000 + _stub->get_secs());
 }
 
 #pragma endregion Context回调接口
@@ -407,12 +407,12 @@ void WtExecuter::on_channel_lost()
 
 void WtExecuter::on_position(const char* stdCode, bool isLong, double prevol, double preavail, double newvol, double newavail)
 {
-	IHotMgr* hotMgr = _engine->get_hot_mgr();
+	IHotMgr* hotMgr = _stub->get_hot_mgr();
 	if(CodeHelper::isStdFutHotCode(stdCode))
 	{
 		CodeHelper::CodeInfo cInfo;
 		CodeHelper::extractStdFutCode(stdCode, cInfo);
-		std::string code = hotMgr->getPrevRawCode(cInfo._exchg, cInfo._product, _engine->get_trading_date());
+		std::string code = hotMgr->getPrevRawCode(cInfo._exchg, cInfo._product, _stub->get_trading_day());
 		if (code == stdCode)
 		{
 			//上期主力合约，需要清理仓位
@@ -533,3 +533,33 @@ ExecuteUnitPtr WtExecuterFactory::createExeUnit(const char* name)
 	}
 	return ExecuteUnitPtr(new ExeUnitWrapper(unit, fInfo._fact));
 }
+
+//////////////////////////////////////////////////////////////////////////
+#pragma region "WtExecuterMgr"
+void WtExecuterMgr::set_positions(std::unordered_map<std::string, double> target_pos)
+{
+	for (auto it = _executers.begin(); it != _executers.end(); it++)
+	{
+		ExecCmdPtr& executer = (*it);
+		executer->set_position(target_pos);
+	}
+}
+
+void WtExecuterMgr::handle_pos_change(const char* stdCode, double targetPos)
+{
+	for (auto it = _executers.begin(); it != _executers.end(); it++)
+	{
+		ExecCmdPtr& executer = (*it);
+		executer->on_position_changed(stdCode, targetPos);
+	}
+}
+
+void WtExecuterMgr::handle_tick(const char* stdCode, WTSTickData* curTick)
+{
+	for (auto it = _executers.begin(); it != _executers.end(); it++)
+	{
+		ExecCmdPtr& executer = (*it);
+		executer->on_tick(stdCode, curTick);
+	}
+}
+#pragma endregion "WtExecuterMgr"

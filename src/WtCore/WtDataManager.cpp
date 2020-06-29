@@ -235,28 +235,6 @@ WTSTickData* WtDataManager::grab_last_tick(const char* code)
 	return curTick;
 }
 
-//WTSHisTickData* WtDataManager::get_ticks(const char* code, uint32_t count)
-//{
-//	if (_ticks_cache == NULL)
-//		_ticks_cache = DataCacheMap::create();
-//
-//	WTSHisTickData* tData = (WTSHisTickData*)_ticks_cache->get(code);
-//	if(tData != NULL && tData->size() >= count)
-//	{
-//		tData->retain();
-//		return tData;
-//	}
-//	else
-//	{
-//		tData = _reader->readTicks(code, count, 0, true);
-//		if (tData)
-//			_ticks_cache->add(code, tData, true);
-//	}
-//
-//
-//	return tData;
-//}
-
 WTSTickSlice* WtDataManager::get_tick_slice(const char* code, uint32_t count)
 {
 	if (_reader == NULL)
@@ -265,45 +243,6 @@ WTSTickSlice* WtDataManager::get_tick_slice(const char* code, uint32_t count)
 	return _reader->readTickSlice(code, count);
 }
 
-/*
-WTSKlineData* WtDataManager::get_bars(const char* code, WTSKlinePeriod period, uint32_t times, uint32_t count)
-{
-	WTSSessionInfo* sInfo = _engine->get_session_info(code, true);
-
-	if (_bars_cache == NULL)
-		_bars_cache = DataCacheMap::create();
-
-	std::string key = StrUtil::printf("%s-%u-%u", code, period, times);
-	WTSKlineData* kData = (WTSKlineData*)_bars_cache->get(key);
-	//如果缓存里的K线条数大于请求的条数, 则直接返回
-	if (kData != NULL && kData->size() >= count)
-	{
-		kData->retain();
-		return kData;
-	}
-
-	{
-		if (times == 1)
-		{
-			kData = _store->readBars(code, period, count);
-		}
-		else
-		{
-			uint32_t realCount = count*times + times;
-			WTSKlineData* rawData = _store->readBars(code, period, realCount);
-			if(rawData != NULL)
-			{
-				kData = g_dataFact.extractKlineData(rawData, period, times, sInfo, true);
-				rawData->release();
-			}
-		}
-		
-		if(kData)
-			_bars_cache->add(key, kData);
-		return kData;
-	}
-}
-*/
 
 WTSKlineSlice* WtDataManager::get_kline_slice(const char* stdCode, WTSKlinePeriod period, uint32_t times, uint32_t count)
 {
@@ -354,11 +293,3 @@ WTSKlineSlice* WtDataManager::get_kline_slice(const char* stdCode, WTSKlinePerio
 	WTSKlineSlice* slice = WTSKlineSlice::create(stdCode, period, times, NULL, 0, rtHead, rtCnt);
 	return slice;
 }
-
-//WTSKlineSlice* WtDataManager::get_kline_slice(const char* code, WTSKlinePeriod period, uint32_t count)
-//{
-//	if (_store == NULL)
-//		return NULL;
-//
-//	return _store->readKlineSlice(code, period, count);
-//}

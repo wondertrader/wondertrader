@@ -196,12 +196,14 @@ bool reg_exe_factories(const char* factFolder)
 	return getRunner().addExeFactories(factFolder);
 }
 
-CtxHandler create_sel_context(const char* name, uint32_t date, uint32_t time, const char* period)
-{
-	return getRunner().createSelContext(name, date, time, period);
-}
 
 #pragma region "CTA策略接口"
+
+CtxHandler create_cta_context(const char* name)
+{
+	return getRunner().createCtaContext(name);
+}
+
 void cta_enter_long(CtxHandler cHandle, const char* code, double qty, const char* userTag, double limitprice, double stopprice)
 {
 	CtaContextPtr ctx = getRunner().getCtaContext(cHandle);
@@ -457,6 +459,12 @@ WtString cta_load_userdata(CtxHandler cHandle, const char* key, const char* defV
 #pragma endregion
 
 #pragma region "多因子策略接口"
+CtxHandler create_sel_context(const char* name, uint32_t date, uint32_t time, const char* period)
+{
+	return getRunner().createSelContext(name, date, time, period);
+}
+
+
 void sel_save_userdata(CtxHandler cHandle, const char* key, const char* val)
 {
 	SelContextPtr ctx = getRunner().getSelContext(cHandle);

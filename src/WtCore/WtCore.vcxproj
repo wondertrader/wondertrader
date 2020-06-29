@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ActionPolicyMgr.h" />
+    <ClInclude Include="IDataManager.h" />
     <ClInclude Include="IDataReader.h" />
     <ClInclude Include="HftStraBaseCtx.h" />
     <ClInclude Include="HftStraContext.h" />
@@ -41,7 +42,6 @@
     <ClInclude Include="ParserAdapter.h" />
     <ClInclude Include="TraderAdapter.h" />
     <ClInclude Include="WtEngine.h" />
-    <ClInclude Include="WtExecuterMgr.h" />
     <ClInclude Include="WtHelper.h" />
     <ClInclude Include="WtCtaTicker.h" />
     <ClInclude Include="CtaStraContext.h" />
@@ -67,7 +67,6 @@
     <ClCompile Include="ParserAdapter.cpp" />
     <ClCompile Include="TraderAdapter.cpp" />
     <ClCompile Include="WtEngine.cpp" />
-    <ClCompile Include="WtExecuterMgr.cpp" />
     <ClCompile Include="WtHelper.cpp" />
     <ClCompile Include="WtCtaTicker.cpp" />
     <ClCompile Include="WtDataManager.cpp" />

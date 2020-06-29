@@ -401,7 +401,7 @@ bool WtRtRunner::initParsers()
 		const char* id = cfgItem->getCString("id");
 
 		ParserAdapterPtr adapter(new ParserAdapter);
-		adapter->init(id, cfgItem, _engine);
+		adapter->init(id, cfgItem, _engine, _engine->get_basedata_mgr(), _engine->get_hot_mgr());
 
 		_parsers.addAdapter(id, adapter);
 
@@ -432,15 +432,15 @@ bool WtRtRunner::initExecuters()
 
 		const char* id = cfgItem->getCString("id");
 
-		WtExecuterPtr executer(new WtExecuter(&_exe_factory, id, &_data_mgr));
+		WtExecuter* executer = new WtExecuter(&_exe_factory, id, &_data_mgr);
 		if (!executer->init(cfgItem))
 			return false;
 
 		TraderAdapterPtr trader = _traders.getAdapter(cfgItem->getCString("trader"));
 		executer->setTrader(trader.get());
-		trader->addSink(executer.get());
+		trader->addSink(executer);
 
-		_cta_engine.addExecuter(executer);
+		_cta_engine.addExecuter(ExecCmdPtr(executer));
 		count++;
 	}
 

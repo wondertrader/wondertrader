@@ -11,6 +11,7 @@
 #include <vector>
 #include <unordered_set>
 #include "IDataReader.h"
+#include "IDataManager.h"
 
 #include "../Share/WTSCollection.hpp"
 
@@ -25,7 +26,7 @@ class IBaseDataMgr;
 class IBaseDataMgr;
 class WtEngine;
 
-class WtDataManager : public IDataReaderSink
+class WtDataManager : public IDataReaderSink, public IDataManager
 {
 public:
 	WtDataManager();
@@ -39,16 +40,14 @@ public:
 
 	void	handle_push_quote(const char* stdCode, WTSTickData* newTick);
 
-	//WTSHisTickData* get_ticks(const char* code, uint32_t count);
-	//WTSKlineData*	get_bars(const char* code, WTSKlinePeriod period, uint32_t times, uint32_t count);
-
-	WTSTickSlice*	get_tick_slice(const char* code, uint32_t count);
-	WTSKlineSlice*	get_kline_slice(const char* code, WTSKlinePeriod period, uint32_t times, uint32_t count);
-
-	WTSTickData*	grab_last_tick(const char* code);
+	//////////////////////////////////////////////////////////////////////////
+	//IDataManager ½Ó¿Ú
+	virtual WTSTickSlice* get_tick_slice(const char* code, uint32_t count) override;
+	virtual WTSKlineSlice* get_kline_slice(const char* code, WTSKlinePeriod period, uint32_t times, uint32_t count) override;
+	virtual WTSTickData* grab_last_tick(const char* code) override;
 
 	//////////////////////////////////////////////////////////////////////////
-	//IDataStoreListener
+	//IDataReaderSink
 	virtual void	on_bar(const char* code, WTSKlinePeriod period, WTSBarStruct* newBar) override;
 	virtual void	on_all_bar_updated(uint32_t updateTime) override;
 

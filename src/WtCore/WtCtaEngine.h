@@ -18,7 +18,7 @@ typedef boost::shared_ptr<ICtaStraCtx> CtaContextPtr;
 
 class WtCtaRtTicker;
 
-class WtCtaEngine : public WtEngine
+class WtCtaEngine : public WtEngine, public IExecuterStub
 {
 public:
 	WtCtaEngine();
@@ -44,6 +44,14 @@ public:
 	virtual bool isInTrading() override;
 	virtual uint32_t transTimeToMin(uint32_t uTime) override;
 
+	///////////////////////////////////////////////////////////////////////////
+	//IExecuterStub ½Ó¿Ú
+	virtual uint64_t get_real_time() override;
+	virtual WTSCommodityInfo* get_comm_info(const char* stdCode) override;
+	virtual IHotMgr* IExecuterStub::get_hot_mgr() { return _hot_mgr; }
+	virtual uint32_t get_trading_day() { return _cur_tdate; }
+
+
 public:
 	void on_schedule(uint32_t curDate, uint32_t curTime);	
 
@@ -53,10 +61,10 @@ public:
 	
 	CtaContextPtr	getContext(uint32_t id);
 
-	inline void addExecuter(WtExecuterPtr& executer)
+	inline void addExecuter(ExecCmdPtr& executer)
 	{
-		_executers.push_back(executer);
-		executer->setEngine(this);
+		_exec_mgr.add_executer(executer);
+		executer->setStub(this);
 	}
 
 private:
@@ -65,8 +73,7 @@ private:
 
 	WtCtaRtTicker*	_tm_ticker;
 
-	typedef std::vector<WtExecuterPtr> ExecuterList;
-	ExecuterList	_executers;
+	WtExecuterMgr	_exec_mgr;
 
 	WTSVariant*		_cfg;
 };

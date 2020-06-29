@@ -89,11 +89,12 @@ void WtSelEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 	if (it != _subed_raw_codes.end())
 	{
 		//是否主力合约代码的标记, 主要用于给执行器发数据的
-		for (auto it = _executers.begin(); it != _executers.end(); it++)
-		{
-			WtExecuterPtr& executer = (*it);
-			executer->on_tick(stdCode, curTick);
-		}
+		//for (auto it = _executers.begin(); it != _executers.end(); it++)
+		//{
+		//	WtExecuterPtr& executer = (*it);
+		//	executer->on_tick(stdCode, curTick);
+		//}
+		_exec_mgr.handle_tick(stdCode, curTick);
 	}
 
 	auto sit = _tick_sub_map.find(stdCode);
@@ -299,9 +300,20 @@ void WtSelEngine::handle_pos_change(const char* stdCode, double diffQty)
 		append_signal(realCode.c_str(), targetPos);
 	});
 
-	for (auto it = _executers.begin(); it != _executers.end(); it++)
-	{
-		WtExecuterPtr& executer = (*it);
-		executer->on_position_changed(realCode.c_str(), targetPos);
-	}
+	//for (auto it = _executers.begin(); it != _executers.end(); it++)
+	//{
+	//	WtExecuterPtr& executer = (*it);
+	//	executer->on_position_changed(realCode.c_str(), targetPos);
+	//}
+	_exec_mgr.handle_pos_change(realCode.c_str(), targetPos);
+}
+
+WTSCommodityInfo* WtSelEngine::get_comm_info(const char* stdCode)
+{
+	return _base_data_mgr->getCommodity(CodeHelper::stdCodeToStdCommID(stdCode).c_str());
+}
+
+uint64_t WtSelEngine::get_real_time()
+{
+	return TimeUtils::makeTime(_cur_date, _cur_raw_time * 100000 + _cur_secs);
 }

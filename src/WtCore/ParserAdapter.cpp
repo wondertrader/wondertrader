@@ -33,7 +33,7 @@ ParserAdapter::ParserAdapter()
 	, _remover(NULL)
 	, _stopped(false)
 	, _bd_mgr(NULL)
-	, _engine(NULL)
+	, _stub(NULL)
 	, _cfg(NULL)
 {
 }
@@ -43,13 +43,14 @@ ParserAdapter::~ParserAdapter()
 {
 }
 
-bool ParserAdapter::init(const char* id, WTSVariant* cfg, WtEngine* engine)
+bool ParserAdapter::init(const char* id, WTSVariant* cfg, IParserStub* stub, IBaseDataMgr* bgMgr, IHotMgr* hotMgr/* = NULL*/)
 {
 	if (cfg == NULL)
 		return false;
 
-	_engine = engine;
-	_bd_mgr = _engine->get_basedata_mgr();;
+	_stub = stub;
+	_bd_mgr = bgMgr;
+	_hot_mgr = hotMgr;
 	_id = id;
 
 	if (_cfg != NULL)
@@ -186,11 +187,6 @@ bool ParserAdapter::run()
 	return true;
 }
 
-void ParserAdapter::handleSymbolList(const WTSArray* aySymbols)
-{
-
-}
-
 void ParserAdapter::handleQuote(WTSTickData *quote, bool bNeedSlice)
 {
 	if (_stopped)
@@ -202,7 +198,7 @@ void ParserAdapter::handleQuote(WTSTickData *quote, bool bNeedSlice)
 	if (quote->actiondate() == 0 || quote->tradingdate() == 0)
 		return;
 
-	std::string hotCode = _engine->get_hot_mgr()->getHotCode(quote->exchg(), quote->code(), quote->tradingdate());
+	std::string hotCode = _hot_mgr->getHotCode(quote->exchg(), quote->code(), quote->tradingdate());
 
 	WTSContractInfo* cInfo = _bd_mgr->getContract(quote->code(), quote->exchg());
 	WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(cInfo);
@@ -213,7 +209,7 @@ void ParserAdapter::handleQuote(WTSTickData *quote, bool bNeedSlice)
 		stdCode = CodeHelper::bscStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
 	quote->setCode(stdCode.c_str());
 
-	_engine->handle_push_quote(quote, !hotCode.empty());
+	_stub->handle_push_quote(quote, !hotCode.empty());
 
 }
 
@@ -226,11 +222,6 @@ void ParserAdapter::handleParserLog(WTSLogLevel ll, const char* format, ...)
 	va_start(args, format);
 	WTSLogger::log_dyn_direct("parser", _id.c_str(), ll, format, args);
 	va_end(args);
-}
-
-IBaseDataMgr* ParserAdapter::getBaseDataMgr()
-{
-	return _bd_mgr;
 }
 
 

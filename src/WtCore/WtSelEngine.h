@@ -37,7 +37,7 @@ typedef boost::shared_ptr<ISelStraCtx> SelContextPtr;
 class WtSelRtTicker;
 
 
-class WtSelEngine : public WtEngine
+class WtSelEngine : public WtEngine, public IExecuterStub
 {
 public:
 	WtSelEngine();
@@ -62,16 +62,23 @@ public:
 
 	virtual void on_session_end() override;
 
+	///////////////////////////////////////////////////////////////////////////
+	//IExecuterStub ½Ó¿Ú
+	virtual uint64_t get_real_time() override;
+	virtual WTSCommodityInfo* get_comm_info(const char* stdCode) override;
+	virtual IHotMgr* IExecuterStub::get_hot_mgr() { return _hot_mgr; }
+	virtual uint32_t get_trading_day() { return _cur_tdate; }
+
 public:
 	//uint32_t	register_task(const char* name, uint32_t date, uint32_t time, TaskPeriodType period, bool bStrict = true, const char* trdtpl = "CHINA");
 	void			addContext(SelContextPtr ctx, uint32_t date, uint32_t time, TaskPeriodType period, bool bStrict = true, const char* trdtpl = "CHINA");
 
 	SelContextPtr	getContext(uint32_t id);
 
-	inline void addExecuter(WtExecuterPtr& executer)
+	inline void addExecuter(ExecCmdPtr& executer)
 	{
-		_executers.push_back(executer);
-		executer->setEngine(this);
+		_exec_mgr.add_executer(executer);
+		executer->setStub(this);
 	}
 
 	void	on_minute_end(uint32_t uDate, uint32_t uTime);
@@ -84,8 +91,7 @@ private:
 	typedef std::unordered_map<uint32_t, SelContextPtr> ContextMap;
 	ContextMap		_ctx_map;
 
-	typedef std::vector<WtExecuterPtr> ExecuterList;
-	ExecuterList	_executers;
+	WtExecuterMgr	_exec_mgr;
 
 	bool	_terminated;
 

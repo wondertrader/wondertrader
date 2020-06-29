@@ -111,9 +111,6 @@
     <ClInclude Include="IDataStore.h">
       <Filter>Defs</Filter>
     </ClInclude>
-    <ClInclude Include="WtExecuterMgr.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="ISelStraCtx.h">
       <Filter>SEL</Filter>
     </ClInclude>
@@ -134,6 +131,9 @@
     </ClInclude>
     <ClInclude Include="WtSelTicker.h">
       <Filter>SEL</Filter>
+    </ClInclude>
+    <ClInclude Include="IDataManager.h">
+      <Filter>Datas</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -187,9 +187,6 @@
     </ClCompile>
     <ClCompile Include="WtHftTicker.cpp">
       <Filter>HFT</Filter>
-    </ClCompile>
-    <ClCompile Include="WtExecuterMgr.cpp">
-      <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="SelStraBaseCtx.cpp">
       <Filter>SEL</Filter>

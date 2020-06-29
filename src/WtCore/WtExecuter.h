@@ -22,9 +22,9 @@
 
 NS_OTP_BEGIN
 class WTSVariant;
-class WtDataManager;
+class IDataManager;
 class TraderAdapter;
-class WtEngine;
+class IHotMgr;
 
 //////////////////////////////////////////////////////////////////////////
 //执行单元封装
@@ -53,14 +53,47 @@ private:
 typedef std::shared_ptr<ExeUnitWrapper>	ExecuteUnitPtr;
 class WtExecuterFactory;
 
+class IExecuterStub
+{
+public:
+	virtual uint64_t get_real_time() = 0;
+	virtual WTSCommodityInfo* get_comm_info(const char* stdCode) = 0;
+	virtual IHotMgr* get_hot_mgr() = 0;
+	virtual uint32_t get_trading_day() = 0;
+};
+
+class IExecCommand
+{
+public:
+	IExecCommand():_stub(NULL){}
+	/*
+	 *	设置目标仓位
+	 */
+	virtual void set_position(const std::unordered_map<std::string, double>& targets) = 0;
+
+	/*
+	 *	合约仓位变动
+	 */
+	virtual void on_position_changed(const char* stdCode, double targetPos) = 0;
+
+	/*
+	 *	实时行情回调
+	 */
+	virtual void on_tick(const char* stdCode, WTSTickData* newTick) = 0;
+
+	void setStub(IExecuterStub* stub) { _stub = stub; }
+protected:
+	IExecuterStub* _stub;
+};
+
 class WtExecuter : public ExecuteContext,
-		public ITrdNotifySink
+		public ITrdNotifySink, public IExecCommand
 {
 public:
 	typedef std::unordered_map<std::string, ExecuteUnitPtr> ExecuteUnitMap;
 
 public:
-	WtExecuter(WtExecuterFactory* factory, const char* name, WtDataManager* dataMgr);
+	WtExecuter(WtExecuterFactory* factory, const char* name, IDataManager* dataMgr);
 	virtual ~WtExecuter();
 
 public:
@@ -75,8 +108,6 @@ public:
 	{
 		_trader = adapter;
 	}
-
-	void setEngine(WtEngine* engine){ _engine = engine; }
 
 	const char* name() const{ return _name.c_str(); }
 
@@ -108,18 +139,18 @@ public:
 	/*
 	 *	设置目标仓位
 	 */
-	void set_position(const std::unordered_map<std::string, double>& targets);
+	virtual void set_position(const std::unordered_map<std::string, double>& targets) override;
 
 
 	/*
 	 *	合约仓位变动
 	 */
-	void on_position_changed(const char* stdCode, double targetPos);
+	virtual void on_position_changed(const char* stdCode, double targetPos) override;
 
 	/*
 	 *	实时行情回调
 	 */
-	void on_tick(const char* stdCode, WTSTickData* newTick);
+	virtual void on_tick(const char* stdCode, WTSTickData* newTick) override;
 
 	/*
 	 *	成交回报
@@ -156,10 +187,9 @@ private:
 	ExecuteUnitMap		_unit_map;
 	TraderAdapter*		_trader;
 	WtExecuterFactory*	_factory;
-	WtDataManager*		_data_mgr;
+	IDataManager*		_data_mgr;
 	WTSVariant*			_config;
 	std::string			_name;
-	WtEngine*			_engine;
 
 	uint32_t			_scale;
 	bool				_channel_ready;
@@ -172,6 +202,7 @@ private:
 	ThreadPoolPtr		_pool;
 };
 
+typedef std::shared_ptr<IExecCommand> ExecCmdPtr;
 typedef std::shared_ptr<WtExecuter> WtExecuterPtr;
 
 //////////////////////////////////////////////////////////////////////////
@@ -200,5 +231,23 @@ private:
 
 	ExeFactMap	_factories;
 };
+
+class WtExecuterMgr : private boost::noncopyable
+{
+public:
+	inline void	add_executer(ExecCmdPtr& executer)
+	{
+		_executers.push_back(executer);
+	}
+
+	void	set_positions(std::unordered_map<std::string, double> target_pos);
+	void	handle_pos_change(const char* stdCode, double targetPos);
+	void	handle_tick(const char* stdCode, WTSTickData* curTick);
+
+public:
+	typedef std::vector<ExecCmdPtr> ExecuterList;
+	ExecuterList	_executers;
+};
+
 
 NS_OTP_END
