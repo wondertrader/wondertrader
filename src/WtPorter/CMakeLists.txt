@@ -52,6 +52,41 @@ ELSE (UNIX)
 		VISIBILITY_INLINES_HIDDEN 1)
 ENDIF ()
 
-file(COPY ${PROJECT_SOURCE_DIR}/../build/bin/libParserUDP.so ${LIBRARY_OUTPUT_PATH}/Parsers/)
+file(MAKE_DIRECTORY ${LIBRARY_OUTPUT_PATH}/parsers/)
+file(MAKE_DIRECTORY ${LIBRARY_OUTPUT_PATH}/traders/)
+file(MAKE_DIRECTORY ${LIBRARY_OUTPUT_PATH}/executer/)
+
+add_custom_command(TARGET WtPorter POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E
+		copy ${PROJECT_SOURCE_DIR}/../build/bin/libParserUDP.so ${LIBRARY_OUTPUT_PATH}/parsers/
+		
+		COMMAND ${CMAKE_COMMAND} -E
+		copy ${PROJECT_SOURCE_DIR}/../build/bin/libTraderCTP.so ${LIBRARY_OUTPUT_PATH}/traders/
+		
+		COMMAND ${CMAKE_COMMAND} -E
+		copy ${PROJECT_SOURCE_DIR}/../build/bin/libTraderXTP.so ${LIBRARY_OUTPUT_PATH}/traders/
+		
+		COMMAND ${CMAKE_COMMAND} -E
+		copy ${PROJECT_SOURCE_DIR}/../build/bin/libTraderMocker.so ${LIBRARY_OUTPUT_PATH}/traders/
+		
+		COMMAND ${CMAKE_COMMAND} -E
+		copy ${PROJECT_SOURCE_DIR}/../build/bin/libTraderCTPMini.so ${LIBRARY_OUTPUT_PATH}/traders/
+		
+		COMMAND ${CMAKE_COMMAND} -E
+		copy ${PROJECT_SOURCE_DIR}/../build/bin/libTraderFemas.so ${LIBRARY_OUTPUT_PATH}/traders/
+		
+		COMMAND ${CMAKE_COMMAND} -E
+		copy ${PROJECT_SOURCE_DIR}/../build/bin/libTraderiTap.so ${LIBRARY_OUTPUT_PATH}/traders/
+		
+		COMMAND ${CMAKE_COMMAND} -E
+		copy ${PROJECT_SOURCE_DIR}/../build/bin/libWtExeFact.so ${LIBRARY_OUTPUT_PATH}/executer/
+		
+		COMMAND ${CMAKE_COMMAND} -E
+		copy ${PROJECT_SOURCE_DIR}/../build/bin/libWtDataReader.so ${LIBRARY_OUTPUT_PATH}/
+		
+		COMMAND ${CMAKE_COMMAND} -E
+		copy ${PROJECT_SOURCE_DIR}/../build/bin/libWtRiskMonFact.so ${LIBRARY_OUTPUT_PATH}/
+		
+		COMMENT "depends modules copied")
 
 

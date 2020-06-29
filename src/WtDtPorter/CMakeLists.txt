@@ -23,7 +23,7 @@ ELSE (UNIX)
 	SET(LNKS ${MyDeps}/lib)
 ENDIF ()
 
-SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../build/bin)
+SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../build/bin/WtDtPorter)
 
 #7. 添加源码
 file(GLOB SRCS *.cpp)
@@ -51,3 +51,24 @@ ELSE (UNIX)
 		VISIBILITY_INLINES_HIDDEN 1)
 ENDIF ()
 
+add_custom_command(TARGET WtDtPorter POST_BUILD		
+		COMMAND ${CMAKE_COMMAND} -E
+		copy ${PROJECT_SOURCE_DIR}/../build/bin/libWtDataWriter.so ${LIBRARY_OUTPUT_PATH}/
+		
+		COMMAND ${CMAKE_COMMAND} -E
+		copy ${PROJECT_SOURCE_DIR}/../build/bin/libParserCTP.so ${LIBRARY_OUTPUT_PATH}/
+		
+		COMMAND ${CMAKE_COMMAND} -E
+		copy ${PROJECT_SOURCE_DIR}/../build/bin/libParserXTP.so ${LIBRARY_OUTPUT_PATH}/
+		
+		COMMAND ${CMAKE_COMMAND} -E
+		copy ${PROJECT_SOURCE_DIR}/../build/bin/libParserCTPMini.so ${LIBRARY_OUTPUT_PATH}/
+		
+		COMMAND ${CMAKE_COMMAND} -E
+		copy ${PROJECT_SOURCE_DIR}/../build/bin/libParserFemas.so ${LIBRARY_OUTPUT_PATH}/
+		
+		COMMAND ${CMAKE_COMMAND} -E
+		copy ${PROJECT_SOURCE_DIR}/../build/bin/libParseriTap.so ${LIBRARY_OUTPUT_PATH}/
+		
+		COMMENT "depends modules copied")
+		
