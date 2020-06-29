@@ -69,17 +69,17 @@ public:
 	/*
 	 *	设置目标仓位
 	 */
-	virtual void set_position(const std::unordered_map<std::string, double>& targets) = 0;
+	virtual void set_position(const std::unordered_map<std::string, double>& targets) {}
 
 	/*
 	 *	合约仓位变动
 	 */
-	virtual void on_position_changed(const char* stdCode, double targetPos) = 0;
+	virtual void on_position_changed(const char* stdCode, double targetPos) {}
 
 	/*
 	 *	实时行情回调
 	 */
-	virtual void on_tick(const char* stdCode, WTSTickData* newTick) = 0;
+	virtual void on_tick(const char* stdCode, WTSTickData* newTick) {}
 
 	void setStub(IExecuterStub* stub) { _stub = stub; }
 protected:

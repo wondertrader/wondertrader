@@ -440,6 +440,7 @@ bool WtRtRunner::initExecuters()
 		executer->setTrader(trader.get());
 		trader->addSink(executer);
 
+		//WtExecuterPtr exec_ptr(executer);
 		_cta_engine.addExecuter(ExecCmdPtr(executer));
 		count++;
 	}

@@ -61,7 +61,7 @@ public:
 	
 	CtaContextPtr	getContext(uint32_t id);
 
-	inline void addExecuter(ExecCmdPtr& executer)
+	inline void addExecuter(ExecCmdPtr executer)
 	{
 		_exec_mgr.add_executer(executer);
 		executer->setStub(this);
