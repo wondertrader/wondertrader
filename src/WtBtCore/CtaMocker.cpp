@@ -202,7 +202,7 @@ void CtaMocker::log_close(const char* stdCode, bool isLong, uint64_t openTime, d
 		ss << stdCode << "," << (isLong ? "LONG" : "SHORT") << "," << openTime << "," << openpx
 			<< "," << closeTime << "," << closepx << "," << qty << "," << profit << ","
 			<< totalprofit << "," << enterTag << "," << exitTag << "\n";
-		_trade_logs->write_file(ss.str());
+		_close_logs->write_file(ss.str());
 	}
 }
 
