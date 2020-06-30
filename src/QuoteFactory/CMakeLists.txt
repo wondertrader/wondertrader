@@ -44,4 +44,25 @@ SET(LIBS
 ADD_EXECUTABLE(QuoteFactory ${SRCS})
 TARGET_LINK_LIBRARIES(QuoteFactory ${LIBS})
 
+add_custom_command(TARGET QuoteFactory POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E
+		copy ${PROJECT_SOURCE_DIR}/../build/bin/libParserCTP.so ${LIBRARY_OUTPUT_PATH}/
+		
+		COMMAND ${CMAKE_COMMAND} -E
+		copy ${PROJECT_SOURCE_DIR}/../build/bin/libParserXTP.so ${LIBRARY_OUTPUT_PATH}/
+		
+		COMMAND ${CMAKE_COMMAND} -E
+		copy ${PROJECT_SOURCE_DIR}/../build/bin/libParseriTap.so ${LIBRARY_OUTPUT_PATH}/
+		
+		COMMAND ${CMAKE_COMMAND} -E
+		copy ${PROJECT_SOURCE_DIR}/../build/bin/libParserFemas.so ${LIBRARY_OUTPUT_PATH}/
+		
+		COMMAND ${CMAKE_COMMAND} -E
+		copy ${PROJECT_SOURCE_DIR}/../build/bin/libParserCTPMini.so ${LIBRARY_OUTPUT_PATH}/
+		
+		COMMAND ${CMAKE_COMMAND} -E
+		copy ${PROJECT_SOURCE_DIR}/../build/bin/libWtDataWriter.so ${LIBRARY_OUTPUT_PATH}/
+		
+		COMMENT "depends modules copied")
+
 
