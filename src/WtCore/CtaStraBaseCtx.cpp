@@ -169,7 +169,7 @@ void CtaStraBaseCtx::log_close(const char* stdCode, bool isLong, uint64_t openTi
 		ss << stdCode << "," << (isLong ? "LONG" : "SHORT") << "," << openTime << "," << openpx
 			<< "," << closeTime << "," << closepx << "," << qty << "," << profit << "," 
 			<< totalprofit << "," << enterTag << "," << exitTag << "\n";
-		_trade_logs->write_file(ss.str());
+		_close_logs->write_file(ss.str());
 
 		//_close_logs->write_file(StrUtil::printf("%s,%s,%s,%f,%s,%f,%f,%.2f,%.2f,%s,%s\n",
 		//	stdCode, isLong ? "LONG" : "SHORT", StrUtil::fmtUInt64(openTime).c_str(), openpx, StrUtil::fmtUInt64(closeTime).c_str(), closepx, qty, profit, totalprofit, enterTag, exitTag));
