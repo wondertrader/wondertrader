@@ -408,7 +408,7 @@ void WtExecuter::on_channel_lost()
 void WtExecuter::on_position(const char* stdCode, bool isLong, double prevol, double preavail, double newvol, double newavail)
 {
 	IHotMgr* hotMgr = _stub->get_hot_mon();
-	if(CodeHelper::isStdFutHotCode(stdCode))
+	//if(CodeHelper::isStdFutHotCode(stdCode))
 	{
 		CodeHelper::CodeInfo cInfo;
 		CodeHelper::extractStdFutCode(stdCode, cInfo);
