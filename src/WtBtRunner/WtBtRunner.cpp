@@ -20,7 +20,7 @@ int main()
 {
 	WTSLogger::init("logcfg.json");
 
-	std::string filename = "config.json";
+	std::string filename = "configstk.json";
 
 	std::string content;
 	StdFile::read_file_content(filename.c_str(), content);

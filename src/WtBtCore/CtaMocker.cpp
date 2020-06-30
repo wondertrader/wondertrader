@@ -21,6 +21,7 @@
 #include "../Share/WTSTradeDef.hpp"
 #include "../Share/decimal.h"
 #include "../Share/WTSVariant.hpp"
+#include "../Share/CodeHelper.hpp"
 
 #include "../WTSTools/WTSLogger.h"
 
@@ -1000,8 +1001,18 @@ WTSKlineSlice* CtaMocker::stra_get_bars(const char* stdCode, const char* period,
 
 	if (kline)
 	{
-		double lastClose = kline->close(-1);
-		_replayer->sub_tick(id(), stdCode);
+		//double lastClose = kline->close(-1);
+		CodeHelper::CodeInfo cInfo;
+		CodeHelper::extractStdCode(stdCode, cInfo);
+
+		std::string realCode = stdCode;
+		if(cInfo._category == CC_Stock && cInfo._exright)
+		{
+			realCode = cInfo._exchg;
+			realCode += ".";
+			realCode += cInfo._code;
+		}
+		_replayer->sub_tick(id(), realCode.c_str());
 	}
 
 	return kline;

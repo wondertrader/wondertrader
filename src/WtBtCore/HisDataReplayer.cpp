@@ -546,34 +546,45 @@ void HisDataReplayer::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTD
 								const std::string& ticker = _ticker_keys[barsList._code];
 								if (ticker == it->first)
 								{
-									WTSSessionInfo* sInfo = get_session_info(barsList._code.c_str(), true);
+									CodeHelper::CodeInfo cInfo;
+									CodeHelper::extractStdCode(barsList._code.c_str(), cInfo);
+
+									std::string realCode = barsList._code;
+									if (cInfo._category == CC_Stock && cInfo._exright)
+									{
+										realCode = cInfo._exchg;
+										realCode += ".";
+										realCode += cInfo._code;
+									}
+
+									WTSSessionInfo* sInfo = get_session_info(realCode.c_str(), true);
 									uint32_t curTime = sInfo->getOpenTime();
 									//¿ª¸ßµÍÊÕ
 									WTSTickStruct curTS;
-									strcpy(curTS.code, barsList._code.c_str());
+									strcpy(curTS.code, realCode.c_str());
 									curTS.action_date = _cur_date;
 									curTS.action_time = curTime * 100000;
 
 									curTS.price = nextBar.open;
 									curTS.volumn = nextBar.vol;
 									WTSTickData* curTick = WTSTickData::create(curTS);
-									_listener->handle_tick(barsList._code.c_str(), curTick);
+									_listener->handle_tick(realCode.c_str(), curTick);
 									curTick->release();
 
 									curTS.price = nextBar.high;
 									curTS.volumn = nextBar.vol;
 									curTick = WTSTickData::create(curTS);
-									_listener->handle_tick(barsList._code.c_str(), curTick);
+									_listener->handle_tick(realCode.c_str(), curTick);
 									curTick->release();
 
 									curTS.price = nextBar.low;
 									curTick = WTSTickData::create(curTS);
-									_listener->handle_tick(barsList._code.c_str(), curTick);
+									_listener->handle_tick(realCode.c_str(), curTick);
 									curTick->release();
 
 									curTS.price = nextBar.close;
 									curTick = WTSTickData::create(curTS);
-									_listener->handle_tick(barsList._code.c_str(), curTick);
+									_listener->handle_tick(realCode.c_str(), curTick);
 								}
 							}
 
