@@ -43,7 +43,7 @@ TARGET_LINK_LIBRARIES(WtBtRunner ${LIBS})
 
 
 SET(LIBS
-	${PROJECT_SOURCE_DIR}/../build/bin/libWtBtPorter.so
+	${PROJECT_SOURCE_DIR}/../build/bin/WtBtPorter/libWtBtPorter.so
 	
 	${PROJECT_SOURCE_DIR}/../build/libs/libWTSTools.a
 	${PROJECT_SOURCE_DIR}/../build/libs/libWTSUtils.a
