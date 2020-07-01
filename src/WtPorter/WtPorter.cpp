@@ -147,9 +147,9 @@ void run_porter(bool bAsync)
 	getRunner().run(bAsync);
 }
 
-void release_porter(bool bAsync)
+void release_porter()
 {
-	getRunner().run(bAsync);
+	getRunner().release();
 }
 
 const char* get_version()
