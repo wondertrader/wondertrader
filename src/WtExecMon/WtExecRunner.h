@@ -16,7 +16,7 @@ NS_OTP_END
 
 USING_NS_OTP;
 
-class WtExecRunner : public IParserStub
+class WtExecRunner : public IParserStub, public IExecuterStub
 {
 public:
 	/*
@@ -29,6 +29,8 @@ public:
 	void run(bool bAsync = false);
 
 	void release();
+
+	void setPosition(const char* stdCode, double targetPos);
 
 	bool addExeFactories(const char* folder);
 
@@ -46,6 +48,13 @@ public:
 	/// <param name="isHot">是否是主力合约代码</param>
 	virtual void handle_push_quote(WTSTickData* curTick, bool isHot = false) override;
 
+	///////////////////////////////////////////////////////////////////////////
+	//IExecuterStub 接口
+	virtual uint64_t get_real_time() override;
+	virtual WTSCommodityInfo* get_comm_info(const char* stdCode) override;
+	virtual IHotMgr* get_hot_mon() override { return &_hot_mgr; }
+	virtual uint32_t get_trading_day() override;
+
 private:
 	bool initTraders();
 	bool initParsers();
@@ -57,6 +66,7 @@ private:
 	TraderAdapterMgr	_traders;
 	ParserAdapterMgr	_parsers;
 	WtExecuterFactory	_exe_factory;
+	WtExecuterMgr		_exe_mgr;
 
 	WTSVariant*			_config;
 

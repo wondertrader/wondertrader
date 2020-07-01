@@ -1,8 +1,9 @@
 // TestPorter.cpp : 定义控制台应用程序的入口点。
 //
-#include "..\WtPorter\WtPorter.h"
+#include "../WtPorter/WtPorter.h"
+#include "../WtExecMon/WtExecPorter.h"
 
-#include "..\Share\WTSStruct.h"
+#include "../Share/WTSStruct.h"
 #include "../Share/DLLHelper.hpp"
 
 void _cdecl on_init(CtxHandler ctxid)
@@ -44,11 +45,8 @@ void _cdecl on_event(WtUInt32 evtId, WtUInt32 curDate, WtUInt32 curTime)
 }
 
 
-void main()
+void test_porter()
 {
-
-	//trans_mc_bars("E:\\LocalSource\\WTSOptSvr\\Win32\\Debug\\WtRunner\\storage\\csv\\", "E:\\LocalSource\\WTSOptSvr\\Win32\\Debug\\WtRunner\\storage\\test\\", "m5");
-	//return;
 #ifdef _WIN32
 	DLLHelper::load_library("WtPorter.dll");
 #else
@@ -71,6 +69,36 @@ void main()
 	//dump_bars("DCE.a.HOT", "m5", "CZCE.a.HOT_m5.csv");
 
 	run_porter(true);
+
+	printf("press enter key to exit\n");
 	getchar();
+
+	release_porter();
 }
 
+void test_exec()
+{
+#ifdef _WIN32
+	DLLHelper::load_library("WtExecMon.dll");
+#else
+	DLLHelper::load_library("libWtExecMon.so");
+#endif
+
+	init_exec("logcfgexec.json");
+
+	config_exec("config_exec.json");
+
+	run_exec();
+
+	set_position("CFFEX.IF.2007", 1);
+
+	printf("press enter key to exit\n");
+	getchar();
+
+	release_exec();
+}
+
+void main()
+{
+	test_exec();
+}

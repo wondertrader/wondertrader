@@ -7,6 +7,7 @@
 #include "../Share/CodeHelper.hpp"
 #include "../Share/JsonToVariant.hpp"
 #include "../Share/StdUtils.hpp"
+#include "../Share/TimeUtils.hpp"
 
 extern const char* getBinDir();
 
@@ -129,12 +130,15 @@ bool WtExecRunner::initExecuters()
 		const char* id = cfgItem->getCString("id");
 
 		WtExecuterPtr executer(new WtExecuter(&_exe_factory, id, &_data_mgr));
+		executer->setStub(this);
 		if (!executer->init(cfgItem))
 			return false;
 
 		TraderAdapterPtr trader = _traders.getAdapter(cfgItem->getCString("trader"));
 		executer->setTrader(trader.get());
 		trader->addSink(executer.get());
+
+		_exe_mgr.add_executer(executer);
 
 		count++;
 	}
@@ -177,7 +181,7 @@ bool WtExecRunner::initDataMgr()
 	if (cfg == NULL)
 		return false;
 
-	_data_mgr.init(cfg, NULL);
+	_data_mgr.init(cfg, this);
 
 	WTSLogger::info("数据管理模块初始化完成");
 	return true;
@@ -204,22 +208,17 @@ void WtExecRunner::handle_push_quote(WTSTickData* curTick, bool isHot /*= false*
 {
 	std::string stdCode = curTick->code();
 	_data_mgr.handle_push_quote(stdCode.c_str(), curTick);
-
-	if (isHot)
-	{
-		std::string hotCode = CodeHelper::stdCodeToStdHotCode(stdCode.c_str());
-		WTSTickData* hotTick = WTSTickData::create(curTick->getTickStruct());
-		hotTick->setCode(hotCode.c_str());
-
-		_data_mgr.handle_push_quote(hotCode.c_str(), hotTick);
-
-		hotTick->release();
-	}
 }
 
 void WtExecRunner::release()
 {
 	WTSLogger::stop();
+}
+
+
+void WtExecRunner::setPosition(const char* stdCode, double targetPos)
+{
+	_exe_mgr.handle_pos_change(stdCode, targetPos);
 }
 
 bool WtExecRunner::initActionPolicy()
@@ -231,4 +230,19 @@ bool WtExecRunner::initActionPolicy()
 	bool ret = _act_policy.init(action_file);
 	WTSLogger::info("开平策略模板初始化完成");
 	return ret;
+}
+
+uint64_t WtExecRunner::get_real_time()
+{
+	return TimeUtils::makeTime(_data_mgr.get_date(), _data_mgr.get_raw_time() * 100000 + _data_mgr.get_secs());
+}
+
+WTSCommodityInfo* WtExecRunner::get_comm_info(const char* stdCode)
+{
+	return _bd_mgr.getCommodity(CodeHelper::stdCodeToStdCommID(stdCode).c_str());
+}
+
+uint32_t WtExecRunner::get_trading_day()
+{
+	return _data_mgr.get_trading_day();
 }

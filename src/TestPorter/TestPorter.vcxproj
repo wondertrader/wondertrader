@@ -143,12 +143,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
+    <ClCompile Include="TestPorter.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="TestPorter.cpp" />
-  </ItemGroup>
-  <ItemGroup>
+    <ProjectReference Include="..\WtExecMon\WtExecMon.vcxproj">
+      <Project>{c91f9311-117b-4db3-bc1a-df01b7a364c1}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\WtPorter\WtPorter.vcxproj">
       <Project>{2fa13367-71a9-4b8f-9683-ab4f0c1e1c12}</Project>
     </ProjectReference>

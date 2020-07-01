@@ -235,7 +235,7 @@ private:
 class WtExecuterMgr : private boost::noncopyable
 {
 public:
-	inline void	add_executer(ExecCmdPtr& executer)
+	inline void	add_executer(ExecCmdPtr executer)
 	{
 		_executers.push_back(executer);
 	}

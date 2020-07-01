@@ -93,7 +93,7 @@ const char* getBinDir()
 	return _bin_dir.c_str();
 }
 
-void init_exec(const char* logProfile)
+void init_exec(WtString logProfile)
 {
 	static bool inited = false;
 
@@ -108,7 +108,7 @@ void init_exec(const char* logProfile)
 	inited = true;
 }
 
-void config_exec(const char* cfgfile)
+void config_exec(WtString cfgfile)
 {
 	if (strlen(cfgfile) == 0)
 		getRunner().config("cfgexec.json");
@@ -123,10 +123,10 @@ void run_exec()
 
 void release_exec()
 {
-	getRunner().run();
+	getRunner().release();
 }
 
-const char* get_version()
+WtString get_version()
 {
 	static std::string _ver;
 	if (_ver.empty())
@@ -138,7 +138,7 @@ const char* get_version()
 	return _ver.c_str();
 }
 
-void write_log(unsigned int level, const char* message, const char* catName)
+void write_log(unsigned int level, WtString message, const char* catName)
 {
 	if (strlen(catName) > 0)
 	{
@@ -148,4 +148,9 @@ void write_log(unsigned int level, const char* message, const char* catName)
 	{
 		WTSLogger::log((WTSLogLevel)level, message);
 	}
+}
+
+void set_position(WtString stdCode, double targetPos)
+{
+	getRunner().setPosition(stdCode, targetPos);
 }

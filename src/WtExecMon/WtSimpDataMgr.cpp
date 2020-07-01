@@ -15,6 +15,7 @@
 #include "../Share/WTSDataDef.hpp"
 #include "../Share/WTSVariant.hpp"
 #include "../Share/DLLHelper.hpp"
+#include "../Share/WTSSessionInfo.hpp"
 
 #include "../WTSTools/WTSLogger.h"
 #include "../WTSTools/WTSDataFactory.h"
@@ -79,6 +80,8 @@ bool WtSimpDataMgr::initStore(WTSVariant* cfg)
 
 	_reader->init(cfg, this);
 
+	_s_info = _runner->get_session_info(cfg->getCString("session"), false);
+
 	return true;
 }
 
@@ -131,15 +134,38 @@ void WtSimpDataMgr::on_bar(const char* code, WTSKlinePeriod period, WTSBarStruct
 
 }
 
-void WtSimpDataMgr::handle_push_quote(const char* stdCode, WTSTickData* newTick)
+void WtSimpDataMgr::handle_push_quote(const char* stdCode, WTSTickData* curTick)
 {
-	if (newTick == NULL)
+	if (curTick == NULL)
 		return;
 
 	if (_rt_tick_map == NULL)
 		_rt_tick_map = DataCacheMap::create();
 
-	_rt_tick_map->add(stdCode, newTick, true);
+	_rt_tick_map->add(stdCode, curTick, true);
+
+	uint32_t uDate = curTick->actiondate();
+	uint32_t uTime = curTick->actiontime();
+
+	if (_cur_date != 0 && (uDate < _cur_date || (uDate == _cur_date && uTime < _cur_act_time)))
+	{
+		return;
+	}
+
+	_cur_date = uDate;
+	_cur_act_time = uTime;
+
+	uint32_t _cur_raw_time = _cur_act_time / 100000;
+	uint32_t _cur_secs = _cur_act_time % 100000;
+	uint32_t minutes = _s_info->timeToMinutes(_cur_raw_time);
+	bool isSecEnd = _s_info->isLastOfSection(_cur_raw_time);
+	if (isSecEnd)
+	{
+		minutes--;
+	}
+	minutes++;
+	_cur_min_time = _s_info->minuteToTime(minutes);
+	_cur_tdate = curTick->tradingdate();
 }
 
 WTSTickData* WtSimpDataMgr::grab_last_tick(const char* code)
