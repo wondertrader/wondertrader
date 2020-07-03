@@ -35,7 +35,7 @@ public:
 	void	registerSelCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar);
 
 	uint32_t	initCtaMocker(const char* name);
-	uint32_t	initSelMocker(const char* name, uint32_t date, uint32_t time, const char* period);
+	uint32_t	initSelMocker(const char* name, uint32_t date, uint32_t time, const char* period, const char* trdtpl = "CHINA", const char* session = "TRADING");
 
 	void	ctx_on_init(uint32_t id, bool isCta = true);
 	void	ctx_on_tick(uint32_t id, const char* stdCode, WTSTickData* newTick, bool isCta = true);
