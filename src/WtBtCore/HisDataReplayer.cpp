@@ -98,7 +98,7 @@ bool HisDataReplayer::init(WTSVariant* cfg)
 	return true;
 }
 
-void HisDataReplayer::register_task(uint32_t taskid, uint32_t date, uint32_t time, const char* period, const char* trdtpl /* = "CHINA" */)
+void HisDataReplayer::register_task(uint32_t taskid, uint32_t date, uint32_t time, const char* period, const char* trdtpl /* = "CHINA" */, const char* session /* = "TRADING" */)
 {
 	TaskPeriodType ptype;
 	if (my_stricmp(period, "d") == 0)
@@ -109,12 +109,15 @@ void HisDataReplayer::register_task(uint32_t taskid, uint32_t date, uint32_t tim
 		ptype = TPT_Monthly;
 	else if (my_stricmp(period, "y") == 0)
 		ptype = TPT_Yearly;
+	else if (my_stricmp(period, "min") == 0)
+		ptype = TPT_Minute;
 	else
 		ptype = TPT_None;
 
 	_task.reset(new TaskInfo);
-	strcpy(_task->_name, "mf");
+	strcpy(_task->_name, "sel");
 	strcpy(_task->_trdtpl, trdtpl);
+	strcpy(_task->_session, session);
 	_task->_day = date;
 	_task->_time = time;
 	_task->_id = taskid;
@@ -216,135 +219,235 @@ void HisDataReplayer::run()
 	else //if(_task != NULL)
 	{
 		//时间调度任务不为空，则按照时间调度任务回放
-		WTSSessionInfo* sInfo = _bd_mgr.getSession(DEFAULT_SESSIONID);
+		WTSSessionInfo* sInfo = NULL;
+		const char* DEF_SESS = (strlen(_task->_session) == 0) ? DEFAULT_SESSIONID : _task->_session;
+		sInfo = _bd_mgr.getSession(DEF_SESS);
 		WTSLogger::info("开始按任务周期回测……");
-		uint32_t endtime = TimeUtils::getNextMinute(_task->_time, -1);
-		bool bIsPreDay = endtime > _task->_time;
-		if (bIsPreDay)
-			_cur_date = TimeUtils::getNextDate(_cur_date, -1);
-		for (;;)
+
+		//分钟即任务和日级别任务分开写
+		if (_task->_period != TPT_Minute)
 		{
-			bool fired = false;
-			//获取上一个交易日的日期
-			uint32_t preTDate = TimeUtils::getNextDate(_cur_tdate, -1);
-			if (_cur_time == endtime)
+			uint32_t endtime = TimeUtils::getNextMinute(_task->_time, -1);
+			bool bIsPreDay = endtime > _task->_time;
+			if (bIsPreDay)
+				_cur_date = TimeUtils::getNextDate(_cur_date, -1);
+			for (;;)
 			{
-				if (!_bd_mgr.isHoliday(_task->_trdtpl, _cur_date, true))
+				bool fired = false;
+				//获取上一个交易日的日期
+				uint32_t preTDate = TimeUtils::getNextDate(_cur_tdate, -1);
+				if (_cur_time == endtime)
 				{
-					uint32_t weekDay = TimeUtils::getWeekDay(_cur_date);
-
-					
-					bool bHasHoliday = false;
-					uint32_t days = 1;
-					while (_bd_mgr.isHoliday(_task->_trdtpl, preTDate, true))
+					if (!_bd_mgr.isHoliday(_task->_trdtpl, _cur_date, true))
 					{
-						bHasHoliday = true;
-						preTDate = TimeUtils::getNextDate(preTDate, -1);
-						days++;
-					}
-					uint32_t preWD = TimeUtils::getWeekDay(preTDate);
+						uint32_t weekDay = TimeUtils::getWeekDay(_cur_date);
 
-					switch (_task->_period)
-					{
-					case TPT_Daily: 
-						fired = true; 
-						break;
-					case TPT_Monthly:
-						//if (preTDate % 1000000 < _task->_day && _cur_date % 1000000 >= _task->_day)
-						//	fired = true;
-						if (_cur_date % 1000000 == _task->_day)
-							fired = true;
-						else if(bHasHoliday)
+
+						bool bHasHoliday = false;
+						uint32_t days = 1;
+						while (_bd_mgr.isHoliday(_task->_trdtpl, preTDate, true))
 						{
-							//上一个交易日在上个月，且当前日期大于触发日期
-							//说明这个月的开始日期在节假日内，顺延到今天
-							if ((preTDate % 10000 / 100 < _cur_date % 10000 / 100) && _cur_date % 1000000 > _task->_day)	
-							{
-								fired = true;
-							}
-							else if (preTDate % 1000000 < _task->_day && _cur_date % 1000000 > _task->_day)
-							{
-								//上一个交易日在同一个月，且小于触发日期，但是今天大于触发日期，说明正确触发日期到节假日内，顺延到今天
-								fired = true;
-							}
+							bHasHoliday = true;
+							preTDate = TimeUtils::getNextDate(preTDate, -1);
+							days++;
 						}
-						break;
-					case TPT_Weekly:
-						//if (preWD < _task->_day && weekDay >= _task->_day)
-						//	fired = true;
-						if (weekDay == _task->_day)
-							fired = true;
-						else if(bHasHoliday)
+						uint32_t preWD = TimeUtils::getWeekDay(preTDate);
+
+						switch (_task->_period)
 						{
-							if (days >= 7 && weekDay > _task->_day)
-							{
-								fired = true;
-							}
-							else if (preWD > weekDay && weekDay > _task->_day)
-							{
-								//上一个交易日的星期大于今天的星期，说明换了一周了
-								fired = true;
-							}
-							else if (preWD < _task->_day && weekDay > _task->_day)
-							{
-								fired = true;
-							}
-						}
-						break;
-					case TPT_Yearly:
-						if (preTDate % 10000 < _task->_day && _cur_date % 10000 >= _task->_day)
+						case TPT_Daily:
 							fired = true;
-						break;
+							break;
+						case TPT_Minute:
+							break;
+						case TPT_Monthly:
+							//if (preTDate % 1000000 < _task->_day && _cur_date % 1000000 >= _task->_day)
+							//	fired = true;
+							if (_cur_date % 1000000 == _task->_day)
+								fired = true;
+							else if (bHasHoliday)
+							{
+								//上一个交易日在上个月，且当前日期大于触发日期
+								//说明这个月的开始日期在节假日内，顺延到今天
+								if ((preTDate % 10000 / 100 < _cur_date % 10000 / 100) && _cur_date % 1000000 > _task->_day)
+								{
+									fired = true;
+								}
+								else if (preTDate % 1000000 < _task->_day && _cur_date % 1000000 > _task->_day)
+								{
+									//上一个交易日在同一个月，且小于触发日期，但是今天大于触发日期，说明正确触发日期到节假日内，顺延到今天
+									fired = true;
+								}
+							}
+							break;
+						case TPT_Weekly:
+							//if (preWD < _task->_day && weekDay >= _task->_day)
+							//	fired = true;
+							if (weekDay == _task->_day)
+								fired = true;
+							else if (bHasHoliday)
+							{
+								if (days >= 7 && weekDay > _task->_day)
+								{
+									fired = true;
+								}
+								else if (preWD > weekDay && weekDay > _task->_day)
+								{
+									//上一个交易日的星期大于今天的星期，说明换了一周了
+									fired = true;
+								}
+								else if (preWD < _task->_day && weekDay > _task->_day)
+								{
+									fired = true;
+								}
+							}
+							break;
+						case TPT_Yearly:
+							if (preTDate % 10000 < _task->_day && _cur_date % 10000 >= _task->_day)
+								fired = true;
+							break;
+						}
 					}
 				}
-			}
 
-			if (!fired)
-			{
-				//调整时间
-				//如果当前时间小于任务时间，则直接赋值即可
-				//如果当前时间大于任务时间，则至少要等下一天
-				if (_cur_time < endtime)
+				if (!fired)
 				{
-					_cur_time = endtime;
-					continue;
+					//调整时间
+					//如果当前时间小于任务时间，则直接赋值即可
+					//如果当前时间大于任务时间，则至少要等下一天
+					if (_cur_time < endtime)
+					{
+						_cur_time = endtime;
+						continue;
+					}
+
+					uint32_t newTDate = _bd_mgr.calcTradingDate(DEF_SESS, _cur_date, _cur_time, true);
+
+					if (newTDate != _cur_tdate)
+					{
+						_cur_tdate = newTDate;
+						if (_listener)
+							_listener->handle_session_begin();
+						if (_listener)
+							_listener->handle_session_end();
+					}
 				}
-
-				uint32_t newTDate = _bd_mgr.calcTradingDate(DEFAULT_SESSIONID, _cur_date, _cur_time, true);
-
-				if(newTDate != _cur_tdate)
+				else
 				{
-					_cur_tdate = newTDate;
+					//用前一分钟作为结束时间
+					uint32_t curDate = _cur_date;
+					uint32_t curTime = endtime;
+					bool bEndSession = sInfo->offsetTime(curTime) >= sInfo->getCloseTime(true);
 					if (_listener)
 						_listener->handle_session_begin();
+					onMinuteEnd(curDate, curTime, bEndSession ? _cur_tdate : preTDate);
 					if (_listener)
 						_listener->handle_session_end();
 				}
-			}
-			else
-			{
-				//用前一分钟作为结束时间
-				uint32_t curDate = _cur_date;
-				uint32_t curTime = endtime;
-				bool bEndSession = sInfo->offsetTime(curTime) >= sInfo->getCloseTime(true);
-				if (_listener)
-					_listener->handle_session_begin();
-				onMinuteEnd(curDate, curTime, bEndSession?_cur_tdate:preTDate);
-				if (_listener)
-					_listener->handle_session_end();
-			}
 
-			_cur_date = TimeUtils::getNextDate(_cur_date);
-			_cur_time = endtime;
-			_cur_tdate = _bd_mgr.calcTradingDate(DEFAULT_SESSIONID, _cur_date, _cur_time, true);
+				_cur_date = TimeUtils::getNextDate(_cur_date);
+				_cur_time = endtime;
+				_cur_tdate = _bd_mgr.calcTradingDate(DEF_SESS, _cur_date, _cur_time, true);
 
-			uint64_t nextTime = (uint64_t)_cur_date * 10000 + _cur_time;
-			if (nextTime > _end_time)
+				uint64_t nextTime = (uint64_t)_cur_date * 10000 + _cur_time;
+				if (nextTime > _end_time)
+				{
+					WTSLogger::info("按任务周期回测结束");
+					if (_listener)
+						_listener->handle_session_end();
+					break;
+				}
+			}
+		}
+		else
+		{
+			if (_listener)
+				_listener->handle_session_begin();
+
+			for(;;)
 			{
-				WTSLogger::info("按任务周期回测结束");
-				if (_listener)
-					_listener->handle_session_end();
-				break;
+				//要考虑到跨日的情况
+				uint32_t mins = sInfo->timeToMinutes(_cur_time);
+				//如果一开始不能整除，则直接修正一下
+				if(mins % _task->_time != 0)
+				{
+					mins = mins / _task->_time + _task->_time;
+					_cur_time = sInfo->minuteToTime(mins);
+				}
+
+				bool bNewTDate = false;
+				if(mins < sInfo->getTradingMins())
+				{
+					onMinuteEnd(_cur_date, _cur_time, 0);
+				}
+				else
+				{
+					bNewTDate = true;
+					mins = sInfo->getTradingMins();
+					_cur_time = sInfo->getCloseTime();
+
+					onMinuteEnd(_cur_date, _cur_time, _cur_tdate);
+
+					if (_listener)
+						_listener->handle_session_end();
+				}
+		
+				
+				if(bNewTDate)
+				{
+					//换日了
+					mins = _task->_time;
+					uint32_t nextTDate = _bd_mgr.getNextTDate(_task->_trdtpl, _cur_tdate, 1, true);
+
+					if(sInfo->getOffsetMins() != 0)
+					{
+						if(sInfo->getOffsetMins() > 0)
+						{
+							//真实时间后移，说明夜盘算作下一天的
+							_cur_date = _cur_tdate;
+							_cur_tdate = nextTDate;
+						}
+						else
+						{
+							//真实时间前移，说明夜盘是上一天的，这种情况就不需要动了
+							_cur_tdate = nextTDate;
+							_cur_date = _cur_tdate;
+						}
+					}
+
+					_cur_time = sInfo->minuteToTime(mins);
+
+					if (_listener)
+						_listener->handle_session_begin();
+				}
+				else
+				{
+					mins += _task->_time;
+					uint32_t newTime = sInfo->minuteToTime(mins);
+					bool bNewDay = newTime < _cur_time;
+					if(bNewDay)
+						_cur_date = TimeUtils::getNextDate(_cur_date);
+
+					uint32_t dayMins = _cur_time / 100 * 60 + _cur_time % 100;
+					uint32_t nextDMins = newTime / 100 * 60 + newTime % 100;
+
+					//是否到了一个新的小节
+					bool bNewSec = (nextDMins - dayMins > _task->_time) && !bNewDay;
+
+					while(bNewSec && _bd_mgr.isHoliday(_task->_trdtpl, _cur_date, true))
+						_cur_date = TimeUtils::getNextDate(_cur_date);
+
+					_cur_time = newTime;
+				}
+				
+				uint64_t nextTime = (uint64_t)_cur_date * 10000 + _cur_time;
+				if (nextTime > _end_time)
+				{
+					WTSLogger::info("按任务周期回测结束");
+					if (_listener)
+						_listener->handle_session_end();
+					break;
+				}
 			}
 		}
 	}
@@ -1721,7 +1824,7 @@ bool HisDataReplayer::cacheRawBars(const std::string& key, const char* stdCode, 
 				uint32_t curCnt = eIdx - sIdx + 1;
 				std::vector<WTSBarStruct>* tempAy = new std::vector<WTSBarStruct>();
 				tempAy->resize(curCnt);
-				memcpy(tempAy->data(), &kBlock->_bars[sIdx], sizeof(WTSBarStruct)*curCnt);
+				memcpy(tempAy->data(), &firstBar[sIdx], sizeof(WTSBarStruct)*curCnt);
 				realCnt += curCnt;
 
 				barsSections.push_back(tempAy);

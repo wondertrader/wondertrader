@@ -139,6 +139,10 @@ void WtBtRunner::config(const char* cfgFile)
 		_sel_mocker = new PySelMocker(&_replayer, "sel");
 		_sel_mocker->initSelFactory(cfgMode);
 		_replayer.register_sink(_sel_mocker);
+
+		WTSVariant* cfgTask = cfgMode->get("task");
+		if(cfgTask)
+			_replayer.register_task(_sel_mocker->id(), cfgTask->getUInt32("date"), cfgTask->getUInt32("time"), cfgTask->getCString("period"));
 	}
 	else if (strcmp(mode, "exec") == 0 && cfgMode)
 	{

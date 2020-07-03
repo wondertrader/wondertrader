@@ -391,7 +391,7 @@ bool SelMocker::on_schedule(uint32_t curDate, uint32_t curTime, uint32_t fireTim
 
 	TimeUtils::Ticker ticker;
 	on_strategy_schedule(curDate, curTime);
-	stra_log_text("策略已重新调度 @ %u.%u", curDate, fireTime);
+	stra_log_text("策略已重新调度 @ %u.%u[闭合时间%u]", curDate, fireTime, curTime);
 
 	std::unordered_set<std::string> to_clear;
 	for(auto& v : _pos_map)
@@ -685,6 +685,12 @@ WTSCommodityInfo* SelMocker::stra_get_comminfo(const char* stdCode)
 {
 	return _replayer->get_commodity_info(stdCode);
 }
+
+WTSSessionInfo* SelMocker::stra_get_sessinfo(const char* stdCode)
+{
+	return _replayer->get_session_info(stdCode, true);
+}
+
 
 uint32_t SelMocker::stra_get_date()
 {
