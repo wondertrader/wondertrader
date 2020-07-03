@@ -14,6 +14,7 @@
 
 NS_OTP_BEGIN
 class WTSCommodityInfo;
+class WTSSessionInfo;
 class WTSKlineData;
 class WTSHisTickData;
 class WTSTickData;
@@ -59,6 +60,7 @@ public:
 	virtual uint32_t stra_get_time() = 0;
 
 	virtual WTSCommodityInfo* stra_get_comminfo(const char* stdCode) = 0;
+	virtual WTSSessionInfo* stra_get_sessinfo(const char* stdCode) = 0;
 	virtual WTSKlineSlice*	stra_get_bars(const char* stdCode, const char* period, uint32_t count) = 0;
 	virtual WTSTickSlice*	stra_get_ticks(const char* stdCode, uint32_t count) = 0;
 	virtual WTSTickData*	stra_get_last_tick(const char* stdCode) = 0;

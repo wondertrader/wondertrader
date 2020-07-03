@@ -148,11 +148,22 @@ void WtSelEngine::on_minute_end(uint32_t curDate, uint32_t curTime)
 		}
 		uint32_t preWD = TimeUtils::getWeekDay(preTDate);
 
+		WTSSessionInfo* sInfo = get_session_info(tInfo->_session, false);
+
 		bool bIgnore = true;
 		switch (tInfo->_period)
 		{
 		case TPT_Daily:
 			bIgnore = false;
+			break;
+		case TPT_Minute:
+			{
+				uint32_t minutes = sInfo->timeToMinutes(curTime);	//先将时间转换成分钟数
+				if(minutes != 0 && (minutes%tInfo->_time == 0))		//如果分钟数能被整除，且不为0，则可以触发
+				{
+					bIgnore = false;
+				}
+			}
 			break;
 		case TPT_Monthly:
 			//if (preTDate % 1000000 < _task->_day && _cur_date % 1000000 >= _task->_day)
@@ -233,7 +244,7 @@ void WtSelEngine::init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtDataManager* data
 	_cfg->retain();
 }
 
-void WtSelEngine::addContext(SelContextPtr ctx, uint32_t date, uint32_t time, TaskPeriodType period, bool bStrict /* = true */, const char* trdtpl /* = "CHINA" */)
+void WtSelEngine::addContext(SelContextPtr ctx, uint32_t date, uint32_t time, TaskPeriodType period, bool bStrict /* = true */, const char* trdtpl /* = "CHINA" */, const char* sessionID/* ="TRADING" */)
 {
 	if (ctx == NULL)
 		return;
@@ -248,6 +259,7 @@ void WtSelEngine::addContext(SelContextPtr ctx, uint32_t date, uint32_t time, Ta
 	TaskInfoPtr tInfo(new TaskInfo);
 	strcpy(tInfo->_name, ctx->name());
 	strcpy(tInfo->_trdtpl, trdtpl);
+	strcpy(tInfo->_session, sessionID);
 	tInfo->_day = date;
 	tInfo->_time = time;
 	tInfo->_period = period;

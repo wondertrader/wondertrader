@@ -67,6 +67,7 @@ public:
 	virtual uint32_t stra_get_time() override;
 
 	virtual WTSCommodityInfo* stra_get_comminfo(const char* stdCode) override;
+	virtual WTSSessionInfo* stra_get_sessinfo(const char* stdCode) override;
 	virtual WTSKlineSlice*	stra_get_bars(const char* stdCode, const char* period, uint32_t count) override;
 	virtual WTSTickSlice*	stra_get_ticks(const char* stdCode, uint32_t count) override;
 	virtual WTSTickData*	stra_get_last_tick(const char* stdCode) override;
@@ -85,6 +86,9 @@ protected:
 
 	uint64_t		_total_calc_time;	//总计算时间
 	uint32_t		_emit_times;		//总计算次数
+
+	uint32_t		_schedule_date;
+	uint32_t		_schedule_time;
 
 	typedef struct _KlineTag
 	{

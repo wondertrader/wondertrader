@@ -41,6 +41,8 @@ SelStraBaseCtx::SelStraBaseCtx(WtSelEngine* engine, const char* name)
 	, _emit_times(0)
 	, _is_in_schedule(false)
 	, _ud_modified(false)
+	, _schedule_date(0)
+	, _schedule_time(0)
 {
 	_context_id = makeMfCtxId();
 }
@@ -542,7 +544,10 @@ void SelStraBaseCtx::on_tick(const char* stdCode, WTSTickData* newTick, bool bEm
 
 bool SelStraBaseCtx::on_schedule(uint32_t curDate, uint32_t curTime, uint32_t fireTime)
 {
-	_is_in_schedule = true;//开始调度, 修改标记
+	_schedule_date = curDate;
+	_schedule_time = curTime;
+
+	_is_in_schedule = true;//开始调度, 修改标记	
 
 	//主要用于保存浮动盈亏的
 	save_data();
@@ -800,7 +805,15 @@ WTSKlineSlice* SelStraBaseCtx::stra_get_bars(const char* stdCode, const char* pe
 		basePeriod = period;
 	}
 
-	WTSKlineSlice* kline = _engine->get_kline_slice(_context_id, stdCode, basePeriod.c_str(), count, times);
+	WTSSessionInfo* sInfo = _engine->get_session_info(stdCode, true);
+	
+	uint64_t etime = 0;
+	if (period[0] == 'd')
+		etime = (uint64_t)_schedule_date * 10000 + sInfo->getCloseTime();
+	else
+		etime = (uint64_t)_schedule_date * 10000 + _schedule_time;
+
+	WTSKlineSlice* kline = _engine->get_kline_slice(_context_id, stdCode, basePeriod.c_str(), count, times, etime);
 
 	KlineTag& tag = _kline_tags[key];
 	tag._closed = false;
@@ -836,14 +849,19 @@ WTSCommodityInfo* SelStraBaseCtx::stra_get_comminfo(const char* stdCode)
 	return _engine->get_commodity_info(stdCode);
 }
 
+WTSSessionInfo* SelStraBaseCtx::stra_get_sessinfo(const char* stdCode)
+{
+	return _engine->get_session_info(stdCode, true);
+}
+
 uint32_t SelStraBaseCtx::stra_get_date()
 {
-	return _engine->get_date();
+	return _is_in_schedule ? _schedule_date : _engine->get_date();
 }
 
 uint32_t SelStraBaseCtx::stra_get_time()
 {
-	return _engine->get_min_time();
+	return _is_in_schedule ? _schedule_time : _engine->get_min_time();
 }
 
 void SelStraBaseCtx::stra_log_text(const char* fmt, ...)
