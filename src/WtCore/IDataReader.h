@@ -118,16 +118,6 @@ public:
 	 */
 	virtual WTSHisTickData* readTicks(const char* stdCode, uint32_t count, uint64_t etime = 0, bool bOnlyValid = false) = 0;
 
-	/*
-	 *	@brief 读取K线序列，并返回一个存储容器类
-	 *	@details	返回的WTSKlineData包含了WTSBarStruct的序列，读取的数据要复制到该序列中
-	 *	
-	 *	@param	stdCode	标准品种代码，如SSE.600000，SHFE.au.2005
-	 *	@param	period	K线周期
-	 *	@param	count	要读取的K线条数
-	 *	@param	etime	结束时间，如果是日线数据，则格式为yyyyMMdd，如果是分钟线，则为yyyyMMddhhmm
-	 */
-	//virtual WTSKlineData*	readBars(const char* stdCode, WTSKlinePeriod period, uint32_t count, uint64_t etime = 0) = 0;
 
 	/*
 	 *	@brief	读取tick数据切片
@@ -146,7 +136,7 @@ public:
 	 *	@param	stdCode	标准品种代码，如SSE.600000，SHFE.au.2005
 	 *	@param	period	K线周期
 	 *	@param	count	要读取的K线条数
-	 *	@param	etime	结束时间，如果是日线数据，则格式为yyyyMMdd，如果是分钟线，则为yyyyMMddhhmm
+	 *	@param	etime	结束时间，格式yyyyMMddhhmm
 	 */
 	virtual WTSKlineSlice*	readKlineSlice(const char* stdCode, WTSKlinePeriod period, uint32_t count, uint64_t etime = 0) = 0;
 

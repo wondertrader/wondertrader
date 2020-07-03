@@ -35,8 +35,8 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	//IDataManager
-	WTSTickSlice* get_tick_slice(const char* code, uint32_t count) override;
-	WTSKlineSlice* get_kline_slice(const char* code, WTSKlinePeriod period, uint32_t times, uint32_t count) override;
+	WTSTickSlice* get_tick_slice(const char* code, uint32_t count, uint64_t etime = 0) override;
+	WTSKlineSlice* get_kline_slice(const char* code, WTSKlinePeriod period, uint32_t times, uint32_t count, uint64_t etime = 0) override;
 	WTSTickData* grab_last_tick(const char* code) override;
 
 	//////////////////////////////////////////////////////////////////////////

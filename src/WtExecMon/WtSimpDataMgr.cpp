@@ -182,16 +182,16 @@ WTSTickData* WtSimpDataMgr::grab_last_tick(const char* code)
 }
 
 
-WTSTickSlice* WtSimpDataMgr::get_tick_slice(const char* code, uint32_t count)
+WTSTickSlice* WtSimpDataMgr::get_tick_slice(const char* code, uint32_t count, uint64_t etime /*= 0*/)
 {
 	if (_reader == NULL)
 		return NULL;
 
-	return _reader->readTickSlice(code, count);
+	return _reader->readTickSlice(code, count, etime);
 }
 
 
-WTSKlineSlice* WtSimpDataMgr::get_kline_slice(const char* stdCode, WTSKlinePeriod period, uint32_t times, uint32_t count)
+WTSKlineSlice* WtSimpDataMgr::get_kline_slice(const char* stdCode, WTSKlinePeriod period, uint32_t times, uint32_t count, uint64_t etime /*= 0*/)
 {
 	if (_reader == NULL)
 		return NULL;
@@ -200,7 +200,7 @@ WTSKlineSlice* WtSimpDataMgr::get_kline_slice(const char* stdCode, WTSKlinePerio
 
 	if (times == 1)
 	{
-		return _reader->readKlineSlice(stdCode, period, count);
+		return _reader->readKlineSlice(stdCode, period, count, etime);
 	}
 
 	//只有非基础周期的会进到下面的步骤
@@ -216,7 +216,7 @@ WTSKlineSlice* WtSimpDataMgr::get_kline_slice(const char* stdCode, WTSKlinePerio
 	if (kData == NULL || kData->size() < count)
 	{
 		uint32_t realCount = count * times + times;
-		WTSKlineSlice* rawData = _reader->readKlineSlice(stdCode, period, realCount);
+		WTSKlineSlice* rawData = _reader->readKlineSlice(stdCode, period, realCount, etime);
 		if (rawData != NULL)
 		{
 			kData = g_dataFact.extractKlineData(rawData, period, times, sInfo, true);

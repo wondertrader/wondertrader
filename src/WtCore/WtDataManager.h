@@ -42,9 +42,9 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	//IDataManager ½Ó¿Ú
-	virtual WTSTickSlice* get_tick_slice(const char* code, uint32_t count) override;
-	virtual WTSKlineSlice* get_kline_slice(const char* code, WTSKlinePeriod period, uint32_t times, uint32_t count) override;
-	virtual WTSTickData* grab_last_tick(const char* code) override;
+	virtual WTSTickSlice* get_tick_slice(const char* stdCode, uint32_t count, uint64_t etime = 0) override;
+	virtual WTSKlineSlice* get_kline_slice(const char* stdCode, WTSKlinePeriod period, uint32_t times, uint32_t count, uint64_t etime = 0) override;
+	virtual WTSTickData* grab_last_tick(const char* stdCode) override;
 
 	//////////////////////////////////////////////////////////////////////////
 	//IDataReaderSink
