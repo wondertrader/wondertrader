@@ -25,7 +25,7 @@ extern "C"
 
 	EXPORT_FLAG	CtxHandler	init_cta_mocker(const char* name);
 
-	EXPORT_FLAG	CtxHandler	init_sel_mocker(const char* name, uint32_t date, uint32_t time, const char* period);
+	EXPORT_FLAG	CtxHandler	init_sel_mocker(const char* name, uint32_t date, uint32_t time, const char* period, const char* trdtpl = "CHINA", const char* session = "TRADING");
 
 	EXPORT_FLAG	void		run_backtest();
 

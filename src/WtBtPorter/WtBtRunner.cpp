@@ -62,12 +62,12 @@ uint32_t WtBtRunner::initCtaMocker(const char* name)
 	return _cta_mocker->id();
 }
 
-uint32_t WtBtRunner::initSelMocker(const char* name, uint32_t date, uint32_t time, const char* period)
+uint32_t WtBtRunner::initSelMocker(const char* name, uint32_t date, uint32_t time, const char* period, const char* trdtpl /* = "CHINA" */, const char* session /* = "TRADING" */)
 {
 	_sel_mocker = new PySelMocker(&_replayer, name);
 	_replayer.register_sink(_sel_mocker);
 
-	_replayer.register_task(_sel_mocker->id(), date, time, period);
+	_replayer.register_task(_sel_mocker->id(), date, time, period, trdtpl, session);
 	return _sel_mocker->id();
 }
 
@@ -142,7 +142,8 @@ void WtBtRunner::config(const char* cfgFile)
 
 		WTSVariant* cfgTask = cfgMode->get("task");
 		if(cfgTask)
-			_replayer.register_task(_sel_mocker->id(), cfgTask->getUInt32("date"), cfgTask->getUInt32("time"), cfgTask->getCString("period"));
+			_replayer.register_task(_sel_mocker->id(), cfgTask->getUInt32("date"), cfgTask->getUInt32("time"), 
+				cfgTask->getCString("period"), cfgTask->getCString("trdtpl"), cfgTask->getCString("session"));
 	}
 	else if (strcmp(mode, "exec") == 0 && cfgMode)
 	{
