@@ -10,8 +10,6 @@
 #include "WtDtPorter.h"
 #include "WtDtRunner.h"
 
-#include "../Common/version.h"
-
 #include "../WTSTools/WTSLogger.h"
 #include "../Share/StrUtil.hpp"
 

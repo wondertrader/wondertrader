@@ -10,8 +10,6 @@
 #include "WtPorter.h"
 #include "WtRtRunner.h"
 
-#include "../Common/version.h"
-
 #include "../WTSTools/WTSLogger.h"
 #include "../Share/decimal.h"
 #include "../Share/WTSTradeDef.hpp"

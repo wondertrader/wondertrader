@@ -1,8 +1,6 @@
 #include "WtExecPorter.h"
 #include "WtExecRunner.h"
 
-#include "../Common/version.h"
-
 #include "../WTSTools/WTSLogger.h"
 #include "../Share/StrUtil.hpp"
 

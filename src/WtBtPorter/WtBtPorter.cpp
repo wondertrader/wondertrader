@@ -10,8 +10,6 @@
 #include "WtBtPorter.h"
 #include "WtBtRunner.h"
 
-#include "../Common/version.h"
-
 #include "../WtBtCore/CtaMocker.h"
 #include "../WtBtCore/SelMocker.h"
 
