@@ -1,6 +1,8 @@
 #pragma once
 #include "../WtCore/SelStrategyDefs.h"
 
+#include <unordered_set>
+
 USING_NS_OTP;
 
 class WtStraDtSel : public SelStrategy
@@ -35,8 +37,10 @@ private:
 	//K线条数
 	uint32_t	_count;
 
+	bool		_isstk;
+
 	//合约代码
-	std::string _code;
+	std::unordered_set<std::string> _codes;
 
 };
 
