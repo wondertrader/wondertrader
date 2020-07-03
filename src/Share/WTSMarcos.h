@@ -48,3 +48,5 @@
 #else
 #	define EXPORT_FLAG __attribute__((__visibility__("default")))
 #endif
+
+static const char WT_VERSION[] = "v0.4.0";

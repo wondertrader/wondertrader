@@ -123,6 +123,8 @@ void HisDataReplayer::register_task(uint32_t taskid, uint32_t date, uint32_t tim
 	_task->_id = taskid;
 	_task->_period = ptype;
 	_task->_strict_time = true;
+
+	WTSLogger::info("定时任务注册成功，周期：%s", period);
 }
 
 void HisDataReplayer::run()
@@ -141,7 +143,10 @@ void HisDataReplayer::run()
 		WTSSessionInfo* sInfo = get_session_info(barList._code.c_str(), true);
 		std::string commId = CodeHelper::stdCodeToStdCommID(barList._code.c_str());
 
-		WTSLogger::info("开始数据回放……");
+		//WTSLogger::info("开始进行数据回放……");
+		{
+			StreamLogger(LL_INFO).self() << "开始从" << _begin_time << "进行数据回放……";
+		}
 
 		for (;;)
 		{
@@ -222,7 +227,9 @@ void HisDataReplayer::run()
 		WTSSessionInfo* sInfo = NULL;
 		const char* DEF_SESS = (strlen(_task->_session) == 0) ? DEFAULT_SESSIONID : _task->_session;
 		sInfo = _bd_mgr.getSession(DEF_SESS);
-		WTSLogger::info("开始按任务周期回测……");
+		{
+			StreamLogger(LL_INFO).self() << "从" << _begin_time << "开始按任务周期回测……";
+		}
 
 		//分钟即任务和日级别任务分开写
 		if (_task->_period != TPT_Minute)

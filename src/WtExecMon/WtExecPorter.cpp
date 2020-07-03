@@ -133,7 +133,11 @@ WtString get_version()
 	{
 		_ver = PLATFORM_NAME;
 		_ver += " ";
-		_ver += GetVersionStr();
+		_ver += WT_VERSION;
+		_ver += " Build@";
+		_ver += __DATE__;
+		_ver += " ";
+		_ver += __TIME__;
 	}
 	return _ver.c_str();
 }

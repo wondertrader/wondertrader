@@ -49,7 +49,7 @@ int main()
 
 	config_backtest("configbt.json");
 
-	//init_sel_mocker("sel", 1, 1600, "d");	//every money 09:26
+	init_sel_mocker("sel", 0, 5, "min");	//every money 09:26
 
 	run_backtest();
 	getchar();

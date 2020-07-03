@@ -155,11 +155,15 @@ void release_porter()
 const char* get_version()
 {
 	static std::string _ver;
-	if(_ver.empty())
+	if (_ver.empty())
 	{
 		_ver = PLATFORM_NAME;
 		_ver += " ";
-		_ver += GetVersionStr();
+		_ver += WT_VERSION;
+		_ver += " Build@";
+		_ver += __DATE__;
+		_ver += " ";
+		_ver += __TIME__;
 	}
 	return _ver.c_str();
 }
