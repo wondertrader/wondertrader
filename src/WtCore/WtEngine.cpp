@@ -551,7 +551,7 @@ WTSTickData* WtEngine::get_last_tick(uint32_t sid, const char* stdCode)
 	return _data_mgr->grab_last_tick(stdCode);
 }
 
-WTSKlineSlice* WtEngine::get_kline_slice(uint32_t sid, const char* stdCode, const char* period, uint32_t count, uint32_t times /* = 1 */)
+WTSKlineSlice* WtEngine::get_kline_slice(uint32_t sid, const char* stdCode, const char* period, uint32_t count, uint32_t times /* = 1 */, uint64_t etime /* = 0 */)
 {
 	WTSCommodityInfo* cInfo = _base_data_mgr->getCommodity(CodeHelper::stdCodeToStdCommID(stdCode).c_str());
 	if (cInfo == NULL)
@@ -581,7 +581,7 @@ WTSKlineSlice* WtEngine::get_kline_slice(uint32_t sid, const char* stdCode, cons
 		kp = KP_DAY;
 	}
 
-	return _data_mgr->get_kline_slice(stdCode, kp, times, count);
+	return _data_mgr->get_kline_slice(stdCode, kp, times, count, etime);
 }
 
 
