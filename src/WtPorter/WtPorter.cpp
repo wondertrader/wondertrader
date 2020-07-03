@@ -459,9 +459,9 @@ WtString cta_load_userdata(CtxHandler cHandle, const char* key, const char* defV
 #pragma endregion
 
 #pragma region "多因子策略接口"
-CtxHandler create_sel_context(const char* name, uint32_t date, uint32_t time, const char* period)
+CtxHandler create_sel_context(const char* name, uint32_t date, uint32_t time, const char* period, const char* trdtpl/* = "CHINA"*/, const char* session/* = "TRADING"*/)
 {
-	return getRunner().createSelContext(name, date, time, period);
+	return getRunner().createSelContext(name, date, time, period, trdtpl, session);
 }
 
 

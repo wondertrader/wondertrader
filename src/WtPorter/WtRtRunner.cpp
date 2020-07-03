@@ -93,7 +93,7 @@ uint32_t WtRtRunner::createCtaContext(const char* name)
 	return ctx->id();
 }
 
-uint32_t WtRtRunner::createSelContext(const char* name, uint32_t date, uint32_t time, const char* period, const char* trdtpl/* ="CHINA" */)
+uint32_t WtRtRunner::createSelContext(const char* name, uint32_t date, uint32_t time, const char* period, const char* trdtpl /* = "CHINA" */, const char* session/* ="TRADING" */)
 {
 	TaskPeriodType ptype;
 	if (my_stricmp(period, "d") == 0)
@@ -104,12 +104,14 @@ uint32_t WtRtRunner::createSelContext(const char* name, uint32_t date, uint32_t 
 		ptype = TPT_Monthly;
 	else if (my_stricmp(period, "y") == 0)
 		ptype = TPT_Yearly;
+	else if (my_stricmp(period, "min") == 0)
+		ptype = TPT_Minute;
 	else
 		ptype = TPT_None;
 
 	PySelContext* ctx = new PySelContext(&_sel_engine, name);
 
-	_sel_engine.addContext(SelContextPtr(ctx), date, time, ptype, true, trdtpl);
+	_sel_engine.addContext(SelContextPtr(ctx), date, time, ptype, true, trdtpl, session);
 
 	return ctx->id();
 }

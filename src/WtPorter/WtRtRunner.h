@@ -59,7 +59,7 @@ public:
 	void registerEvtCallback(FuncEventCallback cbEvt);
 
 	uint32_t		createCtaContext(const char* name);
-	uint32_t		createSelContext(const char* name, uint32_t date, uint32_t time, const char* period, const char* trdtpl = "CHINA");
+	uint32_t		createSelContext(const char* name, uint32_t date, uint32_t time, const char* period, const char* trdtpl = "CHINA", const char* session="TRADING");
 
 	CtaContextPtr	getCtaContext(uint32_t id);
 	SelContextPtr	getSelContext(uint32_t id);

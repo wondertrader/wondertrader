@@ -25,10 +25,6 @@ extern "C"
 
 	EXPORT_FLAG	void		config_porter(const char* cfgfile);
 
-	EXPORT_FLAG	CtxHandler	create_cta_context(const char* name);
-
-	EXPORT_FLAG	CtxHandler	create_sel_context(const char* name, uint32_t date, uint32_t time, const char* period);
-
 	EXPORT_FLAG	void		run_porter(bool bAsync);
 
 	EXPORT_FLAG	void		write_log(unsigned int level, const char* message, const char* catName);
@@ -49,6 +45,8 @@ extern "C"
 	/*
 	 *	Context专属接口
 	 */
+	EXPORT_FLAG	CtxHandler	create_cta_context(const char* name);
+
 	EXPORT_FLAG	void		cta_enter_long(CtxHandler cHandle, const char* code, double qty, const char* userTag, double limitprice, double stopprice);
 
 	EXPORT_FLAG	void		cta_exit_long(CtxHandler cHandle, const char* code, double qty, const char* userTag, double limitprice, double stopprice);
@@ -95,6 +93,8 @@ extern "C"
 
 	//////////////////////////////////////////////////////////////////////////
 	//多因子策略接口
+	EXPORT_FLAG	CtxHandler	create_sel_context(const char* name, uint32_t date, uint32_t time, const char* period, const char* trdtpl = "CHINA", const char* session = "TRADING");
+
 	EXPORT_FLAG	double		sel_get_position(CtxHandler cHandle, const char* code, const char* openTag);
 
 	EXPORT_FLAG	void		sel_set_position(CtxHandler cHandle, const char* code, double qty, const char* uesrTag);
