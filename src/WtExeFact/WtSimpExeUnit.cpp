@@ -18,7 +18,7 @@ extern const char* FACT_NAME;
 WtSimpExeUnit::WtSimpExeUnit()
 	: _last_tick(NULL)
 	, _comm_info(NULL)
-	, _use_opposite(false)
+	, _price_mode(0)
 	, _price_offset(0)
 	, _expire_secs(0)
 	, _cancel_cnt(0)
@@ -46,6 +46,12 @@ const char* WtSimpExeUnit::getName()
 	return "WtSimpExeUnit";
 }
 
+const char* PriceModeNames[] = 
+{
+	"最优价",
+	"最新价",
+	"对手价"
+};
 void WtSimpExeUnit::init(ExecuteContext* ctx, const char* stdCode, WTSVariant* cfg)
 {
 	ExecuteUnit::init(ctx, stdCode, cfg);
@@ -56,9 +62,9 @@ void WtSimpExeUnit::init(ExecuteContext* ctx, const char* stdCode, WTSVariant* c
 
 	_price_offset = cfg->getInt32("offset");
 	_expire_secs = cfg->getUInt32("expire");
-	_use_opposite = cfg->getBoolean("opposite");
+	_price_mode = cfg->getBoolean("pricemode");	//价格类型，0-最新价，-1-最优价，1-对手价，默认为0
 
-	ctx->writeLog("执行单元 %s 初始化完成，委托价 %s ± %d 跳，订单超时 %u 秒", stdCode, _use_opposite?"对手价":"最新价", _price_offset, _expire_secs);
+	ctx->writeLog("执行单元 %s 初始化完成，委托价 %s ± %d 跳，订单超时 %u 秒", stdCode, PriceModeNames[_price_mode+1], _price_offset, _expire_secs);
 }
 
 void WtSimpExeUnit::on_order(uint32_t localid, const char* stdCode, bool isBuy, double leftover, double price, bool isCanceled)
@@ -258,13 +264,22 @@ void WtSimpExeUnit::doCalculate()
 		return;
 	}
 
-	/*
-	*	这是一个简单的执行模块
-	*	一般合约就用涨跌停价发出
-	*/
-
-	double buyPx = _last_tick->price() + _comm_info->getPriceTick() * _price_offset;
-	double sellPx = _last_tick->price() - _comm_info->getPriceTick() * _price_offset;
+	double buyPx, sellPx;
+	if(_price_mode == -1)
+	{
+		buyPx = _last_tick->bidprice(0) + _comm_info->getPriceTick() * _price_offset;
+		sellPx = _last_tick->askprice(0) - _comm_info->getPriceTick() * _price_offset;
+	}
+	else if(_price_mode == 0)
+	{
+		buyPx = _last_tick->price() + _comm_info->getPriceTick() * _price_offset;
+		sellPx = _last_tick->price() - _comm_info->getPriceTick() * _price_offset;
+	}
+	else //if (_price_mode == 1)
+	{
+		buyPx = _last_tick->askprice(0) + _comm_info->getPriceTick() * _price_offset;
+		sellPx = _last_tick->bidprice(0) - _comm_info->getPriceTick() * _price_offset;
+	}
 
 	//if (newVol > curPos)
 	if (decimal::gt(newVol, curPos))

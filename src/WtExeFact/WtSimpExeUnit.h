@@ -99,7 +99,7 @@ private:
 	//Ö´ÐÐ²ÎÊý
 	int32_t		_price_offset;
 	uint32_t	_expire_secs;
-	bool		_use_opposite;
+	int32_t		_price_mode;
 
 	typedef std::unordered_set<uint32_t> IDSet;
 	IDSet			_orders;
