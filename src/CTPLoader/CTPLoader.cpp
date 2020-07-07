@@ -23,6 +23,9 @@ std::string APPID;
 std::string AUTHCODE;
 bool		ISFOROPTION;	//期权
 
+std::string COMM_FILE;		//输出的品种文件名
+std::string CONT_FILE;		//输出的合约文件名
+
 typedef std::map<std::string, std::string>	SymbolMap;
 SymbolMap	MAP_NAME;
 SymbolMap	MAP_SESSION;
@@ -63,6 +66,9 @@ int main()
 
 	SAVEPATH	= ini.readString("config", "path", "");
 	ISFOROPTION = ini.readInt("config", "option", 0) == 1;
+
+	COMM_FILE = ini.readString("config", "commfile", "commodities.json");
+	CONT_FILE = ini.readString("config", "contfile", "contracts.json");
 
 	if(FRONT_ADDR.empty() || BROKER_ID.empty() || INVESTOR_ID.empty() || PASSWORD.empty() || SAVEPATH.empty())
 	{
