@@ -95,6 +95,62 @@ bool HisDataReplayer::init(WTSVariant* cfg)
 
 	loadFees(cfg->getCString("fees"));
 
+	if (cfg->has("adjfactor"))
+		loadStkAdjFactors(cfg->getCString("adjfactor"));
+
+	return true;
+}
+
+bool HisDataReplayer::loadStkAdjFactors(const char* adjfile)
+{
+	if (!BoostFile::exists(adjfile))
+	{
+		WTSLogger::error("除权因子文件%s不存在", adjfile);
+		return false;
+	}
+
+	std::string content;
+	BoostFile::read_file_contents(adjfile, content);
+
+	rj::Document doc;
+	doc.Parse(content.c_str());
+
+	if (doc.HasParseError())
+	{
+		WTSLogger::error("除权因子文件%s解析失败", adjfile);
+		return false;
+	}
+
+	uint32_t stk_cnt = 0;
+	uint32_t fct_cnt = 0;
+	for (auto& mExchg : doc.GetObject())
+	{
+		const char* exchg = mExchg.name.GetString();
+		const rj::Value& itemExchg = mExchg.value;
+		for (auto& mCode : itemExchg.GetObject())
+		{
+			const char* code = mCode.name.GetString();
+			const rj::Value& ayFacts = mCode.value;
+			if (!ayFacts.IsArray())
+				continue;
+
+			std::string key = StrUtil::printf("%s.%s", exchg, code);
+			stk_cnt++;
+
+			AdjFactorList& fctrLst = _adj_factors[key];
+			for (auto& fItem : ayFacts.GetArray())
+			{
+				AdjFactor adjFact;
+				adjFact._date = fItem["date"].GetUint();
+				adjFact._factor = fItem["factor"].GetDouble();
+
+				fctrLst.push_back(adjFact);
+				fct_cnt++;
+			}
+		}
+	}
+
+	WTSLogger::info("共加载%u只股票的%u条除权因子数据", stk_cnt, fct_cnt);
 	return true;
 }
 
@@ -2000,6 +2056,49 @@ bool HisDataReplayer::cacheRawBars(const std::string& key, const char* stdCode, 
 					tempAy->resize(curCnt);
 					memcpy(tempAy->data(), &firstBar[sIdx], sizeof(WTSBarStruct)*curCnt);
 					realCnt += curCnt;
+
+					auto& ayFactors = getAdjFactors(cInfo._code, cInfo._exchg);
+					if (!ayFactors.empty())
+					{
+						//做前复权处理
+
+						int32_t lastIdx = curCnt;
+						WTSBarStruct bar;
+						firstBar = tempAy->data();
+						for (auto& adjFact : ayFactors)
+						{
+							bar.date = adjFact._date;
+							double factor = adjFact._factor;
+
+							WTSBarStruct* pBar = NULL;
+							pBar = std::lower_bound(firstBar, firstBar + lastIdx - 1, bar, [period](const WTSBarStruct& a, const WTSBarStruct& b) {
+								return a.date < b.date;
+							});
+
+							if(pBar->date < bar.date)
+								continue;
+
+							WTSBarStruct* endBar = pBar;
+							if (pBar != NULL)
+							{
+								int32_t curIdx = pBar - firstBar;
+								while (pBar && curIdx < lastIdx)
+								{
+									pBar->open /= factor;
+									pBar->high /= factor;
+									pBar->low /= factor;
+									pBar->close /= factor;
+
+									pBar++;
+									curIdx++;
+								}
+								lastIdx = endBar - firstBar;
+							}
+
+							if(lastIdx == 0)
+								break;
+						}
+					}
 
 					barsSections.push_back(tempAy);
 				}

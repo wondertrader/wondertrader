@@ -130,6 +130,8 @@ private:
 
 	bool		checkTicks(const char* stdCode, uint32_t uDate);
 
+	bool		loadStkAdjFactors(const char* adjfile);
+
 public:
 	bool init(WTSVariant* cfg);
 
@@ -216,5 +218,22 @@ private:
 	StraSubMap		_tick_sub_map;	//tick数据订阅表
 
 	std::unordered_set<std::string>		_subed_raw_codes;	//tick订阅表（真实代码模式）
+
+	//除权因子
+	typedef struct _AdjFactor
+	{
+		uint32_t	_date;
+		double		_factor;
+	} AdjFactor;
+	typedef std::vector<AdjFactor> AdjFactorList;
+	typedef std::unordered_map<std::string, AdjFactorList>	AdjFactorMap;
+	AdjFactorMap	_adj_factors;
+
+	inline const AdjFactorList& getAdjFactors(const char* code, const char* exchg)
+	{
+		char key[20] = { 0 };
+		sprintf(key, "%s.%s", exchg, code);
+		return _adj_factors[key];
+	}
 };
 

@@ -83,6 +83,8 @@ private:
 	uint32_t	readBarsFromCache(const std::string& key, uint64_t etime, uint32_t count, std::vector<WTSBarStruct>& ayBars, bool isDay = false);
 	WTSBarStruct*	indexBarFromCache(const std::string& key, uint64_t etime, uint32_t& count, bool isDay = false);
 
+	bool	loadStkAdjFactors(const char* adjfile);
+
 public:
 	virtual void init(WTSVariant* cfg, IDataReaderSink* sink) override;
 
@@ -116,6 +118,23 @@ private:
 	BarsCache	_bars_cache;
 
 	uint64_t	_last_time;
+
+	//Г§ШЈвђзг
+	typedef struct _AdjFactor
+	{
+		uint32_t	_date;
+		double		_factor;
+	} AdjFactor;
+	typedef std::vector<AdjFactor> AdjFactorList;
+	typedef std::unordered_map<std::string, AdjFactorList>	AdjFactorMap;
+	AdjFactorMap	_adj_factors;
+
+	inline const AdjFactorList& getAdjFactors(const char* code, const char* exchg)
+	{
+		char key[20] = { 0 };
+		sprintf(key, "%s.%s", exchg, code);
+		return _adj_factors[key];
+	}
 };
 
 NS_OTP_END
