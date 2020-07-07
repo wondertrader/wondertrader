@@ -42,7 +42,10 @@ extern std::string	SAVEPATH;	//保存位置
 extern std::string	HOTFILE;
 extern std::string	APPID;
 extern std::string	AUTHCODE;
-extern bool			ISFOROPTION;;
+extern bool			ISFOROPTION;
+
+extern std::string COMM_FILE;		//输出的品种文件名
+extern std::string CONT_FILE;		//输出的合约文件名
 
 // 请求编号
 extern int iRequestID;
@@ -353,7 +356,7 @@ void CTraderSpi::DumpToJson()
 
 	std::ofstream ofs;
 	std::string path = SAVEPATH;
-	path += "commodities.json";
+	path += COMM_FILE;
 	ofs.open(path);
 	{
 		rj::StringBuffer sb;
@@ -364,7 +367,7 @@ void CTraderSpi::DumpToJson()
 	ofs.close();
 
 	path = SAVEPATH;
-	path += "contracts.json";
+	path += CONT_FILE;
 	ofs.open(path);
 	{
 		rj::StringBuffer sb;

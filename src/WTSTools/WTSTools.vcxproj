@@ -77,8 +77,8 @@
     <ReferencePath>D:\Windows Kits\10\Include\10.0.18362.0\ucrt;$(ReferencePath)</ReferencePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(MyDepends12X64)\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(MyDepends12X64)\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(MyDepends141)\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(MyDepends141)\lib\x64;$(LibraryPath)</LibraryPath>
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)$(Platform)\libs\$(Configuration)\</OutDir>
     <ReferencePath>D:\Windows Kits\10\Include\10.0.18362.0\ucrt;$(ReferencePath)</ReferencePath>
