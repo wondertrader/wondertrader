@@ -213,9 +213,16 @@ void CTraderSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CTho
 			}
 			else
 			{
-				std::string month = pInstrument->InstrumentID;
-				month = month.substr(strlen(pInstrument->ProductID));
-				cname = pname + month;
+				if(ISFOROPTION)
+				{
+					cname = pInstrument->InstrumentName;
+				}
+				else
+				{
+					std::string month = pInstrument->InstrumentID;
+					month = month.substr(strlen(pInstrument->ProductID));
+					cname = pname + month;
+				}
 			}
 
 			Contract contract;
