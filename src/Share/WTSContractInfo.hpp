@@ -62,6 +62,15 @@ public:
 	void		addCode(const char* code){ m_setCodes.insert(code); }
 	const std::unordered_set<std::string>& getCodes() const{ return m_setCodes; }
 
+	void	setEntrustQtyUnit(uint32_t buyQtyUnit, uint32_t sellQtyUnit)
+	{
+		m_buyQtyUnit = buyQtyUnit;
+		m_selQtyUnit = sellQtyUnit;
+	}
+
+	uint32_t	getBuyQtyUnit() const { return m_buyQtyUnit; }
+	uint32_t	getSellQtyUnit() const { return m_selQtyUnit; }
+
 private:
 	std::string	m_strName;
 	std::string	m_strExchg;
@@ -74,6 +83,9 @@ private:
 	uint32_t	m_uVolScale;
 	double		m_fPriceTick;
 	uint32_t	m_uPrecision;
+
+	uint32_t	m_buyQtyUnit;
+	uint32_t	m_selQtyUnit;
 
 	ContractCategory	m_ccCategory;
 	CoverMode			m_coverMode;
