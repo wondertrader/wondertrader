@@ -138,6 +138,53 @@ public:
 		return StrUtil::printf("%s.%s", exchg, code);
 	}
 
+	static bool	isStdFutOptCode(const char* code)
+	{
+		using namespace boost::xpressive;
+		/* 定义正则表达式 */
+		cregex reg_stk = cregex::compile("^[A-Z]+.[A-z]+\\d{4}.(C|P).\\d+$");	//CFFEX.IO2007.C.4000
+		return 	regex_match(code, reg_stk);
+	}
+
+
+	/*
+	 *	期货期权代码标准化
+	 */
+	static std::string bscFutOptCodeToStdCode(const char* code, const char* exchg)
+	{
+		using namespace boost::xpressive;
+		/* 定义正则表达式 */
+		cregex reg_stk = cregex::compile("^[A-Z]+\\d{4}-(C|P)-\\d+$");	//中金所、大商所格式IO2013-C-4000
+		bool bMatch = regex_match(code, reg_stk);
+		if(bMatch)
+		{
+			std::string s = StrUtil::printf("%s.%s", exchg, code);
+			StrUtil::replace(s, "-", ".");
+			return s;
+		}
+		else
+		{
+			//郑商所上期所期权代码格式ZC2010P11600
+
+			//先从后往前定位到P或C的位置
+			int idx = strlen(code) - 1;
+			for(; idx >= 0; idx--)
+			{
+				if(!isdigit(code[idx]))
+					break;
+			}
+			
+			std::string s = exchg;
+			s.append(".");
+			s.append(code, idx);
+			s.append(".");
+			s.append(&code[idx], 1);
+			s.append(".");
+			s.append(&code[idx + 1]);
+			return s;
+		}
+	}
+
 	/*
 	 *	通过品种代码获取主力合约代码
 	 */
@@ -161,6 +208,17 @@ public:
 		return stdHotCode;
 	}
 
+	static std::string stdFutOptCodeToBscCode(const char* stdCode)
+	{
+		std::string ret = stdCode;
+		auto pos = ret.find(".");
+		ret = ret.substr(pos + 1);
+		if (strncmp(stdCode, "CFFEX", 5) == 0 || strncmp(stdCode, "DCE", 3) == 0)
+			StrUtil::replace(ret, ".", "-");
+		else
+			StrUtil::replace(ret, ".", "");
+		return ret;
+	}
 
 	static std::string stdFutCodeToBscCode(const char* stdCode)
 	{
@@ -195,25 +253,11 @@ public:
 	{
 		if (isStdStkCode(stdCode))
 			return stdStkCodeToBscCode(stdCode);
+		else if (isStdFutOptCode(stdCode))
+			return stdFutOptCodeToBscCode(stdCode);
 		else
 			return stdFutCodeToBscCode(stdCode);
 	}
-
-	//static void extractStdFutCode(const char* stdCode, std::string& exchg, std::string& bscCode, std::string& commID, bool& isHot)
-	//{
-	//	isHot = StrUtil::endsWith(stdCode, ".HOT", false);
-	//	StringVector ay = StrUtil::split(stdCode, ".");
-	//	exchg = ay[0];
-	//	bscCode = ay[1];
-	//	if (!isHot)
-	//	{
-	//		if (exchg.compare("CZCE") == 0 && ay[2].size() == 4)
-	//			bscCode += ay[2].substr(1);
-	//		else
-	//			bscCode += ay[2];
-	//	}
-	//	commID = ay[1];
-	//}
 
 	static void extractStdFutCode(const char* stdCode, CodeInfo& codeInfo)
 	{
@@ -238,22 +282,6 @@ public:
 		//commID = ay[1];
 		strcpy(codeInfo._product, ay[1].c_str());
 	}
-
-	//static void extractStdStkCode(const char* stdCode, std::string& exchg, std::string& bscCode, std::string& commID)
-	//{
-	//	StringVector ay = StrUtil::split(stdCode, ".");
-	//	exchg = ay[0];
-	//	if(ay.size() > 2)
-	//	{
-	//		commID = ay[1];
-	//		bscCode = ay[2];
-	//	}
-	//	else
-	//	{
-	//		commID = "STK";
-	//		bscCode = ay[1];
-	//	}
-	//}
 
 	static void extractStdStkCode(const char* stdCode, CodeInfo& codeInfo)
 	{
@@ -280,7 +308,9 @@ public:
 		else
 		{
 			//commID = "STK";
-			strcpy(codeInfo._product, "STK");
+			bool isSH = strcmp(codeInfo._exchg, "SSE") == 0;
+			bool isIdx = (isSH && ay[1][0] == '0') || (!isSH && strncmp(ay[1].c_str(), "39", 2) == 0);//是否是指数，上交所的指数以'0'开头，深交所以'39'开头
+			strcpy(codeInfo._product, isIdx ? "IDX" : "STK");
 			//bscCode = ay[1];
 			if (ay[1].back() == 'Q')
 			{
@@ -295,23 +325,50 @@ public:
 		}
 	}
 
-	static void extractStdCode(const char* stdCode, std::string& exchg, std::string& bscCode, std::string& commID, bool& isHot)
+
+	static int indexCodeMonth(const char* code)
 	{
-		CodeInfo codeInfo;
-		if(isStdStkCode(stdCode))
+		if (strlen(code) == 0)
+			return -1;
+
+		int idx = 0;
+		int len = strlen(code);
+		while(idx < len)
 		{
-			extractStdStkCode(stdCode, codeInfo);
-			isHot = false;
+			if (isdigit(code[idx]))
+				return idx;
+
+			idx++;
+		}
+		return -1;
+	}
+
+	static void extractStdFutOptCode(const char* stdCode, CodeInfo& codeInfo)
+	{
+		StringVector ay = StrUtil::split(stdCode, ".");
+		strcpy(codeInfo._exchg, ay[0].c_str());
+		codeInfo._category = CC_Option;
+		if(strcmp(codeInfo._exchg, "SHFE") == 0 || strcmp(codeInfo._exchg, "CZCE") == 0)
+		{
+			sprintf(codeInfo._code, "%s%s%s", ay[1].c_str(), ay[2].c_str(), ay[3].c_str());
 		}
 		else
 		{
-			extractStdFutCode(stdCode, codeInfo);
+			sprintf(codeInfo._code, "%s-%s-%s", ay[1].c_str(), ay[2].c_str(), ay[3].c_str());
 		}
 
-		exchg = codeInfo._exchg;
-		bscCode = codeInfo._code;
-		commID = codeInfo._product;
-		isHot = codeInfo._hot;
+		int mpos = indexCodeMonth(ay[1].c_str());
+
+		if(strcmp(codeInfo._exchg, "CZCE") == 0)
+		{
+			strncpy(codeInfo._product, ay[1].c_str(), mpos);
+			strcat(codeInfo._product, ay[2].c_str());
+		}
+		else
+		{
+			strncpy(codeInfo._product, ay[1].c_str(), mpos);
+			strcat(codeInfo._product, "_o");
+		}
 	}
 
 	static void extractStdCode(const char* stdCode, CodeInfo& codeInfo)
@@ -319,6 +376,10 @@ public:
 		if (isStdStkCode(stdCode))
 		{
 			extractStdStkCode(stdCode, codeInfo);
+		}
+		else if(isStdFutOptCode(stdCode))
+		{
+			extractStdFutOptCode(stdCode, codeInfo);
 		}
 		else
 		{
