@@ -198,18 +198,28 @@ void ParserAdapter::handleQuote(WTSTickData *quote, bool bNeedSlice)
 	if (quote->actiondate() == 0 || quote->tradingdate() == 0)
 		return;
 
-	std::string hotCode = _hot_mgr->getHotCode(quote->exchg(), quote->code(), quote->tradingdate());
+	bool isHot = false;
 
 	WTSContractInfo* cInfo = _bd_mgr->getContract(quote->code(), quote->exchg());
 	WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(cInfo);
 	std::string stdCode;
 	if (commInfo->getCategoty() == CC_Future)
+	{
 		stdCode = CodeHelper::bscFutCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
-	else
+		std::string hotCode = _hot_mgr->getHotCode(quote->exchg(), quote->code(), quote->tradingdate());
+		isHot = !hotCode.empty();
+	}
+	else if(commInfo->getCategoty() == CC_Stock)
+	{
 		stdCode = CodeHelper::bscStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
+	}
+	else if (commInfo->getCategoty() == CC_Option)
+	{
+		stdCode = CodeHelper::bscFutOptCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
+	}
 	quote->setCode(stdCode.c_str());
 
-	_stub->handle_push_quote(quote, !hotCode.empty());
+	_stub->handle_push_quote(quote, isHot);
 
 }
 

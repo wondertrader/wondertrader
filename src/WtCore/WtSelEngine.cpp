@@ -9,6 +9,7 @@
 #include "../Share/StrUtil.hpp"
 #include "../Share/WTSVariant.hpp"
 #include "../Share/WTSSessionInfo.hpp"
+#include "../Share/WTSContractInfo.hpp"
 #include "../Share/WTSDataDef.hpp"
 #include "../Share/CodeHelper.hpp"
 #include "../Share/StdUtils.hpp"
@@ -286,11 +287,10 @@ void WtSelEngine::handle_pos_change(const char* stdCode, double diffQty)
 	std::string realCode = stdCode;
 	if (CodeHelper::isStdFutHotCode(stdCode))
 	{
-		std::string exchg, pid, code;
-		bool isHot = false;
-		CodeHelper::extractStdCode(stdCode, exchg, code, pid, isHot);
-		code = _hot_mgr->getRawCode(exchg.c_str(), pid.c_str(), _cur_tdate);
-		realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), exchg.c_str());
+		CodeHelper::CodeInfo cInfo;
+		CodeHelper::extractStdCode(stdCode, cInfo);
+		std::string code = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
+		realCode = CodeHelper::bscFutCodeToStdCode(cInfo._code, cInfo._exchg);
 	}
 
 	PosInfo& pItem = _pos_map[realCode];
@@ -323,6 +323,15 @@ void WtSelEngine::handle_pos_change(const char* stdCode, double diffQty)
 WTSCommodityInfo* WtSelEngine::get_comm_info(const char* stdCode)
 {
 	return _base_data_mgr->getCommodity(CodeHelper::stdCodeToStdCommID(stdCode).c_str());
+}
+
+WTSSessionInfo* WtSelEngine::get_sess_info(const char* stdCode)
+{
+	WTSCommodityInfo* cInfo = _base_data_mgr->getCommodity(CodeHelper::stdCodeToStdCommID(stdCode).c_str());
+	if (cInfo == NULL)
+		return NULL;
+
+	return _base_data_mgr->getSession(cInfo->getSession());
 }
 
 uint64_t WtSelEngine::get_real_time()

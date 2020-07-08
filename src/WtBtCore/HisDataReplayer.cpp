@@ -1527,6 +1527,10 @@ bool HisDataReplayer::cacheRawTicksFromCSV(const std::string& key, const char* s
 
 bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* stdCode, WTSKlinePeriod period)
 {
+	CodeHelper::CodeInfo cInfo;
+	CodeHelper::extractStdCode(stdCode, cInfo);
+	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
+
 	std::string pname;
 	switch (period)
 	{

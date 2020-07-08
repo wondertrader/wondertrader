@@ -86,11 +86,10 @@ OrderIDs HftStraBaseCtx::stra_buy(const char* stdCode, double price, double qty)
 {
 	if(CodeHelper::isStdFutHotCode(stdCode))
 	{
-		std::string exchg, pid, code;
-		bool isHot = false;
-		CodeHelper::extractStdCode(stdCode, exchg, code, pid, isHot);
-		code = _engine->get_hot_mgr()->getRawCode(exchg.c_str(), pid.c_str(), _engine->get_trading_date());
-		std::string realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), exchg.c_str());
+		CodeHelper::CodeInfo cInfo;
+		CodeHelper::extractStdCode(stdCode, cInfo);
+		std::string code = _engine->get_hot_mgr()->getRawCode(cInfo._exchg, cInfo._product, _engine->get_trading_date());
+		std::string realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), cInfo._exchg);
 
 		_code_map[realCode] = stdCode;
 
@@ -106,11 +105,10 @@ OrderIDs HftStraBaseCtx::stra_sell(const char* stdCode, double price, double qty
 {
 	if (CodeHelper::isStdFutHotCode(stdCode))
 	{
-		std::string exchg, pid, code;
-		bool isHot = false;
-		CodeHelper::extractStdCode(stdCode, exchg, code, pid, isHot);
-		code = _engine->get_hot_mgr()->getRawCode(exchg.c_str(), pid.c_str(), _engine->get_trading_date());
-		std::string realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), exchg.c_str());
+		CodeHelper::CodeInfo cInfo;
+		CodeHelper::extractStdCode(stdCode, cInfo);
+		std::string code = _engine->get_hot_mgr()->getRawCode(cInfo._exchg, cInfo._product, _engine->get_trading_date());
+		std::string realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), cInfo._exchg);
 
 		_code_map[realCode] = stdCode;
 
@@ -194,11 +192,10 @@ double HftStraBaseCtx::stra_get_position(const char* stdCode)
 {
 	if (CodeHelper::isStdFutHotCode(stdCode))
 	{
-		std::string exchg, pid, code;
-		bool isHot = false;
-		CodeHelper::extractStdCode(stdCode, exchg, code, pid, isHot);
-		code = _engine->get_hot_mgr()->getRawCode(exchg.c_str(), pid.c_str(), _engine->get_trading_date());
-		std::string realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), exchg.c_str());
+		CodeHelper::CodeInfo cInfo;
+		CodeHelper::extractStdCode(stdCode, cInfo);
+		std::string code = _engine->get_hot_mgr()->getRawCode(cInfo._exchg, cInfo._product, _engine->get_trading_date());
+		std::string realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), cInfo._exchg);
 
 		_code_map[realCode] = stdCode;
 
@@ -214,11 +211,10 @@ double HftStraBaseCtx::stra_get_undone(const char* stdCode)
 {
 	if (CodeHelper::isStdFutHotCode(stdCode))
 	{
-		std::string exchg, pid, code;
-		bool isHot = false;
-		CodeHelper::extractStdCode(stdCode, exchg, code, pid, isHot);
-		code = _engine->get_hot_mgr()->getRawCode(exchg.c_str(), pid.c_str(), _engine->get_trading_date());
-		std::string realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), exchg.c_str());
+		CodeHelper::CodeInfo cInfo;
+		CodeHelper::extractStdCode(stdCode, cInfo);
+		std::string code = _engine->get_hot_mgr()->getRawCode(cInfo._exchg, cInfo._product, _engine->get_trading_date());
+		std::string realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), cInfo._exchg);
 
 		_code_map[realCode] = stdCode;
 

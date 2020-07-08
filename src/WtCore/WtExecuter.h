@@ -58,6 +58,7 @@ class IExecuterStub
 public:
 	virtual uint64_t get_real_time() = 0;
 	virtual WTSCommodityInfo* get_comm_info(const char* stdCode) = 0;
+	virtual WTSSessionInfo* get_sess_info(const char* stdCode) = 0;
 	virtual IHotMgr* get_hot_mon() = 0;
 	virtual uint32_t get_trading_day() = 0;
 };
@@ -132,6 +133,7 @@ public:
 	virtual void		writeLog(const char* fmt, ...) override;
 
 	virtual WTSCommodityInfo*	getCommodityInfo(const char* stdCode) override;
+	virtual WTSSessionInfo*		getSessionInfo(const char* stdCode) override;
 
 	virtual uint64_t	getCurTime() override;
 

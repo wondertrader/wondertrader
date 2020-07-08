@@ -16,6 +16,7 @@ class WTSTickData;
 class WTSHisTickData;
 class WTSVariant;
 class WTSCommodityInfo;
+class WTSSessionInfo;
 
 typedef std::vector<uint32_t> OrderIDs;
 typedef WTSMap<uint32_t> OrderMap;
@@ -120,6 +121,11 @@ public:
 	 *	获取品种参数
 	 */
 	virtual WTSCommodityInfo* getCommodityInfo(const char* stdCode) = 0;
+
+	/*
+	 *	获取交易时间模板信息
+	 */
+	virtual WTSSessionInfo* getSessionInfo(const char* stdCode) = 0;
 
 	/*
 	 *	获取当前时间，精确到毫秒，格式如20191127174139500

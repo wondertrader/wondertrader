@@ -10,6 +10,7 @@
 
 #include "../Share/WTSVariant.hpp"
 #include "../Share/WTSContractInfo.hpp"
+#include "../Share/WTSSessionInfo.hpp"
 #include "../Share/decimal.h"
 
 extern const char* FACT_NAME;
@@ -59,6 +60,10 @@ void WtSimpExeUnit::init(ExecuteContext* ctx, const char* stdCode, WTSVariant* c
 	_comm_info = ctx->getCommodityInfo(stdCode);
 	if (_comm_info)
 		_comm_info->retain();
+
+	_sess_info = ctx->getSessionInfo(stdCode);
+	if (_sess_info)
+		_sess_info->retain();
 
 	_price_offset = cfg->getInt32("offset");
 	_expire_secs = cfg->getUInt32("expire");
@@ -129,9 +134,17 @@ void WtSimpExeUnit::on_tick(WTSTickData* newTick)
 	bool isFirstTick = false;
 	//如果原来的tick不为空，则要释放掉
 	if (_last_tick)
+	{
 		_last_tick->release();
+	}
 	else
+	{
+		//如果行情时间不在交易时间，这种情况一般是集合竞价的行情进来，下单会失败，所以直接过滤掉这笔行情
+		if (_sess_info != NULL && !_sess_info->isInTradingTime(newTick->actiontime() / 100000))
+			return;
+
 		isFirstTick = true;
+	}
 
 	//新的tick数据，要保留
 	_last_tick = newTick;

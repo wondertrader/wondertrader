@@ -88,10 +88,9 @@ WTSCommodityInfo* WtEngine::get_commodity_info(const char* stdCode)
 
 WTSContractInfo* WtEngine::get_contract_info(const char* stdCode)
 {
-	std::string exchg, code, commID;
-	bool isHot = false;
-	CodeHelper::extractStdCode(stdCode, exchg, code, commID, isHot);
-	return _base_data_mgr->getContract(code.c_str(), exchg.c_str());
+	CodeHelper::CodeInfo cInfo;
+	CodeHelper::extractStdCode(stdCode, cInfo);
+	return _base_data_mgr->getContract(cInfo._code, cInfo._exchg);
 }
 
 WTSSessionInfo* WtEngine::get_session_info(const char* sid, bool isCode /* = false */)

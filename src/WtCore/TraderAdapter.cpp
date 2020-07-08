@@ -56,6 +56,7 @@ TraderAdapter::TraderAdapter()
 	, _undone_qty(0)
 	, _stat_map(NULL)
 	, _risk_mon_enabled(false)
+	, _save_trade_log(false)
 {
 }
 
@@ -82,6 +83,8 @@ bool TraderAdapter::init(const char* id, WTSVariant* params, IBaseDataMgr* bdMgr
 
 	_cfg = params;
 	_cfg->retain();
+
+	_save_trade_log = _cfg->getBoolean("savedata");
 
 	//这里解析流量风控参数
 	WTSVariant* cfgRisk = params->get("riskmon");
@@ -166,6 +169,8 @@ bool TraderAdapter::init(const char* id, WTSVariant* params, IBaseDataMgr* bdMgr
 	}
 
 	cfg->release();
+
+
 
 	return true;
 }
@@ -252,11 +257,10 @@ uint32_t TraderAdapter::doEntrust(WTSEntrust* entrust)
 		entrust->setEntrustID(entrustid);
 	}
 
-	std::string exchg, pid, code;
-	bool isHot = false;
-	CodeHelper::extractStdCode(entrust->getCode(), exchg, code, pid, isHot);
-	entrust->setCode(code.c_str());
-	entrust->setExchange(exchg.c_str());
+	CodeHelper::CodeInfo cInfo;
+	CodeHelper::extractStdCode(entrust->getCode(), cInfo);
+	entrust->setCode(cInfo._code);
+	entrust->setExchange(cInfo._exchg);
 
 	uint32_t localid = makeLocalOrderID();
 	entrust->setUserTag(StrUtil::printf("%s.%u", _order_pattern.c_str(), localid).c_str());
@@ -988,6 +992,8 @@ bool TraderAdapter::doCancel(WTSOrderInfo* ordInfo)
 	std::string stdCode;
 	if (commInfo->getCategoty() == CC_Future)
 		stdCode = CodeHelper::bscFutCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
+	else if (commInfo->getCategoty() == CC_Option)
+		stdCode = CodeHelper::bscFutOptCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
 	else
 		stdCode = CodeHelper::bscStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
 
@@ -1025,9 +1031,8 @@ bool TraderAdapter::cancel(uint32_t localid)
 
 OrderIDs TraderAdapter::cancel(const char* stdCode, bool isBuy, double qty /* = 0 */)
 {
-	std::string exchg, pid, code;
-	bool isHot = false;
-	CodeHelper::extractStdCode(stdCode, exchg, code, pid, isHot);
+	CodeHelper::CodeInfo cInfo;
+	CodeHelper::extractStdCode(stdCode, cInfo);
 
 	OrderIDs ret;
 
@@ -1038,7 +1043,7 @@ OrderIDs TraderAdapter::cancel(const char* stdCode, bool isBuy, double qty /* = 
 		for (auto it = _orders->begin(); it != _orders->end(); it++)
 		{
 			WTSOrderInfo* orderInfo = (WTSOrderInfo*)it->second;
-			if (isAll || strcmp(orderInfo->getCode(), code.c_str()) == 0)
+			if (isAll || strcmp(orderInfo->getCode(), cInfo._code) == 0)
 			{
 				if(doCancel(orderInfo))
 				{
@@ -1194,6 +1199,8 @@ void TraderAdapter::onRspEntrust(WTSEntrust* entrust, WTSError *err)
 		std::string stdCode;
 		if (commInfo->getCategoty() == CC_Future)
 			stdCode = CodeHelper::bscFutCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
+		else if (commInfo->getCategoty() == CC_Option)
+			stdCode = CodeHelper::bscFutOptCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
 		else
 			stdCode = CodeHelper::bscStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
 
@@ -1261,6 +1268,8 @@ void TraderAdapter::onRspPosition(const WTSArray* ayPositions)
 			std::string stdCode;
 			if (commInfo->getCategoty() == CC_Future)
 				stdCode = CodeHelper::bscFutCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
+			else if (commInfo->getCategoty() == CC_Option)
+				stdCode = CodeHelper::bscFutOptCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
 			else
 				stdCode = CodeHelper::bscStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
 			PosItem& pos = _positions[stdCode];
@@ -1328,6 +1337,8 @@ void TraderAdapter::onRspOrders(const WTSArray* ayOrders)
 			std::string stdCode;
 			if (commInfo->getCategoty() == CC_Future)
 				stdCode = CodeHelper::bscFutCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
+			else if (commInfo->getCategoty() == CC_Option)
+				stdCode = CodeHelper::bscFutOptCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
 			else
 				stdCode = CodeHelper::bscStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
 
@@ -1437,6 +1448,8 @@ void TraderAdapter::onRspTrades(const WTSArray* ayTrades)
 			std::string stdCode;
 			if (commInfo->getCategoty() == CC_Future)
 				stdCode = CodeHelper::bscFutCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
+			else if (commInfo->getCategoty() == CC_Option)
+				stdCode = CodeHelper::bscFutOptCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
 			else
 				stdCode = CodeHelper::bscStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
 
@@ -1529,6 +1542,8 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 	std::string stdCode;
 	if (commInfo->getCategoty() == CC_Future)
 		stdCode = CodeHelper::bscFutCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
+	else if (commInfo->getCategoty() == CC_Option)
+		stdCode = CodeHelper::bscFutOptCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
 	else
 		stdCode = CodeHelper::bscStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
 
@@ -1776,6 +1791,8 @@ void TraderAdapter::onPushTrade(WTSTradeInfo* tradeRecord)
 	std::string stdCode;
 	if (commInfo->getCategoty() == CC_Future)
 		stdCode = CodeHelper::bscFutCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
+	else if (commInfo->getCategoty() == CC_Option)
+		stdCode = CodeHelper::bscFutOptCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
 	else
 		stdCode = CodeHelper::bscStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
 

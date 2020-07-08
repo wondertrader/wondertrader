@@ -85,6 +85,11 @@ WTSCommodityInfo* ExecMocker::getCommodityInfo(const char* stdCode)
 	return _replayer->get_commodity_info(stdCode);
 }
 
+WTSSessionInfo* ExecMocker::getSessionInfo(const char* stdCode)
+{
+	return _replayer->get_session_info(stdCode, true);
+}
+
 uint64_t ExecMocker::getCurTime()
 {
 	return TimeUtils::makeTime(_replayer->get_date(), _replayer->get_raw_time() * 100000 + _replayer->get_secs());

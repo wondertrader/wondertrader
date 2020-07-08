@@ -15,6 +15,7 @@
 
 #include "../Share/ITraderApi.h"
 #include "../Share/BoostDefine.h"
+#include "../Share/BoostFile.hpp"
 
 NS_OTP_BEGIN
 class WTSVariant;
@@ -213,6 +214,9 @@ private:
 	typedef std::unordered_map<std::string, RiskParams>	RiskParamsMap;
 	RiskParamsMap	_risk_params_map;
 	bool			_risk_mon_enabled;
+
+	bool			_save_trade_log;	//是否保存交易日志
+	BoostFilePtr	_trade_log;			//交易数据日志
 };
 
 typedef std::shared_ptr<TraderAdapter>				TraderAdapterPtr;

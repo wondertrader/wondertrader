@@ -173,6 +173,11 @@ WTSCommodityInfo* WtExecuter::getCommodityInfo(const char* stdCode)
 	return _stub->get_comm_info(stdCode);
 }
 
+WTSSessionInfo* WtExecuter::getSessionInfo(const char* stdCode)
+{
+	return _stub->get_sess_info(stdCode);
+}
+
 uint64_t WtExecuter::getCurTime()
 {
 	return _stub->get_real_time();
