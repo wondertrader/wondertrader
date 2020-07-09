@@ -18,7 +18,7 @@
 #include "../Share/StdUtils.hpp"
 #include "../Share/TimeUtils.hpp"
 #include "../Share/BoostFile.hpp"
-
+#include "../Share/StrUtil.hpp"
 #include "../Share/decimal.h"
 
 #ifdef _WIN32

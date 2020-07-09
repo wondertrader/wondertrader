@@ -17,6 +17,7 @@
 
 #include "../Share/TimeUtils.hpp"
 #include "../Share/JsonToVariant.hpp"
+#include "../Share/StrUtil.hpp"
 
 #include "../WTSTools/WTSLogger.h"
 #include "../WTSTools/WTSCmpHelper.hpp"

@@ -11,8 +11,10 @@
 #include "WtRtRunner.h"
 
 #include "../WTSTools/WTSLogger.h"
-#include "../Share/decimal.h"
 #include "../Includes/WTSTradeDef.hpp"
+
+#include "../Share/decimal.h"
+#include "../Share/StrUtil.hpp"
 
 
 #ifdef _WIN32

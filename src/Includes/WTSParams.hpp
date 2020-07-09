@@ -13,8 +13,6 @@
 #include "WTSObject.hpp"
 #include "WTSCollection.hpp"
 
-#include "../Share/StrUtil.hpp"
-
 #include <string>
 #include <vector>
 #include <map>
@@ -44,7 +42,9 @@ private:
 	static WTSParams* create(int32_t i32, const char* desc="")
 	{
 		WTSParams* ret = new WTSParams();
-		ret->_value._string = new std::string(StrUtil::printf("%d", i32));
+		char s[32] = { 0 };
+		sprintf(s, "%d", i32);
+		ret->_value._string = new std::string(s);
 		ret->_desc = desc;
 		return ret;
 	}
@@ -52,7 +52,9 @@ private:
 	static WTSParams* create(uint32_t u32, const char* desc="")
 	{
 		WTSParams* ret = new WTSParams();
-		ret->_value._string = new std::string(StrUtil::printf("%u", u32));
+		char s[32] = { 0 };
+		sprintf(s, "%u", u32);
+		ret->_value._string = new std::string(s);
 		ret->_desc = desc;
 		return ret;
 	}
@@ -60,7 +62,9 @@ private:
 	static WTSParams* create(double _real, const char* desc="")
 	{
 		WTSParams* ret = new WTSParams();
-		ret->_value._string = new std::string(StrUtil::printf("%f", _real));
+		char s[32] = { 0 };
+		sprintf(s, "%f", _real);
+		ret->_value._string = new std::string(s);
 		ret->_desc = desc;
 		return ret;
 	}

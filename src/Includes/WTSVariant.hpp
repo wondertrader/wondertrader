@@ -14,8 +14,6 @@
 #include "WTSCollection.hpp"
 #include "WTSParams.hpp"
 
-#include "../Share/StrUtil.hpp"
-
 #include <string>
 #include <vector>
 #include <map>
@@ -66,7 +64,10 @@ private:
 	{
 		WTSVariant* ret = new WTSVariant();
 		ret->_type = VT_Int32;
-		ret->_value._string = new std::string(StrUtil::printf("%d", i32));
+		char s[32] = { 0 };
+		sprintf(s, "%d", i32);
+		ret->_value._string = new std::string(s);
+		//ret->_value._string = new std::string(StrUtil::printf("%d", i32));
 		return ret;
 	}
 
@@ -74,7 +75,9 @@ private:
 	{
 		WTSVariant* ret = new WTSVariant();
 		ret->_type = VT_Uint32;
-		ret->_value._string = new std::string(StrUtil::printf("%u", u32));
+		char s[32] = { 0 };
+		sprintf(s, "%u", u32);
+		ret->_value._string = new std::string(s);
 		return ret;
 	}
 
@@ -82,7 +85,10 @@ private:
 	{
 		WTSVariant* ret = new WTSVariant();
 		ret->_type = VT_Int64;
-		ret->_value._string = new std::string(StrUtil::printf(INT64_FMT, i64));
+		char s[32] = { 0 };
+		sprintf(s, INT64_FMT, i64);
+		ret->_value._string = new std::string(s);
+		//ret->_value._string = new std::string(StrUtil::printf(INT64_FMT, i64));
 		return ret;
 	}
 
@@ -90,7 +96,10 @@ private:
 	{
 		WTSVariant* ret = new WTSVariant();
 		ret->_type = VT_Uint64;
-		ret->_value._string = new std::string(StrUtil::printf(UINT64_FMT, u64));
+		char s[32] = { 0 };
+		sprintf(s, UINT64_FMT, u64);
+		ret->_value._string = new std::string(s);
+		//ret->_value._string = new std::string(StrUtil::printf(UINT64_FMT, u64));
 		return ret;
 	}
 
@@ -98,7 +107,10 @@ private:
 	{
 		WTSVariant* ret = new WTSVariant();
 		ret->_type = VT_Real;
-		ret->_value._string = new std::string(StrUtil::printf("%f", _real));
+		char s[32] = { 0 };
+		sprintf(s, "%f", _real);
+		ret->_value._string = new std::string(s);
+		//ret->_value._string = new std::string(StrUtil::printf("%f", _real));
 		return ret;
 	}
 

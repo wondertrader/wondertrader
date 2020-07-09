@@ -14,6 +14,7 @@
 #include "../Includes/ILogHandler.h"
 #include "../Share/JsonToVariant.hpp"
 #include "../Share/StdUtils.hpp"
+#include "../Share/StrUtil.hpp"
 
 #include <boost/filesystem.hpp>
 

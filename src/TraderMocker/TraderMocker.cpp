@@ -5,10 +5,12 @@
 #include "../Includes/WTSTradeDef.hpp"
 #include "../Includes/WTSContractInfo.hpp"
 #include "../Includes/IBaseDataMgr.h"
+#include "../Includes/WTSError.hpp"
+
 #include "../Share/TimeUtils.hpp"
 #include "../Share/BoostFile.hpp"
 #include "../Share/decimal.h"
-#include "../Includes/WTSError.hpp"
+#include "../Share/StrUtil.hpp"
 
 #include <rapidjson/document.h>
 #include <rapidjson/prettywriter.h>

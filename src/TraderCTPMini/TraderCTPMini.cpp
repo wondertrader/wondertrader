@@ -19,6 +19,7 @@
 #include "../Includes/IBaseDataMgr.h"
 #include "../Share/DLLHelper.hpp"
 #include "../Share/decimal.h"
+#include "../Share/StrUtil.hpp"
 
 #ifdef _WIN32
 #include <wtypes.h>

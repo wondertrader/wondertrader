@@ -1,15 +1,17 @@
 #include "TraderiTap.h"
 #include "HttpClient.h"
 
-#include "../Share/BoostDefine.h"
 #include "../Includes/WTSError.hpp"
 #include "../Includes/WTSContractInfo.hpp"
 #include "../Includes/WTSTradeDef.hpp"
 #include "../Includes/WTSDataDef.hpp"
 #include "../Includes/WTSParams.hpp"
+#include "../Includes/IBaseDataMgr.h"
+
+#include "../Share/BoostDefine.h"
 #include "../Share/BoostFile.hpp"
 #include "../Share/TimeUtils.hpp"
-#include "../Includes/IBaseDataMgr.h"
+#include "../Share/StrUtil.hpp"
 
 #include "./iTapTradeApi/iTapAPIError.h"
 

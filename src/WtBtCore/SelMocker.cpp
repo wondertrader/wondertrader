@@ -16,6 +16,7 @@
 #include <rapidjson/prettywriter.h>
 
 #include "../Share/StdUtils.hpp"
+#include "../Share/StrUtil.hpp"
 #include "../Includes/WTSContractInfo.hpp"
 #include "../Includes/WTSSessionInfo.hpp"
 #include "../Includes/WTSTradeDef.hpp"

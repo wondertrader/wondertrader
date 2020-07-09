@@ -11,7 +11,6 @@
 #include "WTSObject.hpp"
 #include "WTSTypes.h"
 #include "WTSMarcos.h"
-#include "../Share/StrUtil.hpp"
 
 #include <time.h>
 #include <string>
