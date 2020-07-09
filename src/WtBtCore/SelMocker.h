@@ -12,7 +12,7 @@
 #include "HisDataReplayer.h"
 
 #include "../Includes/ISelStraCtx.h"
-#include "../WtCore/SelStrategyDefs.h"
+#include "../Includes/SelStrategyDefs.h"
 
 #include "../Includes/WTSDataDef.hpp"
 #include "../Share/BoostFile.hpp"

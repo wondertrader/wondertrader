@@ -7,6 +7,7 @@
 #include "../Includes/WTSVariant.hpp"
 #include "../Includes/WTSDataDef.hpp"
 #include "../Share/decimal.h"
+#include "../Share/StrUtil.hpp"
 
 extern const char* FACT_NAME;
 

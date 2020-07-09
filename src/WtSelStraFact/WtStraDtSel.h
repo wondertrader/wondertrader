@@ -1,5 +1,5 @@
 #pragma once
-#include "../WtCore/SelStrategyDefs.h"
+#include "../Includes/SelStrategyDefs.h"
 
 #include <unordered_set>
 

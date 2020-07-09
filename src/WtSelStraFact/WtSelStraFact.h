@@ -1,5 +1,5 @@
 #pragma once
-#include "../WtCore/SelStrategyDefs.h"
+#include "../Includes/SelStrategyDefs.h"
 
 USING_NS_OTP;
 
