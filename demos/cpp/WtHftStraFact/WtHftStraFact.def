@@ -1,0 +1,5 @@
+LIBRARY WtHftStraFact
+
+EXPORTS
+	createStrategyFact
+	deleteStrategyFact
