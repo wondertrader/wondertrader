@@ -7,14 +7,13 @@
  * 
  * \brief 
  */
-#include "stdafx.h"
 #include "WtRunner.h"
 
 #include "..\WtCore\WtHelper.h"
 #include "..\WtCore\CtaStraContext.h"
 #include "..\WtCore\HftStraContext.h"
 
-#include "..\Share\WTSVariant.hpp"
+#include "..\Includes\WTSVariant.hpp"
 #include "..\Share\StdUtils.hpp"
 #include "..\WTSTools\WTSLogger.h"
 #include "..\Share\JsonToVariant.hpp"
@@ -234,7 +233,7 @@ bool WtRunner::initParsers()
 		const char* id = cfgItem->getCString("id");
 
 		ParserAdapterPtr adapter(new ParserAdapter);
-		adapter->init(id, cfgItem, _engine);
+		adapter->init(id, cfgItem, _engine, &_bd_mgr, &_hot_mgr);
 
 		_parsers.addAdapter(id, adapter);
 	}

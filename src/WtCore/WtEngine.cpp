@@ -19,15 +19,15 @@
 #include "../Share/decimal.h"
 #include "../Share/CodeHelper.hpp"
 
-#include "../Share/IBaseDataMgr.h"
-#include "../Share/IHotMgr.h"
+#include "../Includes/IBaseDataMgr.h"
+#include "../Includes/IHotMgr.h"
 
-#include "../Share/WTSVariant.hpp"
-#include "../Share/WTSContractInfo.hpp"
-#include "../Share/WTSSessionInfo.hpp"
+#include "../Includes/WTSVariant.hpp"
+#include "../Includes/WTSContractInfo.hpp"
+#include "../Includes/WTSSessionInfo.hpp"
 
-#include "../Share/WTSDataDef.hpp"
-#include "../Share/WTSRiskDef.hpp"
+#include "../Includes/WTSDataDef.hpp"
+#include "../Includes/WTSRiskDef.hpp"
 
 #include "../WTSTools/WTSLogger.h"
 

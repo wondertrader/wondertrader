@@ -8,8 +8,8 @@
  * \brief 日志模块定义
  */
 #pragma once
-#include "../Share/WTSTypes.h"
-#include "../Share/WTSCollection.hpp"
+#include "../Includes/WTSTypes.h"
+#include "../Includes/WTSCollection.hpp"
 #include <memory>
 #include <sstream>
 

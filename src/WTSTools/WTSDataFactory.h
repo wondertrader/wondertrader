@@ -8,7 +8,7 @@
  * \brief 数据拼接工厂类定义
  */
 #pragma once
-#include "../Share/IDataFactory.h"
+#include "../Includes/IDataFactory.h"
 
 USING_NS_OTP;
 

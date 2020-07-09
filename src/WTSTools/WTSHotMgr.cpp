@@ -8,7 +8,7 @@
  * \brief 
  */
 #include "WTSHotMgr.h"
-#include "../Share/WTSHotItem.hpp"
+#include "../Includes/WTSHotItem.hpp"
 #include "../Share/StrUtil.hpp"
 #include "../Share/TimeUtils.hpp"
 #include "../Share/CodeHelper.hpp"

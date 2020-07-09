@@ -11,10 +11,10 @@
 #include <unordered_map>
 #include "HisDataReplayer.h"
 
-#include "../WtCore/ICtaStraCtx.h"
-#include "../WtCore/CtaStrategyDefs.h"
+#include "../Includes/ICtaStraCtx.h"
+#include "../Includes/CtaStrategyDefs.h"
 
-#include "../Share/WTSDataDef.hpp"
+#include "../Includes/WTSDataDef.hpp"
 #include "../Share/BoostFile.hpp"
 #include "../Share/DLLHelper.hpp"
 

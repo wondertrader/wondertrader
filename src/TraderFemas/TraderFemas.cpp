@@ -9,12 +9,12 @@
  */
 #include "TraderFemas.h"
 
-#include "../Share/WTSError.hpp"
-#include "../Share/IBaseDataMgr.h"
-#include "../Share/WTSTradeDef.hpp"
-#include "../Share/WTSDataDef.hpp"
-#include "../Share/WTSParams.hpp"
-#include "../Share/WTSContractInfo.hpp"
+#include "../Includes/WTSError.hpp"
+#include "../Includes/IBaseDataMgr.h"
+#include "../Includes/WTSTradeDef.hpp"
+#include "../Includes/WTSDataDef.hpp"
+#include "../Includes/WTSParams.hpp"
+#include "../Includes/WTSContractInfo.hpp"
 #include "../Share/StdUtils.hpp"
 #include "../Share/TimeUtils.hpp"
 #include "../Share/BoostFile.hpp"

@@ -15,7 +15,7 @@
 
 #include "../Share/CodeHelper.hpp"
 #include "../Share/StrUtil.hpp"
-#include "../Share/WTSVariant.hpp"
+#include "../Includes/WTSVariant.hpp"
 
 #include <boost/asio.hpp>
 

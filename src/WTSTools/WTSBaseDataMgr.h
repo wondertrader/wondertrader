@@ -11,8 +11,8 @@
 #include <unordered_set>
 #include <unordered_map>
 
-#include "../Share/IBaseDataMgr.h"
-#include "../Share/WTSCollection.hpp"
+#include "../Includes/IBaseDataMgr.h"
+#include "../Includes/WTSCollection.hpp"
 
 USING_NS_OTP;
 typedef std::unordered_map<std::string, TradingDayTpl>	TradingDayTplMap;

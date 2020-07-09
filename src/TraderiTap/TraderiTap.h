@@ -5,9 +5,9 @@
 #include <stdint.h>
 #include <string.h>
 
-#include "../Share/WTSTypes.h"
-#include "../Share/ITraderApi.h"
-#include "../Share/WTSCollection.hpp"
+#include "../Includes/WTSTypes.h"
+#include "../Includes/ITraderApi.h"
+#include "../Includes/WTSCollection.hpp"
 #include "../Share/DLLHelper.hpp"
 
 #include "./iTapTradeApi/iTapTradeAPI.h"

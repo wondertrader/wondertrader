@@ -1,5 +1,5 @@
 #pragma once
-#include "../WtCore/CtaStrategyDefs.h"
+#include "../Includes/CtaStrategyDefs.h"
 
 class WtStraDualThrust : public CtaStrategy
 {

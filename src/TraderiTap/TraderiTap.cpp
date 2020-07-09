@@ -2,14 +2,14 @@
 #include "HttpClient.h"
 
 #include "../Share/BoostDefine.h"
-#include "../Share/WTSError.hpp"
-#include "../Share/WTSContractInfo.hpp"
-#include "../Share/WTSTradeDef.hpp"
-#include "../Share/WTSDataDef.hpp"
-#include "../Share/WTSParams.hpp"
+#include "../Includes/WTSError.hpp"
+#include "../Includes/WTSContractInfo.hpp"
+#include "../Includes/WTSTradeDef.hpp"
+#include "../Includes/WTSDataDef.hpp"
+#include "../Includes/WTSParams.hpp"
 #include "../Share/BoostFile.hpp"
 #include "../Share/TimeUtils.hpp"
-#include "../Share/IBaseDataMgr.h"
+#include "../Includes/IBaseDataMgr.h"
 
 #include "./iTapTradeApi/iTapAPIError.h"
 

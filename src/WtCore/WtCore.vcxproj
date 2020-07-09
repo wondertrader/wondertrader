@@ -19,9 +19,16 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Includes\CtaStrategyDefs.h" />
+    <ClInclude Include="..\Includes\ExecuteDefs.h" />
+    <ClInclude Include="..\Includes\HftStrategyDefs.h" />
+    <ClInclude Include="..\Includes\ICtaStraCtx.h" />
+    <ClInclude Include="..\Includes\IDataReader.h" />
+    <ClInclude Include="..\Includes\IHftStraCtx.h" />
+    <ClInclude Include="..\Includes\ISelStraCtx.h" />
+    <ClInclude Include="..\Includes\RiskMonDefs.h" />
     <ClInclude Include="ActionPolicyMgr.h" />
     <ClInclude Include="IDataManager.h" />
-    <ClInclude Include="IDataReader.h" />
     <ClInclude Include="HftStraBaseCtx.h" />
     <ClInclude Include="HftStraContext.h" />
     <ClInclude Include="HftStrategyDefs.h" />
@@ -29,7 +36,6 @@
     <ClInclude Include="ICtaStraCtx.h" />
     <ClInclude Include="CtaStrategyMgr.h" />
     <ClInclude Include="CtaStraBaseCtx.h" />
-    <ClInclude Include="IDataStore.h" />
     <ClInclude Include="ISelStraCtx.h" />
     <ClInclude Include="IHftStraCtx.h" />
     <ClInclude Include="ITrdNotifySink.h" />
@@ -37,8 +43,6 @@
     <ClInclude Include="SelStraContext.h" />
     <ClInclude Include="SelStrategyDefs.h" />
     <ClInclude Include="SelStrategyMgr.h" />
-    <ClInclude Include="RiskMonDefs.h" />
-    <ClInclude Include="ExecuteDefs.h" />
     <ClInclude Include="ParserAdapter.h" />
     <ClInclude Include="TraderAdapter.h" />
     <ClInclude Include="WtEngine.h" />

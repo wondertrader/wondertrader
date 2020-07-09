@@ -8,7 +8,7 @@
  * \brief 
  */
 #pragma once
-#include "ICtaStraCtx.h"
+#include "../Includes/ICtaStraCtx.h"
 #include "WtExecuter.h"
 #include "WtEngine.h"
 

@@ -14,10 +14,11 @@
 #include <unordered_set>
 #include <unordered_map>
 
-#include "RiskMonDefs.h"
 #include "ParserAdapter.h"
 
-#include "../Share/WTSMarcos.h"
+#include "../Includes/WTSMarcos.h"
+#include "../Includes/RiskMonDefs.h"
+
 #include "../Share/BoostDefine.h"
 #include "../Share/DLLHelper.hpp"
 

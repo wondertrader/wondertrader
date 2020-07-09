@@ -10,9 +10,10 @@
 #pragma once
 
 #include "WTSTypes.h"
-#include "StrUtil.hpp"
 #include "WTSObject.hpp"
 #include "WTSCollection.hpp"
+
+#include "../Share/StrUtil.hpp"
 
 #include <string>
 #include <vector>

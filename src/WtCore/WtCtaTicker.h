@@ -11,7 +11,7 @@
 #include <stdint.h>
 #include <atomic>
 
-#include "../Share/WTSMarcos.h"
+#include "../Includes/WTSMarcos.h"
 #include "../Share/BoostDefine.h"
 
 NS_OTP_BEGIN

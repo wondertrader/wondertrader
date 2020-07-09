@@ -8,7 +8,7 @@
  * \brief 
  */
 #include "HftStraContext.h"
-#include "HftStrategyDefs.h"
+#include "../Includes/HftStrategyDefs.h"
 
 
 HftStraContext::HftStraContext(WtHftEngine* engine, const char* name)

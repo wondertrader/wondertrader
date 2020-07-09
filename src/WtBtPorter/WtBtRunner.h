@@ -10,7 +10,7 @@
 #pragma once
 #include "PorterDefs.h"
 #include "../WtBtCore/HisDataReplayer.h"
-#include "../Share/WTSMarcos.h"
+#include "../Includes/WTSMarcos.h"
 
 
 NS_OTP_BEGIN

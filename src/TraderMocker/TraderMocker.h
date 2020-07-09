@@ -6,9 +6,9 @@
 #include <boost/array.hpp>
 #include <boost/asio/io_service.hpp>
 
-#include "../Share/ITraderApi.h"
+#include "../Includes/ITraderApi.h"
 #include "../Share/BoostDefine.h"
-#include "../Share/WTSCollection.hpp"
+#include "../Includes/WTSCollection.hpp"
 
 
 NS_OTP_BEGIN

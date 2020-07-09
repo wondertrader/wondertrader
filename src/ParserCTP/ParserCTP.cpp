@@ -10,13 +10,13 @@
 #include "ParserCTP.h"
 #include "../Share/StrUtil.hpp"
 #include "../Share/TimeUtils.hpp"
-#include "../Share/WTSDataDef.hpp"
+#include "../Includes/WTSDataDef.hpp"
 #include "../Share/StdUtils.hpp"
-#include "../Share/WTSContractInfo.hpp"
-#include "../Share/WTSParams.hpp"
+#include "../Includes/WTSContractInfo.hpp"
+#include "../Includes/WTSParams.hpp"
 #include "../Share/StrUtil.hpp"
-#include "../Share/IBaseDataMgr.h"
-#include "../Share/IBaseDataMgr.h"
+#include "../Includes/IBaseDataMgr.h"
+#include "../Includes/IBaseDataMgr.h"
 #include "../Share/DLLHelper.hpp"
 
 #include <boost/filesystem.hpp>

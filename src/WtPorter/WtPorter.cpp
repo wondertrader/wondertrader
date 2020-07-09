@@ -12,7 +12,7 @@
 
 #include "../WTSTools/WTSLogger.h"
 #include "../Share/decimal.h"
-#include "../Share/WTSTradeDef.hpp"
+#include "../Includes/WTSTradeDef.hpp"
 
 
 #ifdef _WIN32

@@ -8,9 +8,9 @@
  */
 #include "WtSimpExeUnit.h"
 
-#include "../Share/WTSVariant.hpp"
-#include "../Share/WTSContractInfo.hpp"
-#include "../Share/WTSSessionInfo.hpp"
+#include "../Includes/WTSVariant.hpp"
+#include "../Includes/WTSContractInfo.hpp"
+#include "../Includes/WTSSessionInfo.hpp"
 #include "../Share/decimal.h"
 
 extern const char* FACT_NAME;

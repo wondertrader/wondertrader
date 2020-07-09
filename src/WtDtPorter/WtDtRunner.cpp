@@ -10,9 +10,9 @@
 #include "WtDtRunner.h"
 #include "../WtDtCore/WtHelper.h"
 
-#include "../Share/WTSSessionInfo.hpp"
+#include "../Includes/WTSSessionInfo.hpp"
 #include "../Share/DLLHelper.hpp"
-#include "../Share/WTSVariant.hpp"
+#include "../Includes/WTSVariant.hpp"
 #include "../Share/JsonToVariant.hpp"
 
 #include "../WTSTools/WTSLogger.h"

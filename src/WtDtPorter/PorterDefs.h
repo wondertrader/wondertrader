@@ -10,7 +10,7 @@
 #pragma once
 
 #include <stdint.h>
-#include "../Share/WTSTypes.h"
+#include "../Includes/WTSTypes.h"
 
 NS_OTP_BEGIN
 NS_OTP_END

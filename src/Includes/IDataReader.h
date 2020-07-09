@@ -10,8 +10,8 @@
 #pragma once
 #include <stdint.h>
 
-#include "../Share/WTSMarcos.h"
-#include "../Share/WTSTypes.h"
+#include "../Includes/WTSMarcos.h"
+#include "../Includes/WTSTypes.h"
 
 NS_OTP_BEGIN
 class WTSHisTickData;

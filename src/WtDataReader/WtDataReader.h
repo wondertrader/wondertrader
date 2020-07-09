@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include <unordered_map>
 
-#include "../WtCore/IDataReader.h"
+#include "../Includes/IDataReader.h"
 
 #include "../WtDataWriter/DataDefine.h"
 #include "../Share/BoostMappingFile.hpp"

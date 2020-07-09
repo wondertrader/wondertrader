@@ -8,7 +8,7 @@
  * \brief 指标工厂类定义
  */
 #pragma once
-#include "../Share/IExpFactory.h"
+#include "../Includes/IExpFactory.h"
 
 NS_OTP_BEGIN
 class WTSValueArray;

@@ -12,7 +12,7 @@
 #include "UDPCaster.h"
 #include "WtHelper.h"
 
-#include "../Share/WTSVariant.hpp"
+#include "../Includes/WTSVariant.hpp"
 #include "../Share/DLLHelper.hpp"
 
 #include "../WTSTools/WTSBaseDataMgr.h"

@@ -11,7 +11,7 @@
 #include "HisDataReplayer.h"
 #include "WtHelper.h"
 
-#include "../Share/WTSVariant.hpp"
+#include "../Includes/WTSVariant.hpp"
 #include "../Share/TimeUtils.hpp"
 #include "../Share/decimal.h"
 #include "../Share/BoostFile.hpp"

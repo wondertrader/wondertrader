@@ -9,7 +9,7 @@
  */
 #pragma once
 
-#include "WTSVariant.hpp"
+#include "../Includes/WTSVariant.hpp"
 #include <rapidjson/document.h>
 
 namespace rj = rapidjson;

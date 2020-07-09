@@ -9,8 +9,8 @@
  */
 #include "WtSimpRiskMon.h"
 
-#include "../Share/WTSRiskDef.hpp"
-#include "../Share/WTSVariant.hpp"
+#include "../Includes/WTSRiskDef.hpp"
+#include "../Includes/WTSVariant.hpp"
 #include "../Share/TimeUtils.hpp"
 #include "../Share/decimal.h"
 

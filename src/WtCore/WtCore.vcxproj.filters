@@ -13,9 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Defs">
-      <UniqueIdentifier>{cb28796e-2033-4f99-8c5e-378ac575c33b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Datas">
       <UniqueIdentifier>{d0a3fbad-c6a2-420e-a58d-e98b65776dd8}</UniqueIdentifier>
     </Filter>
@@ -31,6 +28,9 @@
     <Filter Include="SEL">
       <UniqueIdentifier>{d60a1661-ccd3-4142-9777-3ab97f08856a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Incs">
+      <UniqueIdentifier>{9f1bbb47-ad4c-461b-9a65-c33dc3af0cbc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WtExecuter.h">
@@ -41,9 +41,6 @@
     </ClInclude>
     <ClInclude Include="ParserAdapter.h">
       <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="ExecuteDefs.h">
-      <Filter>Defs</Filter>
     </ClInclude>
     <ClInclude Include="WtDataManager.h">
       <Filter>Datas</Filter>
@@ -87,9 +84,6 @@
     <ClInclude Include="HftStraContext.h">
       <Filter>HFT</Filter>
     </ClInclude>
-    <ClInclude Include="ITrdNotifySink.h">
-      <Filter>Defs</Filter>
-    </ClInclude>
     <ClInclude Include="HftStrategyMgr.h">
       <Filter>HFT</Filter>
     </ClInclude>
@@ -101,15 +95,6 @@
     </ClInclude>
     <ClInclude Include="WtHftTicker.h">
       <Filter>HFT</Filter>
-    </ClInclude>
-    <ClInclude Include="RiskMonDefs.h">
-      <Filter>Defs</Filter>
-    </ClInclude>
-    <ClInclude Include="IDataReader.h">
-      <Filter>Defs</Filter>
-    </ClInclude>
-    <ClInclude Include="IDataStore.h">
-      <Filter>Defs</Filter>
     </ClInclude>
     <ClInclude Include="ISelStraCtx.h">
       <Filter>SEL</Filter>
@@ -134,6 +119,33 @@
     </ClInclude>
     <ClInclude Include="IDataManager.h">
       <Filter>Datas</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Includes\CtaStrategyDefs.h">
+      <Filter>Incs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Includes\HftStrategyDefs.h">
+      <Filter>Incs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Includes\ICtaStraCtx.h">
+      <Filter>Incs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Includes\IHftStraCtx.h">
+      <Filter>Incs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Includes\ISelStraCtx.h">
+      <Filter>Incs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Includes\RiskMonDefs.h">
+      <Filter>Incs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Includes\ExecuteDefs.h">
+      <Filter>Incs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Includes\IDataReader.h">
+      <Filter>Incs</Filter>
+    </ClInclude>
+    <ClInclude Include="ITrdNotifySink.h">
+      <Filter>Incs</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -10,12 +10,12 @@
 #include "ParserXTP.h"
 #include "../Share/StrUtil.hpp"
 #include "../Share/TimeUtils.hpp"
-#include "../Share/WTSDataDef.hpp"
+#include "../Includes/WTSDataDef.hpp"
 #include "../Share/BoostFile.hpp"
-#include "../Share/WTSContractInfo.hpp"
-#include "../Share/WTSParams.hpp"
+#include "../Includes/WTSContractInfo.hpp"
+#include "../Includes/WTSParams.hpp"
 #include "../Share/StrUtil.hpp"
-#include "../Share/IBaseDataMgr.h"
+#include "../Includes/IBaseDataMgr.h"
 #include "../Share/DLLHelper.hpp"
 
 #ifdef _WIN32

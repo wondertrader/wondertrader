@@ -3,7 +3,7 @@
 #include "../WtPorter/WtPorter.h"
 #include "../WtExecMon/WtExecPorter.h"
 
-#include "../Share/WTSStruct.h"
+#include "../Includes/WTSStruct.h"
 #include "../Share/DLLHelper.hpp"
 
 void _cdecl on_init(CtxHandler ctxid)

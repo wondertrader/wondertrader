@@ -1,6 +1,6 @@
 #pragma once
 #include <stdint.h>
-#include "../Share/WTSMarcos.h"
+#include "../Includes/WTSMarcos.h"
 
 
 #ifdef _WIN32

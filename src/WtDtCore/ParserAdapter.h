@@ -10,7 +10,7 @@
 #pragma once
 #include <set>
 #include <boost/core/noncopyable.hpp>
-#include "../Share/IParserApi.h"
+#include "../Includes/IParserApi.h"
 #include "../Share/BoostDefine.h"
 
 USING_NS_OTP;

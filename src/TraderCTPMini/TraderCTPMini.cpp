@@ -8,15 +8,15 @@
  * \brief 
  */
 #include "TraderCTPMini.h"
-#include "../Share/WTSError.hpp"
-#include "../Share/WTSContractInfo.hpp"
-#include "../Share/WTSSessionInfo.hpp"
-#include "../Share/WTSTradeDef.hpp"
-#include "../Share/WTSDataDef.hpp"
-#include "../Share/WTSParams.hpp"
+#include "../Includes/WTSError.hpp"
+#include "../Includes/WTSContractInfo.hpp"
+#include "../Includes/WTSSessionInfo.hpp"
+#include "../Includes/WTSTradeDef.hpp"
+#include "../Includes/WTSDataDef.hpp"
+#include "../Includes/WTSParams.hpp"
 #include "../Share/StdUtils.hpp"
 #include "../Share/TimeUtils.hpp"
-#include "../Share/IBaseDataMgr.h"
+#include "../Includes/IBaseDataMgr.h"
 #include "../Share/DLLHelper.hpp"
 #include "../Share/decimal.h"
 

@@ -9,7 +9,7 @@
  */
 #pragma once
 #include "StrUtil.hpp"
-#include "WTSTypes.h"
+#include "../Includes/WTSTypes.h"
 
 #include <boost/xpressive/xpressive_dynamic.hpp>
 

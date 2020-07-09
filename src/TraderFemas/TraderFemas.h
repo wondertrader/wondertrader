@@ -23,10 +23,10 @@
 #include <boost/asio/io_service.hpp>
 #include <boost/asio/strand.hpp>
 
-#include "../Share/WTSTypes.h"
-#include "../Share/ITraderApi.h"
+#include "../Includes/WTSTypes.h"
+#include "../Includes/ITraderApi.h"
 #include "../Share/BoostDefine.h"
-#include "../Share/WTSVariant.hpp"
+#include "../Includes/WTSVariant.hpp"
 #include "./ustptraderapi/USTPFtdcTraderApi.h"
 
 #include "../Share/DLLHelper.hpp"

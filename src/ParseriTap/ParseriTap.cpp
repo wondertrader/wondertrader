@@ -3,11 +3,11 @@
 
 #include "../Share/StrUtil.hpp"
 #include "../Share/TimeUtils.hpp"
-#include "../Share/WTSDataDef.hpp"
+#include "../Includes/WTSDataDef.hpp"
 #include "../Share/BoostDefine.h"
-#include "../Share/IBaseDataMgr.h"
-#include "../Share/WTSParams.hpp"
-#include "../Share/WTSContractInfo.hpp"
+#include "../Includes/IBaseDataMgr.h"
+#include "../Includes/WTSParams.hpp"
+#include "../Includes/WTSContractInfo.hpp"
 #include "../Share/DLLHelper.hpp"
 
 

@@ -16,12 +16,12 @@
 
 #include "../Share/CodeHelper.hpp"
 #include "../Share/StrUtil.hpp"
-#include "../Share/WTSVariant.hpp"
+#include "../Includes/WTSVariant.hpp"
 #include "../Share/TimeUtils.hpp"
-#include "../Share/IBaseDataMgr.h"
-#include "../Share/IHotMgr.h"
-#include "../Share/WTSContractInfo.hpp"
-#include "../Share/WTSRiskDef.hpp"
+#include "../Includes/IBaseDataMgr.h"
+#include "../Includes/IHotMgr.h"
+#include "../Includes/WTSContractInfo.hpp"
+#include "../Includes/WTSRiskDef.hpp"
 #include "../Share/decimal.h"
 #include "../Share/StdUtils.hpp"
 

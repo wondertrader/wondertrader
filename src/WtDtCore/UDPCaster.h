@@ -11,8 +11,8 @@
 
 #include "../WTSUtils/pugixml/pugixml.hpp"
 
-#include "../Share/WTSMarcos.h"
-#include "../Share/WTSObject.hpp"
+#include "../Includes/WTSMarcos.h"
+#include "../Includes/WTSObject.hpp"
 #include "../Share/BoostDefine.h"
 
 #include <boost/asio.hpp>

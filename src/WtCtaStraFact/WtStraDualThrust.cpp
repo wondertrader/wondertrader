@@ -1,10 +1,10 @@
 #include "WtStraDualThrust.h"
 
-#include "../WtCore/ICtaStraCtx.h"
+#include "../Includes/ICtaStraCtx.h"
 
-#include "../Share/WTSContractInfo.hpp"
-#include "../Share/WTSVariant.hpp"
-#include "../Share/WTSDataDef.hpp"
+#include "../Includes/WTSContractInfo.hpp"
+#include "../Includes/WTSVariant.hpp"
+#include "../Includes/WTSDataDef.hpp"
 #include "../Share/decimal.h"
 
 extern const char* FACT_NAME;

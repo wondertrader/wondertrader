@@ -1,11 +1,11 @@
 #include "WtStraDtSel.h"
 
-#include "../WtCore/ISelStraCtx.h"
+#include "../Includes/ISelStraCtx.h"
 
-#include "../Share/WTSContractInfo.hpp"
-#include "../Share/WTSSessionInfo.hpp"
-#include "../Share/WTSVariant.hpp"
-#include "../Share/WTSDataDef.hpp"
+#include "../Includes/WTSContractInfo.hpp"
+#include "../Includes/WTSSessionInfo.hpp"
+#include "../Includes/WTSVariant.hpp"
+#include "../Includes/WTSDataDef.hpp"
 #include "../Share/decimal.h"
 
 extern const char* FACT_NAME;

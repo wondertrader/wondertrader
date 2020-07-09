@@ -18,12 +18,12 @@
 #include <boost/asio/io_service.hpp>
 #include <boost/asio/strand.hpp>
 
-#include "../Share/WTSTypes.h"
-#include "../Share/ITraderApi.h"
-#include "../Share/WTSCollection.hpp"
-#include "../Share/IniHelper.hpp"
+#include "../Includes/WTSTypes.h"
+#include "../Includes/ITraderApi.h"
+#include "../Includes/WTSCollection.hpp"
 #include "./ThostTraderApi/ThostFtdcTraderApi.h"
 
+#include "../Share/IniHelper.hpp"
 #include "../Share/BoostDefine.h"
 #include "../Share/DLLHelper.hpp"
 

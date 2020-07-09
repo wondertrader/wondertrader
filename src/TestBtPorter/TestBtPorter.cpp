@@ -2,7 +2,7 @@
 //
 #include "../WtBtPorter/WtBtPorter.h"
 
-#include "../Share/WTSStruct.h"
+#include "../Includes/WTSStruct.h"
 #include "../Share/DLLHelper.hpp"
 
 void on_getbar(CtxHandler ctxid, const char* code, const char* period, WTSBarStruct* bar, bool isLast)

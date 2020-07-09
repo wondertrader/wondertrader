@@ -17,9 +17,9 @@
 
 #include "../Share/StrUtil.hpp"
 #include "../Share/StdUtils.hpp"
-#include "../Share/WTSContractInfo.hpp"
-#include "../Share/WTSSessionInfo.hpp"
-#include "../Share/WTSTradeDef.hpp"
+#include "../Includes/WTSContractInfo.hpp"
+#include "../Includes/WTSSessionInfo.hpp"
+#include "../Includes/WTSTradeDef.hpp"
 #include "../Share/decimal.h"
 #include "../Share/CodeHelper.hpp"
 

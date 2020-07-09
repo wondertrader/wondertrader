@@ -1,15 +1,15 @@
 #include "WtDataReader.h"
 
-#include "../Share/WTSVariant.hpp"
+#include "../Includes/WTSVariant.hpp"
 #include "../Share/BoostFile.hpp"
 #include "../Share/TimeUtils.hpp"
 #include "../Share/CodeHelper.hpp"
 #include "../Share/StdUtils.hpp"
 
-#include "../Share/WTSContractInfo.hpp"
-#include "../Share/IBaseDataMgr.h"
-#include "../Share/IHotMgr.h"
-#include "../Share/WTSDataDef.hpp"
+#include "../Includes/WTSContractInfo.hpp"
+#include "../Includes/IBaseDataMgr.h"
+#include "../Includes/IHotMgr.h"
+#include "../Includes/WTSDataDef.hpp"
 
 #include "../WTSTools/WTSCmpHelper.hpp"
 

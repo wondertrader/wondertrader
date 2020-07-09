@@ -11,7 +11,7 @@
 #include <string>
 #include <stdint.h>
 
-#include "../Share/WTSMarcos.h"
+#include "../Includes/WTSMarcos.h"
 
 NS_OTP_BEGIN
 class WTSVariant;

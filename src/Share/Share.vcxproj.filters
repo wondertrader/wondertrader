@@ -45,71 +45,8 @@
     <ClInclude Include="BoostFile.hpp">
       <Filter>Utils</Filter>
     </ClInclude>
-    <ClInclude Include="WTSCollection.hpp">
-      <Filter>Objects</Filter>
-    </ClInclude>
-    <ClInclude Include="WTSStruct.h">
-      <Filter>Objects</Filter>
-    </ClInclude>
-    <ClInclude Include="WTSContractInfo.hpp">
-      <Filter>Objects</Filter>
-    </ClInclude>
-    <ClInclude Include="WTSDataDef.hpp">
-      <Filter>Objects</Filter>
-    </ClInclude>
-    <ClInclude Include="WTSError.hpp">
-      <Filter>Objects</Filter>
-    </ClInclude>
-    <ClInclude Include="WTSExpressData.hpp">
-      <Filter>Objects</Filter>
-    </ClInclude>
-    <ClInclude Include="WTSObject.hpp">
-      <Filter>Objects</Filter>
-    </ClInclude>
-    <ClInclude Include="WTSTradeDef.hpp">
-      <Filter>Objects</Filter>
-    </ClInclude>
-    <ClInclude Include="WTSParams.hpp">
-      <Filter>Objects</Filter>
-    </ClInclude>
-    <ClInclude Include="ILogHandler.h">
-      <Filter>Interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="IParserApi.h">
-      <Filter>Interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="ITraderApi.h">
-      <Filter>Interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="WTSTypes.h">
-      <Filter>BaseDefs</Filter>
-    </ClInclude>
-    <ClInclude Include="IExpFactory.h">
-      <Filter>Interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="WTSSessionInfo.hpp">
-      <Filter>Objects</Filter>
-    </ClInclude>
     <ClInclude Include="CodeHelper.hpp">
       <Filter>Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="WTSMarcos.h">
-      <Filter>BaseDefs</Filter>
-    </ClInclude>
-    <ClInclude Include="ISessionMgr.h">
-      <Filter>BaseDefs</Filter>
-    </ClInclude>
-    <ClInclude Include="PriceHelper.hpp">
-      <Filter>BaseDefs</Filter>
-    </ClInclude>
-    <ClInclude Include="IDataFactory.h">
-      <Filter>Interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="IBaseDataMgr.h">
-      <Filter>Interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="IHotMgr.h">
-      <Filter>Interfaces</Filter>
     </ClInclude>
     <ClInclude Include="BoostMappingFile.hpp">
       <Filter>Utils</Filter>
@@ -117,29 +54,17 @@
     <ClInclude Include="PacketDefine.h">
       <Filter>Utils</Filter>
     </ClInclude>
-    <ClInclude Include="WTSVariant.hpp">
-      <Filter>Objects</Filter>
-    </ClInclude>
     <ClInclude Include="IniHelper.hpp">
       <Filter>Utils</Filter>
     </ClInclude>
     <ClInclude Include="JsonToVariant.hpp">
       <Filter>Utils</Filter>
     </ClInclude>
-    <ClInclude Include="WTSRiskDef.hpp">
-      <Filter>Objects</Filter>
-    </ClInclude>
     <ClInclude Include="StdUtils.hpp">
       <Filter>Utils</Filter>
     </ClInclude>
-    <ClInclude Include="WTSHotItem.hpp">
-      <Filter>Objects</Filter>
-    </ClInclude>
     <ClInclude Include="DLLHelper.hpp">
       <Filter>Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="IDataWriter.h">
-      <Filter>Interfaces</Filter>
     </ClInclude>
     <ClInclude Include="charconv.hpp">
       <Filter>Utils</Filter>
@@ -186,8 +111,86 @@
     <ClInclude Include="threadpool.hpp">
       <Filter>ThreadPool</Filter>
     </ClInclude>
-    <ClInclude Include="WTSAllocator.hpp">
+    <ClInclude Include="ILogHandler.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Includes\IBaseDataMgr.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Includes\IDataFactory.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Includes\IDataWriter.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Includes\IExpFactory.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Includes\IHotMgr.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Includes\IParserApi.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Includes\ISessionMgr.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Includes\ITraderApi.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="PriceHelper.hpp">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Includes\WTSMarcos.h">
+      <Filter>BaseDefs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Includes\WTSTypes.h">
+      <Filter>BaseDefs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Includes\WTSCollection.hpp">
       <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Includes\WTSContractInfo.hpp">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Includes\WTSDataDef.hpp">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Includes\WTSError.hpp">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Includes\WTSExpressData.hpp">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Includes\WTSHotItem.hpp">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Includes\WTSObject.hpp">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Includes\WTSParams.hpp">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Includes\WTSRiskDef.hpp">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Includes\WTSSessionInfo.hpp">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Includes\WTSStruct.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Includes\WTSTradeDef.hpp">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Includes\WTSVariant.hpp">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Includes\IDataManager.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Includes\IDataReader.h">
+      <Filter>Interfaces</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -14,8 +14,8 @@
 
 #include "./XTPApi/xtp_trader_api.h"
 
-#include "../Share/ITraderApi.h"
-#include "../Share/WTSCollection.hpp"
+#include "../Includes/ITraderApi.h"
+#include "../Includes/WTSCollection.hpp"
 #include "../Share/IniHelper.hpp"
 #include "../Share/BoostDefine.h"
 

@@ -9,14 +9,14 @@
  */
 #include "TraderXTP.h"
 
-#include "../Share/IBaseDataMgr.h"
+#include "../Includes/IBaseDataMgr.h"
 #include "../Share/StrUtil.hpp"
 
-#include "../Share/WTSContractInfo.hpp"
-#include "../Share/WTSSessionInfo.hpp"
-#include "../Share/WTSTradeDef.hpp"
-#include "../Share/WTSError.hpp"
-#include "../Share/WTSParams.hpp"
+#include "../Includes/WTSContractInfo.hpp"
+#include "../Includes/WTSSessionInfo.hpp"
+#include "../Includes/WTSTradeDef.hpp"
+#include "../Includes/WTSError.hpp"
+#include "../Includes/WTSParams.hpp"
 #include "../Share/StdUtils.hpp"
 #include "../Share/DLLHelper.hpp"
 #include "../Share/decimal.h"

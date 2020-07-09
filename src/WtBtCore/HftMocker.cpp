@@ -12,9 +12,9 @@
 
 #include <math.h>
 
-#include "../Share/WTSVariant.hpp"
+#include "../Includes/WTSVariant.hpp"
 #include "../Share/TimeUtils.hpp"
-#include "../Share/WTSContractInfo.hpp"
+#include "../Includes/WTSContractInfo.hpp"
 #include "../Share/decimal.h"
 
 uint32_t makeLocalOrderID()

@@ -8,7 +8,6 @@
  * \brief 
  */
 
-#include "stdafx.h"
 #include "WtRunner.h"
 #include "..\WTSTools\WTSLogger.h"
 #include "..\Share\IniHelper.hpp"

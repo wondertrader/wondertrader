@@ -1,8 +1,8 @@
 #include "WtTWapExeUnit.h"
 
 #include "../Share/TimeUtils.hpp"
-#include "../Share/WTSVariant.hpp"
-#include "../Share/WTSContractInfo.hpp"
+#include "../Includes/WTSVariant.hpp"
+#include "../Includes/WTSContractInfo.hpp"
 #include "../Share/decimal.h"
 
 #include <math.h>

@@ -10,7 +10,7 @@
 #pragma once
 #include "../WTSUtils/pugixml/pugixml.hpp"
 
-#include "../Share/WTSMarcos.h"
+#include "../Includes/WTSMarcos.h"
 
 
 NS_OTP_BEGIN

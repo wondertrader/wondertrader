@@ -9,7 +9,7 @@
  */
 #include "WTSExpFactory.h"
 #include "../Share/StrUtil.hpp"
-#include "../Share/WTSExpressData.hpp"
+#include "../Includes/WTSExpressData.hpp"
 
 USING_NS_OTP;
 

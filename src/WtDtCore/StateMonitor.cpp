@@ -13,8 +13,8 @@
 #include "../Share/StdUtils.hpp"
 #include "../Share/TimeUtils.hpp"
 #include "../Share/StrUtil.hpp"
-#include "../Share/WTSContractInfo.hpp"
-#include "../Share/WTSSessionInfo.hpp"
+#include "../Includes/WTSContractInfo.hpp"
+#include "../Includes/WTSSessionInfo.hpp"
 
 #include "../WTSTools/WTSBaseDataMgr.h"
 #include "../WTSTools/WTSLogger.h"

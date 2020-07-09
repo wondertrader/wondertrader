@@ -9,7 +9,7 @@
  */
 #pragma once
 
-#include "../Share/IDataWriter.h"
+#include "../Includes/IDataWriter.h"
 #include "../Share/BoostDefine.h"
 #include "../Share/StdUtils.hpp"
 #include "../Share/BoostMappingFile.hpp"

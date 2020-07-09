@@ -8,7 +8,7 @@
  * \brief 
  */
 #include "WTSParamParser.h"
-#include "../Share/WTSParams.hpp"
+#include "../Includes/WTSParams.hpp"
 
 
 WTSParams* WTSParamParser::parseFromXML(const pugi::xml_node& root)

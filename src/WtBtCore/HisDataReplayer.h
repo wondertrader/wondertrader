@@ -13,8 +13,8 @@
 
 #include "DataDefine.h"
 
-#include "../Share/WTSMarcos.h"
-#include "../Share/WTSTypes.h"
+#include "../Includes/WTSMarcos.h"
+#include "../Includes/WTSTypes.h"
 
 #include "../WTSTools/WTSHotMgr.h"
 #include "../WTSTools/WTSBaseDataMgr.h"

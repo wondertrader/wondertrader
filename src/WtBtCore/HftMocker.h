@@ -14,8 +14,8 @@
 
 #include "HisDataReplayer.h"
 
-#include "../WtCore/IHftStraCtx.h"
-#include "../WtCore/HftStrategyDefs.h"
+#include "../Includes/IHftStraCtx.h"
+#include "../Includes/HftStrategyDefs.h"
 
 #include "../Share/StdUtils.hpp"
 #include "../Share/DLLHelper.hpp"

@@ -11,7 +11,7 @@
 #include <iostream>
 
 #include "WTSLogger.h"
-#include "../Share/ILogHandler.h"
+#include "../Includes/ILogHandler.h"
 #include "../Share/JsonToVariant.hpp"
 #include "../Share/StdUtils.hpp"
 

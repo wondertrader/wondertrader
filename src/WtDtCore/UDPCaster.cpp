@@ -11,10 +11,10 @@
 #include "DataManager.h"
 
 #include "../Share/StrUtil.hpp"
-#include "../Share/WTSDataDef.hpp"
-#include "../Share/WTSCollection.hpp"
-#include "../Share/WTSContractInfo.hpp"
-#include "../Share/WTSVariant.hpp"
+#include "../Includes/WTSDataDef.hpp"
+#include "../Includes/WTSCollection.hpp"
+#include "../Includes/WTSContractInfo.hpp"
+#include "../Includes/WTSVariant.hpp"
 
 #include "../WTSTools/WTSBaseDataMgr.h"
 #include "../WTSTools/WTSLogger.h"

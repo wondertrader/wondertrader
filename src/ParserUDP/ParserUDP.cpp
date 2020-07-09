@@ -8,8 +8,8 @@
  * \brief 
  */
 #include "ParserUDP.h"
-#include "../Share/WTSParams.hpp"
-#include "../Share/WTSDataDef.hpp"
+#include "../Includes/WTSParams.hpp"
+#include "../Includes/WTSDataDef.hpp"
 
 
 #define UDP_MSG_SUBSCRIBE	0x100

@@ -9,9 +9,9 @@
  */
 #pragma once
 #include <unordered_map>
-#include "ICtaStraCtx.h"
+#include "../Includes/ICtaStraCtx.h"
 
-#include "../Share/WTSDataDef.hpp"
+#include "../Includes/WTSDataDef.hpp"
 #include "../Share/BoostFile.hpp"
 
 class CtaStrategy;

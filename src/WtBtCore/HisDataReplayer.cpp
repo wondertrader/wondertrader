@@ -11,13 +11,13 @@
 
 #include <fstream>
 
-#include "../Share/WTSVariant.hpp"
-#include "../Share/WTSDataDef.hpp"
+#include "../Includes/WTSVariant.hpp"
+#include "../Includes/WTSDataDef.hpp"
 #include "../Share/StrUtil.hpp"
 #include "../Share/TimeUtils.hpp"
 #include "../Share/StdUtils.hpp"
-#include "../Share/WTSContractInfo.hpp"
-#include "../Share/WTSSessionInfo.hpp"
+#include "../Includes/WTSContractInfo.hpp"
+#include "../Includes/WTSSessionInfo.hpp"
 
 #include "../Share/BoostFile.hpp"
 #include "../Share/decimal.h"

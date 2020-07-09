@@ -5,10 +5,10 @@
 
 #include "../WTSUtils/pugixml/pugixml.hpp"
 
-#include "../Share/WTSSessionInfo.hpp"
+#include "../Includes/WTSSessionInfo.hpp"
 #include "../Share/DLLHelper.hpp"
 #include "../Share/JsonToVariant.hpp"
-#include "../Share/WTSVariant.hpp"
+#include "../Includes/WTSVariant.hpp"
 
 #include "../WTSTools/WTSHotMgr.h"
 #include "../WTSTools/WTSParamParser.h"

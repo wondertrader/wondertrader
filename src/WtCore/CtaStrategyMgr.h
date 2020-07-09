@@ -11,7 +11,7 @@
 #include <unordered_map>
 #include <boost/core/noncopyable.hpp>
 
-#include "CtaStrategyDefs.h"
+#include "../Includes/CtaStrategyDefs.h"
 
 #include "../Share/BoostDefine.h"
 #include "../Share/DLLHelper.hpp"

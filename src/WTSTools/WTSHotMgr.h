@@ -8,8 +8,8 @@
  * \brief 主力合约管理器实现
  */
 #pragma once
-#include "../Share/IHotMgr.h"
-#include "../Share/WTSCollection.hpp"
+#include "../Includes/IHotMgr.h"
+#include "../Includes/WTSCollection.hpp"
 #include <string>
 
 NS_OTP_BEGIN

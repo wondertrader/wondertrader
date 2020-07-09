@@ -12,23 +12,23 @@
 #include "ActionPolicyMgr.h"
 #include "WtHelper.h"
 #include "ITrdNotifySink.h"
-#include "RiskMonDefs.h"
+#include "../Includes/RiskMonDefs.h"
 
 #include <atomic>
 
 #include "../WTSTools/WTSLogger.h"
 
 #include "../Share/CodeHelper.hpp"
-#include "../Share/WTSError.hpp"
-#include "../Share/WTSVariant.hpp"
-#include "../Share/WTSTradeDef.hpp"
-#include "../Share/WTSRiskDef.hpp"
+#include "../Includes/WTSError.hpp"
+#include "../Includes/WTSVariant.hpp"
+#include "../Includes/WTSTradeDef.hpp"
+#include "../Includes/WTSRiskDef.hpp"
 #include "../Share/StrUtil.hpp"
 #include "../Share/TimeUtils.hpp"
-#include "../Share/WTSSessionInfo.hpp"
+#include "../Includes/WTSSessionInfo.hpp"
 
-#include "../Share/WTSContractInfo.hpp"
-#include "../Share/IBaseDataMgr.h"
+#include "../Includes/WTSContractInfo.hpp"
+#include "../Includes/IBaseDataMgr.h"
 #include "../Share/DLLHelper.hpp"
 #include "../Share/StdUtils.hpp"
 #include "../Share/decimal.h"

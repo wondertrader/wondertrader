@@ -14,7 +14,7 @@
 #include <boost/core/noncopyable.hpp>
 
 #include "ITrdNotifySink.h"
-#include "ExecuteDefs.h"
+#include "../Includes/ExecuteDefs.h"
 
 #include "../Share/BoostDefine.h"
 #include "../Share/DLLHelper.hpp"

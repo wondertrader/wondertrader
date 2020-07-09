@@ -9,9 +9,9 @@
  */
 #include "WTSBaseDataMgr.h"
 
-#include "../Share/WTSContractInfo.hpp"
-#include "../Share/WTSCollection.hpp"
-#include "../Share/WTSSessionInfo.hpp"
+#include "../Includes/WTSContractInfo.hpp"
+#include "../Includes/WTSCollection.hpp"
+#include "../Includes/WTSSessionInfo.hpp"
 
 #include "../Share/StrUtil.hpp"
 #include "../Share/StdUtils.hpp"

@@ -8,9 +8,9 @@
  * \brief 
  */
 #include "WTSDataFactory.h"
-#include "../Share/WTSDataDef.hpp"
-#include "../Share/WTSContractInfo.hpp"
-#include "../Share/WTSSessionInfo.hpp"
+#include "../Includes/WTSDataDef.hpp"
+#include "../Includes/WTSContractInfo.hpp"
+#include "../Includes/WTSSessionInfo.hpp"
 #include "../Share/TimeUtils.hpp"
 
 

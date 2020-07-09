@@ -9,13 +9,13 @@
 */
 #include "WtSelTicker.h"
 #include "WtSelEngine.h"
-#include "IDataReader.h"
+#include "../Includes/IDataReader.h"
 
 #include "../Share/TimeUtils.hpp"
-#include "../Share/WTSSessionInfo.hpp"
-#include "../Share/IBaseDataMgr.h"
-#include "../Share/WTSDataDef.hpp"
-#include "../Share/IHotMgr.h"
+#include "../Includes/WTSSessionInfo.hpp"
+#include "../Includes/IBaseDataMgr.h"
+#include "../Includes/WTSDataDef.hpp"
+#include "../Includes/IHotMgr.h"
 #include "../Share/CodeHelper.hpp"
 
 #include "../WTSTools/WTSLogger.h"

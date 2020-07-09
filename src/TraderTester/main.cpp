@@ -2,14 +2,16 @@
 #include <iostream>
 #include <mutex>
 
-#include "..\Share\ITraderApi.h"
-#include "..\Share\IniFile.hpp"
-#include "..\Share\WTSParams.hpp"
-#include "..\Share\WTSTradeDef.hpp"
-#include "..\Share\WTSError.hpp"
+#include "IniFile.hpp"
+
+#include "..\Includes\ITraderApi.h"
+#include "..\Includes\WTSParams.hpp"
+#include "..\Includes\WTSTradeDef.hpp"
+#include "..\Includes\WTSError.hpp"
+#include "..\Includes\WTSCollection.hpp"
+
 #include "..\Share\TimeUtils.hpp"
 #include "..\Share\StdUtils.hpp"
-#include "..\Share\WTSCollection.hpp"
 
 #include "..\WTSTools\WTSBaseDataMgr.h"
 #include "..\WTSTools\WTSLogger.h"

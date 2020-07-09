@@ -11,9 +11,9 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include "ExecuteDefs.h"
+#include "../Includes/ExecuteDefs.h"
 
-#include "../Share/ITraderApi.h"
+#include "../Includes/ITraderApi.h"
 #include "../Share/BoostDefine.h"
 #include "../Share/BoostFile.hpp"
 

@@ -8,7 +8,7 @@
  * \brief 
  */
 #pragma once
-#include "../Share/IParserApi.h"
+#include "../Includes/IParserApi.h"
 #include "./ThostTraderApi/ThostFtdcMdApi.h"
 #include <map>
 

@@ -6,7 +6,7 @@
 
 #include "./ThostTraderApi/ThostFtdcTraderApi.h"
 #include "../Share/StrUtil.hpp"
-#include "../Share/WTSTypes.h"
+#include "../Includes/WTSTypes.h"
 
 #include <rapidjson/document.h>
 #include <rapidjson/prettywriter.h>

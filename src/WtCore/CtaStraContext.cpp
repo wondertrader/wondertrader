@@ -9,12 +9,12 @@
  */
 #include "CtaStraContext.h"
 #include "WtCtaEngine.h"
-#include "CtaStrategyDefs.h"
+#include "../Includes/CtaStrategyDefs.h"
 
 #include <exception>
 
 #include "../Share/StrUtil.hpp"
-#include "../Share/WTSContractInfo.hpp"
+#include "../Includes/WTSContractInfo.hpp"
 
 
 CtaStraContext::CtaStraContext(WtCtaEngine* engine, const char* name)

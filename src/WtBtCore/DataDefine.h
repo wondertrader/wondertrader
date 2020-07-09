@@ -1,5 +1,5 @@
 #pragma once
-#include "../Share/WTSStruct.h"
+#include "../Includes/WTSStruct.h"
 
 USING_NS_OTP;
 

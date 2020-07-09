@@ -115,6 +115,31 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\Includes\IBaseDataMgr.h" />
+    <ClInclude Include="..\Includes\IDataFactory.h" />
+    <ClInclude Include="..\Includes\IDataManager.h" />
+    <ClInclude Include="..\Includes\IDataReader.h" />
+    <ClInclude Include="..\Includes\IDataWriter.h" />
+    <ClInclude Include="..\Includes\IExpFactory.h" />
+    <ClInclude Include="..\Includes\IHotMgr.h" />
+    <ClInclude Include="..\Includes\IParserApi.h" />
+    <ClInclude Include="..\Includes\ISessionMgr.h" />
+    <ClInclude Include="..\Includes\ITraderApi.h" />
+    <ClInclude Include="..\Includes\WTSCollection.hpp" />
+    <ClInclude Include="..\Includes\WTSContractInfo.hpp" />
+    <ClInclude Include="..\Includes\WTSDataDef.hpp" />
+    <ClInclude Include="..\Includes\WTSError.hpp" />
+    <ClInclude Include="..\Includes\WTSExpressData.hpp" />
+    <ClInclude Include="..\Includes\WTSHotItem.hpp" />
+    <ClInclude Include="..\Includes\WTSMarcos.h" />
+    <ClInclude Include="..\Includes\WTSObject.hpp" />
+    <ClInclude Include="..\Includes\WTSParams.hpp" />
+    <ClInclude Include="..\Includes\WTSRiskDef.hpp" />
+    <ClInclude Include="..\Includes\WTSSessionInfo.hpp" />
+    <ClInclude Include="..\Includes\WTSStruct.h" />
+    <ClInclude Include="..\Includes\WTSTradeDef.hpp" />
+    <ClInclude Include="..\Includes\WTSTypes.h" />
+    <ClInclude Include="..\Includes\WTSVariant.hpp" />
     <ClInclude Include="BoostDefine.h" />
     <ClInclude Include="BoostFile.hpp" />
     <ClInclude Include="BoostMappingFile.hpp" />
@@ -122,17 +147,9 @@
     <ClInclude Include="CodeHelper.hpp" />
     <ClInclude Include="decimal.h" />
     <ClInclude Include="DLLHelper.hpp" />
-    <ClInclude Include="IBaseDataMgr.h" />
-    <ClInclude Include="IDataFactory.h" />
-    <ClInclude Include="IDataWriter.h" />
-    <ClInclude Include="IExpFactory.h" />
-    <ClInclude Include="IHotMgr.h" />
     <ClInclude Include="ILogHandler.h" />
     <ClInclude Include="IniFile.hpp" />
     <ClInclude Include="IniHelper.hpp" />
-    <ClInclude Include="IParserApi.h" />
-    <ClInclude Include="ISessionMgr.h" />
-    <ClInclude Include="ITraderApi.h" />
     <ClInclude Include="JsonToVariant.hpp" />
     <ClInclude Include="PacketDefine.h" />
     <ClInclude Include="PriceHelper.hpp" />
@@ -150,24 +167,8 @@
     <ClInclude Include="threadpool\shutdown_policies.hpp" />
     <ClInclude Include="threadpool\size_policies.hpp" />
     <ClInclude Include="threadpool\task_adaptors.hpp" />
-    <ClInclude Include="WTSAllocator.hpp" />
-    <ClInclude Include="WTSHotItem.hpp" />
-    <ClInclude Include="WTSRiskDef.hpp" />
-    <ClInclude Include="WTSSessionInfo.hpp" />
-    <ClInclude Include="WTSStruct.h" />
     <ClInclude Include="StrUtil.hpp" />
     <ClInclude Include="TimeUtils.hpp" />
-    <ClInclude Include="WTSCollection.hpp" />
-    <ClInclude Include="WTSParams.hpp" />
-    <ClInclude Include="WTSContractInfo.hpp" />
-    <ClInclude Include="WTSError.hpp" />
-    <ClInclude Include="WTSExpressData.hpp" />
-    <ClInclude Include="WTSMarcos.h" />
-    <ClInclude Include="WTSObject.hpp" />
-    <ClInclude Include="WTSTradeDef.hpp" />
-    <ClInclude Include="WTSDataDef.hpp" />
-    <ClInclude Include="WTSTypes.h" />
-    <ClInclude Include="WTSVariant.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

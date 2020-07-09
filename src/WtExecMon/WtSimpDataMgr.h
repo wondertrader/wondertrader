@@ -1,10 +1,10 @@
 #pragma once
 #include <vector>
 #include <unordered_set>
-#include "../WtCore/IDataReader.h"
-#include "../WtCore/IDataManager.h"
+#include "../Includes/IDataReader.h"
+#include "../Includes/IDataManager.h"
 
-#include "../Share/WTSCollection.hpp"
+#include "../Includes/WTSCollection.hpp"
 
 class WtExecRunner;
 

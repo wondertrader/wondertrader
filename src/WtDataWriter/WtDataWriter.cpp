@@ -1,13 +1,13 @@
 #include "WtDataWriter.h"
 
-#include "../Share/WTSSessionInfo.hpp"
-#include "../Share/WTSContractInfo.hpp"
-#include "../Share/WTSDataDef.hpp"
-#include "../Share/WTSVariant.hpp"
+#include "../Includes/WTSSessionInfo.hpp"
+#include "../Includes/WTSContractInfo.hpp"
+#include "../Includes/WTSDataDef.hpp"
+#include "../Includes/WTSVariant.hpp"
 #include "../Share/BoostFile.hpp"
 #include "../Share/StrUtil.hpp"
 #include "../Share/IniHelper.hpp"
-#include "../Share/IBaseDataMgr.h"
+#include "../Includes/IBaseDataMgr.h"
 
 #include "../WTSTools/WTSCmpHelper.hpp"
 

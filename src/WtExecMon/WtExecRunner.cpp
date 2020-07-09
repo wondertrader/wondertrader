@@ -3,7 +3,7 @@
 #include "../WtCore/WtHelper.h"
 #include "../WTSTools/WTSLogger.h"
 
-#include "../Share/WTSContractInfo.hpp"
+#include "../Includes/WTSContractInfo.hpp"
 #include "../Share/CodeHelper.hpp"
 #include "../Share/JsonToVariant.hpp"
 #include "../Share/StdUtils.hpp"
@@ -240,6 +240,15 @@ uint64_t WtExecRunner::get_real_time()
 WTSCommodityInfo* WtExecRunner::get_comm_info(const char* stdCode)
 {
 	return _bd_mgr.getCommodity(CodeHelper::stdCodeToStdCommID(stdCode).c_str());
+}
+
+WTSSessionInfo* WtExecRunner::get_sess_info(const char* stdCode)
+{
+	WTSCommodityInfo* cInfo = _bd_mgr.getCommodity(CodeHelper::stdCodeToStdCommID(stdCode).c_str());
+	if (cInfo == NULL)
+		return NULL;
+
+	return _bd_mgr.getSession(cInfo->getSession());
 }
 
 uint32_t WtExecRunner::get_trading_day()

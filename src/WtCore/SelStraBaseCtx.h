@@ -9,9 +9,8 @@
 */
 #pragma once
 #include <unordered_map>
-#include "ISelStraCtx.h"
-
-#include "../Share/WTSDataDef.hpp"
+#include "../Includes/ISelStraCtx.h"
+#include "../Includes/WTSDataDef.hpp"
 #include "../Share/BoostFile.hpp"
 
 NS_OTP_BEGIN
