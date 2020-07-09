@@ -1,4 +1,6 @@
-# C++ Demos
+# WonderTrader Demos
+
+*如果需要`wtpy`的demo，请到[wtpy的demo](https://github.com/wondertrader/wtpy/tree/master/demos)
 
 + BackTester        回测器主程序，模块回测的入口程序
 + WtCtaStraFact     CTA策略工厂项目，内置一个DualThrust策略的简单实现
