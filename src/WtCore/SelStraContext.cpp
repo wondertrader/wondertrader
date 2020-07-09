@@ -1,5 +1,5 @@
 #include "SelStraContext.h"
-#include "SelStrategyDefs.h"
+#include "../Includes/SelStrategyDefs.h"
 
 
 SelStraContext::SelStraContext(WtSelEngine* engine, const char* name)
