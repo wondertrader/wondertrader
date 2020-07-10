@@ -337,7 +337,6 @@ WTSTradeInfo* TraderXTP::makeTradeInfo(XTPQueryTradeRsp* trade_info)
 		return NULL;
 
 	WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(contract);
-	WTSSessionInfo* sInfo = _bd_mgr->getSession(commInfo->getSession());
 
 	WTSTradeInfo *pRet = WTSTradeInfo::create(code.c_str(), commInfo->getExchg());
 	pRet->setVolumn((uint32_t)trade_info->quantity);

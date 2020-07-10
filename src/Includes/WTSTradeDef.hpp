@@ -231,7 +231,6 @@ public:
 	uint64_t getOrderTime() const{return m_uInsertTime;}
 	double getVolTraded() const{ return m_dVolTraded; }
 	double getVolLeft() const{ return m_dVolLeft; }
-	double getVolumn() const{ return m_dVolLeft + m_dVolTraded; }
     
 	WTSOrderState		getOrderState() const{return m_orderState;}
 	WTSOrderType			getOrderType() const{return m_orderType;}
