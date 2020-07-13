@@ -15,6 +15,7 @@
 #include <time.h>
 #include <string>
 #include <map>
+#include<chrono>
 
 NS_OTP_BEGIN
 //////////////////////////////////////////////////////////////////////////
@@ -27,6 +28,7 @@ protected:
 		,m_strCode("")
 		,m_dVolumn(0)
 		,m_strExchg("")
+		,m_uSndTm(0)
 	{
 		m_direction = WDT_LONG;
 		m_priceType = WPT_ANYPRICE;
@@ -37,7 +39,7 @@ protected:
 	virtual ~WTSEntrust(){}
 
 public:
-	static WTSEntrust* create(const char* code, double vol, double price, const char* exchg = "")
+	static inline WTSEntrust* create(const char* code, double vol, double price, const char* exchg = "")
 	{
 		WTSEntrust* pRet = new WTSEntrust;
 		if(pRet)
@@ -53,38 +55,43 @@ public:
 	}
 
 public:
-	void setExchange(const char* exchg){ m_strExchg = exchg; }
-	void setCode(const char* code){m_strCode = code;}
-	void setDirection(WTSDirectionType dType){m_direction = dType;}
-	void setPriceType(WTSPriceType pType){m_priceType = pType;}
-	void setTimeCondition(WTSTimeCondition tCond){m_timeCond = tCond;}
-	void setOffsetType(WTSOffsetType oType){m_offsetType = oType;}
+	inline void setExchange(const char* exchg){ m_strExchg = exchg; }
+	inline void setCode(const char* code){m_strCode = code;}
+	inline void setDirection(WTSDirectionType dType){m_direction = dType;}
+	inline void setPriceType(WTSPriceType pType){m_priceType = pType;}
+	inline void setTimeCondition(WTSTimeCondition tCond){m_timeCond = tCond;}
+	inline void setOffsetType(WTSOffsetType oType){m_offsetType = oType;}
 
-	WTSDirectionType	getDirection() const{return m_direction;}
-	WTSPriceType		getPriceType() const{return m_priceType;}
-	WTSTimeCondition	getTimeCondition() const{return m_timeCond;}
-	WTSOffsetType	getOffsetType() const{return m_offsetType;}
+	inline WTSDirectionType	getDirection() const{return m_direction;}
+	inline WTSPriceType		getPriceType() const{return m_priceType;}
+	inline WTSTimeCondition	getTimeCondition() const{return m_timeCond;}
+	inline WTSOffsetType	getOffsetType() const{return m_offsetType;}
 
-	void setVolumn(double volumn){ m_dVolumn = volumn; }
-	void setPrice(double price){ m_iPrice = price; }
+	inline void setVolumn(double volumn){ m_dVolumn = volumn; }
+	inline void setPrice(double price){ m_iPrice = price; }
 
-	double getVolumn() const{ return m_dVolumn; }
-	double getPrice() const{ return m_iPrice; }
+	inline double getVolumn() const{ return m_dVolumn; }
+	inline double getPrice() const{ return m_iPrice; }
 
-	const char* getCode() const{return m_strCode.c_str();}
-	const char* getExchg() const{return m_strExchg.c_str();}
+	inline const char* getCode() const{return m_strCode.c_str();}
+	inline const char* getExchg() const{return m_strExchg.c_str();}
 
-	void setEntrustID(const char* eid){m_strEntrustID = eid;}
-	const char* getEntrustID() const{return m_strEntrustID.c_str();}
+	inline void setEntrustID(const char* eid){m_strEntrustID = eid;}
+	inline const char* getEntrustID() const{return m_strEntrustID.c_str();}
 
-	void setUserTag(const char* tag){m_strUserTag = tag;}
-	const char* getUserTag() const{return m_strUserTag.c_str();}
+	inline void setUserTag(const char* tag){m_strUserTag = tag;}
+	inline const char* getUserTag() const{return m_strUserTag.c_str();}
+
+	inline void setSent() { m_uSndTm = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count(); }
+	inline uint64_t getSendTime() const { return m_uSndTm; }
 
 protected:
 	std::string		m_strExchg;
 	std::string		m_strCode;
 	double			m_dVolumn;
 	double			m_iPrice;
+
+	uint64_t		m_uSndTm;
 
 	WTSDirectionType	m_direction;
 	WTSPriceType		m_priceType;
@@ -113,7 +120,7 @@ protected:
 	virtual ~WTSEntrustAction(){}
 
 public:
-	static WTSEntrustAction* create(const char* code, const char* exchg = "", double vol = 0, double price = 0)
+	static inline WTSEntrustAction* create(const char* code, const char* exchg = "", double vol = 0, double price = 0)
 	{
 		WTSEntrustAction* pRet = new WTSEntrustAction;
 		if(pRet)
@@ -128,7 +135,7 @@ public:
 		return NULL;
 	}
 
-	static WTSEntrustAction* createCancelAction(const char* eid, const char* oid)
+	static inline WTSEntrustAction* createCancelAction(const char* eid, const char* oid)
 	{
 		WTSEntrustAction* pRet = new WTSEntrustAction;
 		if(pRet)
@@ -142,25 +149,25 @@ public:
 	}
 
 public:
-	void setVolumn(double volumn){ m_dVolumn = volumn; }
-	void setPrice(double price){ m_iPrice = price; }
+	inline void setVolumn(double volumn){ m_dVolumn = volumn; }
+	inline void setPrice(double price){ m_iPrice = price; }
 
-	double getVolumn() const{ return m_dVolumn; }
-	double getPrice() const{ return m_iPrice; }
+	inline double getVolumn() const{ return m_dVolumn; }
+	inline double getPrice() const{ return m_iPrice; }
 
-	const char* getCode() const{return m_strCode.c_str();}
+	inline const char* getCode() const{return m_strCode.c_str();}
 
-	void setExchg(const char* exchg){ m_strExchg = exchg; }
-	const char* getExchg() const{ return m_strExchg.c_str(); }
+	inline void setExchg(const char* exchg){ m_strExchg = exchg; }
+	inline const char* getExchg() const{ return m_strExchg.c_str(); }
 
-	void setActionFlag(WTSActionFlag af){m_actionFlag = af;}
-	WTSActionFlag getActionFlag() const{return m_actionFlag;}
+	inline void setActionFlag(WTSActionFlag af){m_actionFlag = af;}
+	inline WTSActionFlag getActionFlag() const{return m_actionFlag;}
 
-	void setEntrustID(const char* eid){m_strEnturstID = eid;}
-	const char* getEntrustID() const{return m_strEnturstID.c_str();}
+	inline void setEntrustID(const char* eid){m_strEnturstID = eid;}
+	inline const char* getEntrustID() const{return m_strEnturstID.c_str();}
 
-	void setOrderID(const char* oid){m_strOrderID = oid;}
-	const char* getOrderID() const{return m_strOrderID.c_str();}
+	inline void setOrderID(const char* oid){m_strOrderID = oid;}
+	inline const char* getOrderID() const{return m_strOrderID.c_str();}
 
 protected:
 	std::string		m_strExchg;
@@ -194,7 +201,7 @@ protected:
 	virtual ~WTSOrderInfo(){}
 
 public:
-	static WTSOrderInfo* create(WTSEntrust* entrust = NULL)
+	static inline WTSOrderInfo* create(WTSEntrust* entrust = NULL)
 	{
 		WTSOrderInfo *pRet = new WTSOrderInfo;
 
@@ -218,31 +225,31 @@ public:
 		return pRet;
 	}
 
-	void	setOrderDate(uint32_t uDate){m_uInsertDate = uDate;}
-	void	setOrderTime(uint64_t uTime){m_uInsertTime = uTime;}
-	void	setVolTraded(double vol){ m_dVolTraded = vol; }
-	void	setVolLeft(double vol){ m_dVolLeft = vol; }
+	inline void	setOrderDate(uint32_t uDate){m_uInsertDate = uDate;}
+	inline void	setOrderTime(uint64_t uTime){m_uInsertTime = uTime;}
+	inline void	setVolTraded(double vol){ m_dVolTraded = vol; }
+	inline void	setVolLeft(double vol){ m_dVolLeft = vol; }
 	
-	void	setOrderID(const char* oid){m_strOrderID = oid;/*StrUtil::trim(m_strOrderID);*/}
-	void	setOrderState(WTSOrderState os){m_orderState = os;}
-	void	setOrderType(WTSOrderType ot){m_orderType = ot;}
+	inline void	setOrderID(const char* oid){m_strOrderID = oid;/*StrUtil::trim(m_strOrderID);*/}
+	inline void	setOrderState(WTSOrderState os){m_orderState = os;}
+	inline void	setOrderType(WTSOrderType ot){m_orderType = ot;}
 
-	uint32_t getOrderDate() const{return m_uInsertDate;}
-	uint64_t getOrderTime() const{return m_uInsertTime;}
-	double getVolTraded() const{ return m_dVolTraded; }
-	double getVolLeft() const{ return m_dVolLeft; }
+	inline uint32_t getOrderDate() const{return m_uInsertDate;}
+	inline uint64_t getOrderTime() const{return m_uInsertTime;}
+	inline double getVolTraded() const{ return m_dVolTraded; }
+	inline double getVolLeft() const{ return m_dVolLeft; }
     
-	WTSOrderState		getOrderState() const{return m_orderState;}
-	WTSOrderType			getOrderType() const{return m_orderType;}
-	const char*			getOrderID() const{return m_strOrderID.c_str();}
+	inline WTSOrderState		getOrderState() const{return m_orderState;}
+	inline WTSOrderType			getOrderType() const{return m_orderType;}
+	inline const char*			getOrderID() const{return m_strOrderID.c_str();}
 
-	void	setCode(const char* code){m_strCode = code;}
-	void	setExchg(const char* exchg){ m_strExchg = exchg; }
+	inline void	setCode(const char* code){m_strCode = code;}
+	inline void	setExchg(const char* exchg){ m_strExchg = exchg; }
 
-	void	setStateMsg(const char* msg){m_strStateMsg = msg;}
-	const char* getStateMsg() const{return m_strStateMsg.c_str();}
+	inline void	setStateMsg(const char* msg){m_strStateMsg = msg;}
+	inline const char* getStateMsg() const{return m_strStateMsg.c_str();}
 
-	bool	isAlive() const
+	inline bool	isAlive() const
 	{
 		switch(m_orderState)
 		{
@@ -254,8 +261,8 @@ public:
 		}
 	}
 
-	void	setError(bool bError = true){ m_bIsError = bError; }
-	bool	isError() const{ return m_bIsError; }
+	inline void	setError(bool bError = true){ m_bIsError = bError; }
+	inline bool	isError() const{ return m_bIsError; }
 
 private:
 	uint32_t	m_uInsertDate;
@@ -284,7 +291,7 @@ protected:
 	virtual ~WTSTradeInfo(){}
 
 public:
-	static WTSTradeInfo* create(const char* code, const char* exchg = "")
+	static inline WTSTradeInfo* create(const char* code, const char* exchg = "")
 	{
 		WTSTradeInfo *pRet = new WTSTradeInfo;
 		pRet->m_strExchg = exchg;
@@ -293,42 +300,42 @@ public:
 		return pRet;
 	}
 
-	void setTradeID(const char* tradeid){m_strTradeID = tradeid;/*StrUtil::trim(m_strTradeID);*/}
-	void setRefOrder(const char* oid){m_strRefOrder = oid;/*StrUtil::trim(m_strRefOrder);*/}
+	inline void setTradeID(const char* tradeid){m_strTradeID = tradeid;/*StrUtil::trim(m_strTradeID);*/}
+	inline void setRefOrder(const char* oid){m_strRefOrder = oid;/*StrUtil::trim(m_strRefOrder);*/}
 	
-	void setDirection(WTSDirectionType dType){m_direction = dType;}
-	void setOffsetType(WTSOffsetType oType){m_offsetType = oType;}
-	void setOrderType(WTSOrderType ot){m_orderType = ot;}
-	void setTradeType(WTSTradeType tt){m_tradeType = tt;}
+	inline void setDirection(WTSDirectionType dType){m_direction = dType;}
+	inline void setOffsetType(WTSOffsetType oType){m_offsetType = oType;}
+	inline void setOrderType(WTSOrderType ot){m_orderType = ot;}
+	inline void setTradeType(WTSTradeType tt){m_tradeType = tt;}
 
-	void setVolumn(uint32_t volumn){m_uVolumn = volumn;}
-	void setPrice(double price){ m_uPrice = price; }
+	inline void setVolumn(uint32_t volumn){m_uVolumn = volumn;}
+	inline void setPrice(double price){ m_uPrice = price; }
 
-	void setTradeDate(uint32_t uDate){m_uTradeDate = uDate;}
-	void setTradeTime(uint64_t uTime){m_uTradeTime = uTime;}
+	inline void setTradeDate(uint32_t uDate){m_uTradeDate = uDate;}
+	inline void setTradeTime(uint64_t uTime){m_uTradeTime = uTime;}
 
-	void setAmount(double amount){ m_uAmount = amount; }
+	inline void setAmount(double amount){ m_uAmount = amount; }
 
-	WTSDirectionType	getDirection() const{return m_direction;}
-	WTSOffsetType		getOffsetType() const{return m_offsetType;}
-	WTSOrderType		getOrderType() const{return m_orderType;}
-	WTSTradeType		getTradeType() const{return m_tradeType;}
+	inline WTSDirectionType	getDirection() const{return m_direction;}
+	inline WTSOffsetType		getOffsetType() const{return m_offsetType;}
+	inline WTSOrderType		getOrderType() const{return m_orderType;}
+	inline WTSTradeType		getTradeType() const{return m_tradeType;}
 
-	double getVolumn() const{ return m_uVolumn; }
-	double getPrice() const{ return m_uPrice; }
+	inline double getVolumn() const{ return m_uVolumn; }
+	inline double getPrice() const{ return m_uPrice; }
 
-	const char*	getCode() const{return m_strCode.c_str();}
-	const char*	getExchg() const{ return m_strExchg.c_str(); }
-	const char*	getTradeID() const{return m_strTradeID.c_str();}
-	const char*	getRefOrder() const{return m_strRefOrder.c_str();}
+	inline const char*	getCode() const{return m_strCode.c_str();}
+	inline const char*	getExchg() const{ return m_strExchg.c_str(); }
+	inline const char*	getTradeID() const{return m_strTradeID.c_str();}
+	inline const char*	getRefOrder() const{return m_strRefOrder.c_str();}
 
-	uint32_t getTradeDate() const{return m_uTradeDate;}
-	uint64_t getTradeTime() const{return m_uTradeTime;}
+	inline uint32_t getTradeDate() const{return m_uTradeDate;}
+	inline uint64_t getTradeTime() const{return m_uTradeTime;}
 
-	double getAmount() const{ return m_uAmount; }
+	inline double getAmount() const{ return m_uAmount; }
 
-	void setUserTag(const char* tag){m_strUserTag = tag;}
-	const char* getUserTag() const{return m_strUserTag.c_str();}
+	inline void setUserTag(const char* tag){m_strUserTag = tag;}
+	inline const char* getUserTag() const{return m_strUserTag.c_str();}
 
 protected:
 	std::string	m_strExchg;		//ÊÐ³¡
@@ -355,7 +362,7 @@ protected:
 class WTSPositionItem : public WTSObject
 {
 public:
-	static WTSPositionItem* create(const char* code, const char* currency, const char* exchg = "")
+	static inline WTSPositionItem* create(const char* code, const char* currency, const char* exchg = "")
 	{
 		WTSPositionItem *pRet = new WTSPositionItem;
 		pRet->m_strExchg = exchg;
@@ -365,37 +372,37 @@ public:
 		return pRet;
 	}
 
-	void setDirection(WTSDirectionType dType){m_direction = dType;}
-	void setPrePosition(double prePos){ m_dPrePosition = prePos; }
-	void setNewPosition(double newPos){ m_dNewPosition = newPos; }
-	void setAvailPrePos(double availPos){ m_dAvailPrePos = availPos; }
-	void setAvailNewPos(double availPos){ m_dAvailNewPos = availPos; }
-	void setPositionCost(double cost){m_dTotalPosCost = cost;}
-	void setMargin(double margin){ m_dMargin = margin; }
-	void setAvgPrice(double avgPrice){ m_dAvgPrice = avgPrice; }
-	void setDynProfit(double profit){ m_dDynProfit = profit; }
+	inline void setDirection(WTSDirectionType dType){m_direction = dType;}
+	inline void setPrePosition(double prePos){ m_dPrePosition = prePos; }
+	inline void setNewPosition(double newPos){ m_dNewPosition = newPos; }
+	inline void setAvailPrePos(double availPos){ m_dAvailPrePos = availPos; }
+	inline void setAvailNewPos(double availPos){ m_dAvailNewPos = availPos; }
+	inline void setPositionCost(double cost){m_dTotalPosCost = cost;}
+	inline void setMargin(double margin){ m_dMargin = margin; }
+	inline void setAvgPrice(double avgPrice){ m_dAvgPrice = avgPrice; }
+	inline void setDynProfit(double profit){ m_dDynProfit = profit; }
 
-	WTSDirectionType getDirection() const{return m_direction;}
-	double	getPrePosition() const{ return m_dPrePosition; }
-	double	getNewPosition() const{ return m_dNewPosition; }
-	double	getAvailPrePos() const{ return m_dAvailPrePos; }
-	double	getAvailNewPos() const{ return m_dAvailNewPos; }
+	inline WTSDirectionType getDirection() const{return m_direction;}
+	inline double	getPrePosition() const{ return m_dPrePosition; }
+	inline double	getNewPosition() const{ return m_dNewPosition; }
+	inline double	getAvailPrePos() const{ return m_dAvailPrePos; }
+	inline double	getAvailNewPos() const{ return m_dAvailNewPos; }
 
-	double	getTotalPosition() const{ return m_dPrePosition + m_dNewPosition; }
-	double	getAvailPosition() const{ return m_dAvailPrePos + m_dAvailNewPos; }
+	inline double	getTotalPosition() const{ return m_dPrePosition + m_dNewPosition; }
+	inline double	getAvailPosition() const{ return m_dAvailPrePos + m_dAvailNewPos; }
 
-	double	getFrozenPosition() const{ return getTotalPosition() - getAvailPosition(); }
-	double	getFrozenNewPos() const{ return m_dNewPosition - m_dAvailNewPos; }
-	double	getFrozenPrePos() const{ return m_dPrePosition - m_dAvailPrePos; }
+	inline double	getFrozenPosition() const{ return getTotalPosition() - getAvailPosition(); }
+	inline double	getFrozenNewPos() const{ return m_dNewPosition - m_dAvailNewPos; }
+	inline double	getFrozenPrePos() const{ return m_dPrePosition - m_dAvailPrePos; }
 
-	double		getPositionCost() const{ return m_dTotalPosCost; }
-	double		getMargin() const{ return m_dMargin; }
-	double		getAvgPrice() const{ return m_dAvgPrice; }
-	double		getDynProfit() const{ return m_dDynProfit; }
+	inline double		getPositionCost() const{ return m_dTotalPosCost; }
+	inline double		getMargin() const{ return m_dMargin; }
+	inline double		getAvgPrice() const{ return m_dAvgPrice; }
+	inline double		getDynProfit() const{ return m_dDynProfit; }
 
-	const char* getCode() const{ return m_strCode.c_str(); }
-	const char* getCurrency() const{ return m_strCurrency.c_str(); }
-	const char* getExchg() const{ return m_strExchg.c_str(); }
+	inline const char* getCode() const{ return m_strCode.c_str(); }
+	inline const char* getCurrency() const{ return m_strCurrency.c_str(); }
+	inline const char* getExchg() const{ return m_strExchg.c_str(); }
 
 protected:
 	WTSPositionItem()
@@ -433,7 +440,7 @@ protected:
 class WTSPositionDetail : public WTSObject
 {
 public:
-	static WTSPositionDetail* create(const char* code = "", const char* exchg = "")
+	static inline WTSPositionDetail* create(const char* code = "", const char* exchg = "")
 	{
 		WTSPositionDetail* pRet = new WTSPositionDetail();
 		pRet->m_strCode = code;
@@ -442,42 +449,42 @@ public:
 		return pRet;
 	}
 
-	void setCode(const char* code){m_strCode = code;}
-	void setTradeID(const char* tid){m_strTradeID = tid;}
-	void setUserTag(const char* tag){m_strUserTag = tag;}
+	inline void setCode(const char* code){m_strCode = code;}
+	inline void setTradeID(const char* tid){m_strTradeID = tid;}
+	inline void setUserTag(const char* tag){m_strUserTag = tag;}
 
-	void setDirection(WTSDirectionType dType){m_direction = dType;}
+	inline void setDirection(WTSDirectionType dType){m_direction = dType;}
 
-	void setOpenDate(uint32_t uDate){m_uOpenDate = uDate;}
-	void setOpenTime(uint64_t uTime){m_uOpenTime = uTime;}
+	inline void setOpenDate(uint32_t uDate){m_uOpenDate = uDate;}
+	inline void setOpenTime(uint64_t uTime){m_uOpenTime = uTime;}
 
-	void setVolumn(double vol){ m_dVolumn = vol; }
-	void setOpenPrice(double openpx){ m_dOpenPrice = openpx; }
-	void setMargin(double margin){ m_dMargin = margin; }
-	void setCloseVol(double closevol){ m_dCloseVol = closevol; }
-	void setCloseAmount(double closeamount){ m_dCloseAmount = closeamount; }
-	void setCloseProfitByDate(double profitbydate){ m_dCloseProfitByDate = profitbydate; }
-	void setCloseProfitByTrade(double profitbytrade){ m_dCloseProfitByTrade = profitbytrade; }
-	void setPreSettlePx(double preSettlePx){ m_dPreSettlePx = preSettlePx; }
+	inline void setVolumn(double vol){ m_dVolumn = vol; }
+	inline void setOpenPrice(double openpx){ m_dOpenPrice = openpx; }
+	inline void setMargin(double margin){ m_dMargin = margin; }
+	inline void setCloseVol(double closevol){ m_dCloseVol = closevol; }
+	inline void setCloseAmount(double closeamount){ m_dCloseAmount = closeamount; }
+	inline void setCloseProfitByDate(double profitbydate){ m_dCloseProfitByDate = profitbydate; }
+	inline void setCloseProfitByTrade(double profitbytrade){ m_dCloseProfitByTrade = profitbytrade; }
+	inline void setPreSettlePx(double preSettlePx){ m_dPreSettlePx = preSettlePx; }
 
-	const char* getCode() const{return m_strCode.c_str();}
-	const char* getTradeID() const{return m_strTradeID.c_str();}
-	const char* getUserTag() const{return m_strUserTag.c_str();}
+	inline const char* getCode() const{return m_strCode.c_str();}
+	inline const char* getTradeID() const{return m_strTradeID.c_str();}
+	inline const char* getUserTag() const{return m_strUserTag.c_str();}
 
-	const char* getExchg() const{return m_strExchg.c_str();}
+	inline const char* getExchg() const{return m_strExchg.c_str();}
 
-	WTSDirectionType getDirection() const{return m_direction;}
+	inline WTSDirectionType getDirection() const{return m_direction;}
 
-	uint32_t getOpenDate() const{return m_uOpenDate;}
-	uint64_t getOpenTime() const{return m_uOpenTime;}
+	inline uint32_t getOpenDate() const{return m_uOpenDate;}
+	inline uint64_t getOpenTime() const{return m_uOpenTime;}
 
-	double		getOpenPrice() const{ return m_dOpenPrice; }
-	double		getVolumn() const{ return m_dVolumn; }
-	double		getMargin() const{ return m_dMargin; }
-	double		getCloseVol() const{ return m_dCloseVol; }
-	double		getCloseAmount() const{ return m_dCloseAmount; }
-	double		getCloseProfitByDate() const{ return m_dCloseProfitByDate; }
-	double		getCloseProfitByTrade() const{ return m_dCloseProfitByTrade; }
+	inline double		getOpenPrice() const{ return m_dOpenPrice; }
+	inline double		getVolumn() const{ return m_dVolumn; }
+	inline double		getMargin() const{ return m_dMargin; }
+	inline double		getCloseVol() const{ return m_dCloseVol; }
+	inline double		getCloseAmount() const{ return m_dCloseAmount; }
+	inline double		getCloseProfitByDate() const{ return m_dCloseProfitByDate; }
+	inline double		getCloseProfitByTrade() const{ return m_dCloseProfitByTrade; }
 
 
 protected:
@@ -524,18 +531,18 @@ protected:
 	~WTSInvestorInfo(){}
 
 public:
-	static WTSInvestorInfo* create(){return new WTSInvestorInfo;}
+	static inline WTSInvestorInfo* create(){return new WTSInvestorInfo;}
 
-	void	setDescription(const char* desc){m_strDescription = desc;}
-	void	setUsername(const char* username){m_strUserName = username;}
-	void	setState(uint32_t uState){m_uState = uState;}
-	void	setExtInfo(const char* key, const char* val){ m_mapExts[key] = val; }
+	inline void	setDescription(const char* desc){m_strDescription = desc;}
+	inline void	setUsername(const char* username){m_strUserName = username;}
+	inline void	setState(uint32_t uState){m_uState = uState;}
+	inline void	setExtInfo(const char* key, const char* val){ m_mapExts[key] = val; }
 
-	const char* getUsername() const{return m_strUserName.c_str();}
-	const char* getDescription() const{return m_strDescription.c_str();}
-	uint32_t	getState() const{return m_uState;}
+	inline const char* getUsername() const{return m_strUserName.c_str();}
+	inline const char* getDescription() const{return m_strDescription.c_str();}
+	inline uint32_t	getState() const{return m_uState;}
 
-	const char* getExtInfo(const char* key)
+	inline const char* getExtInfo(const char* key)
 	{
 		auto it = m_mapExts.find(key);
 		if (it == m_mapExts.end())
@@ -560,37 +567,37 @@ protected:
 	virtual ~WTSAccountInfo(){}
 
 public:
-	static WTSAccountInfo* create(){return new WTSAccountInfo;}
+	static inline WTSAccountInfo* create(){return new WTSAccountInfo;}
 
-	void	setDescription(const char* desc){m_strDescription = desc;}
-	void	setCurrency(const char* currency){ m_strCurrency = currency; }
+	inline void	setDescription(const char* desc){m_strDescription = desc;}
+	inline void	setCurrency(const char* currency){ m_strCurrency = currency; }
 
-	void	setBalance(double balance){m_uBalance = balance;}
-	void	setPreBalance(double prebalance){m_uPreBalance = prebalance;}
-	void	setMargin(double margin){m_uMargin = margin;}
-	void	setFrozenMargin(double frozenmargin){m_uFrozenMargin = frozenmargin;}
-	void	setCloseProfit(double closeprofit){m_iCloseProfit = closeprofit;}
-	void	setDynProfit(double dynprofit){m_iDynProfit = dynprofit;}
-	void	setDeposit(double deposit){m_uDeposit = deposit;}
-	void	setWithdraw(double withdraw){m_uWithdraw = withdraw;}
-	void	setCommission(double commission){m_uCommission = commission;}
-	void	setFrozenCommission(double frozencommission){m_uFrozenCommission = frozencommission;}
-	void	setAvailable(double available){m_uAvailable = available;}
+	inline void	setBalance(double balance){m_uBalance = balance;}
+	inline void	setPreBalance(double prebalance){m_uPreBalance = prebalance;}
+	inline void	setMargin(double margin){m_uMargin = margin;}
+	inline void	setFrozenMargin(double frozenmargin){m_uFrozenMargin = frozenmargin;}
+	inline void	setCloseProfit(double closeprofit){m_iCloseProfit = closeprofit;}
+	inline void	setDynProfit(double dynprofit){m_iDynProfit = dynprofit;}
+	inline void	setDeposit(double deposit){m_uDeposit = deposit;}
+	inline void	setWithdraw(double withdraw){m_uWithdraw = withdraw;}
+	inline void	setCommission(double commission){m_uCommission = commission;}
+	inline void	setFrozenCommission(double frozencommission){m_uFrozenCommission = frozencommission;}
+	inline void	setAvailable(double available){m_uAvailable = available;}
 
-	double	getBalance() const{return m_uBalance;}
-	double	getPreBalance() const{return m_uPreBalance;}
-	double	getMargin() const{return m_uMargin;}
-	double	getFrozenMargin() const{return m_uFrozenMargin;}
-	double	getCloseProfit() const{return m_iCloseProfit;}
-	double	getDynProfit() const{return m_iDynProfit;}
-	double	getDeposit() const{return m_uDeposit;}
-	double	getWithdraw() const{return m_uWithdraw;}
-	double	getCommission() const{return m_uCommission;}
-	double	getFrozenCommission() const{return m_uFrozenCommission;}
-	double	getAvailable() const{return m_uAvailable;}
+	inline double	getBalance() const{return m_uBalance;}
+	inline double	getPreBalance() const{return m_uPreBalance;}
+	inline double	getMargin() const{return m_uMargin;}
+	inline double	getFrozenMargin() const{return m_uFrozenMargin;}
+	inline double	getCloseProfit() const{return m_iCloseProfit;}
+	inline double	getDynProfit() const{return m_iDynProfit;}
+	inline double	getDeposit() const{return m_uDeposit;}
+	inline double	getWithdraw() const{return m_uWithdraw;}
+	inline double	getCommission() const{return m_uCommission;}
+	inline double	getFrozenCommission() const{return m_uFrozenCommission;}
+	inline double	getAvailable() const{return m_uAvailable;}
 
-	const char* getDescription() const{return m_strDescription.c_str();}
-	const char* getCurrency() const{ return m_strCurrency.c_str(); }
+	inline const char* getDescription() const{return m_strDescription.c_str();}
+	inline const char* getCurrency() const{ return m_strCurrency.c_str(); }
 
 protected:
 	std::string	m_strDescription;

@@ -12,6 +12,7 @@
 #include <vector>
 #include <deque>
 #include <string.h>
+#include<chrono>
 
 #include "WTSObject.hpp"
 
@@ -1041,7 +1042,7 @@ public:
 	 *	创建一个tick数据对象
 	 *	@stdCode 合约代码
 	 */
-	static WTSTickData* create(const char* stdCode)
+	static inline WTSTickData* create(const char* stdCode)
 	{
 		WTSTickData* pRet = new WTSTickData;
 		strcpy(pRet->m_tickStruct.code, stdCode);
@@ -1053,7 +1054,7 @@ public:
 	 *	根据tick结构体创建一个tick数据对象
 	 *	@tickData tick结构体
 	 */
-	static WTSTickData* create(WTSTickStruct& tickData)
+	static inline WTSTickData* create(WTSTickStruct& tickData)
 	{
 		WTSTickData* pRet = new WTSTickData;
 		memcpy(&pRet->m_tickStruct, &tickData, sizeof(WTSTickStruct));
@@ -1185,6 +1186,9 @@ public:
 
 private:
 	WTSTickStruct	m_tickStruct;
+	uint64_t		m_uLocalTime;	//本地时间
+
+	WTSTickData():m_uLocalTime(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count()){}
 };
 
 /*
@@ -1193,13 +1197,13 @@ private:
 class WTSBarData : public WTSObject
 {
 public:
-	static WTSBarData* create()
+	inline static WTSBarData* create()
 	{
 		WTSBarData* pRet = new WTSBarData;
 		return pRet;
 	}
 
-	static WTSBarData* create(WTSBarStruct& barData, uint16_t market, const char* code)
+	inline static WTSBarData* create(WTSBarStruct& barData, uint16_t market, const char* code)
 	{
 		WTSBarData* pRet = new WTSBarData;
 		pRet->m_market = market;
@@ -1209,10 +1213,10 @@ public:
 		return pRet;
 	}
 
-	WTSBarStruct&	getBarStruct(){return m_barStruct;}
+	inline WTSBarStruct&	getBarStruct(){return m_barStruct;}
 
-	uint16_t	getMarket(){return m_market;}
-	const char* getCode(){return m_strCode.c_str();}
+	inline uint16_t	getMarket(){return m_market;}
+	inline const char* getCode(){return m_strCode.c_str();}
 
 private:
 	WTSBarStruct	m_barStruct;
@@ -1223,14 +1227,14 @@ private:
 class WTSOrdQueData : public WTSObject
 {
 public:
-	static WTSOrdQueData* create(const char* code)
+	static inline WTSOrdQueData* create(const char* code)
 	{
 		WTSOrdQueData* pRet = new WTSOrdQueData;
 		strcpy(pRet->m_oqStruct.code, code);
 		return pRet;
 	}
 
-	static WTSOrdQueData* create(WTSOrdQueStruct& ordQueData)
+	static inline WTSOrdQueData* create(WTSOrdQueStruct& ordQueData)
 	{
 		WTSOrdQueData* pRet = new WTSOrdQueData;
 		memcpy(&pRet->m_oqStruct, &ordQueData, sizeof(WTSOrdQueStruct));
@@ -1252,14 +1256,14 @@ private:
 class WTSOrdDtlData : public WTSObject
 {
 public:
-	static WTSOrdDtlData* create(const char* code)
+	static inline WTSOrdDtlData* create(const char* code)
 	{
 		WTSOrdDtlData* pRet = new WTSOrdDtlData;
 		strcpy(pRet->m_odStruct.code, code);
 		return pRet;
 	}
 
-	static WTSOrdDtlData* create(WTSOrdDtlStruct& odData)
+	static inline WTSOrdDtlData* create(WTSOrdDtlStruct& odData)
 	{
 		WTSOrdDtlData* pRet = new WTSOrdDtlData;
 		memcpy(&pRet->m_odStruct, &odData, sizeof(WTSOrdDtlStruct));
@@ -1281,14 +1285,14 @@ private:
 class WTSTransData : public WTSObject
 {
 public:
-	static WTSTransData* create(const char* code)
+	static inline WTSTransData* create(const char* code)
 	{
 		WTSTransData* pRet = new WTSTransData;
 		strcpy(pRet->m_tsStruct.code, code);
 		return pRet;
 	}
 
-	static WTSTransData* create(WTSTransStruct& transData)
+	static inline WTSTransData* create(WTSTransStruct& transData)
 	{
 		WTSTransData* pRet = new WTSTransData;
 		memcpy(&pRet->m_tsStruct, &transData, sizeof(WTSTransStruct));
@@ -1328,7 +1332,7 @@ public:
 	 *	@param stdCode 合约代码
 	 *	@param nSize 预先分配的大小
 	 */
-	static WTSHisTickData* create(const char* stdCode, unsigned int nSize = 0, bool bValidOnly = false)
+	static inline WTSHisTickData* create(const char* stdCode, unsigned int nSize = 0, bool bValidOnly = false)
 	{
 		WTSHisTickData *pRet = new WTSHisTickData;
 		strcpy(pRet->m_strCode, stdCode);
@@ -1344,7 +1348,7 @@ public:
 
 	 *	@param ayTicks tick数组对象指针
 	 */
-	static WTSHisTickData* create(const char* stdCode, const std::vector<WTSTickStruct>& ayTicks, bool bValidOnly = false)
+	static inline WTSHisTickData* create(const char* stdCode, const std::vector<WTSTickStruct>& ayTicks, bool bValidOnly = false)
 	{
 		WTSHisTickData *pRet = new WTSHisTickData;
 		strcpy(pRet->m_strCode, stdCode);
@@ -1412,7 +1416,7 @@ protected:
 	}
 
 public:
-	static WTSTickSlice* create(const char* code, WTSTickStruct* firstTick, uint32_t count)
+	static inline WTSTickSlice* create(const char* code, WTSTickStruct* firstTick, uint32_t count)
 	{
 		if (count == 0 || firstTick == NULL)
 			return NULL;
