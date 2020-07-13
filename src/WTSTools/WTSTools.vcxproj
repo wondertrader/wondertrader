@@ -179,7 +179,6 @@
     <ClInclude Include="WTSExpFactory.h" />
     <ClInclude Include="WTSHotMgr.h" />
     <ClInclude Include="WTSLogger.h" />
-    <ClInclude Include="WTSParamParser.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WTSBaseDataMgr.cpp" />
@@ -187,7 +186,6 @@
     <ClCompile Include="WTSExpFactory.cpp" />
     <ClCompile Include="WTSHotMgr.cpp" />
     <ClCompile Include="WTSLogger.cpp" />
-    <ClCompile Include="WTSParamParser.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\WTSUtils\WTSUtils.vcxproj">

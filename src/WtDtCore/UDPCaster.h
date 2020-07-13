@@ -9,8 +9,6 @@
  */
 #pragma once
 
-#include "../WTSUtils/pugixml/pugixml.hpp"
-
 #include "../Includes/WTSMarcos.h"
 #include "../Includes/WTSObject.hpp"
 #include "../Share/BoostDefine.h"

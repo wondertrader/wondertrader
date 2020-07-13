@@ -152,10 +152,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="base64.h" />
-    <ClInclude Include="MD5Sum.h" />
-    <ClInclude Include="pugixml\pugiconfig.hpp" />
-    <ClInclude Include="pugixml\pugixml.hpp" />
     <ClInclude Include="zstdlib\bitstream.h" />
     <ClInclude Include="zstdlib\compiler.h" />
     <ClInclude Include="zstdlib\cover.h" />
@@ -190,12 +186,6 @@
     <ClInclude Include="zstdlib\zstd_opt.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="base64.cpp" />
-    <ClCompile Include="MD5Sum.cpp" />
-    <ClCompile Include="pugixml\pugixml.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="zstdlib\cover.c" />
     <ClCompile Include="zstdlib\debug.c" />
     <ClCompile Include="zstdlib\divsufsort.c" />

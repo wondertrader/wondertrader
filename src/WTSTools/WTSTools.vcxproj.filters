@@ -30,9 +30,6 @@
     <ClInclude Include="WTSHotMgr.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="WTSParamParser.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="WTSCmpHelper.hpp">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -51,9 +48,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="WTSHotMgr.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="WTSParamParser.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

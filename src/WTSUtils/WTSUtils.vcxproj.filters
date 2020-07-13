@@ -13,26 +13,11 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="pugixml">
-      <UniqueIdentifier>{fe2dd16f-22dd-44c8-9ea2-18c3694d58f8}</UniqueIdentifier>
-    </Filter>
     <Filter Include="zstdlib">
       <UniqueIdentifier>{363bbb4a-b6cb-414d-b708-002e75ed7d56}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="pugixml\pugiconfig.hpp">
-      <Filter>pugixml</Filter>
-    </ClInclude>
-    <ClInclude Include="pugixml\pugixml.hpp">
-      <Filter>pugixml</Filter>
-    </ClInclude>
-    <ClInclude Include="base64.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="MD5Sum.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="zstdlib\bitstream.h">
       <Filter>zstdlib</Filter>
     </ClInclude>
@@ -131,15 +116,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="pugixml\pugixml.cpp">
-      <Filter>pugixml</Filter>
-    </ClCompile>
-    <ClCompile Include="base64.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="MD5Sum.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="zstdlib\cover.c">
       <Filter>zstdlib</Filter>
     </ClCompile>

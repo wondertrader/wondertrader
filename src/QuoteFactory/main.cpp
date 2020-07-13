@@ -3,15 +3,12 @@
 #include "../WtDtCore/StateMonitor.h"
 #include "../WtDtCore/UDPCaster.h"
 
-#include "../WTSUtils/pugixml/pugixml.hpp"
-
 #include "../Includes/WTSSessionInfo.hpp"
 #include "../Share/DLLHelper.hpp"
 #include "../Share/JsonToVariant.hpp"
 #include "../Includes/WTSVariant.hpp"
 
 #include "../WTSTools/WTSHotMgr.h"
-#include "../WTSTools/WTSParamParser.h"
 #include "../WTSTools/WTSBaseDataMgr.h"
 #include "../WTSTools/WTSLogger.h"
 
