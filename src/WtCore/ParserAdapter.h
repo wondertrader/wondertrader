@@ -60,6 +60,7 @@ private:
 
 	typedef std::unordered_set<std::string>	ExchgFilter;
 	ExchgFilter			_exchg_filter;
+	ExchgFilter			_code_filter;
 	IBaseDataMgr*		_bd_mgr;
 	IHotMgr*			_hot_mgr;
 	IParserStub*		_stub;

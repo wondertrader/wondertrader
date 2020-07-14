@@ -108,6 +108,17 @@ bool ParserAdapter::init(const char* id, WTSVariant* cfg, IParserStub* stub, IBa
 		}
 	}
 
+	std::string strCodes = cfg->getString("code");
+	if (!strCodes.empty())
+	{
+		const StringVector &ayCodes = StrUtil::split(strCodes, ",");
+		auto it = ayCodes.begin();
+		for (; it != ayCodes.end(); it++)
+		{
+			_code_filter.insert(*it);
+		}
+	}
+
 	if (_parser_api)
 	{
 		_parser_api->registerListener(this);
@@ -116,7 +127,30 @@ bool ParserAdapter::init(const char* id, WTSVariant* cfg, IParserStub* stub, IBa
 		if (_parser_api->init(params))
 		{
 			ContractSet contractSet;
-			if (!_exchg_filter.empty())
+			if (!_code_filter.empty())//优先判断合约过滤器
+			{
+				ExchgFilter::iterator it = _code_filter.begin();
+				for (; it != _code_filter.end(); it++)
+				{
+					//全代码，形式如SSE.600000，期货代码为CFFEX.IF2005
+					std::string code, exchg;
+					auto ay = StrUtil::split((*it).c_str(), ".");
+					if (ay.size() == 1)
+						code = ay[0];
+					else
+					{
+						exchg = ay[0];
+						code = ay[1];
+					}
+					WTSContractInfo* contract = _bd_mgr->getContract(code.c_str(), exchg.c_str());
+					WTSCommodityInfo* pCommInfo = _bd_mgr->getCommodity(contract);
+					if (pCommInfo->getCategoty() == CC_Future || pCommInfo->getCategoty() == CC_Option || pCommInfo->getCategoty() == CC_Stock)
+					{
+						contractSet.insert(contract->getFullCode());
+					}
+				}
+			}
+			else if (!_exchg_filter.empty())
 			{
 				ExchgFilter::iterator it = _exchg_filter.begin();
 				for (; it != _exchg_filter.end(); it++)
