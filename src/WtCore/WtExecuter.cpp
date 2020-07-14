@@ -164,7 +164,7 @@ void WtExecuter::writeLog(const char* fmt, ...)
 	strcat(szBuf, fmt);
 	va_list args;
 	va_start(args, fmt);
-	WTSLogger::log_dyn_direct("executer", _name.c_str(), LL_INFO, szBuf, args);
+	WTSLogger::vlog_dyn("executer", _name.c_str(), LL_INFO, szBuf, args);
 	va_end(args);
 }
 
@@ -205,7 +205,8 @@ void WtExecuter::on_position_changed(const char* stdCode, double targetPos)
 	//writeLog("%s目标仓位更新: %f -> %f", stdCode, oldVol, targetPos);
 	if(!decimal::eq(oldVol, targetPos))
 	{
-		StreamLogger(LL_INFO, _name.c_str(), "executer").self() << "[" << _name << "]" << stdCode << "目标仓位更新: " << oldVol << " -> " << targetPos << "";
+		//StreamLogger(LL_INFO, _name.c_str(), "executer").self() << "[" << _name << "]" << stdCode << "目标仓位更新: " << oldVol << " -> " << targetPos << "";
+		writeLog(fmt::format("{}目标仓位更新: {} -> {}", stdCode, oldVol, targetPos).c_str());
 	}
 
 	if (_trader && !_trader->checkOrderLimits(stdCode))
@@ -232,8 +233,8 @@ void WtExecuter::set_position(const std::unordered_map<std::string, double>& tar
 		_target_pos[stdCode] = newVol;
 		if(!decimal::eq(oldVol, newVol))
 		{
-			//writeLog("%s目标仓位更新: %f -> %f", stdCode, oldVol, newVol);
-			StreamLogger(LL_INFO, _name.c_str(), "executer").self() << "[" << _name << "]" << stdCode << "目标仓位更新: " << oldVol << " -> " << newVol << "";
+			writeLog(fmt::format("{}目标仓位更新: {} -> {}", stdCode, oldVol, newVol).c_str());
+			//StreamLogger(LL_INFO, _name.c_str(), "executer").self() << "[" << _name << "]" << stdCode << "目标仓位更新: " << oldVol << " -> " << newVol << "";
 		}
 
 		if (_trader && !_trader->checkOrderLimits(stdCode))

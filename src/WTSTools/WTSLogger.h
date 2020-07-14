@@ -10,6 +10,7 @@
 #pragma once
 #include "../Includes/WTSTypes.h"
 #include "../Includes/WTSCollection.hpp"
+
 #include <memory>
 #include <sstream>
 
@@ -43,7 +44,7 @@ public:
 	static void error(const char* format, ...);
 	static void fatal(const char* format, ...);
 	static void log(WTSLogLevel ll, const char* format, ...);
-	static void log_direct(WTSLogLevel ll, const char* format, va_list args);
+	static void vlog(WTSLogLevel ll, const char* format, va_list args);
 	static void log_raw(WTSLogLevel ll, const char* message);
 
 	static void debug2(const char* catName, const char* format, ...);
@@ -56,7 +57,7 @@ public:
 	static void log2_raw(const char* catName, WTSLogLevel ll, const char* message);
 
 	static void log_dyn(const char* patttern, const char* catName, WTSLogLevel ll, const char* format, ...);
-	static void log_dyn_direct(const char* patttern, const char* catName, WTSLogLevel ll, const char* format, va_list args);
+	static void vlog_dyn(const char* patttern, const char* catName, WTSLogLevel ll, const char* format, va_list args);
 	static void log_dyn_raw(const char* patttern, const char* catName, WTSLogLevel ll, const char* message);
 
 	static void init(const char* propFile = "logcfg.json", ILogHandler* handler = NULL, WTSLogLevel logLevel = LL_INFO);
@@ -78,6 +79,7 @@ private:
 	static LogPatterns*			m_mapPatterns;
 };
 
+/*
 class StreamLogger
 {
 private:
@@ -110,4 +112,5 @@ public:
 	operator std::stringstream&(){ return _ss; }
 	std::stringstream& self(){ return _ss; }
 };
+*/
 

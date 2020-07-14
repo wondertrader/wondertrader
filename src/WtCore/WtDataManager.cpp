@@ -136,7 +136,7 @@ void WtDataManager::reader_log(WTSLogLevel ll, const char* fmt, ...)
 {
 	va_list args;
 	va_start(args, fmt);
-	WTSLogger::log_direct(ll, fmt, args);
+	WTSLogger::vlog(ll, fmt, args);
 	va_end(args);
 }
 

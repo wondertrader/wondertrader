@@ -38,7 +38,7 @@ void log(const char* fmt, ...)
 	//char szBuf[512] = { 0 };
 	va_list args;
 	va_start(args, fmt);
-	WTSLogger::log_direct(LL_INFO, fmt, args);
+	WTSLogger::vlog(LL_INFO, fmt, args);
 	va_end(args);
 
 	//printf(szBuf);
@@ -312,7 +312,7 @@ public:
 	{
 		va_list args;
 		va_start(args, format);
-		WTSLogger::log_direct(LL_INFO, format, args);
+		WTSLogger::vlog(LL_INFO, format, args);
 		va_end(args);
 	}
 

@@ -569,7 +569,7 @@ void ExecMocker::writeLog(const char* fmt, ...)
 {
 	va_list args;
 	va_start(args, fmt);
-	WTSLogger::log_dyn_direct("executer", _id.c_str(), LL_INFO, fmt, args);
+	WTSLogger::vlog_dyn("executer", _id.c_str(), LL_INFO, fmt, args);
 	va_end(args);
 
 

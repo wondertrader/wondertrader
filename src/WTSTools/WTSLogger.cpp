@@ -401,7 +401,7 @@ void WTSLogger::log_raw(WTSLogLevel ll, const char* message)
 }
 
 
-void WTSLogger::log_direct(WTSLogLevel ll, const char* format, va_list args)
+void WTSLogger::vlog(WTSLogLevel ll, const char* format, va_list args)
 {
 	if (m_logLevel > ll || m_bStopped)
 		return;
@@ -601,12 +601,12 @@ void WTSLogger::log_dyn(const char* patttern, const char* catName, WTSLogLevel l
 	va_list args;
 	va_start(args, format);
 
-	log_dyn_direct(patttern, catName, ll, format, args);
+	vlog_dyn(patttern, catName, ll, format, args);
 
 	va_end(args);
 }
 
-void WTSLogger::log_dyn_direct(const char* patttern, const char* catName, WTSLogLevel ll, const char* format, va_list args)
+void WTSLogger::vlog_dyn(const char* patttern, const char* catName, WTSLogLevel ll, const char* format, va_list args)
 {
 	if (m_logLevel > ll || m_bStopped)
 		return;

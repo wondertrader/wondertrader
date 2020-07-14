@@ -415,8 +415,8 @@ bool SelMocker::on_schedule(uint32_t curDate, uint32_t curTime, uint32_t fireTim
 	_total_calc_time += ticker.micro_seconds();
 
 	if (_emit_times % 20 == 0)
-		stra_log_text("策略共触发%u次, 共耗时%s微秒, 平均耗时%s微秒",
-		_emit_times, StrUtil::fmtUInt64(_total_calc_time).c_str(), StrUtil::fmtUInt64(_total_calc_time / _emit_times).c_str());
+		stra_log_text(fmt::format("策略共触发{}次, 共耗时{}微秒, 平均耗时{}微秒",
+		_emit_times, _total_calc_time, _total_calc_time / _emit_times).c_str());
 
 	_is_in_schedule = false;//调度结束，修改标记
 	return true;
@@ -707,7 +707,7 @@ void SelMocker::stra_log_text(const char* fmt, ...)
 {
 	va_list args;
 	va_start(args, fmt);
-	WTSLogger::log_dyn_direct("strategy", _name.c_str(), LL_INFO, fmt, args);
+	WTSLogger::vlog_dyn("strategy", _name.c_str(), LL_INFO, fmt, args);
 	va_end(args);
 }
 

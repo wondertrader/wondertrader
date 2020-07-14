@@ -199,10 +199,11 @@ void HisDataReplayer::run()
 		WTSSessionInfo* sInfo = get_session_info(barList._code.c_str(), true);
 		std::string commId = CodeHelper::stdCodeToStdCommID(barList._code.c_str());
 
-		//WTSLogger::info("开始进行数据回放……");
-		{
-			StreamLogger(LL_INFO).self() << "开始从" << _begin_time << "进行数据回放……";
-		}
+		//WTSLogger::info("开始从进行数据回放……", _begin_time);
+		WTSLogger::log_raw(LL_INFO, fmt::format("开始从{}进行数据回放……", _begin_time).c_str());
+		//{
+		//	StreamLogger(LL_INFO).self() << "开始从" << _begin_time << "进行数据回放……";
+		//}
 
 		for (;;)
 		{
@@ -220,7 +221,8 @@ void HisDataReplayer::run()
 
 				if (nextBarTime > _end_time)
 				{
-					StreamLogger(LL_INFO).self() << nextBarTime << "超过结束时间" << _end_time << "，回放结束";
+					//StreamLogger(LL_INFO).self() << nextBarTime << "超过结束时间" << _end_time << "，回放结束";
+					WTSLogger::log_raw(LL_INFO, fmt::format("{}超过结束时间{}，回放结束", nextBarTime, _end_time).c_str());
 					break;
 				}
 
@@ -283,9 +285,10 @@ void HisDataReplayer::run()
 		WTSSessionInfo* sInfo = NULL;
 		const char* DEF_SESS = (strlen(_task->_session) == 0) ? DEFAULT_SESSIONID : _task->_session;
 		sInfo = _bd_mgr.getSession(DEF_SESS);
-		{
-			StreamLogger(LL_INFO).self() << "从" << _begin_time << "开始按任务周期回测……";
-		}
+		//{
+		//	StreamLogger(LL_INFO).self() << "从" << _begin_time << "开始按任务周期回测……";
+		//}
+		WTSLogger::log_raw(LL_INFO, fmt::format("从{}开始按任务周期回测……", _begin_time).c_str());
 
 		//分钟即任务和日级别任务分开写
 		if (_task->_period != TPT_Minute)

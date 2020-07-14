@@ -264,7 +264,7 @@ void ParserAdapter::handleParserLog(WTSLogLevel ll, const char* format, ...)
 
 	va_list args;
 	va_start(args, format);
-	WTSLogger::log_dyn_direct("parser", _id.c_str(), ll, format, args);
+	WTSLogger::vlog_dyn("parser", _id.c_str(), ll, format, args);
 	va_end(args);
 }
 

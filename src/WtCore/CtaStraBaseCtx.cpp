@@ -365,14 +365,16 @@ void CtaStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 
 					//stra_log_text("条件单恢复, 合约: %s, %s %d手, 触发条件: 最新价 %s %s", stdCode, ACTION_NAMES[condInfo._action], condInfo._qty, CMP_ALG_NAMES[condInfo._alg], condInfo._target);
 					{
-						StreamLogger(LL_INFO, _name.c_str(), "strategy").self() << "[" << _name << "]条件单恢复, 合约: " << stdCode << ", " << ACTION_NAMES[condInfo._action] 
-							<< " " << condInfo._qty << "手, 触发条件 : 最新价 " << CMP_ALG_NAMES[condInfo._alg] << " " << condInfo._target;
+						//StreamLogger(LL_INFO, _name.c_str(), "strategy").self() << "[" << _name << "]条件单恢复, 合约: " << stdCode << ", " << ACTION_NAMES[condInfo._action] 
+						//	<< " " << condInfo._qty << "手, 触发条件 : 最新价 " << CMP_ALG_NAMES[condInfo._alg] << " " << condInfo._target;
+						stra_log_text(fmt::format("条件单恢复, 合约: {}, {} {}手, 触发条件: 最新价 {} {}",
+							stdCode, ACTION_NAMES[condInfo._action], condInfo._qty, CMP_ALG_NAMES[condInfo._alg], condInfo._target).c_str());
 					}
 					count++;
 				}
 			}
 
-			stra_log_text("条件单共恢复 %u 条, 设置时间为 %s", count, StrUtil::fmtUInt64(_last_cond_min).c_str());
+			stra_log_text(fmt::format("条件单共恢复 {} 条, 设置时间为 {}", count, _last_cond_min).c_str());
 		}
 	}
 
@@ -635,20 +637,12 @@ void CtaStraBaseCtx::on_tick(const char* stdCode, WTSTickData* newTick, bool bEm
 
 			if (isMatched)
 			{
-				//stra_log_text("条件单触发[最新价: %f%s%f], 合约: %s, %s %f手", curVal, CMP_ALG_NAMES[entrust._alg], entrust._target, stdCode, ACTION_NAMES[entrust._action], entrust._qty);
+				stra_log_text(fmt::format("条件单触发[最新价: {}{}{}], 合约: {}, {} {}手", curVal, CMP_ALG_NAMES[entrust._alg], entrust._target, stdCode, ACTION_NAMES[entrust._action], entrust._qty).c_str());
 				{
-
-					//char szBuf[256] = { 0 };
-					//uint32_t length = sprintf(szBuf, "[%s]", _name.c_str());
-					//strcat(szBuf, fmt);
-					//va_list args;
-					//va_start(args, fmt);
-					//WTSLogger::log_dyn_direct("strategy", _name.c_str(), LL_INFO, szBuf, args);
-					//va_end(args);
-
-					StreamLogger(LL_INFO, _name.c_str(), "strategy").self() << "[" << _name << "]条件单触发[最新价: " << curVal << CMP_ALG_NAMES[entrust._alg] 
-						<< entrust._target << "], 合约: " << stdCode << ", " << ACTION_NAMES[entrust._action] << " " << entrust._qty  << "手";
+					//StreamLogger(LL_INFO, _name.c_str(), "strategy").self() << "[" << _name << "]条件单触发[最新价: " << curVal << CMP_ALG_NAMES[entrust._alg] 
+					//	<< entrust._target << "], 合约: " << stdCode << ", " << ACTION_NAMES[entrust._action] << " " << entrust._qty  << "手";
 				}
+
 				switch (entrust._action)
 				{
 				case COND_ACTION_OL:
@@ -767,8 +761,10 @@ bool CtaStraBaseCtx::on_schedule(uint32_t curDate, uint32_t curTime)
 				_total_calc_time += ticker.micro_seconds();
 
 				if (_emit_times % 20 == 0)
-					stra_log_text("策略共触发%u次, 共耗时%s微秒, 平均耗时%s微秒", 
-					_emit_times, StrUtil::fmtUInt64(_total_calc_time).c_str(), StrUtil::fmtUInt64(_total_calc_time / _emit_times).c_str());
+				{
+					stra_log_text(fmt::format("策略共触发{}次, 共耗时{}微秒, 平均耗时{}微秒",
+						_emit_times, _total_calc_time, _total_calc_time / _emit_times).c_str());
+				}
 
 				if (_ud_modified)
 				{
@@ -1276,7 +1272,7 @@ void CtaStraBaseCtx::stra_log_text(const char* fmt, ...)
 	strcat(szBuf, fmt);
 	va_list args;
 	va_start(args, fmt);
-	WTSLogger::log_dyn_direct("strategy", _name.c_str(), LL_INFO, szBuf, args);
+	WTSLogger::vlog_dyn("strategy", _name.c_str(), LL_INFO, szBuf, args);
 	va_end(args);
 }
 
