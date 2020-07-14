@@ -51,6 +51,13 @@ bool WtRunner::config(const char* cfgFile)
 	rj::Document document;
 	document.Parse(json.c_str());
 
+	if(document.HasParseError())
+	{
+		auto ec = document.GetParseError();
+		WTSLogger::error("ÅäÖÃÎÄ¼ş½âÎöÊ§°Ü");
+		return false;
+	}
+
 	_config = WTSVariant::createObject();
 	jsonToVariant(document, _config);
 
