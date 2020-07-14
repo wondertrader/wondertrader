@@ -95,6 +95,7 @@ void WtHftRtTicker::on_tick(WTSTickData* curTick, bool isHot /* = false */)
 		minutes--;
 	}
 	minutes++;
+	uint32_t rawMin = curMin;
 	curMin = _s_info->minuteToTime(minutes);
 
 	if (_cur_pos == 0)
@@ -132,7 +133,7 @@ void WtHftRtTicker::on_tick(WTSTickData* curTick, bool isHot /* = false */)
 		trigger_price(curTick, isHot);
 		if (_engine)
 		{
-			_engine->set_date_time(_date, curMin, curSec);
+			_engine->set_date_time(_date, curMin, curSec, rawMin);
 			_engine->set_trading_date(curTick->tradingdate());
 		}
 
@@ -143,7 +144,7 @@ void WtHftRtTicker::on_tick(WTSTickData* curTick, bool isHot /* = false */)
 		//如果分钟数还是一致的, 则直接触发行情和时间即可
 		trigger_price(curTick, isHot);
 		if (_engine)
-			_engine->set_date_time(_date, curMin, curSec);
+			_engine->set_date_time(_date, curMin, curSec, rawMin);
 	}
 
 	uint32_t sec = curSec / 1000;

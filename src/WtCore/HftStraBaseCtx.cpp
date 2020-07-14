@@ -238,7 +238,7 @@ uint32_t HftStraBaseCtx::stra_get_date()
 
 uint32_t HftStraBaseCtx::stra_get_time()
 {
-	return _engine->get_min_time();
+	return _engine->get_raw_time();
 }
 
 uint32_t HftStraBaseCtx::stra_get_secs()
