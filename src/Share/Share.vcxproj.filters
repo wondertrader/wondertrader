@@ -51,9 +51,6 @@
     <ClInclude Include="BoostMappingFile.hpp">
       <Filter>Utils</Filter>
     </ClInclude>
-    <ClInclude Include="PacketDefine.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
     <ClInclude Include="IniHelper.hpp">
       <Filter>Utils</Filter>
     </ClInclude>
@@ -137,9 +134,6 @@
     </ClInclude>
     <ClInclude Include="..\Includes\ITraderApi.h">
       <Filter>Interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="PriceHelper.hpp">
-      <Filter>Utils</Filter>
     </ClInclude>
     <ClInclude Include="..\Includes\WTSMarcos.h">
       <Filter>BaseDefs</Filter>

@@ -180,10 +180,10 @@ public:
 			printf("请输入委托价格: ");
 			std::cin >> price;
 
-			printf("请输入手数: ");
+			printf("请输入数量: ");
 			std::cin >> qty;
 
-			printf("品种：%s.%s，价格：%f，手数：%u，确认y/n? ", exchg, code, price, qty);
+			printf("品种：%s.%s，价格：%f，数量：%u，确认y/n? ", exchg, code, price, qty);
 			char c;
 			std::cin >> c;
 			if(c == 'y')
@@ -200,7 +200,7 @@ public:
 		m_pTraderApi->makeEntrustID(entrustid, 64);
 		entrust->setEntrustID(entrustid);
 
-		log("[%s]开始下单，品种: %s.%s，价格: %f，手数: %d，动作: 开多", m_pParams->getCString("user"), exchg, code, price, qty);
+		log("[%s]开始下单，品种: %s.%s，价格: %f，数量: %d，动作: 开多", m_pParams->getCString("user"), exchg, code, price, qty);
 
 		m_pTraderApi->orderInsert(entrust);
 		entrust->release();
@@ -222,10 +222,10 @@ public:
 			printf("请输入交易所代码: ");
 			std::cin >> exchg;
 
-			printf("请输入手数: ");
+			printf("请输入数量: ");
 			std::cin >> qty;
 
-			printf("品种：%s.%s，手数：%u，确认y/n? ", exchg, code, qty);
+			printf("品种：%s.%s，数量：%u，确认y/n? ", exchg, code, qty);
 			char c;
 			std::cin >> c;
 			if (c == 'y')
@@ -242,7 +242,7 @@ public:
 		m_pTraderApi->makeEntrustID(entrustid, 64);
 		entrust->setEntrustID(entrustid);
 
-		log("[%s]开始下单，品种: %s.%s，价格: 市价，手数: %d，动作: 开多", m_pParams->getCString("user"), exchg, code, qty);
+		log("[%s]开始下单，品种: %s.%s，价格: 市价，数量: %d，动作: 开多", m_pParams->getCString("user"), exchg, code, qty);
 
 		m_pTraderApi->orderInsert(entrust);
 		entrust->release();
@@ -453,7 +453,7 @@ public:
 
 	virtual void onPushTrade(WTSTradeInfo* tradeRecord)
 	{
-		log("[%s]收到成交回报，合约%s，成交价：%.4f，成交手数：%.4f", m_pParams->getCString("user"), tradeRecord->getCode(), tradeRecord->getPrice(), tradeRecord->getVolumn());
+		log("[%s]收到成交回报，合约%s，成交价：%.4f，成交数量：%.4f", m_pParams->getCString("user"), tradeRecord->getCode(), tradeRecord->getPrice(), tradeRecord->getVolumn());
 	}
 
 	virtual void onTraderError(WTSError*	err)

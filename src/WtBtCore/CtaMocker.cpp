@@ -412,7 +412,7 @@ void CtaMocker::on_tick(const char* stdCode, WTSTickData* newTick, bool bEmitStr
 
 			if (isMatched)
 			{
-				stra_log_text("条件单触发[最新价: %f%s%f], 合约: %s, %s %d手", curVal, CMP_ALG_NAMES[entrust._alg], entrust._target, stdCode, ACTION_NAMES[entrust._action], entrust._qty);
+				stra_log_text(fmt::format("条件单触发[最新价: {}{}{}], 合约: {}, {} {}", curVal, CMP_ALG_NAMES[entrust._alg], entrust._target, stdCode, ACTION_NAMES[entrust._action], entrust._qty).c_str());
 				switch (entrust._action)
 				{
 				case COND_ACTION_OL:
@@ -878,7 +878,7 @@ void CtaMocker::do_set_position(const char* stdCode, double qty, double price /*
 
 	WTSCommodityInfo* commInfo = _replayer->get_commodity_info(stdCode);
 
-	if (decimal::gt(pInfo._volumn*qty, 0))//当前持仓和目标仓位方向一致，增加一条明细，增加手数即可
+	if (decimal::gt(pInfo._volumn*qty, 0))//当前持仓和目标仓位方向一致，增加一条明细，增加数量即可
 	{
 		double diff = abs(qty - pInfo._volumn);
 		pInfo._volumn = qty;

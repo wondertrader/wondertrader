@@ -289,7 +289,6 @@ OrderIDs HftMocker::stra_cancel(const char* code, bool isBuy, double qty /* = 0 
 
 otp::OrderIDs HftMocker::stra_buy(const char* stdCode, double price, double qty)
 {
-	//logger.log("买入%s合约%u手，价格：%f", stdCode, qty, price);
 	uint32_t localid = makeLocalOrderID();
 
 	OrderInfo order;
@@ -396,7 +395,6 @@ void HftMocker::procOrder(uint32_t localid)
 
 otp::OrderIDs HftMocker::stra_sell(const char* stdCode, double price, double qty)
 {
-	//logger.log("卖出%s合约%u手，价格：%f", stdCode, qty, price);
 	uint32_t localid = makeLocalOrderID();
 
 	OrderInfo order;

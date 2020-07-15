@@ -333,7 +333,7 @@ void SelStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 				sInfo._sigprice = jItem["sigprice"].GetDouble();
 				sInfo._gentime = jItem["gentime"].GetUint64();
 
-				stra_log_text("未触发信号恢复, 合约: %s, 目标部位: %d手", stdCode, sInfo._volumn);
+				stra_log_text("未触发信号恢复, 合约: %s, 目标部位: %d", stdCode, sInfo._volumn);
 			}
 		}
 	}
@@ -692,7 +692,7 @@ void SelStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 
 	WTSCommodityInfo* commInfo = _engine->get_commodity_info(stdCode);
 
-	if (decimal::gt(pInfo._volumn*diff, 0))//当前持仓和目标仓位方向一致, 增加一条明细, 增加手数即可
+	if (decimal::gt(pInfo._volumn*diff, 0))//当前持仓和目标仓位方向一致, 增加一条明细, 增加数量即可
 	{
 		pInfo._volumn = qty;
 

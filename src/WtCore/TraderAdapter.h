@@ -199,7 +199,7 @@ private:
 	OrderMap*		_orders;
 	std::unordered_set<std::string> _orderids;	//主要用于标记有没有处理过该订单
 
-	std::unordered_map<std::string, double> _undone_qty;	//未完成手数
+	std::unordered_map<std::string, double> _undone_qty;	//未完成数量
 
 	typedef WTSHashMap<std::string>	TradeStatMap;
 	TradeStatMap*	_stat_map;	//统计数据

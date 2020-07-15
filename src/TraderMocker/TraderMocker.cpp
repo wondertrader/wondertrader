@@ -161,7 +161,7 @@ int TraderMocker::orderInsert(WTSEntrust* entrust)
 				break;
 			}
 
-			//检查手数的合法性
+			//检查数量的合法性
 			if ((commInfo->getCategoty() == CC_Stock) && (entrust->getOffsetType() == WOT_OPEN) && !decimal::eq(decimal::mod(entrust->getVolumn(), 100), 0))
 			{
 				bPass = false;

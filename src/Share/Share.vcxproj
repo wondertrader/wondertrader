@@ -151,8 +151,6 @@
     <ClInclude Include="IniFile.hpp" />
     <ClInclude Include="IniHelper.hpp" />
     <ClInclude Include="JsonToVariant.hpp" />
-    <ClInclude Include="PacketDefine.h" />
-    <ClInclude Include="PriceHelper.hpp" />
     <ClInclude Include="StdUtils.hpp" />
     <ClInclude Include="threadpool.hpp" />
     <ClInclude Include="threadpool\detail\future.hpp" />

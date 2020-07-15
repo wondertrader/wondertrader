@@ -944,7 +944,7 @@ void WtEngine::do_set_position(const char* stdCode, double qty)
 
 	WTSFundStruct& fundInfo = _port_fund->fundInfo();
 
-	if (decimal::gt(pInfo._volumn*diff, 0))//当前持仓和目标仓位方向一致, 增加一条明细, 增加手数即可
+	if (decimal::gt(pInfo._volumn*diff, 0))//当前持仓和目标仓位方向一致, 增加一条明细, 增加数量即可
 	{
 		pInfo._volumn = qty;
 
