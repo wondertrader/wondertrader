@@ -39,8 +39,8 @@ public:
 	virtual WTSPortFundInfo*	getFundInfo() = 0;
 
 	/*
-	 *	设置手数倍数
-	 *	@scale	手数倍率, 一般小于等于1, 用于控制整体仓位比例
+	 *	设置数量倍数
+	 *	@scale	数量倍率, 一般小于等于1, 用于控制整体仓位比例
 	 */
 	virtual void	setVolScale(double scale) = 0;
 
