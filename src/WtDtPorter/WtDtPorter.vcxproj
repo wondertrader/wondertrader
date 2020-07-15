@@ -79,9 +79,9 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\$(ProjectName)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
-    <TargetName>$(ProjectName)64</TargetName>
+    <TargetName>$(ProjectName)</TargetName>
     <IncludePath>$(MyDepends141)\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(MyDepends141)\lib\x86;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(MyDepends141)\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
