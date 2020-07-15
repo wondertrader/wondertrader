@@ -114,7 +114,7 @@ struct WTSOrdDtlStruct
 	uint32_t		index;			//委托编号(从1开始，递增1)
 	WTSBSDirectType	side;			//委托方向
 	double			price;			//委托价格
-	uint32_t		volumn;			//委托手数
+	uint32_t		volumn;			//委托数量
 	WTSOrdDetailType	otype;		//委托类型
 
 	WTSOrdDtlStruct()

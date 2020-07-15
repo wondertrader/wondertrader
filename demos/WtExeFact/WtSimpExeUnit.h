@@ -44,7 +44,7 @@ public:
 	 *	localid	本地单号
 	 *	code	合约代码
 	 *	isBuy	买or卖
-	 *	leftover	剩余手数
+	 *	leftover	剩余数量
 	 *	price	委托价格
 	 *	isCanceled	是否已撤销
 	 */
@@ -60,7 +60,7 @@ public:
 	 *	成交回报
 	 *	code	合约代码
 	 *	isBuy	买or卖
-	 *	vol		成交手数，这里没有正负，通过isBuy确定买入还是卖出
+	 *	vol		成交数量，这里没有正负，通过isBuy确定买入还是卖出
 	 *	price	成交价格
 	 */
 	virtual void on_trade(const char* stdCode, bool isBuy, double vol, double price) override;
@@ -90,7 +90,7 @@ public:
 private:
 	WTSTickData* _last_tick;	//上一笔行情
 	double		_target_pos;	//目标仓位
-	double		_unsent_qty;	//未发送手数
+	double		_unsent_qty;	//未发送数量
 
 
 	WTSCommodityInfo*	_comm_info;

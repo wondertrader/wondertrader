@@ -24,21 +24,21 @@ typedef struct _TradeStatInfo
 
 	//挂单统计
 	double	b_orders;	//委买笔数
-	double	b_ordqty;	//委买手数
+	double	b_ordqty;	//委买数量
 	double	s_orders;	//委卖笔数
-	double	s_ordqty;	//委卖手数
+	double	s_ordqty;	//委卖数量
 
 	//撤单统计
 	double	b_cancels;	//撤买笔数
-	double	b_canclqty;	//撤买手数
+	double	b_canclqty;	//撤买数量
 	double	s_cancels;	//撤卖笔数
-	double	s_canclqty;	//撤卖手数
+	double	s_canclqty;	//撤卖数量
 
 	//错单统计
 	double	b_wrongs;	//错单笔数
-	double	b_wrongqty;	//错单手数
+	double	b_wrongqty;	//错单数量
 	double	s_wrongs;	//错单笔数
-	double	s_wrongqty;	//错单手数
+	double	s_wrongqty;	//错单数量
 
 	_TradeStatInfo()
 	{

@@ -62,7 +62,7 @@ void WtTWapExeUnit::init(ExecuteContext* ctx, const char* stdCode, WTSVariant* c
 	_price_mode = cfg->getUInt32("price_mode");
 	_price_offset = cfg->getUInt32("price_offset");
 
-	_fire_span = (_total_secs - _tail_secs) / _total_times;		//单次发单时间间隔，要去掉尾部时间计算，这样的话，最后剩余的手数就有一个兜底发单的机制了
+	_fire_span = (_total_secs - _tail_secs) / _total_times;		//单次发单时间间隔，要去掉尾部时间计算，这样的话，最后剩余的数量就有一个兜底发单的机制了
 
 	ctx->writeLog("执行单元WtTWapExeUnit[%s] 初始化完成，订单超时 %u 秒，执行时限 %u 秒，收尾时间 %u 秒", stdCode, _ord_sticky, _total_secs, _tail_secs);
 }
@@ -102,7 +102,7 @@ void WtTWapExeUnit::on_channel_ready()
 	if (undone != 0 && _orders.empty())
 	{
 		//这说明有未完成单不在监控之中，先撤掉
-		_ctx->writeLog("%s有不在管理中的未完成单 %.0f 手，全部撤销", _code.c_str(), undone);
+		_ctx->writeLog("%s有不在管理中的未完成单 %f，全部撤销", _code.c_str(), undone);
 
 		bool isBuy = (undone > 0);
 		OrderIDs ids = _ctx->cancel(_code.c_str(), isBuy);
@@ -190,8 +190,6 @@ void WtTWapExeUnit::on_tick(WTSTickData* newTick)
 void WtTWapExeUnit::on_trade(const char* stdCode, bool isBuy, double vol, double price)
 {
 	//不用触发，这里在ontick里触发吧
-	//_ctx->writeLog("%s合约%s%u手，重新触发执行逻辑", stdCode, isBuy?"买入":"卖出", vol);
-	//doCalculate();
 }
 
 void WtTWapExeUnit::on_entrust(uint32_t localid, const char* stdCode, bool bSuccess, const char* message)
@@ -290,15 +288,15 @@ void WtTWapExeUnit::do_calc()
 	uint32_t leftTimes = _total_times - _fired_times;
 
 	bool bNeedShowHand = false;
-	//剩余次数为0，剩余手数不为0，说明要全部发出去了
-	//剩余次数为0，说明已经到了兜底时间了，如果这个时候还有未完成手数，则需要发单
+	//剩余次数为0，剩余数量不为0，说明要全部发出去了
+	//剩余次数为0，说明已经到了兜底时间了，如果这个时候还有未完成数量，则需要发单
 	if (leftTimes == 0 && !decimal::eq(diffQty, 0))
 		bNeedShowHand = true;
 
 	double curQty = 0;
 
 	//如果剩余此处为0 ，则需要全部下单
-	//否则，取整(剩余手数/剩余次数)与1的最大值，即最小为一手，但是要注意符号处理
+	//否则，取整(剩余数量/剩余次数)与1的最大值，即最小为一手，但是要注意符号处理
 	if (leftTimes == 0)
 		curQty = diffQty;
 	else

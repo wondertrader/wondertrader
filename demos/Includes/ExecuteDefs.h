@@ -66,10 +66,10 @@ public:
 	virtual OrderMap* getOrders(const char* stdCode) = 0;
 
 	/*
-	 *	获取未完成手数
+	 *	获取未完成数量
 	 *	code	合约代码
 	 *	
-	 *	返回值	买卖轧平以后的未完成手数
+	 *	返回值	买卖轧平以后的未完成数量
 	 */
 	virtual double getUndoneQty(const char* stdCode) = 0;
 
@@ -77,7 +77,7 @@ public:
 	 *	买入接口
 	 *	code	合约代码
 	 *	price	委托价格, 0为市价单
-	 *	qty		委托手数
+	 *	qty		委托数量
 	 *
 	 *	返回值	本地订单号数组: 一个买入操作可能会拆成最多3个订单发出
 	 */
@@ -87,7 +87,7 @@ public:
 	*	卖出接口
 	*	code	合约代码
 	*	price	委托价格, 0为市价单
-	*	qty		委托手数
+	*	qty		委托数量
 	*
 	*	返回值	本地订单号数组: 一个买入操作可能会拆成最多3个订单发出
 	*/
@@ -102,13 +102,13 @@ public:
 	virtual bool	cancel(uint32_t localid) = 0;
 
 	/*
-	 *	根据指定的方向和手数撤单
+	 *	根据指定的方向和数量撤单
 	 *	code 合约代码
-	 *	qty	最少撤单数量, 如果有多个委托, 那么按照时间顺序一个一个撤单, 直到撤销的手数大于等于qty
+	 *	qty	最少撤单数量, 如果有多个委托, 那么按照时间顺序一个一个撤单, 直到撤销的数量大于等于qty
 	 *	这个一般用不到, 所以传0的时候, 就是把全部买单或者卖单撤销
 	 *	isBuy 买单or卖单
 	 *	
-	 *	返回值 返回实际发送了撤单指令的手数
+	 *	返回值 返回实际发送了撤单指令的数量
 	 */
 	virtual OrderIDs cancel(const char* stdCode, bool isBuy, double qty = 0) = 0;
 
@@ -186,7 +186,7 @@ public:
 	 *	成交回报
 	 *	code	合约代码
 	 *	isBuy	买or卖
-	 *	vol		成交手数, 这里没有正负, 通过isBuy确定买入还是卖出
+	 *	vol		成交数量, 这里没有正负, 通过isBuy确定买入还是卖出
 	 *	price	成交价格
 	 */
 	virtual void on_trade(const char* stdCode, bool isBuy, double vol, double price) = 0;
@@ -196,7 +196,7 @@ public:
 	 *	localid	本地单号
 	 *	code	合约代码
 	 *	isBuy	买or卖
-	 *	leftover	剩余手数
+	 *	leftover	剩余数量
 	 *	price	委托价格
 	 *	isCanceled	是否已撤销
 	 */

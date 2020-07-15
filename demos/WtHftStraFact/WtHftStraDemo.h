@@ -49,6 +49,8 @@ private:
 	uint32_t		_count;
 	uint32_t		_secs;
 	int32_t			_offset;
+	uint32_t		_unit;
+	bool			_stock;
 
 	typedef std::unordered_set<uint32_t> IDSet;
 	IDSet			_orders;
@@ -56,10 +58,8 @@ private:
 
 	uint64_t		_last_entry_time;
 
-	typedef std::shared_ptr<std::thread> ThreadPtr;
-	ThreadPtr		_thrd;
-	bool			_terminated;
 	bool			_channel_ready;
 	uint32_t		_last_calc_time;
+	uint32_t		_cancel_cnt;
 };
 

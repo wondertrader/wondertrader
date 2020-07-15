@@ -4,16 +4,19 @@
 
 const char* FACT_NAME = "WtHftStraFact";
 
-IHftStrategyFact* createStrategyFact()
+extern "C"
 {
-	IHftStrategyFact* fact = new WtHftStraFact();
-	return fact;
-}
+	EXPORT_FLAG IHftStrategyFact* createStrategyFact()
+	{
+		IHftStrategyFact* fact = new WtHftStraFact();
+		return fact;
+	}
 
-void deleteStrategyFact(IHftStrategyFact* fact)
-{
-	if (fact != NULL)
-		delete fact;
+	EXPORT_FLAG void deleteStrategyFact(IHftStrategyFact* fact)
+	{
+		if (fact != NULL)
+			delete fact;
+	}
 }
 
 

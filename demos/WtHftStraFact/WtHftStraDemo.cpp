@@ -5,17 +5,19 @@
 #include "../Includes/WTSDataDef.hpp"
 #include "../Includes/WTSContractInfo.hpp"
 #include "../Share/TimeUtils.hpp"
+#include "../Share/decimal.h"
 
 extern const char* FACT_NAME;
 
 WtHftStraDemo::WtHftStraDemo(const char* id)
 	: HftStrategy(id)
 	, _last_tick(NULL)
-	, _terminated(false)
-	, _last_entry_time(0)
-	, _thrd(NULL)
+	, _last_entry_time(UINT64_MAX)
 	, _channel_ready(false)
 	, _last_calc_time(0)
+	, _stock(false)
+	, _unit(1)
+	, _cancel_cnt(0)
 {
 }
 
@@ -24,10 +26,6 @@ WtHftStraDemo::~WtHftStraDemo()
 {
 	if (_last_tick)
 		_last_tick->release();
-
-	_terminated = true;
-	if (_thrd)
-		_thrd->join();
 }
 
 const char* WtHftStraDemo::getName()
@@ -47,6 +45,9 @@ bool WtHftStraDemo::init(WTSVariant* cfg)
 	_count = cfg->getUInt32("count");
 	_secs = cfg->getUInt32("second");
 	_offset = cfg->getUInt32("offset");
+
+	_stock = cfg->getBoolean("stock");
+	_unit = _stock ? 100 : 1;
 
 	return true;
 }
@@ -78,7 +79,7 @@ void WtHftStraDemo::on_tick(IHftStraCtx* ctx, const char* code, WTSTickData* new
 
 	if (!_orders.empty())
 	{
-		//如果订单不为空，则进入订单管理逻辑
+		check_orders();
 		return;
 	}
 
@@ -92,16 +93,16 @@ void WtHftStraDemo::on_tick(IHftStraCtx* ctx, const char* code, WTSTickData* new
 	uint32_t curMin = newTick->actiontime() / 100000;	//actiontime是带毫秒的，要取得分钟，则需要除以10w
 	if (curMin > _last_calc_time)
 	{//如果spread上次计算的时候小于当前分钟，则重算spread
-		WTSKlineSlice* kline = ctx->stra_get_bars(code, "m5", 30);
-		if (kline)
-			kline->release();
+		//WTSKlineSlice* kline = ctx->stra_get_bars(code, "m5", 30);
+		//if (kline)
+		//	kline->release();
 
 		//重算晚了以后，更新计算时间
 		_last_calc_time = curMin;
 	}
 
 	//30秒内不重复计算
-	uint64_t now = (uint64_t)ctx->stra_get_date()*1000000000 + (uint64_t)ctx->stra_get_time()*100000 + ctx->stra_get_secs();
+	uint64_t now = TimeUtils::makeTime(ctx->stra_get_date(), ctx->stra_get_time() * 100000 + ctx->stra_get_secs());//(uint64_t)ctx->stra_get_date()*1000000000 + (uint64_t)ctx->stra_get_time()*100000 + ctx->stra_get_secs();
 	if(now - _last_entry_time <= 30*1000)
 	{
 		return;
@@ -133,7 +134,7 @@ void WtHftStraDemo::on_tick(IHftStraCtx* ctx, const char* code, WTSTickData* new
 		{//正向信号，且当前仓位小于等于0
 			//最新价+2跳下单
 			double targetPx = price + cInfo->getPriceTick() * _offset;
-			auto ids = ctx->stra_buy(code, targetPx, 1);
+			auto ids = ctx->stra_buy(code, targetPx, _unit);
 
 			_mtx_ords.lock();
 			for( auto localid : ids)
@@ -143,11 +144,11 @@ void WtHftStraDemo::on_tick(IHftStraCtx* ctx, const char* code, WTSTickData* new
 			_mtx_ords.unlock();
 			_last_entry_time = now;
 		}
-		else if (signal < 0 && curPos >= 0)
+		else if (signal < 0 && (curPos > 0 || (!_stock && curPos == 0)))
 		{//反向信号，且当前仓位大于等于0
 			//最新价-2跳下单
 			double targetPx = price - cInfo->getPriceTick()*_offset;
-			auto ids = ctx->stra_sell(code, targetPx, 1);
+			auto ids = ctx->stra_sell(code, targetPx, _unit);
 
 			_mtx_ords.lock();
 			for (auto localid : ids)
@@ -157,33 +158,25 @@ void WtHftStraDemo::on_tick(IHftStraCtx* ctx, const char* code, WTSTickData* new
 			_mtx_ords.unlock();
 			_last_entry_time = now;
 		}
-
-		if (_secs > 0 && _thrd == NULL)	//如果设置了超时时间，则启动检查现成
-		{
-			_thrd.reset(new std::thread(&WtHftStraDemo::check_orders, this));
-		}
 	}
 }
 
 void WtHftStraDemo::check_orders()
 {
-	while (!_terminated)
+	if (!_orders.empty() && _last_entry_time != UINT64_MAX)
 	{
-		if (!_orders.empty())
+		uint64_t now = TimeUtils::makeTime(_ctx->stra_get_date(), _ctx->stra_get_time() * 100000 + _ctx->stra_get_secs());
+		if (now - _last_entry_time >= _secs * 1000)	//如果超过一定时间没有成交完，则撤销
 		{
-			uint64_t now = TimeUtils::getLocalTimeNow();
-			if (now - _last_entry_time >= _secs * 1000)	//如果超过一定时间没有成交完，则撤销
+			_mtx_ords.lock();
+			for (auto localid : _orders)
 			{
-				_mtx_ords.lock();
-				for( auto localid : _orders)
-				{
-					_ctx->stra_cancel(localid);
-				}
-				_mtx_ords.unlock();
+				_ctx->stra_cancel(localid);
+				_cancel_cnt++;
+				_ctx->stra_log_text("cancelcnt -> %u", _cancel_cnt);
 			}
+			_mtx_ords.unlock();
 		}
-		
-		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	}
 }
 
@@ -214,11 +207,16 @@ void WtHftStraDemo::on_order(IHftStraCtx* ctx, uint32_t localid, const char* std
 	if (it == _orders.end())
 		return;
 
-	//如果已撤销或者剩余手数为0，则清除掉原有的id记录
+	//如果已撤销或者剩余数量为0，则清除掉原有的id记录
 	if(isCanceled || leftQty == 0)
 	{
 		_mtx_ords.lock();
 		_orders.erase(it);
+		if (_cancel_cnt > 0)
+		{
+			_cancel_cnt--;
+			_ctx->stra_log_text("cancelcnt -> %u", _cancel_cnt);
+		}
 		_mtx_ords.unlock();
 	}
 }
@@ -226,6 +224,23 @@ void WtHftStraDemo::on_order(IHftStraCtx* ctx, uint32_t localid, const char* std
 
 void WtHftStraDemo::on_channel_ready(IHftStraCtx* ctx)
 {
+	double undone = _ctx->stra_get_undone(_code.c_str());
+	if (!decimal::eq(undone, 0) && _orders.empty())
+	{
+		//这说明有未完成单不在监控之中，先撤掉
+		_ctx->stra_log_text("%s有不在管理中的未完成单 %f 手，全部撤销", _code.c_str(), undone);
+
+		bool isBuy = (undone > 0);
+		OrderIDs ids = _ctx->stra_cancel(_code.c_str(), isBuy, undone);
+		for (auto localid : ids)
+		{
+			_orders.insert(localid);
+		}
+		_cancel_cnt += ids.size();
+
+		_ctx->stra_log_text("cancelcnt -> %u", _cancel_cnt);
+	}
+
 	_channel_ready = true;
 }
 

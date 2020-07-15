@@ -32,6 +32,11 @@ public:
 		return now.time * 1000 + now.millitm;
 	}
 
+	static inline int64_t getLocalTimeNano(void)
+	{
+		return std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+	}
+
 	static inline std::string getLocalTime(bool bIncludeMilliSec = true)
 	{
 		timeb now;
@@ -272,6 +277,22 @@ public:
 
 		tm* newT = localtime(&ts);
 		return (newT->tm_year+1900)*10000 + (newT->tm_mon+1)*100 + newT->tm_mday;
+	}
+
+	static uint32_t getNextMinute(int32_t curTime, int32_t mins = 1)
+	{
+		int32_t curHour = curTime / 100;
+		int32_t curMin = curTime % 100;
+		int32_t totalMins = curHour * 60 + curMin;
+		totalMins += mins;
+
+		if (totalMins >= 1440)
+			totalMins -= 1440;
+		else if (totalMins < 0)
+			totalMins += 1440;
+
+		int32_t ret = (totalMins / 60) * 100 + totalMins % 60;
+		return (uint32_t)ret;
 	}
 
 	static uint32_t getNextMonth(uint32_t curMonth, int months = 1)
