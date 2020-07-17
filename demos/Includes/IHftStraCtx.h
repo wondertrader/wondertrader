@@ -36,7 +36,6 @@ public:
 	virtual void on_init() = 0;
 	virtual void on_tick(const char* code, WTSTickData* newTick) = 0;
 	virtual void on_bar(const char* code, const char* period, uint32_t times, WTSBarStruct* newBar){}
-	virtual void on_schedule(uint32_t uDate, uint32_t uTime) = 0;
 
 	//²ßÂÔ½Ó¿Ú
 	virtual bool		stra_cancel(uint32_t localid) = 0;
@@ -57,9 +56,13 @@ public:
 	virtual uint32_t stra_get_time() = 0;
 	virtual uint32_t stra_get_secs() = 0;
 
-	virtual void sub_ticks(const char* code) = 0;
+	virtual void stra_sub_ticks(const char* code) = 0;
 
 	virtual void stra_log_text(const char* fmt, ...) = 0;
+
+	virtual void stra_save_user_data(const char* key, const char* val) {}
+
+	virtual const char* stra_load_user_data(const char* key, const char* defVal = "") { return defVal; }
 
 protected:
 	std::string _name;
