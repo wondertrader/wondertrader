@@ -8,8 +8,9 @@
  * \brief 
  */
 #include "WtRtRunner.h"
-#include "PyCtaContext.h"
-#include "PySelContext.h"
+#include "ExpCtaContext.h"
+#include "ExpSelContext.h"
+#include "ExpHftContext.h"
 
 #include "../WtCore/WtHelper.h"
 #include "../WtCore/CtaStraContext.h"
@@ -36,10 +37,21 @@ WtRtRunner::WtRtRunner()
 	, _cb_cta_tick(NULL)
 	, _cb_cta_calc(NULL)
 	, _cb_cta_bar(NULL)
+
 	, _cb_sel_init(NULL)
 	, _cb_sel_tick(NULL)
 	, _cb_sel_calc(NULL)
 	, _cb_sel_bar(NULL)
+
+	, _cb_hft_init(NULL)
+	, _cb_hft_tick(NULL)
+	, _cb_hft_bar(NULL)
+	, _cb_hft_ord(NULL)
+	, _cb_hft_trd(NULL)
+	, _cb_hft_pos(NULL)
+	, _cb_hft_entrust(NULL)
+	, _cb_hft_chnl(NULL)
+
 	, _cb_evt(NULL)
 	, _is_hft(false)
 	, _is_sel(false)
@@ -86,10 +98,33 @@ void WtRtRunner::registerSelCallbacks(FuncStraInitCallback cbInit, FuncStraTickC
 	_cb_sel_bar = cbBar;
 }
 
+void WtRtRunner::registerHftCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraBarCallback cbBar, 
+	FuncHftChannelCallback cbChnl, FuncHftOrdCallback cbOrd, FuncHftTrdCallback cbTrd, FuncHftPosCallback cbPos, FuncHftEntrustCallback cbEntrust)
+{
+	_cb_hft_init = cbInit;
+	_cb_hft_tick = cbTick;
+	_cb_hft_bar = cbBar;
+
+	_cb_hft_chnl = cbChnl;
+	_cb_hft_ord = cbOrd;
+	_cb_hft_trd = cbTrd;
+	_cb_hft_pos = cbPos;
+	_cb_hft_entrust = cbEntrust;
+}
+
 uint32_t WtRtRunner::createCtaContext(const char* name)
 {
-	PyCtaContext* ctx = new PyCtaContext(&_cta_engine, name);
+	ExpCtaContext* ctx = new ExpCtaContext(&_cta_engine, name);
 	_cta_engine.addContext(CtaContextPtr(ctx));
+	return ctx->id();
+}
+
+uint32_t WtRtRunner::createHftContext(const char* name, const char* trader)
+{
+	ExpHftContext* ctx = new ExpHftContext(&_hft_engine, name);
+	_hft_engine.addContext(HftContextPtr(ctx));
+	TraderAdapterPtr trdPtr = _traders.getAdapter(trader);
+	ctx->setTrader(trdPtr.get());
 	return ctx->id();
 }
 
@@ -109,7 +144,7 @@ uint32_t WtRtRunner::createSelContext(const char* name, uint32_t date, uint32_t 
 	else
 		ptype = TPT_None;
 
-	PySelContext* ctx = new PySelContext(&_sel_engine, name);
+	ExpSelContext* ctx = new ExpSelContext(&_sel_engine, name);
 
 	_sel_engine.addContext(SelContextPtr(ctx), date, time, ptype, true, trdtpl, session);
 
@@ -121,41 +156,97 @@ CtaContextPtr WtRtRunner::getCtaContext(uint32_t id)
 	return _cta_engine.getContext(id);
 }
 
+HftContextPtr WtRtRunner::getHftContext(uint32_t id)
+{
+	return _hft_engine.getContext(id);
+}
+
 SelContextPtr WtRtRunner::getSelContext(uint32_t id)
 {
 	return _sel_engine.getContext(id);
 }
 
-void WtRtRunner::ctx_on_bar(uint32_t id, const char* code, const char* period, WTSBarStruct* newBar, bool isCta/* = true*/)
+void WtRtRunner::ctx_on_bar(uint32_t id, const char* stdCode, const char* period, WTSBarStruct* newBar, EngineType eType /* = ET_CTA */)
 {
-	if (_cb_cta_bar && isCta)
-		_cb_cta_bar(id, code, period, newBar);
-	else if(!isCta && _cb_sel_bar)
-		_cb_sel_bar(id, code, period, newBar);
+	switch (eType)
+	{
+	case ET_CTA: if (_cb_cta_bar) _cb_cta_bar(id, stdCode, period, newBar); break;
+	case ET_HFT: if (_cb_hft_bar) _cb_hft_bar(id, stdCode, period, newBar); break;
+	case ET_SEL: if (_cb_sel_bar) _cb_sel_bar(id, stdCode, period, newBar); break;
+	default:
+		break;
+	}
 }
 
-void WtRtRunner::ctx_on_calc(uint32_t id, bool isCta/* = true*/)
+void WtRtRunner::ctx_on_calc(uint32_t id, uint32_t curDate, uint32_t curTime, EngineType eType /* = ET_CTA */)
 {
-	if (_cb_cta_calc && isCta)
-		_cb_cta_calc(id);
-	else if (!isCta && _cb_sel_calc)
-		_cb_sel_calc(id);
+	switch (eType)
+	{
+	case ET_CTA: if (_cb_cta_calc) _cb_cta_calc(id, curDate, curTime); break;
+	case ET_SEL: if (_cb_sel_calc) _cb_sel_calc(id, curDate, curTime); break;
+	default:
+		break;
+	}
 }
 
-void WtRtRunner::ctx_on_init(uint32_t id, bool isCta/* = true*/)
+void WtRtRunner::ctx_on_init(uint32_t id, EngineType eType/* = ET_CTA*/)
 {
-	if (_cb_cta_init && isCta)
-		_cb_cta_init(id);
-	else if (!isCta && _cb_sel_init)
-		_cb_sel_init(id);
+	switch (eType)
+	{
+	case ET_CTA: if (_cb_cta_init) _cb_cta_init(id); break;
+	case ET_HFT: if (_cb_hft_init) _cb_hft_init(id); break;
+	case ET_SEL: if (_cb_sel_init) _cb_sel_init(id); break;
+	default:
+		break;
+	}
 }
 
-void WtRtRunner::ctx_on_tick(uint32_t id, const char* stdCode, WTSTickData* newTick, bool isCta/* = true*/)
+void WtRtRunner::ctx_on_tick(uint32_t id, const char* stdCode, WTSTickData* newTick, EngineType eType /* = ET_CTA */)
 {
-	if (_cb_cta_tick && isCta)
-		_cb_cta_tick(id, stdCode, &newTick->getTickStruct());
-	else if (!isCta && _cb_sel_tick)
-		_cb_sel_tick(id, stdCode, &newTick->getTickStruct());
+	switch (eType)
+	{
+	case ET_CTA: if (_cb_cta_tick) _cb_cta_tick(id, stdCode, &newTick->getTickStruct()); break;
+	case ET_HFT: if (_cb_hft_tick) _cb_hft_tick(id, stdCode, &newTick->getTickStruct()); break;
+	case ET_SEL: if (_cb_sel_tick) _cb_sel_tick(id, stdCode, &newTick->getTickStruct()); break;
+	default:
+		break;
+	}
+}
+
+void WtRtRunner::hft_on_channel_lost(uint32_t cHandle, const char* trader)
+{
+	if (_cb_hft_chnl)
+		_cb_hft_chnl(cHandle, trader, CHNL_EVENT_LOST);
+}
+
+void WtRtRunner::hft_on_channel_ready(uint32_t cHandle, const char* trader)
+{
+	if (_cb_hft_chnl)
+		_cb_hft_chnl(cHandle, trader, CHNL_EVENT_READY);
+}
+
+void WtRtRunner::hft_on_entrust(uint32_t cHandle, WtUInt32 localid, const char* stdCode, bool bSuccess, const char* message)
+{
+	if (_cb_hft_entrust)
+		_cb_hft_entrust(cHandle, localid, stdCode, bSuccess, message);
+}
+
+void WtRtRunner::hft_on_order(uint32_t cHandle, WtUInt32 localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled)
+{
+	if (_cb_hft_ord)
+		_cb_hft_ord(cHandle, localid, stdCode, isBuy, totalQty, leftQty, price, isCanceled);
+}
+
+void WtRtRunner::hft_on_position(uint32_t cHandle, const char* stdCode, bool isLong, double prevol, double preavail, double newvol, double newavail)
+{
+	if (_cb_hft_pos)
+		_cb_hft_pos(cHandle, stdCode, isLong, prevol, preavail, newvol, newavail);
+}
+
+void WtRtRunner::hft_on_trade(uint32_t cHandle, const char* stdCode, bool isBuy, double vol, double price)
+{
+	if (_cb_hft_trd)
+		_cb_hft_trd(cHandle, stdCode, isBuy, vol, price);
 }
 
 bool WtRtRunner::config(const char* cfgFile)

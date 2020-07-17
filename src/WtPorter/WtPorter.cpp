@@ -119,6 +119,12 @@ void register_sel_callbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cb
 	getRunner().registerSelCallbacks(cbInit, cbTick, cbCalc, cbBar);
 }
 
+void register_hft_callbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraBarCallback cbBar, 
+	FuncHftChannelCallback cbChnl, FuncHftOrdCallback cbOrd, FuncHftTrdCallback cbTrd, FuncHftPosCallback cbPos, FuncHftEntrustCallback cbEntrust)
+{
+	getRunner().registerHftCallbacks(cbInit, cbTick, cbBar, cbChnl, cbOrd, cbTrd, cbPos, cbEntrust);
+}
+
 void init_porter(const char* logProfile)
 {
 	static bool inited = false;
@@ -208,50 +214,50 @@ CtxHandler create_cta_context(const char* name)
 	return getRunner().createCtaContext(name);
 }
 
-void cta_enter_long(CtxHandler cHandle, const char* code, double qty, const char* userTag, double limitprice, double stopprice)
+void cta_enter_long(CtxHandler cHandle, const char* stdCode, double qty, const char* userTag, double limitprice, double stopprice)
 {
 	CtaContextPtr ctx = getRunner().getCtaContext(cHandle);
 	if (ctx == NULL)
 		return;
 
-	ctx->stra_enter_long(code, qty, userTag, limitprice, stopprice);
+	ctx->stra_enter_long(stdCode, qty, userTag, limitprice, stopprice);
 }
 
-void cta_exit_long(CtxHandler cHandle, const char* code, double qty, const char* userTag, double limitprice, double stopprice)
+void cta_exit_long(CtxHandler cHandle, const char* stdCode, double qty, const char* userTag, double limitprice, double stopprice)
 {
 	CtaContextPtr ctx = getRunner().getCtaContext(cHandle);
 	if (ctx == NULL)
 		return;
 
-	ctx->stra_exit_long(code, qty, userTag, limitprice, stopprice);
+	ctx->stra_exit_long(stdCode, qty, userTag, limitprice, stopprice);
 }
 
-void cta_enter_short(CtxHandler cHandle, const char* code, double qty, const char* userTag, double limitprice, double stopprice)
+void cta_enter_short(CtxHandler cHandle, const char* stdCode, double qty, const char* userTag, double limitprice, double stopprice)
 {
 	CtaContextPtr ctx = getRunner().getCtaContext(cHandle);
 	if (ctx == NULL)
 		return;
 
-	ctx->stra_enter_short(code, qty, userTag, limitprice, stopprice);
+	ctx->stra_enter_short(stdCode, qty, userTag, limitprice, stopprice);
 }
 
-void cta_exit_short(CtxHandler cHandle, const char* code, double qty, const char* userTag, double limitprice, double stopprice)
+void cta_exit_short(CtxHandler cHandle, const char* stdCode, double qty, const char* userTag, double limitprice, double stopprice)
 {
 	CtaContextPtr ctx = getRunner().getCtaContext(cHandle);
 	if (ctx == NULL)
 		return;
 
-	ctx->stra_exit_short(code, qty, userTag, limitprice, stopprice);
+	ctx->stra_exit_short(stdCode, qty, userTag, limitprice, stopprice);
 }
 
-WtUInt32 cta_get_bars(CtxHandler cHandle, const char* code, const char* period, unsigned int barCnt, bool isMain, FuncGetBarsCallback cb)
+WtUInt32 cta_get_bars(CtxHandler cHandle, const char* stdCode, const char* period, unsigned int barCnt, bool isMain, FuncGetBarsCallback cb)
 {
 	CtaContextPtr ctx = getRunner().getCtaContext(cHandle);
 	if (ctx == NULL)
 		return 0;
 	try
 	{
-		WTSKlineSlice* kData = ctx->stra_get_bars(code, period, barCnt, isMain);
+		WTSKlineSlice* kData = ctx->stra_get_bars(stdCode, period, barCnt, isMain);
 		if (kData)
 		{
 			//printf("K线条数%u\r\n", kData->size());
@@ -260,12 +266,12 @@ WtUInt32 cta_get_bars(CtxHandler cHandle, const char* code, const char* period, 
 			for (int32_t idx = 0; idx < kData->size() && left > 0; idx++, left--)
 			{
 				WTSBarStruct* curBar = kData->at(idx);
-				cb(cHandle, code, period, curBar, false);
+				cb(cHandle, stdCode, period, curBar, false);
 				reaCnt += 1;
 			}
 
 			//printf("数据已读完\r\n");
-			cb(cHandle, code, period, NULL, true);
+			cb(cHandle, stdCode, period, NULL, true);
 
 			kData->release();
 			return reaCnt;
@@ -273,26 +279,26 @@ WtUInt32 cta_get_bars(CtxHandler cHandle, const char* code, const char* period, 
 		else
 		{
 			//printf("K线条数0\r\n");
-			cb(cHandle, code, period, NULL, true);
+			cb(cHandle, stdCode, period, NULL, true);
 			return 0;
 		}
 	}
 	catch (...)
 	{
 		printf("K线读取异常\r\n");
-		cb(cHandle, code, period, NULL, true);
+		cb(cHandle, stdCode, period, NULL, true);
 		return 0;
 	}
 }
 
-WtUInt32	cta_get_ticks(CtxHandler cHandle, const char* code, unsigned int tickCnt, bool isMain, FuncGetTicksCallback cb)
+WtUInt32	cta_get_ticks(CtxHandler cHandle, const char* stdCode, unsigned int tickCnt, bool isMain, FuncGetTicksCallback cb)
 {
 	CtaContextPtr ctx = getRunner().getCtaContext(cHandle);
 	if (ctx == NULL)
 		return 0;
 	try
 	{
-		WTSTickSlice* tData = ctx->stra_get_ticks(code, tickCnt);
+		WTSTickSlice* tData = ctx->stra_get_ticks(stdCode, tickCnt);
 		if (tData)
 		{
 			//printf("K线条数%u\r\n", kData->size());
@@ -301,12 +307,12 @@ WtUInt32	cta_get_ticks(CtxHandler cHandle, const char* code, unsigned int tickCn
 			for (uint32_t idx = 0; idx < tData->size() && left > 0; idx++, left--)
 			{
 				WTSTickStruct* curTick = (WTSTickStruct*)tData->at(idx);
-				cb(cHandle, code, curTick, false);
+				cb(cHandle, stdCode, curTick, false);
 				reaCnt += 1;
 			}
 
 			//printf("数据已读完\r\n");
-			cb(cHandle, code, NULL, true);
+			cb(cHandle, stdCode, NULL, true);
 
 			tData->release();
 			return reaCnt;
@@ -314,113 +320,113 @@ WtUInt32	cta_get_ticks(CtxHandler cHandle, const char* code, unsigned int tickCn
 		else
 		{
 			//printf("K线条数0\r\n");
-			cb(cHandle, code, NULL, true);
+			cb(cHandle, stdCode, NULL, true);
 			return 0;
 		}
 	}
 	catch (...)
 	{
 		printf("tick读取异常\r\n");
-		cb(cHandle, code, NULL, true);
+		cb(cHandle, stdCode, NULL, true);
 		return 0;
 	}
 }
 
-double cta_get_position_profit(CtxHandler cHandle, const char* code)
+double cta_get_position_profit(CtxHandler cHandle, const char* stdCode)
 {
 	CtaContextPtr ctx = getRunner().getCtaContext(cHandle);
 	if (ctx == NULL)
 		return 0;
 
-	return ctx->stra_get_position_profit(code);
+	return ctx->stra_get_position_profit(stdCode);
 }
 
-WtUInt64 cta_get_detail_entertime(CtxHandler cHandle, const char* code, const char* openTag)
+WtUInt64 cta_get_detail_entertime(CtxHandler cHandle, const char* stdCode, const char* openTag)
 {
 	CtaContextPtr ctx = getRunner().getCtaContext(cHandle);
 	if (ctx == NULL)
 		return 0;
 
-	return ctx->stra_get_detail_entertime(code, openTag);
+	return ctx->stra_get_detail_entertime(stdCode, openTag);
 }
 
-double cta_get_detail_cost(CtxHandler cHandle, const char* code, const char* openTag)
+double cta_get_detail_cost(CtxHandler cHandle, const char* stdCode, const char* openTag)
 {
 	CtaContextPtr ctx = getRunner().getCtaContext(cHandle);
 	if (ctx == NULL)
 		return 0;
 
-	return ctx->stra_get_detail_cost(code, openTag);
+	return ctx->stra_get_detail_cost(stdCode, openTag);
 }
 
-double cta_get_detail_profit(CtxHandler cHandle, const char* code, const char* openTag, int flag)
+double cta_get_detail_profit(CtxHandler cHandle, const char* stdCode, const char* openTag, int flag)
 {
 	CtaContextPtr ctx = getRunner().getCtaContext(cHandle);
 	if (ctx == NULL)
 		return 0;
 
-	return ctx->stra_get_detail_profit(code, openTag, flag);
+	return ctx->stra_get_detail_profit(stdCode, openTag, flag);
 }
 
-double cta_get_position_avgpx(CtxHandler cHandle, const char* code)
+double cta_get_position_avgpx(CtxHandler cHandle, const char* stdCode)
 {
 	CtaContextPtr ctx = getRunner().getCtaContext(cHandle);
 	if (ctx == NULL)
 		return 0;
 
-	return ctx->stra_get_position_avgpx(code);
+	return ctx->stra_get_position_avgpx(stdCode);
 }
 
-double cta_get_position(CtxHandler cHandle, const char* code, const char* openTag)
+double cta_get_position(CtxHandler cHandle, const char* stdCode, const char* openTag)
 {
 	CtaContextPtr ctx = getRunner().getCtaContext(cHandle);
 	if (ctx == NULL)
 		return 0;
 
-	return ctx->stra_get_position(code, openTag);
+	return ctx->stra_get_position(stdCode, openTag);
 }
 
 
-void cta_set_position(CtxHandler cHandle, const char* code, double qty, const char* userTag, double limitprice, double stopprice)
+void cta_set_position(CtxHandler cHandle, const char* stdCode, double qty, const char* userTag, double limitprice, double stopprice)
 {
 	CtaContextPtr ctx = getRunner().getCtaContext(cHandle);
 	if (ctx == NULL)
 		return;
 
-	ctx->stra_set_position(code, qty, userTag, limitprice, stopprice);
+	ctx->stra_set_position(stdCode, qty, userTag, limitprice, stopprice);
 }
 
 
-WtUInt64 cta_get_first_entertime(CtxHandler cHandle, const char* code)
+WtUInt64 cta_get_first_entertime(CtxHandler cHandle, const char* stdCode)
 {
 	CtaContextPtr ctx = getRunner().getCtaContext(cHandle);
 	if (ctx == NULL)
 		return 0;
 
-	return ctx->stra_get_first_entertime(code);
+	return ctx->stra_get_first_entertime(stdCode);
 }
 
-WtUInt64 cta_get_last_entertime(CtxHandler cHandle, const char* code)
+WtUInt64 cta_get_last_entertime(CtxHandler cHandle, const char* stdCode)
 {
 	CtaContextPtr ctx = getRunner().getCtaContext(cHandle);
 	if (ctx == NULL)
 		return 0;
 
-	return ctx->stra_get_last_entertime(code);
+	return ctx->stra_get_last_entertime(stdCode);
 }
 
-double cta_get_last_enterprice(CtxHandler cHandle, const char* code)
+double cta_get_last_enterprice(CtxHandler cHandle, const char* stdCode)
 {
 	CtaContextPtr ctx = getRunner().getCtaContext(cHandle);
 	if (ctx == NULL)
 		return 0;
 
-	return ctx->stra_get_last_enterprice(code);
+	return ctx->stra_get_last_enterprice(stdCode);
 }
 
-double cta_get_price(const char* code)
+double cta_get_price(const char* stdCode)
 {
-	return getRunner().getEngine()->get_cur_price(code);
+	return getRunner().getEngine()->get_cur_price(stdCode);
 }
 
 WtUInt32 cta_get_date()
@@ -496,9 +502,9 @@ void sel_log_text(CtxHandler cHandle, const char* message)
 	ctx->stra_log_text(message);
 }
 
-double sel_get_price(const char* code)
+double sel_get_price(const char* stdCode)
 {
-	return getRunner().getEngine()->get_cur_price(code);
+	return getRunner().getEngine()->get_cur_price(stdCode);
 }
 
 WtUInt32 sel_get_date()
@@ -511,23 +517,23 @@ WtUInt32 sel_get_time()
 	return getRunner().getEngine()->get_min_time();
 }
 
-double sel_get_position(CtxHandler cHandle, const char* code, const char* openTag)
+double sel_get_position(CtxHandler cHandle, const char* stdCode, const char* openTag)
 {
 	SelContextPtr ctx = getRunner().getSelContext(cHandle);
 	if (ctx == NULL)
 		return 0;
 
-	return ctx->stra_get_position(code, openTag);
+	return ctx->stra_get_position(stdCode, openTag);
 }
 
-WtUInt32 sel_get_bars(CtxHandler cHandle, const char* code, const char* period, unsigned int barCnt, FuncGetBarsCallback cb)
+WtUInt32 sel_get_bars(CtxHandler cHandle, const char* stdCode, const char* period, unsigned int barCnt, FuncGetBarsCallback cb)
 {
 	SelContextPtr ctx = getRunner().getSelContext(cHandle);
 	if (ctx == NULL)
 		return 0;
 	try
 	{
-		WTSKlineSlice* kData = ctx->stra_get_bars(code, period, barCnt);
+		WTSKlineSlice* kData = ctx->stra_get_bars(stdCode, period, barCnt);
 		if (kData)
 		{
 			//printf("K线条数%u\r\n", kData->size());
@@ -536,12 +542,12 @@ WtUInt32 sel_get_bars(CtxHandler cHandle, const char* code, const char* period, 
 			for (int32_t idx = 0; idx < kData->size() && left > 0; idx++, left--)
 			{
 				WTSBarStruct* curBar = kData->at(idx);
-				cb(cHandle, code, period, curBar, false);
+				cb(cHandle, stdCode, period, curBar, false);
 				reaCnt += 1;
 			}
 
 			//printf("数据已读完\r\n");
-			cb(cHandle, code, period, NULL, true);
+			cb(cHandle, stdCode, period, NULL, true);
 
 			kData->release();
 			return reaCnt;
@@ -549,36 +555,36 @@ WtUInt32 sel_get_bars(CtxHandler cHandle, const char* code, const char* period, 
 		else
 		{
 			//printf("K线条数0\r\n");
-			cb(cHandle, code, period, NULL, true);
+			cb(cHandle, stdCode, period, NULL, true);
 			return 0;
 		}
 	}
 	catch (...)
 	{
 		printf("K线读取异常\r\n");
-		cb(cHandle, code, period, NULL, true);
+		cb(cHandle, stdCode, period, NULL, true);
 		return 0;
 	}
 }
 
-void sel_set_position(CtxHandler cHandle, const char* code, double qty, const char* userTag)
+void sel_set_position(CtxHandler cHandle, const char* stdCode, double qty, const char* userTag)
 {
 	SelContextPtr ctx = getRunner().getSelContext(cHandle);
 	if (ctx == NULL)
 		return;
 
 	//多因子引擎，限价和止价都无效
-	ctx->stra_set_position(code, qty, userTag);
+	ctx->stra_set_position(stdCode, qty, userTag);
 }
 
-WtUInt32	sel_get_ticks(CtxHandler cHandle, const char* code, unsigned int tickCnt, bool isMain, FuncGetTicksCallback cb)
+WtUInt32	sel_get_ticks(CtxHandler cHandle, const char* stdCode, unsigned int tickCnt, bool isMain, FuncGetTicksCallback cb)
 {
 	SelContextPtr ctx = getRunner().getSelContext(cHandle);
 	if (ctx == NULL)
 		return 0;
 	try
 	{
-		WTSTickSlice* tData = ctx->stra_get_ticks(code, tickCnt);
+		WTSTickSlice* tData = ctx->stra_get_ticks(stdCode, tickCnt);
 		if (tData)
 		{
 			//printf("K线条数%u\r\n", kData->size());
@@ -587,12 +593,12 @@ WtUInt32	sel_get_ticks(CtxHandler cHandle, const char* code, unsigned int tickCn
 			for (uint32_t idx = 0; idx < tData->size() && left > 0; idx++, left--)
 			{
 				WTSTickStruct* curTick = (WTSTickStruct*)tData->at(idx);
-				cb(cHandle, code, curTick, false);
+				cb(cHandle, stdCode, curTick, false);
 				reaCnt += 1;
 			}
 
 			//printf("数据已读完\r\n");
-			cb(cHandle, code, NULL, true);
+			cb(cHandle, stdCode, NULL, true);
 
 			tData->release();
 			return reaCnt;
@@ -600,15 +606,246 @@ WtUInt32	sel_get_ticks(CtxHandler cHandle, const char* code, unsigned int tickCn
 		else
 		{
 			//printf("K线条数0\r\n");
-			cb(cHandle, code, NULL, true);
+			cb(cHandle, stdCode, NULL, true);
 			return 0;
 		}
 	}
 	catch (...)
 	{
 		printf("tick读取异常\r\n");
-		cb(cHandle, code, NULL, true);
+		cb(cHandle, stdCode, NULL, true);
 		return 0;
 	}
 }
 #pragma endregion
+
+#pragma region "HFT策略接口"
+CtxHandler create_hft_context(const char* name, const char* trader)
+{
+	return getRunner().createHftContext(name, trader);
+}
+
+double hft_get_position(CtxHandler cHandle, const char* stdCode)
+{
+	HftContextPtr ctx = getRunner().getHftContext(cHandle);
+	if (ctx == NULL)
+		return 0;
+
+	return ctx->stra_get_position(stdCode);
+}
+
+double hft_get_undone(CtxHandler cHandle, const char* stdCode)
+{
+	HftContextPtr ctx = getRunner().getHftContext(cHandle);
+	if (ctx == NULL)
+		return 0;
+
+	return ctx->stra_get_undone(stdCode);
+}
+
+double hft_get_price(const char* stdCode)
+{
+	return getRunner().getEngine()->get_cur_price(stdCode);
+}
+
+WtUInt32 hft_get_date()
+{
+	return getRunner().getEngine()->get_date();
+}
+
+WtUInt32 hft_get_time()
+{
+	return getRunner().getEngine()->get_raw_time();
+}
+
+WtUInt32 hft_get_secs()
+{
+	return getRunner().getEngine()->get_secs();
+}
+
+WtUInt32 hft_get_bars(CtxHandler cHandle, const char* stdCode, const char* period, unsigned int barCnt, FuncGetBarsCallback cb)
+{
+	HftContextPtr ctx = getRunner().getHftContext(cHandle);
+	if (ctx == NULL)
+		return 0;
+
+	try
+	{
+		WTSKlineSlice* kData = ctx->stra_get_bars(stdCode, period, barCnt);
+		if (kData)
+		{
+			//printf("K线条数%u\r\n", kData->size());
+			uint32_t left = barCnt + 1;
+			uint32_t reaCnt = 0;
+			for (int32_t idx = 0; idx < kData->size() && left > 0; idx++, left--)
+			{
+				WTSBarStruct* curBar = kData->at(idx);
+				cb(cHandle, stdCode, period, curBar, false);
+				reaCnt += 1;
+			}
+
+			//printf("数据已读完\r\n");
+			cb(cHandle, stdCode, period, NULL, true);
+
+			kData->release();
+			return reaCnt;
+		}
+		else
+		{
+			//printf("K线条数0\r\n");
+			cb(cHandle, stdCode, period, NULL, true);
+			return 0;
+		}
+	}
+	catch (...)
+	{
+		cb(cHandle, stdCode, period, NULL, true);
+		return 0;
+	}
+}
+
+WtUInt32 hft_get_ticks(CtxHandler cHandle, const char* stdCode, unsigned int tickCnt, bool isMain, FuncGetTicksCallback cb)
+{
+	HftContextPtr ctx = getRunner().getHftContext(cHandle);
+	if (ctx == NULL)
+		return 0;
+	try
+	{
+		WTSTickSlice* tData = ctx->stra_get_ticks(stdCode, tickCnt);
+		if (tData)
+		{
+			//printf("K线条数%u\r\n", kData->size());
+			uint32_t left = tickCnt + 1;
+			uint32_t reaCnt = 0;
+			for (uint32_t idx = 0; idx < tData->size() && left > 0; idx++, left--)
+			{
+				WTSTickStruct* curTick = (WTSTickStruct*)tData->at(idx);
+				cb(cHandle, stdCode, curTick, false);
+				reaCnt += 1;
+			}
+
+			//printf("数据已读完\r\n");
+			cb(cHandle, stdCode, NULL, true);
+
+			tData->release();
+			return reaCnt;
+		}
+		else
+		{
+			//printf("K线条数0\r\n");
+			cb(cHandle, stdCode, NULL, true);
+			return 0;
+		}
+	}
+	catch (...)
+	{
+		cb(cHandle, stdCode, NULL, true);
+		return 0;
+	}
+}
+
+void hft_log_text(CtxHandler cHandle, const char* message)
+{
+	HftContextPtr ctx = getRunner().getHftContext(cHandle);
+	if (ctx == NULL)
+		return;
+
+	ctx->stra_log_text(message);
+}
+
+void hft_sub_ticks(CtxHandler cHandle, const char* stdCode)
+{
+	HftContextPtr ctx = getRunner().getHftContext(cHandle);
+	if (ctx == NULL)
+		return;
+
+	ctx->stra_sub_ticks(stdCode);
+}
+
+bool hft_cancel(CtxHandler cHandle, WtUInt32 localid)
+{
+	HftContextPtr ctx = getRunner().getHftContext(cHandle);
+	if (ctx == NULL)
+		return false;
+
+	return ctx->stra_cancel(localid);
+}
+
+WtString hft_cancel_all(CtxHandler cHandle, const char* stdCode, bool isBuy)
+{
+	HftContextPtr ctx = getRunner().getHftContext(cHandle);
+	if (ctx == NULL)
+		return "";
+
+	static std::string ret;
+
+	std::stringstream ss;
+	OrderIDs ids = ctx->stra_cancel(stdCode, isBuy, DBL_MAX);
+	for(uint32_t localid : ids)
+	{
+		ss << localid << ",";
+	}
+
+	ret = ss.str();
+	ret = ret.substr(0, ret.size() - 1);
+	return ret.c_str();
+}
+
+WtString hft_buy(CtxHandler cHandle, const char* stdCode, double price, double qty)
+{
+	HftContextPtr ctx = getRunner().getHftContext(cHandle);
+	if (ctx == NULL)
+		return "";
+
+	static std::string ret;
+
+	std::stringstream ss;
+	OrderIDs ids = ctx->stra_buy(stdCode, price, qty);
+	for (uint32_t localid : ids)
+	{
+		ss << localid << ",";
+	}
+
+	ret = ss.str();
+	ret = ret.substr(0, ret.size() - 1);
+	return ret.c_str();
+}
+
+WtString hft_sell(CtxHandler cHandle, const char* stdCode, double price, double qty)
+{
+	HftContextPtr ctx = getRunner().getHftContext(cHandle);
+	if (ctx == NULL)
+		return "";
+
+	static std::string ret;
+
+	std::stringstream ss;
+	OrderIDs ids = ctx->stra_sell(stdCode, price, qty);
+	for (uint32_t localid : ids)
+	{
+		ss << localid << ",";
+	}
+
+	ret = ss.str();
+	ret = ret.substr(0, ret.size() - 1);
+	return ret.c_str();
+}
+
+void hft_save_userdata(CtxHandler cHandle, const char* key, const char* val)
+{
+	HftContextPtr ctx = getRunner().getHftContext(cHandle);
+	if (ctx == NULL)
+		return;
+
+	ctx->stra_save_user_data(key, val);
+}
+
+WtString hft_load_userdata(CtxHandler cHandle, const char* key, const char* defVal)
+{
+	HftContextPtr ctx = getRunner().getHftContext(cHandle);
+	if (ctx == NULL)
+		return defVal;
+
+	return ctx->stra_load_user_data(key, defVal);
+}
+#pragma endregion "HFT策略接口"

@@ -3,11 +3,11 @@
 
 USING_NS_OTP;
 
-class PySelContext : public SelStraBaseCtx
+class ExpSelContext : public SelStraBaseCtx
 {
 public:
-	PySelContext(WtSelEngine* env, const char* name);
-	virtual ~PySelContext();
+	ExpSelContext(WtSelEngine* env, const char* name);
+	virtual ~ExpSelContext();
 
 public:
 	virtual void on_init() override;

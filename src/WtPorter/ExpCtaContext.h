@@ -1,5 +1,5 @@
 /*!
- * \file PyCtaMocker.h
+ * \file PyCtaContext.h
  * \project	WonderTrader
  *
  * \author Wesley
@@ -8,15 +8,15 @@
  * \brief 
  */
 #pragma once
-#include "../WtBtCore/CtaMocker.h"
+#include "../WtCore/CtaStraBaseCtx.h"
 
 USING_NS_OTP;
 
-class PyCtaMocker : public CtaMocker
+class ExpCtaContext : public CtaStraBaseCtx
 {
 public:
-	PyCtaMocker(HisDataReplayer* replayer, const char* name);
-	virtual ~PyCtaMocker();
+	ExpCtaContext(WtCtaEngine* env, const char* name);
+	virtual ~ExpCtaContext();
 
 public:
 	virtual void on_init() override;

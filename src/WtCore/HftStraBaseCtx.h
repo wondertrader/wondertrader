@@ -37,8 +37,6 @@ public:
 
 	virtual void on_bar(const char* code, const char* period, uint32_t times, WTSBarStruct* newBar) override;
 
-	virtual void on_schedule(uint32_t uDate, uint32_t uTime) override;
-
 	virtual bool stra_cancel(uint32_t localid) override;
 
 	virtual OrderIDs stra_cancel(const char* code, bool isBuy, double qty) override;
@@ -65,7 +63,11 @@ public:
 	virtual uint32_t stra_get_time() override;
 	virtual uint32_t stra_get_secs() override;
 
-	virtual void sub_ticks(const char* code) override;
+	virtual void stra_sub_ticks(const char* code) override;
+
+	virtual void stra_save_user_data(const char* key, const char* val) override;
+
+	virtual const char* stra_load_user_data(const char* key, const char* defVal = "") override;
 
 	//////////////////////////////////////////////////////////////////////////
 	virtual void on_trade(const char* stdCode, bool isBuy, double vol, double price) override;
@@ -83,12 +85,20 @@ public:
 protected:
 	const char* get_inner_code(const char* stdCode);
 
-private:
+	void	load_userdata();
+	void	save_userdata();
+
+protected:
 	uint32_t		_context_id;
 	WtHftEngine*	_engine;
 	TraderAdapter*	_trader;
 
 	std::unordered_map<std::string, std::string> _code_map;
+
+	//用户数据
+	typedef std::unordered_map<std::string, std::string> StringHashMap;
+	StringHashMap	_user_datas;
+	bool			_ud_modified;
 };
 
 NS_OTP_END

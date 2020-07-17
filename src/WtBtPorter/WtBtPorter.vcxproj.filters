@@ -21,13 +21,16 @@
     <ClCompile Include="WtBtRunner.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="PyCtaMocker.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="..\Common\mdump.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="PySelMocker.cpp">
+    <ClCompile Include="ExpSelMocker.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ExpCtaMocker.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ExpHftMocker.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -41,13 +44,16 @@
     <ClInclude Include="WtBtRunner.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="PyCtaMocker.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="..\Common\mdump.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="PySelMocker.h">
+    <ClInclude Include="ExpSelMocker.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ExpCtaMocker.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ExpHftMocker.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

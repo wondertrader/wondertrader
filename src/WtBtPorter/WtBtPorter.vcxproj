@@ -189,16 +189,18 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Common\mdump.cpp" />
-    <ClCompile Include="PyCtaMocker.cpp" />
-    <ClCompile Include="PySelMocker.cpp" />
+    <ClCompile Include="ExpCtaMocker.cpp" />
+    <ClCompile Include="ExpHftMocker.cpp" />
+    <ClCompile Include="ExpSelMocker.cpp" />
     <ClCompile Include="WtBtPorter.cpp" />
     <ClCompile Include="WtBtRunner.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Common\mdump.h" />
+    <ClInclude Include="ExpHftMocker.h" />
     <ClInclude Include="PorterDefs.h" />
-    <ClInclude Include="PyCtaMocker.h" />
-    <ClInclude Include="PySelMocker.h" />
+    <ClInclude Include="ExpCtaMocker.h" />
+    <ClInclude Include="ExpSelMocker.h" />
     <ClInclude Include="WtBtPorter.h" />
     <ClInclude Include="WtBtRunner.h" />
   </ItemGroup>

@@ -30,8 +30,6 @@ public:
 	virtual void on_tick(const char* code, WTSTickData* newTick) override;
 
 	virtual void on_bar(const char* code, const char* period, uint32_t times, WTSBarStruct* newBar) override;
-	
-	virtual void on_schedule(uint32_t uDate, uint32_t uTime) override;
 
 	virtual void on_trade(const char* stdCode, bool isBuy, double vol, double price) override;
 

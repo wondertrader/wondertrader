@@ -131,11 +131,12 @@ void WtHftEngine::on_bar(const char* stdCode, const char* period, uint32_t times
 
 void WtHftEngine::on_minute_end(uint32_t curDate, uint32_t curTime)
 {
-	for(auto& cit : _ctx_map)
-	{
-		HftContextPtr& ctx = cit.second;
-		ctx->on_schedule(curDate, curTime);
-	}
+	//已去掉高频策略的on_schedule
+	//for(auto& cit : _ctx_map)
+	//{
+	//	HftContextPtr& ctx = cit.second;
+	//	ctx->on_schedule(curDate, curTime);
+	//}
 }
 
 void WtHftEngine::addContext(HftContextPtr ctx)

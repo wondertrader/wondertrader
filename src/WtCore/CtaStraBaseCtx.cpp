@@ -14,6 +14,7 @@
 #include <exception>
 #include <rapidjson/document.h>
 #include <rapidjson/prettywriter.h>
+namespace rj = rapidjson;
 
 #include "../Share/StrUtil.hpp"
 #include "../Share/StdUtils.hpp"
@@ -24,8 +25,6 @@
 #include "../Share/CodeHelper.hpp"
 
 #include "../WTSTools/WTSLogger.h"
-
-namespace rj = rapidjson;
 
 const char* CMP_ALG_NAMES[] =
 {

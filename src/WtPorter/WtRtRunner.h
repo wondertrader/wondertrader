@@ -35,6 +35,13 @@ NS_OTP_END
 
 USING_NS_OTP;
 
+typedef enum tagEngineType
+{
+	ET_CTA = 999,	//CTA引擎	
+	ET_HFT,			//高频引擎
+	ET_SEL			//选股引擎
+} EngineType;
+
 class WtRtRunner : public IEngineEvtListener
 {
 public:
@@ -55,14 +62,18 @@ public:
 
 	void registerCtaCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar);
 	void registerSelCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar);
+	void registerHftCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraBarCallback cbBar,
+		FuncHftChannelCallback cbChnl, FuncHftOrdCallback cbOrd, FuncHftTrdCallback cbTrd, FuncHftPosCallback cbPos, FuncHftEntrustCallback cbEntrust);
 
 	void registerEvtCallback(FuncEventCallback cbEvt);
 
 	uint32_t		createCtaContext(const char* name);
+	uint32_t		createHftContext(const char* name, const char* trader);
 	uint32_t		createSelContext(const char* name, uint32_t date, uint32_t time, const char* period, const char* trdtpl = "CHINA", const char* session="TRADING");
 
 	CtaContextPtr	getCtaContext(uint32_t id);
 	SelContextPtr	getSelContext(uint32_t id);
+	HftContextPtr	getHftContext(uint32_t id);
 	WtEngine*		getEngine(){ return _engine; }
 
 //////////////////////////////////////////////////////////////////////////
@@ -87,10 +98,17 @@ public:
 	}
 
 public:
-	void ctx_on_init(uint32_t id, bool isCta = true);
-	void ctx_on_tick(uint32_t id, const char* stdCode, WTSTickData* newTick, bool isCta = true);
-	void ctx_on_calc(uint32_t id, bool isCta = true);
-	void ctx_on_bar(uint32_t id, const char* stdCode, const char* period, WTSBarStruct* newBar, bool isCta = true);
+	void ctx_on_init(uint32_t id, EngineType eType = ET_CTA);
+	void ctx_on_tick(uint32_t id, const char* stdCode, WTSTickData* newTick, EngineType eType = ET_CTA);
+	void ctx_on_calc(uint32_t id, uint32_t curDate, uint32_t curTime, EngineType eType = ET_CTA);
+	void ctx_on_bar(uint32_t id, const char* stdCode, const char* period, WTSBarStruct* newBar, EngineType eType = ET_CTA);
+
+	void hft_on_channel_ready(uint32_t cHandle, const char* trader);
+	void hft_on_channel_lost(uint32_t cHandle, const char* trader);
+	void hft_on_order(uint32_t cHandle, WtUInt32 localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled);
+	void hft_on_trade(uint32_t cHandle, const char* stdCode, bool isBuy, double vol, double price);
+	void hft_on_position(uint32_t cHandle, const char* stdCode, bool isLong, double prevol, double preavail, double newvol, double newavail);
+	void hft_on_entrust(uint32_t cHandle, WtUInt32 localid, const char* stdCode, bool bSuccess, const char* message);
 
 	bool addExeFactories(const char* folder);
 	bool addCtaFactories(const char* folder);
@@ -119,6 +137,15 @@ private:
 	FuncStraTickCallback	_cb_sel_tick;
 	FuncStraCalcCallback	_cb_sel_calc;
 	FuncStraBarCallback		_cb_sel_bar;
+
+	FuncStraInitCallback	_cb_hft_init;
+	FuncStraTickCallback	_cb_hft_tick;
+	FuncStraBarCallback		_cb_hft_bar;
+	FuncHftChannelCallback	_cb_hft_chnl;
+	FuncHftOrdCallback		_cb_hft_ord;
+	FuncHftTrdCallback		_cb_hft_trd;
+	FuncHftPosCallback		_cb_hft_pos;
+	FuncHftEntrustCallback	_cb_hft_entrust;
 
 	FuncEventCallback		_cb_evt;
 

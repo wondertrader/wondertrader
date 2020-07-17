@@ -33,7 +33,11 @@
 #include "../Share/StdUtils.hpp"
 #include "../Share/decimal.h"
 
+#include <exception>
+#include <rapidjson/document.h>
+#include <rapidjson/prettywriter.h>
 
+namespace rj = rapidjson;
 
 uint32_t makeLocalOrderID()
 {
@@ -47,6 +51,28 @@ uint32_t makeLocalOrderID()
 	return _auto_order_id.fetch_add(1);
 }
 
+inline const char* formatAction(WTSDirectionType dType, WTSOffsetType oType)
+{
+	if(dType == WDT_LONG)
+	{
+		if (oType == WOT_OPEN)
+			return "开多";
+		else if (oType == WOT_CLOSE)
+			return "平多";
+		else
+			return "平今多";
+	}
+	else
+	{
+		if (oType == WOT_OPEN)
+			return "开空";
+		else if (oType == WOT_CLOSE)
+			return "平空";
+		else
+			return "平今空";
+	}
+}
+
 TraderAdapter::TraderAdapter()
 	: _id("")
 	, _cfg(NULL)
@@ -56,7 +82,7 @@ TraderAdapter::TraderAdapter()
 	, _undone_qty(0)
 	, _stat_map(NULL)
 	, _risk_mon_enabled(false)
-	, _save_trade_log(false)
+	, _save_data(false)
 {
 }
 
@@ -84,7 +110,9 @@ bool TraderAdapter::init(const char* id, WTSVariant* params, IBaseDataMgr* bdMgr
 	_cfg = params;
 	_cfg->retain();
 
-	_save_trade_log = _cfg->getBoolean("savedata");
+	_save_data = _cfg->getBoolean("savedata");
+	if (_save_data)
+		initSaveData();
 
 	//这里解析流量风控参数
 	WTSVariant* cfgRisk = params->get("riskmon");
@@ -170,9 +198,163 @@ bool TraderAdapter::init(const char* id, WTSVariant* params, IBaseDataMgr* bdMgr
 
 	cfg->release();
 
-
-
 	return true;
+}
+
+void TraderAdapter::initSaveData()
+{
+	/*std::string folder = WtHelper::getOutputDir();
+	folder += _name;
+	folder += "//";*/
+	std::stringstream ss;
+	ss << WtHelper::getOutputDir() << "traders/" << _id << "//";
+	std::string folder = ss.str();
+	BoostFile::create_directories(folder.c_str());
+
+	std::string filename = folder + "trades.csv";
+	_trades_log.reset(new BoostFile());
+	{
+		bool isNewFile = !BoostFile::exists(filename.c_str());
+		_trades_log->create_or_open_file(filename.c_str());
+		if (isNewFile)
+		{
+			_trades_log->write_file("localid,date,time,code,action,volumn,price,tradeid,orderid\n");
+		}
+		else
+		{
+			_trades_log->seek_to_end();
+		}
+	}
+
+	filename = folder + "orders.csv";
+	_orders_log.reset(new BoostFile());
+	{
+		bool isNewFile = !BoostFile::exists(filename.c_str());
+		_orders_log->create_or_open_file(filename.c_str());
+		if (isNewFile)
+		{
+			_orders_log->write_file("localid,date,inserttime,code,action,volumn,traded,price,orderid,canceled,remark\n");
+		}
+		else
+		{
+			_orders_log->seek_to_end();
+		}
+	}
+
+	_rt_data_file = folder + "rtdata.json";
+}
+
+void TraderAdapter::logTrade(uint32_t localid, const char* stdCode, WTSTradeInfo* trdInfo)
+{
+	if (_trades_log == NULL || trdInfo == NULL)
+		return;
+
+	//localid,date,time,code,action,volumn,price,tradeid,orderid
+	_trades_log->write_file(fmt::format("{},{},{},{},{},{},{},{},{}\n",
+		localid, trdInfo->getTradeDate(), trdInfo->getTradeTime(), stdCode,
+		formatAction(trdInfo->getDirection(), trdInfo->getOffsetType()),
+		trdInfo->getVolumn(), trdInfo->getPrice(), trdInfo->getTradeID(), trdInfo->getRefOrder()));
+}
+
+void TraderAdapter::logOrder(uint32_t localid, const char* stdCode, WTSOrderInfo* ordInfo)
+{
+	if (_orders_log == NULL || ordInfo == NULL)
+		return;
+
+	//localid,date,inserttime,code,action,volumn,traded,price,orderid,canceled,remark
+	_orders_log->write_file(fmt::format("{},{},{},{},{},{},{},{},{},{},{}\n",
+		localid, ordInfo->getOrderDate(), ordInfo->getOrderTime(), stdCode,
+		formatAction(ordInfo->getDirection(), ordInfo->getOffsetType()),
+		ordInfo->getVolumn(), ordInfo->getVolTraded(), ordInfo->getPrice(), 
+		ordInfo->getOrderID(), ordInfo->getOrderState()==WOS_Canceled?"TRUE":"FALSE", ordInfo->getStateMsg()));
+}
+
+void TraderAdapter::saveData(WTSArray* ayFunds /* = NULL */)
+{
+	rj::Document root(rj::kObjectType);
+	rj::Document::AllocatorType &allocator = root.GetAllocator();
+
+	{//持仓数据保存
+		rj::Value jPos(rj::kArrayType);
+		/*
+		//多仓数据
+		double	l_newvol;
+		double	l_newavail;
+		double	l_prevol;
+		double	l_preavail;
+
+		//空仓数据
+		double	s_newvol;
+		double	s_newavail;
+		double	s_prevol;
+		double	s_preavail;
+		 */
+
+		for (auto it = _positions.begin(); it != _positions.end(); it++)
+		{
+			const char* stdCode = it->first.c_str();
+			const PosItem& pInfo = it->second;
+
+			rj::Value pItem(rj::kObjectType);
+			pItem.AddMember("code", rj::Value(stdCode, allocator), allocator);
+
+			rj::Value longItem(rj::kObjectType);
+			longItem.AddMember("newvol", pInfo.l_newvol, allocator);
+			longItem.AddMember("newavail", pInfo.l_newavail, allocator);
+			longItem.AddMember("prevol", pInfo.l_prevol, allocator);
+			longItem.AddMember("preavail", pInfo.l_preavail, allocator);
+			pItem.AddMember("long", longItem, allocator);
+
+			rj::Value shortItem(rj::kObjectType);
+			shortItem.AddMember("newvol", pInfo.s_newvol, allocator);
+			shortItem.AddMember("newavail", pInfo.s_newavail, allocator);
+			shortItem.AddMember("prevol", pInfo.s_prevol, allocator);
+			shortItem.AddMember("preavail", pInfo.s_preavail, allocator);
+			pItem.AddMember("short", shortItem, allocator);
+
+			jPos.PushBack(pItem, allocator);
+		}
+
+		root.AddMember("positions", jPos, allocator);
+	}
+
+	{//资金保存
+		rj::Value jFunds(rj::kObjectType);
+
+		if(ayFunds && ayFunds->size() > 0)
+		{
+			for(auto it = ayFunds->begin(); it != ayFunds->end(); it++)
+			{
+				WTSAccountInfo* fundInfo = (WTSAccountInfo*)(*it);
+				rj::Value fItem(rj::kObjectType);
+				fItem.AddMember("prebalance", fundInfo->getPreBalance(), allocator);
+				fItem.AddMember("balance", fundInfo->getBalance(), allocator);
+				fItem.AddMember("closeprofit", fundInfo->getCloseProfit(), allocator);
+				fItem.AddMember("margin", fundInfo->getMargin(), allocator);
+				fItem.AddMember("fee", fundInfo->getCommission(), allocator);
+				fItem.AddMember("available", fundInfo->getAvailable(), allocator);
+
+				fItem.AddMember("deposit", fundInfo->getDeposit(), allocator);
+				fItem.AddMember("withdraw", fundInfo->getWithdraw(), allocator);
+
+				jFunds.AddMember(rj::Value(fundInfo->getCurrency(), allocator), fItem, allocator);
+			}
+		}
+
+		root.AddMember("funds", jFunds, allocator);
+	}
+
+	{
+		BoostFile bf;
+		if (bf.create_new_file(_rt_data_file.c_str()))
+		{
+			rj::StringBuffer sb;
+			rj::PrettyWriter<rj::StringBuffer> writer(sb);
+			root.Accept(writer);
+			bf.write_file(sb.GetString());
+			bf.close_file();
+		}
+	}
 }
 
 const TraderAdapter::RiskParams* TraderAdapter::getRiskParams(const char* stdCode)
@@ -1255,7 +1437,19 @@ void TraderAdapter::onRspEntrust(WTSEntrust* entrust, WTSError *err)
 
 void TraderAdapter::onRspAccount(WTSArray* ayAccounts)
 {
-	
+	if (_save_data)
+	{
+		saveData(ayAccounts);
+	}
+
+	if(_state == AS_TRADES_QRYED)
+	{
+		_state = AS_ALLREADY;
+
+		WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO, "[%s]交易通道全部就绪", _id.c_str());
+		for (auto sink : _sinks)
+			sink->on_channel_ready();
+	}
 }
 
 void TraderAdapter::onRspPosition(const WTSArray* ayPositions)
@@ -1432,9 +1626,6 @@ void TraderAdapter::printPosition(const char* code, const PosItem& pItem)
 	WTSLogger::log_dyn_raw("trader", _id.c_str(), LL_INFO, fmt::format("[{}]{}持仓更新, 多:{}[{}]|{}[{}], 空:{}[{}]|{}[{}]",
 		_id.c_str(), code, pItem.l_prevol, pItem.l_preavail, pItem.l_newvol, pItem.l_newavail, 
 		pItem.s_prevol, pItem.s_preavail, pItem.s_newvol, pItem.s_newavail).c_str());
-
-	//StreamLogger(LL_INFO, _id.c_str(), "trader").self() << "[" << _id << "]" << code << "持仓更新, 多:" << pItem.l_prevol << "[" << pItem.l_preavail << "]|" << pItem.l_newvol
-	//	<< "[" << pItem.l_newavail << "], 空:" << pItem.s_prevol << "[" << pItem.s_preavail << "]|" << pItem.s_newvol << "[" << pItem.s_newavail << "]";
 }
 
 void TraderAdapter::onRspTrades(const WTSArray* ayTrades)
@@ -1498,20 +1689,14 @@ void TraderAdapter::onRspTrades(const WTSArray* ayTrades)
 			WTSLogger::log_dyn_raw("trader", _id.c_str(), LL_INFO, fmt::format("[{}]合约{}开平统计更新, 开多{}, 平多{}, 平今多{}, 开空{}, 平空{}, 平今空{}",
 				_id.c_str(), stdCode, pItem->open_volumn_long(), pItem->close_volumn_long(), pItem->closet_volumn_long(),
 				pItem->open_volumn_short(), pItem->close_volumn_short(), pItem->closet_volumn_short()).c_str());
-
-			//StreamLogger(LL_INFO, _id.c_str(), "trader").self() << "[" << _id << "]" << stdCode << "开平统计更新, 开多" << pItem->open_volumn_long() 
-			//	<< "手, 平多" << pItem->close_volumn_long() << "手, 平今多" << pItem->closet_volumn_long() << "手, 开空" << pItem->open_volumn_short()
-			//	<< "手, 平空" << pItem->close_volumn_short() << "手, 平今空" << pItem->closet_volumn_short() << "手";
 		}
 	}
 
 	if (_state == AS_ORDERS_QRYED)
 	{
-		_state = AS_ALLREADY;
+		_state = AS_TRADES_QRYED;
 
-		WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO,"[%s]交易通道全部就绪", _id.c_str());
-		for (auto sink : _sinks)
-			sink->on_channel_ready();
+		_trader_api->queryAccount();
 	}
 }
 
@@ -1554,10 +1739,9 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 
 	bool isBuy = (orderInfo->getDirection() == WDT_LONG && orderInfo->getOffsetType() == WOT_OPEN) || (orderInfo->getDirection() == WDT_SHORT && orderInfo->getOffsetType() != WOT_OPEN);
 	
+	//撤销的话, 要更新统计数据
 	if (orderInfo->getOrderState() == WOS_Canceled)
 	{
-		//PosItem& pItem = _positions[stdCode];
-		//pItem.cancel_cnt++;
 		WTSTradeStateInfo* statInfo = (WTSTradeStateInfo*)_stat_map->get(stdCode.c_str());
 		if (statInfo == NULL)
 		{
@@ -1595,7 +1779,7 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 
 	WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO,"[%s]收到订单回报, 合约 %s, 用户标记 %s, 状态 %s", _id.c_str(), stdCode.c_str(), orderInfo->getUserTag(), stateToName(orderInfo->getOrderState()));
 
-	//如果订单撤销, 切是自己的订单, 则要先更新未完成数量
+	//如果订单撤销, 并且是wt的订单, 则要先更新未完成数量
 	if (orderInfo->getOrderState() == WOS_Canceled && StrUtil::startsWith(orderInfo->getUserTag(), _order_pattern, false))
 	{
 		//撤单的时候, 要更新未完成
@@ -1609,25 +1793,10 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 		double newQty = oldQty - qty*(isBuy ? 1 : -1);
 		_undone_qty[stdCode] = newQty;
 		WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO, fmt::format("[{}]合约 {} 未完成订单数量更新, {} -> {}", _id.c_str(), stdCode.c_str(), oldQty, newQty).c_str());
-		{
-			//StreamLogger(LL_INFO, _id.c_str(), "trader").self() << "[" << _id << "]" << stdCode << " 未完成订单数量更新, " << oldQty << " -> " << newQty;
-		}
-
-		//WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR,"[%s]下单失败: %s, 合约: %s, 操作: %s, 数量: %d", _id.c_str(), stdCode.c_str(), err->getMessage(), entrust->getCode(), action.c_str(), qty);
-		std::string action;
-		if (isOpen)
-			action = "开";
-		else if (isToday)
-			action = "平今";
-		else
-			action = "平";
-		action += isLong ? "多" : "空";
 
 		WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO, fmt::format("[{}]合约{}订单{}已撤销:{}, 操作: {}, 剩余数量: {}",
-			_id.c_str(), stdCode.c_str(), orderInfo->getUserTag(), orderInfo->getStateMsg(), action.c_str(), qty).c_str());
-
-		//StreamLogger(LL_INFO, _id.c_str(), "trader").self() << "[" << _id << "]合约" << stdCode << "订单" << orderInfo->getUserTag() 
-		//	<< "已撤销:" << orderInfo->getStateMsg() << ", 操作: " << action << ", 剩余数量: " << qty;
+			_id.c_str(), stdCode.c_str(), orderInfo->getUserTag(), orderInfo->getStateMsg(), 
+			formatAction(orderInfo->getDirection(), orderInfo->getOffsetType()), qty).c_str());
 	}
 
 	//先检查该订单是不是第一次推送过来
@@ -1753,14 +1922,18 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 		}
 	}
 
-	//先看看是不是otp发出去的单子
-	if (!StrUtil::startsWith(orderInfo->getUserTag(), _order_pattern))
-		return;
+	uint32_t localid = 0;
 
-	char* userTag = (char*)orderInfo->getUserTag();
-	userTag += _order_pattern.size() + 1;
-	uint32_t localid = strtoul(userTag, NULL, 10);
+	//先看看是不是wt发出去的单子
+	if (StrUtil::startsWith(orderInfo->getUserTag(), _order_pattern))
+	{
+		char* userTag = (char*)orderInfo->getUserTag();
+		userTag += _order_pattern.size() + 1;
+		localid = strtoul(userTag, NULL, 10);
+	}
 
+	//如果是wt发出去的单子则需要更新内部数据
+	if(localid != 0)
 	{
 		BoostUniqueLock lock(_mtx_orders);
 		if (!orderInfo->isAlive() && _orders)
@@ -1774,12 +1947,17 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 
 			_orders->add(localid, orderInfo);
 		}
-	}
-	
 
-	//通知执行器
-	for (auto sink : _sinks)
-		sink->on_order(localid, stdCode.c_str(), isBuy, orderInfo->getVolumn(), orderInfo->getVolLeft(), orderInfo->getPrice(), orderInfo->getOrderState() == WOS_Canceled);
+		//通知所有监听接口
+		for (auto sink : _sinks)
+			sink->on_order(localid, stdCode.c_str(), isBuy, orderInfo->getVolumn(), orderInfo->getVolLeft(), orderInfo->getPrice(), orderInfo->getOrderState() == WOS_Canceled);
+	}
+
+	//不管是不是内部订单,订单结束了,都要写到日志里
+	if (_save_data && !orderInfo->isAlive())
+	{
+		logOrder(localid, stdCode.c_str(), orderInfo);
+	}
 }
 
 void TraderAdapter::onPushTrade(WTSTradeInfo* tradeRecord)
@@ -1804,20 +1982,18 @@ void TraderAdapter::onPushTrade(WTSTradeInfo* tradeRecord)
 	WTSLogger::log_dyn_raw("trader", _id.c_str(), LL_INFO, 
 		fmt::format("[{}]收到成交回报回报, 合约 {}, 用户标记 {}, 成交数量 {}, 成交价格 {}", 
 			_id.c_str(), stdCode.c_str(), tradeRecord->getUserTag(), tradeRecord->getVolumn(), tradeRecord->getPrice()).c_str());
-	//{
-	//	StreamLogger(LL_INFO, _id.c_str(), "trader").self() << "[" << _id << "]收到成交回报回报, 合约 " 
-	//		<< stdCode << ", 用户标记 " << tradeRecord->getUserTag() << ", 成交数量 " << tradeRecord->getVolumn() << ", 成交价格 " << tradeRecord->getPrice();
-	//}
 
+	uint32_t localid = 0;
 	if (StrUtil::startsWith(tradeRecord->getUserTag(), _order_pattern, false))
 	{
+		char* userTag = (char*)tradeRecord->getUserTag();
+		userTag += _order_pattern.size() + 1;
+		localid = strtoul(userTag, NULL, 10);
+
 		double oldQty = _undone_qty[stdCode];
 		double newQty = oldQty - tradeRecord->getVolumn()*(isBuy ? 1 : -1);
 		_undone_qty[stdCode] = newQty;
 		WTSLogger::log_dyn_raw("trader", _id.c_str(), LL_INFO, fmt::format("[{}]合约 {} 未完成订单数量更新, {} -> {}", _id.c_str(), stdCode.c_str(), oldQty, newQty).c_str());
-		//{
-		//	StreamLogger(LL_INFO, _id.c_str(), "trader").self() << "[" << _id << "]" << stdCode << " 未完成订单数量更新, " << oldQty << " -> " << newQty;
-		//}
 	}
 
 	PosItem& pItem = _positions[stdCode];
@@ -1827,6 +2003,7 @@ void TraderAdapter::onPushTrade(WTSTradeInfo* tradeRecord)
 		statInfo = WTSTradeStateInfo::create(stdCode.c_str());
 		_stat_map->add(stdCode, statInfo, false);
 	}
+
 	TradeStatInfo& statItem = statInfo->statInfo();
 	double vol = tradeRecord->getVolumn();
 	if(isLong)
@@ -1884,10 +2061,15 @@ void TraderAdapter::onPushTrade(WTSTradeInfo* tradeRecord)
 
 	printPosition(stdCode.c_str(), pItem);
 
-	//updateUndone();
-
 	for (auto sink : _sinks)
 		sink->on_trade(stdCode.c_str(), isBuy, vol, tradeRecord->getPrice());
+
+	if (_save_data)
+	{
+		logTrade(localid, stdCode.c_str(), tradeRecord);
+	}
+
+	_trader_api->queryAccount();
 }
 
 void TraderAdapter::onTraderError(WTSError* err)

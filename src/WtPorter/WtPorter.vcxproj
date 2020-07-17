@@ -209,17 +209,19 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Common\mdump.cpp" />
-    <ClCompile Include="PySelContext.cpp" />
+    <ClCompile Include="ExpHftContext.cpp" />
+    <ClCompile Include="ExpSelContext.cpp" />
     <ClCompile Include="WtPorter.cpp" />
-    <ClCompile Include="PyCtaContext.cpp" />
+    <ClCompile Include="ExpCtaContext.cpp" />
     <ClCompile Include="WtRtRunner.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Common\mdump.h" />
     <ClInclude Include="PorterDefs.h" />
-    <ClInclude Include="PySelContext.h" />
+    <ClInclude Include="ExpHftContext.h" />
+    <ClInclude Include="ExpSelContext.h" />
     <ClInclude Include="WtPorter.h" />
-    <ClInclude Include="PyCtaContext.h" />
+    <ClInclude Include="ExpCtaContext.h" />
     <ClInclude Include="WtRtRunner.h" />
   </ItemGroup>
   <ItemGroup>

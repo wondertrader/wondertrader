@@ -27,7 +27,7 @@
 
 namespace rj = rapidjson;
 
-inline uint32_t makeMfCtxId()
+inline uint32_t makeSelCtxId()
 {
 	static std::atomic<uint32_t> _auto_context_id{ 3000 };
 	return _auto_context_id.fetch_add(1);
@@ -43,7 +43,7 @@ SelMocker::SelMocker(HisDataReplayer* replayer, const char* name)
 	, _ud_modified(false)
 	, _strategy(NULL)
 {
-	_context_id = makeMfCtxId();
+	_context_id = makeSelCtxId();
 }
 
 

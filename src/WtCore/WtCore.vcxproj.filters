@@ -57,9 +57,6 @@
     <ClInclude Include="CtaStraContext.h">
       <Filter>CTA</Filter>
     </ClInclude>
-    <ClInclude Include="ICtaStraCtx.h">
-      <Filter>CTA</Filter>
-    </ClInclude>
     <ClInclude Include="CtaStraBaseCtx.h">
       <Filter>CTA</Filter>
     </ClInclude>
@@ -74,9 +71,6 @@
     </ClInclude>
     <ClInclude Include="CtaStrategyDefs.h">
       <Filter>CTA</Filter>
-    </ClInclude>
-    <ClInclude Include="HftStrategyDefs.h">
-      <Filter>HFT</Filter>
     </ClInclude>
     <ClInclude Include="HftStraBaseCtx.h">
       <Filter>HFT</Filter>
@@ -95,9 +89,6 @@
     </ClInclude>
     <ClInclude Include="WtHftTicker.h">
       <Filter>HFT</Filter>
-    </ClInclude>
-    <ClInclude Include="ISelStraCtx.h">
-      <Filter>SEL</Filter>
     </ClInclude>
     <ClInclude Include="SelStraBaseCtx.h">
       <Filter>SEL</Filter>

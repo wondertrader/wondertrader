@@ -8,8 +8,9 @@
  * \brief 
  */
 #include "WtBtRunner.h"
-#include "PyCtaMocker.h"
-#include "PySelMocker.h"
+#include "ExpCtaMocker.h"
+#include "ExpSelMocker.h"
+#include "ExpHftMocker.h"
 
 #include <iomanip>
 
@@ -32,6 +33,25 @@
 WtBtRunner::WtBtRunner()
 	: _cta_mocker(NULL)
 	, _sel_mocker(NULL)
+
+	, _cb_cta_init(NULL)
+	, _cb_cta_tick(NULL)
+	, _cb_cta_calc(NULL)
+	, _cb_cta_bar(NULL)
+
+	, _cb_sel_init(NULL)
+	, _cb_sel_tick(NULL)
+	, _cb_sel_calc(NULL)
+	, _cb_sel_bar(NULL)
+
+	, _cb_hft_init(NULL)
+	, _cb_hft_tick(NULL)
+	, _cb_hft_bar(NULL)
+	, _cb_hft_ord(NULL)
+	, _cb_hft_trd(NULL)
+	, _cb_hft_pos(NULL)
+	, _cb_hft_entrust(NULL)
+	, _cb_hft_chnl(NULL)
 {
 }
 
@@ -56,52 +76,112 @@ void WtBtRunner::registerSelCallbacks(FuncStraInitCallback cbInit, FuncStraTickC
 	_cb_sel_bar = cbBar;
 }
 
+void WtBtRunner::registerHftCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraBarCallback cbBar,
+	FuncHftChannelCallback cbChnl, FuncHftOrdCallback cbOrd, FuncHftTrdCallback cbTrd, FuncHftPosCallback cbPos, FuncHftEntrustCallback cbEntrust)
+{
+	_cb_hft_init = cbInit;
+	_cb_hft_tick = cbTick;
+	_cb_hft_bar = cbBar;
+
+	_cb_hft_chnl = cbChnl;
+	_cb_hft_ord = cbOrd;
+	_cb_hft_trd = cbTrd;
+	_cb_hft_pos = cbPos;
+	_cb_hft_entrust = cbEntrust;
+}
+
 uint32_t WtBtRunner::initCtaMocker(const char* name)
 {
-	_cta_mocker = new PyCtaMocker(&_replayer, name);
+	_cta_mocker = new ExpCtaMocker(&_replayer, name);
 	_replayer.register_sink(_cta_mocker);
 	return _cta_mocker->id();
 }
 
+uint32_t WtBtRunner::initHftMocker(const char* name)
+{
+	_hft_mocker = new ExpHftMocker(&_replayer, name);
+	_replayer.register_sink(_hft_mocker);
+	return _hft_mocker->id();
+}
+
 uint32_t WtBtRunner::initSelMocker(const char* name, uint32_t date, uint32_t time, const char* period, const char* trdtpl /* = "CHINA" */, const char* session /* = "TRADING" */)
 {
-	_sel_mocker = new PySelMocker(&_replayer, name);
+	_sel_mocker = new ExpSelMocker(&_replayer, name);
 	_replayer.register_sink(_sel_mocker);
 
 	_replayer.register_task(_sel_mocker->id(), date, time, period, trdtpl, session);
 	return _sel_mocker->id();
 }
 
-void WtBtRunner::ctx_on_bar(uint32_t id, const char* code, const char* period, WTSBarStruct* newBar, bool isCta /*= true*/)
+void WtBtRunner::ctx_on_bar(uint32_t id, const char* stdCode, const char* period, WTSBarStruct* newBar, EngineType eType/*= ET_CTA*/)
 {
-	if (isCta && _cb_cta_bar)
-		_cb_cta_bar(id, code, period, newBar);
-	else if(!isCta && _cb_sel_bar)
-		_cb_sel_bar(id, code, period, newBar);
+	switch (eType)
+	{
+	case ET_CTA: if (_cb_cta_bar) _cb_cta_bar(id, stdCode, period, newBar); break;
+	case ET_HFT: if (_cb_hft_bar) _cb_hft_bar(id, stdCode, period, newBar); break;
+	case ET_SEL: if (_cb_sel_bar) _cb_sel_bar(id, stdCode, period, newBar); break;
+	default:
+		break;
+	}
 }
 
-void WtBtRunner::ctx_on_calc(uint32_t id, bool isCta /*= true*/)
+void WtBtRunner::ctx_on_calc(uint32_t id, uint32_t curDate, uint32_t curTime, EngineType eType /* = ET_CTA */)
 {
-	if (isCta && _cb_cta_calc)
-		_cb_cta_calc(id);
-	else if (!isCta && _cb_sel_calc)
-		_cb_sel_calc(id);
+	switch (eType)
+	{
+	case ET_CTA: if (_cb_cta_calc) _cb_cta_calc(id, curDate, curTime); break;
+	case ET_SEL: if (_cb_sel_calc) _cb_sel_calc(id, curDate, curTime); break;
+	default:
+		break;
+	}
 }
 
-void WtBtRunner::ctx_on_init(uint32_t id, bool isCta /*= true*/)
+void WtBtRunner::ctx_on_init(uint32_t id, EngineType eType/*= ET_CTA*/)
 {
-	if (isCta && _cb_cta_init)
-		_cb_cta_init(id);
-	else if (!isCta && _cb_sel_init)
-		_cb_sel_init(id);
+	switch (eType)
+	{
+	case ET_CTA: if (_cb_cta_init) _cb_cta_init(id); break;
+	case ET_HFT: if (_cb_hft_init) _cb_hft_init(id); break;
+	case ET_SEL: if (_cb_sel_init) _cb_sel_init(id); break;
+	default:
+		break;
+	}
 }
 
-void WtBtRunner::ctx_on_tick(uint32_t id, const char* stdCode, WTSTickData* newTick, bool isCta /*= true*/)
+void WtBtRunner::ctx_on_tick(uint32_t id, const char* stdCode, WTSTickData* newTick, EngineType eType/*= ET_CTA*/)
 {
-	if (isCta && _cb_cta_tick)
-		_cb_cta_tick(id, stdCode, &newTick->getTickStruct());
-	else if (!isCta && _cb_sel_tick)
-		_cb_sel_tick(id, stdCode, &newTick->getTickStruct());
+	switch (eType)
+	{
+	case ET_CTA: if (_cb_cta_tick) _cb_cta_tick(id, stdCode, &newTick->getTickStruct()); break;
+	case ET_HFT: if (_cb_hft_tick) _cb_hft_tick(id, stdCode, &newTick->getTickStruct()); break;
+	case ET_SEL: if (_cb_sel_tick) _cb_sel_tick(id, stdCode, &newTick->getTickStruct()); break;
+	default:
+		break;
+	}
+}
+
+void WtBtRunner::hft_on_channel_ready(uint32_t cHandle, const char* trader)
+{
+	if (_cb_hft_chnl)
+		_cb_hft_chnl(cHandle, trader, 1000/*CHNL_EVENT_READY*/);
+}
+
+void WtBtRunner::hft_on_entrust(uint32_t cHandle, WtUInt32 localid, const char* stdCode, bool bSuccess, const char* message)
+{
+	if (_cb_hft_entrust)
+		_cb_hft_entrust(cHandle, localid, stdCode, bSuccess, message);
+}
+
+void WtBtRunner::hft_on_order(uint32_t cHandle, WtUInt32 localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled)
+{
+	if (_cb_hft_ord)
+		_cb_hft_ord(cHandle, localid, stdCode, isBuy, totalQty, leftQty, price, isCanceled);
+}
+
+void WtBtRunner::hft_on_trade(uint32_t cHandle, const char* stdCode, bool isBuy, double vol, double price)
+{
+	if (_cb_hft_trd)
+		_cb_hft_trd(cHandle, stdCode, isBuy, vol, price);
 }
 
 void WtBtRunner::init(const char* logProfile /* = "" */)
@@ -131,13 +211,19 @@ void WtBtRunner::config(const char* cfgFile)
 	WTSVariant* cfgMode = cfg->get(mode);
 	if (strcmp(mode, "cta") == 0 && cfgMode)
 	{
-		_cta_mocker = new PyCtaMocker(&_replayer, "cta");
+		_cta_mocker = new ExpCtaMocker(&_replayer, "cta");
 		_cta_mocker->initCtaFactory(cfgMode);
 		_replayer.register_sink(_cta_mocker);
 	}
+	else if (strcmp(mode, "hft") == 0 && cfgMode)
+	{
+		_hft_mocker = new ExpHftMocker(&_replayer, "hft");
+		_hft_mocker->initHftFactory(cfgMode);
+		_replayer.register_sink(_hft_mocker);
+	}
 	else if (strcmp(mode, "sel") == 0 && cfgMode)
 	{
-		_sel_mocker = new PySelMocker(&_replayer, "sel");
+		_sel_mocker = new ExpSelMocker(&_replayer, "sel");
 		_sel_mocker->initSelFactory(cfgMode);
 		_replayer.register_sink(_sel_mocker);
 
@@ -267,9 +353,9 @@ void WtBtRunner::trans_mc_bars(const char* csvFolder, const char* binFolder, con
 	}
 }
 
-void WtBtRunner::dump_bars(const char* code, const char* period, const char* filename)
+void WtBtRunner::dump_bars(const char* stdCode, const char* period, const char* filename)
 {
-	WTSKlineSlice* kline = _replayer.get_kline_slice(code, period, UINT_MAX);
+	WTSKlineSlice* kline = _replayer.get_kline_slice(stdCode, period, UINT_MAX);
 	if (kline)
 	{
 		std::ofstream ofs;

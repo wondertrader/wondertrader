@@ -25,8 +25,8 @@ class HisDataReplayer;
 class HftMocker : public IDataSink, public IHftStraCtx
 {
 public:
-	HftMocker(HisDataReplayer* replayer);
-	~HftMocker();
+	HftMocker(HisDataReplayer* replayer, const char* name);
+	virtual ~HftMocker();
 
 public:
 	//////////////////////////////////////////////////////////////////////////
@@ -41,33 +41,35 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	//IHftStraCtx
-	virtual void on_tick(const char* code, WTSTickData* newTick) override;
+	virtual void on_tick(const char* stdCode, WTSTickData* newTick) override;
 
 	virtual uint32_t id() override;
 
 	virtual void on_init() override;
 
+	virtual void on_bar(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar) override;
+
 	virtual bool stra_cancel(uint32_t localid) override;
 
-	virtual OrderIDs stra_cancel(const char* code, bool isBuy, double qty = 0) override;
+	virtual OrderIDs stra_cancel(const char* stdCode, bool isBuy, double qty = 0) override;
 
 	virtual OrderIDs stra_buy(const char* stdCode, double price, double qty) override;
 
 	virtual OrderIDs stra_sell(const char* stdCode, double price, double qty) override;
 
-	virtual WTSCommodityInfo* stra_get_comminfo(const char* code) override;
+	virtual WTSCommodityInfo* stra_get_comminfo(const char* stdCode) override;
 
-	virtual WTSKlineSlice* stra_get_bars(const char* code, const char* period, uint32_t count) override;
+	virtual WTSKlineSlice* stra_get_bars(const char* stdCode, const char* period, uint32_t count) override;
 
-	virtual WTSTickSlice* stra_get_ticks(const char* code, uint32_t count) override;
+	virtual WTSTickSlice* stra_get_ticks(const char* stdCode, uint32_t count) override;
 
-	virtual WTSTickData* stra_get_last_tick(const char* code) override;
+	virtual WTSTickData* stra_get_last_tick(const char* stdCode) override;
 
-	virtual double stra_get_position(const char* code) override;
+	virtual double stra_get_position(const char* stdCode) override;
 
 	virtual double stra_get_undone(const char* stdCode) override;
 
-	virtual double stra_get_price(const char* code) override;
+	virtual double stra_get_price(const char* stdCode) override;
 
 	virtual uint32_t stra_get_date() override;
 
@@ -75,12 +77,25 @@ public:
 
 	virtual uint32_t stra_get_secs() override;
 
-	virtual void sub_ticks(const char* code) override;
+	virtual void stra_sub_ticks(const char* stdCode) override;
 
 	virtual void stra_log_text(const char* fmt, ...) override;
 
+	virtual void stra_save_user_data(const char* key, const char* val) override;
+
+	virtual const char* stra_load_user_data(const char* key, const char* defVal = "") override;
+
+	//////////////////////////////////////////////////////////////////////////
+	virtual void on_trade(const char* stdCode, bool isBuy, double vol, double price);
+
+	virtual void on_order(uint32_t localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled = false);
+
+	virtual void on_channel_ready();
+
+	virtual void on_entrust(uint32_t localid, const char* stdCode, bool bSuccess, const char* message);
+
 public:
-	bool	init(WTSVariant* cfg);
+	bool	initHftFactory(WTSVariant* cfg);
 
 private:
 	typedef std::function<void()> Task;
@@ -152,5 +167,13 @@ private:
 	std::unordered_map<std::string, double> _positions;
 
 	std::ofstream	_ofs_signals;
+
+	//用户数据
+	typedef std::unordered_map<std::string, std::string> StringHashMap;
+	StringHashMap	_user_datas;
+	bool			_ud_modified;
+
+protected:
+	uint32_t		_context_id;
 };
 

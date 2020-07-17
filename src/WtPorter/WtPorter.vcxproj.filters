@@ -18,16 +18,19 @@
     <ClCompile Include="WtPorter.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="PyCtaContext.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="..\Common\mdump.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="WtRtRunner.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="PySelContext.cpp">
+    <ClCompile Include="ExpCtaContext.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ExpHftContext.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ExpSelContext.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -38,16 +41,19 @@
     <ClInclude Include="WtPorter.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="PyCtaContext.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="..\Common\mdump.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="WtRtRunner.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="PySelContext.h">
+    <ClInclude Include="ExpCtaContext.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ExpHftContext.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ExpSelContext.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

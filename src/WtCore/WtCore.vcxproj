@@ -31,12 +31,9 @@
     <ClInclude Include="IDataManager.h" />
     <ClInclude Include="HftStraBaseCtx.h" />
     <ClInclude Include="HftStraContext.h" />
-    <ClInclude Include="HftStrategyDefs.h" />
     <ClInclude Include="HftStrategyMgr.h" />
-    <ClInclude Include="ICtaStraCtx.h" />
     <ClInclude Include="CtaStrategyMgr.h" />
     <ClInclude Include="CtaStraBaseCtx.h" />
-    <ClInclude Include="ISelStraCtx.h" />
     <ClInclude Include="IHftStraCtx.h" />
     <ClInclude Include="ITrdNotifySink.h" />
     <ClInclude Include="SelStraBaseCtx.h" />

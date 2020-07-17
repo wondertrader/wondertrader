@@ -40,6 +40,7 @@ public:
 		AS_LOGINFAILED,		//登录失败
 		AS_POSITION_QRYED,	//仓位已查
 		AS_ORDERS_QRYED,	//订单已查
+		AS_TRADES_QRYED,	//成交已查
 		AS_ALLREADY			//全部就绪
 	} AdapterState;
 
@@ -125,8 +126,14 @@ private:
 	inline WTSContractInfo* getContract(const char* stdCode);
 	inline WTSCommodityInfo* getCommodify(const char* stdCommID);
 
-
 	const RiskParams* getRiskParams(const char* stdCode);
+
+	void initSaveData();
+
+	inline void	logTrade(uint32_t localid, const char* stdCode, WTSTradeInfo* trdInfo);
+	inline void	logOrder(uint32_t localid, const char* stdCode, WTSOrderInfo* ordInfo);
+
+	void	saveData(WTSArray* ayFunds = NULL);
 
 public:
 	double getPosition(const char* stdCode, int32_t flag = 3);
@@ -217,8 +224,10 @@ private:
 	RiskParamsMap	_risk_params_map;
 	bool			_risk_mon_enabled;
 
-	bool			_save_trade_log;	//是否保存交易日志
-	BoostFilePtr	_trade_log;			//交易数据日志
+	bool			_save_data;	//是否保存交易日志
+	BoostFilePtr	_trades_log;		//交易数据日志
+	BoostFilePtr	_orders_log;		//订单数据日志
+	std::string		_rt_data_file;		//实时数据文件
 };
 
 typedef std::shared_ptr<TraderAdapter>				TraderAdapterPtr;
