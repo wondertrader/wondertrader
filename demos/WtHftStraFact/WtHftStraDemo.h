@@ -28,8 +28,6 @@ public:
 
 	virtual void on_bar(IHftStraCtx* ctx, const char* code, const char* period, uint32_t times, WTSBarStruct* newBar) override;
 
-	virtual void on_schedule(IHftStraCtx* ctx, uint32_t uDate, uint32_t uTime) override;
-
 	virtual void on_trade(IHftStraCtx* ctx, const char* stdCode, bool isBuy, double qty, double price) override;
 
 	virtual void on_position(IHftStraCtx* ctx, const char* stdCode, bool isLong, double prevol, double preavail, double newvol, double newavail) override;

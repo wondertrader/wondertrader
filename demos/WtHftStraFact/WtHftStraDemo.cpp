@@ -67,7 +67,7 @@ void WtHftStraDemo::on_init(IHftStraCtx* ctx)
 	if (kline)
 		kline->release();
 
-	ctx->sub_ticks(_code.c_str());
+	ctx->stra_sub_ticks(_code.c_str());
 
 	_ctx = ctx;
 }
@@ -183,11 +183,6 @@ void WtHftStraDemo::check_orders()
 void WtHftStraDemo::on_bar(IHftStraCtx* ctx, const char* code, const char* period, uint32_t times, WTSBarStruct* newBar)
 {
 	
-}
-
-void WtHftStraDemo::on_schedule(IHftStraCtx* ctx, uint32_t uDate, uint32_t uTime)
-{
-
 }
 
 void WtHftStraDemo::on_trade(IHftStraCtx* ctx, const char* stdCode, bool isBuy, double qty, double price)
