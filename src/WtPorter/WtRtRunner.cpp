@@ -48,7 +48,6 @@ WtRtRunner::WtRtRunner()
 	, _cb_hft_bar(NULL)
 	, _cb_hft_ord(NULL)
 	, _cb_hft_trd(NULL)
-	, _cb_hft_pos(NULL)
 	, _cb_hft_entrust(NULL)
 	, _cb_hft_chnl(NULL)
 
@@ -99,7 +98,7 @@ void WtRtRunner::registerSelCallbacks(FuncStraInitCallback cbInit, FuncStraTickC
 }
 
 void WtRtRunner::registerHftCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraBarCallback cbBar, 
-	FuncHftChannelCallback cbChnl, FuncHftOrdCallback cbOrd, FuncHftTrdCallback cbTrd, FuncHftPosCallback cbPos, FuncHftEntrustCallback cbEntrust)
+	FuncHftChannelCallback cbChnl, FuncHftOrdCallback cbOrd, FuncHftTrdCallback cbTrd, FuncHftEntrustCallback cbEntrust)
 {
 	_cb_hft_init = cbInit;
 	_cb_hft_tick = cbTick;
@@ -108,7 +107,6 @@ void WtRtRunner::registerHftCallbacks(FuncStraInitCallback cbInit, FuncStraTickC
 	_cb_hft_chnl = cbChnl;
 	_cb_hft_ord = cbOrd;
 	_cb_hft_trd = cbTrd;
-	_cb_hft_pos = cbPos;
 	_cb_hft_entrust = cbEntrust;
 }
 
@@ -237,16 +235,10 @@ void WtRtRunner::hft_on_order(uint32_t cHandle, WtUInt32 localid, const char* st
 		_cb_hft_ord(cHandle, localid, stdCode, isBuy, totalQty, leftQty, price, isCanceled);
 }
 
-void WtRtRunner::hft_on_position(uint32_t cHandle, const char* stdCode, bool isLong, double prevol, double preavail, double newvol, double newavail)
-{
-	if (_cb_hft_pos)
-		_cb_hft_pos(cHandle, stdCode, isLong, prevol, preavail, newvol, newavail);
-}
-
-void WtRtRunner::hft_on_trade(uint32_t cHandle, const char* stdCode, bool isBuy, double vol, double price)
+void WtRtRunner::hft_on_trade(uint32_t cHandle, WtUInt32 localid, const char* stdCode, bool isBuy, double vol, double price)
 {
 	if (_cb_hft_trd)
-		_cb_hft_trd(cHandle, stdCode, isBuy, vol, price);
+		_cb_hft_trd(cHandle, localid, stdCode, isBuy, vol, price);
 }
 
 bool WtRtRunner::config(const char* cfgFile)

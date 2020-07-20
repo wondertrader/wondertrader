@@ -304,7 +304,7 @@ void WtExecuter::on_tick(const char* stdCode, WTSTickData* newTick)
 	}
 }
 
-void WtExecuter::on_trade(const char* stdCode, bool isBuy, double vol, double price)
+void WtExecuter::on_trade(uint32_t localid, const char* stdCode, bool isBuy, double vol, double price)
 {
 	ExecuteUnitPtr unit = getUnit(stdCode, false);
 	if (unit == NULL)
@@ -314,13 +314,13 @@ void WtExecuter::on_trade(const char* stdCode, bool isBuy, double vol, double pr
 	if (_pool)
 	{
 		std::string code = stdCode;
-		_pool->schedule([unit, code, isBuy, vol, price](){
-			unit->self()->on_trade(code.c_str(), isBuy, vol, price);
+		_pool->schedule([localid, unit, code, isBuy, vol, price](){
+			unit->self()->on_trade(localid, code.c_str(), isBuy, vol, price);
 		});
 	}
 	else
 	{
-		unit->self()->on_trade(stdCode, isBuy, vol, price);
+		unit->self()->on_trade(localid, stdCode, isBuy, vol, price);
 	}
 }
 
@@ -334,8 +334,8 @@ void WtExecuter::on_order(uint32_t localid, const char* stdCode, bool isBuy, dou
 	if (_pool)
 	{
 		std::string code = stdCode;
-		_pool->schedule([unit, code, isBuy, leftQty, price, isCanceled](){
-			unit->self()->on_trade(code.c_str(), isBuy, leftQty, price);
+		_pool->schedule([localid, unit, code, isBuy, leftQty, price, isCanceled](){
+			unit->self()->on_trade(localid, code.c_str(), isBuy, leftQty, price);
 		});
 	}
 	else

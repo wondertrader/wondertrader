@@ -23,7 +23,7 @@ void on_tick(CtxHandler ctxid, const char* stdCode, WTSTickStruct* newTick)
 	//printf("on_tick\r\n");
 }
 
-void on_calc(CtxHandler ctxid)
+void on_calc(CtxHandler ctxid, WtUInt32 curDate, WtUInt32 curTime)
 {
 	printf("on_calc\r\n");
 	sel_get_bars(ctxid, "SSE.600009Q", "d1", 10, on_getbar);

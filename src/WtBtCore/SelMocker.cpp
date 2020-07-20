@@ -677,7 +677,7 @@ WTSTickData* SelMocker::stra_get_last_tick(const char* stdCode)
 	return _replayer->get_last_tick(stdCode);
 }
 
-void SelMocker::sub_ticks(const char* code)
+void SelMocker::stra_sub_ticks(const char* code)
 {
 	_replayer->sub_tick(_context_id, code);
 }

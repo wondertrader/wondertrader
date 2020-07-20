@@ -51,7 +51,7 @@ public:
 	virtual void on_tick(IHftStraCtx* ctx, const char* code, WTSTickData* newTick) = 0;
 	virtual void on_bar(IHftStraCtx* ctx, const char* code, const char* period, uint32_t times, WTSBarStruct* newBar) = 0;
 
-	virtual void on_trade(IHftStraCtx* ctx, const char* stdCode, bool isBuy, double vol, double price) = 0;
+	virtual void on_trade(IHftStraCtx* ctx, uint32_t localid, const char* stdCode, bool isBuy, double vol, double price) = 0;
 	virtual void on_position(IHftStraCtx* ctx, const char* stdCode, bool isLong, double prevol, double preavail, double newvol, double newavail) = 0;
 	virtual void on_order(IHftStraCtx* ctx, uint32_t localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled = false) = 0;
 	virtual void on_channel_ready(IHftStraCtx* ctx) = 0;

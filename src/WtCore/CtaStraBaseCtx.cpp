@@ -45,7 +45,7 @@ const char* ACTION_NAMES[] =
 };
 
 
-inline uint32_t makeCtxId()
+inline uint32_t makeCtaCtxId()
 {
 	static std::atomic<uint32_t> _auto_context_id{ 1 };
 	return _auto_context_id.fetch_add(1);
@@ -61,7 +61,7 @@ CtaStraBaseCtx::CtaStraBaseCtx(WtCtaEngine* engine, const char* name)
 	, _is_in_schedule(false)
 	, _ud_modified(false)
 {
-	_context_id = makeCtxId();
+	_context_id = makeCtaCtxId();
 }
 
 
@@ -1236,7 +1236,11 @@ WTSKlineSlice* CtaStraBaseCtx::stra_get_bars(const char* stdCode, const char* pe
 
 WTSTickSlice* CtaStraBaseCtx::stra_get_ticks(const char* stdCode, uint32_t count)
 {
-	return _engine->get_tick_slice(_context_id, stdCode, count);
+	WTSTickSlice* ret = _engine->get_tick_slice(_context_id, stdCode, count);
+	if (ret)
+		_engine->sub_tick(id(), stdCode);
+
+	return ret;
 }
 
 WTSTickData* CtaStraBaseCtx::stra_get_last_tick(const char* stdCode)
@@ -1244,7 +1248,7 @@ WTSTickData* CtaStraBaseCtx::stra_get_last_tick(const char* stdCode)
 	return _engine->get_last_tick(_context_id, stdCode);
 }
 
-void CtaStraBaseCtx::sub_ticks(const char* code)
+void CtaStraBaseCtx::stra_sub_ticks(const char* code)
 {
 	_engine->sub_tick(_context_id, code);
 }

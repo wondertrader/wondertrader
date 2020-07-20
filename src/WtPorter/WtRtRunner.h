@@ -63,7 +63,7 @@ public:
 	void registerCtaCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar);
 	void registerSelCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar);
 	void registerHftCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraBarCallback cbBar,
-		FuncHftChannelCallback cbChnl, FuncHftOrdCallback cbOrd, FuncHftTrdCallback cbTrd, FuncHftPosCallback cbPos, FuncHftEntrustCallback cbEntrust);
+		FuncHftChannelCallback cbChnl, FuncHftOrdCallback cbOrd, FuncHftTrdCallback cbTrd, FuncHftEntrustCallback cbEntrust);
 
 	void registerEvtCallback(FuncEventCallback cbEvt);
 
@@ -106,8 +106,7 @@ public:
 	void hft_on_channel_ready(uint32_t cHandle, const char* trader);
 	void hft_on_channel_lost(uint32_t cHandle, const char* trader);
 	void hft_on_order(uint32_t cHandle, WtUInt32 localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled);
-	void hft_on_trade(uint32_t cHandle, const char* stdCode, bool isBuy, double vol, double price);
-	void hft_on_position(uint32_t cHandle, const char* stdCode, bool isLong, double prevol, double preavail, double newvol, double newavail);
+	void hft_on_trade(uint32_t cHandle, WtUInt32 localid, const char* stdCode, bool isBuy, double vol, double price);
 	void hft_on_entrust(uint32_t cHandle, WtUInt32 localid, const char* stdCode, bool bSuccess, const char* message);
 
 	bool addExeFactories(const char* folder);
@@ -144,7 +143,6 @@ private:
 	FuncHftChannelCallback	_cb_hft_chnl;
 	FuncHftOrdCallback		_cb_hft_ord;
 	FuncHftTrdCallback		_cb_hft_trd;
-	FuncHftPosCallback		_cb_hft_pos;
 	FuncHftEntrustCallback	_cb_hft_entrust;
 
 	FuncEventCallback		_cb_evt;

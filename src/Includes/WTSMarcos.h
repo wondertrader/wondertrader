@@ -49,4 +49,8 @@
 #	define EXPORT_FLAG __attribute__((__visibility__("default")))
 #endif
 
-static const char WT_VERSION[] = "v0.4.0";
+#define WT_VER_MAJOR 0
+#define WT_VER_MINOR 5
+#define WT_VER_PATCH 0
+
+static const char WT_VERSION[] = "v0.5.0";

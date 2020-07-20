@@ -71,7 +71,7 @@ public:
 	virtual WTSTickSlice*	stra_get_ticks(const char* stdCode, uint32_t count) override;
 	virtual WTSTickData*	stra_get_last_tick(const char* stdCode) override;
 
-	virtual void sub_ticks(const char* stdCode) override;
+	virtual void stra_sub_ticks(const char* stdCode) override;
 
 	virtual void stra_log_text(const char* fmt, ...) override;
 

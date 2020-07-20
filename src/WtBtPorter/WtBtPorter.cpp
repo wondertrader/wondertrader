@@ -86,6 +86,12 @@ void register_sel_callbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cb
 	getRunner().registerSelCallbacks(cbInit, cbTick, cbCalc, cbBar);
 }
 
+void register_hft_callbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraBarCallback cbBar,
+	FuncHftChannelCallback cbChnl, FuncHftOrdCallback cbOrd, FuncHftTrdCallback cbTrd, FuncHftEntrustCallback cbEntrust)
+{
+	getRunner().registerHftCallbacks(cbInit, cbTick, cbBar, cbChnl, cbOrd, cbTrd, cbEntrust);
+}
+
 void init_backtest(const char* logProfile)
 {
 	static bool inited = false;
@@ -425,6 +431,15 @@ WtString cta_load_userdata(CtxHandler cHandle, const char* key, const char* defV
 
 	return ctx->stra_load_user_data(key, defVal);
 }
+
+void cta_sub_ticks(CtxHandler cHandle, const char* stdCode)
+{
+	CtaMocker* ctx = getRunner().cta_mocker();
+	if (ctx == NULL)
+		return ;
+
+	ctx->stra_sub_ticks(stdCode);
+}
 #pragma endregion "CTA策略接口"
 
 #pragma region "选股策略接口"
@@ -570,6 +585,16 @@ WtUInt32	sel_get_ticks(CtxHandler cHandle, const char* stdCode, unsigned int tic
 		return 0;
 	}
 }
+
+void sel_sub_ticks(CtxHandler cHandle, const char* stdCode)
+{
+	SelMocker* ctx = getRunner().sel_mocker();
+	if (ctx == NULL)
+		return;
+
+	ctx->stra_sub_ticks(stdCode);
+}
+
 #pragma endregion "选股策略接口"
 
 #pragma region "HFT策略接口"

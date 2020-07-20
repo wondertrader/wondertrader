@@ -242,7 +242,7 @@ void ExecMocker::match_orders(WTSTickData* curTick, OrderIDs& to_erase)
 				}
 
 				double qty = min(volumn, ordInfo._left);
-				_exec_unit->on_trade(ordInfo._code, ordInfo._buy, qty, price);
+				_exec_unit->on_trade(localid, ordInfo._code, ordInfo._buy, qty, price);
 				_trade_logs << localid << ","
 					<< _sig_time << ","
 					<< ordInfo._time << ","
@@ -316,7 +316,7 @@ void ExecMocker::match_orders(WTSTickData* curTick, OrderIDs& to_erase)
 				}
 
 				double qty = min(volumn, ordInfo._left);
-				_exec_unit->on_trade(ordInfo._code, ordInfo._buy, qty, price);
+				_exec_unit->on_trade(localid, ordInfo._code, ordInfo._buy, qty, price);
 				_trade_logs << localid << ","
 					<< _sig_time << ","
 					<< ordInfo._time << ","

@@ -22,7 +22,7 @@ extern "C"
 	EXPORT_FLAG	void		register_sel_callbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar);
 
 	EXPORT_FLAG	void		register_hft_callbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraBarCallback cbBar,
-								FuncHftChannelCallback cbChnl, FuncHftOrdCallback cbOrd, FuncHftTrdCallback cbTrd, FuncHftPosCallback cbPos, FuncHftEntrustCallback cbEntrust);
+								FuncHftChannelCallback cbChnl, FuncHftOrdCallback cbOrd, FuncHftTrdCallback cbTrd, FuncHftEntrustCallback cbEntrust);
 
 	EXPORT_FLAG	void		init_porter(const char* logProfile);
 
@@ -92,6 +92,8 @@ extern "C"
 	EXPORT_FLAG	void		cta_save_userdata(CtxHandler cHandle, const char* key, const char* val);
 
 	EXPORT_FLAG	WtString	cta_load_userdata(CtxHandler cHandle, const char* key, const char* defVal);
+
+	EXPORT_FLAG	void		cta_sub_ticks(CtxHandler cHandle, const char* stdCode);
 #pragma endregion "CTA接口"
 
 	//////////////////////////////////////////////////////////////////////////
@@ -118,6 +120,8 @@ extern "C"
 	EXPORT_FLAG	void		sel_save_userdata(CtxHandler cHandle, const char* key, const char* val);
 
 	EXPORT_FLAG	WtString	sel_load_userdata(CtxHandler cHandle, const char* key, const char* defVal);
+
+	EXPORT_FLAG	void		sel_sub_ticks(CtxHandler cHandle, const char* stdCode);
 #pragma endregion "选股接口"
 
 	//////////////////////////////////////////////////////////////////////////

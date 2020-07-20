@@ -69,7 +69,7 @@ uint32_t genRand(uint32_t maxVal = 10000)
 
 inline uint32_t makeHftCtxId()
 {
-	static std::atomic<uint32_t> _auto_context_id{ 3000 };
+	static std::atomic<uint32_t> _auto_context_id{ 6000 };
 	return _auto_context_id.fetch_add(1);
 }
 
@@ -169,10 +169,6 @@ bool HftMocker::initHftFactory(WTSVariant* cfg)
 		_strategy->on_init(this);
 		_strategy->on_channel_ready(this);
 	}
-
-	_ofs_signals.open("signals.log");
-	_ofs_signals << "time, action, position, price" << std::endl;
-
 	return true;
 }
 
@@ -241,6 +237,10 @@ uint32_t HftMocker::id()
 
 void HftMocker::on_init()
 {
+	_ofs_signals.open("signals.log");
+	_ofs_signals << "time, action, position, price" << std::endl;
+
+
 	if (_strategy)
 		_strategy->on_init(this);
 }
@@ -335,10 +335,10 @@ void HftMocker::on_order(uint32_t localid, const char* stdCode, bool isBuy, doub
 		_strategy->on_order(this, localid, stdCode, isBuy, totalQty, leftQty, price, isCanceled);
 }
 
-void HftMocker::on_trade(const char* stdCode, bool isBuy, double vol, double price)
+void HftMocker::on_trade(uint32_t localid, const char* stdCode, bool isBuy, double vol, double price)
 {
 	if (_strategy)
-		_strategy->on_trade(this, stdCode, isBuy, vol, price);
+		_strategy->on_trade(this, localid, stdCode, isBuy, vol, price);
 }
 
 void HftMocker::on_entrust(uint32_t localid, const char* stdCode, bool bSuccess, const char* message)
@@ -413,7 +413,7 @@ void HftMocker::procOrder(uint32_t localid)
 	auto vols = splitVolumn((uint32_t)maxQty);
 	for(uint32_t curQty : vols)
 	{
-		on_trade(ordInfo._code, ordInfo._isBuy, curQty, curPx);
+		on_trade(ordInfo._localid, ordInfo._code, ordInfo._isBuy, curQty, curPx);
 
 		ordInfo._left -= curQty;
 		on_order(localid, ordInfo._code, ordInfo._isBuy, ordInfo._total, ordInfo._left, ordInfo._price, false);

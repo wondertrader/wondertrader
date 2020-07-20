@@ -22,10 +22,8 @@ public:
 
 	virtual void on_order(uint32_t localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled = false) override;
 
-	virtual void on_position(const char* stdCode, bool isLong, double prevol, double preavail, double newvol, double newavail) override;
-
 	virtual void on_tick(const char* code, WTSTickData* newTick) override;
 
-	virtual void on_trade(const char* stdCode, bool isBuy, double vol, double price) override;
+	virtual void on_trade(uint32_t localid, const char* stdCode, bool isBuy, double vol, double price) override;
 };
 

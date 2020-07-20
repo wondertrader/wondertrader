@@ -86,7 +86,7 @@ public:
 	virtual const char* stra_load_user_data(const char* key, const char* defVal = "") override;
 
 	//////////////////////////////////////////////////////////////////////////
-	virtual void on_trade(const char* stdCode, bool isBuy, double vol, double price);
+	virtual void on_trade(uint32_t localid, const char* stdCode, bool isBuy, double vol, double price);
 
 	virtual void on_order(uint32_t localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled = false);
 

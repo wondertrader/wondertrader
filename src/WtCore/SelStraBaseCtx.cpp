@@ -27,7 +27,7 @@
 
 namespace rj = rapidjson;
 
-inline uint32_t makeMfCtxId()
+inline uint32_t makeSelCtxId()
 {
 	static std::atomic<uint32_t> _auto_context_id{ 3000 };
 	return _auto_context_id.fetch_add(1);
@@ -44,7 +44,7 @@ SelStraBaseCtx::SelStraBaseCtx(WtSelEngine* engine, const char* name)
 	, _schedule_date(0)
 	, _schedule_time(0)
 {
-	_context_id = makeMfCtxId();
+	_context_id = makeSelCtxId();
 }
 
 
@@ -822,8 +822,6 @@ WTSKlineSlice* SelStraBaseCtx::stra_get_bars(const char* stdCode, const char* pe
 	{
 		double lastClose = kline->close(-1);
 		_price_map[stdCode] = lastClose;
-
-		_engine->sub_tick(id(), stdCode);
 	}
 
 	return kline;
@@ -839,7 +837,7 @@ WTSTickData* SelStraBaseCtx::stra_get_last_tick(const char* stdCode)
 	return _engine->get_last_tick(_context_id, stdCode);
 }
 
-void SelStraBaseCtx::sub_ticks(const char* code)
+void SelStraBaseCtx::stra_sub_ticks(const char* code)
 {
 	_engine->sub_tick(_context_id, code);
 }

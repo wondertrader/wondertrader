@@ -157,7 +157,7 @@ public:
 	/*
 	 *	成交回报
 	 */
-	virtual void on_trade(const char* stdCode, bool isBuy, double vol, double price) override;
+	virtual void on_trade(uint32_t localid, const char* stdCode, bool isBuy, double vol, double price) override;
 
 	/*
 	 *	订单回报

@@ -120,9 +120,9 @@ void register_sel_callbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cb
 }
 
 void register_hft_callbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraBarCallback cbBar, 
-	FuncHftChannelCallback cbChnl, FuncHftOrdCallback cbOrd, FuncHftTrdCallback cbTrd, FuncHftPosCallback cbPos, FuncHftEntrustCallback cbEntrust)
+	FuncHftChannelCallback cbChnl, FuncHftOrdCallback cbOrd, FuncHftTrdCallback cbTrd, FuncHftEntrustCallback cbEntrust)
 {
-	getRunner().registerHftCallbacks(cbInit, cbTick, cbBar, cbChnl, cbOrd, cbTrd, cbPos, cbEntrust);
+	getRunner().registerHftCallbacks(cbInit, cbTick, cbBar, cbChnl, cbOrd, cbTrd, cbEntrust);
 }
 
 void init_porter(const char* logProfile)
@@ -466,6 +466,15 @@ WtString cta_load_userdata(CtxHandler cHandle, const char* key, const char* defV
 	return ctx->stra_load_user_data(key, defVal);
 }
 
+void cta_sub_ticks(CtxHandler cHandle, const char* stdCode)
+{
+	CtaContextPtr ctx = getRunner().getCtaContext(cHandle);
+	if (ctx == NULL)
+		return;
+
+	ctx->stra_sub_ticks(stdCode);
+}
+
 #pragma endregion
 
 #pragma region "多因子策略接口"
@@ -616,6 +625,15 @@ WtUInt32	sel_get_ticks(CtxHandler cHandle, const char* stdCode, unsigned int tic
 		cb(cHandle, stdCode, NULL, true);
 		return 0;
 	}
+}
+
+void sel_sub_ticks(CtxHandler cHandle, const char* stdCode)
+{
+	SelContextPtr ctx = getRunner().getSelContext(cHandle);
+	if (ctx == NULL)
+		return;
+
+	ctx->stra_sub_ticks(stdCode);
 }
 #pragma endregion
 

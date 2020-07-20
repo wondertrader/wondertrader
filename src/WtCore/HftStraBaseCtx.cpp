@@ -25,13 +25,17 @@ namespace rj = rapidjson;
 
 USING_NS_OTP;
 
-extern uint32_t makeCtxId();
+inline uint32_t makeHftCtxId()
+{
+	static std::atomic<uint32_t> _auto_context_id{ 6000 };
+	return _auto_context_id.fetch_add(1);
+}
 
 HftStraBaseCtx::HftStraBaseCtx(WtHftEngine* engine, const char* name)
 	: IHftStraCtx(name)
 	, _engine(engine)
 {
-	_context_id = makeCtxId();
+	_context_id = makeHftCtxId();
 }
 
 
@@ -49,12 +53,36 @@ void HftStraBaseCtx::setTrader(TraderAdapter* trader)
 	_trader = trader;
 }
 
-void HftStraBaseCtx::on_init()
+void HftStraBaseCtx::init_outputs()
 {
-	
+	std::string folder = WtHelper::getOutputDir();
+	folder += _name;
+	folder += "//";
+	BoostFile::create_directories(folder.c_str());
+	std::string filename = folder + "signals.csv";
+	_sig_logs.reset(new BoostFile());
+	{
+		bool isNewFile = !BoostFile::exists(filename.c_str());
+		_sig_logs->create_or_open_file(filename.c_str());
+		if (isNewFile)
+		{
+			_sig_logs->write_file("time, action, position, price\n");
+		}
+		else
+		{
+			_sig_logs->seek_to_end();
+		}
+	}
 }
 
-void HftStraBaseCtx::on_tick(const char* code, WTSTickData* newTick)
+void HftStraBaseCtx::on_init()
+{
+	init_outputs();
+
+	load_userdata();
+}
+
+void HftStraBaseCtx::on_tick(const char* stdCode, WTSTickData* newTick)
 {
 	if (_ud_modified)
 	{
@@ -63,7 +91,7 @@ void HftStraBaseCtx::on_tick(const char* code, WTSTickData* newTick)
 	}
 }
 
-void HftStraBaseCtx::on_bar(const char* code, const char* period, uint32_t times, WTSBarStruct* newBar)
+void HftStraBaseCtx::on_bar(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar)
 {
 	if (_ud_modified)
 	{
@@ -77,9 +105,9 @@ bool HftStraBaseCtx::stra_cancel(uint32_t localid)
 	return _trader->cancel(localid);
 }
 
-OrderIDs HftStraBaseCtx::stra_cancel(const char* code, bool isBuy, double qty)
+OrderIDs HftStraBaseCtx::stra_cancel(const char* stdCode, bool isBuy, double qty)
 {
-	return _trader->cancel(code, isBuy, qty);
+	return _trader->cancel(stdCode, isBuy, qty);
 }
 
 const char* HftStraBaseCtx::get_inner_code(const char* stdCode)
@@ -129,31 +157,38 @@ OrderIDs HftStraBaseCtx::stra_sell(const char* stdCode, double price, double qty
 	}
 }
 
-WTSCommodityInfo* HftStraBaseCtx::stra_get_comminfo(const char* code)
+WTSCommodityInfo* HftStraBaseCtx::stra_get_comminfo(const char* stdCode)
 {
-	return _engine->get_commodity_info(code);
+	return _engine->get_commodity_info(stdCode);
 }
 
-WTSKlineSlice* HftStraBaseCtx::stra_get_bars(const char* code, const char* period, uint32_t count)
+WTSKlineSlice* HftStraBaseCtx::stra_get_bars(const char* stdCode, const char* period, uint32_t count)
 {
-	return _engine->get_kline_slice(_context_id, code, period, count);
+	WTSKlineSlice* ret = _engine->get_kline_slice(_context_id, stdCode, period, count);
+
+	if (ret)
+		_engine->sub_tick(id(), stdCode);
+
+	return ret;
 }
 
-WTSTickSlice* HftStraBaseCtx::stra_get_ticks(const char* code, uint32_t count)
+WTSTickSlice* HftStraBaseCtx::stra_get_ticks(const char* stdCode, uint32_t count)
 {
-	WTSTickSlice* ticks = _engine->get_tick_slice(_context_id, code, count);
+	WTSTickSlice* ticks = _engine->get_tick_slice(_context_id, stdCode, count);
 
+	if (ticks)
+		_engine->sub_tick(id(), stdCode);
 	return ticks;
 }
 
-WTSTickData* HftStraBaseCtx::stra_get_last_tick(const char* code)
+WTSTickData* HftStraBaseCtx::stra_get_last_tick(const char* stdCode)
 {
-	return _engine->get_last_tick(_context_id, code);
+	return _engine->get_last_tick(_context_id, stdCode);
 }
 
-void HftStraBaseCtx::stra_sub_ticks(const char* code)
+void HftStraBaseCtx::stra_sub_ticks(const char* stdCode)
 {
-	_engine->sub_tick(id(), code);
+	_engine->sub_tick(id(), stdCode);
 }
 
 void HftStraBaseCtx::stra_log_text(const char* fmt, ...)
@@ -167,12 +202,20 @@ void HftStraBaseCtx::stra_log_text(const char* fmt, ...)
 	va_end(args);
 }
 
-void HftStraBaseCtx::on_trade(const char* stdCode, bool isBuy, double vol, double price)
+void HftStraBaseCtx::on_trade(uint32_t localid, const char* stdCode, bool isBuy, double vol, double price)
 {
 	if (_ud_modified)
 	{
 		save_userdata();
 		_ud_modified = false;
+	}
+
+	//_ofs_signals << _replayer->get_date() << "." << _replayer->get_raw_time() << "." << _replayer->get_secs() << ","
+	//	<< (ordInfo._isBuy ? "+" : "-") << curQty << "," << curPos << "," << curPx << std::endl;
+	if(_sig_logs)
+	{
+		double curPos = stra_get_position(stdCode);
+		_sig_logs->write_file(fmt::format("{}.{}.{},{}{},{},{}\n", stra_get_date(), stra_get_time(), stra_get_secs(), isBuy ? "+" : "-", vol, curPos, price));
 	}
 }
 
@@ -184,16 +227,6 @@ void HftStraBaseCtx::on_order(uint32_t localid, const char* stdCode, bool isBuy,
 		_ud_modified = false;
 	}
 }
-
-void HftStraBaseCtx::on_position(const char* stdCode, bool isLong, double prevol, double preavail, double newvol, double newavail)
-{
-	if (_ud_modified)
-	{
-		save_userdata();
-		_ud_modified = false;
-	}
-}
-
 
 void HftStraBaseCtx::on_channel_ready()
 {
@@ -260,9 +293,9 @@ double HftStraBaseCtx::stra_get_undone(const char* stdCode)
 	}
 }
 
-double HftStraBaseCtx::stra_get_price(const char* code)
+double HftStraBaseCtx::stra_get_price(const char* stdCode)
 {
-	return _engine->get_cur_price(code);
+	return _engine->get_cur_price(stdCode);
 }
 
 uint32_t HftStraBaseCtx::stra_get_date()

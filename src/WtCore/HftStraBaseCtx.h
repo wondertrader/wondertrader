@@ -11,6 +11,7 @@
 #include <unordered_map>
 
 #include "../Includes/IHftStraCtx.h"
+#include "../Share/BoostFile.hpp"
 #include "ITrdNotifySink.h"
 
 NS_OTP_BEGIN
@@ -33,48 +34,46 @@ public:
 
 	virtual void on_init() override;
 
-	virtual void on_tick(const char* code, WTSTickData* newTick) override;
+	virtual void on_tick(const char* stdCode, WTSTickData* newTick) override;
 
-	virtual void on_bar(const char* code, const char* period, uint32_t times, WTSBarStruct* newBar) override;
+	virtual void on_bar(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar) override;
 
 	virtual bool stra_cancel(uint32_t localid) override;
 
-	virtual OrderIDs stra_cancel(const char* code, bool isBuy, double qty) override;
+	virtual OrderIDs stra_cancel(const char* stdCode, bool isBuy, double qty) override;
 
 	virtual OrderIDs stra_buy(const char* stdCode, double price, double qty) override;
 
 	virtual OrderIDs stra_sell(const char* stdCode, double price, double qty) override;
 
-	virtual WTSCommodityInfo* stra_get_comminfo(const char* code) override;
+	virtual WTSCommodityInfo* stra_get_comminfo(const char* stdCode) override;
 
-	virtual WTSKlineSlice* stra_get_bars(const char* code, const char* period, uint32_t count) override;
+	virtual WTSKlineSlice* stra_get_bars(const char* stdCode, const char* period, uint32_t count) override;
 
-	virtual WTSTickSlice* stra_get_ticks(const char* code, uint32_t count) override;
+	virtual WTSTickSlice* stra_get_ticks(const char* stdCode, uint32_t count) override;
 
-	virtual WTSTickData* stra_get_last_tick(const char* code) override;
+	virtual WTSTickData* stra_get_last_tick(const char* stdCode) override;
 
 	virtual void stra_log_text(const char* fmt, ...) override;
 
-	virtual double stra_get_position(const char* code) override;
-	virtual double stra_get_price(const char* code) override;
+	virtual double stra_get_position(const char* stdCode) override;
+	virtual double stra_get_price(const char* stdCode) override;
 	virtual double stra_get_undone(const char* stdCode) override;
 
 	virtual uint32_t stra_get_date() override;
 	virtual uint32_t stra_get_time() override;
 	virtual uint32_t stra_get_secs() override;
 
-	virtual void stra_sub_ticks(const char* code) override;
+	virtual void stra_sub_ticks(const char* stdCode) override;
 
 	virtual void stra_save_user_data(const char* key, const char* val) override;
 
 	virtual const char* stra_load_user_data(const char* key, const char* defVal = "") override;
 
 	//////////////////////////////////////////////////////////////////////////
-	virtual void on_trade(const char* stdCode, bool isBuy, double vol, double price) override;
+	virtual void on_trade(uint32_t localid, const char* stdCode, bool isBuy, double vol, double price) override;
 
 	virtual void on_order(uint32_t localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled = false) override;
-
-	virtual void on_position(const char* stdCode, bool isLong, double prevol, double preavail, double newvol, double newavail) override;
 
 	virtual void on_channel_ready() override;
 
@@ -88,12 +87,17 @@ protected:
 	void	load_userdata();
 	void	save_userdata();
 
+	void	init_outputs();
+
+
 protected:
 	uint32_t		_context_id;
 	WtHftEngine*	_engine;
 	TraderAdapter*	_trader;
 
 	std::unordered_map<std::string, std::string> _code_map;
+
+	BoostFilePtr	_sig_logs;
 
 	//用户数据
 	typedef std::unordered_map<std::string, std::string> StringHashMap;

@@ -2062,7 +2062,7 @@ void TraderAdapter::onPushTrade(WTSTradeInfo* tradeRecord)
 	printPosition(stdCode.c_str(), pItem);
 
 	for (auto sink : _sinks)
-		sink->on_trade(stdCode.c_str(), isBuy, vol, tradeRecord->getPrice());
+		sink->on_trade(localid, stdCode.c_str(), isBuy, vol, tradeRecord->getPrice());
 
 	if (_save_data)
 	{

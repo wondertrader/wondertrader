@@ -56,13 +56,6 @@ void ExpHftContext::on_order(uint32_t localid, const char* stdCode, bool isBuy, 
 	HftStraBaseCtx::on_order(localid, stdCode, isBuy, totalQty, leftQty, price, isCanceled);
 }
 
-void ExpHftContext::on_position(const char* stdCode, bool isLong, double prevol, double preavail, double newvol, double newavail)
-{
-	getRunner().hft_on_position(_context_id, stdCode, isLong, prevol, preavail, newvol, newavail);
-
-	HftStraBaseCtx::on_position(stdCode, isLong, prevol, preavail, newvol, newavail);
-}
-
 void ExpHftContext::on_tick(const char* code, WTSTickData* newTick)
 {
 	getRunner().ctx_on_tick(_context_id, code, newTick, ET_HFT);
@@ -70,9 +63,9 @@ void ExpHftContext::on_tick(const char* code, WTSTickData* newTick)
 	HftStraBaseCtx::on_tick(code, newTick);
 }
 
-void ExpHftContext::on_trade(const char* stdCode, bool isBuy, double vol, double price)
+void ExpHftContext::on_trade(uint32_t localid, const char* stdCode, bool isBuy, double vol, double price)
 {
-	getRunner().hft_on_trade(_context_id, stdCode, isBuy, vol, price);
+	getRunner().hft_on_trade(_context_id, localid, stdCode, isBuy, vol, price);
 
-	HftStraBaseCtx::on_trade(stdCode, isBuy, vol, price);
+	HftStraBaseCtx::on_trade(localid, stdCode, isBuy, vol, price);
 }

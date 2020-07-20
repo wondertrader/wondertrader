@@ -25,7 +25,7 @@ public:
 	virtual void on_tick(const char* stdCode, WTSTickData* newTick) override;
 
 
-	virtual void on_trade(const char* stdCode, bool isBuy, double vol, double price) override;
+	virtual void on_trade(uint32_t localid, const char* stdCode, bool isBuy, double vol, double price) override;
 
 };
 

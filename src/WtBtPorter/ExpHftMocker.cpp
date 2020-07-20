@@ -50,7 +50,7 @@ void ExpHftMocker::on_tick(const char* stdCode, WTSTickData* newTick)
 	getRunner().ctx_on_tick(_context_id, stdCode, newTick, ET_HFT);
 }
 
-void ExpHftMocker::on_trade(const char* stdCode, bool isBuy, double vol, double price)
+void ExpHftMocker::on_trade(uint32_t localid, const char* stdCode, bool isBuy, double vol, double price)
 {
-	getRunner().hft_on_trade(_context_id, stdCode, isBuy, vol, price);
+	getRunner().hft_on_trade(_context_id, localid, stdCode, isBuy, vol, price);
 }

@@ -189,7 +189,7 @@ void WtSimpExeUnit::on_tick(WTSTickData* newTick)
 	}
 }
 
-void WtSimpExeUnit::on_trade(const char* stdCode, bool isBuy, double vol, double price)
+void WtSimpExeUnit::on_trade(uint32_t localid, const char* stdCode, bool isBuy, double vol, double price)
 {
 	//不用触发，这里在ontick里触发吧
 }
