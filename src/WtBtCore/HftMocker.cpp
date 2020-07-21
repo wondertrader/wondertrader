@@ -10,6 +10,7 @@
 #include "HftMocker.h"
 //#include "Logger.h"
 
+#include <stdarg.h>
 #include <math.h>
 
 #include "../Includes/WTSVariant.hpp"

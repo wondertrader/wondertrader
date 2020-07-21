@@ -207,7 +207,7 @@ void TraderAdapter::initSaveData()
 	folder += _name;
 	folder += "//";*/
 	std::stringstream ss;
-	ss << WtHelper::getOutputDir() << "traders/" << _id << "//";
+	ss << WtHelper::getBaseDir() << "traders/" << _id << "//";
 	std::string folder = ss.str();
 	BoostFile::create_directories(folder.c_str());
 
