@@ -79,38 +79,4 @@ private:
 	static LogPatterns*			m_mapPatterns;
 };
 
-/*
-class StreamLogger
-{
-private:
-	std::stringstream	_ss;
-	std::string			_logger;
-	std::string			_pattern;
-	WTSLogLevel			_level;
-
-public:
-	StreamLogger(WTSLogLevel ll, const char* catName = "", const char* pattern = "")
-		: _logger(catName),_pattern(pattern),_level(ll){}
-
-	~StreamLogger()
-	{
-		std::string s = _ss.str();
-		if (s.empty())
-			return;
-
-		const char* catName;
-		if (_logger.empty())
-			catName = "root";
-		else
-			catName = _logger.c_str();
-		if(_pattern.empty())
-			WTSLogger::log2_raw(catName, _level, s.c_str());
-		else
-			WTSLogger::log_dyn_raw(_pattern.c_str(), catName, _level, s.c_str());
-	}
-
-	operator std::stringstream&(){ return _ss; }
-	std::stringstream& self(){ return _ss; }
-};
-*/
 

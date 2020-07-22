@@ -593,9 +593,6 @@ OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty)
 	if (!sInfo->isInTradingTime(WtHelper::getTime(), true))
 	{
 		WTSLogger::log_dyn_raw("trader", _id.c_str(), LL_ERROR, fmt::format("[{}]买入 {} 合约{}, {:04d} 不在交易时间", _id.c_str(), stdCode, qty, WtHelper::getTime()).c_str());
-
-		//StreamLogger(LL_INFO, _id.c_str(), "trader").self() << "[" << _id << "]买入 " << stdCode << " 合约" << qty << "手, " << setw(3) << setfill('0') << WtHelper::getTime() << " 不在交易时间";
-
 		return ret;
 	}
 
@@ -605,17 +602,11 @@ OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty)
 	//}
 
 	WTSLogger::log_dyn_raw("trader", _id.c_str(), LL_INFO, fmt::format("[{}]买入 {} 合约{}", _id.c_str(), stdCode, qty).c_str());
-	//{
-	//	StreamLogger(LL_INFO, _id.c_str(), "trader").self() << "[" << _id << "]" << "买入 " << stdCode << " " << qty << "手";
-	//}
 
 	double oldQty = _undone_qty[stdCode];
 	double newQty = oldQty + qty;
 	_undone_qty[stdCode] = newQty;
 	WTSLogger::log_dyn_raw("trader", _id.c_str(), LL_INFO, fmt::format("[{}]合约 {} 未完成订单数量更新, {} -> {}", _id.c_str(), stdCode, oldQty, newQty).c_str());
-	//{
-	//	StreamLogger(LL_INFO, _id.c_str(), "trader").self() << "[" << _id << "]" << stdCode << " 未完成订单数量更新, " << oldQty << " -> " << newQty;
-	//}
 
 	const PosItem& pItem = _positions[stdCode];
 	WTSTradeStateInfo* statInfo = (WTSTradeStateInfo*)_stat_map->get(stdCode);
@@ -687,7 +678,6 @@ OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty)
 			left -= maxQty;
 
 			WTSLogger::log_dyn_raw("trader", _id.c_str(), LL_INFO, fmt::format("[{}]合约 {} 买入{}信号执行: 开多{}", _id.c_str(), stdCode, qty, maxQty).c_str());
-			//StreamLogger(LL_INFO, _id.c_str(), "trader").self() << "[" << _id << "]合约" << stdCode << "买入" << qty << "手信号执行: 开多" << maxQty << "手";
 		}
 		else if(curRule._atype == AT_CloseToday)
 		{
@@ -723,12 +713,10 @@ OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty)
 				if (commInfo->getCoverMode() == CM_CoverToday)
 				{
 					WTSLogger::log_dyn_raw("trader", _id.c_str(), LL_INFO, fmt::format("[{}]{}合约买入{}信号执行: 平今空{}", _id.c_str(), stdCode, qty, maxQty).c_str());
-					//StreamLogger(LL_INFO, _id.c_str(), "trader").self() << "[" << _id << "]合约" << stdCode << "买入" << qty << "手信号执行: 平今空" << maxQty << "手";
 				}
 				else
 				{
 					WTSLogger::log_dyn_raw("trader", _id.c_str(), LL_INFO, fmt::format("[{}]{}合约买入{}信号执行: 平空{}", _id.c_str(), stdCode, qty, maxQty).c_str());
-					//StreamLogger(LL_INFO, _id.c_str(), "trader").self() << "[" << _id << "]合约" << stdCode << "买入" << qty << "手信号执行: 平空" << maxQty << "手";
 				}
 			}
 			
@@ -762,12 +750,10 @@ OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty)
 				if (commInfo->getCoverMode() == CM_CoverToday)
 				{
 					WTSLogger::log_dyn_raw("trader", _id.c_str(), LL_INFO, fmt::format("[{}]{}合约买入{}信号执行: 平昨空{}", _id.c_str(), stdCode, qty, maxQty).c_str());
-					//StreamLogger(LL_INFO, _id.c_str(), "trader").self() << "[" << _id << "]合约" << stdCode << "买入" << qty << "手信号执行: 平昨空" << maxQty << "手";
 				}
 				else
 				{
 					WTSLogger::log_dyn_raw("trader", _id.c_str(), LL_INFO, fmt::format("[{}]{}合约买入{}信号执行: 平空{}", _id.c_str(), stdCode, qty, maxQty).c_str());
-					//StreamLogger(LL_INFO, _id.c_str(), "trader").self() << "[" << _id << "]合约" << stdCode << "买入" << qty << "手信号执行: 平空" << maxQty << "手";
 				}
 			}
 		}
@@ -799,7 +785,6 @@ OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty)
 					left -= maxQty;
 
 					WTSLogger::log_dyn_raw("trader", _id.c_str(), LL_INFO, fmt::format("[{}]{}合约买入{}信号执行: 平空{}", _id.c_str(), stdCode, qty, maxQty).c_str());
-					//StreamLogger(LL_INFO, _id.c_str(), "trader").self() << "[" << _id << "]合约" << stdCode << "买入" << qty << "手信号执行: 平空" << maxQty << "手";
 				}
 			}
 			else
@@ -825,7 +810,6 @@ OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty)
 					left -= maxQty;
 
 					WTSLogger::log_dyn_raw("trader", _id.c_str(), LL_INFO, fmt::format("[{}]{}合约买入{}信号执行: 平昨空{}", _id.c_str(), stdCode, qty, maxQty).c_str());
-					//StreamLogger(LL_INFO, _id.c_str(), "trader").self() << "[" << _id << "]合约" << stdCode << "买入" << qty << "手信号执行: 平昨空" << maxQty << "手";
 				}
 
 				//if (left > 0 && pItem.s_newavail > 0)
@@ -850,7 +834,6 @@ OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty)
 					left -= maxQty;
 
 					WTSLogger::log_dyn_raw("trader", _id.c_str(), LL_INFO, fmt::format("[{}]{}合约买入{}信号执行: 平今空{}", _id.c_str(), stdCode, qty, maxQty).c_str());
-					//StreamLogger(LL_INFO, _id.c_str(), "trader").self() << "[" << _id << "]合约" << stdCode << "买入" << qty << "手信号执行: 平今空" << maxQty << "手";
 				}
 			}
 		}
@@ -880,7 +863,6 @@ OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty)
 	if(!sInfo->isInTradingTime(WtHelper::getTime(), true))
 	{
 		WTSLogger::log_dyn_raw("trader", _id.c_str(), LL_ERROR, fmt::format("[{}]卖出 {} 合约{}, {:04d} 不在交易时间", _id.c_str(), stdCode, qty, WtHelper::getTime()).c_str());
-		//StreamLogger(LL_INFO, _id.c_str(), "trader").self() << "[" << _id << "]卖出 " << stdCode << " 合约" << qty << "手, " << setw(3) << setfill('0') << WtHelper::getTime() << " 不在交易时间";
 		return ret;
 	}
 
@@ -890,17 +872,11 @@ OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty)
 	//}
 
 	WTSLogger::log_dyn_raw("trader", _id.c_str(), LL_INFO, fmt::format("[{}]卖出 {} 合约{}", _id.c_str(), stdCode, qty).c_str());
-	//{
-	//	StreamLogger(LL_INFO, _id.c_str(), "trader").self() << "[" << _id << "]" << "卖出 " << stdCode << " " << qty << "手";
-	//}
 
 	double oldQty = _undone_qty[stdCode];
 	double newQty = oldQty - qty;
 	_undone_qty[stdCode] = newQty;
 	WTSLogger::log_dyn_raw("trader", _id.c_str(), LL_INFO, fmt::format("[{}]合约 {} 未完成订单数量更新, {} -> {}", _id.c_str(), stdCode, oldQty, newQty).c_str());
-	//{
-	//	StreamLogger(LL_INFO, _id.c_str(), "trader").self() << "[" << _id << "]" << stdCode << " 未完成订单数量更新, " << oldQty << " -> " << newQty;
-	//}
 
 	const PosItem& pItem = _positions[stdCode];	
 	WTSTradeStateInfo* statInfo = (WTSTradeStateInfo*)_stat_map->get(stdCode);
@@ -973,8 +949,6 @@ OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty)
 			left -= maxQty;
 
 			WTSLogger::log_dyn_raw("trader", _id.c_str(), LL_INFO, fmt::format("[{}]{}合约卖出{}信号执行: 开空{}", _id.c_str(), stdCode, qty, maxQty).c_str());
-
-			//StreamLogger(LL_INFO, _id.c_str(), "trader").self() << "[" << _id << "]合约" << stdCode << "卖出" << qty << "手信号执行: 开空" << maxQty << "手";
 		}
 		else if (curRule._atype == AT_CloseToday)
 		{
@@ -1013,12 +987,10 @@ OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty)
 				if (commInfo->getCoverMode() == CM_CoverToday)
 				{
 					WTSLogger::log_dyn_raw("trader", _id.c_str(), LL_INFO, fmt::format("[{}]{}合约卖出{}信号执行: 平今多{}", _id.c_str(), stdCode, qty, maxQty).c_str());
-					//StreamLogger(LL_INFO, _id.c_str(), "trader").self() << "[" << _id << "]合约" << stdCode << "卖出" << qty << "手信号执行: 平今多" << maxQty << "手";
 				}
 				else
 				{
 					WTSLogger::log_dyn_raw("trader", _id.c_str(), LL_INFO, fmt::format("[{}]{}合约卖出{}信号执行: 平多{}", _id.c_str(), stdCode, qty, maxQty).c_str());
-					//StreamLogger(LL_INFO, _id.c_str(), "trader").self() << "[" << _id << "]合约" << stdCode << "卖出" << qty << "手信号执行: 平多" << maxQty << "手";
 				}
 			}
 
@@ -1054,12 +1026,10 @@ OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty)
 				if (commInfo->getCoverMode() == CM_CoverToday)
 				{
 					WTSLogger::log_dyn_raw("trader", _id.c_str(), LL_INFO, fmt::format("[{}]{}合约卖出{}信号执行: 平昨多{}", _id.c_str(), stdCode, qty, maxQty).c_str());
-					//StreamLogger(LL_INFO, _id.c_str(), "trader").self() << "[" << _id << "]合约" << stdCode << "卖出" << qty << "手信号执行: 平昨多" << maxQty << "手";
 				}
 				else
 				{
 					WTSLogger::log_dyn_raw("trader", _id.c_str(), LL_INFO, fmt::format("[{}]{}合约卖出{}信号执行: 平多{}", _id.c_str(), stdCode, qty, maxQty).c_str());
-					//StreamLogger(LL_INFO, _id.c_str(), "trader").self() << "[" << _id << "]合约" << stdCode << "卖出" << qty << "手信号执行: 平多" << maxQty << "手";
 				}
 			}
 		}
@@ -1090,7 +1060,6 @@ OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty)
 					left -= maxQty;
 
 					WTSLogger::log_dyn_raw("trader", _id.c_str(), LL_INFO, fmt::format("[{}]{}合约卖出{}信号执行: 平多{}", _id.c_str(), stdCode, qty, maxQty).c_str());
-					//StreamLogger(LL_INFO, _id.c_str(), "trader").self() << "[" << _id << "]合约" << stdCode << "卖出" << qty << "手信号执行: 平多" << maxQty << "手";
 				}
 				
 			}
@@ -1120,7 +1089,6 @@ OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty)
 						left -= maxQty;
 
 						WTSLogger::log_dyn_raw("trader", _id.c_str(), LL_INFO, fmt::format("[{}]{}合约卖出{}信号执行: 平昨多{}", _id.c_str(), stdCode, qty, maxQty).c_str());
-						//StreamLogger(LL_INFO, _id.c_str(), "trader").self() << "[" << _id << "]合约" << stdCode << "卖出" << qty << "手信号执行: 平昨多" << maxQty << "手";
 					}
 					
 				}
@@ -1150,7 +1118,6 @@ OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty)
 						left -= maxQty;
 
 						WTSLogger::log_dyn_raw("trader", _id.c_str(), LL_INFO, fmt::format("[{}]{}合约卖出{}信号执行: 平今多{}", _id.c_str(), stdCode, qty, maxQty).c_str());
-						//StreamLogger(LL_INFO, _id.c_str(), "trader").self() << "[" << _id << "]合约" << stdCode << "卖出" << qty << "手信号执行: 平今多" << maxQty << "手";
 					}
 					
 				}
@@ -1406,9 +1373,6 @@ void TraderAdapter::onRspEntrust(WTSEntrust* entrust, WTSError *err)
 		action += isLong ? "多" : "空";
 
 		WTSLogger::log_dyn_raw("trader", _id.c_str(), LL_ERROR, fmt::format("[{}]下单失败: {}, 合约: {}, 操作: {}, 数量: {}", _id.c_str(), err->getMessage(), entrust->getCode(), action.c_str(), qty).c_str());
-		{
-			//StreamLogger(LL_INFO, _id.c_str(), "trader").self() << "[" << _id << "]下单失败: " << err->getMessage() << ", 合约: " << entrust->getCode() << ", 操作: " << action << ", 数量: " << qty;
-		}
 
 		//如果下单失败, 要更新未完成数量
 		bool isBuy = (isLong&&isOpen) || (!isLong&&!isOpen);
@@ -1417,9 +1381,6 @@ void TraderAdapter::onRspEntrust(WTSEntrust* entrust, WTSError *err)
 		_undone_qty[stdCode] = newQty;
 
 		WTSLogger::log_dyn_raw("trader", _id.c_str(), LL_INFO, fmt::format("[{}]合约 {} 未完成订单数量更新, {} -> {}", _id.c_str(), stdCode.c_str(), oldQty, newQty).c_str());
-		//{
-		//	StreamLogger(LL_INFO, _id.c_str(), "trader").self() << "[" << _id << "]" << stdCode << " 未完成订单数量更新, " << oldQty << " -> " << newQty;
-		//}
 
 
 		if (strlen(entrust->getUserTag()) > 0)
@@ -1609,7 +1570,6 @@ void TraderAdapter::onRspOrders(const WTSArray* ayOrders)
 			const double& curQty = _undone_qty[stdCode];
 
 			WTSLogger::log_dyn_raw("trader", _id.c_str(), LL_INFO, fmt::format("[{}]合约{}未完成数量{}", _id.c_str(), stdCode, curQty).c_str());
-			//StreamLogger(LL_INFO, _id.c_str(), "trader").self() << "[" << _id << "]合约" << stdCode << "未完成数量" << curQty;
 		}
 	}
 

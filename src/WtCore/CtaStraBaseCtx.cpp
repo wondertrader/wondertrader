@@ -362,13 +362,8 @@ void CtaStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 
 					condList.push_back(condInfo);
 
-					//stra_log_text("条件单恢复, 合约: %s, %s %d手, 触发条件: 最新价 %s %s", stdCode, ACTION_NAMES[condInfo._action], condInfo._qty, CMP_ALG_NAMES[condInfo._alg], condInfo._target);
-					{
-						//StreamLogger(LL_INFO, _name.c_str(), "strategy").self() << "[" << _name << "]条件单恢复, 合约: " << stdCode << ", " << ACTION_NAMES[condInfo._action] 
-						//	<< " " << condInfo._qty << "手, 触发条件 : 最新价 " << CMP_ALG_NAMES[condInfo._alg] << " " << condInfo._target;
-						stra_log_text(fmt::format("条件单恢复, 合约: {}, {} {}, 触发条件: 最新价 {} {}",
-							stdCode, ACTION_NAMES[condInfo._action], condInfo._qty, CMP_ALG_NAMES[condInfo._alg], condInfo._target).c_str());
-					}
+					stra_log_text(fmt::format("条件单恢复, 合约: {}, {} {}, 触发条件: 最新价 {} {}",
+						stdCode, ACTION_NAMES[condInfo._action], condInfo._qty, CMP_ALG_NAMES[condInfo._alg], condInfo._target).c_str());
 					count++;
 				}
 			}
@@ -637,10 +632,6 @@ void CtaStraBaseCtx::on_tick(const char* stdCode, WTSTickData* newTick, bool bEm
 			if (isMatched)
 			{
 				stra_log_text(fmt::format("条件单触发[最新价: {}{}{}], 合约: {}, {} {}", curVal, CMP_ALG_NAMES[entrust._alg], entrust._target, stdCode, ACTION_NAMES[entrust._action], entrust._qty).c_str());
-				{
-					//StreamLogger(LL_INFO, _name.c_str(), "strategy").self() << "[" << _name << "]条件单触发[最新价: " << curVal << CMP_ALG_NAMES[entrust._alg] 
-					//	<< entrust._target << "], 合约: " << stdCode << ", " << ACTION_NAMES[entrust._action] << " " << entrust._qty  << "手";
-				}
 
 				switch (entrust._action)
 				{
