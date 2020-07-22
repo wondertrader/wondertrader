@@ -290,7 +290,7 @@ void WtSelEngine::handle_pos_change(const char* stdCode, double diffQty)
 		CodeHelper::CodeInfo cInfo;
 		CodeHelper::extractStdCode(stdCode, cInfo);
 		std::string code = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
-		realCode = CodeHelper::bscFutCodeToStdCode(cInfo._code, cInfo._exchg);
+		realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), cInfo._exchg);
 	}
 
 	PosInfo& pItem = _pos_map[realCode];
