@@ -185,7 +185,7 @@ void WtHftStraDemo::on_bar(IHftStraCtx* ctx, const char* code, const char* perio
 	
 }
 
-void WtHftStraDemo::on_trade(IHftStraCtx* ctx, const char* stdCode, bool isBuy, double qty, double price)
+void WtHftStraDemo::on_trade(IHftStraCtx* ctx, uint32_t localid, const char* stdCode, bool isBuy, double qty, double price)
 {
 	
 }
