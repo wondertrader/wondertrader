@@ -189,7 +189,7 @@ public:
 	 *	vol		成交数量, 这里没有正负, 通过isBuy确定买入还是卖出
 	 *	price	成交价格
 	 */
-	virtual void on_trade(const char* stdCode, bool isBuy, double vol, double price) = 0;
+	virtual void on_trade(uint32_t localid, const char* stdCode, bool isBuy, double vol, double price) = 0;
 
 	/*
 	 *	订单回报
