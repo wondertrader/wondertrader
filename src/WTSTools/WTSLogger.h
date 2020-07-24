@@ -13,6 +13,7 @@
 
 #include <memory>
 #include <sstream>
+#include <thread>
 
 #include <spdlog/spdlog.h>
 
@@ -25,6 +26,7 @@ NS_OTP_END
 
 USING_NS_OTP;
 
+#define MAX_LOG_BUF_SIZE 2048
 
 class WTSLogger
 {
@@ -44,7 +46,7 @@ public:
 	static void error(const char* format, ...);
 	static void fatal(const char* format, ...);
 	static void log(WTSLogLevel ll, const char* format, ...);
-	static void vlog(WTSLogLevel ll, const char* format, va_list args);
+	static void vlog(WTSLogLevel ll, const char* format, va_list& args);
 	static void log_raw(WTSLogLevel ll, const char* message);
 
 	static void debug2(const char* catName, const char* format, ...);
@@ -53,11 +55,11 @@ public:
 	static void error2(const char* catName, const char* format, ...);
 	static void fatal2(const char* catName, const char* format, ...);
 	static void log2(const char* catName, WTSLogLevel ll, const char* format, ...);
-	static void log2_direct(const char* catName, WTSLogLevel ll, const char* format, va_list args);
+	static void vlog2(const char* catName, WTSLogLevel ll, const char* format, va_list& args);
 	static void log2_raw(const char* catName, WTSLogLevel ll, const char* message);
 
 	static void log_dyn(const char* patttern, const char* catName, WTSLogLevel ll, const char* format, ...);
-	static void vlog_dyn(const char* patttern, const char* catName, WTSLogLevel ll, const char* format, va_list args);
+	static void vlog_dyn(const char* patttern, const char* catName, WTSLogLevel ll, const char* format, va_list& args);
 	static void log_dyn_raw(const char* patttern, const char* catName, WTSLogLevel ll, const char* message);
 
 	static void init(const char* propFile = "logcfg.json", ILogHandler* handler = NULL, WTSLogLevel logLevel = LL_INFO);
@@ -77,6 +79,8 @@ private:
 
 	typedef WTSHashMap<std::string>	LogPatterns;
 	static LogPatterns*			m_mapPatterns;
+
+	static thread_local char	m_buffer[MAX_LOG_BUF_SIZE];
 };
 
 

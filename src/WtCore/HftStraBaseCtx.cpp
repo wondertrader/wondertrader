@@ -198,7 +198,7 @@ void HftStraBaseCtx::stra_log_text(const char* fmt, ...)
 	strcat(szBuf, fmt);
 	va_list args;
 	va_start(args, fmt);
-	WTSLogger::log2_direct("strategy", LL_INFO, szBuf, args);
+	WTSLogger::vlog2("strategy", LL_INFO, szBuf, args);
 	va_end(args);
 }
 
