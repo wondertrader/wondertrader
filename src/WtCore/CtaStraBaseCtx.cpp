@@ -1242,6 +1242,7 @@ WTSTickData* CtaStraBaseCtx::stra_get_last_tick(const char* stdCode)
 void CtaStraBaseCtx::stra_sub_ticks(const char* code)
 {
 	_engine->sub_tick(_context_id, code);
+	stra_log_text("实时行情已订阅: %s", code);
 }
 
 WTSCommodityInfo* CtaStraBaseCtx::stra_get_comminfo(const char* stdCode)
