@@ -123,6 +123,7 @@ uint32_t WtRtRunner::createHftContext(const char* name, const char* trader)
 	_hft_engine.addContext(HftContextPtr(ctx));
 	TraderAdapterPtr trdPtr = _traders.getAdapter(trader);
 	ctx->setTrader(trdPtr.get());
+	trdPtr->addSink(ctx);
 	return ctx->id();
 }
 
