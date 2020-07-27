@@ -196,14 +196,26 @@ void CTraderSpi::ReqQryInstrument()
 	std::cerr << "--->>> 请求查询合约: " << ((iResult == 0) ? "成功" : "失败") << std::endl;
 }
 
+inline bool isOption(TThostFtdcProductClassType pClass)
+{
+	if (pClass == THOST_FTDC_PC_Options || pClass == THOST_FTDC_PC_SpotOption)
+		return true;
+	
+	return false;
+}
+
+inline bool isFuture(TThostFtdcProductClassType pClass)
+{
+	return pClass == THOST_FTDC_PC_Futures;
+}
 
 void CTraderSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
-	std::cerr << "--->>> " << "OnRspQryInstrument" << std::endl;
 	if (!IsErrorRspInfo(pRspInfo))
 	{
-		if (pInstrument->ProductClass == (ISFOROPTION ? THOST_FTDC_PC_Options: THOST_FTDC_PC_Futures))
-		{			
+		if (pInstrument && ISFOROPTION?isOption(pInstrument->ProductClass):isFuture(pInstrument->ProductClass))
+		{		
+			std::cerr << "--->>> OnRspQryInstrument: " << pInstrument->ExchangeID << "." << pInstrument->InstrumentID << std::endl;
 			std::string pname = MAP_NAME[pInstrument->ProductID];
 			std::string cname = "";
 			if (pname.empty())
