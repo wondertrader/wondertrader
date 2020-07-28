@@ -44,21 +44,23 @@ SET(LIBS
 ADD_EXECUTABLE(QuoteFactory ${SRCS})
 TARGET_LINK_LIBRARIES(QuoteFactory ${LIBS})
 
+file(MAKE_DIRECTORY ${LIBRARY_OUTPUT_PATH}/parsers/)
+
 add_custom_command(TARGET QuoteFactory POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E
-		copy ${PROJECT_SOURCE_DIR}/../build/bin/libParserCTP.so ${EXECUTABLE_OUTPUT_PATH}/
+		copy ${PROJECT_SOURCE_DIR}/../build/bin/libParserCTP.so ${EXECUTABLE_OUTPUT_PATH}/parsers/
 		
 		COMMAND ${CMAKE_COMMAND} -E
-		copy ${PROJECT_SOURCE_DIR}/../build/bin/libParserXTP.so ${EXECUTABLE_OUTPUT_PATH}/
+		copy ${PROJECT_SOURCE_DIR}/../build/bin/libParserXTP.so ${EXECUTABLE_OUTPUT_PATH}/parsers/
 		
 		COMMAND ${CMAKE_COMMAND} -E
-		copy ${PROJECT_SOURCE_DIR}/../build/bin/libParseriTap.so ${EXECUTABLE_OUTPUT_PATH}/
+		copy ${PROJECT_SOURCE_DIR}/../build/bin/libParseriTap.so ${EXECUTABLE_OUTPUT_PATH}/parsers/
 		
 		COMMAND ${CMAKE_COMMAND} -E
-		copy ${PROJECT_SOURCE_DIR}/../build/bin/libParserFemas.so ${EXECUTABLE_OUTPUT_PATH}/
+		copy ${PROJECT_SOURCE_DIR}/../build/bin/libParserFemas.so ${EXECUTABLE_OUTPUT_PATH}/parsers/
 		
 		COMMAND ${CMAKE_COMMAND} -E
-		copy ${PROJECT_SOURCE_DIR}/../build/bin/libParserCTPMini.so ${EXECUTABLE_OUTPUT_PATH}/
+		copy ${PROJECT_SOURCE_DIR}/../build/bin/libParserCTPMini.so ${EXECUTABLE_OUTPUT_PATH}/parsers/
 		
 		COMMAND ${CMAKE_COMMAND} -E
 		copy ${PROJECT_SOURCE_DIR}/../build/bin/libWtDataWriter.so ${EXECUTABLE_OUTPUT_PATH}/

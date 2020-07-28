@@ -1,7 +1,7 @@
 set env=%1
 set plat=%2
 
-set folder="..\%plat%\%env%\WtPorter\parsers\"
+set folder="..\%plat%\%env%\WtDtPorter\parsers\"
 if not exist %folder% md %folder%
 
 xcopy ..\%plat%\%env%\WtDataWriter.dll ..\%plat%\%env%\WtDtPorter\ /C /Y
