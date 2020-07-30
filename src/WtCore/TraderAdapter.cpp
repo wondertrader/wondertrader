@@ -1971,7 +1971,9 @@ void TraderAdapter::onPushTrade(WTSTradeInfo* tradeRecord)
 		if (isOpen)
 		{
 			pItem.l_newvol += vol;
-			pItem.l_newavail += vol;
+
+			if(commInfo->getCategoty() != CC_Stock)
+				pItem.l_newavail += vol;
 
 			statItem.l_openvol += vol;
 		}
@@ -1997,7 +1999,8 @@ void TraderAdapter::onPushTrade(WTSTradeInfo* tradeRecord)
 		if (isOpen)
 		{
 			pItem.s_newvol += vol;
-			pItem.s_newavail += vol;
+			if (commInfo->getCategoty() != CC_Stock)
+				pItem.s_newavail += vol;
 
 			statItem.s_openvol += vol;
 		}
