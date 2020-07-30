@@ -46,8 +46,10 @@ private:
 	std::string		_code;
 	uint32_t		_count;
 	uint32_t		_secs;
+	uint32_t		_freq;
 	int32_t			_offset;
 	uint32_t		_unit;
+	double			_reserved;
 	bool			_stock;
 
 	typedef std::unordered_set<uint32_t> IDSet;
