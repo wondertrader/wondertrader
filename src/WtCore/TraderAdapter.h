@@ -23,13 +23,14 @@ class ActionPolicyMgr;
 class WTSContractInfo;
 class WTSCommodityInfo;
 class WtExecuter;
+class EventCaster;
 
 class ITrdNotifySink;
 
 class TraderAdapter : public ITraderApiListener
 {
 public:
-	TraderAdapter();
+	TraderAdapter(EventCaster* caster = NULL);
 	~TraderAdapter();
 
 	typedef enum tagAdapterState
@@ -195,6 +196,8 @@ private:
 	FuncDeleteTrader	_remover;
 	AdapterState		_state;
 
+	EventCaster*		_caster;
+
 	std::unordered_set<ITrdNotifySink*>	_sinks;
 
 	IBaseDataMgr*		_bd_mgr;
@@ -243,6 +246,7 @@ public:
 
 	void	run();
 
+	const TraderAdapterMap& getAdapters() const { return _adapters; }
 
 	TraderAdapterPtr getAdapter(const char* tname);
 

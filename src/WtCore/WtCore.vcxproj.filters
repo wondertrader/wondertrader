@@ -138,6 +138,9 @@
     <ClInclude Include="ITrdNotifySink.h">
       <Filter>Incs</Filter>
     </ClInclude>
+    <ClInclude Include="EventCaster.h">
+      <Filter>Common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WtExecuter.cpp">
@@ -205,6 +208,9 @@
     </ClCompile>
     <ClCompile Include="WtSelTicker.cpp">
       <Filter>SEL</Filter>
+    </ClCompile>
+    <ClCompile Include="EventCaster.cpp">
+      <Filter>Common</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

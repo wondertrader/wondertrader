@@ -73,7 +73,7 @@ inline const char* formatAction(WTSDirectionType dType, WTSOffsetType oType)
 	}
 }
 
-TraderAdapter::TraderAdapter()
+TraderAdapter::TraderAdapter(EventCaster* caster /* = NULL */)
 	: _id("")
 	, _cfg(NULL)
 	, _state(AS_NOTLOGIN)
@@ -83,6 +83,7 @@ TraderAdapter::TraderAdapter()
 	, _stat_map(NULL)
 	, _risk_mon_enabled(false)
 	, _save_data(false)
+	, _caster(caster)
 {
 }
 
