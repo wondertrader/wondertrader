@@ -42,6 +42,7 @@ class WTSKlineSlice;
 class WTSPortFundInfo;
 
 class WtDataManager;
+class TraderAdapterMgr;
 
 typedef std::function<void()>	TaskItem;
 
@@ -78,6 +79,8 @@ class WtEngine : public WtPortContext, public IParserStub
 {
 public:
 	WtEngine();
+
+	inline void set_adapter_mgr(TraderAdapterMgr* mgr) { _adapter_mgr = mgr; }
 
 	void set_date_time(uint32_t curDate, uint32_t curTime, uint32_t curSecs = 0, uint32_t rawTime = 0);
 
@@ -324,5 +327,7 @@ protected:
 	WtRiskMonPtr	_risk_mon;
 	double			_risk_volscale;
 	uint32_t		_risk_date;
+
+	TraderAdapterMgr*	_adapter_mgr;
 };
 NS_OTP_END

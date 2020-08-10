@@ -51,6 +51,7 @@ WtEngine::WtEngine()
 	, _risk_date(0)
 	, _terminated(false)
 	, _evt_listener(NULL)
+	, _adapter_mgr(NULL)
 {
 	TimeUtils::getDateTime(_cur_date, _cur_time);
 	_cur_secs = _cur_time % 100000;

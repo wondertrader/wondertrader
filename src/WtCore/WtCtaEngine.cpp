@@ -13,6 +13,7 @@
 #include "WtDataManager.h"
 #include "WtCtaTicker.h"
 #include "WtHelper.h"
+#include "TraderAdapter.h"
 
 #include "../Share/CodeHelper.hpp"
 #include "../Share/StrUtil.hpp"
@@ -66,14 +67,25 @@ void WtCtaEngine::run(bool bAsync /* = false */)
 		rj::Document root(rj::kObjectType);
 		rj::Document::AllocatorType &allocator = root.GetAllocator();
 
-		rj::Value jList(rj::kArrayType);
+		rj::Value jStraList(rj::kArrayType);
 		for (auto& m : _ctx_map)
 		{
 			const CtaContextPtr& ctx = m.second;
-			jList.PushBack(rj::Value(ctx->name(), allocator), allocator);
+			jStraList.PushBack(rj::Value(ctx->name(), allocator), allocator);
 		}
 
-		root.AddMember("marks", jList, allocator);
+		root.AddMember("marks", jStraList, allocator);
+
+		rj::Value jChnlList(rj::kArrayType);
+		for (auto& m : _adapter_mgr->getAdapters())
+		{
+			const TraderAdapterPtr& adapter = m.second;
+			jStraList.PushBack(rj::Value(adapter->id(), allocator), allocator);
+		}
+
+		root.AddMember("channels", jStraList, allocator);
+
+		root.AddMember("engine", rj::Value("CTA", allocator), allocator);
 
 		std::string filename = WtHelper::getBaseDir();
 		filename += "marker.json";
