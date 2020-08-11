@@ -300,6 +300,9 @@ bool WtRtRunner::config(const char* cfgFile)
 	//初始化交易通道
 	initTraders();
 
+	//初始化事件推送器
+	initEvtCaster();
+
 	//如果不是高频引擎，则需要配置执行模块
 	if (!_is_hft)
 		initExecuters();
@@ -455,6 +458,8 @@ bool WtRtRunner::initEngine()
 		_cta_engine.init(cfg, &_bd_mgr, &_data_mgr, &_hot_mgr);
 		_engine = &_cta_engine;
 	}
+
+	_engine->set_adapter_mgr(&_traders);
 	
 	return true;
 }
@@ -536,6 +541,17 @@ bool WtRtRunner::initExecuters()
 	return true;
 }
 
+bool WtRtRunner::initEvtCaster()
+{
+	WTSVariant* cfg = _config->get("broadcaster");
+	if (cfg == NULL || cfg->type() != WTSVariant::VT_Array)
+		return false;
+
+	_evt_caster.init(cfg);
+
+	return true;
+}
+
 bool WtRtRunner::initTraders()
 {
 	WTSVariant* cfg = _config->get("traders");
@@ -551,7 +567,7 @@ bool WtRtRunner::initTraders()
 
 		const char* id = cfgItem->getCString("id");
 
-		TraderAdapterPtr adapter(new TraderAdapter);
+		TraderAdapterPtr adapter(new TraderAdapter(&_evt_caster));
 		adapter->init(id, cfgItem, &_bd_mgr, &_act_policy);
 
 		_traders.addAdapter(id, adapter);

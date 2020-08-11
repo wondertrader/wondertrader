@@ -13,6 +13,7 @@
 
 #include "PorterDefs.h"
 
+#include "../WtCore/EventCaster.h"
 #include "../WtCore/CtaStrategyMgr.h"
 #include "../WtCore/HftStrategyMgr.h"
 #include "../WtCore/SelStrategyMgr.h"
@@ -119,6 +120,7 @@ private:
 	bool initParsers();
 	bool initExecuters();
 	bool initDataMgr();
+	bool initEvtCaster();
 	bool initCtaStrategies();
 	bool initHftStrategies();
 	bool initSelStrategies();
@@ -163,6 +165,7 @@ private:
 
 	WTSBaseDataMgr		_bd_mgr;
 	WTSHotMgr			_hot_mgr;
+	EventCaster			_evt_caster;
 
 	CtaStrategyMgr		_cta_mgr;
 	HftStrategyMgr		_hft_mgr;
