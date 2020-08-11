@@ -13,7 +13,7 @@
 
 #include "PorterDefs.h"
 
-#include "../WtCore/EventCaster.h"
+#include "../WtCore/EventNotifier.h"
 #include "../WtCore/CtaStrategyMgr.h"
 #include "../WtCore/HftStrategyMgr.h"
 #include "../WtCore/SelStrategyMgr.h"

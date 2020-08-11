@@ -21,11 +21,11 @@ class WTSTradeInfo;
 class WTSOrderInfo;
 class WTSVariant;
 
-class EventCaster
+class EventNotifier
 {
 public:
-	EventCaster();
-	~EventCaster();
+	EventNotifier();
+	~EventNotifier();
 
 	typedef boost::asio::ip::udp::endpoint	EndPoint;
 	typedef std::vector<EndPoint>			ReceiverList;
@@ -34,10 +34,9 @@ private:
 	void handle_send_broad(const EndPoint& ep, const boost::system::error_code& error, std::size_t bytes_transferred); 
 	void handle_send_multi(const EndPoint& ep, const boost::system::error_code& error, std::size_t bytes_transferred); 
 
-	void broadcast(const char* trader, uint32_t localid, const char* stdCode, WTSObject* data, uint32_t dataType);
+	void notify(const char* trader, const std::string& data, uint32_t dataType);
 
-	void tradeToJson(uint32_t localid, const char* stdCode, WTSTradeInfo* trdInfo, std::string& output);
-	void orderToJson(uint32_t localid, const char* stdCode, WTSOrderInfo* ordInfo, std::string& output);
+	
 
 public:
 	bool	init(WTSVariant* cfg);
@@ -47,8 +46,13 @@ public:
 	bool	addBRecver(const char* remote, int port);
 	bool	addMRecver(const char* remote, int port, int sendport);
 
-	void	broadcast(const char* trader, uint32_t localid, const char* stdCode, WTSTradeInfo* trdInfo);
-	void	broadcast(const char* trader, uint32_t localid, const char* stdCode, WTSOrderInfo* ordInfo);
+	void	tradeToJson(uint32_t localid, const char* stdCode, WTSTradeInfo* trdInfo, std::string& output);
+	void	orderToJson(uint32_t localid, const char* stdCode, WTSOrderInfo* ordInfo, std::string& output);
+
+	void	notify(const char* trader, uint32_t localid, const char* stdCode, WTSTradeInfo* trdInfo);
+	void	notify(const char* trader, uint32_t localid, const char* stdCode, WTSOrderInfo* ordInfo);
+
+	void	notify(const char* trader, const std::string& message);
 
 private:
 	typedef boost::asio::ip::udp::socket	UDPSocket;
@@ -61,6 +65,8 @@ private:
 
 	boost::asio::ip::udp::endpoint	m_senderEP;
 	char			m_data[max_length];
+
+	std::string		m_strGroupTag;
 
 	//¹ã²¥
 	ReceiverList	m_listRawRecver;
@@ -77,35 +83,19 @@ private:
 	BoostUniqueMutex	m_mtxCast;
 	bool			m_bTerminated;
 
-	typedef struct _CastData
+	typedef struct _NotifyData
 	{
-		char		_trader[32];
-		char		_code[32];
+		std::string	_trader;
 		uint32_t	_datatype;
-		uint32_t	_localid;
-		WTSObject*	_data;
+		std::string	_data;
 
-		_CastData(const char* trader, uint32_t localid, const char* stdCode, WTSObject* obj = NULL, uint32_t dataType = 0)
-			: _data(obj), _datatype(dataType), _localid(localid)
+		_NotifyData(const char* trader, const std::string& data, uint32_t dataType = 0)
+			: _data(data), _datatype(dataType), _trader(trader)
 		{
-			strcpy(_trader, trader);
-			strcpy(_code, stdCode);
-
-			if (_data)
-				_data->retain();
 		}
+	} NotifyData;
 
-		~_CastData()
-		{
-			if (_data)
-			{
-				_data->release();
-				_data = NULL;
-			}
-		}
-	} CastData;
-
-	std::queue<CastData>		m_dataQue;
+	std::queue<NotifyData>		m_dataQue;
 };
 
 NS_OTP_END

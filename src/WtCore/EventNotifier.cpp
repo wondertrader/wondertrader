@@ -7,7 +7,7 @@
  * 
  * \brief 
  */
-#include "EventCaster.h"
+#include "EventNotifier.h"
 
 #include "../Share/StrUtil.hpp"
 #include "../Includes/WTSTradeDef.hpp"
@@ -29,32 +29,37 @@ USING_NS_OTP;
 
 #define UDP_MSG_PUSHTRADE	0x300
 #define UDP_MSG_PUSHORDER	0x301
+#define UDP_MSG_PUSHEVENT	0x302
 
 #pragma pack(push,1)
 //UDP请求包
 typedef struct _UDPPacket
 {
+	char			_group[16];
+	char			_trader[16];
 	uint32_t		_type;
 	uint32_t		_length;
 	char			_data[0];
 } UDPPacket;
 #pragma pack(pop)
 
-EventCaster::EventCaster()
+EventNotifier::EventNotifier()
 	: m_bTerminated(false)
 {
 	
 }
 
 
-EventCaster::~EventCaster()
+EventNotifier::~EventNotifier()
 {
 }
 
-bool EventCaster::init(WTSVariant* cfg)
+bool EventNotifier::init(WTSVariant* cfg)
 {
 	if (!cfg->getBoolean("active"))
 		return false;
+
+	m_strGroupTag = cfg->getCString("tag");
 
 	WTSVariant* cfgBC = cfg->get("broadcast");
 	if (cfgBC)
@@ -81,13 +86,13 @@ bool EventCaster::init(WTSVariant* cfg)
 	return true;
 }
 
-void EventCaster::start(int bport)
+void EventNotifier::start(int bport)
 {
 	if (!m_listRawRecver.empty())
 	{
 		m_sktBroadcast.reset(new UDPSocket(m_ioservice, boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(), 0)));
-		boost::asio::socket_base::broadcast option(true);
-		m_sktBroadcast->set_option(option);
+		//boost::asio::socket_base::broadcast option(true);
+		//m_sktBroadcast->set_option(option);
 	}
 
 	m_thrdIO.reset(new BoostThread([this](){
@@ -104,7 +109,7 @@ void EventCaster::start(int bport)
 	WTSLogger::info("事件广播器已启动");
 }
 
-void EventCaster::stop()
+void EventNotifier::stop()
 {
 	m_bTerminated = true;
 	m_ioservice.stop();
@@ -116,7 +121,7 @@ void EventCaster::stop()
 		m_thrdCast->join();
 }
 
-bool EventCaster::addBRecver(const char* remote, int port)
+bool EventNotifier::addBRecver(const char* remote, int port)
 {
 	try
 	{
@@ -132,7 +137,7 @@ bool EventCaster::addBRecver(const char* remote, int port)
 }
 
 
-bool EventCaster::addMRecver(const char* remote, int port, int sendport)
+bool EventNotifier::addMRecver(const char* remote, int port, int sendport)
 {
 	try
 	{
@@ -151,17 +156,35 @@ bool EventCaster::addMRecver(const char* remote, int port, int sendport)
 	return true;
 }
 
-void EventCaster::broadcast(const char* trader, uint32_t localid, const char* stdCode, WTSTradeInfo* trdInfo)
+void EventNotifier::notify(const char* trader, uint32_t localid, const char* stdCode, WTSTradeInfo* trdInfo)
 {
-	broadcast(trader, localid, stdCode, trdInfo, UDP_MSG_PUSHTRADE);
+	if (trdInfo == NULL)
+		return;
+
+	std::string data;
+	tradeToJson(localid, stdCode, trdInfo, data);
+	notify(trader, data, UDP_MSG_PUSHTRADE);
 }
 
-void EventCaster::broadcast(const char* trader, uint32_t localid, const char* stdCode, WTSOrderInfo* ordInfo)
+void EventNotifier::notify(const char* trader, uint32_t localid, const char* stdCode, WTSOrderInfo* ordInfo)
 {
-	broadcast(trader, localid, stdCode, ordInfo, UDP_MSG_PUSHORDER);
+	if (ordInfo == NULL)
+		return;
+
+	std::string data;
+	orderToJson(localid, stdCode, ordInfo, data);
+	notify(trader, data, UDP_MSG_PUSHORDER);
 }
 
-void EventCaster::tradeToJson(uint32_t localid, const char* stdCode, WTSTradeInfo* trdInfo, std::string& output)
+void EventNotifier::notify(const char* trader, const std::string& message)
+{
+	if (message.empty())
+		return;
+
+	notify(trader, message, UDP_MSG_PUSHEVENT);
+}
+
+void EventNotifier::tradeToJson(uint32_t localid, const char* stdCode, WTSTradeInfo* trdInfo, std::string& output)
 {
 	if(trdInfo == NULL)
 	{
@@ -194,7 +217,7 @@ void EventCaster::tradeToJson(uint32_t localid, const char* stdCode, WTSTradeInf
 	}
 }
 
-void EventCaster::orderToJson(uint32_t localid, const char* stdCode, WTSOrderInfo* ordInfo, std::string& output)
+void EventNotifier::orderToJson(uint32_t localid, const char* stdCode, WTSOrderInfo* ordInfo, std::string& output)
 {
 	if (ordInfo == NULL)
 	{
@@ -232,14 +255,14 @@ void EventCaster::orderToJson(uint32_t localid, const char* stdCode, WTSOrderInf
 	}
 }
 
-void EventCaster::broadcast(const char* trader, uint32_t localid, const char* stdCode, WTSObject* data, uint32_t dataType)
+void EventNotifier::notify(const char* trader, const std::string& data, uint32_t dataType)
 {
-	if(m_sktBroadcast == NULL || data == NULL || m_bTerminated)
+	if(m_sktBroadcast == NULL || data.empty() || m_bTerminated)
 		return;
 
 	{
 		BoostUniqueLock lock(m_mtxCast);
-		m_dataQue.push(CastData(trader, localid, stdCode, data, dataType));
+		m_dataQue.push(NotifyData(trader, data, dataType));
 	}
 
 	if(m_thrdCast == NULL)
@@ -255,7 +278,7 @@ void EventCaster::broadcast(const char* trader, uint32_t localid, const char* st
 					continue;
 				}	
 
-				std::queue<CastData> tmpQue;
+				std::queue<NotifyData> tmpQue;
 				{
 					BoostUniqueLock lock(m_mtxCast);
 					tmpQue.swap(m_dataQue);
@@ -263,29 +286,22 @@ void EventCaster::broadcast(const char* trader, uint32_t localid, const char* st
 				
 				while(!tmpQue.empty())
 				{
-					const CastData& castData = tmpQue.front();
+					const NotifyData& castData = tmpQue.front();
 
-					if (castData._data == NULL)
+					if (castData._data.empty())
 						break;
 
 					//直接广播
 					if (!m_listRawGroup.empty() || !m_listRawRecver.empty())
 					{
 						std::string buf_raw;
-						std::string data;
-						if (castData._datatype == UDP_MSG_PUSHTRADE)
-						{
-							tradeToJson(castData._localid, castData._code, (WTSTradeInfo*)castData._data, data);
-						}
-						else if(castData._datatype == UDP_MSG_PUSHORDER)
-						{
-							orderToJson(castData._localid, castData._code, (WTSOrderInfo*)castData._data, data);
-						}
-						buf_raw.resize(sizeof(UDPPacket)+data.size());
+						buf_raw.resize(sizeof(UDPPacket) + castData._data.size());
 						UDPPacket* pack = (UDPPacket*)buf_raw.data();
-						pack->_length = data.size();
+						pack->_length = castData._data.size();
 						pack->_type = castData._datatype;
-						memcpy(&pack->_data, data.data(), data.size());
+						strcpy(pack->_group, m_strGroupTag.c_str());
+						strcpy(pack->_trader, castData._trader.c_str());
+						memcpy(&pack->_data, castData._data.data(), castData._data.size());
 
 						//广播
 						for (auto it = m_listRawRecver.begin(); it != m_listRawRecver.end(); it++)
@@ -313,7 +329,7 @@ void EventCaster::broadcast(const char* trader, uint32_t localid, const char* st
 	}
 }
 
-void EventCaster::handle_send_broad(const EndPoint& ep, const boost::system::error_code& error, std::size_t bytes_transferred)
+void EventNotifier::handle_send_broad(const EndPoint& ep, const boost::system::error_code& error, std::size_t bytes_transferred)
 {
 	if(error)
 	{
@@ -321,7 +337,7 @@ void EventCaster::handle_send_broad(const EndPoint& ep, const boost::system::err
 	}
 }
 
-void EventCaster::handle_send_multi(const EndPoint& ep, const boost::system::error_code& error, std::size_t bytes_transferred)
+void EventNotifier::handle_send_multi(const EndPoint& ep, const boost::system::error_code& error, std::size_t bytes_transferred)
 {
 	if(error)
 	{

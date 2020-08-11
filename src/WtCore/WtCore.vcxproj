@@ -28,7 +28,7 @@
     <ClInclude Include="..\Includes\ISelStraCtx.h" />
     <ClInclude Include="..\Includes\RiskMonDefs.h" />
     <ClInclude Include="ActionPolicyMgr.h" />
-    <ClInclude Include="EventCaster.h" />
+    <ClInclude Include="EventNotifier.h" />
     <ClInclude Include="IDataManager.h" />
     <ClInclude Include="HftStraBaseCtx.h" />
     <ClInclude Include="HftStraContext.h" />
@@ -60,7 +60,7 @@
     <ClCompile Include="ActionPolicyMgr.cpp" />
     <ClCompile Include="CtaStrategyMgr.cpp" />
     <ClCompile Include="CtaStraBaseCtx.cpp" />
-    <ClCompile Include="EventCaster.cpp" />
+    <ClCompile Include="EventNotifier.cpp" />
     <ClCompile Include="HftStraBaseCtx.cpp" />
     <ClCompile Include="HftStraContext.cpp" />
     <ClCompile Include="HftStrategyMgr.cpp" />

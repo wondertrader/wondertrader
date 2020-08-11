@@ -10,6 +10,7 @@
 #include "WtExecuter.h"
 #include "TraderAdapter.h"
 #include "ActionPolicyMgr.h"
+#include "EventNotifier.h"
 #include "WtHelper.h"
 #include "ITrdNotifySink.h"
 #include "../Includes/RiskMonDefs.h"
@@ -73,7 +74,7 @@ inline const char* formatAction(WTSDirectionType dType, WTSOffsetType oType)
 	}
 }
 
-TraderAdapter::TraderAdapter(EventCaster* caster /* = NULL */)
+TraderAdapter::TraderAdapter(EventNotifier* caster /* = NULL */)
 	: _id("")
 	, _cfg(NULL)
 	, _state(AS_NOTLOGIN)
@@ -83,7 +84,7 @@ TraderAdapter::TraderAdapter(EventCaster* caster /* = NULL */)
 	, _stat_map(NULL)
 	, _risk_mon_enabled(false)
 	, _save_data(false)
-	, _caster(caster)
+	, _notifier(caster)
 {
 }
 
@@ -1329,11 +1330,17 @@ void TraderAdapter::onLoginResult(bool bSucc, const char* msg, uint32_t tradingd
 	{
 		_state = AS_LOGINFAILED;
 		WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR,"[%s]交易账号登录失败: %s", _id.c_str(), msg);
+
+		if (_notifier)
+			_notifier->notify(id(), fmt::format("登录失败: {}", msg).c_str());
 	}
 	else
 	{
 		_state = AS_LOGINED;
 		WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO,"[%s]交易账号登录成功, 当前交易日:%u", _id.c_str(), tradingdate);
+
+		if (_notifier)
+			_notifier->notify(id(), "登录成功");
 
 		_trader_api->queryPositions();	//查持仓
 	}
@@ -1392,6 +1399,9 @@ void TraderAdapter::onRspEntrust(WTSEntrust* entrust, WTSError *err)
 
 			for(auto sink : _sinks)
 				sink->on_entrust(localid, stdCode.c_str(), false, err->getMessage());
+
+			if (_notifier)
+				_notifier->notify(id(), fmt::format("下单失败: {}", err->getMessage()).c_str());
 		}
 		
 	}
@@ -1919,6 +1929,9 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 	{
 		logOrder(localid, stdCode.c_str(), orderInfo);
 	}
+
+	if (_notifier)
+		_notifier->notify(id(), localid, stdCode.c_str(), orderInfo);
 }
 
 void TraderAdapter::onPushTrade(WTSTradeInfo* tradeRecord)
@@ -2033,6 +2046,9 @@ void TraderAdapter::onPushTrade(WTSTradeInfo* tradeRecord)
 		logTrade(localid, stdCode.c_str(), tradeRecord);
 	}
 
+	if (_notifier)
+		_notifier->notify(id(), localid, stdCode.c_str(), tradeRecord);
+
 	_trader_api->queryAccount();
 }
 
@@ -2040,6 +2056,9 @@ void TraderAdapter::onTraderError(WTSError* err)
 {
 	if(err)
 		WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR,"[%s]交易通道出现错误: %s", _id.c_str(), err->getMessage());
+
+	if (_notifier)
+		_notifier->notify(id(), fmt::format("通道错误: {}", err->getMessage()).c_str());
 }
 
 IBaseDataMgr* TraderAdapter::getBaseDataMgr()
