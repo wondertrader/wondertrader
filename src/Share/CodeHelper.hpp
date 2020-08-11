@@ -149,12 +149,13 @@ public:
 
 	/*
 	 *	期货期权代码标准化
+	 *	标准期货期权代码格式为CFFEX.IO2008.C.4300
 	 */
 	static std::string bscFutOptCodeToStdCode(const char* code, const char* exchg)
 	{
 		using namespace boost::xpressive;
 		/* 定义正则表达式 */
-		cregex reg_stk = cregex::compile("^[A-Z]+\\d{4}-(C|P)-\\d+$");	//中金所、大商所格式IO2013-C-4000
+		cregex reg_stk = cregex::compile("^[A-Z|a-z]+\\d{4}-(C|P)-\\d+$");	//中金所、大商所格式IO2013-C-4000
 		bool bMatch = regex_match(code, reg_stk);
 		if(bMatch)
 		{
@@ -363,6 +364,10 @@ public:
 		{
 			strncpy(codeInfo._product, ay[1].c_str(), mpos);
 			strcat(codeInfo._product, ay[2].c_str());
+		}
+		else if (strcmp(codeInfo._exchg, "CFFEX") == 0)
+		{
+			strncpy(codeInfo._product, ay[1].c_str(), mpos);
 		}
 		else
 		{
