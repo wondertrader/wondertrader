@@ -9,7 +9,7 @@
  */
 #pragma once
 #include <queue>
-#include <fstream>
+#include <sstream>
 #include <unordered_map>
 
 #include "HisDataReplayer.h"
@@ -38,6 +38,8 @@ public:
 	virtual void	handle_init() override;
 	virtual void	handle_session_begin() override;
 	virtual void	handle_session_end() override;
+
+	virtual void	handle_replay_done() override;
 
 	//////////////////////////////////////////////////////////////////////////
 	//IHftStraCtx
@@ -166,7 +168,7 @@ private:
 
 	std::unordered_map<std::string, double> _positions;
 
-	std::ofstream	_ofs_signals;
+	std::stringstream	_ofs_signals;
 
 	//用户数据
 	typedef std::unordered_map<std::string, std::string> StringHashMap;

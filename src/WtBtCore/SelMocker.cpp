@@ -51,141 +51,52 @@ SelMocker::~SelMocker()
 {
 }
 
-void SelMocker::init_outputs()
+void SelMocker::dump_outputs()
 {
-	bool isBt = true;
-
 	std::string folder = WtHelper::getOutputDir();
 	folder += _name;
 	folder += "/";
 	boost::filesystem::create_directories(folder.c_str());
 
 	std::string filename = folder + "trades.csv";
-	_trade_logs.reset(new BoostFile());
-	if (isBt)
-	{
-		_trade_logs->create_new_file(filename.c_str());
-		_trade_logs->write_file("code,time,direct,action,price,qty,tag,fee\n");
-	}
-	else
-	{
-		bool isNewFile = !StdFile::exists(filename.c_str());
-		_trade_logs->create_or_open_file(filename.c_str());
-		if (isNewFile)
-		{
-			_trade_logs->write_file("code,time,direct,action,price,qty,tag,fee\n");
-		}
-		else
-		{
-			_trade_logs->seek_to_end();
-		}
-	}
+	std::string content = "code,time,direct,action,price,qty,tag,fee\n";
+	content += _trade_logs.str();
+	BoostFile::write_file_contents(filename.c_str(), content.c_str(), content.size());
 
 	filename = folder + "closes.csv";
-	_close_logs.reset(new BoostFile());
-	if (isBt)
-	{
-		_close_logs->create_new_file(filename.c_str());
-		_close_logs->write_file("code,direct,opentime,openprice,closetime,closeprice,qty,profit,totalprofit,entertag,exittag\n");
-	}
-	else
-	{
-		bool isNewFile = !StdFile::exists(filename.c_str());
-		_close_logs->create_or_open_file(filename.c_str());
-		if (isNewFile)
-		{
-			_close_logs->write_file("code,direct,opentime,openprice,closetime,closeprice,qty,profit,totalprofit,entertag,exittag\n");
-		}
-		else
-		{
-			_close_logs->seek_to_end();
-		}
-	}
+	content = "code,direct,opentime,openprice,closetime,closeprice,qty,profit,totalprofit,entertag,exittag\n";
+	content += _close_logs.str();
+	BoostFile::write_file_contents(filename.c_str(), content.c_str(), content.size());
+
 
 	filename = folder + "funds.csv";
-	_fund_logs.reset(new BoostFile());
-	if (isBt)
-	{
-		_fund_logs->create_new_file(filename.c_str());
-		_fund_logs->write_file("date,closeprofit,positionprofit,dynbalance,fee\n");
-	}
-	else
-	{
-		bool isNewFile = !StdFile::exists(filename.c_str());
-		_fund_logs->create_or_open_file(filename.c_str());
-		if (isNewFile)
-		{
-			_fund_logs->write_file("date,closeprofit,positionprofit,dynbalance,fee\n");
-		}
-		else
-		{
-			_fund_logs->seek_to_end();
-		}
-	}
+	content = "date,closeprofit,positionprofit,dynbalance,fee\n";
+	content += _fund_logs.str();
+	BoostFile::write_file_contents(filename.c_str(), content.c_str(), content.size());
+
 
 	filename = folder + "signals.csv";
-	_sig_logs.reset(new BoostFile());
-	if (isBt)
-	{
-		_sig_logs->create_new_file(filename.c_str());
-		_sig_logs->write_file("code,target,sigprice,gentime,usertag\n");
-	}
-	else
-	{
-		bool isNewFile = !StdFile::exists(filename.c_str());
-		_sig_logs->create_or_open_file(filename.c_str());
-		if (isNewFile)
-		{
-			_sig_logs->write_file("code,target,sigprice,gentime,usertag\n");
-		}
-		else
-		{
-			_sig_logs->seek_to_end();
-		}
-	}
+	content = "code,target,sigprice,gentime,usertag\n";
+	content += _sig_logs.str();
+	BoostFile::write_file_contents(filename.c_str(), content.c_str(), content.size());
 }
 
 void SelMocker::log_signal(const char* stdCode, double target, double price, uint64_t gentime, const char* usertag /* = "" */)
 {
-	//if (_sig_logs)
-	//	_sig_logs->write_file(StrUtil::printf("%s,%f,%f,%s,%s\n", stdCode, target, price, StrUtil::fmtUInt64(gentime).c_str(), usertag));
-
-	if (_sig_logs)
-	{
-		std::stringstream ss;
-		ss << stdCode << "," << target << "," << price << "," << gentime << "," << usertag << "\n";
-		_sig_logs->write_file(ss.str());
-	}
+	_sig_logs << stdCode << "," << target << "," << price << "," << gentime << "," << usertag << "\n";
 }
 
 void SelMocker::log_trade(const char* stdCode, bool isLong, bool isOpen, uint64_t curTime, double price, double qty, const char* userTag, double fee)
 {
-	//if (_trade_logs)
-	//	_trade_logs->write_file(StrUtil::printf("%s,%s,%s,%s,%f,%f,%s,%.2f\n", stdCode, StrUtil::fmtUInt64(curTime).c_str(), isLong ? "LONG" : "SHORT", isOpen ? "OPEN" : "CLOSE", price, qty, userTag, fee));
-	if (_trade_logs)
-	{
-		std::stringstream ss;
-		ss << stdCode << "," << curTime << "," << (isLong ? "LONG" : "SHORT") << "," << (isOpen ? "OPEN" : "CLOSE") << "," << price << "," << qty << "," << userTag << "," << fee << "\n";
-		_trade_logs->write_file(ss.str());
-	}
+	_trade_logs << stdCode << "," << curTime << "," << (isLong ? "LONG" : "SHORT") << "," << (isOpen ? "OPEN" : "CLOSE") << "," << price << "," << qty << "," << userTag << "," << fee << "\n";
 }
 
 void SelMocker::log_close(const char* stdCode, bool isLong, uint64_t openTime, double openpx, uint64_t closeTime, double closepx, double qty,
 	double profit, double totalprofit /* = 0 */, const char* enterTag /* = "" */, const char* exitTag /* = "" */)
 {
-	//if (_close_logs)
-	//	_close_logs->write_file(StrUtil::printf("%s,%s,%s,%f,%s,%f,%f,%.2f,%.2f,%s,%s\n",
-	//	stdCode, isLong ? "LONG" : "SHORT", StrUtil::fmtUInt64(openTime).c_str(), openpx, 
-	//	StrUtil::fmtUInt64(closeTime).c_str(), closepx, qty, profit, totalprofit, enterTag, exitTag));
-
-	if (_close_logs)
-	{
-		std::stringstream ss;
-		ss << stdCode << "," << (isLong ? "LONG" : "SHORT") << "," << openTime << "," << openpx
-			<< "," << closeTime << "," << closepx << "," << qty << "," << profit << ","
-			<< totalprofit << "," << enterTag << "," << exitTag << "\n";
-		_close_logs->write_file(ss.str());
-	}
+	_close_logs << stdCode << "," << (isLong ? "LONG" : "SHORT") << "," << openTime << "," << openpx
+		<< "," << closeTime << "," << closepx << "," << qty << "," << profit << ","
+		<< totalprofit << "," << enterTag << "," << exitTag << "\n";
 }
 
 bool SelMocker::initSelFactory(WTSVariant* cfg)
@@ -257,6 +168,14 @@ void SelMocker::handle_session_end()
 	this->on_session_end();
 }
 
+void SelMocker::handle_replay_done()
+{
+	WTSLogger::log_dyn_raw("strategy", _name.c_str(), LL_INFO, fmt::format("策略共触发{}次，共耗时{}微秒，平均耗时{}微秒",
+		_emit_times, _total_calc_time, _total_calc_time / _emit_times).c_str());
+
+	dump_outputs();
+}
+
 void SelMocker::handle_tick(const char* stdCode, WTSTickData* curTick)
 {
 	this->on_tick(stdCode, curTick, true);
@@ -285,8 +204,6 @@ void SelMocker::on_bar(const char* stdCode, const char* period, uint32_t times, 
 
 void SelMocker::on_init()
 {
-	init_outputs();
-
 	if (_strategy)
 		_strategy->on_init(this);
 
@@ -392,7 +309,7 @@ bool SelMocker::on_schedule(uint32_t curDate, uint32_t curTime, uint32_t fireTim
 
 	TimeUtils::Ticker ticker;
 	on_strategy_schedule(curDate, curTime);
-	stra_log_text("策略已重新调度 @ %u.%u[闭合时间%u]", curDate, fireTime, curTime);
+	//stra_log_text("策略已重新调度 @ %u.%u[闭合时间%u]", curDate, fireTime, curTime);
 
 	std::unordered_set<std::string> to_clear;
 	for(auto& v : _pos_map)
@@ -413,10 +330,6 @@ bool SelMocker::on_schedule(uint32_t curDate, uint32_t curTime, uint32_t fireTim
 
 	_emit_times++;
 	_total_calc_time += ticker.micro_seconds();
-
-	if (_emit_times % 20 == 0)
-		stra_log_text(fmt::format("策略共触发{}次, 共耗时{}微秒, 平均耗时{}微秒",
-		_emit_times, _total_calc_time, _total_calc_time / _emit_times).c_str());
 
 	_is_in_schedule = false;//调度结束，修改标记
 	return true;
@@ -465,13 +378,10 @@ void SelMocker::on_session_end()
 		total_dynprofit += pInfo._dynprofit;
 	}
 
-	//TODO:
-	//这里要把当日结算的数据写到日志文件里
-	//而且这里回测和实盘写法不同，先留着，后面来做
-	if (_fund_logs)
-		_fund_logs->write_file(StrUtil::printf("%d,%.2f,%.2f,%.2f,%.2f\n", curDate,
+
+	_fund_logs << StrUtil::printf("%d,%.2f,%.2f,%.2f,%.2f\n", curDate,
 		_fund_info._total_profit, _fund_info._total_dynprofit,
-		_fund_info._total_profit + _fund_info._total_dynprofit - _fund_info._total_fees, _fund_info._total_fees));
+		_fund_info._total_profit + _fund_info._total_dynprofit - _fund_info._total_fees, _fund_info._total_fees);
 
 	//save_data();
 }

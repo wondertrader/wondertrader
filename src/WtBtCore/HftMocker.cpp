@@ -8,15 +8,16 @@
  * \brief 
  */
 #include "HftMocker.h"
-//#include "Logger.h"
+#include "WtHelper.h"
 
 #include <stdarg.h>
 #include <math.h>
 
 #include "../Includes/WTSVariant.hpp"
-#include "../Share/TimeUtils.hpp"
 #include "../Includes/WTSContractInfo.hpp"
 #include "../Share/decimal.h"
+#include "../Share/TimeUtils.hpp"
+#include "../Share/BoostFile.hpp"
 
 uint32_t makeLocalOrderID()
 {
@@ -94,8 +95,6 @@ HftMocker::~HftMocker()
 	{
 		_factory._fact->deleteStrategy(_strategy);
 	}
-
-	_ofs_signals.close();
 
 	_commodities->release();
 }
@@ -203,6 +202,19 @@ void HftMocker::handle_session_end()
 
 }
 
+void HftMocker::handle_replay_done()
+{
+	std::string folder = WtHelper::getOutputDir();
+	folder += _name;
+	folder += "/";
+	boost::filesystem::create_directories(folder.c_str());
+
+	std::string filename = folder + "signals.csv";
+	std::string content = "time, action, position, price\n";
+	content += _ofs_signals.str();
+	BoostFile::write_file_contents(filename.c_str(), content.c_str(), content.size());
+}
+
 void HftMocker::on_bar(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar)
 {
 	if (_strategy)
@@ -238,10 +250,6 @@ uint32_t HftMocker::id()
 
 void HftMocker::on_init()
 {
-	_ofs_signals.open("signals.log");
-	_ofs_signals << "time, action, position, price" << std::endl;
-
-
 	if (_strategy)
 		_strategy->on_init(this);
 }

@@ -9,6 +9,7 @@
  */
 #pragma once
 #include <unordered_map>
+#include <sstream>
 #include "HisDataReplayer.h"
 
 #include "../Includes/ICtaStraCtx.h"
@@ -62,7 +63,7 @@ public:
 	virtual ~CtaMocker();
 
 private:
-	void	init_outputs();
+	void	dump_outputs();
 	inline void log_signal(const char* stdCode, double target, double price, uint64_t gentime, const char* usertag = "");
 	inline void	log_trade(const char* stdCode, bool isLong, bool isOpen, uint64_t curTime, double price, double qty, const char* userTag = "", double fee = 0.0);
 	inline void	log_close(const char* stdCode, bool isLong, uint64_t openTime, double openpx, uint64_t closeTime, double closepx, double qty,
@@ -88,6 +89,8 @@ public:
 	virtual void	handle_init() override;
 	virtual void	handle_session_begin() override;
 	virtual void	handle_session_end() override;
+
+	virtual void	handle_replay_done() override;
 
 	//////////////////////////////////////////////////////////////////////////
 	//ICtaStraCtx
@@ -223,10 +226,15 @@ protected:
 	typedef std::unordered_map<std::string, SigInfo>	SignalMap;
 	SignalMap		_sig_map;
 
-	BoostFilePtr	_trade_logs;
-	BoostFilePtr	_close_logs;
-	BoostFilePtr	_fund_logs;
-	BoostFilePtr	_sig_logs;
+	//BoostFilePtr	_trade_logs;
+	//BoostFilePtr	_close_logs;
+	//BoostFilePtr	_fund_logs;
+	//BoostFilePtr	_sig_logs;
+
+	std::stringstream	_trade_logs;
+	std::stringstream	_close_logs;
+	std::stringstream	_fund_logs;
+	std::stringstream	_sig_logs;
 
 	CondEntrustMap	_condtions;
 

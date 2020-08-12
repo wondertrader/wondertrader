@@ -218,6 +218,7 @@ void HisDataReplayer::run()
 				if (nextBarTime > _end_time)
 				{
 					WTSLogger::log_raw(LL_INFO, fmt::format("{}超过结束时间{}，回放结束", nextBarTime, _end_time).c_str());
+					_listener->handle_replay_done();
 					break;
 				}
 
@@ -229,7 +230,7 @@ void HisDataReplayer::run()
 				{
 					_listener->handle_session_begin();
 					_opened_tdate = nextTDate;
-					WTSLogger::info("交易日%u开始", nextTDate);
+					//WTSLogger::info("交易日%u开始", nextTDate);
 					_cur_tdate = nextTDate;
 				}
 				;
@@ -253,18 +254,20 @@ void HisDataReplayer::run()
 					_listener->handle_session_end();
 					_closed_tdate = _cur_tdate;
 					_day_cache.clear();
-					WTSLogger::info("交易日%u结束", _cur_tdate);
+					//WTSLogger::info("交易日%u结束", _cur_tdate);
 				}
 
 				if (barList._cursor >= barList._bars.size())
 				{
 					WTSLogger::info("全部数据都已回放，回放结束");
+					_listener->handle_replay_done();
 					break;
 				}
 			}
 			else
 			{
 				WTSLogger::info("数据尚未初始化，回放直接退出");
+				_listener->handle_replay_done();
 				break;
 			}
 		}

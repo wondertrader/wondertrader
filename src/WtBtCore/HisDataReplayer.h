@@ -41,6 +41,7 @@ public:
 	virtual void	handle_init() = 0;
 	virtual void	handle_session_begin() = 0;
 	virtual void	handle_session_end() = 0;
+	virtual void	handle_replay_done() {}
 };
 
 class HisDataReplayer
