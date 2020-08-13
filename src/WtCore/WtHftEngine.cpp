@@ -88,10 +88,10 @@ void WtHftEngine::run(bool bAsync /*= false*/)
 		for (auto& m : _adapter_mgr->getAdapters())
 		{
 			const TraderAdapterPtr& adapter = m.second;
-			jStraList.PushBack(rj::Value(adapter->id(), allocator), allocator);
+			jChnlList.PushBack(rj::Value(adapter->id(), allocator), allocator);
 		}
 
-		root.AddMember("channels", jStraList, allocator);
+		root.AddMember("channels", jChnlList, allocator);
 
 		root.AddMember("engine", rj::Value("HFT", allocator), allocator);
 
