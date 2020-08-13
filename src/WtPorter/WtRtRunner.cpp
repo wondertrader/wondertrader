@@ -543,11 +543,11 @@ bool WtRtRunner::initExecuters()
 
 bool WtRtRunner::initEvtNotifier()
 {
-	WTSVariant* cfg = _config->get("broadcaster");
+	WTSVariant* cfg = _config->get("notifier");
 	if (cfg == NULL || cfg->type() != WTSVariant::VT_Array)
 		return false;
 
-	_evt_caster.init(cfg);
+	_notifier.init(cfg);
 
 	return true;
 }
@@ -567,7 +567,7 @@ bool WtRtRunner::initTraders()
 
 		const char* id = cfgItem->getCString("id");
 
-		TraderAdapterPtr adapter(new TraderAdapter(&_evt_caster));
+		TraderAdapterPtr adapter(new TraderAdapter(&_notifier));
 		adapter->init(id, cfgItem, &_bd_mgr, &_act_policy);
 
 		_traders.addAdapter(id, adapter);

@@ -165,7 +165,7 @@ private:
 
 	WTSBaseDataMgr		_bd_mgr;
 	WTSHotMgr			_hot_mgr;
-	EventNotifier		_evt_caster;
+	EventNotifier		_notifier;
 
 	CtaStrategyMgr		_cta_mgr;
 	HftStrategyMgr		_hft_mgr;
