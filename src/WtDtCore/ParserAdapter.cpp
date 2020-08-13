@@ -12,6 +12,7 @@
 #include "StateMonitor.h"
 
 #include "../Share/TimeUtils.hpp"
+#include "../Share/StrUtil.hpp"
 #include "../Includes/WTSParams.hpp"
 #include "../Includes/WTSContractInfo.hpp"
 #include "../Includes/WTSDataDef.hpp"

@@ -120,7 +120,7 @@ private:
 	bool initParsers();
 	bool initExecuters();
 	bool initDataMgr();
-	bool initEvtCaster();
+	bool initEvtNotifier();
 	bool initCtaStrategies();
 	bool initHftStrategies();
 	bool initSelStrategies();
@@ -165,7 +165,7 @@ private:
 
 	WTSBaseDataMgr		_bd_mgr;
 	WTSHotMgr			_hot_mgr;
-	EventCaster			_evt_caster;
+	EventNotifier		_evt_caster;
 
 	CtaStrategyMgr		_cta_mgr;
 	HftStrategyMgr		_hft_mgr;

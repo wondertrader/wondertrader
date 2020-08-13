@@ -7,10 +7,10 @@
  * 
  * \brief 
  */
+#include "EventNotifier.h"
 #include "WtExecuter.h"
 #include "TraderAdapter.h"
 #include "ActionPolicyMgr.h"
-#include "EventNotifier.h"
 #include "WtHelper.h"
 #include "ITrdNotifySink.h"
 #include "../Includes/RiskMonDefs.h"

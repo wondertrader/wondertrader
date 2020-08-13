@@ -301,7 +301,7 @@ bool WtRtRunner::config(const char* cfgFile)
 	initTraders();
 
 	//初始化事件推送器
-	initEvtCaster();
+	initEvtNotifier();
 
 	//如果不是高频引擎，则需要配置执行模块
 	if (!_is_hft)
@@ -541,7 +541,7 @@ bool WtRtRunner::initExecuters()
 	return true;
 }
 
-bool WtRtRunner::initEvtCaster()
+bool WtRtRunner::initEvtNotifier()
 {
 	WTSVariant* cfg = _config->get("broadcaster");
 	if (cfg == NULL || cfg->type() != WTSVariant::VT_Array)
