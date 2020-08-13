@@ -42,7 +42,7 @@ private:
 
 public:
 	bool	init(WTSVariant* cfg);
-	void	start(int bport);
+	void	start();
 	void	stop();
 
 	bool	addBRecver(const char* remote, int port);

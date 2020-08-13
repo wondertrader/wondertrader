@@ -82,20 +82,18 @@ bool EventNotifier::init(WTSVariant* cfg)
 		}
 	}
 
-	start(cfg->getInt32("bport"));
+	start();
 
 	m_bReady = true;
 
 	return true;
 }
 
-void EventNotifier::start(int bport)
+void EventNotifier::start()
 {
 	if (!m_listRawRecver.empty())
 	{
 		m_sktBroadcast.reset(new UDPSocket(m_ioservice, boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(), 0)));
-		//boost::asio::socket_base::broadcast option(true);
-		//m_sktBroadcast->set_option(option);
 	}
 
 	m_thrdIO.reset(new BoostThread([this](){
@@ -133,6 +131,8 @@ bool EventNotifier::addBRecver(const char* remote, int port)
 	{
 		boost::asio::ip::address_v4 addr = boost::asio::ip::address_v4::from_string(remote);
 		m_listRawRecver.push_back(EndPoint(addr, port));
+
+		WTSLogger::info("接收端%s:%d已加入", remote, port);
 	}
 	catch(...)
 	{

@@ -544,7 +544,7 @@ bool WtRtRunner::initExecuters()
 bool WtRtRunner::initEvtNotifier()
 {
 	WTSVariant* cfg = _config->get("notifier");
-	if (cfg == NULL || cfg->type() != WTSVariant::VT_Array)
+	if (cfg == NULL || cfg->type() != WTSVariant::VT_Object)
 		return false;
 
 	_notifier.init(cfg);
