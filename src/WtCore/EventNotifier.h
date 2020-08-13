@@ -9,12 +9,13 @@
  */
 #pragma once
 
+#include <boost/asio.hpp>
+#include <queue>
+
 #include "../Includes/WTSMarcos.h"
 #include "../Includes/WTSObject.hpp"
 #include "../Share/BoostDefine.h"
 
-#include <boost/asio.hpp>
-#include <queue>
 
 NS_OTP_BEGIN
 class WTSTradeInfo;
@@ -31,12 +32,13 @@ public:
 	typedef std::vector<EndPoint>			ReceiverList;
 
 private:
-	void handle_send_broad(const EndPoint& ep, const boost::system::error_code& error, std::size_t bytes_transferred); 
-	void handle_send_multi(const EndPoint& ep, const boost::system::error_code& error, std::size_t bytes_transferred); 
+	void	handle_send_broad(const EndPoint& ep, const boost::system::error_code& error, std::size_t bytes_transferred); 
+	void	handle_send_multi(const EndPoint& ep, const boost::system::error_code& error, std::size_t bytes_transferred); 
 
-	void notify(const char* trader, const std::string& data, uint32_t dataType);
+	void	notify(const char* trader, const std::string& data, uint32_t dataType);
 
-	
+	void	tradeToJson(uint32_t localid, const char* stdCode, WTSTradeInfo* trdInfo, std::string& output);
+	void	orderToJson(uint32_t localid, const char* stdCode, WTSOrderInfo* ordInfo, std::string& output);
 
 public:
 	bool	init(WTSVariant* cfg);
@@ -45,9 +47,6 @@ public:
 
 	bool	addBRecver(const char* remote, int port);
 	bool	addMRecver(const char* remote, int port, int sendport);
-
-	void	tradeToJson(uint32_t localid, const char* stdCode, WTSTradeInfo* trdInfo, std::string& output);
-	void	orderToJson(uint32_t localid, const char* stdCode, WTSOrderInfo* ordInfo, std::string& output);
 
 	void	notify(const char* trader, uint32_t localid, const char* stdCode, WTSTradeInfo* trdInfo);
 	void	notify(const char* trader, uint32_t localid, const char* stdCode, WTSOrderInfo* ordInfo);
@@ -67,6 +66,7 @@ private:
 	char			m_data[max_length];
 
 	std::string		m_strGroupTag;
+	bool			m_bReady;
 
 	//¹ã²¥
 	ReceiverList	m_listRawRecver;

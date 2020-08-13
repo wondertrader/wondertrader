@@ -45,6 +45,7 @@ typedef struct _UDPPacket
 
 EventNotifier::EventNotifier()
 	: m_bTerminated(false)
+	, m_bReady(false)
 {
 	
 }
@@ -83,6 +84,8 @@ bool EventNotifier::init(WTSVariant* cfg)
 
 	start(cfg->getInt32("bport"));
 
+	m_bReady = true;
+
 	return true;
 }
 
@@ -106,11 +109,14 @@ void EventNotifier::start(int bport)
 		}
 	}));
 
-	WTSLogger::info("事件广播器已启动");
+	WTSLogger::info("事件通知器已启动");
 }
 
 void EventNotifier::stop()
 {
+	if (!m_bReady)
+		return;
+
 	m_bTerminated = true;
 	m_ioservice.stop();
 	if (m_thrdIO)
@@ -158,7 +164,7 @@ bool EventNotifier::addMRecver(const char* remote, int port, int sendport)
 
 void EventNotifier::notify(const char* trader, uint32_t localid, const char* stdCode, WTSTradeInfo* trdInfo)
 {
-	if (trdInfo == NULL)
+	if (trdInfo == NULL || !m_bReady)
 		return;
 
 	std::string data;
@@ -168,7 +174,7 @@ void EventNotifier::notify(const char* trader, uint32_t localid, const char* std
 
 void EventNotifier::notify(const char* trader, uint32_t localid, const char* stdCode, WTSOrderInfo* ordInfo)
 {
-	if (ordInfo == NULL)
+	if (ordInfo == NULL || !m_bReady)
 		return;
 
 	std::string data;
@@ -178,7 +184,7 @@ void EventNotifier::notify(const char* trader, uint32_t localid, const char* std
 
 void EventNotifier::notify(const char* trader, const std::string& message)
 {
-	if (message.empty())
+	if (message.empty() || !m_bReady)
 		return;
 
 	notify(trader, message, UDP_MSG_PUSHEVENT);
