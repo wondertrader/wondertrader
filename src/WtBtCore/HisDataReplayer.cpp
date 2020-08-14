@@ -415,7 +415,11 @@ void HisDataReplayer::run()
 				{
 					WTSLogger::info("按任务周期回测结束");
 					if (_listener)
+					{
 						_listener->handle_session_end();
+						_listener->handle_replay_done();
+					}
+
 					break;
 				}
 			}
@@ -506,7 +510,10 @@ void HisDataReplayer::run()
 				{
 					WTSLogger::info("按任务周期回测结束");
 					if (_listener)
+					{
 						_listener->handle_session_end();
+						_listener->handle_replay_done();
+					}
 					break;
 				}
 			}
