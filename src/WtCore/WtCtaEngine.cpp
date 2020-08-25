@@ -253,7 +253,7 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 		if (bRiskEnabled && pos != 0)
 		{
 			double symbol = pos / abs(pos);
-			pos = abs(pos)*_risk_volscale*symbol;
+			pos = decimal::rnd(abs(pos)*_risk_volscale)*symbol;
 		}
 		
 		push_task([this, stdCode, pos](){
@@ -326,7 +326,7 @@ void WtCtaEngine::handle_pos_change(const char* stdCode, double diffQty)
 	if (bRiskEnabled && targetPos != 0)
 	{
 		double symbol = targetPos / abs(targetPos);
-		targetPos = abs(targetPos)*_risk_volscale*symbol;
+		targetPos = decimal::rnd(abs(targetPos)*_risk_volscale)*symbol;
 	}
 
 	push_task([this, realCode, targetPos](){

@@ -345,7 +345,7 @@ void WtSelEngine::handle_pos_change(const char* stdCode, double diffQty)
 	if (bRiskEnabled && targetPos != 0)
 	{
 		double symbol = targetPos / abs(targetPos);
-		targetPos = abs(targetPos)*_risk_volscale*symbol;
+		targetPos = decimal::rnd(abs(targetPos)*_risk_volscale)*symbol;
 	}
 
 	push_task([this, realCode, targetPos](){

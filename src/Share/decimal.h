@@ -14,6 +14,11 @@ namespace decimal
 {
 	const double EPSINON = 1e-6;
 
+	inline double rnd(double v, int exp = 1)
+	{
+		return round(v*exp) / exp;
+	}
+
 	inline bool eq(double a, double b = 0.0)
 	{
 		return(fabs(a - b) < EPSINON);
