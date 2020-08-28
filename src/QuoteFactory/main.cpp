@@ -58,7 +58,7 @@ const char* getBinDir()
 		_bin_dir = _bin_dir.substr(0, nPos + 1);
 #else
 		char strPath[260];
-		getcwd(strPath, sizeof(path));
+		getcwd(strPath, sizeof(strPath));
 		_bin_dir = StrUtil::standardisePath(strPath, false);
 #endif
 	}
