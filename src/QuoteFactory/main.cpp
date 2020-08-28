@@ -81,8 +81,14 @@ void initParsers(WTSVariant* cfg)
 		if (!cfgItem->getBoolean("active"))
 			continue;
 
-		const char* path = cfgItem->getCString("module");
-		DllHandle libParser = DLLHelper::load_library(path);
+		std::string module = cfgItem->getCString("module");
+		if (!StdFile::exists(module.c_str()))
+		{
+			module = WtHelper::get_module_dir();
+			module += "parsers/";
+			module += cfgItem->getCString("module");
+		}
+		DllHandle libParser = DLLHelper::load_library(module.c_str());
 		if (libParser)
 		{
 			FuncCreateParser pFuncCreateParser = (FuncCreateParser)DLLHelper::get_symbol(libParser, "createParser");
@@ -110,7 +116,7 @@ void initParsers(WTSVariant* cfg)
 		}
 		else
 		{
-			WTSLogger::info("行情模块初始化失败,加载模块%s失败...", path);
+			WTSLogger::info("行情模块初始化失败,加载模块%s失败...", module.c_str());
 		}
 	}
 
