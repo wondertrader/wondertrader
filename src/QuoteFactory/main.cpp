@@ -60,6 +60,7 @@ const char* getBinDir()
 		char strPath[260];
 		getcwd(strPath, sizeof(strPath));
 		_bin_dir = StrUtil::standardisePath(strPath, false);
+		_bin_dir += "/";
 #endif
 	}
 
