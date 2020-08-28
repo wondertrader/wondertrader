@@ -2,6 +2,7 @@
 #include "../WtDtCore/DataManager.h"
 #include "../WtDtCore/StateMonitor.h"
 #include "../WtDtCore/UDPCaster.h"
+#include "../WtDtCore/WtHelper.h"
 
 #include "../Includes/WTSSessionInfo.hpp"
 #include "../Share/DLLHelper.hpp"
@@ -11,6 +12,7 @@
 #include "../WTSTools/WTSHotMgr.h"
 #include "../WTSTools/WTSBaseDataMgr.h"
 #include "../WTSTools/WTSLogger.h"
+#include "../Share/StrUtil.hpp"
 
 #include <boost/asio.hpp>
 
@@ -40,6 +42,29 @@ BOOL WINAPI ConsoleCtrlhandler(DWORD dwCtrlType)
 	return TRUE;
 }
 #endif
+
+const char* getBinDir()
+{
+	static std::string _bin_dir;
+	if (_bin_dir.empty())
+	{
+#ifdef _WIN32
+
+		char strPath[MAX_PATH];
+		GetModuleFileName(GetModuleHandle(NULL), strPath, MAX_PATH);
+
+		_bin_dir = StrUtil::standardisePath(strPath, false);
+		uint32_t nPos = _bin_dir.find_last_of('/');
+		_bin_dir = _bin_dir.substr(0, nPos + 1);
+#else
+		char strPath[260];
+		getcwd(strPath, sizeof(path));
+		_bin_dir = StrUtil::standardisePath(strPath, false);
+#endif
+	}
+
+	return _bin_dir.c_str();
+}
 
 
 void initDataMgr(WTSVariant* config)
@@ -93,6 +118,8 @@ void initParsers(WTSVariant* cfg)
 
 void initialize()
 {
+	WtHelper::set_module_dir(getBinDir());
+
 	std::string json;
 	StdFile::read_file_content("QFConfig.json", json);
 	rj::Document document;
