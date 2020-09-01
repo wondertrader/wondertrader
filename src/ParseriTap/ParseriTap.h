@@ -1,7 +1,8 @@
 #pragma once
-#include "../Includes/IParserApi.h"
-#include "./TapQuote/TapQuoteAPI.h"
 #include <map>
+#include "../Includes/IParserApi.h"
+#include "../Share/DLLHelper.hpp"
+#include "./TapQuote/TapQuoteAPI.h"
 
 
 NS_OTP_BEGIN
@@ -118,5 +119,12 @@ private:
 
 	StringMap			m_mapProductIToO;
 	StringMap			m_mapProductOToI;
+
+	DllHandle		m_hInst;
+	//TAP_DLLEXPORT ITapQuoteAPI *TAP_CDECL CreateTapQuoteAPI(const TapAPIApplicationInfo *appInfo, TAPIINT32 &iResult);
+	typedef ITapQuoteAPI* (*iTapCreator)(const TapAPIApplicationInfo *, TAPIINT32 &);
+	typedef void (*iTapRemover)(ITapQuoteAPI *);
+	iTapCreator		m_funcCreator;
+	iTapRemover		m_funcRemover;
 };
 

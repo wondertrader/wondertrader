@@ -94,13 +94,13 @@ void initParsers(WTSVariant* cfg)
 			FuncCreateParser pFuncCreateParser = (FuncCreateParser)DLLHelper::get_symbol(libParser, "createParser");
 			if (pFuncCreateParser == NULL)
 			{
-				WTSLogger::info("行情模块初始化失败,找不到对应的入口函数...");
+				WTSLogger::info("行情模块初始化失败,找不到入口函数createParser...");
 			}
 
 			FuncDeleteParser pFuncDeleteParser = (FuncDeleteParser)DLLHelper::get_symbol(libParser, "deleteParser");
 			if (pFuncDeleteParser == NULL)
 			{
-				WTSLogger::info("行情模块初始化失败,找不到对应的入口函数...");
+				WTSLogger::info("行情模块初始化失败,找不到入口函数deleteParser...");
 			}
 
 			if (pFuncCreateParser && pFuncDeleteParser)

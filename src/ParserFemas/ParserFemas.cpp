@@ -26,11 +26,6 @@
 #endif
 
 #ifdef _WIN32
-#ifdef _WIN64
-#pragma comment(lib, "./ustptraderapi/USTPmduserapiAF64.lib")
-#else
-#pragma comment(lib, "./ustptraderapi/USTPmduserapiAF32.lib")
-#endif
 #include <wtypes.h>
 HMODULE	g_dllModule = NULL;
 
@@ -161,13 +156,19 @@ bool ParserFemas::init(WTSParams* config)
 #endif
 	}
 	std::string dllpath = getBinDir() + module;
-	DLLHelper::load_library(dllpath.c_str());
 	std::string path = StrUtil::printf("FemasParserFlow/%s/%s/", m_strBroker.c_str(), m_strUserID.c_str());
 	if (!StdFile::exists(path.c_str()))
 	{
 		boost::filesystem::create_directories(boost::filesystem::path(path));
 	}
-	m_pUserAPI = CUstpFtdcMduserApi::CreateFtdcMduserApi(path.c_str());
+	m_hInst = DLLHelper::load_library(dllpath.c_str());
+#ifdef _WIN32
+	const char* creatorName = "?CreateFtdcMduserApi@CUstpFtdcMduserApi@@SAPEAV1@PEBD@Z";
+#else
+	const char* creatorName = "_ZN18CUstpFtdcMduserApi19CreateFtdcMduserApiEPKc";
+#endif
+	m_funcCreator = (FemasCreator)DLLHelper::get_symbol(m_hInst, creatorName);
+	m_pUserAPI = m_funcCreator(path.c_str());
 	m_pUserAPI->RegisterSpi(this);
 	m_pUserAPI->RegisterFront((char*)m_strFrontAddr.c_str());
 

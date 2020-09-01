@@ -19,11 +19,6 @@
 #include "../Share/DLLHelper.hpp"
 
 #ifdef _WIN32
-#ifdef _WIN64
-#pragma comment(lib, "./XTPQuoteApi/xtpquoteapi64.lib")
-#else
-#pragma comment(lib, "./XTPQuoteApi/xtpquoteapi32.lib")
-#endif
 #include <wtypes.h>
 HMODULE	g_dllModule = NULL;
 
@@ -153,12 +148,18 @@ bool ParserXTP::init(WTSParams* config)
 		module = "libxtpquoteapi.so";
 #endif
 	}
-	std::string dllpath = getBinDir() + module;
-	DLLHelper::load_library(dllpath.c_str());
-
-	std::string path = StrUtil::printf("XTPParserFlow/%s/",m_strUser.c_str());
+	std::string path = StrUtil::printf("XTPParserFlow/%s/", m_strUser.c_str());
 	BoostFile::create_directories(path.c_str());
-	m_pUserAPI = XTP::API::QuoteApi::CreateQuoteApi(m_uClientID, path.c_str());
+
+	std::string dllpath = getBinDir() + module;
+	m_hInst = DLLHelper::load_library(dllpath.c_str());
+#ifdef _WIN32
+	const char* creatorName = "?CreateQuoteApi@QuoteApi@API@XTP@@SAPAV123@EPBDW4XTP_LOG_LEVEL@@@Z";
+#else
+	const char* creatorName = "_ZN3XTP3API8QuoteApi14CreateQuoteApiEhPKc13XTP_LOG_LEVEL";
+#endif
+	m_funcCreator = (XTPCreater)DLLHelper::get_symbol(m_hInst, creatorName);
+	m_pUserAPI = m_funcCreator(m_uClientID, path.c_str(), XTP_LOG_LEVEL_DEBUG);
 	m_pUserAPI->RegisterSpi(this);
 
 	return true;

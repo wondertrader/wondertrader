@@ -30,11 +30,6 @@
 #endif
 
 #ifdef _WIN32
-#ifdef _WIN64
-#pragma comment(lib, "./XTPApi/xtptraderapi64.lib")
-#else
-#pragma comment(lib, "./XTPApi/xtptraderapi32.lib")
-#endif
 #include <wtypes.h>
 HMODULE	g_dllModule = NULL;
 
@@ -621,7 +616,14 @@ bool TraderXTP::init(WTSParams *params)
 #endif
 	}
 	std::string dllpath = getBinDir() + module;
-	DLLHelper::load_library(dllpath.c_str());
+
+	m_hInstXTP = DLLHelper::load_library(dllpath.c_str());
+#ifdef _WIN32
+	const char* creatorName = "?CreateTraderApi@TraderApi@API@XTP@@SAPEAV123@EPEBDW4XTP_LOG_LEVEL@@@Z";
+#else
+	const char* creatorName = "_ZN3XTP3API9TraderApi15CreateTraderApiEhPKc13XTP_LOG_LEVEL";
+#endif
+	m_funcCreator = (XTPCreator)DLLHelper::get_symbol(m_hInstXTP, creatorName);
 
 	return true;
 }
@@ -666,7 +668,7 @@ void TraderXTP::reconnect()
 	std::stringstream ss;
 	ss << "./xtpdata/flows/" << _user << "/";
 	boost::filesystem::create_directories(ss.str().c_str());
-	_api = XTP::API::TraderApi::CreateTraderApi(_client, ss.str().c_str());			// 创建UserApi
+	_api = m_funcCreator(_client, ss.str().c_str(), XTP_LOG_LEVEL_DEBUG);			// 创建UserApi
 	if (_api == NULL)
 	{
 		if (_sink)

@@ -109,7 +109,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>
       </ModuleDefinitionFile>
-      <DelayLoadDLLs>xtpquoteapi.dll</DelayLoadDLLs>
+      <DelayLoadDLLs>
+      </DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -125,7 +126,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>
       </ModuleDefinitionFile>
-      <DelayLoadDLLs>xtpquoteapi.dll</DelayLoadDLLs>
+      <DelayLoadDLLs>
+      </DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -146,7 +148,8 @@
       <ModuleDefinitionFile>
       </ModuleDefinitionFile>
       <OptimizeReferences>true</OptimizeReferences>
-      <DelayLoadDLLs>xtpquoteapi.dll</DelayLoadDLLs>
+      <DelayLoadDLLs>
+      </DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -167,7 +170,8 @@
       <ModuleDefinitionFile>
       </ModuleDefinitionFile>
       <OptimizeReferences>true</OptimizeReferences>
-      <DelayLoadDLLs>xtpquoteapi.dll</DelayLoadDLLs>
+      <DelayLoadDLLs>
+      </DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
