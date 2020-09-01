@@ -18,7 +18,6 @@
 #include "../Includes/WTSError.hpp"
 #include "../Includes/WTSParams.hpp"
 #include "../Share/StdUtils.hpp"
-#include "../Share/DLLHelper.hpp"
 #include "../Share/decimal.h"
 
 #include <boost/filesystem.hpp>
