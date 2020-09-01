@@ -343,7 +343,7 @@ bool WtDataWriter::writeTick(WTSTickData* curTick, bool bNeedSlice /* = true */)
 			_tcnt_map[curTick->exchg()]++;
 			if (_tcnt_map[curTick->exchg()] % _log_group_size == 0)
 			{
-				_sink->outputWriterLog(LL_INFO, "共收到交易所%s的tick数据%I64d条", curTick->exchg(), _tcnt_map[curTick->exchg()]);
+				_sink->outputWriterLog(LL_INFO, "共收到交易所%s的tick数据%s条", curTick->exchg(), StrUtil::fmtUInt64(_tcnt_map[curTick->exchg()]).c_str());
 			}
 		} while (false);
 
@@ -366,7 +366,7 @@ bool WtDataWriter::writeOrderQueue(WTSOrdQueData* curOrdQue)
 			WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(ct);
 
 			//再根据状态过滤
-			if (_sink->canSessionReceive(commInfo->getSession()))
+			if (!_sink->canSessionReceive(commInfo->getSession()))
 				break;
 
 			OrdQueBlockPair* pBlockPair = getOrdQueBlock(ct, curOrdQue->tradingdate());
@@ -394,7 +394,7 @@ bool WtDataWriter::writeOrderQueue(WTSOrdQueData* curOrdQue)
 			_tcnt_map[curOrdQue->exchg()]++;
 			if (_tcnt_map[curOrdQue->exchg()] % _log_group_size == 0)
 			{
-				_sink->outputWriterLog(LL_INFO, "共收到交易所%s的委托队列数据%I64d条", curOrdQue->exchg(), _tcnt_map[curOrdQue->exchg()]);
+				_sink->outputWriterLog(LL_INFO, "共收到交易所%s的委托队列数据%s条", curOrdQue->exchg(), StrUtil::fmtUInt64(_tcnt_map[curOrdQue->exchg()]).c_str());
 			}
 		} while (false);
 		curOrdQue->release();
@@ -428,11 +428,17 @@ void WtDataWriter::pushTask(TaskInfo task)
 					continue;
 				}
 
+				std::queue<TaskInfo> tempQueue;
 				{
 					BoostUniqueLock lck(_task_mtx);
-					TaskInfo& curTask = _tasks.front();
+					tempQueue.swap(_tasks);
+				}
+
+				while(!tempQueue.empty())
+				{
+					TaskInfo& curTask = tempQueue.front();
 					curTask();
-					_tasks.pop();
+					tempQueue.pop();
 				}
 			}
 		}));
@@ -454,7 +460,7 @@ bool WtDataWriter::writeOrderDetail(WTSOrdDtlData* curOrdDtl)
 			WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(ct);
 
 			//再根据状态过滤
-			if (_sink->canSessionReceive(commInfo->getSession()))
+			if (!_sink->canSessionReceive(commInfo->getSession()))
 				break;
 
 			OrdDtlBlockPair* pBlockPair = getOrdDtlBlock(ct, curOrdDtl->tradingdate());
@@ -482,7 +488,7 @@ bool WtDataWriter::writeOrderDetail(WTSOrdDtlData* curOrdDtl)
 			_tcnt_map[curOrdDtl->exchg()]++;
 			if (_tcnt_map[curOrdDtl->exchg()] % _log_group_size == 0)
 			{
-				_sink->outputWriterLog(LL_INFO, "共收到交易所%s的逐笔委托数据%I64d条", curOrdDtl->exchg(), _tcnt_map[curOrdDtl->exchg()]);
+				_sink->outputWriterLog(LL_INFO, "共收到交易所%s的逐笔委托数据%s条", curOrdDtl->exchg(), StrUtil::fmtUInt64(_tcnt_map[curOrdDtl->exchg()]).c_str());
 			}
 		} while (false);
 
@@ -507,7 +513,7 @@ bool WtDataWriter::writeTransaction(WTSTransData* curTrans)
 			WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(ct);
 
 			//再根据状态过滤
-			if (_sink->canSessionReceive(commInfo->getSession()))
+			if (!_sink->canSessionReceive(commInfo->getSession()))
 				break;
 
 			TransBlockPair* pBlockPair = getTransBlock(ct, curTrans->tradingdate());
@@ -535,7 +541,7 @@ bool WtDataWriter::writeTransaction(WTSTransData* curTrans)
 			_tcnt_map[curTrans->exchg()]++;
 			if (_tcnt_map[curTrans->exchg()] % _log_group_size == 0)
 			{
-				_sink->outputWriterLog(LL_INFO, "共收到交易所%s的逐笔成交数据%I64d条", curTrans->exchg(), _tcnt_map[curTrans->exchg()]);
+				_sink->outputWriterLog(LL_INFO, "共收到交易所%s的逐笔成交数据%s条", curTrans->exchg(), StrUtil::fmtUInt64(_tcnt_map[curTrans->exchg()]).c_str());
 			}
 		} while (false);
 
