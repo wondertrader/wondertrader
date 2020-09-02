@@ -91,5 +91,3 @@
 * * *
 * 关注公众号`wondertrader`，可以收到`WonderTrader`的实时资讯
 * 用户交流QQ群上线：`610730738`(加入前请先`star`一下, 然后提供`github`用户名)
-* 如果你觉得`WonderTrader`还不错，不妨请我们喝杯咖啡
-![donate.jpg](http://wt.f-sailors.cn/qcode/donate2.jpg)
