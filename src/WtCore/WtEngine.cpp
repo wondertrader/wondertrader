@@ -206,7 +206,7 @@ void WtEngine::update_fund_dynprofit()
 	}
 }
 
-void otp::WtEngine::writeRiskLog(const char* fmt, ...)
+void WtEngine::writeRiskLog(const char* fmt, ...)
 {
 	char szBuf[2048] = { 0 };
 	uint32_t length = sprintf(szBuf, "[资金风控]");
@@ -232,23 +232,23 @@ uint32_t WtEngine::getTradingDate()
 	return _cur_tdate;
 }
 
-bool otp::WtEngine::isInTrading()
+bool WtEngine::isInTrading()
 {
 	return false;
 }
 
-void otp::WtEngine::setVolScale(double scale)
+void WtEngine::setVolScale(double scale)
 {
 	double oldScale = _risk_volscale;
 	_risk_volscale = scale;
 	_risk_date = _cur_tdate;
 
-	WTSLogger::info2("risk", "风控仓位系数已改变: %.1f - > %.1f", oldScale, scale);
+	WTSLogger::log2_raw("risk", LL_INFO, fmt::format("风控仓位系数已改变: {} - > {}", oldScale, scale).c_str());
 
 	save_datas();
 }
 
-WTSPortFundInfo* otp::WtEngine::getFundInfo()
+WTSPortFundInfo* WtEngine::getFundInfo()
 {
 	update_fund_dynprofit();
 	save_datas();
