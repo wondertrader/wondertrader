@@ -163,7 +163,11 @@ bool ParserFemas::init(WTSParams* config)
 	}
 	m_hInst = DLLHelper::load_library(dllpath.c_str());
 #ifdef _WIN32
+#	ifdef _WIN64
 	const char* creatorName = "?CreateFtdcMduserApi@CUstpFtdcMduserApi@@SAPEAV1@PEBD@Z";
+#	else
+	const char* creatorName = "?CreateFtdcMduserApi@CUstpFtdcMduserApi@@SAPAV1@PBD@Z";
+#	endif
 #else
 	const char* creatorName = "_ZN18CUstpFtdcMduserApi19CreateFtdcMduserApiEPKc";
 #endif

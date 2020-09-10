@@ -154,7 +154,11 @@ bool ParserXTP::init(WTSParams* config)
 	std::string dllpath = getBinDir() + module;
 	m_hInst = DLLHelper::load_library(dllpath.c_str());
 #ifdef _WIN32
+#	ifdef _WIN64
+	const char* creatorName = "?CreateQuoteApi@QuoteApi@API@XTP@@SAPEAV123@EPEBDW4XTP_LOG_LEVEL@@@Z";
+#	else
 	const char* creatorName = "?CreateQuoteApi@QuoteApi@API@XTP@@SAPAV123@EPBDW4XTP_LOG_LEVEL@@@Z";
+#	endif
 #else
 	const char* creatorName = "_ZN3XTP3API8QuoteApi14CreateQuoteApiEhPKc13XTP_LOG_LEVEL";
 #endif

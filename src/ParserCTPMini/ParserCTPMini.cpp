@@ -163,7 +163,11 @@ bool ParserCTPMini::init(WTSParams* config)
 		boost::filesystem::create_directories(boost::filesystem::path(path));
 	}
 #ifdef _WIN32
+#	ifdef _WIN64
 	const char* creatorName = "?CreateFtdcMdApi@CThostFtdcMdApi@@SAPEAV1@PEBD_N1@Z";
+#	else
+	const char* creatorName = "?CreateFtdcMdApi@CThostFtdcMdApi@@SAPAV1@PBD_N1@Z";
+#	endif
 #else
 	const char* creatorName = "_ZN15CThostFtdcMdApi15CreateFtdcMdApiEPKcbb";
 #endif

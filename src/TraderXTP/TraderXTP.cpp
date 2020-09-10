@@ -618,7 +618,11 @@ bool TraderXTP::init(WTSParams *params)
 
 	m_hInstXTP = DLLHelper::load_library(dllpath.c_str());
 #ifdef _WIN32
+#	ifdef _WIN64
 	const char* creatorName = "?CreateTraderApi@TraderApi@API@XTP@@SAPEAV123@EPEBDW4XTP_LOG_LEVEL@@@Z";
+#	else
+	const char* creatorName = "?CreateTraderApi@TraderApi@API@XTP@@SAPAV123@EPBDW4XTP_LOG_LEVEL@@@Z";
+#	endif
 #else
 	const char* creatorName = "_ZN3XTP3API9TraderApi15CreateTraderApiEhPKc13XTP_LOG_LEVEL";
 #endif
