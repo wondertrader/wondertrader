@@ -45,26 +45,15 @@ BOOL WINAPI ConsoleCtrlhandler(DWORD dwCtrlType)
 
 const char* getBinDir()
 {
-	static std::string _bin_dir;
-	if (_bin_dir.empty())
+	static std::string basePath;
+	if (basePath.empty())
 	{
-#ifdef _WIN32
+		basePath = boost::filesystem::initial_path<boost::filesystem::path>().string();
 
-		char strPath[MAX_PATH];
-		GetModuleFileName(GetModuleHandle(NULL), strPath, MAX_PATH);
-
-		_bin_dir = StrUtil::standardisePath(strPath, false);
-		uint32_t nPos = _bin_dir.find_last_of('/');
-		_bin_dir = _bin_dir.substr(0, nPos + 1);
-#else
-		char strPath[260];
-		getcwd(strPath, sizeof(strPath));
-		_bin_dir = StrUtil::standardisePath(strPath, false);
-		_bin_dir += "/";
-#endif
+		basePath = StrUtil::standardisePath(basePath);
 	}
 
-	return _bin_dir.c_str();
+	return basePath.c_str();
 }
 
 
