@@ -31,6 +31,8 @@ private:
 
 	void  check_loop();
 
+	void  check_db();
+
 
 public:
 	virtual bool init(WTSVariant* params, IDataWriterSink* sink) override;
@@ -53,6 +55,18 @@ public:
 private:
 	IDataWriterSink*	_sink;
 	IBaseDataMgr*		_bd_mgr;
+
+	typedef struct _DBConfig
+	{
+		bool	_active;
+		char	_host[64];
+		int32_t	_port;
+		char	_dbname[32];
+
+		_DBConfig() { memset(this, 0, sizeof(_DBConfig)); }
+	} DBConfig;
+
+	DBConfig	_db_conf;
 
 	typedef struct _KBlockPair
 	{

@@ -61,6 +61,11 @@ bool WtDataWriter::isSessionProceeded(const char* sid)
 	return (it->second >= TimeUtils::getCurDate());
 }
 
+void WtDataWriter::check_db()
+{
+
+}
+
 bool WtDataWriter::init(WTSVariant* params, IDataWriterSink* sink)
 {
 	_sink = sink;
@@ -88,6 +93,15 @@ bool WtDataWriter::init(WTSVariant* params, IDataWriterSink* sink)
 			_proc_date[ayKeys[idx].c_str()] = strtoul(ayVals[idx].c_str(), 0, 10);
 		}
 	}
+
+	WTSVariant* dbConf = params->get("db");
+	strcpy(_db_conf._host, dbConf->getCString("host"));
+	strcpy(_db_conf._dbname, dbConf->getCString("dbname"));
+	_db_conf._port = dbConf->getInt32("port");
+
+	_db_conf._active = (strlen(_db_conf._host) > 0) && (strlen(_db_conf._dbname) > 0) && (_db_conf._port != 0);
+	if (_db_conf._active)
+		check_db();
 
 	loadCache();
 
