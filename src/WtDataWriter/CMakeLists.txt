@@ -36,14 +36,15 @@ ADD_LIBRARY(WtDataWriter SHARED ${SRCS} ${HDRS})
 SET(LIBS
 	${PROJECT_SOURCE_DIR}/../build/libs/libWTSUtils.a
 	
+	${MyDeps}/lib/libmysqlclient.a
 	dl
 	pthread
 	boost_filesystem	
 )
 
-TARGET_LINK_LIBRARIES(WtDataWriter ${LIBS})
 IF (WIN32)
 ELSE (UNIX)
+	TARGET_LINK_LIBRARIES(WtDataWriter ${LIBS})
 	SET_TARGET_PROPERTIES(WtDataWriter PROPERTIES
 		CXX_VISIBILITY_PRESET hidden
 		VISIBILITY_INLINES_HIDDEN 1)

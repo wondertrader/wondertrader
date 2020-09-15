@@ -1,5 +1,6 @@
 #pragma once
 #include "DataDefine.h"
+#include "MysqlDB.hpp"
 
 #include "../Includes/IDataWriter.h"
 #include "../Share/BoostDefine.h"
@@ -10,6 +11,7 @@
 #include <unordered_map>
 
 typedef boost::shared_ptr<BoostMappingFile> BoostMFPtr;
+typedef boost::shared_ptr<MysqlDb>	MysqlDbPtr;
 
 NS_OTP_BEGIN
 class WTSContractInfo;
@@ -62,6 +64,8 @@ private:
 		char	_host[64];
 		int32_t	_port;
 		char	_dbname[32];
+		char	_user[32];
+		char	_pass[32];
 
 		_DBConfig() { memset(this, 0, sizeof(_DBConfig)); }
 	} DBConfig;
@@ -196,6 +200,8 @@ private:
 	bool			_save_tick_log;
 	
 	std::map<std::string, uint32_t> _proc_date;
+
+	MysqlDbPtr		_db_conn;
 
 private:
 	void loadCache();

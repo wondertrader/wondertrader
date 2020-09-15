@@ -161,6 +161,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="DataDefine.h" />
+    <ClInclude Include="MysqlDB.hpp" />
     <ClInclude Include="WtDataWriter.h" />
   </ItemGroup>
   <ItemGroup>

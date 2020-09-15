@@ -11,6 +11,8 @@
 
 #include "../WTSTools/WTSCmpHelper.hpp"
 
+#pragma comment(lib, "libmysql.lib")
+
 
 #include <set>
 
@@ -63,7 +65,25 @@ bool WtDataWriter::isSessionProceeded(const char* sid)
 
 void WtDataWriter::check_db()
 {
+	if (!_db_conf._active)
+		return;
 
+	_db_conn.reset(new MysqlDb);
+	my_bool autoreconnect = true;
+	_db_conn->options(MYSQL_OPT_RECONNECT, &autoreconnect);
+	_db_conn->options(MYSQL_SET_CHARSET_NAME, "utf8");
+
+	if (_db_conn->connect(_db_conf._dbname, _db_conf._host, _db_conf._user, _db_conf._pass, _db_conf._port, CLIENT_MULTI_STATEMENTS | CLIENT_MULTI_RESULTS))
+	{
+		if(_sink)
+			_sink->outputWriterLog(LL_INFO, "数据库连接成功:%s:%d", _db_conf._host, _db_conf._port);
+	}
+	else
+	{
+		if (_sink)
+			_sink->outputWriterLog(LL_ERROR, "数据库连接失败[%s:%d]:%s", _db_conf._host, _db_conf._port, _db_conn->errstr());
+		_db_conn.reset();
+	}
 }
 
 bool WtDataWriter::init(WTSVariant* params, IDataWriterSink* sink)
