@@ -22,6 +22,7 @@
     <ClCompile Include="WtDataReader.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="MysqlDB.hpp" />
     <ClInclude Include="WtDataReader.h" />
   </ItemGroup>
   <ItemGroup>

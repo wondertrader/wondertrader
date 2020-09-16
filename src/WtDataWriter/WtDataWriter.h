@@ -33,7 +33,11 @@ private:
 
 	void  check_loop();
 
-	void  check_db();
+	void  init_db();
+
+	uint32_t  dump_hisdata_to_file(WTSContractInfo* ct);
+
+	uint32_t  dump_hisdata_to_db(WTSContractInfo* ct);
 
 
 public:
@@ -71,6 +75,7 @@ private:
 	} DBConfig;
 
 	DBConfig	_db_conf;
+	MysqlDbPtr	_db_conn;
 
 	typedef struct _KBlockPair
 	{
@@ -200,8 +205,6 @@ private:
 	bool			_save_tick_log;
 	
 	std::map<std::string, uint32_t> _proc_date;
-
-	MysqlDbPtr		_db_conn;
 
 private:
 	void loadCache();
