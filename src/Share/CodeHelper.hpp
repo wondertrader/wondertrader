@@ -146,6 +146,14 @@ public:
 		return 	regex_match(code, reg_stk);
 	}
 
+	static bool	isStdFutCode(const char* code)
+	{
+		using namespace boost::xpressive;
+		/* 定义正则表达式 */
+		cregex reg_stk = cregex::compile("^[A-Z]+.[A-z]+.\\d{4}$");	//CFFEX.IO.2007
+		return 	regex_match(code, reg_stk);
+	}
+
 
 	/*
 	 *	期货期权代码标准化
