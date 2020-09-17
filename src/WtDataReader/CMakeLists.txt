@@ -36,6 +36,7 @@ ADD_LIBRARY(WtDataReader SHARED ${SRCS} ${HDRS})
 SET(LIBS
 	${PROJECT_SOURCE_DIR}/../build/libs/libWTSUtils.a
 	
+	${MyDeps}/lib/libmysqlclient.a
 	dl
 	pthread
 	boost_filesystem	

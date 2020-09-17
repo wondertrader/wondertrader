@@ -12,7 +12,7 @@
 NS_OTP_BEGIN
 
 typedef std::shared_ptr<BoostMappingFile> BoostMFPtr;
-typedef boost::shared_ptr<MysqlDb>	MysqlDbPtr;
+typedef std::shared_ptr<MysqlDb>	MysqlDbPtr;
 
 class WtDataReader : public IDataReader
 {
