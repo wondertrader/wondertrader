@@ -5,6 +5,7 @@
 #include "../Share/TimeUtils.hpp"
 #include "../Share/CodeHelper.hpp"
 #include "../Share/StdUtils.hpp"
+#include "../Share/DLLHelper.hpp"
 
 #include "../Includes/WTSContractInfo.hpp"
 #include "../Includes/IBaseDataMgr.h"
@@ -33,6 +34,63 @@ extern "C"
 	}
 };
 
+#ifdef _WIN32
+#include <wtypes.h>
+HMODULE	g_dllModule = NULL;
+
+BOOL APIENTRY DllMain(
+	HANDLE hModule,
+	DWORD  ul_reason_for_call,
+	LPVOID lpReserved
+)
+{
+	switch (ul_reason_for_call)
+	{
+	case DLL_PROCESS_ATTACH:
+		g_dllModule = (HMODULE)hModule;
+		break;
+	}
+	return TRUE;
+}
+#else
+#include <dlfcn.h>
+
+char PLATFORM_NAME[] = "UNIX";
+
+std::string	g_moduleName;
+
+__attribute__((constructor))
+void on_load(void) {
+	Dl_info dl_info;
+	dladdr((void *)on_load, &dl_info);
+	g_moduleName = dl_info.dli_fname;
+}
+#endif
+
+std::string getBinDir()
+{
+	static std::string _bin_dir;
+	if (_bin_dir.empty())
+	{
+
+
+#ifdef _WIN32
+		char strPath[MAX_PATH];
+		GetModuleFileName(g_dllModule, strPath, MAX_PATH);
+
+		_bin_dir = StrUtil::standardisePath(strPath, false);
+#else
+		_bin_dir = g_moduleName;
+#endif
+
+		uint32_t nPos = _bin_dir.find_last_of('/');
+		_bin_dir = _bin_dir.substr(0, nPos + 1);
+	}
+
+	return _bin_dir;
+}
+
+
 
 WtDataReader::WtDataReader()
 	: _last_time(0)
@@ -58,9 +116,6 @@ void WtDataReader::init(WTSVariant* cfg, IDataReaderSink* sink)
 	_base_dir = cfg->getCString("path");
 	_base_dir = StrUtil::standardisePath(_base_dir);
 
-	if(cfg->has("adjfactor"))
-		loadStkAdjFactors(cfg->getCString("adjfactor"));
-
 	WTSVariant* dbConf = cfg->get("db");
 	if (dbConf)
 	{
@@ -74,12 +129,24 @@ void WtDataReader::init(WTSVariant* cfg, IDataReaderSink* sink)
 		if (_db_conf._active)
 			init_db();
 	}
+
+	bool bAdjLoaded = false;
+	if (_db_conn)
+		bAdjLoaded = loadStkAdjFactorsFromDB();
+	
+	if (!bAdjLoaded && cfg->has("adjfactor"))
+		loadStkAdjFactorsFromFile(cfg->getCString("adjfactor"));
 }
 
 void WtDataReader::init_db()
 {
 	if (!_db_conf._active)
 		return;
+
+#ifdef _WIN32
+	std::string module = getBinDir() + "libmysql.dll";
+	DLLHelper::load_library(module.c_str());
+#endif
 
 	_db_conn.reset(new MysqlDb);
 	my_bool autoreconnect = true;
@@ -99,7 +166,44 @@ void WtDataReader::init_db()
 	}
 }
 
-bool WtDataReader::loadStkAdjFactors(const char* adjfile)
+bool WtDataReader::loadStkAdjFactorsFromDB()
+{
+	MysqlQuery query(*_db_conn);
+	if(!query.exec("SELECT exchange,code,date,factor FROM tb_adj_factors ORDER BY exchange,code,date DESC;"))
+	{
+		if (_sink)
+			_sink->reader_log(LL_ERROR, "查询除权因子表出错:%s", query.errormsg());
+		return false;
+	}
+
+	uint32_t stk_cnt = 0;
+	uint32_t fct_cnt = 0;
+	while(query.fetch_row())
+	{
+		const char* exchg = query.getstr(0);
+		const char* code = query.getstr(1);
+		uint32_t uDate = query.getuint(2);
+		double factor = query.getdouble(3);
+
+		std::string key = StrUtil::printf("%s.%s", exchg, code);
+		if (_adj_factors.find(key) == _adj_factors.end())
+			stk_cnt++;
+
+		AdjFactorList& fctrLst = _adj_factors[key];
+		AdjFactor adjFact;
+		adjFact._date = uDate;
+		adjFact._factor = factor;
+
+		fctrLst.push_back(adjFact);
+		fct_cnt++;
+	}
+
+	if (_sink) 
+		_sink->reader_log(LL_INFO, "共加载%u只股票的%u条除权因子数据", stk_cnt, fct_cnt);
+	return true;
+}
+
+bool WtDataReader::loadStkAdjFactorsFromFile(const char* adjfile)
 {
 	if(!BoostFile::exists(adjfile))
 	{
@@ -2231,7 +2335,7 @@ void WtDataReader::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTDate
 		}
 		else
 		{
-			if (barsList._bars.size() - 1 > barsList._his_cursor)
+			if (barsList._his_cursor != UINT_MAX && barsList._bars.size() - 1 > barsList._his_cursor)
 			{
 				for (;;)
 				{

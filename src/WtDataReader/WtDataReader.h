@@ -87,7 +87,8 @@ private:
 	uint32_t	readBarsFromCache(const std::string& key, uint64_t etime, uint32_t count, std::vector<WTSBarStruct>& ayBars, bool isDay = false);
 	WTSBarStruct*	indexBarFromCache(const std::string& key, uint64_t etime, uint32_t& count, bool isDay = false);
 
-	bool	loadStkAdjFactors(const char* adjfile);
+	bool	loadStkAdjFactorsFromFile(const char* adjfile);
+	bool	loadStkAdjFactorsFromDB();
 
 	void	init_db();
 
