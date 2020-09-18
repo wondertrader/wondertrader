@@ -661,7 +661,7 @@ bool WtDataReader::cacheHisBarsFromDB(const std::string& key, const char* stdCod
 				sprintf(sql, "SELECT `date`,0,open,high,low,close,settle,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%s.HOT' ORDER BY `date`;", 
 					tbname.c_str(), cInfo._exchg, cInfo._product);
 			else
-				sprintf(sql, "SELECT `date`,`time`,open,high,low,close,settle,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%s.HOT' ORDER BY `time`;",
+				sprintf(sql, "SELECT `date`,`time`,open,high,low,close,0,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%s.HOT' ORDER BY `time`;",
 					tbname.c_str(), cInfo._exchg, cInfo._product);
 
 			MysqlQuery query(*_db_conn);
@@ -756,7 +756,7 @@ bool WtDataReader::cacheHisBarsFromDB(const std::string& key, const char* stdCod
 					"WHERE exchange='%s' AND code='%s' AND `date`>=%u AND `date`<=%u ORDER BY `date`;",
 					tbname.c_str(), cInfo._exchg, curCode, stime, etime);
 			else
-				sprintf(sql, "SELECT `date`,`time`,open,high,low,close,settle,volume,turnover,interest,diff_interest FROM %s "
+				sprintf(sql, "SELECT `date`,`time`,open,high,low,close,0,volume,turnover,interest,diff_interest FROM %s "
 					"WHERE exchange='%s' AND code='%s' AND `time`>=%u AND `time`<=%u ORDER BY `time`;",
 					tbname.c_str(), cInfo._exchg, curCode, stime, etime);
 
@@ -796,105 +796,6 @@ bool WtDataReader::cacheHisBarsFromDB(const std::string& key, const char* stdCod
 				if (bAllCovered)
 					break;
 			}
-
-			/*
-			std::stringstream ss;
-			ss << _base_dir << "his/" << pname << "/" << cInfo._exchg << "/" << curCode << ".dsb";
-			std::string filename = ss.str();
-			if (!StdFile::exists(filename.c_str()))
-				continue;
-
-			{
-				std::string content;
-				StdFile::read_file_content(filename.c_str(), content);
-				if (content.size() < sizeof(HisKlineBlock))
-				{
-					if (_sink) _sink->reader_log(LL_ERROR, "历史K线数据文件%s大小校验失败", filename.c_str());
-					return false;
-				}
-
-				HisKlineBlock* kBlock = (HisKlineBlock*)content.c_str();
-				WTSBarStruct* firstBar = NULL;
-				uint32_t barcnt = 0;
-				std::string rawData;
-				if (kBlock->_version == BLOCK_VERSION_CMP)
-				{
-					if (content.size() < sizeof(HisKlineBlockV2))
-					{
-						if (_sink) _sink->reader_log(LL_ERROR, "历史K线数据文件%s大小校验失败", filename.c_str());
-						break;
-					}
-
-					HisKlineBlockV2* kBlockV2 = (HisKlineBlockV2*)content.c_str();
-					if (kBlockV2->_size == 0)
-						break;
-
-					rawData = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
-					barcnt = rawData.size() / sizeof(WTSBarStruct);
-					if (barcnt <= 0)
-						break;
-
-					firstBar = (WTSBarStruct*)rawData.data();
-				}
-				else
-				{
-					barcnt = (content.size() - sizeof(HisKlineBlock)) / sizeof(WTSBarStruct);
-					if (barcnt <= 0)
-						continue;
-
-					firstBar = kBlock->_bars;
-				}
-
-				WTSBarStruct* pBar = std::lower_bound(firstBar, firstBar + (barcnt - 1), sBar, [period](const WTSBarStruct& a, const WTSBarStruct& b) {
-					if (period == KP_DAY)
-					{
-						return a.date < b.date;
-					}
-					else
-					{
-						return a.time < b.time;
-					}
-				});
-
-				uint32_t sIdx = pBar - firstBar;
-				if ((period == KP_DAY && pBar->date < sBar.date) || (period != KP_DAY && pBar->time < sBar.time))	//早于边界时间
-				{
-					//早于边界时间, 说明没有数据了, 因为lower_bound会返回大于等于目标位置的数据
-					continue;
-				}
-
-				pBar = std::lower_bound(firstBar + sIdx, firstBar + (barcnt - 1), eBar, [period](const WTSBarStruct& a, const WTSBarStruct& b) {
-					if (period == KP_DAY)
-					{
-						return a.date < b.date;
-					}
-					else
-					{
-						return a.time < b.time;
-					}
-				});
-				uint32_t eIdx = pBar - firstBar;
-				if ((period == KP_DAY && pBar->date > eBar.date) || (period != KP_DAY && pBar->time > eBar.time))
-				{
-					pBar--;
-					eIdx--;
-				}
-
-				if (eIdx < sIdx)
-					continue;
-
-				uint32_t curCnt = eIdx - sIdx + 1;
-				std::vector<WTSBarStruct>* tempAy = new std::vector<WTSBarStruct>();
-				tempAy->resize(curCnt);
-				memcpy(tempAy->data(), &firstBar[sIdx], sizeof(WTSBarStruct)*curCnt);
-				realCnt += curCnt;
-
-				barsSections.push_back(tempAy);
-
-				if (bAllCovered)
-					break;
-			}
-			*/
 		}
 
 		if (hotAy)
@@ -916,7 +817,7 @@ bool WtDataReader::cacheHisBarsFromDB(const std::string& key, const char* stdCod
 				sprintf(sql, "SELECT `date`,0,open,high,low,close,settle,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%sQ' ORDER BY `date`;",
 					tbname.c_str(), cInfo._exchg, cInfo._code);
 			else
-				sprintf(sql, "SELECT `date`,`time`,open,high,low,close,settle,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%sQ' ORDER BY `time`;",
+				sprintf(sql, "SELECT `date`,`time`,open,high,low,close,0,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%sQ' ORDER BY `time`;",
 					tbname.c_str(), cInfo._exchg, cInfo._code);
 
 			MysqlQuery query(*_db_conn);
@@ -955,58 +856,6 @@ bool WtDataReader::cacheHisBarsFromDB(const std::string& key, const char* stdCod
 
 				if (_sink) _sink->reader_log(LL_INFO, "股票%s历史%s复权数据直接缓存%u条", stdCode, pname.c_str(), barcnt);
 			}
-
-			/*
-			std::stringstream ss;
-			ss << _base_dir << "his/" << pname << "/" << cInfo._exchg << "/" << cInfo._code << "Q.dsb";
-			std::string filename = ss.str();
-			if (!StdFile::exists(filename.c_str()))
-				break;
-
-			std::string content;
-			StdFile::read_file_content(filename.c_str(), content);
-			if (content.size() < sizeof(HisKlineBlock))
-			{
-				if (_sink) _sink->reader_log(LL_ERROR, "历史K线数据文件%s大小校验失败", filename.c_str());
-				break;
-			}
-
-			HisKlineBlock* kBlock = (HisKlineBlock*)content.c_str();
-			uint32_t barcnt = 0;
-			if (kBlock->_version == BLOCK_VERSION_CMP)
-			{
-				if (content.size() < sizeof(HisKlineBlockV2))
-				{
-					if (_sink) _sink->reader_log(LL_ERROR, "历史K线数据文件%s大小校验失败", filename.c_str());
-					break;
-				}
-
-				HisKlineBlockV2* kBlockV2 = (HisKlineBlockV2*)content.c_str();
-				if (kBlockV2->_size == 0)
-					break;
-
-				std::string rawData = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
-				barcnt = rawData.size() / sizeof(WTSBarStruct);
-				if (barcnt <= 0)
-					break;
-
-				hotAy = new std::vector<WTSBarStruct>();
-				hotAy->resize(barcnt);
-				memcpy(hotAy->data(), rawData.data(), rawData.size());
-			}
-			else
-			{
-				barcnt = (content.size() - sizeof(HisKlineBlock)) / sizeof(WTSBarStruct);
-				if (barcnt <= 0)
-					break;
-
-				HisKlineBlock* kBlock = (HisKlineBlock*)content.c_str();
-				hotAy = new std::vector<WTSBarStruct>();
-				hotAy->resize(barcnt);
-				memcpy(hotAy->data(), kBlock->_bars, sizeof(WTSBarStruct)*barcnt);
-			}
-			*/
-
 			break;
 		} while (false);
 
@@ -1036,7 +885,7 @@ bool WtDataReader::cacheHisBarsFromDB(const std::string& key, const char* stdCod
 				sprintf(sql, "SELECT `date`,0,open,high,low,close,settle,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%s' AND date>=%u ORDER BY `date`;",
 					tbname.c_str(), cInfo._exchg, cInfo._code, lastQTime + 1);
 			else
-				sprintf(sql, "SELECT `date`,`time`,open,high,low,close,settle,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%s' AND time>=%u ORDER BY `time`;",
+				sprintf(sql, "SELECT `date`,`time`,open,high,low,close,0,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%s' AND time>=%u ORDER BY `time`;",
 					tbname.c_str(), cInfo._exchg, cInfo._code, lastQTime + 1);
 
 			MysqlQuery query(*_db_conn);
@@ -1047,149 +896,39 @@ bool WtDataReader::cacheHisBarsFromDB(const std::string& key, const char* stdCod
 			else
 			{
 				uint32_t barcnt = (uint32_t)query.num_rows();
-				auto tempAy = new std::vector<WTSBarStruct>();
-				tempAy->resize(barcnt);
-
-				uint32_t idx = 0;
-				while (query.fetch_row())
+				if (barcnt > 0)
 				{
-					WTSBarStruct& bs = tempAy->at(idx);
-					bs.date = query.getuint(0);
-					bs.time = query.getuint(1);
-					bs.open = query.getdouble(2);
-					bs.high = query.getdouble(3);
-					bs.low = query.getdouble(4);
-					bs.close = query.getdouble(5);
-					bs.settle = query.getdouble(6);
-					bs.vol = query.getuint(7);
-					bs.money = query.getdouble(8);
-					bs.hold = query.getuint(9);
-					bs.add = query.getdouble(10);
-					idx++;
-				}
 
-				realCnt += barcnt;
+					auto tempAy = new std::vector<WTSBarStruct>();
+					tempAy->resize(barcnt);
 
-				auto& ayFactors = getAdjFactors(cInfo._code, cInfo._exchg);
-				if (!ayFactors.empty())
-				{
-					//做前复权处理
-					int32_t lastIdx = barcnt;
-					WTSBarStruct bar;
-					WTSBarStruct* firstBar = tempAy->data();
-					for (auto& adjFact : ayFactors)
+					uint32_t idx = 0;
+					while (query.fetch_row())
 					{
-						bar.date = adjFact._date;
-						double factor = adjFact._factor;
-
-						WTSBarStruct* pBar = NULL;
-						pBar = std::lower_bound(firstBar, firstBar + lastIdx - 1, bar, [period](const WTSBarStruct& a, const WTSBarStruct& b) {
-							return a.date < b.date;
-						});
-
-						if (pBar->date < bar.date)
-							continue;
-
-						WTSBarStruct* endBar = pBar;
-						if (pBar != NULL)
-						{
-							int32_t curIdx = pBar - firstBar;
-							while (pBar && curIdx < lastIdx)
-							{
-								pBar->open /= factor;
-								pBar->high /= factor;
-								pBar->low /= factor;
-								pBar->close /= factor;
-
-								pBar++;
-								curIdx++;
-							}
-							lastIdx = endBar - firstBar;
-						}
-
-						if (lastIdx == 0)
-							break;
-					}
-				}
-
-				barsSections.push_back(tempAy);
-			}
-
-			/*
-			std::stringstream ss;
-			ss << _base_dir << "his/" << pname << "/" << cInfo._exchg << "/" << curCode << ".dsb";
-			std::string filename = ss.str();
-			if (!StdFile::exists(filename.c_str()))
-				continue;
-
-			{
-				std::string content;
-				StdFile::read_file_content(filename.c_str(), content);
-				if (content.size() < sizeof(HisKlineBlock))
-				{
-					if (_sink) _sink->reader_log(LL_ERROR, "历史K线数据文件%s大小校验失败", filename.c_str());
-					return false;
-				}
-
-				HisKlineBlock* kBlock = (HisKlineBlock*)content.c_str();
-				WTSBarStruct* firstBar = NULL;
-				uint32_t barcnt = 0;
-				std::string rawData;
-				if (kBlock->_version == BLOCK_VERSION_CMP)
-				{
-					if (content.size() < sizeof(HisKlineBlockV2))
-					{
-						if (_sink) _sink->reader_log(LL_ERROR, "历史K线数据文件%s大小校验失败", filename.c_str());
-						break;
+						WTSBarStruct& bs = tempAy->at(idx);
+						bs.date = query.getuint(0);
+						bs.time = query.getuint(1);
+						bs.open = query.getdouble(2);
+						bs.high = query.getdouble(3);
+						bs.low = query.getdouble(4);
+						bs.close = query.getdouble(5);
+						bs.settle = query.getdouble(6);
+						bs.vol = query.getuint(7);
+						bs.money = query.getdouble(8);
+						bs.hold = query.getuint(9);
+						bs.add = query.getdouble(10);
+						idx++;
 					}
 
-					HisKlineBlockV2* kBlockV2 = (HisKlineBlockV2*)content.c_str();
-					if (kBlockV2->_size == 0)
-						break;
-
-					rawData = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
-					barcnt = rawData.size() / sizeof(WTSBarStruct);
-					if (barcnt <= 0)
-						break;
-
-					firstBar = (WTSBarStruct*)rawData.data();
-				}
-				else
-				{
-					barcnt = (content.size() - sizeof(HisKlineBlock)) / sizeof(WTSBarStruct);
-					if (barcnt <= 0)
-						continue;
-
-					firstBar = kBlock->_bars;
-				}
-
-				WTSBarStruct* pBar = std::lower_bound(firstBar, firstBar + (barcnt - 1), sBar, [period](const WTSBarStruct& a, const WTSBarStruct& b) {
-					if (period == KP_DAY)
-					{
-						return a.date < b.date;
-					}
-					else
-					{
-						return a.time < b.time;
-					}
-				});
-
-				if (pBar != NULL)
-				{
-					uint32_t sIdx = pBar - firstBar;
-					uint32_t curCnt = barcnt - sIdx;
-					std::vector<WTSBarStruct>* tempAy = new std::vector<WTSBarStruct>();
-					tempAy->resize(curCnt);
-					memcpy(tempAy->data(), &firstBar[sIdx], sizeof(WTSBarStruct)*curCnt);
-					realCnt += curCnt;
+					realCnt += barcnt;
 
 					auto& ayFactors = getAdjFactors(cInfo._code, cInfo._exchg);
 					if (!ayFactors.empty())
 					{
 						//做前复权处理
-						int32_t lastIdx = curCnt;
+						int32_t lastIdx = barcnt;
 						WTSBarStruct bar;
-						firstBar = tempAy->data();
+						WTSBarStruct* firstBar = tempAy->data();
 						for (auto& adjFact : ayFactors)
 						{
 							bar.date = adjFact._date;
@@ -1228,7 +967,6 @@ bool WtDataReader::cacheHisBarsFromDB(const std::string& key, const char* stdCod
 					barsSections.push_back(tempAy);
 				}
 			}
-			*/
 		} while (false);
 
 		if (hotAy)
@@ -1245,7 +983,7 @@ bool WtDataReader::cacheHisBarsFromDB(const std::string& key, const char* stdCod
 			sprintf(sql, "SELECT `date`,0,open,high,low,close,settle,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%sQ' ORDER BY `date`;",
 				tbname.c_str(), cInfo._exchg, cInfo._code);
 		else
-			sprintf(sql, "SELECT `date`,`time`,open,high,low,close,settle,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%sQ' ORDER BY `time`;",
+			sprintf(sql, "SELECT `date`,`time`,open,high,low,close,0,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%sQ' ORDER BY `time`;",
 				tbname.c_str(), cInfo._exchg, cInfo._code);
 
 		MysqlQuery query(*_db_conn);
@@ -1256,94 +994,34 @@ bool WtDataReader::cacheHisBarsFromDB(const std::string& key, const char* stdCod
 		else
 		{
 			uint32_t barcnt = (uint32_t)query.num_rows();
-			auto tempAy = new std::vector<WTSBarStruct>();
-			tempAy->resize(barcnt);
-
-			uint32_t idx = 0;
-			while (query.fetch_row())
-			{
-				WTSBarStruct& bs = tempAy->at(idx);
-				bs.date = query.getuint(0);
-				bs.time = query.getuint(1);
-				bs.open = query.getdouble(2);
-				bs.high = query.getdouble(3);
-				bs.low = query.getdouble(4);
-				bs.close = query.getdouble(5);
-				bs.settle = query.getdouble(6);
-				bs.vol = query.getuint(7);
-				bs.money = query.getdouble(8);
-				bs.hold = query.getuint(9);
-				bs.add = query.getdouble(10);
-				idx++;
-			}
-
-			realCnt += barcnt;
-
-			barsSections.push_back(tempAy);
-		}
-
-		/*
-		std::stringstream ss;
-		ss << _base_dir << "his/" << pname << "/" << cInfo._exchg << "/" << cInfo._code << ".dsb";
-		std::string filename = ss.str();
-		if (StdFile::exists(filename.c_str()))
-		{
-			//如果有格式化的历史数据文件, 则直接读取
-			std::string content;
-			StdFile::read_file_content(filename.c_str(), content);
-			if (content.size() < sizeof(HisKlineBlock))
-			{
-				if (_sink) _sink->reader_log(LL_ERROR, "历史K线数据文件%s大小校验失败", filename.c_str());
-				return false;
-			}
-
-			HisKlineBlock* kBlock = (HisKlineBlock*)content.c_str();
-			WTSBarStruct* firstBar = NULL;
-			uint32_t barcnt = 0;
-			std::string rawData;
-			if (kBlock->_version == BLOCK_VERSION_CMP)
-			{
-				if (content.size() < sizeof(HisKlineBlockV2))
-				{
-					if (_sink) _sink->reader_log(LL_ERROR, "历史K线数据文件%s大小校验失败", filename.c_str());
-					return false;
-				}
-
-				HisKlineBlockV2* kBlockV2 = (HisKlineBlockV2*)content.c_str();
-				if (kBlockV2->_size == 0)
-					return false;
-
-				rawData = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
-				barcnt = rawData.size() / sizeof(WTSBarStruct);
-				if (barcnt <= 0)
-					return false;
-
-				firstBar = (WTSBarStruct*)rawData.data();
-			}
-			else
-			{
-				barcnt = (content.size() - sizeof(HisKlineBlock)) / sizeof(WTSBarStruct);
-				if (barcnt <= 0)
-					return false;
-
-				firstBar = kBlock->_bars;
-			}
-
 			if (barcnt > 0)
 			{
-				uint32_t sIdx = 0;
-				uint32_t idx = barcnt - 1;
-				uint32_t curCnt = (idx - sIdx + 1);
+				auto tempAy = new std::vector<WTSBarStruct>();
+				tempAy->resize(barcnt);
 
-				std::vector<WTSBarStruct>* tempAy = new std::vector<WTSBarStruct>();
-				tempAy->resize(curCnt);
-				memcpy(tempAy->data(), &firstBar[sIdx], sizeof(WTSBarStruct)*curCnt);
-				realCnt += curCnt;
+				uint32_t idx = 0;
+				while (query.fetch_row())
+				{
+					WTSBarStruct& bs = tempAy->at(idx);
+					bs.date = query.getuint(0);
+					bs.time = query.getuint(1);
+					bs.open = query.getdouble(2);
+					bs.high = query.getdouble(3);
+					bs.low = query.getdouble(4);
+					bs.close = query.getdouble(5);
+					bs.settle = query.getdouble(6);
+					bs.vol = query.getuint(7);
+					bs.money = query.getdouble(8);
+					bs.hold = query.getuint(9);
+					bs.add = query.getdouble(10);
+					idx++;
+				}
+
+				realCnt += barcnt;
 
 				barsSections.push_back(tempAy);
 			}
 		}
-		*/
 	}
 
 	if (realCnt > 0)

@@ -1592,7 +1592,7 @@ uint32_t WtDataWriter::dump_hisdata_to_db(WTSContractInfo* ct)
 		const WTSTickStruct& ts = tci._tick;
 
 		char sql[512] = { 0 };
-		sprintf(sql, "REPLACE INTO tb_kline_day(exchg,code,date,open,high,low,close,settle,volume,turnover,interest,diff_interest) "
+		sprintf(sql, "REPLACE INTO tb_kline_day(exchange,code,date,open,high,low,close,settle,volume,turnover,interest,diff_interest) "
 			"VALUES('%s','%s',%u,%f,%f,%f,%f,%f,%u,%f,%u,%d);", ct->getExchg(), ct->getCode(), ts.trading_date, ts.open, ts.high, ts.low, ts.price, 
 			ts.settle_price, ts.total_volumn, ts.total_turnover, ts.open_interest, ts.diff_interest);
 
@@ -1619,7 +1619,7 @@ uint32_t WtDataWriter::dump_hisdata_to_db(WTSContractInfo* ct)
 		for(uint32_t i = 0; i < size; i++)
 		{
 			const WTSBarStruct& bs = kBlkPair->_block->_bars[i];
-			sql += StrUtil::printf("('%s','%s',%u,%u,%f,%f,%f,%f,%f,%u,%f,%u,%d),", ct->getExchg(), ct->getCode(), bs.date, bs.time, bs.open,
+			sql += StrUtil::printf("('%s','%s',%u,%u,%f,%f,%f,%f,%u,%f,%u,%d),", ct->getExchg(), ct->getCode(), bs.date, bs.time, bs.open,
 				bs.high, bs.low, bs.close, bs.vol, bs.money, bs.hold, bs.add);
 		}
 		sql = sql.substr(0, sql.size() - 1);
@@ -1653,7 +1653,7 @@ uint32_t WtDataWriter::dump_hisdata_to_db(WTSContractInfo* ct)
 		for (uint32_t i = 0; i < size; i++)
 		{
 			const WTSBarStruct& bs = kBlkPair->_block->_bars[i];
-			sql += StrUtil::printf("('%s','%s',%u,%u,%f,%f,%f,%f,%f,%u,%f,%u,%d),", ct->getExchg(), ct->getCode(), bs.date, bs.time, bs.open,
+			sql += StrUtil::printf("('%s','%s',%u,%u,%f,%f,%f,%f,%u,%f,%u,%d),", ct->getExchg(), ct->getCode(), bs.date, bs.time, bs.open,
 				bs.high, bs.low, bs.close, bs.vol, bs.money, bs.hold, bs.add);
 		}
 		sql = sql.substr(0, sql.size() - 1);
@@ -2375,7 +2375,10 @@ void WtDataWriter::proc_loop()
 		}
 
 		//转移历史K线
-		count += dump_hisdata_to_file(ct);
+		if(_db_conn)
+			count += dump_hisdata_to_db(ct);
+		else
+			count += dump_hisdata_to_file(ct);
 
 		_sink->outputWriterLog(LL_INFO, "合约%s[%s]已完成收盘, 本次作业共处理数据%u条", ct->getCode(), ct->getExchg(), count);
 	}

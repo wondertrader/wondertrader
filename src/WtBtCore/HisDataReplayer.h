@@ -10,8 +10,8 @@
 #pragma once
 #include <string>
 #include <unordered_map>
-
 #include "DataDefine.h"
+#include "../WtDataWriter/MysqlDB.hpp"
 
 #include "../Includes/WTSMarcos.h"
 #include "../Includes/WTSTypes.h"
@@ -28,6 +28,8 @@ class WTSHisTickData;
 class WTSSessionInfo;
 class WTSCommodityInfo;
 NS_OTP_END
+
+typedef std::shared_ptr<MysqlDb>	MysqlDbPtr;
 
 USING_NS_OTP;
 
@@ -115,11 +117,13 @@ private:
 	/*
 	*	将历史数据放入缓存
 	*/
-	bool		cacheRawBars(const std::string& key, const char* stdCode, WTSKlinePeriod period);
+	bool		cacheRawBarsFromBin(const std::string& key, const char* stdCode, WTSKlinePeriod period);
 
 	bool		cacheRawBarsFromCSV(const std::string& key, const char* stdCode, WTSKlinePeriod period);
 
-	bool		cacheRawTicks(const std::string& key, const char* stdCode, uint32_t uDate);
+	bool		cacheRawBarsFromDB(const std::string& key, const char* stdCode, WTSKlinePeriod period);
+
+	bool		cacheRawTicksFromBin(const std::string& key, const char* stdCode, uint32_t uDate);
 
 	bool		cacheRawTicksFromCSV(const std::string& key, const char* stdCode, uint32_t uDate);
 
@@ -132,6 +136,10 @@ private:
 	bool		checkTicks(const char* stdCode, uint32_t uDate);
 
 	bool		loadStkAdjFactors(const char* adjfile);
+
+	bool		loadStkAdjFactorsFromDB();
+
+	void		init_db();
 
 public:
 	bool init(WTSVariant* cfg);
@@ -236,5 +244,20 @@ private:
 		sprintf(key, "%s.%s", exchg, code);
 		return _adj_factors[key];
 	}
+
+	typedef struct _DBConfig
+	{
+		bool	_active;
+		char	_host[64];
+		int32_t	_port;
+		char	_dbname[32];
+		char	_user[32];
+		char	_pass[32];
+
+		_DBConfig() { memset(this, 0, sizeof(_DBConfig)); }
+	} DBConfig;
+
+	DBConfig	_db_conf;
+	MysqlDbPtr	_db_conn;
 };
 

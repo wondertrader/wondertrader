@@ -19,6 +19,7 @@
 #include "../Share/TimeUtils.hpp"
 #include "../Share/JsonToVariant.hpp"
 #include "../Share/StrUtil.hpp"
+#include "../Share/DLLHelper.hpp"
 
 #include "../WTSTools/WTSLogger.h"
 #include "../WTSTools/WTSCmpHelper.hpp"
@@ -28,6 +29,8 @@
 #else
 #define my_stricmp strcasecmp
 #endif
+
+extern std::string getBinDir();
 
 
 WtBtRunner::WtBtRunner()
@@ -198,6 +201,11 @@ void WtBtRunner::config(const char* cfgFile)
 		WTSLogger::info("≈‰÷√Œƒº˛Ω‚Œˆ ß∞‹");
 		return;
 	}
+
+#ifdef _WIN32
+	std::string module = getBinDir() + "libmysql.dll";
+	DLLHelper::load_library(module.c_str());
+#endif
 
 	WTSVariant* cfg = WTSVariant::createObject();
 	jsonToVariant(root, cfg);

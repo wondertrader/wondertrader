@@ -29,6 +29,8 @@
 #include "../Share/JsonToVariant.hpp"
 #include "../Share/CodeHelper.hpp"
 
+#pragma comment(lib, "libmysql.lib")
+
 #ifdef _WIN32
 #define my_stricmp _stricmp
 #else
@@ -95,9 +97,83 @@ bool HisDataReplayer::init(WTSVariant* cfg)
 
 	loadFees(cfg->getCString("fees"));
 
-	if (cfg->has("adjfactor"))
+	WTSVariant* dbConf = cfg->get("db");
+	if (dbConf)
+	{
+		strcpy(_db_conf._host, dbConf->getCString("host"));
+		strcpy(_db_conf._dbname, dbConf->getCString("dbname"));
+		strcpy(_db_conf._user, dbConf->getCString("user"));
+		strcpy(_db_conf._pass, dbConf->getCString("pass"));
+		_db_conf._port = dbConf->getInt32("port");
+
+		_db_conf._active = (strlen(_db_conf._host) > 0) && (strlen(_db_conf._dbname) > 0) && (_db_conf._port != 0);
+		if (_db_conf._active)
+			init_db();
+	}
+
+	bool bAdjLoaded = false;
+	if (_db_conn)
+		bAdjLoaded = loadStkAdjFactorsFromDB();
+
+	if (!bAdjLoaded && cfg->has("adjfactor"))
 		loadStkAdjFactors(cfg->getCString("adjfactor"));
 
+	return true;
+}
+
+void HisDataReplayer::init_db()
+{
+	if (!_db_conf._active)
+		return;
+
+	_db_conn.reset(new MysqlDb);
+	my_bool autoreconnect = true;
+	_db_conn->options(MYSQL_OPT_RECONNECT, &autoreconnect);
+	_db_conn->options(MYSQL_SET_CHARSET_NAME, "utf8");
+
+	if (_db_conn->connect(_db_conf._dbname, _db_conf._host, _db_conf._user, _db_conf._pass, _db_conf._port, CLIENT_MULTI_STATEMENTS | CLIENT_MULTI_RESULTS))
+	{
+		WTSLogger::info("数据库连接成功:%s:%d", _db_conf._host, _db_conf._port);
+	}
+	else
+	{
+		WTSLogger::error("数据库连接失败[%s:%d]:%s", _db_conf._host, _db_conf._port, _db_conn->errstr());
+		_db_conn.reset();
+	}
+}
+
+bool HisDataReplayer::loadStkAdjFactorsFromDB()
+{
+	MysqlQuery query(*_db_conn);
+	if (!query.exec("SELECT exchange,code,date,factor FROM tb_adj_factors ORDER BY exchange,code,date DESC;"))
+	{
+		WTSLogger::error("查询除权因子表出错:%s", query.errormsg());
+		return false;
+	}
+
+	uint32_t stk_cnt = 0;
+	uint32_t fct_cnt = 0;
+	while (query.fetch_row())
+	{
+		const char* exchg = query.getstr(0);
+		const char* code = query.getstr(1);
+		uint32_t uDate = query.getuint(2);
+		double factor = query.getdouble(3);
+
+		std::string key = StrUtil::printf("%s.%s", exchg, code);
+		if (_adj_factors.find(key) == _adj_factors.end())
+			stk_cnt++;
+
+		AdjFactorList& fctrLst = _adj_factors[key];
+		AdjFactor adjFact;
+		adjFact._date = uDate;
+		adjFact._factor = factor;
+
+		fctrLst.push_back(adjFact);
+		fct_cnt++;
+	}
+
+	WTSLogger::info("共加载%u只股票的%u条除权因子数据", stk_cnt, fct_cnt);
 	return true;
 }
 
@@ -839,9 +915,13 @@ WTSKlineSlice* HisDataReplayer::get_kline_slice(const char* stdCode, const char*
 				{
 					bHasHisData = cacheRawBarsFromCSV(rawKey, stdCode, kp);
 				}
+				else if (_mode == "db")
+				{
+					bHasHisData = cacheRawBarsFromDB(rawKey, stdCode, kp);
+				}
 				else
 				{
-					bHasHisData = cacheRawBars(rawKey, stdCode, kp);
+					bHasHisData = cacheRawBarsFromBin(rawKey, stdCode, kp);
 				}
 			}
 		}
@@ -851,9 +931,13 @@ WTSKlineSlice* HisDataReplayer::get_kline_slice(const char* stdCode, const char*
 			{
 				bHasHisData = cacheRawBarsFromCSV(key, stdCode, kp);
 			}
+			else if (_mode == "db")
+			{
+				bHasHisData = cacheRawBarsFromDB(key, stdCode, kp);
+			}
 			else
 			{
-				bHasHisData = cacheRawBars(key, stdCode, kp);
+				bHasHisData = cacheRawBarsFromBin(key, stdCode, kp);
 			}
 		}
 	}
@@ -1137,7 +1221,7 @@ bool HisDataReplayer::checkTicks(const char* stdCode, uint32_t uDate)
 		}
 		else
 		{
-			hasTicks = cacheRawTicks(stdCode, stdCode, uDate);
+			hasTicks = cacheRawTicksFromBin(stdCode, stdCode, uDate);
 		}
 
 		if (!hasTicks)
@@ -1357,7 +1441,7 @@ uint32_t strToDate(const char* strDate)
 	return strtoul(ss.str().c_str(), NULL, 10);
 }
 
-bool HisDataReplayer::cacheRawTicks(const std::string& key, const char* stdCode, uint32_t uDate)
+bool HisDataReplayer::cacheRawTicksFromBin(const std::string& key, const char* stdCode, uint32_t uDate)
 {
 	CodeHelper::CodeInfo cInfo;
 	CodeHelper::extractStdFutCode(stdCode, cInfo);
@@ -1661,7 +1745,447 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 	return true;
 }
 
-bool HisDataReplayer::cacheRawBars(const std::string& key, const char* stdCode, WTSKlinePeriod period)
+bool HisDataReplayer::cacheRawBarsFromDB(const std::string& key, const char* stdCode, WTSKlinePeriod period)
+{
+	CodeHelper::CodeInfo cInfo;
+	CodeHelper::extractStdCode(stdCode, cInfo);
+	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
+
+	uint32_t curDate = TimeUtils::getCurDate();
+	uint32_t curTime = TimeUtils::getCurMin() / 100;
+
+	uint32_t endTDate = _bd_mgr.calcTradingDate(stdPID.c_str(), curDate, curTime, false);
+
+	std::string tbname, pname;
+	switch (period)
+	{
+	case KP_Minute1:
+		tbname = "tb_kline_min1";
+		pname = "min1";
+		break;
+	case KP_Minute5:
+		tbname = "tb_kline_min5";
+		pname = "min5";
+		break;
+	default:
+		tbname = "tb_kline_day";
+		pname = "day";
+		break;
+	}
+
+	BarsList& barList = _bars_cache[key];
+	barList._code = stdCode;
+	barList._period = period;
+
+	std::vector<std::vector<WTSBarStruct>*> barsSections;
+	bool isDay = (period == KP_DAY);
+
+	uint32_t realCnt = 0;
+	if (cInfo._hot && cInfo._category == CC_Future)//如果是读取期货主力连续数据
+	{
+		HotSections secs;
+		if (!_hot_mgr.splitHotSecions(cInfo._exchg, cInfo._product, 19900102, endTDate, secs))
+			return false;
+
+		if (secs.empty())
+			return false;
+
+		//先按照HOT代码进行读取, 如rb.HOT
+		std::vector<WTSBarStruct>* hotAy = NULL;
+		uint32_t lastHotTime = 0;
+		for (;;)
+		{
+			char sql[256] = { 0 };
+			if (isDay)
+				sprintf(sql, "SELECT `date`,0,open,high,low,close,settle,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%s.HOT' ORDER BY `date`;",
+					tbname.c_str(), cInfo._exchg, cInfo._product);
+			else
+				sprintf(sql, "SELECT `date`,`time`,open,high,low,close,0,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%s.HOT' ORDER BY `time`;",
+					tbname.c_str(), cInfo._exchg, cInfo._product);
+
+			MysqlQuery query(*_db_conn);
+			if (!query.exec(sql))
+			{
+				WTSLogger::error("历史K线读取失败：%s", query.errormsg());
+			}
+			else
+			{
+				uint32_t barcnt = (uint32_t)query.num_rows();
+				if (barcnt > 0)
+				{
+					hotAy = new std::vector<WTSBarStruct>();
+					hotAy->resize(barcnt);
+
+					uint32_t idx = 0;
+					while (query.fetch_row())
+					{
+						WTSBarStruct& bs = hotAy->at(idx);
+						bs.date = query.getuint(0);
+						bs.time = query.getuint(1);
+						bs.open = query.getdouble(2);
+						bs.high = query.getdouble(3);
+						bs.low = query.getdouble(4);
+						bs.close = query.getdouble(5);
+						bs.settle = query.getdouble(6);
+						bs.vol = query.getuint(7);
+						bs.money = query.getdouble(8);
+						bs.hold = query.getuint(9);
+						bs.add = query.getdouble(10);
+						idx++;
+					}
+
+					if (period != KP_DAY)
+						lastHotTime = hotAy->at(barcnt - 1).time;
+					else
+						lastHotTime = hotAy->at(barcnt - 1).date;
+				}
+
+				WTSLogger::info("主力合约%s历史%s数据直接缓存%u条", stdCode, pname.c_str(), barcnt);
+			}
+
+			break;
+		}
+
+		bool bAllCovered = false;
+		for (auto it = secs.rbegin(); it != secs.rend() && left > 0; it++)
+		{
+			const HotSection& hotSec = *it;
+			const char* curCode = hotSec._code.c_str();
+			uint32_t rightDt = hotSec._e_date;
+			uint32_t leftDt = hotSec._s_date;
+
+			//要先将日期转换为边界时间
+			uint32_t stime, etime;
+			if (!isDay)
+			{
+				uint64_t sTime = _bd_mgr.getBoundaryTime(stdPID.c_str(), leftDt, false, true);
+				uint64_t eTime = _bd_mgr.getBoundaryTime(stdPID.c_str(), rightDt, false, false);
+
+				stime = ((uint32_t)(sTime / 10000) - 19900000) * 10000 + (uint32_t)(sTime % 10000);
+
+				if (stime < lastHotTime)	//如果边界时间小于主力的最后一根Bar的时间, 说明已经有交叉了, 则不需要再处理了
+				{
+					bAllCovered = true;
+					stime = lastHotTime + 1;
+				}
+
+				etime = ((uint32_t)(eTime / 10000) - 19900000) * 10000 + (uint32_t)(eTime % 10000);
+
+				if (etime <= lastHotTime)	//右边界时间小于最后一条Hot时间, 说明全部交叉了, 没有再找的必要了
+					break;
+			}
+			else
+			{
+				stime = leftDt;
+				if (stime < lastHotTime)	//如果边界时间小于主力的最后一根Bar的时间, 说明已经有交叉了, 则不需要再处理了
+				{
+					bAllCovered = true;
+					stime = lastHotTime + 1;
+				}
+
+				etime = rightDt;
+
+				if (etime <= lastHotTime)
+					break;
+			}
+
+			char sql[256] = { 0 };
+			if (isDay)
+				sprintf(sql, "SELECT `date`,0,open,high,low,close,settle,volume,turnover,interest,diff_interest FROM %s "
+					"WHERE exchange='%s' AND code='%s' AND `date`>=%u AND `date`<=%u ORDER BY `date`;",
+					tbname.c_str(), cInfo._exchg, curCode, stime, etime);
+			else
+				sprintf(sql, "SELECT `date`,`time`,open,high,low,close,0,volume,turnover,interest,diff_interest FROM %s "
+					"WHERE exchange='%s' AND code='%s' AND `time`>=%u AND `time`<=%u ORDER BY `time`;",
+					tbname.c_str(), cInfo._exchg, curCode, stime, etime);
+
+			MysqlQuery query(*_db_conn);
+			if (!query.exec(sql))
+			{
+				WTSLogger::error("历史K线读取失败：%s", query.errormsg());
+			}
+			else
+			{
+				uint32_t barcnt = (uint32_t)query.num_rows();
+				if(barcnt)
+				{
+					auto tempAy = new std::vector<WTSBarStruct>();
+					tempAy->resize(barcnt);
+
+					uint32_t idx = 0;
+					while (query.fetch_row())
+					{
+						WTSBarStruct& bs = tempAy->at(idx);
+						bs.date = query.getuint(0);
+						bs.time = query.getuint(1);
+						bs.open = query.getdouble(2);
+						bs.high = query.getdouble(3);
+						bs.low = query.getdouble(4);
+						bs.close = query.getdouble(5);
+						bs.settle = query.getdouble(6);
+						bs.vol = query.getuint(7);
+						bs.money = query.getdouble(8);
+						bs.hold = query.getuint(9);
+						bs.add = query.getdouble(10);
+						idx++;
+					}
+
+					realCnt += barcnt;
+
+					barsSections.push_back(tempAy);
+				}
+
+				if (bAllCovered)
+					break;
+			}
+		}
+
+		if (hotAy)
+		{
+			barsSections.push_back(hotAy);
+			realCnt += hotAy->size();
+		}
+	}
+	else if (cInfo._exright && cInfo._category == CC_Stock)//如果是读取股票复权数据
+	{
+		std::vector<WTSBarStruct>* hotAy = NULL;
+		uint32_t lastQTime = 0;
+
+		do
+		{
+			//先直接读取复权过的历史数据，路径如/his/day/sse/SH600000Q.dsb
+			char sql[256] = { 0 };
+			if (isDay)
+				sprintf(sql, "SELECT `date`,0,open,high,low,close,settle,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%sQ' ORDER BY `date`;",
+					tbname.c_str(), cInfo._exchg, cInfo._code);
+			else
+				sprintf(sql, "SELECT `date`,`time`,open,high,low,close,0,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%sQ' ORDER BY `time`;",
+					tbname.c_str(), cInfo._exchg, cInfo._code);
+
+			MysqlQuery query(*_db_conn);
+			if (!query.exec(sql))
+			{
+				WTSLogger::error("历史K线读取失败：%s", query.errormsg());
+			}
+			else
+			{
+				uint32_t barcnt = (uint32_t)query.num_rows();
+				if(barcnt > 0)
+				{
+					hotAy = new std::vector<WTSBarStruct>();
+					hotAy->resize(barcnt);
+
+					uint32_t idx = 0;
+					while (query.fetch_row())
+					{
+						WTSBarStruct& bs = hotAy->at(idx);
+						bs.date = query.getuint(0);
+						bs.time = query.getuint(1);
+						bs.open = query.getdouble(2);
+						bs.high = query.getdouble(3);
+						bs.low = query.getdouble(4);
+						bs.close = query.getdouble(5);
+						bs.settle = query.getdouble(6);
+						bs.vol = query.getuint(7);
+						bs.money = query.getdouble(8);
+						bs.hold = query.getuint(9);
+						bs.add = query.getdouble(10);
+						idx++;
+					}
+
+					if (period != KP_DAY)
+						lastQTime = hotAy->at(barcnt - 1).time;
+					else
+						lastQTime = hotAy->at(barcnt - 1).date;
+				}
+
+				WTSLogger::error("股票%s历史%s复权数据直接缓存%u条", stdCode, pname.c_str(), barcnt);
+			}
+
+		} while (false);
+
+		bool bAllCovered = false;
+		do
+		{
+			const char* curCode = cInfo._code;
+
+			//要先将日期转换为边界时间
+			WTSBarStruct sBar;
+			if (period != KP_DAY)
+			{
+				sBar.date = TimeUtils::minBarToDate(lastQTime);
+
+				sBar.time = lastQTime + 1;
+			}
+			else
+			{
+				sBar.date = lastQTime + 1;
+			}
+
+			char sql[256] = { 0 };
+			if (isDay)
+				sprintf(sql, "SELECT `date`,0,open,high,low,close,settle,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%s' AND date>=%u ORDER BY `date`;",
+					tbname.c_str(), cInfo._exchg, cInfo._code, lastQTime + 1);
+			else
+				sprintf(sql, "SELECT `date`,`time`,open,high,low,close,0,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%s' AND time>=%u ORDER BY `time`;",
+					tbname.c_str(), cInfo._exchg, cInfo._code, lastQTime + 1);
+
+			MysqlQuery query(*_db_conn);
+			if (!query.exec(sql))
+			{
+				WTSLogger::error("历史K线读取失败：%s", query.errormsg());
+			}
+			else
+			{
+				uint32_t barcnt = (uint32_t)query.num_rows();
+				if (barcnt > 0)
+				{
+					auto tempAy = new std::vector<WTSBarStruct>();
+					tempAy->resize(barcnt);
+
+					uint32_t idx = 0;
+					while (query.fetch_row())
+					{
+						WTSBarStruct& bs = tempAy->at(idx);
+						bs.date = query.getuint(0);
+						bs.time = query.getuint(1);
+						bs.open = query.getdouble(2);
+						bs.high = query.getdouble(3);
+						bs.low = query.getdouble(4);
+						bs.close = query.getdouble(5);
+						bs.settle = query.getdouble(6);
+						bs.vol = query.getuint(7);
+						bs.money = query.getdouble(8);
+						bs.hold = query.getuint(9);
+						bs.add = query.getdouble(10);
+						idx++;
+					}
+
+					realCnt += barcnt;
+
+					auto& ayFactors = getAdjFactors(cInfo._code, cInfo._exchg);
+					if (!ayFactors.empty())
+					{
+						//做前复权处理
+						int32_t lastIdx = barcnt;
+						WTSBarStruct bar;
+						WTSBarStruct* firstBar = tempAy->data();
+						for (auto& adjFact : ayFactors)
+						{
+							bar.date = adjFact._date;
+							double factor = adjFact._factor;
+
+							WTSBarStruct* pBar = NULL;
+							pBar = std::lower_bound(firstBar, firstBar + lastIdx - 1, bar, [period](const WTSBarStruct& a, const WTSBarStruct& b) {
+								return a.date < b.date;
+							});
+
+							if (pBar->date < bar.date)
+								continue;
+
+							WTSBarStruct* endBar = pBar;
+							if (pBar != NULL)
+							{
+								int32_t curIdx = pBar - firstBar;
+								while (pBar && curIdx < lastIdx)
+								{
+									pBar->open /= factor;
+									pBar->high /= factor;
+									pBar->low /= factor;
+									pBar->close /= factor;
+
+									pBar++;
+									curIdx++;
+								}
+								lastIdx = endBar - firstBar;
+							}
+
+							if (lastIdx == 0)
+								break;
+						}
+					}
+
+					barsSections.push_back(tempAy);
+				}
+			}
+
+		} while (false);
+
+		if (hotAy)
+		{
+			barsSections.push_back(hotAy);
+			realCnt += hotAy->size();
+		}
+	}
+	else
+	{
+		//读取历史的
+		char sql[256] = { 0 };
+		if (isDay)
+			sprintf(sql, "SELECT `date`,0,open,high,low,close,settle,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%sQ' ORDER BY `date`;",
+				tbname.c_str(), cInfo._exchg, cInfo._code);
+		else
+			sprintf(sql, "SELECT `date`,`time`,open,high,low,close,0,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%sQ' ORDER BY `time`;",
+				tbname.c_str(), cInfo._exchg, cInfo._code);
+
+		MysqlQuery query(*_db_conn);
+		if (!query.exec(sql))
+		{
+			WTSLogger::error("历史K线读取失败：%s", query.errormsg());
+		}
+		else
+		{
+			uint32_t barcnt = (uint32_t)query.num_rows();
+			if(barcnt > 0)
+			{
+				auto tempAy = new std::vector<WTSBarStruct>();
+				tempAy->resize(barcnt);
+
+				uint32_t idx = 0;
+				while (query.fetch_row())
+				{
+					WTSBarStruct& bs = tempAy->at(idx);
+					bs.date = query.getuint(0);
+					bs.time = query.getuint(1);
+					bs.open = query.getdouble(2);
+					bs.high = query.getdouble(3);
+					bs.low = query.getdouble(4);
+					bs.close = query.getdouble(5);
+					bs.settle = query.getdouble(6);
+					bs.vol = query.getuint(7);
+					bs.money = query.getdouble(8);
+					bs.hold = query.getuint(9);
+					bs.add = query.getdouble(10);
+					idx++;
+				}
+
+				realCnt += barcnt;
+
+				barsSections.push_back(tempAy);
+			}
+		}
+	}
+
+	if (realCnt > 0)
+	{
+		barList._bars.resize(realCnt);
+
+		uint32_t curIdx = 0;
+		for (auto it = barsSections.rbegin(); it != barsSections.rend(); it++)
+		{
+			std::vector<WTSBarStruct>* tempAy = *it;
+			memcpy(barList._bars.data() + curIdx, tempAy->data(), tempAy->size() * sizeof(WTSBarStruct));
+			curIdx += tempAy->size();
+			delete tempAy;
+		}
+		barsSections.clear();
+	}
+
+	WTSLogger::info("合约%s的历史%s数据已缓存%u条", stdCode, pname.c_str(), realCnt);
+	return true;
+}
+
+bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* stdCode, WTSKlinePeriod period)
 {
 	CodeHelper::CodeInfo cInfo;
 	CodeHelper::extractStdCode(stdCode, cInfo);

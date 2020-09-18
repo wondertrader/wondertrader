@@ -15,7 +15,9 @@
 #include "../WtBtCore/HftMocker.h"
 
 #include "../WTSTools/WTSLogger.h"
+
 #include "../Share/decimal.h"
+#include "../Share/StrUtil.hpp"
 #include "../Includes/WTSTradeDef.hpp"
 
 
@@ -47,10 +49,14 @@ BOOL APIENTRY DllMain(
 #else
 char PLATFORM_NAME[] = "UNIX";
 
-//__attribute__((constructor))
-//void on_load(void) {
-//	printf("module loaded\r\n");
-//}
+std::string	g_moduleName;
+
+__attribute__((constructor))
+void on_load(void) {
+	Dl_info dl_info;
+	dladdr((void *)on_load, &dl_info);
+	g_moduleName = dl_info.dli_fname;
+}
 #endif
 
 
@@ -75,6 +81,30 @@ const char* getModuleName()
 	return MODULE_NAME;
 }
 #endif
+
+std::string getBinDir()
+{
+	static std::string _bin_dir;
+	if (_bin_dir.empty())
+	{
+
+
+#ifdef _WIN32
+		char strPath[MAX_PATH];
+		GetModuleFileName(g_dllModule, strPath, MAX_PATH);
+
+		_bin_dir = StrUtil::standardisePath(strPath, false);
+#else
+		_bin_dir = g_moduleName;
+#endif
+
+		uint32_t nPos = _bin_dir.find_last_of('/');
+		_bin_dir = _bin_dir.substr(0, nPos + 1);
+	}
+
+	return _bin_dir;
+}
+
 
 void register_cta_callbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar)
 {
