@@ -9,6 +9,7 @@
  */
 #pragma once
 #include "../Includes/IParserApi.h"
+#include "../Share/DLLHelper.hpp"
 #include "./ustptraderapi/USTPFtdcMduserApi.h"
 #include <map>
 
@@ -102,5 +103,9 @@ private:
 
 	IParserApiListener*	m_parserSink;
 	IBaseDataMgr*		m_pBaseDataMgr;
+
+	DllHandle		m_hInst;
+	typedef CUstpFtdcMduserApi* (*FemasCreator)(const char *);
+	FemasCreator		m_funcCreator;
 };
 

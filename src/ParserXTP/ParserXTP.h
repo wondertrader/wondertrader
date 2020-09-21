@@ -9,6 +9,7 @@
  */
 #pragma once
 #include "../Includes/IParserApi.h"
+#include "../Share/DLLHelper.hpp"
 #include "./XTPQuoteApi/xtp_quote_api.h"
 #include <map>
 
@@ -107,5 +108,10 @@ private:
 
 	IParserApiListener*	m_parserSink;
 	IBaseDataMgr*		m_pBaseDataMgr;
+
+	DllHandle		m_hInst;
+	typedef XTP::API::QuoteApi* (*XTPCreater)(uint8_t, const char *, XTP_LOG_LEVEL log_level);
+	//typedef CUstpFtdcMduserApi* (*FemasCreator)(const char *);
+	XTPCreater		m_funcCreator;
 };
 

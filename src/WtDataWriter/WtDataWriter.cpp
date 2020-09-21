@@ -7,9 +7,13 @@
 #include "../Share/BoostFile.hpp"
 #include "../Share/StrUtil.hpp"
 #include "../Share/IniHelper.hpp"
+#include "../Share/DLLHelper.hpp"
+
 #include "../Includes/IBaseDataMgr.h"
 
 #include "../WTSTools/WTSCmpHelper.hpp"
+
+#pragma comment(lib, "libmysql.lib")
 
 
 #include <set>
@@ -39,6 +43,63 @@ static const uint32_t KLINE_SIZE_STEP = 200;
 const char CMD_CLEAR_CACHE[] = "CMD_CLEAR_CACHE";
 const char MARKER_FILE[] = "marker.ini";
 
+#ifdef _WIN32
+#include <wtypes.h>
+HMODULE	g_dllModule = NULL;
+
+BOOL APIENTRY DllMain(
+	HANDLE hModule,
+	DWORD  ul_reason_for_call,
+	LPVOID lpReserved
+)
+{
+	switch (ul_reason_for_call)
+	{
+	case DLL_PROCESS_ATTACH:
+		g_dllModule = (HMODULE)hModule;
+		break;
+	}
+	return TRUE;
+}
+#else
+#include <dlfcn.h>
+
+char PLATFORM_NAME[] = "UNIX";
+
+std::string	g_moduleName;
+
+__attribute__((constructor))
+void on_load(void) {
+	Dl_info dl_info;
+	dladdr((void *)on_load, &dl_info);
+	g_moduleName = dl_info.dli_fname;
+}
+#endif
+
+std::string getBinDir()
+{
+	static std::string _bin_dir;
+	if (_bin_dir.empty())
+	{
+
+
+#ifdef _WIN32
+		char strPath[MAX_PATH];
+		GetModuleFileName(g_dllModule, strPath, MAX_PATH);
+
+		_bin_dir = StrUtil::standardisePath(strPath, false);
+#else
+		_bin_dir = g_moduleName;
+#endif
+
+		uint32_t nPos = _bin_dir.find_last_of('/');
+		_bin_dir = _bin_dir.substr(0, nPos + 1);
+	}
+
+	return _bin_dir;
+}
+
+
 
 WtDataWriter::WtDataWriter()
 	: _terminated(false)
@@ -59,6 +120,34 @@ bool WtDataWriter::isSessionProceeded(const char* sid)
 		return false;
 
 	return (it->second >= TimeUtils::getCurDate());
+}
+
+void WtDataWriter::init_db()
+{
+	if (!_db_conf._active)
+		return;
+
+#ifdef _WIN32
+	std::string module = getBinDir() + "libmysql.dll";
+	DLLHelper::load_library(module.c_str());
+#endif
+
+	_db_conn.reset(new MysqlDb);
+	my_bool autoreconnect = true;
+	_db_conn->options(MYSQL_OPT_RECONNECT, &autoreconnect);
+	_db_conn->options(MYSQL_SET_CHARSET_NAME, "utf8");
+
+	if (_db_conn->connect(_db_conf._dbname, _db_conf._host, _db_conf._user, _db_conf._pass, _db_conf._port, CLIENT_MULTI_STATEMENTS | CLIENT_MULTI_RESULTS))
+	{
+		if(_sink)
+			_sink->outputWriterLog(LL_INFO, "数据库连接成功:%s:%d", _db_conf._host, _db_conf._port);
+	}
+	else
+	{
+		if (_sink)
+			_sink->outputWriterLog(LL_ERROR, "数据库连接失败[%s:%d]:%s", _db_conf._host, _db_conf._port, _db_conn->errstr());
+		_db_conn.reset();
+	}
 }
 
 bool WtDataWriter::init(WTSVariant* params, IDataWriterSink* sink)
@@ -87,6 +176,20 @@ bool WtDataWriter::init(WTSVariant* params, IDataWriterSink* sink)
 		{
 			_proc_date[ayKeys[idx].c_str()] = strtoul(ayVals[idx].c_str(), 0, 10);
 		}
+	}
+
+	WTSVariant* dbConf = params->get("db");
+	if(dbConf)
+	{
+		strcpy(_db_conf._host, dbConf->getCString("host"));
+		strcpy(_db_conf._dbname, dbConf->getCString("dbname"));
+		strcpy(_db_conf._user, dbConf->getCString("user"));
+		strcpy(_db_conf._pass, dbConf->getCString("pass"));
+		_db_conf._port = dbConf->getInt32("port");
+
+		_db_conf._active = (strlen(_db_conf._host) > 0) && (strlen(_db_conf._dbname) > 0) && (_db_conf._port != 0);
+		if (_db_conf._active)
+			init_db();
 	}
 
 	loadCache();
@@ -343,7 +446,7 @@ bool WtDataWriter::writeTick(WTSTickData* curTick, bool bNeedSlice /* = true */)
 			_tcnt_map[curTick->exchg()]++;
 			if (_tcnt_map[curTick->exchg()] % _log_group_size == 0)
 			{
-				_sink->outputWriterLog(LL_INFO, "共收到交易所%s的tick数据%I64d条", curTick->exchg(), _tcnt_map[curTick->exchg()]);
+				_sink->outputWriterLog(LL_INFO, "共收到交易所%s的tick数据%s条", curTick->exchg(), StrUtil::fmtUInt64(_tcnt_map[curTick->exchg()]).c_str());
 			}
 		} while (false);
 
@@ -366,7 +469,7 @@ bool WtDataWriter::writeOrderQueue(WTSOrdQueData* curOrdQue)
 			WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(ct);
 
 			//再根据状态过滤
-			if (_sink->canSessionReceive(commInfo->getSession()))
+			if (!_sink->canSessionReceive(commInfo->getSession()))
 				break;
 
 			OrdQueBlockPair* pBlockPair = getOrdQueBlock(ct, curOrdQue->tradingdate());
@@ -394,7 +497,7 @@ bool WtDataWriter::writeOrderQueue(WTSOrdQueData* curOrdQue)
 			_tcnt_map[curOrdQue->exchg()]++;
 			if (_tcnt_map[curOrdQue->exchg()] % _log_group_size == 0)
 			{
-				_sink->outputWriterLog(LL_INFO, "共收到交易所%s的委托队列数据%I64d条", curOrdQue->exchg(), _tcnt_map[curOrdQue->exchg()]);
+				_sink->outputWriterLog(LL_INFO, "共收到交易所%s的委托队列数据%s条", curOrdQue->exchg(), StrUtil::fmtUInt64(_tcnt_map[curOrdQue->exchg()]).c_str());
 			}
 		} while (false);
 		curOrdQue->release();
@@ -428,11 +531,17 @@ void WtDataWriter::pushTask(TaskInfo task)
 					continue;
 				}
 
+				std::queue<TaskInfo> tempQueue;
 				{
 					BoostUniqueLock lck(_task_mtx);
-					TaskInfo& curTask = _tasks.front();
+					tempQueue.swap(_tasks);
+				}
+
+				while(!tempQueue.empty())
+				{
+					TaskInfo& curTask = tempQueue.front();
 					curTask();
-					_tasks.pop();
+					tempQueue.pop();
 				}
 			}
 		}));
@@ -454,7 +563,7 @@ bool WtDataWriter::writeOrderDetail(WTSOrdDtlData* curOrdDtl)
 			WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(ct);
 
 			//再根据状态过滤
-			if (_sink->canSessionReceive(commInfo->getSession()))
+			if (!_sink->canSessionReceive(commInfo->getSession()))
 				break;
 
 			OrdDtlBlockPair* pBlockPair = getOrdDtlBlock(ct, curOrdDtl->tradingdate());
@@ -482,7 +591,7 @@ bool WtDataWriter::writeOrderDetail(WTSOrdDtlData* curOrdDtl)
 			_tcnt_map[curOrdDtl->exchg()]++;
 			if (_tcnt_map[curOrdDtl->exchg()] % _log_group_size == 0)
 			{
-				_sink->outputWriterLog(LL_INFO, "共收到交易所%s的逐笔委托数据%I64d条", curOrdDtl->exchg(), _tcnt_map[curOrdDtl->exchg()]);
+				_sink->outputWriterLog(LL_INFO, "共收到交易所%s的逐笔委托数据%s条", curOrdDtl->exchg(), StrUtil::fmtUInt64(_tcnt_map[curOrdDtl->exchg()]).c_str());
 			}
 		} while (false);
 
@@ -507,7 +616,7 @@ bool WtDataWriter::writeTransaction(WTSTransData* curTrans)
 			WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(ct);
 
 			//再根据状态过滤
-			if (_sink->canSessionReceive(commInfo->getSession()))
+			if (!_sink->canSessionReceive(commInfo->getSession()))
 				break;
 
 			TransBlockPair* pBlockPair = getTransBlock(ct, curTrans->tradingdate());
@@ -535,7 +644,7 @@ bool WtDataWriter::writeTransaction(WTSTransData* curTrans)
 			_tcnt_map[curTrans->exchg()]++;
 			if (_tcnt_map[curTrans->exchg()] % _log_group_size == 0)
 			{
-				_sink->outputWriterLog(LL_INFO, "共收到交易所%s的逐笔成交数据%I64d条", curTrans->exchg(), _tcnt_map[curTrans->exchg()]);
+				_sink->outputWriterLog(LL_INFO, "共收到交易所%s的逐笔成交数据%s条", curTrans->exchg(), StrUtil::fmtUInt64(_tcnt_map[curTrans->exchg()]).c_str());
 			}
 		} while (false);
 
@@ -1459,6 +1568,423 @@ void WtDataWriter::check_loop()
 	}
 }
 
+uint32_t WtDataWriter::dump_hisdata_to_db(WTSContractInfo* ct)
+{
+	if (ct == NULL)
+		return 0;
+
+	if (!_db_conf._active || _db_conn == NULL)
+		return 0;
+
+	std::string key = StrUtil::printf("%s.%s", ct->getExchg(), ct->getCode());
+
+	uint32_t count = 0;
+
+	MysqlDb& db = *_db_conn;
+	MysqlTransaction trans(db);
+	//从缓存中读取最新tick，更新到历史日线
+	auto it = _tick_cache_idx.find(key);
+	if (it != _tick_cache_idx.end())
+	{
+		uint32_t idx = it->second;
+
+		const TickCacheItem& tci = _tick_cache_block->_ticks[idx];
+		const WTSTickStruct& ts = tci._tick;
+
+		char sql[512] = { 0 };
+		sprintf(sql, "REPLACE INTO tb_kline_day(exchange,code,date,open,high,low,close,settle,volume,turnover,interest,diff_interest) "
+			"VALUES('%s','%s',%u,%f,%f,%f,%f,%f,%u,%f,%u,%d);", ct->getExchg(), ct->getCode(), ts.trading_date, ts.open, ts.high, ts.low, ts.price, 
+			ts.settle_price, ts.total_volumn, ts.total_turnover, ts.open_interest, ts.diff_interest);
+
+		MysqlQuery query(db);
+		if(!query.exec(sql))
+		{
+			_sink->outputWriterLog(LL_ERROR, "day数据收盘作业失败：%s", query.errormsg());
+		}
+		else
+		{
+			count++;
+		}
+	}
+
+	//转移实时1分钟线
+	KBlockPair* kBlkPair = getKlineBlock(ct, KP_Minute1, false);
+	if (kBlkPair != NULL && kBlkPair->_block->_size > 0)
+	{
+		uint32_t size = kBlkPair->_block->_size;
+		_sink->outputWriterLog(LL_INFO, "开始转移合约%s的1分钟数据", ct->getFullCode());
+		BoostUniqueLock lock(kBlkPair->_mutex);
+
+		std::string sql = "REPLACE INTO tb_kline_min1(exchange,code,date,time,open,high,low,close,volume,turnover,interest,diff_interest) VALUES";
+		for(uint32_t i = 0; i < size; i++)
+		{
+			const WTSBarStruct& bs = kBlkPair->_block->_bars[i];
+			sql += StrUtil::printf("('%s','%s',%u,%u,%f,%f,%f,%f,%u,%f,%u,%d),", ct->getExchg(), ct->getCode(), bs.date, bs.time, bs.open,
+				bs.high, bs.low, bs.close, bs.vol, bs.money, bs.hold, bs.add);
+		}
+		sql = sql.substr(0, sql.size() - 1);
+		sql += ";";
+
+		MysqlQuery query(db);
+		if (!query.exec(sql))
+		{
+			_sink->outputWriterLog(LL_ERROR, "min1数据收盘作业失败：%s", query.errormsg());
+		}
+		else
+		{
+			count += size;
+			//最后将缓存清空
+			kBlkPair->_block->_size = 0;
+		}
+	}
+
+	if (kBlkPair)
+		releaseBlock(kBlkPair);
+
+	//第四步，转移实时5分钟线
+	kBlkPair = getKlineBlock(ct, KP_Minute5, false);
+	if (kBlkPair != NULL && kBlkPair->_block->_size > 0)
+	{
+		uint32_t size = kBlkPair->_block->_size;
+		_sink->outputWriterLog(LL_INFO, "开始转移合约%s的5分钟数据", ct->getFullCode());
+		BoostUniqueLock lock(kBlkPair->_mutex);
+
+		std::string sql = "REPLACE INTO tb_kline_min5(exchange,code,date,time,open,high,low,close,volume,turnover,interest,diff_interest) VALUES";
+		for (uint32_t i = 0; i < size; i++)
+		{
+			const WTSBarStruct& bs = kBlkPair->_block->_bars[i];
+			sql += StrUtil::printf("('%s','%s',%u,%u,%f,%f,%f,%f,%u,%f,%u,%d),", ct->getExchg(), ct->getCode(), bs.date, bs.time, bs.open,
+				bs.high, bs.low, bs.close, bs.vol, bs.money, bs.hold, bs.add);
+		}
+		sql = sql.substr(0, sql.size() - 1);
+		sql += ";";
+
+		MysqlQuery query(db);
+		if (!query.exec(sql))
+		{
+			_sink->outputWriterLog(LL_ERROR, "min5数据收盘作业失败：%s", query.errormsg());
+		}
+		else
+		{
+			count += size;
+			//最后将缓存清空
+			kBlkPair->_block->_size = 0;
+		}
+	}
+
+	if (kBlkPair)
+		releaseBlock(kBlkPair);
+
+	trans.commit();
+
+	return count;
+}
+
+uint32_t WtDataWriter::dump_hisdata_to_file(WTSContractInfo* ct)
+{
+	if (ct == NULL)
+		return 0;
+
+	std::string key = StrUtil::printf("%s.%s", ct->getExchg(), ct->getCode());
+
+	uint32_t count = 0;
+
+	//从缓存中读取最新tick，更新到历史日线
+	auto it = _tick_cache_idx.find(key);
+	if (it != _tick_cache_idx.end())
+	{
+		uint32_t idx = it->second;
+
+		const TickCacheItem& tci = _tick_cache_block->_ticks[idx];
+		const WTSTickStruct& ts = tci._tick;
+
+		WTSBarStruct bs;
+		bs.date = ts.trading_date;
+		bs.time = 0;
+		bs.open = ts.open;
+		bs.close = ts.price;
+		bs.high = ts.high;
+		bs.low = ts.low;
+		bs.settle = ts.settle_price;
+		bs.vol = ts.total_volumn;
+		bs.hold = ts.open_interest;
+		bs.money = ts.total_turnover;
+		bs.add = ts.open_interest - ts.pre_interest;
+
+		std::stringstream ss;
+		ss << _base_dir << "his/day/" << ct->getExchg() << "/";
+		std::string path = ss.str();
+		BoostFile::create_directories(ss.str().c_str());
+		std::string filename = StrUtil::printf("%s%s.dsb", path.c_str(), ct->getCode());
+
+		bool bNew = false;
+		if (!BoostFile::exists(filename.c_str()))
+			bNew = true;
+
+		BoostFile f;
+		if (f.create_or_open_file(filename.c_str()))
+		{
+			bool bNeedWrite = true;
+			if (bNew)
+			{
+				BlockHeader header;
+				strcpy(header._blk_flag, BLK_FLAG);
+				header._type = BT_HIS_Day;
+				header._version = BLOCK_VERSION_RAW;
+
+				f.write_file(&header, sizeof(header));
+
+				f.write_file(&bs, sizeof(WTSBarStruct));
+				count++;
+			}
+			else
+			{
+				//日线必须要检查一下
+				std::string content;
+				BoostFile::read_file_contents(filename.c_str(), content);
+				uint64_t flength = content.size();
+
+				HisKlineBlock* kBlock = (HisKlineBlock*)content.data();
+				if (strcmp(kBlock->_blk_flag, BLK_FLAG) != 0)
+				{
+					_sink->outputWriterLog(LL_ERROR, "历史数据文件%s头部异常，将清除数据重建", filename.c_str());
+					f.truncate_file(0);
+					BlockHeader header;
+					strcpy(header._blk_flag, BLK_FLAG);
+					header._type = BT_HIS_Day;
+					header._version = BLOCK_VERSION_RAW;
+
+					f.write_file(&header, sizeof(header));
+
+					f.write_file(&bs, sizeof(WTSBarStruct));
+					count++;
+				}
+				else
+				{
+					std::vector<WTSBarStruct>	bars;
+					if (kBlock->_version == BLOCK_VERSION_RAW)	//如果老的文件是非压缩版本，则直接把K线读到缓存里去
+					{
+						uint32_t barcnt = (uint32_t)(flength - BLOCK_HEADER_SIZE) / sizeof(WTSBarStruct);
+						bars.resize(barcnt);
+						memcpy(bars.data(), kBlock->_bars, (uint32_t)(flength - BLOCK_HEADER_SIZE));
+					}
+					else if (kBlock->_version == BLOCK_VERSION_CMP)	//压缩版本
+					{
+						//现在就需要把数据解压以后读到缓存里去
+						HisKlineBlockV2* kBlockV2 = (HisKlineBlockV2*)content.data();
+						std::string rawData = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
+						uint32_t barcnt = rawData.size() / sizeof(WTSBarStruct);
+						bars.resize(barcnt);
+						memcpy(bars.data(), rawData.data(), rawData.size());
+					}
+
+					//开始比较K线时间标签，主要为了防止数据重复写
+					if (!bars.empty())
+					{
+						WTSBarStruct& oldBS = bars.at(bars.size() - 1);	//先取出最后一条K线
+
+						if (oldBS.date == bs.date && memcmp(&oldBS, &bs, sizeof(WTSBarStruct)) != 0)
+						{
+							//日期相同且数据不同，则用最新的替换最后一条
+							oldBS = bs;
+						}
+						else if (oldBS.date < bs.date)	//老的K线日期小于新的，则直接追加到后面
+						{
+							bars.push_back(bs);
+						}
+					}
+
+					//如果老的文件已经是压缩版本，或者最终数据大小大于100条，则进行压缩
+					bool bNeedCompress = false;
+					if (kBlock->_version == BLOCK_VERSION_CMP || bars.size() > 100)
+					{
+						bNeedCompress = true;
+					}
+
+					if (bNeedCompress)
+					{
+						std::string cmpData = WTSCmpHelper::compress_data(bars.data(), bars.size() * sizeof(WTSBarStruct));
+						BlockHeaderV2 header;
+						strcpy(header._blk_flag, BLK_FLAG);
+						header._type = BT_HIS_Day;
+						header._version = BLOCK_VERSION_CMP;
+						header._size = cmpData.size();
+
+						f.truncate_file(0);
+						f.seek_to_begin();
+						f.write_file(&header, sizeof(header));
+
+						f.write_file(cmpData.data(), cmpData.size());
+						count++;
+					}
+					else
+					{
+						BlockHeader header;
+						strcpy(header._blk_flag, BLK_FLAG);
+						header._type = BT_HIS_Day;
+						header._version = BLOCK_VERSION_RAW;
+
+						f.truncate_file(0);
+						f.seek_to_begin();
+						f.write_file(&header, sizeof(header));
+						f.write_file(bars.data(), bars.size() * sizeof(WTSBarStruct));
+						count++;
+					}
+				}
+			}
+
+			f.close_file();
+		}
+		else
+		{
+			_sink->outputWriterLog(LL_ERROR, "历史数据文件%s打开失败，day数据收盘作业失败", filename.c_str());
+		}
+	}
+
+	//转移实时1分钟线
+	KBlockPair* kBlkPair = getKlineBlock(ct, KP_Minute1, false);
+	if (kBlkPair != NULL && kBlkPair->_block->_size > 0)
+	{
+		uint32_t size = kBlkPair->_block->_size;
+		_sink->outputWriterLog(LL_INFO, "开始转移合约%s的1分钟数据", ct->getFullCode());
+		BoostUniqueLock lock(kBlkPair->_mutex);
+
+		std::stringstream ss;
+		ss << _base_dir << "his/min1/" << ct->getExchg() << "/";
+		BoostFile::create_directories(ss.str().c_str());
+		std::string path = ss.str();
+		BoostFile::create_directories(ss.str().c_str());
+		std::string filename = StrUtil::printf("%s%s.dsb", path.c_str(), ct->getCode());
+
+		bool bNew = false;
+		if (!BoostFile::exists(filename.c_str()))
+			bNew = true;
+
+		_sink->outputWriterLog(LL_INFO, "打开数据存储块: %s", filename.c_str());
+
+		BoostFile f;
+		if (f.create_or_open_file(filename.c_str()))
+		{
+			std::string newData;
+			if (!bNew)
+			{
+				std::string content;
+				BoostFile::read_file_contents(filename.c_str(), content);
+				HisKlineBlock* kBlock = (HisKlineBlock*)content.data();
+				if (kBlock->_version == BLOCK_VERSION_RAW)
+				{
+					uint32_t barcnt = (content.size() - BLOCK_HEADER_SIZE) / sizeof(WTSBarStruct);
+					newData.resize(sizeof(WTSBarStruct)*barcnt);
+					memcpy((void*)newData.data(), kBlock->_bars, sizeof(WTSBarStruct)*barcnt);
+				}
+				else //if (kBlock->_version == BLOCK_VERSION_CMP)
+				{
+					HisKlineBlockV2* kBlockV2 = (HisKlineBlockV2*)content.data();
+					newData = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
+				}
+			}
+			newData.append((const char*)kBlkPair->_block->_bars, sizeof(WTSBarStruct)*size);
+
+			std::string cmpData = WTSCmpHelper::compress_data(newData.data(), newData.size());
+
+			f.truncate_file(0);
+			f.seek_to_begin(0);
+
+			BlockHeaderV2 header;
+			strcpy(header._blk_flag, BLK_FLAG);
+			header._type = BT_HIS_Minute1;
+			header._version = BLOCK_VERSION_CMP;
+			header._size = cmpData.size();
+			f.write_file(&header, sizeof(header));
+			f.write_file(cmpData);
+			count += size;
+
+			//最后将缓存清空
+			//memset(kBlkPair->_block->_bars, 0, sizeof(WTSBarStruct)*kBlkPair->_block->_size);
+			kBlkPair->_block->_size = 0;
+		}
+		else
+		{
+			_sink->outputWriterLog(LL_ERROR, "历史数据文件%s打开失败，min1数据收盘作业失败", filename.c_str());
+		}
+	}
+
+	if (kBlkPair)
+		releaseBlock(kBlkPair);
+
+	//第四步，转移实时5分钟线
+	kBlkPair = getKlineBlock(ct, KP_Minute5, false);
+	if (kBlkPair != NULL && kBlkPair->_block->_size > 0)
+	{
+		uint32_t size = kBlkPair->_block->_size;
+		_sink->outputWriterLog(LL_INFO, "开始转移合约%s的5分钟数据", ct->getFullCode());
+		BoostUniqueLock lock(kBlkPair->_mutex);
+
+		std::stringstream ss;
+		ss << _base_dir << "his/min5/" << ct->getExchg() << "/";
+		BoostFile::create_directories(ss.str().c_str());
+		std::string path = ss.str();
+		BoostFile::create_directories(ss.str().c_str());
+		std::string filename = StrUtil::printf("%s%s.dsb", path.c_str(), ct->getCode());
+
+		bool bNew = false;
+		if (!BoostFile::exists(filename.c_str()))
+			bNew = true;
+
+		_sink->outputWriterLog(LL_INFO, "打开数据存储块: %s", filename.c_str());
+
+		BoostFile f;
+		if (f.create_or_open_file(filename.c_str()))
+		{
+			std::string newData;
+			if (!bNew)
+			{
+				std::string content;
+				BoostFile::read_file_contents(filename.c_str(), content);
+				HisKlineBlock* kBlock = (HisKlineBlock*)content.data();
+				if (kBlock->_version == BLOCK_VERSION_RAW)
+				{
+					uint32_t barcnt = (content.size() - BLOCK_HEADER_SIZE) / sizeof(WTSBarStruct);
+					newData.resize(sizeof(WTSBarStruct)*barcnt);
+					memcpy((void*)newData.data(), kBlock->_bars, sizeof(WTSBarStruct)*barcnt);
+				}
+				else //if (kBlock->_version == BLOCK_VERSION_CMP)
+				{
+					HisKlineBlockV2* kBlockV2 = (HisKlineBlockV2*)content.data();
+					newData = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
+				}
+			}
+			newData.append((const char*)kBlkPair->_block->_bars, sizeof(WTSBarStruct)*size);
+
+			std::string cmpData = WTSCmpHelper::compress_data(newData.data(), newData.size());
+
+			f.truncate_file(0);
+			f.seek_to_begin(0);
+
+			BlockHeaderV2 header;
+			strcpy(header._blk_flag, BLK_FLAG);
+			header._type = BT_HIS_Minute5;
+			header._version = BLOCK_VERSION_CMP;
+			header._size = cmpData.size();
+			f.write_file(&header, sizeof(header));
+			f.write_file(cmpData);
+			count += size;
+
+			//最后将缓存清空
+			kBlkPair->_block->_size = 0;
+		}
+		else
+		{
+			_sink->outputWriterLog(LL_ERROR, "历史数据文件%s打开失败，min5数据收盘作业失败", filename.c_str());
+		}
+	}
+
+	if (kBlkPair)
+		releaseBlock(kBlkPair);
+
+	return count;
+}
+
 void WtDataWriter::proc_loop()
 {
 	while (!_terminated)
@@ -1635,169 +2161,10 @@ void WtDataWriter::proc_loop()
 		if(ct == NULL)
 			continue;
 
-		std::string key = StrUtil::printf("%s.%s", ct->getExchg(), ct->getCode());
-
 		uint32_t count = 0;
 
-		uint32_t uCurDate = 0;
-		//第一步，从缓存中读取最新tick，更新到历史日线
-		auto it = _tick_cache_idx.find(key);
-		if (it != _tick_cache_idx.end())
-		{
-			uint32_t idx = it->second;
-
-			const TickCacheItem& tci = _tick_cache_block->_ticks[idx];
-			const WTSTickStruct& ts = tci._tick;
-
-			WTSBarStruct bs;
-			bs.date = ts.trading_date;
-			bs.time = 0;
-			bs.open = ts.open;
-			bs.close = ts.price;
-			bs.high = ts.high;
-			bs.low = ts.low;
-			bs.settle = ts.settle_price;
-			bs.vol = ts.total_volumn;
-			bs.hold = ts.open_interest;
-			bs.money = ts.total_turnover;
-			bs.add = ts.open_interest - ts.pre_interest;
-
-			uCurDate = ts.trading_date;
-
-			std::stringstream ss;
-			ss << _base_dir << "his/day/" << ct->getExchg() << "/";
-			std::string path = ss.str();
-			BoostFile::create_directories(ss.str().c_str());
-			std::string filename = StrUtil::printf("%s%s.dsb", path.c_str(), code.c_str());
-
-			bool bNew = false;
-			if (!BoostFile::exists(filename.c_str()))
-				bNew = true;
-
-			//_sink->outputWriterLog(LL_INFO, "打开数据存储块: %s", filename.c_str());
-
-			BoostFile f;
-			if(f.create_or_open_file(filename.c_str()))
-			{
-				bool bNeedWrite = true;
-				if (bNew)
-				{
-					BlockHeader header;
-					strcpy(header._blk_flag, BLK_FLAG);
-					header._type = BT_HIS_Day;
-					header._version = BLOCK_VERSION_RAW;
-					
-					f.write_file(&header, sizeof(header));
-
-					f.write_file(&bs, sizeof(WTSBarStruct));
-					count++;
-				}
-				else
-				{
-					//日线必须要检查一下
-					std::string content;
-					BoostFile::read_file_contents(filename.c_str(), content);
-					uint64_t flength = content.size();
-					
-					HisKlineBlock* kBlock = (HisKlineBlock*)content.data();
-					if (strcmp(kBlock->_blk_flag, BLK_FLAG) != 0)
-					{
-						_sink->outputWriterLog(LL_ERROR, "历史数据文件%s头部异常，将清除数据重建", filename.c_str());
-						f.truncate_file(0);
-						BlockHeader header;
-						strcpy(header._blk_flag, BLK_FLAG);
-						header._type = BT_HIS_Day;
-						header._version = BLOCK_VERSION_RAW;
-
-						f.write_file(&header, sizeof(header));
-
-						f.write_file(&bs, sizeof(WTSBarStruct));
-						count++;
-					}
-					else
-					{
-						std::vector<WTSBarStruct>	bars;
-						if (kBlock->_version == BLOCK_VERSION_RAW)	//如果老的文件是非压缩版本，则直接把K线读到缓存里去
-						{
-							uint32_t barcnt = (uint32_t)(flength - BLOCK_HEADER_SIZE) / sizeof(WTSBarStruct);
-							bars.resize(barcnt);
-							memcpy(bars.data(), kBlock->_bars, (uint32_t)(flength - BLOCK_HEADER_SIZE));
-						}
-						else if (kBlock->_version == BLOCK_VERSION_CMP)	//压缩版本
-						{
-							//现在就需要把数据解压以后读到缓存里去
-							HisKlineBlockV2* kBlockV2 = (HisKlineBlockV2*)content.data();
-							std::string rawData = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
-							uint32_t barcnt = rawData.size() / sizeof(WTSBarStruct);
-							bars.resize(barcnt);
-							memcpy(bars.data(), rawData.data(), rawData.size());
-						}
-
-						//开始比较K线时间标签，主要为了防止数据重复写
-						if (!bars.empty())
-						{
-							WTSBarStruct& oldBS = bars.at(bars.size() - 1);	//先取出最后一条K线
-
-							if (oldBS.date == bs.date && memcmp(&oldBS, &bs, sizeof(WTSBarStruct)) != 0)
-							{
-								//日期相同且数据不同，则用最新的替换最后一条
-								oldBS = bs;
-							}
-							else if (oldBS.date < bs.date)	//老的K线日期小于新的，则直接追加到后面
-							{
-								bars.push_back(bs);
-							}
-						}
-
-						//如果老的文件已经是压缩版本，或者最终数据大小大于100条，则进行压缩
-						bool bNeedCompress = false;
-						if (kBlock->_version == BLOCK_VERSION_CMP || bars.size() > 100)
-						{
-							bNeedCompress = true;
-						}
-
-						if (bNeedCompress)
-						{
-							std::string cmpData = WTSCmpHelper::compress_data(bars.data(), bars.size()*sizeof(WTSBarStruct));
-							BlockHeaderV2 header;
-							strcpy(header._blk_flag, BLK_FLAG);
-							header._type = BT_HIS_Day;
-							header._version = BLOCK_VERSION_CMP;
-							header._size = cmpData.size();
-
-							f.truncate_file(0);
-							f.seek_to_begin();
-							f.write_file(&header, sizeof(header));
-
-							f.write_file(cmpData.data(), cmpData.size());
-							count++;
-						}
-						else
-						{
-							BlockHeader header;
-							strcpy(header._blk_flag, BLK_FLAG);
-							header._type = BT_HIS_Day;
-							header._version = BLOCK_VERSION_RAW;
-
-							f.truncate_file(0);
-							f.seek_to_begin();
-							f.write_file(&header, sizeof(header));
-							f.write_file(bars.data(), bars.size()*sizeof(WTSBarStruct));
-							count++;
-						}
-					}
-				}
-				
-				f.close_file();
-			}
-			else
-			{
-				_sink->outputWriterLog(LL_ERROR, "历史数据文件%s打开失败，day数据收盘作业失败", filename.c_str());
-			}
-		}
-
-		uint32_t uDate = _sink->getTradingDate(key.c_str());
-		//第二步，转移实时tick数据
+		uint32_t uDate = _sink->getTradingDate(ct->getFullCode());
+		//转移实时tick数据
 		{
 			TickBlockPair *tBlkPair = getTickBlock(ct, uDate, false);
 			if (tBlkPair != NULL && tBlkPair->_block->_size > 0)
@@ -1849,7 +2216,7 @@ void WtDataWriter::proc_loop()
 				releaseBlock<TickBlockPair>(tBlkPair);
 		}
 
-		//第三步，转移实时trans数据
+		//转移实时trans数据
 		{
 			TransBlockPair *tBlkPair = getTransBlock(ct, uDate, false);
 			if (tBlkPair != NULL && tBlkPair->_block->_size > 0)
@@ -1901,7 +2268,7 @@ void WtDataWriter::proc_loop()
 				releaseBlock<TransBlockPair>(tBlkPair);
 		}
 
-		//第四步，转移实时order数据
+		//转移实时order数据
 		{
 			OrdDtlBlockPair *tBlkPair = getOrdDtlBlock(ct, uDate, false);
 			if (tBlkPair != NULL && tBlkPair->_block->_size > 0)
@@ -1953,7 +2320,7 @@ void WtDataWriter::proc_loop()
 				releaseBlock<OrdDtlBlockPair>(tBlkPair);
 		}
 
-		//第五步，转移实时queue数据
+		//转移实时queue数据
 		{
 			OrdQueBlockPair *tBlkPair = getOrdQueBlock(ct, uDate, false);
 			if (tBlkPair != NULL && tBlkPair->_block->_size > 0)
@@ -2007,146 +2374,11 @@ void WtDataWriter::proc_loop()
 				releaseBlock<OrdQueBlockPair>(tBlkPair);
 		}
 
-		//第六步，转移实时1分钟线
-		KBlockPair* kBlkPair = getKlineBlock(ct, KP_Minute1, false);
-		if (kBlkPair != NULL  && kBlkPair->_block->_size>0)
-		{
-			uint32_t size = kBlkPair->_block->_size;
-			_sink->outputWriterLog(LL_INFO, "开始转移合约%s的1分钟数据", fullcode.c_str());
-			BoostUniqueLock lock(kBlkPair->_mutex);
-
-			std::stringstream ss;
-			ss << _base_dir << "his/min1/" << ct->getExchg() << "/";
-			BoostFile::create_directories(ss.str().c_str());
-			std::string path = ss.str();
-			BoostFile::create_directories(ss.str().c_str());
-			std::string filename = StrUtil::printf("%s%s.dsb", path.c_str(), code.c_str());
-
-			bool bNew = false;
-			if (!BoostFile::exists(filename.c_str()))
-				bNew = true;
-
-			_sink->outputWriterLog(LL_INFO, "打开数据存储块: %s", filename.c_str());
-
-			BoostFile f;
-			if (f.create_or_open_file(filename.c_str()))
-			{
-				std::string newData;
-				if(!bNew)
-				{
-					std::string content;
-					BoostFile::read_file_contents(filename.c_str(), content);
-					HisKlineBlock* kBlock = (HisKlineBlock*)content.data();
-					if(kBlock->_version == BLOCK_VERSION_RAW)
-					{
-						uint32_t barcnt = (content.size() - BLOCK_HEADER_SIZE) / sizeof(WTSBarStruct);
-						newData.resize(sizeof(WTSBarStruct)*barcnt);
-						memcpy((void*)newData.data(), kBlock->_bars, sizeof(WTSBarStruct)*barcnt);
-					}
-					else //if (kBlock->_version == BLOCK_VERSION_CMP)
-					{
-						HisKlineBlockV2* kBlockV2 = (HisKlineBlockV2*)content.data();
-						newData = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
-					}
-				}
-				newData.append((const char*)kBlkPair->_block->_bars, sizeof(WTSBarStruct)*size);
-
-				std::string cmpData = WTSCmpHelper::compress_data(newData.data(), newData.size());
-
-				f.truncate_file(0);
-				f.seek_to_begin(0);
-
-				BlockHeaderV2 header;
-				strcpy(header._blk_flag, BLK_FLAG);
-				header._type = BT_HIS_Minute1;
-				header._version = BLOCK_VERSION_CMP;
-				header._size = cmpData.size();
-				f.write_file(&header, sizeof(header));
-				f.write_file(cmpData);
-				count += size;
-
-				//最后将缓存清空
-				//memset(kBlkPair->_block->_bars, 0, sizeof(WTSBarStruct)*kBlkPair->_block->_size);
-				kBlkPair->_block->_size = 0;
-			}
-			else
-			{
-				_sink->outputWriterLog(LL_ERROR, "历史数据文件%s打开失败，min1数据收盘作业失败", filename.c_str());
-			}
-		}
-
-		if (kBlkPair)
-			releaseBlock(kBlkPair);
-
-		//第四步，转移实时5分钟线
-		kBlkPair = getKlineBlock(ct, KP_Minute5, false);
-		if (kBlkPair != NULL  && kBlkPair->_block->_size>0)
-		{
-			uint32_t size = kBlkPair->_block->_size;
-			_sink->outputWriterLog(LL_INFO, "开始转移合约%s的5分钟数据", fullcode.c_str());
-			BoostUniqueLock lock(kBlkPair->_mutex);
-
-			std::stringstream ss;
-			ss << _base_dir << "his/min5/" << ct->getExchg() << "/";
-			BoostFile::create_directories(ss.str().c_str());
-			std::string path = ss.str();
-			BoostFile::create_directories(ss.str().c_str());
-			std::string filename = StrUtil::printf("%s%s.dsb", path.c_str(), code.c_str());
-
-			bool bNew = false;
-			if (!BoostFile::exists(filename.c_str()))
-				bNew = true;
-
-			_sink->outputWriterLog(LL_INFO, "打开数据存储块: %s", filename.c_str());
-
-			BoostFile f;
-			if (f.create_or_open_file(filename.c_str()))
-			{
-				std::string newData;
-				if (!bNew)
-				{
-					std::string content;
-					BoostFile::read_file_contents(filename.c_str(), content);
-					HisKlineBlock* kBlock = (HisKlineBlock*)content.data();
-					if (kBlock->_version == BLOCK_VERSION_RAW)
-					{
-						uint32_t barcnt = (content.size() - BLOCK_HEADER_SIZE) / sizeof(WTSBarStruct);
-						newData.resize(sizeof(WTSBarStruct)*barcnt);
-						memcpy((void*)newData.data(), kBlock->_bars, sizeof(WTSBarStruct)*barcnt);
-					}
-					else //if (kBlock->_version == BLOCK_VERSION_CMP)
-					{
-						HisKlineBlockV2* kBlockV2 = (HisKlineBlockV2*)content.data();
-						newData = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
-					}
-				}
-				newData.append((const char*)kBlkPair->_block->_bars, sizeof(WTSBarStruct)*size);
-
-				std::string cmpData = WTSCmpHelper::compress_data(newData.data(), newData.size());
-
-				f.truncate_file(0);
-				f.seek_to_begin(0);
-
-				BlockHeaderV2 header;
-				strcpy(header._blk_flag, BLK_FLAG);
-				header._type = BT_HIS_Minute5;
-				header._version = BLOCK_VERSION_CMP;
-				header._size = cmpData.size();
-				f.write_file(&header, sizeof(header));
-				f.write_file(cmpData);
-				count += size;
-
-				//最后将缓存清空
-				kBlkPair->_block->_size = 0;
-			}
-			else
-			{
-				_sink->outputWriterLog(LL_ERROR, "历史数据文件%s打开失败，min5数据收盘作业失败", filename.c_str());
-			}
-		}
-
-		if (kBlkPair)
-			releaseBlock(kBlkPair);
+		//转移历史K线
+		if(_db_conn)
+			count += dump_hisdata_to_db(ct);
+		else
+			count += dump_hisdata_to_file(ct);
 
 		_sink->outputWriterLog(LL_INFO, "合约%s[%s]已完成收盘, 本次作业共处理数据%u条", ct->getCode(), ct->getExchg(), count);
 	}

@@ -1,5 +1,6 @@
 #include <string>
 #include <map>
+//v6.3.15
 #include "./ThostTraderApi/ThostFtdcTraderApi.h"
 #include "TraderSpi.h"
 
@@ -7,7 +8,6 @@
 #include "../Share/StrUtil.hpp"
 #include "../Share/DLLHelper.hpp"
 #include <boost/filesystem.hpp>
-
 
 
 // UserApi对象
@@ -26,9 +26,14 @@ bool		ISFOROPTION;	//期权
 std::string COMM_FILE;		//输出的品种文件名
 std::string CONT_FILE;		//输出的合约文件名
 
+std::string MODULE_NAME;	//外部模块名
+
 typedef std::map<std::string, std::string>	SymbolMap;
 SymbolMap	MAP_NAME;
 SymbolMap	MAP_SESSION;
+
+typedef CThostFtdcTraderApi* (*CTPCreator)(const char *);
+CTPCreator		g_ctpCreator = NULL;
 
 // 请求编号
 int iRequestID = 0;
@@ -48,11 +53,6 @@ std::string getBaseFolder()
 
 int main()
 {
-#ifdef _WIN32
-#else
-	DLLHelper::load_library("libthosttraderapi_se.so");
-#endif
-
 	std::string cfg = getBaseFolder() + "config.ini";
 	IniHelper ini;
 	ini.load(cfg.c_str());
@@ -69,6 +69,20 @@ int main()
 
 	COMM_FILE = ini.readString("config", "commfile", "commodities.json");
 	CONT_FILE = ini.readString("config", "contfile", "contracts.json");
+
+#ifdef _WIN32
+	MODULE_NAME = ini.readString("config", "module", "thosttraderapi_se.dll");
+#else
+	MODULE_NAME = ini.readString("config", "module", "libthosttraderapi_se.so");
+#endif
+	if(!boost::filesystem::exists(MODULE_NAME.c_str()))
+	{
+#ifdef _WIN32
+		MODULE_NAME = getBaseFolder() + "traders/thosttraderapi_se.dll";
+#else
+		MODULE_NAME = getBaseFolder() + "traders/libthosttraderapi_se.so";
+#endif
+	}
 
 	if(FRONT_ADDR.empty() || BROKER_ID.empty() || INVESTOR_ID.empty() || PASSWORD.empty() || SAVEPATH.empty())
 	{
@@ -95,7 +109,17 @@ int main()
 	}
 
 	// 初始化UserApi
-	pUserApi = CThostFtdcTraderApi::CreateFtdcTraderApi();			// 创建UserApi
+	DllHandle dllInst = DLLHelper::load_library(MODULE_NAME.c_str());
+#ifdef _WIN32
+#	ifdef _WIN64
+	g_ctpCreator = (CTPCreator)DLLHelper::get_symbol(dllInst, "?CreateFtdcTraderApi@CThostFtdcTraderApi@@SAPEAV1@PEBD@Z");
+#	else
+	g_ctpCreator = (CTPCreator)DLLHelper::get_symbol(dllInst, "?CreateFtdcTraderApi@CThostFtdcTraderApi@@SAPAV1@PBD@Z");
+#	endif
+#else
+	g_ctpCreator = (CTPCreator)DLLHelper::get_symbol(dllInst, "_ZN19CThostFtdcTraderApi19CreateFtdcTraderApiEPKc");
+#endif
+	pUserApi = g_ctpCreator("");			// 创建UserApi
 	CTraderSpi* pUserSpi = new CTraderSpi();
 	pUserApi->RegisterSpi((CThostFtdcTraderSpi*)pUserSpi);			// 注册事件类
 	pUserApi->SubscribePublicTopic(THOST_TERT_QUICK);					// 注册公有流

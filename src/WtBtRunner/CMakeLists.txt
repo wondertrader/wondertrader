@@ -32,6 +32,7 @@ SET(LIBS
 	${PROJECT_SOURCE_DIR}/../build/libs/libWTSTools.a
 	${PROJECT_SOURCE_DIR}/../build/libs/libWTSUtils.a
 	
+	${MyDeps}/lib/libmysqlclient.a
 	boost_filesystem
 	pthread
 	dl
@@ -48,6 +49,7 @@ SET(LIBS
 	${PROJECT_SOURCE_DIR}/../build/libs/libWTSTools.a
 	${PROJECT_SOURCE_DIR}/../build/libs/libWTSUtils.a
 	
+	${MyDeps}/lib/libmysqlclient.a
 	boost_filesystem
 	pthread
 	dl

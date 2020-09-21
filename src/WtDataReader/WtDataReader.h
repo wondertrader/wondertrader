@@ -6,11 +6,13 @@
 #include "../Includes/IDataReader.h"
 
 #include "../WtDataWriter/DataDefine.h"
+#include "../WtDataWriter/MysqlDB.hpp"
 #include "../Share/BoostMappingFile.hpp"
 
 NS_OTP_BEGIN
 
 typedef std::shared_ptr<BoostMappingFile> BoostMFPtr;
+typedef std::shared_ptr<MysqlDb>	MysqlDbPtr;
 
 class WtDataReader : public IDataReader
 {
@@ -79,11 +81,16 @@ private:
 	/*
 	 *	将历史数据放入缓存
 	 */
-	bool		cacheHisBars(const std::string& key, const char* stdCode, WTSKlinePeriod period);
+	bool		cacheHisBarsFromFile(const std::string& key, const char* stdCode, WTSKlinePeriod period);
+	bool		cacheHisBarsFromDB(const std::string& key, const char* stdCode, WTSKlinePeriod period);
+
 	uint32_t	readBarsFromCache(const std::string& key, uint64_t etime, uint32_t count, std::vector<WTSBarStruct>& ayBars, bool isDay = false);
 	WTSBarStruct*	indexBarFromCache(const std::string& key, uint64_t etime, uint32_t& count, bool isDay = false);
 
-	bool	loadStkAdjFactors(const char* adjfile);
+	bool	loadStkAdjFactorsFromFile(const char* adjfile);
+	bool	loadStkAdjFactorsFromDB();
+
+	void	init_db();
 
 public:
 	virtual void init(WTSVariant* cfg, IDataReaderSink* sink) override;
@@ -135,6 +142,21 @@ private:
 		sprintf(key, "%s.%s", exchg, code);
 		return _adj_factors[key];
 	}
+
+	typedef struct _DBConfig
+	{
+		bool	_active;
+		char	_host[64];
+		int32_t	_port;
+		char	_dbname[32];
+		char	_user[32];
+		char	_pass[32];
+
+		_DBConfig() { memset(this, 0, sizeof(_DBConfig)); }
+	} DBConfig;
+
+	DBConfig	_db_conf;
+	MysqlDbPtr	_db_conn;
 };
 
 NS_OTP_END

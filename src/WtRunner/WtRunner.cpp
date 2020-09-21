@@ -206,6 +206,8 @@ bool WtRunner::initEnv()
 		WTSLogger::info("交易环境初始化完成，交易引擎：CTA");
 	}
 
+	_engine->set_adapter_mgr(&_traders);
+
 	return true;
 }
 

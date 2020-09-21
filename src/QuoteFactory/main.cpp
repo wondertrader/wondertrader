@@ -2,6 +2,7 @@
 #include "../WtDtCore/DataManager.h"
 #include "../WtDtCore/StateMonitor.h"
 #include "../WtDtCore/UDPCaster.h"
+#include "../WtDtCore/WtHelper.h"
 
 #include "../Includes/WTSSessionInfo.hpp"
 #include "../Share/DLLHelper.hpp"
@@ -11,6 +12,7 @@
 #include "../WTSTools/WTSHotMgr.h"
 #include "../WTSTools/WTSBaseDataMgr.h"
 #include "../WTSTools/WTSLogger.h"
+#include "../Share/StrUtil.hpp"
 
 #include <boost/asio.hpp>
 
@@ -41,6 +43,19 @@ BOOL WINAPI ConsoleCtrlhandler(DWORD dwCtrlType)
 }
 #endif
 
+const char* getBinDir()
+{
+	static std::string basePath;
+	if (basePath.empty())
+	{
+		basePath = boost::filesystem::initial_path<boost::filesystem::path>().string();
+
+		basePath = StrUtil::standardisePath(basePath);
+	}
+
+	return basePath.c_str();
+}
+
 
 void initDataMgr(WTSVariant* config)
 {
@@ -55,20 +70,26 @@ void initParsers(WTSVariant* cfg)
 		if (!cfgItem->getBoolean("active"))
 			continue;
 
-		const char* path = cfgItem->getCString("module");
-		DllHandle libParser = DLLHelper::load_library(path);
+		std::string module = cfgItem->getCString("module");
+		if (!StdFile::exists(module.c_str()))
+		{
+			module = WtHelper::get_module_dir();
+			module += "parsers/";
+			module += cfgItem->getCString("module");
+		}
+		DllHandle libParser = DLLHelper::load_library(module.c_str());
 		if (libParser)
 		{
 			FuncCreateParser pFuncCreateParser = (FuncCreateParser)DLLHelper::get_symbol(libParser, "createParser");
 			if (pFuncCreateParser == NULL)
 			{
-				WTSLogger::info("行情模块初始化失败,找不到对应的入口函数...");
+				WTSLogger::info("行情模块初始化失败,找不到入口函数createParser...");
 			}
 
 			FuncDeleteParser pFuncDeleteParser = (FuncDeleteParser)DLLHelper::get_symbol(libParser, "deleteParser");
 			if (pFuncDeleteParser == NULL)
 			{
-				WTSLogger::info("行情模块初始化失败,找不到对应的入口函数...");
+				WTSLogger::info("行情模块初始化失败,找不到入口函数deleteParser...");
 			}
 
 			if (pFuncCreateParser && pFuncDeleteParser)
@@ -84,7 +105,7 @@ void initParsers(WTSVariant* cfg)
 		}
 		else
 		{
-			WTSLogger::info("行情模块初始化失败,加载模块%s失败...", path);
+			WTSLogger::info("行情模块初始化失败,加载模块%s失败...", module.c_str());
 		}
 	}
 
@@ -93,6 +114,8 @@ void initParsers(WTSVariant* cfg)
 
 void initialize()
 {
+	WtHelper::set_module_dir(getBinDir());
+
 	std::string json;
 	StdFile::read_file_content("QFConfig.json", json);
 	rj::Document document;

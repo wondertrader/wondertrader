@@ -49,4 +49,4 @@
 #	define EXPORT_FLAG __attribute__((__visibility__("default")))
 #endif
 
-static const char WT_VERSION[] = "v0.5.1";
+static const char WT_VERSION[] = "v0.5.2";

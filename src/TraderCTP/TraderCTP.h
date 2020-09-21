@@ -21,6 +21,8 @@
 #include "../Includes/WTSTypes.h"
 #include "../Includes/ITraderApi.h"
 #include "../Includes/WTSCollection.hpp"
+
+//CTP 6.3.15
 #include "./ThostTraderApi/ThostFtdcTraderApi.h"
 
 #include "../Share/IniHelper.hpp"
