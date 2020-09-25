@@ -11,7 +11,7 @@
     ```
     或者直接下载whl文件到本地进行安装
     阿里云镜像地址：<https://mirrors.aliyun.com/pypi/simple/wtpy/>
-    pipy地址：<https://pypi.org/project/wtpy/#files>
+    pipy地址：<https://pypi.org/project/wtpy/>
 
 * 安装完成以后，输入以下命令，可以查看wtpy的版本号
     ``` shell
@@ -21,12 +21,14 @@
 ### 选择要运行的demo
 ---
 * github上提供了python下的几个demo
-    * 期货回测 [backtest_fut](https://github.com/wondertrader/wondertrader/tree/master/demos/py/backtest_fut)
-    * 股票回测 [backtest_stk](https://github.com/wondertrader/wondertrader/tree/master/demos/py/backtest_stk)
-    * 期货数据组件 [datakit_fut](https://github.com/wondertrader/wondertrader/tree/master/demos/py/datakit_fut)
-    * 股票数据组件 [datakit_stk](https://github.com/wondertrader/wondertrader/tree/master/demos/py/datakit_stk)
-    * 期货实盘 [product_fut](https://github.com/wondertrader/wondertrader/tree/master/demos/py/product_fut)
-    * 股票实盘 [product_stk](https://github.com/wondertrader/wondertrader/tree/master/demos/py/product_stk)
+    * cta期货策略实盘 [cta_fut](https://github.com/wondertrader/wtpy/tree/master/demos/cta_fut)
+    * cta期货策略回测 [cta_fut_bt](https://github.com/wondertrader/wtpy/tree/master/demos/cta_fut_bt)
+    * cta股票策略实盘 [cta_stk](https://github.com/wondertrader/wtpy/tree/master/demos/cta_stk)
+    * cta股票策略回测 [cta_stk_bt](https://github.com/wondertrader/wtpy/tree/master/demos/cta_stk_bt)
+    * 期货数据组件 [datakit_fut](https://github.com/wondertrader/wtpy/tree/master/demos/datakit_fut)
+    * 股票数据组件 [datakit_stk](https://github.com/wondertrader/wtpy/tree/master/demos/datakit_stk)
+    * 期货高频实盘 [hft_fut](https://github.com/wondertrader/wtpy/tree/master/demos/hft_fut)
+    * 期货sel回测 [sel_fut_bt](https://github.com/wondertrader/wtpy/tree/master/demos/sel_fut_bt)
 
 * 选择需要的demo，如期货回测demo
 

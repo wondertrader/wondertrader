@@ -7,7 +7,7 @@
     ```
     或者直接下载whl文件到本地进行安装
     阿里云镜像地址：<https://mirrors.aliyun.com/pypi/simple/wtpy/>
-    pipy地址：<https://pypi.org/project/wtpy/#files>
+    pipy地址：<https://pypi.org/project/wtpy>
 
 * 确定策略模型
     我们选择一个知名度相对较高的R-Breaker模型来进行编写。模型的原理可以参考如下文档：
@@ -63,13 +63,13 @@
 
 * 策略实现
     ```python
-    from wtpy import BaseStrategy
-    from wtpy import Context
+    from wtpy import BaseCtaStrategy
+    from wtpy import CtaContext
 
-    class StraRBreaker(BaseStrategy):
+    class StraRBreaker(BaseCtaStrategy):
 
         def __init__(self, name:str, code:str, barCnt:int, period:str, N:int, a:float, b:float, c:float, d:float, cleartimes:list):
-            BaseStrategy.__init__(self, name)
+            BaseCtaStrategy.__init__(self, name)
 
             self.__N__ = N
             self.__a__ = a
@@ -82,13 +82,13 @@
             self.__code__ = code
             self.__cleartimes__ = cleartimes    # 尾盘清仓需要多个时间区间，因为夜盘和白盘都要清仓，格式如[[1455,1515],[2255,2300]]
 
-        def on_init(self, context:Context):
+        def on_init(self, context:CtaContext):
             code = self.__code__
             context.stra_get_bars(code, self.__period__, self.__bar_cnt__, isMain = True)
             context.stra_log_text("R-Breaker inited")
 
         
-        def on_calculate(self, context:Context):
+        def on_calculate(self, context:CtaContext):
             code = self.__code__    #品种代码
 
             #读取当前仓位
@@ -150,17 +150,17 @@
                     context.stra_log_text("向上反转%.2f>=%.2f，空反多" % (curPx, Benter))
 
 
-        def on_tick(self, context:Context, code:str, newTick:dict):
+        def on_tick(self, context:CtaContext, code:str, newTick:dict):
             return
 
-        def on_bar(self, context:Context, code:str, period:str, newBar:dict):
+        def on_bar(self, context:CtaContext, code:str, period:str, newBar:dict):
             return
 
     ```
 
 ### 回测自己的策略
 ---
-* 首先从demo里选择期货回测demo: [backtest_fut](https://github.com/wondertrader/wondertrader/tree/master/demos/py/backtest_fut)
+* 首先从demo里选择期货回测demo: [cta_fut_bt](https://github.com/wondertrader/wtpy/tree/master/demos/cta_fut_bt)
 * 将策略模块`RBreaker.py`复制到`strategies/`目录下
 * 修改runBT.py，设置好RBreaker策略的参数
     ```python
