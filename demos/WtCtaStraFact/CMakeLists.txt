@@ -22,8 +22,8 @@ ELSE (UNIX)
 ENDIF ()
 
 #7. 添加源码
-file(GLOB SRCS "*.cpp" "./PairTrading/*.cpp")
-file(GLOB HDRS "*.h" "./PairTrading/*.h")
+file(GLOB SRCS "*.cpp")
+file(GLOB HDRS "*.h")
 
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../build/bin)
 
@@ -31,8 +31,7 @@ INCLUDE_DIRECTORIES(${INCS})
 LINK_DIRECTORIES(${LNKS})
 ADD_LIBRARY(WtCtaStraFact SHARED ${SRCS} ${HDRS})
 
-SET(LIBS
-	nlopt	
+SET(LIBS	
 	boost_filesystem
 	dl
 )

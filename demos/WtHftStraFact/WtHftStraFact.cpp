@@ -1,6 +1,7 @@
 #include "WtHftStraFact.h"
-
 #include "WtHftStraDemo.h"
+
+#include <string.h>
 
 const char* FACT_NAME = "WtHftStraFact";
 
