@@ -112,7 +112,7 @@ void WtStraDualThrust::on_schedule(ICtaStraCtx* ctx, uint32_t curDate, uint32_t 
 		if(lowPx <= lower_bound)
 		{
 			//多仓出场
-			ctx->stra_exit_long(_code.c_str(), 2 * trdUnit, "DT_ExitLong", 0.0, curPx - commInfo->getPriceTick());
+			ctx->stra_exit_long(_code.c_str(), 2 * trdUnit, "DT_ExitLong");
 			ctx->stra_log_text("向下突破%.2f<=%.2f，多仓出场", lowPx, lower_bound);
 		}
 	}
@@ -122,7 +122,7 @@ void WtStraDualThrust::on_schedule(ICtaStraCtx* ctx, uint32_t curDate, uint32_t 
 		if (highPx >= upper_bound && !_isstk)
 		{
 			//空仓出场
-			ctx->stra_exit_short(_code.c_str(), 2 * trdUnit, "DT_ExitShort", 0.0, curPx + commInfo->getPriceTick());
+			ctx->stra_exit_short(_code.c_str(), 2 * trdUnit, "DT_ExitShort");
 			ctx->stra_log_text("向上突破%.2f>=%.2f，空仓出场", highPx, upper_bound);
 		}
 	}
