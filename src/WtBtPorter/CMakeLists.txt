@@ -23,7 +23,7 @@ ELSE (UNIX)
 	SET(LNKS ${MyDeps}/lib)
 ENDIF ()
 
-SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../build/bin/WtBtPorter)
+SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/WtBtPorter)
 
 #7. 添加源码
 file(GLOB SRCS *.cpp)
@@ -34,9 +34,9 @@ LINK_DIRECTORIES(${LNKS})
 ADD_LIBRARY(WtBtPorter SHARED ${SRCS} ${HDRS})
 
 SET(LIBS
-	${PROJECT_SOURCE_DIR}/../build/libs/libWtBtCore.a
-	${PROJECT_SOURCE_DIR}/../build/libs/libWTSTools.a
-	${PROJECT_SOURCE_DIR}/../build/libs/libWTSUtils.a
+	${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/libs/libWtBtCore.a
+	${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/libs/libWTSTools.a
+	${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/libs/libWTSUtils.a
 	
 	dl
 	pthread

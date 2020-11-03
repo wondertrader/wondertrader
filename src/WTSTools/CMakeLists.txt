@@ -23,7 +23,7 @@ ELSE (UNIX)
 	SET(LNKS ${MyDeps}/lib)
 ENDIF ()
 
-SET(LIBRARY_OUTPUT_PATH  ${PROJECT_SOURCE_DIR}/../build/libs)
+SET(LIBRARY_OUTPUT_PATH  ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/libs)
 
 #7. 添加源码
 file(GLOB SRCS *.cpp)

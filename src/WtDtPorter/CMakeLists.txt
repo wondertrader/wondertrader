@@ -23,7 +23,7 @@ ELSE (UNIX)
 	SET(LNKS ${MyDeps}/lib)
 ENDIF ()
 
-SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../build/bin/WtDtPorter)
+SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/WtDtPorter)
 
 #7. 添加源码
 file(GLOB SRCS *.cpp)
@@ -34,9 +34,9 @@ LINK_DIRECTORIES(${LNKS})
 ADD_LIBRARY(WtDtPorter SHARED ${SRCS} ${HDRS})
 
 SET(LIBS
-	${PROJECT_SOURCE_DIR}/../build/libs/libWtDtCore.a
-	${PROJECT_SOURCE_DIR}/../build/libs/libWTSTools.a
-	${PROJECT_SOURCE_DIR}/../build/libs/libWTSUtils.a
+	${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/libs/libWtDtCore.a
+	${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/libs/libWTSTools.a
+	${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/libs/libWTSUtils.a
 	
 	dl
 	pthread
@@ -55,22 +55,22 @@ file(MAKE_DIRECTORY ${LIBRARY_OUTPUT_PATH}/parsers/)
 
 add_custom_command(TARGET WtDtPorter POST_BUILD		
 		COMMAND ${CMAKE_COMMAND} -E
-		copy ${PROJECT_SOURCE_DIR}/../build/bin/libWtDataWriter.so ${LIBRARY_OUTPUT_PATH}/
+		copy ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/libWtDataWriter.so ${LIBRARY_OUTPUT_PATH}/
 		
 		COMMAND ${CMAKE_COMMAND} -E
-		copy ${PROJECT_SOURCE_DIR}/../build/bin/libParserCTP.so ${LIBRARY_OUTPUT_PATH}/parsers/
+		copy ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/libParserCTP.so ${LIBRARY_OUTPUT_PATH}/parsers/
 		
 		COMMAND ${CMAKE_COMMAND} -E
-		copy ${PROJECT_SOURCE_DIR}/../build/bin/libParserXTP.so ${LIBRARY_OUTPUT_PATH}/parsers/
+		copy ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/libParserXTP.so ${LIBRARY_OUTPUT_PATH}/parsers/
 		
 		COMMAND ${CMAKE_COMMAND} -E
-		copy ${PROJECT_SOURCE_DIR}/../build/bin/libParserCTPMini.so ${LIBRARY_OUTPUT_PATH}/parsers/
+		copy ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/libParserCTPMini.so ${LIBRARY_OUTPUT_PATH}/parsers/
 		
 		COMMAND ${CMAKE_COMMAND} -E
-		copy ${PROJECT_SOURCE_DIR}/../build/bin/libParserFemas.so ${LIBRARY_OUTPUT_PATH}/parsers/
+		copy ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/libParserFemas.so ${LIBRARY_OUTPUT_PATH}/parsers/
 		
 		COMMAND ${CMAKE_COMMAND} -E
-		copy ${PROJECT_SOURCE_DIR}/../build/bin/libParseriTap.so ${LIBRARY_OUTPUT_PATH}/parsers/
+		copy ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/libParseriTap.so ${LIBRARY_OUTPUT_PATH}/parsers/
 		
 		COMMENT "depends modules copied")
 		

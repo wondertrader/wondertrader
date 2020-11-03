@@ -24,7 +24,7 @@ ELSE (UNIX)
 	SET(LNKS ${MyDeps}/lib)
 ENDIF ()
 
-SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../build/bin/WtPorter)
+SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/WtPorter)
 
 #7. 添加源码
 file(GLOB SRCS *.cpp)
@@ -35,8 +35,8 @@ LINK_DIRECTORIES(${LNKS})
 ADD_LIBRARY(WtExecMon SHARED ${SRCS} ${HDRS})
 
 SET(LIBS
-	${PROJECT_SOURCE_DIR}/../build/libs/libWtCore.a
-	${PROJECT_SOURCE_DIR}/../build/libs/libWTSTools.a
+	${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/libs/libWtCore.a
+	${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/libs/libWTSTools.a
 	
 	dl
 	pthread
