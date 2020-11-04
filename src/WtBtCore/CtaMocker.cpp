@@ -53,7 +53,7 @@ inline uint32_t makeCtxId()
 }
 
 
-CtaMocker::CtaMocker(HisDataReplayer* replayer, const char* name)
+CtaMocker::CtaMocker(HisDataReplayer* replayer, const char* name, int32_t slippage /* = 0 */)
 	: ICtaStraCtx(name)
 	, _replayer(replayer)
 	, _total_calc_time(0)
@@ -61,6 +61,7 @@ CtaMocker::CtaMocker(HisDataReplayer* replayer, const char* name)
 	, _is_in_schedule(false)
 	, _ud_modified(false)
 	, _strategy(NULL)
+	, _slippage(slippage)
 {
 	_context_id = makeCtxId();
 }
@@ -772,35 +773,110 @@ void CtaMocker::do_set_position(const char* stdCode, double qty, double price /*
 	uint64_t curTm = (uint64_t)_replayer->get_date() * 10000 + _replayer->get_min_time();
 	uint32_t curTDate = _replayer->get_trading_date();
 
+	//手数相等则不用操作了
 	if (decimal::eq(pInfo._volumn, qty))
 		return;
 
-	double diff = qty - pInfo._volumn;
-
 	WTSCommodityInfo* commInfo = _replayer->get_commodity_info(stdCode);
 
-	if (decimal::gt(pInfo._volumn*qty, 0))//当前持仓和目标仓位方向一致，增加一条明细，增加数量即可
+	//成交价
+	double trdPx = curPx;
+
+	if (decimal::gt(pInfo._volumn*qty, 0))//当前持仓和目标仓位方向一致
 	{
-		double diff = abs(qty - pInfo._volumn);
-		pInfo._volumn = qty;
+		//目标仓位绝对值大于当前仓位绝对值，则是继续开仓，增加一条记录即可
+		if(decimal::gt(abs(qty), abs(pInfo._volumn)))
+		{
+			double diff = abs(qty - pInfo._volumn);
+			pInfo._volumn = qty;
 
-		DetailInfo dInfo;
-		dInfo._long = decimal::gt(qty, 0);
-		dInfo._price = curPx;
-		dInfo._volumn = diff;
-		dInfo._opentime = curTm;
-		dInfo._opentdate = curTDate;
-		strcpy(dInfo._opentag, userTag);
-		pInfo._details.push_back(dInfo);
+			if(_slippage != 0)
+			{
+				bool isBuy = decimal::gt(qty, 0.0);
+				trdPx += _slippage * commInfo->getPriceTick()*(isBuy ? 1 : -1);
+			}
 
-		double fee = _replayer->calc_fee(stdCode, curPx, abs(qty), 0);
-		_fund_info._total_fees += fee;
-		//_engine->mutate_fund(fee, FFT_Fee);
-		log_trade(stdCode, dInfo._long, true, curTm, curPx, abs(qty), userTag, fee);
+			DetailInfo dInfo;
+			dInfo._long = decimal::gt(qty, 0);
+			dInfo._price = trdPx;
+			dInfo._volumn = diff;
+			dInfo._opentime = curTm;
+			dInfo._opentdate = curTDate;
+			strcpy(dInfo._opentag, userTag);
+			pInfo._details.push_back(dInfo);
+
+			double fee = _replayer->calc_fee(stdCode, trdPx, abs(diff), 0);
+			_fund_info._total_fees += fee;
+
+			log_trade(stdCode, dInfo._long, true, curTm, trdPx, abs(diff), userTag, fee);
+		}
+		else
+		{
+			//目标仓位绝对值小于当前仓位绝对值，则要平仓
+			double left = abs(qty - pInfo._volumn);
+
+			if (_slippage != 0)
+			{
+				//平仓的话，方向是反的
+				bool isBuy = !decimal::gt(qty, 0.0);
+				trdPx += _slippage * commInfo->getPriceTick()*(isBuy ? 1 : -1);
+			}
+
+			pInfo._volumn = qty;
+			if (decimal::eq(pInfo._volumn, 0))
+				pInfo._dynprofit = 0;
+			uint32_t count = 0;
+			for (auto it = pInfo._details.begin(); it != pInfo._details.end(); it++)
+			{
+				DetailInfo& dInfo = *it;
+				double maxQty = min(dInfo._volumn, left);
+				if (decimal::eq(maxQty, 0))
+					continue;
+
+				dInfo._volumn -= maxQty;
+				left -= maxQty;
+
+				//if (dInfo._volumn == 0)
+				if (decimal::eq(dInfo._volumn, 0))
+					count++;
+
+				double profit = (trdPx - dInfo._price) * maxQty * commInfo->getVolScale();
+				if (!dInfo._long)
+					profit *= -1;
+				pInfo._closeprofit += profit;
+				pInfo._dynprofit = pInfo._dynprofit*dInfo._volumn / (dInfo._volumn + maxQty);//浮盈也要做等比缩放
+				_fund_info._total_profit += profit;
+
+				double fee = _replayer->calc_fee(stdCode, trdPx, maxQty, dInfo._opentdate == curTDate ? 2 : 1);
+				_fund_info._total_fees += fee;
+				//_engine->mutate_fund(fee, FFT_Fee);
+				//这里写成交记录
+				log_trade(stdCode, dInfo._long, false, curTm, trdPx, maxQty, userTag, fee);
+				//这里写平仓记录
+				log_close(stdCode, dInfo._long, dInfo._opentime, dInfo._price, curTm, trdPx, maxQty, profit, pInfo._closeprofit, dInfo._opentag, userTag);
+
+				if (left == 0)
+					break;
+			}
+
+			//需要清理掉已经平仓完的明细
+			while (count > 0)
+			{
+				auto it = pInfo._details.begin();
+				pInfo._details.erase(it);
+				count--;
+			}
+		}
 	}
 	else
 	{//持仓方向和目标仓位方向不一致，需要平仓
 		double left = abs(pInfo._volumn) + abs(qty);
+
+		if (_slippage != 0)
+		{
+			bool isBuy = decimal::gt(qty, 0.0);
+			trdPx += _slippage * commInfo->getPriceTick()*(isBuy ? 1 : -1);
+		}
 
 		pInfo._volumn = qty;
 		if (decimal::eq(pInfo._volumn, 0))
@@ -820,7 +896,7 @@ void CtaMocker::do_set_position(const char* stdCode, double qty, double price /*
 			if (decimal::eq(dInfo._volumn, 0))
 				count++;
 
-			double profit = (curPx - dInfo._price) * maxQty * commInfo->getVolScale();
+			double profit = (trdPx - dInfo._price) * maxQty * commInfo->getVolScale();
 			if (!dInfo._long)
 				profit *= -1;
 			pInfo._closeprofit += profit;
@@ -828,13 +904,13 @@ void CtaMocker::do_set_position(const char* stdCode, double qty, double price /*
 			_fund_info._total_profit += profit;
 			//_engine->mutate_fund(profit, FFT_CloseProfit);
 
-			double fee = _replayer->calc_fee(stdCode, curPx, maxQty, dInfo._opentdate == curTDate ? 2 : 1);
+			double fee = _replayer->calc_fee(stdCode, trdPx, maxQty, dInfo._opentdate == curTDate ? 2 : 1);
 			_fund_info._total_fees += fee;
 			//_engine->mutate_fund(fee, FFT_Fee);
 			//这里写成交记录
-			log_trade(stdCode, dInfo._long, false, curTm, curPx, maxQty, userTag, fee);
+			log_trade(stdCode, dInfo._long, false, curTm, trdPx, maxQty, userTag, fee);
 			//这里写平仓记录
-			log_close(stdCode, dInfo._long, dInfo._opentime, dInfo._price, curTm, curPx, maxQty, profit, pInfo._closeprofit, dInfo._opentag, userTag);
+			log_close(stdCode, dInfo._long, dInfo._opentime, dInfo._price, curTm, trdPx, maxQty, profit, pInfo._closeprofit, dInfo._opentag, userTag);
 
 			if (left == 0)
 				break;
@@ -855,7 +931,7 @@ void CtaMocker::do_set_position(const char* stdCode, double qty, double price /*
 
 			DetailInfo dInfo;
 			dInfo._long = decimal::gt(qty, 0);
-			dInfo._price = curPx;
+			dInfo._price = trdPx;
 			dInfo._volumn = abs(left);
 			dInfo._opentime = curTm;
 			dInfo._opentdate = curTDate;
@@ -864,10 +940,10 @@ void CtaMocker::do_set_position(const char* stdCode, double qty, double price /*
 
 			//TODO: 
 			//这里还需要写一笔成交记录
-			double fee = _replayer->calc_fee(stdCode, curPx, abs(qty), 0);
+			double fee = _replayer->calc_fee(stdCode, trdPx, abs(qty), 0);
 			_fund_info._total_fees += fee;
 			//_engine->mutate_fund(fee, FFT_Fee);
-			log_trade(stdCode, dInfo._long, true, curTm, curPx, abs(left), userTag, fee);
+			log_trade(stdCode, dInfo._long, true, curTm, trdPx, abs(left), userTag, fee);
 		}
 	}
 }

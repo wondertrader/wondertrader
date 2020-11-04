@@ -28,7 +28,7 @@ class HisDataReplayer;
 class SelMocker : public ISelStraCtx, public IDataSink
 {
 public:
-	SelMocker(HisDataReplayer* replayer, const char* name);
+	SelMocker(HisDataReplayer* replayer, const char* name, int32_t slippage = 0);
 	virtual ~SelMocker();
 
 private:
@@ -105,6 +105,7 @@ protected:
 
 	uint64_t		_total_calc_time;	//总计算时间
 	uint32_t		_emit_times;		//总计算次数
+	int32_t			_slippage;	//成交滑点
 
 	std::string		_main_key;
 
