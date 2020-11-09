@@ -245,12 +245,18 @@ void StateMonitor::run()
 								}
 								else
 								{
-									//if (sInfo->_schedule)
-									//{
-									//	_dt_mgr->preloadRtCaches();
-									//}
-									sInfo->_state = SS_PAUSED;
-									WTSLogger::info("交易时间模板 %s[%s]暂停接收数据", mInfo->name(), sInfo->_session);
+									//小于市场收盘时间，且不在交易时间，则为中途休盘时间
+									if(offTime < mInfo->getCloseTime(true))
+									{
+										sInfo->_state = SS_PAUSED;
+										WTSLogger::info("交易时间模板 %s[%s]暂停接收数据", mInfo->name(), sInfo->_session);
+									}
+									else
+									{//大于市场收盘时间，但是没有大于接收收盘时间，则还要继续接收，主要是要收结算价
+										sInfo->_state = SS_RECEIVING;
+										WTSLogger::info("交易时间模板 %s[%s]开始接收数据", mInfo->name(), sInfo->_session);
+									}
+									
 								}
 							}								
 							else if (offTime >= offInitTime)
