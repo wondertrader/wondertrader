@@ -144,7 +144,6 @@ void CtaStraBaseCtx::log_signal(const char* stdCode, double target, double price
 		std::stringstream ss;
 		ss << stdCode << "," << target << "," << price << "," << gentime << "," << usertag << "\n";
 		_sig_logs->write_file(ss.str());
-		//_sig_logs->write_file(StrUtil::printf("%s,%f,%f,%s,%s\n", stdCode, target, price, StrUtil::fmtUInt64(gentime).c_str(), usertag));
 	}
 }
 
@@ -155,7 +154,6 @@ void CtaStraBaseCtx::log_trade(const char* stdCode, bool isLong, bool isOpen, ui
 		std::stringstream ss;
 		ss << stdCode << "," << curTime << "," << (isLong ? "LONG" : "SHORT") << "," << (isOpen ? "OPEN" : "CLOSE") << "," << price << "," << qty << "," << userTag << "," << fee << "\n";
 		_trade_logs->write_file(ss.str());
-		//_trade_logs->write_file(StrUtil::printf("%s,%s,%s,%s,%f,%f,%s,%.2f\n", stdCode, StrUtil::fmtUInt64(curTime).c_str(), isLong ? "LONG" : "SHORT", isOpen ? "OPEN" : "CLOSE", price, qty, userTag, fee));
 	}
 }
 
@@ -169,15 +167,11 @@ void CtaStraBaseCtx::log_close(const char* stdCode, bool isLong, uint64_t openTi
 			<< "," << closeTime << "," << closepx << "," << qty << "," << profit << "," 
 			<< totalprofit << "," << enterTag << "," << exitTag << "\n";
 		_close_logs->write_file(ss.str());
-
-		//_close_logs->write_file(StrUtil::printf("%s,%s,%s,%f,%s,%f,%f,%.2f,%.2f,%s,%s\n",
-		//	stdCode, isLong ? "LONG" : "SHORT", StrUtil::fmtUInt64(openTime).c_str(), openpx, StrUtil::fmtUInt64(closeTime).c_str(), closepx, qty, profit, totalprofit, enterTag, exitTag));
 	}
 }
 
 void CtaStraBaseCtx::save_userdata()
 {
-	//ini.save(filename.c_str());
 	rj::Document root(rj::kObjectType);
 	rj::Document::AllocatorType &allocator = root.GetAllocator();
 	for (auto it = _user_datas.begin(); it != _user_datas.end(); it++)
@@ -265,8 +259,7 @@ void CtaStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 			_fund_info._total_profit = jFund["total_profit"].GetDouble();
 			_fund_info._total_dynprofit = jFund["total_dynprofit"].GetDouble();
 			uint32_t tdate = jFund["tdate"].GetUint();
-			if(tdate == _engine->get_trading_date())
-				_fund_info._total_fees = jFund["total_fees"].GetDouble();
+			_fund_info._total_fees = jFund["total_fees"].GetDouble();
 		}
 	}
 
@@ -517,8 +510,6 @@ void CtaStraBaseCtx::on_bar(const char* stdCode, const char* period, uint32_t ti
 	tag._closed = true;
 
 	on_bar_close(stdCode, realPeriod.c_str(), newBar);
-
-	//stra_log_text("K线%s @ %u已闭合", key.c_str(), period[0] == 'd' ? newBar->date : newBar->time);
 }
 
 void CtaStraBaseCtx::on_init()
@@ -528,6 +519,7 @@ void CtaStraBaseCtx::on_init()
 	//读取数据
 	load_data();
 
+	//加载用户数据
 	load_userdata();
 }
 
@@ -592,6 +584,7 @@ void CtaStraBaseCtx::on_tick(const char* stdCode, WTSTickData* newTick, bool bEm
 		}
 	}
 
+	//更新浮动盈亏
 	update_dyn_profit(stdCode, newTick->price());
 
 	//////////////////////////////////////////////////////////////////////////
@@ -605,25 +598,25 @@ void CtaStraBaseCtx::on_tick(const char* stdCode, WTSTickData* newTick, bool bEm
 		const CondList& condList = it->second;
 		for (const CondEntrust& entrust : condList)
 		{
-			double curVal = newTick->price();
+			double curPrice = newTick->price();
 
 			bool isMatched = false;
 			switch (entrust._alg)
 			{
 			case WCT_Equal:
-				isMatched = decimal::eq(curVal, entrust._target);
+				isMatched = decimal::eq(curPrice, entrust._target);
 				break;
 			case WCT_Larger:
-				isMatched = decimal::gt(curVal, entrust._target);
+				isMatched = decimal::gt(curPrice, entrust._target);
 				break;
 			case WCT_LargerOrEqual:
-				isMatched = decimal::ge(curVal, entrust._target);
+				isMatched = decimal::ge(curPrice, entrust._target);
 				break;
 			case WCT_Smaller:
-				isMatched = decimal::lt(curVal, entrust._target);
+				isMatched = decimal::lt(curPrice, entrust._target);
 				break;
 			case WCT_SmallerOrEqual:
-				isMatched = decimal::le(curVal, entrust._target);
+				isMatched = decimal::le(curPrice, entrust._target);
 				break;
 			default:
 				break;
@@ -631,55 +624,78 @@ void CtaStraBaseCtx::on_tick(const char* stdCode, WTSTickData* newTick, bool bEm
 
 			if (isMatched)
 			{
-				stra_log_text(fmt::format("条件单触发[最新价: {}{}{}], 合约: {}, {} {}", curVal, CMP_ALG_NAMES[entrust._alg], entrust._target, stdCode, ACTION_NAMES[entrust._action], entrust._qty).c_str());
+				stra_log_text(fmt::format("条件单触发[最新价: {}{}{}], 合约: {}, {} {}", curPrice, CMP_ALG_NAMES[entrust._alg], entrust._target, stdCode, ACTION_NAMES[entrust._action], entrust._qty).c_str());
 
 				switch (entrust._action)
 				{
 				case COND_ACTION_OL:
 				{
-					//stra_enter_long(code, entrust._qty, entrust._usertag);
 					double curQty = stra_get_position(stdCode);
+					double desQty = 0;
 					if (decimal::lt(curQty, 0))
-						do_set_position(stdCode, entrust._qty, entrust._usertag, true);
+						desQty = entrust._qty;
 					else
-						do_set_position(stdCode, curQty + entrust._qty, entrust._usertag, true);
+						desQty = curQty + entrust._qty;
+
+					//uint64_t sigTime = (uint64_t)_engine->get_date() * 1000000000 + (uint64_t)_engine->get_raw_time() * 100000 + _engine->get_secs();
+					//log_signal(stdCode, desQty, curPrice, sigTime, entrust._usertag);						
+					//do_set_position(stdCode, desQty, entrust._usertag, true);
+					append_signal(stdCode, desQty, entrust._usertag);
 				}
 				break;
 				case COND_ACTION_CL:
 				{
-					//stra_exit_long(code, entrust._qty, entrust._usertag);
 					double curQty = stra_get_position(stdCode);
 					if (decimal::le(curQty, 0))
 						return;
 
 					double maxQty = min(curQty, entrust._qty);
-					do_set_position(stdCode, curQty - maxQty, entrust._usertag, true);
+					double desQty = curQty - maxQty;
+
+					//uint64_t sigTime = (uint64_t)_engine->get_date() * 1000000000 + (uint64_t)_engine->get_raw_time() * 100000 + _engine->get_secs();
+					//log_signal(stdCode, desQty, curPrice, sigTime, entrust._usertag);
+					//do_set_position(stdCode, desQty, entrust._usertag, true);
+					append_signal(stdCode, desQty, entrust._usertag);
 				}
 				break;
 				case COND_ACTION_OS:
 				{
-					//stra_enter_short(code, entrust._qty, entrust._usertag);
 					double curQty = stra_get_position(stdCode);
-					//if (curQty > 0)
-					if(decimal::gt(curQty, 0))
-						do_set_position(stdCode, -entrust._qty, entrust._usertag, true);
+					double desQty = 0;
+					if (decimal::gt(curQty, 0))
+						desQty = -entrust._qty;
 					else
-						do_set_position(stdCode, curQty - entrust._qty, entrust._usertag, true);
+						desQty = curQty - entrust._qty;
+
+					//uint64_t sigTime = (uint64_t)_engine->get_date() * 1000000000 + (uint64_t)_engine->get_raw_time() * 100000 + _engine->get_secs();
+					//log_signal(stdCode, desQty, curPrice, sigTime, entrust._usertag);
+					//do_set_position(stdCode, desQty, entrust._usertag, true);
+					append_signal(stdCode, desQty, entrust._usertag);
 				}
 				break;
 				case COND_ACTION_CS:
 				{
-					//stra_exit_short(code, entrust._qty, entrust._usertag);
 					double curQty = stra_get_position(stdCode);
-					//if (curQty >= 0)
 					if (decimal::ge(curQty, 0))
 						return;
 
 					double maxQty = min(abs(curQty), entrust._qty);
-					do_set_position(stdCode, curQty + maxQty, entrust._usertag, true);
+					double desQty = curQty + maxQty;
+
+					//uint64_t sigTime = (uint64_t)_engine->get_date() * 1000000000 + (uint64_t)_engine->get_raw_time() * 100000 + _engine->get_secs();
+					//log_signal(stdCode, desQty, curPrice, sigTime, entrust._usertag);
+					//do_set_position(stdCode, desQty, entrust._usertag, true);
+					append_signal(stdCode, desQty, entrust._usertag);
 				}
 				break;
-				case COND_ACTION_SP: do_set_position(stdCode, entrust._qty, entrust._usertag, true); break;
+				case COND_ACTION_SP: 
+				{
+					//uint64_t sigTime = (uint64_t)_engine->get_date() * 1000000000 + (uint64_t)_engine->get_raw_time() * 100000 + _engine->get_secs();
+					//log_signal(stdCode, entrust._qty, curPrice, sigTime, entrust._usertag);
+					//do_set_position(stdCode, entrust._qty, entrust._usertag, true);
+					append_signal(stdCode, entrust._qty, entrust._usertag);
+				}
+				break;
 				default: break;
 				}
 
@@ -818,7 +834,6 @@ void CtaStraBaseCtx::on_session_end()
 		total_dynprofit += pInfo._dynprofit;
 	}
 
-	//TODO:
 	//这里要把当日结算的数据写到日志文件里
 	//而且这里回测和实盘写法不同, 先留着, 后面来做
 	if (_fund_logs)
@@ -831,15 +846,7 @@ void CtaStraBaseCtx::on_session_end()
 
 CondList& CtaStraBaseCtx::get_cond_entrusts(const char* stdCode)
 {
-	//uint64_t curTm = (uint64_t)_engine->get_date() * 10000 + _engine->get_time();
-	//if (curTm != _last_cond_min && !_condtions.empty())
-	//{
-	//	stra_log_text("上次条件单设置时间为%I64d, 不同于当前时间%I64d, %u笔条件单清空", _last_cond_min, curTm, _condtions.size());
-	//	_condtions.clear();
-	//}
-
 	CondList& ce = _condtions[stdCode];
-	//_last_cond_min = curTm;
 	return ce;
 }
 
@@ -850,13 +857,16 @@ void CtaStraBaseCtx::stra_enter_long(const char* stdCode, double qty, const char
 	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式, 则直接触发
 	{
 		double curQty = stra_get_position(stdCode);
-		//if (curQty < 0)
-		if(decimal::lt(curQty, 0))
-			//do_set_position(stdCode, qty, userTag, !_is_in_schedule);
+		if (decimal::lt(curQty, 0))
+		{
+			//当前持仓小于0，逻辑是反手到qty，所以设置信号目标仓位为qty
 			append_signal(stdCode, qty, userTag);
+		}
 		else
-			//do_set_position(stdCode, curQty + qty, userTag, !_is_in_schedule);
+		{
+			//当前持仓大于等于0，则要增加多仓qty
 			append_signal(stdCode, curQty + qty, userTag);
+		}
 	}
 	else
 	{
@@ -890,14 +900,16 @@ void CtaStraBaseCtx::stra_enter_short(const char* stdCode, double qty, const cha
 	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式, 则直接触发
 	{
 		double curQty = stra_get_position(stdCode);
-		//if (curQty > 0)
 		if (decimal::gt(curQty, 0))
-			//do_set_position(stdCode, -qty, userTag, !_is_in_schedule);
+		{
+			//当前仓位大于0，逻辑是反手到qty手，所以设置信号目标仓位为-qty手
 			append_signal(stdCode, -qty, userTag);
+		}
 		else
-			//do_set_position(stdCode, curQty - qty, userTag, !_is_in_schedule);
+		{
+			//当前仓位小于等于0，则是追加空方手数
 			append_signal(stdCode, curQty - qty, userTag);
-
+		}
 	}
 	else
 	{
@@ -931,13 +943,12 @@ void CtaStraBaseCtx::stra_exit_long(const char* stdCode, double qty, const char*
 	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式, 则直接触发
 	{
 		double curQty = stra_get_position(stdCode);
-		//if (curQty <= 0)
+		//如果持仓为空，则不需要再执行退出多头的逻辑了
 		if (decimal::le(curQty, 0))
 			return;
 
 		double maxQty = min(curQty, qty);
-		//do_set_position(stdCode, curQty - maxQty, userTag, !_is_in_schedule);
-		append_signal(stdCode, curQty - qty, userTag);
+		append_signal(stdCode, curQty - maxQty, userTag);
 	}
 	else
 	{
@@ -971,12 +982,11 @@ void CtaStraBaseCtx::stra_exit_short(const char* stdCode, double qty, const char
 	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式, 则直接触发
 	{
 		double curQty = stra_get_position(stdCode);
-		//if (curQty >= 0)
+		//如果持仓是多，则不需要执行退出空头的逻辑了
 		if (decimal::ge(curQty, 0))
 			return ;
 
 		double maxQty = min(abs(curQty), qty);
-		//do_set_position(stdCode, curQty + maxQty, userTag, !_is_in_schedule);
 		append_signal(stdCode, curQty + maxQty, userTag);
 	}
 	else
@@ -1018,12 +1028,15 @@ void CtaStraBaseCtx::stra_set_position(const char* stdCode, double qty, const ch
 {
 	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式, 则直接触发
 	{
-		//do_set_position(stdCode, qty, userTag, !_is_in_schedule);
 		append_signal(stdCode, qty, userTag);
 	}
 	else
 	{
 		CondList& condList = get_cond_entrusts(stdCode);
+
+		//根据目标仓位和当前仓位，判断是买还是卖
+		double curVol = stra_get_position(stdCode);
+		bool isBuy = decimal::gt(qty, curVol);
 
 		CondEntrust entrust;
 		strcpy(entrust._code, stdCode);
@@ -1034,12 +1047,12 @@ void CtaStraBaseCtx::stra_set_position(const char* stdCode, double qty, const ch
 		if (!decimal::eq(limitprice))
 		{
 			entrust._target = limitprice;
-			entrust._alg = WCT_SmallerOrEqual;
+			entrust._alg = isBuy ? WCT_SmallerOrEqual : WCT_LargerOrEqual;
 		}
 		else if (!decimal::eq(stopprice))
 		{
 			entrust._target = stopprice;
-			entrust._alg = WCT_LargerOrEqual;
+			entrust._alg = isBuy ? WCT_LargerOrEqual : WCT_SmallerOrEqual;
 		}
 
 		entrust._action = COND_ACTION_SP;
@@ -1078,8 +1091,8 @@ void CtaStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 
 	WTSCommodityInfo* commInfo = _engine->get_commodity_info(stdCode);
 
-	if (decimal::gt(pInfo._volumn*diff, 0))//当前持仓和目标仓位方向一致, 增加一条明细, 增加数量即可
-	{
+	if (decimal::gt(pInfo._volumn*diff, 0))
+	{//当前持仓和仓位变化方向一致, 增加一条明细, 增加数量即可
 		pInfo._volumn = qty;
 
 		DetailInfo dInfo;
@@ -1093,11 +1106,10 @@ void CtaStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 
 		double fee = _engine->calc_fee(stdCode, curPx, abs(qty), 0);
 		_fund_info._total_fees += fee;
-		//_engine->mutate_fund(fee, FFT_Fee);
 		log_trade(stdCode, dInfo._long, true, curTm, curPx, abs(qty), userTag, fee);
 	}
 	else
-	{//持仓方向和目标仓位方向不一致, 需要平仓
+	{//持仓方向和仓位变化方向不一致, 需要平仓
 		double left = abs(diff);
 
 		pInfo._volumn = qty;
@@ -1108,33 +1120,33 @@ void CtaStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 		{
 			DetailInfo& dInfo = *it;
 			double maxQty = min(dInfo._volumn, left);
-			//if (maxQty == 0)
 			if (decimal::eq(maxQty, 0))
 				continue;
 
 			dInfo._volumn -= maxQty;
 			left -= maxQty;
 
-			if (decimal::eq(dInfo._volumn, 0)) //dInfo._volumn == 0
+			if (decimal::eq(dInfo._volumn, 0))
 				count++;
 
+			//计算平仓盈亏
 			double profit = (curPx - dInfo._price) * maxQty * commInfo->getVolScale();
 			if (!dInfo._long)
 				profit *= -1;
 			pInfo._closeprofit += profit;
-			pInfo._dynprofit = pInfo._dynprofit*dInfo._volumn / (dInfo._volumn + maxQty);//浮盈也要做等比缩放
-			_fund_info._total_profit += profit;
-			//_engine->mutate_fund(profit, FFT_CloseProfit);
 
+			//浮盈也要做等比缩放
+			pInfo._dynprofit = pInfo._dynprofit*dInfo._volumn / (dInfo._volumn + maxQty);
+			_fund_info._total_profit += profit;
+
+			//计算手续费
 			double fee = _engine->calc_fee(stdCode, curPx, maxQty, dInfo._opentdate == curTDate ? 2 : 1);
 			_fund_info._total_fees += fee;
-			//_engine->mutate_fund(fee, FFT_Fee);
 			//这里写成交记录
 			log_trade(stdCode, dInfo._long, false, curTm, curPx, maxQty, userTag, fee);
 			//这里写平仓记录
 			log_close(stdCode, dInfo._long, dInfo._opentime, dInfo._price, curTm, curPx, maxQty, profit, pInfo._closeprofit, dInfo._opentag, userTag);
 
-			//if (left == 0)
 			if (decimal::eq(left,0))
 				break;
 		}
@@ -1148,7 +1160,6 @@ void CtaStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 		}
 
 		//最后, 如果还有剩余的, 则需要反手了
-		//if (left > 0)
 		if (decimal::gt(left, 0))
 		{
 			left = left * qty / abs(qty);
@@ -1162,23 +1173,16 @@ void CtaStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 			strcpy(dInfo._opentag, userTag);
 			pInfo._details.push_back(dInfo);
 
-			//TODO: 
 			//这里还需要写一笔成交记录
-			double fee = _engine->calc_fee(stdCode, curPx, abs(qty), 0);
+			double fee = _engine->calc_fee(stdCode, curPx, abs(left), 0);
 			_fund_info._total_fees += fee;
-			//_engine->mutate_fund(fee, FFT_Fee);
 			log_trade(stdCode, dInfo._long, true, curTm, curPx, abs(left), userTag, fee);
 		}
 	}
 
-	//触发on_price重新计算浮动盈亏
-	//update_dyn_profit(stdCode, curPx);
 
-	//if (!_engine->isBackTest())
-	{
-		//存储数据
-		save_data();
-	}
+	//存储数据
+	save_data();
 
 	if (bTriggered)	//如果是条件单触发, 则向引擎提交变化量
 	{

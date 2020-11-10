@@ -304,25 +304,25 @@ void CtaMocker::on_tick(const char* stdCode, WTSTickData* newTick, bool bEmitStr
 		const CondList& condList = it->second;
 		for (const CondEntrust& entrust : condList)
 		{
-			double curVal = newTick->price();
+			double curPrice = newTick->price();
 
 			bool isMatched = false;
 			switch (entrust._alg)
 			{
 			case WCT_Equal:
-				isMatched = decimal::eq(curVal, entrust._target);
+				isMatched = decimal::eq(curPrice, entrust._target);
 				break;
 			case WCT_Larger:
-				isMatched = decimal::gt(curVal, entrust._target);
+				isMatched = decimal::gt(curPrice, entrust._target);
 				break;
 			case WCT_LargerOrEqual:
-				isMatched = decimal::ge(curVal, entrust._target);
+				isMatched = decimal::ge(curPrice, entrust._target);
 				break;
 			case WCT_Smaller:
-				isMatched = decimal::lt(curVal, entrust._target);
+				isMatched = decimal::lt(curPrice, entrust._target);
 				break;
 			case WCT_SmallerOrEqual:
-				isMatched = decimal::le(curVal, entrust._target);
+				isMatched = decimal::le(curPrice, entrust._target);
 				break;
 			default:
 				break;
@@ -330,19 +330,16 @@ void CtaMocker::on_tick(const char* stdCode, WTSTickData* newTick, bool bEmitStr
 
 			if (isMatched)
 			{
-				WTSLogger::log_dyn_raw("strategy", _name.c_str(), LL_INFO, fmt::format("条件单触发[最新价: {}{}{}], 合约: {}, {} {}", curVal, CMP_ALG_NAMES[entrust._alg], entrust._target, stdCode, ACTION_NAMES[entrust._action], entrust._qty).c_str());
+				WTSLogger::log_dyn_raw("strategy", _name.c_str(), LL_INFO, fmt::format("条件单触发[最新价: {}{}{}], 合约: {}, {} {}", curPrice, CMP_ALG_NAMES[entrust._alg], entrust._target, stdCode, ACTION_NAMES[entrust._action], entrust._qty).c_str());
 				switch (entrust._action)
 				{
 				case COND_ACTION_OL:
 				{
 					double price = _replayer->is_tick_enabled() ? newTick->price() : entrust._target;	//如果开启了tick回测，则用tick数据的价格，如果没有开启，则只能用条件单价格
 					double curQty = stra_get_position(stdCode);
-					//if (curQty < 0)
 					if(decimal::lt(curQty, 0))
-						//do_set_position(stdCode, entrust._qty, price, entrust._usertag, true);
 						append_signal(stdCode, entrust._qty, entrust._usertag, price);
 					else
-						//do_set_position(stdCode, curQty + entrust._qty, price, entrust._usertag, true);
 						append_signal(stdCode, curQty + entrust._qty, entrust._usertag, price);
 				}
 				break;
@@ -350,12 +347,10 @@ void CtaMocker::on_tick(const char* stdCode, WTSTickData* newTick, bool bEmitStr
 				{
 					double price = _replayer->is_tick_enabled() ? newTick->price() : entrust._target;	//如果开启了tick回测，则用tick数据的价格，如果没有开启，则只能用条件单价格
 					double curQty = stra_get_position(stdCode);
-					//if (curQty <= 0)
-					if(decimal::le(curVal, 0))
+					if(decimal::le(curPrice, 0))
 						return;
 
-					double maxQty = min(curQty, entrust._qty);
-					//do_set_position(stdCode, curQty - maxQty, price, entrust._usertag, true);
+					double maxQty = min(curQty, entrust._qty););
 					append_signal(stdCode, curQty - maxQty, entrust._usertag, price);
 				}
 				break;
@@ -363,12 +358,9 @@ void CtaMocker::on_tick(const char* stdCode, WTSTickData* newTick, bool bEmitStr
 				{
 					double price = _replayer->is_tick_enabled() ? newTick->price() : entrust._target;	//如果开启了tick回测，则用tick数据的价格，如果没有开启，则只能用条件单价格
 					double curQty = stra_get_position(stdCode);
-					//if (curQty > 0)
 					if(decimal::gt(curQty, 0))
-						//do_set_position(stdCode, -entrust._qty, price, entrust._usertag, true);
 						append_signal(stdCode, -entrust._qty, entrust._usertag, price);
 					else
-						//do_set_position(stdCode, curQty - entrust._qty, price, entrust._usertag, true);
 						append_signal(stdCode, curQty - entrust._qty, entrust._usertag, price);
 				}
 				break;
@@ -376,19 +368,16 @@ void CtaMocker::on_tick(const char* stdCode, WTSTickData* newTick, bool bEmitStr
 				{
 					double price = _replayer->is_tick_enabled() ? newTick->price() : entrust._target;	//如果开启了tick回测，则用tick数据的价格，如果没有开启，则只能用条件单价格
 					double curQty = stra_get_position(stdCode);
-					//if (curQty >= 0)
 					if(decimal::ge(curQty, 0))
 						return;
 
 					double maxQty = min(abs(curQty), entrust._qty);
-					//do_set_position(stdCode, curQty + maxQty, price, entrust._usertag, true);
 					append_signal(stdCode, curQty + maxQty, entrust._usertag, price);
 				}
 				break;
 				case COND_ACTION_SP:
 				{
 					double price = _replayer->is_tick_enabled() ? newTick->price() : entrust._target;	//如果开启了tick回测，则用tick数据的价格，如果没有开启，则只能用条件单价格
-					//do_set_position(stdCode, entrust._qty, price, entrust._usertag, true); break;
 					append_signal(stdCode, entrust._qty, entrust._usertag, price);
 				}
 				default: break;
@@ -728,17 +717,21 @@ void CtaMocker::stra_set_position(const char* stdCode, double qty, const char* u
 		strcpy(entrust._code, stdCode);
 		strcpy(entrust._usertag, userTag);
 
+		double curQty = stra_get_position(stdCode);
+
+		bool isBuy = decimal::gt(qty, curQty);
+
 		entrust._qty = qty;
 		entrust._field = WCF_NEWPRICE;
 		if (!decimal::eq(limitprice))
 		{
 			entrust._target = limitprice;
-			entrust._alg = WCT_SmallerOrEqual;
+			entrust._alg = isBuy ? WCT_SmallerOrEqual : WCT_LargerOrEqual;
 		}
 		else if (!decimal::eq(stopprice))
 		{
 			entrust._target = stopprice;
-			entrust._alg = WCT_LargerOrEqual;
+			entrust._alg = isBuy ? WCT_LargerOrEqual : WCT_SmallerOrEqual;
 		}
 
 		entrust._action = COND_ACTION_SP;
@@ -782,99 +775,39 @@ void CtaMocker::do_set_position(const char* stdCode, double qty, double price /*
 	//成交价
 	double trdPx = curPx;
 
-	if (decimal::gt(pInfo._volumn*qty, 0))//当前持仓和目标仓位方向一致
+	double diff = qty - pInfo._volumn;
+
+	if (decimal::gt(pInfo._volumn*diff, 0))//当前持仓和仓位变化方向一致, 增加一条明细, 增加数量即可
 	{
-		//目标仓位绝对值大于当前仓位绝对值，则是继续开仓，增加一条记录即可
-		if(decimal::gt(abs(qty), abs(pInfo._volumn)))
-		{
-			double diff = abs(qty - pInfo._volumn);
-			pInfo._volumn = qty;
-
-			if(_slippage != 0)
-			{
-				bool isBuy = decimal::gt(qty, 0.0);
-				trdPx += _slippage * commInfo->getPriceTick()*(isBuy ? 1 : -1);
-			}
-
-			DetailInfo dInfo;
-			dInfo._long = decimal::gt(qty, 0);
-			dInfo._price = trdPx;
-			dInfo._volumn = diff;
-			dInfo._opentime = curTm;
-			dInfo._opentdate = curTDate;
-			strcpy(dInfo._opentag, userTag);
-			pInfo._details.push_back(dInfo);
-
-			double fee = _replayer->calc_fee(stdCode, trdPx, abs(diff), 0);
-			_fund_info._total_fees += fee;
-
-			log_trade(stdCode, dInfo._long, true, curTm, trdPx, abs(diff), userTag, fee);
-		}
-		else
-		{
-			//目标仓位绝对值小于当前仓位绝对值，则要平仓
-			double left = abs(qty - pInfo._volumn);
-
-			if (_slippage != 0)
-			{
-				//平仓的话，方向是反的
-				bool isBuy = !decimal::gt(qty, 0.0);
-				trdPx += _slippage * commInfo->getPriceTick()*(isBuy ? 1 : -1);
-			}
-
-			pInfo._volumn = qty;
-			if (decimal::eq(pInfo._volumn, 0))
-				pInfo._dynprofit = 0;
-			uint32_t count = 0;
-			for (auto it = pInfo._details.begin(); it != pInfo._details.end(); it++)
-			{
-				DetailInfo& dInfo = *it;
-				double maxQty = min(dInfo._volumn, left);
-				if (decimal::eq(maxQty, 0))
-					continue;
-
-				dInfo._volumn -= maxQty;
-				left -= maxQty;
-
-				//if (dInfo._volumn == 0)
-				if (decimal::eq(dInfo._volumn, 0))
-					count++;
-
-				double profit = (trdPx - dInfo._price) * maxQty * commInfo->getVolScale();
-				if (!dInfo._long)
-					profit *= -1;
-				pInfo._closeprofit += profit;
-				pInfo._dynprofit = pInfo._dynprofit*dInfo._volumn / (dInfo._volumn + maxQty);//浮盈也要做等比缩放
-				_fund_info._total_profit += profit;
-
-				double fee = _replayer->calc_fee(stdCode, trdPx, maxQty, dInfo._opentdate == curTDate ? 2 : 1);
-				_fund_info._total_fees += fee;
-				//_engine->mutate_fund(fee, FFT_Fee);
-				//这里写成交记录
-				log_trade(stdCode, dInfo._long, false, curTm, trdPx, maxQty, userTag, fee);
-				//这里写平仓记录
-				log_close(stdCode, dInfo._long, dInfo._opentime, dInfo._price, curTm, trdPx, maxQty, profit, pInfo._closeprofit, dInfo._opentag, userTag);
-
-				if (left == 0)
-					break;
-			}
-
-			//需要清理掉已经平仓完的明细
-			while (count > 0)
-			{
-				auto it = pInfo._details.begin();
-				pInfo._details.erase(it);
-				count--;
-			}
-		}
-	}
-	else
-	{//持仓方向和目标仓位方向不一致，需要平仓
-		double left = abs(pInfo._volumn) + abs(qty);
+		pInfo._volumn = qty;
 
 		if (_slippage != 0)
 		{
-			bool isBuy = decimal::gt(qty, 0.0);
+			bool isBuy = decimal::gt(diff, 0.0);
+			trdPx += _slippage * commInfo->getPriceTick()*(isBuy ? 1 : -1);
+		}
+
+		DetailInfo dInfo;
+		dInfo._long = decimal::gt(qty, 0);
+		dInfo._price = trdPx;
+		dInfo._volumn = abs(diff);
+		dInfo._opentime = curTm;
+		dInfo._opentdate = curTDate;
+		strcpy(dInfo._opentag, userTag);
+		pInfo._details.push_back(dInfo);
+
+		double fee = _replayer->calc_fee(stdCode, trdPx, abs(diff), 0);
+		_fund_info._total_fees += fee;
+
+		log_trade(stdCode, dInfo._long, true, curTm, trdPx, abs(diff), userTag, fee);
+	}
+	else
+	{//持仓方向和仓位变化方向不一致，需要平仓
+		double left = abs(diff);
+
+		if (_slippage != 0)
+		{
+			bool isBuy = decimal::gt(diff, 0.0);
 			trdPx += _slippage * commInfo->getPriceTick()*(isBuy ? 1 : -1);
 		}
 
@@ -902,11 +835,9 @@ void CtaMocker::do_set_position(const char* stdCode, double qty, double price /*
 			pInfo._closeprofit += profit;
 			pInfo._dynprofit = pInfo._dynprofit*dInfo._volumn / (dInfo._volumn + maxQty);//浮盈也要做等比缩放
 			_fund_info._total_profit += profit;
-			//_engine->mutate_fund(profit, FFT_CloseProfit);
 
 			double fee = _replayer->calc_fee(stdCode, trdPx, maxQty, dInfo._opentdate == curTDate ? 2 : 1);
 			_fund_info._total_fees += fee;
-			//_engine->mutate_fund(fee, FFT_Fee);
 			//这里写成交记录
 			log_trade(stdCode, dInfo._long, false, curTm, trdPx, maxQty, userTag, fee);
 			//这里写平仓记录
@@ -937,10 +868,9 @@ void CtaMocker::do_set_position(const char* stdCode, double qty, double price /*
 			dInfo._opentdate = curTDate;
 			strcpy(dInfo._opentag, userTag);
 			pInfo._details.push_back(dInfo);
-
-			//TODO: 
+ 
 			//这里还需要写一笔成交记录
-			double fee = _replayer->calc_fee(stdCode, trdPx, abs(qty), 0);
+			double fee = _replayer->calc_fee(stdCode, trdPx, abs(left), 0);
 			_fund_info._total_fees += fee;
 			//_engine->mutate_fund(fee, FFT_Fee);
 			log_trade(stdCode, dInfo._long, true, curTm, trdPx, abs(left), userTag, fee);
