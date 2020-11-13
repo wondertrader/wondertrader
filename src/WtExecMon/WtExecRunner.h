@@ -2,7 +2,7 @@
 
 #include "WtSimpDataMgr.h"
 
-#include "../WtCore/WtExecuter.h"
+#include "../WtCore/WtLocalExecuter.h"
 #include "../WtCore/TraderAdapter.h"
 #include "../WtCore/ParserAdapter.h"
 #include "../WtCore/ActionPolicyMgr.h"

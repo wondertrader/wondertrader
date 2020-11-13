@@ -350,7 +350,7 @@ void CtaMocker::on_tick(const char* stdCode, WTSTickData* newTick, bool bEmitStr
 					if(decimal::le(curPrice, 0))
 						return;
 
-					double maxQty = min(curQty, entrust._qty););
+					double maxQty = min(curQty, entrust._qty);
 					append_signal(stdCode, curQty - maxQty, entrust._usertag, price);
 				}
 				break;
