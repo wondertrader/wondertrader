@@ -166,9 +166,11 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\Common\mdump.h" />
     <ClInclude Include="WtRunner.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Common\mdump.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="WtRunner.cpp" />
   </ItemGroup>

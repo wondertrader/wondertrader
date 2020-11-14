@@ -9,6 +9,9 @@
  */
 
 #include "WtRunner.h"
+
+#include "../Common/mdump.h"
+
 #include "..\WTSTools\WTSLogger.h"
 #include "..\Share\IniHelper.hpp"
 
@@ -16,6 +19,7 @@
 
 void main()
 {
+	CMiniDumper::Enable("WtRunner.exe", true);
 	WtRunner runner;
 	runner.init();
 
