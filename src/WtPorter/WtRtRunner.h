@@ -20,7 +20,6 @@
 #include "../WtCore/WtCtaEngine.h"
 #include "../WtCore/WtHftEngine.h"
 #include "../WtCore/WtSelEngine.h"
-#include "../WtCore/WtLocalExecuter.h"
 #include "../WtCore/TraderAdapter.h"
 #include "../WtCore/ParserAdapter.h"
 #include "../WtCore/WtDataManager.h"

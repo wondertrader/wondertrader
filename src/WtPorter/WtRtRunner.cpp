@@ -16,6 +16,7 @@
 #include "../WtCore/CtaStraContext.h"
 #include "../WtCore/HftStraContext.h"
 #include "../WtCore/SelStraContext.h"
+#include "../WtCore/WtLocalExecuter.h"
 
 #include "../WTSTools/WTSLogger.h"
 #include "../Share/JsonToVariant.hpp"
@@ -523,7 +524,7 @@ bool WtRtRunner::initExecuters()
 
 		const char* id = cfgItem->getCString("id");
 
-		WtExecuter* executer = new WtExecuter(&_exe_factory, id, &_data_mgr);
+		WtLocalExecuter* executer = new WtLocalExecuter(&_exe_factory, id, &_data_mgr);
 		if (!executer->init(cfgItem))
 			return false;
 
