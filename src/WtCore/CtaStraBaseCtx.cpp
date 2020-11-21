@@ -320,7 +320,6 @@ void CtaStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 		_fund_info._total_dynprofit = total_dynprofit;
 	}
 
-	if(false)
 	{//读取条件单
 		uint32_t count = 0;
 		const rj::Value& jCond = root["conditions"];
@@ -473,6 +472,35 @@ void CtaStraBaseCtx::save_data(uint32_t flag /* = 0xFFFFFFFF */)
 		}
 
 		root.AddMember("signals", jSigs, allocator);
+	}
+
+	{//条件单保存
+		rj::Value jCond(rj::kObjectType);
+		rj::Value jItems(rj::kObjectType);
+
+		rj::Document::AllocatorType &allocator = root.GetAllocator();
+
+		for (auto it = _condtions.begin(); it != _condtions.end(); it++)
+		{
+			const char* code = it->first.c_str();
+			const CondEntrust& condInfo = it->second;
+
+			rj::Value cItem(rj::kObjectType);
+			cItem.AddMember("code", rj::Value(code, allocator), allocator);
+			cItem.AddMember("usertag", rj::Value(condInfo._usertag, allocator), allocator);
+
+			cItem.AddMember("field", (uint32_t)condInfo._field, allocator);
+			cItem.AddMember("alg", (uint32_t)condInfo._alg, allocator);
+			cItem.AddMember("target", condInfo._target, allocator);
+			cItem.AddMember("qty", condInfo._qty, allocator);
+			cItem.AddMember("action", (uint32_t)condInfo._action, allocator);
+
+			jItems.AddMember(rj::Value(code, allocator), cItem, allocator);
+		}
+		jCond.AddMember("settime", _last_cond_min, allocator);
+		jCond.AddMember("items", jItems, allocator);
+
+		root.AddMember("conditions", jCond, allocator);
 	}
 
 	{
@@ -776,6 +804,12 @@ bool CtaStraBaseCtx::on_schedule(uint32_t curDate, uint32_t curTime)
 				{
 					save_userdata();
 					_ud_modified = false;
+				}
+
+				if(!_condtions.empty())
+				{
+					_last_cond_min = (uint64_t)curDate * 10000 + curTime;
+					save_data();
 				}
 			}
 			else
@@ -1224,6 +1258,19 @@ WTSKlineSlice* CtaStraBaseCtx::stra_get_bars(const char* stdCode, const char* pe
 		_price_map[stdCode] = lastClose;
 
 		_engine->sub_tick(id(), stdCode);
+
+		if(isMain)
+		{
+			bool isDay = basePeriod[0] == 'd';
+			uint64_t lastBartime = isDay ? kline->date(-1) : kline->time(-1);
+			if(!isDay)
+				lastBartime += 199000000000;
+
+			if(lastBartime >= _last_cond_min)
+			{
+				_condtions.clear();
+			}
+		}
 	}
 
 	return kline;
