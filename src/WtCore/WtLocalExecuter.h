@@ -190,8 +190,6 @@ private:
 	uint32_t			_scale;
 	bool				_channel_ready;
 
-	std::unordered_set<std::string>			_clear_codes;
-
 	std::unordered_map<std::string, double> _target_pos;
 
 	typedef boost::shared_ptr<boost::threadpool::pool> ThreadPoolPtr;

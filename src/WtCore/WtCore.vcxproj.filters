@@ -151,7 +151,7 @@
       <Filter>Exec</Filter>
     </ClInclude>
     <ClInclude Include="WtDistExecuter.h">
-      <Filter>头文件</Filter>
+      <Filter>Exec</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -228,7 +228,7 @@
       <Filter>Exec</Filter>
     </ClCompile>
     <ClCompile Include="WtDistExecuter.cpp">
-      <Filter>源文件</Filter>
+      <Filter>Exec</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
