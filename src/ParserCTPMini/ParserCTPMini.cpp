@@ -172,6 +172,7 @@ bool ParserCTPMini::init(WTSParams* config)
 	const char* creatorName = "_ZN15CThostFtdcMdApi15CreateFtdcMdApiEPKcbb";
 #endif
 	m_funcCreator = (CTPCreator)DLLHelper::get_symbol(m_hInstCTP, creatorName);
+	m_pUserAPI = m_funcCreator(path.c_str(), false, false);
 	m_pUserAPI->RegisterSpi(this);
 	m_pUserAPI->RegisterFront((char*)m_strFrontAddr.c_str());
 
