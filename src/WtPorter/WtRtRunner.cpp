@@ -538,13 +538,9 @@ bool WtRtRunner::initExecuters()
 		}
 		else
 		{
-			WtDistExecuter* executer = new WtDistExecuter(&_exe_factory, id, &_data_mgr);
+			WtDistExecuter* executer = new WtDistExecuter(id);
 			if (!executer->init(cfgItem))
 				return false;
-
-			TraderAdapterPtr trader = _traders.getAdapter(cfgItem->getCString("trader"));
-			executer->setTrader(trader.get());
-			trader->addSink(executer);
 
 			_cta_engine.addExecuter(ExecCmdPtr(executer));
 		}

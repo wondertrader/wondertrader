@@ -483,19 +483,25 @@ void CtaStraBaseCtx::save_data(uint32_t flag /* = 0xFFFFFFFF */)
 		for (auto it = _condtions.begin(); it != _condtions.end(); it++)
 		{
 			const char* code = it->first.c_str();
-			const CondEntrust& condInfo = it->second;
+			const CondList& condList = it->second;
 
-			rj::Value cItem(rj::kObjectType);
-			cItem.AddMember("code", rj::Value(code, allocator), allocator);
-			cItem.AddMember("usertag", rj::Value(condInfo._usertag, allocator), allocator);
+			rj::Value cArray(rj::kArrayType);
+			for(auto& condInfo : condList)
+			{
+				rj::Value cItem(rj::kObjectType);
+				cItem.AddMember("code", rj::Value(code, allocator), allocator);
+				cItem.AddMember("usertag", rj::Value(condInfo._usertag, allocator), allocator);
 
-			cItem.AddMember("field", (uint32_t)condInfo._field, allocator);
-			cItem.AddMember("alg", (uint32_t)condInfo._alg, allocator);
-			cItem.AddMember("target", condInfo._target, allocator);
-			cItem.AddMember("qty", condInfo._qty, allocator);
-			cItem.AddMember("action", (uint32_t)condInfo._action, allocator);
+				cItem.AddMember("field", (uint32_t)condInfo._field, allocator);
+				cItem.AddMember("alg", (uint32_t)condInfo._alg, allocator);
+				cItem.AddMember("target", condInfo._target, allocator);
+				cItem.AddMember("qty", condInfo._qty, allocator);
+				cItem.AddMember("action", (uint32_t)condInfo._action, allocator);
 
-			jItems.AddMember(rj::Value(code, allocator), cItem, allocator);
+				cArray.PushBack(cItem, allocator);
+			}
+
+			jItems.AddMember(rj::Value(code, allocator), cArray, allocator);
 		}
 		jCond.AddMember("settime", _last_cond_min, allocator);
 		jCond.AddMember("items", jItems, allocator);
@@ -1248,19 +1254,19 @@ WTSKlineSlice* CtaStraBaseCtx::stra_get_bars(const char* stdCode, const char* pe
 	}
 
 	WTSKlineSlice* kline = _engine->get_kline_slice(_context_id, stdCode, basePeriod.c_str(), count, times);
-
-	KlineTag& tag = _kline_tags[key];
-	tag._closed = false;
-
 	if(kline)
 	{
+		//如果K线获取不到，说明也不会有闭合事件发生，所以不更新本地标记
+		bool isFirst = (_kline_tags.find(key) == _kline_tags.end());	//如果没有保存标记，说明是第一次拉取该K线
+		KlineTag& tag = _kline_tags[key];
+		tag._closed = false;
+
 		double lastClose = kline->close(-1);
 		_price_map[stdCode] = lastClose;
 
-		_engine->sub_tick(id(), stdCode);
-
-		if(isMain)
+		if(isMain && isFirst && !_condtions.empty())
 		{
+			//如果是第一次拉取主K线，则检查条件单触发时间
 			bool isDay = basePeriod[0] == 'd';
 			uint64_t lastBartime = isDay ? kline->date(-1) : kline->time(-1);
 			if(!isDay)
@@ -1268,9 +1274,12 @@ WTSKlineSlice* CtaStraBaseCtx::stra_get_bars(const char* stdCode, const char* pe
 
 			if(lastBartime >= _last_cond_min)
 			{
+				stra_log_text(fmt::format("条件单已过期，设置时间为{}，上一根主K线时间为{}，全部清空", _last_cond_min, lastBartime).c_str());
 				_condtions.clear();
 			}
 		}
+
+		_engine->sub_tick(id(), stdCode);
 	}
 
 	return kline;
