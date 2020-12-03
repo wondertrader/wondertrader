@@ -38,6 +38,7 @@ SET(LIBS
 	${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/libs/libWTSTools.a
 	${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/libs/libWTSUtils.a
 	
+	${MyDeps}/lib/libmysqlclient.a
 	dl
 	pthread
 	boost_filesystem	
