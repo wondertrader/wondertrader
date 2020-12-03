@@ -23,81 +23,81 @@ private:
 
 public:
 	/*
-	 *	æ‰€å±æ‰§è¡Œå™¨å·¥å‚åç§°
+	 *	ËùÊôÖ´ĞĞÆ÷¹¤³§Ãû³Æ
 	 */
 	virtual const char* getFactName() override;
 
 	/*
-	 *	æ‰§è¡Œå•å…ƒåç§°
+	 *	Ö´ĞĞµ¥ÔªÃû³Æ
 	 */
 	virtual const char* getName() override;
 
 	/*
-	 *	åˆå§‹åŒ–æ‰§è¡Œå•å…ƒ
-	 *	ctx		æ‰§è¡Œå•å…ƒè¿è¡Œç¯å¢ƒ
-	 *	code	ç®¡ç†çš„åˆçº¦ä»£ç 
+	 *	³õÊ¼»¯Ö´ĞĞµ¥Ôª
+	 *	ctx		Ö´ĞĞµ¥ÔªÔËĞĞ»·¾³
+	 *	code	¹ÜÀíµÄºÏÔ¼´úÂë
 	 */
 	virtual void init(ExecuteContext* ctx, const char* stdCode, WTSVariant* cfg) override;
 
 	/*
-	 *	è®¢å•å›æŠ¥
-	 *	localid	æœ¬åœ°å•å·
-	 *	code	åˆçº¦ä»£ç 
-	 *	isBuy	ä¹°orå–
-	 *	leftover	å‰©ä½™æ•°é‡
-	 *	price	å§”æ‰˜ä»·æ ¼
-	 *	isCanceled	æ˜¯å¦å·²æ’¤é”€
+	 *	¶©µ¥»Ø±¨
+	 *	localid	±¾µØµ¥ºÅ
+	 *	code	ºÏÔ¼´úÂë
+	 *	isBuy	ÂòorÂô
+	 *	leftover	Ê£ÓàÊıÁ¿
+	 *	price	Î¯ÍĞ¼Û¸ñ
+	 *	isCanceled	ÊÇ·ñÒÑ³·Ïú
 	 */
 	virtual void on_order(uint32_t localid, const char* stdCode, bool isBuy, double leftover, double price, bool isCanceled) override;
 
 	/*
-	 *	tickæ•°æ®å›è°ƒ
-	 *	newTick	æœ€æ–°çš„tickæ•°æ®
+	 *	tickÊı¾İ»Øµ÷
+	 *	newTick	×îĞÂµÄtickÊı¾İ
 	 */
 	virtual void on_tick(WTSTickData* newTick) override;
 
 	/*
-	 *	æˆäº¤å›æŠ¥
-	 *	code	åˆçº¦ä»£ç 
-	 *	isBuy	ä¹°orå–
-	 *	vol		æˆäº¤æ•°é‡ï¼Œè¿™é‡Œæ²¡æœ‰æ­£è´Ÿï¼Œé€šè¿‡isBuyç¡®å®šä¹°å…¥è¿˜æ˜¯å–å‡º
-	 *	price	æˆäº¤ä»·æ ¼
+	 *	³É½»»Ø±¨
+	 *	code	ºÏÔ¼´úÂë
+	 *	isBuy	ÂòorÂô
+	 *	vol		³É½»ÊıÁ¿£¬ÕâÀïÃ»ÓĞÕı¸º£¬Í¨¹ıisBuyÈ·¶¨ÂòÈë»¹ÊÇÂô³ö
+	 *	price	³É½»¼Û¸ñ
 	 */
 	virtual void on_trade(uint32_t localid, const char* stdCode, bool isBuy, double vol, double price) override;
 
 	/*
-	 *	ä¸‹å•ç»“æœå›æŠ¥
+	 *	ÏÂµ¥½á¹û»Ø±¨
 	 */
 	virtual void on_entrust(uint32_t localid, const char* stdCode, bool bSuccess, const char* message) override;
 
 	/*
-	 *	è®¾ç½®æ–°çš„ç›®æ ‡ä»“ä½
-	 *	code	åˆçº¦ä»£ç 
-	 *	newVol	æ–°çš„ç›®æ ‡ä»“ä½
+	 *	ÉèÖÃĞÂµÄÄ¿±ê²ÖÎ»
+	 *	code	ºÏÔ¼´úÂë
+	 *	newVol	ĞÂµÄÄ¿±ê²ÖÎ»
 	 */
 	virtual void set_position(const char* stdCode, double newVol) override;
 
 	/*
-	 *	äº¤æ˜“é€šé“å°±ç»ªå›è°ƒ
+	 *	½»Ò×Í¨µÀ¾ÍĞ÷»Øµ÷
 	 */
 	virtual void on_channel_ready() override;
 
 	/*
-	 *	äº¤æ˜“é€šé“ä¸¢å¤±å›è°ƒ
+	 *	½»Ò×Í¨µÀ¶ªÊ§»Øµ÷
 	 */
 	virtual void on_channel_lost() override;
 
 private:
-	WTSTickData* _last_tick;	//ä¸Šä¸€ç¬”è¡Œæƒ…
-	double		_target_pos;	//ç›®æ ‡ä»“ä½
-	double		_unsent_qty;	//æœªå‘é€æ•°é‡
+	WTSTickData* _last_tick;	//ÉÏÒ»±ÊĞĞÇé
+	double		_target_pos;	//Ä¿±ê²ÖÎ»
+	double		_unsent_qty;	//Î´·¢ËÍÊıÁ¿
 
 
 	WTSCommodityInfo*	_comm_info;
 	WTSSessionInfo*		_sess_info;
 
 	//////////////////////////////////////////////////////////////////////////
-	//æ‰§è¡Œå‚æ•°
+	//Ö´ĞĞ²ÎÊı
 	int32_t		_price_offset;
 	uint32_t	_expire_secs;
 	int32_t		_price_mode;

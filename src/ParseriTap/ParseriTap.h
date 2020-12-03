@@ -26,7 +26,7 @@ public:
 		LS_LOGINED
 	};
 
-//IQuoteParser æ¥å£
+//IQuoteParser ½Ó¿Ú
 public:
 	virtual bool init(WTSParams* config);
 
@@ -75,11 +75,11 @@ public:
 
 private:
 	/*
-	 *	å‘é€ç™»å½•è¯·æ±‚
+	 *	·¢ËÍµÇÂ¼ÇëÇó
 	 */
 	bool login(bool bNeedReconn = false);
 	/*
-	 *	è®¢é˜…å“ç§è¡Œæƒ…
+	 *	¶©ÔÄÆ·ÖÖĞĞÇé
 	 */
 	void subscribe();
 

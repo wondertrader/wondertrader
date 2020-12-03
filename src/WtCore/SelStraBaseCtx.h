@@ -45,7 +45,7 @@ private:
 public:
 	virtual uint32_t id() { return _context_id; }
 
-	//å›è°ƒå‡½æ•°
+	//»Øµ÷º¯Êı
 	virtual void on_init() override;
 	virtual void on_session_begin() override;
 	virtual void on_session_end() override;
@@ -57,7 +57,7 @@ public:
 
 
 	//////////////////////////////////////////////////////////////////////////
-	//ç­–ç•¥æ¥å£
+	//²ßÂÔ½Ó¿Ú
 	virtual double stra_get_position(const char* stdCode, const char* userTag = "") override;
 	virtual void stra_set_position(const char* stdCode, double qty, const char* userTag = "") override;
 	virtual double stra_get_price(const char* stdCode) override;
@@ -83,8 +83,8 @@ protected:
 	uint32_t		_context_id;
 	WtSelEngine*	_engine;
 
-	uint64_t		_total_calc_time;	//æ€»è®¡ç®—æ—¶é—´
-	uint32_t		_emit_times;		//æ€»è®¡ç®—æ¬¡æ•°
+	uint64_t		_total_calc_time;	//×Ü¼ÆËãÊ±¼ä
+	uint32_t		_emit_times;		//×Ü¼ÆËã´ÎÊı
 
 	uint32_t		_schedule_date;
 	uint32_t		_schedule_time;
@@ -162,10 +162,10 @@ protected:
 	BoostFilePtr	_fund_logs;
 	BoostFilePtr	_sig_logs;
 
-	//æ˜¯å¦å¤„äºè°ƒåº¦ä¸­çš„æ ‡è®°
-	bool			_is_in_schedule;	//æ˜¯å¦åœ¨è‡ªåŠ¨è°ƒåº¦ä¸­
+	//ÊÇ·ñ´¦ÓÚµ÷¶ÈÖĞµÄ±ê¼Ç
+	bool			_is_in_schedule;	//ÊÇ·ñÔÚ×Ô¶¯µ÷¶ÈÖĞ
 
-	//ç”¨æˆ·æ•°æ®
+	//ÓÃ»§Êı¾İ
 	typedef std::unordered_map<std::string, std::string> StringHashMap;
 	StringHashMap	_user_datas;
 	bool			_ud_modified;

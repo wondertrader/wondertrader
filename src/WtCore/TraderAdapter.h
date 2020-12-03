@@ -35,25 +35,25 @@ public:
 
 	typedef enum tagAdapterState
 	{
-		AS_NOTLOGIN,		//æœªç™»å½•
-		AS_LOGINING,		//æ­£åœ¨ç™»å½•
-		AS_LOGINED,			//å·²ç™»å½•
-		AS_LOGINFAILED,		//ç™»å½•å¤±è´¥
-		AS_POSITION_QRYED,	//ä»“ä½å·²æŸ¥
-		AS_ORDERS_QRYED,	//è®¢å•å·²æŸ¥
-		AS_TRADES_QRYED,	//æˆäº¤å·²æŸ¥
-		AS_ALLREADY			//å…¨éƒ¨å°±ç»ª
+		AS_NOTLOGIN,		//Î´µÇÂ¼
+		AS_LOGINING,		//ÕıÔÚµÇÂ¼
+		AS_LOGINED,			//ÒÑµÇÂ¼
+		AS_LOGINFAILED,		//µÇÂ¼Ê§°Ü
+		AS_POSITION_QRYED,	//²ÖÎ»ÒÑ²é
+		AS_ORDERS_QRYED,	//¶©µ¥ÒÑ²é
+		AS_TRADES_QRYED,	//³É½»ÒÑ²é
+		AS_ALLREADY			//È«²¿¾ÍĞ÷
 	} AdapterState;
 
 	typedef struct _PosItem
 	{
-		//å¤šä»“æ•°æ®
+		//¶à²ÖÊı¾İ
 		double	l_newvol;
 		double	l_newavail;
 		double	l_prevol;
 		double	l_preavail;
 
-		//ç©ºä»“æ•°æ®
+		//¿Õ²ÖÊı¾İ
 		double	s_newvol;
 		double	s_newavail;
 		double	s_prevol;
@@ -160,7 +160,7 @@ public:
 
 public:
 	//////////////////////////////////////////////////////////////////////////
-	//ITraderApiListeneræ¥å£
+	//ITraderApiListener½Ó¿Ú
 	virtual void handleEvent(WTSTraderEvent e, int32_t ec) override;
 
 	virtual void onLoginResult(bool bSucc, const char* msg, uint32_t tradingdate) override;
@@ -207,30 +207,30 @@ private:
 
 	BoostUniqueMutex _mtx_orders;
 	OrderMap*		_orders;
-	std::unordered_set<std::string> _orderids;	//ä¸»è¦ç”¨äºæ ‡è®°æœ‰æ²¡æœ‰å¤„ç†è¿‡è¯¥è®¢å•
+	std::unordered_set<std::string> _orderids;	//Ö÷ÒªÓÃÓÚ±ê¼ÇÓĞÃ»ÓĞ´¦Àí¹ı¸Ã¶©µ¥
 
-	std::unordered_map<std::string, double> _undone_qty;	//æœªå®Œæˆæ•°é‡
+	std::unordered_map<std::string, double> _undone_qty;	//Î´Íê³ÉÊıÁ¿
 
 	typedef WTSHashMap<std::string>	TradeStatMap;
-	TradeStatMap*	_stat_map;	//ç»Ÿè®¡æ•°æ®
+	TradeStatMap*	_stat_map;	//Í³¼ÆÊı¾İ
 
-	//è¿™ä¸¤ä¸ªç¼“å­˜æ—¶é—´å†…çš„å®¹å™¨ï¼Œä¸»è¦æ˜¯ä¸ºäº†æ§åˆ¶ç¬é—´æµé‡è€Œè®¾ç½®çš„
+	//ÕâÁ½¸ö»º´æÊ±¼äÄÚµÄÈİÆ÷£¬Ö÷ÒªÊÇÎªÁË¿ØÖÆË²¼äÁ÷Á¿¶øÉèÖÃµÄ
 	typedef std::vector<uint64_t> TimeCacheList;
 	typedef std::unordered_map<std::string, TimeCacheList> CodeTimeCacheMap;
-	CodeTimeCacheMap	_order_time_cache;	//ä¸‹å•æ—¶é—´ç¼“å­˜
-	CodeTimeCacheMap	_cancel_time_cache;	//æ’¤å•æ—¶é—´ç¼“å­˜
+	CodeTimeCacheMap	_order_time_cache;	//ÏÂµ¥Ê±¼ä»º´æ
+	CodeTimeCacheMap	_cancel_time_cache;	//³·µ¥Ê±¼ä»º´æ
 
-	//å¦‚æœè¢«é£æ§äº†ï¼Œå°±ä¼šè¿›å…¥åˆ°æ’é™¤é˜Ÿåˆ—
+	//Èç¹û±»·ç¿ØÁË£¬¾Í»á½øÈëµ½ÅÅ³ı¶ÓÁĞ
 	std::unordered_set<std::string>	_exclude_codes;
 	
 	typedef std::unordered_map<std::string, RiskParams>	RiskParamsMap;
 	RiskParamsMap	_risk_params_map;
 	bool			_risk_mon_enabled;
 
-	bool			_save_data;	//æ˜¯å¦ä¿å­˜äº¤æ˜“æ—¥å¿—
-	BoostFilePtr	_trades_log;		//äº¤æ˜“æ•°æ®æ—¥å¿—
-	BoostFilePtr	_orders_log;		//è®¢å•æ•°æ®æ—¥å¿—
-	std::string		_rt_data_file;		//å®æ—¶æ•°æ®æ–‡ä»¶
+	bool			_save_data;	//ÊÇ·ñ±£´æ½»Ò×ÈÕÖ¾
+	BoostFilePtr	_trades_log;		//½»Ò×Êı¾İÈÕÖ¾
+	BoostFilePtr	_orders_log;		//¶©µ¥Êı¾İÈÕÖ¾
+	std::string		_rt_data_file;		//ÊµÊ±Êı¾İÎÄ¼ş
 };
 
 typedef std::shared_ptr<TraderAdapter>				TraderAdapterPtr;

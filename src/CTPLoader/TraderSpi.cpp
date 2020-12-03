@@ -22,30 +22,30 @@ extern std::map<std::string, std::string>	MAP_SESSION;
 
 #pragma warning(disable : 4996)
 
-// USER_APIå‚æ•°
+// USER_API²ÎÊı
 extern CThostFtdcTraderApi* pUserApi;
 
-// é…ç½®å‚æ•°
-extern std::string	FRONT_ADDR;	// å‰ç½®åœ°å€
-extern std::string	BROKER_ID;	// ç»çºªå…¬å¸ä»£ç 
-extern std::string	INVESTOR_ID;// æŠ•èµ„è€…ä»£ç 
-extern std::string	PASSWORD;	// ç”¨æˆ·å¯†ç 
-extern std::string	SAVEPATH;	//ä¿å­˜ä½ç½®
+// ÅäÖÃ²ÎÊı
+extern std::string	FRONT_ADDR;	// Ç°ÖÃµØÖ·
+extern std::string	BROKER_ID;	// ¾­¼Í¹«Ë¾´úÂë
+extern std::string	INVESTOR_ID;// Í¶×ÊÕß´úÂë
+extern std::string	PASSWORD;	// ÓÃ»§ÃÜÂë
+extern std::string	SAVEPATH;	//±£´æÎ»ÖÃ
 extern std::string	HOTFILE;
 extern std::string	APPID;
 extern std::string	AUTHCODE;
 extern bool			ISFOROPTION;
 
-extern std::string COMM_FILE;		//è¾“å‡ºçš„å“ç§æ–‡ä»¶å
-extern std::string CONT_FILE;		//è¾“å‡ºçš„åˆçº¦æ–‡ä»¶å
+extern std::string COMM_FILE;		//Êä³öµÄÆ·ÖÖÎÄ¼şÃû
+extern std::string CONT_FILE;		//Êä³öµÄºÏÔ¼ÎÄ¼şÃû
 
-// è¯·æ±‚ç¼–å·
+// ÇëÇó±àºÅ
 extern int iRequestID;
 
-// ä¼šè¯å‚æ•°
-TThostFtdcFrontIDType	FRONT_ID;	//å‰ç½®ç¼–å·
-TThostFtdcSessionIDType	SESSION_ID;	//ä¼šè¯ç¼–å·
-TThostFtdcOrderRefType	ORDER_REF;	//æŠ¥å•å¼•ç”¨
+// »á»°²ÎÊı
+TThostFtdcFrontIDType	FRONT_ID;	//Ç°ÖÃ±àºÅ
+TThostFtdcSessionIDType	SESSION_ID;	//»á»°±àºÅ
+TThostFtdcOrderRefType	ORDER_REF;	//±¨µ¥ÒıÓÃ
 
 typedef struct _Commodity
 {
@@ -124,7 +124,7 @@ double convertInvalidDouble(double val)
 void CTraderSpi::OnFrontConnected()
 {
 	std::cerr << "--->>> " << "OnFrontConnected" << std::endl;
-	///ç”¨æˆ·ç™»å½•è¯·æ±‚
+	///ÓÃ»§µÇÂ¼ÇëÇó
 	ReqAuth();
 }
 
@@ -138,7 +138,7 @@ void CTraderSpi::ReqAuth()
 	strcpy(req.AuthCode, AUTHCODE.c_str());
 	strcpy(req.AppID, APPID.c_str());
 	int iResult = pUserApi->ReqAuthenticate(&req, ++iRequestID);
-	std::cerr << "--->>> å‘é€ç»ˆç«¯è®¤è¯å½•è¯·æ±‚: " << ((iResult == 0) ? "æˆåŠŸ" : "å¤±è´¥") << std::endl;
+	std::cerr << "--->>> ·¢ËÍÖÕ¶ËÈÏÖ¤Â¼ÇëÇó: " << ((iResult == 0) ? "³É¹¦" : "Ê§°Ü") << std::endl;
 }
 
 void CTraderSpi::OnRspAuthenticate(CThostFtdcRspAuthenticateField *pRspAuthenticateField, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
@@ -158,7 +158,7 @@ void CTraderSpi::ReqUserLogin()
 	strcpy(req.UserID, INVESTOR_ID.c_str());
 	strcpy(req.Password, PASSWORD.c_str());
 	int iResult = pUserApi->ReqUserLogin(&req, ++iRequestID);
-	std::cerr << "--->>> å‘é€ç”¨æˆ·ç™»å½•è¯·æ±‚: " << ((iResult == 0) ? "æˆåŠŸ" : "å¤±è´¥") << std::endl;
+	std::cerr << "--->>> ·¢ËÍÓÃ»§µÇÂ¼ÇëÇó: " << ((iResult == 0) ? "³É¹¦" : "Ê§°Ü") << std::endl;
 }
 
 void CTraderSpi::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin,
@@ -167,13 +167,13 @@ void CTraderSpi::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin,
 	std::cerr << "--->>> " << "OnRspUserLogin" << std::endl;
 	if (bIsLast && !IsErrorRspInfo(pRspInfo))
 	{
-		// ä¿å­˜ä¼šè¯å‚æ•°
+		// ±£´æ»á»°²ÎÊı
 		FRONT_ID = pRspUserLogin->FrontID;
 		SESSION_ID = pRspUserLogin->SessionID;
 		int iNextOrderRef = atoi(pRspUserLogin->MaxOrderRef);
 		iNextOrderRef++;
 		sprintf(ORDER_REF, "%d", iNextOrderRef);
-		///è·å–å½“å‰äº¤æ˜“æ—¥
+		///»ñÈ¡µ±Ç°½»Ò×ÈÕ
 		m_lTradingDate = atoi(pUserApi->GetTradingDay());
 		
 		ReqQryInstrument();
@@ -185,7 +185,7 @@ void CTraderSpi::ReqQryInstrument()
 	CThostFtdcQryInstrumentField req;
 	memset(&req, 0, sizeof(req));
 	int iResult = pUserApi->ReqQryInstrument(&req, ++iRequestID);
-	std::cerr << "--->>> è¯·æ±‚æŸ¥è¯¢åˆçº¦: " << ((iResult == 0) ? "æˆåŠŸ" : "å¤±è´¥") << std::endl;
+	std::cerr << "--->>> ÇëÇó²éÑ¯ºÏÔ¼: " << ((iResult == 0) ? "³É¹¦" : "Ê§°Ü") << std::endl;
 }
 
 inline bool isOption(TThostFtdcProductClassType pClass)
@@ -258,7 +258,7 @@ void CTraderSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CTho
 				{
 					if (strcmp(pInstrument->ExchangeID, "SHFE") == 0 || strcmp(pInstrument->ExchangeID, "INE") == 0)
 						cm = CM_CoverToday;
-					//ä¸ŠæœŸæ‰€çš„å°±æ˜¯å¹³ä»Šï¼Œéä¸ŠæœŸæ‰€çš„å°±æ˜¯å¼€å¹³
+					//ÉÏÆÚËùµÄ¾ÍÊÇÆ½½ñ£¬·ÇÉÏÆÚËùµÄ¾ÍÊÇ¿ªÆ½
 				}
 				
 				commInfo.m_coverMode = cm;
@@ -297,7 +297,7 @@ void CTraderSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CTho
 
 void CTraderSpi::DumpToJson()
 {
-	//ä¸¤ä¸ªæ–‡ä»¶ï¼Œä¸€ä¸ªcontracts.json,ä¸€ä¸ªcommodities.json
+	//Á½¸öÎÄ¼ş£¬Ò»¸öcontracts.json,Ò»¸öcommodities.json
 	//Json::Value jComms(Json::objectValue);
 	rj::Document jComms(rj::kObjectType);
 	{
@@ -405,7 +405,7 @@ void CTraderSpi::OnRspError(CThostFtdcRspInfoField *pRspInfo, int nRequestID, bo
 
 bool CTraderSpi::IsErrorRspInfo(CThostFtdcRspInfoField *pRspInfo)
 {
-	// å¦‚æœErrorID != 0, è¯´æ˜æ”¶åˆ°äº†é”™è¯¯çš„å“åº”
+	// Èç¹ûErrorID != 0, ËµÃ÷ÊÕµ½ÁË´íÎóµÄÏìÓ¦
 	bool bResult = ((pRspInfo) && (pRspInfo->ErrorID != 0));
 	if (bResult)
 		std::cerr << "--->>> ErrorID=" << pRspInfo->ErrorID << ", ErrorMsg=" << pRspInfo->ErrorMsg << std::endl;

@@ -54,14 +54,14 @@ bool WtRunner::config(const char* cfgFile)
 	if(document.HasParseError())
 	{
 		auto ec = document.GetParseError();
-		WTSLogger::error("é…ç½®æ–‡ä»¶è§£æå¤±è´¥");
+		WTSLogger::error("ÅäÖÃÎÄ¼ş½âÎöÊ§°Ü");
 		return false;
 	}
 
 	_config = WTSVariant::createObject();
 	jsonToVariant(document, _config);
 
-	//åŸºç¡€æ•°æ®æ–‡ä»¶
+	//»ù´¡Êı¾İÎÄ¼ş
 	WTSVariant* cfgBF = _config->get("basefiles");
 	if (cfgBF->get("session"))
 		_bd_mgr.loadSessions(cfgBF->getCString("session"));
@@ -78,22 +78,22 @@ bool WtRunner::config(const char* cfgFile)
 	if (cfgBF->get("hot"))
 		_hot_mgr.loadHots(cfgBF->getCString("hot"));
 
-	//åˆå§‹åŒ–è¿è¡Œç¯å¢ƒ
+	//³õÊ¼»¯ÔËĞĞ»·¾³
 	initEnv();
 
-	//åˆå§‹åŒ–æ•°æ®ç®¡ç†
+	//³õÊ¼»¯Êı¾İ¹ÜÀí
 	initDataMgr();
 
 	if (!initActionPolicy())
 		return false;
 
-	//åˆå§‹åŒ–è¡Œæƒ…é€šé“
+	//³õÊ¼»¯ĞĞÇéÍ¨µÀ
 	initParsers();
 
-	//åˆå§‹åŒ–äº¤æ˜“é€šé“
+	//³õÊ¼»¯½»Ò×Í¨µÀ
 	initTraders();
 
-	//å¦‚æœä¸æ˜¯é«˜é¢‘å¼•æ“ï¼Œåˆ™éœ€è¦é…ç½®æ‰§è¡Œæ¨¡å—
+	//Èç¹û²»ÊÇ¸ßÆµÒıÇæ£¬ÔòĞèÒªÅäÖÃÖ´ĞĞÄ£¿é
 	if (!_is_hft)
 		initExecuters();
 
@@ -196,14 +196,14 @@ bool WtRunner::initEnv()
 		_hft_engine.init(cfg, &_bd_mgr, &_data_mgr, &_hot_mgr);
 		_engine = &_hft_engine;
 
-		WTSLogger::info("äº¤æ˜“ç¯å¢ƒåˆå§‹åŒ–å®Œæˆï¼Œäº¤æ˜“å¼•æ“ï¼šHFT");
+		WTSLogger::info("½»Ò×»·¾³³õÊ¼»¯Íê³É£¬½»Ò×ÒıÇæ£ºHFT");
 	}
 	else
 	{
 		_cta_engine.init(cfg, &_bd_mgr, &_data_mgr, &_hot_mgr);
 		_engine = &_cta_engine;
 
-		WTSLogger::info("äº¤æ˜“ç¯å¢ƒåˆå§‹åŒ–å®Œæˆï¼Œäº¤æ˜“å¼•æ“ï¼šCTA");
+		WTSLogger::info("½»Ò×»·¾³³õÊ¼»¯Íê³É£¬½»Ò×ÒıÇæ£ºCTA");
 	}
 
 	_engine->set_adapter_mgr(&_traders);

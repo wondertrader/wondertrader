@@ -39,7 +39,7 @@ bool ActionPolicyMgr::init(const char* filename)
 	StdFile::read_file_content(filename, json);
 	if (json.empty())
 	{
-		WTSLogger::error("å¼€å¹³ç­–ç•¥é…ç½®æ–‡ä»¶%sè¯»å–é”™è¯¯", filename);
+		WTSLogger::error("¿ªÆ½²ßÂÔÅäÖÃÎÄ¼ş%s¶ÁÈ¡´íÎó", filename);
 		return false;
 	}
 
@@ -48,7 +48,7 @@ bool ActionPolicyMgr::init(const char* filename)
 
 	if (document.HasParseError())
 	{
-		WTSLogger::error("å¼€å¹³ç­–ç•¥é…ç½®æ–‡ä»¶%sè§£æå¤±è´¥", filename);
+		WTSLogger::error("¿ªÆ½²ßÂÔÅäÖÃÎÄ¼ş%s½âÎöÊ§°Ü", filename);
 		return false;
 	}
 
@@ -83,7 +83,7 @@ bool ActionPolicyMgr::init(const char* filename)
 					aRule._atype = AT_CloseYestoday;
 				else 
 				{
-					WTSLogger::error("å¼€å¹³ç­–ç•¥åŠ è½½å¤±è´¥: æœªè¯†åˆ«çš„å¼€å¹³ç±»å‹%s", action);
+					WTSLogger::error("¿ªÆ½²ßÂÔ¼ÓÔØÊ§°Ü: Î´Ê¶±ğµÄ¿ªÆ½ÀàĞÍ%s", action);
 					continue;
 				}
 
@@ -113,7 +113,7 @@ const ActionRuleGroup& ActionPolicyMgr::getActionRules(const char* pid)
 {
 	std::string gpName = "default";
 
-	{//å…ˆæ‰¾åˆ°å“ç§å¯¹åº”çš„è§„åˆ™ç»„åç§°
+	{//ÏÈÕÒµ½Æ·ÖÖ¶ÔÓ¦µÄ¹æÔò×éÃû³Æ
 		auto it = _comm_rule_map.find(pid);
 		if (it != _comm_rule_map.end())
 			gpName = it->second;
@@ -124,7 +124,7 @@ const ActionRuleGroup& ActionPolicyMgr::getActionRules(const char* pid)
 		if (it == _rules.end())
 		{
 			it = _rules.find("default");
-			WTSLogger::error("å¼€å¹³è§„åˆ™ç»„%sä¸å­˜åœ¨, è‡ªåŠ¨åˆ‡æ¢åˆ°é»˜è®¤è§„åˆ™ç»„", gpName.c_str());
+			WTSLogger::error("¿ªÆ½¹æÔò×é%s²»´æÔÚ, ×Ô¶¯ÇĞ»»µ½Ä¬ÈÏ¹æÔò×é", gpName.c_str());
 		}
 
 		assert(it != _rules.end());

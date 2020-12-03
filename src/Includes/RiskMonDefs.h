@@ -15,12 +15,12 @@
 #include <string.h>
 
 /*
- *	è¿™æ˜¯é£æ§æ¨¡å—åŸºæœ¬å®šä¹‰æ–‡ä»¶
- *	ç›®å‰é£æ§æ¨¡å—æš‚æ—¶ä¸è€ƒè™‘æ ¹æ®è¡Œæƒ…é£æ§
- *	åªå®ç°åŸºæœ¬çš„èµ„é‡‘é£æ§çš„è¦æ±‚
- *	è¡Œæƒ…é£æ§é€šè¿‡æ›´é«˜å±‚çš„æ‹©æ—¶ç­–ç•¥æ¥å®ç°
- *	ä¸åœ¨é£æ§æ¨¡å—é‡Œå¤„ç†
- *	é£æ§æ¨¡å—åªå¤„ç†é«˜æ•ˆçš„é£æ§ç­–ç•¥
+ *	ÕâÊÇ·ç¿ØÄ£¿é»ù±¾¶¨ÒåÎÄ¼ş
+ *	Ä¿Ç°·ç¿ØÄ£¿éÔİÊ±²»¿¼ÂÇ¸ù¾İĞĞÇé·ç¿Ø
+ *	Ö»ÊµÏÖ»ù±¾µÄ×Ê½ğ·ç¿ØµÄÒªÇó
+ *	ĞĞÇé·ç¿ØÍ¨¹ı¸ü¸ß²ãµÄÔñÊ±²ßÂÔÀ´ÊµÏÖ
+ *	²»ÔÚ·ç¿ØÄ£¿éÀï´¦Àí
+ *	·ç¿ØÄ£¿éÖ»´¦Àí¸ßĞ§µÄ·ç¿Ø²ßÂÔ
  */
 
 NS_OTP_BEGIN
@@ -28,57 +28,57 @@ class WTSVariant;
 class WTSPortFundInfo;
 
 /*
- *	ç»„åˆä¸Šä¸‹æ–‡
+ *	×éºÏÉÏÏÂÎÄ
  */
 class WtPortContext
 {
 public:
 	/*
-	 *	è·å–ç»„åˆèµ„é‡‘æ•°æ®
+	 *	»ñÈ¡×éºÏ×Ê½ğÊı¾İ
 	 */
 	virtual WTSPortFundInfo*	getFundInfo() = 0;
 
 	/*
-	 *	è®¾ç½®æ•°é‡å€æ•°
-	 *	@scale	æ•°é‡å€ç‡, ä¸€èˆ¬å°äºç­‰äº1, ç”¨äºæ§åˆ¶æ•´ä½“ä»“ä½æ¯”ä¾‹
+	 *	ÉèÖÃÊıÁ¿±¶Êı
+	 *	@scale	ÊıÁ¿±¶ÂÊ, Ò»°ãĞ¡ÓÚµÈÓÚ1, ÓÃÓÚ¿ØÖÆÕûÌå²ÖÎ»±ÈÀı
 	 */
 	virtual void	setVolScale(double scale) = 0;
 
 	/*
-	 *	æ£€æŸ¥æ˜¯å¦å¤„äºäº¤æ˜“çŠ¶æ€
+	 *	¼ì²éÊÇ·ñ´¦ÓÚ½»Ò××´Ì¬
 	 *
-	 *	return	å¤„äºäº¤æ˜“çŠ¶æ€ä¸ºtrue
+	 *	return	´¦ÓÚ½»Ò××´Ì¬Îªtrue
 	 */
 	virtual bool	isInTrading() = 0;
 
 	/*
-	 *	å†™æ—¥å¿—
+	 *	Ğ´ÈÕÖ¾
 	 */
 	virtual void	writeRiskLog(const char* fmt, ...) = 0;
 
 	/*
-	 *	è·å–å½“å‰æ—¥æœŸ
+	 *	»ñÈ¡µ±Ç°ÈÕÆÚ
 	 */
 	virtual uint32_t	getCurDate() = 0;
 
 	/*
-	 *	è·å–å½“å‰æ—¶é—´
+	 *	»ñÈ¡µ±Ç°Ê±¼ä
 	 */
 	virtual uint32_t	getCurTime() = 0;
 
 	/*
-	 *	è·å–å½“å‰äº¤æ˜“æ—¥
+	 *	»ñÈ¡µ±Ç°½»Ò×ÈÕ
 	 */
 	virtual uint32_t	getTradingDate() = 0;
 
 	/*
-	 *	å°†æ—¶é—´è½¬æ¢ä¸ºåˆ†é’Ÿæ•°(æ—¥å†…æœ‰æ•ˆ)
+	 *	½«Ê±¼ä×ª»»Îª·ÖÖÓÊı(ÈÕÄÚÓĞĞ§)
 	 */
 	virtual uint32_t	transTimeToMin(uint32_t uTime) = 0;
 };
 
 /*
- *	ç»„åˆé£æ§æ¨¡å—
+ *	×éºÏ·ç¿ØÄ£¿é
  */
 class WtRiskMonitor
 {
@@ -88,29 +88,29 @@ public:
 
 public:
 	/*
-	*	æ‰§è¡Œå•å…ƒåç§°
+	*	Ö´ĞĞµ¥ÔªÃû³Æ
 	*/
 	virtual const char* getName() = 0;
 
 	/*
-	*	æ‰€å±æ‰§è¡Œå™¨å·¥å‚åç§°
+	*	ËùÊôÖ´ĞĞÆ÷¹¤³§Ãû³Æ
 	*/
 	virtual const char* getFactName() = 0;
 
 	/*
-	*	åˆå§‹åŒ–æ‰§è¡Œå•å…ƒ
-	*	ctx		æ‰§è¡Œå•å…ƒè¿è¡Œç¯å¢ƒ
-	*	code	ç®¡ç†çš„åˆçº¦ä»£ç 
+	*	³õÊ¼»¯Ö´ĞĞµ¥Ôª
+	*	ctx		Ö´ĞĞµ¥ÔªÔËĞĞ»·¾³
+	*	code	¹ÜÀíµÄºÏÔ¼´úÂë
 	*/
 	virtual void init(WtPortContext* ctx, WTSVariant* cfg){ _ctx = ctx; }
 
 	/*
-	 *	å¯åŠ¨é£æ§æ¨¡å—
+	 *	Æô¶¯·ç¿ØÄ£¿é
 	 */
 	virtual void run(){}
 
 	/*
-	 *	åœæ­¢é£æ§æ¨¡å—
+	 *	Í£Ö¹·ç¿ØÄ£¿é
 	 */
 	virtual void stop(){}
 
@@ -120,7 +120,7 @@ protected:
 
 
 //////////////////////////////////////////////////////////////////////////
-//é£æ§æ¨¡å—å·¥å‚æ¥å£
+//·ç¿ØÄ£¿é¹¤³§½Ó¿Ú
 typedef void(*FuncEnumRiskMonCallback)(const char* factName, const char* unitName, bool isLast);
 
 class IRiskMonitorFact
@@ -131,29 +131,29 @@ public:
 
 public:
 	/*
-	*	è·å–å·¥å‚å
+	*	»ñÈ¡¹¤³§Ãû
 	*/
 	virtual const char* getName() = 0;
 
 	/*
-	*	æšä¸¾äº¤æ˜“é€šé“é£æ§æ¨¡å—
+	*	Ã¶¾Ù½»Ò×Í¨µÀ·ç¿ØÄ£¿é
 	*/
 	virtual void enumRiskMonitors(FuncEnumRiskMonCallback cb) = 0;
 
 	/*
-	*	æ ¹æ®åç§°åˆ›å»ºäº¤æ˜“é€šé“é£æ§æ¨¡å—
+	*	¸ù¾İÃû³Æ´´½¨½»Ò×Í¨µÀ·ç¿ØÄ£¿é
 	*/
 	virtual WtRiskMonitor* createRiskMonotor(const char* name) = 0;
 
 	/*
-	*	åˆ é™¤äº¤æ˜“é€šé“é£æ§æ¨¡å—
+	*	É¾³ı½»Ò×Í¨µÀ·ç¿ØÄ£¿é
 	*/
 	virtual bool deleteRiskMonotor(WtRiskMonitor* unit) = 0;
 };
 
-//åˆ›å»ºæ‰§è¡Œå·¥å‚
+//´´½¨Ö´ĞĞ¹¤³§
 typedef IRiskMonitorFact* (*FuncCreateRiskMonFact)();
-//åˆ é™¤æ‰§è¡Œå·¥å‚
+//É¾³ıÖ´ĞĞ¹¤³§
 typedef void(*FuncDeleteRiskMonFact)(IRiskMonitorFact* &fact);
 
 NS_OTP_END

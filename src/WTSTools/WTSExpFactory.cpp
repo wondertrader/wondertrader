@@ -169,7 +169,7 @@ WTSExpressData* WTSExpFactory::calcExpressMA(WTSValueArray* ayData, WTSExpressPa
 		mSum += ayData->at(i);
 		lSum += ayData->at(i);
 
-		//çŸ­å‘¨æœŸ
+		//¶ÌÖÜÆÚ
 		if(i >= sPeriod)
 		{
 			sSum -= ayData->at(i-sPeriod);
@@ -179,7 +179,7 @@ WTSExpressData* WTSExpFactory::calcExpressMA(WTSValueArray* ayData, WTSExpressPa
 			(*sline)[i] = sSum/sPeriod;
 		}
 
-		//ä¸­å‘¨æœŸ
+		//ÖÐÖÜÆÚ
 		if(i >= mPeriod)
 		{
 			mSum -= ayData->at(i-mPeriod);
@@ -190,7 +190,7 @@ WTSExpressData* WTSExpFactory::calcExpressMA(WTSValueArray* ayData, WTSExpressPa
 			(*mline)[i] = mSum/mPeriod;
 		}
 
-		//é•¿å‘¨æœŸ
+		//³¤ÖÜÆÚ
 		if(i >= lPeriod)
 		{
 			lSum -= ayData->at(i-lPeriod);
@@ -260,7 +260,7 @@ WTSExpressData* WTSExpFactory::calcExpressVOL(WTSValueArray* ayData, WTSExpressP
 			mSum += absVal;
 			lSum += absVal;
 
-			//çŸ­å‘¨æœŸ
+			//¶ÌÖÜÆÚ
 			if (i >= sPeriod)
 			{
 				sSum -= abs(ayData->at(i - sPeriod));
@@ -270,7 +270,7 @@ WTSExpressData* WTSExpFactory::calcExpressVOL(WTSValueArray* ayData, WTSExpressP
 				(*sline)[i] = sSum / sPeriod;
 			}
 
-			//ä¸­å‘¨æœŸ
+			//ÖÐÖÜÆÚ
 			if (i >= mPeriod)
 			{
 				mSum -= abs(ayData->at(i - mPeriod));
@@ -281,7 +281,7 @@ WTSExpressData* WTSExpFactory::calcExpressVOL(WTSValueArray* ayData, WTSExpressP
 				(*mline)[i] = mSum / mPeriod;
 			}
 
-			//é•¿å‘¨æœŸ
+			//³¤ÖÜÆÚ
 			if (i >= lPeriod)
 			{
 				lSum -= abs(ayData->at(i - lPeriod));
@@ -333,17 +333,17 @@ WTSExpressData* WTSExpFactory::calcExpressKDJ(WTSValueArray* ayClose, WTSValueAr
 
 		if(i != 0){
 
-			//(Næ—¥æ”¶ç›˜ä»· - Næ—¥å†…æœ€ä½Žä»·) Ã· (Næ—¥å†…æœ€é«˜ä»· - Næ—¥å†…æœ€ä½Žä»·) Ã— 100 = Næ—¥RSV
+			//(NÈÕÊÕÅÌ¼Û - NÈÕÄÚ×îµÍ¼Û) ¡Â (NÈÕÄÚ×î¸ß¼Û - NÈÕÄÚ×îµÍ¼Û) ¡Á 100 = NÈÕRSV
 			double rsa = RSA(
 				ayClose->at(i), 
 				MAX(ayHigh, i-n, i), 
 				MIN(ayLow, i-n, i));
 
-			//å½“æ—¥Kå€¼ = 1/3å½“æ—¥RSV + 2/3å‰1æ—¥Kå€¼ ;
+			//µ±ÈÕKÖµ = 1/3µ±ÈÕRSV + 2/3Ç°1ÈÕKÖµ ;
 			k = SMA(rsa, (*lineK)[i-1], m1);	
-			//å½“æ—¥Då€¼ = 2/3å‰1æ—¥Då€¼ + 1/3å½“æ—¥Kå€¼;
+			//µ±ÈÕDÖµ = 2/3Ç°1ÈÕDÖµ + 1/3µ±ÈÕKÖµ;
 			d = SMA(k, (*lineD)[i-1], m2);
-			//å½“æ—¥Jå€¼ = 3å½“æ—¥Kå€¼ - 2å½“æ—¥Då€¼
+			//µ±ÈÕJÖµ = 3µ±ÈÕKÖµ - 2µ±ÈÕDÖµ
 			j = 3*k - 2*d;
 		}
 
@@ -390,11 +390,11 @@ WTSExpressData* WTSExpFactory::calcExpressMACD(WTSValueArray* ayData, WTSExpress
 	{
 		double curValue = ayData->at(i);
 
-		//çŸ­æœŸEMA
+		//¶ÌÆÚEMA
 		double curEMA1 = EMA(preEMA1, curValue, sPeriod);
 		preEMA1 = curEMA1;
 
-		//é•¿æœŸEMA
+		//³¤ÆÚEMA
 		double curEMA2 = EMA(preEMA2, curValue, lPeriod);
 		preEMA2 = curEMA2;
 
@@ -448,7 +448,7 @@ WTSExpressData* WTSExpFactory::calcExpressBIAS(WTSValueArray* ayData, WTSExpress
 		mSum += curClose;
 		lSum += curClose;
 
-		//çŸ­å‘¨æœŸ
+		//¶ÌÖÜÆÚ
 		if(i >= sPeriod)
 		{
 			sSum -= ayData->at(i-sPeriod);
@@ -459,7 +459,7 @@ WTSExpressData* WTSExpFactory::calcExpressBIAS(WTSValueArray* ayData, WTSExpress
 			(*lineB1)[i] = (curClose - sSum/sPeriod)*100/(sSum/sPeriod);
 		}
 
-		//ä¸­å‘¨æœŸ
+		//ÖÐÖÜÆÚ
 		if(i >= mPeriod)
 		{
 			mSum -= ayData->at(i-mPeriod);
@@ -469,7 +469,7 @@ WTSExpressData* WTSExpFactory::calcExpressBIAS(WTSValueArray* ayData, WTSExpress
 			(*lineB2)[i] = (curClose - mSum/mPeriod)*100/(mSum/mPeriod);
 		}
 
-		//é•¿å‘¨æœŸ
+		//³¤ÖÜÆÚ
 		if(i >= lPeriod)
 		{
 			lSum -= ayData->at(i-lPeriod);

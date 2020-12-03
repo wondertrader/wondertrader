@@ -70,7 +70,7 @@ void WtHftEngine::run(bool bAsync /*= false*/)
 	WTSVariant* cfgProd = _cfg->get("product");
 	_tm_ticker->init(_data_mgr->reader(), cfgProd->getCString("session"));
 
-	//å¯åŠ¨ä¹‹å‰ï¼Œå…ˆæŠŠè¿è¡Œä¸­çš„ç­–ç•¥è½åœ°
+	//Æô¶¯Ö®Ç°£¬ÏÈ°ÑÔËĞĞÖĞµÄ²ßÂÔÂäµØ
 	{
 		rj::Document root(rj::kObjectType);
 		rj::Document::AllocatorType &allocator = root.GetAllocator();
@@ -172,7 +172,7 @@ void WtHftEngine::on_bar(const char* stdCode, const char* period, uint32_t times
 
 void WtHftEngine::on_minute_end(uint32_t curDate, uint32_t curTime)
 {
-	//å·²å»æ‰é«˜é¢‘ç­–ç•¥çš„on_schedule
+	//ÒÑÈ¥µô¸ßÆµ²ßÂÔµÄon_schedule
 	//for(auto& cit : _ctx_map)
 	//{
 	//	HftContextPtr& ctx = cit.second;

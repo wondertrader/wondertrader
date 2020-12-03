@@ -28,7 +28,7 @@ void ExpCtaMocker::on_init()
 {
 	CtaMocker::on_init();
 
-	//å‘å¤–éƒ¨å›è°ƒ
+	//ÏòÍâ²¿»Øµ÷
 	getRunner().ctx_on_init(_context_id, ET_CTA);
 }
 
@@ -51,7 +51,7 @@ void ExpCtaMocker::on_tick_updated(const char* stdCode, WTSTickData* newTick)
 void ExpCtaMocker::on_bar_close(const char* code, const char* period, WTSBarStruct* newBar)
 {
 	CtaMocker::on_bar_close(code, period, newBar);
-	//è¦å‘å¤–éƒ¨å›è°ƒ
+	//ÒªÏòÍâ²¿»Øµ÷
 	getRunner().ctx_on_bar(_context_id, code, period, newBar, ET_CTA);
 }
 

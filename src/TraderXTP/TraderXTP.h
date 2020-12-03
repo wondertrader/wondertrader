@@ -31,16 +31,16 @@ public:
 
 	typedef enum
 	{
-		TS_NOTLOGIN,		//æœªç™»å½•
-		TS_LOGINING,		//æ­£åœ¨ç™»å½•
-		TS_LOGINED,			//å·²ç™»å½•
-		TS_LOGINFAILED,		//ç™»å½•å¤±è´¥
-		TS_ALLREADY			//å…¨éƒ¨å°±ç»ª
+		TS_NOTLOGIN,		//Î´µÇÂ¼
+		TS_LOGINING,		//ÕıÔÚµÇÂ¼
+		TS_LOGINED,			//ÒÑµÇÂ¼
+		TS_LOGINFAILED,		//µÇÂ¼Ê§°Ü
+		TS_ALLREADY			//È«²¿¾ÍĞ÷
 	} TraderState;
 
 public:
 	//////////////////////////////////////////////////////////////////////////
-	//XTP::API::TraderSpi æ¥å£
+	//XTP::API::TraderSpi ½Ó¿Ú
 	virtual void OnDisconnected(uint64_t session_id, int reason) override;
 
 	virtual void OnError(XTPRI *error_info) override;
@@ -61,7 +61,7 @@ public:
 
 public:
 	//////////////////////////////////////////////////////////////////////////
-	//ITraderApi æ¥å£
+	//ITraderApi ½Ó¿Ú
 	virtual bool init(WTSParams *params) override;
 
 	virtual void release() override;
@@ -129,7 +129,7 @@ private:
 	uint64_t		_sessionid;
 	uint32_t		_tradingday;
 	std::atomic<uint32_t>		_reqid;
-	std::atomic<uint32_t>		_ordref;		//æŠ¥å•å¼•ç”¨
+	std::atomic<uint32_t>		_ordref;		//±¨µ¥ÒıÓÃ
 
 	boost::asio::io_service		_asyncio;
 	BoostThreadPtr				_thrd_worker;

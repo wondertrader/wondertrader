@@ -5,7 +5,7 @@
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief åŸºç¡€æ•°æ®ç®¡ç†å™¨æ¥å£å®šä¹‰
+ * \brief »ù´¡Êı¾İ¹ÜÀíÆ÷½Ó¿Ú¶¨Òå
  */
 #pragma once
 #include "WTSMarcos.h"

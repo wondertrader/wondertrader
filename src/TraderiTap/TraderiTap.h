@@ -30,14 +30,14 @@ public:
 public:
 	typedef enum 
 	{
-		WS_NOTLOGIN,		//æœªç™»å½•
-		WS_LOGINING,		//æ­£åœ¨ç™»å½•
-		WS_DYNAUTH,			//åŠ¨æ€è®¤è¯
-		WS_LOGINED,			//å·²ç™»å½•
-		WS_LOGINFAILED,		//ç™»å½•å¤±è´¥
-		WS_APIINITED,		//æ¥å£åˆå§‹åŒ–
-		WS_COMMQRYED,		//å“ç§å·²æŸ¥
-		WS_ALLREADY			//å…¨éƒ¨å°±ç»ª
+		WS_NOTLOGIN,		//Î´µÇÂ¼
+		WS_LOGINING,		//ÕıÔÚµÇÂ¼
+		WS_DYNAUTH,			//¶¯Ì¬ÈÏÖ¤
+		WS_LOGINED,			//ÒÑµÇÂ¼
+		WS_LOGINFAILED,		//µÇÂ¼Ê§°Ü
+		WS_APIINITED,		//½Ó¿Ú³õÊ¼»¯
+		WS_COMMQRYED,		//Æ·ÖÖÒÑ²é
+		WS_ALLREADY			//È«²¿¾ÍĞ÷
 	} WrapperState;
 
 
@@ -49,7 +49,7 @@ private:
 	const char* GetErrcodeDesc(int ec);
 
 //////////////////////////////////////////////////////////////////////////
-//ISimpleTraderApiæ¥å£
+//ISimpleTraderApi½Ó¿Ú
 public:
 	virtual bool init(WTSParams* params);
 
@@ -88,7 +88,7 @@ public:
 
 
 //////////////////////////////////////////////////////////////////////////
-//ITapTradeAPINotifyäº¤æ˜“æ¥å£å®ç°
+//ITapTradeAPINotify½»Ò×½Ó¿ÚÊµÏÖ
 public:
 	virtual void TAP_CDECL OnAPIReady(ITapTrade::TAPIINT32 errorCode) override;
 
@@ -297,7 +297,7 @@ protected:
 	std::atomic<uint32_t> m_orderId;
 
 
-	//äº¤æ˜“æ‰€ã€å“ç§æ˜ å°„
+	//½»Ò×Ëù¡¢Æ·ÖÖÓ³Éä
 	typedef std::map<std::string,std::string>	StringMap;
 	StringMap			m_mapExchgIToO;
 	StringMap			m_mapExchgOToI;

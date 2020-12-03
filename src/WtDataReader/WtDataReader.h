@@ -79,7 +79,7 @@ private:
 	TBlockPair* getRTTBlock(const char* exchg, const char* code);
 
 	/*
-	 *	å°†å†å²æ•°æ®æ”¾å…¥ç¼“å­˜
+	 *	½«ÀúÊ·Êı¾İ·ÅÈë»º´æ
 	 */
 	bool		cacheHisBarsFromFile(const std::string& key, const char* stdCode, WTSKlinePeriod period);
 	bool		cacheHisBarsFromDB(const std::string& key, const char* stdCode, WTSKlinePeriod period);
@@ -126,7 +126,7 @@ private:
 
 	uint64_t	_last_time;
 
-	//é™¤æƒå› å­
+	//³ıÈ¨Òò×Ó
 	typedef struct _AdjFactor
 	{
 		uint32_t	_date;

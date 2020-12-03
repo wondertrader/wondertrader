@@ -5,7 +5,7 @@
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief æ—¶é—´å¤„ç†çš„å°è£…
+ * \brief Ê±¼ä´¦ÀíµÄ·â×°
  */
 #pragma once
 #include <stdint.h>
@@ -69,7 +69,7 @@ public:
 
 	/*
 	static inline int64_t getFrequency(void){              
-		LARGE_INTEGER f;              //è®¡æ—¶å™¨é¢‘ç‡
+		LARGE_INTEGER f;              //¼ÆÊ±Æ÷ÆµÂÊ
 		QueryPerformanceFrequency(&f);
 		return (int64_t)f.QuadPart;
 	}
@@ -195,8 +195,8 @@ public:
 		return datetime_fmt_str;
 	}
 
-	//20120512 09:15:00 -> æ¯«ç§’
-	//æ”¯æŒå¦‚ä¸‹æ ¼å¼çš„å­—ç¬¦ä¸²ï¼š
+	//20120512 09:15:00 -> ºÁÃë
+	//Ö§³ÖÈçÏÂ¸ñÊ½µÄ×Ö·û´®£º
 	// 20120512 09:15:00 or 20120512 09:15:00 999
 	// 20120512091500 or 20120512091500999
 	static inline int64_t makeTime(std::string time_str)
@@ -214,7 +214,7 @@ public:
 		t.tm_min = atoi(time_str.substr(10,2).c_str());
 		t.tm_sec = atoi(time_str.substr(12,2).c_str());
 		int millisec = 0;
-		if ( len == 17){ //è¯´æ˜è¿˜æœ‰æ¯«ç§’
+		if ( len == 17){ //ËµÃ÷»¹ÓĞºÁÃë
 			millisec = atoi(time_str.substr(14,3).c_str());
 		}
 		//t.tm_isdst 	
@@ -255,7 +255,7 @@ public:
 		localtime_r(&tt, &t);
 #endif
 		char tm_buf[64] = {'\0'};
-		if (msec > 0) //æ˜¯å¦æœ‰æ¯«ç§’
+		if (msec > 0) //ÊÇ·ñÓĞºÁÃë
 		   sprintf(tm_buf,"%4d%02d%02d%02d%02d%02d.%03d",t.tm_year+1900, t.tm_mon+1, t.tm_mday,
 			t.tm_hour, t.tm_min, t.tm_sec, msec);
 		else 

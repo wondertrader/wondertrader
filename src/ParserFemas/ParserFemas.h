@@ -33,7 +33,7 @@ public:
 		LS_LOGINED
 	};
 
-//IQuoteParser æ¥å£
+//IQuoteParser ½Ó¿Ú
 public:
 	virtual bool init(WTSParams* config) override;
 
@@ -51,7 +51,7 @@ public:
 	virtual void registerListener(IParserApiListener* listener) override;
 
 
-//CUstpFtdcMdSpi æ¥å£
+//CUstpFtdcMdSpi ½Ó¿Ú
 public:
 	virtual void OnRspError( CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast );
 
@@ -59,7 +59,7 @@ public:
 
 	virtual void OnRspUserLogin( CUstpFtdcRspUserLoginField *pRspUserLogin, CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast );
 
-	///ç™»å‡ºè¯·æ±‚å“åº”
+	///µÇ³öÇëÇóÏìÓ¦
 	virtual void OnRspUserLogout(CUstpFtdcRspUserLogoutField *pUserLogout, CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
 
 	virtual void OnFrontDisconnected( int nReason );
@@ -74,15 +74,15 @@ public:
 
 private:
 	/*
-	 *	å‘é€ç™»å½•è¯·æ±‚
+	 *	·¢ËÍµÇÂ¼ÇëÇó
 	 */
 	void ReqUserLogin();
 	/*
-	 *	è®¢é˜…å“ç§è¡Œæƒ…
+	 *	¶©ÔÄÆ·ÖÖĞĞÇé
 	 */
 	void SubscribeMarketData();
 	/*
-	 *	æ£€æŸ¥é”™è¯¯ä¿¡æ¯
+	 *	¼ì²é´íÎóĞÅÏ¢
 	 */
 	bool IsErrorRspInfo(CUstpFtdcRspInfoField *pRspInfo);
 

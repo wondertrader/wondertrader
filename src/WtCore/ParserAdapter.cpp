@@ -60,36 +60,36 @@ bool ParserAdapter::init(const char* id, WTSVariant* cfg, IParserStub* stub, IBa
 	_cfg->retain();
 
 	{
-		//åŠ è½½æ¨¡å—
+		//¼ÓÔØÄ£¿é
 		if (cfg->getString("module").empty())
 			return false;
 
 		const char* module = cfg->getCString("module");
 
-		//å…ˆçœ‹å·¥ä½œç›®å½•ä¸‹æ˜¯å¦æœ‰è¡Œæƒ…æ¨¡å—
+		//ÏÈ¿´¹¤×÷Ä¿Â¼ÏÂÊÇ·ñÓĞĞĞÇéÄ£¿é
 		std::string dllpath = WtHelper::getModulePath(module, "parsers", true);
-		//å¦‚æœæ²¡æœ‰ï¼Œåˆ™å†çœ‹æ¨¡å—ç›®å½•ï¼Œå³dllåŒç›®å½•ä¸‹
+		//Èç¹ûÃ»ÓĞ£¬ÔòÔÙ¿´Ä£¿éÄ¿Â¼£¬¼´dllÍ¬Ä¿Â¼ÏÂ
 		if(!StdFile::exists(dllpath.c_str()))
 			dllpath = WtHelper::getModulePath(module, "parsers", false);
 
 		DllHandle hInst = DLLHelper::load_library(dllpath.c_str());
 		if (hInst == NULL)
 		{
-			WTSLogger::log_dyn("parser", _id.c_str(), LL_ERROR, "[%s]è¡Œæƒ…æ¨¡å—%såŠ è½½å¤±è´¥", _id.c_str(), dllpath.c_str());
+			WTSLogger::log_dyn("parser", _id.c_str(), LL_ERROR, "[%s]ĞĞÇéÄ£¿é%s¼ÓÔØÊ§°Ü", _id.c_str(), dllpath.c_str());
 			return false;
 		}
 
 		FuncCreateParser pFuncCreateParser = (FuncCreateParser)DLLHelper::get_symbol(hInst, "createParser");
 		if (NULL == pFuncCreateParser)
 		{
-			WTSLogger::log_dyn("parser", _id.c_str(), LL_FATAL, "[%s]äº¤æ˜“æ¥å£åˆ›å»ºå‡½æ•°è¯»å–å¤±è´¥", _id.c_str());
+			WTSLogger::log_dyn("parser", _id.c_str(), LL_FATAL, "[%s]½»Ò×½Ó¿Ú´´½¨º¯Êı¶ÁÈ¡Ê§°Ü", _id.c_str());
 			return false;
 		}
 
 		_parser_api = pFuncCreateParser();
 		if (NULL == _parser_api)
 		{
-			WTSLogger::log_dyn("parser", _id.c_str(), LL_FATAL, "[%s]è¡Œæƒ…æ¥å£åˆ›å»ºå¤±è´¥", _id.c_str());
+			WTSLogger::log_dyn("parser", _id.c_str(), LL_FATAL, "[%s]ĞĞÇé½Ó¿Ú´´½¨Ê§°Ü", _id.c_str());
 			return false;
 		}
 
@@ -127,12 +127,12 @@ bool ParserAdapter::init(const char* id, WTSVariant* cfg, IParserStub* stub, IBa
 		if (_parser_api->init(params))
 		{
 			ContractSet contractSet;
-			if (!_code_filter.empty())//ä¼˜å…ˆåˆ¤æ–­åˆçº¦è¿‡æ»¤å™¨
+			if (!_code_filter.empty())//ÓÅÏÈÅĞ¶ÏºÏÔ¼¹ıÂËÆ÷
 			{
 				ExchgFilter::iterator it = _code_filter.begin();
 				for (; it != _code_filter.end(); it++)
 				{
-					//å…¨ä»£ç ï¼Œå½¢å¼å¦‚SSE.600000ï¼ŒæœŸè´§ä»£ç ä¸ºCFFEX.IF2005
+					//È«´úÂë£¬ĞÎÊ½ÈçSSE.600000£¬ÆÚ»õ´úÂëÎªCFFEX.IF2005
 					std::string code, exchg;
 					auto ay = StrUtil::split((*it).c_str(), ".");
 					if (ay.size() == 1)
@@ -188,14 +188,14 @@ bool ParserAdapter::init(const char* id, WTSVariant* cfg, IParserStub* stub, IBa
 		}
 		else
 		{
-			WTSLogger::log_dyn("parser", _id.c_str(), LL_ERROR, "[%s]è¡Œæƒ…æ¨¡å—åˆå§‹åŒ–å¤±è´¥,æ¨¡å—æ¥å£åˆå§‹åŒ–å¤±è´¥...", _id.c_str());
+			WTSLogger::log_dyn("parser", _id.c_str(), LL_ERROR, "[%s]ĞĞÇéÄ£¿é³õÊ¼»¯Ê§°Ü,Ä£¿é½Ó¿Ú³õÊ¼»¯Ê§°Ü...", _id.c_str());
 		}
 
 		params->release();
 	}
 	else
 	{
-		WTSLogger::log_dyn("parser", _id.c_str(), LL_ERROR, "[%s]è¡Œæƒ…æ¨¡å—åˆå§‹åŒ–å¤±è´¥,è·å–æ¨¡å—æ¥å£å¤±è´¥...", _id.c_str());
+		WTSLogger::log_dyn("parser", _id.c_str(), LL_ERROR, "[%s]ĞĞÇéÄ£¿é³õÊ¼»¯Ê§°Ü,»ñÈ¡Ä£¿é½Ó¿ÚÊ§°Ü...", _id.c_str());
 	}
 
 	return true;
@@ -289,7 +289,7 @@ bool ParserAdapterMgr::addAdapter(const char* id, ParserAdapterPtr& adapter)
 	auto it = _adapters.find(id);
 	if (it != _adapters.end())
 	{
-		WTSLogger::error("è¡Œæƒ…é€šé“åç§°ç›¸åŒ: %s", id);
+		WTSLogger::error("ĞĞÇéÍ¨µÀÃû³ÆÏàÍ¬: %s", id);
 		return false;
 	}
 
@@ -317,5 +317,5 @@ void ParserAdapterMgr::run()
 		it->second->run();
 	}
 
-	WTSLogger::info("%uä¸ªè¡Œæƒ…é€šé“å·²å¯åŠ¨", _adapters.size());
+	WTSLogger::info("%u¸öĞĞÇéÍ¨µÀÒÑÆô¶¯", _adapters.size());
 }

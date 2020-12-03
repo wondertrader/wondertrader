@@ -92,12 +92,12 @@ bool ParserAdapter::initAdapter(WTSParams* params, FuncCreateParser funcCreate, 
 		if(m_pParser->init(params))
 		{
 			ContractSet contractSet;
-			if (!m_codeFilter.empty())//ä¼˜å…ˆåˆ¤æ–­åˆçº¦è¿‡æ»¤å™¨
+			if (!m_codeFilter.empty())//ÓÅÏÈÅĞ¶ÏºÏÔ¼¹ıÂËÆ÷
 			{
 				ExchgFilter::iterator it = m_codeFilter.begin();
 				for (; it != m_codeFilter.end(); it++)
 				{
-					//å…¨ä»£ç ï¼Œå½¢å¼å¦‚SSE.600000ï¼ŒæœŸè´§ä»£ç ä¸ºCFFEX.IF2005
+					//È«´úÂë£¬ĞÎÊ½ÈçSSE.600000£¬ÆÚ»õ´úÂëÎªCFFEX.IF2005
 					std::string code, exchg;
 					auto ay = StrUtil::split((*it).c_str(), ".");
 					if (ay.size() == 1)
@@ -115,7 +115,7 @@ bool ParserAdapter::initAdapter(WTSParams* params, FuncCreateParser funcCreate, 
 					}
 				}
 			}
-			else if(!m_exchgFilter.empty())//å†åˆ¤æ–­äº¤æ˜“æ‰€è¿‡æ»¤å™¨
+			else if(!m_exchgFilter.empty())//ÔÙÅĞ¶Ï½»Ò×Ëù¹ıÂËÆ÷
 			{
 				ExchgFilter::iterator it = m_exchgFilter.begin();
 				for(; it != m_exchgFilter.end(); it++)
@@ -135,7 +135,7 @@ bool ParserAdapter::initAdapter(WTSParams* params, FuncCreateParser funcCreate, 
 					ayContract->release();
 				}
 			}
-			else//æœ€åæ‰æ˜¯å…¨è®¢é˜…
+			else//×îºó²ÅÊÇÈ«¶©ÔÄ
 			{
 				WTSArray* ayContract = m_bdMgr->getContracts();
 				WTSArray::Iterator it = ayContract->begin();
@@ -157,12 +157,12 @@ bool ParserAdapter::initAdapter(WTSParams* params, FuncCreateParser funcCreate, 
 		}
 		else
 		{
-			WTSLogger::info("è¡Œæƒ…æ¨¡å—åˆå§‹åŒ–å¤±è´¥,æ¨¡å—æ¥å£åˆå§‹åŒ–å¤±è´¥...");
+			WTSLogger::info("ĞĞÇéÄ£¿é³õÊ¼»¯Ê§°Ü,Ä£¿é½Ó¿Ú³õÊ¼»¯Ê§°Ü...");
 		}
 	}
 	else
 	{
-		WTSLogger::info("è¡Œæƒ…æ¨¡å—åˆå§‹åŒ–å¤±è´¥,è·å–æ¨¡å—æ¥å£å¤±è´¥...");
+		WTSLogger::info("ĞĞÇéÄ£¿é³õÊ¼»¯Ê§°Ü,»ñÈ¡Ä£¿é½Ó¿ÚÊ§°Ü...");
 	}
 
 	return true;

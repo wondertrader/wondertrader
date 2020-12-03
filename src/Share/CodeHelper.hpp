@@ -5,7 +5,7 @@
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief ä»£ç è¾…åŠ©ç±»ï¼Œå°è£…åˆ°ä¸€èµ·æ–¹ä¾¿ä½¿ç”¨
+ * \brief ´úÂë¸¨ÖúÀà£¬·â×°µ½Ò»Æğ·½±ãÊ¹ÓÃ
  */
 #pragma once
 #include "StrUtil.hpp"
@@ -20,15 +20,15 @@ class CodeHelper
 public:
 	typedef struct _CodeInfo
 	{
-		char _code[MAX_INSTRUMENT_LENGTH];		//åˆçº¦ä»£ç 
-		char _exchg[MAX_INSTRUMENT_LENGTH];		//äº¤æ˜“æ‰€ä»£ç 
-		char _product[MAX_INSTRUMENT_LENGTH];	//å“ç§ä»£ç 
+		char _code[MAX_INSTRUMENT_LENGTH];		//ºÏÔ¼´úÂë
+		char _exchg[MAX_INSTRUMENT_LENGTH];		//½»Ò×Ëù´úÂë
+		char _product[MAX_INSTRUMENT_LENGTH];	//Æ·ÖÖ´úÂë
 
-		ContractCategory	_category;		//åˆçº¦ç±»å‹
+		ContractCategory	_category;		//ºÏÔ¼ÀàĞÍ
 		union
 		{
-			bool	_hot;		//æ˜¯å¦æ˜¯ä¸»åŠ›åˆçº¦
-			bool	_exright;	//æ˜¯å¦æ˜¯å¤æƒä»£ç ï¼Œå¦‚SH600000Q
+			bool	_hot;		//ÊÇ·ñÊÇÖ÷Á¦ºÏÔ¼
+			bool	_exright;	//ÊÇ·ñÊÇ¸´È¨´úÂë£¬ÈçSH600000Q
 		};
 
 		_CodeInfo()
@@ -42,7 +42,7 @@ public:
 	static bool	isStdStkCode(const char* code)
 	{
 		using namespace boost::xpressive;
-		/* å®šä¹‰æ­£åˆ™è¡¨è¾¾å¼ */
+		/* ¶¨ÒåÕıÔò±í´ïÊ½ */
 		cregex reg_stk = cregex::compile("^[A-Z]+.([A-Z]+.)?\\d{6}Q?$");
 		return 	regex_match(code, reg_stk);
 	}
@@ -57,8 +57,8 @@ public:
 
 	static std::string stdStkCodeToStdCommID(const char* stdCode)
 	{
-		//å¦‚æœæ˜¯SSE.600000æ ¼å¼çš„ï¼Œé»˜è®¤ä¸ºSTKå“ç§
-		//å¦‚æœæ˜¯SSE.STK.600000æ ¼å¼çš„ï¼Œå°±è§£æå“ç§å‡ºæ¥
+		//Èç¹ûÊÇSSE.600000¸ñÊ½µÄ£¬Ä¬ÈÏÎªSTKÆ·ÖÖ
+		//Èç¹ûÊÇSSE.STK.600000¸ñÊ½µÄ£¬¾Í½âÎöÆ·ÖÖ³öÀ´
 		StringVector ay = StrUtil::split(stdCode, ".");
 		std::string str = ay[0];
 		str += ".";
@@ -70,8 +70,8 @@ public:
 	}
 
 	/*
-	 *	ä»åŸºç¡€åˆçº¦ä»£ç æå–åŸºç¡€å“ç§ä»£ç 
-	 *	å¦‚ag1912 -> ag
+	 *	´Ó»ù´¡ºÏÔ¼´úÂëÌáÈ¡»ù´¡Æ·ÖÖ´úÂë
+	 *	Èçag1912 -> ag
 	 */
 	static std::string bscFutCodeToBscCommID(const char* code)
 	{
@@ -87,8 +87,8 @@ public:
 	}
 
 	/*
-	 *	æ ‡å‡†åˆçº¦ä»£ç è½¬æ ‡å‡†å“ç§ä»£ç 
-	 *	å¦‚SHFE.ag.1912 -> SHFE.ag
+	 *	±ê×¼ºÏÔ¼´úÂë×ª±ê×¼Æ·ÖÖ´úÂë
+	 *	ÈçSHFE.ag.1912 -> SHFE.ag
 	 */
 	static std::string stdFutCodeToStdCommID(const char* stdCode)
 	{
@@ -100,8 +100,8 @@ public:
 	}
 
 	/*
-	 *	åŸºç¡€åˆçº¦ä»£ç è½¬æ ‡å‡†ç 
-	 *	å¦‚ag1912è½¬æˆå…¨ç 
+	 *	»ù´¡ºÏÔ¼´úÂë×ª±ê×¼Âë
+	 *	Èçag1912×ª³ÉÈ«Âë
 	 */
 	static std::string bscFutCodeToStdCode(const char* code, const char* exchg, bool isComm = false)
 	{
@@ -141,7 +141,7 @@ public:
 	static bool	isStdFutOptCode(const char* code)
 	{
 		using namespace boost::xpressive;
-		/* å®šä¹‰æ­£åˆ™è¡¨è¾¾å¼ */
+		/* ¶¨ÒåÕıÔò±í´ïÊ½ */
 		cregex reg_stk = cregex::compile("^[A-Z]+.[A-z]+\\d{4}.(C|P).\\d+$");	//CFFEX.IO2007.C.4000
 		return 	regex_match(code, reg_stk);
 	}
@@ -149,21 +149,21 @@ public:
 	static bool	isStdFutCode(const char* code)
 	{
 		using namespace boost::xpressive;
-		/* å®šä¹‰æ­£åˆ™è¡¨è¾¾å¼ */
+		/* ¶¨ÒåÕıÔò±í´ïÊ½ */
 		cregex reg_stk = cregex::compile("^[A-Z]+.[A-z]+.\\d{4}$");	//CFFEX.IO.2007
 		return 	regex_match(code, reg_stk);
 	}
 
 
 	/*
-	 *	æœŸè´§æœŸæƒä»£ç æ ‡å‡†åŒ–
-	 *	æ ‡å‡†æœŸè´§æœŸæƒä»£ç æ ¼å¼ä¸ºCFFEX.IO2008.C.4300
+	 *	ÆÚ»õÆÚÈ¨´úÂë±ê×¼»¯
+	 *	±ê×¼ÆÚ»õÆÚÈ¨´úÂë¸ñÊ½ÎªCFFEX.IO2008.C.4300
 	 */
 	static std::string bscFutOptCodeToStdCode(const char* code, const char* exchg)
 	{
 		using namespace boost::xpressive;
-		/* å®šä¹‰æ­£åˆ™è¡¨è¾¾å¼ */
-		cregex reg_stk = cregex::compile("^[A-Z|a-z]+\\d{4}-(C|P)-\\d+$");	//ä¸­é‡‘æ‰€ã€å¤§å•†æ‰€æ ¼å¼IO2013-C-4000
+		/* ¶¨ÒåÕıÔò±í´ïÊ½ */
+		cregex reg_stk = cregex::compile("^[A-Z|a-z]+\\d{4}-(C|P)-\\d+$");	//ÖĞ½ğËù¡¢´óÉÌËù¸ñÊ½IO2013-C-4000
 		bool bMatch = regex_match(code, reg_stk);
 		if(bMatch)
 		{
@@ -173,9 +173,9 @@ public:
 		}
 		else
 		{
-			//éƒ‘å•†æ‰€ä¸ŠæœŸæ‰€æœŸæƒä»£ç æ ¼å¼ZC2010P11600
+			//Ö£ÉÌËùÉÏÆÚËùÆÚÈ¨´úÂë¸ñÊ½ZC2010P11600
 
-			//å…ˆä»åå¾€å‰å®šä½åˆ°Pæˆ–Cçš„ä½ç½®
+			//ÏÈ´ÓºóÍùÇ°¶¨Î»µ½P»òCµÄÎ»ÖÃ
 			int idx = strlen(code) - 1;
 			for(; idx >= 0; idx--)
 			{
@@ -195,7 +195,7 @@ public:
 	}
 
 	/*
-	 *	é€šè¿‡å“ç§ä»£ç è·å–ä¸»åŠ›åˆçº¦ä»£ç 
+	 *	Í¨¹ıÆ·ÖÖ´úÂë»ñÈ¡Ö÷Á¦ºÏÔ¼´úÂë
 	 */
 	static std::string bscCodeToStdHotCode(const char* code, const char* exchg, bool isComm = false)
 	{
@@ -318,7 +318,7 @@ public:
 		{
 			//commID = "STK";
 			bool isSH = strcmp(codeInfo._exchg, "SSE") == 0;
-			bool isIdx = (isSH && ay[1][0] == '0') || (!isSH && strncmp(ay[1].c_str(), "39", 2) == 0);//æ˜¯å¦æ˜¯æŒ‡æ•°ï¼Œä¸Šäº¤æ‰€çš„æŒ‡æ•°ä»¥'0'å¼€å¤´ï¼Œæ·±äº¤æ‰€ä»¥'39'å¼€å¤´
+			bool isIdx = (isSH && ay[1][0] == '0') || (!isSH && strncmp(ay[1].c_str(), "39", 2) == 0);//ÊÇ·ñÊÇÖ¸Êı£¬ÉÏ½»ËùµÄÖ¸ÊıÒÔ'0'¿ªÍ·£¬Éî½»ËùÒÔ'39'¿ªÍ·
 			strcpy(codeInfo._product, isIdx ? "IDX" : "STK");
 			//bscCode = ay[1];
 			if (ay[1].back() == 'Q')

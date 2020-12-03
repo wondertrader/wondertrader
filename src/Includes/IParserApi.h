@@ -5,7 +5,7 @@
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief è¡Œæƒ…è§£ææ¨¡å—æ¥å£å®šä¹‰æ–‡ä»¶
+ * \brief ĞĞÇé½âÎöÄ£¿é½Ó¿Ú¶¨ÒåÎÄ¼ş
  */
 #pragma once
 
@@ -26,53 +26,53 @@ class WTSArray;
 class IBaseDataMgr;
 
 /*
- *	è¡Œæƒ…è§£ææ¨¡å—å›è°ƒæ¥å£
+ *	ĞĞÇé½âÎöÄ£¿é»Øµ÷½Ó¿Ú
  */
 class IParserApiListener
 {
 public:
 	/*
-	 *	å¤„ç†æ¨¡å—äº‹ä»¶
-	 *	@e	äº‹ä»¶ç±»å‹ï¼Œå¦‚è¿æ¥ã€æ–­å¼€ã€ç™»å½•ã€ç™»å‡º
-	 *	@ec	é”™è¯¯ç ï¼Œ0ä¸ºæ²¡æœ‰é”™è¯¯
+	 *	´¦ÀíÄ£¿éÊÂ¼ş
+	 *	@e	ÊÂ¼şÀàĞÍ£¬ÈçÁ¬½Ó¡¢¶Ï¿ª¡¢µÇÂ¼¡¢µÇ³ö
+	 *	@ec	´íÎóÂë£¬0ÎªÃ»ÓĞ´íÎó
 	 */
 	virtual void handleEvent(WTSParserEvent e, int32_t ec){}
 
 	/*
-	 *	å¤„ç†åˆçº¦åˆ—è¡¨
-	 *	@aySymbols	åˆçº¦åˆ—è¡¨ï¼ŒåŸºç¡€å…ƒç´ ä¸ºWTSContractInfoï¼ŒWTSArrayçš„ç”¨æ³•è¯·å‚è€ƒå®šä¹‰
+	 *	´¦ÀíºÏÔ¼ÁĞ±í
+	 *	@aySymbols	ºÏÔ¼ÁĞ±í£¬»ù´¡ÔªËØÎªWTSContractInfo£¬WTSArrayµÄÓÃ·¨Çë²Î¿¼¶¨Òå
 	 */
 	virtual void handleSymbolList(const WTSArray* aySymbols)		= 0;
 
 	/*
-	 *	å¤„ç†å®æ—¶è¡Œæƒ…
-	 *	@quote		å®æ—¶è¡Œæƒ…
-	 *	@bNeedSlice	æ˜¯å¦éœ€è¦åˆ‡ç‰‡ï¼Œå¦‚æœæ˜¯ä»å¤–éƒ¨æ¥å…¥çš„å¿«ç…§è¡Œæƒ…æ•°æ®ï¼Œåˆ™éœ€è¦åˆ‡ç‰‡ï¼Œå¦‚æœæ˜¯å†…éƒ¨å¹¿æ’­çš„å°±ä¸éœ€è¦åˆ‡ç‰‡
+	 *	´¦ÀíÊµÊ±ĞĞÇé
+	 *	@quote		ÊµÊ±ĞĞÇé
+	 *	@bNeedSlice	ÊÇ·ñĞèÒªÇĞÆ¬£¬Èç¹ûÊÇ´ÓÍâ²¿½ÓÈëµÄ¿ìÕÕĞĞÇéÊı¾İ£¬ÔòĞèÒªÇĞÆ¬£¬Èç¹ûÊÇÄÚ²¿¹ã²¥µÄ¾Í²»ĞèÒªÇĞÆ¬
 	 */
 	virtual void handleQuote(WTSTickData *quote, bool bNeedSlice)	= 0;
 
 	/*
-	 *	å¤„ç†å§”æ‰˜é˜Ÿåˆ—æ•°æ®ï¼ˆè‚¡ç¥¨level2ï¼‰
-	 *	@ordQueData	å§”æ‰˜å¯¹å’æ•°æ®
+	 *	´¦ÀíÎ¯ÍĞ¶ÓÁĞÊı¾İ£¨¹ÉÆ±level2£©
+	 *	@ordQueData	Î¯ÍĞ¶ÔÀİÊı¾İ
 	 */
 	virtual void handleOrderQueue(WTSOrdQueData* ordQueData){}
 
 	/*
-	 *	å¤„ç†é€ç¬”å§”æ‰˜æ•°æ®ï¼ˆè‚¡ç¥¨level2ï¼‰
-	 *	@ordDetailData	é€ç¬”å§”æ‰˜æ•°æ®
+	 *	´¦ÀíÖğ±ÊÎ¯ÍĞÊı¾İ£¨¹ÉÆ±level2£©
+	 *	@ordDetailData	Öğ±ÊÎ¯ÍĞÊı¾İ
 	 */
 	virtual void handleOrderDetail(WTSOrdDtlData* ordDetailData){}
 
 	/*
-	 *	å¤„ç†é€ç¬”æˆäº¤æ•°æ®
-	 *	@transData	é€ç¬”æˆäº¤æ•°æ®
+	 *	´¦ÀíÖğ±Ê³É½»Êı¾İ
+	 *	@transData	Öğ±Ê³É½»Êı¾İ
 	 */
 	virtual void handleTransaction(WTSTransData* transData){}
 
 	/*
-	 *	å¤„ç†è§£ææ¨¡å—çš„æ—¥å¿—
-	 *	@ll			æ—¥å¿—çº§åˆ«
-	 *	@message	æ—¥å¿—å†…å®¹
+	 *	´¦Àí½âÎöÄ£¿éµÄÈÕÖ¾
+	 *	@ll			ÈÕÖ¾¼¶±ğ
+	 *	@message	ÈÕÖ¾ÄÚÈİ
 	 */
 	virtual void handleParserLog(WTSLogLevel ll, const char* format, ...)	= 0;
 
@@ -81,7 +81,7 @@ public:
 };
 
 /*
- *	è¡Œæƒ…è§£ææ¨¡å—æ¥å£
+ *	ĞĞÇé½âÎöÄ£¿é½Ó¿Ú
  */
 class IParserApi
 {
@@ -90,54 +90,54 @@ public:
 
 public:
 	/*
-	 *	åˆå§‹åŒ–è§£ææ¨¡å—
-	 *	@config	æ¨¡å—é…ç½®
-	 *	è¿”å›å€¼	æ˜¯å¦åˆå§‹åŒ–æˆåŠŸ
+	 *	³õÊ¼»¯½âÎöÄ£¿é
+	 *	@config	Ä£¿éÅäÖÃ
+	 *	·µ»ØÖµ	ÊÇ·ñ³õÊ¼»¯³É¹¦
 	 */
 	virtual bool init(WTSParams* config)			= 0;
 
 	/*
-	 *	é‡Šæ”¾è§£ææ¨¡å—
-	 *	ç”¨äºé€€å‡ºæ—¶
+	 *	ÊÍ·Å½âÎöÄ£¿é
+	 *	ÓÃÓÚÍË³öÊ±
 	 */
 	virtual void release()							= 0;
 
 	/*
-	 *	å¼€å§‹è¿æ¥æœåŠ¡å™¨
-	 *	@è¿”å›å€¼	è¿æ¥å‘½ä»¤æ˜¯å¦å‘é€æˆåŠŸ
+	 *	¿ªÊ¼Á¬½Ó·şÎñÆ÷
+	 *	@·µ»ØÖµ	Á¬½ÓÃüÁîÊÇ·ñ·¢ËÍ³É¹¦
 	 */
 	virtual bool connect()							= 0;
 
 	/*
-	 *	æ–­å¼€è¿æ¥
-	 *	@è¿”å›å€¼	å‘½ä»¤æ˜¯å¦å‘é€æˆåŠŸ
+	 *	¶Ï¿ªÁ¬½Ó
+	 *	@·µ»ØÖµ	ÃüÁîÊÇ·ñ·¢ËÍ³É¹¦
 	 */
 	virtual bool disconnect()						= 0;
 
 	/*
-	 *	æ˜¯å¦å·²è¿æ¥
-	 *	@è¿”å›å€¼	æ˜¯å¦å·²è¿æ¥
+	 *	ÊÇ·ñÒÑÁ¬½Ó
+	 *	@·µ»ØÖµ	ÊÇ·ñÒÑÁ¬½Ó
 	 */
 	virtual bool isConnected()						= 0;
 
 	/*
-	 *	è®¢é˜…åˆçº¦åˆ—è¡¨
+	 *	¶©ÔÄºÏÔ¼ÁĞ±í
 	 */
 	virtual void subscribe(const CodeSet& setCodes)		= 0;
 
 	/*
-	 *	é€€è®¢åˆçº¦åˆ—è¡¨
+	 *	ÍË¶©ºÏÔ¼ÁĞ±í
 	 */
 	virtual void unsubscribe(const CodeSet& setCodes) = 0;
 
 	/*
-	 *	æ³¨å†Œå›è°ƒæ¥å£
+	 *	×¢²á»Øµ÷½Ó¿Ú
 	 */
 	virtual void registerListener(IParserApiListener* listener)		= 0;
 };
 
 NS_OTP_END
 
-//è·å–IDataMgrçš„å‡½æ•°æŒ‡é’ˆç±»å‹
+//»ñÈ¡IDataMgrµÄº¯ÊıÖ¸ÕëÀàĞÍ
 typedef otp::IParserApi* (*FuncCreateParser)();
 typedef void(*FuncDeleteParser)(otp::IParserApi* &parser);

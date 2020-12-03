@@ -63,13 +63,13 @@ bool DataManager::init(WTSVariant* params, WTSBaseDataMgr* bdMgr, StateMonitor* 
 		FuncCreateWriter pFuncCreateWriter = (FuncCreateWriter)DLLHelper::get_symbol(libParser, "createWriter");
 		if (pFuncCreateWriter == NULL)
 		{
-			WTSLogger::info("æ•°æ®è½åœ°æ¨¡å—åˆå§‹åŒ–å¤±è´¥,æ‰¾ä¸åˆ°å¯¹åº”çš„å…¥å£å‡½æ•°...");
+			WTSLogger::info("Êı¾İÂäµØÄ£¿é³õÊ¼»¯Ê§°Ü,ÕÒ²»µ½¶ÔÓ¦µÄÈë¿Úº¯Êı...");
 		}
 
 		FuncDeleteWriter pFuncDeleteWriter = (FuncDeleteWriter)DLLHelper::get_symbol(libParser, "deleteWriter");
 		if (pFuncDeleteWriter == NULL)
 		{
-			WTSLogger::info("æ•°æ®è½åœ°æ¨¡å—åˆå§‹åŒ–å¤±è´¥,æ‰¾ä¸åˆ°å¯¹åº”çš„å…¥å£å‡½æ•°...");
+			WTSLogger::info("Êı¾İÂäµØÄ£¿é³õÊ¼»¯Ê§°Ü,ÕÒ²»µ½¶ÔÓ¦µÄÈë¿Úº¯Êı...");
 		}
 
 		if (pFuncCreateWriter && pFuncDeleteWriter)
@@ -81,7 +81,7 @@ bool DataManager::init(WTSVariant* params, WTSBaseDataMgr* bdMgr, StateMonitor* 
 	}
 	else
 	{
-		WTSLogger::info("æ•°æ®è½åœ°æ¨¡å—åˆå§‹åŒ–å¤±è´¥,åŠ è½½æ¨¡å—%så¤±è´¥...",  module.c_str());
+		WTSLogger::info("Êı¾İÂäµØÄ£¿é³õÊ¼»¯Ê§°Ü,¼ÓÔØÄ£¿é%sÊ§°Ü...",  module.c_str());
 	}
 
 	return _writer->init(params, this);

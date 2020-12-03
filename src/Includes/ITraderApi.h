@@ -5,7 +5,7 @@
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief äº¤æ˜“é€šé“å¯¹æ¥æ¥å£å®šä¹‰æ–‡ä»¶
+ * \brief ½»Ò×Í¨µÀ¶Ô½Ó½Ó¿Ú¶¨ÒåÎÄ¼ş
  */
 #pragma once
 #include <set>
@@ -35,7 +35,7 @@ typedef std::function<void()>	CommonExecuter;
 
 #pragma region "Stock Trading API definations"
 /*
- *	è‚¡ç¥¨äº¤æ˜“æ¥å£å›è°ƒ
+ *	¹ÉÆ±½»Ò×½Ó¿Ú»Øµ÷
  *	Added By Wesley @ 2020/05/06
  */
 class IStkTraderApiListener
@@ -44,10 +44,10 @@ class IStkTraderApiListener
 };
 
 /*
- *	è‚¡ç¥¨äº¤æ˜“æ¥å£
+ *	¹ÉÆ±½»Ò×½Ó¿Ú
  *	Added By Wesley @ 2020/05/06
- *	é¢„ç•™èµ·æ¥ä»¥åä½¿ç”¨ï¼Œå…ˆæŠŠæ¥å£çš„ç›¸äº’æ¡†æ¶æ­å»ºèµ·æ¥
- *	ä¸»è¦æä¾›èèµ„èåˆ¸ç­‰è‚¡ç¥¨ç‰¹æœ‰æ¥å£
+ *	Ô¤ÁôÆğÀ´ÒÔºóÊ¹ÓÃ£¬ÏÈ°Ñ½Ó¿ÚµÄÏà»¥¿ò¼Ü´î½¨ÆğÀ´
+ *	Ö÷ÒªÌá¹©ÈÚ×ÊÈÚÈ¯µÈ¹ÉÆ±ÌØÓĞ½Ó¿Ú
  */
 class IStkTraderApi
 {
@@ -56,7 +56,7 @@ class IStkTraderApi
 
 #pragma region "Option Trading API definations"
 /*
- *	æœŸæƒäº¤æ˜“æ¥å£å›è°ƒ
+ *	ÆÚÈ¨½»Ò×½Ó¿Ú»Øµ÷
  *	Added By Wesley @ 2020/05/06
  */
 class IOptTraderApiListener
@@ -65,10 +65,10 @@ class IOptTraderApiListener
 };
 
 /*
- *	æœŸæƒäº¤æ˜“æ¥å£
+ *	ÆÚÈ¨½»Ò×½Ó¿Ú
  *	Added By Wesley @ 2020/05/06
- *	é¢„ç•™èµ·æ¥ä»¥åä½¿ç”¨ï¼Œå…ˆæŠŠæ¥å£çš„ç›¸äº’æ¡†æ¶æ­å»ºèµ·æ¥
- *	ä¸»è¦æä¾›æŠ¥ä»·ã€è¡Œæƒç­‰æœŸæƒç‰¹æœ‰æ¥å£
+ *	Ô¤ÁôÆğÀ´ÒÔºóÊ¹ÓÃ£¬ÏÈ°Ñ½Ó¿ÚµÄÏà»¥¿ò¼Ü´î½¨ÆğÀ´
+ *	Ö÷ÒªÌá¹©±¨¼Û¡¢ĞĞÈ¨µÈÆÚÈ¨ÌØÓĞ½Ó¿Ú
  */
 class IOptTraderApi
 {
@@ -77,7 +77,7 @@ class IOptTraderApi
 #pragma endregion
 
 
-//å§”æ‰˜å›è°ƒæ¥å£
+//Î¯ÍĞ»Øµ÷½Ó¿Ú
 class ITraderApiListener
 {
 public:
@@ -104,7 +104,7 @@ public:
 	virtual void onTraderError(WTSError*	err){}
 };
 
-//ä¸‹å•æ¥å£ç®¡ç†æ¥å£
+//ÏÂµ¥½Ó¿Ú¹ÜÀí½Ó¿Ú
 class ITraderApi
 {
 public:
@@ -115,85 +115,85 @@ public:
 
 public:
 	/*
-	*	åˆå§‹åŒ–è§£æç®¡ç†å™¨
+	*	³õÊ¼»¯½âÎö¹ÜÀíÆ÷
 	*/
 	virtual bool init(WTSParams *params) = 0;
 
 	/*
-	*	é‡Šæ”¾è§£æç®¡ç†å™¨
+	*	ÊÍ·Å½âÎö¹ÜÀíÆ÷
 	*/
 	virtual void release() = 0;
 
 	/*
-	*	æ³¨å†Œå›è°ƒæ¥å£
+	*	×¢²á»Øµ÷½Ó¿Ú
 	*/
 	virtual void registerListener(ITraderApiListener *listener) = 0;
 
 
 	//////////////////////////////////////////////////////////////////////////
-	//ä¸šåŠ¡é€»è¾‘æ¥å£
+	//ÒµÎñÂß¼­½Ó¿Ú
 
 	/*
-	*	è¿æ¥æœåŠ¡å™¨
+	*	Á¬½Ó·şÎñÆ÷
 	*/
 	virtual void connect() = 0;
 
 	/*
-	*	æ–­å¼€è¿æ¥
+	*	¶Ï¿ªÁ¬½Ó
 	*/
 	virtual void disconnect() = 0;
 
 	virtual bool isConnected() = 0;
 
 	/*
-	*	ç”Ÿæˆå§”æ‰˜å•å·
+	*	Éú³ÉÎ¯ÍĞµ¥ºÅ
 	*/
 	virtual bool makeEntrustID(char* buffer, int length){ return false; }
 
 	/*
-	*	ç™»å½•æ¥å£
+	*	µÇÂ¼½Ó¿Ú
 	*/
 	virtual int login(const char* user, const char* pass, const char* productInfo) = 0;
 
 	/*
-	*	æ³¨é”€æ¥å£
+	*	×¢Ïú½Ó¿Ú
 	*/
 	virtual int logout() = 0;
 
 	/*
-	*	ä¸‹å•æ¥å£
-	*	entrust ä¸‹å•çš„å…·ä½“æ•°æ®ç»“æ„
+	*	ÏÂµ¥½Ó¿Ú
+	*	entrust ÏÂµ¥µÄ¾ßÌåÊı¾İ½á¹¹
 	*/
 	virtual int orderInsert(WTSEntrust* eutrust) = 0;
 
 	/*
-	*	è®¢å•æ“ä½œæ¥å£
-	*	action	æ“ä½œçš„å…·ä½“æ•°æ®ç»“æ„
+	*	¶©µ¥²Ù×÷½Ó¿Ú
+	*	action	²Ù×÷µÄ¾ßÌåÊı¾İ½á¹¹
 	*/
 	virtual int orderAction(WTSEntrustAction* action) = 0;
 
 	/*
-	*	æŸ¥è¯¢è´¦æˆ·ä¿¡æ¯
+	*	²éÑ¯ÕË»§ĞÅÏ¢
 	*/
 	virtual int queryAccount() = 0;
 
 	/*
-	*	æŸ¥è¯¢æŒä»“ä¿¡æ¯
+	*	²éÑ¯³Ö²ÖĞÅÏ¢
 	*/
 	virtual int queryPositions() = 0;
 
 	/*
-	*	æŸ¥è¯¢æ‰€æœ‰è®¢å•
+	*	²éÑ¯ËùÓĞ¶©µ¥
 	*/
 	virtual int queryOrders() = 0;
 
 	/*
-	*	æŸ¥è¯¢æˆäº¤æ˜ç»†
+	*	²éÑ¯³É½»Ã÷Ï¸
 	*/
 	virtual int	queryTrades() = 0;
 
 	/*
-	 *	æŸ¥è¯¢ç»“ç®—å•
+	 *	²éÑ¯½áËãµ¥
 	 */
 	virtual int querySettlement(uint32_t uDate){ return 0; }
 
@@ -201,6 +201,6 @@ public:
 
 NS_OTP_END
 
-//è·å–IDataMgrçš„å‡½æ•°æŒ‡é’ˆç±»å‹
+//»ñÈ¡IDataMgrµÄº¯ÊıÖ¸ÕëÀàĞÍ
 typedef otp::ITraderApi* (*FuncCreateTrader)();
 typedef void(*FuncDeleteTrader)(otp::ITraderApi* &trader);

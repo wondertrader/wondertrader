@@ -5,7 +5,7 @@
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief boostçš„å†…å­˜æ˜ å°„æ–‡ä»¶ç»„ä»¶çš„å°è£…ï¼Œæ–¹ä¾¿ä½¿ç”¨
+ * \brief boostµÄÄÚ´æÓ³ÉäÎÄ¼ş×é¼şµÄ·â×°£¬·½±ãÊ¹ÓÃ
  */
 #pragma once
 #include <boost/filesystem.hpp>
