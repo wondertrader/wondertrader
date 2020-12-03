@@ -5,7 +5,7 @@
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief WtæŒ‡æ ‡æ•°æ®å®šä¹‰æ–‡ä»¶
+ * \brief WtÖ¸±êÊı¾İ¶¨ÒåÎÄ¼ş
  */
 #pragma once
 #include <stdint.h>
@@ -25,7 +25,7 @@ typedef unsigned long	DWORD;
 NS_OTP_BEGIN
 
 //////////////////////////////////////////////////////////////////////////
-//çº¿å‹ç±»ï¼ŒæŒ‡æ ‡ç”¨åˆ°
+//ÏßĞÍÀà£¬Ö¸±êÓÃµ½
 class WTSLineInfo : public WTSObject
 {
 public:
@@ -56,7 +56,7 @@ protected:
 
 
 //////////////////////////////////////////////////////////////////////////
-//æŒ‡æ ‡å‚æ•°ç±»
+//Ö¸±ê²ÎÊıÀà
 class WTSExpressParams : public WTSObject
 {
 public:
@@ -97,7 +97,7 @@ protected:
 };
 
 //////////////////////////////////////////////////////////////////////////
-//æŒ‡æ ‡çº¿ç±»
+//Ö¸±êÏßÀà
 class WTSExpressLine : public WTSValueArray
 {
 public:
@@ -130,7 +130,7 @@ public:
 	}
 
 	/*
-	 *	è¯»å–æ•°å€¼æ•°ç»„çš„æ ¼å¼åŒ–å­—ç¬¦ä¸²
+	 *	¶ÁÈ¡ÊıÖµÊı×éµÄ¸ñÊ½»¯×Ö·û´®
 	 */
 	const char* getFormat()
 	{
@@ -145,7 +145,7 @@ public:
 	}
 
 	/*
-	 *	è¯»å–æ•°æ®çš„å°æ•°ç‚¹ä½æ•°
+	 *	¶ÁÈ¡Êı¾İµÄĞ¡ÊıµãÎ»Êı
 	 */
 	uint32_t	getDecimal(){return m_uDecimal;}
 
@@ -193,7 +193,7 @@ typedef vector<WTSExpressLine*>	WTSVecExpLines;
 
 
 //////////////////////////////////////////////////////////////////////////
-//æŒ‡æ ‡ç±»
+//Ö¸±êÀà
 class WTSExpressData : public WTSObject
 {
 public:
@@ -341,7 +341,7 @@ public:
 		{
 			WTSExpressLine* line = STATIC_CONVERT(*it, WTSExpressLine*);
 			bool bAbs = (line->getLineType() == WELT_VolStick || line->getLineType() == WELT_AStickLine);
-			if(bAbs)//åŸå› æ˜¯æˆäº¤é‡æŸ±ï¼Œæ˜¯ä»¥0å¼€å§‹ç»˜åˆ¶çš„
+			if(bAbs)//Ô­ÒòÊÇ³É½»Á¿Öù£¬ÊÇÒÔ0¿ªÊ¼»æÖÆµÄ
 				return 0;
 			double v = line->minvalue(head, tail, bAbs);
 			if (v == INVALID_DOUBLE)

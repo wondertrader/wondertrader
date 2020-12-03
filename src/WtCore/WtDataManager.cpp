@@ -62,14 +62,14 @@ bool WtDataManager::initStore(WTSVariant* cfg)
 	DllHandle hInst = DLLHelper::load_library(module.c_str());
 	if(hInst == NULL)
 	{
-		WTSLogger::error("æ•°æ®å­˜å‚¨æ¨¡å—%såŠ è½½å¤±è´¥", module.c_str());
+		WTSLogger::error("Êý¾Ý´æ´¢Ä£¿é%s¼ÓÔØÊ§°Ü", module.c_str());
 		return false;
 	}
 
 	FuncCreateDataReader funcCreator = (FuncCreateDataReader)DLLHelper::get_symbol(hInst, "createDataReader");
 	if(funcCreator == NULL)
 	{
-		WTSLogger::error("æ•°æ®å­˜å‚¨æ¨¡å—%såŠ è½½å¤±è´¥ï¼Œæ²¡æœ‰æ‰¾åˆ°æ­£ç¡®çš„å…¥å£å‡½æ•°", module);
+		WTSLogger::error("Êý¾Ý´æ´¢Ä£¿é%s¼ÓÔØÊ§°Ü£¬Ã»ÓÐÕÒµ½ÕýÈ·µÄÈë¿Úº¯Êý", module);
 		DLLHelper::free_library(hInst);
 		return false;
 	}
@@ -77,7 +77,7 @@ bool WtDataManager::initStore(WTSVariant* cfg)
 	_reader = funcCreator();
 	if(_reader == NULL)
 	{
-		WTSLogger::error("æ•°æ®å­˜å‚¨æ¨¡å—%så®žä¾‹åˆ›å»ºå¤±è´¥", module);
+		WTSLogger::error("Êý¾Ý´æ´¢Ä£¿é%sÊµÀý´´½¨Ê§°Ü", module);
 		DLLHelper::free_library(hInst);
 		return false;
 	}
@@ -164,13 +164,13 @@ void WtDataManager::on_bar(const char* code, WTSKlinePeriod period, WTSBarStruct
 
 	if(_subed_basic_bars.find(key_pattern) != _subed_basic_bars.end())
 	{
-		//å¦‚æžœæ˜¯åŸºç¡€å‘¨æœŸ, ç›´æŽ¥è§¦å‘on_baräº‹ä»¶
+		//Èç¹ûÊÇ»ù´¡ÖÜÆÚ, Ö±½Ó´¥·¢on_barÊÂ¼þ
 		//_engine->on_bar(code, speriod.c_str(), times, newBar);
-		//æ›´æ–°å®ŒKçº¿ä»¥åŽ, ç»Ÿä¸€é€šçŸ¥äº¤æ˜“å¼•æ“Ž
+		//¸üÐÂÍêKÏßÒÔºó, Í³Ò»Í¨Öª½»Ò×ÒýÇæ
 		_bar_notifies.push_back(NotifyItem({ code, speriod, times, newBar }));
 	}
 
-	//ç„¶åŽå†å¤„ç†éžåŸºç¡€å‘¨æœŸ
+	//È»ºóÔÙ´¦Àí·Ç»ù´¡ÖÜÆÚ
 	if (_bars_cache == NULL || _bars_cache->size() == 0)
 		return;
 	
@@ -187,12 +187,12 @@ void WtDataManager::on_bar(const char* code, WTSKlinePeriod period, WTSBarStruct
 			g_dataFact.updateKlineData(kData, newBar, sInfo);
 			if (kData->isClosed())
 			{
-				//å¦‚æžœåŸºç¡€å‘¨æœŸKçº¿çš„æ—¶é—´å’Œè‡ªå®šä¹‰å‘¨æœŸKçº¿çš„æ—¶é—´ä¸€è‡´, è¯´æ˜ŽKçº¿å…³é—­äº†
-				//è¿™é‡Œä¹Ÿè¦è§¦å‘on_baräº‹ä»¶
+				//Èç¹û»ù´¡ÖÜÆÚKÏßµÄÊ±¼äºÍ×Ô¶¨ÒåÖÜÆÚKÏßµÄÊ±¼äÒ»ÖÂ, ËµÃ÷KÏß¹Ø±ÕÁË
+				//ÕâÀïÒ²Òª´¥·¢on_barÊÂ¼þ
 				times *= kData->times();
 				WTSBarStruct* lastBar = kData->at(-1);
 				//_engine->on_bar(code, speriod.c_str(), times, lastBar);
-				//æ›´æ–°å®ŒKçº¿ä»¥åŽ, ç»Ÿä¸€é€šçŸ¥äº¤æ˜“å¼•æ“Ž
+				//¸üÐÂÍêKÏßÒÔºó, Í³Ò»Í¨Öª½»Ò×ÒýÇæ
 				_bar_notifies.push_back(NotifyItem({ code, speriod, times, lastBar }));
 			}
 		}
@@ -258,7 +258,7 @@ WTSKlineSlice* WtDataManager::get_kline_slice(const char* stdCode, WTSKlinePerio
 		return _reader->readKlineSlice(stdCode, period, count, etime);
 	}
 
-	//åªæœ‰éžåŸºç¡€å‘¨æœŸçš„ä¼šè¿›åˆ°ä¸‹é¢çš„æ­¥éª¤
+	//Ö»ÓÐ·Ç»ù´¡ÖÜÆÚµÄ»á½øµ½ÏÂÃæµÄ²½Öè
 	WTSSessionInfo* sInfo = _engine->get_session_info(stdCode, true);
 
 	if (_bars_cache == NULL)
@@ -267,7 +267,7 @@ WTSKlineSlice* WtDataManager::get_kline_slice(const char* stdCode, WTSKlinePerio
 	key = StrUtil::printf("%s-%u-%u", stdCode, period, times);
 
 	WTSKlineData* kData = (WTSKlineData*)_bars_cache->get(key);
-	//å¦‚æžœç¼“å­˜é‡Œçš„Kçº¿æ¡æ•°å¤§äºŽè¯·æ±‚çš„æ¡æ•°, åˆ™ç›´æŽ¥è¿”å›ž
+	//Èç¹û»º´æÀïµÄKÏßÌõÊý´óÓÚÇëÇóµÄÌõÊý, ÔòÖ±½Ó·µ»Ø
 	if (kData == NULL || kData->size() < count)
 	{
 		uint32_t realCount = count*times + times;

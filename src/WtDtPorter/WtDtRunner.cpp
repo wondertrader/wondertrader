@@ -51,36 +51,36 @@ void WtDtRunner::initialize(const char* cfgFile, const char* logCfg, const char*
 	WTSVariant* config = WTSVariant::createObject();
 	jsonToVariant(document, config);
 
-	//åŸºç¡€æ•°æ®æ–‡ä»¶
+	//»ù´¡Êı¾İÎÄ¼ş
 	WTSVariant* cfgBF = config->get("basefiles");
 	if (cfgBF->get("session"))
 	{
 		m_baseDataMgr.loadSessions(cfgBF->getCString("session"));
-		WTSLogger::info("äº¤æ˜“æ—¶é—´æ¨¡æ¿åŠ è½½å®Œæˆ");
+		WTSLogger::info("½»Ò×Ê±¼äÄ£°å¼ÓÔØÍê³É");
 	}
 
 	if (cfgBF->get("commodity"))
 	{
 		m_baseDataMgr.loadCommodities(cfgBF->getCString("commodity"));
-		WTSLogger::info("å“ç§åˆ—è¡¨åŠ è½½å®Œæˆ");
+		WTSLogger::info("Æ·ÖÖÁĞ±í¼ÓÔØÍê³É");
 	}
 
 	if (cfgBF->get("contract"))
 	{
 		m_baseDataMgr.loadContracts(cfgBF->getCString("contract"));
-		WTSLogger::info("åˆçº¦åˆ—è¡¨åŠ è½½å®Œæˆ");
+		WTSLogger::info("ºÏÔ¼ÁĞ±í¼ÓÔØÍê³É");
 	}
 
 	if (cfgBF->get("holiday"))
 	{
 		m_baseDataMgr.loadHolidays(cfgBF->getCString("holiday"));
-		WTSLogger::info("èŠ‚å‡æ—¥æ¨¡æ¿åŠ è½½å®Œæˆ");
+		WTSLogger::info("½Ú¼ÙÈÕÄ£°å¼ÓÔØÍê³É");
 	}
 
 	if (cfgBF->get("hot"))
 	{
 		m_hotMgr.loadHots(cfgBF->getCString("hot"));
-		WTSLogger::info("ä¸»åŠ›åˆ‡æ¢è¡¨åŠ è½½å®Œæˆ");
+		WTSLogger::info("Ö÷Á¦ÇĞ»»±í¼ÓÔØÍê³É");
 	}
 
 	m_udpCaster.init(config->get("broadcaster"), &m_baseDataMgr, &m_dataMgr);
@@ -120,13 +120,13 @@ void WtDtRunner::initParsers(WTSVariant* cfg)
 			FuncCreateParser pFuncCreateParser = (FuncCreateParser)DLLHelper::get_symbol(libParser, "createParser");
 			if (pFuncCreateParser == NULL)
 			{
-				WTSLogger::info("è¡Œæƒ…æ¨¡å—åˆå§‹åŒ–å¤±è´¥,æ‰¾ä¸åˆ°å¯¹åº”çš„å…¥å£å‡½æ•°...");
+				WTSLogger::info("ĞĞÇéÄ£¿é³õÊ¼»¯Ê§°Ü,ÕÒ²»µ½¶ÔÓ¦µÄÈë¿Úº¯Êı...");
 			}
 
 			FuncDeleteParser pFuncDeleteParser = (FuncDeleteParser)DLLHelper::get_symbol(libParser, "deleteParser");
 			if (pFuncDeleteParser == NULL)
 			{
-				WTSLogger::info("è¡Œæƒ…æ¨¡å—åˆå§‹åŒ–å¤±è´¥,æ‰¾ä¸åˆ°å¯¹åº”çš„å…¥å£å‡½æ•°...");
+				WTSLogger::info("ĞĞÇéÄ£¿é³õÊ¼»¯Ê§°Ü,ÕÒ²»µ½¶ÔÓ¦µÄÈë¿Úº¯Êı...");
 			}
 
 			if (pFuncCreateParser && pFuncDeleteParser)
@@ -142,9 +142,9 @@ void WtDtRunner::initParsers(WTSVariant* cfg)
 		}
 		else
 		{
-			WTSLogger::info("è¡Œæƒ…æ¨¡å—åˆå§‹åŒ–å¤±è´¥,åŠ è½½æ¨¡å—%så¤±è´¥...", module.c_str());
+			WTSLogger::info("ĞĞÇéÄ£¿é³õÊ¼»¯Ê§°Ü,¼ÓÔØÄ£¿é%sÊ§°Ü...", module.c_str());
 		}
 	}
 
-	WTSLogger::info("ä¸€å…±åŠ è½½%uä¸ªParser", ParserAdapterMgr::size());
+	WTSLogger::info("Ò»¹²¼ÓÔØ%u¸öParser", ParserAdapterMgr::size());
 }

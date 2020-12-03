@@ -28,7 +28,7 @@ void ExpCtaContext::on_init()
 {
 	CtaStraBaseCtx::on_init();
 
-	//å‘å¤–éƒ¨å›è°ƒ
+	//ÏòÍâ²¿»Øµ÷
 	getRunner().ctx_on_init(_context_id, ET_CTA);
 }
 
@@ -49,7 +49,7 @@ void ExpCtaContext::on_tick_updated(const char* stdCode, WTSTickData* newTick)
 
 void ExpCtaContext::on_bar_close(const char* stdCode, const char* period, WTSBarStruct* newBar)
 {
-	//è¦å‘å¤–éƒ¨å›è°ƒ
+	//ÒªÏòÍâ²¿»Øµ÷
 	getRunner().ctx_on_bar(_context_id, stdCode, period, newBar, ET_CTA);
 }
 

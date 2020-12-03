@@ -369,8 +369,8 @@ bool WTSHotMgr::splitHotSecions(const char* exchg, const char* pid, uint32_t sDt
 		}
 		else if(leftDate < curDate)
 		{
-			//å¦‚æžœå¼€å§‹æ—¥æœŸå°äºŽå½“å‰åˆ‡æ¢çš„æ—¥æœŸï¼Œåˆ™æ·»åŠ ä¸€æ®µ
-			if(strlen(hotItem->from()) > 0)//è¿™é‡Œfromä¸ºç©ºï¼Œä¸»è¦æ˜¯ç¬¬ä¸€æ¡è§„åˆ™ï¼Œå¦‚æžœçœŸçš„é‡åˆ°è¿™ç§æƒ…å†µï¼Œä¹Ÿæ²¡æœ‰å¤ªå¥½çš„åŠžæ³•ï¼Œåªèƒ½ä¸è¦è¿™ä¸€æ®µæ•°æ®äº†ï¼Œä¸€èˆ¬æƒ…å†µä¸‹æ˜¯å¤Ÿçš„
+			//Èç¹û¿ªÊ¼ÈÕÆÚÐ¡ÓÚµ±Ç°ÇÐ»»µÄÈÕÆÚ£¬ÔòÌí¼ÓÒ»¶Î
+			if(strlen(hotItem->from()) > 0)//ÕâÀïfromÎª¿Õ£¬Ö÷ÒªÊÇµÚÒ»Ìõ¹æÔò£¬Èç¹ûÕæµÄÓöµ½ÕâÖÖÇé¿ö£¬Ò²Ã»ÓÐÌ«ºÃµÄ°ì·¨£¬Ö»ÄÜ²»ÒªÕâÒ»¶ÎÊý¾ÝÁË£¬Ò»°ãÇé¿öÏÂÊÇ¹»µÄ
 			{
 				//sections[hotItem->from()] = HotSection(leftDate, TimeUtils::getNextDate(curDate, -1));
 				sections.push_back(HotSection(hotItem->from(), leftDate, TimeUtils::getNextDate(curDate, -1)));

@@ -215,7 +215,7 @@ void ParserCTP::OnFrontConnected()
 {
 	if(m_parserSink)
 	{
-		m_parserSink->handleParserLog(LL_INFO, "[CTPParser]CTPè¡Œæƒ…æœåŠ¡å·²è¿žæŽ¥");
+		m_parserSink->handleParserLog(LL_INFO, "[CTPParser]CTPÐÐÇé·þÎñÒÑÁ¬½Ó");
 		m_parserSink->handleEvent(WPE_Connect, 0);
 	}
 
@@ -233,7 +233,7 @@ void ParserCTP::OnRspUserLogin( CThostFtdcRspUserLoginField *pRspUserLogin, CTho
 			m_parserSink->handleEvent(WPE_Login, 0);
 		}
 
-		//è®¢é˜…è¡Œæƒ…æ•°æ®
+		//¶©ÔÄÐÐÇéÊý¾Ý
 		SubscribeMarketData();
 	}
 }
@@ -250,7 +250,7 @@ void ParserCTP::OnFrontDisconnected( int nReason )
 {
 	if(m_parserSink)
 	{
-		m_parserSink->handleParserLog(LL_ERROR, StrUtil::printf("[CTPParser]CTPè¡Œæƒ…æœåŠ¡è¿žæŽ¥å·²æ–­å¼€,åŽŸå› : %d...", nReason).c_str());
+		m_parserSink->handleParserLog(LL_ERROR, StrUtil::printf("[CTPParser]CTPÐÐÇé·þÎñÁ¬½ÓÒÑ¶Ï¿ª,Ô­Òò: %d...", nReason).c_str());
 		m_parserSink->handleEvent(WPE_Close, 0);
 	}
 }
@@ -273,14 +273,14 @@ void ParserCTP::OnRtnDepthMarketData( CThostFtdcDepthMarketDataField *pDepthMark
 
 	if (actDate == m_uTradingDate && actHour >= 20)
 	{
-		//è¿™æ ·çš„æ—¶é—´æ˜¯æœ‰é—®é¢˜ï¼Œå› ä¸ºå¤œç›˜æ—¶å‘ç”Ÿæ—¥æœŸä¸å¯èƒ½ç­‰äºŽäº¤æ˜“æ—¥
-		//è¿™å°±éœ€è¦æ‰‹åŠ¨è®¾ç½®ä¸€ä¸‹
+		//ÕâÑùµÄÊ±¼äÊÇÓÐÎÊÌâ£¬ÒòÎªÒ¹ÅÌÊ±·¢ÉúÈÕÆÚ²»¿ÉÄÜµÈÓÚ½»Ò×ÈÕ
+		//Õâ¾ÍÐèÒªÊÖ¶¯ÉèÖÃÒ»ÏÂ
 		uint32_t curDate, curTime;
 		TimeUtils::getDateTime(curDate, curTime);
 		uint32_t curHour = curTime / 10000000;
 
-		//æ—©ä¸Šå¯åŠ¨ä»¥åŽï¼Œä¼šæ”¶åˆ°æ˜¨æ™š12ç‚¹ä»¥å‰æ”¶ç›˜çš„è¡Œæƒ…ï¼Œè¿™ä¸ªæ—¶å€™å¯èƒ½ä¼šæœ‰å‘ç”Ÿæ—¥æœŸ=äº¤æ˜“æ—¥çš„æƒ…å†µå‡ºçŽ°
-		//è¿™ç¬”æ•°æ®ç›´æŽ¥ä¸¢æŽ‰
+		//ÔçÉÏÆô¶¯ÒÔºó£¬»áÊÕµ½×òÍí12µãÒÔÇ°ÊÕÅÌµÄÐÐÇé£¬Õâ¸öÊ±ºò¿ÉÄÜ»áÓÐ·¢ÉúÈÕÆÚ=½»Ò×ÈÕµÄÇé¿ö³öÏÖ
+		//Õâ±ÊÊý¾ÝÖ±½Ó¶ªµô
 		if (curHour >= 3 && curHour < 9)
 			return;
 
@@ -288,12 +288,12 @@ void ParserCTP::OnRtnDepthMarketData( CThostFtdcDepthMarketDataField *pDepthMark
 
 		if (actHour == 23 && curHour == 0)
 		{
-			//è¡Œæƒ…æ—¶é—´æ…¢äºŽç³»ç»Ÿæ—¶é—´
+			//ÐÐÇéÊ±¼äÂýÓÚÏµÍ³Ê±¼ä
 			actDate = TimeUtils::getNextDate(curDate, -1);
 		}
 		else if (actHour == 0 && curHour == 23)
 		{
-			//ç³»ç»Ÿæ—¶é—´æ…¢äºŽè¡Œæƒ…æ—¶é—´
+			//ÏµÍ³Ê±¼äÂýÓÚÐÐÇéÊ±¼ä
 			actDate = TimeUtils::getNextDate(curDate, 1);
 		}
 	}
@@ -340,28 +340,28 @@ void ParserCTP::OnRtnDepthMarketData( CThostFtdcDepthMarketDataField *pDepthMark
 	quote.pre_settle = checkValid(pDepthMarketData->PreSettlementPrice);
 	quote.pre_interest = (uint32_t)pDepthMarketData->PreOpenInterest;
 
-	//å§”å–ä»·æ ¼
+	//Î¯Âô¼Û¸ñ
 	quote.ask_prices[0] = checkValid(pDepthMarketData->AskPrice1);
 	quote.ask_prices[1] = checkValid(pDepthMarketData->AskPrice2);
 	quote.ask_prices[2] = checkValid(pDepthMarketData->AskPrice3);
 	quote.ask_prices[3] = checkValid(pDepthMarketData->AskPrice4);
 	quote.ask_prices[4] = checkValid(pDepthMarketData->AskPrice5);
 
-	//å§”ä¹°ä»·æ ¼
+	//Î¯Âò¼Û¸ñ
 	quote.bid_prices[0] = checkValid(pDepthMarketData->BidPrice1);
 	quote.bid_prices[1] = checkValid(pDepthMarketData->BidPrice2);
 	quote.bid_prices[2] = checkValid(pDepthMarketData->BidPrice3);
 	quote.bid_prices[3] = checkValid(pDepthMarketData->BidPrice4);
 	quote.bid_prices[4] = checkValid(pDepthMarketData->BidPrice5);
 
-	//å§”å–é‡
+	//Î¯ÂôÁ¿
 	quote.ask_qty[0] = pDepthMarketData->AskVolume1;
 	quote.ask_qty[1] = pDepthMarketData->AskVolume2;
 	quote.ask_qty[2] = pDepthMarketData->AskVolume3;
 	quote.ask_qty[3] = pDepthMarketData->AskVolume4;
 	quote.ask_qty[4] = pDepthMarketData->AskVolume5;
 
-	//å§”ä¹°é‡
+	//Î¯ÂòÁ¿
 	quote.bid_qty[0] = pDepthMarketData->BidVolume1;
 	quote.bid_qty[1] = pDepthMarketData->BidVolume2;
 	quote.bid_qty[2] = pDepthMarketData->BidVolume3;
@@ -379,19 +379,19 @@ void ParserCTP::OnRspSubMarketData( CThostFtdcSpecificInstrumentField *pSpecific
 	if(!IsErrorRspInfo(pRspInfo))
 	{
 		//if(m_parserSink)
-		//	m_parserSink->handleParserLog(LL_INFO, StrUtil::printf("[CTPParser]å®žæ—¶è¡Œæƒ…è®¢é˜…æˆåŠŸ,åˆçº¦ä»£ç :%s", pSpecificInstrument->InstrumentID).c_str());
+		//	m_parserSink->handleParserLog(LL_INFO, StrUtil::printf("[CTPParser]ÊµÊ±ÐÐÇé¶©ÔÄ³É¹¦,ºÏÔ¼´úÂë:%s", pSpecificInstrument->InstrumentID).c_str());
 	}
 	else
 	{
 		//if(m_parserSink)
-		//	m_parserSink->handleParserLog(LL_INFO, StrUtil::printf("[CTPParser]å®žæ—¶è¡Œæƒ…è®¢é˜…å¤±è´¥,åˆçº¦ä»£ç :%s", pSpecificInstrument->InstrumentID).c_str());
+		//	m_parserSink->handleParserLog(LL_INFO, StrUtil::printf("[CTPParser]ÊµÊ±ÐÐÇé¶©ÔÄÊ§°Ü,ºÏÔ¼´úÂë:%s", pSpecificInstrument->InstrumentID).c_str());
 	}
 }
 
 void ParserCTP::OnHeartBeatWarning( int nTimeLapse )
 {
 	if(m_parserSink)
-		m_parserSink->handleParserLog(LL_INFO, StrUtil::printf("[CTPParser]å¿ƒè·³åŒ…, æ—¶é•¿: %d...", nTimeLapse).c_str());
+		m_parserSink->handleParserLog(LL_INFO, StrUtil::printf("[CTPParser]ÐÄÌø°ü, Ê±³¤: %d...", nTimeLapse).c_str());
 }
 
 void ParserCTP::ReqUserLogin()
@@ -410,7 +410,7 @@ void ParserCTP::ReqUserLogin()
 	if(iResult != 0)
 	{
 		if(m_parserSink)
-			m_parserSink->handleParserLog(LL_ERROR, StrUtil::printf("[CTPParser]CTP ç™»å½•è¯·æ±‚å‘é€å¤±è´¥, é”™è¯¯ç :%d", iResult).c_str());
+			m_parserSink->handleParserLog(LL_ERROR, StrUtil::printf("[CTPParser]CTP µÇÂ¼ÇëÇó·¢ËÍÊ§°Ü, ´íÎóÂë:%d", iResult).c_str());
 	}
 }
 
@@ -418,7 +418,7 @@ void ParserCTP::SubscribeMarketData()
 {
 	CodeSet codeFilter = m_filterSubs;
 	if(codeFilter.empty())
-	{//å¦‚æžœè®¢é˜…ç¤¼åŒ…åªç©ºçš„,åˆ™å–å‡ºå…¨éƒ¨åˆçº¦åˆ—è¡¨
+	{//Èç¹û¶©ÔÄÀñ°üÖ»¿ÕµÄ,ÔòÈ¡³öÈ«²¿ºÏÔ¼ÁÐ±í
 		return;
 	}
 
@@ -439,12 +439,12 @@ void ParserCTP::SubscribeMarketData()
 		if(iResult != 0)
 		{
 			if(m_parserSink)
-				m_parserSink->handleParserLog(LL_ERROR, StrUtil::printf("[CTPParser]CTP è¡Œæƒ…è®¢é˜…è¯·æ±‚å‘é€å¤±è´¥, é”™è¯¯ç :%d", iResult).c_str());
+				m_parserSink->handleParserLog(LL_ERROR, StrUtil::printf("[CTPParser]CTP ÐÐÇé¶©ÔÄÇëÇó·¢ËÍÊ§°Ü, ´íÎóÂë:%d", iResult).c_str());
 		}
 		else
 		{
 			if(m_parserSink)
-				m_parserSink->handleParserLog(LL_INFO, StrUtil::printf("[CTPParser]ä¸€å…±è®¢é˜… %d ä¸ªåˆçº¦è¡Œæƒ…", nCount).c_str());
+				m_parserSink->handleParserLog(LL_INFO, StrUtil::printf("[CTPParser]Ò»¹²¶©ÔÄ %d ¸öºÏÔ¼ÐÐÇé", nCount).c_str());
 		}
 	}
 	codeFilter.clear();
@@ -482,12 +482,12 @@ void ParserCTP::subscribe(const CodeSet &vecSymbols)
 			if(iResult != 0)
 			{
 				if(m_parserSink)
-					m_parserSink->handleParserLog(LL_ERROR, StrUtil::printf("[CTPParser]CTP è¡Œæƒ…è®¢é˜…è¯·æ±‚å‘é€å¤±è´¥, é”™è¯¯ç :%d", iResult).c_str());
+					m_parserSink->handleParserLog(LL_ERROR, StrUtil::printf("[CTPParser]CTP ÐÐÇé¶©ÔÄÇëÇó·¢ËÍÊ§°Ü, ´íÎóÂë:%d", iResult).c_str());
 			}
 			else
 			{
 				if(m_parserSink)
-					m_parserSink->handleParserLog(LL_INFO, StrUtil::printf("[CTPParser]ä¸€å…±è®¢é˜… %d ä¸ªåˆçº¦è¡Œæƒ…", nCount).c_str());
+					m_parserSink->handleParserLog(LL_INFO, StrUtil::printf("[CTPParser]Ò»¹²¶©ÔÄ %d ¸öºÏÔ¼ÐÐÇé", nCount).c_str());
 			}
 		}
 	}

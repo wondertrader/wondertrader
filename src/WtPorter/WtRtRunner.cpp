@@ -252,62 +252,62 @@ bool WtRtRunner::config(const char* cfgFile)
 	_config = WTSVariant::createObject();
 	jsonToVariant(document, _config);
 
-	//åŸºç¡€æ•°æ®æ–‡ä»¶
+	//»ù´¡Êı¾İÎÄ¼ş
 	WTSVariant* cfgBF = _config->get("basefiles");
 	if (cfgBF->get("session"))
 	{
 		_bd_mgr.loadSessions(cfgBF->getCString("session"));
-		WTSLogger::info("äº¤æ˜“æ—¶é—´æ¨¡æ¿åŠ è½½å®Œæˆ");
+		WTSLogger::info("½»Ò×Ê±¼äÄ£°å¼ÓÔØÍê³É");
 	}
 
 	if (cfgBF->get("commodity"))
 	{
 		_bd_mgr.loadCommodities(cfgBF->getCString("commodity"));
-		WTSLogger::info("å“ç§åˆ—è¡¨åŠ è½½å®Œæˆ");
+		WTSLogger::info("Æ·ÖÖÁĞ±í¼ÓÔØÍê³É");
 	}
 
 	if (cfgBF->get("contract"))
 	{
 		_bd_mgr.loadContracts(cfgBF->getCString("contract"));
-		WTSLogger::info("åˆçº¦åˆ—è¡¨åŠ è½½å®Œæˆ");
+		WTSLogger::info("ºÏÔ¼ÁĞ±í¼ÓÔØÍê³É");
 	}
 
 	if (cfgBF->get("holiday"))
 	{
 		_bd_mgr.loadHolidays(cfgBF->getCString("holiday"));
-		WTSLogger::info("èŠ‚å‡æ—¥æ¨¡æ¿åŠ è½½å®Œæˆ");
+		WTSLogger::info("½Ú¼ÙÈÕÄ£°å¼ÓÔØÍê³É");
 	}
 
 	if (cfgBF->get("hot"))
 	{
 		_hot_mgr.loadHots(cfgBF->getCString("hot"));
-		WTSLogger::info("ä¸»åŠ›åˆ‡æ¢è¡¨åŠ è½½å®Œæˆ");
+		WTSLogger::info("Ö÷Á¦ÇĞ»»±í¼ÓÔØÍê³É");
 	}
 
-	//åˆå§‹åŒ–è¿è¡Œç¯å¢ƒ
+	//³õÊ¼»¯ÔËĞĞ»·¾³
 	initEngine();
 
-	//åˆå§‹åŒ–æ•°æ®ç®¡ç†
+	//³õÊ¼»¯Êı¾İ¹ÜÀí
 	initDataMgr();
 
-	//åˆå§‹åŒ–å¼€å¹³ç­–ç•¥
+	//³õÊ¼»¯¿ªÆ½²ßÂÔ
 	if (!initActionPolicy())
 		return false;
 
-	//åˆå§‹åŒ–è¡Œæƒ…é€šé“
+	//³õÊ¼»¯ĞĞÇéÍ¨µÀ
 	initParsers();
 
-	//åˆå§‹åŒ–äº¤æ˜“é€šé“
+	//³õÊ¼»¯½»Ò×Í¨µÀ
 	initTraders();
 
-	//åˆå§‹åŒ–äº‹ä»¶æ¨é€å™¨
+	//³õÊ¼»¯ÊÂ¼şÍÆËÍÆ÷
 	initEvtNotifier();
 
-	//å¦‚æœä¸æ˜¯é«˜é¢‘å¼•æ“ï¼Œåˆ™éœ€è¦é…ç½®æ‰§è¡Œæ¨¡å—
+	//Èç¹û²»ÊÇ¸ßÆµÒıÇæ£¬ÔòĞèÒªÅäÖÃÖ´ĞĞÄ£¿é
 	if (!_is_hft)
 		initExecuters();
 
-	//è¿™é‡Œæœ¬æ¥åº”è¯¥æœ‰ï¼Œä½†æ˜¯å¯¹äºpyéƒ¨åˆ†ï¼Œå°±ä¸è¦è¿™ä¸ªäº†
+	//ÕâÀï±¾À´Ó¦¸ÃÓĞ£¬µ«ÊÇ¶ÔÓÚpy²¿·Ö£¬¾Í²»ÒªÕâ¸öÁË
 	//initStrategies();
 
 	if (!_is_hft)
@@ -442,19 +442,19 @@ bool WtRtRunner::initEngine()
 
 	if (_is_hft)
 	{
-		WTSLogger::info("äº¤æ˜“ç¯å¢ƒåˆå§‹åŒ–å®Œæˆï¼Œäº¤æ˜“å¼•æ“ï¼šHFT");
+		WTSLogger::info("½»Ò×»·¾³³õÊ¼»¯Íê³É£¬½»Ò×ÒıÇæ£ºHFT");
 		_hft_engine.init(cfg, &_bd_mgr, &_data_mgr, &_hot_mgr);
 		_engine = &_hft_engine;
 	}
 	else if (_is_sel)
 	{
-		WTSLogger::info("äº¤æ˜“ç¯å¢ƒåˆå§‹åŒ–å®Œæˆï¼Œäº¤æ˜“å¼•æ“ï¼šSelStk");
+		WTSLogger::info("½»Ò×»·¾³³õÊ¼»¯Íê³É£¬½»Ò×ÒıÇæ£ºSelStk");
 		_sel_engine.init(cfg, &_bd_mgr, &_data_mgr, &_hot_mgr);
 		_engine = &_sel_engine;
 	}
 	else
 	{
-		WTSLogger::info("äº¤æ˜“ç¯å¢ƒåˆå§‹åŒ–å®Œæˆï¼Œäº¤æ˜“å¼•æ“ï¼šCTA");
+		WTSLogger::info("½»Ò×»·¾³³õÊ¼»¯Íê³É£¬½»Ò×ÒıÇæ£ºCTA");
 		_cta_engine.init(cfg, &_bd_mgr, &_data_mgr, &_hot_mgr);
 		_engine = &_cta_engine;
 	}
@@ -472,7 +472,7 @@ bool WtRtRunner::initDataMgr()
 
 	_data_mgr.init(cfg, _engine);
 
-	WTSLogger::info("æ•°æ®ç®¡ç†æ¨¡å—åˆå§‹åŒ–å®Œæˆ");
+	WTSLogger::info("Êı¾İ¹ÜÀíÄ£¿é³õÊ¼»¯Íê³É");
 	return true;
 }
 
@@ -499,7 +499,7 @@ bool WtRtRunner::initParsers()
 		count++;
 	}
 
-	WTSLogger::info("å…±åŠ è½½%uä¸ªè¡Œæƒ…é€šé“", count);
+	WTSLogger::info("¹²¼ÓÔØ%u¸öĞĞÇéÍ¨µÀ", count);
 
 	return true;
 }
@@ -510,7 +510,7 @@ bool WtRtRunner::initExecuters()
 	if (cfg == NULL || cfg->type() != WTSVariant::VT_Array)
 		return false;
 
-	//å…ˆåŠ è½½è‡ªå¸¦çš„æ‰§è¡Œå™¨å·¥å‚
+	//ÏÈ¼ÓÔØ×Ô´øµÄÖ´ĞĞÆ÷¹¤³§
 	std::string path = WtHelper::getInstDir() + "executer//";
 	_exe_factory.loadFactories(path.c_str());
 
@@ -548,7 +548,7 @@ bool WtRtRunner::initExecuters()
 		count++;
 	}
 
-	WTSLogger::info("å…±åŠ è½½%uä¸ªæ‰§è¡Œå™¨", count);
+	WTSLogger::info("¹²¼ÓÔØ%u¸öÖ´ĞĞÆ÷", count);
 
 	return true;
 }
@@ -586,7 +586,7 @@ bool WtRtRunner::initTraders()
 		count++;
 	}
 
-	WTSLogger::info("å…±åŠ è½½%uä¸ªäº¤æ˜“é€šé“", count);
+	WTSLogger::info("¹²¼ÓÔØ%u¸ö½»Ò×Í¨µÀ", count);
 
 	return true;
 }
@@ -611,7 +611,7 @@ bool WtRtRunner::initActionPolicy()
 		return false;
 
 	bool ret = _act_policy.init(action_file);
-	WTSLogger::info("å¼€å¹³ç­–ç•¥æ¨¡æ¿åˆå§‹åŒ–å®Œæˆ");
+	WTSLogger::info("¿ªÆ½²ßÂÔÄ£°å³õÊ¼»¯Íê³É");
 	return ret;
 }
 

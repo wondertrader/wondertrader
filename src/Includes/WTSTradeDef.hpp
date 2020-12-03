@@ -5,7 +5,7 @@
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief Wtäº¤æ˜“æ•°æ®å¯¹è±¡å®šä¹‰ï¼ŒåŒ…æ‹¬å§”æ‰˜ã€è®¢å•ã€æˆäº¤ã€æŒä»“ã€èµ„é‡‘ã€æŒä»“æ˜ç»†ç­‰æ•°æ®
+ * \brief Wt½»Ò×Êı¾İ¶ÔÏó¶¨Òå£¬°üÀ¨Î¯ÍĞ¡¢¶©µ¥¡¢³É½»¡¢³Ö²Ö¡¢×Ê½ğ¡¢³Ö²ÖÃ÷Ï¸µÈÊı¾İ
  */
 #pragma once
 #include "WTSObject.hpp"
@@ -19,7 +19,7 @@
 
 NS_OTP_BEGIN
 //////////////////////////////////////////////////////////////////////////
-//å§”æ‰˜æ•°æ®ç»“æ„ï¼Œç”¨æˆ·å®¢æˆ·ç«¯å‘æœåŠ¡ç«¯å‘èµ·
+//Î¯ÍĞÊı¾İ½á¹¹£¬ÓÃ»§¿Í»§¶ËÏò·şÎñ¶Ë·¢Æğ
 class WTSEntrust : public WTSObject
 {
 protected:
@@ -104,7 +104,7 @@ protected:
 
 
 //////////////////////////////////////////////////////////////////////////
-//å§”æ‰˜æ“ä½œï¼šæ’¤å•ã€æ”¹å•
+//Î¯ÍĞ²Ù×÷£º³·µ¥¡¢¸Äµ¥
 class WTSEntrustAction : public WTSObject
 {
 protected:
@@ -182,7 +182,7 @@ protected:
 };
 
 //////////////////////////////////////////////////////////////////////////
-//è®¢å•ä¿¡æ¯ï¼ŒæŸ¥çœ‹è®¢å•çŠ¶æ€å˜åŒ–ç­‰
+//¶©µ¥ĞÅÏ¢£¬²é¿´¶©µ¥×´Ì¬±ä»¯µÈ
 class WTSOrderInfo : public WTSEntrust
 {
 protected:
@@ -338,11 +338,11 @@ public:
 	inline const char* getUserTag() const{return m_strUserTag.c_str();}
 
 protected:
-	std::string	m_strExchg;		//å¸‚åœº
-	std::string m_strCode;			//ä»£ç 
-	std::string m_strTradeID;		//æˆäº¤å•å·
-	std::string	m_strRefOrder;		//æœ¬åœ°å§”æ‰˜åºåˆ—å·
-	std::string	m_strUserTag;		//ç”¨æˆ·æ ‡ç­¾
+	std::string	m_strExchg;		//ÊĞ³¡
+	std::string m_strCode;			//´úÂë
+	std::string m_strTradeID;		//³É½»µ¥ºÅ
+	std::string	m_strRefOrder;		//±¾µØÎ¯ÍĞĞòÁĞºÅ
+	std::string	m_strUserTag;		//ÓÃ»§±êÇ©
 
 	uint32_t	m_uTradeDate;
 	uint64_t	m_uTradeTime;
@@ -358,7 +358,7 @@ protected:
 };
 
 //////////////////////////////////////////////////////////////////////////
-//æŒä»“ä¿¡æ¯
+//³Ö²ÖĞÅÏ¢
 class WTSPositionItem : public WTSObject
 {
 public:
@@ -423,20 +423,20 @@ protected:
 	std::string		m_strCode;
 	std::string		m_strCurrency;
 
-	WTSDirectionType	m_direction;//å¤šç©ºæ–¹å‘
-	double		m_dPrePosition;		//æ˜¨ä»“
-	double		m_dNewPosition;		//ä»Šä»“
-	double		m_dAvailPrePos;		//å¯å¹³æ˜¨ä»“
-	double		m_dAvailNewPos;		//å¯å¹³ä»Šä»“
-	double		m_dTotalPosCost;	//æŒä»“æ€»æˆæœ¬
-	double		m_dMargin;			//å ç”¨ä¿è¯é‡‘
-	double		m_dAvgPrice;		//æŒä»“å‡ä»·
-	double		m_dDynProfit;		//æµ®åŠ¨ç›ˆäº
+	WTSDirectionType	m_direction;//¶à¿Õ·½Ïò
+	double		m_dPrePosition;		//×ò²Ö
+	double		m_dNewPosition;		//½ñ²Ö
+	double		m_dAvailPrePos;		//¿ÉÆ½×ò²Ö
+	double		m_dAvailNewPos;		//¿ÉÆ½½ñ²Ö
+	double		m_dTotalPosCost;	//³Ö²Ö×Ü³É±¾
+	double		m_dMargin;			//Õ¼ÓÃ±£Ö¤½ğ
+	double		m_dAvgPrice;		//³Ö²Ö¾ù¼Û
+	double		m_dDynProfit;		//¸¡¶¯Ó¯¿÷
 };
 
 
 //////////////////////////////////////////////////////////////////////////
-//æŒä»“æ˜ç»†
+//³Ö²ÖÃ÷Ï¸
 class WTSPositionDetail : public WTSObject
 {
 public:
@@ -508,7 +508,7 @@ protected:
 	std::string	m_strTradeID;
 	std::string m_strUserTag;
 
-	WTSDirectionType	m_direction;//å¤šç©ºæ–¹å‘
+	WTSDirectionType	m_direction;//¶à¿Õ·½Ïò
 	uint32_t	m_uOpenDate;
 	uint64_t	m_uOpenTime;
 	double		m_dVolumn;
@@ -523,7 +523,7 @@ protected:
 
 
 //////////////////////////////////////////////////////////////////////////
-//æŠ•èµ„è€…ä¿¡æ¯
+//Í¶×ÊÕßĞÅÏ¢
 class WTSInvestorInfo : public WTSObject
 {
 protected:
@@ -559,7 +559,7 @@ private:
 };
 
 //////////////////////////////////////////////////////////////////////////
-//è´¦æˆ·ä¿¡æ¯
+//ÕË»§ĞÅÏ¢
 class WTSAccountInfo : public WTSObject
 {
 protected:

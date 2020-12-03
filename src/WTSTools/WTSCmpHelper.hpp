@@ -5,7 +5,7 @@
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief 鏁版嵁鍘嬬缉杈呭姪绫伙紝鍒╃敤zstdlib鍘嬬缉
+ * \brief 数据压缩辅助类，利用zstdlib压缩
  */
 #pragma once
 #include <string>

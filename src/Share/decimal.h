@@ -5,7 +5,7 @@
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief 娴偣鏁拌緟鍔╃被锛屼富瑕佺敤浜庢诞鐐规暟鎹殑姣旇緝
+ * \brief 浮点数辅助类，主要用于浮点数据的比较
  */
 #pragma once
 #include <math.h>

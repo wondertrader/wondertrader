@@ -82,27 +82,27 @@ private:
 
 	typedef enum tagTaskPeriodType
 	{
-		TPT_None,		//ä¸é‡å¤
-		TPT_Minute = 4,	//åˆ†é’Ÿçº¿å‘¨æœŸ
-		TPT_Daily = 8,	//æ¯ä¸ªäº¤æ˜“æ—¥
-		TPT_Weekly,		//æ¯å‘¨ï¼Œé‡åˆ°èŠ‚å‡æ—¥çš„è¯è¦é¡ºå»¶
-		TPT_Monthly,	//æ¯æœˆï¼Œé‡åˆ°èŠ‚å‡æ—¥é¡ºå»¶
-		TPT_Yearly		//æ¯å¹´ï¼Œé‡åˆ°èŠ‚å‡æ—¥é¡ºå»¶
+		TPT_None,		//²»ÖØ¸´
+		TPT_Minute = 4,	//·ÖÖÓÏßÖÜÆÚ
+		TPT_Daily = 8,	//Ã¿¸ö½»Ò×ÈÕ
+		TPT_Weekly,		//Ã¿ÖÜ£¬Óöµ½½Ú¼ÙÈÕµÄ»°ÒªË³ÑÓ
+		TPT_Monthly,	//Ã¿ÔÂ£¬Óöµ½½Ú¼ÙÈÕË³ÑÓ
+		TPT_Yearly		//Ã¿Äê£¬Óöµ½½Ú¼ÙÈÕË³ÑÓ
 	}TaskPeriodType;
 
 	typedef struct _TaskInfo
 	{
 		uint32_t	_id;
-		char		_name[16];		//ä»»åŠ¡å
-		char		_trdtpl[16];	//äº¤æ˜“æ—¥æ¨¡æ¿
-		char		_session[16];	//äº¤æ˜“æ—¶é—´æ¨¡æ¿
-		uint32_t	_day;			//æ—¥æœŸï¼Œæ ¹æ®å‘¨æœŸå˜åŒ–ï¼Œæ¯æ—¥ä¸º0ï¼Œæ¯å‘¨ä¸º0~6ï¼Œå¯¹åº”å‘¨æ—¥åˆ°å‘¨å…­ï¼Œæ¯æœˆä¸º1~31ï¼Œæ¯å¹´ä¸º0101~1231
-		uint32_t	_time;			//æ—¶é—´ï¼Œç²¾ç¡®åˆ°åˆ†é’Ÿ
-		bool		_strict_time;	//æ˜¯å¦æ˜¯ä¸¥æ ¼æ—¶é—´ï¼Œä¸¥æ ¼æ—¶é—´å³åªæœ‰æ—¶é—´ç›¸ç­‰æ‰ä¼šæ‰§è¡Œï¼Œä¸æ˜¯ä¸¥æ ¼æ—¶é—´ï¼Œåˆ™å¤§äºç­‰äºè§¦å‘æ—¶é—´éƒ½ä¼šæ‰§è¡Œ
+		char		_name[16];		//ÈÎÎñÃû
+		char		_trdtpl[16];	//½»Ò×ÈÕÄ£°å
+		char		_session[16];	//½»Ò×Ê±¼äÄ£°å
+		uint32_t	_day;			//ÈÕÆÚ£¬¸ù¾İÖÜÆÚ±ä»¯£¬Ã¿ÈÕÎª0£¬Ã¿ÖÜÎª0~6£¬¶ÔÓ¦ÖÜÈÕµ½ÖÜÁù£¬Ã¿ÔÂÎª1~31£¬Ã¿ÄêÎª0101~1231
+		uint32_t	_time;			//Ê±¼ä£¬¾«È·µ½·ÖÖÓ
+		bool		_strict_time;	//ÊÇ·ñÊÇÑÏ¸ñÊ±¼ä£¬ÑÏ¸ñÊ±¼ä¼´Ö»ÓĞÊ±¼äÏàµÈ²Å»áÖ´ĞĞ£¬²»ÊÇÑÏ¸ñÊ±¼ä£¬Ôò´óÓÚµÈÓÚ´¥·¢Ê±¼ä¶¼»áÖ´ĞĞ
 
-		uint64_t	_last_exe_time;	//ä¸Šæ¬¡æ‰§è¡Œæ—¶é—´ï¼Œä¸»è¦ä¸ºäº†é˜²æ­¢é‡å¤æ‰§è¡Œ
+		uint64_t	_last_exe_time;	//ÉÏ´ÎÖ´ĞĞÊ±¼ä£¬Ö÷ÒªÎªÁË·ÀÖ¹ÖØ¸´Ö´ĞĞ
 
-		TaskPeriodType	_period;	//ä»»åŠ¡å‘¨æœŸ
+		TaskPeriodType	_period;	//ÈÎÎñÖÜÆÚ
 	} TaskInfo;
 
 	typedef std::shared_ptr<TaskInfo> TaskInfoPtr;
@@ -115,7 +115,7 @@ public:
 
 private:
 	/*
-	*	å°†å†å²æ•°æ®æ”¾å…¥ç¼“å­˜
+	*	½«ÀúÊ·Êı¾İ·ÅÈë»º´æ
 	*/
 	bool		cacheRawBarsFromBin(const std::string& key, const char* stdCode, WTSKlinePeriod period);
 
@@ -180,7 +180,7 @@ private:
 
 	std::string		_main_key;
 	bool			_tick_enabled;
-	std::map<std::string, WTSTickStruct>	_day_cache;	//æ¯æ—¥Tickç¼“å­˜,å½“tickå›æ”¾æœªå¼€æ”¾æ—¶ï¼Œä¼šç”¨åˆ°è¯¥ç¼“å­˜
+	std::map<std::string, WTSTickStruct>	_day_cache;	//Ã¿ÈÕTick»º´æ,µ±tick»Ø·ÅÎ´¿ª·ÅÊ±£¬»áÓÃµ½¸Ã»º´æ
 	std::map<std::string, std::string>		_ticker_keys;
 
 	uint32_t		_cur_date;
@@ -199,7 +199,7 @@ private:
 	uint64_t		_end_time;
 
 	//////////////////////////////////////////////////////////////////////////
-	//æ‰‹ç»­è´¹æ¨¡æ¿
+	//ÊÖĞø·ÑÄ£°å
 	typedef struct _FeeItem
 	{
 		double	_open;
@@ -224,11 +224,11 @@ private:
 	//
 	typedef std::unordered_set<uint32_t> SIDSet;
 	typedef std::unordered_map<std::string, SIDSet>	StraSubMap;
-	StraSubMap		_tick_sub_map;	//tickæ•°æ®è®¢é˜…è¡¨
+	StraSubMap		_tick_sub_map;	//tickÊı¾İ¶©ÔÄ±í
 
-	std::unordered_set<std::string>		_subed_raw_codes;	//tickè®¢é˜…è¡¨ï¼ˆçœŸå®ä»£ç æ¨¡å¼ï¼‰
+	std::unordered_set<std::string>		_subed_raw_codes;	//tick¶©ÔÄ±í£¨ÕæÊµ´úÂëÄ£Ê½£©
 
-	//é™¤æƒå› å­
+	//³ıÈ¨Òò×Ó
 	typedef struct _AdjFactor
 	{
 		uint32_t	_date;

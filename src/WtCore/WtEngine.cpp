@@ -110,7 +110,7 @@ void WtEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 {
 	_price_map[stdCode] = curTick->price();
 
-	//å…ˆæ£€æŸ¥æ˜¯å¦è¦ä¿¡å·è¦è§¦å‘
+	//ÏÈ¼ì²éÊÇ·ñÒªĞÅºÅÒª´¥·¢
 	{
 		auto it = _sig_map.find(stdCode);
 		if (it != _sig_map.end())
@@ -167,7 +167,7 @@ void WtEngine::update_fund_dynprofit()
 	WTSFundStruct& fundInfo = _port_fund->fundInfo();
 	if (fundInfo._last_date == _cur_tdate)
 	{
-		//ä¸Šæ¬¡ç»“ç®—æ—¥æœŸç­‰äºå½“å‰äº¤æ˜“æ—¥ï¼Œè¯´æ˜å·²ç»ç»“ç®—ï¼Œä¸å†æ›´æ–°äº†
+		//ÉÏ´Î½áËãÈÕÆÚµÈÓÚµ±Ç°½»Ò×ÈÕ£¬ËµÃ÷ÒÑ¾­½áËã£¬²»ÔÙ¸üĞÂÁË
 		return;
 	}
 
@@ -209,7 +209,7 @@ void WtEngine::update_fund_dynprofit()
 void WtEngine::writeRiskLog(const char* fmt, ...)
 {
 	char szBuf[2048] = { 0 };
-	uint32_t length = sprintf(szBuf, "[èµ„é‡‘é£æ§]");
+	uint32_t length = sprintf(szBuf, "[×Ê½ğ·ç¿Ø]");
 	strcat(szBuf, fmt);
 	va_list args;
 	va_start(args, fmt);
@@ -243,7 +243,7 @@ void WtEngine::setVolScale(double scale)
 	_risk_volscale = scale;
 	_risk_date = _cur_tdate;
 
-	WTSLogger::log2_raw("risk", LL_INFO, fmt::format("é£æ§ä»“ä½ç³»æ•°å·²æ”¹å˜: {} - > {}", oldScale, scale).c_str());
+	WTSLogger::log2_raw("risk", LL_INFO, fmt::format("·ç¿Ø²ÖÎ»ÏµÊıÒÑ¸Ä±ä: {} - > {}", oldScale, scale).c_str());
 
 	save_datas();
 }
@@ -262,7 +262,7 @@ void WtEngine::init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtDataManager* dataMgr
 	_data_mgr = dataMgr;
 	_hot_mgr = hotMgr;
 
-	WTSLogger::info("å¹³å°è¿è¡Œæ¨¡å¼: ç”Ÿäº§æ¨¡å¼");
+	WTSLogger::info("Æ½Ì¨ÔËĞĞÄ£Ê½: Éú²úÄ£Ê½");
 
 	_filter_file = cfg->getCString("filters");
 	load_filters();
@@ -280,7 +280,7 @@ void WtEngine::init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtDataManager* dataMgr
 
 void WtEngine::on_session_end()
 {
-	//èµ„é‡‘ç»“ç®—
+	//×Ê½ğ½áËã
 	WTSFundStruct& fundInfo = _port_fund->fundInfo();
 	if (fundInfo._last_date < _cur_tdate)
 	{
@@ -300,7 +300,7 @@ void WtEngine::on_session_end()
 			}
 		}
 
-		//å¯èƒ½è¿™é‡Œè¿˜éœ€è¦å†™ä¸€æ¡èµ„é‡‘è®°å½•
+		//¿ÉÄÜÕâÀï»¹ĞèÒªĞ´Ò»Ìõ×Ê½ğ¼ÇÂ¼
 		//date,predynbalance,prebalance,balance,closeprofit,dynprofit,fee,maxdynbalance,maxtime,mindynbalance,mintime,mdmaxbalance,mdmaxdate,mdminbalance,mdmindate
 		fund_log->write_file(StrUtil::printf("%u,%f,%f,%f,%f,%f,%f,%f,%u,%f,%u,%f,%u,%f,%u\n", 
 			_cur_tdate, fundInfo._predynbal, fundInfo._prebalance, fundInfo._balance, 
@@ -333,7 +333,7 @@ void WtEngine::save_datas()
 	rj::Document::AllocatorType &allocator = root.GetAllocator();
 
 	if (_port_fund != NULL)
-	{//ä¿å­˜èµ„é‡‘æ•°æ®
+	{//±£´æ×Ê½ğÊı¾İ
 		const WTSFundStruct& fundInfo = _port_fund->fundInfo();
 		rj::Value jFund(rj::kObjectType);
 		jFund.AddMember("predynbal", fundInfo._predynbal, allocator);
@@ -365,7 +365,7 @@ void WtEngine::save_datas()
 		root.AddMember("fund", jFund, allocator);
 	}
 
-	{//æŒä»“æ•°æ®ä¿å­˜
+	{//³Ö²ÖÊı¾İ±£´æ
 		rj::Value jPos(rj::kArrayType);
 
 		for (auto it = _pos_map.begin(); it != _pos_map.end(); it++)
@@ -405,7 +405,7 @@ void WtEngine::save_datas()
 		root.AddMember("positions", jPos, allocator);
 	}
 
-	//é£æ§å‚æ•°è®¾ç½®
+	//·ç¿Ø²ÎÊıÉèÖÃ
 	{
 		rj::Value jRisk(rj::kObjectType);
 
@@ -454,7 +454,7 @@ void WtEngine::load_datas()
 	if (root.HasParseError())
 		return;
 
-	//è¯»å–èµ„é‡‘
+	//¶ÁÈ¡×Ê½ğ
 	{
 		const rj::Value& jFund = root["fund"];
 		if (!jFund.IsNull() && jFund.IsObject())
@@ -482,7 +482,7 @@ void WtEngine::load_datas()
 		}
 	}
 
-	{//è¯»å–ä»“ä½
+	{//¶ÁÈ¡²ÖÎ»
 		double total_profit = 0;
 		double total_dynprofit = 0;
 		const rj::Value& jPos = root["positions"];
@@ -531,7 +531,7 @@ void WtEngine::load_datas()
 
 	if(root.HasMember("riskmon"))
 	{
-		//è¯»å–é£æ§å‚æ•°
+		//¶ÁÈ¡·ç¿Ø²ÎÊı
 		const rj::Value& jRisk = root["riskmon"];
 		if (!jRisk.IsNull() && jRisk.IsObject())
 		{
@@ -628,8 +628,8 @@ double WtEngine::get_cur_price(const char* stdCode)
 
 void WtEngine::sub_tick(uint32_t sid, const char* stdCode)
 {
-	//å¦‚æœæ˜¯ä¸»åŠ›åˆçº¦ä»£ç , å¦‚SHFE.ag.HOT, é‚£ä¹ˆè¦è½¬æ¢æˆåŸåˆçº¦ä»£ç , SHFE.ag.1912
-	//å› ä¸ºæ‰§è¡Œå™¨åªè¯†åˆ«åŸåˆçº¦ä»£ç 
+	//Èç¹ûÊÇÖ÷Á¦ºÏÔ¼´úÂë, ÈçSHFE.ag.HOT, ÄÇÃ´Òª×ª»»³ÉÔ­ºÏÔ¼´úÂë, SHFE.ag.1912
+	//ÒòÎªÖ´ĞĞÆ÷Ö»Ê¶±ğÔ­ºÏÔ¼´úÂë
 	if (CodeHelper::isStdFutHotCode(stdCode))
 	{
 		SIDSet& sids = _tick_sub_map[stdCode];
@@ -662,7 +662,7 @@ void WtEngine::load_filters()
 
 	if (!StdFile::exists(_filter_file.c_str()))
 	{
-		WTSLogger::error("è¿‡æ»¤å™¨é…ç½®æ–‡ä»¶%sä¸å­˜åœ¨", _filter_file.c_str());
+		WTSLogger::error("¹ıÂËÆ÷ÅäÖÃÎÄ¼ş%s²»´æÔÚ", _filter_file.c_str());
 		return;
 	}
 
@@ -670,13 +670,13 @@ void WtEngine::load_filters()
 	if (lastModTime <= _filter_timestamp)
 		return;
 
-	WTSLogger::info("è¿‡æ»¤å™¨é…ç½®æ–‡ä»¶%så·²ä¿®æ”¹, éœ€è¦é‡æ–°åŠ è½½", _filter_file.c_str());
+	WTSLogger::info("¹ıÂËÆ÷ÅäÖÃÎÄ¼ş%sÒÑĞŞ¸Ä, ĞèÒªÖØĞÂ¼ÓÔØ", _filter_file.c_str());
 
 	std::string content;
 	StdFile::read_file_content(_filter_file.c_str(), content);
 	if (content.empty())
 	{
-		WTSLogger::error("è¿‡æ»¤å™¨é…ç½®æ–‡ä»¶%sä¸ºç©º", _filter_file.c_str());
+		WTSLogger::error("¹ıÂËÆ÷ÅäÖÃÎÄ¼ş%sÎª¿Õ", _filter_file.c_str());
 		return;
 	}
 
@@ -685,14 +685,14 @@ void WtEngine::load_filters()
 
 	if (root.HasParseError())
 	{
-		WTSLogger::error("è¿‡æ»¤å™¨é…ç½®æ–‡ä»¶%sè§£æå¤±è´¥", _filter_file.c_str());
+		WTSLogger::error("¹ıÂËÆ÷ÅäÖÃÎÄ¼ş%s½âÎöÊ§°Ü", _filter_file.c_str());
 		return;
 	}
 
 	WTSVariant* cfg = WTSVariant::createObject();
 	if(!jsonToVariant(root, cfg))
 	{
-		WTSLogger::error("è¿‡æ»¤å™¨é…ç½®æ–‡ä»¶%sè½¬æ¢å¤±è´¥", _filter_file.c_str());
+		WTSLogger::error("¹ıÂËÆ÷ÅäÖÃÎÄ¼ş%s×ª»»Ê§°Ü", _filter_file.c_str());
 		return;
 	}
 
@@ -701,7 +701,7 @@ void WtEngine::load_filters()
 	_stra_filters.clear();
 	_code_filters.clear();
 
-	//è¯»ç­–ç•¥è¿‡æ»¤å™¨
+	//¶Á²ßÂÔ¹ıÂËÆ÷
 	WTSVariant* filterStra = cfg->get("strategy_filters");
 	if(filterStra)
 	{
@@ -718,7 +718,7 @@ void WtEngine::load_filters()
 
 			if(fAct == FA_None)
 			{
-				WTSLogger::error("ç­–ç•¥è¿‡æ»¤å™¨%sæ“ä½œ%sä¸å¯è¯†åˆ«", key.c_str(), action);
+				WTSLogger::error("²ßÂÔ¹ıÂËÆ÷%s²Ù×÷%s²»¿ÉÊ¶±ğ", key.c_str(), action);
 				continue;
 			}
 
@@ -727,11 +727,11 @@ void WtEngine::load_filters()
 			fItem._action = fAct;
 			fItem._target = cfgItem->getInt32("target");
 
-			WTSLogger::info("ç­–ç•¥è¿‡æ»¤å™¨%så·²åŠ è½½", key.c_str());
+			WTSLogger::info("²ßÂÔ¹ıÂËÆ÷%sÒÑ¼ÓÔØ", key.c_str());
 		}
 	}
 
-	//è¯»ä»£ç è¿‡æ»¤å™¨
+	//¶Á´úÂë¹ıÂËÆ÷
 	WTSVariant* filterCode = cfg->get("code_filters");
 	if (filterCode)
 	{
@@ -748,7 +748,7 @@ void WtEngine::load_filters()
 
 			if (fAct == FA_None)
 			{
-				WTSLogger::error("ä»£ç è¿‡æ»¤å™¨%sæ“ä½œ%sä¸å¯è¯†åˆ«", key.c_str(), action);
+				WTSLogger::error("´úÂë¹ıÂËÆ÷%s²Ù×÷%s²»¿ÉÊ¶±ğ", key.c_str(), action);
 				continue;
 			}
 
@@ -757,7 +757,7 @@ void WtEngine::load_filters()
 			fItem._action = fAct;
 			fItem._target = cfgItem->getInt32("target");
 
-			WTSLogger::info("ä»£ç è¿‡æ»¤å™¨%så·²åŠ è½½", key.c_str());
+			WTSLogger::info("´úÂë¹ıÂËÆ÷%sÒÑ¼ÓÔØ", key.c_str());
 		}
 	}
 
@@ -766,8 +766,8 @@ void WtEngine::load_filters()
 
 const char* FLTACT_NAMEs[] = 
 {
-	"å¿½ç•¥",
-	"é‡å®šå‘"
+	"ºöÂÔ",
+	"ÖØ¶¨Ïò"
 };
 
 bool WtEngine::is_filtered(const char* sname, const char* stdCode, double& targetPos)
@@ -776,7 +776,7 @@ bool WtEngine::is_filtered(const char* sname, const char* stdCode, double& targe
 	if(it != _stra_filters.end())
 	{
 		const FilterItem& fItem = it->second;
-		WTSLogger::info("[è¿‡æ»¤å™¨] ç­–ç•¥è¿‡æ»¤å™¨%sè§¦å‘, è¿‡æ»¤æ“ä½œ: %s", sname, fItem._action <= FA_Redirect ? FLTACT_NAMEs[fItem._action] : "æœªçŸ¥");
+		WTSLogger::info("[¹ıÂËÆ÷] ²ßÂÔ¹ıÂËÆ÷%s´¥·¢, ¹ıÂË²Ù×÷: %s", sname, fItem._action <= FA_Redirect ? FLTACT_NAMEs[fItem._action] : "Î´Öª");
 		if (fItem._action == FA_Ignore)
 		{
 			return true;
@@ -793,7 +793,7 @@ bool WtEngine::is_filtered(const char* sname, const char* stdCode, double& targe
 	if (it != _code_filters.end())
 	{
 		const FilterItem& fItem = it->second;
-		WTSLogger::info("[è¿‡æ»¤å™¨] åˆçº¦è¿‡æ»¤å™¨%sè§¦å‘, è¿‡æ»¤æ“ä½œ: %s", stdCode, fItem._action <= FA_Redirect ? FLTACT_NAMEs[fItem._action] : "æœªçŸ¥");
+		WTSLogger::info("[¹ıÂËÆ÷] ºÏÔ¼¹ıÂËÆ÷%s´¥·¢, ¹ıÂË²Ù×÷: %s", stdCode, fItem._action <= FA_Redirect ? FLTACT_NAMEs[fItem._action] : "Î´Öª");
 		if (fItem._action == FA_Ignore)
 		{
 			return true;
@@ -811,7 +811,7 @@ bool WtEngine::is_filtered(const char* sname, const char* stdCode, double& targe
 	if (it != _code_filters.end())
 	{
 		const FilterItem& fItem = it->second;
-		WTSLogger::info("[è¿‡æ»¤å™¨] å“ç§è¿‡æ»¤å™¨%sè§¦å‘, è¿‡æ»¤æ“ä½œ: %s", stdPID.c_str(), fItem._action <= FA_Redirect ? FLTACT_NAMEs[fItem._action] : "æœªçŸ¥");
+		WTSLogger::info("[¹ıÂËÆ÷] Æ·ÖÖ¹ıÂËÆ÷%s´¥·¢, ¹ıÂË²Ù×÷: %s", stdPID.c_str(), fItem._action <= FA_Redirect ? FLTACT_NAMEs[fItem._action] : "Î´Öª");
 		if (fItem._action == FA_Ignore)
 		{
 			return true;
@@ -834,7 +834,7 @@ void WtEngine::load_fees(const char* filename)
 
 	if (!StdFile::exists(filename))
 	{
-		WTSLogger::error("æ‰‹ç»­è´¹æ¨¡æ¿æ–‡ä»¶%sä¸å­˜åœ¨", filename);
+		WTSLogger::error("ÊÖĞø·ÑÄ£°åÎÄ¼ş%s²»´æÔÚ", filename);
 		return;
 	}
 
@@ -843,7 +843,7 @@ void WtEngine::load_fees(const char* filename)
 	StdFile::read_file_content(filename, content);
 	if (content.empty())
 	{
-		WTSLogger::error("æ‰‹ç»­è´¹æ¨¡æ¿æ–‡ä»¶%sä¸ºç©º", filename);
+		WTSLogger::error("ÊÖĞø·ÑÄ£°åÎÄ¼ş%sÎª¿Õ", filename);
 		return;
 	}
 
@@ -852,14 +852,14 @@ void WtEngine::load_fees(const char* filename)
 
 	if (root.HasParseError())
 	{
-		WTSLogger::error("æ‰‹ç»­è´¹æ¨¡æ¿æ–‡ä»¶%sè§£æå¤±è´¥", filename);
+		WTSLogger::error("ÊÖĞø·ÑÄ£°åÎÄ¼ş%s½âÎöÊ§°Ü", filename);
 		return;
 	}
 
 	WTSVariant* cfg = WTSVariant::createObject();
 	if (!jsonToVariant(root, cfg))
 	{
-		WTSLogger::error("æ‰‹ç»­è´¹æ¨¡æ¿æ–‡ä»¶%sè½¬æ¢å¤±è´¥", filename);
+		WTSLogger::error("ÊÖĞø·ÑÄ£°åÎÄ¼ş%s×ª»»Ê§°Ü", filename);
 		return;
 	}
 
@@ -876,7 +876,7 @@ void WtEngine::load_fees(const char* filename)
 
 	cfg->release();
 
-	WTSLogger::info("å…±åŠ è½½%uæ¡æ‰‹ç»­è´¹æ¨¡æ¿", _fee_map.size());
+	WTSLogger::info("¹²¼ÓÔØ%uÌõÊÖĞø·ÑÄ£°å", _fee_map.size());
 }
 
 double WtEngine::calc_fee(const char* stdCode, double price, double qty, uint32_t offset)
@@ -945,7 +945,7 @@ void WtEngine::do_set_position(const char* stdCode, double qty)
 
 	WTSFundStruct& fundInfo = _port_fund->fundInfo();
 
-	if (decimal::gt(pInfo._volumn*diff, 0))//å½“å‰æŒä»“å’Œç›®æ ‡ä»“ä½æ–¹å‘ä¸€è‡´, å¢åŠ ä¸€æ¡æ˜ç»†, å¢åŠ æ•°é‡å³å¯
+	if (decimal::gt(pInfo._volumn*diff, 0))//µ±Ç°³Ö²ÖºÍÄ¿±ê²ÖÎ»·½ÏòÒ»ÖÂ, Ôö¼ÓÒ»ÌõÃ÷Ï¸, Ôö¼ÓÊıÁ¿¼´¿É
 	{
 		pInfo._volumn = qty;
 
@@ -962,7 +962,7 @@ void WtEngine::do_set_position(const char* stdCode, double qty)
 		fundInfo._balance -= fee;
 	}
 	else
-	{//æŒä»“æ–¹å‘å’Œç›®æ ‡ä»“ä½æ–¹å‘ä¸ä¸€è‡´, éœ€è¦å¹³ä»“
+	{//³Ö²Ö·½ÏòºÍÄ¿±ê²ÖÎ»·½Ïò²»Ò»ÖÂ, ĞèÒªÆ½²Ö
 		double left = abs(diff);
 
 		pInfo._volumn = qty;
@@ -987,7 +987,7 @@ void WtEngine::do_set_position(const char* stdCode, double qty)
 			if (!dInfo._long)
 				profit *= -1;
 			pInfo._closeprofit += profit;
-			pInfo._dynprofit = pInfo._dynprofit*dInfo._volumn / (dInfo._volumn + maxQty);//æµ®ç›ˆä¹Ÿè¦åšç­‰æ¯”ç¼©æ”¾
+			pInfo._dynprofit = pInfo._dynprofit*dInfo._volumn / (dInfo._volumn + maxQty);//¸¡Ó¯Ò²Òª×öµÈ±ÈËõ·Å
 			fundInfo._profit += profit;
 			fundInfo._balance += profit;
 
@@ -999,7 +999,7 @@ void WtEngine::do_set_position(const char* stdCode, double qty)
 				break;
 		}
 
-		//éœ€è¦æ¸…ç†æ‰å·²ç»å¹³ä»“å®Œçš„æ˜ç»†
+		//ĞèÒªÇåÀíµôÒÑ¾­Æ½²ÖÍêµÄÃ÷Ï¸
 		while (count > 0)
 		{
 			auto it = pInfo._details.begin();
@@ -1007,7 +1007,7 @@ void WtEngine::do_set_position(const char* stdCode, double qty)
 			count--;
 		}
 
-		//æœ€å, å¦‚æœè¿˜æœ‰å‰©ä½™çš„, åˆ™éœ€è¦åæ‰‹äº†
+		//×îºó, Èç¹û»¹ÓĞÊ£ÓàµÄ, ÔòĞèÒª·´ÊÖÁË
 		//if (left > 0)
 		if(decimal::gt(left, 0))
 		{
@@ -1021,7 +1021,7 @@ void WtEngine::do_set_position(const char* stdCode, double qty)
 			dInfo._opentdate = curTDate;
 			pInfo._details.push_back(dInfo);
 
-			//è¿™é‡Œè¿˜éœ€è¦å†™ä¸€ç¬”æˆäº¤è®°å½•
+			//ÕâÀï»¹ĞèÒªĞ´Ò»±Ê³É½»¼ÇÂ¼
 			double fee = calc_fee(stdCode, curPx, abs(qty), 0);
 			fundInfo._fees += fee;
 			fundInfo._balance -= fee;
@@ -1086,16 +1086,16 @@ bool WtEngine::init_riskmon(WTSVariant* cfg)
 		return false;
 
 	const char* module = cfg->getCString("module");
-	//å…ˆçœ‹å·¥ä½œç›®å½•ä¸‹æ˜¯å¦æœ‰å¯¹åº”æ¨¡å—
+	//ÏÈ¿´¹¤×÷Ä¿Â¼ÏÂÊÇ·ñÓĞ¶ÔÓ¦Ä£¿é
 	std::string dllpath = WtHelper::getCWD() + module;
-	//å¦‚æœæ²¡æœ‰ï¼Œåˆ™å†çœ‹æ¨¡å—ç›®å½•ï¼Œå³dllåŒç›®å½•ä¸‹
+	//Èç¹ûÃ»ÓĞ£¬ÔòÔÙ¿´Ä£¿éÄ¿Â¼£¬¼´dllÍ¬Ä¿Â¼ÏÂ
 	if (!StdFile::exists(dllpath.c_str()))
 		dllpath = WtHelper::getInstDir() + module;
 
 	DllHandle hInst = DLLHelper::load_library(dllpath.c_str());
 	if (hInst == NULL)
 	{
-		WTSLogger::info2("risk", "é£æ§æ¨¡å—%såŠ è½½å¤±è´¥", module);
+		WTSLogger::info2("risk", "·ç¿ØÄ£¿é%s¼ÓÔØÊ§°Ü", module);
 		return false;
 	}
 
@@ -1103,7 +1103,7 @@ bool WtEngine::init_riskmon(WTSVariant* cfg)
 	if (creator == NULL)
 	{
 		DLLHelper::free_library(hInst);
-		WTSLogger::info2("risk", "é£æ§æ¨¡å—%sä¸æ˜¯æ­£ç¡®çš„é£æ§æ¨¡å—", module);
+		WTSLogger::info2("risk", "·ç¿ØÄ£¿é%s²»ÊÇÕıÈ·µÄ·ç¿ØÄ£¿é", module);
 		return false;
 	}
 

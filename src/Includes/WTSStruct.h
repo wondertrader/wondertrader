@@ -5,7 +5,7 @@
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief WtåŸºç¡€ç»“æ„ä½“å®šä¹‰
+ * \brief Wt»ù´¡½á¹¹Ìå¶¨Òå
  */
 #pragma once
 #include <memory>
@@ -29,16 +29,16 @@ public:
 
 	uint32_t	date;
 	uint32_t	time;
-	double		open;		//å¼€
-	double		high;		//é«˜
-	double		low;		//ä½
-	double		close;		//æ”¶
-	double		settle;		//ç»“ç®—
-	double		money;		//æˆäº¤é‡‘é¢
+	double		open;		//¿ª
+	double		high;		//¸ß
+	double		low;		//µÍ
+	double		close;		//ÊÕ
+	double		settle;		//½áËã
+	double		money;		//³É½»½ğ¶î
 
-	uint32_t	vol;	//æˆäº¤é‡
-	uint32_t	hold;	//æ€»æŒ
-	int32_t		add;	//å¢ä»“
+	uint32_t	vol;	//³É½»Á¿
+	uint32_t	hold;	//×Ü³Ö
+	int32_t		add;	//Ôö²Ö
 };
 
 struct WTSTickStruct
@@ -46,34 +46,34 @@ struct WTSTickStruct
 	char		exchg[MAX_EXCHANGE_LENGTH];
 	char		code[MAX_INSTRUMENT_LENGTH];
 
-	double		price;				//æœ€æ–°ä»·
-	double		open;				//å¼€ç›˜ä»·
-	double		high;				//æœ€é«˜ä»·
-	double		low;				//æœ€ä½ä»·
-	double		settle_price;		//ç»“ç®—ä»·
+	double		price;				//×îĞÂ¼Û
+	double		open;				//¿ªÅÌ¼Û
+	double		high;				//×î¸ß¼Û
+	double		low;				//×îµÍ¼Û
+	double		settle_price;		//½áËã¼Û
 
-	double		upper_limit;		//æ¶¨åœä»·
-	double		lower_limit;		//è·Œåœä»·
+	double		upper_limit;		//ÕÇÍ£¼Û
+	double		lower_limit;		//µøÍ£¼Û
 
-	uint32_t	total_volumn;		//æ€»æˆäº¤é‡
-	uint32_t	volumn;				//æˆäº¤é‡
-	double		total_turnover;		//æ€»æˆäº¤é¢
-	double		turn_over;			//æˆäº¤é¢
-	uint32_t	open_interest;		//æ€»æŒ
-	int32_t		diff_interest;		//å¢ä»“
+	uint32_t	total_volumn;		//×Ü³É½»Á¿
+	uint32_t	volumn;				//³É½»Á¿
+	double		total_turnover;		//×Ü³É½»¶î
+	double		turn_over;			//³É½»¶î
+	uint32_t	open_interest;		//×Ü³Ö
+	int32_t		diff_interest;		//Ôö²Ö
 
-	uint32_t	trading_date;		//äº¤æ˜“æ—¥ï¼Œå¦‚20140327
-	uint32_t	action_date;		//è‡ªç„¶æ—¥æœŸï¼Œå¦‚20140327
-	uint32_t	action_time;		//å‘ç”Ÿæ—¶é—´ï¼Œç²¾ç¡®åˆ°æ¯«ç§’ï¼Œå¦‚105932000
+	uint32_t	trading_date;		//½»Ò×ÈÕ£¬Èç20140327
+	uint32_t	action_date;		//×ÔÈ»ÈÕÆÚ£¬Èç20140327
+	uint32_t	action_time;		//·¢ÉúÊ±¼ä£¬¾«È·µ½ºÁÃë£¬Èç105932000
 
-	double		pre_close;			//æ˜¨æ”¶ä»·
-	double		pre_settle;			//æ˜¨ç»“ç®—
-	int32_t		pre_interest;		//ä¸Šæ—¥æ€»æŒ
+	double		pre_close;			//×òÊÕ¼Û
+	double		pre_settle;			//×ò½áËã
+	int32_t		pre_interest;		//ÉÏÈÕ×Ü³Ö
 
-	double		bid_prices[10];		//å§”ä¹°ä»·æ ¼
-	double		ask_prices[10];		//å§”å–ä»·æ ¼
-	uint32_t	bid_qty[10];		//å§”ä¹°é‡
-	uint32_t	ask_qty[10];		//å§”å–é‡
+	double		bid_prices[10];		//Î¯Âò¼Û¸ñ
+	double		ask_prices[10];		//Î¯Âô¼Û¸ñ
+	uint32_t	bid_qty[10];		//Î¯ÂòÁ¿
+	uint32_t	ask_qty[10];		//Î¯ÂôÁ¿
 	WTSTickStruct()
 	{
 		memset(this, 0, sizeof(WTSTickStruct));
@@ -85,15 +85,15 @@ struct WTSOrdQueStruct
 	char		exchg[MAX_EXCHANGE_LENGTH];
 	char		code[MAX_INSTRUMENT_LENGTH];
 
-	uint32_t	trading_date;		//äº¤æ˜“æ—¥ï¼Œå¦‚20140327
-	uint32_t	action_date;		//è‡ªç„¶æ—¥æœŸï¼Œå¦‚20140327
-	uint32_t	action_time;		//å‘ç”Ÿæ—¶é—´ï¼Œç²¾ç¡®åˆ°æ¯«ç§’ï¼Œå¦‚105932000
+	uint32_t	trading_date;		//½»Ò×ÈÕ£¬Èç20140327
+	uint32_t	action_date;		//×ÔÈ»ÈÕÆÚ£¬Èç20140327
+	uint32_t	action_time;		//·¢ÉúÊ±¼ä£¬¾«È·µ½ºÁÃë£¬Èç105932000
 
-	WTSBSDirectType	side;			//å§”æ‰˜æ–¹å‘
-	double			price;			//å§”æ‰˜ä»·æ ¼
-	uint32_t		order_items;	//è®¢å•ä¸ªæ•°
-	uint32_t		qsize;			//é˜Ÿåˆ—é•¿åº¦
-	uint32_t		volumns[50];	//å§”æ‰˜æ˜ç»†
+	WTSBSDirectType	side;			//Î¯ÍĞ·½Ïò
+	double			price;			//Î¯ÍĞ¼Û¸ñ
+	uint32_t		order_items;	//¶©µ¥¸öÊı
+	uint32_t		qsize;			//¶ÓÁĞ³¤¶È
+	uint32_t		volumns[50];	//Î¯ÍĞÃ÷Ï¸
 
 	WTSOrdQueStruct()
 	{
@@ -107,15 +107,15 @@ struct WTSOrdDtlStruct
 	char		exchg[MAX_EXCHANGE_LENGTH];
 	char		code[MAX_INSTRUMENT_LENGTH];
 
-	uint32_t	trading_date;		//äº¤æ˜“æ—¥ï¼Œå¦‚20140327
-	uint32_t	action_date;		//è‡ªç„¶æ—¥æœŸï¼Œå¦‚20140327
-	uint32_t	action_time;		//å‘ç”Ÿæ—¶é—´ï¼Œç²¾ç¡®åˆ°æ¯«ç§’ï¼Œå¦‚105932000
+	uint32_t	trading_date;		//½»Ò×ÈÕ£¬Èç20140327
+	uint32_t	action_date;		//×ÔÈ»ÈÕÆÚ£¬Èç20140327
+	uint32_t	action_time;		//·¢ÉúÊ±¼ä£¬¾«È·µ½ºÁÃë£¬Èç105932000
 
-	uint32_t		index;			//å§”æ‰˜ç¼–å·(ä»1å¼€å§‹ï¼Œé€’å¢1)
-	WTSBSDirectType	side;			//å§”æ‰˜æ–¹å‘
-	double			price;			//å§”æ‰˜ä»·æ ¼
-	uint32_t		volumn;			//å§”æ‰˜æ•°é‡
-	WTSOrdDetailType	otype;		//å§”æ‰˜ç±»å‹
+	uint32_t		index;			//Î¯ÍĞ±àºÅ(´Ó1¿ªÊ¼£¬µİÔö1)
+	WTSBSDirectType	side;			//Î¯ÍĞ·½Ïò
+	double			price;			//Î¯ÍĞ¼Û¸ñ
+	uint32_t		volumn;			//Î¯ÍĞÊıÁ¿
+	WTSOrdDetailType	otype;		//Î¯ÍĞÀàĞÍ
 
 	WTSOrdDtlStruct()
 	{
@@ -128,18 +128,18 @@ struct WTSTransStruct
 	char		exchg[MAX_EXCHANGE_LENGTH];
 	char		code[MAX_INSTRUMENT_LENGTH];
 
-	uint32_t	trading_date;		//äº¤æ˜“æ—¥ï¼Œå¦‚20140327
-	uint32_t	action_date;		//è‡ªç„¶æ—¥æœŸï¼Œå¦‚20140327
-	uint32_t	action_time;		//å‘ç”Ÿæ—¶é—´ï¼Œç²¾ç¡®åˆ°æ¯«ç§’ï¼Œå¦‚105932000
+	uint32_t	trading_date;		//½»Ò×ÈÕ£¬Èç20140327
+	uint32_t	action_date;		//×ÔÈ»ÈÕÆÚ£¬Èç20140327
+	uint32_t	action_time;		//·¢ÉúÊ±¼ä£¬¾«È·µ½ºÁÃë£¬Èç105932000
 
-	uint32_t		index;			//æˆäº¤ç¼–å·(ä»1å¼€å§‹ï¼Œé€’å¢1)
-	WTSTransType	ttype;			//æˆäº¤ç±»å‹: 'C', 0
-	WTSBSDirectType	side;			//BSæ ‡å¿—
+	uint32_t		index;			//³É½»±àºÅ(´Ó1¿ªÊ¼£¬µİÔö1)
+	WTSTransType	ttype;			//³É½»ÀàĞÍ: 'C', 0
+	WTSBSDirectType	side;			//BS±êÖ¾
 
-	double			price;			//æˆäº¤ä»·æ ¼
-	uint32_t		volumn;			//æˆäº¤æ•°é‡
-	int32_t			askorder;		//å«å–åºå·
-	int32_t			bidorder;		//å«ä¹°åºå·
+	double			price;			//³É½»¼Û¸ñ
+	uint32_t		volumn;			//³É½»ÊıÁ¿
+	int32_t			askorder;		//½ĞÂôĞòºÅ
+	int32_t			bidorder;		//½ĞÂòĞòºÅ
 
 	WTSTransStruct()
 	{

@@ -5,7 +5,7 @@
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief ä¸»åŠ›åˆçº¦ç®¡ç†å™¨æ¥å£å®šä¹‰
+ * \brief Ö÷Á¦ºÏÔ¼¹ÜÀíÆ÷½Ó¿Ú¶¨Òå
  */
 #pragma once
 #include "WTSMarcos.h"
@@ -36,35 +36,35 @@ class IHotMgr
 {
 public:
 	/*
-	 *	è·å–åˆ†æœˆä»£ç 
-	 *	@pid	å“ç§ä»£ç 
-	 *	@dt		æ—¥æœŸ(äº¤æ˜“æ—¥)
+	 *	»ñÈ¡·ÖÔÂ´úÂë
+	 *	@pid	Æ·ÖÖ´úÂë
+	 *	@dt		ÈÕÆÚ(½»Ò×ÈÕ)
 	 */
 	virtual const char* getRawCode(const char* exchg, const char* pid, uint32_t dt)	= 0;
 
 	/*
-	 *	è·å–ä¸»åŠ›å¯¹ä¸€ä¸ªçš„ä¸Šä¸€ä¸ªåˆ†æœˆï¼Œå³ä¸Šä¸€ä¸ªä¸»åŠ›åˆçº¦çš„åˆ†æœˆä»£ç 
-	 *	@pid	å“ç§ä»£ç 
-	 *	@dt		æ—¥æœŸ(äº¤æ˜“æ—¥)
+	 *	»ñÈ¡Ö÷Á¦¶ÔÒ»¸öµÄÉÏÒ»¸ö·ÖÔÂ£¬¼´ÉÏÒ»¸öÖ÷Á¦ºÏÔ¼µÄ·ÖÔÂ´úÂë
+	 *	@pid	Æ·ÖÖ´úÂë
+	 *	@dt		ÈÕÆÚ(½»Ò×ÈÕ)
 	 */
 	virtual const char* getPrevRawCode(const char* exchg, const char* pid, uint32_t dt) = 0;
 
 	/*
-	 *	è·å–ä¸»åŠ›ä»£ç 
-	 *	@rawCode	åˆ†æœˆä»£ç 
-	 *	@dt			æ—¥æœŸ(äº¤æ˜“æ—¥)
+	 *	»ñÈ¡Ö÷Á¦´úÂë
+	 *	@rawCode	·ÖÔÂ´úÂë
+	 *	@dt			ÈÕÆÚ(½»Ò×ÈÕ)
 	 */
 	virtual const char* getHotCode(const char* exchg, const char* rawCode, uint32_t dt) = 0;
 
 	/*
-	 *	æ˜¯å¦ä¸»åŠ›åˆçº¦
-	 *	@rawCode	åˆ†æœˆä»£ç 
-	 *	@dt			æ—¥æœŸ(äº¤æ˜“æ—¥)
+	 *	ÊÇ·ñÖ÷Á¦ºÏÔ¼
+	 *	@rawCode	·ÖÔÂ´úÂë
+	 *	@dt			ÈÕÆÚ(½»Ò×ÈÕ)
 	 */
 	virtual bool		isHot(const char* exchg, const char* rawCode, uint32_t dt) = 0;
 
 	/*
-	 *	åˆ†å‰²ä¸»åŠ›æ®µï¼Œå°†ä¸»åŠ›åˆçº¦åœ¨æŸä¸ªæ—¶æ®µçš„åˆ†æœˆåˆçº¦å…¨éƒ¨æå‡ºå–æ¥
+	 *	·Ö¸îÖ÷Á¦¶Î£¬½«Ö÷Á¦ºÏÔ¼ÔÚÄ³¸öÊ±¶ÎµÄ·ÖÔÂºÏÔ¼È«²¿Ìá³öÈ¡À´
 	 */
 	virtual bool		splitHotSecions(const char* exchg, const char* hotCode, uint32_t sDt, uint32_t eDt, HotSections& sections) = 0;
 };

@@ -26,8 +26,8 @@ USING_NS_OTP;
 
 typedef enum tagTradeAccountType
 {
-	TAT_CTP,		//CTPæ¥å£
-	TAT_CTPTest,	//CTPæµ‹è¯•
+	TAT_CTP,		//CTP½Ó¿Ú
+	TAT_CTPTest,	//CTP²âÊÔ
 	TAT_Femas,
 	TAT_CTPMini,
 	TAT_CTPMiniTest
@@ -90,7 +90,7 @@ public:
 			return;
 		}
 
-		log("[%s]å¼€å§‹è¿æ¥æœåŠ¡ç«¯ï¼š%s", m_pParams->getCString("user"), m_pParams->getCString("front"));
+		log("[%s]¿ªÊ¼Á¬½Ó·şÎñ¶Ë£º%s", m_pParams->getCString("user"), m_pParams->getCString("front"));
 		m_pTraderApi->connect();
 	}
 
@@ -99,21 +99,21 @@ public:
 		HINSTANCE hInst = LoadLibrary(moduleName);
 		if (hInst == NULL)
 		{
-			log("äº¤æ˜“æ¨¡å—%såŠ è½½å¤±è´¥", moduleName);
+			log("½»Ò×Ä£¿é%s¼ÓÔØÊ§°Ü", moduleName);
 			return false;
 		}
 
 		FuncCreateTrader pFunCreateTrader = (FuncCreateTrader)GetProcAddress(hInst, "createTrader");
 		if (NULL == pFunCreateTrader)
 		{
-			log("äº¤æ˜“æ¥å£åˆ›å»ºå‡½æ•°è¯»å–å¤±è´¥");
+			log("½»Ò×½Ó¿Ú´´½¨º¯Êı¶ÁÈ¡Ê§°Ü");
 			return false;
 		}
 
 		m_pTraderApi = pFunCreateTrader();
 		if (NULL == m_pTraderApi)
 		{
-			log("äº¤æ˜“æ¥å£åˆ›å»ºå¤±è´¥");
+			log("½»Ò×½Ó¿Ú´´½¨Ê§°Ü");
 			return false;
 		}
 
@@ -123,7 +123,7 @@ public:
 
 	bool qryFund()
 	{
-		log("[%s]æ­£åœ¨æŸ¥è¯¢èµ„é‡‘â€¦â€¦", m_pParams->getCString("user"));
+		log("[%s]ÕıÔÚ²éÑ¯×Ê½ğ¡­¡­", m_pParams->getCString("user"));
 		m_pTraderApi->queryAccount();
 
 		return true;
@@ -131,7 +131,7 @@ public:
 
 	bool qryOrders()
 	{
-		log("[%s]æ­£åœ¨æŸ¥è¯¢å½“æ—¥å§”æ‰˜â€¦â€¦", m_pParams->getCString("user"));
+		log("[%s]ÕıÔÚ²éÑ¯µ±ÈÕÎ¯ÍĞ¡­¡­", m_pParams->getCString("user"));
 		m_pTraderApi->queryOrders();
 
 		return true;
@@ -139,7 +139,7 @@ public:
 
 	bool qryTrades()
 	{
-		log("%s]æ­£åœ¨æŸ¥è¯¢å½“æ—¥æˆäº¤â€¦â€¦", m_pParams->getCString("user"));
+		log("%s]ÕıÔÚ²éÑ¯µ±ÈÕ³É½»¡­¡­", m_pParams->getCString("user"));
 		m_pTraderApi->queryTrades();
 
 		return true;
@@ -147,7 +147,7 @@ public:
 
 	bool qryPosition()
 	{
-		log("[%s]æ­£åœ¨æŸ¥è¯¢æŒä»“â€¦â€¦",  m_pParams->getCString("user"));
+		log("[%s]ÕıÔÚ²éÑ¯³Ö²Ö¡­¡­",  m_pParams->getCString("user"));
 		m_pTraderApi->queryPositions();
 
 		return true;
@@ -156,7 +156,7 @@ public:
 	bool qrySettle()
 	{
 		uint32_t uDate = TimeUtils::getNextDate(TimeUtils::getCurDate(), -1);
-		log("[%s]æ­£åœ¨æŸ¥è¯¢%uçš„ç»“ç®—å•â€¦â€¦", m_pParams->getCString("user"), uDate);
+		log("[%s]ÕıÔÚ²éÑ¯%uµÄ½áËãµ¥¡­¡­", m_pParams->getCString("user"), uDate);
 		m_pTraderApi->querySettlement(uDate);
 
 		return true;
@@ -171,19 +171,19 @@ public:
 
 		for (;;)
 		{
-			printf("è¯·è¾“å…¥å“ç§ä»£ç : ");
+			printf("ÇëÊäÈëÆ·ÖÖ´úÂë: ");
 			std::cin >> code;
 
-			printf("è¯·è¾“å…¥äº¤æ˜“æ‰€ä»£ç : ");
+			printf("ÇëÊäÈë½»Ò×Ëù´úÂë: ");
 			std::cin >> exchg;
 
-			printf("è¯·è¾“å…¥å§”æ‰˜ä»·æ ¼: ");
+			printf("ÇëÊäÈëÎ¯ÍĞ¼Û¸ñ: ");
 			std::cin >> price;
 
-			printf("è¯·è¾“å…¥æ•°é‡: ");
+			printf("ÇëÊäÈëÊıÁ¿: ");
 			std::cin >> qty;
 
-			printf("å“ç§ï¼š%s.%sï¼Œä»·æ ¼ï¼š%fï¼Œæ•°é‡ï¼š%uï¼Œç¡®è®¤y/n? ", exchg, code, price, qty);
+			printf("Æ·ÖÖ£º%s.%s£¬¼Û¸ñ£º%f£¬ÊıÁ¿£º%u£¬È·ÈÏy/n? ", exchg, code, price, qty);
 			char c;
 			std::cin >> c;
 			if(c == 'y')
@@ -200,7 +200,7 @@ public:
 		m_pTraderApi->makeEntrustID(entrustid, 64);
 		entrust->setEntrustID(entrustid);
 
-		log("[%s]å¼€å§‹ä¸‹å•ï¼Œå“ç§: %s.%sï¼Œä»·æ ¼: %fï¼Œæ•°é‡: %dï¼ŒåŠ¨ä½œ: å¼€å¤š", m_pParams->getCString("user"), exchg, code, price, qty);
+		log("[%s]¿ªÊ¼ÏÂµ¥£¬Æ·ÖÖ: %s.%s£¬¼Û¸ñ: %f£¬ÊıÁ¿: %d£¬¶¯×÷: ¿ª¶à", m_pParams->getCString("user"), exchg, code, price, qty);
 
 		m_pTraderApi->orderInsert(entrust);
 		entrust->release();
@@ -216,16 +216,16 @@ public:
 
 		for (;;)
 		{
-			printf("è¯·è¾“å…¥å“ç§ä»£ç : ");
+			printf("ÇëÊäÈëÆ·ÖÖ´úÂë: ");
 			std::cin >> code;
 
-			printf("è¯·è¾“å…¥äº¤æ˜“æ‰€ä»£ç : ");
+			printf("ÇëÊäÈë½»Ò×Ëù´úÂë: ");
 			std::cin >> exchg;
 
-			printf("è¯·è¾“å…¥æ•°é‡: ");
+			printf("ÇëÊäÈëÊıÁ¿: ");
 			std::cin >> qty;
 
-			printf("å“ç§ï¼š%s.%sï¼Œæ•°é‡ï¼š%uï¼Œç¡®è®¤y/n? ", exchg, code, qty);
+			printf("Æ·ÖÖ£º%s.%s£¬ÊıÁ¿£º%u£¬È·ÈÏy/n? ", exchg, code, qty);
 			char c;
 			std::cin >> c;
 			if (c == 'y')
@@ -242,7 +242,7 @@ public:
 		m_pTraderApi->makeEntrustID(entrustid, 64);
 		entrust->setEntrustID(entrustid);
 
-		log("[%s]å¼€å§‹ä¸‹å•ï¼Œå“ç§: %s.%sï¼Œä»·æ ¼: å¸‚ä»·ï¼Œæ•°é‡: %dï¼ŒåŠ¨ä½œ: å¼€å¤š", m_pParams->getCString("user"), exchg, code, qty);
+		log("[%s]¿ªÊ¼ÏÂµ¥£¬Æ·ÖÖ: %s.%s£¬¼Û¸ñ: ÊĞ¼Û£¬ÊıÁ¿: %d£¬¶¯×÷: ¿ª¶à", m_pParams->getCString("user"), exchg, code, qty);
 
 		m_pTraderApi->orderInsert(entrust);
 		entrust->release();
@@ -256,10 +256,10 @@ public:
 
 		for (;;)
 		{
-			printf("è¯·è¾“å…¥è®¢å•ID: ");
+			printf("ÇëÊäÈë¶©µ¥ID: ");
 			std::cin >> orderid;
 
-			printf("è®¢å•IDï¼š%sï¼Œç¡®è®¤y/n? ", orderid);
+			printf("¶©µ¥ID£º%s£¬È·ÈÏy/n? ", orderid);
 			char c;
 			std::cin >> c;
 			if (c == 'y')
@@ -272,12 +272,12 @@ public:
 		WTSOrderInfo* ordInfo = (WTSOrderInfo*)m_mapOrds->get(orderid);
 		if (ordInfo == NULL)
 		{
-			printf("è®¢å•ä¸å­˜åœ¨ï¼Œè¯·æ£€æŸ¥è®¢å•å·æ˜¯å¦æœ‰è¯¯ï¼Œæˆ–è€…å…ˆæŸ¥è¯¢è®¢å•\r\n");
+			printf("¶©µ¥²»´æÔÚ£¬Çë¼ì²é¶©µ¥ºÅÊÇ·ñÓĞÎó£¬»òÕßÏÈ²éÑ¯¶©µ¥\r\n");
 			return false;
 		}
 
 
-		log("[%s]å¼€å§‹æ’¤å•[%s]â€¦â€¦", m_pParams->getCString("user"), orderid);
+		log("[%s]¿ªÊ¼³·µ¥[%s]¡­¡­", m_pParams->getCString("user"), orderid);
 		WTSEntrustAction* action = WTSEntrustAction::create(ordInfo->getCode());
 		action->setEntrustID(ordInfo->getEntrustID());
 		action->setOrderID(orderid);
@@ -296,7 +296,7 @@ public:
 		{
 			if (ec == 0)
 			{
-				log("[%s]è¿æ¥æˆåŠŸ", m_pParams->getCString("user"));
+				log("[%s]Á¬½Ó³É¹¦", m_pParams->getCString("user"));
 				m_pTraderApi->login(m_pParams->getCString("user"), m_pParams->getCString("pass"), "");
 			}
 			else
@@ -320,12 +320,12 @@ public:
 	{
 		if(bSucc)
 		{
-			log("[%s]ç™»å½•æˆåŠŸ" , m_pParams->getCString("user"));	
+			log("[%s]µÇÂ¼³É¹¦" , m_pParams->getCString("user"));	
 			m_bLogined = true;
 		}
 		else
 		{
-			log("[%s]ç™»å½•å¤±è´¥ï¼š%s", m_pParams->getCString("user"), msg);
+			log("[%s]µÇÂ¼Ê§°Ü£º%s", m_pParams->getCString("user"), msg);
 			g_exitNow = true;
 		}
 
@@ -337,7 +337,7 @@ public:
 	{
 		if(err)
 		{
-			log("[%s]ä¸‹å•å¤±è´¥ï¼š%s", m_pParams->getCString("user"), err->getMessage());
+			log("[%s]ÏÂµ¥Ê§°Ü£º%s", m_pParams->getCString("user"), err->getMessage());
 			StdUniqueLock lock(g_mtxOpt);
 			g_condOpt.notify_all();
 		}
@@ -351,7 +351,7 @@ public:
 			WTSAccountInfo* accInfo = (WTSAccountInfo*)ayAccounts->at(0);
 			if(accInfo)
 			{
-				log("[%s]èµ„é‡‘æ•°æ®æ›´æ–°, å½“å‰é™æ€æƒç›Š: %.2f", m_pParams->getCString("user"), accInfo->getBalance());
+				log("[%s]×Ê½ğÊı¾İ¸üĞÂ, µ±Ç°¾²Ì¬È¨Òæ: %.2f", m_pParams->getCString("user"), accInfo->getBalance());
 			}
 		}
 
@@ -365,7 +365,7 @@ public:
 		if (ayPositions != NULL)
 			cnt = ayPositions->size();
 
-		log("[%s]æŒä»“æ•°æ®å·²æ›´æ–°, å½“æ—¥å…±æœ‰%uç¬”æŒä»“", m_pParams->getCString("user"), cnt);
+		log("[%s]³Ö²ÖÊı¾İÒÑ¸üĞÂ, µ±ÈÕ¹²ÓĞ%u±Ê³Ö²Ö", m_pParams->getCString("user"), cnt);
 		StdUniqueLock lock(g_mtxOpt);
 		g_condOpt.notify_all();
 	}
@@ -387,7 +387,7 @@ public:
 				m_mapOrds->add(ordInfo->getOrderID(), ordInfo, true);
 		}
 
-		log("[%s]å§”æ‰˜åˆ—è¡¨å·²æ›´æ–°, å½“æ—¥å…±æœ‰%uç¬”å§”æ‰˜, æœªå®Œæˆ%uç¬”", m_pParams->getCString("user"), cnt, m_mapOrds->size());
+		log("[%s]Î¯ÍĞÁĞ±íÒÑ¸üĞÂ, µ±ÈÕ¹²ÓĞ%u±ÊÎ¯ÍĞ, Î´Íê³É%u±Ê", m_pParams->getCString("user"), cnt, m_mapOrds->size());
 
 		StdUniqueLock lock(g_mtxOpt);
 		g_condOpt.notify_all();
@@ -399,14 +399,14 @@ public:
 		if (ayTrades != NULL)
 			cnt = ayTrades->size();
 
-		log("[%s]æˆäº¤æ˜ç»†å·²æ›´æ–°, å½“æ—¥å…±æœ‰%uç¬”æˆäº¤", m_pParams->getCString("user"), cnt);
+		log("[%s]³É½»Ã÷Ï¸ÒÑ¸üĞÂ, µ±ÈÕ¹²ÓĞ%u±Ê³É½»", m_pParams->getCString("user"), cnt);
 		StdUniqueLock lock(g_mtxOpt);
 		g_condOpt.notify_all();
 	}
 
 	virtual void onRspSettlementInfo(uint32_t uDate, const char* content)
 	{
-		log("[%s]%uç»“ç®—å•å·²æ¥æ”¶", m_pParams->getCString("user"), uDate);
+		log("[%s]%u½áËãµ¥ÒÑ½ÓÊÕ", m_pParams->getCString("user"), uDate);
 		log_raw(content);
 		StdUniqueLock lock(g_mtxOpt);
 		g_condOpt.notify_all();
@@ -423,7 +423,7 @@ public:
 
 				if (m_mapOrds->find(orderInfo->getOrderID()) == m_mapOrds->end())
 				{
-					log("[%s]ä¸‹å•æˆåŠŸï¼Œè®¢å•ID: %s",  m_pParams->getCString("user"), orderInfo->getOrderID());
+					log("[%s]ÏÂµ¥³É¹¦£¬¶©µ¥ID: %s",  m_pParams->getCString("user"), orderInfo->getOrderID());
 					m_mapOrds->add(orderInfo->getOrderID(), orderInfo, true);
 				}
 
@@ -438,13 +438,13 @@ public:
 
 			if (strlen(orderInfo->getOrderID()) == 0)
 			{
-				log("[%s]è®¢å•%sæäº¤å¤±è´¥è¢«æ’¤é”€:%s", m_pParams->getCString("user"), orderInfo->getEntrustID(), orderInfo->getStateMsg());
+				log("[%s]¶©µ¥%sÌá½»Ê§°Ü±»³·Ïú:%s", m_pParams->getCString("user"), orderInfo->getEntrustID(), orderInfo->getStateMsg());
 				StdUniqueLock lock(g_mtxOpt);
 				g_condOpt.notify_all();
 			}
 			else
 			{
-				log("[%s]è®¢å•%så·²æ’¤é”€:%s", m_pParams->getCString("user"), orderInfo->getOrderID(), orderInfo->getStateMsg());
+				log("[%s]¶©µ¥%sÒÑ³·Ïú:%s", m_pParams->getCString("user"), orderInfo->getOrderID(), orderInfo->getStateMsg());
 				StdUniqueLock lock(g_mtxOpt);
 				g_condOpt.notify_all();
 			}			
@@ -453,14 +453,14 @@ public:
 
 	virtual void onPushTrade(WTSTradeInfo* tradeRecord)
 	{
-		log("[%s]æ”¶åˆ°æˆäº¤å›æŠ¥ï¼Œåˆçº¦%sï¼Œæˆäº¤ä»·ï¼š%.4fï¼Œæˆäº¤æ•°é‡ï¼š%.4f", m_pParams->getCString("user"), tradeRecord->getCode(), tradeRecord->getPrice(), tradeRecord->getVolumn());
+		log("[%s]ÊÕµ½³É½»»Ø±¨£¬ºÏÔ¼%s£¬³É½»¼Û£º%.4f£¬³É½»ÊıÁ¿£º%.4f", m_pParams->getCString("user"), tradeRecord->getCode(), tradeRecord->getPrice(), tradeRecord->getVolumn());
 	}
 
 	virtual void onTraderError(WTSError*	err)
 	{
 		if(err && err->getErrorCode() == WEC_ORDERCANCEL)
 		{
-			log("[%s]æ’¤å•å¤±è´¥: %s", m_pParams->getCString("user"), err->getMessage());
+			log("[%s]³·µ¥Ê§°Ü: %s", m_pParams->getCString("user"), err->getMessage());
 			StdUniqueLock lock(g_mtxOpt);
 			g_condOpt.notify_all();
 		}
@@ -551,16 +551,16 @@ void main()
 	
 	while(true)
 	{
-		printf("è¯·é€‰æ‹©æ“ä½œ\r\n");
-		printf("1ã€æŸ¥è¯¢èµ„é‡‘\r\n");
-		printf("2ã€æŸ¥è¯¢è®¢å•\r\n");
-		printf("3ã€æŸ¥è¯¢æˆäº¤\r\n");
-		printf("4ã€æŸ¥è¯¢æŒä»“\r\n");
-		printf("5ã€æŸ¥è¯¢ç»“ç®—å•\r\n");
-		printf("6ã€é™ä»·ä¸‹å•\r\n");
-		printf("7ã€å¸‚ä»·ä¸‹å•\r\n");
-		printf("8ã€æ’¤å•\r\n");
-		printf("0ã€é€€å‡º\r\n");
+		printf("ÇëÑ¡Ôñ²Ù×÷\r\n");
+		printf("1¡¢²éÑ¯×Ê½ğ\r\n");
+		printf("2¡¢²éÑ¯¶©µ¥\r\n");
+		printf("3¡¢²éÑ¯³É½»\r\n");
+		printf("4¡¢²éÑ¯³Ö²Ö\r\n");
+		printf("5¡¢²éÑ¯½áËãµ¥\r\n");
+		printf("6¡¢ÏŞ¼ÛÏÂµ¥\r\n");
+		printf("7¡¢ÊĞ¼ÛÏÂµ¥\r\n");
+		printf("8¡¢³·µ¥\r\n");
+		printf("0¡¢ÍË³ö\r\n");
 
 		char cmd;
 		for (;;)

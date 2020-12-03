@@ -189,7 +189,7 @@ WTSTickData* HftStraBaseCtx::stra_get_last_tick(const char* stdCode)
 void HftStraBaseCtx::stra_sub_ticks(const char* stdCode)
 {
 	_engine->sub_tick(id(), stdCode);
-	stra_log_text("å®žæ—¶è¡Œæƒ…å·²è®¢é˜…: %s", stdCode);
+	stra_log_text("ÊµÊ±ÐÐÇéÒÑ¶©ÔÄ: %s", stdCode);
 }
 
 void HftStraBaseCtx::stra_log_text(const char* fmt, ...)

@@ -271,11 +271,11 @@ void TraderiTap::reconnect()
 	{
 		if (m_traderSink)
 			m_traderSink->handleEvent(WTE_Connect, -1);
-		m_traderSink->handleTraderLog(LL_ERROR, "[TraderiTap]äº¤æ˜“æ¨¡å—åˆå§‹åŒ–å¤±è´¥ï¼Œé”™è¯¯ç ï¼š%sâ€¦â€¦", GetErrcodeDesc(CreateErrorCode));
+		m_traderSink->handleTraderLog(LL_ERROR, "[TraderiTap]½»Ò×Ä£¿é³õÊ¼»¯Ê§°Ü£¬´íÎóÂë£º%s¡­¡­", GetErrcodeDesc(CreateErrorCode));
 
 		BoostThreadPtr thrd(new BoostThread([this](){
 			boost::this_thread::sleep(boost::posix_time::seconds(2));
-			m_traderSink->handleTraderLog(LL_WARN, "[TraderiTap]è´¦å·%sæ­£åœ¨é‡è¿žâ€¦â€¦", m_strUser.c_str());
+			m_traderSink->handleTraderLog(LL_WARN, "[TraderiTap]ÕËºÅ%sÕýÔÚÖØÁ¬¡­¡­", m_strUser.c_str());
 			reconnect();
 		}));
 		return;
@@ -292,13 +292,13 @@ void TraderiTap::reconnect()
 			if (m_traderSink)
 				m_traderSink->handleEvent(WTE_Connect, -1);
 
-			//å¦‚æžœè‡ªåŠ¨é‡è¿žï¼Œåˆ™è¦ç»§ç»­è‡ªåŠ¨é‡è¿ž
+			//Èç¹û×Ô¶¯ÖØÁ¬£¬ÔòÒª¼ÌÐø×Ô¶¯ÖØÁ¬
 			if (m_bReconnect)
 			{
-				//è¿™é‡Œä¸¢åˆ°çº¿ç¨‹é‡ŒåŽ»å¤„ç†ï¼Œè®©reconnectå¯ä»¥é©¬ä¸Šè¿”å›ž
+				//ÕâÀï¶ªµ½Ïß³ÌÀïÈ¥´¦Àí£¬ÈÃreconnect¿ÉÒÔÂíÉÏ·µ»Ø
 				BoostThreadPtr thrd(new BoostThread([this](){
 					boost::this_thread::sleep(boost::posix_time::seconds(2));
-					m_traderSink->handleTraderLog(LL_WARN, "[TraderiTap]è´¦å·%sæ­£åœ¨é‡è¿žâ€¦â€¦", m_strUser.c_str());
+					m_traderSink->handleTraderLog(LL_WARN, "[TraderiTap]ÕËºÅ%sÕýÔÚÖØÁ¬¡­¡­", m_strUser.c_str());
 					reconnect();
 				}));
 			}
@@ -448,7 +448,7 @@ int TraderiTap::login( const char* user, const char* pass, const char* productIn
 	uint32_t iResult = m_pUserAPI->Login(&stLoginAuth);
 	if (iResult != TAPIERROR_SUCCEED)
 	{
-		m_traderSink->handleTraderLog(LL_ERROR, "[TraderiTap]ç™»å½•è¯·æ±‚å‘é€å¤±è´¥:%s", GetErrcodeDesc(iResult));
+		m_traderSink->handleTraderLog(LL_ERROR, "[TraderiTap]µÇÂ¼ÇëÇó·¢ËÍÊ§°Ü:%s", GetErrcodeDesc(iResult));
 	}
 	return 0;
 }
@@ -479,7 +479,7 @@ int TraderiTap::orderInsert( WTSEntrust* entrust )
 	WTSContractInfo* ct = m_bdMgr->getContract(entrust->getCode(), entrust->getExchg());
 	if (ct == NULL)
 	{
-		m_traderSink->handleTraderLog(LL_ERROR, "åˆçº¦%sä¸å­˜åœ¨ï¼Œä¸èƒ½äº¤æ˜“", ct->getFullCode());
+		m_traderSink->handleTraderLog(LL_ERROR, "ºÏÔ¼%s²»´æÔÚ£¬²»ÄÜ½»Ò×", ct->getFullCode());
 		return -1;
 	}
 	char* code = (char*)entrust->getCode();
@@ -503,7 +503,7 @@ int TraderiTap::orderInsert( WTSEntrust* entrust )
 	int iResult = m_pUserAPI->InsertOrder(makeRequestID(), NULL, &req);
 	if(iResult != 0)
 	{
-		m_traderSink->handleTraderLog(LL_ERROR, "[TraderiTap]æ’å…¥è®¢å•å¤±è´¥:%s", GetErrcodeDesc(iResult));
+		m_traderSink->handleTraderLog(LL_ERROR, "[TraderiTap]²åÈë¶©µ¥Ê§°Ü:%s", GetErrcodeDesc(iResult));
 		return iResult;
 	}
 
@@ -525,7 +525,7 @@ int TraderiTap::orderAction( WTSEntrustAction* action )
 	int iResult = m_pUserAPI->CancelOrder(makeRequestID(), &req);
 	if(iResult != 0)
 	{
-		m_traderSink->handleTraderLog(LL_ERROR, "[TraderiTap]æ’¤å•è¯·æ±‚å‘é€å¤±è´¥, é”™è¯¯ç :%d", iResult);
+		m_traderSink->handleTraderLog(LL_ERROR, "[TraderiTap]³·µ¥ÇëÇó·¢ËÍÊ§°Ü, ´íÎóÂë:%d", iResult);
 		return iResult;
 	}
 
@@ -552,7 +552,7 @@ int TraderiTap::queryContracts()
 	int32_t iResult = m_pUserAPI->QryCommodity(makeRequestID());
 	if(iResult != 0)
 	{
-		m_traderSink->handleTraderLog(LL_ERROR, "[ESFTrader-%s]æŸ¥è¯¢åˆçº¦åˆ—è¡¨è¯·æ±‚å‘é€å¤±è´¥, é”™è¯¯ç :%d", m_strUser.c_str(), iResult);
+		m_traderSink->handleTraderLog(LL_ERROR, "[ESFTrader-%s]²éÑ¯ºÏÔ¼ÁÐ±íÇëÇó·¢ËÍÊ§°Ü, ´íÎóÂë:%d", m_strUser.c_str(), iResult);
 		return -1;
 	}
 
@@ -574,7 +574,7 @@ int TraderiTap::queryAccount()
 	if (iResult != 0)
 	{
 		if (m_traderSink)
-			m_traderSink->handleTraderLog(LL_ERROR, "[TraderiTap]èµ„é‡‘æŸ¥è¯¢æŒ‡ä»¤å‘é€å¤±è´¥ï¼š%d", iResult);
+			m_traderSink->handleTraderLog(LL_ERROR, "[TraderiTap]×Ê½ð²éÑ¯Ö¸Áî·¢ËÍÊ§°Ü£º%d", iResult);
 		return -1;
 	}
 
@@ -970,13 +970,13 @@ WTSOrderInfo* TraderiTap::makeOrderInfo(const TapAPIOrderInfo* orderField)
 
 const char* TraderiTap::GetErrcodeDesc(int ec)
 {
-	static std::string curErr = "æœªçŸ¥é”™è¯¯";
+	static std::string curErr = "Î´Öª´íÎó";
 	if (m_pUserAPI)
 		curErr = m_funcGetErrorDesc(ec);
 
-	if(curErr.compare("æœªçŸ¥é”™è¯¯") == 0)
+	if(curErr.compare("Î´Öª´íÎó") == 0)
 	{
-		curErr = StrUtil::printf("æœªçŸ¥é”™è¯¯ï¼š%d", ec);
+		curErr = StrUtil::printf("Î´Öª´íÎó£º%d", ec);
 	}
 	return curErr.c_str();
 }
@@ -1105,7 +1105,7 @@ void TAP_CDECL TraderiTap::OnAPIReady(ITapTrade::TAPIINT32 errCode)
 		//m_wrapperState = WS_APIINITED;
 
 		m_wrapperState = WS_ALLREADY;
-		m_traderSink->handleTraderLog(LL_INFO, "[TraderiTap-%s]è´¦æˆ·æ•°æ®åˆå§‹åŒ–å®Œæˆâ€¦â€¦", m_strUser.c_str());
+		m_traderSink->handleTraderLog(LL_INFO, "[TraderiTap-%s]ÕË»§Êý¾Ý³õÊ¼»¯Íê³É¡­¡­", m_strUser.c_str());
 
 		if (m_traderSink)
 			m_traderSink->onLoginResult(true, "", 0);
@@ -1113,7 +1113,7 @@ void TAP_CDECL TraderiTap::OnAPIReady(ITapTrade::TAPIINT32 errCode)
 		//int ret = queryCommodity();
 		//if(ret < 0)
 		//{
-		//	m_traderSink->handleTraderLog(LL_ERROR, "[TraderiTap]æŸ¥è¯¢å“ç§å‡ºé”™ï¼š%s", GetErrcodeDesc(ret));
+		//	m_traderSink->handleTraderLog(LL_ERROR, "[TraderiTap]²éÑ¯Æ·ÖÖ³ö´í£º%s", GetErrcodeDesc(ret));
 		//}
 	}
 	else
@@ -1142,10 +1142,10 @@ void TAP_CDECL TraderiTap::OnDisconnect(ITapTrade::TAPIINT32 reasonCode)
 		if (!m_bReconnect)
 		{
 			m_bReconnect = true;
-			//è¿™é‡Œä¸¢åˆ°çº¿ç¨‹é‡ŒåŽ»å¤„ç†ï¼Œè®©OnCloseå¯ä»¥é©¬ä¸Šè¿”å›ž
+			//ÕâÀï¶ªµ½Ïß³ÌÀïÈ¥´¦Àí£¬ÈÃOnClose¿ÉÒÔÂíÉÏ·µ»Ø
 			BoostThreadPtr thrd(new BoostThread([this](){
 				boost::this_thread::sleep(boost::posix_time::seconds(2));
-				m_traderSink->handleTraderLog(LL_WARN, "[TraderiTap]è´¦å·%sæ­£åœ¨é‡è¿žâ€¦â€¦", m_strUser.c_str());
+				m_traderSink->handleTraderLog(LL_WARN, "[TraderiTap]ÕËºÅ%sÕýÔÚÖØÁ¬¡­¡­", m_strUser.c_str());
 				reconnect();
 			}));
 		}
@@ -1210,7 +1210,7 @@ void TAP_CDECL TraderiTap::OnRspLogin(ITapTrade::TAPIINT32 errCode, const ITapTr
 		m_uLoginTime = TimeUtils::getLocalTimeNow() * 100 + esfinstance++;
 		m_uDate = strToTime(loginRspInfo->TradeDate);
 
-		m_traderSink->handleTraderLog(LL_INFO, "[TraderiTap-%s]è´¦æˆ·ç™»å½•æˆåŠŸâ€¦â€¦", m_strUser.c_str());
+		m_traderSink->handleTraderLog(LL_INFO, "[TraderiTap-%s]ÕË»§µÇÂ¼³É¹¦¡­¡­", m_strUser.c_str());
 
 		m_bReconnect = false;
 	}
@@ -1221,14 +1221,14 @@ void TAP_CDECL TraderiTap::OnRspLogin(ITapTrade::TAPIINT32 errCode, const ITapTr
 			m_wrapperState = WS_LOGINFAILED;
 
 			if (m_traderSink)
-				m_traderSink->onLoginResult(false, "éœ€è¦äºŒæ¬¡éªŒè¯ï¼Œä½†æ˜¯æ²¡æœ‰é…ç½®æ‹‰å–æœåŠ¡", 0);
+				m_traderSink->onLoginResult(false, "ÐèÒª¶þ´ÎÑéÖ¤£¬µ«ÊÇÃ»ÓÐÅäÖÃÀ­È¡·þÎñ", 0);
 
 			if (m_bReconnect)
 			{
-				//è¿™é‡Œä¸¢åˆ°çº¿ç¨‹é‡ŒåŽ»å¤„ç†ï¼Œè®©oncloseå¯ä»¥é©¬ä¸Šè¿”å›ž
+				//ÕâÀï¶ªµ½Ïß³ÌÀïÈ¥´¦Àí£¬ÈÃonclose¿ÉÒÔÂíÉÏ·µ»Ø
 				BoostThreadPtr thrd(new BoostThread([this](){
 					boost::this_thread::sleep(boost::posix_time::seconds(2));
-					m_traderSink->handleTraderLog(LL_WARN, "[TraderiTap]è´¦å·%sæ­£åœ¨é‡è¿žâ€¦â€¦", m_strUser.c_str());
+					m_traderSink->handleTraderLog(LL_WARN, "[TraderiTap]ÕËºÅ%sÕýÔÚÖØÁ¬¡­¡­", m_strUser.c_str());
 					reconnect();
 				}));
 			}
@@ -1249,10 +1249,10 @@ void TAP_CDECL TraderiTap::OnRspLogin(ITapTrade::TAPIINT32 errCode, const ITapTr
 
 		if (m_bReconnect)
 		{
-			//è¿™é‡Œä¸¢åˆ°çº¿ç¨‹é‡ŒåŽ»å¤„ç†ï¼Œè®©oncloseå¯ä»¥é©¬ä¸Šè¿”å›ž
+			//ÕâÀï¶ªµ½Ïß³ÌÀïÈ¥´¦Àí£¬ÈÃonclose¿ÉÒÔÂíÉÏ·µ»Ø
 			BoostThreadPtr thrd(new BoostThread([this](){
 				boost::this_thread::sleep(boost::posix_time::seconds(2));
-				m_traderSink->handleTraderLog(LL_WARN, "[TraderiTap]è´¦å·%sæ­£åœ¨é‡è¿žâ€¦â€¦", m_strUser.c_str());
+				m_traderSink->handleTraderLog(LL_WARN, "[TraderiTap]ÕËºÅ%sÕýÔÚÖØÁ¬¡­¡­", m_strUser.c_str());
 				reconnect();
 			}));
 		}
@@ -1373,7 +1373,7 @@ void TAP_CDECL TraderiTap::OnRspQryCommodity(ITapTrade::TAPIUINT32 sessionID, IT
 		//m_wrapperState = WS_COMMQRYED;
 
 		m_wrapperState = WS_ALLREADY;
-		m_traderSink->handleTraderLog(LL_INFO, "[TraderiTap-%s]è´¦æˆ·æ•°æ®åˆå§‹åŒ–å®Œæˆâ€¦â€¦", m_strUser.c_str());
+		m_traderSink->handleTraderLog(LL_INFO, "[TraderiTap-%s]ÕË»§Êý¾Ý³õÊ¼»¯Íê³É¡­¡­", m_strUser.c_str());
 
 		if (m_traderSink)
 			m_traderSink->onLoginResult(true, "", 0);
@@ -1391,7 +1391,7 @@ void TAP_CDECL TraderiTap::OnRspRequestVertificateCode(ITapTrade::TAPIUINT32 ses
 	if(errCode != 0)
 	{
 		if (m_traderSink)
-			m_traderSink->onLoginResult(false, "è¯·æ±‚å‘é€äºŒæ¬¡éªŒè¯ç å¤±è´¥", errCode);
+			m_traderSink->onLoginResult(false, "ÇëÇó·¢ËÍ¶þ´ÎÑéÖ¤ÂëÊ§°Ü", errCode);
 		return;
 	}
 
@@ -1403,14 +1403,14 @@ void TAP_CDECL TraderiTap::OnRspRequestVertificateCode(ITapTrade::TAPIUINT32 ses
 		m_wrapperState = WS_LOGINFAILED;
 
 		if (m_traderSink)
-			m_traderSink->onLoginResult(false, "äºŒæ¬¡éªŒè¯ç æ‹‰å–å¤±è´¥", 0);
+			m_traderSink->onLoginResult(false, "¶þ´ÎÑéÖ¤ÂëÀ­È¡Ê§°Ü", 0);
 
 		if (m_bReconnect)
 		{
-			//è¿™é‡Œä¸¢åˆ°çº¿ç¨‹é‡ŒåŽ»å¤„ç†ï¼Œè®©oncloseå¯ä»¥é©¬ä¸Šè¿”å›ž
+			//ÕâÀï¶ªµ½Ïß³ÌÀïÈ¥´¦Àí£¬ÈÃonclose¿ÉÒÔÂíÉÏ·µ»Ø
 			BoostThreadPtr thrd(new BoostThread([this](){
 				boost::this_thread::sleep(boost::posix_time::seconds(2));
-				m_traderSink->handleTraderLog(LL_WARN, "[TraderiTap]è´¦å·%sæ­£åœ¨é‡è¿žâ€¦â€¦", m_strUser.c_str());
+				m_traderSink->handleTraderLog(LL_WARN, "[TraderiTap]ÕËºÅ%sÕýÔÚÖØÁ¬¡­¡­", m_strUser.c_str());
 				reconnect();
 			}));
 		}
@@ -1427,21 +1427,21 @@ void TAP_CDECL TraderiTap::OnRspRequestVertificateCode(ITapTrade::TAPIUINT32 ses
 			req.LoginType = TAPI_LOGINTYPE_NORMAL;
 			strcpy(req.VertificateCode, ay[1].c_str());
 			m_pUserAPI->SetVertificateCode(makeRequestID(), &req);
-			m_traderSink->handleTraderLog(LL_WARN, "[TraderiTap]è´¦å·%säºŒæ¬¡éªŒè¯ç å·²å‘é€", m_strUser.c_str());
+			m_traderSink->handleTraderLog(LL_WARN, "[TraderiTap]ÕËºÅ%s¶þ´ÎÑéÖ¤ÂëÒÑ·¢ËÍ", m_strUser.c_str());
 		}
 		else
 		{
 			m_wrapperState = WS_LOGINFAILED;
 
 			if (m_traderSink)
-				m_traderSink->onLoginResult(false, StrUtil::printf("äºŒæ¬¡éªŒè¯ç æ‹‰å–å¤±è´¥:%s", ay[1].c_str()).c_str(), 0);
+				m_traderSink->onLoginResult(false, StrUtil::printf("¶þ´ÎÑéÖ¤ÂëÀ­È¡Ê§°Ü:%s", ay[1].c_str()).c_str(), 0);
 
 			if (m_bReconnect)
 			{
-				//è¿™é‡Œä¸¢åˆ°çº¿ç¨‹é‡ŒåŽ»å¤„ç†ï¼Œè®©oncloseå¯ä»¥é©¬ä¸Šè¿”å›ž
+				//ÕâÀï¶ªµ½Ïß³ÌÀïÈ¥´¦Àí£¬ÈÃonclose¿ÉÒÔÂíÉÏ·µ»Ø
 				BoostThreadPtr thrd(new BoostThread([this](){
 					boost::this_thread::sleep(boost::posix_time::seconds(2));
-					m_traderSink->handleTraderLog(LL_WARN, "[TraderiTap]è´¦å·%sæ­£åœ¨é‡è¿žâ€¦â€¦", m_strUser.c_str());
+					m_traderSink->handleTraderLog(LL_WARN, "[TraderiTap]ÕËºÅ%sÕýÔÚÖØÁ¬¡­¡­", m_strUser.c_str());
 					reconnect();
 				}));
 			}
@@ -1493,7 +1493,7 @@ void TAP_CDECL TraderiTap::OnRtnFund(const ITapTrade::TapAPIFundData *rsp)
 		return;
 
 	if (m_traderSink)
-		m_traderSink->handleTraderLog(LL_INFO, "[TraderiTap]èµ„é‡‘æ›´æ–°ï¼š%s", rsp->CurrencyNo);
+		m_traderSink->handleTraderLog(LL_INFO, "[TraderiTap]×Ê½ð¸üÐÂ£º%s", rsp->CurrencyNo);
 
 	const char* currency = currencyO2I(rsp->CurrencyNo);
 

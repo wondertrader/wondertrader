@@ -14,9 +14,9 @@
 
 #define UDP_MSG_SUBSCRIBE	0x100
 #define UDP_MSG_PUSHTICK	0x200
-#define UDP_MSG_PUSHORDQUE	0x201	//å§”æ‰˜é˜Ÿåˆ—
-#define UDP_MSG_PUSHORDDTL	0x202	//å§”æ‰˜æ˜ç»†
-#define UDP_MSG_PUSHTRANS	0x203	//é€ç¬”æˆäº¤
+#define UDP_MSG_PUSHORDQUE	0x201	//Î¯ÍĞ¶ÓÁĞ
+#define UDP_MSG_PUSHORDDTL	0x202	//Î¯ÍĞÃ÷Ï¸
+#define UDP_MSG_PUSHTRANS	0x203	//Öğ±Ê³É½»
 
 #pragma pack(push,1)
 
@@ -24,13 +24,13 @@ typedef struct UDPPacketHead
 {
 	uint32_t		_type;
 } UDPPacketHead;
-//UDPè¯·æ±‚åŒ…
+//UDPÇëÇó°ü
 typedef struct _UDPReqPacket : UDPPacketHead
 {
 	char			_data[1020];
 } UDPReqPacket;
 
-//UDPTickæ•°æ®åŒ…
+//UDPTickÊı¾İ°ü
 template <typename T>
 struct UDPDataPacket : UDPPacketHead
 {
@@ -100,7 +100,7 @@ void ParserUDP::release()
 
 bool ParserUDP::reconnect()
 {
-	{//å»ºç«‹å¹¿æ’­é€šé“
+	{//½¨Á¢¹ã²¥Í¨µÀ
 		if (_b_socket != NULL)
 		{
 			_b_socket->close();
@@ -124,7 +124,7 @@ bool ParserUDP::reconnect()
 	}
 
 	{
-		//å»ºç«‹è®¢é˜…é€šé“
+		//½¨Á¢¶©ÔÄÍ¨µÀ
 		if (_s_socket != NULL)
 		{
 			_s_socket->close();
@@ -193,7 +193,7 @@ void ParserUDP::handle_write(const boost::system::error_code& e)
 	if (e)
 	{
 		if (_sink)
-			_sink->handleParserLog(LL_ERROR, "[ParserUDP]å‘é€å‡ºé”™:%s(%d)", e.message().c_str(), e.value());
+			_sink->handleParserLog(LL_ERROR, "[ParserUDP]·¢ËÍ³ö´í:%s(%d)", e.message().c_str(), e.value());
 	}
 	else
 	{
@@ -275,7 +275,7 @@ void ParserUDP::handle_read(const boost::system::error_code& e, std::size_t byte
 			_sink->handleEvent(WPE_Close, 0);
 
 		if(_sink)
-			_sink->handleParserLog(LL_ERROR, "[ParserUDP]æ¥æ”¶å‡ºé”™:%s(%d)", e.message().c_str(), e.value());
+			_sink->handleParserLog(LL_ERROR, "[ParserUDP]½ÓÊÕ³ö´í:%s(%d)", e.message().c_str(), e.value());
 
 		if (!_stopped && !_connecting)
 		{		

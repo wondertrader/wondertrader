@@ -5,7 +5,7 @@
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief äº¤æ˜“æ—¶é—´æ¨¡æ¿ç®¡ç†å™¨æŽ¥å£å®šä¹‰
+ * \brief ½»Ò×Ê±¼äÄ£°å¹ÜÀíÆ÷½Ó¿Ú¶¨Òå
  */
 #pragma once
 
@@ -15,17 +15,17 @@ NS_OTP_BEGIN
 class WTSSessionInfo;
 
 /*
- *	æ—¶é—´æ¨¡æ¿ç®¡ç†å™¨æŽ¥å£
+ *	Ê±¼äÄ£°å¹ÜÀíÆ÷½Ó¿Ú
  */
 class ISessionMgr
 {
 public:
 	/*
-	 *	èŽ·å–åˆçº¦æ‰€å±žçš„æ—¶é—´æ¨¡æ¿å¯¹è±¡æŒ‡é’ˆ
-	 *	@code	åˆçº¦ä»£ç 
-	 *	@exchg	äº¤æ˜“æ‰€ä»£ç 
+	 *	»ñÈ¡ºÏÔ¼ËùÊôµÄÊ±¼äÄ£°å¶ÔÏóÖ¸Õë
+	 *	@code	ºÏÔ¼´úÂë
+	 *	@exchg	½»Ò×Ëù´úÂë
 	 *
-	 *	è¿”å›žå€¼	æ—¶é—´æ¨¡æ¿æŒ‡é’ˆï¼Œä¸å­˜åœ¨åˆ™ä¸ºNULL
+	 *	·µ»ØÖµ	Ê±¼äÄ£°åÖ¸Õë£¬²»´æÔÚÔòÎªNULL
 	 */
 	virtual WTSSessionInfo* getSession(const char* code, const char* exchg = "")	= 0;
 };

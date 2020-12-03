@@ -21,17 +21,17 @@ public:
 	virtual void on_tick(ICtaStraCtx* ctx, const char* stdCode, WTSTickData* newTick) override;
 
 private:
-	//æŒ‡æ ‡å‚æ•°
+	//Ö¸±ê²ÎÊı
 	double		_k1;
 	double		_k2;
 	uint32_t	_days;
 
-	//æ•°æ®å‘¨æœŸ
+	//Êı¾İÖÜÆÚ
 	std::string _period;
-	//Kçº¿æ¡æ•°
+	//KÏßÌõÊı
 	uint32_t	_count;
 
-	//åˆçº¦ä»£ç 
+	//ºÏÔ¼´úÂë
 	std::string _code;
 
 	bool		_isstk;

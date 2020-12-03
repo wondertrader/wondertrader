@@ -5,7 +5,7 @@
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief WtЕ⌠│Г╖█Д©║Ф│╞Ц─│Е░┬Г╨╕Д©║Ф│╞Е╝ Д╧┴Ф√┤Д╩╤
+ * \brief Wtф╥жжпео╒║╒╨от╪пео╒╤╗рЕнд╪Ч
  */
 #pragma once
 #include "WTSObject.hpp"

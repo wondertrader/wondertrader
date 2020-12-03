@@ -28,7 +28,7 @@ bool SelStrategyMgr::loadFactories(const char* path)
 {
 	if (!StdFile::exists(path))
 	{
-		WTSLogger::error("MFç­–ç•¥å·¥å‚ç›®å½•%sä¸å­˜åœ¨", path);
+		WTSLogger::error("MF²ßÂÔ¹¤³§Ä¿Â¼%s²»´æÔÚ", path);
 		return false;
 	}
 
@@ -69,7 +69,7 @@ bool SelStrategyMgr::loadFactories(const char* path)
 			fInfo._remover = (FuncDeleteSelStraFact)DLLHelper::get_symbol(hInst, "deleteMfStrategyFact");
 			fInfo._fact = fact;
 
-			WTSLogger::info("CTAç­–ç•¥å·¥å‚[%s]åŠ è½½æˆåŠŸ", fact->getName());
+			WTSLogger::info("CTA²ßÂÔ¹¤³§[%s]¼ÓÔØ³É¹¦", fact->getName());
 
 			count++;
 		}
@@ -81,7 +81,7 @@ bool SelStrategyMgr::loadFactories(const char* path)
 
 	}
 
-	WTSLogger::info("ç›®å½•[%s]ä¸‹å…±åŠ è½½%uä¸ªCTAç­–ç•¥å·¥å‚", path, count);
+	WTSLogger::info("Ä¿Â¼[%s]ÏÂ¹²¼ÓÔØ%u¸öCTA²ßÂÔ¹¤³§", path, count);
 
 	return true;
 }

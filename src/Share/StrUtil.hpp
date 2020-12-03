@@ -5,7 +5,7 @@
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief å­—ç¬¦ä¸²å¤„ç†çš„å°è£…
+ * \brief ×Ö·û´®´¦ÀíµÄ·â×°
  */
 #pragma once
 #include <string>
@@ -52,7 +52,7 @@ public:
 		return ret;
 	}
 
-	//å»æ‰æ‰€æœ‰ç©ºæ ¼
+	//È¥µôËùÓĞ¿Õ¸ñ
 	static void trimAllSpace(std::string &str)
 	{
 		std::string::iterator destEnd = std::remove_if(str.begin(), str.end(), [](const char& c){
@@ -61,7 +61,7 @@ public:
 		str.resize(destEnd-str.begin());
 	}
 
-	//å»é™¤æ‰€æœ‰ç‰¹å®šå­—ç¬¦
+	//È¥³ıËùÓĞÌØ¶¨×Ö·û
 	static void trimAll(std::string &str,char ch)
 	{
 		std::string::iterator destEnd=std::remove_if(str.begin(),str.end(),std::bind1st(std::equal_to<char>(),ch));
@@ -329,7 +329,7 @@ public:
 		return temp;
 	}
 
-	//åœ°çƒäººéƒ½çŸ¥é“ï¼Œæ¶å¿ƒçš„std::stringæ˜¯æ²¡æœ‰CStringçš„Formatè¿™ä¸ªå‡½æ•°çš„ï¼Œæ‰€ä»¥æˆ‘ä»¬è‡ªå·±é€ 
+	//µØÇòÈË¶¼ÖªµÀ£¬¶ñĞÄµÄstd::stringÊÇÃ»ÓĞCStringµÄFormatÕâ¸öº¯ÊıµÄ£¬ËùÒÔÎÒÃÇ×Ô¼ºÔì
 	static std::string printf(const char *pszFormat, ...)
 	{
 		va_list argptr;
@@ -339,7 +339,7 @@ public:
 		return result;
 	}
 
-	//åœ°çƒäººéƒ½çŸ¥é“ï¼Œæ¶å¿ƒçš„std::stringæ˜¯æ²¡æœ‰CStringçš„Formatè¿™ä¸ªå‡½æ•°çš„ï¼Œæ‰€ä»¥æˆ‘ä»¬è‡ªå·±é€ 
+	//µØÇòÈË¶¼ÖªµÀ£¬¶ñĞÄµÄstd::stringÊÇÃ»ÓĞCStringµÄFormatÕâ¸öº¯ÊıµÄ£¬ËùÒÔÎÒÃÇ×Ô¼ºÔì
 	static std::string printf2(const char *pszFormat, ...)
 	{
 		va_list argptr;
@@ -349,7 +349,7 @@ public:
 		return result;
 	}
 
-	//åœ°çƒäººéƒ½çŸ¥é“ï¼Œæ¶å¿ƒçš„std::stringæ˜¯æ²¡æœ‰CStringçš„Formatè¿™ä¸ªå‡½æ•°çš„ï¼Œæ‰€ä»¥æˆ‘ä»¬è‡ªå·±é€ 
+	//µØÇòÈË¶¼ÖªµÀ£¬¶ñĞÄµÄstd::stringÊÇÃ»ÓĞCStringµÄFormatÕâ¸öº¯ÊıµÄ£¬ËùÒÔÎÒÃÇ×Ô¼ºÔì
 	static std::string printf2(const char *pszFormat,va_list argptr)
 	{
 		int         size   = 1024;
@@ -400,7 +400,7 @@ public:
 		return ret;
 	}
 
-	//åœ°çƒäººéƒ½çŸ¥é“ï¼Œæ¶å¿ƒçš„std::stringæ˜¯æ²¡æœ‰CStringçš„Formatè¿™ä¸ªå‡½æ•°çš„ï¼Œæ‰€ä»¥æˆ‘ä»¬è‡ªå·±é€ 
+	//µØÇòÈË¶¼ÖªµÀ£¬¶ñĞÄµÄstd::stringÊÇÃ»ÓĞCStringµÄFormatÕâ¸öº¯ÊıµÄ£¬ËùÒÔÎÒÃÇ×Ô¼ºÔì
 	static std::string printf(const char* pszFormat, va_list argptr)
 	{
 		int size = 1024;
@@ -436,7 +436,7 @@ public:
 		return ret;
 	}
 
-	//å–å¾—å³è¾¹çš„Nä¸ªå­—ç¬¦
+	//È¡µÃÓÒ±ßµÄN¸ö×Ö·û
 	static std::string right(const std::string &src,size_t nCount)
 	{
 		if(nCount>src.length())
@@ -444,7 +444,7 @@ public:
 		return src.substr(src.length()-nCount,nCount);
 	}
 
-	//å–å·¦è¾¹çš„Nä¸ªå­—ç¬¦
+	//È¡×ó±ßµÄN¸ö×Ö·û
 	static std::string left(const std::string &src,size_t nCount)
 	{
 		return src.substr(0,nCount);

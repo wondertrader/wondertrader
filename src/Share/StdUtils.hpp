@@ -5,7 +5,7 @@
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief C++æ ‡å‡†åº“ä¸€äº›å®šä¹‰çš„ç®€å•å°è£…ï¼Œæ–¹ä¾¿è°ƒç”¨
+ * \brief C++±ê×¼¿âÒ»Ğ©¶¨ÒåµÄ¼òµ¥·â×°£¬·½±ãµ÷ÓÃ
  */
 #pragma once
 
@@ -23,12 +23,12 @@
 #endif
 
 //////////////////////////////////////////////////////////////////////////
-//stdçº¿ç¨‹ç±»
+//stdÏß³ÌÀà
 typedef std::thread StdThread;
 typedef std::shared_ptr<StdThread> StdThreadPtr;
 
 //////////////////////////////////////////////////////////////////////////
-//stdäº’æ–¥é‡å’Œé”
+//std»¥³âÁ¿ºÍËø
 typedef std::recursive_mutex	StdRecurMutex;
 typedef std::mutex				StdUniqueMutex;
 typedef std::condition_variable	StdCondVariable;
@@ -54,7 +54,7 @@ private:
 };
 
 //////////////////////////////////////////////////////////////////////////
-//æ–‡ä»¶è¾…åŠ©ç±»
+//ÎÄ¼ş¸¨ÖúÀà
 class StdFile
 {
 public:

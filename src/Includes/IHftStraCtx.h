@@ -32,12 +32,12 @@ public:
 public:
 	virtual uint32_t id() = 0;
 
-	//鍥炶皟鍑芥暟
+	//回调函数
 	virtual void on_init() = 0;
 	virtual void on_tick(const char* stdCode, WTSTickData* newTick) = 0;
 	virtual void on_bar(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar){}
 
-	//绛栫暐鎺ュ彛
+	//策略接口
 	virtual bool		stra_cancel(uint32_t localid) = 0;
 	virtual OrderIDs	stra_cancel(const char* stdCode, bool isBuy, double qty) = 0;
 	virtual OrderIDs	stra_buy(const char* stdCode, double price, double qty) = 0;

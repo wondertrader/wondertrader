@@ -30,39 +30,39 @@ public:
 
 public:
 	/*
-	*	æ‰§è¡Œå•å…ƒåç§°
+	*	Ö´ĞĞµ¥ÔªÃû³Æ
 	*/
 	virtual const char* getName() = 0;
 
 	/*
-	*	æ‰€å±æ‰§è¡Œå™¨å·¥å‚åç§°
+	*	ËùÊôÖ´ĞĞÆ÷¹¤³§Ãû³Æ
 	*/
 	virtual const char* getFactName() = 0;
 
 	/*
-	*	åˆå§‹åŒ–
+	*	³õÊ¼»¯
 	*/
 	virtual bool init(WTSVariant* cfg){ return true; }
 
 	virtual const char* id() const { return _id.c_str(); }
 
 	/*
-	*	åˆå§‹åŒ–å›è°ƒ
+	*	³õÊ¼»¯»Øµ÷
 	*/
 	virtual void on_init(ISelStraCtx* ctx){}
 
 	/*
-	*	ä¸»ä½“é€»è¾‘æ‰§è¡Œå…¥å£
+	*	Ö÷ÌåÂß¼­Ö´ĞĞÈë¿Ú
 	*/
 	virtual void on_schedule(ISelStraCtx* ctx, uint32_t uDate, uint32_t uTime){}
 
 	/*
-	*	tickæ•°æ®
+	*	tickÊı¾İ
 	*/
 	virtual void on_tick(ISelStraCtx* ctx, const char* stdCode, WTSTickData* newTick){}
 
 	/*
-	*	Kçº¿é—­åˆ
+	*	KÏß±ÕºÏ
 	*/
 	virtual void on_bar(ISelStraCtx* ctx, const char* stdCode, const char* period, WTSBarStruct* newBar){}
 
@@ -71,7 +71,7 @@ protected:
 };
 
 //////////////////////////////////////////////////////////////////////////
-//ç­–ç•¥å·¥å‚æ¥å£
+//²ßÂÔ¹¤³§½Ó¿Ú
 typedef void(*FuncEnumSelStrategyCallback)(const char* factName, const char* straName, bool isLast);
 
 class ISelStrategyFact
@@ -82,28 +82,28 @@ public:
 
 public:
 	/*
-	*	è·å–å·¥å‚å
+	*	»ñÈ¡¹¤³§Ãû
 	*/
 	virtual const char* getName() = 0;
 
 	/*
-	*	æšä¸¾ç­–ç•¥
+	*	Ã¶¾Ù²ßÂÔ
 	*/
 	virtual void enumStrategy(FuncEnumSelStrategyCallback cb) = 0;
 
 	/*
-	*	æ ¹æ®åç§°åˆ›å»ºKçº¿çº§åˆ«ç­–ç•¥
+	*	¸ù¾İÃû³Æ´´½¨KÏß¼¶±ğ²ßÂÔ
 	*/
 	virtual SelStrategy* createStrategy(const char* name, const char* id) = 0;
 
 
 	/*
-	*	åˆ é™¤ç­–ç•¥
+	*	É¾³ı²ßÂÔ
 	*/
 	virtual bool deleteStrategy(SelStrategy* stra) = 0;
 };
 
-//åˆ›å»ºå·¥å‚
+//´´½¨¹¤³§
 typedef ISelStrategyFact* (*FuncCreateSelStraFact)();
-//åˆ é™¤å·¥å‚
+//É¾³ı¹¤³§
 typedef void(*FuncDeleteSelStraFact)(ISelStrategyFact* &fact);

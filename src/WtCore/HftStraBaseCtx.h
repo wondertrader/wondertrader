@@ -29,7 +29,7 @@ public:
 
 public:
 	//////////////////////////////////////////////////////////////////////////
-	//IHftStraCtx 鎺ュ彛
+	//IHftStraCtx 接口
 	virtual uint32_t id() override;
 
 	virtual void on_init() override;
@@ -99,7 +99,7 @@ protected:
 
 	BoostFilePtr	_sig_logs;
 
-	//鐢ㄦ埛鏁版嵁
+	//用户数据
 	typedef std::unordered_map<std::string, std::string> StringHashMap;
 	StringHashMap	_user_datas;
 	bool			_ud_modified;

@@ -5,7 +5,7 @@
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief æ•°æ®ç»Ÿè®¡è¾…åŠ©ç±»
+ * \brief Êı¾İÍ³¼Æ¸¨ÖúÀà
  */
 #pragma once
 #include <boost/atomic.hpp>

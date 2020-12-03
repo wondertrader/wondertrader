@@ -11,25 +11,25 @@ const int FLAG_SIZE = 8;
 
 typedef enum tagBlockType
 {
-	BT_RT_Minute1		= 1,	//å®æ—¶1åˆ†é’Ÿçº¿
-	BT_RT_Minute5		= 2,	//å®æ—¶5åˆ†é’Ÿçº¿
-	BT_RT_Ticks			= 3,	//å®æ—¶tickæ•°æ®
-	BT_RT_Cache			= 4,	//å®æ—¶ç¼“å­˜
-	BT_RT_Trnsctn		= 5,	//å®æ—¶é€ç¬”æˆäº¤
-	BT_RT_OrdDetail		= 6,	//å®æ—¶é€ç¬”å§”æ‰˜
-	BT_RT_OrdQueue		= 7,	//å®æ—¶å§”æ‰˜é˜Ÿåˆ—
+	BT_RT_Minute1		= 1,	//ÊµÊ±1·ÖÖÓÏß
+	BT_RT_Minute5		= 2,	//ÊµÊ±5·ÖÖÓÏß
+	BT_RT_Ticks			= 3,	//ÊµÊ±tickÊı¾İ
+	BT_RT_Cache			= 4,	//ÊµÊ±»º´æ
+	BT_RT_Trnsctn		= 5,	//ÊµÊ±Öğ±Ê³É½»
+	BT_RT_OrdDetail		= 6,	//ÊµÊ±Öğ±ÊÎ¯ÍĞ
+	BT_RT_OrdQueue		= 7,	//ÊµÊ±Î¯ÍĞ¶ÓÁĞ
 
-	BT_HIS_Minute1		= 21,	//å†å²1åˆ†é’Ÿçº¿
-	BT_HIS_Minute5		= 22,	//å†å²5åˆ†é’Ÿçº¿
-	BT_HIS_Day			= 23,	//å†å²æ—¥çº¿
-	BT_HIS_Ticks		= 24,	//å†å²tick
-	BT_HIS_Trnsctn		= 25,	//å†å²é€ç¬”æˆäº¤
-	BT_HIS_OrdDetail	= 26,	//å†å²é€ç¬”å§”æ‰˜
-	BT_HIS_OrdQueue		= 27	//å†å²å§”æ‰˜é˜Ÿåˆ—
+	BT_HIS_Minute1		= 21,	//ÀúÊ·1·ÖÖÓÏß
+	BT_HIS_Minute5		= 22,	//ÀúÊ·5·ÖÖÓÏß
+	BT_HIS_Day			= 23,	//ÀúÊ·ÈÕÏß
+	BT_HIS_Ticks		= 24,	//ÀúÊ·tick
+	BT_HIS_Trnsctn		= 25,	//ÀúÊ·Öğ±Ê³É½»
+	BT_HIS_OrdDetail	= 26,	//ÀúÊ·Öğ±ÊÎ¯ÍĞ
+	BT_HIS_OrdQueue		= 27	//ÀúÊ·Î¯ÍĞ¶ÓÁĞ
 } BlockType;
 
-#define BLOCK_VERSION_RAW	1	//æ™®é€šç‰ˆæœ¬
-#define BLOCK_VERSION_CMP	2	//å‹ç¼©ç‰ˆæœ¬
+#define BLOCK_VERSION_RAW	1	//ÆÕÍ¨°æ±¾
+#define BLOCK_VERSION_CMP	2	//Ñ¹Ëõ°æ±¾
 
 typedef struct _BlockHeader
 {
@@ -44,7 +44,7 @@ typedef struct _BlockHeaderV2
 	uint16_t	_type;
 	uint16_t	_version;
 
-	uint64_t	_size;		//å‹ç¼©åçš„æ•°æ®å¤§å°
+	uint64_t	_size;		//Ñ¹ËõºóµÄÊı¾İ´óĞ¡
 } BlockHeaderV2;
 
 #define BLOCK_HEADER_SIZE	sizeof(BlockHeader)
@@ -56,37 +56,37 @@ typedef struct _RTBlockHeader : BlockHeader
 	uint32_t _capacity;
 } RTBlockHeader;
 
-//æ¯æ—¥å®æ—¶æ•°æ®å—å¤´éƒ¨
+//Ã¿ÈÕÊµÊ±Êı¾İ¿éÍ·²¿
 typedef struct _RTDayBlockHeader : RTBlockHeader
 {
 	uint32_t		_date;
 } RTDayBlockHeader;
 
-//å®æ—¶Kçº¿æ•°æ®å—
+//ÊµÊ±KÏßÊı¾İ¿é
 typedef struct _RTKlineBlock : _RTDayBlockHeader
 {
 	WTSBarStruct	_bars[0];
 } RTKlineBlock;
 
-//tickæ•°æ®æ•°æ®å—
+//tickÊı¾İÊı¾İ¿é
 typedef struct _RTTickBlock : RTDayBlockHeader
 {
 	WTSTickStruct	_ticks[0];
 } RTTickBlock;
 
-//é€ç¬”æˆäº¤æ•°æ®å—
+//Öğ±Ê³É½»Êı¾İ¿é
 typedef struct _RTTransBlock : RTDayBlockHeader
 {
 	WTSTransStruct	_trans[0];
 } RTTransBlock;
 
-//é€ç¬”å§”æ‰˜æ•°æ®å—
+//Öğ±ÊÎ¯ÍĞÊı¾İ¿é
 typedef struct _RTOrdDtlBlock : RTDayBlockHeader
 {
 	WTSOrdDtlStruct	_details[0];
 } RTOrdDtlBlock;
 
-//å§”æ‰˜é˜Ÿåˆ—æ•°æ®å—
+//Î¯ÍĞ¶ÓÁĞÊı¾İ¿é
 typedef struct _RTOrdQueBlock : RTDayBlockHeader
 {
 	WTSOrdQueStruct	_queues[0];
@@ -98,20 +98,20 @@ typedef struct _TickCacheItem
 	WTSTickStruct	_tick;
 } TickCacheItem;
 
-//å®æ—¶tickç¼“å­˜
+//ÊµÊ±tick»º´æ
 typedef struct _RTTickCache : RTBlockHeader
 {
 	TickCacheItem	_ticks[0];
 } RTTickCache;
 
 
-//å†å²Tickæ•°æ®
+//ÀúÊ·TickÊı¾İ
 typedef struct _HisTickBlock : BlockHeader
 {
 	WTSTickStruct	_ticks[0];
 } HisTickBlock;
 
-//å†å²Tickæ•°æ®V2
+//ÀúÊ·TickÊı¾İV2
 typedef struct _HisTickBlockV2 : BlockHeaderV2
 {
 	char			_data[0];
@@ -132,13 +132,13 @@ typedef struct _HisOrdQueBlockV2 : BlockHeaderV2
 	char			_data[0];
 } HisOrdQueBlockV2;
 
-//å†å²Kçº¿æ•°æ®
+//ÀúÊ·KÏßÊı¾İ
 typedef struct _HisKlineBlock : BlockHeader
 {
 	WTSBarStruct	_bars[0];
 } HisKlineBlock;
 
-//å†å²Kçº¿æ•°æ®V2
+//ÀúÊ·KÏßÊı¾İV2
 typedef struct _HisKlineBlockV2 : BlockHeaderV2
 {
 	char			_data[0];
