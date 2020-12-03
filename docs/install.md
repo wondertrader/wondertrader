@@ -59,3 +59,14 @@
     ```shell
     $ sudo chmod 777 build_xxx.sh
     ```
+* 使用Docker作为开发环境。
+    docker环境已经将将Linux下的依赖提前安装。
+    进入到docker目录下，
+    ```
+    $ docker build -t wondertrader .
+    ```
+    镜像构建完成后，在宿主机上运行
+    ```
+    docker run -it --rm  wondertrader /bin/bash
+    ```
+    之后可以使用vscode 的远程开发模式连接到docker容器进行开发。
