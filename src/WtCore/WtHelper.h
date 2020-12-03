@@ -43,10 +43,10 @@ public:
 	static void setInstDir(const char* inst_dir){ _inst_dir = inst_dir; }
 
 private:
-	static uint32_t		_cur_date;	//µ±Ç°ÈÕÆÚ
-	static uint32_t		_cur_time;	//µ±Ç°Ê±¼ä, ÒÔ·ÖÖÓÎª×¼
-	static uint32_t		_cur_secs;	//µ±Ç°ÃëÊı, °üº¬ºÁÃë
-	static uint32_t		_cur_tdate;	//µ±Ç°½»Ò×ÈÕprivate:
+	static uint32_t		_cur_date;	//å½“å‰æ—¥æœŸ
+	static uint32_t		_cur_time;	//å½“å‰æ—¶é—´, ä»¥åˆ†é’Ÿä¸ºå‡†
+	static uint32_t		_cur_secs;	//å½“å‰ç§’æ•°, åŒ…å«æ¯«ç§’
+	static uint32_t		_cur_tdate;	//å½“å‰äº¤æ˜“æ—¥private:
 	static std::string	_inst_dir;
 };
 

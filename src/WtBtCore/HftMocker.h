@@ -170,7 +170,7 @@ private:
 
 	std::stringstream	_ofs_signals;
 
-	//用户数据
+	//鐢ㄦ埛鏁版嵁
 	typedef std::unordered_map<std::string, std::string> StringHashMap;
 	StringHashMap	_user_datas;
 	bool			_ud_modified;

@@ -189,7 +189,7 @@ void ParseriTap::OnRspLogin(TAPIINT32 errorCode, const TapAPIQuotLoginRspInfo *i
 	{
 		if(m_parserSink)
 		{
-			m_parserSink->handleParserLog(LL_INFO, "[ParseriTap]%sµÇÂ¼³É¹¦", m_strUser.c_str());
+			m_parserSink->handleParserLog(LL_INFO, "[ParseriTap]%sç™»å½•æˆåŠŸ", m_strUser.c_str());
 			m_parserSink->handleEvent(WPE_Login, 0);
 		}
 
@@ -201,7 +201,7 @@ void ParseriTap::OnRspLogin(TAPIINT32 errorCode, const TapAPIQuotLoginRspInfo *i
 	{
 		if(m_parserSink)
 		{
-			m_parserSink->handleParserLog(LL_INFO, "[ParseriTap]%sµÇÂ¼Ê§°Ü:%d", m_strUser.c_str(), errorCode);
+			m_parserSink->handleParserLog(LL_INFO, "[ParseriTap]%sç™»å½•å¤±è´¥:%d", m_strUser.c_str(), errorCode);
 			m_parserSink->handleEvent(WPE_Login, errorCode);
 		}
 	}
@@ -218,7 +218,7 @@ void ParseriTap::OnDisconnect(TAPIINT32 reasonCode)
 {
 	if(m_parserSink && !m_bStopped)
 	{
-		m_parserSink->handleParserLog(LL_ERROR, StrUtil::printf("[ParseriTap]ĞĞÇé·şÎñÁ¬½ÓÒÑ¶Ï¿ª,´íÎóÂë: %d...", reasonCode).c_str());
+		m_parserSink->handleParserLog(LL_ERROR, StrUtil::printf("[ParseriTap]è¡Œæƒ…æœåŠ¡è¿æ¥å·²æ–­å¼€,é”™è¯¯ç : %d...", reasonCode).c_str());
 		m_parserSink->handleEvent(WPE_Close, 0);
 	}
 
@@ -228,10 +228,10 @@ void ParseriTap::OnDisconnect(TAPIINT32 reasonCode)
 		if (!m_bReconnect)
 		{
 			m_bReconnect = true;
-			//ÕâÀï¶ªµ½Ïß³ÌÀïÈ¥´¦Àí£¬ÈÃOnClose¿ÉÒÔÂíÉÏ·µ»Ø
+			//è¿™é‡Œä¸¢åˆ°çº¿ç¨‹é‡Œå»å¤„ç†ï¼Œè®©OnCloseå¯ä»¥é©¬ä¸Šè¿”å›
 			BoostThreadPtr thrd(new BoostThread([this](){
 				boost::this_thread::sleep(boost::posix_time::seconds(2));
-				m_parserSink->handleParserLog(LL_WARN, "[ParseriTap]ĞĞÇéÕıÔÚÖØÁ¬¡­¡­", m_strUser.c_str());
+				m_parserSink->handleParserLog(LL_WARN, "[ParseriTap]è¡Œæƒ…æ­£åœ¨é‡è¿â€¦â€¦", m_strUser.c_str());
 				reconnect();
 			}));
 		}
@@ -271,17 +271,17 @@ void ParseriTap::OnRtnQuote(const TapAPIQuoteWhole *info)
 	uint32_t curHour = curTime/10000000;
 	if(hour == 23 && curHour == 0)
 	{
-		//ĞĞÇéÊ±¼äÂıÓÚÏµÍ³Ê±¼ä
+		//è¡Œæƒ…æ—¶é—´æ…¢äºç³»ç»Ÿæ—¶é—´
 		quote.action_date = TimeUtils::getNextDate(curDate, -1);
 	}
 	else if(hour == 0 && curHour == 23)
 	{
-		//ÏµÍ³Ê±¼äÂıÓÚĞĞÇéÊ±¼ä
+		//ç³»ç»Ÿæ—¶é—´æ…¢äºè¡Œæƒ…æ—¶é—´
 		quote.action_date = TimeUtils::getNextDate(curDate, 1);
 	}
 	/*
 	if(quote.action_time < 005000000 && quote.action_date != m_uTradingDate)
-	{//Èç¹ûÊ±¼äĞ¡ÓÚ00:05·Ö,²¢ÇÒµ±Ç°ÈÕÆÚ²»µÈÓÚ½»Ò×ÈÕ,ËµÃ÷ÊÇÒ¹ÅÌÊ±¼ä,ÔòÈÕÆÚÇ¿ÖÆÉèÖÃÎª½»Ò×ÈÕ
+	{//å¦‚æœæ—¶é—´å°äº00:05åˆ†,å¹¶ä¸”å½“å‰æ—¥æœŸä¸ç­‰äºäº¤æ˜“æ—¥,è¯´æ˜æ˜¯å¤œç›˜æ—¶é—´,åˆ™æ—¥æœŸå¼ºåˆ¶è®¾ç½®ä¸ºäº¤æ˜“æ—¥
 		quote.action_date = m_uTradingDate;
 	}
 	*/
@@ -306,7 +306,7 @@ void ParseriTap::OnRtnQuote(const TapAPIQuoteWhole *info)
 	quote.pre_settle = (info->QPreSettlePrice);
 	quote.pre_interest = (uint32_t)(info->QPrePositionQty + 0.5);
 
-	//Î¯Âô¼Û¸ñ
+	//å§”å–ä»·æ ¼
 	for(uint32_t i = 0; i < 10; i++)
 	{
 		quote.ask_prices[i] = (info->QAskPrice[i]);
@@ -351,12 +351,12 @@ void ParseriTap::OnRspSubscribeQuote(TAPIUINT32 sessionID, TAPIINT32 errorCode, 
 		uint32_t curHour = curTime / 10000000;
 		if (hour == 23 && curHour == 0)
 		{
-			//ĞĞÇéÊ±¼äÂıÓÚÏµÍ³Ê±¼ä
+			//è¡Œæƒ…æ—¶é—´æ…¢äºç³»ç»Ÿæ—¶é—´
 			quote.action_date = TimeUtils::getNextDate(curDate, -1);
 		}
 		else if (hour == 0 && curHour == 23)
 		{
-			//ÏµÍ³Ê±¼äÂıÓÚĞĞÇéÊ±¼ä
+			//ç³»ç»Ÿæ—¶é—´æ…¢äºè¡Œæƒ…æ—¶é—´
 			quote.action_date = TimeUtils::getNextDate(curDate, 1);
 		}
 
@@ -380,7 +380,7 @@ void ParseriTap::OnRspSubscribeQuote(TAPIUINT32 sessionID, TAPIINT32 errorCode, 
 		quote.pre_settle = (info->QPreSettlePrice);
 		quote.pre_interest = (uint32_t)(info->QPrePositionQty + 0.5);
 
-		//Î¯Âô¼Û¸ñ
+		//å§”å–ä»·æ ¼
 		for (uint32_t i = 0; i < 10; i++)
 		{
 			quote.ask_prices[i] = (info->QAskPrice[i]);
@@ -435,13 +435,13 @@ bool ParseriTap::login(bool bNeedReconn /* = false */)
 	if(iResult != TAPIERROR_SUCCEED)
 	{
 		if(m_parserSink)
-			m_parserSink->handleParserLog(LL_ERROR, StrUtil::printf("[ParseriTap]µÇÂ¼ÇëÇó·¢ËÍÊ§°Ü, ´íÎóÂë:%d", iResult).c_str());
+			m_parserSink->handleParserLog(LL_ERROR, StrUtil::printf("[ParseriTap]ç™»å½•è¯·æ±‚å‘é€å¤±è´¥, é”™è¯¯ç :%d", iResult).c_str());
 
-		//Èç¹ûÁ¬½ÓÊ§°Ü£¬ÇÒĞèÒªÖØÁ¬£¬¾ÍÔÙÖØÁ¬
+		//å¦‚æœè¿æ¥å¤±è´¥ï¼Œä¸”éœ€è¦é‡è¿ï¼Œå°±å†é‡è¿
 		if(iResult == TAPIERROR_ConnectFail && bNeedReconn && !m_bStopped)
 		{
 			boost::this_thread::sleep(boost::posix_time::seconds(RECONNECT_SECONDS));
-			m_parserSink->handleParserLog(LL_INFO, StrUtil::printf("[ParseriTap]ĞĞÇéÕıÔÚÖØÁ¬...").c_str());
+			m_parserSink->handleParserLog(LL_INFO, StrUtil::printf("[ParseriTap]è¡Œæƒ…æ­£åœ¨é‡è¿...").c_str());
 			reconnect();
 		}
 	}
@@ -453,7 +453,7 @@ void ParseriTap::subscribe()
 {
 	CodeSet codeFilter = m_filterSubs;
 	if(codeFilter.empty())
-	{//Èç¹û¶©ÔÄÀñ°üÖ»¿ÕµÄ,ÔòÈ¡³öÈ«²¿ºÏÔ¼ÁĞ±í
+	{//å¦‚æœè®¢é˜…ç¤¼åŒ…åªç©ºçš„,åˆ™å–å‡ºå…¨éƒ¨åˆçº¦åˆ—è¡¨
 		return;
 	}
 
@@ -589,7 +589,7 @@ void ParseriTap::subscribe(const CodeSet &vecSymbols)
 			}
 
 			if(m_parserSink)
-				m_parserSink->handleParserLog(LL_INFO, StrUtil::printf("[ParseriTap]Ò»¹²¶©ÔÄ %d ¸öºÏÔ¼ĞĞÇé", vecSymbols.size()).c_str());
+				m_parserSink->handleParserLog(LL_INFO, StrUtil::printf("[ParseriTap]ä¸€å…±è®¢é˜… %d ä¸ªåˆçº¦è¡Œæƒ…", vecSymbols.size()).c_str());
 		}
 	}
 }

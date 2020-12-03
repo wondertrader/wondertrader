@@ -62,7 +62,7 @@ void WtCtaEngine::run(bool bAsync /* = false */)
 	WTSVariant* cfgProd = _cfg->get("product");
 	_tm_ticker->init(_data_mgr->reader(), cfgProd->getCString("session"));
 
-	//Æô¶¯Ö®Ç°£¬ÏÈ°ÑÔËĞĞÖĞµÄ²ßÂÔÂäµØ
+	//å¯åŠ¨ä¹‹å‰ï¼Œå…ˆæŠŠè¿è¡Œä¸­çš„ç­–ç•¥è½åœ°
 	{
 		rj::Document root(rj::kObjectType);
 		rj::Document::AllocatorType &allocator = root.GetAllocator();
@@ -169,7 +169,7 @@ void WtCtaEngine::on_init()
 
 void WtCtaEngine::on_session_begin()
 {
-	WTSLogger::info("½»Ò×ÈÕ%uÒÑ¿ªÊ¼", _cur_tdate);
+	WTSLogger::info("äº¤æ˜“æ—¥%uå·²å¼€å§‹", _cur_tdate);
 	for (auto it = _ctx_map.begin(); it != _ctx_map.end(); it++)
 	{
 		CtaContextPtr& ctx = it->second;
@@ -190,14 +190,14 @@ void WtCtaEngine::on_session_end()
 		ctx->on_session_end();
 	}
 
-	WTSLogger::info("½»Ò×ÈÕ%uÒÑ½áÊø", _cur_tdate);
+	WTSLogger::info("äº¤æ˜“æ—¥%uå·²ç»“æŸ", _cur_tdate);
 	if (_evt_listener)
 		_evt_listener->on_session_event(_cur_tdate, false);
 }
 
 void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 {
-	//È¥¼ì²éÒ»ÏÂ¹ıÂËÆ÷
+	//å»æ£€æŸ¥ä¸€ä¸‹è¿‡æ»¤å™¨
 	load_filters();
 
 	std::unordered_map<std::string, double> target_pos;
@@ -214,8 +214,8 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 			{
 				if(qty != oldQty)
 				{
-					//Êä³öÈÕÖ¾
-					WTSLogger::info("[¹ıÂËÆ÷] ²ßÂÔ%sµÄºÏÔ¼%sµÄÄ¿±ê²ÖÎ»±»¹ıÂËÆ÷µ÷Õû: %d -> %d", ctx->name(), stdCode, oldQty, qty);
+					//è¾“å‡ºæ—¥å¿—
+					WTSLogger::info("[è¿‡æ»¤å™¨] ç­–ç•¥%sçš„åˆçº¦%sçš„ç›®æ ‡ä»“ä½è¢«è¿‡æ»¤å™¨è°ƒæ•´: %d -> %d", ctx->name(), stdCode, oldQty, qty);
 				}
 
 				std::string realCode = stdCode;
@@ -232,8 +232,8 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 			}
 			else
 			{
-				//Êä³öÈÕÖ¾
-				WTSLogger::info("[¹ıÂËÆ÷] ²ßÂÔ%sµÄºÏÔ¼%sµÄÄ¿±ê²ÖÎ»±»¹ıÂËÆ÷ºöÂÔ", ctx->name(), stdCode);
+				//è¾“å‡ºæ—¥å¿—
+				WTSLogger::info("[è¿‡æ»¤å™¨] ç­–ç•¥%sçš„åˆçº¦%sçš„ç›®æ ‡ä»“ä½è¢«è¿‡æ»¤å™¨å¿½ç•¥", ctx->name(), stdCode);
 			}
 		});
 	}
@@ -241,11 +241,11 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 	bool bRiskEnabled = false;
 	if(!decimal::eq(_risk_volscale, 1.0) && _risk_date == _cur_tdate)
 	{
-		WTSLogger::info2("risk", "×éºÏÅÌ²ÖÎ»·ç¿ØÏµÊıÎª%.2f", _risk_volscale);
+		WTSLogger::info2("risk", "ç»„åˆç›˜ä»“ä½é£æ§ç³»æ•°ä¸º%.2f", _risk_volscale);
 		bRiskEnabled = true;
 	}
 
-	//´¦Àí×éºÏÀíÂÛ²¿Î»
+	//å¤„ç†ç»„åˆç†è®ºéƒ¨ä½
 	for (auto it = target_pos.begin(); it != target_pos.end(); it++)
 	{
 		std::string stdCode = it->first;
@@ -272,7 +272,7 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 					append_signal(stdCode.c_str(), 0);
 				});
 
-				WTSLogger::error("Æ·ÖÖ%s²»ÔÚÄ¿±ê²ÖÎ»ÄÚ£¬×Ô¶¯ÉèÖÃÎª0", stdCode.c_str());
+				WTSLogger::error("å“ç§%sä¸åœ¨ç›®æ ‡ä»“ä½å†…ï¼Œè‡ªåŠ¨è®¾ç½®ä¸º0", stdCode.c_str());
 			}
 
 			target_pos[stdCode] = 0;
@@ -320,7 +320,7 @@ void WtCtaEngine::handle_pos_change(const char* stdCode, double diffQty)
 	bool bRiskEnabled = false;
 	if (!decimal::eq(_risk_volscale, 1.0) && _risk_date == _cur_tdate)
 	{
-		WTSLogger::info2("risk", "×éºÏÅÌ²ÖÎ»·ç¿ØÏµÊıÎª%.2f", _risk_volscale);
+		WTSLogger::info2("risk", "ç»„åˆç›˜ä»“ä½é£æ§ç³»æ•°ä¸º%.2f", _risk_volscale);
 		bRiskEnabled = true;
 	}
 	if (bRiskEnabled && targetPos != 0)
@@ -347,11 +347,11 @@ void WtCtaEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 
 	_data_mgr->handle_push_quote(stdCode, curTick);
 
-	//Èç¹ûÊÇÕæÊµ´úÂë, ÔòÒª´«µİ¸øÖ´ĞĞÆ÷
+	//å¦‚æœæ˜¯çœŸå®ä»£ç , åˆ™è¦ä¼ é€’ç»™æ‰§è¡Œå™¨
 	auto it = _subed_raw_codes.find(stdCode);
 	if (it != _subed_raw_codes.end())
 	{
-		//ÊÇ·ñÖ÷Á¦ºÏÔ¼´úÂëµÄ±ê¼Ç, Ö÷ÒªÓÃÓÚ¸øÖ´ĞĞÆ÷·¢Êı¾İµÄ
+		//æ˜¯å¦ä¸»åŠ›åˆçº¦ä»£ç çš„æ ‡è®°, ä¸»è¦ç”¨äºç»™æ‰§è¡Œå™¨å‘æ•°æ®çš„
 		_exec_mgr.handle_tick(stdCode, curTick);
 	}
 
@@ -371,7 +371,7 @@ void WtCtaEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 		}
 	}
 
-	//ÔİÊ±ÏÈ²»¿¼ÂÇ³É±¾, ÏÈ¼ÆËã³öÀ´
+	//æš‚æ—¶å…ˆä¸è€ƒè™‘æˆæœ¬, å…ˆè®¡ç®—å‡ºæ¥
 	/*
 	double dynprofit = 0.0;
 	for(auto v : _ctx_map)
@@ -410,7 +410,7 @@ void WtCtaEngine::on_bar(const char* stdCode, const char* period, uint32_t times
 		}
 	}
 
-	WTSLogger::info("KÏß [%s#%s%d] @ %uÒÑ±ÕºÏ", stdCode, period, times, period[0] == 'd' ? newBar->date : newBar->time);
+	WTSLogger::info("Kçº¿ [%s#%s%d] @ %uå·²é—­åˆ", stdCode, period, times, period[0] == 'd' ? newBar->date : newBar->time);
 }
 
 bool WtCtaEngine::isInTrading()

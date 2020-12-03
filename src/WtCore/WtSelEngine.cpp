@@ -82,7 +82,7 @@ void WtSelEngine::on_bar(const char* stdCode, const char* period, uint32_t times
 		}
 	}
 
-	WTSLogger::info("KÏß [%s#%s%d] @ %uÒÑ±ÕºÏ", stdCode, period, times, period[0] == 'd' ? newBar->date : newBar->time);
+	WTSLogger::info("Kçº¿ [%s#%s%d] @ %uå·²é—­åˆ", stdCode, period, times, period[0] == 'd' ? newBar->date : newBar->time);
 }
 
 void WtSelEngine::on_tick(const char* stdCode, WTSTickData* curTick)
@@ -91,11 +91,11 @@ void WtSelEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 
 	_data_mgr->handle_push_quote(stdCode, curTick);
 
-	//Èç¹ûÊÇÕæÊµ´úÂë, ÔòÒª´«µİ¸øÖ´ĞĞÆ÷
+	//å¦‚æœæ˜¯çœŸå®ä»£ç , åˆ™è¦ä¼ é€’ç»™æ‰§è¡Œå™¨
 	auto it = _subed_raw_codes.find(stdCode);
 	if (it != _subed_raw_codes.end())
 	{
-		//ÊÇ·ñÖ÷Á¦ºÏÔ¼´úÂëµÄ±ê¼Ç, Ö÷ÒªÓÃÓÚ¸øÖ´ĞĞÆ÷·¢Êı¾İµÄ
+		//æ˜¯å¦ä¸»åŠ›åˆçº¦ä»£ç çš„æ ‡è®°, ä¸»è¦ç”¨äºç»™æ‰§è¡Œå™¨å‘æ•°æ®çš„
 		//for (auto it = _executers.begin(); it != _executers.end(); it++)
 		//{
 		//	WtExecuterPtr& executer = (*it);
@@ -123,7 +123,7 @@ void WtSelEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 
 void WtSelEngine::on_minute_end(uint32_t curDate, uint32_t curTime)
 {
-	//Òª±È½ÏÏÂÒ»·ÖÖÓµÄÊ±¼ä
+	//è¦æ¯”è¾ƒä¸‹ä¸€åˆ†é’Ÿçš„æ—¶é—´
 	uint32_t nextTime = TimeUtils::getNextMinute(curTime, 1);
 	if (nextTime < curTime)
 		curDate = TimeUtils::getNextDate(curDate);
@@ -143,7 +143,7 @@ void WtSelEngine::on_minute_end(uint32_t curDate, uint32_t curTime)
 		if (_base_data_mgr->isHoliday(tInfo->_trdtpl, curDate, true))
 			continue;
 
-		//»ñÈ¡ÉÏÒ»¸ö½»Ò×ÈÕµÄÈÕÆÚ
+		//è·å–ä¸Šä¸€ä¸ªäº¤æ˜“æ—¥çš„æ—¥æœŸ
 		uint32_t preTDate = TimeUtils::getNextDate(_cur_date, -1);
 		bool bHasHoliday = false;
 		uint32_t days = 1;
@@ -165,8 +165,8 @@ void WtSelEngine::on_minute_end(uint32_t curDate, uint32_t curTime)
 			break;
 		case TPT_Minute:
 			{
-				uint32_t minutes = sInfo->timeToMinutes(curTime);	//ÏÈ½«Ê±¼ä×ª»»³É·ÖÖÓÊı
-				if(minutes != 0 && (minutes%tInfo->_time == 0))		//Èç¹û·ÖÖÓÊıÄÜ±»Õû³ı£¬ÇÒ²»Îª0£¬Ôò¿ÉÒÔ´¥·¢
+				uint32_t minutes = sInfo->timeToMinutes(curTime);	//å…ˆå°†æ—¶é—´è½¬æ¢æˆåˆ†é’Ÿæ•°
+				if(minutes != 0 && (minutes%tInfo->_time == 0))		//å¦‚æœåˆ†é’Ÿæ•°èƒ½è¢«æ•´é™¤ï¼Œä¸”ä¸ä¸º0ï¼Œåˆ™å¯ä»¥è§¦å‘
 				{
 					bIgnore = false;
 				}
@@ -179,15 +179,15 @@ void WtSelEngine::on_minute_end(uint32_t curDate, uint32_t curTime)
 				bIgnore = false;
 			else if (bHasHoliday)
 			{
-				//ÉÏÒ»¸ö½»Ò×ÈÕÔÚÉÏ¸öÔÂ£¬ÇÒµ±Ç°ÈÕÆÚ´óÓÚ´¥·¢ÈÕÆÚ
-				//ËµÃ÷Õâ¸öÔÂµÄ¿ªÊ¼ÈÕÆÚÔÚ½Ú¼ÙÈÕÄÚ£¬Ë³ÑÓµ½½ñÌì
+				//ä¸Šä¸€ä¸ªäº¤æ˜“æ—¥åœ¨ä¸Šä¸ªæœˆï¼Œä¸”å½“å‰æ—¥æœŸå¤§äºè§¦å‘æ—¥æœŸ
+				//è¯´æ˜è¿™ä¸ªæœˆçš„å¼€å§‹æ—¥æœŸåœ¨èŠ‚å‡æ—¥å†…ï¼Œé¡ºå»¶åˆ°ä»Šå¤©
 				if ((preTDate % 10000 / 100 < _cur_date % 10000 / 100) && _cur_date % 1000000 > tInfo->_day)
 				{
 					bIgnore = false;
 				}
 				else if (preTDate % 1000000 < tInfo->_day && _cur_date % 1000000 > tInfo->_day)
 				{
-					//ÉÏÒ»¸ö½»Ò×ÈÕÔÚÍ¬Ò»¸öÔÂ£¬ÇÒĞ¡ÓÚ´¥·¢ÈÕÆÚ£¬µ«ÊÇ½ñÌì´óÓÚ´¥·¢ÈÕÆÚ£¬ËµÃ÷ÕıÈ·´¥·¢ÈÕÆÚµ½½Ú¼ÙÈÕÄÚ£¬Ë³ÑÓµ½½ñÌì
+					//ä¸Šä¸€ä¸ªäº¤æ˜“æ—¥åœ¨åŒä¸€ä¸ªæœˆï¼Œä¸”å°äºè§¦å‘æ—¥æœŸï¼Œä½†æ˜¯ä»Šå¤©å¤§äºè§¦å‘æ—¥æœŸï¼Œè¯´æ˜æ­£ç¡®è§¦å‘æ—¥æœŸåˆ°èŠ‚å‡æ—¥å†…ï¼Œé¡ºå»¶åˆ°ä»Šå¤©
 					bIgnore = false;
 				}
 			}
@@ -205,7 +205,7 @@ void WtSelEngine::on_minute_end(uint32_t curDate, uint32_t curTime)
 				}
 				else if (preWD > weekDay && weekDay > tInfo->_day)
 				{
-					//ÉÏÒ»¸ö½»Ò×ÈÕµÄĞÇÆÚ´óÓÚ½ñÌìµÄĞÇÆÚ£¬ËµÃ÷»»ÁËÒ»ÖÜÁË
+					//ä¸Šä¸€ä¸ªäº¤æ˜“æ—¥çš„æ˜ŸæœŸå¤§äºä»Šå¤©çš„æ˜ŸæœŸï¼Œè¯´æ˜æ¢äº†ä¸€å‘¨äº†
 					bIgnore = false;
 				}
 				else if (preWD < tInfo->_day && weekDay > tInfo->_day)
@@ -223,7 +223,7 @@ void WtSelEngine::on_minute_end(uint32_t curDate, uint32_t curTime)
 		if (bIgnore)
 			continue;
 
-		//TODO: »Øµ÷ÈÎÎñ
+		//TODO: å›è°ƒä»»åŠ¡
 		SelContextPtr ctx = getContext(tInfo->_id);
 		StdThreadPtr thrd(new StdThread([ctx, curDate, curTime, nextTime](){
 			if (ctx)
@@ -240,7 +240,7 @@ void WtSelEngine::run(bool bAsync /*= false*/)
 	_tm_ticker = new WtSelRtTicker(this);
 	_tm_ticker->init(_data_mgr->reader(), cfgProd->getCString("session"));
 
-	//Æô¶¯Ö®Ç°£¬ÏÈ°ÑÔËĞĞÖĞµÄ²ßÂÔÂäµØ
+	//å¯åŠ¨ä¹‹å‰ï¼Œå…ˆæŠŠè¿è¡Œä¸­çš„ç­–ç•¥è½åœ°
 	{
 		rj::Document root(rj::kObjectType);
 		rj::Document::AllocatorType &allocator = root.GetAllocator();
@@ -293,7 +293,7 @@ void WtSelEngine::addContext(SelContextPtr ctx, uint32_t date, uint32_t time, Ta
 	auto it = _tasks.find(ctx->id());
 	if(it != _tasks.end())
 	{
-		WTSLogger::error("ÈÎÎñ×¢²áÊ§°Ü£ºÈÎÎñÃû%uÒÑ±»×¢²á", ctx->id());
+		WTSLogger::error("ä»»åŠ¡æ³¨å†Œå¤±è´¥ï¼šä»»åŠ¡å%uå·²è¢«æ³¨å†Œ", ctx->id());
 		return;
 	}
 
@@ -339,7 +339,7 @@ void WtSelEngine::handle_pos_change(const char* stdCode, double diffQty)
 	bool bRiskEnabled = false;
 	if (!decimal::eq(_risk_volscale, 1.0) && _risk_date == _cur_tdate)
 	{
-		WTSLogger::info2("risk", "×éºÏÅÌ²ÖÎ»·ç¿ØÏµÊıÎª%.2f", _risk_volscale);
+		WTSLogger::info2("risk", "ç»„åˆç›˜ä»“ä½é£æ§ç³»æ•°ä¸º%.2f", _risk_volscale);
 		bRiskEnabled = true;
 	}
 	if (bRiskEnabled && targetPos != 0)

@@ -5,7 +5,7 @@
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief Êı¾İÆ´½Ó¹¤³§½Ó¿Ú¶¨Òå
+ * \brief æ•°æ®æ‹¼æ¥å·¥å‚æ¥å£å®šä¹‰
  */
 #pragma once
 #include <stdint.h>
@@ -24,18 +24,18 @@ class WTSContractInfo;
 struct WTSBarStruct;
 
 /*
- *	Êı¾İ¹¤³§
- *	Ö÷ÒªÓÃÓÚ¸÷ÖÖÊı¾İµÄÆ´½Ó
- *	ÕâÀïÖ»¶¨ÒåÒ»¸ö½Ó¿Ú
+ *	æ•°æ®å·¥å‚
+ *	ä¸»è¦ç”¨äºå„ç§æ•°æ®çš„æ‹¼æ¥
+ *	è¿™é‡Œåªå®šä¹‰ä¸€ä¸ªæ¥å£
  */
 class IDataFactory
 {
 public:
 	/*
-	 *	¸üĞÂKÏßÊı¾İ
-	 *	@klineData Òª¸üĞÂµÄKÏßÊı¾İ
-	 *	@tick ×îĞÂµÄtickÊı¾İ
-	 *	·µ»ØÖµ ÊÇ·ñÓĞĞÂµÄKÏßÉú³É
+	 *	æ›´æ–°Kçº¿æ•°æ®
+	 *	@klineData è¦æ›´æ–°çš„Kçº¿æ•°æ®
+	 *	@tick æœ€æ–°çš„tickæ•°æ®
+	 *	è¿”å›å€¼ æ˜¯å¦æœ‰æ–°çš„Kçº¿ç”Ÿæˆ
 	 */
 	virtual WTSBarStruct*	updateKlineData(WTSKlineData* klineData, WTSTickData* tick, WTSSessionInfo* sInfo)						= 0;
 	virtual WTSBarStruct*	updateKlineData(WTSKlineData* klineData, WTSBarStruct* newBasicBar, WTSSessionInfo* sInfo)				= 0;

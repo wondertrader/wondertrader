@@ -18,7 +18,7 @@ NS_OTP_END
 USING_NS_OTP;
 
 /*
- *	·ÂÕæ½»Ò×Æ÷
+ *	ä»¿çœŸäº¤æ˜“å™¨
  */
 class TraderMocker : public ITraderApi
 {
@@ -28,7 +28,7 @@ public:
 
 private:
 	/*
-	*	´éºÏ ¶¨Ê±Æ÷
+	*	æ’®åˆ å®šæ—¶å™¨
 	*/
 	int32_t		match_once();
 

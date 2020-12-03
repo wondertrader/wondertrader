@@ -5,7 +5,7 @@
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief Êı¾İÆ´½Ó¹¤³§Àà¶¨Òå
+ * \brief æ•°æ®æ‹¼æ¥å·¥å‚ç±»å®šä¹‰
  */
 #pragma once
 #include "../Includes/IDataFactory.h"

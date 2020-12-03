@@ -36,7 +36,7 @@ public:
 public:
 	virtual uint32_t id() = 0;
 
-	//回调函数
+	//鍥炶皟鍑芥暟
 	virtual void on_init() = 0;
 	virtual void on_session_begin() = 0;
 	virtual void on_session_end() = 0;
@@ -50,7 +50,7 @@ public:
 
 	virtual void enum_position(FuncEnumSelPositionCallBack cb) = 0;
 
-	//策略接口
+	//绛栫暐鎺ュ彛
 	virtual double stra_get_position(const char* stdCode, const char* userTag = "") = 0;
 	virtual void stra_set_position(const char* stdCode, double qty, const char* userTag = "") = 0;
 
