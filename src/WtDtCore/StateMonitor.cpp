@@ -42,7 +42,7 @@ bool StateMonitor::initialize(const char* filename, WTSBaseDataMgr* bdMgr, DataM
 
 	if (!StdFile::exists(filename))
 	{
-		WTSLogger::error("×´Ì¬ÅäÖÃÎÄ¼ş %s ²»´æÔÚ", filename);
+		WTSLogger::error("çŠ¶æ€é…ç½®æ–‡ä»¶ %s ä¸å­˜åœ¨", filename);
 		return false;
 	}
 
@@ -51,7 +51,7 @@ bool StateMonitor::initialize(const char* filename, WTSBaseDataMgr* bdMgr, DataM
 	rj::Document root;
 	if (root.Parse(content.c_str()).HasParseError())
 	{
-		WTSLogger::error("×´Ì¬ÅäÖÃÎÄ¼ş½âÎöÊ§°Ü");
+		WTSLogger::error("çŠ¶æ€é…ç½®æ–‡ä»¶è§£æå¤±è´¥");
 		return false;
 	}
 
@@ -63,46 +63,46 @@ bool StateMonitor::initialize(const char* filename, WTSBaseDataMgr* bdMgr, DataM
 		WTSSessionInfo* ssInfo = _bd_mgr->getSession(sid);
 		if (ssInfo == NULL)
 		{
-			WTSLogger::error("½»Ò×Ê±¼äÄ£°å[%s]²»´æÔÚ£¬Ìø¹ı¸ÃÌõ×´Ì¬¿ØÖÆÉèÖÃ", sid);
+			WTSLogger::error("äº¤æ˜“æ—¶é—´æ¨¡æ¿[%s]ä¸å­˜åœ¨ï¼Œè·³è¿‡è¯¥æ¡çŠ¶æ€æ§åˆ¶è®¾ç½®", sid);
 			continue;
 		}
 
 		StatePtr sInfo(new StateInfo);
-		sInfo->_init_time = jItem["inittime"].GetUint();	//³õÊ¼»¯Ê±¼ä£¬³õÊ¼»¯ÒÔºóÊı¾İ²Å¿ªÊ¼½ÓÊÕ
-		sInfo->_close_time = jItem["closetime"].GetUint();	//ÊÕÅÌÊ±¼ä£¬ÊÕÅÌºóÊı¾İ²»ÔÙ½ÓÊÕÁË
-		sInfo->_proc_time = jItem["proctime"].GetUint();	//ÅÌºó´¦ÀíÊ±¼ä£¬Ö÷Òª°ÑÊµÊ±Êı¾İ×ªµ½ÀúÊ·È¥
+		sInfo->_init_time = jItem["inittime"].GetUint();	//åˆå§‹åŒ–æ—¶é—´ï¼Œåˆå§‹åŒ–ä»¥åæ•°æ®æ‰å¼€å§‹æ¥æ”¶
+		sInfo->_close_time = jItem["closetime"].GetUint();	//æ”¶ç›˜æ—¶é—´ï¼Œæ”¶ç›˜åæ•°æ®ä¸å†æ¥æ”¶äº†
+		sInfo->_proc_time = jItem["proctime"].GetUint();	//ç›˜åå¤„ç†æ—¶é—´ï¼Œä¸»è¦æŠŠå®æ—¶æ•°æ®è½¬åˆ°å†å²å»
 
 		strcpy(sInfo->_session, sid);
 
-		auto secInfo = ssInfo->getAuctionSection();//ÕâÀïÃæÊÇÆ«ÒÆ¹ıµÄÊ±¼ä£¬Òª×¢ÒâÁË!!!
+		auto secInfo = ssInfo->getAuctionSection();//è¿™é‡Œé¢æ˜¯åç§»è¿‡çš„æ—¶é—´ï¼Œè¦æ³¨æ„äº†!!!
 		if (secInfo.first != 0 || secInfo.second != 0)
 		{
 			uint32_t stime = secInfo.first;
 			uint32_t etime = secInfo.second;
 
-			stime = stime / 100 * 60 + stime % 100;//ÏÈ½«Ê±¼ä×ª³É·ÖÖÓÊı
+			stime = stime / 100 * 60 + stime % 100;//å…ˆå°†æ—¶é—´è½¬æˆåˆ†é’Ÿæ•°
 			etime = etime / 100 * 60 + etime % 100;
 
-			stime = stime / 60 * 100 + stime % 60;//ÔÙ½«·ÖÖÓÊı×ª³ÉÊ±¼ä
-			etime = etime / 60 * 100 + etime % 60;//ÏÈ²»¿¼ÂÇ°ëÒ¹12µãµÄÇé¿ö£¬Ä¿Ç°¿´À´£¬¼¸ºõÃ»ÓĞ
+			stime = stime / 60 * 100 + stime % 60;//å†å°†åˆ†é’Ÿæ•°è½¬æˆæ—¶é—´
+			etime = etime / 60 * 100 + etime % 60;//å…ˆä¸è€ƒè™‘åŠå¤œ12ç‚¹çš„æƒ…å†µï¼Œç›®å‰çœ‹æ¥ï¼Œå‡ ä¹æ²¡æœ‰
 			sInfo->_sections.push_back(StateInfo::Section({ stime, etime }));
 		}
 
-		auto sections = ssInfo->getTradingSections();//ÕâÀïÃæÊÇÆ«ÒÆ¹ıµÄÊ±¼ä£¬Òª×¢ÒâÁË!!!
+		auto sections = ssInfo->getTradingSections();//è¿™é‡Œé¢æ˜¯åç§»è¿‡çš„æ—¶é—´ï¼Œè¦æ³¨æ„äº†!!!
 		for (auto it = sections.begin(); it != sections.end(); it++)
 		{
 			auto secInfo = *it;
 			uint32_t stime = secInfo.first;
 			uint32_t etime = secInfo.second;
 
-			stime = stime / 100 * 60 + stime % 100;//ÏÈ½«Ê±¼ä×ª³É·ÖÖÓÊı
+			stime = stime / 100 * 60 + stime % 100;//å…ˆå°†æ—¶é—´è½¬æˆåˆ†é’Ÿæ•°
 			etime = etime / 100 * 60 + etime % 100;
 
-			stime--;//¿ªÊ¼·ÖÖÓÊı-1
-			etime++;//½áÊø·ÖÖÓÊı+1
+			stime--;//å¼€å§‹åˆ†é’Ÿæ•°-1
+			etime++;//ç»“æŸåˆ†é’Ÿæ•°+1
 
-			stime = stime / 60 * 100 + stime % 60;//ÔÙ½«·ÖÖÓÊı×ª³ÉÊ±¼ä
-			etime = etime / 60 * 100 + etime % 60;//ÏÈ²»¿¼ÂÇ°ëÒ¹12µãµÄÇé¿ö£¬Ä¿Ç°¿´À´£¬¼¸ºõÃ»ÓĞ
+			stime = stime / 60 * 100 + stime % 60;//å†å°†åˆ†é’Ÿæ•°è½¬æˆæ—¶é—´
+			etime = etime / 60 * 100 + etime % 60;//å…ˆä¸è€ƒè™‘åŠå¤œ12ç‚¹çš„æƒ…å†µï¼Œç›®å‰çœ‹æ¥ï¼Œå‡ ä¹æ²¡æœ‰
 			sInfo->_sections.push_back(StateInfo::Section({ stime, etime }));
 		}
 
@@ -116,7 +116,7 @@ bool StateMonitor::initialize(const char* filename, WTSBaseDataMgr* bdMgr, DataM
 			uint32_t offDate = ssInfo->getOffsetDate(curDate, curMin);
 			uint32_t offMin = ssInfo->offsetTime(curMin);
 
-			//ÏÈ»ñÈ¡»ù×¼µÄ½»Ò×ÈÕ
+			//å…ˆè·å–åŸºå‡†çš„äº¤æ˜“æ—¥
 
 			for (auto it = pCommSet->begin(); it != pCommSet->end(); it++)
 			{
@@ -130,7 +130,7 @@ bool StateMonitor::initialize(const char* filename, WTSBaseDataMgr* bdMgr, DataM
 					(ssInfo->getOffsetMins() <= 0 && ! _bd_mgr->isTradingDate(pid, offDate))
 					)
 				{
-					WTSLogger::info("Æ·ÖÖ%s´¦ÓÚ½Ú¼ÙÈÕ", pid);
+					WTSLogger::info("å“ç§%så¤„äºèŠ‚å‡æ—¥", pid);
 				}
 			}
 		}
@@ -194,18 +194,18 @@ void StateMonitor::run()
 								{
 									const char* pid = (*it).c_str();
 									/*
-									 *	Èç¹ûÊ±¼äÍùºóÆ«ÒÆ
-									 *	Èç¹ûµ±Ç°ÈÕÆÚ²»ÊÇ½»Ò×ÈÕ£¬ÇÒ²»´¦ÓÚÒ¹ÅÌºó°ëÒ¹£¨½»Ò×Ê±¼äÇÒ×òÌìÊÇ½»Ò×ÈÕ£©
-									 *	»òÕßÊ±¼äÍùºóÆ«ÒÆµÄ»°£¬¾Í¿´Æ«ÒÆÈÕÆÚÊÇ·ñÊÇ½Ú¼ÙÈÕ
+									 *	å¦‚æœæ—¶é—´å¾€ååç§»
+									 *	å¦‚æœå½“å‰æ—¥æœŸä¸æ˜¯äº¤æ˜“æ—¥ï¼Œä¸”ä¸å¤„äºå¤œç›˜ååŠå¤œï¼ˆäº¤æ˜“æ—¶é—´ä¸”æ˜¨å¤©æ˜¯äº¤æ˜“æ—¥ï¼‰
+									 *	æˆ–è€…æ—¶é—´å¾€ååç§»çš„è¯ï¼Œå°±çœ‹åç§»æ—¥æœŸæ˜¯å¦æ˜¯èŠ‚å‡æ—¥
 									 */
 									if ((mInfo->getOffsetMins() > 0 &&
-										(! _bd_mgr->isTradingDate(pid, curDate) &&	//µ±Ç°ÈÕÖ¾²»ÊÇ½»Ò×ÈÕ
-										!(mInfo->isInTradingTime(curMin) &&  _bd_mgr->isTradingDate(pid, prevDate)))) ||	//µ±Ç°²»ÔÚ½»Ò×Ê±¼ä£¬ÇÒ×òÌìÊÇ½»Ò×ÈÕ
+										(! _bd_mgr->isTradingDate(pid, curDate) &&	//å½“å‰æ—¥å¿—ä¸æ˜¯äº¤æ˜“æ—¥
+										!(mInfo->isInTradingTime(curMin) &&  _bd_mgr->isTradingDate(pid, prevDate)))) ||	//å½“å‰ä¸åœ¨äº¤æ˜“æ—¶é—´ï¼Œä¸”æ˜¨å¤©æ˜¯äº¤æ˜“æ—¥
 										(mInfo->getOffsetMins() <= 0 && ! _bd_mgr->isTradingDate(pid, offDate))
 										)
 									{
 										ss_a << pid << ",";
-										WTSLogger::info("Æ·ÖÖ%s´¦ÓÚ½Ú¼ÙÈÕ", pid);
+										WTSLogger::info("å“ç§%så¤„äºèŠ‚å‡æ—¥", pid);
 									}
 									else
 									{
@@ -214,23 +214,23 @@ void StateMonitor::run()
 									}
 								}
 
-								//WTSLogger::info("½»Ò×Ê±¼äÄ£°å %s[%s]½»Ò×Æ·ÖÖ£º%s£¬Ğİ¼ÙÆ·ÖÖ£º%s", mInfo->name(), sInfo->_session, ss_b.str().c_str(), ss_a.str().c_str());
+								//WTSLogger::info("äº¤æ˜“æ—¶é—´æ¨¡æ¿ %s[%s]äº¤æ˜“å“ç§ï¼š%sï¼Œä¼‘å‡å“ç§ï¼š%s", mInfo->name(), sInfo->_session, ss_b.str().c_str(), ss_a.str().c_str());
 							}
 							else
 							{
-								WTSLogger::info("½»Ò×Ê±¼äÄ£°å %s[%s]Ã»ÓĞ¹ØÁªÆ·ÖÖ£¬½øÈëĞİ¼Ù×´Ì¬", mInfo->name(), sInfo->_session);
+								WTSLogger::info("äº¤æ˜“æ—¶é—´æ¨¡æ¿ %s[%s]æ²¡æœ‰å…³è”å“ç§ï¼Œè¿›å…¥ä¼‘å‡çŠ¶æ€", mInfo->name(), sInfo->_session);
 								sInfo->_state = SS_Holiday;
 							}
 
 							if(isAllHoliday)
 							{
-								WTSLogger::info("½»Ò×Ê±¼äÄ£°å %s[%s]È«²¿Æ·ÖÖ´¦ÓÚ½Ú¼ÙÈÕ£¬½øÈëĞİ¼Ù×´Ì¬", mInfo->name(), sInfo->_session);
+								WTSLogger::info("äº¤æ˜“æ—¶é—´æ¨¡æ¿ %s[%s]å…¨éƒ¨å“ç§å¤„äºèŠ‚å‡æ—¥ï¼Œè¿›å…¥ä¼‘å‡çŠ¶æ€", mInfo->name(), sInfo->_session);
 								sInfo->_state = SS_Holiday;
 							}
 							else if (offTime >= offCloseTime)
 							{
 								sInfo->_state = SS_CLOSED;
-								WTSLogger::info("½»Ò×Ê±¼äÄ£°å %s[%s]Í£Ö¹½ÓÊÕÊı¾İ", mInfo->name(), sInfo->_session);
+								WTSLogger::info("äº¤æ˜“æ—¶é—´æ¨¡æ¿ %s[%s]åœæ­¢æ¥æ”¶æ•°æ®", mInfo->name(), sInfo->_session);
 							}
 							else if (aucStartTime != -1 && offTime >= aucStartTime)
 							{
@@ -241,20 +241,20 @@ void StateMonitor::run()
 									//	_dt_mgr->preloadRtCaches();
 									//}
 									sInfo->_state = SS_RECEIVING;
-									WTSLogger::info("½»Ò×Ê±¼äÄ£°å %s[%s]¿ªÊ¼½ÓÊÕÊı¾İ", mInfo->name(), sInfo->_session);
+									WTSLogger::info("äº¤æ˜“æ—¶é—´æ¨¡æ¿ %s[%s]å¼€å§‹æ¥æ”¶æ•°æ®", mInfo->name(), sInfo->_session);
 								}
 								else
 								{
-									//Ğ¡ÓÚÊĞ³¡ÊÕÅÌÊ±¼ä£¬ÇÒ²»ÔÚ½»Ò×Ê±¼ä£¬ÔòÎªÖĞÍ¾ĞİÅÌÊ±¼ä
+									//å°äºå¸‚åœºæ”¶ç›˜æ—¶é—´ï¼Œä¸”ä¸åœ¨äº¤æ˜“æ—¶é—´ï¼Œåˆ™ä¸ºä¸­é€”ä¼‘ç›˜æ—¶é—´
 									if(offTime < mInfo->getCloseTime(true))
 									{
 										sInfo->_state = SS_PAUSED;
-										WTSLogger::info("½»Ò×Ê±¼äÄ£°å %s[%s]ÔİÍ£½ÓÊÕÊı¾İ", mInfo->name(), sInfo->_session);
+										WTSLogger::info("äº¤æ˜“æ—¶é—´æ¨¡æ¿ %s[%s]æš‚åœæ¥æ”¶æ•°æ®", mInfo->name(), sInfo->_session);
 									}
 									else
-									{//´óÓÚÊĞ³¡ÊÕÅÌÊ±¼ä£¬µ«ÊÇÃ»ÓĞ´óÓÚ½ÓÊÕÊÕÅÌÊ±¼ä£¬Ôò»¹Òª¼ÌĞø½ÓÊÕ£¬Ö÷ÒªÊÇÒªÊÕ½áËã¼Û
+									{//å¤§äºå¸‚åœºæ”¶ç›˜æ—¶é—´ï¼Œä½†æ˜¯æ²¡æœ‰å¤§äºæ¥æ”¶æ”¶ç›˜æ—¶é—´ï¼Œåˆ™è¿˜è¦ç»§ç»­æ¥æ”¶ï¼Œä¸»è¦æ˜¯è¦æ”¶ç»“ç®—ä»·
 										sInfo->_state = SS_RECEIVING;
-										WTSLogger::info("½»Ò×Ê±¼äÄ£°å %s[%s]¿ªÊ¼½ÓÊÕÊı¾İ", mInfo->name(), sInfo->_session);
+										WTSLogger::info("äº¤æ˜“æ—¶é—´æ¨¡æ¿ %s[%s]å¼€å§‹æ¥æ”¶æ•°æ®", mInfo->name(), sInfo->_session);
 									}
 									
 								}
@@ -262,7 +262,7 @@ void StateMonitor::run()
 							else if (offTime >= offInitTime)
 							{
 								sInfo->_state = SS_INITIALIZED;
-								WTSLogger::info("½»Ò×Ê±¼äÄ£°å %s[%s]³õÊ¼»¯", mInfo->name(), sInfo->_session);
+								WTSLogger::info("äº¤æ˜“æ—¶é—´æ¨¡æ¿ %s[%s]åˆå§‹åŒ–", mInfo->name(), sInfo->_session);
 							}
 
 							
@@ -282,7 +282,7 @@ void StateMonitor::run()
 									//}
 									sInfo->_state = SS_PAUSED;
 
-									WTSLogger::info("½»Ò×Ê±¼äÄ£°å %s[%s]ÔİÍ£½ÓÊÕÊı¾İ", mInfo->name(), sInfo->_session);
+									WTSLogger::info("äº¤æ˜“æ—¶é—´æ¨¡æ¿ %s[%s]æš‚åœæ¥æ”¶æ•°æ®", mInfo->name(), sInfo->_session);
 								}
 								else
 								{
@@ -291,7 +291,7 @@ void StateMonitor::run()
 									//	_dt_mgr->preloadRtCaches();
 									//}
 									sInfo->_state = SS_RECEIVING;
-									WTSLogger::info("½»Ò×Ê±¼äÄ£°å %s[%s]¿ªÊ¼½ÓÊÕÊı¾İ", mInfo->name(), sInfo->_session);
+									WTSLogger::info("äº¤æ˜“æ—¶é—´æ¨¡æ¿ %s[%s]å¼€å§‹æ¥æ”¶æ•°æ®", mInfo->name(), sInfo->_session);
 								}
 								
 							}
@@ -305,7 +305,7 @@ void StateMonitor::run()
 							{
 								sInfo->_state = SS_CLOSED;
 
-								WTSLogger::info("½»Ò×Ê±¼äÄ£°å %s[%s]Í£Ö¹½ÓÊÕÊı¾İ", mInfo->name(), sInfo->_session);
+								WTSLogger::info("äº¤æ˜“æ—¶é—´æ¨¡æ¿ %s[%s]åœæ­¢æ¥æ”¶æ•°æ®", mInfo->name(), sInfo->_session);
 							}
 							else if (offTime >= mInfo->getAuctionStartTime(true))
 							{
@@ -319,21 +319,21 @@ void StateMonitor::run()
 										//}
 										sInfo->_state = SS_PAUSED;
 
-										WTSLogger::info("½»Ò×Ê±¼äÄ£°å %s[%s]ÔİÍ£½ÓÊÕÊı¾İ", mInfo->name(), sInfo->_session);
+										WTSLogger::info("äº¤æ˜“æ—¶é—´æ¨¡æ¿ %s[%s]æš‚åœæ¥æ”¶æ•°æ®", mInfo->name(), sInfo->_session);
 									}
 								}
 								else
 								{
-									//Õâ¾ÍÊÇÏÂÎçÊÕÅÌÒÔºóµÄÊ±¼ä
-									//ÕâÀï²»ÄÜ¸Ä×´Ì¬£¬ÒòÎªÒªÊÕ½áËã¼Û
+									//è¿™å°±æ˜¯ä¸‹åˆæ”¶ç›˜ä»¥åçš„æ—¶é—´
+									//è¿™é‡Œä¸èƒ½æ”¹çŠ¶æ€ï¼Œå› ä¸ºè¦æ”¶ç»“ç®—ä»·
 								}
 							}
 						}
 						break;
 					case SS_PAUSED:
 						{
-							//ĞİÏ¢×´Ì¬Ö»ÄÜ×ª»»Îª½»Ò××´Ì¬
-							//ÕâÀïÒªÓÃÆ«ÒÆ¹ıµÄÈÕÆÚ£¬²»È»Èç¹ûÖÜÁùÔçÉÏÓĞÖĞÍ¾ĞİÏ¢£¬¾Í»á³ö´í
+							//ä¼‘æ¯çŠ¶æ€åªèƒ½è½¬æ¢ä¸ºäº¤æ˜“çŠ¶æ€
+							//è¿™é‡Œè¦ç”¨åç§»è¿‡çš„æ—¥æœŸï¼Œä¸ç„¶å¦‚æœå‘¨å…­æ—©ä¸Šæœ‰ä¸­é€”ä¼‘æ¯ï¼Œå°±ä¼šå‡ºé”™
 							uint32_t weekDay = TimeUtils::getWeekDay();
 
 							bool isAllHoliday = true;
@@ -349,7 +349,7 @@ void StateMonitor::run()
 										(mInfo->getOffsetMins() <= 0 && ! _bd_mgr->isTradingDate(pid, offDate))
 										)
 									{
-										WTSLogger::info("Æ·ÖÖ%s´¦ÓÚ½Ú¼ÙÈÕ", pid);
+										WTSLogger::info("å“ç§%så¤„äºèŠ‚å‡æ—¥", pid);
 									}
 									else
 									{
@@ -364,12 +364,12 @@ void StateMonitor::run()
 								if (sInfo->isInSections(offTime))
 								{
 									sInfo->_state = SS_RECEIVING;
-									WTSLogger::info("½»Ò×Ê±¼äÄ£°å %s[%s]»Ö¸´½ÓÊÕÊı¾İ", mInfo->name(), sInfo->_session);
+									WTSLogger::info("äº¤æ˜“æ—¶é—´æ¨¡æ¿ %s[%s]æ¢å¤æ¥æ”¶æ•°æ®", mInfo->name(), sInfo->_session);
 								}
 							}
 							else
 							{
-								WTSLogger::info("½»Ò×Ê±¼äÄ£°å %s[%s]È«²¿Æ·ÖÖ´¦ÓÚ½Ú¼ÙÈÕ£¬½øÈëĞİ¼Ù×´Ì¬", mInfo->name(), sInfo->_session);
+								WTSLogger::info("äº¤æ˜“æ—¶é—´æ¨¡æ¿ %s[%s]å…¨éƒ¨å“ç§å¤„äºèŠ‚å‡æ—¥ï¼Œè¿›å…¥ä¼‘å‡çŠ¶æ€", mInfo->name(), sInfo->_session);
 								sInfo->_state = SS_Holiday;
 							}
 						}
@@ -384,7 +384,7 @@ void StateMonitor::run()
 								{
 									sInfo->_state = SS_PROCING;
 
-									WTSLogger::info("½»Ò×Ê±¼äÄ£°å %s[%s]¿ªÊ¼½øĞĞÊÕÅÌ×÷Òµ¡­¡­", mInfo->name(), sInfo->_session);
+									WTSLogger::info("äº¤æ˜“æ—¶é—´æ¨¡æ¿ %s[%s]å¼€å§‹è¿›è¡Œæ”¶ç›˜ä½œä¸šâ€¦â€¦", mInfo->name(), sInfo->_session);
 									_dt_mgr->transHisData(sInfo->_session);
 								}
 								else
@@ -398,7 +398,7 @@ void StateMonitor::run()
 								{
 									sInfo->_state = SS_PAUSED;
 
-									WTSLogger::info("½»Ò×Ê±¼äÄ£°å %s[%s] ÔİÍ£½ÓÊÕÊı¾İ", mInfo->name(), sInfo->_session);
+									WTSLogger::info("äº¤æ˜“æ—¶é—´æ¨¡æ¿ %s[%s] æš‚åœæ¥æ”¶æ•°æ®", mInfo->name(), sInfo->_session);
 								}
 							}
 						}
@@ -426,7 +426,7 @@ void StateMonitor::run()
 											(mInfo->getOffsetMins() <= 0 && ! _bd_mgr->isTradingDate(pid, offDate))
 											)
 										{
-											//WTSLogger::info("Æ·ÖÖ%s´¦ÓÚ½Ú¼ÙÈÕ", pid);
+											//WTSLogger::info("å“ç§%så¤„äºèŠ‚å‡æ—¥", pid);
 										}
 										else
 										{
@@ -438,7 +438,7 @@ void StateMonitor::run()
 								if(!isAllHoliday)
 								{
 									sInfo->_state = SS_ORIGINAL;
-									WTSLogger::info("½»Ò×Ê±¼äÄ£°å %s[%s]ÒÑÖØÖÃ", mInfo->name(), sInfo->_session);
+									WTSLogger::info("äº¤æ˜“æ—¶é—´æ¨¡æ¿ %s[%s]å·²é‡ç½®", mInfo->name(), sInfo->_session);
 								}
 							}
 						}
@@ -451,7 +451,7 @@ void StateMonitor::run()
 
 				if (isAllInState(SS_PROCING) && !isAllInState(SS_Holiday))
 				{
-					//»º´æÇåÀí
+					//ç¼“å­˜æ¸…ç†
 					_dt_mgr->transHisData("CMD_CLEAR_CACHE");
 				}
 			}

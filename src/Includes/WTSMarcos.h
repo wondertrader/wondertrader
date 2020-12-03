@@ -5,7 +5,7 @@
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief WonderTrader»ù´¡ºê¶¨ÒåÎÄ¼ş
+ * \brief WonderTraderåŸºç¡€å®å®šä¹‰æ–‡ä»¶
  */
 #pragma once
 #include <limits.h>

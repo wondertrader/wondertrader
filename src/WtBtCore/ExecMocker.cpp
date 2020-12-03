@@ -110,7 +110,7 @@ void ExecMocker::handle_session_end()
 	_orders.clear();
 	_undone = 0;
 
-	WTSLogger::info("×ÜÏÂµ¥±ÊÊı%u, ×ÜÏÂµ¥ÊıÁ¿%u, ×Ü³·µ¥±ÊÊı%u, ×Ü³·µ¥ÊıÁ¿%u, ×ÜĞÅºÅÊı%u", _ord_cnt, _ord_qty, _cacl_cnt, _cacl_qty, _sig_cnt);
+	WTSLogger::info("æ€»ä¸‹å•ç¬”æ•°%u, æ€»ä¸‹å•æ•°é‡%u, æ€»æ’¤å•ç¬”æ•°%u, æ€»æ’¤å•æ•°é‡%u, æ€»ä¿¡å·æ•°%u", _ord_cnt, _ord_qty, _cacl_cnt, _cacl_qty, _sig_cnt);
 }
 
 void ExecMocker::update_lob(WTSTickData* curTick)
@@ -140,7 +140,7 @@ void ExecMocker::update_lob(WTSTickData* curTick)
 		}
 	}
 
-	//ÂôÒ»ºÍÂòÒ»Ö®¼äµÄ±¨¼Û±ØĞëÈ«²¿Çå³ıµô
+	//å–ä¸€å’Œä¹°ä¸€ä¹‹é—´çš„æŠ¥ä»·å¿…é¡»å…¨éƒ¨æ¸…é™¤æ‰
 	if (!curBook._items.empty())
 	{
 		auto sit = curBook._items.lower_bound(curBook._bid_px);
@@ -162,7 +162,7 @@ void ExecMocker::fire_orders(const char* stdCode, OrderIDs& to_erase)
 		uint32_t localid = v.first;
 		OrderInfo& ordInfo = v.second;
 
-		if (ordInfo._state == 0)	//ĞèÒª¼¤»î
+		if (ordInfo._state == 0)	//éœ€è¦æ¿€æ´»
 		{
 			_exec_unit->on_entrust(localid, stdCode, true, "");
 			_exec_unit->on_order(localid, stdCode, ordInfo._buy, ordInfo._left, ordInfo._limit, false);
@@ -181,14 +181,14 @@ void ExecMocker::match_orders(WTSTickData* curTick, OrderIDs& to_erase)
 		uint32_t localid = v.first;
 		OrderInfo& ordInfo = v.second;
 
-		if (ordInfo._state == 9)//Òª³·µ¥
+		if (ordInfo._state == 9)//è¦æ’¤å•
 		{
 			_exec_unit->on_order(localid, ordInfo._code, ordInfo._buy, 0, ordInfo._limit, true);
 			ordInfo._state = 99;
 
 			to_erase.push_back(localid);
 
-			WTSLogger::info("¶©µ¥%uÒÑ³·Ïú, Ê£ÓàÊıÁ¿: %d", localid, ordInfo._left*(ordInfo._buy ? 1 : -1));
+			WTSLogger::info("è®¢å•%uå·²æ’¤é”€, å‰©ä½™æ•°é‡: %d", localid, ordInfo._left*(ordInfo._buy ? 1 : -1));
 			ordInfo._left = 0;
 			continue;
 		}
@@ -201,7 +201,7 @@ void ExecMocker::match_orders(WTSTickData* curTick, OrderIDs& to_erase)
 			double price;
 			double volumn;
 
-			//Ö÷¶¯¶©µ¥¾Í°´ÕÕ¶ÔÊÖ¼Û
+			//ä¸»åŠ¨è®¢å•å°±æŒ‰ç…§å¯¹æ‰‹ä»·
 			if(ordInfo._positive)
 			{
 				price = curTick->askprice(0);
@@ -218,12 +218,12 @@ void ExecMocker::match_orders(WTSTickData* curTick, OrderIDs& to_erase)
 				uint64_t sigUnixTime = TimeUtils::makeTime((uint32_t)(_sig_time / 10000), _sig_time % 10000 * 100000);
 				uint64_t ordUnixTime = TimeUtils::makeTime((uint32_t)(ordInfo._time / 1000000000), ordInfo._time % 1000000000);
 
-				//Èç¹û¼Û¸ñÏàµÈ£¬ĞèÒªÏÈ¿´ÅÅ¶ÓÎ»ÖÃ£¬Èç¹û¼Û¸ñ²»µÈËµÃ÷ÒÑ¾­È«²¿±»´óµ¥³ÔµôÁË
+				//å¦‚æœä»·æ ¼ç›¸ç­‰ï¼Œéœ€è¦å…ˆçœ‹æ’é˜Ÿä½ç½®ï¼Œå¦‚æœä»·æ ¼ä¸ç­‰è¯´æ˜å·²ç»å…¨éƒ¨è¢«å¤§å•åƒæ‰äº†
 				if (!ordInfo._positive && decimal::eq(price, ordInfo._limit))
 				{
 					uint32_t& quepos = ordInfo._queue;
 
-					//Èç¹û³É½»Á¿Ğ¡ÓÚÅÅ¶ÓÎ»ÖÃ£¬Ôò²»ÄÜ³É½»
+					//å¦‚æœæˆäº¤é‡å°äºæ’é˜Ÿä½ç½®ï¼Œåˆ™ä¸èƒ½æˆäº¤
 					if (volumn <= quepos)
 					{
 						quepos -= (uint32_t)volumn;
@@ -231,7 +231,7 @@ void ExecMocker::match_orders(WTSTickData* curTick, OrderIDs& to_erase)
 					}
 					else if (quepos != 0)
 					{
-						//Èç¹û³É½»Á¿´óÓÚÅÅ¶ÓÎ»ÖÃ£¬Ôò¿ÉÒÔ³É½»
+						//å¦‚æœæˆäº¤é‡å¤§äºæ’é˜Ÿä½ç½®ï¼Œåˆ™å¯ä»¥æˆäº¤
 						volumn -= quepos;
 						quepos = 0;
 					}
@@ -260,8 +260,8 @@ void ExecMocker::match_orders(WTSTickData* curTick, OrderIDs& to_erase)
 				ordInfo._traded += qty;
 				ordInfo._left -= qty;
 				_undone -= qty;
-				WTSLogger::info("%dÎ´Íê³É¶©µ¥ÊıÁ¿¸üĞÂ,%d", __LINE__, _undone);
-				WTSLogger::info("³Ö²Ö¸üĞÂ,%d", _position);
+				WTSLogger::info("%dæœªå®Œæˆè®¢å•æ•°é‡æ›´æ–°,%d", __LINE__, _undone);
+				WTSLogger::info("æŒä»“æ›´æ–°,%d", _position);
 
 				_exec_unit->on_order(localid, ordInfo._code, ordInfo._buy, ordInfo._left, price, false);
 
@@ -275,7 +275,7 @@ void ExecMocker::match_orders(WTSTickData* curTick, OrderIDs& to_erase)
 			double price;
 			double volumn;
 
-			//Ö÷¶¯¶©µ¥¾Í°´ÕÕ¶ÔÊÖ¼Û
+			//ä¸»åŠ¨è®¢å•å°±æŒ‰ç…§å¯¹æ‰‹ä»·
 			if (ordInfo._positive)
 			{
 				price = curTick->bidprice(0);
@@ -292,12 +292,12 @@ void ExecMocker::match_orders(WTSTickData* curTick, OrderIDs& to_erase)
 				uint64_t sigUnixTime = TimeUtils::makeTime((uint32_t)(_sig_time / 10000), _sig_time % 10000 * 100000);
 				uint64_t ordUnixTime = TimeUtils::makeTime((uint32_t)(ordInfo._time / 1000000000), ordInfo._time % 1000000000);
 
-				//Èç¹û¼Û¸ñÏàµÈ£¬ĞèÒªÏÈ¿´ÅÅ¶ÓÎ»ÖÃ£¬Èç¹û¼Û¸ñ²»µÈËµÃ÷ÒÑ¾­È«²¿±»´óµ¥³ÔµôÁË
+				//å¦‚æœä»·æ ¼ç›¸ç­‰ï¼Œéœ€è¦å…ˆçœ‹æ’é˜Ÿä½ç½®ï¼Œå¦‚æœä»·æ ¼ä¸ç­‰è¯´æ˜å·²ç»å…¨éƒ¨è¢«å¤§å•åƒæ‰äº†
 				if (!ordInfo._positive && decimal::eq(price, ordInfo._limit))
 				{
 					uint32_t& quepos = ordInfo._queue;
 
-					//Èç¹û³É½»Á¿Ğ¡ÓÚÅÅ¶ÓÎ»ÖÃ£¬Ôò²»ÄÜ³É½»
+					//å¦‚æœæˆäº¤é‡å°äºæ’é˜Ÿä½ç½®ï¼Œåˆ™ä¸èƒ½æˆäº¤
 					if (volumn <= quepos)
 					{
 						quepos -= (uint32_t)volumn;
@@ -305,7 +305,7 @@ void ExecMocker::match_orders(WTSTickData* curTick, OrderIDs& to_erase)
 					}
 					else if (quepos != 0)
 					{
-						//Èç¹û³É½»Á¿´óÓÚÅÅ¶ÓÎ»ÖÃ£¬Ôò¿ÉÒÔ³É½»
+						//å¦‚æœæˆäº¤é‡å¤§äºæ’é˜Ÿä½ç½®ï¼Œåˆ™å¯ä»¥æˆäº¤
 						volumn -= quepos;
 						quepos = 0;
 					}
@@ -334,8 +334,8 @@ void ExecMocker::match_orders(WTSTickData* curTick, OrderIDs& to_erase)
 				ordInfo._traded += qty;
 				ordInfo._left -= qty;
 				_undone += qty;
-				WTSLogger::info("%dÎ´Íê³É¶©µ¥ÊıÁ¿¸üĞÂ,%d", __LINE__, _undone);
-				WTSLogger::info("³Ö²Ö¸üĞÂ,%d", _position);
+				WTSLogger::info("%dæœªå®Œæˆè®¢å•æ•°é‡æ›´æ–°,%d", __LINE__, _undone);
+				WTSLogger::info("æŒä»“æ›´æ–°,%d", _position);
 
 				_exec_unit->on_order(localid, ordInfo._code, ordInfo._buy, ordInfo._left, price, false);
 
@@ -361,10 +361,10 @@ void ExecMocker::handle_tick(const char* stdCode, WTSTickData* curTick)
 	update_lob(curTick);
 
 	OrderIDs to_erase;
-	//¼ì²é¶©µ¥×´Ì¬
+	//æ£€æŸ¥è®¢å•çŠ¶æ€
 	fire_orders(stdCode, to_erase);	
 	
-	//´éºÏ
+	//æ’®åˆ
 	match_orders(curTick, to_erase);
 
 	for (uint32_t localid : to_erase)
@@ -409,12 +409,12 @@ void ExecMocker::handle_schedule(uint32_t uDate, uint32_t uTime)
 	if (_position <= 0)
 	{
 		_exec_unit->set_position(_code.c_str(), _volunit);
-		WTSLogger::info("Ä¿±ê²ÖÎ»¸üĞÂ@%u.%u£º%d", uDate, uTime, _volunit);
+		WTSLogger::info("ç›®æ ‡ä»“ä½æ›´æ–°@%u.%uï¼š%d", uDate, uTime, _volunit);
 	}
 	else
 	{
 		_exec_unit->set_position(_code.c_str(), -_volunit);
-		WTSLogger::info("Ä¿±ê²ÖÎ»¸üĞÂ@%u.%u£º%d", uDate, uTime, -_volunit);
+		WTSLogger::info("ç›®æ ‡ä»“ä½æ›´æ–°@%u.%uï¼š%d", uDate, uTime, -_volunit);
 	}
 	_sig_cnt++;
 }
@@ -455,8 +455,8 @@ OrderIDs ExecMocker::buy(const char* stdCode, double price, double qty)
 	ordInfo._left = qty;
 	ordInfo._price = _last_tick->price();
 
-	//¶©µ¥ÅÅ¶Ó£¬Èç¹ûÊÇ¶ÔÊÖ¼Û£¬Ôò°´ÕÕ¶ÔÊÖ¼ÛµÄ¹Òµ¥Á¿À´ÅÅ¶Ó
-	//Èç¹ûÊÇ×îĞÂ¼Û£¬Ôò°´ÕÕÂòÒ»ÂôÒ»µÄ¼ÓÈ¨Æ½¾ù
+	//è®¢å•æ’é˜Ÿï¼Œå¦‚æœæ˜¯å¯¹æ‰‹ä»·ï¼Œåˆ™æŒ‰ç…§å¯¹æ‰‹ä»·çš„æŒ‚å•é‡æ¥æ’é˜Ÿ
+	//å¦‚æœæ˜¯æœ€æ–°ä»·ï¼Œåˆ™æŒ‰ç…§ä¹°ä¸€å–ä¸€çš„åŠ æƒå¹³å‡
 	if (decimal::ge(price, _last_tick->askprice(0)))
 		ordInfo._positive = true;
 	else if (decimal::eq(price, _last_tick->bidprice(0)))
@@ -464,7 +464,7 @@ OrderIDs ExecMocker::buy(const char* stdCode, double price, double qty)
 	if (decimal::eq(price, _last_tick->price()))
 		ordInfo._queue = (uint32_t)round((_last_tick->askqty(0)*_last_tick->askprice(0) + _last_tick->bidqty(0)*_last_tick->bidprice(0)) / (_last_tick->askprice(0) + _last_tick->bidprice(0)));
 
-	//ÅÅ¶ÓÎ»ÖÃ°´ÕÕÆ½¾ù³·µ¥ÂÊ£¬³·Ïúµô²¿·Ö
+	//æ’é˜Ÿä½ç½®æŒ‰ç…§å¹³å‡æ’¤å•ç‡ï¼Œæ’¤é”€æ‰éƒ¨åˆ†
 	ordInfo._queue -= (uint32_t)round(ordInfo._queue*_cancelrate);
 
 	_ord_cnt++;
@@ -473,7 +473,7 @@ OrderIDs ExecMocker::buy(const char* stdCode, double price, double qty)
 	ordInfo._time = (uint64_t)_replayer->get_date() * 1000000000 + (uint64_t)_replayer->get_raw_time() * 100000 + _replayer->get_secs();
 
 	_undone += (int32_t)qty;
-	WTSLogger::info("%dÎ´Íê³É¶©µ¥ÊıÁ¿¸üĞÂ,%d", __LINE__, _undone);
+	WTSLogger::info("%dæœªå®Œæˆè®¢å•æ•°é‡æ›´æ–°,%d", __LINE__, _undone);
 
 	OrderIDs ret;
 	ret.push_back(localid);
@@ -491,8 +491,8 @@ OrderIDs ExecMocker::sell(const char* stdCode, double price, double qty)
 	ordInfo._left = qty;
 	ordInfo._price = _last_tick->price();
 
-	//¶©µ¥ÅÅ¶Ó£¬Èç¹ûÊÇ¶ÔÊÖ¼Û£¬Ôò°´ÕÕ¶ÔÊÖ¼ÛµÄ¹Òµ¥Á¿À´ÅÅ¶Ó
-	//Èç¹ûÊÇ×îĞÂ¼Û£¬Ôò°´ÕÕÂòÒ»ÂôÒ»µÄ¼ÓÈ¨Æ½¾ù
+	//è®¢å•æ’é˜Ÿï¼Œå¦‚æœæ˜¯å¯¹æ‰‹ä»·ï¼Œåˆ™æŒ‰ç…§å¯¹æ‰‹ä»·çš„æŒ‚å•é‡æ¥æ’é˜Ÿ
+	//å¦‚æœæ˜¯æœ€æ–°ä»·ï¼Œåˆ™æŒ‰ç…§ä¹°ä¸€å–ä¸€çš„åŠ æƒå¹³å‡
 	if (decimal::eq(price, _last_tick->askprice(0)))
 		ordInfo._queue = _last_tick->askqty(0);
 	else if (decimal::le(price, _last_tick->bidprice(0)))
@@ -508,7 +508,7 @@ OrderIDs ExecMocker::sell(const char* stdCode, double price, double qty)
 	ordInfo._time = (uint64_t)_replayer->get_date() * 1000000000 + (uint64_t)_replayer->get_raw_time() * 100000 + _replayer->get_secs();
 
 	_undone -= (int32_t)qty;
-	WTSLogger::info("%dÎ´Íê³É¶©µ¥ÊıÁ¿¸üĞÂ,%d", __LINE__, _undone);
+	WTSLogger::info("%dæœªå®Œæˆè®¢å•æ•°é‡æ›´æ–°,%d", __LINE__, _undone);
 
 	OrderIDs ret;
 	ret.push_back(localid);
@@ -526,7 +526,7 @@ bool ExecMocker::cancel(uint32_t localid)
 	_undone -= ordInfo._left*(ordInfo._buy ? 1 : -1);
 	_cacl_cnt++;
 	_cacl_qty += ordInfo._left;
-	WTSLogger::info("%dÎ´Íê³É¶©µ¥ÊıÁ¿¸üĞÂ,%d", __LINE__, _undone);
+	WTSLogger::info("%dæœªå®Œæˆè®¢å•æ•°é‡æ›´æ–°,%d", __LINE__, _undone);
 
 	return true;
 }
@@ -560,7 +560,7 @@ OrderIDs ExecMocker::cancel(const char* stdCode, bool isBuy, double qty /*= 0*/)
 			}
 		}
 	}
-	WTSLogger::info("%dÎ´Íê³É¶©µ¥ÊıÁ¿¸üĞÂ,%d", __LINE__, _undone);
+	WTSLogger::info("%dæœªå®Œæˆè®¢å•æ•°é‡æ›´æ–°,%d", __LINE__, _undone);
 
 	return ret;
 }

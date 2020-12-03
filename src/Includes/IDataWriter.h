@@ -5,7 +5,7 @@
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief Êı¾İÂäµØ½Ó¿Ú¶¨Òå
+ * \brief æ•°æ®è½åœ°æ¥å£å®šä¹‰
  */
 #pragma once
 #include <unordered_set>
@@ -43,15 +43,15 @@ public:
 	virtual uint32_t getTradingDate(const char* pid) = 0;
 
 	/*
-	*	´¦Àí½âÎöÄ£¿éµÄÈÕÖ¾
-	*	@ll			ÈÕÖ¾¼¶±ğ
-	*	@message	ÈÕÖ¾ÄÚÈİ
+	*	å¤„ç†è§£ææ¨¡å—çš„æ—¥å¿—
+	*	@ll			æ—¥å¿—çº§åˆ«
+	*	@message	æ—¥å¿—å†…å®¹
 	*/
 	virtual void outputWriterLog(WTSLogLevel ll, const char* format, ...) = 0;
 };
 
 /*
- *	Êı¾İÂäµØ½Ó¿Ú
+ *	æ•°æ®è½åœ°æ¥å£
  */
 class IDataWriter
 {
@@ -78,6 +78,6 @@ public:
 NS_OTP_END
 
 
-//»ñÈ¡IDataWriterµÄº¯ÊıÖ¸ÕëÀàĞÍ
+//è·å–IDataWriterçš„å‡½æ•°æŒ‡é’ˆç±»å‹
 typedef otp::IDataWriter* (*FuncCreateWriter)();
 typedef void(*FuncDeleteWriter)(otp::IDataWriter* &writer);

@@ -5,7 +5,7 @@
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief Wt主力切换规则对象定义文件
+ * \brief Wt涓诲姏鍒囨崲瑙勫垯瀵硅薄瀹氫箟鏂囦欢
  */
 #pragma once
 #include "WTSObject.hpp"

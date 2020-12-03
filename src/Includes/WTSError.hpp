@@ -5,7 +5,7 @@
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief Wt错误对象定义
+ * \brief Wt閿欒瀵硅薄瀹氫箟
  */
 #pragma once
 #include "WTSObject.hpp"

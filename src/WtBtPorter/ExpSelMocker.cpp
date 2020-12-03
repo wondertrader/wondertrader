@@ -18,7 +18,7 @@ void ExpSelMocker::on_init()
 {
 	SelMocker::on_init();
 
-	//ÏòÍâ²¿»Øµ÷
+	//å‘å¤–éƒ¨å›è°ƒ
 	getRunner().ctx_on_init(_context_id, ET_SEL);
 }
 
@@ -36,14 +36,14 @@ void ExpSelMocker::on_tick_updated(const char* stdCode, WTSTickData* newTick)
 {
 	SelMocker::on_tick_updated(stdCode, newTick);
 
-	//ÏòÍâ²¿»Øµ÷
+	//å‘å¤–éƒ¨å›è°ƒ
 	getRunner().ctx_on_tick(_context_id, stdCode, newTick, ET_SEL);
 }
 
 void ExpSelMocker::on_bar_close(const char* stdCode, const char* period, WTSBarStruct* newBar)
 {
 	SelMocker::on_bar_close(stdCode, period, newBar);
-	//ÒªÏòÍâ²¿»Øµ÷
+	//è¦å‘å¤–éƒ¨å›è°ƒ
 	getRunner().ctx_on_bar(_context_id, stdCode, period, newBar, ET_SEL);
 }
 
@@ -51,6 +51,6 @@ void ExpSelMocker::on_strategy_schedule(uint32_t curDate, uint32_t curTime)
 {
 	SelMocker::on_strategy_schedule(curDate, curTime);
 
-	//ÏòÍâ²¿»Øµ÷
+	//å‘å¤–éƒ¨å›è°ƒ
 	getRunner().ctx_on_calc(_context_id, curDate, curTime, ET_SEL);
 }

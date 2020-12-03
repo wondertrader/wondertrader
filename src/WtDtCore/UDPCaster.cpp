@@ -22,19 +22,19 @@
 
 #define UDP_MSG_SUBSCRIBE	0x100
 #define UDP_MSG_PUSHTICK	0x200
-#define UDP_MSG_PUSHORDQUE	0x201	//Î¯ÍĞ¶ÓÁĞ
-#define UDP_MSG_PUSHORDDTL	0x202	//Î¯ÍĞÃ÷Ï¸
-#define UDP_MSG_PUSHTRANS	0x203	//Öğ±Ê³É½»
+#define UDP_MSG_PUSHORDQUE	0x201	//å§”æ‰˜é˜Ÿåˆ—
+#define UDP_MSG_PUSHORDDTL	0x202	//å§”æ‰˜æ˜ç»†
+#define UDP_MSG_PUSHTRANS	0x203	//é€ç¬”æˆäº¤
 
 #pragma pack(push,1)
-//UDPÇëÇó°ü
+//UDPè¯·æ±‚åŒ…
 typedef struct _UDPReqPacket
 {
 	uint32_t		_type;
 	char			_data[1020];
 } UDPReqPacket;
 
-//UDPTickÊı¾İ°ü
+//UDPTickæ•°æ®åŒ…
 template <typename T>
 struct UDPDataPacket
 {
@@ -146,7 +146,7 @@ void UDPCaster::do_receive()
 			UDPReqPacket* req = (UDPReqPacket*)m_data;
 
 			std::string data;
-			//´¦ÀíÇëÇó
+			//å¤„ç†è¯·æ±‚
 			if (req->_type == UDP_MSG_SUBSCRIBE)
 			{
 				const StringVector& ay = StrUtil::split(req->_data, ",");
@@ -182,7 +182,7 @@ void UDPCaster::do_receive()
 						delete data;
 						if (ec)
 						{
-							WTSLogger::error("UDPÊı¾İ·¢ËÍÊ§°Ü£º%s", ec.message().c_str());
+							WTSLogger::error("UDPæ•°æ®å‘é€å¤±è´¥ï¼š%s", ec.message().c_str());
 						}
 					});
 				}
@@ -198,7 +198,7 @@ void UDPCaster::do_receive()
 				delete data;
 				if (ec)
 				{
-					WTSLogger::error("UDPÊı¾İ·¢ËÍÊ§°Ü£º%s", ec.message().c_str());
+					WTSLogger::error("UDPæ•°æ®å‘é€å¤±è´¥ï¼š%s", ec.message().c_str());
 				}
 			});
 		}
@@ -309,7 +309,7 @@ void UDPCaster::broadcast(WTSObject* data, uint32_t dataType)
 					if (castData._data == NULL)
 						break;
 
-					//Ö±½Ó¹ã²¥
+					//ç›´æ¥å¹¿æ’­
 					if (!m_listRawGroup.empty() || !m_listRawRecver.empty())
 					{
 						std::string buf_raw;
@@ -350,14 +350,14 @@ void UDPCaster::broadcast(WTSObject* data, uint32_t dataType)
 							break;
 						}
 
-						//¹ã²¥
+						//å¹¿æ’­
 						for (auto it = m_listRawRecver.begin(); it != m_listRawRecver.end(); it++)
 						{
 							const UDPReceiverPtr& receiver = (*it);
 							m_sktBroadcast->send_to(boost::asio::buffer(buf_raw), receiver->_ep);
 						}
 
-						//×é²¥
+						//ç»„æ’­
 						for (auto it = m_listRawGroup.begin(); it != m_listRawGroup.end(); it++)
 						{
 							const MulticastPair& item = *it;
@@ -375,14 +375,14 @@ void UDPCaster::broadcast(WTSObject* data, uint32_t dataType)
 		m_condCast.notify_all();
 	}
 
-	//´¿ÎÄ±¾¸ñÊ½
+	//çº¯æ–‡æœ¬æ ¼å¼
 	/*
 	if(!m_listFlatRecver.empty() || !m_listFlatGroup.empty())
 	{
 		uint32_t curTime = curTick->actiontime()/1000;
 		char buf_flat[2048] = {0};
 		char *str = buf_flat;
-		//ÈÕÆÚ£¬Ê±¼ä£¬Âò¼Û£¬Âô¼Û£¬´úÂë£¬×îĞÂ¼Û£¬¿ª£¬¸ß£¬µÍ£¬½ñ½á£¬×ò½á£¬×ÜÊÖ£¬ÏÖÊÖ£¬×Ü³Ö£¬Ôö²Ö£¬µµÎ»[Âòx¼Û£¬ÂòxÁ¿£¬Âôx¼Û£¬ÂôxÁ¿]
+		//æ—¥æœŸï¼Œæ—¶é—´ï¼Œä¹°ä»·ï¼Œå–ä»·ï¼Œä»£ç ï¼Œæœ€æ–°ä»·ï¼Œå¼€ï¼Œé«˜ï¼Œä½ï¼Œä»Šç»“ï¼Œæ˜¨ç»“ï¼Œæ€»æ‰‹ï¼Œç°æ‰‹ï¼Œæ€»æŒï¼Œå¢ä»“ï¼Œæ¡£ä½[ä¹°xä»·ï¼Œä¹°xé‡ï¼Œå–xä»·ï¼Œå–xé‡]
 		str += sprintf(str, "%04d.%02d.%02d,", 
 			curTick->actiondate()/10000, curTick->actiondate()%10000/100, curTick->actiondate()%100);
 		str += sprintf(str, "%02d:%02d:%02d,", 
@@ -417,7 +417,7 @@ void UDPCaster::broadcast(WTSObject* data, uint32_t dataType)
 			sendBytes += strlen(buf_flat);
 		}
 
-		//×é²¥
+		//ç»„æ’­
 		for(auto it = m_listFlatGroup.begin(); it != m_listFlatGroup.end(); it++)
 		{
 			const MulticastPair& item = *it;
@@ -428,7 +428,7 @@ void UDPCaster::broadcast(WTSObject* data, uint32_t dataType)
 	}
 	
 
-	//json¸ñÊ½
+	//jsonæ ¼å¼
 	if(!m_listJsonRecver.empty() || !m_listJsonGroup.empty())
 	{
 		datasvr::TickData newTick;
@@ -466,7 +466,7 @@ void UDPCaster::broadcast(WTSObject* data, uint32_t dataType)
 		}
 		const std::string& buf_json =  pb2json(newTick);
 
-		//¹ã²¥
+		//å¹¿æ’­
 		for(auto it = m_listJsonRecver.begin(); it != m_listJsonRecver.end(); it++)
 		{
 			const UDPReceiverPtr& receiver = (*it);
@@ -475,7 +475,7 @@ void UDPCaster::broadcast(WTSObject* data, uint32_t dataType)
 			sendBytes += buf_json.size();
 		}
 
-		//×é²¥
+		//ç»„æ’­
 		for(auto it = m_listJsonGroup.begin(); it != m_listJsonGroup.end(); it++)
 		{
 			const MulticastPair& item = *it;
@@ -491,7 +491,7 @@ void UDPCaster::handle_send_broad(const EndPoint& ep, const boost::system::error
 {
 	if(error)
 	{
-		WTSLogger::error("ĞĞÇé¹ã²¥Ê§°Ü£¬Ä¿±êµØÖ·£º%s£¬´íÎóĞÅÏ¢£º%s", ep.address().to_string().c_str(), error.message().c_str());
+		WTSLogger::error("è¡Œæƒ…å¹¿æ’­å¤±è´¥ï¼Œç›®æ ‡åœ°å€ï¼š%sï¼Œé”™è¯¯ä¿¡æ¯ï¼š%s", ep.address().to_string().c_str(), error.message().c_str());
 	}
 }
 
@@ -499,7 +499,7 @@ void UDPCaster::handle_send_multi(const EndPoint& ep, const boost::system::error
 {
 	if(error)
 	{
-		WTSLogger::error("ĞĞÇé¶à²¥Ê§°Ü£¬Ä¿±êµØÖ·£º%s£¬´íÎóĞÅÏ¢£º%s", ep.address().to_string().c_str(), error.message().c_str());
+		WTSLogger::error("è¡Œæƒ…å¤šæ’­å¤±è´¥ï¼Œç›®æ ‡åœ°å€ï¼š%sï¼Œé”™è¯¯ä¿¡æ¯ï¼š%s", ep.address().to_string().c_str(), error.message().c_str());
 	}
 }
 

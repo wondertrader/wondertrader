@@ -24,17 +24,17 @@ class IExecCommand
 public:
 	IExecCommand() :_stub(NULL) {}
 	/*
-	 *	设置目标仓位
+	 *	璁剧疆鐩爣浠撲綅
 	 */
 	virtual void set_position(const std::unordered_map<std::string, double>& targets) {}
 
 	/*
-	 *	合约仓位变动
+	 *	鍚堢害浠撲綅鍙樺姩
 	 */
 	virtual void on_position_changed(const char* stdCode, double targetPos) {}
 
 	/*
-	 *	实时行情回调
+	 *	瀹炴椂琛屾儏鍥炶皟
 	 */
 	virtual void on_tick(const char* stdCode, WTSTickData* newTick) {}
 

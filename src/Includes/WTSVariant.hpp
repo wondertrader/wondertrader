@@ -5,7 +5,7 @@
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief WtÍ¨ÓÃ±äÁ¿¶ÔÏó¶¨Òå
+ * \brief Wté€šç”¨å˜é‡å¯¹è±¡å®šä¹‰
  */
 #pragma once
 
@@ -30,9 +30,9 @@
 NS_OTP_BEGIN
 
 /*
- *	WTSVariantÊÇÒ»¸öÍ¨ÓÃÊý¾ÝÈÝÆ÷£¬Éè¼ÆÄ¿±êÊÇJsonµÄValueÀà
- *	ºÍJson²»Í¬µÄµØ·½ÔÚÓÚ£¬WTSVariantÂú×ãWTÏµÍ³ÄÚµÄÅÉÉú¹ØÏµ
- *	¿ÉÒÔÍ¨¹ýÒýÓÃ¼ÆÊý¹ÜÀíÊý¾Ý£¬´Ó¶ø¼õÉÙÊý¾Ý¸´ÖÆ
+ *	WTSVariantæ˜¯ä¸€ä¸ªé€šç”¨æ•°æ®å®¹å™¨ï¼Œè®¾è®¡ç›®æ ‡æ˜¯Jsonçš„Valueç±»
+ *	å’ŒJsonä¸åŒçš„åœ°æ–¹åœ¨äºŽï¼ŒWTSVariantæ»¡è¶³WTç³»ç»Ÿå†…çš„æ´¾ç”Ÿå…³ç³»
+ *	å¯ä»¥é€šè¿‡å¼•ç”¨è®¡æ•°ç®¡ç†æ•°æ®ï¼Œä»Žè€Œå‡å°‘æ•°æ®å¤åˆ¶
  */
 class WTSVariant : public WTSObject
 {

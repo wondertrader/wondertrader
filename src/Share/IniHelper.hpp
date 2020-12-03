@@ -5,7 +5,7 @@
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief IniÎÄ¼ş¸¨ÖúÀà£¬ÀûÓÃboostµÄproperty_treeÀ´ÊµÏÖ£¬¿ÉÒÔ¿çÆ½Ì¨Ê¹ÓÃ
+ * \brief Iniæ–‡ä»¶è¾…åŠ©ç±»ï¼Œåˆ©ç”¨boostçš„property_treeæ¥å®ç°ï¼Œå¯ä»¥è·¨å¹³å°ä½¿ç”¨
  */
 #pragma once
 
