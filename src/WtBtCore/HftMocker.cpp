@@ -329,7 +329,7 @@ otp::OrderIDs HftMocker::stra_buy(const char* stdCode, double price, double qty)
 	}
 
 	postTask([this, localid](){
-		on_entrust(localid, _orders[localid]._code, true, "ä¸‹å•æˆåŠŸ");
+		on_entrust(localid, _orders[localid]._code, true, "ÏÂµ¥³É¹¦");
 		procOrder(localid);
 	});
 
@@ -371,7 +371,7 @@ void HftMocker::procOrder(uint32_t localid)
 	StdLocker<StdRecurMutex> lock(_mtx_ords);
 	OrderInfo& ordInfo = it->second;
 
-	//ç¬¬ä¸€æ­¥ï¼Œå¦‚æœåœ¨æ’¤å•æ¦‚ç‡ä¸­ï¼Œåˆ™æ‰§è¡Œæ’¤å•
+	//µÚÒ»²½£¬Èç¹ûÔÚ³·µ¥¸ÅÂÊÖĞ£¬ÔòÖ´ĞĞ³·µ¥
 	if(_error_rate>0 && genRand(10000)<=_error_rate)
 	{
 		on_order(localid, ordInfo._code, ordInfo._isBuy, ordInfo._total, ordInfo._left, ordInfo._price, true);
@@ -388,7 +388,7 @@ void HftMocker::procOrder(uint32_t localid)
 		return;
 
 	double curPx = curTick->price();
-	double orderQty = ordInfo._isBuy ? curTick->askqty(0) : curTick->bidqty(0);	//çœ‹å¯¹æ‰‹ç›˜çš„æ•°é‡
+	double orderQty = ordInfo._isBuy ? curTick->askqty(0) : curTick->bidqty(0);	//¿´¶ÔÊÖÅÌµÄÊıÁ¿
 	if (!_use_newpx)
 	{
 		curPx = ordInfo._isBuy ? curTick->askprice(0) : curTick->bidprice(0);
@@ -398,24 +398,24 @@ void HftMocker::procOrder(uint32_t localid)
 	}
 	curTick->release();
 
-	//å¦‚æœæ²¡æœ‰æˆäº¤æ¡ä»¶ï¼Œåˆ™é€€å‡ºé€»è¾‘
+	//Èç¹ûÃ»ÓĞ³É½»Ìõ¼ş£¬ÔòÍË³öÂß¼­
 	if(!decimal::eq(ordInfo._price, 0.0))
 	{
 		if(ordInfo._isBuy && decimal::gt(curPx, ordInfo._price))
 		{
-			//ä¹°å•ï¼Œä½†æ˜¯å½“å‰ä»·å¤§äºé™ä»·ï¼Œä¸æˆäº¤
+			//Âòµ¥£¬µ«ÊÇµ±Ç°¼Û´óÓÚÏŞ¼Û£¬²»³É½»
 			return;
 		}
 
 		if (!ordInfo._isBuy && decimal::lt(curPx, ordInfo._price))
 		{
-			//å–å•ï¼Œä½†æ˜¯å½“å‰ä»·å°äºé™ä»·ï¼Œä¸æˆäº¤
+			//Âôµ¥£¬µ«ÊÇµ±Ç°¼ÛĞ¡ÓÚÏŞ¼Û£¬²»³É½»
 			return;
 		}
 	}
 
 	/*
-	 *	ä¸‹é¢å°±è¦æ¨¡æ‹Ÿæˆäº¤äº†
+	 *	ÏÂÃæ¾ÍÒªÄ£Äâ³É½»ÁË
 	 */
 
 	double maxQty = min(orderQty, ordInfo._total);

@@ -135,10 +135,10 @@ int TraderMocker::orderInsert(WTSEntrust* entrust)
 		WTSContractInfo* ct = _bd_mgr->getContract(entrust->getCode(), entrust->getExchg());
 
 		/*
-		 *	1ã€å¼€ä»“æ— éœ€æ£€æŸ¥
-		 *	2ã€å¹³ä»“è¦å…ˆæ£€æŸ¥å¯å¹³
-		 *	3ã€æ£€æŸ¥é€šè¿‡äº†ï¼Œå¹³ä»“è¿˜è¦å†»ç»“æŒä»“
-		 *	4ã€è¿˜è¦è€ƒè™‘å›½é™…æœŸè´§çš„é—®é¢˜
+		 *	1¡¢¿ª²ÖÎŞĞè¼ì²é
+		 *	2¡¢Æ½²ÖÒªÏÈ¼ì²é¿ÉÆ½
+		 *	3¡¢¼ì²éÍ¨¹ıÁË£¬Æ½²Ö»¹Òª¶³½á³Ö²Ö
+		 *	4¡¢»¹Òª¿¼ÂÇ¹ú¼ÊÆÚ»õµÄÎÊÌâ
 		 */
 
 		bool bPass = false;
@@ -148,78 +148,78 @@ int TraderMocker::orderInsert(WTSEntrust* entrust)
 			if (ct == NULL)
 			{
 				bPass = false;
-				msg = "å“ç§ä¸å­˜åœ¨";
+				msg = "Æ·ÖÖ²»´æÔÚ";
 				break;
 			}
 			WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(ct);
 
-			//æ£€æŸ¥ä»·æ ¼ç±»å‹çš„åˆæ³•æ€§
+			//¼ì²é¼Û¸ñÀàĞÍµÄºÏ·¨ĞÔ
 			if (entrust->getPriceType() == WPT_ANYPRICE && commInfo->getPriceMode() == PM_Limit)
 			{
 				bPass = false;
-				msg = "ä»·æ ¼ç±»å‹ä¸åˆæ³•";
+				msg = "¼Û¸ñÀàĞÍ²»ºÏ·¨";
 				break;
 			}
 
-			//æ£€æŸ¥æ•°é‡çš„åˆæ³•æ€§
+			//¼ì²éÊıÁ¿µÄºÏ·¨ĞÔ
 			if ((commInfo->getCategoty() == CC_Stock) && (entrust->getOffsetType() == WOT_OPEN) && !decimal::eq(decimal::mod(entrust->getVolumn(), 100), 0))
 			{
 				bPass = false;
-				msg = "è‚¡ç¥¨ä¹°å…¥æ•°é‡å¿…é¡»ä¸º100çš„æ•´æ•°å€";
+				msg = "¹ÉÆ±ÂòÈëÊıÁ¿±ØĞëÎª100µÄÕûÊı±¶";
 				break;
 			}
 
-			//æ£€æŸ¥æ–¹å‘çš„åˆæ³•æ€§
+			//¼ì²é·½ÏòµÄºÏ·¨ĞÔ
 			if(commInfo->getCategoty() == CC_Stock && entrust->getDirection() == WDT_SHORT)
 			{
 				bPass = false;
-				msg = "è‚¡ç¥¨ä¸èƒ½åšç©º";
+				msg = "¹ÉÆ±²»ÄÜ×ö¿Õ";
 				break;
 			}
 
-			//æ£€æŸ¥ä»·æ ¼çš„åˆæ³•æ€§
+			//¼ì²é¼Û¸ñµÄºÏ·¨ĞÔ
 			if(!decimal::eq(entrust->getPrice(), 0))
 			{
 				double pricetick = commInfo->getPriceTick();
 				double v = entrust->getPrice() / pricetick;
 
-				if (!decimal::eq(decimal::mod(entrust->getPrice(), pricetick), 0))	//æ•´é™¤çš„æ£€æŸ¥æ–¹å¼ï¼Œå…ˆå°æ•°ç›¸é™¤å¾—åˆ°å•†ï¼Œç„¶åå•†å–æ•´ä»¥åï¼Œå†è·ŸåŸæ¥çš„å•†ç›¸å‡ï¼Œå¦‚æœç­‰äº0ï¼Œåˆ™æ˜¯æ•´é™¤ï¼Œå¦åˆ™æ˜¯
+				if (!decimal::eq(decimal::mod(entrust->getPrice(), pricetick), 0))	//Õû³ıµÄ¼ì²é·½Ê½£¬ÏÈĞ¡ÊıÏà³ıµÃµ½ÉÌ£¬È»ºóÉÌÈ¡ÕûÒÔºó£¬ÔÙ¸úÔ­À´µÄÉÌÏà¼õ£¬Èç¹ûµÈÓÚ0£¬ÔòÊÇÕû³ı£¬·ñÔòÊÇ
 				{
 					bPass = false;
-					msg = "å§”æ‰˜ä»·æ ¼ä¸åˆæ³•";
+					msg = "Î¯ÍĞ¼Û¸ñ²»ºÏ·¨";
 					break;
 				}
 			}
 
 
-			//å¼€ä»“ç›´æ¥é€šè¿‡ï¼Œä¸æ£€æŸ¥èµ„é‡‘
+			//¿ª²ÖÖ±½ÓÍ¨¹ı£¬²»¼ì²é×Ê½ğ
 			if (entrust->getOffsetType() == WOT_OPEN)
 			{
 				bPass = true;
 				break;
 			}
 
-			//å¦‚æœä¸éœ€è¦å¼€å¹³ï¼Œåˆ™ç›´æ¥é€šè¿‡ï¼Œä¸»è¦é’ˆå¯¹å›½é™…æœŸè´§
+			//Èç¹û²»ĞèÒª¿ªÆ½£¬ÔòÖ±½ÓÍ¨¹ı£¬Ö÷ÒªÕë¶Ô¹ú¼ÊÆÚ»õ
 			if (commInfo->getCoverMode() == CM_None)
 			{
 				bPass = true;
 				break;
 			}
 			
-			//å¦‚æœåŒºåˆ†å¹³æ˜¨å¹³ä»Šï¼Œè€Œå§”æ‰˜çš„æ˜¯å¹³æ˜¨ï¼Œåˆ™ç›´æ¥æ‹’ç»ï¼Œå› ä¸ºmockerä¸ºäº†ç®€åŒ–å¤„ç†ï¼Œä¸è€ƒè™‘æ˜¨ä»“
+			//Èç¹ûÇø·ÖÆ½×òÆ½½ñ£¬¶øÎ¯ÍĞµÄÊÇÆ½×ò£¬ÔòÖ±½Ó¾Ü¾ø£¬ÒòÎªmockerÎªÁË¼ò»¯´¦Àí£¬²»¿¼ÂÇ×ò²Ö
 			if (commInfo->getCoverMode() == CM_CoverToday && (entrust->getOffsetType() == WOT_CLOSE || entrust->getOffsetType() == WOT_CLOSEYESTERDAY))
 			{
 				bPass = false;
-				msg = "æ²¡æœ‰è¶³å¤Ÿçš„å¯å¹³ä»“ä½";
+				msg = "Ã»ÓĞ×ã¹»µÄ¿ÉÆ½²ÖÎ»";
 				break;
 			}
 
-			//å¦‚æœæ²¡æœ‰æŒä»“æˆ–è€…æŒä»“ä¸å¤Ÿï¼Œä¹Ÿè¦
+			//Èç¹ûÃ»ÓĞ³Ö²Ö»òÕß³Ö²Ö²»¹»£¬Ò²Òª
 			auto it = _positions.find(ct->getFullCode());
 			if(it == _positions.end())
 			{
 				bPass = false;
-				msg = "æ²¡æœ‰è¶³å¤Ÿçš„å¯å¹³ä»“ä½";
+				msg = "Ã»ÓĞ×ã¹»µÄ¿ÉÆ½²ÖÎ»";
 				break;
 			}
 
@@ -230,11 +230,11 @@ int TraderMocker::orderInsert(WTSEntrust* entrust)
 			if(decimal::lt(validQty, entrust->getVolumn()))
 			{
 				bPass = false;
-				msg = "æ²¡æœ‰è¶³å¤Ÿçš„å¯å¹³ä»“ä½";
+				msg = "Ã»ÓĞ×ã¹»µÄ¿ÉÆ½²ÖÎ»";
 				break;
 			}
 
-			//å†»ç»“æŒä»“
+			//¶³½á³Ö²Ö
 			if(isLong)
 			{
 				pItem._long._frozen += entrust->getVolumn();
@@ -245,7 +245,7 @@ int TraderMocker::orderInsert(WTSEntrust* entrust)
 			}
 
 			bPass = true;
-			msg = "ä¸‹å•æˆåŠŸ";
+			msg = "ÏÂµ¥³É¹¦";
 
 		} while (false);
 		
@@ -279,7 +279,7 @@ int TraderMocker::orderInsert(WTSEntrust* entrust)
 
 			if(_listener)
 			{
-				_listener->handleTraderLog(LL_INFO, "å…±æœ‰%uä¸ªå“ç§æœ‰å¾…æ’®åˆè®¢å•", _codes.size());
+				_listener->handleTraderLog(LL_INFO, "¹²ÓĞ%u¸öÆ·ÖÖÓĞ´ı´éºÏ¶©µ¥", _codes.size());
 			}
 
 			if (_orders == NULL)
@@ -337,8 +337,8 @@ int32_t TraderMocker::match_once()
 			uint64_t tickTime = (uint64_t)curTick->actiondate() * 1000000000 + curTick->actiontime();
 			if (decimal::gt(curTick->price(), 0) /*&& tickTime >= _last_match_time*/)
 			{
-				//å¼€å§‹å¤„ç†è®¢å•
-				//å¤„ç†è®°å½•
+				//¿ªÊ¼´¦Àí¶©µ¥
+				//´¦Àí¼ÇÂ¼
 				std::vector<std::string> to_erase;
 
 				for (auto it = _awaits->begin(); it != _awaits->end(); it++)
@@ -373,7 +373,7 @@ int32_t TraderMocker::match_once()
 						continue;
 
 					double target = ordInfo->getPrice();
-					//ä¹°å…¥çš„æ—¶å€™ï¼Œå§”æ‰˜ä»·æ ¼å°äºæœ€æ–°ä»·åˆ™ä¸æˆäº¤ï¼Œå–å‡ºçš„æ—¶å€™ï¼Œå§”æ‰˜ä»·å¤§äºæœ€æ–°ä»·åˆ™ä¸æˆäº¤
+					//ÂòÈëµÄÊ±ºò£¬Î¯ÍĞ¼Û¸ñĞ¡ÓÚ×îĞÂ¼ÛÔò²»³É½»£¬Âô³öµÄÊ±ºò£¬Î¯ÍĞ¼Û´óÓÚ×îĞÂ¼ÛÔò²»³É½»
 					if (ordInfo->getPriceType() == WPT_LIMITPRICE && ((isBuy && decimal::lt(target, uPrice)) || (!isBuy && decimal::gt(target, uPrice))))
 						continue;
 
@@ -400,23 +400,23 @@ int32_t TraderMocker::match_once()
 						trade->setTradeTime(TimeUtils::getLocalTimeNow());
 						trade->setUserTag(ordInfo->getUserTag());
 
-						//æ›´æ–°è®¢å•æ•°æ®
+						//¸üĞÂ¶©µ¥Êı¾İ
 						ordInfo->setVolLeft(ordInfo->getVolLeft() - curVol);
 						ordInfo->setVolTraded(ordInfo->getVolTraded() - curVol);
 						if (decimal::eq(ordInfo->getVolLeft(), 0))
 						{
 							ordInfo->setOrderState(WOS_AllTraded);
-							ordInfo->setStateMsg("å…¨éƒ¨æˆäº¤");
+							ordInfo->setStateMsg("È«²¿³É½»");
 							to_erase.push_back(ordInfo->getOrderID());
 						}
 						else
 						{
 							ordInfo->setOrderState(WOS_PartTraded_Queuing);
-							ordInfo->setStateMsg("éƒ¨åˆ†æˆäº¤");
+							ordInfo->setStateMsg("²¿·Ö³É½»");
 						}
 
 						PosItem& pItem = _positions[ct->getFullCode()];
-						//ç¬¬ä¸€æ¬¡çš„è¯è¦ç»™ä»£ç å’Œäº¤æ˜“æ‰€èµ‹å€¼
+						//µÚÒ»´ÎµÄ»°Òª¸ø´úÂëºÍ½»Ò×Ëù¸³Öµ
 						if(strlen(pItem._code) == 0)
 						{
 							strcpy(pItem._code, ct->getCode());
@@ -472,7 +472,7 @@ int32_t TraderMocker::match_once()
 
 				if (count > 0)
 				{
-					//_listener->handleTraderLog(LL_INFO, "[TraderMocker]è§¦å‘ %s.%s å¼€å¤š %u æ¡,ä»·æ ¼:%u", tick->exchg(), tick->code(), iCount, uPrice);
+					//_listener->handleTraderLog(LL_INFO, "[TraderMocker]´¥·¢ %s.%s ¿ª¶à %u Ìõ,¼Û¸ñ:%u", tick->exchg(), tick->code(), iCount, uPrice);
 					for (const std::string& oid : to_erase)
 					{
 						_awaits->remove(oid);
@@ -516,7 +516,7 @@ bool TraderMocker::init(WTSParams *params)
 	if (decimal::eq(_min_qty, 0))
 		_min_qty = 1;
 
-	//åŠ è½½æŒä»“æ•°æ®
+	//¼ÓÔØ³Ö²ÖÊı¾İ
 	std::stringstream ss;
 	ss << "./mocker_" << _mocker_id << "/";
 	std::string path = ss.str();
@@ -542,7 +542,7 @@ void TraderMocker::load_positions()
 		return;
 
 	if(root.HasMember("positions"))
-	{//è¯»å–ä»“ä½
+	{//¶ÁÈ¡²ÖÎ»
 		double total_profit = 0;
 		double total_dynprofit = 0;
 		const rj::Value& jPos = root["positions"];
@@ -568,14 +568,14 @@ void TraderMocker::load_positions()
 	}
 
 	if (_listener)
-		_listener->handleTraderLog(LL_INFO, "[TraderMocker]å…±åŠ è½½%uæ¡æŒä»“æ•°æ®", _positions.size());
+		_listener->handleTraderLog(LL_INFO, "[TraderMocker]¹²¼ÓÔØ%uÌõ³Ö²ÖÊı¾İ", _positions.size());
 }
 
 void TraderMocker::save_positions()
 {
 	rj::Document root(rj::kObjectType);
 
-	{//æŒä»“æ•°æ®ä¿å­˜
+	{//³Ö²ÖÊı¾İ±£´æ
 		rj::Value jPos(rj::kArrayType);
 
 		rj::Document::AllocatorType &allocator = root.GetAllocator();
@@ -713,7 +713,7 @@ int TraderMocker::login(const char* user, const char* pass, const char* productI
 		{
 			match_once();
 
-			//ç­‰å¾…5æ¯«ç§’
+			//µÈ´ı5ºÁÃë
 			boost::this_thread::sleep(boost::posix_time::millisec(5));
 		}
 	}));
@@ -738,19 +738,19 @@ int TraderMocker::orderAction(WTSEntrustAction* action)
 	action->retain();
 	
 	_io_service.post([this, action](){
-		BoostUniqueLock lck(_mtx_awaits);	//ä¸€å®šè¦æŠŠawaitsé”èµ·æ¥ï¼Œä¸ç„¶å¯èƒ½ä¼šå¯¼è‡´ä¸€è¾¹æ’®åˆä¸€è¾¹æ’¤å•
+		BoostUniqueLock lck(_mtx_awaits);	//Ò»¶¨Òª°ÑawaitsËøÆğÀ´£¬²»È»¿ÉÄÜ»áµ¼ÖÂÒ»±ß´éºÏÒ»±ß³·µ¥
 		WTSOrderInfo* ordInfo = (WTSOrderInfo*)_awaits->grab(action->getOrderID());
 
 		/*
-		 *	æ’¤å•ä¹Ÿè¦è€ƒè™‘å‡ ä¸ªé—®é¢˜
-		 *	1ã€æ˜¯å¦å¤„äºå¯ä»¥æ’¤é”€çš„çŠ¶æ€
-		 *	2ã€å¦‚æœæ˜¯å¼€ä»“ï¼Œåˆ™ç›´æ¥æ’¤é”€
-		 *	3ã€å¦‚æœæ˜¯å¹³ä»“ï¼Œè¦é‡Šæ”¾å†»ç»“
+		 *	³·µ¥Ò²Òª¿¼ÂÇ¼¸¸öÎÊÌâ
+		 *	1¡¢ÊÇ·ñ´¦ÓÚ¿ÉÒÔ³·ÏúµÄ×´Ì¬
+		 *	2¡¢Èç¹ûÊÇ¿ª²Ö£¬ÔòÖ±½Ó³·Ïú
+		 *	3¡¢Èç¹ûÊÇÆ½²Ö£¬ÒªÊÍ·Å¶³½á
 		 */
 		if(ordInfo == NULL)
 		{
-			_listener->handleTraderLog(LL_ERROR, "è®¢å•%sä¸å­˜åœ¨æˆ–è€…å·²å®Œæˆ", action->getOrderID());
-			WTSError* err = WTSError::create(WEC_ORDERCANCEL, "è®¢å•ä¸å­˜åœ¨æˆ–è€…å¤„äºä¸å¯æ’¤é”€çŠ¶æ€");
+			_listener->handleTraderLog(LL_ERROR, "¶©µ¥%s²»´æÔÚ»òÕßÒÑÍê³É", action->getOrderID());
+			WTSError* err = WTSError::create(WEC_ORDERCANCEL, "¶©µ¥²»´æÔÚ»òÕß´¦ÓÚ²»¿É³·Ïú×´Ì¬");
 			if (_listener)
 				_listener->onTraderError(err);
 			err->release();
@@ -763,21 +763,21 @@ int TraderMocker::orderAction(WTSEntrustAction* action)
 		bool bPass = false;
 		do 
 		{
-			//å¼€ä»“å§”æ‰˜ç›´æ¥æ’¤å•
+			//¿ª²ÖÎ¯ÍĞÖ±½Ó³·µ¥
 			if (ordInfo->getOffsetType() == WOT_OPEN)
 			{
 				bPass = true;
 				break;
 			}
 			
-			//ä¸åŒºåˆ†å¼€å¹³çš„ï¼Œä¹Ÿç›´æ¥æ’¤é”€
+			//²»Çø·Ö¿ªÆ½µÄ£¬Ò²Ö±½Ó³·Ïú
 			if (commInfo->getCoverMode() == CM_None)
 			{
 				bPass = true;
 				break;
 			}
 
-			//é‡Šæ”¾å†»ç»“æŒä»“
+			//ÊÍ·Å¶³½á³Ö²Ö
 			PosItem& pItem = _positions[ct->getFullCode()];
 			bool isLong = ordInfo->getDirection() == WDT_LONG;
 			if(isLong)
@@ -792,7 +792,7 @@ int TraderMocker::orderAction(WTSEntrustAction* action)
 
 		} while (false);
 
-		ordInfo->setStateMsg("æ’¤å•æˆåŠŸ");
+		ordInfo->setStateMsg("³·µ¥³É¹¦");
 		ordInfo->setOrderState(WOS_Canceled);
 		//ordInfo->setVolLeft(0);	
 
@@ -922,7 +922,7 @@ void TraderMocker::handle_read(const boost::system::error_code& e, std::size_t b
 	if (e)
 	{
 		if (_listener)
-			_listener->handleTraderLog(LL_ERROR, "[TraderMocker]UDPè¡Œæƒ…æ¥æ”¶å‡ºé”™:%s(%d)", e.message().c_str(), e.value());
+			_listener->handleTraderLog(LL_ERROR, "[TraderMocker]UDPĞĞÇé½ÓÊÕ³ö´í:%s(%d)", e.message().c_str(), e.value());
 
 		if (!_terminated)
 		{
@@ -953,13 +953,13 @@ typedef struct UDPPacketHead
 {
 	uint32_t		_type;
 } UDPPacketHead;
-//UDPè¯·æ±‚åŒ…
+//UDPÇëÇó°ü
 typedef struct _UDPReqPacket : UDPPacketHead
 {
 	char			_data[1020];
 } UDPReqPacket;
 
-//UDPTickæ•°æ®åŒ…
+//UDPTickÊı¾İ°ü
 template <typename T>
 struct UDPDataPacket : UDPPacketHead
 {

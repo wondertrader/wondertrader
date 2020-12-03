@@ -39,9 +39,9 @@ USING_NS_OTP;
 
 typedef enum tagEngineType
 {
-	ET_CTA = 999,	//CTAå¼•æ“	
-	ET_HFT,			//é«˜é¢‘å¼•æ“
-	ET_SEL			//é€‰è‚¡å¼•æ“
+	ET_CTA = 999,	//CTAÒıÇæ	
+	ET_HFT,			//¸ßÆµÒıÇæ
+	ET_SEL			//Ñ¡¹ÉÒıÇæ
 } EngineType;
 
 class WtRtRunner : public IEngineEvtListener
@@ -52,7 +52,7 @@ public:
 
 public:
 	/*
-	 *	åˆå§‹åŒ–
+	 *	³õÊ¼»¯
 	 */
 	bool init(const char* logProfile = "log4cxx.prop");
 

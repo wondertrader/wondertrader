@@ -29,7 +29,7 @@ bool HftStrategyMgr::loadFactories(const char* path)
 {
 	if (!StdFile::exists(path))
 	{
-		WTSLogger::error("HFTç­–ç•¥å·¥å‚ç›®å½•%sä¸å­˜åœ¨", path);
+		WTSLogger::error("HFT²ßÂÔ¹¤³§Ä¿Â¼%s²»´æÔÚ", path);
 		return false;
 	}
 
@@ -70,7 +70,7 @@ bool HftStrategyMgr::loadFactories(const char* path)
 			fInfo._creator = creator;
 			fInfo._remover = (FuncDeleteHftStraFact)DLLHelper::get_symbol(hInst, "deleteStrategyFact");
 			fInfo._fact = pFact;
-			WTSLogger::info("HFTç­–ç•¥å·¥å‚[%s]åŠ è½½æˆåŠŸ", pFact->getName());
+			WTSLogger::info("HFT²ßÂÔ¹¤³§[%s]¼ÓÔØ³É¹¦", pFact->getName());
 
 			count++;
 		}
@@ -81,7 +81,7 @@ bool HftStrategyMgr::loadFactories(const char* path)
 		}
 	}
 
-	WTSLogger::info("ç›®å½•[%s]ä¸‹å…±åŠ è½½%uä¸ªHFTç­–ç•¥å·¥å‚", path, count);
+	WTSLogger::info("Ä¿Â¼[%s]ÏÂ¹²¼ÓÔØ%u¸öHFT²ßÂÔ¹¤³§", path, count);
 
 	return true;
 }

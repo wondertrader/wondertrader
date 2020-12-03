@@ -119,7 +119,7 @@ public:
 	}
 
 	//////////////////////////////////////////////////////////////////////////
-	//WtPortContextæ¥å£
+	//WtPortContext½Ó¿Ú
 	virtual WTSPortFundInfo* getFundInfo() override;
 
 	virtual void setVolScale(double scale) override;
@@ -134,7 +134,7 @@ public:
 	virtual uint32_t	transTimeToMin(uint32_t uTime) override{ return 0; }
 
 	//////////////////////////////////////////////////////////////////////////
-	/// IParserStubæ¥å£
+	/// IParserStub½Ó¿Ú
 	virtual void handle_push_quote(WTSTickData* newTick, bool isHot) override;
 
 public:
@@ -153,19 +153,19 @@ public:
 
 protected:
 	/*
-	 *	åŠ è½½ä¿¡å·è¿‡æ»¤å™¨
+	 *	¼ÓÔØĞÅºÅ¹ıÂËÆ÷
 	 */
 	void		load_filters();
 	
 	/*
-	 *	æ˜¯å¦è¢«è¿‡æ»¤æ‰äº†
-	 *	å¦‚æœè¿‡æ»¤å™¨æ˜¯å¿½ç•¥çš„è¯, å°±ä¼šè¿”å›true, å¦‚æœæ˜¯é‡å®šå‘ä»“ä½, å°±ä¼šè¿”å›false, è€Œç›®æ ‡ä»“ä½æ˜¯ä¸€ä¸ªè¢«è¿‡æ»¤å™¨æ”¹è¿‡çš„å€¼
+	 *	ÊÇ·ñ±»¹ıÂËµôÁË
+	 *	Èç¹û¹ıÂËÆ÷ÊÇºöÂÔµÄ»°, ¾Í»á·µ»Øtrue, Èç¹ûÊÇÖØ¶¨Ïò²ÖÎ», ¾Í»á·µ»Øfalse, ¶øÄ¿±ê²ÖÎ»ÊÇÒ»¸ö±»¹ıÂËÆ÷¸Ä¹ıµÄÖµ
 	 *
-	 *	@sname		ç­–ç•¥åç§°
-	 *	@stdCode	æ ‡å‡†åˆçº¦ä»£ç 
-	 *	@targetPos	ç›®æ ‡ä»“ä½, ä»¥è¯¥æ•°æ®ä¸ºå‡†
+	 *	@sname		²ßÂÔÃû³Æ
+	 *	@stdCode	±ê×¼ºÏÔ¼´úÂë
+	 *	@targetPos	Ä¿±ê²ÖÎ», ÒÔ¸ÃÊı¾İÎª×¼
 	 *	
-	 *	return		æ˜¯å¦è¿‡æ»¤æ‰äº†, å¦‚æœè¿‡æ»¤æ‰äº†, è¯¥æŒä»“å°±ä¸åŠ å…¥æœ€ç»ˆç»„åˆç›®æ ‡ä»“ä½
+	 *	return		ÊÇ·ñ¹ıÂËµôÁË, Èç¹û¹ıÂËµôÁË, ¸Ã³Ö²Ö¾Í²»¼ÓÈë×îÖÕ×éºÏÄ¿±ê²ÖÎ»
 	 */
 	bool		is_filtered(const char* sname, const char* stdCode, double& targetPos);
 
@@ -189,23 +189,23 @@ protected:
 
 
 protected:
-	uint32_t		_cur_date;	//å½“å‰æ—¥æœŸ
-	uint32_t		_cur_time;		//å½“å‰æ—¶é—´, æ˜¯1åˆ†é’Ÿçº¿æ—¶é—´, æ¯”å¦‚0900, è¿™ä¸ªæ—¶å€™çš„1åˆ†é’Ÿçº¿æ˜¯0901, _cur_timeä¹Ÿå°±æ˜¯0901, è¿™ä¸ªæ˜¯ä¸ºäº†CTAé‡Œé¢æ–¹ä¾¿
-	uint32_t		_cur_raw_time;	//å½“å‰çœŸå®æ—¶é—´
-	uint32_t		_cur_secs;	//å½“å‰ç§’æ•°, åŒ…å«æ¯«ç§’
-	uint32_t		_cur_tdate;	//å½“å‰äº¤æ˜“æ—¥
+	uint32_t		_cur_date;	//µ±Ç°ÈÕÆÚ
+	uint32_t		_cur_time;		//µ±Ç°Ê±¼ä, ÊÇ1·ÖÖÓÏßÊ±¼ä, ±ÈÈç0900, Õâ¸öÊ±ºòµÄ1·ÖÖÓÏßÊÇ0901, _cur_timeÒ²¾ÍÊÇ0901, Õâ¸öÊÇÎªÁËCTAÀïÃæ·½±ã
+	uint32_t		_cur_raw_time;	//µ±Ç°ÕæÊµÊ±¼ä
+	uint32_t		_cur_secs;	//µ±Ç°ÃëÊı, °üº¬ºÁÃë
+	uint32_t		_cur_tdate;	//µ±Ç°½»Ò×ÈÕ
 
-	IBaseDataMgr*	_base_data_mgr;	//åŸºç¡€æ•°æ®ç®¡ç†å™¨
-	IHotMgr*		_hot_mgr;		//ä¸»åŠ›ç®¡ç†å™¨
-	WtDataManager*	_data_mgr;		//æ•°æ®ç®¡ç†å™¨
+	IBaseDataMgr*	_base_data_mgr;	//»ù´¡Êı¾İ¹ÜÀíÆ÷
+	IHotMgr*		_hot_mgr;		//Ö÷Á¦¹ÜÀíÆ÷
+	WtDataManager*	_data_mgr;		//Êı¾İ¹ÜÀíÆ÷
 	IEngineEvtListener*	_evt_listener;
 
 	typedef std::unordered_set<uint32_t> SIDSet;
 	typedef std::unordered_map<std::string, SIDSet>	StraSubMap;
-	StraSubMap		_tick_sub_map;	//tickæ•°æ®è®¢é˜…è¡¨
-	StraSubMap		_bar_sub_map;	//Kçº¿æ•°æ®è®¢é˜…è¡¨
+	StraSubMap		_tick_sub_map;	//tickÊı¾İ¶©ÔÄ±í
+	StraSubMap		_bar_sub_map;	//KÏßÊı¾İ¶©ÔÄ±í
 
-	std::unordered_set<std::string>		_subed_raw_codes;	//tickè®¢é˜…è¡¨ï¼ˆçœŸå®ä»£ç æ¨¡å¼ï¼‰
+	std::unordered_set<std::string>		_subed_raw_codes;	//tick¶©ÔÄ±í£¨ÕæÊµ´úÂëÄ£Ê½£©
 
 	//////////////////////////////////////////////////////////////////////////
 	//
@@ -224,31 +224,31 @@ protected:
 	SignalMap		_sig_map;
 
 	//////////////////////////////////////////////////////////////////////////
-	//ä¿¡å·è¿‡æ»¤å™¨
+	//ĞÅºÅ¹ıÂËÆ÷
 	typedef enum tagFilterAction
 	{
-		FA_Ignore,		//å¿½ç•¥, å³ç»´æŒåŸæœ‰ä»“ä½
-		FA_Redirect,	//é‡å®šå‘æŒä»“, å³åŒæ­¥åˆ°æŒ‡å®šç›®æ ‡ä»“ä½
+		FA_Ignore,		//ºöÂÔ, ¼´Î¬³ÖÔ­ÓĞ²ÖÎ»
+		FA_Redirect,	//ÖØ¶¨Ïò³Ö²Ö, ¼´Í¬²½µ½Ö¸¶¨Ä¿±ê²ÖÎ»
 		FA_None = 99
 	} FilterAction;
 
 	typedef struct _FilterItem
 	{
-		std::string		_key;		//å…³é”®å­—
-		FilterAction	_action;	//è¿‡æ»¤æ“ä½œ
-		int32_t			_target;	//ç›®æ ‡ä»“ä½, åªæœ‰å½“_actionä¸ºFA_Redirectæ‰ç”Ÿæ•ˆ
+		std::string		_key;		//¹Ø¼ü×Ö
+		FilterAction	_action;	//¹ıÂË²Ù×÷
+		int32_t			_target;	//Ä¿±ê²ÖÎ», Ö»ÓĞµ±_actionÎªFA_Redirect²ÅÉúĞ§
 	} FilterItem;
 
 	typedef std::unordered_map<std::string, FilterItem>	FilterMap;
-	FilterMap		_stra_filters;	//ç­–ç•¥è¿‡æ»¤å™¨
-	FilterMap		_code_filters;	//ä»£ç è¿‡æ»¤å™¨, åŒ…æ‹¬åˆçº¦ä»£ç å’Œå“ç§ä»£ç , åŒä¸€æ—¶é—´åªæœ‰ä¸€ä¸ªç”Ÿæ•ˆ, åˆçº¦ä»£ç ä¼˜å…ˆçº§é«˜äºå“ç§ä»£ç 
-	std::string		_filter_file;	//è¿‡æ»¤å™¨é…ç½®æ–‡ä»¶
-	uint64_t		_filter_timestamp;	//è¿‡æ»¤å™¨æ–‡ä»¶æ—¶é—´æˆ³
+	FilterMap		_stra_filters;	//²ßÂÔ¹ıÂËÆ÷
+	FilterMap		_code_filters;	//´úÂë¹ıÂËÆ÷, °üÀ¨ºÏÔ¼´úÂëºÍÆ·ÖÖ´úÂë, Í¬Ò»Ê±¼äÖ»ÓĞÒ»¸öÉúĞ§, ºÏÔ¼´úÂëÓÅÏÈ¼¶¸ßÓÚÆ·ÖÖ´úÂë
+	std::string		_filter_file;	//¹ıÂËÆ÷ÅäÖÃÎÄ¼ş
+	uint64_t		_filter_timestamp;	//¹ıÂËÆ÷ÎÄ¼şÊ±¼ä´Á
 
 
 
 	//////////////////////////////////////////////////////////////////////////
-	//æ‰‹ç»­è´¹æ¨¡æ¿
+	//ÊÖĞø·ÑÄ£°å
 	typedef struct _FeeItem
 	{
 		double	_open;
@@ -268,7 +268,7 @@ protected:
 	WTSPortFundInfo*	_port_fund;
 
 	//////////////////////////////////////////////////////////////////////////
-	//æŒä»“æ•°æ®
+	//³Ö²ÖÊı¾İ
 	typedef struct _DetailInfo
 	{
 		bool		_long;
@@ -307,7 +307,7 @@ protected:
 	typedef std::unordered_map<std::string, double> PriceMap;
 	PriceMap		_price_map;
 
-	//åå°ä»»åŠ¡çº¿ç¨‹, æŠŠé£æ§å’Œèµ„é‡‘, æŒä»“æ›´æ–°éƒ½æ”¾åˆ°è¿™ä¸ªçº¿ç¨‹é‡Œå»
+	//ºóÌ¨ÈÎÎñÏß³Ì, °Ñ·ç¿ØºÍ×Ê½ğ, ³Ö²Ö¸üĞÂ¶¼·Åµ½Õâ¸öÏß³ÌÀïÈ¥
 	typedef std::queue<TaskItem>	TaskQueue;
 	BoostThreadPtr	_thrd_task;
 	TaskQueue		_task_queue;

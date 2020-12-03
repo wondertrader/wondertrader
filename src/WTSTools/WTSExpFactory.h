@@ -5,7 +5,7 @@
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief æŒ‡æ ‡å·¥åŽ‚ç±»å®šä¹‰
+ * \brief Ö¸±ê¹¤³§Àà¶¨Òå
  */
 #pragma once
 #include "../Includes/IExpFactory.h"

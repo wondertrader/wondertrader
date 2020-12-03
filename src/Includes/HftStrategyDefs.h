@@ -30,23 +30,23 @@ public:
 
 public:
 	/*
-	*	æ‰§è¡Œå•å…ƒåç§°
+	*	Ö´ĞĞµ¥ÔªÃû³Æ
 	*/
 	virtual const char* getName() = 0;
 
 	/*
-	*	æ‰€å±æ‰§è¡Œå™¨å·¥å‚åç§°
+	*	ËùÊôÖ´ĞĞÆ÷¹¤³§Ãû³Æ
 	*/
 	virtual const char* getFactName() = 0;
 
 	/*
-	*	åˆå§‹åŒ–
+	*	³õÊ¼»¯
 	*/
 	virtual bool init(WTSVariant* cfg){ return true; }
 
 	virtual const char* id() const { return _id.c_str(); }
 
-	//å›è°ƒå‡½æ•°
+	//»Øµ÷º¯Êı
 	virtual void on_init(IHftStraCtx* ctx) = 0;
 	virtual void on_tick(IHftStraCtx* ctx, const char* code, WTSTickData* newTick) = 0;
 	virtual void on_bar(IHftStraCtx* ctx, const char* code, const char* period, uint32_t times, WTSBarStruct* newBar) = 0;
@@ -63,7 +63,7 @@ protected:
 };
 
 //////////////////////////////////////////////////////////////////////////
-//ç­–ç•¥å·¥å‚æ¥å£
+//²ßÂÔ¹¤³§½Ó¿Ú
 typedef void(*FuncEnumHftStrategyCallback)(const char* factName, const char* straName, bool isLast);
 
 class IHftStrategyFact
@@ -74,27 +74,27 @@ public:
 
 public:
 	/*
-	*	è·å–å·¥å‚å
+	*	»ñÈ¡¹¤³§Ãû
 	*/
 	virtual const char* getName() = 0;
 
 	/*
-	*	æšä¸¾ç­–ç•¥
+	*	Ã¶¾Ù²ßÂÔ
 	*/
 	virtual void enumStrategy(FuncEnumHftStrategyCallback cb) = 0;
 
 	/*
-	*	æ ¹æ®åç§°åˆ›å»ºæ‰§è¡Œå•å…ƒ
+	*	¸ù¾İÃû³Æ´´½¨Ö´ĞĞµ¥Ôª
 	*/
 	virtual HftStrategy* createStrategy(const char* name, const char* id) = 0;
 
 	/*
-	*	åˆ é™¤æ‰§è¡Œå•å…ƒ
+	*	É¾³ıÖ´ĞĞµ¥Ôª
 	*/
 	virtual bool deleteStrategy(HftStrategy* stra) = 0;
 };
 
-//åˆ›å»ºæ‰§è¡Œå·¥å‚
+//´´½¨Ö´ĞĞ¹¤³§
 typedef IHftStrategyFact* (*FuncCreateHftStraFact)();
-//åˆ é™¤æ‰§è¡Œå·¥å‚
+//É¾³ıÖ´ĞĞ¹¤³§
 typedef void(*FuncDeleteHftStraFact)(IHftStrategyFact* &fact);

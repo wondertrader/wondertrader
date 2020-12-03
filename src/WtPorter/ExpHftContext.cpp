@@ -43,7 +43,7 @@ void ExpHftContext::on_entrust(uint32_t localid, const char* stdCode, bool bSucc
 
 void ExpHftContext::on_init()
 {
-	//å‘å¤–éƒ¨å›è°ƒ
+	//ÏòÍâ²¿»Øµ÷
 	getRunner().ctx_on_init(_context_id, ET_HFT);
 
 	HftStraBaseCtx::on_init();

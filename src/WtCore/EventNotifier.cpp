@@ -32,7 +32,7 @@ USING_NS_OTP;
 #define UDP_MSG_PUSHEVENT	0x302
 
 #pragma pack(push,1)
-//UDPè¯·æ±‚åŒ…
+//UDPÇëÇó°ü
 typedef struct _UDPPacket
 {
 	char			_group[16];
@@ -107,7 +107,7 @@ void EventNotifier::start()
 		}
 	}));
 
-	WTSLogger::info("äº‹ä»¶é€šçŸ¥å™¨å·²å¯åŠ¨");
+	WTSLogger::info("ÊÂ¼şÍ¨ÖªÆ÷ÒÑÆô¶¯");
 }
 
 void EventNotifier::stop()
@@ -132,7 +132,7 @@ bool EventNotifier::addBRecver(const char* remote, int port)
 		boost::asio::ip::address_v4 addr = boost::asio::ip::address_v4::from_string(remote);
 		m_listRawRecver.push_back(EndPoint(addr, port));
 
-		WTSLogger::info("æ¥æ”¶ç«¯%s:%då·²åŠ å…¥", remote, port);
+		WTSLogger::info("½ÓÊÕ¶Ë%s:%dÒÑ¼ÓÈë", remote, port);
 	}
 	catch(...)
 	{
@@ -297,7 +297,7 @@ void EventNotifier::notify(const char* trader, const std::string& data, uint32_t
 					if (castData._data.empty())
 						break;
 
-					//ç›´æ¥å¹¿æ’­
+					//Ö±½Ó¹ã²¥
 					if (!m_listRawGroup.empty() || !m_listRawRecver.empty())
 					{
 						std::string buf_raw;
@@ -309,14 +309,14 @@ void EventNotifier::notify(const char* trader, const std::string& data, uint32_t
 						strcpy(pack->_trader, castData._trader.c_str());
 						memcpy(&pack->_data, castData._data.data(), castData._data.size());
 
-						//å¹¿æ’­
+						//¹ã²¥
 						for (auto it = m_listRawRecver.begin(); it != m_listRawRecver.end(); it++)
 						{
 							const EndPoint& receiver = (*it);
 							m_sktBroadcast->send_to(boost::asio::buffer(buf_raw), receiver);
 						}
 
-						//ç»„æ’­
+						//×é²¥
 						for (auto it = m_listRawGroup.begin(); it != m_listRawGroup.end(); it++)
 						{
 							const MulticastPair& item = *it;
@@ -339,7 +339,7 @@ void EventNotifier::handle_send_broad(const EndPoint& ep, const boost::system::e
 {
 	if(error)
 	{
-		WTSLogger::error("äº‹ä»¶å¹¿æ’­å¤±è´¥ï¼Œç›®æ ‡åœ°å€ï¼š%sï¼Œé”™è¯¯ä¿¡æ¯ï¼š%s", ep.address().to_string().c_str(), error.message().c_str());
+		WTSLogger::error("ÊÂ¼ş¹ã²¥Ê§°Ü£¬Ä¿±êµØÖ·£º%s£¬´íÎóĞÅÏ¢£º%s", ep.address().to_string().c_str(), error.message().c_str());
 	}
 }
 
@@ -347,7 +347,7 @@ void EventNotifier::handle_send_multi(const EndPoint& ep, const boost::system::e
 {
 	if(error)
 	{
-		WTSLogger::error("äº‹ä»¶å¤šæ’­å¤±è´¥ï¼Œç›®æ ‡åœ°å€ï¼š%sï¼Œé”™è¯¯ä¿¡æ¯ï¼š%s", ep.address().to_string().c_str(), error.message().c_str());
+		WTSLogger::error("ÊÂ¼ş¶à²¥Ê§°Ü£¬Ä¿±êµØÖ·£º%s£¬´íÎóĞÅÏ¢£º%s", ep.address().to_string().c_str(), error.message().c_str());
 	}
 }
 

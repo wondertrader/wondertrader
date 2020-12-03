@@ -22,9 +22,9 @@ USING_NS_OTP;
 
 typedef enum tagEngineType
 {
-	ET_CTA = 999,	//CTA寮曟搸	
-	ET_HFT,			//楂橀寮曟搸
-	ET_SEL			//閫夎偂寮曟搸
+	ET_CTA = 999,	//CTA引擎	
+	ET_HFT,			//高频引擎
+	ET_SEL			//选股引擎
 } EngineType;
 
 class SelMocker;

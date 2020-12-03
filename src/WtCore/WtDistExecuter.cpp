@@ -54,10 +54,10 @@ void WtDistExecuter::set_position(const std::unordered_map<std::string, double>&
 		_target_pos[stdCode] = newVol;
 		if (!decimal::eq(oldVol, newVol))
 		{
-			writeLog(fmt::format("{}鐩爣浠撲綅鏇存柊: {} -> {}", stdCode, oldVol, newVol).c_str());
+			writeLog(fmt::format("{}目标仓位更新: {} -> {}", stdCode, oldVol, newVol).c_str());
 		}
 
-		//杩欓噷骞挎挱鐩爣浠撲綅
+		//这里广播目标仓位
 	}
 }
 
@@ -70,13 +70,13 @@ void WtDistExecuter::on_position_changed(const char* stdCode, double targetPos)
 
 	if (!decimal::eq(oldVol, targetPos))
 	{
-		writeLog(fmt::format("{}鐩爣浠撲綅鏇存柊: {} -> {}", stdCode, oldVol, targetPos).c_str());
+		writeLog(fmt::format("{}目标仓位更新: {} -> {}", stdCode, oldVol, targetPos).c_str());
 	}
 
-	//杩欓噷骞挎挱鐩爣浠撲綅
+	//这里广播目标仓位
 }
 
 void WtDistExecuter::on_tick(const char* stdCode, WTSTickData* newTick)
 {
-	//鍒嗗竷寮忔墽琛屽櫒涓嶉渶瑕佸鐞唎ntick
+	//分布式执行器不需要处理ontick
 }

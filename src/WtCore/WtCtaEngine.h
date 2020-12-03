@@ -26,7 +26,7 @@ public:
 
 public:
 	//////////////////////////////////////////////////////////////////////////
-	//WtEngine鎺ュ彛
+	//WtEngine接口
 	virtual void handle_push_quote(WTSTickData* newTick, bool isHot) override;
 
 	virtual void on_tick(const char* stdCode, WTSTickData* curTick) override;
@@ -45,7 +45,7 @@ public:
 	virtual uint32_t transTimeToMin(uint32_t uTime) override;
 
 	///////////////////////////////////////////////////////////////////////////
-	//IExecuterStub 鎺ュ彛
+	//IExecuterStub 接口
 	virtual uint64_t get_real_time() override;
 	virtual WTSCommodityInfo* get_comm_info(const char* stdCode) override;
 	virtual WTSSessionInfo* get_sess_info(const char* stdCode) override;

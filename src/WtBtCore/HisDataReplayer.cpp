@@ -78,7 +78,7 @@ bool HisDataReplayer::init(WTSVariant* cfg)
 
 	_tick_enabled = cfg->getBoolean("tick");
 
-	//åŸºç¡€æ•°æ®æ–‡ä»¶
+	//»ù´¡Êı¾İÎÄ¼ş
 	WTSVariant* cfgBF = cfg->get("basefiles");
 	if (cfgBF->get("session"))
 		_bd_mgr.loadSessions(cfgBF->getCString("session"));
@@ -133,11 +133,11 @@ void HisDataReplayer::init_db()
 
 	if (_db_conn->connect(_db_conf._dbname, _db_conf._host, _db_conf._user, _db_conf._pass, _db_conf._port, CLIENT_MULTI_STATEMENTS | CLIENT_MULTI_RESULTS))
 	{
-		WTSLogger::info("æ•°æ®åº“è¿æ¥æˆåŠŸ:%s:%d", _db_conf._host, _db_conf._port);
+		WTSLogger::info("Êı¾İ¿âÁ¬½Ó³É¹¦:%s:%d", _db_conf._host, _db_conf._port);
 	}
 	else
 	{
-		WTSLogger::error("æ•°æ®åº“è¿æ¥å¤±è´¥[%s:%d]:%s", _db_conf._host, _db_conf._port, _db_conn->errstr());
+		WTSLogger::error("Êı¾İ¿âÁ¬½ÓÊ§°Ü[%s:%d]:%s", _db_conf._host, _db_conf._port, _db_conn->errstr());
 		_db_conn.reset();
 	}
 }
@@ -147,7 +147,7 @@ bool HisDataReplayer::loadStkAdjFactorsFromDB()
 	MysqlQuery query(*_db_conn);
 	if (!query.exec("SELECT exchange,code,date,factor FROM tb_adj_factors ORDER BY exchange,code,date DESC;"))
 	{
-		WTSLogger::error("æŸ¥è¯¢é™¤æƒå› å­è¡¨å‡ºé”™:%s", query.errormsg());
+		WTSLogger::error("²éÑ¯³ıÈ¨Òò×Ó±í³ö´í:%s", query.errormsg());
 		return false;
 	}
 
@@ -173,7 +173,7 @@ bool HisDataReplayer::loadStkAdjFactorsFromDB()
 		fct_cnt++;
 	}
 
-	WTSLogger::info("å…±åŠ è½½%uåªè‚¡ç¥¨çš„%uæ¡é™¤æƒå› å­æ•°æ®", stk_cnt, fct_cnt);
+	WTSLogger::info("¹²¼ÓÔØ%uÖ»¹ÉÆ±µÄ%uÌõ³ıÈ¨Òò×ÓÊı¾İ", stk_cnt, fct_cnt);
 	return true;
 }
 
@@ -181,7 +181,7 @@ bool HisDataReplayer::loadStkAdjFactors(const char* adjfile)
 {
 	if (!BoostFile::exists(adjfile))
 	{
-		WTSLogger::error("é™¤æƒå› å­æ–‡ä»¶%sä¸å­˜åœ¨", adjfile);
+		WTSLogger::error("³ıÈ¨Òò×ÓÎÄ¼ş%s²»´æÔÚ", adjfile);
 		return false;
 	}
 
@@ -193,7 +193,7 @@ bool HisDataReplayer::loadStkAdjFactors(const char* adjfile)
 
 	if (doc.HasParseError())
 	{
-		WTSLogger::error("é™¤æƒå› å­æ–‡ä»¶%sè§£æå¤±è´¥", adjfile);
+		WTSLogger::error("³ıÈ¨Òò×ÓÎÄ¼ş%s½âÎöÊ§°Ü", adjfile);
 		return false;
 	}
 
@@ -226,7 +226,7 @@ bool HisDataReplayer::loadStkAdjFactors(const char* adjfile)
 		}
 	}
 
-	WTSLogger::info("å…±åŠ è½½%uåªè‚¡ç¥¨çš„%uæ¡é™¤æƒå› å­æ•°æ®", stk_cnt, fct_cnt);
+	WTSLogger::info("¹²¼ÓÔØ%uÖ»¹ÉÆ±µÄ%uÌõ³ıÈ¨Òò×ÓÊı¾İ", stk_cnt, fct_cnt);
 	return true;
 }
 
@@ -256,7 +256,7 @@ void HisDataReplayer::register_task(uint32_t taskid, uint32_t date, uint32_t tim
 	_task->_period = ptype;
 	_task->_strict_time = true;
 
-	WTSLogger::info("å®šæ—¶ä»»åŠ¡æ³¨å†ŒæˆåŠŸï¼Œå‘¨æœŸï¼š%s", period);
+	WTSLogger::info("¶¨Ê±ÈÎÎñ×¢²á³É¹¦£¬ÖÜÆÚ£º%s", period);
 }
 
 void HisDataReplayer::run()
@@ -270,12 +270,12 @@ void HisDataReplayer::run()
 
 	if(_task == NULL)
 	{
-		//å¦‚æœæ²¡æœ‰æ—¶é—´è°ƒåº¦ä»»åŠ¡ï¼Œåˆ™é‡‡ç”¨ä¸»Kçº¿å›æ”¾çš„æ¨¡å¼
+		//Èç¹ûÃ»ÓĞÊ±¼äµ÷¶ÈÈÎÎñ£¬Ôò²ÉÓÃÖ÷KÏß»Ø·ÅµÄÄ£Ê½
 		BarsList& barList = _bars_cache[_main_key];
 		WTSSessionInfo* sInfo = get_session_info(barList._code.c_str(), true);
 		std::string commId = CodeHelper::stdCodeToStdCommID(barList._code.c_str());
 
-		WTSLogger::log_raw(LL_INFO, fmt::format("å¼€å§‹ä»{}è¿›è¡Œæ•°æ®å›æ”¾â€¦â€¦", _begin_time).c_str());
+		WTSLogger::log_raw(LL_INFO, fmt::format("¿ªÊ¼´Ó{}½øĞĞÊı¾İ»Ø·Å¡­¡­", _begin_time).c_str());
 
 		for (;;)
 		{
@@ -293,7 +293,7 @@ void HisDataReplayer::run()
 
 				if (nextBarTime > _end_time)
 				{
-					WTSLogger::log_raw(LL_INFO, fmt::format("{}è¶…è¿‡ç»“æŸæ—¶é—´{}ï¼Œå›æ”¾ç»“æŸ", nextBarTime, _end_time).c_str());
+					WTSLogger::log_raw(LL_INFO, fmt::format("{}³¬¹ı½áÊøÊ±¼ä{}£¬»Ø·Å½áÊø", nextBarTime, _end_time).c_str());
 					_listener->handle_replay_done();
 					break;
 				}
@@ -306,7 +306,7 @@ void HisDataReplayer::run()
 				{
 					_listener->handle_session_begin();
 					_opened_tdate = nextTDate;
-					//WTSLogger::info("äº¤æ˜“æ—¥%uå¼€å§‹", nextTDate);
+					//WTSLogger::info("½»Ò×ÈÕ%u¿ªÊ¼", nextTDate);
 					_cur_tdate = nextTDate;
 				}
 				;
@@ -330,19 +330,19 @@ void HisDataReplayer::run()
 					_listener->handle_session_end();
 					_closed_tdate = _cur_tdate;
 					_day_cache.clear();
-					//WTSLogger::info("äº¤æ˜“æ—¥%uç»“æŸ", _cur_tdate);
+					//WTSLogger::info("½»Ò×ÈÕ%u½áÊø", _cur_tdate);
 				}
 
 				if (barList._cursor >= barList._bars.size())
 				{
-					WTSLogger::info("å…¨éƒ¨æ•°æ®éƒ½å·²å›æ”¾ï¼Œå›æ”¾ç»“æŸ");
+					WTSLogger::info("È«²¿Êı¾İ¶¼ÒÑ»Ø·Å£¬»Ø·Å½áÊø");
 					_listener->handle_replay_done();
 					break;
 				}
 			}
 			else
 			{
-				WTSLogger::info("æ•°æ®å°šæœªåˆå§‹åŒ–ï¼Œå›æ”¾ç›´æ¥é€€å‡º");
+				WTSLogger::info("Êı¾İÉĞÎ´³õÊ¼»¯£¬»Ø·ÅÖ±½ÓÍË³ö");
 				_listener->handle_replay_done();
 				break;
 			}
@@ -355,13 +355,13 @@ void HisDataReplayer::run()
 	}
 	else //if(_task != NULL)
 	{
-		//æ—¶é—´è°ƒåº¦ä»»åŠ¡ä¸ä¸ºç©ºï¼Œåˆ™æŒ‰ç…§æ—¶é—´è°ƒåº¦ä»»åŠ¡å›æ”¾
+		//Ê±¼äµ÷¶ÈÈÎÎñ²»Îª¿Õ£¬Ôò°´ÕÕÊ±¼äµ÷¶ÈÈÎÎñ»Ø·Å
 		WTSSessionInfo* sInfo = NULL;
 		const char* DEF_SESS = (strlen(_task->_session) == 0) ? DEFAULT_SESSIONID : _task->_session;
 		sInfo = _bd_mgr.getSession(DEF_SESS);
-		WTSLogger::log_raw(LL_INFO, fmt::format("ä»{}å¼€å§‹æŒ‰ä»»åŠ¡å‘¨æœŸå›æµ‹â€¦â€¦", _begin_time).c_str());
+		WTSLogger::log_raw(LL_INFO, fmt::format("´Ó{}¿ªÊ¼°´ÈÎÎñÖÜÆÚ»Ø²â¡­¡­", _begin_time).c_str());
 
-		//åˆ†é’Ÿå³ä»»åŠ¡å’Œæ—¥çº§åˆ«ä»»åŠ¡åˆ†å¼€å†™
+		//·ÖÖÓ¼´ÈÎÎñºÍÈÕ¼¶±ğÈÎÎñ·Ö¿ªĞ´
 		if (_task->_period != TPT_Minute)
 		{
 			uint32_t endtime = TimeUtils::getNextMinute(_task->_time, -1);
@@ -371,7 +371,7 @@ void HisDataReplayer::run()
 			for (;;)
 			{
 				bool fired = false;
-				//è·å–ä¸Šä¸€ä¸ªäº¤æ˜“æ—¥çš„æ—¥æœŸ
+				//»ñÈ¡ÉÏÒ»¸ö½»Ò×ÈÕµÄÈÕÆÚ
 				uint32_t preTDate = TimeUtils::getNextDate(_cur_tdate, -1);
 				if (_cur_time == endtime)
 				{
@@ -404,15 +404,15 @@ void HisDataReplayer::run()
 								fired = true;
 							else if (bHasHoliday)
 							{
-								//ä¸Šä¸€ä¸ªäº¤æ˜“æ—¥åœ¨ä¸Šä¸ªæœˆï¼Œä¸”å½“å‰æ—¥æœŸå¤§äºè§¦å‘æ—¥æœŸ
-								//è¯´æ˜è¿™ä¸ªæœˆçš„å¼€å§‹æ—¥æœŸåœ¨èŠ‚å‡æ—¥å†…ï¼Œé¡ºå»¶åˆ°ä»Šå¤©
+								//ÉÏÒ»¸ö½»Ò×ÈÕÔÚÉÏ¸öÔÂ£¬ÇÒµ±Ç°ÈÕÆÚ´óÓÚ´¥·¢ÈÕÆÚ
+								//ËµÃ÷Õâ¸öÔÂµÄ¿ªÊ¼ÈÕÆÚÔÚ½Ú¼ÙÈÕÄÚ£¬Ë³ÑÓµ½½ñÌì
 								if ((preTDate % 10000 / 100 < _cur_date % 10000 / 100) && _cur_date % 1000000 > _task->_day)
 								{
 									fired = true;
 								}
 								else if (preTDate % 1000000 < _task->_day && _cur_date % 1000000 > _task->_day)
 								{
-									//ä¸Šä¸€ä¸ªäº¤æ˜“æ—¥åœ¨åŒä¸€ä¸ªæœˆï¼Œä¸”å°äºè§¦å‘æ—¥æœŸï¼Œä½†æ˜¯ä»Šå¤©å¤§äºè§¦å‘æ—¥æœŸï¼Œè¯´æ˜æ­£ç¡®è§¦å‘æ—¥æœŸåˆ°èŠ‚å‡æ—¥å†…ï¼Œé¡ºå»¶åˆ°ä»Šå¤©
+									//ÉÏÒ»¸ö½»Ò×ÈÕÔÚÍ¬Ò»¸öÔÂ£¬ÇÒĞ¡ÓÚ´¥·¢ÈÕÆÚ£¬µ«ÊÇ½ñÌì´óÓÚ´¥·¢ÈÕÆÚ£¬ËµÃ÷ÕıÈ·´¥·¢ÈÕÆÚµ½½Ú¼ÙÈÕÄÚ£¬Ë³ÑÓµ½½ñÌì
 									fired = true;
 								}
 							}
@@ -430,7 +430,7 @@ void HisDataReplayer::run()
 								}
 								else if (preWD > weekDay && weekDay > _task->_day)
 								{
-									//ä¸Šä¸€ä¸ªäº¤æ˜“æ—¥çš„æ˜ŸæœŸå¤§äºä»Šå¤©çš„æ˜ŸæœŸï¼Œè¯´æ˜æ¢äº†ä¸€å‘¨äº†
+									//ÉÏÒ»¸ö½»Ò×ÈÕµÄĞÇÆÚ´óÓÚ½ñÌìµÄĞÇÆÚ£¬ËµÃ÷»»ÁËÒ»ÖÜÁË
 									fired = true;
 								}
 								else if (preWD < _task->_day && weekDay > _task->_day)
@@ -449,9 +449,9 @@ void HisDataReplayer::run()
 
 				if (!fired)
 				{
-					//è°ƒæ•´æ—¶é—´
-					//å¦‚æœå½“å‰æ—¶é—´å°äºä»»åŠ¡æ—¶é—´ï¼Œåˆ™ç›´æ¥èµ‹å€¼å³å¯
-					//å¦‚æœå½“å‰æ—¶é—´å¤§äºä»»åŠ¡æ—¶é—´ï¼Œåˆ™è‡³å°‘è¦ç­‰ä¸‹ä¸€å¤©
+					//µ÷ÕûÊ±¼ä
+					//Èç¹ûµ±Ç°Ê±¼äĞ¡ÓÚÈÎÎñÊ±¼ä£¬ÔòÖ±½Ó¸³Öµ¼´¿É
+					//Èç¹ûµ±Ç°Ê±¼ä´óÓÚÈÎÎñÊ±¼ä£¬ÔòÖÁÉÙÒªµÈÏÂÒ»Ìì
 					if (_cur_time < endtime)
 					{
 						_cur_time = endtime;
@@ -471,7 +471,7 @@ void HisDataReplayer::run()
 				}
 				else
 				{
-					//ç”¨å‰ä¸€åˆ†é’Ÿä½œä¸ºç»“æŸæ—¶é—´
+					//ÓÃÇ°Ò»·ÖÖÓ×÷Îª½áÊøÊ±¼ä
 					uint32_t curDate = _cur_date;
 					uint32_t curTime = endtime;
 					bool bEndSession = sInfo->offsetTime(curTime) >= sInfo->getCloseTime(true);
@@ -489,7 +489,7 @@ void HisDataReplayer::run()
 				uint64_t nextTime = (uint64_t)_cur_date * 10000 + _cur_time;
 				if (nextTime > _end_time)
 				{
-					WTSLogger::info("æŒ‰ä»»åŠ¡å‘¨æœŸå›æµ‹ç»“æŸ");
+					WTSLogger::info("°´ÈÎÎñÖÜÆÚ»Ø²â½áÊø");
 					if (_listener)
 					{
 						_listener->handle_session_end();
@@ -507,9 +507,9 @@ void HisDataReplayer::run()
 
 			for(;;)
 			{
-				//è¦è€ƒè™‘åˆ°è·¨æ—¥çš„æƒ…å†µ
+				//Òª¿¼ÂÇµ½¿çÈÕµÄÇé¿ö
 				uint32_t mins = sInfo->timeToMinutes(_cur_time);
-				//å¦‚æœä¸€å¼€å§‹ä¸èƒ½æ•´é™¤ï¼Œåˆ™ç›´æ¥ä¿®æ­£ä¸€ä¸‹
+				//Èç¹ûÒ»¿ªÊ¼²»ÄÜÕû³ı£¬ÔòÖ±½ÓĞŞÕıÒ»ÏÂ
 				if(mins % _task->_time != 0)
 				{
 					mins = mins / _task->_time + _task->_time;
@@ -536,7 +536,7 @@ void HisDataReplayer::run()
 				
 				if(bNewTDate)
 				{
-					//æ¢æ—¥äº†
+					//»»ÈÕÁË
 					mins = _task->_time;
 					uint32_t nextTDate = _bd_mgr.getNextTDate(_task->_trdtpl, _cur_tdate, 1, true);
 
@@ -544,13 +544,13 @@ void HisDataReplayer::run()
 					{
 						if(sInfo->getOffsetMins() > 0)
 						{
-							//çœŸå®æ—¶é—´åç§»ï¼Œè¯´æ˜å¤œç›˜ç®—ä½œä¸‹ä¸€å¤©çš„
+							//ÕæÊµÊ±¼äºóÒÆ£¬ËµÃ÷Ò¹ÅÌËã×÷ÏÂÒ»ÌìµÄ
 							_cur_date = _cur_tdate;
 							_cur_tdate = nextTDate;
 						}
 						else
 						{
-							//çœŸå®æ—¶é—´å‰ç§»ï¼Œè¯´æ˜å¤œç›˜æ˜¯ä¸Šä¸€å¤©çš„ï¼Œè¿™ç§æƒ…å†µå°±ä¸éœ€è¦åŠ¨äº†
+							//ÕæÊµÊ±¼äÇ°ÒÆ£¬ËµÃ÷Ò¹ÅÌÊÇÉÏÒ»ÌìµÄ£¬ÕâÖÖÇé¿ö¾Í²»ĞèÒª¶¯ÁË
 							_cur_tdate = nextTDate;
 							_cur_date = _cur_tdate;
 						}
@@ -572,7 +572,7 @@ void HisDataReplayer::run()
 					uint32_t dayMins = _cur_time / 100 * 60 + _cur_time % 100;
 					uint32_t nextDMins = newTime / 100 * 60 + newTime % 100;
 
-					//æ˜¯å¦åˆ°äº†ä¸€ä¸ªæ–°çš„å°èŠ‚
+					//ÊÇ·ñµ½ÁËÒ»¸öĞÂµÄĞ¡½Ú
 					bool bNewSec = (nextDMins - dayMins > _task->_time) && !bNewDay;
 
 					while(bNewSec && _bd_mgr.isHoliday(_task->_trdtpl, _cur_date, true))
@@ -584,7 +584,7 @@ void HisDataReplayer::run()
 				uint64_t nextTime = (uint64_t)_cur_date * 10000 + _cur_time;
 				if (nextTime > _end_time)
 				{
-					WTSLogger::info("æŒ‰ä»»åŠ¡å‘¨æœŸå›æµ‹ç»“æŸ");
+					WTSLogger::info("°´ÈÎÎñÖÜÆÚ»Ø²â½áÊø");
 					if (_listener)
 					{
 						_listener->handle_session_end();
@@ -665,12 +665,12 @@ void HisDataReplayer::replayTicks(uint64_t stime, uint64_t etime)
 
 void HisDataReplayer::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTDate /* = 0 */)
 {
-	//è¿™é‡Œåº”è¯¥è§¦å‘æ£€æŸ¥
+	//ÕâÀïÓ¦¸Ã´¥·¢¼ì²é
 	uint64_t nowTime = (uint64_t)uDate * 10000 + uTime;
 
 	//if(_task && endTDate != 0)
 	//{
-	//	//å¦‚æœæ˜¯äº¤æ˜“æ—¥ç»“æŸï¼Œæ¸…ç†æ‰åˆ†é’Ÿçº¿ç¼“å­˜ï¼Œä¸ç„¶åƒå†…å­˜å¤ªå¤š
+	//	//Èç¹ûÊÇ½»Ò×ÈÕ½áÊø£¬ÇåÀíµô·ÖÖÓÏß»º´æ£¬²»È»³ÔÄÚ´æÌ«¶à
 	//	std::set<std::string> to_clear;
 	//	for (auto it = _bars_cache.begin(); it != _bars_cache.end(); it++)
 	//	{
@@ -685,7 +685,7 @@ void HisDataReplayer::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTD
 	//		if (it != _bars_cache.end())
 	//		{
 	//			_bars_cache.erase(it);
-	//			WTSLogger::info("æ•°æ®ç¼“å­˜%så·²è¢«æ¸…ç†", key.c_str());
+	//			WTSLogger::info("Êı¾İ»º´æ%sÒÑ±»ÇåÀí", key.c_str());
 	//		}
 	//	}
 	//}
@@ -695,7 +695,7 @@ void HisDataReplayer::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTD
 		BarsList& barsList = it->second;
 		if (barsList._period != KP_DAY)
 		{
-			//å¦‚æœå†å²æ•°æ®æŒ‡æ ‡ä¸åœ¨å°¾éƒ¨, è¯´æ˜æ˜¯å›æµ‹æ¨¡å¼, è¦ç»§ç»­å›æ”¾å†å²æ•°æ®
+			//Èç¹ûÀúÊ·Êı¾İÖ¸±ê²»ÔÚÎ²²¿, ËµÃ÷ÊÇ»Ø²âÄ£Ê½, Òª¼ÌĞø»Ø·ÅÀúÊ·Êı¾İ
 			if (barsList._bars.size() > barsList._cursor)
 			{
 				for (;;)
@@ -712,7 +712,7 @@ void HisDataReplayer::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTD
 								const std::string& ticker = _ticker_keys[barsList._code];
 								if (ticker == it->first)
 								{
-									//å¼€é«˜ä½æ”¶
+									//¿ª¸ßµÍÊÕ
 									WTSTickStruct& curTS = _day_cache[barsList._code];
 									strcpy(curTS.code, barsList._code.c_str());
 									curTS.action_date = _cur_date;
@@ -721,7 +721,7 @@ void HisDataReplayer::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTD
 									curTS.price = nextBar.open;
 									curTS.volumn = nextBar.vol;
 
-									//æ›´æ–°å¼€é«˜ä½ä¸‰ä¸ªå­—æ®µ
+									//¸üĞÂ¿ª¸ßµÍÈı¸ö×Ö¶Î
 									if (decimal::eq(curTS.open, 0))
 										curTS.open = curTS.price;
 									curTS.high = max(curTS.price, curTS.high);
@@ -806,7 +806,7 @@ void HisDataReplayer::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTD
 
 									WTSSessionInfo* sInfo = get_session_info(realCode.c_str(), true);
 									uint32_t curTime = sInfo->getOpenTime();
-									//å¼€é«˜ä½æ”¶
+									//¿ª¸ßµÍÊÕ
 									WTSTickStruct curTS;
 									strcpy(curTS.code, realCode.c_str());
 									curTS.action_date = _cur_date;
@@ -864,7 +864,7 @@ WTSKlineSlice* HisDataReplayer::get_kline_slice(const char* stdCode, const char*
 		_main_key = key;
 
 	//if(!_tick_enabled)
-	//ä¸åšåˆ¤æ–­ï¼Œä¸»è¦ä¸ºäº†é˜²æ­¢æ²¡æœ‰tickæ•°æ®ï¼Œè€Œé‡‡ç”¨ç¬¬äºŒæ–¹æ¡ˆ
+	//²»×öÅĞ¶Ï£¬Ö÷ÒªÎªÁË·ÀÖ¹Ã»ÓĞtickÊı¾İ£¬¶ø²ÉÓÃµÚ¶ş·½°¸
 	{
 		if(_ticker_keys.find(stdCode) == _ticker_keys.end())
 			_ticker_keys[stdCode] = key;
@@ -980,7 +980,7 @@ WTSKlineSlice* HisDataReplayer::get_kline_slice(const char* stdCode, const char*
 	BarsList& kBlkPair = _bars_cache[key];
 	if (kBlkPair._cursor == UINT_MAX)
 	{
-		//è¿˜æ²¡æœ‰ç»è¿‡åˆå§‹å®šä½
+		//»¹Ã»ÓĞ¾­¹ı³õÊ¼¶¨Î»
 		WTSBarStruct bar;
 		bar.date = _cur_tdate;
 		if(kp != KP_DAY)
@@ -1221,4 +1221,1511 @@ bool HisDataReplayer::checkTicks(const char* stdCode, uint32_t uDate)
 		}
 		else
 		{
-			has
+			hasTicks = cacheRawTicksFromBin(stdCode, stdCode, uDate);
+		}
+
+		if (!hasTicks)
+			return false;
+	}
+
+	return true;
+}
+
+WTSTickData* HisDataReplayer::get_last_tick(const char* stdCode)
+{
+	if (!checkTicks(stdCode, _cur_tdate))
+		return NULL;
+
+	TickList& tickList = _ticks_cache[stdCode];
+	if (tickList._cursor == 0)
+		return NULL;
+
+	if (tickList._cursor == UINT_MAX)
+	{
+		uint32_t uDate = _cur_date;
+		uint32_t uTime = _cur_time * 100000 + _cur_secs;
+
+		WTSTickStruct curTick;
+		curTick.action_date = uDate;
+		curTick.action_time = uTime;
+
+		auto tit = std::lower_bound(tickList._ticks.begin(), tickList._ticks.end(), curTick, [](const WTSTickStruct& a, const WTSTickStruct& b){
+			if (a.action_date != b.action_date)
+				return a.action_date < b.action_date;
+			else
+				return a.action_time < b.action_time;
+		});
+
+		uint32_t idx = tit - tickList._ticks.begin();
+		tickList._cursor = idx + 1;
+	}
+
+	return WTSTickData::create(tickList._ticks[tickList._cursor - 1]);
+}
+
+WTSCommodityInfo* HisDataReplayer::get_commodity_info(const char* stdCode)
+{
+	return _bd_mgr.getCommodity(CodeHelper::stdCodeToStdCommID(stdCode).c_str());
+}
+
+WTSSessionInfo* HisDataReplayer::get_session_info(const char* sid, bool isCode /* = false */)
+{
+	if (!isCode)
+		return _bd_mgr.getSession(sid);
+
+	WTSCommodityInfo* cInfo = _bd_mgr.getCommodity(CodeHelper::stdCodeToStdCommID(sid).c_str());
+	if (cInfo == NULL)
+		return NULL;
+
+	return _bd_mgr.getSession(cInfo->getSession());
+}
+
+void HisDataReplayer::loadFees(const char* filename)
+{
+	if (strlen(filename) == 0)
+		return;
+
+	if (!StdFile::exists(filename))
+	{
+		WTSLogger::error("ÊÖĞø·ÑÄ£°åÎÄ¼ş%s²»´æÔÚ", filename);
+		return;
+	}
+
+
+	std::string content;
+	StdFile::read_file_content(filename, content);
+	if (content.empty())
+	{
+		WTSLogger::error("ÊÖĞø·ÑÄ£°åÎÄ¼ş%sÎª¿Õ", filename);
+		return;
+	}
+
+	rj::Document root;
+	root.Parse(content.c_str());
+
+	if (root.HasParseError())
+	{
+		WTSLogger::error("ÊÖĞø·ÑÄ£°åÎÄ¼ş%s½âÎöÊ§°Ü", filename);
+		return;
+	}
+
+	WTSVariant* cfg = WTSVariant::createObject();
+	if (!jsonToVariant(root, cfg))
+	{
+		WTSLogger::error("ÊÖĞø·ÑÄ£°åÎÄ¼ş%s×ª»»Ê§°Ü", filename);
+		return;
+	}
+
+	auto keys = cfg->memberNames();
+	for (const std::string& key : keys)
+	{
+		WTSVariant* cfgItem = cfg->get(key.c_str());
+		FeeItem& fItem = _fee_map[key];
+		fItem._by_volumn = cfgItem->getBoolean("byvolumn");
+		fItem._open = cfgItem->getDouble("open");
+		fItem._close = cfgItem->getDouble("close");
+		fItem._close_today = cfgItem->getDouble("closetoday");
+	}
+
+	cfg->release();
+
+	WTSLogger::info("¹²¼ÓÔØ%uÌõÊÖĞø·ÑÄ£°å", _fee_map.size());
+}
+
+
+double HisDataReplayer::calc_fee(const char* stdCode, double price, double qty, uint32_t offset)
+{
+	std::string stdPID = CodeHelper::stdCodeToStdCommID(stdCode);
+	auto it = _fee_map.find(stdPID);
+	if (it == _fee_map.end())
+		return 0.0;
+
+	double ret = 0.0;
+	WTSCommodityInfo* commInfo = _bd_mgr.getCommodity(stdPID.c_str());
+	const FeeItem& fItem = it->second;
+	if (fItem._by_volumn)
+	{
+		switch (offset)
+		{
+		case 0: ret = fItem._open*qty; break;
+		case 1: ret = fItem._close*qty; break;
+		case 2: ret = fItem._close_today*qty; break;
+		default: ret = 0.0; break;
+		}
+	}
+	else
+	{
+		double amount = price*qty*commInfo->getVolScale();
+		switch (offset)
+		{
+		case 0: ret = fItem._open*amount; break;
+		case 1: ret = fItem._close*amount; break;
+		case 2: ret = fItem._close_today*amount; break;
+		default: ret = 0.0; break;
+		}
+	}
+
+	return (int32_t)(ret * 100 + 0.5) / 100.0;
+}
+
+double HisDataReplayer::get_cur_price(const char* stdCode)
+{
+	auto it = _price_map.find(stdCode);
+	if (it == _price_map.end())
+	{
+		return 0.0;
+	}
+	else
+	{
+		return it->second;
+	}
+}
+
+void HisDataReplayer::sub_tick(uint32_t sid, const char* stdCode)
+{
+	SIDSet& sids = _tick_sub_map[stdCode];
+	sids.insert(sid);
+
+	//Èç¹ûÊÇÖ÷Á¦ºÏÔ¼´úÂë, ÈçSHFE.ag.HOT, ÄÇÃ´Òª×ª»»³ÉÔ­ºÏÔ¼´úÂë, SHFE.ag.1912
+	//ÒòÎªÖ´ĞĞÆ÷Ö»Ê¶±ğÔ­ºÏÔ¼´úÂë
+	if (CodeHelper::isStdFutHotCode(stdCode))
+	{
+		CodeHelper::CodeInfo cInfo;
+		CodeHelper::extractStdFutCode(stdCode, cInfo);
+		std::string rawCode = _hot_mgr.getRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
+		std::string stdRawCode = CodeHelper::bscFutCodeToStdCode(rawCode.c_str(), cInfo._exchg, false);
+		_subed_raw_codes.insert(stdRawCode);
+	}
+	else
+	{
+		_subed_raw_codes.insert(stdCode);
+	}
+}
+
+uint32_t strToTime(const char* strTime, bool bHasSec = false)
+{
+	std::string str;
+	const char *pos = strTime;
+	while (strlen(pos) > 0)
+	{
+		if (pos[0] != ':')
+		{
+			str.append(pos, 1);
+		}
+		pos++;
+	}
+
+	uint32_t ret = strtoul(str.c_str(), NULL, 10);
+	if (ret > 10000 && !bHasSec)
+		ret /= 100;
+
+	return ret;
+}
+
+uint32_t strToDate(const char* strDate)
+{
+	StringVector ay = StrUtil::split(strDate, "/");
+	if(ay.size() == 1)
+		ay = StrUtil::split(strDate, "-");
+	std::stringstream ss;
+	if (ay.size() > 1)
+	{
+		auto pos = ay[2].find(" ");
+		if (pos != std::string::npos)
+			ay[2] = ay[2].substr(0, pos);
+		ss << ay[0] << (ay[1].size() == 1 ? "0" : "") << ay[1] << (ay[2].size() == 1 ? "0" : "") << ay[2];
+	}
+	else
+		ss << ay[0];
+
+	return strtoul(ss.str().c_str(), NULL, 10);
+}
+
+bool HisDataReplayer::cacheRawTicksFromBin(const std::string& key, const char* stdCode, uint32_t uDate)
+{
+	CodeHelper::CodeInfo cInfo;
+	CodeHelper::extractStdFutCode(stdCode, cInfo);
+	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
+	
+	std::string rawCode = cInfo._code;
+	if (cInfo._hot)
+	{
+		rawCode = _hot_mgr.getRawCode(cInfo._exchg, cInfo._product, uDate);
+	}
+
+	std::stringstream ss;
+	ss << _base_dir << "his/ticks/" << cInfo._exchg << "/" << uDate << "/" << rawCode << ".dsb";
+
+	std::string filename = ss.str();
+	if (!StdFile::exists(filename.c_str()))
+		return false;
+
+	std::string content;
+	StdFile::read_file_content(filename.c_str(), content);
+	if (content.size() < sizeof(HisTickBlock))
+	{
+		WTSLogger::error("ÀúÊ·TickÊı¾İÎÄ¼ş%s´óĞ¡Ğ£ÑéÊ§°Ü", filename.c_str());
+		return false;
+	}
+
+	HisTickBlock* tBlock = (HisTickBlock*)content.c_str();
+	HisTickBlockV2* tBlockV2 = NULL;
+	if(tBlock->_version == BLOCK_VERSION_CMP)
+	{
+		//Ñ¹Ëõ°æ±¾£¬ÒªÖØĞÂ¼ì²éÎÄ¼ş´óĞ¡
+		tBlockV2 = (HisTickBlockV2*)content.c_str();
+
+		if (content.size() != (sizeof(HisTickBlockV2) + tBlockV2->_size))
+		{
+			WTSLogger::error("ÀúÊ·TickÊı¾İÎÄ¼ş%s´óĞ¡Ğ£ÑéÊ§°Ü", filename.c_str());
+			return false;
+		}
+	}
+
+	TickList& ticksList = _ticks_cache[key];
+	uint32_t tickcnt = 0;
+	if (tBlockV2 == NULL)
+	{
+		tickcnt = (content.size() - sizeof(HisTickBlock)) / sizeof(WTSTickStruct);
+		ticksList._ticks.resize(tickcnt);
+		memcpy(ticksList._ticks.data(), tBlock->_ticks, sizeof(WTSTickStruct)*tickcnt);
+	}
+	else
+	{
+		//ĞèÒª½âÑ¹
+		std::string buf = WTSCmpHelper::uncompress_data(tBlockV2->_data, (uint32_t)tBlockV2->_size);
+		tickcnt = buf.size() / sizeof(WTSTickStruct);
+		ticksList._ticks.resize(tickcnt);
+		memcpy(ticksList._ticks.data(), buf.data(), buf.size());
+	}	
+	
+	ticksList._cursor = UINT_MAX;
+	ticksList._code = stdCode;
+	ticksList._date = uDate;
+	ticksList._count = tickcnt;
+
+	return true;
+}
+
+bool HisDataReplayer::cacheRawTicksFromCSV(const std::string& key, const char* stdCode, uint32_t uDate)
+{
+	std::stringstream ss;
+	ss << _base_dir << "bin/ticks/";
+	std::string path = ss.str();
+	if (!StdFile::exists(path.c_str()))
+		boost::filesystem::create_directories(path.c_str());
+	ss << stdCode << "_tick_" << uDate << ".dsb";
+	std::string filename = ss.str();
+	if (StdFile::exists(filename.c_str()))
+	{
+		//Èç¹ûÓĞ¸ñÊ½»¯µÄÀúÊ·Êı¾İÎÄ¼ş, ÔòÖ±½Ó¶ÁÈ¡
+		std::string content;
+		StdFile::read_file_content(filename.c_str(), content);
+		if (content.size() < sizeof(HisTickBlockV2))
+		{
+			WTSLogger::error("ÀúÊ·TickÊı¾İÎÄ¼ş%s´óĞ¡Ğ£ÑéÊ§°Ü", filename.c_str());
+			return false;
+		}
+
+		HisTickBlockV2* tBlock = (HisTickBlockV2*)content.data();
+		std::string rawData = WTSCmpHelper::uncompress_data(tBlock->_data, (uint32_t)tBlock->_size);
+		uint32_t tickcnt = rawData.size() / sizeof(WTSTickStruct);
+
+		TickList& ticksList = _ticks_cache[key];
+		ticksList._ticks.resize(tickcnt);
+		memcpy(ticksList._ticks.data(), rawData.data(), rawData.size());
+		ticksList._cursor = UINT_MAX;
+		ticksList._code = stdCode;
+		ticksList._date = uDate;
+		ticksList._count = tickcnt;
+	}
+	else
+	{
+		//Èç¹ûÃ»ÓĞ¸ñÊ½»¯µÄÀúÊ·Êı¾İÎÄ¼ş, Ôò´Ócsv¼ÓÔØ
+		std::stringstream ss;
+		ss << _base_dir << "csv/ticks/" << stdCode << "_tick_" << uDate << ".csv";
+		std::string csvfile = ss.str();
+
+		if (!StdFile::exists(csvfile.c_str()))
+		{
+			WTSLogger::error("ÀúÊ·TickÊı¾İÎÄ¼ş²»´æÔÚ", csvfile.c_str());
+			return false;
+		}
+
+		std::ifstream ifs;
+		ifs.open(csvfile.c_str());
+
+		WTSLogger::info("ÕıÔÚ¶ÁÈ¡Êı¾İÎÄ¼ş%s¡­¡­", csvfile.c_str());
+
+		char buffer[512];
+		bool headerskipped = false;
+		TickList& tickList = _ticks_cache[key];
+		tickList._code = stdCode;
+		tickList._date = uDate;
+		while (!ifs.eof())
+		{
+			ifs.getline(buffer, 512);
+			if (strlen(buffer) == 0)
+				continue;
+
+			//Ìø¹ıÍ·²¿
+			if (!headerskipped)
+			{
+				headerskipped = true;
+				continue;
+			}
+
+			//ÖğĞĞ¶ÁÈ¡
+			StringVector ay = StrUtil::split(buffer, ",");
+			WTSTickStruct ticks;
+			ticks.action_date = strToDate(ay[0].c_str());
+			ticks.action_time = strToTime(ay[1].c_str(), true) * 1000;
+			ticks.price = strtod(ay[2].c_str(), NULL);
+			ticks.volumn = strtoul(ay[3].c_str(), NULL, 10);
+			tickList._ticks.push_back(ticks);
+
+			if (tickList._ticks.size() % 1000 == 0)
+			{
+				WTSLogger::info("ÒÑ¶ÁÈ¡Êı¾İ%uÌõ", tickList._ticks.size());
+			}
+		}
+		tickList._count = tickList._ticks.size();
+		ifs.close();
+		WTSLogger::info("Êı¾İÎÄ¼ş%sÈ«²¿¶ÁÈ¡Íê³É, ¹²%uÌõ", csvfile.c_str(), tickList._ticks.size());
+
+		HisTickBlockV2 tBlock;
+		strcpy(tBlock._blk_flag, BLK_FLAG);
+		tBlock._type = BT_HIS_Ticks;
+		tBlock._version = BLOCK_VERSION_CMP;
+		
+		std::string cmpData = WTSCmpHelper::compress_data(tickList._ticks.data(), sizeof(WTSTickStruct)*tickList._count);
+		tBlock._size = cmpData.size();
+
+		BoostFile bf;
+		if (bf.create_new_file(filename.c_str()))
+		{
+			bf.write_file(&tBlock, sizeof(HisTickBlockV2));
+		}
+		bf.write_file(cmpData);
+		bf.close_file();
+		WTSLogger::info("Êı¾İÒÑ×ª´¢ÖÁ%s", filename.c_str());
+	}
+
+	return true;
+}
+
+bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* stdCode, WTSKlinePeriod period)
+{
+	CodeHelper::CodeInfo cInfo;
+	CodeHelper::extractStdCode(stdCode, cInfo);
+	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
+
+	std::string pname;
+	switch (period)
+	{
+	case KP_Minute1: pname = "m1"; break;
+	case KP_Minute5: pname = "m5"; break;
+	case KP_DAY: pname = "d"; break;
+	default: pname = ""; break;
+	}
+
+	std::stringstream ss;
+	ss << _base_dir << "bin/";
+	if (!StdFile::exists(ss.str().c_str()))
+		BoostFile::create_directories(ss.str().c_str());
+	ss << stdCode << "_" << pname << ".dsb";
+	std::string filename = ss.str();
+	if (StdFile::exists(filename.c_str()))
+	{
+		//Èç¹ûÓĞ¸ñÊ½»¯µÄÀúÊ·Êı¾İÎÄ¼ş, ÔòÖ±½Ó¶ÁÈ¡
+		std::string content;
+		StdFile::read_file_content(filename.c_str(), content);
+		if (content.size() < sizeof(HisKlineBlockV2))
+		{
+			WTSLogger::error("ÀúÊ·KÏßÊı¾İÎÄ¼ş%s´óĞ¡Ğ£ÑéÊ§°Ü", filename.c_str());
+			return false;
+		}
+
+		HisKlineBlockV2* kBlock = (HisKlineBlockV2*)content.c_str();
+		std::string rawData = WTSCmpHelper::uncompress_data(kBlock->_data, (uint32_t)kBlock->_size);
+		uint32_t barcnt = rawData.size() / sizeof(WTSBarStruct);
+
+		BarsList& barList = _bars_cache[key];
+		barList._bars.resize(barcnt);
+		memcpy(barList._bars.data(), rawData.data(), rawData.size());
+		barList._cursor = UINT_MAX;
+		barList._code = stdCode;
+		barList._period = period;
+		barList._count = barcnt;
+	}
+	else
+	{
+		//Èç¹ûÃ»ÓĞ¸ñÊ½»¯µÄÀúÊ·Êı¾İÎÄ¼ş, Ôò´Ócsv¼ÓÔØ
+		std::stringstream ss;
+		ss << _base_dir << "csv/" << stdCode << "_" << pname << ".csv";
+		std::string csvfile = ss.str();
+
+		if (!StdFile::exists(csvfile.c_str()))
+		{
+			WTSLogger::error("ÀúÊ·KÏßÊı¾İÎÄ¼ş%s²»´æÔÚ", csvfile.c_str());
+			return false;
+		}
+
+		std::ifstream ifs;
+		ifs.open(csvfile.c_str());
+
+		WTSLogger::info("ÕıÔÚ¶ÁÈ¡Êı¾İÎÄ¼ş%s¡­¡­", csvfile.c_str());
+
+		char buffer[512];
+		bool headerskipped = false;
+		BarsList& barList = _bars_cache[key];
+		barList._code = stdCode;
+		barList._period = period;
+		while (!ifs.eof())
+		{
+			ifs.getline(buffer, 512);
+			if (strlen(buffer) == 0)
+				continue;
+
+			//Ìø¹ıÍ·²¿
+			if (!headerskipped)
+			{
+				headerskipped = true;
+				continue;
+			}
+
+			//ÖğĞĞ¶ÁÈ¡
+			StringVector ay = StrUtil::split(buffer, ",");
+			WTSBarStruct bs;
+			bs.date = strToDate(ay[0].c_str());
+			if (period != KP_DAY)
+				bs.time = TimeUtils::timeToMinBar(bs.date, strToTime(ay[1].c_str()));
+			bs.open = strtod(ay[2].c_str(), NULL);
+			bs.high = strtod(ay[3].c_str(), NULL);
+			bs.low = strtod(ay[4].c_str(), NULL);
+			bs.close = strtod(ay[5].c_str(), NULL);
+			bs.vol = strtoul(ay[6].c_str(), NULL, 10);
+			barList._bars.push_back(bs);
+
+			if (barList._bars.size() % 1000 == 0)
+			{
+				WTSLogger::info("ÒÑ¶ÁÈ¡Êı¾İ%uÌõ", barList._bars.size());
+			}
+		}
+		barList._count = barList._bars.size();
+		ifs.close();
+		WTSLogger::info("Êı¾İÎÄ¼ş%sÈ«²¿¶ÁÈ¡Íê³É, ¹²%uÌõ", csvfile.c_str(), barList._bars.size());
+
+		BlockType btype;
+		switch (period)
+		{
+		case KP_Minute1: btype = BT_HIS_Minute1; break;
+		case KP_Minute5: btype = BT_HIS_Minute5; break;
+		default: btype = BT_HIS_Day; break;
+		}
+
+		HisKlineBlockV2 kBlock;
+		strcpy(kBlock._blk_flag, BLK_FLAG);
+		kBlock._type = btype;
+		kBlock._version = BLOCK_VERSION_CMP;
+
+		std::string cmpData = WTSCmpHelper::compress_data(barList._bars.data(), sizeof(WTSBarStruct)*barList._count);
+		kBlock._size = cmpData.size();
+
+		BoostFile bf;
+		if (bf.create_new_file(filename.c_str()))
+		{
+			bf.write_file(&kBlock, sizeof(HisKlineBlockV2));
+		}
+		bf.write_file(cmpData);
+		bf.close_file();
+		WTSLogger::info("Êı¾İÒÑ×ª´¢ÖÁ%s", filename.c_str());
+	}
+
+	return true;
+}
+
+bool HisDataReplayer::cacheRawBarsFromDB(const std::string& key, const char* stdCode, WTSKlinePeriod period)
+{
+	CodeHelper::CodeInfo cInfo;
+	CodeHelper::extractStdCode(stdCode, cInfo);
+	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
+
+	uint32_t curDate = TimeUtils::getCurDate();
+	uint32_t curTime = TimeUtils::getCurMin() / 100;
+
+	uint32_t endTDate = _bd_mgr.calcTradingDate(stdPID.c_str(), curDate, curTime, false);
+
+	std::string tbname, pname;
+	switch (period)
+	{
+	case KP_Minute1:
+		tbname = "tb_kline_min1";
+		pname = "min1";
+		break;
+	case KP_Minute5:
+		tbname = "tb_kline_min5";
+		pname = "min5";
+		break;
+	default:
+		tbname = "tb_kline_day";
+		pname = "day";
+		break;
+	}
+
+	BarsList& barList = _bars_cache[key];
+	barList._code = stdCode;
+	barList._period = period;
+
+	std::vector<std::vector<WTSBarStruct>*> barsSections;
+	bool isDay = (period == KP_DAY);
+
+	uint32_t realCnt = 0;
+	if (cInfo._hot && cInfo._category == CC_Future)//Èç¹ûÊÇ¶ÁÈ¡ÆÚ»õÖ÷Á¦Á¬ĞøÊı¾İ
+	{
+		HotSections secs;
+		if (!_hot_mgr.splitHotSecions(cInfo._exchg, cInfo._product, 19900102, endTDate, secs))
+			return false;
+
+		if (secs.empty())
+			return false;
+
+		//ÏÈ°´ÕÕHOT´úÂë½øĞĞ¶ÁÈ¡, Èçrb.HOT
+		std::vector<WTSBarStruct>* hotAy = NULL;
+		uint32_t lastHotTime = 0;
+		for (;;)
+		{
+			char sql[256] = { 0 };
+			if (isDay)
+				sprintf(sql, "SELECT `date`,0,open,high,low,close,settle,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%s.HOT' ORDER BY `date`;",
+					tbname.c_str(), cInfo._exchg, cInfo._product);
+			else
+				sprintf(sql, "SELECT `date`,`time`,open,high,low,close,0,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%s.HOT' ORDER BY `time`;",
+					tbname.c_str(), cInfo._exchg, cInfo._product);
+
+			MysqlQuery query(*_db_conn);
+			if (!query.exec(sql))
+			{
+				WTSLogger::error("ÀúÊ·KÏß¶ÁÈ¡Ê§°Ü£º%s", query.errormsg());
+			}
+			else
+			{
+				uint32_t barcnt = (uint32_t)query.num_rows();
+				if (barcnt > 0)
+				{
+					hotAy = new std::vector<WTSBarStruct>();
+					hotAy->resize(barcnt);
+
+					uint32_t idx = 0;
+					while (query.fetch_row())
+					{
+						WTSBarStruct& bs = hotAy->at(idx);
+						bs.date = query.getuint(0);
+						bs.time = query.getuint(1);
+						bs.open = query.getdouble(2);
+						bs.high = query.getdouble(3);
+						bs.low = query.getdouble(4);
+						bs.close = query.getdouble(5);
+						bs.settle = query.getdouble(6);
+						bs.vol = query.getuint(7);
+						bs.money = query.getdouble(8);
+						bs.hold = query.getuint(9);
+						bs.add = query.getdouble(10);
+						idx++;
+					}
+
+					if (period != KP_DAY)
+						lastHotTime = hotAy->at(barcnt - 1).time;
+					else
+						lastHotTime = hotAy->at(barcnt - 1).date;
+				}
+
+				WTSLogger::info("Ö÷Á¦ºÏÔ¼%sÀúÊ·%sÊı¾İÖ±½Ó»º´æ%uÌõ", stdCode, pname.c_str(), barcnt);
+			}
+
+			break;
+		}
+
+		bool bAllCovered = false;
+		for (auto it = secs.rbegin(); it != secs.rend() && left > 0; it++)
+		{
+			const HotSection& hotSec = *it;
+			const char* curCode = hotSec._code.c_str();
+			uint32_t rightDt = hotSec._e_date;
+			uint32_t leftDt = hotSec._s_date;
+
+			//ÒªÏÈ½«ÈÕÆÚ×ª»»Îª±ß½çÊ±¼ä
+			uint32_t stime, etime;
+			if (!isDay)
+			{
+				uint64_t sTime = _bd_mgr.getBoundaryTime(stdPID.c_str(), leftDt, false, true);
+				uint64_t eTime = _bd_mgr.getBoundaryTime(stdPID.c_str(), rightDt, false, false);
+
+				stime = ((uint32_t)(sTime / 10000) - 19900000) * 10000 + (uint32_t)(sTime % 10000);
+
+				if (stime < lastHotTime)	//Èç¹û±ß½çÊ±¼äĞ¡ÓÚÖ÷Á¦µÄ×îºóÒ»¸ùBarµÄÊ±¼ä, ËµÃ÷ÒÑ¾­ÓĞ½»²æÁË, Ôò²»ĞèÒªÔÙ´¦ÀíÁË
+				{
+					bAllCovered = true;
+					stime = lastHotTime + 1;
+				}
+
+				etime = ((uint32_t)(eTime / 10000) - 19900000) * 10000 + (uint32_t)(eTime % 10000);
+
+				if (etime <= lastHotTime)	//ÓÒ±ß½çÊ±¼äĞ¡ÓÚ×îºóÒ»ÌõHotÊ±¼ä, ËµÃ÷È«²¿½»²æÁË, Ã»ÓĞÔÙÕÒµÄ±ØÒªÁË
+					break;
+			}
+			else
+			{
+				stime = leftDt;
+				if (stime < lastHotTime)	//Èç¹û±ß½çÊ±¼äĞ¡ÓÚÖ÷Á¦µÄ×îºóÒ»¸ùBarµÄÊ±¼ä, ËµÃ÷ÒÑ¾­ÓĞ½»²æÁË, Ôò²»ĞèÒªÔÙ´¦ÀíÁË
+				{
+					bAllCovered = true;
+					stime = lastHotTime + 1;
+				}
+
+				etime = rightDt;
+
+				if (etime <= lastHotTime)
+					break;
+			}
+
+			char sql[256] = { 0 };
+			if (isDay)
+				sprintf(sql, "SELECT `date`,0,open,high,low,close,settle,volume,turnover,interest,diff_interest FROM %s "
+					"WHERE exchange='%s' AND code='%s' AND `date`>=%u AND `date`<=%u ORDER BY `date`;",
+					tbname.c_str(), cInfo._exchg, curCode, stime, etime);
+			else
+				sprintf(sql, "SELECT `date`,`time`,open,high,low,close,0,volume,turnover,interest,diff_interest FROM %s "
+					"WHERE exchange='%s' AND code='%s' AND `time`>=%u AND `time`<=%u ORDER BY `time`;",
+					tbname.c_str(), cInfo._exchg, curCode, stime, etime);
+
+			MysqlQuery query(*_db_conn);
+			if (!query.exec(sql))
+			{
+				WTSLogger::error("ÀúÊ·KÏß¶ÁÈ¡Ê§°Ü£º%s", query.errormsg());
+			}
+			else
+			{
+				uint32_t barcnt = (uint32_t)query.num_rows();
+				if(barcnt)
+				{
+					auto tempAy = new std::vector<WTSBarStruct>();
+					tempAy->resize(barcnt);
+
+					uint32_t idx = 0;
+					while (query.fetch_row())
+					{
+						WTSBarStruct& bs = tempAy->at(idx);
+						bs.date = query.getuint(0);
+						bs.time = query.getuint(1);
+						bs.open = query.getdouble(2);
+						bs.high = query.getdouble(3);
+						bs.low = query.getdouble(4);
+						bs.close = query.getdouble(5);
+						bs.settle = query.getdouble(6);
+						bs.vol = query.getuint(7);
+						bs.money = query.getdouble(8);
+						bs.hold = query.getuint(9);
+						bs.add = query.getdouble(10);
+						idx++;
+					}
+
+					realCnt += barcnt;
+
+					barsSections.push_back(tempAy);
+				}
+
+				if (bAllCovered)
+					break;
+			}
+		}
+
+		if (hotAy)
+		{
+			barsSections.push_back(hotAy);
+			realCnt += hotAy->size();
+		}
+	}
+	else if (cInfo._exright && cInfo._category == CC_Stock)//Èç¹ûÊÇ¶ÁÈ¡¹ÉÆ±¸´È¨Êı¾İ
+	{
+		std::vector<WTSBarStruct>* hotAy = NULL;
+		uint32_t lastQTime = 0;
+
+		do
+		{
+			//ÏÈÖ±½Ó¶ÁÈ¡¸´È¨¹ıµÄÀúÊ·Êı¾İ£¬Â·¾¶Èç/his/day/sse/SH600000Q.dsb
+			char sql[256] = { 0 };
+			if (isDay)
+				sprintf(sql, "SELECT `date`,0,open,high,low,close,settle,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%sQ' ORDER BY `date`;",
+					tbname.c_str(), cInfo._exchg, cInfo._code);
+			else
+				sprintf(sql, "SELECT `date`,`time`,open,high,low,close,0,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%sQ' ORDER BY `time`;",
+					tbname.c_str(), cInfo._exchg, cInfo._code);
+
+			MysqlQuery query(*_db_conn);
+			if (!query.exec(sql))
+			{
+				WTSLogger::error("ÀúÊ·KÏß¶ÁÈ¡Ê§°Ü£º%s", query.errormsg());
+			}
+			else
+			{
+				uint32_t barcnt = (uint32_t)query.num_rows();
+				if(barcnt > 0)
+				{
+					hotAy = new std::vector<WTSBarStruct>();
+					hotAy->resize(barcnt);
+
+					uint32_t idx = 0;
+					while (query.fetch_row())
+					{
+						WTSBarStruct& bs = hotAy->at(idx);
+						bs.date = query.getuint(0);
+						bs.time = query.getuint(1);
+						bs.open = query.getdouble(2);
+						bs.high = query.getdouble(3);
+						bs.low = query.getdouble(4);
+						bs.close = query.getdouble(5);
+						bs.settle = query.getdouble(6);
+						bs.vol = query.getuint(7);
+						bs.money = query.getdouble(8);
+						bs.hold = query.getuint(9);
+						bs.add = query.getdouble(10);
+						idx++;
+					}
+
+					if (period != KP_DAY)
+						lastQTime = hotAy->at(barcnt - 1).time;
+					else
+						lastQTime = hotAy->at(barcnt - 1).date;
+				}
+
+				WTSLogger::error("¹ÉÆ±%sÀúÊ·%s¸´È¨Êı¾İÖ±½Ó»º´æ%uÌõ", stdCode, pname.c_str(), barcnt);
+			}
+
+		} while (false);
+
+		bool bAllCovered = false;
+		do
+		{
+			const char* curCode = cInfo._code;
+
+			//ÒªÏÈ½«ÈÕÆÚ×ª»»Îª±ß½çÊ±¼ä
+			WTSBarStruct sBar;
+			if (period != KP_DAY)
+			{
+				sBar.date = TimeUtils::minBarToDate(lastQTime);
+
+				sBar.time = lastQTime + 1;
+			}
+			else
+			{
+				sBar.date = lastQTime + 1;
+			}
+
+			char sql[256] = { 0 };
+			if (isDay)
+				sprintf(sql, "SELECT `date`,0,open,high,low,close,settle,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%s' AND date>=%u ORDER BY `date`;",
+					tbname.c_str(), cInfo._exchg, cInfo._code, lastQTime + 1);
+			else
+				sprintf(sql, "SELECT `date`,`time`,open,high,low,close,0,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%s' AND time>=%u ORDER BY `time`;",
+					tbname.c_str(), cInfo._exchg, cInfo._code, lastQTime + 1);
+
+			MysqlQuery query(*_db_conn);
+			if (!query.exec(sql))
+			{
+				WTSLogger::error("ÀúÊ·KÏß¶ÁÈ¡Ê§°Ü£º%s", query.errormsg());
+			}
+			else
+			{
+				uint32_t barcnt = (uint32_t)query.num_rows();
+				if (barcnt > 0)
+				{
+					auto tempAy = new std::vector<WTSBarStruct>();
+					tempAy->resize(barcnt);
+
+					uint32_t idx = 0;
+					while (query.fetch_row())
+					{
+						WTSBarStruct& bs = tempAy->at(idx);
+						bs.date = query.getuint(0);
+						bs.time = query.getuint(1);
+						bs.open = query.getdouble(2);
+						bs.high = query.getdouble(3);
+						bs.low = query.getdouble(4);
+						bs.close = query.getdouble(5);
+						bs.settle = query.getdouble(6);
+						bs.vol = query.getuint(7);
+						bs.money = query.getdouble(8);
+						bs.hold = query.getuint(9);
+						bs.add = query.getdouble(10);
+						idx++;
+					}
+
+					realCnt += barcnt;
+
+					auto& ayFactors = getAdjFactors(cInfo._code, cInfo._exchg);
+					if (!ayFactors.empty())
+					{
+						//×öÇ°¸´È¨´¦Àí
+						int32_t lastIdx = barcnt;
+						WTSBarStruct bar;
+						WTSBarStruct* firstBar = tempAy->data();
+						for (auto& adjFact : ayFactors)
+						{
+							bar.date = adjFact._date;
+							double factor = adjFact._factor;
+
+							WTSBarStruct* pBar = NULL;
+							pBar = std::lower_bound(firstBar, firstBar + lastIdx - 1, bar, [period](const WTSBarStruct& a, const WTSBarStruct& b) {
+								return a.date < b.date;
+							});
+
+							if (pBar->date < bar.date)
+								continue;
+
+							WTSBarStruct* endBar = pBar;
+							if (pBar != NULL)
+							{
+								int32_t curIdx = pBar - firstBar;
+								while (pBar && curIdx < lastIdx)
+								{
+									pBar->open /= factor;
+									pBar->high /= factor;
+									pBar->low /= factor;
+									pBar->close /= factor;
+
+									pBar++;
+									curIdx++;
+								}
+								lastIdx = endBar - firstBar;
+							}
+
+							if (lastIdx == 0)
+								break;
+						}
+					}
+
+					barsSections.push_back(tempAy);
+				}
+			}
+
+		} while (false);
+
+		if (hotAy)
+		{
+			barsSections.push_back(hotAy);
+			realCnt += hotAy->size();
+		}
+	}
+	else
+	{
+		//¶ÁÈ¡ÀúÊ·µÄ
+		char sql[256] = { 0 };
+		if (isDay)
+			sprintf(sql, "SELECT `date`,0,open,high,low,close,settle,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%sQ' ORDER BY `date`;",
+				tbname.c_str(), cInfo._exchg, cInfo._code);
+		else
+			sprintf(sql, "SELECT `date`,`time`,open,high,low,close,0,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%sQ' ORDER BY `time`;",
+				tbname.c_str(), cInfo._exchg, cInfo._code);
+
+		MysqlQuery query(*_db_conn);
+		if (!query.exec(sql))
+		{
+			WTSLogger::error("ÀúÊ·KÏß¶ÁÈ¡Ê§°Ü£º%s", query.errormsg());
+		}
+		else
+		{
+			uint32_t barcnt = (uint32_t)query.num_rows();
+			if(barcnt > 0)
+			{
+				auto tempAy = new std::vector<WTSBarStruct>();
+				tempAy->resize(barcnt);
+
+				uint32_t idx = 0;
+				while (query.fetch_row())
+				{
+					WTSBarStruct& bs = tempAy->at(idx);
+					bs.date = query.getuint(0);
+					bs.time = query.getuint(1);
+					bs.open = query.getdouble(2);
+					bs.high = query.getdouble(3);
+					bs.low = query.getdouble(4);
+					bs.close = query.getdouble(5);
+					bs.settle = query.getdouble(6);
+					bs.vol = query.getuint(7);
+					bs.money = query.getdouble(8);
+					bs.hold = query.getuint(9);
+					bs.add = query.getdouble(10);
+					idx++;
+				}
+
+				realCnt += barcnt;
+
+				barsSections.push_back(tempAy);
+			}
+		}
+	}
+
+	if (realCnt > 0)
+	{
+		barList._bars.resize(realCnt);
+
+		uint32_t curIdx = 0;
+		for (auto it = barsSections.rbegin(); it != barsSections.rend(); it++)
+		{
+			std::vector<WTSBarStruct>* tempAy = *it;
+			memcpy(barList._bars.data() + curIdx, tempAy->data(), tempAy->size() * sizeof(WTSBarStruct));
+			curIdx += tempAy->size();
+			delete tempAy;
+		}
+		barsSections.clear();
+	}
+
+	WTSLogger::info("ºÏÔ¼%sµÄÀúÊ·%sÊı¾İÒÑ»º´æ%uÌõ", stdCode, pname.c_str(), realCnt);
+	return true;
+}
+
+bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* stdCode, WTSKlinePeriod period)
+{
+	CodeHelper::CodeInfo cInfo;
+	CodeHelper::extractStdCode(stdCode, cInfo);
+	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
+
+	uint32_t curDate = TimeUtils::getCurDate();
+	uint32_t curTime = TimeUtils::getCurMin() / 100;
+
+	uint32_t endTDate = _bd_mgr.calcTradingDate(stdPID.c_str(), curDate, curTime, false);
+
+	std::string pname;
+	switch (period)
+	{
+	case KP_Minute1: pname = "min1"; break;
+	case KP_Minute5: pname = "min5"; break;
+	default: pname = "day"; break;
+	}
+
+	BarsList& barList = _bars_cache[key];
+	barList._code = stdCode;
+	barList._period = period;
+
+	std::vector<std::vector<WTSBarStruct>*> barsSections;
+
+	uint32_t realCnt = 0;
+	if (cInfo._hot && cInfo._category == CC_Future)//Èç¹ûÊÇ¶ÁÈ¡ÆÚ»õÖ÷Á¦Á¬ĞøÊı¾İ
+	{
+		HotSections secs;
+		if (!_hot_mgr.splitHotSecions(cInfo._exchg, cInfo._product, 19900102, endTDate, secs))
+			return false;
+
+		if (secs.empty())
+			return false;
+
+		//ÏÈ°´ÕÕHOT´úÂë½øĞĞ¶ÁÈ¡, Èçrb.HOT
+		std::vector<WTSBarStruct>* hotAy = NULL;
+		uint32_t lastHotTime = 0;
+		for (;;)
+		{
+			std::stringstream ss;
+			ss << _base_dir << "his/" << pname << "/" << cInfo._exchg << "/" << cInfo._exchg << "." << cInfo._product << "_HOT.dsb";
+			std::string filename = ss.str();
+			if (!StdFile::exists(filename.c_str()))
+				break;
+
+			std::string content;
+			StdFile::read_file_content(filename.c_str(), content);
+			if (content.size() < sizeof(HisKlineBlock))
+			{
+				WTSLogger::error("ÀúÊ·KÏßÊı¾İÎÄ¼ş%s´óĞ¡Ğ£ÑéÊ§°Ü", filename.c_str());
+				break;
+			}
+
+			HisKlineBlock* kBlock = (HisKlineBlock*)content.c_str();
+			uint32_t barcnt = 0;
+			if (kBlock->_version == BLOCK_VERSION_CMP)
+			{
+				if (content.size() < sizeof(HisKlineBlockV2))
+				{
+					WTSLogger::error("ÀúÊ·KÏßÊı¾İÎÄ¼ş%s´óĞ¡Ğ£ÑéÊ§°Ü", filename.c_str());
+					break;
+				}
+
+				HisKlineBlockV2* kBlockV2 = (HisKlineBlockV2*)content.c_str();
+				if (kBlockV2->_size == 0)
+					break;
+
+				std::string rawData = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
+				barcnt = rawData.size() / sizeof(WTSBarStruct);
+				if (barcnt <= 0)
+					break;
+
+				hotAy = new std::vector<WTSBarStruct>();
+				hotAy->resize(barcnt);
+				memcpy(hotAy->data(), rawData.data(), rawData.size());
+			}
+			else
+			{
+				barcnt = (content.size() - sizeof(HisKlineBlock)) / sizeof(WTSBarStruct);
+				if (barcnt <= 0)
+					break;
+
+				HisKlineBlock* kBlock = (HisKlineBlock*)content.c_str();
+				hotAy = new std::vector<WTSBarStruct>();
+				hotAy->resize(barcnt);
+				memcpy(hotAy->data(), kBlock->_bars, sizeof(WTSBarStruct)*barcnt);
+			}
+
+			if (period != KP_DAY)
+				lastHotTime = hotAy->at(barcnt - 1).time;
+			else
+				lastHotTime = hotAy->at(barcnt - 1).date;
+
+			WTSLogger::info("Ö÷Á¦%sÀúÊ·%sÊı¾İÖ±½Ó»º´æ%uÌõ", stdCode, pname.c_str(), barcnt);
+
+			break;
+		}
+
+		bool bAllCovered = false;
+		for (auto it = secs.rbegin(); it != secs.rend() && left > 0; it++)
+		{
+			//const char* curCode = it->first.c_str();
+			//uint32_t rightDt = it->second.second;
+			//uint32_t leftDt = it->second.first;
+			const HotSection& hotSec = *it;
+			const char* curCode = hotSec._code.c_str();
+			uint32_t rightDt = hotSec._e_date;
+			uint32_t leftDt = hotSec._s_date;
+
+			//ÒªÏÈ½«ÈÕÆÚ×ª»»Îª±ß½çÊ±¼ä
+			WTSBarStruct sBar, eBar;
+			if (period != KP_DAY)
+			{
+				uint64_t sTime = _bd_mgr.getBoundaryTime(stdPID.c_str(), leftDt, false, true);
+				uint64_t eTime = _bd_mgr.getBoundaryTime(stdPID.c_str(), rightDt, false, false);
+
+				sBar.date = leftDt;
+				sBar.time = ((uint32_t)(sTime / 10000) - 19900000) * 10000 + (uint32_t)(sTime % 10000);
+
+				if (sBar.time < lastHotTime)	//Èç¹û±ß½çÊ±¼äĞ¡ÓÚÖ÷Á¦µÄ×îºóÒ»¸ùBarµÄÊ±¼ä, ËµÃ÷ÒÑ¾­ÓĞ½»²æÁË, Ôò²»ĞèÒªÔÙ´¦ÀíÁË
+				{
+					bAllCovered = true;
+					sBar.time = lastHotTime + 1;
+				}
+
+				eBar.date = rightDt;
+				eBar.time = ((uint32_t)(eTime / 10000) - 19900000) * 10000 + (uint32_t)(eTime % 10000);
+
+				if (eBar.time <= lastHotTime)	//ÓÒ±ß½çÊ±¼äĞ¡ÓÚ×îºóÒ»ÌõHotÊ±¼ä, ËµÃ÷È«²¿½»²æÁË, Ã»ÓĞÔÙÕÒµÄ±ØÒªÁË
+					break;
+			}
+			else
+			{
+				sBar.date = leftDt;
+				if (sBar.date < lastHotTime)	//Èç¹û±ß½çÊ±¼äĞ¡ÓÚÖ÷Á¦µÄ×îºóÒ»¸ùBarµÄÊ±¼ä, ËµÃ÷ÒÑ¾­ÓĞ½»²æÁË, Ôò²»ĞèÒªÔÙ´¦ÀíÁË
+				{
+					bAllCovered = true;
+					sBar.date = lastHotTime + 1;
+				}
+
+				eBar.date = rightDt;
+
+				if (eBar.date <= lastHotTime)
+					break;
+			}
+
+			std::stringstream ss;
+			ss << _base_dir << "his/" << pname << "/" << cInfo._exchg << "/" << curCode << ".dsb";
+			std::string filename = ss.str();
+			if (!StdFile::exists(filename.c_str()))
+				continue;
+
+			{
+				std::string content;
+				StdFile::read_file_content(filename.c_str(), content);
+				if (content.size() < sizeof(HisKlineBlock))
+				{
+					WTSLogger::error("ÀúÊ·KÏßÊı¾İÎÄ¼ş%s´óĞ¡Ğ£ÑéÊ§°Ü", filename.c_str());
+					return false;
+				}
+
+				HisKlineBlock* kBlock = (HisKlineBlock*)content.c_str();
+				WTSBarStruct* firstBar = NULL;
+				uint32_t barcnt = 0;
+				std::string rawData;
+				if (kBlock->_version == BLOCK_VERSION_CMP)
+				{
+					if (content.size() < sizeof(HisKlineBlockV2))
+					{
+						WTSLogger::error("ÀúÊ·KÏßÊı¾İÎÄ¼ş%s´óĞ¡Ğ£ÑéÊ§°Ü", filename.c_str());
+						break;
+					}
+
+					HisKlineBlockV2* kBlockV2 = (HisKlineBlockV2*)content.c_str();
+					if (kBlockV2->_size == 0)
+						break;
+
+					rawData = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
+					barcnt = rawData.size() / sizeof(WTSBarStruct);
+					if (barcnt <= 0)
+						break;
+
+					firstBar = (WTSBarStruct*)rawData.data();
+				}
+				else
+				{
+					barcnt = (content.size() - sizeof(HisKlineBlock)) / sizeof(WTSBarStruct);
+					if (barcnt <= 0)
+						continue;
+
+					firstBar = kBlock->_bars;
+				}
+
+				WTSBarStruct* pBar = std::lower_bound(firstBar, firstBar + (barcnt - 1), sBar, [period](const WTSBarStruct& a, const WTSBarStruct& b){
+					if (period == KP_DAY)
+					{
+						return a.date < b.date;
+					}
+					else
+					{
+						return a.time < b.time;
+					}
+				});
+
+				uint32_t sIdx = pBar - firstBar;
+				if ((period == KP_DAY && pBar->date < sBar.date) || (period != KP_DAY && pBar->time < sBar.time))	//ÔçÓÚ±ß½çÊ±¼ä
+				{
+					//ÔçÓÚ±ß½çÊ±¼ä, ËµÃ÷Ã»ÓĞÊı¾İÁË, ÒòÎªlower_bound»á·µ»Ø´óÓÚµÈÓÚÄ¿±êÎ»ÖÃµÄÊı¾İ
+					continue;
+				}
+
+				pBar = std::lower_bound(firstBar + sIdx, firstBar + (barcnt - 1), eBar, [period](const WTSBarStruct& a, const WTSBarStruct& b){
+					if (period == KP_DAY)
+					{
+						return a.date < b.date;
+					}
+					else
+					{
+						return a.time < b.time;
+					}
+				});
+				uint32_t eIdx = pBar - firstBar;
+				if ((period == KP_DAY && pBar->date > eBar.date) || (period != KP_DAY && pBar->time > eBar.time))
+				{
+					pBar--;
+					eIdx--;
+				}
+
+				if (eIdx < sIdx)
+					continue;
+
+				uint32_t curCnt = eIdx - sIdx + 1;
+				std::vector<WTSBarStruct>* tempAy = new std::vector<WTSBarStruct>();
+				tempAy->resize(curCnt);
+				memcpy(tempAy->data(), &firstBar[sIdx], sizeof(WTSBarStruct)*curCnt);
+				realCnt += curCnt;
+
+				barsSections.push_back(tempAy);
+
+				if (bAllCovered)
+					break;
+			}
+		}
+
+		if (hotAy)
+		{
+			barsSections.push_back(hotAy);
+			realCnt += hotAy->size();
+		}
+	}
+	else if (cInfo._exright && cInfo._category == CC_Stock)//Èç¹ûÊÇ¶ÁÈ¡¹ÉÆ±¸´È¨Êı¾İ
+	{
+		std::vector<WTSBarStruct>* hotAy = NULL;
+		uint32_t lastQTime = 0;
+
+		do
+		{
+			//ÏÈÖ±½Ó¶ÁÈ¡¸´È¨¹ıµÄÀúÊ·Êı¾İ£¬Â·¾¶Èç/his/day/sse/SH600000Q.dsb
+			std::stringstream ss;
+			ss << _base_dir << "his/" << pname << "/" << cInfo._exchg << "/" << cInfo._code << "Q.dsb";
+			std::string filename = ss.str();
+			if (!StdFile::exists(filename.c_str()))
+				break;
+
+			std::string content;
+			StdFile::read_file_content(filename.c_str(), content);
+			if (content.size() < sizeof(HisKlineBlock))
+			{
+				WTSLogger::error("ÀúÊ·KÏßÊı¾İÎÄ¼ş%s´óĞ¡Ğ£ÑéÊ§°Ü", filename.c_str());
+				break;
+			}
+
+			HisKlineBlock* kBlock = (HisKlineBlock*)content.c_str();
+			uint32_t barcnt = 0;
+			if (kBlock->_version == BLOCK_VERSION_CMP)
+			{
+				if (content.size() < sizeof(HisKlineBlockV2))
+				{
+					WTSLogger::error("ÀúÊ·KÏßÊı¾İÎÄ¼ş%s´óĞ¡Ğ£ÑéÊ§°Ü", filename.c_str());
+					break;
+				}
+
+				HisKlineBlockV2* kBlockV2 = (HisKlineBlockV2*)content.c_str();
+				if (kBlockV2->_size == 0)
+					break;
+
+				std::string rawData = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
+				barcnt = rawData.size() / sizeof(WTSBarStruct);
+				if (barcnt <= 0)
+					break;
+
+				hotAy = new std::vector<WTSBarStruct>();
+				hotAy->resize(barcnt);
+				memcpy(hotAy->data(), rawData.data(), rawData.size());
+			}
+			else
+			{
+				barcnt = (content.size() - sizeof(HisKlineBlock)) / sizeof(WTSBarStruct);
+				if (barcnt <= 0)
+					break;
+
+				HisKlineBlock* kBlock = (HisKlineBlock*)content.c_str();
+				hotAy = new std::vector<WTSBarStruct>();
+				hotAy->resize(barcnt);
+				memcpy(hotAy->data(), kBlock->_bars, sizeof(WTSBarStruct)*barcnt);
+			}
+
+			if (period != KP_DAY)
+				lastQTime = hotAy->at(barcnt - 1).time;
+			else
+				lastQTime = hotAy->at(barcnt - 1).date;
+
+			WTSLogger::info("%sÀúÊ·%s¸´È¨Êı¾İÖ±½Ó»º´æ%uÌõ", stdCode, pname.c_str(), barcnt);
+			break;
+		} while (false);
+
+		bool bAllCovered = false;
+		do
+		{
+			//const char* curCode = it->first.c_str();
+			//uint32_t rightDt = it->second.second;
+			//uint32_t leftDt = it->second.first;
+			const char* curCode = cInfo._code;
+
+			//ÒªÏÈ½«ÈÕÆÚ×ª»»Îª±ß½çÊ±¼ä
+			WTSBarStruct sBar;
+			if (period != KP_DAY)
+			{
+				sBar.date = TimeUtils::minBarToDate(lastQTime);
+
+				sBar.time = lastQTime + 1;
+			}
+			else
+			{
+				sBar.date = lastQTime + 1;
+			}
+
+			std::stringstream ss;
+			ss << _base_dir << "his/" << pname << "/" << cInfo._exchg << "/" << curCode << ".dsb";
+			std::string filename = ss.str();
+			if (!StdFile::exists(filename.c_str()))
+				continue;
+
+			{
+				std::string content;
+				StdFile::read_file_content(filename.c_str(), content);
+				if (content.size() < sizeof(HisKlineBlock))
+				{
+					WTSLogger::error("ÀúÊ·KÏßÊı¾İÎÄ¼ş%s´óĞ¡Ğ£ÑéÊ§°Ü", filename.c_str());
+					return false;
+				}
+
+				HisKlineBlock* kBlock = (HisKlineBlock*)content.c_str();
+				WTSBarStruct* firstBar = NULL;
+				uint32_t barcnt = 0;
+				std::string rawData;
+				if (kBlock->_version == BLOCK_VERSION_CMP)
+				{
+					if (content.size() < sizeof(HisKlineBlockV2))
+					{
+						WTSLogger::error("ÀúÊ·KÏßÊı¾İÎÄ¼ş%s´óĞ¡Ğ£ÑéÊ§°Ü", filename.c_str());
+						break;
+					}
+
+					HisKlineBlockV2* kBlockV2 = (HisKlineBlockV2*)content.c_str();
+					if (kBlockV2->_size == 0)
+						break;
+
+					rawData = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
+					barcnt = rawData.size() / sizeof(WTSBarStruct);
+					if (barcnt <= 0)
+						break;
+
+					firstBar = (WTSBarStruct*)rawData.data();
+				}
+				else
+				{
+					barcnt = (content.size() - sizeof(HisKlineBlock)) / sizeof(WTSBarStruct);
+					if (barcnt <= 0)
+						continue;
+
+					firstBar = kBlock->_bars;
+				}
+
+				WTSBarStruct* pBar = std::lower_bound(firstBar, firstBar + (barcnt - 1), sBar, [period](const WTSBarStruct& a, const WTSBarStruct& b){
+					if (period == KP_DAY)
+					{
+						return a.date < b.date;
+					}
+					else
+					{
+						return a.time < b.time;
+					}
+				});
+
+				if (pBar != NULL)
+				{
+					uint32_t sIdx = pBar - firstBar;
+					uint32_t curCnt = barcnt - sIdx;
+					std::vector<WTSBarStruct>* tempAy = new std::vector<WTSBarStruct>();
+					tempAy->resize(curCnt);
+					memcpy(tempAy->data(), &firstBar[sIdx], sizeof(WTSBarStruct)*curCnt);
+					realCnt += curCnt;
+
+					auto& ayFactors = getAdjFactors(cInfo._code, cInfo._exchg);
+					if (!ayFactors.empty())
+					{
+						//×öÇ°¸´È¨´¦Àí
+
+						int32_t lastIdx = curCnt;
+						WTSBarStruct bar;
+						firstBar = tempAy->data();
+						for (auto& adjFact : ayFactors)
+						{
+							bar.date = adjFact._date;
+							double factor = adjFact._factor;
+
+							WTSBarStruct* pBar = NULL;
+							pBar = std::lower_bound(firstBar, firstBar + lastIdx - 1, bar, [period](const WTSBarStruct& a, const WTSBarStruct& b) {
+								return a.date < b.date;
+							});
+
+							if(pBar->date < bar.date)
+								continue;
+
+							WTSBarStruct* endBar = pBar;
+							if (pBar != NULL)
+							{
+								int32_t curIdx = pBar - firstBar;
+								while (pBar && curIdx < lastIdx)
+								{
+									pBar->open /= factor;
+									pBar->high /= factor;
+									pBar->low /= factor;
+									pBar->close /= factor;
+
+									pBar++;
+									curIdx++;
+								}
+								lastIdx = endBar - firstBar;
+							}
+
+							if(lastIdx == 0)
+								break;
+						}
+					}
+
+					barsSections.push_back(tempAy);
+				}
+			}
+		} while (false);
+
+		if (hotAy)
+		{
+			barsSections.push_back(hotAy);
+			realCnt += hotAy->size();
+		}
+	}
+	else
+	{
+		//¶ÁÈ¡ÀúÊ·µÄ
+		std::stringstream ss;
+		ss << _base_dir << "his/" << pname << "/" << cInfo._exchg << "/" << cInfo._code << ".dsb";
+		std::string filename = ss.str();
+		if (StdFile::exists(filename.c_str()))
+		{
+			//Èç¹ûÓĞ¸ñÊ½»¯µÄÀúÊ·Êı¾İÎÄ¼ş, ÔòÖ±½Ó¶ÁÈ¡
+			std::string content;
+			StdFile::read_file_content(filename.c_str(), content);
+			if (content.size() < sizeof(HisKlineBlock))
+			{
+				WTSLogger::error("ÀúÊ·KÏßÊı¾İÎÄ¼ş%s´óĞ¡Ğ£ÑéÊ§°Ü", filename.c_str());
+				return false;
+			}
+
+			HisKlineBlock* kBlock = (HisKlineBlock*)content.c_str();
+			WTSBarStruct* firstBar = NULL;
+			uint32_t barcnt = 0;
+			std::string rawData;
+			if (kBlock->_version == BLOCK_VERSION_CMP)
+			{
+				if (content.size() < sizeof(HisKlineBlockV2))
+				{
+					WTSLogger::error("ÀúÊ·KÏßÊı¾İÎÄ¼ş%s´óĞ¡Ğ£ÑéÊ§°Ü", filename.c_str());
+					return false;
+				}
+
+				HisKlineBlockV2* kBlockV2 = (HisKlineBlockV2*)content.c_str();
+				if (kBlockV2->_size == 0)
+					return false;
+
+				rawData = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
+				barcnt = rawData.size() / sizeof(WTSBarStruct);
+				if (barcnt <= 0)
+					return false;
+
+				firstBar = (WTSBarStruct*)rawData.data();
+			}
+			else
+			{
+				barcnt = (content.size() - sizeof(HisKlineBlock)) / sizeof(WTSBarStruct);
+				if (barcnt <= 0)
+					return false;
+
+				firstBar = kBlock->_bars;
+			}
+
+			if (barcnt > 0)
+			{
+
+				uint32_t sIdx = 0;
+				uint32_t idx = barcnt - 1;
+				uint32_t curCnt = (idx - sIdx + 1);
+
+				std::vector<WTSBarStruct>* tempAy = new std::vector<WTSBarStruct>();
+				tempAy->resize(curCnt);
+				memcpy(tempAy->data(), &firstBar[sIdx], sizeof(WTSBarStruct)*curCnt);
+				realCnt += curCnt;
+
+				barsSections.push_back(tempAy);
+			}
+		}
+	}
+
+	if (realCnt > 0)
+	{
+		barList._bars.resize(realCnt);
+
+		uint32_t curIdx = 0;
+		for (auto it = barsSections.rbegin(); it != barsSections.rend(); it++)
+		{
+			std::vector<WTSBarStruct>* tempAy = *it;
+			memcpy(barList._bars.data() + curIdx, tempAy->data(), tempAy->size()*sizeof(WTSBarStruct));
+			curIdx += tempAy->size();
+			delete tempAy;
+		}
+		barList._count = barList._bars.size();
+		barsSections.clear();
+	}
+
+	WTSLogger::info("%sµÄÀúÊ·%sÊı¾İÒÑ»º´æ%uÌõ", stdCode, pname.c_str(), realCnt);
+	return true;
+}

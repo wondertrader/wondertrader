@@ -4,31 +4,31 @@
 class CTraderSpi : public CThostFtdcTraderSpi
 {
 public:
-	///å½“å®¢æˆ·ç«¯ä¸äº¤æ˜“åå°å»ºç«‹èµ·é€šä¿¡è¿æ¥æ—¶ï¼ˆè¿˜æœªç™»å½•å‰ï¼‰ï¼Œè¯¥æ–¹æ³•è¢«è°ƒç”¨ã€‚
+	///µ±¿Í»§¶ËÓë½»Ò×ºóÌ¨½¨Á¢ÆğÍ¨ĞÅÁ¬½ÓÊ±£¨»¹Î´µÇÂ¼Ç°£©£¬¸Ã·½·¨±»µ÷ÓÃ¡£
 	virtual void OnFrontConnected();
 
 	virtual void OnRspAuthenticate(CThostFtdcRspAuthenticateField *pRspAuthenticateField, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
 
-	///ç™»å½•è¯·æ±‚å“åº”
+	///µÇÂ¼ÇëÇóÏìÓ¦
 	virtual void OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin,	CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
 	
-	///è¯·æ±‚æŸ¥è¯¢åˆçº¦å“åº”
+	///ÇëÇó²éÑ¯ºÏÔ¼ÏìÓ¦
 	virtual void OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
 
-	///é”™è¯¯åº”ç­”
+	///´íÎóÓ¦´ğ
 	virtual void OnRspError(CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
 	
-	///å½“å®¢æˆ·ç«¯ä¸äº¤æ˜“åå°é€šä¿¡è¿æ¥æ–­å¼€æ—¶ï¼Œè¯¥æ–¹æ³•è¢«è°ƒç”¨ã€‚å½“å‘ç”Ÿè¿™ä¸ªæƒ…å†µåï¼ŒAPIä¼šè‡ªåŠ¨é‡æ–°è¿æ¥ï¼Œå®¢æˆ·ç«¯å¯ä¸åšå¤„ç†ã€‚
+	///µ±¿Í»§¶ËÓë½»Ò×ºóÌ¨Í¨ĞÅÁ¬½Ó¶Ï¿ªÊ±£¬¸Ã·½·¨±»µ÷ÓÃ¡£µ±·¢ÉúÕâ¸öÇé¿öºó£¬API»á×Ô¶¯ÖØĞÂÁ¬½Ó£¬¿Í»§¶Ë¿É²»×ö´¦Àí¡£
 	virtual void OnFrontDisconnected(int nReason);
 
 private:
 	void ReqAuth();
-	///ç”¨æˆ·ç™»å½•è¯·æ±‚
+	///ÓÃ»§µÇÂ¼ÇëÇó
 	void ReqUserLogin();
-	///è¯·æ±‚æŸ¥è¯¢åˆçº¦
+	///ÇëÇó²éÑ¯ºÏÔ¼
 	void ReqQryInstrument();
 
-	// æ˜¯å¦æ”¶åˆ°æˆåŠŸçš„å“åº”
+	// ÊÇ·ñÊÕµ½³É¹¦µÄÏìÓ¦
 	bool IsErrorRspInfo(CThostFtdcRspInfoField *pRspInfo);
 
 

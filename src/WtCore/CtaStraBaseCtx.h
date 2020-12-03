@@ -20,11 +20,11 @@ NS_OTP_BEGIN
 
 class WtCtaEngine;
 
-const char COND_ACTION_OL = 0;	//å¼€å¤š
-const char COND_ACTION_CL = 1;	//å¹³å¤š
-const char COND_ACTION_OS = 2;	//å¼€ç©º
-const char COND_ACTION_CS = 3;	//å¹³ç©º
-const char COND_ACTION_SP = 4;	//ç›´æ¥è®¾ç½®ä»“ä½
+const char COND_ACTION_OL = 0;	//¿ª¶à
+const char COND_ACTION_CL = 1;	//Æ½¶à
+const char COND_ACTION_OS = 2;	//¿ª¿Õ
+const char COND_ACTION_CS = 3;	//Æ½¿Õ
+const char COND_ACTION_SP = 4;	//Ö±½ÓÉèÖÃ²ÖÎ»
 
 typedef struct _CondEntrust
 {
@@ -34,7 +34,7 @@ typedef struct _CondEntrust
 
 	double			_qty;
 
-	char			_action;	//0-å¼€å¤š, 1-å¹³å¤š, 2-å¼€ç©º, 3-å¹³ç©º
+	char			_action;	//0-¿ª¶à, 1-Æ½¶à, 2-¿ª¿Õ, 3-Æ½¿Õ
 
 	char			_code[MAX_INSTRUMENT_LENGTH];
 	char			_usertag[32];
@@ -81,7 +81,7 @@ private:
 public:
 	virtual uint32_t id() { return _context_id; }
 
-	//å›è°ƒå‡½æ•°
+	//»Øµ÷º¯Êı
 	virtual void on_init() override;
 	virtual void on_session_begin() override;
 	virtual void on_session_end() override;
@@ -93,7 +93,7 @@ public:
 
 
 	//////////////////////////////////////////////////////////////////////////
-	//ç­–ç•¥æ¥å£
+	//²ßÂÔ½Ó¿Ú
 	virtual void stra_enter_long(const char* stdCode, double qty, const char* userTag = "", double limitprice = 0.0, double stopprice = 0.0) override;
 	virtual void stra_enter_short(const char* stdCode, double qty, const char* userTag = "", double limitprice = 0.0, double stopprice = 0.0) override;
 	virtual void stra_exit_long(const char* stdCode, double qty, const char* userTag = "", double limitprice = 0.0, double stopprice = 0.0) override;
@@ -133,8 +133,8 @@ protected:
 	uint32_t		_context_id;
 	WtCtaEngine*	_engine;
 
-	uint64_t		_total_calc_time;	//æ€»è®¡ç®—æ—¶é—´
-	uint32_t		_emit_times;		//æ€»è®¡ç®—æ¬¡æ•°
+	uint64_t		_total_calc_time;	//×Ü¼ÆËãÊ±¼ä
+	uint32_t		_emit_times;		//×Ü¼ÆËã´ÎÊı
 
 	std::string		_main_key;
 
@@ -212,12 +212,12 @@ protected:
 	BoostFilePtr	_sig_logs;
 
 	CondEntrustMap	_condtions;
-	uint64_t		_last_cond_min;	//ä¸Šæ¬¡è®¾ç½®æ¡ä»¶å•çš„æ—¶é—´
+	uint64_t		_last_cond_min;	//ÉÏ´ÎÉèÖÃÌõ¼şµ¥µÄÊ±¼ä
 
-	//æ˜¯å¦å¤„äºè°ƒåº¦ä¸­çš„æ ‡è®°
-	bool			_is_in_schedule;	//æ˜¯å¦åœ¨è‡ªåŠ¨è°ƒåº¦ä¸­
+	//ÊÇ·ñ´¦ÓÚµ÷¶ÈÖĞµÄ±ê¼Ç
+	bool			_is_in_schedule;	//ÊÇ·ñÔÚ×Ô¶¯µ÷¶ÈÖĞ
 
-	//ç”¨æˆ·æ•°æ®
+	//ÓÃ»§Êı¾İ
 	typedef std::unordered_map<std::string, std::string> StringHashMap;
 	StringHashMap	_user_datas;
 	bool			_ud_modified;

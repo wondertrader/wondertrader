@@ -22,10 +22,10 @@ class WTSVariant;
 typedef enum tagActionType
 {
 	AT_Unknown = 8888,
-	AT_Open = 9999,	//å¼€ä»“
-	AT_Close,		//å¹³ä»“
-	AT_CloseToday,	//å¹³ä»Š
-	AT_CloseYestoday	//å¹³æ˜¨
+	AT_Open = 9999,	//¿ª²Ö
+	AT_Close,		//Æ½²Ö
+	AT_CloseToday,	//Æ½½ñ
+	AT_CloseYestoday	//Æ½×ò
 } ActionType;
 
 typedef struct _ActionRule
@@ -56,9 +56,9 @@ public:
 
 private:
 	typedef std::unordered_map<std::string, ActionRuleGroup> RulesMap;
-	RulesMap	_rules;	//è§„åˆ™è¡¨
+	RulesMap	_rules;	//¹æÔò±í
 
-	std::unordered_map<std::string, std::string> _comm_rule_map;	//å“ç§è§„åˆ™æ˜ å°„
+	std::unordered_map<std::string, std::string> _comm_rule_map;	//Æ·ÖÖ¹æÔòÓ³Éä
 };
 
 NS_OTP_END

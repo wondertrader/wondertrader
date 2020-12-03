@@ -22,7 +22,7 @@ typedef std::vector<uint32_t> OrderIDs;
 typedef WTSMap<uint32_t> OrderMap;
 
 //////////////////////////////////////////////////////////////////////////
-//æ‰§è¡ŒçŽ¯å¢ƒåŸºç¡€ç±»
+//Ö´ÐÐ»·¾³»ù´¡Àà
 class ExecuteContext
 {
 public:
@@ -31,119 +31,119 @@ public:
 
 public:
 	/*
-	 *	èŽ·å–tickæ•°æ®
-	 *	code	åˆçº¦ä»£ç 
-	 *	count	æ•°æ®æ¡æ•°
-	 *	etime	æˆªæ­¢æ—¶é—´, 0åˆ™ä¸ºå½“å‰æ—¶é—´
+	 *	»ñÈ¡tickÊý¾Ý
+	 *	code	ºÏÔ¼´úÂë
+	 *	count	Êý¾ÝÌõÊý
+	 *	etime	½ØÖ¹Ê±¼ä, 0ÔòÎªµ±Ç°Ê±¼ä
 	 *	
-	 *	è¿”å›žå€¼	åŽ†å²æ•°æ®å°è£…ç±»æŒ‡é’ˆ
+	 *	·µ»ØÖµ	ÀúÊ·Êý¾Ý·â×°ÀàÖ¸Õë
 	 */
 	virtual WTSTickSlice*	getTicks(const char* stdCode, uint32_t count, uint64_t etime = 0) = 0;
 
 	/*
-	 *	è¯»å–æœ€è¿‘ä¸€ç¬”Tickæ•°æ®
-	 *	code	åˆçº¦ä»£ç 
+	 *	¶ÁÈ¡×î½üÒ»±ÊTickÊý¾Ý
+	 *	code	ºÏÔ¼´úÂë
 	 *	
-	 *	è¿”å›žå€¼	WTSTickDataæŒ‡é’ˆ
+	 *	·µ»ØÖµ	WTSTickDataÖ¸Õë
 	 */
 	virtual WTSTickData*	grabLastTick(const char* stdCode) = 0;
 
 	/*
-	 *	èŽ·å–ä»“ä½
-	 *	code	åˆçº¦ä»£ç 
-	 *	flag	æ“ä½œæ ‡è®° 1-å¤šä»“, 2-ç©ºä»“, 3-å¤šç©ºè½§å¹³
+	 *	»ñÈ¡²ÖÎ»
+	 *	code	ºÏÔ¼´úÂë
+	 *	flag	²Ù×÷±ê¼Ç 1-¶à²Ö, 2-¿Õ²Ö, 3-¶à¿ÕÔþÆ½
 	 *	
-	 *	è¿”å›žå€¼	è½§å¹³åŽçš„ä»“ä½: å¤šä»“>0, ç©ºä»“<0
+	 *	·µ»ØÖµ	ÔþÆ½ºóµÄ²ÖÎ»: ¶à²Ö>0, ¿Õ²Ö<0
 	 */
 	virtual double getPosition(const char* stdCode, int32_t flag = 3) = 0;
 
 	/*
-	 *	èŽ·å–æœªå®Œæˆè®¢å•
-	 *	code	åˆçº¦ä»£ç 
+	 *	»ñÈ¡Î´Íê³É¶©µ¥
+	 *	code	ºÏÔ¼´úÂë
 	 *
-	 *	è¿”å›žå€¼	localid-WTSOrderInfoçš„æ˜ å°„
+	 *	·µ»ØÖµ	localid-WTSOrderInfoµÄÓ³Éä
 	 */
 	virtual OrderMap* getOrders(const char* stdCode) = 0;
 
 	/*
-	 *	èŽ·å–æœªå®Œæˆæ•°é‡
-	 *	code	åˆçº¦ä»£ç 
+	 *	»ñÈ¡Î´Íê³ÉÊýÁ¿
+	 *	code	ºÏÔ¼´úÂë
 	 *	
-	 *	è¿”å›žå€¼	ä¹°å–è½§å¹³ä»¥åŽçš„æœªå®Œæˆæ•°é‡
+	 *	·µ»ØÖµ	ÂòÂôÔþÆ½ÒÔºóµÄÎ´Íê³ÉÊýÁ¿
 	 */
 	virtual double getUndoneQty(const char* stdCode) = 0;
 
 	/*
-	 *	ä¹°å…¥æŽ¥å£
-	 *	code	åˆçº¦ä»£ç 
-	 *	price	å§”æ‰˜ä»·æ ¼, 0ä¸ºå¸‚ä»·å•
-	 *	qty		å§”æ‰˜æ•°é‡
+	 *	ÂòÈë½Ó¿Ú
+	 *	code	ºÏÔ¼´úÂë
+	 *	price	Î¯ÍÐ¼Û¸ñ, 0ÎªÊÐ¼Ûµ¥
+	 *	qty		Î¯ÍÐÊýÁ¿
 	 *
-	 *	è¿”å›žå€¼	æœ¬åœ°è®¢å•å·æ•°ç»„: ä¸€ä¸ªä¹°å…¥æ“ä½œå¯èƒ½ä¼šæ‹†æˆæœ€å¤š3ä¸ªè®¢å•å‘å‡º
+	 *	·µ»ØÖµ	±¾µØ¶©µ¥ºÅÊý×é: Ò»¸öÂòÈë²Ù×÷¿ÉÄÜ»á²ð³É×î¶à3¸ö¶©µ¥·¢³ö
 	 */
 	virtual OrderIDs buy(const char* stdCode, double price, double qty) = 0;
 
 	/*
-	*	å–å‡ºæŽ¥å£
-	*	code	åˆçº¦ä»£ç 
-	*	price	å§”æ‰˜ä»·æ ¼, 0ä¸ºå¸‚ä»·å•
-	*	qty		å§”æ‰˜æ•°é‡
+	*	Âô³ö½Ó¿Ú
+	*	code	ºÏÔ¼´úÂë
+	*	price	Î¯ÍÐ¼Û¸ñ, 0ÎªÊÐ¼Ûµ¥
+	*	qty		Î¯ÍÐÊýÁ¿
 	*
-	*	è¿”å›žå€¼	æœ¬åœ°è®¢å•å·æ•°ç»„: ä¸€ä¸ªä¹°å…¥æ“ä½œå¯èƒ½ä¼šæ‹†æˆæœ€å¤š3ä¸ªè®¢å•å‘å‡º
+	*	·µ»ØÖµ	±¾µØ¶©µ¥ºÅÊý×é: Ò»¸öÂòÈë²Ù×÷¿ÉÄÜ»á²ð³É×î¶à3¸ö¶©µ¥·¢³ö
 	*/
 	virtual OrderIDs sell(const char* stdCode, double price, double qty) = 0;
 
 	/*
-	 *	æ ¹æ®æœ¬åœ°è®¢å•å·æ’¤å•
-	 *	localid æœ¬åœ°è®¢å•å·
+	 *	¸ù¾Ý±¾µØ¶©µ¥ºÅ³·µ¥
+	 *	localid ±¾µØ¶©µ¥ºÅ
 	 *
-	 *	è¿”å›žå€¼	è¿”å›žæ’¤å•æŒ‡ä»¤æ˜¯å¦å‘é€æˆåŠŸ
+	 *	·µ»ØÖµ	·µ»Ø³·µ¥Ö¸ÁîÊÇ·ñ·¢ËÍ³É¹¦
 	 */
 	virtual bool	cancel(uint32_t localid) = 0;
 
 	/*
-	 *	æ ¹æ®æŒ‡å®šçš„æ–¹å‘å’Œæ•°é‡æ’¤å•
-	 *	code åˆçº¦ä»£ç 
-	 *	qty	æœ€å°‘æ’¤å•æ•°é‡, å¦‚æžœæœ‰å¤šä¸ªå§”æ‰˜, é‚£ä¹ˆæŒ‰ç…§æ—¶é—´é¡ºåºä¸€ä¸ªä¸€ä¸ªæ’¤å•, ç›´åˆ°æ’¤é”€çš„æ•°é‡å¤§äºŽç­‰äºŽqty
-	 *	è¿™ä¸ªä¸€èˆ¬ç”¨ä¸åˆ°, æ‰€ä»¥ä¼ 0çš„æ—¶å€™, å°±æ˜¯æŠŠå…¨éƒ¨ä¹°å•æˆ–è€…å–å•æ’¤é”€
-	 *	isBuy ä¹°å•orå–å•
+	 *	¸ù¾ÝÖ¸¶¨µÄ·½ÏòºÍÊýÁ¿³·µ¥
+	 *	code ºÏÔ¼´úÂë
+	 *	qty	×îÉÙ³·µ¥ÊýÁ¿, Èç¹ûÓÐ¶à¸öÎ¯ÍÐ, ÄÇÃ´°´ÕÕÊ±¼äË³ÐòÒ»¸öÒ»¸ö³·µ¥, Ö±µ½³·ÏúµÄÊýÁ¿´óÓÚµÈÓÚqty
+	 *	Õâ¸öÒ»°ãÓÃ²»µ½, ËùÒÔ´«0µÄÊ±ºò, ¾ÍÊÇ°ÑÈ«²¿Âòµ¥»òÕßÂôµ¥³·Ïú
+	 *	isBuy Âòµ¥orÂôµ¥
 	 *	
-	 *	è¿”å›žå€¼ è¿”å›žå®žé™…å‘é€äº†æ’¤å•æŒ‡ä»¤çš„æ•°é‡
+	 *	·µ»ØÖµ ·µ»ØÊµ¼Ê·¢ËÍÁË³·µ¥Ö¸ÁîµÄÊýÁ¿
 	 */
 	virtual OrderIDs cancel(const char* stdCode, bool isBuy, double qty = 0) = 0;
 
 	/*
-	 *	å†™æ—¥å¿—
+	 *	Ð´ÈÕÖ¾
 	 */
 	virtual void writeLog(const char* fmt, ...) = 0;
 
 	/*
-	 *	èŽ·å–å“ç§å‚æ•°
+	 *	»ñÈ¡Æ·ÖÖ²ÎÊý
 	 */
 	virtual WTSCommodityInfo* getCommodityInfo(const char* stdCode) = 0;
 
 	/*
-	 *	èŽ·å–äº¤æ˜“æ—¶é—´æ¨¡æ¿ä¿¡æ¯
+	 *	»ñÈ¡½»Ò×Ê±¼äÄ£°åÐÅÏ¢
 	 */
 	virtual WTSSessionInfo* getSessionInfo(const char* stdCode) = 0;
 
 	/*
-	 *	èŽ·å–å½“å‰æ—¶é—´ï¼Œç²¾ç¡®åˆ°æ¯«ç§’ï¼Œæ ¼å¼å¦‚20191127174139500
+	 *	»ñÈ¡µ±Ç°Ê±¼ä£¬¾«È·µ½ºÁÃë£¬¸ñÊ½Èç20191127174139500
 	 */
 	virtual uint64_t	getCurTime() = 0;
 
 	/*
-	 *	æ³¨å†Œå®šæ—¶å™¨
-	 *	@stdCode	åˆçº¦ä»£ç 
-	 *	@elapse		æ—¶é—´é—´éš”ï¼Œå•ä½æ¯«ç§’
+	 *	×¢²á¶¨Ê±Æ÷
+	 *	@stdCode	ºÏÔ¼´úÂë
+	 *	@elapse		Ê±¼ä¼ä¸ô£¬µ¥Î»ºÁÃë
 	 *
-	 *	è¿”å›žå€¼		æ˜¯å¦æ³¨å†ŒæˆåŠŸ
+	 *	·µ»ØÖµ		ÊÇ·ñ×¢²á³É¹¦
 	 */
 	virtual bool		registerTimer(const char* stdCode, uint32_t elapse){ return false; }
 };
 
 //////////////////////////////////////////////////////////////////////////
-//æ‰§è¡Œå•å…ƒåŸºç¡€ç±»
+//Ö´ÐÐµ¥Ôª»ù´¡Àà
 class ExecuteUnit
 {
 public:
@@ -152,53 +152,53 @@ public:
 
 public:
 	/*
-	 *	æ‰§è¡Œå•å…ƒåç§°
+	 *	Ö´ÐÐµ¥ÔªÃû³Æ
 	 */
 	virtual const char* getName() = 0;
 
 	/*
-	 *	æ‰€å±žæ‰§è¡Œå™¨å·¥åŽ‚åç§°
+	 *	ËùÊôÖ´ÐÐÆ÷¹¤³§Ãû³Æ
 	 */
 	virtual const char* getFactName() = 0;
 
 	/*
-	 *	åˆå§‹åŒ–æ‰§è¡Œå•å…ƒ
-	 *	ctx		æ‰§è¡Œå•å…ƒè¿è¡ŒçŽ¯å¢ƒ
-	 *	code	ç®¡ç†çš„åˆçº¦ä»£ç 
+	 *	³õÊ¼»¯Ö´ÐÐµ¥Ôª
+	 *	ctx		Ö´ÐÐµ¥ÔªÔËÐÐ»·¾³
+	 *	code	¹ÜÀíµÄºÏÔ¼´úÂë
 	 */
 	virtual void init(ExecuteContext* ctx, const char* stdCode, WTSVariant* cfg){ _ctx = ctx; _code = stdCode; }
 
 public:
 	/*
-	 *	è®¾ç½®æ–°çš„ç›®æ ‡ä»“ä½
-	 *	code	åˆçº¦ä»£ç 
-	 *	newVol	æ–°çš„ç›®æ ‡ä»“ä½
+	 *	ÉèÖÃÐÂµÄÄ¿±ê²ÖÎ»
+	 *	code	ºÏÔ¼´úÂë
+	 *	newVol	ÐÂµÄÄ¿±ê²ÖÎ»
 	 */
 	virtual void set_position(const char* stdCode, double newVol) = 0;
 
 	/*
-	 *	tickæ•°æ®å›žè°ƒ
-	 *	newTick	æœ€æ–°çš„tickæ•°æ®
+	 *	tickÊý¾Ý»Øµ÷
+	 *	newTick	×îÐÂµÄtickÊý¾Ý
 	 */
 	virtual void on_tick(WTSTickData* newTick) = 0;
 
 	/*
-	 *	æˆäº¤å›žæŠ¥
-	 *	code	åˆçº¦ä»£ç 
-	 *	isBuy	ä¹°orå–
-	 *	vol		æˆäº¤æ•°é‡, è¿™é‡Œæ²¡æœ‰æ­£è´Ÿ, é€šè¿‡isBuyç¡®å®šä¹°å…¥è¿˜æ˜¯å–å‡º
-	 *	price	æˆäº¤ä»·æ ¼
+	 *	³É½»»Ø±¨
+	 *	code	ºÏÔ¼´úÂë
+	 *	isBuy	ÂòorÂô
+	 *	vol		³É½»ÊýÁ¿, ÕâÀïÃ»ÓÐÕý¸º, Í¨¹ýisBuyÈ·¶¨ÂòÈë»¹ÊÇÂô³ö
+	 *	price	³É½»¼Û¸ñ
 	 */
 	virtual void on_trade(uint32_t localid, const char* stdCode, bool isBuy, double vol, double price) = 0;
 
 	/*
-	 *	è®¢å•å›žæŠ¥
-	 *	localid	æœ¬åœ°å•å·
-	 *	code	åˆçº¦ä»£ç 
-	 *	isBuy	ä¹°orå–
-	 *	leftover	å‰©ä½™æ•°é‡
-	 *	price	å§”æ‰˜ä»·æ ¼
-	 *	isCanceled	æ˜¯å¦å·²æ’¤é”€
+	 *	¶©µ¥»Ø±¨
+	 *	localid	±¾µØµ¥ºÅ
+	 *	code	ºÏÔ¼´úÂë
+	 *	isBuy	ÂòorÂô
+	 *	leftover	Ê£ÓàÊýÁ¿
+	 *	price	Î¯ÍÐ¼Û¸ñ
+	 *	isCanceled	ÊÇ·ñÒÑ³·Ïú
 	 */
 	virtual void on_order(uint32_t localid, const char* stdCode, bool isBuy, double leftover, double price, bool isCanceled) = 0;
 
@@ -208,12 +208,12 @@ public:
 	virtual void on_entrust(uint32_t localid, const char* stdCode, bool bSuccess, const char* message) = 0;
 
 	/*
-	 *	äº¤æ˜“é€šé“å°±ç»ªå›žè°ƒ
+	 *	½»Ò×Í¨µÀ¾ÍÐ÷»Øµ÷
 	 */
 	virtual void on_channel_ready() = 0;
 
 	/*
-	 *	äº¤æ˜“é€šé“ä¸¢å¤±å›žè°ƒ
+	 *	½»Ò×Í¨µÀ¶ªÊ§»Øµ÷
 	 */
 	virtual void on_channel_lost() = 0;
 
@@ -223,7 +223,7 @@ protected:
 };
 
 //////////////////////////////////////////////////////////////////////////
-//æ‰§è¡Œå•å…ƒå·¥åŽ‚æŽ¥å£
+//Ö´ÐÐµ¥Ôª¹¤³§½Ó¿Ú
 typedef void(*FuncEnumUnitCallback)(const char* factName, const char* unitName, bool isLast);
 
 class IExecuterFact
@@ -234,29 +234,29 @@ public:
 
 public:
 	/*
-	 *	èŽ·å–å·¥åŽ‚å
+	 *	»ñÈ¡¹¤³§Ãû
 	 */
 	virtual const char* getName() = 0;
 
 	/*
-	 *	æžšä¸¾æ‰§è¡Œå•å…ƒ
+	 *	Ã¶¾ÙÖ´ÐÐµ¥Ôª
 	 */
 	virtual void enumExeUnit(FuncEnumUnitCallback cb) = 0;
 
 	/*
-	 *	æ ¹æ®åç§°åˆ›å»ºæ‰§è¡Œå•å…ƒ
+	 *	¸ù¾ÝÃû³Æ´´½¨Ö´ÐÐµ¥Ôª
 	 */
 	virtual ExecuteUnit* createExeUnit(const char* name) = 0;
 
 	/*
-	 *	åˆ é™¤æ‰§è¡Œå•å…ƒ
+	 *	É¾³ýÖ´ÐÐµ¥Ôª
 	 */
 	virtual bool deleteExeUnit(ExecuteUnit* unit) = 0;
 };
 
-//åˆ›å»ºæ‰§è¡Œå·¥åŽ‚
+//´´½¨Ö´ÐÐ¹¤³§
 typedef IExecuterFact* (*FuncCreateExeFact)();
-//åˆ é™¤æ‰§è¡Œå·¥åŽ‚
+//É¾³ýÖ´ÐÐ¹¤³§
 typedef void(*FuncDeleteExeFact)(IExecuterFact* &fact);
 
 NS_OTP_END

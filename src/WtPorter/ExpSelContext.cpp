@@ -18,7 +18,7 @@ void ExpSelContext::on_init()
 {
 	SelStraBaseCtx::on_init();
 
-	//å‘å¤–éƒ¨å›è°ƒ
+	//ÏòÍâ²¿»Øµ÷
 	getRunner().ctx_on_init(_context_id, ET_SEL);
 }
 

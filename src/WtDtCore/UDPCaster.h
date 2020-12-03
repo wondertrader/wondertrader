@@ -5,7 +5,7 @@
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief UDP骞挎挱瀵硅薄瀹氫箟
+ * \brief UDP广播对象定义
  */
 #pragma once
 
@@ -86,7 +86,7 @@ private:
 	boost::asio::ip::udp::endpoint	m_senderEP;
 	char			m_data[max_length];
 
-	//骞挎挱
+	//广播
 	ReceiverList	m_listFlatRecver;
 	ReceiverList	m_listJsonRecver;
 	ReceiverList	m_listRawRecver;

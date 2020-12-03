@@ -20,7 +20,7 @@ class WtExecRunner : public IParserStub, public IExecuterStub
 {
 public:
 	/*
-	 *	åˆå§‹åŒ–
+	 *	³õÊ¼»¯
 	 */
 	bool init(const char* logProfile = "logcfgexec.json");
 
@@ -42,14 +42,14 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	/// <summary>
-	/// å¤„ç†å®æ—¶ä¸»æ¨è¡Œæƒ…
+	/// ´¦ÀíÊµÊ±Ö÷ÍÆĞĞÇé
 	/// </summary>
-	/// <param name="curTick">æœ€æ–°çš„tickæ•°æ®</param>
-	/// <param name="isHot">æ˜¯å¦æ˜¯ä¸»åŠ›åˆçº¦ä»£ç </param>
+	/// <param name="curTick">×îĞÂµÄtickÊı¾İ</param>
+	/// <param name="isHot">ÊÇ·ñÊÇÖ÷Á¦ºÏÔ¼´úÂë</param>
 	virtual void handle_push_quote(WTSTickData* curTick, bool isHot = false) override;
 
 	///////////////////////////////////////////////////////////////////////////
-	//IExecuterStub æ¥å£
+	//IExecuterStub ½Ó¿Ú
 	virtual uint64_t get_real_time() override;
 	virtual WTSCommodityInfo* get_comm_info(const char* stdCode) override;
 	virtual WTSSessionInfo* get_sess_info(const char* stdCode) override;

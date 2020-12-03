@@ -5,7 +5,7 @@
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief boost搴撴枃浠舵搷浣滅殑杈呭姪瀵硅薄
+ * \brief boost库文件操作的辅助对象
  */
 #pragma once
 #include <boost/version.hpp>
