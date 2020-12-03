@@ -63,7 +63,7 @@
     docker环境已经将将Linux下的依赖提前安装。
     进入到docker目录下，
     ```
-    $ docker build wondertrader .
+    $ docker build -t wondertrader .
     ```
     镜像构建完成后，在宿主机上运行
     ```
