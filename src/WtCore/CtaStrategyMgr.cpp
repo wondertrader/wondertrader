@@ -28,7 +28,7 @@ bool CtaStrategyMgr::loadFactories(const char* path)
 {
 	if (!StdFile::exists(path))
 	{
-		WTSLogger::error("CTA²ßÂÔ¹¤³§Ä¿Â¼%s²»´æÔÚ", path);
+		WTSLogger::error("CTAç­–ç•¥å·¥å‚ç›®å½•%sä¸å­˜åœ¨", path);
 		return false;
 	}
 
@@ -69,7 +69,7 @@ bool CtaStrategyMgr::loadFactories(const char* path)
 			fInfo._remover = (FuncDeleteStraFact)DLLHelper::get_symbol(hInst, "deleteStrategyFact");
 			fInfo._fact = fact;
 
-			WTSLogger::info("CTA²ßÂÔ¹¤³§[%s]¼ÓÔØ³É¹¦", fact->getName());
+			WTSLogger::info("CTAç­–ç•¥å·¥å‚[%s]åŠ è½½æˆåŠŸ", fact->getName());
 
 			count++;
 		}
@@ -81,7 +81,7 @@ bool CtaStrategyMgr::loadFactories(const char* path)
 		
 	}
 
-	WTSLogger::info("Ä¿Â¼[%s]ÏÂ¹²¼ÓÔØ%u¸öCTA²ßÂÔ¹¤³§", path, count);
+	WTSLogger::info("ç›®å½•[%s]ä¸‹å…±åŠ è½½%uä¸ªCTAç­–ç•¥å·¥å‚", path, count);
 
 	return true;
 }

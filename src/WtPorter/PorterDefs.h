@@ -30,16 +30,16 @@ typedef unsigned long		WtUInt32;
 typedef unsigned long long	WtUInt64;
 typedef const char*			WtString;
 
-static const WtUInt32	EVENT_ENGINE_INIT	= 1;	//¿ò¼Ü³õÊ¼»¯
-static const WtUInt32	EVENT_SESSION_BEGIN = 2;	//½»Ò×ÈÕ¿ªÊ¼
-static const WtUInt32	EVENT_SESSION_END	= 3;	//½»Ò×ÈÕ½áÊø
-static const WtUInt32	EVENT_ENGINE_SCHDL	= 4;	//¿ò¼Üµ÷¶È
+static const WtUInt32	EVENT_ENGINE_INIT	= 1;	//æ¡†æ¶åˆå§‹åŒ–
+static const WtUInt32	EVENT_SESSION_BEGIN = 2;	//äº¤æ˜“æ—¥å¼€å§‹
+static const WtUInt32	EVENT_SESSION_END	= 3;	//äº¤æ˜“æ—¥ç»“æŸ
+static const WtUInt32	EVENT_ENGINE_SCHDL	= 4;	//æ¡†æ¶è°ƒåº¦
 
-static const WtUInt32	CHNL_EVENT_READY	= 1000;	//Í¨µÀ¾ÍĞ÷ÊÂ¼ş
-static const WtUInt32	CHNL_EVENT_LOST		= 1001;	//Í¨µÀ¶Ï¿ªÊÂ¼ş
+static const WtUInt32	CHNL_EVENT_READY	= 1000;	//é€šé“å°±ç»ªäº‹ä»¶
+static const WtUInt32	CHNL_EVENT_LOST		= 1001;	//é€šé“æ–­å¼€äº‹ä»¶
 
 /*
-*	»Øµ÷º¯Êı¶¨Òå
+*	å›è°ƒå‡½æ•°å®šä¹‰
 */
 typedef void(PORTER_FLAG *FuncGetBarsCallback)(CtxHandler cHandle, const char* code, const char* period, WTSBarStruct* bar, bool isLast);
 typedef void(PORTER_FLAG *FuncGetTicksCallback)(CtxHandler cHandle, const char* code, WTSTickStruct* tick, bool isLast);
@@ -49,8 +49,8 @@ typedef void(PORTER_FLAG *FuncStraCalcCallback)(CtxHandler cHandle, WtUInt32 cur
 typedef void(PORTER_FLAG *FuncStraBarCallback)(CtxHandler cHandle, const char* code, const char* period, WTSBarStruct* newBar);
 
 //////////////////////////////////////////////////////////////////////////
-//HFT»Øµ÷º¯Êı
-typedef void(PORTER_FLAG *FuncHftChannelCallback)(CtxHandler cHandle, const char* trader, WtUInt32 evtid);	//½»Ò×Í¨µÀÊÂ¼ş»Øµ÷
+//HFTå›è°ƒå‡½æ•°
+typedef void(PORTER_FLAG *FuncHftChannelCallback)(CtxHandler cHandle, const char* trader, WtUInt32 evtid);	//äº¤æ˜“é€šé“äº‹ä»¶å›è°ƒ
 typedef void(PORTER_FLAG *FuncHftOrdCallback)(CtxHandler cHandle, WtUInt32 localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled);
 typedef void(PORTER_FLAG *FuncHftTrdCallback)(CtxHandler cHandle, WtUInt32 localid, const char* stdCode, bool isBuy, double vol, double price);
 typedef void(PORTER_FLAG *FuncHftEntrustCallback)(CtxHandler cHandle, WtUInt32 localid, const char* stdCode, bool bSuccess, const char* message);

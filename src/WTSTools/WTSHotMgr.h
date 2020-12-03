@@ -5,7 +5,7 @@
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief Ö÷Á¦ºÏÔ¼¹ÜÀíÆ÷ÊµÏÖ
+ * \brief ä¸»åŠ›åˆçº¦ç®¡ç†å™¨å®ç°
  */
 #pragma once
 #include "../Includes/IHotMgr.h"
@@ -19,11 +19,11 @@ NS_OTP_END
 
 USING_NS_OTP;
 
-//»»ÔÂÖ÷Á¦Ó³Éä
+//æ¢æœˆä¸»åŠ›æ˜ å°„
 typedef WTSMap<uint32_t>		WTSDateHotMap;
-//Æ·ÖÖÖ÷Á¦Ó³Éä
+//å“ç§ä¸»åŠ›æ˜ å°„
 typedef WTSMap<std::string>		WTSProductHotMap;
-//·ÖÊĞ³¡Ö÷Á¦Ó³Éä
+//åˆ†å¸‚åœºä¸»åŠ›æ˜ å°„
 typedef WTSMap<std::string>		WTSExchgHotMap;
 
 class WTSHotMgr : public IHotMgr

@@ -198,7 +198,7 @@ void WtBtRunner::config(const char* cfgFile)
 	rj::Document root;
 	if (root.Parse(content.c_str()).HasParseError())
 	{
-		WTSLogger::info("ÅäÖÃÎÄ¼ş½âÎöÊ§°Ü");
+		WTSLogger::info("é…ç½®æ–‡ä»¶è§£æå¤±è´¥");
 		return;
 	}
 
@@ -290,7 +290,7 @@ void WtBtRunner::trans_mc_bars(const char* csvFolder, const char* binFolder, con
 		std::ifstream ifs;
 		ifs.open(path.c_str());
 
-		WTSLogger::info("ÕıÔÚ¶ÁÈ¡Êı¾İÎÄ¼ş%s¡­¡­", path.c_str());
+		WTSLogger::info("æ­£åœ¨è¯»å–æ•°æ®æ–‡ä»¶%sâ€¦â€¦", path.c_str());
 
 		char buffer[512];
 		bool headerskipped = false;
@@ -301,14 +301,14 @@ void WtBtRunner::trans_mc_bars(const char* csvFolder, const char* binFolder, con
 			if (strlen(buffer) == 0)
 				continue;
 
-			//Ìø¹ıÍ·²¿
+			//è·³è¿‡å¤´éƒ¨
 			if (!headerskipped)
 			{
 				headerskipped = true;
 				continue;
 			}
 
-			//ÖğĞĞ¶ÁÈ¡
+			//é€è¡Œè¯»å–
 			StringVector ay = StrUtil::split(buffer, ",");
 			WTSBarStruct bs;
 			bs.date = strToDate(ay[0].c_str());
@@ -322,11 +322,11 @@ void WtBtRunner::trans_mc_bars(const char* csvFolder, const char* binFolder, con
 
 			if (bars.size() % 1000 == 0)
 			{
-				WTSLogger::info("ÒÑ¶ÁÈ¡Êı¾İ%uÌõ", bars.size());
+				WTSLogger::info("å·²è¯»å–æ•°æ®%uæ¡", bars.size());
 			}
 		}
 		ifs.close();
-		WTSLogger::info("Êı¾İÎÄ¼ş%sÈ«²¿¶ÁÈ¡Íê³É£¬¹²%uÌõ", path.c_str(), bars.size());
+		WTSLogger::info("æ•°æ®æ–‡ä»¶%så…¨éƒ¨è¯»å–å®Œæˆï¼Œå…±%uæ¡", path.c_str(), bars.size());
 
 		BlockType btype;
 		switch (kp)
@@ -355,7 +355,7 @@ void WtBtRunner::trans_mc_bars(const char* csvFolder, const char* binFolder, con
 		}
 		bf.write_file(cmprsData);
 		bf.close_file();
-		WTSLogger::info("Êı¾İÒÑ×ª´¢ÖÁ%s", filename.c_str());
+		WTSLogger::info("æ•°æ®å·²è½¬å‚¨è‡³%s", filename.c_str());
 	}
 }
 

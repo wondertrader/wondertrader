@@ -5,7 +5,7 @@
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief boostÏà¹Ø×é¼şµÄtypedef£¬·½±ãÊ¹ÓÃ
+ * \brief boostç›¸å…³ç»„ä»¶çš„typedefï¼Œæ–¹ä¾¿ä½¿ç”¨
  */
 #pragma once
 
@@ -15,12 +15,12 @@
 #include <boost/thread.hpp>
 #include <boost/filesystem.hpp>
 
-//¶ÁĞ´Ëø
+//è¯»å†™é”
 typedef boost::shared_mutex							BoostRWMutex;
 typedef boost::shared_lock<boost::shared_mutex>		BoostReadLock;
 typedef boost::unique_lock<boost::shared_mutex>		BoostWriteLock;
 
-//¼òµ¥µÄ»¥³âËø
+//ç®€å•çš„äº’æ–¥é”
 typedef boost::recursive_mutex						BoostRecursiveMutex;
 typedef boost::recursive_mutex::scoped_lock			BoostScopedLock;
 
@@ -28,7 +28,7 @@ typedef boost::mutex								BoostUniqueMutex;
 
 typedef boost::unique_lock<boost::mutex>			BoostUniqueLock;				
 
-//Ïß³Ì
+//çº¿ç¨‹
 typedef boost::thread								BoostThread;
 typedef boost::shared_ptr<boost::thread>			BoostThreadPtr;
 

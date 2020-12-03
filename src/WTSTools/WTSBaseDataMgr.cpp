@@ -86,7 +86,7 @@ WTSContractInfo* WTSBaseDataMgr::getContract(const char* code, const char* exchg
 {
 	std::string realCode = code;	
 
-	//Èç¹ûÖ±½ÓÕÒµ½¶ÔÓ¦µÄÊĞ³¡´úÂë£¬ÔòÖ±½Ó
+	//å¦‚æœç›´æ¥æ‰¾åˆ°å¯¹åº”çš„å¸‚åœºä»£ç ï¼Œåˆ™ç›´æ¥
 	auto it = m_mapExchgContract->find(exchg);
 	if(it != m_mapExchgContract->end())
 	{
@@ -221,7 +221,7 @@ bool WTSBaseDataMgr::loadSessions(const char* filename)
 {
 	if (!StdFile::exists(filename))
 	{
-		WTSLogger::error("½»Ò×Ê±¼äÅäÖÃÎÄ¼ş %s ²»´æÔÚ", filename);
+		WTSLogger::error("äº¤æ˜“æ—¶é—´é…ç½®æ–‡ä»¶ %s ä¸å­˜åœ¨", filename);
 		return false;
 	}
 
@@ -230,7 +230,7 @@ bool WTSBaseDataMgr::loadSessions(const char* filename)
 	rj::Document root;
 	if (root.Parse(content.c_str()).HasParseError())
 	{
-		WTSLogger::error("½»Ò×Ê±¼äÅäÖÃÎÄ¼ş½âÎöÊ§°Ü");
+		WTSLogger::error("äº¤æ˜“æ—¶é—´é…ç½®æ–‡ä»¶è§£æå¤±è´¥");
 		return false;
 	}
 
@@ -269,7 +269,7 @@ bool WTSBaseDataMgr::loadCommodities(const char* filename)
 {
 	if (!StdFile::exists(filename))
 	{
-		WTSLogger::error("Æ·ÖÖÊôĞÔÅäÖÃÎÄ¼ş %s ²»´æÔÚ", filename);
+		WTSLogger::error("å“ç§å±æ€§é…ç½®æ–‡ä»¶ %s ä¸å­˜åœ¨", filename);
 		return false;
 	}
 
@@ -278,7 +278,7 @@ bool WTSBaseDataMgr::loadCommodities(const char* filename)
 	rj::Document root;
 	if (root.Parse(content.c_str()).HasParseError())
 	{
-		WTSLogger::error("Æ·ÖÖÊôĞÔÅäÖÃÎÄ¼ş½âÎöÊ§°Ü");
+		WTSLogger::error("å“ç§å±æ€§é…ç½®æ–‡ä»¶è§£æå¤±è´¥");
 		return false;
 	}
 
@@ -298,7 +298,7 @@ bool WTSBaseDataMgr::loadCommodities(const char* filename)
 
 			if (strlen(sid) == 0)
 			{
-				WTSLogger::error("Æ·ÖÖ%sÃ»ÓĞÕÒµ½¶ÔÓ¦µÄ»á»°ID", pid.c_str());
+				WTSLogger::error("å“ç§%sæ²¡æœ‰æ‰¾åˆ°å¯¹åº”çš„ä¼šè¯ID", pid.c_str());
 				continue;
 			}
 
@@ -340,7 +340,7 @@ bool WTSBaseDataMgr::loadContracts(const char* filename)
 {
 	if (!StdFile::exists(filename))
 	{
-		WTSLogger::error("ºÏÔ¼ÁĞ±íÎÄ¼ş %s ²»´æÔÚ", filename);
+		WTSLogger::error("åˆçº¦åˆ—è¡¨æ–‡ä»¶ %s ä¸å­˜åœ¨", filename);
 		return false;
 	}
 
@@ -349,7 +349,7 @@ bool WTSBaseDataMgr::loadContracts(const char* filename)
 	rj::Document root;
 	if (root.Parse(content.c_str()).HasParseError())
 	{
-		WTSLogger::error("ºÏÔ¼ÁĞ±íÎÄ¼ş½âÎöÊ§°Ü");
+		WTSLogger::error("åˆçº¦åˆ—è¡¨æ–‡ä»¶è§£æå¤±è´¥");
 		return false;
 	}
 
@@ -399,7 +399,7 @@ bool WTSBaseDataMgr::loadHolidays(const char* filename)
 {
 	if (!StdFile::exists(filename))
 	{
-		WTSLogger::error("½Ú¼ÙÈÕÎÄ¼ş %s ²»´æÔÚ", filename);
+		WTSLogger::error("èŠ‚å‡æ—¥æ–‡ä»¶ %s ä¸å­˜åœ¨", filename);
 		return false;
 	}
 
@@ -408,7 +408,7 @@ bool WTSBaseDataMgr::loadHolidays(const char* filename)
 	rj::Document root;
 	if (root.Parse(content.c_str()).HasParseError())
 	{
-		WTSLogger::error("½Ú¼ÙÈÕÎÄ¼ş½âÎöÊ§°Ü");
+		WTSLogger::error("èŠ‚å‡æ—¥æ–‡ä»¶è§£æå¤±è´¥");
 		return false;
 	}
 
@@ -464,7 +464,7 @@ uint64_t WTSBaseDataMgr::getBoundaryTime(const char* stdPID, uint32_t tDate, boo
 			tDate = getPrevTDate(tplid.c_str(), tDate, 1, isTpl);
 	}
 
-	//²»Æ«ÒÆµÄ×î¼òµ¥£¬Ö»ĞèÒªÖ±½Ó·µ»Ø¿ªÅÌºÍÊÕÅÌÊ±¼ä¼´¿É
+	//ä¸åç§»çš„æœ€ç®€å•ï¼Œåªéœ€è¦ç›´æ¥è¿”å›å¼€ç›˜å’Œæ”¶ç›˜æ—¶é—´å³å¯
 	if (sInfo->getOffsetMins() == 0)
 	{
 		if (isStart)
@@ -475,8 +475,8 @@ uint64_t WTSBaseDataMgr::getBoundaryTime(const char* stdPID, uint32_t tDate, boo
 
 	if(sInfo->getOffsetMins() < 0)
 	{
-		//ÍùÇ°Æ«ÒÆ£¬¾ÍÊÇ½»Ò×ÈÕÍÆºó£¬Ò»°ãÓÃÓÚÍâÅÌ
-		//Õâ¸ö±È½Ï¼òµ¥£¬Ö»ĞèÒª°´×ÔÈ»ÈÕÈ¡¼´¿É
+		//å¾€å‰åç§»ï¼Œå°±æ˜¯äº¤æ˜“æ—¥æ¨åï¼Œä¸€èˆ¬ç”¨äºå¤–ç›˜
+		//è¿™ä¸ªæ¯”è¾ƒç®€å•ï¼Œåªéœ€è¦æŒ‰è‡ªç„¶æ—¥å–å³å¯
 		if (isStart)
 			return (uint64_t)tDate * 10000 + sInfo->getOpenTime();
 		else
@@ -484,14 +484,14 @@ uint64_t WTSBaseDataMgr::getBoundaryTime(const char* stdPID, uint32_t tDate, boo
 	}
 	else
 	{
-		//ÍùºóÆ«ÒÆ£¬Ò»°ã¹úÄÚÆÚ»õÒ¹ÅÌ¶¼ÊÇÕâ¸ö£¬¼´Ò¹ÅÌËãÊÇµÚ¶ş¸ö½»Ò×ÈÕ
-		//Õâ¸ö±È½Ï¸´ÔÓ£¬Ö÷Òª½Ú¼ÙÈÕºóµÚÒ»ÌìµÄ±ß½çºÜÂé·³£¨ÈçÒ»°ãÇé¿öµÄÖÜÒ»£©
-		//ÕâÖÖÇé¿öÎ¨Ò»·½±ãµÄ¾ÍÊÇ£¬ÊÕÅÌÊ±¼ä²»ĞèÒª´¦Àí
+		//å¾€ååç§»ï¼Œä¸€èˆ¬å›½å†…æœŸè´§å¤œç›˜éƒ½æ˜¯è¿™ä¸ªï¼Œå³å¤œç›˜ç®—æ˜¯ç¬¬äºŒä¸ªäº¤æ˜“æ—¥
+		//è¿™ä¸ªæ¯”è¾ƒå¤æ‚ï¼Œä¸»è¦èŠ‚å‡æ—¥åç¬¬ä¸€å¤©çš„è¾¹ç•Œå¾ˆéº»çƒ¦ï¼ˆå¦‚ä¸€èˆ¬æƒ…å†µçš„å‘¨ä¸€ï¼‰
+		//è¿™ç§æƒ…å†µå”¯ä¸€æ–¹ä¾¿çš„å°±æ˜¯ï¼Œæ”¶ç›˜æ—¶é—´ä¸éœ€è¦å¤„ç†
 		if(!isStart)
 			return (uint64_t)tDate * 10000 + sInfo->getCloseTime();
 
-		//Ïëµ½Ò»¸ö¼òµ¥µÄ°ì·¨£¬¾ÍÊÇ²»¹ÜÔõÃ´Ñù£¬¿ªÊ¼Ê±¼äÒ»¶¨ÊÇÉÏÒ»¸ö½»Ò×ÈÕµÄÍíÉÏ
-		//ËùÒÔÎÒÖ»ĞèÒªÄÃµ½ÉÏÒ»¸ö½»Ò×ÈÕ¼´¿É
+		//æƒ³åˆ°ä¸€ä¸ªç®€å•çš„åŠæ³•ï¼Œå°±æ˜¯ä¸ç®¡æ€ä¹ˆæ ·ï¼Œå¼€å§‹æ—¶é—´ä¸€å®šæ˜¯ä¸Šä¸€ä¸ªäº¤æ˜“æ—¥çš„æ™šä¸Š
+		//æ‰€ä»¥æˆ‘åªéœ€è¦æ‹¿åˆ°ä¸Šä¸€ä¸ªäº¤æ˜“æ—¥å³å¯
 		tDate = getPrevTDate(tplid.c_str(), tDate, 1, isTpl);
 		return (uint64_t)tDate * 10000 + sInfo->getOpenTime();
 	}
@@ -532,41 +532,41 @@ uint32_t WTSBaseDataMgr::calcTradingDate(const char* stdPID, uint32_t uDate, uin
 	uint32_t offMin = sInfo->offsetTime(uTime);
 	if (sInfo->getOffsetMins() > 0)
 	{
-		//Èç¹ûÏòºóÆ«ÒÆ£¬ÇÒµ±Ç°Ê±¼ä´óÓÚÆ«ÒÆÊ±¼ä£¬ËµÃ÷Ïòºó¿çÈÕÁË
-		//ÕâÊ±½»Ò×ÈÕ=ÏÂÒ»¸ö½»Ò×ÈÕ
+		//å¦‚æœå‘ååç§»ï¼Œä¸”å½“å‰æ—¶é—´å¤§äºåç§»æ—¶é—´ï¼Œè¯´æ˜å‘åè·¨æ—¥äº†
+		//è¿™æ—¶äº¤æ˜“æ—¥=ä¸‹ä¸€ä¸ªäº¤æ˜“æ—¥
 		if (uTime > offMin)
 		{
-			//Èç£¬20151016 23:00£¬Æ«ÒÆ300·ÖÖÓ£¬Îª5:00
+			//å¦‚ï¼Œ20151016 23:00ï¼Œåç§»300åˆ†é’Ÿï¼Œä¸º5:00
 			return getNextTDate(tplid.c_str(), uDate, 1, isTpl);
 		}
 		else if (weekday == 6 || weekday == 0)
 		{
-			//Èç£¬20151017 1:00£¬ÖÜÁù£¬½»Ò×ÈÕÎª20151019
+			//å¦‚ï¼Œ20151017 1:00ï¼Œå‘¨å…­ï¼Œäº¤æ˜“æ—¥ä¸º20151019
 			return getNextTDate(tplid.c_str(), uDate, 1, isTpl);
 		}
 	}
 	else if (sInfo->getOffsetMins() < 0)
 	{
-		//Èç¹ûÏòÇ°Æ«ÒÆ£¬ÇÒµ±Ç°Ê±¼äĞ¡ÓÚÆ«ÒÆÊ±¼ä£¬ËµÃ÷»¹ÊÇÇ°Ò»¸ö½»Ò×ÈÕ
-		//ÕâÊ±½»Ò×ÈÕ=Ç°Ò»¸ö½»Ò×ÈÕ
+		//å¦‚æœå‘å‰åç§»ï¼Œä¸”å½“å‰æ—¶é—´å°äºåç§»æ—¶é—´ï¼Œè¯´æ˜è¿˜æ˜¯å‰ä¸€ä¸ªäº¤æ˜“æ—¥
+		//è¿™æ—¶äº¤æ˜“æ—¥=å‰ä¸€ä¸ªäº¤æ˜“æ—¥
 		if (uTime < offMin)
 		{
-			//Èç20151017 1:00£¬Æ«ÒÆ-300·ÖÖÓ£¬Îª20:00
+			//å¦‚20151017 1:00ï¼Œåç§»-300åˆ†é’Ÿï¼Œä¸º20:00
 			return getPrevTDate(tplid.c_str(), uDate, 1, isTpl);
 		}
 		else if (weekday == 6 || weekday == 0)
 		{
-			//ÒòÎªÏòÇ°Æ«ÒÆ£¬Èç¹ûÔÚÖÜÄ©£¬ÔòÖ±½Óµ½ÏÂÒ»¸ö½»Ò×ÈÕ
+			//å› ä¸ºå‘å‰åç§»ï¼Œå¦‚æœåœ¨å‘¨æœ«ï¼Œåˆ™ç›´æ¥åˆ°ä¸‹ä¸€ä¸ªäº¤æ˜“æ—¥
 			return getNextTDate(tplid.c_str(), uDate, 1, isTpl);
 		}
 	}
 	else if (weekday == 6 || weekday == 0)
 	{
-		//Èç¹ûÃ»ÓĞÆ«ÒÆ£¬ÇÒÔÚÖÜÄ©£¬ÔòÖ±½Ó¶ÁÈ¡ÏÂÒ»¸ö½»Ò×ÈÕ
+		//å¦‚æœæ²¡æœ‰åç§»ï¼Œä¸”åœ¨å‘¨æœ«ï¼Œåˆ™ç›´æ¥è¯»å–ä¸‹ä¸€ä¸ªäº¤æ˜“æ—¥
 		return getNextTDate(tplid.c_str(), uDate, 1, isTpl);;
 	}
 
-	//ÆäËûÇé¿ö£¬½»Ò×ÈÕ=×ÔÈ»ÈÕ
+	//å…¶ä»–æƒ…å†µï¼Œäº¤æ˜“æ—¥=è‡ªç„¶æ—¥
 	return uDate;
 }
 
@@ -592,12 +592,12 @@ uint32_t WTSBaseDataMgr::getTradingDate(const char* pid, uint32_t uOffDate /* = 
 
 	if (weekday == 6 || weekday == 0)
 	{
-		//Èç¹ûÃ»ÓĞÆ«ÒÆ£¬ÇÒÔÚÖÜÄ©£¬ÔòÖ±½Ó¶ÁÈ¡ÏÂÒ»¸ö½»Ò×ÈÕ
+		//å¦‚æœæ²¡æœ‰åç§»ï¼Œä¸”åœ¨å‘¨æœ«ï¼Œåˆ™ç›´æ¥è¯»å–ä¸‹ä¸€ä¸ªäº¤æ˜“æ—¥
 		tpl._cur_tdate = getNextTDate(tplID, uOffDate, 1, true);
 		uOffDate = tpl._cur_tdate;
 	}
 
-	//ÆäËûÇé¿ö£¬½»Ò×ÈÕ=×ÔÈ»ÈÕ
+	//å…¶ä»–æƒ…å†µï¼Œäº¤æ˜“æ—¥=è‡ªç„¶æ—¥
 	return uOffDate;
 }
 
@@ -620,7 +620,7 @@ uint32_t WTSBaseDataMgr::getNextTDate(const char* pid, uint32_t uDate, int days 
 		curDate = (newT->tm_year + 1900) * 10000 + (newT->tm_mon + 1) * 100 + newT->tm_mday;
 		if (newT->tm_wday != 0 && newT->tm_wday != 6 && !isHoliday(pid, curDate, isTpl))
 		{
-			//Èç¹û²»ÊÇÖÜÄ©£¬Ò²²»ÊÇ½Ú¼ÙÈÕ£¬ÔòÊ£ÓàµÄÌìÊı-1
+			//å¦‚æœä¸æ˜¯å‘¨æœ«ï¼Œä¹Ÿä¸æ˜¯èŠ‚å‡æ—¥ï¼Œåˆ™å‰©ä½™çš„å¤©æ•°-1
 			left--;
 			if (left == 0)
 				return curDate;
@@ -647,7 +647,7 @@ uint32_t WTSBaseDataMgr::getPrevTDate(const char* pid, uint32_t uDate, int days 
 		curDate = (newT->tm_year + 1900) * 10000 + (newT->tm_mon + 1) * 100 + newT->tm_mday;
 		if (newT->tm_wday != 0 && newT->tm_wday != 6 && !isHoliday(pid, curDate, isTpl))
 		{
-			//Èç¹û²»ÊÇÖÜÄ©£¬Ò²²»ÊÇ½Ú¼ÙÈÕ£¬ÔòÊ£ÓàµÄÌìÊı-1
+			//å¦‚æœä¸æ˜¯å‘¨æœ«ï¼Œä¹Ÿä¸æ˜¯èŠ‚å‡æ—¥ï¼Œåˆ™å‰©ä½™çš„å¤©æ•°-1
 			left--;
 			if (left == 0)
 				return curDate;

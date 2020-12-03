@@ -208,13 +208,13 @@ void TraderCTP::connect()
 	m_pUserAPI->RegisterSpi(this);
 	if (m_bQuickStart)
 	{
-		m_pUserAPI->SubscribePublicTopic(THOST_TERT_QUICK);			// ×¢²á¹«ÓĞÁ÷
-		m_pUserAPI->SubscribePrivateTopic(THOST_TERT_QUICK);		// ×¢²áË½ÓĞÁ÷
+		m_pUserAPI->SubscribePublicTopic(THOST_TERT_QUICK);			// æ³¨å†Œå…¬æœ‰æµ
+		m_pUserAPI->SubscribePrivateTopic(THOST_TERT_QUICK);		// æ³¨å†Œç§æœ‰æµ
 	}
 	else
 	{
-		m_pUserAPI->SubscribePublicTopic(THOST_TERT_RESUME);		// ×¢²á¹«ÓĞÁ÷
-		m_pUserAPI->SubscribePrivateTopic(THOST_TERT_RESUME);		// ×¢²áË½ÓĞÁ÷
+		m_pUserAPI->SubscribePublicTopic(THOST_TERT_RESUME);		// æ³¨å†Œå…¬æœ‰æµ
+		m_pUserAPI->SubscribePrivateTopic(THOST_TERT_RESUME);		// æ³¨å†Œç§æœ‰æµ
 	}
 
 	m_pUserAPI->RegisterFront((char*)m_strFront.c_str());
@@ -317,7 +317,7 @@ int TraderCTP::doLogin()
 	int iResult = m_pUserAPI->ReqUserLogin(&req, genRequestID());
 	if (iResult != 0)
 	{
-		m_traderSink->handleTraderLog(LL_ERROR, "[CTPTrader]µÇÂ¼ÇëÇó·¢ËÍÊ§°Ü, ´íÎóÂë:%d", iResult);
+		m_traderSink->handleTraderLog(LL_ERROR, "[CTPTrader]ç™»å½•è¯·æ±‚å‘é€å¤±è´¥, é”™è¯¯ç :%d", iResult);
 	}
 
 	return 0;
@@ -337,7 +337,7 @@ int TraderCTP::logout()
 	int iResult = m_pUserAPI->ReqUserLogout(&req, genRequestID());
 	if (iResult != 0)
 	{
-		m_traderSink->handleTraderLog(LL_ERROR, "[CTPTrader]×¢ÏúÇëÇó·¢ËÍÊ§°Ü, ´íÎóÂë:%d", iResult);
+		m_traderSink->handleTraderLog(LL_ERROR, "[CTPTrader]æ³¨é”€è¯·æ±‚å‘é€å¤±è´¥, é”™è¯¯ç :%d", iResult);
 	}
 
 	return 0;
@@ -352,21 +352,21 @@ int TraderCTP::orderInsert(WTSEntrust* entrust)
 
 	CThostFtdcInputOrderField req;
 	memset(&req, 0, sizeof(req));
-	///¾­¼Í¹«Ë¾´úÂë
+	///ç»çºªå…¬å¸ä»£ç 
 	strcpy(req.BrokerID, m_strBroker.c_str());
-	///Í¶×ÊÕß´úÂë
+	///æŠ•èµ„è€…ä»£ç 
 	strcpy(req.InvestorID, m_strUser.c_str());
-	///ºÏÔ¼´úÂë
+	///åˆçº¦ä»£ç 
 	strcpy(req.InstrumentID, entrust->getCode());
 
 	strcpy(req.ExchangeID, entrust->getExchg());
 
 	if (strlen(entrust->getUserTag()) == 0)
 	{
-		///±¨µ¥ÒıÓÃ
+		///æŠ¥å•å¼•ç”¨
 		sprintf(req.OrderRef, "%u", m_orderRef.fetch_add(0));
 
-		//Éú³É±¾µØÎ¯ÍĞµ¥ºÅ
+		//ç”Ÿæˆæœ¬åœ°å§”æ‰˜å•å·
 		//entrust->setEntrustID(generateEntrustID(m_frontID, m_sessionID, m_orderRef++).c_str());	
 	}
 	else
@@ -374,7 +374,7 @@ int TraderCTP::orderInsert(WTSEntrust* entrust)
 		uint32_t fid, sid, orderref;
 		extractEntrustID(entrust->getEntrustID(), fid, sid, orderref);
 		//entrust->setEntrustID(entrust->getUserTag());
-		///±¨µ¥ÒıÓÃ
+		///æŠ¥å•å¼•ç”¨
 		sprintf(req.OrderRef, "%d", orderref);
 	}
 
@@ -388,47 +388,47 @@ int TraderCTP::orderInsert(WTSEntrust* entrust)
 	WTSContractInfo* ct = m_bdMgr->getContract(entrust->getCode(), entrust->getExchg());
 	WTSCommodityInfo* commInfo = m_bdMgr->getCommodity(ct);
 
-	///ÓÃ»§´úÂë
+	///ç”¨æˆ·ä»£ç 
 	//	TThostFtdcUserIDType	UserID;
-	///±¨µ¥¼Û¸ñÌõ¼ş: ÏŞ¼Û
+	///æŠ¥å•ä»·æ ¼æ¡ä»¶: é™ä»·
 	req.OrderPriceType = wrapPriceType(entrust->getPriceType(), strcmp(commInfo->getExchg(), "CFFEX") == 0);
-	///ÂòÂô·½Ïò: 
+	///ä¹°å–æ–¹å‘: 
 	req.Direction = wrapDirectionType(entrust->getDirection(), entrust->getOffsetType());
-	///×éºÏ¿ªÆ½±êÖ¾: ¿ª²Ö
+	///ç»„åˆå¼€å¹³æ ‡å¿—: å¼€ä»“
 	req.CombOffsetFlag[0] = wrapOffsetType(entrust->getOffsetType());
-	///×éºÏÍ¶»úÌ×±£±êÖ¾
+	///ç»„åˆæŠ•æœºå¥—ä¿æ ‡å¿—
 	req.CombHedgeFlag[0] = THOST_FTDC_HF_Speculation;
-	///¼Û¸ñ
+	///ä»·æ ¼
 	req.LimitPrice = entrust->getPrice();
-	///ÊıÁ¿: 1
+	///æ•°é‡: 1
 	req.VolumeTotalOriginal = (int)entrust->getVolumn();
-	///ÓĞĞ§ÆÚÀàĞÍ: µ±ÈÕÓĞĞ§
+	///æœ‰æ•ˆæœŸç±»å‹: å½“æ—¥æœ‰æ•ˆ
 	req.TimeCondition = wrapTimeCondition(entrust->getTimeCondition());
-	///GTDÈÕÆÚ
+	///GTDæ—¥æœŸ
 	//	TThostFtdcDateType	GTDDate;
-	///³É½»Á¿ÀàĞÍ: ÈÎºÎÊıÁ¿
+	///æˆäº¤é‡ç±»å‹: ä»»ä½•æ•°é‡
 	req.VolumeCondition = THOST_FTDC_VC_AV;
-	///×îĞ¡³É½»Á¿: 1
+	///æœ€å°æˆäº¤é‡: 1
 	req.MinVolume = 1;
-	///´¥·¢Ìõ¼ş: Á¢¼´
+	///è§¦å‘æ¡ä»¶: ç«‹å³
 	req.ContingentCondition = THOST_FTDC_CC_Immediately;
-	///Ö¹Ëğ¼Û
+	///æ­¢æŸä»·
 	//	TThostFtdcPriceType	StopPrice;
-	///Ç¿Æ½Ô­Òò: ·ÇÇ¿Æ½
+	///å¼ºå¹³åŸå› : éå¼ºå¹³
 	req.ForceCloseReason = THOST_FTDC_FCC_NotForceClose;
-	///×Ô¶¯¹ÒÆğ±êÖ¾: ·ñ
+	///è‡ªåŠ¨æŒ‚èµ·æ ‡å¿—: å¦
 	req.IsAutoSuspend = 0;
-	///ÒµÎñµ¥Ôª
+	///ä¸šåŠ¡å•å…ƒ
 	//	TThostFtdcBusinessUnitType	BusinessUnit;
-	///ÇëÇó±àºÅ
+	///è¯·æ±‚ç¼–å·
 	//	TThostFtdcRequestIDType	RequestID;
-	///ÓÃ»§Ç¿ÆÀ±êÖ¾: ·ñ
+	///ç”¨æˆ·å¼ºè¯„æ ‡å¿—: å¦
 	req.UserForceClose = 0;
 
 	int iResult = m_pUserAPI->ReqOrderInsert(&req, genRequestID());
 	if (iResult != 0)
 	{
-		m_traderSink->handleTraderLog(LL_ERROR, "[CTPTrader]²åÈë¶©µ¥Ê§°Ü, ´íÎóÂë:%d", iResult);
+		m_traderSink->handleTraderLog(LL_ERROR, "[CTPTrader]æ’å…¥è®¢å•å¤±è´¥, é”™è¯¯ç :%d", iResult);
 	}
 
 	return 0;
@@ -445,20 +445,20 @@ int TraderCTP::orderAction(WTSEntrustAction* action)
 
 	CThostFtdcInputOrderActionField req;
 	memset(&req, 0, sizeof(req));
-	///¾­¼Í¹«Ë¾´úÂë
+	///ç»çºªå…¬å¸ä»£ç 
 	strcpy(req.BrokerID, m_strBroker.c_str());
-	///Í¶×ÊÕß´úÂë
+	///æŠ•èµ„è€…ä»£ç 
 	strcpy(req.InvestorID, m_strUser.c_str());
-	///±¨µ¥ÒıÓÃ
+	///æŠ¥å•å¼•ç”¨
 	sprintf(req.OrderRef, "%u", orderref);
-	///ÇëÇó±àºÅ
-	///Ç°ÖÃ±àºÅ
+	///è¯·æ±‚ç¼–å·
+	///å‰ç½®ç¼–å·
 	req.FrontID = frontid;
-	///»á»°±àºÅ
+	///ä¼šè¯ç¼–å·
 	req.SessionID = sessionid;
-	///²Ù×÷±êÖ¾
+	///æ“ä½œæ ‡å¿—
 	req.ActionFlag = wrapActionFlag(action->getActionFlag());
-	///ºÏÔ¼´úÂë
+	///åˆçº¦ä»£ç 
 	strcpy(req.InstrumentID, action->getCode());
 
 	req.LimitPrice = action->getPrice();
@@ -471,7 +471,7 @@ int TraderCTP::orderAction(WTSEntrustAction* action)
 	int iResult = m_pUserAPI->ReqOrderAction(&req, genRequestID());
 	if (iResult != 0)
 	{
-		m_traderSink->handleTraderLog(LL_ERROR, "[CTPTrader]³·µ¥ÇëÇó·¢ËÍÊ§°Ü, ´íÎóÂë:%d", iResult);
+		m_traderSink->handleTraderLog(LL_ERROR, "[CTPTrader]æ’¤å•è¯·æ±‚å‘é€å¤±è´¥, é”™è¯¯ç :%d", iResult);
 	}
 
 	return 0;
@@ -571,7 +571,7 @@ void TraderCTP::OnFrontConnected()
 
 void TraderCTP::OnFrontDisconnected(int nReason)
 {
-	//m_traderSink->handleTraderLog(LL_ERROR, "[CTPTrader]CTP½»Ò×·şÎñÆ÷ÒÑ¶Ï¿ª");
+	//m_traderSink->handleTraderLog(LL_ERROR, "[CTPTrader]CTPäº¤æ˜“æœåŠ¡å™¨å·²æ–­å¼€");
 	m_wrapperState = WS_NOTLOGIN;
 	if (m_traderSink)
 		m_traderSink->handleEvent(WTE_Close, nReason);
@@ -590,7 +590,7 @@ void TraderCTP::OnRspAuthenticate(CThostFtdcRspAuthenticateField *pRspAuthentica
 	}
 	else
 	{
-		m_traderSink->handleTraderLog(LL_INFO, "[%s-%s]ÖÕ¶ËÈÏÖ¤Ê§°Ü,´íÎóĞÅÏ¢:%s", m_strBroker.c_str(), m_strUser.c_str(), pRspInfo->ErrorMsg);
+		m_traderSink->handleTraderLog(LL_INFO, "[%s-%s]ç»ˆç«¯è®¤è¯å¤±è´¥,é”™è¯¯ä¿¡æ¯:%s", m_strBroker.c_str(), m_strUser.c_str(), pRspInfo->ErrorMsg);
 		m_wrapperState = WS_LOGINFAILED;
 
 		if (m_traderSink)
@@ -605,14 +605,14 @@ void TraderCTP::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, CThos
 	{
 		m_wrapperState = WS_LOGINED;
 
-		// ±£´æ»á»°²ÎÊı
+		// ä¿å­˜ä¼šè¯å‚æ•°
 		m_frontID = pRspUserLogin->FrontID;
 		m_sessionID = pRspUserLogin->SessionID;
 		m_orderRef = atoi(pRspUserLogin->MaxOrderRef);
-		///»ñÈ¡µ±Ç°½»Ò×ÈÕ
+		///è·å–å½“å‰äº¤æ˜“æ—¥
 		m_lDate = atoi(m_pUserAPI->GetTradingDay());
 
-		m_traderSink->handleTraderLog(LL_INFO, "[%s-%s]ÕË»§µÇÂ¼³É¹¦£¬AppID:%s, Sessionid: %u, µÇÂ¼Ê±¼ä: %s¡­¡­",
+		m_traderSink->handleTraderLog(LL_INFO, "[%s-%s]è´¦æˆ·ç™»å½•æˆåŠŸï¼ŒAppID:%s, Sessionid: %u, ç™»å½•æ—¶é—´: %sâ€¦â€¦",
 			m_strBroker.c_str(), m_strUser.c_str(), m_strAppID.c_str(), m_sessionID, pRspUserLogin->LoginTime);
 
 		std::stringstream ss;
@@ -626,23 +626,23 @@ void TraderCTP::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, CThos
 		uint32_t lastDate = m_iniHelper.readUInt("marker", "date", 0);
 		if(lastDate != m_lDate)
 		{
-			//½»Ò×ÈÕ²»Í¬£¬ÇåÀíµôÔ­À´µÄÊı¾İ
+			//äº¤æ˜“æ—¥ä¸åŒï¼Œæ¸…ç†æ‰åŸæ¥çš„æ•°æ®
 			m_iniHelper.removeSection(ENTRUST_SECTION);
 			m_iniHelper.removeSection(ORDER_SECTION);
 			m_iniHelper.writeUInt("marker", "date", m_lDate);
 			m_iniHelper.save();
 
-			m_traderSink->handleTraderLog(LL_INFO, "[%s-%s]½»Ò×ÈÕÒÑÇĞ»»[%u -> %u]£¬Çå¿Õ±¾µØÊı¾İ»º´æ¡­¡­", m_strBroker.c_str(), m_strUser.c_str(), lastDate, m_lDate);
+			m_traderSink->handleTraderLog(LL_INFO, "[%s-%s]äº¤æ˜“æ—¥å·²åˆ‡æ¢[%u -> %u]ï¼Œæ¸…ç©ºæœ¬åœ°æ•°æ®ç¼“å­˜â€¦â€¦", m_strBroker.c_str(), m_strUser.c_str(), lastDate, m_lDate);
 		}
 
-		m_traderSink->handleTraderLog(LL_INFO, "[%s-%s]ÕË»§µÇÂ¼³É¹¦£¬½»Ò×ÈÕ£º%u¡­¡­", m_strBroker.c_str(), m_strUser.c_str(), m_lDate);
+		m_traderSink->handleTraderLog(LL_INFO, "[%s-%s]è´¦æˆ·ç™»å½•æˆåŠŸï¼Œäº¤æ˜“æ—¥ï¼š%uâ€¦â€¦", m_strBroker.c_str(), m_strUser.c_str(), m_lDate);
 
-		m_traderSink->handleTraderLog(LL_INFO, "[%s-%s]ÕıÔÚ²éÑ¯½áËãÈ·ÈÏĞÅÏ¢¡­¡­", m_strBroker.c_str(), m_strUser.c_str());
+		m_traderSink->handleTraderLog(LL_INFO, "[%s-%s]æ­£åœ¨æŸ¥è¯¢ç»“ç®—ç¡®è®¤ä¿¡æ¯â€¦â€¦", m_strBroker.c_str(), m_strUser.c_str());
 		queryConfirm();
 	}
 	else
 	{
-		m_traderSink->handleTraderLog(LL_INFO, "[%s-%s]ÕË»§µÇÂ¼Ê§°Ü,´íÎóĞÅÏ¢:%s", m_strBroker.c_str(), m_strUser.c_str(), pRspInfo->ErrorMsg);
+		m_traderSink->handleTraderLog(LL_INFO, "[%s-%s]è´¦æˆ·ç™»å½•å¤±è´¥,é”™è¯¯ä¿¡æ¯:%s", m_strBroker.c_str(), m_strUser.c_str(), pRspInfo->ErrorMsg);
 		m_wrapperState = WS_LOGINFAILED;
 
 		if (m_traderSink)
@@ -674,7 +674,7 @@ void TraderCTP::OnRspQrySettlementInfoConfirm(CThostFtdcSettlementInfoConfirmFie
 			{
 				m_wrapperState = WS_CONFIRMED;
 
-				m_traderSink->handleTraderLog(LL_INFO, "[%s-%s]ÕË»§Êı¾İ³õÊ¼»¯Íê³É¡­¡­", m_strBroker.c_str(), m_strUser.c_str());
+				m_traderSink->handleTraderLog(LL_INFO, "[%s-%s]è´¦æˆ·æ•°æ®åˆå§‹åŒ–å®Œæˆâ€¦â€¦", m_strBroker.c_str(), m_strUser.c_str());
 				m_wrapperState = WS_ALLREADY;
 				if (m_traderSink)
 					m_traderSink->onLoginResult(true, "", m_lDate);
@@ -683,7 +683,7 @@ void TraderCTP::OnRspQrySettlementInfoConfirm(CThostFtdcSettlementInfoConfirmFie
 			{
 				m_wrapperState = WS_CONFIRM_QRYED;
 
-				m_traderSink->handleTraderLog(LL_INFO, "[%s-%s]ÕıÔÚÈ·ÈÏ½áËã½á¹û¡­¡­", m_strBroker.c_str(), m_strUser.c_str());
+				m_traderSink->handleTraderLog(LL_INFO, "[%s-%s]æ­£åœ¨ç¡®è®¤ç»“ç®—ç»“æœâ€¦â€¦", m_strBroker.c_str(), m_strUser.c_str());
 				confirm();
 			}
 		}
@@ -704,7 +704,7 @@ void TraderCTP::OnRspSettlementInfoConfirm(CThostFtdcSettlementInfoConfirmField 
 		{
 			m_wrapperState = WS_CONFIRMED;
 
-			m_traderSink->handleTraderLog(LL_INFO, "[%s-%s]ÕË»§Êı¾İ³õÊ¼»¯Íê³É¡­¡­", m_strBroker.c_str(), m_strUser.c_str());
+			m_traderSink->handleTraderLog(LL_INFO, "[%s-%s]è´¦æˆ·æ•°æ®åˆå§‹åŒ–å®Œæˆâ€¦â€¦", m_strBroker.c_str(), m_strUser.c_str());
 			m_wrapperState = WS_ALLREADY;
 			if (m_traderSink)
 				m_traderSink->onLoginResult(true, "", m_lDate);
@@ -889,7 +889,7 @@ void TraderCTP::OnRspQryInvestorPosition(CThostFtdcInvestorPositionField *pInves
 
 			if (decimal::lt(pos->getTotalPosition(), 0.0) && decimal::eq(pos->getMargin(), 0.0))
 			{
-				//ÓĞ²ÖÎ»£¬µ«ÊÇ±£Ö¤½ğÎª0£¬ÔòËµÃ÷ÊÇÌ×ÀûºÏÔ¼£¬µ¥¸öºÏÔ¼µÄ¿ÉÓÃ³Ö²ÖÈ«²¿ÖÃÎª0
+				//æœ‰ä»“ä½ï¼Œä½†æ˜¯ä¿è¯é‡‘ä¸º0ï¼Œåˆ™è¯´æ˜æ˜¯å¥—åˆ©åˆçº¦ï¼Œå•ä¸ªåˆçº¦çš„å¯ç”¨æŒä»“å…¨éƒ¨ç½®ä¸º0
 				pos->setAvailNewPos(0);
 				pos->setAvailPrePos(0);
 			}
@@ -1249,15 +1249,15 @@ WTSTradeInfo* TraderCTP::makeTradeRecord(CThostFtdcTradeField *tradeField)
 
 	//if(uDate == m_pContractMgr->getTradingDate())
 	//{
-	//	//Èç¹ûµ±Ç°ÈÕÆÚºÍ½»Ò×ÈÕÒ»ÖÂ£¬ÇÒÊ±¼ä´óÓÚ21µã£¬ËµÃ÷ÊÇÒ¹ÅÌ£¬Ò²¾ÍÊÇÊµ¼ÊÈÕÆÚÒªµ¥¶À¼ÆËã
+	//	//å¦‚æœå½“å‰æ—¥æœŸå’Œäº¤æ˜“æ—¥ä¸€è‡´ï¼Œä¸”æ—¶é—´å¤§äº21ç‚¹ï¼Œè¯´æ˜æ˜¯å¤œç›˜ï¼Œä¹Ÿå°±æ˜¯å®é™…æ—¥æœŸè¦å•ç‹¬è®¡ç®—
 	//	if (uTime / 10000 >= 21)
 	//	{
 	//		uDate = m_pMarketMgr->getPrevTDate(commInfo->getExchg(), uDate, 1);
 	//	}
 	//	else if(uTime <= 3)
 	//	{
-	//		//Èç¹ûÔÚ3µãÒÔÄÚ£¬¾ÍÒªÏÈ»ñÈ¡ÉÏÒ»¸ö½»Ò×ÈÕ£¬ÔÙ»ñÈ¡ÏÂÒ»¸ö×ÔÈ»ÈÕ
-	//		//ÕâÑù×öµÄÄ¿µÄÊÇ£¬Óöµ½ÖÜÎåÍíÉÏµÄÇé¿ö£¬¿ÉÒÔ´¦Àí¹ıÀ´
+	//		//å¦‚æœåœ¨3ç‚¹ä»¥å†…ï¼Œå°±è¦å…ˆè·å–ä¸Šä¸€ä¸ªäº¤æ˜“æ—¥ï¼Œå†è·å–ä¸‹ä¸€ä¸ªè‡ªç„¶æ—¥
+	//		//è¿™æ ·åšçš„ç›®çš„æ˜¯ï¼Œé‡åˆ°å‘¨äº”æ™šä¸Šçš„æƒ…å†µï¼Œå¯ä»¥å¤„ç†è¿‡æ¥
 	//		uDate = m_pMarketMgr->getPrevTDate(commInfo->getExchg(), uDate, 1);
 	//		uDate = TimeUtils::getNextDate(uDate);
 	//	}
@@ -1351,7 +1351,7 @@ int TraderCTP::queryConfirm()
 		int iResult = m_pUserAPI->ReqQrySettlementInfoConfirm(&req, genRequestID());
 		if (iResult != 0)
 		{
-			m_traderSink->handleTraderLog(LL_ERROR, "[%s-%s]²éÑ¯ÕË»§½áËãÈ·ÈÏÇëÇó·¢ËÍÊ§°Ü, ´íÎóÂë:%d", m_strBroker.c_str(), m_strUser.c_str(), iResult);
+			m_traderSink->handleTraderLog(LL_ERROR, "[%s-%s]æŸ¥è¯¢è´¦æˆ·ç»“ç®—ç¡®è®¤è¯·æ±‚å‘é€å¤±è´¥, é”™è¯¯ç :%d", m_strBroker.c_str(), m_strUser.c_str(), iResult);
 		}
 	});
 
@@ -1379,7 +1379,7 @@ int TraderCTP::confirm()
 	int iResult = m_pUserAPI->ReqSettlementInfoConfirm(&req, genRequestID());
 	if (iResult != 0)
 	{
-		m_traderSink->handleTraderLog(LL_ERROR, "[%s-%s]È·ÈÏ½áËãĞÅÏ¢ÇëÇó·¢ËÍÊ§°Ü, ´íÎóÂë:%d", m_strBroker.c_str(), m_strUser.c_str(), iResult);
+		m_traderSink->handleTraderLog(LL_ERROR, "[%s-%s]ç¡®è®¤ç»“ç®—ä¿¡æ¯è¯·æ±‚å‘é€å¤±è´¥, é”™è¯¯ç :%d", m_strBroker.c_str(), m_strUser.c_str(), iResult);
 		return -1;
 	}
 

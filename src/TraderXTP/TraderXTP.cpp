@@ -671,26 +671,26 @@ void TraderXTP::reconnect()
 	std::stringstream ss;
 	ss << "./xtpdata/flows/" << _user << "/";
 	boost::filesystem::create_directories(ss.str().c_str());
-	_api = m_funcCreator(_client, ss.str().c_str(), XTP_LOG_LEVEL_DEBUG);			// ´´½¨UserApi
+	_api = m_funcCreator(_client, ss.str().c_str(), XTP_LOG_LEVEL_DEBUG);			// åˆ›å»ºUserApi
 	if (_api == NULL)
 	{
 		if (_sink)
 			_sink->handleEvent(WTE_Connect, -1);
-		_sink->handleTraderLog(LL_ERROR, "[TraderrXTP]½»Ò×Ä£¿é³õÊ¼»¯Ê§°Ü");
+		_sink->handleTraderLog(LL_ERROR, "[TraderrXTP]äº¤æ˜“æ¨¡å—åˆå§‹åŒ–å¤±è´¥");
 
 		StdThreadPtr thrd(new StdThread([this](){
 			std::this_thread::sleep_for(std::chrono::seconds(2));
-			_sink->handleTraderLog(LL_WARN, "[TraderrXTP]ÕËºÅ%sÕýÔÚÖØÁ¬¡­¡­", _user.c_str());
+			_sink->handleTraderLog(LL_WARN, "[TraderrXTP]è´¦å·%sæ­£åœ¨é‡è¿žâ€¦â€¦", _user.c_str());
 			reconnect();
 		}));
 		return;
 	}
 
 	_api->SubscribePublicTopic(_quick ? XTP_TERT_QUICK : XTP_TERT_RESUME);
-	_api->SetSoftwareVersion("1.0.0"); //Éè¶¨´ËÈí¼þµÄ¿ª·¢°æ±¾ºÅ£¬ÓÃ»§×Ô¶¨Òå
-	_api->SetSoftwareKey(_acckey.c_str());//Éè¶¨ÓÃ»§µÄ¿ª·¢´úÂë£¬ÔÚXTPÉêÇë¿ª»§Ê±£¬ÓÉxtpÈËÔ±Ìá¹©
-	_api->SetHeartBeatInterval(15);//Éè¶¨½»Ò×·þÎñÆ÷³¬Ê±Ê±¼ä£¬µ¥Î»ÎªÃë£¬´ËÎª1.1.16ÐÂÔö½Ó¿Ú
-	_api->RegisterSpi(this);						// ×¢²áÊÂ¼þ
+	_api->SetSoftwareVersion("1.0.0"); //è®¾å®šæ­¤è½¯ä»¶çš„å¼€å‘ç‰ˆæœ¬å·ï¼Œç”¨æˆ·è‡ªå®šä¹‰
+	_api->SetSoftwareKey(_acckey.c_str());//è®¾å®šç”¨æˆ·çš„å¼€å‘ä»£ç ï¼Œåœ¨XTPç”³è¯·å¼€æˆ·æ—¶ï¼Œç”±xtpäººå‘˜æä¾›
+	_api->SetHeartBeatInterval(15);//è®¾å®šäº¤æ˜“æœåŠ¡å™¨è¶…æ—¶æ—¶é—´ï¼Œå•ä½ä¸ºç§’ï¼Œæ­¤ä¸º1.1.16æ–°å¢žæŽ¥å£
+	_api->RegisterSpi(this);						// æ³¨å†Œäº‹ä»¶
 
 	if (_sink)
 		_sink->handleEvent(WTE_Connect, 0);
@@ -765,7 +765,7 @@ int TraderXTP::login(const char* user, const char* pass, const char* productInfo
 	if (iResult == 0)
 	{
 		auto error_info = _api->GetApiLastError();
-		_sink->handleTraderLog(LL_ERROR, "[TraderXTP]µÇÂ¼Ê§°Ü:%s", error_info->error_msg);
+		_sink->handleTraderLog(LL_ERROR, "[TraderXTP]ç™»å½•å¤±è´¥:%s", error_info->error_msg);
 		std::string msg = error_info->error_msg;
 		_state = TS_LOGINFAILED;
 		_asyncio.post([this, msg]{
@@ -788,15 +788,15 @@ int TraderXTP::login(const char* user, const char* pass, const char* productInfo
 		uint32_t lastDate = _ini.readUInt("marker", "date", 0);
 		if (lastDate != _tradingday)
 		{
-			//½»Ò×ÈÕ²»Í¬£¬ÇåÀíµôÔ­À´µÄÊý¾Ý
+			//äº¤æ˜“æ—¥ä¸åŒï¼Œæ¸…ç†æŽ‰åŽŸæ¥çš„æ•°æ®
 			_ini.removeSection(ORDER_SECTION);
 			_ini.writeUInt("marker", "date", _tradingday);
 			_ini.save();
 
-			_sink->handleTraderLog(LL_INFO, "[%s]½»Ò×ÈÕÒÑÇÐ»»[%u -> %u]£¬Çå¿Õ±¾µØÊý¾Ý»º´æ¡­¡­", _user.c_str(), lastDate, _tradingday);
+			_sink->handleTraderLog(LL_INFO, "[%s]äº¤æ˜“æ—¥å·²åˆ‡æ¢[%u -> %u]ï¼Œæ¸…ç©ºæœ¬åœ°æ•°æ®ç¼“å­˜â€¦â€¦", _user.c_str(), lastDate, _tradingday);
 		}		
 
-		_sink->handleTraderLog(LL_INFO, "[%s]ÕË»§µÇÂ¼³É¹¦£¬½»Ò×ÈÕ£º%u¡­¡­", _user.c_str(), _tradingday);
+		_sink->handleTraderLog(LL_INFO, "[%s]è´¦æˆ·ç™»å½•æˆåŠŸï¼Œäº¤æ˜“æ—¥ï¼š%uâ€¦â€¦", _user.c_str(), _tradingday);
 
 		_state = TS_LOGINED;
 		_asyncio.post([this]{
@@ -847,7 +847,7 @@ int TraderXTP::orderInsert(WTSEntrust* entrust)
 	if (iResult == 0)
 	{
 		auto error_info = _api->GetApiLastError();
-		_sink->handleTraderLog(LL_ERROR, "[TraderXTP]²åÈë¶©µ¥Ê§°Ü:%s", error_info->error_msg);
+		_sink->handleTraderLog(LL_ERROR, "[TraderXTP]æ’å…¥è®¢å•å¤±è´¥:%s", error_info->error_msg);
 	}
 
 	return 0;
@@ -864,7 +864,7 @@ int TraderXTP::orderAction(WTSEntrustAction* action)
 	if (iResult != 0)
 	{
 		auto error_info = _api->GetApiLastError();
-		_sink->handleTraderLog(LL_ERROR, "[TraderXTP]³·Ïú¶©µ¥Ê§°Ü:%s", error_info->error_msg);
+		_sink->handleTraderLog(LL_ERROR, "[TraderXTP]æ’¤é”€è®¢å•å¤±è´¥:%s", error_info->error_msg);
 	}
 
 	return 0;
@@ -881,7 +881,7 @@ int TraderXTP::queryAccount()
 	if (iResult != 0)
 	{
 		auto error_info = _api->GetApiLastError();
-		_sink->handleTraderLog(LL_ERROR, "[TraderXTP]×Ê½ð²éÑ¯Ê§°Ü:%s", error_info->error_msg);
+		_sink->handleTraderLog(LL_ERROR, "[TraderXTP]èµ„é‡‘æŸ¥è¯¢å¤±è´¥:%s", error_info->error_msg);
 	}
 
 	return 0;
@@ -893,7 +893,7 @@ int TraderXTP::queryPositions()
 	if (iResult != 0)
 	{
 		auto error_info = _api->GetApiLastError();
-		_sink->handleTraderLog(LL_ERROR, "[TraderXTP]³Ö²Ö²éÑ¯Ê§°Ü:%s", error_info->error_msg);
+		_sink->handleTraderLog(LL_ERROR, "[TraderXTP]æŒä»“æŸ¥è¯¢å¤±è´¥:%s", error_info->error_msg);
 	}
 
 	return 0;
@@ -907,7 +907,7 @@ int TraderXTP::queryOrders()
 	if (iResult != 0)
 	{
 		auto error_info = _api->GetApiLastError();
-		_sink->handleTraderLog(LL_ERROR, "[TraderXTP]¶©µ¥²éÑ¯Ê§°Ü:%s", error_info->error_msg);
+		_sink->handleTraderLog(LL_ERROR, "[TraderXTP]è®¢å•æŸ¥è¯¢å¤±è´¥:%s", error_info->error_msg);
 	}
 
 	return 0;
@@ -921,7 +921,7 @@ int TraderXTP::queryTrades()
 	if (iResult != 0)
 	{
 		auto error_info = _api->GetApiLastError();
-		_sink->handleTraderLog(LL_ERROR, "[TraderXTP]³É½»²éÑ¯Ê§°Ü:%s", error_info->error_msg);
+		_sink->handleTraderLog(LL_ERROR, "[TraderXTP]æˆäº¤æŸ¥è¯¢å¤±è´¥:%s", error_info->error_msg);
 	}
 
 	return 0;

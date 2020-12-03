@@ -40,8 +40,8 @@ void WtSimpleRiskMon::init(WtPortContext* ctx, WTSVariant* cfg)
 	_base_amount = cfg->getDouble("base_amount");
 	_risk_scale = cfg->getDouble("risk_scale");
 
-	ctx->writeRiskLog("²ÎÊý³õÊ¼»¯Íê³É, ¼à¿ØÊ±¼ä¼ä¸ô: %u Ãë, ÈÕÄÚ»Ø³·: %s(%.2f%%), ¶àÈÕ»Ø³·: %s(%.2f%%), ×Ê½ð»ùÊý: %.1f, ÃÅ¼÷Ó¯Àû: %.2f%%, »Ø³·Ê±ÏÞ: %u mins, ·çÏÕ¿ØÖÆÏµÊý: %.2f",
-		_calc_span, _inner_day_active ? "¿ªÆô" : "¹Ø±Õ", _inner_day_fd, _multi_day_active ? "¿ªÆô" : "¹Ø±Õ", _multi_day_fd, _base_amount, _basic_ratio, _risk_span, _risk_scale);
+	ctx->writeRiskLog("å‚æ•°åˆå§‹åŒ–å®Œæˆ, ç›‘æŽ§æ—¶é—´é—´éš”: %u ç§’, æ—¥å†…å›žæ’¤: %s(%.2f%%), å¤šæ—¥å›žæ’¤: %s(%.2f%%), èµ„é‡‘åŸºæ•°: %.1f, é—¨æ§›ç›ˆåˆ©: %.2f%%, å›žæ’¤æ—¶é™: %u mins, é£Žé™©æŽ§åˆ¶ç³»æ•°: %.2f",
+		_calc_span, _inner_day_active ? "å¼€å¯" : "å…³é—­", _inner_day_fd, _multi_day_active ? "å¼€å¯" : "å…³é—­", _multi_day_fd, _base_amount, _basic_ratio, _risk_span, _risk_scale);
 }
 
 void WtSimpleRiskMon::run()
@@ -57,14 +57,14 @@ void WtSimpleRiskMon::run()
 				WTSPortFundInfo* fundInfo = _ctx->getFundInfo();
 				const WTSFundStruct& fs = fundInfo->fundInfo();
 				/*
-				* Ìõ¼þ1: ÕûÌåÅÌ×ÓµÄ¸¡¶¯ÊÕÒæ±ÈÉÏÒ»½»Ò×ÈÕ½áÊøÊ±£¨ÊÕÅÌ¼Û¼Æ£©, Ôö³¤ 1% ÒÔÉÏ
-				*		×éºÏÅÌµÄ¶¯Ì¬È¨Òæ ¡Ý ÉÏÈÕÊÕÅÌÊ±µÄ¶¯Ì¬È¨ÒæµÄ 101%
-				* Ìõ¼þ2: 30minÒÔÄÚ, ´Ó½ñÈÕ¸ßµã»Øµ÷µ½ 80%ÒÔÏÂ
-				*		30minÒÔÄÚ, ½ñÈÕÊÕÒæ´Ó¸ßµã»Øµ÷µ½ 80%ÒÔÏÂ
+				* æ¡ä»¶1: æ•´ä½“ç›˜å­çš„æµ®åŠ¨æ”¶ç›Šæ¯”ä¸Šä¸€äº¤æ˜“æ—¥ç»“æŸæ—¶ï¼ˆæ”¶ç›˜ä»·è®¡ï¼‰, å¢žé•¿ 1% ä»¥ä¸Š
+				*		ç»„åˆç›˜çš„åŠ¨æ€æƒç›Š â‰¥ ä¸Šæ—¥æ”¶ç›˜æ—¶çš„åŠ¨æ€æƒç›Šçš„ 101%
+				* æ¡ä»¶2: 30minä»¥å†…, ä»Žä»Šæ—¥é«˜ç‚¹å›žè°ƒåˆ° 80%ä»¥ä¸‹
+				*		30minä»¥å†…, ä»Šæ—¥æ”¶ç›Šä»Žé«˜ç‚¹å›žè°ƒåˆ° 80%ä»¥ä¸‹
 				*
-				* ¶¯×÷: 
-				* ·½Ê½A:  ËùÓÐÆ·ÖÖ¼õ²Ö£¨¼õÉÙµ½ 30% ²ÖÎ»£©, ÏÂÒ»½»Ò×ÈÕÖØÐÂ°´²ßÂÔÐÂ²ÖÎ»²¹Æë
-				* ·½Ê½B:  ËùÓÐÓ¯ÀûÆ·ÖÖ¶¼ Æ½²Ö, ÏÂÒ»½»Ò×ÈÕÖØÐÂ°´²ßÂÔÐÂ²ÖÎ»²¹Æë
+				* åŠ¨ä½œ: 
+				* æ–¹å¼A:  æ‰€æœ‰å“ç§å‡ä»“ï¼ˆå‡å°‘åˆ° 30% ä»“ä½ï¼‰, ä¸‹ä¸€äº¤æ˜“æ—¥é‡æ–°æŒ‰ç­–ç•¥æ–°ä»“ä½è¡¥é½
+				* æ–¹å¼B:  æ‰€æœ‰ç›ˆåˆ©å“ç§éƒ½ å¹³ä»“, ä¸‹ä¸€äº¤æ˜“æ—¥é‡æ–°æŒ‰ç­–ç•¥æ–°ä»“ä½è¡¥é½
 				*/
 
 				if (_inner_day_active && fs._max_dyn_bal != DBL_MAX)
@@ -81,29 +81,29 @@ void WtSimpleRiskMon::run()
 					{
 						
 						/*
-						 *	ÕâÀïÒª×ª³ÉÈÕÄÚ·ÖÖÓÊý´¦Àí
-						 *	²»È»Èç¹ûÓöµ½ÎçÅÌÆô¶¯»òÔçÅÌÆô¶¯, 
-						 *	¿ÉÄÜ»áÒòÎªÖÐÍ¾ÐÝÏ¢Ê±¼ä¹ý³¤, ¶ø²»´¥·¢·ç¿Ø
-						 *	µ¼ÖÂ¸ü´ó·çÏÕµÄ·¢Éú
+						 *	è¿™é‡Œè¦è½¬æˆæ—¥å†…åˆ†é’Ÿæ•°å¤„ç†
+						 *	ä¸ç„¶å¦‚æžœé‡åˆ°åˆç›˜å¯åŠ¨æˆ–æ—©ç›˜å¯åŠ¨, 
+						 *	å¯èƒ½ä¼šå› ä¸ºä¸­é€”ä¼‘æ¯æ—¶é—´è¿‡é•¿, è€Œä¸è§¦å‘é£ŽæŽ§
+						 *	å¯¼è‡´æ›´å¤§é£Žé™©çš„å‘ç”Ÿ
 						 */
 						uint32_t maxTime = _ctx->transTimeToMin(fundInfo->max_dynbal_time());	
-						uint32_t curTime = _ctx->transTimeToMin(_ctx->getCurTime());			//×ª³ÉÈÕÄÚ·ÖÖÓÊý
+						uint32_t curTime = _ctx->transTimeToMin(_ctx->getCurTime());			//è½¬æˆæ—¥å†…åˆ†é’Ÿæ•°
 
 						if (rate >= _inner_day_fd && curTime - maxTime <= _risk_span && !_limited)
 						{
-							_ctx->writeRiskLog("µ±Ç°ÈÕÄÚÓ¯Àû»Ø³· %.2f%%, ³¬¹ý×î´óÈÕÄÚ»Ø³· %.2f%%, ²ÖÎ»±ÈÀý½µµ½ %.1f%%", rate, _inner_day_fd, _risk_scale);
+							_ctx->writeRiskLog("å½“å‰æ—¥å†…ç›ˆåˆ©å›žæ’¤ %.2f%%, è¶…è¿‡æœ€å¤§æ—¥å†…å›žæ’¤ %.2f%%, ä»“ä½æ¯”ä¾‹é™åˆ° %.1f%%", rate, _inner_day_fd, _risk_scale);
 							_ctx->setVolScale(_risk_scale);
 							_limited = true;
 						}
 						else
 						{
-							_ctx->writeRiskLog("µ±Ç°Ó¯ÀûÂÊ: %.2f%%, ÈÕÄÚÓ¯Àû»Ø³·ÂÊ: %.2f%%", curBal*100.0 / predynbal, rate);
+							_ctx->writeRiskLog("å½“å‰ç›ˆåˆ©çŽ‡: %.2f%%, æ—¥å†…ç›ˆåˆ©å›žæ’¤çŽ‡: %.2f%%", curBal*100.0 / predynbal, rate);
 							//_limited = false;
 						}
 					}
 					else
 					{
-						_ctx->writeRiskLog("µ±Ç°Ó¯ÀûÂÊ: %.2f%%, ÈÕÄÚÓ¯Àû»Ø³·ÂÊ: %.2f%%", curBal*100.0 / predynbal, rate);
+						_ctx->writeRiskLog("å½“å‰ç›ˆåˆ©çŽ‡: %.2f%%, æ—¥å†…ç›ˆåˆ©å›žæ’¤çŽ‡: %.2f%%", curBal*100.0 / predynbal, rate);
 						//_limited = false;
 					}
 				}
@@ -118,7 +118,7 @@ void WtSimpleRiskMon::run()
 						double rate = (maxBal - curBal) * 100 / maxBal;
 						if (rate >= _multi_day_fd)
 						{
-							_ctx->writeRiskLog("µ±Ç°¶àÈÕ¸ßµã»Ø³· %.2f%%, ³¬¹ý×î´ó¶àÈÕ»Ø³· %.2f%%, ²ÖÎ»±ÈÀý½µµ½ 0.0%%", rate, _multi_day_fd);
+							_ctx->writeRiskLog("å½“å‰å¤šæ—¥é«˜ç‚¹å›žæ’¤ %.2f%%, è¶…è¿‡æœ€å¤§å¤šæ—¥å›žæ’¤ %.2f%%, ä»“ä½æ¯”ä¾‹é™åˆ° 0.0%%", rate, _multi_day_fd);
 							_ctx->setVolScale(0.0);
 						}
 					}

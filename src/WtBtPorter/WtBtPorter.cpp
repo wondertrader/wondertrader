@@ -209,7 +209,7 @@ CtxHandler init_sel_mocker(const char* name, uint32_t date, uint32_t time, const
 	return getRunner().initSelMocker(name, date, time, period);
 }
 
-#pragma region "CTA²ßÂÔ½Ó¿Ú"
+#pragma region "CTAç­–ç•¥æ¥å£"
 void cta_enter_long(CtxHandler cHandle, const char* stdCode, double qty, const char* userTag, double limitprice, double stopprice)
 {
 	CtaMocker* ctx = getRunner().cta_mocker();
@@ -257,7 +257,7 @@ WtUInt32 cta_get_bars(CtxHandler cHandle, const char* stdCode, const char* perio
 		WTSKlineSlice* kData = ctx->stra_get_bars(stdCode, period, barCnt, isMain);
 		if (kData)
 		{
-			//printf("KÏßÌõÊı%u\r\n", kData->size());
+			//printf("Kçº¿æ¡æ•°%u\r\n", kData->size());
 			uint32_t left = barCnt + 1;
 			uint32_t reaCnt = 0;
 			for (int32_t idx = 0; idx < kData->size() && left > 0; idx++, left--)
@@ -267,7 +267,7 @@ WtUInt32 cta_get_bars(CtxHandler cHandle, const char* stdCode, const char* perio
 				reaCnt += 1;
 			}
 
-			//printf("Êı¾İÒÑ¶ÁÍê\r\n");
+			//printf("æ•°æ®å·²è¯»å®Œ\r\n");
 			cb(cHandle, stdCode, period, NULL, true);
 
 			kData->release();
@@ -275,14 +275,14 @@ WtUInt32 cta_get_bars(CtxHandler cHandle, const char* stdCode, const char* perio
 		}
 		else
 		{
-			//printf("KÏßÌõÊı0\r\n");
+			//printf("Kçº¿æ¡æ•°0\r\n");
 			cb(cHandle, stdCode, period, NULL, true);
 			return 0;
 		}
 	}
 	catch(...)
 	{
-		printf("KÏß¶ÁÈ¡Òì³£\r\n");
+		printf("Kçº¿è¯»å–å¼‚å¸¸\r\n");
 		cb(cHandle, stdCode, period, NULL, true);
 		return 0;
 	}
@@ -299,7 +299,7 @@ WtUInt32	cta_get_ticks(CtxHandler cHandle, const char* stdCode, unsigned int tic
 		WTSTickSlice* tData = ctx->stra_get_ticks(stdCode, tickCnt);
 		if (tData)
 		{
-			//printf("KÏßÌõÊı%u\r\n", kData->size());
+			//printf("Kçº¿æ¡æ•°%u\r\n", kData->size());
 			uint32_t left = tickCnt + 1;
 			uint32_t reaCnt = 0;
 			for (uint32_t idx = 0; idx < tData->size() && left > 0; idx++, left--)
@@ -309,7 +309,7 @@ WtUInt32	cta_get_ticks(CtxHandler cHandle, const char* stdCode, unsigned int tic
 				reaCnt += 1;
 			}
 
-			//printf("Êı¾İÒÑ¶ÁÍê\r\n");
+			//printf("æ•°æ®å·²è¯»å®Œ\r\n");
 			cb(cHandle, stdCode, NULL, true);
 
 			tData->release();
@@ -317,14 +317,14 @@ WtUInt32	cta_get_ticks(CtxHandler cHandle, const char* stdCode, unsigned int tic
 		}
 		else
 		{
-			//printf("KÏßÌõÊı0\r\n");
+			//printf("Kçº¿æ¡æ•°0\r\n");
 			cb(cHandle, stdCode, NULL, true);
 			return 0;
 		}
 	}
 	catch (...)
 	{
-		printf("tick¶ÁÈ¡Òì³£\r\n");
+		printf("tickè¯»å–å¼‚å¸¸\r\n");
 		cb(cHandle, stdCode, NULL, true);
 		return 0;
 	}
@@ -470,9 +470,9 @@ void cta_sub_ticks(CtxHandler cHandle, const char* stdCode)
 
 	ctx->stra_sub_ticks(stdCode);
 }
-#pragma endregion "CTA²ßÂÔ½Ó¿Ú"
+#pragma endregion "CTAç­–ç•¥æ¥å£"
 
-#pragma region "Ñ¡¹É²ßÂÔ½Ó¿Ú"
+#pragma region "é€‰è‚¡ç­–ç•¥æ¥å£"
 void sel_save_userdata(CtxHandler cHandle, const char* key, const char* val)
 {
 	SelMocker* ctx = getRunner().sel_mocker();
@@ -534,7 +534,7 @@ WtUInt32 sel_get_bars(CtxHandler cHandle, const char* stdCode, const char* perio
 		WTSKlineSlice* kData = ctx->stra_get_bars(stdCode, period, barCnt);
 		if (kData)
 		{
-			//printf("KÏßÌõÊı%u\r\n", kData->size());
+			//printf("Kçº¿æ¡æ•°%u\r\n", kData->size());
 			uint32_t left = barCnt;
 			uint32_t reaCnt = 0;
 			for (int32_t idx = 0; idx < kData->size() && left > 0; idx++, left--)
@@ -544,7 +544,7 @@ WtUInt32 sel_get_bars(CtxHandler cHandle, const char* stdCode, const char* perio
 				reaCnt += 1;
 			}
 
-			//printf("Êı¾İÒÑ¶ÁÍê\r\n");
+			//printf("æ•°æ®å·²è¯»å®Œ\r\n");
 			cb(cHandle, stdCode, period, NULL, true);
 
 			kData->release();
@@ -552,14 +552,14 @@ WtUInt32 sel_get_bars(CtxHandler cHandle, const char* stdCode, const char* perio
 		}
 		else
 		{
-			//printf("KÏßÌõÊı0\r\n");
+			//printf("Kçº¿æ¡æ•°0\r\n");
 			cb(cHandle, stdCode, period, NULL, true);
 			return 0;
 		}
 	}
 	catch (...)
 	{
-		printf("KÏß¶ÁÈ¡Òì³£\r\n");
+		printf("Kçº¿è¯»å–å¼‚å¸¸\r\n");
 		cb(cHandle, stdCode, period, NULL, true);
 		return 0;
 	}
@@ -571,7 +571,7 @@ void sel_set_position(CtxHandler cHandle, const char* stdCode, double qty, const
 	if (ctx == NULL)
 		return;
 
-	//¶àÒò×ÓÒıÇæ£¬ÏŞ¼ÛºÍÖ¹¼Û¶¼ÎŞĞ§
+	//å¤šå› å­å¼•æ“ï¼Œé™ä»·å’Œæ­¢ä»·éƒ½æ— æ•ˆ
 	ctx->stra_set_position(stdCode, qty, userTag);
 }
 
@@ -585,7 +585,7 @@ WtUInt32	sel_get_ticks(CtxHandler cHandle, const char* stdCode, unsigned int tic
 		WTSTickSlice* tData = ctx->stra_get_ticks(stdCode, tickCnt);
 		if (tData)
 		{
-			//printf("KÏßÌõÊı%u\r\n", kData->size());
+			//printf("Kçº¿æ¡æ•°%u\r\n", kData->size());
 			uint32_t left = tickCnt + 1;
 			uint32_t reaCnt = 0;
 			for (uint32_t idx = 0; idx < tData->size() && left > 0; idx++, left--)
@@ -595,7 +595,7 @@ WtUInt32	sel_get_ticks(CtxHandler cHandle, const char* stdCode, unsigned int tic
 				reaCnt += 1;
 			}
 
-			//printf("Êı¾İÒÑ¶ÁÍê\r\n");
+			//printf("æ•°æ®å·²è¯»å®Œ\r\n");
 			cb(cHandle, stdCode, NULL, true);
 
 			tData->release();
@@ -603,14 +603,14 @@ WtUInt32	sel_get_ticks(CtxHandler cHandle, const char* stdCode, unsigned int tic
 		}
 		else
 		{
-			//printf("KÏßÌõÊı0\r\n");
+			//printf("Kçº¿æ¡æ•°0\r\n");
 			cb(cHandle, stdCode, NULL, true);
 			return 0;
 		}
 	}
 	catch (...)
 	{
-		printf("tick¶ÁÈ¡Òì³£\r\n");
+		printf("tickè¯»å–å¼‚å¸¸\r\n");
 		cb(cHandle, stdCode, NULL, true);
 		return 0;
 	}
@@ -625,9 +625,9 @@ void sel_sub_ticks(CtxHandler cHandle, const char* stdCode)
 	ctx->stra_sub_ticks(stdCode);
 }
 
-#pragma endregion "Ñ¡¹É²ßÂÔ½Ó¿Ú"
+#pragma endregion "é€‰è‚¡ç­–ç•¥æ¥å£"
 
-#pragma region "HFT²ßÂÔ½Ó¿Ú"
+#pragma region "HFTç­–ç•¥æ¥å£"
 double hft_get_position(CtxHandler cHandle, const char* stdCode)
 {
 	HftMocker* mocker = getRunner().hft_mocker();
@@ -677,7 +677,7 @@ WtUInt32 hft_get_bars(CtxHandler cHandle, const char* stdCode, const char* perio
 		WTSKlineSlice* kData = mocker->stra_get_bars(stdCode, period, barCnt);
 		if (kData)
 		{
-			//printf("KÏßÌõÊı%u\r\n", kData->size());
+			//printf("Kçº¿æ¡æ•°%u\r\n", kData->size());
 			uint32_t left = barCnt + 1;
 			uint32_t reaCnt = 0;
 			for (int32_t idx = 0; idx < kData->size() && left > 0; idx++, left--)
@@ -687,7 +687,7 @@ WtUInt32 hft_get_bars(CtxHandler cHandle, const char* stdCode, const char* perio
 				reaCnt += 1;
 			}
 
-			//printf("Êı¾İÒÑ¶ÁÍê\r\n");
+			//printf("æ•°æ®å·²è¯»å®Œ\r\n");
 			cb(cHandle, stdCode, period, NULL, true);
 
 			kData->release();
@@ -695,7 +695,7 @@ WtUInt32 hft_get_bars(CtxHandler cHandle, const char* stdCode, const char* perio
 		}
 		else
 		{
-			//printf("KÏßÌõÊı0\r\n");
+			//printf("Kçº¿æ¡æ•°0\r\n");
 			cb(cHandle, stdCode, period, NULL, true);
 			return 0;
 		}
@@ -717,7 +717,7 @@ WtUInt32 hft_get_ticks(CtxHandler cHandle, const char* stdCode, unsigned int tic
 		WTSTickSlice* tData = mocker->stra_get_ticks(stdCode, tickCnt);
 		if (tData)
 		{
-			//printf("KÏßÌõÊı%u\r\n", kData->size());
+			//printf("Kçº¿æ¡æ•°%u\r\n", kData->size());
 			uint32_t left = tickCnt + 1;
 			uint32_t reaCnt = 0;
 			for (uint32_t idx = 0; idx < tData->size() && left > 0; idx++, left--)
@@ -727,7 +727,7 @@ WtUInt32 hft_get_ticks(CtxHandler cHandle, const char* stdCode, unsigned int tic
 				reaCnt += 1;
 			}
 
-			//printf("Êı¾İÒÑ¶ÁÍê\r\n");
+			//printf("æ•°æ®å·²è¯»å®Œ\r\n");
 			cb(cHandle, stdCode, NULL, true);
 
 			tData->release();
@@ -735,7 +735,7 @@ WtUInt32 hft_get_ticks(CtxHandler cHandle, const char* stdCode, unsigned int tic
 		}
 		else
 		{
-			//printf("KÏßÌõÊı0\r\n");
+			//printf("Kçº¿æ¡æ•°0\r\n");
 			cb(cHandle, stdCode, NULL, true);
 			return 0;
 		}
@@ -851,4 +851,4 @@ WtString hft_load_userdata(CtxHandler cHandle, const char* key, const char* defV
 
 	return mocker->stra_load_user_data(key, defVal);
 }
-#pragma endregion "HFT²ßÂÔ½Ó¿Ú"
+#pragma endregion "HFTç­–ç•¥æ¥å£"

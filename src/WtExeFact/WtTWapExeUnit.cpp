@@ -62,9 +62,9 @@ void WtTWapExeUnit::init(ExecuteContext* ctx, const char* stdCode, WTSVariant* c
 	_price_mode = cfg->getUInt32("price_mode");
 	_price_offset = cfg->getUInt32("price_offset");
 
-	_fire_span = (_total_secs - _tail_secs) / _total_times;		//µ¥´Î·¢µ¥Ê±¼ä¼ä¸ô£¬ÒªÈ¥µôÎ²²¿Ê±¼ä¼ÆËã£¬ÕâÑùµÄ»°£¬×îºóÊ£ÓàµÄÊýÁ¿¾ÍÓÐÒ»¸ö¶µµ×·¢µ¥µÄ»úÖÆÁË
+	_fire_span = (_total_secs - _tail_secs) / _total_times;		//å•æ¬¡å‘å•æ—¶é—´é—´éš”ï¼Œè¦åŽ»æŽ‰å°¾éƒ¨æ—¶é—´è®¡ç®—ï¼Œè¿™æ ·çš„è¯ï¼Œæœ€åŽå‰©ä½™çš„æ•°é‡å°±æœ‰ä¸€ä¸ªå…œåº•å‘å•çš„æœºåˆ¶äº†
 
-	ctx->writeLog("Ö´ÐÐµ¥ÔªWtTWapExeUnit[%s] ³õÊ¼»¯Íê³É£¬¶©µ¥³¬Ê± %u Ãë£¬Ö´ÐÐÊ±ÏÞ %u Ãë£¬ÊÕÎ²Ê±¼ä %u Ãë", stdCode, _ord_sticky, _total_secs, _tail_secs);
+	ctx->writeLog("æ‰§è¡Œå•å…ƒWtTWapExeUnit[%s] åˆå§‹åŒ–å®Œæˆï¼Œè®¢å•è¶…æ—¶ %u ç§’ï¼Œæ‰§è¡Œæ—¶é™ %u ç§’ï¼Œæ”¶å°¾æ—¶é—´ %u ç§’", stdCode, _ord_sticky, _total_secs, _tail_secs);
 }
 
 void WtTWapExeUnit::on_order(uint32_t localid, const char* stdCode, bool isBuy, double leftover, double price, bool isCanceled)
@@ -83,13 +83,13 @@ void WtTWapExeUnit::on_order(uint32_t localid, const char* stdCode, bool isBuy, 
 		_ctx->writeLog("@ %d cancelcnt -> %u", __LINE__, _cancel_cnt);
 	}
 
-	//Èç¹ûÈ«²¿¶©µ¥ÒÑ³·Ïú£¬Õâ¸öÊ±ºòÒ»°ãÊÇÓöµ½Òª³¬Ê±³·µ¥
+	//å¦‚æžœå…¨éƒ¨è®¢å•å·²æ’¤é”€ï¼Œè¿™ä¸ªæ—¶å€™ä¸€èˆ¬æ˜¯é‡åˆ°è¦è¶…æ—¶æ’¤å•
 	if (isCanceled && _cancel_cnt == 0)
 	{
 		double realPos = _ctx->getPosition(stdCode);
 		if(!decimal::eq(realPos, _this_target))
 		{
-			//³·µ¥ÒÔºóÖØ·¢£¬Ò»°ãÊÇ¼ÓµãÖØ·¢
+			//æ’¤å•ä»¥åŽé‡å‘ï¼Œä¸€èˆ¬æ˜¯åŠ ç‚¹é‡å‘
 			fire_at_once(_this_target - realPos);
 		}
 	}
@@ -101,8 +101,8 @@ void WtTWapExeUnit::on_channel_ready()
 	double undone = _ctx->getUndoneQty(_code.c_str());
 	if (undone != 0 && _orders.empty())
 	{
-		//ÕâËµÃ÷ÓÐÎ´Íê³Éµ¥²»ÔÚ¼à¿ØÖ®ÖÐ£¬ÏÈ³·µô
-		_ctx->writeLog("%sÓÐ²»ÔÚ¹ÜÀíÖÐµÄÎ´Íê³Éµ¥ %f£¬È«²¿³·Ïú", _code.c_str(), undone);
+		//è¿™è¯´æ˜Žæœ‰æœªå®Œæˆå•ä¸åœ¨ç›‘æŽ§ä¹‹ä¸­ï¼Œå…ˆæ’¤æŽ‰
+		_ctx->writeLog("%sæœ‰ä¸åœ¨ç®¡ç†ä¸­çš„æœªå®Œæˆå• %fï¼Œå…¨éƒ¨æ’¤é”€", _code.c_str(), undone);
 
 		bool isBuy = (undone > 0);
 		OrderIDs ids = _ctx->cancel(_code.c_str(), isBuy);
@@ -130,29 +130,29 @@ void WtTWapExeUnit::on_tick(WTSTickData* newTick)
 		return;
 
 	bool isFirstTick = false;
-	//Èç¹ûÔ­À´µÄtick²»Îª¿Õ£¬ÔòÒªÊÍ·Åµô
+	//å¦‚æžœåŽŸæ¥çš„tickä¸ä¸ºç©ºï¼Œåˆ™è¦é‡Šæ”¾æŽ‰
 	if (_last_tick)
 		_last_tick->release();
 	else
 		isFirstTick = true;
 
-	//ÐÂµÄtickÊý¾Ý£¬Òª±£Áô
+	//æ–°çš„tickæ•°æ®ï¼Œè¦ä¿ç•™
 	_last_tick = newTick;
 	_last_tick->retain();
 
 	/*
-	*	ÕâÀï¿ÉÒÔ¿¼ÂÇÒ»ÏÂ
-	*	Èç¹ûÐ´µÄÉÏÒ»´Î¶ª³öÈ¥µÄµ¥×Ó²»¹»´ïµ½Ä¿±ê²ÖÎ»
-	*	ÄÇÃ´ÔÚÐÂµÄÐÐÇéÊý¾Ý½øÀ´µÄÊ±ºò¿ÉÒÔÔÙ´Î´¥·¢ºËÐÄÂß¼­
+	*	è¿™é‡Œå¯ä»¥è€ƒè™‘ä¸€ä¸‹
+	*	å¦‚æžœå†™çš„ä¸Šä¸€æ¬¡ä¸¢å‡ºåŽ»çš„å•å­ä¸å¤Ÿè¾¾åˆ°ç›®æ ‡ä»“ä½
+	*	é‚£ä¹ˆåœ¨æ–°çš„è¡Œæƒ…æ•°æ®è¿›æ¥çš„æ—¶å€™å¯ä»¥å†æ¬¡è§¦å‘æ ¸å¿ƒé€»è¾‘
 	*/
 
-	if (isFirstTick)	//Èç¹ûÊÇµÚÒ»±Êtick£¬Ôò¼ì²éÄ¿±ê²ÖÎ»£¬²»·ûºÏÔòÏÂµ¥
+	if (isFirstTick)	//å¦‚æžœæ˜¯ç¬¬ä¸€ç¬”tickï¼Œåˆ™æ£€æŸ¥ç›®æ ‡ä»“ä½ï¼Œä¸ç¬¦åˆåˆ™ä¸‹å•
 	{
 		double newVol = _target_pos;
 		const char* stdCode = _code.c_str();
 		double undone = _ctx->getUndoneQty(stdCode);
 		double realPos = _ctx->getPosition(stdCode);
-		if (!decimal::eq(newVol, undone + realPos)) //²ÖÎ»±ä»¯Òª½»Ò×
+		if (!decimal::eq(newVol, undone + realPos)) //ä»“ä½å˜åŒ–è¦äº¤æ˜“
 		{
 			do_calc();
 		}
@@ -168,7 +168,7 @@ void WtTWapExeUnit::on_tick(WTSTickData* newTick)
 			{
 				uint32_t localid = v.first;
 				uint64_t firetime = v.second;
-				if (now - firetime > _ord_sticky * 1000) //Òª³·µ¥ÖØ¹Ò
+				if (now - firetime > _ord_sticky * 1000) //è¦æ’¤å•é‡æŒ‚
 				{
 					if (_ctx->cancel(localid))
 					{
@@ -189,14 +189,14 @@ void WtTWapExeUnit::on_tick(WTSTickData* newTick)
 
 void WtTWapExeUnit::on_trade(uint32_t localid, const char* stdCode, bool isBuy, double vol, double price)
 {
-	//²»ÓÃ´¥·¢£¬ÕâÀïÔÚontickÀï´¥·¢°É
+	//ä¸ç”¨è§¦å‘ï¼Œè¿™é‡Œåœ¨ontické‡Œè§¦å‘å§
 }
 
 void WtTWapExeUnit::on_entrust(uint32_t localid, const char* stdCode, bool bSuccess, const char* message)
 {
 	if (!bSuccess)
 	{
-		//Èç¹û²»ÊÇÎÒ·¢³öÈ¥µÄ¶©µ¥£¬ÎÒ¾Í²»¹ÜÁË
+		//å¦‚æžœä¸æ˜¯æˆ‘å‘å‡ºåŽ»çš„è®¢å•ï¼Œæˆ‘å°±ä¸ç®¡äº†
 		auto it = _orders.find(localid);
 		if (it == _orders.end())
 			return;
@@ -218,7 +218,7 @@ void WtTWapExeUnit::fire_at_once(double qty)
 	uint64_t now = TimeUtils::getLocalTimeNow();
 	bool isBuy = decimal::gt(qty, 0);
 	double targetPx = 0;
-	//¸ù¾Ý¼Û¸ñÄ£Ê½ÉèÖÃ£¬È·¶¨Î¯ÍÐ»ù×¼¼Û¸ñ£º0-×îÐÂ¼Û£¬1-×îÓÅ¼Û£¬2-¶ÔÊÖ¼Û
+	//æ ¹æ®ä»·æ ¼æ¨¡å¼è®¾ç½®ï¼Œç¡®å®šå§”æ‰˜åŸºå‡†ä»·æ ¼ï¼š0-æœ€æ–°ä»·ï¼Œ1-æœ€ä¼˜ä»·ï¼Œ2-å¯¹æ‰‹ä»·
 	if (_price_mode == 0)
 	{
 		targetPx = curTick->price();
@@ -232,10 +232,10 @@ void WtTWapExeUnit::fire_at_once(double qty)
 		targetPx = isBuy ? curTick->askprice(0) : curTick->bidprice(0);
 	}
 
-	//Èç¹ûÐèÒªÈ«²¿·¢µ¥£¬Ôò¼Û¸ñÆ«ÒÆ5Ìø£¬ÒÔ±£ÕÏÖ´ÐÐ
+	//å¦‚æžœéœ€è¦å…¨éƒ¨å‘å•ï¼Œåˆ™ä»·æ ¼åç§»5è·³ï¼Œä»¥ä¿éšœæ‰§è¡Œ
 	targetPx += _comm_info->getPriceTick() * 5 * (isBuy ? 1 : -1);
 
-	//×îºó·¢³öÖ¸Áî
+	//æœ€åŽå‘å‡ºæŒ‡ä»¤
 	OrderIDs ids;
 	if (qty > 0)
 		ids = _ctx->buy(code, targetPx, abs(qty));
@@ -256,26 +256,26 @@ void WtTWapExeUnit::do_calc()
 	if (!_channel_ready)
 		return;
 
-	//ÓÐÕýÔÚ³·ÏúµÄ¶©µ¥£¬Ôò²»ÄÜ½øÐÐÏÂÒ»ÂÖ¼ÆËã
+	//æœ‰æ­£åœ¨æ’¤é”€çš„è®¢å•ï¼Œåˆ™ä¸èƒ½è¿›è¡Œä¸‹ä¸€è½®è®¡ç®—
 	if (_cancel_cnt != 0)
 	{
-		_ctx->writeLog("%sÉÐÓÐÎ´Íê³É³·µ¥Ö¸Áî£¬ÔÝÊ±ÍË³ö±¾ÂÖÖ´ÐÐ", _code.c_str());
+		_ctx->writeLog("%så°šæœ‰æœªå®Œæˆæ’¤å•æŒ‡ä»¤ï¼Œæš‚æ—¶é€€å‡ºæœ¬è½®æ‰§è¡Œ", _code.c_str());
 		return;
 	}
 
 	if (_last_tick == NULL)
 	{
-		_ctx->writeLog("%sÃ»ÓÐ×îÐÂtickÊý¾Ý£¬ÍË³öÖ´ÐÐÂß¼­", _code.c_str());
+		_ctx->writeLog("%sæ²¡æœ‰æœ€æ–°tickæ•°æ®ï¼Œé€€å‡ºæ‰§è¡Œé€»è¾‘", _code.c_str());
 		return;
 	}
 
 	const char* code = _code.c_str();
 
 	double undone = _ctx->getUndoneQty(code);
-	//Ã¿Ò»´Î·¢µ¥Òª±£ÕÏ³É½»£¬ËùÒÔÈç¹ûÓÐÎ´Íê³Éµ¥£¬ËµÃ÷ÉÏÒ»ÂÖÃ»Íê³É
+	//æ¯ä¸€æ¬¡å‘å•è¦ä¿éšœæˆäº¤ï¼Œæ‰€ä»¥å¦‚æžœæœ‰æœªå®Œæˆå•ï¼Œè¯´æ˜Žä¸Šä¸€è½®æ²¡å®Œæˆ
 	if (undone != 0)
 	{
-		_ctx->writeLog("%sÉÏÒ»ÂÖÓÐ¹Òµ¥Î´Íê³É£¬ÔÝÊ±ÍË³ö±¾ÂÖÖ´ÐÐ", _code.c_str());
+		_ctx->writeLog("%sä¸Šä¸€è½®æœ‰æŒ‚å•æœªå®Œæˆï¼Œæš‚æ—¶é€€å‡ºæœ¬è½®æ‰§è¡Œ", _code.c_str());
 		return;
 	}
 
@@ -288,21 +288,21 @@ void WtTWapExeUnit::do_calc()
 	uint32_t leftTimes = _total_times - _fired_times;
 
 	bool bNeedShowHand = false;
-	//Ê£Óà´ÎÊýÎª0£¬Ê£ÓàÊýÁ¿²»Îª0£¬ËµÃ÷ÒªÈ«²¿·¢³öÈ¥ÁË
-	//Ê£Óà´ÎÊýÎª0£¬ËµÃ÷ÒÑ¾­µ½ÁË¶µµ×Ê±¼äÁË£¬Èç¹ûÕâ¸öÊ±ºò»¹ÓÐÎ´Íê³ÉÊýÁ¿£¬ÔòÐèÒª·¢µ¥
+	//å‰©ä½™æ¬¡æ•°ä¸º0ï¼Œå‰©ä½™æ•°é‡ä¸ä¸º0ï¼Œè¯´æ˜Žè¦å…¨éƒ¨å‘å‡ºåŽ»äº†
+	//å‰©ä½™æ¬¡æ•°ä¸º0ï¼Œè¯´æ˜Žå·²ç»åˆ°äº†å…œåº•æ—¶é—´äº†ï¼Œå¦‚æžœè¿™ä¸ªæ—¶å€™è¿˜æœ‰æœªå®Œæˆæ•°é‡ï¼Œåˆ™éœ€è¦å‘å•
 	if (leftTimes == 0 && !decimal::eq(diffQty, 0))
 		bNeedShowHand = true;
 
 	double curQty = 0;
 
-	//Èç¹ûÊ£Óà´Ë´¦Îª0 £¬ÔòÐèÒªÈ«²¿ÏÂµ¥
-	//·ñÔò£¬È¡Õû(Ê£ÓàÊýÁ¿/Ê£Óà´ÎÊý)Óë1µÄ×î´óÖµ£¬¼´×îÐ¡ÎªÒ»ÊÖ£¬µ«ÊÇÒª×¢Òâ·ûºÅ´¦Àí
+	//å¦‚æžœå‰©ä½™æ­¤å¤„ä¸º0 ï¼Œåˆ™éœ€è¦å…¨éƒ¨ä¸‹å•
+	//å¦åˆ™ï¼Œå–æ•´(å‰©ä½™æ•°é‡/å‰©ä½™æ¬¡æ•°)ä¸Ž1çš„æœ€å¤§å€¼ï¼Œå³æœ€å°ä¸ºä¸€æ‰‹ï¼Œä½†æ˜¯è¦æ³¨æ„ç¬¦å·å¤„ç†
 	if (leftTimes == 0)
 		curQty = diffQty;
 	else
 		curQty = max(1.0, round(abs(diffQty) / leftTimes)) * abs(diffQty) / diffQty;
 
-	//Éè¶¨±¾ÂÖÄ¿±ê²ÖÎ»
+	//è®¾å®šæœ¬è½®ç›®æ ‡ä»“ä½
 	_this_target = realPos + curQty;
 
 
@@ -311,7 +311,7 @@ void WtTWapExeUnit::do_calc()
 	uint64_t now = TimeUtils::getLocalTimeNow();
 	bool isBuy = decimal::gt(diffQty, 0);
 	double targetPx = 0;
-	//¸ù¾Ý¼Û¸ñÄ£Ê½ÉèÖÃ£¬È·¶¨Î¯ÍÐ»ù×¼¼Û¸ñ£º0-×îÐÂ¼Û£¬1-×îÓÅ¼Û£¬2-¶ÔÊÖ¼Û
+	//æ ¹æ®ä»·æ ¼æ¨¡å¼è®¾ç½®ï¼Œç¡®å®šå§”æ‰˜åŸºå‡†ä»·æ ¼ï¼š0-æœ€æ–°ä»·ï¼Œ1-æœ€ä¼˜ä»·ï¼Œ2-å¯¹æ‰‹ä»·
 	if (_price_mode == 0)
 	{
 		targetPx = curTick->price();
@@ -325,17 +325,17 @@ void WtTWapExeUnit::do_calc()
 		targetPx = isBuy ? curTick->askprice(0) : curTick->bidprice(0);
 	}
 
-	//Èç¹ûÐèÒªÈ«²¿·¢µ¥£¬Ôò¼Û¸ñÆ«ÒÆ5Ìø£¬ÒÔ±£ÕÏÖ´ÐÐ
+	//å¦‚æžœéœ€è¦å…¨éƒ¨å‘å•ï¼Œåˆ™ä»·æ ¼åç§»5è·³ï¼Œä»¥ä¿éšœæ‰§è¡Œ
 	if(bNeedShowHand) //  last showhand time
 	{		
 		targetPx += _comm_info->getPriceTick() * 5 * (isBuy ? 1 : -1);
 	}
-	else if(_price_offset != 0)	//Èç¹ûÉèÖÃÁË¼Û¸ñÆ«ÒÆ£¬Ò²Òª´¦ÀíÒ»ÏÂ
+	else if(_price_offset != 0)	//å¦‚æžœè®¾ç½®äº†ä»·æ ¼åç§»ï¼Œä¹Ÿè¦å¤„ç†ä¸€ä¸‹
 	{
 		targetPx += _comm_info->getPriceTick() * _price_offset * (isBuy ? 1 : -1);
 	}
 	
-	//×îºó·¢³öÖ¸Áî
+	//æœ€åŽå‘å‡ºæŒ‡ä»¤
 	OrderIDs ids;
 	if (curQty > 0)
 		ids = _ctx->buy(code, targetPx, abs(curQty));

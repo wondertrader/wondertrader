@@ -77,7 +77,7 @@ WTSBarStruct* WTSDataFactory::updateMin1Data(WTSSessionInfo* sInfo, WTSKlineData
 		return klineData->at(-1);
 	}
 
-	//¼ÆËãÊ±¼ä²½³¤
+	//è®¡ç®—æ—¶é—´æ­¥é•¿
 	uint32_t steplen = klineData->times();
 
 	const WTSBarStruct& curBar = *newBasicBar;
@@ -93,7 +93,7 @@ WTSBarStruct* WTSDataFactory::updateMin1Data(WTSSessionInfo* sInfo, WTSKlineData
 	uint32_t uBarTime = sInfo->minuteToTime(uBarMin);
 	//if(uBarTime > uTime && !sInfo->isInAuctionTime(uTime))
 	//{
-	//	//ÕâÖÖÇé¿öÖ»¿ÉÄÜÊÇÈÕÆÚµ¹ÍË
+	//	//è¿™ç§æƒ…å†µåªå¯èƒ½æ˜¯æ—¥æœŸå€’é€€
 	//	uDate = TimeUtils::getNextDate(uDate, -1);
 	//}
 	uBarTime = TimeUtils::timeToMinBar(uDate, uBarTime);
@@ -107,7 +107,7 @@ WTSBarStruct* WTSDataFactory::updateMin1Data(WTSSessionInfo* sInfo, WTSKlineData
 	bool bNewBar = false;
 	if (lastBar == NULL || lastBar->date != uDate || lastBar->time != uBarTime)
 	{
-		//Ö»ÒªÈÕÆÚºÍÊ±¼ä¶¼²»·û£¬ÔòÈÏÎªÒÑ¾­ÊÇÒ»ÌõĞÂµÄbarÁË
+		//åªè¦æ—¥æœŸå’Œæ—¶é—´éƒ½ä¸ç¬¦ï¼Œåˆ™è®¤ä¸ºå·²ç»æ˜¯ä¸€æ¡æ–°çš„baräº†
 		lastBar = new WTSBarStruct();
 		bNewBar = true;
 
@@ -191,7 +191,7 @@ WTSBarStruct* WTSDataFactory::updateMin1Data(WTSSessionInfo* sInfo, WTSKlineData
 	uint32_t lastDate = klineData->date(-1);
 	if (lastTime == INVALID_UINT32 || uBarTime > lastTime || tick->tradingdate() > lastDate)
 	{
-		//Èç¹ûÊ±¼ä²»Ò»ÖÂ£¬ÔòĞÂÔöÒ»ÌõKÏß
+		//å¦‚æœæ—¶é—´ä¸ä¸€è‡´ï¼Œåˆ™æ–°å¢ä¸€æ¡Kçº¿
 		WTSBarStruct *day = new WTSBarStruct;
 		day->date = tick->tradingdate();
 		day->time = uBarTime;
@@ -210,7 +210,7 @@ WTSBarStruct* WTSDataFactory::updateMin1Data(WTSSessionInfo* sInfo, WTSKlineData
 	}
 	else if (lastTime != INVALID_UINT32 && uBarTime < lastTime)
 	{
-		//ÕâÖÖÇé¿öÖ÷ÒªÎªÁË·ÀÖ¹ÈÕÆÚ·´¸´³öÏÖ
+		//è¿™ç§æƒ…å†µä¸»è¦ä¸ºäº†é˜²æ­¢æ—¥æœŸåå¤å‡ºç°
 		return NULL;
 	}
 	else
@@ -239,7 +239,7 @@ WTSBarStruct* WTSDataFactory::updateMin5Data(WTSSessionInfo* sInfo, WTSKlineData
 		return klineData->at(-1);
 	}
 
-	//¼ÆËãÊ±¼ä²½³¤
+	//è®¡ç®—æ—¶é—´æ­¥é•¿
 	uint32_t steplen = 5 * klineData->times();
 
 	const WTSBarStruct& curBar = *newBasicBar;
@@ -266,7 +266,7 @@ WTSBarStruct* WTSDataFactory::updateMin5Data(WTSSessionInfo* sInfo, WTSKlineData
 	if (lastBar == NULL || lastBar->date != uDate || lastBar->time != uBarTime)
 	{
 
-		//Ö»ÒªÈÕÆÚºÍÊ±¼ä¶¼²»·û£¬ÔòÈÏÎªÒÑ¾­ÊÇÒ»ÌõĞÂµÄbarÁË
+		//åªè¦æ—¥æœŸå’Œæ—¶é—´éƒ½ä¸ç¬¦ï¼Œåˆ™è®¤ä¸ºå·²ç»æ˜¯ä¸€æ¡æ–°çš„baräº†
 		lastBar = new WTSBarStruct();
 		bNewBar = true;
 
@@ -331,7 +331,7 @@ WTSBarStruct* WTSDataFactory::updateMin5Data(WTSSessionInfo* sInfo, WTSKlineData
 	uint32_t lastTime = klineData->time(klineData->size()-1);
 	if(lastTime == INVALID_UINT32 || uBarTime != lastTime)
 	{
-		//Èç¹ûÊ±¼ä²»Ò»ÖÂ£¬ÔòĞÂÔöÒ»ÌõKÏß
+		//å¦‚æœæ—¶é—´ä¸ä¸€è‡´ï¼Œåˆ™æ–°å¢ä¸€æ¡Kçº¿
 		WTSBarStruct *day = new WTSBarStruct;
 		day->date = tick->tradingdate();
 		day->time = uBarTime;
@@ -370,7 +370,7 @@ WTSBarStruct* WTSDataFactory::updateDayData(WTSSessionInfo* sInfo, WTSKlineData*
 
 	if(lastDate == INVALID_UINT32 || curDate != lastDate)
 	{
-		//Èç¹ûÊ±¼ä²»Ò»ÖÂ£¬ÔòĞÂÔöÒ»ÌõKÏß
+		//å¦‚æœæ—¶é—´ä¸ä¸€è‡´ï¼Œåˆ™æ–°å¢ä¸€æ¡Kçº¿
 		WTSBarStruct *day = new WTSBarStruct;
 		day->date = curDate;
 		day->time = 0;
@@ -471,7 +471,7 @@ WTSKlineData* WTSDataFactory::extractKlineData(WTSKlineSlice* baseKline, WTSKlin
 	if(baseKline == NULL || baseKline->size() == 0)
 		return NULL;
 
-	//Ò»±¶£¬Ôò²»ĞèÒª×ª»»
+	//ä¸€å€ï¼Œåˆ™ä¸éœ€è¦è½¬æ¢
 	if(times <= 1 || period == KP_Tick)
 	{
 		return NULL;
@@ -495,11 +495,11 @@ WTSKlineData* WTSDataFactory::extractKlineData(WTSKlineSlice* baseKline, WTSKlin
 
 WTSKlineData* WTSDataFactory::extractMin1Data(WTSKlineSlice* baseKline, uint32_t times, WTSSessionInfo* sInfo, bool bIncludeOpen /* = true */)
 {
-	//¸ù¾İºÏÔ¼´úÂë»ñÈ¡ÊĞ³¡ĞÅÏ¢
+	//æ ¹æ®åˆçº¦ä»£ç è·å–å¸‚åœºä¿¡æ¯
 	if(sInfo == NULL)
 		return NULL;
 
-	//¼ÆËãÊ±¼ä²½³¤
+	//è®¡ç®—æ—¶é—´æ­¥é•¿
 	uint32_t steplen = times;
 
 	WTSKlineData* ret = WTSKlineData::create(baseKline->code(), 0);
@@ -523,7 +523,7 @@ WTSKlineData* WTSDataFactory::extractMin1Data(WTSKlineSlice* baseKline, uint32_t
 		uint32_t uBarTime = sInfo->minuteToTime(uBarMin);
 		//if(uBarTime > uTime && !sInfo->isInAuctionTime(uTime))
 		//{
-		//	//ÕâÖÖÇé¿öÖ»¿ÉÄÜÊÇÈÕÆÚµ¹ÍË
+		//	//è¿™ç§æƒ…å†µåªå¯èƒ½æ˜¯æ—¥æœŸå€’é€€
 		//	uDate = TimeUtils::getNextDate(uDate, -1);
 		//}
 		uBarTime = TimeUtils::timeToMinBar(uDate, uBarTime);
@@ -542,7 +542,7 @@ WTSKlineData* WTSDataFactory::extractMin1Data(WTSKlineSlice* baseKline, uint32_t
 			//	lastBar->time = sInfo->originalTime(lastBar->time);
 			//}
 
-			//Ö»ÒªÈÕÆÚºÍÊ±¼ä¶¼²»·û£¬ÔòÈÏÎªÒÑ¾­ÊÇÒ»ÌõĞÂµÄbarÁË
+			//åªè¦æ—¥æœŸå’Œæ—¶é—´éƒ½ä¸ç¬¦ï¼Œåˆ™è®¤ä¸ºå·²ç»æ˜¯ä¸€æ¡æ–°çš„baräº†
 			lastBar = new WTSBarStruct();
 			bNewBar = true;
 
@@ -572,11 +572,11 @@ WTSKlineData* WTSDataFactory::extractMin1Data(WTSKlineSlice* baseKline, uint32_t
 		}
 	}
 
-	//¼ì²é×îºóÒ»ÌõÊı¾İ
+	//æ£€æŸ¥æœ€åä¸€æ¡æ•°æ®
 	{
 		WTSBarStruct* lastRawBar = baseKline->at(-1);
 		WTSBarStruct* lastDesBar = ret->at(-1);
-		//Èç¹ûÄ¿±êKÏßµÄ×îºóÒ»ÌõÊı¾İµÄÈÕÆÚ»òÕßÊ±¼ä´óÓÚÔ­Ê¼KÏß×îºóÒ»ÌõµÄÈÕÆÚ»òÊ±¼ä
+		//å¦‚æœç›®æ ‡Kçº¿çš„æœ€åä¸€æ¡æ•°æ®çš„æ—¥æœŸæˆ–è€…æ—¶é—´å¤§äºåŸå§‹Kçº¿æœ€åä¸€æ¡çš„æ—¥æœŸæˆ–æ—¶é—´
 		if ( lastDesBar->date > lastRawBar->date || lastDesBar->time > lastRawBar->time)
 		{
 			if (!bIncludeOpen)
@@ -595,7 +595,7 @@ WTSKlineData* WTSDataFactory::extractMin5Data(WTSKlineSlice* baseKline, uint32_t
 	if(sInfo == NULL)
 		return NULL;
 
-	//¼ÆËãÊ±¼ä²½³¤
+	//è®¡ç®—æ—¶é—´æ­¥é•¿
 	uint32_t steplen = 5*times;
 
 	WTSKlineData* ret = WTSKlineData::create(baseKline->code(), 0);
@@ -634,7 +634,7 @@ WTSKlineData* WTSDataFactory::extractMin5Data(WTSKlineSlice* baseKline, uint32_t
 			//	lastBar->time = sInfo->originalTime(lastBar->time);
 			//}
 
-			//Ö»ÒªÈÕÆÚºÍÊ±¼ä¶¼²»·û£¬ÔòÈÏÎªÒÑ¾­ÊÇÒ»ÌõĞÂµÄbarÁË
+			//åªè¦æ—¥æœŸå’Œæ—¶é—´éƒ½ä¸ç¬¦ï¼Œåˆ™è®¤ä¸ºå·²ç»æ˜¯ä¸€æ¡æ–°çš„baräº†
 			lastBar = new WTSBarStruct();
 			bNewBar = true;
 
@@ -664,11 +664,11 @@ WTSKlineData* WTSDataFactory::extractMin5Data(WTSKlineSlice* baseKline, uint32_t
 		}
 	}
 
-	//¼ì²é×îºóÒ»ÌõÊı¾İ
+	//æ£€æŸ¥æœ€åä¸€æ¡æ•°æ®
 	{
 		WTSBarStruct* lastRawBar = baseKline->at(-1);
 		WTSBarStruct* lastDesBar = ret->at(-1);
-		//Èç¹ûÄ¿±êKÏßµÄ×îºóÒ»ÌõÊı¾İµÄÈÕÆÚ»òÕßÊ±¼ä´óÓÚÔ­Ê¼KÏß×îºóÒ»ÌõµÄÈÕÆÚ»òÊ±¼ä
+		//å¦‚æœç›®æ ‡Kçº¿çš„æœ€åä¸€æ¡æ•°æ®çš„æ—¥æœŸæˆ–è€…æ—¶é—´å¤§äºåŸå§‹Kçº¿æœ€åä¸€æ¡çš„æ—¥æœŸæˆ–æ—¶é—´
 		if (lastDesBar->date > lastRawBar->date || lastDesBar->time > lastRawBar->time)
 		{
 			if (!bIncludeOpen)
@@ -683,7 +683,7 @@ WTSKlineData* WTSDataFactory::extractMin5Data(WTSKlineSlice* baseKline, uint32_t
 
 WTSKlineData* WTSDataFactory::extractDayData(WTSKlineSlice* baseKline, uint32_t times, bool bIncludeOpen /* = true */)
 {
-	//¼ÆËãÊ±¼ä²½³¤
+	//è®¡ç®—æ—¶é—´æ­¥é•¿
 	uint32_t steplen = times;
 
 	WTSKlineData* ret = WTSKlineData::create(baseKline->code(), 0);
@@ -708,7 +708,7 @@ WTSKlineData* WTSDataFactory::extractDayData(WTSKlineSlice* baseKline, uint32_t 
 		bool bNewBar = false;
 		if(lastBar == NULL || count == steplen)
 		{
-			//Ö»ÒªÈÕÆÚºÍÊ±¼ä¶¼²»·û£¬ÔòÈÏÎªÒÑ¾­ÊÇÒ»ÌõĞÂµÄbarÁË
+			//åªè¦æ—¥æœŸå’Œæ—¶é—´éƒ½ä¸ç¬¦ï¼Œåˆ™è®¤ä¸ºå·²ç»æ˜¯ä¸€æ¡æ–°çš„baräº†
 			lastBar = new WTSBarStruct();
 			bNewBar = true;
 
@@ -772,7 +772,7 @@ WTSKlineData* WTSDataFactory::extractKlineData(WTSTickSlice* ayTicks, uint32_t s
 		uint32_t barSeconds = (curSeconds/seconds)*seconds + seconds;
 		uint32_t barTime = sInfo->secondsToTime(barSeconds);
 
-		//Èç¹û¼ÆËã³öÀ´µÄKÏßÊ±¼ä´ÁĞ¡ÓÚtickÊı¾İµÄÊ±¼ä´Á
+		//å¦‚æœè®¡ç®—å‡ºæ¥çš„Kçº¿æ—¶é—´æˆ³å°äºtickæ•°æ®çš„æ—¶é—´æˆ³
 		if(bUnixTime)
 		{
 			uint32_t actDt = curTick->action_date;

@@ -5,7 +5,7 @@
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief WonderTrader»ù±¾Êı¾İÀàĞÍ¶¨ÒåÎÄ¼ş
+ * \brief WonderTraderåŸºæœ¬æ•°æ®ç±»å‹å®šä¹‰æ–‡ä»¶
  */
 #pragma once
 #include "WTSMarcos.h"
@@ -13,42 +13,42 @@
 NS_OTP_BEGIN
 
 /*
- *	ºÏÔ¼·ÖÀà
+ *	åˆçº¦åˆ†ç±»
  */
 typedef enum tagContractCategory
 {
-	CC_Stock,			//¹ÉÆ±
-	CC_Future,			//ÆÚ»õ
-	CC_Option,			//ÆÚÈ¨
-	CC_Combination,		//×éºÏ
-	CC_Spot,			//¼´ÆÚ
-	CC_EFP				//ÆÚ×ªÏÖ
+	CC_Stock,			//è‚¡ç¥¨
+	CC_Future,			//æœŸè´§
+	CC_Option,			//æœŸæƒ
+	CC_Combination,		//ç»„åˆ
+	CC_Spot,			//å³æœŸ
+	CC_EFP				//æœŸè½¬ç°
 } ContractCategory;
 
 /*
- *	Æ½²ÖÀàĞÍ
+ *	å¹³ä»“ç±»å‹
  */
 typedef enum tagCoverMode
 {
-	CM_OpenCover,		//¿ªÆ½
-	CM_CoverToday,		//¿ªÆ½×òÆ½½ñ
-	CM_UNFINISHED,		//Æ½Î´ÁË½áµÄ
-	CM_None			//²»Çø·Ö¿ªÆ½
+	CM_OpenCover,		//å¼€å¹³
+	CM_CoverToday,		//å¼€å¹³æ˜¨å¹³ä»Š
+	CM_UNFINISHED,		//å¹³æœªäº†ç»“çš„
+	CM_None			//ä¸åŒºåˆ†å¼€å¹³
 } CoverMode;
 
 /*
-*	¼Û¸ñÄ£Ê½
+*	ä»·æ ¼æ¨¡å¼
 */
 typedef enum tagPriceMode
 {
-	PM_Both,		//ÊĞ¼ÛÏŞ¼Û¶¼Ö§³Ö
-	PM_Limit,		//Ö»Ö§³ÖÏŞ¼Û
-	PM_Market		//Ö»Ö§³ÖÊĞ¼Û
+	PM_Both,		//å¸‚ä»·é™ä»·éƒ½æ”¯æŒ
+	PM_Limit,		//åªæ”¯æŒé™ä»·
+	PM_Market		//åªæ”¯æŒå¸‚ä»·
 } PriceMode;
 
 /*
- *	KÏßÊı¾İÀàĞÍ
- *	¿ª¡¢¸ß¡¢µÍ¡¢ÊÕ¡¢Á¿¡¢¶î¡¢ÈÕÆÚ
+ *	Kçº¿æ•°æ®ç±»å‹
+ *	å¼€ã€é«˜ã€ä½ã€æ”¶ã€é‡ã€é¢ã€æ—¥æœŸ
  */
 typedef enum tagKlineFieldType
 {
@@ -62,7 +62,7 @@ typedef enum tagKlineFieldType
 } WTSKlineFieldType;
 
 /*
- *	KÏßÖÜÆÚ
+ *	Kçº¿å‘¨æœŸ
  */
 typedef enum tagKlinePeriod
 {
@@ -76,7 +76,7 @@ typedef enum tagKlinePeriod
 } WTSKlinePeriod;
 
 /*
- *	ÈÕÖ¾¼¶±ğ
+ *	æ—¥å¿—çº§åˆ«
  */
 typedef enum tagLogLevel
 {
@@ -90,168 +90,168 @@ typedef enum tagLogLevel
 } WTSLogLevel;
 
 /*
- *	¼Û¸ñÀàĞÍ
+ *	ä»·æ ¼ç±»å‹
  */
 typedef enum tagPriceType
 {
-	WPT_ANYPRICE	= '1',	//ÊĞ¼Ûµ¥
-	WPT_LIMITPRICE,			//ÏŞ¼Ûµ¥
-	WPT_BESTPRICE,			//×îÓÅ¼Û
-	WPT_LASTPRICE,			//×îĞÂ¼Û
-	//WTP_LASTPRICEPLUSONETICKS,		//×îĞÂ¼Û+1ticks
-	//WPT_LASTPRICEPLUSTWOTICKS,		//×îĞÂ¼Û+2ticks
-	//WPT_LASTPRICEPLUSTHREETICKS,	//×îĞÂ¼Û+3ticks
-	//WPT_ASKPRICE1,					//ÂôÒ»¼Û
-	//WPT_ASKPRICE1PLUSONETICKS,		//ÂôÒ»¼Û+1ticks
-	//WPT_ASKPRICE1PLUSTWOTICKS,		//ÂôÒ»¼Û+2ticks
-	//WPT_ASKPRICE1PLUSTHREETICKS,	//ÂôÒ»¼Û+3ticks
-	//WPT_BIDPRICE1,					//ÂòÒ»¼Û
-	//WPT_BIDPRICE1PLUSONETICKS,		//ÂôÒ»¼Û+1ticks
-	//WPT_BIDPRICE1PLUSTWOTICKS,		//ÂôÒ»¼Û+2ticks
-	//WPT_BIDPRICE1PLUSTHREETICKS,	//ÂôÒ»¼Û+3ticks
+	WPT_ANYPRICE	= '1',	//å¸‚ä»·å•
+	WPT_LIMITPRICE,			//é™ä»·å•
+	WPT_BESTPRICE,			//æœ€ä¼˜ä»·
+	WPT_LASTPRICE,			//æœ€æ–°ä»·
+	//WTP_LASTPRICEPLUSONETICKS,		//æœ€æ–°ä»·+1ticks
+	//WPT_LASTPRICEPLUSTWOTICKS,		//æœ€æ–°ä»·+2ticks
+	//WPT_LASTPRICEPLUSTHREETICKS,	//æœ€æ–°ä»·+3ticks
+	//WPT_ASKPRICE1,					//å–ä¸€ä»·
+	//WPT_ASKPRICE1PLUSONETICKS,		//å–ä¸€ä»·+1ticks
+	//WPT_ASKPRICE1PLUSTWOTICKS,		//å–ä¸€ä»·+2ticks
+	//WPT_ASKPRICE1PLUSTHREETICKS,	//å–ä¸€ä»·+3ticks
+	//WPT_BIDPRICE1,					//ä¹°ä¸€ä»·
+	//WPT_BIDPRICE1PLUSONETICKS,		//å–ä¸€ä»·+1ticks
+	//WPT_BIDPRICE1PLUSTWOTICKS,		//å–ä¸€ä»·+2ticks
+	//WPT_BIDPRICE1PLUSTHREETICKS,	//å–ä¸€ä»·+3ticks
 } WTSPriceType;
 
 /*
- *	Ê±¼äÌõ¼ş
+ *	æ—¶é—´æ¡ä»¶
  */
 typedef enum tagTimeCondition
 {
-	WTC_IOC		= '1',	//Á¢¼´Íê³É£¬·ñÔò³·Ïú
-	WTC_GFS,			//±¾½ÚÓĞĞ§
-	WTC_GFD,			//µ±ÈÕÓĞĞ§
+	WTC_IOC		= '1',	//ç«‹å³å®Œæˆï¼Œå¦åˆ™æ’¤é”€
+	WTC_GFS,			//æœ¬èŠ‚æœ‰æ•ˆ
+	WTC_GFD,			//å½“æ—¥æœ‰æ•ˆ
 } WTSTimeCondition;
 
 /*
- *	¿ªÆ½·½Ïò
+ *	å¼€å¹³æ–¹å‘
  */
 typedef enum tagOffsetType
 {
-	WOT_OPEN			= '0',	//¿ª²Ö
-	WOT_CLOSE,					//Æ½²Ö£¬ÉÏÆÚÎªÆ½×ò
-	WOT_FORCECLOSE,				//Ç¿Æ½
-	WOT_CLOSETODAY,				//Æ½½ñ
-	WOT_CLOSEYESTERDAY,			//Æ½×ò
+	WOT_OPEN			= '0',	//å¼€ä»“
+	WOT_CLOSE,					//å¹³ä»“ï¼Œä¸ŠæœŸä¸ºå¹³æ˜¨
+	WOT_FORCECLOSE,				//å¼ºå¹³
+	WOT_CLOSETODAY,				//å¹³ä»Š
+	WOT_CLOSEYESTERDAY,			//å¹³æ˜¨
 } WTSOffsetType;
 
 /*
- *	¶à¿Õ·½Ïò
+ *	å¤šç©ºæ–¹å‘
  */
 typedef enum tagDirectionType
 {
-	WDT_LONG			= '0',	//×ö¶à
-	WDT_SHORT,					//×ö¿Õ
+	WDT_LONG			= '0',	//åšå¤š
+	WDT_SHORT,					//åšç©º
 } WTSDirectionType;
 
 /*
- *	¶©µ¥²Ù×÷ÀàĞÍ
+ *	è®¢å•æ“ä½œç±»å‹
  */
 typedef enum tagActionFlag
 {
-	WAF_CANCEL			= '0',	//³·Ïú
-	WAF_MODIFY			= '3',	//ĞŞ¸Ä
+	WAF_CANCEL			= '0',	//æ’¤é”€
+	WAF_MODIFY			= '3',	//ä¿®æ”¹
 } WTSActionFlag;
 
 /*
- *	¶©µ¥×´Ì¬
+ *	è®¢å•çŠ¶æ€
  */
 typedef enum tagOrderState
 {
-	WOS_AllTraded				= '0',	//È«²¿³É½»
-	WOS_PartTraded_Queuing,				//²¿·Ö³É½»£¬ÈÔÔÚ¶ÓÁĞÖĞ
-	WOS_PartTraded_NotQueuing,			//²¿·Ö³É½»£¬Î´ÔÚ¶ÓÁĞ
-	WOS_NotTraded_Queuing,				//Î´³É½»
-	WOS_NotTraded_NotQueuing,			//Î´³É½»£¬Î´ÔÚ¶ÓÁĞ
-	WOS_Canceled,						//ÒÑ³·Ïú
-	WOS_Submitting				= 'a',	//ÕıÔÚÌá½»
-	WOS_Nottouched,						//Î´´¥·¢
+	WOS_AllTraded				= '0',	//å…¨éƒ¨æˆäº¤
+	WOS_PartTraded_Queuing,				//éƒ¨åˆ†æˆäº¤ï¼Œä»åœ¨é˜Ÿåˆ—ä¸­
+	WOS_PartTraded_NotQueuing,			//éƒ¨åˆ†æˆäº¤ï¼Œæœªåœ¨é˜Ÿåˆ—
+	WOS_NotTraded_Queuing,				//æœªæˆäº¤
+	WOS_NotTraded_NotQueuing,			//æœªæˆäº¤ï¼Œæœªåœ¨é˜Ÿåˆ—
+	WOS_Canceled,						//å·²æ’¤é”€
+	WOS_Submitting				= 'a',	//æ­£åœ¨æäº¤
+	WOS_Nottouched,						//æœªè§¦å‘
 } WTSOrderState;
 
 /*
- *	¶©µ¥ÀàĞÍ
+ *	è®¢å•ç±»å‹
  */
 typedef enum tagOrderType
 {
-	WORT_Normal			= 0,		//Õı³£¶©µ¥
-	WORT_Exception,					//Òì³£¶©µ¥
-	WORT_System,					//ÏµÍ³¶©µ¥
-	WORT_Hedge						//¶Ô³å¶©µ¥
+	WORT_Normal			= 0,		//æ­£å¸¸è®¢å•
+	WORT_Exception,					//å¼‚å¸¸è®¢å•
+	WORT_System,					//ç³»ç»Ÿè®¢å•
+	WORT_Hedge						//å¯¹å†²è®¢å•
 } WTSOrderType;
 
 /*
- *	³É½»ÀàĞÍ
+ *	æˆäº¤ç±»å‹
  */
 typedef enum tagTrageType
 {
-	WTT_Common				= '0',	//ÆÕÍ¨
-	WTT_OptionExecution		= '1',	//ÆÚÈ¨Ö´ĞĞ
-	WTT_OTC					= '2',	//OTC³É½»
-	WTT_EFPDerived			= '3',	//ÆÚ×ªÏÖÑÜÉú³É½»
-	WTT_CombinationDerived	= '4'	//×éºÏÑÜÉú³É½»
+	WTT_Common				= '0',	//æ™®é€š
+	WTT_OptionExecution		= '1',	//æœŸæƒæ‰§è¡Œ
+	WTT_OTC					= '2',	//OTCæˆäº¤
+	WTT_EFPDerived			= '3',	//æœŸè½¬ç°è¡ç”Ÿæˆäº¤
+	WTT_CombinationDerived	= '4'	//ç»„åˆè¡ç”Ÿæˆäº¤
 } WTSTradeType;
 
 
 /*
- *	´íÎó´úÂë
+ *	é”™è¯¯ä»£ç 
  */
 typedef enum tagErrorCode
 {
-	WEC_NONE			=	0,		//Ã»ÓĞ´íÎó
-	WEC_ORDERINSERT,				//ÏÂµ¥´íÎó
-	WEC_ORDERCANCEL,				//³·µ¥´íÎó
-	WEC_MODPWD,						//ÃÜÂëĞŞ¸Ä´íÎó
+	WEC_NONE			=	0,		//æ²¡æœ‰é”™è¯¯
+	WEC_ORDERINSERT,				//ä¸‹å•é”™è¯¯
+	WEC_ORDERCANCEL,				//æ’¤å•é”™è¯¯
+	WEC_MODPWD,						//å¯†ç ä¿®æ”¹é”™è¯¯
 	WEC_MONEYOPTION,
 	WEC_FUNDINGAPPLY,
-	WEC_UNKNOWN			=	9999	//Î»ÖÃ´íÎó
+	WEC_UNKNOWN			=	9999	//ä½ç½®é”™è¯¯
 } WTSErroCode;
 
 /*
- *	±È½Ï×Ö¶Î
+ *	æ¯”è¾ƒå­—æ®µ
  */
 typedef enum tagCompareField
 {
-	WCF_NEWPRICE			=	0,	//×îĞÂ¼Û
-	WCF_BIDPRICE,					//ÂòÒ»¼Û
-	WCF_ASKPRICE,					//ÂôÒ»¼Û
-	WCF_PRICEDIFF,					//¼Û²î£¬Ö¹Ó¯Ö¹Ëğ×¨ÓÃ
-	WCF_NONE				=	9	//²»±È½Ï
+	WCF_NEWPRICE			=	0,	//æœ€æ–°ä»·
+	WCF_BIDPRICE,					//ä¹°ä¸€ä»·
+	WCF_ASKPRICE,					//å–ä¸€ä»·
+	WCF_PRICEDIFF,					//ä»·å·®ï¼Œæ­¢ç›ˆæ­¢æŸä¸“ç”¨
+	WCF_NONE				=	9	//ä¸æ¯”è¾ƒ
 } WTSCompareField;
 
 /*
- *	±È½ÏÀàĞÍ
+ *	æ¯”è¾ƒç±»å‹
  */
 typedef enum tagCompareType
 {
-	WCT_Equal			= 0,		//µÈÓÚ
-	WCT_Larger,						//´óÓÚ
-	WCT_Smaller,					//Ğ¡ÓÚ
-	WCT_LargerOrEqual,				//´óÓÚµÈÓÚ
-	WCT_SmallerOrEqual				//Ğ¡ÓÚµÈÓÚ
+	WCT_Equal			= 0,		//ç­‰äº
+	WCT_Larger,						//å¤§äº
+	WCT_Smaller,					//å°äº
+	WCT_LargerOrEqual,				//å¤§äºç­‰äº
+	WCT_SmallerOrEqual				//å°äºç­‰äº
 }WTSCompareType;
 
 /*
- *	ĞĞÇé½âÎöÆ÷ÊÂ¼ş
+ *	è¡Œæƒ…è§£æå™¨äº‹ä»¶
  */
 typedef enum tagParserEvent
 {
-	WPE_Connect			= 0,		//Á¬½ÓÊÂ¼ş
-	WPE_Close,						//¹Ø±ÕÊÂ¼ş
-	WPE_Login,						//µÇÂ¼
-	WPE_Logout						//×¢Ïú
+	WPE_Connect			= 0,		//è¿æ¥äº‹ä»¶
+	WPE_Close,						//å…³é—­äº‹ä»¶
+	WPE_Login,						//ç™»å½•
+	WPE_Logout						//æ³¨é”€
 }WTSParserEvent;
 
 /*
- *	½»Ò×Ä£¿éÊÂ¼ş
+ *	äº¤æ˜“æ¨¡å—äº‹ä»¶
  */
 typedef enum tagTraderEvent
 {
-	WTE_Connect			= 0,		//Á¬½ÓÊÂ¼ş
-	WTE_Close,						//¹Ø±ÕÊÂ¼ş
-	WTE_Login,						//µÇÂ¼
-	WTE_Logout						//×¢Ïú
+	WTE_Connect			= 0,		//è¿æ¥äº‹ä»¶
+	WTE_Close,						//å…³é—­äº‹ä»¶
+	WTE_Login,						//ç™»å½•
+	WTE_Logout						//æ³¨é”€
 }WTSTraderEvent;
 
 /*
- *	Ö¸±êÀàĞÍ
+ *	æŒ‡æ ‡ç±»å‹
  */
 typedef enum tagExpressType
 {
@@ -260,43 +260,43 @@ typedef enum tagExpressType
 } WTSExpressType;
 
 /*
- *	Ö¸±êÏßÀàĞÍ
+ *	æŒ‡æ ‡çº¿ç±»å‹
  */
 typedef enum tagExpressLineType
 {
-	WELT_Polyline,	//ÏßÌõ	
-	WELT_VolStick,	//Á¿Öù
-	WELT_StickLine,	//Öù×´Ïß
-	WELT_AStickLine,	//Öù×´Ïß¾ø¶ÔÖµ
+	WELT_Polyline,	//çº¿æ¡	
+	WELT_VolStick,	//é‡æŸ±
+	WELT_StickLine,	//æŸ±çŠ¶çº¿
+	WELT_AStickLine,	//æŸ±çŠ¶çº¿ç»å¯¹å€¼
 } WTSExpressLineType;
 
-//Ö¸±êÏß·ç¸ñ
+//æŒ‡æ ‡çº¿é£æ ¼
 typedef enum tagExpLineStyle
 {
-	ELS_LINE_VISIBLE = 0x00000001,	//ÏßÌõ¿É¼û
-	ELS_TITLE_VISIBLE = 0x00000002	//±êÌâ¿É¼û
+	ELS_LINE_VISIBLE = 0x00000001,	//çº¿æ¡å¯è§
+	ELS_TITLE_VISIBLE = 0x00000002	//æ ‡é¢˜å¯è§
 } ExpLineStyle;
 
 /*
- *	ÂòÂô·½ÏòÀàĞÍ
+ *	ä¹°å–æ–¹å‘ç±»å‹
  */
 typedef enum tagBSDirectType
 {
-	BDT_Buy		= 'B',	//ÂòÈë	
-	BDT_Sell	= 'S',	//Âô³ö
-	BDT_Unknown = ' ',	//Î´Öª
-	BDT_Borrow	= 'G',	//½èÈë
-	BDT_Lend	= 'F'	//½è³ö
+	BDT_Buy		= 'B',	//ä¹°å…¥	
+	BDT_Sell	= 'S',	//å–å‡º
+	BDT_Unknown = ' ',	//æœªçŸ¥
+	BDT_Borrow	= 'G',	//å€Ÿå…¥
+	BDT_Lend	= 'F'	//å€Ÿå‡º
 } WTSBSDirectType;
 
 /*
- *	³É½»ÀàĞÍ
+ *	æˆäº¤ç±»å‹
  */
 typedef enum tagTransType
 {
-	TT_Unknown	= 'U',	//Î´ÖªÀàĞÍ
-	TT_Match	= 'M',	//´éºÏ³É½»
-	TT_Cancel	= 'C'	//³·µ¥
+	TT_Unknown	= 'U',	//æœªçŸ¥ç±»å‹
+	TT_Match	= 'M',	//æ’®åˆæˆäº¤
+	TT_Cancel	= 'C'	//æ’¤å•
 } WTSTransType;
 
 /*
@@ -304,10 +304,10 @@ typedef enum tagTransType
  */
 typedef enum tagOrdDetailType
 {
-	ODT_Unknown		= 0,	//Î´ÖªÀàĞÍ
-	ODT_BestPrice	= 'U',	//±¾·½×îÓÅ
-	ODT_AnyPrice	= '1',	//ÊĞ¼Û
-	ODT_LimitPrice	= '2'	//ÏŞ¼Û
+	ODT_Unknown		= 0,	//æœªçŸ¥ç±»å‹
+	ODT_BestPrice	= 'U',	//æœ¬æ–¹æœ€ä¼˜
+	ODT_AnyPrice	= '1',	//å¸‚ä»·
+	ODT_LimitPrice	= '2'	//é™ä»·
 } WTSOrdDetailType;
 
 NS_OTP_END
