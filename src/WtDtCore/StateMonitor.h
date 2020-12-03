@@ -5,7 +5,7 @@
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief ×´Ì¬¿ØÖÆÆ÷¶¨Òå
+ * \brief çŠ¶æ€æŽ§åˆ¶å™¨å®šä¹‰
  */
 #pragma once
 #include <unordered_map>
@@ -14,14 +14,14 @@
 
 typedef enum tagSimpleState
 {
-	SS_ORIGINAL,		//Î´³õÊ¼»¯
-	SS_INITIALIZED,		//ÒÑ³õÊ¼»¯
-	SS_RECEIVING,		//½»Ò×ÖÐ
-	SS_PAUSED,			//ÐÝÏ¢ÖÐ
-	SS_CLOSED,			//ÒÑÊÕÅÌ
-	SS_PROCING,			//ÊÕÅÌ×÷ÒµÖÐ
-	SS_PROCED,			//ÅÌºóÒÑ´¦Àí
-	SS_Holiday	= 99	//½Ú¼ÙÈÕ
+	SS_ORIGINAL,		//æœªåˆå§‹åŒ–
+	SS_INITIALIZED,		//å·²åˆå§‹åŒ–
+	SS_RECEIVING,		//äº¤æ˜“ä¸­
+	SS_PAUSED,			//ä¼‘æ¯ä¸­
+	SS_CLOSED,			//å·²æ”¶ç›˜
+	SS_PROCING,			//æ”¶ç›˜ä½œä¸šä¸­
+	SS_PROCED,			//ç›˜åŽå·²å¤„ç†
+	SS_Holiday	= 99	//èŠ‚å‡æ—¥
 } SimpleState;
 
 typedef struct _StateInfo

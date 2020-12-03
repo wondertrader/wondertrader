@@ -5,7 +5,7 @@
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief WT参数对象定义
+ * \brief WT鍙傛暟瀵硅薄瀹氫箟
  */
 #pragma once
 

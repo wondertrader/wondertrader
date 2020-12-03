@@ -203,7 +203,7 @@ void ParserXTP::OnFrontConnected()
 {
 	if (m_parserSink)
 	{
-		m_parserSink->handleParserLog(LL_INFO, "[ParserXTP]CTPĞĞÇé·şÎñÒÑÁ¬½Ó");
+		m_parserSink->handleParserLog(LL_INFO, "[ParserXTP]CTPè¡Œæƒ…æœåŠ¡å·²è¿æ¥");
 		m_parserSink->handleEvent(WPE_Connect, 0);
 	}
 
@@ -221,7 +221,7 @@ void ParserXTP::OnRspUserLogin( CThostFtdcRspUserLoginField *pRspUserLogin, CTho
 			m_parserSink->handleEvent(WPE_Login, 0);
 		}
 
-		//¶©ÔÄĞĞÇéÊı¾İ
+		//è®¢é˜…è¡Œæƒ…æ•°æ®
 		SubscribeMarketData();
 	}
 }
@@ -231,7 +231,7 @@ void ParserXTP::OnDisconnected(int nReason)
 {
 	if(m_parserSink)
 	{
-		m_parserSink->handleParserLog(LL_ERROR, "[ParserXTP]CTPĞĞÇé·şÎñÁ¬½ÓÒÑ¶Ï¿ª,Ô­Òò: %d...", nReason);
+		m_parserSink->handleParserLog(LL_ERROR, "[ParserXTP]CTPè¡Œæƒ…æœåŠ¡è¿æ¥å·²æ–­å¼€,åŸå› : %d...", nReason);
 		m_parserSink->handleEvent(WPE_Close, 0);
 	}
 }
@@ -267,7 +267,7 @@ void ParserXTP::OnDepthMarketData(XTPMD *market_data, int64_t bid1_qty[], int32_
 	if(ct == NULL)
 	{
 		if (m_parserSink)
-			m_parserSink->handleParserLog(LL_ERROR, "[ParserXTP]´úÂë%s.%s²»´æÔÚ...", exchg.c_str(), market_data->ticker);
+			m_parserSink->handleParserLog(LL_ERROR, "[ParserXTP]ä»£ç %s.%sä¸å­˜åœ¨...", exchg.c_str(), market_data->ticker);
 		return;
 	}
 	WTSCommodityInfo* commInfo = m_pBaseDataMgr->getCommodity(ct);
@@ -301,7 +301,7 @@ void ParserXTP::OnDepthMarketData(XTPMD *market_data, int64_t bid1_qty[], int32_
 
 	quote.pre_close = checkValid(market_data->pre_close_price);	
 
-	//Î¯Âô¼Û¸ñ
+	//å§”å–ä»·æ ¼
 	for (int i = 0; i < 10; i++)
 	{
 		quote.ask_prices[i] = checkValid(market_data->ask[i]);
@@ -322,12 +322,12 @@ void ParserXTP::OnSubMarketData(XTPST *ticker, XTPRI *error_info, bool is_last)
 	if (!IsErrorRspInfo(error_info))
 	{
 		//if (m_parserSink)
-		//	m_parserSink->handleParserLog(LL_INFO, "[ParserXTP]ÊµÊ±ĞĞÇé¶©ÔÄ³É¹¦,´úÂë:%s%s", ticker->exchange_id == XTP_EXCHANGE_SH ? "SH" : "SZ", ticker->ticker);
+		//	m_parserSink->handleParserLog(LL_INFO, "[ParserXTP]å®æ—¶è¡Œæƒ…è®¢é˜…æˆåŠŸ,ä»£ç :%s%s", ticker->exchange_id == XTP_EXCHANGE_SH ? "SH" : "SZ", ticker->ticker);
 	}
 	else
 	{
 		if(m_parserSink)
-			m_parserSink->handleParserLog(LL_ERROR, "[ParserXTP]ÊµÊ±ĞĞÇé¶©ÔÄÊ§°Ü,´úÂë:%s%s", ticker->exchange_id == XTP_EXCHANGE_SH ? "SSE." : "SZSE.", ticker->ticker);
+			m_parserSink->handleParserLog(LL_ERROR, "[ParserXTP]å®æ—¶è¡Œæƒ…è®¢é˜…å¤±è´¥,ä»£ç :%s%s", ticker->exchange_id == XTP_EXCHANGE_SH ? "SSE." : "SZSE.", ticker->ticker);
 	}
 }
 
@@ -351,7 +351,7 @@ void ParserXTP::DoLogin()
 			{
 				m_parserSink->handleEvent(WPE_Connect, 0);
 
-				m_parserSink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserXTP]CTP µÇÂ¼ÇëÇó·¢ËÍÊ§°Ü, ´íÎóÂë:%d", iResult).c_str());
+				m_parserSink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserXTP]CTP ç™»å½•è¯·æ±‚å‘é€å¤±è´¥, é”™è¯¯ç :%d", iResult).c_str());
 			}
 			
 		}
@@ -388,12 +388,12 @@ void ParserXTP::DoSubscribeMD()
 			if (iResult != 0)
 			{
 				if (m_parserSink)
-					m_parserSink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserXTP]ÉÏÖ¤ĞĞÇé¶©ÔÄÇëÇó·¢ËÍÊ§°Ü, ´íÎóÂë:%d", iResult).c_str());
+					m_parserSink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserXTP]ä¸Šè¯è¡Œæƒ…è®¢é˜…è¯·æ±‚å‘é€å¤±è´¥, é”™è¯¯ç :%d", iResult).c_str());
 			}
 			else
 			{
 				if (m_parserSink)
-					m_parserSink->handleParserLog(LL_INFO, StrUtil::printf("[ParserXTP]Ò»¹²¶©ÔÄÉÏÖ¤ %d ¸öÆ·ÖÖĞĞÇé", nCount).c_str());
+					m_parserSink->handleParserLog(LL_INFO, StrUtil::printf("[ParserXTP]ä¸€å…±è®¢é˜…ä¸Šè¯ %d ä¸ªå“ç§è¡Œæƒ…", nCount).c_str());
 			}
 		}
 		codeFilter.clear();
@@ -418,12 +418,12 @@ void ParserXTP::DoSubscribeMD()
 			if (iResult != 0)
 			{
 				if (m_parserSink)
-					m_parserSink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserXTP]ÉîÖ¤ĞĞÇé¶©ÔÄÇëÇó·¢ËÍÊ§°Ü, ´íÎóÂë:%d", iResult).c_str());
+					m_parserSink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserXTP]æ·±è¯è¡Œæƒ…è®¢é˜…è¯·æ±‚å‘é€å¤±è´¥, é”™è¯¯ç :%d", iResult).c_str());
 			}
 			else
 			{
 				if (m_parserSink)
-					m_parserSink->handleParserLog(LL_INFO, StrUtil::printf("[ParserXTP]Ò»¹²¶©ÔÄÉîÖ¤ %d ¸öÆ·ÖÖĞĞÇé", nCount).c_str());
+					m_parserSink->handleParserLog(LL_INFO, StrUtil::printf("[ParserXTP]ä¸€å…±è®¢é˜…æ·±è¯ %d ä¸ªå“ç§è¡Œæƒ…", nCount).c_str());
 			}
 		}
 		codeFilter.clear();
@@ -489,12 +489,12 @@ void ParserXTP::subscribe(const CodeSet &vecSymbols)
 				if (iResult != 0)
 				{
 					if (m_parserSink)
-						m_parserSink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserXTP]ĞĞÇé¶©ÔÄÇëÇó·¢ËÍÊ§°Ü, ´íÎóÂë:%d", iResult).c_str());
+						m_parserSink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserXTP]è¡Œæƒ…è®¢é˜…è¯·æ±‚å‘é€å¤±è´¥, é”™è¯¯ç :%d", iResult).c_str());
 				}
 				else
 				{
 					if (m_parserSink)
-						m_parserSink->handleParserLog(LL_INFO, StrUtil::printf("[ParserXTP]Ò»¹²¶©ÔÄ %d ¸öÆ·ÖÖĞĞÇé", nCount).c_str());
+						m_parserSink->handleParserLog(LL_INFO, StrUtil::printf("[ParserXTP]ä¸€å…±è®¢é˜… %d ä¸ªå“ç§è¡Œæƒ…", nCount).c_str());
 				}
 			}
 			delete[] subscribe;
@@ -516,12 +516,12 @@ void ParserXTP::subscribe(const CodeSet &vecSymbols)
 				if (iResult != 0)
 				{
 					if (m_parserSink)
-						m_parserSink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserXTP]ĞĞÇé¶©ÔÄÇëÇó·¢ËÍÊ§°Ü, ´íÎóÂë:%d", iResult).c_str());
+						m_parserSink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserXTP]è¡Œæƒ…è®¢é˜…è¯·æ±‚å‘é€å¤±è´¥, é”™è¯¯ç :%d", iResult).c_str());
 				}
 				else
 				{
 					if (m_parserSink)
-						m_parserSink->handleParserLog(LL_INFO, StrUtil::printf("[ParserXTP]Ò»¹²¶©ÔÄ %d ¸öÆ·ÖÖĞĞÇé", nCount).c_str());
+						m_parserSink->handleParserLog(LL_INFO, StrUtil::printf("[ParserXTP]ä¸€å…±è®¢é˜… %d ä¸ªå“ç§è¡Œæƒ…", nCount).c_str());
 				}
 			}
 			delete[] subscribe;

@@ -83,13 +83,13 @@ void initParsers(WTSVariant* cfg)
 			FuncCreateParser pFuncCreateParser = (FuncCreateParser)DLLHelper::get_symbol(libParser, "createParser");
 			if (pFuncCreateParser == NULL)
 			{
-				WTSLogger::info("ÐÐÇéÄ£¿é³õÊ¼»¯Ê§°Ü,ÕÒ²»µ½Èë¿Úº¯ÊýcreateParser...");
+				WTSLogger::info("è¡Œæƒ…æ¨¡å—åˆå§‹åŒ–å¤±è´¥,æ‰¾ä¸åˆ°å…¥å£å‡½æ•°createParser...");
 			}
 
 			FuncDeleteParser pFuncDeleteParser = (FuncDeleteParser)DLLHelper::get_symbol(libParser, "deleteParser");
 			if (pFuncDeleteParser == NULL)
 			{
-				WTSLogger::info("ÐÐÇéÄ£¿é³õÊ¼»¯Ê§°Ü,ÕÒ²»µ½Èë¿Úº¯ÊýdeleteParser...");
+				WTSLogger::info("è¡Œæƒ…æ¨¡å—åˆå§‹åŒ–å¤±è´¥,æ‰¾ä¸åˆ°å…¥å£å‡½æ•°deleteParser...");
 			}
 
 			if (pFuncCreateParser && pFuncDeleteParser)
@@ -105,11 +105,11 @@ void initParsers(WTSVariant* cfg)
 		}
 		else
 		{
-			WTSLogger::info("ÐÐÇéÄ£¿é³õÊ¼»¯Ê§°Ü,¼ÓÔØÄ£¿é%sÊ§°Ü...", module.c_str());
+			WTSLogger::info("è¡Œæƒ…æ¨¡å—åˆå§‹åŒ–å¤±è´¥,åŠ è½½æ¨¡å—%så¤±è´¥...", module.c_str());
 		}
 	}
 
-	WTSLogger::info("Ò»¹²¼ÓÔØ%u¸öParser", ParserAdapterMgr::size());
+	WTSLogger::info("ä¸€å…±åŠ è½½%uä¸ªParser", ParserAdapterMgr::size());
 }
 
 void initialize()
@@ -141,36 +141,36 @@ void initialize()
 	}
 
 
-	//¼ÓÔØÊÐ³¡ÐÅÏ¢
+	//åŠ è½½å¸‚åœºä¿¡æ¯
 	WTSVariant* cfgBF = config->get("basefiles");
 	if (cfgBF->get("session"))
 	{
 		g_baseDataMgr.loadSessions(cfgBF->getCString("session"));
-		WTSLogger::info("½»Ò×Ê±¼äÄ£°å¼ÓÔØÍê³É");
+		WTSLogger::info("äº¤æ˜“æ—¶é—´æ¨¡æ¿åŠ è½½å®Œæˆ");
 	}
 
 	if (cfgBF->get("commodity"))
 	{
 		g_baseDataMgr.loadCommodities(cfgBF->getCString("commodity"));
-		WTSLogger::info("Æ·ÖÖÁÐ±í¼ÓÔØÍê³É");
+		WTSLogger::info("å“ç§åˆ—è¡¨åŠ è½½å®Œæˆ");
 	}
 
 	if (cfgBF->get("contract"))
 	{
 		g_baseDataMgr.loadContracts(cfgBF->getCString("contract"));
-		WTSLogger::info("ºÏÔ¼ÁÐ±í¼ÓÔØÍê³É");
+		WTSLogger::info("åˆçº¦åˆ—è¡¨åŠ è½½å®Œæˆ");
 	}
 
 	if (cfgBF->get("holiday"))
 	{
 		g_baseDataMgr.loadHolidays(cfgBF->getCString("holiday"));
-		WTSLogger::info("½Ú¼ÙÈÕÄ£°å¼ÓÔØÍê³É");
+		WTSLogger::info("èŠ‚å‡æ—¥æ¨¡æ¿åŠ è½½å®Œæˆ");
 	}
 
 	if (cfgBF->get("hot"))
 	{
 		g_hotMgr.loadHots(cfgBF->getCString("hot"));
-		WTSLogger::info("Ö÷Á¦ÇÐ»»±í¼ÓÔØÍê³É");
+		WTSLogger::info("ä¸»åŠ›åˆ‡æ¢è¡¨åŠ è½½å®Œæˆ");
 	}
 
 	g_udpCaster.init(config->get("broadcaster"), &g_baseDataMgr, &g_dataMgr);

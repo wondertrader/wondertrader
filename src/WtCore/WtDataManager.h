@@ -41,7 +41,7 @@ public:
 	void	handle_push_quote(const char* stdCode, WTSTickData* newTick);
 
 	//////////////////////////////////////////////////////////////////////////
-	//IDataManager ½Ó¿Ú
+	//IDataManager æ¥å£
 	virtual WTSTickSlice* get_tick_slice(const char* stdCode, uint32_t count, uint64_t etime = 0) override;
 	virtual WTSKlineSlice* get_kline_slice(const char* stdCode, WTSKlinePeriod period, uint32_t times, uint32_t count, uint64_t etime = 0) override;
 	virtual WTSTickData* grab_last_tick(const char* stdCode) override;
@@ -67,9 +67,9 @@ private:
 
 	std::unordered_set<std::string> _subed_basic_bars;
 	typedef WTSHashMap<std::string> DataCacheMap;
-	DataCacheMap*	_bars_cache;	//KÏß»º´æ
-	DataCacheMap*	_ticks_cache;	//ÀúÊ·Tick»º´æ
-	DataCacheMap*	_rt_tick_map;	//ÊµÊ±tick»º´æ
+	DataCacheMap*	_bars_cache;	//Kçº¿ç¼“å­˜
+	DataCacheMap*	_ticks_cache;	//å†å²Tickç¼“å­˜
+	DataCacheMap*	_rt_tick_map;	//å®æ—¶tickç¼“å­˜
 
 	typedef struct _NotifyItem
 	{

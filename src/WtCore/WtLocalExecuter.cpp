@@ -54,7 +54,7 @@ bool WtLocalExecuter::init(WTSVariant* params)
 	if(poolsize > 0)
 	{
 		_pool.reset(new boost::threadpool::pool(poolsize));
-		writeLog("Ö´ĞĞÆ÷Ïß³Ì³Ø´óĞ¡%u", poolsize);
+		writeLog("æ‰§è¡Œå™¨çº¿ç¨‹æ± å¤§å°%u", poolsize);
 	}
 
 	return true;
@@ -94,7 +94,7 @@ ExecuteUnitPtr WtLocalExecuter::getUnit(const char* code, bool bAutoCreate /* = 
 
 //////////////////////////////////////////////////////////////////////////
 //ExecuteContext
-#pragma region Context»Øµ÷½Ó¿Ú
+#pragma region Contextå›è°ƒæ¥å£
 WTSTickSlice* WtLocalExecuter::getTicks(const char* stdCode, uint32_t count, uint64_t etime /* = 0 */)
 {
 	if (_data_mgr == NULL)
@@ -184,12 +184,12 @@ uint64_t WtLocalExecuter::getCurTime()
 	//return TimeUtils::makeTime(_stub->get_date(), _stub->get_raw_time() * 100000 + _stub->get_secs());
 }
 
-#pragma endregion Context»Øµ÷½Ó¿Ú
+#pragma endregion Contextå›è°ƒæ¥å£
 //ExecuteContext
 //////////////////////////////////////////////////////////////////////////
 
 
-#pragma region Íâ²¿½Ó¿Ú
+#pragma region å¤–éƒ¨æ¥å£
 void WtLocalExecuter::on_position_changed(const char* stdCode, double targetPos)
 {
 	ExecuteUnitPtr unit = getUnit(stdCode);
@@ -204,12 +204,12 @@ void WtLocalExecuter::on_position_changed(const char* stdCode, double targetPos)
 
 	if(!decimal::eq(oldVol, targetPos))
 	{
-		writeLog(fmt::format("{}Ä¿±ê²ÖÎ»¸üĞÂ: {} -> {}", stdCode, oldVol, targetPos).c_str());
+		writeLog(fmt::format("{}ç›®æ ‡ä»“ä½æ›´æ–°: {} -> {}", stdCode, oldVol, targetPos).c_str());
 	}
 
 	if (_trader && !_trader->checkOrderLimits(stdCode))
 	{
-		writeLog("ºÏÔ¼ %s ÒÑ±»½ûÖ¹½»Ò×", stdCode);
+		writeLog("åˆçº¦ %s å·²è¢«ç¦æ­¢äº¤æ˜“", stdCode);
 		return;
 	}
 
@@ -231,12 +231,12 @@ void WtLocalExecuter::set_position(const std::unordered_map<std::string, double>
 		_target_pos[stdCode] = newVol;
 		if(!decimal::eq(oldVol, newVol))
 		{
-			writeLog(fmt::format("{}Ä¿±ê²ÖÎ»¸üĞÂ: {} -> {}", stdCode, oldVol, newVol).c_str());
+			writeLog(fmt::format("{}ç›®æ ‡ä»“ä½æ›´æ–°: {} -> {}", stdCode, oldVol, newVol).c_str());
 		}
 
 		if (_trader && !_trader->checkOrderLimits(stdCode))
 		{
-			writeLog("ºÏÔ¼ %s ÒÑ±»½ûÖ¹½»Ò×", stdCode);
+			writeLog("åˆçº¦ %s å·²è¢«ç¦æ­¢äº¤æ˜“", stdCode);
 			continue;
 		}
 
@@ -418,8 +418,8 @@ void WtLocalExecuter::on_position(const char* stdCode, bool isLong, double prevo
 		std::string code = hotMgr->getPrevRawCode(cInfo._exchg, cInfo._product, _stub->get_trading_day());
 		if (code == stdCode)
 		{
-			//ÉÏÆÚÖ÷Á¦ºÏÔ¼£¬ĞèÒªÇåÀí²ÖÎ»
-			writeLog("ºÏÔ¼ %s ÎªÉÏÒ»ÆÚÖ÷Á¦ºÏÔ¼£¬²ÖÎ»¼´½«×Ô¶¯ÇåÀí");
+			//ä¸ŠæœŸä¸»åŠ›åˆçº¦ï¼Œéœ€è¦æ¸…ç†ä»“ä½
+			writeLog("åˆçº¦ %s ä¸ºä¸Šä¸€æœŸä¸»åŠ›åˆçº¦ï¼Œä»“ä½å³å°†è‡ªåŠ¨æ¸…ç†");
 			ExecuteUnitPtr unit = getUnit(stdCode);
 			if (unit)
 			{
@@ -440,7 +440,7 @@ void WtLocalExecuter::on_position(const char* stdCode, bool isLong, double prevo
 	}
 }
 
-#pragma endregion Íâ²¿½Ó¿Ú
+#pragma endregion å¤–éƒ¨æ¥å£
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -449,7 +449,7 @@ bool WtExecuterFactory::loadFactories(const char* path)
 {
 	if (!StdFile::exists(path))
 	{
-		WTSLogger::error("Ö´ĞĞÆ÷¹¤³§Ä¿Â¼%s²»´æÔÚ", path);
+		WTSLogger::error("æ‰§è¡Œå™¨å·¥å‚ç›®å½•%sä¸å­˜åœ¨", path);
 		return false;
 	}
 
@@ -492,7 +492,7 @@ bool WtExecuterFactory::loadFactories(const char* path)
 
 		_factories[fInfo._fact->getName()] = fInfo;
 
-		WTSLogger::info("Ö´ĞĞÆ÷¹¤³§%s¼ÓÔØ³É¹¦", fInfo._fact->getName());
+		WTSLogger::info("æ‰§è¡Œå™¨å·¥å‚%såŠ è½½æˆåŠŸ", fInfo._fact->getName());
 	}
 
 	return true;
@@ -508,7 +508,7 @@ ExecuteUnitPtr WtExecuterFactory::createExeUnit(const char* factname, const char
 	ExecuteUnit* unit = fInfo._fact->createExeUnit(unitname);
 	if(unit == NULL)
 	{
-		WTSLogger::error("Ö´ĞĞµ¥Ôª´´½¨Ê§°Ü:%s.%s", factname, unitname);
+		WTSLogger::error("æ‰§è¡Œå•å…ƒåˆ›å»ºå¤±è´¥:%s.%s", factname, unitname);
 		return ExecuteUnitPtr();
 	}
 	return ExecuteUnitPtr(new ExeUnitWrapper(unit, fInfo._fact));
@@ -531,7 +531,7 @@ ExecuteUnitPtr WtExecuterFactory::createExeUnit(const char* name)
 	ExecuteUnit* unit = fInfo._fact->createExeUnit(unitname);
 	if (unit == NULL)
 	{
-		WTSLogger::error("Ö´ĞĞµ¥Ôª´´½¨Ê§°Ü:", name);
+		WTSLogger::error("æ‰§è¡Œå•å…ƒåˆ›å»ºå¤±è´¥:", name);
 		return ExecuteUnitPtr();
 	}
 	return ExecuteUnitPtr(new ExeUnitWrapper(unit, fInfo._fact));

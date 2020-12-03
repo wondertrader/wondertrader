@@ -28,20 +28,20 @@ namespace rj = rapidjson;
 
 const char* CMP_ALG_NAMES[] =
 {
-	"£½",
-	"£¾",
-	"£¼",
-	"¡Ý",
-	"¡Ü"
+	"ï¼",
+	"ï¼ž",
+	"ï¼œ",
+	"â‰¥",
+	"â‰¤"
 };
 
 const char* ACTION_NAMES[] =
 {
-	"¿ª¶à",
-	"Æ½¶à",
-	"¿ª¿Õ",
-	"Æ½¿Õ",
-	"Í¬²½"
+	"å¼€å¤š",
+	"å¹³å¤š",
+	"å¼€ç©º",
+	"å¹³ç©º",
+	"åŒæ­¥"
 };
 
 
@@ -252,7 +252,7 @@ void CtaStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 
 	if(root.HasMember("fund"))
 	{
-		//¶ÁÈ¡×Ê½ð
+		//è¯»å–èµ„é‡‘
 		const rj::Value& jFund = root["fund"];
 		if(!jFund.IsNull() && jFund.IsObject())
 		{
@@ -263,7 +263,7 @@ void CtaStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 		}
 	}
 
-	{//¶ÁÈ¡²ÖÎ»
+	{//è¯»å–ä»“ä½
 		double total_profit = 0;
 		double total_dynprofit = 0;
 		const rj::Value& jPos = root["positions"];
@@ -274,7 +274,7 @@ void CtaStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 				const char* stdCode = pItem["code"].GetString();
 				if (!CodeHelper::isStdFutHotCode(stdCode) && _engine->get_contract_info(stdCode) == NULL)
 				{
-					stra_log_text("ºÏÔ¼%s²»´æÔÚ»òÕßÒÑ¹ýÆÚ£¬³Ö²ÖÊý¾ÝÒÑºöÂÔ", stdCode);
+					stra_log_text("åˆçº¦%sä¸å­˜åœ¨æˆ–è€…å·²è¿‡æœŸï¼ŒæŒä»“æ•°æ®å·²å¿½ç•¥", stdCode);
 					continue;
 				}
 				PosInfo& pInfo = _pos_map[stdCode];
@@ -312,7 +312,7 @@ void CtaStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 					strcpy(dInfo._opentag, dItem["opentag"].GetString());
 				}
 
-				stra_log_text("²ßÂÔ²ÖÎ»È·ÈÏ,%s -> %d", stdCode, pInfo._volumn);
+				stra_log_text("ç­–ç•¥ä»“ä½ç¡®è®¤,%s -> %d", stdCode, pInfo._volumn);
 			}
 		}
 
@@ -320,7 +320,7 @@ void CtaStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 		_fund_info._total_dynprofit = total_dynprofit;
 	}
 
-	{//¶ÁÈ¡Ìõ¼þµ¥
+	{//è¯»å–æ¡ä»¶å•
 		uint32_t count = 0;
 		const rj::Value& jCond = root["conditions"];
 		if (!jCond.IsNull() && jCond.IsObject())
@@ -332,7 +332,7 @@ void CtaStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 				const char* stdCode = m.name.GetString();
 				if (!CodeHelper::isStdFutHotCode(stdCode) && _engine->get_contract_info(stdCode) == NULL)
 				{
-					stra_log_text("ºÏÔ¼%s²»´æÔÚ»òÕßÒÑ¹ýÆÚ£¬Ìõ¼þµ¥ÒÑºöÂÔ", stdCode);
+					stra_log_text("åˆçº¦%sä¸å­˜åœ¨æˆ–è€…å·²è¿‡æœŸï¼Œæ¡ä»¶å•å·²å¿½ç•¥", stdCode);
 					continue;
 				}
 
@@ -354,19 +354,19 @@ void CtaStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 
 					condList.push_back(condInfo);
 
-					stra_log_text(fmt::format("Ìõ¼þµ¥»Ö¸´, ºÏÔ¼: {}, {} {}, ´¥·¢Ìõ¼þ: ×îÐÂ¼Û {} {}",
+					stra_log_text(fmt::format("æ¡ä»¶å•æ¢å¤, åˆçº¦: {}, {} {}, è§¦å‘æ¡ä»¶: æœ€æ–°ä»· {} {}",
 						stdCode, ACTION_NAMES[condInfo._action], condInfo._qty, CMP_ALG_NAMES[condInfo._alg], condInfo._target).c_str());
 					count++;
 				}
 			}
 
-			stra_log_text(fmt::format("Ìõ¼þµ¥¹²»Ö¸´ {} Ìõ, ÉèÖÃÊ±¼äÎª {}", count, _last_cond_min).c_str());
+			stra_log_text(fmt::format("æ¡ä»¶å•å…±æ¢å¤ {} æ¡, è®¾ç½®æ—¶é—´ä¸º {}", count, _last_cond_min).c_str());
 		}
 	}
 
 	if (root.HasMember("signals"))
 	{
-		//¶ÁÈ¡ÐÅºÅ
+		//è¯»å–ä¿¡å·
 		const rj::Value& jSignals = root["signals"];
 		if (!jSignals.IsNull() && jSignals.IsObject())
 		{
@@ -375,7 +375,7 @@ void CtaStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 				const char* stdCode = m.name.GetString();
 				if (!CodeHelper::isStdFutHotCode(stdCode) && _engine->get_contract_info(stdCode) == NULL)
 				{
-					stra_log_text("ºÏÔ¼%s²»´æÔÚ»òÕßÒÑ¹ýÆÚ£¬ÐÅºÅÒÑºöÂÔ", stdCode);
+					stra_log_text("åˆçº¦%sä¸å­˜åœ¨æˆ–è€…å·²è¿‡æœŸï¼Œä¿¡å·å·²å¿½ç•¥", stdCode);
 					continue;
 				}
 
@@ -387,7 +387,7 @@ void CtaStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 				sInfo._sigprice = jItem["sigprice"].GetDouble();
 				sInfo._gentime = jItem["gentime"].GetUint64();
 				
-				stra_log_text("Î´´¥·¢ÐÅºÅ»Ö¸´, ºÏÔ¼: %s, Ä¿±ê²¿Î»: %d", stdCode, sInfo._volumn);
+				stra_log_text("æœªè§¦å‘ä¿¡å·æ¢å¤, åˆçº¦: %s, ç›®æ ‡éƒ¨ä½: %d", stdCode, sInfo._volumn);
 			}
 		}
 	}
@@ -397,7 +397,7 @@ void CtaStraBaseCtx::save_data(uint32_t flag /* = 0xFFFFFFFF */)
 {
 	rj::Document root(rj::kObjectType);
 
-	{//³Ö²ÖÊý¾Ý±£´æ
+	{//æŒä»“æ•°æ®ä¿å­˜
 		rj::Value jPos(rj::kArrayType);
 
 		rj::Document::AllocatorType &allocator = root.GetAllocator();
@@ -440,7 +440,7 @@ void CtaStraBaseCtx::save_data(uint32_t flag /* = 0xFFFFFFFF */)
 		root.AddMember("positions", jPos, allocator);
 	}
 
-	{//×Ê½ð±£´æ
+	{//èµ„é‡‘ä¿å­˜
 		rj::Value jFund(rj::kObjectType);
 		rj::Document::AllocatorType &allocator = root.GetAllocator();
 
@@ -452,7 +452,7 @@ void CtaStraBaseCtx::save_data(uint32_t flag /* = 0xFFFFFFFF */)
 		root.AddMember("fund", jFund, allocator);
 	}
 
-	{//ÐÅºÅ±£´æ
+	{//ä¿¡å·ä¿å­˜
 		rj::Value jSigs(rj::kObjectType);
 		rj::Document::AllocatorType &allocator = root.GetAllocator();
 
@@ -474,7 +474,7 @@ void CtaStraBaseCtx::save_data(uint32_t flag /* = 0xFFFFFFFF */)
 		root.AddMember("signals", jSigs, allocator);
 	}
 
-	{//Ìõ¼þµ¥±£´æ
+	{//æ¡ä»¶å•ä¿å­˜
 		rj::Value jCond(rj::kObjectType);
 		rj::Value jItems(rj::kObjectType);
 
@@ -527,7 +527,7 @@ void CtaStraBaseCtx::save_data(uint32_t flag /* = 0xFFFFFFFF */)
 }
 
 //////////////////////////////////////////////////////////////////////////
-//»Øµ÷º¯Êý
+//å›žè°ƒå‡½æ•°
 void CtaStraBaseCtx::on_bar(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar)
 {
 	if (newBar == NULL)
@@ -550,10 +550,10 @@ void CtaStraBaseCtx::on_init()
 {
 	init_outputs();
 
-	//¶ÁÈ¡Êý¾Ý
+	//è¯»å–æ•°æ®
 	load_data();
 
-	//¼ÓÔØÓÃ»§Êý¾Ý
+	//åŠ è½½ç”¨æˆ·æ•°æ®
 	load_userdata();
 }
 
@@ -601,7 +601,7 @@ void CtaStraBaseCtx::on_tick(const char* stdCode, WTSTickData* newTick, bool bEm
 {
 	_price_map[stdCode] = newTick->price();
 
-	//ÏÈ¼ì²éÊÇ·ñÒªÐÅºÅÒª´¥·¢
+	//å…ˆæ£€æŸ¥æ˜¯å¦è¦ä¿¡å·è¦è§¦å‘
 	{
 		auto it = _sig_map.find(stdCode);
 		if(it != _sig_map.end())
@@ -618,11 +618,11 @@ void CtaStraBaseCtx::on_tick(const char* stdCode, WTSTickData* newTick, bool bEm
 		}
 	}
 
-	//¸üÐÂ¸¡¶¯Ó¯¿÷
+	//æ›´æ–°æµ®åŠ¨ç›ˆäº
 	update_dyn_profit(stdCode, newTick->price());
 
 	//////////////////////////////////////////////////////////////////////////
-	//¼ì²éÌõ¼þµ¥
+	//æ£€æŸ¥æ¡ä»¶å•
 	if(!_condtions.empty())
 	{
 		auto it = _condtions.find(stdCode);
@@ -658,7 +658,7 @@ void CtaStraBaseCtx::on_tick(const char* stdCode, WTSTickData* newTick, bool bEm
 
 			if (isMatched)
 			{
-				stra_log_text(fmt::format("Ìõ¼þµ¥´¥·¢[×îÐÂ¼Û: {}{}{}], ºÏÔ¼: {}, {} {}", curPrice, CMP_ALG_NAMES[entrust._alg], entrust._target, stdCode, ACTION_NAMES[entrust._action], entrust._qty).c_str());
+				stra_log_text(fmt::format("æ¡ä»¶å•è§¦å‘[æœ€æ–°ä»·: {}{}{}], åˆçº¦: {}, {} {}", curPrice, CMP_ALG_NAMES[entrust._alg], entrust._target, stdCode, ACTION_NAMES[entrust._action], entrust._qty).c_str());
 
 				switch (entrust._action)
 				{
@@ -733,8 +733,8 @@ void CtaStraBaseCtx::on_tick(const char* stdCode, WTSTickData* newTick, bool bEm
 				default: break;
 				}
 
-				//Í¬Ò»¸öbarÉèÖÃÕë¶ÔÍ¬Ò»¸öºÏÔ¼µÄÌõ¼þµ¥, Ö»¿ÉÄÜ´¥·¢Ò»Ìõ
-				//ËùÒÔÕâÀïÖ±½ÓÇåÀíµô¼´¿É
+				//åŒä¸€ä¸ªbarè®¾ç½®é’ˆå¯¹åŒä¸€ä¸ªåˆçº¦çš„æ¡ä»¶å•, åªå¯èƒ½è§¦å‘ä¸€æ¡
+				//æ‰€ä»¥è¿™é‡Œç›´æŽ¥æ¸…ç†æŽ‰å³å¯
 				_condtions.erase(it);
 				break;
 			}
@@ -753,9 +753,9 @@ void CtaStraBaseCtx::on_tick(const char* stdCode, WTSTickData* newTick, bool bEm
 
 bool CtaStraBaseCtx::on_schedule(uint32_t curDate, uint32_t curTime)
 {
-	_is_in_schedule = true;//¿ªÊ¼µ÷¶È, ÐÞ¸Ä±ê¼Ç
+	_is_in_schedule = true;//å¼€å§‹è°ƒåº¦, ä¿®æ”¹æ ‡è®°
 
-	//Ö÷ÒªÓÃÓÚ±£´æ¸¡¶¯Ó¯¿÷µÄ
+	//ä¸»è¦ç”¨äºŽä¿å­˜æµ®åŠ¨ç›ˆäºçš„
 	save_data();
 
 	bool isMainUdt = false;
@@ -794,7 +794,7 @@ bool CtaStraBaseCtx::on_schedule(uint32_t curDate, uint32_t curTime)
 			{
 				_condtions.clear();
 				on_mainkline_updated(curDate, curTime);
-				stra_log_text("²ßÂÔÖØËãÒÑ´¥·¢ @ %u", curTime);
+				stra_log_text("ç­–ç•¥é‡ç®—å·²è§¦å‘ @ %u", curTime);
 				emmited = true;
 
 				_emit_times++;
@@ -802,7 +802,7 @@ bool CtaStraBaseCtx::on_schedule(uint32_t curDate, uint32_t curTime)
 
 				if (_emit_times % 20 == 0)
 				{
-					stra_log_text(fmt::format("²ßÂÔ¹²´¥·¢{}´Î, ¹²ºÄÊ±{}Î¢Ãë, Æ½¾ùºÄÊ±{}Î¢Ãë",
+					stra_log_text(fmt::format("ç­–ç•¥å…±è§¦å‘{}æ¬¡, å…±è€—æ—¶{}å¾®ç§’, å¹³å‡è€—æ—¶{}å¾®ç§’",
 						_emit_times, _total_calc_time, _total_calc_time / _emit_times).c_str());
 				}
 
@@ -820,13 +820,13 @@ bool CtaStraBaseCtx::on_schedule(uint32_t curDate, uint32_t curTime)
 			}
 			else
 			{
-				stra_log_text("%u ²»ÔÚ½»Ò×Ê±¼ä, ²ßÂÔÖØËãÈ¡Ïû", curTime);
+				stra_log_text("%u ä¸åœ¨äº¤æ˜“æ—¶é—´, ç­–ç•¥é‡ç®—å–æ¶ˆ", curTime);
 			}
 			break;
 		}
 	}
 
-	_is_in_schedule = false;//µ÷¶È½áÊø, ÐÞ¸Ä±ê¼Ç
+	_is_in_schedule = false;//è°ƒåº¦ç»“æŸ, ä¿®æ”¹æ ‡è®°
 	return emmited;
 }
 
@@ -874,8 +874,8 @@ void CtaStraBaseCtx::on_session_end()
 		total_dynprofit += pInfo._dynprofit;
 	}
 
-	//ÕâÀïÒª°Ñµ±ÈÕ½áËãµÄÊý¾ÝÐ´µ½ÈÕÖ¾ÎÄ¼þÀï
-	//¶øÇÒÕâÀï»Ø²âºÍÊµÅÌÐ´·¨²»Í¬, ÏÈÁô×Å, ºóÃæÀ´×ö
+	//è¿™é‡Œè¦æŠŠå½“æ—¥ç»“ç®—çš„æ•°æ®å†™åˆ°æ—¥å¿—æ–‡ä»¶é‡Œ
+	//è€Œä¸”è¿™é‡Œå›žæµ‹å’Œå®žç›˜å†™æ³•ä¸åŒ, å…ˆç•™ç€, åŽé¢æ¥åš
 	if (_fund_logs)
 		_fund_logs->write_file(StrUtil::printf("%d,%.2f,%.2f,%.2f,%.2f\n", curDate, 
 		_fund_info._total_profit, _fund_info._total_dynprofit, 
@@ -891,20 +891,20 @@ CondList& CtaStraBaseCtx::get_cond_entrusts(const char* stdCode)
 }
 
 //////////////////////////////////////////////////////////////////////////
-//²ßÂÔ½Ó¿Ú
+//ç­–ç•¥æŽ¥å£
 void CtaStraBaseCtx::stra_enter_long(const char* stdCode, double qty, const char* userTag /* = "" */, double limitprice, double stopprice)
 {
-	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//Èç¹û²»ÊÇ¶¯Ì¬ÏÂµ¥Ä£Ê½, ÔòÖ±½Ó´¥·¢
+	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//å¦‚æžœä¸æ˜¯åŠ¨æ€ä¸‹å•æ¨¡å¼, åˆ™ç›´æŽ¥è§¦å‘
 	{
 		double curQty = stra_get_position(stdCode);
 		if (decimal::lt(curQty, 0))
 		{
-			//µ±Ç°³Ö²ÖÐ¡ÓÚ0£¬Âß¼­ÊÇ·´ÊÖµ½qty£¬ËùÒÔÉèÖÃÐÅºÅÄ¿±ê²ÖÎ»Îªqty
+			//å½“å‰æŒä»“å°äºŽ0ï¼Œé€»è¾‘æ˜¯åæ‰‹åˆ°qtyï¼Œæ‰€ä»¥è®¾ç½®ä¿¡å·ç›®æ ‡ä»“ä½ä¸ºqty
 			append_signal(stdCode, qty, userTag);
 		}
 		else
 		{
-			//µ±Ç°³Ö²Ö´óÓÚµÈÓÚ0£¬ÔòÒªÔö¼Ó¶à²Öqty
+			//å½“å‰æŒä»“å¤§äºŽç­‰äºŽ0ï¼Œåˆ™è¦å¢žåŠ å¤šä»“qty
 			append_signal(stdCode, curQty + qty, userTag);
 		}
 	}
@@ -937,17 +937,17 @@ void CtaStraBaseCtx::stra_enter_long(const char* stdCode, double qty, const char
 
 void CtaStraBaseCtx::stra_enter_short(const char* stdCode, double qty, const char* userTag /* = "" */, double limitprice, double stopprice)
 {
-	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//Èç¹û²»ÊÇ¶¯Ì¬ÏÂµ¥Ä£Ê½, ÔòÖ±½Ó´¥·¢
+	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//å¦‚æžœä¸æ˜¯åŠ¨æ€ä¸‹å•æ¨¡å¼, åˆ™ç›´æŽ¥è§¦å‘
 	{
 		double curQty = stra_get_position(stdCode);
 		if (decimal::gt(curQty, 0))
 		{
-			//µ±Ç°²ÖÎ»´óÓÚ0£¬Âß¼­ÊÇ·´ÊÖµ½qtyÊÖ£¬ËùÒÔÉèÖÃÐÅºÅÄ¿±ê²ÖÎ»Îª-qtyÊÖ
+			//å½“å‰ä»“ä½å¤§äºŽ0ï¼Œé€»è¾‘æ˜¯åæ‰‹åˆ°qtyæ‰‹ï¼Œæ‰€ä»¥è®¾ç½®ä¿¡å·ç›®æ ‡ä»“ä½ä¸º-qtyæ‰‹
 			append_signal(stdCode, -qty, userTag);
 		}
 		else
 		{
-			//µ±Ç°²ÖÎ»Ð¡ÓÚµÈÓÚ0£¬ÔòÊÇ×·¼Ó¿Õ·½ÊÖÊý
+			//å½“å‰ä»“ä½å°äºŽç­‰äºŽ0ï¼Œåˆ™æ˜¯è¿½åŠ ç©ºæ–¹æ‰‹æ•°
 			append_signal(stdCode, curQty - qty, userTag);
 		}
 	}
@@ -980,10 +980,10 @@ void CtaStraBaseCtx::stra_enter_short(const char* stdCode, double qty, const cha
 
 void CtaStraBaseCtx::stra_exit_long(const char* stdCode, double qty, const char* userTag /* = "" */, double limitprice, double stopprice)
 {
-	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//Èç¹û²»ÊÇ¶¯Ì¬ÏÂµ¥Ä£Ê½, ÔòÖ±½Ó´¥·¢
+	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//å¦‚æžœä¸æ˜¯åŠ¨æ€ä¸‹å•æ¨¡å¼, åˆ™ç›´æŽ¥è§¦å‘
 	{
 		double curQty = stra_get_position(stdCode);
-		//Èç¹û³Ö²ÖÎª¿Õ£¬Ôò²»ÐèÒªÔÙÖ´ÐÐÍË³ö¶àÍ·µÄÂß¼­ÁË
+		//å¦‚æžœæŒä»“ä¸ºç©ºï¼Œåˆ™ä¸éœ€è¦å†æ‰§è¡Œé€€å‡ºå¤šå¤´çš„é€»è¾‘äº†
 		if (decimal::le(curQty, 0))
 			return;
 
@@ -1019,10 +1019,10 @@ void CtaStraBaseCtx::stra_exit_long(const char* stdCode, double qty, const char*
 
 void CtaStraBaseCtx::stra_exit_short(const char* stdCode, double qty, const char* userTag /* = "" */, double limitprice, double stopprice)
 {
-	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//Èç¹û²»ÊÇ¶¯Ì¬ÏÂµ¥Ä£Ê½, ÔòÖ±½Ó´¥·¢
+	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//å¦‚æžœä¸æ˜¯åŠ¨æ€ä¸‹å•æ¨¡å¼, åˆ™ç›´æŽ¥è§¦å‘
 	{
 		double curQty = stra_get_position(stdCode);
-		//Èç¹û³Ö²ÖÊÇ¶à£¬Ôò²»ÐèÒªÖ´ÐÐÍË³ö¿ÕÍ·µÄÂß¼­ÁË
+		//å¦‚æžœæŒä»“æ˜¯å¤šï¼Œåˆ™ä¸éœ€è¦æ‰§è¡Œé€€å‡ºç©ºå¤´çš„é€»è¾‘äº†
 		if (decimal::ge(curQty, 0))
 			return ;
 
@@ -1066,7 +1066,7 @@ double CtaStraBaseCtx::stra_get_price(const char* stdCode)
 
 void CtaStraBaseCtx::stra_set_position(const char* stdCode, double qty, const char* userTag /* = "" */, double limitprice /* = 0.0 */, double stopprice /* = 0.0 */)
 {
-	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//Èç¹û²»ÊÇ¶¯Ì¬ÏÂµ¥Ä£Ê½, ÔòÖ±½Ó´¥·¢
+	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//å¦‚æžœä¸æ˜¯åŠ¨æ€ä¸‹å•æ¨¡å¼, åˆ™ç›´æŽ¥è§¦å‘
 	{
 		append_signal(stdCode, qty, userTag);
 	}
@@ -1074,7 +1074,7 @@ void CtaStraBaseCtx::stra_set_position(const char* stdCode, double qty, const ch
 	{
 		CondList& condList = get_cond_entrusts(stdCode);
 
-		//¸ù¾ÝÄ¿±ê²ÖÎ»ºÍµ±Ç°²ÖÎ»£¬ÅÐ¶ÏÊÇÂò»¹ÊÇÂô
+		//æ ¹æ®ç›®æ ‡ä»“ä½å’Œå½“å‰ä»“ä½ï¼Œåˆ¤æ–­æ˜¯ä¹°è¿˜æ˜¯å–
 		double curVol = stra_get_position(stdCode);
 		bool isBuy = decimal::gt(qty, curVol);
 
@@ -1132,7 +1132,7 @@ void CtaStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 	WTSCommodityInfo* commInfo = _engine->get_commodity_info(stdCode);
 
 	if (decimal::gt(pInfo._volumn*diff, 0))
-	{//µ±Ç°³Ö²ÖºÍ²ÖÎ»±ä»¯·½ÏòÒ»ÖÂ, Ôö¼ÓÒ»ÌõÃ÷Ï¸, Ôö¼ÓÊýÁ¿¼´¿É
+	{//å½“å‰æŒä»“å’Œä»“ä½å˜åŒ–æ–¹å‘ä¸€è‡´, å¢žåŠ ä¸€æ¡æ˜Žç»†, å¢žåŠ æ•°é‡å³å¯
 		pInfo._volumn = qty;
 
 		DetailInfo dInfo;
@@ -1149,7 +1149,7 @@ void CtaStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 		log_trade(stdCode, dInfo._long, true, curTm, curPx, abs(qty), userTag, fee);
 	}
 	else
-	{//³Ö²Ö·½ÏòºÍ²ÖÎ»±ä»¯·½Ïò²»Ò»ÖÂ, ÐèÒªÆ½²Ö
+	{//æŒä»“æ–¹å‘å’Œä»“ä½å˜åŒ–æ–¹å‘ä¸ä¸€è‡´, éœ€è¦å¹³ä»“
 		double left = abs(diff);
 
 		pInfo._volumn = qty;
@@ -1161,342 +1161,11 @@ void CtaStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 			DetailInfo& dInfo = *it;
 			double maxQty = min(dInfo._volumn, left);
 			if (decimal::eq(maxQty, 0))
-				continue;
+				contin);
 
-			dInfo._volumn -= maxQty;
-			left -= maxQty;
-
-			if (decimal::eq(dInfo._volumn, 0))
-				count++;
-
-			//¼ÆËãÆ½²ÖÓ¯¿÷
-			double profit = (curPx - dInfo._price) * maxQty * commInfo->getVolScale();
-			if (!dInfo._long)
-				profit *= -1;
-			pInfo._closeprofit += profit;
-
-			//¸¡Ó¯Ò²Òª×öµÈ±ÈËõ·Å
-			pInfo._dynprofit = pInfo._dynprofit*dInfo._volumn / (dInfo._volumn + maxQty);
-			_fund_info._total_profit += profit;
-
-			//¼ÆËãÊÖÐø·Ñ
-			double fee = _engine->calc_fee(stdCode, curPx, maxQty, dInfo._opentdate == curTDate ? 2 : 1);
-			_fund_info._total_fees += fee;
-			//ÕâÀïÐ´³É½»¼ÇÂ¼
-			log_trade(stdCode, dInfo._long, false, curTm, curPx, maxQty, userTag, fee);
-			//ÕâÀïÐ´Æ½²Ö¼ÇÂ¼
-			log_close(stdCode, dInfo._long, dInfo._opentime, dInfo._price, curTm, curPx, maxQty, profit, pInfo._closeprofit, dInfo._opentag, userTag);
-
-			if (decimal::eq(left,0))
-				break;
-		}
-
-		//ÐèÒªÇåÀíµôÒÑ¾­Æ½²ÖÍêµÄÃ÷Ï¸
-		while (count > 0)
-		{
-			auto it = pInfo._details.begin();
-			pInfo._details.erase(it);
-			count--;
-		}
-
-		//×îºó, Èç¹û»¹ÓÐÊ£ÓàµÄ, ÔòÐèÒª·´ÊÖÁË
-		if (decimal::gt(left, 0))
-		{
-			left = left * qty / abs(qty);
-
-			DetailInfo dInfo;
-			dInfo._long = decimal::gt(qty, 0);
-			dInfo._price = curPx;
-			dInfo._volumn = abs(left);
-			dInfo._opentime = curTm;
-			dInfo._opentdate = curTDate;
-			strcpy(dInfo._opentag, userTag);
-			pInfo._details.push_back(dInfo);
-
-			//ÕâÀï»¹ÐèÒªÐ´Ò»±Ê³É½»¼ÇÂ¼
-			double fee = _engine->calc_fee(stdCode, curPx, abs(left), 0);
-			_fund_info._total_fees += fee;
-			log_trade(stdCode, dInfo._long, true, curTm, curPx, abs(left), userTag, fee);
-		}
-	}
-
-
-	//´æ´¢Êý¾Ý
-	save_data();
-
-	if (bTriggered)	//Èç¹ûÊÇÌõ¼þµ¥´¥·¢, ÔòÏòÒýÇæÌá½»±ä»¯Á¿
-	{
-		_engine->handle_pos_change(stdCode, diff);
-	}
-}
-
-WTSKlineSlice* CtaStraBaseCtx::stra_get_bars(const char* stdCode, const char* period, uint32_t count, bool isMain /* = false */)
-{
-	std::string key = StrUtil::printf("%s#%s", stdCode, period);
-	if (isMain)
-	{
-		if (_main_key.empty())
-			_main_key = key;
-		else if (_main_key != key)
-			throw std::runtime_error("²»ÄÜÖØ¸´Éè¶¨Ö÷KÏß");
-	}
-
-	std::string basePeriod = "";
-	uint32_t times = 1;
-	if (strlen(period) > 1)
-	{
-		basePeriod.append(period, 1);
-		times = strtoul(period + 1, NULL, 10);
+		double fee = _engine->calc_fee(stdCode, curPx, abs(qty), 0);
+		_fund_info._total_fees += fee;
+		log_trade(stdCode, dInfo._long, true, curTm, curPx, abs(qty), userTag, fee);
 	}
 	else
-	{
-		basePeriod = period;
-	}
-
-	WTSKlineSlice* kline = _engine->get_kline_slice(_context_id, stdCode, basePeriod.c_str(), count, times);
-	if(kline)
-	{
-		//Èç¹ûKÏß»ñÈ¡²»µ½£¬ËµÃ÷Ò²²»»áÓÐ±ÕºÏÊÂ¼þ·¢Éú£¬ËùÒÔ²»¸üÐÂ±¾µØ±ê¼Ç
-		bool isFirst = (_kline_tags.find(key) == _kline_tags.end());	//Èç¹ûÃ»ÓÐ±£´æ±ê¼Ç£¬ËµÃ÷ÊÇµÚÒ»´ÎÀ­È¡¸ÃKÏß
-		KlineTag& tag = _kline_tags[key];
-		tag._closed = false;
-
-		double lastClose = kline->close(-1);
-		_price_map[stdCode] = lastClose;
-
-		if(isMain && isFirst && !_condtions.empty())
-		{
-			//Èç¹ûÊÇµÚÒ»´ÎÀ­È¡Ö÷KÏß£¬Ôò¼ì²éÌõ¼þµ¥´¥·¢Ê±¼ä
-			bool isDay = basePeriod[0] == 'd';
-			uint64_t lastBartime = isDay ? kline->date(-1) : kline->time(-1);
-			if(!isDay)
-				lastBartime += 199000000000;
-
-			if(lastBartime >= _last_cond_min)
-			{
-				stra_log_text(fmt::format("Ìõ¼þµ¥ÒÑ¹ýÆÚ£¬ÉèÖÃÊ±¼äÎª{}£¬ÉÏÒ»¸ùÖ÷KÏßÊ±¼äÎª{}£¬È«²¿Çå¿Õ", _last_cond_min, lastBartime).c_str());
-				_condtions.clear();
-			}
-		}
-
-		_engine->sub_tick(id(), stdCode);
-	}
-
-	return kline;
-}
-
-WTSTickSlice* CtaStraBaseCtx::stra_get_ticks(const char* stdCode, uint32_t count)
-{
-	WTSTickSlice* ret = _engine->get_tick_slice(_context_id, stdCode, count);
-	if (ret)
-		_engine->sub_tick(id(), stdCode);
-
-	return ret;
-}
-
-WTSTickData* CtaStraBaseCtx::stra_get_last_tick(const char* stdCode)
-{
-	return _engine->get_last_tick(_context_id, stdCode);
-}
-
-void CtaStraBaseCtx::stra_sub_ticks(const char* code)
-{
-	_engine->sub_tick(_context_id, code);
-	stra_log_text("ÊµÊ±ÐÐÇéÒÑ¶©ÔÄ: %s", code);
-}
-
-WTSCommodityInfo* CtaStraBaseCtx::stra_get_comminfo(const char* stdCode)
-{
-	return _engine->get_commodity_info(stdCode);
-}
-
-uint32_t CtaStraBaseCtx::stra_get_date()
-{
-	return _engine->get_date();
-}
-
-uint32_t CtaStraBaseCtx::stra_get_time()
-{
-	return _engine->get_min_time();
-}
-
-void CtaStraBaseCtx::stra_log_text(const char* fmt, ...)
-{
-	char szBuf[256] = { 0 };
-	uint32_t length = sprintf(szBuf, "[%s]", _name.c_str());
-	strcat(szBuf, fmt);
-	va_list args;
-	va_start(args, fmt);
-	WTSLogger::vlog_dyn("strategy", _name.c_str(), LL_INFO, szBuf, args);
-	va_end(args);
-}
-
-const char* CtaStraBaseCtx::stra_load_user_data(const char* key, const char* defVal /*= ""*/)
-{
-	auto it = _user_datas.find(key);
-	if (it != _user_datas.end())
-		return it->second.c_str();
-
-	return defVal;
-}
-
-void CtaStraBaseCtx::stra_save_user_data(const char* key, const char* val)
-{
-	_user_datas[key] = val;
-	_ud_modified = true;
-}
-
-uint64_t CtaStraBaseCtx::stra_get_first_entertime(const char* stdCode)
-{
-	auto it = _pos_map.find(stdCode);
-	if (it == _pos_map.end())
-		return INVALID_UINT64;
-
-	const PosInfo& pInfo = it->second;
-	if (pInfo._details.empty())
-		return INVALID_UINT64;
-
-	return pInfo._details[0]._opentime;
-}
-
-uint64_t CtaStraBaseCtx::stra_get_last_entertime(const char* stdCode)
-{
-	auto it = _pos_map.find(stdCode);
-	if (it == _pos_map.end())
-		return INVALID_UINT64;
-
-	const PosInfo& pInfo = it->second;
-	if (pInfo._details.empty())
-		return INVALID_UINT64;
-
-	return pInfo._details[pInfo._details.size() - 1]._opentime;
-}
-
-double CtaStraBaseCtx::stra_get_last_enterprice(const char* stdCode)
-{
-	auto it = _pos_map.find(stdCode);
-	if (it == _pos_map.end())
-		return INVALID_DOUBLE;
-
-	const PosInfo& pInfo = it->second;
-	if (pInfo._details.empty())
-		return INVALID_DOUBLE;
-
-	return pInfo._details[pInfo._details.size() - 1]._price;
-}
-
-double CtaStraBaseCtx::stra_get_position(const char* stdCode, const char* userTag /* = "" */)
-{
-	auto it = _pos_map.find(stdCode);
-	if (it == _pos_map.end())
-		return 0;
-
-	const PosInfo& pInfo = it->second;
-	if (strlen(userTag) == 0)
-		return pInfo._volumn;
-
-	for (auto it = pInfo._details.begin(); it != pInfo._details.end(); it++)
-	{
-		const DetailInfo& dInfo = (*it);
-		if (strcmp(dInfo._opentag, userTag) != 0)
-			continue;
-
-		return dInfo._volumn;
-	}
-
-	return 0;
-}
-
-double CtaStraBaseCtx::stra_get_position_avgpx(const char* stdCode)
-{
-	auto it = _pos_map.find(stdCode);
-	if (it == _pos_map.end())
-		return 0;
-
-	const PosInfo& pInfo = it->second;
-	if (pInfo._volumn == 0)
-		return 0.0;
-
-	double amount = 0.0;
-	for (auto dit = pInfo._details.begin(); dit != pInfo._details.end(); dit++)
-	{
-		const DetailInfo& dInfo = *dit;
-		amount += dInfo._price*dInfo._volumn;
-	}
-
-	return amount / pInfo._volumn;
-}
-
-double CtaStraBaseCtx::stra_get_position_profit(const char* stdCode)
-{
-	auto it = _pos_map.find(stdCode);
-	if (it == _pos_map.end())
-		return 0;
-
-	const PosInfo& pInfo = it->second;
-	return pInfo._dynprofit;
-}
-
-uint64_t CtaStraBaseCtx::stra_get_detail_entertime(const char* stdCode, const char* userTag)
-{
-	auto it = _pos_map.find(stdCode);
-	if (it == _pos_map.end())
-		return 0;
-
-	const PosInfo& pInfo = it->second;
-	for (auto it = pInfo._details.begin(); it != pInfo._details.end(); it++)
-	{
-		const DetailInfo& dInfo = (*it);
-		if (strcmp(dInfo._opentag, userTag) != 0)
-			continue;
-
-		return dInfo._opentime;
-	}
-
-	return 0;
-}
-
-double CtaStraBaseCtx::stra_get_detail_cost(const char* stdCode, const char* userTag)
-{
-	auto it = _pos_map.find(stdCode);
-	if (it == _pos_map.end())
-		return 0;
-
-	const PosInfo& pInfo = it->second;
-	for (auto it = pInfo._details.begin(); it != pInfo._details.end(); it++)
-	{
-		const DetailInfo& dInfo = (*it);
-		if (strcmp(dInfo._opentag, userTag) != 0)
-			continue;
-
-		return dInfo._price;
-	}
-
-	return 0.0;
-}
-
-double CtaStraBaseCtx::stra_get_detail_profit(const char* stdCode, const char* userTag, int flag /* = 0 */)
-{
-	auto it = _pos_map.find(stdCode);
-	if (it == _pos_map.end())
-		return 0;
-
-	const PosInfo& pInfo = it->second;
-	for (auto it = pInfo._details.begin(); it != pInfo._details.end(); it++)
-	{
-		const DetailInfo& dInfo = (*it);
-		if (strcmp(dInfo._opentag, userTag) != 0)
-			continue;
-
-		if (flag == 0)
-			return dInfo._profit;
-		else if (flag > 0)
-			return dInfo._max_profit;
-		else
-			return dInfo._max_loss;
-	}
-
-	return 0.0;
-}
-
-
+	{//

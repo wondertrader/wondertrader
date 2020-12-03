@@ -5,7 +5,7 @@
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief Ini文件辅助工具，仅适用于windows平台
+ * \brief Ini鏂囦欢杈呭姪宸ュ叿锛屼粎閫傜敤浜巜indows骞冲彴
  */
 #pragma once
 #include <string>

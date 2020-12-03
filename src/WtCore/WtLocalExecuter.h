@@ -28,9 +28,9 @@ class TraderAdapter;
 class IHotMgr;
 
 //////////////////////////////////////////////////////////////////////////
-//Ö´ĞĞµ¥Ôª·â×°
-//ÒòÎªÖ´ĞĞµ¥ÔªÊÇdllÀï´´½¨µÄ, Èç¹û²»·â×°µÄ»°, Ö±½Ódelete¿ÉÄÜ»áÓĞÎÊÌâ
-//ËùÒÔÒª°Ñ¹¤³§Ö¸ÕëÒ»Æğ·â×°µ½ÕâÀï, Ö±½Óµ÷ÓÃ¹¤³§ÊµÀıµÄdeleteUnit·½·¨ÊÍ·ÅÖ´ĞĞµ¥Ôª
+//æ‰§è¡Œå•å…ƒå°è£…
+//å› ä¸ºæ‰§è¡Œå•å…ƒæ˜¯dllé‡Œåˆ›å»ºçš„, å¦‚æœä¸å°è£…çš„è¯, ç›´æ¥deleteå¯èƒ½ä¼šæœ‰é—®é¢˜
+//æ‰€ä»¥è¦æŠŠå·¥å‚æŒ‡é’ˆä¸€èµ·å°è£…åˆ°è¿™é‡Œ, ç›´æ¥è°ƒç”¨å·¥å‚å®ä¾‹çš„deleteUnitæ–¹æ³•é‡Šæ”¾æ‰§è¡Œå•å…ƒ
 class ExeUnitWrapper
 {
 public:
@@ -54,7 +54,7 @@ private:
 typedef std::shared_ptr<ExeUnitWrapper>	ExecuteUnitPtr;
 
 //////////////////////////////////////////////////////////////////////////
-//Ö´ĞĞÆ÷¹¤³§Àà
+//æ‰§è¡Œå™¨å·¥å‚ç±»
 class WtExecuterFactory : private boost::noncopyable
 {
 public:
@@ -80,7 +80,7 @@ private:
 	ExeFactMap	_factories;
 };
 
-//±¾µØÖ´ĞĞÆ÷
+//æœ¬åœ°æ‰§è¡Œå™¨
 class WtLocalExecuter : public ExecuteContext,
 		public ITrdNotifySink, public IExecCommand
 {
@@ -93,8 +93,8 @@ public:
 
 public:
 	/*
-	 *	³õÊ¼»¯Ö´ĞĞÆ÷
-	 *	´«Èë³õÊ¼»¯²ÎÊı
+	 *	åˆå§‹åŒ–æ‰§è¡Œå™¨
+	 *	ä¼ å…¥åˆå§‹åŒ–å‚æ•°
 	 */
 	bool init(WTSVariant* params);
 
@@ -133,28 +133,28 @@ public:
 
 public:
 	/*
-	 *	ÉèÖÃÄ¿±ê²ÖÎ»
+	 *	è®¾ç½®ç›®æ ‡ä»“ä½
 	 */
 	virtual void set_position(const std::unordered_map<std::string, double>& targets) override;
 
 
 	/*
-	 *	ºÏÔ¼²ÖÎ»±ä¶¯
+	 *	åˆçº¦ä»“ä½å˜åŠ¨
 	 */
 	virtual void on_position_changed(const char* stdCode, double targetPos) override;
 
 	/*
-	 *	ÊµÊ±ĞĞÇé»Øµ÷
+	 *	å®æ—¶è¡Œæƒ…å›è°ƒ
 	 */
 	virtual void on_tick(const char* stdCode, WTSTickData* newTick) override;
 
 	/*
-	 *	³É½»»Ø±¨
+	 *	æˆäº¤å›æŠ¥
 	 */
 	virtual void on_trade(uint32_t localid, const char* stdCode, bool isBuy, double vol, double price) override;
 
 	/*
-	 *	¶©µ¥»Ø±¨
+	 *	è®¢å•å›æŠ¥
 	 */
 	virtual void on_order(uint32_t localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled = false) override;
 
@@ -169,12 +169,12 @@ public:
 	virtual void on_entrust(uint32_t localid, const char* stdCode, bool bSuccess, const char* message) override;
 
 	/*
-	 *	½»Ò×Í¨µÀ¾ÍĞ÷
+	 *	äº¤æ˜“é€šé“å°±ç»ª
 	 */
 	virtual void on_channel_ready() override;
 
 	/*
-	 *	½»Ò×Í¨µÀ¶ªÊ§
+	 *	äº¤æ˜“é€šé“ä¸¢å¤±
 	 */
 	virtual void on_channel_lost() override;
 

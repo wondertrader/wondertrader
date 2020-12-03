@@ -703,7 +703,7 @@ SpdLoggerPtr WTSLogger::getLogger(const char* logger, const char* pattern /* = "
 	SpdLoggerPtr ret = spdlog::get(logger);
 	if (ret == NULL && strlen(pattern) > 0)
 	{
-		//µ±³É¶¯Ì¬µÄÈÕÖ¾À´´¦Àí
+		//å½“æˆåŠ¨æ€çš„æ—¥å¿—æ¥å¤„ç†
 		if (m_mapPatterns == NULL)
 			return SpdLoggerPtr();
 

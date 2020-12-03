@@ -156,12 +156,12 @@ void WtDataReader::init_db()
 	if (_db_conn->connect(_db_conf._dbname, _db_conf._host, _db_conf._user, _db_conf._pass, _db_conf._port, CLIENT_MULTI_STATEMENTS | CLIENT_MULTI_RESULTS))
 	{
 		if (_sink)
-			_sink->reader_log(LL_INFO, "Êı¾İ¿âÁ¬½Ó³É¹¦:%s:%d", _db_conf._host, _db_conf._port);
+			_sink->reader_log(LL_INFO, "æ•°æ®åº“è¿æ¥æˆåŠŸ:%s:%d", _db_conf._host, _db_conf._port);
 	}
 	else
 	{
 		if (_sink)
-			_sink->reader_log(LL_ERROR, "Êı¾İ¿âÁ¬½ÓÊ§°Ü[%s:%d]:%s", _db_conf._host, _db_conf._port, _db_conn->errstr());
+			_sink->reader_log(LL_ERROR, "æ•°æ®åº“è¿æ¥å¤±è´¥[%s:%d]:%s", _db_conf._host, _db_conf._port, _db_conn->errstr());
 		_db_conn.reset();
 	}
 }
@@ -172,7 +172,7 @@ bool WtDataReader::loadStkAdjFactorsFromDB()
 	if(!query.exec("SELECT exchange,code,date,factor FROM tb_adj_factors ORDER BY exchange,code,date DESC;"))
 	{
 		if (_sink)
-			_sink->reader_log(LL_ERROR, "²éÑ¯³ıÈ¨Òò×Ó±í³ö´í:%s", query.errormsg());
+			_sink->reader_log(LL_ERROR, "æŸ¥è¯¢é™¤æƒå› å­è¡¨å‡ºé”™:%s", query.errormsg());
 		return false;
 	}
 
@@ -199,7 +199,7 @@ bool WtDataReader::loadStkAdjFactorsFromDB()
 	}
 
 	if (_sink) 
-		_sink->reader_log(LL_INFO, "¹²¼ÓÔØ%uÖ»¹ÉÆ±µÄ%uÌõ³ıÈ¨Òò×ÓÊı¾İ", stk_cnt, fct_cnt);
+		_sink->reader_log(LL_INFO, "å…±åŠ è½½%uåªè‚¡ç¥¨çš„%uæ¡é™¤æƒå› å­æ•°æ®", stk_cnt, fct_cnt);
 	return true;
 }
 
@@ -207,7 +207,7 @@ bool WtDataReader::loadStkAdjFactorsFromFile(const char* adjfile)
 {
 	if(!BoostFile::exists(adjfile))
 	{
-		if (_sink) _sink->reader_log(LL_ERROR, "³ıÈ¨Òò×ÓÎÄ¼ş%s²»´æÔÚ", adjfile);
+		if (_sink) _sink->reader_log(LL_ERROR, "é™¤æƒå› å­æ–‡ä»¶%sä¸å­˜åœ¨", adjfile);
 		return false;
 	}
 
@@ -219,7 +219,7 @@ bool WtDataReader::loadStkAdjFactorsFromFile(const char* adjfile)
 
 	if(doc.HasParseError())
 	{
-		if (_sink) _sink->reader_log(LL_ERROR, "³ıÈ¨Òò×ÓÎÄ¼ş%s½âÎöÊ§°Ü", adjfile);
+		if (_sink) _sink->reader_log(LL_ERROR, "é™¤æƒå› å­æ–‡ä»¶%sè§£æå¤±è´¥", adjfile);
 		return false;
 	}
 
@@ -252,7 +252,7 @@ bool WtDataReader::loadStkAdjFactorsFromFile(const char* adjfile)
 		}
 	}
 
-	if (_sink) _sink->reader_log(LL_INFO, "¹²¼ÓÔØ%uÖ»¹ÉÆ±µÄ%uÌõ³ıÈ¨Òò×ÓÊı¾İ", stk_cnt, fct_cnt);
+	if (_sink) _sink->reader_log(LL_INFO, "å…±åŠ è½½%uåªè‚¡ç¥¨çš„%uæ¡é™¤æƒå› å­æ•°æ®", stk_cnt, fct_cnt);
 	return true;
 }
 
@@ -291,7 +291,7 @@ WTSTickSlice* WtDataReader::readTickSlice(const char* stdCode, uint32_t count, u
 
 	std::vector<WTSTickStruct>	ayTicks;
 
-	//±È½ÏÊ±¼äµÄ¶ÔÏó
+	//æ¯”è¾ƒæ—¶é—´çš„å¯¹è±¡
 	WTSTickStruct eTick;
 	eTick.action_date = curDate;
 	eTick.action_time = curTime * 100000 + curSecs;
@@ -313,7 +313,7 @@ WTSTickSlice* WtDataReader::readTickSlice(const char* stdCode, uint32_t count, u
 
 		uint32_t eIdx = pTick - tBlock->_ticks;
 
-		//Èç¹û¹â±ê¶¨Î»µÄtickÊ±¼ä±ÈÄ¿±êÊ±¼ä´ò, ÔòÈ«²¿»ØÍËÒ»¸ö
+		//å¦‚æœå…‰æ ‡å®šä½çš„tickæ—¶é—´æ¯”ç›®æ ‡æ—¶é—´æ‰“, åˆ™å…¨éƒ¨å›é€€ä¸€ä¸ª
 		if (pTick->action_date > eTick.action_date || pTick->action_time>eTick.action_time)
 		{
 			pTick--;
@@ -342,7 +342,7 @@ WTSTickSlice* WtDataReader::readTickSlice(const char* stdCode, uint32_t count, u
 			StdFile::read_file_content(filename.c_str(), tBlkPair._buffer);
 			if (tBlkPair._buffer.size() < sizeof(HisTickBlock))
 			{
-				if (_sink) _sink->reader_log(LL_ERROR, "ÀúÊ·TickÊı¾İÎÄ¼ş%s´óĞ¡Ğ£ÑéÊ§°Ü", filename.c_str());
+				if (_sink) _sink->reader_log(LL_ERROR, "å†å²Tickæ•°æ®æ–‡ä»¶%så¤§å°æ ¡éªŒå¤±è´¥", filename.c_str());
 				tBlkPair._buffer.clear();
 				return NULL;
 			}
@@ -350,19 +350,19 @@ WTSTickSlice* WtDataReader::readTickSlice(const char* stdCode, uint32_t count, u
 			HisTickBlock* tBlock = (HisTickBlock*)tBlkPair._buffer.c_str();
 			if (tBlock->_version == BLOCK_VERSION_CMP)
 			{
-				//Ñ¹Ëõ°æ±¾£¬ÒªÖØĞÂ¼ì²éÎÄ¼ş´óĞ¡
+				//å‹ç¼©ç‰ˆæœ¬ï¼Œè¦é‡æ–°æ£€æŸ¥æ–‡ä»¶å¤§å°
 				HisTickBlockV2* tBlockV2 = (HisTickBlockV2*)tBlkPair._buffer.c_str();
 
 				if (tBlkPair._buffer.size() != (sizeof(HisTickBlockV2) + tBlockV2->_size))
 				{
-					if (_sink) _sink->reader_log(LL_ERROR, "ÀúÊ·TickÊı¾İÎÄ¼ş%s´óĞ¡Ğ£ÑéÊ§°Ü", filename.c_str());
+					if (_sink) _sink->reader_log(LL_ERROR, "å†å²Tickæ•°æ®æ–‡ä»¶%så¤§å°æ ¡éªŒå¤±è´¥", filename.c_str());
 					return NULL;
 				}
 
-				//ĞèÒª½âÑ¹
+				//éœ€è¦è§£å‹
 				std::string buf = WTSCmpHelper::uncompress_data(tBlockV2->_data, (uint32_t)tBlockV2->_size);
 
-				//½«Ô­À´µÄbufferÖ»±£ÁôÒ»¸öÍ·²¿£¬²¢½«ËùÓĞtickÊı¾İ×·¼Óµ½Î²²¿
+				//å°†åŸæ¥çš„bufferåªä¿ç•™ä¸€ä¸ªå¤´éƒ¨ï¼Œå¹¶å°†æ‰€æœ‰tickæ•°æ®è¿½åŠ åˆ°å°¾éƒ¨
 				tBlkPair._buffer.resize(sizeof(HisTickBlock));
 				tBlkPair._buffer.append(buf);
 				tBlockV2->_version = BLOCK_VERSION_RAW;
@@ -436,7 +436,7 @@ WTSHisTickData* WtDataReader::readTicks(const char* stdCode, uint32_t count, uin
 
 	std::vector<WTSTickStruct>	ayTicks;
 
-	//±È½ÏÊ±¼äµÄ¶ÔÏó
+	//æ¯”è¾ƒæ—¶é—´çš„å¯¹è±¡
 	WTSTickStruct eTick;
 	eTick.action_date = curDate;
 	eTick.action_time = curTime * 100000 + curSecs;
@@ -458,14 +458,14 @@ WTSHisTickData* WtDataReader::readTicks(const char* stdCode, uint32_t count, uin
 
 		uint32_t eIdx = pTick - tBlock->_ticks;
 
-		//Èç¹û¹â±ê¶¨Î»µÄtickÊ±¼ä±ÈÄ¿±êÊ±¼ä´ò, ÔòÈ«²¿»ØÍËÒ»¸ö
+		//å¦‚æœå…‰æ ‡å®šä½çš„tickæ—¶é—´æ¯”ç›®æ ‡æ—¶é—´æ‰“, åˆ™å…¨éƒ¨å›é€€ä¸€ä¸ª
 		if (pTick->action_date > eTick.action_date || pTick->action_time>eTick.action_time)
 		{
 			pTick--;
 			eIdx--;
 		}
 
-		//Èç¹ûÖ»ÒªÓĞĞ§tick£¨¼´³É½»Á¿´óÓÚ0µÄÊı¾İ)
+		//å¦‚æœåªè¦æœ‰æ•ˆtickï¼ˆå³æˆäº¤é‡å¤§äº0çš„æ•°æ®)
 		if (bOnlyValid)
 		{
 			uint32_t left = count;
@@ -490,7 +490,7 @@ WTSHisTickData* WtDataReader::readTicks(const char* stdCode, uint32_t count, uin
 		}
 		else
 		{
-			//Èç¹û²»ÊÇÏŞÖÆ, Ôò¿ÉÒÔÕû¿éÊı¾İ¿½±´
+			//å¦‚æœä¸æ˜¯é™åˆ¶, åˆ™å¯ä»¥æ•´å—æ•°æ®æ‹·è´
 			uint32_t cnt = min(eIdx + 1, count);
 			uint32_t sIdx = eIdx + 1 - cnt;
 			ayTicks.resize(cnt);
@@ -514,7 +514,7 @@ WTSHisTickData* WtDataReader::readTicks(const char* stdCode, uint32_t count, uin
 			StdFile::read_file_content(filename.c_str(), tBlkPair._buffer);
 			if (tBlkPair._buffer.size() < sizeof(HisTickBlock))
 			{
-				if (_sink) _sink->reader_log(LL_ERROR, "ÀúÊ·TickÊı¾İÎÄ¼ş%s´óĞ¡Ğ£ÑéÊ§°Ü", filename.c_str());
+				if (_sink) _sink->reader_log(LL_ERROR, "å†å²Tickæ•°æ®æ–‡ä»¶%så¤§å°æ ¡éªŒå¤±è´¥", filename.c_str());
 				tBlkPair._buffer.clear();
 				return NULL;
 			}
@@ -522,19 +522,19 @@ WTSHisTickData* WtDataReader::readTicks(const char* stdCode, uint32_t count, uin
 			HisTickBlock* tBlock = (HisTickBlock*)tBlkPair._buffer.c_str();
 			if (tBlock->_version == BLOCK_VERSION_CMP)
 			{
-				//Ñ¹Ëõ°æ±¾£¬ÒªÖØĞÂ¼ì²éÎÄ¼ş´óĞ¡
+				//å‹ç¼©ç‰ˆæœ¬ï¼Œè¦é‡æ–°æ£€æŸ¥æ–‡ä»¶å¤§å°
 				HisTickBlockV2* tBlockV2 = (HisTickBlockV2*)tBlkPair._buffer.c_str();
 
 				if (tBlkPair._buffer.size() != (sizeof(HisTickBlockV2) + tBlockV2->_size))
 				{
-					if (_sink) _sink->reader_log(LL_ERROR, "ÀúÊ·TickÊı¾İÎÄ¼ş%s´óĞ¡Ğ£ÑéÊ§°Ü", filename.c_str());
+					if (_sink) _sink->reader_log(LL_ERROR, "å†å²Tickæ•°æ®æ–‡ä»¶%så¤§å°æ ¡éªŒå¤±è´¥", filename.c_str());
 					return NULL;
 				}
 
-				//ĞèÒª½âÑ¹
+				//éœ€è¦è§£å‹
 				std::string buf = WTSCmpHelper::uncompress_data(tBlockV2->_data, (uint32_t)tBlockV2->_size);
 
-				//½«Ô­À´µÄbufferÖ»±£ÁôÒ»¸öÍ·²¿£¬²¢½«ËùÓĞtickÊı¾İ×·¼Óµ½Î²²¿
+				//å°†åŸæ¥çš„bufferåªä¿ç•™ä¸€ä¸ªå¤´éƒ¨ï¼Œå¹¶å°†æ‰€æœ‰tickæ•°æ®è¿½åŠ åˆ°å°¾éƒ¨
 				tBlkPair._buffer.resize(sizeof(HisTickBlock));
 				tBlkPair._buffer.append(buf);
 				tBlockV2->_version = BLOCK_VERSION_RAW;
@@ -642,7 +642,7 @@ bool WtDataReader::cacheHisBarsFromDB(const std::string& key, const char* stdCod
 	bool isDay = (period == KP_DAY);
 
 	uint32_t realCnt = 0;
-	if (cInfo._hot && cInfo._category == CC_Future)//Èç¹ûÊÇ¶ÁÈ¡ÆÚ»õÖ÷Á¦Á¬ĞøÊı¾İ
+	if (cInfo._hot && cInfo._category == CC_Future)//å¦‚æœæ˜¯è¯»å–æœŸè´§ä¸»åŠ›è¿ç»­æ•°æ®
 	{
 		HotSections secs;
 		if (!_hot_mgr->splitHotSecions(cInfo._exchg, cInfo._product, 19900102, endTDate, secs))
@@ -651,7 +651,7 @@ bool WtDataReader::cacheHisBarsFromDB(const std::string& key, const char* stdCod
 		if (secs.empty())
 			return false;
 
-		//ÏÈ°´ÕÕHOT´úÂë½øĞĞ¶ÁÈ¡, Èçrb.HOT
+		//å…ˆæŒ‰ç…§HOTä»£ç è¿›è¡Œè¯»å–, å¦‚rb.HOT
 		std::vector<WTSBarStruct>* hotAy = NULL;
 		uint32_t lastHotTime = 0;
 		for (;;)
@@ -667,7 +667,7 @@ bool WtDataReader::cacheHisBarsFromDB(const std::string& key, const char* stdCod
 			MysqlQuery query(*_db_conn);
 			if(!query.exec(sql))
 			{
-				if (_sink) _sink->reader_log(LL_ERROR, "ÀúÊ·KÏß¶ÁÈ¡Ê§°Ü£º%s", query.errormsg());
+				if (_sink) _sink->reader_log(LL_ERROR, "å†å²Kçº¿è¯»å–å¤±è´¥ï¼š%s", query.errormsg());
 			}
 			else
 			{
@@ -698,7 +698,7 @@ bool WtDataReader::cacheHisBarsFromDB(const std::string& key, const char* stdCod
 				else
 					lastHotTime = hotAy->at(barcnt - 1).date;
 
-				if (_sink) _sink->reader_log(LL_INFO, "Ö÷Á¦ºÏÔ¼%sÀúÊ·%sÊı¾İÖ±½Ó»º´æ%uÌõ", stdCode, pname.c_str(), barcnt);
+				if (_sink) _sink->reader_log(LL_INFO, "ä¸»åŠ›åˆçº¦%så†å²%sæ•°æ®ç›´æ¥ç¼“å­˜%uæ¡", stdCode, pname.c_str(), barcnt);
 			}
 
 			break;
@@ -715,7 +715,7 @@ bool WtDataReader::cacheHisBarsFromDB(const std::string& key, const char* stdCod
 			uint32_t rightDt = hotSec._e_date;
 			uint32_t leftDt = hotSec._s_date;
 
-			//ÒªÏÈ½«ÈÕÆÚ×ª»»Îª±ß½çÊ±¼ä
+			//è¦å…ˆå°†æ—¥æœŸè½¬æ¢ä¸ºè¾¹ç•Œæ—¶é—´
 			uint32_t stime, etime;
 			if (!isDay)
 			{
@@ -724,7 +724,7 @@ bool WtDataReader::cacheHisBarsFromDB(const std::string& key, const char* stdCod
 
 				stime = ((uint32_t)(sTime / 10000) - 19900000) * 10000 + (uint32_t)(sTime % 10000);
 
-				if (stime < lastHotTime)	//Èç¹û±ß½çÊ±¼äĞ¡ÓÚÖ÷Á¦µÄ×îºóÒ»¸ùBarµÄÊ±¼ä, ËµÃ÷ÒÑ¾­ÓĞ½»²æÁË, Ôò²»ĞèÒªÔÙ´¦ÀíÁË
+				if (stime < lastHotTime)	//å¦‚æœè¾¹ç•Œæ—¶é—´å°äºä¸»åŠ›çš„æœ€åä¸€æ ¹Barçš„æ—¶é—´, è¯´æ˜å·²ç»æœ‰äº¤å‰äº†, åˆ™ä¸éœ€è¦å†å¤„ç†äº†
 				{
 					bAllCovered = true;
 					stime = lastHotTime + 1;
@@ -732,13 +732,13 @@ bool WtDataReader::cacheHisBarsFromDB(const std::string& key, const char* stdCod
 
 				etime = ((uint32_t)(eTime / 10000) - 19900000) * 10000 + (uint32_t)(eTime % 10000);
 
-				if (etime <= lastHotTime)	//ÓÒ±ß½çÊ±¼äĞ¡ÓÚ×îºóÒ»ÌõHotÊ±¼ä, ËµÃ÷È«²¿½»²æÁË, Ã»ÓĞÔÙÕÒµÄ±ØÒªÁË
+				if (etime <= lastHotTime)	//å³è¾¹ç•Œæ—¶é—´å°äºæœ€åä¸€æ¡Hotæ—¶é—´, è¯´æ˜å…¨éƒ¨äº¤å‰äº†, æ²¡æœ‰å†æ‰¾çš„å¿…è¦äº†
 					break;
 			}
 			else
 			{
 				stime = leftDt;
-				if (stime < lastHotTime)	//Èç¹û±ß½çÊ±¼äĞ¡ÓÚÖ÷Á¦µÄ×îºóÒ»¸ùBarµÄÊ±¼ä, ËµÃ÷ÒÑ¾­ÓĞ½»²æÁË, Ôò²»ĞèÒªÔÙ´¦ÀíÁË
+				if (stime < lastHotTime)	//å¦‚æœè¾¹ç•Œæ—¶é—´å°äºä¸»åŠ›çš„æœ€åä¸€æ ¹Barçš„æ—¶é—´, è¯´æ˜å·²ç»æœ‰äº¤å‰äº†, åˆ™ä¸éœ€è¦å†å¤„ç†äº†
 				{
 					bAllCovered = true;
 					stime = lastHotTime + 1;
@@ -763,7 +763,7 @@ bool WtDataReader::cacheHisBarsFromDB(const std::string& key, const char* stdCod
 			MysqlQuery query(*_db_conn);
 			if (!query.exec(sql))
 			{
-				if (_sink) _sink->reader_log(LL_ERROR, "ÀúÊ·KÏß¶ÁÈ¡Ê§°Ü£º%s", query.errormsg());
+				if (_sink) _sink->reader_log(LL_ERROR, "å†å²Kçº¿è¯»å–å¤±è´¥ï¼š%s", query.errormsg());
 			}
 			else
 			{
@@ -804,14 +804,14 @@ bool WtDataReader::cacheHisBarsFromDB(const std::string& key, const char* stdCod
 			realCnt += hotAy->size();
 		}
 	}
-	else if (cInfo._exright && cInfo._category == CC_Stock)//Èç¹ûÊÇ¶ÁÈ¡¹ÉÆ±¸´È¨Êı¾İ
+	else if (cInfo._exright && cInfo._category == CC_Stock)//å¦‚æœæ˜¯è¯»å–è‚¡ç¥¨å¤æƒæ•°æ®
 	{
 		std::vector<WTSBarStruct>* hotAy = NULL;
 		uint32_t lastQTime = 0;
 
 		do
 		{
-			//ÏÈÖ±½Ó¶ÁÈ¡¸´È¨¹ıµÄÀúÊ·Êı¾İ£¬Â·¾¶Èç/his/day/sse/SH600000Q.dsb
+			//å…ˆç›´æ¥è¯»å–å¤æƒè¿‡çš„å†å²æ•°æ®ï¼Œè·¯å¾„å¦‚/his/day/sse/SH600000Q.dsb
 			char sql[256] = { 0 };
 			if (isDay)
 				sprintf(sql, "SELECT `date`,0,open,high,low,close,settle,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%sQ' ORDER BY `date`;",
@@ -823,7 +823,7 @@ bool WtDataReader::cacheHisBarsFromDB(const std::string& key, const char* stdCod
 			MysqlQuery query(*_db_conn);
 			if (!query.exec(sql))
 			{
-				if (_sink) _sink->reader_log(LL_ERROR, "ÀúÊ·KÏß¶ÁÈ¡Ê§°Ü£º%s", query.errormsg());
+				if (_sink) _sink->reader_log(LL_ERROR, "å†å²Kçº¿è¯»å–å¤±è´¥ï¼š%s", query.errormsg());
 			}
 			else
 			{
@@ -854,7 +854,7 @@ bool WtDataReader::cacheHisBarsFromDB(const std::string& key, const char* stdCod
 				else
 					lastQTime = hotAy->at(barcnt - 1).date;
 
-				if (_sink) _sink->reader_log(LL_INFO, "¹ÉÆ±%sÀúÊ·%s¸´È¨Êı¾İÖ±½Ó»º´æ%uÌõ", stdCode, pname.c_str(), barcnt);
+				if (_sink) _sink->reader_log(LL_INFO, "è‚¡ç¥¨%så†å²%så¤æƒæ•°æ®ç›´æ¥ç¼“å­˜%uæ¡", stdCode, pname.c_str(), barcnt);
 			}
 			break;
 		} while (false);
@@ -867,7 +867,7 @@ bool WtDataReader::cacheHisBarsFromDB(const std::string& key, const char* stdCod
 			//uint32_t leftDt = it->second.first;
 			const char* curCode = cInfo._code;
 
-			//ÒªÏÈ½«ÈÕÆÚ×ª»»Îª±ß½çÊ±¼ä
+			//è¦å…ˆå°†æ—¥æœŸè½¬æ¢ä¸ºè¾¹ç•Œæ—¶é—´
 			WTSBarStruct sBar;
 			if (period != KP_DAY)
 			{
@@ -891,7 +891,7 @@ bool WtDataReader::cacheHisBarsFromDB(const std::string& key, const char* stdCod
 			MysqlQuery query(*_db_conn);
 			if (!query.exec(sql))
 			{
-				if (_sink) _sink->reader_log(LL_ERROR, "ÀúÊ·KÏß¶ÁÈ¡Ê§°Ü£º%s", query.errormsg());
+				if (_sink) _sink->reader_log(LL_ERROR, "å†å²Kçº¿è¯»å–å¤±è´¥ï¼š%s", query.errormsg());
 			}
 			else
 			{
@@ -925,7 +925,7 @@ bool WtDataReader::cacheHisBarsFromDB(const std::string& key, const char* stdCod
 					auto& ayFactors = getAdjFactors(cInfo._code, cInfo._exchg);
 					if (!ayFactors.empty())
 					{
-						//×öÇ°¸´È¨´¦Àí
+						//åšå‰å¤æƒå¤„ç†
 						int32_t lastIdx = barcnt;
 						WTSBarStruct bar;
 						WTSBarStruct* firstBar = tempAy->data();
@@ -977,7 +977,7 @@ bool WtDataReader::cacheHisBarsFromDB(const std::string& key, const char* stdCod
 	}
 	else
 	{
-		//¶ÁÈ¡ÀúÊ·µÄ
+		//è¯»å–å†å²çš„
 		char sql[256] = { 0 };
 		if (isDay)
 			sprintf(sql, "SELECT `date`,0,open,high,low,close,settle,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%sQ' ORDER BY `date`;",
@@ -989,7 +989,7 @@ bool WtDataReader::cacheHisBarsFromDB(const std::string& key, const char* stdCod
 		MysqlQuery query(*_db_conn);
 		if (!query.exec(sql))
 		{
-			if (_sink) _sink->reader_log(LL_ERROR, "ÀúÊ·KÏß¶ÁÈ¡Ê§°Ü£º%s", query.errormsg());
+			if (_sink) _sink->reader_log(LL_ERROR, "å†å²Kçº¿è¯»å–å¤±è´¥ï¼š%s", query.errormsg());
 		}
 		else
 		{
@@ -1039,7 +1039,7 @@ bool WtDataReader::cacheHisBarsFromDB(const std::string& key, const char* stdCod
 		barsSections.clear();
 	}
 
-	if (_sink) _sink->reader_log(LL_INFO, "ºÏÔ¼%sµÄÀúÊ·%sÊı¾İÒÑ»º´æ%uÌõ", stdCode, pname.c_str(), realCnt);
+	if (_sink) _sink->reader_log(LL_INFO, "åˆçº¦%sçš„å†å²%sæ•°æ®å·²ç¼“å­˜%uæ¡", stdCode, pname.c_str(), realCnt);
 	return true;
 }
 
@@ -1070,7 +1070,7 @@ bool WtDataReader::cacheHisBarsFromFile(const std::string& key, const char* stdC
 	std::vector<std::vector<WTSBarStruct>*> barsSections;
 
 	uint32_t realCnt = 0;
-	if (cInfo._hot && cInfo._category == CC_Future)//Èç¹ûÊÇ¶ÁÈ¡ÆÚ»õÖ÷Á¦Á¬ĞøÊı¾İ
+	if (cInfo._hot && cInfo._category == CC_Future)//å¦‚æœæ˜¯è¯»å–æœŸè´§ä¸»åŠ›è¿ç»­æ•°æ®
 	{
 		HotSections secs;
 		if (!_hot_mgr->splitHotSecions(cInfo._exchg, cInfo._product, 19900102, endTDate, secs))
@@ -1079,7 +1079,7 @@ bool WtDataReader::cacheHisBarsFromFile(const std::string& key, const char* stdC
 		if (secs.empty())
 			return false;
 
-		//ÏÈ°´ÕÕHOT´úÂë½øĞĞ¶ÁÈ¡, Èçrb.HOT
+		//å…ˆæŒ‰ç…§HOTä»£ç è¿›è¡Œè¯»å–, å¦‚rb.HOT
 		std::vector<WTSBarStruct>* hotAy = NULL;
 		uint32_t lastHotTime = 0;
 		for (;;)
@@ -1094,7 +1094,7 @@ bool WtDataReader::cacheHisBarsFromFile(const std::string& key, const char* stdC
 			StdFile::read_file_content(filename.c_str(), content);
 			if (content.size() < sizeof(HisKlineBlock))
 			{
-				if (_sink) _sink->reader_log(LL_ERROR, "ÀúÊ·KÏßÊı¾İÎÄ¼ş%s´óĞ¡Ğ£ÑéÊ§°Ü", filename.c_str());
+				if (_sink) _sink->reader_log(LL_ERROR, "å†å²Kçº¿æ•°æ®æ–‡ä»¶%så¤§å°æ ¡éªŒå¤±è´¥", filename.c_str());
 				break;
 			}
 
@@ -1104,7 +1104,7 @@ bool WtDataReader::cacheHisBarsFromFile(const std::string& key, const char* stdC
 			{
 				if (content.size() < sizeof(HisKlineBlockV2))
 				{
-					if (_sink) _sink->reader_log(LL_ERROR, "ÀúÊ·KÏßÊı¾İÎÄ¼ş%s´óĞ¡Ğ£ÑéÊ§°Ü", filename.c_str());
+					if (_sink) _sink->reader_log(LL_ERROR, "å†å²Kçº¿æ•°æ®æ–‡ä»¶%så¤§å°æ ¡éªŒå¤±è´¥", filename.c_str());
 					break;
 				}
 
@@ -1138,7 +1138,7 @@ bool WtDataReader::cacheHisBarsFromFile(const std::string& key, const char* stdC
 			else
 				lastHotTime = hotAy->at(barcnt - 1).date;
 
-			if (_sink) _sink->reader_log(LL_INFO, "Ö÷Á¦ºÏÔ¼%sÀúÊ·%sÊı¾İÖ±½Ó»º´æ%uÌõ", stdCode, pname.c_str(), barcnt);
+			if (_sink) _sink->reader_log(LL_INFO, "ä¸»åŠ›åˆçº¦%så†å²%sæ•°æ®ç›´æ¥ç¼“å­˜%uæ¡", stdCode, pname.c_str(), barcnt);
 			break;
 		}
 
@@ -1146,899 +1146,15 @@ bool WtDataReader::cacheHisBarsFromFile(const std::string& key, const char* stdC
 		for (auto it = secs.rbegin(); it != secs.rend() && left > 0; it++)
 		{
 			//const char* curCode = it->first.c_str();
-			//uint32_t rightDt = it->second.second;
-			//uint32_t leftDt = it->second.first;
-			const HotSection& hotSec = *it;
-			const char* curCode = hotSec._code.c_str();
-			uint32_t rightDt = hotSec._e_date;
-			uint32_t leftDt = hotSec._s_date;
-
-			//ÒªÏÈ½«ÈÕÆÚ×ª»»Îª±ß½çÊ±¼ä
-			WTSBarStruct sBar, eBar;
-			if (period != KP_DAY)
-			{
-				uint64_t sTime = _base_data_mgr->getBoundaryTime(stdPID.c_str(), leftDt, false, true);
-				uint64_t eTime = _base_data_mgr->getBoundaryTime(stdPID.c_str(), rightDt, false, false);
-
-				sBar.date = leftDt;
-				sBar.time = ((uint32_t)(sTime / 10000) - 19900000) * 10000 + (uint32_t)(sTime % 10000);
-
-				if(sBar.time < lastHotTime)	//Èç¹û±ß½çÊ±¼äĞ¡ÓÚÖ÷Á¦µÄ×îºóÒ»¸ùBarµÄÊ±¼ä, ËµÃ÷ÒÑ¾­ÓĞ½»²æÁË, Ôò²»ĞèÒªÔÙ´¦ÀíÁË
-				{
-					bAllCovered = true;
-					sBar.time = lastHotTime + 1;
-				}
-
-				eBar.date = rightDt;
-				eBar.time = ((uint32_t)(eTime / 10000) - 19900000) * 10000 + (uint32_t)(eTime % 10000);
-
-				if (eBar.time <= lastHotTime)	//ÓÒ±ß½çÊ±¼äĞ¡ÓÚ×îºóÒ»ÌõHotÊ±¼ä, ËµÃ÷È«²¿½»²æÁË, Ã»ÓĞÔÙÕÒµÄ±ØÒªÁË
-					break;
-			}
-			else
-			{
-				sBar.date = leftDt;
-				if (sBar.date < lastHotTime)	//Èç¹û±ß½çÊ±¼äĞ¡ÓÚÖ÷Á¦µÄ×îºóÒ»¸ùBarµÄÊ±¼ä, ËµÃ÷ÒÑ¾­ÓĞ½»²æÁË, Ôò²»ĞèÒªÔÙ´¦ÀíÁË
-				{
-					bAllCovered = true;
-					sBar.date = lastHotTime + 1;
-				}
-
-				eBar.date = rightDt;
-
-				if (eBar.date <= lastHotTime)
-					break;
-			}
-
-			std::stringstream ss;
-			ss << _base_dir << "his/" << pname << "/" << cInfo._exchg << "/" << curCode << ".dsb";
-			std::string filename = ss.str();
-			if (!StdFile::exists(filename.c_str()))
-				continue;
-
-			{
-				std::string content;
-				StdFile::read_file_content(filename.c_str(), content);
-				if (content.size() < sizeof(HisKlineBlock))
-				{
-					if (_sink) _sink->reader_log(LL_ERROR, "ÀúÊ·KÏßÊı¾İÎÄ¼ş%s´óĞ¡Ğ£ÑéÊ§°Ü", filename.c_str());
-					return false;
-				}
-
-				HisKlineBlock* kBlock = (HisKlineBlock*)content.c_str();
-				WTSBarStruct* firstBar = NULL;
-				uint32_t barcnt = 0;
-				std::string rawData;
-				if(kBlock->_version == BLOCK_VERSION_CMP)
-				{
-					if (content.size() < sizeof(HisKlineBlockV2))
-					{
-						if (_sink) _sink->reader_log(LL_ERROR, "ÀúÊ·KÏßÊı¾İÎÄ¼ş%s´óĞ¡Ğ£ÑéÊ§°Ü", filename.c_str());
-						break;
-					}
-
-					HisKlineBlockV2* kBlockV2 = (HisKlineBlockV2*)content.c_str();
-					if (kBlockV2->_size == 0)
-						break;
-
-					rawData = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
-					barcnt = rawData.size() / sizeof(WTSBarStruct);
-					if (barcnt <= 0)
-						break;
-
-					firstBar = (WTSBarStruct*)rawData.data();
-				}
-				else
-				{
-					barcnt = (content.size() - sizeof(HisKlineBlock)) / sizeof(WTSBarStruct);
-					if (barcnt <= 0)
-						continue;
-
-					firstBar = kBlock->_bars;
-				}
-
-				WTSBarStruct* pBar = std::lower_bound(firstBar, firstBar + (barcnt - 1), sBar, [period](const WTSBarStruct& a, const WTSBarStruct& b){
-					if (period == KP_DAY)
-					{
-						return a.date < b.date;
-					}
-					else
-					{
-						return a.time < b.time;
-					}
-				});
-
-				uint32_t sIdx = pBar - firstBar;
-				if ((period == KP_DAY && pBar->date < sBar.date) || (period != KP_DAY && pBar->time < sBar.time))	//ÔçÓÚ±ß½çÊ±¼ä
-				{
-					//ÔçÓÚ±ß½çÊ±¼ä, ËµÃ÷Ã»ÓĞÊı¾İÁË, ÒòÎªlower_bound»á·µ»Ø´óÓÚµÈÓÚÄ¿±êÎ»ÖÃµÄÊı¾İ
-					continue;
-				}
-
-				pBar = std::lower_bound(firstBar + sIdx, firstBar + (barcnt - 1), eBar, [period](const WTSBarStruct& a, const WTSBarStruct& b){
-					if (period == KP_DAY)
-					{
-						return a.date < b.date;
-					}
-					else
-					{
-						return a.time < b.time;
-					}
-				});
-				uint32_t eIdx = pBar - firstBar;
-				if ((period == KP_DAY && pBar->date > eBar.date) || (period != KP_DAY && pBar->time > eBar.time))
-				{
-					pBar--;
-					eIdx--;
-				}
-
-				if (eIdx < sIdx)
-					continue;
-
-				uint32_t curCnt = eIdx - sIdx + 1;
-				std::vector<WTSBarStruct>* tempAy = new std::vector<WTSBarStruct>();
-				tempAy->resize(curCnt);
-				memcpy(tempAy->data(), &firstBar[sIdx], sizeof(WTSBarStruct)*curCnt);
-				realCnt += curCnt;
-
-				barsSections.push_back(tempAy);
-
-				if(bAllCovered)
-					break;
-			}
-		}
-
-		if (hotAy)
-		{
-			barsSections.push_back(hotAy);
-			realCnt += hotAy->size();
-		}
-	}
-	else if(cInfo._exright && cInfo._category == CC_Stock)//Èç¹ûÊÇ¶ÁÈ¡¹ÉÆ±¸´È¨Êı¾İ
-	{
-		std::vector<WTSBarStruct>* hotAy = NULL;
-		uint32_t lastQTime = 0;
-		
-		do
-		{
-			//ÏÈÖ±½Ó¶ÁÈ¡¸´È¨¹ıµÄÀúÊ·Êı¾İ£¬Â·¾¶Èç/his/day/sse/SH600000Q.dsb
-			std::stringstream ss;
-			ss << _base_dir << "his/" << pname << "/" << cInfo._exchg << "/" << cInfo._code << "Q.dsb";
-			std::string filename = ss.str();
-			if (!StdFile::exists(filename.c_str()))
-				break;
-
-			std::string content;
-			StdFile::read_file_content(filename.c_str(), content);
-			if (content.size() < sizeof(HisKlineBlock))
-			{
-				if (_sink) _sink->reader_log(LL_ERROR, "ÀúÊ·KÏßÊı¾İÎÄ¼ş%s´óĞ¡Ğ£ÑéÊ§°Ü", filename.c_str());
-				break;
-			}
-
-			HisKlineBlock* kBlock = (HisKlineBlock*)content.c_str();
-			uint32_t barcnt = 0;
-			if (kBlock->_version == BLOCK_VERSION_CMP)
-			{
-				if (content.size() < sizeof(HisKlineBlockV2))
-				{
-					if (_sink) _sink->reader_log(LL_ERROR, "ÀúÊ·KÏßÊı¾İÎÄ¼ş%s´óĞ¡Ğ£ÑéÊ§°Ü", filename.c_str());
-					break;
-				}
-
-				HisKlineBlockV2* kBlockV2 = (HisKlineBlockV2*)content.c_str();
-				if (kBlockV2->_size == 0)
-					break;
-
-				std::string rawData = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
-				barcnt = rawData.size() / sizeof(WTSBarStruct);
-				if (barcnt <= 0)
-					break;
-
-				hotAy = new std::vector<WTSBarStruct>();
-				hotAy->resize(barcnt);
-				memcpy(hotAy->data(), rawData.data(), rawData.size());
-			}
-			else
-			{
-				barcnt = (content.size() - sizeof(HisKlineBlock)) / sizeof(WTSBarStruct);
-				if (barcnt <= 0)
-					break;
-
-				HisKlineBlock* kBlock = (HisKlineBlock*)content.c_str();
+			//uint32_t rightDt = it->
 				hotAy = new std::vector<WTSBarStruct>();
 				hotAy->resize(barcnt);
 				memcpy(hotAy->data(), kBlock->_bars, sizeof(WTSBarStruct)*barcnt);
-			}
+			}		
 
 			if (period != KP_DAY)
-				lastQTime = hotAy->at(barcnt - 1).time;
+				lastHotTime = hotAy->at(barcnt - 1).time;
 			else
-				lastQTime = hotAy->at(barcnt - 1).date;
+				lastHotTime = hotAy->at(barcnt - 1).date;
 
-			if (_sink) _sink->reader_log(LL_INFO, "¹ÉÆ±%sÀúÊ·%s¸´È¨Êı¾İÖ±½Ó»º´æ%uÌõ", stdCode, pname.c_str(), barcnt);
-			break;
-		} while (false);
-
-		bool bAllCovered = false;
-		do
-		{
-			//const char* curCode = it->first.c_str();
-			//uint32_t rightDt = it->second.second;
-			//uint32_t leftDt = it->second.first;
-			const char* curCode = cInfo._code;
-
-			//ÒªÏÈ½«ÈÕÆÚ×ª»»Îª±ß½çÊ±¼ä
-			WTSBarStruct sBar;
-			if (period != KP_DAY)
-			{
-				sBar.date = TimeUtils::minBarToDate(lastQTime);
-
-				sBar.time = lastQTime + 1;
-			}
-			else
-			{
-				sBar.date = lastQTime + 1;
-			}
-
-			std::stringstream ss;
-			ss << _base_dir << "his/" << pname << "/" << cInfo._exchg << "/" << curCode << ".dsb";
-			std::string filename = ss.str();
-			if (!StdFile::exists(filename.c_str()))
-				continue;
-
-			{
-				std::string content;
-				StdFile::read_file_content(filename.c_str(), content);
-				if (content.size() < sizeof(HisKlineBlock))
-				{
-					if (_sink) _sink->reader_log(LL_ERROR, "ÀúÊ·KÏßÊı¾İÎÄ¼ş%s´óĞ¡Ğ£ÑéÊ§°Ü", filename.c_str());
-					return false;
-				}
-
-				HisKlineBlock* kBlock = (HisKlineBlock*)content.c_str();
-				WTSBarStruct* firstBar = NULL;
-				uint32_t barcnt = 0;
-				std::string rawData;
-				if (kBlock->_version == BLOCK_VERSION_CMP)
-				{
-					if (content.size() < sizeof(HisKlineBlockV2))
-					{
-						if (_sink) _sink->reader_log(LL_ERROR, "ÀúÊ·KÏßÊı¾İÎÄ¼ş%s´óĞ¡Ğ£ÑéÊ§°Ü", filename.c_str());
-						break;
-					}
-
-					HisKlineBlockV2* kBlockV2 = (HisKlineBlockV2*)content.c_str();
-					if (kBlockV2->_size == 0)
-						break;
-
-					rawData = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
-					barcnt = rawData.size() / sizeof(WTSBarStruct);
-					if (barcnt <= 0)
-						break;
-
-					firstBar = (WTSBarStruct*)rawData.data();
-				}
-				else
-				{
-					barcnt = (content.size() - sizeof(HisKlineBlock)) / sizeof(WTSBarStruct);
-					if (barcnt <= 0)
-						continue;
-
-					firstBar = kBlock->_bars;
-				}
-
-				WTSBarStruct* pBar = std::lower_bound(firstBar, firstBar + (barcnt - 1), sBar, [period](const WTSBarStruct& a, const WTSBarStruct& b){
-					if (period == KP_DAY)
-					{
-						return a.date < b.date;
-					}
-					else
-					{
-						return a.time < b.time;
-					}
-				});
-
-				if(pBar != NULL)
-				{
-					uint32_t sIdx = pBar - firstBar;
-					uint32_t curCnt = barcnt - sIdx;
-					std::vector<WTSBarStruct>* tempAy = new std::vector<WTSBarStruct>();
-					tempAy->resize(curCnt);
-					memcpy(tempAy->data(), &firstBar[sIdx], sizeof(WTSBarStruct)*curCnt);
-					realCnt += curCnt;
-
-					auto& ayFactors = getAdjFactors(cInfo._code, cInfo._exchg);
-					if(!ayFactors.empty())
-					{
-						//×öÇ°¸´È¨´¦Àí
-						int32_t lastIdx = curCnt;
-						WTSBarStruct bar;
-						firstBar = tempAy->data();
-						for (auto& adjFact : ayFactors)
-						{
-							bar.date = adjFact._date;
-							double factor = adjFact._factor;
-
-							WTSBarStruct* pBar = NULL;
-							pBar = std::lower_bound(firstBar, firstBar + lastIdx - 1, bar, [period](const WTSBarStruct& a, const WTSBarStruct& b) {
-								return a.date < b.date;
-							});
-
-							if (pBar->date < bar.date)
-								continue;
-
-							WTSBarStruct* endBar = pBar;
-							if (pBar != NULL)
-							{
-								int32_t curIdx = pBar - firstBar;
-								while (pBar && curIdx < lastIdx)
-								{
-									pBar->open /= factor;
-									pBar->high /= factor;
-									pBar->low /= factor;
-									pBar->close /= factor;
-
-									pBar++;
-									curIdx++;
-								}
-								lastIdx = endBar - firstBar;
-							}
-
-							if (lastIdx == 0)
-								break;
-						}
-					}
-
-					barsSections.push_back(tempAy);
-				}
-			}
-		} while (false);
-
-		if (hotAy)
-		{
-			barsSections.push_back(hotAy);
-			realCnt += hotAy->size();
-		}
-	}
-	else
-	{
-		//¶ÁÈ¡ÀúÊ·µÄ
-		std::stringstream ss;
-		ss << _base_dir << "his/" << pname << "/" << cInfo._exchg << "/" << cInfo._code << ".dsb";
-		std::string filename = ss.str();
-		if (StdFile::exists(filename.c_str()))
-		{
-			//Èç¹ûÓĞ¸ñÊ½»¯µÄÀúÊ·Êı¾İÎÄ¼ş, ÔòÖ±½Ó¶ÁÈ¡
-			std::string content;
-			StdFile::read_file_content(filename.c_str(), content);
-			if (content.size() < sizeof(HisKlineBlock))
-			{
-				if (_sink) _sink->reader_log(LL_ERROR, "ÀúÊ·KÏßÊı¾İÎÄ¼ş%s´óĞ¡Ğ£ÑéÊ§°Ü", filename.c_str());
-				return false;
-			}
-
-			HisKlineBlock* kBlock = (HisKlineBlock*)content.c_str();
-			WTSBarStruct* firstBar = NULL;
-			uint32_t barcnt = 0;
-			std::string rawData;
-			if (kBlock->_version == BLOCK_VERSION_CMP)
-			{
-				if (content.size() < sizeof(HisKlineBlockV2))
-				{
-					if (_sink) _sink->reader_log(LL_ERROR, "ÀúÊ·KÏßÊı¾İÎÄ¼ş%s´óĞ¡Ğ£ÑéÊ§°Ü", filename.c_str());
-					return false;
-				}
-
-				HisKlineBlockV2* kBlockV2 = (HisKlineBlockV2*)content.c_str();
-				if (kBlockV2->_size == 0)
-					return false;
-
-				rawData = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
-				barcnt = rawData.size() / sizeof(WTSBarStruct);
-				if (barcnt <= 0)
-					return false;
-
-				firstBar = (WTSBarStruct*)rawData.data();
-			}
-			else
-			{
-				barcnt = (content.size() - sizeof(HisKlineBlock)) / sizeof(WTSBarStruct);
-				if (barcnt <= 0)
-					return false;
-
-				firstBar = kBlock->_bars;
-			}
-
-			if (barcnt > 0)
-			{
-				
-				uint32_t sIdx = 0;
-				uint32_t idx = barcnt - 1;
-				uint32_t curCnt = (idx - sIdx + 1);
-
-				std::vector<WTSBarStruct>* tempAy = new std::vector<WTSBarStruct>();
-				tempAy->resize(curCnt);
-				memcpy(tempAy->data(), &firstBar[sIdx], sizeof(WTSBarStruct)*curCnt);
-				realCnt += curCnt;
-
-				barsSections.push_back(tempAy);
-			}
-		}
-	}
-
-	if (realCnt > 0)
-	{
-		barList._bars.resize(realCnt);
-
-		uint32_t curIdx = 0;
-		for (auto it = barsSections.rbegin(); it != barsSections.rend(); it++)
-		{
-			std::vector<WTSBarStruct>* tempAy = *it;
-			memcpy(barList._bars.data() + curIdx, tempAy->data(), tempAy->size()*sizeof(WTSBarStruct));
-			curIdx += tempAy->size();
-			delete tempAy;
-		}
-		barsSections.clear();
-	}
-
-	if (_sink) _sink->reader_log(LL_INFO, "ºÏÔ¼%sµÄÀúÊ·%sÊı¾İÒÑ»º´æ%uÌõ", stdCode, pname.c_str(), realCnt);
-	return true;
-}
-
-WTSBarStruct* WtDataReader::indexBarFromCache(const std::string& key, uint64_t etime, uint32_t& count, bool isDay /* = false */)
-{
-	uint32_t curDate, curTime;
-	if (etime == 0)
-	{
-		curDate = _sink->get_date();
-		curTime = _sink->get_min_time();
-	}
-	else
-	{
-		curDate = (uint32_t)(etime / 10000);
-		curTime = (uint32_t)(etime % 10000);
-	}
-
-	BarsList& barsList = _bars_cache[key];
-	if (barsList._his_cursor == UINT_MAX)
-	{
-		//¹â±êÉĞÎ´³õÊ¼»¯, ĞèÒªÖØĞÂ¶¨Î»
-		uint64_t nowTime = (uint64_t)curDate * 10000 + curTime;
-		if (_last_time < nowTime)
-		{
-			_last_time = nowTime;
-		}
-
-		WTSBarStruct bar;
-		bar.date = curDate;
-		bar.time = (curDate - 19900000) * 10000 + curTime;
-		auto it = std::lower_bound(barsList._bars.begin(), barsList._bars.end(), bar, [isDay](const WTSBarStruct& a, const WTSBarStruct& b){
-			if (isDay)
-				return a.date < b.date;
-			else
-				return a.time < b.time;
-		});
-
-
-		if (it == barsList._bars.end())
-			barsList._his_cursor = barsList._bars.size() - 1;
-		else
-		{
-			if ((isDay && it->date > bar.date) || (!isDay && it->time > bar.time))
-			{
-				it--;
-			}
-
-			barsList._his_cursor = it - barsList._bars.begin();
-		}
-	}
-
-	uint32_t sIdx = 0;
-	if (count <= barsList._his_cursor + 1)
-	{
-		sIdx = barsList._his_cursor - count + 1;
-	}
-
-	uint32_t curCnt = barsList._his_cursor - sIdx + 1;
-	//if (curCnt > 0)
-	//{
-	//	ayBars.resize(curCnt);
-	//	memcpy(ayBars.data(), &barsList._bars[sIdx], sizeof(WTSBarStruct)*curCnt);
-	//}
-	count = curCnt;
-	return &barsList._bars[sIdx];
-}
-
-uint32_t WtDataReader::readBarsFromCache(const std::string& key, uint64_t etime, uint32_t count, std::vector<WTSBarStruct>& ayBars, bool isDay /* = false */)
-{
-	uint32_t curDate, curTime;
-	if (etime == 0)
-	{
-		curDate = _sink->get_date();
-		curTime = _sink->get_min_time();
-	}
-	else
-	{
-		curDate = (uint32_t)(etime / 10000);
-		curTime = (uint32_t)(etime % 10000);
-	}
-
-	BarsList& barsList = _bars_cache[key];
-	if (barsList._his_cursor == UINT_MAX)
-	{
-		//¹â±êÉĞÎ´³õÊ¼»¯, ĞèÒªÖØĞÂ¶¨Î»
-		uint64_t nowTime = (uint64_t)curDate * 10000 + curTime;
-		if (_last_time < nowTime)
-		{
-			_last_time = nowTime;
-		}
-
-		WTSBarStruct bar;
-		bar.date = curDate;
-		bar.time = (curDate - 19900000) * 10000 + curTime;
-		auto it = std::lower_bound(barsList._bars.begin(), barsList._bars.end(), bar, [isDay](const WTSBarStruct& a, const WTSBarStruct& b){
-			if (isDay)
-				return a.date < b.date;
-			else
-				return a.time < b.time;
-		});
-		
-
-		if(it == barsList._bars.end())
-			barsList._his_cursor = barsList._bars.size() - 1;
-		else
-		{
-			if ((isDay && it->date > bar.date) || (!isDay && it->time > bar.time))
-			{
-				if (it == barsList._bars.begin())
-					return 0;
-				
-				it--;
-			}
-
-			barsList._his_cursor = it - barsList._bars.begin();
-		}
-	}
-
-	uint32_t sIdx = 0;
-	if (count <= barsList._his_cursor + 1)
-	{
-		sIdx = barsList._his_cursor - count + 1;
-	}
-
-	uint32_t curCnt = barsList._his_cursor - sIdx + 1;
-	if(curCnt > 0)
-	{
-		ayBars.resize(curCnt);
-		memcpy(ayBars.data(), &barsList._bars[sIdx], sizeof(WTSBarStruct)*curCnt);
-	}
-	return curCnt;
-}
-
-WTSKlineSlice* WtDataReader::readKlineSlice(const char* stdCode, WTSKlinePeriod period, uint32_t count, uint64_t etime /* = 0 */)
-{
-	CodeHelper::CodeInfo cInfo;
-	CodeHelper::extractStdCode(stdCode, cInfo);
-	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
-
-	std::string key = StrUtil::printf("%s#%u", stdCode, period);
-	auto it = _bars_cache.find(key);
-	bool bHasHisData = false;
-	if (it == _bars_cache.end())
-	{
-		if(_db_conn)
-			bHasHisData = cacheHisBarsFromDB(key, stdCode, period);
-		else
-			bHasHisData = cacheHisBarsFromFile(key, stdCode, period);
-	}
-	else
-	{
-		bHasHisData = true;
-	}
-
-	uint32_t curDate, curTime;
-	if (etime == 0)
-	{
-		curDate = _sink->get_date();
-		curTime = _sink->get_min_time();
-		etime = (uint64_t)curDate * 10000 + curTime;
-	}
-	else
-	{
-		curDate = (uint32_t)(etime / 10000);
-		curTime = (uint32_t)(etime % 10000);
-	}
-
-	uint32_t endTDate = _base_data_mgr->calcTradingDate(stdPID.c_str(), curDate, curTime, false);
-	uint32_t curTDate = _base_data_mgr->calcTradingDate(stdPID.c_str(), 0, 0, false);
-
-
-	//WTSKlineSlice* kData = WTSKlineSlice::create(stdCode, period, times, NULL, 0, NULL, 0);
-	
-	WTSBarStruct* hisHead = NULL;
-	WTSBarStruct* rtHead = NULL;
-	uint32_t hisCnt = 0;
-	uint32_t rtCnt = 0;
-
-	std::string pname;
-	switch (period)
-	{
-	case KP_Minute1: pname = "min1"; break;
-	case KP_Minute5: pname = "min5"; break;
-	default: pname = "day"; break;
-	}
-
-	uint32_t left = count;
-
-	//ÊÇ·ñ°üº¬µ±ÌìµÄ
-	bool bHasToday = (endTDate == curTDate);
-
-	if (cInfo._hot && cInfo._category == CC_Future)
-	{
-		_bars_cache[key]._raw_code = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, curTDate);
-		if (_sink) _sink->reader_log(LL_INFO, "Ö÷Á¦ºÏÔ¼Ó³ÉäÈ·ÈÏ: %s -> %s", stdCode, _bars_cache[key]._raw_code.c_str());
-	}
-	else
-	{
-		_bars_cache[key]._raw_code = cInfo._code;
-	}
-
-	if (bHasToday)
-	{
-		WTSBarStruct bar;
-		bar.date = curDate;
-		bar.time = (curDate - 19900000) * 10000 + curTime;
-
-		const char* curCode = _bars_cache[key]._raw_code.c_str();
-
-		//¶ÁÈ¡ÊµÊ±µÄ
-		RTKBlockPair* kPair = getRTKBlock(cInfo._exchg, curCode, period);
-		if (kPair != NULL)
-		{
-			//¶ÁÈ¡µ±ÈÕµÄÊı¾İ
-			WTSBarStruct* pBar = std::lower_bound(kPair->_block->_bars, kPair->_block->_bars + (kPair->_block->_size - 1), bar, [period](const WTSBarStruct& a, const WTSBarStruct& b){
-				if (period == KP_DAY)
-					return a.date < b.date;
-				else
-					return a.time < b.time;
-			});
-			uint32_t idx = pBar - kPair->_block->_bars;
-			if ((period == KP_DAY && pBar->date > bar.date) || (period != KP_DAY && pBar->time > bar.time))
-			{
-				pBar--;
-				idx--;
-			}
-
-			_bars_cache[key]._rt_cursor = idx;
-
-			uint32_t sIdx = 0;
-			if (left <= idx + 1)
-			{
-				sIdx = idx - left + 1;
-			}
-
-			uint32_t curCnt = (idx - sIdx + 1);
-			left -= (idx - sIdx + 1);
-			rtHead = &kPair->_block->_bars[sIdx];
-			rtCnt = curCnt;
-		}
-	}
-
-	if (left > 0 && bHasHisData)
-	{
-		hisCnt = left;
-		hisHead = indexBarFromCache(key, etime, hisCnt, period == KP_DAY);
-	}
-
-	if (hisCnt + rtCnt > 0)
-	{
-		WTSKlineSlice* slice = WTSKlineSlice::create(stdCode, period, 1, hisHead, hisCnt, rtHead, rtCnt);
-		return slice;
-	}
-
-	return NULL;
-}
-
-
-WtDataReader::TBlockPair* WtDataReader::getRTTBlock(const char* exchg, const char* code)
-{
-	std::string key = StrUtil::printf("%s.%s", exchg, code);
-
-	std::string path = StrUtil::printf("%srt/ticks/%s/%s.dmb", _base_dir.c_str(), exchg, code);
-	if (!StdFile::exists(path.c_str()))
-		return NULL;
-
-	TBlockPair& block = _rt_tick_map[key];
-	if (block._file == NULL || block._block == NULL)
-	{
-		if (block._file == NULL)
-		{
-			block._file.reset(new BoostMappingFile());
-		}
-
-		if (!block._file->map(path.c_str(), boost::interprocess::read_only, boost::interprocess::read_only))
-			return NULL;
-
-		block._block = (RTTickBlock*)block._file->addr();
-		block._last_cap = block._block->_capacity;
-	}
-	else if (block._last_cap != block._block->_capacity)
-	{
-		//ËµÃ÷ÎÄ¼ş´óĞ¡ÒÑ±ä, ĞèÒªÖØĞÂÓ³Éä
-		block._file.reset(new BoostMappingFile());
-		block._last_cap = 0;
-		block._block = NULL;
-
-		if (!block._file->map(path.c_str(), boost::interprocess::read_only, boost::interprocess::read_only))
-			return NULL;
-
-		block._block = (RTTickBlock*)block._file->addr();
-		block._last_cap = block._block->_capacity;
-	}
-
-	return &block;
-}
-
-WtDataReader::RTKBlockPair* WtDataReader::getRTKBlock(const char* exchg, const char* code, WTSKlinePeriod period)
-{
-	if (period != KP_Minute1 && period != KP_Minute5)
-		return NULL;
-
-	std::string key = StrUtil::printf("%s.%s", exchg, code);
-
-	RTKBlockFilesMap* cache_map = NULL;
-	std::string subdir = "";
-	BlockType bType;
-	switch (period)
-	{
-	case KP_Minute1:
-		cache_map = &_rt_min1_map;
-		subdir = "min1";
-		bType = BT_RT_Minute1;
-		break;
-	case KP_Minute5:
-		cache_map = &_rt_min5_map;
-		subdir = "min5";
-		bType = BT_RT_Minute5;
-		break;
-	default: break;
-	}
-
-	std::string path = StrUtil::printf("%srt/%s/%s/%s.dmb", _base_dir.c_str(), subdir.c_str(), exchg, code);
-	if (!StdFile::exists(path.c_str()))
-		return NULL;
-
-	RTKBlockPair& block = (*cache_map)[key];
-	if (block._file == NULL || block._block == NULL)
-	{
-		if (block._file == NULL)
-		{
-			block._file.reset(new BoostMappingFile());
-		}
-
-		if (!block._file->map(path.c_str(), boost::interprocess::read_only, boost::interprocess::read_only))
-			return NULL;
-
-		block._block = (RTKlineBlock*)block._file->addr();
-		block._last_cap = block._block->_capacity;
-	}
-	else if (block._last_cap != block._block->_capacity)
-	{
-		//ËµÃ÷ÎÄ¼ş´óĞ¡ÒÑ±ä, ĞèÒªÖØĞÂÓ³Éä
-		block._file.reset(new BoostMappingFile());
-		block._last_cap = 0;
-		block._block = NULL;
-
-		if (!block._file->map(path.c_str(), boost::interprocess::read_only, boost::interprocess::read_only))
-			return NULL;
-
-		block._block = (RTKlineBlock*)block._file->addr();
-		block._last_cap = block._block->_capacity;
-	}
-
-	return &block;
-}
-
-void WtDataReader::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTDate /* = 0 */)
-{
-	//ÕâÀïÓ¦¸Ã´¥·¢¼ì²é
-	uint64_t nowTime = (uint64_t)uDate * 10000 + uTime;
-	if (nowTime <= _last_time)
-		return;
-
-	for (auto it = _bars_cache.begin(); it != _bars_cache.end(); it++)
-	{
-		BarsList& barsList = it->second;
-		if (barsList._period != KP_DAY)
-		{
-			//Èç¹ûÀúÊ·Êı¾İÖ¸±ê²»ÔÚÎ²²¿, ËµÃ÷ÊÇ»Ø²âÄ£Ê½, Òª¼ÌĞø»Ø·ÅÀúÊ·Êı¾İ
-			if (barsList._bars.size() - 1 > barsList._his_cursor)
-			{
-				for (;;)
-				{
-					WTSBarStruct& nextBar = barsList._bars[barsList._his_cursor + 1];
-
-					uint64_t barTime = 199000000000 + nextBar.time;
-					if (barTime <= nowTime)
-					{
-						_sink->on_bar(barsList._code.c_str(), barsList._period, &nextBar);
-					}
-					else
-					{
-						break;
-					}
-
-					barsList._his_cursor++;
-
-					if (barsList._his_cursor == barsList._bars.size() - 1)
-						break;
-				}
-			}
-			else if (!barsList._raw_code.empty())
-			{
-				RTKBlockPair* kBlk = getRTKBlock(barsList._exchg.c_str(), barsList._raw_code.c_str(), barsList._period);
-				if (kBlk == NULL)
-					continue;
-
-				uint32_t preCnt = 0;
-				if (barsList._rt_cursor == UINT_MAX)
-					preCnt = 0;
-				else
-					preCnt = barsList._rt_cursor + 1;
-
-				for (;;)
-				{
-					if (kBlk->_block->_size <= preCnt)
-						break;
-
-					WTSBarStruct& nextBar = kBlk->_block->_bars[preCnt];
-
-					uint64_t barTime = 199000000000 + nextBar.time;
-					if (barTime <= nowTime)
-					{
-						_sink->on_bar(barsList._code.c_str(), barsList._period, &nextBar);
-					}
-					else
-					{
-						break;
-					}
-
-					preCnt++;
-				}
-
-				if (preCnt > 0)
-					barsList._rt_cursor = preCnt - 1;
-			}
-		}
-		else
-		{
-			if (barsList._his_cursor != UINT_MAX && barsList._bars.size() - 1 > barsList._his_cursor)
-			{
-				for (;;)
-				{
-					WTSBarStruct& nextBar = barsList._bars[barsList._his_cursor + 1];
-
-					if (nextBar.date <= endTDate)
-					{
-						_sink->on_bar(barsList._code.c_str(), barsList._period, &nextBar);
-					}
-					else
-					{
-						break;
-					}
-
-					barsList._his_cursor++;
-
-					if (barsList._his_cursor == barsList._bars.size() - 1)
-						break;
-				}
-			}
-		}
-	}
-
-	if (_sink)
-		_sink->on_all_bar_updated(uTime);
-
-	_last_time = nowTime;
-}
+			if (_sink) _sink->reader_log(LL_INFO, "æ¶“è¯²

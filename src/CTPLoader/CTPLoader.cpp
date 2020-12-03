@@ -10,23 +10,23 @@
 #include <boost/filesystem.hpp>
 
 
-// UserApi¶ÔÏó
+// UserApiå¯¹è±¡
 CThostFtdcTraderApi* pUserApi;
 
-// ÅäÖÃ²ÎÊı
-std::string	FRONT_ADDR;	// Ç°ÖÃµØÖ·
-std::string	BROKER_ID;	// ¾­¼Í¹«Ë¾´úÂë
-std::string	INVESTOR_ID;// Í¶×ÊÕß´úÂë
-std::string	PASSWORD;	// ÓÃ»§ÃÜÂë
-std::string SAVEPATH;	//±£´æÎ»ÖÃ
+// é…ç½®å‚æ•°
+std::string	FRONT_ADDR;	// å‰ç½®åœ°å€
+std::string	BROKER_ID;	// ç»çºªå…¬å¸ä»£ç 
+std::string	INVESTOR_ID;// æŠ•èµ„è€…ä»£ç 
+std::string	PASSWORD;	// ç”¨æˆ·å¯†ç 
+std::string SAVEPATH;	//ä¿å­˜ä½ç½®
 std::string APPID;
 std::string AUTHCODE;
-bool		ISFOROPTION;	//ÆÚÈ¨
+bool		ISFOROPTION;	//æœŸæƒ
 
-std::string COMM_FILE;		//Êä³öµÄÆ·ÖÖÎÄ¼şÃû
-std::string CONT_FILE;		//Êä³öµÄºÏÔ¼ÎÄ¼şÃû
+std::string COMM_FILE;		//è¾“å‡ºçš„å“ç§æ–‡ä»¶å
+std::string CONT_FILE;		//è¾“å‡ºçš„åˆçº¦æ–‡ä»¶å
 
-std::string MODULE_NAME;	//Íâ²¿Ä£¿éÃû
+std::string MODULE_NAME;	//å¤–éƒ¨æ¨¡å—å
 
 typedef std::map<std::string, std::string>	SymbolMap;
 SymbolMap	MAP_NAME;
@@ -35,7 +35,7 @@ SymbolMap	MAP_SESSION;
 typedef CThostFtdcTraderApi* (*CTPCreator)(const char *);
 CTPCreator		g_ctpCreator = NULL;
 
-// ÇëÇó±àºÅ
+// è¯·æ±‚ç¼–å·
 int iRequestID = 0;
 
 std::string getBaseFolder()
@@ -55,7 +55,7 @@ std::string getBaseFolder()
 
 		char path[1024];
 		int cnt = readlink("/proc/self/exe", path, 1024);
-		//×îºóÒ»¸ö'/' ºóÃæÊÇ¿ÉÖ´ĞĞ³ÌĞòÃû£¬È¥µô¿ÉÖ´ĞĞ³ÌĞòµÄÃû×Ö£¬Ö»±£ÁôÂ·¾¶
+		//æœ€åä¸€ä¸ª'/' åé¢æ˜¯å¯æ‰§è¡Œç¨‹åºåï¼Œå»æ‰å¯æ‰§è¡Œç¨‹åºçš„åå­—ï¼Œåªä¿ç•™è·¯å¾„
 		for (int i = cnt; i >= 0; --i)
 		{
 			if (path[i] == '/')
@@ -117,7 +117,7 @@ int main()
 	for (int i = 0; i < cout; i++)
 	{
 		MAP_NAME[ayKeys[i]] = ayVals[i];
-		printf("Æ·ÖÖÃû³ÆÓ³Éä£º%s - %s\r\n", ayKeys[i].c_str(), ayVals[i].c_str());
+		printf("å“ç§åç§°æ˜ å°„ï¼š%s - %s\r\n", ayKeys[i].c_str(), ayVals[i].c_str());
 	}
 
 	ayKeys.clear();
@@ -126,10 +126,10 @@ int main()
 	for (int i = 0; i < cout; i++)
 	{
 		MAP_SESSION[ayKeys[i]] = ayVals[i];
-		printf("½»Ò×Ê±¼äÓ³Éä£º%s - %s\r\n", ayKeys[i].c_str(), ayVals[i].c_str());
+		printf("äº¤æ˜“æ—¶é—´æ˜ å°„ï¼š%s - %s\r\n", ayKeys[i].c_str(), ayVals[i].c_str());
 	}
 
-	// ³õÊ¼»¯UserApi
+	// åˆå§‹åŒ–UserApi
 	DllHandle dllInst = DLLHelper::load_library(MODULE_NAME.c_str());
 #ifdef _WIN32
 #	ifdef _WIN64
@@ -140,11 +140,11 @@ int main()
 #else
 	g_ctpCreator = (CTPCreator)DLLHelper::get_symbol(dllInst, "_ZN19CThostFtdcTraderApi19CreateFtdcTraderApiEPKc");
 #endif
-	pUserApi = g_ctpCreator("");			// ´´½¨UserApi
+	pUserApi = g_ctpCreator("");			// åˆ›å»ºUserApi
 	CTraderSpi* pUserSpi = new CTraderSpi();
-	pUserApi->RegisterSpi((CThostFtdcTraderSpi*)pUserSpi);			// ×¢²áÊÂ¼şÀà
-	pUserApi->SubscribePublicTopic(THOST_TERT_QUICK);					// ×¢²á¹«ÓĞÁ÷
-	pUserApi->SubscribePrivateTopic(THOST_TERT_QUICK);					// ×¢²áË½ÓĞÁ÷
+	pUserApi->RegisterSpi((CThostFtdcTraderSpi*)pUserSpi);			// æ³¨å†Œäº‹ä»¶ç±»
+	pUserApi->SubscribePublicTopic(THOST_TERT_QUICK);					// æ³¨å†Œå…¬æœ‰æµ
+	pUserApi->SubscribePrivateTopic(THOST_TERT_QUICK);					// æ³¨å†Œç§æœ‰æµ
 	pUserApi->RegisterFront((char*)FRONT_ADDR.c_str());				// connect
 	pUserApi->Init();
 

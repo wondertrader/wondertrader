@@ -36,7 +36,7 @@ public:
 public:
 	virtual uint32_t id() = 0;
 
-	//回调函数
+	//鍥炶皟鍑芥暟
 	virtual void on_init() = 0;
 	virtual void on_session_begin() = 0;
 	virtual void on_session_end() = 0;
@@ -50,7 +50,7 @@ public:
 
 	virtual void enum_position(FuncEnumPositionCallBack cb) = 0;
 
-	//策略接口
+	//绛栫暐鎺ュ彛
 	virtual void stra_enter_long(const char* stdCode, double qty, const char* userTag = "", double limitprice = 0.0, double stopprice = 0.0) = 0;
 	virtual void stra_enter_short(const char* stdCode, double qty, const char* userTag = "", double limitprice = 0.0, double stopprice = 0.0) = 0;
 	virtual void stra_exit_long(const char* stdCode, double qty, const char* userTag = "", double limitprice = 0.0, double stopprice = 0.0) = 0;

@@ -33,7 +33,7 @@ public:
 		LS_LOGINED
 	};
 
-//IQuoteParser ½Ó¿Ú
+//IQuoteParser æ¥å£
 public:
 	virtual bool init(WTSParams* config) override;
 
@@ -51,18 +51,18 @@ public:
 	virtual void registerListener(IParserApiListener* listener) override;
 
 
-//CThostFtdcMdSpi ½Ó¿Ú
+//CThostFtdcMdSpi æ¥å£
 public:
-	///µ±¿Í»§¶ËÓë½»Ò×ºóÌ¨Í¨ĞÅÁ¬½Ó¶Ï¿ªÊ±£¬¸Ã·½·¨±»µ÷ÓÃ¡£µ±·¢ÉúÕâ¸öÇé¿öºó£¬API»á×Ô¶¯ÖØĞÂÁ¬½Ó£¬¿Í»§¶Ë¿É²»×ö´¦Àí¡£
-	///@param reason ´íÎóÔ­Òò
-	///        0x1001 ÍøÂç¶ÁÊ§°Ü
-	///        0x1002 ÍøÂçĞ´Ê§°Ü
-	///        0x2001 ½ÓÊÕĞÄÌø³¬Ê±
-	///        0x2002 ·¢ËÍĞÄÌøÊ§°Ü
-	///        0x2003 ÊÕµ½´íÎó±¨ÎÄ
+	///å½“å®¢æˆ·ç«¯ä¸äº¤æ˜“åå°é€šä¿¡è¿æ¥æ–­å¼€æ—¶ï¼Œè¯¥æ–¹æ³•è¢«è°ƒç”¨ã€‚å½“å‘ç”Ÿè¿™ä¸ªæƒ…å†µåï¼ŒAPIä¼šè‡ªåŠ¨é‡æ–°è¿æ¥ï¼Œå®¢æˆ·ç«¯å¯ä¸åšå¤„ç†ã€‚
+	///@param reason é”™è¯¯åŸå› 
+	///        0x1001 ç½‘ç»œè¯»å¤±è´¥
+	///        0x1002 ç½‘ç»œå†™å¤±è´¥
+	///        0x2001 æ¥æ”¶å¿ƒè·³è¶…æ—¶
+	///        0x2002 å‘é€å¿ƒè·³å¤±è´¥
+	///        0x2003 æ”¶åˆ°é”™è¯¯æŠ¥æ–‡
 	virtual void OnDisconnected(int reason) override;
 
-	///´íÎóÓ¦´ğ
+	///é”™è¯¯åº”ç­”
 	virtual void OnError(XTPRI *error_info) override;
 
 
@@ -72,15 +72,15 @@ public:
 
 private:
 	/*
-	 *	·¢ËÍµÇÂ¼ÇëÇó
+	 *	å‘é€ç™»å½•è¯·æ±‚
 	 */
 	void DoLogin();
 	/*
-	 *	¶©ÔÄÆ·ÖÖĞĞÇé
+	 *	è®¢é˜…å“ç§è¡Œæƒ…
 	 */
 	void DoSubscribeMD();
 	/*
-	 *	¼ì²é´íÎóĞÅÏ¢
+	 *	æ£€æŸ¥é”™è¯¯ä¿¡æ¯
 	 */
 	bool IsErrorRspInfo(XTPRI *error_info);
 
