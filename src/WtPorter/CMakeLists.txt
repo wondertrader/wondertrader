@@ -41,7 +41,8 @@ SET(LIBS
 	
 	dl
 	pthread
-	boost_filesystem	
+	boost_filesystem
+	boost_thread
 )
 
 TARGET_LINK_LIBRARIES(WtPorter ${LIBS})
