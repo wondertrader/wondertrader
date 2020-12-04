@@ -100,11 +100,9 @@ const char* getBinDir()
 		g_bin_dir = StrUtil::standardisePath(strPath, false);
 #else
 		g_bin_dir = getInstPath();
-		//printf("2:%s\n", g_bin_dir.c_str());
 #endif
 		boost::filesystem::path p(g_bin_dir);
 		g_bin_dir = p.branch_path().string() + "/";
-		//printf("3:%s\n", g_bin_dir.c_str());
 	}
 
 	return g_bin_dir.c_str();

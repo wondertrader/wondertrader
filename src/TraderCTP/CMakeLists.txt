@@ -24,12 +24,7 @@ ENDIF ()
 SET(SRC  
 	${PROJECT_SOURCE_DIR}/TraderCTP.cpp
 	${PROJECT_SOURCE_DIR}/TraderCTP.h
-	
-	${PROJECT_SOURCE_DIR}/ThostTraderApi/ThostFtdcTraderApi.h
-	${PROJECT_SOURCE_DIR}/ThostTraderApi/ThostFtdcUserApiDataType.h
-	${PROJECT_SOURCE_DIR}/ThostTraderApi/ThostFtdcUserApiStruct.h
 )
-SET(LNKS "${LNKS} ${PROJECT_SOURCE_DIR}/ThostTraderApi")
 
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin)
 
@@ -39,6 +34,7 @@ ADD_LIBRARY(TraderCTP SHARED ${SRC})
 
 SET(LIBS
 	boost_thread
+	boost_filesystem
 )
 TARGET_LINK_LIBRARIES(TraderCTP ${LIBS})
 
