@@ -1095,7 +1095,7 @@ bool WtEngine::init_riskmon(WTSVariant* cfg)
 	DllHandle hInst = DLLHelper::load_library(dllpath.c_str());
 	if (hInst == NULL)
 	{
-		WTSLogger::info2("risk", "风控模块%s加载失败", module);
+		WTSLogger::info2("risk", "风控模块%s加载失败", dllpath.c_str());
 		return false;
 	}
 

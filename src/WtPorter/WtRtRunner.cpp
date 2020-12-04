@@ -69,6 +69,8 @@ bool WtRtRunner::init(const char* logProfile /* = "log4cxx.prop" */)
 	WTSLogger::init(path.c_str());
 
 	WtHelper::setInstDir(getBinDir());
+	printf(getBinDir());
+	printf("\n");
 	return true;
 }
 
