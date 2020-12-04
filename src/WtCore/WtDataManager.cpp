@@ -60,16 +60,11 @@ bool WtDataManager::initStore(WTSVariant* cfg)
 		module += "libWtDataReader.so";
 #endif
 	}
-	//先看工作目录下是否有对应模块
-	std::string dllpath = WtHelper::getCWD() + module;
-	//如果没有，则再看模块目录，即dll同目录下
-	if (!StdFile::exists(dllpath.c_str()))
-		dllpath = WtHelper::getInstDir() + module;
 
-	DllHandle hInst = DLLHelper::load_library(dllpath.c_str());
+	DllHandle hInst = DLLHelper::load_library(module.c_str());
 	if(hInst == NULL)
 	{
-		WTSLogger::error("数据存储模块%s加载失败", dllpath.c_str());
+		WTSLogger::error("数据存储模块%s加载失败", module.c_str());
 		return false;
 	}
 
