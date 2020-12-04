@@ -387,7 +387,7 @@ void CtaStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 				sInfo._sigprice = jItem["sigprice"].GetDouble();
 				sInfo._gentime = jItem["gentime"].GetUint64();
 				
-				stra_log_text("未触发信号恢复, 合约: %s, 目标部位: %d", stdCode, sInfo._volumn);
+				stra_log_text(fmt::format("未触发信号恢复, 合约: {}, 目标部位: {}", stdCode, sInfo._volumn).c_str());
 			}
 		}
 	}
