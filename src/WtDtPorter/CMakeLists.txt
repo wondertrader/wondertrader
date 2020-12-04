@@ -41,7 +41,8 @@ SET(LIBS
 	${MyDeps}/lib/libmysqlclient.a
 	dl
 	pthread
-	boost_filesystem	
+	boost_filesystem
+	boost_thread
 )
 
 TARGET_LINK_LIBRARIES(WtDtPorter ${LIBS})

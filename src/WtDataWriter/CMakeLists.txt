@@ -40,6 +40,7 @@ SET(LIBS
 	dl
 	pthread
 	boost_filesystem	
+	boost_thread
 )
 
 IF (WIN32)
