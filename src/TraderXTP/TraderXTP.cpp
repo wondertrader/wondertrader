@@ -726,7 +726,7 @@ bool TraderXTP::isConnected()
 
 std::string TraderXTP::genEntrustID(uint32_t orderRef)
 {
-	return StrUtil::printf("%s#%u#%s#%u", _user.c_str(), _tradingday, StrUtil::fmtUInt64(_sessionid), orderRef);
+	return StrUtil::printf("%s#%u#%s#%u", _user.c_str(), _tradingday, StrUtil::fmtUInt64(_sessionid).c_str(), orderRef);
 }
 
 bool TraderXTP::makeEntrustID(char* buffer, int length)
