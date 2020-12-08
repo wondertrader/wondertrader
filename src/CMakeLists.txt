@@ -23,6 +23,7 @@ ADD_SUBDIRECTORY(WTSTools)
 
 #contract Loade through ctp channel
 ADD_SUBDIRECTORY(CTPLoader)
+ADD_SUBDIRECTORY(MiniLoader)
 
 #parser for quote date from ctp channel
 ADD_SUBDIRECTORY(ParserCTP)

@@ -3,7 +3,7 @@
 cmake_minimum_required(VERSION 3.0.0)
 
 #2. 确定工程名
-project(CTPLoader LANGUAGES CXX)
+project(MiniLoader LANGUAGES CXX)
 SET(CMAKE_CXX_STANDARD 11)
 
 
@@ -22,11 +22,11 @@ ELSE (UNIX)
 	SET(LNKS ${MyDeps}/lib)
 ENDIF ()
 
-SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/CTPLoader)
+SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/MiniLoader)
 
 #7. 添加源码
 SET(SRC  
-	${PROJECT_SOURCE_DIR}/CTPLoader.cpp
+	${PROJECT_SOURCE_DIR}/MiniLoader.cpp
 	${PROJECT_SOURCE_DIR}/TraderSpi.cpp
 	${PROJECT_SOURCE_DIR}/TraderSpi.h
 	
@@ -44,10 +44,10 @@ SET(LIBS
 )
 
 #9. 生成可执行文件
-ADD_EXECUTABLE(CTPLoader ${SRC})
+ADD_EXECUTABLE(MiniLoader ${SRC})
 IF (WIN32)
 ELSE (UNIX)
-	TARGET_LINK_LIBRARIES(CTPLoader ${LIBS})
+	TARGET_LINK_LIBRARIES(MiniLoader ${LIBS})
 ENDIF ()
 
 

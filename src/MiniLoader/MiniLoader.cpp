@@ -94,14 +94,14 @@ int main()
 #ifdef _WIN32
 	MODULE_NAME = ini.readString("config", "module", "thosttraderapi.dll");
 #else
-	MODULE_NAME = ini.readString("config", "module", "libthosttraderapi.so");
+	MODULE_NAME = ini.readString("config", "module", "thosttraderapi.so");
 #endif
 	if(!boost::filesystem::exists(MODULE_NAME.c_str()))
 	{
 #ifdef _WIN32
 		MODULE_NAME = getBaseFolder() + "traders/thosttraderapi.dll";
 #else
-		MODULE_NAME = getBaseFolder() + "traders/libthosttraderapi.so";
+		MODULE_NAME = getBaseFolder() + "traders/thosttraderapi.so";
 #endif
 	}
 
