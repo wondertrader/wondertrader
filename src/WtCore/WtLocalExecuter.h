@@ -14,6 +14,7 @@
 #include <boost/core/noncopyable.hpp>
 
 #include "ITrdNotifySink.h"
+#include "IExecCommand.h"
 #include "../Includes/ExecuteDefs.h"
 
 #include "../Share/BoostDefine.h"
@@ -51,51 +52,44 @@ private:
 };
 
 typedef std::shared_ptr<ExeUnitWrapper>	ExecuteUnitPtr;
-class WtExecuterFactory;
 
-class IExecuterStub
+//////////////////////////////////////////////////////////////////////////
+//执行器工厂类
+class WtExecuterFactory : private boost::noncopyable
 {
 public:
-	virtual uint64_t get_real_time() = 0;
-	virtual WTSCommodityInfo* get_comm_info(const char* stdCode) = 0;
-	virtual WTSSessionInfo* get_sess_info(const char* stdCode) = 0;
-	virtual IHotMgr* get_hot_mon() = 0;
-	virtual uint32_t get_trading_day() = 0;
-};
+	~WtExecuterFactory() {}
 
-class IExecCommand
-{
 public:
-	IExecCommand():_stub(NULL){}
-	/*
-	 *	设置目标仓位
-	 */
-	virtual void set_position(const std::unordered_map<std::string, double>& targets) {}
+	bool loadFactories(const char* path);
 
-	/*
-	 *	合约仓位变动
-	 */
-	virtual void on_position_changed(const char* stdCode, double targetPos) {}
+	ExecuteUnitPtr createExeUnit(const char* name);
+	ExecuteUnitPtr createExeUnit(const char* factname, const char* unitname);
 
-	/*
-	 *	实时行情回调
-	 */
-	virtual void on_tick(const char* stdCode, WTSTickData* newTick) {}
+private:
+	typedef struct _ExeFactInfo
+	{
+		std::string		_module_path;
+		DllHandle		_module_inst;
+		IExecuterFact*	_fact;
+		FuncCreateExeFact	_creator;
+		FuncDeleteExeFact	_remover;
+	} ExeFactInfo;
+	typedef std::unordered_map<std::string, ExeFactInfo> ExeFactMap;
 
-	void setStub(IExecuterStub* stub) { _stub = stub; }
-protected:
-	IExecuterStub* _stub;
+	ExeFactMap	_factories;
 };
 
-class WtExecuter : public ExecuteContext,
+//本地执行器
+class WtLocalExecuter : public ExecuteContext,
 		public ITrdNotifySink, public IExecCommand
 {
 public:
 	typedef std::unordered_map<std::string, ExecuteUnitPtr> ExecuteUnitMap;
 
 public:
-	WtExecuter(WtExecuterFactory* factory, const char* name, IDataManager* dataMgr);
-	virtual ~WtExecuter();
+	WtLocalExecuter(WtExecuterFactory* factory, const char* name, IDataManager* dataMgr);
+	virtual ~WtLocalExecuter();
 
 public:
 	/*
@@ -196,8 +190,6 @@ private:
 	uint32_t			_scale;
 	bool				_channel_ready;
 
-	std::unordered_set<std::string>			_clear_codes;
-
 	std::unordered_map<std::string, double> _target_pos;
 
 	typedef boost::shared_ptr<boost::threadpool::pool> ThreadPoolPtr;
@@ -205,51 +197,6 @@ private:
 };
 
 typedef std::shared_ptr<IExecCommand> ExecCmdPtr;
-typedef std::shared_ptr<WtExecuter> WtExecuterPtr;
-
-//////////////////////////////////////////////////////////////////////////
-//执行器工厂类
-class WtExecuterFactory : private boost::noncopyable
-{
-public:
-	~WtExecuterFactory(){}
-
-public:
-	bool loadFactories(const char* path);
-
-	ExecuteUnitPtr createExeUnit(const char* name);
-	ExecuteUnitPtr createExeUnit(const char* factname, const char* unitname);
-
-private:
-	typedef struct _ExeFactInfo
-	{
-		std::string		_module_path;
-		DllHandle		_module_inst;
-		IExecuterFact*	_fact;
-		FuncCreateExeFact	_creator;
-		FuncDeleteExeFact	_remover;
-	} ExeFactInfo;
-	typedef std::unordered_map<std::string, ExeFactInfo> ExeFactMap;
-
-	ExeFactMap	_factories;
-};
-
-class WtExecuterMgr : private boost::noncopyable
-{
-public:
-	inline void	add_executer(ExecCmdPtr executer)
-	{
-		_executers.push_back(executer);
-	}
-
-	void	set_positions(std::unordered_map<std::string, double> target_pos);
-	void	handle_pos_change(const char* stdCode, double targetPos);
-	void	handle_tick(const char* stdCode, WTSTickData* curTick);
-
-public:
-	typedef std::vector<ExecCmdPtr> ExecuterList;
-	ExecuterList	_executers;
-};
-
+typedef std::shared_ptr<WtLocalExecuter> WtExecuterPtr;
 
 NS_OTP_END

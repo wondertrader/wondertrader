@@ -43,9 +43,30 @@ std::string getBaseFolder()
 	static std::string basePath;
 	if(basePath.empty())
 	{
-		basePath = boost::filesystem::initial_path<boost::filesystem::path>().string();
+#ifdef _WIN32
+		char strPath[MAX_PATH];
+		GetModuleFileName(NULL, strPath, MAX_PATH);
 
-		basePath = StrUtil::standardisePath(basePath);
+		basePath = StrUtil::standardisePath(strPath, false);
+
+		uint32_t nPos = basePath.find_last_of('/');
+		basePath = basePath.substr(0, nPos + 1);
+#else
+
+		char path[1024];
+		int cnt = readlink("/proc/self/exe", path, 1024);
+		//最后一个'/' 后面是可执行程序名，去掉可执行程序的名字，只保留路径
+		for (int i = cnt; i >= 0; --i)
+		{
+			if (path[i] == '/')
+			{
+				path[i + 1] = '\0';
+				break;
+			}
+		}
+		basePath = path;
+		basePath = StrUtil::standardisePath(basePath, false);
+#endif
 	}
 
 	return basePath;
@@ -53,7 +74,7 @@ std::string getBaseFolder()
 
 int main()
 {
-	std::string cfg = getBaseFolder() + "config.ini";
+	std::string cfg = "config.ini";
 	IniHelper ini;
 	ini.load(cfg.c_str());
 

@@ -21,6 +21,8 @@
 #include "../Share/decimal.h"
 #include "../Share/StrUtil.hpp"
 
+void inst_hlp(){}
+
 #ifdef _WIN32
 #include <wtypes.h>
 HMODULE	g_dllModule = NULL;
@@ -46,11 +48,17 @@ char PLATFORM_NAME[] = "UNIX";
 
 std::string	g_moduleName;
 
-__attribute__((constructor))
-void on_load(void) {
-	Dl_info dl_info;
-	dladdr((void *)on_load, &dl_info);
-	g_moduleName = dl_info.dli_fname;
+const std::string& getInstPath()
+{
+	static std::string moduleName;
+	if (moduleName.empty())
+	{
+		Dl_info dl_info;
+		dladdr((void *)inst_hlp, &dl_info);
+		moduleName = dl_info.dli_fname;
+	}
+
+	return moduleName;
 }
 #endif
 
@@ -67,11 +75,10 @@ std::string getBinDir()
 
 		_bin_dir = StrUtil::standardisePath(strPath, false);
 #else
-		_bin_dir = g_moduleName;
+		_bin_dir = getInstPath();
 #endif
-
-		uint32_t nPos = _bin_dir.find_last_of('/');
-		_bin_dir = _bin_dir.substr(0, nPos + 1);
+		boost::filesystem::path p(_bin_dir);
+		_bin_dir = p.branch_path().string() + "/";
 	}
 
 	return _bin_dir;
@@ -156,7 +163,7 @@ bool TraderCTP::init(WTSParams* params)
 #ifdef _WIN32
 		m_strModule = getBinDir() + "thosttraderapi_se.dll";
 #else
-		m_strModule =  getBinDir() + "libthosttraderapi_se.so";
+		m_strModule =  getBinDir() + "thosttraderapi_se.so";
 #endif
 	}
 

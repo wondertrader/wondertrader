@@ -58,7 +58,7 @@ void WtStraDtSel::on_init(ISelStraCtx* ctx)
 {
 	for(auto& code : _codes)
 	{
-		ctx->sub_ticks(code.c_str());
+		ctx->stra_sub_ticks(code.c_str());
 	}
 }
 

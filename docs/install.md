@@ -24,25 +24,24 @@
     * [boost 1.72](https://dl.bintray.com/boostorg/release/1.72.0/source/)
     * [rapidjson](https://github.com/Tencent/rapidjson/)
     * [spdlog](https://github.com/gabime/spdlog)
+    * [curl 7.70](https://curl.haxx.se/)
+    * [mysql connector 6.11](https://conan.io/center/mysql-connector-c/6.1.11/?revision=&os=Windows&tab=config)
     
-    因为rapidjson和spdlog是header-only的，所以只需要预编译boost1.72即可
-    boost的编译方法，不管是win还是linux，网络上都有很多教程，这里就不赘述了。
+    其中mysql是数据组件（`WtDataWriter`,`WtDataReader`）和回测框架(`WtBtCore`)的依赖库；curl是易盛极星交易模块的依赖库，主要用于获取二次验证码。
+
+    为了方便大家使用，依赖库统一发布到百度云盘，下载就可以直接使用：链接：<https://pan.baidu.com/s/1Bdxh_PgjqHMzuGjl9ernhg> 提取码:d6bh
 
 * 配置依赖库环境
-    WonderTrader在windows下的依赖文件根目录，采用了环境变量存储，如32位依赖文件根目录为
+    `WonderTrader`在`windows`下的依赖文件根目录，采用了环境变量存储。将云盘的依赖库下载到本地以后，解压到本地目录，如`E:\vc141depends`。然后设置一个环境变量，如下：
     ```
-    $ MyDepends12=E:\vc12depends
+    $ MyDepends141=E:\vc141depends
     ```
-    64位依赖文件根目录
-    ```
-    $ MyX64Deps12=E:\vc12depsX64
-    ```
-    在依赖库文件根目录下，建立两个子目录`include`、`lib`，将头文件全部放到`include`里，将预编译的lib全部放到`lib`里，如下图所示
+    最终如下图所示
     ![alt 依赖库目录结构](http://wt.f-sailors.cn/snapshots/deps_snap.png)
     linux下，WonderTrader将依赖库文件统一放到/home/mydeps目录下，目录结构同上
 
-* Windows下编译WonderTrader
-    WonderTrader在Windows下的开发环境是`Win7` + `vs2013`，WonderTrader直接提供了vs的解决方案文件，当然也可以用CMakelists生成解决方案。
+* `Windows`下编译`WonderTrader`
+    `WonderTrader`在`Windows`下的开发环境是`Win7` + `vs2017`，`WonderTrader`直接提供了vs的解决方案文件，当然也可以用`CMakelists`生成解决方案。
     解决方案结构如图
     ![alt 解决方案结构图](http://wt.f-sailors.cn/snapshots/wt_vs_snap.png)
 
@@ -60,3 +59,14 @@
     ```shell
     $ sudo chmod 777 build_xxx.sh
     ```
+* 使用Docker作为开发环境。
+    docker环境已经将将Linux下的依赖提前安装。
+    进入到docker目录下，
+    ```
+    $ docker build -t wondertrader .
+    ```
+    镜像构建完成后，在宿主机上运行
+    ```
+    docker run -it --rm  wondertrader /bin/bash
+    ```
+    之后可以使用vscode 的远程开发模式连接到docker容器进行开发。

@@ -7,7 +7,7 @@
  * 
  * \brief 
  */
-#include "WtExecuter.h"
+#include "WtLocalExecuter.h"
 #include "TraderAdapter.h"
 #include "../Includes/IDataManager.h"
 #include "WtEngine.h"
@@ -26,7 +26,7 @@
 USING_NS_OTP;
 
 
-WtExecuter::WtExecuter(WtExecuterFactory* factory, const char* name, IDataManager* dataMgr)
+WtLocalExecuter::WtLocalExecuter(WtExecuterFactory* factory, const char* name, IDataManager* dataMgr)
 	: _factory(factory)
 	, _name(name)
 	, _data_mgr(dataMgr)
@@ -35,13 +35,13 @@ WtExecuter::WtExecuter(WtExecuterFactory* factory, const char* name, IDataManage
 }
 
 
-WtExecuter::~WtExecuter()
+WtLocalExecuter::~WtLocalExecuter()
 {
 	if (_pool)
 		_pool->wait();
 }
 
-bool WtExecuter::init(WTSVariant* params)
+bool WtLocalExecuter::init(WTSVariant* params)
 {
 	if (params == NULL)
 		return false;
@@ -60,7 +60,7 @@ bool WtExecuter::init(WTSVariant* params)
 	return true;
 }
 
-ExecuteUnitPtr WtExecuter::getUnit(const char* code, bool bAutoCreate /* = true */)
+ExecuteUnitPtr WtLocalExecuter::getUnit(const char* code, bool bAutoCreate /* = true */)
 {
 	WTSVariant* policy = _config->get("policy");
 	std::string des = code;
@@ -95,7 +95,7 @@ ExecuteUnitPtr WtExecuter::getUnit(const char* code, bool bAutoCreate /* = true 
 //////////////////////////////////////////////////////////////////////////
 //ExecuteContext
 #pragma region Context回调接口
-WTSTickSlice* WtExecuter::getTicks(const char* stdCode, uint32_t count, uint64_t etime /* = 0 */)
+WTSTickSlice* WtLocalExecuter::getTicks(const char* stdCode, uint32_t count, uint64_t etime /* = 0 */)
 {
 	if (_data_mgr == NULL)
 		return NULL;
@@ -103,7 +103,7 @@ WTSTickSlice* WtExecuter::getTicks(const char* stdCode, uint32_t count, uint64_t
 	return _data_mgr->get_tick_slice(stdCode, count);
 }
 
-WTSTickData* WtExecuter::grabLastTick(const char* stdCode)
+WTSTickData* WtLocalExecuter::grabLastTick(const char* stdCode)
 {
 	if (_data_mgr == NULL)
 		return NULL;
@@ -111,29 +111,29 @@ WTSTickData* WtExecuter::grabLastTick(const char* stdCode)
 	return _data_mgr->grab_last_tick(stdCode);
 }
 
-double WtExecuter::getPosition(const char* stdCode, int32_t flag /* = 3 */)
+double WtLocalExecuter::getPosition(const char* stdCode, int32_t flag /* = 3 */)
 {
 	return _trader->getPosition(stdCode, flag);
 }
 
-double WtExecuter::getUndoneQty(const char* stdCode)
+double WtLocalExecuter::getUndoneQty(const char* stdCode)
 {
 	return _trader->getUndoneQty(stdCode);
 }
 
-OrderMap* WtExecuter::getOrders(const char* stdCode)
+OrderMap* WtLocalExecuter::getOrders(const char* stdCode)
 {
 	return _trader->getOrders(stdCode);
 }
 
-OrderIDs WtExecuter::buy(const char* stdCode, double price, double qty)
+OrderIDs WtLocalExecuter::buy(const char* stdCode, double price, double qty)
 {
 	if (!_channel_ready)
 		return OrderIDs();
 	return _trader->buy(stdCode, price, qty);
 }
 
-OrderIDs WtExecuter::sell(const char* stdCode, double price, double qty)
+OrderIDs WtLocalExecuter::sell(const char* stdCode, double price, double qty)
 {
 	if (!_channel_ready)
 		return OrderIDs();
@@ -141,7 +141,7 @@ OrderIDs WtExecuter::sell(const char* stdCode, double price, double qty)
 	return _trader->sell(stdCode, price, qty);
 }
 
-bool WtExecuter::cancel(uint32_t localid)
+bool WtLocalExecuter::cancel(uint32_t localid)
 {
 	if (!_channel_ready)
 		return false;
@@ -149,7 +149,7 @@ bool WtExecuter::cancel(uint32_t localid)
 	return _trader->cancel(localid);
 }
 
-OrderIDs WtExecuter::cancel(const char* stdCode, bool isBuy, double qty)
+OrderIDs WtLocalExecuter::cancel(const char* stdCode, bool isBuy, double qty)
 {
 	if (!_channel_ready)
 		return OrderIDs();
@@ -157,7 +157,7 @@ OrderIDs WtExecuter::cancel(const char* stdCode, bool isBuy, double qty)
 	return _trader->cancel(stdCode, isBuy, qty);
 }
 
-void WtExecuter::writeLog(const char* fmt, ...)
+void WtLocalExecuter::writeLog(const char* fmt, ...)
 {
 	char szBuf[2048] = { 0 };
 	uint32_t length = sprintf(szBuf, "[%s]", _name.c_str());
@@ -168,17 +168,17 @@ void WtExecuter::writeLog(const char* fmt, ...)
 	va_end(args);
 }
 
-WTSCommodityInfo* WtExecuter::getCommodityInfo(const char* stdCode)
+WTSCommodityInfo* WtLocalExecuter::getCommodityInfo(const char* stdCode)
 {
 	return _stub->get_comm_info(stdCode);
 }
 
-WTSSessionInfo* WtExecuter::getSessionInfo(const char* stdCode)
+WTSSessionInfo* WtLocalExecuter::getSessionInfo(const char* stdCode)
 {
 	return _stub->get_sess_info(stdCode);
 }
 
-uint64_t WtExecuter::getCurTime()
+uint64_t WtLocalExecuter::getCurTime()
 {
 	return _stub->get_real_time();
 	//return TimeUtils::makeTime(_stub->get_date(), _stub->get_raw_time() * 100000 + _stub->get_secs());
@@ -190,7 +190,7 @@ uint64_t WtExecuter::getCurTime()
 
 
 #pragma region 外部接口
-void WtExecuter::on_position_changed(const char* stdCode, double targetPos)
+void WtLocalExecuter::on_position_changed(const char* stdCode, double targetPos)
 {
 	ExecuteUnitPtr unit = getUnit(stdCode);
 	if (unit == NULL)
@@ -216,7 +216,7 @@ void WtExecuter::on_position_changed(const char* stdCode, double targetPos)
 	unit->self()->set_position(stdCode, targetPos);
 }
 
-void WtExecuter::set_position(const std::unordered_map<std::string, double>& targets)
+void WtLocalExecuter::set_position(const std::unordered_map<std::string, double>& targets)
 {
 	for (auto it = targets.begin(); it != targets.end(); it++)
 	{
@@ -280,7 +280,7 @@ void WtExecuter::set_position(const std::unordered_map<std::string, double>& tar
 	}
 }
 
-void WtExecuter::on_tick(const char* stdCode, WTSTickData* newTick)
+void WtLocalExecuter::on_tick(const char* stdCode, WTSTickData* newTick)
 {
 	ExecuteUnitPtr unit = getUnit(stdCode, false);
 	if (unit == NULL)
@@ -301,7 +301,7 @@ void WtExecuter::on_tick(const char* stdCode, WTSTickData* newTick)
 	}
 }
 
-void WtExecuter::on_trade(uint32_t localid, const char* stdCode, bool isBuy, double vol, double price)
+void WtLocalExecuter::on_trade(uint32_t localid, const char* stdCode, bool isBuy, double vol, double price)
 {
 	ExecuteUnitPtr unit = getUnit(stdCode, false);
 	if (unit == NULL)
@@ -321,7 +321,7 @@ void WtExecuter::on_trade(uint32_t localid, const char* stdCode, bool isBuy, dou
 	}
 }
 
-void WtExecuter::on_order(uint32_t localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled /* = false */)
+void WtLocalExecuter::on_order(uint32_t localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled /* = false */)
 {
 	ExecuteUnitPtr unit = getUnit(stdCode, false);
 	if (unit == NULL)
@@ -341,7 +341,7 @@ void WtExecuter::on_order(uint32_t localid, const char* stdCode, bool isBuy, dou
 	}
 }
 
-void WtExecuter::on_entrust(uint32_t localid, const char* stdCode, bool bSuccess, const char* message)
+void WtLocalExecuter::on_entrust(uint32_t localid, const char* stdCode, bool bSuccess, const char* message)
 {
 	ExecuteUnitPtr unit = getUnit(stdCode, false);
 	if (unit == NULL)
@@ -362,7 +362,7 @@ void WtExecuter::on_entrust(uint32_t localid, const char* stdCode, bool bSuccess
 	}
 }
 
-void WtExecuter::on_channel_ready()
+void WtLocalExecuter::on_channel_ready()
 {
 	_channel_ready = true;
 	for (auto it = _unit_map.begin(); it != _unit_map.end(); it++)
@@ -385,7 +385,7 @@ void WtExecuter::on_channel_ready()
 	}
 }
 
-void WtExecuter::on_channel_lost()
+void WtLocalExecuter::on_channel_lost()
 {
 	_channel_ready = false;
 	for (auto it = _unit_map.begin(); it != _unit_map.end(); it++)
@@ -408,7 +408,7 @@ void WtExecuter::on_channel_lost()
 	}
 }
 
-void WtExecuter::on_position(const char* stdCode, bool isLong, double prevol, double preavail, double newvol, double newavail)
+void WtLocalExecuter::on_position(const char* stdCode, bool isLong, double prevol, double preavail, double newvol, double newavail)
 {
 	IHotMgr* hotMgr = _stub->get_hot_mon();
 	if(CodeHelper::isStdFutCode(stdCode))
@@ -536,33 +536,3 @@ ExecuteUnitPtr WtExecuterFactory::createExeUnit(const char* name)
 	}
 	return ExecuteUnitPtr(new ExeUnitWrapper(unit, fInfo._fact));
 }
-
-//////////////////////////////////////////////////////////////////////////
-#pragma region "WtExecuterMgr"
-void WtExecuterMgr::set_positions(std::unordered_map<std::string, double> target_pos)
-{
-	for (auto it = _executers.begin(); it != _executers.end(); it++)
-	{
-		ExecCmdPtr& executer = (*it);
-		executer->set_position(target_pos);
-	}
-}
-
-void WtExecuterMgr::handle_pos_change(const char* stdCode, double targetPos)
-{
-	for (auto it = _executers.begin(); it != _executers.end(); it++)
-	{
-		ExecCmdPtr& executer = (*it);
-		executer->on_position_changed(stdCode, targetPos);
-	}
-}
-
-void WtExecuterMgr::handle_tick(const char* stdCode, WTSTickData* curTick)
-{
-	for (auto it = _executers.begin(); it != _executers.end(); it++)
-	{
-		ExecCmdPtr& executer = (*it);
-		executer->on_tick(stdCode, curTick);
-	}
-}
-#pragma endregion "WtExecuterMgr"

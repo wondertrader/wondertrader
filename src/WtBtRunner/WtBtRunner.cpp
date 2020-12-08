@@ -20,7 +20,7 @@ int main()
 {
 	WTSLogger::init("logcfg.json");
 
-	std::string filename = "configstk.json";
+	std::string filename = "config.json";
 
 	std::string content;
 	StdFile::read_file_content(filename.c_str(), content);
@@ -40,9 +40,10 @@ int main()
 
 	WTSVariant* cfgEnv = cfg->get("env");
 	const char* mode = cfgEnv->getCString("mocker");
+	int32_t slippage = cfgEnv->getInt32("slippage");
 	if (strcmp(mode, "cta") == 0)
 	{
-		CtaMocker* mocker = new CtaMocker(&replayer, "cta");
+		CtaMocker* mocker = new CtaMocker(&replayer, "cta", slippage);
 		mocker->initCtaFactory(cfg->get("cta"));
 		replayer.register_sink(mocker);
 	}

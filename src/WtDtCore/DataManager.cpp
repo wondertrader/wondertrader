@@ -63,13 +63,13 @@ bool DataManager::init(WTSVariant* params, WTSBaseDataMgr* bdMgr, StateMonitor* 
 		FuncCreateWriter pFuncCreateWriter = (FuncCreateWriter)DLLHelper::get_symbol(libParser, "createWriter");
 		if (pFuncCreateWriter == NULL)
 		{
-			WTSLogger::info("数据落地模块初始化失败,找不到对应的入口函数...");
+			WTSLogger::error("数据落地模块初始化失败,找不到对应的入口函数...");
 		}
 
 		FuncDeleteWriter pFuncDeleteWriter = (FuncDeleteWriter)DLLHelper::get_symbol(libParser, "deleteWriter");
 		if (pFuncDeleteWriter == NULL)
 		{
-			WTSLogger::info("数据落地模块初始化失败,找不到对应的入口函数...");
+			WTSLogger::error("数据落地模块初始化失败,找不到对应的入口函数...");
 		}
 
 		if (pFuncCreateWriter && pFuncDeleteWriter)
@@ -81,7 +81,7 @@ bool DataManager::init(WTSVariant* params, WTSBaseDataMgr* bdMgr, StateMonitor* 
 	}
 	else
 	{
-		WTSLogger::info("数据落地模块初始化失败,加载模块%s失败...",  module.c_str());
+		WTSLogger::error("数据落地模块初始化失败,加载模块%s失败...",  module.c_str());
 	}
 
 	return _writer->init(params, this);

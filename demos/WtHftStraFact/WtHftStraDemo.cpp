@@ -18,6 +18,7 @@ WtHftStraDemo::WtHftStraDemo(const char* id)
 	, _stock(false)
 	, _unit(1)
 	, _cancel_cnt(0)
+	, _reserved(0)
 {
 }
 
@@ -44,10 +45,14 @@ bool WtHftStraDemo::init(WTSVariant* cfg)
 	_code = cfg->getCString("code");
 	_count = cfg->getUInt32("count");
 	_secs = cfg->getUInt32("second");
+	_freq = cfg->getUInt32("freq");
 	_offset = cfg->getUInt32("offset");
+	_reserved = cfg->getDouble("reserve");
 
 	_stock = cfg->getBoolean("stock");
 	_unit = _stock ? 100 : 1;
+	if (_freq == 0)
+		_freq = 30;
 
 	return true;
 }
@@ -59,13 +64,13 @@ void WtHftStraDemo::on_entrust(uint32_t localid, bool bSuccess, const char* mess
 
 void WtHftStraDemo::on_init(IHftStraCtx* ctx)
 {
-	WTSTickSlice* ticks = ctx->stra_get_ticks(_code.c_str(), _count);
-	if (ticks)
-		ticks->release();
+	//WTSTickSlice* ticks = ctx->stra_get_ticks(_code.c_str(), _count);
+	//if (ticks)
+	//	ticks->release();
 
-	WTSKlineSlice* kline = ctx->stra_get_bars(_code.c_str(), "m1", 30);
-	if (kline)
-		kline->release();
+	//WTSKlineSlice* kline = ctx->stra_get_bars(_code.c_str(), "m1", 30);
+	//if (kline)
+	//	kline->release();
 
 	ctx->stra_sub_ticks(_code.c_str());
 
@@ -103,7 +108,7 @@ void WtHftStraDemo::on_tick(IHftStraCtx* ctx, const char* code, WTSTickData* new
 
 	//30秒内不重复计算
 	uint64_t now = TimeUtils::makeTime(ctx->stra_get_date(), ctx->stra_get_time() * 100000 + ctx->stra_get_secs());//(uint64_t)ctx->stra_get_date()*1000000000 + (uint64_t)ctx->stra_get_time()*100000 + ctx->stra_get_secs();
-	if(now - _last_entry_time <= 30*1000)
+	if(now - _last_entry_time <= _freq * 1000)
 	{
 		return;
 	}
@@ -128,6 +133,8 @@ void WtHftStraDemo::on_tick(IHftStraCtx* ctx, const char* code, WTSTickData* new
 	if (signal != 0)
 	{
 		double curPos = ctx->stra_get_position(code);
+		curPos -= _reserved;
+
 		WTSCommodityInfo* cInfo = ctx->stra_get_comminfo(code);
 
 		if(signal > 0  && curPos <= 0)
@@ -144,8 +151,8 @@ void WtHftStraDemo::on_tick(IHftStraCtx* ctx, const char* code, WTSTickData* new
 			_mtx_ords.unlock();
 			_last_entry_time = now;
 		}
-		else if (signal < 0 && (curPos > 0 || (!_stock && curPos == 0)))
-		{//反向信号，且当前仓位大于等于0
+		else if (signal < 0 && (curPos > 0 || ((!_stock || !decimal::eq(_reserved,0)) && curPos == 0)))
+		{//反向信号，且当前仓位大于0，或者仓位为0但不是股票，或者仓位为0但是基础仓位有修正
 			//最新价-2跳下单
 			double targetPx = price - cInfo->getPriceTick()*_offset;
 			auto ids = ctx->stra_sell(code, targetPx, _unit);

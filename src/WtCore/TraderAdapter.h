@@ -22,7 +22,7 @@ class WTSVariant;
 class ActionPolicyMgr;
 class WTSContractInfo;
 class WTSCommodityInfo;
-class WtExecuter;
+class WtLocalExecuter;
 class EventNotifier;
 
 class ITrdNotifySink;

@@ -522,17 +522,29 @@ bool WtRtRunner::initExecuters()
 			continue;
 
 		const char* id = cfgItem->getCString("id");
+		bool bLocal = cfgItem->getBoolean("local");
 
-		WtExecuter* executer = new WtExecuter(&_exe_factory, id, &_data_mgr);
-		if (!executer->init(cfgItem))
-			return false;
+		if(bLocal)
+		{
+			WtLocalExecuter* executer = new WtLocalExecuter(&_exe_factory, id, &_data_mgr);
+			if (!executer->init(cfgItem))
+				return false;
 
-		TraderAdapterPtr trader = _traders.getAdapter(cfgItem->getCString("trader"));
-		executer->setTrader(trader.get());
-		trader->addSink(executer);
+			TraderAdapterPtr trader = _traders.getAdapter(cfgItem->getCString("trader"));
+			executer->setTrader(trader.get());
+			trader->addSink(executer);
 
-		//WtExecuterPtr exec_ptr(executer);
-		_cta_engine.addExecuter(ExecCmdPtr(executer));
+			_cta_engine.addExecuter(ExecCmdPtr(executer));
+		}
+		else
+		{
+			WtDistExecuter* executer = new WtDistExecuter(id);
+			if (!executer->init(cfgItem))
+				return false;
+
+			_cta_engine.addExecuter(ExecCmdPtr(executer));
+		}
+		
 		count++;
 	}
 

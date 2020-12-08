@@ -21,16 +21,16 @@ ELSE (UNIX)
 	SET(LNKS ${MyDeps}/lib)
 ENDIF ()
 
-SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../build/bin/WtTester)
+SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/WtTester)
 
 INCLUDE_DIRECTORIES(${INCS})
 LINK_DIRECTORIES(${LNKS})
 
 SET(LIBS
-	${PROJECT_SOURCE_DIR}/../build/libs/libWtBtCore.a
+	${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/libs/libWtBtCore.a
 	
-	${PROJECT_SOURCE_DIR}/../build/libs/libWTSTools.a
-	${PROJECT_SOURCE_DIR}/../build/libs/libWTSUtils.a
+	${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/libs/libWTSTools.a
+	${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/libs/libWTSUtils.a
 	
 	${MyDeps}/lib/libmysqlclient.a
 	boost_filesystem
@@ -44,10 +44,10 @@ TARGET_LINK_LIBRARIES(WtBtRunner ${LIBS})
 
 
 SET(LIBS
-	${PROJECT_SOURCE_DIR}/../build/bin/WtBtPorter/libWtBtPorter.so
+	${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/WtBtPorter/libWtBtPorter.so
 	
-	${PROJECT_SOURCE_DIR}/../build/libs/libWTSTools.a
-	${PROJECT_SOURCE_DIR}/../build/libs/libWTSUtils.a
+	${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/libs/libWTSTools.a
+	${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/libs/libWTSUtils.a
 	
 	${MyDeps}/lib/libmysqlclient.a
 	boost_filesystem

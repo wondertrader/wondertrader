@@ -267,7 +267,7 @@ bool WtRunner::initExecuters()
 
 		const char* id = cfgItem->getCString("id");
 
-		WtExecuterPtr executer(new WtExecuter(&_exe_factory, id, &_data_mgr));
+		WtExecuterPtr executer(new WtLocalExecuter(&_exe_factory, id, &_data_mgr));
 		if (!executer->init(cfgItem))
 			return false;
 

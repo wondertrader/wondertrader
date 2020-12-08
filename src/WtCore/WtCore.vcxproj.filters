@@ -31,11 +31,11 @@
     <Filter Include="Incs">
       <UniqueIdentifier>{9f1bbb47-ad4c-461b-9a65-c33dc3af0cbc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Exec">
+      <UniqueIdentifier>{1f4c4ad5-a32a-4c03-943c-c5e6831cc00b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="WtExecuter.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="TraderAdapter.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -141,11 +141,20 @@
     <ClInclude Include="EventNotifier.h">
       <Filter>Common</Filter>
     </ClInclude>
+    <ClInclude Include="WtExecMgr.h">
+      <Filter>Exec</Filter>
+    </ClInclude>
+    <ClInclude Include="IExecCommand.h">
+      <Filter>Exec</Filter>
+    </ClInclude>
+    <ClInclude Include="WtLocalExecuter.h">
+      <Filter>Exec</Filter>
+    </ClInclude>
+    <ClInclude Include="WtDistExecuter.h">
+      <Filter>Exec</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="WtExecuter.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="TraderAdapter.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -211,6 +220,15 @@
     </ClCompile>
     <ClCompile Include="EventNotifier.cpp">
       <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="WtExecMgr.cpp">
+      <Filter>Exec</Filter>
+    </ClCompile>
+    <ClCompile Include="WtLocalExecuter.cpp">
+      <Filter>Exec</Filter>
+    </ClCompile>
+    <ClCompile Include="WtDistExecuter.cpp">
+      <Filter>Exec</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
