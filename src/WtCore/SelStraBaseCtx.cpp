@@ -264,7 +264,7 @@ void SelStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 				const char* stdCode = pItem["code"].GetString();
 				if (!CodeHelper::isStdFutHotCode(stdCode) && _engine->get_contract_info(stdCode) == NULL)
 				{
-					stra_log_text("合约%s不存在或者已过期，持仓数据已忽略", stdCode);
+					stra_log_text("标的%s不存在或者已过期，持仓数据已忽略", stdCode);
 					continue;
 				}
 				PosInfo& pInfo = _pos_map[stdCode];
@@ -321,7 +321,7 @@ void SelStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 				const char* stdCode = m.name.GetString();
 				if (!CodeHelper::isStdFutHotCode(stdCode) && _engine->get_contract_info(stdCode) == NULL)
 				{
-					stra_log_text("合约%s不存在或者已过期，信号已忽略", stdCode);
+					stra_log_text("标的%s不存在或者已过期，信号已忽略", stdCode);
 					continue;
 				}
 
@@ -333,7 +333,7 @@ void SelStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 				sInfo._sigprice = jItem["sigprice"].GetDouble();
 				sInfo._gentime = jItem["gentime"].GetUint64();
 
-				stra_log_text("未触发信号恢复, 合约: %s, 目标部位: %d", stdCode, sInfo._volumn);
+				stra_log_text("未触发信号恢复, 标的: %s, 目标部位: %d", stdCode, sInfo._volumn);
 			}
 		}
 	}

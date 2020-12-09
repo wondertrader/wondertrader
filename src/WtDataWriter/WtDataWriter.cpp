@@ -1048,7 +1048,7 @@ WtDataWriter::TickBlockPair* WtDataWriter::getTickBlock(WTSContractInfo* ct, uin
 					pBlock->_block->_capacity = oldCnt;
 					pBlock->_block->_size = oldCnt;
 
-					_sink->outputWriterLog(LL_WARN, "%s合约%u的tick缓存文件已修复", ct->getCode(), curDate);
+					_sink->outputWriterLog(LL_WARN, "%s标的%u的tick缓存文件已修复", ct->getCode(), curDate);
 				}
 				
 				break;
@@ -1412,12 +1412,12 @@ bool WtDataWriter::updateCache(WTSContractInfo* ct, WTSTickData* curTick, bool b
 		uint32_t tdate = sInfo->getOffsetDate(curTick->actiondate(), curTick->actiontime() / 100000);
 		if (tdate > curTick->tradingdate())
 		{
-			_sink->outputWriterLog(LL_ERROR, "合约%s.%s最新tick数据(时间%u.%u)异常，丢弃", curTick->exchg(), curTick->code(), curTick->actiondate(), curTick->actiontime());
+			_sink->outputWriterLog(LL_ERROR, "标的%s.%s最新tick数据(时间%u.%u)异常，丢弃", curTick->exchg(), curTick->code(), curTick->actiondate(), curTick->actiontime());
 			return false;
 		}
 		else if (curTick->totalvolumn() < item._tick.total_volumn)
 		{
-			_sink->outputWriterLog(LL_ERROR, "合约%s.%s最新tick数据(时间%u.%u，总成交%u小于缓存总成交%u)异常，丢弃", 
+			_sink->outputWriterLog(LL_ERROR, "标的%s.%s最新tick数据(时间%u.%u，总成交%u小于缓存总成交%u)异常，丢弃", 
 				curTick->exchg(), curTick->code(), curTick->actiondate(), curTick->actiontime(), curTick->totalvolumn(), item._tick.total_volumn);
 			return false;
 		}
@@ -1612,7 +1612,7 @@ uint32_t WtDataWriter::dump_hisdata_to_db(WTSContractInfo* ct)
 	if (kBlkPair != NULL && kBlkPair->_block->_size > 0)
 	{
 		uint32_t size = kBlkPair->_block->_size;
-		_sink->outputWriterLog(LL_INFO, "开始转移合约%s的1分钟数据", ct->getFullCode());
+		_sink->outputWriterLog(LL_INFO, "开始转移标的%s的1分钟数据", ct->getFullCode());
 		BoostUniqueLock lock(kBlkPair->_mutex);
 
 		std::string sql = "REPLACE INTO tb_kline_min1(exchange,code,date,time,open,high,low,close,volume,turnover,interest,diff_interest) VALUES";
@@ -1646,7 +1646,7 @@ uint32_t WtDataWriter::dump_hisdata_to_db(WTSContractInfo* ct)
 	if (kBlkPair != NULL && kBlkPair->_block->_size > 0)
 	{
 		uint32_t size = kBlkPair->_block->_size;
-		_sink->outputWriterLog(LL_INFO, "开始转移合约%s的5分钟数据", ct->getFullCode());
+		_sink->outputWriterLog(LL_INFO, "开始转移标的%s的5分钟数据", ct->getFullCode());
 		BoostUniqueLock lock(kBlkPair->_mutex);
 
 		std::string sql = "REPLACE INTO tb_kline_min5(exchange,code,date,time,open,high,low,close,volume,turnover,interest,diff_interest) VALUES";
@@ -1846,7 +1846,7 @@ uint32_t WtDataWriter::dump_hisdata_to_file(WTSContractInfo* ct)
 	if (kBlkPair != NULL && kBlkPair->_block->_size > 0)
 	{
 		uint32_t size = kBlkPair->_block->_size;
-		_sink->outputWriterLog(LL_INFO, "开始转移合约%s的1分钟数据", ct->getFullCode());
+		_sink->outputWriterLog(LL_INFO, "开始转移标的%s的1分钟数据", ct->getFullCode());
 		BoostUniqueLock lock(kBlkPair->_mutex);
 
 		std::stringstream ss;
@@ -1917,7 +1917,7 @@ uint32_t WtDataWriter::dump_hisdata_to_file(WTSContractInfo* ct)
 	if (kBlkPair != NULL && kBlkPair->_block->_size > 0)
 	{
 		uint32_t size = kBlkPair->_block->_size;
-		_sink->outputWriterLog(LL_INFO, "开始转移合约%s的5分钟数据", ct->getFullCode());
+		_sink->outputWriterLog(LL_INFO, "开始转移标的%s的5分钟数据", ct->getFullCode());
 		BoostUniqueLock lock(kBlkPair->_mutex);
 
 		std::stringstream ss;
@@ -2049,15 +2049,15 @@ void WtDataWriter::proc_loop()
 				}
 				else
 				{
-					_sink->outputWriterLog(LL_WARN, "合约%s[%s]已过期，缓存即将清理", ay[1].c_str(), ay[0].c_str());
+					_sink->outputWriterLog(LL_WARN, "标的%s[%s]已过期，缓存即将清理", ay[1].c_str(), ay[0].c_str());
 
-					//删除已经过期合约的实时tick文件
+					//删除已经过期标的的实时tick文件
 					std::string path = StrUtil::printf("%srt/ticks/%s/%s.dmb", _base_dir.c_str(), ay[0].c_str(), ay[1].c_str());
 					BoostFile::delete_file(path.c_str());
 				}
 			}
 
-			//如果两组合约个数不同，说明有合约过期了，被排除了
+			//如果两组标的个数不同，说明有标的过期了，被排除了
 			if(setCodes.size() != _tick_cache_idx.size())
 			{
 				uint32_t diff = _tick_cache_idx.size() - setCodes.size();
@@ -2106,7 +2106,7 @@ void WtDataWriter::proc_loop()
 				_tick_cache_file->map(filename.c_str());
 				_tick_cache_block = (RTTickCache*)_tick_cache_file->addr();
 				
-				_sink->outputWriterLog(LL_INFO, "行情缓存清理成功，共清理%u条过期合约的缓存", diff);
+				_sink->outputWriterLog(LL_INFO, "行情缓存清理成功，共清理%u条过期标的的缓存", diff);
 			}
 
 			std::string path = StrUtil::printf("%srt/min1/", _base_dir.c_str());
@@ -2169,7 +2169,7 @@ void WtDataWriter::proc_loop()
 			TickBlockPair *tBlkPair = getTickBlock(ct, uDate, false);
 			if (tBlkPair != NULL && tBlkPair->_block->_size > 0)
 			{
-				_sink->outputWriterLog(LL_INFO, "开始转移合约%s的tick数据", fullcode.c_str());
+				_sink->outputWriterLog(LL_INFO, "开始转移标的%s的tick数据", fullcode.c_str());
 				BoostUniqueLock lock(tBlkPair->_mutex);
 
 				std::stringstream ss;
@@ -2380,6 +2380,6 @@ void WtDataWriter::proc_loop()
 		else
 			count += dump_hisdata_to_file(ct);
 
-		_sink->outputWriterLog(LL_INFO, "合约%s[%s]已完成收盘, 本次作业共处理数据%u条", ct->getCode(), ct->getExchg(), count);
+		_sink->outputWriterLog(LL_INFO, "标的%s[%s]已完成收盘, 本次作业共处理数据%u条", ct->getCode(), ct->getExchg(), count);
 	}
 }

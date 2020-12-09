@@ -274,7 +274,7 @@ void CtaStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 				const char* stdCode = pItem["code"].GetString();
 				if (!CodeHelper::isStdFutHotCode(stdCode) && _engine->get_contract_info(stdCode) == NULL)
 				{
-					stra_log_text("合约%s不存在或者已过期，持仓数据已忽略", stdCode);
+					stra_log_text("标的%s不存在或者已过期，持仓数据已忽略", stdCode);
 					continue;
 				}
 				PosInfo& pInfo = _pos_map[stdCode];
@@ -332,7 +332,7 @@ void CtaStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 				const char* stdCode = m.name.GetString();
 				if (!CodeHelper::isStdFutHotCode(stdCode) && _engine->get_contract_info(stdCode) == NULL)
 				{
-					stra_log_text("合约%s不存在或者已过期，条件单已忽略", stdCode);
+					stra_log_text("标的%s不存在或者已过期，条件单已忽略", stdCode);
 					continue;
 				}
 
@@ -354,7 +354,7 @@ void CtaStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 
 					condList.push_back(condInfo);
 
-					stra_log_text(fmt::format("条件单恢复, 合约: {}, {} {}, 触发条件: 最新价 {} {}",
+					stra_log_text(fmt::format("条件单恢复, 标的: {}, {} {}, 触发条件: 最新价 {} {}",
 						stdCode, ACTION_NAMES[condInfo._action], condInfo._qty, CMP_ALG_NAMES[condInfo._alg], condInfo._target).c_str());
 					count++;
 				}
@@ -375,7 +375,7 @@ void CtaStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 				const char* stdCode = m.name.GetString();
 				if (!CodeHelper::isStdFutHotCode(stdCode) && _engine->get_contract_info(stdCode) == NULL)
 				{
-					stra_log_text("合约%s不存在或者已过期，信号已忽略", stdCode);
+					stra_log_text("标的%s不存在或者已过期，信号已忽略", stdCode);
 					continue;
 				}
 
@@ -387,7 +387,7 @@ void CtaStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 				sInfo._sigprice = jItem["sigprice"].GetDouble();
 				sInfo._gentime = jItem["gentime"].GetUint64();
 				
-				stra_log_text(fmt::format("未触发信号恢复, 合约: {}, 目标部位: {}", stdCode, sInfo._volumn).c_str());
+				stra_log_text(fmt::format("未触发信号恢复, 标的: {}, 目标部位: {}", stdCode, sInfo._volumn).c_str());
 			}
 		}
 	}
@@ -658,7 +658,7 @@ void CtaStraBaseCtx::on_tick(const char* stdCode, WTSTickData* newTick, bool bEm
 
 			if (isMatched)
 			{
-				stra_log_text(fmt::format("条件单触发[最新价: {}{}{}], 合约: {}, {} {}", curPrice, CMP_ALG_NAMES[entrust._alg], entrust._target, stdCode, ACTION_NAMES[entrust._action], entrust._qty).c_str());
+				stra_log_text(fmt::format("条件单触发[最新价: {}{}{}], 标的: {}, {} {}", curPrice, CMP_ALG_NAMES[entrust._alg], entrust._target, stdCode, ACTION_NAMES[entrust._action], entrust._qty).c_str());
 
 				switch (entrust._action)
 				{
@@ -1226,7 +1226,7 @@ void CtaStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 
 	if (bTriggered)	//如果是条件单触发, 则向引擎提交变化量
 	{
-		_engine->handle_pos_change(stdCode, diff);
+		_engine->handle_pos_change(_name.c_str(), stdCode, diff);
 	}
 }
 
