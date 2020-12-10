@@ -50,3 +50,6 @@
 * 增加了一个MiniLoader工程，用于从CTPMini接口拉取合约列表
 * 将linux下编译的boost依赖从动态库改成静态库
 * 其他细节完善
+
+### 0.5.4
+* WtBtPorter、WtPorter、WtExecMon的初始化接口，全部改成支持传文件名和文件内容两种方式
