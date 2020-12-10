@@ -12,19 +12,31 @@
 
 extern const char* getBinDir();
 
-bool WtExecRunner::init(const char* logProfile /* = "log4cxx.prop" */)
+bool WtExecRunner::init(const char* logCfg /* = "logcfgexec.json" */, bool isFile /* = true */)
 {
-	std::string path = WtHelper::getCWD() + logProfile;
-	WTSLogger::init(path.c_str());
+	if(isFile)
+	{
+		std::string path = WtHelper::getCWD() + logCfg;
+		WTSLogger::init(path.c_str(), true);
+	}
+	else
+	{
+		WTSLogger::init(logCfg, false);
+	}
+	
 
 	WtHelper::setInstDir(getBinDir());
 	return true;
 }
 
-bool WtExecRunner::config(const char* cfgFile)
+bool WtExecRunner::config(const char* cfgFile, bool isFile /* = true */)
 {
 	std::string json;
-	StdFile::read_file_content(cfgFile, json);
+	if (isFile)
+		StdFile::read_file_content(cfgFile, json);
+	else
+		json = cfgFile;
+
 	rj::Document document;
 	document.Parse(json.c_str());
 

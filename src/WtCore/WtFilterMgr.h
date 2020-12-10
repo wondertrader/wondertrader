@@ -25,7 +25,7 @@ public:
 	 *
 	 *	return		是否过滤掉了, 如果过滤掉了, 该持仓就不加入最终组合目标仓位
 	 */
-	inline bool		is_filtered_by_strategy(const char* straName, double& targetPos, bool isDiff = false);
+	bool		is_filtered_by_strategy(const char* straName, double& targetPos, bool isDiff = false);
 
 	/*
 	 *	是否因为代码被过滤掉了
@@ -36,7 +36,7 @@ public:
 	 *
 	 *	return		是否过滤掉了, 如果过滤掉了, 该持仓就不加入最终组合目标仓位
 	 */
-	inline bool		is_filtered_by_code(const char* stdCode, double& targetPos);
+	bool		is_filtered_by_code(const char* stdCode, double& targetPos);
 
 private:
 	//////////////////////////////////////////////////////////////////////////

@@ -54,9 +54,9 @@ public:
 	/*
 	 *	≥ı ºªØ
 	 */
-	bool init(const char* logProfile = "log4cxx.prop");
+	bool init(const char* logCfg = "logcfg.prop", bool isFile = true);
 
-	bool config(const char* cfgFile);
+	bool config(const char* cfgFile, bool isFile = true);
 
 	void run(bool bAsync = false);
 

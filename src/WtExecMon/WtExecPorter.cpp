@@ -91,7 +91,7 @@ const char* getBinDir()
 	return _bin_dir.c_str();
 }
 
-void init_exec(WtString logProfile)
+void init_exec(WtString logCfg, bool isFile /*= true*/)
 {
 	static bool inited = false;
 
@@ -101,12 +101,12 @@ void init_exec(WtString logProfile)
 	CMiniDumper::Enable(getModuleName(), true);
 #endif
 
-	getRunner().init(logProfile);
+	getRunner().init(logCfg);
 
 	inited = true;
 }
 
-void config_exec(WtString cfgfile)
+void config_exec(WtString cfgfile, bool isFile /*= true*/)
 {
 	if (strlen(cfgfile) == 0)
 		getRunner().config("cfgexec.json");
@@ -140,7 +140,7 @@ WtString get_version()
 	return _ver.c_str();
 }
 
-void write_log(unsigned int level, WtString message, const char* catName)
+void write_log(unsigned int level, WtString message, WtString catName)
 {
 	if (strlen(catName) > 0)
 	{
