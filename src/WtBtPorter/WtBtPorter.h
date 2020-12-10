@@ -22,9 +22,9 @@ extern "C"
 	EXPORT_FLAG	void		register_hft_callbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraBarCallback cbBar,
 		FuncHftChannelCallback cbChnl, FuncHftOrdCallback cbOrd, FuncHftTrdCallback cbTrd, FuncHftEntrustCallback cbEntrust);
 
-	EXPORT_FLAG	void		init_backtest(const char* logProfile);
+	EXPORT_FLAG	void		init_backtest(const char* logProfile, bool isFile);
 
-	EXPORT_FLAG	void		config_backtest(const char* cfgfile);
+	EXPORT_FLAG	void		config_backtest(const char* cfgfile, bool isFile);
 
 	EXPORT_FLAG	CtxHandler	init_cta_mocker(const char* name);
 

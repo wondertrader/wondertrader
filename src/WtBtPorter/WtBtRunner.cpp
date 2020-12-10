@@ -185,15 +185,18 @@ void WtBtRunner::hft_on_trade(uint32_t cHandle, WtUInt32 localid, const char* st
 		_cb_hft_trd(cHandle, localid, stdCode, isBuy, vol, price);
 }
 
-void WtBtRunner::init(const char* logProfile /* = "" */)
+void WtBtRunner::init(const char* logProfile /* = "" */, bool isFile /* = true */)
 {
-	WTSLogger::init(logProfile);
+	WTSLogger::init(logProfile, isFile);
 }
 
-void WtBtRunner::config(const char* cfgFile)
+void WtBtRunner::config(const char* cfgFile, bool isFile /* = true */)
 {
 	std::string content;
-	StdFile::read_file_content(cfgFile, content);
+	if (isFile)
+		StdFile::read_file_content(cfgFile, content);
+	else
+		content = cfgFile;
 
 	rj::Document root;
 	if (root.Parse(content.c_str()).HasParseError())

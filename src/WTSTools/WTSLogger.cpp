@@ -146,15 +146,16 @@ void WTSLogger::initLogger(const char* catName, WTSVariant* cfgLogger)
 	}
 }
 
-void WTSLogger::init(const char* propFile /* = "log4cxx.prop" */,
-	ILogHandler* handler /* = NULL */,
-	WTSLogLevel logLevel /* = LL_ALL */)
+void WTSLogger::init(const char* propFile /* = "logcfg.json" */, bool isFile /* = true */, ILogHandler* handler /* = NULL */, WTSLogLevel logLevel /* = LL_INFO */)
 {
-	if (!StdFile::exists(propFile))
+	if (isFile && !StdFile::exists(propFile))
 		return;
 
 	std::string content;
-	StdFile::read_file_content(propFile, content);
+	if (isFile)
+		StdFile::read_file_content(propFile, content);
+	else
+		content = propFile;
 
 	rj::Document root;
 	if (root.Parse(content.c_str()).HasParseError())

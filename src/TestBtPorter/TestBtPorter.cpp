@@ -45,7 +45,7 @@ int main()
 #endif
 	register_sel_callbacks(on_init, on_tick, on_calc, on_bar);
 
-	init_backtest("logcfg.json");
+	init_backtest("logcfg.json", true);
 
 	config_backtest("configbt.json");
 

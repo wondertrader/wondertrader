@@ -122,7 +122,7 @@ void register_hft_callbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cb
 	getRunner().registerHftCallbacks(cbInit, cbTick, cbBar, cbChnl, cbOrd, cbTrd, cbEntrust);
 }
 
-void init_backtest(const char* logProfile)
+void init_backtest(const char* logProfile, bool isFile)
 {
 	static bool inited = false;
 
@@ -133,17 +133,17 @@ void init_backtest(const char* logProfile)
 	CMiniDumper::Enable(getModuleName(), true);
 #endif
 
-	getRunner().init(logProfile);
+	getRunner().init(logProfile, isFile);
 
 	inited = true;
 }
 
-void config_backtest(const char* cfgfile)
+void config_backtest(const char* cfgfile, bool isFile)
 {
 	if (strlen(cfgfile) == 0)
-		getRunner().config("config.json");
+		getRunner().config("configbt.json", true);
 	else
-		getRunner().config(cfgfile);
+		getRunner().config(cfgfile, isFile);
 }
 
 void run_backtest()
