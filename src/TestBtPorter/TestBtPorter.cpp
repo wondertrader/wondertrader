@@ -47,7 +47,7 @@ int main()
 
 	init_backtest("logcfg.json", true);
 
-	config_backtest("configbt.json");
+	config_backtest("configbt.json", true);
 
 	int ctxid = init_sel_mocker("sel", 0, 5, "min");	//every money 09:26
 
