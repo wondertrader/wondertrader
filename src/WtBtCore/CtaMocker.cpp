@@ -62,6 +62,7 @@ CtaMocker::CtaMocker(HisDataReplayer* replayer, const char* name, int32_t slippa
 	, _ud_modified(false)
 	, _strategy(NULL)
 	, _slippage(slippage)
+	, _schedule_times(0)
 {
 	_context_id = makeCtxId();
 }
@@ -79,12 +80,12 @@ void CtaMocker::dump_outputs()
 	boost::filesystem::create_directories(folder.c_str());
 
 	std::string filename = folder + "trades.csv";
-	std::string content = "code,time,direct,action,price,qty,tag,fee\n";
+	std::string content = "code,time,direct,action,price,qty,tag,fee,barno\n";
 	content += _trade_logs.str();
 	BoostFile::write_file_contents(filename.c_str(), content.c_str(), content.size());
 
 	filename = folder + "closes.csv";
-	content = "code,direct,opentime,openprice,closetime,closeprice,qty,profit,totalprofit,entertag,exittag\n";
+	content = "code,direct,opentime,openprice,closetime,closeprice,qty,profit,totalprofit,entertag,exittag,openbarno,closebarno\n";
 	content += _close_logs.str();
 	BoostFile::write_file_contents(filename.c_str(), content.c_str(), content.size());
 
@@ -106,17 +107,18 @@ void CtaMocker::log_signal(const char* stdCode, double target, double price, uin
 	_sig_logs << stdCode << "," << target << "," << price << "," << gentime << "," << usertag << "\n";
 }
 
-void CtaMocker::log_trade(const char* stdCode, bool isLong, bool isOpen, uint64_t curTime, double price, double qty, const char* userTag, double fee)
+void CtaMocker::log_trade(const char* stdCode, bool isLong, bool isOpen, uint64_t curTime, double price, double qty, const char* userTag, double fee, uint32_t barNo)
 {
-	_trade_logs << stdCode << "," << curTime << "," << (isLong ? "LONG" : "SHORT") << "," << (isOpen ? "OPEN" : "CLOSE") << "," << price << "," << qty << "," << userTag << "," << fee << "\n";
+	_trade_logs << stdCode << "," << curTime << "," << (isLong ? "LONG" : "SHORT") << "," << (isOpen ? "OPEN" : "CLOSE") 
+		<< "," << price << "," << qty << "," << userTag << "," << fee << "," << barNo << "\n";
 }
 
-void CtaMocker::log_close(const char* stdCode, bool isLong, uint64_t openTime, double openpx, uint64_t closeTime, double closepx, double qty,
-	double profit, double totalprofit /* = 0 */, const char* enterTag /* = "" */, const char* exitTag /* = "" */)
+void CtaMocker::log_close(const char* stdCode, bool isLong, uint64_t openTime, double openpx, uint64_t closeTime, double closepx, double qty, double profit, 
+	double totalprofit /* = 0 */, const char* enterTag /* = "" */, const char* exitTag /* = "" */, uint32_t openBarNo /* = 0 */, uint32_t closeBarNo /* = 0 */)
 {
 	_close_logs << stdCode << "," << (isLong ? "LONG" : "SHORT") << "," << openTime << "," << openpx
 		<< "," << closeTime << "," << closepx << "," << qty << "," << profit << ","
-		<< totalprofit << "," << enterTag << "," << exitTag << "\n";
+		<< totalprofit << "," << enterTag << "," << exitTag << "," << openBarNo << "," << closeBarNo << "\n";
 }
 
 bool CtaMocker::initCtaFactory(WTSVariant* cfg)
@@ -418,8 +420,7 @@ bool CtaMocker::on_schedule(uint32_t curDate, uint32_t curTime)
 {
 	_is_in_schedule = true;//开始调度，修改标记
 
-	//主要用于保存浮动盈亏的
-	//save_data();
+	_schedule_times++;
 
 	bool isMainUdt = false;
 	bool emmited = false;
@@ -794,12 +795,13 @@ void CtaMocker::do_set_position(const char* stdCode, double qty, double price /*
 		dInfo._opentime = curTm;
 		dInfo._opentdate = curTDate;
 		strcpy(dInfo._opentag, userTag);
+		dInfo._open_barno = _schedule_times;
 		pInfo._details.push_back(dInfo);
 
 		double fee = _replayer->calc_fee(stdCode, trdPx, abs(diff), 0);
 		_fund_info._total_fees += fee;
 
-		log_trade(stdCode, dInfo._long, true, curTm, trdPx, abs(diff), userTag, fee);
+		log_trade(stdCode, dInfo._long, true, curTm, trdPx, abs(diff), userTag, fee, _schedule_times);
 	}
 	else
 	{//持仓方向和仓位变化方向不一致，需要平仓
@@ -839,9 +841,9 @@ void CtaMocker::do_set_position(const char* stdCode, double qty, double price /*
 			double fee = _replayer->calc_fee(stdCode, trdPx, maxQty, dInfo._opentdate == curTDate ? 2 : 1);
 			_fund_info._total_fees += fee;
 			//这里写成交记录
-			log_trade(stdCode, dInfo._long, false, curTm, trdPx, maxQty, userTag, fee);
+			log_trade(stdCode, dInfo._long, false, curTm, trdPx, maxQty, userTag, fee, _schedule_times);
 			//这里写平仓记录
-			log_close(stdCode, dInfo._long, dInfo._opentime, dInfo._price, curTm, trdPx, maxQty, profit, pInfo._closeprofit, dInfo._opentag, userTag);
+			log_close(stdCode, dInfo._long, dInfo._opentime, dInfo._price, curTm, trdPx, maxQty, profit, pInfo._closeprofit, dInfo._opentag, userTag, dInfo._open_barno, _schedule_times);
 
 			if (left == 0)
 				break;
@@ -866,6 +868,7 @@ void CtaMocker::do_set_position(const char* stdCode, double qty, double price /*
 			dInfo._volumn = abs(left);
 			dInfo._opentime = curTm;
 			dInfo._opentdate = curTDate;
+			dInfo._open_barno = _schedule_times;
 			strcpy(dInfo._opentag, userTag);
 			pInfo._details.push_back(dInfo);
  
@@ -873,7 +876,7 @@ void CtaMocker::do_set_position(const char* stdCode, double qty, double price /*
 			double fee = _replayer->calc_fee(stdCode, trdPx, abs(left), 0);
 			_fund_info._total_fees += fee;
 			//_engine->mutate_fund(fee, FFT_Fee);
-			log_trade(stdCode, dInfo._long, true, curTm, trdPx, abs(left), userTag, fee);
+			log_trade(stdCode, dInfo._long, true, curTm, trdPx, abs(left), userTag, fee, _schedule_times);
 		}
 	}
 }

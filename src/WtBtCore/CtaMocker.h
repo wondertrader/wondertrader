@@ -65,9 +65,9 @@ public:
 private:
 	void	dump_outputs();
 	inline void log_signal(const char* stdCode, double target, double price, uint64_t gentime, const char* usertag = "");
-	inline void	log_trade(const char* stdCode, bool isLong, bool isOpen, uint64_t curTime, double price, double qty, const char* userTag = "", double fee = 0.0);
+	inline void	log_trade(const char* stdCode, bool isLong, bool isOpen, uint64_t curTime, double price, double qty, const char* userTag = "", double fee = 0.0, uint32_t barNo = 0);
 	inline void	log_close(const char* stdCode, bool isLong, uint64_t openTime, double openpx, uint64_t closeTime, double closepx, double qty,
-		double profit, double totalprofit = 0, const char* enterTag = "", const char* exitTag = "");
+		double profit, double totalprofit = 0, const char* enterTag = "", const char* exitTag = "", uint32_t openBarNo = 0, uint32_t closeBarNo = 0);
 
 	void	update_dyn_profit(const char* stdCode, double price);
 
@@ -154,7 +154,9 @@ protected:
 	uint64_t		_total_calc_time;	//总计算时间
 	uint32_t		_emit_times;		//总计算次数
 
-	int32_t			_slippage;	//成交滑点
+	int32_t			_slippage;			//成交滑点
+
+	uint32_t		_schedule_times;	//调度次数
 
 	std::string		_main_key;
 
@@ -182,6 +184,7 @@ protected:
 		double		_max_loss;
 		double		_profit;
 		char		_opentag[32];
+		uint32_t	_open_barno;
 
 		_DetailInfo()
 		{
