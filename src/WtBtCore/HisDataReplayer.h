@@ -117,11 +117,11 @@ private:
 	/*
 	*	将历史数据放入缓存
 	*/
-	bool		cacheRawBarsFromBin(const std::string& key, const char* stdCode, WTSKlinePeriod period);
+	bool		cacheRawBarsFromBin(const std::string& key, const char* stdCode, WTSKlinePeriod period, bool bForBars = true);
 
-	bool		cacheRawBarsFromCSV(const std::string& key, const char* stdCode, WTSKlinePeriod period);
+	bool		cacheRawBarsFromCSV(const std::string& key, const char* stdCode, WTSKlinePeriod period, bool bForBars = true);
 
-	bool		cacheRawBarsFromDB(const std::string& key, const char* stdCode, WTSKlinePeriod period);
+	bool		cacheRawBarsFromDB(const std::string& key, const char* stdCode, WTSKlinePeriod period, bool bForBars = true);
 
 	bool		cacheRawTicksFromBin(const std::string& key, const char* stdCode, uint32_t uDate);
 
@@ -133,7 +133,11 @@ private:
 
 	void		replayTicks(uint64_t stime, uint64_t etime);
 
+	void		replayUnbars(uint64_t stime, uint64_t etime, uint32_t endTDate = 0);
+
 	bool		checkTicks(const char* stdCode, uint32_t uDate);
+
+	void		checkUnbars();
 
 	bool		loadStkAdjFactors(const char* adjfile);
 
@@ -175,10 +179,12 @@ private:
 
 	TickCache		_ticks_cache;
 	BarsCache		_bars_cache;
+	BarsCache		_unbars_cache;
 
 	TaskInfoPtr		_task;
 
 	std::string		_main_key;
+	std::string		_min_period;	//最小K线周期，这个主要用于未订阅品种的信号处理上
 	bool			_tick_enabled;
 	std::map<std::string, WTSTickStruct>	_day_cache;	//每日Tick缓存,当tick回放未开放时，会用到该缓存
 	std::map<std::string, std::string>		_ticker_keys;

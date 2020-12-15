@@ -268,6 +268,8 @@ void HisDataReplayer::run()
 
 	_listener->handle_init();	
 
+	checkUnbars();
+
 	if(_task == NULL)
 	{
 		//如果没有时间调度任务，则采用主K线回放的模式
@@ -309,10 +311,10 @@ void HisDataReplayer::run()
 					//WTSLogger::info("交易日%u开始", nextTDate);
 					_cur_tdate = nextTDate;
 				}
-				;
+				
+				uint64_t curBarTime = (uint64_t)_cur_date * 10000 + _cur_time;
 				if (_tick_enabled)
-				{
-					uint64_t curBarTime = (uint64_t)_cur_date * 10000 + _cur_time;
+				{//如果开始了tick回放，则直接回放tick数据
 					replayTicks(curBarTime, nextBarTime);
 				}
 
@@ -323,6 +325,12 @@ void HisDataReplayer::run()
 				uint32_t offTime = sInfo->offsetTime(_cur_time);
 				bool isEndTDate = (offTime >= sInfo->getCloseTime(true));
 
+				if (!_tick_enabled)
+				{
+					checkUnbars();
+					replayUnbars(curBarTime, nextBarTime, (isDay || isEndTDate) ? nextTDate : 0);
+				}
+
 				onMinuteEnd(nextDate, nextTime, (isDay || isEndTDate) ? nextTDate : 0);
 
 				if (isEndTDate && _closed_tdate != _cur_tdate)
@@ -330,7 +338,6 @@ void HisDataReplayer::run()
 					_listener->handle_session_end();
 					_closed_tdate = _cur_tdate;
 					_day_cache.clear();
-					//WTSLogger::info("交易日%u结束", _cur_tdate);
 				}
 
 				if (barList._cursor >= barList._bars.size())
@@ -591,6 +598,155 @@ void HisDataReplayer::run()
 						_listener->handle_replay_done();
 					}
 					break;
+				}
+			}
+		}
+	}
+}
+
+void HisDataReplayer::replayUnbars(uint64_t stime, uint64_t nowTime, uint32_t endTDate /* = 0 */)
+{
+	//uint64_t nowTime = (uint64_t)uDate * 10000 + uTime;
+	uint32_t uDate = (uint32_t)(stime / 10000);
+
+	for (auto it = _unbars_cache.begin(); it != _unbars_cache.end(); it++)
+	{
+		BarsList& barsList = it->second;
+		if (barsList._period != KP_DAY)
+		{
+			//如果历史数据指标不在尾部, 说明是回测模式, 要继续回放历史数据
+			if (barsList._bars.size() > barsList._cursor)
+			{
+				for (;;)
+				{
+					WTSBarStruct& nextBar = barsList._bars[barsList._cursor];
+
+					uint64_t barTime = 199000000000 + nextBar.time;
+					if (barTime <= nowTime)
+					{
+						if(barTime <= stime)
+							continue;
+
+						//开高低收
+						WTSTickStruct& curTS = _day_cache[barsList._code];
+						strcpy(curTS.code, barsList._code.c_str());
+						curTS.action_date = _cur_date;
+						curTS.action_time = _cur_time * 100000;
+
+						curTS.price = nextBar.open;
+						curTS.volumn = nextBar.vol;
+
+						//更新开高低三个字段
+						if (decimal::eq(curTS.open, 0))
+							curTS.open = curTS.price;
+						curTS.high = max(curTS.price, curTS.high);
+						if (decimal::eq(curTS.low, 0))
+							curTS.low = curTS.price;
+						else
+							curTS.low = min(curTS.price, curTS.low);
+
+
+						WTSTickData* curTick = WTSTickData::create(curTS);
+						_listener->handle_tick(barsList._code.c_str(), curTick);
+						curTick->release();
+
+						curTS.price = nextBar.high;
+						curTS.volumn = nextBar.vol;
+						curTS.high = max(curTS.price, curTS.high);
+						curTS.low = min(curTS.price, curTS.low);
+						curTick = WTSTickData::create(curTS);
+						_listener->handle_tick(barsList._code.c_str(), curTick);
+						curTick->release();
+
+						curTS.price = nextBar.low;
+						curTS.high = max(curTS.price, curTS.high);
+						curTS.low = min(curTS.price, curTS.low);
+						curTick = WTSTickData::create(curTS);
+						_listener->handle_tick(barsList._code.c_str(), curTick);
+						curTick->release();
+
+						curTS.price = nextBar.close;
+						curTS.high = max(curTS.price, curTS.high);
+						curTS.low = min(curTS.price, curTS.low);
+						curTick = WTSTickData::create(curTS);
+						_listener->handle_tick(barsList._code.c_str(), curTick);
+						curTick->release();
+					}
+					else
+					{
+						break;
+					}
+
+					barsList._cursor++;
+
+					if (barsList._cursor == barsList._bars.size())
+						break;
+				}
+			}
+		}
+		else
+		{
+			if (barsList._bars.size() > barsList._cursor)
+			{
+				for (;;)
+				{
+					WTSBarStruct& nextBar = barsList._bars[barsList._cursor];
+
+					if (nextBar.date <= endTDate)
+					{
+						if (nextBar.date <= uDate)
+							continue;
+
+						CodeHelper::CodeInfo cInfo;
+						CodeHelper::extractStdCode(barsList._code.c_str(), cInfo);
+
+						std::string realCode = barsList._code;
+						if (cInfo._category == CC_Stock && cInfo._exright)
+						{
+							realCode = cInfo._exchg;
+							realCode += ".";
+							realCode += cInfo._code;
+						}
+
+						WTSSessionInfo* sInfo = get_session_info(realCode.c_str(), true);
+						uint32_t curTime = sInfo->getOpenTime();
+						//开高低收
+						WTSTickStruct curTS;
+						strcpy(curTS.code, realCode.c_str());
+						curTS.action_date = _cur_date;
+						curTS.action_time = curTime * 100000;
+
+						curTS.price = nextBar.open;
+						curTS.volumn = nextBar.vol;
+						WTSTickData* curTick = WTSTickData::create(curTS);
+						_listener->handle_tick(realCode.c_str(), curTick);
+						curTick->release();
+
+						curTS.price = nextBar.high;
+						curTS.volumn = nextBar.vol;
+						curTick = WTSTickData::create(curTS);
+						_listener->handle_tick(realCode.c_str(), curTick);
+						curTick->release();
+
+						curTS.price = nextBar.low;
+						curTick = WTSTickData::create(curTS);
+						_listener->handle_tick(realCode.c_str(), curTick);
+						curTick->release();
+
+						curTS.price = nextBar.close;
+						curTick = WTSTickData::create(curTS);
+						_listener->handle_tick(realCode.c_str(), curTick);
+						curTick->release();
+					}
+					else
+					{
+						break;
+					}
+
+					barsList._cursor++;
+
+					if (barsList._cursor >= barsList._bars.size())
+						break;
 				}
 			}
 		}
@@ -875,10 +1031,12 @@ WTSKlineSlice* HisDataReplayer::get_kline_slice(const char* stdCode, const char*
 			if (strcmp(period, "m") == 0 && oldKey.at(0) == 'd')
 			{
 				_ticker_keys[stdCode] = key;
+				_min_period = period;
 			}
 			else if (oldKey.at(0) == period[0] && times < strtoul(oldKey.substr(2, 1).c_str(), NULL, 10))
 			{
 				_ticker_keys[stdCode] = key;
+				_min_period = period;
 			}
 		}
 	}
@@ -1385,20 +1543,89 @@ void HisDataReplayer::sub_tick(uint32_t sid, const char* stdCode)
 {
 	SIDSet& sids = _tick_sub_map[stdCode];
 	sids.insert(sid);
+}
 
-	//如果是主力合约代码, 如SHFE.ag.HOT, 那么要转换成原合约代码, SHFE.ag.1912
-	//因为执行器只识别原合约代码
-	if (CodeHelper::isStdFutHotCode(stdCode))
+void HisDataReplayer::checkUnbars()
+{
+	for(auto& m : _tick_sub_map)
 	{
-		CodeHelper::CodeInfo cInfo;
-		CodeHelper::extractStdFutCode(stdCode, cInfo);
-		std::string rawCode = _hot_mgr.getRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
-		std::string stdRawCode = CodeHelper::bscFutCodeToStdCode(rawCode.c_str(), cInfo._exchg, false);
-		_subed_raw_codes.insert(stdRawCode);
-	}
-	else
-	{
-		_subed_raw_codes.insert(stdCode);
+		const char* stdCode = m.first.c_str();
+		bool bHasBars = false;
+		for (auto& m : _unbars_cache)
+		{
+			const std::string& key = m.first;
+			auto& ay = StrUtil::split(key, "#");
+			if (ay[0] == stdCode)
+			{
+				bHasBars = true;
+				break;
+			}
+		}
+		if(bHasBars)
+			continue;
+
+		for (auto& m : _bars_cache)
+		{
+			const std::string& key = m.first;
+			auto& ay = StrUtil::split(key, "#");
+			if (ay[0] == stdCode)
+			{
+				bHasBars = true;
+				break;
+			}
+		}
+
+		if (bHasBars)
+			continue;
+
+		//如果订阅了tick，但是没有对应的K线数据，则自动加载1分钟线到内存中
+		bool bHasHisData = false;
+		std::string key = StrUtil::printf("%s#m#1", stdCode);
+		if (_mode == "csv")
+		{
+			bHasHisData = cacheRawBarsFromCSV(key, stdCode, KP_Minute1, false);
+		}
+		else if (_mode == "db")
+		{
+			bHasHisData = cacheRawBarsFromDB(key, stdCode, KP_Minute1, false);
+		}
+		else
+		{
+			bHasHisData = cacheRawBarsFromBin(key, stdCode, KP_Minute1, false);
+		}
+		
+		if (!bHasHisData)
+			continue;
+
+		WTSSessionInfo* sInfo = get_session_info(stdCode, true);
+
+		BarsList& kBlkPair = _unbars_cache[key];
+		
+		//还没有经过初始定位
+		WTSBarStruct bar;
+		bar.date = _cur_tdate;
+		bar.time = (_cur_date - 19900000) * 10000 + _cur_time;
+
+		auto it = std::lower_bound(kBlkPair._bars.begin(), kBlkPair._bars.end(), bar, [](const WTSBarStruct& a, const WTSBarStruct& b) {
+			return a.time < b.time;
+		});
+
+		uint32_t eIdx = it - kBlkPair._bars.begin();
+
+		if (it != kBlkPair._bars.end())
+		{
+			WTSBarStruct& curBar = *it;
+			if (curBar.time > bar.time)
+			{
+				if (eIdx > 0)
+				{
+					it--;
+					eIdx--;
+				}
+			}
+
+			kBlkPair._cursor = eIdx + 1;
+		}
 	}
 }
 
@@ -1614,7 +1841,7 @@ bool HisDataReplayer::cacheRawTicksFromCSV(const std::string& key, const char* s
 	return true;
 }
 
-bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* stdCode, WTSKlinePeriod period)
+bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* stdCode, WTSKlinePeriod period, bool bForBars/* = true*/)
 {
 	CodeHelper::CodeInfo cInfo;
 	CodeHelper::extractStdCode(stdCode, cInfo);
@@ -1650,7 +1877,7 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 		std::string rawData = WTSCmpHelper::uncompress_data(kBlock->_data, (uint32_t)kBlock->_size);
 		uint32_t barcnt = rawData.size() / sizeof(WTSBarStruct);
 
-		BarsList& barList = _bars_cache[key];
+		BarsList& barList = bForBars ? _bars_cache[key] : _unbars_cache[key];
 		barList._bars.resize(barcnt);
 		memcpy(barList._bars.data(), rawData.data(), rawData.size());
 		barList._cursor = UINT_MAX;
@@ -1678,7 +1905,7 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 
 		char buffer[512];
 		bool headerskipped = false;
-		BarsList& barList = _bars_cache[key];
+		BarsList& barList = bForBars ? _bars_cache[key] : _unbars_cache[key];
 		barList._code = stdCode;
 		barList._period = period;
 		while (!ifs.eof())
@@ -1745,7 +1972,7 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 	return true;
 }
 
-bool HisDataReplayer::cacheRawBarsFromDB(const std::string& key, const char* stdCode, WTSKlinePeriod period)
+bool HisDataReplayer::cacheRawBarsFromDB(const std::string& key, const char* stdCode, WTSKlinePeriod period, bool bForBars/* = true*/)
 {
 	CodeHelper::CodeInfo cInfo;
 	CodeHelper::extractStdCode(stdCode, cInfo);
@@ -1773,7 +2000,7 @@ bool HisDataReplayer::cacheRawBarsFromDB(const std::string& key, const char* std
 		break;
 	}
 
-	BarsList& barList = _bars_cache[key];
+	BarsList& barList = bForBars ? _bars_cache[key] : _unbars_cache[key];
 	barList._code = stdCode;
 	barList._period = period;
 
@@ -2122,10 +2349,10 @@ bool HisDataReplayer::cacheRawBarsFromDB(const std::string& key, const char* std
 		//读取历史的
 		char sql[256] = { 0 };
 		if (isDay)
-			sprintf(sql, "SELECT `date`,0,open,high,low,close,settle,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%sQ' ORDER BY `date`;",
+			sprintf(sql, "SELECT `date`,0,open,high,low,close,settle,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%s' ORDER BY `date`;",
 				tbname.c_str(), cInfo._exchg, cInfo._code);
 		else
-			sprintf(sql, "SELECT `date`,`time`,open,high,low,close,0,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%sQ' ORDER BY `time`;",
+			sprintf(sql, "SELECT `date`,`time`,open,high,low,close,0,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%s' ORDER BY `time`;",
 				tbname.c_str(), cInfo._exchg, cInfo._code);
 
 		MysqlQuery query(*_db_conn);
@@ -2185,7 +2412,7 @@ bool HisDataReplayer::cacheRawBarsFromDB(const std::string& key, const char* std
 	return true;
 }
 
-bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* stdCode, WTSKlinePeriod period)
+bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* stdCode, WTSKlinePeriod period, bool bForBars/* = true*/)
 {
 	CodeHelper::CodeInfo cInfo;
 	CodeHelper::extractStdCode(stdCode, cInfo);
@@ -2204,7 +2431,7 @@ bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* st
 	default: pname = "day"; break;
 	}
 
-	BarsList& barList = _bars_cache[key];
+	BarsList& barList = bForBars ? _bars_cache[key] : _unbars_cache[key];
 	barList._code = stdCode;
 	barList._period = period;
 

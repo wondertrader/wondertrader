@@ -536,6 +536,7 @@ CondList& CtaMocker::get_cond_entrusts(const char* stdCode)
 //策略接口
 void CtaMocker::stra_enter_long(const char* stdCode, double qty, const char* userTag /* = "" */, double limitprice, double stopprice)
 {
+	_replayer->sub_tick(_context_id, stdCode);
 	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式，则直接触发
 	{
 		double curQty = stra_get_position(stdCode);
@@ -576,6 +577,7 @@ void CtaMocker::stra_enter_long(const char* stdCode, double qty, const char* use
 
 void CtaMocker::stra_enter_short(const char* stdCode, double qty, const char* userTag /* = "" */, double limitprice, double stopprice)
 {
+	_replayer->sub_tick(_context_id, stdCode);
 	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式，则直接触发
 	{
 		double curQty = stra_get_position(stdCode);
@@ -705,6 +707,7 @@ double CtaMocker::stra_get_price(const char* stdCode)
 
 void CtaMocker::stra_set_position(const char* stdCode, double qty, const char* userTag /* = "" */, double limitprice /* = 0.0 */, double stopprice /* = 0.0 */)
 {
+	_replayer->sub_tick(_context_id, stdCode);
 	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式，则直接触发
 	{
 		//do_set_position(stdCode, qty, userTag, !_is_in_schedule);
