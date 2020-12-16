@@ -980,10 +980,10 @@ bool WtDataReader::cacheHisBarsFromDB(const std::string& key, const char* stdCod
 		//读取历史的
 		char sql[256] = { 0 };
 		if (isDay)
-			sprintf(sql, "SELECT `date`,0,open,high,low,close,settle,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%sQ' ORDER BY `date`;",
+			sprintf(sql, "SELECT `date`,0,open,high,low,close,settle,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%s' ORDER BY `date`;",
 				tbname.c_str(), cInfo._exchg, cInfo._code);
 		else
-			sprintf(sql, "SELECT `date`,`time`,open,high,low,close,0,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%sQ' ORDER BY `time`;",
+			sprintf(sql, "SELECT `date`,`time`,open,high,low,close,0,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%s' ORDER BY `time`;",
 				tbname.c_str(), cInfo._exchg, cInfo._code);
 
 		MysqlQuery query(*_db_conn);
