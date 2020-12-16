@@ -894,6 +894,8 @@ CondList& CtaStraBaseCtx::get_cond_entrusts(const char* stdCode)
 //策略接口
 void CtaStraBaseCtx::stra_enter_long(const char* stdCode, double qty, const char* userTag /* = "" */, double limitprice, double stopprice)
 {
+	_engine->sub_tick(id(), stdCode);
+	
 	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式, 则直接触发
 	{
 		double curQty = stra_get_position(stdCode);
@@ -937,6 +939,8 @@ void CtaStraBaseCtx::stra_enter_long(const char* stdCode, double qty, const char
 
 void CtaStraBaseCtx::stra_enter_short(const char* stdCode, double qty, const char* userTag /* = "" */, double limitprice, double stopprice)
 {
+	_engine->sub_tick(id(), stdCode);
+	
 	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式, 则直接触发
 	{
 		double curQty = stra_get_position(stdCode);
@@ -980,6 +984,8 @@ void CtaStraBaseCtx::stra_enter_short(const char* stdCode, double qty, const cha
 
 void CtaStraBaseCtx::stra_exit_long(const char* stdCode, double qty, const char* userTag /* = "" */, double limitprice, double stopprice)
 {
+	_engine->sub_tick(id(), stdCode);
+	
 	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式, 则直接触发
 	{
 		double curQty = stra_get_position(stdCode);
@@ -1019,6 +1025,8 @@ void CtaStraBaseCtx::stra_exit_long(const char* stdCode, double qty, const char*
 
 void CtaStraBaseCtx::stra_exit_short(const char* stdCode, double qty, const char* userTag /* = "" */, double limitprice, double stopprice)
 {
+	_engine->sub_tick(id(), stdCode);
+	
 	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式, 则直接触发
 	{
 		double curQty = stra_get_position(stdCode);
@@ -1066,8 +1074,6 @@ double CtaStraBaseCtx::stra_get_price(const char* stdCode)
 
 void CtaStraBaseCtx::stra_set_position(const char* stdCode, double qty, const char* userTag /* = "" */, double limitprice /* = 0.0 */, double stopprice /* = 0.0 */)
 {
-	_engine->sub_tick(id(), stdCode);
-
 	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式, 则直接触发
 	{
 		append_signal(stdCode, qty, userTag);
