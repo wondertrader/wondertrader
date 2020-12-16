@@ -115,16 +115,28 @@ public:
 
 private:
 	/*
-	*	将历史数据放入缓存
-	*/
+	 *	从自定义数据文件缓存历史数据
+	 */
 	bool		cacheRawBarsFromBin(const std::string& key, const char* stdCode, WTSKlinePeriod period, bool bForBars = true);
 
+	/*
+	 *	从csv文件缓存历史数据
+	 */
 	bool		cacheRawBarsFromCSV(const std::string& key, const char* stdCode, WTSKlinePeriod period, bool bForBars = true);
 
+	/*
+	 *	从数据库缓存历史数据
+	 */
 	bool		cacheRawBarsFromDB(const std::string& key, const char* stdCode, WTSKlinePeriod period, bool bForBars = true);
 
+	/*
+	 *	从自定义数据文件缓存历史tick数据
+	 */
 	bool		cacheRawTicksFromBin(const std::string& key, const char* stdCode, uint32_t uDate);
 
+	/*
+	 *	从csv文件缓存历史tick数据
+	 */
 	bool		cacheRawTicksFromCSV(const std::string& key, const char* stdCode, uint32_t uDate);
 
 	void		onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTDate = 0);
@@ -143,7 +155,7 @@ private:
 
 	bool		loadStkAdjFactorsFromDB();
 
-	void		init_db();
+	void		initDB();
 
 public:
 	bool init(WTSVariant* cfg);
@@ -177,9 +189,9 @@ public:
 private:
 	IDataSink*		_listener;
 
-	TickCache		_ticks_cache;
-	BarsCache		_bars_cache;
-	BarsCache		_unbars_cache;
+	TickCache		_ticks_cache;	//tick缓存
+	BarsCache		_bars_cache;	//K线缓存
+	BarsCache		_unbars_cache;	//未订阅的K线缓存
 
 	TaskInfoPtr		_task;
 

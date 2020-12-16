@@ -108,7 +108,7 @@ bool HisDataReplayer::init(WTSVariant* cfg)
 
 		_db_conf._active = (strlen(_db_conf._host) > 0) && (strlen(_db_conf._dbname) > 0) && (_db_conf._port != 0);
 		if (_db_conf._active)
-			init_db();
+			initDB();
 	}
 
 	bool bAdjLoaded = false;
@@ -121,7 +121,7 @@ bool HisDataReplayer::init(WTSVariant* cfg)
 	return true;
 }
 
-void HisDataReplayer::init_db()
+void HisDataReplayer::initDB()
 {
 	if (!_db_conf._active)
 		return;
@@ -2346,14 +2346,23 @@ bool HisDataReplayer::cacheRawBarsFromDB(const std::string& key, const char* std
 	}
 	else
 	{
+		std::string timecond = "";
+		if(!bForBars)
+		{
+			if (isDay)
+				timecond = StrUtil::printf("AND `date` >= %u ", _cur_tdate);
+			else
+				timecond = StrUtil::printf("AND `time` >= %u%04u ", _cur_date-19900000, _cur_time);
+		}
+
 		//读取历史的
 		char sql[256] = { 0 };
 		if (isDay)
-			sprintf(sql, "SELECT `date`,0,open,high,low,close,settle,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%s' ORDER BY `date`;",
-				tbname.c_str(), cInfo._exchg, cInfo._code);
+			sprintf(sql, "SELECT `date`,0,open,high,low,close,settle,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%s' %sORDER BY `date`;",
+				tbname.c_str(), cInfo._exchg, cInfo._code, timecond.c_str());
 		else
-			sprintf(sql, "SELECT `date`,`time`,open,high,low,close,0,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%s' ORDER BY `time`;",
-				tbname.c_str(), cInfo._exchg, cInfo._code);
+			sprintf(sql, "SELECT `date`,`time`,open,high,low,close,0,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%s' %sORDER BY `time`;",
+				tbname.c_str(), cInfo._exchg, cInfo._code, timecond.c_str());
 
 		MysqlQuery query(*_db_conn);
 		if (!query.exec(sql))
