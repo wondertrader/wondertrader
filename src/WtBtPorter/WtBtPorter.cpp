@@ -10,6 +10,7 @@
 #include "WtBtPorter.h"
 #include "WtBtRunner.h"
 
+#include "../WtBtCore/WtHelper.h"
 #include "../WtBtCore/CtaMocker.h"
 #include "../WtBtCore/SelMocker.h"
 #include "../WtBtCore/HftMocker.h"
@@ -130,7 +131,7 @@ void init_backtest(const char* logProfile, bool isFile)
 		return;
 
 #ifdef _WIN32
-	CMiniDumper::Enable(getModuleName(), true);
+	CMiniDumper::Enable(getModuleName(), true, WtHelper::getCWD().c_str());
 #endif
 
 	getRunner().init(logProfile, isFile);

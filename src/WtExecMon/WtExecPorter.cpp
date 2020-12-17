@@ -1,6 +1,8 @@
 #include "WtExecPorter.h"
 #include "WtExecRunner.h"
 
+#include "../WtCore/WtHelper.h"
+
 #include "../WTSTools/WTSLogger.h"
 #include "../Share/StrUtil.hpp"
 
@@ -98,7 +100,7 @@ void init_exec(WtString logCfg, bool isFile /*= true*/)
 	if (inited)
 		return;
 #ifdef _WIN32
-	CMiniDumper::Enable(getModuleName(), true);
+	CMiniDumper::Enable(getModuleName(), true, WtHelper::getCWD().c_str());
 #endif
 
 	getRunner().init(logCfg);

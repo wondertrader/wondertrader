@@ -10,6 +10,7 @@
 #include "WtPorter.h"
 #include "WtRtRunner.h"
 
+#include "../WtCore/WtHelper.h"
 #include "../WTSTools/WTSLogger.h"
 #include "../Includes/WTSTradeDef.hpp"
 
@@ -136,7 +137,7 @@ void init_porter(const char* logProfile, bool isFile)
 	if (inited)
 		return;
 #ifdef _WIN32
-	CMiniDumper::Enable(getModuleName(), true);
+	CMiniDumper::Enable(getModuleName(), true, WtHelper::getCWD().c_str());
 #endif
 
 	getRunner().init(logProfile, isFile);

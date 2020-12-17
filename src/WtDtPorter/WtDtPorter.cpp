@@ -10,6 +10,8 @@
 #include "WtDtPorter.h"
 #include "WtDtRunner.h"
 
+#include "../WtDtCore/WtHelper.h"
+
 #include "../WTSTools/WTSLogger.h"
 #include "../Share/StrUtil.hpp"
 
@@ -111,7 +113,7 @@ WtDtRunner& getRunner()
 void initialize(WtString cfgFile, WtString logCfg)
 {
 #ifdef _WIN32
-	CMiniDumper::Enable(getModuleName(), true);
+	CMiniDumper::Enable(getModuleName(), true, WtHelper::get_cwd());
 #endif
 	getRunner().initialize(cfgFile, logCfg, getBinDir());
 }
