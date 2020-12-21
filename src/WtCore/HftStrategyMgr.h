@@ -13,7 +13,6 @@
 
 #include "../Includes/HftStrategyDefs.h"
 
-#include "../Share/BoostDefine.h"
 #include "../Share/DLLHelper.hpp"
 
 class HftStraWrapper

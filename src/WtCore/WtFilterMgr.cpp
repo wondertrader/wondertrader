@@ -157,6 +157,8 @@ bool WtFilterMgr::is_filtered_by_strategy(const char* straName, double& targetPo
 
 		return false;
 	}
+
+	return false;
 }
 
 bool WtFilterMgr::is_filtered_by_code(const char* stdCode, double& targetPos)

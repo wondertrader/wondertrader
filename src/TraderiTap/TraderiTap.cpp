@@ -8,7 +8,7 @@
 #include "../Includes/WTSParams.hpp"
 #include "../Includes/IBaseDataMgr.h"
 
-#include "../Share/BoostDefine.h"
+#include "../Share/StdUtils.hpp"
 #include "../Share/BoostFile.hpp"
 #include "../Share/TimeUtils.hpp"
 #include "../Share/StrUtil.hpp"
@@ -273,8 +273,8 @@ void TraderiTap::reconnect()
 			m_traderSink->handleEvent(WTE_Connect, -1);
 		m_traderSink->handleTraderLog(LL_ERROR, "[TraderiTap]交易模块初始化失败，错误码：%s……", GetErrcodeDesc(CreateErrorCode));
 
-		BoostThreadPtr thrd(new BoostThread([this](){
-			boost::this_thread::sleep(boost::posix_time::seconds(2));
+		StdThreadPtr thrd(new StdThread([this](){
+			std::this_thread::sleep_for(std::chrono::seconds(2));
 			m_traderSink->handleTraderLog(LL_WARN, "[TraderiTap]账号%s正在重连……", m_strUser.c_str());
 			reconnect();
 		}));
@@ -296,8 +296,8 @@ void TraderiTap::reconnect()
 			if (m_bReconnect)
 			{
 				//这里丢到线程里去处理，让reconnect可以马上返回
-				BoostThreadPtr thrd(new BoostThread([this](){
-					boost::this_thread::sleep(boost::posix_time::seconds(2));
+				StdThreadPtr thrd(new StdThread([this](){
+					std::this_thread::sleep_for(std::chrono::seconds(2));
 					m_traderSink->handleTraderLog(LL_WARN, "[TraderiTap]账号%s正在重连……", m_strUser.c_str());
 					reconnect();
 				}));
@@ -1143,8 +1143,8 @@ void TAP_CDECL TraderiTap::OnDisconnect(ITapTrade::TAPIINT32 reasonCode)
 		{
 			m_bReconnect = true;
 			//这里丢到线程里去处理，让OnClose可以马上返回
-			BoostThreadPtr thrd(new BoostThread([this](){
-				boost::this_thread::sleep(boost::posix_time::seconds(2));
+			StdThreadPtr thrd(new StdThread([this](){
+				std::this_thread::sleep_for(std::chrono::seconds(2));
 				m_traderSink->handleTraderLog(LL_WARN, "[TraderiTap]账号%s正在重连……", m_strUser.c_str());
 				reconnect();
 			}));
@@ -1226,8 +1226,8 @@ void TAP_CDECL TraderiTap::OnRspLogin(ITapTrade::TAPIINT32 errCode, const ITapTr
 			if (m_bReconnect)
 			{
 				//这里丢到线程里去处理，让onclose可以马上返回
-				BoostThreadPtr thrd(new BoostThread([this](){
-					boost::this_thread::sleep(boost::posix_time::seconds(2));
+				StdThreadPtr thrd(new StdThread([this](){
+					std::this_thread::sleep_for(std::chrono::seconds(2));
 					m_traderSink->handleTraderLog(LL_WARN, "[TraderiTap]账号%s正在重连……", m_strUser.c_str());
 					reconnect();
 				}));
@@ -1250,8 +1250,8 @@ void TAP_CDECL TraderiTap::OnRspLogin(ITapTrade::TAPIINT32 errCode, const ITapTr
 		if (m_bReconnect)
 		{
 			//这里丢到线程里去处理，让onclose可以马上返回
-			BoostThreadPtr thrd(new BoostThread([this](){
-				boost::this_thread::sleep(boost::posix_time::seconds(2));
+			StdThreadPtr thrd(new StdThread([this](){
+				std::this_thread::sleep_for(std::chrono::seconds(2));
 				m_traderSink->handleTraderLog(LL_WARN, "[TraderiTap]账号%s正在重连……", m_strUser.c_str());
 				reconnect();
 			}));
@@ -1408,8 +1408,8 @@ void TAP_CDECL TraderiTap::OnRspRequestVertificateCode(ITapTrade::TAPIUINT32 ses
 		if (m_bReconnect)
 		{
 			//这里丢到线程里去处理，让onclose可以马上返回
-			BoostThreadPtr thrd(new BoostThread([this](){
-				boost::this_thread::sleep(boost::posix_time::seconds(2));
+			StdThreadPtr thrd(new StdThread([this](){
+				std::this_thread::sleep_for(std::chrono::seconds(2));
 				m_traderSink->handleTraderLog(LL_WARN, "[TraderiTap]账号%s正在重连……", m_strUser.c_str());
 				reconnect();
 			}));
@@ -1439,8 +1439,8 @@ void TAP_CDECL TraderiTap::OnRspRequestVertificateCode(ITapTrade::TAPIUINT32 ses
 			if (m_bReconnect)
 			{
 				//这里丢到线程里去处理，让onclose可以马上返回
-				BoostThreadPtr thrd(new BoostThread([this](){
-					boost::this_thread::sleep(boost::posix_time::seconds(2));
+				StdThreadPtr thrd(new StdThread([this](){
+					std::this_thread::sleep_for(std::chrono::seconds(2));
 					m_traderSink->handleTraderLog(LL_WARN, "[TraderiTap]账号%s正在重连……", m_strUser.c_str());
 					reconnect();
 				}));

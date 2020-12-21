@@ -11,6 +11,8 @@
 #include "../Includes/WTSParams.hpp"
 #include "../Includes/WTSDataDef.hpp"
 
+#include <boost/bind.hpp>
+
 
 #define UDP_MSG_SUBSCRIBE	0x100
 #define UDP_MSG_PUSHTICK	0x200
@@ -207,7 +209,7 @@ bool ParserUDP::connect()
 {
 	if(reconnect())
 	{
-		_thrd_parser.reset(new BoostThread(boost::bind(&io_service::run, &_io_service)));
+		_thrd_parser.reset(new StdThread(boost::bind(&io_service::run, &_io_service)));
 	}
 	else
 	{
@@ -278,8 +280,8 @@ void ParserUDP::handle_read(const boost::system::error_code& e, std::size_t byte
 			_sink->handleParserLog(LL_ERROR, "[ParserUDP]½ÓÊÕ³ö´í:%s(%d)", e.message().c_str(), e.value());
 
 		if (!_stopped && !_connecting)
-		{		
-			boost::this_thread::sleep(boost::posix_time::seconds(2));
+		{
+			std::this_thread::sleep_for(std::chrono::seconds(2));
 			reconnect();
 			return;
 		}

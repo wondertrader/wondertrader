@@ -861,14 +861,14 @@ void WtEngine::do_set_position(const char* stdCode, double qty)
 void WtEngine::push_task(TaskItem task)
 {
 	{
-		BoostUniqueLock lock(_mtx_task);
+		StdUniqueLock lock(_mtx_task);
 		_task_queue.push(task);
 	}
 	
 
 	if (_thrd_task == NULL)
 	{
-		_thrd_task.reset(new BoostThread([this]{
+		_thrd_task.reset(new StdThread([this]{
 			task_loop();
 		}));
 	}
@@ -882,7 +882,7 @@ void WtEngine::task_loop()
 	{
 		TaskQueue temp;
 		{
-			BoostUniqueLock lock(_mtx_task);
+			StdUniqueLock lock(_mtx_task);
 			if(_task_queue.empty())
 			{
 				_cond_task.wait(_mtx_task);

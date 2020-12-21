@@ -13,7 +13,6 @@
 
 #include "../Includes/SelStrategyDefs.h"
 
-#include "../Share/BoostDefine.h"
 #include "../Share/DLLHelper.hpp"
 
 class SelStraWrapper

@@ -703,10 +703,10 @@ void TraderXTP::connect()
 	if (_thrd_worker == NULL)
 	{
 		boost::asio::io_service::work work(_asyncio);
-		_thrd_worker.reset(new BoostThread([this](){
+		_thrd_worker.reset(new StdThread([this](){
 			while (true)
 			{
-				boost::this_thread::sleep(boost::posix_time::milliseconds(2));
+				std::this_thread::sleep_for(std::chrono::seconds(2));
 				_asyncio.run_one();
 				//m_asyncIO.run();
 			}

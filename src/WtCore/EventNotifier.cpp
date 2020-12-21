@@ -96,7 +96,7 @@ void EventNotifier::start()
 		m_sktBroadcast.reset(new UDPSocket(m_ioservice, boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(), 0)));
 	}
 
-	m_thrdIO.reset(new BoostThread([this](){
+	m_thrdIO.reset(new StdThread([this](){
 		try
 		{
 			m_ioservice.run();
@@ -267,26 +267,26 @@ void EventNotifier::notify(const char* trader, const std::string& data, uint32_t
 		return;
 
 	{
-		BoostUniqueLock lock(m_mtxCast);
+		StdUniqueLock lock(m_mtxCast);
 		m_dataQue.push(NotifyData(trader, data, dataType));
 	}
 
 	if(m_thrdCast == NULL)
 	{
-		m_thrdCast.reset(new BoostThread([this](){
+		m_thrdCast.reset(new StdThread([this](){
 
 			while (!m_bTerminated)
 			{
 				if(m_dataQue.empty())
 				{
-					BoostUniqueLock lock(m_mtxCast);
+					StdUniqueLock lock(m_mtxCast);
 					m_condCast.wait(lock);
 					continue;
 				}	
 
 				std::queue<NotifyData> tmpQue;
 				{
-					BoostUniqueLock lock(m_mtxCast);
+					StdUniqueLock lock(m_mtxCast);
 					tmpQue.swap(m_dataQue);
 				}
 				

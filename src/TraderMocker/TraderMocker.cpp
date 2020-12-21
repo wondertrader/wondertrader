@@ -12,6 +12,8 @@
 #include "../Share/decimal.h"
 #include "../Share/StrUtil.hpp"
 
+#include <boost/bind.hpp>
+
 #include <rapidjson/document.h>
 #include <rapidjson/prettywriter.h>
 namespace rj = rapidjson;
@@ -130,7 +132,7 @@ int TraderMocker::orderInsert(WTSEntrust* entrust)
 
 	entrust->retain();
 	_io_service.post([this, entrust](){
-		BoostUniqueLock lock(_mutex_api);
+		StdUniqueLock lock(_mutex_api);
 
 		WTSContractInfo* ct = _bd_mgr->getContract(entrust->getCode(), entrust->getExchg());
 
@@ -333,7 +335,7 @@ int32_t TraderMocker::match_once()
 		WTSTickData* curTick = (WTSTickData*)_ticks->grab(fullcode);
 		if (curTick && strcmp(curTick->code(), ct->getCode())==0)
 		{
-			BoostUniqueLock lock(_mtx_awaits);
+			StdUniqueLock lock(_mtx_awaits);
 			uint64_t tickTime = (uint64_t)curTick->actiondate() * 1000000000 + curTick->actiontime();
 			if (decimal::gt(curTick->price(), 0) /*&& tickTime >= _last_match_time*/)
 			{
@@ -458,7 +460,7 @@ int32_t TraderMocker::match_once()
 
 						if (_listener)
 						{
-							BoostUniqueLock lock(_mutex_api);
+							StdUniqueLock lock(_mutex_api);
 							_listener->onPushOrder(ordInfo);
 							_listener->onPushTrade(trade);
 						}
@@ -676,10 +678,10 @@ void TraderMocker::connect()
 {
 	reconn_udp();
 
-	_thrd_worker.reset(new BoostThread(boost::bind(&boost::asio::io_service::run, &_io_service)));
+	_thrd_worker.reset(new StdThread(boost::bind(&boost::asio::io_service::run, &_io_service)));
 
 	_io_service.post([this](){
-		BoostUniqueLock lock(_mutex_api);
+		StdUniqueLock lock(_mutex_api);
 
 		load_positions();
 
@@ -708,18 +710,18 @@ bool TraderMocker::isConnected()
 
 int TraderMocker::login(const char* user, const char* pass, const char* productInfo)
 {
-	_thrd_match.reset(new BoostThread([this]() {
+	_thrd_match.reset(new StdThread([this]() {
 		while (!_terminated)
 		{
 			match_once();
 
 			//等待5毫秒
-			boost::this_thread::sleep(boost::posix_time::millisec(5));
+			std::this_thread::sleep_for(std::chrono::milliseconds(5));
 		}
 	}));
 
 	_io_service.post([this](){
-		BoostUniqueLock lock(_mutex_api);
+		StdUniqueLock lock(_mutex_api);
 
 		if (_listener)
 			_listener->onLoginResult(true, "", TimeUtils::getCurDate());
@@ -738,7 +740,7 @@ int TraderMocker::orderAction(WTSEntrustAction* action)
 	action->retain();
 	
 	_io_service.post([this, action](){
-		BoostUniqueLock lck(_mtx_awaits);	//一定要把awaits锁起来，不然可能会导致一边撮合一边撤单
+		StdUniqueLock lck(_mtx_awaits);	//一定要把awaits锁起来，不然可能会导致一边撮合一边撤单
 		WTSOrderInfo* ordInfo = (WTSOrderInfo*)_awaits->grab(action->getOrderID());
 
 		/*
@@ -798,7 +800,7 @@ int TraderMocker::orderAction(WTSEntrustAction* action)
 
 		if (_listener)
 		{
-			BoostUniqueLock lock(_mutex_api);
+			StdUniqueLock lock(_mutex_api);
 			_listener->onPushOrder(ordInfo);
 		}
 
@@ -836,7 +838,7 @@ int TraderMocker::queryAccount()
 
 		if (_listener)
 		{
-			BoostUniqueLock lock(_mutex_api);
+			StdUniqueLock lock(_mutex_api);
 			_listener->onRspAccount(ay);
 		}
 
@@ -884,7 +886,7 @@ int TraderMocker::queryPositions()
 
 		if (_listener)
 		{
-			BoostUniqueLock lock(_mutex_api);
+			StdUniqueLock lock(_mutex_api);
 			_listener->onRspPosition(ayPos);
 		}
 		ayPos->release();
@@ -896,7 +898,7 @@ int TraderMocker::queryPositions()
 int TraderMocker::queryOrders()
 {
 	_io_service.post([this](){
-		BoostUniqueLock lock(_mutex_api);
+		StdUniqueLock lock(_mutex_api);
 
 		if (_listener)
 			_listener->onRspOrders(_orders);
@@ -908,7 +910,7 @@ int TraderMocker::queryOrders()
 int TraderMocker::queryTrades()
 {
 	_io_service.post([this](){
-		BoostUniqueLock lock(_mutex_api);
+		StdUniqueLock lock(_mutex_api);
 
 		if (_listener)
 			_listener->onRspTrades(_trades);
@@ -926,7 +928,7 @@ void TraderMocker::handle_read(const boost::system::error_code& e, std::size_t b
 
 		if (!_terminated)
 		{
-			boost::this_thread::sleep(boost::posix_time::seconds(2));
+			std::this_thread::sleep_for(std::chrono::seconds(2));
 			reconn_udp();
 			return;
 		}

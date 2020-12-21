@@ -9,8 +9,7 @@
  */
 #pragma once
 #include <unordered_map>
-
-#include "../Share/BoostDefine.h"
+#include "../Share/StdUtils.hpp"
 
 typedef enum tagSimpleState
 {
@@ -60,7 +59,7 @@ typedef struct _StateInfo
 	}
 } StateInfo;
 
-typedef boost::shared_ptr<StateInfo> StatePtr;
+typedef std::shared_ptr<StateInfo> StatePtr;
 typedef std::unordered_map<std::string, StatePtr>	StateMap;
 
 class WTSBaseDataMgr;
@@ -88,7 +87,7 @@ private:
 	WTSBaseDataMgr*	_bd_mgr;
 	DataManager*	_dt_mgr;
 
-	BoostThreadPtr	_thrd;
+	StdThreadPtr	_thrd;
 
 	bool			_stopped;
 };

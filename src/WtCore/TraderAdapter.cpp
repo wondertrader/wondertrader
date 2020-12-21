@@ -1171,7 +1171,7 @@ bool TraderAdapter::cancel(uint32_t localid)
 	if (_orders == NULL || _orders->size() == 0)
 		return false;
 
-	BoostUniqueLock lock(_mtx_orders);
+	StdUniqueLock lock(_mtx_orders);
 	WTSOrderInfo* ordInfo = (WTSOrderInfo*)_orders->get(localid);
 	if (ordInfo == NULL)
 		return false;
@@ -1567,7 +1567,7 @@ void TraderAdapter::onRspOrders(const WTSArray* ayOrders)
 			uint32_t localid = strtoul(userTag, NULL, 10);
 
 			{
-				BoostUniqueLock lock(_mtx_orders);
+				StdUniqueLock lock(_mtx_orders);
 				_orders->add(localid, orderInfo);
 			}
 
@@ -1906,7 +1906,7 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 	//如果是wt发出去的单子则需要更新内部数据
 	if(localid != 0)
 	{
-		BoostUniqueLock lock(_mtx_orders);
+		StdUniqueLock lock(_mtx_orders);
 		if (!orderInfo->isAlive() && _orders)
 		{
 			_orders->remove(localid);

@@ -12,7 +12,7 @@
 #include <atomic>
 
 #include "../Includes/WTSMarcos.h"
-#include "../Share/BoostDefine.h"
+#include "../Share/StdUtils.hpp"
 
 NS_OTP_BEGIN
 class WTSSessionInfo;
@@ -59,12 +59,12 @@ private:
 
 	uint32_t	_cur_pos;
 
-	BoostUniqueMutex	_mtx;
+	StdUniqueMutex	_mtx;
 	std::atomic<uint64_t>	_next_check_time;
 	std::atomic<uint32_t>	_last_emit_pos;
 
 	bool		_stopped;
-	BoostThreadPtr	_thrd;
+	StdThreadPtr	_thrd;
 
 };
 NS_OTP_END

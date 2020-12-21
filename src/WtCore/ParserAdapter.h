@@ -13,7 +13,6 @@
 #include <boost/core/noncopyable.hpp>
 
 #include "../Includes/IParserApi.h"
-#include "../Share/BoostDefine.h"
 
 
 NS_OTP_BEGIN

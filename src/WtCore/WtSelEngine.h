@@ -36,7 +36,7 @@ typedef struct _TaskInfo
 
 typedef std::shared_ptr<TaskInfo> TaskInfoPtr;
 
-typedef boost::shared_ptr<ISelStraCtx> SelContextPtr;
+typedef std::shared_ptr<ISelStraCtx> SelContextPtr;
 class WtSelRtTicker;
 
 

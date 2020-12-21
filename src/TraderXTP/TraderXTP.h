@@ -18,7 +18,7 @@
 #include "../Includes/WTSCollection.hpp"
 
 #include "../Share/IniHelper.hpp"
-#include "../Share/BoostDefine.h"
+#include "../Share/StdUtils.hpp"
 #include "../Share/DLLHelper.hpp"
 
 USING_NS_OTP;
@@ -132,7 +132,7 @@ private:
 	std::atomic<uint32_t>		_ordref;		//报单引用
 
 	boost::asio::io_service		_asyncio;
-	BoostThreadPtr				_thrd_worker;
+	StdThreadPtr				_thrd_worker;
 
 	DllHandle		m_hInstXTP;
 	typedef XTP::API::TraderApi* (*XTPCreator)(uint8_t, const char*, XTP_LOG_LEVEL);

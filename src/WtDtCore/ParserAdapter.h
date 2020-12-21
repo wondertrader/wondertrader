@@ -11,7 +11,6 @@
 #include <set>
 #include <boost/core/noncopyable.hpp>
 #include "../Includes/IParserApi.h"
-#include "../Share/BoostDefine.h"
 
 USING_NS_OTP;
 
@@ -63,7 +62,7 @@ private:
 	ExchgFilter		m_codeFilter;
 };
 
-typedef boost::shared_ptr<ParserAdapter>	ParserAdapterPtr;
+typedef std::shared_ptr<ParserAdapter>	ParserAdapterPtr;
 typedef std::vector<ParserAdapterPtr>		ParserAdapterVec;
 
 class ParserAdapterMgr : private boost::noncopyable

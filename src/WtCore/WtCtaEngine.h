@@ -14,7 +14,7 @@
 
 NS_OTP_BEGIN
 class WTSVariant;
-typedef boost::shared_ptr<ICtaStraCtx> CtaContextPtr;
+typedef std::shared_ptr<ICtaStraCtx> CtaContextPtr;
 
 class WtCtaRtTicker;
 

@@ -26,7 +26,7 @@
 #include "./ThostTraderApi/ThostFtdcTraderApi.h"
 
 #include "../Share/IniHelper.hpp"
-#include "../Share/BoostDefine.h"
+#include "../Share/StdUtils.hpp"
 #include "../Share/DLLHelper.hpp"
 
 USING_NS_OTP;
@@ -212,12 +212,12 @@ protected:
 	typedef std::queue<CommonExecuter>	QueryQue;
 	QueryQue				m_queQuery;
 	bool					m_bInQuery;
-	BoostUniqueMutex		m_mtxQuery;
+	StdUniqueMutex		m_mtxQuery;
 	uint64_t				m_lastQryTime;
 
 	boost::asio::io_service		m_asyncIO;
 	boost::asio::io_service::strand*	m_strandIO;
-	BoostThreadPtr			m_thrdWorker;
+	StdThreadPtr			m_thrdWorker;
 
 	std::string		m_strModule;
 	DllHandle		m_hInstCTP;

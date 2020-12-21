@@ -31,7 +31,7 @@ typedef std::shared_ptr<StdThread> StdThreadPtr;
 //std»¥³âÁ¿ºÍËø
 typedef std::recursive_mutex	StdRecurMutex;
 typedef std::mutex				StdUniqueMutex;
-typedef std::condition_variable	StdCondVariable;
+typedef std::condition_variable_any	StdCondVariable;
 
 typedef std::unique_lock<StdUniqueMutex>	StdUniqueLock;
 

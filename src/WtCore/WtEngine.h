@@ -20,7 +20,7 @@
 #include "../Includes/WTSMarcos.h"
 #include "../Includes/RiskMonDefs.h"
 
-#include "../Share/BoostDefine.h"
+#include "../Share/StdUtils.hpp"
 #include "../Share/DLLHelper.hpp"
 
 
@@ -273,10 +273,10 @@ protected:
 
 	//后台任务线程, 把风控和资金, 持仓更新都放到这个线程里去
 	typedef std::queue<TaskItem>	TaskQueue;
-	BoostThreadPtr	_thrd_task;
+	StdThreadPtr	_thrd_task;
 	TaskQueue		_task_queue;
-	BoostUniqueMutex	_mtx_task;
-	BoostCondition		_cond_task;
+	StdUniqueMutex	_mtx_task;
+	StdCondVariable		_cond_task;
 	bool			_terminated;
 
 	typedef struct _RiskMonFactInfo

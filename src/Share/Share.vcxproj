@@ -140,7 +140,6 @@
     <ClInclude Include="..\Includes\WTSTradeDef.hpp" />
     <ClInclude Include="..\Includes\WTSTypes.h" />
     <ClInclude Include="..\Includes\WTSVariant.hpp" />
-    <ClInclude Include="BoostDefine.h" />
     <ClInclude Include="BoostFile.hpp" />
     <ClInclude Include="BoostMappingFile.hpp" />
     <ClInclude Include="charconv.hpp" />

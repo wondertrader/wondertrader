@@ -14,7 +14,7 @@
 
 #include "../Includes/WTSMarcos.h"
 #include "../Includes/WTSObject.hpp"
-#include "../Share/BoostDefine.h"
+#include "../Share/StdUtils.hpp"
 
 
 NS_OTP_BEGIN
@@ -55,7 +55,7 @@ public:
 
 private:
 	typedef boost::asio::ip::udp::socket	UDPSocket;
-	typedef boost::shared_ptr<UDPSocket>	UDPSocketPtr;
+	typedef std::shared_ptr<UDPSocket>	UDPSocketPtr;
 
 	enum 
 	{ 
@@ -76,11 +76,11 @@ private:
 	typedef std::vector<MulticastPair>	MulticastList;
 	MulticastList	m_listRawGroup;
 	boost::asio::io_service		m_ioservice;
-	BoostThreadPtr	m_thrdIO;
+	StdThreadPtr	m_thrdIO;
 
-	BoostThreadPtr	m_thrdCast;
-	BoostCondition	m_condCast;
-	BoostUniqueMutex	m_mtxCast;
+	StdThreadPtr	m_thrdCast;
+	StdCondVariable	m_condCast;
+	StdUniqueMutex	m_mtxCast;
 	bool			m_bTerminated;
 
 	typedef struct _NotifyData

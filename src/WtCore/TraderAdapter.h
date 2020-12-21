@@ -14,8 +14,8 @@
 #include "../Includes/ExecuteDefs.h"
 
 #include "../Includes/ITraderApi.h"
-#include "../Share/BoostDefine.h"
 #include "../Share/BoostFile.hpp"
+#include "../Share/StdUtils.hpp"
 
 NS_OTP_BEGIN
 class WTSVariant;
@@ -205,7 +205,7 @@ private:
 
 	std::unordered_map<std::string, PosItem> _positions;
 
-	BoostUniqueMutex _mtx_orders;
+	StdUniqueMutex _mtx_orders;
 	OrderMap*		_orders;
 	std::unordered_set<std::string> _orderids;	//主要用于标记有没有处理过该订单
 

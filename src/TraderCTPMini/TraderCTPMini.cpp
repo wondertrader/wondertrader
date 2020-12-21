@@ -14,11 +14,12 @@
 #include "../Includes/WTSTradeDef.hpp"
 #include "../Includes/WTSDataDef.hpp"
 #include "../Includes/WTSParams.hpp"
-#include "../Share/StdUtils.hpp"
 #include "../Share/TimeUtils.hpp"
 #include "../Includes/IBaseDataMgr.h"
 #include "../Share/decimal.h"
 #include "../Share/StrUtil.hpp"
+
+#include <boost/filesystem.hpp>
 
 #ifdef _WIN32
 #include <wtypes.h>
@@ -227,10 +228,10 @@ void TraderCTPMini::connect()
 	{
 		m_strandIO = new boost::asio::io_service::strand(m_asyncIO);
 		boost::asio::io_service::work work(m_asyncIO);
-		m_thrdWorker.reset(new BoostThread([this](){
+		m_thrdWorker.reset(new StdThread([this](){
 			while (true)
 			{
-				boost::this_thread::sleep(boost::posix_time::milliseconds(2));
+				std::this_thread::sleep_for(std::chrono::milliseconds(2));
 				m_asyncIO.run_one();
 				//m_asyncIO.run();
 			}
@@ -483,7 +484,7 @@ int TraderCTPMini::queryAccount()
 		return -1;
 	}
 
-	BoostUniqueLock lock(m_mtxQuery);
+	StdUniqueLock lock(m_mtxQuery);
 	m_queQuery.push([this](){
 		CThostFtdcQryTradingAccountField req;
 		memset(&req, 0, sizeof(req));
@@ -504,7 +505,7 @@ int TraderCTPMini::queryPositions()
 		return -1;
 	}
 
-	BoostUniqueLock lock(m_mtxQuery);
+	StdUniqueLock lock(m_mtxQuery);
 	m_queQuery.push([this](){
 		CThostFtdcQryInvestorPositionField req;
 		memset(&req, 0, sizeof(req));
@@ -525,7 +526,7 @@ int TraderCTPMini::queryOrders()
 		return -1;
 	}
 
-	BoostUniqueLock lock(m_mtxQuery);
+	StdUniqueLock lock(m_mtxQuery);
 	m_queQuery.push([this](){
 		CThostFtdcQryOrderField req;
 		memset(&req, 0, sizeof(req));
@@ -547,7 +548,7 @@ int TraderCTPMini::queryTrades()
 		return -1;
 	}
 
-	BoostUniqueLock lock(m_mtxQuery);
+	StdUniqueLock lock(m_mtxQuery);
 	m_queQuery.push([this](){
 		CThostFtdcQryTradeField req;
 		memset(&req, 0, sizeof(req));
@@ -1340,7 +1341,7 @@ int TraderCTPMini::queryConfirm()
 		return -1;
 	}
 
-	BoostUniqueLock lock(m_mtxQuery);
+	StdUniqueLock lock(m_mtxQuery);
 	m_queQuery.push([this](){
 		CThostFtdcQrySettlementInfoConfirmField req;
 		memset(&req, 0, sizeof(req));
@@ -1366,7 +1367,7 @@ int TraderCTPMini::confirm()
 		return -1;
 	}
 
-	//boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
+	//std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 	CThostFtdcSettlementInfoConfirmField req;
 	memset(&req, 0, sizeof(req));
 	strcpy(req.BrokerID, m_strBroker.c_str());
@@ -1408,7 +1409,7 @@ void TraderCTPMini::triggerQuery()
 		uint64_t curTime = TimeUtils::getLocalTimeNow();
 		if (curTime - m_lastQryTime < 1000)
 		{
-			boost::this_thread::sleep(boost::posix_time::milliseconds(50));
+			std::this_thread::sleep_for(std::chrono::milliseconds(50));
 			m_strandIO->post([this](){
 				triggerQuery();
 			});
@@ -1421,7 +1422,7 @@ void TraderCTPMini::triggerQuery()
 		handler();
 
 		{
-			BoostUniqueLock lock(m_mtxQuery);
+			StdUniqueLock lock(m_mtxQuery);
 			m_queQuery.pop();
 		}
 

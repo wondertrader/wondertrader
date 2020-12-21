@@ -12,7 +12,6 @@
 #include "WtLocalExecuter.h"
 
 #include "../Includes/IHftStraCtx.h"
-#include "../Share/BoostDefine.h"
 
 NS_OTP_BEGIN
 

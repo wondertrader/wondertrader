@@ -30,9 +30,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BoostDefine.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
     <ClInclude Include="StrUtil.hpp">
       <Filter>Utils</Filter>
     </ClInclude>
