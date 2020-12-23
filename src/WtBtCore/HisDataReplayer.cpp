@@ -1554,7 +1554,7 @@ void HisDataReplayer::checkUnbars()
 		for (auto& m : _unbars_cache)
 		{
 			const std::string& key = m.first;
-			auto& ay = StrUtil::split(key, "#");
+			auto ay = StrUtil::split(key, "#");
 			if (ay[0] == stdCode)
 			{
 				bHasBars = true;
@@ -1567,7 +1567,7 @@ void HisDataReplayer::checkUnbars()
 		for (auto& m : _bars_cache)
 		{
 			const std::string& key = m.first;
-			auto& ay = StrUtil::split(key, "#");
+			auto ay = StrUtil::split(key, "#");
 			if (ay[0] == stdCode)
 			{
 				bHasBars = true;
