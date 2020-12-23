@@ -184,7 +184,7 @@ void initialize()
 	config->release();
 
 	g_asyncIO.post([](){
-		std::this_thread::sleep_for(std::chrono::millisec(5));
+		std::this_thread::sleep_for(std::chrono::milliseconds(5));
 		g_stateMon.run();
 	});
 }

@@ -9,6 +9,8 @@
  */
 #pragma once
 #include <set>
+#include <vector>
+#include <memory>
 #include <boost/core/noncopyable.hpp>
 #include "../Includes/IParserApi.h"
 

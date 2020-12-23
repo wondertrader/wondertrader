@@ -8,6 +8,7 @@
 * \brief
 */
 #pragma once
+#include <memory>
 #include <unordered_map>
 #include <boost/core/noncopyable.hpp>
 
