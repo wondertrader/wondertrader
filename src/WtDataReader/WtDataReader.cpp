@@ -537,6 +537,7 @@ WTSHisTickData* WtDataReader::readTicks(const char* stdCode, uint32_t count, uin
 				//将原来的buffer只保留一个头部，并将所有tick数据追加到尾部
 				tBlkPair._buffer.resize(sizeof(HisTickBlock));
 				tBlkPair._buffer.append(buf);
+				tBlockV2 = (HisTickBlockV2*)tBlkPair._buffer.c_str();
 				tBlockV2->_version = BLOCK_VERSION_RAW;
 			}
 

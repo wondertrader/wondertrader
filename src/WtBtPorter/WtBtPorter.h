@@ -40,8 +40,6 @@ extern "C"
 
 	EXPORT_FLAG	void		dump_bars(const char* stdCode, const char* period, const char* filename);
 
-	EXPORT_FLAG	void		trans_mc_bars(const char* csvFolder, const char* binFolder, const char* period);
-
 	EXPORT_FLAG	void		release_backtest();
 
 

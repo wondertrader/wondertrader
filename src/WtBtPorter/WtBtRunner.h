@@ -70,9 +70,6 @@ public:
 	HftMocker*			hft_mocker() { return _hft_mocker; }
 	HisDataReplayer&	replayer() { return _replayer; }
 
-
-	static void trans_mc_bars(const char* csvFolder, const char* binFolder, const char* period);
-
 private:
 	FuncStraInitCallback	_cb_cta_init;
 	FuncStraTickCallback	_cb_cta_tick;

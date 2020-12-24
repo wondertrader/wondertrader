@@ -178,11 +178,6 @@ void dump_bars(const char* stdCode, const char* period, const char* filename)
 	getRunner().dump_bars(stdCode, period, filename);
 }
 
-void trans_mc_bars(const char* csvFolder, const char* binFolder, const char* period)
-{
-	WtBtRunner::trans_mc_bars(csvFolder, binFolder, period);
-}
-
 void write_log(unsigned int level, const char* message, const char* catName)
 {
 	if (strlen(catName) > 0)
