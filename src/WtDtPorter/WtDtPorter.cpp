@@ -11,9 +11,10 @@
 #include "WtDtRunner.h"
 
 #include "../WtDtCore/WtHelper.h"
-
 #include "../WTSTools/WTSLogger.h"
+
 #include "../Share/StrUtil.hpp"
+#include "../Includes/WTSVersion.h"
 
 #ifdef _WIN32
 #include "../Common/mdump.h"

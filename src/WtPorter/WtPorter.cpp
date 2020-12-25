@@ -16,6 +16,7 @@
 
 #include "../Share/decimal.h"
 #include "../Share/StrUtil.hpp"
+#include "../Includes/WTSVersion.h"
 
 std::string g_bin_dir;
 

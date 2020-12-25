@@ -20,6 +20,7 @@
 #include "../Share/decimal.h"
 #include "../Share/StrUtil.hpp"
 #include "../Includes/WTSTradeDef.hpp"
+#include "../Includes/WTSVersion.h"
 
 
 #ifdef _WIN32
