@@ -156,11 +156,6 @@ void WtCtaEngine::on_init()
 		});
 	}
 
-	//for (auto it = _executers.begin(); it != _executers.end(); it++)
-	//{
-	//	WtExecuterPtr& executer = (*it);
-	//	executer->set_position(target_pos);
-	//}
 	_exec_mgr.set_positions(target_pos);
 
 	if (_evt_listener)
@@ -198,7 +193,7 @@ void WtCtaEngine::on_session_end()
 void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 {
 	//去检查一下过滤器
-	load_filters();
+	_filter_mgr.load_filters();
 
 	std::unordered_map<std::string, double> target_pos;
 
@@ -209,13 +204,13 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 		ctx->enum_position([this, &target_pos, ctx](const char* stdCode, double qty){
 
 			double oldQty = qty;
-			bool bFilterd = is_filtered(ctx->name(), stdCode, qty);
+			bool bFilterd = _filter_mgr.is_filtered_by_strategy(ctx->name(), qty);
 			if(!bFilterd)
 			{
-				if(qty != oldQty)
+				if(!decimal::eq(qty, oldQty))
 				{
 					//输出日志
-					WTSLogger::info("[过滤器] 策略%s的合约%s的目标仓位被过滤器调整: %d -> %d", ctx->name(), stdCode, oldQty, qty);
+					WTSLogger::info(fmt::format("[过滤器] 策略{}的标的{}的目标仓位被策略过滤器调整: {} -> {}", ctx->name(), stdCode, oldQty, qty).c_str());
 				}
 
 				std::string realCode = stdCode;
@@ -233,7 +228,7 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 			else
 			{
 				//输出日志
-				WTSLogger::info("[过滤器] 策略%s的合约%s的目标仓位被过滤器忽略", ctx->name(), stdCode);
+				WTSLogger::info("[过滤器] 策略%s的标的%s的目标仓位被策略过滤器忽略", ctx->name(), stdCode);
 			}
 		});
 	}
@@ -250,13 +245,14 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 	{
 		std::string stdCode = it->first;
 		double& pos = it->second;
-		if (bRiskEnabled && pos != 0)
+
+		if (bRiskEnabled && !decimal::eq(pos, 0))
 		{
 			double symbol = pos / abs(pos);
 			pos = decimal::rnd(abs(pos)*_risk_volscale)*symbol;
 		}
-		
-		push_task([this, stdCode, pos](){
+
+		push_task([this, stdCode, pos]() {
 			append_signal(stdCode.c_str(), pos);
 		});
 	}
@@ -283,11 +279,6 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 		update_fund_dynprofit();
 	});
 
-	//for (auto it = _executers.begin(); it != _executers.end(); it++)
-	//{
-	//	WtExecuterPtr& executer = (*it);
-	//	executer->set_position(target_pos);
-	//}
 	_exec_mgr.set_positions(target_pos);
 
 	save_datas();
@@ -303,8 +294,15 @@ void WtCtaEngine::handle_push_quote(WTSTickData* newTick, bool isHot)
 		_tm_ticker->on_tick(newTick, isHot);
 }
 
-void WtCtaEngine::handle_pos_change(const char* stdCode, double diffQty)
+void WtCtaEngine::handle_pos_change(const char* straName, const char* stdCode, double diffQty)
 {
+	//这里是持仓增量，所以不用处理未过滤的情况，因为增量情况下，不会改变目标diffQty
+	if(!_filter_mgr.is_filtered_by_strategy(straName, diffQty, true))
+	{
+		//输出日志
+		WTSLogger::info("[过滤器] 策略%s的标的%s的目标仓位被策略过滤器忽略", straName, stdCode);
+	}
+
 	std::string realCode = stdCode;
 	if (CodeHelper::isStdFutHotCode(stdCode))
 	{
@@ -323,21 +321,16 @@ void WtCtaEngine::handle_pos_change(const char* stdCode, double diffQty)
 		WTSLogger::info2("risk", "组合盘仓位风控系数为%.2f", _risk_volscale);
 		bRiskEnabled = true;
 	}
-	if (bRiskEnabled && targetPos != 0)
+	if (bRiskEnabled && !decimal::eq(targetPos, 0))
 	{
 		double symbol = targetPos / abs(targetPos);
 		targetPos = decimal::rnd(abs(targetPos)*_risk_volscale)*symbol;
 	}
 
-	push_task([this, realCode, targetPos](){
+	push_task([this, realCode, targetPos]() {
 		append_signal(realCode.c_str(), targetPos);
 	});
-		
-	//for (auto it = _executers.begin(); it != _executers.end(); it++)
-	//{
-	//	WtExecuterPtr& executer = (*it);
-	//	executer->on_position_changed(realCode.c_str(), targetPos);
-	//}
+
 	_exec_mgr.handle_pos_change(realCode.c_str(), targetPos);
 }
 

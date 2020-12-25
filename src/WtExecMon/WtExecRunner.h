@@ -22,9 +22,9 @@ public:
 	/*
 	 *	≥ı ºªØ
 	 */
-	bool init(const char* logProfile = "logcfgexec.json");
+	bool init(const char* logCfg = "logcfgexec.json", bool isFile = true);
 
-	bool config(const char* cfgFile);
+	bool config(const char* cfgFile, bool isFile = true);
 
 	void run(bool bAsync = false);
 

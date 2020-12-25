@@ -63,10 +63,18 @@ WtRtRunner::~WtRtRunner()
 {
 }
 
-bool WtRtRunner::init(const char* logProfile /* = "log4cxx.prop" */)
+bool WtRtRunner::init(const char* logCfg /* = "logcfg.prop" */, bool isFile /* = true */)
 {
-	std::string path = WtHelper::getCWD() + logProfile;
-	WTSLogger::init(path.c_str());
+	if(isFile)
+	{
+		std::string path = WtHelper::getCWD() + logCfg;
+		WTSLogger::init(path.c_str(), true);
+	}
+	else
+	{
+		WTSLogger::init(logCfg, false);
+	}
+	
 
 	WtHelper::setInstDir(getBinDir());
 	return true;
@@ -242,10 +250,14 @@ void WtRtRunner::hft_on_trade(uint32_t cHandle, WtUInt32 localid, const char* st
 		_cb_hft_trd(cHandle, localid, stdCode, isBuy, vol, price);
 }
 
-bool WtRtRunner::config(const char* cfgFile)
+bool WtRtRunner::config(const char* cfgFile, bool isFile /* = true */)
 {
 	std::string json;
-	StdFile::read_file_content(cfgFile, json);
+	if (isFile)
+		StdFile::read_file_content(cfgFile, json);
+	else
+		json = cfgFile;
+
 	rj::Document document;
 	document.Parse(json.c_str());
 
@@ -269,7 +281,7 @@ bool WtRtRunner::config(const char* cfgFile)
 	if (cfgBF->get("contract"))
 	{
 		_bd_mgr.loadContracts(cfgBF->getCString("contract"));
-		WTSLogger::info("合约列表加载完成");
+		WTSLogger::info("标的列表加载完成");
 	}
 
 	if (cfgBF->get("holiday"))

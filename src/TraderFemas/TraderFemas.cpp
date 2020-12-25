@@ -242,10 +242,10 @@ void TraderFemas::connect()
 	{
 		m_strandIO = new boost::asio::io_service::strand(m_asyncIO);
 		boost::asio::io_service::work work(m_asyncIO);
-		m_thrdWorker.reset(new BoostThread([this](){
+		m_thrdWorker.reset(new StdThread([this](){
 			while (true)
 			{
-				boost::this_thread::sleep(boost::posix_time::milliseconds(2));
+				std::this_thread::sleep_for(std::chrono::milliseconds(2));
 				m_asyncIO.run_one();
 				//m_asyncIO.run();
 			}
@@ -455,7 +455,7 @@ int TraderFemas::queryAccount()
 		return -1;
 	}
 
-	BoostUniqueLock lock(m_mtxQuery);
+	StdUniqueLock lock(m_mtxQuery);
 	m_queQuery.push([this](){
 		CUstpFtdcQryInvestorAccountField req;
 		memset(&req, 0, sizeof(req));
@@ -477,7 +477,7 @@ int TraderFemas::queryPositions()
 		return -1;
 	}
 
-	BoostUniqueLock lock(m_mtxQuery);
+	StdUniqueLock lock(m_mtxQuery);
 	m_queQuery.push([this](){
 		CUstpFtdcQryInvestorPositionField req;
 		memset(&req, 0, sizeof(req));
@@ -497,7 +497,7 @@ int TraderFemas::queryOrders()
 		return -1;
 	}
 
-	BoostUniqueLock lock(m_mtxQuery);
+	StdUniqueLock lock(m_mtxQuery);
 	m_queQuery.push([this](){
 		CUstpFtdcQryOrderField req;
 		memset(&req, 0, sizeof(req));
@@ -518,7 +518,7 @@ int TraderFemas::queryTrades()
 		return -1;
 	}
 
-	BoostUniqueLock lock(m_mtxQuery);
+	StdUniqueLock lock(m_mtxQuery);
 	m_queQuery.push([this](){
 		CUstpFtdcQryTradeField req;
 		memset(&req, 0, sizeof(req));
@@ -1149,7 +1149,7 @@ void TraderFemas::triggerQuery()
 		uint64_t curTime = TimeUtils::getLocalTimeNow();
 		if (curTime - m_lastQryTime < 1000)
 		{
-			boost::this_thread::sleep(boost::posix_time::milliseconds(50));
+			std::this_thread::sleep_for(std::chrono::milliseconds(50));
 			m_strandIO->post([this](){
 				triggerQuery();
 			});
@@ -1162,7 +1162,7 @@ void TraderFemas::triggerQuery()
 		handler();
 
 		{
-			BoostUniqueLock lock(m_mtxQuery);
+			StdUniqueLock lock(m_mtxQuery);
 			m_queQuery.pop();
 		}
 

@@ -10,11 +10,13 @@
 #include "WtPorter.h"
 #include "WtRtRunner.h"
 
+#include "../WtCore/WtHelper.h"
 #include "../WTSTools/WTSLogger.h"
 #include "../Includes/WTSTradeDef.hpp"
 
 #include "../Share/decimal.h"
 #include "../Share/StrUtil.hpp"
+#include "../Includes/WTSVersion.h"
 
 std::string g_bin_dir;
 
@@ -129,27 +131,27 @@ void register_hft_callbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cb
 	getRunner().registerHftCallbacks(cbInit, cbTick, cbBar, cbChnl, cbOrd, cbTrd, cbEntrust);
 }
 
-void init_porter(const char* logProfile)
+void init_porter(const char* logProfile, bool isFile)
 {
 	static bool inited = false;
 
 	if (inited)
 		return;
 #ifdef _WIN32
-	CMiniDumper::Enable(getModuleName(), true);
+	CMiniDumper::Enable(getModuleName(), true, WtHelper::getCWD().c_str());
 #endif
 
-	getRunner().init(logProfile);
+	getRunner().init(logProfile, isFile);
 
 	inited = true;
 }
 
-void config_porter(const char* cfgfile)
+void config_porter(const char* cfgfile, bool isFile)
 {
 	if (strlen(cfgfile) == 0)
-		getRunner().config("config.json");
+		getRunner().config("config.json", true);
 	else
-		getRunner().config(cfgfile);
+		getRunner().config(cfgfile, isFile);
 }
 
 void run_porter(bool bAsync)

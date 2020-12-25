@@ -8,12 +8,12 @@
 * \brief
 */
 #pragma once
+#include <memory>
 #include <unordered_map>
 #include <boost/core/noncopyable.hpp>
 
 #include "../Includes/SelStrategyDefs.h"
 
-#include "../Share/BoostDefine.h"
 #include "../Share/DLLHelper.hpp"
 
 class SelStraWrapper

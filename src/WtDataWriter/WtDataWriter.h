@@ -3,15 +3,14 @@
 #include "MysqlDB.hpp"
 
 #include "../Includes/IDataWriter.h"
-#include "../Share/BoostDefine.h"
 #include "../Share/StdUtils.hpp"
 #include "../Share/BoostMappingFile.hpp"
 
 #include <queue>
 #include <unordered_map>
 
-typedef boost::shared_ptr<BoostMappingFile> BoostMFPtr;
-typedef boost::shared_ptr<MysqlDb>	MysqlDbPtr;
+typedef std::shared_ptr<BoostMappingFile> BoostMFPtr;
+typedef std::shared_ptr<MysqlDb>	MysqlDbPtr;
 
 NS_OTP_BEGIN
 class WTSContractInfo;
@@ -81,7 +80,7 @@ private:
 	{
 		RTKlineBlock*	_block;
 		BoostMFPtr		_file;
-		BoostUniqueMutex	_mutex;
+		StdUniqueMutex	_mutex;
 		uint64_t		_lasttime;
 
 		_KBlockPair()
@@ -98,10 +97,10 @@ private:
 	{
 		RTTickBlock*	_block;
 		BoostMFPtr		_file;
-		BoostUniqueMutex	_mutex;
+		StdUniqueMutex	_mutex;
 		uint64_t		_lasttime;
 
-		boost::shared_ptr< std::ofstream>	_fstream;
+		std::shared_ptr< std::ofstream>	_fstream;
 
 		_TickBlockPair()
 		{
@@ -117,10 +116,10 @@ private:
 	{
 		RTTransBlock*	_block;
 		BoostMFPtr		_file;
-		BoostUniqueMutex	_mutex;
+		StdUniqueMutex	_mutex;
 		uint64_t		_lasttime;
 
-		boost::shared_ptr< std::ofstream>	_fstream;
+		std::shared_ptr< std::ofstream>	_fstream;
 
 		_TransBlockPair()
 		{
@@ -136,10 +135,10 @@ private:
 	{
 		RTOrdDtlBlock*	_block;
 		BoostMFPtr		_file;
-		BoostUniqueMutex	_mutex;
+		StdUniqueMutex	_mutex;
 		uint64_t		_lasttime;
 
-		boost::shared_ptr< std::ofstream>	_fstream;
+		std::shared_ptr< std::ofstream>	_fstream;
 
 		_OdeDtlBlockPair()
 		{
@@ -155,10 +154,10 @@ private:
 	{
 		RTOrdQueBlock*	_block;
 		BoostMFPtr		_file;
-		BoostUniqueMutex	_mutex;
+		StdUniqueMutex	_mutex;
 		uint64_t		_lasttime;
 
-		boost::shared_ptr< std::ofstream>	_fstream;
+		std::shared_ptr< std::ofstream>	_fstream;
 
 		_OdeQueBlockPair()
 		{
@@ -179,7 +178,7 @@ private:
 	OrdDtlBlockFilesMap _rt_orddtl_blocks;
 	OrdQueBlockFilesMap _rt_ordque_blocks;
 
-	BoostUniqueMutex	_mtx_tick_cache;
+	StdUniqueMutex	_mtx_tick_cache;
 	std::unordered_map<std::string, uint32_t> _tick_cache_idx;
 	BoostMFPtr		_tick_cache_file;
 	RTTickCache*	_tick_cache_block;
@@ -187,19 +186,19 @@ private:
 	typedef std::function<void()> TaskInfo;
 	std::queue<TaskInfo>	_tasks;
 	StdThreadPtr			_task_thrd;
-	BoostUniqueMutex		_task_mtx;
-	BoostCondition			_task_cond;
+	StdUniqueMutex		_task_mtx;
+	StdCondVariable			_task_cond;
 
 	std::string		_base_dir;
 	std::string		_cache_file;
 	uint32_t		_log_group_size;
 	bool			_async_proc;
 
-	BoostCondition	 _proc_cond;
-	BoostUniqueMutex _proc_mtx;
+	StdCondVariable	 _proc_cond;
+	StdUniqueMutex _proc_mtx;
 	std::queue<std::string> _proc_que;
-	BoostThreadPtr	_proc_thrd;
-	BoostThreadPtr	_proc_chk;
+	StdThreadPtr	_proc_thrd;
+	StdThreadPtr	_proc_chk;
 	bool			_terminated;
 
 	bool			_save_tick_log;

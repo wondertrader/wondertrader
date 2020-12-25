@@ -537,6 +537,7 @@ WTSHisTickData* WtDataReader::readTicks(const char* stdCode, uint32_t count, uin
 				//将原来的buffer只保留一个头部，并将所有tick数据追加到尾部
 				tBlkPair._buffer.resize(sizeof(HisTickBlock));
 				tBlkPair._buffer.append(buf);
+				tBlockV2 = (HisTickBlockV2*)tBlkPair._buffer.c_str();
 				tBlockV2->_version = BLOCK_VERSION_RAW;
 			}
 
@@ -980,10 +981,10 @@ bool WtDataReader::cacheHisBarsFromDB(const std::string& key, const char* stdCod
 		//读取历史的
 		char sql[256] = { 0 };
 		if (isDay)
-			sprintf(sql, "SELECT `date`,0,open,high,low,close,settle,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%sQ' ORDER BY `date`;",
+			sprintf(sql, "SELECT `date`,0,open,high,low,close,settle,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%s' ORDER BY `date`;",
 				tbname.c_str(), cInfo._exchg, cInfo._code);
 		else
-			sprintf(sql, "SELECT `date`,`time`,open,high,low,close,0,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%sQ' ORDER BY `time`;",
+			sprintf(sql, "SELECT `date`,`time`,open,high,low,close,0,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%s' ORDER BY `time`;",
 				tbname.c_str(), cInfo._exchg, cInfo._code);
 
 		MysqlQuery query(*_db_conn);

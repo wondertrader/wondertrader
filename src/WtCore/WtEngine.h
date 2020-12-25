@@ -15,11 +15,12 @@
 #include <unordered_map>
 
 #include "ParserAdapter.h"
+#include "WtFilterMgr.h"
 
 #include "../Includes/WTSMarcos.h"
 #include "../Includes/RiskMonDefs.h"
 
-#include "../Share/BoostDefine.h"
+#include "../Share/StdUtils.hpp"
 #include "../Share/DLLHelper.hpp"
 
 
@@ -152,23 +153,6 @@ public:
 
 
 protected:
-	/*
-	 *	加载信号过滤器
-	 */
-	void		load_filters();
-	
-	/*
-	 *	是否被过滤掉了
-	 *	如果过滤器是忽略的话, 就会返回true, 如果是重定向仓位, 就会返回false, 而目标仓位是一个被过滤器改过的值
-	 *
-	 *	@sname		策略名称
-	 *	@stdCode	标准合约代码
-	 *	@targetPos	目标仓位, 以该数据为准
-	 *	
-	 *	return		是否过滤掉了, 如果过滤掉了, 该持仓就不加入最终组合目标仓位
-	 */
-	bool		is_filtered(const char* sname, const char* stdCode, double& targetPos);
-
 	void		load_fees(const char* filename);
 
 	void		load_datas();
@@ -225,27 +209,7 @@ protected:
 
 	//////////////////////////////////////////////////////////////////////////
 	//信号过滤器
-	typedef enum tagFilterAction
-	{
-		FA_Ignore,		//忽略, 即维持原有仓位
-		FA_Redirect,	//重定向持仓, 即同步到指定目标仓位
-		FA_None = 99
-	} FilterAction;
-
-	typedef struct _FilterItem
-	{
-		std::string		_key;		//关键字
-		FilterAction	_action;	//过滤操作
-		int32_t			_target;	//目标仓位, 只有当_action为FA_Redirect才生效
-	} FilterItem;
-
-	typedef std::unordered_map<std::string, FilterItem>	FilterMap;
-	FilterMap		_stra_filters;	//策略过滤器
-	FilterMap		_code_filters;	//代码过滤器, 包括合约代码和品种代码, 同一时间只有一个生效, 合约代码优先级高于品种代码
-	std::string		_filter_file;	//过滤器配置文件
-	uint64_t		_filter_timestamp;	//过滤器文件时间戳
-
-
+	WtFilterMgr		_filter_mgr;
 
 	//////////////////////////////////////////////////////////////////////////
 	//手续费模板
@@ -309,10 +273,10 @@ protected:
 
 	//后台任务线程, 把风控和资金, 持仓更新都放到这个线程里去
 	typedef std::queue<TaskItem>	TaskQueue;
-	BoostThreadPtr	_thrd_task;
+	StdThreadPtr	_thrd_task;
 	TaskQueue		_task_queue;
-	BoostUniqueMutex	_mtx_task;
-	BoostCondition		_cond_task;
+	StdUniqueMutex	_mtx_task;
+	StdCondVariable		_cond_task;
 	bool			_terminated;
 
 	typedef struct _RiskMonFactInfo

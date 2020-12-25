@@ -110,7 +110,7 @@ void WtSelRtTicker::on_tick(WTSTickData* curTick, bool isHot /* = false */)
 		if (_last_emit_pos < _cur_pos)
 		{
 			//触发数据回放模块
-			BoostUniqueLock lock(_mtx);
+			StdUniqueLock lock(_mtx);
 
 			//优先修改时间标记
 			_last_emit_pos = _cur_pos;
@@ -168,7 +168,7 @@ void WtSelRtTicker::run()
 	//先检查当前时间, 如果大于
 	//uint32_t offTime = _s_info->offsetTime(_engine->get_min_time());
 
-	_thrd.reset(new BoostThread([this](){
+	_thrd.reset(new StdThread([this](){
 		while (!_stopped)
 		{
 			if (_time != UINT_MAX && _s_info->isInTradingTime(_time / 100000, true))
@@ -179,7 +179,7 @@ void WtSelRtTicker::run()
 				if (now >= _next_check_time && _last_emit_pos < _cur_pos)
 				{
 					//触发数据回放模块
-					BoostUniqueLock lock(_mtx);
+					StdUniqueLock lock(_mtx);
 
 					//优先修改时间标记
 					_last_emit_pos = _cur_pos;

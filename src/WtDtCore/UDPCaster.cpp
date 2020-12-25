@@ -106,7 +106,7 @@ void UDPCaster::start(int bport)
 
 	do_receive();
 
-	m_thrdIO.reset(new BoostThread([this](){
+	m_thrdIO.reset(new StdThread([this](){
 		try
 		{
 			m_ioservice.run();
@@ -279,26 +279,26 @@ void UDPCaster::broadcast(WTSObject* data, uint32_t dataType)
 		return;
 
 	{
-		BoostUniqueLock lock(m_mtxCast);
+		StdUniqueLock lock(m_mtxCast);
 		m_dataQue.push(CastData(data, dataType));
 	}
 
 	if(m_thrdCast == NULL)
 	{
-		m_thrdCast.reset(new BoostThread([this](){
+		m_thrdCast.reset(new StdThread([this](){
 
 			while (!m_bTerminated)
 			{
 				if(m_dataQue.empty())
 				{
-					BoostUniqueLock lock(m_mtxCast);
+					StdUniqueLock lock(m_mtxCast);
 					m_condCast.wait(lock);
 					continue;
 				}	
 
 				std::queue<CastData> tmpQue;
 				{
-					BoostUniqueLock lock(m_mtxCast);
+					StdUniqueLock lock(m_mtxCast);
 					tmpQue.swap(m_dataQue);
 				}
 				

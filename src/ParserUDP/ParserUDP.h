@@ -9,7 +9,7 @@
  */
 #pragma once
 #include "../Includes/IParserApi.h"
-#include "../Share/BoostDefine.h"
+#include "../Share/StdUtils.hpp"
 
 #include <queue>
 
@@ -83,7 +83,7 @@ private:
 
 	CodeSet					_set_subs;
 
-	BoostThreadPtr			_thrd_parser;
+	StdThreadPtr			_thrd_parser;
 
 	std::queue<std::string>	_send_queue;
 };

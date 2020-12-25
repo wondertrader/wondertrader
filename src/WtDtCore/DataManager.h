@@ -10,7 +10,6 @@
 #pragma once
 
 #include "../Includes/IDataWriter.h"
-#include "../Share/BoostDefine.h"
 #include "../Share/StdUtils.hpp"
 #include "../Share/BoostMappingFile.hpp"
 

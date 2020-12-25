@@ -11,7 +11,7 @@
 
 #include "../Includes/WTSMarcos.h"
 #include "../Includes/WTSObject.hpp"
-#include "../Share/BoostDefine.h"
+#include "../Share/StdUtils.hpp"
 
 #include <boost/asio.hpp>
 #include <queue>
@@ -49,7 +49,7 @@ public:
 		}
 
 	} UDPReceiver;
-	typedef boost::shared_ptr<UDPReceiver>	UDPReceiverPtr;
+	typedef std::shared_ptr<UDPReceiver>	UDPReceiverPtr;
 	typedef std::vector<UDPReceiverPtr>		ReceiverList;
 
 private:
@@ -76,7 +76,7 @@ public:
 
 private:
 	typedef boost::asio::ip::udp::socket	UDPSocket;
-	typedef boost::shared_ptr<UDPSocket>	UDPSocketPtr;
+	typedef std::shared_ptr<UDPSocket>		UDPSocketPtr;
 
 	enum 
 	{ 
@@ -99,11 +99,11 @@ private:
 	MulticastList	m_listJsonGroup;
 	MulticastList	m_listRawGroup;
 	boost::asio::io_service		m_ioservice;
-	BoostThreadPtr	m_thrdIO;
+	StdThreadPtr	m_thrdIO;
 
-	BoostThreadPtr	m_thrdCast;
-	BoostCondition	m_condCast;
-	BoostUniqueMutex	m_mtxCast;
+	StdThreadPtr	m_thrdCast;
+	StdCondVariable	m_condCast;
+	StdUniqueMutex	m_mtxCast;
 	bool			m_bTerminated;
 
 	WTSBaseDataMgr*	m_bdMgr;

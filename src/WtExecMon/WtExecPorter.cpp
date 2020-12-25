@@ -1,8 +1,11 @@
 #include "WtExecPorter.h"
 #include "WtExecRunner.h"
 
+#include "../WtCore/WtHelper.h"
 #include "../WTSTools/WTSLogger.h"
+
 #include "../Share/StrUtil.hpp"
+#include "../Includes/WTSVersion.h"
 
 #ifdef _WIN32
 #include "../Common/mdump.h"
@@ -91,22 +94,22 @@ const char* getBinDir()
 	return _bin_dir.c_str();
 }
 
-void init_exec(WtString logProfile)
+void init_exec(WtString logCfg, bool isFile /*= true*/)
 {
 	static bool inited = false;
 
 	if (inited)
 		return;
 #ifdef _WIN32
-	CMiniDumper::Enable(getModuleName(), true);
+	CMiniDumper::Enable(getModuleName(), true, WtHelper::getCWD().c_str());
 #endif
 
-	getRunner().init(logProfile);
+	getRunner().init(logCfg);
 
 	inited = true;
 }
 
-void config_exec(WtString cfgfile)
+void config_exec(WtString cfgfile, bool isFile /*= true*/)
 {
 	if (strlen(cfgfile) == 0)
 		getRunner().config("cfgexec.json");
@@ -140,7 +143,7 @@ WtString get_version()
 	return _ver.c_str();
 }
 
-void write_log(unsigned int level, WtString message, const char* catName)
+void write_log(unsigned int level, WtString message, WtString catName)
 {
 	if (strlen(catName) > 0)
 	{

@@ -143,7 +143,7 @@ void StateMonitor::run()
 {
 	if(_thrd == NULL)
 	{
-		_thrd.reset(new BoostThread([this](){
+		_thrd.reset(new StdThread([this](){
 
 			while (!_stopped)
 			{
@@ -158,7 +158,7 @@ void StateMonitor::run()
 					if(_stopped)
 						break;
 
-					boost::this_thread::sleep(boost::posix_time::milliseconds(2));
+					std::this_thread::sleep_for(std::chrono::milliseconds(2));
 				}
 
 				if(_stopped)

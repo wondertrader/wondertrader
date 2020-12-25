@@ -115,16 +115,28 @@ public:
 
 private:
 	/*
-	*	将历史数据放入缓存
-	*/
-	bool		cacheRawBarsFromBin(const std::string& key, const char* stdCode, WTSKlinePeriod period);
+	 *	从自定义数据文件缓存历史数据
+	 */
+	bool		cacheRawBarsFromBin(const std::string& key, const char* stdCode, WTSKlinePeriod period, bool bForBars = true);
 
-	bool		cacheRawBarsFromCSV(const std::string& key, const char* stdCode, WTSKlinePeriod period);
+	/*
+	 *	从csv文件缓存历史数据
+	 */
+	bool		cacheRawBarsFromCSV(const std::string& key, const char* stdCode, WTSKlinePeriod period, bool bForBars = true);
 
-	bool		cacheRawBarsFromDB(const std::string& key, const char* stdCode, WTSKlinePeriod period);
+	/*
+	 *	从数据库缓存历史数据
+	 */
+	bool		cacheRawBarsFromDB(const std::string& key, const char* stdCode, WTSKlinePeriod period, bool bForBars = true);
 
+	/*
+	 *	从自定义数据文件缓存历史tick数据
+	 */
 	bool		cacheRawTicksFromBin(const std::string& key, const char* stdCode, uint32_t uDate);
 
+	/*
+	 *	从csv文件缓存历史tick数据
+	 */
 	bool		cacheRawTicksFromCSV(const std::string& key, const char* stdCode, uint32_t uDate);
 
 	void		onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTDate = 0);
@@ -133,13 +145,17 @@ private:
 
 	void		replayTicks(uint64_t stime, uint64_t etime);
 
+	void		replayUnbars(uint64_t stime, uint64_t etime, uint32_t endTDate = 0);
+
 	bool		checkTicks(const char* stdCode, uint32_t uDate);
+
+	void		checkUnbars();
 
 	bool		loadStkAdjFactors(const char* adjfile);
 
 	bool		loadStkAdjFactorsFromDB();
 
-	void		init_db();
+	void		initDB();
 
 public:
 	bool init(WTSVariant* cfg);
@@ -173,12 +189,14 @@ public:
 private:
 	IDataSink*		_listener;
 
-	TickCache		_ticks_cache;
-	BarsCache		_bars_cache;
+	TickCache		_ticks_cache;	//tick缓存
+	BarsCache		_bars_cache;	//K线缓存
+	BarsCache		_unbars_cache;	//未订阅的K线缓存
 
 	TaskInfoPtr		_task;
 
 	std::string		_main_key;
+	std::string		_min_period;	//最小K线周期，这个主要用于未订阅品种的信号处理上
 	bool			_tick_enabled;
 	std::map<std::string, WTSTickStruct>	_day_cache;	//每日Tick缓存,当tick回放未开放时，会用到该缓存
 	std::map<std::string, std::string>		_ticker_keys;

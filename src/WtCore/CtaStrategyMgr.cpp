@@ -14,6 +14,8 @@
 
 #include "../WTSTools/WTSLogger.h"
 
+#include <boost/filesystem.hpp>
+
 
 CtaStrategyMgr::CtaStrategyMgr()
 {

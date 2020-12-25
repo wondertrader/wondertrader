@@ -7,7 +7,7 @@
 #include <boost/asio/io_service.hpp>
 
 #include "../Includes/ITraderApi.h"
-#include "../Share/BoostDefine.h"
+#include "../Share/StdUtils.hpp"
 #include "../Includes/WTSCollection.hpp"
 
 
@@ -40,10 +40,10 @@ private:
 
 
 private:
-	BoostThreadPtr	_thrd_match;
+	StdThreadPtr	_thrd_match;
 	bool			_terminated;
 
-	BoostUniqueMutex		_mutex_api;
+	StdUniqueMutex		_mutex_api;
 
 	std::atomic<uint32_t>	_auto_trade_id;
 	std::atomic<uint32_t>	_auto_order_id;
@@ -52,7 +52,7 @@ private:
 	ITraderApiListener* _listener;
 	IBaseDataMgr*		_bd_mgr;
 
-	BoostThreadPtr		_thrd_worker;
+	StdThreadPtr		_thrd_worker;
 
 	uint32_t		_millisecs;
 	uint32_t		_mocker_id;
@@ -67,7 +67,7 @@ private:
 
 	typedef WTSHashMap<std::string> OrderCache;
 	OrderCache*			_awaits;
-	BoostUniqueMutex	_mtx_awaits;
+	StdUniqueMutex	_mtx_awaits;
 
 	std::unordered_set<std::string>	_codes;
 

@@ -340,7 +340,7 @@ bool WTSBaseDataMgr::loadContracts(const char* filename)
 {
 	if (!StdFile::exists(filename))
 	{
-		WTSLogger::error("合约列表文件 %s 不存在", filename);
+		WTSLogger::error("标的列表文件 %s 不存在", filename);
 		return false;
 	}
 
@@ -349,7 +349,7 @@ bool WTSBaseDataMgr::loadContracts(const char* filename)
 	rj::Document root;
 	if (root.Parse(content.c_str()).HasParseError())
 	{
-		WTSLogger::error("合约列表文件解析失败");
+		WTSLogger::error("标的列表文件解析失败");
 		return false;
 	}
 

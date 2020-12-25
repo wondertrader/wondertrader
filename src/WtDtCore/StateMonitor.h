@@ -8,9 +8,9 @@
  * \brief ×´Ì¬¿ØÖÆÆ÷¶¨Òå
  */
 #pragma once
+#include <vector>
 #include <unordered_map>
-
-#include "../Share/BoostDefine.h"
+#include "../Share/StdUtils.hpp"
 
 typedef enum tagSimpleState
 {
@@ -52,7 +52,7 @@ typedef struct _StateInfo
 
 	_StateInfo()
 	{
-		strcpy(_session, "\0");
+		_session[0] = '\0';
 		_init_time = 0;
 		_close_time = 0;
 		_proc_time = 0;
@@ -60,7 +60,7 @@ typedef struct _StateInfo
 	}
 } StateInfo;
 
-typedef boost::shared_ptr<StateInfo> StatePtr;
+typedef std::shared_ptr<StateInfo> StatePtr;
 typedef std::unordered_map<std::string, StatePtr>	StateMap;
 
 class WTSBaseDataMgr;
@@ -88,7 +88,7 @@ private:
 	WTSBaseDataMgr*	_bd_mgr;
 	DataManager*	_dt_mgr;
 
-	BoostThreadPtr	_thrd;
+	StdThreadPtr	_thrd;
 
 	bool			_stopped;
 };

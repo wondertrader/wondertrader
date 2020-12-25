@@ -194,7 +194,7 @@ bool WtDataWriter::init(WTSVariant* params, IDataWriterSink* sink)
 
 	loadCache();
 
-	_proc_chk.reset(new BoostThread(boost::bind(&WtDataWriter::check_loop, this)));
+	_proc_chk.reset(new StdThread(boost::bind(&WtDataWriter::check_loop, this)));
 	return true;
 }
 
@@ -476,7 +476,7 @@ bool WtDataWriter::writeOrderQueue(WTSOrdQueData* curOrdQue)
 			if (pBlockPair == NULL)
 				break;
 
-			BoostUniqueLock lock(pBlockPair->_mutex);
+			StdUniqueLock lock(pBlockPair->_mutex);
 
 			//先检查容量够不够，不够要扩
 			RTOrdQueBlock* blk = pBlockPair->_block;
@@ -509,7 +509,7 @@ void WtDataWriter::pushTask(TaskInfo task)
 {
 	if(_async_proc)
 	{
-		BoostUniqueLock lck(_task_mtx);
+		StdUniqueLock lck(_task_mtx);
 		_tasks.push(task);
 		_task_cond.notify_all();
 	}
@@ -526,14 +526,14 @@ void WtDataWriter::pushTask(TaskInfo task)
 			{
 				if(_tasks.empty())
 				{
-					BoostUniqueLock lck(_task_mtx);
+					StdUniqueLock lck(_task_mtx);
 					_task_cond.wait(_task_mtx);
 					continue;
 				}
 
 				std::queue<TaskInfo> tempQueue;
 				{
-					BoostUniqueLock lck(_task_mtx);
+					StdUniqueLock lck(_task_mtx);
 					tempQueue.swap(_tasks);
 				}
 
@@ -570,7 +570,7 @@ bool WtDataWriter::writeOrderDetail(WTSOrdDtlData* curOrdDtl)
 			if (pBlockPair == NULL)
 				break;
 
-			BoostUniqueLock lock(pBlockPair->_mutex);
+			StdUniqueLock lock(pBlockPair->_mutex);
 
 			//先检查容量够不够，不够要扩
 			RTOrdDtlBlock* blk = pBlockPair->_block;
@@ -623,7 +623,7 @@ bool WtDataWriter::writeTransaction(WTSTransData* curTrans)
 			if (pBlockPair == NULL)
 				break;
 
-			BoostUniqueLock lock(pBlockPair->_mutex);
+			StdUniqueLock lock(pBlockPair->_mutex);
 
 			//先检查容量够不够，不够要扩
 			RTTransBlock* blk = pBlockPair->_block;
@@ -659,7 +659,7 @@ void WtDataWriter::pipeToTicks(WTSContractInfo* ct, WTSTickData* curTick)
 	if (pBlockPair == NULL)
 		return;
 
-	BoostUniqueLock lock(pBlockPair->_mutex);
+	StdUniqueLock lock(pBlockPair->_mutex);
 
 	//先检查容量够不够，不够要扩
 	RTTickBlock* blk = pBlockPair->_block;
@@ -1048,7 +1048,7 @@ WtDataWriter::TickBlockPair* WtDataWriter::getTickBlock(WTSContractInfo* ct, uin
 					pBlock->_block->_capacity = oldCnt;
 					pBlock->_block->_size = oldCnt;
 
-					_sink->outputWriterLog(LL_WARN, "%s合约%u的tick缓存文件已修复", ct->getCode(), curDate);
+					_sink->outputWriterLog(LL_WARN, "%s标的%u的tick缓存文件已修复", ct->getCode(), curDate);
 				}
 				
 				break;
@@ -1083,7 +1083,7 @@ void WtDataWriter::pipeToKlines(WTSContractInfo* ct, WTSTickData* curTick)
 	KBlockPair* pBlockPair = getKlineBlock(ct, KP_Minute1);
 	if (pBlockPair && pBlockPair->_block)
 	{
-		BoostUniqueLock lock(pBlockPair->_mutex);
+		StdUniqueLock lock(pBlockPair->_mutex);
 		RTKlineBlock* blk = pBlockPair->_block;
 		if (blk->_size == blk->_capacity)
 		{
@@ -1151,7 +1151,7 @@ void WtDataWriter::pipeToKlines(WTSContractInfo* ct, WTSTickData* curTick)
 	pBlockPair = getKlineBlock(ct, KP_Minute5);
 	if (pBlockPair && pBlockPair->_block)
 	{
-		BoostUniqueLock lock(pBlockPair->_mutex);
+		StdUniqueLock lock(pBlockPair->_mutex);
 		RTKlineBlock* blk = pBlockPair->_block;
 		if (blk->_size == blk->_capacity)
 		{
@@ -1221,7 +1221,7 @@ void WtDataWriter::releaseBlock(T* block)
 	if (block == NULL || block->_file == NULL)
 		return;
 
-	BoostUniqueLock lock(block->_mutex);
+	StdUniqueLock lock(block->_mutex);
 	block->_block = NULL;
 	block->_file.reset();
 	block->_lasttime = 0;
@@ -1339,7 +1339,7 @@ WTSTickData* WtDataWriter::getCurTick(const char* code, const char* exchg/* = ""
 		return NULL;
 
 	std::string key = StrUtil::printf("%s.%s", ct->getExchg(), ct->getCode());
-	BoostUniqueLock lock(_mtx_tick_cache);
+	StdUniqueLock lock(_mtx_tick_cache);
 	auto it = _tick_cache_idx.find(key);
 	if (it == _tick_cache_idx.end())
 		return NULL;
@@ -1357,7 +1357,7 @@ bool WtDataWriter::updateCache(WTSContractInfo* ct, WTSTickData* curTick, bool b
 		return false;
 	}
 
-	BoostUniqueLock lock(_mtx_tick_cache);
+	StdUniqueLock lock(_mtx_tick_cache);
 	std::string key = StrUtil::printf("%s.%s", curTick->exchg(), curTick->code());
 	uint32_t idx = 0;
 	if (_tick_cache_idx.find(key) == _tick_cache_idx.end())
@@ -1412,12 +1412,12 @@ bool WtDataWriter::updateCache(WTSContractInfo* ct, WTSTickData* curTick, bool b
 		uint32_t tdate = sInfo->getOffsetDate(curTick->actiondate(), curTick->actiontime() / 100000);
 		if (tdate > curTick->tradingdate())
 		{
-			_sink->outputWriterLog(LL_ERROR, "合约%s.%s最新tick数据(时间%u.%u)异常，丢弃", curTick->exchg(), curTick->code(), curTick->actiondate(), curTick->actiontime());
+			_sink->outputWriterLog(LL_ERROR, "标的%s.%s最新tick数据(时间%u.%u)异常，丢弃", curTick->exchg(), curTick->code(), curTick->actiondate(), curTick->actiontime());
 			return false;
 		}
 		else if (curTick->totalvolumn() < item._tick.total_volumn)
 		{
-			_sink->outputWriterLog(LL_ERROR, "合约%s.%s最新tick数据(时间%u.%u，总成交%u小于缓存总成交%u)异常，丢弃", 
+			_sink->outputWriterLog(LL_ERROR, "标的%s.%s最新tick数据(时间%u.%u，总成交%u小于缓存总成交%u)异常，丢弃", 
 				curTick->exchg(), curTick->code(), curTick->actiondate(), curTick->actiontime(), curTick->totalvolumn(), item._tick.total_volumn);
 			return false;
 		}
@@ -1448,7 +1448,7 @@ bool WtDataWriter::updateCache(WTSContractInfo* ct, WTSTickData* curTick, bool b
 
 void WtDataWriter::transHisData(const char* sid)
 {
-	BoostUniqueLock lock(_proc_mtx);
+	StdUniqueLock lock(_proc_mtx);
 	if (strcmp(sid, CMD_CLEAR_CACHE) != 0)
 	{
 		CodeSet* pCommSet = _sink->getSessionComms(sid);
@@ -1485,7 +1485,7 @@ void WtDataWriter::transHisData(const char* sid)
 
 	if (_proc_thrd == NULL)
 	{
-		_proc_thrd.reset(new BoostThread(boost::bind(&WtDataWriter::proc_loop, this)));
+		_proc_thrd.reset(new StdThread(boost::bind(&WtDataWriter::proc_loop, this)));
 	}
 	else
 	{
@@ -1498,7 +1498,7 @@ void WtDataWriter::check_loop()
 	uint32_t expire_secs = 600;
 	while(!_terminated)
 	{
-		boost::this_thread::sleep(boost::posix_time::seconds(10));
+		std::this_thread::sleep_for(std::chrono::seconds(10));
 		uint64_t now = time(NULL);
 		for (auto it = _rt_ticks_blocks.begin(); it != _rt_ticks_blocks.end(); it++)
 		{
@@ -1612,8 +1612,8 @@ uint32_t WtDataWriter::dump_hisdata_to_db(WTSContractInfo* ct)
 	if (kBlkPair != NULL && kBlkPair->_block->_size > 0)
 	{
 		uint32_t size = kBlkPair->_block->_size;
-		_sink->outputWriterLog(LL_INFO, "开始转移合约%s的1分钟数据", ct->getFullCode());
-		BoostUniqueLock lock(kBlkPair->_mutex);
+		_sink->outputWriterLog(LL_INFO, "开始转移标的%s的1分钟数据", ct->getFullCode());
+		StdUniqueLock lock(kBlkPair->_mutex);
 
 		std::string sql = "REPLACE INTO tb_kline_min1(exchange,code,date,time,open,high,low,close,volume,turnover,interest,diff_interest) VALUES";
 		for(uint32_t i = 0; i < size; i++)
@@ -1646,8 +1646,8 @@ uint32_t WtDataWriter::dump_hisdata_to_db(WTSContractInfo* ct)
 	if (kBlkPair != NULL && kBlkPair->_block->_size > 0)
 	{
 		uint32_t size = kBlkPair->_block->_size;
-		_sink->outputWriterLog(LL_INFO, "开始转移合约%s的5分钟数据", ct->getFullCode());
-		BoostUniqueLock lock(kBlkPair->_mutex);
+		_sink->outputWriterLog(LL_INFO, "开始转移标的%s的5分钟数据", ct->getFullCode());
+		StdUniqueLock lock(kBlkPair->_mutex);
 
 		std::string sql = "REPLACE INTO tb_kline_min5(exchange,code,date,time,open,high,low,close,volume,turnover,interest,diff_interest) VALUES";
 		for (uint32_t i = 0; i < size; i++)
@@ -1846,8 +1846,8 @@ uint32_t WtDataWriter::dump_hisdata_to_file(WTSContractInfo* ct)
 	if (kBlkPair != NULL && kBlkPair->_block->_size > 0)
 	{
 		uint32_t size = kBlkPair->_block->_size;
-		_sink->outputWriterLog(LL_INFO, "开始转移合约%s的1分钟数据", ct->getFullCode());
-		BoostUniqueLock lock(kBlkPair->_mutex);
+		_sink->outputWriterLog(LL_INFO, "开始转移标的%s的1分钟数据", ct->getFullCode());
+		StdUniqueLock lock(kBlkPair->_mutex);
 
 		std::stringstream ss;
 		ss << _base_dir << "his/min1/" << ct->getExchg() << "/";
@@ -1917,8 +1917,8 @@ uint32_t WtDataWriter::dump_hisdata_to_file(WTSContractInfo* ct)
 	if (kBlkPair != NULL && kBlkPair->_block->_size > 0)
 	{
 		uint32_t size = kBlkPair->_block->_size;
-		_sink->outputWriterLog(LL_INFO, "开始转移合约%s的5分钟数据", ct->getFullCode());
-		BoostUniqueLock lock(kBlkPair->_mutex);
+		_sink->outputWriterLog(LL_INFO, "开始转移标的%s的5分钟数据", ct->getFullCode());
+		StdUniqueLock lock(kBlkPair->_mutex);
 
 		std::stringstream ss;
 		ss << _base_dir << "his/min5/" << ct->getExchg() << "/";
@@ -1991,7 +1991,7 @@ void WtDataWriter::proc_loop()
 	{
 		if(_proc_que.empty())
 		{
-			BoostUniqueLock lock(_proc_mtx);
+			StdUniqueLock lock(_proc_mtx);
 			_proc_cond.wait(_proc_mtx);
 			continue;
 		}
@@ -1999,7 +1999,7 @@ void WtDataWriter::proc_loop()
 		std::string fullcode;
 		try
 		{
-			BoostUniqueLock lock(_proc_mtx);
+			StdUniqueLock lock(_proc_mtx);
 			fullcode = _proc_que.front().c_str();
 			_proc_que.pop();
 		}
@@ -2012,7 +2012,7 @@ void WtDataWriter::proc_loop()
 		if (fullcode.compare(CMD_CLEAR_CACHE) == 0)
 		{
 			//清理缓存
-			BoostUniqueLock lock(_mtx_tick_cache);
+			StdUniqueLock lock(_mtx_tick_cache);
 
 			std::set<std::string> setCodes;
 			std::stringstream ss_snapshot;
@@ -2049,15 +2049,15 @@ void WtDataWriter::proc_loop()
 				}
 				else
 				{
-					_sink->outputWriterLog(LL_WARN, "合约%s[%s]已过期，缓存即将清理", ay[1].c_str(), ay[0].c_str());
+					_sink->outputWriterLog(LL_WARN, "标的%s[%s]已过期，缓存即将清理", ay[1].c_str(), ay[0].c_str());
 
-					//删除已经过期合约的实时tick文件
+					//删除已经过期标的的实时tick文件
 					std::string path = StrUtil::printf("%srt/ticks/%s/%s.dmb", _base_dir.c_str(), ay[0].c_str(), ay[1].c_str());
 					BoostFile::delete_file(path.c_str());
 				}
 			}
 
-			//如果两组合约个数不同，说明有合约过期了，被排除了
+			//如果两组标的个数不同，说明有标的过期了，被排除了
 			if(setCodes.size() != _tick_cache_idx.size())
 			{
 				uint32_t diff = _tick_cache_idx.size() - setCodes.size();
@@ -2106,7 +2106,7 @@ void WtDataWriter::proc_loop()
 				_tick_cache_file->map(filename.c_str());
 				_tick_cache_block = (RTTickCache*)_tick_cache_file->addr();
 				
-				_sink->outputWriterLog(LL_INFO, "行情缓存清理成功，共清理%u条过期合约的缓存", diff);
+				_sink->outputWriterLog(LL_INFO, "行情缓存清理成功，共清理%u条过期标的的缓存", diff);
 			}
 
 			std::string path = StrUtil::printf("%srt/min1/", _base_dir.c_str());
@@ -2169,8 +2169,8 @@ void WtDataWriter::proc_loop()
 			TickBlockPair *tBlkPair = getTickBlock(ct, uDate, false);
 			if (tBlkPair != NULL && tBlkPair->_block->_size > 0)
 			{
-				_sink->outputWriterLog(LL_INFO, "开始转移合约%s的tick数据", fullcode.c_str());
-				BoostUniqueLock lock(tBlkPair->_mutex);
+				_sink->outputWriterLog(LL_INFO, "开始转移标的%s的tick数据", fullcode.c_str());
+				StdUniqueLock lock(tBlkPair->_mutex);
 
 				std::stringstream ss;
 				ss << _base_dir << "his/ticks/" << ct->getExchg() << "/" << tBlkPair->_block->_date << "/";
@@ -2222,7 +2222,7 @@ void WtDataWriter::proc_loop()
 			if (tBlkPair != NULL && tBlkPair->_block->_size > 0)
 			{
 				_sink->outputWriterLog(LL_INFO, "开始转移%s的trans数据", fullcode.c_str());
-				BoostUniqueLock lock(tBlkPair->_mutex);
+				StdUniqueLock lock(tBlkPair->_mutex);
 
 				std::stringstream ss;
 				ss << _base_dir << "his/trans/" << ct->getExchg() << "/" << tBlkPair->_block->_date << "/";
@@ -2274,7 +2274,7 @@ void WtDataWriter::proc_loop()
 			if (tBlkPair != NULL && tBlkPair->_block->_size > 0)
 			{
 				_sink->outputWriterLog(LL_INFO, "开始转移%s的order数据", fullcode.c_str());
-				BoostUniqueLock lock(tBlkPair->_mutex);
+				StdUniqueLock lock(tBlkPair->_mutex);
 
 				std::stringstream ss;
 				ss << _base_dir << "his/orders/" << ct->getExchg() << "/" << tBlkPair->_block->_date << "/";
@@ -2326,7 +2326,7 @@ void WtDataWriter::proc_loop()
 			if (tBlkPair != NULL && tBlkPair->_block->_size > 0)
 			{
 				_sink->outputWriterLog(LL_INFO, "开始转移%s的queue数据", fullcode.c_str());
-				BoostUniqueLock lock(tBlkPair->_mutex);
+				StdUniqueLock lock(tBlkPair->_mutex);
 
 				std::stringstream ss;
 				ss << _base_dir << "his/queue/" << ct->getExchg() << "/" << tBlkPair->_block->_date << "/";
@@ -2380,6 +2380,6 @@ void WtDataWriter::proc_loop()
 		else
 			count += dump_hisdata_to_file(ct);
 
-		_sink->outputWriterLog(LL_INFO, "合约%s[%s]已完成收盘, 本次作业共处理数据%u条", ct->getCode(), ct->getExchg(), count);
+		_sink->outputWriterLog(LL_INFO, "标的%s[%s]已完成收盘, 本次作业共处理数据%u条", ct->getCode(), ct->getExchg(), count);
 	}
 }

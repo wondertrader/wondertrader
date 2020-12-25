@@ -4,7 +4,7 @@
 #include "../Share/StrUtil.hpp"
 #include "../Share/TimeUtils.hpp"
 #include "../Includes/WTSDataDef.hpp"
-#include "../Share/BoostDefine.h"
+#include "../Share/StdUtils.hpp"
 #include "../Includes/IBaseDataMgr.h"
 #include "../Includes/WTSParams.hpp"
 #include "../Includes/WTSContractInfo.hpp"
@@ -229,8 +229,8 @@ void ParseriTap::OnDisconnect(TAPIINT32 reasonCode)
 		{
 			m_bReconnect = true;
 			//这里丢到线程里去处理，让OnClose可以马上返回
-			BoostThreadPtr thrd(new BoostThread([this](){
-				boost::this_thread::sleep(boost::posix_time::seconds(2));
+			StdThreadPtr thrd(new StdThread([this](){
+				std::this_thread::sleep_for(std::chrono::seconds(RECONNECT_SECONDS));
 				m_parserSink->handleParserLog(LL_WARN, "[ParseriTap]行情正在重连……", m_strUser.c_str());
 				reconnect();
 			}));
@@ -440,7 +440,7 @@ bool ParseriTap::login(bool bNeedReconn /* = false */)
 		//如果连接失败，且需要重连，就再重连
 		if(iResult == TAPIERROR_ConnectFail && bNeedReconn && !m_bStopped)
 		{
-			boost::this_thread::sleep(boost::posix_time::seconds(RECONNECT_SECONDS));
+			std::this_thread::sleep_for(std::chrono::seconds(RECONNECT_SECONDS));
 			m_parserSink->handleParserLog(LL_INFO, StrUtil::printf("[ParseriTap]行情正在重连...").c_str());
 			reconnect();
 		}

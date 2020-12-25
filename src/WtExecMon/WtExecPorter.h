@@ -16,9 +16,9 @@ extern "C"
 {
 #endif
 
-	EXPORT_FLAG	void		init_exec(WtString logProfile);
+	EXPORT_FLAG	void		init_exec(WtString logCfg, bool isFile = true);
 
-	EXPORT_FLAG	void		config_exec(WtString cfgfile);
+	EXPORT_FLAG	void		config_exec(WtString cfgfile, bool isFile = true);
 
 	EXPORT_FLAG	void		run_exec();
 

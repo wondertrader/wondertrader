@@ -62,7 +62,7 @@ public:
 	static void vlog_dyn(const char* patttern, const char* catName, WTSLogLevel ll, const char* format, va_list& args);
 	static void log_dyn_raw(const char* patttern, const char* catName, WTSLogLevel ll, const char* message);
 
-	static void init(const char* propFile = "logcfg.json", ILogHandler* handler = NULL, WTSLogLevel logLevel = LL_INFO);
+	static void init(const char* propFile = "logcfg.json", bool isFile = true, ILogHandler* handler = NULL, WTSLogLevel logLevel = LL_INFO);
 
 	static void registerHandler(ILogHandler* handler = NULL, WTSLogLevel logLevel = LL_INFO);
 

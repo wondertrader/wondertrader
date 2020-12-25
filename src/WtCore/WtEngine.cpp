@@ -45,8 +45,7 @@ namespace rj = rapidjson;
 USING_NS_OTP;
 
 WtEngine::WtEngine()
-	: _filter_timestamp(0)
-	, _port_fund(NULL)
+	:_port_fund(NULL)
 	, _risk_volscale(1.0)
 	, _risk_date(0)
 	, _terminated(false)
@@ -264,8 +263,9 @@ void WtEngine::init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtDataManager* dataMgr
 
 	WTSLogger::info("平台运行模式: 生产模式");
 
-	_filter_file = cfg->getCString("filters");
-	load_filters();
+	//_filter_file = cfg->getCString("filters");
+	//load_strategy_filters();
+	_filter_mgr.load_filters(cfg->getCString("filters"));
 
 	load_fees(cfg->getCString("fees"));
 
@@ -654,179 +654,6 @@ void WtEngine::sub_tick(uint32_t sid, const char* stdCode)
 	}
 }
 
-
-void WtEngine::load_filters()
-{
-	if (_filter_file.empty())
-		return;
-
-	if (!StdFile::exists(_filter_file.c_str()))
-	{
-		WTSLogger::error("过滤器配置文件%s不存在", _filter_file.c_str());
-		return;
-	}
-
-	uint64_t lastModTime = boost::filesystem::last_write_time(boost::filesystem::path(_filter_file));
-	if (lastModTime <= _filter_timestamp)
-		return;
-
-	WTSLogger::info("过滤器配置文件%s已修改, 需要重新加载", _filter_file.c_str());
-
-	std::string content;
-	StdFile::read_file_content(_filter_file.c_str(), content);
-	if (content.empty())
-	{
-		WTSLogger::error("过滤器配置文件%s为空", _filter_file.c_str());
-		return;
-	}
-
-	rj::Document root;
-	root.Parse(content.c_str());
-
-	if (root.HasParseError())
-	{
-		WTSLogger::error("过滤器配置文件%s解析失败", _filter_file.c_str());
-		return;
-	}
-
-	WTSVariant* cfg = WTSVariant::createObject();
-	if(!jsonToVariant(root, cfg))
-	{
-		WTSLogger::error("过滤器配置文件%s转换失败", _filter_file.c_str());
-		return;
-	}
-
-	_filter_timestamp = lastModTime;
-
-	_stra_filters.clear();
-	_code_filters.clear();
-
-	//读策略过滤器
-	WTSVariant* filterStra = cfg->get("strategy_filters");
-	if(filterStra)
-	{
-		auto keys = filterStra->memberNames();
-		for(const std::string& key : keys)
-		{
-			WTSVariant* cfgItem = filterStra->get(key.c_str());
-			const char* action = cfgItem->getCString("action");
-			FilterAction fAct = FA_None;
-			if (my_stricmp(action, "ignore") == 0)
-				fAct = FA_Ignore;
-			else if (my_stricmp(action, "redirect") == 0)
-				fAct = FA_Redirect;				
-
-			if(fAct == FA_None)
-			{
-				WTSLogger::error("策略过滤器%s操作%s不可识别", key.c_str(), action);
-				continue;
-			}
-
-			FilterItem& fItem = _stra_filters[key];
-			fItem._key = key;
-			fItem._action = fAct;
-			fItem._target = cfgItem->getInt32("target");
-
-			WTSLogger::info("策略过滤器%s已加载", key.c_str());
-		}
-	}
-
-	//读代码过滤器
-	WTSVariant* filterCode = cfg->get("code_filters");
-	if (filterCode)
-	{
-		auto keys = filterCode->memberNames();
-		for (const std::string& key : keys)
-		{
-			WTSVariant* cfgItem = filterCode->get(key.c_str());
-			const char* action = cfgItem->getCString("action");
-			FilterAction fAct = FA_None;
-			if (my_stricmp(action, "ignore") == 0)
-				fAct = FA_Ignore;
-			else if (my_stricmp(action, "redirect") == 0)
-				fAct = FA_Redirect;
-
-			if (fAct == FA_None)
-			{
-				WTSLogger::error("代码过滤器%s操作%s不可识别", key.c_str(), action);
-				continue;
-			}
-
-			FilterItem& fItem = _code_filters[key];
-			fItem._key = key;
-			fItem._action = fAct;
-			fItem._target = cfgItem->getInt32("target");
-
-			WTSLogger::info("代码过滤器%s已加载", key.c_str());
-		}
-	}
-
-	cfg->release();
-}
-
-const char* FLTACT_NAMEs[] = 
-{
-	"忽略",
-	"重定向"
-};
-
-bool WtEngine::is_filtered(const char* sname, const char* stdCode, double& targetPos)
-{
-	auto it = _stra_filters.find(sname);
-	if(it != _stra_filters.end())
-	{
-		const FilterItem& fItem = it->second;
-		WTSLogger::info("[过滤器] 策略过滤器%s触发, 过滤操作: %s", sname, fItem._action <= FA_Redirect ? FLTACT_NAMEs[fItem._action] : "未知");
-		if (fItem._action == FA_Ignore)
-		{
-			return true;
-		}
-		else if(fItem._action == FA_Redirect)
-		{
-			targetPos = fItem._target;
-		}
-
-		return false;
-	}
-
-	it = _code_filters.find(stdCode);
-	if (it != _code_filters.end())
-	{
-		const FilterItem& fItem = it->second;
-		WTSLogger::info("[过滤器] 合约过滤器%s触发, 过滤操作: %s", stdCode, fItem._action <= FA_Redirect ? FLTACT_NAMEs[fItem._action] : "未知");
-		if (fItem._action == FA_Ignore)
-		{
-			return true;
-		}
-		else if (fItem._action == FA_Redirect)
-		{
-			targetPos = fItem._target;
-		}
-
-		return false;
-	}
-
-	std::string stdPID = CodeHelper::stdCodeToStdCommID(stdCode);
-	it = _code_filters.find(stdPID);
-	if (it != _code_filters.end())
-	{
-		const FilterItem& fItem = it->second;
-		WTSLogger::info("[过滤器] 品种过滤器%s触发, 过滤操作: %s", stdPID.c_str(), fItem._action <= FA_Redirect ? FLTACT_NAMEs[fItem._action] : "未知");
-		if (fItem._action == FA_Ignore)
-		{
-			return true;
-		}
-		else if (fItem._action == FA_Redirect)
-		{
-			targetPos = fItem._target;
-		}
-
-		return false;
-	}
-
-	return false;
-}
-
 void WtEngine::load_fees(const char* filename)
 {
 	if (strlen(filename) == 0)
@@ -1034,14 +861,14 @@ void WtEngine::do_set_position(const char* stdCode, double qty)
 void WtEngine::push_task(TaskItem task)
 {
 	{
-		BoostUniqueLock lock(_mtx_task);
+		StdUniqueLock lock(_mtx_task);
 		_task_queue.push(task);
 	}
 	
 
 	if (_thrd_task == NULL)
 	{
-		_thrd_task.reset(new BoostThread([this]{
+		_thrd_task.reset(new StdThread([this]{
 			task_loop();
 		}));
 	}
@@ -1055,7 +882,7 @@ void WtEngine::task_loop()
 	{
 		TaskQueue temp;
 		{
-			BoostUniqueLock lock(_mtx_task);
+			StdUniqueLock lock(_mtx_task);
 			if(_task_queue.empty())
 			{
 				_cond_task.wait(_mtx_task);

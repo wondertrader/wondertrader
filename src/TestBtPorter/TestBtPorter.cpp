@@ -45,9 +45,9 @@ int main()
 #endif
 	register_sel_callbacks(on_init, on_tick, on_calc, on_bar);
 
-	init_backtest("logcfg.json");
+	init_backtest("logcfg.json", true);
 
-	config_backtest("configbt.json");
+	config_backtest("configbt.json", true);
 
 	int ctxid = init_sel_mocker("sel", 0, 5, "min");	//every money 09:26
 

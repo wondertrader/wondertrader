@@ -58,8 +58,8 @@ public:
 	void	hft_on_trade(uint32_t cHandle, WtUInt32 localid, const char* stdCode, bool isBuy, double vol, double price);
 	void	hft_on_entrust(uint32_t cHandle, WtUInt32 localid, const char* stdCode, bool bSuccess, const char* message);
 
-	void	init(const char* logProfile = "");
-	void	config(const char* cfgFile);
+	void	init(const char* logProfile = "", bool isFile = true);
+	void	config(const char* cfgFile, bool isFile = true);
 	void	run();
 	void	release();
 
@@ -69,9 +69,6 @@ public:
 	SelMocker*			sel_mocker() { return _sel_mocker; }
 	HftMocker*			hft_mocker() { return _hft_mocker; }
 	HisDataReplayer&	replayer() { return _replayer; }
-
-
-	static void trans_mc_bars(const char* csvFolder, const char* binFolder, const char* period);
 
 private:
 	FuncStraInitCallback	_cb_cta_init;

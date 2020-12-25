@@ -34,11 +34,13 @@ typedef BOOL(WINAPI *MINIDUMPWRITEDUMP)(HANDLE hProcess, DWORD dwPid, HANDLE hFi
 
 CMiniDumper theCrashDumper;
 TCHAR CMiniDumper::m_szAppName[MAX_PATH] = { 0 };
+TCHAR CMiniDumper::m_szDumpPath[MAX_PATH] = { 0 };
 
-void CMiniDumper::Enable(LPCTSTR pszAppName, bool bShowErrors)
+void CMiniDumper::Enable(LPCTSTR pszAppName, bool bShowErrors, LPCTSTR pszDumpPath/* = ""*/)
 {
 	// if this assert fires then you have two instances of CMiniDumper which is not allowed
 	_tcsncpy(m_szAppName, pszAppName, ARRSIZE(m_szAppName));
+	_tcsncpy(m_szDumpPath, pszDumpPath, ARRSIZE(m_szDumpPath));
 
 	MINIDUMPWRITEDUMP pfnMiniDumpWriteDump = NULL;
 	HMODULE hDbgHelpDll = GetDebugHelperDll((FARPROC*)&pfnMiniDumpWriteDump, bShowErrors);
@@ -98,11 +100,19 @@ LONG CMiniDumper::TopLevelFilter(struct _EXCEPTION_POINTERS* pExceptionInfo)
 			{
 				// Create full path for DUMP file
 				TCHAR szDumpPath[_MAX_PATH] = { 0 };
-				GetModuleFileName(NULL, szDumpPath, ARRSIZE(szDumpPath));
-				LPTSTR pszFileName = _tcsrchr(szDumpPath, _T('\\'));
-				if (pszFileName) {
-					pszFileName++;
-					*pszFileName = _T('\0');
+				if(_tcsclen(m_szDumpPath) == 0)
+				{
+					GetModuleFileName(NULL, szDumpPath, ARRSIZE(szDumpPath));
+					LPTSTR pszFileName = _tcsrchr(szDumpPath, _T('\\'));
+					if (pszFileName) {
+						pszFileName++;
+						*pszFileName = _T('\0');
+					}
+				}
+				else
+				{
+					_tcsncpy(szDumpPath, m_szDumpPath, _tcsclen(m_szDumpPath));
+					szDumpPath[_tcsclen(m_szDumpPath)] = _T('\0');
 				}
 
 				// Replace spaces and dots in file name.

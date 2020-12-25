@@ -25,7 +25,7 @@
 
 #include "../Includes/WTSTypes.h"
 #include "../Includes/ITraderApi.h"
-#include "../Share/BoostDefine.h"
+#include "../Share/StdUtils.hpp"
 #include "../Includes/WTSVariant.hpp"
 #include "./ustptraderapi/USTPFtdcTraderApi.h"
 
@@ -222,12 +222,12 @@ protected:
 
 	boost::asio::io_service		m_asyncIO;
 	boost::asio::io_service::strand*	m_strandIO;
-	BoostThreadPtr				m_thrdWorker;
+	StdThreadPtr				m_thrdWorker;
 
 	typedef std::queue<CommonExecuter>	QueryQue;
 	QueryQue				m_queQuery;
 	bool					m_bInQuery;
-	BoostUniqueMutex		m_mtxQuery;
+	StdUniqueMutex		m_mtxQuery;
 	uint64_t				m_lastQryTime;
 
 	std::string		m_strModule;

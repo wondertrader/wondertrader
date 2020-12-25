@@ -17,7 +17,6 @@
 #include "IExecCommand.h"
 #include "../Includes/ExecuteDefs.h"
 
-#include "../Share/BoostDefine.h"
 #include "../Share/DLLHelper.hpp"
 #include "../Share/threadpool.hpp"
 
@@ -192,7 +191,7 @@ private:
 
 	std::unordered_map<std::string, double> _target_pos;
 
-	typedef boost::shared_ptr<boost::threadpool::pool> ThreadPoolPtr;
+	typedef std::shared_ptr<boost::threadpool::pool> ThreadPoolPtr;
 	ThreadPoolPtr		_pool;
 };
 

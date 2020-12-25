@@ -153,6 +153,9 @@
     <ClInclude Include="WtDistExecuter.h">
       <Filter>Exec</Filter>
     </ClInclude>
+    <ClInclude Include="WtFilterMgr.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TraderAdapter.cpp">
@@ -229,6 +232,9 @@
     </ClCompile>
     <ClCompile Include="WtDistExecuter.cpp">
       <Filter>Exec</Filter>
+    </ClCompile>
+    <ClCompile Include="WtFilterMgr.cpp">
+      <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -30,9 +30,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BoostDefine.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
     <ClInclude Include="StrUtil.hpp">
       <Filter>Utils</Filter>
     </ClInclude>
@@ -185,6 +182,9 @@
     </ClInclude>
     <ClInclude Include="..\Includes\IDataReader.h">
       <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Includes\WTSVersion.h">
+      <Filter>BaseDefs</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

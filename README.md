@@ -1,4 +1,10 @@
 ![WonderTrader2.png](http://wt.f-sailors.cn/wt/logo_qcode_noad.jpg)
+<p align="center">
+    <img src ="https://img.shields.io/badge/version-0.5.3-blueviolet.svg"/>
+    <img src ="https://img.shields.io/badge/platform-windows|linux-yellow.svg"/>
+    <img src ="https://img.shields.io/badge/build-passing-brightgreen"/>
+    <img src ="https://img.shields.io/badge/license-MIT-orange"/>
+</p>
 
 #### *WonderTrader*是什么
 * `WonderTrader`是一个基于`C++`核心模块的，适应全市场**全品种**交易的，**高效率**、**高可用**的量化交易开发框架。
