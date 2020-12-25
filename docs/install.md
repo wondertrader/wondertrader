@@ -41,7 +41,7 @@
     linux下，WonderTrader将依赖库文件统一放到/home/mydeps目录下，目录结构同上
 
 * `Windows`下编译`WonderTrader`
-    `WonderTrader`在`Windows`下的开发环境是`Win7` + `vs2017`，`WonderTrader`直接提供了vs的解决方案文件，当然也可以用`CMakelists`生成解决方案。
+    `WonderTrader`在`Windows`下的开发环境是`Win7` + `vs2017`，`WonderTrader`直接提供了`VisualStudio 2017`的解决方案文件。
     解决方案结构如图
     ![alt 解决方案结构图](http://wt.f-sailors.cn/snapshots/wt_vs_snap.png)
 
