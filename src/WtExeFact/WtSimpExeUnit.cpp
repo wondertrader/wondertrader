@@ -67,7 +67,7 @@ void WtSimpExeUnit::init(ExecuteContext* ctx, const char* stdCode, WTSVariant* c
 
 	_price_offset = cfg->getInt32("offset");
 	_expire_secs = cfg->getUInt32("expire");
-	_price_mode = cfg->getBoolean("pricemode");	//价格类型，0-最新价，-1-最优价，1-对手价，默认为0
+	_price_mode = cfg->getInt32("pricemode");	//价格类型，0-最新价，-1-最优价，1-对手价，默认为0
 
 	ctx->writeLog("执行单元 %s 初始化完成，委托价 %s ± %d 跳，订单超时 %u 秒", stdCode, PriceModeNames[_price_mode+1], _price_offset, _expire_secs);
 }
@@ -75,14 +75,12 @@ void WtSimpExeUnit::init(ExecuteContext* ctx, const char* stdCode, WTSVariant* c
 void WtSimpExeUnit::on_order(uint32_t localid, const char* stdCode, bool isBuy, double leftover, double price, bool isCanceled)
 {
 	{
-		std::unique_lock<std::mutex> lck(_mtx_ords);
-		auto it = _orders.find(localid);
-		if (it == _orders.end())
+		if (!_orders_mon.has_order(localid))
 			return;
 
 		if (isCanceled || leftover == 0)
 		{
-			_orders.erase(it);
+			_orders_mon.erase_order(localid);
 			if (_cancel_cnt > 0)
 				_cancel_cnt--;
 
@@ -101,17 +99,15 @@ void WtSimpExeUnit::on_order(uint32_t localid, const char* stdCode, bool isBuy, 
 void WtSimpExeUnit::on_channel_ready()
 {
 	double undone = _ctx->getUndoneQty(_code.c_str());
-	if(!decimal::eq(undone, 0) && _orders.empty())
+
+	if(!decimal::eq(undone, 0) && !_orders_mon.has_order())
 	{
 		//这说明有未完成单不在监控之中，先撤掉
 		_ctx->writeLog("%s有不在管理中的未完成单 %f ，全部撤销", _code.c_str(), undone);
 
 		bool isBuy = (undone > 0);
 		OrderIDs ids = _ctx->cancel(_code.c_str(), isBuy);
-		for(auto localid : ids)
-		{
-			_orders.insert(localid);
-		}
+		_orders_mon.push_order(ids.data(), ids.size(), _ctx->getCurTime());
 		_cancel_cnt += ids.size();
 
 		_ctx->writeLog("%s cancelcnt -> %u", __FUNCTION__, _cancel_cnt);
@@ -164,28 +160,22 @@ void WtSimpExeUnit::on_tick(WTSTickData* newTick)
 		double undone = _ctx->getUndoneQty(stdCode);
 		double realPos = _ctx->getPosition(stdCode);
 
-		//if (newVol != undone + realPos)
 		if (!decimal::eq(newVol, undone + realPos))
 		{
 			doCalculate();
 		}
 	}
-	else if(_expire_secs != 0 && !_orders.empty())
+	else if(_expire_secs != 0 && !_orders_mon.has_order() && _cancel_cnt!=0)
 	{
 		uint64_t now = _ctx->getCurTime();
-		if (now - _last_entry_time < _expire_secs * 1000 || _cancel_cnt!=0)
-			return;
 
-		_mtx_ords.lock();
-		for (auto localid : _orders)
-		{
-			if(_ctx->cancel(localid))
+		_orders_mon.check_orders(_expire_secs, now, [this](uint32_t localid) {
+			if (_ctx->cancel(localid))
 			{
 				_cancel_cnt++;
 				_ctx->writeLog("@ %d cancelcnt -> %u", __LINE__, _cancel_cnt);
 			}
-		}
-		_mtx_ords.unlock();
+		});
 	}
 }
 
@@ -199,11 +189,10 @@ void WtSimpExeUnit::on_entrust(uint32_t localid, const char* stdCode, bool bSucc
 	if (!bSuccess)
 	{
 		//如果不是我发出去的订单，我就不管了
-		auto it = _orders.find(localid);
-		if (it == _orders.end())
+		if (!_orders_mon.has_order(localid))
 			return;
 
-		_orders.erase(it);
+		_orders_mon.erase_order(localid);
 
 		doCalculate();
 	}
@@ -225,12 +214,8 @@ void WtSimpExeUnit::doCalculate()
 	if (decimal::lt(newVol * undone, 0))
 	{
 		bool isBuy = decimal::gt(undone, 0);
-		//_cancel_cnt += _ctx->cancel(stdCode, isBuy);
 		OrderIDs ids = _ctx->cancel(stdCode, isBuy);
-		for (auto localid : ids)
-		{
-			_orders.insert(localid);
-		}
+		_orders_mon.push_order(ids.data(), ids.size(), _ctx->getCurTime());
 		_cancel_cnt += ids.size();
 		_ctx->writeLog("@ %d cancelcnt -> %u", __LINE__, _cancel_cnt);
 		return;
@@ -245,12 +230,8 @@ void WtSimpExeUnit::doCalculate()
 		if (decimal::eq(realPos, 0) || decimal::gt(realPos * undone, 0))
 		{
 			bool isBuy = decimal::gt(undone, 0);
-			//_cancel_cnt += _ctx->cancel(stdCode, isBuy);
 			OrderIDs ids = _ctx->cancel(stdCode, isBuy);
-			for (auto localid : ids)
-			{
-				_orders.insert(localid);
-			}
+			_orders_mon.push_order(ids.data(), ids.size(), _ctx->getCurTime());
 			_cancel_cnt += ids.size();
 			_ctx->writeLog("@ %d cancelcnt -> %u", __LINE__, _cancel_cnt);
 			return;
@@ -296,26 +277,12 @@ void WtSimpExeUnit::doCalculate()
 	if (decimal::gt(newVol, curPos))
 	{
 		OrderIDs ids = _ctx->buy(stdCode, buyPx, newVol - curPos);
-
-		_mtx_ords.lock();
-		for (auto localid : ids)
-		{
-			_orders.insert(localid);
-		}
-		_mtx_ords.unlock();
-		_last_entry_time = _ctx->getCurTime();
+		_orders_mon.push_order(ids.data(), ids.size(), _ctx->getCurTime());
 	}
 	else
 	{
 		OrderIDs ids  = _ctx->sell(stdCode, sellPx, curPos - newVol);
-
-		_mtx_ords.lock();
-		for (auto localid : ids)
-		{
-			_orders.insert(localid);
-		}
-		_mtx_ords.unlock();
-		_last_entry_time = _ctx->getCurTime();
+		_orders_mon.push_order(ids.data(), ids.size(), _ctx->getCurTime());
 	}
 }
 

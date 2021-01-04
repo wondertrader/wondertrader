@@ -162,11 +162,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="WtExeFact.cpp" />
+    <ClCompile Include="WtOrdMon.cpp" />
     <ClCompile Include="WtSimpExeUnit.cpp" />
     <ClCompile Include="WtTWapExeUnit.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WtExeFact.h" />
+    <ClInclude Include="WtOrdMon.h" />
     <ClInclude Include="WtSimpExeUnit.h" />
     <ClInclude Include="WtTWapExeUnit.h" />
   </ItemGroup>
