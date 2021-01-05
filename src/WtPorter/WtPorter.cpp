@@ -383,6 +383,22 @@ double cta_get_position_avgpx(CtxHandler cHandle, const char* stdCode)
 	return ctx->stra_get_position_avgpx(stdCode);
 }
 
+void cta_get_all_position(CtxHandler cHandle, FuncGetPositionCallback cb)
+{
+	CtaContextPtr ctx = getRunner().getCtaContext(cHandle);
+	if (ctx == NULL)
+	{
+		cb(cHandle, "", 0, true);
+		return;
+	}
+
+	ctx->enum_position([cb, cHandle](const char* stdCode, double qty) {
+		cb(cHandle, stdCode, qty, false);
+	});
+
+	cb(cHandle, "", 0, true);
+}
+
 double cta_get_position(CtxHandler cHandle, const char* stdCode, const char* openTag)
 {
 	CtaContextPtr ctx = getRunner().getCtaContext(cHandle);
@@ -433,6 +449,11 @@ double cta_get_last_enterprice(CtxHandler cHandle, const char* stdCode)
 double cta_get_price(const char* stdCode)
 {
 	return getRunner().getEngine()->get_cur_price(stdCode);
+}
+
+WtUInt32 cta_get_tdate()
+{
+	return getRunner().getEngine()->get_trading_date();
 }
 
 WtUInt32 cta_get_date()
@@ -530,6 +551,22 @@ WtUInt32 sel_get_date()
 WtUInt32 sel_get_time()
 {
 	return getRunner().getEngine()->get_min_time();
+}
+
+void sel_get_all_position(CtxHandler cHandle, FuncGetPositionCallback cb)
+{
+	SelContextPtr ctx = getRunner().getSelContext(cHandle);
+	if (ctx == NULL)
+	{
+		cb(cHandle, "", 0, true);
+		return;
+	}
+
+	ctx->enum_position([cb, cHandle](const char* stdCode, double qty) {
+		cb(cHandle, stdCode, qty, false);
+	});
+
+	cb(cHandle, "", 0, true);
 }
 
 double sel_get_position(CtxHandler cHandle, const char* stdCode, const char* openTag)

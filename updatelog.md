@@ -60,3 +60,9 @@
 * 全平台中，将能部分`boost`库改成`std`的库，减少对`boost`的依赖
 * 新增一个`WtDtHelper`模块，主要提供数据辅助功能，目前主要是提供`csv`和二进制文件的互转，后面还会加入数据库、二进制、`csv`的互转接口
 * 将平台版本号从`WTSMarcos.h`迁移到`WTSVersion.h`中，减少修改版本号引起的重编译
+
+### 0.5.5
+* CTA策略接口新增一个获取交易日的API
+* 回测引擎和实盘引擎的C接口，新增cta_get_tdate和sel_get_tdate两个策略接口，用于获取当前交易日
+* 回测引擎和实盘引擎的C接口，新增cta_get_all_position和sel_get_all_position两个策略接口，用于获取策略全部持仓
+* 修复了ParserUDP的一些bug

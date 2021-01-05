@@ -1318,6 +1318,11 @@ WTSCommodityInfo* CtaStraBaseCtx::stra_get_comminfo(const char* stdCode)
 	return _engine->get_commodity_info(stdCode);
 }
 
+uint32_t CtaStraBaseCtx::stra_get_tdate()
+{
+	return _engine->get_trading_date();
+}
+
 uint32_t CtaStraBaseCtx::stra_get_date()
 {
 	return _engine->get_date();

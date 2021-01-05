@@ -951,6 +951,11 @@ WTSCommodityInfo* CtaMocker::stra_get_comminfo(const char* stdCode)
 	return _replayer->get_commodity_info(stdCode);
 }
 
+uint32_t CtaMocker::stra_get_tdate()
+{
+	return _replayer->get_trading_date();
+}
+
 uint32_t CtaMocker::stra_get_date()
 {
 	return _replayer->get_date();
