@@ -209,7 +209,7 @@ void WtLocalExecuter::on_position_changed(const char* stdCode, double targetPos)
 
 	if (_trader && !_trader->checkOrderLimits(stdCode))
 	{
-		writeLog("标的 %s 已被禁止交易", stdCode);
+		writeLog("%s 已被禁止交易", stdCode);
 		return;
 	}
 
@@ -236,7 +236,7 @@ void WtLocalExecuter::set_position(const std::unordered_map<std::string, double>
 
 		if (_trader && !_trader->checkOrderLimits(stdCode))
 		{
-			writeLog("标的 %s 已被禁止交易", stdCode);
+			writeLog("%s 已被禁止交易", stdCode);
 			continue;
 		}
 
@@ -419,7 +419,7 @@ void WtLocalExecuter::on_position(const char* stdCode, bool isLong, double prevo
 		if (code == stdCode)
 		{
 			//上期主力合约，需要清理仓位
-			writeLog("标的 %s 为上一期主力合约，仓位即将自动清理");
+			writeLog("%s 为上一期主力合约，仓位即将自动清理");
 			ExecuteUnitPtr unit = getUnit(stdCode);
 			if (unit)
 			{

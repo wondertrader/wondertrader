@@ -281,7 +281,7 @@ bool WtRtRunner::config(const char* cfgFile, bool isFile /* = true */)
 	if (cfgBF->get("contract"))
 	{
 		_bd_mgr.loadContracts(cfgBF->getCString("contract"));
-		WTSLogger::info("标的列表加载完成");
+		WTSLogger::info("代码列表加载完成");
 	}
 
 	if (cfgBF->get("holiday"))

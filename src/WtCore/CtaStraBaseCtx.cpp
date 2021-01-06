@@ -274,7 +274,7 @@ void CtaStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 				const char* stdCode = pItem["code"].GetString();
 				if (!CodeHelper::isStdFutHotCode(stdCode) && _engine->get_contract_info(stdCode) == NULL)
 				{
-					stra_log_text("标的%s不存在或者已过期，持仓数据已忽略", stdCode);
+					stra_log_text("%s不存在或者已过期，持仓数据已忽略", stdCode);
 					continue;
 				}
 				PosInfo& pInfo = _pos_map[stdCode];
@@ -312,7 +312,8 @@ void CtaStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 					strcpy(dInfo._opentag, dItem["opentag"].GetString());
 				}
 
-				stra_log_text("策略仓位确认,%s -> %d", stdCode, pInfo._volumn);
+				stra_log_text(fmt::format("策略仓位确认,{} -> {}", stdCode, pInfo._volumn).c_str());
+				stra_sub_ticks(stdCode);
 			}
 		}
 
@@ -332,7 +333,7 @@ void CtaStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 				const char* stdCode = m.name.GetString();
 				if (!CodeHelper::isStdFutHotCode(stdCode) && _engine->get_contract_info(stdCode) == NULL)
 				{
-					stra_log_text("标的%s不存在或者已过期，条件单已忽略", stdCode);
+					stra_log_text("%s不存在或者已过期，条件单已忽略", stdCode);
 					continue;
 				}
 
@@ -354,7 +355,7 @@ void CtaStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 
 					condList.push_back(condInfo);
 
-					stra_log_text(fmt::format("条件单恢复, 标的: {}, {} {}, 触发条件: 最新价 {} {}",
+					stra_log_text(fmt::format("{} 的条件单恢复, {} {}, 触发条件: 最新价 {} {}",
 						stdCode, ACTION_NAMES[condInfo._action], condInfo._qty, CMP_ALG_NAMES[condInfo._alg], condInfo._target).c_str());
 					count++;
 				}
@@ -375,7 +376,7 @@ void CtaStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 				const char* stdCode = m.name.GetString();
 				if (!CodeHelper::isStdFutHotCode(stdCode) && _engine->get_contract_info(stdCode) == NULL)
 				{
-					stra_log_text("标的%s不存在或者已过期，信号已忽略", stdCode);
+					stra_log_text("%s不存在或者已过期，信号已忽略", stdCode);
 					continue;
 				}
 
@@ -387,7 +388,8 @@ void CtaStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 				sInfo._sigprice = jItem["sigprice"].GetDouble();
 				sInfo._gentime = jItem["gentime"].GetUint64();
 				
-				stra_log_text(fmt::format("未触发信号恢复, 标的: {}, 目标部位: {}", stdCode, sInfo._volumn).c_str());
+				stra_log_text(fmt::format("{} 的未触发信号恢复, 目标部位: {}", stdCode, sInfo._volumn).c_str());
+				stra_sub_ticks(stdCode);
 			}
 		}
 	}
@@ -456,10 +458,10 @@ void CtaStraBaseCtx::save_data(uint32_t flag /* = 0xFFFFFFFF */)
 		rj::Value jSigs(rj::kObjectType);
 		rj::Document::AllocatorType &allocator = root.GetAllocator();
 
-		for (auto it:_sig_map)
+		for (auto& m:_sig_map)
 		{
-			const char* stdCode = it.first.c_str();
-			const SigInfo& sInfo = it.second;
+			const char* stdCode = m.first.c_str();
+			const SigInfo& sInfo = m.second;
 
 			rj::Value jItem(rj::kObjectType);
 			jItem.AddMember("usertag", rj::Value(sInfo._usertag.c_str(), allocator), allocator);
@@ -603,7 +605,7 @@ void CtaStraBaseCtx::on_tick(const char* stdCode, WTSTickData* newTick, bool bEm
 
 	//先检查是否要信号要触发
 	{
-		auto it = _sig_map.find(stdCode);
+		auto& it = _sig_map.find(stdCode);
 		if(it != _sig_map.end())
 		{
 			WTSSessionInfo* sInfo = _engine->get_session_info(stdCode, true);
@@ -658,7 +660,7 @@ void CtaStraBaseCtx::on_tick(const char* stdCode, WTSTickData* newTick, bool bEm
 
 			if (isMatched)
 			{
-				stra_log_text(fmt::format("条件单触发[最新价: {}{}{}], 标的: {}, {} {}", curPrice, CMP_ALG_NAMES[entrust._alg], entrust._target, stdCode, ACTION_NAMES[entrust._action], entrust._qty).c_str());
+				stra_log_text(fmt::format("条件单触发[最新价: {}{}{}], 代码: {}, {} {}", curPrice, CMP_ALG_NAMES[entrust._alg], entrust._target, stdCode, ACTION_NAMES[entrust._action], entrust._qty).c_str());
 
 				switch (entrust._action)
 				{

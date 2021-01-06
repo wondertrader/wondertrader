@@ -210,7 +210,7 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 				if(!decimal::eq(qty, oldQty))
 				{
 					//输出日志
-					WTSLogger::info(fmt::format("[过滤器] 策略{}的标的{}的目标仓位被策略过滤器调整: {} -> {}", ctx->name(), stdCode, oldQty, qty).c_str());
+					WTSLogger::info(fmt::format("[过滤器] 策略{}的{}的目标仓位被策略过滤器调整: {} -> {}", ctx->name(), stdCode, oldQty, qty).c_str());
 				}
 
 				std::string realCode = stdCode;
@@ -228,7 +228,7 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 			else
 			{
 				//输出日志
-				WTSLogger::info("[过滤器] 策略%s的标的%s的目标仓位被策略过滤器忽略", ctx->name(), stdCode);
+				WTSLogger::info("[过滤器] 策略%s的%s的目标仓位被策略过滤器忽略", ctx->name(), stdCode);
 			}
 		});
 	}
@@ -300,7 +300,7 @@ void WtCtaEngine::handle_pos_change(const char* straName, const char* stdCode, d
 	if(!_filter_mgr.is_filtered_by_strategy(straName, diffQty, true))
 	{
 		//输出日志
-		WTSLogger::info("[过滤器] 策略%s的标的%s的目标仓位被策略过滤器忽略", straName, stdCode);
+		WTSLogger::info("[过滤器] 策略%s的%s的目标仓位被策略过滤器忽略", straName, stdCode);
 	}
 
 	std::string realCode = stdCode;
