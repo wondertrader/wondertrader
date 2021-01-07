@@ -1076,6 +1076,8 @@ double CtaStraBaseCtx::stra_get_price(const char* stdCode)
 
 void CtaStraBaseCtx::stra_set_position(const char* stdCode, double qty, const char* userTag /* = "" */, double limitprice /* = 0.0 */, double stopprice /* = 0.0 */)
 {
+	_engine->sub_tick(id(), stdCode);
+
 	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式, 则直接触发
 	{
 		append_signal(stdCode, qty, userTag);
