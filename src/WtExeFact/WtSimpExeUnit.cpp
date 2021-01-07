@@ -165,7 +165,7 @@ void WtSimpExeUnit::on_tick(WTSTickData* newTick)
 			doCalculate();
 		}
 	}
-	else if(_expire_secs != 0 && !_orders_mon.has_order() && _cancel_cnt!=0)
+	else if(_expire_secs != 0 && _orders_mon.has_order() && _cancel_cnt!=0)
 	{
 		uint64_t now = _ctx->getCurTime();
 
