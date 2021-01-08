@@ -711,7 +711,10 @@ double WtEngine::calc_fee(const char* stdCode, double price, double qty, uint32_
 	std::string stdPID = CodeHelper::stdCodeToStdCommID(stdCode);
 	auto it = _fee_map.find(stdPID);
 	if (it == _fee_map.end())
+	{
+		WTSLogger::warn("品种%s没有预设的佣金费率，直接返回0.0", stdCode);
 		return 0.0;
+	}
 
 	double ret = 0.0;
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(stdPID.c_str());
