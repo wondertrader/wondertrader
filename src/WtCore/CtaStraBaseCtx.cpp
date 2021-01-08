@@ -605,7 +605,7 @@ void CtaStraBaseCtx::on_tick(const char* stdCode, WTSTickData* newTick, bool bEm
 
 	//先检查是否要信号要触发
 	{
-		auto& it = _sig_map.find(stdCode);
+		auto it = _sig_map.find(stdCode);
 		if(it != _sig_map.end())
 		{
 			WTSSessionInfo* sInfo = _engine->get_session_info(stdCode, true);
