@@ -85,7 +85,7 @@ void CtaMocker::dump_outputs()
 	BoostFile::write_file_contents(filename.c_str(), content.c_str(), content.size());
 
 	filename = folder + "closes.csv";
-	content = "code,direct,opentime,openprice,closetime,closeprice,qty,profit,totalprofit,entertag,exittag,openbarno,closebarno\n";
+	content = "code,direct,opentime,openprice,closetime,closeprice,qty,profit,maxprofit,maxloss,totalprofit,entertag,exittag,openbarno,closebarno\n";
 	content += _close_logs.str();
 	BoostFile::write_file_contents(filename.c_str(), content.c_str(), content.size());
 
@@ -113,11 +113,11 @@ void CtaMocker::log_trade(const char* stdCode, bool isLong, bool isOpen, uint64_
 		<< "," << price << "," << qty << "," << userTag << "," << fee << "," << barNo << "\n";
 }
 
-void CtaMocker::log_close(const char* stdCode, bool isLong, uint64_t openTime, double openpx, uint64_t closeTime, double closepx, double qty, double profit, 
+void CtaMocker::log_close(const char* stdCode, bool isLong, uint64_t openTime, double openpx, uint64_t closeTime, double closepx, double qty, double profit, double maxprofit, double maxloss, 
 	double totalprofit /* = 0 */, const char* enterTag /* = "" */, const char* exitTag /* = "" */, uint32_t openBarNo /* = 0 */, uint32_t closeBarNo /* = 0 */)
 {
 	_close_logs << stdCode << "," << (isLong ? "LONG" : "SHORT") << "," << openTime << "," << openpx
-		<< "," << closeTime << "," << closepx << "," << qty << "," << profit << ","
+		<< "," << closeTime << "," << closepx << "," << qty << "," << profit << "," << maxprofit << "," << maxloss << ","
 		<< totalprofit << "," << enterTag << "," << exitTag << "," << openBarNo << "," << closeBarNo << "\n";
 }
 
@@ -827,6 +827,9 @@ void CtaMocker::do_set_position(const char* stdCode, double qty, double price /*
 			if (decimal::eq(maxQty, 0))
 				continue;
 
+			double maxProf = dInfo._max_profit * maxQty / dInfo._volumn;
+			double maxLoss = dInfo._max_loss * maxQty / dInfo._volumn;
+
 			dInfo._volumn -= maxQty;
 			left -= maxQty;
 
@@ -846,7 +849,7 @@ void CtaMocker::do_set_position(const char* stdCode, double qty, double price /*
 			//这里写成交记录
 			log_trade(stdCode, dInfo._long, false, curTm, trdPx, maxQty, userTag, fee, _schedule_times);
 			//这里写平仓记录
-			log_close(stdCode, dInfo._long, dInfo._opentime, dInfo._price, curTm, trdPx, maxQty, profit, pInfo._closeprofit, dInfo._opentag, userTag, dInfo._open_barno, _schedule_times);
+			log_close(stdCode, dInfo._long, dInfo._opentime, dInfo._price, curTm, trdPx, maxQty, profit, maxProf, maxLoss, pInfo._closeprofit, dInfo._opentag, userTag, dInfo._open_barno, _schedule_times);
 
 			if (left == 0)
 				break;
