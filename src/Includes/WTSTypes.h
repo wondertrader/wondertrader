@@ -67,12 +67,11 @@ typedef enum tagKlineFieldType
 typedef enum tagKlinePeriod
 {
 	KP_Tick,
-	KP_DAY,
 	KP_Minute1,
 	KP_Minute5,
+	KP_DAY,
 	KP_Week,
-	KP_Month,
-	KP_Trend
+	KP_Month
 } WTSKlinePeriod;
 
 /*
