@@ -24,6 +24,8 @@ WtSimpExeUnit::WtSimpExeUnit()
 	, _expire_secs(0)
 	, _cancel_cnt(0)
 	, _target_pos(0)
+	, _unsent_qty(0)
+	, _cancel_times(0)
 {
 }
 
@@ -51,7 +53,8 @@ const char* PriceModeNames[] =
 {
 	"最优价",
 	"最新价",
-	"对手价"
+	"对手价",
+	"自适应"
 };
 void WtSimpExeUnit::init(ExecuteContext* ctx, const char* stdCode, WTSVariant* cfg)
 {
@@ -67,7 +70,7 @@ void WtSimpExeUnit::init(ExecuteContext* ctx, const char* stdCode, WTSVariant* c
 
 	_price_offset = cfg->getInt32("offset");
 	_expire_secs = cfg->getUInt32("expire");
-	_price_mode = cfg->getInt32("pricemode");	//价格类型，0-最新价，-1-最优价，1-对手价，默认为0
+	_price_mode = cfg->getInt32("pricemode");	//价格类型，0-最新价，-1-最优价，1-对手价，2-自动，默认为0
 
 	ctx->writeLog("执行单元 %s 初始化完成，委托价 %s ± %d 跳，订单超时 %u 秒", stdCode, PriceModeNames[_price_mode+1], _price_offset, _expire_secs);
 }
@@ -86,12 +89,16 @@ void WtSimpExeUnit::on_order(uint32_t localid, const char* stdCode, bool isBuy, 
 
 			_ctx->writeLog("@ %d cancelcnt -> %u", __LINE__, _cancel_cnt);
 		}
+
+		if (leftover == 0 && !isCanceled)
+			_cancel_times = 0;
 	}
 
 	//如果有撤单，也触发重新计算
 	if (isCanceled)
 	{
 		_ctx->writeLog("%s的订单%u已撤销，重新触发执行逻辑", stdCode, localid);
+		_cancel_times++;
 		doCalculate();
 	}
 }
@@ -267,10 +274,25 @@ void WtSimpExeUnit::doCalculate()
 		buyPx = _last_tick->price() + _comm_info->getPriceTick() * _price_offset;
 		sellPx = _last_tick->price() - _comm_info->getPriceTick() * _price_offset;
 	}
-	else //if (_price_mode == 1)
+	else if(_price_mode == 1)
 	{
 		buyPx = _last_tick->askprice(0) + _comm_info->getPriceTick() * _price_offset;
 		sellPx = _last_tick->bidprice(0) - _comm_info->getPriceTick() * _price_offset;
+	}
+	else if(_price_mode == 2)
+	{
+		double mp = (_last_tick->bidqty(0) - _last_tick->askqty(0))*1.0 / (_last_tick->bidqty(0) + _last_tick->askqty(0));
+		bool isUp = (mp > 0);
+		if(isUp)
+		{
+			buyPx = _last_tick->askprice(0) + _comm_info->getPriceTick() * _cancel_times;
+			sellPx = _last_tick->askprice(0) - _comm_info->getPriceTick() * _cancel_times;
+		}
+		else
+		{
+			buyPx = _last_tick->bidprice(0) + _comm_info->getPriceTick() * _cancel_times;
+			sellPx = _last_tick->bidprice(0) - _comm_info->getPriceTick() * _cancel_times;
+		}
 	}
 
 	//if (newVol > curPos)

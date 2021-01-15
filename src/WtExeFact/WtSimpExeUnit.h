@@ -104,5 +104,6 @@ private:
 
 	WtOrdMon	_orders_mon;
 	uint32_t	_cancel_cnt;
+	uint32_t	_cancel_times;
 };
 
