@@ -14,21 +14,23 @@
 #include "../Includes/ExecuteDefs.h"
 #include "../Share/StdUtils.hpp"
 #include "../Share/DLLHelper.hpp"
+#include "MatchEngine.h"
 
 USING_NS_OTP;
 
-class ExecMocker : public ExecuteContext, public IDataSink
+class ExecMocker : public ExecuteContext, public IDataSink, public IMatchSink
 {
 public:
 	ExecMocker(HisDataReplayer* replayer);
 	virtual ~ExecMocker();
 
-private:
-	void	fire_orders(const char* stdCode, OrderIDs& to_erase);
-	void	match_orders(WTSTickData* curTick, OrderIDs& to_erase);
-	void	update_lob(WTSTickData* curTick);
-
 public:
+	//////////////////////////////////////////////////////////////////////////
+	//IMatchSink
+	virtual void handle_trade(uint32_t localid, const char* stdCode, bool isBuy, double vol, double fireprice, double price, uint64_t ordTime) override;
+	virtual void handle_order(uint32_t localid, const char* stdCode, bool isBuy, double leftover, double price, bool isCanceled, uint64_t ordTime) override;
+	virtual void handle_entrust(uint32_t localid, const char* stdCode, bool bSuccess, const char* message, uint64_t ordTime) override;
+
 	//////////////////////////////////////////////////////////////////////////
 	//IDataSink
 	virtual void handle_tick(const char* stdCode, WTSTickData* curTick) override;
@@ -100,36 +102,12 @@ private:
 	std::string		_code;
 	std::string		_period;
 	int32_t			_volunit;
-	double			_cancelrate;
 
 	double			_position;
 	double			_undone;
 	WTSTickData*	_last_tick;
 	double			_sig_px;
 	uint64_t		_sig_time;
-
-	typedef struct _OrderInfo
-	{
-		char		_code[32];
-		bool		_buy;
-		double		_qty;
-		double		_left;
-		double		_traded;
-		double		_limit;
-		double		_price;
-		uint32_t	_state;
-		uint64_t	_time;
-		uint32_t	_queue;
-		bool		_positive;
-
-		_OrderInfo()
-		{
-			memset(this, 0, sizeof(_OrderInfo));
-		}
-	} OrderInfo;
-
-	typedef std::unordered_map<uint32_t, OrderInfo> Orders;
-	Orders	_orders;
 
 	std::ofstream	_trade_logs;
 	uint32_t	_ord_cnt;
@@ -140,31 +118,6 @@ private:
 
 	std::string	_id;
 
-	typedef std::map<uint32_t, uint32_t>	LOBItems;
-
-	typedef struct _LmtOrdBook
-	{
-		LOBItems	_items;
-		uint32_t	_cur_px;
-		uint32_t	_ask_px;
-		uint32_t	_bid_px;
-
-		void clear()
-		{
-			_items.clear();
-			_cur_px = 0;
-			_ask_px = 0;
-			_bid_px = 0;
-		}
-
-		_LmtOrdBook()
-		{
-			_cur_px = 0;
-			_ask_px = 0;
-			_bid_px = 0;
-		}
-	} LmtOrdBook;
-	typedef std::unordered_map<std::string, LmtOrdBook> LmtOrdBooks;
-	LmtOrdBooks	_lmt_ord_books;
+	MatchEngine	_matcher;
 };
 

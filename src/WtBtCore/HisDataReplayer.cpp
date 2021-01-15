@@ -268,96 +268,139 @@ void HisDataReplayer::run()
 
 	_listener->handle_init();	
 
-	checkUnbars();
+	if (!_tick_enabled)
+		checkUnbars();
 
 	if(_task == NULL)
 	{
 		//如果没有时间调度任务，则采用主K线回放的模式
-		BarsList& barList = _bars_cache[_main_key];
-		WTSSessionInfo* sInfo = get_session_info(barList._code.c_str(), true);
-		std::string commId = CodeHelper::stdCodeToStdCommID(barList._code.c_str());
 
-		WTSLogger::log_raw(LL_INFO, fmt::format("开始从{}进行数据回放……", _begin_time).c_str());
-
-		for (;;)
+		//如果没有确定主K线，则确定一个周期最短的主K线
+		if (_main_key.empty() && !_bars_cache.empty())
 		{
-			bool isDay = barList._period == KP_DAY;
-			if (barList._cursor != UINT_MAX)
+			WTSKlinePeriod minPeriod = KP_DAY;
+			uint32_t minTimes = 1;
+			for(auto& m : _bars_cache)
 			{
-				uint64_t nextBarTime = 0;
-				if (isDay)
-					nextBarTime = (uint64_t)barList._bars[barList._cursor].date * 10000 + sInfo->getCloseTime();
-				else
+				const BarsList& barList = m.second;
+				if (barList._period < minPeriod)
 				{
-					nextBarTime = (uint64_t)barList._bars[barList._cursor].time;
-					nextBarTime += 199000000000;
+					minPeriod = barList._period;
+					minTimes = barList._times;
+					_main_key = m.first;
 				}
-
-				if (nextBarTime > _end_time)
+				else if(barList._period == minPeriod)
 				{
-					WTSLogger::log_raw(LL_INFO, fmt::format("{}超过结束时间{}，回放结束", nextBarTime, _end_time).c_str());
-					_listener->handle_replay_done();
-					break;
-				}
-
-				uint32_t nextDate = (uint32_t)(nextBarTime / 10000);
-				uint32_t nextTime = (uint32_t)(nextBarTime % 10000);
-
-				uint32_t nextTDate = _bd_mgr.calcTradingDate(commId.c_str(), nextDate, nextTime, false);
-				if (_opened_tdate != nextTDate)
-				{
-					_listener->handle_session_begin();
-					_opened_tdate = nextTDate;
-					//WTSLogger::info("交易日%u开始", nextTDate);
-					_cur_tdate = nextTDate;
-				}
-				
-				uint64_t curBarTime = (uint64_t)_cur_date * 10000 + _cur_time;
-				if (_tick_enabled)
-				{//如果开始了tick回放，则直接回放tick数据
-					replayTicks(curBarTime, nextBarTime);
-				}
-
-				_cur_date = nextDate;
-				_cur_time = nextTime;
-				_cur_secs = 0;
-
-				uint32_t offTime = sInfo->offsetTime(_cur_time);
-				bool isEndTDate = (offTime >= sInfo->getCloseTime(true));
-
-				if (!_tick_enabled)
-				{
-					checkUnbars();
-					replayUnbars(curBarTime, nextBarTime, (isDay || isEndTDate) ? nextTDate : 0);
-				}
-
-				onMinuteEnd(nextDate, nextTime, (isDay || isEndTDate) ? nextTDate : 0);
-
-				if (isEndTDate && _closed_tdate != _cur_tdate)
-				{
-					_listener->handle_session_end();
-					_closed_tdate = _cur_tdate;
-					_day_cache.clear();
-				}
-
-				if (barList._cursor >= barList._bars.size())
-				{
-					WTSLogger::info("全部数据都已回放，回放结束");
-					_listener->handle_replay_done();
-					break;
+					if(barList._times < minTimes)
+					{
+						_main_key = m.first;
+						minTimes = barList._times;
+					}
 				}
 			}
-			else
-			{
-				WTSLogger::info("数据尚未初始化，回放直接退出");
-				_listener->handle_replay_done();
-				break;
-			}
+
+			WTSLogger::info("主K线自动确定：%s", _main_key.c_str());
 		}
 
-		if (_closed_tdate != _cur_tdate)
+		if(!_main_key.empty())
 		{
-			_listener->handle_session_end();
+			BarsList& barList = _bars_cache[_main_key];
+			WTSSessionInfo* sInfo = get_session_info(barList._code.c_str(), true);
+			std::string commId = CodeHelper::stdCodeToStdCommID(barList._code.c_str());
+
+			WTSLogger::log_raw(LL_INFO, fmt::format("开始从{}进行数据回放……", _begin_time).c_str());
+
+			for (;;)
+			{
+				bool isDay = barList._period == KP_DAY;
+				if (barList._cursor != UINT_MAX)
+				{
+					uint64_t nextBarTime = 0;
+					if (isDay)
+						nextBarTime = (uint64_t)barList._bars[barList._cursor].date * 10000 + sInfo->getCloseTime();
+					else
+					{
+						nextBarTime = (uint64_t)barList._bars[barList._cursor].time;
+						nextBarTime += 199000000000;
+					}
+
+					if (nextBarTime > _end_time)
+					{
+						WTSLogger::log_raw(LL_INFO, fmt::format("{}超过结束时间{}，回放结束", nextBarTime, _end_time).c_str());
+						_listener->handle_replay_done();
+						break;
+					}
+
+					uint32_t nextDate = (uint32_t)(nextBarTime / 10000);
+					uint32_t nextTime = (uint32_t)(nextBarTime % 10000);
+
+					uint32_t nextTDate = _bd_mgr.calcTradingDate(commId.c_str(), nextDate, nextTime, false);
+					if (_opened_tdate != nextTDate)
+					{
+						_listener->handle_session_begin();
+						_opened_tdate = nextTDate;
+						//WTSLogger::info("交易日%u开始", nextTDate);
+						_cur_tdate = nextTDate;
+					}
+
+					uint64_t curBarTime = (uint64_t)_cur_date * 10000 + _cur_time;
+					if (_tick_enabled)
+					{//如果开始了tick回放，则直接回放tick数据
+						replayTicks(curBarTime, nextBarTime);
+					}
+
+					_cur_date = nextDate;
+					_cur_time = nextTime;
+					_cur_secs = 0;
+
+					uint32_t offTime = sInfo->offsetTime(_cur_time);
+					bool isEndTDate = (offTime >= sInfo->getCloseTime(true));
+
+					if (!_tick_enabled)
+					{
+						checkUnbars();
+						replayUnbars(curBarTime, nextBarTime, (isDay || isEndTDate) ? nextTDate : 0);
+					}
+
+					onMinuteEnd(nextDate, nextTime, (isDay || isEndTDate) ? nextTDate : 0);
+
+					if (isEndTDate && _closed_tdate != _cur_tdate)
+					{
+						_listener->handle_session_end();
+						_closed_tdate = _cur_tdate;
+						_day_cache.clear();
+					}
+
+					if (barList._cursor >= barList._bars.size())
+					{
+						WTSLogger::info("全部数据都已回放，回放结束");
+						_listener->handle_replay_done();
+						break;
+					}
+				}
+				else
+				{
+					WTSLogger::info("数据尚未初始化，回放直接退出");
+					_listener->handle_replay_done();
+					break;
+				}
+			}
+
+			if (_closed_tdate != _cur_tdate)
+			{
+				_listener->handle_session_end();
+			}
+		}
+		else if(_tick_enabled)
+		{
+			_listener->handle_session_begin();
+
+
+		}
+		else
+		{
+			WTSLogger::info("没有订阅主力K线且未开放tick回测，回放直接退出");
+			_listener->handle_replay_done();
 		}
 	}
 	else //if(_task != NULL)

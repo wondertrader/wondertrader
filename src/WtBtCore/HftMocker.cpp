@@ -514,6 +514,7 @@ uint32_t HftMocker::stra_get_secs()
 
 void HftMocker::stra_sub_ticks(const char* stdCode)
 {
+	_replayer->sub_tick(_context_id, stdCode);
 }
 
 void HftMocker::stra_log_text(const char* fmt, ...)
