@@ -246,6 +246,8 @@ void dump_ticks(WtString binFolder, WtString csvFolder, WtString strFilter /* = 
 			cbLogger(StrUtil::printf("ÕýÔÚÐ´Èë%s¡­¡­", filename.c_str()).c_str());
 
 		std::stringstream ss;
+		ss.setf(std::ios::fixed, std::ios::floatfield);
+		ss.precision(3);
 		ss << "code,tradingdate,actiondate,actiontime,price,open,high,low,settle,preclose,"
 			<< "presettle,preinterest,total_volume,total_turnover,open_interest,volume,turnover,additional,";
 		for (int i = 0; i < 10; i++)
