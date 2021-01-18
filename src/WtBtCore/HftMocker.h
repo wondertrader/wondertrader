@@ -102,14 +102,27 @@ public:
 private:
 	typedef std::function<void()> Task;
 	void	postTask(Task task);
+	void	procTask();
 
-	void	procOrder(uint32_t localid);
+	bool	procOrder(uint32_t localid);
+
+	void	do_set_position(const char* stdCode, double qty, double price = 0.0);
+	void	update_dyn_profit(const char* stdCode, WTSTickData* newTick);
+
+	void	dump_outputs();
+	inline void log_signal(const char* stdCode, double target, double price, uint64_t gentime);
+	inline void	log_trade(const char* stdCode, bool isLong, bool isOpen, uint64_t curTime, double price, double qty, double fee = 0.0);
+	inline void	log_close(const char* stdCode, bool isLong, uint64_t openTime, double openpx, uint64_t closeTime, double closepx, double qty,
+		double profit, double maxprofit, double maxloss, double totalprofit = 0);
 
 private:
 	HisDataReplayer*	_replayer;
 
 	bool			_use_newpx;
 	uint32_t		_error_rate;
+
+	typedef std::unordered_map<std::string, double> PriceMap;
+	PriceMap		_price_map;
 
 
 	typedef struct _StraFactInfo
@@ -166,14 +179,64 @@ private:
 	typedef WTSHashMap<std::string> CommodityMap;
 	CommodityMap*	_commodities;
 
-	std::unordered_map<std::string, double> _positions;
-
-	std::stringstream	_ofs_signals;
-
 	//用户数据
 	typedef std::unordered_map<std::string, std::string> StringHashMap;
 	StringHashMap	_user_datas;
 	bool			_ud_modified;
+
+	typedef struct _DetailInfo
+	{
+		bool		_long;
+		double		_price;
+		double		_volumn;
+		uint64_t	_opentime;
+		uint32_t	_opentdate;
+		double		_max_profit;
+		double		_max_loss;
+		double		_profit;
+
+		_DetailInfo()
+		{
+			memset(this, 0, sizeof(_DetailInfo));
+		}
+	} DetailInfo;
+
+	typedef struct _PosInfo
+	{
+		double		_volumn;
+		double		_closeprofit;
+		double		_dynprofit;
+
+		std::vector<DetailInfo> _details;
+
+		_PosInfo()
+		{
+			_volumn = 0;
+			_closeprofit = 0;
+			_dynprofit = 0;
+		}
+	} PosInfo;
+	typedef std::unordered_map<std::string, PosInfo> PositionMap;
+	PositionMap		_pos_map;
+
+	std::stringstream	_trade_logs;
+	std::stringstream	_close_logs;
+	std::stringstream	_fund_logs;
+	std::stringstream	_sig_logs;
+
+	typedef struct _StraFundInfo
+	{
+		double	_total_profit;
+		double	_total_dynprofit;
+		double	_total_fees;
+
+		_StraFundInfo()
+		{
+			memset(this, 0, sizeof(_StraFundInfo));
+		}
+	} StraFundInfo;
+
+	StraFundInfo		_fund_info;
 
 protected:
 	uint32_t		_context_id;

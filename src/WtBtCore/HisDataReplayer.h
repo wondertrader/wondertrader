@@ -145,6 +145,8 @@ private:
 
 	void		replayTicks(uint64_t stime, uint64_t etime);
 
+	void		replayDayTicks(uint32_t curTDate);
+
 	void		replayUnbars(uint64_t stime, uint64_t etime, uint32_t endTDate = 0);
 
 	bool		checkTicks(const char* stdCode, uint32_t uDate);

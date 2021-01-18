@@ -393,9 +393,22 @@ void HisDataReplayer::run()
 		}
 		else if(_tick_enabled)
 		{
-			_listener->handle_session_begin();
+			uint32_t edt = (uint32_t)(_end_time / 10000);
+			uint32_t etime = (uint32_t)(_end_time % 10000);
+			uint64_t end_tdate = _bd_mgr.calcTradingDate(DEFAULT_SESSIONID, edt, etime, true);
 
+			while(_cur_tdate <= end_tdate)
+			{
+				WTSLogger::info("开始回放%u的tick数据...", _cur_tdate);
+				_listener->handle_session_begin();
+				replayDayTicks(_cur_tdate);
+				_listener->handle_session_end();
 
+				_cur_tdate = TimeUtils::getNextDate(_cur_tdate);
+			}
+
+			WTSLogger::info("全部数据都已回放，回放结束");
+			_listener->handle_replay_done();
 		}
 		else
 		{
@@ -791,6 +804,58 @@ void HisDataReplayer::replayUnbars(uint64_t stime, uint64_t nowTime, uint32_t en
 					if (barsList._cursor >= barsList._bars.size())
 						break;
 				}
+			}
+		}
+	}
+}
+
+void HisDataReplayer::replayDayTicks(uint32_t curTDate)
+{
+	for (;;)
+	{
+		//先确定下一笔tick的时间
+		uint64_t nextTime = UINT64_MAX;
+		for (auto v : _tick_sub_map)
+		{
+			std::string stdCode = v.first;
+			if (!checkTicks(stdCode.c_str(), curTDate))
+				continue;
+
+			TickList& tickList = _ticks_cache[stdCode];
+			if (tickList._cursor == UINT_MAX)
+				tickList._cursor = 1;
+
+			if (tickList._cursor >= tickList._count)
+				continue;
+
+			const WTSTickStruct& nextTick = tickList._ticks[tickList._cursor - 1];
+			uint64_t lastTime = (uint64_t)nextTick.action_date * 1000000000 + nextTick.action_time;
+
+			nextTime = min(lastTime, nextTime);
+		}
+
+		if(nextTime == UINT64_MAX)
+			break;
+
+		//再根据时间回放tick数据
+		_cur_date = (uint32_t)(nextTime / 1000000000);
+		_cur_time = nextTime % 1000000000 / 100000;
+		_cur_secs = nextTime % 100000;
+		
+		for (auto v : _tick_sub_map)
+		{
+			std::string stdCode = v.first;
+			TickList& tickList = _ticks_cache[stdCode];
+			WTSTickStruct& nextTick = tickList._ticks[tickList._cursor - 1];
+			uint64_t lastTime = (uint64_t)nextTick.action_date * 1000000000 + nextTick.action_time;
+			if (lastTime <= nextTime)
+			{
+				WTSTickData* newTick = WTSTickData::create(nextTick);
+				newTick->setCode(stdCode.c_str());
+				_listener->handle_tick(stdCode.c_str(), newTick);
+				newTick->release();
+
+				tickList._cursor++;
 			}
 		}
 	}
