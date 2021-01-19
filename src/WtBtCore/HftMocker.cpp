@@ -167,6 +167,9 @@ void HftMocker::postTask(Task task)
 
 bool HftMocker::initHftFactory(WTSVariant* cfg)
 {
+	if (cfg == NULL)
+		return false;
+
 	const char* module = cfg->getCString("module");
 	
 	_use_newpx = cfg->getBoolean("use_newpx");
