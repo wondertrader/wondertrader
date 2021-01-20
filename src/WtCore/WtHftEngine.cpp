@@ -20,6 +20,8 @@
 #include "../Share/StdUtils.hpp"
 #include "../Includes/WTSVariant.hpp"
 
+#include "../WTSTools/WTSLogger.h"
+
 #include <rapidjson/document.h>
 #include <rapidjson/prettywriter.h>
 namespace rj = rapidjson;
@@ -168,6 +170,36 @@ void WtHftEngine::on_bar(const char* stdCode, const char* period, uint32_t times
 			ctx->on_bar(stdCode, period, times, newBar);
 		}
 	}
+}
+
+void WtHftEngine::on_session_begin()
+{
+	WTSLogger::info("交易日%u已开始", _cur_tdate);
+	WtEngine::on_session_begin();
+
+	for (auto it = _ctx_map.begin(); it != _ctx_map.end(); it++)
+	{
+		HftContextPtr& ctx = it->second;
+		ctx->on_session_begin();
+	}
+
+	if (_evt_listener)
+		_evt_listener->on_session_event(_cur_tdate, true);
+}
+
+void WtHftEngine::on_session_end()
+{
+	WtEngine::on_session_end();
+
+	for (auto it = _ctx_map.begin(); it != _ctx_map.end(); it++)
+	{
+		HftContextPtr& ctx = it->second;
+		ctx->on_session_end();
+	}
+
+	WTSLogger::info("交易日%u已结束", _cur_tdate);
+	if (_evt_listener)
+		_evt_listener->on_session_event(_cur_tdate, false);
 }
 
 void WtHftEngine::on_minute_end(uint32_t curDate, uint32_t curTime)

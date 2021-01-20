@@ -695,6 +695,16 @@ double hft_get_position(CtxHandler cHandle, const char* stdCode)
 	return ctx->stra_get_position(stdCode);
 }
 
+double hft_get_position_profit(CtxHandler cHandle, const char* stdCode)
+{
+	HftContextPtr ctx = getRunner().getHftContext(cHandle);
+	if (ctx == NULL)
+		return 0;
+
+	return ctx->stra_get_position_profit(stdCode);
+}
+
+
 double hft_get_undone(CtxHandler cHandle, const char* stdCode)
 {
 	HftContextPtr ctx = getRunner().getHftContext(cHandle);
@@ -765,7 +775,7 @@ WtUInt32 hft_get_bars(CtxHandler cHandle, const char* stdCode, const char* perio
 	}
 }
 
-WtUInt32 hft_get_ticks(CtxHandler cHandle, const char* stdCode, unsigned int tickCnt, bool isMain, FuncGetTicksCallback cb)
+WtUInt32 hft_get_ticks(CtxHandler cHandle, const char* stdCode, unsigned int tickCnt, FuncGetTicksCallback cb)
 {
 	HftContextPtr ctx = getRunner().getHftContext(cHandle);
 	if (ctx == NULL)
@@ -852,7 +862,7 @@ WtString hft_cancel_all(CtxHandler cHandle, const char* stdCode, bool isBuy)
 	return ret.c_str();
 }
 
-WtString hft_buy(CtxHandler cHandle, const char* stdCode, double price, double qty)
+WtString hft_buy(CtxHandler cHandle, const char* stdCode, double price, double qty, const char* userTag)
 {
 	HftContextPtr ctx = getRunner().getHftContext(cHandle);
 	if (ctx == NULL)
@@ -861,7 +871,7 @@ WtString hft_buy(CtxHandler cHandle, const char* stdCode, double price, double q
 	static std::string ret;
 
 	std::stringstream ss;
-	OrderIDs ids = ctx->stra_buy(stdCode, price, qty);
+	OrderIDs ids = ctx->stra_buy(stdCode, price, qty, userTag);
 	for (uint32_t localid : ids)
 	{
 		ss << localid << ",";
@@ -872,7 +882,7 @@ WtString hft_buy(CtxHandler cHandle, const char* stdCode, double price, double q
 	return ret.c_str();
 }
 
-WtString hft_sell(CtxHandler cHandle, const char* stdCode, double price, double qty)
+WtString hft_sell(CtxHandler cHandle, const char* stdCode, double price, double qty, const char* userTag)
 {
 	HftContextPtr ctx = getRunner().getHftContext(cHandle);
 	if (ctx == NULL)
@@ -881,7 +891,7 @@ WtString hft_sell(CtxHandler cHandle, const char* stdCode, double price, double 
 	static std::string ret;
 
 	std::stringstream ss;
-	OrderIDs ids = ctx->stra_sell(stdCode, price, qty);
+	OrderIDs ids = ctx->stra_sell(stdCode, price, qty, userTag);
 	for (uint32_t localid : ids)
 	{
 		ss << localid << ",";

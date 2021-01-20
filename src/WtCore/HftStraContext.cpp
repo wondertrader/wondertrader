@@ -32,6 +32,8 @@ void HftStraContext::on_init()
 
 void HftStraContext::on_tick(const char* code, WTSTickData* newTick)
 {
+	update_dyn_profit(code, newTick);
+
 	if (_strategy)
 		_strategy->on_tick(this, code, newTick);
 
@@ -48,18 +50,20 @@ void HftStraContext::on_bar(const char* code, const char* period, uint32_t times
 
 void HftStraContext::on_trade(uint32_t localid, const char* stdCode, bool isBuy, double vol, double price)
 {
+	const char* innerCode = get_inner_code(stdCode);
 	if (_strategy)
-		_strategy->on_trade(this, localid, get_inner_code(stdCode), isBuy, vol, price);
+		_strategy->on_trade(this, localid, innerCode, isBuy, vol, price, getOrderTag(localid));
 
-	HftStraBaseCtx::on_trade(localid, stdCode, isBuy, vol, price);
+	HftStraBaseCtx::on_trade(localid, innerCode, isBuy, vol, price);
 }
 
 void HftStraContext::on_order(uint32_t localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled /* = false */)
 {
+	const char* innerCode = get_inner_code(stdCode);
 	if (_strategy)
-		_strategy->on_order(this, localid, get_inner_code(stdCode), isBuy, totalQty, leftQty, price, isCanceled);
+		_strategy->on_order(this, localid, innerCode, isBuy, totalQty, leftQty, price, isCanceled, getOrderTag(localid));
 
-	HftStraBaseCtx::on_order(localid, stdCode, isBuy, totalQty, leftQty, price, isCanceled);
+	HftStraBaseCtx::on_order(localid, innerCode, isBuy, totalQty, leftQty, price, isCanceled);
 }
 
 void HftStraContext::on_channel_ready()
@@ -81,7 +85,7 @@ void HftStraContext::on_channel_lost()
 void HftStraContext::on_entrust(uint32_t localid, const char* stdCode, bool bSuccess, const char* message)
 {
 	if (_strategy)
-		_strategy->on_entrust(localid, bSuccess, message);
+		_strategy->on_entrust(localid, bSuccess, message, getOrderTag(localid));
 
-	HftStraBaseCtx::on_entrust(localid, stdCode, bSuccess, message);
+	HftStraBaseCtx::on_entrust(localid, get_inner_code(stdCode), bSuccess, message);
 }

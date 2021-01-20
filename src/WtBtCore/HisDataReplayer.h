@@ -145,7 +145,7 @@ private:
 
 	void		replayTicks(uint64_t stime, uint64_t etime);
 
-	void		replayDayTicks(uint32_t curTDate);
+	uint64_t	replayDayTicks(uint32_t curTDate);
 
 	void		replayUnbars(uint64_t stime, uint64_t etime, uint32_t endTDate = 0);
 
@@ -158,6 +158,8 @@ private:
 	bool		loadStkAdjFactorsFromDB();
 
 	void		initDB();
+
+	bool		checkAllTicks(uint32_t uDate);
 
 public:
 	bool init(WTSVariant* cfg);

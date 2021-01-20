@@ -39,6 +39,10 @@ public:
 
 	virtual void on_bar(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar) override;
 
+	virtual void on_session_begin() override;
+
+	virtual void on_session_end() override;
+
 public:
 	void on_minute_end(uint32_t curDate, uint32_t curTime);
 

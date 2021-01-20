@@ -232,22 +232,22 @@ void WtRtRunner::hft_on_channel_ready(uint32_t cHandle, const char* trader)
 		_cb_hft_chnl(cHandle, trader, CHNL_EVENT_READY);
 }
 
-void WtRtRunner::hft_on_entrust(uint32_t cHandle, WtUInt32 localid, const char* stdCode, bool bSuccess, const char* message)
+void WtRtRunner::hft_on_entrust(uint32_t cHandle, WtUInt32 localid, const char* stdCode, bool bSuccess, const char* message, const char* userTag)
 {
 	if (_cb_hft_entrust)
-		_cb_hft_entrust(cHandle, localid, stdCode, bSuccess, message);
+		_cb_hft_entrust(cHandle, localid, stdCode, bSuccess, message, userTag);
 }
 
-void WtRtRunner::hft_on_order(uint32_t cHandle, WtUInt32 localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled)
+void WtRtRunner::hft_on_order(uint32_t cHandle, WtUInt32 localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled, const char* userTag)
 {
 	if (_cb_hft_ord)
-		_cb_hft_ord(cHandle, localid, stdCode, isBuy, totalQty, leftQty, price, isCanceled);
+		_cb_hft_ord(cHandle, localid, stdCode, isBuy, totalQty, leftQty, price, isCanceled, userTag);
 }
 
-void WtRtRunner::hft_on_trade(uint32_t cHandle, WtUInt32 localid, const char* stdCode, bool isBuy, double vol, double price)
+void WtRtRunner::hft_on_trade(uint32_t cHandle, WtUInt32 localid, const char* stdCode, bool isBuy, double vol, double price, const char* userTag)
 {
 	if (_cb_hft_trd)
-		_cb_hft_trd(cHandle, localid, stdCode, isBuy, vol, price);
+		_cb_hft_trd(cHandle, localid, stdCode, isBuy, vol, price, userTag);
 }
 
 bool WtRtRunner::config(const char* cfgFile, bool isFile /* = true */)

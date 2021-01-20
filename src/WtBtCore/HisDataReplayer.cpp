@@ -399,10 +399,13 @@ void HisDataReplayer::run()
 
 			while(_cur_tdate <= end_tdate)
 			{
-				WTSLogger::info("开始回放%u的tick数据...", _cur_tdate);
-				_listener->handle_session_begin();
-				replayDayTicks(_cur_tdate);
-				_listener->handle_session_end();
+				if(checkAllTicks(_cur_tdate))
+				{
+					WTSLogger::info("开始回放%u的tick数据...", _cur_tdate);
+					_listener->handle_session_begin();
+					replayDayTicks(_cur_tdate);
+					_listener->handle_session_end();
+				}
 
 				_cur_tdate = TimeUtils::getNextDate(_cur_tdate);
 			}
@@ -809,8 +812,9 @@ void HisDataReplayer::replayUnbars(uint64_t stime, uint64_t nowTime, uint32_t en
 	}
 }
 
-void HisDataReplayer::replayDayTicks(uint32_t curTDate)
+uint64_t HisDataReplayer::replayDayTicks(uint32_t curTDate)
 {
+	uint64_t total_ticks = 0;
 	for (;;)
 	{
 		//先确定下一笔tick的时间
@@ -856,9 +860,12 @@ void HisDataReplayer::replayDayTicks(uint32_t curTDate)
 				newTick->release();
 
 				tickList._cursor++;
+				total_ticks++;
 			}
 		}
 	}
+
+	return total_ticks;
 }
 
 void HisDataReplayer::replayTicks(uint64_t stime, uint64_t etime)
@@ -1463,6 +1470,18 @@ WTSHisTickData* HisDataReplayer::get_ticks(const char* stdCode, uint32_t count, 
 	return ticks;
 }
 */
+
+bool HisDataReplayer::checkAllTicks(uint32_t uDate)
+{
+	bool bHasTick = false;
+	for (auto v : _tick_sub_map)
+	{
+		std::string stdCode = v.first;
+		bHasTick = bHasTick || checkTicks(stdCode.c_str(), uDate);
+	}
+
+	return bHasTick;
+}
 
 bool HisDataReplayer::checkTicks(const char* stdCode, uint32_t uDate)
 {

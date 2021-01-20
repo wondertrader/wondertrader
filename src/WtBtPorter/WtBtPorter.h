@@ -131,6 +131,8 @@ extern "C"
 
 	EXPORT_FLAG	double		hft_get_position(CtxHandler cHandle, const char* stdCode);
 
+	EXPORT_FLAG	double		hft_get_position_profit(CtxHandler cHandle, const char* stdCode);
+
 	EXPORT_FLAG	double		hft_get_undone(CtxHandler cHandle, const char* stdCode);
 
 	EXPORT_FLAG	double 		hft_get_price(const char* stdCode);
@@ -143,7 +145,7 @@ extern "C"
 
 	EXPORT_FLAG	WtUInt32	hft_get_bars(CtxHandler cHandle, const char* stdCode, const char* period, unsigned int barCnt, FuncGetBarsCallback cb);
 
-	EXPORT_FLAG	WtUInt32	hft_get_ticks(CtxHandler cHandle, const char* stdCode, unsigned int tickCnt, bool isMain, FuncGetTicksCallback cb);
+	EXPORT_FLAG	WtUInt32	hft_get_ticks(CtxHandler cHandle, const char* stdCode, unsigned int tickCnt, FuncGetTicksCallback cb);
 
 	EXPORT_FLAG	void		hft_log_text(CtxHandler cHandle, const char* message);
 
@@ -153,9 +155,9 @@ extern "C"
 
 	EXPORT_FLAG	WtString	hft_cancel_all(CtxHandler cHandle, const char* stdCode, bool isBuy);
 
-	EXPORT_FLAG	WtString	hft_buy(CtxHandler cHandle, const char* stdCode, double price, double qty);
+	EXPORT_FLAG	WtString	hft_buy(CtxHandler cHandle, const char* stdCode, double price, double qty, const char* userTag);
 
-	EXPORT_FLAG	WtString	hft_sell(CtxHandler cHandle, const char* stdCode, double price, double qty);
+	EXPORT_FLAG	WtString	hft_sell(CtxHandler cHandle, const char* stdCode, double price, double qty, const char* userTag);
 
 	EXPORT_FLAG	void		hft_save_userdata(CtxHandler cHandle, const char* key, const char* val);
 

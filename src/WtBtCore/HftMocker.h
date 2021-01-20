@@ -51,13 +51,17 @@ public:
 
 	virtual void on_bar(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar) override;
 
+	virtual void on_session_begin() override;
+
+	virtual void on_session_end() override;
+
 	virtual bool stra_cancel(uint32_t localid) override;
 
 	virtual OrderIDs stra_cancel(const char* stdCode, bool isBuy, double qty = 0) override;
 
-	virtual OrderIDs stra_buy(const char* stdCode, double price, double qty) override;
+	virtual OrderIDs stra_buy(const char* stdCode, double price, double qty, const char* userTag) override;
 
-	virtual OrderIDs stra_sell(const char* stdCode, double price, double qty) override;
+	virtual OrderIDs stra_sell(const char* stdCode, double price, double qty, const char* userTag) override;
 
 	virtual WTSCommodityInfo* stra_get_comminfo(const char* stdCode) override;
 
@@ -68,6 +72,8 @@ public:
 	virtual WTSTickData* stra_get_last_tick(const char* stdCode) override;
 
 	virtual double stra_get_position(const char* stdCode) override;
+
+	virtual double stra_get_position_profit(const char* stdCode) override;
 
 	virtual double stra_get_undone(const char* stdCode) override;
 
@@ -88,13 +94,13 @@ public:
 	virtual const char* stra_load_user_data(const char* key, const char* defVal = "") override;
 
 	//////////////////////////////////////////////////////////////////////////
-	virtual void on_trade(uint32_t localid, const char* stdCode, bool isBuy, double vol, double price);
+	virtual void on_trade(uint32_t localid, const char* stdCode, bool isBuy, double vol, double price, const char* userTag);
 
-	virtual void on_order(uint32_t localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled = false);
+	virtual void on_order(uint32_t localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled, const char* userTag);
 
 	virtual void on_channel_ready();
 
-	virtual void on_entrust(uint32_t localid, const char* stdCode, bool bSuccess, const char* message);
+	virtual void on_entrust(uint32_t localid, const char* stdCode, bool bSuccess, const char* message, const char* userTag);
 
 public:
 	bool	initHftFactory(WTSVariant* cfg);
@@ -106,14 +112,13 @@ private:
 
 	bool	procOrder(uint32_t localid);
 
-	void	do_set_position(const char* stdCode, double qty, double price = 0.0);
+	void	do_set_position(const char* stdCode, double qty, double price = 0.0, const char* userTag = "");
 	void	update_dyn_profit(const char* stdCode, WTSTickData* newTick);
 
 	void	dump_outputs();
-	inline void log_signal(const char* stdCode, double target, double price, uint64_t gentime);
-	inline void	log_trade(const char* stdCode, bool isLong, bool isOpen, uint64_t curTime, double price, double qty, double fee = 0.0);
+	inline void	log_trade(const char* stdCode, bool isLong, bool isOpen, uint64_t curTime, double price, double qty, double fee, const char* userTag);
 	inline void	log_close(const char* stdCode, bool isLong, uint64_t openTime, double openpx, uint64_t closeTime, double closepx, double qty,
-		double profit, double maxprofit, double maxloss, double totalprofit = 0);
+		double profit, double maxprofit, double maxloss, double totalprofit, const char* enterTag, const char* exitTag);
 
 private:
 	HisDataReplayer*	_replayer;
@@ -163,6 +168,7 @@ private:
 		double	_price;
 		double	_total;
 		double	_left;
+		char	_usertag[32];
 		
 		uint32_t	_localid;
 
@@ -194,6 +200,7 @@ private:
 		double		_max_profit;
 		double		_max_loss;
 		double		_profit;
+		char		_usertag[32];
 
 		_DetailInfo()
 		{

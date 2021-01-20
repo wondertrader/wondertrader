@@ -36,7 +36,7 @@ void ExpHftContext::on_channel_ready()
 
 void ExpHftContext::on_entrust(uint32_t localid, const char* stdCode, bool bSuccess, const char* message)
 {
-	getRunner().hft_on_entrust(_context_id, localid, stdCode, bSuccess, message);
+	getRunner().hft_on_entrust(_context_id, localid, stdCode, bSuccess, message, getOrderTag(localid));
 
 	HftStraBaseCtx::on_entrust(localid, stdCode, bSuccess, message);
 }
@@ -49,15 +49,17 @@ void ExpHftContext::on_init()
 	HftStraBaseCtx::on_init();
 }
 
-void ExpHftContext::on_order(uint32_t localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled /*= false*/)
+void ExpHftContext::on_order(uint32_t localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled)
 {
-	getRunner().hft_on_order(_context_id, localid, stdCode, isBuy, totalQty, leftQty, price, isCanceled);
+	getRunner().hft_on_order(_context_id, localid, stdCode, isBuy, totalQty, leftQty, price, isCanceled, getOrderTag(localid));
 
 	HftStraBaseCtx::on_order(localid, stdCode, isBuy, totalQty, leftQty, price, isCanceled);
 }
 
 void ExpHftContext::on_tick(const char* code, WTSTickData* newTick)
 {
+	update_dyn_profit(code, newTick);
+
 	getRunner().ctx_on_tick(_context_id, code, newTick, ET_HFT);
 
 	HftStraBaseCtx::on_tick(code, newTick);
@@ -65,7 +67,7 @@ void ExpHftContext::on_tick(const char* code, WTSTickData* newTick)
 
 void ExpHftContext::on_trade(uint32_t localid, const char* stdCode, bool isBuy, double vol, double price)
 {
-	getRunner().hft_on_trade(_context_id, localid, stdCode, isBuy, vol, price);
+	getRunner().hft_on_trade(_context_id, localid, stdCode, isBuy, vol, price, getOrderTag(localid));
 
 	HftStraBaseCtx::on_trade(localid, stdCode, isBuy, vol, price);
 }

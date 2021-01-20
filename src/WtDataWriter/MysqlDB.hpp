@@ -109,11 +109,11 @@ public:
 	std::string escape(const char *buf)
 	{
 		std::string result;
-		int fromlen=strlen(buf);
-		if(fromlen<=0)
+		std::size_t fromlen=strlen(buf);
+		if(fromlen==0)
 			return std::string("");
 		result.resize(fromlen*2+1);
-		unsigned resultlen=mysql_real_escape_string(_handle,(char *)result.c_str(),buf,fromlen);
+		unsigned long resultlen=mysql_real_escape_string(_handle,(char *)result.c_str(),buf,(unsigned long)fromlen);
 		if(resultlen==0)
 			return std::string("");
 		result.resize(resultlen);
