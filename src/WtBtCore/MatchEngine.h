@@ -4,6 +4,7 @@
 #include <map>
 #include <vector>
 #include <functional>
+#include <string.h>
 
 #include "../Includes/WTSMarcos.h"
 #include "../Includes/WTSCollection.hpp"
