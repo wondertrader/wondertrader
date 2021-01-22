@@ -50,6 +50,7 @@ int main()
 	config_backtest("configbt.json", true);
 
 	run_backtest();
+	printf("press enter key to exit\n");
 	getchar();
 	release_backtest();
 	return 0;

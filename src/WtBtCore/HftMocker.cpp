@@ -718,7 +718,7 @@ void HftMocker::do_set_position(const char* stdCode, double qty, double price /*
 	if (decimal::eq(pInfo._volumn, qty))
 		return;
 
-	stra_log_text("%s 持仓更新：%.0f -> %0.f", stdCode, pInfo._volumn, qty);
+	stra_log_text("[%04u.%05u] %s 持仓更新：%.0f -> %0.f", _replayer->get_min_time(), _replayer->get_secs(), stdCode, pInfo._volumn, qty);
 
 	WTSCommodityInfo* commInfo = _replayer->get_commodity_info(stdCode);
 

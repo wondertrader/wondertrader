@@ -1902,7 +1902,7 @@ bool HisDataReplayer::cacheRawTicksFromCSV(const std::string& key, const char* s
 
 		if (!StdFile::exists(csvfile.c_str()))
 		{
-			WTSLogger::error("历史Tick数据文件不存在", csvfile.c_str());
+			WTSLogger::error("历史Tick数据文件%s不存在", csvfile.c_str());
 			return false;
 		}
 
