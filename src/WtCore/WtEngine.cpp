@@ -639,7 +639,7 @@ void WtEngine::sub_tick(uint32_t sid, const char* stdCode)
 		CodeHelper::extractStdFutCode(stdCode, cInfo);
 		std::string rawCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
 		std::string stdRawCode = CodeHelper::bscFutCodeToStdCode(rawCode.c_str(), cInfo._exchg);
-		_subed_raw_codes.insert(stdRawCode);
+		_ticksubed_raw_codes.insert(stdRawCode);
 	}
 	else
 	{
@@ -650,7 +650,7 @@ void WtEngine::sub_tick(uint32_t sid, const char* stdCode)
 		SIDSet& sids = _tick_sub_map[std::string(stdCode, length)];
 		sids.insert(sid);
 
-		_subed_raw_codes.insert(std::string(stdCode, length));
+		_ticksubed_raw_codes.insert(std::string(stdCode, length));
 	}
 }
 

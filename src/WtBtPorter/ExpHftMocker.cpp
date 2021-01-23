@@ -62,6 +62,27 @@ void ExpHftMocker::on_tick(const char* stdCode, WTSTickData* newTick)
 	getRunner().ctx_on_tick(_context_id, stdCode, newTick, ET_HFT);
 }
 
+void ExpHftMocker::on_order_queue(const char* stdCode, WTSOrdQueData* newOrdQue)
+{
+	HftMocker::on_order_queue(stdCode, newOrdQue);
+
+	getRunner().hft_on_order_queue(_context_id, stdCode, newOrdQue);
+}
+
+void ExpHftMocker::on_order_detail(const char* stdCode, WTSOrdDtlData* newOrdDtl)
+{
+	HftMocker::on_order_detail(stdCode, newOrdDtl);
+
+	getRunner().hft_on_order_detail(_context_id, stdCode, newOrdDtl);
+}
+
+void ExpHftMocker::on_transaction(const char* stdCode, WTSTransData* newTrans)
+{
+	HftMocker::on_transaction(stdCode, newTrans);
+
+	getRunner().hft_on_transaction(_context_id, stdCode, newTrans);
+}
+
 void ExpHftMocker::on_trade(uint32_t localid, const char* stdCode, bool isBuy, double vol, double price, const char* userTag)
 {
 	HftMocker::on_trade(localid, stdCode, isBuy, vol, price, userTag);

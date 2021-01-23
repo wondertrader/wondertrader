@@ -152,7 +152,7 @@ void WtCtaEngine::on_init()
 			double& vol = target_pos[realCode];
 			vol += qty;
 
-			_subed_raw_codes.insert(realCode);
+			_ticksubed_raw_codes.insert(realCode);
 		});
 	}
 
@@ -341,8 +341,8 @@ void WtCtaEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 	_data_mgr->handle_push_quote(stdCode, curTick);
 
 	//如果是真实代码, 则要传递给执行器
-	auto it = _subed_raw_codes.find(stdCode);
-	if (it != _subed_raw_codes.end())
+	auto it = _ticksubed_raw_codes.find(stdCode);
+	if (it != _ticksubed_raw_codes.end())
 	{
 		//是否主力合约代码的标记, 主要用于给执行器发数据的
 		_exec_mgr.handle_tick(stdCode, curTick);

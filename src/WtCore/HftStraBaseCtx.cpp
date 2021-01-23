@@ -141,6 +141,33 @@ void HftStraBaseCtx::on_tick(const char* stdCode, WTSTickData* newTick)
 	}
 }
 
+void HftStraBaseCtx::on_order_queue(const char* stdCode, WTSOrdQueData* newOrdQue)
+{
+	if (_ud_modified)
+	{
+		save_userdata();
+		_ud_modified = false;
+	}
+}
+
+void HftStraBaseCtx::on_order_detail(const char* stdCode, WTSOrdDtlData* newOrdDtl)
+{
+	if (_ud_modified)
+	{
+		save_userdata();
+		_ud_modified = false;
+	}
+}
+
+void HftStraBaseCtx::on_transaction(const char* stdCode, WTSTransData* newTrans)
+{
+	if (_ud_modified)
+	{
+		save_userdata();
+		_ud_modified = false;
+	}
+}
+
 void HftStraBaseCtx::on_bar(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar)
 {
 	if (_ud_modified)
@@ -260,6 +287,24 @@ void HftStraBaseCtx::stra_sub_ticks(const char* stdCode)
 {
 	_engine->sub_tick(id(), stdCode);
 	stra_log_text("实时行情已订阅: %s", stdCode);
+}
+
+void HftStraBaseCtx::stra_sub_order_details(const char* stdCode)
+{
+	_engine->sub_order_detail(id(), stdCode);
+	stra_log_text("逐笔委托已订阅: %s", stdCode);
+}
+
+void HftStraBaseCtx::stra_sub_order_queues(const char* stdCode)
+{
+	_engine->sub_order_queue(id(), stdCode);
+	stra_log_text("委托队列已订阅: %s", stdCode);
+}
+
+void HftStraBaseCtx::stra_sub_transactions(const char* stdCode)
+{
+	_engine->sub_transaction(id(), stdCode);
+	stra_log_text("逐笔成交已订阅: %s", stdCode);
 }
 
 void HftStraBaseCtx::stra_log_text(const char* fmt, ...)

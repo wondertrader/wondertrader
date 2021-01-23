@@ -30,14 +30,38 @@ void HftStraContext::on_init()
 		_strategy->on_init(this);
 }
 
-void HftStraContext::on_tick(const char* code, WTSTickData* newTick)
+void HftStraContext::on_tick(const char* stdCode, WTSTickData* newTick)
 {
-	update_dyn_profit(code, newTick);
+	update_dyn_profit(stdCode, newTick);
 
 	if (_strategy)
-		_strategy->on_tick(this, code, newTick);
+		_strategy->on_tick(this, stdCode, newTick);
 
-	HftStraBaseCtx::on_tick(code, newTick);
+	HftStraBaseCtx::on_tick(stdCode, newTick);
+}
+
+void HftStraContext::on_order_queue(const char* stdCode, WTSOrdQueData* newOrdQue)
+{
+	if (_strategy)
+		_strategy->on_order_queue(this, stdCode, newOrdQue);
+
+	HftStraBaseCtx::on_order_queue(stdCode, newOrdQue);
+}
+
+void HftStraContext::on_order_detail(const char* stdCode, WTSOrdDtlData* newOrdDtl)
+{
+	if (_strategy)
+		_strategy->on_order_detail(this, stdCode, newOrdDtl);
+
+	HftStraBaseCtx::on_order_detail(stdCode, newOrdDtl);
+}
+
+void HftStraContext::on_transaction(const char* stdCode, WTSTransData* newTrans)
+{
+	if (_strategy)
+		_strategy->on_transaction(this, stdCode, newTrans);
+
+	HftStraBaseCtx::on_transaction(stdCode, newTrans);
 }
 
 void HftStraContext::on_bar(const char* code, const char* period, uint32_t times, WTSBarStruct* newBar)

@@ -15,6 +15,9 @@
 NS_OTP_BEGIN
 struct WTSBarStruct;
 struct WTSTickStruct;
+struct WTSOrdDtlStruct;
+struct WTSOrdQueStruct;
+struct WTSTransStruct;
 NS_OTP_END
 
 USING_NS_OTP;
@@ -40,6 +43,10 @@ typedef void(PORTER_FLAG *FuncStraTickCallback)(CtxHandler cHandle, const char* 
 typedef void(PORTER_FLAG *FuncStraCalcCallback)(CtxHandler cHandle, WtUInt32 uDate, WtUInt32 uTime);
 typedef void(PORTER_FLAG *FuncStraBarCallback)(CtxHandler cHandle, const char* code, const char* period, WTSBarStruct* newBar);
 typedef void(PORTER_FLAG *FuncGetPositionCallback)(CtxHandler cHandle, const char* stdCode, double position, bool isLast);
+
+typedef void(PORTER_FLAG *FuncStraOrdQueCallback)(CtxHandler cHandle, const char* stdCode, WTSOrdQueStruct* ordQue);
+typedef void(PORTER_FLAG *FuncStraOrdDtlCallback)(CtxHandler cHandle, const char* stdCode, WTSOrdDtlStruct* ordDtl);
+typedef void(PORTER_FLAG *FuncStraTransCallback)(CtxHandler cHandle, const char* stdCode, WTSTransStruct* trans);
 
 //////////////////////////////////////////////////////////////////////////
 //HFT»Øµ÷º¯Êý
