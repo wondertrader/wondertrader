@@ -834,6 +834,33 @@ void hft_sub_ticks(CtxHandler cHandle, const char* stdCode)
 	ctx->stra_sub_ticks(stdCode);
 }
 
+void hft_sub_order_detail(CtxHandler cHandle, const char* stdCode)
+{
+	HftContextPtr ctx = getRunner().getHftContext(cHandle);
+	if (ctx == NULL)
+		return;
+
+	ctx->stra_sub_order_details(stdCode);
+}
+
+void hft_sub_order_queue(CtxHandler cHandle, const char* stdCode)
+{
+	HftContextPtr ctx = getRunner().getHftContext(cHandle);
+	if (ctx == NULL)
+		return;
+
+	ctx->stra_sub_order_queues(stdCode);
+}
+
+void hft_sub_transaction(CtxHandler cHandle, const char* stdCode)
+{
+	HftContextPtr ctx = getRunner().getHftContext(cHandle);
+	if (ctx == NULL)
+		return;
+
+	ctx->stra_sub_transactions(stdCode);
+}
+
 bool hft_cancel(CtxHandler cHandle, WtUInt32 localid)
 {
 	HftContextPtr ctx = getRunner().getHftContext(cHandle);
