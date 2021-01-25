@@ -217,7 +217,7 @@ void SelMocker::update_dyn_profit(const char* stdCode, double price)
 	if (it != _pos_map.end())
 	{
 		PosInfo& pInfo = it->second;
-		if (pInfo._volumn == 0)
+		if (pInfo._volume == 0)
 		{
 			pInfo._dynprofit = 0;
 		}
@@ -228,7 +228,7 @@ void SelMocker::update_dyn_profit(const char* stdCode, double price)
 			for (auto pit = pInfo._details.begin(); pit != pInfo._details.end(); pit++)
 			{
 				DetailInfo& dInfo = *pit;
-				dInfo._profit = dInfo._volumn*(price - dInfo._price)*commInfo->getVolScale()*(dInfo._long ? 1 : -1);
+				dInfo._profit = dInfo._volume*(price - dInfo._price)*commInfo->getVolScale()*(dInfo._long ? 1 : -1);
 				if (dInfo._profit > 0)
 					dInfo._max_profit = max(dInfo._profit, dInfo._max_profit);
 				else if (dInfo._profit < 0)
@@ -269,7 +269,7 @@ void SelMocker::on_tick(const char* stdCode, WTSTickData* newTick, bool bEmitStr
 					price = newTick->price();
 				else
 					price = sInfo._desprice;
-				do_set_position(stdCode, sInfo._volumn, price, sInfo._usertag.c_str(), sInfo._triggered);
+				do_set_position(stdCode, sInfo._volume, price, sInfo._usertag.c_str(), sInfo._triggered);
 				_sig_map.erase(it);
 			}
 
@@ -317,7 +317,7 @@ bool SelMocker::on_schedule(uint32_t curDate, uint32_t curTime, uint32_t fireTim
 	{
 		const PosInfo& pInfo = v.second;
 		const char* code = v.first.c_str();
-		if(_sig_map.find(code) == _sig_map.end() && !decimal::eq(pInfo._volumn, 0.0))
+		if(_sig_map.find(code) == _sig_map.end() && !decimal::eq(pInfo._volume, 0.0))
 		{
 			//新的信号中没有该持仓，则要清空
 			to_clear.insert(code);
@@ -347,15 +347,14 @@ void SelMocker::enum_position(FuncEnumSelPositionCallBack cb)
 	{
 		const char* stdCode = it.first.c_str();
 		const PosInfo& pInfo = it.second;
-		//cb(stdCode, pInfo._volumn);
-		desPos[stdCode] = pInfo._volumn;
+		desPos[stdCode] = pInfo._volume;
 	}
 
 	for (auto sit : _sig_map)
 	{
 		const char* stdCode = sit.first.c_str();
 		const SigInfo& sInfo = sit.second;
-		desPos[stdCode] = sInfo._volumn;
+		desPos[stdCode] = sInfo._volume;
 	}
 
 	for (auto v : desPos)
@@ -408,7 +407,7 @@ void SelMocker::append_signal(const char* stdCode, double qty, const char* userT
 	double curPx = _price_map[stdCode].first;
 
 	SigInfo& sInfo = _sig_map[stdCode];
-	sInfo._volumn = qty;
+	sInfo._volume = qty;
 	sInfo._sigprice = curPx;
 	sInfo._desprice = price;
 	sInfo._usertag = userTag;
@@ -429,7 +428,7 @@ void SelMocker::do_set_position(const char* stdCode, double qty, double price /*
 	uint64_t curTm = (uint64_t)_replayer->get_date() * 10000 + _replayer->get_min_time();
 	uint32_t curTDate = _replayer->get_trading_date();
 
-	if (decimal::eq(pInfo._volumn, qty))
+	if (decimal::eq(pInfo._volume, qty))
 		return;
 
 	WTSCommodityInfo* commInfo = _replayer->get_commodity_info(stdCode);
@@ -437,13 +436,13 @@ void SelMocker::do_set_position(const char* stdCode, double qty, double price /*
 	//成交价
 	double trdPx = curPx;
 
-	if (decimal::gt(pInfo._volumn*qty, 0))//当前持仓和目标仓位方向一致，增加一条明细，增加数量即可
+	if (decimal::gt(pInfo._volume*qty, 0))//当前持仓和目标仓位方向一致，增加一条明细，增加数量即可
 	{
 		//目标仓位绝对值大于当前仓位绝对值，则是继续开仓，增加一条记录即可
-		if (decimal::gt(abs(qty), abs(pInfo._volumn)))
+		if (decimal::gt(abs(qty), abs(pInfo._volume)))
 		{
-			double diff = abs(qty - pInfo._volumn);
-			pInfo._volumn = qty;
+			double diff = abs(qty - pInfo._volume);
+			pInfo._volume = qty;
 
 			if (_slippage != 0)
 			{
@@ -454,7 +453,7 @@ void SelMocker::do_set_position(const char* stdCode, double qty, double price /*
 			DetailInfo dInfo;
 			dInfo._long = decimal::gt(qty, 0);
 			dInfo._price = trdPx;
-			dInfo._volumn = diff;
+			dInfo._volume = diff;
 			dInfo._opentime = curTm;
 			dInfo._opentdate = curTDate;
 			strcpy(dInfo._opentag, userTag);
@@ -468,7 +467,7 @@ void SelMocker::do_set_position(const char* stdCode, double qty, double price /*
 		else
 		{
 			//目标仓位绝对值小于当前仓位绝对值，则要平仓
-			double left = abs(qty - pInfo._volumn);
+			double left = abs(qty - pInfo._volume);
 
 			if (_slippage != 0)
 			{
@@ -477,29 +476,28 @@ void SelMocker::do_set_position(const char* stdCode, double qty, double price /*
 				trdPx += _slippage * commInfo->getPriceTick()*(isBuy ? 1 : -1);
 			}
 
-			pInfo._volumn = qty;
-			if (decimal::eq(pInfo._volumn, 0))
+			pInfo._volume = qty;
+			if (decimal::eq(pInfo._volume, 0))
 				pInfo._dynprofit = 0;
 			uint32_t count = 0;
 			for (auto it = pInfo._details.begin(); it != pInfo._details.end(); it++)
 			{
 				DetailInfo& dInfo = *it;
-				double maxQty = min(dInfo._volumn, left);
+				double maxQty = min(dInfo._volume, left);
 				if (decimal::eq(maxQty, 0))
 					continue;
 
-				dInfo._volumn -= maxQty;
+				dInfo._volume -= maxQty;
 				left -= maxQty;
 
-				//if (dInfo._volumn == 0)
-				if (decimal::eq(dInfo._volumn, 0))
+				if (decimal::eq(dInfo._volume, 0))
 					count++;
 
 				double profit = (trdPx - dInfo._price) * maxQty * commInfo->getVolScale();
 				if (!dInfo._long)
 					profit *= -1;
 				pInfo._closeprofit += profit;
-				pInfo._dynprofit = pInfo._dynprofit*dInfo._volumn / (dInfo._volumn + maxQty);//浮盈也要做等比缩放
+				pInfo._dynprofit = pInfo._dynprofit*dInfo._volume / (dInfo._volume + maxQty);//浮盈也要做等比缩放
 				_fund_info._total_profit += profit;
 
 				double fee = _replayer->calc_fee(stdCode, trdPx, maxQty, dInfo._opentdate == curTDate ? 2 : 1);
@@ -525,7 +523,7 @@ void SelMocker::do_set_position(const char* stdCode, double qty, double price /*
 	}
 	else
 	{//持仓方向和目标仓位方向不一致，需要平仓
-		double left = abs(pInfo._volumn) + abs(qty);
+		double left = abs(pInfo._volume) + abs(qty);
 
 		if (_slippage != 0)
 		{
@@ -533,28 +531,28 @@ void SelMocker::do_set_position(const char* stdCode, double qty, double price /*
 			trdPx += _slippage * commInfo->getPriceTick()*(isBuy ? 1 : -1);
 		}
 
-		pInfo._volumn = qty;
-		if (decimal::eq(pInfo._volumn, 0))
+		pInfo._volume = qty;
+		if (decimal::eq(pInfo._volume, 0))
 			pInfo._dynprofit = 0;
 		uint32_t count = 0;
 		for (auto it = pInfo._details.begin(); it != pInfo._details.end(); it++)
 		{
 			DetailInfo& dInfo = *it;
-			double maxQty = min(dInfo._volumn, left);
+			double maxQty = min(dInfo._volume, left);
 			if (decimal::eq(maxQty, 0))
 				continue;
 
-			dInfo._volumn -= maxQty;
+			dInfo._volume -= maxQty;
 			left -= maxQty;
 
-			if (decimal::eq(dInfo._volumn, 0))
+			if (decimal::eq(dInfo._volume, 0))
 				count++;
 
 			double profit = (trdPx - dInfo._price) * maxQty * commInfo->getVolScale();
 			if (!dInfo._long)
 				profit *= -1;
 			pInfo._closeprofit += profit;
-			pInfo._dynprofit = pInfo._dynprofit*dInfo._volumn / (dInfo._volumn + maxQty);//浮盈也要做等比缩放
+			pInfo._dynprofit = pInfo._dynprofit*dInfo._volume / (dInfo._volume + maxQty);//浮盈也要做等比缩放
 			_fund_info._total_profit += profit;
 
 			double fee = _replayer->calc_fee(stdCode, trdPx, maxQty, dInfo._opentdate == curTDate ? 2 : 1);
@@ -584,7 +582,7 @@ void SelMocker::do_set_position(const char* stdCode, double qty, double price /*
 			DetailInfo dInfo;
 			dInfo._long = decimal::gt(qty, 0);
 			dInfo._price = trdPx;
-			dInfo._volumn = abs(left);
+			dInfo._volume = abs(left);
 			dInfo._opentime = curTm;
 			dInfo._opentdate = curTDate;
 			strcpy(dInfo._opentag, userTag);
@@ -716,7 +714,7 @@ double SelMocker::stra_get_position(const char* stdCode, const char* userTag /* 
 
 	const PosInfo& pInfo = it->second;
 	if (strlen(userTag) == 0)
-		return pInfo._volumn;
+		return pInfo._volume;
 
 	for (auto it = pInfo._details.begin(); it != pInfo._details.end(); it++)
 	{
@@ -724,7 +722,7 @@ double SelMocker::stra_get_position(const char* stdCode, const char* userTag /* 
 		if (strcmp(dInfo._opentag, userTag) != 0)
 			continue;
 
-		return dInfo._volumn;
+		return dInfo._volume;
 	}
 
 	return 0;

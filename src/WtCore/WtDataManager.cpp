@@ -217,7 +217,7 @@ void WtDataManager::handle_push_quote(const char* stdCode, WTSTickData* newTick)
 		if (tData == NULL)
 			return;
 
-		if (tData->isValidOnly() && newTick->volumn() == 0)
+		if (tData->isValidOnly() && newTick->volume() == 0)
 			return;
 
 		tData->appendTick(newTick->getTickStruct());

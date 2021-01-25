@@ -884,7 +884,7 @@ WTSHisTickData* WtDataReader::readTicks(const char* stdCode, uint32_t count, uin
 			uint32_t left = count;
 			for (;;)
 			{
-				if (tBlock->_ticks[eIdx].volumn != 0)
+				if (tBlock->_ticks[eIdx].volume != 0)
 				{
 					ayTicks.emplace_back(tBlock->_ticks[eIdx]);
 					left--;
@@ -986,7 +986,7 @@ WTSHisTickData* WtDataReader::readTicks(const char* stdCode, uint32_t count, uin
 			uint32_t left = count;
 			for (;;)
 			{
-				if (tBlock->_ticks[eIdx].volumn != 0)
+				if (tBlock->_ticks[eIdx].volume != 0)
 				{
 					ayTicks.emplace_back(tBlock->_ticks[eIdx]);
 					left--;

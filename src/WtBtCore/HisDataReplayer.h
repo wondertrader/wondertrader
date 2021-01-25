@@ -266,7 +266,7 @@ private:
 		double	_open;
 		double	_close;
 		double	_close_today;
-		bool	_by_volumn;
+		bool	_by_volume;
 
 		_FeeItem()
 		{

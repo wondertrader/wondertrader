@@ -212,7 +212,7 @@ void EventNotifier::tradeToJson(uint32_t localid, const char* stdCode, WTSTradeI
 		root.AddMember("isopen", isOpen, allocator);
 		root.AddMember("istoday", isToday, allocator);
 
-		root.AddMember("volumn", trdInfo->getVolumn(), allocator);
+		root.AddMember("volume", trdInfo->getVolume(), allocator);
 		root.AddMember("price", trdInfo->getPrice(), allocator);
 
 		rj::StringBuffer sb;
@@ -247,7 +247,7 @@ void EventNotifier::orderToJson(uint32_t localid, const char* stdCode, WTSOrderI
 		root.AddMember("istoday", isToday, allocator);
 		root.AddMember("canceled", isCanceled, allocator);
 
-		root.AddMember("total", ordInfo->getVolumn(), allocator);
+		root.AddMember("total", ordInfo->getVolume(), allocator);
 		root.AddMember("left", ordInfo->getVolLeft(), allocator);
 		root.AddMember("traded", ordInfo->getVolTraded(), allocator);
 		root.AddMember("price", ordInfo->getPrice(), allocator);

@@ -283,7 +283,7 @@ void ParserXTP::OnDepthMarketData(XTPMD *market_data, int64_t bid1_qty[], int32_
 	quote.open = checkValid(market_data->open_price);
 	quote.high = checkValid(market_data->high_price);
 	quote.low = checkValid(market_data->low_price);
-	quote.total_volumn = (uint32_t)market_data->qty;
+	quote.total_volume = (uint32_t)market_data->qty;
 	quote.trading_date = m_uTradingDate;
 	quote.total_turnover = market_data->turnover;
 

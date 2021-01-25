@@ -378,7 +378,7 @@ bool WTSBaseDataMgr::loadContracts(const char* filename)
 				maxMktQty = jcInfo["maxmarketqty"].GetUint();
 			if (jcInfo.HasMember("maxlimitqty"))
 				maxLmtQty = jcInfo["maxlimitqty"].GetUint();
-			cInfo->setVolumnLimits(maxMktQty, maxLmtQty);
+			cInfo->setVolumeLimits(maxMktQty, maxLmtQty);
 
 			WTSContractList* contractList = (WTSContractList*)m_mapExchgContract->get(cInfo->getExchg());
 			if (contractList == NULL)

@@ -216,7 +216,7 @@ private:
 	{
 		bool		_long;
 		double		_price;
-		double		_volumn;
+		double		_volume;
 		uint64_t	_opentime;
 		uint32_t	_opentdate;
 		double		_max_profit;
@@ -232,7 +232,7 @@ private:
 
 	typedef struct _PosInfo
 	{
-		double		_volumn;
+		double		_volume;
 		double		_closeprofit;
 		double		_dynprofit;
 
@@ -240,7 +240,7 @@ private:
 
 		_PosInfo()
 		{
-			_volumn = 0;
+			_volume = 0;
 			_closeprofit = 0;
 			_dynprofit = 0;
 		}

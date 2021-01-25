@@ -194,12 +194,12 @@ protected:
 	//
 	typedef struct _SigInfo
 	{
-		double		_volumn;
+		double		_volume;
 		uint64_t	_gentime;
 
 		_SigInfo()
 		{
-			_volumn = 0;
+			_volume = 0;
 			_gentime = 0;
 		}
 	}SigInfo;
@@ -217,7 +217,7 @@ protected:
 		double	_open;
 		double	_close;
 		double	_close_today;
-		bool	_by_volumn;
+		bool	_by_volume;
 
 		_FeeItem()
 		{
@@ -236,7 +236,7 @@ protected:
 	{
 		bool		_long;
 		double		_price;
-		double		_volumn;
+		double		_volume;
 		uint64_t	_opentime;
 		uint32_t	_opentdate;
 		double		_profit;
@@ -249,7 +249,7 @@ protected:
 
 	typedef struct _PosInfo
 	{
-		double		_volumn;
+		double		_volume;
 		double		_closeprofit;
 		double		_dynprofit;
 
@@ -257,7 +257,7 @@ protected:
 
 		_PosInfo()
 		{
-			_volumn = 0;
+			_volume = 0;
 			_closeprofit = 0;
 			_dynprofit = 0;
 		}

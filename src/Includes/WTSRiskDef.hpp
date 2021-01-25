@@ -65,12 +65,12 @@ public:
 
 	const char* code() const{ return _trd_stat_info._code; }
 
-	double open_volumn_long() const{ return _trd_stat_info.l_openvol; }
-	double close_volumn_long() const{ return _trd_stat_info.l_closevol; }
-	double closet_volumn_long() const{ return _trd_stat_info.l_closetvol; }
-	double open_volumn_short() const{ return _trd_stat_info.s_openvol; }
-	double close_volumn_short() const{ return _trd_stat_info.s_closevol; }
-	double closet_volumn_short() const{ return _trd_stat_info.s_closetvol; }
+	double open_volume_long() const{ return _trd_stat_info.l_openvol; }
+	double close_volume_long() const{ return _trd_stat_info.l_closevol; }
+	double closet_volume_long() const{ return _trd_stat_info.l_closetvol; }
+	double open_volume_short() const{ return _trd_stat_info.s_openvol; }
+	double close_volume_short() const{ return _trd_stat_info.s_closevol; }
+	double closet_volume_short() const{ return _trd_stat_info.s_closetvol; }
 
 	double orders_buy() const{ return _trd_stat_info.b_orders; }
 	double ordqty_buy() const{ return _trd_stat_info.b_ordqty; }

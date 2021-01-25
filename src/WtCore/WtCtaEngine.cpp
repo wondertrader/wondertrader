@@ -262,7 +262,7 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 		std::string stdCode = m.first;
 		if (target_pos.find(stdCode) == target_pos.end())
 		{
-			if(!decimal::eq(m.second._volumn, 0))
+			if(!decimal::eq(m.second._volume, 0))
 			{
 				push_task([this, stdCode](){
 					append_signal(stdCode.c_str(), 0);
@@ -313,7 +313,7 @@ void WtCtaEngine::handle_pos_change(const char* straName, const char* stdCode, d
 	}
 
 	PosInfo& pItem = _pos_map[realCode];
-	double targetPos = pItem._volumn + diffQty;
+	double targetPos = pItem._volume + diffQty;
 
 	bool bRiskEnabled = false;
 	if (!decimal::eq(_risk_volscale, 1.0) && _risk_date == _cur_tdate)
@@ -356,7 +356,7 @@ void WtCtaEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 		{
 			uint32_t sid = *it;
 			auto cit = _ctx_map.find(sid);
-			if (cit != _ctx_map.end() && curTick->volumn())
+			if (cit != _ctx_map.end() && curTick->volume())
 			{
 				CtaContextPtr& ctx = cit->second;
 				ctx->on_tick(stdCode, curTick);

@@ -272,10 +272,10 @@ void dump_ticks(WtString binFolder, WtString csvFolder, WtString strFilter /* = 
 				<< curTick.pre_close << ","
 				<< curTick.pre_settle << ","
 				<< curTick.pre_interest << ","
-				<< curTick.total_volumn << ","
+				<< curTick.total_volume << ","
 				<< curTick.total_turnover << ","
 				<< curTick.open_interest << ","
-				<< curTick.volumn << ","
+				<< curTick.volume << ","
 				<< curTick.turn_over << ","
 				<< curTick.diff_interest << ",";
 

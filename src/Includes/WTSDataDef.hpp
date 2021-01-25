@@ -438,7 +438,7 @@ public:
 	*	读取指定位置的成交量
 	*	如果超出范围则返回INVALID_VALUE
 	*/
-	uint32_t	volumn(int32_t idx) const
+	uint32_t	volume(int32_t idx) const
 	{
 		idx = translateIdx(idx);
 
@@ -588,7 +588,7 @@ public:
 	*	将指定范围内的某个特定字段的数据全部抓取出来
 	*	并保存的一个数值数组中
 	*	如果超出范围，则返回NULL
-	*	@type 支持的类型有KT_OPEN、KT_HIGH、KT_LOW、KT_CLOSE，KT_VOLUMN、KT_DATE
+	*	@type 支持的类型有KT_OPEN、KT_HIGH、KT_LOW、KT_CLOSE，KFT_VOLUME、KT_DATE
 	*/
 	WTSValueArray*	extractData(WTSKlineFieldType type, int32_t head = 0, int32_t tail = -1) const
 	{
@@ -625,10 +625,10 @@ public:
 			case KFT_CLOSE:
 				vArray->append(day.close);
 				break;
-			case KFT_VOLUMN:
+			case KFT_VOLUME:
 				vArray->append(day.vol);
 				break;
-			case KFT_SVOLUMN:
+			case KFT_SVOLUME:
 				if (day.vol > INT_MAX)
 					vArray->append(1 * ((day.close > day.open) ? 1 : -1));
 				else
@@ -839,7 +839,7 @@ public:
 	 *	读取指定位置的成交量
 	 *	如果超出范围则返回INVALID_VALUE
 	 */
-	inline uint32_t	volumn(int32_t idx) const
+	inline uint32_t	volume(int32_t idx) const
 	{
 		idx = translateIdx(idx);
 
@@ -923,7 +923,7 @@ public:
 	 *	将指定范围内的某个特定字段的数据全部抓取出来
 	 *	并保存的一个数值数组中
 	 *	如果超出范围，则返回NULL
-	 *	@type 支持的类型有KT_OPEN、KT_HIGH、KT_LOW、KT_CLOSE，KT_VOLUMN、KT_DATE
+	 *	@type 支持的类型有KT_OPEN、KT_HIGH、KT_LOW、KT_CLOSE，KFT_VOLUME、KT_DATE
 	 */
 	WTSValueArray*	extractData(WTSKlineFieldType type, int32_t head = 0, int32_t tail = -1) const
 	{
@@ -957,10 +957,10 @@ public:
 			case KFT_CLOSE:
 				vArray->append(day.close);
 				break;
-			case KFT_VOLUMN:
+			case KFT_VOLUME:
 				vArray->append(day.vol);
 				break;
-			case KFT_SVOLUMN:
+			case KFT_SVOLUME:
 				if(day.vol > INT_MAX)
 					vArray->append(1 * ((day.close > day.open) ? 1 : -1));
 				else
@@ -1102,10 +1102,10 @@ public:
 	inline double	upperlimit() const{ return m_tickStruct.upper_limit; }
 	inline double	lowerlimit() const{ return m_tickStruct.lower_limit; }
 	//成交量
-	inline uint32_t	totalvolumn() const{ return m_tickStruct.total_volumn; }
+	inline uint32_t	totalvolume() const{ return m_tickStruct.total_volume; }
 
 	//成交量
-	inline uint32_t	volumn() const{ return m_tickStruct.volumn; }
+	inline uint32_t	volume() const{ return m_tickStruct.volume; }
 
 	//结算价
 	inline double	settlepx() const{ return m_tickStruct.settle_price; }

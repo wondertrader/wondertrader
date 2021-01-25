@@ -57,8 +57,8 @@ typedef enum tagKlineFieldType
 	KFT_LOW,
 	KFT_CLOSE,
 	KFT_DATE,
-	KFT_VOLUMN,
-	KFT_SVOLUMN
+	KFT_VOLUME,
+	KFT_SVOLUME
 } WTSKlineFieldType;
 
 /*

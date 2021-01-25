@@ -34,7 +34,7 @@ uint32_t makeLocalOrderID()
 	return _auto_order_id.fetch_add(1);
 }
 
-std::vector<uint32_t> splitVolumn(uint32_t vol)
+std::vector<uint32_t> splitVolume(uint32_t vol)
 {
 	uint32_t minQty = 1;
 	uint32_t maxQty = 100;
@@ -450,7 +450,7 @@ void HftMocker::on_trade(uint32_t localid, const char* stdCode, bool isBuy, doub
 		_strategy->on_trade(this, localid, stdCode, isBuy, vol, price, userTag);
 
 	const PosInfo& posInfo = _pos_map[stdCode];
-	double curPos = posInfo._volumn + vol * (isBuy ? 1 : -1);
+	double curPos = posInfo._volume + vol * (isBuy ? 1 : -1);
 	do_set_position(stdCode, curPos, price, userTag);
 }
 
@@ -472,13 +472,13 @@ void HftMocker::update_dyn_profit(const char* stdCode, WTSTickData* newTick)
 	if (it != _pos_map.end())
 	{
 		PosInfo& pInfo = it->second;
-		if (pInfo._volumn == 0)
+		if (pInfo._volume == 0)
 		{
 			pInfo._dynprofit = 0;
 		}
 		else
 		{
-			bool isLong = decimal::gt(pInfo._volumn, 0);
+			bool isLong = decimal::gt(pInfo._volume, 0);
 			double price = isLong ? newTick->bidprice(0) : newTick->askprice(0);
 
 			WTSCommodityInfo* commInfo = _replayer->get_commodity_info(stdCode);
@@ -487,7 +487,7 @@ void HftMocker::update_dyn_profit(const char* stdCode, WTSTickData* newTick)
 			{
 				
 				DetailInfo& dInfo = *pit;
-				dInfo._profit = dInfo._volumn*(price - dInfo._price)*commInfo->getVolScale()*(dInfo._long ? 1 : -1);
+				dInfo._profit = dInfo._volume*(price - dInfo._price)*commInfo->getVolScale()*(dInfo._long ? 1 : -1);
 				if (dInfo._profit > 0)
 					dInfo._max_profit = max(dInfo._profit, dInfo._max_profit);
 				else if (dInfo._profit < 0)
@@ -557,7 +557,7 @@ bool HftMocker::procOrder(uint32_t localid)
 	 *	下面就要模拟成交了
 	 */
 	double maxQty = min(orderQty, ordInfo._left);
-	auto vols = splitVolumn((uint32_t)maxQty);
+	auto vols = splitVolume((uint32_t)maxQty);
 	for(uint32_t curQty : vols)
 	{
 		on_trade(ordInfo._localid, ordInfo._code, ordInfo._isBuy, curQty, curPx, ordInfo._usertag);
@@ -652,7 +652,7 @@ WTSTickData* HftMocker::stra_get_last_tick(const char* stdCode)
 double HftMocker::stra_get_position(const char* stdCode)
 {
 	const PosInfo& pInfo = _pos_map[stdCode];
-	return pInfo._volumn;
+	return pInfo._volume;
 }
 
 double HftMocker::stra_get_position_profit(const char* stdCode)
@@ -778,26 +778,26 @@ void HftMocker::do_set_position(const char* stdCode, double qty, double price /*
 	uint32_t curTDate = _replayer->get_trading_date();
 
 	//手数相等则不用操作了
-	if (decimal::eq(pInfo._volumn, qty))
+	if (decimal::eq(pInfo._volume, qty))
 		return;
 
-	stra_log_text("[%04u.%05u] %s 持仓更新：%.0f -> %0.f", _replayer->get_min_time(), _replayer->get_secs(), stdCode, pInfo._volumn, qty);
+	stra_log_text("[%04u.%05u] %s 持仓更新：%.0f -> %0.f", _replayer->get_min_time(), _replayer->get_secs(), stdCode, pInfo._volume, qty);
 
 	WTSCommodityInfo* commInfo = _replayer->get_commodity_info(stdCode);
 
 	//成交价
 	double trdPx = curPx;
 
-	double diff = qty - pInfo._volumn;
+	double diff = qty - pInfo._volume;
 
-	if (decimal::gt(pInfo._volumn*diff, 0))//当前持仓和仓位变化方向一致, 增加一条明细, 增加数量即可
+	if (decimal::gt(pInfo._volume*diff, 0))//当前持仓和仓位变化方向一致, 增加一条明细, 增加数量即可
 	{
-		pInfo._volumn = qty;
+		pInfo._volume = qty;
 
 		DetailInfo dInfo;
 		dInfo._long = decimal::gt(qty, 0);
 		dInfo._price = trdPx;
-		dInfo._volumn = abs(diff);
+		dInfo._volume = abs(diff);
 		dInfo._opentime = curTm;
 		dInfo._opentdate = curTDate;
 		strcpy(dInfo._usertag, userTag);
@@ -812,32 +812,31 @@ void HftMocker::do_set_position(const char* stdCode, double qty, double price /*
 	{//持仓方向和仓位变化方向不一致，需要平仓
 		double left = abs(diff);
 
-		pInfo._volumn = qty;
-		if (decimal::eq(pInfo._volumn, 0))
+		pInfo._volume = qty;
+		if (decimal::eq(pInfo._volume, 0))
 			pInfo._dynprofit = 0;
 		uint32_t count = 0;
 		for (auto it = pInfo._details.begin(); it != pInfo._details.end(); it++)
 		{
 			DetailInfo& dInfo = *it;
-			double maxQty = min(dInfo._volumn, left);
+			double maxQty = min(dInfo._volume, left);
 			if (decimal::eq(maxQty, 0))
 				continue;
 
-			double maxProf = dInfo._max_profit * maxQty / dInfo._volumn;
-			double maxLoss = dInfo._max_loss * maxQty / dInfo._volumn;
+			double maxProf = dInfo._max_profit * maxQty / dInfo._volume;
+			double maxLoss = dInfo._max_loss * maxQty / dInfo._volume;
 
-			dInfo._volumn -= maxQty;
+			dInfo._volume -= maxQty;
 			left -= maxQty;
 
-			//if (dInfo._volumn == 0)
-			if (decimal::eq(dInfo._volumn, 0))
+			if (decimal::eq(dInfo._volume, 0))
 				count++;
 
 			double profit = (trdPx - dInfo._price) * maxQty * commInfo->getVolScale();
 			if (!dInfo._long)
 				profit *= -1;
 			pInfo._closeprofit += profit;
-			pInfo._dynprofit = pInfo._dynprofit*dInfo._volumn / (dInfo._volumn + maxQty);//浮盈也要做等比缩放
+			pInfo._dynprofit = pInfo._dynprofit*dInfo._volume / (dInfo._volume + maxQty);//浮盈也要做等比缩放
 			_fund_info._total_profit += profit;
 
 			double fee = _replayer->calc_fee(stdCode, trdPx, maxQty, dInfo._opentdate == curTDate ? 2 : 1);
@@ -867,7 +866,7 @@ void HftMocker::do_set_position(const char* stdCode, double qty, double price /*
 			DetailInfo dInfo;
 			dInfo._long = decimal::gt(qty, 0);
 			dInfo._price = trdPx;
-			dInfo._volumn = abs(left);
+			dInfo._volume = abs(left);
 			dInfo._opentime = curTm;
 			dInfo._opentdate = curTDate;
 			strcpy(dInfo._usertag, userTag);

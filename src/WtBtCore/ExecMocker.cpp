@@ -131,15 +131,15 @@ void ExecMocker::update_lob(WTSTickData* curTick)
 		uint32_t px = PRICE_DOUBLE_TO_INT(curTick->askprice(i));
 		if (px != 0)
 		{
-			uint32_t& volumn = curBook._items[px];
-			volumn = curTick->askqty(i);
+			uint32_t& volume = curBook._items[px];
+			volume = curTick->askqty(i);
 		}
 
 		px = PRICE_DOUBLE_TO_INT(curTick->bidprice(i));
 		if (px != 0)
 		{
-			uint32_t& volumn = curBook._items[px];
-			volumn = curTick->askqty(i);
+			uint32_t& volume = curBook._items[px];
+			volume = curTick->askqty(i);
 		}
 	}
 
@@ -209,24 +209,24 @@ void ExecMocker::match_orders(WTSTickData* curTick, OrderIDs& to_erase)
 			continue;
 		}
 
-		if (ordInfo._state != 1 || curTick->volumn() == 0)
+		if (ordInfo._state != 1 || curTick->volume() == 0)
 			continue;
 
 		if (ordInfo._buy)
 		{
 			double price;
-			double volumn;
+			double volume;
 
 			//主动订单就按照对手价
 			if(ordInfo._positive)
 			{
 				price = curTick->askprice(0);
-				volumn = curTick->askqty(0);
+				volume = curTick->askqty(0);
 			}
 			else
 			{
 				price = curTick->price();
-				volumn = curTick->volumn();
+				volume = curTick->volume();
 			}
 
 			if (decimal::le(price, ordInfo._limit))
@@ -240,24 +240,24 @@ void ExecMocker::match_orders(WTSTickData* curTick, OrderIDs& to_erase)
 					uint32_t& quepos = ordInfo._queue;
 
 					//如果成交量小于排队位置，则不能成交
-					if (volumn <= quepos)
+					if (volume <= quepos)
 					{
-						quepos -= (uint32_t)volumn;
+						quepos -= (uint32_t)volume;
 						continue;
 					}
 					else if (quepos != 0)
 					{
 						//如果成交量大于排队位置，则可以成交
-						volumn -= quepos;
+						volume -= quepos;
 						quepos = 0;
 					}
 				}
 				else if (!ordInfo._positive)
 				{
-					volumn = ordInfo._left;
+					volume = ordInfo._left;
 				}
 
-				double qty = min(volumn, ordInfo._left);
+				double qty = min(volume, ordInfo._left);
 				_exec_unit->on_trade(localid, ordInfo._code, ordInfo._buy, qty, price);
 				_trade_logs << localid << ","
 					<< _sig_time << ","
@@ -290,18 +290,18 @@ void ExecMocker::match_orders(WTSTickData* curTick, OrderIDs& to_erase)
 		if (!ordInfo._buy && decimal::ge(curTick->price(), ordInfo._limit))
 		{
 			double price;
-			double volumn;
+			double volume;
 
 			//主动订单就按照对手价
 			if (ordInfo._positive)
 			{
 				price = curTick->bidprice(0);
-				volumn = curTick->bidqty(0);
+				volume = curTick->bidqty(0);
 			}
 			else
 			{
 				price = curTick->price();
-				volumn = curTick->volumn();
+				volume = curTick->volume();
 			}
 
 			if (decimal::le(price, ordInfo._limit))
@@ -315,24 +315,24 @@ void ExecMocker::match_orders(WTSTickData* curTick, OrderIDs& to_erase)
 					uint32_t& quepos = ordInfo._queue;
 
 					//如果成交量小于排队位置，则不能成交
-					if (volumn <= quepos)
+					if (volume <= quepos)
 					{
-						quepos -= (uint32_t)volumn;
+						quepos -= (uint32_t)volume;
 						continue;
 					}
 					else if (quepos != 0)
 					{
 						//如果成交量大于排队位置，则可以成交
-						volumn -= quepos;
+						volume -= quepos;
 						quepos = 0;
 					}
 				}
 				else if (!ordInfo._positive)
 				{
-					volumn = ordInfo._left;
+					volume = ordInfo._left;
 				}
 
-				double qty = min(volumn, ordInfo._left);
+				double qty = min(volume, ordInfo._left);
 				_exec_unit->on_trade(localid, ordInfo._code, ordInfo._buy, qty, price);
 				_trade_logs << localid << ","
 					<< _sig_time << ","

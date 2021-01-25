@@ -220,7 +220,7 @@ void TraderAdapter::initSaveData()
 		_trades_log->create_or_open_file(filename.c_str());
 		if (isNewFile)
 		{
-			_trades_log->write_file("localid,date,time,code,action,volumn,price,tradeid,orderid\n");
+			_trades_log->write_file("localid,date,time,code,action,volume,price,tradeid,orderid\n");
 		}
 		else
 		{
@@ -235,7 +235,7 @@ void TraderAdapter::initSaveData()
 		_orders_log->create_or_open_file(filename.c_str());
 		if (isNewFile)
 		{
-			_orders_log->write_file("localid,date,inserttime,code,action,volumn,traded,price,orderid,canceled,remark\n");
+			_orders_log->write_file("localid,date,inserttime,code,action,volume,traded,price,orderid,canceled,remark\n");
 		}
 		else
 		{
@@ -251,11 +251,10 @@ void TraderAdapter::logTrade(uint32_t localid, const char* stdCode, WTSTradeInfo
 	if (_trades_log == NULL || trdInfo == NULL)
 		return;
 
-	//localid,date,time,code,action,volumn,price,tradeid,orderid
 	_trades_log->write_file(fmt::format("{},{},{},{},{},{},{},{},{}\n",
 		localid, trdInfo->getTradeDate(), trdInfo->getTradeTime(), stdCode,
 		formatAction(trdInfo->getDirection(), trdInfo->getOffsetType()),
-		trdInfo->getVolumn(), trdInfo->getPrice(), trdInfo->getTradeID(), trdInfo->getRefOrder()));
+		trdInfo->getVolume(), trdInfo->getPrice(), trdInfo->getTradeID(), trdInfo->getRefOrder()));
 }
 
 void TraderAdapter::logOrder(uint32_t localid, const char* stdCode, WTSOrderInfo* ordInfo)
@@ -263,11 +262,10 @@ void TraderAdapter::logOrder(uint32_t localid, const char* stdCode, WTSOrderInfo
 	if (_orders_log == NULL || ordInfo == NULL)
 		return;
 
-	//localid,date,inserttime,code,action,volumn,traded,price,orderid,canceled,remark
 	_orders_log->write_file(fmt::format("{},{},{},{},{},{},{},{},{},{},{}\n",
 		localid, ordInfo->getOrderDate(), ordInfo->getOrderTime(), stdCode,
 		formatAction(ordInfo->getDirection(), ordInfo->getOffsetType()),
-		ordInfo->getVolumn(), ordInfo->getVolTraded(), ordInfo->getPrice(), 
+		ordInfo->getVolume(), ordInfo->getVolTraded(), ordInfo->getPrice(), 
 		ordInfo->getOrderID(), ordInfo->getOrderState()==WOS_Canceled?"TRUE":"FALSE", ordInfo->getStateMsg()));
 }
 
@@ -1369,7 +1367,7 @@ void TraderAdapter::onRspEntrust(WTSEntrust* entrust, WTSError *err)
 		bool isLong = (entrust->getDirection() == WDT_LONG);
 		bool isToday = (entrust->getOffsetType() == WOT_CLOSETODAY);
 		bool isOpen = (entrust->getOffsetType() == WOT_OPEN);
-		double qty = entrust->getVolumn();
+		double qty = entrust->getVolume();
 
 		std::string action;
 		if (isOpen)
@@ -1525,34 +1523,34 @@ void TraderAdapter::onRspOrders(const WTSArray* ayOrders)
 			if (isBuy)
 			{
 				statItem.b_orders++;
-				statItem.b_ordqty += orderInfo->getVolumn();
+				statItem.b_ordqty += orderInfo->getVolume();
 
 				if (orderInfo->isError())
 				{
 					statItem.b_wrongs++;
-					statItem.b_wrongqty += orderInfo->getVolumn() - orderInfo->getVolTraded();
+					statItem.b_wrongqty += orderInfo->getVolume() - orderInfo->getVolTraded();
 				}
 				else if (orderInfo->getOrderState() == WOS_Canceled)
 				{			
 					statItem.b_cancels++;
-					statItem.b_canclqty += orderInfo->getVolumn() - orderInfo->getVolTraded();
+					statItem.b_canclqty += orderInfo->getVolume() - orderInfo->getVolTraded();
 				}
 				
 			}
 			else
 			{
 				statItem.s_orders++;
-				statItem.s_ordqty += orderInfo->getVolumn();
+				statItem.s_ordqty += orderInfo->getVolume();
 
 				if (orderInfo->isError())
 				{
 					statItem.s_wrongs++;
-					statItem.s_wrongqty += orderInfo->getVolumn() - orderInfo->getVolTraded();
+					statItem.s_wrongqty += orderInfo->getVolume() - orderInfo->getVolTraded();
 				}
 				else if (orderInfo->getOrderState() == WOS_Canceled)
 				{
 					statItem.s_cancels++;
-					statItem.s_canclqty += orderInfo->getVolumn() - orderInfo->getVolTraded();
+					statItem.s_canclqty += orderInfo->getVolume() - orderInfo->getVolTraded();
 				}
 			}			
 
@@ -1631,7 +1629,7 @@ void TraderAdapter::onRspTrades(const WTSArray* ayTrades)
 			bool isLong = (tInfo->getDirection() == WDT_LONG);
 			bool isOpen = (tInfo->getOffsetType() == WOT_OPEN);
 			bool isCloseT = (tInfo->getOffsetType() == WOT_CLOSETODAY);
-			double qty = tInfo->getVolumn();
+			double qty = tInfo->getVolume();
 
 			if (isLong)
 			{
@@ -1658,8 +1656,8 @@ void TraderAdapter::onRspTrades(const WTSArray* ayTrades)
 			const char* stdCode = it->first.c_str();
 			WTSTradeStateInfo* pItem = (WTSTradeStateInfo*)it->second;
 			WTSLogger::log_dyn_raw("trader", _id.c_str(), LL_INFO, fmt::format("[{}] {}开平统计更新, 开多{}, 平多{}, 平今多{}, 开空{}, 平空{}, 平今空{}",
-				_id.c_str(), stdCode, pItem->open_volumn_long(), pItem->close_volumn_long(), pItem->closet_volumn_long(),
-				pItem->open_volumn_short(), pItem->close_volumn_short(), pItem->closet_volumn_short()).c_str());
+				_id.c_str(), stdCode, pItem->open_volume_long(), pItem->close_volume_long(), pItem->closet_volume_long(),
+				pItem->open_volume_short(), pItem->close_volume_short(), pItem->closet_volume_short()).c_str());
 		}
 	}
 
@@ -1725,12 +1723,12 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 			if (orderInfo->isError())//错单要和撤单区分开
 			{
 				statItem.b_wrongs++;
-				statItem.b_wrongqty += orderInfo->getVolumn() - orderInfo->getVolTraded();
+				statItem.b_wrongqty += orderInfo->getVolume() - orderInfo->getVolTraded();
 			}
 			else
 			{
 				statItem.b_cancels++;
-				statItem.b_canclqty += orderInfo->getVolumn() - orderInfo->getVolTraded();
+				statItem.b_canclqty += orderInfo->getVolume() - orderInfo->getVolTraded();
 			}
 		}
 		else
@@ -1738,12 +1736,12 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 			if (orderInfo->isError())//错单要和撤单区分开
 			{
 				statItem.s_wrongs++;
-				statItem.s_wrongqty += orderInfo->getVolumn() - orderInfo->getVolTraded();
+				statItem.s_wrongqty += orderInfo->getVolume() - orderInfo->getVolTraded();
 			}
 			else
 			{
 				statItem.s_cancels++;
-				statItem.s_canclqty += orderInfo->getVolumn() - orderInfo->getVolTraded();
+				statItem.s_canclqty += orderInfo->getVolume() - orderInfo->getVolTraded();
 			}
 		}
 	}
@@ -1757,7 +1755,7 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 		bool isLong = (orderInfo->getDirection() == WDT_LONG);
 		bool isOpen = (orderInfo->getOffsetType() == WOT_OPEN);
 		bool isToday = (orderInfo->getOffsetType() == WOT_CLOSETODAY);
-		double qty = orderInfo->getVolumn() - orderInfo->getVolTraded();
+		double qty = orderInfo->getVolume() - orderInfo->getVolTraded();
 
 		bool isBuy = (isLong&&isOpen) || (!isLong&&!isOpen);
 		double oldQty = _undone_qty[stdCode];
@@ -1790,12 +1788,12 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 			if (isBuy)
 			{
 				statItem.b_orders++;
-				statItem.b_ordqty += orderInfo->getVolumn();
+				statItem.b_ordqty += orderInfo->getVolume();
 			}
 			else
 			{
 				statItem.s_orders++;
-				statItem.s_ordqty += orderInfo->getVolumn();
+				statItem.s_ordqty += orderInfo->getVolume();
 			}
 
 			//只有平仓需要更新可平
@@ -1804,7 +1802,7 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 				//const char* code = stdCode.c_str();
 				bool isLong = (orderInfo->getDirection() == WDT_LONG);
 				bool isToday = (orderInfo->getOffsetType() == WOT_CLOSETODAY);
-				double qty = orderInfo->getVolumn();
+				double qty = orderInfo->getVolume();
 
 				PosItem& pItem = _positions[stdCode];
 				if (isLong)	//平多
@@ -1854,7 +1852,7 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 			//const char* code = orderInfo->getCode();
 			bool isLong = (orderInfo->getDirection() == WDT_LONG);
 			bool isToday = (orderInfo->getOffsetType() == WOT_CLOSETODAY);
-			double qty = orderInfo->getVolumn() - orderInfo->getVolTraded();
+			double qty = orderInfo->getVolume() - orderInfo->getVolTraded();
 
 			PosItem& pItem = _positions[stdCode];
 			if (isLong)	//平多
@@ -1921,7 +1919,7 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 
 		//通知所有监听接口
 		for (auto sink : _sinks)
-			sink->on_order(localid, stdCode.c_str(), isBuy, orderInfo->getVolumn(), orderInfo->getVolLeft(), orderInfo->getPrice(), orderInfo->getOrderState() == WOS_Canceled);
+			sink->on_order(localid, stdCode.c_str(), isBuy, orderInfo->getVolume(), orderInfo->getVolLeft(), orderInfo->getPrice(), orderInfo->getOrderState() == WOS_Canceled);
 	}
 
 	//不管是不是内部订单,订单结束了,都要写到日志里
@@ -1955,7 +1953,7 @@ void TraderAdapter::onPushTrade(WTSTradeInfo* tradeRecord)
 
 	WTSLogger::log_dyn_raw("trader", _id.c_str(), LL_INFO, 
 		fmt::format("[{}]收到成交回报回报, 代码 {}, 用户标记 {}, 成交数量 {}, 成交价格 {}", 
-			_id.c_str(), stdCode.c_str(), tradeRecord->getUserTag(), tradeRecord->getVolumn(), tradeRecord->getPrice()).c_str());
+			_id.c_str(), stdCode.c_str(), tradeRecord->getUserTag(), tradeRecord->getVolume(), tradeRecord->getPrice()).c_str());
 
 	uint32_t localid = 0;
 	if (StrUtil::startsWith(tradeRecord->getUserTag(), _order_pattern, false))
@@ -1965,7 +1963,7 @@ void TraderAdapter::onPushTrade(WTSTradeInfo* tradeRecord)
 		localid = strtoul(userTag, NULL, 10);
 
 		double oldQty = _undone_qty[stdCode];
-		double newQty = oldQty - tradeRecord->getVolumn()*(isBuy ? 1 : -1);
+		double newQty = oldQty - tradeRecord->getVolume()*(isBuy ? 1 : -1);
 		_undone_qty[stdCode] = newQty;
 		WTSLogger::log_dyn_raw("trader", _id.c_str(), LL_INFO, fmt::format("[{}] {} 未完成订单数量更新, {} -> {}", _id.c_str(), stdCode.c_str(), oldQty, newQty).c_str());
 	}
@@ -1979,7 +1977,7 @@ void TraderAdapter::onPushTrade(WTSTradeInfo* tradeRecord)
 	}
 
 	TradeStatInfo& statItem = statInfo->statInfo();
-	double vol = tradeRecord->getVolumn();
+	double vol = tradeRecord->getVolume();
 	if(isLong)
 	{
 		if (isOpen)

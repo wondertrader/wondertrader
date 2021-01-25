@@ -94,7 +94,7 @@ WTSExpressData* WTSExpFactory::calcKlineExpress(const char* expName, WTSKlineDat
 	}
 	else if (my_stricmp(expName, "VOL") == 0)
 	{
-		WTSValueArray* ayData = klineData->extractData(KFT_SVOLUMN);
+		WTSValueArray* ayData = klineData->extractData(KFT_SVOLUME);
 		if (ayData)
 		{
 			pRet = calcExpressVOL(ayData, params);

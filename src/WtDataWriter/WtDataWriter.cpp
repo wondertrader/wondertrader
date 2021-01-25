@@ -681,10 +681,10 @@ void WtDataWriter::pipeToTicks(WTSContractInfo* ct, WTSTickData* curTick)
 			<< curTick->actiontime() << ","
 			<< TimeUtils::getLocalTime(false) << ","
 			<< curTick->price() << ","
-			<< curTick->totalvolumn() << ","
+			<< curTick->totalvolume() << ","
 			<< curTick->openinterest() << ","
 			<< (uint64_t)curTick->totalturnover() << ","
-			<< curTick->volumn() << ","
+			<< curTick->volume() << ","
 			<< curTick->additional() << ","
 			<< (uint64_t)curTick->turnover() << std::endl;
 	}
@@ -1127,7 +1127,7 @@ void WtDataWriter::pipeToKlines(WTSContractInfo* ct, WTSTickData* curTick)
 			newBar->low = curTick->price();
 			newBar->close = curTick->price();
 
-			newBar->vol = curTick->volumn();
+			newBar->vol = curTick->volume();
 			newBar->money = curTick->turnover();
 			newBar->hold = curTick->openinterest();
 			newBar->add = curTick->additional();
@@ -1140,7 +1140,7 @@ void WtDataWriter::pipeToKlines(WTSContractInfo* ct, WTSTickData* curTick)
 			newBar->high = max(curTick->price(), newBar->high);
 			newBar->low = min(curTick->price(), newBar->low);
 
-			newBar->vol += curTick->volumn();
+			newBar->vol += curTick->volume();
 			newBar->money += curTick->turnover();
 			newBar->hold = curTick->openinterest();
 			newBar->add += curTick->additional();
@@ -1194,7 +1194,7 @@ void WtDataWriter::pipeToKlines(WTSContractInfo* ct, WTSTickData* curTick)
 			newBar->low = curTick->price();
 			newBar->close = curTick->price();
 
-			newBar->vol = curTick->volumn();
+			newBar->vol = curTick->volume();
 			newBar->money = curTick->turnover();
 			newBar->hold = curTick->openinterest();
 			newBar->add = curTick->additional();
@@ -1207,7 +1207,7 @@ void WtDataWriter::pipeToKlines(WTSContractInfo* ct, WTSTickData* curTick)
 			newBar->high = max(curTick->price(), newBar->high);
 			newBar->low = min(curTick->price(), newBar->low);
 
-			newBar->vol += curTick->volumn();
+			newBar->vol += curTick->volume();
 			newBar->money += curTick->turnover();
 			newBar->hold = curTick->openinterest();
 			newBar->add += curTick->additional();
@@ -1393,16 +1393,16 @@ bool WtDataWriter::updateCache(WTSContractInfo* ct, WTSTickData* curTick, bool b
 		memcpy(&item._tick, &newTick, sizeof(WTSTickStruct));
 		if (bNeedSlice)
 		{
-			item._tick.volumn = item._tick.total_volumn;
+			item._tick.volume = item._tick.total_volume;
 			item._tick.turn_over = item._tick.total_turnover;
 			item._tick.diff_interest = item._tick.open_interest - item._tick.pre_interest;
 
-			newTick.volumn = newTick.total_volumn;
+			newTick.volume = newTick.total_volume;
 			newTick.turn_over = newTick.total_turnover;
 			newTick.diff_interest = newTick.open_interest - newTick.pre_interest;
 		}
 
-		_sink->outputWriterLog(LL_INFO, "新交易日%u的第一笔数据,%s.%s,%u,%f,%d,%d", newTick.trading_date, curTick->exchg(), curTick->code(), curTick->volumn(), curTick->turnover(), curTick->openinterest(), curTick->additional());
+		_sink->outputWriterLog(LL_INFO, "新交易日%u的第一笔数据,%s.%s,%u,%f,%d,%d", newTick.trading_date, curTick->exchg(), curTick->code(), curTick->volume(), curTick->turnover(), curTick->openinterest(), curTick->additional());
 	}
 	else
 	{
@@ -1415,15 +1415,15 @@ bool WtDataWriter::updateCache(WTSContractInfo* ct, WTSTickData* curTick, bool b
 			_sink->outputWriterLog(LL_ERROR, "%s.%s最新tick数据(时间%u.%u)异常，丢弃", curTick->exchg(), curTick->code(), curTick->actiondate(), curTick->actiontime());
 			return false;
 		}
-		else if (curTick->totalvolumn() < item._tick.total_volumn)
+		else if (curTick->totalvolume() < item._tick.total_volume)
 		{
 			_sink->outputWriterLog(LL_ERROR, "%s.%s最新tick数据(时间%u.%u，总成交%u小于缓存总成交%u)异常，丢弃", 
-				curTick->exchg(), curTick->code(), curTick->actiondate(), curTick->actiontime(), curTick->totalvolumn(), item._tick.total_volumn);
+				curTick->exchg(), curTick->code(), curTick->actiondate(), curTick->actiontime(), curTick->totalvolume(), item._tick.total_volume);
 			return false;
 		}
 
 		//时间戳相同，但是成交量大于等于原来的，这种情况一般是郑商所，这里的处理方式就是时间戳+500毫秒
-		if(newTick.action_date == item._tick.action_date && newTick.action_time == item._tick.action_time && newTick.total_volumn >= item._tick.volumn)
+		if(newTick.action_date == item._tick.action_date && newTick.action_time == item._tick.action_time && newTick.total_volume >= item._tick.volume)
 		{
 			newTick.action_time += 500;
 		}
@@ -1435,7 +1435,7 @@ bool WtDataWriter::updateCache(WTSContractInfo* ct, WTSTickData* curTick, bool b
 		}
 		else
 		{
-			newTick.volumn = newTick.total_volumn - item._tick.total_volumn;
+			newTick.volume = newTick.total_volume - item._tick.total_volume;
 			newTick.turn_over = newTick.total_turnover - item._tick.total_turnover;
 			newTick.diff_interest = newTick.open_interest - item._tick.open_interest;
 
@@ -1594,7 +1594,7 @@ uint32_t WtDataWriter::dump_hisdata_to_db(WTSContractInfo* ct)
 		char sql[512] = { 0 };
 		sprintf(sql, "REPLACE INTO tb_kline_day(exchange,code,date,open,high,low,close,settle,volume,turnover,interest,diff_interest) "
 			"VALUES('%s','%s',%u,%f,%f,%f,%f,%f,%u,%f,%u,%d);", ct->getExchg(), ct->getCode(), ts.trading_date, ts.open, ts.high, ts.low, ts.price, 
-			ts.settle_price, ts.total_volumn, ts.total_turnover, ts.open_interest, ts.diff_interest);
+			ts.settle_price, ts.total_volume, ts.total_turnover, ts.open_interest, ts.diff_interest);
 
 		MysqlQuery query(db);
 		if(!query.exec(sql))
@@ -1706,7 +1706,7 @@ uint32_t WtDataWriter::dump_hisdata_to_file(WTSContractInfo* ct)
 		bs.high = ts.high;
 		bs.low = ts.low;
 		bs.settle = ts.settle_price;
-		bs.vol = ts.total_volumn;
+		bs.vol = ts.total_volume;
 		bs.hold = ts.open_interest;
 		bs.money = ts.total_turnover;
 		bs.add = ts.open_interest - ts.pre_interest;
@@ -2016,7 +2016,7 @@ void WtDataWriter::proc_loop()
 
 			std::set<std::string> setCodes;
 			std::stringstream ss_snapshot;
-			ss_snapshot << "date,exchg,code,open,high,low,close,settle,volumn,turnover,openinterest,upperlimit,lowerlimit,preclose,presettle,preinterest" << std::endl << std::fixed;
+			ss_snapshot << "date,exchg,code,open,high,low,close,settle,volume,turnover,openinterest,upperlimit,lowerlimit,preclose,presettle,preinterest" << std::endl << std::fixed;
 			for (auto it = _tick_cache_idx.begin(); it != _tick_cache_idx.end(); it++)
 			{
 				const std::string& key = it->first;
@@ -2038,7 +2038,7 @@ void WtDataWriter::proc_loop()
 						<< ts.low << ","
 						<< ts.price << ","
 						<< ts.settle_price << ","
-						<< ts.total_volumn << ","
+						<< ts.total_volume << ","
 						<< ts.total_turnover << ","
 						<< ts.open_interest << ","
 						<< ts.upper_limit << ","

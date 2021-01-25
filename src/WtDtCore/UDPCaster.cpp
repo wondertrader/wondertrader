@@ -398,8 +398,8 @@ void UDPCaster::broadcast(WTSObject* data, uint32_t dataType)
 		str += sprintf(str, "%.2f,", PRICE_INT_TO_DOUBLE(curTick->settlepx()));
 		str += sprintf(str, "%.2f,", PRICE_INT_TO_DOUBLE(curTick->preclose()));
 
-		str += sprintf(str, "%u,", curTick->totalvolumn());
-		str += sprintf(str, "%u,", curTick->volumn());
+		str += sprintf(str, "%u,", curTick->totalvolume());
+		str += sprintf(str, "%u,", curTick->volume());
 		str += sprintf(str, "%u,", curTick->openinterest());
 		str += sprintf(str, "%d,", curTick->additional());
 
@@ -442,8 +442,8 @@ void UDPCaster::broadcast(WTSObject* data, uint32_t dataType)
 		newTick.set_preclose(curTick->preclose());
 		newTick.set_settlepx(curTick->settlepx());
 
-		newTick.set_totalvolumn(curTick->totalvolumn());
-		newTick.set_volumn(curTick->volumn());
+		newTick.set_totalvolume(curTick->totalvolume());
+		newTick.set_volume(curTick->volume());
 		newTick.set_totalmoney(curTick->totalturnover());
 		newTick.set_money(curTick->turnover());
 		newTick.set_openinterest(curTick->openinterest());

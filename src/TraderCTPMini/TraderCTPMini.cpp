@@ -401,7 +401,7 @@ int TraderCTPMini::orderInsert(WTSEntrust* entrust)
 	///价格
 	req.LimitPrice = entrust->getPrice();
 	///数量: 1
-	req.VolumeTotalOriginal = (int)entrust->getVolumn();
+	req.VolumeTotalOriginal = (int)entrust->getVolume();
 	///有效期类型: 当日有效
 	req.TimeCondition = wrapTimeCondition(entrust->getTimeCondition());
 	///GTD日期
@@ -463,7 +463,7 @@ int TraderCTPMini::orderAction(WTSEntrustAction* action)
 
 	req.LimitPrice = action->getPrice();
 
-	req.VolumeChange = (int32_t)action->getVolumn();
+	req.VolumeChange = (int32_t)action->getVolume();
 
 	strcpy(req.OrderSysID, action->getOrderID());
 	strcpy(req.ExchangeID, action->getExchg());
@@ -1144,7 +1144,7 @@ WTSOrderInfo* TraderCTPMini::makeOrderInfo(CThostFtdcOrderField* orderField)
 
 	WTSOrderInfo* pRet = WTSOrderInfo::create();
 	pRet->setPrice(orderField->LimitPrice);
-	pRet->setVolumn(orderField->VolumeTotalOriginal);
+	pRet->setVolume(orderField->VolumeTotalOriginal);
 	pRet->setDirection(wrapDirectionType(orderField->Direction, orderField->CombOffsetFlag[0]));
 	pRet->setPriceType(wrapPriceType(orderField->OrderPriceType));
 	pRet->setTimeCondition(wrapTimeCondition(orderField->TimeCondition));
@@ -1238,7 +1238,7 @@ WTSTradeInfo* TraderCTPMini::makeTradeRecord(CThostFtdcTradeField *tradeField)
 	WTSSessionInfo* sInfo = m_bdMgr->getSession(commInfo->getSession());
 
 	WTSTradeInfo *pRet = WTSTradeInfo::create(tradeField->InstrumentID, commInfo->getExchg());
-	pRet->setVolumn(tradeField->Volume);
+	pRet->setVolume(tradeField->Volume);
 	pRet->setPrice(tradeField->Price);
 	pRet->setTradeID(tradeField->TradeID);
 

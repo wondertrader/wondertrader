@@ -696,7 +696,7 @@ void HisDataReplayer::replayUnbars(uint64_t stime, uint64_t nowTime, uint32_t en
 						curTS.action_time = _cur_time * 100000;
 
 						curTS.price = nextBar.open;
-						curTS.volumn = nextBar.vol;
+						curTS.volume = nextBar.vol;
 
 						//更新开高低三个字段
 						if (decimal::eq(curTS.open, 0))
@@ -713,7 +713,7 @@ void HisDataReplayer::replayUnbars(uint64_t stime, uint64_t nowTime, uint32_t en
 						curTick->release();
 
 						curTS.price = nextBar.high;
-						curTS.volumn = nextBar.vol;
+						curTS.volume = nextBar.vol;
 						curTS.high = max(curTS.price, curTS.high);
 						curTS.low = min(curTS.price, curTS.low);
 						curTick = WTSTickData::create(curTS);
@@ -779,13 +779,13 @@ void HisDataReplayer::replayUnbars(uint64_t stime, uint64_t nowTime, uint32_t en
 						curTS.action_time = curTime * 100000;
 
 						curTS.price = nextBar.open;
-						curTS.volumn = nextBar.vol;
+						curTS.volume = nextBar.vol;
 						WTSTickData* curTick = WTSTickData::create(curTS);
 						_listener->handle_tick(realCode.c_str(), curTick);
 						curTick->release();
 
 						curTS.price = nextBar.high;
-						curTS.volumn = nextBar.vol;
+						curTS.volume = nextBar.vol;
 						curTick = WTSTickData::create(curTS);
 						_listener->handle_tick(realCode.c_str(), curTick);
 						curTick->release();
@@ -1251,7 +1251,7 @@ void HisDataReplayer::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTD
 									curTS.action_time = _cur_time * 100000;
 
 									curTS.price = nextBar.open;
-									curTS.volumn = nextBar.vol;
+									curTS.volume = nextBar.vol;
 
 									//更新开高低三个字段
 									if (decimal::eq(curTS.open, 0))
@@ -1268,7 +1268,7 @@ void HisDataReplayer::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTD
 									curTick->release();
 
 									curTS.price = nextBar.high;
-									curTS.volumn = nextBar.vol;
+									curTS.volume = nextBar.vol;
 									curTS.high = max(curTS.price, curTS.high);
 									curTS.low = min(curTS.price, curTS.low);
 									curTick = WTSTickData::create(curTS);
@@ -1345,13 +1345,13 @@ void HisDataReplayer::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTD
 									curTS.action_time = curTime * 100000;
 
 									curTS.price = nextBar.open;
-									curTS.volumn = nextBar.vol;
+									curTS.volume = nextBar.vol;
 									WTSTickData* curTick = WTSTickData::create(curTS);
 									_listener->handle_tick(realCode.c_str(), curTick);
 									curTick->release();
 
 									curTS.price = nextBar.high;
-									curTS.volumn = nextBar.vol;
+									curTS.volume = nextBar.vol;
 									curTick = WTSTickData::create(curTS);
 									_listener->handle_tick(realCode.c_str(), curTick);
 									curTick->release();
@@ -2060,7 +2060,7 @@ void HisDataReplayer::loadFees(const char* filename)
 	{
 		WTSVariant* cfgItem = cfg->get(key.c_str());
 		FeeItem& fItem = _fee_map[key];
-		fItem._by_volumn = cfgItem->getBoolean("byvolumn");
+		fItem._by_volume = cfgItem->getBoolean("byvolume");
 		fItem._open = cfgItem->getDouble("open");
 		fItem._close = cfgItem->getDouble("close");
 		fItem._close_today = cfgItem->getDouble("closetoday");
@@ -2082,7 +2082,7 @@ double HisDataReplayer::calc_fee(const char* stdCode, double price, double qty, 
 	double ret = 0.0;
 	WTSCommodityInfo* commInfo = _bd_mgr.getCommodity(stdPID.c_str());
 	const FeeItem& fItem = it->second;
-	if (fItem._by_volumn)
+	if (fItem._by_volume)
 	{
 		switch (offset)
 		{
@@ -2407,7 +2407,7 @@ bool HisDataReplayer::cacheRawTicksFromCSV(const std::string& key, const char* s
 			ticks.action_date = strToDate(ay[0].c_str());
 			ticks.action_time = strToTime(ay[1].c_str(), true) * 1000;
 			ticks.price = strtod(ay[2].c_str(), NULL);
-			ticks.volumn = strtoul(ay[3].c_str(), NULL, 10);
+			ticks.volume = strtoul(ay[3].c_str(), NULL, 10);
 			tickList._items.emplace_back(ticks);
 
 			if (tickList._items.size() % 1000 == 0)

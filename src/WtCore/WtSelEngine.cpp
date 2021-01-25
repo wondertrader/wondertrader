@@ -112,7 +112,7 @@ void WtSelEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 		{
 			uint32_t sid = *it;
 			auto cit = _ctx_map.find(sid);
-			if (cit != _ctx_map.end() && curTick->volumn())
+			if (cit != _ctx_map.end() && curTick->volume())
 			{
 				SelContextPtr& ctx = cit->second;
 				ctx->on_tick(stdCode, curTick);
@@ -334,7 +334,7 @@ void WtSelEngine::handle_pos_change(const char* stdCode, double diffQty)
 	}
 
 	PosInfo& pItem = _pos_map[realCode];
-	double targetPos = pItem._volumn + diffQty;
+	double targetPos = pItem._volume + diffQty;
 
 	bool bRiskEnabled = false;
 	if (!decimal::eq(_risk_volscale, 1.0) && _risk_date == _cur_tdate)

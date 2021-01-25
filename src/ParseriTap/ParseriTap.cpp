@@ -290,7 +290,7 @@ void ParseriTap::OnRtnQuote(const TapAPIQuoteWhole *info)
 	quote.open = info->QOpeningPrice;
 	quote.high = info->QHighPrice;
 	quote.low = info->QLowPrice;
-	quote.total_volumn = (uint32_t)(info->QTotalQty+0.5);
+	quote.total_volume = (uint32_t)(info->QTotalQty+0.5);
 	quote.trading_date = m_uTradingDate;
 	if(info->QSettlePrice != 0.0)
 		quote.settle_price = info->QSettlePrice;
@@ -364,7 +364,7 @@ void ParseriTap::OnRspSubscribeQuote(TAPIUINT32 sessionID, TAPIINT32 errorCode, 
 		quote.open = (info->QOpeningPrice);
 		quote.high = (info->QHighPrice);
 		quote.low = (info->QLowPrice);
-		quote.total_volumn = (uint32_t)(info->QTotalQty + 0.5);
+		quote.total_volume = (uint32_t)(info->QTotalQty + 0.5);
 		quote.trading_date = m_uTradingDate;
 		if (info->QSettlePrice != 0.0)
 			quote.settle_price = (info->QSettlePrice);
