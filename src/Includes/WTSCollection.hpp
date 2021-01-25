@@ -149,7 +149,7 @@ public:
 		if (bAutoRetain && obj)
 			obj->retain();
 
-		_vec.push_back(obj);
+		_vec.emplace_back(obj);
 	}
 
 	/*
@@ -718,7 +718,7 @@ public:
 		if (obj && bAutoRetain)
 			obj->retain();
 
-		_queue.push_back(obj);		
+		_queue.emplace_back(obj);
 	}
 
 	WTSObject* front(bool bRetain = true)

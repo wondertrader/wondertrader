@@ -169,7 +169,7 @@ void WtDataManager::on_bar(const char* code, WTSKlinePeriod period, WTSBarStruct
 		//如果是基础周期, 直接触发on_bar事件
 		//_engine->on_bar(code, speriod.c_str(), times, newBar);
 		//更新完K线以后, 统一通知交易引擎
-		_bar_notifies.push_back(NotifyItem({ code, speriod, times, newBar }));
+		_bar_notifies.emplace_back(NotifyItem({ code, speriod, times, newBar }));
 	}
 
 	//然后再处理非基础周期
@@ -195,7 +195,7 @@ void WtDataManager::on_bar(const char* code, WTSKlinePeriod period, WTSBarStruct
 				WTSBarStruct* lastBar = kData->at(-1);
 				//_engine->on_bar(code, speriod.c_str(), times, lastBar);
 				//更新完K线以后, 统一通知交易引擎
-				_bar_notifies.push_back(NotifyItem({ code, speriod, times, lastBar }));
+				_bar_notifies.emplace_back(NotifyItem({ code, speriod, times, lastBar }));
 			}
 		}
 	}

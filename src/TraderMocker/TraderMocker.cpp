@@ -42,7 +42,7 @@ std::vector<uint32_t> splitVolumn(uint32_t vol, uint32_t minQty = 1, uint32_t ma
 	std::vector<uint32_t> ret;
 	if (vol <= minQty)
 	{
-		ret.push_back(vol);
+		ret.emplace_back(vol);
 	}
 	else
 	{
@@ -58,7 +58,7 @@ std::vector<uint32_t> splitVolumn(uint32_t vol, uint32_t minQty = 1, uint32_t ma
 			if (curVol == 0)
 				continue;
 
-			ret.push_back(curVol);
+			ret.emplace_back(curVol);
 			left -= curVol;
 		}
 	}
@@ -409,7 +409,7 @@ int32_t TraderMocker::match_once()
 						{
 							ordInfo->setOrderState(WOS_AllTraded);
 							ordInfo->setStateMsg("全部成交");
-							to_erase.push_back(ordInfo->getOrderID());
+							to_erase.emplace_back(ordInfo->getOrderID());
 						}
 						else
 						{

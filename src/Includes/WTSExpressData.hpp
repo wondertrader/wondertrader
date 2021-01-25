@@ -69,7 +69,7 @@ public:
 
 	void	addParam(int param)
 	{
-		m_vecParams.push_back(param);
+		m_vecParams.emplace_back(param);
 	}
 
 	void	setParam(uint32_t idx, int param)

@@ -204,8 +204,6 @@ WTSBarStruct* WTSDataFactory::updateMin1Data(WTSSessionInfo* sInfo, WTSKlineData
 		day->hold = tick->openinterest();
 		day->add = tick->additional();
 
-		//klineData->getDataRef().push_back(day);
-
 		return day;
 	}
 	else if (lastTime != INVALID_UINT32 && uBarTime < lastTime)
@@ -344,8 +342,6 @@ WTSBarStruct* WTSDataFactory::updateMin5Data(WTSSessionInfo* sInfo, WTSKlineData
 		day->hold = tick->openinterest();
 		day->add = tick->additional();
 
-		//klineData->getDataRef().push_back(day);
-
 		return day;
 	}
 	else
@@ -382,8 +378,6 @@ WTSBarStruct* WTSDataFactory::updateDayData(WTSSessionInfo* sInfo, WTSKlineData*
 		day->money = tick->turnover();
 		day->hold = tick->openinterest();
 		day->add = tick->additional();
-
-		//klineData->getDataRef().push_back(day);
 
 		return day;
 	}
@@ -869,11 +863,11 @@ bool WTSDataFactory::mergeKlineData(WTSKlineData* klineData, WTSKlineData* newKl
 
 			if(curTime < sTime)
 			{
-				tempHead.push_back(curBar);
+				tempHead.emplace_back(curBar);
 			}
 			else if(curTime > eTime)
 			{
-				tempTail.push_back(curBar);
+				tempTail.emplace_back(curBar);
 			}
 		}
 

@@ -56,7 +56,7 @@ void MatchEngine::match_orders(WTSTickData* curTick, OrderIDs& to_erase)
 			_sink->handle_order(localid, ordInfo._code, ordInfo._buy, 0, ordInfo._limit, true, ordInfo._time);
 			ordInfo._state = 99;
 
-			to_erase.push_back(localid);
+			to_erase.emplace_back(localid);
 
 			WTSLogger::info("订单%u已撤销, 剩余数量: %d", localid, ordInfo._left*(ordInfo._buy ? 1 : -1));
 			ordInfo._left = 0;
@@ -117,7 +117,7 @@ void MatchEngine::match_orders(WTSTickData* curTick, OrderIDs& to_erase)
 				_sink->handle_order(localid, ordInfo._code, ordInfo._buy, ordInfo._left, price, false, ordInfo._time);
 
 				if (ordInfo._left == 0)
-					to_erase.push_back(localid);
+					to_erase.emplace_back(localid);
 			}
 		}
 
@@ -171,7 +171,7 @@ void MatchEngine::match_orders(WTSTickData* curTick, OrderIDs& to_erase)
 				_sink->handle_order(localid, ordInfo._code, ordInfo._buy, ordInfo._left, price, false, ordInfo._time);
 
 				if (ordInfo._left == 0)
-					to_erase.push_back(localid);
+					to_erase.emplace_back(localid);
 			}
 
 		}
@@ -251,7 +251,7 @@ OrderIDs MatchEngine::buy(const char* stdCode, double price, double qty, uint64_
 	lastTick->release();
 
 	OrderIDs ret;
-	ret.push_back(localid);
+	ret.emplace_back(localid);
 	return ret;
 }
 
@@ -285,7 +285,7 @@ OrderIDs MatchEngine::sell(const char* stdCode, double price, double qty, uint64
 	lastTick->release();
 
 	OrderIDs ret;
-	ret.push_back(localid);
+	ret.emplace_back(localid);
 	return ret;
 }
 
@@ -302,7 +302,7 @@ OrderIDs MatchEngine::cancel(const char* stdCode, bool isBuy, double qty, FuncCa
 		if (ordInfo._buy == isBuy)
 		{
 			uint32_t localid = v.first;
-			ret.push_back(localid);
+			ret.emplace_back(localid);
 			ordInfo._state = 9;
 			cb(ordInfo._left*(ordInfo._buy ? 1 : -1));
 

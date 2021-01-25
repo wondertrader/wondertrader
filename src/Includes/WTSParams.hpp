@@ -461,7 +461,7 @@ public:
 			ChildrenMap::Iterator it = _value._map->begin();
 			for( ; it != _value._map->end(); it++)
 			{
-				names.push_back(it->first);
+				names.emplace_back(it->first);
 			}
 		}
 

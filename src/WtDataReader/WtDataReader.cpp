@@ -194,7 +194,7 @@ bool WtDataReader::loadStkAdjFactorsFromDB()
 		adjFact._date = uDate;
 		adjFact._factor = factor;
 
-		fctrLst.push_back(adjFact);
+		fctrLst.emplace_back(adjFact);
 		fct_cnt++;
 	}
 
@@ -246,7 +246,7 @@ bool WtDataReader::loadStkAdjFactorsFromFile(const char* adjfile)
 				adjFact._date = fItem["date"].GetUint();
 				adjFact._factor = fItem["factor"].GetDouble();
 
-				fctrLst.push_back(adjFact);
+				fctrLst.emplace_back(adjFact);
 				fct_cnt++;
 			}
 		}
@@ -886,7 +886,7 @@ WTSHisTickData* WtDataReader::readTicks(const char* stdCode, uint32_t count, uin
 			{
 				if (tBlock->_ticks[eIdx].volumn != 0)
 				{
-					ayTicks.push_back(tBlock->_ticks[eIdx]);
+					ayTicks.emplace_back(tBlock->_ticks[eIdx]);
 					left--;
 				}
 
@@ -988,7 +988,7 @@ WTSHisTickData* WtDataReader::readTicks(const char* stdCode, uint32_t count, uin
 			{
 				if (tBlock->_ticks[eIdx].volumn != 0)
 				{
-					ayTicks.push_back(tBlock->_ticks[eIdx]);
+					ayTicks.emplace_back(tBlock->_ticks[eIdx]);
 					left--;
 				}
 
@@ -1206,7 +1206,7 @@ bool WtDataReader::cacheHisBarsFromDB(const std::string& key, const char* stdCod
 
 				realCnt += barcnt;
 
-				barsSections.push_back(tempAy);
+				barsSections.emplace_back(tempAy);
 
 				if (bAllCovered)
 					break;
@@ -1215,7 +1215,7 @@ bool WtDataReader::cacheHisBarsFromDB(const std::string& key, const char* stdCod
 
 		if (hotAy)
 		{
-			barsSections.push_back(hotAy);
+			barsSections.emplace_back(hotAy);
 			realCnt += hotAy->size();
 		}
 	}
@@ -1379,14 +1379,14 @@ bool WtDataReader::cacheHisBarsFromDB(const std::string& key, const char* stdCod
 						}
 					}
 
-					barsSections.push_back(tempAy);
+					barsSections.emplace_back(tempAy);
 				}
 			}
 		} while (false);
 
 		if (hotAy)
 		{
-			barsSections.push_back(hotAy);
+			barsSections.emplace_back(hotAy);
 			realCnt += hotAy->size();
 		}
 	}
@@ -1434,7 +1434,7 @@ bool WtDataReader::cacheHisBarsFromDB(const std::string& key, const char* stdCod
 
 				realCnt += barcnt;
 
-				barsSections.push_back(tempAy);
+				barsSections.emplace_back(tempAy);
 			}
 		}
 	}
@@ -1696,7 +1696,7 @@ bool WtDataReader::cacheHisBarsFromFile(const std::string& key, const char* stdC
 				memcpy(tempAy->data(), &firstBar[sIdx], sizeof(WTSBarStruct)*curCnt);
 				realCnt += curCnt;
 
-				barsSections.push_back(tempAy);
+				barsSections.emplace_back(tempAy);
 
 				if(bAllCovered)
 					break;
@@ -1705,7 +1705,7 @@ bool WtDataReader::cacheHisBarsFromFile(const std::string& key, const char* stdC
 
 		if (hotAy)
 		{
-			barsSections.push_back(hotAy);
+			barsSections.emplace_back(hotAy);
 			realCnt += hotAy->size();
 		}
 	}
@@ -1905,14 +1905,14 @@ bool WtDataReader::cacheHisBarsFromFile(const std::string& key, const char* stdC
 						}
 					}
 
-					barsSections.push_back(tempAy);
+					barsSections.emplace_back(tempAy);
 				}
 			}
 		} while (false);
 
 		if (hotAy)
 		{
-			barsSections.push_back(hotAy);
+			barsSections.emplace_back(hotAy);
 			realCnt += hotAy->size();
 		}
 	}
@@ -1977,7 +1977,7 @@ bool WtDataReader::cacheHisBarsFromFile(const std::string& key, const char* stdC
 				memcpy(tempAy->data(), &firstBar[sIdx], sizeof(WTSBarStruct)*curCnt);
 				realCnt += curCnt;
 
-				barsSections.push_back(tempAy);
+				barsSections.emplace_back(tempAy);
 			}
 		}
 	}

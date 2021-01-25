@@ -151,7 +151,7 @@ public:
 	 */
 	inline void		append(double val)
 	{
-		m_vecData.push_back(val);
+		m_vecData.emplace_back(val);
 	}
 
 	/*
@@ -1011,7 +1011,7 @@ public:
 	{
 		if(m_vecBarData.empty())
 		{
-			m_vecBarData.push_back(bar);
+			m_vecBarData.emplace_back(bar);
 		}
 		else
 		{
@@ -1022,7 +1022,7 @@ public:
 			}
 			else
 			{
-				m_vecBarData.push_back(bar);
+				m_vecBarData.emplace_back(bar);
 			}
 		}
 	}
@@ -1395,7 +1395,7 @@ public:
 	*/
 	inline void	appendTick(const WTSTickStruct& ts)
 	{
-		m_ayTicks.push_back(ts);
+		m_ayTicks.emplace_back(ts);
 	}
 };
 

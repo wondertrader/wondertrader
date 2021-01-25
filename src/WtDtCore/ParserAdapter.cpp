@@ -294,5 +294,5 @@ void ParserAdapterMgr::releaseAdapters()
 
 void ParserAdapterMgr::addAdapter(ParserAdapterPtr& adapter)
 {
-	m_ayAdapters.push_back(adapter);
+	m_ayAdapters.emplace_back(adapter);
 }

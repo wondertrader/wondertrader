@@ -12,7 +12,7 @@ public:
 
 	inline void	add_executer(ExecCmdPtr executer)
 	{
-		_executers.push_back(executer);
+		_executers.emplace_back(executer);
 	}
 
 	void	set_positions(std::unordered_map<std::string, double> target_pos);

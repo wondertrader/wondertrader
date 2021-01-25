@@ -172,7 +172,7 @@ bool HisDataReplayer::loadStkAdjFactorsFromDB()
 		adjFact._date = uDate;
 		adjFact._factor = factor;
 
-		fctrLst.push_back(adjFact);
+		fctrLst.emplace_back(adjFact);
 		fct_cnt++;
 	}
 
@@ -223,7 +223,7 @@ bool HisDataReplayer::loadStkAdjFactors(const char* adjfile)
 				adjFact._date = fItem["date"].GetUint();
 				adjFact._factor = fItem["factor"].GetDouble();
 
-				fctrLst.push_back(adjFact);
+				fctrLst.emplace_back(adjFact);
 				fct_cnt++;
 			}
 		}
@@ -2408,7 +2408,7 @@ bool HisDataReplayer::cacheRawTicksFromCSV(const std::string& key, const char* s
 			ticks.action_time = strToTime(ay[1].c_str(), true) * 1000;
 			ticks.price = strtod(ay[2].c_str(), NULL);
 			ticks.volumn = strtoul(ay[3].c_str(), NULL, 10);
-			tickList._items.push_back(ticks);
+			tickList._items.emplace_back(ticks);
 
 			if (tickList._items.size() % 1000 == 0)
 			{
@@ -2531,7 +2531,7 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 			bs.low = strtod(ay[4].c_str(), NULL);
 			bs.close = strtod(ay[5].c_str(), NULL);
 			bs.vol = strtoul(ay[6].c_str(), NULL, 10);
-			barList._bars.push_back(bs);
+			barList._bars.emplace_back(bs);
 
 			if (barList._bars.size() % 1000 == 0)
 			{
@@ -2758,7 +2758,7 @@ bool HisDataReplayer::cacheRawBarsFromDB(const std::string& key, const char* std
 
 					realCnt += barcnt;
 
-					barsSections.push_back(tempAy);
+					barsSections.emplace_back(tempAy);
 				}
 
 				if (bAllCovered)
@@ -2768,7 +2768,7 @@ bool HisDataReplayer::cacheRawBarsFromDB(const std::string& key, const char* std
 
 		if (hotAy)
 		{
-			barsSections.push_back(hotAy);
+			barsSections.emplace_back(hotAy);
 			realCnt += hotAy->size();
 		}
 	}
@@ -2931,7 +2931,7 @@ bool HisDataReplayer::cacheRawBarsFromDB(const std::string& key, const char* std
 						}
 					}
 
-					barsSections.push_back(tempAy);
+					barsSections.emplace_back(tempAy);
 				}
 			}
 
@@ -2939,7 +2939,7 @@ bool HisDataReplayer::cacheRawBarsFromDB(const std::string& key, const char* std
 
 		if (hotAy)
 		{
-			barsSections.push_back(hotAy);
+			barsSections.emplace_back(hotAy);
 			realCnt += hotAy->size();
 		}
 	}
@@ -2996,7 +2996,7 @@ bool HisDataReplayer::cacheRawBarsFromDB(const std::string& key, const char* std
 
 				realCnt += barcnt;
 
-				barsSections.push_back(tempAy);
+				barsSections.emplace_back(tempAy);
 			}
 		}
 	}
@@ -3258,7 +3258,7 @@ bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* st
 				memcpy(tempAy->data(), &firstBar[sIdx], sizeof(WTSBarStruct)*curCnt);
 				realCnt += curCnt;
 
-				barsSections.push_back(tempAy);
+				barsSections.emplace_back(tempAy);
 
 				if (bAllCovered)
 					break;
@@ -3267,7 +3267,7 @@ bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* st
 
 		if (hotAy)
 		{
-			barsSections.push_back(hotAy);
+			barsSections.emplace_back(hotAy);
 			realCnt += hotAy->size();
 		}
 	}
@@ -3468,14 +3468,14 @@ bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* st
 						}
 					}
 
-					barsSections.push_back(tempAy);
+					barsSections.emplace_back(tempAy);
 				}
 			}
 		} while (false);
 
 		if (hotAy)
 		{
-			barsSections.push_back(hotAy);
+			barsSections.emplace_back(hotAy);
 			realCnt += hotAy->size();
 		}
 	}
@@ -3540,7 +3540,7 @@ bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* st
 				memcpy(tempAy->data(), &firstBar[sIdx], sizeof(WTSBarStruct)*curCnt);
 				realCnt += curCnt;
 
-				barsSections.push_back(tempAy);
+				barsSections.emplace_back(tempAy);
 			}
 		}
 	}

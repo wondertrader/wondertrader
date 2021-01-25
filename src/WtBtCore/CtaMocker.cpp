@@ -571,7 +571,7 @@ void CtaMocker::stra_enter_long(const char* stdCode, double qty, const char* use
 
 		entrust._action = COND_ACTION_OL;
 
-		condList.push_back(entrust);
+		condList.emplace_back(entrust);
 	}
 }
 
@@ -613,7 +613,7 @@ void CtaMocker::stra_enter_short(const char* stdCode, double qty, const char* us
 
 		entrust._action = COND_ACTION_OS;
 
-		condList.push_back(entrust);
+		condList.emplace_back(entrust);
 	}
 }
 
@@ -653,7 +653,7 @@ void CtaMocker::stra_exit_long(const char* stdCode, double qty, const char* user
 
 		entrust._action = COND_ACTION_CL;
 
-		condList.push_back(entrust);
+		condList.emplace_back(entrust);
 	}
 }
 
@@ -693,7 +693,7 @@ void CtaMocker::stra_exit_short(const char* stdCode, double qty, const char* use
 
 		entrust._action = COND_ACTION_CS;
 
-		condList.push_back(entrust);
+		condList.emplace_back(entrust);
 	}
 }
 
@@ -740,7 +740,7 @@ void CtaMocker::stra_set_position(const char* stdCode, double qty, const char* u
 
 		entrust._action = COND_ACTION_SP;
 
-		condList.push_back(entrust);
+		condList.emplace_back(entrust);
 	}
 }
 
@@ -799,7 +799,7 @@ void CtaMocker::do_set_position(const char* stdCode, double qty, double price /*
 		dInfo._opentdate = curTDate;
 		strcpy(dInfo._opentag, userTag);
 		dInfo._open_barno = _schedule_times;
-		pInfo._details.push_back(dInfo);
+		pInfo._details.emplace_back(dInfo);
 
 		double fee = _replayer->calc_fee(stdCode, trdPx, abs(diff), 0);
 		_fund_info._total_fees += fee;
@@ -876,7 +876,7 @@ void CtaMocker::do_set_position(const char* stdCode, double qty, double price /*
 			dInfo._opentdate = curTDate;
 			dInfo._open_barno = _schedule_times;
 			strcpy(dInfo._opentag, userTag);
-			pInfo._details.push_back(dInfo);
+			pInfo._details.emplace_back(dInfo);
  
 			//这里还需要写一笔成交记录
 			double fee = _replayer->calc_fee(stdCode, trdPx, abs(left), 0);

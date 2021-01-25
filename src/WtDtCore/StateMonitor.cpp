@@ -85,7 +85,7 @@ bool StateMonitor::initialize(const char* filename, WTSBaseDataMgr* bdMgr, DataM
 
 			stime = stime / 60 * 100 + stime % 60;//再将分钟数转成时间
 			etime = etime / 60 * 100 + etime % 60;//先不考虑半夜12点的情况，目前看来，几乎没有
-			sInfo->_sections.push_back(StateInfo::Section({ stime, etime }));
+			sInfo->_sections.emplace_back(StateInfo::Section({ stime, etime }));
 		}
 
 		auto sections = ssInfo->getTradingSections();//这里面是偏移过的时间，要注意了!!!
@@ -103,7 +103,7 @@ bool StateMonitor::initialize(const char* filename, WTSBaseDataMgr* bdMgr, DataM
 
 			stime = stime / 60 * 100 + stime % 60;//再将分钟数转成时间
 			etime = etime / 60 * 100 + etime % 60;//先不考虑半夜12点的情况，目前看来，几乎没有
-			sInfo->_sections.push_back(StateInfo::Section({ stime, etime }));
+			sInfo->_sections.emplace_back(StateInfo::Section({ stime, etime }));
 		}
 
 		_map[sInfo->_session] = sInfo;

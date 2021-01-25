@@ -353,7 +353,7 @@ void CtaStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 					condInfo._qty = cItem["qty"].GetDouble();
 					condInfo._action = (char)cItem["action"].GetUint();
 
-					condList.push_back(condInfo);
+					condList.emplace_back(condInfo);
 
 					stra_log_text(fmt::format("{} 的条件单恢复, {} {}, 触发条件: 最新价 {} {}",
 						stdCode, ACTION_NAMES[condInfo._action], condInfo._qty, CMP_ALG_NAMES[condInfo._alg], condInfo._target).c_str());
@@ -935,7 +935,7 @@ void CtaStraBaseCtx::stra_enter_long(const char* stdCode, double qty, const char
 		
 		entrust._action = COND_ACTION_OL;
 
-		condList.push_back(entrust);
+		condList.emplace_back(entrust);
 	}
 }
 
@@ -980,7 +980,7 @@ void CtaStraBaseCtx::stra_enter_short(const char* stdCode, double qty, const cha
 
 		entrust._action = COND_ACTION_OS;
 
-		condList.push_back(entrust);
+		condList.emplace_back(entrust);
 	}
 }
 
@@ -1021,7 +1021,7 @@ void CtaStraBaseCtx::stra_exit_long(const char* stdCode, double qty, const char*
 
 		entrust._action = COND_ACTION_CL;
 
-		condList.push_back(entrust);
+		condList.emplace_back(entrust);
 	}
 }
 
@@ -1062,7 +1062,7 @@ void CtaStraBaseCtx::stra_exit_short(const char* stdCode, double qty, const char
 
 		entrust._action = COND_ACTION_CS;
 		
-		condList.push_back(entrust);
+		condList.emplace_back(entrust);
 	}
 }
 
@@ -1109,7 +1109,7 @@ void CtaStraBaseCtx::stra_set_position(const char* stdCode, double qty, const ch
 
 		entrust._action = COND_ACTION_SP;
 
-		condList.push_back(entrust);
+		condList.emplace_back(entrust);
 	}
 }
 
@@ -1154,7 +1154,7 @@ void CtaStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 		dInfo._opentime = curTm;
 		dInfo._opentdate = curTDate;
 		strcpy(dInfo._opentag, userTag);
-		pInfo._details.push_back(dInfo);
+		pInfo._details.emplace_back(dInfo);
 
 		double fee = _engine->calc_fee(stdCode, curPx, abs(qty), 0);
 		_fund_info._total_fees += fee;
@@ -1223,7 +1223,7 @@ void CtaStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 			dInfo._opentime = curTm;
 			dInfo._opentdate = curTDate;
 			strcpy(dInfo._opentag, userTag);
-			pInfo._details.push_back(dInfo);
+			pInfo._details.emplace_back(dInfo);
 
 			//这里还需要写一笔成交记录
 			double fee = _engine->calc_fee(stdCode, curPx, abs(left), 0);

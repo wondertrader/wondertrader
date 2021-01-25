@@ -202,7 +202,7 @@ void ExecMocker::match_orders(WTSTickData* curTick, OrderIDs& to_erase)
 				<< "true" << std::endl;
 			ordInfo._state = 99;
 
-			to_erase.push_back(localid);
+			to_erase.emplace_back(localid);
 
 			WTSLogger::info("订单%u已撤销, 剩余数量: %d", localid, ordInfo._left*(ordInfo._buy ? 1 : -1));
 			ordInfo._left = 0;
@@ -283,7 +283,7 @@ void ExecMocker::match_orders(WTSTickData* curTick, OrderIDs& to_erase)
 				_exec_unit->on_order(localid, ordInfo._code, ordInfo._buy, ordInfo._left, price, false);
 
 				if (ordInfo._left == 0)
-					to_erase.push_back(localid);
+					to_erase.emplace_back(localid);
 			}
 		}
 
@@ -358,7 +358,7 @@ void ExecMocker::match_orders(WTSTickData* curTick, OrderIDs& to_erase)
 				_exec_unit->on_order(localid, ordInfo._code, ordInfo._buy, ordInfo._left, price, false);
 
 				if (ordInfo._left == 0)
-					to_erase.push_back(localid);
+					to_erase.emplace_back(localid);
 			}
 			
 		}

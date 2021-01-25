@@ -89,20 +89,20 @@ public:
 			pos = str.find_first_of(delims, start);
 			if (pos == start)
 			{
-				ret.push_back("");
+				ret.emplace_back("");
 				// Do nothing
 				start = pos + 1;
 			}
 			else if (pos == std::string::npos || (maxSplits && numSplits == maxSplits))
 			{
 				// Copy the rest of the std::string
-				ret.push_back( str.substr(start) );
+				ret.emplace_back( str.substr(start) );
 				break;
 			}
 			else
 			{
 				// Copy up to delimiter
-				ret.push_back( str.substr(start, pos - start) );
+				ret.emplace_back( str.substr(start, pos - start) );
 				start = pos + 1;
 			}
 			// parse up to next real data

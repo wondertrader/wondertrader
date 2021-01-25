@@ -42,7 +42,7 @@ std::vector<uint32_t> splitVolumn(uint32_t vol)
 	std::vector<uint32_t> ret;
 	if (vol <= minQty)
 	{
-		ret.push_back(vol);
+		ret.emplace_back(vol);
 	}
 	else
 	{
@@ -58,7 +58,7 @@ std::vector<uint32_t> splitVolumn(uint32_t vol)
 			if (curVol == 0)
 				continue;
 
-			ret.push_back(curVol);
+			ret.emplace_back(curVol);
 			left -= curVol;
 		}
 	}
@@ -278,7 +278,7 @@ void HftMocker::on_tick(const char* stdCode, WTSTickData* newTick)
 			uint32_t localid = it->first;
 			bool bNeedErase = procOrder(localid);
 			if (bNeedErase)
-				ids.push_back(localid);
+				ids.emplace_back(localid);
 		}
 
 		for(uint32_t localid : ids)
@@ -391,7 +391,7 @@ OrderIDs HftMocker::stra_cancel(const char* stdCode, bool isBuy, double qty /* =
 		{
 			double left = ordInfo._left;
 			stra_cancel(it->first);
-			ret.push_back(it->first);
+			ret.emplace_back(it->first);
 			cnt++;
 			if (left < qty)
 				qty -= left;
@@ -434,7 +434,7 @@ otp::OrderIDs HftMocker::stra_buy(const char* stdCode, double price, double qty,
 	});
 
 	OrderIDs ids;
-	ids.push_back(localid);
+	ids.emplace_back(localid);
 	return ids;
 }
 
@@ -610,7 +610,7 @@ otp::OrderIDs HftMocker::stra_sell(const char* stdCode, double price, double qty
 	});
 
 	OrderIDs ids;
-	ids.push_back(localid);
+	ids.emplace_back(localid);
 	return ids;
 }
 
@@ -801,7 +801,7 @@ void HftMocker::do_set_position(const char* stdCode, double qty, double price /*
 		dInfo._opentime = curTm;
 		dInfo._opentdate = curTDate;
 		strcpy(dInfo._usertag, userTag);
-		pInfo._details.push_back(dInfo);
+		pInfo._details.emplace_back(dInfo);
 
 		double fee = _replayer->calc_fee(stdCode, trdPx, abs(diff), 0);
 		_fund_info._total_fees += fee;
@@ -871,7 +871,7 @@ void HftMocker::do_set_position(const char* stdCode, double qty, double price /*
 			dInfo._opentime = curTm;
 			dInfo._opentdate = curTDate;
 			strcpy(dInfo._usertag, userTag);
-			pInfo._details.push_back(dInfo);
+			pInfo._details.emplace_back(dInfo);
 
 			//这里还需要写一笔成交记录
 			double fee = _replayer->calc_fee(stdCode, trdPx, abs(left), 0);

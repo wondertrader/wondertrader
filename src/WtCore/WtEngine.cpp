@@ -785,7 +785,7 @@ void WtEngine::do_set_position(const char* stdCode, double qty)
 		dInfo._volumn = abs(diff);
 		dInfo._opentime = curTm;
 		dInfo._opentdate = curTDate;
-		pInfo._details.push_back(dInfo);
+		pInfo._details.emplace_back(dInfo);
 
 		double fee = calc_fee(stdCode, curPx, abs(qty), 0);
 		fundInfo._fees += fee;
@@ -849,7 +849,7 @@ void WtEngine::do_set_position(const char* stdCode, double qty)
 			dInfo._volumn = abs(left);
 			dInfo._opentime = curTm;
 			dInfo._opentdate = curTDate;
-			pInfo._details.push_back(dInfo);
+			pInfo._details.emplace_back(dInfo);
 
 			//这里还需要写一笔成交记录
 			double fee = calc_fee(stdCode, curPx, abs(qty), 0);

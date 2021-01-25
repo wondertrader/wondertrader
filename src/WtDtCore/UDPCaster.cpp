@@ -214,11 +214,11 @@ bool UDPCaster::addBRecver(const char* remote, int port, int type /* = 0 */)
 		boost::asio::ip::address_v4 addr = boost::asio::ip::address_v4::from_string(remote);
 		UDPReceiverPtr item(new UDPReceiver(EndPoint(addr, port), type));
 		if(type == 0)
-			m_listFlatRecver.push_back(item);
+			m_listFlatRecver.emplace_back(item);
 		else if(type == 1)
-			m_listJsonRecver.push_back(item);
+			m_listJsonRecver.emplace_back(item);
 		else if(type == 2)
-			m_listRawRecver.push_back(item);
+			m_listRawRecver.emplace_back(item);
 	}
 	catch(...)
 	{
@@ -239,11 +239,11 @@ bool UDPCaster::addMRecver(const char* remote, int port, int sendport, int type 
 		boost::asio::ip::multicast::join_group option(item->_ep.address());
 		sock->set_option(option);
 		if(type == 0)
-			m_listFlatGroup.push_back(std::make_pair(sock, item));
+			m_listFlatGroup.emplace_back(std::make_pair(sock, item));
 		else if(type == 1)
-			m_listJsonGroup.push_back(std::make_pair(sock, item));
+			m_listJsonGroup.emplace_back(std::make_pair(sock, item));
 		else if(type == 2)
-			m_listRawGroup.push_back(std::make_pair(sock, item));
+			m_listRawGroup.emplace_back(std::make_pair(sock, item));
 	}
 	catch(...)
 	{

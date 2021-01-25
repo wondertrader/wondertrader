@@ -458,7 +458,7 @@ void SelMocker::do_set_position(const char* stdCode, double qty, double price /*
 			dInfo._opentime = curTm;
 			dInfo._opentdate = curTDate;
 			strcpy(dInfo._opentag, userTag);
-			pInfo._details.push_back(dInfo);
+			pInfo._details.emplace_back(dInfo);
 
 			double fee = _replayer->calc_fee(stdCode, trdPx, abs(diff), 0);
 			_fund_info._total_fees += fee;
@@ -588,7 +588,7 @@ void SelMocker::do_set_position(const char* stdCode, double qty, double price /*
 			dInfo._opentime = curTm;
 			dInfo._opentdate = curTDate;
 			strcpy(dInfo._opentag, userTag);
-			pInfo._details.push_back(dInfo);
+			pInfo._details.emplace_back(dInfo);
 
 			//TODO: 
 			//这里还需要写一笔成交记录

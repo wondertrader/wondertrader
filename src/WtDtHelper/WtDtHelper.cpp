@@ -357,7 +357,7 @@ void trans_csv_bars(WtString csvFolder, WtString binFolder, WtString period, Fun
 			bs.low = strtod(ay[4].c_str(), NULL);
 			bs.close = strtod(ay[5].c_str(), NULL);
 			bs.vol = strtoul(ay[6].c_str(), NULL, 10);
-			bars.push_back(bs);
+			bars.emplace_back(bs);
 
 			if (bars.size() % 1000 == 0)
 			{

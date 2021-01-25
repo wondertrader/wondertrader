@@ -1790,7 +1790,7 @@ uint32_t WtDataWriter::dump_hisdata_to_file(WTSContractInfo* ct)
 						}
 						else if (oldBS.date < bs.date)	//老的K线日期小于新的，则直接追加到后面
 						{
-							bars.push_back(bs);
+							bars.emplace_back(bs);
 						}
 					}
 
