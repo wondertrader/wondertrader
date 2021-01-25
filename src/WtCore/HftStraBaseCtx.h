@@ -36,6 +36,12 @@ public:
 
 	virtual void on_tick(const char* stdCode, WTSTickData* newTick) override;
 
+	virtual void on_order_queue(const char* stdCode, WTSOrdQueData* newOrdQue) override;
+
+	virtual void on_order_detail(const char* stdCode, WTSOrdDtlData* newOrdDtl) override;
+
+	virtual void on_transaction(const char* stdCode, WTSTransData* newTrans) override;
+
 	virtual void on_bar(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar) override;
 
 	virtual void on_session_begin() override;
@@ -70,6 +76,9 @@ public:
 	virtual uint32_t stra_get_secs() override;
 
 	virtual void stra_sub_ticks(const char* stdCode) override;
+	virtual void stra_sub_order_details(const char* stdCode) override;
+	virtual void stra_sub_order_queues(const char* stdCode) override;
+	virtual void stra_sub_transactions(const char* stdCode) override;
 
 	virtual void stra_save_user_data(const char* key, const char* val) override;
 

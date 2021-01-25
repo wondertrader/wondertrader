@@ -1248,6 +1248,9 @@ public:
 	inline const char* code() const{ return m_oqStruct.code; }
 	inline uint32_t tradingdate() const{ return m_oqStruct.trading_date; }
 	inline uint32_t actiondate() const{ return m_oqStruct.action_date; }
+	inline uint32_t actiontime() const { return m_oqStruct.action_time; }
+
+	inline void		setCode(const char* code) { strcpy(m_oqStruct.code, code); }
 
 private:
 	WTSOrdQueStruct	m_oqStruct;
@@ -1277,6 +1280,9 @@ public:
 	inline const char* code() const{ return m_odStruct.code; }
 	inline uint32_t tradingdate() const{ return m_odStruct.trading_date; }
 	inline uint32_t actiondate() const{ return m_odStruct.action_date; }
+	inline uint32_t actiontime() const { return m_odStruct.action_time; }
+
+	inline void		setCode(const char* code) { strcpy(m_odStruct.code, code); }
 
 private:
 	WTSOrdDtlStruct	m_odStruct;
@@ -1304,8 +1310,11 @@ public:
 	inline const char* code() const{ return m_tsStruct.code; }
 	inline uint32_t tradingdate() const{ return m_tsStruct.trading_date; }
 	inline uint32_t actiondate() const{ return m_tsStruct.action_date; }
+	inline uint32_t actiontime() const { return m_tsStruct.action_time; }
 
 	inline WTSTransStruct& getTransStruct(){ return m_tsStruct; }
+
+	inline void		setCode(const char* code) { strcpy(m_tsStruct.code, code); }
 
 private:
 	WTSTransStruct	m_tsStruct;

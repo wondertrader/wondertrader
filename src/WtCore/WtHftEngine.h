@@ -34,6 +34,9 @@ public:
 	virtual void run(bool bAsync = false) override;
 
 	virtual void handle_push_quote(WTSTickData* newTick, bool isHot) override;
+	virtual void handle_push_order_detail(WTSOrdDtlData* curOrdDtl) override;
+	virtual void handle_push_order_queue(WTSOrdQueData* curOrdQue) override;
+	virtual void handle_push_transaction(WTSTransData* curTrans) override;
 
 	virtual void on_tick(const char* stdCode, WTSTickData* curTick) override;
 
@@ -50,12 +53,21 @@ public:
 
 	HftContextPtr	getContext(uint32_t id);
 
+	void sub_order_queue(uint32_t sid, const char* stdCode);
+	void sub_order_detail(uint32_t sid, const char* stdCode);
+	void sub_transaction(uint32_t sid, const char* stdCode);
+
 private:
 	typedef std::unordered_map<uint32_t, HftContextPtr> ContextMap;
 	ContextMap		_ctx_map;
 
 	WtHftRtTicker*	_tm_ticker;
 	WTSVariant*		_cfg;
+
+
+	StraSubMap		_ordque_sub_map;	//委托队列订阅表
+	StraSubMap		_orddtl_sub_map;	//委托明细订阅表
+	StraSubMap		_trans_sub_map;		//成交明细订阅表
 };
 
 NS_OTP_END

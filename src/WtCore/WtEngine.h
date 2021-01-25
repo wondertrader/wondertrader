@@ -189,7 +189,8 @@ protected:
 	StraSubMap		_tick_sub_map;	//tick数据订阅表
 	StraSubMap		_bar_sub_map;	//K线数据订阅表
 
-	std::unordered_set<std::string>		_subed_raw_codes;	//tick订阅表（真实代码模式）
+	std::unordered_set<std::string>		_ticksubed_raw_codes;	//tick订阅表（真实代码模式）
+	
 
 	//////////////////////////////////////////////////////////////////////////
 	//

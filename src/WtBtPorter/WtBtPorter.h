@@ -20,7 +20,8 @@ extern "C"
 	EXPORT_FLAG	void		register_sel_callbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar);
 
 	EXPORT_FLAG	void		register_hft_callbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraBarCallback cbBar,
-		FuncHftChannelCallback cbChnl, FuncHftOrdCallback cbOrd, FuncHftTrdCallback cbTrd, FuncHftEntrustCallback cbEntrust);
+		FuncHftChannelCallback cbChnl, FuncHftOrdCallback cbOrd, FuncHftTrdCallback cbTrd, FuncHftEntrustCallback cbEntrust,
+		FuncStraOrdDtlCallback cbOrdDtl, FuncStraOrdQueCallback cbOrdQue, FuncStraTransCallback cbTrans);
 
 	EXPORT_FLAG	void		init_backtest(const char* logProfile, bool isFile);
 
@@ -147,9 +148,21 @@ extern "C"
 
 	EXPORT_FLAG	WtUInt32	hft_get_ticks(CtxHandler cHandle, const char* stdCode, unsigned int tickCnt, FuncGetTicksCallback cb);
 
+	EXPORT_FLAG	WtUInt32	hft_get_ordque(CtxHandler cHandle, const char* stdCode, unsigned int tickCnt, FuncGetOrdQueCallback cb);
+
+	EXPORT_FLAG	WtUInt32	hft_get_orddtl(CtxHandler cHandle, const char* stdCode, unsigned int tickCnt, FuncGetOrdDtlCallback cb);
+
+	EXPORT_FLAG	WtUInt32	hft_get_trans(CtxHandler cHandle, const char* stdCode, unsigned int tickCnt, FuncGetTransCallback cb);
+
 	EXPORT_FLAG	void		hft_log_text(CtxHandler cHandle, const char* message);
 
 	EXPORT_FLAG	void		hft_sub_ticks(CtxHandler cHandle, const char* stdCode);
+
+	EXPORT_FLAG	void		hft_sub_order_queue(CtxHandler cHandle, const char* stdCode);
+
+	EXPORT_FLAG	void		hft_sub_order_detail(CtxHandler cHandle, const char* stdCode);
+
+	EXPORT_FLAG	void		hft_sub_transaction(CtxHandler cHandle, const char* stdCode);
 
 	EXPORT_FLAG	bool		hft_cancel(CtxHandler cHandle, WtUInt32 localid);
 

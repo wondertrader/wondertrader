@@ -254,8 +254,77 @@ void ParserAdapter::handleQuote(WTSTickData *quote, bool bNeedSlice)
 	quote->setCode(stdCode.c_str());
 
 	_stub->handle_push_quote(quote, isHot);
-
 }
+
+void ParserAdapter::handleOrderQueue(WTSOrdQueData* ordQueData)
+{
+	if (_stopped)
+		return;
+
+	if (!_exchg_filter.empty() && (_exchg_filter.find(ordQueData->exchg()) == _exchg_filter.end()))
+		return;
+
+	if (ordQueData->actiondate() == 0 || ordQueData->tradingdate() == 0)
+		return;
+
+	WTSContractInfo* cInfo = _bd_mgr->getContract(ordQueData->code(), ordQueData->exchg());
+	if (cInfo == NULL)
+		return;
+
+	WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(cInfo);
+	std::string stdCode = CodeHelper::bscStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
+	ordQueData->setCode(stdCode.c_str());
+
+	if (_stub)
+		_stub->handle_push_order_queue(ordQueData);
+}
+
+void ParserAdapter::handleOrderDetail(WTSOrdDtlData* ordDtlData)
+{
+	if (_stopped)
+		return;
+
+	if (!_exchg_filter.empty() && (_exchg_filter.find(ordDtlData->exchg()) == _exchg_filter.end()))
+		return;
+
+	if (ordDtlData->actiondate() == 0 || ordDtlData->tradingdate() == 0)
+		return;
+
+	WTSContractInfo* cInfo = _bd_mgr->getContract(ordDtlData->code(), ordDtlData->exchg());
+	if (cInfo == NULL)
+		return;
+
+	WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(cInfo);
+	std::string stdCode = CodeHelper::bscStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
+	ordDtlData->setCode(stdCode.c_str());
+
+	if (_stub)
+		_stub->handle_push_order_detail(ordDtlData);
+}
+
+void ParserAdapter::handleTransaction(WTSTransData* transData)
+{
+	if (_stopped)
+		return;
+
+	if (!_exchg_filter.empty() && (_exchg_filter.find(transData->exchg()) == _exchg_filter.end()))
+		return;
+
+	if (transData->actiondate() == 0 || transData->tradingdate() == 0)
+		return;
+
+	WTSContractInfo* cInfo = _bd_mgr->getContract(transData->code(), transData->exchg());
+	if (cInfo == NULL)
+		return;
+
+	WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(cInfo);
+	std::string stdCode = CodeHelper::bscStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
+	transData->setCode(stdCode.c_str());
+
+	if (_stub)
+		_stub->handle_push_transaction(transData);
+}
+
 
 void ParserAdapter::handleParserLog(WTSLogLevel ll, const char* format, ...)
 {

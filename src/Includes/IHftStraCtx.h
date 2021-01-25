@@ -35,6 +35,9 @@ public:
 	//»Øµ÷º¯Êý
 	virtual void on_init() = 0;
 	virtual void on_tick(const char* stdCode, WTSTickData* newTick) = 0;
+	virtual void on_order_queue(const char* stdCode, WTSOrdQueData* newOrdQue) = 0;
+	virtual void on_order_detail(const char* stdCode, WTSOrdDtlData* newOrdDtl) = 0;
+	virtual void on_transaction(const char* stdCode, WTSTransData* newTrans) = 0;
 	virtual void on_bar(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar) {}
 	virtual void on_session_begin() {};
 	virtual void on_session_end() {};
@@ -60,6 +63,9 @@ public:
 	virtual uint32_t stra_get_secs() = 0;
 
 	virtual void stra_sub_ticks(const char* stdCode) = 0;
+	virtual void stra_sub_order_queues(const char* stdCode) = 0;
+	virtual void stra_sub_order_details(const char* stdCode) = 0;
+	virtual void stra_sub_transactions(const char* stdCode) = 0;
 
 	virtual void stra_log_text(const char* fmt, ...) = 0;
 

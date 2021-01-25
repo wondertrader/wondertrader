@@ -32,6 +32,10 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	//ITickListener
 	virtual void	handle_tick(const char* stdCode, WTSTickData* curTick) override;
+	virtual void	handle_order_queue(const char* stdCode, WTSOrdQueData* curOrdQue) override;
+	virtual void	handle_order_detail(const char* stdCode, WTSOrdDtlData* curOrdDtl) override;
+	virtual void	handle_transaction(const char* stdCode, WTSTransData* curTrans) override;
+
 	virtual void	handle_bar_close(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar) override;
 	virtual void	handle_schedule(uint32_t uDate, uint32_t uTime) override;
 
@@ -44,6 +48,12 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	//IHftStraCtx
 	virtual void on_tick(const char* stdCode, WTSTickData* newTick) override;
+
+	virtual void on_order_queue(const char* stdCode, WTSOrdQueData* newOrdQue) override;
+
+	virtual void on_order_detail(const char* stdCode, WTSOrdDtlData* newOrdDtl) override;
+
+	virtual void on_transaction(const char* stdCode, WTSTransData* newTrans) override;
 
 	virtual uint32_t id() override;
 
@@ -86,6 +96,12 @@ public:
 	virtual uint32_t stra_get_secs() override;
 
 	virtual void stra_sub_ticks(const char* stdCode) override;
+
+	virtual void stra_sub_order_queues(const char* stdCode) override;
+
+	virtual void stra_sub_order_details(const char* stdCode) override;
+
+	virtual void stra_sub_transactions(const char* stdCode) override;
 
 	virtual void stra_log_text(const char* fmt, ...) override;
 

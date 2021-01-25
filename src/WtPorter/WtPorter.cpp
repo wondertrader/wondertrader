@@ -126,9 +126,10 @@ void register_sel_callbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cb
 }
 
 void register_hft_callbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraBarCallback cbBar, 
-	FuncHftChannelCallback cbChnl, FuncHftOrdCallback cbOrd, FuncHftTrdCallback cbTrd, FuncHftEntrustCallback cbEntrust)
+	FuncHftChannelCallback cbChnl, FuncHftOrdCallback cbOrd, FuncHftTrdCallback cbTrd, FuncHftEntrustCallback cbEntrust,
+	FuncStraOrdDtlCallback cbOrdDtl, FuncStraOrdQueCallback cbOrdQue, FuncStraTransCallback cbTrans)
 {
-	getRunner().registerHftCallbacks(cbInit, cbTick, cbBar, cbChnl, cbOrd, cbTrd, cbEntrust);
+	getRunner().registerHftCallbacks(cbInit, cbTick, cbBar, cbChnl, cbOrd, cbTrd, cbEntrust, cbOrdDtl, cbOrdQue, cbTrans);
 }
 
 void init_porter(const char* logProfile, bool isFile)
@@ -831,6 +832,33 @@ void hft_sub_ticks(CtxHandler cHandle, const char* stdCode)
 		return;
 
 	ctx->stra_sub_ticks(stdCode);
+}
+
+void hft_sub_order_detail(CtxHandler cHandle, const char* stdCode)
+{
+	HftContextPtr ctx = getRunner().getHftContext(cHandle);
+	if (ctx == NULL)
+		return;
+
+	ctx->stra_sub_order_details(stdCode);
+}
+
+void hft_sub_order_queue(CtxHandler cHandle, const char* stdCode)
+{
+	HftContextPtr ctx = getRunner().getHftContext(cHandle);
+	if (ctx == NULL)
+		return;
+
+	ctx->stra_sub_order_queues(stdCode);
+}
+
+void hft_sub_transaction(CtxHandler cHandle, const char* stdCode)
+{
+	HftContextPtr ctx = getRunner().getHftContext(cHandle);
+	if (ctx == NULL)
+		return;
+
+	ctx->stra_sub_transactions(stdCode);
 }
 
 bool hft_cancel(CtxHandler cHandle, WtUInt32 localid)

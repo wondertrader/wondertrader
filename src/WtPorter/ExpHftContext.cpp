@@ -65,6 +65,21 @@ void ExpHftContext::on_tick(const char* code, WTSTickData* newTick)
 	HftStraBaseCtx::on_tick(code, newTick);
 }
 
+void ExpHftContext::on_order_queue(const char* stdCode, WTSOrdQueData* newOrdQue)
+{
+	getRunner().hft_on_order_queue(_context_id, stdCode, newOrdQue);
+}
+
+void ExpHftContext::on_order_detail(const char* stdCode, WTSOrdDtlData* newOrdDtl)
+{
+	getRunner().hft_on_order_detail(_context_id, stdCode, newOrdDtl);
+}
+
+void ExpHftContext::on_transaction(const char* stdCode, WTSTransData* newTrans)
+{
+	getRunner().hft_on_transaction(_context_id, stdCode, newTrans);
+}
+
 void ExpHftContext::on_trade(uint32_t localid, const char* stdCode, bool isBuy, double vol, double price)
 {
 	getRunner().hft_on_trade(_context_id, localid, stdCode, isBuy, vol, price, getOrderTag(localid));

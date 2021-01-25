@@ -349,7 +349,7 @@ void HisDataReplayer::run()
 					uint64_t curBarTime = (uint64_t)_cur_date * 10000 + _cur_time;
 					if (_tick_enabled)
 					{//如果开始了tick回放，则直接回放tick数据
-						replayTicks(curBarTime, nextBarTime);
+						replayHftDatas(curBarTime, nextBarTime);
 					}
 
 					_cur_date = nextDate;
@@ -406,7 +406,7 @@ void HisDataReplayer::run()
 				{
 					WTSLogger::info("开始回放%u的tick数据...", _cur_tdate);
 					_listener->handle_session_begin();
-					replayDayTicks(_cur_tdate);
+					replayHftDatasByDay(_cur_tdate);
 					_listener->handle_session_end();
 				}
 
@@ -815,31 +815,207 @@ void HisDataReplayer::replayUnbars(uint64_t stime, uint64_t nowTime, uint32_t en
 	}
 }
 
-uint64_t HisDataReplayer::replayDayTicks(uint32_t curTDate)
+uint64_t HisDataReplayer::getNextTickTime(uint32_t curTDate, uint64_t stime /* = UINT64_MAX */)
+{
+	uint64_t nextTime = UINT64_MAX;
+	for (auto v : _tick_sub_map)
+	{
+		std::string stdCode = v.first;
+		if (!checkTicks(stdCode.c_str(), curTDate))
+			continue;
+
+		auto& tickList = _ticks_cache[stdCode];
+		if (tickList._cursor == UINT_MAX)
+		{
+			if (stime == UINT64_MAX)
+				tickList._cursor = 1;
+			else
+			{
+				uint32_t uDate = (uint32_t)(stime / 10000);
+				uint32_t uTime = (uint32_t)(stime % 10000);
+
+				WTSTickStruct curTick;
+				curTick.action_date = uDate;
+				curTick.action_time = uTime * 100000;
+
+				auto tit = std::lower_bound(tickList._items.begin(), tickList._items.end(), curTick, [](const WTSTickStruct& a, const WTSTickStruct& b) {
+					if (a.action_date != b.action_date)
+						return a.action_date < b.action_date;
+					else
+						return a.action_time < b.action_time;
+				});
+
+				uint32_t idx = tit - tickList._items.begin();
+				tickList._cursor = idx + 1;
+			}
+		}
+
+		if (tickList._cursor >= tickList._count)
+			continue;
+
+		const WTSTickStruct& nextTick = tickList._items[tickList._cursor - 1];
+		uint64_t lastTime = (uint64_t)nextTick.action_date * 1000000000 + nextTick.action_time;
+
+		nextTime = min(lastTime, nextTime);
+	}
+
+	return nextTime;
+}
+
+
+uint64_t HisDataReplayer::getNextTransTime(uint32_t curTDate, uint64_t stime /* = UINT64_MAX */)
+{
+	uint64_t nextTime = UINT64_MAX;
+	for (auto v : _trans_sub_map)
+	{
+		std::string stdCode = v.first;
+		if (!checkTransactions(stdCode.c_str(), curTDate))
+			continue;
+
+		auto& itemList = _trans_cache[stdCode];
+		if (itemList._cursor == UINT_MAX)
+		{
+			if (stime == UINT64_MAX)
+				itemList._cursor = 1;
+			else
+			{
+				uint32_t uDate = (uint32_t)(stime / 10000);
+				uint32_t uTime = (uint32_t)(stime % 10000);
+
+				WTSTransStruct curItem;
+				curItem.action_date = uDate;
+				curItem.action_time = uTime * 100000;
+
+				auto tit = std::lower_bound(itemList._items.begin(), itemList._items.end(), curItem, [](const auto& a, const auto& b) {
+					if (a.action_date != b.action_date)
+						return a.action_date < b.action_date;
+					else
+						return a.action_time < b.action_time;
+				});
+
+				uint32_t idx = tit - itemList._items.begin();
+				itemList._cursor = idx + 1;
+			}
+		}
+
+		if (itemList._cursor >= itemList._count)
+			continue;
+
+		const auto& nextItem = itemList._items[itemList._cursor - 1];
+		uint64_t lastTime = (uint64_t)nextItem.action_date * 1000000000 + nextItem.action_time;
+
+		nextTime = min(lastTime, nextTime);
+	}
+
+	return nextTime;
+}
+
+
+uint64_t HisDataReplayer::getNextOrdDtlTime(uint32_t curTDate, uint64_t stime /* = UINT64_MAX */)
+{
+	uint64_t nextTime = UINT64_MAX;
+	for (auto v : _orddtl_sub_map)
+	{
+		std::string stdCode = v.first;
+		if (!checkOrderDetails(stdCode.c_str(), curTDate))
+			continue;
+
+		auto& itemList = _orddtl_cache[stdCode];
+		if (itemList._cursor == UINT_MAX)
+		{
+			if (stime == UINT64_MAX)
+				itemList._cursor = 1;
+			else
+			{
+				uint32_t uDate = (uint32_t)(stime / 10000);
+				uint32_t uTime = (uint32_t)(stime % 10000);
+
+				WTSTransStruct curItem;
+				curItem.action_date = uDate;
+				curItem.action_time = uTime * 100000;
+
+				auto tit = std::lower_bound(itemList._items.begin(), itemList._items.end(), curItem, [](const auto& a, const auto& b) {
+					if (a.action_date != b.action_date)
+						return a.action_date < b.action_date;
+					else
+						return a.action_time < b.action_time;
+				});
+
+				uint32_t idx = tit - itemList._items.begin();
+				itemList._cursor = idx + 1;
+			}
+		}
+
+		if (itemList._cursor >= itemList._count)
+			continue;
+
+		const auto& nextItem = itemList._items[itemList._cursor - 1];
+		uint64_t lastTime = (uint64_t)nextItem.action_date * 1000000000 + nextItem.action_time;
+
+		nextTime = min(lastTime, nextTime);
+	}
+
+	return nextTime;
+}
+
+
+uint64_t HisDataReplayer::getNextOrdQueTime(uint32_t curTDate, uint64_t stime /* = UINT64_MAX */)
+{
+	uint64_t nextTime = UINT64_MAX;
+	for (auto v : _ordque_sub_map)
+	{
+		std::string stdCode = v.first;
+		if (!checkOrderQueues(stdCode.c_str(), curTDate))
+			continue;
+
+		auto& itemList = _ordque_cache[stdCode];
+		if (itemList._cursor == UINT_MAX)
+		{
+			if (stime == UINT64_MAX)
+				itemList._cursor = 1;
+			else
+			{
+				uint32_t uDate = (uint32_t)(stime / 10000);
+				uint32_t uTime = (uint32_t)(stime % 10000);
+
+				WTSTransStruct curItem;
+				curItem.action_date = uDate;
+				curItem.action_time = uTime * 100000;
+
+				auto tit = std::lower_bound(itemList._items.begin(), itemList._items.end(), curItem, [](const auto& a, const auto& b) {
+					if (a.action_date != b.action_date)
+						return a.action_date < b.action_date;
+					else
+						return a.action_time < b.action_time;
+				});
+
+				uint32_t idx = tit - itemList._items.begin();
+				itemList._cursor = idx + 1;
+			}
+		}
+
+		if (itemList._cursor >= itemList._count)
+			continue;
+
+		const auto& nextItem = itemList._items[itemList._cursor - 1];
+		uint64_t lastTime = (uint64_t)nextItem.action_date * 1000000000 + nextItem.action_time;
+
+		nextTime = min(lastTime, nextTime);
+	}
+
+	return nextTime;
+}
+
+uint64_t HisDataReplayer::replayHftDatasByDay(uint32_t curTDate)
 {
 	uint64_t total_ticks = 0;
 	for (;;)
 	{
 		//先确定下一笔tick的时间
-		uint64_t nextTime = UINT64_MAX;
-		for (auto v : _tick_sub_map)
-		{
-			std::string stdCode = v.first;
-			if (!checkTicks(stdCode.c_str(), curTDate))
-				continue;
-
-			TickList& tickList = _ticks_cache[stdCode];
-			if (tickList._cursor == UINT_MAX)
-				tickList._cursor = 1;
-
-			if (tickList._cursor >= tickList._count)
-				continue;
-
-			const WTSTickStruct& nextTick = tickList._ticks[tickList._cursor - 1];
-			uint64_t lastTime = (uint64_t)nextTick.action_date * 1000000000 + nextTick.action_time;
-
-			nextTime = min(lastTime, nextTime);
-		}
+		uint64_t nextTime = min(UINT64_MAX, getNextTickTime(curTDate));
+		nextTime = min(nextTime, getNextOrdDtlTime(curTDate));
+		nextTime = min(nextTime, getNextOrdQueTime(curTDate));
+		nextTime = min(nextTime, getNextTransTime(curTDate));
 
 		if(nextTime == UINT64_MAX)
 			break;
@@ -848,12 +1024,51 @@ uint64_t HisDataReplayer::replayDayTicks(uint32_t curTDate)
 		_cur_date = (uint32_t)(nextTime / 1000000000);
 		_cur_time = nextTime % 1000000000 / 100000;
 		_cur_secs = nextTime % 100000;
-		
+
+		//1、首先回放委托明细
+		for (auto v : _orddtl_sub_map)
+		{
+			std::string stdCode = v.first;
+			auto& itemList = _orddtl_cache[stdCode];
+			auto& nextItem = itemList._items[itemList._cursor - 1];
+			uint64_t lastTime = (uint64_t)nextItem.action_date * 1000000000 + nextItem.action_time;
+			if (lastTime <= nextTime)
+			{
+				WTSOrdDtlData* newData = WTSOrdDtlData::create(nextItem);
+				newData->setCode(stdCode.c_str());
+				_listener->handle_order_detail(stdCode.c_str(), newData);
+				newData->release();
+
+				itemList._cursor++;
+				total_ticks++;
+			}
+		}
+
+		//2、其次再回放成交明细
+		for (auto v : _trans_sub_map)
+		{
+			std::string stdCode = v.first;
+			auto& itemList = _trans_cache[stdCode];
+			auto& nextItem = itemList._items[itemList._cursor - 1];
+			uint64_t lastTime = (uint64_t)nextItem.action_date * 1000000000 + nextItem.action_time;
+			if (lastTime <= nextTime)
+			{
+				WTSTransData* newData = WTSTransData::create(nextItem);
+				newData->setCode(stdCode.c_str());
+				_listener->handle_transaction(stdCode.c_str(), newData);
+				newData->release();
+
+				itemList._cursor++;
+				total_ticks++;
+			}
+		}
+
+		//3、第三步再回放tick数据
 		for (auto v : _tick_sub_map)
 		{
 			std::string stdCode = v.first;
-			TickList& tickList = _ticks_cache[stdCode];
-			WTSTickStruct& nextTick = tickList._ticks[tickList._cursor - 1];
+			auto& tickList = _ticks_cache[stdCode];
+			WTSTickStruct& nextTick = tickList._items[tickList._cursor - 1];
 			uint64_t lastTime = (uint64_t)nextTick.action_date * 1000000000 + nextTick.action_time;
 			if (lastTime <= nextTime)
 			{
@@ -866,51 +1081,38 @@ uint64_t HisDataReplayer::replayDayTicks(uint32_t curTDate)
 				total_ticks++;
 			}
 		}
+		
+		//4、最后回放委托队列
+		for (auto v : _ordque_sub_map)
+		{
+			std::string stdCode = v.first;
+			auto& itemList = _ordque_cache[stdCode];
+			auto& nextItem = itemList._items[itemList._cursor - 1];
+			uint64_t lastTime = (uint64_t)nextItem.action_date * 1000000000 + nextItem.action_time;
+			if (lastTime <= nextTime)
+			{
+				WTSOrdQueData* newData = WTSOrdQueData::create(nextItem);
+				newData->setCode(stdCode.c_str());
+				_listener->handle_order_queue(stdCode.c_str(), newData);
+				newData->release();
+
+				itemList._cursor++;
+				total_ticks++;
+			}
+		}
 	}
 
 	return total_ticks;
 }
 
-void HisDataReplayer::replayTicks(uint64_t stime, uint64_t etime)
+void HisDataReplayer::replayHftDatas(uint64_t stime, uint64_t etime)
 {
 	for (;;)
 	{
-		uint64_t nextTime = UINT64_MAX;
-		for (auto v : _tick_sub_map)
-		{
-			std::string stdCode = v.first;
-			if(!checkTicks(stdCode.c_str(), _cur_tdate))
-				continue;
-
-			TickList& tickList = _ticks_cache[stdCode];
-			if (tickList._cursor == UINT_MAX)
-			{
-				uint32_t uDate = (uint32_t)(stime / 10000);
-				uint32_t uTime = (uint32_t)(stime % 10000);
-
-				WTSTickStruct curTick;
-				curTick.action_date = uDate;
-				curTick.action_time = uTime * 100000;
-
-				auto tit = std::lower_bound(tickList._ticks.begin(), tickList._ticks.end(), curTick, [](const WTSTickStruct& a, const WTSTickStruct& b){
-					if (a.action_date != b.action_date)
-						return a.action_date < b.action_date;
-					else
-						return a.action_time < b.action_time;
-				});
-
-				uint32_t idx = tit - tickList._ticks.begin();
-				tickList._cursor = idx + 1;
-			}
-
-			if(tickList._cursor >= tickList._count)
-				continue;
-
-			const WTSTickStruct& nextTick = tickList._ticks[tickList._cursor - 1];
-			uint64_t lastTime = (uint64_t)nextTick.action_date * 1000000000 + nextTick.action_time;
-
-			nextTime = min(lastTime, nextTime);
-		}
+		uint64_t nextTime = min(UINT64_MAX, getNextTickTime(_cur_tdate, stime));
+		nextTime = min(nextTime, getNextOrdDtlTime(_cur_tdate, stime));
+		nextTime = min(nextTime, getNextOrdQueTime(_cur_tdate, stime));
+		nextTime = min(nextTime, getNextTransTime(_cur_tdate, stime));
 
 		if (nextTime/100000 >= etime)
 			break;
@@ -918,20 +1120,76 @@ void HisDataReplayer::replayTicks(uint64_t stime, uint64_t etime)
 		_cur_date = (uint32_t)(nextTime / 1000000000);
 		_cur_time = nextTime % 1000000000 / 100000;
 		_cur_secs = nextTime % 100000;
+		
+		//1、首先回放委托明细
+		for (auto v : _orddtl_sub_map)
+		{
+			std::string stdCode = v.first;
+			auto& itemList = _orddtl_cache[stdCode];
+			auto& nextItem = itemList._items[itemList._cursor - 1];
+			uint64_t lastTime = (uint64_t)nextItem.action_date * 1000000000 + nextItem.action_time;
+			if (lastTime <= nextTime)
+			{
+				WTSOrdDtlData* newData = WTSOrdDtlData::create(nextItem);
+				newData->setCode(stdCode.c_str());
+				_listener->handle_order_detail(stdCode.c_str(), newData);
+				newData->release();
+
+				itemList._cursor++;
+			}
+		}
+
+		//2、其次再回放成交明细
+		for (auto v : _trans_sub_map)
+		{
+			std::string stdCode = v.first;
+			auto& itemList = _trans_cache[stdCode];
+			auto& nextItem = itemList._items[itemList._cursor - 1];
+			uint64_t lastTime = (uint64_t)nextItem.action_date * 1000000000 + nextItem.action_time;
+			if (lastTime <= nextTime)
+			{
+				WTSTransData* newData = WTSTransData::create(nextItem);
+				newData->setCode(stdCode.c_str());
+				_listener->handle_transaction(stdCode.c_str(), newData);
+				newData->release();
+
+				itemList._cursor++;
+			}
+		}
+
+		//3、第三步再回放tick数据
 		for (auto v : _tick_sub_map)
 		{
 			std::string stdCode = v.first;
-			TickList& tickList = _ticks_cache[stdCode];
-			WTSTickStruct& nextTick = tickList._ticks[tickList._cursor - 1];
-			uint64_t lastTime = (uint64_t)nextTick.action_date * 1000000000 + nextTick.action_time;
-			if(lastTime <= nextTime)
+			auto& itemList = _ticks_cache[stdCode];
+			auto& nextItem = itemList._items[itemList._cursor - 1];
+			uint64_t lastTime = (uint64_t)nextItem.action_date * 1000000000 + nextItem.action_time;
+			if (lastTime <= nextTime)
 			{
-				WTSTickData* newTick = WTSTickData::create(nextTick);
-				newTick->setCode(stdCode.c_str());
-				_listener->handle_tick(stdCode.c_str(), newTick);
-				newTick->release();
+				WTSTickData* newData = WTSTickData::create(nextItem);
+				newData->setCode(stdCode.c_str());
+				_listener->handle_tick(stdCode.c_str(), newData);
+				newData->release();
 
-				tickList._cursor++;
+				itemList._cursor++;
+			}
+		}
+
+		//4、最后回放委托队列
+		for (auto v : _ordque_sub_map)
+		{
+			std::string stdCode = v.first;
+			auto& itemList = _ordque_cache[stdCode];
+			auto& nextItem = itemList._items[itemList._cursor - 1];
+			uint64_t lastTime = (uint64_t)nextItem.action_date * 1000000000 + nextItem.action_time;
+			if (lastTime <= nextTime)
+			{
+				WTSOrdQueData* newData = WTSOrdQueData::create(nextItem);
+				newData->setCode(stdCode.c_str());
+				_listener->handle_order_queue(stdCode.c_str(), newData);
+				newData->release();
+
+				itemList._cursor++;
 			}
 		}
 	}
@@ -1381,7 +1639,7 @@ WTSTickSlice* HisDataReplayer::get_tick_slice(const char* stdCode, uint32_t coun
 	if (!checkTicks(stdCode, _cur_tdate))
 		return NULL;
 
-	TickList& tickList = _ticks_cache[stdCode];
+	auto& tickList = _ticks_cache[stdCode];
 	if (tickList._cursor == 0)
 		return NULL;
 
@@ -1400,14 +1658,14 @@ WTSTickSlice* HisDataReplayer::get_tick_slice(const char* stdCode, uint32_t coun
 		curTick.action_date = uDate;
 		curTick.action_time = uTime;
 
-		auto tit = std::lower_bound(tickList._ticks.begin(), tickList._ticks.end(), curTick, [](const WTSTickStruct& a, const WTSTickStruct& b){
+		auto tit = std::lower_bound(tickList._items.begin(), tickList._items.end(), curTick, [](const WTSTickStruct& a, const WTSTickStruct& b){
 			if (a.action_date != b.action_date)
 				return a.action_date < b.action_date;
 			else
 				return a.action_time < b.action_time;
 		});
 
-		uint32_t idx = tit - tickList._ticks.begin();
+		uint32_t idx = tit - tickList._items.begin();
 		tickList._cursor = idx + 1;
 	}
 
@@ -1420,7 +1678,7 @@ WTSTickSlice* HisDataReplayer::get_tick_slice(const char* stdCode, uint32_t coun
 	if (realCnt == 0)
 		return NULL;
 
-	WTSTickSlice* ticks = WTSTickSlice::create(stdCode, tickList._ticks.data() + sIdx, realCnt);
+	WTSTickSlice* ticks = WTSTickSlice::create(stdCode, tickList._items.data() + sIdx, realCnt);
 	return ticks;
 }
 
@@ -1486,6 +1744,105 @@ bool HisDataReplayer::checkAllTicks(uint32_t uDate)
 	return bHasTick;
 }
 
+bool HisDataReplayer::checkOrderDetails(const char* stdCode, uint32_t uDate)
+{
+	bool bNeedCache = false;
+	auto it = _ticks_cache.find(stdCode);
+	if (it == _ticks_cache.end())
+		bNeedCache = true;
+	else
+	{
+		auto& tickList = it->second;
+		if (tickList._date != uDate)
+			bNeedCache = true;
+	}
+
+
+	if (bNeedCache)
+	{
+		bool hasTicks = false;
+		if (_mode == "csv")
+		{
+			hasTicks = cacheRawTicksFromCSV(stdCode, stdCode, uDate);
+		}
+		else
+		{
+			hasTicks = cacheRawTicksFromBin(stdCode, stdCode, uDate);
+		}
+
+		if (!hasTicks)
+			return false;
+	}
+
+	return true;
+}
+
+bool HisDataReplayer::checkOrderQueues(const char* stdCode, uint32_t uDate)
+{
+	bool bNeedCache = false;
+	auto it = _ticks_cache.find(stdCode);
+	if (it == _ticks_cache.end())
+		bNeedCache = true;
+	else
+	{
+		auto& tickList = it->second;
+		if (tickList._date != uDate)
+			bNeedCache = true;
+	}
+
+
+	if (bNeedCache)
+	{
+		bool hasTicks = false;
+		if (_mode == "csv")
+		{
+			hasTicks = cacheRawTicksFromCSV(stdCode, stdCode, uDate);
+		}
+		else
+		{
+			hasTicks = cacheRawTicksFromBin(stdCode, stdCode, uDate);
+		}
+
+		if (!hasTicks)
+			return false;
+	}
+
+	return true;
+}
+
+bool HisDataReplayer::checkTransactions(const char* stdCode, uint32_t uDate)
+{
+	bool bNeedCache = false;
+	auto it = _ticks_cache.find(stdCode);
+	if (it == _ticks_cache.end())
+		bNeedCache = true;
+	else
+	{
+		auto& tickList = it->second;
+		if (tickList._date != uDate)
+			bNeedCache = true;
+	}
+
+
+	if (bNeedCache)
+	{
+		bool hasTicks = false;
+		if (_mode == "csv")
+		{
+			hasTicks = cacheRawTicksFromCSV(stdCode, stdCode, uDate);
+		}
+		else
+		{
+			hasTicks = cacheRawTicksFromBin(stdCode, stdCode, uDate);
+		}
+
+		if (!hasTicks)
+			return false;
+	}
+
+	return true;
+}
+
 bool HisDataReplayer::checkTicks(const char* stdCode, uint32_t uDate)
 {
 	bool bNeedCache = false;
@@ -1494,7 +1851,7 @@ bool HisDataReplayer::checkTicks(const char* stdCode, uint32_t uDate)
 		bNeedCache = true;
 	else
 	{
-		TickList& tickList = it->second;
+		auto& tickList = it->second;
 		if (tickList._date != uDate)
 			bNeedCache = true;
 	}
@@ -1524,7 +1881,7 @@ WTSTickData* HisDataReplayer::get_last_tick(const char* stdCode)
 	if (!checkTicks(stdCode, _cur_tdate))
 		return NULL;
 
-	TickList& tickList = _ticks_cache[stdCode];
+	auto& tickList = _ticks_cache[stdCode];
 	if (tickList._cursor == 0)
 		return NULL;
 
@@ -1537,18 +1894,18 @@ WTSTickData* HisDataReplayer::get_last_tick(const char* stdCode)
 		curTick.action_date = uDate;
 		curTick.action_time = uTime;
 
-		auto tit = std::lower_bound(tickList._ticks.begin(), tickList._ticks.end(), curTick, [](const WTSTickStruct& a, const WTSTickStruct& b){
+		auto tit = std::lower_bound(tickList._items.begin(), tickList._items.end(), curTick, [](const WTSTickStruct& a, const WTSTickStruct& b){
 			if (a.action_date != b.action_date)
 				return a.action_date < b.action_date;
 			else
 				return a.action_time < b.action_time;
 		});
 
-		uint32_t idx = tit - tickList._ticks.begin();
+		uint32_t idx = tit - tickList._items.begin();
 		tickList._cursor = idx + 1;
 	}
 
-	return WTSTickData::create(tickList._ticks[tickList._cursor - 1]);
+	return WTSTickData::create(tickList._items[tickList._cursor - 1]);
 }
 
 WTSCommodityInfo* HisDataReplayer::get_commodity_info(const char* stdCode)
@@ -1672,6 +2029,24 @@ double HisDataReplayer::get_cur_price(const char* stdCode)
 void HisDataReplayer::sub_tick(uint32_t sid, const char* stdCode)
 {
 	SIDSet& sids = _tick_sub_map[stdCode];
+	sids.insert(sid);
+}
+
+void HisDataReplayer::sub_order_detail(uint32_t sid, const char* stdCode)
+{
+	SIDSet& sids = _orddtl_sub_map[stdCode];
+	sids.insert(sid);
+}
+
+void HisDataReplayer::sub_order_queue(uint32_t sid, const char* stdCode)
+{
+	SIDSet& sids = _ordque_sub_map[stdCode];
+	sids.insert(sid);
+}
+
+void HisDataReplayer::sub_transaction(uint32_t sid, const char* stdCode)
+{
+	SIDSet& sids = _trans_sub_map[stdCode];
 	sids.insert(sid);
 }
 
@@ -1839,21 +2214,21 @@ bool HisDataReplayer::cacheRawTicksFromBin(const std::string& key, const char* s
 		}
 	}
 
-	TickList& ticksList = _ticks_cache[key];
+	auto& ticksList = _ticks_cache[key];
 	uint32_t tickcnt = 0;
 	if (tBlockV2 == NULL)
 	{
 		tickcnt = (content.size() - sizeof(HisTickBlock)) / sizeof(WTSTickStruct);
-		ticksList._ticks.resize(tickcnt);
-		memcpy(ticksList._ticks.data(), tBlock->_ticks, sizeof(WTSTickStruct)*tickcnt);
+		ticksList._items.resize(tickcnt);
+		memcpy(ticksList._items.data(), tBlock->_ticks, sizeof(WTSTickStruct)*tickcnt);
 	}
 	else
 	{
 		//需要解压
 		std::string buf = WTSCmpHelper::uncompress_data(tBlockV2->_data, (uint32_t)tBlockV2->_size);
 		tickcnt = buf.size() / sizeof(WTSTickStruct);
-		ticksList._ticks.resize(tickcnt);
-		memcpy(ticksList._ticks.data(), buf.data(), buf.size());
+		ticksList._items.resize(tickcnt);
+		memcpy(ticksList._items.data(), buf.data(), buf.size());
 	}	
 	
 	ticksList._cursor = UINT_MAX;
@@ -1888,9 +2263,9 @@ bool HisDataReplayer::cacheRawTicksFromCSV(const std::string& key, const char* s
 		std::string rawData = WTSCmpHelper::uncompress_data(tBlock->_data, (uint32_t)tBlock->_size);
 		uint32_t tickcnt = rawData.size() / sizeof(WTSTickStruct);
 
-		TickList& ticksList = _ticks_cache[key];
-		ticksList._ticks.resize(tickcnt);
-		memcpy(ticksList._ticks.data(), rawData.data(), rawData.size());
+		auto& ticksList = _ticks_cache[key];
+		ticksList._items.resize(tickcnt);
+		memcpy(ticksList._items.data(), rawData.data(), rawData.size());
 		ticksList._cursor = UINT_MAX;
 		ticksList._code = stdCode;
 		ticksList._date = uDate;
@@ -1916,7 +2291,7 @@ bool HisDataReplayer::cacheRawTicksFromCSV(const std::string& key, const char* s
 
 		char buffer[512];
 		bool headerskipped = false;
-		TickList& tickList = _ticks_cache[key];
+		auto& tickList = _ticks_cache[key];
 		tickList._code = stdCode;
 		tickList._date = uDate;
 		while (!ifs.eof())
@@ -1939,23 +2314,23 @@ bool HisDataReplayer::cacheRawTicksFromCSV(const std::string& key, const char* s
 			ticks.action_time = strToTime(ay[1].c_str(), true) * 1000;
 			ticks.price = strtod(ay[2].c_str(), NULL);
 			ticks.volumn = strtoul(ay[3].c_str(), NULL, 10);
-			tickList._ticks.push_back(ticks);
+			tickList._items.push_back(ticks);
 
-			if (tickList._ticks.size() % 1000 == 0)
+			if (tickList._items.size() % 1000 == 0)
 			{
-				WTSLogger::info("已读取数据%u条", tickList._ticks.size());
+				WTSLogger::info("已读取数据%u条", tickList._items.size());
 			}
 		}
-		tickList._count = tickList._ticks.size();
+		tickList._count = tickList._items.size();
 		ifs.close();
-		WTSLogger::info("数据文件%s全部读取完成, 共%u条", csvfile.c_str(), tickList._ticks.size());
+		WTSLogger::info("数据文件%s全部读取完成, 共%u条", csvfile.c_str(), tickList._items.size());
 
 		HisTickBlockV2 tBlock;
 		strcpy(tBlock._blk_flag, BLK_FLAG);
 		tBlock._type = BT_HIS_Ticks;
 		tBlock._version = BLOCK_VERSION_CMP;
 		
-		std::string cmpData = WTSCmpHelper::compress_data(tickList._ticks.data(), sizeof(WTSTickStruct)*tickList._count);
+		std::string cmpData = WTSCmpHelper::compress_data(tickList._items.data(), sizeof(WTSTickStruct)*tickList._count);
 		tBlock._size = cmpData.size();
 
 		BoostFile bf;

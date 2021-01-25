@@ -24,6 +24,10 @@ class IParserStub
 {
 public:
 	virtual void			handle_push_quote(WTSTickData* curTick, bool isHot = false){}
+
+	virtual void			handle_push_order_detail(WTSOrdDtlData* curOrdDtl){}
+	virtual void			handle_push_order_queue(WTSOrdQueData* curOrdQue) {}
+	virtual void			handle_push_transaction(WTSTransData* curTrans) {}
 };
 
 class ParserAdapter : public IParserApiListener,
@@ -45,7 +49,30 @@ public:
 public:
 	virtual void handleSymbolList(const WTSArray* aySymbols) override {}
 
+	/*
+	 *	处理实时行情
+	 *	@quote		实时行情
+	 *	@bNeedSlice	是否需要切片，如果是从外部接入的快照行情数据，则需要切片，如果是内部广播的就不需要切片
+	 */
 	virtual void handleQuote(WTSTickData *quote, bool bNeedSlice) override;
+
+	/*
+	 *	处理委托队列数据（股票level2）
+	 *	@ordQueData	委托对垒数据
+	 */
+	virtual void handleOrderQueue(WTSOrdQueData* ordQueData) override;
+
+	/*
+	 *	处理逐笔委托数据（股票level2）
+	 *	@ordDetailData	逐笔委托数据
+	 */
+	virtual void handleOrderDetail(WTSOrdDtlData* ordDetailData) override;
+
+	/*
+		*	处理逐笔成交数据
+		*	@transData	逐笔成交数据
+		*/
+	virtual void handleTransaction(WTSTransData* transData) override;
 
 	virtual void handleParserLog(WTSLogLevel ll, const char* format, ...) override;
 

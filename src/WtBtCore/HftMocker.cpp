@@ -207,6 +207,21 @@ void HftMocker::handle_tick(const char* stdCode, WTSTickData* curTick)
 	on_tick(stdCode, curTick);
 }
 
+void HftMocker::handle_order_detail(const char* stdCode, WTSOrdDtlData* curOrdDtl)
+{
+	on_order_detail(stdCode, curOrdDtl);
+}
+
+void HftMocker::handle_order_queue(const char* stdCode, WTSOrdQueData* curOrdQue)
+{
+	on_order_queue(stdCode, curOrdQue);
+}
+
+void HftMocker::handle_transaction(const char* stdCode, WTSTransData* curTrans)
+{
+	on_transaction(stdCode, curTrans);
+}
+
 void HftMocker::handle_bar_close(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar)
 {
 	on_bar(stdCode, period, times, newBar);
@@ -276,6 +291,24 @@ void HftMocker::on_tick(const char* stdCode, WTSTickData* newTick)
 	if (_strategy)
 		_strategy->on_tick(this, stdCode, newTick);
 
+}
+
+void HftMocker::on_order_queue(const char* stdCode, WTSOrdQueData* newOrdQue)
+{
+	if (_strategy)
+		_strategy->on_order_queue(this, stdCode, newOrdQue);
+}
+
+void HftMocker::on_order_detail(const char* stdCode, WTSOrdDtlData* newOrdDtl)
+{
+	if (_strategy)
+		_strategy->on_order_detail(this, stdCode, newOrdDtl);
+}
+
+void HftMocker::on_transaction(const char* stdCode, WTSTransData* newTrans)
+{
+	if (_strategy)
+		_strategy->on_transaction(this, stdCode, newTrans);
 }
 
 uint32_t HftMocker::id()
@@ -636,6 +669,21 @@ uint32_t HftMocker::stra_get_secs()
 void HftMocker::stra_sub_ticks(const char* stdCode)
 {
 	_replayer->sub_tick(_context_id, stdCode);
+}
+
+void HftMocker::stra_sub_order_queues(const char* stdCode)
+{
+	_replayer->sub_order_queue(_context_id, stdCode);
+}
+
+void HftMocker::stra_sub_order_details(const char* stdCode)
+{
+	_replayer->sub_order_detail(_context_id, stdCode);
+}
+
+void HftMocker::stra_sub_transactions(const char* stdCode)
+{
+	_replayer->sub_transaction(_context_id, stdCode);
 }
 
 void HftMocker::stra_log_text(const char* fmt, ...)
