@@ -97,18 +97,21 @@ bool HisDataReplayer::init(WTSVariant* cfg)
 
 	loadFees(cfg->getCString("fees"));
 
-	WTSVariant* dbConf = cfg->get("db");
-	if (dbConf)
+	if(_mode.compare("db") == 0)
 	{
-		strcpy(_db_conf._host, dbConf->getCString("host"));
-		strcpy(_db_conf._dbname, dbConf->getCString("dbname"));
-		strcpy(_db_conf._user, dbConf->getCString("user"));
-		strcpy(_db_conf._pass, dbConf->getCString("pass"));
-		_db_conf._port = dbConf->getInt32("port");
+		WTSVariant* dbConf = cfg->get("db");
+		if (dbConf)
+		{
+			strcpy(_db_conf._host, dbConf->getCString("host"));
+			strcpy(_db_conf._dbname, dbConf->getCString("dbname"));
+			strcpy(_db_conf._user, dbConf->getCString("user"));
+			strcpy(_db_conf._pass, dbConf->getCString("pass"));
+			_db_conf._port = dbConf->getInt32("port");
 
-		_db_conf._active = (strlen(_db_conf._host) > 0) && (strlen(_db_conf._dbname) > 0) && (_db_conf._port != 0);
-		if (_db_conf._active)
-			initDB();
+			_db_conf._active = (strlen(_db_conf._host) > 0) && (strlen(_db_conf._dbname) > 0) && (_db_conf._port != 0);
+			if (_db_conf._active)
+				initDB();
+		}
 	}
 
 	bool bAdjLoaded = false;
