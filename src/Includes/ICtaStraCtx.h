@@ -15,8 +15,6 @@
 
 NS_OTP_BEGIN
 class WTSCommodityInfo;
-class WTSKlineData;
-class WTSHisTickData;
 class WTSTickData;
 struct WTSBarStruct;
 class WTSKlineSlice;

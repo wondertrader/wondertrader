@@ -117,15 +117,30 @@ typedef struct _HisTickBlockV2 : BlockHeaderV2
 	char			_data[0];
 } HisTickBlockV2;
 
+typedef struct _HisTransBlock : BlockHeader
+{
+	WTSTransStruct	_items[0];
+} HisTransBlock;
+
 typedef struct _HisTransBlockV2 : BlockHeaderV2
 {
 	char			_data[0];
 } HisTransBlockV2;
 
+typedef struct _HisOrdDtlBlock : BlockHeader
+{
+	WTSOrdDtlStruct	_items[0];
+} HisOrdDtlBlock;
+
 typedef struct _HisOrdDtlBlockV2 : BlockHeaderV2
 {
 	char			_data[0];
 } HisOrdDtlBlockV2;
+
+typedef struct _HisOrdQueBlock : BlockHeader
+{
+	WTSOrdQueStruct	_items[0];
+} HisOrdQueBlock;
 
 typedef struct _HisOrdQueBlockV2 : BlockHeaderV2
 {

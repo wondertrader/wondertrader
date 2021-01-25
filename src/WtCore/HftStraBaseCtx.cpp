@@ -278,6 +278,35 @@ WTSTickSlice* HftStraBaseCtx::stra_get_ticks(const char* stdCode, uint32_t count
 	return ticks;
 }
 
+WTSOrdDtlSlice* HftStraBaseCtx::stra_get_order_detail(const char* stdCode, uint32_t count)
+{
+	WTSOrdDtlSlice* ret = _engine->get_order_detail_slice(_context_id, stdCode, count);
+
+	if (ret)
+		_engine->sub_order_detail(id(), stdCode);
+	return ret;
+}
+
+WTSOrdQueSlice* HftStraBaseCtx::stra_get_order_queue(const char* stdCode, uint32_t count)
+{
+	WTSOrdQueSlice* ret = _engine->get_order_queue_slice(_context_id, stdCode, count);
+
+	if (ret)
+		_engine->sub_order_queue(id(), stdCode);
+	return ret;
+}
+
+
+WTSTransSlice* HftStraBaseCtx::stra_get_transaction(const char* stdCode, uint32_t count)
+{
+	WTSTransSlice* ret = _engine->get_transaction_slice(_context_id, stdCode, count);
+
+	if (ret)
+		_engine->sub_transaction(id(), stdCode);
+	return ret;
+}
+
+
 WTSTickData* HftStraBaseCtx::stra_get_last_tick(const char* stdCode)
 {
 	return _engine->get_last_tick(_context_id, stdCode);

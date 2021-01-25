@@ -1409,11 +1409,11 @@ class WTSTickSlice : public WTSObject
 {
 private:
 	char			m_strCode[MAX_INSTRUMENT_LENGTH];
-	WTSTickStruct*	m_tsBegin;
+	WTSTickStruct*	m_ptrBegin;
 	uint32_t		m_uCount;
 
 protected:
-	WTSTickSlice():m_tsBegin(NULL),m_uCount(0){}
+	WTSTickSlice():m_ptrBegin(NULL),m_uCount(0){}
 	inline int32_t		translateIdx(int32_t idx) const
 	{
 		if (idx < 0)
@@ -1432,7 +1432,7 @@ public:
 
 		WTSTickSlice* slice = new WTSTickSlice();
 		strcpy(slice->m_strCode, code);
-		slice->m_tsBegin = firstTick;
+		slice->m_ptrBegin = firstTick;
 		slice->m_uCount = count;
 
 		return slice;
@@ -1440,14 +1440,170 @@ public:
 
 	inline uint32_t size() const{ return m_uCount; }
 
-	inline bool empty() const{ return (m_uCount == 0) || (m_tsBegin == NULL); }
+	inline bool empty() const{ return (m_uCount == 0) || (m_ptrBegin == NULL); }
 
 	inline const WTSTickStruct* at(int32_t idx)
 	{
-		if (m_tsBegin == NULL)
+		if (m_ptrBegin == NULL)
 			return NULL;
 		idx = translateIdx(idx);
-		return m_tsBegin + idx;
+		return m_ptrBegin + idx;
+	}
+};
+
+//////////////////////////////////////////////////////////////////////////
+/*
+ *	@brief 逐笔委托数据切片，从连续的逐笔委托缓存中做的切片
+ *	@details 切片并没有真实的复制内存，而只是取了开始和结尾的下标
+ *	这样使用虽然更快，但是使用场景要非常小心，因为他依赖于基础数据对象
+ */
+class WTSOrdDtlSlice : public WTSObject
+{
+private:
+	char				m_strCode[MAX_INSTRUMENT_LENGTH];
+	WTSOrdDtlStruct*	m_ptrBegin;
+	uint32_t			m_uCount;
+
+protected:
+	WTSOrdDtlSlice() :m_ptrBegin(NULL), m_uCount(0) {}
+	inline int32_t		translateIdx(int32_t idx) const
+	{
+		if (idx < 0)
+		{
+			return max(0, (int32_t)m_uCount + idx);
+		}
+
+		return idx;
+	}
+
+public:
+	static inline WTSOrdDtlSlice* create(const char* code, WTSOrdDtlStruct* firstItem, uint32_t count)
+	{
+		if (count == 0 || firstItem == NULL)
+			return NULL;
+
+		WTSOrdDtlSlice* slice = new WTSOrdDtlSlice();
+		strcpy(slice->m_strCode, code);
+		slice->m_ptrBegin = firstItem;
+		slice->m_uCount = count;
+
+		return slice;
+	}
+
+	inline uint32_t size() const { return m_uCount; }
+
+	inline bool empty() const { return (m_uCount == 0) || (m_ptrBegin == NULL); }
+
+	inline const WTSOrdDtlStruct* at(int32_t idx)
+	{
+		if (m_ptrBegin == NULL)
+			return NULL;
+		idx = translateIdx(idx);
+		return m_ptrBegin + idx;
+	}
+};
+
+//////////////////////////////////////////////////////////////////////////
+/*
+ *	@brief 委托队列数据切片，从连续的委托队列缓存中做的切片
+ *	@details 切片并没有真实的复制内存，而只是取了开始和结尾的下标
+ *	这样使用虽然更快，但是使用场景要非常小心，因为他依赖于基础数据对象
+ */
+class WTSOrdQueSlice : public WTSObject
+{
+private:
+	char				m_strCode[MAX_INSTRUMENT_LENGTH];
+	WTSOrdQueStruct*	m_ptrBegin;
+	uint32_t			m_uCount;
+
+protected:
+	WTSOrdQueSlice() :m_ptrBegin(NULL), m_uCount(0) {}
+	inline int32_t		translateIdx(int32_t idx) const
+	{
+		if (idx < 0)
+		{
+			return max(0, (int32_t)m_uCount + idx);
+		}
+
+		return idx;
+	}
+
+public:
+	static inline WTSOrdQueSlice* create(const char* code, WTSOrdQueStruct* firstItem, uint32_t count)
+	{
+		if (count == 0 || firstItem == NULL)
+			return NULL;
+
+		WTSOrdQueSlice* slice = new WTSOrdQueSlice();
+		strcpy(slice->m_strCode, code);
+		slice->m_ptrBegin = firstItem;
+		slice->m_uCount = count;
+
+		return slice;
+	}
+
+	inline uint32_t size() const { return m_uCount; }
+
+	inline bool empty() const { return (m_uCount == 0) || (m_ptrBegin == NULL); }
+
+	inline const WTSOrdQueStruct* at(int32_t idx)
+	{
+		if (m_ptrBegin == NULL)
+			return NULL;
+		idx = translateIdx(idx);
+		return m_ptrBegin + idx;
+	}
+};
+
+//////////////////////////////////////////////////////////////////////////
+/*
+ *	@brief 逐笔成交数据切片，从连续的逐笔成交缓存中做的切片
+ *	@details 切片并没有真实的复制内存，而只是取了开始和结尾的下标
+ *	这样使用虽然更快，但是使用场景要非常小心，因为他依赖于基础数据对象
+ */
+class WTSTransSlice : public WTSObject
+{
+private:
+	char			m_strCode[MAX_INSTRUMENT_LENGTH];
+	WTSTransStruct*	m_ptrBegin;
+	uint32_t		m_uCount;
+
+protected:
+	WTSTransSlice() :m_ptrBegin(NULL), m_uCount(0) {}
+	inline int32_t		translateIdx(int32_t idx) const
+	{
+		if (idx < 0)
+		{
+			return max(0, (int32_t)m_uCount + idx);
+		}
+
+		return idx;
+	}
+
+public:
+	static inline WTSTransSlice* create(const char* code, WTSTransStruct* firstItem, uint32_t count)
+	{
+		if (count == 0 || firstItem == NULL)
+			return NULL;
+
+		WTSTransSlice* slice = new WTSTransSlice();
+		strcpy(slice->m_strCode, code);
+		slice->m_ptrBegin = firstItem;
+		slice->m_uCount = count;
+
+		return slice;
+	}
+
+	inline uint32_t size() const { return m_uCount; }
+
+	inline bool empty() const { return (m_uCount == 0) || (m_ptrBegin == NULL); }
+
+	inline const WTSTransStruct* at(int32_t idx)
+	{
+		if (m_ptrBegin == NULL)
+			return NULL;
+		idx = translateIdx(idx);
+		return m_ptrBegin + idx;
 	}
 };
 

@@ -24,7 +24,9 @@ class WTSTickData;
 class WTSVariant;
 class WTSKlineSlice;
 class WTSTickSlice;
-class WTSHisTickData;
+class WTSOrdDtlSlice;
+class WTSOrdQueSlice;
+class WTSTransSlice;
 class WTSSessionInfo;
 class WTSCommodityInfo;
 
@@ -196,6 +198,12 @@ public:
 	WTSKlineSlice* get_kline_slice(const char* stdCode, const char* period, uint32_t count, uint32_t times = 1, bool isMain = false);
 
 	WTSTickSlice* get_tick_slice(const char* stdCode, uint32_t count, uint64_t etime = 0);
+
+	WTSOrdDtlSlice* get_order_detail_slice(const char* stdCode, uint32_t count, uint64_t etime = 0);
+
+	WTSOrdQueSlice* get_order_queue_slice(const char* stdCode, uint32_t count, uint64_t etime = 0);
+
+	WTSTransSlice* get_transaction_slice(const char* stdCode, uint32_t count, uint64_t etime = 0);
 
 	WTSTickData* get_last_tick(const char* stdCode);
 

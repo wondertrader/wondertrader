@@ -629,6 +629,21 @@ WTSTickSlice* HftMocker::stra_get_ticks(const char* stdCode, uint32_t count)
 	return _replayer->get_tick_slice(stdCode, count);
 }
 
+WTSOrdQueSlice* HftMocker::stra_get_order_queue(const char* stdCode, uint32_t count)
+{
+	return _replayer->get_order_queue_slice(stdCode, count);
+}
+
+WTSOrdDtlSlice* HftMocker::stra_get_order_detail(const char* stdCode, uint32_t count)
+{
+	return _replayer->get_order_detail_slice(stdCode, count);
+}
+
+WTSTransSlice* HftMocker::stra_get_transaction(const char* stdCode, uint32_t count)
+{
+	return _replayer->get_transaction_slice(stdCode, count);
+}
+
 WTSTickData* HftMocker::stra_get_last_tick(const char* stdCode)
 {
 	return _replayer->get_last_tick(stdCode);

@@ -62,6 +62,12 @@ public:
 
 	virtual WTSTickSlice* stra_get_ticks(const char* stdCode, uint32_t count) override;
 
+	virtual WTSOrdDtlSlice*	stra_get_order_detail(const char* stdCode, uint32_t count) override;
+
+	virtual WTSOrdQueSlice*	stra_get_order_queue(const char* stdCode, uint32_t count) override;
+
+	virtual WTSTransSlice*	stra_get_transaction(const char* stdCode, uint32_t count) override;
+
 	virtual WTSTickData* stra_get_last_tick(const char* stdCode) override;
 
 	virtual void stra_log_text(const char* fmt, ...) override;

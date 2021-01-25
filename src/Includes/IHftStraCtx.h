@@ -51,6 +51,9 @@ public:
 	virtual WTSCommodityInfo* stra_get_comminfo(const char* stdCode) = 0;
 	virtual WTSKlineSlice*	stra_get_bars(const char* stdCode, const char* period, uint32_t count) = 0;
 	virtual WTSTickSlice*	stra_get_ticks(const char* stdCode, uint32_t count) = 0;
+	virtual WTSOrdDtlSlice*	stra_get_order_detail(const char* stdCode, uint32_t count) = 0;
+	virtual WTSOrdQueSlice*	stra_get_order_queue(const char* stdCode, uint32_t count) = 0;
+	virtual WTSTransSlice*	stra_get_transaction(const char* stdCode, uint32_t count) = 0;
 	virtual WTSTickData*	stra_get_last_tick(const char* stdCode) = 0;
 
 	virtual double stra_get_position(const char* stdCode) = 0;

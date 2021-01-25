@@ -108,9 +108,6 @@
     <ClInclude Include="WtSelTicker.h">
       <Filter>SEL</Filter>
     </ClInclude>
-    <ClInclude Include="IDataManager.h">
-      <Filter>Datas</Filter>
-    </ClInclude>
     <ClInclude Include="..\Includes\CtaStrategyDefs.h">
       <Filter>Incs</Filter>
     </ClInclude>

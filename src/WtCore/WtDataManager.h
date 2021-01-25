@@ -17,8 +17,6 @@
 
 NS_OTP_BEGIN
 class WTSVariant;
-class WTSHisTickData;
-class WTSKlineData;
 class WTSTickData;
 class WTSKlineSlice;
 class WTSTickSlice;
@@ -43,6 +41,9 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	//IDataManager ½Ó¿Ú
 	virtual WTSTickSlice* get_tick_slice(const char* stdCode, uint32_t count, uint64_t etime = 0) override;
+	virtual WTSOrdQueSlice* get_order_queue_slice(const char* stdCode, uint32_t count, uint64_t etime = 0) override;
+	virtual WTSOrdDtlSlice* get_order_detail_slice(const char* stdCode, uint32_t count, uint64_t etime = 0) override;
+	virtual WTSTransSlice* get_transaction_slice(const char* stdCode, uint32_t count, uint64_t etime = 0) override;
 	virtual WTSKlineSlice* get_kline_slice(const char* stdCode, WTSKlinePeriod period, uint32_t times, uint32_t count, uint64_t etime = 0) override;
 	virtual WTSTickData* grab_last_tick(const char* stdCode) override;
 

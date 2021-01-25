@@ -47,6 +47,11 @@ public:
 	virtual void on_session_end() override;
 
 public:
+	WTSOrdQueSlice* get_order_queue_slice(uint32_t sid, const char* stdCode, uint32_t count);
+	WTSOrdDtlSlice* get_order_detail_slice(uint32_t sid, const char* stdCode, uint32_t count);
+	WTSTransSlice* get_transaction_slice(uint32_t sid, const char* stdCode, uint32_t count);
+
+public:
 	void on_minute_end(uint32_t curDate, uint32_t curTime);
 
 	void addContext(HftContextPtr ctx);

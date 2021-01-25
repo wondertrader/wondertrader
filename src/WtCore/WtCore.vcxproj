@@ -30,7 +30,6 @@
     <ClInclude Include="ActionPolicyMgr.h" />
     <ClInclude Include="EventNotifier.h" />
     <ClInclude Include="WtFilterMgr.h" />
-    <ClInclude Include="IDataManager.h" />
     <ClInclude Include="HftStraBaseCtx.h" />
     <ClInclude Include="HftStraContext.h" />
     <ClInclude Include="HftStrategyMgr.h" />

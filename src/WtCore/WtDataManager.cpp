@@ -245,6 +245,29 @@ WTSTickSlice* WtDataManager::get_tick_slice(const char* stdCode, uint32_t count,
 	return _reader->readTickSlice(stdCode, count, etime);
 }
 
+WTSOrdQueSlice* WtDataManager::get_order_queue_slice(const char* stdCode, uint32_t count, uint64_t etime /* = 0 */)
+{
+	if (_reader == NULL)
+		return NULL;
+
+	return _reader->readOrdQueSlice(stdCode, count, etime);
+}
+
+WTSOrdDtlSlice* WtDataManager::get_order_detail_slice(const char* stdCode, uint32_t count, uint64_t etime /* = 0 */)
+{
+	if (_reader == NULL)
+		return NULL;
+
+	return _reader->readOrdDtlSlice(stdCode, count, etime);
+}
+
+WTSTransSlice* WtDataManager::get_transaction_slice(const char* stdCode, uint32_t count, uint64_t etime /* = 0 */)
+{
+	if (_reader == NULL)
+		return NULL;
+
+	return _reader->readTransSlice(stdCode, count, etime);
+}
 
 WTSKlineSlice* WtDataManager::get_kline_slice(const char* stdCode, WTSKlinePeriod period, uint32_t times, uint32_t count, uint64_t etime /* = 0 */)
 {

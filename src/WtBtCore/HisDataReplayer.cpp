@@ -1682,42 +1682,42 @@ WTSTickSlice* HisDataReplayer::get_tick_slice(const char* stdCode, uint32_t coun
 	return ticks;
 }
 
-/*
-WTSHisTickData* HisDataReplayer::get_ticks(const char* stdCode, uint32_t count, uint64_t etime)
+WTSOrdDtlSlice* HisDataReplayer::get_order_detail_slice(const char* stdCode, uint32_t count, uint64_t etime /* = 0 */)
 {
-	if (!checkTicks(stdCode, _cur_tdate))
+	if (!checkOrderDetails(stdCode, _cur_tdate))
 		return NULL;
 
-	TickList& tickList = _ticks_cache[stdCode];
-	if (tickList._cursor == 0)
+	auto& dataList = _orddtl_cache[stdCode];
+	if (dataList._cursor == 0)
 		return NULL;
 
-	if (tickList._cursor == UINT_MAX)
+	if (dataList._cursor == UINT_MAX)
 	{
 		uint32_t uDate = _cur_date;
 		uint32_t uTime = _cur_time * 100000 + _cur_secs;
-		if(etime != 0)
+
+		if (etime != 0)
 		{
 			uDate = (uint32_t)(etime / 10000);
 			uTime = (uint32_t)(etime % 10000 * 100000);
 		}
 
-		WTSTickStruct curTick;
-		curTick.action_date = uDate;
-		curTick.action_time = uTime;
+		WTSOrdDtlStruct curItem;
+		curItem.action_date = uDate;
+		curItem.action_time = uTime;
 
-		auto tit = std::lower_bound(tickList._ticks.begin(), tickList._ticks.end(), curTick, [](const WTSTickStruct& a, const WTSTickStruct& b){
+		auto tit = std::lower_bound(dataList._items.begin(), dataList._items.end(), curItem, [](const WTSOrdDtlStruct& a, const WTSOrdDtlStruct& b) {
 			if (a.action_date != b.action_date)
 				return a.action_date < b.action_date;
 			else
 				return a.action_time < b.action_time;
 		});
 
-		uint32_t idx = tit - tickList._ticks.begin();
-		tickList._cursor = idx + 1;
+		uint32_t idx = tit - dataList._items.begin();
+		dataList._cursor = idx + 1;
 	}
 
-	uint32_t eIdx = tickList._cursor - 1;
+	uint32_t eIdx = dataList._cursor - 1;
 	uint32_t sIdx = 0;
 	if (eIdx >= count - 1)
 		sIdx = eIdx + 1 - count;
@@ -1726,11 +1726,105 @@ WTSHisTickData* HisDataReplayer::get_ticks(const char* stdCode, uint32_t count, 
 	if (realCnt == 0)
 		return NULL;
 
-	WTSHisTickData* ticks = WTSHisTickData::create(stdCode, realCnt);
-	memcpy(ticks->getDataRef().data(), tickList._ticks.data() + sIdx, sizeof(WTSTickStruct)*realCnt);
+	WTSOrdDtlSlice* ticks = WTSOrdDtlSlice::create(stdCode, dataList._items.data() + sIdx, realCnt);
 	return ticks;
 }
-*/
+
+WTSOrdQueSlice* HisDataReplayer::get_order_queue_slice(const char* stdCode, uint32_t count, uint64_t etime /* = 0 */)
+{
+	if (!checkOrderQueues(stdCode, _cur_tdate))
+		return NULL;
+
+	auto& dataList = _ordque_cache[stdCode];
+	if (dataList._cursor == 0)
+		return NULL;
+
+	if (dataList._cursor == UINT_MAX)
+	{
+		uint32_t uDate = _cur_date;
+		uint32_t uTime = _cur_time * 100000 + _cur_secs;
+
+		if (etime != 0)
+		{
+			uDate = (uint32_t)(etime / 10000);
+			uTime = (uint32_t)(etime % 10000 * 100000);
+		}
+
+		WTSOrdQueStruct curItem;
+		curItem.action_date = uDate;
+		curItem.action_time = uTime;
+
+		auto tit = std::lower_bound(dataList._items.begin(), dataList._items.end(), curItem, [](const WTSOrdQueStruct& a, const WTSOrdQueStruct& b) {
+			if (a.action_date != b.action_date)
+				return a.action_date < b.action_date;
+			else
+				return a.action_time < b.action_time;
+		});
+
+		uint32_t idx = tit - dataList._items.begin();
+		dataList._cursor = idx + 1;
+	}
+
+	uint32_t eIdx = dataList._cursor - 1;
+	uint32_t sIdx = 0;
+	if (eIdx >= count - 1)
+		sIdx = eIdx + 1 - count;
+
+	uint32_t realCnt = eIdx - sIdx + 1;
+	if (realCnt == 0)
+		return NULL;
+
+	WTSOrdQueSlice* ticks = WTSOrdQueSlice::create(stdCode, dataList._items.data() + sIdx, realCnt);
+	return ticks;
+}
+
+WTSTransSlice* HisDataReplayer::get_transaction_slice(const char* stdCode, uint32_t count, uint64_t etime /* = 0 */)
+{
+	if (!checkTransactions(stdCode, _cur_tdate))
+		return NULL;
+
+	auto& dataList = _trans_cache[stdCode];
+	if (dataList._cursor == 0)
+		return NULL;
+
+	if (dataList._cursor == UINT_MAX)
+	{
+		uint32_t uDate = _cur_date;
+		uint32_t uTime = _cur_time * 100000 + _cur_secs;
+
+		if (etime != 0)
+		{
+			uDate = (uint32_t)(etime / 10000);
+			uTime = (uint32_t)(etime % 10000 * 100000);
+		}
+
+		WTSTransStruct curItem;
+		curItem.action_date = uDate;
+		curItem.action_time = uTime;
+
+		auto tit = std::lower_bound(dataList._items.begin(), dataList._items.end(), curItem, [](const WTSTransStruct& a, const WTSTransStruct& b) {
+			if (a.action_date != b.action_date)
+				return a.action_date < b.action_date;
+			else
+				return a.action_time < b.action_time;
+		});
+
+		uint32_t idx = tit - dataList._items.begin();
+		dataList._cursor = idx + 1;
+	}
+
+	uint32_t eIdx = dataList._cursor - 1;
+	uint32_t sIdx = 0;
+	if (eIdx >= count - 1)
+		sIdx = eIdx + 1 - count;
+
+	uint32_t realCnt = eIdx - sIdx + 1;
+	if (realCnt == 0)
+		return NULL;
+
+	WTSTransSlice* ticks = WTSTransSlice::create(stdCode, dataList._items.data() + sIdx, realCnt);
+	return ticks;
+}
 
 bool HisDataReplayer::checkAllTicks(uint32_t uDate)
 {

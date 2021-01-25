@@ -305,3 +305,18 @@ HftContextPtr WtHftEngine::getContext(uint32_t id)
 
 	return it->second;
 }
+
+WTSOrdQueSlice* WtHftEngine::get_order_queue_slice(uint32_t sid, const char* code, uint32_t count)
+{
+	return _data_mgr->get_order_queue_slice(code, count);
+}
+
+WTSOrdDtlSlice* WtHftEngine::get_order_detail_slice(uint32_t sid, const char* code, uint32_t count)
+{
+	return _data_mgr->get_order_detail_slice(code, count);
+}
+
+WTSTransSlice* WtHftEngine::get_transaction_slice(uint32_t sid, const char* code, uint32_t count)
+{
+	return _data_mgr->get_transaction_slice(code, count);
+}

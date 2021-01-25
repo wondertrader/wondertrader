@@ -36,8 +36,6 @@ class WTSVariant;
 
 class WTSTickData;
 struct WTSBarStruct;
-class WTSKlineData;
-class WTSHisTickData;
 class WTSTickSlice;
 class WTSKlineSlice;
 class WTSPortFundInfo;
