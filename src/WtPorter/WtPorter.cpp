@@ -816,6 +816,117 @@ WtUInt32 hft_get_ticks(CtxHandler cHandle, const char* stdCode, unsigned int tic
 	}
 }
 
+WtUInt32 hft_get_ordque(CtxHandler cHandle, const char* stdCode, unsigned int tickCnt, FuncGetOrdQueCallback cb)
+{
+	HftContextPtr ctx = getRunner().getHftContext(cHandle);
+	if (ctx == NULL)
+		return 0;
+	try
+	{
+		WTSOrdQueSlice* dataSlice = ctx->stra_get_order_queue(stdCode, tickCnt);
+		if (dataSlice)
+		{
+			uint32_t left = tickCnt + 1;
+			uint32_t reaCnt = 0;
+			for (uint32_t idx = 0; idx < dataSlice->size() && left > 0; idx++, left--)
+			{
+				WTSOrdQueStruct* curItem = (WTSOrdQueStruct*)dataSlice->at(idx);
+				cb(cHandle, stdCode, curItem, false);
+				reaCnt += 1;
+			}
+
+			cb(cHandle, stdCode, NULL, true);
+
+			dataSlice->release();
+			return reaCnt;
+		}
+		else
+		{
+			cb(cHandle, stdCode, NULL, true);
+			return 0;
+		}
+	}
+	catch (...)
+	{
+		cb(cHandle, stdCode, NULL, true);
+		return 0;
+	}
+}
+
+WtUInt32 hft_get_orddtl(CtxHandler cHandle, const char* stdCode, unsigned int tickCnt, FuncGetOrdDtlCallback cb)
+{
+	HftContextPtr ctx = getRunner().getHftContext(cHandle);
+	if (ctx == NULL)
+		return 0;
+	try
+	{
+		WTSOrdDtlSlice* dataSlice = ctx->stra_get_order_detail(stdCode, tickCnt);
+		if (dataSlice)
+		{
+			uint32_t left = tickCnt + 1;
+			uint32_t reaCnt = 0;
+			for (uint32_t idx = 0; idx < dataSlice->size() && left > 0; idx++, left--)
+			{
+				WTSOrdDtlStruct* curItem = (WTSOrdDtlStruct*)dataSlice->at(idx);
+				cb(cHandle, stdCode, curItem, false);
+				reaCnt += 1;
+			}
+
+			cb(cHandle, stdCode, NULL, true);
+
+			dataSlice->release();
+			return reaCnt;
+		}
+		else
+		{
+			cb(cHandle, stdCode, NULL, true);
+			return 0;
+		}
+	}
+	catch (...)
+	{
+		cb(cHandle, stdCode, NULL, true);
+		return 0;
+	}
+}
+
+WtUInt32 hft_get_trans(CtxHandler cHandle, const char* stdCode, unsigned int tickCnt, FuncGetTransCallback cb)
+{
+	HftContextPtr ctx = getRunner().getHftContext(cHandle);
+	if (ctx == NULL)
+		return 0;
+	try
+	{
+		WTSTransSlice* dataSlice = ctx->stra_get_transaction(stdCode, tickCnt);
+		if (dataSlice)
+		{
+			uint32_t left = tickCnt + 1;
+			uint32_t reaCnt = 0;
+			for (uint32_t idx = 0; idx < dataSlice->size() && left > 0; idx++, left--)
+			{
+				WTSTransStruct* curItem = (WTSTransStruct*)dataSlice->at(idx);
+				cb(cHandle, stdCode, curItem, false);
+				reaCnt += 1;
+			}
+
+			cb(cHandle, stdCode, NULL, true);
+
+			dataSlice->release();
+			return reaCnt;
+		}
+		else
+		{
+			cb(cHandle, stdCode, NULL, true);
+			return 0;
+		}
+	}
+	catch (...)
+	{
+		cb(cHandle, stdCode, NULL, true);
+		return 0;
+	}
+}
+
 void hft_log_text(CtxHandler cHandle, const char* message)
 {
 	HftContextPtr ctx = getRunner().getHftContext(cHandle);

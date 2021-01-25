@@ -791,6 +791,120 @@ WtUInt32 hft_get_ticks(CtxHandler cHandle, const char* stdCode, unsigned int tic
 	}
 }
 
+WtUInt32 hft_get_ordque(CtxHandler cHandle, const char* stdCode, unsigned int tickCnt, FuncGetOrdQueCallback cb)
+{
+	HftMocker* mocker = getRunner().hft_mocker();
+	if (mocker == NULL)
+		return 0;
+	try
+	{
+		WTSOrdQueSlice* tData = mocker->stra_get_order_queue(stdCode, tickCnt);
+		if (tData)
+		{
+			//printf("K线条数%u\r\n", kData->size());
+			uint32_t left = tickCnt + 1;
+			uint32_t reaCnt = 0;
+			for (uint32_t idx = 0; idx < tData->size() && left > 0; idx++, left--)
+			{
+				WTSOrdQueStruct* curData = (WTSOrdQueStruct*)tData->at(idx);
+				cb(cHandle, stdCode, curData, false);
+				reaCnt += 1;
+			}
+
+			//printf("数据已读完\r\n");
+			cb(cHandle, stdCode, NULL, true);
+
+			tData->release();
+			return reaCnt;
+		}
+		else
+		{
+			//printf("K线条数0\r\n");
+			cb(cHandle, stdCode, NULL, true);
+			return 0;
+		}
+	}
+	catch (...)
+	{
+		cb(cHandle, stdCode, NULL, true);
+		return 0;
+	}
+}
+
+WtUInt32 hft_get_orddtl(CtxHandler cHandle, const char* stdCode, unsigned int tickCnt, FuncGetOrdDtlCallback cb)
+{
+	HftMocker* mocker = getRunner().hft_mocker();
+	if (mocker == NULL)
+		return 0;
+	try
+	{
+		WTSOrdDtlSlice* tData = mocker->stra_get_order_detail(stdCode, tickCnt);
+		if (tData)
+		{
+			uint32_t left = tickCnt + 1;
+			uint32_t reaCnt = 0;
+			for (uint32_t idx = 0; idx < tData->size() && left > 0; idx++, left--)
+			{
+				WTSOrdDtlStruct* curData = (WTSOrdDtlStruct*)tData->at(idx);
+				cb(cHandle, stdCode, curData, false);
+				reaCnt += 1;
+			}
+
+			cb(cHandle, stdCode, NULL, true);
+
+			tData->release();
+			return reaCnt;
+		}
+		else
+		{
+			cb(cHandle, stdCode, NULL, true);
+			return 0;
+		}
+	}
+	catch (...)
+	{
+		cb(cHandle, stdCode, NULL, true);
+		return 0;
+	}
+}
+
+WtUInt32 hft_get_trans(CtxHandler cHandle, const char* stdCode, unsigned int tickCnt, FuncGetTransCallback cb)
+{
+	HftMocker* mocker = getRunner().hft_mocker();
+	if (mocker == NULL)
+		return 0;
+	try
+	{
+		WTSTransSlice* tData = mocker->stra_get_transaction(stdCode, tickCnt);
+		if (tData)
+		{
+			uint32_t left = tickCnt + 1;
+			uint32_t reaCnt = 0;
+			for (uint32_t idx = 0; idx < tData->size() && left > 0; idx++, left--)
+			{
+				WTSTransStruct* curData = (WTSTransStruct*)tData->at(idx);
+				cb(cHandle, stdCode, curData, false);
+				reaCnt += 1;
+			}
+
+			cb(cHandle, stdCode, NULL, true);
+
+			tData->release();
+			return reaCnt;
+		}
+		else
+		{
+			cb(cHandle, stdCode, NULL, true);
+			return 0;
+		}
+	}
+	catch (...)
+	{
+		cb(cHandle, stdCode, NULL, true);
+		return 0;
+	}
+}
+
 void hft_log_text(CtxHandler cHandle, const char* message)
 {
 	HftMocker* mocker = getRunner().hft_mocker();
