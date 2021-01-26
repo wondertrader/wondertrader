@@ -117,7 +117,7 @@ public:
 	}
 
 
-	void	setVolumnLimits(uint32_t maxMarketVol, uint32_t maxLimitVol)
+	void	setVolumeLimits(uint32_t maxMarketVol, uint32_t maxLimitVol)
 	{
 		m_maxMktQty = maxMarketVol;
 		m_maxLmtQty = maxLimitVol;

@@ -19,9 +19,10 @@ class WTSHisTrendData;
 class WTSTickData;
 class WTSSessionInfo;
 class WTSKlineSlice;
-class WTSTickSlice;
 class WTSContractInfo;
 struct WTSBarStruct;
+struct WTSTickStruct;
+class WTSTickSlice;
 
 /*
  *	数据工厂

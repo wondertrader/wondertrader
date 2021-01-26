@@ -58,7 +58,7 @@ public:
 	{
 		sTime = offsetTime(sTime);
 		eTime = offsetTime(eTime);
-		m_tradingTimes.push_back(TradingSection(sTime, eTime));
+		m_tradingTimes.emplace_back(TradingSection(sTime, eTime));
 	}
 
 	void setAuctionTime(uint32_t sTime, uint32_t eTime)

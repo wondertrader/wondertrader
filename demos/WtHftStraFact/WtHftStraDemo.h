@@ -28,17 +28,17 @@ public:
 
 	virtual void on_bar(IHftStraCtx* ctx, const char* code, const char* period, uint32_t times, WTSBarStruct* newBar) override;
 
-	virtual void on_trade(IHftStraCtx* ctx, uint32_t localid, const char* stdCode, bool isBuy, double qty, double price) override;
+	virtual void on_trade(IHftStraCtx* ctx, uint32_t localid, const char* stdCode, bool isBuy, double qty, double price, const char* userTag) override;
 
 	virtual void on_position(IHftStraCtx* ctx, const char* stdCode, bool isLong, double prevol, double preavail, double newvol, double newavail) override;
 
-	virtual void on_order(IHftStraCtx* ctx, uint32_t localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled = false) override;
+	virtual void on_order(IHftStraCtx* ctx, uint32_t localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled, const char* userTag) override;
 
 	virtual void on_channel_ready(IHftStraCtx* ctx) override;
 
 	virtual void on_channel_lost(IHftStraCtx* ctx) override;
 
-	virtual void on_entrust(uint32_t localid, bool bSuccess, const char* message) override;
+	virtual void on_entrust(uint32_t localid, bool bSuccess, const char* message, const char* userTag) override;
 
 private:
 	WTSTickData*	_last_tick;

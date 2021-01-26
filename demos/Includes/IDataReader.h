@@ -14,10 +14,12 @@
 #include "../Includes/WTSTypes.h"
 
 NS_OTP_BEGIN
-class WTSHisTickData;
 class WTSKlineData;
 class WTSKlineSlice;
 class WTSTickSlice;
+class WTSOrdQueSlice;
+class WTSOrdDtlSlice;
+class WTSTransSlice;
 struct WTSBarStruct;
 class WTSVariant;
 class IBaseDataMgr;
@@ -108,18 +110,6 @@ public:
 	virtual void onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTDate = 0) = 0;
 
 	/*
-	 *	@brief	读取tick数据，并返回一个存储容器类
-	 *	@details	返回值WTSHisTickData包含一个WTSTickStruct的序列，读取的数据要复制到该容器中
-	 *	
-	 *	@param stdCode	标准品种代码，如SSE.600000，SHFE.au.2005
-	 *	@param count	要读取的tick条数
-	 *	@param etime	结束时间，精确到毫秒，格式如yyyyMMddhhmmssmmm，如果要读取到最后一条，etime为0，默认为0
-	 *	@param bOnlyValid	是否只读有效tick(成交量不为0)，默认为false
-	 */
-	virtual WTSHisTickData* readTicks(const char* stdCode, uint32_t count, uint64_t etime = 0, bool bOnlyValid = false) = 0;
-
-
-	/*
 	 *	@brief	读取tick数据切片
 	 *	@details 切片不会复制数据，只把缓存中的数据指针传递出来，所以叫做切片
 	 *
@@ -128,6 +118,36 @@ public:
 	 *	@param etime	结束时间，精确到毫秒，格式如yyyyMMddhhmmssmmm，如果要读取到最后一条，etime为0，默认为0
 	 */
 	virtual WTSTickSlice*	readTickSlice(const char* stdCode, uint32_t count, uint64_t etime = 0) = 0;
+
+	/*
+	 *	@brief	读取逐笔委托数据切片
+	 *	@details 切片不会复制数据，只把缓存中的数据指针传递出来，所以叫做切片
+	 *
+	 *	@param stdCode	标准品种代码，如SSE.600000，SHFE.au.2005
+	 *	@param count	要读取的tick条数
+	 *	@param etime	结束时间，精确到毫秒，格式如yyyyMMddhhmmssmmm，如果要读取到最后一条，etime为0，默认为0
+	 */
+	virtual WTSOrdDtlSlice*	readOrdDtlSlice(const char* stdCode, uint32_t count, uint64_t etime = 0) = 0;
+
+	/*
+	 *	@brief	读取委托队列数据切片
+	 *	@details 切片不会复制数据，只把缓存中的数据指针传递出来，所以叫做切片
+	 *
+	 *	@param stdCode	标准品种代码，如SSE.600000，SHFE.au.2005
+	 *	@param count	要读取的tick条数
+	 *	@param etime	结束时间，精确到毫秒，格式如yyyyMMddhhmmssmmm，如果要读取到最后一条，etime为0，默认为0
+	 */
+	virtual WTSOrdQueSlice*	readOrdQueSlice(const char* stdCode, uint32_t count, uint64_t etime = 0) = 0;
+
+	/*
+	 *	@brief	读取逐笔成交数据切片
+	 *	@details 切片不会复制数据，只把缓存中的数据指针传递出来，所以叫做切片
+	 *
+	 *	@param stdCode	标准品种代码，如SSE.600000，SHFE.au.2005
+	 *	@param count	要读取的tick条数
+	 *	@param etime	结束时间，精确到毫秒，格式如yyyyMMddhhmmssmmm，如果要读取到最后一条，etime为0，默认为0
+	 */
+	virtual WTSTransSlice*	readTransSlice(const char* stdCode, uint32_t count, uint64_t etime = 0) = 0;
 
 	/*
 	 *	@brief 读取K线序列，并返回一个存储容器类
