@@ -61,8 +61,16 @@
 * 新增一个`WtDtHelper`模块，主要提供数据辅助功能，目前主要是提供`csv`和二进制文件的互转，后面还会加入数据库、二进制、`csv`的互转接口
 * 将平台版本号从`WTSMarcos.h`迁移到`WTSVersion.h`中，减少修改版本号引起的重编译
 
-### 0.5.5
-* CTA策略接口新增一个获取交易日的API
-* 回测引擎和实盘引擎的C接口，新增cta_get_tdate和sel_get_tdate两个策略接口，用于获取当前交易日
-* 回测引擎和实盘引擎的C接口，新增cta_get_all_position和sel_get_all_position两个策略接口，用于获取策略全部持仓
-* 修复了ParserUDP的一些bug
+### 0.6.0(大版本)
+* `CTA`策略接口新增一个获取交易日的`API`，`cta_get_tdate`和`sel_get_tdate`
+* 回测引擎和实盘引擎的C接口，新增`cta_get_all_position`和`sel_get_all_position`两个策略接口，用于获取策略全部持仓
+* 修复了`ParserUDP`的一些`bug`
+* `CTA`引擎设置目标仓位时，同时订阅`tick`数据，主要针对标的不确定的策略，例如截面因子`CTA`策略
+* 内置执行单元`WtSimpExeUnit`新增一个根据`microprice`来确定委托价格的方式
+* 将内置执行模块`WtExeFact`中的订单管理模块独立出来，方便调用
+* `CTA`回测引擎中，输出的平仓明细中新增“最大潜在收益”和“最大潜在亏损”两个字段
+* 回测框架中，将`ExecMocker`中的模拟撮合逻辑剥离出来，放到一个单独的`MatchEngine`中，方便以后的优化
+* **`HFT`引擎的回测进行了一次彻底的整理实现，基本满足了`HFT`策略回测的需求（已测试）**
+* 初步完成了`HFT`引擎对股票`Level2`数据（`orderqueue`,`orderdetail`,`transaction`）的访问接口（尚未充分测试）
+* `WtPorter`和`WtBtPorter`两个C接口粘合模块，初步完成了C接口对股票`Level2`数据的支持
+* 其他代码细节的完善
