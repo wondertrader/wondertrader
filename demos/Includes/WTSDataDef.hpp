@@ -151,7 +151,7 @@ public:
 	 */
 	inline void		append(double val)
 	{
-		m_vecData.push_back(val);
+		m_vecData.emplace_back(val);
 	}
 
 	/*
@@ -438,7 +438,7 @@ public:
 	*	读取指定位置的成交量
 	*	如果超出范围则返回INVALID_VALUE
 	*/
-	uint32_t	volumn(int32_t idx) const
+	uint32_t	volume(int32_t idx) const
 	{
 		idx = translateIdx(idx);
 
@@ -588,7 +588,7 @@ public:
 	*	将指定范围内的某个特定字段的数据全部抓取出来
 	*	并保存的一个数值数组中
 	*	如果超出范围，则返回NULL
-	*	@type 支持的类型有KT_OPEN、KT_HIGH、KT_LOW、KT_CLOSE，KT_VOLUMN、KT_DATE
+	*	@type 支持的类型有KT_OPEN、KT_HIGH、KT_LOW、KT_CLOSE，KFT_VOLUME、KT_DATE
 	*/
 	WTSValueArray*	extractData(WTSKlineFieldType type, int32_t head = 0, int32_t tail = -1) const
 	{
@@ -625,10 +625,10 @@ public:
 			case KFT_CLOSE:
 				vArray->append(day.close);
 				break;
-			case KFT_VOLUMN:
+			case KFT_VOLUME:
 				vArray->append(day.vol);
 				break;
-			case KFT_SVOLUMN:
+			case KFT_SVOLUME:
 				if (day.vol > INT_MAX)
 					vArray->append(1 * ((day.close > day.open) ? 1 : -1));
 				else
@@ -839,7 +839,7 @@ public:
 	 *	读取指定位置的成交量
 	 *	如果超出范围则返回INVALID_VALUE
 	 */
-	inline uint32_t	volumn(int32_t idx) const
+	inline uint32_t	volume(int32_t idx) const
 	{
 		idx = translateIdx(idx);
 
@@ -923,7 +923,7 @@ public:
 	 *	将指定范围内的某个特定字段的数据全部抓取出来
 	 *	并保存的一个数值数组中
 	 *	如果超出范围，则返回NULL
-	 *	@type 支持的类型有KT_OPEN、KT_HIGH、KT_LOW、KT_CLOSE，KT_VOLUMN、KT_DATE
+	 *	@type 支持的类型有KT_OPEN、KT_HIGH、KT_LOW、KT_CLOSE，KFT_VOLUME、KT_DATE
 	 */
 	WTSValueArray*	extractData(WTSKlineFieldType type, int32_t head = 0, int32_t tail = -1) const
 	{
@@ -957,10 +957,10 @@ public:
 			case KFT_CLOSE:
 				vArray->append(day.close);
 				break;
-			case KFT_VOLUMN:
+			case KFT_VOLUME:
 				vArray->append(day.vol);
 				break;
-			case KFT_SVOLUMN:
+			case KFT_SVOLUME:
 				if(day.vol > INT_MAX)
 					vArray->append(1 * ((day.close > day.open) ? 1 : -1));
 				else
@@ -1011,7 +1011,7 @@ public:
 	{
 		if(m_vecBarData.empty())
 		{
-			m_vecBarData.push_back(bar);
+			m_vecBarData.emplace_back(bar);
 		}
 		else
 		{
@@ -1022,7 +1022,7 @@ public:
 			}
 			else
 			{
-				m_vecBarData.push_back(bar);
+				m_vecBarData.emplace_back(bar);
 			}
 		}
 	}
@@ -1102,10 +1102,10 @@ public:
 	inline double	upperlimit() const{ return m_tickStruct.upper_limit; }
 	inline double	lowerlimit() const{ return m_tickStruct.lower_limit; }
 	//成交量
-	inline uint32_t	totalvolumn() const{ return m_tickStruct.total_volumn; }
+	inline uint32_t	totalvolume() const{ return m_tickStruct.total_volume; }
 
 	//成交量
-	inline uint32_t	volumn() const{ return m_tickStruct.volumn; }
+	inline uint32_t	volume() const{ return m_tickStruct.volume; }
 
 	//结算价
 	inline double	settlepx() const{ return m_tickStruct.settle_price; }
@@ -1248,6 +1248,9 @@ public:
 	inline const char* code() const{ return m_oqStruct.code; }
 	inline uint32_t tradingdate() const{ return m_oqStruct.trading_date; }
 	inline uint32_t actiondate() const{ return m_oqStruct.action_date; }
+	inline uint32_t actiontime() const { return m_oqStruct.action_time; }
+
+	inline void		setCode(const char* code) { strcpy(m_oqStruct.code, code); }
 
 private:
 	WTSOrdQueStruct	m_oqStruct;
@@ -1277,6 +1280,9 @@ public:
 	inline const char* code() const{ return m_odStruct.code; }
 	inline uint32_t tradingdate() const{ return m_odStruct.trading_date; }
 	inline uint32_t actiondate() const{ return m_odStruct.action_date; }
+	inline uint32_t actiontime() const { return m_odStruct.action_time; }
+
+	inline void		setCode(const char* code) { strcpy(m_odStruct.code, code); }
 
 private:
 	WTSOrdDtlStruct	m_odStruct;
@@ -1304,8 +1310,11 @@ public:
 	inline const char* code() const{ return m_tsStruct.code; }
 	inline uint32_t tradingdate() const{ return m_tsStruct.trading_date; }
 	inline uint32_t actiondate() const{ return m_tsStruct.action_date; }
+	inline uint32_t actiontime() const { return m_tsStruct.action_time; }
 
 	inline WTSTransStruct& getTransStruct(){ return m_tsStruct; }
+
+	inline void		setCode(const char* code) { strcpy(m_tsStruct.code, code); }
 
 private:
 	WTSTransStruct	m_tsStruct;
@@ -1386,7 +1395,7 @@ public:
 	*/
 	inline void	appendTick(const WTSTickStruct& ts)
 	{
-		m_ayTicks.push_back(ts);
+		m_ayTicks.emplace_back(ts);
 	}
 };
 
@@ -1400,11 +1409,11 @@ class WTSTickSlice : public WTSObject
 {
 private:
 	char			m_strCode[MAX_INSTRUMENT_LENGTH];
-	WTSTickStruct*	m_tsBegin;
+	WTSTickStruct*	m_ptrBegin;
 	uint32_t		m_uCount;
 
 protected:
-	WTSTickSlice():m_tsBegin(NULL),m_uCount(0){}
+	WTSTickSlice():m_ptrBegin(NULL),m_uCount(0){}
 	inline int32_t		translateIdx(int32_t idx) const
 	{
 		if (idx < 0)
@@ -1423,7 +1432,7 @@ public:
 
 		WTSTickSlice* slice = new WTSTickSlice();
 		strcpy(slice->m_strCode, code);
-		slice->m_tsBegin = firstTick;
+		slice->m_ptrBegin = firstTick;
 		slice->m_uCount = count;
 
 		return slice;
@@ -1431,14 +1440,170 @@ public:
 
 	inline uint32_t size() const{ return m_uCount; }
 
-	inline bool empty() const{ return (m_uCount == 0) || (m_tsBegin == NULL); }
+	inline bool empty() const{ return (m_uCount == 0) || (m_ptrBegin == NULL); }
 
 	inline const WTSTickStruct* at(int32_t idx)
 	{
-		if (m_tsBegin == NULL)
+		if (m_ptrBegin == NULL)
 			return NULL;
 		idx = translateIdx(idx);
-		return m_tsBegin + idx;
+		return m_ptrBegin + idx;
+	}
+};
+
+//////////////////////////////////////////////////////////////////////////
+/*
+ *	@brief 逐笔委托数据切片，从连续的逐笔委托缓存中做的切片
+ *	@details 切片并没有真实的复制内存，而只是取了开始和结尾的下标
+ *	这样使用虽然更快，但是使用场景要非常小心，因为他依赖于基础数据对象
+ */
+class WTSOrdDtlSlice : public WTSObject
+{
+private:
+	char				m_strCode[MAX_INSTRUMENT_LENGTH];
+	WTSOrdDtlStruct*	m_ptrBegin;
+	uint32_t			m_uCount;
+
+protected:
+	WTSOrdDtlSlice() :m_ptrBegin(NULL), m_uCount(0) {}
+	inline int32_t		translateIdx(int32_t idx) const
+	{
+		if (idx < 0)
+		{
+			return max(0, (int32_t)m_uCount + idx);
+		}
+
+		return idx;
+	}
+
+public:
+	static inline WTSOrdDtlSlice* create(const char* code, WTSOrdDtlStruct* firstItem, uint32_t count)
+	{
+		if (count == 0 || firstItem == NULL)
+			return NULL;
+
+		WTSOrdDtlSlice* slice = new WTSOrdDtlSlice();
+		strcpy(slice->m_strCode, code);
+		slice->m_ptrBegin = firstItem;
+		slice->m_uCount = count;
+
+		return slice;
+	}
+
+	inline uint32_t size() const { return m_uCount; }
+
+	inline bool empty() const { return (m_uCount == 0) || (m_ptrBegin == NULL); }
+
+	inline const WTSOrdDtlStruct* at(int32_t idx)
+	{
+		if (m_ptrBegin == NULL)
+			return NULL;
+		idx = translateIdx(idx);
+		return m_ptrBegin + idx;
+	}
+};
+
+//////////////////////////////////////////////////////////////////////////
+/*
+ *	@brief 委托队列数据切片，从连续的委托队列缓存中做的切片
+ *	@details 切片并没有真实的复制内存，而只是取了开始和结尾的下标
+ *	这样使用虽然更快，但是使用场景要非常小心，因为他依赖于基础数据对象
+ */
+class WTSOrdQueSlice : public WTSObject
+{
+private:
+	char				m_strCode[MAX_INSTRUMENT_LENGTH];
+	WTSOrdQueStruct*	m_ptrBegin;
+	uint32_t			m_uCount;
+
+protected:
+	WTSOrdQueSlice() :m_ptrBegin(NULL), m_uCount(0) {}
+	inline int32_t		translateIdx(int32_t idx) const
+	{
+		if (idx < 0)
+		{
+			return max(0, (int32_t)m_uCount + idx);
+		}
+
+		return idx;
+	}
+
+public:
+	static inline WTSOrdQueSlice* create(const char* code, WTSOrdQueStruct* firstItem, uint32_t count)
+	{
+		if (count == 0 || firstItem == NULL)
+			return NULL;
+
+		WTSOrdQueSlice* slice = new WTSOrdQueSlice();
+		strcpy(slice->m_strCode, code);
+		slice->m_ptrBegin = firstItem;
+		slice->m_uCount = count;
+
+		return slice;
+	}
+
+	inline uint32_t size() const { return m_uCount; }
+
+	inline bool empty() const { return (m_uCount == 0) || (m_ptrBegin == NULL); }
+
+	inline const WTSOrdQueStruct* at(int32_t idx)
+	{
+		if (m_ptrBegin == NULL)
+			return NULL;
+		idx = translateIdx(idx);
+		return m_ptrBegin + idx;
+	}
+};
+
+//////////////////////////////////////////////////////////////////////////
+/*
+ *	@brief 逐笔成交数据切片，从连续的逐笔成交缓存中做的切片
+ *	@details 切片并没有真实的复制内存，而只是取了开始和结尾的下标
+ *	这样使用虽然更快，但是使用场景要非常小心，因为他依赖于基础数据对象
+ */
+class WTSTransSlice : public WTSObject
+{
+private:
+	char			m_strCode[MAX_INSTRUMENT_LENGTH];
+	WTSTransStruct*	m_ptrBegin;
+	uint32_t		m_uCount;
+
+protected:
+	WTSTransSlice() :m_ptrBegin(NULL), m_uCount(0) {}
+	inline int32_t		translateIdx(int32_t idx) const
+	{
+		if (idx < 0)
+		{
+			return max(0, (int32_t)m_uCount + idx);
+		}
+
+		return idx;
+	}
+
+public:
+	static inline WTSTransSlice* create(const char* code, WTSTransStruct* firstItem, uint32_t count)
+	{
+		if (count == 0 || firstItem == NULL)
+			return NULL;
+
+		WTSTransSlice* slice = new WTSTransSlice();
+		strcpy(slice->m_strCode, code);
+		slice->m_ptrBegin = firstItem;
+		slice->m_uCount = count;
+
+		return slice;
+	}
+
+	inline uint32_t size() const { return m_uCount; }
+
+	inline bool empty() const { return (m_uCount == 0) || (m_ptrBegin == NULL); }
+
+	inline const WTSTransStruct* at(int32_t idx)
+	{
+		if (m_ptrBegin == NULL)
+			return NULL;
+		idx = translateIdx(idx);
+		return m_ptrBegin + idx;
 	}
 };
 

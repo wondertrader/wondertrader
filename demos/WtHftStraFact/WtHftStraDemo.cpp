@@ -57,7 +57,7 @@ bool WtHftStraDemo::init(WTSVariant* cfg)
 	return true;
 }
 
-void WtHftStraDemo::on_entrust(uint32_t localid, bool bSuccess, const char* message)
+void WtHftStraDemo::on_entrust(uint32_t localid, bool bSuccess, const char* message, const char* userTag)
 {
 
 }
@@ -141,7 +141,7 @@ void WtHftStraDemo::on_tick(IHftStraCtx* ctx, const char* code, WTSTickData* new
 		{//正向信号，且当前仓位小于等于0
 			//最新价+2跳下单
 			double targetPx = price + cInfo->getPriceTick() * _offset;
-			auto ids = ctx->stra_buy(code, targetPx, _unit);
+			auto ids = ctx->stra_buy(code, targetPx, _unit, "enterlong");
 
 			_mtx_ords.lock();
 			for( auto localid : ids)
@@ -155,7 +155,7 @@ void WtHftStraDemo::on_tick(IHftStraCtx* ctx, const char* code, WTSTickData* new
 		{//反向信号，且当前仓位大于0，或者仓位为0但不是股票，或者仓位为0但是基础仓位有修正
 			//最新价-2跳下单
 			double targetPx = price - cInfo->getPriceTick()*_offset;
-			auto ids = ctx->stra_sell(code, targetPx, _unit);
+			auto ids = ctx->stra_sell(code, targetPx, _unit, "entershort");
 
 			_mtx_ords.lock();
 			for (auto localid : ids)
@@ -192,7 +192,7 @@ void WtHftStraDemo::on_bar(IHftStraCtx* ctx, const char* code, const char* perio
 	
 }
 
-void WtHftStraDemo::on_trade(IHftStraCtx* ctx, uint32_t localid, const char* stdCode, bool isBuy, double qty, double price)
+void WtHftStraDemo::on_trade(IHftStraCtx* ctx, uint32_t localid, const char* stdCode, bool isBuy, double qty, double price, const char* userTag)
 {
 	
 }
@@ -202,7 +202,7 @@ void WtHftStraDemo::on_position(IHftStraCtx* ctx, const char* stdCode, bool isLo
 	
 }
 
-void WtHftStraDemo::on_order(IHftStraCtx* ctx, uint32_t localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled /* = false */)
+void WtHftStraDemo::on_order(IHftStraCtx* ctx, uint32_t localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled, const char* userTag)
 {
 	//如果不是我发出去的订单，我就不管了
 	auto it = _orders.find(localid);

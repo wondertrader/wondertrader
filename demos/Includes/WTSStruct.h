@@ -55,8 +55,8 @@ struct WTSTickStruct
 	double		upper_limit;		//涨停价
 	double		lower_limit;		//跌停价
 
-	uint32_t	total_volumn;		//总成交量
-	uint32_t	volumn;				//成交量
+	uint32_t	total_volume;		//总成交量
+	uint32_t	volume;				//成交量
 	double		total_turnover;		//总成交额
 	double		turn_over;			//成交额
 	uint32_t	open_interest;		//总持
@@ -93,7 +93,7 @@ struct WTSOrdQueStruct
 	double			price;			//委托价格
 	uint32_t		order_items;	//订单个数
 	uint32_t		qsize;			//队列长度
-	uint32_t		volumns[50];	//委托明细
+	uint32_t		volumes[50];	//委托明细
 
 	WTSOrdQueStruct()
 	{
@@ -114,7 +114,7 @@ struct WTSOrdDtlStruct
 	uint32_t		index;			//委托编号(从1开始，递增1)
 	WTSBSDirectType	side;			//委托方向
 	double			price;			//委托价格
-	uint32_t		volumn;			//委托数量
+	uint32_t		volume;			//委托数量
 	WTSOrdDetailType	otype;		//委托类型
 
 	WTSOrdDtlStruct()
@@ -137,7 +137,7 @@ struct WTSTransStruct
 	WTSBSDirectType	side;			//BS标志
 
 	double			price;			//成交价格
-	uint32_t		volumn;			//成交数量
+	uint32_t		volume;			//成交数量
 	int32_t			askorder;		//叫卖序号
 	int32_t			bidorder;		//叫买序号
 
