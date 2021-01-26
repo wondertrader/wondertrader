@@ -13,9 +13,13 @@
 #include "WtHftEngine.h"
 #include "WtHelper.h"
 
+#include "../Includes/WTSContractInfo.hpp"
+
 #include "../Share/CodeHelper.hpp"
 #include "../Share/StrUtil.hpp"
 #include "../Share/StdUtils.hpp"
+#include "../Share/decimal.h"
+
 #include "../WTSTools/WTSLogger.h"
 #include "../WTSTools/WTSHotMgr.h"
 
@@ -59,14 +63,60 @@ void HftStraBaseCtx::init_outputs()
 	folder += _name;
 	folder += "//";
 	BoostFile::create_directories(folder.c_str());
-	std::string filename = folder + "signals.csv";
+
+	std::string filename = folder + "trades.csv";
+	_trade_logs.reset(new BoostFile());
+	{
+		bool isNewFile = !BoostFile::exists(filename.c_str());
+		_trade_logs->create_or_open_file(filename.c_str());
+		if (isNewFile)
+		{
+			_trade_logs->write_file("code,time,direct,action,price,qty,tag,fee\n");
+		}
+		else
+		{
+			_trade_logs->seek_to_end();
+		}
+	}
+
+	filename = folder + "closes.csv";
+	_close_logs.reset(new BoostFile());
+	{
+		bool isNewFile = !BoostFile::exists(filename.c_str());
+		_close_logs->create_or_open_file(filename.c_str());
+		if (isNewFile)
+		{
+			_close_logs->write_file("code,direct,opentime,openprice,closetime,closeprice,qty,profit,totalprofit,entertag,exittag\n");
+		}
+		else
+		{
+			_close_logs->seek_to_end();
+		}
+	}
+
+	filename = folder + "funds.csv";
+	_fund_logs.reset(new BoostFile());
+	{
+		bool isNewFile = !BoostFile::exists(filename.c_str());
+		_fund_logs->create_or_open_file(filename.c_str());
+		if (isNewFile)
+		{
+			_fund_logs->write_file("date,closeprofit,positionprofit,dynbalance,fee\n");
+		}
+		else
+		{
+			_fund_logs->seek_to_end();
+		}
+	}
+
+	filename = folder + "signals.csv";
 	_sig_logs.reset(new BoostFile());
 	{
 		bool isNewFile = !BoostFile::exists(filename.c_str());
 		_sig_logs->create_or_open_file(filename.c_str());
 		if (isNewFile)
 		{
-			_sig_logs->write_file("time, action, position, price\n");
+			_sig_logs->write_file("code,target,sigprice,gentime,usertag\n");
 		}
 		else
 		{
@@ -83,6 +133,33 @@ void HftStraBaseCtx::on_init()
 }
 
 void HftStraBaseCtx::on_tick(const char* stdCode, WTSTickData* newTick)
+{
+	if (_ud_modified)
+	{
+		save_userdata();
+		_ud_modified = false;
+	}
+}
+
+void HftStraBaseCtx::on_order_queue(const char* stdCode, WTSOrdQueData* newOrdQue)
+{
+	if (_ud_modified)
+	{
+		save_userdata();
+		_ud_modified = false;
+	}
+}
+
+void HftStraBaseCtx::on_order_detail(const char* stdCode, WTSOrdDtlData* newOrdDtl)
+{
+	if (_ud_modified)
+	{
+		save_userdata();
+		_ud_modified = false;
+	}
+}
+
+void HftStraBaseCtx::on_transaction(const char* stdCode, WTSTransData* newTrans)
 {
 	if (_ud_modified)
 	{
@@ -119,7 +196,7 @@ const char* HftStraBaseCtx::get_inner_code(const char* stdCode)
 	return it->second.c_str();
 }
 
-OrderIDs HftStraBaseCtx::stra_buy(const char* stdCode, double price, double qty)
+OrderIDs HftStraBaseCtx::stra_buy(const char* stdCode, double price, double qty, const char* userTag)
 {
 	if(CodeHelper::isStdFutHotCode(stdCode))
 	{
@@ -130,15 +207,25 @@ OrderIDs HftStraBaseCtx::stra_buy(const char* stdCode, double price, double qty)
 
 		_code_map[realCode] = stdCode;
 
-		return _trader->buy(realCode.c_str(), price, qty);
+		auto ids = _trader->buy(realCode.c_str(), price, qty);
+		for(auto localid : ids)
+		{
+			_orders[localid] = userTag;
+		}
+		return ids;
 	}
 	else
 	{
-		return _trader->buy(stdCode, price, qty);
+		auto ids = _trader->buy(stdCode, price, qty);
+		for (auto localid : ids)
+		{
+			_orders[localid] = userTag;
+		}
+		return ids;
 	}
 }
 
-OrderIDs HftStraBaseCtx::stra_sell(const char* stdCode, double price, double qty)
+OrderIDs HftStraBaseCtx::stra_sell(const char* stdCode, double price, double qty, const char* userTag)
 {
 	if (CodeHelper::isStdFutHotCode(stdCode))
 	{
@@ -149,11 +236,21 @@ OrderIDs HftStraBaseCtx::stra_sell(const char* stdCode, double price, double qty
 
 		_code_map[realCode] = stdCode;
 
-		return _trader->sell(realCode.c_str(), price, qty);
+		auto ids = _trader->sell(realCode.c_str(), price, qty);
+		for (auto localid : ids)
+		{
+			_orders[localid] = userTag;
+		}
+		return ids;
 	}
 	else
 	{
-		return _trader->sell(stdCode, price, qty);
+		auto ids = _trader->sell(stdCode, price, qty);
+		for (auto localid : ids)
+		{
+			_orders[localid] = userTag;
+		}
+		return ids;
 	}
 }
 
@@ -181,6 +278,35 @@ WTSTickSlice* HftStraBaseCtx::stra_get_ticks(const char* stdCode, uint32_t count
 	return ticks;
 }
 
+WTSOrdDtlSlice* HftStraBaseCtx::stra_get_order_detail(const char* stdCode, uint32_t count)
+{
+	WTSOrdDtlSlice* ret = _engine->get_order_detail_slice(_context_id, stdCode, count);
+
+	if (ret)
+		_engine->sub_order_detail(id(), stdCode);
+	return ret;
+}
+
+WTSOrdQueSlice* HftStraBaseCtx::stra_get_order_queue(const char* stdCode, uint32_t count)
+{
+	WTSOrdQueSlice* ret = _engine->get_order_queue_slice(_context_id, stdCode, count);
+
+	if (ret)
+		_engine->sub_order_queue(id(), stdCode);
+	return ret;
+}
+
+
+WTSTransSlice* HftStraBaseCtx::stra_get_transaction(const char* stdCode, uint32_t count)
+{
+	WTSTransSlice* ret = _engine->get_transaction_slice(_context_id, stdCode, count);
+
+	if (ret)
+		_engine->sub_transaction(id(), stdCode);
+	return ret;
+}
+
+
 WTSTickData* HftStraBaseCtx::stra_get_last_tick(const char* stdCode)
 {
 	return _engine->get_last_tick(_context_id, stdCode);
@@ -190,6 +316,24 @@ void HftStraBaseCtx::stra_sub_ticks(const char* stdCode)
 {
 	_engine->sub_tick(id(), stdCode);
 	stra_log_text("实时行情已订阅: %s", stdCode);
+}
+
+void HftStraBaseCtx::stra_sub_order_details(const char* stdCode)
+{
+	_engine->sub_order_detail(id(), stdCode);
+	stra_log_text("逐笔委托已订阅: %s", stdCode);
+}
+
+void HftStraBaseCtx::stra_sub_order_queues(const char* stdCode)
+{
+	_engine->sub_order_queue(id(), stdCode);
+	stra_log_text("委托队列已订阅: %s", stdCode);
+}
+
+void HftStraBaseCtx::stra_sub_transactions(const char* stdCode)
+{
+	_engine->sub_transaction(id(), stdCode);
+	stra_log_text("逐笔成交已订阅: %s", stdCode);
 }
 
 void HftStraBaseCtx::stra_log_text(const char* fmt, ...)
@@ -218,6 +362,10 @@ void HftStraBaseCtx::on_trade(uint32_t localid, const char* stdCode, bool isBuy,
 		double curPos = stra_get_position(stdCode);
 		_sig_logs->write_file(fmt::format("{}.{}.{},{}{},{},{}\n", stra_get_date(), stra_get_time(), stra_get_secs(), isBuy ? "+" : "-", vol, curPos, price));
 	}
+
+	const PosInfo& posInfo = _pos_map[stdCode];
+	double curPos = posInfo._volume + vol * (isBuy ? 1 : -1);
+	do_set_position(stdCode, curPos, price, getOrderTag(localid));
 }
 
 void HftStraBaseCtx::on_order(uint32_t localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled /* = false */)
@@ -254,6 +402,16 @@ void HftStraBaseCtx::on_entrust(uint32_t localid, const char* stdCode, bool bSuc
 		save_userdata();
 		_ud_modified = false;
 	}
+}
+
+double HftStraBaseCtx::stra_get_position_profit(const char* stdCode)
+{
+	auto it = _pos_map.find(stdCode);
+	if (it == _pos_map.end())
+		return 0.0;
+
+	const PosInfo& pInfo = it->second;
+	return pInfo._dynprofit;
 }
 
 double HftStraBaseCtx::stra_get_position(const char* stdCode)
@@ -386,4 +544,213 @@ void HftStraBaseCtx::load_userdata()
 		const char* val = m.value.GetString();
 		_user_datas[key] = val;
 	}
+}
+
+void HftStraBaseCtx::do_set_position(const char* stdCode, double qty, double price /* = 0.0 */, const char* userTag /*= ""*/)
+{
+	PosInfo& pInfo = _pos_map[stdCode];
+	double curPx = price;
+	if (decimal::eq(price, 0.0))
+		curPx = _price_map[stdCode];
+	uint64_t curTm = (uint64_t)_engine->get_date() * 1000000000 + (uint64_t)_engine->get_raw_time() * 100000 + _engine->get_secs();
+	uint32_t curTDate = _engine->get_trading_date();
+
+	//手数相等则不用操作了
+	if (decimal::eq(pInfo._volume, qty))
+		return;
+
+	stra_log_text("目标仓位设定：%.0f -> %0.f", pInfo._volume, qty);
+
+	WTSCommodityInfo* commInfo = _engine->get_commodity_info(stdCode);
+
+	//成交价
+	double trdPx = curPx;
+
+	double diff = qty - pInfo._volume;
+
+	if (decimal::gt(pInfo._volume*diff, 0))//当前持仓和仓位变化方向一致, 增加一条明细, 增加数量即可
+	{
+		pInfo._volume = qty;
+
+		DetailInfo dInfo;
+		dInfo._long = decimal::gt(qty, 0);
+		dInfo._price = trdPx;
+		dInfo._volume = abs(diff);
+		dInfo._opentime = curTm;
+		dInfo._opentdate = curTDate;
+		strcpy(dInfo._usertag, userTag);
+		pInfo._details.emplace_back(dInfo);
+
+		double fee = _engine->calc_fee(stdCode, trdPx, abs(diff), 0);
+		_fund_info._total_fees += fee;
+
+		log_trade(stdCode, dInfo._long, true, curTm, trdPx, abs(diff), fee, userTag);
+	}
+	else
+	{//持仓方向和仓位变化方向不一致，需要平仓
+		double left = abs(diff);
+
+		pInfo._volume = qty;
+		if (decimal::eq(pInfo._volume, 0))
+			pInfo._dynprofit = 0;
+		uint32_t count = 0;
+		for (auto it = pInfo._details.begin(); it != pInfo._details.end(); it++)
+		{
+			DetailInfo& dInfo = *it;
+			double maxQty = min(dInfo._volume, left);
+			if (decimal::eq(maxQty, 0))
+				continue;
+
+			double maxProf = dInfo._max_profit * maxQty / dInfo._volume;
+			double maxLoss = dInfo._max_loss * maxQty / dInfo._volume;
+
+			dInfo._volume -= maxQty;
+			left -= maxQty;
+
+			if (decimal::eq(dInfo._volume, 0))
+				count++;
+
+			double profit = (trdPx - dInfo._price) * maxQty * commInfo->getVolScale();
+			if (!dInfo._long)
+				profit *= -1;
+			pInfo._closeprofit += profit;
+			pInfo._dynprofit = pInfo._dynprofit*dInfo._volume / (dInfo._volume + maxQty);//浮盈也要做等比缩放
+			_fund_info._total_profit += profit;
+
+			double fee = _engine->calc_fee(stdCode, trdPx, maxQty, dInfo._opentdate == curTDate ? 2 : 1);
+			_fund_info._total_fees += fee;
+			//这里写成交记录
+			log_trade(stdCode, dInfo._long, false, curTm, trdPx, maxQty, fee, userTag);
+			//这里写平仓记录
+			log_close(stdCode, dInfo._long, dInfo._opentime, dInfo._price, curTm, trdPx, maxQty, profit, maxProf, maxLoss, pInfo._closeprofit, dInfo._usertag, userTag);
+
+			if (left == 0)
+				break;
+		}
+
+		//需要清理掉已经平仓完的明细
+		while (count > 0)
+		{
+			auto it = pInfo._details.begin();
+			pInfo._details.erase(it);
+			count--;
+		}
+
+		//最后，如果还有剩余的，则需要反手了
+		if (left > 0)
+		{
+			left = left * qty / abs(qty);
+
+			DetailInfo dInfo;
+			dInfo._long = decimal::gt(qty, 0);
+			dInfo._price = trdPx;
+			dInfo._volume = abs(left);
+			dInfo._opentime = curTm;
+			dInfo._opentdate = curTDate;
+			strcpy(dInfo._usertag, userTag);
+			pInfo._details.emplace_back(dInfo);
+
+			//这里还需要写一笔成交记录
+			double fee = _engine->calc_fee(stdCode, trdPx, abs(left), 0);
+			_fund_info._total_fees += fee;
+			//_engine->mutate_fund(fee, FFT_Fee);
+			log_trade(stdCode, dInfo._long, true, curTm, trdPx, abs(left), fee, userTag);
+		}
+	}
+}
+
+void HftStraBaseCtx::update_dyn_profit(const char* stdCode, WTSTickData* newTick)
+{
+	auto it = _pos_map.find(stdCode);
+	if (it != _pos_map.end())
+	{
+		PosInfo& pInfo = it->second;
+		if (pInfo._volume == 0)
+		{
+			pInfo._dynprofit = 0;
+		}
+		else
+		{
+			bool isLong = decimal::gt(pInfo._volume, 0);
+			double price = isLong ? newTick->bidprice(0) : newTick->askprice(0);
+
+			WTSCommodityInfo* commInfo = _engine->get_commodity_info(stdCode);
+			double dynprofit = 0;
+			for (auto pit = pInfo._details.begin(); pit != pInfo._details.end(); pit++)
+			{
+
+				DetailInfo& dInfo = *pit;
+				dInfo._profit = dInfo._volume*(price - dInfo._price)*commInfo->getVolScale()*(dInfo._long ? 1 : -1);
+				if (dInfo._profit > 0)
+					dInfo._max_profit = max(dInfo._profit, dInfo._max_profit);
+				else if (dInfo._profit < 0)
+					dInfo._max_loss = min(dInfo._profit, dInfo._max_loss);
+
+				dynprofit += dInfo._profit;
+			}
+
+			pInfo._dynprofit = dynprofit;
+		}
+	}
+}
+
+void HftStraBaseCtx::on_session_begin()
+{
+
+}
+
+void HftStraBaseCtx::on_session_end()
+{
+	uint32_t curDate = _engine->get_trading_date();
+
+	double total_profit = 0;
+	double total_dynprofit = 0;
+
+	for (auto it = _pos_map.begin(); it != _pos_map.end(); it++)
+	{
+		const char* stdCode = it->first.c_str();
+		const PosInfo& pInfo = it->second;
+		total_profit += pInfo._closeprofit;
+		total_dynprofit += pInfo._dynprofit;
+	}
+
+	//这里要把当日结算的数据写到日志文件里
+	//而且这里回测和实盘写法不同, 先留着, 后面来做
+	if (_fund_logs)
+		_fund_logs->write_file(StrUtil::printf("%d,%.2f,%.2f,%.2f,%.2f\n", curDate,
+			_fund_info._total_profit, _fund_info._total_dynprofit,
+			_fund_info._total_profit + _fund_info._total_dynprofit - _fund_info._total_fees, _fund_info._total_fees));
+}
+
+void HftStraBaseCtx::log_trade(const char* stdCode, bool isLong, bool isOpen, uint64_t curTime, double price, double qty, double fee, const char* userTag/* = ""*/)
+{
+	if(_trade_logs)
+	{
+		std::stringstream ss;
+		ss << stdCode << "," << curTime << "," << (isLong ? "LONG" : "SHORT") << "," << (isOpen ? "OPEN" : "CLOSE")
+			<< "," << price << "," << qty << "," << fee << "," << userTag << "\n";
+		_trade_logs->write_file(ss.str());
+	}
+}
+
+void HftStraBaseCtx::log_close(const char* stdCode, bool isLong, uint64_t openTime, double openpx, uint64_t closeTime, double closepx, double qty, double profit, double maxprofit, double maxloss,
+	double totalprofit /* = 0 */, const char* enterTag/* = ""*/, const char* exitTag/* = ""*/)
+{
+	if (_close_logs)
+	{
+		std::stringstream ss;
+		ss << stdCode << "," << (isLong ? "LONG" : "SHORT") << "," << openTime << "," << openpx
+			<< "," << closeTime << "," << closepx << "," << qty << "," << profit << "," << maxprofit << "," << maxloss << ","
+			<< totalprofit << "," << enterTag << "," << exitTag << "\n";
+		_close_logs->write_file(ss.str());
+	}
+}
+
+const char* HftStraBaseCtx::getOrderTag(uint32_t localid)
+{
+	auto it = _orders.find(localid);
+	if (it == _orders.end())
+		return "";
+
+	return it->second.c_str();
 }

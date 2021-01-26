@@ -20,6 +20,8 @@
 #include "../Share/StdUtils.hpp"
 #include "../Includes/WTSVariant.hpp"
 
+#include "../WTSTools/WTSLogger.h"
+
 #include <rapidjson/document.h>
 #include <rapidjson/prettywriter.h>
 namespace rj = rapidjson;
@@ -120,22 +122,101 @@ void WtHftEngine::handle_push_quote(WTSTickData* newTick, bool isHot)
 		_tm_ticker->on_tick(newTick, isHot);
 }
 
+void WtHftEngine::handle_push_order_detail(WTSOrdDtlData* curOrdDtl)
+{
+	const char* stdCode = curOrdDtl->code();
+	auto sit = _orddtl_sub_map.find(stdCode);
+	if (sit != _orddtl_sub_map.end())
+	{
+		const SIDSet& sids = sit->second;
+		for (auto it = sids.begin(); it != sids.end(); it++)
+		{
+			uint32_t sid = *it;
+			auto cit = _ctx_map.find(sid);
+			if (cit != _ctx_map.end())
+			{
+				HftContextPtr& ctx = cit->second;
+				ctx->on_order_detail(stdCode, curOrdDtl);
+			}
+		}
+	}
+}
+
+void WtHftEngine::handle_push_order_queue(WTSOrdQueData* curOrdQue)
+{
+	const char* stdCode = curOrdQue->code();
+	auto sit = _ordque_sub_map.find(stdCode);
+	if (sit != _ordque_sub_map.end())
+	{
+		const SIDSet& sids = sit->second;
+		for (auto it = sids.begin(); it != sids.end(); it++)
+		{
+			uint32_t sid = *it;
+			auto cit = _ctx_map.find(sid);
+			if (cit != _ctx_map.end())
+			{
+				HftContextPtr& ctx = cit->second;
+				ctx->on_order_queue(stdCode, curOrdQue);
+			}
+		}
+	}
+}
+
+void WtHftEngine::handle_push_transaction(WTSTransData* curTrans)
+{
+	const char* stdCode = curTrans->code();
+	auto sit = _trans_sub_map.find(stdCode);
+	if (sit != _trans_sub_map.end())
+	{
+		const SIDSet& sids = sit->second;
+		for (auto it = sids.begin(); it != sids.end(); it++)
+		{
+			uint32_t sid = *it;
+			auto cit = _ctx_map.find(sid);
+			if (cit != _ctx_map.end())
+			{
+				HftContextPtr& ctx = cit->second;
+				ctx->on_transaction(stdCode, curTrans);
+			}
+		}
+	}
+}
+
+void WtHftEngine::sub_order_detail(uint32_t sid, const char* stdCode)
+{
+	std::size_t length = strlen(stdCode);
+	if (stdCode[length - 1] == 'Q')
+		length--;
+
+	SIDSet& sids = _orddtl_sub_map[std::string(stdCode, length)];
+	sids.insert(sid);
+}
+
+void WtHftEngine::sub_order_queue(uint32_t sid, const char* stdCode)
+{
+	std::size_t length = strlen(stdCode);
+	if (stdCode[length - 1] == 'Q')
+		length--;
+
+	SIDSet& sids = _ordque_sub_map[std::string(stdCode, length)];
+	sids.insert(sid);
+}
+
+void WtHftEngine::sub_transaction(uint32_t sid, const char* stdCode)
+{
+	std::size_t length = strlen(stdCode);
+	if (stdCode[length - 1] == 'Q')
+		length--;
+
+	SIDSet& sids = _trans_sub_map[std::string(stdCode, length)];
+	sids.insert(sid);
+}
+
 void WtHftEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 {
 	WtEngine::on_tick(stdCode, curTick);
 
 	_data_mgr->handle_push_quote(stdCode, curTick);
-
-	//uint32_t uDate = curTick->actiondate();
-	//uint32_t uTime = curTick->actiontime();
-	//
-	//uint64_t now = (uint64_t)curTick->actiondate() * 1000000000 + curTick->actiontime();
-	//uint64_t preTick = (uint64_t)_cur_date * 1000000000 + _cur_time * 100000 + _cur_secs;
-	//if(now >= preTick)
-	//{
-	//	set_date_time(uDate, uTime / 100000, uTime % 100000);
-	//	set_trading_date(curTick->tradingdate());
-	//}
 
 	auto sit = _tick_sub_map.find(stdCode);
 	if (sit != _tick_sub_map.end())
@@ -170,6 +251,36 @@ void WtHftEngine::on_bar(const char* stdCode, const char* period, uint32_t times
 	}
 }
 
+void WtHftEngine::on_session_begin()
+{
+	WTSLogger::info("交易日%u已开始", _cur_tdate);
+	WtEngine::on_session_begin();
+
+	for (auto it = _ctx_map.begin(); it != _ctx_map.end(); it++)
+	{
+		HftContextPtr& ctx = it->second;
+		ctx->on_session_begin();
+	}
+
+	if (_evt_listener)
+		_evt_listener->on_session_event(_cur_tdate, true);
+}
+
+void WtHftEngine::on_session_end()
+{
+	WtEngine::on_session_end();
+
+	for (auto it = _ctx_map.begin(); it != _ctx_map.end(); it++)
+	{
+		HftContextPtr& ctx = it->second;
+		ctx->on_session_end();
+	}
+
+	WTSLogger::info("交易日%u已结束", _cur_tdate);
+	if (_evt_listener)
+		_evt_listener->on_session_event(_cur_tdate, false);
+}
+
 void WtHftEngine::on_minute_end(uint32_t curDate, uint32_t curTime)
 {
 	//已去掉高频策略的on_schedule
@@ -193,4 +304,19 @@ HftContextPtr WtHftEngine::getContext(uint32_t id)
 		return HftContextPtr();
 
 	return it->second;
+}
+
+WTSOrdQueSlice* WtHftEngine::get_order_queue_slice(uint32_t sid, const char* code, uint32_t count)
+{
+	return _data_mgr->get_order_queue_slice(code, count);
+}
+
+WTSOrdDtlSlice* WtHftEngine::get_order_detail_slice(uint32_t sid, const char* code, uint32_t count)
+{
+	return _data_mgr->get_order_detail_slice(code, count);
+}
+
+WTSTransSlice* WtHftEngine::get_transaction_slice(uint32_t sid, const char* code, uint32_t count)
+{
+	return _data_mgr->get_transaction_slice(code, count);
 }

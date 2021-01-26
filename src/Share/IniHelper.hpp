@@ -134,7 +134,7 @@ public:
 	{
 		for (auto it = _root.begin(); it != _root.end(); it++)
 		{
-			aySection.push_back(it->first.data());
+			aySection.emplace_back(it->first.data());
 		}
 
 		return _root.size();
@@ -147,7 +147,7 @@ public:
 			const boost::property_tree::ptree& _sec = _root.get_child(szSec);
 			for (auto it = _sec.begin(); it != _sec.end(); it++)
 			{
-				ayKey.push_back(it->first.data());
+				ayKey.emplace_back(it->first.data());
 			}
 
 			return _sec.size();
@@ -166,8 +166,8 @@ public:
 			const boost::property_tree::ptree& _sec = _root.get_child(szSec);
 			for (auto it = _sec.begin(); it != _sec.end(); it++)
 			{
-				ayKey.push_back(it->first.data());
-				ayVal.push_back(it->second.data());
+				ayKey.emplace_back(it->first.data());
+				ayVal.emplace_back(it->second.data());
 			}
 
 			return _sec.size();

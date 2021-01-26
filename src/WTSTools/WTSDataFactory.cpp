@@ -161,13 +161,13 @@ WTSBarStruct* WTSDataFactory::updateMin1Data(WTSSessionInfo* sInfo, WTSKlineData
 	uint32_t uMinute = sInfo->timeToMinutes(uTime);
 	if(uMinute == INVALID_UINT32)
 	{
-		if(tick->volumn() != 0)
+		if(tick->volume() != 0)
 		{
 			WTSBarStruct *bar = klineData->at(klineData->size()-1);
 			bar->close = tick->price();
 			bar->high = max(bar->high,tick->price());
 			bar->low = min(bar->low,tick->price());
-			bar->vol += tick->volumn();
+			bar->vol += tick->volume();
 			bar->money += tick->turnover();
 			bar->hold = tick->openinterest();
 			bar->add += tick->additional();
@@ -199,12 +199,10 @@ WTSBarStruct* WTSDataFactory::updateMin1Data(WTSSessionInfo* sInfo, WTSKlineData
 		day->high = tick->price();
 		day->low = tick->price();
 		day->close = tick->price();
-		day->vol = tick->volumn();
+		day->vol = tick->volume();
 		day->money = tick->turnover();
 		day->hold = tick->openinterest();
 		day->add = tick->additional();
-
-		//klineData->getDataRef().push_back(day);
 
 		return day;
 	}
@@ -219,7 +217,7 @@ WTSBarStruct* WTSDataFactory::updateMin1Data(WTSSessionInfo* sInfo, WTSKlineData
 		bar->close = tick->price();
 		bar->high = max(bar->high,tick->price());
 		bar->low = min(bar->low,tick->price());
-		bar->vol += tick->volumn();
+		bar->vol += tick->volume();
 		bar->money += tick->turnover();
 		bar->hold = tick->openinterest();
 		bar->add += tick->additional();
@@ -339,12 +337,10 @@ WTSBarStruct* WTSDataFactory::updateMin5Data(WTSSessionInfo* sInfo, WTSKlineData
 		day->high = tick->price();
 		day->low = tick->price();
 		day->close = tick->price();
-		day->vol = tick->volumn();
+		day->vol = tick->volume();
 		day->money = tick->turnover();
 		day->hold = tick->openinterest();
 		day->add = tick->additional();
-
-		//klineData->getDataRef().push_back(day);
 
 		return day;
 	}
@@ -354,7 +350,7 @@ WTSBarStruct* WTSDataFactory::updateMin5Data(WTSSessionInfo* sInfo, WTSKlineData
 		bar->close = tick->price();
 		bar->high = max(bar->high,tick->price());
 		bar->low = min(bar->low,tick->price());
-		bar->vol += tick->volumn();
+		bar->vol += tick->volume();
 		bar->money += tick->turnover();
 		bar->hold = tick->openinterest();
 		bar->add = tick->additional();
@@ -378,12 +374,10 @@ WTSBarStruct* WTSDataFactory::updateDayData(WTSSessionInfo* sInfo, WTSKlineData*
 		day->high = tick->price();
 		day->low = tick->price();
 		day->close = tick->price();
-		day->vol = tick->volumn();
+		day->vol = tick->volume();
 		day->money = tick->turnover();
 		day->hold = tick->openinterest();
 		day->add = tick->additional();
-
-		//klineData->getDataRef().push_back(day);
 
 		return day;
 	}
@@ -393,7 +387,7 @@ WTSBarStruct* WTSDataFactory::updateDayData(WTSSessionInfo* sInfo, WTSKlineData*
 		bar->close = tick->price();
 		bar->high = max(bar->high,tick->price());
 		bar->low = min(bar->low,tick->price());
-		bar->vol += tick->volumn();
+		bar->vol += tick->volume();
 		bar->money += tick->turnover();
 		bar->hold = tick->openinterest();
 		bar->add += tick->additional();
@@ -427,7 +421,7 @@ WTSBarStruct* WTSDataFactory::updateSecData(WTSSessionInfo* sInfo, WTSKlineData*
 		day->high = tick->price();
 		day->low = tick->price();
 		day->close = tick->price();
-		day->vol = tick->volumn();
+		day->vol = tick->volume();
 		day->money = tick->turnover();
 		day->hold = tick->openinterest();
 		day->add = tick->additional();
@@ -440,7 +434,7 @@ WTSBarStruct* WTSDataFactory::updateSecData(WTSSessionInfo* sInfo, WTSKlineData*
 		bar->close = tick->price();
 		bar->high = max(bar->high,tick->price());
 		bar->low = min(bar->low,tick->price());
-		bar->vol += tick->volumn();
+		bar->vol += tick->volume();
 		bar->money += tick->turnover();
 		bar->hold = tick->openinterest();
 		bar->add += tick->additional();
@@ -796,7 +790,7 @@ WTSKlineData* WTSDataFactory::extractKlineData(WTSTickSlice* ayTicks, uint32_t s
 			lastBar->high = curTick->price;
 			lastBar->low = curTick->price;
 			lastBar->close = curTick->price;
-			lastBar->vol = curTick->volumn;
+			lastBar->vol = curTick->volume;
 			lastBar->money = curTick->turn_over;
 			lastBar->hold = curTick->open_interest;
 			lastBar->add = curTick->diff_interest;
@@ -806,7 +800,7 @@ WTSKlineData* WTSDataFactory::extractKlineData(WTSTickSlice* ayTicks, uint32_t s
 			lastBar->close = curTick->price;
 			lastBar->high = max(lastBar->high,curTick->price);
 			lastBar->low = min(lastBar->low,curTick->price);
-			lastBar->vol += curTick->volumn;
+			lastBar->vol += curTick->volume;
 			lastBar->money += curTick->turn_over;
 			lastBar->hold = curTick->open_interest;
 			lastBar->add += curTick->diff_interest;
@@ -869,11 +863,11 @@ bool WTSDataFactory::mergeKlineData(WTSKlineData* klineData, WTSKlineData* newKl
 
 			if(curTime < sTime)
 			{
-				tempHead.push_back(curBar);
+				tempHead.emplace_back(curBar);
 			}
 			else if(curTime > eTime)
 			{
-				tempTail.push_back(curBar);
+				tempTail.emplace_back(curBar);
 			}
 		}
 

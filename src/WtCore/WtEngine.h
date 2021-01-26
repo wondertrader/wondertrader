@@ -36,8 +36,6 @@ class WTSVariant;
 
 class WTSTickData;
 struct WTSBarStruct;
-class WTSKlineData;
-class WTSHisTickData;
 class WTSTickSlice;
 class WTSKlineSlice;
 class WTSPortFundInfo;
@@ -189,18 +187,19 @@ protected:
 	StraSubMap		_tick_sub_map;	//tick数据订阅表
 	StraSubMap		_bar_sub_map;	//K线数据订阅表
 
-	std::unordered_set<std::string>		_subed_raw_codes;	//tick订阅表（真实代码模式）
+	std::unordered_set<std::string>		_ticksubed_raw_codes;	//tick订阅表（真实代码模式）
+	
 
 	//////////////////////////////////////////////////////////////////////////
 	//
 	typedef struct _SigInfo
 	{
-		double		_volumn;
+		double		_volume;
 		uint64_t	_gentime;
 
 		_SigInfo()
 		{
-			_volumn = 0;
+			_volume = 0;
 			_gentime = 0;
 		}
 	}SigInfo;
@@ -218,7 +217,7 @@ protected:
 		double	_open;
 		double	_close;
 		double	_close_today;
-		bool	_by_volumn;
+		bool	_by_volume;
 
 		_FeeItem()
 		{
@@ -237,7 +236,7 @@ protected:
 	{
 		bool		_long;
 		double		_price;
-		double		_volumn;
+		double		_volume;
 		uint64_t	_opentime;
 		uint32_t	_opentdate;
 		double		_profit;
@@ -250,7 +249,7 @@ protected:
 
 	typedef struct _PosInfo
 	{
-		double		_volumn;
+		double		_volume;
 		double		_closeprofit;
 		double		_dynprofit;
 
@@ -258,7 +257,7 @@ protected:
 
 		_PosInfo()
 		{
-			_volumn = 0;
+			_volume = 0;
 			_closeprofit = 0;
 			_dynprofit = 0;
 		}

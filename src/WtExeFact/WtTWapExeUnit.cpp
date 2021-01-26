@@ -69,14 +69,13 @@ void WtTWapExeUnit::init(ExecuteContext* ctx, const char* stdCode, WTSVariant* c
 
 void WtTWapExeUnit::on_order(uint32_t localid, const char* stdCode, bool isBuy, double leftover, double price, bool isCanceled)
 {
-	auto it = _orders.find(localid);
-	if (it == _orders.end())
+	if (!_orders_mon.has_order(localid))
 		return;
 
 	if (isCanceled || leftover == 0)
 	{
-		StdLocker<StdRecurMutex> lock(_mtx_ords);
-		_orders.erase(it);
+		_orders_mon.erase_order(localid);
+
 		if (_cancel_cnt > 0)
 			_cancel_cnt--;
 
@@ -99,17 +98,14 @@ void WtTWapExeUnit::on_channel_ready()
 {
 	_channel_ready = true;
 	double undone = _ctx->getUndoneQty(_code.c_str());
-	if (undone != 0 && _orders.empty())
+	if (undone != 0 && !_orders_mon.has_order())
 	{
 		//这说明有未完成单不在监控之中，先撤掉
 		_ctx->writeLog("%s有不在管理中的未完成单 %f，全部撤销", _code.c_str(), undone);
 
 		bool isBuy = (undone > 0);
 		OrderIDs ids = _ctx->cancel(_code.c_str(), isBuy);
-		for (auto localid : ids)
-		{
-			_orders[localid] = _ctx->getCurTime();
-		}
+		_orders_mon.push_order(ids.data(), ids.size(), _ctx->getCurTime());
 		_cancel_cnt += ids.size();
 
 		_ctx->writeLog("%s cancelcnt -> %u", __FUNCTION__, _cancel_cnt);
@@ -161,8 +157,18 @@ void WtTWapExeUnit::on_tick(WTSTickData* newTick)
 	{
 		uint64_t now = _ctx->getCurTime();
 		bool hasCancel = false;
-		if (_ord_sticky != 0 && !_orders.empty())
+		if (_ord_sticky != 0 && _orders_mon.has_order())
 		{
+			_orders_mon.check_orders(_ord_sticky, now, [this, &hasCancel](uint32_t localid) {
+				if (_ctx->cancel(localid))
+				{
+					_cancel_cnt++;
+					_ctx->writeLog("@ %d cancelcnt -> %u", __LINE__, _cancel_cnt);
+					hasCancel = true;
+				}
+			});
+
+			/*
 			StdLocker<StdRecurMutex> lock(_mtx_ords);
 			for (auto v : _orders)
 			{
@@ -178,6 +184,7 @@ void WtTWapExeUnit::on_tick(WTSTickData* newTick)
 					}
 				}
 			}
+			*/
 		}
 		
 		if (!hasCancel && (now - _last_fire_time >= _fire_span))
@@ -197,11 +204,10 @@ void WtTWapExeUnit::on_entrust(uint32_t localid, const char* stdCode, bool bSucc
 	if (!bSuccess)
 	{
 		//如果不是我发出去的订单，我就不管了
-		auto it = _orders.find(localid);
-		if (it == _orders.end())
+		if (!_orders_mon.has_order(localid))
 			return;
 
-		_orders.erase(it);
+		_orders_mon.erase_order(localid);
 
 		do_calc();
 	}
@@ -242,11 +248,7 @@ void WtTWapExeUnit::fire_at_once(double qty)
 	else
 		ids = _ctx->sell(code, targetPx, abs(qty));
 
-	StdLocker<StdRecurMutex> lock(_mtx_ords);
-	for (auto localid : ids)
-	{
-		_orders[localid] = now;
-	}
+	_orders_mon.push_order(ids.data(), ids.size(), now);
 
 	curTick->release();
 }
@@ -342,11 +344,7 @@ void WtTWapExeUnit::do_calc()
 	else
 		ids = _ctx->sell(code, targetPx, abs(curQty));
 
-	StdLocker<StdRecurMutex> lock(_mtx_ords);
-	for (auto localid : ids)
-	{
-		_orders[localid] = now;
-	}
+	_orders_mon.push_order(ids.data(), ids.size(), now);
 	_last_fire_time = now;
 	_fired_times += 1;
 

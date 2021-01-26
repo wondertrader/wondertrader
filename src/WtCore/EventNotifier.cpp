@@ -130,7 +130,7 @@ bool EventNotifier::addBRecver(const char* remote, int port)
 	try
 	{
 		boost::asio::ip::address_v4 addr = boost::asio::ip::address_v4::from_string(remote);
-		m_listRawRecver.push_back(EndPoint(addr, port));
+		m_listRawRecver.emplace_back(EndPoint(addr, port));
 
 		WTSLogger::info("接收端%s:%d已加入", remote, port);
 	}
@@ -152,7 +152,7 @@ bool EventNotifier::addMRecver(const char* remote, int port, int sendport)
 		UDPSocketPtr sock(new UDPSocket(m_ioservice, boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(), sendport)));
 		boost::asio::ip::multicast::join_group option(ep.address());
 		sock->set_option(option);
-		m_listRawGroup.push_back(std::make_pair(sock, ep));
+		m_listRawGroup.emplace_back(std::make_pair(sock, ep));
 	}
 	catch(...)
 	{
@@ -212,7 +212,7 @@ void EventNotifier::tradeToJson(uint32_t localid, const char* stdCode, WTSTradeI
 		root.AddMember("isopen", isOpen, allocator);
 		root.AddMember("istoday", isToday, allocator);
 
-		root.AddMember("volumn", trdInfo->getVolumn(), allocator);
+		root.AddMember("volume", trdInfo->getVolume(), allocator);
 		root.AddMember("price", trdInfo->getPrice(), allocator);
 
 		rj::StringBuffer sb;
@@ -247,7 +247,7 @@ void EventNotifier::orderToJson(uint32_t localid, const char* stdCode, WTSOrderI
 		root.AddMember("istoday", isToday, allocator);
 		root.AddMember("canceled", isCanceled, allocator);
 
-		root.AddMember("total", ordInfo->getVolumn(), allocator);
+		root.AddMember("total", ordInfo->getVolume(), allocator);
 		root.AddMember("left", ordInfo->getVolLeft(), allocator);
 		root.AddMember("traded", ordInfo->getVolTraded(), allocator);
 		root.AddMember("price", ordInfo->getPrice(), allocator);

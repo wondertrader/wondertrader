@@ -90,7 +90,7 @@ bool ActionPolicyMgr::init(const char* filename)
 				aRule._limit = uLimit;
 				aRule._limit_s = uLimitS;
 				aRule._limit_l = uLimitL;
-				gp.push_back(aRule);
+				gp.emplace_back(aRule);
 			}
 		}
 

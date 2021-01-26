@@ -214,11 +214,11 @@ bool UDPCaster::addBRecver(const char* remote, int port, int type /* = 0 */)
 		boost::asio::ip::address_v4 addr = boost::asio::ip::address_v4::from_string(remote);
 		UDPReceiverPtr item(new UDPReceiver(EndPoint(addr, port), type));
 		if(type == 0)
-			m_listFlatRecver.push_back(item);
+			m_listFlatRecver.emplace_back(item);
 		else if(type == 1)
-			m_listJsonRecver.push_back(item);
+			m_listJsonRecver.emplace_back(item);
 		else if(type == 2)
-			m_listRawRecver.push_back(item);
+			m_listRawRecver.emplace_back(item);
 	}
 	catch(...)
 	{
@@ -239,11 +239,11 @@ bool UDPCaster::addMRecver(const char* remote, int port, int sendport, int type 
 		boost::asio::ip::multicast::join_group option(item->_ep.address());
 		sock->set_option(option);
 		if(type == 0)
-			m_listFlatGroup.push_back(std::make_pair(sock, item));
+			m_listFlatGroup.emplace_back(std::make_pair(sock, item));
 		else if(type == 1)
-			m_listJsonGroup.push_back(std::make_pair(sock, item));
+			m_listJsonGroup.emplace_back(std::make_pair(sock, item));
 		else if(type == 2)
-			m_listRawGroup.push_back(std::make_pair(sock, item));
+			m_listRawGroup.emplace_back(std::make_pair(sock, item));
 	}
 	catch(...)
 	{
@@ -398,8 +398,8 @@ void UDPCaster::broadcast(WTSObject* data, uint32_t dataType)
 		str += sprintf(str, "%.2f,", PRICE_INT_TO_DOUBLE(curTick->settlepx()));
 		str += sprintf(str, "%.2f,", PRICE_INT_TO_DOUBLE(curTick->preclose()));
 
-		str += sprintf(str, "%u,", curTick->totalvolumn());
-		str += sprintf(str, "%u,", curTick->volumn());
+		str += sprintf(str, "%u,", curTick->totalvolume());
+		str += sprintf(str, "%u,", curTick->volume());
 		str += sprintf(str, "%u,", curTick->openinterest());
 		str += sprintf(str, "%d,", curTick->additional());
 
@@ -442,8 +442,8 @@ void UDPCaster::broadcast(WTSObject* data, uint32_t dataType)
 		newTick.set_preclose(curTick->preclose());
 		newTick.set_settlepx(curTick->settlepx());
 
-		newTick.set_totalvolumn(curTick->totalvolumn());
-		newTick.set_volumn(curTick->volumn());
+		newTick.set_totalvolume(curTick->totalvolume());
+		newTick.set_volume(curTick->volume());
 		newTick.set_totalmoney(curTick->totalturnover());
 		newTick.set_money(curTick->turnover());
 		newTick.set_openinterest(curTick->openinterest());

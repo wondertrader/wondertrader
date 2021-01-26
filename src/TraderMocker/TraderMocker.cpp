@@ -36,13 +36,13 @@ extern "C"
 	}
 }
 
-std::vector<uint32_t> splitVolumn(uint32_t vol, uint32_t minQty = 1, uint32_t maxQty = 100)
+std::vector<uint32_t> splitVolume(uint32_t vol, uint32_t minQty = 1, uint32_t maxQty = 100)
 {
 	uint32_t length = maxQty - minQty + 1;
 	std::vector<uint32_t> ret;
 	if (vol <= minQty)
 	{
-		ret.push_back(vol);
+		ret.emplace_back(vol);
 	}
 	else
 	{
@@ -58,7 +58,7 @@ std::vector<uint32_t> splitVolumn(uint32_t vol, uint32_t minQty = 1, uint32_t ma
 			if (curVol == 0)
 				continue;
 
-			ret.push_back(curVol);
+			ret.emplace_back(curVol);
 			left -= curVol;
 		}
 	}
@@ -164,7 +164,7 @@ int TraderMocker::orderInsert(WTSEntrust* entrust)
 			}
 
 			//检查数量的合法性
-			if ((commInfo->getCategoty() == CC_Stock) && (entrust->getOffsetType() == WOT_OPEN) && !decimal::eq(decimal::mod(entrust->getVolumn(), 100), 0))
+			if ((commInfo->getCategoty() == CC_Stock) && (entrust->getOffsetType() == WOT_OPEN) && !decimal::eq(decimal::mod(entrust->getVolume(), 100), 0))
 			{
 				bPass = false;
 				msg = "股票买入数量必须为100的整数倍";
@@ -228,8 +228,8 @@ int TraderMocker::orderInsert(WTSEntrust* entrust)
 			PosItem& pItem = it->second;
 			bool isLong = entrust->getDirection() == WDT_LONG;
 
-			double validQty = isLong ? (pItem._long._volumn - pItem._long._frozen) : (pItem._short._volumn - pItem._short._frozen);
-			if(decimal::lt(validQty, entrust->getVolumn()))
+			double validQty = isLong ? (pItem._long._volume - pItem._long._frozen) : (pItem._short._volume - pItem._short._frozen);
+			if(decimal::lt(validQty, entrust->getVolume()))
 			{
 				bPass = false;
 				msg = "没有足够的可平仓位";
@@ -239,11 +239,11 @@ int TraderMocker::orderInsert(WTSEntrust* entrust)
 			//冻结持仓
 			if(isLong)
 			{
-				pItem._long._frozen += entrust->getVolumn();
+				pItem._long._frozen += entrust->getVolume();
 			}
 			else
 			{
-				pItem._short._frozen += entrust->getVolumn();
+				pItem._short._frozen += entrust->getVolume();
 			}
 
 			bPass = true;
@@ -266,8 +266,8 @@ int TraderMocker::orderInsert(WTSEntrust* entrust)
 			ordInfo->setStateMsg(msg.c_str());
 			ordInfo->setOrderState(WOS_NotTraded_Queuing);
 			ordInfo->setOrderTime(TimeUtils::getLocalTimeNow());
-			ordInfo->setVolumn(entrust->getVolumn());
-			ordInfo->setVolLeft(entrust->getVolumn());
+			ordInfo->setVolume(entrust->getVolume());
+			ordInfo->setVolLeft(entrust->getVolume());
 			ordInfo->setPriceType(entrust->getPriceType());
 			ordInfo->setTimeCondition(entrust->getTimeCondition());
 
@@ -351,19 +351,19 @@ int32_t TraderMocker::match_once()
 
 					bool isBuy = (ordInfo->getDirection() == WDT_LONG && ordInfo->getOffsetType() == WOT_OPEN) || (ordInfo->getDirection() != WDT_LONG && ordInfo->getOffsetType() != WOT_OPEN);
 
-					double uPrice, uVolumn;
+					double uPrice, uVolume;
 					if (isBuy)
 					{
 						uPrice = curTick->askprice(0);
-						uVolumn = curTick->askqty(0);
+						uVolume = curTick->askqty(0);
 					}
 					else
 					{
 						uPrice = curTick->bidprice(0);
-						uVolumn = curTick->bidqty(0);
+						uVolume = curTick->bidqty(0);
 					}
 
-					if (decimal::eq(uVolumn, 0))
+					if (decimal::eq(uVolume, 0))
 						continue;					
 
 					if (_use_newpx)
@@ -381,8 +381,8 @@ int32_t TraderMocker::match_once()
 
 					count++;
 
-					double maxVolumn = min(uVolumn, ordInfo->getVolLeft());
-					std::vector<uint32_t> ayVol = splitVolumn((uint32_t)maxVolumn, (uint32_t)_min_qty, (uint32_t)_max_qty);
+					double maxVolume = min(uVolume, ordInfo->getVolLeft());
+					std::vector<uint32_t> ayVol = splitVolume((uint32_t)maxVolume, (uint32_t)_min_qty, (uint32_t)_max_qty);
 					for (uint32_t curVol : ayVol)
 					{
 
@@ -391,7 +391,7 @@ int32_t TraderMocker::match_once()
 						trade->setOffsetType(ordInfo->getOffsetType());
 
 						trade->setPrice(uPrice);
-						trade->setVolumn(curVol);
+						trade->setVolume(curVol);
 
 						trade->setRefOrder(ordInfo->getOrderID());
 
@@ -409,7 +409,7 @@ int32_t TraderMocker::match_once()
 						{
 							ordInfo->setOrderState(WOS_AllTraded);
 							ordInfo->setStateMsg("全部成交");
-							to_erase.push_back(ordInfo->getOrderID());
+							to_erase.emplace_back(ordInfo->getOrderID());
 						}
 						else
 						{
@@ -435,11 +435,11 @@ int32_t TraderMocker::match_once()
 							{
 								if (ordInfo->getOffsetType() == WOT_OPEN)
 								{
-									pItem._long._volumn += curVol;
+									pItem._long._volume += curVol;
 								}
 								else
 								{
-									pItem._long._volumn -= curVol;
+									pItem._long._volume -= curVol;
 									pItem._long._frozen -= curVol;
 								}
 							}
@@ -447,11 +447,11 @@ int32_t TraderMocker::match_once()
 							{
 								if (ordInfo->getOffsetType() == WOT_OPEN)
 								{
-									pItem._short._volumn += curVol;
+									pItem._short._volume += curVol;
 								}
 								else
 								{
-									pItem._short._volumn -= curVol;
+									pItem._short._volume -= curVol;
 									pItem._short._frozen -= curVol;
 								}
 							}
@@ -562,9 +562,9 @@ void TraderMocker::load_positions()
 				strcpy(pInfo._code, ct->getCode());
 				strcpy(pInfo._exchg, ct->getExchg());
 				
-				pInfo._long._volumn = pItem["long"]["volumn"].GetDouble();
+				pInfo._long._volume = pItem["long"]["volume"].GetDouble();
 
-				pInfo._short._volumn = pItem["short"]["volumn"].GetDouble();
+				pInfo._short._volume = pItem["short"]["volume"].GetDouble();
 			}
 		}
 	}
@@ -593,14 +593,14 @@ void TraderMocker::save_positions()
 
 			{
 				rj::Value dItem(rj::kObjectType);
-				dItem.AddMember("volumn", pInfo._long._volumn, allocator);
+				dItem.AddMember("volume", pInfo._long._volume, allocator);
 
 				pItem.AddMember("long", dItem, allocator);
 			}
 
 			{
 				rj::Value dItem(rj::kObjectType);
-				dItem.AddMember("volumn", pInfo._short._volumn, allocator);
+				dItem.AddMember("volume", pInfo._short._volume, allocator);
 
 				pItem.AddMember("short", dItem, allocator);
 			}
@@ -863,22 +863,22 @@ int TraderMocker::queryPositions()
 
 			WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(ct);
 
-			if(pItem._long._volumn > 0)
+			if(pItem._long._volume > 0)
 			{
 				WTSPositionItem* pInfo = WTSPositionItem::create(pItem._code, commInfo->getCurrency(), pItem._exchg);
 				pInfo->setDirection(WDT_LONG);
-				pInfo->setNewPosition(pItem._long._volumn);
-				pInfo->setAvailNewPos(pItem._long._volumn - pItem._long._frozen);
+				pInfo->setNewPosition(pItem._long._volume);
+				pInfo->setAvailNewPos(pItem._long._volume - pItem._long._frozen);
 
 				ayPos->append(pInfo, false);
 			}
 
-			if (pItem._short._volumn > 0)
+			if (pItem._short._volume > 0)
 			{
 				WTSPositionItem* pInfo = WTSPositionItem::create(pItem._code, commInfo->getCurrency(), pItem._exchg);
 				pInfo->setDirection(WDT_SHORT);
-				pInfo->setNewPosition(pItem._short._volumn);
-				pInfo->setAvailNewPos(pItem._short._volumn - pItem._short._frozen);
+				pInfo->setNewPosition(pItem._short._volume);
+				pInfo->setAvailNewPos(pItem._short._volume - pItem._short._frozen);
 
 				ayPos->append(pInfo, false);
 			}

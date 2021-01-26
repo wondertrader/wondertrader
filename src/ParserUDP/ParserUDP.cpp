@@ -89,8 +89,7 @@ bool ParserUDP::init( WTSParams* config )
 	ip::address addr = ip::address::from_string(_hots);
 	_server_ep = ip::udp::endpoint(addr, _sport);
 
-	addr = ip::address::from_string("0.0.0.0");
-	_broad_ep = ip::udp::endpoint(addr, _bport);
+	_broad_ep = ip::udp::endpoint(ip::address_v4::any(), _bport);
 
 	return true;
 }

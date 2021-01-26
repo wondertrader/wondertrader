@@ -681,10 +681,10 @@ void WtDataWriter::pipeToTicks(WTSContractInfo* ct, WTSTickData* curTick)
 			<< curTick->actiontime() << ","
 			<< TimeUtils::getLocalTime(false) << ","
 			<< curTick->price() << ","
-			<< curTick->totalvolumn() << ","
+			<< curTick->totalvolume() << ","
 			<< curTick->openinterest() << ","
 			<< (uint64_t)curTick->totalturnover() << ","
-			<< curTick->volumn() << ","
+			<< curTick->volume() << ","
 			<< curTick->additional() << ","
 			<< (uint64_t)curTick->turnover() << std::endl;
 	}
@@ -1048,7 +1048,7 @@ WtDataWriter::TickBlockPair* WtDataWriter::getTickBlock(WTSContractInfo* ct, uin
 					pBlock->_block->_capacity = oldCnt;
 					pBlock->_block->_size = oldCnt;
 
-					_sink->outputWriterLog(LL_WARN, "%s标的%u的tick缓存文件已修复", ct->getCode(), curDate);
+					_sink->outputWriterLog(LL_WARN, "%s日期为%u的tick缓存文件已修复", ct->getCode(), curDate);
 				}
 				
 				break;
@@ -1127,7 +1127,7 @@ void WtDataWriter::pipeToKlines(WTSContractInfo* ct, WTSTickData* curTick)
 			newBar->low = curTick->price();
 			newBar->close = curTick->price();
 
-			newBar->vol = curTick->volumn();
+			newBar->vol = curTick->volume();
 			newBar->money = curTick->turnover();
 			newBar->hold = curTick->openinterest();
 			newBar->add = curTick->additional();
@@ -1140,7 +1140,7 @@ void WtDataWriter::pipeToKlines(WTSContractInfo* ct, WTSTickData* curTick)
 			newBar->high = max(curTick->price(), newBar->high);
 			newBar->low = min(curTick->price(), newBar->low);
 
-			newBar->vol += curTick->volumn();
+			newBar->vol += curTick->volume();
 			newBar->money += curTick->turnover();
 			newBar->hold = curTick->openinterest();
 			newBar->add += curTick->additional();
@@ -1194,7 +1194,7 @@ void WtDataWriter::pipeToKlines(WTSContractInfo* ct, WTSTickData* curTick)
 			newBar->low = curTick->price();
 			newBar->close = curTick->price();
 
-			newBar->vol = curTick->volumn();
+			newBar->vol = curTick->volume();
 			newBar->money = curTick->turnover();
 			newBar->hold = curTick->openinterest();
 			newBar->add = curTick->additional();
@@ -1207,7 +1207,7 @@ void WtDataWriter::pipeToKlines(WTSContractInfo* ct, WTSTickData* curTick)
 			newBar->high = max(curTick->price(), newBar->high);
 			newBar->low = min(curTick->price(), newBar->low);
 
-			newBar->vol += curTick->volumn();
+			newBar->vol += curTick->volume();
 			newBar->money += curTick->turnover();
 			newBar->hold = curTick->openinterest();
 			newBar->add += curTick->additional();
@@ -1393,16 +1393,16 @@ bool WtDataWriter::updateCache(WTSContractInfo* ct, WTSTickData* curTick, bool b
 		memcpy(&item._tick, &newTick, sizeof(WTSTickStruct));
 		if (bNeedSlice)
 		{
-			item._tick.volumn = item._tick.total_volumn;
+			item._tick.volume = item._tick.total_volume;
 			item._tick.turn_over = item._tick.total_turnover;
 			item._tick.diff_interest = item._tick.open_interest - item._tick.pre_interest;
 
-			newTick.volumn = newTick.total_volumn;
+			newTick.volume = newTick.total_volume;
 			newTick.turn_over = newTick.total_turnover;
 			newTick.diff_interest = newTick.open_interest - newTick.pre_interest;
 		}
 
-		_sink->outputWriterLog(LL_INFO, "新交易日%u的第一笔数据,%s.%s,%u,%f,%d,%d", newTick.trading_date, curTick->exchg(), curTick->code(), curTick->volumn(), curTick->turnover(), curTick->openinterest(), curTick->additional());
+		_sink->outputWriterLog(LL_INFO, "新交易日%u的第一笔数据,%s.%s,%u,%f,%d,%d", newTick.trading_date, curTick->exchg(), curTick->code(), curTick->volume(), curTick->turnover(), curTick->openinterest(), curTick->additional());
 	}
 	else
 	{
@@ -1412,18 +1412,18 @@ bool WtDataWriter::updateCache(WTSContractInfo* ct, WTSTickData* curTick, bool b
 		uint32_t tdate = sInfo->getOffsetDate(curTick->actiondate(), curTick->actiontime() / 100000);
 		if (tdate > curTick->tradingdate())
 		{
-			_sink->outputWriterLog(LL_ERROR, "标的%s.%s最新tick数据(时间%u.%u)异常，丢弃", curTick->exchg(), curTick->code(), curTick->actiondate(), curTick->actiontime());
+			_sink->outputWriterLog(LL_ERROR, "%s.%s最新tick数据(时间%u.%u)异常，丢弃", curTick->exchg(), curTick->code(), curTick->actiondate(), curTick->actiontime());
 			return false;
 		}
-		else if (curTick->totalvolumn() < item._tick.total_volumn)
+		else if (curTick->totalvolume() < item._tick.total_volume)
 		{
-			_sink->outputWriterLog(LL_ERROR, "标的%s.%s最新tick数据(时间%u.%u，总成交%u小于缓存总成交%u)异常，丢弃", 
-				curTick->exchg(), curTick->code(), curTick->actiondate(), curTick->actiontime(), curTick->totalvolumn(), item._tick.total_volumn);
+			_sink->outputWriterLog(LL_ERROR, "%s.%s最新tick数据(时间%u.%u，总成交%u小于缓存总成交%u)异常，丢弃", 
+				curTick->exchg(), curTick->code(), curTick->actiondate(), curTick->actiontime(), curTick->totalvolume(), item._tick.total_volume);
 			return false;
 		}
 
 		//时间戳相同，但是成交量大于等于原来的，这种情况一般是郑商所，这里的处理方式就是时间戳+500毫秒
-		if(newTick.action_date == item._tick.action_date && newTick.action_time == item._tick.action_time && newTick.total_volumn >= item._tick.volumn)
+		if(newTick.action_date == item._tick.action_date && newTick.action_time == item._tick.action_time && newTick.total_volume >= item._tick.volume)
 		{
 			newTick.action_time += 500;
 		}
@@ -1435,7 +1435,7 @@ bool WtDataWriter::updateCache(WTSContractInfo* ct, WTSTickData* curTick, bool b
 		}
 		else
 		{
-			newTick.volumn = newTick.total_volumn - item._tick.total_volumn;
+			newTick.volume = newTick.total_volume - item._tick.total_volume;
 			newTick.turn_over = newTick.total_turnover - item._tick.total_turnover;
 			newTick.diff_interest = newTick.open_interest - item._tick.open_interest;
 
@@ -1594,7 +1594,7 @@ uint32_t WtDataWriter::dump_hisdata_to_db(WTSContractInfo* ct)
 		char sql[512] = { 0 };
 		sprintf(sql, "REPLACE INTO tb_kline_day(exchange,code,date,open,high,low,close,settle,volume,turnover,interest,diff_interest) "
 			"VALUES('%s','%s',%u,%f,%f,%f,%f,%f,%u,%f,%u,%d);", ct->getExchg(), ct->getCode(), ts.trading_date, ts.open, ts.high, ts.low, ts.price, 
-			ts.settle_price, ts.total_volumn, ts.total_turnover, ts.open_interest, ts.diff_interest);
+			ts.settle_price, ts.total_volume, ts.total_turnover, ts.open_interest, ts.diff_interest);
 
 		MysqlQuery query(db);
 		if(!query.exec(sql))
@@ -1612,7 +1612,7 @@ uint32_t WtDataWriter::dump_hisdata_to_db(WTSContractInfo* ct)
 	if (kBlkPair != NULL && kBlkPair->_block->_size > 0)
 	{
 		uint32_t size = kBlkPair->_block->_size;
-		_sink->outputWriterLog(LL_INFO, "开始转移标的%s的1分钟数据", ct->getFullCode());
+		_sink->outputWriterLog(LL_INFO, "开始转移%s的1分钟数据", ct->getFullCode());
 		StdUniqueLock lock(kBlkPair->_mutex);
 
 		std::string sql = "REPLACE INTO tb_kline_min1(exchange,code,date,time,open,high,low,close,volume,turnover,interest,diff_interest) VALUES";
@@ -1646,7 +1646,7 @@ uint32_t WtDataWriter::dump_hisdata_to_db(WTSContractInfo* ct)
 	if (kBlkPair != NULL && kBlkPair->_block->_size > 0)
 	{
 		uint32_t size = kBlkPair->_block->_size;
-		_sink->outputWriterLog(LL_INFO, "开始转移标的%s的5分钟数据", ct->getFullCode());
+		_sink->outputWriterLog(LL_INFO, "开始转移%s的5分钟数据", ct->getFullCode());
 		StdUniqueLock lock(kBlkPair->_mutex);
 
 		std::string sql = "REPLACE INTO tb_kline_min5(exchange,code,date,time,open,high,low,close,volume,turnover,interest,diff_interest) VALUES";
@@ -1706,7 +1706,7 @@ uint32_t WtDataWriter::dump_hisdata_to_file(WTSContractInfo* ct)
 		bs.high = ts.high;
 		bs.low = ts.low;
 		bs.settle = ts.settle_price;
-		bs.vol = ts.total_volumn;
+		bs.vol = ts.total_volume;
 		bs.hold = ts.open_interest;
 		bs.money = ts.total_turnover;
 		bs.add = ts.open_interest - ts.pre_interest;
@@ -1790,7 +1790,7 @@ uint32_t WtDataWriter::dump_hisdata_to_file(WTSContractInfo* ct)
 						}
 						else if (oldBS.date < bs.date)	//老的K线日期小于新的，则直接追加到后面
 						{
-							bars.push_back(bs);
+							bars.emplace_back(bs);
 						}
 					}
 
@@ -1846,7 +1846,7 @@ uint32_t WtDataWriter::dump_hisdata_to_file(WTSContractInfo* ct)
 	if (kBlkPair != NULL && kBlkPair->_block->_size > 0)
 	{
 		uint32_t size = kBlkPair->_block->_size;
-		_sink->outputWriterLog(LL_INFO, "开始转移标的%s的1分钟数据", ct->getFullCode());
+		_sink->outputWriterLog(LL_INFO, "开始转移%s的1分钟数据", ct->getFullCode());
 		StdUniqueLock lock(kBlkPair->_mutex);
 
 		std::stringstream ss;
@@ -1917,7 +1917,7 @@ uint32_t WtDataWriter::dump_hisdata_to_file(WTSContractInfo* ct)
 	if (kBlkPair != NULL && kBlkPair->_block->_size > 0)
 	{
 		uint32_t size = kBlkPair->_block->_size;
-		_sink->outputWriterLog(LL_INFO, "开始转移标的%s的5分钟数据", ct->getFullCode());
+		_sink->outputWriterLog(LL_INFO, "开始转移%s的5分钟数据", ct->getFullCode());
 		StdUniqueLock lock(kBlkPair->_mutex);
 
 		std::stringstream ss;
@@ -2016,7 +2016,7 @@ void WtDataWriter::proc_loop()
 
 			std::set<std::string> setCodes;
 			std::stringstream ss_snapshot;
-			ss_snapshot << "date,exchg,code,open,high,low,close,settle,volumn,turnover,openinterest,upperlimit,lowerlimit,preclose,presettle,preinterest" << std::endl << std::fixed;
+			ss_snapshot << "date,exchg,code,open,high,low,close,settle,volume,turnover,openinterest,upperlimit,lowerlimit,preclose,presettle,preinterest" << std::endl << std::fixed;
 			for (auto it = _tick_cache_idx.begin(); it != _tick_cache_idx.end(); it++)
 			{
 				const std::string& key = it->first;
@@ -2038,7 +2038,7 @@ void WtDataWriter::proc_loop()
 						<< ts.low << ","
 						<< ts.price << ","
 						<< ts.settle_price << ","
-						<< ts.total_volumn << ","
+						<< ts.total_volume << ","
 						<< ts.total_turnover << ","
 						<< ts.open_interest << ","
 						<< ts.upper_limit << ","
@@ -2049,15 +2049,15 @@ void WtDataWriter::proc_loop()
 				}
 				else
 				{
-					_sink->outputWriterLog(LL_WARN, "标的%s[%s]已过期，缓存即将清理", ay[1].c_str(), ay[0].c_str());
+					_sink->outputWriterLog(LL_WARN, "%s[%s]已过期，缓存即将清理", ay[1].c_str(), ay[0].c_str());
 
-					//删除已经过期标的的实时tick文件
+					//删除已经过期代码的实时tick文件
 					std::string path = StrUtil::printf("%srt/ticks/%s/%s.dmb", _base_dir.c_str(), ay[0].c_str(), ay[1].c_str());
 					BoostFile::delete_file(path.c_str());
 				}
 			}
 
-			//如果两组标的个数不同，说明有标的过期了，被排除了
+			//如果两组代码个数不同，说明有代码过期了，被排除了
 			if(setCodes.size() != _tick_cache_idx.size())
 			{
 				uint32_t diff = _tick_cache_idx.size() - setCodes.size();
@@ -2106,7 +2106,7 @@ void WtDataWriter::proc_loop()
 				_tick_cache_file->map(filename.c_str());
 				_tick_cache_block = (RTTickCache*)_tick_cache_file->addr();
 				
-				_sink->outputWriterLog(LL_INFO, "行情缓存清理成功，共清理%u条过期标的的缓存", diff);
+				_sink->outputWriterLog(LL_INFO, "行情缓存清理成功，共清理%u条过期的缓存", diff);
 			}
 
 			std::string path = StrUtil::printf("%srt/min1/", _base_dir.c_str());
@@ -2169,7 +2169,7 @@ void WtDataWriter::proc_loop()
 			TickBlockPair *tBlkPair = getTickBlock(ct, uDate, false);
 			if (tBlkPair != NULL && tBlkPair->_block->_size > 0)
 			{
-				_sink->outputWriterLog(LL_INFO, "开始转移标的%s的tick数据", fullcode.c_str());
+				_sink->outputWriterLog(LL_INFO, "开始转移%s的tick数据", fullcode.c_str());
 				StdUniqueLock lock(tBlkPair->_mutex);
 
 				std::stringstream ss;
@@ -2380,6 +2380,6 @@ void WtDataWriter::proc_loop()
 		else
 			count += dump_hisdata_to_file(ct);
 
-		_sink->outputWriterLog(LL_INFO, "标的%s[%s]已完成收盘, 本次作业共处理数据%u条", ct->getCode(), ct->getExchg(), count);
+		_sink->outputWriterLog(LL_INFO, "%s[%s]已完成收盘, 本次作业共处理数据%u条", ct->getCode(), ct->getExchg(), count);
 	}
 }

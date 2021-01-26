@@ -30,12 +30,38 @@ void HftStraContext::on_init()
 		_strategy->on_init(this);
 }
 
-void HftStraContext::on_tick(const char* code, WTSTickData* newTick)
+void HftStraContext::on_tick(const char* stdCode, WTSTickData* newTick)
+{
+	update_dyn_profit(stdCode, newTick);
+
+	if (_strategy)
+		_strategy->on_tick(this, stdCode, newTick);
+
+	HftStraBaseCtx::on_tick(stdCode, newTick);
+}
+
+void HftStraContext::on_order_queue(const char* stdCode, WTSOrdQueData* newOrdQue)
 {
 	if (_strategy)
-		_strategy->on_tick(this, code, newTick);
+		_strategy->on_order_queue(this, stdCode, newOrdQue);
 
-	HftStraBaseCtx::on_tick(code, newTick);
+	HftStraBaseCtx::on_order_queue(stdCode, newOrdQue);
+}
+
+void HftStraContext::on_order_detail(const char* stdCode, WTSOrdDtlData* newOrdDtl)
+{
+	if (_strategy)
+		_strategy->on_order_detail(this, stdCode, newOrdDtl);
+
+	HftStraBaseCtx::on_order_detail(stdCode, newOrdDtl);
+}
+
+void HftStraContext::on_transaction(const char* stdCode, WTSTransData* newTrans)
+{
+	if (_strategy)
+		_strategy->on_transaction(this, stdCode, newTrans);
+
+	HftStraBaseCtx::on_transaction(stdCode, newTrans);
 }
 
 void HftStraContext::on_bar(const char* code, const char* period, uint32_t times, WTSBarStruct* newBar)
@@ -48,18 +74,20 @@ void HftStraContext::on_bar(const char* code, const char* period, uint32_t times
 
 void HftStraContext::on_trade(uint32_t localid, const char* stdCode, bool isBuy, double vol, double price)
 {
+	const char* innerCode = get_inner_code(stdCode);
 	if (_strategy)
-		_strategy->on_trade(this, localid, get_inner_code(stdCode), isBuy, vol, price);
+		_strategy->on_trade(this, localid, innerCode, isBuy, vol, price, getOrderTag(localid));
 
-	HftStraBaseCtx::on_trade(localid, stdCode, isBuy, vol, price);
+	HftStraBaseCtx::on_trade(localid, innerCode, isBuy, vol, price);
 }
 
 void HftStraContext::on_order(uint32_t localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled /* = false */)
 {
+	const char* innerCode = get_inner_code(stdCode);
 	if (_strategy)
-		_strategy->on_order(this, localid, get_inner_code(stdCode), isBuy, totalQty, leftQty, price, isCanceled);
+		_strategy->on_order(this, localid, innerCode, isBuy, totalQty, leftQty, price, isCanceled, getOrderTag(localid));
 
-	HftStraBaseCtx::on_order(localid, stdCode, isBuy, totalQty, leftQty, price, isCanceled);
+	HftStraBaseCtx::on_order(localid, innerCode, isBuy, totalQty, leftQty, price, isCanceled);
 }
 
 void HftStraContext::on_channel_ready()
@@ -81,7 +109,7 @@ void HftStraContext::on_channel_lost()
 void HftStraContext::on_entrust(uint32_t localid, const char* stdCode, bool bSuccess, const char* message)
 {
 	if (_strategy)
-		_strategy->on_entrust(localid, bSuccess, message);
+		_strategy->on_entrust(localid, bSuccess, message, getOrderTag(localid));
 
-	HftStraBaseCtx::on_entrust(localid, stdCode, bSuccess, message);
+	HftStraBaseCtx::on_entrust(localid, get_inner_code(stdCode), bSuccess, message);
 }

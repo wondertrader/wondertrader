@@ -246,6 +246,8 @@ void dump_ticks(WtString binFolder, WtString csvFolder, WtString strFilter /* = 
 			cbLogger(StrUtil::printf("ÕýÔÚÐ´Èë%s¡­¡­", filename.c_str()).c_str());
 
 		std::stringstream ss;
+		ss.setf(std::ios::fixed, std::ios::floatfield);
+		ss.precision(3);
 		ss << "code,tradingdate,actiondate,actiontime,price,open,high,low,settle,preclose,"
 			<< "presettle,preinterest,total_volume,total_turnover,open_interest,volume,turnover,additional,";
 		for (int i = 0; i < 10; i++)
@@ -270,10 +272,10 @@ void dump_ticks(WtString binFolder, WtString csvFolder, WtString strFilter /* = 
 				<< curTick.pre_close << ","
 				<< curTick.pre_settle << ","
 				<< curTick.pre_interest << ","
-				<< curTick.total_volumn << ","
+				<< curTick.total_volume << ","
 				<< curTick.total_turnover << ","
 				<< curTick.open_interest << ","
-				<< curTick.volumn << ","
+				<< curTick.volume << ","
 				<< curTick.turn_over << ","
 				<< curTick.diff_interest << ",";
 
@@ -355,7 +357,7 @@ void trans_csv_bars(WtString csvFolder, WtString binFolder, WtString period, Fun
 			bs.low = strtod(ay[4].c_str(), NULL);
 			bs.close = strtod(ay[5].c_str(), NULL);
 			bs.vol = strtoul(ay[6].c_str(), NULL, 10);
-			bars.push_back(bs);
+			bars.emplace_back(bs);
 
 			if (bars.size() % 1000 == 0)
 			{

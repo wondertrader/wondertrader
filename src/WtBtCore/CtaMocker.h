@@ -67,7 +67,7 @@ private:
 	inline void log_signal(const char* stdCode, double target, double price, uint64_t gentime, const char* usertag = "");
 	inline void	log_trade(const char* stdCode, bool isLong, bool isOpen, uint64_t curTime, double price, double qty, const char* userTag = "", double fee = 0.0, uint32_t barNo = 0);
 	inline void	log_close(const char* stdCode, bool isLong, uint64_t openTime, double openpx, uint64_t closeTime, double closepx, double qty,
-		double profit, double totalprofit = 0, const char* enterTag = "", const char* exitTag = "", uint32_t openBarNo = 0, uint32_t closeBarNo = 0);
+		double profit, double maxprofit, double maxloss, double totalprofit = 0, const char* enterTag = "", const char* exitTag = "", uint32_t openBarNo = 0, uint32_t closeBarNo = 0);
 
 	void	update_dyn_profit(const char* stdCode, double price);
 
@@ -121,6 +121,7 @@ public:
 	virtual void stra_set_position(const char* stdCode, double qty, const char* userTag = "", double limitprice = 0.0, double stopprice = 0.0) override;
 	virtual double stra_get_price(const char* stdCode) override;
 
+	virtual uint32_t stra_get_tdate() override;
 	virtual uint32_t stra_get_date() override;
 	virtual uint32_t stra_get_time() override;
 
@@ -177,7 +178,7 @@ protected:
 	{
 		bool		_long;
 		double		_price;
-		double		_volumn;
+		double		_volume;
 		uint64_t	_opentime;
 		uint32_t	_opentdate;
 		double		_max_profit;
@@ -194,7 +195,7 @@ protected:
 
 	typedef struct _PosInfo
 	{
-		double		_volumn;
+		double		_volume;
 		double		_closeprofit;
 		double		_dynprofit;
 
@@ -202,7 +203,7 @@ protected:
 
 		_PosInfo()
 		{
-			_volumn = 0;
+			_volume = 0;
 			_closeprofit = 0;
 			_dynprofit = 0;
 		}
@@ -212,7 +213,7 @@ protected:
 
 	typedef struct _SigInfo
 	{
-		double		_volumn;
+		double		_volume;
 		std::string	_usertag;
 		double		_sigprice;
 		double		_desprice;
@@ -221,7 +222,7 @@ protected:
 
 		_SigInfo()
 		{
-			_volumn = 0;
+			_volume = 0;
 			_sigprice = 0;
 			_desprice = 0;
 			_triggered = false;

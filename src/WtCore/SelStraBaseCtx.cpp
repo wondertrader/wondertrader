@@ -264,13 +264,13 @@ void SelStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 				const char* stdCode = pItem["code"].GetString();
 				if (!CodeHelper::isStdFutHotCode(stdCode) && _engine->get_contract_info(stdCode) == NULL)
 				{
-					stra_log_text("标的%s不存在或者已过期，持仓数据已忽略", stdCode);
+					stra_log_text("%s不存在或者已过期，持仓数据已忽略", stdCode);
 					continue;
 				}
 				PosInfo& pInfo = _pos_map[stdCode];
 				pInfo._closeprofit = pItem["closeprofit"].GetDouble();
-				pInfo._volumn = pItem["volumn"].GetDouble();
-				if (pInfo._volumn == 0)
+				pInfo._volume = pItem["volume"].GetDouble();
+				if (pInfo._volume == 0)
 					pInfo._dynprofit = 0;
 				else
 					pInfo._dynprofit = pItem["dynprofit"].GetDouble();
@@ -290,7 +290,7 @@ void SelStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 					DetailInfo& dInfo = pInfo._details[i];
 					dInfo._long = dItem["long"].GetBool();
 					dInfo._price = dItem["price"].GetDouble();
-					dInfo._volumn = dItem["volumn"].GetDouble();
+					dInfo._volume = dItem["volume"].GetDouble();
 					dInfo._opentime = dItem["opentime"].GetUint64();
 					if (dItem.HasMember("opentdate"))
 						dInfo._opentdate = dItem["opentdate"].GetUint();
@@ -302,7 +302,7 @@ void SelStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 					strcpy(dInfo._opentag, dItem["opentag"].GetString());
 				}
 
-				stra_log_text("策略仓位确认,%s -> %d", stdCode, pInfo._volumn);
+				stra_log_text("策略仓位确认,%s -> %d", stdCode, pInfo._volume);
 			}
 		}
 
@@ -321,7 +321,7 @@ void SelStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 				const char* stdCode = m.name.GetString();
 				if (!CodeHelper::isStdFutHotCode(stdCode) && _engine->get_contract_info(stdCode) == NULL)
 				{
-					stra_log_text("标的%s不存在或者已过期，信号已忽略", stdCode);
+					stra_log_text("%s不存在或者已过期，信号已忽略", stdCode);
 					continue;
 				}
 
@@ -329,11 +329,12 @@ void SelStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 
 				SigInfo& sInfo = _sig_map[stdCode];
 				sInfo._usertag = jItem["usertag"].GetString();
-				sInfo._volumn = jItem["volumn"].GetDouble();
+				sInfo._volume = jItem["volume"].GetDouble();
 				sInfo._sigprice = jItem["sigprice"].GetDouble();
 				sInfo._gentime = jItem["gentime"].GetUint64();
 
-				stra_log_text("未触发信号恢复, 标的: %s, 目标部位: %d", stdCode, sInfo._volumn);
+				stra_log_text(fmt::format("{} 的未触发信号恢复, 目标部位: {}", stdCode, sInfo._volume).c_str());
+				stra_sub_ticks(stdCode);
 			}
 		}
 	}
@@ -355,7 +356,7 @@ void SelStraBaseCtx::save_data(uint32_t flag /* = 0xFFFFFFFF */)
 
 			rj::Value pItem(rj::kObjectType);
 			pItem.AddMember("code", rj::Value(stdCode, allocator), allocator);
-			pItem.AddMember("volumn", pInfo._volumn, allocator);
+			pItem.AddMember("volume", pInfo._volume, allocator);
 			pItem.AddMember("closeprofit", pInfo._closeprofit, allocator);
 			pItem.AddMember("dynprofit", pInfo._dynprofit, allocator);
 
@@ -366,7 +367,7 @@ void SelStraBaseCtx::save_data(uint32_t flag /* = 0xFFFFFFFF */)
 				rj::Value dItem(rj::kObjectType);
 				dItem.AddMember("long", dInfo._long, allocator);
 				dItem.AddMember("price", dInfo._price, allocator);
-				dItem.AddMember("volumn", dInfo._volumn, allocator);
+				dItem.AddMember("volume", dInfo._volume, allocator);
 				dItem.AddMember("opentime", dInfo._opentime, allocator);
 				dItem.AddMember("opentdate", dInfo._opentdate, allocator);
 
@@ -410,7 +411,7 @@ void SelStraBaseCtx::save_data(uint32_t flag /* = 0xFFFFFFFF */)
 			rj::Value jItem(rj::kObjectType);
 			jItem.AddMember("usertag", rj::Value(sInfo._usertag.c_str(), allocator), allocator);
 
-			jItem.AddMember("volumn", sInfo._volumn, allocator);
+			jItem.AddMember("volume", sInfo._volume, allocator);
 			jItem.AddMember("sigprice", sInfo._sigprice, allocator);
 			jItem.AddMember("gentime", sInfo._gentime, allocator);
 
@@ -475,7 +476,7 @@ void SelStraBaseCtx::update_dyn_profit(const char* stdCode, double price)
 	if (it != _pos_map.end())
 	{
 		PosInfo& pInfo = it->second;
-		if (pInfo._volumn == 0)
+		if (pInfo._volume == 0)
 		{
 			pInfo._dynprofit = 0;
 		}
@@ -486,7 +487,7 @@ void SelStraBaseCtx::update_dyn_profit(const char* stdCode, double price)
 			for (auto pit = pInfo._details.begin(); pit != pInfo._details.end(); pit++)
 			{
 				DetailInfo& dInfo = *pit;
-				dInfo._profit = dInfo._volumn*(price - dInfo._price)*commInfo->getVolScale()*(dInfo._long ? 1 : -1);
+				dInfo._profit = dInfo._volume*(price - dInfo._price)*commInfo->getVolScale()*(dInfo._long ? 1 : -1);
 				if (dInfo._profit > 0)
 					dInfo._max_profit = max(dInfo._profit, dInfo._max_profit);
 				else if (dInfo._profit < 0)
@@ -523,7 +524,7 @@ void SelStraBaseCtx::on_tick(const char* stdCode, WTSTickData* newTick, bool bEm
 			if (sInfo->isInTradingTime(_engine->get_raw_time(), true))
 			{
 				const SigInfo& sInfo = it->second;
-				do_set_position(stdCode, sInfo._volumn, sInfo._usertag.c_str(), sInfo._triggered);
+				do_set_position(stdCode, sInfo._volume, sInfo._usertag.c_str(), sInfo._triggered);
 				_sig_map.erase(it);
 			}
 
@@ -561,7 +562,7 @@ bool SelStraBaseCtx::on_schedule(uint32_t curDate, uint32_t curTime, uint32_t fi
 	{
 		const PosInfo& pInfo = v.second;
 		const char* code = v.first.c_str();
-		if (_sig_map.find(code) == _sig_map.end() && !decimal::eq(pInfo._volumn, 0.0))
+		if (_sig_map.find(code) == _sig_map.end() && !decimal::eq(pInfo._volume, 0.0))
 		{
 			//新的信号中没有该持仓，则要清空
 			to_clear.insert(code);
@@ -602,15 +603,14 @@ void SelStraBaseCtx::enum_position(FuncEnumSelPositionCallBack cb)
 	{
 		const char* stdCode = it.first.c_str();
 		const PosInfo& pInfo = it.second;
-		//cb(stdCode, pInfo._volumn);
-		desPos[stdCode] = pInfo._volumn;
+		desPos[stdCode] = pInfo._volume;
 	}
 
 	for (auto sit : _sig_map)
 	{
 		const char* stdCode = sit.first.c_str();
 		const SigInfo& sInfo = sit.second;
-		desPos[stdCode] = sInfo._volumn;
+		desPos[stdCode] = sInfo._volume;
 	}
 
 	for (auto v : desPos)
@@ -667,7 +667,7 @@ void SelStraBaseCtx::append_signal(const char* stdCode, double qty, const char* 
 	double curPx = _price_map[stdCode];
 
 	SigInfo& sInfo = _sig_map[stdCode];
-	sInfo._volumn = qty;
+	sInfo._volume = qty;
 	sInfo._sigprice = curPx;
 	sInfo._usertag = userTag;
 	sInfo._gentime = (uint64_t)_engine->get_date() * 1000000000 + (uint64_t)_engine->get_raw_time() * 100000 + _engine->get_secs();
@@ -685,21 +685,21 @@ void SelStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 	uint64_t curTm = (uint64_t)_engine->get_date() * 10000 + _engine->get_min_time();
 	uint32_t curTDate = _engine->get_trading_date();
 
-	if (decimal::eq(pInfo._volumn, qty))
+	if (decimal::eq(pInfo._volume, qty))
 		return;
 
-	double diff = qty - pInfo._volumn;
+	double diff = qty - pInfo._volume;
 
 	WTSCommodityInfo* commInfo = _engine->get_commodity_info(stdCode);
 
-	if (decimal::gt(pInfo._volumn*diff, 0))//当前持仓和目标仓位方向一致, 增加一条明细, 增加数量即可
+	if (decimal::gt(pInfo._volume*diff, 0))//当前持仓和目标仓位方向一致, 增加一条明细, 增加数量即可
 	{
-		pInfo._volumn = qty;
+		pInfo._volume = qty;
 
 		DetailInfo dInfo;
 		dInfo._long = decimal::gt(qty, 0);
 		dInfo._price = curPx;
-		dInfo._volumn = abs(diff);
+		dInfo._volume = abs(diff);
 		dInfo._opentime = curTm;
 		dInfo._opentdate = curTDate;
 		strcpy(dInfo._opentag, userTag);
@@ -714,29 +714,29 @@ void SelStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 	{//持仓方向和目标仓位方向不一致, 需要平仓
 		double left = abs(diff);
 
-		pInfo._volumn = qty;
-		if (decimal::eq(pInfo._volumn, 0))
+		pInfo._volume = qty;
+		if (decimal::eq(pInfo._volume, 0))
 			pInfo._dynprofit = 0;
 		uint32_t count = 0;
 		for (auto it = pInfo._details.begin(); it != pInfo._details.end(); it++)
 		{
 			DetailInfo& dInfo = *it;
-			double maxQty = min(dInfo._volumn, left);
+			double maxQty = min(dInfo._volume, left);
 			//if (maxQty == 0)
 			if (decimal::eq(maxQty, 0))
 				continue;
 
-			dInfo._volumn -= maxQty;
+			dInfo._volume -= maxQty;
 			left -= maxQty;
 
-			if (decimal::eq(dInfo._volumn, 0)) //dInfo._volumn == 0
+			if (decimal::eq(dInfo._volume, 0))
 				count++;
 
 			double profit = (curPx - dInfo._price) * maxQty * commInfo->getVolScale();
 			if (!dInfo._long)
 				profit *= -1;
 			pInfo._closeprofit += profit;
-			pInfo._dynprofit = pInfo._dynprofit*dInfo._volumn / (dInfo._volumn + maxQty);//浮盈也要做等比缩放
+			pInfo._dynprofit = pInfo._dynprofit*dInfo._volume / (dInfo._volume + maxQty);//浮盈也要做等比缩放
 			_fund_info._total_profit += profit;
 
 			double fee = _engine->calc_fee(stdCode, curPx, maxQty, dInfo._opentdate == curTDate ? 2 : 1);
@@ -768,7 +768,7 @@ void SelStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 			DetailInfo dInfo;
 			dInfo._long = decimal::gt(qty, 0);
 			dInfo._price = curPx;
-			dInfo._volumn = abs(left);
+			dInfo._volume = abs(left);
 			dInfo._opentime = curTm;
 			dInfo._opentdate = curTDate;
 			strcpy(dInfo._opentag, userTag);
@@ -897,7 +897,7 @@ double SelStraBaseCtx::stra_get_position(const char* stdCode, const char* userTa
 
 	const PosInfo& pInfo = it->second;
 	if (strlen(userTag) == 0)
-		return pInfo._volumn;
+		return pInfo._volume;
 
 	for (auto it = pInfo._details.begin(); it != pInfo._details.end(); it++)
 	{
@@ -905,7 +905,7 @@ double SelStraBaseCtx::stra_get_position(const char* stdCode, const char* userTa
 		if (strcmp(dInfo._opentag, userTag) != 0)
 			continue;
 
-		return dInfo._volumn;
+		return dInfo._volume;
 	}
 
 	return 0;

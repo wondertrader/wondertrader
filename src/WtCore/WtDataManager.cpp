@@ -169,7 +169,7 @@ void WtDataManager::on_bar(const char* code, WTSKlinePeriod period, WTSBarStruct
 		//如果是基础周期, 直接触发on_bar事件
 		//_engine->on_bar(code, speriod.c_str(), times, newBar);
 		//更新完K线以后, 统一通知交易引擎
-		_bar_notifies.push_back(NotifyItem({ code, speriod, times, newBar }));
+		_bar_notifies.emplace_back(NotifyItem({ code, speriod, times, newBar }));
 	}
 
 	//然后再处理非基础周期
@@ -195,7 +195,7 @@ void WtDataManager::on_bar(const char* code, WTSKlinePeriod period, WTSBarStruct
 				WTSBarStruct* lastBar = kData->at(-1);
 				//_engine->on_bar(code, speriod.c_str(), times, lastBar);
 				//更新完K线以后, 统一通知交易引擎
-				_bar_notifies.push_back(NotifyItem({ code, speriod, times, lastBar }));
+				_bar_notifies.emplace_back(NotifyItem({ code, speriod, times, lastBar }));
 			}
 		}
 	}
@@ -217,7 +217,7 @@ void WtDataManager::handle_push_quote(const char* stdCode, WTSTickData* newTick)
 		if (tData == NULL)
 			return;
 
-		if (tData->isValidOnly() && newTick->volumn() == 0)
+		if (tData->isValidOnly() && newTick->volume() == 0)
 			return;
 
 		tData->appendTick(newTick->getTickStruct());
@@ -245,6 +245,29 @@ WTSTickSlice* WtDataManager::get_tick_slice(const char* stdCode, uint32_t count,
 	return _reader->readTickSlice(stdCode, count, etime);
 }
 
+WTSOrdQueSlice* WtDataManager::get_order_queue_slice(const char* stdCode, uint32_t count, uint64_t etime /* = 0 */)
+{
+	if (_reader == NULL)
+		return NULL;
+
+	return _reader->readOrdQueSlice(stdCode, count, etime);
+}
+
+WTSOrdDtlSlice* WtDataManager::get_order_detail_slice(const char* stdCode, uint32_t count, uint64_t etime /* = 0 */)
+{
+	if (_reader == NULL)
+		return NULL;
+
+	return _reader->readOrdDtlSlice(stdCode, count, etime);
+}
+
+WTSTransSlice* WtDataManager::get_transaction_slice(const char* stdCode, uint32_t count, uint64_t etime /* = 0 */)
+{
+	if (_reader == NULL)
+		return NULL;
+
+	return _reader->readTransSlice(stdCode, count, etime);
+}
 
 WTSKlineSlice* WtDataManager::get_kline_slice(const char* stdCode, WTSKlinePeriod period, uint32_t times, uint32_t count, uint64_t etime /* = 0 */)
 {

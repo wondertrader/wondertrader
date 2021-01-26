@@ -76,7 +76,7 @@ private:
 
 	typedef struct _PosUnit
 	{
-		double	_volumn;
+		double	_volume;
 		double	_frozen;
 	} PosUnit;
 

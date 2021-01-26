@@ -18,6 +18,9 @@
 #include "../Share/decimal.h"
 #include "../Share/TimeUtils.hpp"
 #include "../Share/BoostFile.hpp"
+#include "../Share/StrUtil.hpp"
+
+#include "../WTSTools/WTSLogger.h"
 
 uint32_t makeLocalOrderID()
 {
@@ -31,7 +34,7 @@ uint32_t makeLocalOrderID()
 	return _auto_order_id.fetch_add(1);
 }
 
-std::vector<uint32_t> splitVolumn(uint32_t vol)
+std::vector<uint32_t> splitVolume(uint32_t vol)
 {
 	uint32_t minQty = 1;
 	uint32_t maxQty = 100;
@@ -39,7 +42,7 @@ std::vector<uint32_t> splitVolumn(uint32_t vol)
 	std::vector<uint32_t> ret;
 	if (vol <= minQty)
 	{
-		ret.push_back(vol);
+		ret.emplace_back(vol);
 	}
 	else
 	{
@@ -55,7 +58,7 @@ std::vector<uint32_t> splitVolumn(uint32_t vol)
 			if (curVol == 0)
 				continue;
 
-			ret.push_back(curVol);
+			ret.emplace_back(curVol);
 			left -= curVol;
 		}
 	}
@@ -82,6 +85,7 @@ HftMocker::HftMocker(HisDataReplayer* replayer, const char* name)
 	, _thrd(NULL)
 	, _stopped(false)
 	, _use_newpx(false)
+	, _error_rate(0)
 {
 	_commodities = CommodityMap::create();
 
@@ -99,11 +103,36 @@ HftMocker::~HftMocker()
 	_commodities->release();
 }
 
+void HftMocker::procTask()
+{
+	if (_tasks.empty())
+	{
+		return;
+	}
+
+	_mtx_control.lock();
+
+	while (!_tasks.empty())
+	{
+		Task& task = _tasks.front();
+
+		task();
+
+		{
+			std::unique_lock<std::mutex> lck(_mtx);
+			_tasks.pop();
+		}
+	}
+
+	_mtx_control.unlock();
+}
+
 void HftMocker::postTask(Task task)
 {
 	{
 		std::unique_lock<std::mutex> lck(_mtx);
 		_tasks.push(task);
+		return;
 	}
 
 	if(_thrd == NULL)
@@ -113,7 +142,7 @@ void HftMocker::postTask(Task task)
 			{
 				if(_tasks.empty())
 				{
-					std::this_thread::sleep_for(std::chrono::milliseconds(2));
+					std::this_thread::sleep_for(std::chrono::milliseconds(1));
 					continue;
 				}
 
@@ -139,6 +168,9 @@ void HftMocker::postTask(Task task)
 
 bool HftMocker::initHftFactory(WTSVariant* cfg)
 {
+	if (cfg == NULL)
+		return false;
+
 	const char* module = cfg->getCString("module");
 	
 	_use_newpx = cfg->getBoolean("use_newpx");
@@ -166,8 +198,6 @@ bool HftMocker::initHftFactory(WTSVariant* cfg)
 	{
 		_strategy = _factory._fact->createStrategy(cfgStra->getCString("name"), "hft");
 		_strategy->init(cfgStra->get("params"));
-		_strategy->on_init(this);
-		_strategy->on_channel_ready(this);
 	}
 	return true;
 }
@@ -175,6 +205,21 @@ bool HftMocker::initHftFactory(WTSVariant* cfg)
 void HftMocker::handle_tick(const char* stdCode, WTSTickData* curTick)
 {
 	on_tick(stdCode, curTick);
+}
+
+void HftMocker::handle_order_detail(const char* stdCode, WTSOrdDtlData* curOrdDtl)
+{
+	on_order_detail(stdCode, curOrdDtl);
+}
+
+void HftMocker::handle_order_queue(const char* stdCode, WTSOrdQueData* curOrdQue)
+{
+	on_order_queue(stdCode, curOrdQue);
+}
+
+void HftMocker::handle_transaction(const char* stdCode, WTSTransData* curTrans)
+{
+	on_transaction(stdCode, curTrans);
 }
 
 void HftMocker::handle_bar_close(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar)
@@ -185,6 +230,7 @@ void HftMocker::handle_bar_close(const char* stdCode, const char* period, uint32
 void HftMocker::handle_init()
 {
 	on_init();
+	on_channel_ready();
 }
 
 void HftMocker::handle_schedule(uint32_t uDate, uint32_t uTime)
@@ -194,25 +240,17 @@ void HftMocker::handle_schedule(uint32_t uDate, uint32_t uTime)
 
 void HftMocker::handle_session_begin()
 {
-
+	on_session_begin();
 }
 
 void HftMocker::handle_session_end()
 {
-
+	on_session_end();
 }
 
 void HftMocker::handle_replay_done()
 {
-	std::string folder = WtHelper::getOutputDir();
-	folder += _name;
-	folder += "/";
-	boost::filesystem::create_directories(folder.c_str());
-
-	std::string filename = folder + "signals.csv";
-	std::string content = "time, action, position, price\n";
-	content += _ofs_signals.str();
-	BoostFile::write_file_contents(filename.c_str(), content.c_str(), content.size());
+	dump_outputs();
 }
 
 void HftMocker::on_bar(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar)
@@ -223,24 +261,54 @@ void HftMocker::on_bar(const char* stdCode, const char* period, uint32_t times, 
 
 void HftMocker::on_tick(const char* stdCode, WTSTickData* newTick)
 {
+	_price_map[stdCode] = newTick->price();
 	{
 		std::unique_lock<std::recursive_mutex> lck(_mtx_control);
 	}
+
+	update_dyn_profit(stdCode, newTick);
+
+	procTask();
 	
-	if (_orders.empty())
+	if (!_orders.empty())
 	{
+		OrderIDs ids;
 		for (auto it = _orders.begin(); it != _orders.end(); it++)
 		{
 			uint32_t localid = it->first;
-			postTask([this, localid](){
-				procOrder(localid);
-			});
+			bool bNeedErase = procOrder(localid);
+			if (bNeedErase)
+				ids.emplace_back(localid);
+		}
+
+		for(uint32_t localid : ids)
+		{
+			auto it = _orders.find(localid);
+			_orders.erase(it);
 		}
 	}
 
 	if (_strategy)
 		_strategy->on_tick(this, stdCode, newTick);
 
+}
+
+void HftMocker::on_order_queue(const char* stdCode, WTSOrdQueData* newOrdQue)
+{
+	if (_strategy)
+		_strategy->on_order_queue(this, stdCode, newOrdQue);
+}
+
+void HftMocker::on_order_detail(const char* stdCode, WTSOrdDtlData* newOrdDtl)
+{
+	if (_strategy)
+		_strategy->on_order_detail(this, stdCode, newOrdDtl);
+}
+
+void HftMocker::on_transaction(const char* stdCode, WTSTransData* newTrans)
+{
+	if (_strategy)
+		_strategy->on_transaction(this, stdCode, newTrans);
 }
 
 uint32_t HftMocker::id()
@@ -254,9 +322,34 @@ void HftMocker::on_init()
 		_strategy->on_init(this);
 }
 
+void HftMocker::on_session_begin()
+{
+
+}
+
+void HftMocker::on_session_end()
+{
+	uint32_t curDate = _replayer->get_trading_date();
+
+	double total_profit = 0;
+	double total_dynprofit = 0;
+
+	for (auto it = _pos_map.begin(); it != _pos_map.end(); it++)
+	{
+		const char* stdCode = it->first.c_str();
+		const PosInfo& pInfo = it->second;
+		total_profit += pInfo._closeprofit;
+		total_dynprofit += pInfo._dynprofit;
+	}
+
+	_fund_logs << StrUtil::printf("%d,%.2f,%.2f,%.2f,%.2f\n", curDate,
+		_fund_info._total_profit, _fund_info._total_dynprofit,
+		_fund_info._total_profit + _fund_info._total_dynprofit - _fund_info._total_fees, _fund_info._total_fees);
+}
+
 double HftMocker::stra_get_undone(const char* stdCode)
 {
-	int32_t ret = 0;
+	double ret = 0;
 	for (auto it = _orders.begin(); it != _orders.end(); it++)
 	{
 		OrderInfo& ordInfo = it->second;
@@ -280,7 +373,7 @@ bool HftMocker::stra_cancel(uint32_t localid)
 		OrderInfo& ordInfo = it->second;
 		ordInfo._left = 0;
 
-		on_order(localid, ordInfo._code, ordInfo._isBuy, ordInfo._total, ordInfo._left, ordInfo._price, true);
+		on_order(localid, ordInfo._code, ordInfo._isBuy, ordInfo._total, ordInfo._left, ordInfo._price, true, ordInfo._usertag);
 		_orders.erase(it);
 	});
 
@@ -298,7 +391,7 @@ OrderIDs HftMocker::stra_cancel(const char* stdCode, bool isBuy, double qty /* =
 		{
 			double left = ordInfo._left;
 			stra_cancel(it->first);
-			ret.push_back(it->first);
+			ret.emplace_back(it->first);
 			cnt++;
 			if (left < qty)
 				qty -= left;
@@ -310,13 +403,14 @@ OrderIDs HftMocker::stra_cancel(const char* stdCode, bool isBuy, double qty /* =
 	return ret;
 }
 
-otp::OrderIDs HftMocker::stra_buy(const char* stdCode, double price, double qty)
+otp::OrderIDs HftMocker::stra_buy(const char* stdCode, double price, double qty, const char* userTag)
 {
 	uint32_t localid = makeLocalOrderID();
 
 	OrderInfo order;
 	order._localid = localid;
 	strcpy(order._code, stdCode);
+	strcpy(order._usertag, userTag);
 	order._isBuy = true;
 	order._price = price;
 	order._total = qty;
@@ -329,31 +423,41 @@ otp::OrderIDs HftMocker::stra_buy(const char* stdCode, double price, double qty)
 	}
 
 	postTask([this, localid](){
-		on_entrust(localid, _orders[localid]._code, true, "下单成功");
-		procOrder(localid);
+		const OrderInfo& ordInfo = _orders[localid];
+		on_entrust(localid, ordInfo._code, true, "下单成功", ordInfo._usertag);
+		bool bNeedErase = procOrder(localid);
+		if(bNeedErase)
+		{
+			auto it = _orders.find(localid);
+			_orders.erase(it);
+		}
 	});
 
 	OrderIDs ids;
-	ids.push_back(localid);
+	ids.emplace_back(localid);
 	return ids;
 }
 
-void HftMocker::on_order(uint32_t localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled /* = false */)
+void HftMocker::on_order(uint32_t localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled /* = false */, const char* userTag /* = "" */)
 {
 	if(_strategy)
-		_strategy->on_order(this, localid, stdCode, isBuy, totalQty, leftQty, price, isCanceled);
+		_strategy->on_order(this, localid, stdCode, isBuy, totalQty, leftQty, price, isCanceled, userTag);
 }
 
-void HftMocker::on_trade(uint32_t localid, const char* stdCode, bool isBuy, double vol, double price)
+void HftMocker::on_trade(uint32_t localid, const char* stdCode, bool isBuy, double vol, double price, const char* userTag/* = ""*/)
 {
 	if (_strategy)
-		_strategy->on_trade(this, localid, stdCode, isBuy, vol, price);
+		_strategy->on_trade(this, localid, stdCode, isBuy, vol, price, userTag);
+
+	const PosInfo& posInfo = _pos_map[stdCode];
+	double curPos = posInfo._volume + vol * (isBuy ? 1 : -1);
+	do_set_position(stdCode, curPos, price, userTag);
 }
 
-void HftMocker::on_entrust(uint32_t localid, const char* stdCode, bool bSuccess, const char* message)
+void HftMocker::on_entrust(uint32_t localid, const char* stdCode, bool bSuccess, const char* message, const char* userTag/* = ""*/)
 {
 	if (_strategy)
-		_strategy->on_entrust(localid, bSuccess, message);
+		_strategy->on_entrust(localid, bSuccess, message, userTag);
 }
 
 void HftMocker::on_channel_ready()
@@ -362,11 +466,46 @@ void HftMocker::on_channel_ready()
 		_strategy->on_channel_ready(this);
 }
 
-void HftMocker::procOrder(uint32_t localid)
+void HftMocker::update_dyn_profit(const char* stdCode, WTSTickData* newTick)
+{
+	auto it = _pos_map.find(stdCode);
+	if (it != _pos_map.end())
+	{
+		PosInfo& pInfo = it->second;
+		if (pInfo._volume == 0)
+		{
+			pInfo._dynprofit = 0;
+		}
+		else
+		{
+			bool isLong = decimal::gt(pInfo._volume, 0);
+			double price = isLong ? newTick->bidprice(0) : newTick->askprice(0);
+
+			WTSCommodityInfo* commInfo = _replayer->get_commodity_info(stdCode);
+			double dynprofit = 0;
+			for (auto pit = pInfo._details.begin(); pit != pInfo._details.end(); pit++)
+			{
+				
+				DetailInfo& dInfo = *pit;
+				dInfo._profit = dInfo._volume*(price - dInfo._price)*commInfo->getVolScale()*(dInfo._long ? 1 : -1);
+				if (dInfo._profit > 0)
+					dInfo._max_profit = max(dInfo._profit, dInfo._max_profit);
+				else if (dInfo._profit < 0)
+					dInfo._max_loss = min(dInfo._profit, dInfo._max_loss);
+
+				dynprofit += dInfo._profit;
+			}
+
+			pInfo._dynprofit = dynprofit;
+		}
+	}
+}
+
+bool HftMocker::procOrder(uint32_t localid)
 {
 	auto it = _orders.find(localid);
 	if (it == _orders.end())
-		return;
+		return false;
 
 	StdLocker<StdRecurMutex> lock(_mtx_ords);
 	OrderInfo& ordInfo = it->second;
@@ -374,18 +513,18 @@ void HftMocker::procOrder(uint32_t localid)
 	//第一步，如果在撤单概率中，则执行撤单
 	if(_error_rate>0 && genRand(10000)<=_error_rate)
 	{
-		on_order(localid, ordInfo._code, ordInfo._isBuy, ordInfo._total, ordInfo._left, ordInfo._price, true);
-		_orders.erase(it);
-		return;
+		on_order(localid, ordInfo._code, ordInfo._isBuy, ordInfo._total, ordInfo._left, ordInfo._price, true, ordInfo._usertag);
+		stra_log_text("随机错误单：%u", localid);
+		return true;
 	}
 	else
 	{
-		on_order(localid, ordInfo._code, ordInfo._isBuy, ordInfo._total, ordInfo._left, ordInfo._price, false);
+		on_order(localid, ordInfo._code, ordInfo._isBuy, ordInfo._total, ordInfo._left, ordInfo._price, false, ordInfo._usertag);
 	}
 
 	WTSTickData* curTick = stra_get_last_tick(ordInfo._code);
 	if (curTick == NULL)
-		return;
+		return false;
 
 	double curPx = curTick->price();
 	double orderQty = ordInfo._isBuy ? curTick->askqty(0) : curTick->bidqty(0);	//看对手盘的数量
@@ -394,7 +533,7 @@ void HftMocker::procOrder(uint32_t localid)
 		curPx = ordInfo._isBuy ? curTick->askprice(0) : curTick->bidprice(0);
 		//if (curPx == 0.0)
 		if(decimal::eq(curPx, 0.0))
-			return;
+			return false;
 	}
 	curTick->release();
 
@@ -404,50 +543,51 @@ void HftMocker::procOrder(uint32_t localid)
 		if(ordInfo._isBuy && decimal::gt(curPx, ordInfo._price))
 		{
 			//买单，但是当前价大于限价，不成交
-			return;
+			return false;
 		}
 
 		if (!ordInfo._isBuy && decimal::lt(curPx, ordInfo._price))
 		{
 			//卖单，但是当前价小于限价，不成交
-			return;
+			return false;
 		}
 	}
 
 	/*
 	 *	下面就要模拟成交了
 	 */
-
-	double maxQty = min(orderQty, ordInfo._total);
-	auto vols = splitVolumn((uint32_t)maxQty);
+	double maxQty = min(orderQty, ordInfo._left);
+	auto vols = splitVolume((uint32_t)maxQty);
 	for(uint32_t curQty : vols)
 	{
-		on_trade(ordInfo._localid, ordInfo._code, ordInfo._isBuy, curQty, curPx);
+		on_trade(ordInfo._localid, ordInfo._code, ordInfo._isBuy, curQty, curPx, ordInfo._usertag);
 
 		ordInfo._left -= curQty;
-		on_order(localid, ordInfo._code, ordInfo._isBuy, ordInfo._total, ordInfo._left, ordInfo._price, false);
+		on_order(localid, ordInfo._code, ordInfo._isBuy, ordInfo._total, ordInfo._left, ordInfo._price, false, ordInfo._usertag);
 
-		double& curPos = _positions[ordInfo._code];
-		curPos += curQty * (ordInfo._isBuy ? 1 : -1);
+		double curPos = stra_get_position(ordInfo._code);
 
-		_ofs_signals << _replayer->get_date() << "." << _replayer->get_raw_time() << "." << _replayer->get_secs() << ","
+		_sig_logs << _replayer->get_date() << "." << _replayer->get_raw_time() << "." << _replayer->get_secs() << ","
 			<< (ordInfo._isBuy ? "+" : "-") << curQty << "," << curPos << "," << curPx << std::endl;
 	}
 
 	//if(ordInfo._left == 0)
 	if(decimal::eq(ordInfo._left, 0.0))
 	{
-		_orders.erase(it);
+		return true;
 	}
+
+	return false;
 }
 
-otp::OrderIDs HftMocker::stra_sell(const char* stdCode, double price, double qty)
+otp::OrderIDs HftMocker::stra_sell(const char* stdCode, double price, double qty, const char* userTag)
 {
 	uint32_t localid = makeLocalOrderID();
 
 	OrderInfo order;
 	order._localid = localid;
 	strcpy(order._code, stdCode);
+	strcpy(order._usertag, userTag);
 	order._isBuy = false;
 	order._price = price;
 	order._total = qty;
@@ -458,12 +598,19 @@ otp::OrderIDs HftMocker::stra_sell(const char* stdCode, double price, double qty
 		_orders[localid] = order;
 	}
 
-	postTask([this, localid](){
-		procOrder(localid);
+	postTask([this, localid]() {
+		const OrderInfo& ordInfo = _orders[localid];
+		on_entrust(localid, ordInfo._code, true, "下单成功", ordInfo._usertag);
+		bool bNeedErase = procOrder(localid);
+		if (bNeedErase)
+		{
+			auto it = _orders.find(localid);
+			_orders.erase(it);
+		}
 	});
 
 	OrderIDs ids;
-	ids.push_back(localid);
+	ids.emplace_back(localid);
 	return ids;
 }
 
@@ -482,6 +629,21 @@ WTSTickSlice* HftMocker::stra_get_ticks(const char* stdCode, uint32_t count)
 	return _replayer->get_tick_slice(stdCode, count);
 }
 
+WTSOrdQueSlice* HftMocker::stra_get_order_queue(const char* stdCode, uint32_t count)
+{
+	return _replayer->get_order_queue_slice(stdCode, count);
+}
+
+WTSOrdDtlSlice* HftMocker::stra_get_order_detail(const char* stdCode, uint32_t count)
+{
+	return _replayer->get_order_detail_slice(stdCode, count);
+}
+
+WTSTransSlice* HftMocker::stra_get_transaction(const char* stdCode, uint32_t count)
+{
+	return _replayer->get_transaction_slice(stdCode, count);
+}
+
 WTSTickData* HftMocker::stra_get_last_tick(const char* stdCode)
 {
 	return _replayer->get_last_tick(stdCode);
@@ -489,7 +651,14 @@ WTSTickData* HftMocker::stra_get_last_tick(const char* stdCode)
 
 double HftMocker::stra_get_position(const char* stdCode)
 {
-	return _positions[stdCode];
+	const PosInfo& pInfo = _pos_map[stdCode];
+	return pInfo._volume;
+}
+
+double HftMocker::stra_get_position_profit(const char* stdCode)
+{
+	const PosInfo& pInfo = _pos_map[stdCode];
+	return pInfo._dynprofit;
 }
 
 double HftMocker::stra_get_price(const char* stdCode)
@@ -514,13 +683,29 @@ uint32_t HftMocker::stra_get_secs()
 
 void HftMocker::stra_sub_ticks(const char* stdCode)
 {
+	_replayer->sub_tick(_context_id, stdCode);
+}
+
+void HftMocker::stra_sub_order_queues(const char* stdCode)
+{
+	_replayer->sub_order_queue(_context_id, stdCode);
+}
+
+void HftMocker::stra_sub_order_details(const char* stdCode)
+{
+	_replayer->sub_order_detail(_context_id, stdCode);
+}
+
+void HftMocker::stra_sub_transactions(const char* stdCode)
+{
+	_replayer->sub_transaction(_context_id, stdCode);
 }
 
 void HftMocker::stra_log_text(const char* fmt, ...)
 {
 	va_list args;
 	va_start(args, fmt);
-	//logger.log(fmt, args);
+	WTSLogger::vlog_dyn("strategy", _name.c_str(), LL_INFO, fmt, args);
 	va_end(args);
 }
 
@@ -537,4 +722,161 @@ void HftMocker::stra_save_user_data(const char* key, const char* val)
 {
 	_user_datas[key] = val;
 	_ud_modified = true;
+}
+
+void HftMocker::dump_outputs()
+{
+	std::string folder = WtHelper::getOutputDir();
+	folder += _name;
+	folder += "/";
+	boost::filesystem::create_directories(folder.c_str());
+
+	std::string filename = folder + "trades.csv";
+	std::string content = "code,time,direct,action,price,qty,fee,usertag\n";
+	content += _trade_logs.str();
+	BoostFile::write_file_contents(filename.c_str(), content.c_str(), content.size());
+
+	filename = folder + "closes.csv";
+	content = "code,direct,opentime,openprice,closetime,closeprice,qty,profit,maxprofit,maxloss,totalprofit,entertag,exittag\n";
+	content += _close_logs.str();
+	BoostFile::write_file_contents(filename.c_str(), content.c_str(), content.size());
+
+
+	filename = folder + "funds.csv";
+	content = "date,closeprofit,positionprofit,dynbalance,fee\n";
+	content += _fund_logs.str();
+	BoostFile::write_file_contents(filename.c_str(), content.c_str(), content.size());
+
+
+	filename = folder + "signals.csv";
+	content = "time, action, position, price\n";
+	content += _sig_logs.str();
+	BoostFile::write_file_contents(filename.c_str(), content.c_str(), content.size());
+}
+
+void HftMocker::log_trade(const char* stdCode, bool isLong, bool isOpen, uint64_t curTime, double price, double qty, double fee, const char* userTag/* = ""*/)
+{
+	_trade_logs << stdCode << "," << curTime << "," << (isLong ? "LONG" : "SHORT") << "," << (isOpen ? "OPEN" : "CLOSE")
+		<< "," << price << "," << qty << "," << fee << "," << userTag << "\n";
+}
+
+void HftMocker::log_close(const char* stdCode, bool isLong, uint64_t openTime, double openpx, uint64_t closeTime, double closepx, double qty, double profit, double maxprofit, double maxloss,
+	double totalprofit /* = 0 */, const char* enterTag/* = ""*/, const char* exitTag/* = ""*/)
+{
+	_close_logs << stdCode << "," << (isLong ? "LONG" : "SHORT") << "," << openTime << "," << openpx
+		<< "," << closeTime << "," << closepx << "," << qty << "," << profit << "," << maxprofit << "," << maxloss << ","
+		<< totalprofit << "," << enterTag << "," << exitTag << "\n";
+}
+
+void HftMocker::do_set_position(const char* stdCode, double qty, double price /* = 0.0 */, const char* userTag /*= ""*/)
+{
+	PosInfo& pInfo = _pos_map[stdCode];
+	double curPx = price;
+	if (decimal::eq(price, 0.0))
+		curPx = _price_map[stdCode];
+	uint64_t curTm = (uint64_t)_replayer->get_date() * 1000000000 + (uint64_t)_replayer->get_min_time()*100000 + _replayer->get_secs();
+	uint32_t curTDate = _replayer->get_trading_date();
+
+	//手数相等则不用操作了
+	if (decimal::eq(pInfo._volume, qty))
+		return;
+
+	stra_log_text("[%04u.%05u] %s 持仓更新：%.0f -> %0.f", _replayer->get_min_time(), _replayer->get_secs(), stdCode, pInfo._volume, qty);
+
+	WTSCommodityInfo* commInfo = _replayer->get_commodity_info(stdCode);
+
+	//成交价
+	double trdPx = curPx;
+
+	double diff = qty - pInfo._volume;
+
+	if (decimal::gt(pInfo._volume*diff, 0))//当前持仓和仓位变化方向一致, 增加一条明细, 增加数量即可
+	{
+		pInfo._volume = qty;
+
+		DetailInfo dInfo;
+		dInfo._long = decimal::gt(qty, 0);
+		dInfo._price = trdPx;
+		dInfo._volume = abs(diff);
+		dInfo._opentime = curTm;
+		dInfo._opentdate = curTDate;
+		strcpy(dInfo._usertag, userTag);
+		pInfo._details.emplace_back(dInfo);
+
+		double fee = _replayer->calc_fee(stdCode, trdPx, abs(diff), 0);
+		_fund_info._total_fees += fee;
+
+		log_trade(stdCode, dInfo._long, true, curTm, trdPx, abs(diff), fee, userTag);
+	}
+	else
+	{//持仓方向和仓位变化方向不一致，需要平仓
+		double left = abs(diff);
+
+		pInfo._volume = qty;
+		if (decimal::eq(pInfo._volume, 0))
+			pInfo._dynprofit = 0;
+		uint32_t count = 0;
+		for (auto it = pInfo._details.begin(); it != pInfo._details.end(); it++)
+		{
+			DetailInfo& dInfo = *it;
+			double maxQty = min(dInfo._volume, left);
+			if (decimal::eq(maxQty, 0))
+				continue;
+
+			double maxProf = dInfo._max_profit * maxQty / dInfo._volume;
+			double maxLoss = dInfo._max_loss * maxQty / dInfo._volume;
+
+			dInfo._volume -= maxQty;
+			left -= maxQty;
+
+			if (decimal::eq(dInfo._volume, 0))
+				count++;
+
+			double profit = (trdPx - dInfo._price) * maxQty * commInfo->getVolScale();
+			if (!dInfo._long)
+				profit *= -1;
+			pInfo._closeprofit += profit;
+			pInfo._dynprofit = pInfo._dynprofit*dInfo._volume / (dInfo._volume + maxQty);//浮盈也要做等比缩放
+			_fund_info._total_profit += profit;
+
+			double fee = _replayer->calc_fee(stdCode, trdPx, maxQty, dInfo._opentdate == curTDate ? 2 : 1);
+			_fund_info._total_fees += fee;
+			//这里写成交记录
+			log_trade(stdCode, dInfo._long, false, curTm, trdPx, maxQty, fee, userTag);
+			//这里写平仓记录
+			log_close(stdCode, dInfo._long, dInfo._opentime, dInfo._price, curTm, trdPx, maxQty, profit, maxProf, maxLoss, pInfo._closeprofit, dInfo._usertag, userTag);
+
+			if (left == 0)
+				break;
+		}
+
+		//需要清理掉已经平仓完的明细
+		while (count > 0)
+		{
+			auto it = pInfo._details.begin();
+			pInfo._details.erase(it);
+			count--;
+		}
+
+		//最后，如果还有剩余的，则需要反手了
+		if (left > 0)
+		{
+			left = left * qty / abs(qty);
+
+			DetailInfo dInfo;
+			dInfo._long = decimal::gt(qty, 0);
+			dInfo._price = trdPx;
+			dInfo._volume = abs(left);
+			dInfo._opentime = curTm;
+			dInfo._opentdate = curTDate;
+			strcpy(dInfo._usertag, userTag);
+			pInfo._details.emplace_back(dInfo);
+
+			//这里还需要写一笔成交记录
+			double fee = _replayer->calc_fee(stdCode, trdPx, abs(left), 0);
+			_fund_info._total_fees += fee;
+			//_engine->mutate_fund(fee, FFT_Fee);
+			log_trade(stdCode, dInfo._long, true, curTm, trdPx, abs(left), fee, userTag);
+		}
+	}
 }

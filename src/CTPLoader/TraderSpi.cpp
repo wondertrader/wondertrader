@@ -314,7 +314,7 @@ void CTraderSpi::DumpToJson()
 			rj::Value jComm(rj::kObjectType);
 			jComm.AddMember("covermode", (uint32_t)commInfo.m_coverMode, allocator);
 			jComm.AddMember("pricemode", (uint32_t)commInfo.m_priceMode, allocator);
-			jComm.AddMember("category", (uint32_t)commInfo.m_priceMode, allocator);
+			jComm.AddMember("category", (uint32_t)commInfo.m_ccCategory, allocator);
 			jComm.AddMember("precision", commInfo.m_uPrecision, allocator);
 			jComm.AddMember("pricetick", commInfo.m_fPriceTick, allocator);
 			jComm.AddMember("volscale", commInfo.m_uVolScale, allocator);

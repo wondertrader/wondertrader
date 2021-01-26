@@ -34,8 +34,8 @@ private:
 			_last_cap = 0;
 		}
 
-	} RTKBlockPair;
-	typedef std::unordered_map<std::string, RTKBlockPair>	RTKBlockFilesMap;
+	} RTKlineBlockPair;
+	typedef std::unordered_map<std::string, RTKlineBlockPair>	RTKBlockFilesMap;
 
 	typedef struct _TBlockPair
 	{
@@ -49,13 +49,67 @@ private:
 			_file = NULL;
 			_last_cap = 0;
 		}
-	} TBlockPair;
-	typedef std::unordered_map<std::string, TBlockPair>	TBlockFilesMap;
+	} TickBlockPair;
+	typedef std::unordered_map<std::string, TickBlockPair>	TBlockFilesMap;
+
+	typedef struct _TransBlockPair
+	{
+		RTTransBlock*	_block;
+		BoostMFPtr		_file;
+		uint64_t		_last_cap;
+
+		std::shared_ptr< std::ofstream>	_fstream;
+
+		_TransBlockPair()
+		{
+			_block = NULL;
+			_file = NULL;
+			_last_cap = 0;
+		}
+	} TransBlockPair;
+	typedef std::unordered_map<std::string, TransBlockPair>	TransBlockFilesMap;
+
+	typedef struct _OdeDtlBlockPair
+	{
+		RTOrdDtlBlock*	_block;
+		BoostMFPtr		_file;
+		uint64_t		_last_cap;
+
+		std::shared_ptr< std::ofstream>	_fstream;
+
+		_OdeDtlBlockPair()
+		{
+			_block = NULL;
+			_file = NULL;
+			_last_cap = 0;
+		}
+	} OrdDtlBlockPair;
+	typedef std::unordered_map<std::string, OrdDtlBlockPair>	OrdDtlBlockFilesMap;
+
+	typedef struct _OdeQueBlockPair
+	{
+		RTOrdQueBlock*	_block;
+		BoostMFPtr		_file;
+		uint64_t		_last_cap;
+
+		std::shared_ptr< std::ofstream>	_fstream;
+
+		_OdeQueBlockPair()
+		{
+			_block = NULL;
+			_file = NULL;
+			_last_cap = 0;
+		}
+	} OrdQueBlockPair;
+	typedef std::unordered_map<std::string, OrdQueBlockPair>	OrdQueBlockFilesMap;
 
 	RTKBlockFilesMap	_rt_min1_map;
 	RTKBlockFilesMap	_rt_min5_map;
 
 	TBlockFilesMap		_rt_tick_map;
+	TransBlockFilesMap	_rt_trans_map;
+	OrdDtlBlockFilesMap	_rt_orddtl_map;
+	OrdQueBlockFilesMap	_rt_ordque_map;
 
 	typedef struct _HisTBlockPair
 	{
@@ -71,12 +125,67 @@ private:
 		}
 	} HisTBlockPair;
 
-	typedef std::unordered_map<std::string, HisTBlockPair>	HisTBlockMap;
-	HisTBlockMap		_his_tick_map;
+	typedef std::unordered_map<std::string, HisTBlockPair>	HisTickBlockMap;
+
+	typedef struct _HisTransBlockPair
+	{
+		HisTransBlock*	_block;
+		uint64_t		_date;
+		std::string		_buffer;
+
+		_HisTransBlockPair()
+		{
+			_block = NULL;
+			_date = 0;
+			_buffer.clear();
+		}
+	} HisTransBlockPair;
+
+	typedef std::unordered_map<std::string, HisTransBlockPair>	HisTransBlockMap;
+
+	typedef struct _HisOrdDtlBlockPair
+	{
+		HisOrdDtlBlock*	_block;
+		uint64_t		_date;
+		std::string		_buffer;
+
+		_HisOrdDtlBlockPair()
+		{
+			_block = NULL;
+			_date = 0;
+			_buffer.clear();
+		}
+	} HisOrdDtlBlockPair;
+
+	typedef std::unordered_map<std::string, HisOrdDtlBlockPair>	HisOrdDtlBlockMap;
+
+	typedef struct _HisOrdQueBlockPair
+	{
+		HisOrdQueBlock*	_block;
+		uint64_t		_date;
+		std::string		_buffer;
+
+		_HisOrdQueBlockPair()
+		{
+			_block = NULL;
+			_date = 0;
+			_buffer.clear();
+		}
+	} HisOrdQueBlockPair;
+
+	typedef std::unordered_map<std::string, HisOrdQueBlockPair>	HisOrdQueBlockMap;
+
+	HisTickBlockMap		_his_tick_map;
+	HisOrdDtlBlockMap	_his_orddtl_map;
+	HisOrdQueBlockMap	_his_ordque_map;
+	HisTransBlockMap	_his_trans_map;
 
 private:
-	RTKBlockPair* getRTKBlock(const char* exchg, const char* code, WTSKlinePeriod period);
-	TBlockPair* getRTTBlock(const char* exchg, const char* code);
+	RTKlineBlockPair* getRTKilneBlock(const char* exchg, const char* code, WTSKlinePeriod period);
+	TickBlockPair* getRTTickBlock(const char* exchg, const char* code);
+	OrdQueBlockPair* getRTOrdQueBlock(const char* exchg, const char* code);
+	OrdDtlBlockPair* getRTOrdDtlBlock(const char* exchg, const char* code);
+	TransBlockPair* getRTTransBlock(const char* exchg, const char* code);
 
 	/*
 	 *	将历史数据放入缓存
@@ -97,9 +206,10 @@ public:
 
 	virtual void onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTDate = 0) override;
 
-	virtual WTSHisTickData* readTicks(const char* stdCode, uint32_t count, uint64_t etime = 0, bool bOnlyValid = false) override;
-
 	virtual WTSTickSlice*	readTickSlice(const char* stdCode, uint32_t count, uint64_t etime = 0) override;
+	virtual WTSOrdDtlSlice*	readOrdDtlSlice(const char* stdCode, uint32_t count, uint64_t etime = 0) override;
+	virtual WTSOrdQueSlice*	readOrdQueSlice(const char* stdCode, uint32_t count, uint64_t etime = 0) override;
+	virtual WTSTransSlice*	readTransSlice(const char* stdCode, uint32_t count, uint64_t etime = 0) override;
 	virtual WTSKlineSlice*	readKlineSlice(const char* stdCode, WTSKlinePeriod period, uint32_t count, uint64_t etime = 0) override;
 
 private:

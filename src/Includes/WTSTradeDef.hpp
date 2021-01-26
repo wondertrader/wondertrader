@@ -26,7 +26,7 @@ protected:
 	WTSEntrust()
 		:m_iPrice(0)
 		,m_strCode("")
-		,m_dVolumn(0)
+		,m_dVolume(0)
 		,m_strExchg("")
 		,m_uSndTm(0)
 	{
@@ -46,7 +46,7 @@ public:
 		{
 			pRet->m_strExchg = exchg;
 			pRet->m_strCode = code;
-			pRet->m_dVolumn = vol;
+			pRet->m_dVolume = vol;
 			pRet->m_iPrice = price;
 			return pRet;
 		}
@@ -67,10 +67,10 @@ public:
 	inline WTSTimeCondition	getTimeCondition() const{return m_timeCond;}
 	inline WTSOffsetType	getOffsetType() const{return m_offsetType;}
 
-	inline void setVolumn(double volumn){ m_dVolumn = volumn; }
+	inline void setVolume(double volume){ m_dVolume = volume; }
 	inline void setPrice(double price){ m_iPrice = price; }
 
-	inline double getVolumn() const{ return m_dVolumn; }
+	inline double getVolume() const{ return m_dVolume; }
 	inline double getPrice() const{ return m_iPrice; }
 
 	inline const char* getCode() const{return m_strCode.c_str();}
@@ -88,7 +88,7 @@ public:
 protected:
 	std::string		m_strExchg;
 	std::string		m_strCode;
-	double			m_dVolumn;
+	double			m_dVolume;
 	double			m_iPrice;
 
 	uint64_t		m_uSndTm;
@@ -111,7 +111,7 @@ protected:
 	WTSEntrustAction()
 		:m_iPrice(0)
 		,m_strCode("")
-		,m_dVolumn(0)
+		,m_dVolume(0)
 		,m_actionFlag(WAF_CANCEL)
 	{
 
@@ -127,7 +127,7 @@ public:
 		{
 			pRet->m_strExchg = exchg;
 			pRet->m_strCode = code;
-			pRet->m_dVolumn = vol;
+			pRet->m_dVolume = vol;
 			pRet->m_iPrice = price;
 			return pRet;
 		}
@@ -149,10 +149,10 @@ public:
 	}
 
 public:
-	inline void setVolumn(double volumn){ m_dVolumn = volumn; }
+	inline void setVolume(double volume){ m_dVolume = volume; }
 	inline void setPrice(double price){ m_iPrice = price; }
 
-	inline double getVolumn() const{ return m_dVolumn; }
+	inline double getVolume() const{ return m_dVolume; }
 	inline double getPrice() const{ return m_iPrice; }
 
 	inline const char* getCode() const{return m_strCode.c_str();}
@@ -172,7 +172,7 @@ public:
 protected:
 	std::string		m_strExchg;
 	std::string		m_strCode;
-	double			m_dVolumn;
+	double			m_dVolume;
 	double			m_iPrice;
 
 	std::string		m_strEnturstID;
@@ -210,7 +210,7 @@ public:
 			pRet->m_strExchg = entrust->getExchg();
 			pRet->m_iPrice = entrust->getPrice();
 			pRet->m_strCode = entrust->getCode();
-			pRet->m_dVolumn = entrust->getVolumn();
+			pRet->m_dVolume = entrust->getVolume();
 
 			pRet->m_direction = entrust->getDirection();
 			pRet->m_offsetType = entrust->getOffsetType();
@@ -219,7 +219,7 @@ public:
 			pRet->m_strEntrustID = entrust->getEntrustID();
 			pRet->m_strUserTag = entrust->getUserTag();
 
-			pRet->m_dVolLeft = entrust->getVolumn();
+			pRet->m_dVolLeft = entrust->getVolume();
 		}
 
 		return pRet;
@@ -308,7 +308,7 @@ public:
 	inline void setOrderType(WTSOrderType ot){m_orderType = ot;}
 	inline void setTradeType(WTSTradeType tt){m_tradeType = tt;}
 
-	inline void setVolumn(uint32_t volumn){m_uVolumn = volumn;}
+	inline void setVolume(uint32_t volume){m_uVolume = volume;}
 	inline void setPrice(double price){ m_uPrice = price; }
 
 	inline void setTradeDate(uint32_t uDate){m_uTradeDate = uDate;}
@@ -321,7 +321,7 @@ public:
 	inline WTSOrderType		getOrderType() const{return m_orderType;}
 	inline WTSTradeType		getTradeType() const{return m_tradeType;}
 
-	inline double getVolumn() const{ return m_uVolumn; }
+	inline double getVolume() const{ return m_uVolume; }
 	inline double getPrice() const{ return m_uPrice; }
 
 	inline const char*	getCode() const{return m_strCode.c_str();}
@@ -346,7 +346,7 @@ protected:
 
 	uint32_t	m_uTradeDate;
 	uint64_t	m_uTradeTime;
-	uint32_t	m_uVolumn;
+	uint32_t	m_uVolume;
 	double	m_uPrice;
 
 	WTSDirectionType	m_direction;
@@ -458,7 +458,7 @@ public:
 	inline void setOpenDate(uint32_t uDate){m_uOpenDate = uDate;}
 	inline void setOpenTime(uint64_t uTime){m_uOpenTime = uTime;}
 
-	inline void setVolumn(double vol){ m_dVolumn = vol; }
+	inline void setVolume(double vol){ m_dVolume = vol; }
 	inline void setOpenPrice(double openpx){ m_dOpenPrice = openpx; }
 	inline void setMargin(double margin){ m_dMargin = margin; }
 	inline void setCloseVol(double closevol){ m_dCloseVol = closevol; }
@@ -479,7 +479,7 @@ public:
 	inline uint64_t getOpenTime() const{return m_uOpenTime;}
 
 	inline double		getOpenPrice() const{ return m_dOpenPrice; }
-	inline double		getVolumn() const{ return m_dVolumn; }
+	inline double		getVolume() const{ return m_dVolume; }
 	inline double		getMargin() const{ return m_dMargin; }
 	inline double		getCloseVol() const{ return m_dCloseVol; }
 	inline double		getCloseAmount() const{ return m_dCloseAmount; }
@@ -492,7 +492,7 @@ protected:
 		: m_direction(WDT_LONG)
 		, m_uOpenDate(0)
 		, m_uOpenTime(0)
-		, m_dVolumn(0)
+		, m_dVolume(0)
 		, m_dOpenPrice(0)
 		, m_dMargin(0)
 		, m_dCloseVol(0)
@@ -511,7 +511,7 @@ protected:
 	WTSDirectionType	m_direction;//¶à¿Õ·½Ïò
 	uint32_t	m_uOpenDate;
 	uint64_t	m_uOpenTime;
-	double		m_dVolumn;
+	double		m_dVolume;
 	double		m_dOpenPrice;
 	double		m_dMargin;
 	double		m_dCloseVol;

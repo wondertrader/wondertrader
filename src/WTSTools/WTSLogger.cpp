@@ -107,7 +107,7 @@ void WTSLogger::initLogger(const char* catName, WTSVariant* cfgLogger)
 			checkDirs(filename.c_str());
 			auto sink = std::make_shared<spdlog::sinks::daily_file_sink_mt>(filename, 0, 0);
 			sink->set_pattern(cfgSink->getCString("pattern"));
-			sinks.push_back(sink);
+			sinks.emplace_back(sink);
 		}
 		else if (strcmp(type, "basic_file_sink") == 0)
 		{
@@ -116,19 +116,19 @@ void WTSLogger::initLogger(const char* catName, WTSVariant* cfgLogger)
 			checkDirs(filename.c_str());
 			auto sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(filename, cfgSink->getBoolean("truncate"));
 			sink->set_pattern(cfgSink->getCString("pattern"));
-			sinks.push_back(sink);
+			sinks.emplace_back(sink);
 		}
 		else if (strcmp(type, "console_sink") == 0)
 		{
 			auto sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
 			sink->set_pattern(cfgSink->getCString("pattern"));
-			sinks.push_back(sink);
+			sinks.emplace_back(sink);
 		}
 		else if (strcmp(type, "ostream_sink") == 0)
 		{
 			auto sink = std::make_shared<spdlog::sinks::ostream_sink_mt>(std::cout, true);
 			sink->set_pattern(cfgSink->getCString("pattern"));
-			sinks.push_back(sink);
+			sinks.emplace_back(sink);
 		}
 	}
 

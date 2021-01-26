@@ -119,9 +119,10 @@ void register_sel_callbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cb
 }
 
 void register_hft_callbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraBarCallback cbBar,
-	FuncHftChannelCallback cbChnl, FuncHftOrdCallback cbOrd, FuncHftTrdCallback cbTrd, FuncHftEntrustCallback cbEntrust)
+	FuncHftChannelCallback cbChnl, FuncHftOrdCallback cbOrd, FuncHftTrdCallback cbTrd, FuncHftEntrustCallback cbEntrust,
+	FuncStraOrdDtlCallback cbOrdDtl, FuncStraOrdQueCallback cbOrdQue, FuncStraTransCallback cbTrans)
 {
-	getRunner().registerHftCallbacks(cbInit, cbTick, cbBar, cbChnl, cbOrd, cbTrd, cbEntrust);
+	getRunner().registerHftCallbacks(cbInit, cbTick, cbBar, cbChnl, cbOrd, cbTrd, cbEntrust, cbOrdDtl, cbOrdQue, cbTrans);
 }
 
 void init_backtest(const char* logProfile, bool isFile)
@@ -372,6 +373,22 @@ double cta_get_position_avgpx(CtxHandler cHandle, const char* stdCode)
 	return ctx->stra_get_position_avgpx(stdCode);
 }
 
+void cta_get_all_position(CtxHandler cHandle, FuncGetPositionCallback cb)
+{
+	CtaMocker* ctx = getRunner().cta_mocker();
+	if (ctx == NULL)
+	{
+		cb(cHandle, "", 0, true);
+		return;
+	}
+
+	ctx->enum_position([cb, cHandle](const char* stdCode, double qty) {
+		cb(cHandle, stdCode, qty, false);
+	});
+
+	cb(cHandle, "", 0, true);
+}
+
 double cta_get_position(CtxHandler cHandle, const char* stdCode, const char* openTag)
 {
 	CtaMocker* ctx = getRunner().cta_mocker();
@@ -420,6 +437,11 @@ double cta_get_last_enterprice(CtxHandler cHandle, const char* stdCode)
 double cta_get_price(const char* stdCode)
 {
 	return getRunner().replayer().get_cur_price(stdCode);
+}
+
+WtUInt32 cta_get_tdate()
+{
+	return getRunner().replayer().get_trading_date();
 }
 
 WtUInt32 cta_get_date()
@@ -510,6 +532,22 @@ WtUInt32 sel_get_date()
 WtUInt32 sel_get_time()
 {
 	return getRunner().replayer().get_min_time();
+}
+
+void sel_get_all_position(CtxHandler cHandle, FuncGetPositionCallback cb)
+{
+	SelMocker* ctx = getRunner().sel_mocker();
+	if (ctx == NULL)
+	{
+		cb(cHandle, "", 0, true);
+		return;
+	}
+
+	ctx->enum_position([cb, cHandle](const char* stdCode, double qty) {
+		cb(cHandle, stdCode, qty, false);
+	});
+
+	cb(cHandle, "", 0, true);
 }
 
 double sel_get_position(CtxHandler cHandle, const char* stdCode, const char* openTag)
@@ -634,6 +672,15 @@ double hft_get_position(CtxHandler cHandle, const char* stdCode)
 	return mocker->stra_get_position(stdCode);
 }
 
+double hft_get_position_profit(CtxHandler cHandle, const char* stdCode)
+{
+	HftMocker* mocker = getRunner().hft_mocker();
+	if (mocker == NULL)
+		return 0;
+
+	return mocker->stra_get_position_profit(stdCode);
+}
+
 double hft_get_undone(CtxHandler cHandle, const char* stdCode)
 {
 	HftMocker* mocker = getRunner().hft_mocker();
@@ -704,7 +751,7 @@ WtUInt32 hft_get_bars(CtxHandler cHandle, const char* stdCode, const char* perio
 	}
 }
 
-WtUInt32 hft_get_ticks(CtxHandler cHandle, const char* stdCode, unsigned int tickCnt, bool isMain, FuncGetTicksCallback cb)
+WtUInt32 hft_get_ticks(CtxHandler cHandle, const char* stdCode, unsigned int tickCnt, FuncGetTicksCallback cb)
 {
 	HftMocker* mocker = getRunner().hft_mocker();
 	if (mocker == NULL)
@@ -744,6 +791,120 @@ WtUInt32 hft_get_ticks(CtxHandler cHandle, const char* stdCode, unsigned int tic
 	}
 }
 
+WtUInt32 hft_get_ordque(CtxHandler cHandle, const char* stdCode, unsigned int tickCnt, FuncGetOrdQueCallback cb)
+{
+	HftMocker* mocker = getRunner().hft_mocker();
+	if (mocker == NULL)
+		return 0;
+	try
+	{
+		WTSOrdQueSlice* tData = mocker->stra_get_order_queue(stdCode, tickCnt);
+		if (tData)
+		{
+			//printf("K线条数%u\r\n", kData->size());
+			uint32_t left = tickCnt + 1;
+			uint32_t reaCnt = 0;
+			for (uint32_t idx = 0; idx < tData->size() && left > 0; idx++, left--)
+			{
+				WTSOrdQueStruct* curData = (WTSOrdQueStruct*)tData->at(idx);
+				cb(cHandle, stdCode, curData, false);
+				reaCnt += 1;
+			}
+
+			//printf("数据已读完\r\n");
+			cb(cHandle, stdCode, NULL, true);
+
+			tData->release();
+			return reaCnt;
+		}
+		else
+		{
+			//printf("K线条数0\r\n");
+			cb(cHandle, stdCode, NULL, true);
+			return 0;
+		}
+	}
+	catch (...)
+	{
+		cb(cHandle, stdCode, NULL, true);
+		return 0;
+	}
+}
+
+WtUInt32 hft_get_orddtl(CtxHandler cHandle, const char* stdCode, unsigned int tickCnt, FuncGetOrdDtlCallback cb)
+{
+	HftMocker* mocker = getRunner().hft_mocker();
+	if (mocker == NULL)
+		return 0;
+	try
+	{
+		WTSOrdDtlSlice* tData = mocker->stra_get_order_detail(stdCode, tickCnt);
+		if (tData)
+		{
+			uint32_t left = tickCnt + 1;
+			uint32_t reaCnt = 0;
+			for (uint32_t idx = 0; idx < tData->size() && left > 0; idx++, left--)
+			{
+				WTSOrdDtlStruct* curData = (WTSOrdDtlStruct*)tData->at(idx);
+				cb(cHandle, stdCode, curData, false);
+				reaCnt += 1;
+			}
+
+			cb(cHandle, stdCode, NULL, true);
+
+			tData->release();
+			return reaCnt;
+		}
+		else
+		{
+			cb(cHandle, stdCode, NULL, true);
+			return 0;
+		}
+	}
+	catch (...)
+	{
+		cb(cHandle, stdCode, NULL, true);
+		return 0;
+	}
+}
+
+WtUInt32 hft_get_trans(CtxHandler cHandle, const char* stdCode, unsigned int tickCnt, FuncGetTransCallback cb)
+{
+	HftMocker* mocker = getRunner().hft_mocker();
+	if (mocker == NULL)
+		return 0;
+	try
+	{
+		WTSTransSlice* tData = mocker->stra_get_transaction(stdCode, tickCnt);
+		if (tData)
+		{
+			uint32_t left = tickCnt + 1;
+			uint32_t reaCnt = 0;
+			for (uint32_t idx = 0; idx < tData->size() && left > 0; idx++, left--)
+			{
+				WTSTransStruct* curData = (WTSTransStruct*)tData->at(idx);
+				cb(cHandle, stdCode, curData, false);
+				reaCnt += 1;
+			}
+
+			cb(cHandle, stdCode, NULL, true);
+
+			tData->release();
+			return reaCnt;
+		}
+		else
+		{
+			cb(cHandle, stdCode, NULL, true);
+			return 0;
+		}
+	}
+	catch (...)
+	{
+		cb(cHandle, stdCode, NULL, true);
+		return 0;
+	}
+}
+
 void hft_log_text(CtxHandler cHandle, const char* message)
 {
 	HftMocker* mocker = getRunner().hft_mocker();
@@ -760,6 +921,33 @@ void hft_sub_ticks(CtxHandler cHandle, const char* stdCode)
 		return;
 
 	mocker->stra_sub_ticks(stdCode);
+}
+
+void hft_sub_order_detail(CtxHandler cHandle, const char* stdCode)
+{
+	HftMocker* mocker = getRunner().hft_mocker();
+	if (mocker == NULL)
+		return;
+
+	mocker->stra_sub_order_details(stdCode);
+}
+
+void hft_sub_order_queue(CtxHandler cHandle, const char* stdCode)
+{
+	HftMocker* mocker = getRunner().hft_mocker();
+	if (mocker == NULL)
+		return;
+
+	mocker->stra_sub_order_queues(stdCode);
+}
+
+void hft_sub_transaction(CtxHandler cHandle, const char* stdCode)
+{
+	HftMocker* mocker = getRunner().hft_mocker();
+	if (mocker == NULL)
+		return;
+
+	mocker->stra_sub_transactions(stdCode);
 }
 
 bool hft_cancel(CtxHandler cHandle, WtUInt32 localid)
@@ -791,7 +979,7 @@ WtString hft_cancel_all(CtxHandler cHandle, const char* stdCode, bool isBuy)
 	return ret.c_str();
 }
 
-WtString hft_buy(CtxHandler cHandle, const char* stdCode, double price, double qty)
+WtString hft_buy(CtxHandler cHandle, const char* stdCode, double price, double qty, const char* userTag)
 {
 	HftMocker* mocker = getRunner().hft_mocker();
 	if (mocker == NULL)
@@ -800,7 +988,7 @@ WtString hft_buy(CtxHandler cHandle, const char* stdCode, double price, double q
 	static std::string ret;
 
 	std::stringstream ss;
-	OrderIDs ids = mocker->stra_buy(stdCode, price, qty);
+	OrderIDs ids = mocker->stra_buy(stdCode, price, qty, userTag);
 	for (uint32_t localid : ids)
 	{
 		ss << localid << ",";
@@ -811,7 +999,7 @@ WtString hft_buy(CtxHandler cHandle, const char* stdCode, double price, double q
 	return ret.c_str();
 }
 
-WtString hft_sell(CtxHandler cHandle, const char* stdCode, double price, double qty)
+WtString hft_sell(CtxHandler cHandle, const char* stdCode, double price, double qty, const char* userTag)
 {
 	HftMocker* mocker = getRunner().hft_mocker();
 	if (mocker == NULL)
@@ -820,7 +1008,7 @@ WtString hft_sell(CtxHandler cHandle, const char* stdCode, double price, double 
 	static std::string ret;
 
 	std::stringstream ss;
-	OrderIDs ids = mocker->stra_sell(stdCode, price, qty);
+	OrderIDs ids = mocker->stra_sell(stdCode, price, qty, userTag);
 	for (uint32_t localid : ids)
 	{
 		ss << localid << ",";

@@ -497,7 +497,7 @@ int TraderiTap::orderInsert( WTSEntrust* entrust )
 	req.TimeInForce = wrapTimeCondition(entrust->getTimeCondition());
 	req.OrderSide = wrapDirectionType(entrust->getDirection(), entrust->getOffsetType());
 	req.OrderPrice = entrust->getPrice();
-	req.OrderQty = (int)entrust->getVolumn();
+	req.OrderQty = (int)entrust->getVolume();
 	strcpy(req.RefString, entrust->getUserTag());
 
 	int iResult = m_pUserAPI->InsertOrder(makeRequestID(), NULL, &req);
@@ -941,7 +941,7 @@ WTSOrderInfo* TraderiTap::makeOrderInfo(const TapAPIOrderInfo* orderField)
 
 	WTSOrderInfo* pRet = WTSOrderInfo::create();
 	pRet->setPrice(orderField->OrderPrice);
-	pRet->setVolumn(orderField->OrderQty);
+	pRet->setVolume(orderField->OrderQty);
 	pRet->setDirection(wrapDirectionType(orderField->OrderSide, orderField->PositionEffect));
 	pRet->setPriceType(wrapPriceType(orderField->OrderType));
 	pRet->setTimeCondition(wrapTimeCondition(orderField->TimeInForce));
@@ -1022,7 +1022,7 @@ WTSTradeInfo* TraderiTap::makeTradeRecord(const TapAPIFillInfo* tradeField)
 		return NULL;
 
 	WTSTradeInfo *pRet = WTSTradeInfo::create(code.c_str());
-	pRet->setVolumn(tradeField->MatchQty);
+	pRet->setVolume(tradeField->MatchQty);
 	pRet->setPrice(tradeField->MatchPrice);
 	pRet->setTradeID(StrUtil::printf("%s.Trd.%s", m_strUser.c_str(), tradeField->MatchNo).c_str());
 

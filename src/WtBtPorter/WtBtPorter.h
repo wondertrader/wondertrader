@@ -20,7 +20,8 @@ extern "C"
 	EXPORT_FLAG	void		register_sel_callbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar);
 
 	EXPORT_FLAG	void		register_hft_callbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraBarCallback cbBar,
-		FuncHftChannelCallback cbChnl, FuncHftOrdCallback cbOrd, FuncHftTrdCallback cbTrd, FuncHftEntrustCallback cbEntrust);
+		FuncHftChannelCallback cbChnl, FuncHftOrdCallback cbOrd, FuncHftTrdCallback cbTrd, FuncHftEntrustCallback cbEntrust,
+		FuncStraOrdDtlCallback cbOrdDtl, FuncStraOrdQueCallback cbOrdQue, FuncStraTransCallback cbTrans);
 
 	EXPORT_FLAG	void		init_backtest(const char* logProfile, bool isFile);
 
@@ -70,6 +71,8 @@ extern "C"
 
 	EXPORT_FLAG	double 		cta_get_price(const char* stdCode);
 
+	EXPORT_FLAG	WtUInt32 	cta_get_tdate();
+
 	EXPORT_FLAG	WtUInt32 	cta_get_date();
 
 	EXPORT_FLAG	WtUInt32 	cta_get_time();
@@ -77,6 +80,8 @@ extern "C"
 	EXPORT_FLAG	WtUInt32	cta_get_bars(CtxHandler cHandle, const char* stdCode, const char* period, unsigned int barCnt, bool isMain, FuncGetBarsCallback cb);
 
 	EXPORT_FLAG	WtUInt32	cta_get_ticks(CtxHandler cHandle, const char* stdCode, unsigned int tickCnt, bool isMain, FuncGetTicksCallback cb);
+
+	EXPORT_FLAG void		cta_get_all_position(CtxHandler cHandle, FuncGetPositionCallback cb);
 
 	EXPORT_FLAG	WtUInt64	cta_get_first_entertime(CtxHandler cHandle, const char* stdCode);
 
@@ -110,6 +115,8 @@ extern "C"
 
 	EXPORT_FLAG	WtUInt32	sel_get_ticks(CtxHandler cHandle, const char* stdCode, unsigned int tickCnt, bool isMain, FuncGetTicksCallback cb);
 
+	EXPORT_FLAG void		sel_get_all_position(CtxHandler cHandle, FuncGetPositionCallback cb);
+
 	EXPORT_FLAG	void		sel_log_text(CtxHandler cHandle, const char* message);
 
 	EXPORT_FLAG	void		sel_save_userdata(CtxHandler cHandle, const char* key, const char* val);
@@ -125,6 +132,8 @@ extern "C"
 
 	EXPORT_FLAG	double		hft_get_position(CtxHandler cHandle, const char* stdCode);
 
+	EXPORT_FLAG	double		hft_get_position_profit(CtxHandler cHandle, const char* stdCode);
+
 	EXPORT_FLAG	double		hft_get_undone(CtxHandler cHandle, const char* stdCode);
 
 	EXPORT_FLAG	double 		hft_get_price(const char* stdCode);
@@ -137,19 +146,31 @@ extern "C"
 
 	EXPORT_FLAG	WtUInt32	hft_get_bars(CtxHandler cHandle, const char* stdCode, const char* period, unsigned int barCnt, FuncGetBarsCallback cb);
 
-	EXPORT_FLAG	WtUInt32	hft_get_ticks(CtxHandler cHandle, const char* stdCode, unsigned int tickCnt, bool isMain, FuncGetTicksCallback cb);
+	EXPORT_FLAG	WtUInt32	hft_get_ticks(CtxHandler cHandle, const char* stdCode, unsigned int tickCnt, FuncGetTicksCallback cb);
+
+	EXPORT_FLAG	WtUInt32	hft_get_ordque(CtxHandler cHandle, const char* stdCode, unsigned int tickCnt, FuncGetOrdQueCallback cb);
+
+	EXPORT_FLAG	WtUInt32	hft_get_orddtl(CtxHandler cHandle, const char* stdCode, unsigned int tickCnt, FuncGetOrdDtlCallback cb);
+
+	EXPORT_FLAG	WtUInt32	hft_get_trans(CtxHandler cHandle, const char* stdCode, unsigned int tickCnt, FuncGetTransCallback cb);
 
 	EXPORT_FLAG	void		hft_log_text(CtxHandler cHandle, const char* message);
 
 	EXPORT_FLAG	void		hft_sub_ticks(CtxHandler cHandle, const char* stdCode);
 
+	EXPORT_FLAG	void		hft_sub_order_queue(CtxHandler cHandle, const char* stdCode);
+
+	EXPORT_FLAG	void		hft_sub_order_detail(CtxHandler cHandle, const char* stdCode);
+
+	EXPORT_FLAG	void		hft_sub_transaction(CtxHandler cHandle, const char* stdCode);
+
 	EXPORT_FLAG	bool		hft_cancel(CtxHandler cHandle, WtUInt32 localid);
 
 	EXPORT_FLAG	WtString	hft_cancel_all(CtxHandler cHandle, const char* stdCode, bool isBuy);
 
-	EXPORT_FLAG	WtString	hft_buy(CtxHandler cHandle, const char* stdCode, double price, double qty);
+	EXPORT_FLAG	WtString	hft_buy(CtxHandler cHandle, const char* stdCode, double price, double qty, const char* userTag);
 
-	EXPORT_FLAG	WtString	hft_sell(CtxHandler cHandle, const char* stdCode, double price, double qty);
+	EXPORT_FLAG	WtString	hft_sell(CtxHandler cHandle, const char* stdCode, double price, double qty, const char* userTag);
 
 	EXPORT_FLAG	void		hft_save_userdata(CtxHandler cHandle, const char* key, const char* val);
 

@@ -1,5 +1,5 @@
 #pragma once
-#include <unordered_map>
+#include "WtOrdMon.h"
 #include "../Includes/ExecuteDefs.h"
 #include "../Share/StdUtils.hpp"
 
@@ -92,9 +92,7 @@ private:
 
 	//////////////////////////////////////////////////////////////////////////
 	//Ö´ÐÐ²ÎÊý
-	typedef std::unordered_map<uint32_t, uint64_t> Orders;
-	Orders			_orders;
-	StdRecurMutex	_mtx_ords;
+	WtOrdMon		_orders_mon;
 	uint32_t		_cancel_cnt;
 
 	//////////////////////////////////////////////////////////////////////////

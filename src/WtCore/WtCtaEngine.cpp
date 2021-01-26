@@ -152,7 +152,7 @@ void WtCtaEngine::on_init()
 			double& vol = target_pos[realCode];
 			vol += qty;
 
-			_subed_raw_codes.insert(realCode);
+			_ticksubed_raw_codes.insert(realCode);
 		});
 	}
 
@@ -210,7 +210,7 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 				if(!decimal::eq(qty, oldQty))
 				{
 					//输出日志
-					WTSLogger::info(fmt::format("[过滤器] 策略{}的标的{}的目标仓位被策略过滤器调整: {} -> {}", ctx->name(), stdCode, oldQty, qty).c_str());
+					WTSLogger::info(fmt::format("[过滤器] 策略{}的{}的目标仓位被策略过滤器调整: {} -> {}", ctx->name(), stdCode, oldQty, qty).c_str());
 				}
 
 				std::string realCode = stdCode;
@@ -228,7 +228,7 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 			else
 			{
 				//输出日志
-				WTSLogger::info("[过滤器] 策略%s的标的%s的目标仓位被策略过滤器忽略", ctx->name(), stdCode);
+				WTSLogger::info("[过滤器] 策略%s的%s的目标仓位被策略过滤器忽略", ctx->name(), stdCode);
 			}
 		});
 	}
@@ -262,7 +262,7 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 		std::string stdCode = m.first;
 		if (target_pos.find(stdCode) == target_pos.end())
 		{
-			if(!decimal::eq(m.second._volumn, 0))
+			if(!decimal::eq(m.second._volume, 0))
 			{
 				push_task([this, stdCode](){
 					append_signal(stdCode.c_str(), 0);
@@ -300,7 +300,7 @@ void WtCtaEngine::handle_pos_change(const char* straName, const char* stdCode, d
 	if(!_filter_mgr.is_filtered_by_strategy(straName, diffQty, true))
 	{
 		//输出日志
-		WTSLogger::info("[过滤器] 策略%s的标的%s的目标仓位被策略过滤器忽略", straName, stdCode);
+		WTSLogger::info("[过滤器] 策略%s的%s的目标仓位被策略过滤器忽略", straName, stdCode);
 	}
 
 	std::string realCode = stdCode;
@@ -313,7 +313,7 @@ void WtCtaEngine::handle_pos_change(const char* straName, const char* stdCode, d
 	}
 
 	PosInfo& pItem = _pos_map[realCode];
-	double targetPos = pItem._volumn + diffQty;
+	double targetPos = pItem._volume + diffQty;
 
 	bool bRiskEnabled = false;
 	if (!decimal::eq(_risk_volscale, 1.0) && _risk_date == _cur_tdate)
@@ -341,8 +341,8 @@ void WtCtaEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 	_data_mgr->handle_push_quote(stdCode, curTick);
 
 	//如果是真实代码, 则要传递给执行器
-	auto it = _subed_raw_codes.find(stdCode);
-	if (it != _subed_raw_codes.end())
+	auto it = _ticksubed_raw_codes.find(stdCode);
+	if (it != _ticksubed_raw_codes.end())
 	{
 		//是否主力合约代码的标记, 主要用于给执行器发数据的
 		_exec_mgr.handle_tick(stdCode, curTick);
@@ -356,7 +356,7 @@ void WtCtaEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 		{
 			uint32_t sid = *it;
 			auto cit = _ctx_map.find(sid);
-			if (cit != _ctx_map.end() && curTick->volumn())
+			if (cit != _ctx_map.end() && curTick->volume())
 			{
 				CtaContextPtr& ctx = cit->second;
 				ctx->on_tick(stdCode, curTick);

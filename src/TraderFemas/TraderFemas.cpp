@@ -401,7 +401,7 @@ int TraderFemas::orderInsert(WTSEntrust* entrust)
 	req.OffsetFlag = wrapOffsetType(entrust->getOffsetType());
 	req.HedgeFlag = USTP_FTDC_CHF_Speculation;
 	req.LimitPrice = entrust->getPrice();
-	req.Volume = (int)entrust->getVolumn();
+	req.Volume = (int)entrust->getVolume();
 	req.TimeCondition = wrapTimeCondition(entrust->getTimeCondition());
 	req.VolumeCondition = USTP_FTDC_VC_AV;
 	req.ForceCloseReason = USTP_FTDC_FCR_NotForceClose;
@@ -434,7 +434,7 @@ int TraderFemas::orderAction( WTSEntrustAction* action )
 	req.ActionFlag = wrapActionFlag(action->getActionFlag());
 	req.LimitPrice = action->getPrice();
 
-	req.VolumeChange = (int32_t)action->getVolumn();
+	req.VolumeChange = (int32_t)action->getVolume();
 
 	strcpy(req.OrderSysID, action->getOrderID());
 	strcpy(req.ExchangeID, wrapExchg(action->getExchg()));
@@ -996,7 +996,7 @@ WTSOrderInfo* TraderFemas::makeOrderInfo(CUstpFtdcOrderField* orderField)
 
 	WTSOrderInfo* pRet = WTSOrderInfo::create();
 	pRet->setPrice(orderField->LimitPrice);
-	pRet->setVolumn(orderField->Volume);
+	pRet->setVolume(orderField->Volume);
 	pRet->setDirection(wrapDirectionType(orderField->Direction, orderField->OffsetFlag));
 	pRet->setPriceType(wrapPriceType(orderField->OrderPriceType));
 	pRet->setTimeCondition(wrapTimeCondition(orderField->TimeCondition));
@@ -1063,7 +1063,7 @@ WTSTradeInfo* TraderFemas::makeTradeRecord(CUstpFtdcTradeField *tradeField)
 	WTSCommodityInfo* mInfo = m_bdMgr->getCommodity(contract);
 
 	WTSTradeInfo *pRet = WTSTradeInfo::create(tradeField->InstrumentID);
-	pRet->setVolumn(tradeField->TradeVolume);
+	pRet->setVolume(tradeField->TradeVolume);
 	pRet->setPrice(tradeField->TradePrice);
 	pRet->setTradeID(tradeField->TradeID);
 

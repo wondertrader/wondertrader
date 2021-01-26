@@ -7,9 +7,9 @@
  * 
  */
 #pragma once
-#include <unordered_set>
-#include <mutex>
 #include "../Includes/ExecuteDefs.h"
+#include "WtOrdMon.h"
+
 USING_NS_OTP;
 
 class WtSimpExeUnit : public ExecuteUnit
@@ -102,10 +102,8 @@ private:
 	uint32_t	_expire_secs;
 	int32_t		_price_mode;
 
-	typedef std::unordered_set<uint32_t> IDSet;
-	IDSet			_orders;
-	std::mutex		_mtx_ords;
-	uint64_t		_last_entry_time;
-	uint32_t		_cancel_cnt;
+	WtOrdMon	_orders_mon;
+	uint32_t	_cancel_cnt;
+	uint32_t	_cancel_times;
 };
 

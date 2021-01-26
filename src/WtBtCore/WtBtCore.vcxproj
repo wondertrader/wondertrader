@@ -23,6 +23,7 @@
     <ClCompile Include="ExecMocker.cpp" />
     <ClCompile Include="HftMocker.cpp" />
     <ClCompile Include="HisDataReplayer.cpp" />
+    <ClCompile Include="MatchEngine.cpp" />
     <ClCompile Include="SelMocker.cpp" />
     <ClCompile Include="WtHelper.cpp" />
   </ItemGroup>
@@ -31,6 +32,7 @@
     <ClInclude Include="ExecMocker.h" />
     <ClInclude Include="HftMocker.h" />
     <ClInclude Include="HisDataReplayer.h" />
+    <ClInclude Include="MatchEngine.h" />
     <ClInclude Include="SelMocker.h" />
     <ClInclude Include="WtHelper.h" />
   </ItemGroup>

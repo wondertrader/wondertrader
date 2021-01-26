@@ -167,7 +167,7 @@ bool WtFilterMgr::is_filtered_by_code(const char* stdCode, double& targetPos)
 	if (cit != _exec_filters.end())
 	{
 		const FilterItem& fItem = cit->second;
-		WTSLogger::info("[过滤器] 标的过滤器%s触发, 过滤操作: %s", stdCode, fItem._action <= FA_Redirect ? FLTACT_NAMEs[fItem._action] : "未知");
+		WTSLogger::info("[过滤器] 代码过滤器%s触发, 过滤操作: %s", stdCode, fItem._action <= FA_Redirect ? FLTACT_NAMEs[fItem._action] : "未知");
 		if (fItem._action == FA_Ignore)
 		{
 			return true;

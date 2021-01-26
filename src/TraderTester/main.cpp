@@ -21,6 +21,8 @@ WTSBaseDataMgr	g_bdMgr;
 StdUniqueMutex	g_mtxOpt;
 StdCondVariable	g_condOpt;
 bool		g_exitNow = false;
+bool		g_riskAct = false;
+std::set<std::string>	g_blkList;
 
 USING_NS_OTP;
 
@@ -168,6 +170,8 @@ public:
 		char exchg[32] = { 0 };
 		double price = 0.0;
 		uint32_t qty = 0;
+		uint32_t bs = 0;
+		uint32_t offset = 0;
 
 		for (;;)
 		{
@@ -180,19 +184,41 @@ public:
 			printf("请输入委托价格: ");
 			std::cin >> price;
 
-			printf("请输入数量: ");
+			printf("请输入手数: ");
 			std::cin >> qty;
 
-			printf("品种：%s.%s，价格：%f，数量：%u，确认y/n? ", exchg, code, price, qty);
+			printf("请输入方向，0-做多，1-做空: ");
+			std::cin >> bs;
+			if(bs != 0 && bs != 1)
+				continue;
+
+			printf("请输入开平，0-开仓，1-平仓: ");
+			std::cin >> offset;
+			if (offset != 0 && offset != 1)
+				continue;
+
+			printf("品种：%s.%s，价格：%f，手数：%u，方向：%s，开平：%s，确认y/n? ", exchg, code, price, qty, bs == 0 ? "做多" : "做空", offset == 0 ? "开仓" : "平仓");
 			char c;
 			std::cin >> c;
 			if(c == 'y')
 				break;
 		}
 
+		if(g_riskAct)
+		{
+			auto it = g_blkList.find(code);
+			if (it != g_blkList.end())
+			{
+				log("%s已被禁止交易", code);
+				return false;
+			}
+		}
+
+		bool bNeedToday = (strcmp(exchg, "SHFE") == 0 || strcmp(exchg, "INE") == 0);
+
 		WTSEntrust* entrust = WTSEntrust::create(code, qty, price, exchg);
-		entrust->setDirection(WDT_LONG);
-		entrust->setOffsetType(WOT_OPEN);
+		entrust->setDirection(bs == 0 ? WDT_LONG : WDT_SHORT);
+		entrust->setOffsetType(offset == 0 ? WOT_OPEN : (bNeedToday?WOT_CLOSETODAY:WOT_CLOSE));
 		entrust->setPriceType(WPT_LIMITPRICE);
 		entrust->setTimeCondition(WTC_GFD);
 
@@ -200,7 +226,7 @@ public:
 		m_pTraderApi->makeEntrustID(entrustid, 64);
 		entrust->setEntrustID(entrustid);
 
-		log("[%s]开始下单，品种: %s.%s，价格: %f，数量: %d，动作: 开多", m_pParams->getCString("user"), exchg, code, price, qty);
+		log("[%s]开始下单，品种: %s.%s，价格: %f，手数: %d，动作: %s%s", m_pParams->getCString("user"), exchg, code, price, qty, offset == 0 ? "开" : "平", bs == 0 ? "多" : "空");
 
 		m_pTraderApi->orderInsert(entrust);
 		entrust->release();
@@ -213,6 +239,8 @@ public:
 		char code[32] = { 0 };
 		char exchg[32] = { 0 };
 		uint32_t qty = 0;
+		uint32_t bs = 0;
+		uint32_t offset = 0;
 
 		for (;;)
 		{
@@ -222,19 +250,36 @@ public:
 			printf("请输入交易所代码: ");
 			std::cin >> exchg;
 
-			printf("请输入数量: ");
+			printf("请输入手数: ");
 			std::cin >> qty;
 
-			printf("品种：%s.%s，数量：%u，确认y/n? ", exchg, code, qty);
+			printf("请输入方向，0-做多，1-做空: ");
+			std::cin >> bs;
+
+			printf("请输入开平，0-开仓，1-平仓: ");
+			std::cin >> offset;
+
+			printf("品种：%s.%s，手数：%u，方向：%s，开平：%s，确认y/n? ", exchg, code, qty, bs == 0 ? "做多" : "做空", offset == 0 ? "开仓" : "平仓");
 			char c;
 			std::cin >> c;
 			if (c == 'y')
 				break;
 		}
 
+		if (g_riskAct)
+		{
+			auto it = g_blkList.find(code);
+			if (it != g_blkList.end())
+			{
+				log("%s已被禁止交易", code);
+				return false;
+			}
+		}
+
+		bool bNeedToday = (strcmp(exchg, "SHFE") == 0 || strcmp(exchg, "INE") == 0);
 		WTSEntrust* entrust = WTSEntrust::create(code, qty, 0, exchg);
-		entrust->setDirection(WDT_LONG);
-		entrust->setOffsetType(WOT_OPEN);
+		entrust->setDirection(bs == 0 ? WDT_LONG : WDT_SHORT);
+		entrust->setOffsetType(offset == 0 ? WOT_OPEN : (bNeedToday ? WOT_CLOSETODAY : WOT_CLOSE));
 		entrust->setPriceType(WPT_ANYPRICE);
 		entrust->setTimeCondition(WTC_IOC);
 
@@ -242,7 +287,7 @@ public:
 		m_pTraderApi->makeEntrustID(entrustid, 64);
 		entrust->setEntrustID(entrustid);
 
-		log("[%s]开始下单，品种: %s.%s，价格: 市价，数量: %d，动作: 开多", m_pParams->getCString("user"), exchg, code, qty);
+		log("[%s]开始下单，品种: %s.%s，价格: 市价，手数: %d，动作: %s%s", m_pParams->getCString("user"), exchg, code, qty, offset == 0 ? "开" : "平", bs == 0 ? "多" : "空");
 
 		m_pTraderApi->orderInsert(entrust);
 		entrust->release();
@@ -366,6 +411,15 @@ public:
 			cnt = ayPositions->size();
 
 		log("[%s]持仓数据已更新, 当日共有%u笔持仓", m_pParams->getCString("user"), cnt);
+		for(uint32_t i = 0; i < cnt; i++)
+		{
+			WTSPositionItem* posItem = (WTSPositionItem*)((WTSArray*)ayPositions)->at(i);
+			if(posItem && posItem->getTotalPosition() > 0 && g_riskAct)
+			{
+				g_blkList.insert(posItem->getCode());
+				log("%s持仓量超限，限制开仓", posItem->getCode());
+			}
+		}
 		StdUniqueLock lock(g_mtxOpt);
 		g_condOpt.notify_all();
 	}
@@ -453,7 +507,14 @@ public:
 
 	virtual void onPushTrade(WTSTradeInfo* tradeRecord)
 	{
-		log("[%s]收到成交回报，标的%s，成交价：%.4f，成交数量：%.4f", m_pParams->getCString("user"), tradeRecord->getCode(), tradeRecord->getPrice(), tradeRecord->getVolumn());
+		log("[%s]收到成交回报，合约%s，成交价：%.4f，成交手数：%.4f", m_pParams->getCString("user"), tradeRecord->getCode(), tradeRecord->getPrice(), tradeRecord->getVolume());
+
+		if(g_riskAct)
+		{
+			log("[%s]%s超过最大持仓手数，禁止开仓", m_pParams->getCString("user"), tradeRecord->getCode());
+
+			g_blkList.insert(tradeRecord->getCode());
+		}
 	}
 
 	virtual void onTraderError(WTSError*	err)
@@ -494,7 +555,7 @@ std::string getBaseFolder()
 		GetModuleFileName(GetModuleHandle(NULL), path, MAX_PATH);
 
 		basePath = path;
-		int pos = basePath.find_last_of('\\');
+		auto pos = basePath.find_last_of('\\');
 		basePath = basePath.substr(0, pos + 1);
 	}
 
@@ -504,6 +565,8 @@ std::string getBaseFolder()
 void main()
 {
 	WTSLogger::init();
+
+	WTSLogger::info("启动成功，当前系统版本号: v1.0");
 
 	std::string cfg = getBaseFolder() + "config.ini";
 
@@ -522,6 +585,9 @@ void main()
 	file = IniFile::ReadConfigString("config", "holiday", "", cfg.c_str());
 	if (!file.empty())
 		g_bdMgr.loadHolidays(file.c_str());
+
+	g_riskAct = IniFile::ReadConfigInt("config", "risk", 0, cfg.c_str()) == 1;
+	WTSLogger::info("风控开关：%s", g_riskAct ? "开" : "关");
 
 
 	WTSParams* params = WTSParams::createObject();

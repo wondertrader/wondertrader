@@ -274,7 +274,7 @@ WTSOrderInfo* TraderXTP::makeOrderInfo(XTPQueryOrderRsp* order_info)
 
 	WTSOrderInfo* pRet = WTSOrderInfo::create();
 	pRet->setPrice(order_info->price);
-	pRet->setVolumn((uint32_t)order_info->quantity);
+	pRet->setVolume((uint32_t)order_info->quantity);
 	pRet->setDirection(wrapDirectionType(order_info->side, order_info->position_effect));
 	pRet->setPriceType(wrapPriceType(order_info->price_type));
 	pRet->setTimeCondition(WTC_GFD);
@@ -333,7 +333,7 @@ WTSTradeInfo* TraderXTP::makeTradeInfo(XTPQueryTradeRsp* trade_info)
 	WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(contract);
 
 	WTSTradeInfo *pRet = WTSTradeInfo::create(code.c_str(), commInfo->getExchg());
-	pRet->setVolumn((uint32_t)trade_info->quantity);
+	pRet->setVolume((uint32_t)trade_info->quantity);
 	pRet->setPrice(trade_info->price);
 	pRet->setTradeID(trade_info->exec_id);
 
@@ -830,7 +830,7 @@ int TraderXTP::orderInsert(WTSEntrust* entrust)
 	strcpy(req.ticker, entrust->getCode());
 	req.market = my_stricmp(entrust->getExchg(), "SSE") == 0 ? XTP_MKT_SH_A : XTP_MKT_SZ_A;
 	req.price = entrust->getPrice();
-	req.quantity = (int64_t)entrust->getVolumn();
+	req.quantity = (int64_t)entrust->getVolume();
 	req.price_type = XTP_PRICE_LIMIT;
 	req.side = wrapDirectionType(entrust->getDirection(), entrust->getOffsetType());
 	req.business_type = XTP_BUSINESS_TYPE_CASH;

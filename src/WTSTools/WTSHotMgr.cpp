@@ -365,7 +365,7 @@ bool WTSHotMgr::splitHotSecions(const char* exchg, const char* pid, uint32_t sDt
 		if(curDate > eDt)
 		{
 			//sections[hotItem->from()] = HotSection(leftDate, eDt);
-			sections.push_back(HotSection(hotItem->from(), leftDate, eDt));
+			sections.emplace_back(HotSection(hotItem->from(), leftDate, eDt));
 		}
 		else if(leftDate < curDate)
 		{
@@ -373,7 +373,7 @@ bool WTSHotMgr::splitHotSecions(const char* exchg, const char* pid, uint32_t sDt
 			if(strlen(hotItem->from()) > 0)//这里from为空，主要是第一条规则，如果真的遇到这种情况，也没有太好的办法，只能不要这一段数据了，一般情况下是够的
 			{
 				//sections[hotItem->from()] = HotSection(leftDate, TimeUtils::getNextDate(curDate, -1));
-				sections.push_back(HotSection(hotItem->from(), leftDate, TimeUtils::getNextDate(curDate, -1)));
+				sections.emplace_back(HotSection(hotItem->from(), leftDate, TimeUtils::getNextDate(curDate, -1)));
 			}
 			
 			leftDate = curDate;
@@ -386,7 +386,7 @@ bool WTSHotMgr::splitHotSecions(const char* exchg, const char* pid, uint32_t sDt
 	if(leftDate >= lastDate && lastDate != 0)
 	{
 		//sections[curHot] = HotSection(leftDate, eDt);
-		sections.push_back(HotSection(curHot, leftDate, eDt));
+		sections.emplace_back(HotSection(curHot, leftDate, eDt));
 	}
 
 	return true;

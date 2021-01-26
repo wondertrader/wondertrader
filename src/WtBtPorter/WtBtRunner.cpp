@@ -16,6 +16,8 @@
 
 #include "../WtBtCore/ExecMocker.h"
 
+#include "../Includes/WTSDataDef.hpp"
+
 #include "../Share/TimeUtils.hpp"
 #include "../Share/JsonToVariant.hpp"
 #include "../Share/StrUtil.hpp"
@@ -54,6 +56,10 @@ WtBtRunner::WtBtRunner()
 	, _cb_hft_trd(NULL)
 	, _cb_hft_entrust(NULL)
 	, _cb_hft_chnl(NULL)
+
+	, _cb_hft_orddtl(NULL)
+	, _cb_hft_ordque(NULL)
+	, _cb_hft_trans(NULL)
 {
 }
 
@@ -79,7 +85,8 @@ void WtBtRunner::registerSelCallbacks(FuncStraInitCallback cbInit, FuncStraTickC
 }
 
 void WtBtRunner::registerHftCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraBarCallback cbBar,
-	FuncHftChannelCallback cbChnl, FuncHftOrdCallback cbOrd, FuncHftTrdCallback cbTrd, FuncHftEntrustCallback cbEntrust)
+	FuncHftChannelCallback cbChnl, FuncHftOrdCallback cbOrd, FuncHftTrdCallback cbTrd, FuncHftEntrustCallback cbEntrust, 
+	FuncStraOrdDtlCallback cbOrdDtl, FuncStraOrdQueCallback cbOrdQue, FuncStraTransCallback cbTrans)
 {
 	_cb_hft_init = cbInit;
 	_cb_hft_tick = cbTick;
@@ -89,6 +96,10 @@ void WtBtRunner::registerHftCallbacks(FuncStraInitCallback cbInit, FuncStraTickC
 	_cb_hft_ord = cbOrd;
 	_cb_hft_trd = cbTrd;
 	_cb_hft_entrust = cbEntrust;
+
+	_cb_hft_orddtl = cbOrdDtl;
+	_cb_hft_ordque = cbOrdQue;
+	_cb_hft_trans = cbTrans;
 }
 
 uint32_t WtBtRunner::initCtaMocker(const char* name)
@@ -161,28 +172,46 @@ void WtBtRunner::ctx_on_tick(uint32_t id, const char* stdCode, WTSTickData* newT
 	}
 }
 
+void WtBtRunner::hft_on_order_queue(uint32_t id, const char* stdCode, WTSOrdQueData* newOrdQue)
+{
+	if (_cb_hft_ordque) 
+		_cb_hft_ordque(id, stdCode, &newOrdQue->getOrdQueStruct());
+}
+
+void WtBtRunner::hft_on_order_detail(uint32_t id, const char* stdCode, WTSOrdDtlData* newOrdDtl)
+{
+	if (_cb_hft_orddtl) 
+		_cb_hft_orddtl(id, stdCode, &newOrdDtl->getOrdDtlStruct());
+}
+
+void WtBtRunner::hft_on_transaction(uint32_t id, const char* stdCode, WTSTransData* newTrans)
+{
+	if (_cb_hft_trans) 
+		_cb_hft_trans(id, stdCode, &newTrans->getTransStruct());
+}
+
 void WtBtRunner::hft_on_channel_ready(uint32_t cHandle, const char* trader)
 {
 	if (_cb_hft_chnl)
 		_cb_hft_chnl(cHandle, trader, 1000/*CHNL_EVENT_READY*/);
 }
 
-void WtBtRunner::hft_on_entrust(uint32_t cHandle, WtUInt32 localid, const char* stdCode, bool bSuccess, const char* message)
+void WtBtRunner::hft_on_entrust(uint32_t cHandle, WtUInt32 localid, const char* stdCode, bool bSuccess, const char* message, const char* userTag)
 {
 	if (_cb_hft_entrust)
-		_cb_hft_entrust(cHandle, localid, stdCode, bSuccess, message);
+		_cb_hft_entrust(cHandle, localid, stdCode, bSuccess, message, userTag);
 }
 
-void WtBtRunner::hft_on_order(uint32_t cHandle, WtUInt32 localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled)
+void WtBtRunner::hft_on_order(uint32_t cHandle, WtUInt32 localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled, const char* userTag)
 {
 	if (_cb_hft_ord)
-		_cb_hft_ord(cHandle, localid, stdCode, isBuy, totalQty, leftQty, price, isCanceled);
+		_cb_hft_ord(cHandle, localid, stdCode, isBuy, totalQty, leftQty, price, isCanceled, userTag);
 }
 
-void WtBtRunner::hft_on_trade(uint32_t cHandle, WtUInt32 localid, const char* stdCode, bool isBuy, double vol, double price)
+void WtBtRunner::hft_on_trade(uint32_t cHandle, WtUInt32 localid, const char* stdCode, bool isBuy, double vol, double price, const char* userTag)
 {
 	if (_cb_hft_trd)
-		_cb_hft_trd(cHandle, localid, stdCode, isBuy, vol, price);
+		_cb_hft_trd(cHandle, localid, stdCode, isBuy, vol, price, userTag);
 }
 
 void WtBtRunner::init(const char* logProfile /* = "" */, bool isFile /* = true */)

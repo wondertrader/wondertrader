@@ -24,9 +24,15 @@ class WTSTickData;
 class WTSVariant;
 class WTSKlineSlice;
 class WTSTickSlice;
-class WTSHisTickData;
+class WTSOrdDtlSlice;
+class WTSOrdQueSlice;
+class WTSTransSlice;
 class WTSSessionInfo;
 class WTSCommodityInfo;
+
+class WTSOrdDtlData;
+class WTSOrdQueData;
+class WTSTransData;
 NS_OTP_END
 
 typedef std::shared_ptr<MysqlDb>	MysqlDbPtr;
@@ -37,6 +43,9 @@ class IDataSink
 {
 public:
 	virtual void	handle_tick(const char* stdCode, WTSTickData* curTick) = 0;
+	virtual void	handle_order_queue(const char* stdCode, WTSOrdQueData* curOrdQue) {};
+	virtual void	handle_order_detail(const char* stdCode, WTSOrdDtlData* curOrdDtl) {};
+	virtual void	handle_transaction(const char* stdCode, WTSTransData* curTrans) {};
 	virtual void	handle_bar_close(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar) = 0;
 	virtual void	handle_schedule(uint32_t uDate, uint32_t uTime) = 0;
 
@@ -50,19 +59,24 @@ class HisDataReplayer
 {
 
 private:
-	typedef struct _TickList
+	template <typename T>
+	class HftDataList
 	{
+	public:
 		std::string		_code;
 		uint32_t		_date;
 		uint32_t		_cursor;
 		uint32_t		_count;
 
-		std::vector<WTSTickStruct> _ticks;
+		std::vector<T> _items;
 
-		_TickList() :_cursor(UINT_MAX), _count(0), _date(0){}
-	} TickList;
+		HftDataList() :_cursor(UINT_MAX), _count(0), _date(0){}
+	};
 
-	typedef std::unordered_map<std::string, TickList>	TickCache;
+	typedef std::unordered_map<std::string, HftDataList<WTSTickStruct>>		TickCache;
+	typedef std::unordered_map<std::string, HftDataList<WTSOrdDtlStruct>>	OrdDtlCache;
+	typedef std::unordered_map<std::string, HftDataList<WTSOrdQueStruct>>	OrdQueCache;
+	typedef std::unordered_map<std::string, HftDataList<WTSTransStruct>>	TransCache;
 
 
 	typedef struct _BarsList
@@ -143,11 +157,19 @@ private:
 
 	void		loadFees(const char* filename);
 
-	void		replayTicks(uint64_t stime, uint64_t etime);
+	void		replayHftDatas(uint64_t stime, uint64_t etime);
+
+	uint64_t	replayHftDatasByDay(uint32_t curTDate);
 
 	void		replayUnbars(uint64_t stime, uint64_t etime, uint32_t endTDate = 0);
 
-	bool		checkTicks(const char* stdCode, uint32_t uDate);
+	inline bool		checkTicks(const char* stdCode, uint32_t uDate);
+
+	inline bool		checkOrderDetails(const char* stdCode, uint32_t uDate);
+
+	inline bool		checkOrderQueues(const char* stdCode, uint32_t uDate);
+
+	inline bool		checkTransactions(const char* stdCode, uint32_t uDate);
 
 	void		checkUnbars();
 
@@ -156,6 +178,13 @@ private:
 	bool		loadStkAdjFactorsFromDB();
 
 	void		initDB();
+
+	bool		checkAllTicks(uint32_t uDate);
+
+	inline	uint64_t	getNextTickTime(uint32_t curTDate, uint64_t stime = UINT64_MAX);
+	inline	uint64_t	getNextOrdQueTime(uint32_t curTDate, uint64_t stime = UINT64_MAX);
+	inline	uint64_t	getNextOrdDtlTime(uint32_t curTDate, uint64_t stime = UINT64_MAX);
+	inline	uint64_t	getNextTransTime(uint32_t curTDate, uint64_t stime = UINT64_MAX);
 
 public:
 	bool init(WTSVariant* cfg);
@@ -170,6 +199,12 @@ public:
 
 	WTSTickSlice* get_tick_slice(const char* stdCode, uint32_t count, uint64_t etime = 0);
 
+	WTSOrdDtlSlice* get_order_detail_slice(const char* stdCode, uint32_t count, uint64_t etime = 0);
+
+	WTSOrdQueSlice* get_order_queue_slice(const char* stdCode, uint32_t count, uint64_t etime = 0);
+
+	WTSTransSlice* get_transaction_slice(const char* stdCode, uint32_t count, uint64_t etime = 0);
+
 	WTSTickData* get_last_tick(const char* stdCode);
 
 	uint32_t get_date() const{ return _cur_date; }
@@ -182,7 +217,11 @@ public:
 	WTSSessionInfo*		get_session_info(const char* sid, bool isCode = false);
 	WTSCommodityInfo*	get_commodity_info(const char* stdCode);
 	double get_cur_price(const char* stdCode);
+
 	void sub_tick(uint32_t sid, const char* stdCode);
+	void sub_order_queue(uint32_t sid, const char* stdCode);
+	void sub_order_detail(uint32_t sid, const char* stdCode);
+	void sub_transaction(uint32_t sid, const char* stdCode);
 
 	bool	is_tick_enabled() const{ return _tick_enabled; }
 
@@ -190,6 +229,10 @@ private:
 	IDataSink*		_listener;
 
 	TickCache		_ticks_cache;	//tick缓存
+	OrdDtlCache		_orddtl_cache;	//order detail缓存
+	OrdQueCache		_ordque_cache;	//order queue缓存
+	TransCache		_trans_cache;	//transaction缓存
+
 	BarsCache		_bars_cache;	//K线缓存
 	BarsCache		_unbars_cache;	//未订阅的K线缓存
 
@@ -223,7 +266,7 @@ private:
 		double	_open;
 		double	_close;
 		double	_close_today;
-		bool	_by_volumn;
+		bool	_by_volume;
 
 		_FeeItem()
 		{
@@ -242,9 +285,10 @@ private:
 	//
 	typedef std::unordered_set<uint32_t> SIDSet;
 	typedef std::unordered_map<std::string, SIDSet>	StraSubMap;
-	StraSubMap		_tick_sub_map;	//tick数据订阅表
-
-	std::unordered_set<std::string>		_subed_raw_codes;	//tick订阅表（真实代码模式）
+	StraSubMap		_tick_sub_map;		//tick数据订阅表
+	StraSubMap		_ordque_sub_map;	//orderqueue数据订阅表
+	StraSubMap		_orddtl_sub_map;	//orderdetail数据订阅表
+	StraSubMap		_trans_sub_map;		//transaction数据订阅表
 
 	//除权因子
 	typedef struct _AdjFactor

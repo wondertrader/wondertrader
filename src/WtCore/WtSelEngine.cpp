@@ -92,8 +92,8 @@ void WtSelEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 	_data_mgr->handle_push_quote(stdCode, curTick);
 
 	//如果是真实代码, 则要传递给执行器
-	auto it = _subed_raw_codes.find(stdCode);
-	if (it != _subed_raw_codes.end())
+	auto it = _ticksubed_raw_codes.find(stdCode);
+	if (it != _ticksubed_raw_codes.end())
 	{
 		//是否主力合约代码的标记, 主要用于给执行器发数据的
 		//for (auto it = _executers.begin(); it != _executers.end(); it++)
@@ -112,7 +112,7 @@ void WtSelEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 		{
 			uint32_t sid = *it;
 			auto cit = _ctx_map.find(sid);
-			if (cit != _ctx_map.end() && curTick->volumn())
+			if (cit != _ctx_map.end() && curTick->volume())
 			{
 				SelContextPtr& ctx = cit->second;
 				ctx->on_tick(stdCode, curTick);
@@ -334,7 +334,7 @@ void WtSelEngine::handle_pos_change(const char* stdCode, double diffQty)
 	}
 
 	PosInfo& pItem = _pos_map[realCode];
-	double targetPos = pItem._volumn + diffQty;
+	double targetPos = pItem._volume + diffQty;
 
 	bool bRiskEnabled = false;
 	if (!decimal::eq(_risk_volscale, 1.0) && _risk_date == _cur_tdate)

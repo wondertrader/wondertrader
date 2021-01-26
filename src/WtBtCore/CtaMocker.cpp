@@ -85,7 +85,7 @@ void CtaMocker::dump_outputs()
 	BoostFile::write_file_contents(filename.c_str(), content.c_str(), content.size());
 
 	filename = folder + "closes.csv";
-	content = "code,direct,opentime,openprice,closetime,closeprice,qty,profit,totalprofit,entertag,exittag,openbarno,closebarno\n";
+	content = "code,direct,opentime,openprice,closetime,closeprice,qty,profit,maxprofit,maxloss,totalprofit,entertag,exittag,openbarno,closebarno\n";
 	content += _close_logs.str();
 	BoostFile::write_file_contents(filename.c_str(), content.c_str(), content.size());
 
@@ -113,11 +113,11 @@ void CtaMocker::log_trade(const char* stdCode, bool isLong, bool isOpen, uint64_
 		<< "," << price << "," << qty << "," << userTag << "," << fee << "," << barNo << "\n";
 }
 
-void CtaMocker::log_close(const char* stdCode, bool isLong, uint64_t openTime, double openpx, uint64_t closeTime, double closepx, double qty, double profit, 
+void CtaMocker::log_close(const char* stdCode, bool isLong, uint64_t openTime, double openpx, uint64_t closeTime, double closepx, double qty, double profit, double maxprofit, double maxloss, 
 	double totalprofit /* = 0 */, const char* enterTag /* = "" */, const char* exitTag /* = "" */, uint32_t openBarNo /* = 0 */, uint32_t closeBarNo /* = 0 */)
 {
 	_close_logs << stdCode << "," << (isLong ? "LONG" : "SHORT") << "," << openTime << "," << openpx
-		<< "," << closeTime << "," << closepx << "," << qty << "," << profit << ","
+		<< "," << closeTime << "," << closepx << "," << qty << "," << profit << "," << maxprofit << "," << maxloss << ","
 		<< totalprofit << "," << enterTag << "," << exitTag << "," << openBarNo << "," << closeBarNo << "\n";
 }
 
@@ -235,7 +235,7 @@ void CtaMocker::update_dyn_profit(const char* stdCode, double price)
 	if (it != _pos_map.end())
 	{
 		PosInfo& pInfo = it->second;
-		if (pInfo._volumn == 0)
+		if (pInfo._volume == 0)
 		{
 			pInfo._dynprofit = 0;
 		}
@@ -246,7 +246,7 @@ void CtaMocker::update_dyn_profit(const char* stdCode, double price)
 			for (auto pit = pInfo._details.begin(); pit != pInfo._details.end(); pit++)
 			{
 				DetailInfo& dInfo = *pit;
-				dInfo._profit = dInfo._volumn*(price - dInfo._price)*commInfo->getVolScale()*(dInfo._long ? 1 : -1);
+				dInfo._profit = dInfo._volume*(price - dInfo._price)*commInfo->getVolScale()*(dInfo._long ? 1 : -1);
 				if (dInfo._profit > 0)
 					dInfo._max_profit = max(dInfo._profit, dInfo._max_profit);
 				else if (dInfo._profit < 0)
@@ -286,7 +286,7 @@ void CtaMocker::on_tick(const char* stdCode, WTSTickData* newTick, bool bEmitStr
 					price = newTick->price();
 				else
 					price = sInfo._desprice;
-				do_set_position(stdCode, sInfo._volumn, price, sInfo._usertag.c_str(), sInfo._triggered);
+				do_set_position(stdCode, sInfo._volume, price, sInfo._usertag.c_str(), sInfo._triggered);
 				_sig_map.erase(it);
 			}
 
@@ -487,15 +487,14 @@ void CtaMocker::enum_position(FuncEnumPositionCallBack cb)
 	{
 		const char* stdCode = it.first.c_str();
 		const PosInfo& pInfo = it.second;
-		//cb(stdCode, pInfo._volumn);
-		desPos[stdCode] = pInfo._volumn;
+		desPos[stdCode] = pInfo._volume;
 	}
 
 	for (auto sit : _sig_map)
 	{
 		const char* stdCode = sit.first.c_str();
 		const SigInfo& sInfo = sit.second;
-		desPos[stdCode] = sInfo._volumn;
+		desPos[stdCode] = sInfo._volume;
 	}
 
 	for (auto v : desPos)
@@ -571,7 +570,7 @@ void CtaMocker::stra_enter_long(const char* stdCode, double qty, const char* use
 
 		entrust._action = COND_ACTION_OL;
 
-		condList.push_back(entrust);
+		condList.emplace_back(entrust);
 	}
 }
 
@@ -613,7 +612,7 @@ void CtaMocker::stra_enter_short(const char* stdCode, double qty, const char* us
 
 		entrust._action = COND_ACTION_OS;
 
-		condList.push_back(entrust);
+		condList.emplace_back(entrust);
 	}
 }
 
@@ -653,7 +652,7 @@ void CtaMocker::stra_exit_long(const char* stdCode, double qty, const char* user
 
 		entrust._action = COND_ACTION_CL;
 
-		condList.push_back(entrust);
+		condList.emplace_back(entrust);
 	}
 }
 
@@ -693,7 +692,7 @@ void CtaMocker::stra_exit_short(const char* stdCode, double qty, const char* use
 
 		entrust._action = COND_ACTION_CS;
 
-		condList.push_back(entrust);
+		condList.emplace_back(entrust);
 	}
 }
 
@@ -740,7 +739,7 @@ void CtaMocker::stra_set_position(const char* stdCode, double qty, const char* u
 
 		entrust._action = COND_ACTION_SP;
 
-		condList.push_back(entrust);
+		condList.emplace_back(entrust);
 	}
 }
 
@@ -749,7 +748,7 @@ void CtaMocker::append_signal(const char* stdCode, double qty, const char* userT
 	double curPx = _price_map[stdCode];
 
 	SigInfo& sInfo = _sig_map[stdCode];
-	sInfo._volumn = qty;
+	sInfo._volume = qty;
 	sInfo._sigprice = curPx;
 	sInfo._desprice = price;
 	sInfo._usertag = userTag;
@@ -771,7 +770,7 @@ void CtaMocker::do_set_position(const char* stdCode, double qty, double price /*
 	uint32_t curTDate = _replayer->get_trading_date();
 
 	//手数相等则不用操作了
-	if (decimal::eq(pInfo._volumn, qty))
+	if (decimal::eq(pInfo._volume, qty))
 		return;
 
 	WTSCommodityInfo* commInfo = _replayer->get_commodity_info(stdCode);
@@ -779,11 +778,11 @@ void CtaMocker::do_set_position(const char* stdCode, double qty, double price /*
 	//成交价
 	double trdPx = curPx;
 
-	double diff = qty - pInfo._volumn;
+	double diff = qty - pInfo._volume;
 
-	if (decimal::gt(pInfo._volumn*diff, 0))//当前持仓和仓位变化方向一致, 增加一条明细, 增加数量即可
+	if (decimal::gt(pInfo._volume*diff, 0))//当前持仓和仓位变化方向一致, 增加一条明细, 增加数量即可
 	{
-		pInfo._volumn = qty;
+		pInfo._volume = qty;
 
 		if (_slippage != 0)
 		{
@@ -794,12 +793,12 @@ void CtaMocker::do_set_position(const char* stdCode, double qty, double price /*
 		DetailInfo dInfo;
 		dInfo._long = decimal::gt(qty, 0);
 		dInfo._price = trdPx;
-		dInfo._volumn = abs(diff);
+		dInfo._volume = abs(diff);
 		dInfo._opentime = curTm;
 		dInfo._opentdate = curTDate;
 		strcpy(dInfo._opentag, userTag);
 		dInfo._open_barno = _schedule_times;
-		pInfo._details.push_back(dInfo);
+		pInfo._details.emplace_back(dInfo);
 
 		double fee = _replayer->calc_fee(stdCode, trdPx, abs(diff), 0);
 		_fund_info._total_fees += fee;
@@ -816,29 +815,31 @@ void CtaMocker::do_set_position(const char* stdCode, double qty, double price /*
 			trdPx += _slippage * commInfo->getPriceTick()*(isBuy ? 1 : -1);
 		}
 
-		pInfo._volumn = qty;
-		if (decimal::eq(pInfo._volumn, 0))
+		pInfo._volume = qty;
+		if (decimal::eq(pInfo._volume, 0))
 			pInfo._dynprofit = 0;
 		uint32_t count = 0;
 		for (auto it = pInfo._details.begin(); it != pInfo._details.end(); it++)
 		{
 			DetailInfo& dInfo = *it;
-			double maxQty = min(dInfo._volumn, left);
+			double maxQty = min(dInfo._volume, left);
 			if (decimal::eq(maxQty, 0))
 				continue;
 
-			dInfo._volumn -= maxQty;
+			double maxProf = dInfo._max_profit * maxQty / dInfo._volume;
+			double maxLoss = dInfo._max_loss * maxQty / dInfo._volume;
+
+			dInfo._volume -= maxQty;
 			left -= maxQty;
 
-			//if (dInfo._volumn == 0)
-			if (decimal::eq(dInfo._volumn, 0))
+			if (decimal::eq(dInfo._volume, 0))
 				count++;
 
 			double profit = (trdPx - dInfo._price) * maxQty * commInfo->getVolScale();
 			if (!dInfo._long)
 				profit *= -1;
 			pInfo._closeprofit += profit;
-			pInfo._dynprofit = pInfo._dynprofit*dInfo._volumn / (dInfo._volumn + maxQty);//浮盈也要做等比缩放
+			pInfo._dynprofit = pInfo._dynprofit*dInfo._volume / (dInfo._volume + maxQty);//浮盈也要做等比缩放
 			_fund_info._total_profit += profit;
 
 			double fee = _replayer->calc_fee(stdCode, trdPx, maxQty, dInfo._opentdate == curTDate ? 2 : 1);
@@ -846,7 +847,7 @@ void CtaMocker::do_set_position(const char* stdCode, double qty, double price /*
 			//这里写成交记录
 			log_trade(stdCode, dInfo._long, false, curTm, trdPx, maxQty, userTag, fee, _schedule_times);
 			//这里写平仓记录
-			log_close(stdCode, dInfo._long, dInfo._opentime, dInfo._price, curTm, trdPx, maxQty, profit, pInfo._closeprofit, dInfo._opentag, userTag, dInfo._open_barno, _schedule_times);
+			log_close(stdCode, dInfo._long, dInfo._opentime, dInfo._price, curTm, trdPx, maxQty, profit, maxProf, maxLoss, pInfo._closeprofit, dInfo._opentag, userTag, dInfo._open_barno, _schedule_times);
 
 			if (left == 0)
 				break;
@@ -868,12 +869,12 @@ void CtaMocker::do_set_position(const char* stdCode, double qty, double price /*
 			DetailInfo dInfo;
 			dInfo._long = decimal::gt(qty, 0);
 			dInfo._price = trdPx;
-			dInfo._volumn = abs(left);
+			dInfo._volume = abs(left);
 			dInfo._opentime = curTm;
 			dInfo._opentdate = curTDate;
 			dInfo._open_barno = _schedule_times;
 			strcpy(dInfo._opentag, userTag);
-			pInfo._details.push_back(dInfo);
+			pInfo._details.emplace_back(dInfo);
  
 			//这里还需要写一笔成交记录
 			double fee = _replayer->calc_fee(stdCode, trdPx, abs(left), 0);
@@ -949,6 +950,11 @@ void CtaMocker::stra_sub_ticks(const char* code)
 WTSCommodityInfo* CtaMocker::stra_get_comminfo(const char* stdCode)
 {
 	return _replayer->get_commodity_info(stdCode);
+}
+
+uint32_t CtaMocker::stra_get_tdate()
+{
+	return _replayer->get_trading_date();
 }
 
 uint32_t CtaMocker::stra_get_date()
@@ -1031,7 +1037,7 @@ double CtaMocker::stra_get_position(const char* stdCode, const char* userTag /* 
 
 	const PosInfo& pInfo = it->second;
 	if (strlen(userTag) == 0)
-		return pInfo._volumn;
+		return pInfo._volume;
 
 	for (auto it = pInfo._details.begin(); it != pInfo._details.end(); it++)
 	{
@@ -1039,7 +1045,7 @@ double CtaMocker::stra_get_position(const char* stdCode, const char* userTag /* 
 		if (strcmp(dInfo._opentag, userTag) != 0)
 			continue;
 
-		return dInfo._volumn;
+		return dInfo._volume;
 	}
 
 	return 0;
@@ -1052,17 +1058,17 @@ double CtaMocker::stra_get_position_avgpx(const char* stdCode)
 		return 0;
 
 	const PosInfo& pInfo = it->second;
-	if (pInfo._volumn == 0)
+	if (pInfo._volume == 0)
 		return 0.0;
 
 	double amount = 0.0;
 	for (auto dit = pInfo._details.begin(); dit != pInfo._details.end(); dit++)
 	{
 		const DetailInfo& dInfo = *dit;
-		amount += dInfo._price*dInfo._volumn;
+		amount += dInfo._price*dInfo._volume;
 	}
 
-	return amount / pInfo._volumn;
+	return amount / pInfo._volume;
 }
 
 double CtaMocker::stra_get_position_profit(const char* stdCode)

@@ -103,6 +103,7 @@ public:
 	virtual void stra_set_position(const char* stdCode, double qty, const char* userTag = "", double limitprice = 0.0, double stopprice = 0.0) override;
 	virtual double stra_get_price(const char* stdCode) override;
 
+	virtual uint32_t stra_get_tdate() override;
 	virtual uint32_t stra_get_date() override;
 	virtual uint32_t stra_get_time() override;
 
@@ -155,7 +156,7 @@ protected:
 	{
 		bool		_long;
 		double		_price;
-		double		_volumn;
+		double		_volume;
 		uint64_t	_opentime;
 		uint32_t	_opentdate;
 		double		_max_profit;
@@ -171,7 +172,7 @@ protected:
 
 	typedef struct _PosInfo
 	{
-		double		_volumn;
+		double		_volume;
 		double		_closeprofit;
 		double		_dynprofit;
 
@@ -179,7 +180,7 @@ protected:
 
 		_PosInfo()
 		{
-			_volumn = 0;
+			_volume = 0;
 			_closeprofit = 0;
 			_dynprofit = 0;
 		}
@@ -189,7 +190,7 @@ protected:
 
 	typedef struct _SigInfo
 	{
-		double		_volumn;
+		double		_volume;
 		std::string	_usertag;
 		double		_sigprice;
 		bool		_triggered;
@@ -197,7 +198,7 @@ protected:
 
 		_SigInfo()
 		{
-			_volumn = 0;
+			_volume = 0;
 			_sigprice = 0;
 			_triggered = false;
 			_gentime = 0;

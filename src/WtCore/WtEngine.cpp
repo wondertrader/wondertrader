@@ -119,7 +119,7 @@ void WtEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 			if (sInfo->isInTradingTime(_cur_raw_time, true))
 			{
 				const SigInfo& sInfo = it->second;
-				double pos = sInfo._volumn;
+				double pos = sInfo._volume;
 				std::string code = stdCode;
 				push_task([this, code, pos](){
 					do_set_position(code.c_str(), pos);
@@ -130,7 +130,7 @@ void WtEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 		}
 	}
 
-	if (curTick->volumn() == 0)
+	if (curTick->volume() == 0)
 		return;
 
 	std::string code = stdCode;
@@ -141,7 +141,7 @@ void WtEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 			return;
 
 		PosInfo& pInfo = it->second;
-		if (pInfo._volumn == 0)
+		if (pInfo._volume == 0)
 		{
 			pInfo._dynprofit = 0;
 		}
@@ -152,7 +152,7 @@ void WtEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 			for (auto pit = pInfo._details.begin(); pit != pInfo._details.end(); pit++)
 			{
 				DetailInfo& dInfo = *pit;
-				dInfo._profit = dInfo._volumn*(price - dInfo._price)*commInfo->getVolScale()*(dInfo._long ? 1 : -1);
+				dInfo._profit = dInfo._volume*(price - dInfo._price)*commInfo->getVolScale()*(dInfo._long ? 1 : -1);
 				dynprofit += dInfo._profit;
 			}
 
@@ -375,7 +375,7 @@ void WtEngine::save_datas()
 
 			rj::Value pItem(rj::kObjectType);
 			pItem.AddMember("code", rj::Value(stdCode, allocator), allocator);
-			pItem.AddMember("volumn", pInfo._volumn, allocator);
+			pItem.AddMember("volume", pInfo._volume, allocator);
 			pItem.AddMember("closeprofit", pInfo._closeprofit, allocator);
 			pItem.AddMember("dynprofit", pInfo._dynprofit, allocator);
 
@@ -383,12 +383,12 @@ void WtEngine::save_datas()
 			for (auto dit = pInfo._details.begin(); dit != pInfo._details.end(); dit++)
 			{
 				const DetailInfo& dInfo = *dit;
-				if(decimal::eq(dInfo._volumn, 0))
+				if(decimal::eq(dInfo._volume, 0))
 					continue;
 				rj::Value dItem(rj::kObjectType);
 				dItem.AddMember("long", dInfo._long, allocator);
 				dItem.AddMember("price", dInfo._price, allocator);
-				dItem.AddMember("volumn", dInfo._volumn, allocator);
+				dItem.AddMember("volume", dInfo._volume, allocator);
 				dItem.AddMember("opentime", dInfo._opentime, allocator);
 				dItem.AddMember("opentdate", dInfo._opentdate, allocator);
 
@@ -493,8 +493,8 @@ void WtEngine::load_datas()
 				const char* stdCode = pItem["code"].GetString();
 				PosInfo& pInfo = _pos_map[stdCode];
 				pInfo._closeprofit = pItem["closeprofit"].GetDouble();
-				pInfo._volumn = pItem["volumn"].GetInt();
-				if (pInfo._volumn == 0)
+				pInfo._volume = pItem["volume"].GetInt();
+				if (pInfo._volume == 0)
 					pInfo._dynprofit = 0;
 				else
 					pInfo._dynprofit = pItem["dynprofit"].GetDouble();
@@ -514,7 +514,7 @@ void WtEngine::load_datas()
 					DetailInfo& dInfo = pInfo._details[i];
 					dInfo._long = dItem["long"].GetBool();
 					dInfo._price = dItem["price"].GetDouble();
-					dInfo._volumn = dItem["volumn"].GetInt();
+					dInfo._volume = dItem["volume"].GetInt();
 					dInfo._opentime = dItem["opentime"].GetUint64();
 					if (dItem.HasMember("opentdate"))
 						dInfo._opentdate = dItem["opentdate"].GetUint();
@@ -639,7 +639,7 @@ void WtEngine::sub_tick(uint32_t sid, const char* stdCode)
 		CodeHelper::extractStdFutCode(stdCode, cInfo);
 		std::string rawCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
 		std::string stdRawCode = CodeHelper::bscFutCodeToStdCode(rawCode.c_str(), cInfo._exchg);
-		_subed_raw_codes.insert(stdRawCode);
+		_ticksubed_raw_codes.insert(stdRawCode);
 	}
 	else
 	{
@@ -650,7 +650,7 @@ void WtEngine::sub_tick(uint32_t sid, const char* stdCode)
 		SIDSet& sids = _tick_sub_map[std::string(stdCode, length)];
 		sids.insert(sid);
 
-		_subed_raw_codes.insert(std::string(stdCode, length));
+		_ticksubed_raw_codes.insert(std::string(stdCode, length));
 	}
 }
 
@@ -695,7 +695,7 @@ void WtEngine::load_fees(const char* filename)
 	{
 		WTSVariant* cfgItem = cfg->get(key.c_str());
 		FeeItem& fItem = _fee_map[key];
-		fItem._by_volumn = cfgItem->getBoolean("byvolumn");
+		fItem._by_volume = cfgItem->getBoolean("byvolume");
 		fItem._open = cfgItem->getDouble("open");
 		fItem._close = cfgItem->getDouble("close");
 		fItem._close_today = cfgItem->getDouble("closetoday");
@@ -711,12 +711,15 @@ double WtEngine::calc_fee(const char* stdCode, double price, double qty, uint32_
 	std::string stdPID = CodeHelper::stdCodeToStdCommID(stdCode);
 	auto it = _fee_map.find(stdPID);
 	if (it == _fee_map.end())
+	{
+		WTSLogger::warn("品种%s没有预设的佣金费率，直接返回0.0", stdCode);
 		return 0.0;
+	}
 
 	double ret = 0.0;
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(stdPID.c_str());
 	const FeeItem& fItem = it->second;
-	if(fItem._by_volumn)
+	if(fItem._by_volume)
 	{
 		switch (offset)
 		{
@@ -747,7 +750,7 @@ void WtEngine::append_signal(const char* stdCode, double qty)
 	if(decimal::eq(curPx, 0.0))
 	{
 		SigInfo& sInfo = _sig_map[stdCode];
-		sInfo._volumn = qty;
+		sInfo._volume = qty;
 		sInfo._gentime = (uint64_t)_cur_date * 1000000000 + (uint64_t)_cur_raw_time * 100000 + _cur_secs;
 	}
 	else
@@ -763,26 +766,26 @@ void WtEngine::do_set_position(const char* stdCode, double qty)
 	uint64_t curTm = (uint64_t)_cur_date * 10000 + _cur_time;
 	uint32_t curTDate = _cur_tdate;
 
-	if (decimal::eq(pInfo._volumn, qty))
+	if (decimal::eq(pInfo._volume, qty))
 		return;
 
-	double diff = qty - pInfo._volumn;
+	double diff = qty - pInfo._volume;
 
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(CodeHelper::stdCodeToStdCommID(stdCode).c_str());
 
 	WTSFundStruct& fundInfo = _port_fund->fundInfo();
 
-	if (decimal::gt(pInfo._volumn*diff, 0))//当前持仓和目标仓位方向一致, 增加一条明细, 增加数量即可
+	if (decimal::gt(pInfo._volume*diff, 0))//当前持仓和目标仓位方向一致, 增加一条明细, 增加数量即可
 	{
-		pInfo._volumn = qty;
+		pInfo._volume = qty;
 
 		DetailInfo dInfo;
 		dInfo._long = decimal::gt(qty, 0);
 		dInfo._price = curPx;
-		dInfo._volumn = abs(diff);
+		dInfo._volume = abs(diff);
 		dInfo._opentime = curTm;
 		dInfo._opentdate = curTDate;
-		pInfo._details.push_back(dInfo);
+		pInfo._details.emplace_back(dInfo);
 
 		double fee = calc_fee(stdCode, curPx, abs(qty), 0);
 		fundInfo._fees += fee;
@@ -792,29 +795,29 @@ void WtEngine::do_set_position(const char* stdCode, double qty)
 	{//持仓方向和目标仓位方向不一致, 需要平仓
 		double left = abs(diff);
 
-		pInfo._volumn = qty;
-		if (decimal::eq(pInfo._volumn, 0))
+		pInfo._volume = qty;
+		if (decimal::eq(pInfo._volume, 0))
 			pInfo._dynprofit = 0;
 		uint32_t count = 0;
 		for (auto it = pInfo._details.begin(); it != pInfo._details.end(); it++)
 		{
 			DetailInfo& dInfo = *it;
-			double maxQty = min(dInfo._volumn, left);
+			double maxQty = min(dInfo._volume, left);
 			if (decimal::eq(maxQty, 0))
 				continue;
 
-			dInfo._volumn -= maxQty;
+			dInfo._volume -= maxQty;
 			left -= maxQty;
 
-			//if (dInfo._volumn == 0)
-			if (decimal::eq(dInfo._volumn, 0))
+			//if (dInfo._volume == 0)
+			if (decimal::eq(dInfo._volume, 0))
 				count++;
 
 			double profit = (curPx - dInfo._price) * maxQty * commInfo->getVolScale();
 			if (!dInfo._long)
 				profit *= -1;
 			pInfo._closeprofit += profit;
-			pInfo._dynprofit = pInfo._dynprofit*dInfo._volumn / (dInfo._volumn + maxQty);//浮盈也要做等比缩放
+			pInfo._dynprofit = pInfo._dynprofit*dInfo._volume / (dInfo._volume + maxQty);//浮盈也要做等比缩放
 			fundInfo._profit += profit;
 			fundInfo._balance += profit;
 
@@ -843,10 +846,10 @@ void WtEngine::do_set_position(const char* stdCode, double qty)
 			DetailInfo dInfo;
 			dInfo._long = qty > 0;
 			dInfo._price = curPx;
-			dInfo._volumn = abs(left);
+			dInfo._volume = abs(left);
 			dInfo._opentime = curTm;
 			dInfo._opentdate = curTDate;
-			pInfo._details.push_back(dInfo);
+			pInfo._details.emplace_back(dInfo);
 
 			//这里还需要写一笔成交记录
 			double fee = calc_fee(stdCode, curPx, abs(qty), 0);

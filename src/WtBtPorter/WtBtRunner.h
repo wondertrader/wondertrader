@@ -42,7 +42,8 @@ public:
 	void	registerCtaCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar);
 	void	registerSelCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar);
 	void registerHftCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraBarCallback cbBar,
-		FuncHftChannelCallback cbChnl, FuncHftOrdCallback cbOrd, FuncHftTrdCallback cbTrd, FuncHftEntrustCallback cbEntrust);
+		FuncHftChannelCallback cbChnl, FuncHftOrdCallback cbOrd, FuncHftTrdCallback cbTrd, FuncHftEntrustCallback cbEntrust,
+		FuncStraOrdDtlCallback cbOrdDtl, FuncStraOrdQueCallback cbOrdQue, FuncStraTransCallback cbTrans);
 
 	uint32_t	initCtaMocker(const char* name);
 	uint32_t	initHftMocker(const char* name);
@@ -53,10 +54,14 @@ public:
 	void	ctx_on_calc(uint32_t id, uint32_t uDate, uint32_t uTime, EngineType eType);
 	void	ctx_on_bar(uint32_t id, const char* stdCode, const char* period, WTSBarStruct* newBar, EngineType eType);
 
+	void	hft_on_order_queue(uint32_t id, const char* stdCode, WTSOrdQueData* newOrdQue);
+	void	hft_on_order_detail(uint32_t id, const char* stdCode, WTSOrdDtlData* newOrdDtl);
+	void	hft_on_transaction(uint32_t id, const char* stdCode, WTSTransData* newTranns);
+
 	void	hft_on_channel_ready(uint32_t cHandle, const char* trader);
-	void	hft_on_order(uint32_t cHandle, WtUInt32 localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled);
-	void	hft_on_trade(uint32_t cHandle, WtUInt32 localid, const char* stdCode, bool isBuy, double vol, double price);
-	void	hft_on_entrust(uint32_t cHandle, WtUInt32 localid, const char* stdCode, bool bSuccess, const char* message);
+	void	hft_on_order(uint32_t cHandle, WtUInt32 localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled, const char* userTag);
+	void	hft_on_trade(uint32_t cHandle, WtUInt32 localid, const char* stdCode, bool isBuy, double vol, double price, const char* userTag);
+	void	hft_on_entrust(uint32_t cHandle, WtUInt32 localid, const char* stdCode, bool bSuccess, const char* message, const char* userTag);
 
 	void	init(const char* logProfile = "", bool isFile = true);
 	void	config(const char* cfgFile, bool isFile = true);
@@ -89,6 +94,10 @@ private:
 	FuncHftOrdCallback		_cb_hft_ord;
 	FuncHftTrdCallback		_cb_hft_trd;
 	FuncHftEntrustCallback	_cb_hft_entrust;
+
+	FuncStraOrdQueCallback	_cb_hft_ordque;
+	FuncStraOrdDtlCallback	_cb_hft_orddtl;
+	FuncStraTransCallback	_cb_hft_trans;
 
 	CtaMocker*		_cta_mocker;
 	SelMocker*		_sel_mocker;

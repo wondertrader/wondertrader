@@ -43,17 +43,14 @@ int main()
 #else
 	DLLHelper::load_library("libWtBtPorter.so");
 #endif
-	register_sel_callbacks(on_init, on_tick, on_calc, on_bar);
+	//register_sel_callbacks(on_init, on_tick, on_calc, on_bar);
 
-	init_backtest("logcfg.json", true);
+	init_backtest("logcfgbt.json", true);
 
 	config_backtest("configbt.json", true);
 
-	int ctxid = init_sel_mocker("sel", 0, 5, "min");	//every money 09:26
-
-	sel_get_bars(ctxid, "SSE.600000Q", "m5", 50000, on_getbar);
-
 	run_backtest();
+	printf("press enter key to exit\n");
 	getchar();
 	release_backtest();
 	return 0;

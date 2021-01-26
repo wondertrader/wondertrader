@@ -51,6 +51,10 @@ WtRtRunner::WtRtRunner()
 	, _cb_hft_entrust(NULL)
 	, _cb_hft_chnl(NULL)
 
+	, _cb_hft_orddtl(NULL)
+	, _cb_hft_ordque(NULL)
+	, _cb_hft_trans(NULL)
+
 	, _cb_evt(NULL)
 	, _is_hft(false)
 	, _is_sel(false)
@@ -106,7 +110,8 @@ void WtRtRunner::registerSelCallbacks(FuncStraInitCallback cbInit, FuncStraTickC
 }
 
 void WtRtRunner::registerHftCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraBarCallback cbBar, 
-	FuncHftChannelCallback cbChnl, FuncHftOrdCallback cbOrd, FuncHftTrdCallback cbTrd, FuncHftEntrustCallback cbEntrust)
+	FuncHftChannelCallback cbChnl, FuncHftOrdCallback cbOrd, FuncHftTrdCallback cbTrd, FuncHftEntrustCallback cbEntrust,
+	FuncStraOrdDtlCallback cbOrdDtl, FuncStraOrdQueCallback cbOrdQue, FuncStraTransCallback cbTrans)
 {
 	_cb_hft_init = cbInit;
 	_cb_hft_tick = cbTick;
@@ -116,6 +121,10 @@ void WtRtRunner::registerHftCallbacks(FuncStraInitCallback cbInit, FuncStraTickC
 	_cb_hft_ord = cbOrd;
 	_cb_hft_trd = cbTrd;
 	_cb_hft_entrust = cbEntrust;
+
+	_cb_hft_orddtl = cbOrdDtl;
+	_cb_hft_ordque = cbOrdQue;
+	_cb_hft_trans = cbTrans;
 }
 
 uint32_t WtRtRunner::createCtaContext(const char* name)
@@ -232,22 +241,22 @@ void WtRtRunner::hft_on_channel_ready(uint32_t cHandle, const char* trader)
 		_cb_hft_chnl(cHandle, trader, CHNL_EVENT_READY);
 }
 
-void WtRtRunner::hft_on_entrust(uint32_t cHandle, WtUInt32 localid, const char* stdCode, bool bSuccess, const char* message)
+void WtRtRunner::hft_on_entrust(uint32_t cHandle, WtUInt32 localid, const char* stdCode, bool bSuccess, const char* message, const char* userTag)
 {
 	if (_cb_hft_entrust)
-		_cb_hft_entrust(cHandle, localid, stdCode, bSuccess, message);
+		_cb_hft_entrust(cHandle, localid, stdCode, bSuccess, message, userTag);
 }
 
-void WtRtRunner::hft_on_order(uint32_t cHandle, WtUInt32 localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled)
+void WtRtRunner::hft_on_order(uint32_t cHandle, WtUInt32 localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled, const char* userTag)
 {
 	if (_cb_hft_ord)
-		_cb_hft_ord(cHandle, localid, stdCode, isBuy, totalQty, leftQty, price, isCanceled);
+		_cb_hft_ord(cHandle, localid, stdCode, isBuy, totalQty, leftQty, price, isCanceled, userTag);
 }
 
-void WtRtRunner::hft_on_trade(uint32_t cHandle, WtUInt32 localid, const char* stdCode, bool isBuy, double vol, double price)
+void WtRtRunner::hft_on_trade(uint32_t cHandle, WtUInt32 localid, const char* stdCode, bool isBuy, double vol, double price, const char* userTag)
 {
 	if (_cb_hft_trd)
-		_cb_hft_trd(cHandle, localid, stdCode, isBuy, vol, price);
+		_cb_hft_trd(cHandle, localid, stdCode, isBuy, vol, price, userTag);
 }
 
 bool WtRtRunner::config(const char* cfgFile, bool isFile /* = true */)
@@ -281,7 +290,7 @@ bool WtRtRunner::config(const char* cfgFile, bool isFile /* = true */)
 	if (cfgBF->get("contract"))
 	{
 		_bd_mgr.loadContracts(cfgBF->getCString("contract"));
-		WTSLogger::info("标的列表加载完成");
+		WTSLogger::info("代码列表加载完成");
 	}
 
 	if (cfgBF->get("holiday"))
@@ -645,4 +654,22 @@ bool WtRtRunner::addExeFactories(const char* folder)
 bool WtRtRunner::addHftFactories(const char* folder)
 {
 	return _hft_mgr.loadFactories(folder);
+}
+
+void WtRtRunner::hft_on_order_queue(uint32_t id, const char* stdCode, WTSOrdQueData* newOrdQue)
+{
+	if (_cb_hft_ordque)
+		_cb_hft_ordque(id, stdCode, &newOrdQue->getOrdQueStruct());
+}
+
+void WtRtRunner::hft_on_order_detail(uint32_t id, const char* stdCode, WTSOrdDtlData* newOrdDtl)
+{
+	if (_cb_hft_orddtl)
+		_cb_hft_orddtl(id, stdCode, &newOrdDtl->getOrdDtlStruct());
+}
+
+void WtRtRunner::hft_on_transaction(uint32_t id, const char* stdCode, WTSTransData* newTrans)
+{
+	if (_cb_hft_trans)
+		_cb_hft_trans(id, stdCode, &newTrans->getTransStruct());
 }
