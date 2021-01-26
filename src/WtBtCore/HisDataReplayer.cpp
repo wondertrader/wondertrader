@@ -886,7 +886,7 @@ uint64_t HisDataReplayer::getNextTransTime(uint32_t curTDate, uint64_t stime /* 
 				curItem.action_date = uDate;
 				curItem.action_time = uTime * 100000;
 
-				auto tit = std::lower_bound(itemList._items.begin(), itemList._items.end(), curItem, [](const auto& a, const auto& b) {
+				auto tit = std::lower_bound(itemList._items.begin(), itemList._items.end(), curItem, [](const WTSTransStruct& a, const WTSTransStruct& b) {
 					if (a.action_date != b.action_date)
 						return a.action_date < b.action_date;
 					else
@@ -930,11 +930,11 @@ uint64_t HisDataReplayer::getNextOrdDtlTime(uint32_t curTDate, uint64_t stime /*
 				uint32_t uDate = (uint32_t)(stime / 10000);
 				uint32_t uTime = (uint32_t)(stime % 10000);
 
-				WTSTransStruct curItem;
+				WTSOrdDtlStruct curItem;
 				curItem.action_date = uDate;
 				curItem.action_time = uTime * 100000;
 
-				auto tit = std::lower_bound(itemList._items.begin(), itemList._items.end(), curItem, [](const auto& a, const auto& b) {
+				auto tit = std::lower_bound(itemList._items.begin(), itemList._items.end(), curItem, [](const WTSOrdDtlStruct& a, const WTSOrdDtlStruct& b) {
 					if (a.action_date != b.action_date)
 						return a.action_date < b.action_date;
 					else
@@ -978,11 +978,11 @@ uint64_t HisDataReplayer::getNextOrdQueTime(uint32_t curTDate, uint64_t stime /*
 				uint32_t uDate = (uint32_t)(stime / 10000);
 				uint32_t uTime = (uint32_t)(stime % 10000);
 
-				WTSTransStruct curItem;
+				WTSOrdQueStruct curItem;
 				curItem.action_date = uDate;
 				curItem.action_time = uTime * 100000;
 
-				auto tit = std::lower_bound(itemList._items.begin(), itemList._items.end(), curItem, [](const auto& a, const auto& b) {
+				auto tit = std::lower_bound(itemList._items.begin(), itemList._items.end(), curItem, [](const WTSOrdQueStruct& a, const WTSOrdQueStruct& b) {
 					if (a.action_date != b.action_date)
 						return a.action_date < b.action_date;
 					else
