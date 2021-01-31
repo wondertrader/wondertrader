@@ -43,8 +43,6 @@ ADD_SUBDIRECTORY(WtBtCore)
 #back test c porter for outter libraries
 ADD_SUBDIRECTORY(WtBtPorter)
 
-ADD_SUBDIRECTORY(WtBtRunner)
-
 ADD_SUBDIRECTORY(ParserUDP)
 ADD_SUBDIRECTORY(TraderCTP)
 ADD_SUBDIRECTORY(TraderCTPMini)
