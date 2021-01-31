@@ -51,17 +51,32 @@ void _cdecl on_channel_evt(CtxHandler cHandle, const char* trader, WtUInt32 evti
 	double undone = hft_get_undone(cHandle, "CFFEX.IF.HOT");
 }
 
-void _cdecl on_order(CtxHandler cHandle, WtUInt32 localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled)
+void _cdecl on_order(CtxHandler cHandle, WtUInt32 localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled, const char* userTag)
 {
 
 }
 
-void _cdecl on_trade(CtxHandler cHandle, WtUInt32 localid, const char* stdCode, bool isBuy, double vol, double price)
+void _cdecl on_trade(CtxHandler cHandle, WtUInt32 localid, const char* stdCode, bool isBuy, double vol, double price, const char* userTag)
 {
 
 }
 
-void _cdecl on_entrust(CtxHandler cHandle, WtUInt32 localid, const char* stdCode, bool bSuccess, const char* message)
+void _cdecl on_entrust(CtxHandler cHandle, WtUInt32 localid, const char* stdCode, bool bSuccess, const char* message, const char* userTag)
+{
+
+}
+
+void _cdecl on_order_queue(CtxHandler cHandle, const char* stdCode, WTSOrdQueStruct* ordQue)
+{
+
+}
+
+void _cdecl on_order_detail(CtxHandler cHandle, const char* stdCode, WTSOrdDtlStruct* ordDtl)
+{
+
+}
+
+void _cdecl on_transaction(CtxHandler cHandle, const char* stdCode, WTSTransStruct* trans)
 {
 
 }
@@ -76,19 +91,13 @@ void test_porter()
 	register_evt_callback(on_event);
 	//register_cta_callbacks(on_init, on_tick, on_calc, on_bar);
 	//register_sel_callbacks(on_init, on_tick, on_calc, on_bar);
-	register_hft_callbacks(on_init, on_tick, on_bar, on_channel_evt, on_order, on_trade, on_entrust);
+	register_hft_callbacks(on_init, on_tick, on_bar, on_channel_evt, on_order, on_trade, on_entrust, on_order_detail, on_order_queue, on_transaction);
 
-	init_porter("logcfg.json");
+	init_porter("logcfg.json", true);
 
-	//reg_cta_factories("./cta/");
-
-	//reg_sel_factories("./sel/");
-
-	config_porter("config.json");
+	config_porter("config.json", true);
 
 	CtxHandler ctx = create_hft_context("test", "simnow");
-	//ctx_str_get_bars(ctx, "DCE.pp.HOT", "m5", 220, true, on_getbar);
-	//dump_bars("DCE.a.HOT", "m5", "CZCE.a.HOT_m5.csv");
 
 	run_porter(true);
 
