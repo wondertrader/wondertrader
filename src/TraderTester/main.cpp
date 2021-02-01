@@ -55,7 +55,7 @@ void log_raw(const char* message)
 	//WTSLogger::info(message);
 }
 
-class TraderSpi : public ITraderApiListener
+class TraderSpi : public ITraderSpi
 {
 public:
 	TraderSpi() :m_bLogined(false), m_mapOrds(NULL){}
@@ -85,7 +85,7 @@ public:
 			return;
 		}
 
-		m_pTraderApi->registerListener(this);
+		m_pTraderApi->registerSpi(this);
 
 		if (!m_pTraderApi->init(m_pParams))
 		{

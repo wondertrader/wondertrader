@@ -20,7 +20,7 @@ class wxMainFrame;
 class WTSBaseDataMgr;
 class DataManager;
 
-class ParserAdapter : public IParserApiListener
+class ParserAdapter : public IParserSpi
 {
 public:
 	ParserAdapter(WTSBaseDataMgr * bgMgr, DataManager* dtMgr);

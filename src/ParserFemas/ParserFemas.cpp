@@ -213,10 +213,10 @@ void ParserFemas::OnRspError( CUstpFtdcRspInfoField *pRspInfo, int nRequestID, b
 
 void ParserFemas::OnFrontConnected()
 {
-	if(m_parserSink)
+	if(m_sink)
 	{
-		m_parserSink->handleParserLog(LL_INFO, "[ParserFemas]行情服务已连接");
-		m_parserSink->handleEvent(WPE_Connect, 0);
+		m_sink->handleParserLog(LL_INFO, "[ParserFemas]行情服务已连接");
+		m_sink->handleEvent(WPE_Connect, 0);
 	}
 
 	ReqUserLogin();
@@ -228,9 +228,9 @@ void ParserFemas::OnRspUserLogin( CUstpFtdcRspUserLoginField *pRspUserLogin, CUs
 	{
 		m_uTradingDate = strtoul(m_pUserAPI->GetTradingDay(), NULL, 10);
 		
-		if(m_parserSink)
+		if(m_sink)
 		{
-			m_parserSink->handleEvent(WPE_Login, 0);
+			m_sink->handleEvent(WPE_Login, 0);
 		}
 
 		//订阅行情数据
@@ -240,18 +240,18 @@ void ParserFemas::OnRspUserLogin( CUstpFtdcRspUserLoginField *pRspUserLogin, CUs
 
 void ParserFemas::OnRspUserLogout(CUstpFtdcRspUserLogoutField *pUserLogout, CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
-	if(m_parserSink)
+	if(m_sink)
 	{
-		m_parserSink->handleEvent(WPE_Logout, 0);
+		m_sink->handleEvent(WPE_Logout, 0);
 	}
 }
 
 void ParserFemas::OnFrontDisconnected( int nReason )
 {
-	if(m_parserSink)
+	if(m_sink)
 	{
-		m_parserSink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserFemas]行情服务连接已断开,原因: %d...", nReason).c_str());
-		m_parserSink->handleEvent(WPE_Close, 0);
+		m_sink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserFemas]行情服务连接已断开,原因: %d...", nReason).c_str());
+		m_sink->handleEvent(WPE_Close, 0);
 	}
 }
 
@@ -368,8 +368,8 @@ void ParserFemas::OnRtnDepthMarketData( CUstpFtdcDepthMarketDataField *pDepthMar
 	quote.bid_qty[3] = pDepthMarketData->BidVolume4;
 	quote.bid_qty[4] = pDepthMarketData->BidVolume5;
 
-	if(m_parserSink)
-		m_parserSink->handleQuote(tick, true);
+	if(m_sink)
+		m_sink->handleQuote(tick, true);
 
 	tick->release();
 }
@@ -378,20 +378,20 @@ void ParserFemas::OnRspSubMarketData( CUstpFtdcSpecificInstrumentField *pSpecifi
 {
 	if(!IsErrorRspInfo(pRspInfo))
 	{
-		//if(m_parserSink)
-		//	m_parserSink->handleParserLog(LL_INFO, StrUtil::printf("[ParserFemas]实时行情订阅成功,合约代码:%s", pSpecificInstrument->InstrumentID).c_str());
+		//if(m_sink)
+		//	m_sink->handleParserLog(LL_INFO, StrUtil::printf("[ParserFemas]实时行情订阅成功,合约代码:%s", pSpecificInstrument->InstrumentID).c_str());
 	}
 	else
 	{
-		//if(m_parserSink)
-		//	m_parserSink->handleParserLog(LL_INFO, StrUtil::printf("[ParserFemas]实时行情订阅失败,合约代码:%s", pSpecificInstrument->InstrumentID).c_str());
+		//if(m_sink)
+		//	m_sink->handleParserLog(LL_INFO, StrUtil::printf("[ParserFemas]实时行情订阅失败,合约代码:%s", pSpecificInstrument->InstrumentID).c_str());
 	}
 }
 
 void ParserFemas::OnHeartBeatWarning( int nTimeLapse )
 {
-	if(m_parserSink)
-		m_parserSink->handleParserLog(LL_INFO, StrUtil::printf("[ParserFemas]心跳包, 时长: %d...", nTimeLapse).c_str());
+	if(m_sink)
+		m_sink->handleParserLog(LL_INFO, StrUtil::printf("[ParserFemas]心跳包, 时长: %d...", nTimeLapse).c_str());
 }
 
 void ParserFemas::ReqUserLogin()
@@ -409,8 +409,8 @@ void ParserFemas::ReqUserLogin()
 	int iResult = m_pUserAPI->ReqUserLogin(&req, ++m_iRequestID);
 	if(iResult != 0)
 	{
-		if(m_parserSink)
-			m_parserSink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserFemas]登录请求发送失败, 错误码:%d", iResult).c_str());
+		if(m_sink)
+			m_sink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserFemas]登录请求发送失败, 错误码:%d", iResult).c_str());
 	}
 }
 
@@ -438,13 +438,13 @@ void ParserFemas::SubscribeMarketData()
 		int iResult = m_pUserAPI->SubMarketData(subscribe, nCount);
 		if(iResult != 0)
 		{
-			if(m_parserSink)
-				m_parserSink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserFemas]行情订阅请求发送失败, 错误码:%d", iResult).c_str());
+			if(m_sink)
+				m_sink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserFemas]行情订阅请求发送失败, 错误码:%d", iResult).c_str());
 		}
 		else
 		{
-			if(m_parserSink)
-				m_parserSink->handleParserLog(LL_INFO, StrUtil::printf("[ParserFemas]一共订阅 %d 个合约行情", nCount).c_str());
+			if(m_sink)
+				m_sink->handleParserLog(LL_INFO, StrUtil::printf("[ParserFemas]一共订阅 %d 个合约行情", nCount).c_str());
 		}
 	}
 	codeFilter.clear();
@@ -481,13 +481,13 @@ void ParserFemas::subscribe(const CodeSet &vecSymbols)
 			int iResult = m_pUserAPI->SubMarketData(subscribe, nCount);
 			if(iResult != 0)
 			{
-				if(m_parserSink)
-					m_parserSink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserFemas]行情订阅请求发送失败, 错误码:%d", iResult).c_str());
+				if(m_sink)
+					m_sink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserFemas]行情订阅请求发送失败, 错误码:%d", iResult).c_str());
 			}
 			else
 			{
-				if(m_parserSink)
-					m_parserSink->handleParserLog(LL_INFO, StrUtil::printf("[ParserFemas]一共订阅 %d 个合约行情", nCount).c_str());
+				if(m_sink)
+					m_sink->handleParserLog(LL_INFO, StrUtil::printf("[ParserFemas]一共订阅 %d 个合约行情", nCount).c_str());
 			}
 		}
 	}
@@ -502,10 +502,10 @@ bool ParserFemas::isConnected()
 	return m_pUserAPI!=NULL;
 }
 
-void ParserFemas::registerListener(IParserApiListener* listener)
+void ParserFemas::registerSpi(IParserSpi* listener)
 {
-	m_parserSink = listener;
+	m_sink = listener;
 
-	if(m_parserSink)
-		m_pBaseDataMgr = m_parserSink->getBaseDataMgr();
+	if(m_sink)
+		m_pBaseDataMgr = m_sink->getBaseDataMgr();
 }

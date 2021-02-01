@@ -41,7 +41,7 @@ public:
 	virtual void subscribe(const CodeSet &vecSymbols) override;
 	virtual void unsubscribe(const CodeSet &vecSymbols) override;
 
-	virtual void registerListener(IParserApiListener* listener) override;
+	virtual void registerSpi(IParserSpi* listener) override;
 
 
 private:
@@ -77,7 +77,7 @@ private:
 	boost::array<char, 1024> _b_buffer;
 	boost::array<char, 1024> _s_buffer;
 
-	IParserApiListener*		_sink;
+	IParserSpi*		_sink;
 	bool					_stopped;
 	bool					_connecting;
 

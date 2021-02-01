@@ -87,7 +87,7 @@ bool ParserAdapter::initAdapter(WTSParams* params, FuncCreateParser funcCreate, 
 	m_pParser = m_funcCreate();
 	if(m_pParser)
 	{
-		m_pParser->registerListener(this);
+		m_pParser->registerSpi(this);
 
 		if(m_pParser->init(params))
 		{

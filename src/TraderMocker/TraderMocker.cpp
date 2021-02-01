@@ -644,7 +644,7 @@ void TraderMocker::release()
 	}
 }
 
-void TraderMocker::registerListener(ITraderApiListener *listener)
+void TraderMocker::registerSpi(ITraderSpi *listener)
 {
 	_listener = listener;
 

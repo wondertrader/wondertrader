@@ -66,7 +66,7 @@ public:
 
 	virtual void release() override;
 
-	virtual void registerListener(ITraderApiListener *listener) override;
+	virtual void registerSpi(ITraderSpi *listener) override;
 
 	virtual void connect() override;
 
@@ -104,7 +104,7 @@ private:
 
 private:
 	XTP::API::TraderApi*	_api;
-	ITraderApiListener*		_sink;
+	ITraderSpi*		_sink;
 
 	typedef WTSHashMap<std::string> PositionMap;
 	PositionMap*			_positions;

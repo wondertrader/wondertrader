@@ -41,7 +41,7 @@ public:
 	virtual void subscribe(const CodeSet& vecSymbols);
 	virtual void unsubscribe(const CodeSet& vecSymbols);
 
-	virtual void registerListener(IParserApiListener* listener);
+	virtual void registerSpi(IParserSpi* listener);
 
 
 public:
@@ -110,7 +110,7 @@ private:
 	uint32_t			m_uSessionID;
 	bool				m_bStopped;
 
-	IParserApiListener*	m_parserSink;
+	IParserSpi*	m_sink;
 	IBaseDataMgr*		m_bdMgr;
 
 	typedef std::map<std::string,std::string>	StringMap;

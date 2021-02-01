@@ -376,7 +376,7 @@ bool TraderAdapter::run()
 	if (_stat_map == NULL)
 		_stat_map = TradeStatMap::create();
 
-	_trader_api->registerListener(this);
+	_trader_api->registerSpi(this);
 
 	_trader_api->connect();
 	_state = AS_LOGINING;
@@ -387,7 +387,7 @@ void TraderAdapter::release()
 {
 	if (_trader_api)
 	{
-		_trader_api->registerListener(NULL);
+		_trader_api->registerSpi(NULL);
 		_trader_api->release();
 	}
 }
@@ -1300,7 +1300,7 @@ uint32_t TraderAdapter::closeShort(const char* stdCode, double price, double qty
 }
 
 
-#pragma region "ITraderApiListener接口"
+#pragma region "ITraderSpi接口"
 void TraderAdapter::handleEvent(WTSTraderEvent e, int32_t ec)
 {
 	if(e == WTE_Connect)
@@ -2076,7 +2076,7 @@ void TraderAdapter::handleTraderLog(WTSLogLevel ll, const char* format, ...)
 	va_end(args);
 }
 
-#pragma endregion "ITraderApiListener接口"
+#pragma endregion "ITraderSpi接口"
 
 
 //////////////////////////////////////////////////////////////////////////

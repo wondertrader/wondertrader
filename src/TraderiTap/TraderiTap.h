@@ -58,7 +58,7 @@ public:
 	virtual void setTag(const char* tag){m_strTag = tag;}
 	virtual const char* getTag(){return m_strTag.c_str();}
 
-	virtual void registerListener(ITraderApiListener *listener);
+	virtual void registerSpi(ITraderSpi *listener);
 
 	virtual bool makeEntrustID(char* buffer, int length);
 
@@ -257,7 +257,7 @@ protected:
 	bool				m_bStopped;
 	bool				m_bReconnect;
 
-	ITraderApiListener*	m_traderSink;
+	ITraderSpi*	m_sink;
 
 	WrapperState	m_wrapperState;
 

@@ -49,7 +49,7 @@ private:
 	std::atomic<uint32_t>	_auto_order_id;
 	std::atomic<uint32_t>	_auto_entrust_id;
 
-	ITraderApiListener* _listener;
+	ITraderSpi* _listener;
 	IBaseDataMgr*		_bd_mgr;
 
 	StdThreadPtr		_thrd_worker;
@@ -120,7 +120,7 @@ public:
 
 	virtual void release() override;
 
-	virtual void registerListener(ITraderApiListener *listener) override;
+	virtual void registerSpi(ITraderSpi *listener) override;
 
 	virtual void connect() override;
 

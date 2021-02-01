@@ -28,7 +28,7 @@ class IBaseDataMgr;
 /*
  *	行情解析模块回调接口
  */
-class IParserApiListener
+class IParserSpi
 {
 public:
 	/*
@@ -128,12 +128,12 @@ public:
 	/*
 	 *	退订合约列表
 	 */
-	virtual void unsubscribe(const CodeSet& setCodes) = 0;
+	virtual void unsubscribe(const CodeSet& setCodes)	= 0;
 
 	/*
 	 *	注册回调接口
 	 */
-	virtual void registerListener(IParserApiListener* listener)		= 0;
+	virtual void registerSpi(IParserSpi* listener)		= 0;
 };
 
 NS_OTP_END

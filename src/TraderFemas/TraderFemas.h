@@ -71,7 +71,7 @@ public:
 	virtual void setTag(const char* tag){m_strTag = tag;}
 	virtual const char* getTag(){return m_strTag.c_str();}
 
-	virtual void registerListener( ITraderApiListener *listener );
+	virtual void registerSpi( ITraderSpi *listener );
 
 	virtual bool makeEntrustID(char* buffer, int length);
 
@@ -195,7 +195,7 @@ protected:
 
 	std::string		m_strUserName;
 
-	ITraderApiListener*	m_traderSink;
+	ITraderSpi*	m_sink;
 	uint64_t		m_uLastQryTime;
 
 	long			m_lDate;

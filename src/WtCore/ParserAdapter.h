@@ -30,7 +30,7 @@ public:
 	virtual void			handle_push_transaction(WTSTransData* curTrans) {}
 };
 
-class ParserAdapter : public IParserApiListener,
+class ParserAdapter : public IParserSpi,
 					private boost::noncopyable
 {
 public:

@@ -27,7 +27,7 @@ class EventNotifier;
 
 class ITrdNotifySink;
 
-class TraderAdapter : public ITraderApiListener
+class TraderAdapter : public ITraderSpi
 {
 public:
 	TraderAdapter(EventNotifier* caster = NULL);
@@ -160,7 +160,7 @@ public:
 
 public:
 	//////////////////////////////////////////////////////////////////////////
-	//ITraderApiListener接口
+	//ITraderSpi接口
 	virtual void handleEvent(WTSTraderEvent e, int32_t ec) override;
 
 	virtual void onLoginResult(bool bSucc, const char* msg, uint32_t tradingdate) override;

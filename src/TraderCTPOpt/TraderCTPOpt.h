@@ -69,7 +69,7 @@ public:
 
 	virtual void release() override;
 
-	virtual void registerListener(ITraderApiListener *listener) override;
+	virtual void registerSpi(ITraderSpi *listener) override;
 
 	virtual bool makeEntrustID(char* buffer, int length) override;
 
@@ -83,7 +83,7 @@ public:
 
 	virtual int logout() override;
 
-	virtual int orderInsert(WTSEntrust* eutrust) override;
+	virtual int orderInsert(WTSEntrust* entrust) override;
 
 	virtual int orderAction(WTSEntrustAction* action) override;
 
@@ -94,6 +94,15 @@ public:
 	virtual int queryOrders() override;
 
 	virtual int queryTrades() override;
+
+
+	//////////////////////////////////////////////////////////////////////////
+	//IOptTraderApi
+	virtual int orderInsertOpt(WTSEntrust* entrust) override;
+
+	virtual int orderActionOpt(WTSEntrustAction* action) override;
+
+	virtual int	queryOrdersOpt(WTSBusinessType bType) override;
 
 
 	//////////////////////////////////////////////////////////////////////////
@@ -136,29 +145,34 @@ public:
 
 	virtual void OnErrRtnOrderInsert(CThostFtdcInputOrderField *pInputOrder, CThostFtdcRspInfoField *pRspInfo) override;
 
+	//////////////////////////////////////////////////////////////////////////
+	///执行宣告录入请求响应
+	virtual void OnRspExecOrderInsert(CThostFtdcInputExecOrderField *pInputExecOrder, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) override;
+
+	///执行宣告操作请求响应
+	virtual void OnRspExecOrderAction(CThostFtdcInputExecOrderActionField *pInputExecOrderAction, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) override;
+
+	///执行宣告通知
+	virtual void OnRtnExecOrder(CThostFtdcExecOrderField *pExecOrder) override;
+
+	///执行宣告录入错误回报
+	virtual void OnErrRtnExecOrderInsert(CThostFtdcInputExecOrderField *pInputExecOrder, CThostFtdcRspInfoField *pRspInfo) override;
+
+	virtual void OnRspQryExecOrder(CThostFtdcExecOrderField *pExecOrder, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) override;
+
 protected:
 	/*
 	*	检查错误信息
 	*/
 	bool IsErrorRspInfo(CThostFtdcRspInfoField *pRspInfo);
 
-	int wrapPriceType(WTSPriceType priceType, bool isCFFEX = false);
-	int wrapDirectionType(WTSDirectionType dirType, WTSOffsetType offType);
-	int wrapOffsetType(WTSOffsetType offType);
-	int	wrapTimeCondition(WTSTimeCondition timeCond);
-	int wrapActionFlag(WTSActionFlag actionFlag);
-
-	WTSPriceType		wrapPriceType(TThostFtdcOrderPriceTypeType priceType);
-	WTSDirectionType	wrapDirectionType(TThostFtdcDirectionType dirType, TThostFtdcOffsetFlagType offType);
-	WTSDirectionType	wrapPosDirection(TThostFtdcPosiDirectionType dirType);
-	WTSOffsetType		wrapOffsetType(TThostFtdcOffsetFlagType offType);
-	WTSTimeCondition	wrapTimeCondition(TThostFtdcTimeConditionType timeCond);
-	WTSOrderState		wrapOrderState(TThostFtdcOrderStatusType orderState);
 
 	WTSOrderInfo*	makeOrderInfo(CThostFtdcOrderField* orderField);
+	WTSOrderInfo*	makeOrderInfo(CThostFtdcExecOrderField* orderField);
 	WTSEntrust*		makeEntrust(CThostFtdcInputOrderField *entrustField);
 	WTSError*		makeError(CThostFtdcRspInfoField* rspInfo);
 	WTSTradeInfo*	makeTradeRecord(CThostFtdcTradeField *tradeField);
+	WTSEntrust*		makeEntrust(CThostFtdcInputExecOrderField *entrustField);
 
 	std::string		generateEntrustID(uint32_t frontid, uint32_t sessionid, uint32_t orderRef);
 	bool			extractEntrustID(const char* entrustid, uint32_t &frontid, uint32_t &sessionid, uint32_t &orderRef);
@@ -188,7 +202,8 @@ protected:
 
 	std::string		m_strUserName;
 
-	ITraderApiListener*	m_traderSink;
+	ITraderSpi*		m_bscSink;
+	IOptTraderSpi*	m_optSink;
 	uint64_t		m_uLastQryTime;
 
 	uint32_t					m_lDate;
@@ -205,6 +220,7 @@ protected:
 	PositionMap*				m_mapPosition;
 	WTSArray*					m_ayTrades;
 	WTSArray*					m_ayOrders;
+	WTSArray*					m_ayExecOrds;
 	WTSArray*					m_ayPosDetail;
 
 	IBaseDataMgr*				m_bdMgr;
@@ -212,7 +228,7 @@ protected:
 	typedef std::queue<CommonExecuter>	QueryQue;
 	QueryQue				m_queQuery;
 	bool					m_bInQuery;
-	StdUniqueMutex		m_mtxQuery;
+	StdUniqueMutex			m_mtxQuery;
 	uint64_t				m_lastQryTime;
 
 	boost::asio::io_service		m_asyncIO;

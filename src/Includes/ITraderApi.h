@@ -38,7 +38,7 @@ typedef std::function<void()>	CommonExecuter;
  *	股票交易接口回调
  *	Added By Wesley @ 2020/05/06
  */
-class IStkTraderApiListener
+class IStkTraderSpi
 {
 
 };
@@ -59,9 +59,12 @@ class IStkTraderApi
  *	期权交易接口回调
  *	Added By Wesley @ 2020/05/06
  */
-class IOptTraderApiListener
+class IOptTraderSpi
 {
-
+public:
+	virtual void onRspEntrustOpt(WTSEntrust* entrust, WTSError *err) {}
+	virtual void onRspOrdersOpt(const WTSArray* ayOrders) {}
+	virtual void onPushOrderOpt(WTSOrderInfo* orderInfo) {}
 };
 
 /*
@@ -72,20 +75,36 @@ class IOptTraderApiListener
  */
 class IOptTraderApi
 {
+public:
+	/*
+	 *	下单接口
+	 *	entrust 下单的具体数据结构
+	 */
+	virtual int orderInsertOpt(WTSEntrust* eutrust) { return -1; }
 
+	/*
+	 *	订单操作接口
+	 *	action	操作的具体数据结构
+	 */
+	virtual int orderActionOpt(WTSEntrustAction* action) { return -1; }
+
+	/*
+	 *	查询期权订单
+	 */
+	virtual int	queryOrdersOpt(WTSBusinessType bType) { return -1; }
 };
 #pragma endregion
 
 
 //委托回调接口
-class ITraderApiListener
+class ITraderSpi
 {
 public:
 	virtual IBaseDataMgr*	getBaseDataMgr() = 0;
 	virtual void handleTraderLog(WTSLogLevel ll, const char* format, ...){}
 
-	virtual IStkTraderApiListener* getStkListener(){ return NULL; }
-	virtual IOptTraderApiListener* getOptListener(){ return NULL; }
+	virtual IStkTraderSpi* getStkSpi(){ return NULL; }
+	virtual IOptTraderSpi* getOptSpi(){ return NULL; }
 
 public:
 	virtual void handleEvent(WTSTraderEvent e, int32_t ec) = 0;
@@ -115,81 +134,81 @@ public:
 
 public:
 	/*
-	*	初始化解析管理器
-	*/
+	 *	初始化解析管理器
+	 */
 	virtual bool init(WTSParams *params) = 0;
 
 	/*
-	*	释放解析管理器
-	*/
+	 *	释放解析管理器
+	 */
 	virtual void release() = 0;
 
 	/*
-	*	注册回调接口
-	*/
-	virtual void registerListener(ITraderApiListener *listener) = 0;
+	 *	注册回调接口
+	 */
+	virtual void registerSpi(ITraderSpi *listener) = 0;
 
 
 	//////////////////////////////////////////////////////////////////////////
 	//业务逻辑接口
 
 	/*
-	*	连接服务器
-	*/
+	 *	连接服务器
+	 */
 	virtual void connect() = 0;
 
 	/*
-	*	断开连接
-	*/
+	 *	断开连接
+	 */
 	virtual void disconnect() = 0;
 
 	virtual bool isConnected() = 0;
 
 	/*
-	*	生成委托单号
-	*/
+	 *	生成委托单号
+	 */
 	virtual bool makeEntrustID(char* buffer, int length){ return false; }
 
 	/*
-	*	登录接口
-	*/
+	 *	登录接口
+	 */
 	virtual int login(const char* user, const char* pass, const char* productInfo) = 0;
 
 	/*
-	*	注销接口
-	*/
+	 *	注销接口
+	 */
 	virtual int logout() = 0;
 
 	/*
-	*	下单接口
-	*	entrust 下单的具体数据结构
-	*/
+	 *	下单接口
+	 *	entrust 下单的具体数据结构
+	 */
 	virtual int orderInsert(WTSEntrust* eutrust) = 0;
 
 	/*
-	*	订单操作接口
-	*	action	操作的具体数据结构
-	*/
+	 *	订单操作接口
+	 *	action	操作的具体数据结构
+	 */
 	virtual int orderAction(WTSEntrustAction* action) = 0;
 
 	/*
-	*	查询账户信息
-	*/
+	 *	查询账户信息
+	 */
 	virtual int queryAccount() = 0;
 
 	/*
-	*	查询持仓信息
-	*/
+	 *	查询持仓信息
+	 */
 	virtual int queryPositions() = 0;
 
 	/*
-	*	查询所有订单
-	*/
+	 *	查询所有订单
+	 */
 	virtual int queryOrders() = 0;
 
 	/*
-	*	查询成交明细
-	*/
+	 *	查询成交明细
+	 */
 	virtual int	queryTrades() = 0;
 
 	/*

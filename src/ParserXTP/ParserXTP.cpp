@@ -201,10 +201,10 @@ void ParserXTP::OnError(XTPRI *error_info)
 /*
 void ParserXTP::OnFrontConnected()
 {
-	if (m_parserSink)
+	if (m_sink)
 	{
-		m_parserSink->handleParserLog(LL_INFO, "[ParserXTP]CTP行情服务已连接");
-		m_parserSink->handleEvent(WPE_Connect, 0);
+		m_sink->handleParserLog(LL_INFO, "[ParserXTP]CTP行情服务已连接");
+		m_sink->handleEvent(WPE_Connect, 0);
 	}
 
 	ReqUserLogin();
@@ -216,9 +216,9 @@ void ParserXTP::OnRspUserLogin( CThostFtdcRspUserLoginField *pRspUserLogin, CTho
 	{
 		m_uTradingDate = strtoul(m_pUserAPI->GetTradingDay(), NULL, 10);
 		
-		if(m_parserSink)
+		if(m_sink)
 		{
-			m_parserSink->handleEvent(WPE_Login, 0);
+			m_sink->handleEvent(WPE_Login, 0);
 		}
 
 		//订阅行情数据
@@ -229,10 +229,10 @@ void ParserXTP::OnRspUserLogin( CThostFtdcRspUserLoginField *pRspUserLogin, CTho
 
 void ParserXTP::OnDisconnected(int nReason)
 {
-	if(m_parserSink)
+	if(m_sink)
 	{
-		m_parserSink->handleParserLog(LL_ERROR, "[ParserXTP]CTP行情服务连接已断开,原因: %d...", nReason);
-		m_parserSink->handleEvent(WPE_Close, 0);
+		m_sink->handleParserLog(LL_ERROR, "[ParserXTP]CTP行情服务连接已断开,原因: %d...", nReason);
+		m_sink->handleEvent(WPE_Close, 0);
 	}
 }
 
@@ -266,8 +266,8 @@ void ParserXTP::OnDepthMarketData(XTPMD *market_data, int64_t bid1_qty[], int32_
 	WTSContractInfo* ct = m_pBaseDataMgr->getContract(code.c_str(), exchg.c_str());
 	if(ct == NULL)
 	{
-		if (m_parserSink)
-			m_parserSink->handleParserLog(LL_ERROR, "[ParserXTP]代码%s.%s不存在...", exchg.c_str(), market_data->ticker);
+		if (m_sink)
+			m_sink->handleParserLog(LL_ERROR, "[ParserXTP]代码%s.%s不存在...", exchg.c_str(), market_data->ticker);
 		return;
 	}
 	WTSCommodityInfo* commInfo = m_pBaseDataMgr->getCommodity(ct);
@@ -311,8 +311,8 @@ void ParserXTP::OnDepthMarketData(XTPMD *market_data, int64_t bid1_qty[], int32_
 		quote.bid_qty[i] = (uint32_t)market_data->bid_qty[i];
 	}
 
-	if(m_parserSink)
-		m_parserSink->handleQuote(tick, true);
+	if(m_sink)
+		m_sink->handleQuote(tick, true);
 
 	tick->release();
 }
@@ -321,13 +321,13 @@ void ParserXTP::OnSubMarketData(XTPST *ticker, XTPRI *error_info, bool is_last)
 {
 	if (!IsErrorRspInfo(error_info))
 	{
-		//if (m_parserSink)
-		//	m_parserSink->handleParserLog(LL_INFO, "[ParserXTP]实时行情订阅成功,代码:%s%s", ticker->exchange_id == XTP_EXCHANGE_SH ? "SH" : "SZ", ticker->ticker);
+		//if (m_sink)
+		//	m_sink->handleParserLog(LL_INFO, "[ParserXTP]实时行情订阅成功,代码:%s%s", ticker->exchange_id == XTP_EXCHANGE_SH ? "SH" : "SZ", ticker->ticker);
 	}
 	else
 	{
-		if(m_parserSink)
-			m_parserSink->handleParserLog(LL_ERROR, "[ParserXTP]实时行情订阅失败,代码:%s%s", ticker->exchange_id == XTP_EXCHANGE_SH ? "SSE." : "SZSE.", ticker->ticker);
+		if(m_sink)
+			m_sink->handleParserLog(LL_ERROR, "[ParserXTP]实时行情订阅失败,代码:%s%s", ticker->exchange_id == XTP_EXCHANGE_SH ? "SSE." : "SZSE.", ticker->ticker);
 	}
 }
 
@@ -341,17 +341,17 @@ void ParserXTP::DoLogin()
 	int iResult = m_pUserAPI->Login(m_strHost.c_str(), m_iPort, m_strUser.c_str(), m_strPass.c_str(), m_iProtocol);
 	if(iResult != 0)
 	{
-		if (m_parserSink)
+		if (m_sink)
 		{
 			if(iResult == -1)
 			{
-				m_parserSink->handleEvent(WPE_Connect, iResult);
+				m_sink->handleEvent(WPE_Connect, iResult);
 			}
 			else
 			{
-				m_parserSink->handleEvent(WPE_Connect, 0);
+				m_sink->handleEvent(WPE_Connect, 0);
 
-				m_parserSink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserXTP]CTP 登录请求发送失败, 错误码:%d", iResult).c_str());
+				m_sink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserXTP]CTP 登录请求发送失败, 错误码:%d", iResult).c_str());
 			}
 			
 		}
@@ -359,10 +359,10 @@ void ParserXTP::DoLogin()
 	else
 	{
 		m_uTradingDate = strToTime(m_pUserAPI->GetTradingDay());
-		if (m_parserSink)
+		if (m_sink)
 		{
-			m_parserSink->handleEvent(WPE_Connect, 0);
-			m_parserSink->handleEvent(WPE_Login, 0);
+			m_sink->handleEvent(WPE_Connect, 0);
+			m_sink->handleEvent(WPE_Login, 0);
 		}
 
 		DoSubscribeMD();
@@ -387,13 +387,13 @@ void ParserXTP::DoSubscribeMD()
 			int iResult = m_pUserAPI->SubscribeMarketData(subscribe, nCount, XTP_EXCHANGE_SH);
 			if (iResult != 0)
 			{
-				if (m_parserSink)
-					m_parserSink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserXTP]上证行情订阅请求发送失败, 错误码:%d", iResult).c_str());
+				if (m_sink)
+					m_sink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserXTP]上证行情订阅请求发送失败, 错误码:%d", iResult).c_str());
 			}
 			else
 			{
-				if (m_parserSink)
-					m_parserSink->handleParserLog(LL_INFO, StrUtil::printf("[ParserXTP]一共订阅上证 %d 个品种行情", nCount).c_str());
+				if (m_sink)
+					m_sink->handleParserLog(LL_INFO, StrUtil::printf("[ParserXTP]一共订阅上证 %d 个品种行情", nCount).c_str());
 			}
 		}
 		codeFilter.clear();
@@ -417,13 +417,13 @@ void ParserXTP::DoSubscribeMD()
 			int iResult = m_pUserAPI->SubscribeMarketData(subscribe, nCount, XTP_EXCHANGE_SZ);
 			if (iResult != 0)
 			{
-				if (m_parserSink)
-					m_parserSink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserXTP]深证行情订阅请求发送失败, 错误码:%d", iResult).c_str());
+				if (m_sink)
+					m_sink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserXTP]深证行情订阅请求发送失败, 错误码:%d", iResult).c_str());
 			}
 			else
 			{
-				if (m_parserSink)
-					m_parserSink->handleParserLog(LL_INFO, StrUtil::printf("[ParserXTP]一共订阅深证 %d 个品种行情", nCount).c_str());
+				if (m_sink)
+					m_sink->handleParserLog(LL_INFO, StrUtil::printf("[ParserXTP]一共订阅深证 %d 个品种行情", nCount).c_str());
 			}
 		}
 		codeFilter.clear();
@@ -488,13 +488,13 @@ void ParserXTP::subscribe(const CodeSet &vecSymbols)
 				int iResult = m_pUserAPI->SubscribeMarketData(subscribe, nCount, XTP_EXCHANGE_SH);
 				if (iResult != 0)
 				{
-					if (m_parserSink)
-						m_parserSink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserXTP]行情订阅请求发送失败, 错误码:%d", iResult).c_str());
+					if (m_sink)
+						m_sink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserXTP]行情订阅请求发送失败, 错误码:%d", iResult).c_str());
 				}
 				else
 				{
-					if (m_parserSink)
-						m_parserSink->handleParserLog(LL_INFO, StrUtil::printf("[ParserXTP]一共订阅 %d 个品种行情", nCount).c_str());
+					if (m_sink)
+						m_sink->handleParserLog(LL_INFO, StrUtil::printf("[ParserXTP]一共订阅 %d 个品种行情", nCount).c_str());
 				}
 			}
 			delete[] subscribe;
@@ -515,13 +515,13 @@ void ParserXTP::subscribe(const CodeSet &vecSymbols)
 				int iResult = m_pUserAPI->SubscribeMarketData(subscribe, nCount, XTP_EXCHANGE_SZ);
 				if (iResult != 0)
 				{
-					if (m_parserSink)
-						m_parserSink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserXTP]行情订阅请求发送失败, 错误码:%d", iResult).c_str());
+					if (m_sink)
+						m_sink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserXTP]行情订阅请求发送失败, 错误码:%d", iResult).c_str());
 				}
 				else
 				{
-					if (m_parserSink)
-						m_parserSink->handleParserLog(LL_INFO, StrUtil::printf("[ParserXTP]一共订阅 %d 个品种行情", nCount).c_str());
+					if (m_sink)
+						m_sink->handleParserLog(LL_INFO, StrUtil::printf("[ParserXTP]一共订阅 %d 个品种行情", nCount).c_str());
 				}
 			}
 			delete[] subscribe;
@@ -538,10 +538,10 @@ bool ParserXTP::isConnected()
 	return m_pUserAPI!=NULL;
 }
 
-void ParserXTP::registerListener(IParserApiListener* listener)
+void ParserXTP::registerSpi(IParserSpi* listener)
 {
-	m_parserSink = listener;
+	m_sink = listener;
 
-	if(m_parserSink)
-		m_pBaseDataMgr = m_parserSink->getBaseDataMgr();
+	if(m_sink)
+		m_pBaseDataMgr = m_sink->getBaseDataMgr();
 }

@@ -187,10 +187,10 @@ void ParseriTap::OnRspLogin(TAPIINT32 errorCode, const TapAPIQuotLoginRspInfo *i
 {
 	if(errorCode == TAPIERROR_SUCCEED)
 	{
-		if(m_parserSink)
+		if(m_sink)
 		{
-			m_parserSink->handleParserLog(LL_INFO, "[ParseriTap]%s登录成功", m_strUser.c_str());
-			m_parserSink->handleEvent(WPE_Login, 0);
+			m_sink->handleParserLog(LL_INFO, "[ParseriTap]%s登录成功", m_strUser.c_str());
+			m_sink->handleEvent(WPE_Login, 0);
 		}
 
 		m_loginState = LS_LOGINED;
@@ -199,10 +199,10 @@ void ParseriTap::OnRspLogin(TAPIINT32 errorCode, const TapAPIQuotLoginRspInfo *i
 	}
 	else
 	{
-		if(m_parserSink)
+		if(m_sink)
 		{
-			m_parserSink->handleParserLog(LL_INFO, "[ParseriTap]%s登录失败:%d", m_strUser.c_str(), errorCode);
-			m_parserSink->handleEvent(WPE_Login, errorCode);
+			m_sink->handleParserLog(LL_INFO, "[ParseriTap]%s登录失败:%d", m_strUser.c_str(), errorCode);
+			m_sink->handleEvent(WPE_Login, errorCode);
 		}
 	}
 
@@ -216,10 +216,10 @@ void ParseriTap::OnAPIReady()
 
 void ParseriTap::OnDisconnect(TAPIINT32 reasonCode)
 {
-	if(m_parserSink && !m_bStopped)
+	if(m_sink && !m_bStopped)
 	{
-		m_parserSink->handleParserLog(LL_ERROR, StrUtil::printf("[ParseriTap]行情服务连接已断开,错误码: %d...", reasonCode).c_str());
-		m_parserSink->handleEvent(WPE_Close, 0);
+		m_sink->handleParserLog(LL_ERROR, StrUtil::printf("[ParseriTap]行情服务连接已断开,错误码: %d...", reasonCode).c_str());
+		m_sink->handleEvent(WPE_Close, 0);
 	}
 
 
@@ -231,7 +231,7 @@ void ParseriTap::OnDisconnect(TAPIINT32 reasonCode)
 			//这里丢到线程里去处理，让OnClose可以马上返回
 			StdThreadPtr thrd(new StdThread([this](){
 				std::this_thread::sleep_for(std::chrono::seconds(RECONNECT_SECONDS));
-				m_parserSink->handleParserLog(LL_WARN, "[ParseriTap]行情正在重连……", m_strUser.c_str());
+				m_sink->handleParserLog(LL_WARN, "[ParseriTap]行情正在重连……", m_strUser.c_str());
 				reconnect();
 			}));
 		}
@@ -316,8 +316,8 @@ void ParseriTap::OnRtnQuote(const TapAPIQuoteWhole *info)
 		quote.bid_qty[i] = (uint32_t)(info->QBidQty[i] + 0.5);
 	}
 
-	if(m_parserSink)
-		m_parserSink->handleQuote(tick, true);
+	if(m_sink)
+		m_sink->handleQuote(tick, true);
 
 	tick->release();
 }
@@ -390,8 +390,8 @@ void ParseriTap::OnRspSubscribeQuote(TAPIUINT32 sessionID, TAPIINT32 errorCode, 
 			quote.bid_qty[i] = (uint32_t)(info->QBidQty[i] + 0.5);
 		}
 
-		if (m_parserSink)
-			m_parserSink->handleQuote(tick, true);
+		if (m_sink)
+			m_sink->handleQuote(tick, true);
 
 		tick->release();
 	}
@@ -434,14 +434,14 @@ bool ParseriTap::login(bool bNeedReconn /* = false */)
 	iResult = m_pUserAPI->Login(&stLoginAuth);
 	if(iResult != TAPIERROR_SUCCEED)
 	{
-		if(m_parserSink)
-			m_parserSink->handleParserLog(LL_ERROR, StrUtil::printf("[ParseriTap]登录请求发送失败, 错误码:%d", iResult).c_str());
+		if(m_sink)
+			m_sink->handleParserLog(LL_ERROR, StrUtil::printf("[ParseriTap]登录请求发送失败, 错误码:%d", iResult).c_str());
 
 		//如果连接失败，且需要重连，就再重连
 		if(iResult == TAPIERROR_ConnectFail && bNeedReconn && !m_bStopped)
 		{
 			std::this_thread::sleep_for(std::chrono::seconds(RECONNECT_SECONDS));
-			m_parserSink->handleParserLog(LL_INFO, StrUtil::printf("[ParseriTap]行情正在重连...").c_str());
+			m_sink->handleParserLog(LL_INFO, StrUtil::printf("[ParseriTap]行情正在重连...").c_str());
 			reconnect();
 		}
 	}
@@ -588,8 +588,8 @@ void ParseriTap::subscribe(const CodeSet &vecSymbols)
 				m_pUserAPI->SubscribeQuote(&m_uSessionID, &stContract);
 			}
 
-			if(m_parserSink)
-				m_parserSink->handleParserLog(LL_INFO, StrUtil::printf("[ParseriTap]一共订阅 %d 个合约行情", vecSymbols.size()).c_str());
+			if(m_sink)
+				m_sink->handleParserLog(LL_INFO, StrUtil::printf("[ParseriTap]一共订阅 %d 个合约行情", vecSymbols.size()).c_str());
 		}
 	}
 }
@@ -599,13 +599,13 @@ bool ParseriTap::isConnected()
 	return m_pUserAPI!=NULL;
 }
 
-void ParseriTap::registerListener(IParserApiListener* listener)
+void ParseriTap::registerSpi(IParserSpi* listener)
 {
-	m_parserSink = listener;
+	m_sink = listener;
 
-	if(m_parserSink)
+	if(m_sink)
 	{
-		m_bdMgr = m_parserSink->getBaseDataMgr();
+		m_bdMgr = m_sink->getBaseDataMgr();
 	}
 }
 

@@ -280,10 +280,10 @@ bool TraderFemas::makeEntrustID(char* buffer, int length)
 	return false;
 }
 
-void TraderFemas::registerListener( ITraderApiListener *listener )
+void TraderFemas::registerSpi( ITraderSpi *listener )
 {
-	m_traderSink = listener;
-	if(m_traderSink)
+	m_sink = listener;
+	if(m_sink)
 	{
 		m_bdMgr = listener->getBaseDataMgr();
 	}
@@ -321,7 +321,7 @@ int TraderFemas::doLogin()
 	int iResult = m_pUserAPI->ReqUserLogin(&req, genRequestID());
 	if (iResult != 0)
 	{
-		m_traderSink->handleTraderLog(LL_ERROR, "[TraderFemas]登录请求发送失败, 错误码:%d", iResult);
+		m_sink->handleTraderLog(LL_ERROR, "[TraderFemas]登录请求发送失败, 错误码:%d", iResult);
 	}
 
 	return 0;
@@ -357,7 +357,7 @@ int TraderFemas::logout()
 	int iResult = m_pUserAPI->ReqUserLogout(&req, genRequestID());
 	if (iResult != 0)
 	{
-		m_traderSink->handleTraderLog(LL_ERROR, "[TraderFemas]注销请求发送失败, 错误码:%d", iResult);
+		m_sink->handleTraderLog(LL_ERROR, "[TraderFemas]注销请求发送失败, 错误码:%d", iResult);
 	}
 
 	return 0;
@@ -409,7 +409,7 @@ int TraderFemas::orderInsert(WTSEntrust* entrust)
 	int iResult = m_pUserAPI->ReqOrderInsert(&req, genRequestID());
 	if(iResult != 0)
 	{
-		m_traderSink->handleTraderLog(LL_ERROR, "[TraderFemas]插入订单失败, 错误码:%d", iResult);
+		m_sink->handleTraderLog(LL_ERROR, "[TraderFemas]插入订单失败, 错误码:%d", iResult);
 	}
 
 	return 0;
@@ -442,7 +442,7 @@ int TraderFemas::orderAction( WTSEntrustAction* action )
 	int iResult = m_pUserAPI->ReqOrderAction(&req, genRequestID());
 	if(iResult != 0)
 	{
-		m_traderSink->handleTraderLog(LL_ERROR, "[TraderFemas]撤单请求发送失败, 错误码:%d", iResult);
+		m_sink->handleTraderLog(LL_ERROR, "[TraderFemas]撤单请求发送失败, 错误码:%d", iResult);
 	}
 
 	return 0;	
@@ -534,8 +534,8 @@ int TraderFemas::queryTrades()
 
 void TraderFemas::OnFrontConnected()
 {
-	if(m_traderSink)
-		m_traderSink->handleEvent(WTE_Connect, 0);
+	if(m_sink)
+		m_sink->handleEvent(WTE_Connect, 0);
 }
 
 void TraderFemas::OnQryFrontConnected()
@@ -544,8 +544,8 @@ void TraderFemas::OnQryFrontConnected()
 
 	//if (m_wrapperState == WS_ALLREADY)
 	//{
-	//	if (m_traderSink)
-	//		m_traderSink->onLoginResult(true, "", m_lDate);
+	//	if (m_sink)
+	//		m_sink->onLoginResult(true, "", m_lDate);
 	//}
 }
 
@@ -553,8 +553,8 @@ void TraderFemas::OnFrontDisconnected( int nReason )
 {
 	m_bQryOnline = false;
 	m_wrapperState = WS_NOTLOGIN;
-	if(m_traderSink)
-		m_traderSink->handleEvent(WTE_Close, nReason);
+	if(m_sink)
+		m_sink->handleEvent(WTE_Close, nReason);
 }
 
 void TraderFemas::OnQryFrontDisconnected(int nReason)
@@ -583,11 +583,11 @@ void TraderFemas::OnRspDSUserCertification(CUstpFtdcDSUserCertRspDataField *pDSU
 	}
 	else
 	{
-		m_traderSink->handleTraderLog(LL_INFO, "[%s-%s]终端认证失败,错误信息:%s", m_strBroker.c_str(), m_strUser.c_str(), pRspInfo->ErrorMsg);
+		m_sink->handleTraderLog(LL_INFO, "[%s-%s]终端认证失败,错误信息:%s", m_strBroker.c_str(), m_strUser.c_str(), pRspInfo->ErrorMsg);
 		m_wrapperState = WS_LOGINFAILED;
 
-		if (m_traderSink)
-			m_traderSink->onLoginResult(false, pRspInfo->ErrorMsg, 0);
+		if (m_sink)
+			m_sink->onLoginResult(false, pRspInfo->ErrorMsg, 0);
 	}
 }
 
@@ -604,28 +604,28 @@ void TraderFemas::OnRspUserLogin( CUstpFtdcRspUserLoginField *pRspUserLogin, CUs
 		///获取当前交易日
 		m_lDate = atoi(m_pUserAPI->GetTradingDay());
 
-		m_traderSink->handleTraderLog(LL_INFO,"[%s-%s]账户登录成功……", m_strBroker.c_str(), m_strUser.c_str());
+		m_sink->handleTraderLog(LL_INFO,"[%s-%s]账户登录成功……", m_strBroker.c_str(), m_strUser.c_str());
 
 		//据说飞马不支持结算，所以查不到结算单
-		m_traderSink->handleTraderLog(LL_INFO, "[%s-%s]正在查询结算确认信息……", m_strBroker.c_str(), m_strUser.c_str());
+		m_sink->handleTraderLog(LL_INFO, "[%s-%s]正在查询结算确认信息……", m_strBroker.c_str(), m_strUser.c_str());
 		if (m_bQryOnline)
 			onInitialized();
 	}
 	else
 	{
-		m_traderSink->handleTraderLog(LL_INFO,"[%s-%s]账户登录失败,错误信息:%s", m_strBroker.c_str(), m_strUser.c_str(), pRspInfo->ErrorMsg);
+		m_sink->handleTraderLog(LL_INFO,"[%s-%s]账户登录失败,错误信息:%s", m_strBroker.c_str(), m_strUser.c_str(), pRspInfo->ErrorMsg);
 		m_wrapperState = WS_LOGINFAILED;
 
-		if(m_traderSink)
-			m_traderSink->onLoginResult( false, pRspInfo->ErrorMsg, 0);
+		if(m_sink)
+			m_sink->onLoginResult( false, pRspInfo->ErrorMsg, 0);
 	}
 }
 
 void TraderFemas::OnRspUserLogout(CUstpFtdcRspUserLogoutField *pRspUserLogout, CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
 	m_wrapperState = WS_NOTLOGIN;
-	if(m_traderSink)
-		m_traderSink->handleEvent(WTE_Logout, 0);
+	if(m_sink)
+		m_sink->handleEvent(WTE_Logout, 0);
 }
 
 void TraderFemas::OnRspOrderInsert( CUstpFtdcInputOrderField *pInputOrder, CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast )
@@ -635,8 +635,8 @@ void TraderFemas::OnRspOrderInsert( CUstpFtdcInputOrderField *pInputOrder, CUstp
 	{
 		WTSError *err = makeError(pRspInfo);
 		//g_orderMgr.onRspEntrust(entrust, err);
-		if(m_traderSink)
-			m_traderSink->onRspEntrust(entrust, err);
+		if(m_sink)
+			m_sink->onRspEntrust(entrust, err);
 		entrust->release();
 
 		if(err)
@@ -653,8 +653,8 @@ void TraderFemas::OnRspOrderAction(CUstpFtdcOrderActionField *pOrderAction, CUst
 	else
 	{
 		WTSError* error = WTSError::create(WEC_ORDERCANCEL, pRspInfo->ErrorMsg);
-		if(m_traderSink)
-			m_traderSink->onTraderError(error);
+		if(m_sink)
+			m_sink->onTraderError(error);
 	}
 }
 
@@ -686,8 +686,8 @@ void TraderFemas::OnRspQryInvestorAccount(CUstpFtdcRspInvestorAccountField *pRsp
 
 		WTSArray * ay = WTSArray::create();
 		ay->append(accountInfo, false);
-		if(m_traderSink)
-			m_traderSink->onRspAccount(ay);
+		if(m_sink)
+			m_sink->onRspAccount(ay);
 
 		ay->release();
 	}
@@ -758,8 +758,8 @@ void TraderFemas::OnRspQryInvestorPosition(CUstpFtdcRspInvestorPositionField *pR
 	
 	if(bIsLast)
 	{
-		if(m_traderSink)
-			m_traderSink->onRspPosition(m_ayPosition);
+		if(m_sink)
+			m_sink->onRspPosition(m_ayPosition);
 
 		if(m_ayPosition)
 		{
@@ -791,8 +791,8 @@ void TraderFemas::OnRspQryTrade(CUstpFtdcTradeField *pTrade, CUstpFtdcRspInfoFie
 
 	if(bIsLast)
 	{
-		if(m_traderSink)
-			m_traderSink->onRspTrades(m_ayTrades);
+		if(m_sink)
+			m_sink->onRspTrades(m_ayTrades);
 
 		if(NULL != m_ayTrades)
 			m_ayTrades->clear();
@@ -821,8 +821,8 @@ void TraderFemas::OnRspQryOrder(CUstpFtdcOrderField *pOrder, CUstpFtdcRspInfoFie
 
 	if(bIsLast)
 	{
-		if(m_traderSink)
-			m_traderSink->onRspOrders(m_ayOrders);
+		if(m_sink)
+			m_sink->onRspOrders(m_ayOrders);
 
 		if(m_ayOrders)
 			m_ayOrders->clear();
@@ -831,16 +831,16 @@ void TraderFemas::OnRspQryOrder(CUstpFtdcOrderField *pOrder, CUstpFtdcRspInfoFie
 
 void TraderFemas::onInitialized()
 {
-	m_traderSink->handleTraderLog(LL_INFO, "[%s-%s]账户数据初始化完成……", m_strBroker.c_str(), m_strUser.c_str());
+	m_sink->handleTraderLog(LL_INFO, "[%s-%s]账户数据初始化完成……", m_strBroker.c_str(), m_strUser.c_str());
 	m_wrapperState = WS_ALLREADY;
-	if (m_traderSink)
-		m_traderSink->onLoginResult(true, "", m_lDate);
+	if (m_sink)
+		m_sink->onLoginResult(true, "", m_lDate);
 }
 
 void TraderFemas::OnRspError( CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast )
 {
-	if (m_traderSink)
-		m_traderSink->handleTraderLog(LL_ERROR, "[TraderFemas]请求出错: %s, 请求ID: %d", pRspInfo->ErrorMsg, nRequestID);
+	if (m_sink)
+		m_sink->handleTraderLog(LL_ERROR, "[TraderFemas]请求出错: %s, 请求ID: %d", pRspInfo->ErrorMsg, nRequestID);
 }
 
 void TraderFemas::OnRtnOrder( CUstpFtdcOrderField *pOrder )
@@ -848,8 +848,8 @@ void TraderFemas::OnRtnOrder( CUstpFtdcOrderField *pOrder )
 	WTSOrderInfo *orderInfo = makeOrderInfo(pOrder);
 	if(orderInfo)
 	{
-		if(m_traderSink)
-			m_traderSink->onPushOrder(orderInfo);
+		if(m_sink)
+			m_sink->onPushOrder(orderInfo);
 
 		orderInfo->release();
 	}
@@ -860,8 +860,8 @@ void TraderFemas::OnRtnTrade( CUstpFtdcTradeField *pTrade )
 	WTSTradeInfo *tRecord = makeTradeRecord(pTrade);
 	if(tRecord)
 	{
-		if(m_traderSink)
-			m_traderSink->onPushTrade(tRecord);
+		if(m_sink)
+			m_sink->onPushTrade(tRecord);
 
 		tRecord->release();
 	}

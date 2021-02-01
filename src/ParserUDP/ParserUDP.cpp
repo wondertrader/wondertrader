@@ -257,7 +257,7 @@ void ParserUDP::unsubscribe(const CodeSet &setSymbols)
 
 }
 
-void ParserUDP::registerListener( IParserApiListener* listener )
+void ParserUDP::registerSpi( IParserSpi* listener )
 {
 	bool bReplaced = (_sink!=NULL);
 	_sink = listener;

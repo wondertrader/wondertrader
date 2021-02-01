@@ -121,7 +121,7 @@ bool ParserAdapter::init(const char* id, WTSVariant* cfg, IParserStub* stub, IBa
 
 	if (_parser_api)
 	{
-		_parser_api->registerListener(this);
+		_parser_api->registerSpi(this);
 
 		WTSParams* params = cfg->toParams();
 		if (_parser_api->init(params))

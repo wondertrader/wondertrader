@@ -650,7 +650,7 @@ void TraderXTP::release()
 		_trades->clear();
 }
 
-void TraderXTP::registerListener(ITraderApiListener *listener)
+void TraderXTP::registerSpi(ITraderSpi *listener)
 {
 	_sink = listener;
 	if (_sink)

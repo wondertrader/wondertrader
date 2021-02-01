@@ -67,7 +67,7 @@ public:
 
 	virtual void release() override;
 
-	virtual void registerListener(ITraderApiListener *listener) override;
+	virtual void registerSpi(ITraderSpi *listener) override;
 
 	virtual bool makeEntrustID(char* buffer, int length) override;
 
@@ -186,7 +186,7 @@ protected:
 
 	std::string		m_strUserName;
 
-	ITraderApiListener*	m_traderSink;
+	ITraderSpi*	m_sink;
 	uint64_t		m_uLastQryTime;
 
 	uint32_t					m_lDate;

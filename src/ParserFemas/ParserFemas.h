@@ -48,7 +48,7 @@ public:
 	virtual void subscribe(const CodeSet &vecSymbols) override;
 	virtual void unsubscribe(const CodeSet &vecSymbols) override;
 
-	virtual void registerListener(IParserApiListener* listener) override;
+	virtual void registerSpi(IParserSpi* listener) override;
 
 
 //CUstpFtdcMdSpi ½Ó¿Ú
@@ -101,7 +101,7 @@ private:
 
 	int					m_iRequestID;
 
-	IParserApiListener*	m_parserSink;
+	IParserSpi*	m_sink;
 	IBaseDataMgr*		m_pBaseDataMgr;
 
 	DllHandle		m_hInst;
