@@ -157,7 +157,7 @@ bool ParserCTPMini::init(WTSParams* config)
 	}
 	std::string dllpath = getBinDir() + module;
 	m_hInstCTP = DLLHelper::load_library(dllpath.c_str());
-	std::string path = StrUtil::printf("CTPMiniParserFlow/%s/%s/", m_strBroker.c_str(), m_strUserID.c_str());
+	std::string path = StrUtil::printf("ParserCTPMiniFlow/%s/%s/", m_strBroker.c_str(), m_strUserID.c_str());
 	if (!StdFile::exists(path.c_str()))
 	{
 		boost::filesystem::create_directories(boost::filesystem::path(path));
@@ -215,7 +215,7 @@ void ParserCTPMini::OnFrontConnected()
 {
 	if(m_parserSink)
 	{
-		m_parserSink->handleParserLog(LL_INFO, "[CTPMiniParser]行情服务已连接");
+		m_parserSink->handleParserLog(LL_INFO, "[ParserCTPMini]行情服务已连接");
 		m_parserSink->handleEvent(WPE_Connect, 0);
 	}
 
@@ -250,7 +250,7 @@ void ParserCTPMini::OnFrontDisconnected( int nReason )
 {
 	if(m_parserSink)
 	{
-		m_parserSink->handleParserLog(LL_ERROR, StrUtil::printf("[CTPMiniParser]行情服务连接已断开,原因: %d...", nReason).c_str());
+		m_parserSink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserCTPMini]行情服务连接已断开,原因: %d...", nReason).c_str());
 		m_parserSink->handleEvent(WPE_Close, 0);
 	}
 }
@@ -379,19 +379,19 @@ void ParserCTPMini::OnRspSubMarketData( CThostFtdcSpecificInstrumentField *pSpec
 	if(!IsErrorRspInfo(pRspInfo))
 	{
 		//if(m_parserSink)
-		//	m_parserSink->handleParserLog(LL_INFO, StrUtil::printf("[CTPMiniParser]实时行情订阅成功,合约代码:%s", pSpecificInstrument->InstrumentID).c_str());
+		//	m_parserSink->handleParserLog(LL_INFO, StrUtil::printf("[ParserCTPMini]实时行情订阅成功,合约代码:%s", pSpecificInstrument->InstrumentID).c_str());
 	}
 	else
 	{
 		//if(m_parserSink)
-		//	m_parserSink->handleParserLog(LL_INFO, StrUtil::printf("[CTPMiniParser]实时行情订阅失败,合约代码:%s", pSpecificInstrument->InstrumentID).c_str());
+		//	m_parserSink->handleParserLog(LL_INFO, StrUtil::printf("[ParserCTPMini]实时行情订阅失败,合约代码:%s", pSpecificInstrument->InstrumentID).c_str());
 	}
 }
 
 void ParserCTPMini::OnHeartBeatWarning( int nTimeLapse )
 {
 	if(m_parserSink)
-		m_parserSink->handleParserLog(LL_INFO, StrUtil::printf("[CTPMiniParser]心跳包, 时长: %d...", nTimeLapse).c_str());
+		m_parserSink->handleParserLog(LL_INFO, StrUtil::printf("[ParserCTPMini]心跳包, 时长: %d...", nTimeLapse).c_str());
 }
 
 void ParserCTPMini::ReqUserLogin()
@@ -410,7 +410,7 @@ void ParserCTPMini::ReqUserLogin()
 	if(iResult != 0)
 	{
 		if(m_parserSink)
-			m_parserSink->handleParserLog(LL_ERROR, StrUtil::printf("[CTPMiniParser]登录请求发送失败, 错误码:%d", iResult).c_str());
+			m_parserSink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserCTPMini]登录请求发送失败, 错误码:%d", iResult).c_str());
 	}
 }
 
@@ -439,12 +439,12 @@ void ParserCTPMini::SubscribeMarketData()
 		if(iResult != 0)
 		{
 			if(m_parserSink)
-				m_parserSink->handleParserLog(LL_ERROR, StrUtil::printf("[CTPMiniParser]行情订阅请求发送失败, 错误码:%d", iResult).c_str());
+				m_parserSink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserCTPMini]行情订阅请求发送失败, 错误码:%d", iResult).c_str());
 		}
 		else
 		{
 			if(m_parserSink)
-				m_parserSink->handleParserLog(LL_INFO, StrUtil::printf("[CTPMiniParser]一共订阅 %d 个合约行情", nCount).c_str());
+				m_parserSink->handleParserLog(LL_INFO, StrUtil::printf("[ParserCTPMini]一共订阅 %d 个合约行情", nCount).c_str());
 		}
 	}
 	codeFilter.clear();
@@ -482,12 +482,12 @@ void ParserCTPMini::subscribe(const CodeSet &vecSymbols)
 			if(iResult != 0)
 			{
 				if(m_parserSink)
-					m_parserSink->handleParserLog(LL_ERROR, StrUtil::printf("[CTPMiniParser]行情订阅请求发送失败, 错误码:%d", iResult).c_str());
+					m_parserSink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserCTPMini]行情订阅请求发送失败, 错误码:%d", iResult).c_str());
 			}
 			else
 			{
 				if(m_parserSink)
-					m_parserSink->handleParserLog(LL_INFO, StrUtil::printf("[CTPMiniParser]一共订阅 %d 个合约行情", nCount).c_str());
+					m_parserSink->handleParserLog(LL_INFO, StrUtil::printf("[ParserCTPMini]一共订阅 %d 个合约行情", nCount).c_str());
 			}
 		}
 	}

@@ -1,5 +1,5 @@
 /*!
- * \file ParserCTP.cpp
+ * \file ParserCTPOpt.cpp
  * \project	WonderTrader
  *
  * \author Wesley
@@ -7,7 +7,7 @@
  * 
  * \brief 
  */
-#include "ParserCTP.h"
+#include "ParserCTPOpt.h"
 #include "../Share/StrUtil.hpp"
 #include "../Share/TimeUtils.hpp"
 #include "../Includes/WTSDataDef.hpp"
@@ -90,7 +90,7 @@ extern "C"
 {
 	EXPORT_FLAG IParserApi* createParser()
 	{
-		ParserCTP* parser = new ParserCTP();
+		ParserCTPOpt* parser = new ParserCTPOpt();
 		return parser;
 	}
 
@@ -129,7 +129,7 @@ inline double checkValid(double val)
 	return val;
 }
 
-ParserCTP::ParserCTP()
+ParserCTPOpt::ParserCTPOpt()
 	:m_pUserAPI(NULL)
 	,m_iRequestID(0)
 	,m_uTradingDate(0)
@@ -137,12 +137,12 @@ ParserCTP::ParserCTP()
 }
 
 
-ParserCTP::~ParserCTP()
+ParserCTPOpt::~ParserCTPOpt()
 {
 	m_pUserAPI = NULL;
 }
 
-bool ParserCTP::init(WTSParams* config)
+bool ParserCTPOpt::init(WTSParams* config)
 {
 	m_strFrontAddr = config->getCString("front");
 	m_strBroker = config->getCString("broker");
@@ -161,19 +161,19 @@ bool ParserCTP::init(WTSParams* config)
 	}
 	std::string dllpath = getBinDir() + module;
 	m_hInstCTP = DLLHelper::load_library(dllpath.c_str());
-	std::string path = StrUtil::printf("ParserCTPFlow/%s/%s/", m_strBroker.c_str(), m_strUserID.c_str());
+	std::string path = StrUtil::printf("ParserCTPOptFlow/%s/%s/", m_strBroker.c_str(), m_strUserID.c_str());
 	if (!StdFile::exists(path.c_str()))
 	{
 		boost::filesystem::create_directories(boost::filesystem::path(path));
 	}	
 #ifdef _WIN32
 #	ifdef _WIN64
-	const char* creatorName = "?CreateFtdcMdApi@CThostFtdcMdApi@@SAPEAV1@PEBD_N1@Z";
+	const char* creatorName = "?CreateFtdcMdApi@CThostFtdcMdApi@ctp_sopt@@SAPEAV12@PEBD_N1@Z";
 #	else
-	const char* creatorName = "?CreateFtdcMdApi@CThostFtdcMdApi@@SAPAV1@PBD_N1@Z";
+	const char* creatorName = "?CreateFtdcMdApi@CThostFtdcMdApi@ctp_sopt@@SAPAV12@PBD_N1@Z";
 #	endif
 #else
-	const char* creatorName = "_ZN15CThostFtdcMdApi15CreateFtdcMdApiEPKcbb";
+	const char* creatorName = "_ZN8ctp_sopt15CThostFtdcMdApi15CreateFtdcMdApiEPKcbb";
 #endif
 	m_funcCreator = (CTPCreator)DLLHelper::get_symbol(m_hInstCTP, creatorName);
 	m_pUserAPI = m_funcCreator(path.c_str(), false, false);
@@ -183,12 +183,12 @@ bool ParserCTP::init(WTSParams* config)
 	return true;
 }
 
-void ParserCTP::release()
+void ParserCTPOpt::release()
 {
 	disconnect();
 }
 
-bool ParserCTP::connect()
+bool ParserCTPOpt::connect()
 {
 	if(m_pUserAPI)
 	{
@@ -198,7 +198,7 @@ bool ParserCTP::connect()
 	return true;
 }
 
-bool ParserCTP::disconnect()
+bool ParserCTPOpt::disconnect()
 {
 	if(m_pUserAPI)
 	{
@@ -210,23 +210,23 @@ bool ParserCTP::disconnect()
 	return true;
 }
 
-void ParserCTP::OnRspError( CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast )
+void ParserCTPOpt::OnRspError( CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast )
 {
 	IsErrorRspInfo(pRspInfo);
 }
 
-void ParserCTP::OnFrontConnected()
+void ParserCTPOpt::OnFrontConnected()
 {
 	if(m_parserSink)
 	{
-		m_parserSink->handleParserLog(LL_INFO, "[ParserCTP]行情服务已连接");
+		m_parserSink->handleParserLog(LL_INFO, "[ParserCTPOpt]行情服务已连接");
 		m_parserSink->handleEvent(WPE_Connect, 0);
 	}
 
 	ReqUserLogin();
 }
 
-void ParserCTP::OnRspUserLogin( CThostFtdcRspUserLoginField *pRspUserLogin, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast )
+void ParserCTPOpt::OnRspUserLogin( CThostFtdcRspUserLoginField *pRspUserLogin, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast )
 {
 	if(bIsLast && !IsErrorRspInfo(pRspInfo))
 	{
@@ -242,7 +242,7 @@ void ParserCTP::OnRspUserLogin( CThostFtdcRspUserLoginField *pRspUserLogin, CTho
 	}
 }
 
-void ParserCTP::OnRspUserLogout(CThostFtdcUserLogoutField *pUserLogout, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
+void ParserCTPOpt::OnRspUserLogout(CThostFtdcUserLogoutField *pUserLogout, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
 	if(m_parserSink)
 	{
@@ -250,21 +250,21 @@ void ParserCTP::OnRspUserLogout(CThostFtdcUserLogoutField *pUserLogout, CThostFt
 	}
 }
 
-void ParserCTP::OnFrontDisconnected( int nReason )
+void ParserCTPOpt::OnFrontDisconnected( int nReason )
 {
 	if(m_parserSink)
 	{
-		m_parserSink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserCTP]CTP行情服务连接已断开,原因: %d...", nReason).c_str());
+		m_parserSink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserCTPOpt]CTP行情服务连接已断开,原因: %d...", nReason).c_str());
 		m_parserSink->handleEvent(WPE_Close, 0);
 	}
 }
 
-void ParserCTP::OnRspUnSubMarketData( CThostFtdcSpecificInstrumentField *pSpecificInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast )
+void ParserCTPOpt::OnRspUnSubMarketData( CThostFtdcSpecificInstrumentField *pSpecificInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast )
 {
 
 }
 
-void ParserCTP::OnRtnDepthMarketData( CThostFtdcDepthMarketDataField *pDepthMarketData )
+void ParserCTPOpt::OnRtnDepthMarketData( CThostFtdcDepthMarketDataField *pDepthMarketData )
 {	
 	if(m_pBaseDataMgr == NULL)
 	{
@@ -378,27 +378,27 @@ void ParserCTP::OnRtnDepthMarketData( CThostFtdcDepthMarketDataField *pDepthMark
 	tick->release();
 }
 
-void ParserCTP::OnRspSubMarketData( CThostFtdcSpecificInstrumentField *pSpecificInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast )
+void ParserCTPOpt::OnRspSubMarketData( CThostFtdcSpecificInstrumentField *pSpecificInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast )
 {
 	if(!IsErrorRspInfo(pRspInfo))
 	{
 		//if(m_parserSink)
-		//	m_parserSink->handleParserLog(LL_INFO, StrUtil::printf("[ParserCTP]实时行情订阅成功,合约代码:%s", pSpecificInstrument->InstrumentID).c_str());
+		//	m_parserSink->handleParserLog(LL_INFO, StrUtil::printf("[ParserCTPOpt]实时行情订阅成功,合约代码:%s", pSpecificInstrument->InstrumentID).c_str());
 	}
 	else
 	{
 		//if(m_parserSink)
-		//	m_parserSink->handleParserLog(LL_INFO, StrUtil::printf("[ParserCTP]实时行情订阅失败,合约代码:%s", pSpecificInstrument->InstrumentID).c_str());
+		//	m_parserSink->handleParserLog(LL_INFO, StrUtil::printf("[ParserCTPOpt]实时行情订阅失败,合约代码:%s", pSpecificInstrument->InstrumentID).c_str());
 	}
 }
 
-void ParserCTP::OnHeartBeatWarning( int nTimeLapse )
+void ParserCTPOpt::OnHeartBeatWarning( int nTimeLapse )
 {
 	if(m_parserSink)
-		m_parserSink->handleParserLog(LL_INFO, StrUtil::printf("[ParserCTP]心跳包, 时长: %d...", nTimeLapse).c_str());
+		m_parserSink->handleParserLog(LL_INFO, StrUtil::printf("[ParserCTPOpt]心跳包, 时长: %d...", nTimeLapse).c_str());
 }
 
-void ParserCTP::ReqUserLogin()
+void ParserCTPOpt::ReqUserLogin()
 {
 	if(m_pUserAPI == NULL)
 	{
@@ -414,11 +414,11 @@ void ParserCTP::ReqUserLogin()
 	if(iResult != 0)
 	{
 		if(m_parserSink)
-			m_parserSink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserCTP]CTP 登录请求发送失败, 错误码:%d", iResult).c_str());
+			m_parserSink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserCTPOpt]CTP 登录请求发送失败, 错误码:%d", iResult).c_str());
 	}
 }
 
-void ParserCTP::SubscribeMarketData()
+void ParserCTPOpt::SubscribeMarketData()
 {
 	CodeSet codeFilter = m_filterSubs;
 	if(codeFilter.empty())
@@ -443,24 +443,24 @@ void ParserCTP::SubscribeMarketData()
 		if(iResult != 0)
 		{
 			if(m_parserSink)
-				m_parserSink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserCTP]CTP 行情订阅请求发送失败, 错误码:%d", iResult).c_str());
+				m_parserSink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserCTPOpt]CTP 行情订阅请求发送失败, 错误码:%d", iResult).c_str());
 		}
 		else
 		{
 			if(m_parserSink)
-				m_parserSink->handleParserLog(LL_INFO, StrUtil::printf("[ParserCTP]一共订阅 %d 个合约行情", nCount).c_str());
+				m_parserSink->handleParserLog(LL_INFO, StrUtil::printf("[ParserCTPOpt]一共订阅 %d 个合约行情", nCount).c_str());
 		}
 	}
 	codeFilter.clear();
 	delete[] subscribe;
 }
 
-bool ParserCTP::IsErrorRspInfo(CThostFtdcRspInfoField *pRspInfo)
+bool ParserCTPOpt::IsErrorRspInfo(CThostFtdcRspInfoField *pRspInfo)
 {
 	return false;
 }
 
-void ParserCTP::subscribe(const CodeSet &vecSymbols)
+void ParserCTPOpt::subscribe(const CodeSet &vecSymbols)
 {
 	if(m_uTradingDate == 0)
 	{
@@ -486,27 +486,27 @@ void ParserCTP::subscribe(const CodeSet &vecSymbols)
 			if(iResult != 0)
 			{
 				if(m_parserSink)
-					m_parserSink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserCTP]CTP 行情订阅请求发送失败, 错误码:%d", iResult).c_str());
+					m_parserSink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserCTPOpt]CTP 行情订阅请求发送失败, 错误码:%d", iResult).c_str());
 			}
 			else
 			{
 				if(m_parserSink)
-					m_parserSink->handleParserLog(LL_INFO, StrUtil::printf("[ParserCTP]一共订阅 %d 个合约行情", nCount).c_str());
+					m_parserSink->handleParserLog(LL_INFO, StrUtil::printf("[ParserCTPOpt]一共订阅 %d 个合约行情", nCount).c_str());
 			}
 		}
 	}
 }
 
-void ParserCTP::unsubscribe(const CodeSet &vecSymbols)
+void ParserCTPOpt::unsubscribe(const CodeSet &vecSymbols)
 {
 }
 
-bool ParserCTP::isConnected()
+bool ParserCTPOpt::isConnected()
 {
 	return m_pUserAPI!=NULL;
 }
 
-void ParserCTP::registerListener(IParserApiListener* listener)
+void ParserCTPOpt::registerListener(IParserApiListener* listener)
 {
 	m_parserSink = listener;
 
