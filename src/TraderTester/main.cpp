@@ -184,7 +184,7 @@ public:
 			printf("请输入委托价格: ");
 			std::cin >> price;
 
-			printf("请输入手数: ");
+			printf("请输入数量: ");
 			std::cin >> qty;
 
 			printf("请输入方向，0-做多，1-做空: ");
@@ -197,7 +197,7 @@ public:
 			if (offset != 0 && offset != 1)
 				continue;
 
-			printf("品种：%s.%s，价格：%f，手数：%u，方向：%s，开平：%s，确认y/n? ", exchg, code, price, qty, bs == 0 ? "做多" : "做空", offset == 0 ? "开仓" : "平仓");
+			printf("品种：%s.%s，价格：%f，数量：%u，方向：%s，开平：%s，确认y/n? ", exchg, code, price, qty, bs == 0 ? "做多" : "做空", offset == 0 ? "开仓" : "平仓");
 			char c;
 			std::cin >> c;
 			if(c == 'y')
@@ -226,7 +226,7 @@ public:
 		m_pTraderApi->makeEntrustID(entrustid, 64);
 		entrust->setEntrustID(entrustid);
 
-		log("[%s]开始下单，品种: %s.%s，价格: %f，手数: %d，动作: %s%s", m_pParams->getCString("user"), exchg, code, price, qty, offset == 0 ? "开" : "平", bs == 0 ? "多" : "空");
+		log("[%s]开始下单，品种: %s.%s，价格: %f，数量: %d，动作: %s%s", m_pParams->getCString("user"), exchg, code, price, qty, offset == 0 ? "开" : "平", bs == 0 ? "多" : "空");
 
 		m_pTraderApi->orderInsert(entrust);
 		entrust->release();
@@ -250,7 +250,7 @@ public:
 			printf("请输入交易所代码: ");
 			std::cin >> exchg;
 
-			printf("请输入手数: ");
+			printf("请输入数量: ");
 			std::cin >> qty;
 
 			printf("请输入方向，0-做多，1-做空: ");
@@ -259,7 +259,7 @@ public:
 			printf("请输入开平，0-开仓，1-平仓: ");
 			std::cin >> offset;
 
-			printf("品种：%s.%s，手数：%u，方向：%s，开平：%s，确认y/n? ", exchg, code, qty, bs == 0 ? "做多" : "做空", offset == 0 ? "开仓" : "平仓");
+			printf("品种：%s.%s，数量：%u，方向：%s，开平：%s，确认y/n? ", exchg, code, qty, bs == 0 ? "做多" : "做空", offset == 0 ? "开仓" : "平仓");
 			char c;
 			std::cin >> c;
 			if (c == 'y')
@@ -287,7 +287,7 @@ public:
 		m_pTraderApi->makeEntrustID(entrustid, 64);
 		entrust->setEntrustID(entrustid);
 
-		log("[%s]开始下单，品种: %s.%s，价格: 市价，手数: %d，动作: %s%s", m_pParams->getCString("user"), exchg, code, qty, offset == 0 ? "开" : "平", bs == 0 ? "多" : "空");
+		log("[%s]开始下单，品种: %s.%s，价格: 市价，数量: %d，动作: %s%s", m_pParams->getCString("user"), exchg, code, qty, offset == 0 ? "开" : "平", bs == 0 ? "多" : "空");
 
 		m_pTraderApi->orderInsert(entrust);
 		entrust->release();
@@ -507,11 +507,11 @@ public:
 
 	virtual void onPushTrade(WTSTradeInfo* tradeRecord)
 	{
-		log("[%s]收到成交回报，合约%s，成交价：%.4f，成交手数：%.4f", m_pParams->getCString("user"), tradeRecord->getCode(), tradeRecord->getPrice(), tradeRecord->getVolume());
+		log("[%s]收到成交回报，合约%s，成交价：%.4f，成交数量：%.4f", m_pParams->getCString("user"), tradeRecord->getCode(), tradeRecord->getPrice(), tradeRecord->getVolumn());
 
 		if(g_riskAct)
 		{
-			log("[%s]%s超过最大持仓手数，禁止开仓", m_pParams->getCString("user"), tradeRecord->getCode());
+			log("[%s]%s超过最大持仓数量，禁止开仓", m_pParams->getCString("user"), tradeRecord->getCode());
 
 			g_blkList.insert(tradeRecord->getCode());
 		}
