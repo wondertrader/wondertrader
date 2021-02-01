@@ -34,7 +34,7 @@ extern std::string	SAVEPATH;	//保存位置
 extern std::string	HOTFILE;
 extern std::string	APPID;
 extern std::string	AUTHCODE;
-extern bool			ISFOROPTION;
+extern uint32_t		CLASSMASK;
 
 extern std::string COMM_FILE;		//输出的品种文件名
 extern std::string CONT_FILE;		//输出的合约文件名
@@ -77,6 +77,11 @@ typedef struct _Contract
 
 	uint32_t	m_maxMktQty;
 	uint32_t	m_maxLmtQty;
+
+	OptionType	m_optType;
+	std::string m_strUnderlying;
+	double		m_strikePrice;
+	double		m_dUnderlyingScale;
 } Contract;
 typedef std::map<std::string, Contract> ContractMap;
 ContractMap _contracts;
@@ -86,7 +91,7 @@ std::string extractProductID(const char* instrument)
 {
 	std::string strRet;
 	int nLen = 0;
-	while('A' <= instrument[nLen] && instrument[nLen] <= 'z')
+	while ('A' <= instrument[nLen] && instrument[nLen] <= 'z')
 	{
 		strRet += instrument[nLen];
 		nLen++;
@@ -112,10 +117,10 @@ std::set<std::string>	prod_set;
 
 double convertInvalidDouble(double val)
 {
-	if(val == 5.5e-007)
+	if (val == 5.5e-007)
 		return -1;
 
-	if(val == 0)
+	if (val == 0)
 		return -1;
 
 	return val;
@@ -162,7 +167,7 @@ void CTraderSpi::ReqUserLogin()
 }
 
 void CTraderSpi::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin,
-		CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
+	CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
 	std::cerr << "--->>> " << "OnRspUserLogin" << std::endl;
 	if (bIsLast && !IsErrorRspInfo(pRspInfo))
@@ -175,7 +180,7 @@ void CTraderSpi::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin,
 		sprintf(ORDER_REF, "%d", iNextOrderRef);
 		///获取当前交易日
 		m_lTradingDate = atoi(pUserApi->GetTradingDay());
-		
+
 		ReqQryInstrument();
 	}
 }
@@ -190,9 +195,9 @@ void CTraderSpi::ReqQryInstrument()
 
 inline bool isOption(TThostFtdcProductClassType pClass)
 {
-	if (pClass == THOST_FTDC_PC_Options || pClass == THOST_FTDC_PC_SpotOption)
+	if (pClass == THOST_FTDC_PC_Options || pClass == THOST_FTDC_PC_SpotOption || pClass == THOST_FTDC_PC_SpotOption)
 		return true;
-	
+
 	return false;
 }
 
@@ -201,94 +206,130 @@ inline bool isFuture(TThostFtdcProductClassType pClass)
 	return pClass == THOST_FTDC_PC_Futures;
 }
 
+inline ContractCategory wrapCategory(TThostFtdcProductClassType cType)
+{
+	switch (cType)
+	{
+	case THOST_FTDC_PC_Futures: return CC_Future;
+	case THOST_FTDC_PC_Options: return CC_Option;
+	case THOST_FTDC_PC_Combination: return CC_Combination;
+	case THOST_FTDC_PC_Spot: return CC_Spot;
+	case THOST_FTDC_PC_EFP: return CC_EFP;
+	case THOST_FTDC_PC_SpotOption: return CC_SpotOption;
+	default:
+		throw std::exception("non implemented category");
+	}
+}
+
+
 void CTraderSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
 	if (!IsErrorRspInfo(pRspInfo))
 	{
-		if (pInstrument && ISFOROPTION?isOption(pInstrument->ProductClass):isFuture(pInstrument->ProductClass))
-		{		
-			std::cerr << "--->>> OnRspQryInstrument: " << pInstrument->ExchangeID << "." << pInstrument->InstrumentID << std::endl;
-			std::string pname = MAP_NAME[pInstrument->ProductID];
-			std::string cname = "";
-			if (pname.empty())
+		if (pInstrument)
+		{
+			bool bOption = isOption(pInstrument->ProductClass);
+			bool bFuture = isFuture(pInstrument->ProductClass);
+
+			bool isGranted = false;
+			if (bOption && (CLASSMASK & 2) != 0)
+				isGranted = true;
+			else if (bFuture && (CLASSMASK & 1) != 0)
+				isGranted = true;
+
+			if (isGranted)
 			{
-				cname = pInstrument->InstrumentName;
-				pname = ISFOROPTION ? pInstrument->InstrumentName : extractProductName(pInstrument->InstrumentName);
-			}
-			else
-			{
-				if(ISFOROPTION)
+
+				std::cerr << "--->>> OnRspQryInstrument: " << pInstrument->ExchangeID << "." << pInstrument->InstrumentID << std::endl;
+				std::string pname = MAP_NAME[pInstrument->ProductID];
+				std::string cname = "";
+				if (pname.empty())
 				{
 					cname = pInstrument->InstrumentName;
+					pname = bFuture ? extractProductName(pInstrument->InstrumentName) : pInstrument->InstrumentName;
 				}
 				else
 				{
-					std::string month = pInstrument->InstrumentID;
-					month = month.substr(strlen(pInstrument->ProductID));
-					cname = pname + month;
+					if (!bFuture)
+					{
+						cname = pInstrument->InstrumentName;
+					}
+					else
+					{
+						std::string month = pInstrument->InstrumentID;
+						month = month.substr(strlen(pInstrument->ProductID));
+						cname = pname + month;
+					}
 				}
-			}
 
-			Contract contract;
-			contract.m_strCode = pInstrument->InstrumentID;
-			contract.m_strExchg = pInstrument->ExchangeID;
-			contract.m_strName = cname;
-			contract.m_strProduct = pInstrument->ProductID;
-			contract.m_maxMktQty = pInstrument->MaxMarketOrderVolume;
-			contract.m_maxLmtQty = pInstrument->MaxLimitOrderVolume;
+				Contract contract;
+				contract.m_strCode = pInstrument->InstrumentID;
+				contract.m_strExchg = pInstrument->ExchangeID;
+				contract.m_strName = StrUtil::trim(cname.c_str());
+				contract.m_strProduct = pInstrument->ProductID;
+				contract.m_maxMktQty = pInstrument->MaxMarketOrderVolume;
+				contract.m_maxLmtQty = pInstrument->MaxLimitOrderVolume;
 
-			std::string key = StrUtil::printf("%s.%s", pInstrument->ExchangeID, pInstrument->ProductID);
-			auto it = _commodities.find(key);
-			if(it == _commodities.end())
-			{
-				Commodity commInfo;
-				commInfo.m_strProduct = pInstrument->ProductID;
-				commInfo.m_strName = pname;
-				commInfo.m_strExchg = pInstrument->ExchangeID;
-				commInfo.m_strCurrency = "CNY";
+				contract.m_optType = bOption ? (OptionType)pInstrument->OptionsType : OT_None;
+				contract.m_strUnderlying = pInstrument->UnderlyingInstrID;
+				contract.m_strikePrice = pInstrument->StrikePrice;
+				contract.m_dUnderlyingScale = pInstrument->UnderlyingMultiple;
 
-				commInfo.m_strSession = MAP_SESSION[key];
-				commInfo.m_ccCategory = ISFOROPTION ? CC_Option : CC_Future;
-
-				commInfo.m_uVolScale = (pInstrument->VolumeMultiple == 0 ? 1 : pInstrument->VolumeMultiple);
-				commInfo.m_fPriceTick = pInstrument->PriceTick;
-
-				CoverMode cm = CM_OpenCover;
-				if (!ISFOROPTION)
+				std::string key = StrUtil::printf("%s.%s", pInstrument->ExchangeID, pInstrument->ProductID);
+				auto it = _commodities.find(key);
+				if (it == _commodities.end())
 				{
-					if (strcmp(pInstrument->ExchangeID, "SHFE") == 0 || strcmp(pInstrument->ExchangeID, "INE") == 0)
-						cm = CM_CoverToday;
-					//上期所的就是平今，非上期所的就是开平
+					Commodity commInfo;
+					commInfo.m_strProduct = pInstrument->ProductID;
+					commInfo.m_strName = StrUtil::trim(pname.c_str());
+					commInfo.m_strExchg = pInstrument->ExchangeID;
+					commInfo.m_strCurrency = "CNY";
+
+					commInfo.m_strSession = MAP_SESSION[key];
+					commInfo.m_ccCategory = wrapCategory(pInstrument->ProductClass);
+
+					commInfo.m_uVolScale = (pInstrument->VolumeMultiple == 0 ? 1 : pInstrument->VolumeMultiple);
+					commInfo.m_fPriceTick = pInstrument->PriceTick;
+
+					CoverMode cm = CM_OpenCover;
+					if (bFuture)
+					{
+						if (strcmp(pInstrument->ExchangeID, "SHFE") == 0 || strcmp(pInstrument->ExchangeID, "INE") == 0)
+							cm = CM_CoverToday;
+						//上期所的就是平今，非上期所的就是开平
+					}
+
+					commInfo.m_coverMode = cm;
+
+					PriceMode pm = PM_Both;
+					if (bFuture)
+					{
+						if (strcmp(pInstrument->ExchangeID, "SHFE") == 0 || strcmp(pInstrument->ExchangeID, "INE") == 0)
+							pm = PM_Limit;
+					}
+					commInfo.m_priceMode = pm;
+
+					if (pInstrument->PriceTick < 0.001)
+						commInfo.m_uPrecision = 4;
+					else if (pInstrument->PriceTick < 0.01)
+						commInfo.m_uPrecision = 3;
+					else if (pInstrument->PriceTick < 0.1)
+						commInfo.m_uPrecision = 2;
+					else if (pInstrument->PriceTick < 1)
+						commInfo.m_uPrecision = 1;
+					else
+						commInfo.m_uPrecision = 0;
+
+					_commodities[key] = commInfo;
 				}
-				
-				commInfo.m_coverMode = cm;
 
-				PriceMode pm = PM_Both;
-				if (!ISFOROPTION)
-				{
-					if (strcmp(pInstrument->ExchangeID, "SHFE") == 0 || strcmp(pInstrument->ExchangeID, "INE") == 0)
-						pm = PM_Limit;
-				}
-				commInfo.m_priceMode = pm;
-
-				if (pInstrument->PriceTick < 0.01)
-					commInfo.m_uPrecision = 3;
-				else if (pInstrument->PriceTick < 0.1)
-					commInfo.m_uPrecision = 2;
-				else if (pInstrument->PriceTick < 1)
-					commInfo.m_uPrecision = 1;
-				else
-					commInfo.m_uPrecision = 0;
-
-				_commodities[key] = commInfo;
+				key = StrUtil::printf("%s.%s", pInstrument->ExchangeID, pInstrument->InstrumentID);
+				_contracts[key] = contract;
 			}
-			
-			key = StrUtil::printf("%s.%s", pInstrument->ExchangeID, pInstrument->InstrumentID);
-			_contracts[key] = contract;
 		}
 	}
 
-	if(bIsLast)
+	if (bIsLast)
 	{
 		DumpToJson();
 		exit(0);
@@ -342,25 +383,31 @@ void CTraderSpi::DumpToJson()
 				jContracts.AddMember(rj::Value(cInfo.m_strExchg.c_str(), allocator), rj::Value(rj::kObjectType), allocator);
 			}
 
-			//Json::Value jcInfo(Json::objectValue);
 			rj::Value jcInfo(rj::kObjectType);
-			//jcInfo["name"] = cInfo.m_strName;
-			//jcInfo["code"] = cInfo.m_strCode;
-			//jcInfo["exchg"] = cInfo.m_strExchg;
-			//jcInfo["product"] = cInfo.m_strProduct;
 
 			jcInfo.AddMember("name", rj::Value(cInfo.m_strName.c_str(), allocator), allocator);
 			jcInfo.AddMember("code", rj::Value(cInfo.m_strCode.c_str(), allocator), allocator);
 			jcInfo.AddMember("exchg", rj::Value(cInfo.m_strExchg.c_str(), allocator), allocator);
 			jcInfo.AddMember("product", rj::Value(cInfo.m_strProduct.c_str(), allocator), allocator);
 
-			//jcInfo["maxlimitqty"] = cInfo.m_maxLmtQty;
-			//jcInfo["maxmarketqty"] = cInfo.m_maxMktQty;
 			jcInfo.AddMember("maxlimitqty", cInfo.m_maxLmtQty, allocator);
 			jcInfo.AddMember("maxmarketqty", cInfo.m_maxMktQty, allocator);
 
+			if (cInfo.m_optType != OT_None)
+			{
+				//OptionType	m_optType;
+				//std::string m_strUnderlying;
+				//double		m_strikePrice;
+				//double		m_dUnderlyingScale;
+				rj::Value optInfo(rj::kObjectType);
+				optInfo.AddMember("optiontype", (uint32_t)cInfo.m_optType, allocator);
+				optInfo.AddMember("underlying", rj::Value(cInfo.m_strUnderlying.c_str(), allocator), allocator);
+				optInfo.AddMember("strikeprice", cInfo.m_strikePrice, allocator);
+				optInfo.AddMember("underlyingscale", cInfo.m_dUnderlyingScale, allocator);
 
-			//jContracts[cInfo.m_strExchg][cInfo.m_strCode] = jcInfo;
+				jcInfo.AddMember("option", optInfo, allocator);
+			}
+
 			jContracts[cInfo.m_strExchg.c_str()].AddMember(rj::Value(cInfo.m_strCode.c_str(), allocator), jcInfo, allocator);
 		}
 	}
@@ -390,12 +437,12 @@ void CTraderSpi::DumpToJson()
 }
 
 
-void CTraderSpi:: OnFrontDisconnected(int nReason)
+void CTraderSpi::OnFrontDisconnected(int nReason)
 {
 	std::cerr << "--->>> " << "OnFrontDisconnected" << std::endl;
 	std::cerr << "--->>> Reason = " << nReason << std::endl;
 }
-		
+
 
 void CTraderSpi::OnRspError(CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {

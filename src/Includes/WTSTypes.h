@@ -22,8 +22,20 @@ typedef enum tagContractCategory
 	CC_Option,			//期权
 	CC_Combination,		//组合
 	CC_Spot,			//即期
-	CC_EFP				//期转现
+	CC_EFP,				//期转现
+	CC_SpotOption,		//现货期权
+	CC_ETFOption		//个股期权
 } ContractCategory;
+
+/*
+ *	期权类型
+ */
+typedef enum tagOptionType
+{
+	OT_None = 0,
+	OT_Call = '1',		//看涨期权
+	OT_Put	= '2'		//看跌期权
+} OptionType;
 
 /*
  *	平仓类型

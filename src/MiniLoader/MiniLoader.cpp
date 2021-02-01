@@ -6,6 +6,7 @@
 
 #include "../Share/IniHelper.hpp"
 #include "../Share/StrUtil.hpp"
+#include "../Share/StdUtils.hpp"
 #include "../Share/DLLHelper.hpp"
 #include <boost/filesystem.hpp>
 
@@ -21,7 +22,7 @@ std::string	PASSWORD;	// 用户密码
 std::string SAVEPATH;	//保存位置
 std::string APPID;
 std::string AUTHCODE;
-bool		ISFOROPTION;	//期权
+uint32_t	CLASSMASK;	//期权
 
 std::string COMM_FILE;		//输出的品种文件名
 std::string CONT_FILE;		//输出的合约文件名
@@ -86,7 +87,7 @@ int main()
 	AUTHCODE = ini.readString("ctp", "authcode", "");
 
 	SAVEPATH	= ini.readString("config", "path", "");
-	ISFOROPTION = ini.readInt("config", "option", 0) == 1;
+	CLASSMASK = ini.readUInt("config", "mask", 1|2|4); //1-期货，2-期权，4-股票
 
 	COMM_FILE = ini.readString("config", "commfile", "commodities.json");
 	CONT_FILE = ini.readString("config", "contfile", "contracts.json");
@@ -111,22 +112,35 @@ int main()
 	}
 
 	SAVEPATH = StrUtil::standardisePath(SAVEPATH);
-
-	FieldArray ayKeys, ayVals;
-	int cout = ini.readSecKeyValArray("Name", ayKeys, ayVals);
-	for (int i = 0; i < cout; i++)
+	std::string map_files = ini.readString("config", "mapfiles", "");
+	if (!map_files.empty())
 	{
-		MAP_NAME[ayKeys[i]] = ayVals[i];
-		printf("品种名称映射：%s - %s\r\n", ayKeys[i].c_str(), ayVals[i].c_str());
-	}
+		StringVector ayFiles = StrUtil::split(map_files, ",");
+		for (const std::string& fName : ayFiles)
+		{
+			printf("开始读取映射文件%s……", fName.c_str());
+			IniHelper iniMap;
+			if (!StdFile::exists(fName.c_str()))
+				continue;
 
-	ayKeys.clear();
-	ayVals.clear();
-	cout = ini.readSecKeyValArray("Session", ayKeys, ayVals);
-	for (int i = 0; i < cout; i++)
-	{
-		MAP_SESSION[ayKeys[i]] = ayVals[i];
-		printf("交易时间映射：%s - %s\r\n", ayKeys[i].c_str(), ayVals[i].c_str());
+			iniMap.load(fName.c_str());
+			FieldArray ayKeys, ayVals;
+			int cout = iniMap.readSecKeyValArray("Name", ayKeys, ayVals);
+			for (int i = 0; i < cout; i++)
+			{
+				MAP_NAME[ayKeys[i]] = ayVals[i];
+				printf("品种名称映射：%s - %s\r\n", ayKeys[i].c_str(), ayVals[i].c_str());
+			}
+
+			ayKeys.clear();
+			ayVals.clear();
+			cout = iniMap.readSecKeyValArray("Session", ayKeys, ayVals);
+			for (int i = 0; i < cout; i++)
+			{
+				MAP_SESSION[ayKeys[i]] = ayVals[i];
+				printf("交易时间映射：%s - %s\r\n", ayKeys[i].c_str(), ayVals[i].c_str());
+			}
+		}
 	}
 
 	// 初始化UserApi
