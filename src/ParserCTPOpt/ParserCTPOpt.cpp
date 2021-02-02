@@ -133,6 +133,7 @@ ParserCTPOpt::ParserCTPOpt()
 	:m_pUserAPI(NULL)
 	,m_iRequestID(0)
 	,m_uTradingDate(0)
+	,m_bLocalTime(false)
 {
 }
 
@@ -148,15 +149,16 @@ bool ParserCTPOpt::init(WTSParams* config)
 	m_strBroker = config->getCString("broker");
 	m_strUserID = config->getCString("user");
 	m_strPassword = config->getCString("pass");
+	m_bLocalTime = config->getBoolean("localtime");
 
 	std::string module = config->getCString("ctpmodule");
 	if (module.empty())
 	{
 
 #ifdef _WIN32
-		module = "thostmduserapi_se.dll";
+		module = "soptthostmduserapi_se.dll";
 #else
-		module = "thostmduserapi_se.so";
+		module = "soptthostmduserapi_se.so";
 #endif
 	}
 	std::string dllpath = getBinDir() + module;
@@ -271,8 +273,16 @@ void ParserCTPOpt::OnRtnDepthMarketData( CThostFtdcDepthMarketDataField *pDepthM
 		return;
 	}
 
-	uint32_t actDate = strtoul(pDepthMarketData->ActionDay, NULL, 10);
-	uint32_t actTime = strToTime(pDepthMarketData->UpdateTime) * 1000 + pDepthMarketData->UpdateMillisec;
+	uint32_t actDate, actTime;
+	if (m_bLocalTime)
+	{
+		TimeUtils::getDateTime(actDate, actTime);
+	}
+	else
+	{
+		actDate = strtoul(pDepthMarketData->ActionDay, NULL, 10);
+		actTime = strToTime(pDepthMarketData->UpdateTime) * 1000 + pDepthMarketData->UpdateMillisec;
+	}
 	uint32_t actHour = actTime / 10000000;
 
 	if (actDate == m_uTradingDate && actHour >= 20)
@@ -314,7 +324,7 @@ void ParserCTPOpt::OnRtnDepthMarketData( CThostFtdcDepthMarketDataField *pDepthM
 	WTSTickStruct& quote = tick->getTickStruct();
 	strcpy(quote.exchg, pCommInfo->getExchg());
 	
-	quote.action_date = actDate;
+	quote.action_date = actDate != 0 ? actDate : m_uTradingDate;
 	quote.action_time = actTime;
 	
 	quote.price = checkValid(pDepthMarketData->LastPrice);

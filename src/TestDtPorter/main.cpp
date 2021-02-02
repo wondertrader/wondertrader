@@ -2,6 +2,6 @@
 
 void main()
 {
-	initialize("dtcfg.json", "logcfg.json");
+	initialize("dtcfg.json", "logcfgdt.json");
 	start();
 }

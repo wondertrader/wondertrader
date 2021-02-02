@@ -43,7 +43,6 @@ bool WtHftStraDemo::init(WTSVariant* cfg)
 {
 	//这里演示一下外部传入参数的获取
 	_code = cfg->getCString("code");
-	_count = cfg->getUInt32("count");
 	_secs = cfg->getUInt32("second");
 	_freq = cfg->getUInt32("freq");
 	_offset = cfg->getUInt32("offset");
@@ -51,8 +50,6 @@ bool WtHftStraDemo::init(WTSVariant* cfg)
 
 	_stock = cfg->getBoolean("stock");
 	_unit = _stock ? 100 : 1;
-	if (_freq == 0)
-		_freq = 30;
 
 	return true;
 }

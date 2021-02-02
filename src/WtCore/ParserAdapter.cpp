@@ -144,10 +144,7 @@ bool ParserAdapter::init(const char* id, WTSVariant* cfg, IParserStub* stub, IBa
 					}
 					WTSContractInfo* contract = _bd_mgr->getContract(code.c_str(), exchg.c_str());
 					WTSCommodityInfo* pCommInfo = _bd_mgr->getCommodity(contract);
-					if (pCommInfo->getCategoty() == CC_Future || pCommInfo->getCategoty() == CC_Option || pCommInfo->getCategoty() == CC_Stock)
-					{
-						contractSet.insert(contract->getFullCode());
-					}
+					contractSet.insert(contract->getFullCode());
 				}
 			}
 			else if (!_exchg_filter.empty())
@@ -161,8 +158,7 @@ bool ParserAdapter::init(const char* id, WTSVariant* cfg, IParserStub* stub, IBa
 					{
 						WTSContractInfo* contract = STATIC_CONVERT(*it, WTSContractInfo*);
 						WTSCommodityInfo* pCommInfo = _bd_mgr->getCommodity(contract);
-						if (pCommInfo->getCategoty() == CC_Future || pCommInfo->getCategoty() == CC_Option || pCommInfo->getCategoty() == CC_Stock)
-							contractSet.insert(contract->getFullCode());
+						contractSet.insert(contract->getFullCode());
 					}
 
 					ayContract->release();
@@ -176,8 +172,7 @@ bool ParserAdapter::init(const char* id, WTSVariant* cfg, IParserStub* stub, IBa
 				{
 					WTSContractInfo* contract = STATIC_CONVERT(*it, WTSContractInfo*);
 					WTSCommodityInfo* pCommInfo =_bd_mgr->getCommodity(contract);
-					if (pCommInfo->getCategoty() == CC_Future || pCommInfo->getCategoty() == CC_Option || pCommInfo->getCategoty() == CC_Stock)
-						contractSet.insert(contract->getFullCode());
+					contractSet.insert(contract->getFullCode());
 				}
 
 				ayContract->release();
@@ -247,7 +242,11 @@ void ParserAdapter::handleQuote(WTSTickData *quote, bool bNeedSlice)
 	{
 		stdCode = CodeHelper::bscStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
 	}
-	else if (commInfo->getCategoty() == CC_Option)
+	else if (commInfo->getCategoty() == CC_ETFOption || commInfo->getCategoty() == CC_SpotOption)
+	{
+		stdCode = CodeHelper::bscStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg(), commInfo->getProduct());
+	}
+	else if (commInfo->getCategoty() == CC_FutOption)
 	{
 		stdCode = CodeHelper::bscFutOptCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
 	}

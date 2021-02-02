@@ -109,10 +109,7 @@ bool ParserAdapter::initAdapter(WTSParams* params, FuncCreateParser funcCreate, 
 					}
 					WTSContractInfo* contract = m_bdMgr->getContract(code.c_str(), exchg.c_str());
 					WTSCommodityInfo* pCommInfo = m_bdMgr->getCommodity(contract);
-					if (pCommInfo->getCategoty() == CC_Future || pCommInfo->getCategoty() == CC_Option || pCommInfo->getCategoty() == CC_Stock)
-					{
-						contractSet.insert(contract->getFullCode());
-					}
+					contractSet.insert(contract->getFullCode());
 				}
 			}
 			else if(!m_exchgFilter.empty())//再判断交易所过滤器
@@ -126,10 +123,7 @@ bool ParserAdapter::initAdapter(WTSParams* params, FuncCreateParser funcCreate, 
 					{
 						WTSContractInfo* contract = STATIC_CONVERT(*it, WTSContractInfo*);
 						WTSCommodityInfo* pCommInfo = m_bdMgr->getCommodity(contract);
-						if (pCommInfo->getCategoty() == CC_Future || pCommInfo->getCategoty() == CC_Option || pCommInfo->getCategoty() == CC_Stock)
-						{
-							contractSet.insert(contract->getFullCode());
-						}
+						contractSet.insert(contract->getFullCode());
 					}
 
 					ayContract->release();
@@ -143,10 +137,7 @@ bool ParserAdapter::initAdapter(WTSParams* params, FuncCreateParser funcCreate, 
 				{
 					WTSContractInfo* contract = STATIC_CONVERT(*it, WTSContractInfo*);
 					WTSCommodityInfo* pCommInfo = m_bdMgr->getCommodity(contract);
-					if (pCommInfo->getCategoty() == CC_Future || pCommInfo->getCategoty() == CC_Option || pCommInfo->getCategoty() == CC_Stock)
-					{
-						contractSet.insert(contract->getFullCode());
-					}
+					contractSet.insert(contract->getFullCode());
 				}
 
 				ayContract->release();

@@ -36,40 +36,45 @@ public:
 		return ret;
 	}
 
-	void	setVolScale(uint32_t volScale){ m_uVolScale = volScale; }
-	void	setPriceTick(double pxTick){ m_fPriceTick = pxTick; }
-	void	setCategory(ContractCategory cat){ m_ccCategory = cat; }
-	void	setCoverMode(CoverMode cm){ m_coverMode = cm; }
-	void	setPriceMode(PriceMode pm){ m_priceMode = pm; }
-	void	setPrecision(uint32_t prec){ m_uPrecision = prec; }
+	inline void	setVolScale(uint32_t volScale){ m_uVolScale = volScale; }
+	inline void	setPriceTick(double pxTick){ m_fPriceTick = pxTick; }
+	inline void	setCategory(ContractCategory cat){ m_ccCategory = cat; }
+	inline void	setCoverMode(CoverMode cm){ m_coverMode = cm; }
+	inline void	setPriceMode(PriceMode pm){ m_priceMode = pm; }
+	inline void	setPrecision(uint32_t prec){ m_uPrecision = prec; }
 
-	const char* getName()	const{ return m_strName.c_str(); }
-	const char* getExchg()	const{ return m_strExchg.c_str(); }
-	const char* getProduct()	const{ return m_strProduct.c_str(); }
-	const char* getCurrency()	const{ return m_strCurrency.c_str(); }
-	const char* getSession()	const{ return m_strSession.c_str(); }
-	const char* getTradingTpl()	const{ return m_strTrdTpl.c_str(); }
-	const char* getFullPid()	const{ return m_strFullPid.c_str(); }
+	inline const char* getName()	const{ return m_strName.c_str(); }
+	inline const char* getExchg()	const{ return m_strExchg.c_str(); }
+	inline const char* getProduct()	const{ return m_strProduct.c_str(); }
+	inline const char* getCurrency()	const{ return m_strCurrency.c_str(); }
+	inline const char* getSession()	const{ return m_strSession.c_str(); }
+	inline const char* getTradingTpl()	const{ return m_strTrdTpl.c_str(); }
+	inline const char* getFullPid()	const{ return m_strFullPid.c_str(); }
 
-	uint32_t	getVolScale()	const{ return m_uVolScale; }
-	double		getPriceTick()	const{ return m_fPriceTick; }
-	uint32_t	getPrecision()	const{ return m_uPrecision; }
+	inline uint32_t	getVolScale()	const{ return m_uVolScale; }
+	inline double		getPriceTick()	const{ return m_fPriceTick; }
+	inline uint32_t	getPrecision()	const{ return m_uPrecision; }
 
-	ContractCategory	getCategoty() const{ return m_ccCategory; }
-	CoverMode			getCoverMode() const{ return m_coverMode; }
-	PriceMode			getPriceMode() const{ return m_priceMode; }
+	inline ContractCategory		getCategoty() const{ return m_ccCategory; }
+	inline CoverMode			getCoverMode() const{ return m_coverMode; }
+	inline PriceMode			getPriceMode() const{ return m_priceMode; }
 
-	void		addCode(const char* code){ m_setCodes.insert(code); }
-	const std::unordered_set<std::string>& getCodes() const{ return m_setCodes; }
+	inline void		addCode(const char* code){ m_setCodes.insert(code); }
+	inline const std::unordered_set<std::string>& getCodes() const{ return m_setCodes; }
 
-	void	setEntrustQtyUnit(uint32_t buyQtyUnit, uint32_t sellQtyUnit)
+	inline void	setEntrustQtyUnit(uint32_t buyQtyUnit, uint32_t sellQtyUnit)
 	{
 		m_buyQtyUnit = buyQtyUnit;
 		m_selQtyUnit = sellQtyUnit;
 	}
 
-	uint32_t	getBuyQtyUnit() const { return m_buyQtyUnit; }
-	uint32_t	getSellQtyUnit() const { return m_selQtyUnit; }
+	inline bool isOption() const
+	{
+		return (m_ccCategory == CC_FutOption || m_ccCategory == CC_ETFOption || m_ccCategory == CC_SpotOption);
+	}
+
+	inline uint32_t	getBuyQtyUnit() const { return m_buyQtyUnit; }
+	inline uint32_t	getSellQtyUnit() const { return m_selQtyUnit; }
 
 private:
 	std::string	m_strName;
@@ -117,22 +122,22 @@ public:
 	}
 
 
-	void	setVolumeLimits(uint32_t maxMarketVol, uint32_t maxLimitVol)
+	inline void	setVolumeLimits(uint32_t maxMarketVol, uint32_t maxLimitVol)
 	{
 		m_maxMktQty = maxMarketVol;
 		m_maxLmtQty = maxLimitVol;
 	}
 
-	const char* getCode()	const{return m_strCode.c_str();}
-	const char* getExchg()	const{return m_strExchg.c_str();}
-	const char* getName()	const{return m_strName.c_str();}
-	const char* getProduct()	const{return m_strProduct.c_str();}
+	inline const char* getCode()	const{return m_strCode.c_str();}
+	inline const char* getExchg()	const{return m_strExchg.c_str();}
+	inline const char* getName()	const{return m_strName.c_str();}
+	inline const char* getProduct()	const{return m_strProduct.c_str();}
 
-	const char* getFullCode()	const{ return m_strFullCode.c_str(); }
-	const char* getFullPid()	const{ return m_strFullPid.c_str(); }
+	inline const char* getFullCode()	const{ return m_strFullCode.c_str(); }
+	inline const char* getFullPid()	const{ return m_strFullPid.c_str(); }
 
-	uint32_t	getMaxMktVol() const{ return m_maxMktQty; }
-	uint32_t	getMaxLmtVol() const{ return m_maxLmtQty; }
+	inline uint32_t	getMaxMktVol() const{ return m_maxMktQty; }
+	inline uint32_t	getMaxLmtVol() const{ return m_maxLmtQty; }
 
 protected:
 	WTSContractInfo(){}

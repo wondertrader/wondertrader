@@ -88,16 +88,11 @@ void test_porter()
 #else
 	DLLHelper::load_library("libWtPorter.so");
 #endif
-	register_evt_callback(on_event);
-	//register_cta_callbacks(on_init, on_tick, on_calc, on_bar);
-	//register_sel_callbacks(on_init, on_tick, on_calc, on_bar);
-	register_hft_callbacks(on_init, on_tick, on_bar, on_channel_evt, on_order, on_trade, on_entrust, on_order_detail, on_order_queue, on_transaction);
-
 	init_porter("logcfg.json", true);
 
-	config_porter("config.json", true);
+	reg_hft_factories("./hft");
 
-	CtxHandler ctx = create_hft_context("test", "simnow");
+	config_porter("config.json", true);
 
 	run_porter(true);
 

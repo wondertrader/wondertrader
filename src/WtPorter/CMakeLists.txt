@@ -74,6 +74,9 @@ add_custom_command(TARGET WtPorter POST_BUILD
 		copy ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/libTraderCTPMini.so ${LIBRARY_OUTPUT_PATH}/traders/
 		
 		COMMAND ${CMAKE_COMMAND} -E
+		copy ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/libTraderCTPOpt.so ${LIBRARY_OUTPUT_PATH}/traders/
+		
+		COMMAND ${CMAKE_COMMAND} -E
 		copy ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/libTraderFemas.so ${LIBRARY_OUTPUT_PATH}/traders/
 		
 		COMMAND ${CMAKE_COMMAND} -E

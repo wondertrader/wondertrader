@@ -97,6 +97,7 @@ private:
 	std::string			m_strBroker;
 	std::string			m_strUserID;
 	std::string			m_strPassword;
+	bool				m_bLocalTime;
 
 	CodeSet				m_filterSubs;
 

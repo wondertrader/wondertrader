@@ -19,7 +19,7 @@ typedef enum tagContractCategory
 {
 	CC_Stock,			//股票
 	CC_Future,			//期货
-	CC_Option,			//期权
+	CC_FutOption,		//期货期权
 	CC_Combination,		//组合
 	CC_Spot,			//即期
 	CC_EFP,				//期转现

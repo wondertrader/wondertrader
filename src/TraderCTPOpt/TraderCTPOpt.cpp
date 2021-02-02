@@ -306,9 +306,9 @@ bool TraderCTPOpt::init(WTSParams* params)
 	else
 	{
 #ifdef _WIN32
-		m_strModule = getBinDir() + "thosttraderapi_se.dll";
+		m_strModule = getBinDir() + "soptthosttraderapi_se.dll";
 #else
-		m_strModule =  getBinDir() + "thosttraderapi_se.so";
+		m_strModule =  getBinDir() + "soptthosttraderapi_se.so";
 #endif
 	}
 

@@ -216,7 +216,7 @@ inline ContractCategory wrapCategory(TThostFtdcProductClassType cType)
 	switch (cType)
 	{
 	case THOST_FTDC_PC_Futures: return CC_Future;
-	case THOST_FTDC_PC_Options: return CC_Option;
+	case THOST_FTDC_PC_Options: return CC_FutOption;
 	case THOST_FTDC_PC_Combination: return CC_Combination;
 	case THOST_FTDC_PC_Spot: return CC_Spot;
 	case THOST_FTDC_PC_EFP: return CC_EFP;
@@ -226,6 +226,18 @@ inline ContractCategory wrapCategory(TThostFtdcProductClassType cType)
 	default:
 		throw std::exception("non implemented category");
 	}
+}
+
+inline const char* wrapProductID(const char* rawProductID)
+{
+	if (strcmp(rawProductID, "ASTOCK") == 0)
+		return "STK";
+	else if (strcmp(rawProductID, "ASTOCK_O") == 0)
+		return "STKO";
+	else if (strcmp(rawProductID, "ETF_O") == 0)
+		return "ETFO";
+	else
+		return rawProductID;
 }
 
 
@@ -251,7 +263,15 @@ void CTraderSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CTho
 			{
 
 				std::cerr << "--->>> OnRspQryInstrument: " << pInstrument->ExchangeID << "." << pInstrument->InstrumentID << std::endl;
-				std::string pname = MAP_NAME[pInstrument->ProductID];
+				std::string pid = wrapProductID(pInstrument->ProductID);
+				std::string pname = MAP_NAME[pid];
+				if(pname.empty())
+				{
+					std::stringstream ss;
+					ss << pInstrument->ExchangeID << "." << pid;
+					pname = MAP_NAME[ss.str()];
+				}
+				
 				std::string cname = "";
 				if (pname.empty())
 				{
@@ -267,7 +287,7 @@ void CTraderSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CTho
 					else
 					{
 						std::string month = pInstrument->InstrumentID;
-						month = month.substr(strlen(pInstrument->ProductID));
+						month = month.substr(pid.size());
 						cname = pname + month;
 					}
 				}
@@ -276,7 +296,7 @@ void CTraderSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CTho
 				contract.m_strCode = pInstrument->InstrumentID;
 				contract.m_strExchg = pInstrument->ExchangeID;
 				contract.m_strName = StrUtil::trim(cname.c_str());
-				contract.m_strProduct = pInstrument->ProductID;
+				contract.m_strProduct = pid;
 				contract.m_maxMktQty = pInstrument->MaxMarketOrderVolume;
 				contract.m_maxLmtQty = pInstrument->MaxLimitOrderVolume;
 
@@ -285,12 +305,12 @@ void CTraderSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CTho
 				contract.m_strikePrice = pInstrument->StrikePrice;
 				contract.m_dUnderlyingScale = pInstrument->UnderlyingMultiple;
 
-				std::string key = StrUtil::printf("%s.%s", pInstrument->ExchangeID, pInstrument->ProductID);
+				std::string key = StrUtil::printf("%s.%s", pInstrument->ExchangeID, pid.c_str());
 				auto it = _commodities.find(key);
 				if (it == _commodities.end())
 				{
 					Commodity commInfo;
-					commInfo.m_strProduct = pInstrument->ProductID;
+					commInfo.m_strProduct = pid;
 					commInfo.m_strName = StrUtil::trim(pname.c_str());
 					commInfo.m_strExchg = pInstrument->ExchangeID;
 					commInfo.m_strCurrency = "CNY";

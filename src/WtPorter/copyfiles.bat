@@ -15,6 +15,7 @@ xcopy ..\%plat%\%env%\TraderCTP.dll ..\%plat%\%env%\WtPorter\traders\ /C /Y
 xcopy ..\%plat%\%env%\TraderXTP.dll ..\%plat%\%env%\WtPorter\traders\ /C /Y
 xcopy ..\%plat%\%env%\TraderMocker.dll ..\%plat%\%env%\WtPorter\traders\ /C /Y
 xcopy ..\%plat%\%env%\TraderCTPMini.dll ..\%plat%\%env%\WtPorter\traders\ /C /Y
+xcopy ..\%plat%\%env%\TraderCTPOpt.dll ..\%plat%\%env%\WtPorter\traders\ /C /Y
 xcopy ..\%plat%\%env%\TraderFemas.dll ..\%plat%\%env%\WtPorter\traders\ /C /Y
 xcopy ..\%plat%\%env%\TraderiTap.dll ..\%plat%\%env%\WtPorter\traders\ /C /Y
 

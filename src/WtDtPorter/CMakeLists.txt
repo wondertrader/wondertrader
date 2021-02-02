@@ -69,6 +69,9 @@ add_custom_command(TARGET WtDtPorter POST_BUILD
 		copy ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/libParserCTPMini.so ${LIBRARY_OUTPUT_PATH}/parsers/
 		
 		COMMAND ${CMAKE_COMMAND} -E
+		copy ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/libParserCTPOpt.so ${LIBRARY_OUTPUT_PATH}/parsers/
+		
+		COMMAND ${CMAKE_COMMAND} -E
 		copy ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/libParserFemas.so ${LIBRARY_OUTPUT_PATH}/parsers/
 		
 		COMMAND ${CMAKE_COMMAND} -E

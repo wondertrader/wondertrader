@@ -1146,11 +1146,12 @@ bool TraderAdapter::doCancel(WTSOrderInfo* ordInfo)
 	std::string stdCode;
 	if (commInfo->getCategoty() == CC_Future)
 		stdCode = CodeHelper::bscFutCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
-	else if (commInfo->getCategoty() == CC_Option)
+	else if (commInfo->getCategoty() == CC_FutOption)
 		stdCode = CodeHelper::bscFutOptCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
-	else
+	else if(commInfo->getCategoty() == CC_Stock)
 		stdCode = CodeHelper::bscStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
-
+	else
+		stdCode = CodeHelper::bscStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg(), commInfo->getProduct());
 	//撤单频率检查
 	if (!checkCancelLimits(stdCode.c_str()))
 		return false;
@@ -1359,10 +1360,12 @@ void TraderAdapter::onRspEntrust(WTSEntrust* entrust, WTSError *err)
 		std::string stdCode;
 		if (commInfo->getCategoty() == CC_Future)
 			stdCode = CodeHelper::bscFutCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
-		else if (commInfo->getCategoty() == CC_Option)
+		else if (commInfo->getCategoty() == CC_FutOption)
 			stdCode = CodeHelper::bscFutOptCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
-		else
+		else if (commInfo->getCategoty() == CC_Stock)
 			stdCode = CodeHelper::bscStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
+		else
+			stdCode = CodeHelper::bscStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg(), commInfo->getProduct());
 
 		bool isLong = (entrust->getDirection() == WDT_LONG);
 		bool isToday = (entrust->getOffsetType() == WOT_CLOSETODAY);
@@ -1429,7 +1432,7 @@ void TraderAdapter::onRspPosition(const WTSArray* ayPositions)
 		for (auto it = ayPositions->begin(); it != ayPositions->end(); it++)
 		{
 			WTSPositionItem* pItem = (WTSPositionItem*)(*it);
-			WTSContractInfo* cInfo = _bd_mgr->getContract(pItem->getCode());
+			WTSContractInfo* cInfo = _bd_mgr->getContract(pItem->getCode(), pItem->getExchg());
 			if (cInfo == NULL)
 				continue;
 
@@ -1437,10 +1440,12 @@ void TraderAdapter::onRspPosition(const WTSArray* ayPositions)
 			std::string stdCode;
 			if (commInfo->getCategoty() == CC_Future)
 				stdCode = CodeHelper::bscFutCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
-			else if (commInfo->getCategoty() == CC_Option)
+			else if (commInfo->getCategoty() == CC_FutOption)
 				stdCode = CodeHelper::bscFutOptCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
-			else
+			else if (commInfo->getCategoty() == CC_Stock)
 				stdCode = CodeHelper::bscStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
+			else
+				stdCode = CodeHelper::bscStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg(), commInfo->getProduct());
 			PosItem& pos = _positions[stdCode];
 			if (pItem->getDirection() == WDT_LONG)
 			{
@@ -1496,7 +1501,7 @@ void TraderAdapter::onRspOrders(const WTSArray* ayOrders)
 			if (orderInfo == NULL)
 				continue;
 
-			WTSContractInfo* cInfo = _bd_mgr->getContract(orderInfo->getCode());
+			WTSContractInfo* cInfo = _bd_mgr->getContract(orderInfo->getCode(), orderInfo->getExchg());
 			if (cInfo == NULL)
 				continue;
 
@@ -1506,10 +1511,12 @@ void TraderAdapter::onRspOrders(const WTSArray* ayOrders)
 			std::string stdCode;
 			if (commInfo->getCategoty() == CC_Future)
 				stdCode = CodeHelper::bscFutCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
-			else if (commInfo->getCategoty() == CC_Option)
+			else if (commInfo->getCategoty() == CC_FutOption)
 				stdCode = CodeHelper::bscFutOptCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
-			else
+			else if (commInfo->getCategoty() == CC_Stock)
 				stdCode = CodeHelper::bscStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
+			else
+				stdCode = CodeHelper::bscStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg(), commInfo->getProduct());
 
 			_orderids.insert(orderInfo->getOrderID());
 
@@ -1613,10 +1620,12 @@ void TraderAdapter::onRspTrades(const WTSArray* ayTrades)
 			std::string stdCode;
 			if (commInfo->getCategoty() == CC_Future)
 				stdCode = CodeHelper::bscFutCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
-			else if (commInfo->getCategoty() == CC_Option)
+			else if (commInfo->getCategoty() == CC_FutOption)
 				stdCode = CodeHelper::bscFutOptCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
-			else
+			else if (commInfo->getCategoty() == CC_Stock)
 				stdCode = CodeHelper::bscStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
+			else
+				stdCode = CodeHelper::bscStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg(), commInfo->getProduct());
 
 			WTSTradeStateInfo* statInfo = (WTSTradeStateInfo*)_stat_map->get(stdCode.c_str());
 			if(statInfo == NULL)
@@ -1693,7 +1702,7 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 		return;
 
 
-	WTSContractInfo* cInfo = _bd_mgr->getContract(orderInfo->getCode());
+	WTSContractInfo* cInfo = _bd_mgr->getContract(orderInfo->getCode(), orderInfo->getExchg());
 	if (cInfo == NULL)
 		return;
 
@@ -1701,10 +1710,12 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 	std::string stdCode;
 	if (commInfo->getCategoty() == CC_Future)
 		stdCode = CodeHelper::bscFutCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
-	else if (commInfo->getCategoty() == CC_Option)
+	else if (commInfo->getCategoty() == CC_FutOption)
 		stdCode = CodeHelper::bscFutOptCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
-	else
+	else if (commInfo->getCategoty() == CC_Stock)
 		stdCode = CodeHelper::bscStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
+	else
+		stdCode = CodeHelper::bscStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg(), commInfo->getProduct());
 
 	bool isBuy = (orderInfo->getDirection() == WDT_LONG && orderInfo->getOffsetType() == WOT_OPEN) || (orderInfo->getDirection() == WDT_SHORT && orderInfo->getOffsetType() != WOT_OPEN);
 	
@@ -1934,7 +1945,7 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 
 void TraderAdapter::onPushTrade(WTSTradeInfo* tradeRecord)
 {
-	WTSContractInfo* cInfo = _bd_mgr->getContract(tradeRecord->getCode());
+	WTSContractInfo* cInfo = _bd_mgr->getContract(tradeRecord->getCode(), tradeRecord->getExchg());
 	if (cInfo == NULL)
 		return;
 
@@ -1946,10 +1957,12 @@ void TraderAdapter::onPushTrade(WTSTradeInfo* tradeRecord)
 	std::string stdCode;
 	if (commInfo->getCategoty() == CC_Future)
 		stdCode = CodeHelper::bscFutCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
-	else if (commInfo->getCategoty() == CC_Option)
+	else if (commInfo->getCategoty() == CC_FutOption)
 		stdCode = CodeHelper::bscFutOptCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
-	else
+	else if (commInfo->getCategoty() == CC_Stock)
 		stdCode = CodeHelper::bscStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
+	else
+		stdCode = CodeHelper::bscStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg(), commInfo->getProduct());
 
 	WTSLogger::log_dyn_raw("trader", _id.c_str(), LL_INFO, 
 		fmt::format("[{}]收到成交回报回报, 代码 {}, 用户标记 {}, 成交数量 {}, 成交价格 {}", 

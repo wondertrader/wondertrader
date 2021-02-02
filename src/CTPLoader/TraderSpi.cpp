@@ -211,7 +211,7 @@ inline ContractCategory wrapCategory(TThostFtdcProductClassType cType)
 	switch (cType)
 	{
 	case THOST_FTDC_PC_Futures: return CC_Future;
-	case THOST_FTDC_PC_Options: return CC_Option;
+	case THOST_FTDC_PC_Options: return CC_FutOption;
 	case THOST_FTDC_PC_Combination: return CC_Combination;
 	case THOST_FTDC_PC_Spot: return CC_Spot;
 	case THOST_FTDC_PC_EFP: return CC_EFP;

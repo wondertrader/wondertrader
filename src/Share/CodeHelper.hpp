@@ -43,7 +43,7 @@ public:
 	{
 		using namespace boost::xpressive;
 		/* 定义正则表达式 */
-		cregex reg_stk = cregex::compile("^[A-Z]+.([A-Z]+.)?\\d{6}Q?$");
+		cregex reg_stk = cregex::compile("^[A-Z]+.([A-Z]+.)?\\d{6,16}Q?$");
 		return 	regex_match(code, reg_stk);
 	}
 
@@ -133,9 +133,12 @@ public:
 		return ret;
 	}
 
-	static std::string bscStkCodeToStdCode(const char* code, const char* exchg)
+	static std::string bscStkCodeToStdCode(const char* code, const char* exchg, const char* pid = "")
 	{
-		return StrUtil::printf("%s.%s", exchg, code);
+		if(strlen(pid) == 0)
+			return StrUtil::printf("%s.%s", exchg, code);
+		else
+			return StrUtil::printf("%s.%s.%s", exchg, pid, code);
 	}
 
 	static bool	isStdFutOptCode(const char* code)
@@ -356,7 +359,7 @@ public:
 	{
 		StringVector ay = StrUtil::split(stdCode, ".");
 		strcpy(codeInfo._exchg, ay[0].c_str());
-		codeInfo._category = CC_Option;
+		codeInfo._category = CC_FutOption;
 		if(strcmp(codeInfo._exchg, "SHFE") == 0 || strcmp(codeInfo._exchg, "CZCE") == 0)
 		{
 			sprintf(codeInfo._code, "%s%s%s", ay[1].c_str(), ay[2].c_str(), ay[3].c_str());

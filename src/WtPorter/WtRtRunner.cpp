@@ -328,9 +328,6 @@ bool WtRtRunner::config(const char* cfgFile, bool isFile /* = true */)
 	if (!_is_hft)
 		initExecuters();
 
-	//这里本来应该有，但是对于py部分，就不要这个了
-	//initStrategies();
-
 	if (!_is_hft)
 		initCtaStrategies();
 	else
