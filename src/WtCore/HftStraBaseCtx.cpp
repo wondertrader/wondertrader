@@ -745,12 +745,3 @@ void HftStraBaseCtx::log_close(const char* stdCode, bool isLong, uint64_t openTi
 		_close_logs->write_file(ss.str());
 	}
 }
-
-const char* HftStraBaseCtx::getOrderTag(uint32_t localid)
-{
-	auto it = _orders.find(localid);
-	if (it == _orders.end())
-		return "";
-
-	return it->second.c_str();
-}

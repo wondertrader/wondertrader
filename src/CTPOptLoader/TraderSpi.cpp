@@ -224,7 +224,7 @@ inline ContractCategory wrapCategory(TThostFtdcProductClassType cType)
 	case THOST_FTDC_PC_ETFOption: return CC_ETFOption;
 	case THOST_FTDC_PC_Stock:return CC_Stock;
 	default:
-		throw std::exception("non implemented category");
+		throw std::runtime_error("non implemented category");
 	}
 }
 

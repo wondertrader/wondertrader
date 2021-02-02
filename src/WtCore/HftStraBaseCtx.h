@@ -116,7 +116,14 @@ protected:
 	inline void	log_close(const char* stdCode, bool isLong, uint64_t openTime, double openpx, uint64_t closeTime, double closepx, double qty,
 		double profit, double maxprofit, double maxloss, double totalprofit, const char* enterTag, const char* exitTag);
 
-	inline const char* getOrderTag(uint32_t localid);
+	inline const char* getOrderTag(uint32_t localid)
+	{
+		auto it = _orders.find(localid);
+		if (it == _orders.end())
+			return "";
+
+		return it->second.c_str();
+	}
 
 
 protected:
