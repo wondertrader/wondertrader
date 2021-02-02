@@ -795,7 +795,7 @@ void TraderCTP::OnRspQryInvestorPosition(CThostFtdcInvestorPositionField *pInves
 		if (NULL == m_mapPosition)
 			m_mapPosition = PositionMap::create();
 
-		WTSContractInfo* contract = m_bdMgr->getContract(pInvestorPosition->InstrumentID);
+		WTSContractInfo* contract = m_bdMgr->getContract(pInvestorPosition->InstrumentID, pInvestorPosition->ExchangeID);
 		WTSCommodityInfo* commInfo = m_bdMgr->getCommodity(contract);
 		if (contract)
 		{
@@ -1145,7 +1145,7 @@ int TraderCTP::wrapActionFlag(WTSActionFlag actionFlag)
 
 WTSOrderInfo* TraderCTP::makeOrderInfo(CThostFtdcOrderField* orderField)
 {
-	WTSContractInfo* contract = m_bdMgr->getContract(orderField->InstrumentID);
+	WTSContractInfo* contract = m_bdMgr->getContract(orderField->InstrumentID, orderField->ExchangeID);
 	if (contract == NULL)
 		return NULL;
 
@@ -1200,7 +1200,7 @@ WTSOrderInfo* TraderCTP::makeOrderInfo(CThostFtdcOrderField* orderField)
 
 WTSEntrust* TraderCTP::makeEntrust(CThostFtdcInputOrderField *entrustField)
 {
-	WTSContractInfo* ct = m_bdMgr->getContract(entrustField->InstrumentID);
+	WTSContractInfo* ct = m_bdMgr->getContract(entrustField->InstrumentID, entrustField->ExchangeID);
 	if (ct == NULL)
 		return NULL;
 
@@ -1237,7 +1237,7 @@ WTSError* TraderCTP::makeError(CThostFtdcRspInfoField* rspInfo)
 
 WTSTradeInfo* TraderCTP::makeTradeRecord(CThostFtdcTradeField *tradeField)
 {
-	WTSContractInfo* contract = m_bdMgr->getContract(tradeField->InstrumentID);
+	WTSContractInfo* contract = m_bdMgr->getContract(tradeField->InstrumentID, tradeField->ExchangeID);
 	if (contract == NULL)
 		return NULL;
 

@@ -1160,7 +1160,7 @@ void TraderCTPOpt::OnRspQryInvestorPosition(CThostFtdcInvestorPositionField *pIn
 		if (NULL == m_mapPosition)
 			m_mapPosition = PositionMap::create();
 
-		WTSContractInfo* contract = m_bdMgr->getContract(pInvestorPosition->InstrumentID);
+		WTSContractInfo* contract = m_bdMgr->getContract(pInvestorPosition->InstrumentID, pInvestorPosition->ExchangeID);
 		WTSCommodityInfo* commInfo = m_bdMgr->getCommodity(contract);
 		if (contract)
 		{
@@ -1388,7 +1388,7 @@ void TraderCTPOpt::OnRtnTrade(CThostFtdcTradeField *pTrade)
 
 WTSOrderInfo* TraderCTPOpt::makeOrderInfo(CThostFtdcOrderField* orderField)
 {
-	WTSContractInfo* contract = m_bdMgr->getContract(orderField->InstrumentID);
+	WTSContractInfo* contract = m_bdMgr->getContract(orderField->InstrumentID, orderField->ExchangeID);
 	if (contract == NULL)
 		return NULL;
 
@@ -1443,7 +1443,7 @@ WTSOrderInfo* TraderCTPOpt::makeOrderInfo(CThostFtdcOrderField* orderField)
 
 WTSEntrust* TraderCTPOpt::makeEntrust(CThostFtdcInputOrderField *entrustField)
 {
-	WTSContractInfo* ct = m_bdMgr->getContract(entrustField->InstrumentID);
+	WTSContractInfo* ct = m_bdMgr->getContract(entrustField->InstrumentID, entrustField->ExchangeID);
 	if (ct == NULL)
 		return NULL;
 
@@ -1474,7 +1474,7 @@ WTSEntrust* TraderCTPOpt::makeEntrust(CThostFtdcInputOrderField *entrustField)
 
 WTSOrderInfo* TraderCTPOpt::makeOrderInfo(CThostFtdcExecOrderField* orderField)
 {
-	WTSContractInfo* contract = m_bdMgr->getContract(orderField->InstrumentID);
+	WTSContractInfo* contract = m_bdMgr->getContract(orderField->InstrumentID, orderField->ExchangeID);
 	if (contract == NULL)
 		return NULL;
 
@@ -1528,7 +1528,7 @@ WTSOrderInfo* TraderCTPOpt::makeOrderInfo(CThostFtdcExecOrderField* orderField)
 
 WTSEntrust* TraderCTPOpt::makeEntrust(CThostFtdcInputExecOrderField *entrustField)
 {
-	WTSContractInfo* ct = m_bdMgr->getContract(entrustField->InstrumentID);
+	WTSContractInfo* ct = m_bdMgr->getContract(entrustField->InstrumentID, entrustField->ExchangeID);
 	if (ct == NULL)
 		return NULL;
 
@@ -1555,7 +1555,7 @@ WTSError* TraderCTPOpt::makeError(CThostFtdcRspInfoField* rspInfo)
 
 WTSTradeInfo* TraderCTPOpt::makeTradeRecord(CThostFtdcTradeField *tradeField)
 {
-	WTSContractInfo* contract = m_bdMgr->getContract(tradeField->InstrumentID);
+	WTSContractInfo* contract = m_bdMgr->getContract(tradeField->InstrumentID, tradeField->ExchangeID);
 	if (contract == NULL)
 		return NULL;
 

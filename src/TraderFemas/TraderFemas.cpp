@@ -706,7 +706,7 @@ void TraderFemas::OnRspQryInvestorPosition(CUstpFtdcRspInvestorPositionField *pR
 		if(NULL == m_ayPosition)
 			m_ayPosition = WTSArray::create();
 
-		WTSContractInfo* contract = m_bdMgr->getContract(pRspInvestorPosition->InstrumentID);
+		WTSContractInfo* contract = m_bdMgr->getContract(pRspInvestorPosition->InstrumentID, pRspInvestorPosition->ExchangeID);
 		WTSCommodityInfo* commInfo = m_bdMgr->getCommodity(contract);
 		if (contract)
 		{
@@ -990,7 +990,7 @@ int TraderFemas::wrapActionFlag(WTSActionFlag actionFlag)
 
 WTSOrderInfo* TraderFemas::makeOrderInfo(CUstpFtdcOrderField* orderField)
 {
-	WTSContractInfo* contract = m_bdMgr->getContract(orderField->InstrumentID);
+	WTSContractInfo* contract = m_bdMgr->getContract(orderField->InstrumentID, orderField->ExchangeID);
 	if(contract == NULL)
 		return NULL;
 
@@ -1056,7 +1056,7 @@ WTSError* TraderFemas::makeError(CUstpFtdcRspInfoField* rspInfo)
 
 WTSTradeInfo* TraderFemas::makeTradeRecord(CUstpFtdcTradeField *tradeField)
 {
-	WTSContractInfo* contract = m_bdMgr->getContract(tradeField->InstrumentID);
+	WTSContractInfo* contract = m_bdMgr->getContract(tradeField->InstrumentID, tradeField->ExchangeID);
 	if(contract == NULL)
 		return NULL;
 

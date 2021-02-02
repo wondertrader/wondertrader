@@ -175,7 +175,8 @@
       <ModuleDefinitionFile>
       </ModuleDefinitionFile>
       <ImportLibrary>$(OutDir)$(TargetName).lib</ImportLibrary>
-      <DelayLoadDLLs>thosttraderapi_se.dll</DelayLoadDLLs>
+      <DelayLoadDLLs>
+      </DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
