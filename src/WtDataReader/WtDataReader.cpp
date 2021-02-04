@@ -34,8 +34,16 @@ extern "C"
 	}
 };
 
+void inst_hlp() {}
+
 #ifdef _WIN32
-#include <wtypes.h>
+#include "../Common/mdump.h"
+#ifdef _WIN64
+char PLATFORM_NAME[] = "X64";
+#else
+char PLATFORM_NAME[] = "WIN32";
+#endif
+
 HMODULE	g_dllModule = NULL;
 
 BOOL APIENTRY DllMain(
@@ -52,18 +60,24 @@ BOOL APIENTRY DllMain(
 	}
 	return TRUE;
 }
+
 #else
 #include <dlfcn.h>
 
 char PLATFORM_NAME[] = "UNIX";
 
-std::string	g_moduleName;
+const std::string& getInstPath()
+{
+	static std::string moduleName;
+	if (moduleName.empty())
+	{
+		Dl_info dl_info;
+		dladdr((void *)inst_hlp, &dl_info);
+		moduleName = dl_info.dli_fname;
+		//printf("1:%s\n", moduleName.c_str());
+	}
 
-__attribute__((constructor))
-void on_load(void) {
-	Dl_info dl_info;
-	dladdr((void *)on_load, &dl_info);
-	g_moduleName = dl_info.dli_fname;
+	return moduleName;
 }
 #endif
 
@@ -80,7 +94,7 @@ std::string getBinDir()
 
 		_bin_dir = StrUtil::standardisePath(strPath, false);
 #else
-		_bin_dir = g_moduleName;
+		_bin_dir = getInstPath();
 #endif
 
 		uint32_t nPos = _bin_dir.find_last_of('/');

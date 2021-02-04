@@ -7,6 +7,9 @@
 #include "../Share/StrUtil.hpp"
 #include "../Includes/WTSVersion.h"
 
+
+void inst_hlp() {}
+
 #ifdef _WIN32
 #include "../Common/mdump.h"
 #ifdef _WIN64
@@ -37,13 +40,18 @@ BOOL APIENTRY DllMain(
 
 char PLATFORM_NAME[] = "UNIX";
 
-std::string	g_moduleName;
+const std::string& getInstPath()
+{
+	static std::string moduleName;
+	if (moduleName.empty())
+	{
+		Dl_info dl_info;
+		dladdr((void *)inst_hlp, &dl_info);
+		moduleName = dl_info.dli_fname;
+		//printf("1:%s\n", moduleName.c_str());
+	}
 
-__attribute__((constructor))
-void on_load(void) {
-	Dl_info dl_info;
-	dladdr((void*)on_load, &dl_info);
-	g_moduleName = dl_info.dli_fname;
+	return moduleName;
 }
 #endif
 
@@ -63,7 +71,7 @@ const char* getModuleName()
 		boost::filesystem::path p(MODULE_NAME);
 		strcpy(MODULE_NAME, p.filename().string().c_str());
 #else
-		boost::filesystem::path p(g_moduleName);
+		boost::filesystem::path p(getInstPath());
 		strcpy(MODULE_NAME, p.filename().string().c_str());
 #endif
 	}
@@ -84,7 +92,7 @@ const char* getBinDir()
 
 		_bin_dir = StrUtil::standardisePath(strPath, false);
 #else
-		_bin_dir = g_moduleName;
+		_bin_dir = getInstPath();
 #endif
 
 		uint32_t nPos = _bin_dir.find_last_of('/');

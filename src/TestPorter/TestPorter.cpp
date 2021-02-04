@@ -6,28 +6,28 @@
 #include "../Includes/WTSStruct.h"
 #include "../Share/DLLHelper.hpp"
 
-void _cdecl on_init(CtxHandler ctxid)
+void PORTER_FLAG on_init(CtxHandler ctxid)
 {
 	printf("on_init\r\n");
 	hft_sub_ticks(ctxid, "CFFEX.IF.HOT");
 }
 
-void _cdecl on_tick(CtxHandler ctxid, const char* stdCode, WTSTickStruct* newTick)
+void PORTER_FLAG on_tick(CtxHandler ctxid, const char* stdCode, WTSTickStruct* newTick)
 {
 	printf("on_tick\r\n");
 }
 
-void _cdecl on_calc(CtxHandler ctxid, WtUInt32 uDate, WtUInt32 uTime)
+void PORTER_FLAG on_calc(CtxHandler ctxid, WtUInt32 uDate, WtUInt32 uTime)
 {
 	printf("on_calc\r\n");
 }
 
-void _cdecl on_bar(CtxHandler ctxid, const char* code, const char* period, WTSBarStruct* newBar)
+void PORTER_FLAG on_bar(CtxHandler ctxid, const char* code, const char* period, WTSBarStruct* newBar)
 {
 	printf("on_bar\r\n");
 }
 
-void _cdecl on_getbar(CtxHandler ctxid, const char* code, const char* period, WTSBarStruct* bar, bool isLast)
+void PORTER_FLAG on_getbar(CtxHandler ctxid, const char* code, const char* period, WTSBarStruct* bar, bool isLast)
 {
 	if (bar)
 		printf("on_getbar%u\r\n", bar->time);
@@ -35,48 +35,48 @@ void _cdecl on_getbar(CtxHandler ctxid, const char* code, const char* period, WT
 		int x = 1;
 }
 
-void _cdecl on_getticks(CtxHandler cHandle, const char* code, WTSTickStruct* tick, bool isLast)
+void PORTER_FLAG on_getticks(CtxHandler cHandle, const char* code, WTSTickStruct* tick, bool isLast)
 {
 	printf("on_getticks\r\n");
 }
 
-void _cdecl on_event(WtUInt32 evtId, WtUInt32 curDate, WtUInt32 curTime)
+void PORTER_FLAG on_event(WtUInt32 evtId, WtUInt32 curDate, WtUInt32 curTime)
 {
 	printf("on_event\r\n");
 }
 
-void _cdecl on_channel_evt(CtxHandler cHandle, const char* trader, WtUInt32 evtid)
+void PORTER_FLAG on_channel_evt(CtxHandler cHandle, const char* trader, WtUInt32 evtid)
 {
 	printf("on_channel_evt\r\n");
 	double undone = hft_get_undone(cHandle, "CFFEX.IF.HOT");
 }
 
-void _cdecl on_order(CtxHandler cHandle, WtUInt32 localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled, const char* userTag)
+void PORTER_FLAG on_order(CtxHandler cHandle, WtUInt32 localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled, const char* userTag)
 {
 
 }
 
-void _cdecl on_trade(CtxHandler cHandle, WtUInt32 localid, const char* stdCode, bool isBuy, double vol, double price, const char* userTag)
+void PORTER_FLAG on_trade(CtxHandler cHandle, WtUInt32 localid, const char* stdCode, bool isBuy, double vol, double price, const char* userTag)
 {
 
 }
 
-void _cdecl on_entrust(CtxHandler cHandle, WtUInt32 localid, const char* stdCode, bool bSuccess, const char* message, const char* userTag)
+void PORTER_FLAG on_entrust(CtxHandler cHandle, WtUInt32 localid, const char* stdCode, bool bSuccess, const char* message, const char* userTag)
 {
 
 }
 
-void _cdecl on_order_queue(CtxHandler cHandle, const char* stdCode, WTSOrdQueStruct* ordQue)
+void PORTER_FLAG on_order_queue(CtxHandler cHandle, const char* stdCode, WTSOrdQueStruct* ordQue)
 {
 
 }
 
-void _cdecl on_order_detail(CtxHandler cHandle, const char* stdCode, WTSOrdDtlStruct* ordDtl)
+void PORTER_FLAG on_order_detail(CtxHandler cHandle, const char* stdCode, WTSOrdDtlStruct* ordDtl)
 {
 
 }
 
-void _cdecl on_transaction(CtxHandler cHandle, const char* stdCode, WTSTransStruct* trans)
+void PORTER_FLAG on_transaction(CtxHandler cHandle, const char* stdCode, WTSTransStruct* trans)
 {
 
 }
@@ -124,7 +124,9 @@ void test_exec()
 	release_exec();
 }
 
-void main()
+int main()
 {
+	printf("start...\r\n");
 	test_porter();
+	return 0;
 }
