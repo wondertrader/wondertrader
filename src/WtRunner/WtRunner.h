@@ -1,32 +1,32 @@
 /*!
- * \file WtRunner.h
- * \project	WonderTrader
+ * /file WtRunner.h
+ * /project	WonderTrader
  *
- * \author Wesley
- * \date 2020/03/30
+ * /author Wesley
+ * /date 2020/03/30
  * 
- * \brief 
+ * /brief 
  */
 #pragma once
 #include <string>
 #include <unordered_map>
 
-#include "..\WtCore\CtaStrategyMgr.h"
-#include "..\WtCore\HftStrategyMgr.h"
-#include "..\WtCore\SelStrategyMgr.h"
+#include "../WtCore/CtaStrategyMgr.h"
+#include "../WtCore/HftStrategyMgr.h"
+#include "../WtCore/SelStrategyMgr.h"
 
-#include "..\WtCore\WtCtaEngine.h"
-#include "..\WtCore\WtHftEngine.h"
-#include "..\WtCore\WtSelEngine.h"
-#include "..\WtCore\WtLocalExecuter.h"
-#include "..\WtCore\WtDistExecuter.h"
-#include "..\WtCore\TraderAdapter.h"
-#include "..\WtCore\ParserAdapter.h"
-#include "..\WtCore\WtDataManager.h"
-#include "..\WtCore\ActionPolicyMgr.h"
+#include "../WtCore/WtCtaEngine.h"
+#include "../WtCore/WtHftEngine.h"
+#include "../WtCore/WtSelEngine.h"
+#include "../WtCore/WtLocalExecuter.h"
+#include "../WtCore/WtDistExecuter.h"
+#include "../WtCore/TraderAdapter.h"
+#include "../WtCore/ParserAdapter.h"
+#include "../WtCore/WtDataManager.h"
+#include "../WtCore/ActionPolicyMgr.h"
 
-#include "..\WTSTools\WTSHotMgr.h"
-#include "..\WTSTools\WTSBaseDataMgr.h"
+#include "../WTSTools/WTSHotMgr.h"
+#include "../WTSTools/WTSBaseDataMgr.h"
 
 NS_OTP_BEGIN
 class WTSVariant;

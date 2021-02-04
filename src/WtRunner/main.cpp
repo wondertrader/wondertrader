@@ -1,25 +1,30 @@
 /*!
- * \file main.cpp
- * \project	WonderTrader
+ * /file main.cpp
+ * /project	WonderTrader
  *
- * \author Wesley
- * \date 2020/03/30
+ * /author Wesley
+ * /date 2020/03/30
  * 
- * \brief 
+ * /brief 
  */
 
 #include "WtRunner.h"
 
-#include "../Common/mdump.h"
+#include "../WTSTools/WTSLogger.h"
+#include "../Share/IniHelper.hpp"
 
-#include "..\WTSTools\WTSLogger.h"
-#include "..\Share\IniHelper.hpp"
+#ifdef _WIN32
+#include "../Common/mdump.h"
+#endif
 
 //#include <vld.h>
 
 void main()
 {
+#ifdef _WIN32
 	CMiniDumper::Enable("WtRunner.exe", true);
+#endif
+
 	WtRunner runner;
 	runner.init();
 

@@ -1,22 +1,22 @@
 /*!
- * \file WtRunner.cpp
- * \project	WonderTrader
+ * /file WtRunner.cpp
+ * /project	WonderTrader
  *
- * \author Wesley
- * \date 2020/03/30
+ * /author Wesley
+ * /date 2020/03/30
  * 
- * \brief 
+ * /brief 
  */
 #include "WtRunner.h"
 
-#include "..\WtCore\WtHelper.h"
-#include "..\WtCore\CtaStraContext.h"
-#include "..\WtCore\HftStraContext.h"
+#include "../WtCore/WtHelper.h"
+#include "../WtCore/CtaStraContext.h"
+#include "../WtCore/HftStraContext.h"
 
-#include "..\Includes\WTSVariant.hpp"
-#include "..\Share\StdUtils.hpp"
-#include "..\WTSTools\WTSLogger.h"
-#include "..\Share\JsonToVariant.hpp"
+#include "../Includes/WTSVariant.hpp"
+#include "../Share/StdUtils.hpp"
+#include "../WTSTools/WTSLogger.h"
+#include "../Share/JsonToVariant.hpp"
 
 #ifdef _WIN32
 #define my_stricmp _stricmp
