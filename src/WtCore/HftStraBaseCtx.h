@@ -22,7 +22,7 @@ class TraderAdapter;
 class HftStraBaseCtx : public IHftStraCtx, public ITrdNotifySink
 {
 public:
-	HftStraBaseCtx(WtHftEngine* engine, const char* name);
+	HftStraBaseCtx(WtHftEngine* engine, const char* name, bool bAgent);
 	virtual ~HftStraBaseCtx();
 
 	void setTrader(TraderAdapter* trader);
@@ -142,6 +142,8 @@ protected:
 	typedef std::unordered_map<std::string, std::string> StringHashMap;
 	StringHashMap	_user_datas;
 	bool			_ud_modified;
+
+	bool			_data_agent;	//Êý¾ÝÍÐ¹Ü
 
 private:
 	typedef struct _DetailInfo

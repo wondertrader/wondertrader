@@ -35,9 +35,10 @@ inline uint32_t makeHftCtxId()
 	return _auto_context_id.fetch_add(1);
 }
 
-HftStraBaseCtx::HftStraBaseCtx(WtHftEngine* engine, const char* name)
+HftStraBaseCtx::HftStraBaseCtx(WtHftEngine* engine, const char* name, bool bAgent /* = true */)
 	: IHftStraCtx(name)
 	, _engine(engine)
+	, _data_agent(bAgent)
 {
 	_context_id = makeHftCtxId();
 }
@@ -59,6 +60,9 @@ void HftStraBaseCtx::setTrader(TraderAdapter* trader)
 
 void HftStraBaseCtx::init_outputs()
 {
+	if (!_data_agent)
+		return;
+
 	std::string folder = WtHelper::getOutputDir();
 	folder += _name;
 	folder += "//";
@@ -355,9 +359,7 @@ void HftStraBaseCtx::on_trade(uint32_t localid, const char* stdCode, bool isBuy,
 		_ud_modified = false;
 	}
 
-	//_ofs_signals << _replayer->get_date() << "." << _replayer->get_raw_time() << "." << _replayer->get_secs() << ","
-	//	<< (ordInfo._isBuy ? "+" : "-") << curQty << "," << curPos << "," << curPx << std::endl;
-	if(_sig_logs)
+	if(_sig_logs && _data_agent)
 	{
 		double curPos = stra_get_position(stdCode);
 		_sig_logs->write_file(fmt::format("{}.{}.{},{}{},{},{}\n", stra_get_date(), stra_get_time(), stra_get_secs(), isBuy ? "+" : "-", vol, curPos, price));
@@ -716,7 +718,7 @@ void HftStraBaseCtx::on_session_end()
 
 	//这里要把当日结算的数据写到日志文件里
 	//而且这里回测和实盘写法不同, 先留着, 后面来做
-	if (_fund_logs)
+	if (_fund_logs && _data_agent)
 		_fund_logs->write_file(StrUtil::printf("%d,%.2f,%.2f,%.2f,%.2f\n", curDate,
 			_fund_info._total_profit, _fund_info._total_dynprofit,
 			_fund_info._total_profit + _fund_info._total_dynprofit - _fund_info._total_fees, _fund_info._total_fees));
@@ -724,7 +726,7 @@ void HftStraBaseCtx::on_session_end()
 
 void HftStraBaseCtx::log_trade(const char* stdCode, bool isLong, bool isOpen, uint64_t curTime, double price, double qty, double fee, const char* userTag/* = ""*/)
 {
-	if(_trade_logs)
+	if(_trade_logs && _data_agent)
 	{
 		std::stringstream ss;
 		ss << stdCode << "," << curTime << "," << (isLong ? "LONG" : "SHORT") << "," << (isOpen ? "OPEN" : "CLOSE")
@@ -736,7 +738,7 @@ void HftStraBaseCtx::log_trade(const char* stdCode, bool isLong, bool isOpen, ui
 void HftStraBaseCtx::log_close(const char* stdCode, bool isLong, uint64_t openTime, double openpx, uint64_t closeTime, double closepx, double qty, double profit, double maxprofit, double maxloss,
 	double totalprofit /* = 0 */, const char* enterTag/* = ""*/, const char* exitTag/* = ""*/)
 {
-	if (_close_logs)
+	if (_close_logs && _data_agent)
 	{
 		std::stringstream ss;
 		ss << stdCode << "," << (isLong ? "LONG" : "SHORT") << "," << openTime << "," << openpx

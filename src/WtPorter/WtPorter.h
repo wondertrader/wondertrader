@@ -134,7 +134,7 @@ extern "C"
 	//////////////////////////////////////////////////////////////////////////
 	//HFT策略接口
 #pragma  region "HFT接口"
-	EXPORT_FLAG	CtxHandler	create_hft_context(const char* name, const char* trader);
+	EXPORT_FLAG	CtxHandler	create_hft_context(const char* name, const char* trader, bool agent);
 
 	EXPORT_FLAG	double		hft_get_position(CtxHandler cHandle, const char* stdCode);
 

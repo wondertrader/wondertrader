@@ -134,9 +134,9 @@ uint32_t WtRtRunner::createCtaContext(const char* name)
 	return ctx->id();
 }
 
-uint32_t WtRtRunner::createHftContext(const char* name, const char* trader)
+uint32_t WtRtRunner::createHftContext(const char* name, const char* trader, bool bAgent /* = true */)
 {
-	ExpHftContext* ctx = new ExpHftContext(&_hft_engine, name);
+	ExpHftContext* ctx = new ExpHftContext(&_hft_engine, name, bAgent);
 	_hft_engine.addContext(HftContextPtr(ctx));
 	TraderAdapterPtr trdPtr = _traders.getAdapter(trader);
 	ctx->setTrader(trdPtr.get());
@@ -418,12 +418,13 @@ bool WtRtRunner::initHftStrategies()
 		WTSVariant* cfgItem = cfg->get(idx);
 		const char* id = cfgItem->getCString("id");
 		const char* name = cfgItem->getCString("name");
+		bool bAgent = cfgItem->getCString("agent");
 		HftStrategyPtr stra = _hft_mgr.createStrategy(name, id);
 		if (stra == NULL)
 			continue;
 
 		stra->self()->init(cfgItem->get("params"));
-		HftStraContext* ctx = new HftStraContext(&_hft_engine, id);
+		HftStraContext* ctx = new HftStraContext(&_hft_engine, id, bAgent);
 		ctx->set_strategy(stra->self());
 
 		TraderAdapterPtr trader = _traders.getAdapter(cfgItem->getCString("trader"));

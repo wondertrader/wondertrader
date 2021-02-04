@@ -682,9 +682,9 @@ void sel_sub_ticks(CtxHandler cHandle, const char* stdCode)
 #pragma endregion
 
 #pragma region "HFT²ßÂÔ½Ó¿Ú"
-CtxHandler create_hft_context(const char* name, const char* trader)
+CtxHandler create_hft_context(const char* name, const char* trader, bool agent)
 {
-	return getRunner().createHftContext(name, trader);
+	return getRunner().createHftContext(name, trader, agent);
 }
 
 double hft_get_position(CtxHandler cHandle, const char* stdCode)

@@ -6,7 +6,7 @@ USING_NS_OTP;
 class ExpHftContext : public HftStraBaseCtx
 {
 public:
-	ExpHftContext(WtHftEngine* engine, const char* name):HftStraBaseCtx(engine, name){}
+	ExpHftContext(WtHftEngine* engine, const char* name, bool bAgent):HftStraBaseCtx(engine, name, bAgent){}
 	virtual ~ExpHftContext(){}
 
 public:
