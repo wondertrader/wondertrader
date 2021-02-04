@@ -19,7 +19,7 @@
 
 //#include <vld.h>
 
-void main()
+int main()
 {
 #ifdef _WIN32
 	CMiniDumper::Enable("WtRunner.exe", true);
@@ -31,5 +31,6 @@ void main()
 	runner.config("config.json");
 
 	runner.run(false);
+	return 0;
 }
 
