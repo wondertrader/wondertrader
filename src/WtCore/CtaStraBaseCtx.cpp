@@ -280,6 +280,8 @@ void CtaStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 				PosInfo& pInfo = _pos_map[stdCode];
 				pInfo._closeprofit = pItem["closeprofit"].GetDouble();
 				pInfo._volume = pItem["volume"].GetDouble();
+				pInfo._last_entertime = pItem["lastentertime"].GetUint64();
+				pInfo._last_exittime = pItem["lastexittime"].GetUint64();
 				if (pInfo._volume == 0)
 					pInfo._dynprofit = 0;
 				else
@@ -414,6 +416,8 @@ void CtaStraBaseCtx::save_data(uint32_t flag /* = 0xFFFFFFFF */)
 			pItem.AddMember("volume", pInfo._volume, allocator);
 			pItem.AddMember("closeprofit", pInfo._closeprofit, allocator);
 			pItem.AddMember("dynprofit", pInfo._dynprofit, allocator);
+			pItem.AddMember("lastentertime", pInfo._last_entertime, allocator);
+			pItem.AddMember("lastexittime", pInfo._last_exittime, allocator);
 
 			rj::Value details(rj::kArrayType);
 			for (auto dit = pInfo._details.begin(); dit != pInfo._details.end(); dit++)
@@ -1155,6 +1159,7 @@ void CtaStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 		dInfo._opentdate = curTDate;
 		strcpy(dInfo._opentag, userTag);
 		pInfo._details.emplace_back(dInfo);
+		pInfo._last_entertime = curTm;
 
 		double fee = _engine->calc_fee(stdCode, curPx, abs(qty), 0);
 		_fund_info._total_fees += fee;
@@ -1189,6 +1194,7 @@ void CtaStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 
 			//浮盈也要做等比缩放
 			pInfo._dynprofit = pInfo._dynprofit*dInfo._volume / (dInfo._volume + maxQty);
+			pInfo._last_exittime = curTm;
 			_fund_info._total_profit += profit;
 
 			//计算手续费
@@ -1224,6 +1230,7 @@ void CtaStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 			dInfo._opentdate = curTDate;
 			strcpy(dInfo._opentag, userTag);
 			pInfo._details.emplace_back(dInfo);
+			pInfo._last_entertime = curTm;
 
 			//这里还需要写一笔成交记录
 			double fee = _engine->calc_fee(stdCode, curPx, abs(left), 0);
@@ -1374,6 +1381,16 @@ uint64_t CtaStraBaseCtx::stra_get_first_entertime(const char* stdCode)
 		return INVALID_UINT64;
 
 	return pInfo._details[0]._opentime;
+}
+
+uint64_t CtaStraBaseCtx::stra_get_last_exittime(const char* stdCode)
+{
+	auto it = _pos_map.find(stdCode);
+	if (it == _pos_map.end())
+		return INVALID_UINT64;
+
+	const PosInfo& pInfo = it->second;
+	return pInfo._last_exittime;
 }
 
 uint64_t CtaStraBaseCtx::stra_get_last_entertime(const char* stdCode)

@@ -425,6 +425,15 @@ WtUInt64 cta_get_last_entertime(CtxHandler cHandle, const char* stdCode)
 	return ctx->stra_get_last_entertime(stdCode);
 }
 
+WtUInt64 cta_get_last_exittime(CtxHandler cHandle, const char* stdCode)
+{
+	CtaMocker* ctx = getRunner().cta_mocker();
+	if (ctx == NULL)
+		return 0;
+
+	return ctx->stra_get_last_exittime(stdCode);
+}
+
 double cta_get_last_enterprice(CtxHandler cHandle, const char* stdCode)
 {
 	CtaMocker* ctx = getRunner().cta_mocker();

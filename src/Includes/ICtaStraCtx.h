@@ -64,6 +64,7 @@ public:
 
 	virtual uint64_t stra_get_first_entertime(const char* stdCode) = 0;
 	virtual uint64_t stra_get_last_entertime(const char* stdCode) = 0;
+	virtual uint64_t stra_get_last_exittime(const char* stdCode) = 0;
 	virtual double stra_get_last_enterprice(const char* stdCode) = 0;
 	virtual double stra_get_position_avgpx(const char* stdCode) = 0;
 	virtual double stra_get_position_profit(const char* stdCode) = 0;

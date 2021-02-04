@@ -90,6 +90,8 @@ extern "C"
 
 	EXPORT_FLAG	WtUInt64	cta_get_last_entertime(CtxHandler cHandle, const char* stdCode);
 
+	EXPORT_FLAG	WtUInt64	cta_get_last_exittime(CtxHandler cHandle, const char* stdCode);
+
 	EXPORT_FLAG	double		cta_get_last_enterprice(CtxHandler cHandle, const char* stdCode);
 
 	EXPORT_FLAG	void		cta_log_text(CtxHandler cHandle, const char* message);

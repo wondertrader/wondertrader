@@ -799,6 +799,7 @@ void CtaMocker::do_set_position(const char* stdCode, double qty, double price /*
 		strcpy(dInfo._opentag, userTag);
 		dInfo._open_barno = _schedule_times;
 		pInfo._details.emplace_back(dInfo);
+		pInfo._last_entertime = curTm;
 
 		double fee = _replayer->calc_fee(stdCode, trdPx, abs(diff), 0);
 		_fund_info._total_fees += fee;
@@ -840,6 +841,7 @@ void CtaMocker::do_set_position(const char* stdCode, double qty, double price /*
 				profit *= -1;
 			pInfo._closeprofit += profit;
 			pInfo._dynprofit = pInfo._dynprofit*dInfo._volume / (dInfo._volume + maxQty);//浮盈也要做等比缩放
+			pInfo._last_exittime = curTm;
 			_fund_info._total_profit += profit;
 
 			double fee = _replayer->calc_fee(stdCode, trdPx, maxQty, dInfo._opentdate == curTDate ? 2 : 1);
@@ -881,6 +883,8 @@ void CtaMocker::do_set_position(const char* stdCode, double qty, double price /*
 			_fund_info._total_fees += fee;
 			//_engine->mutate_fund(fee, FFT_Fee);
 			log_trade(stdCode, dInfo._long, true, curTm, trdPx, abs(left), userTag, fee, _schedule_times);
+
+			pInfo._last_entertime = curTm;
 		}
 	}
 }
@@ -1014,6 +1018,16 @@ uint64_t CtaMocker::stra_get_last_entertime(const char* stdCode)
 		return INVALID_UINT64;
 
 	return pInfo._details[pInfo._details.size() - 1]._opentime;
+}
+
+uint64_t CtaMocker::stra_get_last_exittime(const char* stdCode)
+{
+	auto it = _pos_map.find(stdCode);
+	if (it == _pos_map.end())
+		return INVALID_UINT64;
+
+	const PosInfo& pInfo = it->second;
+	return pInfo._last_exittime;
 }
 
 double CtaMocker::stra_get_last_enterprice(const char* stdCode)

@@ -109,6 +109,7 @@ public:
 
 	virtual uint64_t stra_get_first_entertime(const char* stdCode) override;
 	virtual uint64_t stra_get_last_entertime(const char* stdCode) override;
+	virtual uint64_t stra_get_last_exittime(const char* stdCode) override;
 	virtual double stra_get_last_enterprice(const char* stdCode) override;
 	virtual double stra_get_position_avgpx(const char* stdCode) override;
 	virtual double stra_get_position_profit(const char* stdCode) override;
@@ -176,6 +177,9 @@ protected:
 		double		_closeprofit;
 		double		_dynprofit;
 
+		uint64_t	_last_entertime;
+		uint64_t	_last_exittime;
+
 		std::vector<DetailInfo> _details;
 
 		_PosInfo()
@@ -183,6 +187,8 @@ protected:
 			_volume = 0;
 			_closeprofit = 0;
 			_dynprofit = 0;
+			_last_entertime = 0;
+			_last_exittime = 0;
 		}
 	} PosInfo;
 	typedef std::unordered_map<std::string, PosInfo> PositionMap;
