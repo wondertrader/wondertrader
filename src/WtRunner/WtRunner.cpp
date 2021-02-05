@@ -14,8 +14,9 @@
 #include "../WtCore/HftStraContext.h"
 
 #include "../Includes/WTSVariant.hpp"
-#include "../Share/StdUtils.hpp"
 #include "../WTSTools/WTSLogger.h"
+#include "../Share/StdUtils.hpp"
+#include "../Share/StrUtil.hpp"
 #include "../Share/JsonToVariant.hpp"
 
 #ifdef _WIN32
@@ -23,6 +24,20 @@
 #else
 #define my_stricmp strcasecmp
 #endif
+
+
+const char* getBinDir()
+{
+	static std::string basePath;
+	if (basePath.empty())
+	{
+		basePath = boost::filesystem::initial_path<boost::filesystem::path>().string();
+
+		basePath = StrUtil::standardisePath(basePath);
+	}
+
+	return basePath.c_str();
+}
 
 
 WtRunner::WtRunner()
@@ -41,6 +56,8 @@ bool WtRunner::init()
 {
 	std::string path = WtHelper::getCWD() + "logcfg.json";
 	WTSLogger::init(path.c_str());
+
+	WtHelper::setInstDir(getBinDir());
 
 	return true;
 }
