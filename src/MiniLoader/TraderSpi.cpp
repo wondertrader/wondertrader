@@ -242,6 +242,13 @@ void CTraderSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CTho
 
 				std::cerr << "--->>> OnRspQryInstrument: " << pInstrument->ExchangeID << "." << pInstrument->InstrumentID << std::endl;
 				std::string pname = MAP_NAME[pInstrument->ProductID];
+				if (pname.empty())
+				{
+					std::stringstream ss;
+					ss << pInstrument->ExchangeID << "." << pInstrument->ProductID;
+					pname = MAP_NAME[ss.str()];
+				}
+
 				std::string cname = "";
 				if (pname.empty())
 				{
@@ -250,16 +257,24 @@ void CTraderSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CTho
 				}
 				else
 				{
-					if (!bFuture)
-					{
-						cname = pInstrument->InstrumentName;
-					}
-					else
+					if (bFuture)
 					{
 						std::string month = pInstrument->InstrumentID;
 						month = month.substr(strlen(pInstrument->ProductID));
 						cname = pname + month;
 					}
+					else if (bOption)
+					{
+						std::string underlyPID = extractProductID(pInstrument->UnderlyingInstrID);
+						std::string month = pInstrument->InstrumentID;
+						month = month.substr(underlyPID.size());
+						cname = pname + month;
+					}
+					else
+					{
+						cname = pInstrument->InstrumentName;
+					}
+
 				}
 
 				Contract contract;
