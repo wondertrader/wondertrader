@@ -418,7 +418,7 @@ bool WtRtRunner::initHftStrategies()
 		WTSVariant* cfgItem = cfg->get(idx);
 		const char* id = cfgItem->getCString("id");
 		const char* name = cfgItem->getCString("name");
-		bool bAgent = cfgItem->getCString("agent");
+		bool bAgent = cfgItem->getBoolean("agent");
 		HftStrategyPtr stra = _hft_mgr.createStrategy(name, id);
 		if (stra == NULL)
 			continue;
@@ -427,9 +427,17 @@ bool WtRtRunner::initHftStrategies()
 		HftStraContext* ctx = new HftStraContext(&_hft_engine, id, bAgent);
 		ctx->set_strategy(stra->self());
 
-		TraderAdapterPtr trader = _traders.getAdapter(cfgItem->getCString("trader"));
-		ctx->setTrader(trader.get());
-		trader->addSink(ctx);
+		const char* traderid = cfgItem->getCString("trader");
+		TraderAdapterPtr trader = _traders.getAdapter(traderid);
+		if (trader)
+		{
+			ctx->setTrader(trader.get());
+			trader->addSink(ctx);
+		}
+		else
+		{
+			WTSLogger::error("交易通道%s不存在，HFT策略绑定交易通道失败", traderid);
+		}
 
 		_hft_engine.addContext(HftContextPtr(ctx));
 	}
