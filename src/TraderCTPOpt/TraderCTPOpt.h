@@ -182,7 +182,7 @@ protected:
 
 	uint32_t		genRequestID();
 
-	void			triggerQuery();
+	//void			triggerQuery();
 
 protected:
 	std::string		m_strBroker;
@@ -231,8 +231,7 @@ protected:
 	StdUniqueMutex			m_mtxQuery;
 	uint64_t				m_lastQryTime;
 
-	boost::asio::io_service		m_asyncIO;
-	boost::asio::io_service::strand*	m_strandIO;
+	bool					m_bStopped;
 	StdThreadPtr			m_thrdWorker;
 
 	std::string		m_strModule;

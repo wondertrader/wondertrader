@@ -279,7 +279,7 @@ TraderCTPOpt::TraderCTPOpt()
 	, m_optSink(NULL)
 	, m_bscSink(NULL)
 	, m_bInQuery(false)
-	, m_strandIO(NULL)
+	, m_bStopped(NULL)
 	, m_lastQryTime(0)
 {
 }
@@ -378,14 +378,33 @@ void TraderCTPOpt::connect()
 
 	if (m_thrdWorker == NULL)
 	{
-		m_strandIO = new boost::asio::io_service::strand(m_asyncIO);
-		boost::asio::io_service::work work(m_asyncIO);
-		m_thrdWorker.reset(new StdThread([this](){
-			while (true)
+		m_thrdWorker.reset(new StdThread([this]() {
+			while (!m_bStopped)
 			{
-				std::this_thread::sleep_for(std::chrono::milliseconds(2));
-				m_asyncIO.run_one();
-				//m_asyncIO.run();
+				if (m_queQuery.empty() || m_bInQuery)
+				{
+					std::this_thread::sleep_for(std::chrono::milliseconds(1));
+					continue;
+				}
+
+				uint64_t curTime = TimeUtils::getLocalTimeNow();
+				if (curTime - m_lastQryTime < 1000)
+				{
+					std::this_thread::sleep_for(std::chrono::milliseconds(50));
+					continue;
+				}
+
+
+				m_bInQuery = true;
+				CommonExecuter& handler = m_queQuery.front();
+				handler();
+
+				{
+					StdUniqueLock lock(m_mtxQuery);
+					m_queQuery.pop();
+				}
+
+				m_lastQryTime = TimeUtils::getLocalTimeNow();
 			}
 		}));
 	}
@@ -393,18 +412,14 @@ void TraderCTPOpt::connect()
 
 void TraderCTPOpt::disconnect()
 {
-	m_asyncIO.post([this](){
+	m_queQuery.push([this]() {
 		release();
 	});
 
 	if (m_thrdWorker)
 	{
-		m_asyncIO.stop();
 		m_thrdWorker->join();
 		m_thrdWorker = NULL;
-
-		delete m_strandIO;
-		m_strandIO = NULL;
 	}
 }
 
@@ -627,7 +642,7 @@ int TraderCTPOpt::queryOrdersOpt(WTSBusinessType bType)
 		m_pUserAPI->ReqQryExecOrder(&req, genRequestID());
 	});
 
-	triggerQuery();
+	//triggerQuery();
 
 	return 0;
 }
@@ -782,7 +797,7 @@ int TraderCTPOpt::queryAccount()
 		m_pUserAPI->ReqQryTradingAccount(&req, genRequestID());
 	});
 
-	triggerQuery();
+	//triggerQuery();
 
 	return 0;
 }
@@ -803,7 +818,7 @@ int TraderCTPOpt::queryPositions()
 		m_pUserAPI->ReqQryInvestorPosition(&req, genRequestID());
 	});
 
-	triggerQuery();
+	//triggerQuery();
 
 	return 0;
 }
@@ -825,7 +840,7 @@ int TraderCTPOpt::queryOrders()
 		m_pUserAPI->ReqQryOrder(&req, genRequestID());
 	});
 
-	triggerQuery();
+	//triggerQuery();
 
 	return 0;
 }
@@ -847,7 +862,7 @@ int TraderCTPOpt::queryTrades()
 		m_pUserAPI->ReqQryTrade(&req, genRequestID());
 	});
 
-	triggerQuery();
+	//triggerQuery();
 
 	return 0;
 }
@@ -950,7 +965,7 @@ void TraderCTPOpt::OnRspQrySettlementInfoConfirm(CThostFtdcSettlementInfoConfirm
 	if (bIsLast)
 	{
 		m_bInQuery = false;
-		triggerQuery();
+		//triggerQuery();
 	}
 
 	if (!IsErrorRspInfo(pRspInfo))
@@ -1073,7 +1088,7 @@ void TraderCTPOpt::OnRspQryExecOrder(CThostFtdcExecOrderField *pExecOrder, CThos
 	if (bIsLast)
 	{
 		m_bInQuery = false;
-		triggerQuery();
+		//triggerQuery();
 	}
 
 	if (!IsErrorRspInfo(pRspInfo) && pExecOrder)
@@ -1117,7 +1132,7 @@ void TraderCTPOpt::OnRspQryTradingAccount(CThostFtdcTradingAccountField *pTradin
 	if (bIsLast)
 	{
 		m_bInQuery = false;
-		triggerQuery();
+		//triggerQuery();
 	}
 
 	if (bIsLast && !IsErrorRspInfo(pRspInfo))
@@ -1152,7 +1167,7 @@ void TraderCTPOpt::OnRspQryInvestorPosition(CThostFtdcInvestorPositionField *pIn
 	if (bIsLast)
 	{
 		m_bInQuery = false;
-		triggerQuery();
+		//triggerQuery();
 	}
 
 	if (!IsErrorRspInfo(pRspInfo) && pInvestorPosition)
@@ -1299,7 +1314,7 @@ void TraderCTPOpt::OnRspQryTrade(CThostFtdcTradeField *pTrade, CThostFtdcRspInfo
 	if (bIsLast)
 	{
 		m_bInQuery = false;
-		triggerQuery();
+		//triggerQuery();
 	}
 
 	if (!IsErrorRspInfo(pRspInfo) && pTrade)
@@ -1329,7 +1344,7 @@ void TraderCTPOpt::OnRspQryOrder(CThostFtdcOrderField *pOrder, CThostFtdcRspInfo
 	if (bIsLast)
 	{
 		m_bInQuery = false;
-		triggerQuery();
+		//triggerQuery();
 	}
 
 	if (!IsErrorRspInfo(pRspInfo) && pOrder)
@@ -1680,7 +1695,7 @@ int TraderCTPOpt::queryConfirm()
 		}
 	});
 
-	triggerQuery();
+	//triggerQuery();
 
 	return 0;
 }
@@ -1725,6 +1740,7 @@ int TraderCTPOpt::authenticate()
 	return 0;
 }
 
+/*
 void TraderCTPOpt::triggerQuery()
 {
 	m_strandIO->post([this](){
@@ -1754,3 +1770,4 @@ void TraderCTPOpt::triggerQuery()
 		m_lastQryTime = TimeUtils::getLocalTimeNow();
 	});
 }
+*/

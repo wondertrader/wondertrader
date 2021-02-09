@@ -15,9 +15,6 @@
 #include <unordered_map>
 #include <stdint.h>
 
-#include <boost/asio/io_service.hpp>
-#include <boost/asio/strand.hpp>
-
 #include "../Includes/WTSTypes.h"
 #include "../Includes/ITraderApi.h"
 #include "../Includes/WTSCollection.hpp"
@@ -166,7 +163,7 @@ protected:
 
 	uint32_t		genRequestID();
 
-	void			triggerQuery();
+	//void			triggerQuery();
 
 protected:
 	std::string		m_strBroker;
@@ -210,11 +207,10 @@ protected:
 	typedef std::queue<CommonExecuter>	QueryQue;
 	QueryQue				m_queQuery;
 	bool					m_bInQuery;
-	StdUniqueMutex		m_mtxQuery;
+	StdUniqueMutex			m_mtxQuery;
 	uint64_t				m_lastQryTime;
 
-	boost::asio::io_service		m_asyncIO;
-	boost::asio::io_service::strand*	m_strandIO;
+	bool					m_bStopped;
 	StdThreadPtr			m_thrdWorker;
 
 	std::string		m_strModule;
