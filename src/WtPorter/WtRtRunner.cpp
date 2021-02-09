@@ -139,8 +139,15 @@ uint32_t WtRtRunner::createHftContext(const char* name, const char* trader, bool
 	ExpHftContext* ctx = new ExpHftContext(&_hft_engine, name, bAgent);
 	_hft_engine.addContext(HftContextPtr(ctx));
 	TraderAdapterPtr trdPtr = _traders.getAdapter(trader);
-	ctx->setTrader(trdPtr.get());
-	trdPtr->addSink(ctx);
+	if(trdPtr)
+	{
+		ctx->setTrader(trdPtr.get());
+		trdPtr->addSink(ctx);
+	}
+	else
+	{
+		WTSLogger::error("交易通道%s不存在，HFT策略绑定交易通道失败", trader);
+	}
 	return ctx->id();
 }
 
