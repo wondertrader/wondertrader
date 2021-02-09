@@ -492,14 +492,16 @@ int TraderCTP::queryAccount()
 		return -1;
 	}
 
-	StdUniqueLock lock(m_mtxQuery);
-	m_queQuery.push([this](){
-		CThostFtdcQryTradingAccountField req;
-		memset(&req, 0, sizeof(req));
-		strcpy(req.BrokerID, m_strBroker.c_str());
-		strcpy(req.InvestorID, m_strUser.c_str());
-		m_pUserAPI->ReqQryTradingAccount(&req, genRequestID());
-	});
+	{
+		StdUniqueLock lock(m_mtxQuery);
+		m_queQuery.push([this]() {
+			CThostFtdcQryTradingAccountField req;
+			memset(&req, 0, sizeof(req));
+			strcpy(req.BrokerID, m_strBroker.c_str());
+			strcpy(req.InvestorID, m_strUser.c_str());
+			m_pUserAPI->ReqQryTradingAccount(&req, genRequestID());
+		});
+	}
 
 	triggerQuery();
 
@@ -513,14 +515,16 @@ int TraderCTP::queryPositions()
 		return -1;
 	}
 
-	StdUniqueLock lock(m_mtxQuery);
-	m_queQuery.push([this](){
-		CThostFtdcQryInvestorPositionField req;
-		memset(&req, 0, sizeof(req));
-		strcpy(req.BrokerID, m_strBroker.c_str());
-		strcpy(req.InvestorID, m_strUser.c_str());
-		m_pUserAPI->ReqQryInvestorPosition(&req, genRequestID());
-	});
+	{
+		StdUniqueLock lock(m_mtxQuery);
+		m_queQuery.push([this]() {
+			CThostFtdcQryInvestorPositionField req;
+			memset(&req, 0, sizeof(req));
+			strcpy(req.BrokerID, m_strBroker.c_str());
+			strcpy(req.InvestorID, m_strUser.c_str());
+			m_pUserAPI->ReqQryInvestorPosition(&req, genRequestID());
+		});
+	}
 
 	triggerQuery();
 
@@ -534,17 +538,19 @@ int TraderCTP::queryOrders()
 		return -1;
 	}
 
-	StdUniqueLock lock(m_mtxQuery);
-	m_queQuery.push([this](){
-		CThostFtdcQryOrderField req;
-		memset(&req, 0, sizeof(req));
-		strcpy(req.BrokerID, m_strBroker.c_str());
-		strcpy(req.InvestorID, m_strUser.c_str());
+	{
+		StdUniqueLock lock(m_mtxQuery);
+		m_queQuery.push([this]() {
+			CThostFtdcQryOrderField req;
+			memset(&req, 0, sizeof(req));
+			strcpy(req.BrokerID, m_strBroker.c_str());
+			strcpy(req.InvestorID, m_strUser.c_str());
 
-		m_pUserAPI->ReqQryOrder(&req, genRequestID());
-	});
+			m_pUserAPI->ReqQryOrder(&req, genRequestID());
+		});
 
-	triggerQuery();
+		triggerQuery();
+	}
 
 	return 0;
 }
@@ -556,15 +562,17 @@ int TraderCTP::queryTrades()
 		return -1;
 	}
 
-	StdUniqueLock lock(m_mtxQuery);
-	m_queQuery.push([this](){
-		CThostFtdcQryTradeField req;
-		memset(&req, 0, sizeof(req));
-		strcpy(req.BrokerID, m_strBroker.c_str());
-		strcpy(req.InvestorID, m_strUser.c_str());
+	{
+		StdUniqueLock lock(m_mtxQuery);
+		m_queQuery.push([this]() {
+			CThostFtdcQryTradeField req;
+			memset(&req, 0, sizeof(req));
+			strcpy(req.BrokerID, m_strBroker.c_str());
+			strcpy(req.InvestorID, m_strUser.c_str());
 
-		m_pUserAPI->ReqQryTrade(&req, genRequestID());
-	});
+			m_pUserAPI->ReqQryTrade(&req, genRequestID());
+		});
+	}
 
 	triggerQuery();
 
@@ -1348,19 +1356,21 @@ int TraderCTP::queryConfirm()
 		return -1;
 	}
 
-	StdUniqueLock lock(m_mtxQuery);
-	m_queQuery.push([this](){
-		CThostFtdcQrySettlementInfoConfirmField req;
-		memset(&req, 0, sizeof(req));
-		strcpy(req.BrokerID, m_strBroker.c_str());
-		strcpy(req.InvestorID, m_strUser.c_str());
+	{
+		StdUniqueLock lock(m_mtxQuery);
+		m_queQuery.push([this]() {
+			CThostFtdcQrySettlementInfoConfirmField req;
+			memset(&req, 0, sizeof(req));
+			strcpy(req.BrokerID, m_strBroker.c_str());
+			strcpy(req.InvestorID, m_strUser.c_str());
 
-		int iResult = m_pUserAPI->ReqQrySettlementInfoConfirm(&req, genRequestID());
-		if (iResult != 0)
-		{
-			m_sink->handleTraderLog(LL_ERROR, "[TraderCTP][%s-%s]查询账户结算确认请求发送失败, 错误码:%d", m_strBroker.c_str(), m_strUser.c_str(), iResult);
-		}
-	});
+			int iResult = m_pUserAPI->ReqQrySettlementInfoConfirm(&req, genRequestID());
+			if (iResult != 0)
+			{
+				m_sink->handleTraderLog(LL_ERROR, "[TraderCTP][%s-%s]查询账户结算确认请求发送失败, 错误码:%d", m_strBroker.c_str(), m_strUser.c_str(), iResult);
+			}
+		});
+	}
 
 	triggerQuery();
 
