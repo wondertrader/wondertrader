@@ -36,7 +36,6 @@
     <ClInclude Include="CtaStrategyMgr.h" />
     <ClInclude Include="CtaStraBaseCtx.h" />
     <ClInclude Include="IExecCommand.h" />
-    <ClInclude Include="IHftStraCtx.h" />
     <ClInclude Include="ITrdNotifySink.h" />
     <ClInclude Include="SelStraBaseCtx.h" />
     <ClInclude Include="SelStraContext.h" />
