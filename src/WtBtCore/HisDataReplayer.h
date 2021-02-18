@@ -50,8 +50,8 @@ public:
 	virtual void	handle_schedule(uint32_t uDate, uint32_t uTime) = 0;
 
 	virtual void	handle_init() = 0;
-	virtual void	handle_session_begin() = 0;
-	virtual void	handle_session_end() = 0;
+	virtual void	handle_session_begin(uint32_t curTDate) = 0;
+	virtual void	handle_session_end(uint32_t curTDate) = 0;
 	virtual void	handle_replay_done() {}
 };
 

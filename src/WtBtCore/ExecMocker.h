@@ -39,9 +39,9 @@ public:
 
 	virtual void handle_bar_close(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar) override;
 
-	virtual void handle_session_begin() override;
+	virtual void handle_session_begin(uint32_t curTDate) override;
 
-	virtual void handle_session_end() override;
+	virtual void handle_session_end(uint32_t curTDate) override;
 
 	//////////////////////////////////////////////////////////////////////////
 	//ExecuteContext

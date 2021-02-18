@@ -696,14 +696,14 @@ void HftStraBaseCtx::update_dyn_profit(const char* stdCode, WTSTickData* newTick
 	}
 }
 
-void HftStraBaseCtx::on_session_begin()
+void HftStraBaseCtx::on_session_begin(uint32_t uTDate)
 {
 
 }
 
-void HftStraBaseCtx::on_session_end()
+void HftStraBaseCtx::on_session_end(uint32_t uTDate)
 {
-	uint32_t curDate = _engine->get_trading_date();
+	uint32_t curDate = uTDate;//_engine->get_trading_date();
 
 	double total_profit = 0;
 	double total_dynprofit = 0;

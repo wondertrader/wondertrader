@@ -46,6 +46,22 @@ void ExpHftMocker::on_init()
 	HftMocker::on_init();
 
 	getRunner().ctx_on_init(_context_id, ET_HFT);
+
+	getRunner().on_initialize_event();
+}
+
+void ExpHftMocker::on_session_begin(uint32_t uDate)
+{
+	HftMocker::on_session_begin(uDate);
+
+	getRunner().on_session_event(uDate, true);
+}
+
+void ExpHftMocker::on_session_end(uint32_t uDate)
+{
+	HftMocker::on_session_end(uDate);
+
+	getRunner().on_session_event(uDate, false);
 }
 
 void ExpHftMocker::on_order(uint32_t localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled, const char* userTag)

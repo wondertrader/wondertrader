@@ -102,12 +102,12 @@ void ExecMocker::handle_bar_close(const char* stdCode, const char* period, uint3
 	//throw std::logic_error("The method or operation is not implemented.");
 }
 
-void ExecMocker::handle_session_begin()
+void ExecMocker::handle_session_begin(uint32_t curTDate)
 {
 	//throw std::logic_error("The method or operation is not implemented.");
 }
 
-void ExecMocker::handle_session_end()
+void ExecMocker::handle_session_end(uint32_t curTDate)
 {
 	_matcher.clear();
 	_undone = 0;

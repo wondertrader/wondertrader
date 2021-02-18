@@ -45,6 +45,11 @@ public:
 		FuncHftChannelCallback cbChnl, FuncHftOrdCallback cbOrd, FuncHftTrdCallback cbTrd, FuncHftEntrustCallback cbEntrust,
 		FuncStraOrdDtlCallback cbOrdDtl, FuncStraOrdQueCallback cbOrdQue, FuncStraTransCallback cbTrans);
 
+	void registerEvtCallback(FuncEventCallback cbEvt)
+	{
+		_cb_evt = cbEvt;
+	}
+
 	uint32_t	initCtaMocker(const char* name);
 	uint32_t	initHftMocker(const char* name);
 	uint32_t	initSelMocker(const char* name, uint32_t date, uint32_t time, const char* period, const char* trdtpl = "CHINA", const char* session = "TRADING");
@@ -75,6 +80,27 @@ public:
 	HftMocker*			hft_mocker() { return _hft_mocker; }
 	HisDataReplayer&	replayer() { return _replayer; }
 
+public:
+	inline void on_initialize_event()
+	{
+		if (_cb_evt)
+			_cb_evt(EVENT_ENGINE_INIT, 0, 0);
+	}
+
+	inline void on_schedule_event(uint32_t uDate, uint32_t uTime)
+	{
+		if (_cb_evt)
+			_cb_evt(EVENT_ENGINE_SCHDL, uDate, uTime);
+	}
+
+	inline void on_session_event(uint32_t uDate, bool isBegin = true)
+	{
+		if (_cb_evt)
+		{
+			_cb_evt(isBegin ? EVENT_SESSION_BEGIN : EVENT_SESSION_END, uDate, 0);
+		}
+	}
+
 private:
 	FuncStraInitCallback	_cb_cta_init;
 	FuncStraTickCallback	_cb_cta_tick;
@@ -98,6 +124,8 @@ private:
 	FuncStraOrdQueCallback	_cb_hft_ordque;
 	FuncStraOrdDtlCallback	_cb_hft_orddtl;
 	FuncStraTransCallback	_cb_hft_trans;
+
+	FuncEventCallback		_cb_evt;
 
 	CtaMocker*		_cta_mocker;
 	SelMocker*		_sel_mocker;

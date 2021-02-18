@@ -340,7 +340,7 @@ void HisDataReplayer::run()
 					uint32_t nextTDate = _bd_mgr.calcTradingDate(commId.c_str(), nextDate, nextTime, false);
 					if (_opened_tdate != nextTDate)
 					{
-						_listener->handle_session_begin();
+						_listener->handle_session_begin(nextTDate);
 						_opened_tdate = nextTDate;
 						//WTSLogger::info("交易日%u开始", nextTDate);
 						_cur_tdate = nextTDate;
@@ -369,7 +369,7 @@ void HisDataReplayer::run()
 
 					if (isEndTDate && _closed_tdate != _cur_tdate)
 					{
-						_listener->handle_session_end();
+						_listener->handle_session_end(_cur_tdate);
 						_closed_tdate = _cur_tdate;
 						_day_cache.clear();
 					}
@@ -391,7 +391,7 @@ void HisDataReplayer::run()
 
 			if (_closed_tdate != _cur_tdate)
 			{
-				_listener->handle_session_end();
+				_listener->handle_session_end(_cur_tdate);
 			}
 		}
 		else if(_tick_enabled)
@@ -405,9 +405,9 @@ void HisDataReplayer::run()
 				if(checkAllTicks(_cur_tdate))
 				{
 					WTSLogger::info("开始回放%u的tick数据...", _cur_tdate);
-					_listener->handle_session_begin();
+					_listener->handle_session_begin(_cur_tdate);
 					replayHftDatasByDay(_cur_tdate);
-					_listener->handle_session_end();
+					_listener->handle_session_end(_cur_tdate);
 				}
 
 				_cur_tdate = TimeUtils::getNextDate(_cur_tdate);
@@ -533,9 +533,9 @@ void HisDataReplayer::run()
 					{
 						_cur_tdate = newTDate;
 						if (_listener)
-							_listener->handle_session_begin();
+							_listener->handle_session_begin(newTDate);
 						if (_listener)
-							_listener->handle_session_end();
+							_listener->handle_session_end(newTDate);
 					}
 				}
 				else
@@ -545,10 +545,10 @@ void HisDataReplayer::run()
 					uint32_t curTime = endtime;
 					bool bEndSession = sInfo->offsetTime(curTime) >= sInfo->getCloseTime(true);
 					if (_listener)
-						_listener->handle_session_begin();
+						_listener->handle_session_begin(_cur_tdate);
 					onMinuteEnd(curDate, curTime, bEndSession ? _cur_tdate : preTDate);
 					if (_listener)
-						_listener->handle_session_end();
+						_listener->handle_session_end(_cur_tdate);
 				}
 
 				_cur_date = TimeUtils::getNextDate(_cur_date);
@@ -561,7 +561,7 @@ void HisDataReplayer::run()
 					WTSLogger::info("按任务周期回测结束");
 					if (_listener)
 					{
-						_listener->handle_session_end();
+						_listener->handle_session_end(_cur_tdate);
 						_listener->handle_replay_done();
 					}
 
@@ -572,7 +572,7 @@ void HisDataReplayer::run()
 		else
 		{
 			if (_listener)
-				_listener->handle_session_begin();
+				_listener->handle_session_begin(_cur_tdate);
 
 			for(;;)
 			{
@@ -599,7 +599,7 @@ void HisDataReplayer::run()
 					onMinuteEnd(_cur_date, _cur_time, _cur_tdate);
 
 					if (_listener)
-						_listener->handle_session_end();
+						_listener->handle_session_end(_cur_tdate);
 				}
 		
 				
@@ -628,7 +628,7 @@ void HisDataReplayer::run()
 					_cur_time = sInfo->minuteToTime(mins);
 
 					if (_listener)
-						_listener->handle_session_begin();
+						_listener->handle_session_begin(nextTDate);
 				}
 				else
 				{
@@ -656,7 +656,7 @@ void HisDataReplayer::run()
 					WTSLogger::info("按任务周期回测结束");
 					if (_listener)
 					{
-						_listener->handle_session_end();
+						_listener->handle_session_end(_cur_tdate);
 						_listener->handle_replay_done();
 					}
 					break;

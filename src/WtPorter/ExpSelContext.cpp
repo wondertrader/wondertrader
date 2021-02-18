@@ -22,14 +22,14 @@ void ExpSelContext::on_init()
 	getRunner().ctx_on_init(_context_id, ET_SEL);
 }
 
-void ExpSelContext::on_session_begin()
+void ExpSelContext::on_session_begin(uint32_t uDate)
 {
-	SelStraBaseCtx::on_session_begin();
+	SelStraBaseCtx::on_session_begin(uDate);
 }
 
-void ExpSelContext::on_session_end()
+void ExpSelContext::on_session_end(uint32_t uDate)
 {
-	SelStraBaseCtx::on_session_end();
+	SelStraBaseCtx::on_session_end(uDate);
 }
 
 void ExpSelContext::on_strategy_schedule(uint32_t curDate, uint32_t curTime)

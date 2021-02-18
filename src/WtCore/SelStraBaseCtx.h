@@ -47,8 +47,8 @@ public:
 
 	//»Øµ÷º¯Êý
 	virtual void on_init() override;
-	virtual void on_session_begin() override;
-	virtual void on_session_end() override;
+	virtual void on_session_begin(uint32_t uTDate) override;
+	virtual void on_session_end(uint32_t uTDate) override;
 	virtual void on_tick(const char* stdCode, WTSTickData* newTick, bool bEmitStrategy = true) override;
 	virtual void on_bar(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar) override;
 	virtual bool on_schedule(uint32_t curDate, uint32_t curTime, uint32_t fireTime) override;

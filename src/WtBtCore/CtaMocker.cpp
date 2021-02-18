@@ -177,14 +177,14 @@ void CtaMocker::handle_schedule(uint32_t uDate, uint32_t uTime)
 	this->on_schedule(uDate, uTime);
 }
 
-void CtaMocker::handle_session_begin()
+void CtaMocker::handle_session_begin(uint32_t curTDate)
 {
-	this->on_session_begin();
+	this->on_session_begin(curTDate);
 }
 
-void CtaMocker::handle_session_end()
+void CtaMocker::handle_session_end(uint32_t curTDate)
 {
-	this->on_session_end();
+	this->on_session_end(curTDate);
 }
 
 void CtaMocker::handle_replay_done()
@@ -476,7 +476,7 @@ bool CtaMocker::on_schedule(uint32_t curDate, uint32_t curTime)
 	return emmited;
 }
 
-void CtaMocker::on_session_begin()
+void CtaMocker::on_session_begin(uint32_t curTDate)
 {
 }
 
@@ -503,9 +503,9 @@ void CtaMocker::enum_position(FuncEnumPositionCallBack cb)
 	}
 }
 
-void CtaMocker::on_session_end()
+void CtaMocker::on_session_end(uint32_t curTDate)
 {
-	uint32_t curDate = _replayer->get_trading_date();
+	uint32_t curDate = curTDate;//_replayer->get_trading_date();
 
 	double total_profit = 0;
 	double total_dynprofit = 0;

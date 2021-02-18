@@ -32,14 +32,14 @@ void ExpCtaContext::on_init()
 	getRunner().ctx_on_init(_context_id, ET_CTA);
 }
 
-void ExpCtaContext::on_session_begin()
+void ExpCtaContext::on_session_begin(uint32_t uDate)
 {
-	CtaStraBaseCtx::on_session_begin();
+	CtaStraBaseCtx::on_session_begin(uDate);
 }
 
-void ExpCtaContext::on_session_end()
+void ExpCtaContext::on_session_end(uint32_t uDate)
 {
-	CtaStraBaseCtx::on_session_end();
+	CtaStraBaseCtx::on_session_end(uDate);
 }
 
 void ExpCtaContext::on_tick_updated(const char* stdCode, WTSTickData* newTick)

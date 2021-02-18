@@ -12,9 +12,9 @@ public:
 public:
 	virtual void on_init() override;
 
-	virtual void on_session_begin() override;
+	virtual void on_session_begin(uint32_t uDate) override;
 
-	virtual void on_session_end() override;
+	virtual void on_session_end(uint32_t uDate) override;
 
 	virtual void on_strategy_schedule(uint32_t curDate, uint32_t curTime) override;
 

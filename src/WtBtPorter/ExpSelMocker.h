@@ -10,9 +10,9 @@ public:
 public:
 	virtual void on_init() override;
 
-	virtual void on_session_begin() override;
+	virtual void on_session_begin(uint32_t uDate) override;
 
-	virtual void on_session_end() override;
+	virtual void on_session_end(uint32_t uDate) override;
 
 	virtual void on_tick_updated(const char* stdCode, WTSTickData* newTick) override;
 

@@ -36,8 +36,8 @@ public:
 
 	//»Øµ÷º¯Êý
 	virtual void on_init() = 0;
-	virtual void on_session_begin() = 0;
-	virtual void on_session_end() = 0;
+	virtual void on_session_begin(uint32_t uTDate) = 0;
+	virtual void on_session_end(uint32_t uTDate) = 0;
 	virtual void on_tick(const char* stdCode, WTSTickData* newTick, bool bEmitStrategy = true) = 0;
 	virtual void on_bar(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar) = 0;
 	virtual bool on_schedule(uint32_t curDate, uint32_t curTime, uint32_t fireTime) = 0;

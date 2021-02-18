@@ -40,8 +40,8 @@ public:
 	virtual void	handle_schedule(uint32_t uDate, uint32_t uTime) override;
 
 	virtual void	handle_init() override;
-	virtual void	handle_session_begin() override;
-	virtual void	handle_session_end() override;
+	virtual void	handle_session_begin(uint32_t curTDate) override;
+	virtual void	handle_session_end(uint32_t curTDate) override;
 
 	virtual void	handle_replay_done() override;
 
@@ -61,9 +61,9 @@ public:
 
 	virtual void on_bar(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar) override;
 
-	virtual void on_session_begin() override;
+	virtual void on_session_begin(uint32_t curTDate) override;
 
-	virtual void on_session_end() override;
+	virtual void on_session_end(uint32_t curTDate) override;
 
 	virtual bool stra_cancel(uint32_t localid) override;
 

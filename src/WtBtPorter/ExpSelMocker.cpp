@@ -20,16 +20,22 @@ void ExpSelMocker::on_init()
 
 	//向外部回调
 	getRunner().ctx_on_init(_context_id, ET_SEL);
+
+	getRunner().on_initialize_event();
 }
 
-void ExpSelMocker::on_session_begin()
+void ExpSelMocker::on_session_begin(uint32_t uDate)
 {
-	SelMocker::on_session_begin();
+	SelMocker::on_session_begin(uDate);
+
+	getRunner().on_session_event(uDate, true);
 }
 
-void ExpSelMocker::on_session_end()
+void ExpSelMocker::on_session_end(uint32_t uDate)
 {
-	SelMocker::on_session_end();
+	SelMocker::on_session_end(uDate);
+
+	getRunner().on_session_event(uDate, false);
 }
 
 void ExpSelMocker::on_tick_updated(const char* stdCode, WTSTickData* newTick)
@@ -53,4 +59,6 @@ void ExpSelMocker::on_strategy_schedule(uint32_t curDate, uint32_t curTime)
 
 	//向外部回调
 	getRunner().ctx_on_calc(_context_id, curDate, curTime, ET_SEL);
+
+	getRunner().on_schedule_event(curDate, curTime);
 }

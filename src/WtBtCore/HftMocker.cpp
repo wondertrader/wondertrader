@@ -238,14 +238,14 @@ void HftMocker::handle_schedule(uint32_t uDate, uint32_t uTime)
 	//on_schedule(uDate, uTime);
 }
 
-void HftMocker::handle_session_begin()
+void HftMocker::handle_session_begin(uint32_t curTDate)
 {
-	on_session_begin();
+	on_session_begin(curTDate);
 }
 
-void HftMocker::handle_session_end()
+void HftMocker::handle_session_end(uint32_t curTDate)
 {
-	on_session_end();
+	on_session_end(curTDate);
 }
 
 void HftMocker::handle_replay_done()
@@ -322,14 +322,14 @@ void HftMocker::on_init()
 		_strategy->on_init(this);
 }
 
-void HftMocker::on_session_begin()
+void HftMocker::on_session_begin(uint32_t curTDate)
 {
 
 }
 
-void HftMocker::on_session_end()
+void HftMocker::on_session_end(uint32_t curTDate)
 {
-	uint32_t curDate = _replayer->get_trading_date();
+	uint32_t curDate = curTDate;// _replayer->get_trading_date();
 
 	double total_profit = 0;
 	double total_dynprofit = 0;

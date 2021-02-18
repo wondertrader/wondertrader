@@ -168,7 +168,7 @@ void WtCtaEngine::on_session_begin()
 	for (auto it = _ctx_map.begin(); it != _ctx_map.end(); it++)
 	{
 		CtaContextPtr& ctx = it->second;
-		ctx->on_session_begin();
+		ctx->on_session_begin(_cur_tdate);
 	}
 
 	if (_evt_listener)
@@ -182,7 +182,7 @@ void WtCtaEngine::on_session_end()
 	for (auto it = _ctx_map.begin(); it != _ctx_map.end(); it++)
 	{
 		CtaContextPtr& ctx = it->second;
-		ctx->on_session_end();
+		ctx->on_session_end(_cur_tdate);
 	}
 
 	WTSLogger::info("交易日%u已结束", _cur_tdate);

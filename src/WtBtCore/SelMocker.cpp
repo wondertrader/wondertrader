@@ -159,14 +159,14 @@ void SelMocker::handle_schedule(uint32_t uDate, uint32_t uTime)
 	this->on_schedule(uDate, uTime, nextTime);
 }
 
-void SelMocker::handle_session_begin()
+void SelMocker::handle_session_begin(uint32_t uCurDate)
 {
-	this->on_session_begin();
+	this->on_session_begin(uCurDate);
 }
 
-void SelMocker::handle_session_end()
+void SelMocker::handle_session_end(uint32_t uCurDate)
 {
-	this->on_session_end();
+	this->on_session_end(uCurDate);
 }
 
 void SelMocker::handle_replay_done()
@@ -336,7 +336,7 @@ bool SelMocker::on_schedule(uint32_t curDate, uint32_t curTime, uint32_t fireTim
 	return true;
 }
 
-void SelMocker::on_session_begin()
+void SelMocker::on_session_begin(uint32_t curTDate)
 {
 }
 
@@ -363,9 +363,9 @@ void SelMocker::enum_position(FuncEnumSelPositionCallBack cb)
 	}
 }
 
-void SelMocker::on_session_end()
+void SelMocker::on_session_end(uint32_t curTDate)
 {
-	uint32_t curDate = _replayer->get_trading_date();
+	uint32_t curDate = curTDate;//_replayer->get_trading_date();
 
 	double total_profit = 0;
 	double total_dynprofit = 0;

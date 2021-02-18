@@ -591,7 +591,7 @@ bool SelStraBaseCtx::on_schedule(uint32_t curDate, uint32_t curTime, uint32_t fi
 	return true;
 }
 
-void SelStraBaseCtx::on_session_begin()
+void SelStraBaseCtx::on_session_begin(uint32_t uTDate)
 {
 
 }
@@ -619,9 +619,9 @@ void SelStraBaseCtx::enum_position(FuncEnumSelPositionCallBack cb)
 	}
 }
 
-void SelStraBaseCtx::on_session_end()
+void SelStraBaseCtx::on_session_end(uint32_t uTDate)
 {
-	uint32_t curDate = _engine->get_trading_date();
+	uint32_t curDate = uTDate;//_engine->get_trading_date();
 
 	double total_profit = 0;
 	double total_dynprofit = 0;

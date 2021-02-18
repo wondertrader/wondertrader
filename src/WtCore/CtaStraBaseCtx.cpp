@@ -836,7 +836,7 @@ bool CtaStraBaseCtx::on_schedule(uint32_t curDate, uint32_t curTime)
 	return emmited;
 }
 
-void CtaStraBaseCtx::on_session_begin()
+void CtaStraBaseCtx::on_session_begin(uint32_t uTDate)
 {
 
 }
@@ -865,9 +865,9 @@ void CtaStraBaseCtx::enum_position(FuncEnumPositionCallBack cb)
 	}
 }
 
-void CtaStraBaseCtx::on_session_end()
+void CtaStraBaseCtx::on_session_end(uint32_t uTDate)
 {
-	uint32_t curDate = _engine->get_trading_date();
+	uint32_t curDate = uTDate;//_engine->get_trading_date();
 
 	double total_profit = 0;
 	double total_dynprofit = 0;

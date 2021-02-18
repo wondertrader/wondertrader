@@ -30,16 +30,22 @@ void ExpCtaMocker::on_init()
 
 	//向外部回调
 	getRunner().ctx_on_init(_context_id, ET_CTA);
+
+	getRunner().on_initialize_event();
 }
 
-void ExpCtaMocker::on_session_begin()
+void ExpCtaMocker::on_session_begin(uint32_t uCurDate)
 {
-	CtaMocker::on_session_begin();
+	CtaMocker::on_session_begin(uCurDate);
+
+	getRunner().on_session_event(true);
 }
 
-void ExpCtaMocker::on_session_end()
+void ExpCtaMocker::on_session_end(uint32_t uCurDate)
 {
-	CtaMocker::on_session_end();
+	CtaMocker::on_session_end(uCurDate);
+
+	getRunner().on_session_event(false);
 }
 
 void ExpCtaMocker::on_tick_updated(const char* stdCode, WTSTickData* newTick)
@@ -59,4 +65,6 @@ void ExpCtaMocker::on_mainkline_updated(uint32_t curDate, uint32_t curTime)
 {
 	CtaMocker::on_mainkline_updated(curDate, curTime);
 	getRunner().ctx_on_calc(_context_id, curDate, curTime, ET_CTA);
+
+	getRunner().on_schedule_event(curDate, curTime);
 }
