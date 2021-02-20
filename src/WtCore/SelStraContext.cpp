@@ -15,8 +15,26 @@ SelStraContext::~SelStraContext()
 
 void SelStraContext::on_init()
 {
+	SelStraBaseCtx::on_init();
+
 	if (_strategy)
 		_strategy->on_init(this);
+}
+
+void SelStraContext::on_session_begin(uint32_t uTDate)
+{
+	SelStraBaseCtx::on_session_begin(uTDate);
+
+	if (_strategy)
+		_strategy->on_session_begin(this, uTDate);
+}
+
+void SelStraContext::on_session_end(uint32_t uTDate)
+{
+	if (_strategy)
+		_strategy->on_session_end(this, uTDate);
+
+	SelStraBaseCtx::on_session_end(uTDate);
 }
 
 void SelStraContext::on_bar_close(const char* stdCode, const char* period, WTSBarStruct* newBar)

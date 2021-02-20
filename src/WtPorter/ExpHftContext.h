@@ -20,6 +20,10 @@ public:
 
 	virtual void on_init() override;
 
+	virtual void on_session_begin(uint32_t uTDate) override;
+
+	virtual void on_session_end(uint32_t uTDate) override;
+
 	virtual void on_order(uint32_t localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled) override;
 
 	virtual void on_tick(const char* code, WTSTickData* newTick) override;

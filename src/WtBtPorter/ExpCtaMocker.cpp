@@ -38,14 +38,14 @@ void ExpCtaMocker::on_session_begin(uint32_t uCurDate)
 {
 	CtaMocker::on_session_begin(uCurDate);
 
-	getRunner().on_session_event(true);
+	getRunner().on_session_event(uCurDate, true);
 }
 
 void ExpCtaMocker::on_session_end(uint32_t uCurDate)
 {
 	CtaMocker::on_session_end(uCurDate);
 
-	getRunner().on_session_event(false);
+	getRunner().on_session_event(uCurDate, false);
 }
 
 void ExpCtaMocker::on_tick_updated(const char* stdCode, WTSTickData* newTick)

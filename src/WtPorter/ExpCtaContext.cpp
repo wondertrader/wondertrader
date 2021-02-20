@@ -35,10 +35,16 @@ void ExpCtaContext::on_init()
 void ExpCtaContext::on_session_begin(uint32_t uDate)
 {
 	CtaStraBaseCtx::on_session_begin(uDate);
+
+	//向外部回调
+	getRunner().ctx_on_session_event(_context_id, uDate, true, ET_CTA);
 }
 
 void ExpCtaContext::on_session_end(uint32_t uDate)
 {
+	//向外部回调
+	getRunner().ctx_on_session_event(_context_id, uDate, false, ET_CTA);
+
 	CtaStraBaseCtx::on_session_end(uDate);
 }
 

@@ -39,11 +39,11 @@ public:
 	~WtBtRunner();
 
 public:
-	void	registerCtaCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar);
-	void	registerSelCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar);
+	void	registerCtaCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar, FuncSessionEvtCallback cbSessEvt);
+	void	registerSelCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar, FuncSessionEvtCallback cbSessEvt);
 	void registerHftCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraBarCallback cbBar,
 		FuncHftChannelCallback cbChnl, FuncHftOrdCallback cbOrd, FuncHftTrdCallback cbTrd, FuncHftEntrustCallback cbEntrust,
-		FuncStraOrdDtlCallback cbOrdDtl, FuncStraOrdQueCallback cbOrdQue, FuncStraTransCallback cbTrans);
+		FuncStraOrdDtlCallback cbOrdDtl, FuncStraOrdQueCallback cbOrdQue, FuncStraTransCallback cbTrans, FuncSessionEvtCallback cbSessEvt);
 
 	void registerEvtCallback(FuncEventCallback cbEvt)
 	{
@@ -55,6 +55,7 @@ public:
 	uint32_t	initSelMocker(const char* name, uint32_t date, uint32_t time, const char* period, const char* trdtpl = "CHINA", const char* session = "TRADING");
 
 	void	ctx_on_init(uint32_t id, EngineType eType);
+	void	ctx_on_session_event(uint32_t id, uint32_t curTDate, bool isBegin = true, EngineType eType = ET_CTA);
 	void	ctx_on_tick(uint32_t id, const char* stdCode, WTSTickData* newTick, EngineType eType);
 	void	ctx_on_calc(uint32_t id, uint32_t uDate, uint32_t uTime, EngineType eType);
 	void	ctx_on_bar(uint32_t id, const char* stdCode, const char* period, WTSBarStruct* newBar, EngineType eType);
@@ -103,16 +104,19 @@ public:
 
 private:
 	FuncStraInitCallback	_cb_cta_init;
+	FuncSessionEvtCallback	_cb_cta_sessevt;
 	FuncStraTickCallback	_cb_cta_tick;
 	FuncStraCalcCallback	_cb_cta_calc;
 	FuncStraBarCallback		_cb_cta_bar;
 
 	FuncStraInitCallback	_cb_sel_init;
+	FuncSessionEvtCallback	_cb_sel_sessevt;
 	FuncStraTickCallback	_cb_sel_tick;
 	FuncStraCalcCallback	_cb_sel_calc;
 	FuncStraBarCallback		_cb_sel_bar;
 
 	FuncStraInitCallback	_cb_hft_init;
+	FuncSessionEvtCallback	_cb_hft_sessevt;
 	FuncStraTickCallback	_cb_hft_tick;
 	FuncStraCalcCallback	_cb_hft_calc;
 	FuncStraBarCallback		_cb_hft_bar;

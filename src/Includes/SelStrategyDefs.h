@@ -52,6 +52,16 @@ public:
 	virtual void on_init(ISelStraCtx* ctx){}
 
 	/*
+	 *	交易日开始
+	 */
+	virtual void on_session_begin(ISelStraCtx* ctx, uint32_t uTDate) {}
+
+	/*
+	 *	交易日结束
+	 */
+	virtual void on_session_end(ISelStraCtx* ctx, uint32_t uTDate) {}
+
+	/*
 	*	主体逻辑执行入口
 	*/
 	virtual void on_schedule(ISelStraCtx* ctx, uint32_t uDate, uint32_t uTime){}

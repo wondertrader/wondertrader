@@ -43,10 +43,26 @@ void ExpHftContext::on_entrust(uint32_t localid, const char* stdCode, bool bSucc
 
 void ExpHftContext::on_init()
 {
+	HftStraBaseCtx::on_init();
+
 	//向外部回调
 	getRunner().ctx_on_init(_context_id, ET_HFT);
+}
 
-	HftStraBaseCtx::on_init();
+void ExpHftContext::on_session_begin(uint32_t uTDate)
+{
+	HftStraBaseCtx::on_session_begin(uTDate);
+
+	//向外部回调
+	getRunner().ctx_on_session_event(_context_id, uTDate, true, ET_HFT);
+}
+
+void ExpHftContext::on_session_end(uint32_t uTDate)
+{
+	//向外部回调
+	getRunner().ctx_on_session_event(_context_id, uTDate, false, ET_HFT);
+
+	HftStraBaseCtx::on_session_end(uTDate);
 }
 
 void ExpHftContext::on_order(uint32_t localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled)

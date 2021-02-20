@@ -30,6 +30,22 @@ void HftStraContext::on_init()
 		_strategy->on_init(this);
 }
 
+void HftStraContext::on_session_begin(uint32_t uTDate)
+{
+	HftStraBaseCtx::on_session_begin(uTDate);
+
+	if (_strategy)
+		_strategy->on_session_begin(this, uTDate);
+}
+
+void HftStraContext::on_session_end(uint32_t uTDate)
+{
+	if (_strategy)
+		_strategy->on_session_end(this, uTDate);
+
+	HftStraBaseCtx::on_session_end(uTDate);
+}
+
 void HftStraContext::on_tick(const char* stdCode, WTSTickData* newTick)
 {
 	update_dyn_profit(stdCode, newTick);

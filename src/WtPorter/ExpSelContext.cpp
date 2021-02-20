@@ -25,10 +25,14 @@ void ExpSelContext::on_init()
 void ExpSelContext::on_session_begin(uint32_t uDate)
 {
 	SelStraBaseCtx::on_session_begin(uDate);
+
+	getRunner().ctx_on_session_event(_context_id, uDate, true, ET_SEL);
 }
 
 void ExpSelContext::on_session_end(uint32_t uDate)
 {
+	getRunner().ctx_on_session_event(_context_id, uDate, false, ET_SEL);
+
 	SelStraBaseCtx::on_session_end(uDate);
 }
 

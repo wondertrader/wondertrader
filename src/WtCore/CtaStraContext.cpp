@@ -43,6 +43,22 @@ void CtaStraContext::on_init()
 		_strategy->on_init(this);
 }
 
+void CtaStraContext::on_session_begin(uint32_t uTDate)
+{
+	CtaStraBaseCtx::on_session_begin(uTDate);
+
+	if (_strategy)
+		_strategy->on_session_begin(this, uTDate);
+}
+
+void CtaStraContext::on_session_end(uint32_t uTDate)
+{
+	if (_strategy)
+		_strategy->on_session_end(this, uTDate);
+
+	CtaStraBaseCtx::on_session_end(uTDate);
+}
+
 void CtaStraContext::on_tick_updated(const char* code, WTSTickData* newTick)
 {
 	if (_strategy)

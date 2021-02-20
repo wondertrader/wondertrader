@@ -37,11 +37,13 @@ WtRtRunner::WtRtRunner()
 	, _cb_cta_tick(NULL)
 	, _cb_cta_calc(NULL)
 	, _cb_cta_bar(NULL)
+	, _cb_cta_sessevt(NULL)
 
 	, _cb_sel_init(NULL)
 	, _cb_sel_tick(NULL)
 	, _cb_sel_calc(NULL)
 	, _cb_sel_bar(NULL)
+	, _cb_sel_sessevt(NULL)
 
 	, _cb_hft_init(NULL)
 	, _cb_hft_tick(NULL)
@@ -54,6 +56,8 @@ WtRtRunner::WtRtRunner()
 	, _cb_hft_orddtl(NULL)
 	, _cb_hft_ordque(NULL)
 	, _cb_hft_trans(NULL)
+
+	, _cb_hft_sessevt(NULL)
 
 	, _cb_evt(NULL)
 	, _is_hft(false)
@@ -93,25 +97,28 @@ void WtRtRunner::registerEvtCallback(FuncEventCallback cbEvt)
 	_sel_engine.regEventListener(this);
 }
 
-void WtRtRunner::registerCtaCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar)
+void WtRtRunner::registerCtaCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar, FuncSessionEvtCallback cbSessEvt)
 {
 	_cb_cta_init = cbInit;
 	_cb_cta_tick = cbTick;
 	_cb_cta_calc = cbCalc;
 	_cb_cta_bar = cbBar;
+	_cb_cta_sessevt = cbSessEvt;
 }
 
-void WtRtRunner::registerSelCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar)
+void WtRtRunner::registerSelCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar, FuncSessionEvtCallback cbSessEvt)
 {
 	_cb_sel_init = cbInit;
 	_cb_sel_tick = cbTick;
 	_cb_sel_calc = cbCalc;
 	_cb_sel_bar = cbBar;
+
+	_cb_sel_sessevt = cbSessEvt;
 }
 
 void WtRtRunner::registerHftCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraBarCallback cbBar, 
 	FuncHftChannelCallback cbChnl, FuncHftOrdCallback cbOrd, FuncHftTrdCallback cbTrd, FuncHftEntrustCallback cbEntrust,
-	FuncStraOrdDtlCallback cbOrdDtl, FuncStraOrdQueCallback cbOrdQue, FuncStraTransCallback cbTrans)
+	FuncStraOrdDtlCallback cbOrdDtl, FuncStraOrdQueCallback cbOrdQue, FuncStraTransCallback cbTrans, FuncSessionEvtCallback cbSessEvt)
 {
 	_cb_hft_init = cbInit;
 	_cb_hft_tick = cbTick;
@@ -125,6 +132,8 @@ void WtRtRunner::registerHftCallbacks(FuncStraInitCallback cbInit, FuncStraTickC
 	_cb_hft_orddtl = cbOrdDtl;
 	_cb_hft_ordque = cbOrdQue;
 	_cb_hft_trans = cbTrans;
+
+	_cb_hft_sessevt = cbSessEvt;
 }
 
 uint32_t WtRtRunner::createCtaContext(const char* name)
@@ -219,6 +228,18 @@ void WtRtRunner::ctx_on_init(uint32_t id, EngineType eType/* = ET_CTA*/)
 	case ET_CTA: if (_cb_cta_init) _cb_cta_init(id); break;
 	case ET_HFT: if (_cb_hft_init) _cb_hft_init(id); break;
 	case ET_SEL: if (_cb_sel_init) _cb_sel_init(id); break;
+	default:
+		break;
+	}
+}
+
+void WtRtRunner::ctx_on_session_event(uint32_t id, uint32_t curTDate, bool isBegin /* = true */, EngineType eType /* = ET_CTA */)
+{
+	switch (eType)
+	{
+	case ET_CTA: if (_cb_cta_sessevt) _cb_cta_sessevt(id, curTDate, isBegin); break;
+	case ET_HFT: if (_cb_hft_sessevt) _cb_hft_sessevt(id, curTDate, isBegin); break;
+	case ET_SEL: if (_cb_sel_sessevt) _cb_sel_sessevt(id, curTDate, isBegin); break;
 	default:
 		break;
 	}

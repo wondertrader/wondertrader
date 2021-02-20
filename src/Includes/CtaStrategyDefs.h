@@ -53,6 +53,16 @@ public:
 	virtual void on_init(ICtaStraCtx* ctx){}
 
 	/*
+	 *	交易日开始
+	 */
+	virtual void on_session_begin(ICtaStraCtx* ctx, uint32_t uTDate) {}
+
+	/*
+	 *	交易日结束
+	 */
+	virtual void on_session_end(ICtaStraCtx* ctx, uint32_t uTDate) {}
+
+	/*
 	 *	主体逻辑执行入口
 	 */
 	virtual void on_schedule(ICtaStraCtx* ctx, uint32_t uDate, uint32_t uTime){}
