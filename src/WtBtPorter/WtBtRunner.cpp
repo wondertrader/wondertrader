@@ -79,6 +79,8 @@ void WtBtRunner::registerCtaCallbacks(FuncStraInitCallback cbInit, FuncStraTickC
 	_cb_cta_calc = cbCalc;
 	_cb_cta_bar = cbBar;
 	_cb_cta_sessevt = cbSessEvt;
+
+	WTSLogger::info("CTA回调接口注册成功");
 }
 
 void WtBtRunner::registerSelCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar, FuncSessionEvtCallback cbSessEvt)
@@ -88,6 +90,8 @@ void WtBtRunner::registerSelCallbacks(FuncStraInitCallback cbInit, FuncStraTickC
 	_cb_sel_calc = cbCalc;
 	_cb_sel_bar = cbBar;
 	_cb_sel_sessevt = cbSessEvt;
+
+	WTSLogger::info("SEL回调接口注册成功");
 }
 
 void WtBtRunner::registerHftCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraBarCallback cbBar,

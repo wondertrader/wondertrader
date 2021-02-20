@@ -104,6 +104,8 @@ void WtRtRunner::registerCtaCallbacks(FuncStraInitCallback cbInit, FuncStraTickC
 	_cb_cta_calc = cbCalc;
 	_cb_cta_bar = cbBar;
 	_cb_cta_sessevt = cbSessEvt;
+
+	WTSLogger::info("CTA回调接口注册成功");
 }
 
 void WtRtRunner::registerSelCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar, FuncSessionEvtCallback cbSessEvt)
@@ -114,6 +116,8 @@ void WtRtRunner::registerSelCallbacks(FuncStraInitCallback cbInit, FuncStraTickC
 	_cb_sel_bar = cbBar;
 
 	_cb_sel_sessevt = cbSessEvt;
+
+	WTSLogger::info("SEL回调接口注册成功");
 }
 
 void WtRtRunner::registerHftCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraBarCallback cbBar, 
@@ -134,6 +138,8 @@ void WtRtRunner::registerHftCallbacks(FuncStraInitCallback cbInit, FuncStraTickC
 	_cb_hft_trans = cbTrans;
 
 	_cb_hft_sessevt = cbSessEvt;
+
+	WTSLogger::info("HFT回调接口注册成功");
 }
 
 uint32_t WtRtRunner::createCtaContext(const char* name)
