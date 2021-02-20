@@ -28,6 +28,7 @@ void ExpSelMocker::on_session_begin(uint32_t uDate)
 {
 	SelMocker::on_session_begin(uDate);
 
+	getRunner().ctx_on_session_event(_context_id, uDate, true, ET_SEL);
 	getRunner().on_session_event(uDate, true);
 }
 
@@ -35,6 +36,7 @@ void ExpSelMocker::on_session_end(uint32_t uDate)
 {
 	SelMocker::on_session_end(uDate);
 
+	getRunner().ctx_on_session_event(_context_id, uDate, false, ET_SEL);
 	getRunner().on_session_event(uDate, false);
 }
 

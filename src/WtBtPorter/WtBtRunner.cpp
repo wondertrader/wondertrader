@@ -108,6 +108,8 @@ void WtBtRunner::registerHftCallbacks(FuncStraInitCallback cbInit, FuncStraTickC
 	_cb_hft_trans = cbTrans;
 
 	_cb_hft_sessevt = cbSessEvt;
+
+	WTSLogger::info("HFT回调接口注册成功");
 }
 
 uint32_t WtBtRunner::initCtaMocker(const char* name)

@@ -54,6 +54,7 @@ void ExpHftMocker::on_session_begin(uint32_t uDate)
 {
 	HftMocker::on_session_begin(uDate);
 
+	getRunner().ctx_on_session_event(_context_id, uDate, true, ET_HFT);
 	getRunner().on_session_event(uDate, true);
 }
 
@@ -61,6 +62,7 @@ void ExpHftMocker::on_session_end(uint32_t uDate)
 {
 	HftMocker::on_session_end(uDate);
 
+	getRunner().ctx_on_session_event(_context_id, uDate, false, ET_HFT);
 	getRunner().on_session_event(uDate, false);
 }
 

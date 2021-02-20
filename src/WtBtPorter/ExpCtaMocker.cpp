@@ -38,6 +38,7 @@ void ExpCtaMocker::on_session_begin(uint32_t uCurDate)
 {
 	CtaMocker::on_session_begin(uCurDate);
 
+	getRunner().ctx_on_session_event(_context_id, uCurDate, true, ET_CTA);
 	getRunner().on_session_event(uCurDate, true);
 }
 
@@ -45,6 +46,7 @@ void ExpCtaMocker::on_session_end(uint32_t uCurDate)
 {
 	CtaMocker::on_session_end(uCurDate);
 
+	getRunner().ctx_on_session_event(_context_id, uCurDate, false, ET_CTA);
 	getRunner().on_session_event(uCurDate, false);
 }
 
