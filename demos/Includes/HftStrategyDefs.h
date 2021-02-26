@@ -51,6 +51,9 @@ public:
 
 	//»Øµ÷º¯Êý
 	virtual void on_init(IHftStraCtx* ctx) = 0;
+	virtual void on_session_begin(IHftStraCtx* ctx, uint32_t uTDate) {}
+	virtual void on_session_end(IHftStraCtx* ctx, uint32_t uTDate) {}
+
 	virtual void on_tick(IHftStraCtx* ctx, const char* code, WTSTickData* newTick) = 0;
 	virtual void on_order_queue(IHftStraCtx* ctx, const char* code, WTSOrdQueData* newOrdQue) {}
 	virtual void on_order_detail (IHftStraCtx* ctx, const char* code, WTSOrdDtlData* newOrdDtl) {}

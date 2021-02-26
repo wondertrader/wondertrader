@@ -39,8 +39,8 @@ public:
 	virtual void on_order_detail(const char* stdCode, WTSOrdDtlData* newOrdDtl) = 0;
 	virtual void on_transaction(const char* stdCode, WTSTransData* newTrans) = 0;
 	virtual void on_bar(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar) {}
-	virtual void on_session_begin() {};
-	virtual void on_session_end() {};
+	virtual void on_session_begin(uint32_t uTDate) {};
+	virtual void on_session_end(uint32_t uTDate) {};
 
 	//²ßÂÔ½Ó¿Ú
 	virtual bool		stra_cancel(uint32_t localid) = 0;

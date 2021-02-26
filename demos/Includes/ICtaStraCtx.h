@@ -36,8 +36,8 @@ public:
 
 	//»Øµ÷º¯Êý
 	virtual void on_init() = 0;
-	virtual void on_session_begin() = 0;
-	virtual void on_session_end() = 0;
+	virtual void on_session_begin(uint32_t uTDate) = 0;
+	virtual void on_session_end(uint32_t uTDate) = 0;
 	virtual void on_tick(const char* stdCode, WTSTickData* newTick, bool bEmitStrategy = true) = 0;
 	virtual void on_bar(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar) = 0;
 	virtual bool on_schedule(uint32_t curDate, uint32_t curTime) = 0;
@@ -64,6 +64,7 @@ public:
 
 	virtual uint64_t stra_get_first_entertime(const char* stdCode) = 0;
 	virtual uint64_t stra_get_last_entertime(const char* stdCode) = 0;
+	virtual uint64_t stra_get_last_exittime(const char* stdCode) = 0;
 	virtual double stra_get_last_enterprice(const char* stdCode) = 0;
 	virtual double stra_get_position_avgpx(const char* stdCode) = 0;
 	virtual double stra_get_position_profit(const char* stdCode) = 0;

@@ -19,11 +19,23 @@ typedef enum tagContractCategory
 {
 	CC_Stock,			//股票
 	CC_Future,			//期货
-	CC_Option,			//期权
+	CC_FutOption,		//期货期权
 	CC_Combination,		//组合
 	CC_Spot,			//即期
-	CC_EFP				//期转现
+	CC_EFP,				//期转现
+	CC_SpotOption,		//现货期权
+	CC_ETFOption		//个股期权
 } ContractCategory;
+
+/*
+ *	期权类型
+ */
+typedef enum tagOptionType
+{
+	OT_None = 0,
+	OT_Call = '1',		//看涨期权
+	OT_Put	= '2'		//看跌期权
+} OptionType;
 
 /*
  *	平仓类型
@@ -139,7 +151,23 @@ typedef enum tagDirectionType
 {
 	WDT_LONG			= '0',	//做多
 	WDT_SHORT,					//做空
+	WDT_NET						//净
 } WTSDirectionType;
+
+/*
+ *	业务类型
+ */
+typedef enum tagBusinessType
+{
+	BT_CASH		= '0',	//普通买卖，
+	BT_ETF		= '1',	//ETF申赎
+	BT_EXECUTE	= '2',	//期权行权
+	BT_QUOTE	= '3',	//期权报价
+	BT_FORQUOTE = '4',	//期权询价
+	BT_FREEZE	= '5',	//期权对锁
+	BT_CREDIT	= '6',	//融资融券
+	BT_UNKNOWN			//未知业务类型
+} WTSBusinessType;
 
 /*
  *	订单操作类型
@@ -197,10 +225,9 @@ typedef enum tagErrorCode
 	WEC_NONE			=	0,		//没有错误
 	WEC_ORDERINSERT,				//下单错误
 	WEC_ORDERCANCEL,				//撤单错误
-	WEC_MODPWD,						//密码修改错误
-	WEC_MONEYOPTION,
-	WEC_FUNDINGAPPLY,
-	WEC_UNKNOWN			=	9999	//位置错误
+	WEC_EXECINSERT,					//行权指令错误
+	WEC_EXECCANCEL,					//行权撤销错误
+	WEC_UNKNOWN			=	9999	//未知错误
 } WTSErroCode;
 
 /*
