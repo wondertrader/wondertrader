@@ -74,3 +74,10 @@
 * 初步完成了`HFT`引擎对股票`Level2`数据（`orderqueue`,`orderdetail`,`transaction`）的访问接口（尚未充分测试）
 * `WtPorter`和`WtBtPorter`两个C接口粘合模块，初步完成了C接口对股票`Level2`数据的支持
 * 其他代码细节的完善
+
+
+### 0.6.1
+* 新增一个/dist目录，用于发布一些程序的执行环境的配置文件
+* 将CTA、HFT和SEL引擎的策略新增on_session_begin和on_session_end用于向策略推送交易日开始和交易日结束的事件
+* 同步更新/demos下的代码
+* 其他代码细节的完善
