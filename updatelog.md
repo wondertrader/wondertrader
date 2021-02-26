@@ -79,5 +79,13 @@
 ### 0.6.1
 * 新增一个/dist目录，用于发布一些程序的执行环境的配置文件
 * 将CTA、HFT和SEL引擎的策略新增on_session_begin和on_session_end用于向策略推送交易日开始和交易日结束的事件
+* 完善了CTPLoader和MiniLoader，主要优化了对期权合约的支持
+* 新增一个CTPOptLoader工程，主要用于CTP股票期权API接入
+* 添加了CTP期权接口的行情接入模块ParserCTPOpt以及交易模块TraderCTPOpt
+* 初步扩充了交易接口中的期权业务接口，同时修改了一些接口函数命名规则
+* 完善了平台中对ETF期权和个股期权的支持，主要修改的点是，ETF期权和个股期权只支持标准代码格式，即SSE.ETFO.10003045，而简写格式如SSE.600000只针对股票
+* WtDtHelper增加两个接口,read_dsb_ticks用于读取dsb格式的历史tick数据，read_dsb_bars用于读取dsb格式的历史K线数据
+* 创建HFT策略的时候增加一个是否托管数据的参数agent，用于控制是否将持仓、成交等数据放在底层进行管理，默认是托管
+* CTA引擎新增一个获取最后一次出场时间的接口stra_get_last_exittime
 * 同步更新/demos下的代码
 * 其他代码细节的完善
