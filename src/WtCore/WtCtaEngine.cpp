@@ -114,6 +114,8 @@ void WtCtaEngine::init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtDataManager* data
 
 	_cfg = cfg;
 	_cfg->retain();
+
+	_exec_mgr.set_filter_mgr(&_filter_mgr);
 }
 
 void WtCtaEngine::addContext(CtaContextPtr ctx)
