@@ -186,8 +186,8 @@ private:
 	WTSVariant*			_config;
 	std::string			_name;
 
-	uint32_t			_scale;
-	bool				_channel_ready;
+	double			_scale;
+	bool			_channel_ready;
 
 	std::unordered_map<std::string, double> _target_pos;
 

@@ -49,7 +49,7 @@ bool WtLocalExecuter::init(WTSVariant* params)
 	_config = params;
 	_config->retain();
 
-	_scale = params->getUInt32("scale");
+	_scale = params->getDouble("scale");
 	uint32_t poolsize = params->getUInt32("poolsize");
 	if(poolsize > 0)
 	{
@@ -196,7 +196,7 @@ void WtLocalExecuter::on_position_changed(const char* stdCode, double targetPos)
 	if (unit == NULL)
 		return;
 
-	targetPos *= _scale;
+	targetPos = round(targetPos*_scale);
 
 	double oldVol = _target_pos[stdCode];
 	//int32_t targetPos = oldVol + diffQty;
@@ -226,7 +226,7 @@ void WtLocalExecuter::set_position(const std::unordered_map<std::string, double>
 		if (unit == NULL)
 			continue;
 
-		newVol *= _scale;
+		newVol = round(newVol*_scale);
 		double oldVol = _target_pos[stdCode];
 		_target_pos[stdCode] = newVol;
 		if(!decimal::eq(oldVol, newVol))

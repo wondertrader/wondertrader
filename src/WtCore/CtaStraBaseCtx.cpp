@@ -294,12 +294,14 @@ void CtaStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 				if (details.IsNull() || !details.IsArray() || details.Size() == 0)
 					continue;
 
-				pInfo._details.resize(details.Size());
-
 				for (uint32_t i = 0; i < details.Size(); i++)
 				{
 					const rj::Value& dItem = details[i];
-					DetailInfo& dInfo = pInfo._details[i];
+					double vol = dItem["volume"].GetDouble();
+					if(decimal::eq(vol, 0))
+						continue;
+
+					DetailInfo dInfo;
 					dInfo._long = dItem["long"].GetBool();
 					dInfo._price = dItem["price"].GetDouble();
 					dInfo._volume = dItem["volume"].GetDouble();
@@ -312,6 +314,8 @@ void CtaStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 					dInfo._max_loss = dItem["maxloss"].GetDouble();
 
 					strcpy(dInfo._opentag, dItem["opentag"].GetString());
+
+					pInfo._details.push_back(dInfo);
 				}
 
 				stra_log_text(fmt::format("策略仓位确认,{} -> {}", stdCode, pInfo._volume).c_str());
@@ -1176,6 +1180,12 @@ void CtaStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 		for (auto it = pInfo._details.begin(); it != pInfo._details.end(); it++)
 		{
 			DetailInfo& dInfo = *it;
+			if (decimal::eq(dInfo._volume, 0))
+			{
+				count++;
+				continue;
+			}
+
 			double maxQty = min(dInfo._volume, left);
 			if (decimal::eq(maxQty, 0))
 				continue;

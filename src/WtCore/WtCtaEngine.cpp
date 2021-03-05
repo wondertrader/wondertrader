@@ -299,10 +299,11 @@ void WtCtaEngine::handle_push_quote(WTSTickData* newTick, bool isHot)
 void WtCtaEngine::handle_pos_change(const char* straName, const char* stdCode, double diffQty)
 {
 	//这里是持仓增量，所以不用处理未过滤的情况，因为增量情况下，不会改变目标diffQty
-	if(!_filter_mgr.is_filtered_by_strategy(straName, diffQty, true))
+	if(_filter_mgr.is_filtered_by_strategy(straName, diffQty, true))
 	{
 		//输出日志
 		WTSLogger::info("[过滤器] 策略%s的%s的目标仓位被策略过滤器忽略", straName, stdCode);
+		return;
 	}
 
 	std::string realCode = stdCode;
