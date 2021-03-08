@@ -324,6 +324,11 @@ void ParserUDP::extract_buffer(uint32_t length, bool isBroad /* = true */)
 			_sink->handleQuote(curTick, false);
 
 		curTick->release();
+
+		static uint32_t recv_cnt = 0;
+		recv_cnt++;
+		if (recv_cnt % 10000 == 0 && _sink)
+			_sink->handleParserLog(LL_INFO, "[ParserUDP]累计收到%u条Tick数据", recv_cnt);
 	}
 	else if (header->_type == UDP_MSG_PUSHORDDTL)
 	{
@@ -333,6 +338,11 @@ void ParserUDP::extract_buffer(uint32_t length, bool isBroad /* = true */)
 			_sink->handleOrderDetail(curData);
 
 		curData->release();
+
+		static uint32_t recv_cnt = 0;
+		recv_cnt++;
+		if (recv_cnt % 10000 == 0 && _sink)
+			_sink->handleParserLog(LL_INFO, "[ParserUDP]累计收到%u条OrderDetail数据", recv_cnt);
 	}
 	else if (header->_type == UDP_MSG_PUSHORDQUE)
 	{
@@ -342,6 +352,11 @@ void ParserUDP::extract_buffer(uint32_t length, bool isBroad /* = true */)
 			_sink->handleOrderQueue(curData);
 
 		curData->release();
+
+		static uint32_t recv_cnt = 0;
+		recv_cnt++;
+		if (recv_cnt % 10000 == 0 && _sink)
+			_sink->handleParserLog(LL_INFO, "[ParserUDP]累计收到%u条OrderQueue数据", recv_cnt);
 	}
 	else if (header->_type == UDP_MSG_PUSHTRANS)
 	{
@@ -351,6 +366,11 @@ void ParserUDP::extract_buffer(uint32_t length, bool isBroad /* = true */)
 			_sink->handleTransaction(curData);
 
 		curData->release();
+
+		static uint32_t recv_cnt = 0;
+		recv_cnt++;
+		if (recv_cnt % 10000 == 0 && _sink)
+			_sink->handleParserLog(LL_INFO, "[ParserUDP]累计收到%u条Transaction数据", recv_cnt);
 	}
 }
 
