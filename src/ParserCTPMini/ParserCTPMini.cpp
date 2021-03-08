@@ -270,6 +270,9 @@ void ParserCTPMini::OnRtnDepthMarketData( CThostFtdcDepthMarketDataField *pDepth
 	uint32_t actDate = strtoul(pDepthMarketData->ActionDay, NULL, 10);
 	uint32_t actTime = strToTime(pDepthMarketData->UpdateTime) * 1000 + pDepthMarketData->UpdateMillisec;
 	uint32_t actHour = actTime / 10000000;
+	
+	if (actDate == 0)
+		actDate = m_uTradingDate;
 
 	if (actDate == m_uTradingDate && actHour >= 20)
 	{
