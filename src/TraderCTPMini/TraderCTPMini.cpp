@@ -499,14 +499,16 @@ int TraderCTPMini::queryAccount()
 		return -1;
 	}
 
-	StdUniqueLock lock(m_mtxQuery);
-	m_queQuery.push([this](){
-		CThostFtdcQryTradingAccountField req;
-		memset(&req, 0, sizeof(req));
-		strcpy(req.BrokerID, m_strBroker.c_str());
-		strcpy(req.InvestorID, m_strUser.c_str());
-		m_pUserAPI->ReqQryTradingAccount(&req, genRequestID());
-	});
+	{
+		StdUniqueLock lock(m_mtxQuery);
+		m_queQuery.push([this]() {
+			CThostFtdcQryTradingAccountField req;
+			memset(&req, 0, sizeof(req));
+			strcpy(req.BrokerID, m_strBroker.c_str());
+			strcpy(req.InvestorID, m_strUser.c_str());
+			m_pUserAPI->ReqQryTradingAccount(&req, genRequestID());
+		});
+	}
 
 	//triggerQuery();
 
@@ -520,14 +522,16 @@ int TraderCTPMini::queryPositions()
 		return -1;
 	}
 
-	StdUniqueLock lock(m_mtxQuery);
-	m_queQuery.push([this](){
-		CThostFtdcQryInvestorPositionField req;
-		memset(&req, 0, sizeof(req));
-		strcpy(req.BrokerID, m_strBroker.c_str());
-		strcpy(req.InvestorID, m_strUser.c_str());
-		m_pUserAPI->ReqQryInvestorPosition(&req, genRequestID());
-	});
+	{
+		StdUniqueLock lock(m_mtxQuery);
+		m_queQuery.push([this]() {
+			CThostFtdcQryInvestorPositionField req;
+			memset(&req, 0, sizeof(req));
+			strcpy(req.BrokerID, m_strBroker.c_str());
+			strcpy(req.InvestorID, m_strUser.c_str());
+			m_pUserAPI->ReqQryInvestorPosition(&req, genRequestID());
+		});
+	}
 
 	//triggerQuery();
 
@@ -540,16 +544,17 @@ int TraderCTPMini::queryOrders()
 	{
 		return -1;
 	}
+	{
+		StdUniqueLock lock(m_mtxQuery);
+		m_queQuery.push([this]() {
+			CThostFtdcQryOrderField req;
+			memset(&req, 0, sizeof(req));
+			strcpy(req.BrokerID, m_strBroker.c_str());
+			strcpy(req.InvestorID, m_strUser.c_str());
 
-	StdUniqueLock lock(m_mtxQuery);
-	m_queQuery.push([this](){
-		CThostFtdcQryOrderField req;
-		memset(&req, 0, sizeof(req));
-		strcpy(req.BrokerID, m_strBroker.c_str());
-		strcpy(req.InvestorID, m_strUser.c_str());
-
-		m_pUserAPI->ReqQryOrder(&req, genRequestID());
-	});
+			m_pUserAPI->ReqQryOrder(&req, genRequestID());
+		});
+	}
 
 	//triggerQuery();
 
@@ -563,15 +568,17 @@ int TraderCTPMini::queryTrades()
 		return -1;
 	}
 
-	StdUniqueLock lock(m_mtxQuery);
-	m_queQuery.push([this](){
-		CThostFtdcQryTradeField req;
-		memset(&req, 0, sizeof(req));
-		strcpy(req.BrokerID, m_strBroker.c_str());
-		strcpy(req.InvestorID, m_strUser.c_str());
+	{
+		StdUniqueLock lock(m_mtxQuery);
+		m_queQuery.push([this]() {
+			CThostFtdcQryTradeField req;
+			memset(&req, 0, sizeof(req));
+			strcpy(req.BrokerID, m_strBroker.c_str());
+			strcpy(req.InvestorID, m_strUser.c_str());
 
-		m_pUserAPI->ReqQryTrade(&req, genRequestID());
-	});
+			m_pUserAPI->ReqQryTrade(&req, genRequestID());
+		});
+	}
 
 	//triggerQuery();
 
@@ -652,8 +659,10 @@ void TraderCTPMini::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, C
 
 		m_sink->handleTraderLog(LL_INFO, "[TraderCTPMini][%s-%s]账户登录成功，交易日：%u……", m_strBroker.c_str(), m_strUser.c_str(), m_lDate);
 
-		m_sink->handleTraderLog(LL_INFO, "[TraderCTPMini][%s-%s]正在查询结算确认信息……", m_strBroker.c_str(), m_strUser.c_str());
-		queryConfirm();
+		m_sink->handleTraderLog(LL_INFO, "[TraderCTPMini][%s-%s]账户数据初始化完成……", m_strBroker.c_str(), m_strUser.c_str());
+		m_wrapperState = WS_ALLREADY;
+		if (m_sink)
+			m_sink->onLoginResult(true, "", m_lDate);
 	}
 	else
 	{
@@ -670,61 +679,6 @@ void TraderCTPMini::OnRspUserLogout(CThostFtdcUserLogoutField *pUserLogout, CTho
 	m_wrapperState = WS_NOTLOGIN;
 	if (m_sink)
 		m_sink->handleEvent(WTE_Logout, 0);
-}
-
-void TraderCTPMini::OnRspQrySettlementInfoConfirm(CThostFtdcSettlementInfoConfirmField *pSettlementInfoConfirm, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
-{
-	if (bIsLast)
-	{
-		m_bInQuery = false;
-		//triggerQuery();
-	}
-
-	if (!IsErrorRspInfo(pRspInfo))
-	{
-		if (pSettlementInfoConfirm != NULL)
-		{
-			uint32_t uConfirmDate = strtoul(pSettlementInfoConfirm->ConfirmDate, NULL, 10);
-			if (uConfirmDate >= m_lDate)
-			{
-				m_wrapperState = WS_CONFIRMED;
-
-				m_sink->handleTraderLog(LL_INFO, "[TraderCTPMini][%s-%s]账户数据初始化完成……", m_strBroker.c_str(), m_strUser.c_str());
-				m_wrapperState = WS_ALLREADY;
-				if (m_sink)
-					m_sink->onLoginResult(true, "", m_lDate);
-			}
-			else
-			{
-				m_wrapperState = WS_CONFIRM_QRYED;
-
-				m_sink->handleTraderLog(LL_INFO, "[TraderCTPMini][%s-%s]正在确认结算结果……", m_strBroker.c_str(), m_strUser.c_str());
-				confirm();
-			}
-		}
-		else
-		{
-			m_wrapperState = WS_CONFIRM_QRYED;
-			confirm();
-		}
-	}
-
-}
-
-void TraderCTPMini::OnRspSettlementInfoConfirm(CThostFtdcSettlementInfoConfirmField *pSettlementInfoConfirm, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
-{
-	if (!IsErrorRspInfo(pRspInfo) && pSettlementInfoConfirm != NULL)
-	{
-		if (m_wrapperState == WS_CONFIRM_QRYED)
-		{
-			m_wrapperState = WS_CONFIRMED;
-
-			m_sink->handleTraderLog(LL_INFO, "[TraderCTPMini][%s-%s]账户数据初始化完成……", m_strBroker.c_str(), m_strUser.c_str());
-			m_wrapperState = WS_ALLREADY;
-			if (m_sink)
-				m_sink->onLoginResult(true, "", m_lDate);
-		}
-	}
 }
 
 void TraderCTPMini::OnRspOrderInsert(CThostFtdcInputOrderField *pInputOrder, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
@@ -768,17 +722,23 @@ void TraderCTPMini::OnRspQryTradingAccount(CThostFtdcTradingAccountField *pTradi
 		WTSAccountInfo* accountInfo = WTSAccountInfo::create();
 		accountInfo->setDescription(StrUtil::printf("%s-%s", m_strBroker.c_str(), m_strUser.c_str()).c_str());
 		//accountInfo->setUsername(m_strUserName.c_str());
-		accountInfo->setPreBalance(pTradingAccount->PreBalance);
-		accountInfo->setCloseProfit(pTradingAccount->CloseProfit);
-		accountInfo->setDynProfit(pTradingAccount->PositionProfit);
-		accountInfo->setMargin(pTradingAccount->CurrMargin);
-		accountInfo->setAvailable(pTradingAccount->Available);
-		accountInfo->setCommission(pTradingAccount->Commission);
-		accountInfo->setFrozenMargin(pTradingAccount->FrozenMargin);
-		accountInfo->setFrozenCommission(pTradingAccount->FrozenCommission);
-		accountInfo->setDeposit(pTradingAccount->Deposit);
-		accountInfo->setWithdraw(pTradingAccount->Withdraw);
-		accountInfo->setBalance(accountInfo->getPreBalance() + accountInfo->getCloseProfit() - accountInfo->getCommission() + accountInfo->getDeposit() - accountInfo->getWithdraw());
+		if(pTradingAccount)
+		{
+			accountInfo->setPreBalance(pTradingAccount->PreBalance);
+			accountInfo->setCloseProfit(pTradingAccount->CloseProfit);
+			accountInfo->setDynProfit(pTradingAccount->PositionProfit);
+			accountInfo->setMargin(pTradingAccount->CurrMargin);
+			accountInfo->setAvailable(pTradingAccount->Available);
+			accountInfo->setCommission(pTradingAccount->Commission);
+			accountInfo->setFrozenMargin(pTradingAccount->FrozenMargin);
+			accountInfo->setFrozenCommission(pTradingAccount->FrozenCommission);
+			accountInfo->setDeposit(pTradingAccount->Deposit);
+			accountInfo->setWithdraw(pTradingAccount->Withdraw);
+			accountInfo->setBalance(accountInfo->getPreBalance() + accountInfo->getCloseProfit() - accountInfo->getCommission() + accountInfo->getDeposit() - accountInfo->getWithdraw());
+		}
+		else if(m_sink)
+			m_sink->handleTraderLog(LL_ERROR, "[TraderCTPMini][%s-%s]资金数据返回为空", m_strBroker.c_str(), m_strUser.c_str());
+		
 		accountInfo->setCurrency("CNY");
 
 		WTSArray * ay = WTSArray::create();
@@ -1349,58 +1309,6 @@ bool TraderCTPMini::isConnected()
 	return (m_wrapperState == WS_ALLREADY);
 }
 
-int TraderCTPMini::queryConfirm()
-{
-	if (m_pUserAPI == NULL || m_wrapperState != WS_LOGINED)
-	{
-		return -1;
-	}
-
-	StdUniqueLock lock(m_mtxQuery);
-	m_queQuery.push([this](){
-		CThostFtdcQrySettlementInfoConfirmField req;
-		memset(&req, 0, sizeof(req));
-		strcpy(req.BrokerID, m_strBroker.c_str());
-		strcpy(req.InvestorID, m_strUser.c_str());
-
-		int iResult = m_pUserAPI->ReqQrySettlementInfoConfirm(&req, genRequestID());
-		if (iResult != 0)
-		{
-			m_sink->handleTraderLog(LL_ERROR, "[TraderCTPMini][%s-%s]查询账户结算确认请求发送失败, 错误码:%d", m_strBroker.c_str(), m_strUser.c_str(), iResult);
-		}
-	});
-
-	//triggerQuery();
-
-	return 0;
-}
-
-int TraderCTPMini::confirm()
-{
-	if (m_pUserAPI == NULL || m_wrapperState != WS_CONFIRM_QRYED)
-	{
-		return -1;
-	}
-
-	//std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-	CThostFtdcSettlementInfoConfirmField req;
-	memset(&req, 0, sizeof(req));
-	strcpy(req.BrokerID, m_strBroker.c_str());
-	strcpy(req.InvestorID, m_strUser.c_str());
-
-	sprintf(req.ConfirmDate, "%u", TimeUtils::getCurDate());
-	strncpy(req.ConfirmTime, TimeUtils::getLocalTime().c_str(), 8);
-
-	int iResult = m_pUserAPI->ReqSettlementInfoConfirm(&req, genRequestID());
-	if (iResult != 0)
-	{
-		m_sink->handleTraderLog(LL_ERROR, "[TraderCTPMini][%s-%s]确认结算信息请求发送失败, 错误码:%d", m_strBroker.c_str(), m_strUser.c_str(), iResult);
-		return -1;
-	}
-
-	return 0;
-}
-
 int TraderCTPMini::authenticate()
 {
 	CThostFtdcReqAuthenticateField req;
@@ -1409,7 +1317,7 @@ int TraderCTPMini::authenticate()
 	strcpy(req.UserID, m_strUser.c_str());
 	//strcpy(req.UserProductInfo, m_strProdInfo.c_str());
 	strcpy(req.AuthCode, m_strAuthCode.c_str());
-	//strcpy(req.AppID, m_strAppID.c_str());
+	strcpy(req.AppID, m_strAppID.c_str());
 	m_pUserAPI->ReqAuthenticate(&req, genRequestID());
 
 	return 0;
