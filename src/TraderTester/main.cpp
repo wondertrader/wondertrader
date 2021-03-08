@@ -507,7 +507,7 @@ public:
 
 	virtual void onPushTrade(WTSTradeInfo* tradeRecord)
 	{
-		log("[%s]收到成交回报，合约%s，成交价：%.4f，成交数量：%.4f", m_pParams->getCString("user"), tradeRecord->getCode(), tradeRecord->getPrice(), tradeRecord->getVolumn());
+		log("[%s]收到成交回报，合约%s，成交价：%.4f，成交数量：%.4f", m_pParams->getCString("user"), tradeRecord->getCode(), tradeRecord->getPrice(), tradeRecord->getVolume());
 
 		if(g_riskAct)
 		{

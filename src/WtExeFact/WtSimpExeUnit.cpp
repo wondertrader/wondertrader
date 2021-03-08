@@ -295,6 +295,19 @@ void WtSimpExeUnit::doCalculate()
 		}
 	}
 
+	//检查涨跌停价
+	if (!decimal::eq(_last_tick->upperlimit(), 0) && decimal::gt(buyPx, _last_tick->upperlimit()))
+	{
+		_ctx->writeLog("%s的买入价%f已修正为涨停价%f", _code.c_str(), buyPx, _last_tick->upperlimit());
+		buyPx = _last_tick->upperlimit();
+	}
+	
+	if (!decimal::eq(_last_tick->lowerlimit(), 0) && decimal::lt(sellPx, _last_tick->lowerlimit()))
+	{
+		_ctx->writeLog("%s的卖出价%f已修正为跌停价%f", _code.c_str(), sellPx, _last_tick->lowerlimit());
+		sellPx = _last_tick->lowerlimit();
+	}
+
 	//if (newVol > curPos)
 	if (decimal::gt(newVol, curPos))
 	{
