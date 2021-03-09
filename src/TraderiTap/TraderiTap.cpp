@@ -271,11 +271,11 @@ void TraderiTap::reconnect()
 	{
 		if (m_sink)
 			m_sink->handleEvent(WTE_Connect, -1);
-		m_sink->handleTraderLog(LL_ERROR, "[TraderiTap]交易模块初始化失败,错误码: %s...", GetErrcodeDesc(CreateErrorCode));
+		m_sink->handleTraderLog(LL_ERROR, "[TraderiTap] Trading module initializing failed: %s...", GetErrcodeDesc(CreateErrorCode));
 
 		StdThreadPtr thrd(new StdThread([this](){
 			std::this_thread::sleep_for(std::chrono::seconds(2));
-			m_sink->handleTraderLog(LL_WARN, "[TraderiTap]账号%s正在重连...", m_strUser.c_str());
+			m_sink->handleTraderLog(LL_WARN, "[TraderiTap] %s reconnecting...", m_strUser.c_str());
 			reconnect();
 		}));
 		return;
@@ -298,7 +298,7 @@ void TraderiTap::reconnect()
 				//这里丢到线程里去处理,让reconnect可以马上返回
 				StdThreadPtr thrd(new StdThread([this](){
 					std::this_thread::sleep_for(std::chrono::seconds(2));
-					m_sink->handleTraderLog(LL_WARN, "[TraderiTap]账号%s正在重连...", m_strUser.c_str());
+					m_sink->handleTraderLog(LL_WARN, "[TraderiTap] %s reconnecting...", m_strUser.c_str());
 					reconnect();
 				}));
 			}
@@ -448,7 +448,7 @@ int TraderiTap::login( const char* user, const char* pass, const char* productIn
 	uint32_t iResult = m_pUserAPI->Login(&stLoginAuth);
 	if (iResult != TAPIERROR_SUCCEED)
 	{
-		m_sink->handleTraderLog(LL_ERROR, "[TraderiTap]登录请求发送失败:%s", GetErrcodeDesc(iResult));
+		m_sink->handleTraderLog(LL_ERROR, "[TraderiTap] Sending login request failed: %s", GetErrcodeDesc(iResult));
 	}
 	return 0;
 }
@@ -479,7 +479,7 @@ int TraderiTap::orderInsert( WTSEntrust* entrust )
 	WTSContractInfo* ct = m_bdMgr->getContract(entrust->getCode(), entrust->getExchg());
 	if (ct == NULL)
 	{
-		m_sink->handleTraderLog(LL_ERROR, "合约%s不存在,不能交易", ct->getFullCode());
+		m_sink->handleTraderLog(LL_ERROR, "Instrument %s not exists, not exchangable", ct->getFullCode());
 		return -1;
 	}
 	char* code = (char*)entrust->getCode();
@@ -503,7 +503,7 @@ int TraderiTap::orderInsert( WTSEntrust* entrust )
 	int iResult = m_pUserAPI->InsertOrder(makeRequestID(), NULL, &req);
 	if(iResult != 0)
 	{
-		m_sink->handleTraderLog(LL_ERROR, "[TraderiTap]插入订单失败:%s", GetErrcodeDesc(iResult));
+		m_sink->handleTraderLog(LL_ERROR, "[TraderiTap] Order inserting failed: %s", GetErrcodeDesc(iResult));
 		return iResult;
 	}
 
@@ -525,7 +525,7 @@ int TraderiTap::orderAction( WTSEntrustAction* action )
 	int iResult = m_pUserAPI->CancelOrder(makeRequestID(), &req);
 	if(iResult != 0)
 	{
-		m_sink->handleTraderLog(LL_ERROR, "[TraderiTap]撤单请求发送失败, 错误码:%d", iResult);
+		m_sink->handleTraderLog(LL_ERROR, "[TraderiTap] Sending cancel request failed: %d", iResult);
 		return iResult;
 	}
 
@@ -552,7 +552,7 @@ int TraderiTap::queryContracts()
 	int32_t iResult = m_pUserAPI->QryCommodity(makeRequestID());
 	if(iResult != 0)
 	{
-		m_sink->handleTraderLog(LL_ERROR, "[ESFTrader-%s]查询合约列表请求发送失败, 错误码:%d", m_strUser.c_str(), iResult);
+		m_sink->handleTraderLog(LL_ERROR, "[ESFTrader-%s] Sending query of contracts failed: %d", m_strUser.c_str(), iResult);
 		return -1;
 	}
 
@@ -574,7 +574,7 @@ int TraderiTap::queryAccount()
 	if (iResult != 0)
 	{
 		if (m_sink)
-			m_sink->handleTraderLog(LL_ERROR, "[TraderiTap]资金查询指令发送失败: %d", iResult);
+			m_sink->handleTraderLog(LL_ERROR, "[TraderiTap] Sending query of account failed: %d", iResult);
 		return -1;
 	}
 
@@ -1105,16 +1105,11 @@ void TAP_CDECL TraderiTap::OnAPIReady(ITapTrade::TAPIINT32 errCode)
 		//m_wrapperState = WS_APIINITED;
 
 		m_wrapperState = WS_ALLREADY;
-		m_sink->handleTraderLog(LL_INFO, "[TraderiTap-%s]账户数据初始化完成...", m_strUser.c_str());
+		m_sink->handleTraderLog(LL_INFO, "[TraderiTap-%s] Trading channeld initialized...", m_strUser.c_str());
 
 		if (m_sink)
 			m_sink->onLoginResult(true, "", 0);
 
-		//int ret = queryCommodity();
-		//if(ret < 0)
-		//{
-		//	m_sink->handleTraderLog(LL_ERROR, "[TraderiTap]查询品种出错: %s", GetErrcodeDesc(ret));
-		//}
 	}
 	else
 	{
@@ -1145,7 +1140,7 @@ void TAP_CDECL TraderiTap::OnDisconnect(ITapTrade::TAPIINT32 reasonCode)
 			//这里丢到线程里去处理,让OnClose可以马上返回
 			StdThreadPtr thrd(new StdThread([this](){
 				std::this_thread::sleep_for(std::chrono::seconds(2));
-				m_sink->handleTraderLog(LL_WARN, "[TraderiTap]账号%s正在重连...", m_strUser.c_str());
+				m_sink->handleTraderLog(LL_WARN, "[TraderiTap] %s reconnecting...", m_strUser.c_str());
 				reconnect();
 			}));
 		}
@@ -1210,7 +1205,7 @@ void TAP_CDECL TraderiTap::OnRspLogin(ITapTrade::TAPIINT32 errCode, const ITapTr
 		m_uLoginTime = TimeUtils::getLocalTimeNow() * 100 + esfinstance++;
 		m_uDate = strToTime(loginRspInfo->TradeDate);
 
-		m_sink->handleTraderLog(LL_INFO, "[TraderiTap-%s]账户登录成功...", m_strUser.c_str());
+		m_sink->handleTraderLog(LL_INFO, "[TraderiTap-%s] Login succeed...", m_strUser.c_str());
 
 		m_bReconnect = false;
 	}
@@ -1221,14 +1216,14 @@ void TAP_CDECL TraderiTap::OnRspLogin(ITapTrade::TAPIINT32 errCode, const ITapTr
 			m_wrapperState = WS_LOGINFAILED;
 
 			if (m_sink)
-				m_sink->onLoginResult(false, "需要二次验证,但是没有配置拉取服务", 0);
+				m_sink->onLoginResult(false, "Second authentiation needed, but no authcode server setup", 0);
 
 			if (m_bReconnect)
 			{
 				//这里丢到线程里去处理,让onclose可以马上返回
 				StdThreadPtr thrd(new StdThread([this](){
 					std::this_thread::sleep_for(std::chrono::seconds(2));
-					m_sink->handleTraderLog(LL_WARN, "[TraderiTap]账号%s正在重连...", m_strUser.c_str());
+					m_sink->handleTraderLog(LL_WARN, "[TraderiTap] %s reconnecting...", m_strUser.c_str());
 					reconnect();
 				}));
 			}
@@ -1252,7 +1247,7 @@ void TAP_CDECL TraderiTap::OnRspLogin(ITapTrade::TAPIINT32 errCode, const ITapTr
 			//这里丢到线程里去处理,让onclose可以马上返回
 			StdThreadPtr thrd(new StdThread([this](){
 				std::this_thread::sleep_for(std::chrono::seconds(2));
-				m_sink->handleTraderLog(LL_WARN, "[TraderiTap]账号%s正在重连...", m_strUser.c_str());
+				m_sink->handleTraderLog(LL_WARN, "[TraderiTap] %s reconnecting...", m_strUser.c_str());
 				reconnect();
 			}));
 		}
@@ -1391,7 +1386,7 @@ void TAP_CDECL TraderiTap::OnRspRequestVertificateCode(ITapTrade::TAPIUINT32 ses
 	if(errCode != 0)
 	{
 		if (m_sink)
-			m_sink->onLoginResult(false, "请求发送二次验证码失败", errCode);
+			m_sink->onLoginResult(false, "Requesting for sending second authcode failed: %d", errCode);
 		return;
 	}
 
@@ -1403,14 +1398,14 @@ void TAP_CDECL TraderiTap::OnRspRequestVertificateCode(ITapTrade::TAPIUINT32 ses
 		m_wrapperState = WS_LOGINFAILED;
 
 		if (m_sink)
-			m_sink->onLoginResult(false, "二次验证码拉取失败", 0);
+			m_sink->onLoginResult(false, "Fetching second authcode failed", 0);
 
 		if (m_bReconnect)
 		{
 			//这里丢到线程里去处理,让onclose可以马上返回
 			StdThreadPtr thrd(new StdThread([this](){
 				std::this_thread::sleep_for(std::chrono::seconds(2));
-				m_sink->handleTraderLog(LL_WARN, "[TraderiTap]账号%s正在重连...", m_strUser.c_str());
+				m_sink->handleTraderLog(LL_WARN, "[TraderiTap] %s reconnecting...", m_strUser.c_str());
 				reconnect();
 			}));
 		}
@@ -1427,21 +1422,21 @@ void TAP_CDECL TraderiTap::OnRspRequestVertificateCode(ITapTrade::TAPIUINT32 ses
 			req.LoginType = TAPI_LOGINTYPE_NORMAL;
 			strcpy(req.VertificateCode, ay[1].c_str());
 			m_pUserAPI->SetVertificateCode(makeRequestID(), &req);
-			m_sink->handleTraderLog(LL_WARN, "[TraderiTap]账号%s二次验证码已发送", m_strUser.c_str());
+			m_sink->handleTraderLog(LL_WARN, "[TraderiTap] %s submitted second authcode", m_strUser.c_str());
 		}
 		else
 		{
 			m_wrapperState = WS_LOGINFAILED;
 
 			if (m_sink)
-				m_sink->onLoginResult(false, StrUtil::printf("二次验证码拉取失败:%s", ay[1].c_str()).c_str(), 0);
+				m_sink->onLoginResult(false, StrUtil::printf("Fetching second authcode failed: %s", ay[1].c_str()).c_str(), 0);
 
 			if (m_bReconnect)
 			{
 				//这里丢到线程里去处理,让onclose可以马上返回
 				StdThreadPtr thrd(new StdThread([this](){
 					std::this_thread::sleep_for(std::chrono::seconds(2));
-					m_sink->handleTraderLog(LL_WARN, "[TraderiTap]账号%s正在重连...", m_strUser.c_str());
+					m_sink->handleTraderLog(LL_WARN, "[TraderiTap] %s reconnecting...", m_strUser.c_str());
 					reconnect();
 				}));
 			}
@@ -1493,7 +1488,7 @@ void TAP_CDECL TraderiTap::OnRtnFund(const ITapTrade::TapAPIFundData *rsp)
 		return;
 
 	if (m_sink)
-		m_sink->handleTraderLog(LL_INFO, "[TraderiTap]资金更新: %s", rsp->CurrencyNo);
+		m_sink->handleTraderLog(LL_INFO, "[TraderiTap] account data updated: %s", rsp->CurrencyNo);
 
 	const char* currency = currencyO2I(rsp->CurrencyNo);
 

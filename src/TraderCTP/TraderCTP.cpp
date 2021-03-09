@@ -341,7 +341,7 @@ int TraderCTP::doLogin()
 	int iResult = m_pUserAPI->ReqUserLogin(&req, genRequestID());
 	if (iResult != 0)
 	{
-		m_sink->handleTraderLog(LL_ERROR, "[TraderCTP]登录请求发送失败, 错误码:%d", iResult);
+		m_sink->handleTraderLog(LL_ERROR, "[TraderCTP] Sending login request failed: %d", iResult);
 	}
 
 	return 0;
@@ -361,7 +361,7 @@ int TraderCTP::logout()
 	int iResult = m_pUserAPI->ReqUserLogout(&req, genRequestID());
 	if (iResult != 0)
 	{
-		m_sink->handleTraderLog(LL_ERROR, "[TraderCTP]注销请求发送失败, 错误码:%d", iResult);
+		m_sink->handleTraderLog(LL_ERROR, "[TraderCTP] Sending logout request failed: %d", iResult);
 	}
 
 	return 0;
@@ -452,7 +452,7 @@ int TraderCTP::orderInsert(WTSEntrust* entrust)
 	int iResult = m_pUserAPI->ReqOrderInsert(&req, genRequestID());
 	if (iResult != 0)
 	{
-		m_sink->handleTraderLog(LL_ERROR, "[TraderCTP]插入订单失败, 错误码:%d", iResult);
+		m_sink->handleTraderLog(LL_ERROR, "[TraderCTP] Order inserting failed: %d", iResult);
 	}
 
 	return 0;
@@ -495,7 +495,7 @@ int TraderCTP::orderAction(WTSEntrustAction* action)
 	int iResult = m_pUserAPI->ReqOrderAction(&req, genRequestID());
 	if (iResult != 0)
 	{
-		m_sink->handleTraderLog(LL_ERROR, "[TraderCTP]撤单请求发送失败, 错误码:%d", iResult);
+		m_sink->handleTraderLog(LL_ERROR, "[TraderCTP] Sending cancel request failed: %d", iResult);
 	}
 
 	return 0;
@@ -621,7 +621,7 @@ void TraderCTP::OnRspAuthenticate(CThostFtdcRspAuthenticateField *pRspAuthentica
 	}
 	else
 	{
-		m_sink->handleTraderLog(LL_INFO, "[TraderCTP][%s-%s]终端认证失败,错误信息:%s", m_strBroker.c_str(), m_strUser.c_str(), pRspInfo->ErrorMsg);
+		m_sink->handleTraderLog(LL_INFO, "[TraderCTP][%s-%s] Authentiation failed: %s", m_strBroker.c_str(), m_strUser.c_str(), pRspInfo->ErrorMsg);
 		m_wrapperState = WS_LOGINFAILED;
 
 		if (m_sink)
@@ -643,7 +643,7 @@ void TraderCTP::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, CThos
 		///获取当前交易日
 		m_lDate = atoi(m_pUserAPI->GetTradingDay());
 
-		m_sink->handleTraderLog(LL_INFO, "[TraderCTP][%s-%s]账户登录成功,AppID:%s, Sessionid: %u, 登录时间: %s……",
+		m_sink->handleTraderLog(LL_INFO, "[TraderCTP][%s-%s] Login succeed, AppID: %s, Sessionid: %u, login time: %s...",
 			m_strBroker.c_str(), m_strUser.c_str(), m_strAppID.c_str(), m_sessionID, pRspUserLogin->LoginTime);
 
 		std::stringstream ss;
@@ -663,17 +663,17 @@ void TraderCTP::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, CThos
 			m_iniHelper.writeUInt("marker", "date", m_lDate);
 			m_iniHelper.save();
 
-			m_sink->handleTraderLog(LL_INFO, "[TraderCTP][%s-%s]交易日已切换[%u -> %u],清空本地数据缓存……", m_strBroker.c_str(), m_strUser.c_str(), lastDate, m_lDate);
+			m_sink->handleTraderLog(LL_INFO, "[TraderCTP][%s-%s] Trading date changed[%u -> %u], local cache cleared...", m_strBroker.c_str(), m_strUser.c_str(), lastDate, m_lDate);
 		}
 
-		m_sink->handleTraderLog(LL_INFO, "[TraderCTP][%s-%s]账户登录成功,交易日: %u……", m_strBroker.c_str(), m_strUser.c_str(), m_lDate);
+		m_sink->handleTraderLog(LL_INFO, "[TraderCTP][%s-%s] Login succeed, trading date: %u...", m_strBroker.c_str(), m_strUser.c_str(), m_lDate);
 
-		m_sink->handleTraderLog(LL_INFO, "[TraderCTP][%s-%s]正在查询结算确认信息……", m_strBroker.c_str(), m_strUser.c_str());
+		m_sink->handleTraderLog(LL_INFO, "[TraderCTP][%s-%s] Querying confirming state of settlement data...", m_strBroker.c_str(), m_strUser.c_str());
 		queryConfirm();
 	}
 	else
 	{
-		m_sink->handleTraderLog(LL_INFO, "[TraderCTP][%s-%s]账户登录失败,错误信息:%s", m_strBroker.c_str(), m_strUser.c_str(), pRspInfo->ErrorMsg);
+		m_sink->handleTraderLog(LL_INFO, "[TraderCTP][%s-%s] Login failed: %s", m_strBroker.c_str(), m_strUser.c_str(), pRspInfo->ErrorMsg);
 		m_wrapperState = WS_LOGINFAILED;
 
 		if (m_sink)
@@ -705,7 +705,7 @@ void TraderCTP::OnRspQrySettlementInfoConfirm(CThostFtdcSettlementInfoConfirmFie
 			{
 				m_wrapperState = WS_CONFIRMED;
 
-				m_sink->handleTraderLog(LL_INFO, "[TraderCTP][%s-%s]账户数据初始化完成……", m_strBroker.c_str(), m_strUser.c_str());
+				m_sink->handleTraderLog(LL_INFO, "[TraderCTP][%s-%s] Trading channel initialized...", m_strBroker.c_str(), m_strUser.c_str());
 				m_wrapperState = WS_ALLREADY;
 				if (m_sink)
 					m_sink->onLoginResult(true, "", m_lDate);
@@ -714,7 +714,7 @@ void TraderCTP::OnRspQrySettlementInfoConfirm(CThostFtdcSettlementInfoConfirmFie
 			{
 				m_wrapperState = WS_CONFIRM_QRYED;
 
-				m_sink->handleTraderLog(LL_INFO, "[TraderCTP][%s-%s]正在确认结算结果……", m_strBroker.c_str(), m_strUser.c_str());
+				m_sink->handleTraderLog(LL_INFO, "[TraderCTP][%s-%s] Confirming settlement data...", m_strBroker.c_str(), m_strUser.c_str());
 				confirm();
 			}
 		}
@@ -735,7 +735,7 @@ void TraderCTP::OnRspSettlementInfoConfirm(CThostFtdcSettlementInfoConfirmField 
 		{
 			m_wrapperState = WS_CONFIRMED;
 
-			m_sink->handleTraderLog(LL_INFO, "[TraderCTP][%s-%s]账户数据初始化完成……", m_strBroker.c_str(), m_strUser.c_str());
+			m_sink->handleTraderLog(LL_INFO, "[TraderCTP][%s-%s] Trading channel initialized...", m_strBroker.c_str(), m_strUser.c_str());
 			m_wrapperState = WS_ALLREADY;
 			if (m_sink)
 				m_sink->onLoginResult(true, "", m_lDate);
@@ -1383,7 +1383,7 @@ int TraderCTP::queryConfirm()
 			int iResult = m_pUserAPI->ReqQrySettlementInfoConfirm(&req, genRequestID());
 			if (iResult != 0)
 			{
-				m_sink->handleTraderLog(LL_ERROR, "[TraderCTP][%s-%s]查询账户结算确认请求发送失败, 错误码:%d", m_strBroker.c_str(), m_strUser.c_str(), iResult);
+				m_sink->handleTraderLog(LL_ERROR, "[TraderCTP][%s-%s] Sending query of settlement data confirming state failed: %d", m_strBroker.c_str(), m_strUser.c_str(), iResult);
 			}
 		});
 	}
@@ -1412,7 +1412,7 @@ int TraderCTP::confirm()
 	int iResult = m_pUserAPI->ReqSettlementInfoConfirm(&req, genRequestID());
 	if (iResult != 0)
 	{
-		m_sink->handleTraderLog(LL_ERROR, "[TraderCTP][%s-%s]确认结算信息请求发送失败, 错误码:%d", m_strBroker.c_str(), m_strUser.c_str(), iResult);
+		m_sink->handleTraderLog(LL_ERROR, "[TraderCTP][%s-%s] Sending confirming of settlement data failed: %d", m_strBroker.c_str(), m_strUser.c_str(), iResult);
 		return -1;
 	}
 

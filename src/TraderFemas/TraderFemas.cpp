@@ -321,7 +321,7 @@ int TraderFemas::doLogin()
 	int iResult = m_pUserAPI->ReqUserLogin(&req, genRequestID());
 	if (iResult != 0)
 	{
-		m_sink->handleTraderLog(LL_ERROR, "[TraderFemas]登录请求发送失败, 错误码:%d", iResult);
+		m_sink->handleTraderLog(LL_ERROR, "[TraderFemas] Sending login request failed: %d", iResult);
 	}
 
 	return 0;
@@ -357,7 +357,7 @@ int TraderFemas::logout()
 	int iResult = m_pUserAPI->ReqUserLogout(&req, genRequestID());
 	if (iResult != 0)
 	{
-		m_sink->handleTraderLog(LL_ERROR, "[TraderFemas]注销请求发送失败, 错误码:%d", iResult);
+		m_sink->handleTraderLog(LL_ERROR, "[TraderFemas] Sending logout request failed: %d", iResult);
 	}
 
 	return 0;
@@ -409,7 +409,7 @@ int TraderFemas::orderInsert(WTSEntrust* entrust)
 	int iResult = m_pUserAPI->ReqOrderInsert(&req, genRequestID());
 	if(iResult != 0)
 	{
-		m_sink->handleTraderLog(LL_ERROR, "[TraderFemas]插入订单失败, 错误码:%d", iResult);
+		m_sink->handleTraderLog(LL_ERROR, "[TraderFemas] Order inserting failed: %d", iResult);
 	}
 
 	return 0;
@@ -442,7 +442,7 @@ int TraderFemas::orderAction( WTSEntrustAction* action )
 	int iResult = m_pUserAPI->ReqOrderAction(&req, genRequestID());
 	if(iResult != 0)
 	{
-		m_sink->handleTraderLog(LL_ERROR, "[TraderFemas]撤单请求发送失败, 错误码:%d", iResult);
+		m_sink->handleTraderLog(LL_ERROR, "[TraderFemas] Sending cancel request failed: %d", iResult);
 	}
 
 	return 0;	
@@ -583,7 +583,7 @@ void TraderFemas::OnRspDSUserCertification(CUstpFtdcDSUserCertRspDataField *pDSU
 	}
 	else
 	{
-		m_sink->handleTraderLog(LL_INFO, "[%s-%s]终端认证失败,错误信息:%s", m_strBroker.c_str(), m_strUser.c_str(), pRspInfo->ErrorMsg);
+		m_sink->handleTraderLog(LL_INFO, "[%s-%s] Authentiation failed: %s", m_strBroker.c_str(), m_strUser.c_str(), pRspInfo->ErrorMsg);
 		m_wrapperState = WS_LOGINFAILED;
 
 		if (m_sink)
@@ -604,16 +604,16 @@ void TraderFemas::OnRspUserLogin( CUstpFtdcRspUserLoginField *pRspUserLogin, CUs
 		///获取当前交易日
 		m_lDate = atoi(m_pUserAPI->GetTradingDay());
 
-		m_sink->handleTraderLog(LL_INFO,"[%s-%s]账户登录成功...", m_strBroker.c_str(), m_strUser.c_str());
+		m_sink->handleTraderLog(LL_INFO,"[%s-%s] Login succeed...", m_strBroker.c_str(), m_strUser.c_str());
 
 		//据说飞马不支持结算,所以查不到结算单
-		m_sink->handleTraderLog(LL_INFO, "[%s-%s]正在查询结算确认信息...", m_strBroker.c_str(), m_strUser.c_str());
+		m_sink->handleTraderLog(LL_INFO, "[%s-%s] Querying confirming state of settlement data...", m_strBroker.c_str(), m_strUser.c_str());
 		if (m_bQryOnline)
 			onInitialized();
 	}
 	else
 	{
-		m_sink->handleTraderLog(LL_INFO,"[%s-%s]账户登录失败,错误信息:%s", m_strBroker.c_str(), m_strUser.c_str(), pRspInfo->ErrorMsg);
+		m_sink->handleTraderLog(LL_INFO,"[%s-%s] Login failed: %s", m_strBroker.c_str(), m_strUser.c_str(), pRspInfo->ErrorMsg);
 		m_wrapperState = WS_LOGINFAILED;
 
 		if(m_sink)
@@ -831,7 +831,7 @@ void TraderFemas::OnRspQryOrder(CUstpFtdcOrderField *pOrder, CUstpFtdcRspInfoFie
 
 void TraderFemas::onInitialized()
 {
-	m_sink->handleTraderLog(LL_INFO, "[%s-%s]账户数据初始化完成...", m_strBroker.c_str(), m_strUser.c_str());
+	m_sink->handleTraderLog(LL_INFO, "[%s-%s] Trading channel initialized...", m_strBroker.c_str(), m_strUser.c_str());
 	m_wrapperState = WS_ALLREADY;
 	if (m_sink)
 		m_sink->onLoginResult(true, "", m_lDate);
@@ -840,7 +840,7 @@ void TraderFemas::onInitialized()
 void TraderFemas::OnRspError( CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast )
 {
 	if (m_sink)
-		m_sink->handleTraderLog(LL_ERROR, "[TraderFemas]请求出错: %s, 请求ID: %d", pRspInfo->ErrorMsg, nRequestID);
+		m_sink->handleTraderLog(LL_ERROR, "[TraderFemas] Error occured: %s, request id: %d", pRspInfo->ErrorMsg, nRequestID);
 }
 
 void TraderFemas::OnRtnOrder( CUstpFtdcOrderField *pOrder )

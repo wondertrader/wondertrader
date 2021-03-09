@@ -676,11 +676,11 @@ void TraderXTP::reconnect()
 	{
 		if (_sink)
 			_sink->handleEvent(WTE_Connect, -1);
-		_sink->handleTraderLog(LL_ERROR, "[TraderrXTP]交易模块初始化失败");
+		_sink->handleTraderLog(LL_ERROR, "[TraderrXTP] Module initializing failed");
 
 		StdThreadPtr thrd(new StdThread([this](){
 			std::this_thread::sleep_for(std::chrono::seconds(2));
-			_sink->handleTraderLog(LL_WARN, "[TraderrXTP]账号%s正在重连...", _user.c_str());
+			_sink->handleTraderLog(LL_WARN, "[TraderrXTP] %s reconnecting...", _user.c_str());
 			reconnect();
 		}));
 		return;
@@ -765,7 +765,7 @@ int TraderXTP::login(const char* user, const char* pass, const char* productInfo
 	if (iResult == 0)
 	{
 		auto error_info = _api->GetApiLastError();
-		_sink->handleTraderLog(LL_ERROR, "[TraderXTP]登录失败:%s", error_info->error_msg);
+		_sink->handleTraderLog(LL_ERROR, "[TraderXTP] Login failed: %s", error_info->error_msg);
 		std::string msg = error_info->error_msg;
 		_state = TS_LOGINFAILED;
 		_asyncio.post([this, msg]{
@@ -793,10 +793,10 @@ int TraderXTP::login(const char* user, const char* pass, const char* productInfo
 			_ini.writeUInt("marker", "date", _tradingday);
 			_ini.save();
 
-			_sink->handleTraderLog(LL_INFO, "[%s]交易日已切换[%u -> %u],清空本地数据缓存...", _user.c_str(), lastDate, _tradingday);
+			_sink->handleTraderLog(LL_INFO, "[TraderXTP] [%s] Trading date changed [%u -> %u], local cache cleared...", _user.c_str(), lastDate, _tradingday);
 		}		
 
-		_sink->handleTraderLog(LL_INFO, "[%s]账户登录成功,交易日: %u...", _user.c_str(), _tradingday);
+		_sink->handleTraderLog(LL_INFO, "[TraderXTP] [%s] Login succeed, trading date: %u...", _user.c_str(), _tradingday);
 
 		_state = TS_LOGINED;
 		_asyncio.post([this]{
@@ -847,7 +847,7 @@ int TraderXTP::orderInsert(WTSEntrust* entrust)
 	if (iResult == 0)
 	{
 		auto error_info = _api->GetApiLastError();
-		_sink->handleTraderLog(LL_ERROR, "[TraderXTP]插入订单失败:%s", error_info->error_msg);
+		_sink->handleTraderLog(LL_ERROR, "[TraderXTP] Order inserting failed: %s", error_info->error_msg);
 	}
 
 	return 0;
@@ -864,7 +864,7 @@ int TraderXTP::orderAction(WTSEntrustAction* action)
 	if (iResult != 0)
 	{
 		auto error_info = _api->GetApiLastError();
-		_sink->handleTraderLog(LL_ERROR, "[TraderXTP]撤销订单失败:%s", error_info->error_msg);
+		_sink->handleTraderLog(LL_ERROR, "[TraderXTP] Order cancelling failed: %s", error_info->error_msg);
 	}
 
 	return 0;
@@ -881,7 +881,7 @@ int TraderXTP::queryAccount()
 	if (iResult != 0)
 	{
 		auto error_info = _api->GetApiLastError();
-		_sink->handleTraderLog(LL_ERROR, "[TraderXTP]资金查询失败:%s", error_info->error_msg);
+		_sink->handleTraderLog(LL_ERROR, "[TraderXTP] Account querying failed: %s", error_info->error_msg);
 	}
 
 	return 0;
@@ -893,7 +893,7 @@ int TraderXTP::queryPositions()
 	if (iResult != 0)
 	{
 		auto error_info = _api->GetApiLastError();
-		_sink->handleTraderLog(LL_ERROR, "[TraderXTP]持仓查询失败:%s", error_info->error_msg);
+		_sink->handleTraderLog(LL_ERROR, "[TraderXTP] Positions querying failed: %s", error_info->error_msg);
 	}
 
 	return 0;
@@ -907,7 +907,7 @@ int TraderXTP::queryOrders()
 	if (iResult != 0)
 	{
 		auto error_info = _api->GetApiLastError();
-		_sink->handleTraderLog(LL_ERROR, "[TraderXTP]订单查询失败:%s", error_info->error_msg);
+		_sink->handleTraderLog(LL_ERROR, "[TraderXTP] Orders querying failed: %s", error_info->error_msg);
 	}
 
 	return 0;
@@ -921,7 +921,7 @@ int TraderXTP::queryTrades()
 	if (iResult != 0)
 	{
 		auto error_info = _api->GetApiLastError();
-		_sink->handleTraderLog(LL_ERROR, "[TraderXTP]成交查询失败:%s", error_info->error_msg);
+		_sink->handleTraderLog(LL_ERROR, "[TraderXTP] Trades querying failed: %s", error_info->error_msg);
 	}
 
 	return 0;
