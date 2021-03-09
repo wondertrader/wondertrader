@@ -80,7 +80,7 @@ void WtBtRunner::registerCtaCallbacks(FuncStraInitCallback cbInit, FuncStraTickC
 	_cb_cta_bar = cbBar;
 	_cb_cta_sessevt = cbSessEvt;
 
-	WTSLogger::info("CTA回调接口注册成功");
+	WTSLogger::info("Callbacks of CTA engine registration done");
 }
 
 void WtBtRunner::registerSelCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar, FuncSessionEvtCallback cbSessEvt)
@@ -91,7 +91,7 @@ void WtBtRunner::registerSelCallbacks(FuncStraInitCallback cbInit, FuncStraTickC
 	_cb_sel_bar = cbBar;
 	_cb_sel_sessevt = cbSessEvt;
 
-	WTSLogger::info("SEL回调接口注册成功");
+	WTSLogger::info("Callbacks of SEL engine registration done");
 }
 
 void WtBtRunner::registerHftCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraBarCallback cbBar,
@@ -113,7 +113,7 @@ void WtBtRunner::registerHftCallbacks(FuncStraInitCallback cbInit, FuncStraTickC
 
 	_cb_hft_sessevt = cbSessEvt;
 
-	WTSLogger::info("HFT回调接口注册成功");
+	WTSLogger::info("Callbacks of HFT engine registration done");
 }
 
 uint32_t WtBtRunner::initCtaMocker(const char* name)
@@ -256,7 +256,7 @@ void WtBtRunner::config(const char* cfgFile, bool isFile /* = true */)
 	rj::Document root;
 	if (root.Parse(content.c_str()).HasParseError())
 	{
-		WTSLogger::info("配置文件解析失败");
+		WTSLogger::info("Parsing configuration file failed");
 		return;
 	}
 

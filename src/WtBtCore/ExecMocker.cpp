@@ -112,259 +112,8 @@ void ExecMocker::handle_session_end(uint32_t curTDate)
 	_matcher.clear();
 	_undone = 0;
 
-	WTSLogger::info(fmt::format("总下单笔数{}, 总下单数量{}, 总撤单笔数{}, 总撤单数量{}, 总信号数{}", _ord_cnt, _ord_qty, _cacl_cnt, _cacl_qty, _sig_cnt).c_str());
+	WTSLogger::info(fmt::format("Total entrust:{}, total quantity:{}, total cancels:{}, total cancel quantity:{}, total signals:{}", _ord_cnt, _ord_qty, _cacl_cnt, _cacl_qty, _sig_cnt).c_str());
 }
-
-/*
-void ExecMocker::update_lob(WTSTickData* curTick)
-{
-	LmtOrdBook& curBook = _lmt_ord_books[curTick->code()];
-	curBook._cur_px = PRICE_DOUBLE_TO_INT(curTick->price());
-	curBook._ask_px = PRICE_DOUBLE_TO_INT(curTick->askprice(0));
-	curBook._bid_px = PRICE_DOUBLE_TO_INT(curTick->bidprice(0));
-
-	for (uint32_t i = 0; i < 10; i++)
-	{
-		if (PRICE_DOUBLE_TO_INT(curTick->askprice(i)) == 0 && PRICE_DOUBLE_TO_INT(curTick->bidprice(i)) == 0)
-			break;
-
-		uint32_t px = PRICE_DOUBLE_TO_INT(curTick->askprice(i));
-		if (px != 0)
-		{
-			uint32_t& volume = curBook._items[px];
-			volume = curTick->askqty(i);
-		}
-
-		px = PRICE_DOUBLE_TO_INT(curTick->bidprice(i));
-		if (px != 0)
-		{
-			uint32_t& volume = curBook._items[px];
-			volume = curTick->askqty(i);
-		}
-	}
-
-	//卖一和买一之间的报价必须全部清除掉
-	if (!curBook._items.empty())
-	{
-		auto sit = curBook._items.lower_bound(curBook._bid_px);
-		if (sit->first == curBook._bid_px)
-			sit++;
-
-		auto eit = curBook._items.lower_bound(curBook._ask_px);
-
-		if (sit->first <= eit->first)
-			curBook._items.erase(sit, eit);
-	}
-}
-
-void ExecMocker::fire_orders(const char* stdCode, OrderIDs& to_erase)
-{
-	
-	for (auto& v : _orders)
-	{
-		uint32_t localid = v.first;
-		OrderInfo& ordInfo = v.second;
-
-		if (ordInfo._state == 0)	//需要激活
-		{
-			_exec_unit->on_entrust(localid, stdCode, true, "");
-			_exec_unit->on_order(localid, stdCode, ordInfo._buy, ordInfo._left, ordInfo._limit, false);
-			ordInfo._state = 1;
-		}
-	}
-}
-
-void ExecMocker::match_orders(WTSTickData* curTick, OrderIDs& to_erase)
-{
-	uint64_t curTime = (uint64_t)curTick->actiondate() * 1000000000 + curTick->actiontime();
-	uint64_t curUnixTime = TimeUtils::makeTime(curTick->actiondate(), curTick->actiontime());
-
-	for (auto& v : _orders)
-	{
-		uint32_t localid = v.first;
-		OrderInfo& ordInfo = v.second;
-
-		if (ordInfo._state == 9)//要撤单
-		{
-			_exec_unit->on_order(localid, ordInfo._code, ordInfo._buy, 0, ordInfo._limit, true);
-			_trade_logs << localid << ","
-				<< _sig_time << ","
-				<< ordInfo._time << ","
-				<< (ordInfo._buy?"B":"S") << ","
-				<< _sig_px << ","
-				<< ordInfo._price << ","
-				<< ordInfo._limit << ","
-				<< curTime << ","
-				<< 0 << ","
-				<< ordInfo._left << ","
-				<< 0 << ","
-				<< 0 << ","
-				<< "true" << std::endl;
-			ordInfo._state = 99;
-
-			to_erase.emplace_back(localid);
-
-			WTSLogger::info("订单%u已撤销, 剩余数量: %d", localid, ordInfo._left*(ordInfo._buy ? 1 : -1));
-			ordInfo._left = 0;
-			continue;
-		}
-
-		if (ordInfo._state != 1 || curTick->volume() == 0)
-			continue;
-
-		if (ordInfo._buy)
-		{
-			double price;
-			double volume;
-
-			//主动订单就按照对手价
-			if(ordInfo._positive)
-			{
-				price = curTick->askprice(0);
-				volume = curTick->askqty(0);
-			}
-			else
-			{
-				price = curTick->price();
-				volume = curTick->volume();
-			}
-
-			if (decimal::le(price, ordInfo._limit))
-			{
-				uint64_t sigUnixTime = TimeUtils::makeTime((uint32_t)(_sig_time / 10000), _sig_time % 10000 * 100000);
-				uint64_t ordUnixTime = TimeUtils::makeTime((uint32_t)(ordInfo._time / 1000000000), ordInfo._time % 1000000000);
-
-				//如果价格相等，需要先看排队位置，如果价格不等说明已经全部被大单吃掉了
-				if (!ordInfo._positive && decimal::eq(price, ordInfo._limit))
-				{
-					uint32_t& quepos = ordInfo._queue;
-
-					//如果成交量小于排队位置，则不能成交
-					if (volume <= quepos)
-					{
-						quepos -= (uint32_t)volume;
-						continue;
-					}
-					else if (quepos != 0)
-					{
-						//如果成交量大于排队位置，则可以成交
-						volume -= quepos;
-						quepos = 0;
-					}
-				}
-				else if (!ordInfo._positive)
-				{
-					volume = ordInfo._left;
-				}
-
-				double qty = min(volume, ordInfo._left);
-				_exec_unit->on_trade(localid, ordInfo._code, ordInfo._buy, qty, price);
-				_trade_logs << localid << ","
-					<< _sig_time << ","
-					<< ordInfo._time << ","
-					<< "B" << ","
-					<< _sig_px << ","
-					<< ordInfo._price << ","
-					<< ordInfo._limit << ","
-					<< curTime << ","
-					<< price << ","
-					<< qty << ","
-					<< curUnixTime - sigUnixTime << ","
-					<< curUnixTime - ordUnixTime << ","
-					<< "false" << std::endl;
-
-				_position += qty;
-				ordInfo._traded += qty;
-				ordInfo._left -= qty;
-				_undone -= qty;
-				WTSLogger::info("%d未完成订单数量更新,%d", __LINE__, _undone);
-				WTSLogger::info("持仓更新,%d", _position);
-
-				_exec_unit->on_order(localid, ordInfo._code, ordInfo._buy, ordInfo._left, price, false);
-
-				if (ordInfo._left == 0)
-					to_erase.emplace_back(localid);
-			}
-		}
-
-		if (!ordInfo._buy && decimal::ge(curTick->price(), ordInfo._limit))
-		{
-			double price;
-			double volume;
-
-			//主动订单就按照对手价
-			if (ordInfo._positive)
-			{
-				price = curTick->bidprice(0);
-				volume = curTick->bidqty(0);
-			}
-			else
-			{
-				price = curTick->price();
-				volume = curTick->volume();
-			}
-
-			if (decimal::le(price, ordInfo._limit))
-			{
-				uint64_t sigUnixTime = TimeUtils::makeTime((uint32_t)(_sig_time / 10000), _sig_time % 10000 * 100000);
-				uint64_t ordUnixTime = TimeUtils::makeTime((uint32_t)(ordInfo._time / 1000000000), ordInfo._time % 1000000000);
-
-				//如果价格相等，需要先看排队位置，如果价格不等说明已经全部被大单吃掉了
-				if (!ordInfo._positive && decimal::eq(price, ordInfo._limit))
-				{
-					uint32_t& quepos = ordInfo._queue;
-
-					//如果成交量小于排队位置，则不能成交
-					if (volume <= quepos)
-					{
-						quepos -= (uint32_t)volume;
-						continue;
-					}
-					else if (quepos != 0)
-					{
-						//如果成交量大于排队位置，则可以成交
-						volume -= quepos;
-						quepos = 0;
-					}
-				}
-				else if (!ordInfo._positive)
-				{
-					volume = ordInfo._left;
-				}
-
-				double qty = min(volume, ordInfo._left);
-				_exec_unit->on_trade(localid, ordInfo._code, ordInfo._buy, qty, price);
-				_trade_logs << localid << ","
-					<< _sig_time << ","
-					<< ordInfo._time << ","
-					<< "S" << ","
-					<< _sig_px << ","
-					<< ordInfo._price << ","
-					<< ordInfo._limit << ","
-					<< curTime << ","
-					<< price << ","
-					<< qty << ","
-					<< curUnixTime - sigUnixTime << ","
-					<< curUnixTime - ordUnixTime << ","
-					<< "false" << std::endl;
-
-				_position -= qty;
-				ordInfo._traded += qty;
-				ordInfo._left -= qty;
-				_undone += qty;
-				WTSLogger::info("%d未完成订单数量更新,%d", __LINE__, _undone);
-				WTSLogger::info("持仓更新,%d", _position);
-
-				_exec_unit->on_order(localid, ordInfo._code, ordInfo._buy, ordInfo._left, price, false);
-
-				if (ordInfo._left == 0)
-					to_erase.emplace_back(localid);
-			}
-			
-		}
-	}
-}
-*/
 
 void ExecMocker::handle_tick(const char* stdCode, WTSTickData* curTick)
 {
@@ -414,12 +163,12 @@ void ExecMocker::handle_schedule(uint32_t uDate, uint32_t uTime)
 	if (_position <= 0)
 	{
 		_exec_unit->set_position(_code.c_str(), _volunit);
-		WTSLogger::info("目标仓位更新@%u.%u：%d", uDate, uTime, _volunit);
+		WTSLogger::info("Target position updated @%u.%u：%d", uDate, uTime, _volunit);
 	}
 	else
 	{
 		_exec_unit->set_position(_code.c_str(), -_volunit);
-		WTSLogger::info("目标仓位更新@%u.%u：%d", uDate, uTime, -_volunit);
+		WTSLogger::info("Target position updated @%u.%u：%d", uDate, uTime, -_volunit);
 	}
 	_sig_cnt++;
 }
@@ -458,7 +207,7 @@ OrderIDs ExecMocker::buy(const char* stdCode, double price, double qty)
 	_ord_qty += qty;
 
 	_undone += (int32_t)qty;
-	WTSLogger::info("%d未完成订单数量更新,%d", __LINE__, _undone);
+	WTSLogger::info("%s, undone orders updated: %d", __FUNCTION__,_undone);
 
 	return ret;
 }
@@ -472,7 +221,7 @@ OrderIDs ExecMocker::sell(const char* stdCode, double price, double qty)
 	_ord_qty += qty;
 
 	_undone -= (int32_t)qty;
-	WTSLogger::info("%d未完成订单数量更新,%d", __LINE__, _undone);
+	WTSLogger::info("%s, undone orders updated: %d", __FUNCTION__, _undone);
 
 	return ret;
 }
@@ -486,7 +235,7 @@ bool ExecMocker::cancel(uint32_t localid)
 	_undone -= change;
 	_cacl_cnt++;
 	_cacl_qty += abs(change);
-	WTSLogger::info("%d未完成订单数量更新,%d", __LINE__, _undone);
+	WTSLogger::info("%s, undone orders updated: %d", __FUNCTION__, _undone);
 
 	return true;
 }
@@ -499,7 +248,7 @@ OrderIDs ExecMocker::cancel(const char* stdCode, bool isBuy, double qty /*= 0*/)
 		_cacl_cnt++;
 		_cacl_qty += abs(change);
 	});
-	WTSLogger::info("%d未完成订单数量更新,%d", __LINE__, _undone);
+	WTSLogger::info("%s, undone orders updated: %d", __FUNCTION__, _undone);
 
 	return ret;
 }
@@ -569,6 +318,6 @@ void ExecMocker::handle_trade(uint32_t localid, const char* stdCode, bool isBuy,
 
 	_position += vol* (isBuy?1:-1);
 	_undone -= vol * (isBuy ? 1 : -1);
-	WTSLogger::info("%d未完成订单数量更新,%d", __LINE__, _undone);
-	WTSLogger::info("持仓更新,%d", _position);
+	WTSLogger::info("%s, undone orders updated: %d", __FUNCTION__, _undone);
+	WTSLogger::info("Position updated: %d", _position);
 }

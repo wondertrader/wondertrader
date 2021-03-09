@@ -136,11 +136,11 @@ void HisDataReplayer::initDB()
 
 	if (_db_conn->connect(_db_conf._dbname, _db_conf._host, _db_conf._user, _db_conf._pass, _db_conf._port, CLIENT_MULTI_STATEMENTS | CLIENT_MULTI_RESULTS))
 	{
-		WTSLogger::info("数据库连接成功:%s:%d", _db_conf._host, _db_conf._port);
+		WTSLogger::info("Database connection succeed[%s:%d]", _db_conf._host, _db_conf._port);
 	}
 	else
 	{
-		WTSLogger::error("数据库连接失败[%s:%d]:%s", _db_conf._host, _db_conf._port, _db_conn->errstr());
+		WTSLogger::error("Database connection failed[%s:%d]:%s", _db_conf._host, _db_conf._port, _db_conn->errstr());
 		_db_conn.reset();
 	}
 }
@@ -150,7 +150,7 @@ bool HisDataReplayer::loadStkAdjFactorsFromDB()
 	MysqlQuery query(*_db_conn);
 	if (!query.exec("SELECT exchange,code,date,factor FROM tb_adj_factors ORDER BY exchange,code,date DESC;"))
 	{
-		WTSLogger::error("查询除权因子表出错:%s", query.errormsg());
+		WTSLogger::error("Error occured while querying adjust factors:%s", query.errormsg());
 		return false;
 	}
 
@@ -176,7 +176,7 @@ bool HisDataReplayer::loadStkAdjFactorsFromDB()
 		fct_cnt++;
 	}
 
-	WTSLogger::info("共加载%u只股票的%u条除权因子数据", stk_cnt, fct_cnt);
+	WTSLogger::info("%u items of adjust factors for %u stocks loaded", fct_cnt, stk_cnt);
 	return true;
 }
 
@@ -184,7 +184,7 @@ bool HisDataReplayer::loadStkAdjFactors(const char* adjfile)
 {
 	if (!BoostFile::exists(adjfile))
 	{
-		WTSLogger::error("除权因子文件%s不存在", adjfile);
+		WTSLogger::error("Adjust factor file %s not exists", adjfile);
 		return false;
 	}
 
@@ -196,7 +196,7 @@ bool HisDataReplayer::loadStkAdjFactors(const char* adjfile)
 
 	if (doc.HasParseError())
 	{
-		WTSLogger::error("除权因子文件%s解析失败", adjfile);
+		WTSLogger::error("Parsing adjust factor file %s faield", adjfile);
 		return false;
 	}
 
@@ -229,7 +229,7 @@ bool HisDataReplayer::loadStkAdjFactors(const char* adjfile)
 		}
 	}
 
-	WTSLogger::info("共加载%u只股票的%u条除权因子数据", stk_cnt, fct_cnt);
+	WTSLogger::info("%u items of adjust factors for %u stocks loaded", fct_cnt, stk_cnt);
 	return true;
 }
 
@@ -259,7 +259,7 @@ void HisDataReplayer::register_task(uint32_t taskid, uint32_t date, uint32_t tim
 	_task->_period = ptype;
 	_task->_strict_time = true;
 
-	WTSLogger::info("定时任务注册成功，周期：%s", period);
+	WTSLogger::info("Timed task registration succeed, frequency: %s", period);
 }
 
 void HisDataReplayer::run()
@@ -302,7 +302,8 @@ void HisDataReplayer::run()
 				}
 			}
 
-			WTSLogger::info("主K线自动确定：%s", _main_key.c_str());
+			//WTSLogger::info("主K线自动确定：%s", _main_key.c_str());
+			WTSLogger::info("Main K bars automatic determined：%s", _main_key.c_str());
 		}
 
 		if(!_main_key.empty())
@@ -311,7 +312,8 @@ void HisDataReplayer::run()
 			WTSSessionInfo* sInfo = get_session_info(barList._code.c_str(), true);
 			std::string commId = CodeHelper::stdCodeToStdCommID(barList._code.c_str());
 
-			WTSLogger::log_raw(LL_INFO, fmt::format("开始从{}进行数据回放……", _begin_time).c_str());
+			//WTSLogger::log_raw(LL_INFO, fmt::format("开始从{}进行数据回放……", _begin_time).c_str());
+			WTSLogger::log_raw(LL_INFO, fmt::format("Start to replay back data from {}……", _begin_time).c_str());
 
 			for (;;)
 			{
@@ -329,7 +331,8 @@ void HisDataReplayer::run()
 
 					if (nextBarTime > _end_time)
 					{
-						WTSLogger::log_raw(LL_INFO, fmt::format("{}超过结束时间{}，回放结束", nextBarTime, _end_time).c_str());
+						//WTSLogger::log_raw(LL_INFO, fmt::format("{}超过结束时间{}，回放结束", nextBarTime, _end_time).c_str());
+						WTSLogger::log_raw(LL_INFO, fmt::format("{} is beyond ending time {}，replaying done", nextBarTime, _end_time).c_str());
 						_listener->handle_replay_done();
 						break;
 					}
@@ -342,7 +345,6 @@ void HisDataReplayer::run()
 					{
 						_listener->handle_session_begin(nextTDate);
 						_opened_tdate = nextTDate;
-						//WTSLogger::info("交易日%u开始", nextTDate);
 						_cur_tdate = nextTDate;
 					}
 
@@ -376,14 +378,16 @@ void HisDataReplayer::run()
 
 					if (barList._cursor >= barList._bars.size())
 					{
-						WTSLogger::info("全部数据都已回放，回放结束");
+						//WTSLogger::info("全部数据都已回放，回放结束");
+						WTSLogger::info("All back data replayed, replaying done");
 						_listener->handle_replay_done();
 						break;
 					}
 				}
 				else
 				{
-					WTSLogger::info("数据尚未初始化，回放直接退出");
+					//WTSLogger::info("数据尚未初始化，回放直接退出");
+					WTSLogger::info("No back data initialized, replaying canceled");
 					_listener->handle_replay_done();
 					break;
 				}
@@ -404,7 +408,7 @@ void HisDataReplayer::run()
 			{
 				if(checkAllTicks(_cur_tdate))
 				{
-					WTSLogger::info("开始回放%u的tick数据...", _cur_tdate);
+					WTSLogger::info("Start to replay tick data of %u...", _cur_tdate);
 					_listener->handle_session_begin(_cur_tdate);
 					replayHftDatasByDay(_cur_tdate);
 					_listener->handle_session_end(_cur_tdate);
@@ -413,12 +417,13 @@ void HisDataReplayer::run()
 				_cur_tdate = TimeUtils::getNextDate(_cur_tdate);
 			}
 
-			WTSLogger::info("全部数据都已回放，回放结束");
+			WTSLogger::info("All back data replayed, replaying done");
 			_listener->handle_replay_done();
 		}
 		else
 		{
-			WTSLogger::info("没有订阅主力K线且未开放tick回测，回放直接退出");
+			//WTSLogger::info("没有订阅主力K线且未开放tick回测，回放直接退出");
+			WTSLogger::info("Main K bars not subscribed and backtesting of tick data not available , replaying done");
 			_listener->handle_replay_done();
 		}
 	}
@@ -428,7 +433,7 @@ void HisDataReplayer::run()
 		WTSSessionInfo* sInfo = NULL;
 		const char* DEF_SESS = (strlen(_task->_session) == 0) ? DEFAULT_SESSIONID : _task->_session;
 		sInfo = _bd_mgr.getSession(DEF_SESS);
-		WTSLogger::log_raw(LL_INFO, fmt::format("从{}开始按任务周期回测……", _begin_time).c_str());
+		WTSLogger::log_raw(LL_INFO, fmt::format("Start to backtest with task frequency from {}……", _begin_time).c_str());
 
 		//分钟即任务和日级别任务分开写
 		if (_task->_period != TPT_Minute)
@@ -558,7 +563,8 @@ void HisDataReplayer::run()
 				uint64_t nextTime = (uint64_t)_cur_date * 10000 + _cur_time;
 				if (nextTime > _end_time)
 				{
-					WTSLogger::info("按任务周期回测结束");
+					//WTSLogger::info("按任务周期回测结束");
+					WTSLogger::info("Backtesting with task frequency is done");
 					if (_listener)
 					{
 						_listener->handle_session_end(_cur_tdate);
@@ -653,7 +659,8 @@ void HisDataReplayer::run()
 				uint64_t nextTime = (uint64_t)_cur_date * 10000 + _cur_time;
 				if (nextTime > _end_time)
 				{
-					WTSLogger::info("按任务周期回测结束");
+					//WTSLogger::info("按任务周期回测结束");
+					WTSLogger::info("Backtesting with task frequency is done");
 					if (_listener)
 					{
 						_listener->handle_session_end(_cur_tdate);
@@ -1217,7 +1224,7 @@ void HisDataReplayer::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTD
 	//		if (it != _bars_cache.end())
 	//		{
 	//			_bars_cache.erase(it);
-	//			WTSLogger::info("数据缓存%s已被清理", key.c_str());
+	//			WTSLogger::info("Data cache %s cleared", key.c_str());
 	//		}
 	//	}
 	//}
@@ -2026,7 +2033,8 @@ void HisDataReplayer::loadFees(const char* filename)
 
 	if (!StdFile::exists(filename))
 	{
-		WTSLogger::error("手续费模板文件%s不存在", filename);
+		//WTSLogger::error("手续费模板文件%s不存在", filename);
+		WTSLogger::error("Fees template file %s not exists", filename);
 		return;
 	}
 
@@ -2035,7 +2043,8 @@ void HisDataReplayer::loadFees(const char* filename)
 	StdFile::read_file_content(filename, content);
 	if (content.empty())
 	{
-		WTSLogger::error("手续费模板文件%s为空", filename);
+		//WTSLogger::error("手续费模板文件%s为空", filename);
+		WTSLogger::error("Fees template file %s is empty", filename);
 		return;
 	}
 
@@ -2044,14 +2053,16 @@ void HisDataReplayer::loadFees(const char* filename)
 
 	if (root.HasParseError())
 	{
-		WTSLogger::error("手续费模板文件%s解析失败", filename);
+		//WTSLogger::error("手续费模板文件%s解析失败", filename);
+		WTSLogger::error("Parsing fees template file %s failed", filename);
 		return;
 	}
 
 	WTSVariant* cfg = WTSVariant::createObject();
 	if (!jsonToVariant(root, cfg))
 	{
-		WTSLogger::error("手续费模板文件%s转换失败", filename);
+		//WTSLogger::error("手续费模板文件%s转换失败", filename);
+		WTSLogger::error("Converting fees template file %s failed", filename);
 		return;
 	}
 
@@ -2068,7 +2079,8 @@ void HisDataReplayer::loadFees(const char* filename)
 
 	cfg->release();
 
-	WTSLogger::info("共加载%u条手续费模板", _fee_map.size());
+	//WTSLogger::info("共加载%u条手续费模板", _fee_map.size());
+	WTSLogger::error("%u items of fees template loaded", filename);
 }
 
 
@@ -2290,7 +2302,7 @@ bool HisDataReplayer::cacheRawTicksFromBin(const std::string& key, const char* s
 	StdFile::read_file_content(filename.c_str(), content);
 	if (content.size() < sizeof(HisTickBlock))
 	{
-		WTSLogger::error("历史Tick数据文件%s大小校验失败", filename.c_str());
+		WTSLogger::error("Sizechecking of back tick data file %s failed", filename.c_str());
 		return false;
 	}
 
@@ -2303,7 +2315,8 @@ bool HisDataReplayer::cacheRawTicksFromBin(const std::string& key, const char* s
 
 		if (content.size() != (sizeof(HisTickBlockV2) + tBlockV2->_size))
 		{
-			WTSLogger::error("历史Tick数据文件%s大小校验失败", filename.c_str());
+			//WTSLogger::error("历史Tick数据文件%s大小校验失败", filename.c_str());
+			WTSLogger::error("Sizechecking of back tick data file %s failed", filename.c_str());
 			return false;
 		}
 	}
@@ -2349,7 +2362,8 @@ bool HisDataReplayer::cacheRawTicksFromCSV(const std::string& key, const char* s
 		StdFile::read_file_content(filename.c_str(), content);
 		if (content.size() < sizeof(HisTickBlockV2))
 		{
-			WTSLogger::error("历史Tick数据文件%s大小校验失败", filename.c_str());
+			//WTSLogger::error("历史Tick数据文件%s大小校验失败", filename.c_str());
+			WTSLogger::error("Sizechecking of back tick data file %s failed", filename.c_str());
 			return false;
 		}
 
@@ -2374,14 +2388,16 @@ bool HisDataReplayer::cacheRawTicksFromCSV(const std::string& key, const char* s
 
 		if (!StdFile::exists(csvfile.c_str()))
 		{
-			WTSLogger::error("历史Tick数据文件%s不存在", csvfile.c_str());
+			//WTSLogger::error("历史Tick数据文件%s不存在", csvfile.c_str());
+			WTSLogger::error("Back tick data file %s not exists", csvfile.c_str());
 			return false;
 		}
 
 		std::ifstream ifs;
 		ifs.open(csvfile.c_str());
 
-		WTSLogger::info("正在读取数据文件%s……", csvfile.c_str());
+		//WTSLogger::info("正在读取数据文件%s……", csvfile.c_str());
+		WTSLogger::error("Reading data from %s...", csvfile.c_str());
 
 		char buffer[512];
 		bool headerskipped = false;
@@ -2412,12 +2428,14 @@ bool HisDataReplayer::cacheRawTicksFromCSV(const std::string& key, const char* s
 
 			if (tickList._items.size() % 1000 == 0)
 			{
-				WTSLogger::info("已读取数据%u条", tickList._items.size());
+				//WTSLogger::info("已读取数据%u条", tickList._items.size());
+				WTSLogger::info("%u lines of data read", tickList._items.size());
 			}
 		}
 		tickList._count = tickList._items.size();
 		ifs.close();
-		WTSLogger::info("数据文件%s全部读取完成, 共%u条", csvfile.c_str(), tickList._items.size());
+		//WTSLogger::info("数据文件%s全部读取完成, 共%u条", csvfile.c_str(), tickList._items.size());
+		WTSLogger::info("Data file %s all loaded, totally %u items", csvfile.c_str(), tickList._items.size());
 
 		HisTickBlockV2 tBlock;
 		strcpy(tBlock._blk_flag, BLK_FLAG);
@@ -2434,7 +2452,8 @@ bool HisDataReplayer::cacheRawTicksFromCSV(const std::string& key, const char* s
 		}
 		bf.write_file(cmpData);
 		bf.close_file();
-		WTSLogger::info("数据已转储至%s", filename.c_str());
+		//WTSLogger::info("数据已转储至%s", filename.c_str());
+		WTSLogger::info("Data dumped to file %s", filename.c_str());
 	}
 
 	return true;
@@ -2468,7 +2487,8 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 		StdFile::read_file_content(filename.c_str(), content);
 		if (content.size() < sizeof(HisKlineBlockV2))
 		{
-			WTSLogger::error("历史K线数据文件%s大小校验失败", filename.c_str());
+			//WTSLogger::error("历史K线数据文件%s大小校验失败", filename.c_str());
+			WTSLogger::error("Sizechecking of back kbar data file %s failed", filename.c_str());
 			return false;
 		}
 
@@ -2493,14 +2513,16 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 
 		if (!StdFile::exists(csvfile.c_str()))
 		{
-			WTSLogger::error("历史K线数据文件%s不存在", csvfile.c_str());
+			//WTSLogger::error("历史K线数据文件%s不存在", csvfile.c_str());
+			WTSLogger::error("Back kbar data file %s not exists", csvfile.c_str());
 			return false;
 		}
 
 		std::ifstream ifs;
 		ifs.open(csvfile.c_str());
 
-		WTSLogger::info("正在读取数据文件%s……", csvfile.c_str());
+		//WTSLogger::info("正在读取数据文件%s……", csvfile.c_str());
+		WTSLogger::error("Reading data from %s...", csvfile.c_str());
 
 		char buffer[512];
 		bool headerskipped = false;
@@ -2535,12 +2557,14 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 
 			if (barList._bars.size() % 1000 == 0)
 			{
-				WTSLogger::info("已读取数据%u条", barList._bars.size());
+				//WTSLogger::info("已读取数据%u条", barList._bars.size());
+				WTSLogger::info("%u lines of data read", barList._bars.size());
 			}
 		}
 		barList._count = barList._bars.size();
 		ifs.close();
-		WTSLogger::info("数据文件%s全部读取完成, 共%u条", csvfile.c_str(), barList._bars.size());
+		//WTSLogger::info("数据文件%s全部读取完成, 共%u条", csvfile.c_str(), barList._bars.size());
+		WTSLogger::info("Data file %s all loaded, totally %u items", csvfile.c_str(), barList._bars.size());
 
 		BlockType btype;
 		switch (period)
@@ -2565,7 +2589,8 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 		}
 		bf.write_file(cmpData);
 		bf.close_file();
-		WTSLogger::info("数据已转储至%s", filename.c_str());
+		//WTSLogger::info("数据已转储至%s", filename.c_str());
+		WTSLogger::info("Data dumped to file %s", filename.c_str());
 	}
 
 	return true;
@@ -2632,7 +2657,7 @@ bool HisDataReplayer::cacheRawBarsFromDB(const std::string& key, const char* std
 			MysqlQuery query(*_db_conn);
 			if (!query.exec(sql))
 			{
-				WTSLogger::error("历史K线读取失败：%s", query.errormsg());
+				WTSLogger::error("Loading back kbar data from database failed：%s", query.errormsg());
 			}
 			else
 			{
@@ -2666,7 +2691,8 @@ bool HisDataReplayer::cacheRawBarsFromDB(const std::string& key, const char* std
 						lastHotTime = hotAy->at(barcnt - 1).date;
 				}
 
-				WTSLogger::info("主力合约%s历史%s数据直接缓存%u条", stdCode, pname.c_str(), barcnt);
+				//WTSLogger::info("主力合约%s历史%s数据直接缓存%u条", stdCode, pname.c_str(), barcnt);
+				WTSLogger::info("%u items of back %s data of hot contract %s directly loaded", barcnt, pname.c_str(), stdCode);
 			}
 
 			break;
@@ -2728,7 +2754,8 @@ bool HisDataReplayer::cacheRawBarsFromDB(const std::string& key, const char* std
 			MysqlQuery query(*_db_conn);
 			if (!query.exec(sql))
 			{
-				WTSLogger::error("历史K线读取失败：%s", query.errormsg());
+				//WTSLogger::error("历史K线读取失败：%s", query.errormsg());
+				WTSLogger::error("Loading back kbar data from database failed：%s", query.errormsg());
 			}
 			else
 			{
@@ -2791,7 +2818,8 @@ bool HisDataReplayer::cacheRawBarsFromDB(const std::string& key, const char* std
 			MysqlQuery query(*_db_conn);
 			if (!query.exec(sql))
 			{
-				WTSLogger::error("历史K线读取失败：%s", query.errormsg());
+				//WTSLogger::error("历史K线读取失败：%s", query.errormsg());
+				WTSLogger::error("Loading back kbar data from database failed：%s", query.errormsg());
 			}
 			else
 			{
@@ -2825,7 +2853,8 @@ bool HisDataReplayer::cacheRawBarsFromDB(const std::string& key, const char* std
 						lastQTime = hotAy->at(barcnt - 1).date;
 				}
 
-				WTSLogger::error("股票%s历史%s复权数据直接缓存%u条", stdCode, pname.c_str(), barcnt);
+				//WTSLogger::error("股票%s历史%s复权数据直接缓存%u条", stdCode, pname.c_str(), barcnt);
+				WTSLogger::info("%u items of adjusted back %s data of stock %s directly loaded", barcnt, pname.c_str(), stdCode);
 			}
 
 		} while (false);
@@ -2859,7 +2888,8 @@ bool HisDataReplayer::cacheRawBarsFromDB(const std::string& key, const char* std
 			MysqlQuery query(*_db_conn);
 			if (!query.exec(sql))
 			{
-				WTSLogger::error("历史K线读取失败：%s", query.errormsg());
+				//WTSLogger::error("历史K线读取失败：%s", query.errormsg());
+				WTSLogger::error("Loading back kbar data from database failed：%s", query.errormsg());
 			}
 			else
 			{
@@ -2966,7 +2996,8 @@ bool HisDataReplayer::cacheRawBarsFromDB(const std::string& key, const char* std
 		MysqlQuery query(*_db_conn);
 		if (!query.exec(sql))
 		{
-			WTSLogger::error("历史K线读取失败：%s", query.errormsg());
+			//WTSLogger::error("历史K线读取失败：%s", query.errormsg());
+			WTSLogger::error("Loading back kbar data from database failed：%s", query.errormsg());
 		}
 		else
 		{
@@ -3016,7 +3047,8 @@ bool HisDataReplayer::cacheRawBarsFromDB(const std::string& key, const char* std
 		barsSections.clear();
 	}
 
-	WTSLogger::info("合约%s的历史%s数据已缓存%u条", stdCode, pname.c_str(), realCnt);
+	//WTSLogger::info("合约%s的历史%s数据已缓存%u条", stdCode, pname.c_str(), realCnt);
+	WTSLogger::info("%u items of back %s data of contract %s cached", realCnt, pname.c_str(), stdCode);
 	return true;
 }
 
@@ -3070,7 +3102,8 @@ bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* st
 			StdFile::read_file_content(filename.c_str(), content);
 			if (content.size() < sizeof(HisKlineBlock))
 			{
-				WTSLogger::error("历史K线数据文件%s大小校验失败", filename.c_str());
+				//WTSLogger::error("历史K线数据文件%s大小校验失败", filename.c_str());
+				WTSLogger::error("Sizechecking of back kbar data file %s failed", filename.c_str());
 				break;
 			}
 
@@ -3080,7 +3113,8 @@ bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* st
 			{
 				if (content.size() < sizeof(HisKlineBlockV2))
 				{
-					WTSLogger::error("历史K线数据文件%s大小校验失败", filename.c_str());
+					//WTSLogger::error("历史K线数据文件%s大小校验失败", filename.c_str());
+					WTSLogger::error("Sizechecking of back kbar data file %s failed", filename.c_str());
 					break;
 				}
 
@@ -3114,7 +3148,8 @@ bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* st
 			else
 				lastHotTime = hotAy->at(barcnt - 1).date;
 
-			WTSLogger::info("主力%s历史%s数据直接缓存%u条", stdCode, pname.c_str(), barcnt);
+			//WTSLogger::info("主力%s历史%s数据直接缓存%u条", stdCode, pname.c_str(), barcnt);
+			WTSLogger::info("%u items of back %s data of hot contract %s directly loaded", barcnt, pname.c_str(), stdCode);
 
 			break;
 		}
@@ -3178,7 +3213,8 @@ bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* st
 				StdFile::read_file_content(filename.c_str(), content);
 				if (content.size() < sizeof(HisKlineBlock))
 				{
-					WTSLogger::error("历史K线数据文件%s大小校验失败", filename.c_str());
+					//WTSLogger::error("历史K线数据文件%s大小校验失败", filename.c_str());
+					WTSLogger::error("Sizechecking of back kbar data file %s failed", filename.c_str());
 					return false;
 				}
 
@@ -3190,7 +3226,8 @@ bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* st
 				{
 					if (content.size() < sizeof(HisKlineBlockV2))
 					{
-						WTSLogger::error("历史K线数据文件%s大小校验失败", filename.c_str());
+						//WTSLogger::error("历史K线数据文件%s大小校验失败", filename.c_str());
+						WTSLogger::error("Sizechecking of back kbar data file %s failed", filename.c_str());
 						break;
 					}
 
@@ -3289,7 +3326,8 @@ bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* st
 			StdFile::read_file_content(filename.c_str(), content);
 			if (content.size() < sizeof(HisKlineBlock))
 			{
-				WTSLogger::error("历史K线数据文件%s大小校验失败", filename.c_str());
+				//WTSLogger::error("历史K线数据文件%s大小校验失败", filename.c_str());
+				WTSLogger::error("Sizechecking of back kbar data file %s failed", filename.c_str());
 				break;
 			}
 
@@ -3299,7 +3337,8 @@ bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* st
 			{
 				if (content.size() < sizeof(HisKlineBlockV2))
 				{
-					WTSLogger::error("历史K线数据文件%s大小校验失败", filename.c_str());
+					//WTSLogger::error("历史K线数据文件%s大小校验失败", filename.c_str());
+					WTSLogger::error("Sizechecking of back kbar data file %s failed", filename.c_str());
 					break;
 				}
 
@@ -3333,7 +3372,8 @@ bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* st
 			else
 				lastQTime = hotAy->at(barcnt - 1).date;
 
-			WTSLogger::info("%s历史%s复权数据直接缓存%u条", stdCode, pname.c_str(), barcnt);
+			//WTSLogger::info("%s历史%s复权数据直接缓存%u条", stdCode, pname.c_str(), barcnt);
+			WTSLogger::info("%u items of adjusted back %s data of stock %s directly loaded", barcnt, pname.c_str(), stdCode);
 			break;
 		} while (false);
 
@@ -3369,7 +3409,8 @@ bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* st
 				StdFile::read_file_content(filename.c_str(), content);
 				if (content.size() < sizeof(HisKlineBlock))
 				{
-					WTSLogger::error("历史K线数据文件%s大小校验失败", filename.c_str());
+					//WTSLogger::error("历史K线数据文件%s大小校验失败", filename.c_str());
+					WTSLogger::error("Sizechecking of back kbar data file %s failed", filename.c_str());
 					return false;
 				}
 
@@ -3381,7 +3422,8 @@ bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* st
 				{
 					if (content.size() < sizeof(HisKlineBlockV2))
 					{
-						WTSLogger::error("历史K线数据文件%s大小校验失败", filename.c_str());
+						//WTSLogger::error("历史K线数据文件%s大小校验失败", filename.c_str());
+						WTSLogger::error("Sizechecking of back kbar data file %s failed", filename.c_str());
 						break;
 					}
 
@@ -3492,7 +3534,8 @@ bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* st
 			StdFile::read_file_content(filename.c_str(), content);
 			if (content.size() < sizeof(HisKlineBlock))
 			{
-				WTSLogger::error("历史K线数据文件%s大小校验失败", filename.c_str());
+				//WTSLogger::error("历史K线数据文件%s大小校验失败", filename.c_str());
+				WTSLogger::error("Sizechecking of back kbar data file %s failed", filename.c_str());
 				return false;
 			}
 
@@ -3504,7 +3547,8 @@ bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* st
 			{
 				if (content.size() < sizeof(HisKlineBlockV2))
 				{
-					WTSLogger::error("历史K线数据文件%s大小校验失败", filename.c_str());
+					//WTSLogger::error("历史K线数据文件%s大小校验失败", filename.c_str());
+					WTSLogger::error("Sizechecking of back kbar data file %s failed", filename.c_str());
 					return false;
 				}
 
@@ -3561,6 +3605,7 @@ bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* st
 		barsSections.clear();
 	}
 
-	WTSLogger::info("%s的历史%s数据已缓存%u条", stdCode, pname.c_str(), realCnt);
+	//WTSLogger::info("%s的历史%s数据已缓存%u条", stdCode, pname.c_str(), realCnt);
+	WTSLogger::info("%u items of back %s data of %s cached", realCnt, pname.c_str(), stdCode);
 	return true;
 }

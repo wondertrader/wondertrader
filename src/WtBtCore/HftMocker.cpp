@@ -514,7 +514,7 @@ bool HftMocker::procOrder(uint32_t localid)
 	if(_error_rate>0 && genRand(10000)<=_error_rate)
 	{
 		on_order(localid, ordInfo._code, ordInfo._isBuy, ordInfo._total, ordInfo._left, ordInfo._price, true, ordInfo._usertag);
-		stra_log_text("随机错误单：%u", localid);
+		stra_log_text("Random error order：%u", localid);
 		return true;
 	}
 	else
@@ -781,7 +781,7 @@ void HftMocker::do_set_position(const char* stdCode, double qty, double price /*
 	if (decimal::eq(pInfo._volume, qty))
 		return;
 
-	stra_log_text("[%04u.%05u] %s 持仓更新：%.0f -> %0.f", _replayer->get_min_time(), _replayer->get_secs(), stdCode, pInfo._volume, qty);
+	stra_log_text("[%04u.%05u] %s position updated：%.0f -> %0.f", _replayer->get_min_time(), _replayer->get_secs(), stdCode, pInfo._volume, qty);
 
 	WTSCommodityInfo* commInfo = _replayer->get_commodity_info(stdCode);
 

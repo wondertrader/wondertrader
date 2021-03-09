@@ -130,7 +130,7 @@ bool SelMocker::initSelFactory(WTSVariant* cfg)
 		_strategy = _factory._fact->createStrategy(cfgStra->getCString("name"), cfgStra->getCString("id"));
 		if (_strategy)
 		{
-			WTSLogger::info("策略%s.%s创建成功，策略ID：%s", _factory._fact->getName(), _strategy->getName(), _strategy->id());
+			WTSLogger::info("Strategy %s.%s created，strategy ID：%s", _factory._fact->getName(), _strategy->getName(), _strategy->id());
 		}
 		_strategy->init(cfgStra->get("params"));
 		_name = _strategy->id();
@@ -171,7 +171,7 @@ void SelMocker::handle_session_end(uint32_t uCurDate)
 
 void SelMocker::handle_replay_done()
 {
-	WTSLogger::log_dyn_raw("strategy", _name.c_str(), LL_INFO, fmt::format("策略共触发{}次，共耗时{}微秒，平均耗时{}微秒",
+	WTSLogger::log_dyn_raw("strategy", _name.c_str(), LL_INFO, fmt::format("Strategy has been scheduled for {} times，totally taking {} microsecs，average of {} microsecs",
 		_emit_times, _total_calc_time, _total_calc_time / _emit_times).c_str());
 
 	dump_outputs();
@@ -208,7 +208,7 @@ void SelMocker::on_init()
 	if (_strategy)
 		_strategy->on_init(this);
 
-	WTSLogger::info("策略初始化完成");
+	WTSLogger::info("Strategy initialized");
 }
 
 void SelMocker::update_dyn_profit(const char* stdCode, double price)
@@ -305,12 +305,8 @@ bool SelMocker::on_schedule(uint32_t curDate, uint32_t curTime, uint32_t fireTim
 {
 	_is_in_schedule = true;//开始调度，修改标记
 
-	//主要用于保存浮动盈亏的
-	//save_data();
-
 	TimeUtils::Ticker ticker;
 	on_strategy_schedule(curDate, curTime);
-	//stra_log_text("策略已重新调度 @ %u.%u[闭合时间%u]", curDate, fireTime, curTime);
 
 	std::unordered_set<std::string> to_clear;
 	for(auto& v : _pos_map)

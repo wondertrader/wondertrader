@@ -151,7 +151,7 @@ bool CtaMocker::initCtaFactory(WTSVariant* cfg)
 		_strategy = _factory._fact->createStrategy(cfgStra->getCString("name"), cfgStra->getCString("id"));
 		if(_strategy)
 		{
-			WTSLogger::info("策略%s.%s创建成功，策略ID：%s", _factory._fact->getName(), _strategy->getName(), _strategy->id());
+			WTSLogger::info("Strategy %s.%s is created，strategy ID：%s", _factory._fact->getName(), _strategy->getName(), _strategy->id());
 		}
 		_strategy->init(cfgStra->get("params"));
 		_name = _strategy->id();
@@ -189,7 +189,7 @@ void CtaMocker::handle_session_end(uint32_t curTDate)
 
 void CtaMocker::handle_replay_done()
 {
-	WTSLogger::log_dyn_raw("strategy", _name.c_str(), LL_INFO, fmt::format("策略共触发{}次，共耗时{}微秒，平均耗时{}微秒",
+	WTSLogger::log_dyn_raw("strategy", _name.c_str(), LL_INFO, fmt::format("Strategy has been scheduled for {} times，totally taking {} microsecs，average of {} microsecs",
 		_emit_times, _total_calc_time, _total_calc_time / _emit_times).c_str());
 
 	dump_outputs();
@@ -226,7 +226,7 @@ void CtaMocker::on_init()
 	if (_strategy)
 		_strategy->on_init(this);
 
-	WTSLogger::info("策略初始化完成");
+	WTSLogger::info("Strategy initialized");
 }
 
 void CtaMocker::update_dyn_profit(const char* stdCode, double price)
@@ -332,7 +332,7 @@ void CtaMocker::on_tick(const char* stdCode, WTSTickData* newTick, bool bEmitStr
 
 			if (isMatched)
 			{
-				WTSLogger::log_dyn_raw("strategy", _name.c_str(), LL_INFO, fmt::format("条件单触发[最新价: {}{}{}], 合约: {}, {} {}", curPrice, CMP_ALG_NAMES[entrust._alg], entrust._target, stdCode, ACTION_NAMES[entrust._action], entrust._qty).c_str());
+				WTSLogger::log_dyn_raw("strategy", _name.c_str(), LL_INFO, fmt::format("Condition order triggered[newprice: {}{}{}], instrument: {}, {} {}", curPrice, CMP_ALG_NAMES[entrust._alg], entrust._target, stdCode, ACTION_NAMES[entrust._action], entrust._qty).c_str());
 				switch (entrust._action)
 				{
 				case COND_ACTION_OL:
@@ -458,7 +458,6 @@ bool CtaMocker::on_schedule(uint32_t curDate, uint32_t curTime)
 			{
 				_condtions.clear();
 				on_mainkline_updated(curDate, curTime);
-				//stra_log_text("策略重算已触发 @ %u.%04u", curDate, curTime);
 				emmited = true;
 
 				_emit_times++;
@@ -466,7 +465,7 @@ bool CtaMocker::on_schedule(uint32_t curDate, uint32_t curTime)
 			}
 			else
 			{
-				WTSLogger::log_dyn("strategy", _name.c_str(), LL_INFO, "%u 不在交易时间，策略重算取消", curTime);
+				WTSLogger::log_dyn("strategy", _name.c_str(), LL_INFO, "%u is not trading time，strategy will not be scheduled", curTime);
 			}
 			break;
 		}
@@ -897,7 +896,7 @@ WTSKlineSlice* CtaMocker::stra_get_bars(const char* stdCode, const char* period,
 		if (_main_key.empty())
 			_main_key = key;
 		else if (_main_key != key)
-			throw std::runtime_error("不能重复设定主K线");
+			throw std::runtime_error("Main k bars can only be setup once");
 	}
 
 	std::string basePeriod = "";
