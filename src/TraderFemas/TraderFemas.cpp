@@ -604,10 +604,10 @@ void TraderFemas::OnRspUserLogin( CUstpFtdcRspUserLoginField *pRspUserLogin, CUs
 		///获取当前交易日
 		m_lDate = atoi(m_pUserAPI->GetTradingDay());
 
-		m_sink->handleTraderLog(LL_INFO,"[%s-%s]账户登录成功……", m_strBroker.c_str(), m_strUser.c_str());
+		m_sink->handleTraderLog(LL_INFO,"[%s-%s]账户登录成功...", m_strBroker.c_str(), m_strUser.c_str());
 
 		//据说飞马不支持结算，所以查不到结算单
-		m_sink->handleTraderLog(LL_INFO, "[%s-%s]正在查询结算确认信息……", m_strBroker.c_str(), m_strUser.c_str());
+		m_sink->handleTraderLog(LL_INFO, "[%s-%s]正在查询结算确认信息...", m_strBroker.c_str(), m_strUser.c_str());
 		if (m_bQryOnline)
 			onInitialized();
 	}
@@ -831,7 +831,7 @@ void TraderFemas::OnRspQryOrder(CUstpFtdcOrderField *pOrder, CUstpFtdcRspInfoFie
 
 void TraderFemas::onInitialized()
 {
-	m_sink->handleTraderLog(LL_INFO, "[%s-%s]账户数据初始化完成……", m_strBroker.c_str(), m_strUser.c_str());
+	m_sink->handleTraderLog(LL_INFO, "[%s-%s]账户数据初始化完成...", m_strBroker.c_str(), m_strUser.c_str());
 	m_wrapperState = WS_ALLREADY;
 	if (m_sink)
 		m_sink->onLoginResult(true, "", m_lDate);

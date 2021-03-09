@@ -384,7 +384,7 @@ void StateMonitor::run()
 								{
 									sInfo->_state = SS_PROCING;
 
-									WTSLogger::info("交易时间模板 %s[%s]开始进行收盘作业……", mInfo->name(), sInfo->_session);
+									WTSLogger::info("交易时间模板 %s[%s]开始进行收盘作业...", mInfo->name(), sInfo->_session);
 									_dt_mgr->transHisData(sInfo->_session);
 								}
 								else

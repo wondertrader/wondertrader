@@ -231,7 +231,7 @@ void ParseriTap::OnDisconnect(TAPIINT32 reasonCode)
 			//这里丢到线程里去处理，让OnClose可以马上返回
 			StdThreadPtr thrd(new StdThread([this](){
 				std::this_thread::sleep_for(std::chrono::seconds(RECONNECT_SECONDS));
-				m_sink->handleParserLog(LL_WARN, "[ParseriTap]行情正在重连……", m_strUser.c_str());
+				m_sink->handleParserLog(LL_WARN, "[ParseriTap]行情正在重连...", m_strUser.c_str());
 				reconnect();
 			}));
 		}

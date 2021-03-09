@@ -680,7 +680,7 @@ void TraderXTP::reconnect()
 
 		StdThreadPtr thrd(new StdThread([this](){
 			std::this_thread::sleep_for(std::chrono::seconds(2));
-			_sink->handleTraderLog(LL_WARN, "[TraderrXTP]账号%s正在重连……", _user.c_str());
+			_sink->handleTraderLog(LL_WARN, "[TraderrXTP]账号%s正在重连...", _user.c_str());
 			reconnect();
 		}));
 		return;
@@ -793,10 +793,10 @@ int TraderXTP::login(const char* user, const char* pass, const char* productInfo
 			_ini.writeUInt("marker", "date", _tradingday);
 			_ini.save();
 
-			_sink->handleTraderLog(LL_INFO, "[%s]交易日已切换[%u -> %u]，清空本地数据缓存……", _user.c_str(), lastDate, _tradingday);
+			_sink->handleTraderLog(LL_INFO, "[%s]交易日已切换[%u -> %u]，清空本地数据缓存...", _user.c_str(), lastDate, _tradingday);
 		}		
 
-		_sink->handleTraderLog(LL_INFO, "[%s]账户登录成功，交易日：%u……", _user.c_str(), _tradingday);
+		_sink->handleTraderLog(LL_INFO, "[%s]账户登录成功，交易日：%u...", _user.c_str(), _tradingday);
 
 		_state = TS_LOGINED;
 		_asyncio.post([this]{

@@ -634,7 +634,7 @@ void TraderCTPMini::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, C
 		///获取当前交易日
 		m_lDate = atoi(m_pUserAPI->GetTradingDay());
 
-		m_sink->handleTraderLog(LL_INFO, "[TraderCTPMini][%s-%s]账户登录成功，AppID:%s, Sessionid: %u, 登录时间: %s……",
+		m_sink->handleTraderLog(LL_INFO, "[TraderCTPMini][%s-%s]账户登录成功，AppID:%s, Sessionid: %u, 登录时间: %s...",
 			m_strBroker.c_str(), m_strUser.c_str(), m_strAppID.c_str(), m_sessionID, pRspUserLogin->LoginTime);
 
 		std::stringstream ss;
@@ -654,12 +654,12 @@ void TraderCTPMini::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, C
 			m_iniHelper.writeUInt("marker", "date", m_lDate);
 			m_iniHelper.save();
 
-			m_sink->handleTraderLog(LL_INFO, "[TraderCTPMini][%s-%s]交易日已切换[%u -> %u]，清空本地数据缓存……", m_strBroker.c_str(), m_strUser.c_str(), lastDate, m_lDate);
+			m_sink->handleTraderLog(LL_INFO, "[TraderCTPMini][%s-%s]交易日已切换[%u -> %u]，清空本地数据缓存...", m_strBroker.c_str(), m_strUser.c_str(), lastDate, m_lDate);
 		}
 
-		m_sink->handleTraderLog(LL_INFO, "[TraderCTPMini][%s-%s]账户登录成功，交易日：%u……", m_strBroker.c_str(), m_strUser.c_str(), m_lDate);
+		m_sink->handleTraderLog(LL_INFO, "[TraderCTPMini][%s-%s]账户登录成功，交易日：%u...", m_strBroker.c_str(), m_strUser.c_str(), m_lDate);
 
-		m_sink->handleTraderLog(LL_INFO, "[TraderCTPMini][%s-%s]账户数据初始化完成……", m_strBroker.c_str(), m_strUser.c_str());
+		m_sink->handleTraderLog(LL_INFO, "[TraderCTPMini][%s-%s]账户数据初始化完成...", m_strBroker.c_str(), m_strUser.c_str());
 		m_wrapperState = WS_ALLREADY;
 		if (m_sink)
 			m_sink->onLoginResult(true, "", m_lDate);

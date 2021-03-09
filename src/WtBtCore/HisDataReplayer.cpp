@@ -312,8 +312,8 @@ void HisDataReplayer::run()
 			WTSSessionInfo* sInfo = get_session_info(barList._code.c_str(), true);
 			std::string commId = CodeHelper::stdCodeToStdCommID(barList._code.c_str());
 
-			//WTSLogger::log_raw(LL_INFO, fmt::format("开始从{}进行数据回放……", _begin_time).c_str());
-			WTSLogger::log_raw(LL_INFO, fmt::format("Start to replay back data from {}……", _begin_time).c_str());
+			//WTSLogger::log_raw(LL_INFO, fmt::format("开始从{}进行数据回放...", _begin_time).c_str());
+			WTSLogger::log_raw(LL_INFO, fmt::format("Start to replay back data from {}...", _begin_time).c_str());
 
 			for (;;)
 			{
@@ -433,7 +433,7 @@ void HisDataReplayer::run()
 		WTSSessionInfo* sInfo = NULL;
 		const char* DEF_SESS = (strlen(_task->_session) == 0) ? DEFAULT_SESSIONID : _task->_session;
 		sInfo = _bd_mgr.getSession(DEF_SESS);
-		WTSLogger::log_raw(LL_INFO, fmt::format("Start to backtest with task frequency from {}……", _begin_time).c_str());
+		WTSLogger::log_raw(LL_INFO, fmt::format("Start to backtest with task frequency from {}...", _begin_time).c_str());
 
 		//分钟即任务和日级别任务分开写
 		if (_task->_period != TPT_Minute)
@@ -2396,7 +2396,7 @@ bool HisDataReplayer::cacheRawTicksFromCSV(const std::string& key, const char* s
 		std::ifstream ifs;
 		ifs.open(csvfile.c_str());
 
-		//WTSLogger::info("正在读取数据文件%s……", csvfile.c_str());
+		//WTSLogger::info("正在读取数据文件%s...", csvfile.c_str());
 		WTSLogger::error("Reading data from %s...", csvfile.c_str());
 
 		char buffer[512];
@@ -2521,7 +2521,7 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 		std::ifstream ifs;
 		ifs.open(csvfile.c_str());
 
-		//WTSLogger::info("正在读取数据文件%s……", csvfile.c_str());
+		//WTSLogger::info("正在读取数据文件%s...", csvfile.c_str());
 		WTSLogger::error("Reading data from %s...", csvfile.c_str());
 
 		char buffer[512];

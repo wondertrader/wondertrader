@@ -271,11 +271,11 @@ void TraderiTap::reconnect()
 	{
 		if (m_sink)
 			m_sink->handleEvent(WTE_Connect, -1);
-		m_sink->handleTraderLog(LL_ERROR, "[TraderiTap]交易模块初始化失败，错误码：%s……", GetErrcodeDesc(CreateErrorCode));
+		m_sink->handleTraderLog(LL_ERROR, "[TraderiTap]交易模块初始化失败，错误码：%s...", GetErrcodeDesc(CreateErrorCode));
 
 		StdThreadPtr thrd(new StdThread([this](){
 			std::this_thread::sleep_for(std::chrono::seconds(2));
-			m_sink->handleTraderLog(LL_WARN, "[TraderiTap]账号%s正在重连……", m_strUser.c_str());
+			m_sink->handleTraderLog(LL_WARN, "[TraderiTap]账号%s正在重连...", m_strUser.c_str());
 			reconnect();
 		}));
 		return;
@@ -298,7 +298,7 @@ void TraderiTap::reconnect()
 				//这里丢到线程里去处理，让reconnect可以马上返回
 				StdThreadPtr thrd(new StdThread([this](){
 					std::this_thread::sleep_for(std::chrono::seconds(2));
-					m_sink->handleTraderLog(LL_WARN, "[TraderiTap]账号%s正在重连……", m_strUser.c_str());
+					m_sink->handleTraderLog(LL_WARN, "[TraderiTap]账号%s正在重连...", m_strUser.c_str());
 					reconnect();
 				}));
 			}
@@ -1105,7 +1105,7 @@ void TAP_CDECL TraderiTap::OnAPIReady(ITapTrade::TAPIINT32 errCode)
 		//m_wrapperState = WS_APIINITED;
 
 		m_wrapperState = WS_ALLREADY;
-		m_sink->handleTraderLog(LL_INFO, "[TraderiTap-%s]账户数据初始化完成……", m_strUser.c_str());
+		m_sink->handleTraderLog(LL_INFO, "[TraderiTap-%s]账户数据初始化完成...", m_strUser.c_str());
 
 		if (m_sink)
 			m_sink->onLoginResult(true, "", 0);
@@ -1145,7 +1145,7 @@ void TAP_CDECL TraderiTap::OnDisconnect(ITapTrade::TAPIINT32 reasonCode)
 			//这里丢到线程里去处理，让OnClose可以马上返回
 			StdThreadPtr thrd(new StdThread([this](){
 				std::this_thread::sleep_for(std::chrono::seconds(2));
-				m_sink->handleTraderLog(LL_WARN, "[TraderiTap]账号%s正在重连……", m_strUser.c_str());
+				m_sink->handleTraderLog(LL_WARN, "[TraderiTap]账号%s正在重连...", m_strUser.c_str());
 				reconnect();
 			}));
 		}
@@ -1210,7 +1210,7 @@ void TAP_CDECL TraderiTap::OnRspLogin(ITapTrade::TAPIINT32 errCode, const ITapTr
 		m_uLoginTime = TimeUtils::getLocalTimeNow() * 100 + esfinstance++;
 		m_uDate = strToTime(loginRspInfo->TradeDate);
 
-		m_sink->handleTraderLog(LL_INFO, "[TraderiTap-%s]账户登录成功……", m_strUser.c_str());
+		m_sink->handleTraderLog(LL_INFO, "[TraderiTap-%s]账户登录成功...", m_strUser.c_str());
 
 		m_bReconnect = false;
 	}
@@ -1228,7 +1228,7 @@ void TAP_CDECL TraderiTap::OnRspLogin(ITapTrade::TAPIINT32 errCode, const ITapTr
 				//这里丢到线程里去处理，让onclose可以马上返回
 				StdThreadPtr thrd(new StdThread([this](){
 					std::this_thread::sleep_for(std::chrono::seconds(2));
-					m_sink->handleTraderLog(LL_WARN, "[TraderiTap]账号%s正在重连……", m_strUser.c_str());
+					m_sink->handleTraderLog(LL_WARN, "[TraderiTap]账号%s正在重连...", m_strUser.c_str());
 					reconnect();
 				}));
 			}
@@ -1252,7 +1252,7 @@ void TAP_CDECL TraderiTap::OnRspLogin(ITapTrade::TAPIINT32 errCode, const ITapTr
 			//这里丢到线程里去处理，让onclose可以马上返回
 			StdThreadPtr thrd(new StdThread([this](){
 				std::this_thread::sleep_for(std::chrono::seconds(2));
-				m_sink->handleTraderLog(LL_WARN, "[TraderiTap]账号%s正在重连……", m_strUser.c_str());
+				m_sink->handleTraderLog(LL_WARN, "[TraderiTap]账号%s正在重连...", m_strUser.c_str());
 				reconnect();
 			}));
 		}
@@ -1373,7 +1373,7 @@ void TAP_CDECL TraderiTap::OnRspQryCommodity(ITapTrade::TAPIUINT32 sessionID, IT
 		//m_wrapperState = WS_COMMQRYED;
 
 		m_wrapperState = WS_ALLREADY;
-		m_sink->handleTraderLog(LL_INFO, "[TraderiTap-%s]账户数据初始化完成……", m_strUser.c_str());
+		m_sink->handleTraderLog(LL_INFO, "[TraderiTap-%s]账户数据初始化完成...", m_strUser.c_str());
 
 		if (m_sink)
 			m_sink->onLoginResult(true, "", 0);
@@ -1410,7 +1410,7 @@ void TAP_CDECL TraderiTap::OnRspRequestVertificateCode(ITapTrade::TAPIUINT32 ses
 			//这里丢到线程里去处理，让onclose可以马上返回
 			StdThreadPtr thrd(new StdThread([this](){
 				std::this_thread::sleep_for(std::chrono::seconds(2));
-				m_sink->handleTraderLog(LL_WARN, "[TraderiTap]账号%s正在重连……", m_strUser.c_str());
+				m_sink->handleTraderLog(LL_WARN, "[TraderiTap]账号%s正在重连...", m_strUser.c_str());
 				reconnect();
 			}));
 		}
@@ -1441,7 +1441,7 @@ void TAP_CDECL TraderiTap::OnRspRequestVertificateCode(ITapTrade::TAPIUINT32 ses
 				//这里丢到线程里去处理，让onclose可以马上返回
 				StdThreadPtr thrd(new StdThread([this](){
 					std::this_thread::sleep_for(std::chrono::seconds(2));
-					m_sink->handleTraderLog(LL_WARN, "[TraderiTap]账号%s正在重连……", m_strUser.c_str());
+					m_sink->handleTraderLog(LL_WARN, "[TraderiTap]账号%s正在重连...", m_strUser.c_str());
 					reconnect();
 				}));
 			}

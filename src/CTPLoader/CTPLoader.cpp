@@ -119,7 +119,7 @@ int main()
 		StringVector ayFiles = StrUtil::split(map_files, ",");
 		for(const std::string& fName:ayFiles)
 		{
-			printf("开始读取映射文件%s……", fName.c_str());
+			printf("开始读取映射文件%s...", fName.c_str());
 			IniHelper iniMap;
 			if(!StdFile::exists(fName.c_str()))
 				continue;

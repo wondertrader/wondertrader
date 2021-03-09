@@ -214,7 +214,7 @@ void DataManager::preloadRtCaches(const char* exchg)
 	if (!_preload_enable || _preloaded)
 		return;
 
-	_sink->outputWriterLog(LL_INFO, "开始预加载实时数据缓存文件……");
+	_sink->outputWriterLog(LL_INFO, "开始预加载实时数据缓存文件...");
 	TimeUtils::Ticker ticker;
 	uint32_t cnt = 0;
 	uint32_t codecnt = 0;
@@ -711,7 +711,7 @@ WtDataWriter::OrdQueBlockPair* WtDataWriter::getOrdQueBlock(WTSContractInfo* ct,
 			if (!bAutoCreate)
 				return NULL;
 
-			_sink->outputWriterLog(LL_INFO, "数据文件%s不存在，正在初始化……", path.c_str());
+			_sink->outputWriterLog(LL_INFO, "数据文件%s不存在，正在初始化...", path.c_str());
 
 			uint64_t uSize = sizeof(RTDayBlockHeader) + sizeof(WTSOrdQueStruct) * TICK_SIZE_STEP;
 
@@ -801,7 +801,7 @@ WtDataWriter::OrdDtlBlockPair* WtDataWriter::getOrdDtlBlock(WTSContractInfo* ct,
 			if (!bAutoCreate)
 				return NULL;
 
-			_sink->outputWriterLog(LL_INFO, "数据文件%s不存在，正在初始化……", path.c_str());
+			_sink->outputWriterLog(LL_INFO, "数据文件%s不存在，正在初始化...", path.c_str());
 
 			uint64_t uSize = sizeof(RTDayBlockHeader) + sizeof(WTSOrdDtlStruct) * TICK_SIZE_STEP;
 
@@ -892,7 +892,7 @@ WtDataWriter::TransBlockPair* WtDataWriter::getTransBlock(WTSContractInfo* ct, u
 			if (!bAutoCreate)
 				return NULL;
 
-			_sink->outputWriterLog(LL_INFO, "数据文件%s不存在，正在初始化……", path.c_str());
+			_sink->outputWriterLog(LL_INFO, "数据文件%s不存在，正在初始化...", path.c_str());
 
 			uint64_t uSize = sizeof(RTDayBlockHeader) + sizeof(WTSTransStruct) * TICK_SIZE_STEP;
 
@@ -992,7 +992,7 @@ WtDataWriter::TickBlockPair* WtDataWriter::getTickBlock(WTSContractInfo* ct, uin
 			if (!bAutoCreate)
 				return NULL;
 
-			_sink->outputWriterLog(LL_INFO, "数据文件%s不存在，正在初始化……", path.c_str());
+			_sink->outputWriterLog(LL_INFO, "数据文件%s不存在，正在初始化...", path.c_str());
 
 			uint64_t uSize = sizeof(RTTickBlock) + sizeof(WTSTickStruct) * TICK_SIZE_STEP;
 			BoostFile bf;
@@ -1271,7 +1271,7 @@ WtDataWriter::KBlockPair* WtDataWriter::getKlineBlock(WTSContractInfo* ct, WTSKl
 			if (!bAutoCreate)
 				return NULL;
 
-			_sink->outputWriterLog(LL_INFO, "数据文件%s不存在，正在初始化……", path.c_str());
+			_sink->outputWriterLog(LL_INFO, "数据文件%s不存在，正在初始化...", path.c_str());
 
 			uint64_t uSize = sizeof(RTKlineBlock) + sizeof(WTSBarStruct) * KLINE_SIZE_STEP;
 			/*

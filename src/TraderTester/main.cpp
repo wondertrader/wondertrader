@@ -125,7 +125,7 @@ public:
 
 	bool qryFund()
 	{
-		log("[%s]正在查询资金……", m_pParams->getCString("user"));
+		log("[%s]正在查询资金...", m_pParams->getCString("user"));
 		m_pTraderApi->queryAccount();
 
 		return true;
@@ -133,7 +133,7 @@ public:
 
 	bool qryOrders()
 	{
-		log("[%s]正在查询当日委托……", m_pParams->getCString("user"));
+		log("[%s]正在查询当日委托...", m_pParams->getCString("user"));
 		m_pTraderApi->queryOrders();
 
 		return true;
@@ -141,7 +141,7 @@ public:
 
 	bool qryTrades()
 	{
-		log("%s]正在查询当日成交……", m_pParams->getCString("user"));
+		log("%s]正在查询当日成交...", m_pParams->getCString("user"));
 		m_pTraderApi->queryTrades();
 
 		return true;
@@ -149,7 +149,7 @@ public:
 
 	bool qryPosition()
 	{
-		log("[%s]正在查询持仓……",  m_pParams->getCString("user"));
+		log("[%s]正在查询持仓...",  m_pParams->getCString("user"));
 		m_pTraderApi->queryPositions();
 
 		return true;
@@ -158,7 +158,7 @@ public:
 	bool qrySettle()
 	{
 		uint32_t uDate = TimeUtils::getNextDate(TimeUtils::getCurDate(), -1);
-		log("[%s]正在查询%u的结算单……", m_pParams->getCString("user"), uDate);
+		log("[%s]正在查询%u的结算单...", m_pParams->getCString("user"), uDate);
 		m_pTraderApi->querySettlement(uDate);
 
 		return true;
@@ -322,7 +322,7 @@ public:
 		}
 
 
-		log("[%s]开始撤单[%s]……", m_pParams->getCString("user"), orderid);
+		log("[%s]开始撤单[%s]...", m_pParams->getCString("user"), orderid);
 		WTSEntrustAction* action = WTSEntrustAction::create(ordInfo->getCode());
 		action->setEntrustID(ordInfo->getEntrustID());
 		action->setOrderID(orderid);

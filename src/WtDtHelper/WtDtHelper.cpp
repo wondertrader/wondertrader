@@ -91,7 +91,7 @@ void dump_bars(WtString binFolder, WtString csvFolder, WtString strFilter /* = "
 		std::string fileCode = iter->path().stem().string();
 
 		if (cbLogger)
-			cbLogger(StrUtil::printf("正在读取数据文件%s……", path.c_str()).c_str());
+			cbLogger(StrUtil::printf("正在读取数据文件%s...", path.c_str()).c_str());
 
 		std::string buffer;
 		BoostFile::read_file_contents(path.c_str(), buffer);
@@ -117,7 +117,7 @@ void dump_bars(WtString binFolder, WtString csvFolder, WtString strFilter /* = "
 
 			//需要解压
 			if (cbLogger)
-				cbLogger(StrUtil::printf("正在解压数据……").c_str());
+				cbLogger(StrUtil::printf("正在解压数据...").c_str());
 			std::string buf = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
 
 			//将原来的buffer只保留一个头部，并将所有tick数据追加到尾部
@@ -138,7 +138,7 @@ void dump_bars(WtString binFolder, WtString csvFolder, WtString strFilter /* = "
 		filename += ".csv";
 
 		if (cbLogger)
-			cbLogger(StrUtil::printf("正在写入%s……", filename.c_str()).c_str());
+			cbLogger(StrUtil::printf("正在写入%s...", filename.c_str()).c_str());
 
 		std::stringstream ss;
 		ss << "date,time,open,high,low,close,settle,turnover,volume,open_interest,diff_interest" << std::endl;
@@ -165,7 +165,7 @@ void dump_bars(WtString binFolder, WtString csvFolder, WtString strFilter /* = "
 	}
 
 	if (cbLogger)
-		cbLogger(StrUtil::printf("目录%s全部导出完成……", binFolder).c_str());
+		cbLogger(StrUtil::printf("目录%s全部导出完成...", binFolder).c_str());
 }
 
 void dump_ticks(WtString binFolder, WtString csvFolder, WtString strFilter /* = "" */, FuncLogCallback cbLogger /* = NULL */)
@@ -196,7 +196,7 @@ void dump_ticks(WtString binFolder, WtString csvFolder, WtString strFilter /* = 
 		std::string fileCode = iter->path().stem().string();
 
 		if (cbLogger)
-			cbLogger(StrUtil::printf("正在读取数据文件%s……", path.c_str()).c_str());
+			cbLogger(StrUtil::printf("正在读取数据文件%s...", path.c_str()).c_str());
 
 		std::string buffer;
 		BoostFile::read_file_contents(path.c_str(), buffer);
@@ -222,7 +222,7 @@ void dump_ticks(WtString binFolder, WtString csvFolder, WtString strFilter /* = 
 
 			//需要解压
 			if (cbLogger)
-				cbLogger(StrUtil::printf("正在解压数据……").c_str());
+				cbLogger(StrUtil::printf("正在解压数据...").c_str());
 			std::string buf = WTSCmpHelper::uncompress_data(tBlockV2->_data, (uint32_t)tBlockV2->_size);
 
 			//将原来的buffer只保留一个头部，并将所有tick数据追加到尾部
@@ -243,7 +243,7 @@ void dump_ticks(WtString binFolder, WtString csvFolder, WtString strFilter /* = 
 		filename += ".csv";
 
 		if (cbLogger)
-			cbLogger(StrUtil::printf("正在写入%s……", filename.c_str()).c_str());
+			cbLogger(StrUtil::printf("正在写入%s...", filename.c_str()).c_str());
 
 		std::stringstream ss;
 		ss.setf(std::ios::fixed, std::ios::floatfield);
@@ -294,7 +294,7 @@ void dump_ticks(WtString binFolder, WtString csvFolder, WtString strFilter /* = 
 	}
 
 	if (cbLogger)
-		cbLogger(StrUtil::printf("目录%s全部导出完成……", binFolder).c_str());
+		cbLogger(StrUtil::printf("目录%s全部导出完成...", binFolder).c_str());
 }
 
 void trans_csv_bars(WtString csvFolder, WtString binFolder, WtString period, FuncLogCallback cbLogger /* = NULL */)
@@ -329,7 +329,7 @@ void trans_csv_bars(WtString csvFolder, WtString binFolder, WtString period, Fun
 		ifs.open(path.c_str());
 
 		if(cbLogger)
-			cbLogger(StrUtil::printf("正在读取数据文件%s……", path.c_str()).c_str());
+			cbLogger(StrUtil::printf("正在读取数据文件%s...", path.c_str()).c_str());
 
 		char buffer[512];
 		bool headerskipped = false;
@@ -406,7 +406,7 @@ WtUInt32 read_dsb_ticks(WtString tickFile, FuncGetTicksCallback cb, FuncLogCallb
 	const std::string& path = tickFile;
 
 	if (cbLogger)
-		cbLogger(StrUtil::printf("正在读取数据文件%s……", path.c_str()).c_str());
+		cbLogger(StrUtil::printf("正在读取数据文件%s...", path.c_str()).c_str());
 
 	std::string buffer;
 	BoostFile::read_file_contents(path.c_str(), buffer);
@@ -432,7 +432,7 @@ WtUInt32 read_dsb_ticks(WtString tickFile, FuncGetTicksCallback cb, FuncLogCallb
 
 		//需要解压
 		if (cbLogger)
-			cbLogger(StrUtil::printf("正在解压数据……").c_str());
+			cbLogger(StrUtil::printf("正在解压数据...").c_str());
 		std::string buf = WTSCmpHelper::uncompress_data(tBlockV2->_data, (uint32_t)tBlockV2->_size);
 
 		//将原来的buffer只保留一个头部，并将所有tick数据追加到尾部
@@ -489,7 +489,7 @@ WtUInt32 read_dsb_bars(WtString barFile, FuncGetBarsCallback cb, FuncLogCallback
 
 		//需要解压
 		if (cbLogger)
-			cbLogger(StrUtil::printf("正在解压数据……").c_str());
+			cbLogger(StrUtil::printf("正在解压数据...").c_str());
 		std::string buf = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
 
 		//将原来的buffer只保留一个头部，并将所有tick数据追加到尾部
