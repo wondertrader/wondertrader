@@ -274,7 +274,7 @@ void CtaStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 				const char* stdCode = pItem["code"].GetString();
 				if (!CodeHelper::isStdFutHotCode(stdCode) && _engine->get_contract_info(stdCode) == NULL)
 				{
-					stra_log_text("%s不存在或者已过期，持仓数据已忽略", stdCode);
+					stra_log_text("%s不存在或者已过期,持仓数据已忽略", stdCode);
 					continue;
 				}
 				PosInfo& pInfo = _pos_map[stdCode];
@@ -339,7 +339,7 @@ void CtaStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 				const char* stdCode = m.name.GetString();
 				if (!CodeHelper::isStdFutHotCode(stdCode) && _engine->get_contract_info(stdCode) == NULL)
 				{
-					stra_log_text("%s不存在或者已过期，条件单已忽略", stdCode);
+					stra_log_text("%s不存在或者已过期,条件单已忽略", stdCode);
 					continue;
 				}
 
@@ -382,7 +382,7 @@ void CtaStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 				const char* stdCode = m.name.GetString();
 				if (!CodeHelper::isStdFutHotCode(stdCode) && _engine->get_contract_info(stdCode) == NULL)
 				{
-					stra_log_text("%s不存在或者已过期，信号已忽略", stdCode);
+					stra_log_text("%s不存在或者已过期,信号已忽略", stdCode);
 					continue;
 				}
 
@@ -911,12 +911,12 @@ void CtaStraBaseCtx::stra_enter_long(const char* stdCode, double qty, const char
 		double curQty = stra_get_position(stdCode);
 		if (decimal::lt(curQty, 0))
 		{
-			//当前持仓小于0，逻辑是反手到qty，所以设置信号目标仓位为qty
+			//当前持仓小于0,逻辑是反手到qty,所以设置信号目标仓位为qty
 			append_signal(stdCode, qty, userTag);
 		}
 		else
 		{
-			//当前持仓大于等于0，则要增加多仓qty
+			//当前持仓大于等于0,则要增加多仓qty
 			append_signal(stdCode, curQty + qty, userTag);
 		}
 	}
@@ -956,12 +956,12 @@ void CtaStraBaseCtx::stra_enter_short(const char* stdCode, double qty, const cha
 		double curQty = stra_get_position(stdCode);
 		if (decimal::gt(curQty, 0))
 		{
-			//当前仓位大于0，逻辑是反手到qty手，所以设置信号目标仓位为-qty手
+			//当前仓位大于0,逻辑是反手到qty手,所以设置信号目标仓位为-qty手
 			append_signal(stdCode, -qty, userTag);
 		}
 		else
 		{
-			//当前仓位小于等于0，则是追加空方手数
+			//当前仓位小于等于0,则是追加空方手数
 			append_signal(stdCode, curQty - qty, userTag);
 		}
 	}
@@ -999,7 +999,7 @@ void CtaStraBaseCtx::stra_exit_long(const char* stdCode, double qty, const char*
 	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式, 则直接触发
 	{
 		double curQty = stra_get_position(stdCode);
-		//如果持仓为空，则不需要再执行退出多头的逻辑了
+		//如果持仓为空,则不需要再执行退出多头的逻辑了
 		if (decimal::le(curQty, 0))
 			return;
 
@@ -1040,7 +1040,7 @@ void CtaStraBaseCtx::stra_exit_short(const char* stdCode, double qty, const char
 	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式, 则直接触发
 	{
 		double curQty = stra_get_position(stdCode);
-		//如果持仓是多，则不需要执行退出空头的逻辑了
+		//如果持仓是多,则不需要执行退出空头的逻辑了
 		if (decimal::ge(curQty, 0))
 			return ;
 
@@ -1094,7 +1094,7 @@ void CtaStraBaseCtx::stra_set_position(const char* stdCode, double qty, const ch
 	{
 		CondList& condList = get_cond_entrusts(stdCode);
 
-		//根据目标仓位和当前仓位，判断是买还是卖
+		//根据目标仓位和当前仓位,判断是买还是卖
 		double curVol = stra_get_position(stdCode);
 		bool isBuy = decimal::gt(qty, curVol);
 
@@ -1285,8 +1285,8 @@ WTSKlineSlice* CtaStraBaseCtx::stra_get_bars(const char* stdCode, const char* pe
 	WTSKlineSlice* kline = _engine->get_kline_slice(_context_id, stdCode, basePeriod.c_str(), count, times);
 	if(kline)
 	{
-		//如果K线获取不到，说明也不会有闭合事件发生，所以不更新本地标记
-		bool isFirst = (_kline_tags.find(key) == _kline_tags.end());	//如果没有保存标记，说明是第一次拉取该K线
+		//如果K线获取不到,说明也不会有闭合事件发生,所以不更新本地标记
+		bool isFirst = (_kline_tags.find(key) == _kline_tags.end());	//如果没有保存标记,说明是第一次拉取该K线
 		KlineTag& tag = _kline_tags[key];
 		tag._closed = false;
 
@@ -1295,7 +1295,7 @@ WTSKlineSlice* CtaStraBaseCtx::stra_get_bars(const char* stdCode, const char* pe
 
 		if(isMain && isFirst && !_condtions.empty())
 		{
-			//如果是第一次拉取主K线，则检查条件单触发时间
+			//如果是第一次拉取主K线,则检查条件单触发时间
 			bool isDay = basePeriod[0] == 'd';
 			uint64_t lastBartime = isDay ? kline->date(-1) : kline->time(-1);
 			if(!isDay)
@@ -1303,7 +1303,7 @@ WTSKlineSlice* CtaStraBaseCtx::stra_get_bars(const char* stdCode, const char* pe
 
 			if(lastBartime >= _last_cond_min)
 			{
-				stra_log_text(fmt::format("条件单已过期，设置时间为{}，上一根主K线时间为{}，全部清空", _last_cond_min, lastBartime).c_str());
+				stra_log_text(fmt::format("条件单已过期,设置时间为{},上一根主K线时间为{},全部清空", _last_cond_min, lastBartime).c_str());
 				_condtions.clear();
 			}
 		}

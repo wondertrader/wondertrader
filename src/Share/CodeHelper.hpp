@@ -5,7 +5,7 @@
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief 代码辅助类，封装到一起方便使用
+ * \brief 代码辅助类,封装到一起方便使用
  */
 #pragma once
 #include "StrUtil.hpp"
@@ -28,7 +28,7 @@ public:
 		union
 		{
 			bool	_hot;		//是否是主力合约
-			bool	_exright;	//是否是复权代码，如SH600000Q
+			bool	_exright;	//是否是复权代码,如SH600000Q
 		};
 
 		_CodeInfo()
@@ -57,8 +57,8 @@ public:
 
 	static std::string stdStkCodeToStdCommID(const char* stdCode)
 	{
-		//如果是SSE.600000格式的，默认为STK品种
-		//如果是SSE.STK.600000格式的，就解析品种出来
+		//如果是SSE.600000格式的,默认为STK品种
+		//如果是SSE.STK.600000格式的,就解析品种出来
 		StringVector ay = StrUtil::split(stdCode, ".");
 		std::string str = ay[0];
 		str += ".";
@@ -321,7 +321,7 @@ public:
 		{
 			//commID = "STK";
 			bool isSH = strcmp(codeInfo._exchg, "SSE") == 0;
-			bool isIdx = (isSH && ay[1][0] == '0') || (!isSH && strncmp(ay[1].c_str(), "39", 2) == 0);//是否是指数，上交所的指数以'0'开头，深交所以'39'开头
+			bool isIdx = (isSH && ay[1][0] == '0') || (!isSH && strncmp(ay[1].c_str(), "39", 2) == 0);//是否是指数,上交所的指数以'0'开头,深交所以'39'开头
 			strcpy(codeInfo._product, isIdx ? "IDX" : "STK");
 			//bscCode = ay[1];
 			if (ay[1].back() == 'Q')

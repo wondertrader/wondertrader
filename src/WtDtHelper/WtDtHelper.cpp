@@ -105,7 +105,7 @@ void dump_bars(WtString binFolder, WtString csvFolder, WtString strFilter /* = "
 		HisKlineBlock* tBlock = (HisKlineBlock*)buffer.c_str();
 		if (tBlock->_version == BLOCK_VERSION_CMP)
 		{
-			//压缩版本，要重新检查文件大小
+			//压缩版本,要重新检查文件大小
 			HisKlineBlockV2* kBlockV2 = (HisKlineBlockV2*)buffer.c_str();
 
 			if (buffer.size() != (sizeof(HisKlineBlockV2) + kBlockV2->_size))
@@ -120,7 +120,7 @@ void dump_bars(WtString binFolder, WtString csvFolder, WtString strFilter /* = "
 				cbLogger(StrUtil::printf("正在解压数据...").c_str());
 			std::string buf = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
 
-			//将原来的buffer只保留一个头部，并将所有tick数据追加到尾部
+			//将原来的buffer只保留一个头部,并将所有tick数据追加到尾部
 			buffer.resize(sizeof(HisTickBlock));
 			buffer.append(buf);
 			kBlockV2 = (HisKlineBlockV2*)buffer.c_str();
@@ -161,7 +161,7 @@ void dump_bars(WtString binFolder, WtString csvFolder, WtString strFilter /* = "
 		BoostFile::write_file_contents(filename.c_str(), ss.str().c_str(), (uint32_t)ss.str().size());
 
 		if (cbLogger)
-			cbLogger(StrUtil::printf("%s写入完成，共%u条bar", filename.c_str(), kcnt).c_str());
+			cbLogger(StrUtil::printf("%s写入完成,共%u条bar", filename.c_str(), kcnt).c_str());
 	}
 
 	if (cbLogger)
@@ -210,7 +210,7 @@ void dump_ticks(WtString binFolder, WtString csvFolder, WtString strFilter /* = 
 		HisTickBlock* tBlock = (HisTickBlock*)buffer.c_str();
 		if (tBlock->_version == BLOCK_VERSION_CMP)
 		{
-			//压缩版本，要重新检查文件大小
+			//压缩版本,要重新检查文件大小
 			HisTickBlockV2* tBlockV2 = (HisTickBlockV2*)buffer.c_str();
 
 			if (buffer.size() != (sizeof(HisTickBlockV2) + tBlockV2->_size))
@@ -225,7 +225,7 @@ void dump_ticks(WtString binFolder, WtString csvFolder, WtString strFilter /* = 
 				cbLogger(StrUtil::printf("正在解压数据...").c_str());
 			std::string buf = WTSCmpHelper::uncompress_data(tBlockV2->_data, (uint32_t)tBlockV2->_size);
 
-			//将原来的buffer只保留一个头部，并将所有tick数据追加到尾部
+			//将原来的buffer只保留一个头部,并将所有tick数据追加到尾部
 			buffer.resize(sizeof(HisTickBlock));
 			buffer.append(buf);
 			tBlockV2 = (HisTickBlockV2*)buffer.c_str();
@@ -290,7 +290,7 @@ void dump_ticks(WtString binFolder, WtString csvFolder, WtString strFilter /* = 
 		BoostFile::write_file_contents(filename.c_str(), ss.str().c_str(), (uint32_t)ss.str().size());
 
 		if (cbLogger)
-			cbLogger(StrUtil::printf("%s写入完成，共%u条tick数据", filename.c_str(), tcnt).c_str());
+			cbLogger(StrUtil::printf("%s写入完成,共%u条tick数据", filename.c_str(), tcnt).c_str());
 	}
 
 	if (cbLogger)
@@ -367,7 +367,7 @@ void trans_csv_bars(WtString csvFolder, WtString binFolder, WtString period, Fun
 		}
 		ifs.close();
 		if (cbLogger)
-			cbLogger(StrUtil::printf("数据文件%s全部读取完成，共%u条", path.c_str(), bars.size()).c_str());
+			cbLogger(StrUtil::printf("数据文件%s全部读取完成,共%u条", path.c_str(), bars.size()).c_str());
 
 		BlockType btype;
 		switch (kp)
@@ -420,7 +420,7 @@ WtUInt32 read_dsb_ticks(WtString tickFile, FuncGetTicksCallback cb, FuncLogCallb
 	HisTickBlock* tBlock = (HisTickBlock*)buffer.c_str();
 	if (tBlock->_version == BLOCK_VERSION_CMP)
 	{
-		//压缩版本，要重新检查文件大小
+		//压缩版本,要重新检查文件大小
 		HisTickBlockV2* tBlockV2 = (HisTickBlockV2*)buffer.c_str();
 
 		if (buffer.size() != (sizeof(HisTickBlockV2) + tBlockV2->_size))
@@ -435,7 +435,7 @@ WtUInt32 read_dsb_ticks(WtString tickFile, FuncGetTicksCallback cb, FuncLogCallb
 			cbLogger(StrUtil::printf("正在解压数据...").c_str());
 		std::string buf = WTSCmpHelper::uncompress_data(tBlockV2->_data, (uint32_t)tBlockV2->_size);
 
-		//将原来的buffer只保留一个头部，并将所有tick数据追加到尾部
+		//将原来的buffer只保留一个头部,并将所有tick数据追加到尾部
 		buffer.resize(sizeof(HisTickBlock));
 		buffer.append(buf);
 		tBlockV2 = (HisTickBlockV2*)buffer.c_str();
@@ -456,7 +456,7 @@ WtUInt32 read_dsb_ticks(WtString tickFile, FuncGetTicksCallback cb, FuncLogCallb
 	cb(NULL, true);
 
 	if (cbLogger)
-		cbLogger(StrUtil::printf("%s读取完成，共%u条tick数据", tickFile, tcnt).c_str());
+		cbLogger(StrUtil::printf("%s读取完成,共%u条tick数据", tickFile, tcnt).c_str());
 
 	return (WtUInt32)tcnt;
 }
@@ -477,7 +477,7 @@ WtUInt32 read_dsb_bars(WtString barFile, FuncGetBarsCallback cb, FuncLogCallback
 	HisKlineBlock* tBlock = (HisKlineBlock*)buffer.c_str();
 	if (tBlock->_version == BLOCK_VERSION_CMP)
 	{
-		//压缩版本，要重新检查文件大小
+		//压缩版本,要重新检查文件大小
 		HisKlineBlockV2* kBlockV2 = (HisKlineBlockV2*)buffer.c_str();
 
 		if (buffer.size() != (sizeof(HisKlineBlockV2) + kBlockV2->_size))
@@ -492,7 +492,7 @@ WtUInt32 read_dsb_bars(WtString barFile, FuncGetBarsCallback cb, FuncLogCallback
 			cbLogger(StrUtil::printf("正在解压数据...").c_str());
 		std::string buf = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
 
-		//将原来的buffer只保留一个头部，并将所有tick数据追加到尾部
+		//将原来的buffer只保留一个头部,并将所有tick数据追加到尾部
 		buffer.resize(sizeof(HisTickBlock));
 		buffer.append(buf);
 		kBlockV2 = (HisKlineBlockV2*)buffer.c_str();
@@ -514,7 +514,7 @@ WtUInt32 read_dsb_bars(WtString barFile, FuncGetBarsCallback cb, FuncLogCallback
 	cb(NULL, true);
 
 	if (cbLogger)
-		cbLogger(StrUtil::printf("%s读取完成，共%u条bar", barFile, kcnt).c_str());
+		cbLogger(StrUtil::printf("%s读取完成,共%u条bar", barFile, kcnt).c_str());
 
 	return (WtUInt32)kcnt;
 }

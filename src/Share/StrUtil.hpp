@@ -329,7 +329,7 @@ public:
 		return temp;
 	}
 
-	//地球人都知道，恶心的std::string是没有CString的Format这个函数的，所以我们自己造
+	//地球人都知道,恶心的std::string是没有CString的Format这个函数的,所以我们自己造
 	static std::string printf(const char *pszFormat, ...)
 	{
 		va_list argptr;
@@ -339,7 +339,7 @@ public:
 		return result;
 	}
 
-	//地球人都知道，恶心的std::string是没有CString的Format这个函数的，所以我们自己造
+	//地球人都知道,恶心的std::string是没有CString的Format这个函数的,所以我们自己造
 	static std::string printf2(const char *pszFormat, ...)
 	{
 		va_list argptr;
@@ -349,7 +349,7 @@ public:
 		return result;
 	}
 
-	//地球人都知道，恶心的std::string是没有CString的Format这个函数的，所以我们自己造
+	//地球人都知道,恶心的std::string是没有CString的Format这个函数的,所以我们自己造
 	static std::string printf2(const char *pszFormat,va_list argptr)
 	{
 		int         size   = 1024;
@@ -400,7 +400,7 @@ public:
 		return ret;
 	}
 
-	//地球人都知道，恶心的std::string是没有CString的Format这个函数的，所以我们自己造
+	//地球人都知道,恶心的std::string是没有CString的Format这个函数的,所以我们自己造
 	static std::string printf(const char* pszFormat, va_list argptr)
 	{
 		int size = 1024;

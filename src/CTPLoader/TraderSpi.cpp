@@ -312,7 +312,7 @@ void CTraderSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CTho
 					{
 						if (strcmp(pInstrument->ExchangeID, "SHFE") == 0 || strcmp(pInstrument->ExchangeID, "INE") == 0)
 							cm = CM_CoverToday;
-						//上期所的就是平今，非上期所的就是开平
+						//上期所的就是平今,非上期所的就是开平
 					}
 
 					commInfo.m_coverMode = cm;
@@ -354,7 +354,7 @@ void CTraderSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CTho
 
 void CTraderSpi::DumpToJson()
 {
-	//两个文件，一个contracts.json,一个commodities.json
+	//两个文件,一个contracts.json,一个commodities.json
 	//Json::Value jComms(Json::objectValue);
 	rj::Document jComms(rj::kObjectType);
 	{

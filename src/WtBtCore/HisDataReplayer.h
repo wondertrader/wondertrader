@@ -99,9 +99,9 @@ private:
 		TPT_None,		//不重复
 		TPT_Minute = 4,	//分钟线周期
 		TPT_Daily = 8,	//每个交易日
-		TPT_Weekly,		//每周，遇到节假日的话要顺延
-		TPT_Monthly,	//每月，遇到节假日顺延
-		TPT_Yearly		//每年，遇到节假日顺延
+		TPT_Weekly,		//每周,遇到节假日的话要顺延
+		TPT_Monthly,	//每月,遇到节假日顺延
+		TPT_Yearly		//每年,遇到节假日顺延
 	}TaskPeriodType;
 
 	typedef struct _TaskInfo
@@ -110,11 +110,11 @@ private:
 		char		_name[16];		//任务名
 		char		_trdtpl[16];	//交易日模板
 		char		_session[16];	//交易时间模板
-		uint32_t	_day;			//日期，根据周期变化，每日为0，每周为0~6，对应周日到周六，每月为1~31，每年为0101~1231
-		uint32_t	_time;			//时间，精确到分钟
-		bool		_strict_time;	//是否是严格时间，严格时间即只有时间相等才会执行，不是严格时间，则大于等于触发时间都会执行
+		uint32_t	_day;			//日期,根据周期变化,每日为0,每周为0~6,对应周日到周六,每月为1~31,每年为0101~1231
+		uint32_t	_time;			//时间,精确到分钟
+		bool		_strict_time;	//是否是严格时间,严格时间即只有时间相等才会执行,不是严格时间,则大于等于触发时间都会执行
 
-		uint64_t	_last_exe_time;	//上次执行时间，主要为了防止重复执行
+		uint64_t	_last_exe_time;	//上次执行时间,主要为了防止重复执行
 
 		TaskPeriodType	_period;	//任务周期
 	} TaskInfo;
@@ -239,9 +239,9 @@ private:
 	TaskInfoPtr		_task;
 
 	std::string		_main_key;
-	std::string		_min_period;	//最小K线周期，这个主要用于未订阅品种的信号处理上
+	std::string		_min_period;	//最小K线周期,这个主要用于未订阅品种的信号处理上
 	bool			_tick_enabled;
-	std::map<std::string, WTSTickStruct>	_day_cache;	//每日Tick缓存,当tick回放未开放时，会用到该缓存
+	std::map<std::string, WTSTickStruct>	_day_cache;	//每日Tick缓存,当tick回放未开放时,会用到该缓存
 	std::map<std::string, std::string>		_ticker_keys;
 
 	uint32_t		_cur_date;

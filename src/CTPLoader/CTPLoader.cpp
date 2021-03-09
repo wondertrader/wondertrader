@@ -56,7 +56,7 @@ std::string getBaseFolder()
 
 		char path[1024];
 		int cnt = readlink("/proc/self/exe", path, 1024);
-		//最后一个'/' 后面是可执行程序名，去掉可执行程序的名字，只保留路径
+		//最后一个'/' 后面是可执行程序名,去掉可执行程序的名字,只保留路径
 		for (int i = cnt; i >= 0; --i)
 		{
 			if (path[i] == '/')
@@ -87,7 +87,7 @@ int main()
 	AUTHCODE = ini.readString("ctp", "authcode", "");
 
 	SAVEPATH	= ini.readString("config", "path", "");
-	CLASSMASK = ini.readUInt("config", "mask", 1 | 2 | 4); //1-期货，2-期权，4-股票
+	CLASSMASK = ini.readUInt("config", "mask", 1 | 2 | 4); //1-期货,2-期权,4-股票
 
 	COMM_FILE = ini.readString("config", "commfile", "commodities.json");
 	CONT_FILE = ini.readString("config", "contfile", "contracts.json");
@@ -130,7 +130,7 @@ int main()
 			for (int i = 0; i < cout; i++)
 			{
 				MAP_NAME[ayKeys[i]] = ayVals[i];
-				printf("品种名称映射：%s - %s\r\n", ayKeys[i].c_str(), ayVals[i].c_str());
+				printf("品种名称映射: %s - %s\r\n", ayKeys[i].c_str(), ayVals[i].c_str());
 			}
 
 			ayKeys.clear();
@@ -139,7 +139,7 @@ int main()
 			for (int i = 0; i < cout; i++)
 			{
 				MAP_SESSION[ayKeys[i]] = ayVals[i];
-				printf("交易时间映射：%s - %s\r\n", ayKeys[i].c_str(), ayVals[i].c_str());
+				printf("交易时间映射: %s - %s\r\n", ayKeys[i].c_str(), ayVals[i].c_str());
 			}
 		}
 		

@@ -363,7 +363,7 @@ WTSTickSlice* WtDataReader::readTickSlice(const char* stdCode, uint32_t count, u
 			HisTickBlock* tBlock = (HisTickBlock*)tBlkPair._buffer.c_str();
 			if (tBlock->_version == BLOCK_VERSION_CMP)
 			{
-				//压缩版本，要重新检查文件大小
+				//压缩版本,要重新检查文件大小
 				HisTickBlockV2* tBlockV2 = (HisTickBlockV2*)tBlkPair._buffer.c_str();
 
 				if (tBlkPair._buffer.size() != (sizeof(HisTickBlockV2) + tBlockV2->_size))
@@ -375,7 +375,7 @@ WTSTickSlice* WtDataReader::readTickSlice(const char* stdCode, uint32_t count, u
 				//需要解压
 				std::string buf = WTSCmpHelper::uncompress_data(tBlockV2->_data, (uint32_t)tBlockV2->_size);
 
-				//将原来的buffer只保留一个头部，并将所有tick数据追加到尾部
+				//将原来的buffer只保留一个头部,并将所有tick数据追加到尾部
 				tBlkPair._buffer.resize(sizeof(HisTickBlock));
 				tBlkPair._buffer.append(buf);
 				tBlockV2->_version = BLOCK_VERSION_RAW;
@@ -514,7 +514,7 @@ WTSOrdQueSlice* WtDataReader::readOrdQueSlice(const char* stdCode, uint32_t coun
 			//需要解压
 			std::string buf = WTSCmpHelper::uncompress_data(tBlockV2->_data, (uint32_t)tBlockV2->_size);
 
-			//将原来的buffer只保留一个头部，并将所有tick数据追加到尾部
+			//将原来的buffer只保留一个头部,并将所有tick数据追加到尾部
 			hisBlkPair._buffer.resize(sizeof(HisOrdQueBlock));
 			hisBlkPair._buffer.append(buf);
 			tBlockV2->_version = BLOCK_VERSION_RAW;
@@ -652,7 +652,7 @@ WTSOrdDtlSlice* WtDataReader::readOrdDtlSlice(const char* stdCode, uint32_t coun
 			//需要解压
 			std::string buf = WTSCmpHelper::uncompress_data(tBlockV2->_data, (uint32_t)tBlockV2->_size);
 
-			//将原来的buffer只保留一个头部，并将所有tick数据追加到尾部
+			//将原来的buffer只保留一个头部,并将所有tick数据追加到尾部
 			hisBlkPair._buffer.resize(sizeof(HisOrdDtlBlock));
 			hisBlkPair._buffer.append(buf);
 			tBlockV2->_version = BLOCK_VERSION_RAW;
@@ -790,7 +790,7 @@ WTSTransSlice* WtDataReader::readTransSlice(const char* stdCode, uint32_t count,
 			//需要解压
 			std::string buf = WTSCmpHelper::uncompress_data(tBlockV2->_data, (uint32_t)tBlockV2->_size);
 
-			//将原来的buffer只保留一个头部，并将所有tick数据追加到尾部
+			//将原来的buffer只保留一个头部,并将所有tick数据追加到尾部
 			hisBlkPair._buffer.resize(sizeof(HisTransBlock));
 			hisBlkPair._buffer.append(buf);
 			tBlockV2->_version = BLOCK_VERSION_RAW;
@@ -949,7 +949,7 @@ WTSHisTickData* WtDataReader::readTicks(const char* stdCode, uint32_t count, uin
 			HisTickBlock* tBlock = (HisTickBlock*)tBlkPair._buffer.c_str();
 			if (tBlock->_version == BLOCK_VERSION_CMP)
 			{
-				//压缩版本，要重新检查文件大小
+				//压缩版本,要重新检查文件大小
 				HisTickBlockV2* tBlockV2 = (HisTickBlockV2*)tBlkPair._buffer.c_str();
 
 				if (tBlkPair._buffer.size() != (sizeof(HisTickBlockV2) + tBlockV2->_size))
@@ -961,7 +961,7 @@ WTSHisTickData* WtDataReader::readTicks(const char* stdCode, uint32_t count, uin
 				//需要解压
 				std::string buf = WTSCmpHelper::uncompress_data(tBlockV2->_data, (uint32_t)tBlockV2->_size);
 
-				//将原来的buffer只保留一个头部，并将所有tick数据追加到尾部
+				//将原来的buffer只保留一个头部,并将所有tick数据追加到尾部
 				tBlkPair._buffer.resize(sizeof(HisTickBlock));
 				tBlkPair._buffer.append(buf);
 				tBlockV2 = (HisTickBlockV2*)tBlkPair._buffer.c_str();
@@ -1096,7 +1096,7 @@ bool WtDataReader::cacheHisBarsFromDB(const std::string& key, const char* stdCod
 			MysqlQuery query(*_db_conn);
 			if(!query.exec(sql))
 			{
-				if (_sink) _sink->reader_log(LL_ERROR, "历史K线读取失败：%s", query.errormsg());
+				if (_sink) _sink->reader_log(LL_ERROR, "历史K线读取失败: %s", query.errormsg());
 			}
 			else
 			{
@@ -1192,7 +1192,7 @@ bool WtDataReader::cacheHisBarsFromDB(const std::string& key, const char* stdCod
 			MysqlQuery query(*_db_conn);
 			if (!query.exec(sql))
 			{
-				if (_sink) _sink->reader_log(LL_ERROR, "历史K线读取失败：%s", query.errormsg());
+				if (_sink) _sink->reader_log(LL_ERROR, "历史K线读取失败: %s", query.errormsg());
 			}
 			else
 			{
@@ -1240,7 +1240,7 @@ bool WtDataReader::cacheHisBarsFromDB(const std::string& key, const char* stdCod
 
 		do
 		{
-			//先直接读取复权过的历史数据，路径如/his/day/sse/SH600000Q.dsb
+			//先直接读取复权过的历史数据,路径如/his/day/sse/SH600000Q.dsb
 			char sql[256] = { 0 };
 			if (isDay)
 				sprintf(sql, "SELECT `date`,0,open,high,low,close,settle,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%sQ' ORDER BY `date`;",
@@ -1252,7 +1252,7 @@ bool WtDataReader::cacheHisBarsFromDB(const std::string& key, const char* stdCod
 			MysqlQuery query(*_db_conn);
 			if (!query.exec(sql))
 			{
-				if (_sink) _sink->reader_log(LL_ERROR, "历史K线读取失败：%s", query.errormsg());
+				if (_sink) _sink->reader_log(LL_ERROR, "历史K线读取失败: %s", query.errormsg());
 			}
 			else
 			{
@@ -1320,7 +1320,7 @@ bool WtDataReader::cacheHisBarsFromDB(const std::string& key, const char* stdCod
 			MysqlQuery query(*_db_conn);
 			if (!query.exec(sql))
 			{
-				if (_sink) _sink->reader_log(LL_ERROR, "历史K线读取失败：%s", query.errormsg());
+				if (_sink) _sink->reader_log(LL_ERROR, "历史K线读取失败: %s", query.errormsg());
 			}
 			else
 			{
@@ -1418,7 +1418,7 @@ bool WtDataReader::cacheHisBarsFromDB(const std::string& key, const char* stdCod
 		MysqlQuery query(*_db_conn);
 		if (!query.exec(sql))
 		{
-			if (_sink) _sink->reader_log(LL_ERROR, "历史K线读取失败：%s", query.errormsg());
+			if (_sink) _sink->reader_log(LL_ERROR, "历史K线读取失败: %s", query.errormsg());
 		}
 		else
 		{
@@ -1730,7 +1730,7 @@ bool WtDataReader::cacheHisBarsFromFile(const std::string& key, const char* stdC
 		
 		do
 		{
-			//先直接读取复权过的历史数据，路径如/his/day/sse/SH600000Q.dsb
+			//先直接读取复权过的历史数据,路径如/his/day/sse/SH600000Q.dsb
 			std::stringstream ss;
 			ss << _base_dir << "his/" << pname << "/" << cInfo._exchg << "/" << cInfo._code << "Q.dsb";
 			std::string filename = ss.str();

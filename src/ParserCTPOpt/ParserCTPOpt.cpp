@@ -221,7 +221,7 @@ void ParserCTPOpt::OnFrontConnected()
 {
 	if(m_sink)
 	{
-		m_sink->handleParserLog(LL_INFO, "[ParserCTPOpt]行情服务已连接");
+		m_sink->handleParserLog(LL_INFO, "[ParserCTPOpt] Market data server connected");
 		m_sink->handleEvent(WPE_Connect, 0);
 	}
 
@@ -256,7 +256,7 @@ void ParserCTPOpt::OnFrontDisconnected( int nReason )
 {
 	if(m_sink)
 	{
-		m_sink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserCTPOpt]CTP行情服务连接已断开,原因: %d...", nReason).c_str());
+		m_sink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserCTPOpt] Market data server disconnected: %d...", nReason).c_str());
 		m_sink->handleEvent(WPE_Close, 0);
 	}
 }
@@ -287,13 +287,13 @@ void ParserCTPOpt::OnRtnDepthMarketData( CThostFtdcDepthMarketDataField *pDepthM
 
 	if (actDate == m_uTradingDate && actHour >= 20)
 	{
-		//这样的时间是有问题，因为夜盘时发生日期不可能等于交易日
+		//这样的时间是有问题,因为夜盘时发生日期不可能等于交易日
 		//这就需要手动设置一下
 		uint32_t curDate, curTime;
 		TimeUtils::getDateTime(curDate, curTime);
 		uint32_t curHour = curTime / 10000000;
 
-		//早上启动以后，会收到昨晚12点以前收盘的行情，这个时候可能会有发生日期=交易日的情况出现
+		//早上启动以后,会收到昨晚12点以前收盘的行情,这个时候可能会有发生日期=交易日的情况出现
 		//这笔数据直接丢掉
 		if (curHour >= 3 && curHour < 9)
 			return;
@@ -392,20 +392,18 @@ void ParserCTPOpt::OnRspSubMarketData( CThostFtdcSpecificInstrumentField *pSpeci
 {
 	if(!IsErrorRspInfo(pRspInfo))
 	{
-		//if(m_sink)
-		//	m_sink->handleParserLog(LL_INFO, StrUtil::printf("[ParserCTPOpt]实时行情订阅成功,合约代码:%s", pSpecificInstrument->InstrumentID).c_str());
+
 	}
 	else
 	{
-		//if(m_sink)
-		//	m_sink->handleParserLog(LL_INFO, StrUtil::printf("[ParserCTPOpt]实时行情订阅失败,合约代码:%s", pSpecificInstrument->InstrumentID).c_str());
+
 	}
 }
 
 void ParserCTPOpt::OnHeartBeatWarning( int nTimeLapse )
 {
-	if(m_sink)
-		m_sink->handleParserLog(LL_INFO, StrUtil::printf("[ParserCTPOpt]心跳包, 时长: %d...", nTimeLapse).c_str());
+	if (m_sink)
+		m_sink->handleParserLog(LL_INFO, StrUtil::printf("[ParserCTPOpt] Heartbeating, elapse: %d...", nTimeLapse).c_str());
 }
 
 void ParserCTPOpt::ReqUserLogin()
@@ -424,7 +422,7 @@ void ParserCTPOpt::ReqUserLogin()
 	if(iResult != 0)
 	{
 		if(m_sink)
-			m_sink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserCTPOpt]CTP 登录请求发送失败, 错误码:%d", iResult).c_str());
+			m_sink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserCTPOpt] Sending login request failed: %d", iResult).c_str());
 	}
 }
 
@@ -450,15 +448,15 @@ void ParserCTPOpt::SubscribeMarketData()
 	if(m_pUserAPI && nCount > 0)
 	{
 		int iResult = m_pUserAPI->SubscribeMarketData(subscribe, nCount);
-		if(iResult != 0)
+		if (iResult != 0)
 		{
-			if(m_sink)
-				m_sink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserCTPOpt]CTP 行情订阅请求发送失败, 错误码:%d", iResult).c_str());
+			if (m_sink)
+				m_sink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserCTPOpt] Sending md subscribe request failed: %d", iResult).c_str());
 		}
 		else
 		{
-			if(m_sink)
-				m_sink->handleParserLog(LL_INFO, StrUtil::printf("[ParserCTPOpt]一共订阅 %d 个合约行情", nCount).c_str());
+			if (m_sink)
+				m_sink->handleParserLog(LL_INFO, StrUtil::printf("[ParserCTPOpt] Market data of %u contracts subscribed in total", nCount).c_str());
 		}
 	}
 	codeFilter.clear();
@@ -493,15 +491,15 @@ void ParserCTPOpt::subscribe(const CodeSet &vecSymbols)
 		if(m_pUserAPI && nCount > 0)
 		{
 			int iResult = m_pUserAPI->SubscribeMarketData(subscribe, nCount);
-			if(iResult != 0)
+			if (iResult != 0)
 			{
-				if(m_sink)
-					m_sink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserCTPOpt]CTP 行情订阅请求发送失败, 错误码:%d", iResult).c_str());
+				if (m_sink)
+					m_sink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserCTPOpt] Sending md subscribe request failed: %d", iResult).c_str());
 			}
 			else
 			{
-				if(m_sink)
-					m_sink->handleParserLog(LL_INFO, StrUtil::printf("[ParserCTPOpt]一共订阅 %d 个合约行情", nCount).c_str());
+				if (m_sink)
+					m_sink->handleParserLog(LL_INFO, StrUtil::printf("[ParserCTPOpt] Market data of %u contracts subscribed in total", nCount).c_str());
 			}
 		}
 	}

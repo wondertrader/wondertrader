@@ -107,7 +107,7 @@ WTSBarStruct* WTSDataFactory::updateMin1Data(WTSSessionInfo* sInfo, WTSKlineData
 	bool bNewBar = false;
 	if (lastBar == NULL || lastBar->date != uDate || lastBar->time != uBarTime)
 	{
-		//只要日期和时间都不符，则认为已经是一条新的bar了
+		//只要日期和时间都不符,则认为已经是一条新的bar了
 		lastBar = new WTSBarStruct();
 		bNewBar = true;
 
@@ -191,7 +191,7 @@ WTSBarStruct* WTSDataFactory::updateMin1Data(WTSSessionInfo* sInfo, WTSKlineData
 	uint32_t lastDate = klineData->date(-1);
 	if (lastTime == INVALID_UINT32 || uBarTime > lastTime || tick->tradingdate() > lastDate)
 	{
-		//如果时间不一致，则新增一条K线
+		//如果时间不一致,则新增一条K线
 		WTSBarStruct *day = new WTSBarStruct;
 		day->date = tick->tradingdate();
 		day->time = uBarTime;
@@ -264,7 +264,7 @@ WTSBarStruct* WTSDataFactory::updateMin5Data(WTSSessionInfo* sInfo, WTSKlineData
 	if (lastBar == NULL || lastBar->date != uDate || lastBar->time != uBarTime)
 	{
 
-		//只要日期和时间都不符，则认为已经是一条新的bar了
+		//只要日期和时间都不符,则认为已经是一条新的bar了
 		lastBar = new WTSBarStruct();
 		bNewBar = true;
 
@@ -329,7 +329,7 @@ WTSBarStruct* WTSDataFactory::updateMin5Data(WTSSessionInfo* sInfo, WTSKlineData
 	uint32_t lastTime = klineData->time(klineData->size()-1);
 	if(lastTime == INVALID_UINT32 || uBarTime != lastTime)
 	{
-		//如果时间不一致，则新增一条K线
+		//如果时间不一致,则新增一条K线
 		WTSBarStruct *day = new WTSBarStruct;
 		day->date = tick->tradingdate();
 		day->time = uBarTime;
@@ -366,7 +366,7 @@ WTSBarStruct* WTSDataFactory::updateDayData(WTSSessionInfo* sInfo, WTSKlineData*
 
 	if(lastDate == INVALID_UINT32 || curDate != lastDate)
 	{
-		//如果时间不一致，则新增一条K线
+		//如果时间不一致,则新增一条K线
 		WTSBarStruct *day = new WTSBarStruct;
 		day->date = curDate;
 		day->time = 0;
@@ -465,7 +465,7 @@ WTSKlineData* WTSDataFactory::extractKlineData(WTSKlineSlice* baseKline, WTSKlin
 	if(baseKline == NULL || baseKline->size() == 0)
 		return NULL;
 
-	//一倍，则不需要转换
+	//一倍,则不需要转换
 	if(times <= 1 || period == KP_Tick)
 	{
 		return NULL;
@@ -536,7 +536,7 @@ WTSKlineData* WTSDataFactory::extractMin1Data(WTSKlineSlice* baseKline, uint32_t
 			//	lastBar->time = sInfo->originalTime(lastBar->time);
 			//}
 
-			//只要日期和时间都不符，则认为已经是一条新的bar了
+			//只要日期和时间都不符,则认为已经是一条新的bar了
 			lastBar = new WTSBarStruct();
 			bNewBar = true;
 
@@ -628,7 +628,7 @@ WTSKlineData* WTSDataFactory::extractMin5Data(WTSKlineSlice* baseKline, uint32_t
 			//	lastBar->time = sInfo->originalTime(lastBar->time);
 			//}
 
-			//只要日期和时间都不符，则认为已经是一条新的bar了
+			//只要日期和时间都不符,则认为已经是一条新的bar了
 			lastBar = new WTSBarStruct();
 			bNewBar = true;
 
@@ -702,7 +702,7 @@ WTSKlineData* WTSDataFactory::extractDayData(WTSKlineSlice* baseKline, uint32_t 
 		bool bNewBar = false;
 		if(lastBar == NULL || count == steplen)
 		{
-			//只要日期和时间都不符，则认为已经是一条新的bar了
+			//只要日期和时间都不符,则认为已经是一条新的bar了
 			lastBar = new WTSBarStruct();
 			bNewBar = true;
 

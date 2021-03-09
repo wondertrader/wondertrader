@@ -163,12 +163,12 @@ void ExecMocker::handle_schedule(uint32_t uDate, uint32_t uTime)
 	if (_position <= 0)
 	{
 		_exec_unit->set_position(_code.c_str(), _volunit);
-		WTSLogger::info("Target position updated @%u.%u£º%d", uDate, uTime, _volunit);
+		WTSLogger::info("Target position updated @%u.%u: %d", uDate, uTime, _volunit);
 	}
 	else
 	{
 		_exec_unit->set_position(_code.c_str(), -_volunit);
-		WTSLogger::info("Target position updated @%u.%u£º%d", uDate, uTime, -_volunit);
+		WTSLogger::info("Target position updated @%u.%u: %d", uDate, uTime, -_volunit);
 	}
 	_sig_cnt++;
 }

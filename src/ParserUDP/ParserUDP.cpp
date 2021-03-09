@@ -194,7 +194,7 @@ void ParserUDP::handle_write(const boost::system::error_code& e)
 	if (e)
 	{
 		if (_sink)
-			_sink->handleParserLog(LL_ERROR, "[ParserUDP]发送出错:%s(%d)", e.message().c_str(), e.value());
+			_sink->handleParserLog(LL_ERROR, "[ParserUDP] Error occured while receiving: %s(%d)", e.message().c_str(), e.value());
 	}
 	else
 	{
@@ -276,7 +276,7 @@ void ParserUDP::handle_read(const boost::system::error_code& e, std::size_t byte
 			_sink->handleEvent(WPE_Close, 0);
 
 		if(_sink)
-			_sink->handleParserLog(LL_ERROR, "[ParserUDP]接收出错:%s(%d)", e.message().c_str(), e.value());
+			_sink->handleParserLog(LL_ERROR, "[ParserUDP] Error occured while receiving: %s(%d)", e.message().c_str(), e.value());
 
 		if (!_stopped && !_connecting)
 		{
@@ -328,7 +328,7 @@ void ParserUDP::extract_buffer(uint32_t length, bool isBroad /* = true */)
 		static uint32_t recv_cnt = 0;
 		recv_cnt++;
 		if (recv_cnt % 10000 == 0 && _sink)
-			_sink->handleParserLog(LL_INFO, "[ParserUDP]累计收到%u条Tick数据", recv_cnt);
+			_sink->handleParserLog(LL_INFO, "[ParserUDP] %s ticks received in total", recv_cnt);
 	}
 	else if (header->_type == UDP_MSG_PUSHORDDTL)
 	{
@@ -342,7 +342,7 @@ void ParserUDP::extract_buffer(uint32_t length, bool isBroad /* = true */)
 		static uint32_t recv_cnt = 0;
 		recv_cnt++;
 		if (recv_cnt % 10000 == 0 && _sink)
-			_sink->handleParserLog(LL_INFO, "[ParserUDP]累计收到%u条OrderDetail数据", recv_cnt);
+			_sink->handleParserLog(LL_INFO, "[ParserUDP] %s order details received in total", recv_cnt);
 	}
 	else if (header->_type == UDP_MSG_PUSHORDQUE)
 	{
@@ -356,7 +356,7 @@ void ParserUDP::extract_buffer(uint32_t length, bool isBroad /* = true */)
 		static uint32_t recv_cnt = 0;
 		recv_cnt++;
 		if (recv_cnt % 10000 == 0 && _sink)
-			_sink->handleParserLog(LL_INFO, "[ParserUDP]累计收到%u条OrderQueue数据", recv_cnt);
+			_sink->handleParserLog(LL_INFO, "[ParserUDP] %s order queues received in total", recv_cnt);
 	}
 	else if (header->_type == UDP_MSG_PUSHTRANS)
 	{
@@ -370,7 +370,7 @@ void ParserUDP::extract_buffer(uint32_t length, bool isBroad /* = true */)
 		static uint32_t recv_cnt = 0;
 		recv_cnt++;
 		if (recv_cnt % 10000 == 0 && _sink)
-			_sink->handleParserLog(LL_INFO, "[ParserUDP]累计收到%u条Transaction数据", recv_cnt);
+			_sink->handleParserLog(LL_INFO, "[ParserUDP] %s transactions received in total", recv_cnt);
 	}
 }
 

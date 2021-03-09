@@ -130,7 +130,7 @@ bool SelMocker::initSelFactory(WTSVariant* cfg)
 		_strategy = _factory._fact->createStrategy(cfgStra->getCString("name"), cfgStra->getCString("id"));
 		if (_strategy)
 		{
-			WTSLogger::info("Strategy %s.%s created，strategy ID：%s", _factory._fact->getName(), _strategy->getName(), _strategy->id());
+			WTSLogger::info("Strategy %s.%s created,strategy ID: %s", _factory._fact->getName(), _strategy->getName(), _strategy->id());
 		}
 		_strategy->init(cfgStra->get("params"));
 		_name = _strategy->id();
@@ -171,7 +171,7 @@ void SelMocker::handle_session_end(uint32_t uCurDate)
 
 void SelMocker::handle_replay_done()
 {
-	WTSLogger::log_dyn_raw("strategy", _name.c_str(), LL_INFO, fmt::format("Strategy has been scheduled for {} times，totally taking {} microsecs，average of {} microsecs",
+	WTSLogger::log_dyn_raw("strategy", _name.c_str(), LL_INFO, fmt::format("Strategy has been scheduled for {} times,totally taking {} microsecs,average of {} microsecs",
 		_emit_times, _total_calc_time, _total_calc_time / _emit_times).c_str());
 
 	dump_outputs();
@@ -303,7 +303,7 @@ void SelMocker::on_strategy_schedule(uint32_t curDate, uint32_t curTime)
 
 bool SelMocker::on_schedule(uint32_t curDate, uint32_t curTime, uint32_t fireTime)
 {
-	_is_in_schedule = true;//开始调度，修改标记
+	_is_in_schedule = true;//开始调度,修改标记
 
 	TimeUtils::Ticker ticker;
 	on_strategy_schedule(curDate, curTime);
@@ -315,7 +315,7 @@ bool SelMocker::on_schedule(uint32_t curDate, uint32_t curTime, uint32_t fireTim
 		const char* code = v.first.c_str();
 		if(_sig_map.find(code) == _sig_map.end() && !decimal::eq(pInfo._volume, 0.0))
 		{
-			//新的信号中没有该持仓，则要清空
+			//新的信号中没有该持仓,则要清空
 			to_clear.insert(code);
 		}
 	}
@@ -328,7 +328,7 @@ bool SelMocker::on_schedule(uint32_t curDate, uint32_t curTime, uint32_t fireTim
 	_emit_times++;
 	_total_calc_time += ticker.micro_seconds();
 
-	_is_in_schedule = false;//调度结束，修改标记
+	_is_in_schedule = false;//调度结束,修改标记
 	return true;
 }
 
@@ -432,9 +432,9 @@ void SelMocker::do_set_position(const char* stdCode, double qty, double price /*
 	//成交价
 	double trdPx = curPx;
 
-	if (decimal::gt(pInfo._volume*qty, 0))//当前持仓和目标仓位方向一致，增加一条明细，增加数量即可
+	if (decimal::gt(pInfo._volume*qty, 0))//当前持仓和目标仓位方向一致,增加一条明细,增加数量即可
 	{
-		//目标仓位绝对值大于当前仓位绝对值，则是继续开仓，增加一条记录即可
+		//目标仓位绝对值大于当前仓位绝对值,则是继续开仓,增加一条记录即可
 		if (decimal::gt(abs(qty), abs(pInfo._volume)))
 		{
 			double diff = abs(qty - pInfo._volume);
@@ -462,12 +462,12 @@ void SelMocker::do_set_position(const char* stdCode, double qty, double price /*
 		}
 		else
 		{
-			//目标仓位绝对值小于当前仓位绝对值，则要平仓
+			//目标仓位绝对值小于当前仓位绝对值,则要平仓
 			double left = abs(qty - pInfo._volume);
 
 			if (_slippage != 0)
 			{
-				//平仓的话，方向是反的
+				//平仓的话,方向是反的
 				bool isBuy = !decimal::gt(qty, 0.0);
 				trdPx += _slippage * commInfo->getPriceTick()*(isBuy ? 1 : -1);
 			}
@@ -518,7 +518,7 @@ void SelMocker::do_set_position(const char* stdCode, double qty, double price /*
 		}
 	}
 	else
-	{//持仓方向和目标仓位方向不一致，需要平仓
+	{//持仓方向和目标仓位方向不一致,需要平仓
 		double left = abs(pInfo._volume) + abs(qty);
 
 		if (_slippage != 0)
@@ -570,7 +570,7 @@ void SelMocker::do_set_position(const char* stdCode, double qty, double price /*
 			count--;
 		}
 
-		//最后，如果还有剩余的，则需要反手了
+		//最后,如果还有剩余的,则需要反手了
 		if (left > 0)
 		{
 			left = left * qty / abs(qty);

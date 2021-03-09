@@ -604,7 +604,7 @@ void sel_set_position(CtxHandler cHandle, const char* stdCode, double qty, const
 	if (ctx == NULL)
 		return;
 
-	//多因子引擎，限价和止价都无效
+	//多因子引擎,限价和止价都无效
 	ctx->stra_set_position(stdCode, qty, userTag);
 }
 

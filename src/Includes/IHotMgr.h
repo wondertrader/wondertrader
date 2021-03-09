@@ -43,7 +43,7 @@ public:
 	virtual const char* getRawCode(const char* exchg, const char* pid, uint32_t dt)	= 0;
 
 	/*
-	 *	获取主力对一个的上一个分月，即上一个主力合约的分月代码
+	 *	获取主力对一个的上一个分月,即上一个主力合约的分月代码
 	 *	@pid	品种代码
 	 *	@dt		日期(交易日)
 	 */
@@ -64,7 +64,7 @@ public:
 	virtual bool		isHot(const char* exchg, const char* rawCode, uint32_t dt) = 0;
 
 	/*
-	 *	分割主力段，将主力合约在某个时段的分月合约全部提出取来
+	 *	分割主力段,将主力合约在某个时段的分月合约全部提出取来
 	 */
 	virtual bool		splitHotSecions(const char* exchg, const char* hotCode, uint32_t sDt, uint32_t eDt, HotSections& sections) = 0;
 };

@@ -216,7 +216,7 @@ void WtSelRtTicker::run()
 				}
 			}
 			else
-			{//如果不在交易时间，则每隔10毫秒检查一次，如果分钟发生变化则触发
+			{//如果不在交易时间,则每隔10毫秒检查一次,如果分钟发生变化则触发
 				std::this_thread::sleep_for(std::chrono::milliseconds(10));
 				uint32_t curTime = TimeUtils::getCurMin();
 				if (_time != UINT_MAX && curTime != _time)

@@ -72,7 +72,7 @@ void WtHftEngine::run(bool bAsync /*= false*/)
 	WTSVariant* cfgProd = _cfg->get("product");
 	_tm_ticker->init(_data_mgr->reader(), cfgProd->getCString("session"));
 
-	//启动之前，先把运行中的策略落地
+	//启动之前,先把运行中的策略落地
 	{
 		rj::Document root(rj::kObjectType);
 		rj::Document::AllocatorType &allocator = root.GetAllocator();

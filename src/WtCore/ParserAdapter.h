@@ -52,7 +52,7 @@ public:
 	/*
 	 *	处理实时行情
 	 *	@quote		实时行情
-	 *	@bNeedSlice	是否需要切片，如果是从外部接入的快照行情数据，则需要切片，如果是内部广播的就不需要切片
+	 *	@bNeedSlice	是否需要切片,如果是从外部接入的快照行情数据,则需要切片,如果是内部广播的就不需要切片
 	 */
 	virtual void handleQuote(WTSTickData *quote, bool bNeedSlice) override;
 

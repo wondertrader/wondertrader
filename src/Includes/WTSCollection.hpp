@@ -58,7 +58,7 @@ public:
 	uint32_t size() const{ return (uint32_t)_vec.size(); }
 
 	/*
-	 *	清空数组，并重新分配空间
+	 *	清空数组,并重新分配空间
 	 *	调用该函数会预先分配长度
 	 *	预先分配好的数据都是NULL
 	 */
@@ -72,9 +72,9 @@ public:
 
 	/*
 	 *	读取数组指定位置的数据
-	 *	对比grab接口，at接口只取得数据
+	 *	对比grab接口,at接口只取得数据
 	 *	不增加数据的引用计数
-	 *	grab接口读取数据以后，增加引用计数
+	 *	grab接口读取数据以后,增加引用计数
 	 */
 	WTSObject* at(uint32_t idx)
 	{
@@ -154,7 +154,7 @@ public:
 
 	/*
 	 *	设置指定位置的数据
-	 *	如果该位置已有数据，则释放掉
+	 *	如果该位置已有数据,则释放掉
 	 *	新数据引用计数增加
 	 */
 	void set(uint32_t idx, WTSObject* obj, bool bAutoRetain = true)
@@ -201,8 +201,8 @@ public:
 	}
 
 	/*
-	 *	释放数组对象，用法如WTSObject
-	 *	不同的是，如果引用计数为1时
+	 *	释放数组对象,用法如WTSObject
+	 *	不同的是,如果引用计数为1时
 	 *	释放所有数据
 	 */
 	virtual void release()
@@ -365,8 +365,8 @@ public:
 	}
 
 	/*
-	 *	新增一个数据，并增加数据引用计数
-	 *	如果key存在，则将原有数据释放
+	 *	新增一个数据,并增加数据引用计数
+	 *	如果key存在,则将原有数据释放
 	 */
 	void add(T _key, WTSObject* obj, bool bAutoRetain = true)
 	{
@@ -387,7 +387,7 @@ public:
 
 	/*
 	 *	根据key删除一个数据
-	 *	如果key存在，则对应数据引用计数-1
+	 *	如果key存在,则对应数据引用计数-1
 	 */
 	void remove(T _key)
 	{
@@ -486,7 +486,7 @@ public:
 
 	/*
 	 *	释放容器对象
-	 *	如果容器引用计数为1，则清空所有数据
+	 *	如果容器引用计数为1,则清空所有数据
 	 */
 	virtual void release()
 	{
@@ -579,8 +579,8 @@ public:
 	}
 
 	/*
-	 *	新增一个数据，并增加数据引用计数
-	 *	如果key存在，则将原有数据释放
+	 *	新增一个数据,并增加数据引用计数
+	 *	如果key存在,则将原有数据释放
 	 */
 	void add(const T &_key, WTSObject* obj, bool bAutoRetain = true)
 	{
@@ -601,7 +601,7 @@ public:
 
 	/*
 	 *	根据key删除一个数据
-	 *	如果key存在，则对应数据引用计数-1
+	 *	如果key存在,则对应数据引用计数-1
 	 */
 	void remove(const T &_key)
 	{
@@ -665,7 +665,7 @@ public:
 
 	/*
 	 *	释放容器对象
-	 *	如果容器引用计数为1，则清空所有数据
+	 *	如果容器引用计数为1,则清空所有数据
 	 */
 	virtual void release()
 	{

@@ -151,7 +151,7 @@ bool CtaMocker::initCtaFactory(WTSVariant* cfg)
 		_strategy = _factory._fact->createStrategy(cfgStra->getCString("name"), cfgStra->getCString("id"));
 		if(_strategy)
 		{
-			WTSLogger::info("Strategy %s.%s is created，strategy ID：%s", _factory._fact->getName(), _strategy->getName(), _strategy->id());
+			WTSLogger::info("Strategy %s.%s is created,strategy ID: %s", _factory._fact->getName(), _strategy->getName(), _strategy->id());
 		}
 		_strategy->init(cfgStra->get("params"));
 		_name = _strategy->id();
@@ -189,7 +189,7 @@ void CtaMocker::handle_session_end(uint32_t curTDate)
 
 void CtaMocker::handle_replay_done()
 {
-	WTSLogger::log_dyn_raw("strategy", _name.c_str(), LL_INFO, fmt::format("Strategy has been scheduled for {} times，totally taking {} microsecs，average of {} microsecs",
+	WTSLogger::log_dyn_raw("strategy", _name.c_str(), LL_INFO, fmt::format("Strategy has been scheduled for {} times,totally taking {} microsecs,average of {} microsecs",
 		_emit_times, _total_calc_time, _total_calc_time / _emit_times).c_str());
 
 	dump_outputs();
@@ -337,7 +337,7 @@ void CtaMocker::on_tick(const char* stdCode, WTSTickData* newTick, bool bEmitStr
 				{
 				case COND_ACTION_OL:
 				{
-					double price = _replayer->is_tick_enabled() ? newTick->price() : entrust._target;	//如果开启了tick回测，则用tick数据的价格，如果没有开启，则只能用条件单价格
+					double price = _replayer->is_tick_enabled() ? newTick->price() : entrust._target;	//如果开启了tick回测,则用tick数据的价格,如果没有开启,则只能用条件单价格
 					double curQty = stra_get_position(stdCode);
 					if(decimal::lt(curQty, 0))
 						append_signal(stdCode, entrust._qty, entrust._usertag, price);
@@ -347,7 +347,7 @@ void CtaMocker::on_tick(const char* stdCode, WTSTickData* newTick, bool bEmitStr
 				break;
 				case COND_ACTION_CL:
 				{
-					double price = _replayer->is_tick_enabled() ? newTick->price() : entrust._target;	//如果开启了tick回测，则用tick数据的价格，如果没有开启，则只能用条件单价格
+					double price = _replayer->is_tick_enabled() ? newTick->price() : entrust._target;	//如果开启了tick回测,则用tick数据的价格,如果没有开启,则只能用条件单价格
 					double curQty = stra_get_position(stdCode);
 					if(decimal::le(curPrice, 0))
 						return;
@@ -358,7 +358,7 @@ void CtaMocker::on_tick(const char* stdCode, WTSTickData* newTick, bool bEmitStr
 				break;
 				case COND_ACTION_OS:
 				{
-					double price = _replayer->is_tick_enabled() ? newTick->price() : entrust._target;	//如果开启了tick回测，则用tick数据的价格，如果没有开启，则只能用条件单价格
+					double price = _replayer->is_tick_enabled() ? newTick->price() : entrust._target;	//如果开启了tick回测,则用tick数据的价格,如果没有开启,则只能用条件单价格
 					double curQty = stra_get_position(stdCode);
 					if(decimal::gt(curQty, 0))
 						append_signal(stdCode, -entrust._qty, entrust._usertag, price);
@@ -368,7 +368,7 @@ void CtaMocker::on_tick(const char* stdCode, WTSTickData* newTick, bool bEmitStr
 				break;
 				case COND_ACTION_CS:
 				{
-					double price = _replayer->is_tick_enabled() ? newTick->price() : entrust._target;	//如果开启了tick回测，则用tick数据的价格，如果没有开启，则只能用条件单价格
+					double price = _replayer->is_tick_enabled() ? newTick->price() : entrust._target;	//如果开启了tick回测,则用tick数据的价格,如果没有开启,则只能用条件单价格
 					double curQty = stra_get_position(stdCode);
 					if(decimal::ge(curQty, 0))
 						return;
@@ -379,13 +379,13 @@ void CtaMocker::on_tick(const char* stdCode, WTSTickData* newTick, bool bEmitStr
 				break;
 				case COND_ACTION_SP:
 				{
-					double price = _replayer->is_tick_enabled() ? newTick->price() : entrust._target;	//如果开启了tick回测，则用tick数据的价格，如果没有开启，则只能用条件单价格
+					double price = _replayer->is_tick_enabled() ? newTick->price() : entrust._target;	//如果开启了tick回测,则用tick数据的价格,如果没有开启,则只能用条件单价格
 					append_signal(stdCode, entrust._qty, entrust._usertag, price);
 				}
 				default: break;
 				}
 
-				//同一个bar设置针对同一个合约的条件单，只可能触发一条
+				//同一个bar设置针对同一个合约的条件单,只可能触发一条
 				//所以这里直接清理掉即可
 				_condtions.erase(it);
 				break;
@@ -418,7 +418,7 @@ void CtaMocker::on_mainkline_updated(uint32_t curDate, uint32_t curTime)
 
 bool CtaMocker::on_schedule(uint32_t curDate, uint32_t curTime)
 {
-	_is_in_schedule = true;//开始调度，修改标记
+	_is_in_schedule = true;//开始调度,修改标记
 
 	_schedule_times++;
 
@@ -465,13 +465,13 @@ bool CtaMocker::on_schedule(uint32_t curDate, uint32_t curTime)
 			}
 			else
 			{
-				WTSLogger::log_dyn("strategy", _name.c_str(), LL_INFO, "%u is not trading time，strategy will not be scheduled", curTime);
+				WTSLogger::log_dyn("strategy", _name.c_str(), LL_INFO, "%u is not trading time,strategy will not be scheduled", curTime);
 			}
 			break;
 		}
 	}
 
-	_is_in_schedule = false;//调度结束，修改标记
+	_is_in_schedule = false;//调度结束,修改标记
 	return emmited;
 }
 
@@ -535,7 +535,7 @@ CondList& CtaMocker::get_cond_entrusts(const char* stdCode)
 void CtaMocker::stra_enter_long(const char* stdCode, double qty, const char* userTag /* = "" */, double limitprice, double stopprice)
 {
 	_replayer->sub_tick(_context_id, stdCode);
-	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式，则直接触发
+	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式,则直接触发
 	{
 		double curQty = stra_get_position(stdCode);
 		//if (curQty < 0)
@@ -576,7 +576,7 @@ void CtaMocker::stra_enter_long(const char* stdCode, double qty, const char* use
 void CtaMocker::stra_enter_short(const char* stdCode, double qty, const char* userTag /* = "" */, double limitprice, double stopprice)
 {
 	_replayer->sub_tick(_context_id, stdCode);
-	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式，则直接触发
+	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式,则直接触发
 	{
 		double curQty = stra_get_position(stdCode);
 		//if (curQty > 0)
@@ -617,7 +617,7 @@ void CtaMocker::stra_enter_short(const char* stdCode, double qty, const char* us
 
 void CtaMocker::stra_exit_long(const char* stdCode, double qty, const char* userTag /* = "" */, double limitprice, double stopprice)
 {
-	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式，则直接触发
+	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式,则直接触发
 	{
 		double curQty = stra_get_position(stdCode);
 		//if (curQty <= 0)
@@ -657,7 +657,7 @@ void CtaMocker::stra_exit_long(const char* stdCode, double qty, const char* user
 
 void CtaMocker::stra_exit_short(const char* stdCode, double qty, const char* userTag /* = "" */, double limitprice, double stopprice)
 {
-	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式，则直接触发
+	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式,则直接触发
 	{
 		double curQty = stra_get_position(stdCode);
 		//if (curQty >= 0)
@@ -706,7 +706,7 @@ double CtaMocker::stra_get_price(const char* stdCode)
 void CtaMocker::stra_set_position(const char* stdCode, double qty, const char* userTag /* = "" */, double limitprice /* = 0.0 */, double stopprice /* = 0.0 */)
 {
 	_replayer->sub_tick(_context_id, stdCode);
-	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式，则直接触发
+	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式,则直接触发
 	{
 		//do_set_position(stdCode, qty, userTag, !_is_in_schedule);
 		append_signal(stdCode, qty, userTag);
@@ -806,7 +806,7 @@ void CtaMocker::do_set_position(const char* stdCode, double qty, double price /*
 		log_trade(stdCode, dInfo._long, true, curTm, trdPx, abs(diff), userTag, fee, _schedule_times);
 	}
 	else
-	{//持仓方向和仓位变化方向不一致，需要平仓
+	{//持仓方向和仓位变化方向不一致,需要平仓
 		double left = abs(diff);
 
 		if (_slippage != 0)
@@ -862,7 +862,7 @@ void CtaMocker::do_set_position(const char* stdCode, double qty, double price /*
 			count--;
 		}
 
-		//最后，如果还有剩余的，则需要反手了
+		//最后,如果还有剩余的,则需要反手了
 		if (left > 0)
 		{
 			left = left * qty / abs(qty);

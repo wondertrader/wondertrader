@@ -97,7 +97,7 @@ bool ParserAdapter::initAdapter(WTSParams* params, FuncCreateParser funcCreate, 
 				ExchgFilter::iterator it = m_codeFilter.begin();
 				for (; it != m_codeFilter.end(); it++)
 				{
-					//全代码，形式如SSE.600000，期货代码为CFFEX.IF2005
+					//全代码,形式如SSE.600000,期货代码为CFFEX.IF2005
 					std::string code, exchg;
 					auto ay = StrUtil::split((*it).c_str(), ".");
 					if (ay.size() == 1)
@@ -148,12 +148,14 @@ bool ParserAdapter::initAdapter(WTSParams* params, FuncCreateParser funcCreate, 
 		}
 		else
 		{
-			WTSLogger::info("行情模块初始化失败,模块接口初始化失败...");
+			//WTSLogger::info("行情模块初始化失败,模块接口初始化失败...");
+			WTSLogger::error("Initializing of market data parser failed...");
 		}
 	}
 	else
 	{
-		WTSLogger::info("行情模块初始化失败,获取模块接口失败...");
+		//WTSLogger::info("行情模块初始化失败,获取模块接口失败...");
+		WTSLogger::error("Creation of market data parser failed...");
 	}
 
 	return true;

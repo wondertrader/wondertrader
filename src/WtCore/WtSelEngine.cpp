@@ -166,7 +166,7 @@ void WtSelEngine::on_minute_end(uint32_t curDate, uint32_t curTime)
 		case TPT_Minute:
 			{
 				uint32_t minutes = sInfo->timeToMinutes(curTime);	//先将时间转换成分钟数
-				if(minutes != 0 && (minutes%tInfo->_time == 0))		//如果分钟数能被整除，且不为0，则可以触发
+				if(minutes != 0 && (minutes%tInfo->_time == 0))		//如果分钟数能被整除,且不为0,则可以触发
 				{
 					bIgnore = false;
 				}
@@ -179,15 +179,15 @@ void WtSelEngine::on_minute_end(uint32_t curDate, uint32_t curTime)
 				bIgnore = false;
 			else if (bHasHoliday)
 			{
-				//上一个交易日在上个月，且当前日期大于触发日期
-				//说明这个月的开始日期在节假日内，顺延到今天
+				//上一个交易日在上个月,且当前日期大于触发日期
+				//说明这个月的开始日期在节假日内,顺延到今天
 				if ((preTDate % 10000 / 100 < _cur_date % 10000 / 100) && _cur_date % 1000000 > tInfo->_day)
 				{
 					bIgnore = false;
 				}
 				else if (preTDate % 1000000 < tInfo->_day && _cur_date % 1000000 > tInfo->_day)
 				{
-					//上一个交易日在同一个月，且小于触发日期，但是今天大于触发日期，说明正确触发日期到节假日内，顺延到今天
+					//上一个交易日在同一个月,且小于触发日期,但是今天大于触发日期,说明正确触发日期到节假日内,顺延到今天
 					bIgnore = false;
 				}
 			}
@@ -205,7 +205,7 @@ void WtSelEngine::on_minute_end(uint32_t curDate, uint32_t curTime)
 				}
 				else if (preWD > weekDay && weekDay > tInfo->_day)
 				{
-					//上一个交易日的星期大于今天的星期，说明换了一周了
+					//上一个交易日的星期大于今天的星期,说明换了一周了
 					bIgnore = false;
 				}
 				else if (preWD < tInfo->_day && weekDay > tInfo->_day)
@@ -240,7 +240,7 @@ void WtSelEngine::run(bool bAsync /*= false*/)
 	_tm_ticker = new WtSelRtTicker(this);
 	_tm_ticker->init(_data_mgr->reader(), cfgProd->getCString("session"));
 
-	//启动之前，先把运行中的策略落地
+	//启动之前,先把运行中的策略落地
 	{
 		rj::Document root(rj::kObjectType);
 		rj::Document::AllocatorType &allocator = root.GetAllocator();
@@ -293,7 +293,7 @@ void WtSelEngine::addContext(SelContextPtr ctx, uint32_t date, uint32_t time, Ta
 	auto it = _tasks.find(ctx->id());
 	if(it != _tasks.end())
 	{
-		WTSLogger::error("任务注册失败：任务名%u已被注册", ctx->id());
+		WTSLogger::error("任务注册失败: 任务名%u已被注册", ctx->id());
 		return;
 	}
 

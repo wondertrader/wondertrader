@@ -5,7 +5,7 @@
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief Wt行情数据定义文件，包括tick、bar、orderqueue、orderdetail、transaction等数据
+ * \brief Wt行情数据定义文件,包括tick、bar、orderqueue、orderdetail、transaction等数据
  */
 #pragma once
 #include <stdlib.h>
@@ -58,7 +58,7 @@ public:
 
 	/*
 	 *	读取指定位置的数据
-	 *	如果超出范围，则返回INVALID_VALUE
+	 *	如果超出范围,则返回INVALID_VALUE
 	 */
 	inline double		at(uint32_t idx) const
 	{
@@ -82,7 +82,7 @@ public:
 
 	/*
 	 *	找到指定范围内的最大值
-	 *	如果超出范围，则返回INVALID_VALUE
+	 *	如果超出范围,则返回INVALID_VALUE
 	 */
 	double		maxvalue(int32_t head, int32_t tail, bool isAbs = false) const
 	{
@@ -115,7 +115,7 @@ public:
 
 	/*
 	 *	找到指定范围内的最小值
-	 *	如果超出范围，则返回INVALID_VALUE
+	 *	如果超出范围,则返回INVALID_VALUE
 	 */
 	double		minvalue(int32_t head, int32_t tail, bool isAbs = false) const
 	{
@@ -166,7 +166,7 @@ public:
 	}
 
 	/*
-	 *	重新分配数组大小，并设置默认值
+	 *	重新分配数组大小,并设置默认值
 	 */
 	inline void		resize(uint32_t uSize, double val = INVALID_DOUBLE)
 	{
@@ -195,7 +195,7 @@ public:
 
 /*
  *	K线数据切片
- *	这个比较特殊，因为要拼接当日和历史的
+ *	这个比较特殊,因为要拼接当日和历史的
  *	所以有两个开始地址
  */
 class WTSKlineSlice : public WTSObject
@@ -280,7 +280,7 @@ public:
 	*	查找指定范围内的最大价格
 	*	@head 起始位置
 	*	@tail 结束位置
-	*	如果位置超出范围，返回INVALID_VALUE
+	*	如果位置超出范围,返回INVALID_VALUE
 	*/
 	double		maxprice(int32_t head, int32_t tail) const
 	{
@@ -302,7 +302,7 @@ public:
 	*	查找指定范围内的最小价格
 	*	@head 起始位置
 	*	@tail 结束位置
-	*	如果位置超出范围，返回INVALID_VALUE
+	*	如果位置超出范围,返回INVALID_VALUE
 	*/
 	double		minprice(int32_t head, int32_t tail) const
 	{
@@ -587,8 +587,8 @@ public:
 	/*
 	*	将指定范围内的某个特定字段的数据全部抓取出来
 	*	并保存的一个数值数组中
-	*	如果超出范围，则返回NULL
-	*	@type 支持的类型有KT_OPEN、KT_HIGH、KT_LOW、KT_CLOSE，KFT_VOLUME、KT_DATE
+	*	如果超出范围,则返回NULL
+	*	@type 支持的类型有KT_OPEN、KT_HIGH、KT_LOW、KT_CLOSE,KFT_VOLUME、KT_DATE
 	*/
 	WTSValueArray*	extractData(WTSKlineFieldType type, int32_t head = 0, int32_t tail = -1) const
 	{
@@ -660,7 +660,7 @@ protected:
 	char			m_strCode[32];
 	WTSKlinePeriod	m_kpPeriod;
 	uint32_t		m_uTimes;
-	bool			m_bUnixTime;	//是否是时间戳格式，目前只在秒线上有效
+	bool			m_bUnixTime;	//是否是时间戳格式,目前只在秒线上有效
 	WTSBarList		m_vecBarData;
 	bool			m_bClosed;		//是否是闭合K线
 
@@ -719,7 +719,7 @@ public:
 	 *	查找指定范围内的最大价格
 	 *	@head 起始位置
 	 *	@tail 结束位置
-	 *	如果位置超出范围，返回INVALID_VALUE
+	 *	如果位置超出范围,返回INVALID_VALUE
 	 */
 	inline double		maxprice(int32_t head, int32_t tail) const
 	{
@@ -745,7 +745,7 @@ public:
 	 *	查找指定范围内的最小价格
 	 *	@head 起始位置
 	 *	@tail 结束位置
-	 *	如果位置超出范围，返回INVALID_VALUE
+	 *	如果位置超出范围,返回INVALID_VALUE
 	 */
 	inline double		minprice(int32_t head, int32_t tail) const
 	{
@@ -922,8 +922,8 @@ public:
 	/*
 	 *	将指定范围内的某个特定字段的数据全部抓取出来
 	 *	并保存的一个数值数组中
-	 *	如果超出范围，则返回NULL
-	 *	@type 支持的类型有KT_OPEN、KT_HIGH、KT_LOW、KT_CLOSE，KFT_VOLUME、KT_DATE
+	 *	如果超出范围,则返回NULL
+	 *	@type 支持的类型有KT_OPEN、KT_HIGH、KT_LOW、KT_CLOSE,KFT_VOLUME、KT_DATE
 	 */
 	WTSValueArray*	extractData(WTSKlineFieldType type, int32_t head = 0, int32_t tail = -1) const
 	{
@@ -992,7 +992,7 @@ public:
 
 	/*
 	 *	释放K线数据
-	 *	并delete所有的日线数据，清空vector
+	 *	并delete所有的日线数据,清空vector
 	 */
 	virtual void release()
 	{
@@ -1094,7 +1094,7 @@ public:
 	 */
 	inline double	low() const{ return m_tickStruct.low; }
 
-	//昨收价，如果是期货则是昨结算
+	//昨收价,如果是期货则是昨结算
 	inline double	preclose() const{ return m_tickStruct.pre_close; }
 	inline double	presettle() const{ return m_tickStruct.pre_settle; }
 	inline int32_t	preinterest() const{ return m_tickStruct.pre_interest; }
@@ -1192,7 +1192,7 @@ private:
 };
 
 /*
- *	K线数据封装，派生于通用的基础类，便于传递
+ *	K线数据封装,派生于通用的基础类,便于传递
  */
 class WTSBarData : public WTSObject
 {
@@ -1401,9 +1401,9 @@ public:
 
 //////////////////////////////////////////////////////////////////////////
 /*
- *	@brief Tick数据切片，从连续的tick缓存中做的切片
- *	@details 切片并没有真实的复制内存，而只是取了开始和结尾的下标
- *	这样使用虽然更快，但是使用场景要非常小心，因为他依赖于基础数据对象
+ *	@brief Tick数据切片,从连续的tick缓存中做的切片
+ *	@details 切片并没有真实的复制内存,而只是取了开始和结尾的下标
+ *	这样使用虽然更快,但是使用场景要非常小心,因为他依赖于基础数据对象
  */
 class WTSTickSlice : public WTSObject
 {
@@ -1453,9 +1453,9 @@ public:
 
 //////////////////////////////////////////////////////////////////////////
 /*
- *	@brief 逐笔委托数据切片，从连续的逐笔委托缓存中做的切片
- *	@details 切片并没有真实的复制内存，而只是取了开始和结尾的下标
- *	这样使用虽然更快，但是使用场景要非常小心，因为他依赖于基础数据对象
+ *	@brief 逐笔委托数据切片,从连续的逐笔委托缓存中做的切片
+ *	@details 切片并没有真实的复制内存,而只是取了开始和结尾的下标
+ *	这样使用虽然更快,但是使用场景要非常小心,因为他依赖于基础数据对象
  */
 class WTSOrdDtlSlice : public WTSObject
 {
@@ -1505,9 +1505,9 @@ public:
 
 //////////////////////////////////////////////////////////////////////////
 /*
- *	@brief 委托队列数据切片，从连续的委托队列缓存中做的切片
- *	@details 切片并没有真实的复制内存，而只是取了开始和结尾的下标
- *	这样使用虽然更快，但是使用场景要非常小心，因为他依赖于基础数据对象
+ *	@brief 委托队列数据切片,从连续的委托队列缓存中做的切片
+ *	@details 切片并没有真实的复制内存,而只是取了开始和结尾的下标
+ *	这样使用虽然更快,但是使用场景要非常小心,因为他依赖于基础数据对象
  */
 class WTSOrdQueSlice : public WTSObject
 {
@@ -1557,9 +1557,9 @@ public:
 
 //////////////////////////////////////////////////////////////////////////
 /*
- *	@brief 逐笔成交数据切片，从连续的逐笔成交缓存中做的切片
- *	@details 切片并没有真实的复制内存，而只是取了开始和结尾的下标
- *	这样使用虽然更快，但是使用场景要非常小心，因为他依赖于基础数据对象
+ *	@brief 逐笔成交数据切片,从连续的逐笔成交缓存中做的切片
+ *	@details 切片并没有真实的复制内存,而只是取了开始和结尾的下标
+ *	这样使用虽然更快,但是使用场景要非常小心,因为他依赖于基础数据对象
  */
 class WTSTransSlice : public WTSObject
 {

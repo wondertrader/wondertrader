@@ -127,7 +127,7 @@ typedef enum tagPriceType
  */
 typedef enum tagTimeCondition
 {
-	WTC_IOC		= '1',	//立即完成，否则撤销
+	WTC_IOC		= '1',	//立即完成,否则撤销
 	WTC_GFS,			//本节有效
 	WTC_GFD,			//当日有效
 } WTSTimeCondition;
@@ -138,7 +138,7 @@ typedef enum tagTimeCondition
 typedef enum tagOffsetType
 {
 	WOT_OPEN			= '0',	//开仓
-	WOT_CLOSE,					//平仓，上期为平昨
+	WOT_CLOSE,					//平仓,上期为平昨
 	WOT_FORCECLOSE,				//强平
 	WOT_CLOSETODAY,				//平今
 	WOT_CLOSEYESTERDAY,			//平昨
@@ -159,7 +159,7 @@ typedef enum tagDirectionType
  */
 typedef enum tagBusinessType
 {
-	BT_CASH		= '0',	//普通买卖，
+	BT_CASH		= '0',	//普通买卖,
 	BT_ETF		= '1',	//ETF申赎
 	BT_EXECUTE	= '2',	//期权行权
 	BT_QUOTE	= '3',	//期权报价
@@ -184,10 +184,10 @@ typedef enum tagActionFlag
 typedef enum tagOrderState
 {
 	WOS_AllTraded				= '0',	//全部成交
-	WOS_PartTraded_Queuing,				//部分成交，仍在队列中
-	WOS_PartTraded_NotQueuing,			//部分成交，未在队列
+	WOS_PartTraded_Queuing,				//部分成交,仍在队列中
+	WOS_PartTraded_NotQueuing,			//部分成交,未在队列
 	WOS_NotTraded_Queuing,				//未成交
-	WOS_NotTraded_NotQueuing,			//未成交，未在队列
+	WOS_NotTraded_NotQueuing,			//未成交,未在队列
 	WOS_Canceled,						//已撤销
 	WOS_Submitting				= 'a',	//正在提交
 	WOS_Nottouched,						//未触发
@@ -238,7 +238,7 @@ typedef enum tagCompareField
 	WCF_NEWPRICE			=	0,	//最新价
 	WCF_BIDPRICE,					//买一价
 	WCF_ASKPRICE,					//卖一价
-	WCF_PRICEDIFF,					//价差，止盈止损专用
+	WCF_PRICEDIFF,					//价差,止盈止损专用
 	WCF_NONE				=	9	//不比较
 } WTSCompareField;
 

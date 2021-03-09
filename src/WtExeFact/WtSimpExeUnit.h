@@ -60,7 +60,7 @@ public:
 	 *	成交回报
 	 *	code	合约代码
 	 *	isBuy	买or卖
-	 *	vol		成交数量，这里没有正负，通过isBuy确定买入还是卖出
+	 *	vol		成交数量,这里没有正负,通过isBuy确定买入还是卖出
 	 *	price	成交价格
 	 */
 	virtual void on_trade(uint32_t localid, const char* stdCode, bool isBuy, double vol, double price) override;

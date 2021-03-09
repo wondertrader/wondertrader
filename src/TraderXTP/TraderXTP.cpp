@@ -687,9 +687,9 @@ void TraderXTP::reconnect()
 	}
 
 	_api->SubscribePublicTopic(_quick ? XTP_TERT_QUICK : XTP_TERT_RESUME);
-	_api->SetSoftwareVersion("1.0.0"); //设定此软件的开发版本号，用户自定义
-	_api->SetSoftwareKey(_acckey.c_str());//设定用户的开发代码，在XTP申请开户时，由xtp人员提供
-	_api->SetHeartBeatInterval(15);//设定交易服务器超时时间，单位为秒，此为1.1.16新增接口
+	_api->SetSoftwareVersion("1.0.0"); //设定此软件的开发版本号,用户自定义
+	_api->SetSoftwareKey(_acckey.c_str());//设定用户的开发代码,在XTP申请开户时,由xtp人员提供
+	_api->SetHeartBeatInterval(15);//设定交易服务器超时时间,单位为秒,此为1.1.16新增接口
 	_api->RegisterSpi(this);						// 注册事件
 
 	if (_sink)
@@ -788,15 +788,15 @@ int TraderXTP::login(const char* user, const char* pass, const char* productInfo
 		uint32_t lastDate = _ini.readUInt("marker", "date", 0);
 		if (lastDate != _tradingday)
 		{
-			//交易日不同，清理掉原来的数据
+			//交易日不同,清理掉原来的数据
 			_ini.removeSection(ORDER_SECTION);
 			_ini.writeUInt("marker", "date", _tradingday);
 			_ini.save();
 
-			_sink->handleTraderLog(LL_INFO, "[%s]交易日已切换[%u -> %u]，清空本地数据缓存...", _user.c_str(), lastDate, _tradingday);
+			_sink->handleTraderLog(LL_INFO, "[%s]交易日已切换[%u -> %u],清空本地数据缓存...", _user.c_str(), lastDate, _tradingday);
 		}		
 
-		_sink->handleTraderLog(LL_INFO, "[%s]账户登录成功，交易日：%u...", _user.c_str(), _tradingday);
+		_sink->handleTraderLog(LL_INFO, "[%s]账户登录成功,交易日: %u...", _user.c_str(), _tradingday);
 
 		_state = TS_LOGINED;
 		_asyncio.post([this]{

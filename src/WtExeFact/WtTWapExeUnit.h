@@ -54,7 +54,7 @@ public:
 	*	成交回报
 	*	code	合约代码
 	*	isBuy	买or卖
-	*	vol		成交数量，这里没有正负，通过isBuy确定买入还是卖出
+	*	vol		成交数量,这里没有正负,通过isBuy确定买入还是卖出
 	*	price	成交价格
 	*/
 	virtual void on_trade(uint32_t localid, const char* stdCode, bool isBuy, double vol, double price) override;
@@ -97,12 +97,12 @@ private:
 
 	//////////////////////////////////////////////////////////////////////////
 	//参数
-	uint32_t		_total_secs;	//执行总时间，单位s
+	uint32_t		_total_secs;	//执行总时间,单位s
 	uint32_t		_total_times;	//总执行次数
 	uint32_t		_tail_secs;		//执行尾部时间
-	uint32_t		_ord_sticky;	//挂单时限，单位s
-	uint32_t		_price_mode;	//价格模式：0-最新价，1-最优价，2-对手价
-	uint32_t		_price_offset;		//挂单价格偏移，相对于几乎价格偏移，买+卖-
+	uint32_t		_ord_sticky;	//挂单时限,单位s
+	uint32_t		_price_mode;	//价格模式: 0-最新价,1-最优价,2-对手价
+	uint32_t		_price_offset;		//挂单价格偏移,相对于几乎价格偏移,买+卖-
 
 	//////////////////////////////////////////////////////////////////////////
 	//临时变量

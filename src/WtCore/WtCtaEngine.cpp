@@ -62,7 +62,7 @@ void WtCtaEngine::run(bool bAsync /* = false */)
 	WTSVariant* cfgProd = _cfg->get("product");
 	_tm_ticker->init(_data_mgr->reader(), cfgProd->getCString("session"));
 
-	//启动之前，先把运行中的策略落地
+	//启动之前,先把运行中的策略落地
 	{
 		rj::Document root(rj::kObjectType);
 		rj::Document::AllocatorType &allocator = root.GetAllocator();
@@ -270,7 +270,7 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 					append_signal(stdCode.c_str(), 0);
 				});
 
-				WTSLogger::error("品种%s不在目标仓位内，自动设置为0", stdCode.c_str());
+				WTSLogger::error("品种%s不在目标仓位内,自动设置为0", stdCode.c_str());
 			}
 
 			target_pos[stdCode] = 0;
@@ -298,7 +298,7 @@ void WtCtaEngine::handle_push_quote(WTSTickData* newTick, bool isHot)
 
 void WtCtaEngine::handle_pos_change(const char* straName, const char* stdCode, double diffQty)
 {
-	//这里是持仓增量，所以不用处理未过滤的情况，因为增量情况下，不会改变目标diffQty
+	//这里是持仓增量,所以不用处理未过滤的情况,因为增量情况下,不会改变目标diffQty
 	if(_filter_mgr.is_filtered_by_strategy(straName, diffQty, true))
 	{
 		//输出日志

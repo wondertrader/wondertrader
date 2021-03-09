@@ -5,7 +5,7 @@
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief 浮点数辅助类，主要用于浮点数据的比较
+ * \brief 浮点数辅助类,主要用于浮点数据的比较
  */
 #pragma once
 #include <math.h>

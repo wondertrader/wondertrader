@@ -164,7 +164,7 @@ bool TraderAdapter::init(const char* id, WTSVariant* params, IBaseDataMgr* bdMgr
 
 	//先看工作目录下是否有交易模块
 	std::string dllpath = WtHelper::getModulePath(module, "traders", true);
-	//如果没有，则再看模块目录，即dll同目录下
+	//如果没有,则再看模块目录,即dll同目录下
 	if (!StdFile::exists(dllpath.c_str()))
 		dllpath = WtHelper::getModulePath(module, "traders", false);
 	DllHandle hInst = DLLHelper::load_library(dllpath.c_str());

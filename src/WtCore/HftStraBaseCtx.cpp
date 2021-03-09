@@ -561,7 +561,7 @@ void HftStraBaseCtx::do_set_position(const char* stdCode, double qty, double pri
 	if (decimal::eq(pInfo._volume, qty))
 		return;
 
-	stra_log_text("目标仓位设定：%.0f -> %0.f", pInfo._volume, qty);
+	stra_log_text("目标仓位设定: %.0f -> %0.f", pInfo._volume, qty);
 
 	WTSCommodityInfo* commInfo = _engine->get_commodity_info(stdCode);
 
@@ -589,7 +589,7 @@ void HftStraBaseCtx::do_set_position(const char* stdCode, double qty, double pri
 		log_trade(stdCode, dInfo._long, true, curTm, trdPx, abs(diff), fee, userTag);
 	}
 	else
-	{//持仓方向和仓位变化方向不一致，需要平仓
+	{//持仓方向和仓位变化方向不一致,需要平仓
 		double left = abs(diff);
 
 		pInfo._volume = qty;
@@ -638,7 +638,7 @@ void HftStraBaseCtx::do_set_position(const char* stdCode, double qty, double pri
 			count--;
 		}
 
-		//最后，如果还有剩余的，则需要反手了
+		//最后,如果还有剩余的,则需要反手了
 		if (left > 0)
 		{
 			left = left * qty / abs(qty);

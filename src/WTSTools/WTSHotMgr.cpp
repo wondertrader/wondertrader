@@ -369,8 +369,8 @@ bool WTSHotMgr::splitHotSecions(const char* exchg, const char* pid, uint32_t sDt
 		}
 		else if(leftDate < curDate)
 		{
-			//如果开始日期小于当前切换的日期，则添加一段
-			if(strlen(hotItem->from()) > 0)//这里from为空，主要是第一条规则，如果真的遇到这种情况，也没有太好的办法，只能不要这一段数据了，一般情况下是够的
+			//如果开始日期小于当前切换的日期,则添加一段
+			if(strlen(hotItem->from()) > 0)//这里from为空,主要是第一条规则,如果真的遇到这种情况,也没有太好的办法,只能不要这一段数据了,一般情况下是够的
 			{
 				//sections[hotItem->from()] = HotSection(leftDate, TimeUtils::getNextDate(curDate, -1));
 				sections.emplace_back(HotSection(hotItem->from(), leftDate, TimeUtils::getNextDate(curDate, -1)));

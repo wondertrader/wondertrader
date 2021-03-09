@@ -70,9 +70,9 @@ void WtSimpExeUnit::init(ExecuteContext* ctx, const char* stdCode, WTSVariant* c
 
 	_price_offset = cfg->getInt32("offset");
 	_expire_secs = cfg->getUInt32("expire");
-	_price_mode = cfg->getInt32("pricemode");	//价格类型，0-最新价，-1-最优价，1-对手价，2-自动，默认为0
+	_price_mode = cfg->getInt32("pricemode");	//价格类型,0-最新价,-1-最优价,1-对手价,2-自动,默认为0
 
-	ctx->writeLog("执行单元 %s 初始化完成，委托价 %s ± %d 跳，订单超时 %u 秒", stdCode, PriceModeNames[_price_mode+1], _price_offset, _expire_secs);
+	ctx->writeLog("执行单元 %s 初始化完成,委托价 %s ± %d 跳,订单超时 %u 秒", stdCode, PriceModeNames[_price_mode+1], _price_offset, _expire_secs);
 }
 
 void WtSimpExeUnit::on_order(uint32_t localid, const char* stdCode, bool isBuy, double leftover, double price, bool isCanceled)
@@ -94,10 +94,10 @@ void WtSimpExeUnit::on_order(uint32_t localid, const char* stdCode, bool isBuy, 
 			_cancel_times = 0;
 	}
 
-	//如果有撤单，也触发重新计算
+	//如果有撤单,也触发重新计算
 	if (isCanceled)
 	{
-		_ctx->writeLog("%s的订单%u已撤销，重新触发执行逻辑", stdCode, localid);
+		_ctx->writeLog("%s的订单%u已撤销,重新触发执行逻辑", stdCode, localid);
 		_cancel_times++;
 		doCalculate();
 	}
@@ -109,8 +109,8 @@ void WtSimpExeUnit::on_channel_ready()
 
 	if(!decimal::eq(undone, 0) && !_orders_mon.has_order())
 	{
-		//这说明有未完成单不在监控之中，先撤掉
-		_ctx->writeLog("%s有不在管理中的未完成单 %f ，全部撤销", _code.c_str(), undone);
+		//这说明有未完成单不在监控之中,先撤掉
+		_ctx->writeLog("%s有不在管理中的未完成单 %f ,全部撤销", _code.c_str(), undone);
 
 		bool isBuy = (undone > 0);
 		OrderIDs ids = _ctx->cancel(_code.c_str(), isBuy);
@@ -135,21 +135,21 @@ void WtSimpExeUnit::on_tick(WTSTickData* newTick)
 		return;
 
 	bool isFirstTick = false;
-	//如果原来的tick不为空，则要释放掉
+	//如果原来的tick不为空,则要释放掉
 	if (_last_tick)
 	{
 		_last_tick->release();
 	}
 	else
 	{
-		//如果行情时间不在交易时间，这种情况一般是集合竞价的行情进来，下单会失败，所以直接过滤掉这笔行情
+		//如果行情时间不在交易时间,这种情况一般是集合竞价的行情进来,下单会失败,所以直接过滤掉这笔行情
 		if (_sess_info != NULL && !_sess_info->isInTradingTime(newTick->actiontime() / 100000))
 			return;
 
 		isFirstTick = true;
 	}
 
-	//新的tick数据，要保留
+	//新的tick数据,要保留
 	_last_tick = newTick;
 	_last_tick->retain();
 
@@ -159,7 +159,7 @@ void WtSimpExeUnit::on_tick(WTSTickData* newTick)
 	 *	那么在新的行情数据进来的时候可以再次触发核心逻辑
 	 */
 
-	if(isFirstTick)	//如果是第一笔tick，则检查目标仓位，不符合则下单
+	if(isFirstTick)	//如果是第一笔tick,则检查目标仓位,不符合则下单
 	{
 		double newVol = _target_pos;
 		const char* stdCode = _code.c_str();
@@ -188,14 +188,14 @@ void WtSimpExeUnit::on_tick(WTSTickData* newTick)
 
 void WtSimpExeUnit::on_trade(uint32_t localid, const char* stdCode, bool isBuy, double vol, double price)
 {
-	//不用触发，这里在ontick里触发吧
+	//不用触发,这里在ontick里触发吧
 }
 
 void WtSimpExeUnit::on_entrust(uint32_t localid, const char* stdCode, bool bSuccess, const char* message)
 {
 	if (!bSuccess)
 	{
-		//如果不是我发出去的订单，我就不管了
+		//如果不是我发出去的订单,我就不管了
 		if (!_orders_mon.has_order(localid))
 			return;
 
@@ -216,8 +216,8 @@ void WtSimpExeUnit::doCalculate()
 	double undone = _ctx->getUndoneQty(stdCode);
 	double realPos = _ctx->getPosition(stdCode);
 
-	//如果有反向未完成单，则直接撤销
-	//如果目标仓位为0，且当前持仓为0，则撤销全部挂单
+	//如果有反向未完成单,则直接撤销
+	//如果目标仓位为0,且当前持仓为0,则撤销全部挂单
 	if (decimal::lt(newVol * undone, 0))
 	{
 		bool isBuy = decimal::gt(undone, 0);
@@ -230,8 +230,8 @@ void WtSimpExeUnit::doCalculate()
 	//else if(newVol == 0 && undone != 0)
 	else if (decimal::eq(newVol,0) && !decimal::eq(undone, 0))
 	{
-		//如果目标仓位为0，且未完成不为0
-		//那么当目前仓位为0，或者 目前仓位和未完成数量方向相同
+		//如果目标仓位为0,且未完成不为0
+		//那么当目前仓位为0,或者 目前仓位和未完成数量方向相同
 		//这样也要全部撤销
 		//if (realPos == 0 || (realPos * undone > 0))
 		if (decimal::eq(realPos, 0) || decimal::gt(realPos * undone, 0))
@@ -245,7 +245,7 @@ void WtSimpExeUnit::doCalculate()
 		}
 	}
 
-	//如果都是同向的，则纳入计算
+	//如果都是同向的,则纳入计算
 	double curPos = realPos + undone;
 	//if (curPos == newVol)
 	if (decimal::eq(curPos, newVol))
@@ -253,13 +253,13 @@ void WtSimpExeUnit::doCalculate()
 
 	if(_last_tick == NULL)
 	{
-		//grabLastTick会自动增加引用计数，不需要再retain
+		//grabLastTick会自动增加引用计数,不需要再retain
 		_last_tick = _ctx->grabLastTick(stdCode);
 	}
 
 	if (_last_tick == NULL)
 	{
-		_ctx->writeLog("%s没有最新tick数据，退出执行逻辑", _code.c_str());
+		_ctx->writeLog("%s没有最新tick数据,退出执行逻辑", _code.c_str());
 		return;
 	}
 

@@ -92,7 +92,7 @@ public:
 			return;
 		}
 
-		log("[%s]开始连接服务端：%s", m_pParams->getCString("user"), m_pParams->getCString("front"));
+		log("[%s]开始连接服务端: %s", m_pParams->getCString("user"), m_pParams->getCString("front"));
 		m_pTraderApi->connect();
 	}
 
@@ -187,17 +187,17 @@ public:
 			printf("请输入数量: ");
 			std::cin >> qty;
 
-			printf("请输入方向，0-做多，1-做空: ");
+			printf("请输入方向,0-做多,1-做空: ");
 			std::cin >> bs;
 			if(bs != 0 && bs != 1)
 				continue;
 
-			printf("请输入开平，0-开仓，1-平仓: ");
+			printf("请输入开平,0-开仓,1-平仓: ");
 			std::cin >> offset;
 			if (offset != 0 && offset != 1)
 				continue;
 
-			printf("品种：%s.%s，价格：%f，数量：%u，方向：%s，开平：%s，确认y/n? ", exchg, code, price, qty, bs == 0 ? "做多" : "做空", offset == 0 ? "开仓" : "平仓");
+			printf("品种: %s.%s,价格: %f,数量: %u,方向: %s,开平: %s,确认y/n? ", exchg, code, price, qty, bs == 0 ? "做多" : "做空", offset == 0 ? "开仓" : "平仓");
 			char c;
 			std::cin >> c;
 			if(c == 'y')
@@ -226,7 +226,7 @@ public:
 		m_pTraderApi->makeEntrustID(entrustid, 64);
 		entrust->setEntrustID(entrustid);
 
-		log("[%s]开始下单，品种: %s.%s，价格: %f，数量: %d，动作: %s%s", m_pParams->getCString("user"), exchg, code, price, qty, offset == 0 ? "开" : "平", bs == 0 ? "多" : "空");
+		log("[%s]开始下单,品种: %s.%s,价格: %f,数量: %d,动作: %s%s", m_pParams->getCString("user"), exchg, code, price, qty, offset == 0 ? "开" : "平", bs == 0 ? "多" : "空");
 
 		m_pTraderApi->orderInsert(entrust);
 		entrust->release();
@@ -253,13 +253,13 @@ public:
 			printf("请输入数量: ");
 			std::cin >> qty;
 
-			printf("请输入方向，0-做多，1-做空: ");
+			printf("请输入方向,0-做多,1-做空: ");
 			std::cin >> bs;
 
-			printf("请输入开平，0-开仓，1-平仓: ");
+			printf("请输入开平,0-开仓,1-平仓: ");
 			std::cin >> offset;
 
-			printf("品种：%s.%s，数量：%u，方向：%s，开平：%s，确认y/n? ", exchg, code, qty, bs == 0 ? "做多" : "做空", offset == 0 ? "开仓" : "平仓");
+			printf("品种: %s.%s,数量: %u,方向: %s,开平: %s,确认y/n? ", exchg, code, qty, bs == 0 ? "做多" : "做空", offset == 0 ? "开仓" : "平仓");
 			char c;
 			std::cin >> c;
 			if (c == 'y')
@@ -287,7 +287,7 @@ public:
 		m_pTraderApi->makeEntrustID(entrustid, 64);
 		entrust->setEntrustID(entrustid);
 
-		log("[%s]开始下单，品种: %s.%s，价格: 市价，数量: %d，动作: %s%s", m_pParams->getCString("user"), exchg, code, qty, offset == 0 ? "开" : "平", bs == 0 ? "多" : "空");
+		log("[%s]开始下单,品种: %s.%s,价格: 市价,数量: %d,动作: %s%s", m_pParams->getCString("user"), exchg, code, qty, offset == 0 ? "开" : "平", bs == 0 ? "多" : "空");
 
 		m_pTraderApi->orderInsert(entrust);
 		entrust->release();
@@ -304,7 +304,7 @@ public:
 			printf("请输入订单ID: ");
 			std::cin >> orderid;
 
-			printf("订单ID：%s，确认y/n? ", orderid);
+			printf("订单ID: %s,确认y/n? ", orderid);
 			char c;
 			std::cin >> c;
 			if (c == 'y')
@@ -317,7 +317,7 @@ public:
 		WTSOrderInfo* ordInfo = (WTSOrderInfo*)m_mapOrds->get(orderid);
 		if (ordInfo == NULL)
 		{
-			printf("订单不存在，请检查订单号是否有误，或者先查询订单\r\n");
+			printf("订单不存在,请检查订单号是否有误,或者先查询订单\r\n");
 			return false;
 		}
 
@@ -370,7 +370,7 @@ public:
 		}
 		else
 		{
-			log("[%s]登录失败：%s", m_pParams->getCString("user"), msg);
+			log("[%s]登录失败: %s", m_pParams->getCString("user"), msg);
 			g_exitNow = true;
 		}
 
@@ -382,7 +382,7 @@ public:
 	{
 		if(err)
 		{
-			log("[%s]下单失败：%s", m_pParams->getCString("user"), err->getMessage());
+			log("[%s]下单失败: %s", m_pParams->getCString("user"), err->getMessage());
 			StdUniqueLock lock(g_mtxOpt);
 			g_condOpt.notify_all();
 		}
@@ -417,7 +417,7 @@ public:
 			if(posItem && posItem->getTotalPosition() > 0 && g_riskAct)
 			{
 				g_blkList.insert(posItem->getCode());
-				log("%s持仓量超限，限制开仓", posItem->getCode());
+				log("%s持仓量超限,限制开仓", posItem->getCode());
 			}
 		}
 		StdUniqueLock lock(g_mtxOpt);
@@ -477,7 +477,7 @@ public:
 
 				if (m_mapOrds->find(orderInfo->getOrderID()) == m_mapOrds->end())
 				{
-					log("[%s]下单成功，订单ID: %s",  m_pParams->getCString("user"), orderInfo->getOrderID());
+					log("[%s]下单成功,订单ID: %s",  m_pParams->getCString("user"), orderInfo->getOrderID());
 					m_mapOrds->add(orderInfo->getOrderID(), orderInfo, true);
 				}
 
@@ -507,11 +507,11 @@ public:
 
 	virtual void onPushTrade(WTSTradeInfo* tradeRecord)
 	{
-		log("[%s]收到成交回报，合约%s，成交价：%.4f，成交数量：%.4f", m_pParams->getCString("user"), tradeRecord->getCode(), tradeRecord->getPrice(), tradeRecord->getVolume());
+		log("[%s]收到成交回报,合约%s,成交价: %.4f,成交数量: %.4f", m_pParams->getCString("user"), tradeRecord->getCode(), tradeRecord->getPrice(), tradeRecord->getVolume());
 
 		if(g_riskAct)
 		{
-			log("[%s]%s超过最大持仓数量，禁止开仓", m_pParams->getCString("user"), tradeRecord->getCode());
+			log("[%s]%s超过最大持仓数量,禁止开仓", m_pParams->getCString("user"), tradeRecord->getCode());
 
 			g_blkList.insert(tradeRecord->getCode());
 		}
@@ -566,7 +566,7 @@ void main()
 {
 	WTSLogger::init();
 
-	WTSLogger::info("启动成功，当前系统版本号: v1.0");
+	WTSLogger::info("启动成功,当前系统版本号: v1.0");
 
 	std::string cfg = getBaseFolder() + "config.ini";
 
@@ -587,7 +587,7 @@ void main()
 		g_bdMgr.loadHolidays(file.c_str());
 
 	g_riskAct = IniFile::ReadConfigInt("config", "risk", 0, cfg.c_str()) == 1;
-	WTSLogger::info("风控开关：%s", g_riskAct ? "开" : "关");
+	WTSLogger::info("风控开关: %s", g_riskAct ? "开" : "关");
 
 
 	WTSParams* params = WTSParams::createObject();

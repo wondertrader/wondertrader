@@ -25,7 +25,7 @@ typedef unsigned long	DWORD;
 NS_OTP_BEGIN
 
 //////////////////////////////////////////////////////////////////////////
-//线型类，指标用到
+//线型类,指标用到
 class WTSLineInfo : public WTSObject
 {
 public:
@@ -341,7 +341,7 @@ public:
 		{
 			WTSExpressLine* line = STATIC_CONVERT(*it, WTSExpressLine*);
 			bool bAbs = (line->getLineType() == WELT_VolStick || line->getLineType() == WELT_AStickLine);
-			if(bAbs)//原因是成交量柱，是以0开始绘制的
+			if(bAbs)//原因是成交量柱,是以0开始绘制的
 				return 0;
 			double v = line->minvalue(head, tail, bAbs);
 			if (v == INVALID_DOUBLE)

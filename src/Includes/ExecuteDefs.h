@@ -128,14 +128,14 @@ public:
 	virtual WTSSessionInfo* getSessionInfo(const char* stdCode) = 0;
 
 	/*
-	 *	获取当前时间，精确到毫秒，格式如20191127174139500
+	 *	获取当前时间,精确到毫秒,格式如20191127174139500
 	 */
 	virtual uint64_t	getCurTime() = 0;
 
 	/*
 	 *	注册定时器
 	 *	@stdCode	合约代码
-	 *	@elapse		时间间隔，单位毫秒
+	 *	@elapse		时间间隔,单位毫秒
 	 *
 	 *	返回值		是否注册成功
 	 */

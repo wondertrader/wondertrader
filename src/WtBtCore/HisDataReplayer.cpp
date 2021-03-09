@@ -276,9 +276,9 @@ void HisDataReplayer::run()
 
 	if(_task == NULL)
 	{
-		//如果没有时间调度任务，则采用主K线回放的模式
+		//如果没有时间调度任务,则采用主K线回放的模式
 
-		//如果没有确定主K线，则确定一个周期最短的主K线
+		//如果没有确定主K线,则确定一个周期最短的主K线
 		if (_main_key.empty() && !_bars_cache.empty())
 		{
 			WTSKlinePeriod minPeriod = KP_DAY;
@@ -302,8 +302,8 @@ void HisDataReplayer::run()
 				}
 			}
 
-			//WTSLogger::info("主K线自动确定：%s", _main_key.c_str());
-			WTSLogger::info("Main K bars automatic determined：%s", _main_key.c_str());
+			//WTSLogger::info("主K线自动确定: %s", _main_key.c_str());
+			WTSLogger::info("Main K bars automatic determined: %s", _main_key.c_str());
 		}
 
 		if(!_main_key.empty())
@@ -331,8 +331,8 @@ void HisDataReplayer::run()
 
 					if (nextBarTime > _end_time)
 					{
-						//WTSLogger::log_raw(LL_INFO, fmt::format("{}超过结束时间{}，回放结束", nextBarTime, _end_time).c_str());
-						WTSLogger::log_raw(LL_INFO, fmt::format("{} is beyond ending time {}，replaying done", nextBarTime, _end_time).c_str());
+						//WTSLogger::log_raw(LL_INFO, fmt::format("{}超过结束时间{},回放结束", nextBarTime, _end_time).c_str());
+						WTSLogger::log_raw(LL_INFO, fmt::format("{} is beyond ending time {},replaying done", nextBarTime, _end_time).c_str());
 						_listener->handle_replay_done();
 						break;
 					}
@@ -350,7 +350,7 @@ void HisDataReplayer::run()
 
 					uint64_t curBarTime = (uint64_t)_cur_date * 10000 + _cur_time;
 					if (_tick_enabled)
-					{//如果开始了tick回放，则直接回放tick数据
+					{//如果开始了tick回放,则直接回放tick数据
 						replayHftDatas(curBarTime, nextBarTime);
 					}
 
@@ -378,7 +378,7 @@ void HisDataReplayer::run()
 
 					if (barList._cursor >= barList._bars.size())
 					{
-						//WTSLogger::info("全部数据都已回放，回放结束");
+						//WTSLogger::info("全部数据都已回放,回放结束");
 						WTSLogger::info("All back data replayed, replaying done");
 						_listener->handle_replay_done();
 						break;
@@ -386,7 +386,7 @@ void HisDataReplayer::run()
 				}
 				else
 				{
-					//WTSLogger::info("数据尚未初始化，回放直接退出");
+					//WTSLogger::info("数据尚未初始化,回放直接退出");
 					WTSLogger::info("No back data initialized, replaying canceled");
 					_listener->handle_replay_done();
 					break;
@@ -422,14 +422,14 @@ void HisDataReplayer::run()
 		}
 		else
 		{
-			//WTSLogger::info("没有订阅主力K线且未开放tick回测，回放直接退出");
+			//WTSLogger::info("没有订阅主力K线且未开放tick回测,回放直接退出");
 			WTSLogger::info("Main K bars not subscribed and backtesting of tick data not available , replaying done");
 			_listener->handle_replay_done();
 		}
 	}
 	else //if(_task != NULL)
 	{
-		//时间调度任务不为空，则按照时间调度任务回放
+		//时间调度任务不为空,则按照时间调度任务回放
 		WTSSessionInfo* sInfo = NULL;
 		const char* DEF_SESS = (strlen(_task->_session) == 0) ? DEFAULT_SESSIONID : _task->_session;
 		sInfo = _bd_mgr.getSession(DEF_SESS);
@@ -478,15 +478,15 @@ void HisDataReplayer::run()
 								fired = true;
 							else if (bHasHoliday)
 							{
-								//上一个交易日在上个月，且当前日期大于触发日期
-								//说明这个月的开始日期在节假日内，顺延到今天
+								//上一个交易日在上个月,且当前日期大于触发日期
+								//说明这个月的开始日期在节假日内,顺延到今天
 								if ((preTDate % 10000 / 100 < _cur_date % 10000 / 100) && _cur_date % 1000000 > _task->_day)
 								{
 									fired = true;
 								}
 								else if (preTDate % 1000000 < _task->_day && _cur_date % 1000000 > _task->_day)
 								{
-									//上一个交易日在同一个月，且小于触发日期，但是今天大于触发日期，说明正确触发日期到节假日内，顺延到今天
+									//上一个交易日在同一个月,且小于触发日期,但是今天大于触发日期,说明正确触发日期到节假日内,顺延到今天
 									fired = true;
 								}
 							}
@@ -504,7 +504,7 @@ void HisDataReplayer::run()
 								}
 								else if (preWD > weekDay && weekDay > _task->_day)
 								{
-									//上一个交易日的星期大于今天的星期，说明换了一周了
+									//上一个交易日的星期大于今天的星期,说明换了一周了
 									fired = true;
 								}
 								else if (preWD < _task->_day && weekDay > _task->_day)
@@ -524,8 +524,8 @@ void HisDataReplayer::run()
 				if (!fired)
 				{
 					//调整时间
-					//如果当前时间小于任务时间，则直接赋值即可
-					//如果当前时间大于任务时间，则至少要等下一天
+					//如果当前时间小于任务时间,则直接赋值即可
+					//如果当前时间大于任务时间,则至少要等下一天
 					if (_cur_time < endtime)
 					{
 						_cur_time = endtime;
@@ -584,7 +584,7 @@ void HisDataReplayer::run()
 			{
 				//要考虑到跨日的情况
 				uint32_t mins = sInfo->timeToMinutes(_cur_time);
-				//如果一开始不能整除，则直接修正一下
+				//如果一开始不能整除,则直接修正一下
 				if(mins % _task->_time != 0)
 				{
 					mins = mins / _task->_time + _task->_time;
@@ -619,13 +619,13 @@ void HisDataReplayer::run()
 					{
 						if(sInfo->getOffsetMins() > 0)
 						{
-							//真实时间后移，说明夜盘算作下一天的
+							//真实时间后移,说明夜盘算作下一天的
 							_cur_date = _cur_tdate;
 							_cur_tdate = nextTDate;
 						}
 						else
 						{
-							//真实时间前移，说明夜盘是上一天的，这种情况就不需要动了
+							//真实时间前移,说明夜盘是上一天的,这种情况就不需要动了
 							_cur_tdate = nextTDate;
 							_cur_date = _cur_tdate;
 						}
@@ -1209,7 +1209,7 @@ void HisDataReplayer::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTD
 
 	//if(_task && endTDate != 0)
 	//{
-	//	//如果是交易日结束，清理掉分钟线缓存，不然吃内存太多
+	//	//如果是交易日结束,清理掉分钟线缓存,不然吃内存太多
 	//	std::set<std::string> to_clear;
 	//	for (auto it = _bars_cache.begin(); it != _bars_cache.end(); it++)
 	//	{
@@ -1403,7 +1403,7 @@ WTSKlineSlice* HisDataReplayer::get_kline_slice(const char* stdCode, const char*
 		_main_key = key;
 
 	//if(!_tick_enabled)
-	//不做判断，主要为了防止没有tick数据，而采用第二方案
+	//不做判断,主要为了防止没有tick数据,而采用第二方案
 	{
 		if(_ticker_keys.find(stdCode) == _ticker_keys.end())
 			_ticker_keys[stdCode] = key;
@@ -2189,7 +2189,7 @@ void HisDataReplayer::checkUnbars()
 		if (bHasBars)
 			continue;
 
-		//如果订阅了tick，但是没有对应的K线数据，则自动加载1分钟线到内存中
+		//如果订阅了tick,但是没有对应的K线数据,则自动加载1分钟线到内存中
 		bool bHasHisData = false;
 		std::string key = StrUtil::printf("%s#m#1", stdCode);
 		if (_mode == "csv")
@@ -2310,7 +2310,7 @@ bool HisDataReplayer::cacheRawTicksFromBin(const std::string& key, const char* s
 	HisTickBlockV2* tBlockV2 = NULL;
 	if(tBlock->_version == BLOCK_VERSION_CMP)
 	{
-		//压缩版本，要重新检查文件大小
+		//压缩版本,要重新检查文件大小
 		tBlockV2 = (HisTickBlockV2*)content.c_str();
 
 		if (content.size() != (sizeof(HisTickBlockV2) + tBlockV2->_size))
@@ -2657,7 +2657,7 @@ bool HisDataReplayer::cacheRawBarsFromDB(const std::string& key, const char* std
 			MysqlQuery query(*_db_conn);
 			if (!query.exec(sql))
 			{
-				WTSLogger::error("Loading back kbar data from database failed：%s", query.errormsg());
+				WTSLogger::error("Loading back kbar data from database failed: %s", query.errormsg());
 			}
 			else
 			{
@@ -2754,8 +2754,8 @@ bool HisDataReplayer::cacheRawBarsFromDB(const std::string& key, const char* std
 			MysqlQuery query(*_db_conn);
 			if (!query.exec(sql))
 			{
-				//WTSLogger::error("历史K线读取失败：%s", query.errormsg());
-				WTSLogger::error("Loading back kbar data from database failed：%s", query.errormsg());
+				//WTSLogger::error("历史K线读取失败: %s", query.errormsg());
+				WTSLogger::error("Loading back kbar data from database failed: %s", query.errormsg());
 			}
 			else
 			{
@@ -2806,7 +2806,7 @@ bool HisDataReplayer::cacheRawBarsFromDB(const std::string& key, const char* std
 
 		do
 		{
-			//先直接读取复权过的历史数据，路径如/his/day/sse/SH600000Q.dsb
+			//先直接读取复权过的历史数据,路径如/his/day/sse/SH600000Q.dsb
 			char sql[256] = { 0 };
 			if (isDay)
 				sprintf(sql, "SELECT `date`,0,open,high,low,close,settle,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%sQ' ORDER BY `date`;",
@@ -2818,8 +2818,8 @@ bool HisDataReplayer::cacheRawBarsFromDB(const std::string& key, const char* std
 			MysqlQuery query(*_db_conn);
 			if (!query.exec(sql))
 			{
-				//WTSLogger::error("历史K线读取失败：%s", query.errormsg());
-				WTSLogger::error("Loading back kbar data from database failed：%s", query.errormsg());
+				//WTSLogger::error("历史K线读取失败: %s", query.errormsg());
+				WTSLogger::error("Loading back kbar data from database failed: %s", query.errormsg());
 			}
 			else
 			{
@@ -2888,8 +2888,8 @@ bool HisDataReplayer::cacheRawBarsFromDB(const std::string& key, const char* std
 			MysqlQuery query(*_db_conn);
 			if (!query.exec(sql))
 			{
-				//WTSLogger::error("历史K线读取失败：%s", query.errormsg());
-				WTSLogger::error("Loading back kbar data from database failed：%s", query.errormsg());
+				//WTSLogger::error("历史K线读取失败: %s", query.errormsg());
+				WTSLogger::error("Loading back kbar data from database failed: %s", query.errormsg());
 			}
 			else
 			{
@@ -2996,8 +2996,8 @@ bool HisDataReplayer::cacheRawBarsFromDB(const std::string& key, const char* std
 		MysqlQuery query(*_db_conn);
 		if (!query.exec(sql))
 		{
-			//WTSLogger::error("历史K线读取失败：%s", query.errormsg());
-			WTSLogger::error("Loading back kbar data from database failed：%s", query.errormsg());
+			//WTSLogger::error("历史K线读取失败: %s", query.errormsg());
+			WTSLogger::error("Loading back kbar data from database failed: %s", query.errormsg());
 		}
 		else
 		{
@@ -3315,7 +3315,7 @@ bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* st
 
 		do
 		{
-			//先直接读取复权过的历史数据，路径如/his/day/sse/SH600000Q.dsb
+			//先直接读取复权过的历史数据,路径如/his/day/sse/SH600000Q.dsb
 			std::stringstream ss;
 			ss << _base_dir << "his/" << pname << "/" << cInfo._exchg << "/" << cInfo._code << "Q.dsb";
 			std::string filename = ss.str();

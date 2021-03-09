@@ -606,7 +606,7 @@ void TraderFemas::OnRspUserLogin( CUstpFtdcRspUserLoginField *pRspUserLogin, CUs
 
 		m_sink->handleTraderLog(LL_INFO,"[%s-%s]账户登录成功...", m_strBroker.c_str(), m_strUser.c_str());
 
-		//据说飞马不支持结算，所以查不到结算单
+		//据说飞马不支持结算,所以查不到结算单
 		m_sink->handleTraderLog(LL_INFO, "[%s-%s]正在查询结算确认信息...", m_strBroker.c_str(), m_strUser.c_str());
 		if (m_bQryOnline)
 			onInitialized();
@@ -749,7 +749,7 @@ void TraderFemas::OnRspQryInvestorPosition(CUstpFtdcRspInvestorPositionField *pR
 			//if (pos->getTotalPosition() > 0 && pos->getMargin() == 0)
 			if (decimal::lt(pos->getTotalPosition(), 0.0) && decimal::eq(pos->getMargin(), 0.0))
 			{
-				//有仓位，但是保证金为0，则说明是套利合约，单个合约的可用持仓全部置为0
+				//有仓位,但是保证金为0,则说明是套利合约,单个合约的可用持仓全部置为0
 				pos->setAvailNewPos(0);
 				pos->setAvailPrePos(0);
 			}
@@ -1073,15 +1073,15 @@ WTSTradeInfo* TraderFemas::makeTradeRecord(CUstpFtdcTradeField *tradeField)
 	uint32_t uDate = strtoul(tradeField->TradingDay, NULL, 10);
 	//if(uDate == m_pContractMgr->getTradingDate())
 	//{
-	//	//如果当前日期和交易日一致，且时间大于21点，说明是夜盘，也就是实际日期要单独计算
+	//	//如果当前日期和交易日一致,且时间大于21点,说明是夜盘,也就是实际日期要单独计算
 	//	if (uTime / 10000 >= 21)
 	//	{
 	//		uDate = m_pMarketMgr->getPrevTDate(mInfo->getExchange(), uDate, 1);
 	//	}
 	//	else if(uTime <= 3)
 	//	{
-	//		//如果在3点以内，就要先获取上一个交易日，再获取下一个自然日
-	//		//这样做的目的是，遇到周五晚上的情况，可以处理过来
+	//		//如果在3点以内,就要先获取上一个交易日,再获取下一个自然日
+	//		//这样做的目的是,遇到周五晚上的情况,可以处理过来
 	//		uDate = m_pMarketMgr->getPrevTDate(mInfo->getExchange(), uDate, 1);
 	//		uDate = TimeUtils::getNextDate(uDate);
 	//	}

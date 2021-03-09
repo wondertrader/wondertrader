@@ -253,7 +253,7 @@ void DataManager::preloadRtCaches(const char* exchg)
 
 	if (ayCts != NULL)
 		ayCts->release();
-	_sink->outputWriterLog(LL_INFO, "预加载%个品种的实时数据缓存文件%u个，耗时%s微秒", codecnt, cnt, WTSLogger::fmtInt64(ticker.micro_seconds()));
+	_sink->outputWriterLog(LL_INFO, "预加载%个品种的实时数据缓存文件%u个,耗时%s微秒", codecnt, cnt, WTSLogger::fmtInt64(ticker.micro_seconds()));
 	_preloaded = true;
 }
 */
@@ -343,7 +343,7 @@ void* WtDataWriter::resizeRTBlock(BoostMFPtr& mfPtr, uint32_t nCount)
 	if (mfPtr == NULL)
 		return NULL;
 
-	//调用该函数之前，应该已经申请了写锁了
+	//调用该函数之前,应该已经申请了写锁了
 	RTBlockHeader* tBlock = (RTBlockHeader*)mfPtr->addr();
 	if (tBlock->_capacity >= nCount)
 		return mfPtr->addr();
@@ -478,7 +478,7 @@ bool WtDataWriter::writeOrderQueue(WTSOrdQueData* curOrdQue)
 
 			StdUniqueLock lock(pBlockPair->_mutex);
 
-			//先检查容量够不够，不够要扩
+			//先检查容量够不够,不够要扩
 			RTOrdQueBlock* blk = pBlockPair->_block;
 			if (blk->_size >= blk->_capacity)
 			{
@@ -572,7 +572,7 @@ bool WtDataWriter::writeOrderDetail(WTSOrdDtlData* curOrdDtl)
 
 			StdUniqueLock lock(pBlockPair->_mutex);
 
-			//先检查容量够不够，不够要扩
+			//先检查容量够不够,不够要扩
 			RTOrdDtlBlock* blk = pBlockPair->_block;
 			if (blk->_size >= blk->_capacity)
 			{
@@ -625,7 +625,7 @@ bool WtDataWriter::writeTransaction(WTSTransData* curTrans)
 
 			StdUniqueLock lock(pBlockPair->_mutex);
 
-			//先检查容量够不够，不够要扩
+			//先检查容量够不够,不够要扩
 			RTTransBlock* blk = pBlockPair->_block;
 			if (blk->_size >= blk->_capacity)
 			{
@@ -661,7 +661,7 @@ void WtDataWriter::pipeToTicks(WTSContractInfo* ct, WTSTickData* curTick)
 
 	StdUniqueLock lock(pBlockPair->_mutex);
 
-	//先检查容量够不够，不够要扩
+	//先检查容量够不够,不够要扩
 	RTTickBlock* blk = pBlockPair->_block;
 	if(blk->_size >= blk->_capacity)
 	{
@@ -711,7 +711,7 @@ WtDataWriter::OrdQueBlockPair* WtDataWriter::getOrdQueBlock(WTSContractInfo* ct,
 			if (!bAutoCreate)
 				return NULL;
 
-			_sink->outputWriterLog(LL_INFO, "数据文件%s不存在，正在初始化...", path.c_str());
+			_sink->outputWriterLog(LL_INFO, "数据文件%s不存在,正在初始化...", path.c_str());
 
 			uint64_t uSize = sizeof(RTDayBlockHeader) + sizeof(WTSOrdQueStruct) * TICK_SIZE_STEP;
 
@@ -737,7 +737,7 @@ WtDataWriter::OrdQueBlockPair* WtDataWriter::getOrdQueBlock(WTSContractInfo* ct,
 
 		if (!isNew &&  pBlock->_block->_date != curDate)
 		{
-			_sink->outputWriterLog(LL_INFO, "orderqueue缓存模块%s日期%u不等于当前日期%u，重新初始化", path.c_str(), pBlock->_block->_date, curDate);
+			_sink->outputWriterLog(LL_INFO, "orderqueue缓存模块%s日期%u不等于当前日期%u,重新初始化", path.c_str(), pBlock->_block->_date, curDate);
 			pBlock->_block->_size = 0;
 			pBlock->_block->_date = curDate;
 
@@ -755,7 +755,7 @@ WtDataWriter::OrdQueBlockPair* WtDataWriter::getOrdQueBlock(WTSContractInfo* ct,
 		}
 		else
 		{
-			//检查缓存文件是否有问题，要自动恢复
+			//检查缓存文件是否有问题,要自动恢复
 			do
 			{
 				uint64_t uSize = sizeof(RTDayBlockHeader) + sizeof(WTSOrdQueStruct) * pBlock->_block->_capacity;
@@ -763,7 +763,7 @@ WtDataWriter::OrdQueBlockPair* WtDataWriter::getOrdQueBlock(WTSContractInfo* ct,
 				if (oldSize != uSize)
 				{
 					uint32_t oldCnt = (uint32_t)((oldSize - sizeof(RTDayBlockHeader)) / sizeof(WTSOrdQueStruct));
-					//文件大小不匹配，一般是因为capacity改了，但是实际没扩容
+					//文件大小不匹配,一般是因为capacity改了,但是实际没扩容
 					//这是做一次扩容即可
 					pBlock->_block->_capacity = oldCnt;
 					pBlock->_block->_size = oldCnt;
@@ -801,7 +801,7 @@ WtDataWriter::OrdDtlBlockPair* WtDataWriter::getOrdDtlBlock(WTSContractInfo* ct,
 			if (!bAutoCreate)
 				return NULL;
 
-			_sink->outputWriterLog(LL_INFO, "数据文件%s不存在，正在初始化...", path.c_str());
+			_sink->outputWriterLog(LL_INFO, "数据文件%s不存在,正在初始化...", path.c_str());
 
 			uint64_t uSize = sizeof(RTDayBlockHeader) + sizeof(WTSOrdDtlStruct) * TICK_SIZE_STEP;
 
@@ -827,7 +827,7 @@ WtDataWriter::OrdDtlBlockPair* WtDataWriter::getOrdDtlBlock(WTSContractInfo* ct,
 
 		if (!isNew &&  pBlock->_block->_date != curDate)
 		{
-			_sink->outputWriterLog(LL_INFO, "orders缓存模块%s日期%u不等于当前日期%u，重新初始化", path.c_str(), pBlock->_block->_date, curDate);
+			_sink->outputWriterLog(LL_INFO, "orders缓存模块%s日期%u不等于当前日期%u,重新初始化", path.c_str(), pBlock->_block->_date, curDate);
 			pBlock->_block->_size = 0;
 			pBlock->_block->_date = curDate;
 
@@ -845,7 +845,7 @@ WtDataWriter::OrdDtlBlockPair* WtDataWriter::getOrdDtlBlock(WTSContractInfo* ct,
 		}
 		else
 		{
-			//检查缓存文件是否有问题，要自动恢复
+			//检查缓存文件是否有问题,要自动恢复
 			for (;;)
 			{
 				uint64_t uSize = sizeof(RTDayBlockHeader) + sizeof(WTSOrdDtlStruct) * pBlock->_block->_capacity;
@@ -853,7 +853,7 @@ WtDataWriter::OrdDtlBlockPair* WtDataWriter::getOrdDtlBlock(WTSContractInfo* ct,
 				if (oldSize != uSize)
 				{
 					uint32_t oldCnt = (uint32_t)((oldSize - sizeof(RTDayBlockHeader)) / sizeof(WTSOrdDtlStruct));
-					//文件大小不匹配，一般是因为capacity改了，但是实际没扩容
+					//文件大小不匹配,一般是因为capacity改了,但是实际没扩容
 					//这是做一次扩容即可
 					pBlock->_block->_capacity = oldCnt;
 					pBlock->_block->_size = oldCnt;
@@ -892,7 +892,7 @@ WtDataWriter::TransBlockPair* WtDataWriter::getTransBlock(WTSContractInfo* ct, u
 			if (!bAutoCreate)
 				return NULL;
 
-			_sink->outputWriterLog(LL_INFO, "数据文件%s不存在，正在初始化...", path.c_str());
+			_sink->outputWriterLog(LL_INFO, "数据文件%s不存在,正在初始化...", path.c_str());
 
 			uint64_t uSize = sizeof(RTDayBlockHeader) + sizeof(WTSTransStruct) * TICK_SIZE_STEP;
 
@@ -918,7 +918,7 @@ WtDataWriter::TransBlockPair* WtDataWriter::getTransBlock(WTSContractInfo* ct, u
 
 		if (!isNew &&  pBlock->_block->_date != curDate)
 		{
-			_sink->outputWriterLog(LL_INFO, "trans缓存模块%s日期%u不等于当前日期%u，重新初始化", path.c_str(), pBlock->_block->_date, curDate);
+			_sink->outputWriterLog(LL_INFO, "trans缓存模块%s日期%u不等于当前日期%u,重新初始化", path.c_str(), pBlock->_block->_date, curDate);
 			pBlock->_block->_size = 0;
 			pBlock->_block->_date = curDate;
 
@@ -936,7 +936,7 @@ WtDataWriter::TransBlockPair* WtDataWriter::getTransBlock(WTSContractInfo* ct, u
 		}
 		else
 		{
-			//检查缓存文件是否有问题，要自动恢复
+			//检查缓存文件是否有问题,要自动恢复
 			for (;;)
 			{
 				uint64_t uSize = sizeof(RTDayBlockHeader) + sizeof(WTSTransStruct) * pBlock->_block->_capacity;
@@ -944,7 +944,7 @@ WtDataWriter::TransBlockPair* WtDataWriter::getTransBlock(WTSContractInfo* ct, u
 				if (oldSize != uSize)
 				{
 					uint32_t oldCnt = (uint32_t)((oldSize - sizeof(RTDayBlockHeader)) / sizeof(WTSTransStruct));
-					//文件大小不匹配，一般是因为capacity改了，但是实际没扩容
+					//文件大小不匹配,一般是因为capacity改了,但是实际没扩容
 					//这是做一次扩容即可
 					pBlock->_block->_capacity = oldCnt;
 					pBlock->_block->_size = oldCnt;
@@ -992,7 +992,7 @@ WtDataWriter::TickBlockPair* WtDataWriter::getTickBlock(WTSContractInfo* ct, uin
 			if (!bAutoCreate)
 				return NULL;
 
-			_sink->outputWriterLog(LL_INFO, "数据文件%s不存在，正在初始化...", path.c_str());
+			_sink->outputWriterLog(LL_INFO, "数据文件%s不存在,正在初始化...", path.c_str());
 
 			uint64_t uSize = sizeof(RTTickBlock) + sizeof(WTSTickStruct) * TICK_SIZE_STEP;
 			BoostFile bf;
@@ -1017,7 +1017,7 @@ WtDataWriter::TickBlockPair* WtDataWriter::getTickBlock(WTSContractInfo* ct, uin
 
 		if (!isNew &&  pBlock->_block->_date != curDate)
 		{
-			_sink->outputWriterLog(LL_INFO, "tick缓存模块%s日期%u不等于当前日期%u，重新初始化", path.c_str(), pBlock->_block->_date, curDate);
+			_sink->outputWriterLog(LL_INFO, "tick缓存模块%s日期%u不等于当前日期%u,重新初始化", path.c_str(), pBlock->_block->_date, curDate);
 			pBlock->_block->_size = 0;
 			pBlock->_block->_date = curDate;
 
@@ -1035,7 +1035,7 @@ WtDataWriter::TickBlockPair* WtDataWriter::getTickBlock(WTSContractInfo* ct, uin
 		}
 		else
 		{
-			//检查缓存文件是否有问题，要自动恢复
+			//检查缓存文件是否有问题,要自动恢复
 			for (;;)
 			{
 				uint64_t uSize = sizeof(RTTickBlock) + sizeof(WTSTickStruct) * pBlock->_block->_capacity;
@@ -1043,7 +1043,7 @@ WtDataWriter::TickBlockPair* WtDataWriter::getTickBlock(WTSContractInfo* ct, uin
 				if (oldSize != uSize)
 				{
 					uint32_t oldCnt = (uint32_t)((oldSize - sizeof(RTTickBlock)) / sizeof(WTSTickStruct));
-					//文件大小不匹配，一般是因为capacity改了，但是实际没扩容
+					//文件大小不匹配,一般是因为capacity改了,但是实际没扩容
 					//这是做一次扩容即可
 					pBlock->_block->_capacity = oldCnt;
 					pBlock->_block->_size = oldCnt;
@@ -1071,9 +1071,9 @@ void WtDataWriter::pipeToKlines(WTSContractInfo* ct, WTSTickData* curTick)
 	if (minutes == INVALID_UINT32)
 		return;
 
-	//当秒数为0，要专门处理，比如091500000，这笔tick要算作0915的
-	//如果是小节结束，要算作小节结束那一分钟，因为经常会有超过结束时间的价格进来，如113000500
-	//不能同时处理，所以用or	
+	//当秒数为0,要专门处理,比如091500000,这笔tick要算作0915的
+	//如果是小节结束,要算作小节结束那一分钟,因为经常会有超过结束时间的价格进来,如113000500
+	//不能同时处理,所以用or	
 	if (sInfo->isLastOfSection(curTime))
 	{
 		minutes--;
@@ -1271,7 +1271,7 @@ WtDataWriter::KBlockPair* WtDataWriter::getKlineBlock(WTSContractInfo* ct, WTSKl
 			if (!bAutoCreate)
 				return NULL;
 
-			_sink->outputWriterLog(LL_INFO, "数据文件%s不存在，正在初始化...", path.c_str());
+			_sink->outputWriterLog(LL_INFO, "数据文件%s不存在,正在初始化...", path.c_str());
 
 			uint64_t uSize = sizeof(RTKlineBlock) + sizeof(WTSBarStruct) * KLINE_SIZE_STEP;
 			/*
@@ -1279,7 +1279,7 @@ WtDataWriter::KBlockPair* WtDataWriter::getKlineBlock(WTSContractInfo* ct, WTSKl
 			fbuf.open(path, std::ios_base::in | std::ios_base::out
 				| std::ios_base::trunc | std::ios_base::binary);
 
-			//定位到倒数第二个字符，然后写入一个0，这样文件大小就固定为指定大小了
+			//定位到倒数第二个字符,然后写入一个0,这样文件大小就固定为指定大小了
 			fbuf.pubseekoff(uSize - 1, std::ios_base::beg);
 			fbuf.sputc(0);
 			fbuf.close();
@@ -1388,7 +1388,7 @@ bool WtDataWriter::updateCache(WTSContractInfo* ct, WTSTickData* curTick, bool b
 
 	if (curTick->tradingdate() > item._date)
 	{
-		//新数据交易日大于老数据，则认为是新一天的数据
+		//新数据交易日大于老数据,则认为是新一天的数据
 		item._date = curTick->tradingdate();
 		memcpy(&item._tick, &newTick, sizeof(WTSTickStruct));
 		if (bNeedSlice)
@@ -1407,22 +1407,22 @@ bool WtDataWriter::updateCache(WTSContractInfo* ct, WTSTickData* curTick, bool b
 	else
 	{
 		//如果缓存里的数据日期大于最新行情的日期
-		//或者缓存里的时间大于等于最新行情的时间，数据就不需要处理
+		//或者缓存里的时间大于等于最新行情的时间,数据就不需要处理
 		WTSSessionInfo* sInfo = _bd_mgr->getSessionByCode(curTick->code(), curTick->exchg());
 		uint32_t tdate = sInfo->getOffsetDate(curTick->actiondate(), curTick->actiontime() / 100000);
 		if (tdate > curTick->tradingdate())
 		{
-			_sink->outputWriterLog(LL_ERROR, "%s.%s最新tick数据(时间%u.%u)异常，丢弃", curTick->exchg(), curTick->code(), curTick->actiondate(), curTick->actiontime());
+			_sink->outputWriterLog(LL_ERROR, "%s.%s最新tick数据(时间%u.%u)异常,丢弃", curTick->exchg(), curTick->code(), curTick->actiondate(), curTick->actiontime());
 			return false;
 		}
 		else if (curTick->totalvolume() < item._tick.total_volume)
 		{
-			_sink->outputWriterLog(LL_ERROR, "%s.%s最新tick数据(时间%u.%u，总成交%u小于缓存总成交%u)异常，丢弃", 
+			_sink->outputWriterLog(LL_ERROR, "%s.%s最新tick数据(时间%u.%u,总成交%u小于缓存总成交%u)异常,丢弃", 
 				curTick->exchg(), curTick->code(), curTick->actiondate(), curTick->actiontime(), curTick->totalvolume(), item._tick.total_volume);
 			return false;
 		}
 
-		//时间戳相同，但是成交量大于等于原来的，这种情况一般是郑商所，这里的处理方式就是时间戳+500毫秒
+		//时间戳相同,但是成交量大于等于原来的,这种情况一般是郑商所,这里的处理方式就是时间戳+500毫秒
 		if(newTick.action_date == item._tick.action_date && newTick.action_time == item._tick.action_time && newTick.total_volume >= item._tick.volume)
 		{
 			newTick.action_time += 500;
@@ -1506,7 +1506,7 @@ void WtDataWriter::check_loop()
 			TickBlockPair* tBlk = &it->second;
 			if (tBlk->_lasttime != 0 && (now - tBlk->_lasttime > expire_secs))
 			{
-				_sink->outputWriterLog(LL_INFO, "tick缓存 %s 映射超时，自动关闭", key.c_str());
+				_sink->outputWriterLog(LL_INFO, "tick缓存 %s 映射超时,自动关闭", key.c_str());
 				releaseBlock<TickBlockPair>(tBlk);
 			}
 		}
@@ -1517,7 +1517,7 @@ void WtDataWriter::check_loop()
 			TransBlockPair* tBlk = &it->second;
 			if (tBlk->_lasttime != 0 && (now - tBlk->_lasttime > expire_secs))
 			{
-				_sink->outputWriterLog(LL_INFO, "trans缓存 %s 映射超时，自动关闭", key.c_str());
+				_sink->outputWriterLog(LL_INFO, "trans缓存 %s 映射超时,自动关闭", key.c_str());
 				releaseBlock<TransBlockPair>(tBlk);
 			}
 		}
@@ -1528,7 +1528,7 @@ void WtDataWriter::check_loop()
 			OrdDtlBlockPair* tBlk = &it->second;
 			if (tBlk->_lasttime != 0 && (now - tBlk->_lasttime > expire_secs))
 			{
-				_sink->outputWriterLog(LL_INFO, "order缓存 %s 映射超时，自动关闭", key.c_str());
+				_sink->outputWriterLog(LL_INFO, "order缓存 %s 映射超时,自动关闭", key.c_str());
 				releaseBlock<OrdDtlBlockPair>(tBlk);
 			}
 		}
@@ -1539,7 +1539,7 @@ void WtDataWriter::check_loop()
 			OrdQueBlockPair* tBlk = &it->second;
 			if (tBlk->_lasttime != 0 && (now - tBlk->_lasttime > expire_secs))
 			{
-				_sink->outputWriterLog(LL_INFO, "queue缓存 %s 映射超时，自动关闭", key.c_str());
+				_sink->outputWriterLog(LL_INFO, "queue缓存 %s 映射超时,自动关闭", key.c_str());
 				releaseBlock<OrdQueBlockPair>(tBlk);
 			}
 		}
@@ -1550,7 +1550,7 @@ void WtDataWriter::check_loop()
 			KBlockPair* kBlk = &it->second;
 			if (kBlk->_lasttime != 0 && (now - kBlk->_lasttime > expire_secs))
 			{
-				_sink->outputWriterLog(LL_INFO, "1分钟缓存 %s 映射超时，自动关闭", key.c_str());
+				_sink->outputWriterLog(LL_INFO, "1分钟缓存 %s 映射超时,自动关闭", key.c_str());
 				releaseBlock<KBlockPair>(kBlk);
 			}
 		}
@@ -1561,7 +1561,7 @@ void WtDataWriter::check_loop()
 			KBlockPair* kBlk = &it->second;
 			if (kBlk->_lasttime != 0 && (now - kBlk->_lasttime > expire_secs))
 			{
-				_sink->outputWriterLog(LL_INFO, "5分钟缓存 %s 映射超时，自动关闭", key.c_str());
+				_sink->outputWriterLog(LL_INFO, "5分钟缓存 %s 映射超时,自动关闭", key.c_str());
 				releaseBlock<KBlockPair>(kBlk);
 			}
 		}
@@ -1582,7 +1582,7 @@ uint32_t WtDataWriter::dump_hisdata_to_db(WTSContractInfo* ct)
 
 	MysqlDb& db = *_db_conn;
 	MysqlTransaction trans(db);
-	//从缓存中读取最新tick，更新到历史日线
+	//从缓存中读取最新tick,更新到历史日线
 	auto it = _tick_cache_idx.find(key);
 	if (it != _tick_cache_idx.end())
 	{
@@ -1599,7 +1599,7 @@ uint32_t WtDataWriter::dump_hisdata_to_db(WTSContractInfo* ct)
 		MysqlQuery query(db);
 		if(!query.exec(sql))
 		{
-			_sink->outputWriterLog(LL_ERROR, "day数据收盘作业失败：%s", query.errormsg());
+			_sink->outputWriterLog(LL_ERROR, "day数据收盘作业失败: %s", query.errormsg());
 		}
 		else
 		{
@@ -1628,7 +1628,7 @@ uint32_t WtDataWriter::dump_hisdata_to_db(WTSContractInfo* ct)
 		MysqlQuery query(db);
 		if (!query.exec(sql))
 		{
-			_sink->outputWriterLog(LL_ERROR, "min1数据收盘作业失败：%s", query.errormsg());
+			_sink->outputWriterLog(LL_ERROR, "min1数据收盘作业失败: %s", query.errormsg());
 		}
 		else
 		{
@@ -1641,7 +1641,7 @@ uint32_t WtDataWriter::dump_hisdata_to_db(WTSContractInfo* ct)
 	if (kBlkPair)
 		releaseBlock(kBlkPair);
 
-	//第四步，转移实时5分钟线
+	//第四步,转移实时5分钟线
 	kBlkPair = getKlineBlock(ct, KP_Minute5, false);
 	if (kBlkPair != NULL && kBlkPair->_block->_size > 0)
 	{
@@ -1662,7 +1662,7 @@ uint32_t WtDataWriter::dump_hisdata_to_db(WTSContractInfo* ct)
 		MysqlQuery query(db);
 		if (!query.exec(sql))
 		{
-			_sink->outputWriterLog(LL_ERROR, "min5数据收盘作业失败：%s", query.errormsg());
+			_sink->outputWriterLog(LL_ERROR, "min5数据收盘作业失败: %s", query.errormsg());
 		}
 		else
 		{
@@ -1689,7 +1689,7 @@ uint32_t WtDataWriter::dump_hisdata_to_file(WTSContractInfo* ct)
 
 	uint32_t count = 0;
 
-	//从缓存中读取最新tick，更新到历史日线
+	//从缓存中读取最新tick,更新到历史日线
 	auto it = _tick_cache_idx.find(key);
 	if (it != _tick_cache_idx.end())
 	{
@@ -1747,7 +1747,7 @@ uint32_t WtDataWriter::dump_hisdata_to_file(WTSContractInfo* ct)
 				HisKlineBlock* kBlock = (HisKlineBlock*)content.data();
 				if (strcmp(kBlock->_blk_flag, BLK_FLAG) != 0)
 				{
-					_sink->outputWriterLog(LL_ERROR, "历史数据文件%s头部异常，将清除数据重建", filename.c_str());
+					_sink->outputWriterLog(LL_ERROR, "历史数据文件%s头部异常,将清除数据重建", filename.c_str());
 					f.truncate_file(0);
 					BlockHeader header;
 					strcpy(header._blk_flag, BLK_FLAG);
@@ -1762,7 +1762,7 @@ uint32_t WtDataWriter::dump_hisdata_to_file(WTSContractInfo* ct)
 				else
 				{
 					std::vector<WTSBarStruct>	bars;
-					if (kBlock->_version == BLOCK_VERSION_RAW)	//如果老的文件是非压缩版本，则直接把K线读到缓存里去
+					if (kBlock->_version == BLOCK_VERSION_RAW)	//如果老的文件是非压缩版本,则直接把K线读到缓存里去
 					{
 						uint32_t barcnt = (uint32_t)(flength - BLOCK_HEADER_SIZE) / sizeof(WTSBarStruct);
 						bars.resize(barcnt);
@@ -1778,23 +1778,23 @@ uint32_t WtDataWriter::dump_hisdata_to_file(WTSContractInfo* ct)
 						memcpy(bars.data(), rawData.data(), rawData.size());
 					}
 
-					//开始比较K线时间标签，主要为了防止数据重复写
+					//开始比较K线时间标签,主要为了防止数据重复写
 					if (!bars.empty())
 					{
 						WTSBarStruct& oldBS = bars.at(bars.size() - 1);	//先取出最后一条K线
 
 						if (oldBS.date == bs.date && memcmp(&oldBS, &bs, sizeof(WTSBarStruct)) != 0)
 						{
-							//日期相同且数据不同，则用最新的替换最后一条
+							//日期相同且数据不同,则用最新的替换最后一条
 							oldBS = bs;
 						}
-						else if (oldBS.date < bs.date)	//老的K线日期小于新的，则直接追加到后面
+						else if (oldBS.date < bs.date)	//老的K线日期小于新的,则直接追加到后面
 						{
 							bars.emplace_back(bs);
 						}
 					}
 
-					//如果老的文件已经是压缩版本，或者最终数据大小大于100条，则进行压缩
+					//如果老的文件已经是压缩版本,或者最终数据大小大于100条,则进行压缩
 					bool bNeedCompress = false;
 					if (kBlock->_version == BLOCK_VERSION_CMP || bars.size() > 100)
 					{
@@ -1837,7 +1837,7 @@ uint32_t WtDataWriter::dump_hisdata_to_file(WTSContractInfo* ct)
 		}
 		else
 		{
-			_sink->outputWriterLog(LL_ERROR, "历史数据文件%s打开失败，day数据收盘作业失败", filename.c_str());
+			_sink->outputWriterLog(LL_ERROR, "历史数据文件%s打开失败,day数据收盘作业失败", filename.c_str());
 		}
 	}
 
@@ -1905,14 +1905,14 @@ uint32_t WtDataWriter::dump_hisdata_to_file(WTSContractInfo* ct)
 		}
 		else
 		{
-			_sink->outputWriterLog(LL_ERROR, "历史数据文件%s打开失败，min1数据收盘作业失败", filename.c_str());
+			_sink->outputWriterLog(LL_ERROR, "历史数据文件%s打开失败,min1数据收盘作业失败", filename.c_str());
 		}
 	}
 
 	if (kBlkPair)
 		releaseBlock(kBlkPair);
 
-	//第四步，转移实时5分钟线
+	//第四步,转移实时5分钟线
 	kBlkPair = getKlineBlock(ct, KP_Minute5, false);
 	if (kBlkPair != NULL && kBlkPair->_block->_size > 0)
 	{
@@ -1975,7 +1975,7 @@ uint32_t WtDataWriter::dump_hisdata_to_file(WTSContractInfo* ct)
 		}
 		else
 		{
-			_sink->outputWriterLog(LL_ERROR, "历史数据文件%s打开失败，min5数据收盘作业失败", filename.c_str());
+			_sink->outputWriterLog(LL_ERROR, "历史数据文件%s打开失败,min5数据收盘作业失败", filename.c_str());
 		}
 	}
 
@@ -2049,7 +2049,7 @@ void WtDataWriter::proc_loop()
 				}
 				else
 				{
-					_sink->outputWriterLog(LL_WARN, "%s[%s]已过期，缓存即将清理", ay[1].c_str(), ay[0].c_str());
+					_sink->outputWriterLog(LL_WARN, "%s[%s]已过期,缓存即将清理", ay[1].c_str(), ay[0].c_str());
 
 					//删除已经过期代码的实时tick文件
 					std::string path = StrUtil::printf("%srt/ticks/%s/%s.dmb", _base_dir.c_str(), ay[0].c_str(), ay[1].c_str());
@@ -2057,7 +2057,7 @@ void WtDataWriter::proc_loop()
 				}
 			}
 
-			//如果两组代码个数不同，说明有代码过期了，被排除了
+			//如果两组代码个数不同,说明有代码过期了,被排除了
 			if(setCodes.size() != _tick_cache_idx.size())
 			{
 				uint32_t diff = _tick_cache_idx.size() - setCodes.size();
@@ -2106,7 +2106,7 @@ void WtDataWriter::proc_loop()
 				_tick_cache_file->map(filename.c_str());
 				_tick_cache_block = (RTTickCache*)_tick_cache_file->addr();
 				
-				_sink->outputWriterLog(LL_INFO, "行情缓存清理成功，共清理%u条过期的缓存", diff);
+				_sink->outputWriterLog(LL_INFO, "行情缓存清理成功,共清理%u条过期的缓存", diff);
 			}
 
 			std::string path = StrUtil::printf("%srt/min1/", _base_dir.c_str());
@@ -2142,7 +2142,7 @@ void WtDataWriter::proc_loop()
 		}
 		else if (StrUtil::startsWith(fullcode, "MARK.", false))
 		{
-			//如果指令以MARK.开头，说明是标记指令，要写一条标记
+			//如果指令以MARK.开头,说明是标记指令,要写一条标记
 			std::string filename = _base_dir + MARKER_FILE;
 			std::string sid = fullcode.substr(5);
 			uint32_t curDate = TimeUtils::getCurDate();
@@ -2151,7 +2151,7 @@ void WtDataWriter::proc_loop()
 			iniHelper.load(filename.c_str());
 			iniHelper.writeInt("markers", sid.c_str(), curDate);
 			iniHelper.save();
-			_sink->outputWriterLog(LL_INFO, "交易时间模板[%s]收盘作业标记已更新：%u", sid.c_str(), curDate);
+			_sink->outputWriterLog(LL_INFO, "交易时间模板[%s]收盘作业标记已更新: %u", sid.c_str(), curDate);
 		}
 
 		auto pos = fullcode.find(".");
@@ -2208,7 +2208,7 @@ void WtDataWriter::proc_loop()
 				}
 				else
 				{
-					_sink->outputWriterLog(LL_ERROR, "历史数据文件%s打开失败，tick数据收盘作业失败", filename.c_str());
+					_sink->outputWriterLog(LL_ERROR, "历史数据文件%s打开失败,tick数据收盘作业失败", filename.c_str());
 				}
 			}
 
@@ -2260,7 +2260,7 @@ void WtDataWriter::proc_loop()
 				}
 				else
 				{
-					_sink->outputWriterLog(LL_ERROR, "历史数据文件%s打开失败，trans数据收盘作业失败", filename.c_str());
+					_sink->outputWriterLog(LL_ERROR, "历史数据文件%s打开失败,trans数据收盘作业失败", filename.c_str());
 				}
 			}
 
@@ -2312,7 +2312,7 @@ void WtDataWriter::proc_loop()
 				}
 				else
 				{
-					_sink->outputWriterLog(LL_ERROR, "历史数据文件%s打开失败，orders数据收盘作业失败", filename.c_str());
+					_sink->outputWriterLog(LL_ERROR, "历史数据文件%s打开失败,orders数据收盘作业失败", filename.c_str());
 				}
 			}
 
@@ -2364,7 +2364,7 @@ void WtDataWriter::proc_loop()
 				}
 				else
 				{
-					_sink->outputWriterLog(LL_ERROR, "历史数据文件%s打开失败，queue数据收盘作业失败", filename.c_str());
+					_sink->outputWriterLog(LL_ERROR, "历史数据文件%s打开失败,queue数据收盘作业失败", filename.c_str());
 				}
 
 

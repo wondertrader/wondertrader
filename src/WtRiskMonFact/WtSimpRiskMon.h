@@ -38,7 +38,7 @@ private:
 
 	uint64_t		_last_time;
 
-	uint32_t		_calc_span;			//计算时间间隔，单位s
+	uint32_t		_calc_span;			//计算时间间隔,单位s
 	uint32_t		_risk_span;			//回撤比较时间
 	double			_basic_ratio;		//基础盈利率
 	double			_risk_scale;		//风险控制系数

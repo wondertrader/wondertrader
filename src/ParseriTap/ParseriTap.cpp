@@ -189,7 +189,7 @@ void ParseriTap::OnRspLogin(TAPIINT32 errorCode, const TapAPIQuotLoginRspInfo *i
 	{
 		if(m_sink)
 		{
-			m_sink->handleParserLog(LL_INFO, "[ParseriTap]%s登录成功", m_strUser.c_str());
+			m_sink->handleParserLog(LL_INFO, "[ParseriTap] %s login succeed", m_strUser.c_str());
 			m_sink->handleEvent(WPE_Login, 0);
 		}
 
@@ -201,7 +201,7 @@ void ParseriTap::OnRspLogin(TAPIINT32 errorCode, const TapAPIQuotLoginRspInfo *i
 	{
 		if(m_sink)
 		{
-			m_sink->handleParserLog(LL_INFO, "[ParseriTap]%s登录失败:%d", m_strUser.c_str(), errorCode);
+			m_sink->handleParserLog(LL_INFO, "[ParseriTap] %s login failed: %d", m_strUser.c_str(), errorCode);
 			m_sink->handleEvent(WPE_Login, errorCode);
 		}
 	}
@@ -218,7 +218,7 @@ void ParseriTap::OnDisconnect(TAPIINT32 reasonCode)
 {
 	if(m_sink && !m_bStopped)
 	{
-		m_sink->handleParserLog(LL_ERROR, StrUtil::printf("[ParseriTap]行情服务连接已断开,错误码: %d...", reasonCode).c_str());
+		m_sink->handleParserLog(LL_ERROR, StrUtil::printf("[ParseriTap] Market data server disconnected: %d...", reasonCode).c_str());
 		m_sink->handleEvent(WPE_Close, 0);
 	}
 
@@ -228,10 +228,10 @@ void ParseriTap::OnDisconnect(TAPIINT32 reasonCode)
 		if (!m_bReconnect)
 		{
 			m_bReconnect = true;
-			//这里丢到线程里去处理，让OnClose可以马上返回
+			//这里丢到线程里去处理,让OnClose可以马上返回
 			StdThreadPtr thrd(new StdThread([this](){
 				std::this_thread::sleep_for(std::chrono::seconds(RECONNECT_SECONDS));
-				m_sink->handleParserLog(LL_WARN, "[ParseriTap]行情正在重连...", m_strUser.c_str());
+				m_sink->handleParserLog(LL_WARN, "[ParseriTap] Reconnecting server...", m_strUser.c_str());
 				reconnect();
 			}));
 		}
@@ -435,13 +435,13 @@ bool ParseriTap::login(bool bNeedReconn /* = false */)
 	if(iResult != TAPIERROR_SUCCEED)
 	{
 		if(m_sink)
-			m_sink->handleParserLog(LL_ERROR, StrUtil::printf("[ParseriTap]登录请求发送失败, 错误码:%d", iResult).c_str());
+			m_sink->handleParserLog(LL_ERROR, StrUtil::printf("[ParseriTap] Sending login request failed: %d", iResult).c_str());
 
-		//如果连接失败，且需要重连，就再重连
+		//如果连接失败,且需要重连,就再重连
 		if(iResult == TAPIERROR_ConnectFail && bNeedReconn && !m_bStopped)
 		{
 			std::this_thread::sleep_for(std::chrono::seconds(RECONNECT_SECONDS));
-			m_sink->handleParserLog(LL_INFO, StrUtil::printf("[ParseriTap]行情正在重连...").c_str());
+			m_sink->handleParserLog(LL_INFO, StrUtil::printf("[ParseriTap] Reconnecting server...").c_str());
 			reconnect();
 		}
 	}
@@ -589,7 +589,7 @@ void ParseriTap::subscribe(const CodeSet &vecSymbols)
 			}
 
 			if(m_sink)
-				m_sink->handleParserLog(LL_INFO, StrUtil::printf("[ParseriTap]一共订阅 %d 个合约行情", vecSymbols.size()).c_str());
+				m_sink->handleParserLog(LL_INFO, StrUtil::printf("[ParseriTap] Market data of %u contracts subscribed in total", vecSymbols.size()).c_str());
 		}
 	}
 }

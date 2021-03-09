@@ -182,7 +182,7 @@ void UDPCaster::do_receive()
 						delete data;
 						if (ec)
 						{
-							WTSLogger::error("UDP数据发送失败：%s", ec.message().c_str());
+							WTSLogger::error("Sending data on UDP failed: %s", ec.message().c_str());
 						}
 					});
 				}
@@ -198,7 +198,7 @@ void UDPCaster::do_receive()
 				delete data;
 				if (ec)
 				{
-					WTSLogger::error("UDP数据发送失败：%s", ec.message().c_str());
+					WTSLogger::error("Sending data on UDP failed: %s", ec.message().c_str());
 				}
 			});
 		}
@@ -382,7 +382,7 @@ void UDPCaster::broadcast(WTSObject* data, uint32_t dataType)
 		uint32_t curTime = curTick->actiontime()/1000;
 		char buf_flat[2048] = {0};
 		char *str = buf_flat;
-		//日期，时间，买价，卖价，代码，最新价，开，高，低，今结，昨结，总手，现手，总持，增仓，档位[买x价，买x量，卖x价，卖x量]
+		//日期,时间,买价,卖价,代码,最新价,开,高,低,今结,昨结,总手,现手,总持,增仓,档位[买x价,买x量,卖x价,卖x量]
 		str += sprintf(str, "%04d.%02d.%02d,", 
 			curTick->actiondate()/10000, curTick->actiondate()%10000/100, curTick->actiondate()%100);
 		str += sprintf(str, "%02d:%02d:%02d,", 
@@ -491,7 +491,7 @@ void UDPCaster::handle_send_broad(const EndPoint& ep, const boost::system::error
 {
 	if(error)
 	{
-		WTSLogger::error("行情广播失败，目标地址：%s，错误信息：%s", ep.address().to_string().c_str(), error.message().c_str());
+		WTSLogger::error("Broadcasting of market data failed, remote addr: %s, error message: %s", ep.address().to_string().c_str(), error.message().c_str());
 	}
 }
 
@@ -499,7 +499,7 @@ void UDPCaster::handle_send_multi(const EndPoint& ep, const boost::system::error
 {
 	if(error)
 	{
-		WTSLogger::error("行情多播失败，目标地址：%s，错误信息：%s", ep.address().to_string().c_str(), error.message().c_str());
+		WTSLogger::error("Multicasting of market data failed, remote addr: %s, error message: %s", ep.address().to_string().c_str(), error.message().c_str());
 	}
 }
 

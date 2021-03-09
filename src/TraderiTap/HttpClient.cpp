@@ -147,8 +147,8 @@ int CHttpClient::Get(const std::string & strUrl, std::string & strResponse)
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&strResponse);
 	curl_easy_setopt(curl, CURLOPT_HEADERDATA, (void *)&strHeader);
 	/**
-	* 当多个线程都使用超时处理的时候，同时主线程中有sleep或是wait等操作。
-	* 如果不设置这个选项，libcurl将会发信号打断这个wait从而导致程序退出。
+	* 当多个线程都使用超时处理的时候,同时主线程中有sleep或是wait等操作。
+	* 如果不设置这个选项,libcurl将会发信号打断这个wait从而导致程序退出。
 	*/
 	curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
 	curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 30);
@@ -216,7 +216,7 @@ int CHttpClient::Posts(const std::string & strUrl, const std::string & strPost, 
 	}
 	else
 	{
-		//缺省情况就是PEM，所以无需设置，另外支持DER
+		//缺省情况就是PEM,所以无需设置,另外支持DER
 		//curl_easy_setopt(curl,CURLOPT_SSLCERTTYPE,"PEM");
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, true);
 		curl_easy_setopt(curl, CURLOPT_CAINFO, pCaPath);

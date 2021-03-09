@@ -68,7 +68,7 @@ bool ParserAdapter::init(const char* id, WTSVariant* cfg, IParserStub* stub, IBa
 
 		//先看工作目录下是否有行情模块
 		std::string dllpath = WtHelper::getModulePath(module, "parsers", true);
-		//如果没有，则再看模块目录，即dll同目录下
+		//如果没有,则再看模块目录,即dll同目录下
 		if(!StdFile::exists(dllpath.c_str()))
 			dllpath = WtHelper::getModulePath(module, "parsers", false);
 
@@ -132,7 +132,7 @@ bool ParserAdapter::init(const char* id, WTSVariant* cfg, IParserStub* stub, IBa
 				ExchgFilter::iterator it = _code_filter.begin();
 				for (; it != _code_filter.end(); it++)
 				{
-					//全代码，形式如SSE.600000，期货代码为CFFEX.IF2005
+					//全代码,形式如SSE.600000,期货代码为CFFEX.IF2005
 					std::string code, exchg;
 					auto ay = StrUtil::split((*it).c_str(), ".");
 					if (ay.size() == 1)

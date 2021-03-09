@@ -418,8 +418,8 @@ void WtLocalExecuter::on_position(const char* stdCode, bool isLong, double prevo
 		std::string code = hotMgr->getPrevRawCode(cInfo._exchg, cInfo._product, _stub->get_trading_day());
 		if (code == stdCode)
 		{
-			//上期主力合约，需要清理仓位
-			writeLog("%s 为上一期主力合约，仓位即将自动清理");
+			//上期主力合约,需要清理仓位
+			writeLog("%s 为上一期主力合约,仓位即将自动清理");
 			ExecuteUnitPtr unit = getUnit(stdCode);
 			if (unit)
 			{

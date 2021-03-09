@@ -28,7 +28,7 @@ int main()
 	rj::Document root;
 	if (root.Parse(content.c_str()).HasParseError())
 	{
-		WTSLogger::info("ÅäÖÃÎÄ¼ş½âÎöÊ§°Ü");
+		WTSLogger::info("Parsing configuration file failed");
 		return -1;
 	}
 

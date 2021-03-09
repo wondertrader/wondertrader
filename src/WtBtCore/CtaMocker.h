@@ -39,7 +39,7 @@ typedef struct _CondEntrust
 
 	double			_qty;
 
-	char			_action;	//0-开多，1-平多，2-开空，3-平空
+	char			_action;	//0-开多,1-平多,2-开空,3-平空
 
 	char			_code[MAX_INSTRUMENT_LENGTH];
 	char			_usertag[32];

@@ -161,7 +161,7 @@ uint32_t WtRtRunner::createHftContext(const char* name, const char* trader, bool
 	}
 	else
 	{
-		WTSLogger::error("交易通道%s不存在，HFT策略绑定交易通道失败", trader);
+		WTSLogger::error("交易通道%s不存在,HFT策略绑定交易通道失败", trader);
 	}
 	return ctx->id();
 }
@@ -358,7 +358,7 @@ bool WtRtRunner::config(const char* cfgFile, bool isFile /* = true */)
 	//初始化事件推送器
 	initEvtNotifier();
 
-	//如果不是高频引擎，则需要配置执行模块
+	//如果不是高频引擎,则需要配置执行模块
 	if (!_is_hft)
 		initExecuters();
 
@@ -470,7 +470,7 @@ bool WtRtRunner::initHftStrategies()
 		}
 		else
 		{
-			WTSLogger::error("交易通道%s不存在，HFT策略绑定交易通道失败", traderid);
+			WTSLogger::error("交易通道%s不存在,HFT策略绑定交易通道失败", traderid);
 		}
 
 		_hft_engine.addContext(HftContextPtr(ctx));
@@ -503,19 +503,19 @@ bool WtRtRunner::initEngine()
 
 	if (_is_hft)
 	{
-		WTSLogger::info("交易环境初始化完成，交易引擎：HFT");
+		WTSLogger::info("交易环境初始化完成,交易引擎: HFT");
 		_hft_engine.init(cfg, &_bd_mgr, &_data_mgr, &_hot_mgr);
 		_engine = &_hft_engine;
 	}
 	else if (_is_sel)
 	{
-		WTSLogger::info("交易环境初始化完成，交易引擎：SelStk");
+		WTSLogger::info("交易环境初始化完成,交易引擎: SelStk");
 		_sel_engine.init(cfg, &_bd_mgr, &_data_mgr, &_hot_mgr);
 		_engine = &_sel_engine;
 	}
 	else
 	{
-		WTSLogger::info("交易环境初始化完成，交易引擎：CTA");
+		WTSLogger::info("交易环境初始化完成,交易引擎: CTA");
 		_cta_engine.init(cfg, &_bd_mgr, &_data_mgr, &_hot_mgr);
 		_engine = &_cta_engine;
 	}

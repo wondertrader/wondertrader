@@ -231,7 +231,7 @@ void ParserXTP::OnDisconnected(int nReason)
 {
 	if(m_sink)
 	{
-		m_sink->handleParserLog(LL_ERROR, "[ParserXTP]CTP行情服务连接已断开,原因: %d...", nReason);
+		m_sink->handleParserLog(LL_ERROR, "[ParserXTP] Market data server disconnected: %d...", nReason);
 		m_sink->handleEvent(WPE_Close, 0);
 	}
 }
@@ -267,7 +267,7 @@ void ParserXTP::OnDepthMarketData(XTPMD *market_data, int64_t bid1_qty[], int32_
 	if(ct == NULL)
 	{
 		if (m_sink)
-			m_sink->handleParserLog(LL_ERROR, "[ParserXTP]代码%s.%s不存在...", exchg.c_str(), market_data->ticker);
+			m_sink->handleParserLog(LL_ERROR, "[ParserXTP] Instrument %s.%s not exists...", exchg.c_str(), market_data->ticker);
 		return;
 	}
 	WTSCommodityInfo* commInfo = m_pBaseDataMgr->getCommodity(ct);
@@ -321,13 +321,12 @@ void ParserXTP::OnSubMarketData(XTPST *ticker, XTPRI *error_info, bool is_last)
 {
 	if (!IsErrorRspInfo(error_info))
 	{
-		//if (m_sink)
-		//	m_sink->handleParserLog(LL_INFO, "[ParserXTP]实时行情订阅成功,代码:%s%s", ticker->exchange_id == XTP_EXCHANGE_SH ? "SH" : "SZ", ticker->ticker);
+
 	}
 	else
 	{
 		if(m_sink)
-			m_sink->handleParserLog(LL_ERROR, "[ParserXTP]实时行情订阅失败,代码:%s%s", ticker->exchange_id == XTP_EXCHANGE_SH ? "SSE." : "SZSE.", ticker->ticker);
+			m_sink->handleParserLog(LL_ERROR, "[ParserXTP] Market data subscribe faile, code: %s%s", ticker->exchange_id == XTP_EXCHANGE_SH ? "SSE." : "SZSE.", ticker->ticker);
 	}
 }
 
@@ -351,7 +350,7 @@ void ParserXTP::DoLogin()
 			{
 				m_sink->handleEvent(WPE_Connect, 0);
 
-				m_sink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserXTP]CTP 登录请求发送失败, 错误码:%d", iResult).c_str());
+				m_sink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserXTP] Sending login request failed: %d", iResult).c_str());
 			}
 			
 		}
@@ -388,12 +387,12 @@ void ParserXTP::DoSubscribeMD()
 			if (iResult != 0)
 			{
 				if (m_sink)
-					m_sink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserXTP]上证行情订阅请求发送失败, 错误码:%d", iResult).c_str());
+					m_sink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserXTP] Sending md subscribe request of SSE failed: %d", iResult).c_str());
 			}
 			else
 			{
 				if (m_sink)
-					m_sink->handleParserLog(LL_INFO, StrUtil::printf("[ParserXTP]一共订阅上证 %d 个品种行情", nCount).c_str());
+					m_sink->handleParserLog(LL_INFO, StrUtil::printf("[ParserXTP] Market data of %u instruments of SSE subscribed", nCount).c_str());
 			}
 		}
 		codeFilter.clear();
@@ -418,12 +417,12 @@ void ParserXTP::DoSubscribeMD()
 			if (iResult != 0)
 			{
 				if (m_sink)
-					m_sink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserXTP]深证行情订阅请求发送失败, 错误码:%d", iResult).c_str());
+					m_sink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserXTP] Sending md subscribe request of SZSE failed: %d", iResult).c_str());
 			}
 			else
 			{
 				if (m_sink)
-					m_sink->handleParserLog(LL_INFO, StrUtil::printf("[ParserXTP]一共订阅深证 %d 个品种行情", nCount).c_str());
+					m_sink->handleParserLog(LL_INFO, StrUtil::printf("[ParserXTP] Market data of %u instruments of SZSE subscribed", nCount).c_str());
 			}
 		}
 		codeFilter.clear();
@@ -489,12 +488,12 @@ void ParserXTP::subscribe(const CodeSet &vecSymbols)
 				if (iResult != 0)
 				{
 					if (m_sink)
-						m_sink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserXTP]行情订阅请求发送失败, 错误码:%d", iResult).c_str());
+						m_sink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserXTP] Sending md subscribe request of SSE failed: %d", iResult).c_str());
 				}
 				else
 				{
 					if (m_sink)
-						m_sink->handleParserLog(LL_INFO, StrUtil::printf("[ParserXTP]一共订阅 %d 个品种行情", nCount).c_str());
+						m_sink->handleParserLog(LL_INFO, StrUtil::printf("[ParserXTP] Market data of %u instruments of SSE subscribed", nCount).c_str());
 				}
 			}
 			delete[] subscribe;
@@ -516,12 +515,12 @@ void ParserXTP::subscribe(const CodeSet &vecSymbols)
 				if (iResult != 0)
 				{
 					if (m_sink)
-						m_sink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserXTP]行情订阅请求发送失败, 错误码:%d", iResult).c_str());
+						m_sink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserXTP] Sending md subscribe request of SZSE failed: %d", iResult).c_str());
 				}
 				else
 				{
 					if (m_sink)
-						m_sink->handleParserLog(LL_INFO, StrUtil::printf("[ParserXTP]一共订阅 %d 个品种行情", nCount).c_str());
+						m_sink->handleParserLog(LL_INFO, StrUtil::printf("[ParserXTP] Market data of %u instruments of SZSE subscribed", nCount).c_str());
 				}
 			}
 			delete[] subscribe;

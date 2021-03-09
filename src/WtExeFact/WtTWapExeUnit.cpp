@@ -62,9 +62,9 @@ void WtTWapExeUnit::init(ExecuteContext* ctx, const char* stdCode, WTSVariant* c
 	_price_mode = cfg->getUInt32("price_mode");
 	_price_offset = cfg->getUInt32("price_offset");
 
-	_fire_span = (_total_secs - _tail_secs) / _total_times;		//单次发单时间间隔，要去掉尾部时间计算，这样的话，最后剩余的数量就有一个兜底发单的机制了
+	_fire_span = (_total_secs - _tail_secs) / _total_times;		//单次发单时间间隔,要去掉尾部时间计算,这样的话,最后剩余的数量就有一个兜底发单的机制了
 
-	ctx->writeLog("执行单元WtTWapExeUnit[%s] 初始化完成，订单超时 %u 秒，执行时限 %u 秒，收尾时间 %u 秒", stdCode, _ord_sticky, _total_secs, _tail_secs);
+	ctx->writeLog("执行单元WtTWapExeUnit[%s] 初始化完成,订单超时 %u 秒,执行时限 %u 秒,收尾时间 %u 秒", stdCode, _ord_sticky, _total_secs, _tail_secs);
 }
 
 void WtTWapExeUnit::on_order(uint32_t localid, const char* stdCode, bool isBuy, double leftover, double price, bool isCanceled)
@@ -82,13 +82,13 @@ void WtTWapExeUnit::on_order(uint32_t localid, const char* stdCode, bool isBuy, 
 		_ctx->writeLog("@ %d cancelcnt -> %u", __LINE__, _cancel_cnt);
 	}
 
-	//如果全部订单已撤销，这个时候一般是遇到要超时撤单
+	//如果全部订单已撤销,这个时候一般是遇到要超时撤单
 	if (isCanceled && _cancel_cnt == 0)
 	{
 		double realPos = _ctx->getPosition(stdCode);
 		if(!decimal::eq(realPos, _this_target))
 		{
-			//撤单以后重发，一般是加点重发
+			//撤单以后重发,一般是加点重发
 			fire_at_once(_this_target - realPos);
 		}
 	}
@@ -100,8 +100,8 @@ void WtTWapExeUnit::on_channel_ready()
 	double undone = _ctx->getUndoneQty(_code.c_str());
 	if (undone != 0 && !_orders_mon.has_order())
 	{
-		//这说明有未完成单不在监控之中，先撤掉
-		_ctx->writeLog("%s有不在管理中的未完成单 %f，全部撤销", _code.c_str(), undone);
+		//这说明有未完成单不在监控之中,先撤掉
+		_ctx->writeLog("%s有不在管理中的未完成单 %f,全部撤销", _code.c_str(), undone);
 
 		bool isBuy = (undone > 0);
 		OrderIDs ids = _ctx->cancel(_code.c_str(), isBuy);
@@ -126,13 +126,13 @@ void WtTWapExeUnit::on_tick(WTSTickData* newTick)
 		return;
 
 	bool isFirstTick = false;
-	//如果原来的tick不为空，则要释放掉
+	//如果原来的tick不为空,则要释放掉
 	if (_last_tick)
 		_last_tick->release();
 	else
 		isFirstTick = true;
 
-	//新的tick数据，要保留
+	//新的tick数据,要保留
 	_last_tick = newTick;
 	_last_tick->retain();
 
@@ -142,7 +142,7 @@ void WtTWapExeUnit::on_tick(WTSTickData* newTick)
 	*	那么在新的行情数据进来的时候可以再次触发核心逻辑
 	*/
 
-	if (isFirstTick)	//如果是第一笔tick，则检查目标仓位，不符合则下单
+	if (isFirstTick)	//如果是第一笔tick,则检查目标仓位,不符合则下单
 	{
 		double newVol = _target_pos;
 		const char* stdCode = _code.c_str();
@@ -196,14 +196,14 @@ void WtTWapExeUnit::on_tick(WTSTickData* newTick)
 
 void WtTWapExeUnit::on_trade(uint32_t localid, const char* stdCode, bool isBuy, double vol, double price)
 {
-	//不用触发，这里在ontick里触发吧
+	//不用触发,这里在ontick里触发吧
 }
 
 void WtTWapExeUnit::on_entrust(uint32_t localid, const char* stdCode, bool bSuccess, const char* message)
 {
 	if (!bSuccess)
 	{
-		//如果不是我发出去的订单，我就不管了
+		//如果不是我发出去的订单,我就不管了
 		if (!_orders_mon.has_order(localid))
 			return;
 
@@ -224,7 +224,7 @@ void WtTWapExeUnit::fire_at_once(double qty)
 	uint64_t now = TimeUtils::getLocalTimeNow();
 	bool isBuy = decimal::gt(qty, 0);
 	double targetPx = 0;
-	//根据价格模式设置，确定委托基准价格：0-最新价，1-最优价，2-对手价
+	//根据价格模式设置,确定委托基准价格: 0-最新价,1-最优价,2-对手价
 	if (_price_mode == 0)
 	{
 		targetPx = curTick->price();
@@ -238,7 +238,7 @@ void WtTWapExeUnit::fire_at_once(double qty)
 		targetPx = isBuy ? curTick->askprice(0) : curTick->bidprice(0);
 	}
 
-	//如果需要全部发单，则价格偏移5跳，以保障执行
+	//如果需要全部发单,则价格偏移5跳,以保障执行
 	targetPx += _comm_info->getPriceTick() * 5 * (isBuy ? 1 : -1);
 
 	//最后发出指令
@@ -258,26 +258,26 @@ void WtTWapExeUnit::do_calc()
 	if (!_channel_ready)
 		return;
 
-	//有正在撤销的订单，则不能进行下一轮计算
+	//有正在撤销的订单,则不能进行下一轮计算
 	if (_cancel_cnt != 0)
 	{
-		_ctx->writeLog("%s尚有未完成撤单指令，暂时退出本轮执行", _code.c_str());
+		_ctx->writeLog("%s尚有未完成撤单指令,暂时退出本轮执行", _code.c_str());
 		return;
 	}
 
 	if (_last_tick == NULL)
 	{
-		_ctx->writeLog("%s没有最新tick数据，退出执行逻辑", _code.c_str());
+		_ctx->writeLog("%s没有最新tick数据,退出执行逻辑", _code.c_str());
 		return;
 	}
 
 	const char* code = _code.c_str();
 
 	double undone = _ctx->getUndoneQty(code);
-	//每一次发单要保障成交，所以如果有未完成单，说明上一轮没完成
+	//每一次发单要保障成交,所以如果有未完成单,说明上一轮没完成
 	if (undone != 0)
 	{
-		_ctx->writeLog("%s上一轮有挂单未完成，暂时退出本轮执行", _code.c_str());
+		_ctx->writeLog("%s上一轮有挂单未完成,暂时退出本轮执行", _code.c_str());
 		return;
 	}
 
@@ -290,15 +290,15 @@ void WtTWapExeUnit::do_calc()
 	uint32_t leftTimes = _total_times - _fired_times;
 
 	bool bNeedShowHand = false;
-	//剩余次数为0，剩余数量不为0，说明要全部发出去了
-	//剩余次数为0，说明已经到了兜底时间了，如果这个时候还有未完成数量，则需要发单
+	//剩余次数为0,剩余数量不为0,说明要全部发出去了
+	//剩余次数为0,说明已经到了兜底时间了,如果这个时候还有未完成数量,则需要发单
 	if (leftTimes == 0 && !decimal::eq(diffQty, 0))
 		bNeedShowHand = true;
 
 	double curQty = 0;
 
-	//如果剩余此处为0 ，则需要全部下单
-	//否则，取整(剩余数量/剩余次数)与1的最大值，即最小为一手，但是要注意符号处理
+	//如果剩余此处为0 ,则需要全部下单
+	//否则,取整(剩余数量/剩余次数)与1的最大值,即最小为一手,但是要注意符号处理
 	if (leftTimes == 0)
 		curQty = diffQty;
 	else
@@ -313,7 +313,7 @@ void WtTWapExeUnit::do_calc()
 	uint64_t now = TimeUtils::getLocalTimeNow();
 	bool isBuy = decimal::gt(diffQty, 0);
 	double targetPx = 0;
-	//根据价格模式设置，确定委托基准价格：0-最新价，1-最优价，2-对手价
+	//根据价格模式设置,确定委托基准价格: 0-最新价,1-最优价,2-对手价
 	if (_price_mode == 0)
 	{
 		targetPx = curTick->price();
@@ -327,12 +327,12 @@ void WtTWapExeUnit::do_calc()
 		targetPx = isBuy ? curTick->askprice(0) : curTick->bidprice(0);
 	}
 
-	//如果需要全部发单，则价格偏移5跳，以保障执行
+	//如果需要全部发单,则价格偏移5跳,以保障执行
 	if(bNeedShowHand) //  last showhand time
 	{		
 		targetPx += _comm_info->getPriceTick() * 5 * (isBuy ? 1 : -1);
 	}
-	else if(_price_offset != 0)	//如果设置了价格偏移，也要处理一下
+	else if(_price_offset != 0)	//如果设置了价格偏移,也要处理一下
 	{
 		targetPx += _comm_info->getPriceTick() * _price_offset * (isBuy ? 1 : -1);
 	}

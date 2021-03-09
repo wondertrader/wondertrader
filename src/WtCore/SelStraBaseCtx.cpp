@@ -264,7 +264,7 @@ void SelStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 				const char* stdCode = pItem["code"].GetString();
 				if (!CodeHelper::isStdFutHotCode(stdCode) && _engine->get_contract_info(stdCode) == NULL)
 				{
-					stra_log_text("%s不存在或者已过期，持仓数据已忽略", stdCode);
+					stra_log_text("%s不存在或者已过期,持仓数据已忽略", stdCode);
 					continue;
 				}
 				PosInfo& pInfo = _pos_map[stdCode];
@@ -321,7 +321,7 @@ void SelStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 				const char* stdCode = m.name.GetString();
 				if (!CodeHelper::isStdFutHotCode(stdCode) && _engine->get_contract_info(stdCode) == NULL)
 				{
-					stra_log_text("%s不存在或者已过期，信号已忽略", stdCode);
+					stra_log_text("%s不存在或者已过期,信号已忽略", stdCode);
 					continue;
 				}
 
@@ -564,7 +564,7 @@ bool SelStraBaseCtx::on_schedule(uint32_t curDate, uint32_t curTime, uint32_t fi
 		const char* code = v.first.c_str();
 		if (_sig_map.find(code) == _sig_map.end() && !decimal::eq(pInfo._volume, 0.0))
 		{
-			//新的信号中没有该持仓，则要清空
+			//新的信号中没有该持仓,则要清空
 			to_clear.insert(code);
 		}
 	}

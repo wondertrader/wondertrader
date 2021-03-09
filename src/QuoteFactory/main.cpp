@@ -83,13 +83,13 @@ void initParsers(WTSVariant* cfg)
 			FuncCreateParser pFuncCreateParser = (FuncCreateParser)DLLHelper::get_symbol(libParser, "createParser");
 			if (pFuncCreateParser == NULL)
 			{
-				WTSLogger::info("行情模块初始化失败,找不到入口函数createParser...");
+				WTSLogger::error("Initializing of market data parser failed: function createParser not found...");
 			}
 
 			FuncDeleteParser pFuncDeleteParser = (FuncDeleteParser)DLLHelper::get_symbol(libParser, "deleteParser");
 			if (pFuncDeleteParser == NULL)
 			{
-				WTSLogger::info("行情模块初始化失败,找不到入口函数deleteParser...");
+				WTSLogger::error("Initializing of market data parser failed: function deleteParser not found...");
 			}
 
 			if (pFuncCreateParser && pFuncDeleteParser)
@@ -105,11 +105,12 @@ void initParsers(WTSVariant* cfg)
 		}
 		else
 		{
-			WTSLogger::info("行情模块初始化失败,加载模块%s失败...", module.c_str());
+			WTSLogger::error("Initializing of market data parser failed: loading module %s failed...", module.c_str());
 		}
 	}
 
-	WTSLogger::info("一共加载%u个Parser", ParserAdapterMgr::size());
+	//WTSLogger::info("一共加载%u个Parser", ParserAdapterMgr::size());
+	WTSLogger::info("%u market data parsers loaded in total", ParserAdapterMgr::size());
 }
 
 void initialize()
@@ -146,31 +147,31 @@ void initialize()
 	if (cfgBF->get("session"))
 	{
 		g_baseDataMgr.loadSessions(cfgBF->getCString("session"));
-		WTSLogger::info("交易时间模板加载完成");
+		WTSLogger::info("Trading sessions loaded");
 	}
 
 	if (cfgBF->get("commodity"))
 	{
 		g_baseDataMgr.loadCommodities(cfgBF->getCString("commodity"));
-		WTSLogger::info("品种列表加载完成");
+		WTSLogger::info("Commodities loaded");
 	}
 
 	if (cfgBF->get("contract"))
 	{
 		g_baseDataMgr.loadContracts(cfgBF->getCString("contract"));
-		WTSLogger::info("合约列表加载完成");
+		WTSLogger::info("Contracts loaded");
 	}
 
 	if (cfgBF->get("holiday"))
 	{
 		g_baseDataMgr.loadHolidays(cfgBF->getCString("holiday"));
-		WTSLogger::info("节假日模板加载完成");
+		WTSLogger::info("Holidays loaded");
 	}
 
 	if (cfgBF->get("hot"))
 	{
 		g_hotMgr.loadHots(cfgBF->getCString("hot"));
-		WTSLogger::info("主力切换表加载完成");
+		WTSLogger::info("Hot rules loaded");
 	}
 
 	g_udpCaster.init(config->get("broadcaster"), &g_baseDataMgr, &g_dataMgr);

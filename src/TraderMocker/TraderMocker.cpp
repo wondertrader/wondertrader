@@ -139,7 +139,7 @@ int TraderMocker::orderInsert(WTSEntrust* entrust)
 		/*
 		 *	1、开仓无需检查
 		 *	2、平仓要先检查可平
-		 *	3、检查通过了，平仓还要冻结持仓
+		 *	3、检查通过了,平仓还要冻结持仓
 		 *	4、还要考虑国际期货的问题
 		 */
 
@@ -185,7 +185,7 @@ int TraderMocker::orderInsert(WTSEntrust* entrust)
 				double pricetick = commInfo->getPriceTick();
 				double v = entrust->getPrice() / pricetick;
 
-				if (!decimal::eq(decimal::mod(entrust->getPrice(), pricetick), 0))	//整除的检查方式，先小数相除得到商，然后商取整以后，再跟原来的商相减，如果等于0，则是整除，否则是
+				if (!decimal::eq(decimal::mod(entrust->getPrice(), pricetick), 0))	//整除的检查方式,先小数相除得到商,然后商取整以后,再跟原来的商相减,如果等于0,则是整除,否则是
 				{
 					bPass = false;
 					msg = "委托价格不合法";
@@ -194,21 +194,21 @@ int TraderMocker::orderInsert(WTSEntrust* entrust)
 			}
 
 
-			//开仓直接通过，不检查资金
+			//开仓直接通过,不检查资金
 			if (entrust->getOffsetType() == WOT_OPEN)
 			{
 				bPass = true;
 				break;
 			}
 
-			//如果不需要开平，则直接通过，主要针对国际期货
+			//如果不需要开平,则直接通过,主要针对国际期货
 			if (commInfo->getCoverMode() == CM_None)
 			{
 				bPass = true;
 				break;
 			}
 			
-			//如果区分平昨平今，而委托的是平昨，则直接拒绝，因为mocker为了简化处理，不考虑昨仓
+			//如果区分平昨平今,而委托的是平昨,则直接拒绝,因为mocker为了简化处理,不考虑昨仓
 			if (commInfo->getCoverMode() == CM_CoverToday && (entrust->getOffsetType() == WOT_CLOSE || entrust->getOffsetType() == WOT_CLOSEYESTERDAY))
 			{
 				bPass = false;
@@ -216,7 +216,7 @@ int TraderMocker::orderInsert(WTSEntrust* entrust)
 				break;
 			}
 
-			//如果没有持仓或者持仓不够，也要
+			//如果没有持仓或者持仓不够,也要
 			auto it = _positions.find(ct->getFullCode());
 			if(it == _positions.end())
 			{
@@ -375,7 +375,7 @@ int32_t TraderMocker::match_once()
 						continue;
 
 					double target = ordInfo->getPrice();
-					//买入的时候，委托价格小于最新价则不成交，卖出的时候，委托价大于最新价则不成交
+					//买入的时候,委托价格小于最新价则不成交,卖出的时候,委托价大于最新价则不成交
 					if (ordInfo->getPriceType() == WPT_LIMITPRICE && ((isBuy && decimal::lt(target, uPrice)) || (!isBuy && decimal::gt(target, uPrice))))
 						continue;
 
@@ -740,14 +740,14 @@ int TraderMocker::orderAction(WTSEntrustAction* action)
 	action->retain();
 	
 	_io_service.post([this, action](){
-		StdUniqueLock lck(_mtx_awaits);	//一定要把awaits锁起来，不然可能会导致一边撮合一边撤单
+		StdUniqueLock lck(_mtx_awaits);	//一定要把awaits锁起来,不然可能会导致一边撮合一边撤单
 		WTSOrderInfo* ordInfo = (WTSOrderInfo*)_awaits->grab(action->getOrderID());
 
 		/*
 		 *	撤单也要考虑几个问题
 		 *	1、是否处于可以撤销的状态
-		 *	2、如果是开仓，则直接撤销
-		 *	3、如果是平仓，要释放冻结
+		 *	2、如果是开仓,则直接撤销
+		 *	3、如果是平仓,要释放冻结
 		 */
 		if(ordInfo == NULL)
 		{
@@ -772,7 +772,7 @@ int TraderMocker::orderAction(WTSEntrustAction* action)
 				break;
 			}
 			
-			//不区分开平的，也直接撤销
+			//不区分开平的,也直接撤销
 			if (commInfo->getCoverMode() == CM_None)
 			{
 				bPass = true;

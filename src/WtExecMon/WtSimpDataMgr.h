@@ -66,12 +66,12 @@ private:
 	DataCacheMap* _bars_cache;	//K线缓存
 	DataCacheMap* _rt_tick_map;	//实时tick缓存
 
-	uint32_t		_cur_date;		//当前日期，格式如yyyyMMdd
-	uint32_t		_cur_act_time;	//当前完整时间，格式如hhmmssmmm
-	uint32_t		_cur_raw_time;	//当前真实分钟，格式如hhmm
-	uint32_t		_cur_min_time;	//当前1分钟线时间，格式如hhmm
-	uint32_t		_cur_secs;		//当前秒数，格式如ssmmm
-	uint32_t		_cur_tdate;		//当前交易日，格式如yyyyMMdd
+	uint32_t		_cur_date;		//当前日期,格式如yyyyMMdd
+	uint32_t		_cur_act_time;	//当前完整时间,格式如hhmmssmmm
+	uint32_t		_cur_raw_time;	//当前真实分钟,格式如hhmm
+	uint32_t		_cur_min_time;	//当前1分钟线时间,格式如hhmm
+	uint32_t		_cur_secs;		//当前秒数,格式如ssmmm
+	uint32_t		_cur_tdate;		//当前交易日,格式如yyyyMMdd
 
 };
 

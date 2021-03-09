@@ -92,14 +92,14 @@ void WtHftStraDemo::on_tick(IHftStraCtx* ctx, const char* code, WTSTickData* new
 	if (curTick)
 		curTick->release();
 
-	uint32_t curMin = newTick->actiontime() / 100000;	//actiontime是带毫秒的，要取得分钟，则需要除以10w
+	uint32_t curMin = newTick->actiontime() / 100000;	//actiontime是带毫秒的,要取得分钟,则需要除以10w
 	if (curMin > _last_calc_time)
-	{//如果spread上次计算的时候小于当前分钟，则重算spread
+	{//如果spread上次计算的时候小于当前分钟,则重算spread
 		//WTSKlineSlice* kline = ctx->stra_get_bars(code, "m5", 30);
 		//if (kline)
 		//	kline->release();
 
-		//重算晚了以后，更新计算时间
+		//重算晚了以后,更新计算时间
 		_last_calc_time = curMin;
 	}
 
@@ -135,7 +135,7 @@ void WtHftStraDemo::on_tick(IHftStraCtx* ctx, const char* code, WTSTickData* new
 		WTSCommodityInfo* cInfo = ctx->stra_get_comminfo(code);
 
 		if(signal > 0  && curPos <= 0)
-		{//正向信号，且当前仓位小于等于0
+		{//正向信号,且当前仓位小于等于0
 			//最新价+2跳下单
 			double targetPx = price + cInfo->getPriceTick() * _offset;
 			auto ids = ctx->stra_buy(code, targetPx, _unit, "enterlong");
@@ -149,7 +149,7 @@ void WtHftStraDemo::on_tick(IHftStraCtx* ctx, const char* code, WTSTickData* new
 			_last_entry_time = now;
 		}
 		else if (signal < 0 && (curPos > 0 || ((!_stock || !decimal::eq(_reserved,0)) && curPos == 0)))
-		{//反向信号，且当前仓位大于0，或者仓位为0但不是股票，或者仓位为0但是基础仓位有修正
+		{//反向信号,且当前仓位大于0,或者仓位为0但不是股票,或者仓位为0但是基础仓位有修正
 			//最新价-2跳下单
 			double targetPx = price - cInfo->getPriceTick()*_offset;
 			auto ids = ctx->stra_sell(code, targetPx, _unit, "entershort");
@@ -170,7 +170,7 @@ void WtHftStraDemo::check_orders()
 	if (!_orders.empty() && _last_entry_time != UINT64_MAX)
 	{
 		uint64_t now = TimeUtils::makeTime(_ctx->stra_get_date(), _ctx->stra_get_time() * 100000 + _ctx->stra_get_secs());
-		if (now - _last_entry_time >= _secs * 1000)	//如果超过一定时间没有成交完，则撤销
+		if (now - _last_entry_time >= _secs * 1000)	//如果超过一定时间没有成交完,则撤销
 		{
 			_mtx_ords.lock();
 			for (auto localid : _orders)
@@ -201,12 +201,12 @@ void WtHftStraDemo::on_position(IHftStraCtx* ctx, const char* stdCode, bool isLo
 
 void WtHftStraDemo::on_order(IHftStraCtx* ctx, uint32_t localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled, const char* userTag)
 {
-	//如果不是我发出去的订单，我就不管了
+	//如果不是我发出去的订单,我就不管了
 	auto it = _orders.find(localid);
 	if (it == _orders.end())
 		return;
 
-	//如果已撤销或者剩余数量为0，则清除掉原有的id记录
+	//如果已撤销或者剩余数量为0,则清除掉原有的id记录
 	if(isCanceled || leftQty == 0)
 	{
 		_mtx_ords.lock();
@@ -226,8 +226,8 @@ void WtHftStraDemo::on_channel_ready(IHftStraCtx* ctx)
 	double undone = _ctx->stra_get_undone(_code.c_str());
 	if (!decimal::eq(undone, 0) && _orders.empty())
 	{
-		//这说明有未完成单不在监控之中，先撤掉
-		_ctx->stra_log_text("%s有不在管理中的未完成单 %f 手，全部撤销", _code.c_str(), undone);
+		//这说明有未完成单不在监控之中,先撤掉
+		_ctx->stra_log_text("%s有不在管理中的未完成单 %f 手,全部撤销", _code.c_str(), undone);
 
 		bool isBuy = (undone > 0);
 		OrderIDs ids = _ctx->stra_cancel(_code.c_str(), isBuy, undone);

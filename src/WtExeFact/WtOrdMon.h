@@ -23,7 +23,7 @@ public:
 
 	/*
 	 *	检查是否有订单
-	 *	@localid	订单号，为0时检查是否有任意订单，不为0时检查是否有指定订单
+	 *	@localid	订单号,为0时检查是否有任意订单,不为0时检查是否有指定订单
 	 */
 	inline bool has_order(uint32_t localid = 0)
 	{

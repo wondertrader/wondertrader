@@ -65,7 +65,7 @@ bool WtSimpDataMgr::initStore(WTSVariant* cfg)
 	FuncCreateDataReader funcCreator = (FuncCreateDataReader)DLLHelper::get_symbol(hInst, "createDataReader");
 	if (funcCreator == NULL)
 	{
-		WTSLogger::error("数据存储模块%s加载失败，没有找到正确的入口函数", module.c_str());
+		WTSLogger::error("数据存储模块%s加载失败,没有找到正确的入口函数", module.c_str());
 		DLLHelper::free_library(hInst);
 		return false;
 	}

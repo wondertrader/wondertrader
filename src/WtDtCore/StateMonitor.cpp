@@ -42,7 +42,7 @@ bool StateMonitor::initialize(const char* filename, WTSBaseDataMgr* bdMgr, DataM
 
 	if (!StdFile::exists(filename))
 	{
-		WTSLogger::error("状态配置文件 %s 不存在", filename);
+		WTSLogger::error("State configuration file %s not exists", filename);
 		return false;
 	}
 
@@ -51,7 +51,7 @@ bool StateMonitor::initialize(const char* filename, WTSBaseDataMgr* bdMgr, DataM
 	rj::Document root;
 	if (root.Parse(content.c_str()).HasParseError())
 	{
-		WTSLogger::error("状态配置文件解析失败");
+		WTSLogger::error("Parsing state configuration failed");
 		return false;
 	}
 
@@ -63,18 +63,18 @@ bool StateMonitor::initialize(const char* filename, WTSBaseDataMgr* bdMgr, DataM
 		WTSSessionInfo* ssInfo = _bd_mgr->getSession(sid);
 		if (ssInfo == NULL)
 		{
-			WTSLogger::error("交易时间模板[%s]不存在，跳过该条状态控制设置", sid);
+			WTSLogger::error("Trading session template [%s] not exists,state control rule skipped", sid);
 			continue;
 		}
 
 		StatePtr sInfo(new StateInfo);
-		sInfo->_init_time = jItem["inittime"].GetUint();	//初始化时间，初始化以后数据才开始接收
-		sInfo->_close_time = jItem["closetime"].GetUint();	//收盘时间，收盘后数据不再接收了
-		sInfo->_proc_time = jItem["proctime"].GetUint();	//盘后处理时间，主要把实时数据转到历史去
+		sInfo->_init_time = jItem["inittime"].GetUint();	//初始化时间,初始化以后数据才开始接收
+		sInfo->_close_time = jItem["closetime"].GetUint();	//收盘时间,收盘后数据不再接收了
+		sInfo->_proc_time = jItem["proctime"].GetUint();	//盘后处理时间,主要把实时数据转到历史去
 
 		strcpy(sInfo->_session, sid);
 
-		auto secInfo = ssInfo->getAuctionSection();//这里面是偏移过的时间，要注意了!!!
+		auto secInfo = ssInfo->getAuctionSection();//这里面是偏移过的时间,要注意了!!!
 		if (secInfo.first != 0 || secInfo.second != 0)
 		{
 			uint32_t stime = secInfo.first;
@@ -84,11 +84,11 @@ bool StateMonitor::initialize(const char* filename, WTSBaseDataMgr* bdMgr, DataM
 			etime = etime / 100 * 60 + etime % 100;
 
 			stime = stime / 60 * 100 + stime % 60;//再将分钟数转成时间
-			etime = etime / 60 * 100 + etime % 60;//先不考虑半夜12点的情况，目前看来，几乎没有
+			etime = etime / 60 * 100 + etime % 60;//先不考虑半夜12点的情况,目前看来,几乎没有
 			sInfo->_sections.emplace_back(StateInfo::Section({ stime, etime }));
 		}
 
-		auto sections = ssInfo->getTradingSections();//这里面是偏移过的时间，要注意了!!!
+		auto sections = ssInfo->getTradingSections();//这里面是偏移过的时间,要注意了!!!
 		for (auto it = sections.begin(); it != sections.end(); it++)
 		{
 			auto secInfo = *it;
@@ -102,7 +102,7 @@ bool StateMonitor::initialize(const char* filename, WTSBaseDataMgr* bdMgr, DataM
 			etime++;//结束分钟数+1
 
 			stime = stime / 60 * 100 + stime % 60;//再将分钟数转成时间
-			etime = etime / 60 * 100 + etime % 60;//先不考虑半夜12点的情况，目前看来，几乎没有
+			etime = etime / 60 * 100 + etime % 60;//先不考虑半夜12点的情况,目前看来,几乎没有
 			sInfo->_sections.emplace_back(StateInfo::Section({ stime, etime }));
 		}
 
@@ -130,7 +130,7 @@ bool StateMonitor::initialize(const char* filename, WTSBaseDataMgr* bdMgr, DataM
 					(ssInfo->getOffsetMins() <= 0 && ! _bd_mgr->isTradingDate(pid, offDate))
 					)
 				{
-					WTSLogger::info("品种%s处于节假日", pid);
+					WTSLogger::info("Instrument %s is in holiday", pid);
 				}
 			}
 		}
@@ -195,17 +195,17 @@ void StateMonitor::run()
 									const char* pid = (*it).c_str();
 									/*
 									 *	如果时间往后偏移
-									 *	如果当前日期不是交易日，且不处于夜盘后半夜（交易时间且昨天是交易日）
-									 *	或者时间往后偏移的话，就看偏移日期是否是节假日
+									 *	如果当前日期不是交易日,且不处于夜盘后半夜（交易时间且昨天是交易日）
+									 *	或者时间往后偏移的话,就看偏移日期是否是节假日
 									 */
 									if ((mInfo->getOffsetMins() > 0 &&
 										(! _bd_mgr->isTradingDate(pid, curDate) &&	//当前日志不是交易日
-										!(mInfo->isInTradingTime(curMin) &&  _bd_mgr->isTradingDate(pid, prevDate)))) ||	//当前不在交易时间，且昨天是交易日
+										!(mInfo->isInTradingTime(curMin) &&  _bd_mgr->isTradingDate(pid, prevDate)))) ||	//当前不在交易时间,且昨天是交易日
 										(mInfo->getOffsetMins() <= 0 && ! _bd_mgr->isTradingDate(pid, offDate))
 										)
 									{
 										ss_a << pid << ",";
-										WTSLogger::info("品种%s处于节假日", pid);
+										WTSLogger::info("Instrument %s is in holiday", pid);
 									}
 									else
 									{
@@ -214,23 +214,22 @@ void StateMonitor::run()
 									}
 								}
 
-								//WTSLogger::info("交易时间模板 %s[%s]交易品种：%s，休假品种：%s", mInfo->name(), sInfo->_session, ss_b.str().c_str(), ss_a.str().c_str());
 							}
 							else
 							{
-								WTSLogger::info("交易时间模板 %s[%s]没有关联品种，进入休假状态", mInfo->name(), sInfo->_session);
+								WTSLogger::info("No corresponding instrument of trading session %s[%s], changed into holiday state", mInfo->name(), sInfo->_session);
 								sInfo->_state = SS_Holiday;
 							}
 
 							if(isAllHoliday)
 							{
-								WTSLogger::info("交易时间模板 %s[%s]全部品种处于节假日，进入休假状态", mInfo->name(), sInfo->_session);
+								WTSLogger::info("All instruments of trading session %s[%s] are in holiday, changed into holiday state", mInfo->name(), sInfo->_session);
 								sInfo->_state = SS_Holiday;
 							}
 							else if (offTime >= offCloseTime)
 							{
 								sInfo->_state = SS_CLOSED;
-								WTSLogger::info("交易时间模板 %s[%s]停止接收数据", mInfo->name(), sInfo->_session);
+								WTSLogger::info("Trading session %s[%s] stopped receiving data", mInfo->name(), sInfo->_session);
 							}
 							else if (aucStartTime != -1 && offTime >= aucStartTime)
 							{
@@ -241,20 +240,20 @@ void StateMonitor::run()
 									//	_dt_mgr->preloadRtCaches();
 									//}
 									sInfo->_state = SS_RECEIVING;
-									WTSLogger::info("交易时间模板 %s[%s]开始接收数据", mInfo->name(), sInfo->_session);
+									WTSLogger::info("Trading session %s[%s] started receiving data", mInfo->name(), sInfo->_session);
 								}
 								else
 								{
-									//小于市场收盘时间，且不在交易时间，则为中途休盘时间
+									//小于市场收盘时间,且不在交易时间,则为中途休盘时间
 									if(offTime < mInfo->getCloseTime(true))
 									{
 										sInfo->_state = SS_PAUSED;
-										WTSLogger::info("交易时间模板 %s[%s]暂停接收数据", mInfo->name(), sInfo->_session);
+										WTSLogger::info("Trading session %s[%s] paused receiving data", mInfo->name(), sInfo->_session);
 									}
 									else
-									{//大于市场收盘时间，但是没有大于接收收盘时间，则还要继续接收，主要是要收结算价
+									{//大于市场收盘时间,但是没有大于接收收盘时间,则还要继续接收,主要是要收结算价
 										sInfo->_state = SS_RECEIVING;
-										WTSLogger::info("交易时间模板 %s[%s]开始接收数据", mInfo->name(), sInfo->_session);
+										WTSLogger::info("Trading session %s[%s] started receiving data", mInfo->name(), sInfo->_session);
 									}
 									
 								}
@@ -262,7 +261,7 @@ void StateMonitor::run()
 							else if (offTime >= offInitTime)
 							{
 								sInfo->_state = SS_INITIALIZED;
-								WTSLogger::info("交易时间模板 %s[%s]初始化", mInfo->name(), sInfo->_session);
+								WTSLogger::info("Trading session %s[%s] initialized", mInfo->name(), sInfo->_session);
 							}
 
 							
@@ -282,7 +281,7 @@ void StateMonitor::run()
 									//}
 									sInfo->_state = SS_PAUSED;
 
-									WTSLogger::info("交易时间模板 %s[%s]暂停接收数据", mInfo->name(), sInfo->_session);
+									WTSLogger::info("Trading session %s[%s] paused receiving data", mInfo->name(), sInfo->_session);
 								}
 								else
 								{
@@ -291,7 +290,7 @@ void StateMonitor::run()
 									//	_dt_mgr->preloadRtCaches();
 									//}
 									sInfo->_state = SS_RECEIVING;
-									WTSLogger::info("交易时间模板 %s[%s]开始接收数据", mInfo->name(), sInfo->_session);
+									WTSLogger::info("Trading session %s[%s] started receiving data", mInfo->name(), sInfo->_session);
 								}
 								
 							}
@@ -305,7 +304,7 @@ void StateMonitor::run()
 							{
 								sInfo->_state = SS_CLOSED;
 
-								WTSLogger::info("交易时间模板 %s[%s]停止接收数据", mInfo->name(), sInfo->_session);
+								WTSLogger::info("Trading session %s[%s] stopped receiving data", mInfo->name(), sInfo->_session);
 							}
 							else if (offTime >= mInfo->getAuctionStartTime(true))
 							{
@@ -319,13 +318,13 @@ void StateMonitor::run()
 										//}
 										sInfo->_state = SS_PAUSED;
 
-										WTSLogger::info("交易时间模板 %s[%s]暂停接收数据", mInfo->name(), sInfo->_session);
+										WTSLogger::info("Trading session %s[%s] paused receiving data", mInfo->name(), sInfo->_session);
 									}
 								}
 								else
 								{
 									//这就是下午收盘以后的时间
-									//这里不能改状态，因为要收结算价
+									//这里不能改状态,因为要收结算价
 								}
 							}
 						}
@@ -333,7 +332,7 @@ void StateMonitor::run()
 					case SS_PAUSED:
 						{
 							//休息状态只能转换为交易状态
-							//这里要用偏移过的日期，不然如果周六早上有中途休息，就会出错
+							//这里要用偏移过的日期,不然如果周六早上有中途休息,就会出错
 							uint32_t weekDay = TimeUtils::getWeekDay();
 
 							bool isAllHoliday = true;
@@ -349,7 +348,7 @@ void StateMonitor::run()
 										(mInfo->getOffsetMins() <= 0 && ! _bd_mgr->isTradingDate(pid, offDate))
 										)
 									{
-										WTSLogger::info("品种%s处于节假日", pid);
+										WTSLogger::info("Instrument %s is in holiday", pid);
 									}
 									else
 									{
@@ -364,12 +363,12 @@ void StateMonitor::run()
 								if (sInfo->isInSections(offTime))
 								{
 									sInfo->_state = SS_RECEIVING;
-									WTSLogger::info("交易时间模板 %s[%s]恢复接收数据", mInfo->name(), sInfo->_session);
+									WTSLogger::info("Trading session %s[%s] continued to receive data", mInfo->name(), sInfo->_session);
 								}
 							}
 							else
 							{
-								WTSLogger::info("交易时间模板 %s[%s]全部品种处于节假日，进入休假状态", mInfo->name(), sInfo->_session);
+								WTSLogger::info("All instruments of trading session %s[%s] are in holiday, changed into holiday state", mInfo->name(), sInfo->_session);
 								sInfo->_state = SS_Holiday;
 							}
 						}
@@ -384,7 +383,7 @@ void StateMonitor::run()
 								{
 									sInfo->_state = SS_PROCING;
 
-									WTSLogger::info("交易时间模板 %s[%s]开始进行收盘作业...", mInfo->name(), sInfo->_session);
+									WTSLogger::info("Trading session %s[%s] started processing closing task", mInfo->name(), sInfo->_session);
 									_dt_mgr->transHisData(sInfo->_session);
 								}
 								else
@@ -398,7 +397,7 @@ void StateMonitor::run()
 								{
 									sInfo->_state = SS_PAUSED;
 
-									WTSLogger::info("交易时间模板 %s[%s] 暂停接收数据", mInfo->name(), sInfo->_session);
+									WTSLogger::info("Trading session %s[%s] paused receiving data", mInfo->name(), sInfo->_session);
 								}
 							}
 						}
@@ -426,7 +425,7 @@ void StateMonitor::run()
 											(mInfo->getOffsetMins() <= 0 && ! _bd_mgr->isTradingDate(pid, offDate))
 											)
 										{
-											//WTSLogger::info("品种%s处于节假日", pid);
+											
 										}
 										else
 										{
@@ -438,7 +437,7 @@ void StateMonitor::run()
 								if(!isAllHoliday)
 								{
 									sInfo->_state = SS_ORIGINAL;
-									WTSLogger::info("交易时间模板 %s[%s]已重置", mInfo->name(), sInfo->_session);
+									WTSLogger::info("Trading session %s[%s] state reset", mInfo->name(), sInfo->_session);
 								}
 							}
 						}

@@ -339,7 +339,7 @@ void EventNotifier::handle_send_broad(const EndPoint& ep, const boost::system::e
 {
 	if(error)
 	{
-		WTSLogger::error("事件广播失败，目标地址：%s，错误信息：%s", ep.address().to_string().c_str(), error.message().c_str());
+		WTSLogger::error("事件广播失败,目标地址: %s,错误信息: %s", ep.address().to_string().c_str(), error.message().c_str());
 	}
 }
 
@@ -347,7 +347,7 @@ void EventNotifier::handle_send_multi(const EndPoint& ep, const boost::system::e
 {
 	if(error)
 	{
-		WTSLogger::error("事件多播失败，目标地址：%s，错误信息：%s", ep.address().to_string().c_str(), error.message().c_str());
+		WTSLogger::error("事件多播失败,目标地址: %s,错误信息: %s", ep.address().to_string().c_str(), error.message().c_str());
 	}
 }
 

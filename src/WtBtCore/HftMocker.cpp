@@ -510,11 +510,11 @@ bool HftMocker::procOrder(uint32_t localid)
 	StdLocker<StdRecurMutex> lock(_mtx_ords);
 	OrderInfo& ordInfo = it->second;
 
-	//第一步，如果在撤单概率中，则执行撤单
+	//第一步,如果在撤单概率中,则执行撤单
 	if(_error_rate>0 && genRand(10000)<=_error_rate)
 	{
 		on_order(localid, ordInfo._code, ordInfo._isBuy, ordInfo._total, ordInfo._left, ordInfo._price, true, ordInfo._usertag);
-		stra_log_text("Random error order：%u", localid);
+		stra_log_text("Random error order: %u", localid);
 		return true;
 	}
 	else
@@ -537,18 +537,18 @@ bool HftMocker::procOrder(uint32_t localid)
 	}
 	curTick->release();
 
-	//如果没有成交条件，则退出逻辑
+	//如果没有成交条件,则退出逻辑
 	if(!decimal::eq(ordInfo._price, 0.0))
 	{
 		if(ordInfo._isBuy && decimal::gt(curPx, ordInfo._price))
 		{
-			//买单，但是当前价大于限价，不成交
+			//买单,但是当前价大于限价,不成交
 			return false;
 		}
 
 		if (!ordInfo._isBuy && decimal::lt(curPx, ordInfo._price))
 		{
-			//卖单，但是当前价小于限价，不成交
+			//卖单,但是当前价小于限价,不成交
 			return false;
 		}
 	}
@@ -781,7 +781,7 @@ void HftMocker::do_set_position(const char* stdCode, double qty, double price /*
 	if (decimal::eq(pInfo._volume, qty))
 		return;
 
-	stra_log_text("[%04u.%05u] %s position updated：%.0f -> %0.f", _replayer->get_min_time(), _replayer->get_secs(), stdCode, pInfo._volume, qty);
+	stra_log_text("[%04u.%05u] %s position updated: %.0f -> %0.f", _replayer->get_min_time(), _replayer->get_secs(), stdCode, pInfo._volume, qty);
 
 	WTSCommodityInfo* commInfo = _replayer->get_commodity_info(stdCode);
 
@@ -809,7 +809,7 @@ void HftMocker::do_set_position(const char* stdCode, double qty, double price /*
 		log_trade(stdCode, dInfo._long, true, curTm, trdPx, abs(diff), fee, userTag);
 	}
 	else
-	{//持仓方向和仓位变化方向不一致，需要平仓
+	{//持仓方向和仓位变化方向不一致,需要平仓
 		double left = abs(diff);
 
 		pInfo._volume = qty;
@@ -858,7 +858,7 @@ void HftMocker::do_set_position(const char* stdCode, double qty, double price /*
 			count--;
 		}
 
-		//最后，如果还有剩余的，则需要反手了
+		//最后,如果还有剩余的,则需要反手了
 		if (left > 0)
 		{
 			left = left * qty / abs(qty);

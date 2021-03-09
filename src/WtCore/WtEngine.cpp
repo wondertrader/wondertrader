@@ -166,7 +166,7 @@ void WtEngine::update_fund_dynprofit()
 	WTSFundStruct& fundInfo = _port_fund->fundInfo();
 	if (fundInfo._last_date == _cur_tdate)
 	{
-		//上次结算日期等于当前交易日，说明已经结算，不再更新了
+		//上次结算日期等于当前交易日,说明已经结算,不再更新了
 		return;
 	}
 
@@ -712,7 +712,7 @@ double WtEngine::calc_fee(const char* stdCode, double price, double qty, uint32_
 	auto it = _fee_map.find(stdPID);
 	if (it == _fee_map.end())
 	{
-		WTSLogger::warn("品种%s没有预设的佣金费率，直接返回0.0", stdCode);
+		WTSLogger::warn("品种%s没有预设的佣金费率,直接返回0.0", stdCode);
 		return 0.0;
 	}
 
@@ -918,7 +918,7 @@ bool WtEngine::init_riskmon(WTSVariant* cfg)
 	const char* module = cfg->getCString("module");
 	//先看工作目录下是否有对应模块
 	std::string dllpath = WtHelper::getCWD() + module;
-	//如果没有，则再看模块目录，即dll同目录下
+	//如果没有,则再看模块目录,即dll同目录下
 	if (!StdFile::exists(dllpath.c_str()))
 		dllpath = WtHelper::getInstDir() + module;
 

@@ -915,7 +915,7 @@ void TraderCTPOpt::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, CT
 		///获取当前交易日
 		m_lDate = atoi(m_pUserAPI->GetTradingDay());
 
-		m_bscSink->handleTraderLog(LL_INFO, "[TraderCTPOpt][%s-%s]账户登录成功，AppID:%s, Sessionid: %u, 登录时间: %s...",
+		m_bscSink->handleTraderLog(LL_INFO, "[TraderCTPOpt][%s-%s]账户登录成功,AppID:%s, Sessionid: %u, 登录时间: %s...",
 			m_strBroker.c_str(), m_strUser.c_str(), m_strAppID.c_str(), m_sessionID, pRspUserLogin->LoginTime);
 
 		std::stringstream ss;
@@ -929,16 +929,16 @@ void TraderCTPOpt::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, CT
 		uint32_t lastDate = m_iniHelper.readUInt("marker", "date", 0);
 		if(lastDate != m_lDate)
 		{
-			//交易日不同，清理掉原来的数据
+			//交易日不同,清理掉原来的数据
 			m_iniHelper.removeSection(ENTRUST_SECTION);
 			m_iniHelper.removeSection(ORDER_SECTION);
 			m_iniHelper.writeUInt("marker", "date", m_lDate);
 			m_iniHelper.save();
 
-			m_bscSink->handleTraderLog(LL_INFO, "[TraderCTPOpt][%s-%s]交易日已切换[%u -> %u]，清空本地数据缓存...", m_strBroker.c_str(), m_strUser.c_str(), lastDate, m_lDate);
+			m_bscSink->handleTraderLog(LL_INFO, "[TraderCTPOpt][%s-%s]交易日已切换[%u -> %u],清空本地数据缓存...", m_strBroker.c_str(), m_strUser.c_str(), lastDate, m_lDate);
 		}
 
-		m_bscSink->handleTraderLog(LL_INFO, "[TraderCTPOpt][%s-%s]账户登录成功，交易日：%u...", m_strBroker.c_str(), m_strUser.c_str(), m_lDate);
+		m_bscSink->handleTraderLog(LL_INFO, "[TraderCTPOpt][%s-%s]账户登录成功,交易日: %u...", m_strBroker.c_str(), m_strUser.c_str(), m_lDate);
 
 		m_bscSink->handleTraderLog(LL_INFO, "[TraderCTPOpt][%s-%s]正在查询结算确认信息...", m_strBroker.c_str(), m_strUser.c_str());
 		queryConfirm();
@@ -1276,7 +1276,7 @@ void TraderCTPOpt::OnRspQryInvestorPosition(CThostFtdcInvestorPositionField *pIn
 
 			if (decimal::lt(pos->getTotalPosition(), 0.0) && decimal::eq(pos->getMargin(), 0.0))
 			{
-				//有仓位，但是保证金为0，则说明是套利合约，单个合约的可用持仓全部置为0
+				//有仓位,但是保证金为0,则说明是套利合约,单个合约的可用持仓全部置为0
 				pos->setAvailNewPos(0);
 				pos->setAvailPrePos(0);
 			}
@@ -1589,15 +1589,15 @@ WTSTradeInfo* TraderCTPOpt::makeTradeRecord(CThostFtdcTradeField *tradeField)
 
 	//if(uDate == m_pContractMgr->getTradingDate())
 	//{
-	//	//如果当前日期和交易日一致，且时间大于21点，说明是夜盘，也就是实际日期要单独计算
+	//	//如果当前日期和交易日一致,且时间大于21点,说明是夜盘,也就是实际日期要单独计算
 	//	if (uTime / 10000 >= 21)
 	//	{
 	//		uDate = m_pMarketMgr->getPrevTDate(commInfo->getExchg(), uDate, 1);
 	//	}
 	//	else if(uTime <= 3)
 	//	{
-	//		//如果在3点以内，就要先获取上一个交易日，再获取下一个自然日
-	//		//这样做的目的是，遇到周五晚上的情况，可以处理过来
+	//		//如果在3点以内,就要先获取上一个交易日,再获取下一个自然日
+	//		//这样做的目的是,遇到周五晚上的情况,可以处理过来
 	//		uDate = m_pMarketMgr->getPrevTDate(commInfo->getExchg(), uDate, 1);
 	//		uDate = TimeUtils::getNextDate(uDate);
 	//	}

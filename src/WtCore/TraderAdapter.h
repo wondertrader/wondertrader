@@ -214,13 +214,13 @@ private:
 	typedef WTSHashMap<std::string>	TradeStatMap;
 	TradeStatMap*	_stat_map;	//统计数据
 
-	//这两个缓存时间内的容器，主要是为了控制瞬间流量而设置的
+	//这两个缓存时间内的容器,主要是为了控制瞬间流量而设置的
 	typedef std::vector<uint64_t> TimeCacheList;
 	typedef std::unordered_map<std::string, TimeCacheList> CodeTimeCacheMap;
 	CodeTimeCacheMap	_order_time_cache;	//下单时间缓存
 	CodeTimeCacheMap	_cancel_time_cache;	//撤单时间缓存
 
-	//如果被风控了，就会进入到排除队列
+	//如果被风控了,就会进入到排除队列
 	std::unordered_set<std::string>	_exclude_codes;
 	
 	typedef std::unordered_map<std::string, RiskParams>	RiskParamsMap;

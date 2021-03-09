@@ -56,31 +56,31 @@ void WtDtRunner::initialize(const char* cfgFile, const char* logCfg, const char*
 	if (cfgBF->get("session"))
 	{
 		m_baseDataMgr.loadSessions(cfgBF->getCString("session"));
-		WTSLogger::info("交易时间模板加载完成");
+		WTSLogger::info("Trading sessions loaded");
 	}
 
 	if (cfgBF->get("commodity"))
 	{
 		m_baseDataMgr.loadCommodities(cfgBF->getCString("commodity"));
-		WTSLogger::info("品种列表加载完成");
+		WTSLogger::info("Commodities loaded");
 	}
 
 	if (cfgBF->get("contract"))
 	{
 		m_baseDataMgr.loadContracts(cfgBF->getCString("contract"));
-		WTSLogger::info("合约列表加载完成");
+		WTSLogger::info("Contracts loades");
 	}
 
 	if (cfgBF->get("holiday"))
 	{
 		m_baseDataMgr.loadHolidays(cfgBF->getCString("holiday"));
-		WTSLogger::info("节假日模板加载完成");
+		WTSLogger::info("Holidays loaded");
 	}
 
 	if (cfgBF->get("hot"))
 	{
 		m_hotMgr.loadHots(cfgBF->getCString("hot"));
-		WTSLogger::info("主力切换表加载完成");
+		WTSLogger::info("Hot rules loaded");
 	}
 
 	m_udpCaster.init(config->get("broadcaster"), &m_baseDataMgr, &m_dataMgr);
@@ -120,13 +120,13 @@ void WtDtRunner::initParsers(WTSVariant* cfg)
 			FuncCreateParser pFuncCreateParser = (FuncCreateParser)DLLHelper::get_symbol(libParser, "createParser");
 			if (pFuncCreateParser == NULL)
 			{
-				WTSLogger::info("行情模块初始化失败,找不到对应的入口函数...");
+				WTSLogger::error("Initializing of market data parser failed: function createParser not found...");
 			}
 
 			FuncDeleteParser pFuncDeleteParser = (FuncDeleteParser)DLLHelper::get_symbol(libParser, "deleteParser");
 			if (pFuncDeleteParser == NULL)
 			{
-				WTSLogger::info("行情模块初始化失败,找不到对应的入口函数...");
+				WTSLogger::error("Initializing of market data parser failed: function deleteParser not found...");
 			}
 
 			if (pFuncCreateParser && pFuncDeleteParser)
@@ -142,9 +142,9 @@ void WtDtRunner::initParsers(WTSVariant* cfg)
 		}
 		else
 		{
-			WTSLogger::info("行情模块初始化失败,加载模块%s失败...", module.c_str());
+			WTSLogger::error("Initializing of market data parser failed: loading module %s failed...", module.c_str());
 		}
 	}
 
-	WTSLogger::info("一共加载%u个Parser", ParserAdapterMgr::size());
+	WTSLogger::info("%u market data parsers loaded in total", ParserAdapterMgr::size());
 }

@@ -151,7 +151,7 @@ bool WtFilterMgr::is_filtered_by_strategy(const char* straName, double& targetPo
 		}
 		else if (fItem._action == FA_Redirect && !isDiff)
 		{
-			//只有不是增量的时候，才有效
+			//只有不是增量的时候,才有效
 			targetPos = fItem._target;
 		}
 

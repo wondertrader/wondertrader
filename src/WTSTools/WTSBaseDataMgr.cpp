@@ -86,7 +86,7 @@ WTSContractInfo* WTSBaseDataMgr::getContract(const char* code, const char* exchg
 {
 	std::string realCode = code;	
 
-	//如果直接找到对应的市场代码，则直接
+	//如果直接找到对应的市场代码,则直接
 	auto it = m_mapExchgContract->find(exchg);
 	if(it != m_mapExchgContract->end())
 	{
@@ -221,7 +221,7 @@ bool WTSBaseDataMgr::loadSessions(const char* filename)
 {
 	if (!StdFile::exists(filename))
 	{
-		WTSLogger::error("交易时间配置文件 %s 不存在", filename);
+		WTSLogger::error("Trading sessions configuration file %s not exists", filename);
 		return false;
 	}
 
@@ -230,7 +230,7 @@ bool WTSBaseDataMgr::loadSessions(const char* filename)
 	rj::Document root;
 	if (root.Parse(content.c_str()).HasParseError())
 	{
-		WTSLogger::error("交易时间配置文件解析失败");
+		WTSLogger::error("Parsing trading session configuration file failed");
 		return false;
 	}
 
@@ -269,7 +269,7 @@ bool WTSBaseDataMgr::loadCommodities(const char* filename)
 {
 	if (!StdFile::exists(filename))
 	{
-		WTSLogger::error("品种属性配置文件 %s 不存在", filename);
+		WTSLogger::error("Commodities configuration file %s not exists", filename);
 		return false;
 	}
 
@@ -278,7 +278,7 @@ bool WTSBaseDataMgr::loadCommodities(const char* filename)
 	rj::Document root;
 	if (root.Parse(content.c_str()).HasParseError())
 	{
-		WTSLogger::error("品种属性配置文件解析失败");
+		WTSLogger::error("Loading commodities configuration file failed");
 		return false;
 	}
 
@@ -298,7 +298,7 @@ bool WTSBaseDataMgr::loadCommodities(const char* filename)
 
 			if (strlen(sid) == 0)
 			{
-				WTSLogger::error("品种%s没有找到对应的会话ID", pid.c_str());
+				WTSLogger::error("Not corresponding session ID of instrument %s", pid.c_str());
 				continue;
 			}
 
@@ -340,7 +340,7 @@ bool WTSBaseDataMgr::loadContracts(const char* filename)
 {
 	if (!StdFile::exists(filename))
 	{
-		WTSLogger::error("代码列表文件 %s 不存在", filename);
+		WTSLogger::error("Contracts configuration file %s not exists", filename);
 		return false;
 	}
 
@@ -349,7 +349,7 @@ bool WTSBaseDataMgr::loadContracts(const char* filename)
 	rj::Document root;
 	if (root.Parse(content.c_str()).HasParseError())
 	{
-		WTSLogger::error("代码列表文件解析失败");
+		WTSLogger::error("Parsing contracts configuration file failed");
 		return false;
 	}
 
@@ -399,7 +399,7 @@ bool WTSBaseDataMgr::loadHolidays(const char* filename)
 {
 	if (!StdFile::exists(filename))
 	{
-		WTSLogger::error("节假日文件 %s 不存在", filename);
+		WTSLogger::error("Holidays configuration file %s not exists", filename);
 		return false;
 	}
 
@@ -408,7 +408,8 @@ bool WTSBaseDataMgr::loadHolidays(const char* filename)
 	rj::Document root;
 	if (root.Parse(content.c_str()).HasParseError())
 	{
-		WTSLogger::error("节假日文件解析失败");
+		//WTSLogger::error("节假日文件解析失败");
+		WTSLogger::error("Parsing holidays configuration file failed");
 		return false;
 	}
 
@@ -464,7 +465,7 @@ uint64_t WTSBaseDataMgr::getBoundaryTime(const char* stdPID, uint32_t tDate, boo
 			tDate = getPrevTDate(tplid.c_str(), tDate, 1, isTpl);
 	}
 
-	//不偏移的最简单，只需要直接返回开盘和收盘时间即可
+	//不偏移的最简单,只需要直接返回开盘和收盘时间即可
 	if (sInfo->getOffsetMins() == 0)
 	{
 		if (isStart)
@@ -475,8 +476,8 @@ uint64_t WTSBaseDataMgr::getBoundaryTime(const char* stdPID, uint32_t tDate, boo
 
 	if(sInfo->getOffsetMins() < 0)
 	{
-		//往前偏移，就是交易日推后，一般用于外盘
-		//这个比较简单，只需要按自然日取即可
+		//往前偏移,就是交易日推后,一般用于外盘
+		//这个比较简单,只需要按自然日取即可
 		if (isStart)
 			return (uint64_t)tDate * 10000 + sInfo->getOpenTime();
 		else
@@ -484,13 +485,13 @@ uint64_t WTSBaseDataMgr::getBoundaryTime(const char* stdPID, uint32_t tDate, boo
 	}
 	else
 	{
-		//往后偏移，一般国内期货夜盘都是这个，即夜盘算是第二个交易日
-		//这个比较复杂，主要节假日后第一天的边界很麻烦（如一般情况的周一）
-		//这种情况唯一方便的就是，收盘时间不需要处理
+		//往后偏移,一般国内期货夜盘都是这个,即夜盘算是第二个交易日
+		//这个比较复杂,主要节假日后第一天的边界很麻烦（如一般情况的周一）
+		//这种情况唯一方便的就是,收盘时间不需要处理
 		if(!isStart)
 			return (uint64_t)tDate * 10000 + sInfo->getCloseTime();
 
-		//想到一个简单的办法，就是不管怎么样，开始时间一定是上一个交易日的晚上
+		//想到一个简单的办法,就是不管怎么样,开始时间一定是上一个交易日的晚上
 		//所以我只需要拿到上一个交易日即可
 		tDate = getPrevTDate(tplid.c_str(), tDate, 1, isTpl);
 		return (uint64_t)tDate * 10000 + sInfo->getOpenTime();
@@ -532,41 +533,41 @@ uint32_t WTSBaseDataMgr::calcTradingDate(const char* stdPID, uint32_t uDate, uin
 	uint32_t offMin = sInfo->offsetTime(uTime);
 	if (sInfo->getOffsetMins() > 0)
 	{
-		//如果向后偏移，且当前时间大于偏移时间，说明向后跨日了
+		//如果向后偏移,且当前时间大于偏移时间,说明向后跨日了
 		//这时交易日=下一个交易日
 		if (uTime > offMin)
 		{
-			//如，20151016 23:00，偏移300分钟，为5:00
+			//如,20151016 23:00,偏移300分钟,为5:00
 			return getNextTDate(tplid.c_str(), uDate, 1, isTpl);
 		}
 		else if (weekday == 6 || weekday == 0)
 		{
-			//如，20151017 1:00，周六，交易日为20151019
+			//如,20151017 1:00,周六,交易日为20151019
 			return getNextTDate(tplid.c_str(), uDate, 1, isTpl);
 		}
 	}
 	else if (sInfo->getOffsetMins() < 0)
 	{
-		//如果向前偏移，且当前时间小于偏移时间，说明还是前一个交易日
+		//如果向前偏移,且当前时间小于偏移时间,说明还是前一个交易日
 		//这时交易日=前一个交易日
 		if (uTime < offMin)
 		{
-			//如20151017 1:00，偏移-300分钟，为20:00
+			//如20151017 1:00,偏移-300分钟,为20:00
 			return getPrevTDate(tplid.c_str(), uDate, 1, isTpl);
 		}
 		else if (weekday == 6 || weekday == 0)
 		{
-			//因为向前偏移，如果在周末，则直接到下一个交易日
+			//因为向前偏移,如果在周末,则直接到下一个交易日
 			return getNextTDate(tplid.c_str(), uDate, 1, isTpl);
 		}
 	}
 	else if (weekday == 6 || weekday == 0)
 	{
-		//如果没有偏移，且在周末，则直接读取下一个交易日
+		//如果没有偏移,且在周末,则直接读取下一个交易日
 		return getNextTDate(tplid.c_str(), uDate, 1, isTpl);;
 	}
 
-	//其他情况，交易日=自然日
+	//其他情况,交易日=自然日
 	return uDate;
 }
 
@@ -592,12 +593,12 @@ uint32_t WTSBaseDataMgr::getTradingDate(const char* pid, uint32_t uOffDate /* = 
 
 	if (weekday == 6 || weekday == 0)
 	{
-		//如果没有偏移，且在周末，则直接读取下一个交易日
+		//如果没有偏移,且在周末,则直接读取下一个交易日
 		tpl._cur_tdate = getNextTDate(tplID, uOffDate, 1, true);
 		uOffDate = tpl._cur_tdate;
 	}
 
-	//其他情况，交易日=自然日
+	//其他情况,交易日=自然日
 	return uOffDate;
 }
 
@@ -620,7 +621,7 @@ uint32_t WTSBaseDataMgr::getNextTDate(const char* pid, uint32_t uDate, int days 
 		curDate = (newT->tm_year + 1900) * 10000 + (newT->tm_mon + 1) * 100 + newT->tm_mday;
 		if (newT->tm_wday != 0 && newT->tm_wday != 6 && !isHoliday(pid, curDate, isTpl))
 		{
-			//如果不是周末，也不是节假日，则剩余的天数-1
+			//如果不是周末,也不是节假日,则剩余的天数-1
 			left--;
 			if (left == 0)
 				return curDate;
@@ -647,7 +648,7 @@ uint32_t WTSBaseDataMgr::getPrevTDate(const char* pid, uint32_t uDate, int days 
 		curDate = (newT->tm_year + 1900) * 10000 + (newT->tm_mon + 1) * 100 + newT->tm_mday;
 		if (newT->tm_wday != 0 && newT->tm_wday != 6 && !isHoliday(pid, curDate, isTpl))
 		{
-			//如果不是周末，也不是节假日，则剩余的天数-1
+			//如果不是周末,也不是节假日,则剩余的天数-1
 			left--;
 			if (left == 0)
 				return curDate;
