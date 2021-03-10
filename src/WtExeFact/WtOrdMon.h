@@ -17,7 +17,7 @@ public:
 	 *	Ìí¼Ó¶©µ¥
 	 *	
 	 */
-	void push_order(const uint32_t* ids, uint32_t cnt, uint64_t curTime);
+	void push_order(const uint32_t* ids, uint32_t cnt, uint64_t curTime, bool bCanCancel = true);
 
 	void erase_order(uint32_t localid);
 
@@ -40,7 +40,8 @@ public:
 	void check_orders(uint32_t expiresecs, uint64_t curTime, EnumOrderCallback callback);
 
 private:
-	typedef std::unordered_map<uint32_t, uint64_t> IDMap;
+	typedef std::pair<uint64_t, bool> OrderPair;	//uint64_t - entertime, bool - cancancel
+	typedef std::unordered_map<uint32_t, OrderPair> IDMap;
 	IDMap			_orders;
 	StdRecurMutex	_mtx_ords;
 };

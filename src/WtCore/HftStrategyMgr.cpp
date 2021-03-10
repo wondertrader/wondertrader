@@ -29,7 +29,7 @@ bool HftStrategyMgr::loadFactories(const char* path)
 {
 	if (!StdFile::exists(path))
 	{
-		WTSLogger::error("HFT策略工厂目录%s不存在", path);
+		WTSLogger::error("Directory %s of HFT strategy factory not exists", path);
 		return false;
 	}
 
@@ -70,7 +70,7 @@ bool HftStrategyMgr::loadFactories(const char* path)
 			fInfo._creator = creator;
 			fInfo._remover = (FuncDeleteHftStraFact)DLLHelper::get_symbol(hInst, "deleteStrategyFact");
 			fInfo._fact = pFact;
-			WTSLogger::info("HFT策略工厂[%s]加载成功", pFact->getName());
+			WTSLogger::info("HFT strategy factory[%s] loaded", pFact->getName());
 
 			count++;
 		}
@@ -81,7 +81,7 @@ bool HftStrategyMgr::loadFactories(const char* path)
 		}
 	}
 
-	WTSLogger::info("目录[%s]下共加载%u个HFT策略工厂", path, count);
+	WTSLogger::info("%u HFT strategy factories in directory[%s] loaded", count, path);
 
 	return true;
 }

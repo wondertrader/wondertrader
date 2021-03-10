@@ -72,7 +72,7 @@ bool WtRunner::config(const char* cfgFile)
 	if(document.HasParseError())
 	{
 		auto ec = document.GetParseError();
-		WTSLogger::error("配置文件解析失败");
+		WTSLogger::error("Configuration file parsing failed");
 		return false;
 	}
 
@@ -190,7 +190,7 @@ bool WtRunner::initHftStrategies()
 		}
 		else
 		{
-			WTSLogger::error("交易通道%s不存在,HFT策略绑定交易通道失败", traderid);
+			WTSLogger::error("Trader %s not exists, binding trader to HFT strategy failed", traderid);
 		}
 
 		_hft_engine.addContext(HftContextPtr(ctx));
@@ -224,19 +224,19 @@ bool WtRunner::initEngine()
 
 	if (_is_hft)
 	{
-		WTSLogger::info("交易环境初始化完成,交易引擎: HFT");
+		WTSLogger::info("Trading enviroment initialzied with engine: HFT");
 		_hft_engine.init(cfg, &_bd_mgr, &_data_mgr, &_hot_mgr);
 		_engine = &_hft_engine;
 	}
 	else if (_is_sel)
 	{
-		WTSLogger::info("交易环境初始化完成,交易引擎: SelStk");
+		WTSLogger::info("Trading enviroment initialzied with engine: SEL");
 		_sel_engine.init(cfg, &_bd_mgr, &_data_mgr, &_hot_mgr);
 		_engine = &_sel_engine;
 	}
 	else
 	{
-		WTSLogger::info("交易环境初始化完成,交易引擎: CTA");
+		WTSLogger::info("Trading enviroment initialzied with engine: CTA");
 		_cta_engine.init(cfg, &_bd_mgr, &_data_mgr, &_hot_mgr);
 		_engine = &_cta_engine;
 	}
@@ -258,7 +258,7 @@ bool WtRunner::initDataMgr()
 		return false;
 
 	_data_mgr.init(cfg, _engine);
-	WTSLogger::info("数据管理模块初始化完成");
+	WTSLogger::info("Data manager initialized");
 
 	return true;
 }
@@ -286,7 +286,7 @@ bool WtRunner::initParsers()
 		count++;
 	}
 
-	WTSLogger::info("共加载%u个行情通道", count);
+	WTSLogger::info("%u parsers loaded", count);
 	return true;
 }
 
@@ -332,7 +332,7 @@ bool WtRunner::initExecuters()
 		count++;
 	}
 
-	WTSLogger::info("共加载%u个执行器", count);
+	WTSLogger::info("%u executers loaded", count);
 
 	return true;
 }
@@ -360,7 +360,7 @@ bool WtRunner::initTraders()
 		count++;
 	}
 
-	WTSLogger::info("共加载%u个交易通道", count);
+	WTSLogger::info("%u traders loaded", count);
 
 	return true;
 }

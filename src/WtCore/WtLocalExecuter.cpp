@@ -449,7 +449,7 @@ bool WtExecuterFactory::loadFactories(const char* path)
 {
 	if (!StdFile::exists(path))
 	{
-		WTSLogger::error("执行器工厂目录%s不存在", path);
+		WTSLogger::error("Directory %s of executer factory not exists", path);
 		return false;
 	}
 
@@ -492,7 +492,7 @@ bool WtExecuterFactory::loadFactories(const char* path)
 
 		_factories[fInfo._fact->getName()] = fInfo;
 
-		WTSLogger::info("执行器工厂%s加载成功", fInfo._fact->getName());
+		WTSLogger::info("Executer factory %s loaded", fInfo._fact->getName());
 	}
 
 	return true;
@@ -508,7 +508,7 @@ ExecuteUnitPtr WtExecuterFactory::createExeUnit(const char* factname, const char
 	ExecuteUnit* unit = fInfo._fact->createExeUnit(unitname);
 	if(unit == NULL)
 	{
-		WTSLogger::error("执行单元创建失败:%s.%s", factname, unitname);
+		WTSLogger::error("Createing execution unit failed: %s.%s", factname, unitname);
 		return ExecuteUnitPtr();
 	}
 	return ExecuteUnitPtr(new ExeUnitWrapper(unit, fInfo._fact));
@@ -531,7 +531,7 @@ ExecuteUnitPtr WtExecuterFactory::createExeUnit(const char* name)
 	ExecuteUnit* unit = fInfo._fact->createExeUnit(unitname);
 	if (unit == NULL)
 	{
-		WTSLogger::error("执行单元创建失败:", name);
+		WTSLogger::error("Createing execution unit failed: %s", name);
 		return ExecuteUnitPtr();
 	}
 	return ExecuteUnitPtr(new ExeUnitWrapper(unit, fInfo._fact));

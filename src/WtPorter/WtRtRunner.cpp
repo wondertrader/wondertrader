@@ -105,7 +105,7 @@ void WtRtRunner::registerCtaCallbacks(FuncStraInitCallback cbInit, FuncStraTickC
 	_cb_cta_bar = cbBar;
 	_cb_cta_sessevt = cbSessEvt;
 
-	WTSLogger::info("CTA回调接口注册成功");
+	WTSLogger::info("Callbacks of CTA engine registration done");
 }
 
 void WtRtRunner::registerSelCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar, FuncSessionEvtCallback cbSessEvt)
@@ -117,7 +117,7 @@ void WtRtRunner::registerSelCallbacks(FuncStraInitCallback cbInit, FuncStraTickC
 
 	_cb_sel_sessevt = cbSessEvt;
 
-	WTSLogger::info("SEL回调接口注册成功");
+	WTSLogger::info("Callbacks of SEL engine registration done");
 }
 
 void WtRtRunner::registerHftCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraBarCallback cbBar, 
@@ -139,7 +139,7 @@ void WtRtRunner::registerHftCallbacks(FuncStraInitCallback cbInit, FuncStraTickC
 
 	_cb_hft_sessevt = cbSessEvt;
 
-	WTSLogger::info("HFT回调接口注册成功");
+	WTSLogger::info("Callbacks of HFT engine registration done");
 }
 
 uint32_t WtRtRunner::createCtaContext(const char* name)
@@ -161,7 +161,7 @@ uint32_t WtRtRunner::createHftContext(const char* name, const char* trader, bool
 	}
 	else
 	{
-		WTSLogger::error("交易通道%s不存在,HFT策略绑定交易通道失败", trader);
+		WTSLogger::error("Trader %s not exists, Binding trader to HFT strategy failed", trader);
 	}
 	return ctx->id();
 }
@@ -312,31 +312,31 @@ bool WtRtRunner::config(const char* cfgFile, bool isFile /* = true */)
 	if (cfgBF->get("session"))
 	{
 		_bd_mgr.loadSessions(cfgBF->getCString("session"));
-		WTSLogger::info("交易时间模板加载完成");
+		WTSLogger::info("Trading sessions loaded");
 	}
 
 	if (cfgBF->get("commodity"))
 	{
 		_bd_mgr.loadCommodities(cfgBF->getCString("commodity"));
-		WTSLogger::info("品种列表加载完成");
+		WTSLogger::info("Commodities loaded");
 	}
 
 	if (cfgBF->get("contract"))
 	{
 		_bd_mgr.loadContracts(cfgBF->getCString("contract"));
-		WTSLogger::info("代码列表加载完成");
+		WTSLogger::info("Contracts loaded");
 	}
 
 	if (cfgBF->get("holiday"))
 	{
 		_bd_mgr.loadHolidays(cfgBF->getCString("holiday"));
-		WTSLogger::info("节假日模板加载完成");
+		WTSLogger::info("Holidays loaded");
 	}
 
 	if (cfgBF->get("hot"))
 	{
 		_hot_mgr.loadHots(cfgBF->getCString("hot"));
-		WTSLogger::info("主力切换表加载完成");
+		WTSLogger::info("Hot rules loades");
 	}
 
 	//初始化运行环境
@@ -470,7 +470,7 @@ bool WtRtRunner::initHftStrategies()
 		}
 		else
 		{
-			WTSLogger::error("交易通道%s不存在,HFT策略绑定交易通道失败", traderid);
+			WTSLogger::error("Trader %s not exists, Binding trader to HFT strategy failed", traderid);
 		}
 
 		_hft_engine.addContext(HftContextPtr(ctx));
@@ -503,19 +503,19 @@ bool WtRtRunner::initEngine()
 
 	if (_is_hft)
 	{
-		WTSLogger::info("交易环境初始化完成,交易引擎: HFT");
+		WTSLogger::info("Trading environment initialized, engine name: HFT");
 		_hft_engine.init(cfg, &_bd_mgr, &_data_mgr, &_hot_mgr);
 		_engine = &_hft_engine;
 	}
 	else if (_is_sel)
 	{
-		WTSLogger::info("交易环境初始化完成,交易引擎: SelStk");
+		WTSLogger::info("Trading environment initialized, engine name: SEL");
 		_sel_engine.init(cfg, &_bd_mgr, &_data_mgr, &_hot_mgr);
 		_engine = &_sel_engine;
 	}
 	else
 	{
-		WTSLogger::info("交易环境初始化完成,交易引擎: CTA");
+		WTSLogger::info("Trading environment initialized, engine name: CTA");
 		_cta_engine.init(cfg, &_bd_mgr, &_data_mgr, &_hot_mgr);
 		_engine = &_cta_engine;
 	}
@@ -533,7 +533,7 @@ bool WtRtRunner::initDataMgr()
 
 	_data_mgr.init(cfg, _engine);
 
-	WTSLogger::info("数据管理模块初始化完成");
+	WTSLogger::info("Data manager initialized");
 	return true;
 }
 
@@ -560,7 +560,7 @@ bool WtRtRunner::initParsers()
 		count++;
 	}
 
-	WTSLogger::info("共加载%u个行情通道", count);
+	WTSLogger::info("%u parsers loaded", count);
 
 	return true;
 }
@@ -609,7 +609,7 @@ bool WtRtRunner::initExecuters()
 		count++;
 	}
 
-	WTSLogger::info("共加载%u个执行器", count);
+	WTSLogger::info("%u executers loaded", count);
 
 	return true;
 }
@@ -647,7 +647,7 @@ bool WtRtRunner::initTraders()
 		count++;
 	}
 
-	WTSLogger::info("共加载%u个交易通道", count);
+	WTSLogger::info("%u traders loaded", count);
 
 	return true;
 }
@@ -672,7 +672,7 @@ bool WtRtRunner::initActionPolicy()
 		return false;
 
 	bool ret = _act_policy.init(action_file);
-	WTSLogger::info("开平策略模板初始化完成");
+	WTSLogger::info("Action policies initialized");
 	return ret;
 }
 

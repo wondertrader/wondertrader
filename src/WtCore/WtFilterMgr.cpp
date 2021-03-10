@@ -28,7 +28,7 @@ void WtFilterMgr::load_filters(const char* fileName)
 
 	if (!StdFile::exists(_filter_file.c_str()))
 	{
-		WTSLogger::error("过滤器配置文件%s不存在", _filter_file.c_str());
+		WTSLogger::error("Filters configuration file %s not exists", _filter_file.c_str());
 		return;
 	}
 
@@ -37,13 +37,13 @@ void WtFilterMgr::load_filters(const char* fileName)
 		return;
 
 	if(_filter_timestamp != 0)
-		WTSLogger::info("过滤器配置文件%s已修改, 需要重新加载", _filter_file.c_str());
+		WTSLogger::info("Filters configuration file %s modified, will be reloaded", _filter_file.c_str());
 
 	std::string content;
 	StdFile::read_file_content(_filter_file.c_str(), content);
 	if (content.empty())
 	{
-		WTSLogger::error("过滤器配置文件%s为空", _filter_file.c_str());
+		WTSLogger::error("Filters configuration file %s is empty", _filter_file.c_str());
 		return;
 	}
 
@@ -52,14 +52,14 @@ void WtFilterMgr::load_filters(const char* fileName)
 
 	if (root.HasParseError())
 	{
-		WTSLogger::error("过滤器配置文件%s解析失败", _filter_file.c_str());
+		WTSLogger::error("Filters configuration file %s parsing failed", _filter_file.c_str());
 		return;
 	}
 
 	WTSVariant* cfg = WTSVariant::createObject();
 	if (!jsonToVariant(root, cfg))
 	{
-		WTSLogger::error("过滤器配置文件%s转换失败", _filter_file.c_str());
+		WTSLogger::error("Filters configuration file %s converting failed", _filter_file.c_str());
 		return;
 	}
 
@@ -85,7 +85,7 @@ void WtFilterMgr::load_filters(const char* fileName)
 
 			if (fAct == FA_None)
 			{
-				WTSLogger::error("策略过滤器%s操作%s不可识别", key.c_str(), action);
+				WTSLogger::error("Action %s of strategy filter %s not recognized", action, key.c_str());
 				continue;
 			}
 
@@ -94,7 +94,7 @@ void WtFilterMgr::load_filters(const char* fileName)
 			fItem._action = fAct;
 			fItem._target = cfgItem->getDouble("target");
 
-			WTSLogger::info("策略过滤器%s已加载", key.c_str());
+			WTSLogger::info("Strategy filter %s loaded", key.c_str());
 		}
 	}
 
@@ -116,7 +116,7 @@ void WtFilterMgr::load_filters(const char* fileName)
 
 			if (fAct == FA_None)
 			{
-				WTSLogger::error("代码过滤器%s操作%s不可识别", stdCode.c_str(), action);
+				WTSLogger::error("Action %s of code filter %s not recognized", action, stdCode.c_str());
 				continue;
 			}
 
@@ -125,7 +125,7 @@ void WtFilterMgr::load_filters(const char* fileName)
 			fItem._action = fAct;
 			fItem._target = cfgItem->getDouble("target");
 
-			WTSLogger::info("代码过滤器%s已加载", stdCode.c_str());
+			WTSLogger::info("Code filter %s loaded", stdCode.c_str());
 		}
 	}
 
@@ -134,8 +134,8 @@ void WtFilterMgr::load_filters(const char* fileName)
 
 const char* FLTACT_NAMEs[] =
 {
-	"忽略",
-	"重定向"
+	"Ignore",
+	"Redirect"
 };
 
 bool WtFilterMgr::is_filtered_by_strategy(const char* straName, double& targetPos, bool isDiff /* = false */)
@@ -144,7 +144,7 @@ bool WtFilterMgr::is_filtered_by_strategy(const char* straName, double& targetPo
 	if (it != _stra_filters.end())
 	{
 		const FilterItem& fItem = it->second;
-		WTSLogger::info("[过滤器] 策略过滤器%s触发, 过滤操作: %s", straName, fItem._action <= FA_Redirect ? FLTACT_NAMEs[fItem._action] : "未知");
+		WTSLogger::info("[Filters] Strategy filter %s triggered, action: %s", straName, fItem._action <= FA_Redirect ? FLTACT_NAMEs[fItem._action] : "Unknown");
 		if (fItem._action == FA_Ignore)
 		{
 			return true;
@@ -167,7 +167,7 @@ bool WtFilterMgr::is_filtered_by_code(const char* stdCode, double& targetPos)
 	if (cit != _exec_filters.end())
 	{
 		const FilterItem& fItem = cit->second;
-		WTSLogger::info("[过滤器] 代码过滤器%s触发, 过滤操作: %s", stdCode, fItem._action <= FA_Redirect ? FLTACT_NAMEs[fItem._action] : "未知");
+		WTSLogger::info("[Filters] Code filter %s triggered, action: %s", stdCode, fItem._action <= FA_Redirect ? FLTACT_NAMEs[fItem._action] : "Unknown");
 		if (fItem._action == FA_Ignore)
 		{
 			return true;
@@ -185,7 +185,7 @@ bool WtFilterMgr::is_filtered_by_code(const char* stdCode, double& targetPos)
 	if (cit != _exec_filters.end())
 	{
 		const FilterItem& fItem = cit->second;
-		WTSLogger::info("[过滤器] 品种过滤器%s触发, 过滤操作: %s", stdPID.c_str(), fItem._action <= FA_Redirect ? FLTACT_NAMEs[fItem._action] : "未知");
+		WTSLogger::info("[Filters] CommID filter %s triggered, action: %s", stdPID.c_str(), fItem._action <= FA_Redirect ? FLTACT_NAMEs[fItem._action] : "Unknown");
 		if (fItem._action == FA_Ignore)
 		{
 			return true;

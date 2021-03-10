@@ -296,28 +296,31 @@ void WtSimpExeUnit::doCalculate()
 	}
 
 	//检查涨跌停价
+	bool isCanCancel = true;
 	if (!decimal::eq(_last_tick->upperlimit(), 0) && decimal::gt(buyPx, _last_tick->upperlimit()))
 	{
 		_ctx->writeLog("%s的买入价%f已修正为涨停价%f", _code.c_str(), buyPx, _last_tick->upperlimit());
 		buyPx = _last_tick->upperlimit();
+		isCanCancel = false;	//如果价格被修正为涨跌停价，订单不可撤销
 	}
 	
 	if (!decimal::eq(_last_tick->lowerlimit(), 0) && decimal::lt(sellPx, _last_tick->lowerlimit()))
 	{
 		_ctx->writeLog("%s的卖出价%f已修正为跌停价%f", _code.c_str(), sellPx, _last_tick->lowerlimit());
 		sellPx = _last_tick->lowerlimit();
+		isCanCancel = false;	//如果价格被修正为涨跌停价，订单不可撤销
 	}
 
 	//if (newVol > curPos)
 	if (decimal::gt(newVol, curPos))
 	{
 		OrderIDs ids = _ctx->buy(stdCode, buyPx, newVol - curPos);
-		_orders_mon.push_order(ids.data(), ids.size(), _ctx->getCurTime());
+		_orders_mon.push_order(ids.data(), ids.size(), _ctx->getCurTime(), isCanCancel);
 	}
 	else
 	{
 		OrderIDs ids  = _ctx->sell(stdCode, sellPx, curPos - newVol);
-		_orders_mon.push_order(ids.data(), ids.size(), _ctx->getCurTime());
+		_orders_mon.push_order(ids.data(), ids.size(), _ctx->getCurTime(), isCanCancel);
 	}
 }
 
