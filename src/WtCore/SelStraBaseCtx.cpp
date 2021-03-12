@@ -264,7 +264,7 @@ void SelStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 				const char* stdCode = pItem["code"].GetString();
 				if (!CodeHelper::isStdFutHotCode(stdCode) && _engine->get_contract_info(stdCode) == NULL)
 				{
-					stra_log_text("%s不存在或者已过期,持仓数据已忽略", stdCode);
+					stra_log_text("%s not exists or expired, position ignored", stdCode);
 					continue;
 				}
 				PosInfo& pInfo = _pos_map[stdCode];
@@ -302,7 +302,7 @@ void SelStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 					strcpy(dInfo._opentag, dItem["opentag"].GetString());
 				}
 
-				stra_log_text("策略仓位确认,%s -> %d", stdCode, pInfo._volume);
+				stra_log_text("Strategy position confirmed, %s -> %d", stdCode, pInfo._volume);
 			}
 		}
 
@@ -321,7 +321,7 @@ void SelStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 				const char* stdCode = m.name.GetString();
 				if (!CodeHelper::isStdFutHotCode(stdCode) && _engine->get_contract_info(stdCode) == NULL)
 				{
-					stra_log_text("%s不存在或者已过期,信号已忽略", stdCode);
+					stra_log_text("%s not exists or expired, signal ignored", stdCode);
 					continue;
 				}
 
@@ -333,7 +333,7 @@ void SelStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 				sInfo._sigprice = jItem["sigprice"].GetDouble();
 				sInfo._gentime = jItem["gentime"].GetUint64();
 
-				stra_log_text(fmt::format("{} 的未触发信号恢复, 目标部位: {}", stdCode, sInfo._volume).c_str());
+				stra_log_text(fmt::format("{} untouched signal recovered, target pos: {}", stdCode, sInfo._volume).c_str());
 				stra_sub_ticks(stdCode);
 			}
 		}
@@ -456,8 +456,6 @@ void SelStraBaseCtx::on_bar(const char* stdCode, const char* period, uint32_t ti
 	tag._closed = true;
 
 	on_bar_close(stdCode, realPeriod.c_str(), newBar);
-
-	//stra_log_text("K线%s @ %u已闭合", key.c_str(), period[0] == 'd' ? newBar->date : newBar->time);
 }
 
 void SelStraBaseCtx::on_init()
@@ -555,7 +553,7 @@ bool SelStraBaseCtx::on_schedule(uint32_t curDate, uint32_t curTime, uint32_t fi
 
 	TimeUtils::Ticker ticker;
 	on_strategy_schedule(curDate, fireTime);
-	stra_log_text("策略已重新调度 @ %u", curTime);
+	stra_log_text("Strategy scheduled @ %u", curTime);
 
 	std::unordered_set<std::string> to_clear;
 	for (auto& v : _pos_map)
@@ -578,8 +576,8 @@ bool SelStraBaseCtx::on_schedule(uint32_t curDate, uint32_t curTime, uint32_t fi
 	_total_calc_time += ticker.micro_seconds();
 
 	if (_emit_times % 20 == 0)
-		stra_log_text(fmt::format("策略共触发{}次, 共耗时{}微秒, 平均耗时{}微秒",
-		_emit_times, _total_calc_time, _total_calc_time / _emit_times).c_str());
+		stra_log_text(fmt::format("Strategy scheduled {} times, {} microsecs elapsed, {} microsecs per time in average",
+			_emit_times, _total_calc_time, _total_calc_time / _emit_times).c_str());
 
 	if (_ud_modified)
 	{
@@ -840,7 +838,7 @@ WTSTickData* SelStraBaseCtx::stra_get_last_tick(const char* stdCode)
 void SelStraBaseCtx::stra_sub_ticks(const char* code)
 {
 	_engine->sub_tick(_context_id, code);
-	stra_log_text("实时行情已订阅: %s", code);
+	stra_log_text("Market data subscribed: %s", code);
 }
 
 WTSCommodityInfo* SelStraBaseCtx::stra_get_comminfo(const char* stdCode)
