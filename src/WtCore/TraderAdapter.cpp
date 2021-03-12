@@ -1352,12 +1352,12 @@ void TraderAdapter::handleEvent(WTSTraderEvent e, int32_t ec)
 		}
 		else
 		{
-			WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR,"[%s]交易账号连接失败: %d", _id.c_str(), ec);
+			WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR,"[%s] Trading channel connecting failed: %d", _id.c_str(), ec);
 		}
 	}
 	else if(e == WTE_Close)
 	{
-		WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR,"[%s]交易账号连接已断开: %d", _id.c_str(), ec);
+		WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR,"[%s] Trading channel disconnected: %d", _id.c_str(), ec);
 		for (auto sink : _sinks)
 			sink->on_channel_lost();
 	}
@@ -1371,7 +1371,7 @@ void TraderAdapter::onLoginResult(bool bSucc, const char* msg, uint32_t tradingd
 		WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR,"[%s] Trader login failed: %s", _id.c_str(), msg);
 
 		if (_notifier)
-			_notifier->notify(id(), fmt::format("登录失败: {}", msg).c_str());
+			_notifier->notify(id(), fmt::format("login failed: {}", msg).c_str());
 	}
 	else
 	{
