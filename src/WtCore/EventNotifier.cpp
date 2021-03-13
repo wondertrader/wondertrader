@@ -107,7 +107,7 @@ void EventNotifier::start()
 		}
 	}));
 
-	WTSLogger::info("事件通知器已启动");
+	WTSLogger::info("Event notifier started");
 }
 
 void EventNotifier::stop()
@@ -132,7 +132,7 @@ bool EventNotifier::addBRecver(const char* remote, int port)
 		boost::asio::ip::address_v4 addr = boost::asio::ip::address_v4::from_string(remote);
 		m_listRawRecver.emplace_back(EndPoint(addr, port));
 
-		WTSLogger::info("接收端%s:%d已加入", remote, port);
+		WTSLogger::info("Receiver %s:%d added", remote, port);
 	}
 	catch(...)
 	{
@@ -339,7 +339,7 @@ void EventNotifier::handle_send_broad(const EndPoint& ep, const boost::system::e
 {
 	if(error)
 	{
-		WTSLogger::error("事件广播失败,目标地址: %s,错误信息: %s", ep.address().to_string().c_str(), error.message().c_str());
+		WTSLogger::error("Broadcasting of event failed, remote addr: %s, error message: %s", ep.address().to_string().c_str(), error.message().c_str());
 	}
 }
 
@@ -347,7 +347,7 @@ void EventNotifier::handle_send_multi(const EndPoint& ep, const boost::system::e
 {
 	if(error)
 	{
-		WTSLogger::error("事件多播失败,目标地址: %s,错误信息: %s", ep.address().to_string().c_str(), error.message().c_str());
+		WTSLogger::error("Multicasting of event failed, remote addr: %s, error message: %s", ep.address().to_string().c_str(), error.message().c_str());
 	}
 }
 

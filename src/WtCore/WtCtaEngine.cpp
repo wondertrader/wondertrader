@@ -166,7 +166,7 @@ void WtCtaEngine::on_init()
 
 void WtCtaEngine::on_session_begin()
 {
-	WTSLogger::info("交易日%u已开始", _cur_tdate);
+	WTSLogger::info("Trading day %u begun", _cur_tdate);
 	for (auto it = _ctx_map.begin(); it != _ctx_map.end(); it++)
 	{
 		CtaContextPtr& ctx = it->second;
@@ -187,7 +187,7 @@ void WtCtaEngine::on_session_end()
 		ctx->on_session_end(_cur_tdate);
 	}
 
-	WTSLogger::info("交易日%u已结束", _cur_tdate);
+	WTSLogger::info("Trading day %u ended", _cur_tdate);
 	if (_evt_listener)
 		_evt_listener->on_session_event(_cur_tdate, false);
 }
@@ -212,7 +212,8 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 				if(!decimal::eq(qty, oldQty))
 				{
 					//输出日志
-					WTSLogger::info(fmt::format("[过滤器] 策略{}的{}的目标仓位被策略过滤器调整: {} -> {}", ctx->name(), stdCode, oldQty, qty).c_str());
+					//WTSLogger::info(fmt::format("[Filters] 策略{}的{}的目标仓位被策略过滤器调整: {} -> {}", ctx->name(), stdCode, oldQty, qty).c_str());
+					WTSLogger::info(fmt::format("[Filters] Target position of {} of strategy {} reset by strategy filter: {} -> {}", stdCode, ctx->name(), oldQty, qty).c_str());
 				}
 
 				std::string realCode = stdCode;
@@ -230,7 +231,8 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 			else
 			{
 				//输出日志
-				WTSLogger::info("[过滤器] 策略%s的%s的目标仓位被策略过滤器忽略", ctx->name(), stdCode);
+				//WTSLogger::info("[过滤器] 策略%s的%s的目标仓位被策略过滤器忽略", ctx->name(), stdCode);
+				WTSLogger::info("[Filters] Target position of %s of strategy %s ignored by strategy filter", stdCode, ctx->name());
 			}
 		});
 	}
@@ -238,7 +240,7 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 	bool bRiskEnabled = false;
 	if(!decimal::eq(_risk_volscale, 1.0) && _risk_date == _cur_tdate)
 	{
-		WTSLogger::info2("risk", "组合盘仓位风控系数为%.2f", _risk_volscale);
+		WTSLogger::info2("risk", "Risk scale of strategy group is %.2f", _risk_volscale);
 		bRiskEnabled = true;
 	}
 
@@ -270,7 +272,7 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 					append_signal(stdCode.c_str(), 0);
 				});
 
-				WTSLogger::error("品种%s不在目标仓位内,自动设置为0", stdCode.c_str());
+				WTSLogger::error("Instrument %s not in target positions, setup to 0 automatically", stdCode.c_str());
 			}
 
 			target_pos[stdCode] = 0;
@@ -302,7 +304,7 @@ void WtCtaEngine::handle_pos_change(const char* straName, const char* stdCode, d
 	if(_filter_mgr.is_filtered_by_strategy(straName, diffQty, true))
 	{
 		//输出日志
-		WTSLogger::info("[过滤器] 策略%s的%s的目标仓位被策略过滤器忽略", straName, stdCode);
+		WTSLogger::info("[Filters] Target position of %s of strategy %s ignored by strategy filter", stdCode, straName);
 		return;
 	}
 
@@ -321,7 +323,7 @@ void WtCtaEngine::handle_pos_change(const char* straName, const char* stdCode, d
 	bool bRiskEnabled = false;
 	if (!decimal::eq(_risk_volscale, 1.0) && _risk_date == _cur_tdate)
 	{
-		WTSLogger::info2("risk", "组合盘仓位风控系数为%.2f", _risk_volscale);
+		WTSLogger::info2("risk", "Risk scale of strategy group is %.2f", _risk_volscale);
 		bRiskEnabled = true;
 	}
 	if (bRiskEnabled && !decimal::eq(targetPos, 0))
@@ -406,7 +408,7 @@ void WtCtaEngine::on_bar(const char* stdCode, const char* period, uint32_t times
 		}
 	}
 
-	WTSLogger::info("K线 [%s#%s%d] @ %u已闭合", stdCode, period, times, period[0] == 'd' ? newBar->date : newBar->time);
+	WTSLogger::info("KBar [%s#%s%d] @ %u closed", stdCode, period, times, period[0] == 'd' ? newBar->date : newBar->time);
 }
 
 bool WtCtaEngine::isInTrading()

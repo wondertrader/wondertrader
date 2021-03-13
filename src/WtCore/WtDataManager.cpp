@@ -64,14 +64,14 @@ bool WtDataManager::initStore(WTSVariant* cfg)
 	DllHandle hInst = DLLHelper::load_library(module.c_str());
 	if(hInst == NULL)
 	{
-		WTSLogger::error("数据存储模块%s加载失败", module.c_str());
+		WTSLogger::error("Loading data reader module %s failed", module.c_str());
 		return false;
 	}
 
 	FuncCreateDataReader funcCreator = (FuncCreateDataReader)DLLHelper::get_symbol(hInst, "createDataReader");
 	if(funcCreator == NULL)
 	{
-		WTSLogger::error("数据存储模块%s加载失败,没有找到正确的入口函数", module.c_str());
+		WTSLogger::error("Loading data reader module %s failed, entrance function createDataReader not found", module.c_str());
 		DLLHelper::free_library(hInst);
 		return false;
 	}
@@ -79,7 +79,7 @@ bool WtDataManager::initStore(WTSVariant* cfg)
 	_reader = funcCreator();
 	if(_reader == NULL)
 	{
-		WTSLogger::error("数据存储模块%s实例创建失败", module.c_str());
+		WTSLogger::error("Creating instance of data reader module %s failed", module.c_str());
 		DLLHelper::free_library(hInst);
 		return false;
 	}

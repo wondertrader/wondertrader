@@ -26,7 +26,7 @@ void WtExecuterMgr::set_positions(std::unordered_map<std::string, double> target
 				if (!decimal::eq(desVol, oldVol))
 				{
 					//输出日志
-					WTSLogger::info(fmt::format("[过滤器] {}的目标仓位被代码过滤器调整: {} -> {}", stdCode.c_str(), oldVol, desVol).c_str());
+					WTSLogger::info(fmt::format("[Filters] {} target position reset by code filter: {} -> {}", stdCode.c_str(), oldVol, desVol).c_str());
 				}
 
 				des_port[stdCode] = desVol;
@@ -34,7 +34,7 @@ void WtExecuterMgr::set_positions(std::unordered_map<std::string, double> target
 			else
 			{
 				//输出日志
-				WTSLogger::info("[过滤器] %s的目标仓位被策略过滤器忽略", stdCode.c_str());
+				WTSLogger::info("[Filters] %s target position ignored by filter", stdCode.c_str());
 			}
 		}
 
@@ -59,13 +59,13 @@ void WtExecuterMgr::handle_pos_change(const char* stdCode, double targetPos)
 			if (!decimal::eq(targetPos, oldVol))
 			{
 				//输出日志
-				WTSLogger::info(fmt::format("[过滤器] {}的目标仓位被代码过滤器调整: {} -> {}", stdCode, oldVol, targetPos).c_str());
+				WTSLogger::info(fmt::format("[Filters] {} target position reset by filter: {} -> {}", stdCode, oldVol, targetPos).c_str());
 			}
 		}
 		else
 		{
 			//输出日志
-			WTSLogger::info("[过滤器] %s的目标仓位被策略过滤器忽略", stdCode);
+			WTSLogger::info("[Filters] %s target position ignored by filter", stdCode);
 			return;
 		}
 	}

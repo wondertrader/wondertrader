@@ -408,7 +408,6 @@ bool WTSBaseDataMgr::loadHolidays(const char* filename)
 	rj::Document root;
 	if (root.Parse(content.c_str()).HasParseError())
 	{
-		//WTSLogger::error("节假日文件解析失败");
 		WTSLogger::error("Parsing holidays configuration file failed");
 		return false;
 	}

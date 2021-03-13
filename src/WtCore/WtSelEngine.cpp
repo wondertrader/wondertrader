@@ -82,7 +82,7 @@ void WtSelEngine::on_bar(const char* stdCode, const char* period, uint32_t times
 		}
 	}
 
-	WTSLogger::info("K线 [%s#%s%d] @ %u已闭合", stdCode, period, times, period[0] == 'd' ? newBar->date : newBar->time);
+	WTSLogger::info("KBar [%s#%s%d] @ %u closed", stdCode, period, times, period[0] == 'd' ? newBar->date : newBar->time);
 }
 
 void WtSelEngine::on_tick(const char* stdCode, WTSTickData* curTick)
@@ -293,7 +293,7 @@ void WtSelEngine::addContext(SelContextPtr ctx, uint32_t date, uint32_t time, Ta
 	auto it = _tasks.find(ctx->id());
 	if(it != _tasks.end())
 	{
-		WTSLogger::error("任务注册失败: 任务名%u已被注册", ctx->id());
+		WTSLogger::error("Task registration failed: task id %u already registered", ctx->id());
 		return;
 	}
 
@@ -339,7 +339,7 @@ void WtSelEngine::handle_pos_change(const char* stdCode, double diffQty)
 	bool bRiskEnabled = false;
 	if (!decimal::eq(_risk_volscale, 1.0) && _risk_date == _cur_tdate)
 	{
-		WTSLogger::info2("risk", "组合盘仓位风控系数为%.2f", _risk_volscale);
+		WTSLogger::info2("risk", "Risk scale of Strategy Group is %.2f", _risk_volscale);
 		bRiskEnabled = true;
 	}
 	if (bRiskEnabled && targetPos != 0)

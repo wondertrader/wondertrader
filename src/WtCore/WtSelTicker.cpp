@@ -117,7 +117,7 @@ void WtSelRtTicker::on_tick(WTSTickData* curTick, bool isHot /* = false */)
 
 			uint32_t thisMin = _s_info->minuteToTime(_cur_pos);
 
-			WTSLogger::info("分钟线 %u.%04u 触发闭合", _date, thisMin);
+			WTSLogger::info("Minute Bar %u.%04u Closed by data", _date, thisMin);
 			if (_store)
 				_store->onMinuteEnd(_date, thisMin);
 
@@ -195,10 +195,10 @@ void WtSelRtTicker::run()
 						uint32_t lastDate = _date;
 						_date = TimeUtils::getNextDate(_date);
 						_time = 0;
-						WTSLogger::info("0点日期自动切换: %u -> %u", lastDate, _date);
+						WTSLogger::info("Data automatically changed at time 00:00: %u -> %u", lastDate, _date);
 					}
 
-					WTSLogger::info("分钟线 %u.%04u 自动闭合", _date, thisMin);
+					WTSLogger::info("Minute bar %u.%04u closed automatically", _date, thisMin);
 					if (_store)
 						_store->onMinuteEnd(_date, thisMin);
 

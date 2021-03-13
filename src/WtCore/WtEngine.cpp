@@ -242,7 +242,7 @@ void WtEngine::setVolScale(double scale)
 	_risk_volscale = scale;
 	_risk_date = _cur_tdate;
 
-	WTSLogger::log2_raw("risk", LL_INFO, fmt::format("风控仓位系数已改变: {} - > {}", oldScale, scale).c_str());
+	WTSLogger::log2_raw("risk", LL_INFO, fmt::format("Position risk scale updated: {} - > {}", oldScale, scale).c_str());
 
 	save_datas();
 }
@@ -261,7 +261,7 @@ void WtEngine::init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtDataManager* dataMgr
 	_data_mgr = dataMgr;
 	_hot_mgr = hotMgr;
 
-	WTSLogger::info("平台运行模式: 生产模式");
+	WTSLogger::info("Platform running mode: Production");
 
 	//_filter_file = cfg->getCString("filters");
 	//load_strategy_filters();
@@ -661,7 +661,7 @@ void WtEngine::load_fees(const char* filename)
 
 	if (!StdFile::exists(filename))
 	{
-		WTSLogger::error("手续费模板文件%s不存在", filename);
+		WTSLogger::error("Fee templates file %s not exists", filename);
 		return;
 	}
 
@@ -670,7 +670,7 @@ void WtEngine::load_fees(const char* filename)
 	StdFile::read_file_content(filename, content);
 	if (content.empty())
 	{
-		WTSLogger::error("手续费模板文件%s为空", filename);
+		WTSLogger::error("Fee templates file %s is empty", filename);
 		return;
 	}
 
@@ -679,14 +679,14 @@ void WtEngine::load_fees(const char* filename)
 
 	if (root.HasParseError())
 	{
-		WTSLogger::error("手续费模板文件%s解析失败", filename);
+		WTSLogger::error("Fee templates file %s parsing failed", filename);
 		return;
 	}
 
 	WTSVariant* cfg = WTSVariant::createObject();
 	if (!jsonToVariant(root, cfg))
 	{
-		WTSLogger::error("手续费模板文件%s转换失败", filename);
+		WTSLogger::error("Fee templates file %s converting failed", filename);
 		return;
 	}
 
@@ -703,7 +703,7 @@ void WtEngine::load_fees(const char* filename)
 
 	cfg->release();
 
-	WTSLogger::info("共加载%u条手续费模板", _fee_map.size());
+	WTSLogger::info("%u fee templates loaded", _fee_map.size());
 }
 
 double WtEngine::calc_fee(const char* stdCode, double price, double qty, uint32_t offset)
@@ -712,7 +712,7 @@ double WtEngine::calc_fee(const char* stdCode, double price, double qty, uint32_
 	auto it = _fee_map.find(stdPID);
 	if (it == _fee_map.end())
 	{
-		WTSLogger::warn("品种%s没有预设的佣金费率,直接返回0.0", stdCode);
+		WTSLogger::warn("No fee template of instrumnet %s founde, return 0.0 as default", stdCode);
 		return 0.0;
 	}
 
@@ -925,7 +925,7 @@ bool WtEngine::init_riskmon(WTSVariant* cfg)
 	DllHandle hInst = DLLHelper::load_library(dllpath.c_str());
 	if (hInst == NULL)
 	{
-		WTSLogger::info2("risk", "风控模块%s加载失败", dllpath.c_str());
+		WTSLogger::info2("risk", "Riskmon module %s loading failed", dllpath.c_str());
 		return false;
 	}
 
@@ -933,7 +933,7 @@ bool WtEngine::init_riskmon(WTSVariant* cfg)
 	if (creator == NULL)
 	{
 		DLLHelper::free_library(hInst);
-		WTSLogger::info2("risk", "风控模块%s不是正确的风控模块", module);
+		WTSLogger::info2("risk", "Riskmon module %s is not compatible", module);
 		return false;
 	}
 

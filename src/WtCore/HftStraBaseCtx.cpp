@@ -319,25 +319,25 @@ WTSTickData* HftStraBaseCtx::stra_get_last_tick(const char* stdCode)
 void HftStraBaseCtx::stra_sub_ticks(const char* stdCode)
 {
 	_engine->sub_tick(id(), stdCode);
-	stra_log_text("实时行情已订阅: %s", stdCode);
+	stra_log_text("Market Data subscribed: %s", stdCode);
 }
 
 void HftStraBaseCtx::stra_sub_order_details(const char* stdCode)
 {
 	_engine->sub_order_detail(id(), stdCode);
-	stra_log_text("逐笔委托已订阅: %s", stdCode);
+	stra_log_text("Order details subscribed: %s", stdCode);
 }
 
 void HftStraBaseCtx::stra_sub_order_queues(const char* stdCode)
 {
 	_engine->sub_order_queue(id(), stdCode);
-	stra_log_text("委托队列已订阅: %s", stdCode);
+	stra_log_text("Order queues subscribed: %s", stdCode);
 }
 
 void HftStraBaseCtx::stra_sub_transactions(const char* stdCode)
 {
 	_engine->sub_transaction(id(), stdCode);
-	stra_log_text("逐笔成交已订阅: %s", stdCode);
+	stra_log_text("Transactions subscribed: %s", stdCode);
 }
 
 void HftStraBaseCtx::stra_log_text(const char* fmt, ...)
@@ -561,7 +561,7 @@ void HftStraBaseCtx::do_set_position(const char* stdCode, double qty, double pri
 	if (decimal::eq(pInfo._volume, qty))
 		return;
 
-	stra_log_text("目标仓位设定: %.0f -> %0.f", pInfo._volume, qty);
+	stra_log_text("Target position updated: %.0f -> %0.f", pInfo._volume, qty);
 
 	WTSCommodityInfo* commInfo = _engine->get_commodity_info(stdCode);
 

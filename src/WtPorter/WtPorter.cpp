@@ -267,7 +267,6 @@ WtUInt32 cta_get_bars(CtxHandler cHandle, const char* stdCode, const char* perio
 		WTSKlineSlice* kData = ctx->stra_get_bars(stdCode, period, barCnt, isMain);
 		if (kData)
 		{
-			//printf("K线条数%u\r\n", kData->size());
 			uint32_t left = barCnt + 1;
 			uint32_t reaCnt = 0;
 			for (int32_t idx = 0; idx < kData->size() && left > 0; idx++, left--)
@@ -277,7 +276,6 @@ WtUInt32 cta_get_bars(CtxHandler cHandle, const char* stdCode, const char* perio
 				reaCnt += 1;
 			}
 
-			//printf("数据已读完\r\n");
 			cb(cHandle, stdCode, period, NULL, true);
 
 			kData->release();
@@ -285,7 +283,6 @@ WtUInt32 cta_get_bars(CtxHandler cHandle, const char* stdCode, const char* perio
 		}
 		else
 		{
-			//printf("K线条数0\r\n");
 			cb(cHandle, stdCode, period, NULL, true);
 			return 0;
 		}
@@ -308,7 +305,6 @@ WtUInt32	cta_get_ticks(CtxHandler cHandle, const char* stdCode, unsigned int tic
 		WTSTickSlice* tData = ctx->stra_get_ticks(stdCode, tickCnt);
 		if (tData)
 		{
-			//printf("K线条数%u\r\n", kData->size());
 			uint32_t left = tickCnt + 1;
 			uint32_t reaCnt = 0;
 			for (uint32_t idx = 0; idx < tData->size() && left > 0; idx++, left--)
@@ -318,7 +314,6 @@ WtUInt32	cta_get_ticks(CtxHandler cHandle, const char* stdCode, unsigned int tic
 				reaCnt += 1;
 			}
 
-			//printf("数据已读完\r\n");
 			cb(cHandle, stdCode, NULL, true);
 
 			tData->release();
@@ -326,14 +321,12 @@ WtUInt32	cta_get_ticks(CtxHandler cHandle, const char* stdCode, unsigned int tic
 		}
 		else
 		{
-			//printf("K线条数0\r\n");
 			cb(cHandle, stdCode, NULL, true);
 			return 0;
 		}
 	}
 	catch (...)
 	{
-		printf("tick读取异常\r\n");
 		cb(cHandle, stdCode, NULL, true);
 		return 0;
 	}
@@ -598,7 +591,6 @@ WtUInt32 sel_get_bars(CtxHandler cHandle, const char* stdCode, const char* perio
 		WTSKlineSlice* kData = ctx->stra_get_bars(stdCode, period, barCnt);
 		if (kData)
 		{
-			//printf("K线条数%u\r\n", kData->size());
 			uint32_t left = barCnt + 1;
 			uint32_t reaCnt = 0;
 			for (int32_t idx = 0; idx < kData->size() && left > 0; idx++, left--)
@@ -608,7 +600,6 @@ WtUInt32 sel_get_bars(CtxHandler cHandle, const char* stdCode, const char* perio
 				reaCnt += 1;
 			}
 
-			//printf("数据已读完\r\n");
 			cb(cHandle, stdCode, period, NULL, true);
 
 			kData->release();
@@ -616,14 +607,12 @@ WtUInt32 sel_get_bars(CtxHandler cHandle, const char* stdCode, const char* perio
 		}
 		else
 		{
-			//printf("K线条数0\r\n");
 			cb(cHandle, stdCode, period, NULL, true);
 			return 0;
 		}
 	}
 	catch (...)
 	{
-		printf("K线读取异常\r\n");
 		cb(cHandle, stdCode, period, NULL, true);
 		return 0;
 	}
@@ -649,7 +638,6 @@ WtUInt32	sel_get_ticks(CtxHandler cHandle, const char* stdCode, unsigned int tic
 		WTSTickSlice* tData = ctx->stra_get_ticks(stdCode, tickCnt);
 		if (tData)
 		{
-			//printf("K线条数%u\r\n", kData->size());
 			uint32_t left = tickCnt + 1;
 			uint32_t reaCnt = 0;
 			for (uint32_t idx = 0; idx < tData->size() && left > 0; idx++, left--)
@@ -659,7 +647,6 @@ WtUInt32	sel_get_ticks(CtxHandler cHandle, const char* stdCode, unsigned int tic
 				reaCnt += 1;
 			}
 
-			//printf("数据已读完\r\n");
 			cb(cHandle, stdCode, NULL, true);
 
 			tData->release();
@@ -667,14 +654,12 @@ WtUInt32	sel_get_ticks(CtxHandler cHandle, const char* stdCode, unsigned int tic
 		}
 		else
 		{
-			//printf("K线条数0\r\n");
 			cb(cHandle, stdCode, NULL, true);
 			return 0;
 		}
 	}
 	catch (...)
 	{
-		printf("tick读取异常\r\n");
 		cb(cHandle, stdCode, NULL, true);
 		return 0;
 	}
@@ -755,7 +740,6 @@ WtUInt32 hft_get_bars(CtxHandler cHandle, const char* stdCode, const char* perio
 		WTSKlineSlice* kData = ctx->stra_get_bars(stdCode, period, barCnt);
 		if (kData)
 		{
-			//printf("K线条数%u\r\n", kData->size());
 			uint32_t left = barCnt + 1;
 			uint32_t reaCnt = 0;
 			for (int32_t idx = 0; idx < kData->size() && left > 0; idx++, left--)
@@ -765,7 +749,6 @@ WtUInt32 hft_get_bars(CtxHandler cHandle, const char* stdCode, const char* perio
 				reaCnt += 1;
 			}
 
-			//printf("数据已读完\r\n");
 			cb(cHandle, stdCode, period, NULL, true);
 
 			kData->release();
@@ -773,7 +756,6 @@ WtUInt32 hft_get_bars(CtxHandler cHandle, const char* stdCode, const char* perio
 		}
 		else
 		{
-			//printf("K线条数0\r\n");
 			cb(cHandle, stdCode, period, NULL, true);
 			return 0;
 		}
@@ -795,7 +777,6 @@ WtUInt32 hft_get_ticks(CtxHandler cHandle, const char* stdCode, unsigned int tic
 		WTSTickSlice* tData = ctx->stra_get_ticks(stdCode, tickCnt);
 		if (tData)
 		{
-			//printf("K线条数%u\r\n", kData->size());
 			uint32_t left = tickCnt + 1;
 			uint32_t reaCnt = 0;
 			for (uint32_t idx = 0; idx < tData->size() && left > 0; idx++, left--)
@@ -805,7 +786,6 @@ WtUInt32 hft_get_ticks(CtxHandler cHandle, const char* stdCode, unsigned int tic
 				reaCnt += 1;
 			}
 
-			//printf("数据已读完\r\n");
 			cb(cHandle, stdCode, NULL, true);
 
 			tData->release();
@@ -813,7 +793,6 @@ WtUInt32 hft_get_ticks(CtxHandler cHandle, const char* stdCode, unsigned int tic
 		}
 		else
 		{
-			//printf("K线条数0\r\n");
 			cb(cHandle, stdCode, NULL, true);
 			return 0;
 		}

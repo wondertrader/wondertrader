@@ -75,21 +75,21 @@ bool ParserAdapter::init(const char* id, WTSVariant* cfg, IParserStub* stub, IBa
 		DllHandle hInst = DLLHelper::load_library(dllpath.c_str());
 		if (hInst == NULL)
 		{
-			WTSLogger::log_dyn("parser", _id.c_str(), LL_ERROR, "[%s]行情模块%s加载失败", _id.c_str(), dllpath.c_str());
+			WTSLogger::log_dyn("parser", _id.c_str(), LL_ERROR, "[%s] Parser module %s loading failed", _id.c_str(), dllpath.c_str());
 			return false;
 		}
 
 		FuncCreateParser pFuncCreateParser = (FuncCreateParser)DLLHelper::get_symbol(hInst, "createParser");
 		if (NULL == pFuncCreateParser)
 		{
-			WTSLogger::log_dyn("parser", _id.c_str(), LL_FATAL, "[%s]交易接口创建函数读取失败", _id.c_str());
+			WTSLogger::log_dyn("parser", _id.c_str(), LL_FATAL, "[%s] Entrance function createParser not found", _id.c_str());
 			return false;
 		}
 
 		_parser_api = pFuncCreateParser();
 		if (NULL == _parser_api)
 		{
-			WTSLogger::log_dyn("parser", _id.c_str(), LL_FATAL, "[%s]行情接口创建失败", _id.c_str());
+			WTSLogger::log_dyn("parser", _id.c_str(), LL_FATAL, "[%s] Creating parser api failed", _id.c_str());
 			return false;
 		}
 
@@ -183,14 +183,14 @@ bool ParserAdapter::init(const char* id, WTSVariant* cfg, IParserStub* stub, IBa
 		}
 		else
 		{
-			WTSLogger::log_dyn("parser", _id.c_str(), LL_ERROR, "[%s]行情模块初始化失败,模块接口初始化失败...", _id.c_str());
+			WTSLogger::log_dyn("parser", _id.c_str(), LL_ERROR, "[%s] Parser initializing failed: api initializing failed...", _id.c_str());
 		}
 
 		params->release();
 	}
 	else
 	{
-		WTSLogger::log_dyn("parser", _id.c_str(), LL_ERROR, "[%s]行情模块初始化失败,获取模块接口失败...", _id.c_str());
+		WTSLogger::log_dyn("parser", _id.c_str(), LL_ERROR, "[%s] Parser initializing failed: creating api failed...", _id.c_str());
 	}
 
 	return true;
@@ -357,7 +357,7 @@ bool ParserAdapterMgr::addAdapter(const char* id, ParserAdapterPtr& adapter)
 	auto it = _adapters.find(id);
 	if (it != _adapters.end())
 	{
-		WTSLogger::error("行情通道名称相同: %s", id);
+		WTSLogger::error(" Same name of parsers: %s", id);
 		return false;
 	}
 
@@ -385,5 +385,5 @@ void ParserAdapterMgr::run()
 		it->second->run();
 	}
 
-	WTSLogger::info("%u个行情通道已启动", _adapters.size());
+	WTSLogger::info("%u parsers started", _adapters.size());
 }

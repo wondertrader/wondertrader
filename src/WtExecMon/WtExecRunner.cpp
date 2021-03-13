@@ -48,25 +48,25 @@ bool WtExecRunner::config(const char* cfgFile, bool isFile /* = true */)
 	if (cfgBF->get("session"))
 	{
 		_bd_mgr.loadSessions(cfgBF->getCString("session"));
-		WTSLogger::info("交易时间模板加载完成");
+		WTSLogger::info("Trading sessions loaded");
 	}
 
 	if (cfgBF->get("commodity"))
 	{
 		_bd_mgr.loadCommodities(cfgBF->getCString("commodity"));
-		WTSLogger::info("品种列表加载完成");
+		WTSLogger::info("Commodities loaded");
 	}
 
 	if (cfgBF->get("contract"))
 	{
 		_bd_mgr.loadContracts(cfgBF->getCString("contract"));
-		WTSLogger::info("标的列表加载完成");
+		WTSLogger::info("Contracts loaded");
 	}
 
 	if (cfgBF->get("holiday"))
 	{
 		_bd_mgr.loadHolidays(cfgBF->getCString("holiday"));
-		WTSLogger::info("节假日模板加载完成");
+		WTSLogger::info("Holidays loaded");
 	}
 
 
@@ -118,7 +118,7 @@ bool WtExecRunner::initParsers()
 		count++;
 	}
 
-	WTSLogger::info("共加载%u个行情通道", count);
+	WTSLogger::info("%u parsers loaded", count);
 
 	return true;
 }
@@ -156,7 +156,7 @@ bool WtExecRunner::initExecuters()
 		count++;
 	}
 
-	WTSLogger::info("共加载%u个执行器", count);
+	WTSLogger::info("%u executers loaded", count);
 
 	return true;
 }
@@ -183,7 +183,7 @@ bool WtExecRunner::initTraders()
 		count++;
 	}
 
-	WTSLogger::info("共加载%u个交易通道", count);
+	WTSLogger::info("%u traders loaded", count);
 
 	return true;
 }
@@ -196,7 +196,7 @@ bool WtExecRunner::initDataMgr()
 
 	_data_mgr.init(cfg, this);
 
-	WTSLogger::info("数据管理模块初始化完成");
+	WTSLogger::info("Data Manager initialized");
 	return true;
 }
 
@@ -241,7 +241,7 @@ bool WtExecRunner::initActionPolicy()
 		return false;
 
 	bool ret = _act_policy.init(action_file);
-	WTSLogger::info("开平策略模板初始化完成");
+	WTSLogger::info("Action policies initialized");
 	return ret;
 }
 
