@@ -5,7 +5,7 @@
 ```py
 from wtpy import Context
 
-class BaseStrategy:
+class BaseCtaStrategy:
     '''
     策略基础类，所有的策略都从该类派生\n
     包含了策略的基本开发框架
@@ -61,13 +61,13 @@ class BaseStrategy:
 ---
 为了详细的介绍各个接口函数的作用，我们以demo中的DualThrust策略为例，来参照介绍
 ```py
-from wtpy import BaseStrategy
+from wtpy import BaseCtaStrategy
 from wtpy import Context
 
-class StraDualThrust(BaseStrategy):
+class StraDualThrust(BaseCtaStrategy):
     
     def __init__(self, name:str, code:str, barCnt:int, period:str, days:int, k1:float, k2:float, isForStk:bool = False):
-        BaseStrategy.__init__(self, name)
+        BaseCtaStrategy.__init__(self, name)
 
         self.__days__ = days
         self.__k1__ = k1

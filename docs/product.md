@@ -12,7 +12,7 @@
 
 * 打开命令行，输入以下指令直接安装
     ``` shell
-    $ pip install wtpy
+    $ pip install wtpy --upgrade
     ```
     或者直接下载whl文件到本地进行安装
     阿里云镜像地址：<https://mirrors.aliyun.com/pypi/simple/wtpy/>
@@ -25,7 +25,7 @@
 
 ### 准备数据组件
 ---
-* 复制股票数据组件demo<https://github.com/wondertrader/wondertrader/tree/master/demos/py/datakit_stk>
+* 复制股票数据组件demo<https://github.com/wondertrader/wtpy/tree/master/demos/datakit_stk>
 
 * 打开配置文件`dtcfg.json`，配置XTP仿真行情通道
     ```json
@@ -75,7 +75,7 @@
 
 ### 准备环境
 ---
-* 复制股票实盘demo<https://github.com/wondertrader/wondertrader/tree/master/demos/py/product_stk>
+* 复制股票实盘demo<https://github.com/wondertrader/wtpy/tree/master/demos/cta_stk>
 
 * 打开配置文件`config.json`，修改环境配置
     ```json

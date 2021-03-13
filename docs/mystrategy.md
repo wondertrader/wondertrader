@@ -3,7 +3,7 @@
 * 安装wtpy
     打开命令行，输入以下指令直接安装
     ```shell
-    $ pip install wtpy
+    $ pip install wtpy --upgrade
     ```
     或者直接下载whl文件到本地进行安装
     阿里云镜像地址：<https://mirrors.aliyun.com/pypi/simple/wtpy/>

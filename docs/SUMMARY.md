@@ -3,9 +3,10 @@
 * [WonderTrader简介](README.md)
 * 基本用法
     * [快速入门](tutorial.md)
-    * [如何编译和安装](install.md)
+    * [开发环境搭建](devenv.md)
     * [历史数据的处理](histdata.md)
     * [回测自己的策略](mystrategy.md)
+    * [优化自己的策略](optimizer.md)
     * [实盘完整攻略](product.md)
 * Python API详解
     * [策略模块详解](structure.md)
