@@ -154,9 +154,9 @@ bool TraderCTPMini::init(WTSParams* params)
 	else
 	{
 #ifdef _WIN32
-		m_strModule = getBinDir() + "thosttraderapi_mini.dll";
+		m_strModule = getBinDir() + "thosttraderapi.dll";
 #else
-		m_strModule =  getBinDir() + "libthosttraderapi_mini.so";
+		m_strModule =  getBinDir() + "libthosttraderapi.so";
 #endif
 	}
 
