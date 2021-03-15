@@ -10,6 +10,8 @@
 #include "../WtBtCore/HisDataReplayer.h"
 #include "../WtBtCore/CtaMocker.h"
 #include "../WtBtCore/ExecMocker.h"
+#include "../WtBtCore/HftMocker.h"
+#include "../WtBtCore/SelMocker.h"
 
 #include "../WTSTools/WTSLogger.h"
 
@@ -45,6 +47,18 @@ int main()
 	{
 		CtaMocker* mocker = new CtaMocker(&replayer, "cta", slippage);
 		mocker->initCtaFactory(cfg->get("cta"));
+		replayer.register_sink(mocker);
+	}
+	else if (strcmp(mode, "hft") == 0)
+	{
+		HftMocker* mocker = new HftMocker(&replayer, "hft");
+		mocker->initHftFactory(cfg->get("hft"));
+		replayer.register_sink(mocker);
+	}
+	else if (strcmp(mode, "sel") == 0)
+	{
+		SelMocker* mocker = new SelMocker(&replayer, "sel", slippage);
+		mocker->initSelFactory(cfg->get("cta"));
 		replayer.register_sink(mocker);
 	}
 	else if (strcmp(mode, "exec") == 0)
