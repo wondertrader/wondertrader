@@ -2254,7 +2254,7 @@ uint32_t strToTime(const char* strTime, bool bHasSec = false)
 	}
 
 	uint32_t ret = strtoul(str.c_str(), NULL, 10);
-	if (ret > 10000 && !bHasSec)
+	if (str.size() > 4 && !bHasSec)
 		ret /= 100;
 
 	return ret;
@@ -2397,7 +2397,7 @@ bool HisDataReplayer::cacheRawTicksFromCSV(const std::string& key, const char* s
 		ifs.open(csvfile.c_str());
 
 		//WTSLogger::info("正在读取数据文件%s...", csvfile.c_str());
-		WTSLogger::error("Reading data from %s...", csvfile.c_str());
+		WTSLogger::info("Reading data from %s...", csvfile.c_str());
 
 		char buffer[512];
 		bool headerskipped = false;
@@ -2429,7 +2429,7 @@ bool HisDataReplayer::cacheRawTicksFromCSV(const std::string& key, const char* s
 			if (tickList._items.size() % 1000 == 0)
 			{
 				//WTSLogger::info("已读取数据%u条", tickList._items.size());
-				WTSLogger::info("%u lines of data read", tickList._items.size());
+				WTSLogger::info("%u lines of data loaded", tickList._items.size());
 			}
 		}
 		tickList._count = tickList._items.size();
@@ -2522,7 +2522,7 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 		ifs.open(csvfile.c_str());
 
 		//WTSLogger::info("正在读取数据文件%s...", csvfile.c_str());
-		WTSLogger::error("Reading data from %s...", csvfile.c_str());
+		WTSLogger::info("Reading data from %s...", csvfile.c_str());
 
 		char buffer[512];
 		bool headerskipped = false;
@@ -2558,7 +2558,7 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 			if (barList._bars.size() % 1000 == 0)
 			{
 				//WTSLogger::info("已读取数据%u条", barList._bars.size());
-				WTSLogger::info("%u lines of data read", barList._bars.size());
+				WTSLogger::info("%u lines of data loaded", barList._bars.size());
 			}
 		}
 		barList._count = barList._bars.size();
