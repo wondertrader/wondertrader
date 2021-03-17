@@ -54,7 +54,9 @@ bool WtStraFact::deleteStrategy(CtaStrategy* stra)
 
 void WtStraFact::enumStrategy(FuncEnumStrategyCallback cb)
 {
-	cb(FACT_NAME, "DualThrust", true);
+	cb(FACT_NAME, "DualThrust", false);
+	cb(FACT_NAME, "PairTradingFci", false);
+	cb(FACT_NAME, "CtaXPA", true);
 }
 
 const char* WtStraFact::getName()

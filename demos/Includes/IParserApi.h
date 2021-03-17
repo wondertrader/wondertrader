@@ -33,21 +33,21 @@ class IParserSpi
 public:
 	/*
 	 *	处理模块事件
-	 *	@e	事件类型，如连接、断开、登录、登出
-	 *	@ec	错误码，0为没有错误
+	 *	@e	事件类型,如连接、断开、登录、登出
+	 *	@ec	错误码,0为没有错误
 	 */
 	virtual void handleEvent(WTSParserEvent e, int32_t ec){}
 
 	/*
 	 *	处理合约列表
-	 *	@aySymbols	合约列表，基础元素为WTSContractInfo，WTSArray的用法请参考定义
+	 *	@aySymbols	合约列表,基础元素为WTSContractInfo,WTSArray的用法请参考定义
 	 */
 	virtual void handleSymbolList(const WTSArray* aySymbols)		= 0;
 
 	/*
 	 *	处理实时行情
 	 *	@quote		实时行情
-	 *	@bNeedSlice	是否需要切片，如果是从外部接入的快照行情数据，则需要切片，如果是内部广播的就不需要切片
+	 *	@bNeedSlice	是否需要切片,如果是从外部接入的快照行情数据,则需要切片,如果是内部广播的就不需要切片
 	 */
 	virtual void handleQuote(WTSTickData *quote, bool bNeedSlice)	= 0;
 

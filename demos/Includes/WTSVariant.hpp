@@ -30,9 +30,9 @@
 NS_OTP_BEGIN
 
 /*
- *	WTSVariant是一个通用数据容器，设计目标是Json的Value类
- *	和Json不同的地方在于，WTSVariant满足WT系统内的派生关系
- *	可以通过引用计数管理数据，从而减少数据复制
+ *	WTSVariant是一个通用数据容器,设计目标是Json的Value类
+ *	和Json不同的地方在于,WTSVariant满足WT系统内的派生关系
+ *	可以通过引用计数管理数据,从而减少数据复制
  */
 class WTSVariant : public WTSObject
 {

@@ -5,7 +5,7 @@
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief Wt交易数据对象定义，包括委托、订单、成交、持仓、资金、持仓明细等数据
+ * \brief Wt交易数据对象定义,包括委托、订单、成交、持仓、资金、持仓明细等数据
  */
 #pragma once
 #include "WTSObject.hpp"
@@ -19,7 +19,7 @@
 
 NS_OTP_BEGIN
 //////////////////////////////////////////////////////////////////////////
-//委托数据结构，用户客户端向服务端发起
+//委托数据结构,用户客户端向服务端发起
 class WTSEntrust : public WTSObject
 {
 protected:
@@ -112,7 +112,7 @@ protected:
 
 
 //////////////////////////////////////////////////////////////////////////
-//委托操作：撤单、改单
+//委托操作: 撤单、改单
 class WTSEntrustAction : public WTSObject
 {
 protected:
@@ -197,7 +197,7 @@ protected:
 };
 
 //////////////////////////////////////////////////////////////////////////
-//订单信息，查看订单状态变化等
+//订单信息,查看订单状态变化等
 class WTSOrderInfo : public WTSEntrust
 {
 protected:

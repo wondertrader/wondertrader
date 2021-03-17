@@ -44,7 +44,6 @@ private:
 	WTSTickData*	_last_tick;
 	IHftStraCtx*	_ctx;
 	std::string		_code;
-	uint32_t		_count;
 	uint32_t		_secs;
 	uint32_t		_freq;
 	int32_t			_offset;

@@ -62,9 +62,9 @@ struct WTSTickStruct
 	uint32_t	open_interest;		//总持
 	int32_t		diff_interest;		//增仓
 
-	uint32_t	trading_date;		//交易日，如20140327
-	uint32_t	action_date;		//自然日期，如20140327
-	uint32_t	action_time;		//发生时间，精确到毫秒，如105932000
+	uint32_t	trading_date;		//交易日,如20140327
+	uint32_t	action_date;		//自然日期,如20140327
+	uint32_t	action_time;		//发生时间,精确到毫秒,如105932000
 
 	double		pre_close;			//昨收价
 	double		pre_settle;			//昨结算
@@ -85,9 +85,9 @@ struct WTSOrdQueStruct
 	char		exchg[MAX_EXCHANGE_LENGTH];
 	char		code[MAX_INSTRUMENT_LENGTH];
 
-	uint32_t	trading_date;		//交易日，如20140327
-	uint32_t	action_date;		//自然日期，如20140327
-	uint32_t	action_time;		//发生时间，精确到毫秒，如105932000
+	uint32_t	trading_date;		//交易日,如20140327
+	uint32_t	action_date;		//自然日期,如20140327
+	uint32_t	action_time;		//发生时间,精确到毫秒,如105932000
 
 	WTSBSDirectType	side;			//委托方向
 	double			price;			//委托价格
@@ -107,11 +107,11 @@ struct WTSOrdDtlStruct
 	char		exchg[MAX_EXCHANGE_LENGTH];
 	char		code[MAX_INSTRUMENT_LENGTH];
 
-	uint32_t	trading_date;		//交易日，如20140327
-	uint32_t	action_date;		//自然日期，如20140327
-	uint32_t	action_time;		//发生时间，精确到毫秒，如105932000
+	uint32_t	trading_date;		//交易日,如20140327
+	uint32_t	action_date;		//自然日期,如20140327
+	uint32_t	action_time;		//发生时间,精确到毫秒,如105932000
 
-	uint32_t		index;			//委托编号(从1开始，递增1)
+	uint32_t		index;			//委托编号(从1开始,递增1)
 	WTSBSDirectType	side;			//委托方向
 	double			price;			//委托价格
 	uint32_t		volume;			//委托数量
@@ -128,11 +128,11 @@ struct WTSTransStruct
 	char		exchg[MAX_EXCHANGE_LENGTH];
 	char		code[MAX_INSTRUMENT_LENGTH];
 
-	uint32_t	trading_date;		//交易日，如20140327
-	uint32_t	action_date;		//自然日期，如20140327
-	uint32_t	action_time;		//发生时间，精确到毫秒，如105932000
+	uint32_t	trading_date;		//交易日,如20140327
+	uint32_t	action_date;		//自然日期,如20140327
+	uint32_t	action_time;		//发生时间,精确到毫秒,如105932000
 
-	uint32_t		index;			//成交编号(从1开始，递增1)
+	uint32_t		index;			//成交编号(从1开始,递增1)
 	WTSTransType	ttype;			//成交类型: 'C', 0
 	WTSBSDirectType	side;			//BS标志
 

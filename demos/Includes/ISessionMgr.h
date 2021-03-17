@@ -25,7 +25,7 @@ public:
 	 *	@code	合约代码
 	 *	@exchg	交易所代码
 	 *
-	 *	返回值	时间模板指针，不存在则为NULL
+	 *	返回值	时间模板指针,不存在则为NULL
 	 */
 	virtual WTSSessionInfo* getSession(const char* code, const char* exchg = "")	= 0;
 };
