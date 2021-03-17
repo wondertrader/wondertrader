@@ -89,3 +89,11 @@
 * CTA引擎新增一个获取最后一次出场时间的接口stra_get_last_exittime
 * 同步更新/demos下的代码
 * 其他代码细节的完善
+
+### 0.6.2
+* 将日志全部翻译成英文
+* 内置简单执行单元WtSimpExeUnit增加了涨跌停价的修正逻辑
+* 内置执行单元工厂WtExeFact中的订单管理模块WtOrdMon，检查订单超时时，会根据是否是涨跌停价挂单，如果是涨跌停价挂单，则不进行撤单重挂
+* CTPMini2对接模块ParserCTPMini和TraderCTPMini进行的细节完善，并接入实盘
+* 文档做了一次更新
+* 其他代码细节完善
