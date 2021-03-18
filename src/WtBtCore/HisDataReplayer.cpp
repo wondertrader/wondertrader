@@ -2080,7 +2080,7 @@ void HisDataReplayer::loadFees(const char* filename)
 	cfg->release();
 
 	//WTSLogger::info("共加载%u条手续费模板", _fee_map.size());
-	WTSLogger::error("%u items of fees template loaded", filename);
+	WTSLogger::info("%u items of fees template loaded", _fee_map.size());
 }
 
 
@@ -2399,14 +2399,14 @@ bool HisDataReplayer::cacheRawTicksFromCSV(const std::string& key, const char* s
 		//WTSLogger::info("正在读取数据文件%s...", csvfile.c_str());
 		WTSLogger::info("Reading data from %s...", csvfile.c_str());
 
-		char buffer[512];
+		char buffer[1024];
 		bool headerskipped = false;
 		auto& tickList = _ticks_cache[key];
 		tickList._code = stdCode;
 		tickList._date = uDate;
 		while (!ifs.eof())
 		{
-			ifs.getline(buffer, 512);
+			ifs.getline(buffer, 1024);
 			if (strlen(buffer) == 0)
 				continue;
 
