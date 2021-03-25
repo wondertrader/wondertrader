@@ -1187,11 +1187,17 @@ WTSOrderInfo* TraderCTP::makeOrderInfo(CThostFtdcOrderField* orderField)
 	pRet->setCode(orderField->InstrumentID);
 	pRet->setExchange(contract->getExchg());
 
-	pRet->setOrderDate(strtoul(orderField->InsertDate, NULL, 10));
+	uint32_t uDate = strtoul(orderField->InsertDate, NULL, 10);
 	std::string strTime = orderField->InsertTime;
 	StrUtil::replace(strTime, ":", "");
 	uint32_t uTime = strtoul(strTime.c_str(), NULL, 10);
-	pRet->setOrderTime(TimeUtils::makeTime(pRet->getOrderDate(), strtoul(strTime.c_str(), NULL, 10) * 1000));
+	if (uTime >= 210000 && uDate == m_lDate)
+	{
+		uDate = TimeUtils::getNextDate(uDate, -1);
+	}
+
+	pRet->setOrderDate(uDate);
+	pRet->setOrderTime(TimeUtils::makeTime(uDate, uTime * 1000));
 
 	pRet->setOrderState(wrapOrderState(orderField->OrderStatus));
 	if (orderField->OrderSubmitStatus >= THOST_FTDC_OSS_InsertRejected)
@@ -1277,22 +1283,14 @@ WTSTradeInfo* TraderCTP::makeTradeRecord(CThostFtdcTradeField *tradeField)
 	StrUtil::replace(strTime, ":", "");
 	uint32_t uTime = strtoul(strTime.c_str(), NULL, 10);
 	uint32_t uDate = strtoul(tradeField->TradeDate, NULL, 10);
-
-	//if(uDate == m_pContractMgr->getTradingDate())
-	//{
-	//	//如果当前日期和交易日一致,且时间大于21点,说明是夜盘,也就是实际日期要单独计算
-	//	if (uTime / 10000 >= 21)
-	//	{
-	//		uDate = m_pMarketMgr->getPrevTDate(commInfo->getExchg(), uDate, 1);
-	//	}
-	//	else if(uTime <= 3)
-	//	{
-	//		//如果在3点以内,就要先获取上一个交易日,再获取下一个自然日
-	//		//这样做的目的是,遇到周五晚上的情况,可以处理过来
-	//		uDate = m_pMarketMgr->getPrevTDate(commInfo->getExchg(), uDate, 1);
-	//		uDate = TimeUtils::getNextDate(uDate);
-	//	}
-	//}
+	
+	//如果是夜盘时间，并且成交日期等于交易日，说明成交日期是需要修正
+	//因为夜盘是提前的，成交日期必然小于交易日
+	//但是这里只能做一个简单修正了
+	if(uTime >= 210000 && uDate == m_lDate)
+	{
+		uDate = TimeUtils::getNextDate(uDate, -1);
+	}
 
 	pRet->setTradeDate(uDate);
 	pRet->setTradeTime(TimeUtils::makeTime(uDate, uTime * 1000));

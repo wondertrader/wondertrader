@@ -302,7 +302,7 @@ protected:
 		, m_tradeType(WTT_Common)
 		, m_strExchg("")
 		, m_uAmount(0)
-		, m_uPrice(0)
+		, m_dPrice(0)
 		, m_businessType(BT_CASH)
 	{}
 	virtual ~WTSTradeInfo(){}
@@ -326,8 +326,8 @@ public:
 	inline void setOrderType(WTSOrderType ot){m_orderType = ot;}
 	inline void setTradeType(WTSTradeType tt){m_tradeType = tt;}
 
-	inline void setVolume(uint32_t volume){m_uVolume = volume;}
-	inline void setPrice(double price){ m_uPrice = price; }
+	inline void setVolume(double volume){m_dVolume = volume;}
+	inline void setPrice(double price){ m_dPrice = price; }
 
 	inline void setTradeDate(uint32_t uDate){m_uTradeDate = uDate;}
 	inline void setTradeTime(uint64_t uTime){m_uTradeTime = uTime;}
@@ -339,8 +339,8 @@ public:
 	inline WTSOrderType		getOrderType() const{return m_orderType;}
 	inline WTSTradeType		getTradeType() const{return m_tradeType;}
 
-	inline double getVolume() const{ return m_uVolume; }
-	inline double getPrice() const{ return m_uPrice; }
+	inline double getVolume() const{ return m_dVolume; }
+	inline double getPrice() const{ return m_dPrice; }
 
 	inline const char*	getCode() const{return m_strCode.c_str();}
 	inline const char*	getExchg() const{ return m_strExchg.c_str(); }
@@ -367,8 +367,8 @@ protected:
 
 	uint32_t	m_uTradeDate;
 	uint64_t	m_uTradeTime;
-	uint32_t	m_uVolume;
-	double	m_uPrice;
+	double		m_dVolume;
+	double		m_dPrice;
 
 	WTSDirectionType	m_direction;
 	WTSOffsetType		m_offsetType;
