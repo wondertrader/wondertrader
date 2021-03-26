@@ -97,3 +97,6 @@
 * CTPMini2对接模块ParserCTPMini和TraderCTPMini进行的细节完善，并接入实盘
 * 文档做了一次更新
 * 其他代码细节完善
+
+### 0.6.3
+* 完善了回测框架中CTA仿真器CTAMocke中对条件单的处理
