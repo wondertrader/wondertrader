@@ -410,12 +410,11 @@ int TraderCTP::orderInsert(WTSEntrust* entrust)
 	}
 
 	WTSContractInfo* ct = m_bdMgr->getContract(entrust->getCode(), entrust->getExchg());
-	WTSCommodityInfo* commInfo = m_bdMgr->getCommodity(ct);
 
 	///用户代码
 	//	TThostFtdcUserIDType	UserID;
 	///报单价格条件: 限价
-	req.OrderPriceType = wrapPriceType(entrust->getPriceType(), strcmp(commInfo->getExchg(), "CFFEX") == 0);
+	req.OrderPriceType = wrapPriceType(entrust->getPriceType(), strcmp(entrust->getExchg(), "CFFEX") == 0);
 	///买卖方向: 
 	req.Direction = wrapDirectionType(entrust->getDirection(), entrust->getOffsetType());
 	///组合开平标志: 开仓
@@ -748,11 +747,18 @@ void TraderCTP::OnRspOrderInsert(CThostFtdcInputOrderField *pInputOrder, CThostF
 	WTSEntrust* entrust = makeEntrust(pInputOrder);
 	if (entrust)
 	{
-		WTSError *err = makeError(pRspInfo);
+		WTSError *err = makeError(pRspInfo, WEC_ORDERINSERT);
 		//g_orderMgr.onRspEntrust(entrust, err);
 		if (m_sink)
 			m_sink->onRspEntrust(entrust, err);
 		entrust->release();
+		err->release();
+	}
+	else if(IsErrorRspInfo(pRspInfo))
+	{
+		WTSError *err = makeError(pRspInfo, WEC_ORDERINSERT);
+		if (m_sink)
+			m_sink->onTraderError(err);
 		err->release();
 	}
 }
@@ -1259,9 +1265,9 @@ WTSEntrust* TraderCTP::makeEntrust(CThostFtdcInputOrderField *entrustField)
 	return pRet;
 }
 
-WTSError* TraderCTP::makeError(CThostFtdcRspInfoField* rspInfo)
+WTSError* TraderCTP::makeError(CThostFtdcRspInfoField* rspInfo, WTSErroCode ec /* = WEC_NONE */)
 {
-	WTSError* pRet = WTSError::create((WTSErroCode)rspInfo->ErrorID, rspInfo->ErrorMsg);
+	WTSError* pRet = WTSError::create(ec, rspInfo->ErrorMsg);
 	return pRet;
 }
 
@@ -1349,7 +1355,7 @@ void TraderCTP::OnErrRtnOrderInsert(CThostFtdcInputOrderField *pInputOrder, CTho
 	WTSEntrust* entrust = makeEntrust(pInputOrder);
 	if (entrust)
 	{
-		WTSError *err = makeError(pRspInfo);
+		WTSError *err = makeError(pRspInfo, WEC_ORDERINSERT);
 		//g_orderMgr.onRspEntrust(entrust, err);
 		if (m_sink)
 			m_sink->onRspEntrust(entrust, err);

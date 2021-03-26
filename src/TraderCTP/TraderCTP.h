@@ -154,7 +154,7 @@ protected:
 
 	WTSOrderInfo*	makeOrderInfo(CThostFtdcOrderField* orderField);
 	WTSEntrust*		makeEntrust(CThostFtdcInputOrderField *entrustField);
-	WTSError*		makeError(CThostFtdcRspInfoField* rspInfo);
+	WTSError*		makeError(CThostFtdcRspInfoField* rspInfo, WTSErroCode ec = WEC_NONE);
 	WTSTradeInfo*	makeTradeRecord(CThostFtdcTradeField *tradeField);
 
 	std::string		generateEntrustID(uint32_t frontid, uint32_t sessionid, uint32_t orderRef);

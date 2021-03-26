@@ -525,6 +525,12 @@ public:
 			StdUniqueLock lock(g_mtxOpt);
 			g_condOpt.notify_all();
 		}
+		else if (err && err->getErrorCode() == WEC_ORDERINSERT)
+		{
+			log("[%s]ÏÂµ¥Ê§°Ü: %s", m_pParams->getCString("user"), err->getMessage());
+			StdUniqueLock lock(g_mtxOpt);
+			g_condOpt.notify_all();
+		}
 	}
 
 public:
