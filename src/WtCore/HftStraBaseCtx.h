@@ -56,6 +56,11 @@ public:
 
 	virtual OrderIDs stra_sell(const char* stdCode, double price, double qty, const char* userTag) override;
 
+	virtual uint32_t	stra_enter_long(const char* stdCode, double price, double qty, const char* userTag) override;
+	virtual uint32_t	stra_enter_short(const char* stdCode, double price, double qty, const char* userTag) override;
+	virtual uint32_t	stra_exit_long(const char* stdCode, double price, double qty, const char* userTag, bool isToday = false) override;
+	virtual uint32_t	stra_exit_short(const char* stdCode, double price, double qty, const char* userTag, bool isToday = false) override;
+
 	virtual WTSCommodityInfo* stra_get_comminfo(const char* stdCode) override;
 
 	virtual WTSKlineSlice* stra_get_bars(const char* stdCode, const char* period, uint32_t count) override;
@@ -100,6 +105,8 @@ public:
 	virtual void on_channel_lost() override;
 
 	virtual void on_entrust(uint32_t localid, const char* stdCode, bool bSuccess, const char* message) override;
+
+	virtual void on_position(const char* stdCode, bool isLong, double prevol, double preavail, double newvol, double newavail) override;
 
 protected:
 	const char* get_inner_code(const char* stdCode);

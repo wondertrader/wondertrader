@@ -89,7 +89,7 @@ public:
 	virtual void on_bar(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar) override;
 	virtual bool on_schedule(uint32_t curDate, uint32_t curTime) override;
 
-	virtual void enum_position(FuncEnumPositionCallBack cb) override;
+	virtual void enum_position(FuncEnumCtaPosCallBack cb) override;
 
 
 	//////////////////////////////////////////////////////////////////////////

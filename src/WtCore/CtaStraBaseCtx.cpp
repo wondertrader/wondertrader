@@ -846,7 +846,7 @@ void CtaStraBaseCtx::on_session_begin(uint32_t uTDate)
 
 }
 
-void CtaStraBaseCtx::enum_position(FuncEnumPositionCallBack cb)
+void CtaStraBaseCtx::enum_position(FuncEnumCtaPosCallBack cb)
 {
 	std::unordered_map<std::string, double> desPos;
 	for (auto it:_pos_map)

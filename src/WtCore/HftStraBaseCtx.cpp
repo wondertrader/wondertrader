@@ -258,6 +258,70 @@ OrderIDs HftStraBaseCtx::stra_sell(const char* stdCode, double price, double qty
 	}
 }
 
+uint32_t HftStraBaseCtx::stra_enter_long(const char* stdCode, double price, double qty, const char* userTag)
+{
+	std::string realCode = stdCode;
+	if (CodeHelper::isStdFutHotCode(stdCode))
+	{
+		CodeHelper::CodeInfo cInfo;
+		CodeHelper::extractStdCode(stdCode, cInfo);
+		std::string code = _engine->get_hot_mgr()->getRawCode(cInfo._exchg, cInfo._product, _engine->get_trading_date());
+		realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), cInfo._exchg);
+
+		_code_map[realCode] = stdCode;
+	}
+
+	return _trader->openLong(realCode.c_str(), price, qty);
+}
+
+uint32_t HftStraBaseCtx::stra_exit_long(const char* stdCode, double price, double qty, const char* userTag, bool isToday/* = false*/)
+{
+	std::string realCode = stdCode;
+	if (CodeHelper::isStdFutHotCode(stdCode))
+	{
+		CodeHelper::CodeInfo cInfo;
+		CodeHelper::extractStdCode(stdCode, cInfo);
+		std::string code = _engine->get_hot_mgr()->getRawCode(cInfo._exchg, cInfo._product, _engine->get_trading_date());
+		realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), cInfo._exchg);
+
+		_code_map[realCode] = stdCode;
+	}
+
+	return _trader->closeLong(realCode.c_str(), price, qty, isToday);
+}
+
+uint32_t HftStraBaseCtx::stra_enter_short(const char* stdCode, double price, double qty, const char* userTag)
+{
+	std::string realCode = stdCode;
+	if (CodeHelper::isStdFutHotCode(stdCode))
+	{
+		CodeHelper::CodeInfo cInfo;
+		CodeHelper::extractStdCode(stdCode, cInfo);
+		std::string code = _engine->get_hot_mgr()->getRawCode(cInfo._exchg, cInfo._product, _engine->get_trading_date());
+		realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), cInfo._exchg);
+
+		_code_map[realCode] = stdCode;
+	}
+
+	return _trader->openShort(realCode.c_str(), price, qty);
+}
+
+uint32_t HftStraBaseCtx::stra_exit_short(const char* stdCode, double price, double qty, const char* userTag, bool isToday/* = false*/)
+{
+	std::string realCode = stdCode;
+	if (CodeHelper::isStdFutHotCode(stdCode))
+	{
+		CodeHelper::CodeInfo cInfo;
+		CodeHelper::extractStdCode(stdCode, cInfo);
+		std::string code = _engine->get_hot_mgr()->getRawCode(cInfo._exchg, cInfo._product, _engine->get_trading_date());
+		realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), cInfo._exchg);
+
+		_code_map[realCode] = stdCode;
+	}
+
+	return _trader->closeShort(realCode.c_str(), price, qty, isToday);
+}
+
 WTSCommodityInfo* HftStraBaseCtx::stra_get_comminfo(const char* stdCode)
 {
 	return _engine->get_commodity_info(stdCode);

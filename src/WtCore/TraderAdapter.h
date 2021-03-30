@@ -117,11 +117,6 @@ private:
 	uint32_t doEntrust(WTSEntrust* entrust);
 	bool	doCancel(WTSOrderInfo* ordInfo);
 
-	uint32_t openLong(const char* stdCode, double price, double qty);
-	uint32_t openShort(const char* stdCode, double price, double qty);
-	uint32_t closeLong(const char* stdCode, double price, double qty, bool isToday = false);
-	uint32_t closeShort(const char* stdCode, double price, double qty, bool isToday = false);
-
 	inline void	printPosition(const char* stdCode, const PosItem& pItem);
 
 	inline WTSContractInfo* getContract(const char* stdCode);
@@ -147,6 +142,11 @@ public:
 
 		return 0;
 	}
+
+	uint32_t openLong(const char* stdCode, double price, double qty);
+	uint32_t openShort(const char* stdCode, double price, double qty);
+	uint32_t closeLong(const char* stdCode, double price, double qty, bool isToday = false);
+	uint32_t closeShort(const char* stdCode, double price, double qty, bool isToday = false);
 	
 	OrderIDs buy(const char* stdCode, double price, double qty);
 	OrderIDs sell(const char* stdCode, double price, double qty);

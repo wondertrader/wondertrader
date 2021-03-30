@@ -453,8 +453,12 @@ uint32_t TraderAdapter::doEntrust(WTSEntrust* entrust)
 	if(ret < 0)
 	{
 		WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR, "[%s] Order placing failed: %d", _id.c_str(), ret);
+		return UINT_MAX;
 	}
-	_order_time_cache[entrust->getCode()].emplace_back(TimeUtils::getLocalTimeNow());
+	else
+	{
+		_order_time_cache[entrust->getCode()].emplace_back(TimeUtils::getLocalTimeNow());
+	}
 	return localid;
 }
 
