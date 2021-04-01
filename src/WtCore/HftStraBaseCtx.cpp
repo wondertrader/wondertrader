@@ -470,6 +470,11 @@ void HftStraBaseCtx::on_entrust(uint32_t localid, const char* stdCode, bool bSuc
 	}
 }
 
+void HftStraBaseCtx::on_position(const char* stdCode, bool isLong, double prevol, double preavail, double newvol, double newavail)
+{
+
+}
+
 double HftStraBaseCtx::stra_get_position_profit(const char* stdCode)
 {
 	auto it = _pos_map.find(stdCode);

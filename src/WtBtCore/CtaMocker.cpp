@@ -514,7 +514,7 @@ void CtaMocker::on_session_begin(uint32_t curTDate)
 {
 }
 
-void CtaMocker::enum_position(FuncEnumPositionCallBack cb)
+void CtaMocker::enum_position(FuncEnumCtaPosCallBack cb)
 {
 	std::unordered_map<std::string, double> desPos;
 	for (auto it : _pos_map)
