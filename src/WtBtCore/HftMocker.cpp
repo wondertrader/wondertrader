@@ -528,6 +528,7 @@ bool HftMocker::procOrder(uint32_t localid)
 
 	double curPx = curTick->price();
 	double orderQty = ordInfo._isBuy ? curTick->askqty(0) : curTick->bidqty(0);	//看对手盘的数量
+	curTick->release();
 	if (!_use_newpx)
 	{
 		curPx = ordInfo._isBuy ? curTick->askprice(0) : curTick->bidprice(0);
@@ -535,7 +536,6 @@ bool HftMocker::procOrder(uint32_t localid)
 		if(decimal::eq(curPx, 0.0))
 			return false;
 	}
-	curTick->release();
 
 	//如果没有成交条件,则退出逻辑
 	if(!decimal::eq(ordInfo._price, 0.0))
