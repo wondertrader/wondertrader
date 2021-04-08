@@ -34,7 +34,7 @@ public:
 
 	static inline int64_t getLocalTimeNano(void)
 	{
-		return std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+		return std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
 	}
 
 	static inline std::string getLocalTime(bool bIncludeMilliSec = true)

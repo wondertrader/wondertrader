@@ -1184,11 +1184,13 @@ public:
 	 */
 	inline WTSTickStruct&	getTickStruct(){ return m_tickStruct; }
 
+	inline uint64_t getLocalTime() const { return m_uLocalTime; }
+
 private:
 	WTSTickStruct	m_tickStruct;
 	uint64_t		m_uLocalTime;	//本地时间
 
-	WTSTickData():m_uLocalTime(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count()){}
+	WTSTickData():m_uLocalTime(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count()){}
 };
 
 /*
