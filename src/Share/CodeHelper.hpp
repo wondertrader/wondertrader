@@ -39,7 +39,7 @@ public:
 	} CodeInfo;
 
 public:
-	static bool	isStdStkCode(const char* code)
+	static inline bool	isStdStkCode(const char* code)
 	{
 		using namespace boost::xpressive;
 		/* 定义正则表达式 */
@@ -47,7 +47,7 @@ public:
 		return 	regex_match(code, reg_stk);
 	}
 
-	static std::string stdCodeToStdCommID(const char* stdCode)
+	static inline std::string stdCodeToStdCommID(const char* stdCode)
 	{
 		if (isStdStkCode(stdCode))
 			return stdStkCodeToStdCommID(stdCode);
@@ -55,7 +55,7 @@ public:
 			return stdFutCodeToStdCommID(stdCode);
 	}
 
-	static std::string stdStkCodeToStdCommID(const char* stdCode)
+	static inline std::string stdStkCodeToStdCommID(const char* stdCode)
 	{
 		//如果是SSE.600000格式的,默认为STK品种
 		//如果是SSE.STK.600000格式的,就解析品种出来
@@ -73,7 +73,7 @@ public:
 	 *	从基础合约代码提取基础品种代码
 	 *	如ag1912 -> ag
 	 */
-	static std::string bscFutCodeToBscCommID(const char* code)
+	static inline std::string bscFutCodeToBscCommID(const char* code)
 	{
 		std::string strRet;
 		int nLen = 0;
@@ -90,7 +90,7 @@ public:
 	 *	标准合约代码转标准品种代码
 	 *	如SHFE.ag.1912 -> SHFE.ag
 	 */
-	static std::string stdFutCodeToStdCommID(const char* stdCode)
+	static inline std::string stdFutCodeToStdCommID(const char* stdCode)
 	{
 		StringVector ay = StrUtil::split(stdCode, ".");
 		std::string str = ay[0];
@@ -103,7 +103,7 @@ public:
 	 *	基础合约代码转标准码
 	 *	如ag1912转成全码
 	 */
-	static std::string bscFutCodeToStdCode(const char* code, const char* exchg, bool isComm = false)
+	static inline std::string bscFutCodeToStdCode(const char* code, const char* exchg, bool isComm = false)
 	{
 		std::string pid = code;
 		if (!isComm)
@@ -133,7 +133,7 @@ public:
 		return ret;
 	}
 
-	static std::string bscStkCodeToStdCode(const char* code, const char* exchg, const char* pid = "")
+	static inline std::string bscStkCodeToStdCode(const char* code, const char* exchg, const char* pid = "")
 	{
 		if(strlen(pid) == 0)
 			return StrUtil::printf("%s.%s", exchg, code);
@@ -141,7 +141,7 @@ public:
 			return StrUtil::printf("%s.%s.%s", exchg, pid, code);
 	}
 
-	static bool	isStdFutOptCode(const char* code)
+	static inline bool	isStdFutOptCode(const char* code)
 	{
 		using namespace boost::xpressive;
 		/* 定义正则表达式 */
@@ -149,7 +149,7 @@ public:
 		return 	regex_match(code, reg_stk);
 	}
 
-	static bool	isStdFutCode(const char* code)
+	static inline bool	isStdFutCode(const char* code)
 	{
 		using namespace boost::xpressive;
 		/* 定义正则表达式 */
@@ -162,7 +162,7 @@ public:
 	 *	期货期权代码标准化
 	 *	标准期货期权代码格式为CFFEX.IO2008.C.4300
 	 */
-	static std::string bscFutOptCodeToStdCode(const char* code, const char* exchg)
+	static inline std::string bscFutOptCodeToStdCode(const char* code, const char* exchg)
 	{
 		using namespace boost::xpressive;
 		/* 定义正则表达式 */
@@ -200,7 +200,7 @@ public:
 	/*
 	 *	通过品种代码获取主力合约代码
 	 */
-	static std::string bscCodeToStdHotCode(const char* code, const char* exchg, bool isComm = false)
+	static inline std::string bscCodeToStdHotCode(const char* code, const char* exchg, bool isComm = false)
 	{
 		std::string pid = code;
 		if (!isComm)
@@ -210,7 +210,7 @@ public:
 		return ret;
 	}
 
-	static std::string stdCodeToStdHotCode(const char* stdCode)
+	static inline std::string stdCodeToStdHotCode(const char* stdCode)
 	{
 		StringVector ay = StrUtil::split(stdCode, ".");
 		std::string stdHotCode = ay[0];
@@ -220,7 +220,7 @@ public:
 		return stdHotCode;
 	}
 
-	static std::string stdFutOptCodeToBscCode(const char* stdCode)
+	static inline std::string stdFutOptCodeToBscCode(const char* stdCode)
 	{
 		std::string ret = stdCode;
 		auto pos = ret.find(".");
@@ -232,7 +232,7 @@ public:
 		return ret;
 	}
 
-	static std::string stdFutCodeToBscCode(const char* stdCode)
+	static inline std::string stdFutCodeToBscCode(const char* stdCode)
 	{
 		StringVector ay = StrUtil::split(stdCode, ".");
 		std::string exchg = ay[0];
@@ -244,7 +244,7 @@ public:
 		return bscCode;
 	}
 
-	static std::string stdStkCodeToBscCode(const char* stdCode)
+	static inline std::string stdStkCodeToBscCode(const char* stdCode)
 	{
 		StringVector ay = StrUtil::split(stdCode, ".");
 		std::string exchg = ay[0];
@@ -261,7 +261,7 @@ public:
 		return bscCode;
 	}
 
-	static std::string stdCodeToBscCode(const char* stdCode)
+	static inline std::string stdCodeToBscCode(const char* stdCode)
 	{
 		if (isStdStkCode(stdCode))
 			return stdStkCodeToBscCode(stdCode);
@@ -271,7 +271,7 @@ public:
 			return stdFutCodeToBscCode(stdCode);
 	}
 
-	static void extractStdFutCode(const char* stdCode, CodeInfo& codeInfo)
+	static inline void extractStdFutCode(const char* stdCode, CodeInfo& codeInfo)
 	{
 		codeInfo._hot = StrUtil::endsWith(stdCode, ".HOT", false);
 		StringVector ay = StrUtil::split(stdCode, ".");
@@ -295,7 +295,7 @@ public:
 		strcpy(codeInfo._product, ay[1].c_str());
 	}
 
-	static void extractStdStkCode(const char* stdCode, CodeInfo& codeInfo)
+	static inline void extractStdStkCode(const char* stdCode, CodeInfo& codeInfo)
 	{
 		StringVector ay = StrUtil::split(stdCode, ".");
 		codeInfo._category = CC_Stock;
@@ -338,7 +338,7 @@ public:
 	}
 
 
-	static int indexCodeMonth(const char* code)
+	static inline int indexCodeMonth(const char* code)
 	{
 		if (strlen(code) == 0)
 			return -1;
@@ -355,7 +355,7 @@ public:
 		return -1;
 	}
 
-	static void extractStdFutOptCode(const char* stdCode, CodeInfo& codeInfo)
+	static inline void extractStdFutOptCode(const char* stdCode, CodeInfo& codeInfo)
 	{
 		StringVector ay = StrUtil::split(stdCode, ".");
 		strcpy(codeInfo._exchg, ay[0].c_str());
@@ -387,7 +387,7 @@ public:
 		}
 	}
 
-	static void extractStdCode(const char* stdCode, CodeInfo& codeInfo)
+	static inline void extractStdCode(const char* stdCode, CodeInfo& codeInfo)
 	{
 		if (isStdStkCode(stdCode))
 		{
@@ -403,7 +403,7 @@ public:
 		}
 	}
 
-	static bool	isStdFutHotCode(const char* stdCode)
+	static inline bool	isStdFutHotCode(const char* stdCode)
 	{
 		return StrUtil::endsWith(stdCode, ".HOT", false);
 	}
