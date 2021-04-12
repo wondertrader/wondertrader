@@ -99,4 +99,5 @@
 * 其他代码细节完善
 
 ### 0.6.3
-* 完善了回测框架中CTA仿真器CTAMocke中对条件单的处理
+* 完善了回测框架中CTA仿真器CTAMocker中对条件单的处理
+* 新增一个tsl的robin_map库，替换unordered_map和unordered_set，处理速度提升5倍以上（官方宣传）
