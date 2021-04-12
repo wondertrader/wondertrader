@@ -1,4 +1,5 @@
 #pragma once
+// CTP2mini v1.5
 #include "./ThostTraderApi/ThostFtdcTraderApi.h"
 
 class CTraderSpi : public CThostFtdcTraderSpi

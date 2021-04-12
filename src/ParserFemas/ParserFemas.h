@@ -10,6 +10,7 @@
 #pragma once
 #include "../Includes/IParserApi.h"
 #include "../Share/DLLHelper.hpp"
+//Femas v3.02
 #include "./ustptraderapi/USTPFtdcMduserApi.h"
 #include <map>
 

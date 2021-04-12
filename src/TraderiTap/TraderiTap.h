@@ -9,6 +9,7 @@
 #include "../Includes/WTSCollection.hpp"
 #include "../Share/DLLHelper.hpp"
 
+//iTap v9.3.3.3
 #include "./iTapTradeApi/iTapTradeAPI.h"
 
 USING_NS_OTP;

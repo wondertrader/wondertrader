@@ -26,6 +26,8 @@
 #include "../Includes/ITraderApi.h"
 #include "../Share/StdUtils.hpp"
 #include "../Includes/WTSVariant.hpp"
+
+//Femas v3.02
 #include "./ustptraderapi/USTPFtdcTraderApi.h"
 
 #include "../Share/DLLHelper.hpp"

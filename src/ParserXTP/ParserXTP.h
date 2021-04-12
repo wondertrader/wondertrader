@@ -10,6 +10,7 @@
 #pragma once
 #include "../Includes/IParserApi.h"
 #include "../Share/DLLHelper.hpp"
+//XTP v1.1.19.2
 #include "./XTPQuoteApi/xtp_quote_api.h"
 #include <map>
 

@@ -10,7 +10,7 @@
 #pragma once
 #include "../Includes/IParserApi.h"
 #include "../Share/DLLHelper.hpp"
-//CTP 6.3.15
+//CTPOpt v3.5.8P4
 #include "./ThostTraderApi/ThostFtdcMdApi.h"
 #include <map>
 

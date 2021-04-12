@@ -20,7 +20,7 @@
 #include "../Includes/ITraderApi.h"
 #include "../Includes/WTSCollection.hpp"
 
-//CTP 6.3.15
+//CTPOpt v3.5.8P4
 #include "./ThostTraderApi/ThostFtdcTraderApi.h"
 
 #include "../Share/IniHelper.hpp"

@@ -10,6 +10,7 @@
 #pragma once
 #include "../Includes/IParserApi.h"
 #include "../Share/DLLHelper.hpp"
+ // CTP2mini v1.5
 #include "./ThostTraderApi/ThostFtdcMdApi.h"
 #include <map>
 
