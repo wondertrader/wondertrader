@@ -9,9 +9,9 @@
  */
 #pragma once
 #include <memory>
-#include <unordered_map>
 #include <boost/core/noncopyable.hpp>
 
+#include "../Includes/FasterDefs.h"
 #include "../Includes/HftStrategyDefs.h"
 
 #include "../Share/DLLHelper.hpp"
@@ -73,11 +73,11 @@ private:
 				_remover(_fact);
 		}
 	} StraFactInfo;
-	typedef std::unordered_map<std::string, StraFactInfo> StraFactMap;
+	typedef faster_hashmap<std::string, StraFactInfo> StraFactMap;
 
 	StraFactMap	_factories;
 
-	typedef std::unordered_map<std::string, HftStrategyPtr> StrategyMap;
+	typedef faster_hashmap<std::string, HftStrategyPtr> StrategyMap;
 	StrategyMap	_strategies;
 };
 

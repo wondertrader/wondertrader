@@ -64,7 +64,7 @@ void WtHftEngine::run(bool bAsync /*= false*/)
 {
 	for (auto it = _ctx_map.begin(); it != _ctx_map.end(); it++)
 	{
-		HftContextPtr& ctx = it->second;
+		HftContextPtr& ctx = (HftContextPtr&)it->second;
 		ctx->on_init();
 	}
 
@@ -135,7 +135,7 @@ void WtHftEngine::handle_push_order_detail(WTSOrdDtlData* curOrdDtl)
 			auto cit = _ctx_map.find(sid);
 			if (cit != _ctx_map.end())
 			{
-				HftContextPtr& ctx = cit->second;
+				HftContextPtr& ctx = (HftContextPtr&)cit->second;
 				ctx->on_order_detail(stdCode, curOrdDtl);
 			}
 		}
@@ -155,7 +155,7 @@ void WtHftEngine::handle_push_order_queue(WTSOrdQueData* curOrdQue)
 			auto cit = _ctx_map.find(sid);
 			if (cit != _ctx_map.end())
 			{
-				HftContextPtr& ctx = cit->second;
+				HftContextPtr& ctx = (HftContextPtr&)cit->second;
 				ctx->on_order_queue(stdCode, curOrdQue);
 			}
 		}
@@ -175,7 +175,7 @@ void WtHftEngine::handle_push_transaction(WTSTransData* curTrans)
 			auto cit = _ctx_map.find(sid);
 			if (cit != _ctx_map.end())
 			{
-				HftContextPtr& ctx = cit->second;
+				HftContextPtr& ctx = (HftContextPtr&)cit->second;
 				ctx->on_transaction(stdCode, curTrans);
 			}
 		}
@@ -228,7 +228,7 @@ void WtHftEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 			auto cit = _ctx_map.find(sid);
 			if (cit != _ctx_map.end())
 			{
-				HftContextPtr& ctx = cit->second;
+				HftContextPtr& ctx = (HftContextPtr&)cit->second;
 				ctx->on_tick(stdCode, curTick);
 			}
 		}
@@ -245,7 +245,7 @@ void WtHftEngine::on_bar(const char* stdCode, const char* period, uint32_t times
 		auto cit = _ctx_map.find(sid);
 		if (cit != _ctx_map.end())
 		{
-			HftContextPtr& ctx = cit->second;
+			HftContextPtr& ctx = (HftContextPtr&)cit->second;
 			ctx->on_bar(stdCode, period, times, newBar);
 		}
 	}
@@ -258,7 +258,7 @@ void WtHftEngine::on_session_begin()
 
 	for (auto it = _ctx_map.begin(); it != _ctx_map.end(); it++)
 	{
-		HftContextPtr& ctx = it->second;
+		HftContextPtr& ctx = (HftContextPtr&)it->second;
 		ctx->on_session_begin(_cur_tdate);
 	}
 
@@ -272,7 +272,7 @@ void WtHftEngine::on_session_end()
 
 	for (auto it = _ctx_map.begin(); it != _ctx_map.end(); it++)
 	{
-		HftContextPtr& ctx = it->second;
+		HftContextPtr& ctx = (HftContextPtr&)it->second;
 		ctx->on_session_end(_cur_tdate);
 	}
 

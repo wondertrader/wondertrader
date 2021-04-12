@@ -9,8 +9,8 @@
  */
 #pragma once
 #include <vector>
-#include <unordered_map>
 #include "../Share/StdUtils.hpp"
+#include "../Includes/FasterDefs.h"
 
 typedef enum tagSimpleState
 {
@@ -61,7 +61,7 @@ typedef struct _StateInfo
 } StateInfo;
 
 typedef std::shared_ptr<StateInfo> StatePtr;
-typedef std::unordered_map<std::string, StatePtr>	StateMap;
+typedef faster_hashmap<std::string, StatePtr>	StateMap;
 
 class WTSBaseDataMgr;
 class DataManager;

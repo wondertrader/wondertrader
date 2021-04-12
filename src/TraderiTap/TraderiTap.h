@@ -1,10 +1,9 @@
 #pragma once
 #include <string>
-#include <unordered_map>
-#include <unordered_set>
 #include <stdint.h>
 #include <string.h>
 
+#include "../Includes/FasterDefs.h"
 #include "../Includes/WTSTypes.h"
 #include "../Includes/ITraderApi.h"
 #include "../Includes/WTSCollection.hpp"
@@ -16,9 +15,9 @@ USING_NS_OTP;
 
 using namespace ITapTrade;
 
-typedef std::unordered_set<std::string>	ContractSet;
+typedef faster_hashset<std::string>	ContractSet;
 
-typedef std::unordered_map<std::string, std::string>	ProductMap;
+typedef faster_hashmap<std::string, std::string>	ProductMap;
 
 
 class TraderiTap : public ITraderApi, public ITapTradeAPINotify

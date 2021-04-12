@@ -9,10 +9,10 @@
  */
 #pragma once
 #include <vector>
-#include <unordered_set>
 #include "../Includes/IDataReader.h"
 #include "../Includes/IDataManager.h"
 
+#include "../Includes/FasterDefs.h"
 #include "../Includes/WTSCollection.hpp"
 
 NS_OTP_BEGIN
@@ -66,7 +66,7 @@ private:
 	IDataReader*	_reader;
 	WtEngine*		_engine;
 
-	std::unordered_set<std::string> _subed_basic_bars;
+	faster_hashset<std::string> _subed_basic_bars;
 	typedef WTSHashMap<std::string> DataCacheMap;
 	DataCacheMap*	_bars_cache;	//KÏß»º´æ
 	DataCacheMap*	_ticks_cache;	//ÀúÊ·Tick»º´æ

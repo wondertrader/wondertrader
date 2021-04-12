@@ -135,10 +135,10 @@ CtaContextPtr WtCtaEngine::getContext(uint32_t id)
 
 void WtCtaEngine::on_init()
 {
-	std::unordered_map<std::string, double> target_pos;
+	faster_hashmap<std::string, double> target_pos;
 	for (auto it = _ctx_map.begin(); it != _ctx_map.end(); it++)
 	{
-		CtaContextPtr& ctx = it->second;
+		CtaContextPtr& ctx = (CtaContextPtr&)it->second;
 		ctx->on_init();
 
 		ctx->enum_position([this, &target_pos](const char* stdCode, double qty){
@@ -169,7 +169,7 @@ void WtCtaEngine::on_session_begin()
 	WTSLogger::info("Trading day %u begun", _cur_tdate);
 	for (auto it = _ctx_map.begin(); it != _ctx_map.end(); it++)
 	{
-		CtaContextPtr& ctx = it->second;
+		CtaContextPtr& ctx = (CtaContextPtr&)it->second;
 		ctx->on_session_begin(_cur_tdate);
 	}
 
@@ -183,7 +183,7 @@ void WtCtaEngine::on_session_end()
 
 	for (auto it = _ctx_map.begin(); it != _ctx_map.end(); it++)
 	{
-		CtaContextPtr& ctx = it->second;
+		CtaContextPtr& ctx = (CtaContextPtr&)it->second;
 		ctx->on_session_end(_cur_tdate);
 	}
 
@@ -197,11 +197,11 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 	//去检查一下过滤器
 	_filter_mgr.load_filters();
 
-	std::unordered_map<std::string, double> target_pos;
+	faster_hashmap<std::string, double> target_pos;
 
 	for (auto it = _ctx_map.begin(); it != _ctx_map.end(); it++)
 	{
-		CtaContextPtr& ctx = it->second;
+		CtaContextPtr& ctx = (CtaContextPtr&)it->second;
 		ctx->on_schedule(curDate, curTime);
 		ctx->enum_position([this, &target_pos, ctx](const char* stdCode, double qty){
 
@@ -248,7 +248,7 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 	for (auto it = target_pos.begin(); it != target_pos.end(); it++)
 	{
 		std::string stdCode = it->first;
-		double& pos = it->second;
+		double& pos = (double&)it->second;
 
 		if (bRiskEnabled && !decimal::eq(pos, 0))
 		{
@@ -363,7 +363,7 @@ void WtCtaEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 			auto cit = _ctx_map.find(sid);
 			if (cit != _ctx_map.end() && curTick->volume())
 			{
-				CtaContextPtr& ctx = cit->second;
+				CtaContextPtr& ctx = (CtaContextPtr&)cit->second;
 				ctx->on_tick(stdCode, curTick);
 			}
 		}
@@ -403,7 +403,7 @@ void WtCtaEngine::on_bar(const char* stdCode, const char* period, uint32_t times
 		auto cit = _ctx_map.find(sid);
 		if(cit != _ctx_map.end())
 		{
-			CtaContextPtr& ctx = cit->second;
+			CtaContextPtr& ctx = (CtaContextPtr&)cit->second;
 			ctx->on_bar(stdCode, period, times, newBar);
 		}
 	}

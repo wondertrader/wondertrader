@@ -572,7 +572,7 @@ void CtaStraBaseCtx::update_dyn_profit(const char* stdCode, double price)
 	auto it = _pos_map.find(stdCode);
 	if (it != _pos_map.end())
 	{
-		PosInfo& pInfo = it->second;
+		PosInfo& pInfo = (PosInfo&)it->second;
 		if (pInfo._volume == 0)
 		{
 			pInfo._dynprofit = 0;
@@ -775,7 +775,7 @@ bool CtaStraBaseCtx::on_schedule(uint32_t curDate, uint32_t curTime)
 	for (auto it = _kline_tags.begin(); it != _kline_tags.end(); it++)
 	{
 		const std::string& key = it->first;
-		KlineTag& marker = it->second;
+		KlineTag& marker = (KlineTag&)it->second;
 
 		StringVector ay = StrUtil::split(key, "#");
 		const char* stdCode = ay[0].c_str();

@@ -9,10 +9,10 @@
  */
 #pragma once
 #include <string>
-#include <unordered_map>
 #include "DataDefine.h"
 #include "../WtDataWriter/MysqlDB.hpp"
 
+#include "../Includes/FasterDefs.h"
 #include "../Includes/WTSMarcos.h"
 #include "../Includes/WTSTypes.h"
 
@@ -73,10 +73,10 @@ private:
 		HftDataList() :_cursor(UINT_MAX), _count(0), _date(0){}
 	};
 
-	typedef std::unordered_map<std::string, HftDataList<WTSTickStruct>>		TickCache;
-	typedef std::unordered_map<std::string, HftDataList<WTSOrdDtlStruct>>	OrdDtlCache;
-	typedef std::unordered_map<std::string, HftDataList<WTSOrdQueStruct>>	OrdQueCache;
-	typedef std::unordered_map<std::string, HftDataList<WTSTransStruct>>	TransCache;
+	typedef faster_hashmap<std::string, HftDataList<WTSTickStruct>>		TickCache;
+	typedef faster_hashmap<std::string, HftDataList<WTSOrdDtlStruct>>	OrdDtlCache;
+	typedef faster_hashmap<std::string, HftDataList<WTSOrdQueStruct>>	OrdQueCache;
+	typedef faster_hashmap<std::string, HftDataList<WTSTransStruct>>	TransCache;
 
 
 	typedef struct _BarsList
@@ -92,7 +92,7 @@ private:
 		_BarsList() :_cursor(UINT_MAX), _count(0), _times(1){}
 	} BarsList;
 
-	typedef std::unordered_map<std::string, BarsList>	BarsCache;
+	typedef faster_hashmap<std::string, BarsList>	BarsCache;
 
 	typedef enum tagTaskPeriodType
 	{
@@ -273,18 +273,18 @@ private:
 			memset(this, 0, sizeof(_FeeItem));
 		}
 	} FeeItem;
-	typedef std::unordered_map<std::string, FeeItem>	FeeMap;
+	typedef faster_hashmap<std::string, FeeItem>	FeeMap;
 	FeeMap		_fee_map;
 
 	//////////////////////////////////////////////////////////////////////////
 	//
-	typedef std::unordered_map<std::string, double> PriceMap;
+	typedef faster_hashmap<std::string, double> PriceMap;
 	PriceMap		_price_map;
 
 	//////////////////////////////////////////////////////////////////////////
 	//
-	typedef std::unordered_set<uint32_t> SIDSet;
-	typedef std::unordered_map<std::string, SIDSet>	StraSubMap;
+	typedef faster_hashset<uint32_t> SIDSet;
+	typedef faster_hashmap<std::string, SIDSet>	StraSubMap;
 	StraSubMap		_tick_sub_map;		//tick数据订阅表
 	StraSubMap		_ordque_sub_map;	//orderqueue数据订阅表
 	StraSubMap		_orddtl_sub_map;	//orderdetail数据订阅表
@@ -297,7 +297,7 @@ private:
 		double		_factor;
 	} AdjFactor;
 	typedef std::vector<AdjFactor> AdjFactorList;
-	typedef std::unordered_map<std::string, AdjFactorList>	AdjFactorMap;
+	typedef faster_hashmap<std::string, AdjFactorList>	AdjFactorMap;
 	AdjFactorMap	_adj_factors;
 
 	inline const AdjFactorList& getAdjFactors(const char* code, const char* exchg)

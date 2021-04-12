@@ -2,9 +2,9 @@
 #include "WtEngine.h"
 #include "WtExecMgr.h"
 
+#include "../Includes/FasterDefs.h"
 #include "../Includes/ISelStraCtx.h"
 
-#include <unordered_map>
 #include <memory>
 
 NS_OTP_BEGIN
@@ -90,9 +90,9 @@ public:
 	void	handle_pos_change(const char* stdCode, double diffQty);
 
 private:
-	std::unordered_map<uint32_t, TaskInfoPtr>	_tasks;
+	faster_hashmap<uint32_t, TaskInfoPtr>	_tasks;
 
-	typedef std::unordered_map<uint32_t, SelContextPtr> ContextMap;
+	typedef faster_hashmap<uint32_t, SelContextPtr> ContextMap;
 	ContextMap		_ctx_map;
 
 	WtExecuterMgr	_exec_mgr;

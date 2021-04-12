@@ -9,10 +9,9 @@
  */
 #pragma once
 #include <memory>
-#include <unordered_set>
-#include <unordered_map>
 #include <boost/core/noncopyable.hpp>
 
+#include "../Includes/FasterDefs.h"
 #include "../Includes/IParserApi.h"
 
 
@@ -85,7 +84,7 @@ private:
 
 	bool				_stopped;
 
-	typedef std::unordered_set<std::string>	ExchgFilter;
+	typedef faster_hashset<std::string>	ExchgFilter;
 	ExchgFilter			_exchg_filter;
 	ExchgFilter			_code_filter;
 	IBaseDataMgr*		_bd_mgr;
@@ -96,7 +95,7 @@ private:
 };
 
 typedef std::shared_ptr<ParserAdapter>	ParserAdapterPtr;
-typedef std::unordered_map<std::string, ParserAdapterPtr>	ParserAdapterMap;
+typedef faster_hashmap<std::string, ParserAdapterPtr>	ParserAdapterMap;
 
 class ParserAdapterMgr : private boost::noncopyable
 {

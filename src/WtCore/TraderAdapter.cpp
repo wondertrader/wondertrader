@@ -500,7 +500,7 @@ bool TraderAdapter::checkCancelLimits(const char* stdCode)
 	auto it = _cancel_time_cache.find(stdCode);
 	if (it != _cancel_time_cache.end())
 	{
-		TimeCacheList& cache = it->second;
+		TimeCacheList& cache = (TimeCacheList&)it->second;
 		uint32_t cnt = cache.size();
 		if (cnt >= riskPara->_cancel_times_boundary)
 		{
@@ -556,7 +556,7 @@ bool TraderAdapter::checkOrderLimits(const char* stdCode)
 	auto it = _order_time_cache.find(stdCode);
 	if (it != _order_time_cache.end())
 	{
-		TimeCacheList& cache = it->second;
+		TimeCacheList& cache = (TimeCacheList&)it->second;
 		uint32_t cnt = cache.size();
 		if (cnt >= riskPara->_order_times_boundary)
 		{

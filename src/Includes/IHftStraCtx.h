@@ -48,10 +48,10 @@ public:
 	virtual OrderIDs	stra_buy(const char* stdCode, double price, double qty, const char* userTag) = 0;
 	virtual OrderIDs	stra_sell(const char* stdCode, double price, double qty, const char* userTag) = 0;
 
-	virtual uint32_t	stra_enter_long(const char* stdCode, double price, double qty, const char* userTag) = 0;
-	virtual uint32_t	stra_enter_short(const char* stdCode, double price, double qty, const char* userTag) = 0;
-	virtual uint32_t	stra_exit_long(const char* stdCode, double price, double qty, const char* userTag, bool isToday = false) = 0;
-	virtual uint32_t	stra_exit_short(const char* stdCode, double price, double qty, const char* userTag, bool isToday = false) = 0;
+	virtual uint32_t	stra_enter_long(const char* stdCode, double price, double qty, const char* userTag) { return 0; }
+	virtual uint32_t	stra_enter_short(const char* stdCode, double price, double qty, const char* userTag) { return 0; }
+	virtual uint32_t	stra_exit_long(const char* stdCode, double price, double qty, const char* userTag, bool isToday = false) { return 0; }
+	virtual uint32_t	stra_exit_short(const char* stdCode, double price, double qty, const char* userTag, bool isToday = false) { return 0; }
 
 	virtual WTSCommodityInfo* stra_get_comminfo(const char* stdCode) = 0;
 	virtual WTSKlineSlice*	stra_get_bars(const char* stdCode, const char* period, uint32_t count) = 0;

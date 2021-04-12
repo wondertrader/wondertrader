@@ -1,8 +1,8 @@
 #pragma once
 #include <string>
 #include <stdint.h>
-#include <unordered_map>
 
+#include "../Includes/FasterDefs.h"
 #include "../Includes/IDataReader.h"
 
 #include "../WtDataWriter/DataDefine.h"
@@ -35,7 +35,7 @@ private:
 		}
 
 	} RTKlineBlockPair;
-	typedef std::unordered_map<std::string, RTKlineBlockPair>	RTKBlockFilesMap;
+	typedef faster_hashmap<std::string, RTKlineBlockPair>	RTKBlockFilesMap;
 
 	typedef struct _TBlockPair
 	{
@@ -50,7 +50,7 @@ private:
 			_last_cap = 0;
 		}
 	} TickBlockPair;
-	typedef std::unordered_map<std::string, TickBlockPair>	TBlockFilesMap;
+	typedef faster_hashmap<std::string, TickBlockPair>	TBlockFilesMap;
 
 	typedef struct _TransBlockPair
 	{
@@ -67,7 +67,7 @@ private:
 			_last_cap = 0;
 		}
 	} TransBlockPair;
-	typedef std::unordered_map<std::string, TransBlockPair>	TransBlockFilesMap;
+	typedef faster_hashmap<std::string, TransBlockPair>	TransBlockFilesMap;
 
 	typedef struct _OdeDtlBlockPair
 	{
@@ -84,7 +84,7 @@ private:
 			_last_cap = 0;
 		}
 	} OrdDtlBlockPair;
-	typedef std::unordered_map<std::string, OrdDtlBlockPair>	OrdDtlBlockFilesMap;
+	typedef faster_hashmap<std::string, OrdDtlBlockPair>	OrdDtlBlockFilesMap;
 
 	typedef struct _OdeQueBlockPair
 	{
@@ -101,7 +101,7 @@ private:
 			_last_cap = 0;
 		}
 	} OrdQueBlockPair;
-	typedef std::unordered_map<std::string, OrdQueBlockPair>	OrdQueBlockFilesMap;
+	typedef faster_hashmap<std::string, OrdQueBlockPair>	OrdQueBlockFilesMap;
 
 	RTKBlockFilesMap	_rt_min1_map;
 	RTKBlockFilesMap	_rt_min5_map;
@@ -125,7 +125,7 @@ private:
 		}
 	} HisTBlockPair;
 
-	typedef std::unordered_map<std::string, HisTBlockPair>	HisTickBlockMap;
+	typedef faster_hashmap<std::string, HisTBlockPair>	HisTickBlockMap;
 
 	typedef struct _HisTransBlockPair
 	{
@@ -141,7 +141,7 @@ private:
 		}
 	} HisTransBlockPair;
 
-	typedef std::unordered_map<std::string, HisTransBlockPair>	HisTransBlockMap;
+	typedef faster_hashmap<std::string, HisTransBlockPair>	HisTransBlockMap;
 
 	typedef struct _HisOrdDtlBlockPair
 	{
@@ -157,7 +157,7 @@ private:
 		}
 	} HisOrdDtlBlockPair;
 
-	typedef std::unordered_map<std::string, HisOrdDtlBlockPair>	HisOrdDtlBlockMap;
+	typedef faster_hashmap<std::string, HisOrdDtlBlockPair>	HisOrdDtlBlockMap;
 
 	typedef struct _HisOrdQueBlockPair
 	{
@@ -173,7 +173,7 @@ private:
 		}
 	} HisOrdQueBlockPair;
 
-	typedef std::unordered_map<std::string, HisOrdQueBlockPair>	HisOrdQueBlockMap;
+	typedef faster_hashmap<std::string, HisOrdQueBlockPair>	HisOrdQueBlockMap;
 
 	HisTickBlockMap		_his_tick_map;
 	HisOrdDtlBlockMap	_his_orddtl_map;
@@ -231,7 +231,7 @@ private:
 		_BarsList() :_his_cursor(UINT_MAX), _rt_cursor(UINT_MAX){}
 	} BarsList;
 
-	typedef std::unordered_map<std::string, BarsList> BarsCache;
+	typedef faster_hashmap<std::string, BarsList> BarsCache;
 	BarsCache	_bars_cache;
 
 	uint64_t	_last_time;
@@ -243,7 +243,7 @@ private:
 		double		_factor;
 	} AdjFactor;
 	typedef std::vector<AdjFactor> AdjFactorList;
-	typedef std::unordered_map<std::string, AdjFactorList>	AdjFactorMap;
+	typedef faster_hashmap<std::string, AdjFactorList>	AdjFactorMap;
 	AdjFactorMap	_adj_factors;
 
 	inline const AdjFactorList& getAdjFactors(const char* code, const char* exchg)

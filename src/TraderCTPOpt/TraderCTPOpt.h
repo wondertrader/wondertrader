@@ -11,8 +11,6 @@
 
 #include <string>
 #include <queue>
-#include <unordered_set>
-#include <unordered_map>
 #include <stdint.h>
 
 #include <boost/asio/io_service.hpp>
@@ -36,8 +34,6 @@ class TraderCTPOpt : public ITraderApi, public IOptTraderApi, public CThostFtdcT
 public:
 	TraderCTPOpt();
 	virtual ~TraderCTPOpt();
-
-	typedef std::unordered_map<std::string, std::string>	StringMap;
 
 public:
 	typedef enum

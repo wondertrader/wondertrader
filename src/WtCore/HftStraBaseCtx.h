@@ -8,8 +8,8 @@
  * \brief 
  */
 #pragma once
-#include <unordered_map>
 
+#include "../Includes/FasterDefs.h"
 #include "../Includes/IHftStraCtx.h"
 #include "../Share/BoostFile.hpp"
 #include "ITrdNotifySink.h"
@@ -138,7 +138,7 @@ protected:
 	WtHftEngine*	_engine;
 	TraderAdapter*	_trader;
 
-	std::unordered_map<std::string, std::string> _code_map;
+	faster_hashmap<std::string, std::string> _code_map;
 
 	BoostFilePtr	_sig_logs;
 	BoostFilePtr	_close_logs;
@@ -146,7 +146,7 @@ protected:
 	BoostFilePtr	_fund_logs;
 
 	//用户数据
-	typedef std::unordered_map<std::string, std::string> StringHashMap;
+	typedef faster_hashmap<std::string, std::string> StringHashMap;
 	StringHashMap	_user_datas;
 	bool			_ud_modified;
 
@@ -186,10 +186,10 @@ private:
 			_dynprofit = 0;
 		}
 	} PosInfo;
-	typedef std::unordered_map<std::string, PosInfo> PositionMap;
+	typedef faster_hashmap<std::string, PosInfo> PositionMap;
 	PositionMap		_pos_map;
 
-	typedef std::unordered_map<uint32_t, std::string> OrderMap;
+	typedef faster_hashmap<uint32_t, std::string> OrderMap;
 	OrderMap		_orders;
 
 	typedef struct _StraFundInfo
@@ -206,7 +206,7 @@ private:
 
 	StraFundInfo		_fund_info;
 
-	typedef std::unordered_map<std::string, double> PriceMap;
+	typedef faster_hashmap<std::string, double> PriceMap;
 	PriceMap		_price_map;
 };
 

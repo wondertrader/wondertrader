@@ -170,7 +170,7 @@ void StateMonitor::run()
 				auto it = _map.begin();
 				for (; it != _map.end(); it++)
 				{
-					StatePtr& sInfo = it->second;
+					StatePtr& sInfo = (StatePtr&)it->second;
 					WTSSessionInfo* mInfo =  _bd_mgr->getSession(sInfo->_session);
 
 					uint32_t offDate = mInfo->getOffsetDate(curDate, curMin);

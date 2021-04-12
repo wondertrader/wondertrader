@@ -680,7 +680,7 @@ void HisDataReplayer::replayUnbars(uint64_t stime, uint64_t nowTime, uint32_t en
 
 	for (auto it = _unbars_cache.begin(); it != _unbars_cache.end(); it++)
 	{
-		BarsList& barsList = it->second;
+		BarsList& barsList = (BarsList&)it->second;
 		if (barsList._period != KP_DAY)
 		{
 			//如果历史数据指标不在尾部, 说明是回测模式, 要继续回放历史数据
@@ -825,10 +825,10 @@ void HisDataReplayer::replayUnbars(uint64_t stime, uint64_t nowTime, uint32_t en
 uint64_t HisDataReplayer::getNextTickTime(uint32_t curTDate, uint64_t stime /* = UINT64_MAX */)
 {
 	uint64_t nextTime = UINT64_MAX;
-	for (auto v : _tick_sub_map)
+	for (auto& v : _tick_sub_map)
 	{
-		std::string stdCode = v.first;
-		if (!checkTicks(stdCode.c_str(), curTDate))
+		const char* stdCode = v.first.c_str();
+		if (!checkTicks(stdCode, curTDate))
 			continue;
 
 		auto& tickList = _ticks_cache[stdCode];
@@ -1033,17 +1033,17 @@ uint64_t HisDataReplayer::replayHftDatasByDay(uint32_t curTDate)
 		_cur_secs = nextTime % 100000;
 
 		//1、首先回放委托明细
-		for (auto v : _orddtl_sub_map)
+		for (auto& v : _orddtl_sub_map)
 		{
-			std::string stdCode = v.first;
+			const char* stdCode = v.first.c_str();
 			auto& itemList = _orddtl_cache[stdCode];
 			auto& nextItem = itemList._items[itemList._cursor - 1];
 			uint64_t lastTime = (uint64_t)nextItem.action_date * 1000000000 + nextItem.action_time;
 			if (lastTime <= nextTime)
 			{
 				WTSOrdDtlData* newData = WTSOrdDtlData::create(nextItem);
-				newData->setCode(stdCode.c_str());
-				_listener->handle_order_detail(stdCode.c_str(), newData);
+				newData->setCode(stdCode);
+				_listener->handle_order_detail(stdCode, newData);
 				newData->release();
 
 				itemList._cursor++;
@@ -1052,17 +1052,17 @@ uint64_t HisDataReplayer::replayHftDatasByDay(uint32_t curTDate)
 		}
 
 		//2、其次再回放成交明细
-		for (auto v : _trans_sub_map)
+		for (auto& v : _trans_sub_map)
 		{
-			std::string stdCode = v.first;
+			const char* stdCode = v.first.c_str();
 			auto& itemList = _trans_cache[stdCode];
 			auto& nextItem = itemList._items[itemList._cursor - 1];
 			uint64_t lastTime = (uint64_t)nextItem.action_date * 1000000000 + nextItem.action_time;
 			if (lastTime <= nextTime)
 			{
 				WTSTransData* newData = WTSTransData::create(nextItem);
-				newData->setCode(stdCode.c_str());
-				_listener->handle_transaction(stdCode.c_str(), newData);
+				newData->setCode(stdCode);
+				_listener->handle_transaction(stdCode, newData);
 				newData->release();
 
 				itemList._cursor++;
@@ -1071,17 +1071,18 @@ uint64_t HisDataReplayer::replayHftDatasByDay(uint32_t curTDate)
 		}
 
 		//3、第三步再回放tick数据
-		for (auto v : _tick_sub_map)
+		for (auto& v : _tick_sub_map)
 		{
-			std::string stdCode = v.first;
+			//std::string stdCode = v.first;
+			const char* stdCode = v.first.c_str();
 			auto& tickList = _ticks_cache[stdCode];
 			WTSTickStruct& nextTick = tickList._items[tickList._cursor - 1];
 			uint64_t lastTime = (uint64_t)nextTick.action_date * 1000000000 + nextTick.action_time;
 			if (lastTime <= nextTime)
 			{
 				WTSTickData* newTick = WTSTickData::create(nextTick);
-				newTick->setCode(stdCode.c_str());
-				_listener->handle_tick(stdCode.c_str(), newTick);
+				newTick->setCode(stdCode);
+				_listener->handle_tick(stdCode, newTick);
 				newTick->release();
 
 				tickList._cursor++;
@@ -1090,17 +1091,17 @@ uint64_t HisDataReplayer::replayHftDatasByDay(uint32_t curTDate)
 		}
 		
 		//4、最后回放委托队列
-		for (auto v : _ordque_sub_map)
+		for (auto& v : _ordque_sub_map)
 		{
-			std::string stdCode = v.first;
+			const char* stdCode = v.first.c_str();
 			auto& itemList = _ordque_cache[stdCode];
 			auto& nextItem = itemList._items[itemList._cursor - 1];
 			uint64_t lastTime = (uint64_t)nextItem.action_date * 1000000000 + nextItem.action_time;
 			if (lastTime <= nextTime)
 			{
 				WTSOrdQueData* newData = WTSOrdQueData::create(nextItem);
-				newData->setCode(stdCode.c_str());
-				_listener->handle_order_queue(stdCode.c_str(), newData);
+				newData->setCode(stdCode);
+				_listener->handle_order_queue(stdCode, newData);
 				newData->release();
 
 				itemList._cursor++;
@@ -1129,17 +1130,17 @@ void HisDataReplayer::replayHftDatas(uint64_t stime, uint64_t etime)
 		_cur_secs = nextTime % 100000;
 		
 		//1、首先回放委托明细
-		for (auto v : _orddtl_sub_map)
+		for (auto& v : _orddtl_sub_map)
 		{
-			std::string stdCode = v.first;
+			const char* stdCode = v.first.c_str();
 			auto& itemList = _orddtl_cache[stdCode];
 			auto& nextItem = itemList._items[itemList._cursor - 1];
 			uint64_t lastTime = (uint64_t)nextItem.action_date * 1000000000 + nextItem.action_time;
 			if (lastTime <= nextTime)
 			{
 				WTSOrdDtlData* newData = WTSOrdDtlData::create(nextItem);
-				newData->setCode(stdCode.c_str());
-				_listener->handle_order_detail(stdCode.c_str(), newData);
+				newData->setCode(stdCode);
+				_listener->handle_order_detail(stdCode, newData);
 				newData->release();
 
 				itemList._cursor++;
@@ -1147,17 +1148,17 @@ void HisDataReplayer::replayHftDatas(uint64_t stime, uint64_t etime)
 		}
 
 		//2、其次再回放成交明细
-		for (auto v : _trans_sub_map)
+		for (auto& v : _trans_sub_map)
 		{
-			std::string stdCode = v.first;
+			const char* stdCode = v.first.c_str();
 			auto& itemList = _trans_cache[stdCode];
 			auto& nextItem = itemList._items[itemList._cursor - 1];
 			uint64_t lastTime = (uint64_t)nextItem.action_date * 1000000000 + nextItem.action_time;
 			if (lastTime <= nextTime)
 			{
 				WTSTransData* newData = WTSTransData::create(nextItem);
-				newData->setCode(stdCode.c_str());
-				_listener->handle_transaction(stdCode.c_str(), newData);
+				newData->setCode(stdCode);
+				_listener->handle_transaction(stdCode, newData);
 				newData->release();
 
 				itemList._cursor++;
@@ -1165,17 +1166,17 @@ void HisDataReplayer::replayHftDatas(uint64_t stime, uint64_t etime)
 		}
 
 		//3、第三步再回放tick数据
-		for (auto v : _tick_sub_map)
+		for (auto& v : _tick_sub_map)
 		{
-			std::string stdCode = v.first;
+			const char* stdCode = v.first.c_str();
 			auto& itemList = _ticks_cache[stdCode];
 			auto& nextItem = itemList._items[itemList._cursor - 1];
 			uint64_t lastTime = (uint64_t)nextItem.action_date * 1000000000 + nextItem.action_time;
 			if (lastTime <= nextTime)
 			{
 				WTSTickData* newData = WTSTickData::create(nextItem);
-				newData->setCode(stdCode.c_str());
-				_listener->handle_tick(stdCode.c_str(), newData);
+				newData->setCode(stdCode);
+				_listener->handle_tick(stdCode, newData);
 				newData->release();
 
 				itemList._cursor++;
@@ -1183,17 +1184,17 @@ void HisDataReplayer::replayHftDatas(uint64_t stime, uint64_t etime)
 		}
 
 		//4、最后回放委托队列
-		for (auto v : _ordque_sub_map)
+		for (auto& v : _ordque_sub_map)
 		{
-			std::string stdCode = v.first;
+			const char* stdCode = v.first.c_str();
 			auto& itemList = _ordque_cache[stdCode];
 			auto& nextItem = itemList._items[itemList._cursor - 1];
 			uint64_t lastTime = (uint64_t)nextItem.action_date * 1000000000 + nextItem.action_time;
 			if (lastTime <= nextTime)
 			{
 				WTSOrdQueData* newData = WTSOrdQueData::create(nextItem);
-				newData->setCode(stdCode.c_str());
-				_listener->handle_order_queue(stdCode.c_str(), newData);
+				newData->setCode(stdCode);
+				_listener->handle_order_queue(stdCode, newData);
 				newData->release();
 
 				itemList._cursor++;
@@ -1231,7 +1232,7 @@ void HisDataReplayer::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTD
 
 	for (auto it = _bars_cache.begin(); it != _bars_cache.end(); it++)
 	{
-		BarsList& barsList = it->second;
+		BarsList& barsList = (BarsList&)it->second;
 		if (barsList._period != KP_DAY)
 		{
 			//如果历史数据指标不在尾部, 说明是回测模式, 要继续回放历史数据
@@ -1836,10 +1837,9 @@ WTSTransSlice* HisDataReplayer::get_transaction_slice(const char* stdCode, uint3
 bool HisDataReplayer::checkAllTicks(uint32_t uDate)
 {
 	bool bHasTick = false;
-	for (auto v : _tick_sub_map)
+	for (auto& v : _tick_sub_map)
 	{
-		std::string stdCode = v.first;
-		bHasTick = bHasTick || checkTicks(stdCode.c_str(), uDate);
+		bHasTick = bHasTick || checkTicks(v.first.c_str(), uDate);
 	}
 
 	return bHasTick;
@@ -1946,6 +1946,9 @@ bool HisDataReplayer::checkTransactions(const char* stdCode, uint32_t uDate)
 
 bool HisDataReplayer::checkTicks(const char* stdCode, uint32_t uDate)
 {
+	if (strlen(stdCode) == 0)
+		return false;
+
 	bool bNeedCache = false;
 	auto it = _ticks_cache.find(stdCode);
 	if (it == _ticks_cache.end())
@@ -2134,24 +2137,36 @@ double HisDataReplayer::get_cur_price(const char* stdCode)
 
 void HisDataReplayer::sub_tick(uint32_t sid, const char* stdCode)
 {
+	if (strlen(stdCode) == 0)
+		return;
+
 	SIDSet& sids = _tick_sub_map[stdCode];
 	sids.insert(sid);
 }
 
 void HisDataReplayer::sub_order_detail(uint32_t sid, const char* stdCode)
 {
+	if (strlen(stdCode) == 0)
+		return;
+
 	SIDSet& sids = _orddtl_sub_map[stdCode];
 	sids.insert(sid);
 }
 
 void HisDataReplayer::sub_order_queue(uint32_t sid, const char* stdCode)
 {
+	if (strlen(stdCode) == 0)
+		return;
+
 	SIDSet& sids = _ordque_sub_map[stdCode];
 	sids.insert(sid);
 }
 
 void HisDataReplayer::sub_transaction(uint32_t sid, const char* stdCode)
 {
+	if (strlen(stdCode) == 0)
+		return;
+
 	SIDSet& sids = _trans_sub_map[stdCode];
 	sids.insert(sid);
 }
@@ -2166,7 +2181,7 @@ void HisDataReplayer::checkUnbars()
 		{
 			const std::string& key = m.first;
 			auto ay = StrUtil::split(key, "#");
-			if (ay[0] == stdCode)
+			if (ay[0].compare(stdCode) == 0)
 			{
 				bHasBars = true;
 				break;
@@ -2179,7 +2194,7 @@ void HisDataReplayer::checkUnbars()
 		{
 			const std::string& key = m.first;
 			auto ay = StrUtil::split(key, "#");
-			if (ay[0] == stdCode)
+			if (ay[0].compare(stdCode) == 0)
 			{
 				bHasBars = true;
 				break;
@@ -2348,6 +2363,9 @@ bool HisDataReplayer::cacheRawTicksFromBin(const std::string& key, const char* s
 
 bool HisDataReplayer::cacheRawTicksFromCSV(const std::string& key, const char* stdCode, uint32_t uDate)
 {
+	if (strlen(stdCode) == 0)
+		return false;
+
 	std::stringstream ss;
 	ss << _base_dir << "bin/ticks/";
 	std::string path = ss.str();

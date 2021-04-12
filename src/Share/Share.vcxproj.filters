@@ -28,6 +28,12 @@
     <Filter Include="ThreadPool\detail">
       <UniqueIdentifier>{dd81da78-3aec-40b3-a9b4-8dc70d9eb065}</UniqueIdentifier>
     </Filter>
+    <Filter Include="fasterlibs">
+      <UniqueIdentifier>{78e73dc5-6aa8-415e-b7b0-bda970c9eded}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fasterlibs\tsl">
+      <UniqueIdentifier>{fa80e461-6b62-459e-b183-f6c6ed55e5d2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StrUtil.hpp">
@@ -185,6 +191,30 @@
     </ClInclude>
     <ClInclude Include="..\Includes\WTSVersion.h">
       <Filter>BaseDefs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\FasterLibs\tsl\robin_growth_policy.h">
+      <Filter>fasterlibs\tsl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\FasterLibs\tsl\robin_hash.h">
+      <Filter>fasterlibs\tsl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\FasterLibs\tsl\robin_map.h">
+      <Filter>fasterlibs\tsl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\FasterLibs\tsl\robin_set.h">
+      <Filter>fasterlibs\tsl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Includes\FasterDefs.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Includes\ICtaStraCtx.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Includes\IHftStraCtx.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Includes\ISelStraCtx.h">
+      <Filter>Interfaces</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

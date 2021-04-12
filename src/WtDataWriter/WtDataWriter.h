@@ -2,12 +2,12 @@
 #include "DataDefine.h"
 #include "MysqlDB.hpp"
 
+#include "../Includes/FasterDefs.h"
 #include "../Includes/IDataWriter.h"
 #include "../Share/StdUtils.hpp"
 #include "../Share/BoostMappingFile.hpp"
 
 #include <queue>
-#include <unordered_map>
 
 typedef std::shared_ptr<BoostMappingFile> BoostMFPtr;
 typedef std::shared_ptr<MysqlDb>	MysqlDbPtr;
@@ -91,7 +91,7 @@ private:
 		}
 
 	} KBlockPair;
-	typedef std::unordered_map<std::string, KBlockPair>	KBlockFilesMap;
+	typedef faster_hashmap<std::string, KBlockPair*>	KBlockFilesMap;
 
 	typedef struct _TickBlockPair
 	{
@@ -110,7 +110,7 @@ private:
 			_lasttime = 0;
 		}
 	} TickBlockPair;
-	typedef std::unordered_map<std::string, TickBlockPair>	TickBlockFilesMap;
+	typedef faster_hashmap<std::string, TickBlockPair*>	TickBlockFilesMap;
 
 	typedef struct _TransBlockPair
 	{
@@ -129,7 +129,7 @@ private:
 			_lasttime = 0;
 		}
 	} TransBlockPair;
-	typedef std::unordered_map<std::string, TransBlockPair>	TransBlockFilesMap;
+	typedef faster_hashmap<std::string, TransBlockPair*>	TransBlockFilesMap;
 
 	typedef struct _OdeDtlBlockPair
 	{
@@ -148,7 +148,7 @@ private:
 			_lasttime = 0;
 		}
 	} OrdDtlBlockPair;
-	typedef std::unordered_map<std::string, OrdDtlBlockPair>	OrdDtlBlockFilesMap;
+	typedef faster_hashmap<std::string, OrdDtlBlockPair*>	OrdDtlBlockFilesMap;
 
 	typedef struct _OdeQueBlockPair
 	{
@@ -167,7 +167,7 @@ private:
 			_lasttime = 0;
 		}
 	} OrdQueBlockPair;
-	typedef std::unordered_map<std::string, OrdQueBlockPair>	OrdQueBlockFilesMap;
+	typedef faster_hashmap<std::string, OrdQueBlockPair*>	OrdQueBlockFilesMap;
 	
 
 	KBlockFilesMap	_rt_min1_blocks;
@@ -179,7 +179,7 @@ private:
 	OrdQueBlockFilesMap _rt_ordque_blocks;
 
 	StdUniqueMutex	_mtx_tick_cache;
-	std::unordered_map<std::string, uint32_t> _tick_cache_idx;
+	faster_hashmap<std::string, uint32_t> _tick_cache_idx;
 	BoostMFPtr		_tick_cache_file;
 	RTTickCache*	_tick_cache_block;
 

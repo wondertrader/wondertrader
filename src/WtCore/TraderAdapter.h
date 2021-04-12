@@ -8,11 +8,9 @@
  * \brief 
  */
 #pragma once
-#include <unordered_map>
-#include <unordered_set>
 
 #include "../Includes/ExecuteDefs.h"
-
+#include "../Includes/FasterDefs.h"
 #include "../Includes/ITraderApi.h"
 #include "../Share/BoostFile.hpp"
 #include "../Share/StdUtils.hpp"
@@ -198,32 +196,32 @@ private:
 
 	EventNotifier*		_notifier;
 
-	std::unordered_set<ITrdNotifySink*>	_sinks;
+	faster_hashset<ITrdNotifySink*>	_sinks;
 
 	IBaseDataMgr*		_bd_mgr;
 	ActionPolicyMgr*	_policy_mgr;
 
-	std::unordered_map<std::string, PosItem> _positions;
+	faster_hashmap<std::string, PosItem> _positions;
 
 	StdUniqueMutex _mtx_orders;
 	OrderMap*		_orders;
-	std::unordered_set<std::string> _orderids;	//主要用于标记有没有处理过该订单
+	faster_hashset<std::string> _orderids;	//主要用于标记有没有处理过该订单
 
-	std::unordered_map<std::string, double> _undone_qty;	//未完成数量
+	faster_hashmap<std::string, double> _undone_qty;	//未完成数量
 
 	typedef WTSHashMap<std::string>	TradeStatMap;
 	TradeStatMap*	_stat_map;	//统计数据
 
 	//这两个缓存时间内的容器,主要是为了控制瞬间流量而设置的
 	typedef std::vector<uint64_t> TimeCacheList;
-	typedef std::unordered_map<std::string, TimeCacheList> CodeTimeCacheMap;
+	typedef faster_hashmap<std::string, TimeCacheList> CodeTimeCacheMap;
 	CodeTimeCacheMap	_order_time_cache;	//下单时间缓存
 	CodeTimeCacheMap	_cancel_time_cache;	//撤单时间缓存
 
 	//如果被风控了,就会进入到排除队列
-	std::unordered_set<std::string>	_exclude_codes;
+	faster_hashset<std::string>	_exclude_codes;
 	
-	typedef std::unordered_map<std::string, RiskParams>	RiskParamsMap;
+	typedef faster_hashmap<std::string, RiskParams>	RiskParamsMap;
 	RiskParamsMap	_risk_params_map;
 	bool			_risk_mon_enabled;
 
@@ -234,7 +232,7 @@ private:
 };
 
 typedef std::shared_ptr<TraderAdapter>				TraderAdapterPtr;
-typedef std::unordered_map<std::string, TraderAdapterPtr>	TraderAdapterMap;
+typedef faster_hashmap<std::string, TraderAdapterPtr>	TraderAdapterMap;
 
 
 //////////////////////////////////////////////////////////////////////////

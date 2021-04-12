@@ -10,8 +10,6 @@
 #pragma once
 #include "CtaStraBaseCtx.h"
 
-#include <unordered_map>
-
 #include "../Includes/WTSDataDef.hpp"
 
 NS_OTP_BEGIN

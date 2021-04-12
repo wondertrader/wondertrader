@@ -9,11 +9,10 @@
  */
 #pragma once
 #include <vector>
-#include <unordered_map>
 #include <stdint.h>
 #include <string.h>
 
-#include "../Includes/WTSMarcos.h"
+#include "../Includes/FasterDefs.h"
 
 
 NS_OTP_BEGIN
@@ -55,10 +54,10 @@ public:
 	const ActionRuleGroup& getActionRules(const char* pid);
 
 private:
-	typedef std::unordered_map<std::string, ActionRuleGroup> RulesMap;
+	typedef faster_hashmap<std::string, ActionRuleGroup> RulesMap;
 	RulesMap	_rules;	//规则表
 
-	std::unordered_map<std::string, std::string> _comm_rule_map;	//品种规则映射
+	faster_hashmap<std::string, std::string> _comm_rule_map;	//品种规则映射
 };
 
 NS_OTP_END

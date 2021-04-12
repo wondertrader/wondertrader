@@ -11,8 +11,6 @@
 
 #include <string>
 #include <queue>
-#include <unordered_set>
-#include <unordered_map>
 #include <stdint.h>
 
 #include "../Includes/WTSTypes.h"
@@ -33,8 +31,6 @@ class TraderCTP : public ITraderApi, public CThostFtdcTraderSpi
 public:
 	TraderCTP();
 	virtual ~TraderCTP();
-
-	typedef std::unordered_map<std::string, std::string>	StringMap;
 
 public:
 	typedef enum

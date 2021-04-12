@@ -69,7 +69,7 @@ public:
 	}
 
 private:
-	typedef std::unordered_map<uint32_t, CtaContextPtr> ContextMap;
+	typedef faster_hashmap<uint32_t, CtaContextPtr> ContextMap;
 	ContextMap		_ctx_map;
 
 	WtCtaRtTicker*	_tm_ticker;

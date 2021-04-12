@@ -42,7 +42,7 @@ void WtDistExecuter::writeLog(const char* fmt, ...)
 	va_end(args);
 }
 
-void WtDistExecuter::set_position(const std::unordered_map<std::string, double>& targets)
+void WtDistExecuter::set_position(const faster_hashmap<std::string, double>& targets)
 {
 	for (auto it = targets.begin(); it != targets.end(); it++)
 	{

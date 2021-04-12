@@ -1,6 +1,5 @@
 #pragma once
 #include <stdint.h>
-#include <unordered_map>
 #include <map>
 #include <vector>
 #include <functional>
@@ -8,6 +7,7 @@
 
 #include "../Includes/WTSMarcos.h"
 #include "../Includes/WTSCollection.hpp"
+#include "../Includes/FasterDefs.h"
 
 NS_OTP_BEGIN
 class WTSTickData;
@@ -100,7 +100,7 @@ private:
 		}
 	} OrderInfo;
 
-	typedef std::unordered_map<uint32_t, OrderInfo> Orders;
+	typedef faster_hashmap<uint32_t, OrderInfo> Orders;
 	Orders	_orders;
 
 	typedef std::map<uint32_t, uint32_t>	LOBItems;
@@ -127,7 +127,7 @@ private:
 			_bid_px = 0;
 		}
 	} LmtOrdBook;
-	typedef std::unordered_map<std::string, LmtOrdBook> LmtOrdBooks;
+	typedef faster_hashmap<std::string, LmtOrdBook> LmtOrdBooks;
 	LmtOrdBooks	_lmt_ord_books;
 
 	IMatchSink*	_sink;

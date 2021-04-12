@@ -10,10 +10,10 @@
 #pragma once
 #include <queue>
 #include <sstream>
-#include <unordered_map>
 
 #include "HisDataReplayer.h"
 
+#include "../Includes/FasterDefs.h"
 #include "../Includes/IHftStraCtx.h"
 #include "../Includes/HftStrategyDefs.h"
 
@@ -148,7 +148,7 @@ private:
 	bool			_use_newpx;
 	uint32_t		_error_rate;
 
-	typedef std::unordered_map<std::string, double> PriceMap;
+	typedef faster_hashmap<std::string, double> PriceMap;
 	PriceMap		_price_map;
 
 
@@ -200,7 +200,7 @@ private:
 		}
 
 	} OrderInfo;
-	typedef std::unordered_map<uint32_t, OrderInfo> Orders;
+	typedef faster_hashmap<uint32_t, OrderInfo> Orders;
 	StdRecurMutex	_mtx_ords;
 	Orders			_orders;
 
@@ -208,7 +208,7 @@ private:
 	CommodityMap*	_commodities;
 
 	//用户数据
-	typedef std::unordered_map<std::string, std::string> StringHashMap;
+	typedef faster_hashmap<std::string, std::string> StringHashMap;
 	StringHashMap	_user_datas;
 	bool			_ud_modified;
 
@@ -245,7 +245,7 @@ private:
 			_dynprofit = 0;
 		}
 	} PosInfo;
-	typedef std::unordered_map<std::string, PosInfo> PositionMap;
+	typedef faster_hashmap<std::string, PosInfo> PositionMap;
 	PositionMap		_pos_map;
 
 	std::stringstream	_trade_logs;

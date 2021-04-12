@@ -92,7 +92,7 @@ HftStrategyPtr HftStrategyMgr::createStrategy(const char* factname, const char* 
 	if (it == _factories.end())
 		return HftStrategyPtr();
 
-	StraFactInfo& fInfo = it->second;
+	StraFactInfo& fInfo = (StraFactInfo&)it->second;
 	HftStrategyPtr ret(new HftStraWrapper(fInfo._fact->createStrategy(unitname, id), fInfo._fact));
 	_strategies[id] = ret;
 	return ret;
@@ -111,7 +111,7 @@ HftStrategyPtr HftStrategyMgr::createStrategy(const char* name, const char* id)
 	if (it == _factories.end())
 		return HftStrategyPtr();
 
-	StraFactInfo& fInfo = it->second;
+	StraFactInfo& fInfo = (StraFactInfo&)it->second;
 	HftStrategyPtr ret(new HftStraWrapper(fInfo._fact->createStrategy(unitname, id), fInfo._fact));
 	_strategies[id] = ret;
 	return ret;

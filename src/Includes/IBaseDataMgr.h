@@ -8,12 +8,13 @@
  * \brief 基础数据管理器接口定义
  */
 #pragma once
-#include "WTSMarcos.h"
-#include <unordered_set>
 #include <string>
 #include <stdint.h>
 
-typedef std::unordered_set<std::string> ContractSet;
+#include "WTSMarcos.h"
+#include "FasterDefs.h"
+
+typedef faster_hashset<std::string> ContractSet;
 
 NS_OTP_BEGIN
 class WTSContractInfo;
@@ -21,7 +22,7 @@ class WTSArray;
 class WTSSessionInfo;
 class WTSCommodityInfo;
 
-typedef std::unordered_set<uint32_t> HolidaySet;
+typedef faster_hashset<uint32_t> HolidaySet;
 typedef struct _TradingDayTpl
 {
 	uint32_t	_cur_tdate;

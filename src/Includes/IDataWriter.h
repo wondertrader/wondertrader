@@ -8,11 +8,11 @@
  * \brief 数据落地接口定义
  */
 #pragma once
-#include <unordered_set>
 #include <stdint.h>
 #include "WTSTypes.h"
+#include "FasterDefs.h"
 
-typedef std::unordered_set<std::string> CodeSet;
+typedef faster_hashset<std::string> CodeSet;
 
 NS_OTP_BEGIN
 class WTSTickData;

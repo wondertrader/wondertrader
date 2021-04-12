@@ -140,23 +140,23 @@ void WtEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 		if (it == _pos_map.end())
 			return;
 
-		PosInfo& pInfo = it->second;
-		if (pInfo._volume == 0)
+		PosInfo* pInfo = (PosInfo*)&it->second;
+		if (pInfo->_volume == 0)
 		{
-			pInfo._dynprofit = 0;
+			pInfo->_dynprofit = 0;
 		}
 		else
 		{
 			WTSCommodityInfo* commInfo = get_commodity_info(code.c_str());
 			double dynprofit = 0;
-			for (auto pit = pInfo._details.begin(); pit != pInfo._details.end(); pit++)
+			for (auto pit = pInfo->_details.begin(); pit != pInfo->_details.end(); pit++)
 			{
 				DetailInfo& dInfo = *pit;
 				dInfo._profit = dInfo._volume*(price - dInfo._price)*commInfo->getVolScale()*(dInfo._long ? 1 : -1);
 				dynprofit += dInfo._profit;
 			}
 
-			pInfo._dynprofit = dynprofit;
+			pInfo->_dynprofit = dynprofit;
 		}
 	});
 }

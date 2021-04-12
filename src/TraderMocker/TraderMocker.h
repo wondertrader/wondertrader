@@ -1,11 +1,11 @@
 #pragma once
 #include <atomic>
-#include <unordered_set>
 
 #include <boost/asio.hpp>
 #include <boost/array.hpp>
 #include <boost/asio/io_service.hpp>
 
+#include "../Includes/FasterDefs.h"
 #include "../Includes/ITraderApi.h"
 #include "../Share/StdUtils.hpp"
 #include "../Includes/WTSCollection.hpp"
@@ -69,7 +69,7 @@ private:
 	OrderCache*			_awaits;
 	StdUniqueMutex	_mtx_awaits;
 
-	std::unordered_set<std::string>	_codes;
+	faster_hashset<std::string>	_codes;
 
 	uint64_t		_max_tick_time;
 	uint64_t		_last_match_time;
@@ -94,7 +94,7 @@ private:
 		}
 	} PosItem;
 
-	std::unordered_map<std::string, PosItem> _positions;
+	faster_hashmap<std::string, PosItem> _positions;
 	std::string		_pos_file;
 
 private:

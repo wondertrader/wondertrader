@@ -206,6 +206,36 @@ void WtDataWriter::release()
 		_proc_cond.notify_all();
 		_proc_thrd->join();
 	}
+
+	for(auto& v : _rt_ticks_blocks)
+	{
+		delete v.second;
+	}
+
+	for (auto& v : _rt_trans_blocks)
+	{
+		delete v.second;
+	}
+
+	for (auto& v : _rt_orddtl_blocks)
+	{
+		delete v.second;
+	}
+
+	for (auto& v : _rt_ordque_blocks)
+	{
+		delete v.second;
+	}
+
+	for (auto& v : _rt_min1_blocks)
+	{
+		delete v.second;
+	}
+
+	for (auto& v : _rt_min5_blocks)
+	{
+		delete v.second;
+	}
 }
 
 /*
@@ -442,7 +472,7 @@ bool WtDataWriter::writeTick(WTSTickData* curTick, bool bNeedSlice /* = true */)
 
 			_sink->broadcastTick(curTick);
 
-			static std::unordered_map<std::string, uint64_t> _tcnt_map;
+			static faster_hashmap<std::string, uint64_t> _tcnt_map;
 			_tcnt_map[curTick->exchg()]++;
 			if (_tcnt_map[curTick->exchg()] % _log_group_size == 0)
 			{
@@ -493,7 +523,7 @@ bool WtDataWriter::writeOrderQueue(WTSOrdQueData* curOrdQue)
 			//TODO: 要广播的
 			//g_udpCaster.broadcast(curTrans);
 
-			static std::unordered_map<std::string, uint64_t> _tcnt_map;
+			static faster_hashmap<std::string, uint64_t> _tcnt_map;
 			_tcnt_map[curOrdQue->exchg()]++;
 			if (_tcnt_map[curOrdQue->exchg()] % _log_group_size == 0)
 			{
@@ -587,7 +617,7 @@ bool WtDataWriter::writeOrderDetail(WTSOrdDtlData* curOrdDtl)
 			//TODO: 要广播的
 			//g_udpCaster.broadcast(curTrans);
 
-			static std::unordered_map<std::string, uint64_t> _tcnt_map;
+			static faster_hashmap<std::string, uint64_t> _tcnt_map;
 			_tcnt_map[curOrdDtl->exchg()]++;
 			if (_tcnt_map[curOrdDtl->exchg()] % _log_group_size == 0)
 			{
@@ -640,7 +670,7 @@ bool WtDataWriter::writeTransaction(WTSTransData* curTrans)
 			//TODO: 要广播的
 			//g_udpCaster.broadcast(curTrans);
 
-			static std::unordered_map<std::string, uint64_t> _tcnt_map;
+			static faster_hashmap<std::string, uint64_t> _tcnt_map;
 			_tcnt_map[curTrans->exchg()]++;
 			if (_tcnt_map[curTrans->exchg()] % _log_group_size == 0)
 			{
@@ -697,7 +727,13 @@ WtDataWriter::OrdQueBlockPair* WtDataWriter::getOrdQueBlock(WTSContractInfo* ct,
 
 	OrdQueBlockPair* pBlock = NULL;
 	std::string key = StrUtil::printf("%s.%s", ct->getExchg(), ct->getCode());
-	pBlock = &_rt_ordque_blocks[key];
+	pBlock = _rt_ordque_blocks[key];
+	if(pBlock == NULL)
+	{
+		pBlock = new OrdQueBlockPair();
+		_rt_ordque_blocks[key] = pBlock;
+	}
+
 	if (pBlock->_block == NULL)
 	{
 		std::string path = StrUtil::printf("%srt/queue/%s/", _base_dir.c_str(), ct->getExchg());
@@ -787,7 +823,13 @@ WtDataWriter::OrdDtlBlockPair* WtDataWriter::getOrdDtlBlock(WTSContractInfo* ct,
 
 	OrdDtlBlockPair* pBlock = NULL;
 	std::string key = StrUtil::printf("%s.%s", ct->getExchg(), ct->getCode());
-	pBlock = &_rt_orddtl_blocks[key];
+	pBlock = _rt_orddtl_blocks[key];
+	if (pBlock == NULL)
+	{
+		pBlock = new OrdDtlBlockPair();
+		_rt_orddtl_blocks[key] = pBlock;
+	}
+
 	if (pBlock->_block == NULL)
 	{
 		std::string path = StrUtil::printf("%srt/orders/%s/", _base_dir.c_str(), ct->getExchg());
@@ -878,7 +920,13 @@ WtDataWriter::TransBlockPair* WtDataWriter::getTransBlock(WTSContractInfo* ct, u
 
 	TransBlockPair* pBlock = NULL;
 	std::string key = StrUtil::printf("%s.%s", ct->getExchg(), ct->getCode());
-	pBlock = &_rt_trans_blocks[key];
+	pBlock = _rt_trans_blocks[key];
+	if (pBlock == NULL)
+	{
+		pBlock = new TransBlockPair();
+		_rt_trans_blocks[key] = pBlock;
+	}
+
 	if (pBlock->_block == NULL)
 	{
 		std::string path = StrUtil::printf("%srt/trans/%s/", _base_dir.c_str(), ct->getExchg());
@@ -969,7 +1017,13 @@ WtDataWriter::TickBlockPair* WtDataWriter::getTickBlock(WTSContractInfo* ct, uin
 
 	TickBlockPair* pBlock = NULL;
 	std::string key = StrUtil::printf("%s.%s", ct->getExchg(), ct->getCode());
-	pBlock = &_rt_ticks_blocks[key];
+	pBlock = _rt_ticks_blocks[key];
+	if (pBlock == NULL)
+	{
+		pBlock = new TickBlockPair();
+		_rt_ticks_blocks[key] = pBlock;
+	}
+
 	if(pBlock->_block == NULL)
 	{
 		std::string path = StrUtil::printf("%srt/ticks/%s/", _base_dir.c_str(), ct->getExchg());
@@ -1256,7 +1310,13 @@ WtDataWriter::KBlockPair* WtDataWriter::getKlineBlock(WTSContractInfo* ct, WTSKl
 	if (cache_map == NULL)
 		return NULL;
 
-	pBlock = &(*cache_map)[key];
+	pBlock = (*cache_map)[key];
+	if (pBlock == NULL)
+	{
+		pBlock = new KBlockPair();
+		(*cache_map)[key] = pBlock;
+	}
+
 	if (pBlock->_block == NULL)
 	{
 		std::string path = StrUtil::printf("%srt/%s/%s/", _base_dir.c_str(), subdir.c_str(), ct->getExchg());
@@ -1503,7 +1563,7 @@ void WtDataWriter::check_loop()
 		for (auto it = _rt_ticks_blocks.begin(); it != _rt_ticks_blocks.end(); it++)
 		{
 			const std::string& key = it->first;
-			TickBlockPair* tBlk = &it->second;
+			TickBlockPair* tBlk = (TickBlockPair*)&it->second;
 			if (tBlk->_lasttime != 0 && (now - tBlk->_lasttime > expire_secs))
 			{
 				_sink->outputWriterLog(LL_INFO, "tick缓存 %s 映射超时,自动关闭", key.c_str());
@@ -1514,7 +1574,7 @@ void WtDataWriter::check_loop()
 		for (auto it = _rt_trans_blocks.begin(); it != _rt_trans_blocks.end(); it++)
 		{
 			const std::string& key = it->first;
-			TransBlockPair* tBlk = &it->second;
+			TransBlockPair* tBlk = (TransBlockPair*)&it->second;
 			if (tBlk->_lasttime != 0 && (now - tBlk->_lasttime > expire_secs))
 			{
 				_sink->outputWriterLog(LL_INFO, "trans缓存 %s 映射超时,自动关闭", key.c_str());
@@ -1525,7 +1585,7 @@ void WtDataWriter::check_loop()
 		for (auto it = _rt_orddtl_blocks.begin(); it != _rt_orddtl_blocks.end(); it++)
 		{
 			const std::string& key = it->first;
-			OrdDtlBlockPair* tBlk = &it->second;
+			OrdDtlBlockPair* tBlk = (OrdDtlBlockPair*)&it->second;
 			if (tBlk->_lasttime != 0 && (now - tBlk->_lasttime > expire_secs))
 			{
 				_sink->outputWriterLog(LL_INFO, "order缓存 %s 映射超时,自动关闭", key.c_str());
@@ -1533,10 +1593,10 @@ void WtDataWriter::check_loop()
 			}
 		}
 
-		for (auto it = _rt_ordque_blocks.begin(); it != _rt_ordque_blocks.end(); it++)
+		for (auto& v : _rt_ordque_blocks)
 		{
-			const std::string& key = it->first;
-			OrdQueBlockPair* tBlk = &it->second;
+			const std::string& key = v.first;
+			OrdQueBlockPair* tBlk = (OrdQueBlockPair*)&v.second;
 			if (tBlk->_lasttime != 0 && (now - tBlk->_lasttime > expire_secs))
 			{
 				_sink->outputWriterLog(LL_INFO, "queue缓存 %s 映射超时,自动关闭", key.c_str());
@@ -1547,7 +1607,7 @@ void WtDataWriter::check_loop()
 		for (auto it = _rt_min1_blocks.begin(); it != _rt_min1_blocks.end(); it++)
 		{
 			const std::string& key = it->first;
-			KBlockPair* kBlk = &it->second;
+			KBlockPair* kBlk = (KBlockPair*)&it->second;
 			if (kBlk->_lasttime != 0 && (now - kBlk->_lasttime > expire_secs))
 			{
 				_sink->outputWriterLog(LL_INFO, "1分钟缓存 %s 映射超时,自动关闭", key.c_str());
@@ -1558,7 +1618,7 @@ void WtDataWriter::check_loop()
 		for (auto it = _rt_min5_blocks.begin(); it != _rt_min5_blocks.end(); it++)
 		{
 			const std::string& key = it->first;
-			KBlockPair* kBlk = &it->second;
+			KBlockPair* kBlk = (KBlockPair*)&it->second;
 			if (kBlk->_lasttime != 0 && (now - kBlk->_lasttime > expire_secs))
 			{
 				_sink->outputWriterLog(LL_INFO, "5分钟缓存 %s 映射超时,自动关闭", key.c_str());
@@ -2077,7 +2137,7 @@ void WtDataWriter::proc_loop()
 				newCache->_version = BLOCK_VERSION_RAW;
 				strcpy(newCache->_blk_flag, BLK_FLAG);
 
-				std::unordered_map<std::string, uint32_t> newIdxMap;
+				faster_hashmap<std::string, uint32_t> newIdxMap;
 
 				uint32_t newIdx = 0;
 				for (const std::string& key : setCodes)

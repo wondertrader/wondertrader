@@ -94,7 +94,7 @@ CtaStrategyPtr CtaStrategyMgr::createStrategy(const char* factname, const char* 
 	if (it == _factories.end())
 		return CtaStrategyPtr();
 
-	StraFactInfo& fInfo = it->second;
+	StraFactInfo& fInfo = (StraFactInfo&)it->second;
 	CtaStrategyPtr ret(new CtaStraWrapper(fInfo._fact->createStrategy(unitname, id), fInfo._fact));
 	_strategies[id] = ret;
 	return ret;
@@ -113,7 +113,7 @@ CtaStrategyPtr CtaStrategyMgr::createStrategy(const char* name, const char* id)
 	if (it == _factories.end())
 		return CtaStrategyPtr();
 
-	StraFactInfo& fInfo = it->second;
+	StraFactInfo& fInfo = (StraFactInfo&)it->second;
 	CtaStrategyPtr ret(new CtaStraWrapper(fInfo._fact->createStrategy(unitname, id), fInfo._fact));
 	_strategies[id] = ret;
 	return ret;

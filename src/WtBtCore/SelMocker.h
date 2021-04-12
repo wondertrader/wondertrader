@@ -9,9 +9,9 @@
 */
 #pragma once
 #include <sstream>
-#include <unordered_map>
 #include "HisDataReplayer.h"
 
+#include "../Includes/FasterDefs.h"
 #include "../Includes/ISelStraCtx.h"
 #include "../Includes/SelStrategyDefs.h"
 
@@ -116,11 +116,11 @@ protected:
 		_KlineTag() :_closed(false){}
 
 	} KlineTag;
-	typedef std::unordered_map<std::string, KlineTag> KlineTags;
+	typedef faster_hashmap<std::string, KlineTag> KlineTags;
 	KlineTags	_kline_tags;
 
 	typedef std::pair<double, uint64_t>	PriceInfo;
-	typedef std::unordered_map<std::string, PriceInfo> PriceMap;
+	typedef faster_hashmap<std::string, PriceInfo> PriceMap;
 	PriceMap		_price_map;
 
 	typedef struct _DetailInfo
@@ -156,7 +156,7 @@ protected:
 			_dynprofit = 0;
 		}
 	} PosInfo;
-	typedef std::unordered_map<std::string, PosInfo> PositionMap;
+	typedef faster_hashmap<std::string, PosInfo> PositionMap;
 	PositionMap		_pos_map;
 
 	typedef struct _SigInfo
@@ -177,7 +177,7 @@ protected:
 			_gentime = 0;
 		}
 	}SigInfo;
-	typedef std::unordered_map<std::string, SigInfo>	SignalMap;
+	typedef faster_hashmap<std::string, SigInfo>	SignalMap;
 	SignalMap		_sig_map;
 
 	std::stringstream	_trade_logs;
@@ -189,7 +189,7 @@ protected:
 	bool			_is_in_schedule;	//是否在自动调度中
 
 	//用户数据
-	typedef std::unordered_map<std::string, std::string> StringHashMap;
+	typedef faster_hashmap<std::string, std::string> StringHashMap;
 	StringHashMap	_user_datas;
 	bool			_ud_modified;
 

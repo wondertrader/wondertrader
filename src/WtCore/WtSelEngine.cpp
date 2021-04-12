@@ -77,7 +77,7 @@ void WtSelEngine::on_bar(const char* stdCode, const char* period, uint32_t times
 		auto cit = _ctx_map.find(sid);
 		if (cit != _ctx_map.end())
 		{
-			SelContextPtr& ctx = cit->second;
+			SelContextPtr& ctx = (SelContextPtr&)cit->second;
 			ctx->on_bar(stdCode, period, times, newBar);
 		}
 	}
@@ -114,7 +114,7 @@ void WtSelEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 			auto cit = _ctx_map.find(sid);
 			if (cit != _ctx_map.end() && curTick->volume())
 			{
-				SelContextPtr& ctx = cit->second;
+				SelContextPtr& ctx = (SelContextPtr&)cit->second;
 				ctx->on_tick(stdCode, curTick);
 			}
 		}
@@ -132,7 +132,7 @@ void WtSelEngine::on_minute_end(uint32_t curDate, uint32_t curTime)
 
 	for (auto& v : _tasks)
 	{
-		TaskInfoPtr& tInfo = v.second;
+		TaskInfoPtr& tInfo = (TaskInfoPtr&)v.second;
 		if (tInfo->_time != nextTime)
 			continue;
 

@@ -9,15 +9,15 @@ USING_NS_OTP;
 
 //////////////////////////////////////////////////////////////////////////
 #pragma region "WtExecuterMgr"
-void WtExecuterMgr::set_positions(std::unordered_map<std::string, double> target_pos)
+void WtExecuterMgr::set_positions(faster_hashmap<std::string, double> target_pos)
 {
 	if(_filter_mgr != NULL)
 	{
-		std::unordered_map<std::string, double> des_port;
+		faster_hashmap<std::string, double> des_port;
 		for(auto& m : target_pos)
 		{
 			const std::string& stdCode = m.first;
-			double& desVol = m.second;
+			double& desVol = (double&)m.second;
 			double oldVol = desVol;
 
 			bool isFltd = _filter_mgr->is_filtered_by_code(stdCode.c_str(), desVol);

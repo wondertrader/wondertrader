@@ -8,14 +8,13 @@
  * \brief 基础数据管理器实现
  */
 #pragma once
-#include <unordered_set>
-#include <unordered_map>
-
 #include "../Includes/IBaseDataMgr.h"
 #include "../Includes/WTSCollection.hpp"
 
+#include "../Includes/FasterDefs.h"
+
 USING_NS_OTP;
-typedef std::unordered_map<std::string, TradingDayTpl>	TradingDayTplMap;
+typedef faster_hashmap<std::string, TradingDayTpl>	TradingDayTplMap;
 
 typedef WTSHashMap<std::string>		WTSContractList;
 typedef WTSHashMap<std::string>		WTSExchgContract;
@@ -23,8 +22,8 @@ typedef WTSHashMap<std::string>		WTSExchgContract;
 typedef WTSHashMap<std::string>		WTSSessionMap;
 typedef WTSHashMap<std::string>		WTSCommodityMap;
 
-typedef std::unordered_set<std::string> CodeSet;
-typedef std::unordered_map<std::string, CodeSet> SessionCodeMap;
+typedef faster_hashset<std::string> CodeSet;
+typedef faster_hashmap<std::string, CodeSet> SessionCodeMap;
 
 
 class WTSBaseDataMgr : public IBaseDataMgr

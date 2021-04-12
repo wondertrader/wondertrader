@@ -473,7 +473,7 @@ void SelStraBaseCtx::update_dyn_profit(const char* stdCode, double price)
 	auto it = _pos_map.find(stdCode);
 	if (it != _pos_map.end())
 	{
-		PosInfo& pInfo = it->second;
+		PosInfo& pInfo = (PosInfo&)it->second;
 		if (pInfo._volume == 0)
 		{
 			pInfo._dynprofit = 0;
@@ -555,7 +555,7 @@ bool SelStraBaseCtx::on_schedule(uint32_t curDate, uint32_t curTime, uint32_t fi
 	on_strategy_schedule(curDate, fireTime);
 	stra_log_text("Strategy scheduled @ %u", curTime);
 
-	std::unordered_set<std::string> to_clear;
+	faster_hashset<std::string> to_clear;
 	for (auto& v : _pos_map)
 	{
 		const PosInfo& pInfo = v.second;
@@ -596,7 +596,7 @@ void SelStraBaseCtx::on_session_begin(uint32_t uTDate)
 
 void SelStraBaseCtx::enum_position(FuncEnumSelPositionCallBack cb)
 {
-	std::unordered_map<std::string, double> desPos;
+	faster_hashmap<std::string, double> desPos;
 	for (auto it : _pos_map)
 	{
 		const char* stdCode = it.first.c_str();

@@ -216,7 +216,7 @@ void WtLocalExecuter::on_position_changed(const char* stdCode, double targetPos)
 	unit->self()->set_position(stdCode, targetPos);
 }
 
-void WtLocalExecuter::set_position(const std::unordered_map<std::string, double>& targets)
+void WtLocalExecuter::set_position(const faster_hashmap<std::string, double>& targets)
 {
 	for (auto it = targets.begin(); it != targets.end(); it++)
 	{
@@ -256,6 +256,7 @@ void WtLocalExecuter::set_position(const std::unordered_map<std::string, double>
 	for (auto it = _target_pos.begin(); it != _target_pos.end(); it++)
 	{
 		const char* code = it->first.c_str();
+		double& pos = (double&)it->second;
 		auto tit = targets.find(code);
 		if(tit != targets.end())
 			continue;
@@ -276,7 +277,7 @@ void WtLocalExecuter::set_position(const std::unordered_map<std::string, double>
 			unit->self()->set_position(code, 0);
 		}
 
-		it->second = 0;
+		pos = 0;
 	}
 }
 
@@ -367,7 +368,7 @@ void WtLocalExecuter::on_channel_ready()
 	_channel_ready = true;
 	for (auto it = _unit_map.begin(); it != _unit_map.end(); it++)
 	{
-		ExecuteUnitPtr& unitPtr = it->second;
+		ExecuteUnitPtr& unitPtr = (ExecuteUnitPtr&)it->second;
 		if (unitPtr)
 		{
 			//unitPtr->self()->on_channel_ready();
@@ -390,7 +391,7 @@ void WtLocalExecuter::on_channel_lost()
 	_channel_ready = false;
 	for (auto it = _unit_map.begin(); it != _unit_map.end(); it++)
 	{
-		ExecuteUnitPtr& unitPtr = it->second;
+		ExecuteUnitPtr& unitPtr = (ExecuteUnitPtr&)it->second;
 		if (unitPtr)
 		{
 			//unitPtr->self()->on_channel_lost();
@@ -504,7 +505,7 @@ ExecuteUnitPtr WtExecuterFactory::createExeUnit(const char* factname, const char
 	if (it == _factories.end())
 		return ExecuteUnitPtr();
 
-	ExeFactInfo& fInfo = it->second;
+	ExeFactInfo& fInfo = (ExeFactInfo&)it->second;
 	ExecuteUnit* unit = fInfo._fact->createExeUnit(unitname);
 	if(unit == NULL)
 	{
@@ -527,7 +528,7 @@ ExecuteUnitPtr WtExecuterFactory::createExeUnit(const char* name)
 	if (it == _factories.end())
 		return ExecuteUnitPtr();
 
-	ExeFactInfo& fInfo = it->second;
+	ExeFactInfo& fInfo = (ExeFactInfo&)it->second;
 	ExecuteUnit* unit = fInfo._fact->createExeUnit(unitname);
 	if (unit == NULL)
 	{

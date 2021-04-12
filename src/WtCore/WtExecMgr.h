@@ -15,7 +15,7 @@ public:
 		_executers.emplace_back(executer);
 	}
 
-	void	set_positions(std::unordered_map<std::string, double> target_pos);
+	void	set_positions(faster_hashmap<std::string, double> target_pos);
 	void	handle_pos_change(const char* stdCode, double targetPos);
 	void	handle_tick(const char* stdCode, WTSTickData* curTick);
 

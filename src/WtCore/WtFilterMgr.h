@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-#include <unordered_map>
+#include "../Includes/FasterDefs.h"
 #include "../Includes/WTSMarcos.h"
 
 NS_OTP_BEGIN
@@ -55,7 +55,7 @@ private:
 		double			_target;	//目标仓位, 只有当_action为FA_Redirect才生效
 	} FilterItem;
 
-	typedef std::unordered_map<std::string, FilterItem>	FilterMap;
+	typedef faster_hashmap<std::string, FilterItem>	FilterMap;
 	FilterMap		_stra_filters;	//策略过滤器
 
 	FilterMap		_exec_filters;	//代码过滤器, 包括合约代码和品种代码, 同一时间只有一个生效, 合约代码优先级高于品种代码

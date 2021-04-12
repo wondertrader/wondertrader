@@ -1,6 +1,5 @@
 #pragma once
 #include "IExecCommand.h"
-#include <unordered_map>
 
 NS_OTP_BEGIN
 class WTSVariant;
@@ -24,7 +23,7 @@ public:
 public:
 	//////////////////////////////////////////////////////////////////////////
 	//IExecCommand
-	virtual void set_position(const std::unordered_map<std::string, double>& targets) override;
+	virtual void set_position(const faster_hashmap<std::string, double>& targets) override;
 
 
 	virtual void on_position_changed(const char* stdCode, double targetPos) override;
@@ -41,7 +40,7 @@ private:
 
 	uint32_t			_scale;
 
-	std::unordered_map<std::string, double> _target_pos;
+	faster_hashmap<std::string, double> _target_pos;
 };
 NS_OTP_END
 

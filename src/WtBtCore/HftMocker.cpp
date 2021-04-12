@@ -352,7 +352,7 @@ double HftMocker::stra_get_undone(const char* stdCode)
 	double ret = 0;
 	for (auto it = _orders.begin(); it != _orders.end(); it++)
 	{
-		OrderInfo& ordInfo = it->second;
+		const OrderInfo& ordInfo = it->second;
 		if (strcmp(ordInfo._code, stdCode) == 0)
 		{
 			ret += ordInfo._left * ordInfo._isBuy ? 1 : -1;
@@ -370,7 +370,7 @@ bool HftMocker::stra_cancel(uint32_t localid)
 			return;
 
 		StdLocker<StdRecurMutex> lock(_mtx_ords);
-		OrderInfo& ordInfo = it->second;
+		OrderInfo& ordInfo = (OrderInfo&)it->second;
 		ordInfo._left = 0;
 
 		on_order(localid, ordInfo._code, ordInfo._isBuy, ordInfo._total, ordInfo._left, ordInfo._price, true, ordInfo._usertag);
@@ -386,7 +386,7 @@ OrderIDs HftMocker::stra_cancel(const char* stdCode, bool isBuy, double qty /* =
 	uint32_t cnt = 0;
 	for (auto it = _orders.begin(); it != _orders.end(); it++)
 	{
-		OrderInfo& ordInfo = it->second;
+		const OrderInfo& ordInfo = it->second;
 		if(ordInfo._isBuy == isBuy && strcmp(ordInfo._code, stdCode) == 0)
 		{
 			double left = ordInfo._left;
@@ -471,7 +471,7 @@ void HftMocker::update_dyn_profit(const char* stdCode, WTSTickData* newTick)
 	auto it = _pos_map.find(stdCode);
 	if (it != _pos_map.end())
 	{
-		PosInfo& pInfo = it->second;
+		PosInfo& pInfo = (PosInfo&)it->second;
 		if (pInfo._volume == 0)
 		{
 			pInfo._dynprofit = 0;
@@ -508,7 +508,7 @@ bool HftMocker::procOrder(uint32_t localid)
 		return false;
 
 	StdLocker<StdRecurMutex> lock(_mtx_ords);
-	OrderInfo& ordInfo = it->second;
+	OrderInfo& ordInfo = (OrderInfo&)it->second;
 
 	//第一步,如果在撤单概率中,则执行撤单
 	if(_error_rate>0 && genRand(10000)<=_error_rate)

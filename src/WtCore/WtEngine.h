@@ -11,13 +11,12 @@
 #include <queue>
 #include <functional>
 #include <stdint.h>
-#include <unordered_set>
-#include <unordered_map>
 
 #include "ParserAdapter.h"
 #include "WtFilterMgr.h"
 
-#include "../Includes/WTSMarcos.h"
+
+#include "../Includes/FasterDefs.h"
 #include "../Includes/RiskMonDefs.h"
 
 #include "../Share/StdUtils.hpp"
@@ -182,12 +181,12 @@ protected:
 	WtDataManager*	_data_mgr;		//数据管理器
 	IEngineEvtListener*	_evt_listener;
 
-	typedef std::unordered_set<uint32_t> SIDSet;
-	typedef std::unordered_map<std::string, SIDSet>	StraSubMap;
+	typedef faster_hashset<uint32_t> SIDSet;
+	typedef faster_hashmap<std::string, SIDSet>	StraSubMap;
 	StraSubMap		_tick_sub_map;	//tick数据订阅表
 	StraSubMap		_bar_sub_map;	//K线数据订阅表
 
-	std::unordered_set<std::string>		_ticksubed_raw_codes;	//tick订阅表（真实代码模式）
+	faster_hashset<std::string>		_ticksubed_raw_codes;	//tick订阅表（真实代码模式）
 	
 
 	//////////////////////////////////////////////////////////////////////////
@@ -203,7 +202,7 @@ protected:
 			_gentime = 0;
 		}
 	}SigInfo;
-	typedef std::unordered_map<std::string, SigInfo>	SignalMap;
+	typedef faster_hashmap<std::string, SigInfo>	SignalMap;
 	SignalMap		_sig_map;
 
 	//////////////////////////////////////////////////////////////////////////
@@ -224,7 +223,7 @@ protected:
 			memset(this, 0, sizeof(_FeeItem));
 		}
 	} FeeItem;
-	typedef std::unordered_map<std::string, FeeItem>	FeeMap;
+	typedef faster_hashmap<std::string, FeeItem>	FeeMap;
 	FeeMap		_fee_map;
 	
 
@@ -262,12 +261,12 @@ protected:
 			_dynprofit = 0;
 		}
 	} PosInfo;
-	typedef std::unordered_map<std::string, PosInfo> PositionMap;
+	typedef faster_hashmap<std::string, PosInfo> PositionMap;
 	PositionMap		_pos_map;
 
 	//////////////////////////////////////////////////////////////////////////
 	//
-	typedef std::unordered_map<std::string, double> PriceMap;
+	typedef faster_hashmap<std::string, double> PriceMap;
 	PriceMap		_price_map;
 
 	//后台任务线程, 把风控和资金, 持仓更新都放到这个线程里去

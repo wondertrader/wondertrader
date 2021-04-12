@@ -8,9 +8,6 @@
  * \brief 
  */
 #pragma once
-#include <unordered_map>
-#include <unordered_set>
-
 #include <boost/core/noncopyable.hpp>
 
 #include "ITrdNotifySink.h"
@@ -74,7 +71,7 @@ private:
 		FuncCreateExeFact	_creator;
 		FuncDeleteExeFact	_remover;
 	} ExeFactInfo;
-	typedef std::unordered_map<std::string, ExeFactInfo> ExeFactMap;
+	typedef faster_hashmap<std::string, ExeFactInfo> ExeFactMap;
 
 	ExeFactMap	_factories;
 };
@@ -84,7 +81,7 @@ class WtLocalExecuter : public ExecuteContext,
 		public ITrdNotifySink, public IExecCommand
 {
 public:
-	typedef std::unordered_map<std::string, ExecuteUnitPtr> ExecuteUnitMap;
+	typedef faster_hashmap<std::string, ExecuteUnitPtr> ExecuteUnitMap;
 
 public:
 	WtLocalExecuter(WtExecuterFactory* factory, const char* name, IDataManager* dataMgr);
@@ -134,7 +131,7 @@ public:
 	/*
 	 *	设置目标仓位
 	 */
-	virtual void set_position(const std::unordered_map<std::string, double>& targets) override;
+	virtual void set_position(const faster_hashmap<std::string, double>& targets) override;
 
 
 	/*
@@ -189,7 +186,7 @@ private:
 	double			_scale;
 	bool			_channel_ready;
 
-	std::unordered_map<std::string, double> _target_pos;
+	faster_hashmap<std::string, double> _target_pos;
 
 	typedef std::shared_ptr<boost::threadpool::pool> ThreadPoolPtr;
 	ThreadPoolPtr		_pool;

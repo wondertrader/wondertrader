@@ -1,7 +1,6 @@
 #pragma once
-#include "../Includes/WTSMarcos.h"
+#include "../Includes/FasterDefs.h"
 #include <stdint.h>
-#include <unordered_map>
 
 NS_OTP_BEGIN
 class WTSCommodityInfo;
@@ -26,7 +25,7 @@ public:
 	/*
 	 *	设置目标仓位
 	 */
-	virtual void set_position(const std::unordered_map<std::string, double>& targets) {}
+	virtual void set_position(const faster_hashmap<std::string, double>& targets) {}
 
 	/*
 	 *	合约仓位变动

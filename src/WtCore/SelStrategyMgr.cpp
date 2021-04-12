@@ -96,7 +96,7 @@ SelStrategyPtr SelStrategyMgr::createStrategy(const char* factname, const char* 
 	if (it == _factories.end())
 		return SelStrategyPtr();
 
-	StraFactInfo& fInfo = it->second;
+	StraFactInfo& fInfo = (StraFactInfo&)it->second;
 	SelStrategyPtr ret(new SelStraWrapper(fInfo._fact->createStrategy(unitname, id), fInfo._fact));
 	_strategies[id] = ret;
 	return ret;
@@ -115,7 +115,7 @@ SelStrategyPtr SelStrategyMgr::createStrategy(const char* name, const char* id)
 	if (it == _factories.end())
 		return SelStrategyPtr();
 
-	StraFactInfo& fInfo = it->second;
+	StraFactInfo& fInfo = (StraFactInfo&)it->second;
 	SelStrategyPtr ret(new SelStraWrapper(fInfo._fact->createStrategy(unitname, id), fInfo._fact));
 	_strategies[id] = ret;
 	return ret;

@@ -581,9 +581,9 @@ uint32_t WTSBaseDataMgr::getTradingDate(const char* pid, uint32_t uOffDate /* = 
 		return curDate;
 	}
 
-	TradingDayTpl& tpl = it->second;
-	if (tpl._cur_tdate != 0 && uOffDate == 0)
-		return tpl._cur_tdate;
+	TradingDayTpl* tpl = (TradingDayTpl*)&it->second;
+	if (tpl->_cur_tdate != 0 && uOffDate == 0)
+		return tpl->_cur_tdate;
 
 	if (uOffDate == 0)
 		uOffDate = curDate;
@@ -593,8 +593,8 @@ uint32_t WTSBaseDataMgr::getTradingDate(const char* pid, uint32_t uOffDate /* = 
 	if (weekday == 6 || weekday == 0)
 	{
 		//如果没有偏移,且在周末,则直接读取下一个交易日
-		tpl._cur_tdate = getNextTDate(tplID, uOffDate, 1, true);
-		uOffDate = tpl._cur_tdate;
+		tpl->_cur_tdate = getNextTDate(tplID, uOffDate, 1, true);
+		uOffDate = tpl->_cur_tdate;
 	}
 
 	//其他情况,交易日=自然日
@@ -676,8 +676,8 @@ void WTSBaseDataMgr::setTradingDate(const char* pid, uint32_t uDate, bool isTpl 
 	if (it == m_mapTradingDay.end())
 		return;
 
-	TradingDayTpl& tpl = it->second;
-	tpl._cur_tdate = uDate;
+	TradingDayTpl* tpl = (TradingDayTpl*)&it->second;
+	tpl->_cur_tdate = uDate;
 }
 
 
@@ -687,7 +687,7 @@ CodeSet* WTSBaseDataMgr::getSessionComms(const char* sid)
 	if (it == m_mapSessionCode.end())
 		return NULL;
 
-	return &it->second;
+	return (CodeSet*)&it->second;
 }
 
 const char* WTSBaseDataMgr::getTplIDByPID(const char* pid)

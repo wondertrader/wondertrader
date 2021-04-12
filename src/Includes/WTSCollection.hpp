@@ -13,7 +13,7 @@
 #include <map>
 #include <functional>
 #include <algorithm>
-#include <unordered_map>
+#include "../FasterLibs/tsl/robin_map.h"
 
 #include <deque>
 
@@ -529,7 +529,8 @@ public:
 	/*
 	 *	容器迭代器的定义
 	 */
-	typedef std::unordered_map<T, WTSObject*>	_MyType;
+	//typedef std::unordered_map<T, WTSObject*>	_MyType;
+	typedef tsl::robin_map<T, WTSObject*>	_MyType;
 	typedef typename _MyType::iterator			Iterator;
 	typedef typename _MyType::const_iterator	ConstIterator;
 
@@ -691,7 +692,8 @@ protected:
 	WTSHashMap(){}
 	virtual ~WTSHashMap(){}
 
-	std::unordered_map<T, WTSObject*>	_map;
+	//std::unordered_map<T, WTSObject*>	_map;
+	tsl::robin_map<T, WTSObject*>	_map;
 };
 
 //////////////////////////////////////////////////////////////////////////

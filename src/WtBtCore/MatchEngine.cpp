@@ -30,7 +30,7 @@ void MatchEngine::fire_orders(const char* stdCode, OrderIDs& to_erase)
 	for (auto& v : _orders)
 	{
 		uint32_t localid = v.first;
-		OrderInfo& ordInfo = v.second;
+		OrderInfo& ordInfo = (OrderInfo&)v.second;
 
 		if (ordInfo._state == 0)	//需要激活
 		{
@@ -49,7 +49,7 @@ void MatchEngine::match_orders(WTSTickData* curTick, OrderIDs& to_erase)
 	for (auto& v : _orders)
 	{
 		uint32_t localid = v.first;
-		OrderInfo& ordInfo = v.second;
+		OrderInfo& ordInfo = (OrderInfo&)v.second;
 
 		if (ordInfo._state == 9)//要撤单
 		{
@@ -294,7 +294,7 @@ OrderIDs MatchEngine::cancel(const char* stdCode, bool isBuy, double qty, FuncCa
 	OrderIDs ret;
 	for (auto& v : _orders)
 	{
-		OrderInfo& ordInfo = v.second;
+		OrderInfo& ordInfo = (OrderInfo&)v.second;
 		if (ordInfo._state != 1)
 			continue;
 
@@ -325,7 +325,7 @@ double MatchEngine::cancel(uint32_t localid)
 	if (it == _orders.end())
 		return 0.0;
 
-	OrderInfo& ordInfo = it->second;
+	OrderInfo& ordInfo = (OrderInfo&)it->second;
 	ordInfo._state = 9;
 
 	return ordInfo._left*(ordInfo._buy ? 1 : -1);

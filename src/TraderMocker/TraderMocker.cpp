@@ -225,7 +225,7 @@ int TraderMocker::orderInsert(WTSEntrust* entrust)
 				break;
 			}
 
-			PosItem& pItem = it->second;
+			PosItem& pItem = (PosItem&)it->second;
 			bool isLong = entrust->getDirection() == WDT_LONG;
 
 			double validQty = isLong ? (pItem._long._volume - pItem._long._frozen) : (pItem._short._volume - pItem._short._frozen);
