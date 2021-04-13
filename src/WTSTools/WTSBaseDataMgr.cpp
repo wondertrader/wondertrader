@@ -91,7 +91,7 @@ WTSContractInfo* WTSBaseDataMgr::getContract(const char* code, const char* exchg
 	if(it != m_mapExchgContract->end())
 	{
 		WTSContractList* contractList = (WTSContractList*)it->second;
-		WTSContractList::Iterator it = contractList->find(realCode);
+		auto it = contractList->find(realCode);
 		if(it != contractList->end())
 		{
 			return (WTSContractInfo*)it->second;
@@ -103,7 +103,7 @@ WTSContractInfo* WTSBaseDataMgr::getContract(const char* code, const char* exchg
 		for(; it != m_mapExchgContract->end(); it++)
 		{
 			WTSContractList* contractList = (WTSContractList*)it->second;
-			WTSContractList::Iterator it = contractList->find(realCode);
+			auto it = contractList->find(realCode);
 			if (it != contractList->end())
 			{
 				return (WTSContractInfo*)it->second;
