@@ -16,6 +16,9 @@
     <Filter Include="zstdlib">
       <UniqueIdentifier>{363bbb4a-b6cb-414d-b708-002e75ed7d56}</UniqueIdentifier>
     </Filter>
+    <Filter Include="StackTracer">
+      <UniqueIdentifier>{53342f53-e170-4f47-943d-468661890fec}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="zstdlib\bitstream.h">
@@ -114,6 +117,15 @@
     <ClInclude Include="zstdlib\zbuff.h">
       <Filter>zstdlib</Filter>
     </ClInclude>
+    <ClInclude Include="StackTracer\StackTracer.h">
+      <Filter>StackTracer</Filter>
+    </ClInclude>
+    <ClInclude Include="StackTracer\StackWalker.h">
+      <Filter>StackTracer</Filter>
+    </ClInclude>
+    <ClInclude Include="SignalHook.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="zstdlib\cover.c">
@@ -208,6 +220,12 @@
     </ClCompile>
     <ClCompile Include="zstdlib\zbuff_decompress.c">
       <Filter>zstdlib</Filter>
+    </ClCompile>
+    <ClCompile Include="StackTracer\StackTracer.cpp">
+      <Filter>StackTracer</Filter>
+    </ClCompile>
+    <ClCompile Include="StackTracer\StackWalker.cpp">
+      <Filter>StackTracer</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
