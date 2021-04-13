@@ -26,6 +26,8 @@
 #include "../WTSTools/WTSLogger.h"
 #include "../WTSTools/WTSCmpHelper.hpp"
 
+#include "../WTSUtils/SignalHook.hpp"
+
 #ifdef _WIN32
 #define my_stricmp _stricmp
 #else
@@ -65,6 +67,9 @@ WtBtRunner::WtBtRunner()
 
 	, _cb_hft_sessevt(NULL)
 {
+	install_signal_hooks([](const char* message) {
+		WTSLogger::error(message);
+	});
 }
 
 
@@ -306,7 +311,16 @@ void WtBtRunner::config(const char* cfgFile, bool isFile /* = true */)
 
 void WtBtRunner::run()
 {
-	_replayer.run();
+	try
+	{
+		_replayer.run();
+	}
+	catch(...)
+	{
+		print_stack_trace([](const char* message) {
+			WTSLogger::error(message);
+		});
+	}
 }
 
 void WtBtRunner::release()

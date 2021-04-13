@@ -19,6 +19,8 @@ USING_NS_OTP;
 class WtExecRunner : public IParserStub, public IExecuterStub
 {
 public:
+	WtExecRunner();
+
 	/*
 	 *	≥ı ºªØ
 	 */

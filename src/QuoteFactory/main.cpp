@@ -14,6 +14,8 @@
 #include "../WTSTools/WTSLogger.h"
 #include "../Share/StrUtil.hpp"
 
+#include "../WTSUtils/SignalHook.hpp"
+
 #include <boost/asio.hpp>
 
 WTSBaseDataMgr	g_baseDataMgr;
@@ -207,6 +209,10 @@ int main()
 
 	CMiniDumper::Enable("QuoteFactory.exe", true);
 #endif
+
+	install_signal_hooks([](const char* message) {
+		WTSLogger::error(message);
+	});
 
 	initialize();
 

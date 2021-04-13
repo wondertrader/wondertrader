@@ -10,7 +10,16 @@
 #include "../Share/StdUtils.hpp"
 #include "../Share/TimeUtils.hpp"
 
+#include "../WTSUtils/SignalHook.hpp"
+
 extern const char* getBinDir();
+
+WtExecRunner::WtExecRunner()
+{
+	install_signal_hooks([](const char* message) {
+		WTSLogger::error(message);
+	});
+}
 
 bool WtExecRunner::init(const char* logCfg /* = "logcfgexec.json" */, bool isFile /* = true */)
 {
@@ -91,8 +100,17 @@ bool WtExecRunner::config(const char* cfgFile, bool isFile /* = true */)
 
 void WtExecRunner::run(bool bAsync /* = false */)
 {
-	_parsers.run();
-	_traders.run();
+	try
+	{
+		_parsers.run();
+		_traders.run();
+	}
+	catch (...)
+	{
+		print_stack_trace([](const char* message) {
+			WTSLogger::error(message);
+		});
+	}
 }
 
 bool WtExecRunner::initParsers()

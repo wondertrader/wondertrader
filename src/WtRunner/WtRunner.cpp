@@ -19,6 +19,8 @@
 #include "../Share/StrUtil.hpp"
 #include "../Share/JsonToVariant.hpp"
 
+#include "../WTSUtils/SignalHook.hpp"
+
 #ifdef _WIN32
 #define my_stricmp _stricmp
 #else
@@ -45,6 +47,9 @@ WtRunner::WtRunner()
 	, _is_hft(false)
 	, _is_sel(false)
 {
+	install_signal_hooks([](const char* message) {
+		WTSLogger::error(message);
+	});
 }
 
 
@@ -367,8 +372,17 @@ bool WtRunner::initTraders()
 
 void WtRunner::run(bool bAsync /* = false */)
 {
-	_parsers.run();
-	_traders.run();
+	try
+	{
+		_parsers.run();
+		_traders.run();
 
-	_engine->run(bAsync);
+		_engine->run(bAsync);
+	}
+	catch (...)
+	{
+		print_stack_trace([](const char* message) {
+			WTSLogger::error(message);
+		});
+	}
 }

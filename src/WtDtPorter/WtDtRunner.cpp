@@ -16,10 +16,14 @@
 #include "../Share/JsonToVariant.hpp"
 
 #include "../WTSTools/WTSLogger.h"
+#include "../WTSUtils/SignalHook.hpp"
 
 
 WtDtRunner::WtDtRunner()
 {
+	install_signal_hooks([](const char* message) {
+		WTSLogger::error(message);
+	});
 }
 
 
