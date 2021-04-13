@@ -568,7 +568,7 @@ public:
 	 */
 	WTSObject* grab(const T &_key)
 	{
-		Iterator it = _map.find(_key);
+		auto it = _map.find(_key);
 		if(it == _map.end())
 			return NULL;
 
