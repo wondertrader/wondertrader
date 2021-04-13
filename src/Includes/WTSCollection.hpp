@@ -604,7 +604,7 @@ public:
 	 */
 	void remove(const T &_key)
 	{
-		Iterator it = _map.find(_key);
+		auto it = _map.find(_key);
 		if(it != _map.end())
 		{
 			it->second->release();

@@ -28,8 +28,8 @@ ENDIF ()
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/libs)
 
 #7. 添加源码
-file(GLOB SRCS "*.cpp" "./zstdlib/*.c" "./pugixml/*.cpp")
-file(GLOB HDRS "*.h" "./zstdlib/*.h" "./pugixml/*.hpp")
+file(GLOB SRCS "*.cpp" "./zstdlib/*.c" "./StackTracer/*.cpp")
+file(GLOB HDRS "*.h" "./zstdlib/*.h" "./StackTracer/*.hpp")
 
 #8. 编译成动态库，并生成库文件
 add_library(WTSUtils STATIC ${SRCS} ${HDRS})
