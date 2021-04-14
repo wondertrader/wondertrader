@@ -84,14 +84,12 @@ WTSCommodityInfo* WTSBaseDataMgr::getCommodity(WTSContractInfo* ct)
 
 WTSContractInfo* WTSBaseDataMgr::getContract(const char* code, const char* exchg)
 {
-	std::string realCode = code;	
-
 	//如果直接找到对应的市场代码,则直接
 	auto it = m_mapExchgContract->find(exchg);
 	if(it != m_mapExchgContract->end())
 	{
 		WTSContractList* contractList = (WTSContractList*)it->second;
-		auto it = contractList->find(realCode);
+		auto it = contractList->find(code);
 		if(it != contractList->end())
 		{
 			return (WTSContractInfo*)it->second;
@@ -103,7 +101,7 @@ WTSContractInfo* WTSBaseDataMgr::getContract(const char* code, const char* exchg
 		for(; it != m_mapExchgContract->end(); it++)
 		{
 			WTSContractList* contractList = (WTSContractList*)it->second;
-			auto it = contractList->find(realCode);
+			auto it = contractList->find(code);
 			if (it != contractList->end())
 			{
 				return (WTSContractInfo*)it->second;

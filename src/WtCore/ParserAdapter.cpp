@@ -235,7 +235,7 @@ void ParserAdapter::handleQuote(WTSTickData *quote, bool bNeedSlice)
 	if (commInfo->getCategoty() == CC_Future)
 	{
 		stdCode = CodeHelper::bscFutCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
-		std::string hotCode = _hot_mgr->getHotCode(quote->exchg(), quote->code(), quote->tradingdate());
+		std::string hotCode = _hot_mgr->getHotCode(quote->exchg(), quote->code(), 0);
 		isHot = !hotCode.empty();
 	}
 	else if(commInfo->getCategoty() == CC_Stock)

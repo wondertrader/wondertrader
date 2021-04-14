@@ -9,6 +9,7 @@
  */
 #pragma once
 #include "../Includes/IHotMgr.h"
+#include "../Includes/FasterDefs.h"
 #include "../Includes/WTSCollection.hpp"
 #include <string>
 
@@ -54,6 +55,7 @@ public:
 
 private:
 	WTSExchgHotMap*	m_pExchgHotMap;
+	faster_hashmap<std::string, std::string>	m_curHotCodes;
 	bool			m_bInitialized;
 };
 

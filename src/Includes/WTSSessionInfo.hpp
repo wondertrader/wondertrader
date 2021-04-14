@@ -297,7 +297,7 @@ public:
 		return INVALID_UINT32;
 	}
 
-	uint32_t getOpenTime(bool bOffseted = false) const
+	inline uint32_t getOpenTime(bool bOffseted = false) const
 	{
 		if(m_tradingTimes.empty())
 			return 0;
@@ -308,7 +308,7 @@ public:
 			return originalTime(m_tradingTimes[0].first);
 	}
 
-	uint32_t getAuctionStartTime(bool bOffseted = false) const
+	inline uint32_t getAuctionStartTime(bool bOffseted = false) const
 	{
 		if(m_auctionTime.first == 0 && m_auctionTime.second == 0)
 			return -1;
@@ -319,7 +319,7 @@ public:
 			return originalTime(m_auctionTime.first);
 	}
 
-	uint32_t getCloseTime(bool bOffseted = false) const
+	inline uint32_t getCloseTime(bool bOffseted = false) const
 	{
 		if(m_tradingTimes.empty())
 			return 0;
@@ -330,7 +330,7 @@ public:
 			return originalTime(m_tradingTimes[m_tradingTimes.size()-1].second);
 	}
 
-	uint32_t getTradingSeconds()
+	inline uint32_t getTradingSeconds()
 	{
 		uint32_t count = 0;
 		TradingTimes::iterator it = m_tradingTimes.begin();
@@ -347,7 +347,7 @@ public:
 		return count*60;
 	}
 
-	uint32_t getTradingMins()
+	inline uint32_t getTradingMins()
 	{
 		uint32_t count = 0;
 		TradingTimes::iterator it = m_tradingTimes.begin();
@@ -377,7 +377,7 @@ public:
 		return true;
 	}
 
-	bool	isLastOfSection(uint32_t uTime)
+	inline bool	isLastOfSection(uint32_t uTime)
 	{
 		uint32_t offTime = offsetTime(uTime);
 		TradingTimes::iterator it = m_tradingTimes.begin();
@@ -391,7 +391,7 @@ public:
 		return false;
 	}
 
-	bool	isFirstOfSection(uint32_t uTime)
+	inline bool	isFirstOfSection(uint32_t uTime)
 	{
 		uint32_t offTime = offsetTime(uTime);
 		TradingTimes::iterator it = m_tradingTimes.begin();
@@ -405,7 +405,7 @@ public:
 		return false;
 	}
 
-	bool	isInAuctionTime(uint32_t uTime)
+	inline bool	isInAuctionTime(uint32_t uTime)
 	{
 		uint32_t offTime = offsetTime(uTime);
 
@@ -420,7 +420,7 @@ public:
 
 	const TradingTimes &getTradingTimes() const{return m_tradingTimes;}
 
-	uint32_t	offsetTime(uint32_t uTime) const
+	inline uint32_t	offsetTime(uint32_t uTime) const
 	{
 		int32_t curMinute = (uTime/100)*60 + uTime%100;
 		curMinute += m_uOffsetMins;
@@ -434,7 +434,7 @@ public:
 		return uTime;
 	}
 
-	uint32_t	originalTime(uint32_t uTime) const
+	inline uint32_t	originalTime(uint32_t uTime) const
 	{
 		int32_t curMinute = (uTime/100)*60 + uTime%100;
 		curMinute -= m_uOffsetMins;
