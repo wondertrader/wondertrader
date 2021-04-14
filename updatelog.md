@@ -100,4 +100,5 @@
 
 ### 0.6.3
 * 完善了回测框架中CTA仿真器CTAMocker中对条件单的处理
-* 新增一个tsl的robin_map库，替换unordered_map和unordered_set，处理速度提升5倍以上（官方宣传）
+* 新增一个tsl的robin_map库，替换unordered_map和unordered_set，处理速度提升5倍以上（robin_map官方宣传）
+* 增加了堆栈打印的模块，可以在崩溃时把堆栈信息输出到日志中，方便调试
