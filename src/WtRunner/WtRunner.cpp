@@ -43,59 +43,6 @@ const char* getBinDir()
 	return basePath.c_str();
 }
 
-class MyTrashBin : public ITrashBin
-{
-public:
-	MyTrashBin():_stopped(false)
-	{
-		_queue = new boost::circular_buffer<WTSObject *>(1024);
-	}
-
-	~MyTrashBin()
-	{
-		delete _queue;
-	}
-
-	virtual void add_object(WTSObject* obj) override
-	{
-		_queue->push_back(obj);
-	}
-
-	void run()
-	{
-		if (_worker)
-			return;
-
-		_worker.reset(new StdThread([this]() {
-			while(!_stopped)
-			{
-				if(_queue->empty())
-				{
-					std::this_thread::sleep_for(std::chrono::microseconds(1));
-					continue;
-				}
-
-				WTSObject* obj = _queue->front();
-				_queue->pop_front();
-				delete obj;
-			}
-		}));
-	}
-
-	void stop()
-	{
-		_stopped = true;
-		if (_worker)
-			_worker->join();
-	}
-
-private:
-	boost::circular_buffer<WTSObject*>*	_queue;
-	StdThreadPtr	_worker;
-	bool			_stopped;
-};
-
-MyTrashBin g_myTrashBin;
 
 
 WtRunner::WtRunner()
@@ -103,19 +50,14 @@ WtRunner::WtRunner()
 	, _is_hft(false)
 	, _is_sel(false)
 {
-	g_pTrashBin = &g_myTrashBin;
-
 	install_signal_hooks([](const char* message) {
 		WTSLogger::error(message);
 	});
-
-	g_myTrashBin.run();
 }
 
 
 WtRunner::~WtRunner()
 {
-	g_myTrashBin.stop();
 }
 
 bool WtRunner::init()

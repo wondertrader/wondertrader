@@ -13,15 +13,6 @@
 #include "WTSMarcos.h"
 
 NS_OTP_BEGIN
-class WTSObject;
-class ITrashBin
-{
-public:
-	virtual void add_object(WTSObject* obj) = 0;
-};
-
-static ITrashBin* g_pTrashBin = NULL;
-
 class WTSObject
 {
 public:

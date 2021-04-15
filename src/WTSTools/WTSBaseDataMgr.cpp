@@ -79,7 +79,7 @@ WTSCommodityInfo* WTSBaseDataMgr::getCommodity(const char* exchg, const char* pi
 	if (m_mapCommodities == NULL)
 		return NULL;
 
-	static char key[64] = { 0 };
+	char key[64] = { 0 };
 	fmt::format_to(key, "{}.{}", exchg, pid);
 
 	return (WTSCommodityInfo*)m_mapCommodities->get(key);
