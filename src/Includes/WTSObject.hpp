@@ -13,6 +13,15 @@
 #include "WTSMarcos.h"
 
 NS_OTP_BEGIN
+class WTSObject;
+class ITrashBin
+{
+public:
+	virtual void add_object(WTSObject* obj) = 0;
+};
+
+static ITrashBin* g_pTrashBin = NULL;
+
 class WTSObject
 {
 public:
@@ -31,7 +40,12 @@ public:
 		{
 			uint32_t cnt = m_uRefs.fetch_sub(1);
 			if (cnt == 1)
-				delete this;
+			{
+				if (g_pTrashBin)
+					g_pTrashBin->add_object(this);
+				else
+					delete this;
+			}
 		}
 		catch(...)
 		{
