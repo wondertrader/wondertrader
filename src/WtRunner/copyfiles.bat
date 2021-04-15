@@ -10,6 +10,7 @@ if not exist %folder% md %folder%
 set folder="..\%plat%\%env%\WtRunner\executer\"
 if not exist %folder% md %folder%
 
+xcopy ..\%plat%\%env%\ParserCTP.dll ..\%plat%\%env%\WtRunner\parsers\ /C /Y
 xcopy ..\%plat%\%env%\ParserUDP.dll ..\%plat%\%env%\WtRunner\parsers\ /C /Y
 xcopy ..\%plat%\%env%\TraderCTP.dll ..\%plat%\%env%\WtRunner\traders\ /C /Y
 xcopy ..\%plat%\%env%\TraderXTP.dll ..\%plat%\%env%\WtRunner\traders\ /C /Y

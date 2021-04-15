@@ -152,6 +152,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="fmtlib.h" />
     <ClInclude Include="SignalHook.hpp" />
     <ClInclude Include="StackTracer\StackTracer.h" />
     <ClInclude Include="StackTracer\StackWalker.h" />

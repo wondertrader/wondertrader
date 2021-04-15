@@ -18,6 +18,7 @@ typedef faster_hashmap<std::string, TradingDayTpl>	TradingDayTplMap;
 
 typedef WTSHashMap<std::string>		WTSContractList;
 typedef WTSHashMap<std::string>		WTSExchgContract;
+typedef WTSHashMap<std::string>		WTSContractMap;
 
 typedef WTSHashMap<std::string>		WTSSessionMap;
 typedef WTSHashMap<std::string>		WTSCommodityMap;
@@ -75,6 +76,7 @@ private:
 
 	WTSExchgContract*	m_mapExchgContract;
 	WTSSessionMap*		m_mapSessions;
-	WTSCommodityMap*	m_pCommodityMap;
+	WTSCommodityMap*	m_mapCommodities;
+	WTSContractMap*		m_mapContracts;
 };
 

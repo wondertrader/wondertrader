@@ -218,19 +218,20 @@ bool ParserAdapter::run()
 
 void ParserAdapter::handleQuote(WTSTickData *quote, bool bNeedSlice)
 {
-	if (_stopped)
+	if (quote == NULL || _stopped || quote->actiondate() == 0 || quote->tradingdate() == 0)
 		return;
 
 	if (!_exchg_filter.empty() && (_exchg_filter.find(quote->exchg()) == _exchg_filter.end()))
 		return;
 
-	if (quote->actiondate() == 0 || quote->tradingdate() == 0)
-		return;
-
 	bool isHot = false;
 
 	WTSContractInfo* cInfo = _bd_mgr->getContract(quote->code(), quote->exchg());
+	if (cInfo == NULL)
+		return;
+
 	WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(cInfo);
+
 	std::string stdCode;
 	if (commInfo->getCategoty() == CC_Future)
 	{

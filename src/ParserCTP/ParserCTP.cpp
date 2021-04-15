@@ -105,20 +105,23 @@ extern "C"
 };
 
 
-uint32_t strToTime(const char* strTime)
+inline uint32_t strToTime(const char* strTime)
 {
-	std::string str;
+	static char str[10] = { 0 };
 	const char *pos = strTime;
-	while(strlen(pos) > 0)
+	int idx = 0;
+	auto len = strlen(strTime);
+	for(auto i = 0; i < len; i++)
 	{
-		if(pos[0] != ':')
+		if(strTime[i] != ':')
 		{
-			str.append(pos, 1);
+			str[idx] = strTime[i];
+			idx++;
 		}
-		pos++;
 	}
+	str[idx] = '\0';
 
-	return strtoul(str.c_str(), NULL, 10);
+	return strtoul(str, NULL, 10);
 }
 
 inline double checkValid(double val)
@@ -303,6 +306,9 @@ void ParserCTP::OnRtnDepthMarketData( CThostFtdcDepthMarketDataField *pDepthMark
 	}
 
 	WTSContractInfo* contract = m_pBaseDataMgr->getContract(pDepthMarketData->InstrumentID, pDepthMarketData->ExchangeID);
+	if (contract == NULL)
+		return;
+
 	WTSCommodityInfo* pCommInfo = m_pBaseDataMgr->getCommodity(contract);
 
 	//if (strcmp(contract->getExchg(), "CZCE") == 0)

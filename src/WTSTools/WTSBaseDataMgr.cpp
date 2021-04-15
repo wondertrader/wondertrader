@@ -16,6 +16,8 @@
 #include "../Share/StrUtil.hpp"
 #include "../Share/StdUtils.hpp"
 
+#include "../WTSUtils/fmtlib.h"
+
 #include "WTSLogger.h"
 
 #include <rapidjson/document.h>
@@ -29,11 +31,13 @@ namespace rj = rapidjson;
 WTSBaseDataMgr::WTSBaseDataMgr()
 	: m_mapExchgContract(NULL)
 	, m_mapSessions(NULL)
-	, m_pCommodityMap(NULL)
+	, m_mapCommodities(NULL)
+	, m_mapContracts(NULL)
 {
 	m_mapExchgContract = WTSExchgContract::create();
 	m_mapSessions = WTSSessionMap::create();
-	m_pCommodityMap = WTSCommodityMap::create();
+	m_mapCommodities = WTSCommodityMap::create();
+	m_mapContracts = WTSContractMap::create();
 }
 
 
@@ -51,27 +55,34 @@ WTSBaseDataMgr::~WTSBaseDataMgr()
 		m_mapSessions = NULL;
 	}
 
-	if (m_pCommodityMap)
+	if (m_mapCommodities)
 	{
-		m_pCommodityMap->release();
-		m_pCommodityMap = NULL;
+		m_mapCommodities->release();
+		m_mapCommodities = NULL;
 	}
 
+	if(m_mapContracts)
+	{
+		m_mapContracts->release();
+		m_mapContracts = NULL;
+	}
 }
 
 WTSCommodityInfo* WTSBaseDataMgr::getCommodity(const char* exchgpid)
 {
-	return (WTSCommodityInfo*)m_pCommodityMap->get(exchgpid);
+	return (WTSCommodityInfo*)m_mapCommodities->get(exchgpid);
 }
 
 
 WTSCommodityInfo* WTSBaseDataMgr::getCommodity(const char* exchg, const char* pid)
 {
-	std::string key = StrUtil::printf("%s.%s", exchg, pid);
-	if (m_pCommodityMap == NULL)
+	if (m_mapCommodities == NULL)
 		return NULL;
 
-	return (WTSCommodityInfo*)m_pCommodityMap->get(key);
+	static char key[64] = { 0 };
+	fmt::format_to(key, "{}.{}", exchg, pid);
+
+	return (WTSCommodityInfo*)m_mapCommodities->get(key);
 }
 
 WTSCommodityInfo* WTSBaseDataMgr::getCommodity(WTSContractInfo* ct)
@@ -95,18 +106,17 @@ WTSContractInfo* WTSBaseDataMgr::getContract(const char* code, const char* exchg
 			return (WTSContractInfo*)it->second;
 		}
 	}
-	else
+	else if (strlen(exchg) == 0)
 	{
-		it = m_mapExchgContract->begin();
-		for(; it != m_mapExchgContract->end(); it++)
-		{
-			WTSContractList* contractList = (WTSContractList*)it->second;
-			auto it = contractList->find(code);
-			if (it != contractList->end())
-			{
-				return (WTSContractInfo*)it->second;
-			}
-		}
+		auto it = m_mapContracts->find(code);
+		if (it == m_mapContracts->end())
+			return NULL;
+
+		WTSArray* ayInst = (WTSArray*)it->second;
+		if (ayInst == NULL || ayInst->size() == 0)
+			return NULL;
+
+		return (WTSContractInfo*)ayInst->at(0);
 	}
 
 	return NULL;
@@ -208,10 +218,10 @@ void WTSBaseDataMgr::release()
 		m_mapSessions = NULL;
 	}
 
-	if (m_pCommodityMap)
+	if (m_mapCommodities)
 	{
-		m_pCommodityMap->release();
-		m_pCommodityMap = NULL;
+		m_mapCommodities->release();
+		m_mapCommodities = NULL;
 	}
 }
 
@@ -322,10 +332,10 @@ bool WTSBaseDataMgr::loadCommodities(const char* filename)
 			pCommInfo->setEntrustQtyUnit(buyQtyUnit, sellQtyUnit);
 
 			std::string key = StrUtil::printf("%s.%s", exchg.c_str(), pid.c_str());
-			if (m_pCommodityMap == NULL)
-				m_pCommodityMap = WTSCommodityMap::create();
+			if (m_mapCommodities == NULL)
+				m_mapCommodities = WTSCommodityMap::create();
 
-			m_pCommodityMap->add(key, pCommInfo, false);
+			m_mapCommodities->add(key, pCommInfo, false);
 
 			m_mapSessionCode[sid].insert(key);
 		}
@@ -387,6 +397,15 @@ bool WTSBaseDataMgr::loadContracts(const char* filename)
 			contractList->add(cInfo->getCode(), cInfo, false);
 
 			commInfo->addCode(code.c_str());
+
+			WTSArray* ayInst = (WTSArray*)m_mapContracts->get(cInfo->getCode());
+			if(ayInst == NULL)
+			{
+				ayInst = WTSArray::create();
+				m_mapContracts->add(cInfo->getCode(), ayInst, false);
+			}
+
+			ayInst->append(cInfo, true);
 		}
 	}
 

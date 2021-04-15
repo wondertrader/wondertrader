@@ -126,6 +126,9 @@
     <ClInclude Include="SignalHook.hpp">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="fmtlib.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="zstdlib\cover.c">
