@@ -32,10 +32,7 @@ public:
 			uint32_t cnt = m_uRefs.fetch_sub(1);
 			if (cnt == 1)
 			{
-				if (g_pTrashBin)
-					g_pTrashBin->add_object(this);
-				else
-					delete this;
+				delete this;
 			}
 		}
 		catch(...)

@@ -10,3 +10,4 @@ xcopy ..\%plat%\%env%\ParserXTP.dll ..\%plat%\%env%\QuoteFactory\parsers\ /C /Y
 xcopy ..\%plat%\%env%\ParseriTap.dll ..\%plat%\%env%\QuoteFactory\parsers\ /C /Y
 xcopy ..\%plat%\%env%\ParserFemas.dll ..\%plat%\%env%\QuoteFactory\parsers\ /C /Y
 xcopy ..\%plat%\%env%\ParserCTPMini.dll ..\%plat%\%env%\QuoteFactory\parsers\ /C /Y
+xcopy ..\%plat%\%env%\ParserCTPOpt.dll ..\%plat%\%env%\QuoteFactory\parsers\ /C /Y

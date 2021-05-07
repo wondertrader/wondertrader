@@ -1563,7 +1563,7 @@ void WtDataWriter::check_loop()
 		for (auto it = _rt_ticks_blocks.begin(); it != _rt_ticks_blocks.end(); it++)
 		{
 			const std::string& key = it->first;
-			TickBlockPair* tBlk = (TickBlockPair*)&it->second;
+			TickBlockPair* tBlk = (TickBlockPair*)it->second;
 			if (tBlk->_lasttime != 0 && (now - tBlk->_lasttime > expire_secs))
 			{
 				_sink->outputWriterLog(LL_INFO, "tick缓存 %s 映射超时,自动关闭", key.c_str());
@@ -1574,7 +1574,7 @@ void WtDataWriter::check_loop()
 		for (auto it = _rt_trans_blocks.begin(); it != _rt_trans_blocks.end(); it++)
 		{
 			const std::string& key = it->first;
-			TransBlockPair* tBlk = (TransBlockPair*)&it->second;
+			TransBlockPair* tBlk = (TransBlockPair*)it->second;
 			if (tBlk->_lasttime != 0 && (now - tBlk->_lasttime > expire_secs))
 			{
 				_sink->outputWriterLog(LL_INFO, "trans缓存 %s 映射超时,自动关闭", key.c_str());
@@ -1585,7 +1585,7 @@ void WtDataWriter::check_loop()
 		for (auto it = _rt_orddtl_blocks.begin(); it != _rt_orddtl_blocks.end(); it++)
 		{
 			const std::string& key = it->first;
-			OrdDtlBlockPair* tBlk = (OrdDtlBlockPair*)&it->second;
+			OrdDtlBlockPair* tBlk = (OrdDtlBlockPair*)it->second;
 			if (tBlk->_lasttime != 0 && (now - tBlk->_lasttime > expire_secs))
 			{
 				_sink->outputWriterLog(LL_INFO, "order缓存 %s 映射超时,自动关闭", key.c_str());
@@ -1596,7 +1596,7 @@ void WtDataWriter::check_loop()
 		for (auto& v : _rt_ordque_blocks)
 		{
 			const std::string& key = v.first;
-			OrdQueBlockPair* tBlk = (OrdQueBlockPair*)&v.second;
+			OrdQueBlockPair* tBlk = (OrdQueBlockPair*)v.second;
 			if (tBlk->_lasttime != 0 && (now - tBlk->_lasttime > expire_secs))
 			{
 				_sink->outputWriterLog(LL_INFO, "queue缓存 %s 映射超时,自动关闭", key.c_str());
@@ -1607,7 +1607,7 @@ void WtDataWriter::check_loop()
 		for (auto it = _rt_min1_blocks.begin(); it != _rt_min1_blocks.end(); it++)
 		{
 			const std::string& key = it->first;
-			KBlockPair* kBlk = (KBlockPair*)&it->second;
+			KBlockPair* kBlk = (KBlockPair*)it->second;
 			if (kBlk->_lasttime != 0 && (now - kBlk->_lasttime > expire_secs))
 			{
 				_sink->outputWriterLog(LL_INFO, "1分钟缓存 %s 映射超时,自动关闭", key.c_str());
@@ -1618,7 +1618,7 @@ void WtDataWriter::check_loop()
 		for (auto it = _rt_min5_blocks.begin(); it != _rt_min5_blocks.end(); it++)
 		{
 			const std::string& key = it->first;
-			KBlockPair* kBlk = (KBlockPair*)&it->second;
+			KBlockPair* kBlk = (KBlockPair*)it->second;
 			if (kBlk->_lasttime != 0 && (now - kBlk->_lasttime > expire_secs))
 			{
 				_sink->outputWriterLog(LL_INFO, "5分钟缓存 %s 映射超时,自动关闭", key.c_str());
