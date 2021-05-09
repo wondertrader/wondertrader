@@ -63,6 +63,7 @@ CtaMocker::CtaMocker(HisDataReplayer* replayer, const char* name, int32_t slippa
 	, _strategy(NULL)
 	, _slippage(slippage)
 	, _schedule_times(0)
+	, _total_closeprofit(0)
 {
 	_context_id = makeCtxId();
 }
@@ -874,6 +875,7 @@ void CtaMocker::do_set_position(const char* stdCode, double qty, double price /*
 			if (!dInfo._long)
 				profit *= -1;
 			pInfo._closeprofit += profit;
+			_total_closeprofit += profit;
 			pInfo._dynprofit = pInfo._dynprofit*dInfo._volume / (dInfo._volume + maxQty);//浮盈也要做等比缩放
 			pInfo._last_exittime = curTm;
 			_fund_info._total_profit += profit;
@@ -883,7 +885,7 @@ void CtaMocker::do_set_position(const char* stdCode, double qty, double price /*
 			//这里写成交记录
 			log_trade(stdCode, dInfo._long, false, curTm, trdPx, maxQty, userTag, fee, _schedule_times);
 			//这里写平仓记录
-			log_close(stdCode, dInfo._long, dInfo._opentime, dInfo._price, curTm, trdPx, maxQty, profit, maxProf, maxLoss, pInfo._closeprofit, dInfo._opentag, userTag, dInfo._open_barno, _schedule_times);
+			log_close(stdCode, dInfo._long, dInfo._opentime, dInfo._price, curTm, trdPx, maxQty, profit, maxProf, maxLoss, _total_closeprofit - _fund_info._total_fees, dInfo._opentag, userTag, dInfo._open_barno, _schedule_times);
 
 			if (left == 0)
 				break;

@@ -213,6 +213,7 @@ protected:
 	} PosInfo;
 	typedef faster_hashmap<std::string, PosInfo> PositionMap;
 	PositionMap		_pos_map;
+	double	_total_closeprofit;
 
 	typedef struct _SigInfo
 	{
