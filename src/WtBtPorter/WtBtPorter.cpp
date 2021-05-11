@@ -256,28 +256,26 @@ WtUInt32 cta_get_bars(CtxHandler cHandle, const char* stdCode, const char* perio
 		{
 			uint32_t left = barCnt + 1;
 			uint32_t reaCnt = 0;
-			for (int32_t idx = 0; idx < kData->size() && left > 0; idx++, left--)
+			uint32_t kcnt = kData->size();
+			for (int32_t idx = 0; idx < kcnt && left > 0; idx++, left--)
 			{
 				WTSBarStruct* curBar = kData->at(idx);
-				cb(cHandle, stdCode, period, curBar, false);
+
+				bool isLast = (idx == kcnt - 1) || (left == 1);
+				cb(cHandle, stdCode, period, curBar, isLast);
 				reaCnt += 1;
 			}
-
-			cb(cHandle, stdCode, period, NULL, true);
 
 			kData->release();
 			return reaCnt;
 		}
 		else
 		{
-			cb(cHandle, stdCode, period, NULL, true);
 			return 0;
 		}
 	}
 	catch(...)
 	{
-		printf("Exception raised while read kbars\n");
-		cb(cHandle, stdCode, period, NULL, true);
 		return 0;
 	}
 }
@@ -294,28 +292,25 @@ WtUInt32	cta_get_ticks(CtxHandler cHandle, const char* stdCode, unsigned int tic
 		{
 			uint32_t left = tickCnt + 1;
 			uint32_t reaCnt = 0;
-			for (uint32_t idx = 0; idx < tData->size() && left > 0; idx++, left--)
+			uint32_t tcnt = tData->size();
+			for (uint32_t idx = 0; idx < tcnt && left > 0; idx++, left--)
 			{
 				WTSTickStruct* curTick = (WTSTickStruct*)tData->at(idx);
-				cb(cHandle, stdCode, curTick, false);
+				bool isLast = (idx == tcnt - 1) || (left == 1);
+				cb(cHandle, stdCode, curTick, isLast);
 				reaCnt += 1;
 			}
-
-			cb(cHandle, stdCode, NULL, true);
 
 			tData->release();
 			return reaCnt;
 		}
 		else
 		{
-			cb(cHandle, stdCode, NULL, true);
 			return 0;
 		}
 	}
 	catch (...)
 	{
-		printf("Exception raised while read ticks\n");
-		cb(cHandle, stdCode, NULL, true);
 		return 0;
 	}
 }
@@ -572,28 +567,26 @@ WtUInt32 sel_get_bars(CtxHandler cHandle, const char* stdCode, const char* perio
 		{
 			uint32_t left = barCnt;
 			uint32_t reaCnt = 0;
-			for (int32_t idx = 0; idx < kData->size() && left > 0; idx++, left--)
+			uint32_t kcnt = kData->size();
+			for (int32_t idx = 0; idx < kcnt && left > 0; idx++, left--)
 			{
 				WTSBarStruct* curBar = kData->at(idx);
-				cb(cHandle, stdCode, period, curBar, false);
+
+				bool isLast = (idx == kcnt - 1) || (left == 1);
+				cb(cHandle, stdCode, period, curBar, isLast);
 				reaCnt += 1;
 			}
-
-			cb(cHandle, stdCode, period, NULL, true);
 
 			kData->release();
 			return reaCnt;
 		}
 		else
 		{
-			cb(cHandle, stdCode, period, NULL, true);
 			return 0;
 		}
 	}
 	catch (...)
 	{
-		printf("Exception raised while read kbars\n");
-		cb(cHandle, stdCode, period, NULL, true);
 		return 0;
 	}
 }
@@ -620,28 +613,25 @@ WtUInt32	sel_get_ticks(CtxHandler cHandle, const char* stdCode, unsigned int tic
 		{
 			uint32_t left = tickCnt + 1;
 			uint32_t reaCnt = 0;
-			for (uint32_t idx = 0; idx < tData->size() && left > 0; idx++, left--)
+			uint32_t tcnt = tData->size();
+			for (uint32_t idx = 0; idx < tcnt && left > 0; idx++, left--)
 			{
 				WTSTickStruct* curTick = (WTSTickStruct*)tData->at(idx);
-				cb(cHandle, stdCode, curTick, false);
+				bool isLast = (idx == tcnt - 1) || (left == 1);
+				cb(cHandle, stdCode, curTick, isLast);
 				reaCnt += 1;
 			}
-
-			cb(cHandle, stdCode, NULL, true);
 
 			tData->release();
 			return reaCnt;
 		}
 		else
 		{
-			cb(cHandle, stdCode, NULL, true);
 			return 0;
 		}
 	}
 	catch (...)
 	{
-		printf("Exception raised while read ticks\n");
-		cb(cHandle, stdCode, NULL, true);
 		return 0;
 	}
 }
@@ -718,28 +708,26 @@ WtUInt32 hft_get_bars(CtxHandler cHandle, const char* stdCode, const char* perio
 		{
 			uint32_t left = barCnt + 1;
 			uint32_t reaCnt = 0;
-			for (int32_t idx = 0; idx < kData->size() && left > 0; idx++, left--)
+			uint32_t kcnt = kData->size();
+			for (int32_t idx = 0; idx < kcnt && left > 0; idx++, left--)
 			{
 				WTSBarStruct* curBar = kData->at(idx);
-				cb(cHandle, stdCode, period, curBar, false);
+
+				bool isLast = (idx == kcnt - 1) || (left == 1);
+				cb(cHandle, stdCode, period, curBar, isLast);
 				reaCnt += 1;
 			}
-
-			cb(cHandle, stdCode, period, NULL, true);
 
 			kData->release();
 			return reaCnt;
 		}
 		else
 		{
-			cb(cHandle, stdCode, period, NULL, true);
 			return 0;
 		}
 	}
 	catch (...)
 	{
-		printf("Exception raised while read kbars\n");
-		cb(cHandle, stdCode, period, NULL, true);
 		return 0;
 	}
 }
@@ -756,28 +744,25 @@ WtUInt32 hft_get_ticks(CtxHandler cHandle, const char* stdCode, unsigned int tic
 		{
 			uint32_t left = tickCnt + 1;
 			uint32_t reaCnt = 0;
-			for (uint32_t idx = 0; idx < tData->size() && left > 0; idx++, left--)
+			uint32_t tcnt = tData->size();
+			for (uint32_t idx = 0; idx < tcnt && left > 0; idx++, left--)
 			{
 				WTSTickStruct* curTick = (WTSTickStruct*)tData->at(idx);
-				cb(cHandle, stdCode, curTick, false);
+				bool isLast = (idx == tcnt - 1) || (left == 1);
+				cb(cHandle, stdCode, curTick, isLast);
 				reaCnt += 1;
 			}
-
-			cb(cHandle, stdCode, NULL, true);
 
 			tData->release();
 			return reaCnt;
 		}
 		else
 		{
-			cb(cHandle, stdCode, NULL, true);
 			return 0;
 		}
 	}
 	catch (...)
 	{
-		printf("Exception raised while read ticks\n");
-		cb(cHandle, stdCode, NULL, true);
 		return 0;
 	}
 }
@@ -789,31 +774,30 @@ WtUInt32 hft_get_ordque(CtxHandler cHandle, const char* stdCode, unsigned int ti
 		return 0;
 	try
 	{
-		WTSOrdQueSlice* tData = mocker->stra_get_order_queue(stdCode, tickCnt);
-		if (tData)
+		WTSOrdQueSlice* dataSlice = mocker->stra_get_order_queue(stdCode, tickCnt);
+		if (dataSlice)
 		{
 			uint32_t left = tickCnt + 1;
 			uint32_t reaCnt = 0;
-			for (uint32_t idx = 0; idx < tData->size() && left > 0; idx++, left--)
+			uint32_t tcnt = dataSlice->size();
+			for (uint32_t idx = 0; idx < tcnt && left > 0; idx++, left--)
 			{
-				WTSOrdQueStruct* curData = (WTSOrdQueStruct*)tData->at(idx);
-				cb(cHandle, stdCode, curData, false);
+				WTSOrdQueStruct* curItem = (WTSOrdQueStruct*)dataSlice->at(idx);
+				bool isLast = (idx == tcnt - 1) || (left == 1);
+				cb(cHandle, stdCode, curItem, isLast);
 				reaCnt += 1;
 			}
-			cb(cHandle, stdCode, NULL, true);
 
-			tData->release();
+			dataSlice->release();
 			return reaCnt;
 		}
 		else
 		{
-			cb(cHandle, stdCode, NULL, true);
 			return 0;
 		}
 	}
 	catch (...)
 	{
-		cb(cHandle, stdCode, NULL, true);
 		return 0;
 	}
 }
@@ -825,32 +809,30 @@ WtUInt32 hft_get_orddtl(CtxHandler cHandle, const char* stdCode, unsigned int ti
 		return 0;
 	try
 	{
-		WTSOrdDtlSlice* tData = mocker->stra_get_order_detail(stdCode, tickCnt);
-		if (tData)
+		WTSOrdDtlSlice* dataSlice = mocker->stra_get_order_detail(stdCode, tickCnt);
+		if (dataSlice)
 		{
 			uint32_t left = tickCnt + 1;
 			uint32_t reaCnt = 0;
-			for (uint32_t idx = 0; idx < tData->size() && left > 0; idx++, left--)
+			uint32_t tcnt = dataSlice->size();
+			for (uint32_t idx = 0; idx < tcnt && left > 0; idx++, left--)
 			{
-				WTSOrdDtlStruct* curData = (WTSOrdDtlStruct*)tData->at(idx);
-				cb(cHandle, stdCode, curData, false);
+				WTSOrdDtlStruct* curItem = (WTSOrdDtlStruct*)dataSlice->at(idx);
+				bool isLast = (idx == tcnt - 1) || (left == 1);
+				cb(cHandle, stdCode, curItem, isLast);
 				reaCnt += 1;
 			}
 
-			cb(cHandle, stdCode, NULL, true);
-
-			tData->release();
+			dataSlice->release();
 			return reaCnt;
 		}
 		else
 		{
-			cb(cHandle, stdCode, NULL, true);
 			return 0;
 		}
 	}
 	catch (...)
 	{
-		cb(cHandle, stdCode, NULL, true);
 		return 0;
 	}
 }
@@ -862,32 +844,30 @@ WtUInt32 hft_get_trans(CtxHandler cHandle, const char* stdCode, unsigned int tic
 		return 0;
 	try
 	{
-		WTSTransSlice* tData = mocker->stra_get_transaction(stdCode, tickCnt);
-		if (tData)
+		WTSTransSlice* dataSlice = mocker->stra_get_transaction(stdCode, tickCnt);
+		if (dataSlice)
 		{
 			uint32_t left = tickCnt + 1;
 			uint32_t reaCnt = 0;
-			for (uint32_t idx = 0; idx < tData->size() && left > 0; idx++, left--)
+			uint32_t tcnt = dataSlice->size();
+			for (uint32_t idx = 0; idx < tcnt && left > 0; idx++, left--)
 			{
-				WTSTransStruct* curData = (WTSTransStruct*)tData->at(idx);
-				cb(cHandle, stdCode, curData, false);
+				WTSTransStruct* curItem = (WTSTransStruct*)dataSlice->at(idx);
+				bool isLast = (idx == tcnt - 1) || (left == 1);
+				cb(cHandle, stdCode, curItem, isLast);
 				reaCnt += 1;
 			}
 
-			cb(cHandle, stdCode, NULL, true);
-
-			tData->release();
+			dataSlice->release();
 			return reaCnt;
 		}
 		else
 		{
-			cb(cHandle, stdCode, NULL, true);
 			return 0;
 		}
 	}
 	catch (...)
 	{
-		cb(cHandle, stdCode, NULL, true);
 		return 0;
 	}
 }
