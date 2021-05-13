@@ -1031,3 +1031,10 @@ WtString hft_load_userdata(CtxHandler cHandle, const char* key, const char* defV
 	return ctx->stra_load_user_data(key, defVal);
 }
 #pragma endregion "HFT策略接口"
+
+#pragma region "扩展Parser接口"
+void parser_push_quote(const char* id, WTSTickStruct* curTick, bool bNeedSlice)
+{
+	getRunner().on_parser_quote(id, curTick, bNeedSlice);
+}
+#pragma endregion "扩展Parser接口"
