@@ -33,6 +33,12 @@
     <ClCompile Include="ExpSelContext.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="ExpParser.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ExpExecuter.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PorterDefs.h">
@@ -54,6 +60,12 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="ExpSelContext.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ExpParser.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ExpExecuter.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

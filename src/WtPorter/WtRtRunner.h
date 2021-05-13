@@ -69,6 +69,13 @@ public:
 
 	void registerEvtCallback(FuncEventCallback cbEvt);
 
+	void registerParserPorter(FuncParserEvtCallback cbEvt, FuncParserSubCallback cbSub);
+
+	void registerExecuterPorter(FuncExecCmdCallback cbExec);
+
+	bool			createExtParser(const char* id);
+	bool			createExtExecuter(const char* id);
+
 	uint32_t		createCtaContext(const char* name);
 	uint32_t		createHftContext(const char* name, const char* trader, bool bAgent);
 	uint32_t		createSelContext(const char* name, uint32_t date, uint32_t time, const char* period, const char* trdtpl = "CHINA", const char* session="TRADING");
@@ -77,6 +84,24 @@ public:
 	SelContextPtr	getSelContext(uint32_t id);
 	HftContextPtr	getHftContext(uint32_t id);
 	WtEngine*		getEngine(){ return _engine; }
+
+//////////////////////////////////////////////////////////////////////////
+//À©Õ¹Parser
+public:
+	void parser_init(const char* id);
+	void parser_connect(const char* id);
+	void parser_release(const char* id);
+	void parser_disconnect(const char* id);
+	void parser_subscribe(const char* id, const char* code);
+	void parser_unsubscribe(const char* id, const char* code);
+
+	void on_parser_quote(const char* id, WTSTickStruct* curTick, bool bNeedSlice = true);
+
+
+//////////////////////////////////////////////////////////////////////////
+//À©Õ¹Executer
+public:
+	void executer_set_position(const char* id, const char* stdCode, double target);
 
 //////////////////////////////////////////////////////////////////////////
 //ICtaEventListener
@@ -161,6 +186,11 @@ private:
 	FuncStraTransCallback	_cb_hft_trans;
 
 	FuncEventCallback		_cb_evt;
+
+	FuncParserEvtCallback	_cb_parser_evt;
+	FuncParserSubCallback	_cb_parser_sub;
+
+	FuncExecCmdCallback		_cb_exec;
 
 	WTSVariant*			_config;
 	TraderAdapterMgr	_traders;

@@ -102,7 +102,7 @@ private:
 
 	int					m_iRequestID;
 
-	IParserSpi*	m_sink;
+	IParserSpi*			m_sink;
 	IBaseDataMgr*		m_pBaseDataMgr;
 
 	DllHandle		m_hInstCTP;

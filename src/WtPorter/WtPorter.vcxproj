@@ -209,7 +209,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Common\mdump.cpp" />
+    <ClCompile Include="ExpExecuter.cpp" />
     <ClCompile Include="ExpHftContext.cpp" />
+    <ClCompile Include="ExpParser.cpp" />
     <ClCompile Include="ExpSelContext.cpp" />
     <ClCompile Include="WtPorter.cpp" />
     <ClCompile Include="ExpCtaContext.cpp" />
@@ -217,6 +219,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Common\mdump.h" />
+    <ClInclude Include="ExpExecuter.h" />
+    <ClInclude Include="ExpParser.h" />
     <ClInclude Include="PorterDefs.h" />
     <ClInclude Include="ExpHftContext.h" />
     <ClInclude Include="ExpSelContext.h" />
