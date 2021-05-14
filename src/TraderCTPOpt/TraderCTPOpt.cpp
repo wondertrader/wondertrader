@@ -1141,7 +1141,7 @@ void TraderCTPOpt::OnRspQryTradingAccount(CThostFtdcTradingAccountField *pTradin
 		accountInfo->setDescription(StrUtil::printf("%s-%s", m_strBroker.c_str(), m_strUser.c_str()).c_str());
 		//accountInfo->setUsername(m_strUserName.c_str());
 		accountInfo->setPreBalance(pTradingAccount->PreBalance);
-		accountInfo->setCloseProfit(pTradingAccount->CloseProfit);
+		accountInfo->setCloseProfit(pTradingAccount->CloseProfit + pTradingAccount->CashIn);
 		accountInfo->setDynProfit(pTradingAccount->PositionProfit);
 		accountInfo->setMargin(pTradingAccount->CurrMargin);
 		accountInfo->setAvailable(pTradingAccount->Available);

@@ -43,6 +43,51 @@ ParserAdapter::~ParserAdapter()
 {
 }
 
+bool ParserAdapter::initExt(const char* id, IParserApi* api, IParserStub* stub, IBaseDataMgr* bgMgr, IHotMgr* hotMgr/* = NULL*/)
+{
+	if (api == NULL)
+		return false;
+
+	_parser_api = api;
+	_stub = stub;
+	_bd_mgr = bgMgr;
+	_hot_mgr = hotMgr;
+	_id = id;
+
+	if (_parser_api)
+	{
+		_parser_api->registerSpi(this);
+
+		if (_parser_api->init(NULL))
+		{
+			ContractSet contractSet;
+			WTSArray* ayContract = _bd_mgr->getContracts();
+			WTSArray::Iterator it = ayContract->begin();
+			for (; it != ayContract->end(); it++)
+			{
+				WTSContractInfo* contract = STATIC_CONVERT(*it, WTSContractInfo*);
+				WTSCommodityInfo* pCommInfo = _bd_mgr->getCommodity(contract);
+				contractSet.insert(contract->getFullCode());
+			}
+
+			ayContract->release();
+
+			_parser_api->subscribe(contractSet);
+			contractSet.clear();
+		}
+		else
+		{
+			WTSLogger::log_dyn("parser", _id.c_str(), LL_ERROR, "[%s] Parser initializing failed: api initializing failed...", _id.c_str());
+		}
+	}
+	else
+	{
+		WTSLogger::log_dyn("parser", _id.c_str(), LL_ERROR, "[%s] Parser initializing failed: creating api failed...", _id.c_str());
+	}
+
+	return true;
+}
+
 bool ParserAdapter::init(const char* id, WTSVariant* cfg, IParserStub* stub, IBaseDataMgr* bgMgr, IHotMgr* hotMgr/* = NULL*/)
 {
 	if (cfg == NULL)
@@ -368,9 +413,9 @@ bool ParserAdapterMgr::addAdapter(const char* id, ParserAdapterPtr& adapter)
 }
 
 
-ParserAdapterPtr ParserAdapterMgr::getAdapter(const char* tname)
+ParserAdapterPtr ParserAdapterMgr::getAdapter(const char* id)
 {
-	auto it = _adapters.find(tname);
+	auto it = _adapters.find(id);
 	if (it != _adapters.end())
 	{
 		return it->second;

@@ -12,6 +12,9 @@
 #include "ExpSelContext.h"
 #include "ExpHftContext.h"
 
+#include "ExpParser.h"
+#include "ExpExecuter.h"
+
 #include "../WtCore/WtHelper.h"
 #include "../WtCore/CtaStraContext.h"
 #include "../WtCore/HftStraContext.h"
@@ -60,6 +63,10 @@ WtRtRunner::WtRtRunner()
 	, _cb_hft_trans(NULL)
 
 	, _cb_hft_sessevt(NULL)
+	, _cb_exec(NULL)
+
+	, _cb_parser_evt(NULL)
+	, _cb_parser_sub(NULL)
 
 	, _cb_evt(NULL)
 	, _is_hft(false)
@@ -99,6 +106,21 @@ void WtRtRunner::registerEvtCallback(FuncEventCallback cbEvt)
 	_cta_engine.regEventListener(this);
 	_hft_engine.regEventListener(this);
 	_sel_engine.regEventListener(this);
+}
+
+void WtRtRunner::registerParserPorter(FuncParserEvtCallback cbEvt, FuncParserSubCallback cbSub)
+{
+	_cb_parser_evt = cbEvt;
+	_cb_parser_sub = cbSub;
+
+	WTSLogger::info("Callbacks of Extented Parser registration done");
+}
+
+void WtRtRunner::registerExecuterPorter(FuncExecCmdCallback cbExec)
+{
+	_cb_exec = cbExec;
+
+	WTSLogger::info("Callbacks of Extented Executer registration done");
 }
 
 void WtRtRunner::registerCtaCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar, FuncSessionEvtCallback cbSessEvt)
@@ -144,6 +166,23 @@ void WtRtRunner::registerHftCallbacks(FuncStraInitCallback cbInit, FuncStraTickC
 	_cb_hft_sessevt = cbSessEvt;
 
 	WTSLogger::info("Callbacks of HFT engine registration done");
+}
+
+bool WtRtRunner::createExtParser(const char* id)
+{
+	ParserAdapterPtr adapter(new ParserAdapter);
+	ExpParser* parser = new ExpParser(id);
+	adapter->initExt(id, parser, _engine, _engine->get_basedata_mgr(), _engine->get_hot_mgr());
+
+	_parsers.addAdapter(id, adapter);
+	return true;
+}
+
+bool WtRtRunner::createExtExecuter(const char* id)
+{
+	ExpExecuter* executer = new ExpExecuter(id);
+
+	_cta_engine.addExecuter(ExecCmdPtr(executer));
 }
 
 uint32_t WtRtRunner::createCtaContext(const char* name)
@@ -726,3 +765,61 @@ void WtRtRunner::hft_on_transaction(uint32_t id, const char* stdCode, WTSTransDa
 	if (_cb_hft_trans)
 		_cb_hft_trans(id, stdCode, &newTrans->getTransStruct());
 }
+
+#pragma region "Extended Parser"
+void WtRtRunner::parser_init(const char* id)
+{
+	if (_cb_parser_evt)
+		_cb_parser_evt(EVENT_PARSER_INIT, id);
+}
+
+void WtRtRunner::parser_connect(const char* id)
+{
+	if (_cb_parser_evt)
+		_cb_parser_evt(EVENT_PARSER_CONNECT, id);
+}
+
+void WtRtRunner::parser_disconnect(const char* id)
+{
+	if (_cb_parser_evt)
+		_cb_parser_evt(EVENT_PARSER_DISCONNECT, id);
+}
+
+void WtRtRunner::parser_release(const char* id)
+{
+	if (_cb_parser_evt)
+		_cb_parser_evt(EVENT_PARSER_RELEASE, id);
+}
+
+void WtRtRunner::parser_subscribe(const char* id, const char* code)
+{
+	if (_cb_parser_sub)
+		_cb_parser_sub(id, code, true);
+}
+
+void WtRtRunner::parser_unsubscribe(const char* id, const char* code)
+{
+	if (_cb_parser_sub)
+		_cb_parser_sub(id, code, false);
+}
+
+void WtRtRunner::on_parser_quote(const char* id, WTSTickStruct* curTick, bool bNeedSlice /* = true */)
+{
+	ParserAdapterPtr& adapter = _parsers.getAdapter(id);
+	if (adapter)
+	{
+		WTSTickData* newTick = WTSTickData::create(*curTick);
+		adapter->handleQuote(newTick, bNeedSlice);
+		newTick->release();
+	}
+}
+
+#pragma endregion 
+
+#pragma region "Extended Executer"
+void WtRtRunner::executer_set_position(const char* id, const char* stdCode, double target)
+{
+	if (_cb_exec)
+		_cb_exec(id, stdCode, target);
+}
+#pragma endregion

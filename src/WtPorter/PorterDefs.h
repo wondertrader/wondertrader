@@ -69,3 +69,17 @@ typedef void(PORTER_FLAG *FuncHftEntrustCallback)(CtxHandler cHandle, WtUInt32 l
 
 
 typedef void(PORTER_FLAG *FuncEventCallback)(WtUInt32 evtId, WtUInt32 curDate, WtUInt32 curTime);
+
+//////////////////////////////////////////////////////////////////////////
+//扩展Parser回调函数
+static const WtUInt32	EVENT_PARSER_INIT		= 1;	//Parser初始化
+static const WtUInt32	EVENT_PARSER_CONNECT	= 2;	//Parser连接
+static const WtUInt32	EVENT_PARSER_DISCONNECT = 3;	//Parser断开连接
+static const WtUInt32	EVENT_PARSER_RELEASE	= 4;	//Parser释放
+
+typedef void(PORTER_FLAG *FuncParserEvtCallback)(WtUInt32 evtId, const char* parser);
+typedef void(PORTER_FLAG *FuncParserSubCallback)(const char* parser, const char* fullCode, bool isForSub);
+
+//////////////////////////////////////////////////////////////////////////
+//扩展Executer回调函数
+typedef void(PORTER_FLAG *FuncExecCmdCallback)(const char* id, const char* StdCode, double targetPos);

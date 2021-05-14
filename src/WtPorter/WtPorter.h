@@ -185,6 +185,9 @@ extern "C"
 	EXPORT_FLAG	WtString	hft_load_userdata(CtxHandler cHandle, const char* key, const char* defVal);
 #pragma endregion "HFT接口"
 
+#pragma region "扩展Parser接口"
+	EXPORT_FLAG	void		parser_push_quote(const char* id, WTSTickStruct* curTick, bool bNeedSlice);
+#pragma endregion "扩展Parser接口"
 
 #ifdef __cplusplus
 }
