@@ -805,7 +805,7 @@ void WtRtRunner::parser_unsubscribe(const char* id, const char* code)
 
 void WtRtRunner::on_parser_quote(const char* id, WTSTickStruct* curTick, bool bNeedSlice /* = true */)
 {
-	ParserAdapterPtr& adapter = _parsers.getAdapter(id);
+	ParserAdapterPtr adapter = _parsers.getAdapter(id);
 	if (adapter)
 	{
 		WTSTickData* newTick = WTSTickData::create(*curTick);
