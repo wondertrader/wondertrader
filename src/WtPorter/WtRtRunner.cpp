@@ -63,7 +63,9 @@ WtRtRunner::WtRtRunner()
 	, _cb_hft_trans(NULL)
 
 	, _cb_hft_sessevt(NULL)
-	, _cb_exec(NULL)
+
+	, _cb_exec_cmd(NULL)
+	, _cb_exec_init(NULL)
 
 	, _cb_parser_evt(NULL)
 	, _cb_parser_sub(NULL)
@@ -116,9 +118,10 @@ void WtRtRunner::registerParserPorter(FuncParserEvtCallback cbEvt, FuncParserSub
 	WTSLogger::info("Callbacks of Extented Parser registration done");
 }
 
-void WtRtRunner::registerExecuterPorter(FuncExecCmdCallback cbExec)
+void WtRtRunner::registerExecuterPorter(FuncExecInitCallback cbInit, FuncExecCmdCallback cbExec)
 {
-	_cb_exec = cbExec;
+	_cb_exec_init = cbInit;
+	_cb_exec_cmd = cbExec;
 
 	WTSLogger::info("Callbacks of Extented Executer registration done");
 }
@@ -173,16 +176,18 @@ bool WtRtRunner::createExtParser(const char* id)
 	ParserAdapterPtr adapter(new ParserAdapter);
 	ExpParser* parser = new ExpParser(id);
 	adapter->initExt(id, parser, _engine, _engine->get_basedata_mgr(), _engine->get_hot_mgr());
-
 	_parsers.addAdapter(id, adapter);
+	WTSLogger::info("Extended parser created");
 	return true;
 }
 
 bool WtRtRunner::createExtExecuter(const char* id)
 {
 	ExpExecuter* executer = new ExpExecuter(id);
-
+	executer->init();
 	_cta_engine.addExecuter(ExecCmdPtr(executer));
+	WTSLogger::info("Extended Executer created");
+	return true;
 }
 
 uint32_t WtRtRunner::createCtaContext(const char* name)
@@ -817,9 +822,15 @@ void WtRtRunner::on_parser_quote(const char* id, WTSTickStruct* curTick, bool bN
 #pragma endregion 
 
 #pragma region "Extended Executer"
+void WtRtRunner::executer_init(const char* id)
+{
+	if (_cb_exec_init)
+		_cb_exec_init(id);
+}
+
 void WtRtRunner::executer_set_position(const char* id, const char* stdCode, double target)
 {
-	if (_cb_exec)
-		_cb_exec(id, stdCode, target);
+	if (_cb_exec_cmd)
+		_cb_exec_cmd(id, stdCode, target);
 }
 #pragma endregion

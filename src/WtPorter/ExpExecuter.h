@@ -8,6 +8,8 @@ class ExpExecuter : public IExecCommand
 public:
 	ExpExecuter(const char* id):_id(id){}
 
+	void	init();
+
 
 	virtual void set_position(const faster_hashmap<std::string, double>& targets) override;
 

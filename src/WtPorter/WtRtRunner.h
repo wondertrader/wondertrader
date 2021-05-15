@@ -71,7 +71,7 @@ public:
 
 	void registerParserPorter(FuncParserEvtCallback cbEvt, FuncParserSubCallback cbSub);
 
-	void registerExecuterPorter(FuncExecCmdCallback cbExec);
+	void registerExecuterPorter(FuncExecInitCallback cbInit, FuncExecCmdCallback cbExec);
 
 	bool			createExtParser(const char* id);
 	bool			createExtExecuter(const char* id);
@@ -102,6 +102,7 @@ public:
 //À©Õ¹Executer
 public:
 	void executer_set_position(const char* id, const char* stdCode, double target);
+	void executer_init(const char* id);
 
 //////////////////////////////////////////////////////////////////////////
 //ICtaEventListener
@@ -190,7 +191,8 @@ private:
 	FuncParserEvtCallback	_cb_parser_evt;
 	FuncParserSubCallback	_cb_parser_sub;
 
-	FuncExecCmdCallback		_cb_exec;
+	FuncExecCmdCallback		_cb_exec_cmd;
+	FuncExecInitCallback	_cb_exec_init;
 
 	WTSVariant*			_config;
 	TraderAdapterMgr	_traders;

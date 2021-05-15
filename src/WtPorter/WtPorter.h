@@ -25,6 +25,10 @@ extern "C"
 								FuncHftChannelCallback cbChnl, FuncHftOrdCallback cbOrd, FuncHftTrdCallback cbTrd, FuncHftEntrustCallback cbEntrust,
 								FuncStraOrdDtlCallback cbOrdDtl, FuncStraOrdQueCallback cbOrdQue, FuncStraTransCallback cbTrans, FuncSessionEvtCallback cbSessEvt);
 
+	EXPORT_FLAG void		register_parser_callbacks(FuncParserEvtCallback cbEvt, FuncParserSubCallback cbSub);
+
+	EXPORT_FLAG void		register_exec_callbacks(FuncExecInitCallback cbInit, FuncExecCmdCallback cbExec);
+
 	EXPORT_FLAG	void		init_porter(const char* logCfg, bool isFile);
 
 	EXPORT_FLAG	void		config_porter(const char* cfgfile, bool isFile);
@@ -44,6 +48,10 @@ extern "C"
 	EXPORT_FLAG	bool		reg_exe_factories(const char* factFolder);
 
 	EXPORT_FLAG	void		release_porter();
+
+	EXPORT_FLAG	bool		create_ext_parser(const char* id);
+
+	EXPORT_FLAG	bool		create_ext_executer(const char* id);
 
 	//////////////////////////////////////////////////////////////////////////
 	//CTA²ßÂÔ½Ó¿Ú

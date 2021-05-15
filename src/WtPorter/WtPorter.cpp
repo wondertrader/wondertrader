@@ -132,6 +132,26 @@ void register_hft_callbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cb
 	getRunner().registerHftCallbacks(cbInit, cbTick, cbBar, cbChnl, cbOrd, cbTrd, cbEntrust, cbOrdDtl, cbOrdQue, cbTrans, cbSessEvt);
 }
 
+void register_parser_callbacks(FuncParserEvtCallback cbEvt, FuncParserSubCallback cbSub)
+{
+	getRunner().registerParserPorter(cbEvt, cbSub);
+}
+
+void register_exec_callbacks(FuncExecInitCallback cbInit, FuncExecCmdCallback cbExec)
+{
+	getRunner().registerExecuterPorter(cbInit, cbExec);
+}
+
+bool create_ext_parser(const char* id)
+{
+	return getRunner().createExtParser(id);
+}
+
+bool create_ext_executer(const char* id)
+{
+	return getRunner().createExtExecuter(id);
+}
+
 void init_porter(const char* logProfile, bool isFile)
 {
 	static bool inited = false;

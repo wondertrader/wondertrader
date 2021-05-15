@@ -80,10 +80,6 @@ bool ParserAdapter::initExt(const char* id, IParserApi* api, IParserStub* stub, 
 			WTSLogger::log_dyn("parser", _id.c_str(), LL_ERROR, "[%s] Parser initializing failed: api initializing failed...", _id.c_str());
 		}
 	}
-	else
-	{
-		WTSLogger::log_dyn("parser", _id.c_str(), LL_ERROR, "[%s] Parser initializing failed: creating api failed...", _id.c_str());
-	}
 
 	return true;
 }
@@ -249,7 +245,10 @@ void ParserAdapter::release()
 		_parser_api->release();
 	}
 
-	_remover(_parser_api);
+	if (_remover)
+		_remover(_parser_api);
+	else
+		delete _parser_api;
 }
 
 bool ParserAdapter::run()

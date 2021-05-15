@@ -3,6 +3,11 @@
 
 extern WtRtRunner& getRunner();
 
+void ExpExecuter::init()
+{
+	getRunner().executer_init(_id.c_str());
+}
+
 void ExpExecuter::set_position(const faster_hashmap<std::string, double>& targets)
 {
 	for(auto& v : targets)
