@@ -1,6 +1,6 @@
 ![WonderTrader2.png](http://wt.f-sailors.cn/wt/logo_qcode_noad.jpg)
 <p align="center">
-    <img src ="https://img.shields.io/badge/version-0.6.3-blueviolet.svg"/>
+    <img src ="https://img.shields.io/badge/version-0.6.4-blueviolet.svg"/>
     <img src ="https://img.shields.io/badge/platform-windows|linux-yellow.svg"/>
     <img src ="https://img.shields.io/badge/build-passing-brightgreen"/>
     <img src ="https://img.shields.io/badge/license-MIT-orange"/>
@@ -90,9 +90,6 @@
     ``` shell
     pip install wtpy
     ```
-
-#### 特别感谢
-* `WonderTrader`开源以后，虽然没有专门进行过推广，但是也吸引了一些愿意第一批吃螃蟹的用户。`WonderTrader`还不够成熟的当下，还能够得到这些用户的认可，这是`WonderTrader`开发团队的荣幸。在这里要特别感谢@sibaba8888，他提出了不少宝贵的改进意见，同时也要感谢@sunphoenix，他给我们也提供了很多的有用的信息。
 
 #### 写在最后
 * * *
