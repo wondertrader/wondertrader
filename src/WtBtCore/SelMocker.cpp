@@ -208,7 +208,7 @@ void SelMocker::on_init()
 	if (_strategy)
 		_strategy->on_init(this);
 
-	WTSLogger::info("Strategy initialized");
+	WTSLogger::info("SEL Strategy initialized, with slippage: %d", _slippage);
 }
 
 void SelMocker::update_dyn_profit(const char* stdCode, double price)

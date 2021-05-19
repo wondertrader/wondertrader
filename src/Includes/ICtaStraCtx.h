@@ -62,6 +62,8 @@ public:
 	virtual uint32_t stra_get_date() = 0;
 	virtual uint32_t stra_get_time() = 0;
 
+	virtual double stra_get_fund_data(int flag = 0) = 0;
+
 	virtual uint64_t stra_get_first_entertime(const char* stdCode) = 0;
 	virtual uint64_t stra_get_last_entertime(const char* stdCode) = 0;
 	virtual uint64_t stra_get_last_exittime(const char* stdCode) = 0;

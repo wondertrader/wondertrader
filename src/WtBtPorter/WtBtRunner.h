@@ -50,9 +50,9 @@ public:
 		_cb_evt = cbEvt;
 	}
 
-	uint32_t	initCtaMocker(const char* name);
+	uint32_t	initCtaMocker(const char* name, int32_t slippage = 0);
 	uint32_t	initHftMocker(const char* name);
-	uint32_t	initSelMocker(const char* name, uint32_t date, uint32_t time, const char* period, const char* trdtpl = "CHINA", const char* session = "TRADING");
+	uint32_t	initSelMocker(const char* name, uint32_t date, uint32_t time, const char* period, const char* trdtpl = "CHINA", const char* session = "TRADING", int32_t slippage = 0);
 
 	void	ctx_on_init(uint32_t id, EngineType eType);
 	void	ctx_on_session_event(uint32_t id, uint32_t curTDate, bool isBegin = true, EngineType eType = ET_CTA);

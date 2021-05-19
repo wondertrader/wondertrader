@@ -27,11 +27,11 @@ extern "C"
 
 	EXPORT_FLAG	void		config_backtest(const char* cfgfile, bool isFile);
 
-	EXPORT_FLAG	CtxHandler	init_cta_mocker(const char* name);
+	EXPORT_FLAG	CtxHandler	init_cta_mocker(const char* name, int32_t slippage = 0);
 
 	EXPORT_FLAG	CtxHandler	init_hft_mocker(const char* name);
 
-	EXPORT_FLAG	CtxHandler	init_sel_mocker(const char* name, uint32_t date, uint32_t time, const char* period, const char* trdtpl = "CHINA", const char* session = "TRADING");
+	EXPORT_FLAG	CtxHandler	init_sel_mocker(const char* name, uint32_t date, uint32_t time, const char* period, const char* trdtpl = "CHINA", const char* session = "TRADING", int32_t slippage = 0);
 
 	EXPORT_FLAG	void		run_backtest();
 
@@ -70,6 +70,8 @@ extern "C"
 	EXPORT_FLAG	void		cta_set_position(CtxHandler cHandle, const char* stdCode, double qty, const char* uesrTag, double limitprice, double stopprice);
 
 	EXPORT_FLAG	double 		cta_get_price(const char* stdCode);
+
+	EXPORT_FLAG	double		cta_get_fund_data(CtxHandler cHandle, int flag);
 
 	EXPORT_FLAG	WtUInt32 	cta_get_tdate();
 

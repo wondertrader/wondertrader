@@ -915,7 +915,7 @@ bool WtEngine::init_riskmon(WTSVariant* cfg)
 	if (!cfg->getBoolean("active"))
 		return false;
 
-	const char* module = cfg->getCString("module");
+	std::string module = DLLHelper::wrap_module(cfg->getCString("module"));
 	//先看工作目录下是否有对应模块
 	std::string dllpath = WtHelper::getCWD() + module;
 	//如果没有,则再看模块目录,即dll同目录下
@@ -933,7 +933,7 @@ bool WtEngine::init_riskmon(WTSVariant* cfg)
 	if (creator == NULL)
 	{
 		DLLHelper::free_library(hInst);
-		WTSLogger::info2("risk", "Riskmon module %s is not compatible", module);
+		WTSLogger::info2("risk", "Riskmon module %s is not compatible", module.c_str());
 		return false;
 	}
 

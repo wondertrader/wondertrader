@@ -106,6 +106,8 @@ public:
 	virtual uint32_t stra_get_date() override;
 	virtual uint32_t stra_get_time() override;
 
+	virtual double stra_get_fund_data(int flag /* = 0 */) override;
+
 	virtual uint64_t stra_get_first_entertime(const char* stdCode) override;
 	virtual uint64_t stra_get_last_entertime(const char* stdCode) override;
 	virtual uint64_t stra_get_last_exittime(const char* stdCode) override;

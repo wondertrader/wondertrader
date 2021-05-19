@@ -1355,6 +1355,23 @@ uint32_t CtaStraBaseCtx::stra_get_time()
 	return _engine->get_min_time();
 }
 
+double CtaStraBaseCtx::stra_get_fund_data(int flag )
+{
+	switch (flag)
+	{
+	case 0:
+		return _fund_info._total_profit - _fund_info._total_fees + _fund_info._total_dynprofit;
+	case 1:
+		return _fund_info._total_profit;
+	case 2:
+		return _fund_info._total_dynprofit;
+	case 3:
+		return _fund_info._total_fees;
+	default:
+		return 0.0;
+	}
+}
+
 void CtaStraBaseCtx::stra_log_text(const char* fmt, ...)
 {
 	char szBuf[256] = { 0 };

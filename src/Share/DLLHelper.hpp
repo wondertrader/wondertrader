@@ -51,4 +51,19 @@ public:
 		return dlsym(handle, name);
 #endif
 	}
+
+	static std::string wrap_module(const char* name)
+	{
+
+#ifdef _WIN32
+		std::string ret = name;
+		ret += ".dll";
+		return ret;
+#else
+		std::string ret("lib");
+		ret += name;
+		ret += ".so";
+		return ret;
+#endif
+	}
 };

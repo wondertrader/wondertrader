@@ -227,7 +227,7 @@ void CtaMocker::on_init()
 	if (_strategy)
 		_strategy->on_init(this);
 
-	WTSLogger::info("Strategy initialized");
+	WTSLogger::info("CTA Strategy initialized, with slippage: %d", _slippage);
 }
 
 void CtaMocker::update_dyn_profit(const char* stdCode, double price)
@@ -1005,6 +1005,23 @@ uint32_t CtaMocker::stra_get_date()
 uint32_t CtaMocker::stra_get_time()
 {
 	return _replayer->get_min_time();
+}
+
+double CtaMocker::stra_get_fund_data(int flag)
+{
+	switch (flag)
+	{
+	case 0:
+		return _fund_info._total_profit - _fund_info._total_fees + _fund_info._total_dynprofit;
+	case 1:
+		return _fund_info._total_profit;
+	case 2:
+		return _fund_info._total_dynprofit;
+	case 3:
+		return _fund_info._total_fees;
+	default:
+		return 0.0;
+	}
 }
 
 void CtaMocker::stra_log_text(const char* fmt, ...)

@@ -418,6 +418,15 @@ double cta_get_position(CtxHandler cHandle, const char* stdCode, const char* ope
 	return ctx->stra_get_position(stdCode, openTag);
 }
 
+double cta_get_fund_data(CtxHandler cHandle, int flag)
+{
+	CtaContextPtr ctx = getRunner().getCtaContext(cHandle);
+	if (ctx == NULL)
+		return 0;
+
+	return ctx->stra_get_fund_data(flag);
+}
+
 
 void cta_set_position(CtxHandler cHandle, const char* stdCode, double qty, const char* userTag, double limitprice, double stopprice)
 {

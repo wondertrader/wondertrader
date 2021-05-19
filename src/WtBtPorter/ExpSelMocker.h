@@ -4,7 +4,7 @@
 class ExpSelMocker : public SelMocker
 {
 public:
-	ExpSelMocker(HisDataReplayer* replayer, const char* name);
+	ExpSelMocker(HisDataReplayer* replayer, const char* name, int32_t slippage = 0);
 	virtual ~ExpSelMocker();
 
 public:

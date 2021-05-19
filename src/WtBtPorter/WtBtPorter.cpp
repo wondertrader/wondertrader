@@ -192,9 +192,9 @@ void write_log(unsigned int level, const char* message, const char* catName)
 	}
 }
 
-CtxHandler init_cta_mocker(const char* name)
+CtxHandler init_cta_mocker(const char* name, int32_t slippage/* = 0*/)
 {
-	return getRunner().initCtaMocker(name);
+	return getRunner().initCtaMocker(name, slippage);
 }
 
 CtxHandler init_hft_mocker(const char* name)
@@ -202,9 +202,9 @@ CtxHandler init_hft_mocker(const char* name)
 	return getRunner().initHftMocker(name);
 }
 
-CtxHandler init_sel_mocker(const char* name, uint32_t date, uint32_t time, const char* period, const char* trdtpl/* = "CHINA"*/, const char* session/* = "TRADING"*/)
+CtxHandler init_sel_mocker(const char* name, uint32_t date, uint32_t time, const char* period, const char* trdtpl/* = "CHINA"*/, const char* session/* = "TRADING"*/, int32_t slippage/* = 0*/)
 {
-	return getRunner().initSelMocker(name, date, time, period);
+	return getRunner().initSelMocker(name, date, time, period, trdtpl, session, slippage);
 }
 
 #pragma region "CTA²ßÂÔ½Ó¿Ú"
@@ -383,6 +383,15 @@ double cta_get_position(CtxHandler cHandle, const char* stdCode, const char* ope
 		return 0;
 
 	return ctx->stra_get_position(stdCode, openTag);
+}
+
+double cta_get_fund_data(CtxHandler cHandle, int flag)
+{
+	CtaMocker* ctx = getRunner().cta_mocker();
+	if (ctx == NULL)
+		return 0;
+
+	return ctx->stra_get_fund_data(flag);
 }
 
 void cta_set_position(CtxHandler cHandle, const char* stdCode, double qty, const char* userTag, double limitprice, double stopprice)
