@@ -59,9 +59,8 @@ private:
 
 	bool				m_bStopped;
 
-	typedef std::set<std::string>	ExchgFilter;
-	ExchgFilter		m_exchgFilter;
-	ExchgFilter		m_codeFilter;
+	typedef std::set<std::string>	CodeFilter;
+	CodeFilter		m_codeFilters;
 };
 
 typedef std::shared_ptr<ParserAdapter>	ParserAdapterPtr;

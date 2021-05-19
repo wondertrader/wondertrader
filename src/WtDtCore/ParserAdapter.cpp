@@ -40,7 +40,7 @@ ParserAdapter::~ParserAdapter()
 
 bool ParserAdapter::isExchgValid(const char* exchg)
 {
-	if (!m_exchgFilter.empty() && (m_exchgFilter.find(exchg) == m_exchgFilter.end()))
+	if (!m_codeFilters.empty() && (m_codeFilters.find(exchg) == m_codeFilters.end()))
 		return false;
 
 	return true;
@@ -50,7 +50,7 @@ bool ParserAdapter::isCodeValid(const char* code, const char* exchg)
 {
 	static char fullcode[MAX_INSTRUMENT_LENGTH] = { 0 };
 	sprintf(fullcode, "%s.%s", exchg, code);
-	if (!m_codeFilter.empty() && (m_codeFilter.find(fullcode) == m_codeFilter.end()))
+	if (!m_codeFilters.empty() && (m_codeFilters.find(fullcode) == m_codeFilters.end()))
 		return false;
 
 	return true;
@@ -68,18 +68,7 @@ bool ParserAdapter::initAdapter(WTSParams* params, FuncCreateParser funcCreate, 
 		auto it = ayFilter.begin();
 		for(; it != ayFilter.end(); it++)
 		{
-			m_exchgFilter.insert(*it);
-		}
-	}
-	
-	std::string strCodes = params->getString("code");
-	if (!strCodes.empty())
-	{
-		const StringVector &ayCodes = StrUtil::split(strCodes, ",");
-		auto it = ayCodes.begin();
-		for (; it != ayCodes.end(); it++)
-		{
-			m_codeFilter.insert(*it);
+			m_codeFilters.insert(*it);
 		}
 	}
 
@@ -92,56 +81,31 @@ bool ParserAdapter::initAdapter(WTSParams* params, FuncCreateParser funcCreate, 
 		if(m_pParser->init(params))
 		{
 			ContractSet contractSet;
-			if (!m_codeFilter.empty())//优先判断合约过滤器
+			WTSArray* ayContract = m_bdMgr->getContracts();
+			WTSArray::Iterator it = ayContract->begin();
+			for (; it != ayContract->end(); it++)
 			{
-				ExchgFilter::iterator it = m_codeFilter.begin();
-				for (; it != m_codeFilter.end(); it++)
+				WTSContractInfo* contract = STATIC_CONVERT(*it, WTSContractInfo*);
+
+				const char * fullCode = contract->getFullCode();
+				//如果代码过滤器不为空，则进行过滤
+				if (!m_codeFilters.empty())
 				{
-					//全代码,形式如SSE.600000,期货代码为CFFEX.IF2005
-					std::string code, exchg;
-					auto ay = StrUtil::split((*it).c_str(), ".");
-					if (ay.size() == 1)
-						code = ay[0];
-					else
+					for (auto& fItem : m_codeFilters)
 					{
-						exchg = ay[0];
-						code = ay[1];
+						//如果fullcode（格式如CFFEX.IF2106），按照过滤器项的长度进行比较，如果匹配，则订阅
+						if (strncmp(fullCode, fItem.c_str(), fItem.size()) == 0)
+							contractSet.insert(contract->getFullCode());
 					}
-					WTSContractInfo* contract = m_bdMgr->getContract(code.c_str(), exchg.c_str());
-					WTSCommodityInfo* pCommInfo = m_bdMgr->getCommodity(contract);
+				}
+				else
+				{
 					contractSet.insert(contract->getFullCode());
 				}
 			}
-			else if(!m_exchgFilter.empty())//再判断交易所过滤器
-			{
-				ExchgFilter::iterator it = m_exchgFilter.begin();
-				for(; it != m_exchgFilter.end(); it++)
-				{
-					WTSArray* ayContract = m_bdMgr->getContracts((*it).c_str());
-					WTSArray::Iterator it = ayContract->begin();
-					for(; it != ayContract->end(); it++)
-					{
-						WTSContractInfo* contract = STATIC_CONVERT(*it, WTSContractInfo*);
-						WTSCommodityInfo* pCommInfo = m_bdMgr->getCommodity(contract);
-						contractSet.insert(contract->getFullCode());
-					}
 
-					ayContract->release();
-				}
-			}
-			else//最后才是全订阅
-			{
-				WTSArray* ayContract = m_bdMgr->getContracts();
-				WTSArray::Iterator it = ayContract->begin();
-				for(; it != ayContract->end(); it++)
-				{
-					WTSContractInfo* contract = STATIC_CONVERT(*it, WTSContractInfo*);
-					WTSCommodityInfo* pCommInfo = m_bdMgr->getCommodity(contract);
-					contractSet.insert(contract->getFullCode());
-				}
+			ayContract->release();
 
-				ayContract->release();
-			}
 			m_pParser->subscribe(contractSet);
 			m_pParser->connect();
 			contractSet.clear();			
