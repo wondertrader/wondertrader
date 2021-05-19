@@ -151,11 +151,11 @@ void dump_bars(WtString binFolder, WtString csvFolder, WtString strFilter /* = "
 				<< curBar.high << ","
 				<< curBar.low << ","
 				<< curBar.close << ","
-				<< curBar.settle << ","
-				<< curBar.money << ","
 				<< curBar.vol << ","
+				<< curBar.money << ","
 				<< curBar.hold << ","
-				<< curBar.add << std::endl;
+				<< curBar.add << ","
+				<< curBar.settle << std::endl;
 		}
 
 		BoostFile::write_file_contents(filename.c_str(), ss.str().c_str(), (uint32_t)ss.str().size());
@@ -363,6 +363,8 @@ void trans_csv_bars(WtString csvFolder, WtString binFolder, WtString period, Fun
 				bs.hold = strtod(ay[8].c_str(), NULL);
 			if (ay.size() > 9)
 				bs.add = strtod(ay[9].c_str(), NULL);
+			if (ay.size() > 10)
+				bs.settle = strtod(ay[10].c_str(), NULL);
 			bars.emplace_back(bs);
 
 			if (bars.size() % 1000 == 0)

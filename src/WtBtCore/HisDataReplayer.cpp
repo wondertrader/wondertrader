@@ -2583,6 +2583,8 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 				bs.hold = strtod(ay[8].c_str(), NULL);
 			if (ay.size() > 9)
 				bs.add = strtod(ay[9].c_str(), NULL);
+			if (ay.size() > 10)
+				bs.settle = strtod(ay[10].c_str(), NULL);
 			barList._bars.emplace_back(bs);
 
 			if (barList._bars.size() % 1000 == 0)
