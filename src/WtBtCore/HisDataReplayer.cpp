@@ -2484,19 +2484,25 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
 
 	std::string pname;
+	std::string dirname;
 	switch (period)
 	{
-	case KP_Minute1: pname = "m1"; break;
-	case KP_Minute5: pname = "m5"; break;
-	case KP_DAY: pname = "d"; break;
+	case KP_Minute1: pname = "m1"; dirname = "min1"; break;
+	case KP_Minute5: pname = "m5"; dirname = "min5"; break;
+	case KP_DAY: pname = "d"; dirname = "day"; break;
 	default: pname = ""; break;
 	}
 
 	std::stringstream ss;
-	ss << _base_dir << "bin/";
+	ss << _base_dir << "bin/" << dirname << "/" << cInfo._exchg << "/";
 	if (!StdFile::exists(ss.str().c_str()))
 		BoostFile::create_directories(ss.str().c_str());
-	ss << stdCode << "_" << pname << ".dsb";
+	if(cInfo._hot && cInfo._category == CC_Future)
+	{
+		ss << cInfo._exchg << "." << cInfo._product << "_HOT.dsb";
+	}
+	else
+		ss << cInfo._code << ".dsb";
 	std::string filename = ss.str();
 	if (StdFile::exists(filename.c_str()))
 	{
@@ -2571,6 +2577,12 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 			bs.low = strtod(ay[4].c_str(), NULL);
 			bs.close = strtod(ay[5].c_str(), NULL);
 			bs.vol = strtoul(ay[6].c_str(), NULL, 10);
+			if(ay.size() > 7)
+				bs.money = strtod(ay[7].c_str(), NULL);
+			if (ay.size() > 8)
+				bs.hold = strtod(ay[8].c_str(), NULL);
+			if (ay.size() > 9)
+				bs.add = strtod(ay[9].c_str(), NULL);
 			barList._bars.emplace_back(bs);
 
 			if (barList._bars.size() % 1000 == 0)
