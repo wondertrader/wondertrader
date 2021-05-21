@@ -42,11 +42,14 @@ public:
 	static const std::string& getInstDir() { return _inst_dir; }
 	static void setInstDir(const char* inst_dir){ _inst_dir = inst_dir; }
 
+	static void setGenerateDir(const char* gen_dir) { _gen_dir = gen_dir; }
+
 private:
 	static uint32_t		_cur_date;	//当前日期
 	static uint32_t		_cur_time;	//当前时间, 以分钟为准
 	static uint32_t		_cur_secs;	//当前秒数, 包含毫秒
 	static uint32_t		_cur_tdate;	//当前交易日private:
-	static std::string	_inst_dir;
+	static std::string	_inst_dir;	//实例所在目录
+	static std::string	_gen_dir;	//生成文件输出目录
 };
 

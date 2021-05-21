@@ -25,6 +25,7 @@ uint32_t WtHelper::_cur_time = 0;
 uint32_t WtHelper::_cur_secs = 0;
 uint32_t WtHelper::_cur_tdate = 0;
 std::string WtHelper::_inst_dir;
+std::string WtHelper::_gen_dir = "./generated/";
 
 
 std::string WtHelper::getCWD()
@@ -52,40 +53,40 @@ std::string WtHelper::getModulePath(const char* moduleName, const char* subDir, 
 
 const char* WtHelper::getStraDataDir()
 {
-	static const char* folder = "./generated/stradata/";
-	if (!StdFile::exists(folder))
+	static std::string folder = StrUtil::standardisePath(_gen_dir) + "stradata/";
+	if (!StdFile::exists(folder.c_str()))
 		boost::filesystem::create_directories(folder);
-	return folder;
+	return folder.c_str();
 }
 
 const char* WtHelper::getStraUsrDatDir()
 {
-	static const char* folder = "./generated/userdata/";
-	if (!StdFile::exists(folder))
+	static std::string folder = StrUtil::standardisePath(_gen_dir) + "userdata/";
+	if (!StdFile::exists(folder.c_str()))
 		boost::filesystem::create_directories(folder);
-	return folder;
+	return folder.c_str();
 }
 
 const char* WtHelper::getPortifolioDir()
 {
-	static const char* folder = "./generated/portfolio/";
-	if (!StdFile::exists(folder))
+	static std::string folder = StrUtil::standardisePath(_gen_dir) + "portfolio/";
+	if (!StdFile::exists(folder.c_str()))
 		boost::filesystem::create_directories(folder);
-	return folder;
+	return folder.c_str();
 }
 
 const char* WtHelper::getOutputDir()
 {
-	static const char* folder = "./generated/outputs/";
-	if (!StdFile::exists(folder))
+	static std::string folder = StrUtil::standardisePath(_gen_dir) + "outputs/";
+	if (!StdFile::exists(folder.c_str()))
 		boost::filesystem::create_directories(folder);
-	return folder;
+	return folder.c_str();
 }
 
 const char* WtHelper::getBaseDir()
 {
-	static const char* folder = "./generated/";
-	if (!StdFile::exists(folder))
+	static std::string folder = StrUtil::standardisePath(_gen_dir) + "generated/";
+	if (!StdFile::exists(folder.c_str()))
 		boost::filesystem::create_directories(folder);
-	return folder;
+	return folder.c_str();
 }
