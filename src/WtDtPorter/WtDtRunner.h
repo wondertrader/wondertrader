@@ -34,7 +34,7 @@ public:
 
 private:
 	void	initDataMgr(WTSVariant* config);
-	void	initParsers(WTSVariant* config);
+	void	initParsers(const char* filename);
 
 private:
 

@@ -91,9 +91,9 @@ void WtDtRunner::initialize(const char* cfgFile, const char* logCfg, const char*
 
 	initDataMgr(config->get("writer"));
 
-	m_stateMon.initialize("statemonitor.json", &m_baseDataMgr, &m_dataMgr);
+	m_stateMon.initialize(config->getCString("statemonitor"), &m_baseDataMgr, &m_dataMgr);
 
-	initParsers(config->get("parsers"));
+	initParsers(config->getCString("parsers"));
 
 	config->release();
 }
@@ -103,8 +103,17 @@ void WtDtRunner::initDataMgr(WTSVariant* config)
 	m_dataMgr.init(config, &m_baseDataMgr, &m_stateMon, &m_udpCaster);
 }
 
-void WtDtRunner::initParsers(WTSVariant* cfg)
+void WtDtRunner::initParsers(const char* filename)
 {
+	std::string json;
+	StdFile::read_file_content(filename, json);
+	rj::Document document;
+	document.Parse(json.c_str());
+
+	WTSVariant* config = WTSVariant::createObject();
+	jsonToVariant(document, config);
+	WTSVariant* cfg = config->get("parsers");
+
 	for (uint32_t idx = 0; idx < cfg->size(); idx++)
 	{
 		WTSVariant* cfgItem = cfg->get(idx);
@@ -151,4 +160,5 @@ void WtDtRunner::initParsers(WTSVariant* cfg)
 	}
 
 	WTSLogger::info("%u market data parsers loaded in total", ParserAdapterMgr::size());
+	config->release();
 }
