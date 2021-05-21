@@ -87,10 +87,36 @@ bool WtExecRunner::config(const char* cfgFile, bool isFile /* = true */)
 		return false;
 
 	//初始化行情通道
-	initParsers();
+	const char* cfgParser = _config->getCString("parsers");
+	if (StdFile::exists(cfgParser))
+	{
+		std::string json;
+		StdFile::read_file_content(cfgParser, json);
+
+		rj::Document document;
+		document.Parse(json.c_str());
+		WTSVariant* var = WTSVariant::createObject();
+		jsonToVariant(document, var);
+
+		initParsers(var);
+		var->release();
+	}
 
 	//初始化交易通道
-	initTraders();
+	const char* cfgTraders = _config->getCString("traders");
+	if (StdFile::exists(cfgTraders))
+	{
+		std::string json;
+		StdFile::read_file_content(cfgTraders, json);
+
+		rj::Document document;
+		document.Parse(json.c_str());
+		WTSVariant* var = WTSVariant::createObject();
+		jsonToVariant(document, var);
+
+		initTraders(var);
+		var->release();
+	}
 
 	initExecuters();
 
@@ -113,9 +139,9 @@ void WtExecRunner::run(bool bAsync /* = false */)
 	}
 }
 
-bool WtExecRunner::initParsers()
+bool WtExecRunner::initParsers(WTSVariant* cfgParser)
 {
-	WTSVariant* cfg = _config->get("parsers");
+	WTSVariant* cfg = cfgParser->get("parsers");
 	if (cfg == NULL)
 		return false;
 
@@ -179,9 +205,9 @@ bool WtExecRunner::initExecuters()
 	return true;
 }
 
-bool WtExecRunner::initTraders()
+bool WtExecRunner::initTraders(WTSVariant* cfgTrader)
 {
-	WTSVariant* cfg = _config->get("traders");
+	WTSVariant* cfg = cfgTrader->get("traders");
 	if (cfg == NULL || cfg->type() != WTSVariant::VT_Array)
 		return false;
 

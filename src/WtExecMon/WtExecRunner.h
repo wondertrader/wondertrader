@@ -59,8 +59,8 @@ public:
 	virtual uint32_t get_trading_day() override;
 
 private:
-	bool initTraders();
-	bool initParsers();
+	bool initTraders(WTSVariant* cfgTrader);
+	bool initParsers(WTSVariant* cfgParser);
 	bool initExecuters();
 	bool initDataMgr();
 	bool initActionPolicy();
