@@ -52,7 +52,7 @@ public:
 #endif
 	}
 
-	static std::string wrap_module(const char* name)
+	static std::string wrap_module(const char* name, const char* unixPrefix = "lib")
 	{
 
 #ifdef _WIN32
@@ -60,7 +60,7 @@ public:
 		ret += ".dll";
 		return ret;
 #else
-		std::string ret("lib");
+		std::string ret(unixPrefix);
 		ret += name;
 		ret += ".so";
 		return ret;
