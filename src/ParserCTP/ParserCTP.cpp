@@ -151,7 +151,7 @@ bool ParserCTP::init(WTSParams* config)
 	m_strBroker = config->getCString("broker");
 	m_strUserID = config->getCString("user");
 	m_strPassword = config->getCString("pass");
-	m_strFlowDir = StrUtil::standardisePath(params->getCString("flowdir"));
+	m_strFlowDir = StrUtil::standardisePath(config->getCString("flowdir"));
 
 	if (m_strFlowDir.empty())
 		m_strFlowDir = "CTPMDFlow";
