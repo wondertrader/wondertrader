@@ -84,7 +84,7 @@ WtRtRunner::~WtRtRunner()
 {
 }
 
-bool WtRtRunner::init(const char* logCfg /* = "logcfg.prop" */, bool isFile /* = true */)
+bool WtRtRunner::init(const char* logCfg /* = "logcfg.prop" */, bool isFile /* = true */, const char* genDir)
 {
 	if(isFile)
 	{
@@ -98,6 +98,7 @@ bool WtRtRunner::init(const char* logCfg /* = "logcfg.prop" */, bool isFile /* =
 	
 
 	WtHelper::setInstDir(getBinDir());
+	WtHelper::setGenerateDir(genDir);
 	return true;
 }
 
@@ -343,17 +344,18 @@ void WtRtRunner::hft_on_trade(uint32_t cHandle, WtUInt32 localid, const char* st
 
 bool WtRtRunner::config(const char* cfgFile, bool isFile /* = true */)
 {
-	std::string json;
-	if (isFile)
-		StdFile::read_file_content(cfgFile, json);
-	else
-		json = cfgFile;
-
-	rj::Document document;
-	document.Parse(json.c_str());
-
 	_config = WTSVariant::createObject();
-	jsonToVariant(document, _config);
+	{
+		std::string json;
+		if (isFile)
+			StdFile::read_file_content(cfgFile, json);
+		else
+			json = cfgFile;
+
+		rj::Document document;
+		document.Parse(json.c_str());
+		jsonToVariant(document, _config);
+	}
 
 	//基础数据文件
 	WTSVariant* cfgBF = _config->get("basefiles");
@@ -398,10 +400,36 @@ bool WtRtRunner::config(const char* cfgFile, bool isFile /* = true */)
 		return false;
 
 	//初始化行情通道
-	initParsers();
+	const char* cfgParser = _config->getCString("parsers");
+	if(StdFile::exists(cfgParser))
+	{
+		std::string json;
+		StdFile::read_file_content(cfgParser, json);
+
+		rj::Document document;
+		document.Parse(json.c_str());
+		WTSVariant* var = WTSVariant::createObject();
+		jsonToVariant(document, var);
+
+		initParsers(var);
+		var->release();
+	}
 
 	//初始化交易通道
-	initTraders();
+	const char* cfgTraders = _config->getCString("traders");
+	if (StdFile::exists(cfgTraders))
+	{
+		std::string json;
+		StdFile::read_file_content(cfgTraders, json);
+
+		rj::Document document;
+		document.Parse(json.c_str());
+		WTSVariant* var = WTSVariant::createObject();
+		jsonToVariant(document, var);
+
+		initTraders(var);
+		var->release();
+	}
 
 	//初始化事件推送器
 	initEvtNotifier();
@@ -585,9 +613,9 @@ bool WtRtRunner::initDataMgr()
 	return true;
 }
 
-bool WtRtRunner::initParsers()
+bool WtRtRunner::initParsers(WTSVariant* cfgParser)
 {
-	WTSVariant* cfg = _config->get("parsers");
+	WTSVariant* cfg = cfgParser->get("parsers");
 	if (cfg == NULL)
 		return false;
 
@@ -673,7 +701,7 @@ bool WtRtRunner::initEvtNotifier()
 	return true;
 }
 
-bool WtRtRunner::initTraders()
+bool WtRtRunner::initTraders(WTSVariant* cfgTrader)
 {
 	WTSVariant* cfg = _config->get("traders");
 	if (cfg == NULL || cfg->type() != WTSVariant::VT_Array)

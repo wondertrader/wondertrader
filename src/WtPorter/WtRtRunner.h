@@ -53,7 +53,7 @@ public:
 	/*
 	 *	≥ı ºªØ
 	 */
-	bool init(const char* logCfg = "logcfg.prop", bool isFile = true);
+	bool init(const char* logCfg = "logcfg.prop", bool isFile = true, const char* genDir = "");
 
 	bool config(const char* cfgFile, bool isFile = true);
 
@@ -148,8 +148,8 @@ public:
 	bool addSelFactories(const char* folder);
 
 private:
-	bool initTraders();
-	bool initParsers();
+	bool initTraders(WTSVariant* cfgTrader);
+	bool initParsers(WTSVariant* cfgParser);
 	bool initExecuters();
 	bool initDataMgr();
 	bool initEvtNotifier();
