@@ -180,6 +180,7 @@ protected:
 	std::string		m_strTag;
 
 	std::string		m_strUserName;
+	std::string		m_strFlowDir;
 
 	ITraderSpi*	m_sink;
 	uint64_t		m_uLastQryTime;

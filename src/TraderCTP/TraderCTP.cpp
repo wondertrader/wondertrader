@@ -153,19 +153,13 @@ bool TraderCTP::init(WTSParams* params)
 
 	m_strAppID = params->getCString("appid");
 	m_strAuthCode = params->getCString("authcode");
-
+	m_strFlowDir = StrUtil::standardisePath(params->getCString("flowdir"));
 
 	WTSParams* param = params->get("ctpmodule");
 	if (param != NULL)
 		m_strModule = getBinDir() + param->asCString();
 	else
-	{
-#ifdef _WIN32
-		m_strModule = getBinDir() + "thosttraderapi_se.dll";
-#else
-		m_strModule =  getBinDir() + "thosttraderapi_se.so";
-#endif
-	}
+		m_strModule = getBinDir() + DLLHelper::wrap_module("thosttraderapi_se", "");
 
 	m_hInstCTP = DLLHelper::load_library(m_strModule.c_str());
 #ifdef _WIN32
@@ -211,7 +205,7 @@ void TraderCTP::release()
 void TraderCTP::connect()
 {
 	std::stringstream ss;
-	ss << "./ctpdata/flows/" << m_strBroker << "/" << m_strUser << "/";
+	ss << m_strFlowDir << "flows/" << m_strBroker << "/" << m_strUser << "/";
 	boost::filesystem::create_directories(ss.str().c_str());
 	m_pUserAPI = m_funcCreator(ss.str().c_str());
 	m_pUserAPI->RegisterSpi(this);
@@ -646,7 +640,7 @@ void TraderCTP::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, CThos
 			m_strBroker.c_str(), m_strUser.c_str(), m_strAppID.c_str(), m_sessionID, pRspUserLogin->LoginTime);
 
 		std::stringstream ss;
-		ss << "./ctpdata/local/" << m_strBroker << "/";
+		ss << m_strFlowDir << "local/" << m_strBroker << "/";
 		std::string path = StrUtil::standardisePath(ss.str());
 		if (!StdFile::exists(path.c_str()))
 			boost::filesystem::create_directories(path.c_str());
