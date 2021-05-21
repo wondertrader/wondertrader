@@ -186,7 +186,7 @@ private:
 	typedef std::function<void()> TaskInfo;
 	std::queue<TaskInfo>	_tasks;
 	StdThreadPtr			_task_thrd;
-	StdUniqueMutex		_task_mtx;
+	StdUniqueMutex			_task_mtx;
 	StdCondVariable			_task_cond;
 
 	std::string		_base_dir;
@@ -202,6 +202,15 @@ private:
 	bool			_terminated;
 
 	bool			_save_tick_log;
+
+	bool			_disable_tick;
+	bool			_disable_min1;
+	bool			_disable_min5;
+	bool			_disable_day;
+
+	bool			_disable_trans;
+	bool			_disable_ordque;
+	bool			_disable_orddtl;
 	
 	std::map<std::string, uint32_t> _proc_date;
 
