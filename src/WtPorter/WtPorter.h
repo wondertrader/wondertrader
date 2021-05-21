@@ -29,7 +29,7 @@ extern "C"
 
 	EXPORT_FLAG void		register_exec_callbacks(FuncExecInitCallback cbInit, FuncExecCmdCallback cbExec);
 
-	EXPORT_FLAG	void		init_porter(const char* logCfg, bool isFile);
+	EXPORT_FLAG	void		init_porter(const char* logCfg, bool isFile, const char* genDir);
 
 	EXPORT_FLAG	void		config_porter(const char* cfgfile, bool isFile);
 

@@ -152,7 +152,7 @@ bool create_ext_executer(const char* id)
 	return getRunner().createExtExecuter(id);
 }
 
-void init_porter(const char* logProfile, bool isFile)
+void init_porter(const char* logProfile, bool isFile, const char* genDir)
 {
 	static bool inited = false;
 
@@ -162,7 +162,7 @@ void init_porter(const char* logProfile, bool isFile)
 	CMiniDumper::Enable(getModuleName(), true, WtHelper::getCWD().c_str());
 #endif
 
-	getRunner().init(logProfile, isFile);
+	getRunner().init(logProfile, isFile, genDir);
 
 	inited = true;
 }
