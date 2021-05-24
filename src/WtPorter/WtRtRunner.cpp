@@ -703,7 +703,7 @@ bool WtRtRunner::initEvtNotifier()
 
 bool WtRtRunner::initTraders(WTSVariant* cfgTrader)
 {
-	WTSVariant* cfg = _config->get("traders");
+	WTSVariant* cfg = cfgTrader->get("traders");
 	if (cfg == NULL || cfg->type() != WTSVariant::VT_Array)
 		return false;
 	
