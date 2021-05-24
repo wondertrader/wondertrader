@@ -102,3 +102,20 @@
 * 完善了回测框架中CTA仿真器CTAMocker中对条件单的处理
 * 新增一个tsl的robin_map库，替换unordered_map和unordered_set，处理速度提升5倍以上（robin_map官方宣传）
 * 增加了堆栈打印的模块，可以在崩溃时把堆栈信息输出到日志中，方便调试
+
+### 0.6.4
+* 性能调优
+* 调整了CTAMocker中的一些细节
+* 优化了C接口模块获取数据的接口如cta_get_bars、cta_get_ticks，可以提升调用层(wtpy)的性能
+* TraderCTPOpt模块中CashIn为权利金净收入，合并到平仓盈亏字段中
+* WtDtHelper模块增加了trans_bars和trans_ticks，用于通过C接口直接将数据转储到dsb文件
+* WtPorter新增了ExpParser和ExpExecuter两个类，用于与C接口的外接行情接入模块和执行模块进行交互
+* WtPorter模块接口增加向底层推送行情数据的接口parser_push_quote
+* 完善了WtDtCore中行情接入模块订阅过滤规则，统一改成filter参数
+* WtBtPorter模块和WtDtHelper模块，从CSV导入K线数据，添加了对更多字段的支持
+* CAT策略新增获取资金数据接口stra_get_fund_data
+* CTAMocker和SelMocker暴露设置滑点的地方
+* 增加自动补全动态库文件名的机制，目前主要适配好了风控模块、行情解析模块、交易模块、数据读写模块
+* WtDataWriter增加一些配置项，用于控制不同类型的数据是否落地
+* 将配置文件中的traders和parsers全部拆分成独立的配置文件
+* 其他细节优化
