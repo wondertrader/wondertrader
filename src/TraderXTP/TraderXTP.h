@@ -116,6 +116,7 @@ private:
 
 	std::string		_user;
 	std::string		_pass;
+	std::string		_flowdir;
 
 	std::string		_acckey;
 

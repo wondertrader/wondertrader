@@ -605,12 +605,12 @@ bool TraderXTP::init(WTSParams *params)
 
 	_quick = params->getBoolean("quick");	
 
-	m_strFlowDir = config->getCString("flowdir");
+	_flowdir = params->getCString("flowdir");
 
-	if (m_strFlowDir.empty())
-		m_strFlowDir = "XTPTDFlow";
+	if (_flowdir.empty())
+		_flowdir = "XTPTDFlow";
 
-	m_strFlowDir = StrUtil::standardisePath(m_strFlowDir);
+	_flowdir = StrUtil::standardisePath(_flowdir);
 
 	std::string module = params->getCString("xtpmodule");
 	if (module.empty()) module = "xtptraderapi";
@@ -669,7 +669,7 @@ void TraderXTP::reconnect()
 	}
 
 	std::stringstream ss;
-	ss << m_strFlowDir << "flows/" << _user << "/";
+	ss << _flowdir << "flows/" << _user << "/";
 	boost::filesystem::create_directories(ss.str().c_str());
 	_api = m_funcCreator(_client, ss.str().c_str(), XTP_LOG_LEVEL_DEBUG);			// ´´½¨UserApi
 	if (_api == NULL)
