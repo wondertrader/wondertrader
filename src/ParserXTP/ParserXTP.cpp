@@ -147,12 +147,12 @@ bool ParserXTP::init(WTSParams* config)
 
 	std::string module = config->getCString("xtpmodule");
 	if (module.empty())
-		module = DLLHelper::wrap_module("xtpquoteapi", "lib");
+		module = "xtpquoteapi";
 
 	std::string path = StrUtil::printf("%s/%s/", m_strFlowDir.c_str(), m_strUser.c_str());
 	BoostFile::create_directories(path.c_str());
 
-	std::string dllpath = getBinDir() + module;
+	std::string dllpath = getBinDir() + DLLHelper::wrap_module(module.c_str(), "lib");;
 	m_hInst = DLLHelper::load_library(dllpath.c_str());
 #ifdef _WIN32
 #	ifdef _WIN64

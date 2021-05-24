@@ -136,7 +136,7 @@ bool ParseriTap::init(WTSParams* config)
 	WTSParams* param = config->get("tapmodule");
 	std::string m_strModule;
 	if (param != NULL)
-		m_strModule = getBinDir() + config->asCString();
+		m_strModule = getBinDir() + DLLHelper::wrap_module(config->asCString(), "lib");
 	else
 		m_strModule = getBinDir() + DLLHelper::wrap_module("TapQuoteAPI", "lib");
 

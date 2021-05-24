@@ -153,8 +153,8 @@ bool ParserCTPMini::init(WTSParams* config)
 
 	std::string module = config->getCString("ctpmodule");
 	if (module.empty())
-		module = DLLHelper::wrap_module("thostmduserapi", "lib");
-	std::string dllpath = getBinDir() + module;
+		module = "thostmduserapi";
+	std::string dllpath = getBinDir() + DLLHelper::wrap_module(module.c_str(), "lib");;
 	m_hInstCTP = DLLHelper::load_library(dllpath.c_str());
 	std::string path = StrUtil::printf("%s/%s/%s/", m_strFlowDir.c_str(), m_strBroker.c_str(), m_strUserID.c_str());
 	if (!StdFile::exists(path.c_str()))
