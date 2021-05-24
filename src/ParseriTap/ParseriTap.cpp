@@ -138,13 +138,7 @@ bool ParseriTap::init(WTSParams* config)
 	if (param != NULL)
 		m_strModule = getBinDir() + config->asCString();
 	else
-	{
-#ifdef _WIN32
-		m_strModule = getBinDir() + "TapQuoteAPI.dll";
-#else
-		m_strModule = getBinDir() + "libTapQuoteAPI.so";
-#endif
-	}
+		m_strModule = getBinDir() + DLLHelper::wrap_module("TapQuoteAPI", "lib");
 
 	m_hInst = DLLHelper::load_library(m_strModule.c_str());
 	const char* creatorName = "CreateTapQuoteAPI";

@@ -144,20 +144,19 @@ bool ParserCTPMini::init(WTSParams* config)
 	m_strBroker = config->getCString("broker");
 	m_strUserID = config->getCString("user");
 	m_strPassword = config->getCString("pass");
+	m_strFlowDir = config->getCString("flowdir");
+
+	if (m_strFlowDir.empty())
+		m_strFlowDir = "CTPMiniMDFlow";
+
+	m_strFlowDir = StrUtil::standardisePath(m_strFlowDir);
 
 	std::string module = config->getCString("ctpmodule");
 	if (module.empty())
-	{
-
-#ifdef _WIN32
-		module = "thostmduserapi.dll";
-#else
-		module = "libthostmduserapi.so";
-#endif
-	}
+		module = DLLHelper::wrap_module("thostmduserapi", "lib");
 	std::string dllpath = getBinDir() + module;
 	m_hInstCTP = DLLHelper::load_library(dllpath.c_str());
-	std::string path = StrUtil::printf("ParserCTPMiniFlow/%s/%s/", m_strBroker.c_str(), m_strUserID.c_str());
+	std::string path = StrUtil::printf("%s/%s/%s/", m_strFlowDir.c_str(), m_strBroker.c_str(), m_strUserID.c_str());
 	if (!StdFile::exists(path.c_str()))
 	{
 		boost::filesystem::create_directories(boost::filesystem::path(path));

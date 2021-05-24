@@ -152,8 +152,7 @@ void ParserUDP::subscribe()
 	UDPReqPacket* req = (UDPReqPacket*)data.data();
 	req->_type = UDP_MSG_SUBSCRIBE;
 	uint32_t length = 0;
-	CodeSet::iterator it = _set_subs.begin();
-	for (; it != _set_subs.end(); it++)
+	for (auto& code : _set_subs)
 	{
 		if (length > 0)
 		{
@@ -161,8 +160,13 @@ void ParserUDP::subscribe()
 			length++;
 		}
 
-		strcpy(req->_data + length, (*it).c_str());
-		length += (*it).size();
+		std::size_t pos = code.find(".");
+		if (pos != std::string::npos)
+			strcpy(req->_data + length, (char*)code.c_str() + pos + 1);
+		else
+			strcpy(req->_data + length, code.c_str());
+
+		length += code.size();
 
 		if (length > 1000)
 		{

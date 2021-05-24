@@ -138,17 +138,18 @@ bool ParserXTP::init(WTSParams* config)
 	m_uClientID = config->getUInt32("clientid");
 	m_uHBInterval = config->getUInt32("hbinterval");
 	m_uBuffSize = config->getUInt32("buffsize");
+	m_strFlowDir = config->getCString("flowdir");
+
+	if (m_strFlowDir.empty())
+		m_strFlowDir = "XTPMDFlow";
+
+	m_strFlowDir = StrUtil::standardisePath(m_strFlowDir);
 
 	std::string module = config->getCString("xtpmodule");
 	if (module.empty())
-	{
-#ifdef _WIN32
-		module = "xtpquoteapi.dll";
-#else
-		module = "libxtpquoteapi.so";
-#endif
-	}
-	std::string path = StrUtil::printf("XTPParserFlow/%s/", m_strUser.c_str());
+		module = DLLHelper::wrap_module("xtpquoteapi", "lib");
+
+	std::string path = StrUtil::printf("%s/%s/", m_strFlowDir.c_str(), m_strUser.c_str());
 	BoostFile::create_directories(path.c_str());
 
 	std::string dllpath = getBinDir() + module;

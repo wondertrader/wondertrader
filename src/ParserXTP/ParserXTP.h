@@ -96,7 +96,7 @@ private:
 	uint32_t			m_uClientID;
 	std::string			m_strUser;
 	std::string			m_strPass;
-
+	std::string			m_strFlowDir;
 
 	XTP_PROTOCOL_TYPE	m_iProtocol;
 	uint32_t			m_uHBInterval;

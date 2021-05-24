@@ -98,6 +98,7 @@ private:
 	std::string			m_strUserID;
 	std::string			m_strPassword;
 	bool				m_bLocalTime;
+	std::string			m_strFlowDir;
 
 	CodeSet				m_filterSubs;
 

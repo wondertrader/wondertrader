@@ -151,10 +151,12 @@ bool ParserCTP::init(WTSParams* config)
 	m_strBroker = config->getCString("broker");
 	m_strUserID = config->getCString("user");
 	m_strPassword = config->getCString("pass");
-	m_strFlowDir = StrUtil::standardisePath(config->getCString("flowdir"));
+	m_strFlowDir = config->getCString("flowdir");
 
 	if (m_strFlowDir.empty())
 		m_strFlowDir = "CTPMDFlow";
+
+	m_strFlowDir = StrUtil::standardisePath(m_strFlowDir);
 
 	std::string module = config->getCString("ctpmodule");
 	if (module.empty())
@@ -471,31 +473,7 @@ void ParserCTP::subscribe(const CodeSet &vecSymbols)
 	else
 	{
 		m_filterSubs = vecSymbols;
-		char * subscribe[500] = {NULL};
-		int nCount = 0;
-		for (auto& code  : vecSymbols)
-		{
-			std::size_t pos = code.find(".");
-			if (pos != std::string::npos)
-				subscribe[nCount++] = (char*)code.c_str() + pos + 1;
-			else
-				subscribe[nCount++] = (char*)code.c_str();
-		}
-
-		if(m_pUserAPI && nCount > 0)
-		{
-			int iResult = m_pUserAPI->SubscribeMarketData(subscribe, nCount);
-			if (iResult != 0)
-			{
-				if (m_sink)
-					m_sink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserCTP] Sending md subscribe request failed: %d", iResult).c_str());
-			}
-			else
-			{
-				if (m_sink)
-					m_sink->handleParserLog(LL_INFO, StrUtil::printf("[ParserCTP] Market data of %u contracts subscribed in total", nCount).c_str());
-			}
-		}
+		SubscribeMarketData();
 	}
 }
 
