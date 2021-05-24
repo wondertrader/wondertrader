@@ -153,11 +153,16 @@ bool TraderCTP::init(WTSParams* params)
 
 	m_strAppID = params->getCString("appid");
 	m_strAuthCode = params->getCString("authcode");
-	m_strFlowDir = StrUtil::standardisePath(params->getCString("flowdir"));
+	m_strFlowDir = params->getCString("flowdir");
+
+	if (m_strFlowDir.empty())
+		m_strFlowDir = "CTPTDFlow";
+
+	m_strFlowDir = StrUtil::standardisePath(m_strFlowDir);
 
 	WTSParams* param = params->get("ctpmodule");
 	if (param != NULL)
-		m_strModule = getBinDir() + param->asCString();
+		m_strModule = getBinDir() + DLLHelper::wrap_module(param->asCString());
 	else
 		m_strModule = getBinDir() + DLLHelper::wrap_module("thosttraderapi_se", "");
 

@@ -605,16 +605,16 @@ bool TraderXTP::init(WTSParams *params)
 
 	_quick = params->getBoolean("quick");	
 
+	m_strFlowDir = config->getCString("flowdir");
+
+	if (m_strFlowDir.empty())
+		m_strFlowDir = "XTPTDFlow";
+
+	m_strFlowDir = StrUtil::standardisePath(m_strFlowDir);
+
 	std::string module = params->getCString("xtpmodule");
-	if (module.empty())
-	{
-#ifdef _WIN32
-		module = "xtptraderapi.dll";
-#else
-		module = "libxtptraderapi.so";
-#endif
-	}
-	std::string dllpath = getBinDir() + module;
+	if (module.empty()) module = "xtptraderapi";
+	std::string dllpath = getBinDir() + DLLHelper::wrap_module(module.c_str(), "lib");;
 
 	m_hInstXTP = DLLHelper::load_library(dllpath.c_str());
 #ifdef _WIN32
@@ -669,7 +669,7 @@ void TraderXTP::reconnect()
 	}
 
 	std::stringstream ss;
-	ss << "./xtpdata/flows/" << _user << "/";
+	ss << m_strFlowDir << "flows/" << _user << "/";
 	boost::filesystem::create_directories(ss.str().c_str());
 	_api = m_funcCreator(_client, ss.str().c_str(), XTP_LOG_LEVEL_DEBUG);			// ´´½¨UserApi
 	if (_api == NULL)

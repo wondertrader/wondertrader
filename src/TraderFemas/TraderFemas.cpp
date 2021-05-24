@@ -152,17 +152,18 @@ bool TraderFemas::init(WTSParams* params)
 	if (m_strQryFront.empty())
 		m_bQryOnline = true;
 
+	m_strFlowDir = params->getCString("flowdir");
+
+	if (m_strFlowDir.empty())
+		m_strFlowDir = "FemasTDFlow";
+
+	m_strFlowDir = StrUtil::standardisePath(m_strFlowDir);
+
 	WTSParams* param = params->get("ctpmodule");
 	if (param != NULL)
-		m_strModule = getBinDir() + param->asCString();
+		m_strModule = getBinDir() + DLLHelper::wrap_module(param->asCString(), "");
 	else
-	{
-#ifdef _WIN32
-		m_strModule = getBinDir() + "USTPtraderapiAF.dll";
-#else
-		m_strModule = getBinDir() + "libUSTPtraderapiAF.so";
-#endif
-	}
+		m_strModule = DLLHelper::wrap_module("USTPtraderapiAF", "lib");
 
 	m_hInstCTP = DLLHelper::load_library(m_strModule.c_str());
 #ifdef _WIN32
@@ -211,7 +212,7 @@ void TraderFemas::release()
 void TraderFemas::connect()
 {
 	std::stringstream ss;
-	ss << "./fmsdata/flows/" << m_strBroker << "/" << m_strUser << "/";
+	ss << m_strFlowDir << "flows/" << m_strBroker << "/" << m_strUser << "/";
 	std::string path = ss.str();
 	BoostFile::create_directories(path.c_str());
 	m_pUserAPI = m_funcCreator(path.c_str());

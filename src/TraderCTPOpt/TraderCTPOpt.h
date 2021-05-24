@@ -189,6 +189,7 @@ protected:
 
 	std::string		m_strAppID;
 	std::string		m_strAuthCode;
+	std::string		m_strFlowDir;
 
 	std::string		m_strProdInfo;
 

@@ -323,44 +323,12 @@ bool TraderiTap::init(WTSParams* params)
 
 	m_strCodePath = params->getCString("codepath");
 
-	//const char* symbolmap = params->getCString("symbolmap");
-	//if(strlen(symbolmap) > 0)
-	//{
-	//	StringVector ayKeys,ayVals;
-	//	int cout = IniFile::ReadConfigSectionKeyValueArray(ayKeys, ayVals, "Exchg", symbolmap);
-	//	for(int i = 0; i < cout; i++)
-	//	{
-	//		m_mapExchgIToO[ayKeys[i]] = ayVals[i];
-	//		m_mapExchgOToI[ayVals[i]] = ayKeys[i];
-	//	}
-
-	//	cout = IniFile::ReadConfigSectionKeyValueArray(ayKeys, ayVals, "Product", symbolmap);
-	//	for(int i = 0; i < cout; i++)
-	//	{
-	//		m_mapProductIToO[ayKeys[i]] = ayVals[i];
-	//		m_mapProductOToI[ayVals[i]] = ayKeys[i];
-	//	}
-
-	//	cout = IniFile::ReadConfigSectionKeyValueArray(ayKeys, ayVals, "Currency", symbolmap);
-	//	for (int i = 0; i < cout; i++)
-	//	{
-	//		m_mapCurrencyIToO[ayKeys[i]] = ayVals[i];
-	//		m_mapCurrencyOToI[ayVals[i]] = ayKeys[i];
-	//	}
-	//}
-
 
 	WTSParams* param = params->get("tapmodule");
 	if (param != NULL)
-		m_strModule = getBinDir() + param->asCString();
+		m_strModule = getBinDir() + DLLHelper::wrap_module(param->asCString(),"lib");
 	else
-	{
-#ifdef _WIN32
-		m_strModule = getBinDir() + "iTapTradeAPI.dll";
-#else
-		m_strModule = getBinDir() + "libthosttraderapi_se.so";
-#endif
-	}
+		m_strModule = getBinDir() + DLLHelper::wrap_module("iTapTradeAPI", "lib");
 
 	m_hInstESF = DLLHelper::load_library(m_strModule.c_str());
 	m_funcCreator = (ESFCreator)DLLHelper::get_symbol(m_hInstESF, "CreateITapTradeAPI");

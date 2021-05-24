@@ -147,18 +147,18 @@ bool TraderCTPMini::init(WTSParams* params)
 	m_strAppID = params->getCString("appid");
 	m_strAuthCode = params->getCString("authcode");
 
+	m_strFlowDir = params->getCString("flowdir");
+
+	if (m_strFlowDir.empty())
+		m_strFlowDir = "CTPMiniTDFlow";
+
+	m_strFlowDir = StrUtil::standardisePath(m_strFlowDir);
 
 	WTSParams* param = params->get("ctpmodule");
 	if (param != NULL)
-		m_strModule = getBinDir() + param->asCString();
+		m_strModule = getBinDir() + DLLHelper::wrap_module(param->asCString(), "lib");
 	else
-	{
-#ifdef _WIN32
-		m_strModule = getBinDir() + "thosttraderapi.dll";
-#else
-		m_strModule =  getBinDir() + "libthosttraderapi.so";
-#endif
-	}
+		m_strModule = DLLHelper::wrap_module("thosttraderapi", "lib");
 
 	m_hInstCTP = DLLHelper::load_library(m_strModule.c_str());
 #ifdef _WIN32
