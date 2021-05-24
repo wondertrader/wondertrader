@@ -93,6 +93,7 @@
 
 #### 写在最后
 * * *
+* 特别感谢@ZerounNet，他在使用WonderTrader进行实盘交易的过程中也对WonderTrader提出了许多宝贵意见
 * 关注公众号`wondertrader`，可以收到`WonderTrader`的实时资讯
 * 用户交流QQ群上线：`610730738`(加入前请先`star`一下, 然后提供`github`用户名)
 * 更多`WonderTrader`的文档请看<https://wondertrader.github.io/>
