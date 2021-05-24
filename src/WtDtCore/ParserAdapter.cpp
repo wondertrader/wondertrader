@@ -38,24 +38,6 @@ ParserAdapter::~ParserAdapter()
 {
 }
 
-bool ParserAdapter::isExchgValid(const char* exchg)
-{
-	if (!m_codeFilters.empty() && (m_codeFilters.find(exchg) == m_codeFilters.end()))
-		return false;
-
-	return true;
-}
-
-bool ParserAdapter::isCodeValid(const char* code, const char* exchg)
-{
-	static char fullcode[MAX_INSTRUMENT_LENGTH] = { 0 };
-	sprintf(fullcode, "%s.%s", exchg, code);
-	if (!m_codeFilters.empty() && (m_codeFilters.find(fullcode) == m_codeFilters.end()))
-		return false;
-
-	return true;
-}
-
 bool ParserAdapter::initAdapter(WTSParams* params, FuncCreateParser funcCreate, FuncDeleteParser funcDelete)
 {
 	m_funcCreate = funcCreate;
@@ -146,8 +128,6 @@ void ParserAdapter::handleTransaction(WTSTransData* transData)
 	if (m_bStopped)
 		return;
 
-	if (!isExchgValid(transData->exchg()) || !isCodeValid(transData->code(), transData->exchg()))
-		return;
 
 	if (transData->actiondate() == 0 || transData->tradingdate() == 0)
 		return;
@@ -162,9 +142,6 @@ void ParserAdapter::handleTransaction(WTSTransData* transData)
 void ParserAdapter::handleOrderDetail(WTSOrdDtlData* ordDetailData)
 {
 	if (m_bStopped)
-		return;
-
-	if (!isExchgValid(ordDetailData->exchg()) || !isCodeValid(ordDetailData->code(), ordDetailData->exchg()))
 		return;
 
 	if (ordDetailData->actiondate() == 0 || ordDetailData->tradingdate() == 0)
@@ -182,9 +159,6 @@ void ParserAdapter::handleOrderQueue(WTSOrdQueData* ordQueData)
 	if (m_bStopped)
 		return;
 
-	if (!isExchgValid(ordQueData->exchg()) || !isCodeValid(ordQueData->code(), ordQueData->exchg()))
-		return;
-
 	if (ordQueData->actiondate() == 0 || ordQueData->tradingdate() == 0)
 		return;
 
@@ -198,9 +172,6 @@ void ParserAdapter::handleOrderQueue(WTSOrdQueData* ordQueData)
 void ParserAdapter::handleQuote( WTSTickData *quote, bool bNeedSlice )
 {
 	if (m_bStopped)
-		return;
-
-	if (!isExchgValid(quote->exchg()) || !isCodeValid(quote->code(), quote->exchg()))
 		return;
 
 	if (quote->actiondate() == 0 || quote->tradingdate() == 0)

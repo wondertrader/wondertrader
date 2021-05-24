@@ -47,10 +47,6 @@ public:
 	virtual IBaseDataMgr* getBaseDataMgr() override;
 
 private:
-	inline bool isExchgValid(const char* exchg);
-	inline bool isCodeValid(const char* code, const char* exchg);
-
-private:
 	IParserApi*			m_pParser;
 	FuncCreateParser	m_funcCreate;
 	FuncDeleteParser	m_funcDelete;
