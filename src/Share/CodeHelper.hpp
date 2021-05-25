@@ -28,8 +28,10 @@ public:
 		union
 		{
 			bool	_hot;		//是否是主力合约
-			bool	_exright;	//是否是复权代码,如SH600000Q
+			uint8_t	_exright;	//是否是复权代码,如SH600000Q: 0-不复权, 1-前复权, 2-后复权
 		};
+
+		inline bool isExright() const { return _exright != 0; }
 
 		_CodeInfo()
 		{
@@ -309,12 +311,17 @@ public:
 			if (ay[2].back() == 'Q')
 			{
 				strcpy(codeInfo._code, ay[2].substr(0, ay[2].size() - 1).c_str());
-				codeInfo._exright = true;
+				codeInfo._exright = 1;
+			}
+			else if (ay[2].back() == 'H')
+			{
+				strcpy(codeInfo._code, ay[2].substr(0, ay[2].size() - 1).c_str());
+				codeInfo._exright = 2;
 			}
 			else
 			{
 				strcpy(codeInfo._code, ay[2].c_str());
-				codeInfo._exright = false;
+				codeInfo._exright = 0;
 			}
 		}
 		else
