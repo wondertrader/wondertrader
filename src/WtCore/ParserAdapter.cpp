@@ -105,19 +105,23 @@ bool ParserAdapter::init(const char* id, WTSVariant* cfg, IParserStub* stub, IBa
 		if (cfg->getString("module").empty())
 			return false;
 
-		const char* module = cfg->getCString("module");
+		std::string module = DLLHelper::wrap_module(cfg->getCString("module"), "lib");;
 
-		//先看工作目录下是否有行情模块
-		std::string dllpath = WtHelper::getModulePath(module, "parsers", true);
+		//先看工作目录下是否有交易模块
+		std::string dllpath = WtHelper::getModulePath(module.c_str(), "parsers", true);
 		//如果没有,则再看模块目录,即dll同目录下
-		if(!StdFile::exists(dllpath.c_str()))
-			dllpath = WtHelper::getModulePath(module, "parsers", false);
+		if (!StdFile::exists(dllpath.c_str()))
+			dllpath = WtHelper::getModulePath(module.c_str(), "parsers", false);
 
 		DllHandle hInst = DLLHelper::load_library(dllpath.c_str());
 		if (hInst == NULL)
 		{
 			WTSLogger::log_dyn("parser", _id.c_str(), LL_ERROR, "[%s] Parser module %s loading failed", _id.c_str(), dllpath.c_str());
 			return false;
+		}
+		else
+		{
+			WTSLogger::log_dyn("parser", _id.c_str(), LL_INFO, "[%s] Parser module %s loaded", _id.c_str(), dllpath.c_str());
 		}
 
 		FuncCreateParser pFuncCreateParser = (FuncCreateParser)DLLHelper::get_symbol(hInst, "createParser");
