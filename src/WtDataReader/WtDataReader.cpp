@@ -1233,21 +1233,21 @@ bool WtDataReader::cacheHisBarsFromDB(const std::string& key, const char* stdCod
 			realCnt += hotAy->size();
 		}
 	}
-	else if (cInfo._exright && cInfo._category == CC_Stock)//如果是读取股票复权数据
+	else if (cInfo.isExright() && cInfo._category == CC_Stock)//如果是读取股票复权数据
 	{
 		std::vector<WTSBarStruct>* hotAy = NULL;
 		uint32_t lastQTime = 0;
 
 		do
 		{
-			//先直接读取复权过的历史数据,路径如/his/day/sse/SH600000Q.dsb
+			char flag = cInfo._exright == 1 ? 'Q' : 'H';
 			char sql[256] = { 0 };
 			if (isDay)
-				sprintf(sql, "SELECT `date`,0,open,high,low,close,settle,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%sQ' ORDER BY `date`;",
-					tbname.c_str(), cInfo._exchg, cInfo._code);
+				sprintf(sql, "SELECT `date`,0,open,high,low,close,settle,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%s%c' ORDER BY `date`;",
+					tbname.c_str(), cInfo._exchg, cInfo._code, flag);
 			else
-				sprintf(sql, "SELECT `date`,`time`,open,high,low,close,0,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%sQ' ORDER BY `time`;",
-					tbname.c_str(), cInfo._exchg, cInfo._code);
+				sprintf(sql, "SELECT `date`,`time`,open,high,low,close,0,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%s%c' ORDER BY `time`;",
+					tbname.c_str(), cInfo._exchg, cInfo._code, flag);
 
 			MysqlQuery query(*_db_conn);
 			if (!query.exec(sql))
@@ -1723,7 +1723,7 @@ bool WtDataReader::cacheHisBarsFromFile(const std::string& key, const char* stdC
 			realCnt += hotAy->size();
 		}
 	}
-	else if(cInfo._exright && cInfo._category == CC_Stock)//如果是读取股票复权数据
+	else if(cInfo.isExright() && cInfo._category == CC_Stock)//如果是读取股票复权数据
 	{
 		std::vector<WTSBarStruct>* hotAy = NULL;
 		uint32_t lastQTime = 0;
@@ -1731,8 +1731,9 @@ bool WtDataReader::cacheHisBarsFromFile(const std::string& key, const char* stdC
 		do
 		{
 			//先直接读取复权过的历史数据,路径如/his/day/sse/SH600000Q.dsb
+			char flag = cInfo._exright == 1 ? 'Q' : 'H';
 			std::stringstream ss;
-			ss << _base_dir << "his/" << pname << "/" << cInfo._exchg << "/" << cInfo._code << "Q.dsb";
+			ss << _base_dir << "his/" << pname << "/" << cInfo._exchg << "/" << cInfo._code << flag << ".dsb";
 			std::string filename = ss.str();
 			if (!StdFile::exists(filename.c_str()))
 				break;
