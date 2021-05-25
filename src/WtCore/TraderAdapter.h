@@ -84,6 +84,7 @@ public:
 	{
 		uint32_t	_order_times_boundary;
 		uint32_t	_order_stat_timespan;
+		uint32_t	_order_total_limits;
 
 		uint32_t	_cancel_times_boundary;
 		uint32_t	_cancel_stat_timespan;

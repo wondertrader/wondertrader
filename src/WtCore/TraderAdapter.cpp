@@ -135,6 +135,7 @@ bool TraderAdapter::init(const char* id, WTSVariant* params, IBaseDataMgr* bdMgr
 				rParam._cancel_times_boundary = vProdItem->getUInt32("cancel_times_boundary");
 				rParam._cancel_stat_timespan = vProdItem->getUInt32("cancel_stat_timespan");
 
+				rParam._order_total_limits = vProdItem->getUInt32("order_total_limits");
 				rParam._order_times_boundary = vProdItem->getUInt32("order_times_boundary");
 				rParam._order_stat_timespan = vProdItem->getUInt32("order_stat_timespan");
 
@@ -161,18 +162,22 @@ bool TraderAdapter::init(const char* id, WTSVariant* params, IBaseDataMgr* bdMgr
 	if (params->getString("module").empty())
 		return false;
 
-	const char* module = params->getCString("module");
+	std::string module = DLLHelper::wrap_module(params->getCString("module"), "lib");;
 
 	//先看工作目录下是否有交易模块
-	std::string dllpath = WtHelper::getModulePath(module, "traders", true);
+	std::string dllpath = WtHelper::getModulePath(module.c_str(), "traders", true);
 	//如果没有,则再看模块目录,即dll同目录下
 	if (!StdFile::exists(dllpath.c_str()))
-		dllpath = WtHelper::getModulePath(module, "traders", false);
+		dllpath = WtHelper::getModulePath(module.c_str(), "traders", false);
 	DllHandle hInst = DLLHelper::load_library(dllpath.c_str());
 	if (hInst == NULL)
 	{
 		WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR, "[%s] Loading trading module %s failed", _id.c_str(), dllpath.c_str());
 		return false;
+	}
+	else
+	{
+		WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO, "[%s] Trader module %s loaded", _id.c_str(), dllpath.c_str());
 	}
 
 	FuncCreateTrader pFunCreateTrader = (FuncCreateTrader)DLLHelper::get_symbol(hInst, "createTrader");
@@ -551,6 +556,15 @@ bool TraderAdapter::checkOrderLimits(const char* stdCode)
 	const RiskParams* riskPara = getRiskParams(stdCode);
 	if (riskPara == NULL)
 		return true;
+
+	WTSTradeStateInfo* statInfo = (WTSTradeStateInfo*)_stat_map->get(stdCode);
+	if (statInfo->total_orders() >= riskPara->_order_total_limits)
+	{
+		WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR, "[%s] %s entrust times %u beyond upper limit times %u, adding to excluding list",
+			_id.c_str(), stdCode, statInfo->total_orders(), riskPara->_order_total_limits);
+		_exclude_codes.insert(stdCode);
+		return false;
+	}
 
 	//撤单频率检查
 	auto it = _order_time_cache.find(stdCode);
