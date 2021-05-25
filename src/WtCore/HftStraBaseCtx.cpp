@@ -211,6 +211,12 @@ OrderIDs HftStraBaseCtx::stra_buy(const char* stdCode, double price, double qty,
 
 		_code_map[realCode] = stdCode;
 
+		if (_trader && !_trader->checkOrderLimits(realCode.c_str()))
+		{
+			stra_log_text("%s 已被禁止交易", realCode.c_str());
+			return OrderIDs();
+		}
+
 		auto ids = _trader->buy(realCode.c_str(), price, qty);
 		for(auto localid : ids)
 		{
@@ -220,6 +226,12 @@ OrderIDs HftStraBaseCtx::stra_buy(const char* stdCode, double price, double qty,
 	}
 	else
 	{
+		if (_trader && !_trader->checkOrderLimits(stdCode))
+		{
+			stra_log_text("%s 已被禁止交易", stdCode);
+			return OrderIDs();
+		}
+
 		auto ids = _trader->buy(stdCode, price, qty);
 		for (auto localid : ids)
 		{
@@ -240,6 +252,12 @@ OrderIDs HftStraBaseCtx::stra_sell(const char* stdCode, double price, double qty
 
 		_code_map[realCode] = stdCode;
 
+		if (_trader && !_trader->checkOrderLimits(realCode.c_str()))
+		{
+			stra_log_text("%s 已被禁止交易", realCode.c_str());
+			return OrderIDs();
+		}
+
 		auto ids = _trader->sell(realCode.c_str(), price, qty);
 		for (auto localid : ids)
 		{
@@ -249,6 +267,12 @@ OrderIDs HftStraBaseCtx::stra_sell(const char* stdCode, double price, double qty
 	}
 	else
 	{
+		if (_trader && !_trader->checkOrderLimits(stdCode))
+		{
+			stra_log_text("%s 已被禁止交易", stdCode);
+			return OrderIDs();
+		}
+
 		auto ids = _trader->sell(stdCode, price, qty);
 		for (auto localid : ids)
 		{
