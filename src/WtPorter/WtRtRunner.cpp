@@ -403,6 +403,7 @@ bool WtRtRunner::config(const char* cfgFile, bool isFile /* = true */)
 	const char* cfgParser = _config->getCString("parsers");
 	if(StdFile::exists(cfgParser))
 	{
+		WTSLogger::info("Reading parser configuration from %s……", cfgParser);
 		std::string json;
 		StdFile::read_file_content(cfgParser, json);
 
@@ -411,14 +412,20 @@ bool WtRtRunner::config(const char* cfgFile, bool isFile /* = true */)
 		WTSVariant* var = WTSVariant::createObject();
 		jsonToVariant(document, var);
 
-		initParsers(var);
+		if (!initParsers(var))
+			WTSLogger::error("Loading parsers failed");
 		var->release();
+	}
+	else
+	{
+		WTSLogger::error("Parser configuration %s not exists", cfgParser);
 	}
 
 	//初始化交易通道
 	const char* cfgTraders = _config->getCString("traders");
 	if (StdFile::exists(cfgTraders))
 	{
+		WTSLogger::info("Reading trader configuration from %s……", cfgTraders);
 		std::string json;
 		StdFile::read_file_content(cfgTraders, json);
 
@@ -427,8 +434,13 @@ bool WtRtRunner::config(const char* cfgFile, bool isFile /* = true */)
 		WTSVariant* var = WTSVariant::createObject();
 		jsonToVariant(document, var);
 
-		initTraders(var);
+		if (!initTraders(var))
+			WTSLogger::error("Loading traders failed");
 		var->release();
+	}
+	else
+	{
+		WTSLogger::error("Trader configuration %s not exists", cfgTraders);
 	}
 
 	//初始化事件推送器
