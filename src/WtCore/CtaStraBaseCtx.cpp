@@ -1166,9 +1166,9 @@ void CtaStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 		pInfo._details.emplace_back(dInfo);
 		pInfo._last_entertime = curTm;
 
-		double fee = _engine->calc_fee(stdCode, curPx, abs(qty), 0);
+		double fee = _engine->calc_fee(stdCode, curPx, abs(diff), 0);
 		_fund_info._total_fees += fee;
-		log_trade(stdCode, dInfo._long, true, curTm, curPx, abs(qty), userTag, fee);
+		log_trade(stdCode, dInfo._long, true, curTm, curPx, abs(diff), userTag, fee);
 	}
 	else
 	{//持仓方向和仓位变化方向不一致, 需要平仓
