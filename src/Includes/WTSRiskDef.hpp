@@ -83,6 +83,7 @@ public:
 	double cancelqty_sell() const{ return _trd_stat_info.s_canclqty; }
 
 	double total_cancels() const{ return _trd_stat_info.b_cancels + _trd_stat_info.s_cancels; }
+	double total_orders() const { return _trd_stat_info.b_orders + _trd_stat_info.s_orders; }
 
 private:
 	TradeStatInfo	_trd_stat_info;
