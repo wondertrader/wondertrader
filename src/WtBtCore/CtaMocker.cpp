@@ -960,7 +960,7 @@ WTSKlineSlice* CtaMocker::stra_get_bars(const char* stdCode, const char* period,
 		CodeHelper::extractStdCode(stdCode, cInfo);
 
 		std::string realCode = stdCode;
-		if(cInfo._category == CC_Stock && cInfo._exright)
+		if(cInfo._category == CC_Stock && cInfo.isExright())
 		{
 			realCode = cInfo._exchg;
 			realCode += ".";

@@ -770,7 +770,7 @@ void HisDataReplayer::replayUnbars(uint64_t stime, uint64_t nowTime, uint32_t en
 						CodeHelper::extractStdCode(barsList._code.c_str(), cInfo);
 
 						std::string realCode = barsList._code;
-						if (cInfo._category == CC_Stock && cInfo._exright)
+						if (cInfo._category == CC_Stock && cInfo.isExright())
 						{
 							realCode = cInfo._exchg;
 							realCode += ".";
@@ -2494,7 +2494,7 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 	}
 
 	std::stringstream ss;
-	ss << _base_dir << "bin/" << dirname << "/" << cInfo._exchg << "/";
+	ss << _base_dir << "his/" << dirname << "/" << cInfo._exchg << "/";
 	if (!StdFile::exists(ss.str().c_str()))
 		BoostFile::create_directories(ss.str().c_str());
 	if(cInfo._hot && cInfo._category == CC_Future)
@@ -2831,21 +2831,21 @@ bool HisDataReplayer::cacheRawBarsFromDB(const std::string& key, const char* std
 			realCnt += hotAy->size();
 		}
 	}
-	else if (cInfo._exright && cInfo._category == CC_Stock)//如果是读取股票复权数据
+	else if (cInfo.isExright() && cInfo._category == CC_Stock)//如果是读取股票复权数据
 	{
 		std::vector<WTSBarStruct>* hotAy = NULL;
 		uint32_t lastQTime = 0;
 
 		do
 		{
-			//先直接读取复权过的历史数据,路径如/his/day/sse/SH600000Q.dsb
+			char flag = cInfo._exright == 1 ? 'Q' : 'H';
 			char sql[256] = { 0 };
 			if (isDay)
-				sprintf(sql, "SELECT `date`,0,open,high,low,close,settle,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%sQ' ORDER BY `date`;",
-					tbname.c_str(), cInfo._exchg, cInfo._code);
+				sprintf(sql, "SELECT `date`,0,open,high,low,close,settle,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%s%c' ORDER BY `date`;",
+					tbname.c_str(), cInfo._exchg, cInfo._code, flag);
 			else
-				sprintf(sql, "SELECT `date`,`time`,open,high,low,close,0,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%sQ' ORDER BY `time`;",
-					tbname.c_str(), cInfo._exchg, cInfo._code);
+				sprintf(sql, "SELECT `date`,`time`,open,high,low,close,0,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%s%c' ORDER BY `time`;",
+					tbname.c_str(), cInfo._exchg, cInfo._code, flag);
 
 			MysqlQuery query(*_db_conn);
 			if (!query.exec(sql))
@@ -3340,7 +3340,7 @@ bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* st
 			realCnt += hotAy->size();
 		}
 	}
-	else if (cInfo._exright && cInfo._category == CC_Stock)//如果是读取股票复权数据
+	else if (cInfo.isExright() && cInfo._category == CC_Stock)//如果是读取股票复权数据
 	{
 		std::vector<WTSBarStruct>* hotAy = NULL;
 		uint32_t lastQTime = 0;
@@ -3349,7 +3349,7 @@ bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* st
 		{
 			//先直接读取复权过的历史数据,路径如/his/day/sse/SH600000Q.dsb
 			std::stringstream ss;
-			ss << _base_dir << "his/" << pname << "/" << cInfo._exchg << "/" << cInfo._code << "Q.dsb";
+			ss << _base_dir << "his/" << pname << "/" << cInfo._exchg << "/" << cInfo._code << (cInfo._exright==1?"Q":"H") << ".dsb";
 			std::string filename = ss.str();
 			if (!StdFile::exists(filename.c_str()))
 				break;
