@@ -493,7 +493,7 @@ bool TraderAdapter::checkCancelLimits(const char* stdCode)
 		return true;
 
 	WTSTradeStateInfo* statInfo = (WTSTradeStateInfo*)_stat_map->get(stdCode);
-	if (statInfo->total_cancels() >= riskPara->_cancel_total_limits )
+	if (statInfo && statInfo->total_cancels() >= riskPara->_cancel_total_limits )
 	{
 		WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR, "[%s] %s cancelling times %u beyond upper limit times %u, adding to excluding list",
 			_id.c_str(), stdCode, statInfo->total_cancels(), riskPara->_cancel_total_limits);
@@ -558,7 +558,7 @@ bool TraderAdapter::checkOrderLimits(const char* stdCode)
 		return true;
 
 	WTSTradeStateInfo* statInfo = (WTSTradeStateInfo*)_stat_map->get(stdCode);
-	if (statInfo->total_orders() >= riskPara->_order_total_limits)
+	if (statInfo && statInfo->total_orders() >= riskPara->_order_total_limits)
 	{
 		WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR, "[%s] %s entrust times %u beyond upper limit times %u, adding to excluding list",
 			_id.c_str(), stdCode, statInfo->total_orders(), riskPara->_order_total_limits);

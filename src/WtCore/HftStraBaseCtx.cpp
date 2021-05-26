@@ -188,6 +188,10 @@ bool HftStraBaseCtx::stra_cancel(uint32_t localid)
 
 OrderIDs HftStraBaseCtx::stra_cancel(const char* stdCode, bool isBuy, double qty)
 {
+	//撤单频率检查
+	if (!_trader->checkCancelLimits(stdCode))
+		return OrderIDs();
+
 	return _trader->cancel(stdCode, isBuy, qty);
 }
 
@@ -226,7 +230,7 @@ OrderIDs HftStraBaseCtx::stra_buy(const char* stdCode, double price, double qty,
 	}
 	else
 	{
-		if (_trader && !_trader->checkOrderLimits(stdCode))
+		if (!_trader->checkOrderLimits(stdCode))
 		{
 			stra_log_text("%s 已被禁止交易", stdCode);
 			return OrderIDs();
