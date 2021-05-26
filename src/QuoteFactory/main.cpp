@@ -72,12 +72,12 @@ void initParsers(WTSVariant* cfg)
 		if (!cfgItem->getBoolean("active"))
 			continue;
 
-		std::string module = cfgItem->getCString("module");
+		std::string module = DLLHelper::wrap_module(cfgItem->getCString("module"),"lib");
 		if (!StdFile::exists(module.c_str()))
 		{
 			module = WtHelper::get_module_dir();
 			module += "parsers/";
-			module += cfgItem->getCString("module");
+			module += DLLHelper::wrap_module(cfgItem->getCString("module"), "lib");
 		}
 		DllHandle libParser = DLLHelper::load_library(module.c_str());
 		if (libParser)

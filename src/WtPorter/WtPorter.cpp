@@ -998,7 +998,8 @@ WtString hft_cancel_all(CtxHandler cHandle, const char* stdCode, bool isBuy)
 	}
 
 	ret = ss.str();
-	ret = ret.substr(0, ret.size() - 1);
+	if (ret.size() > 0)
+		ret = ret.substr(0, ret.size() - 1);
 	return ret.c_str();
 }
 
@@ -1018,7 +1019,8 @@ WtString hft_buy(CtxHandler cHandle, const char* stdCode, double price, double q
 	}
 
 	ret = ss.str();
-	ret = ret.substr(0, ret.size() - 1);
+	if(ret.size() > 0)
+		ret = ret.substr(0, ret.size() - 1);
 	return ret.c_str();
 }
 
@@ -1038,7 +1040,8 @@ WtString hft_sell(CtxHandler cHandle, const char* stdCode, double price, double 
 	}
 
 	ret = ss.str();
-	ret = ret.substr(0, ret.size() - 1);
+	if (ret.size() > 0)
+		ret = ret.substr(0, ret.size() - 1);
 	return ret.c_str();
 }
 
