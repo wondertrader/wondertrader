@@ -152,7 +152,7 @@ public:
 	bool	cancel(uint32_t localid);
 	OrderIDs cancel(const char* stdCode, bool isBuy, double qty = 0);
 
-	bool	isTradeEnabled(const char* stdCode) const;
+	inline bool	isTradeEnabled(const char* stdCode) const;
 
 	bool	checkCancelLimits(const char* stdCode);
 	bool	checkOrderLimits(const char* stdCode);

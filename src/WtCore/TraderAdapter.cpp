@@ -493,9 +493,9 @@ bool TraderAdapter::checkCancelLimits(const char* stdCode)
 		return true;
 
 	WTSTradeStateInfo* statInfo = (WTSTradeStateInfo*)_stat_map->get(stdCode);
-	if (statInfo && statInfo->total_cancels() >= riskPara->_cancel_total_limits )
+	if (statInfo && riskPara->_cancel_total_limits != 0 && statInfo->total_cancels() >= riskPara->_cancel_total_limits )
 	{
-		WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR, "[%s] %s cancelling times %u beyond upper limit times %u, adding to excluding list",
+		WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR, "[%s] %s cancel %u times totaly, beyond boundary %u times, adding to excluding list",
 			_id.c_str(), stdCode, statInfo->total_cancels(), riskPara->_cancel_total_limits);
 		_exclude_codes.insert(stdCode);
 		return false;
@@ -516,7 +516,7 @@ bool TraderAdapter::checkCancelLimits(const char* stdCode)
 			uint32_t times = cnt - sIdx - 1;
 			if (times > riskPara->_cancel_times_boundary)
 			{
-				WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR, "[%s] %s cancelling frequency too high, cancelled %u times within %u seconds, greater than boundary %u times, adding to excluding list",
+				WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR, "[%s] %s cancel %u times within %u seconds, beyond boundary %u times, adding to excluding list",
 					_id.c_str(), stdCode, times, riskPara->_cancel_stat_timespan, riskPara->_cancel_times_boundary);
 				_exclude_codes.insert(stdCode);
 				return false;
@@ -558,9 +558,9 @@ bool TraderAdapter::checkOrderLimits(const char* stdCode)
 		return true;
 
 	WTSTradeStateInfo* statInfo = (WTSTradeStateInfo*)_stat_map->get(stdCode);
-	if (statInfo && statInfo->total_orders() >= riskPara->_order_total_limits)
+	if (statInfo && riskPara->_order_total_limits != 0 && statInfo->total_orders() >= riskPara->_order_total_limits)
 	{
-		WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR, "[%s] %s entrust times %u beyond upper limit times %u, adding to excluding list",
+		WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR, "[%s] %s entrust %u times totally, beyond boundary %u times, adding to excluding list",
 			_id.c_str(), stdCode, statInfo->total_orders(), riskPara->_order_total_limits);
 		_exclude_codes.insert(stdCode);
 		return false;
@@ -581,8 +581,7 @@ bool TraderAdapter::checkOrderLimits(const char* stdCode)
 			uint32_t times = cnt - sIdx - 1;
 			if (times > riskPara->_order_times_boundary)
 			{
-				//WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR, "[%s] %s 下单频率过高, %u 秒内撤单 %u 次, 大于边界值 %u 次, 加入排除列表",
-				WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR, "[%s] %s placing frequency too high, placed %u times within %u seconds, greater than boundary %u times, adding to excluding list",
+				WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR, "[%s] %s entrust %u times within %u seconds, beyond boundary %u times, adding to excluding list",
 					_id.c_str(), stdCode, times, riskPara->_order_stat_timespan, riskPara->_order_times_boundary);
 				_exclude_codes.insert(stdCode);
 				return false;
