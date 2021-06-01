@@ -43,6 +43,7 @@ typedef const char*			WtString;
 typedef void(PORTER_FLAG *FuncLogCallback)(WtString message);
 typedef void(PORTER_FLAG *FuncGetBarsCallback)(WTSBarStruct* bar, bool isLast);
 typedef void(PORTER_FLAG *FuncGetTicksCallback)(WTSTickStruct* tick, bool isLast);
+typedef void(PORTER_FLAG *FuncCountDataCallback)(WtUInt32 dataCnt);
 
 typedef bool(PORTER_FLAG *FuncGetBarItem)(WTSBarStruct* curBar,int idx);
 typedef bool(PORTER_FLAG *FuncGetTickItem)(WTSTickStruct* curTick, int idx);
@@ -55,8 +56,11 @@ extern "C"
 	EXPORT_FLAG	void		dump_ticks(WtString binFolder, WtString csvFolder, WtString strFilter = "", FuncLogCallback cbLogger = NULL);
 	EXPORT_FLAG	void		trans_csv_bars(WtString csvFolder, WtString binFolder, WtString period, FuncLogCallback cbLogger = NULL);
 
-	EXPORT_FLAG	WtUInt32	read_dsb_ticks(WtString tickFile, FuncGetTicksCallback cb, FuncLogCallback cbLogger = NULL);
-	EXPORT_FLAG	WtUInt32	read_dsb_bars(WtString barFile, FuncGetBarsCallback cb, FuncLogCallback cbLogger = NULL);
+	EXPORT_FLAG	WtUInt32	read_dsb_ticks(WtString tickFile, FuncGetTicksCallback cb, FuncCountDataCallback cbCnt, FuncLogCallback cbLogger = NULL);
+	EXPORT_FLAG	WtUInt32	read_dsb_bars(WtString barFile, FuncGetBarsCallback cb, FuncCountDataCallback cbCnt, FuncLogCallback cbLogger = NULL);
+
+	EXPORT_FLAG	WtUInt32	read_dmb_ticks(WtString tickFile, FuncGetTicksCallback cb, FuncCountDataCallback cbCnt, FuncLogCallback cbLogger = NULL);
+	EXPORT_FLAG	WtUInt32	read_dmb_bars(WtString barFile, FuncGetBarsCallback cb, FuncCountDataCallback cbCnt, FuncLogCallback cbLogger = NULL);
 
 	EXPORT_FLAG bool		trans_bars(WtString barFile, FuncGetBarItem getter, int count, WtString period, FuncLogCallback cbLogger = NULL);
 	EXPORT_FLAG bool		trans_ticks(WtString tickFile, FuncGetTickItem getter, int count, FuncLogCallback cbLogger = NULL);

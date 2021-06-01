@@ -360,9 +360,9 @@ void trans_csv_bars(WtString csvFolder, WtString binFolder, WtString period, Fun
 			if (ay.size() > 7)
 				bs.money = strtod(ay[7].c_str(), NULL);
 			if (ay.size() > 8)
-				bs.hold = strtod(ay[8].c_str(), NULL);
+				bs.hold = (uint32_t)strtod(ay[8].c_str(), NULL);
 			if (ay.size() > 9)
-				bs.add = strtod(ay[9].c_str(), NULL);
+				bs.add = (int32_t)strtod(ay[9].c_str(), NULL);
 			if (ay.size() > 10)
 				bs.settle = strtod(ay[10].c_str(), NULL);
 			bars.emplace_back(bs);
@@ -512,9 +512,9 @@ bool trans_ticks(WtString tickFile, FuncGetTickItem getter, int count, FuncLogCa
 	return true;
 }
 
-WtUInt32 read_dsb_ticks(WtString tickFile, FuncGetTicksCallback cb, FuncLogCallback cbLogger /* = NULL */)
+WtUInt32 read_dsb_ticks(WtString tickFile, FuncGetTicksCallback cb, FuncCountDataCallback cbCnt, FuncLogCallback cbLogger /* = NULL */)
 {
-	const std::string& path = tickFile;
+	std::string path = tickFile;
 
 	if (cbLogger)
 		cbLogger(StrUtil::printf("正在读取数据文件%s...", path.c_str()).c_str());
@@ -557,8 +557,12 @@ WtUInt32 read_dsb_ticks(WtString tickFile, FuncGetTicksCallback cb, FuncLogCallb
 
 	auto tcnt = (buffer.size() - sizeof(HisTickBlock)) / sizeof(WTSTickStruct);
 	if (tcnt <= 0)
+	{
+		cbCnt(0);
 		return 0;
+	}
 
+	cbCnt(tcnt);
 	for (uint32_t i = 0; i < tcnt; i++)
 	{
 		WTSTickStruct& curTick = tickBlk->_ticks[i];
@@ -571,9 +575,11 @@ WtUInt32 read_dsb_ticks(WtString tickFile, FuncGetTicksCallback cb, FuncLogCallb
 	return (WtUInt32)tcnt;
 }
 
-WtUInt32 read_dsb_bars(WtString barFile, FuncGetBarsCallback cb, FuncLogCallback cbLogger )
+WtUInt32 read_dsb_bars(WtString barFile, FuncGetBarsCallback cb, FuncCountDataCallback cbCnt, FuncLogCallback cbLogger )
 {
-	const std::string& path = barFile;
+	std::string path = barFile;
+	if (cbLogger)
+		cbLogger(StrUtil::printf("正在读取数据文件%s...", path.c_str()).c_str());
 
 	std::string buffer;
 	BoostFile::read_file_contents(path.c_str(), buffer);
@@ -613,7 +619,12 @@ WtUInt32 read_dsb_bars(WtString barFile, FuncGetBarsCallback cb, FuncLogCallback
 
 	auto kcnt = (buffer.size() - sizeof(HisKlineBlock)) / sizeof(WTSBarStruct);
 	if (kcnt <= 0)
+	{
+		cbCnt(0);
 		return 0;
+	}
+
+	cbCnt(kcnt);
 
 	for (uint32_t i = 0; i < kcnt; i++)
 	{
@@ -625,4 +636,77 @@ WtUInt32 read_dsb_bars(WtString barFile, FuncGetBarsCallback cb, FuncLogCallback
 		cbLogger(StrUtil::printf("%s读取完成,共%u条bar", barFile, kcnt).c_str());
 
 	return (WtUInt32)kcnt;
+}
+
+WtUInt32 read_dmb_bars(WtString barFile, FuncGetBarsCallback cb, FuncCountDataCallback cbCnt, FuncLogCallback cbLogger)
+{
+	std::string path = barFile;
+
+	std::string buffer;
+	BoostFile::read_file_contents(path.c_str(), buffer);
+	if (buffer.size() < sizeof(RTKlineBlock))
+	{
+		if (cbLogger)
+			cbLogger(StrUtil::printf("文件%s头部校验失败", barFile).c_str());
+		return 0;
+	}
+
+	RTKlineBlock* tBlock = (RTKlineBlock*)buffer.c_str();
+	auto kcnt = tBlock->_size;
+	if (kcnt <= 0)
+	{
+		cbCnt(0);
+		return 0;
+	}
+
+	cbCnt(kcnt);
+
+	for (uint32_t i = 0; i < kcnt; i++)
+	{
+		WTSBarStruct& curBar = tBlock->_bars[i];
+		cb(&curBar, i == kcnt - 1);
+	}
+
+	if (cbLogger)
+		cbLogger(StrUtil::printf("%s读取完成,共%u条bar", barFile, kcnt).c_str());
+
+	return (WtUInt32)kcnt;
+}
+
+WtUInt32 read_dmb_ticks(WtString tickFile, FuncGetTicksCallback cb, FuncCountDataCallback cbCnt, FuncLogCallback cbLogger /* = NULL */)
+{
+	std::string path = tickFile;
+
+	if (cbLogger)
+		cbLogger(StrUtil::printf("正在读取数据文件%s...", path.c_str()).c_str());
+
+	std::string buffer;
+	BoostFile::read_file_contents(path.c_str(), buffer);
+	if (buffer.size() < sizeof(RTTickBlock))
+	{
+		if (cbLogger)
+			cbLogger(StrUtil::printf("文件%s头部校验失败", tickFile).c_str());
+		return 0;
+	}
+
+	RTTickBlock* tBlock = (RTTickBlock*)buffer.c_str();
+	auto tcnt = tBlock->_size;
+	if (tcnt <= 0)
+	{
+		cbCnt(0);
+		return 0;
+	}
+
+	cbCnt(tcnt);
+
+	for (uint32_t i = 0; i < tcnt; i++)
+	{
+		WTSTickStruct& curTick = tBlock->_ticks[i];
+		cb(&curTick, i == tcnt - 1);
+	}
+
+	if (cbLogger)
+		cbLogger(StrUtil::printf("%s读取完成,共%u条tick数据", tickFile, tcnt).c_str());
+
+	return (WtUInt32)tcnt;
 }
