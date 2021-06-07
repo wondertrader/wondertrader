@@ -225,6 +225,11 @@ public:
 
 	bool	is_tick_enabled() const{ return _tick_enabled; }
 
+	inline void update_price(const char* stdCode, double price)
+	{
+		_price_map[stdCode] = price;
+	}
+
 private:
 	IDataSink*		_listener;
 
