@@ -733,8 +733,11 @@ void CtaMocker::stra_exit_short(const char* stdCode, double qty, const char* use
 
 double CtaMocker::stra_get_price(const char* stdCode)
 {
-	if (_replayer)
-		return _replayer->get_cur_price(stdCode);
+	//if (_replayer)
+	//	return _replayer->get_cur_price(stdCode);
+	auto it = _price_map.find(stdCode);
+	if (it != _price_map.end())
+		return it->second;
 
 	return 0.0;
 }
