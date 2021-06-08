@@ -99,9 +99,24 @@ CTPCreator		g_ctpCreator = NULL;
 // «Î«Û±‡∫≈
 int iRequestID = 0;
 
-int run()
+#ifdef _WIN32
+#	define EXPORT_FLAG __declspec(dllexport)
+#else
+#	define EXPORT_FLAG __attribute__((__visibility__("default")))
+#endif
+
+#ifdef __cplusplus
+extern "C"
 {
-	std::string cfg = "config.ini";
+#endif
+	EXPORT_FLAG int run(const char* cfgfile);
+#ifdef __cplusplus
+}
+#endif
+
+int run(const char* cfgfile)
+{
+	std::string cfg = cfgfile;
 	IniHelper ini;
 	ini.load(cfg.c_str());
 

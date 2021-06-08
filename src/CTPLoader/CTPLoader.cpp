@@ -110,14 +110,14 @@ int iRequestID = 0;
 extern "C"
 {
 #endif
-	EXPORT_FLAG int run();
+	EXPORT_FLAG int run(const char* cfgfile);
 #ifdef __cplusplus
 }
 #endif
 
-int run()
+int run(const char* cfgfile)
 {
-	std::string cfg = "config.ini";
+	std::string cfg = cfgfile;
 	IniHelper ini;
 	ini.load(cfg.c_str());
 
