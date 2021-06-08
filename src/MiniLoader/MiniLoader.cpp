@@ -10,6 +10,66 @@
 #include "../Share/DLLHelper.hpp"
 #include <boost/filesystem.hpp>
 
+std::string g_bin_dir;
+
+void inst_hlp() {}
+
+#ifdef _WIN32
+HMODULE	g_dllModule = NULL;
+
+BOOL APIENTRY DllMain(
+	HANDLE hModule,
+	DWORD  ul_reason_for_call,
+	LPVOID lpReserved
+)
+{
+	switch (ul_reason_for_call)
+	{
+	case DLL_PROCESS_ATTACH:
+		g_dllModule = (HMODULE)hModule;
+		break;
+	}
+	return TRUE;
+}
+
+#else
+#include <dlfcn.h>
+
+char PLATFORM_NAME[] = "UNIX";
+
+const std::string& getInstPath()
+{
+	static std::string moduleName;
+	if (moduleName.empty())
+	{
+		Dl_info dl_info;
+		dladdr((void *)inst_hlp, &dl_info);
+		moduleName = dl_info.dli_fname;
+		//printf("1:%s\n", moduleName.c_str());
+	}
+
+	return moduleName;
+}
+#endif
+
+const char* getBaseFolder()
+{
+	if (g_bin_dir.empty())
+	{
+#ifdef _WIN32
+		char strPath[MAX_PATH];
+		GetModuleFileName(g_dllModule, strPath, MAX_PATH);
+
+		g_bin_dir = StrUtil::standardisePath(strPath, false);
+#else
+		g_bin_dir = getInstPath();
+#endif
+		boost::filesystem::path p(g_bin_dir);
+		g_bin_dir = p.branch_path().string() + "/";
+	}
+
+	return g_bin_dir.c_str();
+}
 
 // UserApi对象
 CThostFtdcTraderApi* pUserApi;
@@ -39,41 +99,7 @@ CTPCreator		g_ctpCreator = NULL;
 // 请求编号
 int iRequestID = 0;
 
-std::string getBaseFolder()
-{
-	static std::string basePath;
-	if(basePath.empty())
-	{
-#ifdef _WIN32
-		char strPath[MAX_PATH];
-		GetModuleFileName(NULL, strPath, MAX_PATH);
-
-		basePath = StrUtil::standardisePath(strPath, false);
-
-		uint32_t nPos = basePath.find_last_of('/');
-		basePath = basePath.substr(0, nPos + 1);
-#else
-
-		char path[1024];
-		int cnt = readlink("/proc/self/exe", path, 1024);
-		//最后一个'/' 后面是可执行程序名,去掉可执行程序的名字,只保留路径
-		for (int i = cnt; i >= 0; --i)
-		{
-			if (path[i] == '/')
-			{
-				path[i + 1] = '\0';
-				break;
-			}
-		}
-		basePath = path;
-		basePath = StrUtil::standardisePath(basePath, false);
-#endif
-	}
-
-	return basePath;
-}
-
-int main()
+int run()
 {
 	std::string cfg = "config.ini";
 	IniHelper ini;
@@ -99,10 +125,11 @@ int main()
 #endif
 	if(!boost::filesystem::exists(MODULE_NAME.c_str()))
 	{
+		MODULE_NAME = getBaseFolder();
 #ifdef _WIN32
-		MODULE_NAME = getBaseFolder() + "traders/thosttraderapi.dll";
+		MODULE_NAME += "traders/thosttraderapi.dll";
 #else
-		MODULE_NAME = getBaseFolder() + "traders/thosttraderapi.so";
+		MODULE_NAME += "traders/thosttraderapi.so";
 #endif
 	}
 
