@@ -60,14 +60,16 @@ bool WtLocalExecuter::init(WTSVariant* params)
 	return true;
 }
 
-ExecuteUnitPtr WtLocalExecuter::getUnit(const char* code, bool bAutoCreate /* = true */)
+ExecuteUnitPtr WtLocalExecuter::getUnit(const char* stdCode, bool bAutoCreate /* = true */)
 {
+	std::string commID = CodeHelper::stdCodeToStdCommID(stdCode);
+
 	WTSVariant* policy = _config->get("policy");
-	std::string des = code;
-	if (!policy->has(code))
+	std::string des = commID;
+	if (!policy->has(commID.c_str()))
 		des = "default";
 
-	auto it = _unit_map.find(code);
+	auto it = _unit_map.find(stdCode);
 	if(it != _unit_map.end())
 	{
 		return it->second;
@@ -81,8 +83,8 @@ ExecuteUnitPtr WtLocalExecuter::getUnit(const char* code, bool bAutoCreate /* = 
 		ExecuteUnitPtr unit = _factory->createExeUnit(name);
 		if (unit != NULL)
 		{
-			_unit_map[code] = unit;
-			unit->self()->init(this, code, cfg);
+			_unit_map[stdCode] = unit;
+			unit->self()->init(this, stdCode, cfg);
 		}
 		return unit;
 	}
