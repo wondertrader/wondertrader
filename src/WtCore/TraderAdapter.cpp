@@ -1227,12 +1227,16 @@ bool TraderAdapter::cancel(uint32_t localid)
 	if (_orders == NULL || _orders->size() == 0)
 		return false;
 
-	StdUniqueLock lock(_mtx_orders);
-	WTSOrderInfo* ordInfo = (WTSOrderInfo*)_orders->get(localid);
-	if (ordInfo == NULL)
-		return false;
+	WTSOrderInfo* ordInfo = NULL;
+	{
+		StdUniqueLock lock(_mtx_orders);
+		WTSOrderInfo* ordInfo = (WTSOrderInfo*)_orders->get(localid);
+		if (ordInfo == NULL)
+			return false;
 
-	ordInfo->retain();
+		ordInfo->retain();
+	}
+	
 	bool bRet = doCancel(ordInfo);
 	ordInfo->release();
 

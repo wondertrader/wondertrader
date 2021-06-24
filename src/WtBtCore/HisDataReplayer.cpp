@@ -2712,17 +2712,17 @@ bool HisDataReplayer::cacheRawBarsFromDB(const std::string& key, const char* std
 					while (query.fetch_row())
 					{
 						WTSBarStruct& bs = hotAy->at(idx);
-						bs.date = query.getuint(0);
-						bs.time = query.getuint(1);
-						bs.open = query.getdouble(2);
-						bs.high = query.getdouble(3);
-						bs.low = query.getdouble(4);
-						bs.close = query.getdouble(5);
-						bs.settle = query.getdouble(6);
-						bs.vol = query.getuint(7);
-						bs.money = query.getdouble(8);
-						bs.hold = query.getuint(9);
-						bs.add = query.getdouble(10);
+						bs.date		= query.getuint(0);
+						bs.time		= query.getuint(1);
+						bs.open		= query.getdouble(2);
+						bs.high		= query.getdouble(3);
+						bs.low		= query.getdouble(4);
+						bs.close	= query.getdouble(5);
+						bs.settle	= query.getdouble(6);
+						bs.vol		= query.getuint(7);
+						bs.money	= query.getdouble(8);
+						bs.hold		= query.getuint(9);
+						bs.add		= query.getdouble(10);
 						idx++;
 					}
 
@@ -2810,17 +2810,17 @@ bool HisDataReplayer::cacheRawBarsFromDB(const std::string& key, const char* std
 					while (query.fetch_row())
 					{
 						WTSBarStruct& bs = tempAy->at(idx);
-						bs.date = query.getuint(0);
-						bs.time = query.getuint(1);
-						bs.open = query.getdouble(2);
-						bs.high = query.getdouble(3);
-						bs.low = query.getdouble(4);
-						bs.close = query.getdouble(5);
-						bs.settle = query.getdouble(6);
-						bs.vol = query.getuint(7);
-						bs.money = query.getdouble(8);
-						bs.hold = query.getuint(9);
-						bs.add = query.getdouble(10);
+						bs.date		= query.getuint(0);
+						bs.time		= query.getuint(1);
+						bs.open		= query.getdouble(2);
+						bs.high		= query.getdouble(3);
+						bs.low		= query.getdouble(4);
+						bs.close	= query.getdouble(5);
+						bs.settle	= query.getdouble(6);
+						bs.vol		= query.getuint(7);
+						bs.money	= query.getdouble(8);
+						bs.hold		= query.getuint(9);
+						bs.add		= query.getdouble(10);
 						idx++;
 					}
 
@@ -2874,17 +2874,17 @@ bool HisDataReplayer::cacheRawBarsFromDB(const std::string& key, const char* std
 					while (query.fetch_row())
 					{
 						WTSBarStruct& bs = hotAy->at(idx);
-						bs.date = query.getuint(0);
-						bs.time = query.getuint(1);
-						bs.open = query.getdouble(2);
-						bs.high = query.getdouble(3);
-						bs.low = query.getdouble(4);
-						bs.close = query.getdouble(5);
-						bs.settle = query.getdouble(6);
-						bs.vol = query.getuint(7);
-						bs.money = query.getdouble(8);
-						bs.hold = query.getuint(9);
-						bs.add = query.getdouble(10);
+						bs.date		= query.getuint(0);
+						bs.time		= query.getuint(1);
+						bs.open		= query.getdouble(2);
+						bs.high		= query.getdouble(3);
+						bs.low		= query.getdouble(4);
+						bs.close	= query.getdouble(5);
+						bs.settle	= query.getdouble(6);
+						bs.vol		= query.getuint(7);
+						bs.money	= query.getdouble(8);
+						bs.hold		= query.getuint(9);
+						bs.add		= query.getdouble(10);
 						idx++;
 					}
 
@@ -2944,17 +2944,17 @@ bool HisDataReplayer::cacheRawBarsFromDB(const std::string& key, const char* std
 					while (query.fetch_row())
 					{
 						WTSBarStruct& bs = tempAy->at(idx);
-						bs.date = query.getuint(0);
-						bs.time = query.getuint(1);
-						bs.open = query.getdouble(2);
-						bs.high = query.getdouble(3);
-						bs.low = query.getdouble(4);
-						bs.close = query.getdouble(5);
-						bs.settle = query.getdouble(6);
-						bs.vol = query.getuint(7);
-						bs.money = query.getdouble(8);
-						bs.hold = query.getuint(9);
-						bs.add = query.getdouble(10);
+						bs.date		= query.getuint(0);
+						bs.time		= query.getuint(1);
+						bs.open		= query.getdouble(2);
+						bs.high		= query.getdouble(3);
+						bs.low		= query.getdouble(4);
+						bs.close	= query.getdouble(5);
+						bs.settle	= query.getdouble(6);
+						bs.vol		= query.getuint(7);
+						bs.money	= query.getdouble(8);
+						bs.hold		= query.getuint(9);
+						bs.add		= query.getdouble(10);
 						idx++;
 					}
 
@@ -3052,17 +3052,17 @@ bool HisDataReplayer::cacheRawBarsFromDB(const std::string& key, const char* std
 				while (query.fetch_row())
 				{
 					WTSBarStruct& bs = tempAy->at(idx);
-					bs.date = query.getuint(0);
-					bs.time = query.getuint(1);
-					bs.open = query.getdouble(2);
-					bs.high = query.getdouble(3);
-					bs.low = query.getdouble(4);
-					bs.close = query.getdouble(5);
-					bs.settle = query.getdouble(6);
-					bs.vol = query.getuint(7);
-					bs.money = query.getdouble(8);
-					bs.hold = query.getuint(9);
-					bs.add = query.getdouble(10);
+					bs.date		= query.getuint(0);
+					bs.time		= query.getuint(1);
+					bs.open		= query.getdouble(2);
+					bs.high		= query.getdouble(3);
+					bs.low		= query.getdouble(4);
+					bs.close	= query.getdouble(5);
+					bs.settle	= query.getdouble(6);
+					bs.vol		= query.getuint(7);
+					bs.money	= query.getdouble(8);
+					bs.hold		= query.getuint(9);
+					bs.add		= query.getdouble(10);
 					idx++;
 				}
 
