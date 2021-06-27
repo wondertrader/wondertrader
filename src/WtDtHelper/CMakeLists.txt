@@ -35,6 +35,7 @@ ADD_LIBRARY(WtDtHelper SHARED ${SRCS} ${HDRS})
 
 SET(LIBS
 	${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/libs/libWTSUtils.a
+    ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/libs/libWTSTools.a
 
 	dl
 	boost_filesystem
