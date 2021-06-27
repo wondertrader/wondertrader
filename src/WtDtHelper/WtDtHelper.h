@@ -37,8 +37,9 @@ USING_NS_OTP;
 #endif
 #endif
 
-typedef unsigned long		WtUInt32;
-typedef const char*			WtString;
+typedef unsigned long			WtUInt32;
+typedef unsigned long long		WtUInt64;
+typedef const char*				WtString;
 
 typedef void(PORTER_FLAG *FuncLogCallback)(WtString message);
 typedef void(PORTER_FLAG *FuncGetBarsCallback)(WTSBarStruct* bar, bool isLast);
@@ -64,6 +65,8 @@ extern "C"
 
 	EXPORT_FLAG bool		trans_bars(WtString barFile, FuncGetBarItem getter, int count, WtString period, FuncLogCallback cbLogger = NULL);
 	EXPORT_FLAG bool		trans_ticks(WtString tickFile, FuncGetTickItem getter, int count, FuncLogCallback cbLogger = NULL);
+
+	EXPORT_FLAG WtUInt32	resample_bars(WtString barFile, FuncGetBarsCallback cb, FuncCountDataCallback cbCnt, WtUInt64 fromTime, WtUInt64 endTime, WtString period, WtUInt32 times, WtString sessInfo, FuncLogCallback cbLogger = NULL);
 #ifdef __cplusplus
 }
 #endif

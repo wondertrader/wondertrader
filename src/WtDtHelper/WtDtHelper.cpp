@@ -16,6 +16,15 @@
 #include "../WtDataWriter/DataDefine.h"
 #include "../WTSTools/WTSCmpHelper.hpp"
 
+#include "../Includes/WTSDataDef.hpp"
+#include "../WTSTools/WTSDataFactory.h"
+
+#include "../Includes/WTSSessionInfo.hpp"
+
+#include <rapidjson/document.h>
+
+namespace rj = rapidjson;
+
 USING_NS_OTP;
 
 #ifdef _WIN32
@@ -709,4 +718,225 @@ WtUInt32 read_dmb_ticks(WtString tickFile, FuncGetTicksCallback cb, FuncCountDat
 		cbLogger(StrUtil::printf("%s读取完成,共%u条tick数据", tickFile, tcnt).c_str());
 
 	return (WtUInt32)tcnt;
+}
+
+WtUInt32 resample_bars(WtString barFile, FuncGetBarsCallback cb, FuncCountDataCallback cbCnt, WtUInt64 fromTime, WtUInt64 endTime,
+	WtString period, WtUInt32 times, WtString sessInfo, FuncLogCallback cbLogger /* = NULL */)
+{
+	WTSKlinePeriod kp;
+	if(my_stricmp(period, "m1") == 0)
+	{
+		kp = KP_Minute1;
+	}
+	else if (my_stricmp(period, "m5") == 0)
+	{
+		kp = KP_Minute5;
+	}
+	else if (my_stricmp(period, "d") == 0)
+	{
+		kp = KP_DAY;
+	}
+	else
+	{
+		if (cbLogger)
+			cbLogger(StrUtil::printf("周期%s不是基础周期...", period).c_str());
+		return 0;
+	}
+
+	bool isDay = (kp == KP_DAY);
+
+	if(isDay)
+	{
+		if(fromTime >= 100000000 || endTime > 100000000)
+		{
+			if (cbLogger)
+				cbLogger("日线基础数据的开始时间结束时间应为日期，格式如yyyymmdd");
+			return 0;
+		}
+	}
+	else
+	{
+		if (fromTime < 100000000 || endTime < 100000000)
+		{
+			if (cbLogger)
+				cbLogger("分钟线基础数据的开始时间结束时间应为日期，格式如yyyymmddHHMMSS");
+			return 0;
+		}
+	}
+
+	if(fromTime > endTime)
+	{
+		std::swap(fromTime, endTime);
+	}
+
+	WTSSessionInfo* sInfo = NULL;
+	{
+		rj::Document root;
+		if (root.Parse(sessInfo).HasParseError())
+		{
+			if (cbLogger)
+				cbLogger("交易时间模板解析失败");
+			return 0;
+		}
+
+		int32_t offset = root["offset"].GetInt();
+
+		sInfo = WTSSessionInfo::create("tmp", "tmp", offset);
+
+		if (!root["auction"].IsNull())
+		{
+			const rj::Value& jAuc = root["auction"];
+			sInfo->setAuctionTime(jAuc["from"].GetUint(), jAuc["to"].GetUint());
+		}
+
+		const rj::Value& jSecs = root["sections"];
+		if (jSecs.IsNull() || !jSecs.IsArray())
+		{
+			if (cbLogger)
+				cbLogger("交易时间模板格式错误");
+			return 0;
+		}
+
+		for (const rj::Value& jSec : jSecs.GetArray())
+		{
+			sInfo->addTradingSection(jSec["from"].GetUint(), jSec["to"].GetUint());
+		}
+	}
+
+	std::string path = barFile;
+	if (cbLogger)
+		cbLogger(StrUtil::printf("正在读取数据文件%s...", path.c_str()).c_str());
+
+	std::string buffer;
+	BoostFile::read_file_contents(path.c_str(), buffer);
+	if (buffer.size() < sizeof(HisKlineBlock))
+	{
+		if (cbLogger)
+			cbLogger(StrUtil::printf("文件%s头部校验失败", barFile).c_str());
+		return 0;
+	}
+
+	HisKlineBlock* tBlock = (HisKlineBlock*)buffer.c_str();
+	if (tBlock->_version == BLOCK_VERSION_CMP)
+	{
+		//压缩版本,要重新检查文件大小
+		HisKlineBlockV2* kBlockV2 = (HisKlineBlockV2*)buffer.c_str();
+
+		if (buffer.size() != (sizeof(HisKlineBlockV2) + kBlockV2->_size))
+		{
+			if (cbLogger)
+				cbLogger(StrUtil::printf("文件%s头部校验失败", barFile).c_str());
+			return 0;
+		}
+
+		//需要解压
+		if (cbLogger)
+			cbLogger(StrUtil::printf("正在解压数据...").c_str());
+		std::string buf = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
+
+		//将原来的buffer只保留一个头部,并将所有tick数据追加到尾部
+		buffer.resize(sizeof(HisTickBlock));
+		buffer.append(buf);
+		kBlockV2 = (HisKlineBlockV2*)buffer.c_str();
+		kBlockV2->_version = BLOCK_VERSION_RAW;
+	}
+
+	HisKlineBlock* klineBlk = (HisKlineBlock*)buffer.c_str();
+
+	auto kcnt = (buffer.size() - sizeof(HisKlineBlock)) / sizeof(WTSBarStruct);
+	if (kcnt <= 0)
+	{
+		if (cbLogger)
+			cbLogger(StrUtil::printf("%s数据为空", barFile).c_str());
+		return 0;
+	}
+
+	//确定第一条K线的位置
+	WTSBarStruct bar;
+	if (isDay)
+		bar.date = (uint32_t)fromTime;
+	else
+	{
+
+		bar.time = fromTime % 100000000 + ((fromTime / 100000000) - 1990) * 100000000;
+	}
+
+	WTSBarStruct* pBar = std::lower_bound(klineBlk->_bars, klineBlk->_bars + (kcnt - 1), bar, [isDay](const WTSBarStruct& a, const WTSBarStruct& b) {
+		if (isDay)
+			return a.date < b.date;
+		else
+			return a.time < b.time;
+	});
+
+
+	uint32_t sIdx = pBar - klineBlk->_bars;
+	if((isDay && pBar->date < bar.date) || (!isDay && pBar->time < bar.time))
+	{
+		//如果返回的K线的时间小于要查找的时间，说明没有符合条件的数据
+		if (cbLogger)
+			cbLogger("没有找到指定时间范围的K线");
+		return 0;
+	}
+	else if (sIdx != 0 && ((isDay && pBar->date > bar.date) || (!isDay && pBar->time > bar.time)))
+	{
+		pBar--;
+		sIdx--;
+	}
+
+	//确定最后一条K线的位置
+	if (isDay)
+		bar.date = (uint32_t)endTime;
+	else
+	{
+
+		bar.time = endTime % 100000000 + ((endTime / 100000000) - 1990) * 100000000;
+	}
+	pBar = std::lower_bound(klineBlk->_bars, klineBlk->_bars + (kcnt - 1), bar, [isDay](const WTSBarStruct& a, const WTSBarStruct& b) {
+		if (isDay)
+			return a.date < b.date;
+		else
+			return a.time < b.time;
+	});
+
+	uint32_t eIdx = 0;
+	if (pBar == NULL)
+		eIdx = kcnt - 1;
+	else
+		eIdx = pBar - klineBlk->_bars;
+
+	if (eIdx != 0 && ((isDay && pBar->date > bar.date) || (!isDay && pBar->time > bar.time)))
+	{
+		pBar--;
+		eIdx--;
+	}
+
+	uint32_t hitCnt = eIdx - sIdx + 1;
+	WTSKlineSlice* slice = WTSKlineSlice::create("", kp, 1, &klineBlk->_bars[sIdx], hitCnt);
+	WTSDataFactory fact;
+	WTSKlineData* kline = fact.extractKlineData(slice, kp, times, sInfo);
+	if(kline == NULL)
+	{
+		if (cbLogger)
+			cbLogger("K线重采样失败");
+		return 0;
+	}
+
+	uint32_t newCnt = kline->size();
+	cbCnt(newCnt);
+
+	for (uint32_t i = 0; i < newCnt; i++)
+	{
+		WTSBarStruct* curBar = kline->at(i);
+		cb(curBar, i == newCnt - 1);
+	}
+
+	if (cbLogger)
+		cbLogger(StrUtil::printf("%s重采样完成,共将%u条bar重采样为%u条新bar", barFile, hitCnt, newCnt).c_str());
+
+	
+	kline->release();
+	sInfo->release();
+	slice->release();
+
+	return (WtUInt32)newCnt;
 }

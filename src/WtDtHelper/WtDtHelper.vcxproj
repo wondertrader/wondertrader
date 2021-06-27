@@ -184,6 +184,9 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ProjectReference Include="..\WTSTools\WTSTools.vcxproj">
+      <Project>{8b249955-de56-41a3-a904-21dbbe40ab34}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\WTSUtils\WTSUtils.vcxproj">
       <Project>{9f0b15cc-34c6-46da-9575-d4ae11453b84}</Project>
     </ProjectReference>
