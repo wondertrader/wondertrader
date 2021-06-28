@@ -425,12 +425,12 @@ otp::OrderIDs HftMocker::stra_buy(const char* stdCode, double price, double qty,
 	postTask([this, localid](){
 		const OrderInfo& ordInfo = _orders[localid];
 		on_entrust(localid, ordInfo._code, true, "下单成功", ordInfo._usertag);
-		bool bNeedErase = procOrder(localid);
-		if(bNeedErase)
-		{
-			auto it = _orders.find(localid);
-			_orders.erase(it);
-		}
+		//bool bNeedErase = procOrder(localid);
+		//if(bNeedErase)
+		//{
+		//	auto it = _orders.find(localid);
+		//	_orders.erase(it);
+		//}
 	});
 
 	OrderIDs ids;
@@ -601,12 +601,12 @@ otp::OrderIDs HftMocker::stra_sell(const char* stdCode, double price, double qty
 	postTask([this, localid]() {
 		const OrderInfo& ordInfo = _orders[localid];
 		on_entrust(localid, ordInfo._code, true, "下单成功", ordInfo._usertag);
-		bool bNeedErase = procOrder(localid);
-		if (bNeedErase)
-		{
-			auto it = _orders.find(localid);
-			_orders.erase(it);
-		}
+		//bool bNeedErase = procOrder(localid);
+		//if (bNeedErase)
+		//{
+		//	auto it = _orders.find(localid);
+		//	_orders.erase(it);
+		//}
 	});
 
 	OrderIDs ids;
