@@ -61,10 +61,10 @@ void WtSelEngine::on_init()
 		_evt_listener->on_initialize_event();
 }
 
-void WtSelEngine::handle_push_quote(WTSTickData* curTick, bool isHot)
+void WtSelEngine::handle_push_quote(WTSTickData* curTick, uint32_t hotFlag)
 {
 	if (_tm_ticker)
-		_tm_ticker->on_tick(curTick, isHot);
+		_tm_ticker->on_tick(curTick, hotFlag);
 }
 
 void WtSelEngine::on_bar(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar)
@@ -330,6 +330,13 @@ void WtSelEngine::handle_pos_change(const char* stdCode, double diffQty)
 		CodeHelper::CodeInfo cInfo;
 		CodeHelper::extractStdCode(stdCode, cInfo);
 		std::string code = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
+		realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), cInfo._exchg);
+	}
+	else if (CodeHelper::isStdFut2ndCode(stdCode))
+	{
+		CodeHelper::CodeInfo cInfo;
+		CodeHelper::extractStdCode(stdCode, cInfo);
+		std::string code = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
 		realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), cInfo._exchg);
 	}
 

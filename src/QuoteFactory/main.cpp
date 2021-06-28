@@ -176,6 +176,12 @@ void initialize()
 		WTSLogger::info("Hot rules loaded");
 	}
 
+	if (cfgBF->get("second"))
+	{
+		g_hotMgr.loadSeconds(cfgBF->getCString("second"));
+		WTSLogger::info("Second rules loaded");
+	}
+
 	g_udpCaster.init(config->get("broadcaster"), &g_baseDataMgr, &g_dataMgr);
 
 	initDataMgr(config->get("writer"));

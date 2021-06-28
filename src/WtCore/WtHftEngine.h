@@ -33,7 +33,7 @@ public:
 
 	virtual void run(bool bAsync = false) override;
 
-	virtual void handle_push_quote(WTSTickData* newTick, bool isHot) override;
+	virtual void handle_push_quote(WTSTickData* newTick, uint32_t hotFlag) override;
 	virtual void handle_push_order_detail(WTSOrdDtlData* curOrdDtl) override;
 	virtual void handle_push_order_queue(WTSOrdQueData* curOrdQue) override;
 	virtual void handle_push_transaction(WTSTransData* curTrans) override;

@@ -31,7 +31,6 @@ extern std::string	BROKER_ID;	// 经纪公司代码
 extern std::string	INVESTOR_ID;// 投资者代码
 extern std::string	PASSWORD;	// 用户密码
 extern std::string	SAVEPATH;	//保存位置
-extern std::string	HOTFILE;
 extern std::string	APPID;
 extern std::string	AUTHCODE;
 extern uint32_t		CLASSMASK;

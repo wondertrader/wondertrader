@@ -27,7 +27,7 @@ public:
 public:
 	//////////////////////////////////////////////////////////////////////////
 	//WtEngine½Ó¿Ú
-	virtual void handle_push_quote(WTSTickData* newTick, bool isHot) override;
+	virtual void handle_push_quote(WTSTickData* newTick, uint32_t hotFlag) override;
 
 	virtual void on_tick(const char* stdCode, WTSTickData* curTick) override;
 

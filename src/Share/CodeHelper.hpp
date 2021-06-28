@@ -27,11 +27,14 @@ public:
 		ContractCategory	_category;		//合约类型
 		union
 		{
-			bool	_hot;		//是否是主力合约
+			uint8_t	_hotflag;	//主力标记，0-非主力，1-主力，2-次主力
 			uint8_t	_exright;	//是否是复权代码,如SH600000Q: 0-不复权, 1-前复权, 2-后复权
 		};
 
 		inline bool isExright() const { return _exright != 0; }
+		inline bool isHot() const { return _hotflag ==1; }
+		inline bool isSecond() const { return _hotflag == 2; }
+		inline bool isFlat() const { return _hotflag == 0; }
 
 		_CodeInfo()
 		{
@@ -212,6 +215,16 @@ public:
 		return ret;
 	}
 
+	static inline std::string bscCodeToStd2ndCode(const char* code, const char* exchg, bool isComm = false)
+	{
+		std::string pid = code;
+		if (!isComm)
+			pid = bscFutCodeToBscCommID(code);
+
+		std::string ret = StrUtil::printf("%s.%s.2ND", exchg, pid.c_str());
+		return ret;
+	}
+
 	static inline std::string stdCodeToStdHotCode(const char* stdCode)
 	{
 		StringVector ay = StrUtil::split(stdCode, ".");
@@ -219,6 +232,16 @@ public:
 		stdHotCode += ".";
 		stdHotCode += ay[1];
 		stdHotCode += ".HOT";
+		return stdHotCode;
+	}
+
+	static inline std::string stdCodeToStd2ndCode(const char* stdCode)
+	{
+		StringVector ay = StrUtil::split(stdCode, ".");
+		std::string stdHotCode = ay[0];
+		stdHotCode += ".";
+		stdHotCode += ay[1];
+		stdHotCode += ".2ND";
 		return stdHotCode;
 	}
 
@@ -275,12 +298,12 @@ public:
 
 	static inline void extractStdFutCode(const char* stdCode, CodeInfo& codeInfo)
 	{
-		codeInfo._hot = StrUtil::endsWith(stdCode, ".HOT", false);
+		codeInfo._hotflag = CodeHelper::isStdFutHotCode(stdCode) ? 1 : (CodeHelper::isStdFut2ndCode(stdCode) ? 2 : 0);
 		StringVector ay = StrUtil::split(stdCode, ".");
 		strcpy(codeInfo._exchg, ay[0].c_str());
 		strcpy(codeInfo._code, ay[1].c_str());
 		codeInfo._category = CC_Future;
-		if (!codeInfo._hot)
+		if (codeInfo.isFlat())
 		{
 			if (strcmp(codeInfo._exchg, "CZCE") == 0 && ay[2].size() == 4)
 			{
@@ -413,6 +436,11 @@ public:
 	static inline bool	isStdFutHotCode(const char* stdCode)
 	{
 		return StrUtil::endsWith(stdCode, ".HOT", false);
+	}
+
+	static inline bool	isStdFut2ndCode(const char* stdCode)
+	{
+		return StrUtil::endsWith(stdCode, ".2ND", false);
 	}
 };
 

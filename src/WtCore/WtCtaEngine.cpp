@@ -143,11 +143,18 @@ void WtCtaEngine::on_init()
 
 		ctx->enum_position([this, &target_pos](const char* stdCode, double qty){
 			std::string realCode = stdCode;
-			if (StrUtil::endsWith(realCode, ".HOT", false))
+			if (CodeHelper::isStdFutHotCode(stdCode))
 			{
 				CodeHelper::CodeInfo cInfo;
 				CodeHelper::extractStdCode(stdCode, cInfo);
 				std::string code = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
+				realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), cInfo._exchg);
+			}
+			else if (CodeHelper::isStdFut2ndCode(stdCode))
+			{
+				CodeHelper::CodeInfo cInfo;
+				CodeHelper::extractStdCode(stdCode, cInfo);
+				std::string code = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
 				realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), cInfo._exchg);
 			}
 
@@ -217,11 +224,18 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 				}
 
 				std::string realCode = stdCode;
-				if (StrUtil::endsWith(realCode, ".HOT", false))
+				if (CodeHelper::isStdFutHotCode(stdCode))
 				{
 					CodeHelper::CodeInfo cInfo;
 					CodeHelper::extractStdCode(stdCode, cInfo);
 					std::string code = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
+					realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), cInfo._exchg);
+				}
+				else if (CodeHelper::isStdFut2ndCode(stdCode))
+				{
+					CodeHelper::CodeInfo cInfo;
+					CodeHelper::extractStdCode(stdCode, cInfo);
+					std::string code = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
 					realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), cInfo._exchg);
 				}
 
@@ -292,10 +306,10 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 }
 
 
-void WtCtaEngine::handle_push_quote(WTSTickData* newTick, bool isHot)
+void WtCtaEngine::handle_push_quote(WTSTickData* newTick, uint32_t hotFlag)
 {
 	if (_tm_ticker)
-		_tm_ticker->on_tick(newTick, isHot);
+		_tm_ticker->on_tick(newTick, hotFlag);
 }
 
 void WtCtaEngine::handle_pos_change(const char* straName, const char* stdCode, double diffQty)
@@ -314,6 +328,13 @@ void WtCtaEngine::handle_pos_change(const char* straName, const char* stdCode, d
 		CodeHelper::CodeInfo cInfo;
 		CodeHelper::extractStdCode(stdCode, cInfo);
 		std::string code = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
+		realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), cInfo._exchg);
+	}
+	else if (CodeHelper::isStdFut2ndCode(stdCode))
+	{
+		CodeHelper::CodeInfo cInfo;
+		CodeHelper::extractStdCode(stdCode, cInfo);
+		std::string code = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
 		realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), cInfo._exchg);
 	}
 

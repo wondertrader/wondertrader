@@ -1071,7 +1071,7 @@ bool WtDataReader::cacheHisBarsFromDB(const std::string& key, const char* stdCod
 	bool isDay = (period == KP_DAY);
 
 	uint32_t realCnt = 0;
-	if (cInfo._hot && cInfo._category == CC_Future)//如果是读取期货主力连续数据
+	if (!cInfo.isFlat() && cInfo._category == CC_Future)//如果是读取期货主力连续数据
 	{
 		HotSections secs;
 		if (!_hot_mgr->splitHotSecions(cInfo._exchg, cInfo._product, 19900102, endTDate, secs))
@@ -1080,6 +1080,8 @@ bool WtDataReader::cacheHisBarsFromDB(const std::string& key, const char* stdCod
 		if (secs.empty())
 			return false;
 
+		const char* hot_flag = cInfo.isHot() ? "HOT" : "2ND";
+
 		//先按照HOT代码进行读取, 如rb.HOT
 		std::vector<WTSBarStruct>* hotAy = NULL;
 		uint32_t lastHotTime = 0;
@@ -1087,11 +1089,11 @@ bool WtDataReader::cacheHisBarsFromDB(const std::string& key, const char* stdCod
 		{
 			char sql[256] = { 0 };
 			if (isDay)
-				sprintf(sql, "SELECT `date`,0,open,high,low,close,settle,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%s.HOT' ORDER BY `date`;", 
-					tbname.c_str(), cInfo._exchg, cInfo._product);
+				sprintf(sql, "SELECT `date`,0,open,high,low,close,settle,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%s.%s' ORDER BY `date`;", 
+					tbname.c_str(), cInfo._exchg, cInfo._product, hot_flag);
 			else
-				sprintf(sql, "SELECT `date`,`time`,open,high,low,close,0,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%s.HOT' ORDER BY `time`;",
-					tbname.c_str(), cInfo._exchg, cInfo._product);
+				sprintf(sql, "SELECT `date`,`time`,open,high,low,close,0,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%s.%s' ORDER BY `time`;",
+					tbname.c_str(), cInfo._exchg, cInfo._product, hot_flag);
 
 			MysqlQuery query(*_db_conn);
 			if(!query.exec(sql))
@@ -1499,7 +1501,7 @@ bool WtDataReader::cacheHisBarsFromFile(const std::string& key, const char* stdC
 	std::vector<std::vector<WTSBarStruct>*> barsSections;
 
 	uint32_t realCnt = 0;
-	if (cInfo._hot && cInfo._category == CC_Future)//如果是读取期货主力连续数据
+	if (!cInfo.isFlat() && cInfo._category == CC_Future)//如果是读取期货主力连续数据
 	{
 		HotSections secs;
 		if (!_hot_mgr->splitHotSecions(cInfo._exchg, cInfo._product, 19900102, endTDate, secs))
@@ -1508,13 +1510,15 @@ bool WtDataReader::cacheHisBarsFromFile(const std::string& key, const char* stdC
 		if (secs.empty())
 			return false;
 
+		const char* hot_flag = cInfo.isHot() ? "HOT" : "2ND";
+
 		//先按照HOT代码进行读取, 如rb.HOT
 		std::vector<WTSBarStruct>* hotAy = NULL;
 		uint32_t lastHotTime = 0;
 		for (;;)
 		{
 			std::stringstream ss;
-			ss << _base_dir << "his/" << pname << "/" << cInfo._exchg << "/" << cInfo._exchg << "." << cInfo._product << "_HOT.dsb";
+			ss << _base_dir << "his/" << pname << "/" << cInfo._exchg << "/" << cInfo._exchg << "." << cInfo._product << "_" << hot_flag << ".dsb";
 			std::string filename = ss.str();
 			if (!StdFile::exists(filename.c_str()))
 				break;

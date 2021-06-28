@@ -47,17 +47,17 @@ void WtHftRtTicker::init(IDataReader* store, const char* sessionID)
 	TimeUtils::getDateTime(_date, _time);
 }
 
-void WtHftRtTicker::trigger_price(WTSTickData* curTick, bool isHot/* = false*/)
+void WtHftRtTicker::trigger_price(WTSTickData* curTick, uint32_t hotFlag /* = 0 */)
 {
 	if (_engine)
 	{
 		std::string stdCode = curTick->code();
 		_engine->on_tick(stdCode.c_str(), curTick);
 
-		if (isHot)
+		if (hotFlag !=0)
 		{
 			WTSTickData* hotTick = WTSTickData::create(curTick->getTickStruct());
-			std::string hotCode = CodeHelper::stdCodeToStdHotCode(stdCode.c_str());
+			std::string hotCode = (hotFlag != 1) ? CodeHelper::stdCodeToStdHotCode(stdCode.c_str()) : CodeHelper::stdCodeToStd2ndCode(stdCode.c_str());
 			strcpy(hotTick->getTickStruct().code, hotCode.c_str());
 			_engine->on_tick(hotCode.c_str(), hotTick);
 			hotTick->release();
@@ -65,11 +65,11 @@ void WtHftRtTicker::trigger_price(WTSTickData* curTick, bool isHot/* = false*/)
 	}
 }
 
-void WtHftRtTicker::on_tick(WTSTickData* curTick, bool isHot /* = false */)
+void WtHftRtTicker::on_tick(WTSTickData* curTick, uint32_t hotFlag/* = 0*/)
 {
 	if (_thrd == NULL)
 	{
-		trigger_price(curTick, isHot);
+		trigger_price(curTick, hotFlag);
 		return;
 	}
 
@@ -79,7 +79,7 @@ void WtHftRtTicker::on_tick(WTSTickData* curTick, bool isHot /* = false */)
 	if (_date != 0 && (uDate < _date || (uDate == _date && uTime < _time)))
 	{
 		//WTSLogger::info("行情时间%u小于本地时间%u", uTime, _time);
-		trigger_price(curTick, isHot);
+		trigger_price(curTick, hotFlag);
 		return;
 	}
 
@@ -130,7 +130,7 @@ void WtHftRtTicker::on_tick(WTSTickData* curTick, bool isHot /* = false */)
 			}
 		}
 
-		trigger_price(curTick, isHot);
+		trigger_price(curTick, hotFlag);
 		if (_engine)
 		{
 			_engine->set_date_time(_date, curMin, curSec, rawMin);
@@ -142,7 +142,7 @@ void WtHftRtTicker::on_tick(WTSTickData* curTick, bool isHot /* = false */)
 	else
 	{
 		//如果分钟数还是一致的, 则直接触发行情和时间即可
-		trigger_price(curTick, isHot);
+		trigger_price(curTick, hotFlag);
 		if (_engine)
 			_engine->set_date_time(_date, curMin, curSec, rawMin);
 	}

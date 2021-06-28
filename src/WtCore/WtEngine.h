@@ -133,7 +133,7 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	/// IParserStub½Ó¿Ú
-	virtual void handle_push_quote(WTSTickData* newTick, bool isHot) override;
+	virtual void handle_push_quote(WTSTickData* newTick, uint32_t hotFlag) override;
 
 public:
 	virtual void init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtDataManager* dataMgr, IHotMgr* hotMgr);

@@ -389,6 +389,12 @@ bool WtRtRunner::config(const char* cfgFile, bool isFile /* = true */)
 		WTSLogger::info("Hot rules loades");
 	}
 
+	if (cfgBF->get("second"))
+	{
+		_hot_mgr.loadSeconds(cfgBF->getCString("second"));
+		WTSLogger::info("Second rules loades");
+	}
+
 	//初始化运行环境
 	initEngine();
 

@@ -104,6 +104,9 @@ bool WtRunner::config(const char* cfgFile)
 	if (cfgBF->get("hot"))
 		_hot_mgr.loadHots(cfgBF->getCString("hot"));
 
+	if (cfgBF->get("second"))
+		_hot_mgr.loadSeconds(cfgBF->getCString("second"));
+
 	//初始化运行环境
 	initEngine();
 

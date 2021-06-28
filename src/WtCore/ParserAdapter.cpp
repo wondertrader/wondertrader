@@ -272,7 +272,7 @@ void ParserAdapter::handleQuote(WTSTickData *quote, bool bNeedSlice)
 	if (!_exchg_filter.empty() && (_exchg_filter.find(quote->exchg()) == _exchg_filter.end()))
 		return;
 
-	bool isHot = false;
+	uint32_t hotflag = 0;
 
 	WTSContractInfo* cInfo = _bd_mgr->getContract(quote->code(), quote->exchg());
 	if (cInfo == NULL)
@@ -285,7 +285,8 @@ void ParserAdapter::handleQuote(WTSTickData *quote, bool bNeedSlice)
 	{
 		stdCode = CodeHelper::bscFutCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
 		std::string hotCode = _hot_mgr->getHotCode(quote->exchg(), quote->code(), 0);
-		isHot = !hotCode.empty();
+		std::string scndCode = _hot_mgr->getSecondCode(quote->exchg(), quote->code(), 0);
+		hotflag = !hotCode.empty() ? 1 : (!scndCode.empty() ? 2 : 0);
 	}
 	else if(commInfo->getCategoty() == CC_Stock)
 	{
@@ -301,7 +302,7 @@ void ParserAdapter::handleQuote(WTSTickData *quote, bool bNeedSlice)
 	}
 	quote->setCode(stdCode.c_str());
 
-	_stub->handle_push_quote(quote, isHot);
+	_stub->handle_push_quote(quote, hotflag);
 }
 
 void ParserAdapter::handleOrderQueue(WTSOrdQueData* ordQueData)

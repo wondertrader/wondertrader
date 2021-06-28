@@ -87,6 +87,12 @@ void WtDtRunner::initialize(const char* cfgFile, const char* logCfg, const char*
 		WTSLogger::info("Hot rules loaded");
 	}
 
+	if (cfgBF->get("second"))
+	{
+		m_hotMgr.loadSeconds(cfgBF->getCString("second"));
+		WTSLogger::info("Second rules loaded");
+	}
+
 	m_udpCaster.init(config->get("broadcaster"), &m_baseDataMgr, &m_dataMgr);
 
 	initDataMgr(config->get("writer"));

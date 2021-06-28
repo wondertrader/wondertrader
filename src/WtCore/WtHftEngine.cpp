@@ -115,11 +115,10 @@ void WtHftEngine::run(bool bAsync /*= false*/)
 	}
 }
 
-void WtHftEngine::handle_push_quote(WTSTickData* newTick, bool isHot)
+void WtHftEngine::handle_push_quote(WTSTickData* newTick, uint32_t hotFlag)
 {
-	//WtEngine::handle_push_quote(newTick, isHot);
 	if (_tm_ticker)
-		_tm_ticker->on_tick(newTick, isHot);
+		_tm_ticker->on_tick(newTick, hotFlag);
 }
 
 void WtHftEngine::handle_push_order_detail(WTSOrdDtlData* curOrdDtl)

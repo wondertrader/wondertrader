@@ -57,7 +57,7 @@ public:
 
 	virtual void on_bar(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar) override;
 
-	virtual void handle_push_quote(WTSTickData* newTick, bool isHot) override;
+	virtual void handle_push_quote(WTSTickData* newTick, uint32_t hotFlag) override;
 
 	virtual void on_init() override;
 

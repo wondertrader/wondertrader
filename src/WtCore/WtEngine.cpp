@@ -585,7 +585,7 @@ WTSKlineSlice* WtEngine::get_kline_slice(uint32_t sid, const char* stdCode, cons
 }
 
 
-void WtEngine::handle_push_quote(WTSTickData* curTick, bool isHot)
+void WtEngine::handle_push_quote(WTSTickData* curTick, uint32_t hotFlag)
 {
 	std::string stdCode = curTick->code();
 	_data_mgr->handle_push_quote(stdCode.c_str(), curTick);
@@ -593,7 +593,7 @@ void WtEngine::handle_push_quote(WTSTickData* curTick, bool isHot)
 
 	double price = curTick->price();
 
-	if(isHot)
+	if(hotFlag == 1)
 	{
 		std::string hotCode = CodeHelper::stdCodeToStdHotCode(stdCode.c_str());
 		WTSTickData* hotTick = WTSTickData::create(curTick->getTickStruct());
@@ -603,6 +603,17 @@ void WtEngine::handle_push_quote(WTSTickData* curTick, bool isHot)
 		on_tick(hotCode.c_str(), hotTick);
 
 		hotTick->release();
+	}
+	else if (hotFlag == 2)
+	{
+		std::string scndCode = CodeHelper::stdCodeToStd2ndCode(stdCode.c_str());
+		WTSTickData* scndTick = WTSTickData::create(curTick->getTickStruct());
+		scndTick->setCode(scndCode.c_str());
+
+		_data_mgr->handle_push_quote(scndCode.c_str(), scndTick);
+		on_tick(scndCode.c_str(), scndTick);
+
+		scndTick->release();
 	}
 }
 
@@ -638,6 +649,17 @@ void WtEngine::sub_tick(uint32_t sid, const char* stdCode)
 		CodeHelper::CodeInfo cInfo;
 		CodeHelper::extractStdFutCode(stdCode, cInfo);
 		std::string rawCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
+		std::string stdRawCode = CodeHelper::bscFutCodeToStdCode(rawCode.c_str(), cInfo._exchg);
+		_ticksubed_raw_codes.insert(stdRawCode);
+	}
+	else if (CodeHelper::isStdFut2ndCode(stdCode))
+	{
+		SIDSet& sids = _tick_sub_map[stdCode];
+		sids.insert(sid);
+
+		CodeHelper::CodeInfo cInfo;
+		CodeHelper::extractStdFutCode(stdCode, cInfo);
+		std::string rawCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
 		std::string stdRawCode = CodeHelper::bscFutCodeToStdCode(rawCode.c_str(), cInfo._exchg);
 		_ticksubed_raw_codes.insert(stdRawCode);
 	}
