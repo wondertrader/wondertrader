@@ -1458,7 +1458,8 @@ WTSKlineSlice* HisDataReplayer::get_kline_slice(const char* stdCode, const char*
 
 	auto it = _bars_cache.find(key);
 	bool bHasHisData = false;
-	if (it == _bars_cache.end())
+	bool bHasCache = (it != _bars_cache.end());
+	if (!bHasCache)
 	{
 		if (realTimes != 1)
 		{
@@ -1504,13 +1505,11 @@ WTSKlineSlice* HisDataReplayer::get_kline_slice(const char* stdCode, const char*
 		return NULL;
 
 	WTSSessionInfo* sInfo = get_session_info(stdCode, true);
-	bool isClosed = sInfo->offsetTime(_cur_time) >= sInfo->getCloseTime(true);
-	if (realTimes != 1 && it == _bars_cache.end())
-	{
-
+	bool isClosed = (sInfo->offsetTime(_cur_time) >= sInfo->getCloseTime(true));
+	if (realTimes != 1 && !bHasCache)
+	{	
 		std::string rawKey = StrUtil::printf("%s#%s#%u", stdCode, period, 1);
 		BarsList& rawBars = _bars_cache[rawKey];
-
 		WTSKlineSlice* rawKline = WTSKlineSlice::create(stdCode, kp, realTimes, &rawBars._bars[0], rawBars._bars.size());
 		rawKline->setCode(stdCode);
 		//memcpy(rawKline->getDataRef().data(), rawBars._bars.data(), sizeof(WTSBarStruct)*rawBars._bars.size());
@@ -1528,6 +1527,12 @@ WTSKlineSlice* HisDataReplayer::get_kline_slice(const char* stdCode, const char*
 			barsList._count = kData->size();
 			barsList._bars.swap(kData->getDataRef());
 			kData->release();
+			WTSLogger::info("%u resampled %s%u back kline of %s ready", barsList._bars.size(), period, times, stdCode);
+		}
+		else
+		{
+			WTSLogger::error("Resampling %s%u back kline of %s failed", period, times, stdCode);
+			return NULL;
 		}
 	}
 
@@ -2313,9 +2318,13 @@ bool HisDataReplayer::cacheRawTicksFromBin(const std::string& key, const char* s
 	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
 	
 	std::string rawCode = cInfo._code;
-	if (cInfo._hot)
+	if (cInfo.isHot())
 	{
 		rawCode = _hot_mgr.getRawCode(cInfo._exchg, cInfo._product, uDate);
+	}
+	else if(cInfo.isSecond())
+	{
+		rawCode = _hot_mgr.getSecondRawCode(cInfo._exchg, cInfo._product, uDate);
 	}
 
 	std::stringstream ss;
@@ -2544,6 +2553,8 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 		barList._code = stdCode;
 		barList._period = period;
 		barList._count = barcnt;
+
+		WTSLogger::info("%u items of back %s data of %s directly loaded from dsb file", barcnt, pname.c_str(), stdCode);
 	}
 	else
 	{
@@ -3131,13 +3142,6 @@ bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* st
 	uint32_t realCnt = 0;
 	if (!cInfo.isFlat() && cInfo._category == CC_Future)//如果是读取期货主力连续数据
 	{
-		HotSections secs;
-		if (!_hot_mgr.splitHotSecions(cInfo._exchg, cInfo._product, 19900102, endTDate, secs))
-			return false;
-
-		if (secs.empty())
-			return false;
-
 		const char* hot_flag = cInfo.isHot() ? "HOT" : "2ND";
 
 		//先按照HOT代码进行读取, 如rb.HOT
@@ -3206,6 +3210,22 @@ bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* st
 
 			break;
 		}
+
+		HotSections secs;
+		if(cInfo.isHot())
+		{
+			if (!_hot_mgr.splitHotSecions(cInfo._exchg, cInfo._product, 19900102, endTDate, secs))
+				return false;
+		}
+		else if (cInfo.isSecond())
+		{
+			if (!_hot_mgr.splitSecondSecions(cInfo._exchg, cInfo._product, 19900102, endTDate, secs))
+				return false;
+		}
+		
+
+		if (secs.empty())
+			return false;
 
 		bool bAllCovered = false;
 		for (auto it = secs.rbegin(); it != secs.rend() && left > 0; it++)
