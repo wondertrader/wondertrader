@@ -2694,13 +2694,6 @@ bool HisDataReplayer::cacheRawBarsFromDB(const std::string& key, const char* std
 	uint32_t realCnt = 0;
 	if (!cInfo.isFlat() && cInfo._category == CC_Future)//如果是读取期货主力连续数据
 	{
-		HotSections secs;
-		if (!_hot_mgr.splitHotSecions(cInfo._exchg, cInfo._product, 19900102, endTDate, secs))
-			return false;
-
-		if (secs.empty())
-			return false;
-
 		const char* flag = cInfo.isHot() ? "HOT" : "2ND";
 
 		//先按照HOT代码进行读取, 如rb.HOT
@@ -2759,6 +2752,21 @@ bool HisDataReplayer::cacheRawBarsFromDB(const std::string& key, const char* std
 
 			break;
 		}
+
+		HotSections secs;
+		if (cInfo.isHot())
+		{
+			if (!_hot_mgr.splitHotSecions(cInfo._exchg, cInfo._product, 19900102, endTDate, secs))
+				return false;
+		}
+		else if (cInfo.isSecond())
+		{
+			if (!_hot_mgr.splitSecondSecions(cInfo._exchg, cInfo._product, 19900102, endTDate, secs))
+				return false;
+		}
+
+		if (secs.empty())
+			return false;
 
 		bool bAllCovered = false;
 		for (auto it = secs.rbegin(); it != secs.rend() && left > 0; it++)
@@ -3222,7 +3230,6 @@ bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* st
 			if (!_hot_mgr.splitSecondSecions(cInfo._exchg, cInfo._product, 19900102, endTDate, secs))
 				return false;
 		}
-		
 
 		if (secs.empty())
 			return false;
