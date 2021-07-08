@@ -48,7 +48,7 @@ public:
 	/// </summary>
 	/// <param name="curTick">最新的tick数据</param>
 	/// <param name="isHot">是否是主力合约代码</param>
-	virtual void handle_push_quote(WTSTickData* curTick, bool isHot = false) override;
+	virtual void handle_push_quote(WTSTickData* curTick, uint32_t hotFlag = 0) override;
 
 	///////////////////////////////////////////////////////////////////////////
 	//IExecuterStub 接口

@@ -261,7 +261,7 @@ WTSSessionInfo* WtExecRunner::get_session_info(const char* sid, bool isCode /* =
 	return _bd_mgr.getSession(cInfo->getSession());
 }
 
-void WtExecRunner::handle_push_quote(WTSTickData* curTick, bool isHot /*= false*/)
+void WtExecRunner::handle_push_quote(WTSTickData* curTick, uint32_t hotFlag /* = 0 */)
 {
 	std::string stdCode = curTick->code();
 	_data_mgr.handle_push_quote(stdCode.c_str(), curTick);
