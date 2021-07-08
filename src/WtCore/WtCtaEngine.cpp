@@ -282,6 +282,7 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 		{
 			if(!decimal::eq(m.second._volume, 0))
 			{
+				//这里是通知WtEngine去更新组合持仓数据
 				push_task([this, stdCode](){
 					append_signal(stdCode.c_str(), 0);
 				});
@@ -289,7 +290,10 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 				WTSLogger::error("Instrument %s not in target positions, setup to 0 automatically", stdCode.c_str());
 			}
 
-			target_pos[stdCode] = 0;
+			//因为组合持仓里会有过期的合约代码存在，所以这里在丢给执行以前要做一个检查
+			auto cInfo = get_contract_info(stdCode.c_str());
+			if(cInfo != NULL)
+				target_pos[stdCode] = 0;
 		}
 	}
 
