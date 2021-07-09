@@ -336,6 +336,7 @@ void TraderAdapter::saveData(WTSArray* ayFunds /* = NULL */)
 				fItem.AddMember("prebalance", fundInfo->getPreBalance(), allocator);
 				fItem.AddMember("balance", fundInfo->getBalance(), allocator);
 				fItem.AddMember("closeprofit", fundInfo->getCloseProfit(), allocator);
+				fItem.AddMember("dynprofit", fundInfo->getDynProfit(), allocator);
 				fItem.AddMember("margin", fundInfo->getMargin(), allocator);
 				fItem.AddMember("fee", fundInfo->getCommission(), allocator);
 				fItem.AddMember("available", fundInfo->getAvailable(), allocator);
