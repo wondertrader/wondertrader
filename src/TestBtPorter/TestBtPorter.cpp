@@ -15,7 +15,8 @@ void on_getbar(CtxHandler ctxid, const char* code, const char* period, WTSBarStr
 
 void on_init(CtxHandler ctxid)
 {
-	//mf_get_bars(ctxid, "SSE.600009Q", "m3", 10, on_getbar);
+	cta_get_bars(ctxid, "CFFEX.IF.HOT", "m1", 30, false, on_getbar);
+	cta_get_bars(ctxid, "CFFEX.IF.HOT", "m3", 10, true, on_getbar);
 }
 
 void on_tick(CtxHandler ctxid, const char* stdCode, WTSTickStruct* newTick)
@@ -26,7 +27,7 @@ void on_tick(CtxHandler ctxid, const char* stdCode, WTSTickStruct* newTick)
 void on_calc(CtxHandler ctxid, WtUInt32 curDate, WtUInt32 curTime)
 {
 	printf("on_calc\r\n");
-	sel_get_bars(ctxid, "SSE.600009Q", "d1", 10, on_getbar);
+	//sel_get_bars(ctxid, "SSE.600009Q", "d1", 10, on_getbar);
 }
 
 void on_bar(CtxHandler ctxid, const char* code, const char* period, WTSBarStruct* newBar)
@@ -34,16 +35,22 @@ void on_bar(CtxHandler ctxid, const char* code, const char* period, WTSBarStruct
 	//printf("on_bar\r\n");
 }
 
+void on_session_event(CtxHandler cHandle, WtUInt32 curTDate, bool isBegin)
+{
+
+}
 
 
-int main()
+void run_bt()
 {
 #ifdef _WIN32
 	DLLHelper::load_library("WtBtPorter.dll");
 #else
 	DLLHelper::load_library("libWtBtPorter.so");
 #endif
-	//register_sel_callbacks(on_init, on_tick, on_calc, on_bar);
+	register_cta_callbacks(on_init, on_tick, on_calc, on_bar, on_session_event);
+
+	init_cta_mocker("test");
 
 	init_backtest("logcfgbt.json", true);
 
@@ -53,6 +60,12 @@ int main()
 	printf("press enter key to exit\n");
 	getchar();
 	release_backtest();
+}
+
+
+int main()
+{
+	run_bt();
 	return 0;
 }
 

@@ -8,6 +8,7 @@
  * \brief 动态库辅助类,主要是把跨平台的差异封装起来,方便调用
  */
 #pragma once
+#include <string>
 
 #ifdef _WIN32
 #include <wtypes.h>

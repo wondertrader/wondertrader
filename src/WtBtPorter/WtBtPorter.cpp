@@ -100,7 +100,7 @@ std::string getBinDir()
 		_bin_dir = g_moduleName;
 #endif
 
-		uint32_t nPos = _bin_dir.find_last_of('/');
+		WtUInt32 nPos = _bin_dir.find_last_of('/');
 		_bin_dir = _bin_dir.substr(0, nPos + 1);
 	}
 
@@ -180,7 +180,7 @@ void dump_bars(const char* stdCode, const char* period, const char* filename)
 	getRunner().dump_bars(stdCode, period, filename);
 }
 
-void write_log(unsigned int level, const char* message, const char* catName)
+void write_log(WtUInt32 level, const char* message, const char* catName)
 {
 	if (strlen(catName) > 0)
 	{
@@ -192,7 +192,7 @@ void write_log(unsigned int level, const char* message, const char* catName)
 	}
 }
 
-CtxHandler init_cta_mocker(const char* name, int32_t slippage/* = 0*/)
+CtxHandler init_cta_mocker(const char* name, int slippage/* = 0*/)
 {
 	return getRunner().initCtaMocker(name, slippage);
 }
@@ -202,7 +202,7 @@ CtxHandler init_hft_mocker(const char* name)
 	return getRunner().initHftMocker(name);
 }
 
-CtxHandler init_sel_mocker(const char* name, uint32_t date, uint32_t time, const char* period, const char* trdtpl/* = "CHINA"*/, const char* session/* = "TRADING"*/, int32_t slippage/* = 0*/)
+CtxHandler init_sel_mocker(const char* name, WtUInt32 date, WtUInt32 time, const char* period, const char* trdtpl/* = "CHINA"*/, const char* session/* = "TRADING"*/, int slippage/* = 0*/)
 {
 	return getRunner().initSelMocker(name, date, time, period, trdtpl, session, slippage);
 }
@@ -244,7 +244,7 @@ void cta_exit_short(CtxHandler cHandle, const char* stdCode, double qty, const c
 	ctx->stra_exit_short(stdCode, qty, userTag, limitprice, stopprice);
 }
 
-WtUInt32 cta_get_bars(CtxHandler cHandle, const char* stdCode, const char* period, unsigned int barCnt, bool isMain, FuncGetBarsCallback cb)
+WtUInt32 cta_get_bars(CtxHandler cHandle, const char* stdCode, const char* period, WtUInt32 barCnt, bool isMain, FuncGetBarsCallback cb)
 {
 	CtaMocker* ctx = getRunner().cta_mocker();
 	if (ctx == NULL)
@@ -254,9 +254,9 @@ WtUInt32 cta_get_bars(CtxHandler cHandle, const char* stdCode, const char* perio
 		WTSKlineSlice* kData = ctx->stra_get_bars(stdCode, period, barCnt, isMain);
 		if (kData)
 		{
-			uint32_t left = barCnt + 1;
-			uint32_t reaCnt = 0;
-			uint32_t kcnt = kData->size();
+			WtUInt32 left = barCnt + 1;
+			WtUInt32 reaCnt = 0;
+			WtUInt32 kcnt = kData->size();
 			for (int32_t idx = 0; idx < kcnt && left > 0; idx++, left--)
 			{
 				WTSBarStruct* curBar = kData->at(idx);
@@ -280,7 +280,7 @@ WtUInt32 cta_get_bars(CtxHandler cHandle, const char* stdCode, const char* perio
 	}
 }
 
-WtUInt32	cta_get_ticks(CtxHandler cHandle, const char* stdCode, unsigned int tickCnt, bool isMain, FuncGetTicksCallback cb)
+WtUInt32	cta_get_ticks(CtxHandler cHandle, const char* stdCode, WtUInt32 tickCnt, bool isMain, FuncGetTicksCallback cb)
 {
 	CtaMocker* ctx = getRunner().cta_mocker();
 	if (ctx == NULL)
@@ -290,10 +290,10 @@ WtUInt32	cta_get_ticks(CtxHandler cHandle, const char* stdCode, unsigned int tic
 		WTSTickSlice* tData = ctx->stra_get_ticks(stdCode, tickCnt);
 		if (tData)
 		{
-			uint32_t left = tickCnt + 1;
-			uint32_t reaCnt = 0;
-			uint32_t tcnt = tData->size();
-			for (uint32_t idx = 0; idx < tcnt && left > 0; idx++, left--)
+			WtUInt32 left = tickCnt + 1;
+			WtUInt32 reaCnt = 0;
+			WtUInt32 tcnt = tData->size();
+			for (WtUInt32 idx = 0; idx < tcnt && left > 0; idx++, left--)
 			{
 				WTSTickStruct* curTick = (WTSTickStruct*)tData->at(idx);
 				bool isLast = (idx == tcnt - 1) || (left == 1);
@@ -564,7 +564,7 @@ double sel_get_position(CtxHandler cHandle, const char* stdCode, const char* ope
 	return ctx->stra_get_position(stdCode, openTag);
 }
 
-WtUInt32 sel_get_bars(CtxHandler cHandle, const char* stdCode, const char* period, unsigned int barCnt, FuncGetBarsCallback cb)
+WtUInt32 sel_get_bars(CtxHandler cHandle, const char* stdCode, const char* period, WtUInt32 barCnt, FuncGetBarsCallback cb)
 {
 	SelMocker* ctx = getRunner().sel_mocker();
 	if (ctx == NULL)
@@ -574,9 +574,9 @@ WtUInt32 sel_get_bars(CtxHandler cHandle, const char* stdCode, const char* perio
 		WTSKlineSlice* kData = ctx->stra_get_bars(stdCode, period, barCnt);
 		if (kData)
 		{
-			uint32_t left = barCnt;
-			uint32_t reaCnt = 0;
-			uint32_t kcnt = kData->size();
+			WtUInt32 left = barCnt;
+			WtUInt32 reaCnt = 0;
+			WtUInt32 kcnt = kData->size();
 			for (int32_t idx = 0; idx < kcnt && left > 0; idx++, left--)
 			{
 				WTSBarStruct* curBar = kData->at(idx);
@@ -610,7 +610,7 @@ void sel_set_position(CtxHandler cHandle, const char* stdCode, double qty, const
 	ctx->stra_set_position(stdCode, qty, userTag);
 }
 
-WtUInt32	sel_get_ticks(CtxHandler cHandle, const char* stdCode, unsigned int tickCnt, bool isMain, FuncGetTicksCallback cb)
+WtUInt32	sel_get_ticks(CtxHandler cHandle, const char* stdCode, WtUInt32 tickCnt, bool isMain, FuncGetTicksCallback cb)
 {
 	SelMocker* ctx = getRunner().sel_mocker();
 	if (ctx == NULL)
@@ -620,10 +620,10 @@ WtUInt32	sel_get_ticks(CtxHandler cHandle, const char* stdCode, unsigned int tic
 		WTSTickSlice* tData = ctx->stra_get_ticks(stdCode, tickCnt);
 		if (tData)
 		{
-			uint32_t left = tickCnt + 1;
-			uint32_t reaCnt = 0;
-			uint32_t tcnt = tData->size();
-			for (uint32_t idx = 0; idx < tcnt && left > 0; idx++, left--)
+			WtUInt32 left = tickCnt + 1;
+			WtUInt32 reaCnt = 0;
+			WtUInt32 tcnt = tData->size();
+			for (WtUInt32 idx = 0; idx < tcnt && left > 0; idx++, left--)
 			{
 				WTSTickStruct* curTick = (WTSTickStruct*)tData->at(idx);
 				bool isLast = (idx == tcnt - 1) || (left == 1);
@@ -704,7 +704,7 @@ WtUInt32 hft_get_secs()
 	return getRunner().replayer().get_secs();
 }
 
-WtUInt32 hft_get_bars(CtxHandler cHandle, const char* stdCode, const char* period, unsigned int barCnt, FuncGetBarsCallback cb)
+WtUInt32 hft_get_bars(CtxHandler cHandle, const char* stdCode, const char* period, WtUInt32 barCnt, FuncGetBarsCallback cb)
 {
 	HftMocker* mocker = getRunner().hft_mocker();
 	if (mocker == NULL)
@@ -715,9 +715,9 @@ WtUInt32 hft_get_bars(CtxHandler cHandle, const char* stdCode, const char* perio
 		WTSKlineSlice* kData = mocker->stra_get_bars(stdCode, period, barCnt);
 		if (kData)
 		{
-			uint32_t left = barCnt + 1;
-			uint32_t reaCnt = 0;
-			uint32_t kcnt = kData->size();
+			WtUInt32 left = barCnt + 1;
+			WtUInt32 reaCnt = 0;
+			WtUInt32 kcnt = kData->size();
 			for (int32_t idx = 0; idx < kcnt && left > 0; idx++, left--)
 			{
 				WTSBarStruct* curBar = kData->at(idx);
@@ -741,7 +741,7 @@ WtUInt32 hft_get_bars(CtxHandler cHandle, const char* stdCode, const char* perio
 	}
 }
 
-WtUInt32 hft_get_ticks(CtxHandler cHandle, const char* stdCode, unsigned int tickCnt, FuncGetTicksCallback cb)
+WtUInt32 hft_get_ticks(CtxHandler cHandle, const char* stdCode, WtUInt32 tickCnt, FuncGetTicksCallback cb)
 {
 	HftMocker* mocker = getRunner().hft_mocker();
 	if (mocker == NULL)
@@ -751,10 +751,10 @@ WtUInt32 hft_get_ticks(CtxHandler cHandle, const char* stdCode, unsigned int tic
 		WTSTickSlice* tData = mocker->stra_get_ticks(stdCode, tickCnt);
 		if (tData)
 		{
-			uint32_t left = tickCnt + 1;
-			uint32_t reaCnt = 0;
-			uint32_t tcnt = tData->size();
-			for (uint32_t idx = 0; idx < tcnt && left > 0; idx++, left--)
+			WtUInt32 left = tickCnt + 1;
+			WtUInt32 reaCnt = 0;
+			WtUInt32 tcnt = tData->size();
+			for (WtUInt32 idx = 0; idx < tcnt && left > 0; idx++, left--)
 			{
 				WTSTickStruct* curTick = (WTSTickStruct*)tData->at(idx);
 				bool isLast = (idx == tcnt - 1) || (left == 1);
@@ -776,7 +776,7 @@ WtUInt32 hft_get_ticks(CtxHandler cHandle, const char* stdCode, unsigned int tic
 	}
 }
 
-WtUInt32 hft_get_ordque(CtxHandler cHandle, const char* stdCode, unsigned int tickCnt, FuncGetOrdQueCallback cb)
+WtUInt32 hft_get_ordque(CtxHandler cHandle, const char* stdCode, WtUInt32 tickCnt, FuncGetOrdQueCallback cb)
 {
 	HftMocker* mocker = getRunner().hft_mocker();
 	if (mocker == NULL)
@@ -786,10 +786,10 @@ WtUInt32 hft_get_ordque(CtxHandler cHandle, const char* stdCode, unsigned int ti
 		WTSOrdQueSlice* dataSlice = mocker->stra_get_order_queue(stdCode, tickCnt);
 		if (dataSlice)
 		{
-			uint32_t left = tickCnt + 1;
-			uint32_t reaCnt = 0;
-			uint32_t tcnt = dataSlice->size();
-			for (uint32_t idx = 0; idx < tcnt && left > 0; idx++, left--)
+			WtUInt32 left = tickCnt + 1;
+			WtUInt32 reaCnt = 0;
+			WtUInt32 tcnt = dataSlice->size();
+			for (WtUInt32 idx = 0; idx < tcnt && left > 0; idx++, left--)
 			{
 				WTSOrdQueStruct* curItem = (WTSOrdQueStruct*)dataSlice->at(idx);
 				bool isLast = (idx == tcnt - 1) || (left == 1);
@@ -811,7 +811,7 @@ WtUInt32 hft_get_ordque(CtxHandler cHandle, const char* stdCode, unsigned int ti
 	}
 }
 
-WtUInt32 hft_get_orddtl(CtxHandler cHandle, const char* stdCode, unsigned int tickCnt, FuncGetOrdDtlCallback cb)
+WtUInt32 hft_get_orddtl(CtxHandler cHandle, const char* stdCode, WtUInt32 tickCnt, FuncGetOrdDtlCallback cb)
 {
 	HftMocker* mocker = getRunner().hft_mocker();
 	if (mocker == NULL)
@@ -821,10 +821,10 @@ WtUInt32 hft_get_orddtl(CtxHandler cHandle, const char* stdCode, unsigned int ti
 		WTSOrdDtlSlice* dataSlice = mocker->stra_get_order_detail(stdCode, tickCnt);
 		if (dataSlice)
 		{
-			uint32_t left = tickCnt + 1;
-			uint32_t reaCnt = 0;
-			uint32_t tcnt = dataSlice->size();
-			for (uint32_t idx = 0; idx < tcnt && left > 0; idx++, left--)
+			WtUInt32 left = tickCnt + 1;
+			WtUInt32 reaCnt = 0;
+			WtUInt32 tcnt = dataSlice->size();
+			for (WtUInt32 idx = 0; idx < tcnt && left > 0; idx++, left--)
 			{
 				WTSOrdDtlStruct* curItem = (WTSOrdDtlStruct*)dataSlice->at(idx);
 				bool isLast = (idx == tcnt - 1) || (left == 1);
@@ -846,7 +846,7 @@ WtUInt32 hft_get_orddtl(CtxHandler cHandle, const char* stdCode, unsigned int ti
 	}
 }
 
-WtUInt32 hft_get_trans(CtxHandler cHandle, const char* stdCode, unsigned int tickCnt, FuncGetTransCallback cb)
+WtUInt32 hft_get_trans(CtxHandler cHandle, const char* stdCode, WtUInt32 tickCnt, FuncGetTransCallback cb)
 {
 	HftMocker* mocker = getRunner().hft_mocker();
 	if (mocker == NULL)
@@ -856,10 +856,10 @@ WtUInt32 hft_get_trans(CtxHandler cHandle, const char* stdCode, unsigned int tic
 		WTSTransSlice* dataSlice = mocker->stra_get_transaction(stdCode, tickCnt);
 		if (dataSlice)
 		{
-			uint32_t left = tickCnt + 1;
-			uint32_t reaCnt = 0;
-			uint32_t tcnt = dataSlice->size();
-			for (uint32_t idx = 0; idx < tcnt && left > 0; idx++, left--)
+			WtUInt32 left = tickCnt + 1;
+			WtUInt32 reaCnt = 0;
+			WtUInt32 tcnt = dataSlice->size();
+			for (WtUInt32 idx = 0; idx < tcnt && left > 0; idx++, left--)
 			{
 				WTSTransStruct* curItem = (WTSTransStruct*)dataSlice->at(idx);
 				bool isLast = (idx == tcnt - 1) || (left == 1);
@@ -945,7 +945,7 @@ WtString hft_cancel_all(CtxHandler cHandle, const char* stdCode, bool isBuy)
 
 	std::stringstream ss;
 	OrderIDs ids = mocker->stra_cancel(stdCode, isBuy, DBL_MAX);
-	for (uint32_t localid : ids)
+	for (WtUInt32 localid : ids)
 	{
 		ss << localid << ",";
 	}
@@ -965,7 +965,7 @@ WtString hft_buy(CtxHandler cHandle, const char* stdCode, double price, double q
 
 	std::stringstream ss;
 	OrderIDs ids = mocker->stra_buy(stdCode, price, qty, userTag);
-	for (uint32_t localid : ids)
+	for (WtUInt32 localid : ids)
 	{
 		ss << localid << ",";
 	}
@@ -985,7 +985,7 @@ WtString hft_sell(CtxHandler cHandle, const char* stdCode, double price, double 
 
 	std::stringstream ss;
 	OrderIDs ids = mocker->stra_sell(stdCode, price, qty, userTag);
-	for (uint32_t localid : ids)
+	for (WtUInt32 localid : ids)
 	{
 		ss << localid << ",";
 	}

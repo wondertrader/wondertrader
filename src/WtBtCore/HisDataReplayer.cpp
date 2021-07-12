@@ -1479,6 +1479,10 @@ WTSKlineSlice* HisDataReplayer::get_kline_slice(const char* stdCode, const char*
 					bHasHisData = cacheRawBarsFromBin(rawKey, stdCode, kp);
 				}
 			}
+			else
+			{
+				bHasHisData = true;
+			}
 		}
 		else
 		{
