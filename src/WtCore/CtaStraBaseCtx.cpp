@@ -40,7 +40,7 @@ const char* ACTION_NAMES[] =
 	"OL",
 	"CL",
 	"OS",
-	"CL",
+	"CS",
 	"SYN"
 };
 
@@ -668,7 +668,7 @@ void CtaStraBaseCtx::on_tick(const char* stdCode, WTSTickData* newTick, bool bEm
 
 			if (isMatched)
 			{
-				stra_log_text(fmt::format("Condition triggered[newprice: {}{}{}], instrument: {}, {} {}", 
+				stra_log_text(fmt::format("Condition triggered[newprice {}{} targetprice {}], instrument: {}, {} {}", 
 					curPrice, CMP_ALG_NAMES[entrust._alg], entrust._target, stdCode, ACTION_NAMES[entrust._action], entrust._qty).c_str());
 
 				switch (entrust._action)
@@ -1095,8 +1095,12 @@ void CtaStraBaseCtx::stra_set_position(const char* stdCode, double qty, const ch
 	{
 		CondList& condList = get_cond_entrusts(stdCode);
 
-		//根据目标仓位和当前仓位,判断是买还是卖
 		double curVol = stra_get_position(stdCode);
+		//如果目标仓位和当前仓位是一致的，则不再设置条件单
+		if (decimal::eq(curVol, qty))
+			return;
+
+		//根据目标仓位和当前仓位,判断是买还是卖
 		bool isBuy = decimal::gt(qty, curVol);
 
 		CondEntrust entrust;

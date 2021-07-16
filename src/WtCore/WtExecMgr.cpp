@@ -9,6 +9,15 @@ USING_NS_OTP;
 
 //////////////////////////////////////////////////////////////////////////
 #pragma region "WtExecuterMgr"
+void WtExecuterMgr::enum_executer(EnumExecuterCb cb)
+{
+	for (auto it = _executers.begin(); it != _executers.end(); it++)
+	{
+		ExecCmdPtr& executer = (*it);
+		cb(executer);
+	}
+}
+
 void WtExecuterMgr::set_positions(faster_hashmap<std::string, double> target_pos)
 {
 	if(_filter_mgr != NULL)
@@ -44,6 +53,11 @@ void WtExecuterMgr::set_positions(faster_hashmap<std::string, double> target_pos
 	for (auto it = _executers.begin(); it != _executers.end(); it++)
 	{
 		ExecCmdPtr& executer = (*it);
+		if (_filter_mgr->is_filtered_by_executer(executer->name()))
+		{
+			WTSLogger::info("[Filters] Executer %s is filtered, all signals will be ignored", executer->name());
+			continue;
+		}
 		executer->set_position(target_pos);
 	}
 }
@@ -73,6 +87,11 @@ void WtExecuterMgr::handle_pos_change(const char* stdCode, double targetPos)
 	for (auto it = _executers.begin(); it != _executers.end(); it++)
 	{
 		ExecCmdPtr& executer = (*it);
+		if(_filter_mgr->is_filtered_by_executer(executer->name()))
+		{
+			WTSLogger::info("[Filters] All signals to executer %s are ignored by executer filter", executer->name());
+			continue;
+		}
 		executer->on_position_changed(stdCode, targetPos);
 	}
 }

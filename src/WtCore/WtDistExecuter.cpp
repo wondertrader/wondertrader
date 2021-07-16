@@ -8,7 +8,7 @@
 USING_NS_OTP;
 
 WtDistExecuter::WtDistExecuter(const char* name)
-	: _name(name)
+	: IExecCommand(name)
 {
 
 }

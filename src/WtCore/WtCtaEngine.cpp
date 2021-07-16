@@ -85,6 +85,14 @@ void WtCtaEngine::run(bool bAsync /* = false */)
 
 		root.AddMember("channels", jChnlList, allocator);
 
+		rj::Value jExecList(rj::kArrayType);
+		_exec_mgr.enum_executer([&jExecList, &allocator](ExecCmdPtr executer) {
+			if(executer)
+				jExecList.PushBack(rj::Value(executer->name(), allocator), allocator);
+		});
+
+		root.AddMember("executers", jExecList, allocator);
+
 		root.AddMember("engine", rj::Value("CTA", allocator), allocator);
 
 		std::string filename = WtHelper::getBaseDir();

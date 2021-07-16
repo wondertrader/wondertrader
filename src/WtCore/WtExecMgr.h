@@ -1,8 +1,12 @@
 #pragma once
+#include <functional>
 #include "WtLocalExecuter.h"
 
 NS_OTP_BEGIN
 class WtFilterMgr;
+
+typedef std::function<void(ExecCmdPtr)> EnumExecuterCb;
+
 class WtExecuterMgr : private boost::noncopyable
 {
 public:
@@ -15,11 +19,13 @@ public:
 		_executers.emplace_back(executer);
 	}
 
+	void	enum_executer(EnumExecuterCb cb);
+
 	void	set_positions(faster_hashmap<std::string, double> target_pos);
 	void	handle_pos_change(const char* stdCode, double targetPos);
 	void	handle_tick(const char* stdCode, WTSTickData* curTick);
 
-public:
+private:
 	typedef std::vector<ExecCmdPtr> ExecuterList;
 	ExecuterList	_executers;
 

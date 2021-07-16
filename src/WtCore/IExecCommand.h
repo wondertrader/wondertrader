@@ -21,7 +21,7 @@ public:
 class IExecCommand
 {
 public:
-	IExecCommand() :_stub(NULL) {}
+	IExecCommand(const char* name) :_stub(NULL), _name(name){}
 	/*
 	 *	设置目标仓位
 	 */
@@ -37,9 +37,15 @@ public:
 	 */
 	virtual void on_tick(const char* stdCode, WTSTickData* newTick) {}
 
-	void setStub(IExecuterStub* stub) { _stub = stub; }
+
+	inline void setStub(IExecuterStub* stub) { _stub = stub; }
+
+	inline const char* name() const { return _name.c_str(); }
+
+	inline void setName(const char* name) { _name = name; }
 
 protected:
-	IExecuterStub* _stub;
+	IExecuterStub*	_stub;
+	std::string		_name;
 };
 NS_OTP_END

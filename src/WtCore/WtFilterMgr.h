@@ -38,6 +38,15 @@ public:
 	 */
 	bool		is_filtered_by_code(const char* stdCode, double& targetPos);
 
+	/*
+	 *	是否被执行器过滤器过滤掉了
+	 *
+	 *	@channelid	交易通道ID
+	 * 
+	 *	return		是否被过滤掉了，如果过滤掉了，该执行器就不执行任何信号了
+	 */
+	bool		is_filtered_by_executer(const char* execid);
+
 private:
 	//////////////////////////////////////////////////////////////////////////
 	//信号过滤器
@@ -58,7 +67,11 @@ private:
 	typedef faster_hashmap<std::string, FilterItem>	FilterMap;
 	FilterMap		_stra_filters;	//策略过滤器
 
-	FilterMap		_exec_filters;	//代码过滤器, 包括合约代码和品种代码, 同一时间只有一个生效, 合约代码优先级高于品种代码
+	FilterMap		_code_filters;	//代码过滤器, 包括合约代码和品种代码, 同一时间只有一个生效, 合约代码优先级高于品种代码
+
+	//交易通道过滤器
+	typedef faster_hashmap<std::string, bool>	ExecuterFilters;
+	ExecuterFilters	_exec_filters;
 
 	std::string		_filter_file;	//过滤器配置文件
 	uint64_t		_filter_timestamp;	//过滤器文件时间戳

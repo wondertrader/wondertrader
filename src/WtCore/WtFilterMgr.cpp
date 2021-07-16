@@ -66,6 +66,7 @@ void WtFilterMgr::load_filters(const char* fileName)
 	_filter_timestamp = lastModTime;
 
 	_stra_filters.clear();
+	_code_filters.clear();
 	_exec_filters.clear();
 
 	//¶Á²ßÂÔ¹ýÂËÆ÷
@@ -98,7 +99,7 @@ void WtFilterMgr::load_filters(const char* fileName)
 		}
 	}
 
-	//¶ÁÖ´ÐÐÆ÷¹ýÂËÆ÷
+	//¶Á´úÂë¹ýÂËÆ÷
 	WTSVariant* filterCodes = cfg->get("code_filters");
 	if (filterCodes)
 	{
@@ -120,7 +121,7 @@ void WtFilterMgr::load_filters(const char* fileName)
 				continue;
 			}
 
-			FilterItem& fItem = _exec_filters[stdCode];
+			FilterItem& fItem = _code_filters[stdCode];
 			fItem._key = stdCode;
 			fItem._action = fAct;
 			fItem._target = cfgItem->getDouble("target");
@@ -129,7 +130,29 @@ void WtFilterMgr::load_filters(const char* fileName)
 		}
 	}
 
+	//¶ÁÍ¨µÀ¹ýÂËÆ÷
+	WTSVariant* filterExecuters = cfg->get("executer_filters");
+	if (filterExecuters)
+	{
+		auto executer_ids = filterExecuters->memberNames();
+		for (const std::string& execid : executer_ids)
+		{
+			bool bDisabled = filterExecuters->getBoolean(execid.c_str());
+			WTSLogger::info("Executer %s is %s", execid.c_str(), bDisabled?"disabled":"enabled");
+			_exec_filters[execid] = bDisabled;
+		}
+	}
+
 	cfg->release();
+}
+
+bool WtFilterMgr::is_filtered_by_executer(const char* execid)
+{
+	auto it = _exec_filters.find(execid);
+	if (it == _exec_filters.end())
+		return false;
+
+	return it->second;
 }
 
 const char* FLTACT_NAMEs[] =
@@ -163,8 +186,8 @@ bool WtFilterMgr::is_filtered_by_strategy(const char* straName, double& targetPo
 
 bool WtFilterMgr::is_filtered_by_code(const char* stdCode, double& targetPos)
 {
-	auto cit = _exec_filters.find(stdCode);
-	if (cit != _exec_filters.end())
+	auto cit = _code_filters.find(stdCode);
+	if (cit != _code_filters.end())
 	{
 		const FilterItem& fItem = cit->second;
 		WTSLogger::info("[Filters] Code filter %s triggered, action: %s", stdCode, fItem._action <= FA_Redirect ? FLTACT_NAMEs[fItem._action] : "Unknown");
@@ -181,8 +204,8 @@ bool WtFilterMgr::is_filtered_by_code(const char* stdCode, double& targetPos)
 	}
 
 	std::string stdPID = CodeHelper::stdCodeToStdCommID(stdCode);
-	cit = _exec_filters.find(stdPID);
-	if (cit != _exec_filters.end())
+	cit = _code_filters.find(stdPID);
+	if (cit != _code_filters.end())
 	{
 		const FilterItem& fItem = cit->second;
 		WTSLogger::info("[Filters] CommID filter %s triggered, action: %s", stdPID.c_str(), fItem._action <= FA_Redirect ? FLTACT_NAMEs[fItem._action] : "Unknown");
@@ -200,4 +223,6 @@ bool WtFilterMgr::is_filtered_by_code(const char* stdCode, double& targetPos)
 
 	return false;
 }
+
+
 

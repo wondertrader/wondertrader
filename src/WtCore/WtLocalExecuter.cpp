@@ -27,8 +27,8 @@ USING_NS_OTP;
 
 
 WtLocalExecuter::WtLocalExecuter(WtExecuterFactory* factory, const char* name, IDataManager* dataMgr)
-	: _factory(factory)
-	, _name(name)
+	: IExecCommand(name)
+	, _factory(factory)
 	, _data_mgr(dataMgr)
 	, _channel_ready(false)
 {

@@ -18,8 +18,6 @@ public:
 	bool init(WTSVariant* params);
 
 
-	const char* name() const { return _name.c_str(); }
-
 public:
 	//////////////////////////////////////////////////////////////////////////
 	//IExecCommand
@@ -36,7 +34,6 @@ private:
 
 private:
 	WTSVariant*			_config;
-	std::string			_name;
 
 	uint32_t			_scale;
 

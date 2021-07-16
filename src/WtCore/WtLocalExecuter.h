@@ -95,12 +95,10 @@ public:
 	bool init(WTSVariant* params);
 
 
-	void setTrader(TraderAdapter* adapter)
+	inline void setTrader(TraderAdapter* adapter)
 	{
 		_trader = adapter;
 	}
-
-	const char* name() const{ return _name.c_str(); }
 
 private:
 	ExecuteUnitPtr	getUnit(const char* code, bool bAutoCreate = true);
@@ -181,7 +179,6 @@ private:
 	WtExecuterFactory*	_factory;
 	IDataManager*		_data_mgr;
 	WTSVariant*			_config;
-	std::string			_name;
 
 	double			_scale;
 	bool			_channel_ready;
