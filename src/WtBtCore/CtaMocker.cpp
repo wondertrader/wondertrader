@@ -38,11 +38,11 @@ const char* CMP_ALG_NAMES[] =
 
 const char* ACTION_NAMES[] =
 {
-	"开多",
-	"平多",
-	"开空",
-	"平空",
-	"同步"
+	"OL",
+	"CL",
+	"OS",
+	"CS",
+	"SYN"
 };
 
 
@@ -325,8 +325,9 @@ void CtaMocker::on_tick(const char* stdCode, WTSTickData* newTick, bool bEmitStr
 			double right_px = max(last_px, cur_px);
 
 			bool isMatched = false;	
-			if(_replayer->is_tick_enabled())
+			if(!_replayer->is_tick_simulated())
 			{
+				//如果tick数据不是模拟的，则使用最新价格
 				switch (entrust._alg)
 				{
 				case WCT_Equal:
@@ -350,6 +351,7 @@ void CtaMocker::on_tick(const char* stdCode, WTSTickData* newTick, bool bEmitStr
 			}
 			else
 			{
+				//如果tick数据是模拟的，则要处理一下
 				switch (entrust._alg)
 				{
 				case WCT_Equal:
@@ -751,14 +753,17 @@ void CtaMocker::stra_set_position(const char* stdCode, double qty, const char* u
 	{
 		CondList& condList = get_cond_entrusts(stdCode);
 
-		CondEntrust entrust;
-		strcpy(entrust._code, stdCode);
-		strcpy(entrust._usertag, userTag);
-
 		double curQty = stra_get_position(stdCode);
+		//如果目标仓位和当前仓位是一致的，则不再设置条件单
+		if (decimal::eq(curQty, qty))
+			return;
 
 		bool isBuy = decimal::gt(qty, curQty);
 
+
+		CondEntrust entrust;
+		strcpy(entrust._code, stdCode);
+		strcpy(entrust._usertag, userTag);
 		entrust._qty = qty;
 		entrust._field = WCF_NEWPRICE;
 		if (!decimal::eq(limitprice))

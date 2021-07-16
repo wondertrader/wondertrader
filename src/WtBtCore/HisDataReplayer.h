@@ -153,11 +153,11 @@ private:
 	 */
 	bool		cacheRawTicksFromCSV(const std::string& key, const char* stdCode, uint32_t uDate);
 
-	void		onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTDate = 0);
+	void		onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTDate = 0, bool tickSimulated = true);
 
 	void		loadFees(const char* filename);
 
-	void		replayHftDatas(uint64_t stime, uint64_t etime);
+	bool		replayHftDatas(uint64_t stime, uint64_t etime);
 
 	uint64_t	replayHftDatasByDay(uint32_t curTDate);
 
@@ -225,6 +225,8 @@ public:
 
 	bool	is_tick_enabled() const{ return _tick_enabled; }
 
+	bool	is_tick_simulated() const { return _tick_simulated; }
+
 	inline void update_price(const char* stdCode, double price)
 	{
 		_price_map[stdCode] = price;
@@ -245,7 +247,8 @@ private:
 
 	std::string		_main_key;
 	std::string		_min_period;	//最小K线周期,这个主要用于未订阅品种的信号处理上
-	bool			_tick_enabled;
+	bool			_tick_enabled;	//是否开启了tick回测
+	bool			_tick_simulated;	//是否需要模拟tick
 	std::map<std::string, WTSTickStruct>	_day_cache;	//每日Tick缓存,当tick回放未开放时,会用到该缓存
 	std::map<std::string, std::string>		_ticker_keys;
 

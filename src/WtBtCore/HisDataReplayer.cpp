@@ -59,6 +59,7 @@ HisDataReplayer::HisDataReplayer()
 	, _tick_enabled(true)
 	, _opened_tdate(0)
 	, _closed_tdate(0)
+	, _tick_simulated(true)
 {
 }
 
@@ -353,8 +354,10 @@ void HisDataReplayer::run()
 
 					uint64_t curBarTime = (uint64_t)_cur_date * 10000 + _cur_time;
 					if (_tick_enabled)
-					{//如果开始了tick回放,则直接回放tick数据
-						replayHftDatas(curBarTime, nextBarTime);
+					{
+						//如果开启了tick回放,则直接回放tick数据
+						//如果tick回放失败，说明tick数据不存在，则需要模拟tick
+						_tick_simulated = !replayHftDatas(curBarTime, nextBarTime);
 					}
 
 					_cur_date = nextDate;
@@ -370,7 +373,7 @@ void HisDataReplayer::run()
 						replayUnbars(curBarTime, nextBarTime, (isDay || isEndTDate) ? nextTDate : 0);
 					}
 
-					onMinuteEnd(nextDate, nextTime, (isDay || isEndTDate) ? nextTDate : 0);
+					onMinuteEnd(nextDate, nextTime, (isDay || isEndTDate) ? nextTDate : 0, _tick_simulated);
 
 					if (isEndTDate && _closed_tdate != _cur_tdate)
 					{
@@ -1117,11 +1120,14 @@ uint64_t HisDataReplayer::replayHftDatasByDay(uint32_t curTDate)
 	return total_ticks;
 }
 
-void HisDataReplayer::replayHftDatas(uint64_t stime, uint64_t etime)
-{
+bool HisDataReplayer::replayHftDatas(uint64_t stime, uint64_t etime)
+{	
 	for (;;)
 	{
 		uint64_t nextTime = min(UINT64_MAX, getNextTickTime(_cur_tdate, stime));
+		if (nextTime == UINT64_MAX)
+			return false;
+
 		nextTime = min(nextTime, getNextOrdDtlTime(_cur_tdate, stime));
 		nextTime = min(nextTime, getNextOrdQueTime(_cur_tdate, stime));
 		nextTime = min(nextTime, getNextTransTime(_cur_tdate, stime));
@@ -1206,9 +1212,11 @@ void HisDataReplayer::replayHftDatas(uint64_t stime, uint64_t etime)
 			}
 		}
 	}
+
+	return true;
 }
 
-void HisDataReplayer::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTDate /* = 0 */)
+void HisDataReplayer::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTDate /* = 0 */, bool tickSimulated /* = true */)
 {
 	//这里应该触发检查
 	uint64_t nowTime = (uint64_t)uDate * 10000 + uTime;
@@ -1252,7 +1260,7 @@ void HisDataReplayer::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTD
 					{
 						//if (_task == NULL)
 						{
-							if (!_tick_enabled)
+							if (tickSimulated)
 							{
 								const std::string& ticker = _ticker_keys[barsList._code];
 								if (ticker == it->first)
@@ -1336,7 +1344,7 @@ void HisDataReplayer::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTD
 					{
 						//if (_task == NULL)
 						{
-							if (!_tick_enabled)
+							if (tickSimulated)
 							{
 								const std::string& ticker = _ticker_keys[barsList._code];
 								if (ticker == it->first)
@@ -1594,19 +1602,15 @@ WTSKlineSlice* HisDataReplayer::get_kline_slice(const char* stdCode, const char*
 						it--;
 						eIdx--;
 					}
-					else
-					{
-						return NULL;
-					}
 				}
 			}
+
+			kBlkPair._cursor = eIdx + 1;
 		}
 		else
 		{
-
+			return NULL;
 		}
-
-		kBlkPair._cursor = eIdx + 1;
 	}
 	else
 	{
@@ -1979,8 +1983,9 @@ bool HisDataReplayer::checkTicks(const char* stdCode, uint32_t uDate)
 		auto& tickList = it->second;
 		if (tickList._date != uDate)
 			bNeedCache = true;
+		else if (tickList._count == 0)
+			return false;
 	}
-
 	
 	if (bNeedCache)
 	{
@@ -1995,8 +2000,17 @@ bool HisDataReplayer::checkTicks(const char* stdCode, uint32_t uDate)
 		}
 
 		if (!hasTicks)
+		{
+			auto& ticksList = _ticks_cache[stdCode];
+			ticksList._items.resize(0);
+			ticksList._cursor = UINT_MAX;
+			ticksList._code = stdCode;
+			ticksList._date = uDate;
+			ticksList._count = 0;
 			return false;
+		}
 	}
+
 
 	return true;
 }
