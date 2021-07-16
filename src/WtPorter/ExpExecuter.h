@@ -6,7 +6,7 @@ USING_NS_OTP;
 class ExpExecuter : public IExecCommand
 {
 public:
-	ExpExecuter(const char* id):_id(id){}
+	ExpExecuter(const char* name):IExecCommand(name){}
 
 	void	init();
 
@@ -16,7 +16,5 @@ public:
 
 	virtual void on_position_changed(const char* stdCode, double targetPos) override;
 
-private:
-	std::string _id;
 };
 
