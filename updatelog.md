@@ -119,3 +119,17 @@
 * WtDataWriter增加一些配置项，用于控制不同类型的数据是否落地
 * 将配置文件中的traders和parsers全部拆分成独立的配置文件
 * 其他细节优化
+
+### 0.6.5
+* 将CTPLoader、CTPOptLoader和MiniLoader改成动态库，方便应用层调用
+* 交易通道合规风控代码细节优化
+* 支持模块名自动根据平台补全后缀
+* 本地执行器WtLocalExecuter支持针对品种设置执行策略
+* WtDtHelper模块新增一个resamle_bars接口，用于对K线进行重采样
+* 内部逻辑增加了对次主力合约的支持，代码格式如CFFEX.IF.2ND
+* 完善了回测框架CTA策略回测时对于数据的兼容性
+* 完善了tick回测时对于tick数据不够时的兼容性
+* 完善了回测框架条件单处理的细节
+* WtBtPorter的dump_bars接口修改为通过回调返回数据，而不是直接导出到csv
+* WtPorter新增dump_bars接口，用法同WtBtPorter
+* 其他Bug修正和细节优化
