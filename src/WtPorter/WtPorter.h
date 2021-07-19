@@ -53,6 +53,8 @@ extern "C"
 
 	EXPORT_FLAG	bool		create_ext_executer(const char* id);
 
+	EXPORT_FLAG	void		dump_bars(const char* stdCode, const char* period, FuncDumpBarsCallback cb, FuncCountDataCallback cbCnt);
+
 	//////////////////////////////////////////////////////////////////////////
 	//CTA策略接口
 #pragma region "CTA接口"
