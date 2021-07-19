@@ -2345,8 +2345,23 @@ bool HisDataReplayer::cacheRawTicksFromBin(const std::string& key, const char* s
 		rawCode = _hot_mgr.getSecondRawCode(cInfo._exchg, cInfo._product, uDate);
 	}
 
+	const char* hot_flag = cInfo.isFlat()? "" : (cInfo.isHot() ? "HOT" : "2ND");
+
+	std::string filename;
 	std::stringstream ss;
-	ss << _base_dir << "his/ticks/" << cInfo._exchg << "/" << uDate << "/" << rawCode << ".dsb";
+	bool bHit = false;
+	//先检查有没有HOT、SND的主力次主力的tick文件
+	if(!cInfo.isFlat())
+	{
+		ss << _base_dir << "his/ticks/" << cInfo._exchg << "/" << uDate << "/" << cInfo._product << "_" << hot_flag << ".dsb";
+		filename = ss.str();
+		if (StdFile::exists(filename.c_str()))
+			bHit = true;
+	}
+
+	//如果没有找到，则读取分月合约
+	if(!bHit)
+		ss << _base_dir << "his/ticks/" << cInfo._exchg << "/" << uDate << "/" << rawCode << ".dsb";
 
 	std::string filename = ss.str();
 	if (!StdFile::exists(filename.c_str()))
