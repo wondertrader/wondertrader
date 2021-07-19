@@ -65,3 +65,9 @@ typedef void(PORTER_FLAG *FuncHftTrdCallback)(CtxHandler cHandle, WtUInt32 local
 typedef void(PORTER_FLAG *FuncHftEntrustCallback)(CtxHandler cHandle, WtUInt32 localid, const char* stdCode, bool bSuccess, const char* message, const char* userTag);
 
 typedef void(PORTER_FLAG *FuncEventCallback)(WtUInt32 evtId, WtUInt32 curDate, WtUInt32 curTime);
+
+
+//////////////////////////////////////////////////////////////////////////
+//数据相关回调函数
+typedef void(PORTER_FLAG *FuncDumpBarsCallback)(WTSBarStruct* bar, bool isLast);
+typedef void(PORTER_FLAG *FuncCountDataCallback)(WtUInt32 dataCnt);

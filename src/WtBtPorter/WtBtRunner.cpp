@@ -328,28 +328,21 @@ void WtBtRunner::release()
 	WTSLogger::stop();
 }
 
-void WtBtRunner::dump_bars(const char* stdCode, const char* period, const char* filename)
+void WtBtRunner::dump_bars(const char* stdCode, const char* period, FuncDumpBarsCallback cb, FuncCountDataCallback cbCnt)
 {
 	WTSKlineSlice* kline = _replayer.get_kline_slice(stdCode, period, UINT_MAX);
 	if (kline)
 	{
-		std::ofstream ofs;
-		ofs.open(filename);
-		ofs << "date,time,open,high,low,close,vol,turnover" << std::endl;
-
+		cbCnt(kline->size());
 		for (int32_t idx = 0; idx < kline->size(); idx++)
 		{
-			const WTSBarStruct& bs = *(kline->at(idx));
-			ofs << (bs.time / 10000) + 19900000 << ","
-				<< bs.time % 10000 << ","
-				<< bs.open << ","
-				<< bs.high << ","
-				<< bs.low << ","
-				<< bs.close << ","
-				<< bs.vol << ","
-				<< std::fixed << std::setprecision(0) << bs.money << std::endl;
+			WTSBarStruct* bs = kline->at(idx);
+			cb(bs, (idx == kline->size() - 1));
 		}
-		ofs.close();
 		kline->release();
+	}
+	else
+	{
+		cbCnt(0);
 	}
 }

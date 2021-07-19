@@ -175,9 +175,9 @@ const char* get_version()
 	return _ver.c_str();
 }
 
-void dump_bars(const char* stdCode, const char* period, const char* filename)
+void dump_bars(const char* stdCode, const char* period, FuncDumpBarsCallback cb, FuncCountDataCallback cbCnt)
 {
-	getRunner().dump_bars(stdCode, period, filename);
+	getRunner().dump_bars(stdCode, period, cb, cbCnt);
 }
 
 void write_log(WtUInt32 level, const char* message, const char* catName)
@@ -257,7 +257,7 @@ WtUInt32 cta_get_bars(CtxHandler cHandle, const char* stdCode, const char* perio
 			WtUInt32 left = barCnt + 1;
 			WtUInt32 reaCnt = 0;
 			WtUInt32 kcnt = kData->size();
-			for (int32_t idx = 0; idx < kcnt && left > 0; idx++, left--)
+			for (uint32_t idx = 0; idx < kcnt && left > 0; idx++, left--)
 			{
 				WTSBarStruct* curBar = kData->at(idx);
 
@@ -577,7 +577,7 @@ WtUInt32 sel_get_bars(CtxHandler cHandle, const char* stdCode, const char* perio
 			WtUInt32 left = barCnt;
 			WtUInt32 reaCnt = 0;
 			WtUInt32 kcnt = kData->size();
-			for (int32_t idx = 0; idx < kcnt && left > 0; idx++, left--)
+			for (uint32_t idx = 0; idx < kcnt && left > 0; idx++, left--)
 			{
 				WTSBarStruct* curBar = kData->at(idx);
 
@@ -718,7 +718,7 @@ WtUInt32 hft_get_bars(CtxHandler cHandle, const char* stdCode, const char* perio
 			WtUInt32 left = barCnt + 1;
 			WtUInt32 reaCnt = 0;
 			WtUInt32 kcnt = kData->size();
-			for (int32_t idx = 0; idx < kcnt && left > 0; idx++, left--)
+			for (uint32_t idx = 0; idx < kcnt && left > 0; idx++, left--)
 			{
 				WTSBarStruct* curBar = kData->at(idx);
 
