@@ -4,4 +4,4 @@
 #define WT_VER_MINOR 6
 #define WT_VER_PATCH 0
 
-static const char WT_VERSION[] = "v0.6.4";
+static const char WT_VERSION[] = "v0.6.5";
