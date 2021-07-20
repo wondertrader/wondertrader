@@ -84,8 +84,3 @@ typedef void(PORTER_FLAG *FuncParserSubCallback)(const char* id, const char* ful
 //扩展Executer回调函数
 typedef void(PORTER_FLAG *FuncExecInitCallback)(const char* id);
 typedef void(PORTER_FLAG *FuncExecCmdCallback)(const char* id, const char* StdCode, double targetPos);
-
-//////////////////////////////////////////////////////////////////////////
-//数据相关回调函数
-typedef void(PORTER_FLAG *FuncDumpBarsCallback)(WTSBarStruct* bar, bool isLast);
-typedef void(PORTER_FLAG *FuncCountDataCallback)(WtUInt32 dataCnt);

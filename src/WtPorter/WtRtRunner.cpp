@@ -771,68 +771,6 @@ void WtRtRunner::release()
 	WTSLogger::stop();
 }
 
-void WtRtRunner::dump_bars(const char* stdCode, const char* period, FuncDumpBarsCallback cb, FuncCountDataCallback cbCnt)
-{
-	WTSCommodityInfo* cInfo = _bd_mgr.getCommodity(CodeHelper::stdCodeToStdCommID(stdCode).c_str());
-	if (cInfo == NULL)
-	{
-		cbCnt(0);
-		return;
-	}
-
-	WTSSessionInfo* sInfo = _bd_mgr.getSession(cInfo->getSession());
-	if (sInfo == NULL)
-	{
-		cbCnt(0);
-		return;
-	}
-
-	std::string basePeriod = "";
-	uint32_t times = 1;
-	if (strlen(period) > 1)
-	{
-		basePeriod.append(period, 1);
-		times = strtoul(period + 1, NULL, 10);
-	}
-	else
-	{
-		basePeriod = period;
-	}
-
-	WTSKlinePeriod kp;
-	if (strcmp(basePeriod.c_str(), "m") == 0)
-	{
-		if (times % 5 == 0)
-		{
-			kp = KP_Minute5;
-			times /= 5;
-		}
-		else
-			kp = KP_Minute1;
-	}
-	else
-	{
-		kp = KP_DAY;
-	}
-
-	WTSKlineSlice* kline = _data_mgr.get_kline_slice(stdCode, kp, times, UINT32_MAX, 0);
-	if (kline)
-	{
-		cbCnt(kline->size());
-		for (int32_t idx = 0; idx < kline->size(); idx++)
-		{
-			WTSBarStruct* bs = kline->at(idx);
-			cb(bs, (idx == kline->size() - 1));
-		}
-		kline->release();
-	}
-	else
-	{
-		cbCnt(0);
-	}
-}
-
-
 bool WtRtRunner::initActionPolicy()
 {
 	const char* action_file = _config->getCString("bspolicy");
