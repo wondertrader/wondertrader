@@ -30,7 +30,7 @@
     <Filter Include="Exec">
       <UniqueIdentifier>{1f4c4ad5-a32a-4c03-943c-c5e6831cc00b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="头文件\源文件">
+    <Filter Include="源文件">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
@@ -153,16 +153,16 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TraderAdapter.cpp">
-      <Filter>头文件\源文件</Filter>
+      <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="ParserAdapter.cpp">
-      <Filter>头文件\源文件</Filter>
+      <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="WtDataManager.cpp">
       <Filter>Datas</Filter>
     </ClCompile>
     <ClCompile Include="WtHelper.cpp">
-      <Filter>头文件\源文件</Filter>
+      <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="WtCtaEngine.cpp">
       <Filter>CTA</Filter>
@@ -228,7 +228,7 @@
       <Filter>Exec</Filter>
     </ClCompile>
     <ClCompile Include="WtFilterMgr.cpp">
-      <Filter>头文件\源文件</Filter>
+      <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
