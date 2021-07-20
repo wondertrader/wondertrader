@@ -327,22 +327,3 @@ void WtBtRunner::release()
 {
 	WTSLogger::stop();
 }
-
-void WtBtRunner::dump_bars(const char* stdCode, const char* period, FuncDumpBarsCallback cb, FuncCountDataCallback cbCnt)
-{
-	WTSKlineSlice* kline = _replayer.get_kline_slice(stdCode, period, UINT_MAX);
-	if (kline)
-	{
-		cbCnt(kline->size());
-		for (int32_t idx = 0; idx < kline->size(); idx++)
-		{
-			WTSBarStruct* bs = kline->at(idx);
-			cb(bs, (idx == kline->size() - 1));
-		}
-		kline->release();
-	}
-	else
-	{
-		cbCnt(0);
-	}
-}

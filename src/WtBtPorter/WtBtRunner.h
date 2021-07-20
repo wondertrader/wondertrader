@@ -74,8 +74,6 @@ public:
 	void	run();
 	void	release();
 
-	void	dump_bars(const char* stdCode, const char* period, FuncDumpBarsCallback cb, FuncCountDataCallback cbCnt);
-
 	CtaMocker*			cta_mocker() { return _cta_mocker; }
 	SelMocker*			sel_mocker() { return _sel_mocker; }
 	HftMocker*			hft_mocker() { return _hft_mocker; }

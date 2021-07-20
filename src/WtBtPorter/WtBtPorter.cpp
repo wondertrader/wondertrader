@@ -175,11 +175,6 @@ const char* get_version()
 	return _ver.c_str();
 }
 
-void dump_bars(const char* stdCode, const char* period, FuncDumpBarsCallback cb, FuncCountDataCallback cbCnt)
-{
-	getRunner().dump_bars(stdCode, period, cb, cbCnt);
-}
-
 void write_log(WtUInt32 level, const char* message, const char* catName)
 {
 	if (strlen(catName) > 0)

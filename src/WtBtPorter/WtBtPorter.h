@@ -39,8 +39,6 @@ extern "C"
 
 	EXPORT_FLAG	WtString	get_version();
 
-	EXPORT_FLAG	void		dump_bars(const char* stdCode, const char* period, FuncDumpBarsCallback cb, FuncCountDataCallback cbCnt);
-
 	EXPORT_FLAG	void		release_backtest();
 
 
