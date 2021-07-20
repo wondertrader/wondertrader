@@ -99,7 +99,7 @@ void WtDtRunner::initDataMgr(WTSVariant* config)
 	WTSLogger::info("Data manager initialized");
 }
 
-WTSKlineSlice* WtDtRunner::get_bars(const char* stdCode, const char* period, uint32_t count, uint64_t endTime /* = 0 */)
+WTSKlineSlice* WtDtRunner::get_bars(const char* stdCode, const char* period, uint64_t beginTime, uint64_t endTime /* = 0 */)
 {
 	std::string basePeriod = "";
 	uint32_t times = 1;
@@ -137,10 +137,10 @@ WTSKlineSlice* WtDtRunner::get_bars(const char* stdCode, const char* period, uin
 		endTime = (uint64_t)curDate * 10000 + curTime/100000;
 	}
 
-	return _data_mgr.get_kline_slice(stdCode, kp, realTimes, count, endTime);
+	return _data_mgr.get_kline_slice(stdCode, kp, realTimes, beginTime, endTime);
 }
 
-WTSTickSlice* WtDtRunner::get_ticks(const char* stdCode, uint32_t count, uint64_t endTime /* = 0 */)
+WTSTickSlice* WtDtRunner::get_ticks(const char* stdCode, uint64_t beginTime, uint64_t endTime /* = 0 */)
 {
 	if(endTime == 0)
 	{
@@ -148,5 +148,5 @@ WTSTickSlice* WtDtRunner::get_ticks(const char* stdCode, uint32_t count, uint64_
 		TimeUtils::getDateTime(curDate, curTime);
 		endTime = (uint64_t)curDate * 1000000000 + curTime;
 	}
-	return _data_mgr.get_tick_slice(stdCode, count, endTime);
+	return _data_mgr.get_tick_slice(stdCode, beginTime, endTime);
 }

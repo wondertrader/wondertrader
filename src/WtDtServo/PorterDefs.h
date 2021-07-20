@@ -31,5 +31,4 @@ typedef const char*			WtString;
 
 typedef void(PORTER_FLAG *FuncGetBarsCallback)(WTSBarStruct* bar, bool isLast);
 typedef void(PORTER_FLAG *FuncGetTicksCallback)(WTSTickStruct* tick, bool isLast);
-typedef void(PORTER_FLAG *FuncDataCountCallback)(WtUInt32 dataCnt);
 

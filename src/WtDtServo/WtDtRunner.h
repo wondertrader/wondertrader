@@ -33,9 +33,9 @@ public:
 	inline WTSHotMgr& getHotMgr() { return m_hotMgr; }
 
 public:
-	WTSKlineSlice*	get_bars(const char* stdCode, const char* period, uint32_t count, uint64_t endTime = 0);
+	WTSKlineSlice*	get_bars(const char* stdCode, const char* period, uint64_t beginTime, uint64_t endTime = 0);
 
-	WTSTickSlice*	get_ticks(const char* stdCode, uint32_t count, uint64_t endTime = 0);
+	WTSTickSlice*	get_ticks(const char* stdCode, uint64_t beginTime, uint64_t endTime = 0);
 
 private:
 	void	initDataMgr(WTSVariant* config);

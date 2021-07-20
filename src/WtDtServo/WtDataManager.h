@@ -46,11 +46,11 @@ public:
 
 	void	handle_push_quote(const char* stdCode, WTSTickData* newTick);
 
-	WTSTickSlice* get_tick_slice(const char* stdCode, uint32_t count, uint64_t etime = 0);
-	WTSOrdQueSlice* get_order_queue_slice(const char* stdCode, uint32_t count, uint64_t etime = 0);
-	WTSOrdDtlSlice* get_order_detail_slice(const char* stdCode, uint32_t count, uint64_t etime = 0);
-	WTSTransSlice* get_transaction_slice(const char* stdCode, uint32_t count, uint64_t etime = 0);
-	WTSKlineSlice* get_kline_slice(const char* stdCode, WTSKlinePeriod period, uint32_t times, uint32_t count, uint64_t etime = 0);
+	WTSTickSlice* get_tick_slice(const char* stdCode, uint64_t stime, uint64_t etime = 0);
+	WTSOrdQueSlice* get_order_queue_slice(const char* stdCode, uint64_t stime, uint64_t etime = 0);
+	WTSOrdDtlSlice* get_order_detail_slice(const char* stdCode, uint64_t stime, uint64_t etime = 0);
+	WTSTransSlice* get_transaction_slice(const char* stdCode, uint64_t stime, uint64_t etime = 0);
+	WTSKlineSlice* get_kline_slice(const char* stdCode, WTSKlinePeriod period, uint32_t times, uint64_t stime, uint64_t etime = 0);
 
 private:
 	WtDataReader	_reader;

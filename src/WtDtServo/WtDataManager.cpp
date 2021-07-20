@@ -66,24 +66,24 @@ bool WtDataManager::init(WTSVariant* cfg, WtDtRunner* runner)
 	return initStore(cfg->get("store"));
 }
 
-WTSTickSlice* WtDataManager::get_tick_slice(const char* stdCode, uint32_t count, uint64_t etime /* = 0 */)
+WTSTickSlice* WtDataManager::get_tick_slice(const char* stdCode,uint64_t stime, uint64_t etime /* = 0 */)
 {
-	return _reader.readTickSlice(stdCode, count, etime);
+	return _reader.readTickSlice(stdCode, stime, etime);
 }
 
-WTSOrdQueSlice* WtDataManager::get_order_queue_slice(const char* stdCode, uint32_t count, uint64_t etime /* = 0 */)
+WTSOrdQueSlice* WtDataManager::get_order_queue_slice(const char* stdCode,uint64_t stime, uint64_t etime /* = 0 */)
 {
-	return _reader.readOrdQueSlice(stdCode, count, etime);
+	return _reader.readOrdQueSlice(stdCode, stime, etime);
 }
 
-WTSOrdDtlSlice* WtDataManager::get_order_detail_slice(const char* stdCode, uint32_t count, uint64_t etime /* = 0 */)
+WTSOrdDtlSlice* WtDataManager::get_order_detail_slice(const char* stdCode,uint64_t stime, uint64_t etime /* = 0 */)
 {
-	return _reader.readOrdDtlSlice(stdCode, count, etime);
+	return _reader.readOrdDtlSlice(stdCode, stime, etime);
 }
 
-WTSTransSlice* WtDataManager::get_transaction_slice(const char* stdCode, uint32_t count, uint64_t etime /* = 0 */)
+WTSTransSlice* WtDataManager::get_transaction_slice(const char* stdCode,uint64_t stime, uint64_t etime /* = 0 */)
 {
-	return _reader.readTransSlice(stdCode, count, etime);
+	return _reader.readTransSlice(stdCode, stime, etime);
 }
 
 WTSSessionInfo* WtDataManager::get_session_info(const char* sid, bool isCode /* = false */)
@@ -98,13 +98,13 @@ WTSSessionInfo* WtDataManager::get_session_info(const char* sid, bool isCode /* 
 	return _bd_mgr->getSession(cInfo->getSession());
 }
 
-WTSKlineSlice* WtDataManager::get_kline_slice(const char* stdCode, WTSKlinePeriod period, uint32_t times, uint32_t count, uint64_t etime /* = 0 */)
+WTSKlineSlice* WtDataManager::get_kline_slice(const char* stdCode, WTSKlinePeriod period, uint32_t times,uint64_t stime, uint64_t etime /* = 0 */)
 {
 	std::string key = StrUtil::printf("%s-%u", stdCode, period);
 
 	if (times == 1)
 	{
-		return _reader.readKlineSlice(stdCode, period, count, etime);
+		return _reader.readKlineSlice(stdCode, period, stime, etime);
 	}
 
 	//只有非基础周期的会进到下面的步骤
@@ -115,12 +115,11 @@ WTSKlineSlice* WtDataManager::get_kline_slice(const char* stdCode, WTSKlinePerio
 
 	key = StrUtil::printf("%s-%u-%u", stdCode, period, times);
 
-	WTSKlineData* kData = (WTSKlineData*)_bars_cache->get(key);
-	//如果缓存里的K线条数大于请求的条数, 则直接返回
-	if (kData == NULL || kData->size() < count)
+	bool bNeedReload = true;
+	WTSKlineData* kData = NULL;
+
 	{
-		uint32_t realCount = count*times + times;
-		WTSKlineSlice* rawData = _reader.readKlineSlice(stdCode, period, realCount, etime);
+		WTSKlineSlice* rawData = _reader.readKlineSlice(stdCode, period, stime, etime);
 		if (rawData != NULL)
 		{
 			kData = g_dataFact.extractKlineData(rawData, period, times, sInfo, true);
@@ -135,10 +134,8 @@ WTSKlineSlice* WtDataManager::get_kline_slice(const char* stdCode, WTSKlinePerio
 			_bars_cache->add(key, kData, false);
 	}
 
-	int32_t sIdx = 0;
-	uint32_t rtCnt = min(kData->size(), count);
-	sIdx = kData->size() - rtCnt;
-	WTSBarStruct* rtHead = kData->at(sIdx);
+	uint32_t rtCnt = kData->size();
+	WTSBarStruct* rtHead = kData->at(0);
 	WTSKlineSlice* slice = WTSKlineSlice::create(stdCode, period, times, NULL, 0, rtHead, rtCnt);
 	return slice;
 }

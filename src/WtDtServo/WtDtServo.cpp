@@ -135,19 +135,18 @@ const char* get_version()
 }
 
 
-WtUInt32 get_bars(const char* stdCode, const char* period, WtUInt32 count, WtUInt64 endTime, FuncGetBarsCallback cb, FuncDataCountCallback cbCnt)
+WtUInt32 get_bars(const char* stdCode, const char* period, WtUInt64 beginTime, WtUInt64 endTime, FuncGetBarsCallback cb)
 {
-	WTSKlineSlice* kData = getRunner().get_bars(stdCode, period, count, endTime);
+	WTSKlineSlice* kData = getRunner().get_bars(stdCode, period, beginTime, endTime);
 	if (kData)
 	{
-		uint32_t left = count + 1;
 		uint32_t reaCnt = 0;
 		uint32_t kcnt = kData->size();
-		for (uint32_t idx = 0; idx < kcnt && left > 0; idx++, left--)
+		for (uint32_t idx = 0; idx < kcnt; idx++)
 		{
 			WTSBarStruct* curBar = kData->at(idx);
 
-			bool isLast = (idx == kcnt - 1) || (left == 1);
+			bool isLast = (idx == kcnt - 1);
 			cb(curBar, isLast);
 			reaCnt += 1;
 		}
@@ -161,18 +160,17 @@ WtUInt32 get_bars(const char* stdCode, const char* period, WtUInt32 count, WtUIn
 	}
 }
 
-WtUInt32	get_ticks(const char* stdCode, WtUInt32 count, WtUInt64 endTime, FuncGetTicksCallback cb, FuncDataCountCallback cbCnt)
+WtUInt32	get_ticks(const char* stdCode, WtUInt64 beginTime, WtUInt64 endTime, FuncGetTicksCallback cb)
 {
-	WTSTickSlice* tData = getRunner().get_ticks(stdCode, count, endTime);
+	WTSTickSlice* tData = getRunner().get_ticks(stdCode, beginTime, endTime);
 	if (tData)
 	{
-		uint32_t left = count + 1;
 		uint32_t reaCnt = 0;
 		uint32_t tcnt = tData->size();
-		for (uint32_t idx = 0; idx < tcnt && left > 0; idx++, left--)
+		for (uint32_t idx = 0; idx < tcnt; idx++)
 		{
 			WTSTickStruct* curTick = (WTSTickStruct*)tData->at(idx);
-			bool isLast = (idx == tcnt - 1) || (left == 1);
+			bool isLast = (idx == tcnt - 1);
 			cb(curTick, isLast);
 			reaCnt += 1;
 		}

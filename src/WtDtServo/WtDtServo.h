@@ -20,9 +20,9 @@ extern "C"
 
 	EXPORT_FLAG	WtString	get_version();
 
-	EXPORT_FLAG	WtUInt32	get_bars(const char* stdCode, const char* period, WtUInt32 count, WtUInt64 endTime, FuncGetBarsCallback cb, FuncDataCountCallback cbCnt);
+	EXPORT_FLAG	WtUInt32	get_bars(const char* stdCode, const char* period, WtUInt64 beginTime, WtUInt64 endTime, FuncGetBarsCallback cb);
 
-	EXPORT_FLAG	WtUInt32	get_ticks(const char* stdCode, WtUInt32 count, WtUInt64 endTime, FuncGetTicksCallback cb, FuncDataCountCallback cbCnt);
+	EXPORT_FLAG	WtUInt32	get_ticks(const char* stdCode, WtUInt64 beginTime, WtUInt64 endTime, FuncGetTicksCallback cb);
 
 #ifdef __cplusplus
 }

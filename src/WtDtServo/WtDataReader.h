@@ -197,19 +197,19 @@ private:
 	 */
 	bool		cacheHisBarsFromFile(const std::string& key, const char* stdCode, WTSKlinePeriod period);
 
-	uint32_t	readBarsFromCache(const std::string& key, uint64_t etime, uint32_t count, std::vector<WTSBarStruct>& ayBars, bool isDay = false);
-	WTSBarStruct*	indexBarFromCache(const std::string& key, uint64_t etime, uint32_t& count, bool isDay = false);
+	uint32_t	readBarsFromCache(const std::string& key, uint64_t stime, uint64_t etime, std::vector<WTSBarStruct>& ayBars, bool isDay = false);
+	WTSBarStruct*	indexBarFromCache(const std::string& key, uint64_t stime, uint64_t etime, uint32_t& count, bool isDay = false);
 
 	bool	loadStkAdjFactorsFromFile(const char* adjfile);
 
 public:
 	void init(WTSVariant* cfg, IBaseDataMgr* bdMgr, IHotMgr* hotMgr);
 
-	virtual WTSTickSlice*	readTickSlice(const char* stdCode, uint32_t count, uint64_t etime = 0);
-	virtual WTSOrdDtlSlice*	readOrdDtlSlice(const char* stdCode, uint32_t count, uint64_t etime = 0);
-	virtual WTSOrdQueSlice*	readOrdQueSlice(const char* stdCode, uint32_t count, uint64_t etime = 0);
-	virtual WTSTransSlice*	readTransSlice(const char* stdCode, uint32_t count, uint64_t etime = 0);
-	virtual WTSKlineSlice*	readKlineSlice(const char* stdCode, WTSKlinePeriod period, uint32_t count, uint64_t etime = 0);
+	virtual WTSTickSlice*	readTickSlice(const char* stdCode, uint64_t stime, uint64_t etime = 0);
+	virtual WTSOrdDtlSlice*	readOrdDtlSlice(const char* stdCode, uint64_t stime, uint64_t etime = 0);
+	virtual WTSOrdQueSlice*	readOrdQueSlice(const char* stdCode, uint64_t stime, uint64_t etime = 0);
+	virtual WTSTransSlice*	readTransSlice(const char* stdCode, uint64_t stime, uint64_t etime = 0);
+	virtual WTSKlineSlice*	readKlineSlice(const char* stdCode, WTSKlinePeriod period, uint64_t stime, uint64_t etime = 0);
 
 private:
 	std::string		_base_dir;
