@@ -142,13 +142,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="testDtServo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\WtDtHelper\WtDtHelper.vcxproj">
       <Project>{cd6de209-c68e-43fa-8c55-a92a346d020a}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\WtDtPorter\WtDtPorter.vcxproj">
-      <Project>{ced17d95-54e5-4571-b2c3-727b4f0104f6}</Project>
+    <ProjectReference Include="..\WtDtServo\WtDtServo.vcxproj">
+      <Project>{472d8dbc-185f-40c1-8f80-56bfb4195ea1}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

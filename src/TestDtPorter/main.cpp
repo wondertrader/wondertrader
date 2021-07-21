@@ -1,13 +1,6 @@
-#include "../WtDtPorter/WtDtPorter.h"
 #include "../WtDtHelper/WtDtHelper.h"
 
 #include "../Includes/WTSDataDef.hpp"
-
-void testDtPorter()
-{
-	initialize("dtcfg.json", "logcfgdt.json");
-	start();
-}
 
 void on_get_bar(WTSBarStruct* bar, bool isLast)
 {
@@ -46,7 +39,9 @@ void testDtHelper()
 	resample_bars("IC2009.dsb", on_get_bar, on_bar_cnt, 202001010931, 202009181500, "m1", 5, session_str, on_log);
 }
 
+extern void testDtServo();
+
 void main()
 {
-	testDtHelper();
+	testDtServo();
 }
