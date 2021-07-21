@@ -115,7 +115,7 @@ WTSKlineSlice* WtDtRunner::get_bars(const char* stdCode, const char* period, uin
 
 	WTSKlinePeriod kp;
 	uint32_t realTimes = times;
-	if (strcmp(period, "m") == 0)
+	if (strcmp(basePeriod.c_str(), "m") == 0)
 	{
 		if (times % 5 == 0)
 		{

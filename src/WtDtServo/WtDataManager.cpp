@@ -30,8 +30,7 @@
 WTSDataFactory g_dataFact;
 
 WtDataManager::WtDataManager()
-	: _bars_cache(NULL)
-	, _bd_mgr(NULL)
+	: _bd_mgr(NULL)
 	, _hot_mgr(NULL)
 	, _runner(NULL)
 {
@@ -40,8 +39,12 @@ WtDataManager::WtDataManager()
 
 WtDataManager::~WtDataManager()
 {
-	if (_bars_cache)
-		_bars_cache->release();
+	for(auto& m : _bars_cache)
+	{
+		if (m.second._bars != NULL)
+			m.second._bars->release();
+	}
+	_bars_cache.clear();
 }
 
 bool WtDataManager::initStore(WTSVariant* cfg)
@@ -109,33 +112,122 @@ WTSKlineSlice* WtDataManager::get_kline_slice(const char* stdCode, WTSKlinePerio
 
 	//只有非基础周期的会进到下面的步骤
 	WTSSessionInfo* sInfo = get_session_info(stdCode, true);
-
-	if (_bars_cache == NULL)
-		_bars_cache = DataCacheMap::create();
-
 	key = StrUtil::printf("%s-%u-%u", stdCode, period, times);
-
-	bool bNeedReload = true;
-	WTSKlineData* kData = NULL;
-
+	BarCache& barCache = _bars_cache[key];
+	barCache._period = period;
+	barCache._times = times;
+	if(barCache._bars == NULL)
 	{
-		WTSKlineSlice* rawData = _reader.readKlineSlice(stdCode, period, stime, etime);
+		//第一次将全部数据缓存到内存中
+		WTSKlineSlice* rawData = _reader.readKlineSlice(stdCode, period, 199001010900, 0);
 		if (rawData != NULL)
 		{
-			kData = g_dataFact.extractKlineData(rawData, period, times, sInfo, true);
+			WTSKlineData* kData = g_dataFact.extractKlineData(rawData, period, times, sInfo, false);
+			barCache._bars = kData;
+			if (period == KP_DAY)
+				barCache._last_bartime = kData->date(-1);
+			else
+			{
+				uint64_t lasttime = kData->time(-1);
+				barCache._last_bartime = 199000000000 + lasttime;
+			}
+
 			rawData->release();
 		}
 		else
 		{
 			return NULL;
 		}
+	}
+	else
+	{
+		//后面则增量更新
+		WTSKlineSlice* rawData = _reader.readKlineSlice(stdCode, period, barCache._last_bartime, 0);
+		if (rawData != NULL)
+		{
+			for(int32_t idx = 0; idx < rawData->size(); idx ++)
+			{
+				uint64_t barTime = 0;
+				if (period == KP_DAY)
+					barTime = rawData->date(0);
+				else
+					barTime = 199000000000 + rawData->time(0);
+				
+				//只有时间上次记录的最后一条时间，才可以用于更新K线
+				if(barTime <= barCache._last_bartime)
+					continue;
 
-		if (kData)
-			_bars_cache->add(key, kData, false);
+				g_dataFact.updateKlineData(barCache._bars, rawData->at(idx), sInfo);
+			}
+
+			//不管如何，都删除最后一条K线
+			//不能通过闭合标记判断，因为读取的基础周期可能本身没有闭合
+			if(barCache._bars->size() > 0)
+			{
+				auto& bars = barCache._bars->getDataRef();
+				bars.erase(bars.begin() + bars.size() - 1, bars.end());
+			}
+
+			if (period == KP_DAY)
+				barCache._last_bartime = barCache._bars->date(-1);
+			else
+			{
+				uint64_t lasttime = barCache._bars->time(-1);
+				barCache._last_bartime = 199000000000 + lasttime;
+			}
+			
+
+			rawData->release();
+		}
 	}
 
-	uint32_t rtCnt = kData->size();
-	WTSBarStruct* rtHead = kData->at(0);
+	//最后到缓存中定位
+	bool isDay = period == KP_DAY;
+	uint32_t rDate, rTime, lDate, lTime;
+	rDate = (uint32_t)(etime / 10000);
+	rTime = (uint32_t)(etime % 10000);
+	lDate = (uint32_t)(stime / 10000);
+	lTime = (uint32_t)(stime % 10000);
+
+	WTSBarStruct eBar;
+	eBar.date = rDate;
+	eBar.time = (rDate - 19900000) * 10000 + rTime;
+
+	WTSBarStruct sBar;
+	sBar.date = lDate;
+	sBar.time = (lDate - 19900000) * 10000 + lTime;
+
+	uint32_t eIdx, sIdx;
+	auto& bars = barCache._bars->getDataRef();
+	auto eit = std::lower_bound(bars.begin(), bars.end(), eBar, [isDay](const WTSBarStruct& a, const WTSBarStruct& b) {
+		if (isDay)
+			return a.date < b.date;
+		else
+			return a.time < b.time;
+	});
+
+
+	if (eit == bars.end())
+		eIdx = bars.size() - 1;
+	else
+	{
+		if ((isDay && eit->date > eBar.date) || (!isDay && eit->time > eBar.time))
+		{
+			eit--;
+		}
+
+		eIdx = eit - bars.begin();
+	}
+
+	auto sit = std::lower_bound(bars.begin(), eit, sBar, [isDay](const WTSBarStruct& a, const WTSBarStruct& b) {
+		if (isDay)
+			return a.date < b.date;
+		else
+			return a.time < b.time;
+	});
+	sIdx = sit - bars.begin();
+	uint32_t rtCnt = eIdx - sIdx + 1;
+	WTSBarStruct* rtHead = barCache._bars->at(sIdx);
 	WTSKlineSlice* slice = WTSKlineSlice::create(stdCode, period, times, NULL, 0, rtHead, rtCnt);
 	return slice;
 }

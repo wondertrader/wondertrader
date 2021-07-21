@@ -22,6 +22,7 @@ NS_OTP_BEGIN
 class WTSVariant;
 class WTSTickData;
 class WTSKlineSlice;
+class WTSKlineData;
 class WTSTickSlice;
 class IBaseDataMgr;
 class IHotMgr;
@@ -58,8 +59,18 @@ private:
 	IHotMgr*		_hot_mgr;
 	WtDtRunner*		_runner;
 
-	typedef WTSHashMap<std::string> DataCacheMap;
-	DataCacheMap*	_bars_cache;	//KÏß»º´æ
+	//KÏß»º´æ
+	typedef struct _BarCache
+	{
+		WTSKlineData*	_bars;
+		uint64_t		_last_bartime;
+		WTSKlinePeriod	_period;
+		uint32_t		_times;
+
+		_BarCache():_last_bartime(0),_period(KP_DAY),_times(1),_bars(NULL){}
+	} BarCache;
+	typedef faster_hashmap<std::string, BarCache>	BarCacheMap;
+	BarCacheMap	_bars_cache;
 };
 
 NS_OTP_END

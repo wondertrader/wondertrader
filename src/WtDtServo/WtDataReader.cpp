@@ -1360,6 +1360,8 @@ WTSBarStruct* WtDataReader::indexBarFromCache(const std::string& key, uint64_t s
 	lTime = (uint32_t)(stime % 10000);
 
 	BarsList& barsList = _bars_cache[key];
+	if (barsList._bars.empty())
+		return NULL;
 	
 	uint32_t eIdx,sIdx;
 	{
@@ -1486,6 +1488,9 @@ WTSKlineSlice* WtDataReader::readKlineSlice(const char* stdCode, WTSKlinePeriod 
 		bHasHisData = true;
 	}
 
+	if (etime == 0)
+		etime = 203012312359;
+
 	uint32_t rDate, rTime, lDate, lTime;
 	rDate = (uint32_t)(etime / 10000);
 	rTime = (uint32_t)(etime % 10000);
@@ -1511,21 +1516,22 @@ WTSKlineSlice* WtDataReader::readKlineSlice(const char* stdCode, WTSKlinePeriod 
 	bool isDay = period == KP_DAY;
 
 	//是否包含当天的
-	bool bHasToday = (endTDate == curTDate);
+	bool bHasToday = (endTDate >= curTDate);
+	std::string raw_code = cInfo._code;
 
 	if (cInfo.isHot() && cInfo._category == CC_Future)
 	{
-		_bars_cache[key]._raw_code = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, curTDate);
-		WTSLogger::info( "主力合约映射确认: %s -> %s", stdCode, _bars_cache[key]._raw_code.c_str());
+		raw_code = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, curTDate);
+		WTSLogger::info( "主力合约映射确认: %s -> %s", stdCode, raw_code.c_str());
 	}
 	else if (cInfo.isSecond() && cInfo._category == CC_Future)
 	{
-		_bars_cache[key]._raw_code = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, curTDate);
-		WTSLogger::info( "次主力合约映射确认: %s -> %s", stdCode, _bars_cache[key]._raw_code.c_str());
+		raw_code = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, curTDate);
+		WTSLogger::info( "次主力合约映射确认: %s -> %s", stdCode, raw_code.c_str());
 	}
 	else
 	{
-		_bars_cache[key]._raw_code = cInfo._code;
+		raw_code = cInfo._code;
 	}
 
 	WTSBarStruct eBar;
@@ -1540,7 +1546,7 @@ WTSKlineSlice* WtDataReader::readKlineSlice(const char* stdCode, WTSKlinePeriod 
 
 	if (bHasToday)
 	{
-		const char* curCode = _bars_cache[key]._raw_code.c_str();
+		const char* curCode = raw_code.c_str();
 
 		//读取实时的
 		RTKlineBlockPair* kPair = getRTKilneBlock(cInfo._exchg, curCode, period);
@@ -1586,7 +1592,7 @@ WTSKlineSlice* WtDataReader::readKlineSlice(const char* stdCode, WTSKlinePeriod 
 
 	if (bNeedHisData)
 	{
-		hisHead = indexBarFromCache(key, stime, etime, rtCnt, period == KP_DAY);
+		hisHead = indexBarFromCache(key, stime, etime, hisCnt, period == KP_DAY);
 	}
 
 	if (hisCnt + rtCnt > 0)
