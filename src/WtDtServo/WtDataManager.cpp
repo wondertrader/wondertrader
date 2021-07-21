@@ -124,6 +124,15 @@ WTSKlineSlice* WtDataManager::get_kline_slice(const char* stdCode, WTSKlinePerio
 		{
 			WTSKlineData* kData = g_dataFact.extractKlineData(rawData, period, times, sInfo, false);
 			barCache._bars = kData;
+
+			//不管如何，都删除最后一条K线
+			//不能通过闭合标记判断，因为读取的基础周期可能本身没有闭合
+			if (barCache._bars->size() > 0)
+			{
+				auto& bars = barCache._bars->getDataRef();
+				bars.erase(bars.begin() + bars.size() - 1, bars.end());
+			}
+
 			if (period == KP_DAY)
 				barCache._last_bartime = kData->date(-1);
 			else
