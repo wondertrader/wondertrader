@@ -9,6 +9,7 @@
  */
 #pragma once
 #include <vector>
+#include <stdint.h>
 
 #include "../Includes/IDataManager.h"
 #include "../Includes/FasterDefs.h"
