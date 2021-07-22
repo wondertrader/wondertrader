@@ -759,7 +759,7 @@ WtUInt32 resample_bars(WtString barFile, FuncGetBarsCallback cb, FuncCountDataCa
 		if (fromTime < 100000000 || endTime < 100000000)
 		{
 			if (cbLogger)
-				cbLogger("分钟线基础数据的开始时间结束时间应为日期，格式如yyyymmddHHMMSS");
+				cbLogger("分钟线基础数据的开始时间结束时间应为时间，格式如yyyymmddHHMM");
 			return 0;
 		}
 	}
