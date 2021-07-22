@@ -752,7 +752,7 @@ WTSKlineData* WTSDataFactory::extractKlineData(WTSTickSlice* ayTicks, uint32_t s
 
 	//WTSArray::Iterator it = ayTicks->begin();
 	//for(; it != ayTicks->end(); it++)
-	for (auto i = 0; i < ayTicks->size(); i++)
+	for (uint32_t i = 0; i < ayTicks->size(); i++)
 	{
 		WTSBarStruct* lastBar = NULL;
 		if(ret->size() > 0)

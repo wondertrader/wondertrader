@@ -21,7 +21,9 @@
 #include "../WTSUtils/SignalHook.hpp"
 
 
-WtDtRunner::WtDtRunner():_data_store(NULL)
+WtDtRunner::WtDtRunner()
+	: _data_store(NULL)
+	, m_bInited(false)
 {
 	install_signal_hooks([](const char* message) {
 		WTSLogger::error(message);
@@ -35,6 +37,12 @@ WtDtRunner::~WtDtRunner()
 
 void WtDtRunner::initialize(const char* cfgFile, bool isFile /* = true */, const char* modDir /* = "" */)
 {
+	if(m_bInited)
+	{
+		WTSLogger::error("WtDtServo has already been initialized");
+		return;
+	}
+
 	WTSLogger::init();
 	WtHelper::set_module_dir(modDir);
 
@@ -97,6 +105,8 @@ void WtDtRunner::initialize(const char* cfgFile, bool isFile /* = true */, const
 	initDataMgr(config->get("data"));
 
 	config->release();
+
+	m_bInited = true;
 }
 
 void WtDtRunner::initDataMgr(WTSVariant* config)
@@ -111,6 +121,12 @@ void WtDtRunner::initDataMgr(WTSVariant* config)
 
 WTSKlineSlice* WtDtRunner::get_bars_by_range(const char* stdCode, const char* period, uint64_t beginTime, uint64_t endTime /* = 0 */)
 {
+	if(!m_bInited)
+	{
+		WTSLogger::error("WtDtServo not initialized");
+		return NULL;
+	}
+
 	std::string basePeriod = "";
 	uint32_t times = 1;
 	if (strlen(period) > 1)
@@ -152,6 +168,12 @@ WTSKlineSlice* WtDtRunner::get_bars_by_range(const char* stdCode, const char* pe
 
 WTSArray* WtDtRunner::get_ticks_by_range(const char* stdCode, uint64_t beginTime, uint64_t endTime /* = 0 */)
 {
+	if (!m_bInited)
+	{
+		WTSLogger::error("WtDtServo not initialized");
+		return NULL;
+	}
+
 	if(endTime == 0)
 	{
 		uint32_t curDate, curTime;
@@ -163,6 +185,12 @@ WTSArray* WtDtRunner::get_ticks_by_range(const char* stdCode, uint64_t beginTime
 
 WTSKlineSlice* WtDtRunner::get_bars_by_count(const char* stdCode, const char* period, uint32_t count, uint64_t endTime /* = 0 */)
 {
+	if (!m_bInited)
+	{
+		WTSLogger::error("WtDtServo not initialized");
+		return NULL;
+	}
+
 	std::string basePeriod = "";
 	uint32_t times = 1;
 	if (strlen(period) > 1)
@@ -204,6 +232,12 @@ WTSKlineSlice* WtDtRunner::get_bars_by_count(const char* stdCode, const char* pe
 
 WTSArray* WtDtRunner::get_ticks_by_count(const char* stdCode, uint32_t count, uint64_t endTime /* = 0 */)
 {
+	if (!m_bInited)
+	{
+		WTSLogger::error("WtDtServo not initialized");
+		return NULL;
+	}
+
 	if (endTime == 0)
 	{
 		uint32_t curDate, curTime;

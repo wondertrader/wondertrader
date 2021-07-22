@@ -51,5 +51,7 @@ private:
 
 	WtDataStorage*		_data_store;
 	WtDataManager		_data_mgr;
+
+	bool			m_bInited;
 };
 
