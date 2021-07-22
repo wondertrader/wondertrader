@@ -2201,26 +2201,6 @@ void WtDataWriter::proc_loop()
 				_sink->outputWriterLog(LL_INFO, "行情缓存清理成功,共清理%u条过期的缓存", diff);
 			}
 
-			try
-			{
-				std::string path = StrUtil::printf("%srt/min1/", _base_dir.c_str());
-				boost::filesystem::remove_all(boost::filesystem::path(path));
-				path = StrUtil::printf("%srt/min5/", _base_dir.c_str());
-				boost::filesystem::remove_all(boost::filesystem::path(path));
-				path = StrUtil::printf("%srt/ticks/", _base_dir.c_str());
-				boost::filesystem::remove_all(boost::filesystem::path(path));
-				path = StrUtil::printf("%srt/orders/", _base_dir.c_str());
-				boost::filesystem::remove_all(boost::filesystem::path(path));
-				path = StrUtil::printf("%srt/queue/", _base_dir.c_str());
-				boost::filesystem::remove_all(boost::filesystem::path(path));
-				path = StrUtil::printf("%srt/trans/", _base_dir.c_str());
-				boost::filesystem::remove_all(boost::filesystem::path(path));
-			}
-			catch(...)
-			{
-				_sink->outputWriterLog(LL_ERROR, "清理实时数据缓存文件出现异常");
-			}
-
 			//将当日的日线快照落地到一个快照文件
 			{
 
@@ -2236,6 +2216,40 @@ void WtDataWriter::proc_loop()
 				f.write_file(content.data());
 				f.close_file();
 			}
+
+			int try_count = 0;
+			do
+			{
+				if(try_count >= 5)
+				{
+					_sink->outputWriterLog(LL_ERROR, "清理实时数据缓存文件重试多次没有完成，跳过该步骤");
+					break;
+				}
+
+				try_count++;
+				try
+				{
+					std::string path = StrUtil::printf("%srt/min1/", _base_dir.c_str());
+					boost::filesystem::remove_all(boost::filesystem::path(path));
+					path = StrUtil::printf("%srt/min5/", _base_dir.c_str());
+					boost::filesystem::remove_all(boost::filesystem::path(path));
+					path = StrUtil::printf("%srt/ticks/", _base_dir.c_str());
+					boost::filesystem::remove_all(boost::filesystem::path(path));
+					path = StrUtil::printf("%srt/orders/", _base_dir.c_str());
+					boost::filesystem::remove_all(boost::filesystem::path(path));
+					path = StrUtil::printf("%srt/queue/", _base_dir.c_str());
+					boost::filesystem::remove_all(boost::filesystem::path(path));
+					path = StrUtil::printf("%srt/trans/", _base_dir.c_str());
+					boost::filesystem::remove_all(boost::filesystem::path(path));
+					break;
+				}
+				catch (...)
+				{
+					_sink->outputWriterLog(LL_ERROR, "清理实时数据缓存文件出现异常，300s后重试");
+					std::this_thread::sleep_for(std::chrono::seconds(300));
+					continue;
+				}
+			} while (true);
 
 			continue;
 		}
