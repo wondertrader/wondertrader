@@ -71,6 +71,7 @@ public:
 	static SpdLoggerPtr getLogger(const char* logger, const char* pattern = "");
 
 private:
+	static bool					m_bInited;
 	static bool					m_bStopped;
 	static ILogHandler*			m_logHandler;
 	static WTSLogLevel			m_logLevel;
