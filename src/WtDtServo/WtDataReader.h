@@ -6,6 +6,7 @@
 
 #include "../WtDataWriter/DataDefine.h"
 #include "../Share/BoostMappingFile.hpp"
+#include "../Share/StdUtils.hpp"
 
 NS_OTP_BEGIN
 class WTSVariant;
@@ -29,83 +30,102 @@ public:
 private:
 	typedef struct _RTKBlockPair
 	{
+		StdUniqueMutex*	_mtx;
 		RTKlineBlock*	_block;
 		BoostMFPtr		_file;
 		uint64_t		_last_cap;
+		uint64_t		_last_time;
 
 		_RTKBlockPair()
 		{
+			_mtx = new StdUniqueMutex();
 			_block = NULL;
 			_file = NULL;
 			_last_cap = 0;
+			_last_time = 0;
 		}
+		~_RTKBlockPair() { delete _mtx; }
 
 	} RTKlineBlockPair;
 	typedef faster_hashmap<std::string, RTKlineBlockPair>	RTKBlockFilesMap;
 
 	typedef struct _TBlockPair
 	{
+		StdUniqueMutex*	_mtx;
 		RTTickBlock*	_block;
 		BoostMFPtr		_file;
 		uint64_t		_last_cap;
+		uint64_t		_last_time;
 
 		_TBlockPair()
 		{
 			_block = NULL;
 			_file = NULL;
 			_last_cap = 0;
+			_last_time = 0;
+			_mtx = new StdUniqueMutex();
 		}
+		~_TBlockPair() { delete _mtx; }
 	} TickBlockPair;
 	typedef faster_hashmap<std::string, TickBlockPair>	TBlockFilesMap;
 
 	typedef struct _TransBlockPair
 	{
+		StdUniqueMutex*	_mtx;
 		RTTransBlock*	_block;
 		BoostMFPtr		_file;
 		uint64_t		_last_cap;
-
-		std::shared_ptr< std::ofstream>	_fstream;
+		uint64_t		_last_time;
 
 		_TransBlockPair()
 		{
+			_mtx = new StdUniqueMutex();
 			_block = NULL;
 			_file = NULL;
 			_last_cap = 0;
+			_last_time = 0;
 		}
+		~_TransBlockPair() { delete _mtx; }
 	} TransBlockPair;
 	typedef faster_hashmap<std::string, TransBlockPair>	TransBlockFilesMap;
 
 	typedef struct _OdeDtlBlockPair
 	{
+		StdUniqueMutex*	_mtx;
 		RTOrdDtlBlock*	_block;
 		BoostMFPtr		_file;
 		uint64_t		_last_cap;
-
-		std::shared_ptr< std::ofstream>	_fstream;
+		uint64_t		_last_time;
 
 		_OdeDtlBlockPair()
 		{
+			_mtx = new StdUniqueMutex();
 			_block = NULL;
 			_file = NULL;
 			_last_cap = 0;
+			_last_time = 0;
 		}
+		~_OdeDtlBlockPair() { delete _mtx; }
 	} OrdDtlBlockPair;
 	typedef faster_hashmap<std::string, OrdDtlBlockPair>	OrdDtlBlockFilesMap;
 
 	typedef struct _OdeQueBlockPair
 	{
+		StdUniqueMutex*	_mtx;
 		RTOrdQueBlock*	_block;
 		BoostMFPtr		_file;
 		uint64_t		_last_cap;
-
-		std::shared_ptr< std::ofstream>	_fstream;
+		uint64_t		_last_time;
 
 		_OdeQueBlockPair()
 		{
+			_mtx = new StdUniqueMutex();
 			_block = NULL;
 			_file = NULL;
 			_last_cap = 0;
+			_last_time = 0;
 		}
+		~_OdeQueBlockPair() { delete _mtx; }
 	} OrdQueBlockPair;
 	typedef faster_hashmap<std::string, OrdQueBlockPair>	OrdQueBlockFilesMap;
 
@@ -222,6 +242,8 @@ private:
 	std::string		_base_dir;
 	IBaseDataMgr*	_base_data_mgr;
 	IHotMgr*		_hot_mgr;
+	StdThreadPtr	_thrd_check;
+	bool			_stopped;
 
 	typedef struct _BarsList
 	{

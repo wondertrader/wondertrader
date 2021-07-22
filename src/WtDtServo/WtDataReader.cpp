@@ -23,12 +23,16 @@ namespace rj = rapidjson;
 WtDataReader::WtDataReader()
 	: _base_data_mgr(NULL)
 	, _hot_mgr(NULL)
+	, _stopped(false)
 {
 }
 
 
 WtDataReader::~WtDataReader()
 {
+	_stopped = true;
+	if (_thrd_check)
+		_thrd_check->join();
 }
 
 void WtDataReader::init(WTSVariant* cfg, IBaseDataMgr* bdMgr, IHotMgr* hotMgr)
@@ -46,6 +50,86 @@ void WtDataReader::init(WTSVariant* cfg, IBaseDataMgr* bdMgr, IHotMgr* hotMgr)
 	
 	if (!bAdjLoaded && cfg->has("adjfactor"))
 		loadStkAdjFactorsFromFile(cfg->getCString("adjfactor"));
+
+	_thrd_check.reset(new StdThread([this]() {
+		while(!_stopped)
+		{
+			std::this_thread::sleep_for(std::chrono::seconds(5));
+			uint64_t now = TimeUtils::getLocalTimeNow();
+
+			for(auto& m : _rt_tick_map)
+			{
+				//如果5分钟之内没有访问，则释放掉
+				TickBlockPair& tPair = (TickBlockPair&)m.second;
+				if(now > tPair._last_time + 300000 && tPair._block != NULL)
+				{	
+					StdUniqueLock lock(*tPair._mtx);
+					tPair._block = NULL;
+					tPair._file.reset();
+				}
+			}
+
+			for (auto& m : _rt_ordque_map)
+			{
+				//如果5分钟之内没有访问，则释放掉
+				OrdQueBlockPair& tPair = (OrdQueBlockPair&)m.second;
+				if (now > tPair._last_time + 300000 && tPair._block != NULL)
+				{
+					StdUniqueLock lock(*tPair._mtx);
+					tPair._block = NULL;
+					tPair._file.reset();
+				}
+			}
+
+			for (auto& m : _rt_orddtl_map)
+			{
+				//如果5分钟之内没有访问，则释放掉
+				OrdDtlBlockPair& tPair = (OrdDtlBlockPair&)m.second;
+				if (now > tPair._last_time + 300000 && tPair._block != NULL)
+				{
+					StdUniqueLock lock(*tPair._mtx);
+					tPair._block = NULL;
+					tPair._file.reset();
+				}
+			}
+
+			for (auto& m : _rt_trans_map)
+			{
+				//如果5分钟之内没有访问，则释放掉
+				TransBlockPair& tPair = (TransBlockPair&)m.second;
+				if (now > tPair._last_time + 300000 && tPair._block != NULL)
+				{
+					StdUniqueLock lock(*tPair._mtx);
+					tPair._block = NULL;
+					tPair._file.reset();
+				}
+			}
+
+			for (auto& m : _rt_min1_map)
+			{
+				//如果5分钟之内没有访问，则释放掉
+				RTKlineBlockPair& tPair = (RTKlineBlockPair&)m.second;
+				if (now > tPair._last_time + 300000 && tPair._block != NULL)
+				{
+					StdUniqueLock lock(*tPair._mtx);
+					tPair._block = NULL;
+					tPair._file.reset();
+				}
+			}
+
+			for (auto& m : _rt_min5_map)
+			{
+				//如果5分钟之内没有访问，则释放掉
+				RTKlineBlockPair& tPair = (RTKlineBlockPair&)m.second;
+				if (now > tPair._last_time + 300000 && tPair._block != NULL)
+				{
+					StdUniqueLock lock(*tPair._mtx);
+					tPair._block = NULL;
+					tPair._file.reset();
+				}
+			}
+		}
+	}));
 }
 
 
@@ -278,6 +362,7 @@ WTSArray* WtDataReader::readTickSlicesByRange(const char* stdCode, uint64_t stim
 		if (tPair == NULL || tPair->_block->_size == 0)
 			break;
 
+		StdUniqueLock lock(*tPair->_mtx);
 		RTTickBlock* tBlock = tPair->_block;
 		WTSTickStruct eTick;
 		if (curTDate == endTDate)
@@ -1646,6 +1731,7 @@ WTSKlineSlice* WtDataReader::readKlineSliceByRange(const char* stdCode, WTSKline
 		RTKlineBlockPair* kPair = getRTKilneBlock(cInfo._exchg, curCode, period);
 		if (kPair != NULL)
 		{
+			StdUniqueLock lock(*kPair->_mtx);
 			//读取当日的数据
 			WTSBarStruct* pBar = std::lower_bound(kPair->_block->_bars, kPair->_block->_bars + (kPair->_block->_size - 1), eBar, [isDay](const WTSBarStruct& a, const WTSBarStruct& b){
 				if (isDay)
@@ -1735,6 +1821,7 @@ WtDataReader::TickBlockPair* WtDataReader::getRTTickBlock(const char* exchg, con
 		block._last_cap = block._block->_capacity;
 	}
 
+	block._last_time = TimeUtils::getLocalTimeNow();
 	return &block;
 }
 
@@ -1774,6 +1861,7 @@ WtDataReader::OrdDtlBlockPair* WtDataReader::getRTOrdDtlBlock(const char* exchg,
 		block._last_cap = block._block->_capacity;
 	}
 
+	block._last_time = TimeUtils::getLocalTimeNow();
 	return &block;
 }
 
@@ -1813,6 +1901,7 @@ WtDataReader::OrdQueBlockPair* WtDataReader::getRTOrdQueBlock(const char* exchg,
 		block._last_cap = block._block->_capacity;
 	}
 
+	block._last_time = TimeUtils::getLocalTimeNow();
 	return &block;
 }
 
@@ -1852,6 +1941,7 @@ WtDataReader::TransBlockPair* WtDataReader::getRTTransBlock(const char* exchg, c
 		block._last_cap = block._block->_capacity;
 	}
 
+	block._last_time = TimeUtils::getLocalTimeNow();
 	return &block;
 }
 
@@ -1912,6 +2002,7 @@ WtDataReader::RTKlineBlockPair* WtDataReader::getRTKilneBlock(const char* exchg,
 		block._last_cap = block._block->_capacity;
 	}
 
+	block._last_time = TimeUtils::getLocalTimeNow();
 	return &block;
 }
 
@@ -1992,6 +2083,7 @@ WTSKlineSlice* WtDataReader::readKlineSliceByCount(const char* stdCode, WTSKline
 		RTKlineBlockPair* kPair = getRTKilneBlock(cInfo._exchg, curCode, period);
 		if (kPair != NULL)
 		{
+			StdUniqueLock lock(*kPair->_mtx);
 			//读取当日的数据
 			WTSBarStruct* pBar = std::lower_bound(kPair->_block->_bars, kPair->_block->_bars + (kPair->_block->_size - 1), eBar, [isDay](const WTSBarStruct& a, const WTSBarStruct& b) {
 				if (isDay)
@@ -2070,6 +2162,7 @@ WTSArray* WtDataReader::readTickSlicesByCount(const char* stdCode, uint32_t coun
 		if (tPair == NULL || tPair->_block->_size == 0)
 			break;
 
+		StdUniqueLock lock(*tPair->_mtx);
 		RTTickBlock* tBlock = tPair->_block;
 		WTSTickStruct eTick;
 		if (curTDate == endTDate)
