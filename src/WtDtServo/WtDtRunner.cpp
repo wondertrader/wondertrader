@@ -33,13 +33,23 @@ WtDtRunner::~WtDtRunner()
 {
 }
 
-void WtDtRunner::initialize(const char* cfgFile, const char* logCfg, const char* modDir /* = "" */)
+void WtDtRunner::initialize(const char* cfgFile, bool isFile /* = true */, const char* modDir /* = "" */)
 {
-	WTSLogger::init(logCfg);
+	WTSLogger::init();
 	WtHelper::set_module_dir(modDir);
 
 	std::string json;
-	StdFile::read_file_content(cfgFile, json);
+	if (isFile)
+		StdFile::read_file_content(cfgFile, json);
+	else
+		json = cfgFile;
+
+	if(json.empty())
+	{
+		throw std::runtime_error("configuration file not exists");
+		return;
+	}
+
 	rj::Document document;
 	document.Parse(json.c_str());
 
@@ -99,7 +109,7 @@ void WtDtRunner::initDataMgr(WTSVariant* config)
 	WTSLogger::info("Data manager initialized");
 }
 
-WTSKlineSlice* WtDtRunner::get_bars(const char* stdCode, const char* period, uint64_t beginTime, uint64_t endTime /* = 0 */)
+WTSKlineSlice* WtDtRunner::get_bars_by_range(const char* stdCode, const char* period, uint64_t beginTime, uint64_t endTime /* = 0 */)
 {
 	std::string basePeriod = "";
 	uint32_t times = 1;
@@ -137,16 +147,68 @@ WTSKlineSlice* WtDtRunner::get_bars(const char* stdCode, const char* period, uin
 		endTime = (uint64_t)curDate * 10000 + curTime/100000;
 	}
 
-	return _data_mgr.get_kline_slice(stdCode, kp, realTimes, beginTime, endTime);
+	return _data_mgr.get_kline_slice_by_range(stdCode, kp, realTimes, beginTime, endTime);
 }
 
-WTSTickSlice* WtDtRunner::get_ticks(const char* stdCode, uint64_t beginTime, uint64_t endTime /* = 0 */)
+WTSArray* WtDtRunner::get_ticks_by_range(const char* stdCode, uint64_t beginTime, uint64_t endTime /* = 0 */)
 {
 	if(endTime == 0)
 	{
 		uint32_t curDate, curTime;
 		TimeUtils::getDateTime(curDate, curTime);
-		endTime = (uint64_t)curDate * 1000000000 + curTime;
+		endTime = (uint64_t)curDate * 10000 + curTime;
 	}
-	return _data_mgr.get_tick_slice(stdCode, beginTime, endTime);
+	return _data_mgr.get_tick_slices_by_range(stdCode, beginTime, endTime);
+}
+
+WTSKlineSlice* WtDtRunner::get_bars_by_count(const char* stdCode, const char* period, uint32_t count, uint64_t endTime /* = 0 */)
+{
+	std::string basePeriod = "";
+	uint32_t times = 1;
+	if (strlen(period) > 1)
+	{
+		basePeriod.append(period, 1);
+		times = strtoul(period + 1, NULL, 10);
+	}
+	else
+	{
+		basePeriod = period;
+	}
+
+	WTSKlinePeriod kp;
+	uint32_t realTimes = times;
+	if (strcmp(basePeriod.c_str(), "m") == 0)
+	{
+		if (times % 5 == 0)
+		{
+			kp = KP_Minute5;
+			realTimes /= 5;
+		}
+		else
+		{
+			kp = KP_Minute1;
+		}
+	}
+	else
+		kp = KP_DAY;
+
+	if (endTime == 0)
+	{
+		uint32_t curDate, curTime;
+		TimeUtils::getDateTime(curDate, curTime);
+		endTime = (uint64_t)curDate * 10000 + curTime / 100000;
+	}
+
+	return _data_mgr.get_kline_slice_by_count(stdCode, kp, realTimes, count, endTime);
+}
+
+WTSArray* WtDtRunner::get_ticks_by_count(const char* stdCode, uint32_t count, uint64_t endTime /* = 0 */)
+{
+	if (endTime == 0)
+	{
+		uint32_t curDate, curTime;
+		TimeUtils::getDateTime(curDate, curTime);
+		endTime = (uint64_t)curDate * 10000 + curTime;
+	}
+	return _data_mgr.get_tick_slices_by_count(stdCode, count, endTime);
 }

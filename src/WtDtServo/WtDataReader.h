@@ -14,6 +14,7 @@ class WTSKlineSlice;
 class WTSOrdDtlSlice;
 class WTSOrdQueSlice;
 class WTSTransSlice;
+class WTSArray;
 
 class IBaseDataMgr;
 class IHotMgr;
@@ -197,19 +198,25 @@ private:
 	 */
 	bool		cacheHisBarsFromFile(const std::string& key, const char* stdCode, WTSKlinePeriod period);
 
-	uint32_t	readBarsFromCache(const std::string& key, uint64_t stime, uint64_t etime, std::vector<WTSBarStruct>& ayBars, bool isDay = false);
-	WTSBarStruct*	indexBarFromCache(const std::string& key, uint64_t stime, uint64_t etime, uint32_t& count, bool isDay = false);
+	uint32_t		readBarsFromCacheByRange(const std::string& key, uint64_t stime, uint64_t etime, std::vector<WTSBarStruct>& ayBars, bool isDay = false);
+	WTSBarStruct*	indexBarFromCacheByRange(const std::string& key, uint64_t stime, uint64_t etime, uint32_t& count, bool isDay = false);
+
+	WTSBarStruct*	indexBarFromCacheByCount(const std::string& key, uint64_t etime, uint32_t& count, bool isDay = false);
 
 	bool	loadStkAdjFactorsFromFile(const char* adjfile);
 
 public:
 	void init(WTSVariant* cfg, IBaseDataMgr* bdMgr, IHotMgr* hotMgr);
 
-	virtual WTSTickSlice*	readTickSlice(const char* stdCode, uint64_t stime, uint64_t etime = 0);
-	virtual WTSOrdDtlSlice*	readOrdDtlSlice(const char* stdCode, uint64_t stime, uint64_t etime = 0);
-	virtual WTSOrdQueSlice*	readOrdQueSlice(const char* stdCode, uint64_t stime, uint64_t etime = 0);
-	virtual WTSTransSlice*	readTransSlice(const char* stdCode, uint64_t stime, uint64_t etime = 0);
-	virtual WTSKlineSlice*	readKlineSlice(const char* stdCode, WTSKlinePeriod period, uint64_t stime, uint64_t etime = 0);
+	WTSOrdDtlSlice*	readOrdDtlSliceByRange(const char* stdCode, uint64_t stime, uint64_t etime = 0);
+	WTSOrdQueSlice*	readOrdQueSliceByRange(const char* stdCode, uint64_t stime, uint64_t etime = 0);
+	WTSTransSlice*	readTransSliceByRange(const char* stdCode, uint64_t stime, uint64_t etime = 0);
+
+	WTSArray*		readTickSlicesByRange(const char* stdCode, uint64_t stime, uint64_t etime = 0);
+	WTSKlineSlice*	readKlineSliceByRange(const char* stdCode, WTSKlinePeriod period, uint64_t stime, uint64_t etime = 0);
+
+	WTSArray*		readTickSlicesByCount(const char* stdCode, uint32_t count, uint64_t etime = 0);
+	WTSKlineSlice*	readKlineSliceByCount(const char* stdCode, WTSKlinePeriod period, uint32_t count, uint64_t etime = 0);
 
 private:
 	std::string		_base_dir;
