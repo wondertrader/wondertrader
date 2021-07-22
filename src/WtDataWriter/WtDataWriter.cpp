@@ -2201,18 +2201,25 @@ void WtDataWriter::proc_loop()
 				_sink->outputWriterLog(LL_INFO, "行情缓存清理成功,共清理%u条过期的缓存", diff);
 			}
 
-			std::string path = StrUtil::printf("%srt/min1/", _base_dir.c_str());
-			boost::filesystem::remove_all(boost::filesystem::path(path));
-			path = StrUtil::printf("%srt/min5/", _base_dir.c_str());
-			boost::filesystem::remove_all(boost::filesystem::path(path));
-			path = StrUtil::printf("%srt/ticks/", _base_dir.c_str());
-			boost::filesystem::remove_all(boost::filesystem::path(path));
-			path = StrUtil::printf("%srt/orders/", _base_dir.c_str());
-			boost::filesystem::remove_all(boost::filesystem::path(path));
-			path = StrUtil::printf("%srt/queue/", _base_dir.c_str());
-			boost::filesystem::remove_all(boost::filesystem::path(path));
-			path = StrUtil::printf("%srt/trans/", _base_dir.c_str());
-			boost::filesystem::remove_all(boost::filesystem::path(path));
+			try
+			{
+				std::string path = StrUtil::printf("%srt/min1/", _base_dir.c_str());
+				boost::filesystem::remove_all(boost::filesystem::path(path));
+				path = StrUtil::printf("%srt/min5/", _base_dir.c_str());
+				boost::filesystem::remove_all(boost::filesystem::path(path));
+				path = StrUtil::printf("%srt/ticks/", _base_dir.c_str());
+				boost::filesystem::remove_all(boost::filesystem::path(path));
+				path = StrUtil::printf("%srt/orders/", _base_dir.c_str());
+				boost::filesystem::remove_all(boost::filesystem::path(path));
+				path = StrUtil::printf("%srt/queue/", _base_dir.c_str());
+				boost::filesystem::remove_all(boost::filesystem::path(path));
+				path = StrUtil::printf("%srt/trans/", _base_dir.c_str());
+				boost::filesystem::remove_all(boost::filesystem::path(path));
+			}
+			catch(...)
+			{
+				_sink->outputWriterLog(LL_ERROR, "清理实时数据缓存文件出现异常");
+			}
 
 			//将当日的日线快照落地到一个快照文件
 			{
