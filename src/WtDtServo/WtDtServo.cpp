@@ -115,7 +115,7 @@ WtDtRunner& getRunner()
 
 void initialize(WtString cfgFile, bool isFile)
 {
-	getRunner().initialize(cfgFile, getBinDir());
+	getRunner().initialize(cfgFile, isFile, getBinDir());
 }
 
 const char* get_version()
