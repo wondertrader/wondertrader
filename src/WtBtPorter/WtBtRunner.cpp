@@ -66,6 +66,7 @@ WtBtRunner::WtBtRunner()
 	, _cb_hft_trans(NULL)
 
 	, _cb_hft_sessevt(NULL)
+	, _inited(false)
 {
 	install_signal_hooks([](const char* message) {
 		WTSLogger::error(message);
@@ -123,6 +124,12 @@ void WtBtRunner::registerHftCallbacks(FuncStraInitCallback cbInit, FuncStraTickC
 
 uint32_t WtBtRunner::initCtaMocker(const char* name, int32_t slippage/* = 0*/)
 {
+	if(_cta_mocker)
+	{
+		delete _cta_mocker;
+		_cta_mocker = NULL;
+	}
+
 	_cta_mocker = new ExpCtaMocker(&_replayer, name, slippage);
 	_replayer.register_sink(_cta_mocker);
 	return _cta_mocker->id();
@@ -130,6 +137,12 @@ uint32_t WtBtRunner::initCtaMocker(const char* name, int32_t slippage/* = 0*/)
 
 uint32_t WtBtRunner::initHftMocker(const char* name)
 {
+	if (_hft_mocker)
+	{
+		delete _hft_mocker;
+		_hft_mocker = NULL;
+	}
+
 	_hft_mocker = new ExpHftMocker(&_replayer, name);
 	_replayer.register_sink(_hft_mocker);
 	return _hft_mocker->id();
@@ -137,6 +150,12 @@ uint32_t WtBtRunner::initHftMocker(const char* name)
 
 uint32_t WtBtRunner::initSelMocker(const char* name, uint32_t date, uint32_t time, const char* period, const char* trdtpl /* = "CHINA" */, const char* session /* = "TRADING" */, int32_t slippage/* = 0*/)
 {
+	if (_sel_mocker)
+	{
+		delete _sel_mocker;
+		_sel_mocker = NULL;
+	}
+
 	_sel_mocker = new ExpSelMocker(&_replayer, name, slippage);
 	_replayer.register_sink(_sel_mocker);
 
@@ -205,19 +224,19 @@ void WtBtRunner::ctx_on_tick(uint32_t id, const char* stdCode, WTSTickData* newT
 
 void WtBtRunner::hft_on_order_queue(uint32_t id, const char* stdCode, WTSOrdQueData* newOrdQue)
 {
-	if (_cb_hft_ordque) 
+	if (_cb_hft_ordque)
 		_cb_hft_ordque(id, stdCode, &newOrdQue->getOrdQueStruct());
 }
 
 void WtBtRunner::hft_on_order_detail(uint32_t id, const char* stdCode, WTSOrdDtlData* newOrdDtl)
 {
-	if (_cb_hft_orddtl) 
+	if (_cb_hft_orddtl)
 		_cb_hft_orddtl(id, stdCode, &newOrdDtl->getOrdDtlStruct());
 }
 
 void WtBtRunner::hft_on_transaction(uint32_t id, const char* stdCode, WTSTransData* newTrans)
 {
-	if (_cb_hft_trans) 
+	if (_cb_hft_trans)
 		_cb_hft_trans(id, stdCode, &newTrans->getTransStruct());
 }
 
@@ -252,6 +271,11 @@ void WtBtRunner::init(const char* logProfile /* = "" */, bool isFile /* = true *
 
 void WtBtRunner::config(const char* cfgFile, bool isFile /* = true */)
 {
+	if(_inited)
+	{
+		WTSLogger::error("WtBtEngine has already been inited");
+		return;
+	}
 	std::string content;
 	if (isFile)
 		StdFile::read_file_content(cfgFile, content);
@@ -326,4 +350,14 @@ void WtBtRunner::run()
 void WtBtRunner::release()
 {
 	WTSLogger::stop();
+}
+
+void WtBtRunner::set_time_range(WtUInt64 stime, WtUInt64 etime)
+{
+	_replayer.set_time_range(stime, etime);
+}
+
+void WtBtRunner::enable_tick(bool bEnabled /* = true */)
+{
+	_replayer.enable_tick(bEnabled);
 }
