@@ -186,10 +186,23 @@ private:
 	inline	uint64_t	getNextOrdDtlTime(uint32_t curTDate, uint64_t stime = UINT64_MAX);
 	inline	uint64_t	getNextTransTime(uint32_t curTDate, uint64_t stime = UINT64_MAX);
 
+	void		reset();
+
 public:
 	bool init(WTSVariant* cfg);
 
 	void run();
+
+	inline void set_time_range(uint64_t stime, uint64_t etime)
+	{
+		_begin_time = stime;
+		_end_time = etime;
+	}
+
+	inline void enable_tick(bool bEnabled = true)
+	{
+		_tick_enabled = bEnabled;
+	}
 
 	void register_sink(IDataSink* listener){ _listener = listener; }
 
@@ -223,9 +236,9 @@ public:
 	void sub_order_detail(uint32_t sid, const char* stdCode);
 	void sub_transaction(uint32_t sid, const char* stdCode);
 
-	bool	is_tick_enabled() const{ return _tick_enabled; }
+	inline bool	is_tick_enabled() const{ return _tick_enabled; }
 
-	bool	is_tick_simulated() const { return _tick_simulated; }
+	inline bool	is_tick_simulated() const { return _tick_simulated; }
 
 	inline void update_price(const char* stdCode, double price)
 	{

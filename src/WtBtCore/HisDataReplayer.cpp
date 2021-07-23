@@ -266,8 +266,43 @@ void HisDataReplayer::register_task(uint32_t taskid, uint32_t date, uint32_t tim
 	WTSLogger::info("Timed task registration succeed, frequency: %s", period);
 }
 
+void HisDataReplayer::reset()
+{
+	_ticks_cache.clear();
+	_orddtl_cache.clear();
+	_ordque_cache.clear();
+	_trans_cache.clear();
+
+	_bars_cache.clear();
+	_unbars_cache.clear();
+	_day_cache.clear();
+
+	_day_cache.clear();
+	_ticker_keys.clear();
+
+	_tick_sub_map.clear();
+	_ordque_sub_map.clear();
+	_orddtl_sub_map.clear();
+	_trans_sub_map.clear();
+
+	_price_map.clear();
+
+	_main_key = "";
+	_min_period = "";
+
+	_cur_date = 0;
+	_cur_time = 0;
+	_cur_secs = 0;
+	_cur_tdate = 0;
+	_opened_tdate = 0;
+	_closed_tdate = 0;
+	_tick_simulated = true;
+}
+
 void HisDataReplayer::run()
 {
+	reset();
+
 	_cur_date = (uint32_t)(_begin_time / 10000);
 	_cur_time = (uint32_t)(_begin_time % 10000);
 	_cur_secs = 0;
