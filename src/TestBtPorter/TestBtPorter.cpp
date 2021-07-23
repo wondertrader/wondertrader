@@ -15,8 +15,7 @@ void on_getbar(CtxHandler ctxid, const char* code, const char* period, WTSBarStr
 
 void on_init(CtxHandler ctxid)
 {
-	cta_get_bars(ctxid, "CFFEX.IF.HOT", "m1", 30, false, on_getbar);
-	cta_get_bars(ctxid, "CFFEX.IF.HOT", "m3", 10, true, on_getbar);
+	cta_get_bars(ctxid, "CFFEX.IF.HOT", "m5", 30, true, on_getbar);
 }
 
 void on_tick(CtxHandler ctxid, const char* stdCode, WTSTickStruct* newTick)
@@ -26,7 +25,7 @@ void on_tick(CtxHandler ctxid, const char* stdCode, WTSTickStruct* newTick)
 
 void on_calc(CtxHandler ctxid, WtUInt32 curDate, WtUInt32 curTime)
 {
-	printf("on_calc\r\n");
+	printf("on_calc @ %u.%u\r\n", curDate, curTime);
 	//sel_get_bars(ctxid, "SSE.600009Q", "d1", 10, on_getbar);
 }
 
@@ -57,6 +56,14 @@ void run_bt()
 	config_backtest("configbt.json", true);
 
 	run_backtest();
+
+	init_cta_mocker("test2");
+
+	set_time_range(202107010930, 202107161500);
+	enable_tick(false);
+
+	run_backtest();
+
 	printf("press enter key to exit\n");
 	getchar();
 	release_backtest();
