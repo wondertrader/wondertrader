@@ -60,6 +60,7 @@ HisDataReplayer::HisDataReplayer()
 	, _opened_tdate(0)
 	, _closed_tdate(0)
 	, _tick_simulated(true)
+	, _running(false)
 {
 }
 
@@ -301,6 +302,13 @@ void HisDataReplayer::reset()
 
 void HisDataReplayer::run()
 {
+	if(_running)
+	{
+		WTSLogger::error("Cannot run more than one backtesting task at the same time");
+		return;
+	}
+
+	_running = true;
 	reset();
 
 	_cur_date = (uint32_t)(_begin_time / 10000);
@@ -712,6 +720,8 @@ void HisDataReplayer::run()
 			}
 		}
 	}
+
+	_running = false;
 }
 
 void HisDataReplayer::replayUnbars(uint64_t stime, uint64_t nowTime, uint32_t endTDate /* = 0 */)

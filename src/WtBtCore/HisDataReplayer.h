@@ -280,6 +280,7 @@ private:
 	uint64_t		_begin_time;
 	uint64_t		_end_time;
 
+	bool			_running;
 	//////////////////////////////////////////////////////////////////////////
 	//手续费模板
 	typedef struct _FeeItem
