@@ -21,7 +21,9 @@
 #include "../WTSUtils/SignalHook.hpp"
 
 
-WtDtRunner::WtDtRunner():_data_store(NULL)
+WtDtRunner::WtDtRunner()
+	: _data_store(NULL)
+	, m_bInited(false)
 {
 	install_signal_hooks([](const char* message) {
 		WTSLogger::error(message);
@@ -35,6 +37,12 @@ WtDtRunner::~WtDtRunner()
 
 void WtDtRunner::initialize(const char* cfgFile, bool isFile /* = true */, const char* modDir /* = "" */)
 {
+	if (m_bInited)
+	{
+		WTSLogger::error("WtDtServo has already been initialized");
+		return;
+	}
+
 	WTSLogger::init();
 	WtHelper::set_module_dir(modDir);
 
@@ -97,6 +105,8 @@ void WtDtRunner::initialize(const char* cfgFile, bool isFile /* = true */, const
 	initDataMgr(config->get("data"));
 
 	config->release();
+
+	m_bInited = true;
 }
 
 void WtDtRunner::initDataMgr(WTSVariant* config)
