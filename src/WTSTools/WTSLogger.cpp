@@ -166,6 +166,9 @@ void WTSLogger::initLogger(const char* catName, WTSVariant* cfgLogger)
 
 void WTSLogger::init(const char* propFile /* = "logcfg.json" */, bool isFile /* = true */, ILogHandler* handler /* = NULL */, WTSLogLevel logLevel /* = LL_INFO */)
 {
+	if (m_bInited)
+		return;
+
 	if (isFile && !StdFile::exists(propFile))
 		return;
 
@@ -211,6 +214,8 @@ void WTSLogger::init(const char* propFile /* = "logcfg.json" */, bool isFile /* 
 
 	m_logHandler = handler;
 	m_logLevel = logLevel;
+
+	m_bInited = true;
 }
 
 void WTSLogger::registerHandler(ILogHandler* handler /* = NULL */, WTSLogLevel logLevel /* = LL_ALL */)

@@ -143,10 +143,25 @@ void init_backtest(const char* logProfile, bool isFile)
 
 void config_backtest(const char* cfgfile, bool isFile)
 {
+	static bool inited = false;
+
+	if (inited)
+		return;
+
 	if (strlen(cfgfile) == 0)
 		getRunner().config("configbt.json", true);
 	else
 		getRunner().config(cfgfile, isFile);
+}
+
+void set_time_range(WtUInt64 stime, WtUInt64 etime)
+{
+	getRunner().set_time_range(stime, etime);
+}
+
+void enable_tick(bool bEnabled /* = true */)
+{
+	getRunner().enable_tick(bEnabled);
 }
 
 void run_backtest()

@@ -27,6 +27,10 @@ extern "C"
 
 	EXPORT_FLAG	void		config_backtest(const char* cfgfile, bool isFile);
 
+	EXPORT_FLAG	void		set_time_range(WtUInt64 stime, WtUInt64 etime);
+
+	EXPORT_FLAG	void		enable_tick(bool bEnabled = true);
+
 	EXPORT_FLAG	CtxHandler	init_cta_mocker(const char* name, int slippage = 0);
 
 	EXPORT_FLAG	CtxHandler	init_hft_mocker(const char* name);

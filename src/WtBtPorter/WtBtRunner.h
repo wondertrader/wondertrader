@@ -74,6 +74,10 @@ public:
 	void	run();
 	void	release();
 
+	void	set_time_range(WtUInt64 stime, WtUInt64 etime);
+
+	void	enable_tick(bool bEnabled = true);
+
 	CtaMocker*			cta_mocker() { return _cta_mocker; }
 	SelMocker*			sel_mocker() { return _sel_mocker; }
 	HftMocker*			hft_mocker() { return _hft_mocker; }
@@ -134,5 +138,7 @@ private:
 	ExecMocker*		_exec_mocker;
 	HftMocker*		_hft_mocker;
 	HisDataReplayer	_replayer;
+
+	bool			_inited;
 };
 
