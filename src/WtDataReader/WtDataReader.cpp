@@ -14,7 +14,9 @@
 
 #include "../WTSTools/WTSCmpHelper.hpp"
 
+#ifdef _WIN32
 #pragma comment(lib, "libmysql.lib")
+#endif
 
 #include <rapidjson/document.h>
 namespace rj = rapidjson;

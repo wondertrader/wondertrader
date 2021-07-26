@@ -29,7 +29,9 @@
 #include "../Share/JsonToVariant.hpp"
 #include "../Share/CodeHelper.hpp"
 
+#ifdef _WIN32
 #pragma comment(lib, "libmysql.lib")
+#endif
 
 #ifdef _WIN32
 #define my_stricmp _stricmp

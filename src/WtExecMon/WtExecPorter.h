@@ -22,7 +22,7 @@ extern "C"
 
 	EXPORT_FLAG	void		run_exec();
 
-	EXPORT_FLAG	void		write_log(unsigned int level, WtString message, WtString catName);
+	EXPORT_FLAG	void		write_log(unsigned long level, WtString message, WtString catName);
 
 	EXPORT_FLAG	WtString	get_version();
 

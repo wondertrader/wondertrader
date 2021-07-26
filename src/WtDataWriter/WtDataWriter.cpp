@@ -13,7 +13,9 @@
 
 #include "../WTSTools/WTSCmpHelper.hpp"
 
+#ifdef _WIN32
 #pragma comment(lib, "libmysql.lib")
+#endif
 
 
 #include <set>
