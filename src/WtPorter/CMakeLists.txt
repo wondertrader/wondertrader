@@ -91,6 +91,9 @@ add_custom_command(TARGET WtPorter POST_BUILD
 		
 		COMMAND ${CMAKE_COMMAND} -E
 		copy ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/libWtRiskMonFact.so ${LIBRARY_OUTPUT_PATH}/
+        
+        COMMAND ${CMAKE_COMMAND} -E
+		copy ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/libWtMsgQue.so ${LIBRARY_OUTPUT_PATH}/
 		
 		COMMENT "depends modules copied")
 

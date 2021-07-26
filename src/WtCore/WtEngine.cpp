@@ -947,7 +947,7 @@ bool WtEngine::init_riskmon(WTSVariant* cfg)
 	DllHandle hInst = DLLHelper::load_library(dllpath.c_str());
 	if (hInst == NULL)
 	{
-		WTSLogger::info2("risk", "Riskmon module %s loading failed", dllpath.c_str());
+		WTSLogger::error2("risk", "Riskmon module %s loading failed", dllpath.c_str());
 		return false;
 	}
 
@@ -955,7 +955,7 @@ bool WtEngine::init_riskmon(WTSVariant* cfg)
 	if (creator == NULL)
 	{
 		DLLHelper::free_library(hInst);
-		WTSLogger::info2("risk", "Riskmon module %s is not compatible", module.c_str());
+		WTSLogger::error2("risk", "Riskmon module %s is not compatible", module.c_str());
 		return false;
 	}
 
