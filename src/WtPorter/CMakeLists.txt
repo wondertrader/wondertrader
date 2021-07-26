@@ -43,7 +43,6 @@ SET(LIBS
 	pthread
 	boost_filesystem
 	boost_thread
-    nanomsg
 )
 
 TARGET_LINK_LIBRARIES(WtPorter ${LIBS})

@@ -42,7 +42,6 @@ SET(LIBS
 	pthread
 	boost_filesystem
 	boost_thread
-    nanomsg
 )
 
 ADD_EXECUTABLE(WtRunner ${SRCS} ${HDRS})
