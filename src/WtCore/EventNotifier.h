@@ -9,7 +9,6 @@
  */
 #pragma once
 
-#include <boost/asio.hpp>
 #include <queue>
 
 #include "../Includes/WTSMarcos.h"
@@ -28,13 +27,8 @@ public:
 	EventNotifier();
 	~EventNotifier();
 
-	typedef boost::asio::ip::udp::endpoint	EndPoint;
-	typedef std::vector<EndPoint>			ReceiverList;
 
 private:
-	void	handle_send_broad(const EndPoint& ep, const boost::system::error_code& error, std::size_t bytes_transferred); 
-	void	handle_send_multi(const EndPoint& ep, const boost::system::error_code& error, std::size_t bytes_transferred); 
-
 	void	notify(const char* trader, const std::string& data, uint32_t dataType);
 
 	void	tradeToJson(uint32_t localid, const char* stdCode, WTSTradeInfo* trdInfo, std::string& output);
@@ -45,8 +39,6 @@ public:
 	void	start();
 	void	stop();
 
-	bool	addBRecver(const char* remote, int port);
-	bool	addMRecver(const char* remote, int port, int sendport);
 
 	void	notify(const char* trader, uint32_t localid, const char* stdCode, WTSTradeInfo* trdInfo);
 	void	notify(const char* trader, uint32_t localid, const char* stdCode, WTSOrderInfo* ordInfo);
@@ -54,29 +46,11 @@ public:
 	void	notify(const char* trader, const std::string& message);
 
 private:
-	typedef boost::asio::ip::udp::socket	UDPSocket;
-	typedef std::shared_ptr<UDPSocket>	UDPSocketPtr;
-
-	enum 
-	{ 
-		max_length = 2048 
-	};
-
-	boost::asio::ip::udp::endpoint	m_senderEP;
-	char			m_data[max_length];
-
 	std::string		m_strGroupTag;
+	std::string		m_strURL;
 	bool			m_bReady;
 
-	//¹ã²¥
-	ReceiverList	m_listRawRecver;
-	UDPSocketPtr	m_sktBroadcast;
-
-	typedef std::pair<UDPSocketPtr,EndPoint>	MulticastPair;
-	typedef std::vector<MulticastPair>	MulticastList;
-	MulticastList	m_listRawGroup;
-	boost::asio::io_service		m_ioservice;
-	StdThreadPtr	m_thrdIO;
+	int		_sock;
 
 	StdThreadPtr	m_thrdCast;
 	StdCondVariable	m_condCast;

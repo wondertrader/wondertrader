@@ -18,9 +18,20 @@
 #include "../WTSTools/WTSBaseDataMgr.h"
 #include "../WTSTools/WTSLogger.h"
 
+#define NN_STATIC_LIB
+#include <nanomsg/nn.h>
+#include <nanomsg/pubsub.h>
+
 #include <rapidjson/document.h>
 #include <rapidjson/prettywriter.h>
 namespace rj = rapidjson;
+
+#ifdef _WIN32
+#pragma comment(lib, "nanomsg.lib")
+#pragma comment(lib, "Ws2_32.lib")
+#pragma comment(lib, "Wldap32.lib")
+#pragma comment(lib, "Mswsock.lib")
+#endif
 
 USING_NS_OTP;
 
@@ -61,51 +72,29 @@ bool EventNotifier::init(WTSVariant* cfg)
 		return false;
 
 	m_strGroupTag = cfg->getCString("tag");
-
-	WTSVariant* cfgBC = cfg->get("broadcast");
-	if (cfgBC)
-	{
-		for (uint32_t idx = 0; idx < cfgBC->size(); idx++)
-		{
-			WTSVariant* cfgItem = cfgBC->get(idx);
-			addBRecver(cfgItem->getCString("host"), cfgItem->getInt32("port"));
-		}
-	}
-
-	WTSVariant* cfgMC = cfg->get("multicast");
-	if (cfgMC)
-	{
-		for (uint32_t idx = 0; idx < cfgMC->size(); idx++)
-		{
-			WTSVariant* cfgItem = cfgMC->get(idx);
-			addMRecver(cfgItem->getCString("host"), cfgItem->getInt32("port"), cfgItem->getInt32("sendport"));
-		}
-	}
+	m_strURL = cfg->getCString("url");
 
 	start();
-
-	m_bReady = true;
 
 	return true;
 }
 
 void EventNotifier::start()
 {
-	if (!m_listRawRecver.empty())
+	_sock = nn_socket(AF_SP, NN_PUB);
+	if(_sock < 0)
 	{
-		m_sktBroadcast.reset(new UDPSocket(m_ioservice, boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(), 0)));
+		WTSLogger::info("Event notifier has an error %d while initializing", _sock);
+		return;
 	}
 
-	m_thrdIO.reset(new StdThread([this](){
-		try
-		{
-			m_ioservice.run();
-		}
-		catch(...)
-		{
-			m_ioservice.stop();
-		}
-	}));
+	if(nn_bind(_sock, m_strURL.c_str()) < 0)
+	{
+		WTSLogger::info("Event notifier has an error while binding url");
+		return;
+	}
+
+	m_bReady = true;
 
 	WTSLogger::info("Event notifier started");
 }
@@ -116,51 +105,11 @@ void EventNotifier::stop()
 		return;
 
 	m_bTerminated = true;
-	m_ioservice.stop();
-	if (m_thrdIO)
-		m_thrdIO->join();
-
 	m_condCast.notify_all();
 	if (m_thrdCast)
 		m_thrdCast->join();
 }
 
-bool EventNotifier::addBRecver(const char* remote, int port)
-{
-	try
-	{
-		boost::asio::ip::address_v4 addr = boost::asio::ip::address_v4::from_string(remote);
-		m_listRawRecver.emplace_back(EndPoint(addr, port));
-
-		WTSLogger::info("Receiver %s:%d added", remote, port);
-	}
-	catch(...)
-	{
-		return false;
-	}
-
-	return true;
-}
-
-
-bool EventNotifier::addMRecver(const char* remote, int port, int sendport)
-{
-	try
-	{
-		boost::asio::ip::address_v4 addr = boost::asio::ip::address_v4::from_string(remote);
-		auto ep = EndPoint(addr, port);
-		UDPSocketPtr sock(new UDPSocket(m_ioservice, boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(), sendport)));
-		boost::asio::ip::multicast::join_group option(ep.address());
-		sock->set_option(option);
-		m_listRawGroup.emplace_back(std::make_pair(sock, ep));
-	}
-	catch(...)
-	{
-		return false;
-	}
-
-	return true;
-}
 
 void EventNotifier::notify(const char* trader, uint32_t localid, const char* stdCode, WTSTradeInfo* trdInfo)
 {
@@ -263,7 +212,7 @@ void EventNotifier::orderToJson(uint32_t localid, const char* stdCode, WTSOrderI
 
 void EventNotifier::notify(const char* trader, const std::string& data, uint32_t dataType)
 {
-	if(m_sktBroadcast == NULL || data.empty() || m_bTerminated)
+	if(data.empty() || m_bTerminated)
 		return;
 
 	{
@@ -297,33 +246,15 @@ void EventNotifier::notify(const char* trader, const std::string& data, uint32_t
 					if (castData._data.empty())
 						break;
 
-					//直接广播
-					if (!m_listRawGroup.empty() || !m_listRawRecver.empty())
-					{
-						std::string buf_raw;
-						buf_raw.resize(sizeof(UDPPacket) + castData._data.size());
-						UDPPacket* pack = (UDPPacket*)buf_raw.data();
-						pack->_length = castData._data.size();
-						pack->_type = castData._datatype;
-						strcpy(pack->_group, m_strGroupTag.c_str());
-						strcpy(pack->_trader, castData._trader.c_str());
-						memcpy(&pack->_data, castData._data.data(), castData._data.size());
-
-						//广播
-						for (auto it = m_listRawRecver.begin(); it != m_listRawRecver.end(); it++)
-						{
-							const EndPoint& receiver = (*it);
-							m_sktBroadcast->send_to(boost::asio::buffer(buf_raw), receiver);
-						}
-
-						//组播
-						for (auto it = m_listRawGroup.begin(); it != m_listRawGroup.end(); it++)
-						{
-							const MulticastPair& item = *it;
-							it->first->send_to(boost::asio::buffer(buf_raw), item.second);
-						}
-					}
-
+					std::string buf_raw;
+					buf_raw.resize(sizeof(UDPPacket) + castData._data.size());
+					UDPPacket* pack = (UDPPacket*)buf_raw.data();
+					pack->_length = castData._data.size();
+					pack->_type = castData._datatype;
+					strcpy(pack->_group, m_strGroupTag.c_str());
+					strcpy(pack->_trader, castData._trader.c_str());
+					memcpy(&pack->_data, castData._data.data(), castData._data.size());
+					nn_send(_sock, buf_raw.data(), buf_raw.size(), 0);
 					tmpQue.pop();
 				} 
 			}
@@ -334,21 +265,3 @@ void EventNotifier::notify(const char* trader, const std::string& data, uint32_t
 		m_condCast.notify_all();
 	}
 }
-
-void EventNotifier::handle_send_broad(const EndPoint& ep, const boost::system::error_code& error, std::size_t bytes_transferred)
-{
-	if(error)
-	{
-		WTSLogger::error("Broadcasting of event failed, remote addr: %s, error message: %s", ep.address().to_string().c_str(), error.message().c_str());
-	}
-}
-
-void EventNotifier::handle_send_multi(const EndPoint& ep, const boost::system::error_code& error, std::size_t bytes_transferred)
-{
-	if(error)
-	{
-		WTSLogger::error("Multicasting of event failed, remote addr: %s, error message: %s", ep.address().to_string().c_str(), error.message().c_str());
-	}
-}
-
-;
