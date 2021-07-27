@@ -51,10 +51,10 @@ const char* WtSimpExeUnit::getName()
 
 const char* PriceModeNames[] = 
 {
-	"最优价",
-	"最新价",
-	"对手价",
-	"自适应"
+	"BESTPX",		//最优价
+	"LASTPX",		//最新价
+	"MARKET",		//对手价
+	"AUTOPX"		//自动
 };
 void WtSimpExeUnit::init(ExecuteContext* ctx, const char* stdCode, WTSVariant* cfg)
 {
@@ -72,7 +72,7 @@ void WtSimpExeUnit::init(ExecuteContext* ctx, const char* stdCode, WTSVariant* c
 	_expire_secs = cfg->getUInt32("expire");
 	_price_mode = cfg->getInt32("pricemode");	//价格类型,0-最新价,-1-最优价,1-对手价,2-自动,默认为0
 
-	ctx->writeLog("执行单元 %s 初始化完成,委托价 %s ± %d 跳,订单超时 %u 秒", stdCode, PriceModeNames[_price_mode+1], _price_offset, _expire_secs);
+	ctx->writeLog("ExecUnit %s inited, order price: %s ± %d ticks, order expired in %u secs", stdCode, PriceModeNames[_price_mode+1], _price_offset, _expire_secs);
 }
 
 void WtSimpExeUnit::on_order(uint32_t localid, const char* stdCode, bool isBuy, double leftover, double price, bool isCanceled)
@@ -97,7 +97,8 @@ void WtSimpExeUnit::on_order(uint32_t localid, const char* stdCode, bool isBuy, 
 	//如果有撤单,也触发重新计算
 	if (isCanceled)
 	{
-		_ctx->writeLog("%s的订单%u已撤销,重新触发执行逻辑", stdCode, localid);
+		//_ctx->writeLog("%s的订单%u已撤销,重新触发执行逻辑", stdCode, localid);
+		_ctx->writeLog("Order %u of %s canceled, recalc will be done", localid, stdCode);
 		_cancel_times++;
 		doCalculate();
 	}
@@ -110,7 +111,8 @@ void WtSimpExeUnit::on_channel_ready()
 	if(!decimal::eq(undone, 0) && !_orders_mon.has_order())
 	{
 		//这说明有未完成单不在监控之中,先撤掉
-		_ctx->writeLog("%s有不在管理中的未完成单 %f ,全部撤销", _code.c_str(), undone);
+		//_ctx->writeLog("%s有不在管理中的未完成单 %f ,全部撤销", _code.c_str(), undone);
+		_ctx->writeLog("Live orders with qty %f of %s found, cancel all", undone, _code.c_str());
 
 		bool isBuy = (undone > 0);
 		OrderIDs ids = _ctx->cancel(_code.c_str(), isBuy);
@@ -259,7 +261,8 @@ void WtSimpExeUnit::doCalculate()
 
 	if (_last_tick == NULL)
 	{
-		_ctx->writeLog("%s没有最新tick数据,退出执行逻辑", _code.c_str());
+		//_ctx->writeLog("%s没有最新tick数据,退出执行逻辑", _code.c_str());
+		_ctx->writeLog("No lastest tick data of %s, execute later", _code.c_str());
 		return;
 	}
 
@@ -299,14 +302,16 @@ void WtSimpExeUnit::doCalculate()
 	bool isCanCancel = true;
 	if (!decimal::eq(_last_tick->upperlimit(), 0) && decimal::gt(buyPx, _last_tick->upperlimit()))
 	{
-		_ctx->writeLog("%s的买入价%f已修正为涨停价%f", _code.c_str(), buyPx, _last_tick->upperlimit());
+		//_ctx->writeLog("%s的买入价%f已修正为涨停价%f", _code.c_str(), buyPx, _last_tick->upperlimit());
+		_ctx->writeLog("Buy price %f of %s modified to upper limit price", buyPx, _code.c_str(), _last_tick->upperlimit());
 		buyPx = _last_tick->upperlimit();
 		isCanCancel = false;	//如果价格被修正为涨跌停价，订单不可撤销
 	}
 	
 	if (!decimal::eq(_last_tick->lowerlimit(), 0) && decimal::lt(sellPx, _last_tick->lowerlimit()))
 	{
-		_ctx->writeLog("%s的卖出价%f已修正为跌停价%f", _code.c_str(), sellPx, _last_tick->lowerlimit());
+		//_ctx->writeLog("%s的卖出价%f已修正为跌停价%f", _code.c_str(), sellPx, _last_tick->lowerlimit());
+		_ctx->writeLog("Sell price %f of %s modified to lower limit price", buyPx, _code.c_str(), _last_tick->upperlimit());
 		sellPx = _last_tick->lowerlimit();
 		isCanCancel = false;	//如果价格被修正为涨跌停价，订单不可撤销
 	}

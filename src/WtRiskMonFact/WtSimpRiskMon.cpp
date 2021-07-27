@@ -40,8 +40,11 @@ void WtSimpleRiskMon::init(WtPortContext* ctx, WTSVariant* cfg)
 	_base_amount = cfg->getDouble("base_amount");
 	_risk_scale = cfg->getDouble("risk_scale");
 
-	ctx->writeRiskLog("参数初始化完成, 监控时间间隔: %u 秒, 日内回撤: %s(%.2f%%), 多日回撤: %s(%.2f%%), 资金基数: %.1f, 门槛盈利: %.2f%%, 回撤时限: %u mins, 风险控制系数: %.2f",
-		_calc_span, _inner_day_active ? "开启" : "关闭", _inner_day_fd, _multi_day_active ? "开启" : "关闭", _multi_day_fd, _base_amount, _basic_ratio, _risk_span, _risk_scale);
+	//ctx->writeRiskLog("参数初始化完成, 监控时间间隔: %u 秒, 日内回撤: %s(%.2f%%), 多日回撤: %s(%.2f%%), 资金基数: %.1f, 门槛盈利: %.2f%%, 回撤时限: %u mins, 风险控制系数: %.2f",
+	//	_calc_span, _inner_day_active ? "开启" : "关闭", _inner_day_fd, _multi_day_active ? "开启" : "关闭", _multi_day_fd, _base_amount, _basic_ratio, _risk_span, _risk_scale);
+
+	ctx->writeRiskLog("Params inited, Checking frequency: %u s, MaxIDD: %s(%.2f%%), MaxMDD: %s(%.2f%%), Capital: %.1f, Profit Boudary: %.2f%%, Calc Span: %u mins, Risk Scale: %.2f",
+		_calc_span, _inner_day_active ? "ON" : "OFF", _inner_day_fd, _multi_day_active ? "ON" : "OFF", _multi_day_fd, _base_amount, _basic_ratio, _risk_span, _risk_scale);
 }
 
 void WtSimpleRiskMon::run()
@@ -69,15 +72,16 @@ void WtSimpleRiskMon::run()
 
 				if (_inner_day_active && fs._max_dyn_bal != DBL_MAX)
 				{
-					double predynbal = fundInfo->predynbalance() + _base_amount;
-					double maxBal = fs._max_dyn_bal + _base_amount;
-					double curBal = fs._balance + fs._dynprofit + _base_amount;
+					double predynbal = fundInfo->predynbalance() + _base_amount;	//上日动态权益
+					double maxBal = fs._max_dyn_bal + _base_amount;					//当日最大动态权益
+					double curBal = fs._balance + fs._dynprofit + _base_amount;		//当前动态权益
 
 					double rate = 0.0;
 					if(!decimal::eq(maxBal, predynbal))
-						rate = (maxBal - curBal) * 100 / (maxBal - predynbal);
+						rate = (maxBal - curBal) * 100 / (maxBal - predynbal);	//当日盈利回撤比例
 
-					if (curBal > (_basic_ratio*predynbal / 100.0))
+					//如果当日最大权益超过止盈边界条件
+					if (maxBal > (_basic_ratio*predynbal / 100.0))
 					{
 						
 						/*
@@ -91,19 +95,20 @@ void WtSimpleRiskMon::run()
 
 						if (rate >= _inner_day_fd && curTime - maxTime <= _risk_span && !_limited)
 						{
-							_ctx->writeRiskLog("当前日内盈利回撤 %.2f%%, 超过最大日内回撤 %.2f%%, 仓位比例降到 %.1f%%", rate, _inner_day_fd, _risk_scale);
+							_ctx->writeRiskLog("Current IDD %.2f%%, ≥MaxIDD %.2f%%, Position down to %.1f%%", rate, _inner_day_fd, _risk_scale);
 							_ctx->setVolScale(_risk_scale);
 							_limited = true;
 						}
 						else
 						{
-							_ctx->writeRiskLog("当前盈利率: %.2f%%, 日内盈利回撤率: %.2f%%", curBal*100.0 / predynbal, rate);
+							_ctx->writeRiskLog("Current PR: %.2f%%, Current IDD: %.2f%%", curBal*100.0 / predynbal, rate);
 							//_limited = false;
 						}
 					}
 					else
 					{
-						_ctx->writeRiskLog("当前盈利率: %.2f%%, 日内盈利回撤率: %.2f%%", curBal*100.0 / predynbal, rate);
+						//如果当日最大权益没有超过盈利边界条件
+						_ctx->writeRiskLog("Current PR: %.2f%%", curBal*100.0 / predynbal);
 						//_limited = false;
 					}
 				}
@@ -118,7 +123,7 @@ void WtSimpleRiskMon::run()
 						double rate = (maxBal - curBal) * 100 / maxBal;
 						if (rate >= _multi_day_fd)
 						{
-							_ctx->writeRiskLog("当前多日高点回撤 %.2f%%, 超过最大多日回撤 %.2f%%, 仓位比例降到 0.0%%", rate, _multi_day_fd);
+							_ctx->writeRiskLog("Current MDD %.2f%%, ≥MaxMDD %.2f%%, Position down to 0.0%%", rate, _multi_day_fd);
 							_ctx->setVolScale(0.0);
 						}
 					}
