@@ -457,7 +457,40 @@ bool WtRtRunner::config(const char* cfgFile, bool isFile /* = true */)
 
 	//如果不是高频引擎,则需要配置执行模块
 	if (!_is_hft)
-		initExecuters();
+	{
+		WTSVariant* cfgExec = _config->get("executers");
+		if(cfgExec != NULL)
+		{
+			if(cfgExec->type() == WTSVariant::VT_String)
+			{
+				const char* filename = cfgExec->asCString();
+				if (StdFile::exists(filename))
+				{
+					WTSLogger::info("Reading executer configuration from %s……", filename);
+					std::string json;
+					StdFile::read_file_content(filename, json);
+
+					rj::Document document;
+					document.Parse(json.c_str());
+					WTSVariant* var = WTSVariant::createObject();
+					jsonToVariant(document, var);
+
+					if (!initExecuters(var->get("executers")))
+						WTSLogger::error("Loading executer failed");
+					var->release();
+				}
+				else
+				{
+					WTSLogger::error("Trader configuration %s not exists", filename);
+				}
+			}
+			else if(cfgExec->type() == WTSVariant::VT_Array)
+			{
+				initExecuters(cfgExec);
+			}
+		}
+		
+	}
 
 	if (!_is_hft)
 		initCtaStrategies();
@@ -662,10 +695,9 @@ bool WtRtRunner::initParsers(WTSVariant* cfgParser)
 	return true;
 }
 
-bool WtRtRunner::initExecuters()
+bool WtRtRunner::initExecuters(WTSVariant* cfgExecuter)
 {
-	WTSVariant* cfg = _config->get("executers");
-	if (cfg == NULL || cfg->type() != WTSVariant::VT_Array)
+	if (cfgExecuter == NULL || cfgExecuter->type() != WTSVariant::VT_Array)
 		return false;
 
 	//先加载自带的执行器工厂
@@ -673,9 +705,9 @@ bool WtRtRunner::initExecuters()
 	_exe_factory.loadFactories(path.c_str());
 
 	uint32_t count = 0;
-	for (uint32_t idx = 0; idx < cfg->size(); idx++)
+	for (uint32_t idx = 0; idx < cfgExecuter->size(); idx++)
 	{
-		WTSVariant* cfgItem = cfg->get(idx);
+		WTSVariant* cfgItem = cfgExecuter->get(idx);
 		if (!cfgItem->getBoolean("active"))
 			continue;
 
