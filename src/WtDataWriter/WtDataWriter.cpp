@@ -149,12 +149,12 @@ void WtDataWriter::init_db()
 	if (_db_conn->connect(_db_conf._dbname, _db_conf._host, _db_conf._user, _db_conf._pass, _db_conf._port, CLIENT_MULTI_STATEMENTS | CLIENT_MULTI_RESULTS))
 	{
 		if(_sink)
-			_sink->outputWriterLog(LL_INFO, "数据库连接成功:%s:%d", _db_conf._host, _db_conf._port);
+			_sink->outputWriterLog(LL_INFO, "Mysql connected[%s:%d]", _db_conf._host, _db_conf._port);
 	}
 	else
 	{
 		if (_sink)
-			_sink->outputWriterLog(LL_ERROR, "数据库连接失败[%s:%d]:%s", _db_conf._host, _db_conf._port, _db_conn->errstr());
+			_sink->outputWriterLog(LL_ERROR, "Mysql connecting failed[%s:%d]:%s", _db_conf._host, _db_conf._port, _db_conn->errstr());
 		_db_conn.reset();
 	}
 }
@@ -409,7 +409,7 @@ void* WtDataWriter::resizeRTBlock(BoostMFPtr& mfPtr, uint32_t nCount)
 	}
 	catch(std::exception& ex)
 	{
-		_sink->outputWriterLog(LL_ERROR, "%s[%u]的实时缓存文件扩容出现异常: %s", ex.what());
+		_sink->outputWriterLog(LL_ERROR, "Exception occured while expanding RT cache file of %s[%u]: %s", filename, uSize, ex.what());
 		return mfPtr->addr();
 	}
 
@@ -495,7 +495,7 @@ bool WtDataWriter::writeTick(WTSTickData* curTick, bool bNeedSlice /* = true */)
 			_tcnt_map[curTick->exchg()]++;
 			if (_tcnt_map[curTick->exchg()] % _log_group_size == 0)
 			{
-				_sink->outputWriterLog(LL_INFO, "共收到交易所%s的tick数据%s条", curTick->exchg(), StrUtil::fmtUInt64(_tcnt_map[curTick->exchg()]).c_str());
+				_sink->outputWriterLog(LL_INFO, "%s ticks received from exchange %s", StrUtil::fmtUInt64(_tcnt_map[curTick->exchg()]).c_str(), curTick->exchg());
 			}
 		} while (false);
 
@@ -546,7 +546,8 @@ bool WtDataWriter::writeOrderQueue(WTSOrdQueData* curOrdQue)
 			_tcnt_map[curOrdQue->exchg()]++;
 			if (_tcnt_map[curOrdQue->exchg()] % _log_group_size == 0)
 			{
-				_sink->outputWriterLog(LL_INFO, "共收到交易所%s的委托队列数据%s条", curOrdQue->exchg(), StrUtil::fmtUInt64(_tcnt_map[curOrdQue->exchg()]).c_str());
+				//_sink->outputWriterLog(LL_INFO, "共收到交易所%s的委托队列数据%s条", curOrdQue->exchg(), StrUtil::fmtUInt64(_tcnt_map[curOrdQue->exchg()]).c_str());
+				_sink->outputWriterLog(LL_INFO, "%s orderques received from exchange %s", StrUtil::fmtUInt64(_tcnt_map[curOrdQue->exchg()]).c_str(), curOrdQue->exchg());
 			}
 		} while (false);
 		curOrdQue->release();
@@ -640,7 +641,8 @@ bool WtDataWriter::writeOrderDetail(WTSOrdDtlData* curOrdDtl)
 			_tcnt_map[curOrdDtl->exchg()]++;
 			if (_tcnt_map[curOrdDtl->exchg()] % _log_group_size == 0)
 			{
-				_sink->outputWriterLog(LL_INFO, "共收到交易所%s的逐笔委托数据%s条", curOrdDtl->exchg(), StrUtil::fmtUInt64(_tcnt_map[curOrdDtl->exchg()]).c_str());
+				//_sink->outputWriterLog(LL_INFO, "共收到交易所%s的逐笔委托数据%s条", curOrdDtl->exchg(), StrUtil::fmtUInt64(_tcnt_map[curOrdDtl->exchg()]).c_str());
+				_sink->outputWriterLog(LL_INFO, "%s orderdetails received from exchange %s", StrUtil::fmtUInt64(_tcnt_map[curOrdDtl->exchg()]).c_str(), curOrdDtl->exchg());
 			}
 		} while (false);
 
@@ -693,7 +695,8 @@ bool WtDataWriter::writeTransaction(WTSTransData* curTrans)
 			_tcnt_map[curTrans->exchg()]++;
 			if (_tcnt_map[curTrans->exchg()] % _log_group_size == 0)
 			{
-				_sink->outputWriterLog(LL_INFO, "共收到交易所%s的逐笔成交数据%s条", curTrans->exchg(), StrUtil::fmtUInt64(_tcnt_map[curTrans->exchg()]).c_str());
+				//_sink->outputWriterLog(LL_INFO, "共收到交易所%s的逐笔成交数据%s条", curTrans->exchg(), StrUtil::fmtUInt64(_tcnt_map[curTrans->exchg()]).c_str());
+				_sink->outputWriterLog(LL_INFO, "%s transactions received from exchange %s", StrUtil::fmtUInt64(_tcnt_map[curTrans->exchg()]).c_str(), curTrans->exchg());
 			}
 		} while (false);
 
@@ -766,7 +769,7 @@ WtDataWriter::OrdQueBlockPair* WtDataWriter::getOrdQueBlock(WTSContractInfo* ct,
 			if (!bAutoCreate)
 				return NULL;
 
-			_sink->outputWriterLog(LL_INFO, "数据文件%s不存在,正在初始化...", path.c_str());
+			_sink->outputWriterLog(LL_INFO, "Data file %s not exists, initializing...", path.c_str());
 
 			uint64_t uSize = sizeof(RTDayBlockHeader) + sizeof(WTSOrdQueStruct) * TICK_SIZE_STEP;
 
@@ -782,7 +785,7 @@ WtDataWriter::OrdQueBlockPair* WtDataWriter::getOrdQueBlock(WTSContractInfo* ct,
 		pBlock->_file.reset(new BoostMappingFile);
 		if (!pBlock->_file->map(path.c_str()))
 		{
-			_sink->outputWriterLog(LL_INFO, "文件%s映射失败", path.c_str());
+			_sink->outputWriterLog(LL_INFO, "Mapping file %s failed", path.c_str());
 			pBlock->_file.reset();
 			return NULL;
 		}
@@ -792,7 +795,8 @@ WtDataWriter::OrdQueBlockPair* WtDataWriter::getOrdQueBlock(WTSContractInfo* ct,
 
 		if (!isNew &&  pBlock->_block->_date != curDate)
 		{
-			_sink->outputWriterLog(LL_INFO, "orderqueue缓存模块%s日期%u不等于当前日期%u,重新初始化", path.c_str(), pBlock->_block->_date, curDate);
+			//_sink->outputWriterLog(LL_INFO, "orderqueue缓存模块%s日期%u不等于当前日期%u,重新初始化", path.c_str(), pBlock->_block->_date, curDate);
+			_sink->outputWriterLog(LL_INFO, "date[%u] of orderqueue cache block[%s] is different from current date[%u], reinitializing...", pBlock->_block->_date, path.c_str(), curDate);
 			pBlock->_block->_size = 0;
 			pBlock->_block->_date = curDate;
 
@@ -823,7 +827,8 @@ WtDataWriter::OrdQueBlockPair* WtDataWriter::getOrdQueBlock(WTSContractInfo* ct,
 					pBlock->_block->_capacity = oldCnt;
 					pBlock->_block->_size = oldCnt;
 
-					_sink->outputWriterLog(LL_WARN, "%s股票%u的委托队列缓存文件已修复", ct->getCode(), curDate);
+					//_sink->outputWriterLog(LL_WARN, "%s股票%u的委托队列缓存文件已修复", ct->getCode(), curDate);
+					_sink->outputWriterLog(LL_WARN, "Oderqueue cache file of %s on date %u repaired", ct->getCode(), curDate);
 				}
 
 			} while (false);
@@ -862,7 +867,8 @@ WtDataWriter::OrdDtlBlockPair* WtDataWriter::getOrdDtlBlock(WTSContractInfo* ct,
 			if (!bAutoCreate)
 				return NULL;
 
-			_sink->outputWriterLog(LL_INFO, "数据文件%s不存在,正在初始化...", path.c_str());
+			//_sink->outputWriterLog(LL_INFO, "数据文件%s不存在,正在初始化...", path.c_str());
+			_sink->outputWriterLog(LL_INFO, "Data file %s not exists, initializing...", path.c_str());
 
 			uint64_t uSize = sizeof(RTDayBlockHeader) + sizeof(WTSOrdDtlStruct) * TICK_SIZE_STEP;
 
@@ -878,7 +884,7 @@ WtDataWriter::OrdDtlBlockPair* WtDataWriter::getOrdDtlBlock(WTSContractInfo* ct,
 		pBlock->_file.reset(new BoostMappingFile);
 		if (!pBlock->_file->map(path.c_str()))
 		{
-			_sink->outputWriterLog(LL_INFO, "文件%s映射失败", path.c_str());
+			_sink->outputWriterLog(LL_INFO, "Mapping file %s failed", path.c_str());
 			pBlock->_file.reset();
 			return NULL;
 		}
@@ -888,7 +894,8 @@ WtDataWriter::OrdDtlBlockPair* WtDataWriter::getOrdDtlBlock(WTSContractInfo* ct,
 
 		if (!isNew &&  pBlock->_block->_date != curDate)
 		{
-			_sink->outputWriterLog(LL_INFO, "orders缓存模块%s日期%u不等于当前日期%u,重新初始化", path.c_str(), pBlock->_block->_date, curDate);
+			//_sink->outputWriterLog(LL_INFO, "orders缓存模块%s日期%u不等于当前日期%u,重新初始化", path.c_str(), pBlock->_block->_date, curDate);
+			_sink->outputWriterLog(LL_INFO, "date[%u] of orderdetail cache block[%s] is different from current date[%u], reinitializing...", pBlock->_block->_date, path.c_str(), curDate);
 			pBlock->_block->_size = 0;
 			pBlock->_block->_date = curDate;
 
@@ -919,7 +926,8 @@ WtDataWriter::OrdDtlBlockPair* WtDataWriter::getOrdDtlBlock(WTSContractInfo* ct,
 					pBlock->_block->_capacity = oldCnt;
 					pBlock->_block->_size = oldCnt;
 
-					_sink->outputWriterLog(LL_WARN, "%s股票%u的逐笔成交缓存文件已修复", ct->getCode(), curDate);
+					//_sink->outputWriterLog(LL_WARN, "%s股票%u的逐笔成交缓存文件已修复", ct->getCode(), curDate);
+					_sink->outputWriterLog(LL_WARN, "Orderdetail cache file of %s on date %u repaired", ct->getCode(), curDate);
 				}
 
 				break;
@@ -959,7 +967,7 @@ WtDataWriter::TransBlockPair* WtDataWriter::getTransBlock(WTSContractInfo* ct, u
 			if (!bAutoCreate)
 				return NULL;
 
-			_sink->outputWriterLog(LL_INFO, "数据文件%s不存在,正在初始化...", path.c_str());
+			_sink->outputWriterLog(LL_INFO, "Data file %s not exists, initializing...", path.c_str());
 
 			uint64_t uSize = sizeof(RTDayBlockHeader) + sizeof(WTSTransStruct) * TICK_SIZE_STEP;
 
@@ -975,7 +983,7 @@ WtDataWriter::TransBlockPair* WtDataWriter::getTransBlock(WTSContractInfo* ct, u
 		pBlock->_file.reset(new BoostMappingFile);
 		if (!pBlock->_file->map(path.c_str()))
 		{
-			_sink->outputWriterLog(LL_INFO, "文件%s映射失败", path.c_str());
+			_sink->outputWriterLog(LL_INFO, "Mapping file %s failed", path.c_str());
 			pBlock->_file.reset();
 			return NULL;
 		}
@@ -985,7 +993,8 @@ WtDataWriter::TransBlockPair* WtDataWriter::getTransBlock(WTSContractInfo* ct, u
 
 		if (!isNew &&  pBlock->_block->_date != curDate)
 		{
-			_sink->outputWriterLog(LL_INFO, "trans缓存模块%s日期%u不等于当前日期%u,重新初始化", path.c_str(), pBlock->_block->_date, curDate);
+			//_sink->outputWriterLog(LL_INFO, "trans缓存模块%s日期%u不等于当前日期%u,重新初始化", path.c_str(), pBlock->_block->_date, curDate);
+			_sink->outputWriterLog(LL_INFO, "date[%u] of transaction cache block[%s] is different from current date[%u], reinitializing...", pBlock->_block->_date, path.c_str(), curDate);
 			pBlock->_block->_size = 0;
 			pBlock->_block->_date = curDate;
 
@@ -1016,7 +1025,8 @@ WtDataWriter::TransBlockPair* WtDataWriter::getTransBlock(WTSContractInfo* ct, u
 					pBlock->_block->_capacity = oldCnt;
 					pBlock->_block->_size = oldCnt;
 
-					_sink->outputWriterLog(LL_WARN, "%s股票%u的逐笔成交缓存文件已修复", ct->getCode(), curDate);
+					//_sink->outputWriterLog(LL_WARN, "%s股票%u的逐笔成交缓存文件已修复", ct->getCode(), curDate);
+					_sink->outputWriterLog(LL_WARN, "Transaction cache file of %s on date %u repaired", ct->getCode(), curDate);
 				}
 
 				break;
@@ -1065,7 +1075,8 @@ WtDataWriter::TickBlockPair* WtDataWriter::getTickBlock(WTSContractInfo* ct, uin
 			if (!bAutoCreate)
 				return NULL;
 
-			_sink->outputWriterLog(LL_INFO, "数据文件%s不存在,正在初始化...", path.c_str());
+			//_sink->outputWriterLog(LL_INFO, "数据文件%s不存在,正在初始化...", path.c_str());
+			_sink->outputWriterLog(LL_INFO, "Data file %s not exists, initializing...", path.c_str());
 
 			uint64_t uSize = sizeof(RTTickBlock) + sizeof(WTSTickStruct) * TICK_SIZE_STEP;
 			BoostFile bf;
@@ -1080,7 +1091,8 @@ WtDataWriter::TickBlockPair* WtDataWriter::getTickBlock(WTSContractInfo* ct, uin
 		pBlock->_file.reset(new BoostMappingFile);
 		if(!pBlock->_file->map(path.c_str()))
 		{
-			_sink->outputWriterLog(LL_INFO, "文件%s映射失败", path.c_str());
+			//_sink->outputWriterLog(LL_INFO, "文件%s映射失败", path.c_str());
+			_sink->outputWriterLog(LL_INFO, "Mapping file %s failed", path.c_str());
 			pBlock->_file.reset();
 			return NULL;
 		}
@@ -1090,7 +1102,8 @@ WtDataWriter::TickBlockPair* WtDataWriter::getTickBlock(WTSContractInfo* ct, uin
 
 		if (!isNew &&  pBlock->_block->_date != curDate)
 		{
-			_sink->outputWriterLog(LL_INFO, "tick缓存模块%s日期%u不等于当前日期%u,重新初始化", path.c_str(), pBlock->_block->_date, curDate);
+			//_sink->outputWriterLog(LL_INFO, "tick缓存模块%s日期%u不等于当前日期%u,重新初始化", path.c_str(), pBlock->_block->_date, curDate);
+			_sink->outputWriterLog(LL_INFO, "date[%u] of tick cache block[%s] is different from current date[%u], reinitializing...", pBlock->_block->_date, path.c_str(), curDate);
 			pBlock->_block->_size = 0;
 			pBlock->_block->_date = curDate;
 
@@ -1121,7 +1134,8 @@ WtDataWriter::TickBlockPair* WtDataWriter::getTickBlock(WTSContractInfo* ct, uin
 					pBlock->_block->_capacity = oldCnt;
 					pBlock->_block->_size = oldCnt;
 
-					_sink->outputWriterLog(LL_WARN, "%s日期为%u的tick缓存文件已修复", ct->getCode(), curDate);
+					//_sink->outputWriterLog(LL_WARN, "%s日期为%u的tick缓存文件已修复", ct->getCode(), curDate);
+					_sink->outputWriterLog(LL_WARN, "Tick cache file of %s on date %u repaired", ct->getCode(), curDate);
 				}
 				
 				break;
@@ -1356,7 +1370,8 @@ WtDataWriter::KBlockPair* WtDataWriter::getKlineBlock(WTSContractInfo* ct, WTSKl
 			if (!bAutoCreate)
 				return NULL;
 
-			_sink->outputWriterLog(LL_INFO, "数据文件%s不存在,正在初始化...", path.c_str());
+			//_sink->outputWriterLog(LL_INFO, "数据文件%s不存在,正在初始化...", path.c_str());
+			_sink->outputWriterLog(LL_INFO, "Data file %s not exists, initializing...", path.c_str());
 
 			uint64_t uSize = sizeof(RTKlineBlock) + sizeof(WTSBarStruct) * KLINE_SIZE_STEP;
 			/*
@@ -1385,7 +1400,7 @@ WtDataWriter::KBlockPair* WtDataWriter::getKlineBlock(WTSContractInfo* ct, WTSKl
 		}
 		else
 		{
-			_sink->outputWriterLog(LL_INFO, "数据文件%s映射失败", path.c_str());
+			_sink->outputWriterLog(LL_ERROR, "Mapping file %s failed", path.c_str());
 			pBlock->_file.reset();
 			return NULL;
 		}
@@ -1438,7 +1453,7 @@ bool WtDataWriter::updateCache(WTSContractInfo* ct, WTSTickData* curTick, bool b
 {
 	if (curTick == NULL || _tick_cache_block == NULL)
 	{
-		_sink->outputWriterLog(LL_ERROR, "tick数据缓存尚未初始化");
+		_sink->outputWriterLog(LL_ERROR, "Tick cache data not initialized");
 		return false;
 	}
 
@@ -1453,7 +1468,7 @@ bool WtDataWriter::updateCache(WTSContractInfo* ct, WTSTickData* curTick, bool b
 		if(_tick_cache_block->_size >= _tick_cache_block->_capacity)
 		{
 			_tick_cache_block = (RTTickCache*)resizeRTBlock<RTTickCache, TickCacheItem>(_tick_cache_file, _tick_cache_block->_capacity + CACHE_SIZE_STEP);
-			_sink->outputWriterLog(LL_INFO, "%s缓存已重构为%u大小", key.c_str(), _tick_cache_block->_capacity);
+			_sink->outputWriterLog(LL_INFO, "Cache %s resized to %u bytes", key.c_str(), _tick_cache_block->_capacity);
 		}
 	}
 	else
@@ -1465,7 +1480,8 @@ bool WtDataWriter::updateCache(WTSContractInfo* ct, WTSTickData* curTick, bool b
 	TickCacheItem& item = _tick_cache_block->_ticks[idx];
 	if (curTick->tradingdate() < item._date)
 	{
-		_sink->outputWriterLog(LL_INFO, "%s行情日期%u小于缓存交易日%u", curTick->tradingdate(), item._date);
+		//_sink->outputWriterLog(LL_INFO, "%s行情日期%u小于缓存交易日%u", curTick->tradingdate(), item._date);
+		_sink->outputWriterLog(LL_INFO, "Tradingday[%u] of %s is less than cached tradingday[%u]", curTick->tradingdate(), curTick->code(), item._date);
 		return false;
 	}
 
@@ -1487,7 +1503,12 @@ bool WtDataWriter::updateCache(WTSContractInfo* ct, WTSTickData* curTick, bool b
 			newTick.diff_interest = newTick.open_interest - newTick.pre_interest;
 		}
 
-		_sink->outputWriterLog(LL_INFO, "新交易日%u的第一笔数据,%s.%s,%u,%f,%d,%d", newTick.trading_date, curTick->exchg(), curTick->code(), curTick->volume(), curTick->turnover(), curTick->openinterest(), curTick->additional());
+		//_sink->outputWriterLog(LL_INFO, "新交易日%u的第一笔数据,%s.%s,%u,%f,%d,%d",
+		//	newTick.trading_date, curTick->exchg(), curTick->code(), curTick->volume(),
+		//	curTick->turnover(), curTick->openinterest(), curTick->additional());
+		_sink->outputWriterLog(LL_INFO, "First tick of new tradingday %u,%s.%s,%f,%u,%f,%u,%d", 
+			newTick.trading_date, curTick->exchg(), curTick->code(), curTick->price(), curTick->volume(),
+			curTick->turnover(), curTick->openinterest(), curTick->additional());
 	}
 	else
 	{
@@ -1497,12 +1518,13 @@ bool WtDataWriter::updateCache(WTSContractInfo* ct, WTSTickData* curTick, bool b
 		uint32_t tdate = sInfo->getOffsetDate(curTick->actiondate(), curTick->actiontime() / 100000);
 		if (tdate > curTick->tradingdate())
 		{
-			_sink->outputWriterLog(LL_ERROR, "%s.%s最新tick数据(时间%u.%u)异常,丢弃", curTick->exchg(), curTick->code(), curTick->actiondate(), curTick->actiontime());
+			//_sink->outputWriterLog(LL_ERROR, "%s.%s最新tick数据(时间%u.%u)异常,丢弃", curTick->exchg(), curTick->code(), curTick->actiondate(), curTick->actiontime());
+			_sink->outputWriterLog(LL_ERROR, "Last tick of %s.%s with time %u.%u has an exception, abandoned", curTick->exchg(), curTick->code(), curTick->actiondate(), curTick->actiontime());
 			return false;
 		}
 		else if (curTick->totalvolume() < item._tick.total_volume)
 		{
-			_sink->outputWriterLog(LL_ERROR, "%s.%s最新tick数据(时间%u.%u,总成交%u小于缓存总成交%u)异常,丢弃", 
+			_sink->outputWriterLog(LL_ERROR, "Last tick of %s.%s with time %u.%u, volume %u is less than cached volume %u, abandoned", 
 				curTick->exchg(), curTick->code(), curTick->actiondate(), curTick->actiontime(), curTick->totalvolume(), item._tick.total_volume);
 			return false;
 		}
@@ -1591,7 +1613,7 @@ void WtDataWriter::check_loop()
 			TickBlockPair* tBlk = (TickBlockPair*)it->second;
 			if (tBlk->_lasttime != 0 && (now - tBlk->_lasttime > expire_secs))
 			{
-				_sink->outputWriterLog(LL_INFO, "tick缓存 %s 映射超时,自动关闭", key.c_str());
+				_sink->outputWriterLog(LL_INFO, "tick cache %s mapping expired, automatically closed", key.c_str());
 				releaseBlock<TickBlockPair>(tBlk);
 			}
 		}
@@ -1602,7 +1624,8 @@ void WtDataWriter::check_loop()
 			TransBlockPair* tBlk = (TransBlockPair*)it->second;
 			if (tBlk->_lasttime != 0 && (now - tBlk->_lasttime > expire_secs))
 			{
-				_sink->outputWriterLog(LL_INFO, "trans缓存 %s 映射超时,自动关闭", key.c_str());
+				//_sink->outputWriterLog(LL_INFO, "trans缓存 %s 映射超时,自动关闭", key.c_str());
+				_sink->outputWriterLog(LL_INFO, "trans cache %s mapping expired, automatically closed", key.c_str());
 				releaseBlock<TransBlockPair>(tBlk);
 			}
 		}
@@ -1613,7 +1636,8 @@ void WtDataWriter::check_loop()
 			OrdDtlBlockPair* tBlk = (OrdDtlBlockPair*)it->second;
 			if (tBlk->_lasttime != 0 && (now - tBlk->_lasttime > expire_secs))
 			{
-				_sink->outputWriterLog(LL_INFO, "order缓存 %s 映射超时,自动关闭", key.c_str());
+				//_sink->outputWriterLog(LL_INFO, "order缓存 %s 映射超时,自动关闭", key.c_str());
+				_sink->outputWriterLog(LL_INFO, "order cache %s mapping expired, automatically closed", key.c_str());
 				releaseBlock<OrdDtlBlockPair>(tBlk);
 			}
 		}
@@ -1624,7 +1648,8 @@ void WtDataWriter::check_loop()
 			OrdQueBlockPair* tBlk = (OrdQueBlockPair*)v.second;
 			if (tBlk->_lasttime != 0 && (now - tBlk->_lasttime > expire_secs))
 			{
-				_sink->outputWriterLog(LL_INFO, "queue缓存 %s 映射超时,自动关闭", key.c_str());
+				//_sink->outputWriterLog(LL_INFO, "queue缓存 %s 映射超时,自动关闭", key.c_str());
+				_sink->outputWriterLog(LL_INFO, "queue cache %s mapping expired, automatically closed", key.c_str());
 				releaseBlock<OrdQueBlockPair>(tBlk);
 			}
 		}
@@ -1635,7 +1660,8 @@ void WtDataWriter::check_loop()
 			KBlockPair* kBlk = (KBlockPair*)it->second;
 			if (kBlk->_lasttime != 0 && (now - kBlk->_lasttime > expire_secs))
 			{
-				_sink->outputWriterLog(LL_INFO, "1分钟缓存 %s 映射超时,自动关闭", key.c_str());
+				//_sink->outputWriterLog(LL_INFO, "1分钟缓存 %s 映射超时,自动关闭", key.c_str());
+				_sink->outputWriterLog(LL_INFO, "min1 cache %s mapping expired, automatically closed", key.c_str());
 				releaseBlock<KBlockPair>(kBlk);
 			}
 		}
@@ -1646,7 +1672,8 @@ void WtDataWriter::check_loop()
 			KBlockPair* kBlk = (KBlockPair*)it->second;
 			if (kBlk->_lasttime != 0 && (now - kBlk->_lasttime > expire_secs))
 			{
-				_sink->outputWriterLog(LL_INFO, "5分钟缓存 %s 映射超时,自动关闭", key.c_str());
+				//_sink->outputWriterLog(LL_INFO, "5分钟缓存 %s 映射超时,自动关闭", key.c_str());
+				_sink->outputWriterLog(LL_INFO, "min5 cache %s mapping expired, automatically closed", key.c_str());
 				releaseBlock<KBlockPair>(kBlk);
 			}
 		}
@@ -1684,7 +1711,7 @@ uint32_t WtDataWriter::dump_hisdata_to_db(WTSContractInfo* ct)
 		MysqlQuery query(db);
 		if(!query.exec(sql))
 		{
-			_sink->outputWriterLog(LL_ERROR, "day数据收盘作业失败: %s", query.errormsg());
+			_sink->outputWriterLog(LL_ERROR, "ClosingTask of day bar failed: %s", query.errormsg());
 		}
 		else
 		{
@@ -1697,7 +1724,7 @@ uint32_t WtDataWriter::dump_hisdata_to_db(WTSContractInfo* ct)
 	if (kBlkPair != NULL && kBlkPair->_block->_size > 0)
 	{
 		uint32_t size = kBlkPair->_block->_size;
-		_sink->outputWriterLog(LL_INFO, "开始转移%s的1分钟数据", ct->getFullCode());
+		_sink->outputWriterLog(LL_INFO, "Transfering min1 bars of %s...", ct->getFullCode());
 		StdUniqueLock lock(kBlkPair->_mutex);
 
 		std::string sql = "REPLACE INTO tb_kline_min1(exchange,code,date,time,open,high,low,close,volume,turnover,interest,diff_interest) VALUES";
@@ -1713,7 +1740,7 @@ uint32_t WtDataWriter::dump_hisdata_to_db(WTSContractInfo* ct)
 		MysqlQuery query(db);
 		if (!query.exec(sql))
 		{
-			_sink->outputWriterLog(LL_ERROR, "min1数据收盘作业失败: %s", query.errormsg());
+			_sink->outputWriterLog(LL_ERROR, "ClosingTask of min1 bar failed: %s", query.errormsg());
 		}
 		else
 		{
@@ -1731,7 +1758,8 @@ uint32_t WtDataWriter::dump_hisdata_to_db(WTSContractInfo* ct)
 	if (kBlkPair != NULL && kBlkPair->_block->_size > 0)
 	{
 		uint32_t size = kBlkPair->_block->_size;
-		_sink->outputWriterLog(LL_INFO, "开始转移%s的5分钟数据", ct->getFullCode());
+		//_sink->outputWriterLog(LL_INFO, "开始转移%s的5分钟数据", ct->getFullCode());
+		_sink->outputWriterLog(LL_INFO, "Transfering min5 bars of %s...", ct->getFullCode());
 		StdUniqueLock lock(kBlkPair->_mutex);
 
 		std::string sql = "REPLACE INTO tb_kline_min5(exchange,code,date,time,open,high,low,close,volume,turnover,interest,diff_interest) VALUES";
@@ -1747,7 +1775,8 @@ uint32_t WtDataWriter::dump_hisdata_to_db(WTSContractInfo* ct)
 		MysqlQuery query(db);
 		if (!query.exec(sql))
 		{
-			_sink->outputWriterLog(LL_ERROR, "min5数据收盘作业失败: %s", query.errormsg());
+			//_sink->outputWriterLog(LL_ERROR, "min5数据收盘作业失败: %s", query.errormsg());
+			_sink->outputWriterLog(LL_ERROR, "ClosingTask of min5 bar failed: %s", query.errormsg());
 		}
 		else
 		{
@@ -1834,7 +1863,8 @@ uint32_t WtDataWriter::dump_hisdata_to_file(WTSContractInfo* ct)
 					HisKlineBlock* kBlock = (HisKlineBlock*)content.data();
 					if (strcmp(kBlock->_blk_flag, BLK_FLAG) != 0)
 					{
-						_sink->outputWriterLog(LL_ERROR, "历史数据文件%s头部异常,将清除数据重建", filename.c_str());
+						//_sink->outputWriterLog(LL_ERROR, "历史数据文件%s头部异常,将清除数据重建", filename.c_str());
+						_sink->outputWriterLog(LL_ERROR, "File checking of history data file %s failed, clear and rebuild...", filename.c_str());
 						f.truncate_file(0);
 						BlockHeader header;
 						strcpy(header._blk_flag, BLK_FLAG);
@@ -1924,7 +1954,8 @@ uint32_t WtDataWriter::dump_hisdata_to_file(WTSContractInfo* ct)
 			}
 			else
 			{
-				_sink->outputWriterLog(LL_ERROR, "历史数据文件%s打开失败,day数据收盘作业失败", filename.c_str());
+				//_sink->outputWriterLog(LL_ERROR, "历史数据文件%s打开失败,day数据收盘作业失败", filename.c_str());
+				_sink->outputWriterLog(LL_ERROR, "ClosingTask of day bar failed: openning history data file %s failed", filename.c_str());
 			}
 		}
 	}
@@ -1936,7 +1967,8 @@ uint32_t WtDataWriter::dump_hisdata_to_file(WTSContractInfo* ct)
 		if (kBlkPair != NULL && kBlkPair->_block->_size > 0)
 		{
 			uint32_t size = kBlkPair->_block->_size;
-			_sink->outputWriterLog(LL_INFO, "开始转移%s的1分钟数据", ct->getFullCode());
+			//_sink->outputWriterLog(LL_INFO, "开始转移%s的1分钟数据", ct->getFullCode());
+			_sink->outputWriterLog(LL_INFO, "Transfering min1 bars of %s...", ct->getFullCode());
 			StdUniqueLock lock(kBlkPair->_mutex);
 
 			std::stringstream ss;
@@ -1950,7 +1982,7 @@ uint32_t WtDataWriter::dump_hisdata_to_file(WTSContractInfo* ct)
 			if (!BoostFile::exists(filename.c_str()))
 				bNew = true;
 
-			_sink->outputWriterLog(LL_INFO, "打开数据存储块: %s", filename.c_str());
+			_sink->outputWriterLog(LL_INFO, "Openning data storage faile: %s", filename.c_str());
 
 			BoostFile f;
 			if (f.create_or_open_file(filename.c_str()))
@@ -1995,7 +2027,8 @@ uint32_t WtDataWriter::dump_hisdata_to_file(WTSContractInfo* ct)
 			}
 			else
 			{
-				_sink->outputWriterLog(LL_ERROR, "历史数据文件%s打开失败,min1数据收盘作业失败", filename.c_str());
+				//_sink->outputWriterLog(LL_ERROR, "历史数据文件%s打开失败,min1数据收盘作业失败", filename.c_str());
+				_sink->outputWriterLog(LL_ERROR, "ClosingTask of min1 bar failed: openning history data file %s failed", filename.c_str());
 			}
 		}
 
@@ -2010,7 +2043,7 @@ uint32_t WtDataWriter::dump_hisdata_to_file(WTSContractInfo* ct)
 		if (kBlkPair != NULL && kBlkPair->_block->_size > 0)
 		{
 			uint32_t size = kBlkPair->_block->_size;
-			_sink->outputWriterLog(LL_INFO, "开始转移%s的5分钟数据", ct->getFullCode());
+			_sink->outputWriterLog(LL_INFO, "Transfering min5 bar of %s...", ct->getFullCode());
 			StdUniqueLock lock(kBlkPair->_mutex);
 
 			std::stringstream ss;
@@ -2024,7 +2057,7 @@ uint32_t WtDataWriter::dump_hisdata_to_file(WTSContractInfo* ct)
 			if (!BoostFile::exists(filename.c_str()))
 				bNew = true;
 
-			_sink->outputWriterLog(LL_INFO, "打开数据存储块: %s", filename.c_str());
+			_sink->outputWriterLog(LL_INFO, "Openning data storage file: %s", filename.c_str());
 
 			BoostFile f;
 			if (f.create_or_open_file(filename.c_str()))
@@ -2068,7 +2101,8 @@ uint32_t WtDataWriter::dump_hisdata_to_file(WTSContractInfo* ct)
 			}
 			else
 			{
-				_sink->outputWriterLog(LL_ERROR, "历史数据文件%s打开失败,min5数据收盘作业失败", filename.c_str());
+				//_sink->outputWriterLog(LL_ERROR, "历史数据文件%s打开失败,min5数据收盘作业失败", filename.c_str());
+				_sink->outputWriterLog(LL_ERROR, "ClosingTask of min5 bar failed: openning history data file %s failed", filename.c_str());
 			}
 		}
 
@@ -2143,7 +2177,7 @@ void WtDataWriter::proc_loop()
 				}
 				else
 				{
-					_sink->outputWriterLog(LL_WARN, "%s[%s]已过期,缓存即将清理", ay[1].c_str(), ay[0].c_str());
+					_sink->outputWriterLog(LL_WARN, "%s[%s] expired, cache will be cleared", ay[1].c_str(), ay[0].c_str());
 
 					//删除已经过期代码的实时tick文件
 					std::string path = StrUtil::printf("%srt/ticks/%s/%s.dmb", _base_dir.c_str(), ay[0].c_str(), ay[1].c_str());
@@ -2200,7 +2234,7 @@ void WtDataWriter::proc_loop()
 				_tick_cache_file->map(filename.c_str());
 				_tick_cache_block = (RTTickCache*)_tick_cache_file->addr();
 				
-				_sink->outputWriterLog(LL_INFO, "行情缓存清理成功,共清理%u条过期的缓存", diff);
+				_sink->outputWriterLog(LL_INFO, "%u expired cache cleared totally", diff);
 			}
 
 			//将当日的日线快照落地到一个快照文件
@@ -2224,7 +2258,8 @@ void WtDataWriter::proc_loop()
 			{
 				if(try_count >= 5)
 				{
-					_sink->outputWriterLog(LL_ERROR, "清理实时数据缓存文件重试多次没有完成，跳过该步骤");
+					//_sink->outputWriterLog(LL_ERROR, "清理实时数据缓存文件重试多次没有完成，跳过该步骤");
+					_sink->outputWriterLog(LL_ERROR, "Too many trys to clear rt cache files，skip");
 					break;
 				}
 
@@ -2247,7 +2282,8 @@ void WtDataWriter::proc_loop()
 				}
 				catch (...)
 				{
-					_sink->outputWriterLog(LL_ERROR, "清理实时数据缓存文件出现异常，300s后重试");
+					//_sink->outputWriterLog(LL_ERROR, "清理实时数据缓存文件出现异常，300s后重试");
+					_sink->outputWriterLog(LL_ERROR, "Error occured while clearing rt cache files，retry in 300s");
 					std::this_thread::sleep_for(std::chrono::seconds(300));
 					continue;
 				}
@@ -2266,7 +2302,7 @@ void WtDataWriter::proc_loop()
 			iniHelper.load(filename.c_str());
 			iniHelper.writeInt("markers", sid.c_str(), curDate);
 			iniHelper.save();
-			_sink->outputWriterLog(LL_INFO, "交易时间模板[%s]收盘作业标记已更新: %u", sid.c_str(), curDate);
+			_sink->outputWriterLog(LL_INFO, "ClosingTask mark of Trading session [%s] updated: %u", sid.c_str(), curDate);
 		}
 
 		auto pos = fullcode.find(".");
@@ -2285,7 +2321,7 @@ void WtDataWriter::proc_loop()
 			TickBlockPair *tBlkPair = getTickBlock(ct, uDate, false);
 			if (tBlkPair != NULL && tBlkPair->_block->_size > 0)
 			{
-				_sink->outputWriterLog(LL_INFO, "开始转移%s的tick数据", fullcode.c_str());
+				_sink->outputWriterLog(LL_INFO, "Transfering tick data of %s...", fullcode.c_str());
 				StdUniqueLock lock(tBlkPair->_mutex);
 
 				std::stringstream ss;
@@ -2299,7 +2335,7 @@ void WtDataWriter::proc_loop()
 				if (!BoostFile::exists(filename.c_str()))
 					bNew = true;
 
-				_sink->outputWriterLog(LL_INFO, "打开数据存储块: %s", filename.c_str());
+				_sink->outputWriterLog(LL_INFO, "Openning data storage file: %s", filename.c_str());
 				BoostFile f;
 				if (f.create_new_file(filename.c_str()))
 				{
@@ -2324,7 +2360,8 @@ void WtDataWriter::proc_loop()
 				}
 				else
 				{
-					_sink->outputWriterLog(LL_ERROR, "历史数据文件%s打开失败,tick数据收盘作业失败", filename.c_str());
+					//_sink->outputWriterLog(LL_ERROR, "历史数据文件%s打开失败,tick数据收盘作业失败", filename.c_str());
+					_sink->outputWriterLog(LL_ERROR, "ClosingTask of tick failed: openning history data file %s failed", filename.c_str());
 				}
 			}
 
@@ -2338,7 +2375,8 @@ void WtDataWriter::proc_loop()
 			TransBlockPair *tBlkPair = getTransBlock(ct, uDate, false);
 			if (tBlkPair != NULL && tBlkPair->_block->_size > 0)
 			{
-				_sink->outputWriterLog(LL_INFO, "开始转移%s的trans数据", fullcode.c_str());
+				//_sink->outputWriterLog(LL_INFO, "开始转移%s的trans数据", fullcode.c_str());
+				_sink->outputWriterLog(LL_INFO, "Transfering transaction data of %s...", fullcode.c_str());
 				StdUniqueLock lock(tBlkPair->_mutex);
 
 				std::stringstream ss;
@@ -2352,7 +2390,7 @@ void WtDataWriter::proc_loop()
 				if (!BoostFile::exists(filename.c_str()))
 					bNew = true;
 
-				_sink->outputWriterLog(LL_INFO, "打开数据存储块: %s", filename.c_str());
+				_sink->outputWriterLog(LL_INFO, "Openning data storage file: %s", filename.c_str());
 				BoostFile f;
 				if (f.create_new_file(filename.c_str()))
 				{
@@ -2377,7 +2415,8 @@ void WtDataWriter::proc_loop()
 				}
 				else
 				{
-					_sink->outputWriterLog(LL_ERROR, "历史数据文件%s打开失败,trans数据收盘作业失败", filename.c_str());
+					//_sink->outputWriterLog(LL_ERROR, "历史数据文件%s打开失败,trans数据收盘作业失败", filename.c_str());
+					_sink->outputWriterLog(LL_ERROR, "ClosingTask of transaction failed: openning history data file %s failed", filename.c_str());
 				}
 			}
 
@@ -2391,7 +2430,8 @@ void WtDataWriter::proc_loop()
 			OrdDtlBlockPair *tBlkPair = getOrdDtlBlock(ct, uDate, false);
 			if (tBlkPair != NULL && tBlkPair->_block->_size > 0)
 			{
-				_sink->outputWriterLog(LL_INFO, "开始转移%s的order数据", fullcode.c_str());
+				//_sink->outputWriterLog(LL_INFO, "开始转移%s的order数据", fullcode.c_str());
+				_sink->outputWriterLog(LL_INFO, "Transfering order detail data of %s...", fullcode.c_str());
 				StdUniqueLock lock(tBlkPair->_mutex);
 
 				std::stringstream ss;
@@ -2405,7 +2445,7 @@ void WtDataWriter::proc_loop()
 				if (!BoostFile::exists(filename.c_str()))
 					bNew = true;
 
-				_sink->outputWriterLog(LL_INFO, "打开数据存储块: %s", filename.c_str());
+				_sink->outputWriterLog(LL_INFO, "Openning data storage file: %s", filename.c_str());
 				BoostFile f;
 				if (f.create_new_file(filename.c_str()))
 				{
@@ -2430,7 +2470,8 @@ void WtDataWriter::proc_loop()
 				}
 				else
 				{
-					_sink->outputWriterLog(LL_ERROR, "历史数据文件%s打开失败,orders数据收盘作业失败", filename.c_str());
+					//_sink->outputWriterLog(LL_ERROR, "历史数据文件%s打开失败,orders数据收盘作业失败", filename.c_str());
+					_sink->outputWriterLog(LL_ERROR, "ClosingTask of order detail failed: openning history data file %s failed", filename.c_str());
 				}
 			}
 
@@ -2444,7 +2485,8 @@ void WtDataWriter::proc_loop()
 			OrdQueBlockPair *tBlkPair = getOrdQueBlock(ct, uDate, false);
 			if (tBlkPair != NULL && tBlkPair->_block->_size > 0)
 			{
-				_sink->outputWriterLog(LL_INFO, "开始转移%s的queue数据", fullcode.c_str());
+				//_sink->outputWriterLog(LL_INFO, "开始转移%s的queue数据", fullcode.c_str());
+				_sink->outputWriterLog(LL_INFO, "Transfering order queue data of %s...", fullcode.c_str());
 				StdUniqueLock lock(tBlkPair->_mutex);
 
 				std::stringstream ss;
@@ -2458,7 +2500,7 @@ void WtDataWriter::proc_loop()
 				if (!BoostFile::exists(filename.c_str()))
 					bNew = true;
 
-				_sink->outputWriterLog(LL_INFO, "打开数据存储块: %s", filename.c_str());
+				_sink->outputWriterLog(LL_INFO, "Openning data storage file: %s", filename.c_str());
 				BoostFile f;
 				if (f.create_new_file(filename.c_str()))
 				{
@@ -2483,7 +2525,8 @@ void WtDataWriter::proc_loop()
 				}
 				else
 				{
-					_sink->outputWriterLog(LL_ERROR, "历史数据文件%s打开失败,queue数据收盘作业失败", filename.c_str());
+					//_sink->outputWriterLog(LL_ERROR, "历史数据文件%s打开失败,queue数据收盘作业失败", filename.c_str());
+					_sink->outputWriterLog(LL_ERROR, "ClosingTask of order queue failed: openning history data file %s failed", filename.c_str());
 				}
 
 
@@ -2499,6 +2542,7 @@ void WtDataWriter::proc_loop()
 		else
 			count += dump_hisdata_to_file(ct);
 
-		_sink->outputWriterLog(LL_INFO, "%s[%s]已完成收盘, 本次作业共处理数据%u条", ct->getCode(), ct->getExchg(), count);
+		//_sink->outputWriterLog(LL_INFO, "%s[%s]已完成收盘, 本次作业共处理数据%u条", ct->getCode(), ct->getExchg(), count);
+		_sink->outputWriterLog(LL_INFO, "ClosingTask of %s[%s] done, %u datas processed totally", ct->getCode(), ct->getExchg(), count);
 	}
 }
