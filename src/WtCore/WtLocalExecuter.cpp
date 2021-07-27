@@ -54,7 +54,7 @@ bool WtLocalExecuter::init(WTSVariant* params)
 	if(poolsize > 0)
 	{
 		_pool.reset(new boost::threadpool::pool(poolsize));
-		writeLog("执行器线程池大小%u", poolsize);
+		writeLog("Executer thread poolsize %u", poolsize);
 	}
 
 	return true;
@@ -206,12 +206,12 @@ void WtLocalExecuter::on_position_changed(const char* stdCode, double targetPos)
 
 	if(!decimal::eq(oldVol, targetPos))
 	{
-		writeLog(fmt::format("{}目标仓位更新: {} -> {}", stdCode, oldVol, targetPos).c_str());
+		writeLog(fmt::format("Target position of {} changed: {} -> {}", stdCode, oldVol, targetPos).c_str());
 	}
 
 	if (_trader && !_trader->checkOrderLimits(stdCode))
 	{
-		writeLog("%s 已被禁止交易", stdCode);
+		writeLog("%s is disabled", stdCode);
 		return;
 	}
 
@@ -233,12 +233,12 @@ void WtLocalExecuter::set_position(const faster_hashmap<std::string, double>& ta
 		_target_pos[stdCode] = newVol;
 		if(!decimal::eq(oldVol, newVol))
 		{
-			writeLog(fmt::format("{}目标仓位更新: {} -> {}", stdCode, oldVol, newVol).c_str());
+			writeLog(fmt::format("Target position of {} changed: {} -> {}", stdCode, oldVol, newVol).c_str());
 		}
 
 		if (_trader && !_trader->checkOrderLimits(stdCode))
 		{
-			writeLog("%s 已被禁止交易", stdCode);
+			writeLog("%s is disabled", stdCode);
 			continue;
 		}
 
@@ -422,7 +422,8 @@ void WtLocalExecuter::on_position(const char* stdCode, bool isLong, double prevo
 		if (code == stdCode)
 		{
 			//上期主力合约,需要清理仓位
-			writeLog("%s 为上一期主力合约,仓位即将自动清理");
+			//writeLog("%s 为上一期主力合约,仓位即将自动清理");
+			writeLog("Position of %s, as prev hot contract, will be cleared");
 			ExecuteUnitPtr unit = getUnit(stdCode);
 			if (unit)
 			{

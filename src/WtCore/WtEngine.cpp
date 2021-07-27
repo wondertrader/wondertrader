@@ -208,7 +208,7 @@ void WtEngine::update_fund_dynprofit()
 void WtEngine::writeRiskLog(const char* fmt, ...)
 {
 	char szBuf[2048] = { 0 };
-	uint32_t length = sprintf(szBuf, "[×Ê½ð·ç¿Ø]");
+	uint32_t length = sprintf(szBuf, "[RiskControl]");
 	strcat(szBuf, fmt);
 	va_list args;
 	va_start(args, fmt);
@@ -734,7 +734,7 @@ double WtEngine::calc_fee(const char* stdCode, double price, double qty, uint32_
 	auto it = _fee_map.find(stdPID);
 	if (it == _fee_map.end())
 	{
-		WTSLogger::warn("No fee template of instrumnet %s founde, return 0.0 as default", stdCode);
+		WTSLogger::warn("Fee template of %s not found, return 0.0 as default", stdCode);
 		return 0.0;
 	}
 
