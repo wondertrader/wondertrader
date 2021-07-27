@@ -46,6 +46,8 @@ public:
 	void	notify(const char* trader, uint32_t localid, const char* stdCode, WTSOrderInfo* ordInfo);
 	void	notify(const char* trader, const char* message);
 
+	void	notifyLog(const char* message);
+
 private:
 	std::string		m_strURL;
 	uint32_t		_mq_sid;

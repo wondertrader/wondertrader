@@ -88,6 +88,12 @@ bool EventNotifier::init(WTSVariant* cfg)
 	return true;
 }
 
+void EventNotifier::notifyLog(const char* message)
+{
+	if (_publisher)
+		_publisher(_mq_sid, "LOG", message, strlen(message));
+}
+
 void EventNotifier::notify(const char* trader, const char* message)
 {
 	std::string data;
