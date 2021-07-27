@@ -1283,7 +1283,7 @@ bool WtDataReader::cacheHisBarsFromDB(const std::string& key, const char* stdCod
 		barsSections.clear();
 	}
 
-	if (_sink) _sink->reader_log(LL_INFO, "合约%s的历史%s数据已缓存%u条", stdCode, pname.c_str(), realCnt);
+	if (_sink) _sink->reader_log(LL_INFO, "%u items of back %s data of %s cached", realCnt, pname.c_str(), stdCode);
 	return true;
 }
 
@@ -1837,7 +1837,7 @@ bool WtDataReader::cacheHisBarsFromFile(const std::string& key, const char* stdC
 		barsSections.clear();
 	}
 
-	if (_sink) _sink->reader_log(LL_INFO, "合约%s的历史%s数据已缓存%u条", stdCode, pname.c_str(), realCnt);
+	if (_sink) _sink->reader_log(LL_INFO, "%u items of back %s data of %s cached", realCnt, pname.c_str(), stdCode);
 	return true;
 }
 
@@ -2032,12 +2032,12 @@ WTSKlineSlice* WtDataReader::readKlineSlice(const char* stdCode, WTSKlinePeriod 
 	if (cInfo.isHot() && cInfo._category == CC_Future)
 	{
 		_bars_cache[key]._raw_code = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, curTDate);
-		if (_sink) _sink->reader_log(LL_INFO, "主力合约映射确认: %s -> %s", stdCode, _bars_cache[key]._raw_code.c_str());
+		if (_sink) _sink->reader_log(LL_INFO, "Hot contract of %u confirmed: %s -> %s", curTDate, stdCode, _bars_cache[key]._raw_code.c_str());
 	}
 	else if (cInfo.isSecond() && cInfo._category == CC_Future)
 	{
 		_bars_cache[key]._raw_code = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, curTDate);
-		if (_sink) _sink->reader_log(LL_INFO, "次主力合约映射确认: %s -> %s", stdCode, _bars_cache[key]._raw_code.c_str());
+		if (_sink) _sink->reader_log(LL_INFO, "Second contract of %u confirmed: %s -> %s", curTDate, stdCode, _bars_cache[key]._raw_code.c_str());
 	}
 	else
 	{
