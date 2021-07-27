@@ -222,15 +222,20 @@ WTSArray* WtDataReader::readTickSlicesByRange(const char* stdCode, uint64_t stim
 	while(nowTDate < curTDate)
 	{
 		std::string curCode = cInfo._code;
+		std::string hotCode;
 		if (cInfo.isHot() && cInfo._category == CC_Future)
 		{
 			curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, nowTDate);
 			WTSLogger::info("Hot contract of %u confirmed: %s -> %s", curTDate, stdCode, curCode.c_str());
+			hotCode = cInfo._product;
+			hotCode += "_HOT";
 		}
 		else if (cInfo.isSecond() && cInfo._category == CC_Future)
 		{
 			curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, nowTDate);
 			WTSLogger::info("Second contract of %u confirmed: %s -> %s", curTDate, stdCode, curCode.c_str());
+			hotCode = cInfo._product;
+			hotCode += "_2ND";
 		}
 
 		std::string key = StrUtil::printf("%s-%d", stdCode, nowTDate);
@@ -241,11 +246,29 @@ WTSArray* WtDataReader::readTickSlicesByRange(const char* stdCode, uint64_t stim
 		{
 			for(;;)
 			{
-				std::stringstream ss;
-				ss << _base_dir << "his/ticks/" << cInfo._exchg << "/" << nowTDate << "/" << curCode << ".dsb";
-				std::string filename = ss.str();
-				if (!StdFile::exists(filename.c_str()))
-					break;
+				std::string filename;
+				bool bHitHot = false;
+				if (!hotCode.empty())
+				{
+					std::stringstream ss;
+					ss << _base_dir << "his/ticks/" << cInfo._exchg << "/" << nowTDate << "/" << hotCode << ".dsb";
+					filename = ss.str();
+					if (StdFile::exists(filename.c_str()))
+					{
+						bHitHot = true;
+					}
+				}
+
+				if (!bHitHot)
+				{
+					std::stringstream ss;
+					ss << _base_dir << "his/ticks/" << cInfo._exchg << "/" << nowTDate << "/" << curCode << ".dsb";
+					filename = ss.str();
+					if (!StdFile::exists(filename.c_str()))
+					{
+						break;
+					}
+				}
 
 				HisTBlockPair& tBlkPair = _his_tick_map[key];
 				StdFile::read_file_content(filename.c_str(), tBlkPair._buffer);
@@ -2210,14 +2233,19 @@ WTSArray* WtDataReader::readTickSlicesByCount(const char* stdCode, uint32_t coun
 			break;
 
 		std::string curCode = cInfo._code;
+		std::string hotCode;
 		if (cInfo.isHot() && cInfo._category == CC_Future)
 		{
 			curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, nowTDate);
+			hotCode = cInfo._product;
+			hotCode += "_HOT";
 			WTSLogger::info("Hot contract of %u confirmed: %s -> %s", curTDate, stdCode, curCode.c_str());
 		}
 		else if (cInfo.isSecond() && cInfo._category == CC_Future)
 		{
 			curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, nowTDate);
+			hotCode = cInfo._product;
+			hotCode += "_2ND";
 			WTSLogger::info("Second contract of %u confirmed: %s -> %s", curTDate, stdCode, curCode.c_str());
 		}
 
@@ -2229,13 +2257,29 @@ WTSArray* WtDataReader::readTickSlicesByCount(const char* stdCode, uint32_t coun
 		{
 			for (;;)
 			{
-				std::stringstream ss;
-				ss << _base_dir << "his/ticks/" << cInfo._exchg << "/" << nowTDate << "/" << curCode << ".dsb";
-				std::string filename = ss.str();
-				if (!StdFile::exists(filename.c_str()))
+				std::string filename;
+				bool bHitHot = false;
+				if(!hotCode.empty())
 				{
-					missingCnt++;
-					break;
+					std::stringstream ss;
+					ss << _base_dir << "his/ticks/" << cInfo._exchg << "/" << nowTDate << "/" << hotCode << ".dsb";
+					filename = ss.str();
+					if (StdFile::exists(filename.c_str()))
+					{
+						bHitHot = true;
+					}
+				}
+
+				if(!bHitHot)
+				{
+					std::stringstream ss;
+					ss << _base_dir << "his/ticks/" << cInfo._exchg << "/" << nowTDate << "/" << curCode << ".dsb";
+					filename = ss.str();
+					if (!StdFile::exists(filename.c_str()))
+					{
+						missingCnt++;
+						break;
+					}
 				}
 
 				missingCnt = 0;
