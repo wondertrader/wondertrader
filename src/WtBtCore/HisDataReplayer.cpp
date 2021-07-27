@@ -3199,7 +3199,6 @@ bool HisDataReplayer::cacheRawBarsFromDB(const std::string& key, const char* std
 		barsSections.clear();
 	}
 
-	//WTSLogger::info("合约%s的历史%s数据已缓存%u条", stdCode, pname.c_str(), realCnt);
 	WTSLogger::info("%u items of back %s data of contract %s cached", realCnt, pname.c_str(), stdCode);
 	return true;
 }
@@ -3767,7 +3766,6 @@ bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* st
 		barsSections.clear();
 	}
 
-	//WTSLogger::info("%s的历史%s数据已缓存%u条", stdCode, pname.c_str(), realCnt);
 	WTSLogger::info("%u items of back %s data of %s cached", realCnt, pname.c_str(), stdCode);
 	return true;
 }
