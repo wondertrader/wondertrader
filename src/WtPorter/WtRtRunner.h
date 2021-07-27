@@ -12,6 +12,8 @@
 
 #include "PorterDefs.h"
 
+#include "../Includes/ILogHandler.h"
+
 #include "../WtCore/EventNotifier.h"
 #include "../WtCore/CtaStrategyMgr.h"
 #include "../WtCore/HftStrategyMgr.h"
@@ -43,7 +45,7 @@ typedef enum tagEngineType
 	ET_SEL			//选股引擎
 } EngineType;
 
-class WtRtRunner : public IEngineEvtListener
+class WtRtRunner : public IEngineEvtListener, public ILogHandler
 {
 public:
 	WtRtRunner();
@@ -84,6 +86,11 @@ public:
 	SelContextPtr	getSelContext(uint32_t id);
 	HftContextPtr	getHftContext(uint32_t id);
 	WtEngine*		getEngine(){ return _engine; }
+
+//////////////////////////////////////////////////////////////////////////
+//ILogHandler
+public:
+	virtual void handleLogAppend(WTSLogLevel ll, const char* msg) override;
 
 //////////////////////////////////////////////////////////////////////////
 //扩展Parser
