@@ -141,19 +141,26 @@ void MQClient::start()
 
 void MQClient::extract_buffer()
 {
-	MQPacket* packet = (MQPacket*)_buffer.data();
+	uint32_t proc_len = 0;
+	for(;;)
+	{
+		MQPacket* packet = (MQPacket*)(_buffer.data() + proc_len);
 
-	//先做长度检查
-	if (_buffer.length() < sizeof(MQPacket))
-		return;
+		//先做长度检查
+		if (_buffer.length() < sizeof(MQPacket))
+			break;
 
-	if (_buffer.length() < sizeof(MQPacket)+packet->_length)
-		return;
+		if (_buffer.length() < sizeof(MQPacket) + packet->_length)
+			break;
 
-	char* data = packet->_data;
+		char* data = packet->_data;
 
+		if (is_allowed(packet->_topic))
+			_cb_message(_id, packet->_topic, packet->_data, packet->_length);
 
-	if(is_allowed(packet->_topic))
-		_cb_message(_id, packet->_topic, packet->_data, packet->_length);
-	_buffer.erase(0, sizeof(MQPacket) + packet->_length);
+		proc_len += sizeof(MQPacket) + packet->_length;
+	}
+
+	if(proc_len > 0)
+		_buffer.erase(0, proc_len);
 }
