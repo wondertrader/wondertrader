@@ -21,10 +21,11 @@ USING_NS_OTP;
 
 void WtFilterMgr::load_filters(const char* fileName)
 {
-	if (_filter_file.empty() && strlen(fileName) == 0)
+	if (_filter_file.empty() && (strlen(fileName) == 0))
 		return;
 
-	_filter_file = fileName;
+	if(strlen(fileName) > 0)
+		_filter_file = fileName;
 
 	if (!StdFile::exists(_filter_file.c_str()))
 	{
