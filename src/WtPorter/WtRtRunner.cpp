@@ -417,7 +417,7 @@ bool WtRtRunner::config(const char* cfgFile, bool isFile /* = true */)
 			const char* filename = cfgParser->asCString();
 			if (StdFile::exists(filename))
 			{
-				WTSLogger::info("Reading parser configuration from %s¡­¡­", cfgParser);
+				WTSLogger::info("Reading parser configuration from %s¡­¡­", filename);
 				std::string json;
 				StdFile::read_file_content(filename, json);
 
@@ -733,7 +733,9 @@ bool WtRtRunner::initExecuters(WTSVariant* cfgExecuter)
 			continue;
 
 		const char* id = cfgItem->getCString("id");
-		bool bLocal = cfgItem->getBoolean("local");
+		bool bLocal = true;
+		if(cfgItem->has("local"))
+			bLocal = cfgItem->getBoolean("local");
 
 		if(bLocal)
 		{
