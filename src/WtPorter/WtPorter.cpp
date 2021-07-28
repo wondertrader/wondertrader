@@ -313,7 +313,7 @@ WtUInt32 cta_get_bars(CtxHandler cHandle, const char* stdCode, const char* perio
 	}
 }
 
-WtUInt32	cta_get_ticks(CtxHandler cHandle, const char* stdCode, WtUInt32 tickCnt, bool isMain, FuncGetTicksCallback cb)
+WtUInt32	cta_get_ticks(CtxHandler cHandle, const char* stdCode, WtUInt32 tickCnt, FuncGetTicksCallback cb)
 {
 	CtaContextPtr ctx = getRunner().getCtaContext(cHandle);
 	if (ctx == NULL)
@@ -652,7 +652,7 @@ void sel_set_position(CtxHandler cHandle, const char* stdCode, double qty, const
 	ctx->stra_set_position(stdCode, qty, userTag);
 }
 
-WtUInt32	sel_get_ticks(CtxHandler cHandle, const char* stdCode, WtUInt32 tickCnt, bool isMain, FuncGetTicksCallback cb)
+WtUInt32	sel_get_ticks(CtxHandler cHandle, const char* stdCode, WtUInt32 tickCnt, FuncGetTicksCallback cb)
 {
 	SelContextPtr ctx = getRunner().getSelContext(cHandle);
 	if (ctx == NULL)

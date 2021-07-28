@@ -290,7 +290,7 @@ WtUInt32 cta_get_bars(CtxHandler cHandle, const char* stdCode, const char* perio
 	}
 }
 
-WtUInt32	cta_get_ticks(CtxHandler cHandle, const char* stdCode, WtUInt32 tickCnt, bool isMain, FuncGetTicksCallback cb)
+WtUInt32	cta_get_ticks(CtxHandler cHandle, const char* stdCode, WtUInt32 tickCnt, FuncGetTicksCallback cb)
 {
 	CtaMocker* ctx = getRunner().cta_mocker();
 	if (ctx == NULL)
@@ -620,7 +620,7 @@ void sel_set_position(CtxHandler cHandle, const char* stdCode, double qty, const
 	ctx->stra_set_position(stdCode, qty, userTag);
 }
 
-WtUInt32	sel_get_ticks(CtxHandler cHandle, const char* stdCode, WtUInt32 tickCnt, bool isMain, FuncGetTicksCallback cb)
+WtUInt32	sel_get_ticks(CtxHandler cHandle, const char* stdCode, WtUInt32 tickCnt, FuncGetTicksCallback cb)
 {
 	SelMocker* ctx = getRunner().sel_mocker();
 	if (ctx == NULL)

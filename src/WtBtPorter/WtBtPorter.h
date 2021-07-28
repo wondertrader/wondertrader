@@ -83,7 +83,7 @@ extern "C"
 
 	EXPORT_FLAG	WtUInt32	cta_get_bars(CtxHandler cHandle, const char* stdCode, const char* period, WtUInt32 barCnt, bool isMain, FuncGetBarsCallback cb);
 
-	EXPORT_FLAG	WtUInt32	cta_get_ticks(CtxHandler cHandle, const char* stdCode, WtUInt32 tickCnt, bool isMain, FuncGetTicksCallback cb);
+	EXPORT_FLAG	WtUInt32	cta_get_ticks(CtxHandler cHandle, const char* stdCode, WtUInt32 tickCnt, FuncGetTicksCallback cb);
 
 	EXPORT_FLAG void		cta_get_all_position(CtxHandler cHandle, FuncGetPositionCallback cb);
 
@@ -119,7 +119,7 @@ extern "C"
 
 	EXPORT_FLAG	WtUInt32	sel_get_bars(CtxHandler cHandle, const char* stdCode, const char* period, WtUInt32 barCnt,FuncGetBarsCallback cb);
 
-	EXPORT_FLAG	WtUInt32	sel_get_ticks(CtxHandler cHandle, const char* stdCode, WtUInt32 tickCnt, bool isMain, FuncGetTicksCallback cb);
+	EXPORT_FLAG	WtUInt32	sel_get_ticks(CtxHandler cHandle, const char* stdCode, WtUInt32 tickCnt,FuncGetTicksCallback cb);
 
 	EXPORT_FLAG void		sel_get_all_position(CtxHandler cHandle, FuncGetPositionCallback cb);
 
