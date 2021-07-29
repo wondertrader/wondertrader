@@ -1530,7 +1530,7 @@ bool WtDataWriter::updateCache(WTSContractInfo* ct, WTSTickData* curTick, bool b
 		}
 
 		//时间戳相同,但是成交量大于等于原来的,这种情况一般是郑商所,这里的处理方式就是时间戳+500毫秒
-		if(newTick.action_date == item._tick.action_date && newTick.action_time == item._tick.action_time && newTick.total_volume >= item._tick.volume)
+		if(newTick.action_date == item._tick.action_date && newTick.action_time == item._tick.action_time && newTick.total_volume >= item._tick.total_volume)
 		{
 			newTick.action_time += 500;
 		}

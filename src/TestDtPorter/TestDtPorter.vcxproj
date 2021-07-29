@@ -49,7 +49,7 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -80,6 +80,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\WtDtPorter\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -142,14 +143,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="testDtServo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\WtDtHelper\WtDtHelper.vcxproj">
       <Project>{cd6de209-c68e-43fa-8c55-a92a346d020a}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\WtDtServo\WtDtServo.vcxproj">
-      <Project>{472d8dbc-185f-40c1-8f80-56bfb4195ea1}</Project>
+    <ProjectReference Include="..\WtDtPorter\WtDtPorter.vcxproj">
+      <Project>{ced17d95-54e5-4571-b2c3-727b4f0104f6}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

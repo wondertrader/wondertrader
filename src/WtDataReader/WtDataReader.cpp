@@ -2330,7 +2330,7 @@ void WtDataReader::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTDate
 		if (barsList._period != KP_DAY)
 		{
 			//如果历史数据指标不在尾部, 说明是回测模式, 要继续回放历史数据
-			if (barsList._bars.size() - 1 > barsList._his_cursor)
+			if (barsList._bars.size() > barsList._his_cursor + 1)
 			{
 				for (;;)
 				{
