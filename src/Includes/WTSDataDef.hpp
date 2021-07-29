@@ -315,7 +315,7 @@ public:
 		double minValue = at(begin)->low;
 		for (int32_t i = begin; i <= end; i++)
 		{
-			minValue = max(minValue, at(i)->low);
+			minValue = min(minValue, at(i)->low);
 		}
 
 		return minValue;
