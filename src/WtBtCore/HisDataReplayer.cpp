@@ -1716,6 +1716,9 @@ WTSKlineSlice* HisDataReplayer::get_kline_slice(const char* stdCode, const char*
 
 WTSTickSlice* HisDataReplayer::get_tick_slice(const char* stdCode, uint32_t count, uint64_t etime)
 {
+	if (!_tick_enabled)
+		return NULL;
+
 	if (!checkTicks(stdCode, _cur_tdate))
 		return NULL;
 
@@ -1745,11 +1748,35 @@ WTSTickSlice* HisDataReplayer::get_tick_slice(const char* stdCode, uint32_t coun
 				return a.action_time < b.action_time;
 		});
 
-		uint32_t idx = tit - tickList._items.begin();
-		tickList._cursor = idx + 1;
-	}
+		if(tit == tickList._items.end())
+		{
+			tickList._cursor = tickList._items.size();
+		}
+		else
+		{
+			
+			uint32_t idx = tit - tickList._items.begin();
+			const WTSTickStruct& thisTick = *tit;
+			if (thisTick.action_date > uDate || (thisTick.action_date == uDate && thisTick.action_time > uTime))
+			{
+				if(idx > 0)
+				{
+					tit--;
+					idx--;
+				}
+				else
+				{
+					return NULL;
+				}
+			}
 
-	uint32_t eIdx = tickList._cursor - 1;
+			tickList._cursor = idx + 1;
+		}
+	}
+	
+	//cursor是下一笔tick的index+1，大于当前截止时间的
+	//所以要获取当前截止时间之前的最后一笔tick，需要-2
+	uint32_t eIdx = tickList._cursor - 2;
 	uint32_t sIdx = 0;
 	if (eIdx >= count - 1)
 		sIdx = eIdx + 1 - count;
