@@ -350,41 +350,6 @@ void WtDataWriter::loadCache()
 	}
 }
 
-/*
-void* DataManager::resizeKBlock(BoostMFPtr& mfPtr, uint32_t nCount)
-{
-	if (mfPtr == NULL)
-		return NULL;
-
-	RTKlineBlock* kBlock = (RTKlineBlock*)mfPtr->addr();
-	if (kBlock->_capacity >= nCount)
-		return mfPtr->addr();
-
-	const char* filename = mfPtr->filename();
-	uint64_t uSize = sizeof(RTKlineBlock) + sizeof(WTSBarStruct)*nCount;
-	std::filebuf fbuf;
-	fbuf.open(filename, std::ios_base::in | std::ios_base::out | std::ios_base::binary);
-	//这里没大搞明白
-	fbuf.pubseekoff(uSize - 1, std::ios_base::beg);
-	fbuf.sputc(0);
-	fbuf.close();
-
-	BoostMappingFile* pNewMf = new BoostMappingFile();
-	if (!pNewMf->map(filename))
-	{
-		delete pNewMf;
-		return NULL;
-	}
-
-	mfPtr.reset(pNewMf);
-
-	kBlock = (RTKlineBlock*)mfPtr->addr();
-	kBlock->_capacity = nCount;
-
-	return mfPtr->addr();
-}
-*/
-
 template<typename HeaderType, typename T>
 void* WtDataWriter::resizeRTBlock(BoostMFPtr& mfPtr, uint32_t nCount)
 {
@@ -397,19 +362,21 @@ void* WtDataWriter::resizeRTBlock(BoostMFPtr& mfPtr, uint32_t nCount)
 		return mfPtr->addr();
 
 	const char* filename = mfPtr->filename();
-	uint64_t uSize = sizeof(HeaderType) + sizeof(T)*nCount;
+	uint64_t uOldSize = sizeof(HeaderType) + sizeof(T)*tBlock->_capacity;
+	uint64_t uNewSize = sizeof(HeaderType) + sizeof(T)*nCount;
+	std::string data;
+	data.resize(uNewSize - uOldSize, 0);
 	try
 	{
-		std::filebuf fbuf;
-		fbuf.open(filename, std::ios_base::in | std::ios_base::out | std::ios_base::binary);
-		//这里没大搞明白
-		fbuf.pubseekoff(uSize - 1, std::ios_base::beg);
-		fbuf.sputc(0);
-		fbuf.close();
+		BoostFile f;
+		f.open_existing_file(filename);
+		f.seek_to_end();
+		f.write_file(data.c_str(), data.size());
+		f.close_file();
 	}
 	catch(std::exception& ex)
 	{
-		_sink->outputWriterLog(LL_ERROR, "Exception occured while expanding RT cache file of %s[%u]: %s", filename, uSize, ex.what());
+		_sink->outputWriterLog(LL_ERROR, "Exception occured while expanding RT cache file of %s[%u]: %s", filename, uNewSize, ex.what());
 		return mfPtr->addr();
 	}
 
@@ -426,40 +393,6 @@ void* WtDataWriter::resizeRTBlock(BoostMFPtr& mfPtr, uint32_t nCount)
 	tBlock->_capacity = nCount;
 	return mfPtr->addr();
 }
-
-/*
-void* DataManager::resizeTCache(BoostMFPtr& mfPtr, uint32_t nCount)
-{
-	if (mfPtr == NULL)
-		return NULL;
-
-	RTTickCache* tCache = (RTTickCache*)mfPtr->addr();
-	if (tCache->_capacity >= nCount)
-		return mfPtr->addr();
-
-	const char* filename = mfPtr->filename();
-	uint64_t uSize = sizeof(RTTickCache) + sizeof(TickCacheItem)*nCount;
-	std::filebuf fbuf;
-	fbuf.open(filename, std::ios_base::in | std::ios_base::out | std::ios_base::binary);
-	//这里没大搞明白
-	fbuf.pubseekoff(uSize - 1, std::ios_base::beg);
-	fbuf.sputc(0);
-	fbuf.close();
-
-	BoostMappingFile* pNewMf = new BoostMappingFile();
-	if (!pNewMf->map(filename))
-	{
-		delete pNewMf;
-		return NULL;
-	}
-
-	mfPtr.reset(pNewMf);
-
-	tCache = (RTTickCache*)mfPtr->addr();
-	tCache->_capacity = nCount;
-	return mfPtr->addr();
-}
-*/
 
 bool WtDataWriter::writeTick(WTSTickData* curTick, bool bNeedSlice /* = true */)
 {
@@ -1374,17 +1307,6 @@ WtDataWriter::KBlockPair* WtDataWriter::getKlineBlock(WTSContractInfo* ct, WTSKl
 			_sink->outputWriterLog(LL_INFO, "Data file %s not exists, initializing...", path.c_str());
 
 			uint64_t uSize = sizeof(RTKlineBlock) + sizeof(WTSBarStruct) * KLINE_SIZE_STEP;
-			/*
-			std::filebuf fbuf;
-			fbuf.open(path, std::ios_base::in | std::ios_base::out
-				| std::ios_base::trunc | std::ios_base::binary);
-
-			//定位到倒数第二个字符,然后写入一个0,这样文件大小就固定为指定大小了
-			fbuf.pubseekoff(uSize - 1, std::ios_base::beg);
-			fbuf.sputc(0);
-			fbuf.close();
-			*/
-
 			BoostFile bf;
 			bf.create_new_file(path.c_str());
 			bf.truncate_file((uint32_t)uSize);
@@ -1468,7 +1390,7 @@ bool WtDataWriter::updateCache(WTSContractInfo* ct, WTSTickData* curTick, bool b
 		if(_tick_cache_block->_size >= _tick_cache_block->_capacity)
 		{
 			_tick_cache_block = (RTTickCache*)resizeRTBlock<RTTickCache, TickCacheItem>(_tick_cache_file, _tick_cache_block->_capacity + CACHE_SIZE_STEP);
-			_sink->outputWriterLog(LL_INFO, "Cache %s resized to %u bytes", key.c_str(), _tick_cache_block->_capacity);
+			_sink->outputWriterLog(LL_INFO, "Tick Cache resized to %u items", _tick_cache_block->_capacity);
 		}
 	}
 	else
