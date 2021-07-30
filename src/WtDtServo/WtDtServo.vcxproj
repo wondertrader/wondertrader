@@ -181,6 +181,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\Common\mdump.h" />
     <ClInclude Include="PorterDefs.h" />
     <ClInclude Include="WtDataManager.h" />
     <ClInclude Include="WtDataReader.h" />
@@ -189,6 +190,7 @@
     <ClInclude Include="WtHelper.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Common\mdump.cpp" />
     <ClCompile Include="WtDataManager.cpp" />
     <ClCompile Include="WtDataReader.cpp" />
     <ClCompile Include="WtDtServo.cpp" />

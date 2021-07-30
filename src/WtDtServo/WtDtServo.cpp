@@ -20,6 +20,7 @@
 #include <boost/filesystem.hpp>
 
 #ifdef _WIN32
+#include "../Common/mdump.h"
 #ifdef _WIN64
 char PLATFORM_NAME[] = "X64";
 #else
@@ -115,6 +116,9 @@ WtDtRunner& getRunner()
 
 void initialize(WtString cfgFile, bool isFile)
 {
+#ifdef _WIN32
+	CMiniDumper::Enable(getModuleName(), true, WtHelper::get_cwd());
+#endif
 	getRunner().initialize(cfgFile, isFile, getBinDir());
 }
 
