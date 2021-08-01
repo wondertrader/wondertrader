@@ -18,6 +18,7 @@
 #include <stdio.h>
 #endif
 
+std::string WtHelper::_inst_dir;
 
 std::string WtHelper::getCWD()
 {

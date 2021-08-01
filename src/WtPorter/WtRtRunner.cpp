@@ -820,9 +820,19 @@ void WtRtRunner::run(bool bAsync /* = false */)
 	}
 }
 
+const char* LOG_TAGS[] = {
+	"ALL",
+	"DEBUG",
+	"INFO",
+	"WARN",
+	"ERROR",
+	"FATAL",
+	"NONE",
+};
+
 void WtRtRunner::handleLogAppend(WTSLogLevel ll, const char* msg)
 {
-	_notifier.notifyLog(msg);
+	_notifier.notifyLog(LOG_TAGS[ll-100], msg);
 }
 
 void WtRtRunner::release()

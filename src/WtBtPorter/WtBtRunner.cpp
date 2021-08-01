@@ -15,6 +15,7 @@
 #include <iomanip>
 
 #include "../WtBtCore/ExecMocker.h"
+#include "../WtBtCore/WtHelper.h"
 
 #include "../Includes/WTSDataDef.hpp"
 
@@ -67,6 +68,7 @@ WtBtRunner::WtBtRunner()
 
 	, _cb_hft_sessevt(NULL)
 	, _inited(false)
+	, _terminated(false)
 {
 	install_signal_hooks([](const char* message) {
 		WTSLogger::error(message);
@@ -264,9 +266,13 @@ void WtBtRunner::hft_on_trade(uint32_t cHandle, WtUInt32 localid, const char* st
 		_cb_hft_trd(cHandle, localid, stdCode, isBuy, vol, price, userTag);
 }
 
+extern std::string getBinDir();
+
 void WtBtRunner::init(const char* logProfile /* = "" */, bool isFile /* = true */)
 {
-	WTSLogger::init(logProfile, isFile);
+	WTSLogger::init(logProfile, isFile, this);
+
+	WtHelper::setInstDir(getBinDir().c_str());
 }
 
 void WtBtRunner::config(const char* cfgFile, bool isFile /* = true */)
@@ -298,6 +304,9 @@ void WtBtRunner::config(const char* cfgFile, bool isFile /* = true */)
 	jsonToVariant(root, cfg);
 
 	_replayer.init(cfg->get("replayer"));
+
+	//初始化事件推送器
+	initEvtNotifier(cfg->get("notifier"));
 
 	WTSVariant* cfgEnv = cfg->get("env");
 	const char* mode = cfgEnv->getCString("mocker");
@@ -349,6 +358,7 @@ void WtBtRunner::run()
 
 void WtBtRunner::release()
 {
+	_terminated = true;
 	WTSLogger::stop();
 }
 
@@ -360,4 +370,32 @@ void WtBtRunner::set_time_range(WtUInt64 stime, WtUInt64 etime)
 void WtBtRunner::enable_tick(bool bEnabled /* = true */)
 {
 	_replayer.enable_tick(bEnabled);
+}
+
+const char* LOG_TAGS[] = {
+	"ALL",
+	"DEBUG",
+	"INFO",
+	"WARN",
+	"ERROR",
+	"FATAL",
+	"NONE",
+};
+
+void WtBtRunner::handleLogAppend(WTSLogLevel ll, const char* msg)
+{
+	if (_terminated)
+		return;
+
+	_notifier.notifyLog(LOG_TAGS[ll - 100], msg);
+}
+
+bool WtBtRunner::initEvtNotifier(WTSVariant* cfg)
+{
+	if (cfg == NULL || cfg->type() != WTSVariant::VT_Object)
+		return false;
+
+	_notifier.init(cfg);
+
+	return true;
 }

@@ -36,6 +36,9 @@
     <ClCompile Include="MatchEngine.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="EventNotifier.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CtaMocker.h">
@@ -57,6 +60,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="MatchEngine.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="EventNotifier.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

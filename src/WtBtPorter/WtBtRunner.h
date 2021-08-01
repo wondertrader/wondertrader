@@ -9,13 +9,16 @@
  */
 #pragma once
 #include "PorterDefs.h"
+#include "../WtBtCore/EventNotifier.h"
 #include "../WtBtCore/HisDataReplayer.h"
 #include "../Includes/WTSMarcos.h"
+#include "../Includes/ILogHandler.h"
 
 
 NS_OTP_BEGIN
 class WTSTickData;
 struct WTSBarStruct;
+class WTSVariant;
 NS_OTP_END
 
 USING_NS_OTP;
@@ -32,7 +35,7 @@ class CtaMocker;
 class HftMocker;
 class ExecMocker;
 
-class WtBtRunner
+class WtBtRunner : public ILogHandler
 {
 public:
 	WtBtRunner();
@@ -53,6 +56,8 @@ public:
 	uint32_t	initCtaMocker(const char* name, int32_t slippage = 0);
 	uint32_t	initHftMocker(const char* name);
 	uint32_t	initSelMocker(const char* name, uint32_t date, uint32_t time, const char* period, const char* trdtpl = "CHINA", const char* session = "TRADING", int32_t slippage = 0);
+
+	bool	initEvtNotifier(WTSVariant* cfg);
 
 	void	ctx_on_init(uint32_t id, EngineType eType);
 	void	ctx_on_session_event(uint32_t id, uint32_t curTDate, bool isBegin = true, EngineType eType = ET_CTA);
@@ -104,6 +109,11 @@ public:
 		}
 	}
 
+//////////////////////////////////////////////////////////////////////////
+//ILogHandler
+public:
+	virtual void handleLogAppend(WTSLogLevel ll, const char* msg) override;
+
 private:
 	FuncStraInitCallback	_cb_cta_init;
 	FuncSessionEvtCallback	_cb_cta_sessevt;
@@ -138,7 +148,9 @@ private:
 	ExecMocker*		_exec_mocker;
 	HftMocker*		_hft_mocker;
 	HisDataReplayer	_replayer;
+	EventNotifier	_notifier;
 
 	bool			_inited;
+	bool			_terminated;
 };
 

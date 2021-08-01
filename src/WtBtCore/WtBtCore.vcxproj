@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CtaMocker.cpp" />
+    <ClCompile Include="EventNotifier.cpp" />
     <ClCompile Include="ExecMocker.cpp" />
     <ClCompile Include="HftMocker.cpp" />
     <ClCompile Include="HisDataReplayer.cpp" />
@@ -29,6 +30,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CtaMocker.h" />
+    <ClInclude Include="EventNotifier.h" />
     <ClInclude Include="ExecMocker.h" />
     <ClInclude Include="HftMocker.h" />
     <ClInclude Include="HisDataReplayer.h" />
