@@ -1400,9 +1400,6 @@ void TraderAdapter::onLoginResult(bool bSucc, const char* msg, uint32_t tradingd
 		_state = AS_LOGINED;
 		WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO,"[%s] Trader login succeed, trading date: %u", _id.c_str(), tradingdate);
 
-		if (_notifier)
-			_notifier->notify(id(), "logined");
-
 		_trader_api->queryPositions();	//²é³Ö²Ö
 	}
 }

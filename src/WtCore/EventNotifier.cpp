@@ -11,12 +11,15 @@
 #include "WtHelper.h"
 
 #include "../Share/StrUtil.hpp"
+#include "../Share/TimeUtils.hpp"
+#include "../Share/DLLHelper.hpp"
+
 #include "../Includes/WTSTradeDef.hpp"
 #include "../Includes/WTSCollection.hpp"
 #include "../Includes/WTSContractInfo.hpp"
 #include "../Includes/WTSVariant.hpp"
 
-#include "../Share/DLLHelper.hpp"
+
 #include "../WTSTools/WTSBaseDataMgr.h"
 #include "../WTSTools/WTSLogger.h"
 
@@ -88,10 +91,26 @@ bool EventNotifier::init(WTSVariant* cfg)
 	return true;
 }
 
-void EventNotifier::notifyLog(const char* message)
+void EventNotifier::notifyLog(const char* tag, const char* message)
 {
+	std::string data;
+	{
+		rj::Document root(rj::kObjectType);
+		rj::Document::AllocatorType &allocator = root.GetAllocator();
+
+		root.AddMember("tag", rj::Value(tag, allocator), allocator);
+		root.AddMember("time", TimeUtils::getLocalTimeNow(), allocator);
+		root.AddMember("message", rj::Value(message, allocator), allocator);
+
+		rj::StringBuffer sb;
+		rj::PrettyWriter<rj::StringBuffer> writer(sb);
+		root.Accept(writer);
+
+		data = sb.GetString();
+	}
+
 	if (_publisher)
-		_publisher(_mq_sid, "LOG", message, strlen(message));
+		_publisher(_mq_sid, "LOG", data.c_str(), data.size());
 }
 
 void EventNotifier::notify(const char* trader, const char* message)
