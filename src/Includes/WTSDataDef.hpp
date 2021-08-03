@@ -255,6 +255,26 @@ public:
 		return pRet;
 	}
 
+	inline WTSBarStruct*	get_his_addr()
+	{
+		return m_bsHisBegin;
+	}
+
+	inline int32_t	get_his_count()
+	{
+		return m_iHisCnt;
+	}
+
+	inline WTSBarStruct*	get_rt_addr()
+	{
+		return m_bsRtBegin;
+	}
+
+	inline int32_t	get_rt_count()
+	{
+		return m_iRtCnt;
+	}
+
 	inline WTSBarStruct*	at(int32_t idx)
 	{
 		idx = translateIdx(idx);
