@@ -23,6 +23,7 @@ void on_init(CtxHandler ctxid)
 {
 	cta_get_bars(ctxid, "CFFEX.IF.HOT", "m5", 30, true, on_getbar);
 	cta_get_ticks(ctxid, "CFFEX.IF.HOT", 100, on_gettick);
+	cta_log_text(ctxid, "this is a test message");
 }
 
 void on_tick(CtxHandler ctxid, const char* stdCode, WTSTickStruct* newTick)

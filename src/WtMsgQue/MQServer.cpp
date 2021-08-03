@@ -35,8 +35,9 @@ inline uint32_t makeMQSvrId()
 
 MQServer::MQServer(MQManager* mgr)
 	: _sock(-1)
-	, m_bReady(false)
+	, _ready(false)
 	, _mgr(mgr)
+	, _confirm(false)
 	, m_bTerminated(false)
 {
 	_id = makeMQSvrId();
@@ -44,7 +45,7 @@ MQServer::MQServer(MQManager* mgr)
 
 MQServer::~MQServer()
 {
-	if (!m_bReady)
+	if (!_ready)
 		return;
 
 	m_bTerminated = true;
@@ -56,10 +57,12 @@ MQServer::~MQServer()
 		nn_close(_sock);
 }
 
-bool MQServer::init(const char* url)
+bool MQServer::init(const char* url, bool confirm /* = false */)
 {
 	if (_sock >= 0)
 		return true;
+
+	_confirm = confirm;
 
 	_sock = nn_socket(AF_SP, NN_PUB);
 	if(_sock < 0)
@@ -68,7 +71,10 @@ bool MQServer::init(const char* url)
 		return false;
 	}
 
-	m_strURL = url;
+	int bufsize = 8 * 1024 * 1024;
+	nn_setsockopt(_sock, NN_SOL_SOCKET, NN_SNDBUF, &bufsize, sizeof(bufsize));
+
+	_url = url;
 	if(nn_bind(_sock, url) < 0)
 	{
 		_mgr->log_server(_id, fmt::format("MQServer {} has an error while binding url {}", _id, url).c_str());
@@ -79,7 +85,7 @@ bool MQServer::init(const char* url)
 		_mgr->log_server(_id, fmt::format("MQServer {} has binded to {} ", _id, url).c_str());
 	}
 
-	m_bReady = true;
+	_ready = true;
 
 	_mgr->log_server(_id, fmt::format("MQServer {} ready", _id).c_str());
 	return true;
@@ -107,7 +113,8 @@ void MQServer::publish(const char* topic, const void* data, uint32_t dataLen)
 
 			while (!m_bTerminated)
 			{
-				if(m_dataQue.empty())
+				int cnt = (int)nn_get_statistic(_sock, NN_STAT_CURRENT_CONNECTIONS);
+				if(m_dataQue.empty() || (cnt == 0 && _confirm))
 				{
 					StdUniqueLock lock(m_mtxCast);
 					m_condCast.wait(lock);
@@ -126,13 +133,27 @@ void MQServer::publish(const char* topic, const void* data, uint32_t dataLen)
 
 					if (!pubData._data.empty())
 					{
-						std::string buf_raw;
-						buf_raw.resize(sizeof(MQPacket) + pubData._data.size());
-						MQPacket* pack = (MQPacket*)buf_raw.data();
+						static thread_local char buf_raw[8 * 1024 * 1024];
+						memset(buf_raw, 0, 8 * 1024 * 1024);
+						std::size_t len = sizeof(MQPacket) + pubData._data.size();
+						MQPacket* pack = (MQPacket*)buf_raw;
 						strncpy(pack->_topic, pubData._topic.c_str(), 32);
 						pack->_length = pubData._data.size();
 						memcpy(&pack->_data, pubData._data.data(), pubData._data.size());
-						nn_send(_sock, buf_raw.data(), buf_raw.size(), 0);
+						int bytes_snd = 0;
+						for(;;)
+						{
+							int bytes = nn_send(_sock, buf_raw + bytes_snd, len - bytes_snd, 0);
+							if (bytes >= 0)
+							{
+								bytes_snd += bytes;
+								if(bytes_snd == len)
+									break;
+							}
+							else
+								std::this_thread::sleep_for(std::chrono::milliseconds(1));
+						}
+						
 					}
 					tmpQue.pop();
 				} 

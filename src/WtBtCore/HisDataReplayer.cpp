@@ -8,6 +8,7 @@
  * \brief 
  */
 #include "HisDataReplayer.h"
+#include "EventNotifier.h"
 
 #include <fstream>
 
@@ -72,8 +73,10 @@ HisDataReplayer::~HisDataReplayer()
 }
 
 
-bool HisDataReplayer::init(WTSVariant* cfg)
+bool HisDataReplayer::init(WTSVariant* cfg, EventNotifier* notifier /* = NULL */)
 {
+	_notifier = notifier;
+
 	_mode = cfg->getCString("mode");
 	_base_dir = StrUtil::standardisePath(cfg->getCString("path"));
 
@@ -318,6 +321,9 @@ void HisDataReplayer::run()
 	_cur_secs = 0;
 	_cur_tdate = _bd_mgr.calcTradingDate(DEFAULT_SESSIONID, _cur_date, _cur_time, true);
 
+	if (_notifier)
+		_notifier->notifyEvent("BT_START");
+
 	_listener->handle_init();	
 
 	if (!_tick_enabled)
@@ -383,6 +389,8 @@ void HisDataReplayer::run()
 						//WTSLogger::log_raw(LL_INFO, fmt::format("{}超过结束时间{},回放结束", nextBarTime, _end_time).c_str());
 						WTSLogger::log_raw(LL_INFO, fmt::format("{} is beyond ending time {},replaying done", nextBarTime, _end_time).c_str());
 						_listener->handle_replay_done();
+						if (_notifier)
+							_notifier->notifyEvent("BT_END");
 						break;
 					}
 
@@ -432,6 +440,8 @@ void HisDataReplayer::run()
 						//WTSLogger::info("全部数据都已回放,回放结束");
 						WTSLogger::info("All back data replayed, replaying done");
 						_listener->handle_replay_done();
+						if (_notifier)
+							_notifier->notifyEvent("BT_END");
 						break;
 					}
 				}
@@ -440,6 +450,8 @@ void HisDataReplayer::run()
 					//WTSLogger::info("数据尚未初始化,回放直接退出");
 					WTSLogger::info("No back data initialized, replaying canceled");
 					_listener->handle_replay_done();
+					if (_notifier)
+						_notifier->notifyEvent("BT_END");
 					break;
 				}
 			}
@@ -470,12 +482,16 @@ void HisDataReplayer::run()
 
 			WTSLogger::info("All back data replayed, replaying done");
 			_listener->handle_replay_done();
+			if (_notifier)
+				_notifier->notifyEvent("BT_END");
 		}
 		else
 		{
 			//WTSLogger::info("没有订阅主力K线且未开放tick回测,回放直接退出");
 			WTSLogger::info("Main K bars not subscribed and backtesting of tick data not available , replaying done");
 			_listener->handle_replay_done();
+			if (_notifier)
+				_notifier->notifyEvent("BT_END");
 		}
 	}
 	else //if(_task != NULL)
@@ -620,6 +636,8 @@ void HisDataReplayer::run()
 					{
 						_listener->handle_session_end(_cur_tdate);
 						_listener->handle_replay_done();
+						if (_notifier)
+							_notifier->notifyEvent("BT_END");
 					}
 
 					break;
@@ -716,6 +734,8 @@ void HisDataReplayer::run()
 					{
 						_listener->handle_session_end(_cur_tdate);
 						_listener->handle_replay_done();
+						if (_notifier)
+							_notifier->notifyEvent("BT_END");
 					}
 					break;
 				}

@@ -79,7 +79,7 @@ bool EventNotifier::init(WTSVariant* cfg)
 	_register(on_mq_log);
 	
 	//创建一个MQServer
-	_mq_sid = _creator(m_strURL.c_str());
+	_mq_sid = _creator(m_strURL.c_str(), true);
 
 	WTSLogger::info("EventNotifier initialized with channel %s", m_strURL.c_str());
 
@@ -105,5 +105,98 @@ void EventNotifier::notifyLog(const char* tag, const char* message)
 	}
 
 	if (_publisher)
-		_publisher(_mq_sid, "LOG", data.c_str(), data.size());
+		_publisher(_mq_sid, "BT_LOG", data.c_str(), data.size());
+}
+
+void EventNotifier::notifyEvent(const char* evtType)
+{
+	if (_publisher)
+		_publisher(_mq_sid, "BT_EVENT", evtType, strlen(evtType));
+}
+
+void EventNotifier::notifyData(const char* topic, void* data , uint32_t dataLen)
+{
+	if (_publisher)
+		_publisher(_mq_sid, topic, (const char*)data, dataLen);
+}
+
+void EventNotifier::notifySignal(const char* topic, const char* stdCode, double price, double volume, const char* usertag, uint64_t barTime)
+{
+	std::string output;
+	{
+		rj::Document root(rj::kObjectType);
+		rj::Document::AllocatorType &allocator = root.GetAllocator();
+
+		root.AddMember("code", rj::Value(stdCode, allocator), allocator);
+		root.AddMember("tag", rj::Value(usertag, allocator), allocator);
+		root.AddMember("volume", volume, allocator);
+		root.AddMember("price", price, allocator);
+		root.AddMember("bartime", barTime, allocator);
+
+		rj::StringBuffer sb;
+		rj::PrettyWriter<rj::StringBuffer> writer(sb);
+		root.Accept(writer);
+
+		output = sb.GetString();
+	}
+
+	if (_publisher)
+		_publisher(_mq_sid, topic, (const char*)output.c_str(), output.size());
+}
+
+void EventNotifier::notifyFund(const char* topic, uint32_t uDate, double total_profit, double dynprofit, double dynbalance, double total_fee)
+{
+	std::string output;
+	{
+		rj::Document root(rj::kObjectType);
+		rj::Document::AllocatorType &allocator = root.GetAllocator();
+
+		root.AddMember("date", uDate, allocator);
+		root.AddMember("total_profit", total_profit, allocator);
+		root.AddMember("dynprofit", dynprofit, allocator);
+		root.AddMember("dynbalance", dynbalance, allocator);
+		root.AddMember("total_fee", total_fee, allocator);
+
+		rj::StringBuffer sb;
+		rj::PrettyWriter<rj::StringBuffer> writer(sb);
+		root.Accept(writer);
+
+		output = sb.GetString();
+	}
+
+	if (_publisher)
+		_publisher(_mq_sid, topic, (const char*)output.c_str(), output.size());
+}
+
+void EventNotifier::notifyClose(const char* topic, const char* stdCode, bool isLong, uint64_t openTime, double openpx, uint64_t closeTime, double closepx,
+	double qty, double profit, double maxprofit, double maxloss, double totalprofit /* = 0 */, const char* enterTag /* = "" */, const char* exitTag /* = "" */)
+{
+	std::string output;
+	{
+		rj::Document root(rj::kObjectType);
+		rj::Document::AllocatorType &allocator = root.GetAllocator();
+
+		root.AddMember("code", rj::Value(stdCode, allocator), allocator);
+		root.AddMember("long", isLong, allocator);
+		root.AddMember("open_time", openTime, allocator);
+		root.AddMember("open_price", openpx, allocator);
+		root.AddMember("close_time", closeTime, allocator);
+		root.AddMember("close_price", closepx, allocator);
+		root.AddMember("volume", qty, allocator);
+		root.AddMember("profit", profit, allocator);
+		root.AddMember("max_profit", maxprofit, allocator);
+		root.AddMember("max_loss", maxloss, allocator);
+		root.AddMember("total_profit", totalprofit, allocator);
+		root.AddMember("enter_tag", rj::Value(enterTag, allocator), allocator);
+		root.AddMember("exit_tag", rj::Value(exitTag, allocator), allocator);
+
+		rj::StringBuffer sb;
+		rj::PrettyWriter<rj::StringBuffer> writer(sb);
+		root.Accept(writer);
+
+		output = sb.GetString();
+	}
+
+	if (_publisher)
+		_publisher(_mq_sid, topic, (const char*)output.c_str(), output.size());
 }

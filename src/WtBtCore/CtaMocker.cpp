@@ -9,7 +9,7 @@
  */
 #include "CtaMocker.h"
 #include "WtHelper.h"
-#include "HisDataReplayer.h"
+#include "EventNotifier.h"
 
 #include <exception>
 #include <rapidjson/document.h>
@@ -53,7 +53,7 @@ inline uint32_t makeCtxId()
 }
 
 
-CtaMocker::CtaMocker(HisDataReplayer* replayer, const char* name, int32_t slippage /* = 0 */)
+CtaMocker::CtaMocker(HisDataReplayer* replayer, const char* name, int32_t slippage /* = 0 */, EventNotifier* notifier/* = NULL*/)
 	: ICtaStraCtx(name)
 	, _replayer(replayer)
 	, _total_calc_time(0)
@@ -64,6 +64,7 @@ CtaMocker::CtaMocker(HisDataReplayer* replayer, const char* name, int32_t slippa
 	, _slippage(slippage)
 	, _schedule_times(0)
 	, _total_closeprofit(0)
+	, _notifier(notifier)
 {
 	_context_id = makeCtxId();
 }
@@ -220,6 +221,10 @@ void CtaMocker::on_bar(const char* stdCode, const char* period, uint32_t times, 
 	tag._closed = true;
 
 	on_bar_close(stdCode, realPeriod.c_str(), newBar);
+
+	WTSLogger::info("Notify onbar");
+	if (_notifier && key == _main_key)
+		_notifier->notifyData("BT_ONBAR", newBar, sizeof(WTSBarStruct));
 }
 
 void CtaMocker::on_init()
@@ -559,6 +564,11 @@ void CtaMocker::on_session_end(uint32_t curTDate)
 		_fund_info._total_profit, _fund_info._total_dynprofit,
 		_fund_info._total_profit + _fund_info._total_dynprofit - _fund_info._total_fees, _fund_info._total_fees);
 
+	
+	if (_notifier)
+		_notifier->notifyFund("BT_FUND", curDate, _fund_info._total_profit, _fund_info._total_dynprofit,
+			_fund_info._total_profit + _fund_info._total_dynprofit - _fund_info._total_fees, _fund_info._total_fees);
+
 	//save_data();
 }
 
@@ -819,14 +829,13 @@ void CtaMocker::do_set_position(const char* stdCode, double qty, double price /*
 	double trdPx = curPx;
 
 	double diff = qty - pInfo._volume;
-
+	bool isBuy = decimal::gt(diff, 0.0);
 	if (decimal::gt(pInfo._volume*diff, 0))//当前持仓和仓位变化方向一致, 增加一条明细, 增加数量即可
 	{
 		pInfo._volume = qty;
-
+		
 		if (_slippage != 0)
 		{
-			bool isBuy = decimal::gt(diff, 0.0);
 			trdPx += _slippage * commInfo->getPriceTick()*(isBuy ? 1 : -1);
 		}
 
@@ -849,12 +858,9 @@ void CtaMocker::do_set_position(const char* stdCode, double qty, double price /*
 	else
 	{//持仓方向和仓位变化方向不一致,需要平仓
 		double left = abs(diff);
-
+		bool isBuy = decimal::gt(diff, 0.0);
 		if (_slippage != 0)
-		{
-			bool isBuy = decimal::gt(diff, 0.0);
 			trdPx += _slippage * commInfo->getPriceTick()*(isBuy ? 1 : -1);
-		}
 
 		pInfo._volume = qty;
 		if (decimal::eq(pInfo._volume, 0))
@@ -890,7 +896,12 @@ void CtaMocker::do_set_position(const char* stdCode, double qty, double price /*
 			//这里写成交记录
 			log_trade(stdCode, dInfo._long, false, curTm, trdPx, maxQty, userTag, fee, _schedule_times);
 			//这里写平仓记录
-			log_close(stdCode, dInfo._long, dInfo._opentime, dInfo._price, curTm, trdPx, maxQty, profit, maxProf, maxLoss, _total_closeprofit - _fund_info._total_fees, dInfo._opentag, userTag, dInfo._open_barno, _schedule_times);
+			log_close(stdCode, dInfo._long, dInfo._opentime, dInfo._price, curTm, trdPx, maxQty, profit, maxProf, maxLoss, 
+				_total_closeprofit - _fund_info._total_fees, dInfo._opentag, userTag, dInfo._open_barno, _schedule_times);
+
+			if (_notifier)
+				_notifier->notifyClose("BT_CLOSE", stdCode, dInfo._long, dInfo._opentime, dInfo._price, curTm, trdPx, maxQty, profit, 
+					maxProf, maxLoss, _total_closeprofit - _fund_info._total_fees, dInfo._opentag, userTag);
 
 			if (left == 0)
 				break;
@@ -928,6 +939,9 @@ void CtaMocker::do_set_position(const char* stdCode, double qty, double price /*
 			pInfo._last_entertime = curTm;
 		}
 	}
+
+	if (_notifier)
+		_notifier->notifySignal("BT_SIG", stdCode, trdPx, qty, userTag, curTm);
 }
 
 WTSKlineSlice* CtaMocker::stra_get_bars(const char* stdCode, const char* period, uint32_t count, bool isMain /* = false */)
@@ -955,6 +969,7 @@ WTSKlineSlice* CtaMocker::stra_get_bars(const char* stdCode, const char* period,
 
 	WTSKlineSlice* kline = _replayer->get_kline_slice(stdCode, basePeriod.c_str(), count, times, isMain);
 
+	bool bFirst = (_kline_tags.find(key) == _kline_tags.end());
 	KlineTag& tag = _kline_tags[key];
 	tag._closed = false;
 
@@ -972,6 +987,20 @@ WTSKlineSlice* CtaMocker::stra_get_bars(const char* stdCode, const char* period,
 			realCode += cInfo._code;
 		}
 		_replayer->sub_tick(id(), realCode.c_str());
+
+		if (_notifier && isMain && bFirst)
+		{
+			WTSLogger::info("Notify getbar");
+			if (kline->get_his_count() > 0)
+			{
+				_notifier->notifyData("BT_GETBAR", kline->get_his_addr(), sizeof(WTSBarStruct)*kline->get_his_count());
+			}
+
+			if (kline->get_rt_count() > 0)
+			{
+				_notifier->notifyData("BT_GETBAR", kline->get_rt_addr(), sizeof(WTSBarStruct)*kline->get_rt_count());
+			}
+		}
 	}
 
 	return kline;

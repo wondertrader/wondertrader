@@ -4,12 +4,12 @@
 
 USING_NS_OTP;
 
-WtUInt32 MQManager::create_server(const char* url)
+WtUInt32 MQManager::create_server(const char* url, bool confirm)
 {
 	MQServerPtr server(new MQServer(this));
 
 	printf("init server\r\n");
-	server->init(url);
+	server->init(url, confirm);
 
 	auto id = server->id();
 

@@ -16,7 +16,7 @@ extern "C"
 #endif
 	EXPORT_FLAG void		regiter_callbacks(FuncLogCallback cbLog);
 
-	EXPORT_FLAG WtUInt32	create_server(const char* url);
+	EXPORT_FLAG WtUInt32	create_server(const char* url, bool confirm);
 	EXPORT_FLAG void		destroy_server(WtUInt32 id);
 	EXPORT_FLAG void		publish_message(WtUInt32 id, const char* topic, const char* data, WtUInt32 dataLen);
 

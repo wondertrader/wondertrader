@@ -33,6 +33,8 @@ class WTSCommodityInfo;
 class WTSOrdDtlData;
 class WTSOrdQueData;
 class WTSTransData;
+
+class EventNotifier;
 NS_OTP_END
 
 typedef std::shared_ptr<MysqlDb>	MysqlDbPtr;
@@ -189,7 +191,7 @@ private:
 	void		reset();
 
 public:
-	bool init(WTSVariant* cfg);
+	bool init(WTSVariant* cfg, EventNotifier* notifier = NULL);
 
 	void run();
 
@@ -343,5 +345,7 @@ private:
 
 	DBConfig	_db_conf;
 	MysqlDbPtr	_db_conn;
+
+	EventNotifier*	_notifier;
 };
 

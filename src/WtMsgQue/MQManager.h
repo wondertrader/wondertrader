@@ -31,7 +31,7 @@ public:
 public:
 	inline void		regiter_callbacks(FuncLogCallback cbLog) { _cb_log = cbLog; }
 
-	WtUInt32	create_server(const char* url);
+	WtUInt32	create_server(const char* url, bool confirm);
 	void		destroy_server(WtUInt32 id);
 	void		publish_message(WtUInt32 id, const char* topic, const void* data, WtUInt32 dataLen);
 

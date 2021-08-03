@@ -27,6 +27,8 @@ USING_NS_OTP;
 
 #pragma warning(disable:4200)
 
+#define  RECV_BUF_SIZE  8*1024*1024
+
 inline uint32_t makeMQCientId()
 {
 	static std::atomic<uint32_t> _auto_client_id{ 5001 };
@@ -72,6 +74,9 @@ bool MQClient::init(const char* url, FuncMQCallback cb)
 
 	nn_setsockopt(_sock, NN_SUB, NN_SUB_SUBSCRIBE, "", 0);
 
+	int bufsize = RECV_BUF_SIZE;
+	nn_setsockopt(_sock, NN_SOL_SOCKET, NN_RCVBUF, &bufsize, sizeof(bufsize));
+
 	m_strURL = url;
 	if (nn_connect(_sock, url) < 0)
 	{
@@ -106,11 +111,11 @@ void MQClient::start()
 
 			while (!m_bTerminated)
 			{
-				static char buf[1024];
+				static thread_local char buf[RECV_BUF_SIZE];
 				bool hasData = false;
 				for(;;)
 				{
-					int nBytes = nn_recv(_sock, buf, 1024, NN_DONTWAIT);
+					int nBytes = nn_recv(_sock, buf, RECV_BUF_SIZE, NN_DONTWAIT);
 					if (nBytes > 0)
 					{
 						hasData = true;
@@ -144,13 +149,13 @@ void MQClient::extract_buffer()
 	uint32_t proc_len = 0;
 	for(;;)
 	{
-		MQPacket* packet = (MQPacket*)(_buffer.data() + proc_len);
-
 		//先做长度检查
-		if (_buffer.length() < sizeof(MQPacket))
+		if (_buffer.length() - proc_len < sizeof(MQPacket))
 			break;
 
-		if (_buffer.length() < sizeof(MQPacket) + packet->_length)
+		MQPacket* packet = (MQPacket*)(_buffer.data() + proc_len);
+
+		if (_buffer.length() - proc_len < sizeof(MQPacket) + packet->_length)
 			break;
 
 		char* data = packet->_data;

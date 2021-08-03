@@ -132,7 +132,7 @@ uint32_t WtBtRunner::initCtaMocker(const char* name, int32_t slippage/* = 0*/)
 		_cta_mocker = NULL;
 	}
 
-	_cta_mocker = new ExpCtaMocker(&_replayer, name, slippage);
+	_cta_mocker = new ExpCtaMocker(&_replayer, name, slippage, &_notifier);
 	_replayer.register_sink(_cta_mocker);
 	return _cta_mocker->id();
 }
@@ -303,10 +303,10 @@ void WtBtRunner::config(const char* cfgFile, bool isFile /* = true */)
 	WTSVariant* cfg = WTSVariant::createObject();
 	jsonToVariant(root, cfg);
 
-	_replayer.init(cfg->get("replayer"));
-
 	//初始化事件推送器
 	initEvtNotifier(cfg->get("notifier"));
+
+	_replayer.init(cfg->get("replayer"), &_notifier);
 
 	WTSVariant* cfgEnv = cfg->get("env");
 	const char* mode = cfgEnv->getCString("mocker");
@@ -373,13 +373,13 @@ void WtBtRunner::enable_tick(bool bEnabled /* = true */)
 }
 
 const char* LOG_TAGS[] = {
-	"ALL",
-	"DEBUG",
-	"INFO",
-	"WARN",
-	"ERROR",
-	"FATAL",
-	"NONE",
+	"all",
+	"debug",
+	"info",
+	"warn",
+	"error",
+	"fatal",
+	"none",
 };
 
 void WtBtRunner::handleLogAppend(WTSLogLevel ll, const char* msg)
@@ -387,7 +387,7 @@ void WtBtRunner::handleLogAppend(WTSLogLevel ll, const char* msg)
 	if (_terminated)
 		return;
 
-	_notifier.notifyLog(LOG_TAGS[ll - 100], msg);
+	//_notifier.notifyLog(LOG_TAGS[ll - 100], msg);
 }
 
 bool WtBtRunner::initEvtNotifier(WTSVariant* cfg)

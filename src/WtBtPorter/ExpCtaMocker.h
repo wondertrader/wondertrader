@@ -15,7 +15,7 @@ USING_NS_OTP;
 class ExpCtaMocker : public CtaMocker
 {
 public:
-	ExpCtaMocker(HisDataReplayer* replayer, const char* name, int32_t slippage = 0);
+	ExpCtaMocker(HisDataReplayer* replayer, const char* name, int32_t slippage = 0, EventNotifier* notifier = NULL);
 	virtual ~ExpCtaMocker();
 
 public:

@@ -11,10 +11,15 @@
 #include "MQManager.h"
 
 #ifdef _WIN32
-#pragma comment(lib, "nanomsg.lib")
 #pragma comment(lib, "Ws2_32.lib")
 #pragma comment(lib, "Wldap32.lib")
 #pragma comment(lib, "Mswsock.lib")
+
+#ifdef _DEBUG
+#pragma comment(lib, "nanomsgd.lib")
+#else
+#pragma comment(lib, "nanomsg.lib")
+#endif
 #endif
 
 USING_NS_OTP;
@@ -30,10 +35,10 @@ void regiter_callbacks(FuncLogCallback cbLog)
 	getMgr().regiter_callbacks(cbLog);
 }
 
-WtUInt32 create_server(const char* url)
+WtUInt32 create_server(const char* url, bool confirm)
 {
 	printf("create server\r\n");
-	return getMgr().create_server(url);
+	return getMgr().create_server(url, confirm);
 }
 
 void destroy_server(WtUInt32 id)

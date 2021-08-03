@@ -26,16 +26,17 @@ public:
 public:
 	inline uint32_t id() const { return _id; }
 
-	bool	init(const char* url);
+	bool	init(const char* url, bool confirm = false);
 
 	void	publish(const char* topic, const void* data, uint32_t dataLen);
 
 private:
-	std::string		m_strURL;
-	bool			m_bReady;
+	std::string		_url;
+	bool			_ready;
 	int				_sock;
 	MQManager*		_mgr;
 	uint32_t		_id;
+	bool			_confirm;
 
 	StdThreadPtr	m_thrdCast;
 	StdCondVariable	m_condCast;

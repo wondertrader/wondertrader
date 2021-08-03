@@ -15,7 +15,7 @@
 #include "../Includes/WTSObject.hpp"
 #include "../Share/StdUtils.hpp"
 
-typedef unsigned long(*FuncCreateMQServer)(const char*);
+typedef unsigned long(*FuncCreateMQServer)(const char*, bool);
 typedef void(*FuncDestroyMQServer)(unsigned long);
 typedef void(*FundPublishMessage)(unsigned long, const char*, const char*, unsigned long);
 
@@ -36,6 +36,11 @@ public:
 	bool	init(WTSVariant* cfg);
 	void	notifyLog(const char* tag, const char* message);
 	void	notifyEvent(const char* evtType);
+	void	notifyData(const char* topic, void* data , uint32_t dataLen);
+	void	notifySignal(const char* topic, const char* stdCode, double price, double volume, const char* usertag, uint64_t barTime);
+	void	notifyFund(const char* topic, uint32_t uDate, double total_profit, double dynprofit, double dynbalance, double total_fee);
+	void	notifyClose(const char* topic, const char* stdCode, bool isLong, uint64_t openTime, double openpx, uint64_t closeTime, double closepx, double qty,
+		double profit, double maxprofit, double maxloss, double totalprofit = 0, const char* enterTag = "", const char* exitTag = "");
 
 private:
 	std::string		m_strURL;

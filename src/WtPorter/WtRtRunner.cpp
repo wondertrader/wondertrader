@@ -821,13 +821,13 @@ void WtRtRunner::run(bool bAsync /* = false */)
 }
 
 const char* LOG_TAGS[] = {
-	"ALL",
-	"DEBUG",
-	"INFO",
-	"WARN",
-	"ERROR",
-	"FATAL",
-	"NONE",
+	"all",
+	"debug",
+	"info",
+	"warn",
+	"error",
+	"fatal",
+	"none",
 };
 
 void WtRtRunner::handleLogAppend(WTSLogLevel ll, const char* msg)

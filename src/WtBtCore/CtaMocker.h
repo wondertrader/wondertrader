@@ -19,11 +19,14 @@
 #include "../Share/BoostFile.hpp"
 #include "../Share/DLLHelper.hpp"
 
-class CtaStrategy;
+NS_OTP_BEGIN
+class EventNotifier;
+NS_OTP_END
 
 USING_NS_OTP;
 
 class HisDataReplayer;
+class CtaStrategy;
 
 const char COND_ACTION_OL = 0;	//开多
 const char COND_ACTION_CL = 1;	//平多
@@ -59,7 +62,7 @@ typedef faster_hashmap<std::string, CondList>	CondEntrustMap;
 class CtaMocker : public ICtaStraCtx, public IDataSink
 {
 public:
-	CtaMocker(HisDataReplayer* replayer, const char* name, int32_t slippage = 0);
+	CtaMocker(HisDataReplayer* replayer, const char* name, int32_t slippage = 0, EventNotifier* notifier = NULL);
 	virtual ~CtaMocker();
 
 private:
@@ -295,4 +298,5 @@ protected:
 	StraFactInfo	_factory;
 
 	CtaStrategy*	_strategy;
+	EventNotifier*	_notifier;
 };
