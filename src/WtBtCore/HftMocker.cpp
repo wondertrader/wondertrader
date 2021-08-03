@@ -621,7 +621,19 @@ WTSCommodityInfo* HftMocker::stra_get_comminfo(const char* stdCode)
 
 WTSKlineSlice* HftMocker::stra_get_bars(const char* stdCode, const char* period, uint32_t count)
 {
-	return _replayer->get_kline_slice(stdCode, period, count);
+	std::string basePeriod = "";
+	uint32_t times = 1;
+	if (strlen(period) > 1)
+	{
+		basePeriod.append(period, 1);
+		times = strtoul(period + 1, NULL, 10);
+	}
+	else
+	{
+		basePeriod = period;
+	}
+
+	return _replayer->get_kline_slice(stdCode, basePeriod.c_str(), count, times);
 }
 
 WTSTickSlice* HftMocker::stra_get_ticks(const char* stdCode, uint32_t count)
