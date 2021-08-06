@@ -52,9 +52,9 @@ public:
 	void run(bool bAsync = false);
 
 private:
-	bool initTraders();
-	bool initParsers();
-	bool initExecuters();
+	bool initTraders(WTSVariant* cfgTrader);
+	bool initParsers(WTSVariant* cfgParser);
+	bool initExecuters(WTSVariant* cfgExecuter);
 	bool initDataMgr();
 	bool initCtaStrategies();
 	bool initHftStrategies();

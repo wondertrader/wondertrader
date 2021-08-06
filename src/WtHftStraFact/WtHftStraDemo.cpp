@@ -61,9 +61,9 @@ void WtHftStraDemo::on_entrust(uint32_t localid, bool bSuccess, const char* mess
 
 void WtHftStraDemo::on_init(IHftStraCtx* ctx)
 {
-	WTSTickSlice* ticks = ctx->stra_get_ticks(_code.c_str(), _count);
-	if (ticks)
-		ticks->release();
+	//WTSTickSlice* ticks = ctx->stra_get_ticks(_code.c_str(), _count);
+	//if (ticks)
+	//	ticks->release();
 
 	WTSKlineSlice* kline = ctx->stra_get_bars(_code.c_str(), "m1", 30);
 	if (kline)

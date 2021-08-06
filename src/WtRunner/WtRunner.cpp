@@ -117,14 +117,107 @@ bool WtRunner::config(const char* cfgFile)
 		return false;
 
 	//初始化行情通道
-	initParsers();
+	WTSVariant* cfgParser = _config->get("parsers");
+	if (cfgParser)
+	{
+		if (cfgParser->type() == WTSVariant::VT_String)
+		{
+			const char* filename = cfgParser->asCString();
+			if (StdFile::exists(filename))
+			{
+				WTSLogger::info("Reading parser configuration from %s……", filename);
+				std::string json;
+				StdFile::read_file_content(filename, json);
+
+				rj::Document document;
+				document.Parse(json.c_str());
+				WTSVariant* var = WTSVariant::createObject();
+				jsonToVariant(document, var);
+
+				if (!initParsers(var->get("parsers")))
+					WTSLogger::error("Loading parsers failed");
+				var->release();
+			}
+			else
+			{
+				WTSLogger::error("Parser configuration %s not exists", filename);
+			}
+		}
+		else if (cfgParser->type() == WTSVariant::VT_Array)
+		{
+			initParsers(cfgParser);
+		}
+	}
 
 	//初始化交易通道
-	initTraders();
+	WTSVariant* cfgTraders = _config->get("traders");
+	if (cfgTraders)
+	{
+		if (cfgTraders->type() == WTSVariant::VT_String)
+		{
+			const char* filename = cfgTraders->asCString();
+			if (StdFile::exists(filename))
+			{
+				WTSLogger::info("Reading trader configuration from %s……", filename);
+				std::string json;
+				StdFile::read_file_content(filename, json);
+
+				rj::Document document;
+				document.Parse(json.c_str());
+				WTSVariant* var = WTSVariant::createObject();
+				jsonToVariant(document, var);
+
+				if (!initTraders(var->get("traders")))
+					WTSLogger::error("Loading traders failed");
+				var->release();
+			}
+			else
+			{
+				WTSLogger::error("Trader configuration %s not exists", filename);
+			}
+		}
+		else if (cfgTraders->type() == WTSVariant::VT_Array)
+		{
+			initTraders(cfgTraders);
+		}
+	}
 
 	//如果不是高频引擎,则需要配置执行模块
 	if (!_is_hft)
-		initExecuters();
+	{
+		WTSVariant* cfgExec = _config->get("executers");
+		if (cfgExec != NULL)
+		{
+			if (cfgExec->type() == WTSVariant::VT_String)
+			{
+				const char* filename = cfgExec->asCString();
+				if (StdFile::exists(filename))
+				{
+					WTSLogger::info("Reading executer configuration from %s……", filename);
+					std::string json;
+					StdFile::read_file_content(filename, json);
+
+					rj::Document document;
+					document.Parse(json.c_str());
+					WTSVariant* var = WTSVariant::createObject();
+					jsonToVariant(document, var);
+
+					if (!initExecuters(var->get("executers")))
+						WTSLogger::error("Loading executer failed");
+					var->release();
+				}
+				else
+				{
+					WTSLogger::error("Trader configuration %s not exists", filename);
+				}
+			}
+			else if (cfgExec->type() == WTSVariant::VT_Array)
+			{
+				initExecuters(cfgExec);
+			}
+		}
+
+	}
 
 	if (!_is_hft)
 		initCtaStrategies();
@@ -274,16 +367,15 @@ bool WtRunner::initDataMgr()
 	return true;
 }
 
-bool WtRunner::initParsers()
+bool WtRunner::initParsers(WTSVariant* cfgParser)
 {
-	WTSVariant* cfg = _config->get("parsers");
-	if (cfg == NULL)
+	if (cfgParser == NULL)
 		return false;
 
 	uint32_t count = 0;
-	for (uint32_t idx = 0; idx < cfg->size(); idx++)
+	for (uint32_t idx = 0; idx < cfgParser->size(); idx++)
 	{
-		WTSVariant* cfgItem = cfg->get(idx);
+		WTSVariant* cfgItem = cfgParser->get(idx);
 		if(!cfgItem->getBoolean("active"))
 			continue;
 
@@ -301,19 +393,18 @@ bool WtRunner::initParsers()
 	return true;
 }
 
-bool WtRunner::initExecuters()
+bool WtRunner::initExecuters(WTSVariant* cfgExecuter)
 {
-	WTSVariant* cfg = _config->get("executers");
-	if (cfg == NULL || cfg->type() != WTSVariant::VT_Array)
+	if (cfgExecuter == NULL || cfgExecuter->type() != WTSVariant::VT_Array)
 		return false;
 
 	std::string path = WtHelper::getCWD() + "executer/";
 	_exe_factory.loadFactories(path.c_str());
 
 	uint32_t count = 0;
-	for (uint32_t idx = 0; idx < cfg->size(); idx++)
+	for (uint32_t idx = 0; idx < cfgExecuter->size(); idx++)
 	{
-		WTSVariant* cfgItem = cfg->get(idx);
+		WTSVariant* cfgItem = cfgExecuter->get(idx);
 		if (!cfgItem->getBoolean("active"))
 			continue;
 
@@ -348,16 +439,15 @@ bool WtRunner::initExecuters()
 	return true;
 }
 
-bool WtRunner::initTraders()
+bool WtRunner::initTraders(WTSVariant* cfgTrader)
 {
-	WTSVariant* cfg = _config->get("traders");
-	if (cfg == NULL || cfg->type() != WTSVariant::VT_Array)
+	if (cfgTrader == NULL || cfgTrader->type() != WTSVariant::VT_Array)
 		return false;
 	
 	uint32_t count = 0;
-	for (uint32_t idx = 0; idx < cfg->size(); idx++)
+	for (uint32_t idx = 0; idx < cfgTrader->size(); idx++)
 	{
-		WTSVariant* cfgItem = cfg->get(idx);
+		WTSVariant* cfgItem = cfgTrader->get(idx);
 		if (!cfgItem->getBoolean("active"))
 			continue;
 
