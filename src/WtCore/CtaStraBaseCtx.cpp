@@ -60,6 +60,7 @@ CtaStraBaseCtx::CtaStraBaseCtx(WtCtaEngine* engine, const char* name)
 	, _last_cond_min(0)
 	, _is_in_schedule(false)
 	, _ud_modified(false)
+	, _last_barno(0)
 {
 	_context_id = makeCtaCtxId();
 }
@@ -83,7 +84,7 @@ void CtaStraBaseCtx::init_outputs()
 		_trade_logs->create_or_open_file(filename.c_str());
 		if (isNewFile)
 		{
-			_trade_logs->write_file("code,time,direct,action,price,qty,tag,fee\n");
+			_trade_logs->write_file("code,time,direct,action,price,qty,tag,fee,barno\n");
 		}
 		else
 		{
@@ -98,7 +99,7 @@ void CtaStraBaseCtx::init_outputs()
 		_close_logs->create_or_open_file(filename.c_str());
 		if (isNewFile)
 		{
-			_close_logs->write_file("code,direct,opentime,openprice,closetime,closeprice,qty,profit,totalprofit,entertag,exittag\n");
+			_close_logs->write_file("code,direct,opentime,openprice,closetime,closeprice,qty,profit,totalprofit,entertag,exittag,openbarno,closebarno\n");
 		}
 		else
 		{
@@ -147,25 +148,25 @@ void CtaStraBaseCtx::log_signal(const char* stdCode, double target, double price
 	}
 }
 
-void CtaStraBaseCtx::log_trade(const char* stdCode, bool isLong, bool isOpen, uint64_t curTime, double price, double qty, const char* userTag, double fee)
+void CtaStraBaseCtx::log_trade(const char* stdCode, bool isLong, bool isOpen, uint64_t curTime, double price, double qty, const char* userTag /* = "" */, double fee /* = 0.0 */, uint32_t barNo /* = 0 */)
 {
 	if (_trade_logs)
 	{
 		std::stringstream ss;
-		ss << stdCode << "," << curTime << "," << (isLong ? "LONG" : "SHORT") << "," << (isOpen ? "OPEN" : "CLOSE") << "," << price << "," << qty << "," << userTag << "," << fee << "\n";
+		ss << stdCode << "," << curTime << "," << (isLong ? "LONG" : "SHORT") << "," << (isOpen ? "OPEN" : "CLOSE") << "," << price << "," << qty << "," << userTag << "," << fee << "," << barNo << "\n";
 		_trade_logs->write_file(ss.str());
 	}
 }
 
-void CtaStraBaseCtx::log_close(const char* stdCode, bool isLong, uint64_t openTime, double openpx, uint64_t closeTime, double closepx, double qty,
-	double profit, double totalprofit /* = 0 */, const char* enterTag /* = "" */, const char* exitTag /* = "" */)
+void CtaStraBaseCtx::log_close(const char* stdCode, bool isLong, uint64_t openTime, double openpx, uint64_t closeTime, double closepx, double qty, double profit, double totalprofit /* = 0 */, 
+	const char* enterTag /* = "" */, const char* exitTag /* = "" */, uint32_t openBarNo /* = 0 */, uint32_t closeBarNo /* = 0 */)
 {
 	if (_close_logs)
 	{
 		std::stringstream ss;
 		ss << stdCode << "," << (isLong ? "LONG" : "SHORT") << "," << openTime << "," << openpx
 			<< "," << closeTime << "," << closepx << "," << qty << "," << profit << "," 
-			<< totalprofit << "," << enterTag << "," << exitTag << "\n";
+			<< totalprofit << "," << enterTag << "," << exitTag << "," << openBarNo << "," << closeBarNo << "\n";
 		_close_logs->write_file(ss.str());
 	}
 }
@@ -314,6 +315,10 @@ void CtaStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 					dInfo._max_loss = dItem["maxloss"].GetDouble();
 
 					strcpy(dInfo._opentag, dItem["opentag"].GetString());
+					if (dItem.HasMember("openbarno"))
+						dInfo._open_barno = dItem["openbarno"].GetUint();
+					else
+						dInfo._open_barno = 0;
 
 					pInfo._details.push_back(dInfo);
 				}
@@ -399,6 +404,16 @@ void CtaStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 			}
 		}
 	}
+
+	if (root.HasMember("utils"))
+	{
+		//读取杂项
+		const rj::Value& jUtils = root["utils"];
+		if (!jUtils.IsNull() && jUtils.IsObject())
+		{
+			_last_barno = jUtils["lastbarno"].GetUint();
+		}
+	}
 }
 
 void CtaStraBaseCtx::save_data(uint32_t flag /* = 0xFFFFFFFF */)
@@ -438,6 +453,7 @@ void CtaStraBaseCtx::save_data(uint32_t flag /* = 0xFFFFFFFF */)
 				dItem.AddMember("maxprofit", dInfo._max_profit, allocator);
 				dItem.AddMember("maxloss", dInfo._max_loss, allocator);
 				dItem.AddMember("opentag", rj::Value(dInfo._opentag, allocator), allocator);
+				dItem.AddMember("openbarno", dInfo._open_barno, allocator);
 
 				details.PushBack(dItem, allocator);
 			}
@@ -517,6 +533,16 @@ void CtaStraBaseCtx::save_data(uint32_t flag /* = 0xFFFFFFFF */)
 		jCond.AddMember("items", jItems, allocator);
 
 		root.AddMember("conditions", jCond, allocator);
+	}
+
+	{//杂项保存
+		rj::Value jUtils(rj::kObjectType);
+
+		rj::Document::AllocatorType &allocator = root.GetAllocator();
+
+		jUtils.AddMember("lastbarno", _last_barno, allocator);
+
+		root.AddMember("utils", jUtils, allocator);
 	}
 
 	{
@@ -838,6 +864,7 @@ bool CtaStraBaseCtx::on_schedule(uint32_t curDate, uint32_t curTime)
 	}
 
 	_is_in_schedule = false;//调度结束, 修改标记
+	_last_barno++;	//每次计算，barno加1
 	return emmited;
 }
 
@@ -1166,13 +1193,14 @@ void CtaStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 		dInfo._volume = abs(diff);
 		dInfo._opentime = curTm;
 		dInfo._opentdate = curTDate;
+		dInfo._open_barno = _last_barno;
 		strcpy(dInfo._opentag, userTag);
 		pInfo._details.emplace_back(dInfo);
 		pInfo._last_entertime = curTm;
 
 		double fee = _engine->calc_fee(stdCode, curPx, abs(diff), 0);
 		_fund_info._total_fees += fee;
-		log_trade(stdCode, dInfo._long, true, curTm, curPx, abs(diff), userTag, fee);
+		log_trade(stdCode, dInfo._long, true, curTm, curPx, abs(diff), userTag, fee, _last_barno);
 	}
 	else
 	{//持仓方向和仓位变化方向不一致, 需要平仓
@@ -1216,9 +1244,9 @@ void CtaStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 			double fee = _engine->calc_fee(stdCode, curPx, maxQty, dInfo._opentdate == curTDate ? 2 : 1);
 			_fund_info._total_fees += fee;
 			//这里写成交记录
-			log_trade(stdCode, dInfo._long, false, curTm, curPx, maxQty, userTag, fee);
+			log_trade(stdCode, dInfo._long, false, curTm, curPx, maxQty, userTag, fee, _last_barno);
 			//这里写平仓记录
-			log_close(stdCode, dInfo._long, dInfo._opentime, dInfo._price, curTm, curPx, maxQty, profit, pInfo._closeprofit, dInfo._opentag, userTag);
+			log_close(stdCode, dInfo._long, dInfo._opentime, dInfo._price, curTm, curPx, maxQty, profit, pInfo._closeprofit, dInfo._opentag, userTag, dInfo._open_barno, _last_barno);
 
 			if (decimal::eq(left,0))
 				break;
@@ -1243,6 +1271,7 @@ void CtaStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 			dInfo._volume = abs(left);
 			dInfo._opentime = curTm;
 			dInfo._opentdate = curTDate;
+			dInfo._open_barno = _last_barno;
 			strcpy(dInfo._opentag, userTag);
 			pInfo._details.emplace_back(dInfo);
 			pInfo._last_entertime = curTm;
@@ -1250,7 +1279,7 @@ void CtaStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 			//这里还需要写一笔成交记录
 			double fee = _engine->calc_fee(stdCode, curPx, abs(left), 0);
 			_fund_info._total_fees += fee;
-			log_trade(stdCode, dInfo._long, true, curTm, curPx, abs(left), userTag, fee);
+			log_trade(stdCode, dInfo._long, true, curTm, curPx, abs(left), userTag, fee, _last_barno);
 		}
 	}
 
@@ -1314,6 +1343,13 @@ WTSKlineSlice* CtaStraBaseCtx::stra_get_bars(const char* stdCode, const char* pe
 		}
 
 		_engine->sub_tick(id(), stdCode);
+
+		//如果是主K线，并且最后一根bar的编号为0
+		//则将最后一根bar的编号设置为主K线的长度
+		if(isMain && _last_barno == 0)
+		{
+			_last_barno = kline->size();
+		}
 	}
 
 	return kline;
