@@ -1834,7 +1834,7 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 		_undone_qty[stdCode] = newQty;
 		WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO, fmt::format("[{}] {} qty of undone order updated, {} -> {}", _id.c_str(), stdCode.c_str(), oldQty, newQty).c_str());
 
-		WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO, fmt::format("[{}]  Order {} of {} canceled:{}, actin: {}, leftqty: {}",
+		WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO, fmt::format("[{}] Order {} of {} canceled:{}, actin: {}, leftqty: {}",
 			_id.c_str(), orderInfo->getUserTag(), stdCode.c_str(), orderInfo->getStateMsg(),
 			formatAction(orderInfo->getDirection(), orderInfo->getOffsetType()), qty).c_str());
 	}

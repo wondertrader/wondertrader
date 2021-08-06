@@ -26,6 +26,7 @@ WtMinImpactExeUnit::WtMinImpactExeUnit()
 	, _target_pos(0)
 	, _cancel_times(0)
 	, _last_place_time(0)
+	, _last_tick_time(0)
 {
 }
 
@@ -71,7 +72,7 @@ void WtMinImpactExeUnit::init(ExecuteContext* ctx, const char* stdCode, WTSVaria
 	_qty_rate = cfg->getDouble("rate");			//下单手数比例
 
 	ctx->writeLog("MiniImpactExecUnit %s inited, order price: %s ± %d ticks, order expired: %u secs, order timespan:%u millisec, order qty: %s @ %.2f",
-		stdCode, PriceModeNames[_price_mode + 1], _price_offset, _expire_secs, _by_rate ? "byrate" : "byvol", _by_rate ? _qty_rate : _order_lots);
+		stdCode, PriceModeNames[_price_mode + 1], _price_offset, _expire_secs, _entrust_span, _by_rate ? "byrate" : "byvol", _by_rate ? _qty_rate : _order_lots);
 }
 
 void WtMinImpactExeUnit::on_order(uint32_t localid, const char* stdCode, bool isBuy, double leftover, double price, bool isCanceled)
@@ -171,6 +172,7 @@ void WtMinImpactExeUnit::on_tick(WTSTickData* newTick)
 		if (!decimal::eq(newVol, undone + realPos))
 		{
 			do_calc();
+			return;
 		}
 	}
 	else if(_expire_secs != 0 && _orders_mon.has_order() && _cancel_cnt==0)
@@ -185,6 +187,8 @@ void WtMinImpactExeUnit::on_tick(WTSTickData* newTick)
 			}
 		});
 	}
+	
+	do_calc();
 }
 
 void WtMinImpactExeUnit::on_trade(uint32_t localid, const char* stdCode, bool isBuy, double vol, double price)
@@ -269,6 +273,16 @@ void WtMinImpactExeUnit::do_calc()
 		_ctx->writeLog("No lastest tick data of %s, execute later", _code.c_str());
 		return;
 	}
+
+	//如果相比上次没有更新的tick进来，则先不下单，防止开盘前集中下单导致通道被封
+	uint64_t curTickTime = (uint64_t)_last_tick->actiondate() * 1000000000 + _last_tick->actiontime();
+	if (curTickTime <= _last_tick_time)
+	{
+		_ctx->writeLog("No tick of %s updated, execute later", _code.c_str());
+		return;
+	}
+
+	_last_tick_time = curTickTime;
 
 	double this_qty = _order_lots;
 	if (_by_rate)

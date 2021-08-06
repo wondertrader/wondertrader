@@ -109,5 +109,6 @@ private:
 	uint32_t	_cancel_times;
 
 	uint64_t	_last_place_time;
+	bool		_last_tick_time;
 };
 

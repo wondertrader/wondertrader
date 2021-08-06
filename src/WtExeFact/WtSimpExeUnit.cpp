@@ -26,6 +26,7 @@ WtSimpExeUnit::WtSimpExeUnit()
 	, _target_pos(0)
 	, _unsent_qty(0)
 	, _cancel_times(0)
+	, _last_tick_time(0)
 {
 }
 
@@ -265,6 +266,15 @@ void WtSimpExeUnit::doCalculate()
 		_ctx->writeLog("No lastest tick data of %s, execute later", _code.c_str());
 		return;
 	}
+
+	//如果相比上次没有更新的tick进来，则先不下单，防止开盘前集中下单导致通道被封
+	uint64_t curTickTime = (uint64_t)_last_tick->actiondate() * 1000000000 + _last_tick->actiontime();
+	if(curTickTime <= _last_tick_time)
+	{
+		_ctx->writeLog("No tick data of %s updated, execute later", _code.c_str());
+		return;
+	}
+	_last_tick_time = curTickTime;
 
 	double buyPx, sellPx;
 	if(_price_mode == -1)

@@ -91,6 +91,7 @@ private:
 	WTSTickData* _last_tick;	//上一笔行情
 	double		_target_pos;	//目标仓位
 	double		_unsent_qty;	//未发送数量
+	uint64_t	_last_tick_time;	//上一笔tick的时间戳
 
 
 	WTSCommodityInfo*	_comm_info;
