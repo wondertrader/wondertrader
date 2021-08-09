@@ -458,7 +458,7 @@ public:
 		MemberNames names;
 		if(_type == VT_Object && _value._map != NULL)
 		{
-			ChildrenMap::Iterator it = _value._map->begin();
+			auto it = _value._map->begin();
 			for( ; it != _value._map->end(); it++)
 			{
 				names.emplace_back(it->first);

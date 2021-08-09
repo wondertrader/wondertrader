@@ -10,8 +10,8 @@
 #pragma once
 #include "WTSObject.hpp"
 #include "WTSTypes.h"
+#include "FasterDefs.h"
 #include <string>
-#include <unordered_set>
 #include <sstream>
 
 NS_OTP_BEGIN
@@ -60,7 +60,7 @@ public:
 	inline PriceMode			getPriceMode() const{ return m_priceMode; }
 
 	inline void		addCode(const char* code){ m_setCodes.insert(code); }
-	inline const std::unordered_set<std::string>& getCodes() const{ return m_setCodes; }
+	inline const faster_hashset<std::string>& getCodes() const{ return m_setCodes; }
 
 	inline void	setEntrustQtyUnit(uint32_t buyQtyUnit, uint32_t sellQtyUnit)
 	{
@@ -96,7 +96,7 @@ private:
 	CoverMode			m_coverMode;
 	PriceMode			m_priceMode;
 
-	std::unordered_set<std::string> m_setCodes;
+	faster_hashset<std::string> m_setCodes;
 };
 
 class WTSContractInfo :	public WTSObject

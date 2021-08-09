@@ -34,7 +34,7 @@ public:
 
 	static inline int64_t getLocalTimeNano(void)
 	{
-		return std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+		return std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
 	}
 
 	static inline std::string getLocalTime(bool bIncludeMilliSec = true)
@@ -97,6 +97,19 @@ public:
 		yyyymmdd.append(month);
 		yyyymmdd.append(day);
 		return yyyymmdd;
+	}
+
+	static inline uint64_t getYYYYMMDDhhmmss()
+	{
+		timeb now;
+		ftime(&now);
+
+		tm * tNow = localtime(&(now.time));
+
+		uint64_t date = (tNow->tm_year + 1900) * 10000 + (tNow->tm_mon + 1) * 100 + tNow->tm_mday;
+
+		uint64_t time = tNow->tm_hour * 10000 + tNow->tm_min * 100 + tNow->tm_sec;
+		return date * 1000000 + time;
 	}
 
 	static inline void getDateTime(uint32_t &date, uint32_t &time)
@@ -196,7 +209,7 @@ public:
 	}
 
 	//20120512 09:15:00 -> 毫秒
-	//支持如下格式的字符串：
+	//支持如下格式的字符串: 
 	// 20120512 09:15:00 or 20120512 09:15:00 999
 	// 20120512091500 or 20120512091500999
 	static inline int64_t makeTime(std::string time_str)

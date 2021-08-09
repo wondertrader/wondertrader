@@ -33,7 +33,7 @@ public:
 	beginning or the end of the std::string ( the default action is
 	to trim both).
 	*/
-	static void trim(std::string& str, const char* delims = " \t\r", bool left = true, bool right = true)
+	static inline void trim(std::string& str, const char* delims = " \t\r", bool left = true, bool right = true)
 	{
 		if(right)
 			str.erase(str.find_last_not_of(delims)+1);
@@ -41,7 +41,7 @@ public:
 			str.erase(0, str.find_first_not_of(delims));
 	}
 
-	static std::string trim(const char* str, const char* delims = " \t\r", bool left = true, bool right = true)
+	static inline std::string trim(const char* str, const char* delims = " \t\r", bool left = true, bool right = true)
 	{
 		std::string ret = str;
 		if(right)
@@ -53,7 +53,7 @@ public:
 	}
 
 	//去掉所有空格
-	static void trimAllSpace(std::string &str)
+	static inline void trimAllSpace(std::string &str)
 	{
 		std::string::iterator destEnd = std::remove_if(str.begin(), str.end(), [](const char& c){
 			return c == ' ';
@@ -62,7 +62,7 @@ public:
 	}
 
 	//去除所有特定字符
-	static void trimAll(std::string &str,char ch)
+	static inline void trimAll(std::string &str,char ch)
 	{
 		std::string::iterator destEnd=std::remove_if(str.begin(),str.end(),std::bind1st(std::equal_to<char>(),ch));
 		str.resize(destEnd-str.begin());
@@ -76,7 +76,7 @@ public:
 	maxSplits The maximum number of splits to perform (0 for unlimited splits). If this
 	parameters is > 0, the splitting process will stop after this many splits, left to right.
 	*/
-	static StringVector split( const std::string& str, const std::string& delims = "\t\n ", unsigned int maxSplits = 0)
+	static inline StringVector split( const std::string& str, const std::string& delims = "\t\n ", unsigned int maxSplits = 0)
 	{
 		StringVector ret;
 		unsigned int numSplits = 0;
@@ -89,20 +89,20 @@ public:
 			pos = str.find_first_of(delims, start);
 			if (pos == start)
 			{
-				ret.push_back("");
+				ret.emplace_back("");
 				// Do nothing
 				start = pos + 1;
 			}
 			else if (pos == std::string::npos || (maxSplits && numSplits == maxSplits))
 			{
 				// Copy the rest of the std::string
-				ret.push_back( str.substr(start) );
+				ret.emplace_back( str.substr(start) );
 				break;
 			}
 			else
 			{
 				// Copy up to delimiter
-				ret.push_back( str.substr(start, pos - start) );
+				ret.emplace_back( str.substr(start, pos - start) );
 				start = pos + 1;
 			}
 			// parse up to next real data
@@ -115,7 +115,7 @@ public:
 
 	/** Upper-cases all the characters in the std::string.
 	*/
-	static void toLowerCase( std::string& str )
+	static inline void toLowerCase( std::string& str )
 	{
 		std::transform(
 			str.begin(),
@@ -127,7 +127,7 @@ public:
 
 	/** Lower-cases all the characters in the std::string.
 	*/
-	static void toUpperCase( std::string& str )
+	static inline void toUpperCase( std::string& str )
 	{
 		std::transform(
 			str.begin(),
@@ -136,7 +136,7 @@ public:
 			(int(*)(int))toupper);
 	}
 
-	static std::string makeLowerCase(const char* str)
+	static inline std::string makeLowerCase(const char* str)
 	{
 		std::string strRet = str;
 		std::transform(
@@ -147,7 +147,7 @@ public:
 		return strRet;
 	}
 
-	static std::string makeUpperCase(const char* str)
+	static inline std::string makeUpperCase(const char* str)
 	{
 		std::string strRet = str;
 		std::transform(
@@ -163,12 +163,12 @@ public:
 	Assumes the only contents of the std::string are a valid parsable float. Defaults to  a
 	value of 0.0 if conversion is not possible.
 	*/
-	static float toFloat( const std::string& str )
+	static inline float toFloat( const std::string& str )
 	{
 		return (float)atof(str.c_str());
 	}
 
-	static double toDouble( const std::string& str )
+	static inline double toDouble( const std::string& str )
 	{
 		return atof(str.c_str());
 	}
@@ -178,7 +178,7 @@ public:
 	@param lowerCase If true, the end of the std::string will be lower cased before
 	comparison, pattern should also be in lower case.
 	*/
-	static bool startsWith(const std::string& str, const std::string& pattern, bool lowerCase = true)
+	static inline bool startsWith(const std::string& str, const std::string& pattern, bool lowerCase = true)
 	{
 		size_t thisLen = str.length();
 		size_t patternLen = pattern.length();
@@ -197,7 +197,7 @@ public:
 	@param lowerCase If true, the end of the std::string will be lower cased before
 	comparison, pattern should also be in lower case.
 	*/
-	static bool endsWith(const std::string& str, const std::string& pattern, bool lowerCase = true)
+	static inline bool endsWith(const std::string& str, const std::string& pattern, bool lowerCase = true)
 	{
 		size_t thisLen = str.length();
 		size_t patternLen = pattern.length();
@@ -213,7 +213,7 @@ public:
 
 	/** Method for standardising paths - use forward slashes only, end with slash.
 	*/
-	static std::string standardisePath( const std::string &init, bool bIsDir = true)
+	static inline std::string standardisePath( const std::string &init, bool bIsDir = true)
 	{
 		std::string path = init;
 
@@ -229,7 +229,7 @@ public:
 	@remarks
 	Path is standardised as in standardisePath
 	*/
-	static void splitFilename(const std::string& qualifiedName,std::string& outBasename, std::string& outPath)
+	static inline void splitFilename(const std::string& qualifiedName,std::string& outBasename, std::string& outPath)
 	{
 		std::string path = qualifiedName;
 		// Replace \ with / first
@@ -254,7 +254,7 @@ public:
 	@param pattern Pattern to match against; can include simple '*' wildcards
 	@param caseSensitive Whether the match is case sensitive or not
 	*/
-	static bool match(const std::string& str, const std::string& pattern, bool caseSensitive = true)
+	static inline bool match(const std::string& str, const std::string& pattern, bool caseSensitive = true)
 	{
 		std::string tmpStr = str;
 		std::string tmpPattern = pattern;
@@ -323,14 +323,14 @@ public:
 	}
 
 	/// Constant blank std::string, useful for returning by ref where local does not exist
-	static const std::string BLANK()
+	static inline const std::string BLANK()
 	{
 		static const std::string temp = std::string("");
 		return temp;
 	}
 
-	//地球人都知道，恶心的std::string是没有CString的Format这个函数的，所以我们自己造
-	static std::string printf(const char *pszFormat, ...)
+	//地球人都知道,恶心的std::string是没有CString的Format这个函数的,所以我们自己造
+	static inline std::string printf(const char *pszFormat, ...)
 	{
 		va_list argptr;
 		va_start(argptr, pszFormat);
@@ -339,8 +339,8 @@ public:
 		return result;
 	}
 
-	//地球人都知道，恶心的std::string是没有CString的Format这个函数的，所以我们自己造
-	static std::string printf2(const char *pszFormat, ...)
+	//地球人都知道,恶心的std::string是没有CString的Format这个函数的,所以我们自己造
+	static inline std::string printf2(const char *pszFormat, ...)
 	{
 		va_list argptr;
 		va_start(argptr, pszFormat);
@@ -349,8 +349,8 @@ public:
 		return result;
 	}
 
-	//地球人都知道，恶心的std::string是没有CString的Format这个函数的，所以我们自己造
-	static std::string printf2(const char *pszFormat,va_list argptr)
+	//地球人都知道,恶心的std::string是没有CString的Format这个函数的,所以我们自己造
+	static inline std::string printf2(const char *pszFormat,va_list argptr)
 	{
 		int         size   = 1024;
 		char*       buffer = new char[size];
@@ -379,7 +379,7 @@ public:
 		}
 	}
 
-	static std::string extend(const char* str, uint32_t length)
+	static inline std::string extend(const char* str, uint32_t length)
 	{
 		if(strlen(str) >= length)
 			return str;
@@ -400,8 +400,8 @@ public:
 		return ret;
 	}
 
-	//地球人都知道，恶心的std::string是没有CString的Format这个函数的，所以我们自己造
-	static std::string printf(const char* pszFormat, va_list argptr)
+	//地球人都知道,恶心的std::string是没有CString的Format这个函数的,所以我们自己造
+	static inline std::string printf(const char* pszFormat, va_list argptr)
 	{
 		int size = 1024;
 		int len=0;
@@ -437,7 +437,7 @@ public:
 	}
 
 	//取得右边的N个字符
-	static std::string right(const std::string &src,size_t nCount)
+	static inline std::string right(const std::string &src,size_t nCount)
 	{
 		if(nCount>src.length())
 			return BLANK();
@@ -445,12 +445,12 @@ public:
 	}
 
 	//取左边的N个字符
-	static std::string left(const std::string &src,size_t nCount)
+	static inline std::string left(const std::string &src,size_t nCount)
 	{
 		return src.substr(0,nCount);
 	}
 
-	size_t charCount(const std::string &src,char ch)
+	static inline size_t charCount(const std::string &src,char ch)
 	{
 		size_t result=0;
 		for(size_t i=0;i<src.length();i++)
@@ -460,7 +460,7 @@ public:
 		return result;
 	}
 
-	static void replace(std::string& str, const char* src, const char* des)
+	static inline void replace(std::string& str, const char* src, const char* des)
 	{
 		std::string ret = "";
 		std::size_t srcLen = strlen(src);
@@ -479,7 +479,7 @@ public:
 		str = ret;
 	}
 
-	static std::string fmtInt64(int64_t v)
+	static inline std::string fmtInt64(int64_t v)
 	{
 		char buf[64] = { 0 };
 #ifdef _WIN32
@@ -490,7 +490,7 @@ public:
 		return buf;
 	}
 
-	static std::string fmtUInt64(uint64_t v)
+	static inline std::string fmtUInt64(uint64_t v)
 	{
 		char buf[64] = { 0 };
 #ifdef _WIN32

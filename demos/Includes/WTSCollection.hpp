@@ -13,7 +13,7 @@
 #include <map>
 #include <functional>
 #include <algorithm>
-#include <unordered_map>
+#include "../FasterLibs/tsl/robin_map.h"
 
 #include <deque>
 
@@ -529,8 +529,7 @@ public:
 	/*
 	 *	容器迭代器的定义
 	 */
-	typedef std::unordered_map<T, WTSObject*>	_MyType;
-	typedef typename _MyType::iterator			Iterator;
+	typedef tsl::robin_map<T, WTSObject*>		_MyType;
 	typedef typename _MyType::const_iterator	ConstIterator;
 
 	/*
@@ -554,7 +553,7 @@ public:
 	 */
 	WTSObject* get(const T &_key)
 	{
-		Iterator it = _map.find(_key);
+		auto it = _map.find(_key);
 		if(it == _map.end())
 			return NULL;
 
@@ -569,7 +568,7 @@ public:
 	 */
 	WTSObject* grab(const T &_key)
 	{
-		Iterator it = _map.find(_key);
+		auto it = _map.find(_key);
 		if(it == _map.end())
 			return NULL;
 
@@ -588,7 +587,7 @@ public:
 			obj->retain();
 
 		WTSObject* pOldObj = NULL;
-		Iterator it = _map.find(_key);
+		auto it = _map.find(_key);
 		if (it != _map.end())
 		{
 			pOldObj = it->second;
@@ -605,7 +604,7 @@ public:
 	 */
 	void remove(const T &_key)
 	{
-		Iterator it = _map.find(_key);
+		auto it = _map.find(_key);
 		if(it != _map.end())
 		{
 			it->second->release();
@@ -616,11 +615,6 @@ public:
 	/*
 	 *	获取容器起始位置的迭代器
 	 */
-	Iterator begin()
-	{
-		return _map.begin();
-	}
-
 	ConstIterator begin() const
 	{
 		return _map.begin();
@@ -629,19 +623,9 @@ public:
 	/*
 	 *	获取容易末尾位置的迭代器
 	 */
-	Iterator end()
-	{
-		return _map.end();
-	}
-
 	ConstIterator end() const
 	{
 		return _map.end();
-	}
-
-	Iterator find(const T& key)
-	{
-		return _map.find(key);
 	}
 
 	ConstIterator find(const T& key) const
@@ -655,7 +639,7 @@ public:
 	 */
 	void clear()
 	{
-		Iterator it = _map.begin();
+		ConstIterator it = _map.begin();
 		for(; it != _map.end(); it++)
 		{
 			it->second->release();
@@ -691,7 +675,8 @@ protected:
 	WTSHashMap(){}
 	virtual ~WTSHashMap(){}
 
-	std::unordered_map<T, WTSObject*>	_map;
+	//std::unordered_map<T, WTSObject*>	_map;
+	tsl::robin_map<T, WTSObject*>	_map;
 };
 
 //////////////////////////////////////////////////////////////////////////

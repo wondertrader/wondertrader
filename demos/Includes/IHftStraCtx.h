@@ -39,14 +39,19 @@ public:
 	virtual void on_order_detail(const char* stdCode, WTSOrdDtlData* newOrdDtl) = 0;
 	virtual void on_transaction(const char* stdCode, WTSTransData* newTrans) = 0;
 	virtual void on_bar(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar) {}
-	virtual void on_session_begin(uint32_t uTDate) {};
-	virtual void on_session_end(uint32_t uTDate) {};
+	virtual void on_session_begin(uint32_t uTDate) {}
+	virtual void on_session_end(uint32_t uTDate) {}
 
 	//²ßÂÔ½Ó¿Ú
 	virtual bool		stra_cancel(uint32_t localid) = 0;
 	virtual OrderIDs	stra_cancel(const char* stdCode, bool isBuy, double qty) = 0;
 	virtual OrderIDs	stra_buy(const char* stdCode, double price, double qty, const char* userTag) = 0;
 	virtual OrderIDs	stra_sell(const char* stdCode, double price, double qty, const char* userTag) = 0;
+
+	virtual uint32_t	stra_enter_long(const char* stdCode, double price, double qty, const char* userTag) { return 0; }
+	virtual uint32_t	stra_enter_short(const char* stdCode, double price, double qty, const char* userTag) { return 0; }
+	virtual uint32_t	stra_exit_long(const char* stdCode, double price, double qty, const char* userTag, bool isToday = false) { return 0; }
+	virtual uint32_t	stra_exit_short(const char* stdCode, double price, double qty, const char* userTag, bool isToday = false) { return 0; }
 
 	virtual WTSCommodityInfo* stra_get_comminfo(const char* stdCode) = 0;
 	virtual WTSKlineSlice*	stra_get_bars(const char* stdCode, const char* period, uint32_t count) = 0;

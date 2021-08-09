@@ -31,7 +31,9 @@ public:
 		{
 			uint32_t cnt = m_uRefs.fetch_sub(1);
 			if (cnt == 1)
+			{
 				delete this;
+			}
 		}
 		catch(...)
 		{

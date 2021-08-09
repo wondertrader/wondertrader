@@ -255,6 +255,26 @@ public:
 		return pRet;
 	}
 
+	inline WTSBarStruct*	get_his_addr()
+	{
+		return m_bsHisBegin;
+	}
+
+	inline int32_t	get_his_count()
+	{
+		return m_iHisCnt;
+	}
+
+	inline WTSBarStruct*	get_rt_addr()
+	{
+		return m_bsRtBegin;
+	}
+
+	inline int32_t	get_rt_count()
+	{
+		return m_iRtCnt;
+	}
+
 	inline WTSBarStruct*	at(int32_t idx)
 	{
 		idx = translateIdx(idx);
@@ -315,7 +335,7 @@ public:
 		double minValue = at(begin)->low;
 		for (int32_t i = begin; i <= end; i++)
 		{
-			minValue = max(minValue, at(i)->low);
+			minValue = min(minValue, at(i)->low);
 		}
 
 		return minValue;
@@ -1184,11 +1204,13 @@ public:
 	 */
 	inline WTSTickStruct&	getTickStruct(){ return m_tickStruct; }
 
+	inline uint64_t getLocalTime() const { return m_uLocalTime; }
+
 private:
 	WTSTickStruct	m_tickStruct;
 	uint64_t		m_uLocalTime;	//本地时间
 
-	WTSTickData():m_uLocalTime(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count()){}
+	WTSTickData():m_uLocalTime(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count()){}
 };
 
 /*

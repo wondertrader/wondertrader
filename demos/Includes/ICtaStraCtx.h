@@ -21,7 +21,7 @@ class WTSKlineSlice;
 class WTSTickSlice;
 
 //typedef void(*FuncEnumPositionCallBack)(const char* stdCode, int32_t qty);
-typedef std::function<void(const char*, double)> FuncEnumPositionCallBack;
+typedef std::function<void(const char*, double)> FuncEnumCtaPosCallBack;
 
 class ICtaStraCtx
 {
@@ -46,7 +46,7 @@ public:
 	virtual void on_mainkline_updated(uint32_t curDate, uint32_t curTime) = 0;
 	virtual void on_tick_updated(const char* stdCode, WTSTickData* newTick){}
 
-	virtual void enum_position(FuncEnumPositionCallBack cb) = 0;
+	virtual void enum_position(FuncEnumCtaPosCallBack cb) = 0;
 
 	//²ßÂÔ½Ó¿Ú
 	virtual void stra_enter_long(const char* stdCode, double qty, const char* userTag = "", double limitprice = 0.0, double stopprice = 0.0) = 0;
@@ -61,6 +61,8 @@ public:
 	virtual uint32_t stra_get_tdate() = 0;
 	virtual uint32_t stra_get_date() = 0;
 	virtual uint32_t stra_get_time() = 0;
+
+	virtual double stra_get_fund_data(int flag = 0) = 0;
 
 	virtual uint64_t stra_get_first_entertime(const char* stdCode) = 0;
 	virtual uint64_t stra_get_last_entertime(const char* stdCode) = 0;

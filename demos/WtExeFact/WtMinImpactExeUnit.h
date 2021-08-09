@@ -1,10 +1,10 @@
 /*!
- * \file WtSimpExeUnit.h
+ * \file WtMinImpactExeUnit.h
  *
  * \author Wesley
  * \date 2020/03/30
  *
- * 
+ * 最小冲击执行单元
  */
 #pragma once
 #include "../Includes/ExecuteDefs.h"
@@ -12,14 +12,14 @@
 
 USING_NS_OTP;
 
-class WtSimpExeUnit : public ExecuteUnit
+class WtMinImpactExeUnit : public ExecuteUnit
 {
 public:
-	WtSimpExeUnit();
-	virtual ~WtSimpExeUnit();
+	WtMinImpactExeUnit();
+	virtual ~WtMinImpactExeUnit();
 
 private:
-	void	doCalculate();
+	void	do_calc();
 
 public:
 	/*
@@ -90,9 +90,6 @@ public:
 private:
 	WTSTickData* _last_tick;	//上一笔行情
 	double		_target_pos;	//目标仓位
-	double		_unsent_qty;	//未发送数量
-	uint64_t	_last_tick_time;	//上一笔tick的时间戳
-
 
 	WTSCommodityInfo*	_comm_info;
 	WTSSessionInfo*		_sess_info;
@@ -102,9 +99,16 @@ private:
 	int32_t		_price_offset;
 	uint32_t	_expire_secs;
 	int32_t		_price_mode;
+	uint32_t	_entrust_span;
+	bool		_by_rate;
+	double		_order_lots;
+	double		_qty_rate;
 
 	WtOrdMon	_orders_mon;
 	uint32_t	_cancel_cnt;
 	uint32_t	_cancel_times;
+
+	uint64_t	_last_place_time;
+	uint64_t	_last_tick_time;
 };
 

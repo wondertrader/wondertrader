@@ -65,9 +65,9 @@ void WtHftStraDemo::on_init(IHftStraCtx* ctx)
 	//if (ticks)
 	//	ticks->release();
 
-	//WTSKlineSlice* kline = ctx->stra_get_bars(_code.c_str(), "m1", 30);
-	//if (kline)
-	//	kline->release();
+	WTSKlineSlice* kline = ctx->stra_get_bars(_code.c_str(), "m1", 30);
+	if (kline)
+		kline->release();
 
 	ctx->stra_sub_ticks(_code.c_str());
 

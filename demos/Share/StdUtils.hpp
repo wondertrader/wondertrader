@@ -5,7 +5,7 @@
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief C++标准库一些定义的简单封装，方便调用
+ * \brief C++标准库一些定义的简单封装,方便调用
  */
 #pragma once
 
@@ -31,7 +31,7 @@ typedef std::shared_ptr<StdThread> StdThreadPtr;
 //std互斥量和锁
 typedef std::recursive_mutex	StdRecurMutex;
 typedef std::mutex				StdUniqueMutex;
-typedef std::condition_variable	StdCondVariable;
+typedef std::condition_variable_any	StdCondVariable;
 
 typedef std::unique_lock<StdUniqueMutex>	StdUniqueLock;
 

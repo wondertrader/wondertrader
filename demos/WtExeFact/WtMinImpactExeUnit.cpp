@@ -1,12 +1,12 @@
 /*!
- * \file WtSimpExeUnit.cpp
+ * \file WtMinImpactExeUnit.cpp
  *
  * \author Wesley
  * \date 2020/03/30
  *
  * 
  */
-#include "WtSimpExeUnit.h"
+#include "WtMinImpactExeUnit.h"
 
 #include "../Includes/WTSVariant.hpp"
 #include "../Includes/WTSContractInfo.hpp"
@@ -16,7 +16,7 @@
 extern const char* FACT_NAME;
 
 
-WtSimpExeUnit::WtSimpExeUnit()
+WtMinImpactExeUnit::WtMinImpactExeUnit()
 	: _last_tick(NULL)
 	, _comm_info(NULL)
 	, _price_mode(0)
@@ -24,14 +24,14 @@ WtSimpExeUnit::WtSimpExeUnit()
 	, _expire_secs(0)
 	, _cancel_cnt(0)
 	, _target_pos(0)
-	, _unsent_qty(0)
 	, _cancel_times(0)
+	, _last_place_time(0)
 	, _last_tick_time(0)
 {
 }
 
 
-WtSimpExeUnit::~WtSimpExeUnit()
+WtMinImpactExeUnit::~WtMinImpactExeUnit()
 {
 	if (_last_tick)
 		_last_tick->release();
@@ -40,24 +40,18 @@ WtSimpExeUnit::~WtSimpExeUnit()
 		_comm_info->release();
 }
 
-const char* WtSimpExeUnit::getFactName()
+const char* WtMinImpactExeUnit::getFactName()
 {
 	return FACT_NAME;
 }
 
-const char* WtSimpExeUnit::getName()
+const char* WtMinImpactExeUnit::getName()
 {
-	return "WtSimpExeUnit";
+	return "WtMinImpactExeUnit";
 }
 
-const char* PriceModeNames[] = 
-{
-	"BESTPX",		//最优价
-	"LASTPX",		//最新价
-	"MARKET",		//对手价
-	"AUTOPX"		//自动
-};
-void WtSimpExeUnit::init(ExecuteContext* ctx, const char* stdCode, WTSVariant* cfg)
+extern const char* PriceModeNames[4];
+void WtMinImpactExeUnit::init(ExecuteContext* ctx, const char* stdCode, WTSVariant* cfg)
 {
 	ExecuteUnit::init(ctx, stdCode, cfg);
 
@@ -69,14 +63,19 @@ void WtSimpExeUnit::init(ExecuteContext* ctx, const char* stdCode, WTSVariant* c
 	if (_sess_info)
 		_sess_info->retain();
 
-	_price_offset = cfg->getInt32("offset");
-	_expire_secs = cfg->getUInt32("expire");
+	_price_offset = cfg->getInt32("offset");	//价格偏移跳数，一般和订单同方向
+	_expire_secs = cfg->getUInt32("expire");	//订单超时秒数
 	_price_mode = cfg->getInt32("pricemode");	//价格类型,0-最新价,-1-最优价,1-对手价,2-自动,默认为0
+	_entrust_span = cfg->getUInt32("span");		//发单时间间隔，单位毫秒
+	_by_rate = cfg->getBoolean("byrate");		//是否按照对手的挂单数的比例下单，如果是true，则rate字段生效，如果是false则lots字段生效
+	_order_lots = cfg->getDouble("lots");		//单次发单手数
+	_qty_rate = cfg->getDouble("rate");			//下单手数比例
 
-	ctx->writeLog("ExecUnit %s inited, order price: %s ± %d ticks, order expired in %u secs", stdCode, PriceModeNames[_price_mode+1], _price_offset, _expire_secs);
+	ctx->writeLog("MiniImpactExecUnit %s inited, order price: %s ± %d ticks, order expired: %u secs, order timespan:%u millisec, order qty: %s @ %.2f",
+		stdCode, PriceModeNames[_price_mode + 1], _price_offset, _expire_secs, _entrust_span, _by_rate ? "byrate" : "byvol", _by_rate ? _qty_rate : _order_lots);
 }
 
-void WtSimpExeUnit::on_order(uint32_t localid, const char* stdCode, bool isBuy, double leftover, double price, bool isCanceled)
+void WtMinImpactExeUnit::on_order(uint32_t localid, const char* stdCode, bool isBuy, double leftover, double price, bool isCanceled)
 {
 	{
 		if (!_orders_mon.has_order(localid))
@@ -101,11 +100,11 @@ void WtSimpExeUnit::on_order(uint32_t localid, const char* stdCode, bool isBuy, 
 		//_ctx->writeLog("%s的订单%u已撤销,重新触发执行逻辑", stdCode, localid);
 		_ctx->writeLog("Order %u of %s canceled, recalc will be done", localid, stdCode);
 		_cancel_times++;
-		doCalculate();
+		do_calc();
 	}
 }
 
-void WtSimpExeUnit::on_channel_ready()
+void WtMinImpactExeUnit::on_channel_ready()
 {
 	double undone = _ctx->getUndoneQty(_code.c_str());
 
@@ -124,15 +123,15 @@ void WtSimpExeUnit::on_channel_ready()
 	}
 
 
-	doCalculate();
+	do_calc();
 }
 
-void WtSimpExeUnit::on_channel_lost()
+void WtMinImpactExeUnit::on_channel_lost()
 {
 	
 }
 
-void WtSimpExeUnit::on_tick(WTSTickData* newTick)
+void WtMinImpactExeUnit::on_tick(WTSTickData* newTick)
 {
 	if (newTick == NULL || _code.compare(newTick->code()) != 0)
 		return;
@@ -172,7 +171,8 @@ void WtSimpExeUnit::on_tick(WTSTickData* newTick)
 
 		if (!decimal::eq(newVol, undone + realPos))
 		{
-			doCalculate();
+			do_calc();
+			return;
 		}
 	}
 	else if(_expire_secs != 0 && _orders_mon.has_order() && _cancel_cnt==0)
@@ -187,14 +187,16 @@ void WtSimpExeUnit::on_tick(WTSTickData* newTick)
 			}
 		});
 	}
+	
+	do_calc();
 }
 
-void WtSimpExeUnit::on_trade(uint32_t localid, const char* stdCode, bool isBuy, double vol, double price)
+void WtMinImpactExeUnit::on_trade(uint32_t localid, const char* stdCode, bool isBuy, double vol, double price)
 {
 	//不用触发,这里在ontick里触发吧
 }
 
-void WtSimpExeUnit::on_entrust(uint32_t localid, const char* stdCode, bool bSuccess, const char* message)
+void WtMinImpactExeUnit::on_entrust(uint32_t localid, const char* stdCode, bool bSuccess, const char* message)
 {
 	if (!bSuccess)
 	{
@@ -204,11 +206,11 @@ void WtSimpExeUnit::on_entrust(uint32_t localid, const char* stdCode, bool bSucc
 
 		_orders_mon.erase_order(localid);
 
-		doCalculate();
+		do_calc();
 	}
 }
 
-void WtSimpExeUnit::doCalculate()
+void WtMinImpactExeUnit::do_calc()
 {
 	if (_cancel_cnt != 0)
 		return;
@@ -230,7 +232,6 @@ void WtSimpExeUnit::doCalculate()
 		_ctx->writeLog("@ %d cancelcnt -> %u", __LINE__, _cancel_cnt);
 		return;
 	}
-	//else if(newVol == 0 && undone != 0)
 	else if (decimal::eq(newVol,0) && !decimal::eq(undone, 0))
 	{
 		//如果目标仓位为0,且未完成不为0
@@ -248,33 +249,51 @@ void WtSimpExeUnit::doCalculate()
 		}
 	}
 
-	//如果都是同向的,则纳入计算
-	double curPos = realPos + undone;
+	//因为是逐笔发单，所以如果有不需要撤销的未完成单，则暂不发单
+	if (!decimal::eq(undone, 0))
+		return;
+
+	double curPos = realPos;
 	//if (curPos == newVol)
 	if (decimal::eq(curPos, newVol))
 		return;
 
+	//检查下单时间间隔
+	uint64_t now = TimeUtils::getLocalTimeNow();
+	if (now - _last_place_time < _entrust_span)
+		return;
+
+	bool isBuy = decimal::gt(newVol, curPos);
+
 	if(_last_tick == NULL)
-	{
-		//grabLastTick会自动增加引用计数,不需要再retain
 		_last_tick = _ctx->grabLastTick(stdCode);
-	}
 
 	if (_last_tick == NULL)
 	{
-		//_ctx->writeLog("%s没有最新tick数据,退出执行逻辑", _code.c_str());
 		_ctx->writeLog("No lastest tick data of %s, execute later", _code.c_str());
 		return;
 	}
 
 	//如果相比上次没有更新的tick进来，则先不下单，防止开盘前集中下单导致通道被封
 	uint64_t curTickTime = (uint64_t)_last_tick->actiondate() * 1000000000 + _last_tick->actiontime();
-	if(curTickTime <= _last_tick_time)
+	if (curTickTime <= _last_tick_time)
 	{
-		_ctx->writeLog("No tick data of %s updated, execute later", _code.c_str());
+		_ctx->writeLog("No tick of %s updated, execute later", _code.c_str());
 		return;
 	}
+
 	_last_tick_time = curTickTime;
+
+	double this_qty = _order_lots;
+	if (_by_rate)
+	{
+		this_qty = isBuy ? _last_tick->askqty(0) : _last_tick->bidqty(0);
+		this_qty = round(this_qty*_qty_rate);
+		if (decimal::lt(this_qty, 1))
+			this_qty = 1;
+
+		this_qty = min(this_qty, abs(newVol - curPos));
+	}
 
 	double buyPx, sellPx;
 	if(_price_mode == -1)
@@ -312,7 +331,6 @@ void WtSimpExeUnit::doCalculate()
 	bool isCanCancel = true;
 	if (!decimal::eq(_last_tick->upperlimit(), 0) && decimal::gt(buyPx, _last_tick->upperlimit()))
 	{
-		//_ctx->writeLog("%s的买入价%f已修正为涨停价%f", _code.c_str(), buyPx, _last_tick->upperlimit());
 		_ctx->writeLog("Buy price %f of %s modified to upper limit price", buyPx, _code.c_str(), _last_tick->upperlimit());
 		buyPx = _last_tick->upperlimit();
 		isCanCancel = false;	//如果价格被修正为涨跌停价，订单不可撤销
@@ -320,26 +338,26 @@ void WtSimpExeUnit::doCalculate()
 	
 	if (!decimal::eq(_last_tick->lowerlimit(), 0) && decimal::lt(sellPx, _last_tick->lowerlimit()))
 	{
-		//_ctx->writeLog("%s的卖出价%f已修正为跌停价%f", _code.c_str(), sellPx, _last_tick->lowerlimit());
 		_ctx->writeLog("Sell price %f of %s modified to lower limit price", buyPx, _code.c_str(), _last_tick->upperlimit());
 		sellPx = _last_tick->lowerlimit();
 		isCanCancel = false;	//如果价格被修正为涨跌停价，订单不可撤销
 	}
 
-	//if (newVol > curPos)
-	if (decimal::gt(newVol, curPos))
+	if (isBuy)
 	{
-		OrderIDs ids = _ctx->buy(stdCode, buyPx, newVol - curPos);
+		OrderIDs ids = _ctx->buy(stdCode, buyPx, this_qty);
 		_orders_mon.push_order(ids.data(), ids.size(), _ctx->getCurTime(), isCanCancel);
 	}
 	else
 	{
-		OrderIDs ids  = _ctx->sell(stdCode, sellPx, curPos - newVol);
+		OrderIDs ids  = _ctx->sell(stdCode, sellPx, this_qty);
 		_orders_mon.push_order(ids.data(), ids.size(), _ctx->getCurTime(), isCanCancel);
 	}
+
+	_last_place_time = now;
 }
 
-void WtSimpExeUnit::set_position(const char* stdCode, double newVol)
+void WtMinImpactExeUnit::set_position(const char* stdCode, double newVol)
 {
 	if (_code.compare(stdCode) != 0)
 		return;
@@ -349,5 +367,5 @@ void WtSimpExeUnit::set_position(const char* stdCode, double newVol)
 		_target_pos = newVol;
 	}
 
-	doCalculate();
+	do_calc();
 }
