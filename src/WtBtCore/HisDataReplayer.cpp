@@ -9,6 +9,7 @@
  */
 #include "HisDataReplayer.h"
 #include "EventNotifier.h"
+#include "WtHelper.h"
 
 #include <fstream>
 
@@ -29,6 +30,10 @@
 
 #include "../Share/JsonToVariant.hpp"
 #include "../Share/CodeHelper.hpp"
+
+#include <rapidjson/document.h>
+#include <rapidjson/prettywriter.h>
+namespace rj = rapidjson;
 
 #ifdef _WIN32
 #pragma comment(lib, "libmysql.lib")
@@ -305,7 +310,44 @@ void HisDataReplayer::reset()
 	_tick_simulated = true;
 }
 
-void HisDataReplayer::run()
+void HisDataReplayer::dump_btenv(const char* stdCode, WTSKlinePeriod period, uint32_t times, uint64_t stime, uint64_t etime)
+{
+	std::string output;
+	{
+		rj::Document root(rj::kObjectType);
+		rj::Document::AllocatorType &allocator = root.GetAllocator();
+
+		root.AddMember("code", rj::Value(stdCode, allocator), allocator);
+
+		std::stringstream ss;
+		if (period == KP_DAY)
+			ss << "d";
+		else if (period == KP_Minute1)
+			ss << "m" << times;
+		else
+			ss << "m" << times * 5;
+
+		root.AddMember("period", rj::Value(ss.str().c_str(), allocator), allocator);
+		
+		root.AddMember("stime", stime, allocator);
+		root.AddMember("etime", etime, allocator);
+
+		rj::StringBuffer sb;
+		rj::PrettyWriter<rj::StringBuffer> writer(sb);
+		root.Accept(writer);
+
+		output = sb.GetString();
+	}
+
+	std::string folder = WtHelper::getOutputDir();
+	folder += _stra_name;
+	folder += "/";
+	boost::filesystem::create_directories(folder.c_str());
+	std::string filename = folder + "btenv.json";
+	BoostFile::write_file_contents(filename.c_str(), output.c_str(), output.size());
+}
+
+void HisDataReplayer::run(bool bNeedDump/* = false*/)
 {
 	if(_running)
 	{
@@ -332,6 +374,7 @@ void HisDataReplayer::run()
 	if(_task == NULL)
 	{
 		//如果没有时间调度任务,则采用主K线回放的模式
+		notify_progress(_cur_tdate);
 
 		//如果没有确定主K线,则确定一个周期最短的主K线
 		if (_main_key.empty() && !_bars_cache.empty())
@@ -357,7 +400,6 @@ void HisDataReplayer::run()
 				}
 			}
 
-			//WTSLogger::info("主K线自动确定: %s", _main_key.c_str());
 			WTSLogger::info("Main K bars automatic determined: %s", _main_key.c_str());
 		}
 
@@ -367,7 +409,14 @@ void HisDataReplayer::run()
 			WTSSessionInfo* sInfo = get_session_info(barList._code.c_str(), true);
 			std::string commId = CodeHelper::stdCodeToStdCommID(barList._code.c_str());
 
-			//WTSLogger::log_raw(LL_INFO, fmt::format("开始从{}进行数据回放...", _begin_time).c_str());
+			uint32_t sIdx = locate_barindex(_main_key, _begin_time, false);
+			uint32_t eIdx = locate_barindex(_main_key, _end_time, true);
+
+			uint32_t total_barcnt = eIdx - sIdx + 1;
+			uint32_t replayed_barcnt = 0;
+
+			notify_progress(0);
+
 			WTSLogger::log_raw(LL_INFO, fmt::format("Start to replay back data from {}...", _begin_time).c_str());
 
 			for (;;)
@@ -386,9 +435,9 @@ void HisDataReplayer::run()
 
 					if (nextBarTime > _end_time)
 					{
-						//WTSLogger::log_raw(LL_INFO, fmt::format("{}超过结束时间{},回放结束", nextBarTime, _end_time).c_str());
 						WTSLogger::log_raw(LL_INFO, fmt::format("{} is beyond ending time {},replaying done", nextBarTime, _end_time).c_str());
 						_listener->handle_replay_done();
+						notify_progress(100);
 						if (_notifier)
 							_notifier->notifyEvent("BT_END");
 						break;
@@ -428,11 +477,14 @@ void HisDataReplayer::run()
 
 					onMinuteEnd(nextDate, nextTime, (isDay || isEndTDate) ? nextTDate : 0, _tick_simulated);
 
+					replayed_barcnt += 1;
+
 					if (isEndTDate && _closed_tdate != _cur_tdate)
 					{
 						_listener->handle_session_end(_cur_tdate);
 						_closed_tdate = _cur_tdate;
 						_day_cache.clear();
+						notify_progress(replayed_barcnt/total_barcnt);
 					}
 
 					if (barList._cursor >= barList._bars.size())
@@ -440,6 +492,7 @@ void HisDataReplayer::run()
 						//WTSLogger::info("全部数据都已回放,回放结束");
 						WTSLogger::info("All back data replayed, replaying done");
 						_listener->handle_replay_done();
+						notify_progress(100);
 						if (_notifier)
 							_notifier->notifyEvent("BT_END");
 						break;
@@ -450,6 +503,7 @@ void HisDataReplayer::run()
 					//WTSLogger::info("数据尚未初始化,回放直接退出");
 					WTSLogger::info("No back data initialized, replaying canceled");
 					_listener->handle_replay_done();
+					notify_progress(100);
 					if (_notifier)
 						_notifier->notifyEvent("BT_END");
 					break;
@@ -460,6 +514,9 @@ void HisDataReplayer::run()
 			{
 				_listener->handle_session_end(_cur_tdate);
 			}
+
+			if(bNeedDump)
+				dump_btenv(barList._code.c_str(), barList._period, barList._times, _begin_time, _end_time);
 		}
 		else if(_tick_enabled)
 		{

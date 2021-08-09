@@ -120,28 +120,12 @@ void EventNotifier::notifyData(const char* topic, void* data , uint32_t dataLen)
 		_publisher(_mq_sid, topic, (const char*)data, dataLen);
 }
 
-void EventNotifier::notifySignal(const char* topic, const char* stdCode, double price, double volume, const char* usertag, uint64_t barTime)
+void EventNotifier::notifyProgress(double percent)
 {
-	std::string output;
-	{
-		rj::Document root(rj::kObjectType);
-		rj::Document::AllocatorType &allocator = root.GetAllocator();
-
-		root.AddMember("code", rj::Value(stdCode, allocator), allocator);
-		root.AddMember("tag", rj::Value(usertag, allocator), allocator);
-		root.AddMember("volume", volume, allocator);
-		root.AddMember("price", price, allocator);
-		root.AddMember("bartime", barTime, allocator);
-
-		rj::StringBuffer sb;
-		rj::PrettyWriter<rj::StringBuffer> writer(sb);
-		root.Accept(writer);
-
-		output = sb.GetString();
-	}
+	std::string output = StrUtil::printf("{\"progress\":%.f}", percent);
 
 	if (_publisher)
-		_publisher(_mq_sid, topic, (const char*)output.c_str(), output.size());
+		_publisher(_mq_sid, "BT_PROGRESS", (const char*)output.c_str(), output.size());
 }
 
 void EventNotifier::notifyFund(const char* topic, uint32_t uDate, double total_profit, double dynprofit, double dynbalance, double total_fee)
@@ -156,39 +140,6 @@ void EventNotifier::notifyFund(const char* topic, uint32_t uDate, double total_p
 		root.AddMember("dynprofit", dynprofit, allocator);
 		root.AddMember("dynbalance", dynbalance, allocator);
 		root.AddMember("total_fee", total_fee, allocator);
-
-		rj::StringBuffer sb;
-		rj::PrettyWriter<rj::StringBuffer> writer(sb);
-		root.Accept(writer);
-
-		output = sb.GetString();
-	}
-
-	if (_publisher)
-		_publisher(_mq_sid, topic, (const char*)output.c_str(), output.size());
-}
-
-void EventNotifier::notifyClose(const char* topic, const char* stdCode, bool isLong, uint64_t openTime, double openpx, uint64_t closeTime, double closepx,
-	double qty, double profit, double maxprofit, double maxloss, double totalprofit /* = 0 */, const char* enterTag /* = "" */, const char* exitTag /* = "" */)
-{
-	std::string output;
-	{
-		rj::Document root(rj::kObjectType);
-		rj::Document::AllocatorType &allocator = root.GetAllocator();
-
-		root.AddMember("code", rj::Value(stdCode, allocator), allocator);
-		root.AddMember("long", isLong, allocator);
-		root.AddMember("open_time", openTime, allocator);
-		root.AddMember("open_price", openpx, allocator);
-		root.AddMember("close_time", closeTime, allocator);
-		root.AddMember("close_price", closepx, allocator);
-		root.AddMember("volume", qty, allocator);
-		root.AddMember("profit", profit, allocator);
-		root.AddMember("max_profit", maxprofit, allocator);
-		root.AddMember("max_loss", maxloss, allocator);
-		root.AddMember("total_profit", totalprofit, allocator);
-		root.AddMember("enter_tag", rj::Value(enterTag, allocator), allocator);
-		root.AddMember("exit_tag", rj::Value(exitTag, allocator), allocator);
 
 		rj::StringBuffer sb;
 		rj::PrettyWriter<rj::StringBuffer> writer(sb);

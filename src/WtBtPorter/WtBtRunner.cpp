@@ -133,7 +133,7 @@ uint32_t WtBtRunner::initCtaMocker(const char* name, int32_t slippage/* = 0*/)
 	}
 
 	_cta_mocker = new ExpCtaMocker(&_replayer, name, slippage, &_notifier);
-	_replayer.register_sink(_cta_mocker);
+	_replayer.register_sink(_cta_mocker, name);
 	return _cta_mocker->id();
 }
 
@@ -146,7 +146,7 @@ uint32_t WtBtRunner::initHftMocker(const char* name)
 	}
 
 	_hft_mocker = new ExpHftMocker(&_replayer, name);
-	_replayer.register_sink(_hft_mocker);
+	_replayer.register_sink(_hft_mocker, name);
 	return _hft_mocker->id();
 }
 
@@ -159,7 +159,7 @@ uint32_t WtBtRunner::initSelMocker(const char* name, uint32_t date, uint32_t tim
 	}
 
 	_sel_mocker = new ExpSelMocker(&_replayer, name, slippage);
-	_replayer.register_sink(_sel_mocker);
+	_replayer.register_sink(_sel_mocker, name);
 
 	_replayer.register_task(_sel_mocker->id(), date, time, period, trdtpl, session);
 	return _sel_mocker->id();
@@ -313,21 +313,26 @@ void WtBtRunner::config(const char* cfgFile, bool isFile /* = true */)
 	WTSVariant* cfgMode = cfg->get(mode);
 	if (strcmp(mode, "cta") == 0 && cfgMode)
 	{
-		_cta_mocker = new ExpCtaMocker(&_replayer, "cta");
+		const char* name = cfgMode->getCString("name");
+		int32_t slippage = cfgMode->getInt32("slippage");
+		_cta_mocker = new ExpCtaMocker(&_replayer, name, slippage, &_notifier);
 		_cta_mocker->initCtaFactory(cfgMode);
-		_replayer.register_sink(_cta_mocker);
+		_replayer.register_sink(_cta_mocker, name);
 	}
 	else if (strcmp(mode, "hft") == 0 && cfgMode)
 	{
-		_hft_mocker = new ExpHftMocker(&_replayer, "hft");
+		const char* name = cfgMode->getCString("name");
+		_hft_mocker = new ExpHftMocker(&_replayer, name);
 		_hft_mocker->initHftFactory(cfgMode);
-		_replayer.register_sink(_hft_mocker);
+		_replayer.register_sink(_hft_mocker, name);
 	}
 	else if (strcmp(mode, "sel") == 0 && cfgMode)
 	{
-		_sel_mocker = new ExpSelMocker(&_replayer, "sel");
+		const char* name = cfgMode->getCString("name");
+		int32_t slippage = cfgMode->getInt32("slippage");
+		_sel_mocker = new ExpSelMocker(&_replayer, name, slippage);
 		_sel_mocker->initSelFactory(cfgMode);
-		_replayer.register_sink(_sel_mocker);
+		_replayer.register_sink(_sel_mocker, name);
 
 		WTSVariant* cfgTask = cfgMode->get("task");
 		if(cfgTask)
@@ -336,13 +341,14 @@ void WtBtRunner::config(const char* cfgFile, bool isFile /* = true */)
 	}
 	else if (strcmp(mode, "exec") == 0 && cfgMode)
 	{
+		const char* name = cfgMode->getCString("name");
 		_exec_mocker = new ExecMocker(&_replayer);
 		_exec_mocker->init(cfgMode);
-		_replayer.register_sink(_exec_mocker);
+		_replayer.register_sink(_exec_mocker, name);
 	}
 }
 
-void WtBtRunner::run()
+void WtBtRunner::run(bool bNeedDump /* = false */)
 {
 	try
 	{

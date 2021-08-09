@@ -190,10 +190,15 @@ private:
 
 	void		reset();
 
+	void		dump_btenv(const char* stdCode, WTSKlinePeriod period, uint32_t times, uint64_t stime, uint64_t etime);
+	void		notify_progress(double percent);
+
+	uint32_t	locate_barindex(const std::string& key, uint64_t curTime, bool bLeft = false);
+
 public:
 	bool init(WTSVariant* cfg, EventNotifier* notifier = NULL);
 
-	void run();
+	void run(bool bNeedDump = false);
 
 	inline void set_time_range(uint64_t stime, uint64_t etime)
 	{
@@ -206,7 +211,11 @@ public:
 		_tick_enabled = bEnabled;
 	}
 
-	void register_sink(IDataSink* listener){ _listener = listener; }
+	inline void register_sink(IDataSink* listener, const char* sinkName) 
+	{
+		_listener = listener; 
+		_stra_name = sinkName;
+	}
 
 	void register_task(uint32_t taskid, uint32_t date, uint32_t time, const char* period, const char* trdtpl = "CHINA", const char* session = "TRADING");
 
@@ -249,6 +258,7 @@ public:
 
 private:
 	IDataSink*		_listener;
+	std::string		_stra_name;
 
 	TickCache		_ticks_cache;	//tick»º´æ
 	OrdDtlCache		_orddtl_cache;	//order detail»º´æ

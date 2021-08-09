@@ -899,10 +899,6 @@ void CtaMocker::do_set_position(const char* stdCode, double qty, double price /*
 			log_close(stdCode, dInfo._long, dInfo._opentime, dInfo._price, curTm, trdPx, maxQty, profit, maxProf, maxLoss, 
 				_total_closeprofit - _fund_info._total_fees, dInfo._opentag, userTag, dInfo._open_barno, _schedule_times);
 
-			if (_notifier)
-				_notifier->notifyClose("BT_CLOSE", stdCode, dInfo._long, dInfo._opentime, dInfo._price, curTm, trdPx, maxQty, profit, 
-					maxProf, maxLoss, _total_closeprofit - _fund_info._total_fees, dInfo._opentag, userTag);
-
 			if (left == 0)
 				break;
 		}
@@ -939,9 +935,6 @@ void CtaMocker::do_set_position(const char* stdCode, double qty, double price /*
 			pInfo._last_entertime = curTm;
 		}
 	}
-
-	if (_notifier)
-		_notifier->notifySignal("BT_SIG", stdCode, trdPx, qty, userTag, curTm);
 }
 
 WTSKlineSlice* CtaMocker::stra_get_bars(const char* stdCode, const char* period, uint32_t count, bool isMain /* = false */)

@@ -76,7 +76,7 @@ public:
 
 	void	init(const char* logProfile = "", bool isFile = true);
 	void	config(const char* cfgFile, bool isFile = true);
-	void	run();
+	void	run(bool bNeedDump = false);
 	void	release();
 
 	void	set_time_range(WtUInt64 stime, WtUInt64 etime);
