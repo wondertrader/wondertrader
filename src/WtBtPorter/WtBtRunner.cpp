@@ -352,7 +352,7 @@ void WtBtRunner::run(bool bNeedDump /* = false */)
 {
 	try
 	{
-		_replayer.run();
+		_replayer.run(bNeedDump);
 	}
 	catch(...)
 	{

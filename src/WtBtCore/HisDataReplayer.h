@@ -193,7 +193,7 @@ private:
 	void		dump_btenv(const char* stdCode, WTSKlinePeriod period, uint32_t times, uint64_t stime, uint64_t etime);
 	void		notify_progress(double percent);
 
-	uint32_t	locate_barindex(const std::string& key, uint64_t curTime, bool bLeft = false);
+	uint32_t	locate_barindex(const std::string& key, uint64_t curTime, bool bUpperBound = false);
 
 public:
 	bool init(WTSVariant* cfg, EventNotifier* notifier = NULL);

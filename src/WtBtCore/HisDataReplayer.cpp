@@ -347,6 +347,54 @@ void HisDataReplayer::dump_btenv(const char* stdCode, WTSKlinePeriod period, uin
 	BoostFile::write_file_contents(filename.c_str(), output.c_str(), output.size());
 }
 
+void HisDataReplayer::notify_progress(double percent)
+{
+	if (!_notifier)
+		return;
+
+	std::string output = StrUtil::printf("{\"progress\":%f}", percent);
+
+	_notifier->notifyData("BT_PROGRESS", (void*)output.c_str(), output.size());
+}
+
+uint32_t HisDataReplayer::locate_barindex(const std::string& key, uint64_t now, bool bUpperBound /* = false */)
+{
+	uint32_t curDate, curTime;
+	curDate = (uint32_t)(now / 10000);
+	curTime = (uint32_t)(now % 10000);
+
+	BarsList& barsList = _bars_cache[key];
+	bool isDay = (barsList._period == KP_DAY);
+
+	WTSBarStruct bar;
+	bar.date = curDate;
+	bar.time = (curDate - 19900000) * 10000 + curTime;
+	auto it = std::lower_bound(barsList._bars.begin(), barsList._bars.end(), bar, [isDay](const WTSBarStruct& a, const WTSBarStruct& b) {
+		if (isDay)
+			return a.date < b.date;
+		else
+			return a.time < b.time;
+	});
+
+	uint32_t idx;
+	if (it == barsList._bars.end())
+		idx = barsList._bars.size() - 1;
+	else
+	{
+		if(bUpperBound)
+		{//如果是找上边界，则要比较时间向下修正，因为lower_bound函数找的是大于等于curTime的K线
+			if ((isDay && it->date > bar.date) || (!isDay && it->time > bar.time))
+			{
+				it--;
+			}
+		}
+
+		idx = it - barsList._bars.begin();
+	}
+	
+	return idx;
+}
+
 void HisDataReplayer::run(bool bNeedDump/* = false*/)
 {
 	if(_running)
@@ -484,8 +532,9 @@ void HisDataReplayer::run(bool bNeedDump/* = false*/)
 						_listener->handle_session_end(_cur_tdate);
 						_closed_tdate = _cur_tdate;
 						_day_cache.clear();
-						notify_progress(replayed_barcnt/total_barcnt);
 					}
+
+					notify_progress(replayed_barcnt*100.0 / total_barcnt);
 
 					if (barList._cursor >= barList._bars.size())
 					{

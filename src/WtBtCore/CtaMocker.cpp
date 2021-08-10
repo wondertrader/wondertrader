@@ -221,10 +221,6 @@ void CtaMocker::on_bar(const char* stdCode, const char* period, uint32_t times, 
 	tag._closed = true;
 
 	on_bar_close(stdCode, realPeriod.c_str(), newBar);
-
-	WTSLogger::info("Notify onbar");
-	if (_notifier && key == _main_key)
-		_notifier->notifyData("BT_ONBAR", newBar, sizeof(WTSBarStruct));
 }
 
 void CtaMocker::on_init()
@@ -980,20 +976,6 @@ WTSKlineSlice* CtaMocker::stra_get_bars(const char* stdCode, const char* period,
 			realCode += cInfo._code;
 		}
 		_replayer->sub_tick(id(), realCode.c_str());
-
-		if (_notifier && isMain && bFirst)
-		{
-			WTSLogger::info("Notify getbar");
-			if (kline->get_his_count() > 0)
-			{
-				_notifier->notifyData("BT_GETBAR", kline->get_his_addr(), sizeof(WTSBarStruct)*kline->get_his_count());
-			}
-
-			if (kline->get_rt_count() > 0)
-			{
-				_notifier->notifyData("BT_GETBAR", kline->get_rt_addr(), sizeof(WTSBarStruct)*kline->get_rt_count());
-			}
-		}
 	}
 
 	return kline;
