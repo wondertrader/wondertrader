@@ -21,9 +21,9 @@ void on_gettick(CtxHandler ctxid, const char* code, WTSTickStruct* tick, bool is
 
 void on_init(CtxHandler ctxid)
 {
-	cta_get_bars(ctxid, "CFFEX.IF.HOT", "m5", 30, true, on_getbar);
-	cta_get_ticks(ctxid, "CFFEX.IF.HOT", 100, on_gettick);
-	cta_log_text(ctxid, "this is a test message");
+	cta_get_bars(ctxid, "WH.BLACK.HOT", "d1", 30, true, on_getbar);
+	//cta_get_ticks(ctxid, "CFFEX.IF.HOT", 100, on_gettick);
+	//cta_log_text(ctxid, "this is a test message");
 }
 
 void on_tick(CtxHandler ctxid, const char* stdCode, WTSTickStruct* newTick)
@@ -34,7 +34,7 @@ void on_tick(CtxHandler ctxid, const char* stdCode, WTSTickStruct* newTick)
 void on_calc(CtxHandler ctxid, WtUInt32 curDate, WtUInt32 curTime)
 {
 	printf("on_calc @ %u.%u\r\n", curDate, curTime);
-	cta_get_ticks(ctxid, "CFFEX.IF.HOT", 100, on_gettick);
+	//cta_get_ticks(ctxid, "CFFEX.IF.HOT", 100, on_gettick);
 }
 
 void on_bar(CtxHandler ctxid, const char* code, const char* period, WTSBarStruct* newBar)
@@ -64,7 +64,7 @@ void run_bt()
 	config_backtest("configbt.json", true);
 
 
-	run_backtest();
+	run_backtest(true);
 
 	//init_cta_mocker("test2");
 

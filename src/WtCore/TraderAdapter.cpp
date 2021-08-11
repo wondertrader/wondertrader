@@ -898,7 +898,6 @@ OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty)
 
 	if(!sInfo->isInTradingTime(WtHelper::getTime(), true))
 	{
-		//WTSLogger::log_dyn_raw("trader", _id.c_str(), LL_ERROR, fmt::format("[{}]卖出 {} 数量{}, {:04d} 不在交易时间", _id.c_str(), stdCode, qty, WtHelper::getTime()).c_str());
 		WTSLogger::log_dyn_raw("trader", _id.c_str(), LL_ERROR, fmt::format("[{}] Selling {} of quantity {}, {:04d} not in trading time", _id.c_str(), stdCode, qty, WtHelper::getTime()).c_str());
 		return ret;
 	}
@@ -908,13 +907,11 @@ OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty)
 	//	return ret;
 	//}
 
-	//WTSLogger::log_dyn_raw("trader", _id.c_str(), LL_INFO, fmt::format("[{}]卖出 {} 数量{}", _id.c_str(), stdCode, qty).c_str());
 	WTSLogger::log_dyn_raw("trader", _id.c_str(), LL_INFO, fmt::format("[{}] Selling {} of quantity {}", _id.c_str(), stdCode, qty).c_str());
 
 	double oldQty = _undone_qty[stdCode];
 	double newQty = oldQty - qty;
 	_undone_qty[stdCode] = newQty;
-	//WTSLogger::log_dyn_raw("trader", _id.c_str(), LL_INFO, fmt::format("[{}]{} 未完成订单数量更新, {} -> {}", _id.c_str(), stdCode, oldQty, newQty).c_str());
 	WTSLogger::log_dyn_raw("trader", _id.c_str(), LL_INFO, fmt::format("[{}]{} undone orders updated, {} -> {}", _id.c_str(), stdCode, oldQty, newQty).c_str());
 
 	const PosItem& pItem = _positions[stdCode];	
@@ -948,7 +945,6 @@ OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty)
 			{
 				if (statItem.s_openvol >= curRule._limit_s)
 				{
-					//WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR, "[%s]%s今日开空仓已达限额%u", _id.c_str(), stdCode, curRule._limit_l);
 					WTSLogger::log_dyn("trader", _id.c_str(), LL_WARN, "[%s] %s short position opened today is up to limit %u", _id.c_str(), stdCode, curRule._limit_l);
 					continue;
 				}
@@ -962,7 +958,6 @@ OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty)
 			{
 				if (statItem.l_openvol + statItem.s_openvol >= curRule._limit)
 				{
-					//WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR, "[%s]%s今日开仓已达限额%u", _id.c_str(), stdCode, curRule._limit);
 					WTSLogger::log_dyn("trader", _id.c_str(), LL_WARN, "[%s] %s position opened today is up to limit %u", _id.c_str(), stdCode, curRule._limit);
 					continue;
 				}
@@ -982,14 +977,12 @@ OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty)
 
 				leftQty -= curQty;
 
-				//if (leftQty == 0)
 				if (decimal::eq(leftQty, 0))
 					break;
 			}
 
 			left -= maxQty;
 
-			//WTSLogger::log_dyn_raw("trader", _id.c_str(), LL_INFO, fmt::format("[{}]{} 卖出数量{}信号执行: 开空{}", _id.c_str(), stdCode, qty, maxQty).c_str());
 			WTSLogger::log_dyn_raw("trader", _id.c_str(), LL_INFO,
 				fmt::format("[{}] Signal of selling {} of quantity {} triggered: Opening short of quantity {}", _id.c_str(), stdCode, qty, maxQty).c_str());
 		}
@@ -1443,8 +1436,15 @@ void TraderAdapter::onRspEntrust(WTSEntrust* entrust, WTSError *err)
 		WTSLogger::log_dyn_raw("trader", _id.c_str(), LL_ERROR, fmt::format("[{}] Order placing failed: {}, instrument: {}, action: {}, qty: {}", _id.c_str(), err->getMessage(), entrust->getCode(), action.c_str(), qty).c_str());
 
 		//如果下单失败, 要更新未完成数量
-		bool isBuy = (isLong&&isOpen) || (!isLong&&!isOpen);
+		//实盘中发现错误单有时候会推送两次
+		//所以这里加一个检查未完成单的逻辑
+		//如果有错单，正常情况下未完成单一定不为0
+		//如果未完成订单为0，则说明这一次是重复通知，则不再处理了
 		double oldQty = _undone_qty[stdCode];
+		if (decimal::eq(oldQty, 0))
+			return;
+
+		bool isBuy = (isLong&&isOpen) || (!isLong && !isOpen);
 		double newQty = oldQty - qty*(isBuy ? 1 : -1);
 		_undone_qty[stdCode] = newQty;
 

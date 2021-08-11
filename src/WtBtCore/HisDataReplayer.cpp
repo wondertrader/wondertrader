@@ -422,7 +422,6 @@ void HisDataReplayer::run(bool bNeedDump/* = false*/)
 	if(_task == NULL)
 	{
 		//如果没有时间调度任务,则采用主K线回放的模式
-		notify_progress(_cur_tdate);
 
 		//如果没有确定主K线,则确定一个周期最短的主K线
 		if (_main_key.empty() && !_bars_cache.empty())
@@ -1534,7 +1533,7 @@ void HisDataReplayer::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTD
 									}
 
 									WTSSessionInfo* sInfo = get_session_info(realCode.c_str(), true);
-									uint32_t curTime = sInfo->getOpenTime();
+									uint32_t curTime = sInfo->getCloseTime();
 									//开高低收
 									WTSTickStruct curTS;
 									strcpy(curTS.code, realCode.c_str());
