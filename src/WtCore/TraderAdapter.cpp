@@ -616,10 +616,6 @@ OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty)
 		return ret;
 	}
 
-	//if(!checkOrderLimits(stdCode))
-	//{
-	//	return ret;
-	//}
 
 	WTSLogger::log_dyn_raw("trader", _id.c_str(), LL_INFO, fmt::format("[{}] Buying {} of quantity {}", _id.c_str(), stdCode, qty).c_str());
 
@@ -710,7 +706,14 @@ OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty)
 			else
 				maxQty = min(left, pItem.avail_pos(false));
 			
-			//平仓不检查限额			
+			
+			//如果要检查净今仓，但是昨仓不为0，则跳过该条规则
+			if (curRule._pure && decimal::eq(pItem.s_preavail, 0.0))
+			{
+				WTSLogger::log_dyn_raw("trader", _id.c_str(), LL_WARN,
+					fmt::format("[{}] Closing new short position of {} skipped because of non-zero pre short position", _id.c_str(), stdCode).c_str());
+				continue;
+			}
 
 			//这里还要考虑单笔最大委托数量
 			//if (maxQty > 0)
@@ -739,7 +742,6 @@ OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty)
 				}
 				else
 				{
-					//WTSLogger::log_dyn_raw("trader", _id.c_str(), LL_INFO, fmt::format("[{}]{} 买入数量{}信号执行: 平空数量{}", _id.c_str(), stdCode, qty, maxQty).c_str());
 					WTSLogger::log_dyn_raw("trader", _id.c_str(), LL_INFO, 
 						fmt::format("[{}] Signal of buying {} of quantity {} triggered: Closing short of quantity {}", _id.c_str(), stdCode, qty, maxQty).c_str());
 				}
@@ -750,7 +752,14 @@ OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty)
 		{
 			//平昨比较简单, 因为不需要区分标记
 			double maxQty = min(left, pItem.s_preavail);
-			//平仓不检查限额			
+
+			//如果要检查净昨仓，但是今仓不为0，则跳过该条规则
+			if (curRule._pure && decimal::eq(pItem.s_newavail, 0.0))
+			{
+				WTSLogger::log_dyn_raw("trader", _id.c_str(), LL_WARN,
+					fmt::format("[{}] Closing pre short position of {} skipped because of non-zero new short position", _id.c_str(), stdCode).c_str());
+				continue;
+			}
 
 			//这里还要考虑单笔最大委托数量
 			//if (maxQty > 0)
@@ -902,11 +911,6 @@ OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty)
 		return ret;
 	}
 
-	//if (!checkOrderLimits(stdCode))
-	//{
-	//	return ret;
-	//}
-
 	WTSLogger::log_dyn_raw("trader", _id.c_str(), LL_INFO, fmt::format("[{}] Selling {} of quantity {}", _id.c_str(), stdCode, qty).c_str());
 
 	double oldQty = _undone_qty[stdCode];
@@ -996,10 +1000,13 @@ OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty)
 			else
 				maxQty = min(left, pItem.avail_pos(true));
 
-			/*
-			 *	平仓不检查限额
-			 */	
-
+			//如果要检查净今仓，但是昨仓不为0，则跳过该条规则
+			if (curRule._pure && decimal::eq(pItem.l_preavail, 0.0))
+			{
+				WTSLogger::log_dyn_raw("trader", _id.c_str(), LL_WARN,
+					fmt::format("[{}] Closing new long position of {} skipped because of non-zero pre long position", _id.c_str(), stdCode).c_str());
+				continue;
+			}
 
 			//这里还要考虑单笔最大委托数量
 			//if (maxQty > 0)
@@ -1040,9 +1047,13 @@ OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty)
 			//平昨比较简单, 因为不需要区分标记
 			double maxQty = min(left, pItem.l_preavail);
 			
-			/*
-			 *	平仓不检查限额
-			 */
+			//如果要检查净昨仓，但是今仓不为0，则跳过该条规则
+			if (curRule._pure && decimal::eq(pItem.l_newavail, 0.0))
+			{
+				WTSLogger::log_dyn_raw("trader", _id.c_str(), LL_WARN,
+					fmt::format("[{}] Closing pre long position of {} skipped because of non-zero new long position", _id.c_str(), stdCode).c_str());
+				continue;
+			}
 
 			//这里还要考虑单笔最大委托数量
 			//if (maxQty > 0)

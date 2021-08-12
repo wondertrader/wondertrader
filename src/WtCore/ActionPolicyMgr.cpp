@@ -91,6 +91,7 @@ bool ActionPolicyMgr::init(const char* filename)
 				aRule._limit = uLimit;
 				aRule._limit_s = uLimitS;
 				aRule._limit_l = uLimitL;
+				aRule._pure = vObj->getBoolean("pure");
 				gp.emplace_back(aRule);
 			}
 		}
