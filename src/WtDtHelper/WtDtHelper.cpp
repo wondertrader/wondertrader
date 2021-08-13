@@ -572,11 +572,7 @@ WtUInt32 read_dsb_ticks(WtString tickFile, FuncGetTicksCallback cb, FuncCountDat
 	}
 
 	cbCnt(tcnt);
-	for (uint32_t i = 0; i < tcnt; i++)
-	{
-		WTSTickStruct& curTick = tickBlk->_ticks[i];
-		cb(&curTick, i==tcnt-1);
-	}
+	cb(tickBlk->_ticks, tcnt, true);
 
 	if (cbLogger)
 		cbLogger(StrUtil::printf("%s读取完成,共%u条tick数据", tickFile, tcnt).c_str());
@@ -634,12 +630,7 @@ WtUInt32 read_dsb_bars(WtString barFile, FuncGetBarsCallback cb, FuncCountDataCa
 	}
 
 	cbCnt(kcnt);
-
-	for (uint32_t i = 0; i < kcnt; i++)
-	{
-		WTSBarStruct& curBar = klineBlk->_bars[i];
-		cb(&curBar, i==kcnt-1);
-	}
+	cb(klineBlk->_bars, kcnt, true);
 
 	if (cbLogger)
 		cbLogger(StrUtil::printf("%s读取完成,共%u条bar", barFile, kcnt).c_str());
@@ -669,12 +660,7 @@ WtUInt32 read_dmb_bars(WtString barFile, FuncGetBarsCallback cb, FuncCountDataCa
 	}
 
 	cbCnt(kcnt);
-
-	for (uint32_t i = 0; i < kcnt; i++)
-	{
-		WTSBarStruct& curBar = tBlock->_bars[i];
-		cb(&curBar, i == kcnt - 1);
-	}
+	cb(tBlock->_bars, kcnt, true);
 
 	if (cbLogger)
 		cbLogger(StrUtil::printf("%s读取完成,共%u条bar", barFile, kcnt).c_str());
@@ -707,12 +693,7 @@ WtUInt32 read_dmb_ticks(WtString tickFile, FuncGetTicksCallback cb, FuncCountDat
 	}
 
 	cbCnt(tcnt);
-
-	for (uint32_t i = 0; i < tcnt; i++)
-	{
-		WTSTickStruct& curTick = tBlock->_ticks[i];
-		cb(&curTick, i == tcnt - 1);
-	}
+	cb(tBlock->_ticks, tcnt, true);
 
 	if (cbLogger)
 		cbLogger(StrUtil::printf("%s读取完成,共%u条tick数据", tickFile, tcnt).c_str());
@@ -923,12 +904,7 @@ WtUInt32 resample_bars(WtString barFile, FuncGetBarsCallback cb, FuncCountDataCa
 
 	uint32_t newCnt = kline->size();
 	cbCnt(newCnt);
-
-	for (uint32_t i = 0; i < newCnt; i++)
-	{
-		WTSBarStruct* curBar = kline->at(i);
-		cb(curBar, i == newCnt - 1);
-	}
+	cb(&kline->getDataRef().at(0),newCnt, true);
 
 	if (cbLogger)
 		cbLogger(StrUtil::printf("%s重采样完成,共将%u条bar重采样为%u条新bar", barFile, hitCnt, newCnt).c_str());

@@ -2,7 +2,7 @@
 #include "../WtDtPorter/WtDtPorter.h"
 #include "../Includes/WTSDataDef.hpp"
 
-void on_get_bar(WTSBarStruct* bar, bool isLast)
+void on_get_bar(WTSBarStruct* bar, WtUInt32 count, bool isLast)
 {
 	printf("%u\r\n", bar->time);
 }

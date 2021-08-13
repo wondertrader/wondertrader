@@ -88,7 +88,7 @@ void test_porter()
 #else
 	DLLHelper::load_library("libWtPorter.so");
 #endif
-	init_porter("logcfg.json", true);
+	init_porter("logcfg.json", true, "./generated");
 
 	reg_hft_factories("./hft");
 

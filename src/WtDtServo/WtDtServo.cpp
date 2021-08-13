@@ -143,16 +143,13 @@ WtUInt32 get_bars_by_range(const char* stdCode, const char* period, WtUInt64 beg
 	WTSKlineSlice* kData = getRunner().get_bars_by_range(stdCode, period, beginTime, endTime);
 	if (kData)
 	{
-		uint32_t reaCnt = 0;
-		uint32_t kcnt = kData->size();
-		for (uint32_t idx = 0; idx < kcnt; idx++)
-		{
-			WTSBarStruct* curBar = kData->at(idx);
+		uint32_t reaCnt = kData->size();
 
-			bool isLast = (idx == kcnt - 1);
-			cb(curBar, isLast);
-			reaCnt += 1;
-		}
+		if (kData->get_his_count() > 0)
+			cb(kData->get_his_addr(), kData->get_his_count(), kData->get_rt_count() == 0);
+
+		if (kData->get_rt_count() > 0)
+			cb(kData->get_rt_addr(), kData->get_rt_count(), true);
 
 		kData->release();
 		return reaCnt;
@@ -170,20 +167,15 @@ WtUInt32	get_ticks_by_range(const char* stdCode, WtUInt64 beginTime, WtUInt64 en
 	{
 		uint32_t reaCnt = 0;
 		uint32_t sliceCnt = aySlices->size();
+
 		for(uint32_t sIdx = 0; sIdx < sliceCnt; sIdx++)
 		{
 			WTSTickSlice* slice = (WTSTickSlice*)aySlices->at(sIdx);
 			uint32_t tcnt = slice->size();
-			for (uint32_t idx = 0; idx < tcnt; idx++)
-			{
-				WTSTickStruct* curTick = (WTSTickStruct*)slice->at(idx);
-				bool isLast = (idx == tcnt - 1) && (sIdx == sliceCnt - 1);
-				cb(curTick, isLast);
-				reaCnt += 1;
-			}
+			cb((WTSTickStruct*)slice->at(0), tcnt, sIdx == sliceCnt - 1);
+			reaCnt += tcnt;
 		}
 		
-
 		aySlices->release();
 		return reaCnt;
 	}
@@ -198,16 +190,13 @@ WtUInt32 get_bars_by_count(const char* stdCode, const char* period, WtUInt32 cou
 	WTSKlineSlice* kData = getRunner().get_bars_by_count(stdCode, period, count, endTime);
 	if (kData)
 	{
-		uint32_t reaCnt = 0;
-		uint32_t kcnt = kData->size();
-		for (uint32_t idx = 0; idx < kcnt; idx++)
-		{
-			WTSBarStruct* curBar = kData->at(idx);
+		uint32_t reaCnt = kData->size();
 
-			bool isLast = (idx == kcnt - 1);
-			cb(curBar, isLast);
-			reaCnt += 1;
-		}
+		if (kData->get_his_count() > 0)
+			cb(kData->get_his_addr(), kData->get_his_count(), kData->get_rt_count() == 0);
+
+		if (kData->get_rt_count() > 0)
+			cb(kData->get_rt_addr(), kData->get_rt_count(), true);
 
 		kData->release();
 		return reaCnt;
@@ -229,15 +218,9 @@ WtUInt32	get_ticks_by_count(const char* stdCode, WtUInt32 count, WtUInt64 endTim
 		{
 			WTSTickSlice* slice = (WTSTickSlice*)aySlices->at(sIdx);
 			uint32_t tcnt = slice->size();
-			for (uint32_t idx = 0; idx < tcnt; idx++)
-			{
-				WTSTickStruct* curTick = (WTSTickStruct*)slice->at(idx);
-				bool isLast = (idx == tcnt - 1) && (sIdx == sliceCnt - 1);
-				cb(curTick, isLast);
-				reaCnt += 1;
-			}
+			cb((WTSTickStruct*)slice->at(0), tcnt, sIdx == sliceCnt - 1);
+			reaCnt += tcnt;
 		}
-
 
 		aySlices->release();
 		return reaCnt;

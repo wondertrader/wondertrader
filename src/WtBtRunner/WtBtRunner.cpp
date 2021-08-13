@@ -47,25 +47,25 @@ int main()
 	{
 		CtaMocker* mocker = new CtaMocker(&replayer, "cta", slippage);
 		mocker->initCtaFactory(cfg->get("cta"));
-		replayer.register_sink(mocker);
+		replayer.register_sink(mocker, "cta");
 	}
 	else if (strcmp(mode, "hft") == 0)
 	{
 		HftMocker* mocker = new HftMocker(&replayer, "hft");
 		mocker->initHftFactory(cfg->get("hft"));
-		replayer.register_sink(mocker);
+		replayer.register_sink(mocker, "hft");
 	}
 	else if (strcmp(mode, "sel") == 0)
 	{
 		SelMocker* mocker = new SelMocker(&replayer, "sel", slippage);
 		mocker->initSelFactory(cfg->get("cta"));
-		replayer.register_sink(mocker);
+		replayer.register_sink(mocker, "sel");
 	}
 	else if (strcmp(mode, "exec") == 0)
 	{
 		ExecMocker* mocker = new ExecMocker(&replayer);
 		mocker->init(cfg->get("exec"));
-		replayer.register_sink(mocker);
+		replayer.register_sink(mocker, "exec");
 	}
 
 	replayer.run();

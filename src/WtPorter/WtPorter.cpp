@@ -287,16 +287,23 @@ WtUInt32 cta_get_bars(CtxHandler cHandle, const char* stdCode, const char* perio
 		WTSKlineSlice* kData = ctx->stra_get_bars(stdCode, period, barCnt, isMain);
 		if (kData)
 		{
-			uint32_t left = barCnt + 1;
-			uint32_t reaCnt = 0;
-			uint32_t kcnt = kData->size();
-			for (uint32_t idx = 0; idx < kcnt && left > 0; idx++, left--)
-			{
-				WTSBarStruct* curBar = kData->at(idx);
+			uint32_t left = barCnt;
+			uint32_t reaCnt = min(barCnt, (uint32_t)kData->size());
 
-				bool isLast = (idx == kcnt - 1) || (left == 1);
-				cb(cHandle, stdCode, period, curBar, isLast);
-				reaCnt += 1;
+			if (kData->get_his_count() > 0)
+			{
+				uint32_t thisCnt = min(left, (uint32_t)kData->get_his_count());
+				left -= thisCnt;
+				reaCnt += thisCnt;
+				cb(cHandle, stdCode, period, kData->get_his_addr(), thisCnt, left == 0);
+			}
+
+			if (left > 0 && kData->get_rt_count() > 0)
+			{
+				uint32_t thisCnt = min(left, (uint32_t)kData->get_rt_count());
+				left -= thisCnt;
+				reaCnt += thisCnt;
+				cb(cHandle, stdCode, period, kData->get_rt_addr(), thisCnt, true);
 			}
 
 			kData->release();
@@ -323,19 +330,10 @@ WtUInt32	cta_get_ticks(CtxHandler cHandle, const char* stdCode, WtUInt32 tickCnt
 		WTSTickSlice* tData = ctx->stra_get_ticks(stdCode, tickCnt);
 		if (tData)
 		{
-			uint32_t left = tickCnt + 1;
-			uint32_t reaCnt = 0;
-			uint32_t tcnt = tData->size();
-			for (uint32_t idx = 0; idx < tcnt && left > 0; idx++, left--)
-			{
-				WTSTickStruct* curTick = (WTSTickStruct*)tData->at(idx);
-				bool isLast = (idx == tcnt - 1) || (left == 1);
-				cb(cHandle, stdCode, curTick, isLast);
-				reaCnt += 1;
-			}
-
+			uint32_t thisCnt = min(tickCnt, tData->size());
+			cb(cHandle, stdCode, (WTSTickStruct*)tData->at(0), thisCnt, true);
 			tData->release();
-			return reaCnt;
+			return thisCnt;
 		}
 		else
 		{
@@ -616,16 +614,23 @@ WtUInt32 sel_get_bars(CtxHandler cHandle, const char* stdCode, const char* perio
 		WTSKlineSlice* kData = ctx->stra_get_bars(stdCode, period, barCnt);
 		if (kData)
 		{
-			uint32_t left = barCnt + 1;
-			uint32_t reaCnt = 0;
-			uint32_t kcnt = kData->size();
-			for (uint32_t idx = 0; idx < kcnt && left > 0; idx++, left--)
-			{
-				WTSBarStruct* curBar = kData->at(idx);
+			uint32_t left = barCnt;
+			uint32_t reaCnt = min(barCnt, (uint32_t)kData->size());
 
-				bool isLast = (idx == kcnt - 1) || (left == 1);
-				cb(cHandle, stdCode, period, curBar, isLast);
-				reaCnt += 1;
+			if (kData->get_his_count() > 0)
+			{
+				uint32_t thisCnt = min(left, (uint32_t)kData->get_his_count());
+				left -= thisCnt;
+				reaCnt += thisCnt;
+				cb(cHandle, stdCode, period, kData->get_his_addr(), thisCnt, left == 0);
+			}
+
+			if (left > 0 && kData->get_rt_count() > 0)
+			{
+				uint32_t thisCnt = min(left, (uint32_t)kData->get_rt_count());
+				left -= thisCnt;
+				reaCnt += thisCnt;
+				cb(cHandle, stdCode, period, kData->get_rt_addr(), thisCnt, true);
 			}
 
 			kData->release();
@@ -662,19 +667,10 @@ WtUInt32	sel_get_ticks(CtxHandler cHandle, const char* stdCode, WtUInt32 tickCnt
 		WTSTickSlice* tData = ctx->stra_get_ticks(stdCode, tickCnt);
 		if (tData)
 		{
-			uint32_t left = tickCnt + 1;
-			uint32_t reaCnt = 0;
-			uint32_t tcnt = tData->size();
-			for (uint32_t idx = 0; idx < tcnt && left > 0; idx++, left--)
-			{
-				WTSTickStruct* curTick = (WTSTickStruct*)tData->at(idx);
-				bool isLast = (idx == tcnt - 1) || (left == 1);
-				cb(cHandle, stdCode, curTick, isLast);
-				reaCnt += 1;
-			}
-
+			uint32_t thisCnt = min(tickCnt, tData->size());
+			cb(cHandle, stdCode, (WTSTickStruct*)tData->at(0), thisCnt, true);
 			tData->release();
-			return reaCnt;
+			return thisCnt;
 		}
 		else
 		{
@@ -762,16 +758,23 @@ WtUInt32 hft_get_bars(CtxHandler cHandle, const char* stdCode, const char* perio
 		WTSKlineSlice* kData = ctx->stra_get_bars(stdCode, period, barCnt);
 		if (kData)
 		{
-			uint32_t left = barCnt + 1;
-			uint32_t reaCnt = 0;
-			uint32_t kcnt = kData->size();
-			for (uint32_t idx = 0; idx < kcnt && left > 0; idx++, left--)
-			{
-				WTSBarStruct* curBar = kData->at(idx);
+			uint32_t left = barCnt;
+			uint32_t reaCnt = min(barCnt, (uint32_t)kData->size());
 
-				bool isLast = (idx == kcnt - 1) || (left == 1);
-				cb(cHandle, stdCode, period, curBar, isLast);
-				reaCnt += 1;
+			if (kData->get_his_count() > 0)
+			{
+				uint32_t thisCnt = min(left, (uint32_t)kData->get_his_count());
+				left -= thisCnt;
+				reaCnt += thisCnt;
+				cb(cHandle, stdCode, period, kData->get_his_addr(), thisCnt, left == 0);
+			}
+
+			if (left > 0 && kData->get_rt_count() > 0)
+			{
+				uint32_t thisCnt = min(left, (uint32_t)kData->get_rt_count());
+				left -= thisCnt;
+				reaCnt += thisCnt;
+				cb(cHandle, stdCode, period, kData->get_rt_addr(), thisCnt, true);
 			}
 
 			kData->release();
@@ -798,19 +801,10 @@ WtUInt32 hft_get_ticks(CtxHandler cHandle, const char* stdCode, WtUInt32 tickCnt
 		WTSTickSlice* tData = ctx->stra_get_ticks(stdCode, tickCnt);
 		if (tData)
 		{
-			uint32_t left = tickCnt + 1;
-			uint32_t reaCnt = 0;
-			uint32_t tcnt = tData->size();
-			for (uint32_t idx = 0; idx < tcnt && left > 0; idx++, left--)
-			{
-				WTSTickStruct* curTick = (WTSTickStruct*)tData->at(idx);
-				bool isLast = (idx == tcnt - 1) || (left == 1);
-				cb(cHandle, stdCode, curTick, isLast);
-				reaCnt += 1;
-			}
-
+			uint32_t thisCnt = min(tickCnt, tData->size());
+			cb(cHandle, stdCode, (WTSTickStruct*)tData->at(0), thisCnt, true);
 			tData->release();
-			return reaCnt;
+			return thisCnt;
 		}
 		else
 		{
@@ -823,29 +817,20 @@ WtUInt32 hft_get_ticks(CtxHandler cHandle, const char* stdCode, WtUInt32 tickCnt
 	}
 }
 
-WtUInt32 hft_get_ordque(CtxHandler cHandle, const char* stdCode, WtUInt32 tickCnt, FuncGetOrdQueCallback cb)
+WtUInt32 hft_get_ordque(CtxHandler cHandle, const char* stdCode, WtUInt32 itemCnt, FuncGetOrdQueCallback cb)
 {
 	HftContextPtr ctx = getRunner().getHftContext(cHandle);
 	if (ctx == NULL)
 		return 0;
 	try
 	{
-		WTSOrdQueSlice* dataSlice = ctx->stra_get_order_queue(stdCode, tickCnt);
+		WTSOrdQueSlice* dataSlice = ctx->stra_get_order_queue(stdCode, itemCnt);
 		if (dataSlice)
 		{
-			uint32_t left = tickCnt + 1;
-			uint32_t reaCnt = 0;
-			uint32_t tcnt = dataSlice->size();
-			for (uint32_t idx = 0; idx < tcnt && left > 0; idx++, left--)
-			{
-				WTSOrdQueStruct* curItem = (WTSOrdQueStruct*)dataSlice->at(idx);
-				bool isLast = (idx == tcnt - 1) || (left == 1);
-				cb(cHandle, stdCode, curItem, isLast);
-				reaCnt += 1;
-			}
-
+			uint32_t thisCnt = min(itemCnt, dataSlice->size());
+			cb(cHandle, stdCode, (WTSOrdQueStruct*)dataSlice->at(0), thisCnt, true);
 			dataSlice->release();
-			return reaCnt;
+			return thisCnt;
 		}
 		else
 		{
@@ -858,29 +843,20 @@ WtUInt32 hft_get_ordque(CtxHandler cHandle, const char* stdCode, WtUInt32 tickCn
 	}
 }
 
-WtUInt32 hft_get_orddtl(CtxHandler cHandle, const char* stdCode, WtUInt32 tickCnt, FuncGetOrdDtlCallback cb)
+WtUInt32 hft_get_orddtl(CtxHandler cHandle, const char* stdCode, WtUInt32 itemCnt, FuncGetOrdDtlCallback cb)
 {
 	HftContextPtr ctx = getRunner().getHftContext(cHandle);
 	if (ctx == NULL)
 		return 0;
 	try
 	{
-		WTSOrdDtlSlice* dataSlice = ctx->stra_get_order_detail(stdCode, tickCnt);
+		WTSOrdDtlSlice* dataSlice = ctx->stra_get_order_detail(stdCode, itemCnt);
 		if (dataSlice)
 		{
-			uint32_t left = tickCnt + 1;
-			uint32_t reaCnt = 0;
-			uint32_t tcnt = dataSlice->size();
-			for (uint32_t idx = 0; idx < tcnt && left > 0; idx++, left--)
-			{
-				WTSOrdDtlStruct* curItem = (WTSOrdDtlStruct*)dataSlice->at(idx);
-				bool isLast = (idx == tcnt - 1) || (left == 1);
-				cb(cHandle, stdCode, curItem, isLast);
-				reaCnt += 1;
-			}
-
+			uint32_t thisCnt = min(itemCnt, dataSlice->size());
+			cb(cHandle, stdCode, (WTSOrdDtlStruct*)dataSlice->at(0), thisCnt, true);
 			dataSlice->release();
-			return reaCnt;
+			return thisCnt;
 		}
 		else
 		{
@@ -893,29 +869,20 @@ WtUInt32 hft_get_orddtl(CtxHandler cHandle, const char* stdCode, WtUInt32 tickCn
 	}
 }
 
-WtUInt32 hft_get_trans(CtxHandler cHandle, const char* stdCode, WtUInt32 tickCnt, FuncGetTransCallback cb)
+WtUInt32 hft_get_trans(CtxHandler cHandle, const char* stdCode, WtUInt32 itemCnt, FuncGetTransCallback cb)
 {
 	HftContextPtr ctx = getRunner().getHftContext(cHandle);
 	if (ctx == NULL)
 		return 0;
 	try
 	{
-		WTSTransSlice* dataSlice = ctx->stra_get_transaction(stdCode, tickCnt);
+		WTSTransSlice* dataSlice = ctx->stra_get_transaction(stdCode, itemCnt);
 		if (dataSlice)
 		{
-			uint32_t left = tickCnt + 1;
-			uint32_t reaCnt = 0;
-			uint32_t tcnt = dataSlice->size();
-			for (uint32_t idx = 0; idx < tcnt && left > 0; idx++, left--)
-			{
-				WTSTransStruct* curItem = (WTSTransStruct*)dataSlice->at(idx);
-				bool isLast = (idx == tcnt - 1) || (left == 1);
-				cb(cHandle, stdCode, curItem, isLast);
-				reaCnt += 1;
-			}
-
+			uint32_t thisCnt = min(itemCnt, dataSlice->size());
+			cb(cHandle, stdCode, (WTSTransStruct*)dataSlice->at(0), thisCnt, true);
 			dataSlice->release();
-			return reaCnt;
+			return thisCnt;
 		}
 		else
 		{
