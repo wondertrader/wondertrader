@@ -137,7 +137,7 @@ int run(const char* cfgfile)
 #ifdef _WIN32
 	MODULE_NAME = ini.readString("config", "module", "thosttraderapi_se.dll");
 #else
-	MODULE_NAME = ini.readString("config", "module", "libthosttraderapi_se.so");
+	MODULE_NAME = ini.readString("config", "module", "thosttraderapi_se.so");
 #endif
 	if(!boost::filesystem::exists(MODULE_NAME.c_str()))
 	{
@@ -145,7 +145,7 @@ int run(const char* cfgfile)
 #ifdef _WIN32
 		MODULE_NAME += "traders/thosttraderapi_se.dll";
 #else
-		MODULE_NAME += "traders/libthosttraderapi_se.so";
+		MODULE_NAME += "traders/thosttraderapi_se.so";
 #endif
 	}
 
