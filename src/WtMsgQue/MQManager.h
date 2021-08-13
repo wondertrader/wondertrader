@@ -40,8 +40,8 @@ public:
 	void		sub_topic(WtUInt32 id, const char* topic);
 	void		start_client(WtUInt32 id);
 
-	inline void		log_server(WtUInt32 id, const char* message);
-	inline void		log_client(WtUInt32 id, const char* message);
+	void		log_server(WtUInt32 id, const char* message);
+	void		log_client(WtUInt32 id, const char* message);
 
 private:
 	typedef faster_hashmap<uint32_t, MQServerPtr> ServerMap;
