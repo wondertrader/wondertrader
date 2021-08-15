@@ -310,7 +310,7 @@ void HisDataReplayer::reset()
 	_tick_simulated = true;
 }
 
-void HisDataReplayer::dump_btenv(const char* stdCode, WTSKlinePeriod period, uint32_t times, uint64_t stime, uint64_t etime)
+void HisDataReplayer::dump_btenv(const char* stdCode, WTSKlinePeriod period, uint32_t times, uint64_t stime, uint64_t etime, double progress)
 {
 	std::string output;
 	{
@@ -331,6 +331,7 @@ void HisDataReplayer::dump_btenv(const char* stdCode, WTSKlinePeriod period, uin
 		
 		root.AddMember("stime", stime, allocator);
 		root.AddMember("etime", etime, allocator);
+		root.AddMember("progress", progress, allocator);
 
 		rj::StringBuffer sb;
 		rj::PrettyWriter<rj::StringBuffer> writer(sb);
@@ -347,14 +348,40 @@ void HisDataReplayer::dump_btenv(const char* stdCode, WTSKlinePeriod period, uin
 	BoostFile::write_file_contents(filename.c_str(), output.c_str(), output.size());
 }
 
-void HisDataReplayer::notify_progress(double percent)
+void HisDataReplayer::notify_state(const char* stdCode, WTSKlinePeriod period, uint32_t times, uint64_t stime, uint64_t etime, double progress)
 {
 	if (!_notifier)
 		return;
 
-	std::string output = StrUtil::printf("{\"progress\":%f}", percent);
+	std::string output;
+	{
+		rj::Document root(rj::kObjectType);
+		rj::Document::AllocatorType &allocator = root.GetAllocator();
 
-	_notifier->notifyData("BT_PROGRESS", (void*)output.c_str(), output.size());
+		root.AddMember("code", rj::Value(stdCode, allocator), allocator);
+
+		std::stringstream ss;
+		if (period == KP_DAY)
+			ss << "d";
+		else if (period == KP_Minute1)
+			ss << "m" << times;
+		else
+			ss << "m" << times * 5;
+
+		root.AddMember("period", rj::Value(ss.str().c_str(), allocator), allocator);
+
+		root.AddMember("stime", stime, allocator);
+		root.AddMember("etime", etime, allocator);
+		root.AddMember("progress", progress, allocator);
+
+		rj::StringBuffer sb;
+		rj::PrettyWriter<rj::StringBuffer> writer(sb);
+		root.Accept(writer);
+
+		output = sb.GetString();
+	}
+
+	_notifier->notifyData("BT_STATE", (void*)output.c_str(), output.size());
 }
 
 uint32_t HisDataReplayer::locate_barindex(const std::string& key, uint64_t now, bool bUpperBound /* = false */)
@@ -462,7 +489,10 @@ void HisDataReplayer::run(bool bNeedDump/* = false*/)
 			uint32_t total_barcnt = eIdx - sIdx + 1;
 			uint32_t replayed_barcnt = 0;
 
-			notify_progress(0);
+			notify_state(barList._code.c_str(), barList._period, barList._times, _begin_time, _end_time, 0);
+
+			if (bNeedDump)
+				dump_btenv(barList._code.c_str(), barList._period, barList._times, _begin_time, _end_time, 100.0);
 
 			WTSLogger::log_raw(LL_INFO, fmt::format("Start to replay back data from {}...", _begin_time).c_str());
 
@@ -484,7 +514,7 @@ void HisDataReplayer::run(bool bNeedDump/* = false*/)
 					{
 						WTSLogger::log_raw(LL_INFO, fmt::format("{} is beyond ending time {},replaying done", nextBarTime, _end_time).c_str());
 						_listener->handle_replay_done();
-						notify_progress(100);
+						notify_state(barList._code.c_str(), barList._period, barList._times, _begin_time, _end_time, 100);
 						if (_notifier)
 							_notifier->notifyEvent("BT_END");
 						break;
@@ -533,14 +563,14 @@ void HisDataReplayer::run(bool bNeedDump/* = false*/)
 						_day_cache.clear();
 					}
 
-					notify_progress(replayed_barcnt*100.0 / total_barcnt);
+					notify_state(barList._code.c_str(), barList._period, barList._times, _begin_time, _end_time, replayed_barcnt*100.0 / total_barcnt);
 
 					if (barList._cursor >= barList._bars.size())
 					{
 						//WTSLogger::info("全部数据都已回放,回放结束");
 						WTSLogger::info("All back data replayed, replaying done");
 						_listener->handle_replay_done();
-						notify_progress(100);
+						notify_state(barList._code.c_str(), barList._period, barList._times, _begin_time, _end_time, 100);
 						if (_notifier)
 							_notifier->notifyEvent("BT_END");
 						break;
@@ -551,7 +581,7 @@ void HisDataReplayer::run(bool bNeedDump/* = false*/)
 					//WTSLogger::info("数据尚未初始化,回放直接退出");
 					WTSLogger::info("No back data initialized, replaying canceled");
 					_listener->handle_replay_done();
-					notify_progress(100);
+					notify_state(barList._code.c_str(), barList._period, barList._times, _begin_time, _end_time, 100);
 					if (_notifier)
 						_notifier->notifyEvent("BT_END");
 					break;
@@ -564,7 +594,7 @@ void HisDataReplayer::run(bool bNeedDump/* = false*/)
 			}
 
 			if(bNeedDump)
-				dump_btenv(barList._code.c_str(), barList._period, barList._times, _begin_time, _end_time);
+				dump_btenv(barList._code.c_str(), barList._period, barList._times, _begin_time, _end_time, 100.0);
 		}
 		else if(_tick_enabled)
 		{
