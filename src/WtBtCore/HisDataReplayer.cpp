@@ -310,7 +310,7 @@ void HisDataReplayer::reset()
 	_tick_simulated = true;
 }
 
-void HisDataReplayer::dump_btenv(const char* stdCode, WTSKlinePeriod period, uint32_t times, uint64_t stime, uint64_t etime, double progress)
+void HisDataReplayer::dump_btstate(const char* stdCode, WTSKlinePeriod period, uint32_t times, uint64_t stime, uint64_t etime, double progress, int64_t elapse)
 {
 	std::string output;
 	{
@@ -332,6 +332,7 @@ void HisDataReplayer::dump_btenv(const char* stdCode, WTSKlinePeriod period, uin
 		root.AddMember("stime", stime, allocator);
 		root.AddMember("etime", etime, allocator);
 		root.AddMember("progress", progress, allocator);
+		root.AddMember("elapse", elapse, allocator);
 
 		rj::StringBuffer sb;
 		rj::PrettyWriter<rj::StringBuffer> writer(sb);
@@ -433,6 +434,8 @@ void HisDataReplayer::run(bool bNeedDump/* = false*/)
 	_running = true;
 	reset();
 
+	int64_t now = TimeUtils::getLocalTimeNano();
+
 	_cur_date = (uint32_t)(_begin_time / 10000);
 	_cur_time = (uint32_t)(_begin_time % 10000);
 	_cur_secs = 0;
@@ -492,7 +495,7 @@ void HisDataReplayer::run(bool bNeedDump/* = false*/)
 			notify_state(barList._code.c_str(), barList._period, barList._times, _begin_time, _end_time, 0);
 
 			if (bNeedDump)
-				dump_btenv(barList._code.c_str(), barList._period, barList._times, _begin_time, _end_time, 100.0);
+				dump_btstate(barList._code.c_str(), barList._period, barList._times, _begin_time, _end_time, 100.0, TimeUtils::getLocalTimeNano() - now);
 
 			WTSLogger::log_raw(LL_INFO, fmt::format("Start to replay back data from {}...", _begin_time).c_str());
 
@@ -593,8 +596,10 @@ void HisDataReplayer::run(bool bNeedDump/* = false*/)
 				_listener->handle_session_end(_cur_tdate);
 			}
 
-			if(bNeedDump)
-				dump_btenv(barList._code.c_str(), barList._period, barList._times, _begin_time, _end_time, 100.0);
+			if (bNeedDump)
+			{
+				dump_btstate(barList._code.c_str(), barList._period, barList._times, _begin_time, _end_time, 100.0, TimeUtils::getLocalTimeNano()-now);
+			}
 		}
 		else if(_tick_enabled)
 		{

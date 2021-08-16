@@ -190,7 +190,7 @@ private:
 
 	void		reset();
 
-	void		dump_btenv(const char* stdCode, WTSKlinePeriod period, uint32_t times, uint64_t stime, uint64_t etime, double progress);
+	void		dump_btstate(const char* stdCode, WTSKlinePeriod period, uint32_t times, uint64_t stime, uint64_t etime, double progress, int64_t elapse);
 	void		notify_state(const char* stdCode, WTSKlinePeriod period, uint32_t times, uint64_t stime, uint64_t etime, double progress);
 
 	uint32_t	locate_barindex(const std::string& key, uint64_t curTime, bool bUpperBound = false);
