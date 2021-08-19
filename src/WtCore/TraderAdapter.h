@@ -147,8 +147,8 @@ public:
 	uint32_t closeLong(const char* stdCode, double price, double qty, bool isToday = false);
 	uint32_t closeShort(const char* stdCode, double price, double qty, bool isToday = false);
 	
-	OrderIDs buy(const char* stdCode, double price, double qty);
-	OrderIDs sell(const char* stdCode, double price, double qty);
+	OrderIDs buy(const char* stdCode, double price, double qty, bool bForceClose = false);
+	OrderIDs sell(const char* stdCode, double price, double qty, bool bForceClose = false);
 	bool	cancel(uint32_t localid);
 	OrderIDs cancel(const char* stdCode, bool isBuy, double qty = 0);
 
@@ -190,6 +190,8 @@ private:
 	WTSVariant*			_cfg;
 	std::string			_id;
 	std::string			_order_pattern;
+
+	uint32_t			_trading_day;
 
 	ITraderApi*			_trader_api;
 	FuncDeleteTrader	_remover;

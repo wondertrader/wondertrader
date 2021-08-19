@@ -578,7 +578,7 @@ void HftStraBaseCtx::on_entrust(uint32_t localid, const char* stdCode, bool bSuc
 	}
 }
 
-void HftStraBaseCtx::on_position(const char* stdCode, bool isLong, double prevol, double preavail, double newvol, double newavail)
+void HftStraBaseCtx::on_position(const char* stdCode, bool isLong, double prevol, double preavail, double newvol, double newavail, uint32_t tradingday)
 {
 
 }

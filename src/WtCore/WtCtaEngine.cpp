@@ -379,8 +379,13 @@ void WtCtaEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 	_data_mgr->handle_push_quote(stdCode, curTick);
 
 	//如果是真实代码, 则要传递给执行器
-	auto it = _ticksubed_raw_codes.find(stdCode);
-	if (it != _ticksubed_raw_codes.end())
+	/*
+	 *	这里不再做判断，直接全部传递给执行器管理器，因为执行器可能会处理未订阅的合约
+	 *	主要场景为主力合约换月期间
+	 *	By Wesley @ 2021.08.19
+	 */
+	//auto it = _ticksubed_raw_codes.find(stdCode);
+	//if (it != _ticksubed_raw_codes.end())
 	{
 		//是否主力合约代码的标记, 主要用于给执行器发数据的
 		_exec_mgr.handle_tick(stdCode, curTick);

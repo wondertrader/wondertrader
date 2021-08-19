@@ -29,7 +29,7 @@ public:
 	/*
 	 *	持仓更新回调
 	 */
-	virtual void on_position(const char* stdCode, bool isLong, double prevol, double preavail, double newvol, double newavail) {}
+	virtual void on_position(const char* stdCode, bool isLong, double prevol, double preavail, double newvol, double newavail, uint32_t tradingday) {}
 
 	/*
 	 *	交易通道就绪

@@ -102,6 +102,7 @@ public:
 
 private:
 	ExecuteUnitPtr	getUnit(const char* code, bool bAutoCreate = true);
+	ExecuteUnitPtr	getClearUnit(const char* code, bool bAutoCreate = true);
 
 public:
 	//////////////////////////////////////////////////////////////////////////
@@ -114,8 +115,8 @@ public:
 	virtual OrderMap*	getOrders(const char* code) override;
 	virtual double		getUndoneQty(const char* code) override;
 
-	virtual OrderIDs	buy(const char* code, double price, double qty) override;
-	virtual OrderIDs	sell(const char* code, double price, double qty) override;
+	virtual OrderIDs	buy(const char* code, double price, double qty, bool bForceClose = false) override;
+	virtual OrderIDs	sell(const char* code, double price, double qty, bool bForceClose = false) override;
 	virtual bool		cancel(uint32_t localid) override;
 	virtual OrderIDs	cancel(const char* code, bool isBuy, double qty) override;
 	virtual void		writeLog(const char* fmt, ...) override;
@@ -155,7 +156,7 @@ public:
 	/*
 	 *	
 	 */
-	virtual void on_position(const char* stdCode, bool isLong, double prevol, double preavail, double newvol, double newavail) override;
+	virtual void on_position(const char* stdCode, bool isLong, double prevol, double preavail, double newvol, double newavail, uint32_t tradingday) override;
 
 	/*
 	 *	

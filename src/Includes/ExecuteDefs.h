@@ -81,7 +81,7 @@ public:
 	 *
 	 *	返回值	本地订单号数组: 一个买入操作可能会拆成最多3个订单发出
 	 */
-	virtual OrderIDs buy(const char* stdCode, double price, double qty) = 0;
+	virtual OrderIDs buy(const char* stdCode, double price, double qty, bool bForceClose = false) = 0;
 
 	/*
 	*	卖出接口
@@ -91,7 +91,7 @@ public:
 	*
 	*	返回值	本地订单号数组: 一个买入操作可能会拆成最多3个订单发出
 	*/
-	virtual OrderIDs sell(const char* stdCode, double price, double qty) = 0;
+	virtual OrderIDs sell(const char* stdCode, double price, double qty, bool bForceClose = false) = 0;
 
 	/*
 	 *	根据本地订单号撤单

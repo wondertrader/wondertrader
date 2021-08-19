@@ -600,7 +600,7 @@ bool TraderAdapter::checkOrderLimits(const char* stdCode)
 	return true;
 }
 
-OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty)
+OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty, bool bForceClose/* = false*/)
 {
 	OrderIDs ret;
 	if (qty == 0)
@@ -645,7 +645,7 @@ OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty)
 	for (auto it = ruleGP.begin(); it != ruleGP.end(); it++)
 	{
 		const ActionRule& curRule = (*it);
-		if(curRule._atype == AT_Open)
+		if(curRule._atype == AT_Open && !bForceClose)
 		{
 			//先检查是否已经到了限额
 			//买入开仓, 即开多仓
@@ -708,7 +708,7 @@ OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty)
 			
 			
 			//如果要检查净今仓，但是昨仓不为0，则跳过该条规则
-			if (curRule._pure && decimal::eq(pItem.s_preavail, 0.0))
+			if (!bForceClose && curRule._pure && decimal::eq(pItem.s_preavail, 0.0))
 			{
 				WTSLogger::log_dyn_raw("trader", _id.c_str(), LL_WARN,
 					fmt::format("[{}] Closing new short position of {} skipped because of non-zero pre short position", _id.c_str(), stdCode).c_str());
@@ -754,7 +754,7 @@ OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty)
 			double maxQty = min(left, pItem.s_preavail);
 
 			//如果要检查净昨仓，但是今仓不为0，则跳过该条规则
-			if (curRule._pure && decimal::eq(pItem.s_newavail, 0.0))
+			if (!bForceClose && curRule._pure && decimal::eq(pItem.s_newavail, 0.0))
 			{
 				WTSLogger::log_dyn_raw("trader", _id.c_str(), LL_WARN,
 					fmt::format("[{}] Closing pre short position of {} skipped because of non-zero new short position", _id.c_str(), stdCode).c_str());
@@ -895,7 +895,7 @@ OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty)
 	return ret;
 }
 
-OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty)
+OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty, bool bForceClose/* = false*/)
 {
 	OrderIDs ret;
 	if (qty == 0)
@@ -939,7 +939,7 @@ OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty)
 	for (auto it = ruleGP.begin(); it != ruleGP.end(); it++)
 	{
 		const ActionRule& curRule = (*it);
-		if (curRule._atype == AT_Open)
+		if (curRule._atype == AT_Open && !bForceClose)
 		{
 			//先检查是否已经到了限额
 			//买入开仓, 即开多仓
@@ -1001,7 +1001,7 @@ OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty)
 				maxQty = min(left, pItem.avail_pos(true));
 
 			//如果要检查净今仓，但是昨仓不为0，则跳过该条规则
-			if (curRule._pure && decimal::eq(pItem.l_preavail, 0.0))
+			if (!bForceClose && curRule._pure && decimal::eq(pItem.l_preavail, 0.0))
 			{
 				WTSLogger::log_dyn_raw("trader", _id.c_str(), LL_WARN,
 					fmt::format("[{}] Closing new long position of {} skipped because of non-zero pre long position", _id.c_str(), stdCode).c_str());
@@ -1048,7 +1048,7 @@ OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty)
 			double maxQty = min(left, pItem.l_preavail);
 			
 			//如果要检查净昨仓，但是今仓不为0，则跳过该条规则
-			if (curRule._pure && decimal::eq(pItem.l_newavail, 0.0))
+			if (!bForceClose && curRule._pure && decimal::eq(pItem.l_newavail, 0.0))
 			{
 				WTSLogger::log_dyn_raw("trader", _id.c_str(), LL_WARN,
 					fmt::format("[{}] Closing pre long position of {} skipped because of non-zero new long position", _id.c_str(), stdCode).c_str());
@@ -1403,7 +1403,7 @@ void TraderAdapter::onLoginResult(bool bSucc, const char* msg, uint32_t tradingd
 	{
 		_state = AS_LOGINED;
 		WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO,"[%s] Trader login succeed, trading date: %u", _id.c_str(), tradingdate);
-
+		_trading_day = tradingdate;
 		_trader_api->queryPositions();	//查持仓
 	}
 }
@@ -1540,8 +1540,8 @@ void TraderAdapter::onRspPosition(const WTSArray* ayPositions)
 			printPosition(stdCode, pItem);
 			for (auto sink : _sinks)
 			{
-				sink->on_position(stdCode, true, pItem.l_prevol, pItem.l_preavail, pItem.l_newvol, pItem.l_newavail);
-				sink->on_position(stdCode, false, pItem.s_prevol, pItem.s_preavail, pItem.s_newvol, pItem.s_newavail);
+				sink->on_position(stdCode, true, pItem.l_prevol, pItem.l_preavail, pItem.l_newvol, pItem.l_newavail, _trading_day);
+				sink->on_position(stdCode, false, pItem.s_prevol, pItem.s_preavail, pItem.s_newvol, pItem.s_newavail, _trading_day);
 			}
 		}
 	}

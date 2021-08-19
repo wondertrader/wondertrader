@@ -94,6 +94,39 @@ ExecuteUnitPtr WtLocalExecuter::getUnit(const char* stdCode, bool bAutoCreate /*
 	}
 }
 
+ExecuteUnitPtr WtLocalExecuter::getClearUnit(const char* stdCode, bool bAutoCreate /* = true */)
+{
+	std::string commID = CodeHelper::stdCodeToStdCommID(stdCode);
+
+	WTSVariant* policy = _config->get("policy");
+
+	auto it = _unit_map.find(stdCode);
+	if (it != _unit_map.end())
+	{
+		return it->second;
+	}
+
+	if (bAutoCreate)
+	{
+		WTSVariant* cfg = policy->get("clear");	//先找清仓专用执行策略
+		if(cfg == NULL)
+			cfg = policy->get("default");		//如果没有，则用default
+
+		const char* name = cfg->getCString("name");
+		ExecuteUnitPtr unit = _factory->createExeUnit(name);
+		if (unit != NULL)
+		{
+			_unit_map[stdCode] = unit;
+			unit->self()->init(this, stdCode, cfg);
+		}
+		return unit;
+	}
+	else
+	{
+		return ExecuteUnitPtr();
+	}
+}
+
 //////////////////////////////////////////////////////////////////////////
 //ExecuteContext
 #pragma region Context回调接口
@@ -128,19 +161,19 @@ OrderMap* WtLocalExecuter::getOrders(const char* stdCode)
 	return _trader->getOrders(stdCode);
 }
 
-OrderIDs WtLocalExecuter::buy(const char* stdCode, double price, double qty)
+OrderIDs WtLocalExecuter::buy(const char* stdCode, double price, double qty, bool bForceClose/* = false*/)
 {
 	if (!_channel_ready)
 		return OrderIDs();
-	return _trader->buy(stdCode, price, qty);
+	return _trader->buy(stdCode, price, qty, bForceClose);
 }
 
-OrderIDs WtLocalExecuter::sell(const char* stdCode, double price, double qty)
+OrderIDs WtLocalExecuter::sell(const char* stdCode, double price, double qty, bool bForceClose/* = false*/)
 {
 	if (!_channel_ready)
 		return OrderIDs();
 
-	return _trader->sell(stdCode, price, qty);
+	return _trader->sell(stdCode, price, qty, bForceClose);
 }
 
 bool WtLocalExecuter::cancel(uint32_t localid)
@@ -411,20 +444,21 @@ void WtLocalExecuter::on_channel_lost()
 	}
 }
 
-void WtLocalExecuter::on_position(const char* stdCode, bool isLong, double prevol, double preavail, double newvol, double newavail)
+void WtLocalExecuter::on_position(const char* stdCode, bool isLong, double prevol, double preavail, double newvol, double newavail, uint32_t tradingday)
 {
 	IHotMgr* hotMgr = _stub->get_hot_mon();
 	if(CodeHelper::isStdFutCode(stdCode))
 	{
 		CodeHelper::CodeInfo cInfo;
 		CodeHelper::extractStdFutCode(stdCode, cInfo);
-		std::string code = hotMgr->getPrevRawCode(cInfo._exchg, cInfo._product, _stub->get_trading_day());
-		if (code == stdCode)
+		std::string code = hotMgr->getPrevRawCode(cInfo._exchg, cInfo._product, tradingday);
+		writeLog("Prev hot contract of %s.%s on %u is %s", cInfo._exchg, cInfo._product, tradingday, code.c_str());
+		if (code == cInfo._code)
 		{
 			//上期主力合约,需要清理仓位
 			//writeLog("%s 为上一期主力合约,仓位即将自动清理");
-			writeLog("Position of %s, as prev hot contract, will be cleared");
-			ExecuteUnitPtr unit = getUnit(stdCode);
+			writeLog("Position of %s, as prev hot contract, will be cleared", stdCode);
+			ExecuteUnitPtr unit = getClearUnit(stdCode);
 			if (unit)
 			{
 				//unit->self()->set_position(stdCode, 0);
@@ -432,12 +466,12 @@ void WtLocalExecuter::on_position(const char* stdCode, bool isLong, double prevo
 				{
 					std::string code = stdCode;
 					_pool->schedule([unit, code](){
-						unit->self()->set_position(code.c_str(), 0);
+						unit->self()->set_position(code.c_str(), DBL_MAX);
 					});
 				}
 				else
 				{
-					unit->self()->set_position(stdCode, 0);
+					unit->self()->set_position(stdCode, DBL_MAX);
 				}
 			}
 		}

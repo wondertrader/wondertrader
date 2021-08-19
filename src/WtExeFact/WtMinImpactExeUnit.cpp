@@ -15,6 +15,19 @@
 
 extern const char* FACT_NAME;
 
+inline double get_real_target(double target)
+{
+	if (target == DBL_MAX)
+		return 0;
+
+	return target;
+}
+
+inline bool is_clear(double target)
+{
+	return (target == DBL_MAX);
+}
+
 
 WtMinImpactExeUnit::WtMinImpactExeUnit()
 	: _last_tick(NULL)
@@ -85,9 +98,10 @@ void WtMinImpactExeUnit::on_order(uint32_t localid, const char* stdCode, bool is
 		{
 			_orders_mon.erase_order(localid);
 			if (_cancel_cnt > 0)
+			{
 				_cancel_cnt--;
-
-			_ctx->writeLog("@ %d cancelcnt -> %u", __LINE__, _cancel_cnt);
+				_ctx->writeLog("[%s] Order of %s cancelling done, cancelcnt -> %u", __FUNCTION__, _code.c_str(), _cancel_cnt);
+			}
 		}
 
 		if (leftover == 0 && !isCanceled)
@@ -119,7 +133,7 @@ void WtMinImpactExeUnit::on_channel_ready()
 		_orders_mon.push_order(ids.data(), ids.size(), _ctx->getCurTime());
 		_cancel_cnt += ids.size();
 
-		_ctx->writeLog("%s cancelcnt -> %u", __FUNCTION__, _cancel_cnt);
+		_ctx->writeLog("[%s]cancelcnt -> %u", __FUNCTION__, _cancel_cnt);
 	}
 
 
@@ -163,7 +177,7 @@ void WtMinImpactExeUnit::on_tick(WTSTickData* newTick)
 
 	if(isFirstTick)	//如果是第一笔tick,则检查目标仓位,不符合则下单
 	{
-		double newVol = _target_pos;
+		double newVol = get_real_target(_target_pos);
 		const char* stdCode = _code.c_str();
 
 		double undone = _ctx->getUndoneQty(stdCode);
@@ -183,7 +197,7 @@ void WtMinImpactExeUnit::on_tick(WTSTickData* newTick)
 			if (_ctx->cancel(localid))
 			{
 				_cancel_cnt++;
-				_ctx->writeLog("@ %d cancelcnt -> %u", __LINE__, _cancel_cnt);
+				_ctx->writeLog("[%s] Expired order of %s canceled, cancelcnt -> %u", __FUNCTION__, _code.c_str(), _cancel_cnt);
 			}
 		});
 	}
@@ -215,7 +229,7 @@ void WtMinImpactExeUnit::do_calc()
 	if (_cancel_cnt != 0)
 		return;
 
-	double newVol = _target_pos;
+	double newVol = get_real_target(_target_pos);
 	const char* stdCode = _code.c_str();
 
 	double undone = _ctx->getUndoneQty(stdCode);
@@ -229,7 +243,7 @@ void WtMinImpactExeUnit::do_calc()
 		OrderIDs ids = _ctx->cancel(stdCode, isBuy);
 		_orders_mon.push_order(ids.data(), ids.size(), _ctx->getCurTime());
 		_cancel_cnt += ids.size();
-		_ctx->writeLog("@ %d cancelcnt -> %u", __LINE__, _cancel_cnt);
+		_ctx->writeLog("[%s] live negative order of %s canceled, cancelcnt -> %u", __FUNCTION__, _code.c_str(), _cancel_cnt);
 		return;
 	}
 	else if (decimal::eq(newVol,0) && !decimal::eq(undone, 0))
@@ -244,7 +258,7 @@ void WtMinImpactExeUnit::do_calc()
 			OrderIDs ids = _ctx->cancel(stdCode, isBuy);
 			_orders_mon.push_order(ids.data(), ids.size(), _ctx->getCurTime());
 			_cancel_cnt += ids.size();
-			_ctx->writeLog("@ %d cancelcnt -> %u", __LINE__, _cancel_cnt);
+			_ctx->writeLog("[%s] live order of %s canceled, cancelcnt -> %u", __FUNCTION__, _code.c_str(), _cancel_cnt);
 			return;
 		}
 	}
@@ -254,18 +268,13 @@ void WtMinImpactExeUnit::do_calc()
 		return;
 
 	double curPos = realPos;
-	//if (curPos == newVol)
-	if (decimal::eq(curPos, newVol))
-		return;
 
 	//检查下单时间间隔
 	uint64_t now = TimeUtils::getLocalTimeNow();
 	if (now - _last_place_time < _entrust_span)
 		return;
 
-	bool isBuy = decimal::gt(newVol, curPos);
-
-	if(_last_tick == NULL)
+	if (_last_tick == NULL)
 		_last_tick = _ctx->grabLastTick(stdCode);
 
 	if (_last_tick == NULL)
@@ -273,6 +282,27 @@ void WtMinImpactExeUnit::do_calc()
 		_ctx->writeLog("No lastest tick data of %s, execute later", _code.c_str());
 		return;
 	}
+
+	if (decimal::eq(curPos, newVol))
+	{
+		//当前仓位和最新仓位匹配时，如果不是全部清仓的需求，则直接退出计算了
+		if (!is_clear(_target_pos))
+			return;
+
+		//如果是清仓的需求，还要再进行对比
+		//如果多头为0，说明已经全部清理掉了，则直接退出
+		double lPos = _ctx->getPosition(stdCode, 1);
+		if (decimal::eq(lPos, 0))
+			return;
+
+		//如果还有都头仓位，则将目标仓位设置为非0，强制触发
+		newVol = -min(lPos, _order_lots);
+		_ctx->writeLog("Clearing process triggered, target position of %s has been set to %f", _code.c_str(), newVol);
+	}
+
+	bool bForceClose = is_clear(_target_pos);
+
+	bool isBuy = decimal::gt(newVol, curPos);
 
 	//如果相比上次没有更新的tick进来，则先不下单，防止开盘前集中下单导致通道被封
 	uint64_t curTickTime = (uint64_t)_last_tick->actiondate() * 1000000000 + _last_tick->actiontime();
@@ -345,12 +375,12 @@ void WtMinImpactExeUnit::do_calc()
 
 	if (isBuy)
 	{
-		OrderIDs ids = _ctx->buy(stdCode, buyPx, this_qty);
+		OrderIDs ids = _ctx->buy(stdCode, buyPx, this_qty, bForceClose);
 		_orders_mon.push_order(ids.data(), ids.size(), _ctx->getCurTime(), isCanCancel);
 	}
 	else
 	{
-		OrderIDs ids  = _ctx->sell(stdCode, sellPx, this_qty);
+		OrderIDs ids  = _ctx->sell(stdCode, sellPx, this_qty, bForceClose);
 		_orders_mon.push_order(ids.data(), ids.size(), _ctx->getCurTime(), isCanCancel);
 	}
 
