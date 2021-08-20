@@ -157,6 +157,7 @@ void dump_bars(WtString binFolder, WtString csvFolder, WtString strFilter /* = "
 			const WTSBarStruct& curBar = klineBlk->_bars[i];
 			ss << curBar.date << ","
 				<< curBar.time << ","
+                << curBar.open << ","
 				<< curBar.high << ","
 				<< curBar.low << ","
 				<< curBar.close << ","
