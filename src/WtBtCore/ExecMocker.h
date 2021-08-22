@@ -55,9 +55,9 @@ public:
 
 	virtual double getUndoneQty(const char* stdCode) override;
 
-	virtual OrderIDs buy(const char* stdCode, double price, double qty) override;
+	virtual OrderIDs buy(const char* stdCode, double price, double qty, bool bForceClose = false) override;
 
-	virtual OrderIDs sell(const char* stdCode, double price, double qty) override;
+	virtual OrderIDs sell(const char* stdCode, double price, double qty, bool bForceClose = false) override;
 
 	virtual bool cancel(uint32_t localid) override;
 

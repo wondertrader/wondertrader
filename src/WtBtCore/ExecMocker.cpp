@@ -198,7 +198,7 @@ double ExecMocker::getUndoneQty(const char* stdCode)
 	return _undone;
 }
 
-OrderIDs ExecMocker::buy(const char* stdCode, double price, double qty)
+OrderIDs ExecMocker::buy(const char* stdCode, double price, double qty, bool bForceClose /* = false */)
 {
 	uint64_t curTime = (uint64_t)_replayer->get_date() * 1000000000 + (uint64_t)_replayer->get_raw_time() * 100000 + _replayer->get_secs();
 	OrderIDs ret = _matcher.buy(stdCode, price, qty, curTime);
@@ -212,7 +212,7 @@ OrderIDs ExecMocker::buy(const char* stdCode, double price, double qty)
 	return ret;
 }
 
-OrderIDs ExecMocker::sell(const char* stdCode, double price, double qty)
+OrderIDs ExecMocker::sell(const char* stdCode, double price, double qty, bool bForceClose /* = false */)
 {
 	uint64_t curTime = (uint64_t)_replayer->get_date() * 1000000000 + (uint64_t)_replayer->get_raw_time() * 100000 + _replayer->get_secs();
 	OrderIDs ret = _matcher.sell(stdCode, price, qty, curTime);
