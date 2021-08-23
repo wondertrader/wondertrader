@@ -227,8 +227,9 @@ private:
 		std::string		_raw_code;
 
 		std::vector<WTSBarStruct>	_bars;
+		double			_factor;
 
-		_BarsList() :_his_cursor(UINT_MAX), _rt_cursor(UINT_MAX){}
+		_BarsList() :_his_cursor(UINT_MAX), _rt_cursor(UINT_MAX), _factor(DBL_MAX){}
 	} BarsList;
 
 	typedef faster_hashmap<std::string, BarsList> BarsCache;

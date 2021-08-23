@@ -3853,8 +3853,11 @@ bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* st
 								lastIdx = endBar - firstBar;
 							}
 
-							if(lastIdx == 0)
+							if (lastIdx == 0)
+							{
+								barList._factor = factor;
 								break;
+							}
 						}
 					}
 

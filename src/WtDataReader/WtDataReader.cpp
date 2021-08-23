@@ -1618,9 +1618,6 @@ bool WtDataReader::cacheHisBarsFromFile(const std::string& key, const char* stdC
 		bool bAllCovered = false;
 		do
 		{
-			//const char* curCode = it->first.c_str();
-			//uint32_t rightDt = it->second.second;
-			//uint32_t leftDt = it->second.first;
 			const char* curCode = cInfo._code;
 
 			//要先将日期转换为边界时间
@@ -1741,7 +1738,10 @@ bool WtDataReader::cacheHisBarsFromFile(const std::string& key, const char* stdC
 							}
 
 							if (lastIdx == 0)
+							{
+								barList._factor = factor;	//将最后一个复权因子保存起来
 								break;
+							}
 						}
 					}
 
@@ -2070,8 +2070,6 @@ WTSKlineSlice* WtDataReader::readKlineSlice(const char* stdCode, WTSKlinePeriod 
 				idx--;
 			}
 
-			_bars_cache[key]._rt_cursor = idx;
-
 			uint32_t sIdx = 0;
 			if (left <= idx + 1)
 			{
@@ -2080,8 +2078,32 @@ WTSKlineSlice* WtDataReader::readKlineSlice(const char* stdCode, WTSKlinePeriod 
 
 			uint32_t curCnt = (idx - sIdx + 1);
 			left -= (idx - sIdx + 1);
-			rtHead = &kPair->_block->_bars[sIdx];
-			rtCnt = curCnt;
+
+			if(cInfo._exright == 2 && cInfo._category == CC_Stock)
+			{
+				//后复权数据要把最新的数据进行复权处理，所以要作为历史数据追加到尾部
+				BarsList& barsList = _bars_cache[key];
+				double factor = barsList._factor;
+				uint32_t oldSize = barsList._bars.size();
+				uint32_t newSize = oldSize + curCnt;
+				barsList._bars.resize(newSize);
+				memcpy(&barsList._bars[oldSize], &kPair->_block->_bars[sIdx], sizeof(WTSBarStruct)*curCnt);
+				for(uint32_t thisIdx = oldSize; thisIdx < newSize; thisIdx++)
+				{
+					WTSBarStruct* pBar = &barsList._bars[thisIdx];
+					pBar->open /= factor;
+					pBar->high /= factor;
+					pBar->low /= factor;
+					pBar->close /= factor;
+				}
+			}
+			else
+			{
+				_bars_cache[key]._rt_cursor = idx;				
+				rtHead = &kPair->_block->_bars[sIdx];
+				rtCnt = curCnt;
+			}
+			
 		}
 	}
 
@@ -2374,7 +2396,24 @@ void WtDataReader::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTDate
 					uint64_t barTime = 199000000000 + nextBar.time;
 					if (barTime <= nowTime)
 					{
-						_sink->on_bar(barsList._code.c_str(), barsList._period, &nextBar);
+						//如果不是后复权，则直接回调onbar
+						//如果是后复权，则将最新bar复权处理以后，添加到cache中，再回调onbar
+						if(barsList._factor == DBL_MAX)
+						{
+							_sink->on_bar(barsList._code.c_str(), barsList._period, &nextBar);
+						}
+						else
+						{
+							WTSBarStruct cpBar = nextBar;
+							cpBar.open /= barsList._factor;
+							cpBar.high /= barsList._factor;
+							cpBar.low /= barsList._factor;
+							cpBar.close /= barsList._factor;
+
+							barsList._bars.emplace_back(cpBar);
+
+							_sink->on_bar(barsList._code.c_str(), barsList._period, &barsList._bars[barsList._bars.size()-1]);
+						}
 					}
 					else
 					{

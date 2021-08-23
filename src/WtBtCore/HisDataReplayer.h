@@ -90,8 +90,9 @@ private:
 		uint32_t		_times;
 
 		std::vector<WTSBarStruct>	_bars;
+		double			_factor;	//最后一条复权因子
 
-		_BarsList() :_cursor(UINT_MAX), _count(0), _times(1){}
+		_BarsList() :_cursor(UINT_MAX), _count(0), _times(1), _factor(DBL_MAX){}
 	} BarsList;
 
 	typedef faster_hashmap<std::string, BarsList>	BarsCache;
