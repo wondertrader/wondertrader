@@ -215,10 +215,13 @@ void WtHftRtTicker::run()
 						_engine->set_date_time(_date, thisMin, 0);
 				}
 			}
-			else if (offTime >= _s_info->getOpenTime(true) && offTime <= _s_info->getCloseTime(true))
+			else //if (offTime >= _s_info->getOpenTime(true) && offTime <= _s_info->getCloseTime(true))
 			{
+				//不在交易时间，则休息10s再进行检查
+				//因为这个逻辑是处理分钟线的，所以休盘时间休息10s，不会引起数据踏空的问题
 				std::this_thread::sleep_for(std::chrono::seconds(10));
 			}
+			
 		}
 	}));
 }
