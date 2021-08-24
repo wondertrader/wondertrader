@@ -14,6 +14,7 @@ void WtOrdMon::push_order(const uint32_t* ids, uint32_t cnt, uint64_t curTime, b
 
 void WtOrdMon::erase_order(uint32_t localid)
 {
+	StdLocker<StdRecurMutex> lock(_mtx_ords);
 	auto it = _orders.find(localid);
 	if (it == _orders.end())
 		return;
