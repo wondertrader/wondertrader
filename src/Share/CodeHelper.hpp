@@ -36,6 +36,14 @@ public:
 		inline bool isSecond() const { return _hotflag == 2; }
 		inline bool isFlat() const { return _hotflag == 0; }
 
+		inline bool isFuture() const { return _category == CC_Future; }
+		inline bool isStock() const { return _category == CC_Stock; }
+		inline bool isFutOpt() const { return _category == CC_FutOption; }
+		inline bool isETFOpt() const { return _category == CC_ETFOption; }
+		inline bool isSpotOpt() const { return _category == CC_SpotOption; }
+
+		inline bool isOption() const { return _category == CC_SpotOption || _category == CC_FutOption || _category == CC_ETFOption; }
+
 		_CodeInfo()
 		{
 			memset(this, 0, sizeof(_CodeInfo));
@@ -48,7 +56,7 @@ public:
 	{
 		using namespace boost::xpressive;
 		/* 定义正则表达式 */
-		cregex reg_stk = cregex::compile("^[A-Z]+.([A-Z]+.)?\\d{6,16}Q?$");
+		cregex reg_stk = cregex::compile("^[A-Z]+.([A-Z]+.)?\\d{6,16}(Q?|H)$");
 		return 	regex_match(code, reg_stk);
 	}
 
@@ -357,12 +365,17 @@ public:
 			if (ay[1].back() == 'Q')
 			{
 				strcpy(codeInfo._code, ay[1].substr(0, ay[1].size() - 1).c_str());
-				codeInfo._exright = true;
+				codeInfo._exright = 1;
+			}
+			else if (ay[1].back() == 'H')
+			{
+				strcpy(codeInfo._code, ay[1].substr(0, ay[1].size() - 1).c_str());
+				codeInfo._exright = 2;
 			}
 			else
 			{
 				strcpy(codeInfo._code, ay[1].c_str());
-				codeInfo._exright = false;
+				codeInfo._exright = 0;
 			}
 		}
 	}
