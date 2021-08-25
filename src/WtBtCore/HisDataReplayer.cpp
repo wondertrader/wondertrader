@@ -191,6 +191,21 @@ bool HisDataReplayer::loadStkAdjFactorsFromDB()
 		fct_cnt++;
 	}
 
+	for(auto& m : _adj_factors)
+	{
+		AdjFactorList& fctrLst = (AdjFactorList&)m.second;
+
+		//一定要把第一条加进去，不然如果是前复权的话，可能会漏处理最早的数据
+		AdjFactor adjFact;
+		adjFact._date = 19900101;
+		adjFact._factor = 1;
+		fctrLst.emplace_back(adjFact);
+
+		std::sort(fctrLst.begin(), fctrLst.end(), [](AdjFactor& left, AdjFactor& right) {
+			return left._date < right._date;
+		});
+	}
+
 	WTSLogger::info("%u items of adjust factors for %u stocks loaded", fct_cnt, stk_cnt);
 	return true;
 }
@@ -241,6 +256,16 @@ bool HisDataReplayer::loadStkAdjFactors(const char* adjfile)
 				fctrLst.emplace_back(adjFact);
 				fct_cnt++;
 			}
+
+			//一定要把第一条加进去，不然如果是前复权的话，可能会漏处理最早的数据
+			AdjFactor adjFact;
+			adjFact._date = 19900101;
+			adjFact._factor = 1;
+			fctrLst.emplace_back(adjFact);
+
+			std::sort(fctrLst.begin(), fctrLst.end(), [](AdjFactor& left, AdjFactor& right) {
+				return left._date < right._date;
+			});
 		}
 	}
 
@@ -983,7 +1008,7 @@ void HisDataReplayer::replayUnbars(uint64_t stime, uint64_t nowTime, uint32_t en
 						CodeHelper::extractStdCode(barsList._code.c_str(), cInfo);
 
 						std::string realCode = barsList._code;
-						if (cInfo._category == CC_Stock && cInfo.isExright())
+						if (cInfo.isStock() && cInfo.isExright())
 						{
 							realCode = cInfo._exchg;
 							realCode += ".";
@@ -1560,7 +1585,7 @@ void HisDataReplayer::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTD
 									CodeHelper::extractStdCode(barsList._code.c_str(), cInfo);
 
 									std::string realCode = barsList._code;
-									if (cInfo._category == CC_Stock && cInfo._exright)
+									if (cInfo.isStock() && cInfo._exright)
 									{
 										realCode = cInfo._exchg;
 										realCode += ".";
@@ -2566,7 +2591,7 @@ uint32_t strToDate(const char* strDate)
 bool HisDataReplayer::cacheRawTicksFromBin(const std::string& key, const char* stdCode, uint32_t uDate)
 {
 	CodeHelper::CodeInfo cInfo;
-	CodeHelper::extractStdFutCode(stdCode, cInfo);
+	CodeHelper::extractStdCode(stdCode, cInfo);
 	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
 	
 	std::string rawCode = cInfo._code;
@@ -2788,13 +2813,17 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 	if (!StdFile::exists(ss.str().c_str()))
 		BoostFile::create_directories(ss.str().c_str());
 
-	if(cInfo.isHot() && cInfo._category == CC_Future)
+	if(cInfo.isHot() && cInfo.isFuture())
 	{
 		ss << cInfo._exchg << "." << cInfo._product << "_HOT.dsb";
 	}
-	else if (cInfo.isSecond() && cInfo._category == CC_Future)
+	else if (cInfo.isSecond() && cInfo.isFuture())
 	{
 		ss << cInfo._exchg << "." << cInfo._product << "_2ND.dsb";
+	}
+	else if (cInfo.isExright() && cInfo.isStock())
+	{
+
 	}
 	else
 		ss << cInfo._code << ".dsb";
@@ -2961,7 +2990,7 @@ bool HisDataReplayer::cacheRawBarsFromDB(const std::string& key, const char* std
 	bool isDay = (period == KP_DAY);
 
 	uint32_t realCnt = 0;
-	if (!cInfo.isFlat() && cInfo._category == CC_Future)//如果是读取期货主力连续数据
+	if (!cInfo.isFlat() && cInfo.isFuture())//如果是读取期货主力连续数据
 	{
 		const char* flag = cInfo.isHot() ? "HOT" : "2ND";
 
@@ -3138,7 +3167,7 @@ bool HisDataReplayer::cacheRawBarsFromDB(const std::string& key, const char* std
 			realCnt += hotAy->size();
 		}
 	}
-	else if (cInfo.isExright() && cInfo._category == CC_Stock)//如果是读取股票复权数据
+	else if (cInfo.isExright() && cInfo.isStock())//如果是读取股票复权数据
 	{
 		std::vector<WTSBarStruct>* hotAy = NULL;
 		uint32_t lastQTime = 0;
@@ -3261,14 +3290,27 @@ bool HisDataReplayer::cacheRawBarsFromDB(const std::string& key, const char* std
 					auto& ayFactors = getAdjFactors(cInfo._code, cInfo._exchg);
 					if (!ayFactors.empty())
 					{
-						//做前复权处理
+						//做复权处理
 						int32_t lastIdx = barcnt;
 						WTSBarStruct bar;
 						WTSBarStruct* firstBar = tempAy->data();
-						for (auto& adjFact : ayFactors)
+
+						//根据复权类型确定基础因子
+						//如果是前复权，则历史数据会变小，以最后一个复权因子为基础因子
+						//如果是后复权，则新数据会变大，基础因子为1
+						double baseFactor = 1.0;
+						if (cInfo._exright == 1)
+							baseFactor = ayFactors.back()._factor;
+						else if (cInfo._exright == 2)
+							barList._factor = ayFactors.back()._factor;
+
+						for (auto it = ayFactors.rbegin(); it != ayFactors.rend(); it++)
 						{
+							const AdjFactor& adjFact = *it;
 							bar.date = adjFact._date;
-							double factor = adjFact._factor;
+
+							//调整因子
+							double factor = adjFact._factor / baseFactor;
 
 							WTSBarStruct* pBar = NULL;
 							pBar = std::lower_bound(firstBar, firstBar + lastIdx - 1, bar, [period](const WTSBarStruct& a, const WTSBarStruct& b) {
@@ -3284,10 +3326,10 @@ bool HisDataReplayer::cacheRawBarsFromDB(const std::string& key, const char* std
 								int32_t curIdx = pBar - firstBar;
 								while (pBar && curIdx < lastIdx)
 								{
-									pBar->open /= factor;
-									pBar->high /= factor;
-									pBar->low /= factor;
-									pBar->close /= factor;
+									pBar->open *= factor;
+									pBar->high *= factor;
+									pBar->low *= factor;
+									pBar->close *= factor;
 
 									pBar++;
 									curIdx++;
@@ -3296,7 +3338,9 @@ bool HisDataReplayer::cacheRawBarsFromDB(const std::string& key, const char* std
 							}
 
 							if (lastIdx == 0)
+							{
 								break;
+							}
 						}
 					}
 
@@ -3416,7 +3460,7 @@ bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* st
 	std::vector<std::vector<WTSBarStruct>*> barsSections;
 
 	uint32_t realCnt = 0;
-	if (!cInfo.isFlat() && cInfo._category == CC_Future)//如果是读取期货主力连续数据
+	if (!cInfo.isFlat() && cInfo.isFuture())//如果是读取期货主力连续数据
 	{
 		const char* hot_flag = cInfo.isHot() ? "HOT" : "2ND";
 
@@ -3656,7 +3700,7 @@ bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* st
 			realCnt += hotAy->size();
 		}
 	}
-	else if (cInfo.isExright() && cInfo._category == CC_Stock)//如果是读取股票复权数据
+	else if (cInfo.isExright() && cInfo.isStock())//如果是读取股票复权数据
 	{
 		std::vector<WTSBarStruct>* hotAy = NULL;
 		uint32_t lastQTime = 0;
@@ -3728,9 +3772,6 @@ bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* st
 		bool bAllCovered = false;
 		do
 		{
-			//const char* curCode = it->first.c_str();
-			//uint32_t rightDt = it->second.second;
-			//uint32_t leftDt = it->second.first;
 			const char* curCode = cInfo._code;
 
 			//要先将日期转换为边界时间
@@ -3818,15 +3859,27 @@ bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* st
 					auto& ayFactors = getAdjFactors(cInfo._code, cInfo._exchg);
 					if (!ayFactors.empty())
 					{
-						//做前复权处理
-
+						//做复权处理
 						int32_t lastIdx = curCnt;
 						WTSBarStruct bar;
 						firstBar = tempAy->data();
-						for (auto& adjFact : ayFactors)
+
+						//根据复权类型确定基础因子
+						//如果是前复权，则历史数据会变小，以最后一个复权因子为基础因子
+						//如果是后复权，则新数据会变大，基础因子为1
+						double baseFactor = 1.0;
+						if (cInfo._exright == 1)
+							baseFactor = ayFactors.back()._factor;
+						else if (cInfo._exright == 2)
+							barList._factor = ayFactors.back()._factor;
+
+						for (auto it = ayFactors.rbegin(); it != ayFactors.rend(); it++)
 						{
+							const AdjFactor& adjFact = *it;
 							bar.date = adjFact._date;
-							double factor = adjFact._factor;
+
+							//调整因子
+							double factor = adjFact._factor / baseFactor;
 
 							WTSBarStruct* pBar = NULL;
 							pBar = std::lower_bound(firstBar, firstBar + lastIdx - 1, bar, [period](const WTSBarStruct& a, const WTSBarStruct& b) {
@@ -3842,10 +3895,10 @@ bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* st
 								int32_t curIdx = pBar - firstBar;
 								while (pBar && curIdx < lastIdx)
 								{
-									pBar->open /= factor;
-									pBar->high /= factor;
-									pBar->low /= factor;
-									pBar->close /= factor;
+									pBar->open *= factor;
+									pBar->high *= factor;
+									pBar->low *= factor;
+									pBar->close *= factor;
 
 									pBar++;
 									curIdx++;
@@ -3854,10 +3907,7 @@ bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* st
 							}
 
 							if (lastIdx == 0)
-							{
-								barList._factor = factor;
 								break;
-							}
 						}
 					}
 
