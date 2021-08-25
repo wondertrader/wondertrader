@@ -160,6 +160,14 @@ public:
 	 */
 	virtual WTSKlineSlice*	readKlineSlice(const char* stdCode, WTSKlinePeriod period, uint32_t count, uint64_t etime = 0) = 0;
 
+	/*
+	 *	@brief 获取个股指定日期的复权因子
+	 *
+	 *	@param	stdCode	标准品种代码,如SSE.600000
+	 *	@param	date	指定日期,格式yyyyMMdd，默认为0，为0则按当前日期处理
+	 */
+	virtual double		getAdjFactor(const char* stdCode, uint32_t date = 0) { return 1.0; }
+
 protected:
 	IDataReaderSink* _sink;
 };

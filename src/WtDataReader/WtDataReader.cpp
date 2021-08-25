@@ -214,6 +214,21 @@ bool WtDataReader::loadStkAdjFactorsFromDB()
 		fct_cnt++;
 	}
 
+	for (auto& m : _adj_factors)
+	{
+		AdjFactorList& fctrLst = (AdjFactorList&)m.second;
+
+		//一定要把第一条加进去，不然如果是前复权的话，可能会漏处理最早的数据
+		AdjFactor adjFact;
+		adjFact._date = 19900101;
+		adjFact._factor = 1;
+		fctrLst.emplace_back(adjFact);
+
+		std::sort(fctrLst.begin(), fctrLst.end(), [](AdjFactor& left, AdjFactor& right) {
+			return left._date < right._date;
+		});
+	}
+
 	if (_sink) 
 		_sink->reader_log(LL_INFO, "共加载%u只股票的%u条除权因子数据", stk_cnt, fct_cnt);
 	return true;
@@ -265,6 +280,16 @@ bool WtDataReader::loadStkAdjFactorsFromFile(const char* adjfile)
 				fctrLst.emplace_back(adjFact);
 				fct_cnt++;
 			}
+
+			//一定要把第一条加进去，不然如果是前复权的话，可能会漏处理最早的数据
+			AdjFactor adjFact;
+			adjFact._date = 19900101;
+			adjFact._factor = 1;
+			fctrLst.emplace_back(adjFact);
+
+			std::sort(fctrLst.begin(), fctrLst.end(), [](AdjFactor& left, AdjFactor& right) {
+				return left._date < right._date;
+			});
 		}
 	}
 
@@ -301,9 +326,9 @@ WTSTickSlice* WtDataReader::readTickSlice(const char* stdCode, uint32_t count, u
 	bool isToday = (endTDate == curTDate);
 
 	std::string curCode = cInfo._code;
-	if (cInfo.isHot() && cInfo._category == CC_Future)
+	if (cInfo.isHot() && cInfo.isFuture())
 		curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, endTDate);
-	else if (cInfo.isSecond() && cInfo._category == CC_Future)
+	else if (cInfo.isSecond() && cInfo.isFuture())
 		curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, endTDate);
 
 	std::vector<WTSTickStruct>	ayTicks;
@@ -448,9 +473,9 @@ WTSOrdQueSlice* WtDataReader::readOrdQueSlice(const char* stdCode, uint32_t coun
 	bool isToday = (endTDate == curTDate);
 
 	std::string curCode = cInfo._code;
-	if (cInfo.isHot() && cInfo._category == CC_Future)
+	if (cInfo.isHot() && cInfo.isFuture())
 		curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, endTDate);
-	else if (cInfo.isSecond() && cInfo._category == CC_Future)
+	else if (cInfo.isSecond() && cInfo.isFuture())
 		curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, endTDate);
 
 	//比较时间的对象
@@ -588,9 +613,9 @@ WTSOrdDtlSlice* WtDataReader::readOrdDtlSlice(const char* stdCode, uint32_t coun
 	bool isToday = (endTDate == curTDate);
 
 	std::string curCode = cInfo._code;
-	if (cInfo.isHot() && cInfo._category == CC_Future)
+	if (cInfo.isHot() && cInfo.isFuture())
 		curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, endTDate);
-	else if (cInfo.isSecond() && cInfo._category == CC_Future)
+	else if (cInfo.isSecond() && cInfo.isFuture())
 		curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, endTDate);
 
 	//比较时间的对象
@@ -728,9 +753,9 @@ WTSTransSlice* WtDataReader::readTransSlice(const char* stdCode, uint32_t count,
 	bool isToday = (endTDate == curTDate);
 
 	std::string curCode = cInfo._code;
-	if (cInfo.isHot() && cInfo._category == CC_Future)
+	if (cInfo.isHot() && cInfo.isFuture())
 		curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, endTDate);
-	else if (cInfo.isSecond() && cInfo._category == CC_Future)
+	else if (cInfo.isSecond() && cInfo.isFuture())
 		curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, endTDate);
 
 	//比较时间的对象
@@ -876,7 +901,7 @@ bool WtDataReader::cacheHisBarsFromDB(const std::string& key, const char* stdCod
 	bool isDay = (period == KP_DAY);
 
 	uint32_t realCnt = 0;
-	if (!cInfo.isFlat() && cInfo._category == CC_Future)//如果是读取期货主力连续数据
+	if (!cInfo.isFlat() && cInfo.isFuture())//如果是读取期货主力连续数据
 	{
 		const char* hot_flag = cInfo.isHot() ? "HOT" : "2ND";
 
@@ -1048,7 +1073,7 @@ bool WtDataReader::cacheHisBarsFromDB(const std::string& key, const char* stdCod
 			realCnt += hotAy->size();
 		}
 	}
-	else if (cInfo.isExright() && cInfo._category == CC_Stock)//如果是读取股票复权数据
+	else if (cInfo.isExright() && cInfo.isStock())//如果是读取股票复权数据
 	{
 		std::vector<WTSBarStruct>* hotAy = NULL;
 		uint32_t lastQTime = 0;
@@ -1169,14 +1194,27 @@ bool WtDataReader::cacheHisBarsFromDB(const std::string& key, const char* stdCod
 					auto& ayFactors = getAdjFactors(cInfo._code, cInfo._exchg);
 					if (!ayFactors.empty())
 					{
-						//做前复权处理
+						//做复权处理
 						int32_t lastIdx = barcnt;
 						WTSBarStruct bar;
 						WTSBarStruct* firstBar = tempAy->data();
-						for (auto& adjFact : ayFactors)
+
+						//根据复权类型确定基础因子
+						//如果是前复权，则历史数据会变小，以最后一个复权因子为基础因子
+						//如果是后复权，则新数据会变大，基础因子为1
+						double baseFactor = 1.0;
+						if (cInfo._exright == 1)
+							baseFactor = ayFactors.back()._factor;
+						else if (cInfo._exright == 2)
+							barList._factor = ayFactors.back()._factor;
+
+						for (auto it = ayFactors.rbegin(); it != ayFactors.rend(); it++)
 						{
+							const AdjFactor& adjFact = *it;
 							bar.date = adjFact._date;
-							double factor = adjFact._factor;
+
+							//调整因子
+							double factor = adjFact._factor / baseFactor;
 
 							WTSBarStruct* pBar = NULL;
 							pBar = std::lower_bound(firstBar, firstBar + lastIdx - 1, bar, [period](const WTSBarStruct& a, const WTSBarStruct& b) {
@@ -1192,10 +1230,10 @@ bool WtDataReader::cacheHisBarsFromDB(const std::string& key, const char* stdCod
 								int32_t curIdx = pBar - firstBar;
 								while (pBar && curIdx < lastIdx)
 								{
-									pBar->open /= factor;
-									pBar->high /= factor;
-									pBar->low /= factor;
-									pBar->close /= factor;
+									pBar->open *= factor;
+									pBar->high *= factor;
+									pBar->low *= factor;
+									pBar->close *= factor;
 
 									pBar++;
 									curIdx++;
@@ -1314,7 +1352,7 @@ bool WtDataReader::cacheHisBarsFromFile(const std::string& key, const char* stdC
 	std::vector<std::vector<WTSBarStruct>*> barsSections;
 
 	uint32_t realCnt = 0;
-	if (!cInfo.isFlat() && cInfo._category == CC_Future)//如果是读取期货主力连续数据
+	if (!cInfo.isFlat() && cInfo.isFuture())//如果是读取期货主力连续数据
 	{
 		const char* hot_flag = cInfo.isHot() ? "HOT" : "2ND";
 
@@ -1548,7 +1586,7 @@ bool WtDataReader::cacheHisBarsFromFile(const std::string& key, const char* stdC
 			realCnt += hotAy->size();
 		}
 	}
-	else if(cInfo.isExright() && cInfo._category == CC_Stock)//如果是读取股票复权数据
+	else if(cInfo.isExright() && cInfo.isStock())//如果是读取股票复权数据
 	{
 		std::vector<WTSBarStruct>* hotAy = NULL;
 		uint32_t lastQTime = 0;
@@ -1703,14 +1741,27 @@ bool WtDataReader::cacheHisBarsFromFile(const std::string& key, const char* stdC
 					auto& ayFactors = getAdjFactors(cInfo._code, cInfo._exchg);
 					if(!ayFactors.empty())
 					{
-						//做前复权处理
+						//做复权处理
 						int32_t lastIdx = curCnt;
 						WTSBarStruct bar;
 						firstBar = tempAy->data();
-						for (auto& adjFact : ayFactors)
+
+						//根据复权类型确定基础因子
+						//如果是前复权，则历史数据会变小，以最后一个复权因子为基础因子
+						//如果是后复权，则新数据会变大，基础因子为1
+						double baseFactor = 1.0;
+						if (cInfo._exright == 1)
+							baseFactor = ayFactors.back()._factor;
+						else if (cInfo._exright == 2)
+							barList._factor = ayFactors.back()._factor;
+
+						for (auto it = ayFactors.rbegin(); it != ayFactors.rend(); it++)
 						{
+							const AdjFactor& adjFact = *it;
 							bar.date = adjFact._date;
-							double factor = adjFact._factor;
+
+							//调整因子
+							double factor = adjFact._factor / baseFactor;
 
 							WTSBarStruct* pBar = NULL;
 							pBar = std::lower_bound(firstBar, firstBar + lastIdx - 1, bar, [period](const WTSBarStruct& a, const WTSBarStruct& b) {
@@ -1726,10 +1777,10 @@ bool WtDataReader::cacheHisBarsFromFile(const std::string& key, const char* stdC
 								int32_t curIdx = pBar - firstBar;
 								while (pBar && curIdx < lastIdx)
 								{
-									pBar->open /= factor;
-									pBar->high /= factor;
-									pBar->low /= factor;
-									pBar->close /= factor;
+									pBar->open *= factor;
+									pBar->high *= factor;
+									pBar->low *= factor;
+									pBar->close *= factor;
 
 									pBar++;
 									curIdx++;
@@ -1738,10 +1789,7 @@ bool WtDataReader::cacheHisBarsFromFile(const std::string& key, const char* stdC
 							}
 
 							if (lastIdx == 0)
-							{
-								barList._factor = factor;	//将最后一个复权因子保存起来
 								break;
-							}
 						}
 					}
 
@@ -1896,11 +1944,6 @@ WTSBarStruct* WtDataReader::indexBarFromCache(const std::string& key, uint64_t e
 	}
 
 	uint32_t curCnt = barsList._his_cursor - sIdx + 1;
-	//if (curCnt > 0)
-	//{
-	//	ayBars.resize(curCnt);
-	//	memcpy(ayBars.data(), &barsList._bars[sIdx], sizeof(WTSBarStruct)*curCnt);
-	//}
 	count = curCnt;
 	return &barsList._bars[sIdx];
 }
@@ -2007,9 +2050,6 @@ WTSKlineSlice* WtDataReader::readKlineSlice(const char* stdCode, WTSKlinePeriod 
 
 	uint32_t endTDate = _base_data_mgr->calcTradingDate(stdPID.c_str(), curDate, curTime, false);
 	uint32_t curTDate = _base_data_mgr->calcTradingDate(stdPID.c_str(), 0, 0, false);
-
-
-	//WTSKlineSlice* kData = WTSKlineSlice::create(stdCode, period, times, NULL, 0, NULL, 0);
 	
 	WTSBarStruct* hisHead = NULL;
 	WTSBarStruct* rtHead = NULL;
@@ -2029,12 +2069,12 @@ WTSKlineSlice* WtDataReader::readKlineSlice(const char* stdCode, WTSKlinePeriod 
 	//是否包含当天的
 	bool bHasToday = (endTDate == curTDate);
 
-	if (cInfo.isHot() && cInfo._category == CC_Future)
+	if (cInfo.isHot() && cInfo.isFuture())
 	{
 		_bars_cache[key]._raw_code = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, curTDate);
 		if (_sink) _sink->reader_log(LL_INFO, "Hot contract of %u confirmed: %s -> %s", curTDate, stdCode, _bars_cache[key]._raw_code.c_str());
 	}
-	else if (cInfo.isSecond() && cInfo._category == CC_Future)
+	else if (cInfo.isSecond() && cInfo.isFuture())
 	{
 		_bars_cache[key]._raw_code = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, curTDate);
 		if (_sink) _sink->reader_log(LL_INFO, "Second contract of %u confirmed: %s -> %s", curTDate, stdCode, _bars_cache[key]._raw_code.c_str());
@@ -2079,7 +2119,7 @@ WTSKlineSlice* WtDataReader::readKlineSlice(const char* stdCode, WTSKlinePeriod 
 			uint32_t curCnt = (idx - sIdx + 1);
 			left -= (idx - sIdx + 1);
 
-			if(cInfo._exright == 2 && cInfo._category == CC_Stock)
+			if(cInfo._exright == 2 && cInfo.isStock())
 			{
 				//后复权数据要把最新的数据进行复权处理，所以要作为历史数据追加到尾部
 				BarsList& barsList = _bars_cache[key];
@@ -2091,10 +2131,10 @@ WTSKlineSlice* WtDataReader::readKlineSlice(const char* stdCode, WTSKlinePeriod 
 				for(uint32_t thisIdx = oldSize; thisIdx < newSize; thisIdx++)
 				{
 					WTSBarStruct* pBar = &barsList._bars[thisIdx];
-					pBar->open /= factor;
-					pBar->high /= factor;
-					pBar->low /= factor;
-					pBar->close /= factor;
+					pBar->open *= factor;
+					pBar->high *= factor;
+					pBar->low *= factor;
+					pBar->close *= factor;
 				}
 			}
 			else
@@ -2405,10 +2445,10 @@ void WtDataReader::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTDate
 						else
 						{
 							WTSBarStruct cpBar = nextBar;
-							cpBar.open /= barsList._factor;
-							cpBar.high /= barsList._factor;
-							cpBar.low /= barsList._factor;
-							cpBar.close /= barsList._factor;
+							cpBar.open *= barsList._factor;
+							cpBar.high *= barsList._factor;
+							cpBar.low *= barsList._factor;
+							cpBar.close *= barsList._factor;
 
 							barsList._bars.emplace_back(cpBar);
 
@@ -2457,4 +2497,38 @@ void WtDataReader::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTDate
 		_sink->on_all_bar_updated(uTime);
 
 	_last_time = nowTime;
+}
+
+double WtDataReader::getAdjFactor(const char* stdCode, uint32_t date /* = 0 */)
+{
+	CodeHelper::CodeInfo cInfo;
+	CodeHelper::extractStdCode(stdCode, cInfo);
+	if (!cInfo.isStock())
+		return 1.0;
+
+	AdjFactor factor = { date, 1.0 };
+
+	std::string key = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._code);
+	const AdjFactorList& factList = _adj_factors[key];
+	if (factList.empty())
+		return 1.0;
+
+	auto it = std::lower_bound(factList.begin(), factList.end(), factor, [](const AdjFactor& a, const AdjFactor&b) {
+		return a._date < b._date;
+	});
+
+	if(it == factList.end())
+	{
+		//找不到，则说明目标日期大于最后一条的日期，直接返回最后一条除权因子
+		return factList.back()._factor;
+	}
+	else
+	{
+		//如果找到了，但是命中的日期大于目标日期，则用上一条
+		//如果等于目标日期，则用命中这一条
+		if ((*it)._date > date)
+			it--;
+
+		return (*it)._factor;
+	}
 }
