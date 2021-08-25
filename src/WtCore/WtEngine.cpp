@@ -666,7 +666,7 @@ void WtEngine::sub_tick(uint32_t sid, const char* stdCode)
 	else
 	{
 		std::size_t length = strlen(stdCode);
-		if (stdCode[length - 1] == 'Q')
+		if (stdCode[length - 1] == 'Q' || stdCode[length - 1] == 'H')
 			length--;
 
 		SIDSet& sids = _tick_sub_map[std::string(stdCode, length)];

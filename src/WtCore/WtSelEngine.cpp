@@ -95,12 +95,6 @@ void WtSelEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 	auto it = _ticksubed_raw_codes.find(stdCode);
 	if (it != _ticksubed_raw_codes.end())
 	{
-		//是否主力合约代码的标记, 主要用于给执行器发数据的
-		//for (auto it = _executers.begin(); it != _executers.end(); it++)
-		//{
-		//	WtExecuterPtr& executer = (*it);
-		//	executer->on_tick(stdCode, curTick);
-		//}
 		_exec_mgr.handle_tick(stdCode, curTick);
 	}
 
