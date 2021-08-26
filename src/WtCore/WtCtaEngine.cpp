@@ -168,8 +168,6 @@ void WtCtaEngine::on_init()
 
 			double& vol = target_pos[realCode];
 			vol += qty;
-
-			_ticksubed_raw_codes.insert(realCode);
 		});
 	}
 

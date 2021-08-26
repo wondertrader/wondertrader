@@ -92,8 +92,6 @@ void WtSelEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 	_data_mgr->handle_push_quote(stdCode, curTick);
 
 	//如果是真实代码, 则要传递给执行器
-	auto it = _ticksubed_raw_codes.find(stdCode);
-	if (it != _ticksubed_raw_codes.end())
 	{
 		_exec_mgr.handle_tick(stdCode, curTick);
 	}
