@@ -100,7 +100,7 @@ void WtMinImpactExeUnit::on_order(uint32_t localid, const char* stdCode, bool is
 			if (_cancel_cnt > 0)
 			{
 				_cancel_cnt--;
-				_ctx->writeLog("[%s] Order of %s cancelling done, cancelcnt -> %u", __FUNCTION__, _code.c_str(), _cancel_cnt);
+				_ctx->writeLog("[%s@%d] Order of %s cancelling done, cancelcnt -> %u", __FUNCTION__, __LINE__, _code.c_str(), _cancel_cnt);
 			}
 		}
 
@@ -126,14 +126,14 @@ void WtMinImpactExeUnit::on_channel_ready()
 	{
 		//这说明有未完成单不在监控之中,先撤掉
 		//_ctx->writeLog("%s有不在管理中的未完成单 %f ,全部撤销", _code.c_str(), undone);
-		_ctx->writeLog("Live orders with qty %f of %s found, cancel all", undone, _code.c_str());
+		_ctx->writeLog("Unmanaged live orders with qty %f of %s found, cancel all", undone, _code.c_str());
 
 		bool isBuy = (undone > 0);
 		OrderIDs ids = _ctx->cancel(_code.c_str(), isBuy);
 		_orders_mon.push_order(ids.data(), ids.size(), _ctx->getCurTime());
 		_cancel_cnt += ids.size();
 
-		_ctx->writeLog("[%s]cancelcnt -> %u", __FUNCTION__, _cancel_cnt);
+		_ctx->writeLog("[%s@%d]cancelcnt -> %u", __FUNCTION__, __LINE__, _cancel_cnt);
 	}
 
 
@@ -150,7 +150,6 @@ void WtMinImpactExeUnit::on_tick(WTSTickData* newTick)
 	if (newTick == NULL || _code.compare(newTick->code()) != 0)
 		return;
 
-	bool isFirstTick = false;
 	//如果原来的tick不为空,则要释放掉
 	if (_last_tick)
 	{
@@ -161,8 +160,6 @@ void WtMinImpactExeUnit::on_tick(WTSTickData* newTick)
 		//如果行情时间不在交易时间,这种情况一般是集合竞价的行情进来,下单会失败,所以直接过滤掉这笔行情
 		if (_sess_info != NULL && !_sess_info->isInTradingTime(newTick->actiontime() / 100000))
 			return;
-
-		isFirstTick = true;
 	}
 
 	//新的tick数据,要保留
@@ -175,21 +172,7 @@ void WtMinImpactExeUnit::on_tick(WTSTickData* newTick)
 	 *	那么在新的行情数据进来的时候可以再次触发核心逻辑
 	 */
 
-	if(isFirstTick)	//如果是第一笔tick,则检查目标仓位,不符合则下单
-	{
-		double newVol = get_real_target(_target_pos);
-		const char* stdCode = _code.c_str();
-
-		double undone = _ctx->getUndoneQty(stdCode);
-		double realPos = _ctx->getPosition(stdCode);
-
-		if (!decimal::eq(newVol, undone + realPos))
-		{
-			do_calc();
-			return;
-		}
-	}
-	else if(_expire_secs != 0 && _orders_mon.has_order() && _cancel_cnt==0)
+	if(_expire_secs != 0 && _orders_mon.has_order() && _cancel_cnt==0)
 	{
 		uint64_t now = _ctx->getCurTime();
 
@@ -197,7 +180,7 @@ void WtMinImpactExeUnit::on_tick(WTSTickData* newTick)
 			if (_ctx->cancel(localid))
 			{
 				_cancel_cnt++;
-				_ctx->writeLog("[%s] Expired order of %s canceled, cancelcnt -> %u", __FUNCTION__, _code.c_str(), _cancel_cnt);
+				_ctx->writeLog("[%s@%d] Expired order of %s canceled, cancelcnt -> %u", __FUNCTION__, __LINE__, _code.c_str(), _cancel_cnt);
 			}
 		});
 	}
@@ -234,33 +217,18 @@ void WtMinImpactExeUnit::do_calc()
 
 	double undone = _ctx->getUndoneQty(stdCode);
 	double realPos = _ctx->getPosition(stdCode);
+	double diffPos = newVol - realPos;
 
-	//如果有反向未完成单,则直接撤销
-	//如果目标仓位为0,且当前持仓为0,则撤销全部挂单
-	if (decimal::lt(newVol * undone, 0))
+	//有未完成订单，与实际仓位变动方向相反
+	//则需要撤销现有订单
+	if (decimal::lt(diffPos * undone, 0))
 	{
 		bool isBuy = decimal::gt(undone, 0);
 		OrderIDs ids = _ctx->cancel(stdCode, isBuy);
 		_orders_mon.push_order(ids.data(), ids.size(), _ctx->getCurTime());
 		_cancel_cnt += ids.size();
-		_ctx->writeLog("[%s] live negative order of %s canceled, cancelcnt -> %u", __FUNCTION__, _code.c_str(), _cancel_cnt);
+		_ctx->writeLog("[%s@%d] live opposite order of %s canceled, cancelcnt -> %u", __FUNCTION__, __LINE__, _code.c_str(), _cancel_cnt);
 		return;
-	}
-	else if (decimal::eq(newVol,0) && !decimal::eq(undone, 0))
-	{
-		//如果目标仓位为0,且未完成不为0
-		//那么当目前仓位为0,或者 目前仓位和未完成数量方向相同
-		//这样也要全部撤销
-		//if (realPos == 0 || (realPos * undone > 0))
-		if (decimal::eq(realPos, 0) || decimal::gt(realPos * undone, 0))
-		{
-			bool isBuy = decimal::gt(undone, 0);
-			OrderIDs ids = _ctx->cancel(stdCode, isBuy);
-			_orders_mon.push_order(ids.data(), ids.size(), _ctx->getCurTime());
-			_cancel_cnt += ids.size();
-			_ctx->writeLog("[%s] live order of %s canceled, cancelcnt -> %u", __FUNCTION__, _code.c_str(), _cancel_cnt);
-			return;
-		}
 	}
 
 	//因为是逐笔发单，所以如果有不需要撤销的未完成单，则暂不发单

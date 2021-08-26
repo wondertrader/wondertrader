@@ -218,10 +218,11 @@ void WtSimpExeUnit::doCalculate()
 
 	double undone = _ctx->getUndoneQty(stdCode);
 	double realPos = _ctx->getPosition(stdCode);
+	double diffPos = newVol - realPos;
 
 	//如果有反向未完成单,则直接撤销
 	//如果目标仓位为0,且当前持仓为0,则撤销全部挂单
-	if (decimal::lt(newVol * undone, 0))
+	if (decimal::lt(diffPos * undone, 0))
 	{
 		bool isBuy = decimal::gt(undone, 0);
 		OrderIDs ids = _ctx->cancel(stdCode, isBuy);
@@ -230,27 +231,9 @@ void WtSimpExeUnit::doCalculate()
 		_ctx->writeLog("@ %d cancelcnt -> %u", __LINE__, _cancel_cnt);
 		return;
 	}
-	//else if(newVol == 0 && undone != 0)
-	else if (decimal::eq(newVol,0) && !decimal::eq(undone, 0))
-	{
-		//如果目标仓位为0,且未完成不为0
-		//那么当目前仓位为0,或者 目前仓位和未完成数量方向相同
-		//这样也要全部撤销
-		//if (realPos == 0 || (realPos * undone > 0))
-		if (decimal::eq(realPos, 0) || decimal::gt(realPos * undone, 0))
-		{
-			bool isBuy = decimal::gt(undone, 0);
-			OrderIDs ids = _ctx->cancel(stdCode, isBuy);
-			_orders_mon.push_order(ids.data(), ids.size(), _ctx->getCurTime());
-			_cancel_cnt += ids.size();
-			_ctx->writeLog("@ %d cancelcnt -> %u", __LINE__, _cancel_cnt);
-			return;
-		}
-	}
 
 	//如果都是同向的,则纳入计算
 	double curPos = realPos + undone;
-	//if (curPos == newVol)
 	if (decimal::eq(curPos, newVol))
 		return;
 
