@@ -867,6 +867,30 @@ int TraderCTPOpt::queryTrades()
 	return 0;
 }
 
+int TraderCTPOpt::querySettlement(uint32_t uDate)
+{
+	if (m_pUserAPI == NULL || m_wrapperState != WS_ALLREADY)
+	{
+		return -1;
+	}
+
+	m_strSettleInfo.clear();
+	StdUniqueLock lock(m_mtxQuery);
+	m_queQuery.push([this, uDate]() {
+		CThostFtdcQrySettlementInfoField req;
+		memset(&req, 0, sizeof(req));
+		strcpy(req.BrokerID, m_strBroker.c_str());
+		strcpy(req.InvestorID, m_strUser.c_str());
+		sprintf(req.TradingDay, "%u", uDate);
+
+		m_pUserAPI->ReqQrySettlementInfo(&req, genRequestID());
+	});
+
+	//triggerQuery();
+
+	return 0;
+}
+
 void TraderCTPOpt::OnFrontConnected()
 {
 	if (m_bscSink)
@@ -1159,6 +1183,25 @@ void TraderCTPOpt::OnRspQryTradingAccount(CThostFtdcTradingAccountField *pTradin
 			m_bscSink->onRspAccount(ay);
 
 		ay->release();
+	}
+}
+
+void TraderCTPOpt::OnRspQrySettlementInfo(CThostFtdcSettlementInfoField *pSettlementInfo, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
+{
+	if (bIsLast)
+	{
+		m_bInQuery = false;
+		//triggerQuery();
+	}
+
+	if (!IsErrorRspInfo(pRspInfo) && pSettlementInfo)
+	{
+		m_strSettleInfo += pSettlementInfo->Content;
+	}
+
+	if (bIsLast && !m_strSettleInfo.empty())
+	{
+		m_bscSink->onRspSettlementInfo(atoi(pSettlementInfo->TradingDay), m_strSettleInfo.c_str());
 	}
 }
 
