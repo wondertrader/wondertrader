@@ -426,6 +426,7 @@ OrderMap* TraderAdapter::getOrders(const char* stdCode)
 
 	bool isAll = strlen(stdCode) == 0;
 
+	StdUniqueLock lock(_mtx_orders);
 	OrderMap* ret = OrderMap::create();
 	for (auto it = _orders->begin(); it != _orders->end(); it++)
 	{
@@ -1195,8 +1196,8 @@ bool TraderAdapter::doCancel(WTSOrderInfo* ordInfo)
 	else
 		stdCode = CodeHelper::bscStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg(), commInfo->getProduct());
 	//³·µ¥ÆµÂÊ¼ì²é
-	if (!checkCancelLimits(stdCode.c_str()))
-		return false;
+	//if (!checkCancelLimits(stdCode.c_str()))
+	//	return false;
 
 	WTSEntrustAction* action = WTSEntrustAction::create(ordInfo->getCode(), cInfo->getExchg());
 	action->setEntrustID(ordInfo->getEntrustID());
@@ -1215,17 +1216,16 @@ bool TraderAdapter::cancel(uint32_t localid)
 	WTSOrderInfo* ordInfo = NULL;
 	{
 		StdUniqueLock lock(_mtx_orders);
-		WTSOrderInfo* ordInfo = (WTSOrderInfo*)_orders->get(localid);
+		WTSOrderInfo* ordInfo = (WTSOrderInfo*)_orders->grab(localid);
 		if (ordInfo == NULL)
 			return false;
-
-		ordInfo->retain();
 	}
 	
 	bool bRet = doCancel(ordInfo);
-	ordInfo->release();
 
-	_cancel_time_cache[ordInfo->getCode()].emplace_back(TimeUtils::getLocalTimeNow());
+	//_cancel_time_cache[ordInfo->getCode()].emplace_back(TimeUtils::getLocalTimeNow());
+
+	ordInfo->release();
 
 	return bRet;
 }
@@ -1257,7 +1257,7 @@ OrderIDs TraderAdapter::cancel(const char* stdCode, bool isBuy, double qty /* = 
 				{
 					actQty += orderInfo->getVolLeft();
 					ret.emplace_back(it->first);
-					_cancel_time_cache[orderInfo->getCode()].emplace_back(TimeUtils::getLocalTimeNow());
+					//_cancel_time_cache[orderInfo->getCode()].emplace_back(TimeUtils::getLocalTimeNow());
 				}
 			}
 
