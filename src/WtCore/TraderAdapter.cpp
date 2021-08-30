@@ -1196,8 +1196,8 @@ bool TraderAdapter::doCancel(WTSOrderInfo* ordInfo)
 	else
 		stdCode = CodeHelper::bscStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg(), commInfo->getProduct());
 	//³·µ¥ÆµÂÊ¼ì²é
-	//if (!checkCancelLimits(stdCode.c_str()))
-	//	return false;
+	if (!checkCancelLimits(stdCode.c_str()))
+		return false;
 
 	WTSEntrustAction* action = WTSEntrustAction::create(ordInfo->getCode(), cInfo->getExchg());
 	action->setEntrustID(ordInfo->getEntrustID());
@@ -1216,14 +1216,14 @@ bool TraderAdapter::cancel(uint32_t localid)
 	WTSOrderInfo* ordInfo = NULL;
 	{
 		StdUniqueLock lock(_mtx_orders);
-		WTSOrderInfo* ordInfo = (WTSOrderInfo*)_orders->grab(localid);
+		ordInfo = (WTSOrderInfo*)_orders->grab(localid);
 		if (ordInfo == NULL)
 			return false;
 	}
 	
 	bool bRet = doCancel(ordInfo);
 
-	//_cancel_time_cache[ordInfo->getCode()].emplace_back(TimeUtils::getLocalTimeNow());
+	_cancel_time_cache[ordInfo->getCode()].emplace_back(TimeUtils::getLocalTimeNow());
 
 	ordInfo->release();
 
