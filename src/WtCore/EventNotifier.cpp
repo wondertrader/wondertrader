@@ -121,6 +121,7 @@ void EventNotifier::notify(const char* trader, const char* message)
 		rj::Document::AllocatorType &allocator = root.GetAllocator();
 
 		root.AddMember("trader", rj::Value(trader, allocator), allocator);
+		root.AddMember("time", TimeUtils::getLocalTimeNow(), allocator);
 		root.AddMember("message", rj::Value(message, allocator), allocator);
 
 		rj::StringBuffer sb;
@@ -172,6 +173,7 @@ void EventNotifier::tradeToJson(const char* trader, uint32_t localid, const char
 		rj::Document::AllocatorType &allocator = root.GetAllocator();
 
 		root.AddMember("trader", rj::Value(trader, allocator), allocator);
+		root.AddMember("time", TimeUtils::getLocalTimeNow(), allocator);
 		root.AddMember("localid", localid, allocator);
 		root.AddMember("code", rj::Value(stdCode, allocator), allocator);
 		root.AddMember("islong", isLong, allocator);
@@ -207,6 +209,7 @@ void EventNotifier::orderToJson(const char* trader, uint32_t localid, const char
 		rj::Document::AllocatorType &allocator = root.GetAllocator();
 
 		root.AddMember("trader", rj::Value(trader, allocator), allocator);
+		root.AddMember("time", TimeUtils::getLocalTimeNow(), allocator);
 		root.AddMember("localid", localid, allocator);
 		root.AddMember("code", rj::Value(stdCode, allocator), allocator);
 		root.AddMember("islong", isLong, allocator);
