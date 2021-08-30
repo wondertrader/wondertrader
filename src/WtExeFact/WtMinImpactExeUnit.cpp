@@ -100,7 +100,7 @@ void WtMinImpactExeUnit::on_order(uint32_t localid, const char* stdCode, bool is
 			if (_cancel_cnt > 0)
 			{
 				_cancel_cnt--;
-				_ctx->writeLog("[%s@%d] Order of %s cancelling done, cancelcnt -> %u", __FUNCTION__, __LINE__, _code.c_str(), _cancel_cnt);
+				_ctx->writeLog("[%s@%d] Order of %s cancelling done, cancelcnt -> %u", __FILE__, __LINE__, _code.c_str(), _cancel_cnt);
 			}
 		}
 
@@ -133,7 +133,7 @@ void WtMinImpactExeUnit::on_channel_ready()
 		_orders_mon.push_order(ids.data(), ids.size(), _ctx->getCurTime());
 		_cancel_cnt += ids.size();
 
-		_ctx->writeLog("[%s@%d]cancelcnt -> %u", __FUNCTION__, __LINE__, _cancel_cnt);
+		_ctx->writeLog("[%s@%d]cancelcnt -> %u", __FILE__, __LINE__, _cancel_cnt);
 	}
 
 
@@ -180,7 +180,7 @@ void WtMinImpactExeUnit::on_tick(WTSTickData* newTick)
 			if (_ctx->cancel(localid))
 			{
 				_cancel_cnt++;
-				_ctx->writeLog("[%s@%d] Expired order of %s canceled, cancelcnt -> %u", __FUNCTION__, __LINE__, _code.c_str(), _cancel_cnt);
+				_ctx->writeLog("[%s@%d] Expired order of %s canceled, cancelcnt -> %u", __FILE__, __LINE__, _code.c_str(), _cancel_cnt);
 			}
 		});
 	}
@@ -225,9 +225,12 @@ void WtMinImpactExeUnit::do_calc()
 	{
 		bool isBuy = decimal::gt(undone, 0);
 		OrderIDs ids = _ctx->cancel(stdCode, isBuy);
-		_orders_mon.push_order(ids.data(), ids.size(), _ctx->getCurTime());
-		_cancel_cnt += ids.size();
-		_ctx->writeLog("[%s@%d] live opposite order of %s canceled, cancelcnt -> %u", __FUNCTION__, __LINE__, _code.c_str(), _cancel_cnt);
+		if(!ids.empty())
+		{
+			_orders_mon.push_order(ids.data(), ids.size(), _ctx->getCurTime());
+			_cancel_cnt += ids.size();
+			_ctx->writeLog("[%s@%d] live opposite order of %s canceled, cancelcnt -> %u", __FILE__, __LINE__, _code.c_str(), _cancel_cnt);
+		}
 		return;
 	}
 
