@@ -182,6 +182,8 @@ bool WtRunner::config(const char* cfgFile)
 		}
 	}
 
+	initEvtNotifier();
+
 	//如果不是高频引擎,则需要配置执行模块
 	if (!_is_hft)
 	{
@@ -329,19 +331,19 @@ bool WtRunner::initEngine()
 	if (_is_hft)
 	{
 		WTSLogger::info("Trading enviroment initialzied with engine: HFT");
-		_hft_engine.init(cfg, &_bd_mgr, &_data_mgr, &_hot_mgr);
+		_hft_engine.init(cfg, &_bd_mgr, &_data_mgr, &_hot_mgr, &_notifier);
 		_engine = &_hft_engine;
 	}
 	else if (_is_sel)
 	{
 		WTSLogger::info("Trading enviroment initialzied with engine: SEL");
-		_sel_engine.init(cfg, &_bd_mgr, &_data_mgr, &_hot_mgr);
+		_sel_engine.init(cfg, &_bd_mgr, &_data_mgr, &_hot_mgr, &_notifier);
 		_engine = &_sel_engine;
 	}
 	else
 	{
 		WTSLogger::info("Trading enviroment initialzied with engine: CTA");
-		_cta_engine.init(cfg, &_bd_mgr, &_data_mgr, &_hot_mgr);
+		_cta_engine.init(cfg, &_bd_mgr, &_data_mgr, &_hot_mgr, &_notifier);
 		_engine = &_cta_engine;
 	}
 
@@ -453,7 +455,7 @@ bool WtRunner::initTraders(WTSVariant* cfgTrader)
 
 		const char* id = cfgItem->getCString("id");
 
-		TraderAdapterPtr adapter(new TraderAdapter);
+		TraderAdapterPtr adapter(new TraderAdapter(&_notifier));
 		adapter->init(id, cfgItem, &_bd_mgr, &_act_policy);
 
 		_traders.addAdapter(id, adapter);
@@ -481,4 +483,30 @@ void WtRunner::run(bool bAsync /* = false */)
 			WTSLogger::error(message);
 		});
 	}
+}
+
+const char* LOG_TAGS[] = {
+	"all",
+	"debug",
+	"info",
+	"warn",
+	"error",
+	"fatal",
+	"none"
+};
+
+void WtRunner::handleLogAppend(WTSLogLevel ll, const char* msg)
+{
+	_notifier.notifyLog(LOG_TAGS[ll - 100], msg);
+}
+
+bool WtRunner::initEvtNotifier()
+{
+	WTSVariant* cfg = _config->get("notifier");
+	if (cfg == NULL || cfg->type() != WTSVariant::VT_Object)
+		return false;
+
+	_notifier.init(cfg);
+
+	return true;
 }

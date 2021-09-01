@@ -656,19 +656,19 @@ bool WtRtRunner::initEngine()
 	if (_is_hft)
 	{
 		WTSLogger::info("Trading environment initialized, engine name: HFT");
-		_hft_engine.init(cfg, &_bd_mgr, &_data_mgr, &_hot_mgr);
+		_hft_engine.init(cfg, &_bd_mgr, &_data_mgr, &_hot_mgr, &_notifier);
 		_engine = &_hft_engine;
 	}
 	else if (_is_sel)
 	{
 		WTSLogger::info("Trading environment initialized, engine name: SEL");
-		_sel_engine.init(cfg, &_bd_mgr, &_data_mgr, &_hot_mgr);
+		_sel_engine.init(cfg, &_bd_mgr, &_data_mgr, &_hot_mgr, &_notifier);
 		_engine = &_sel_engine;
 	}
 	else
 	{
 		WTSLogger::info("Trading environment initialized, engine name: CTA");
-		_cta_engine.init(cfg, &_bd_mgr, &_data_mgr, &_hot_mgr);
+		_cta_engine.init(cfg, &_bd_mgr, &_data_mgr, &_hot_mgr, &_notifier);
 		_engine = &_cta_engine;
 	}
 

@@ -11,6 +11,9 @@
 #include <string>
 #include <unordered_map>
 
+#include "../Includes/ILogHandler.h"
+
+#include "../WtCore/EventNotifier.h"
 #include "../WtCore/CtaStrategyMgr.h"
 #include "../WtCore/HftStrategyMgr.h"
 #include "../WtCore/SelStrategyMgr.h"
@@ -35,7 +38,7 @@ NS_OTP_END
 
 USING_NS_OTP;
 
-class WtRunner
+class WtRunner : public ILogHandler
 {
 public:
 	WtRunner();
@@ -56,11 +59,17 @@ private:
 	bool initParsers(WTSVariant* cfgParser);
 	bool initExecuters(WTSVariant* cfgExecuter);
 	bool initDataMgr();
+	bool initEvtNotifier();
 	bool initCtaStrategies();
 	bool initHftStrategies();
 	bool initActionPolicy();
 
 	bool initEngine();
+
+//////////////////////////////////////////////////////////////////////////
+//ILogHandler
+public:
+	virtual void handleLogAppend(WTSLogLevel ll, const char* msg) override;
 
 private:
 	WTSVariant*			_config;
@@ -79,6 +88,7 @@ private:
 
 	WTSBaseDataMgr		_bd_mgr;
 	WTSHotMgr			_hot_mgr;
+	EventNotifier		_notifier;
 
 	CtaStrategyMgr		_cta_stra_mgr;
 	HftStrategyMgr		_hft_stra_mgr;
