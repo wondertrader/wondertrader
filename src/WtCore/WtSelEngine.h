@@ -49,7 +49,7 @@ public:
 public:
 	//////////////////////////////////////////////////////////////////////////
 	//WtEngine½Ó¿Ú
-	virtual void init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtDataManager* dataMgr, IHotMgr* hotMgr) override;
+	virtual void init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtDataManager* dataMgr, IHotMgr* hotMgr, EventNotifier* notifier) override;
 
 	virtual void run(bool bAsync = false) override;
 

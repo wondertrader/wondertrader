@@ -51,6 +51,7 @@ WtEngine::WtEngine()
 	, _terminated(false)
 	, _evt_listener(NULL)
 	, _adapter_mgr(NULL)
+	, _notifier(NULL)
 {
 	TimeUtils::getDateTime(_cur_date, _cur_time);
 	_cur_secs = _cur_time % 100000;
@@ -255,16 +256,17 @@ WTSPortFundInfo* WtEngine::getFundInfo()
 	return _port_fund;
 }
 
-void WtEngine::init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtDataManager* dataMgr, IHotMgr* hotMgr)
+void WtEngine::init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtDataManager* dataMgr, IHotMgr* hotMgr, EventNotifier* notifier)
 {
 	_base_data_mgr = bdMgr;
 	_data_mgr = dataMgr;
 	_hot_mgr = hotMgr;
+	_notifier = notifier;
 
 	WTSLogger::info("Platform running mode: Production");
 
-	//_filter_file = cfg->getCString("filters");
-	//load_strategy_filters();
+	_filter_mgr.set_notifier(notifier);
+
 	_filter_mgr.load_filters(cfg->getCString("filters"));
 
 	load_fees(cfg->getCString("fees"));

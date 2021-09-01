@@ -52,9 +52,9 @@ WtHftEngine::~WtHftEngine()
 		_cfg->release();
 }
 
-void WtHftEngine::init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtDataManager* dataMgr, IHotMgr* hotMgr)
+void WtHftEngine::init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtDataManager* dataMgr, IHotMgr* hotMgr, EventNotifier* notifier /* = NULL */)
 {
-	WtEngine::init(cfg, bdMgr, dataMgr, hotMgr);
+	WtEngine::init(cfg, bdMgr, dataMgr, hotMgr, notifier);
 
 	_cfg = cfg;
 	_cfg->retain();

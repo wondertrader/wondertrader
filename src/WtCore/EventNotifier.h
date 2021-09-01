@@ -48,6 +48,8 @@ public:
 
 	void	notifyLog(const char* tag, const char* message);
 
+	void	notifyEvent(const char* message);
+
 private:
 	std::string		m_strURL;
 	uint32_t		_mq_sid;

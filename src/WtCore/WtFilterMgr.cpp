@@ -1,4 +1,5 @@
 #include "WtFilterMgr.h"
+#include "EventNotifier.h"
 
 #include "../Share/CodeHelper.hpp"
 #include "../Share/JsonToVariant.hpp"
@@ -37,8 +38,12 @@ void WtFilterMgr::load_filters(const char* fileName)
 	if (lastModTime <= _filter_timestamp)
 		return;
 
-	if(_filter_timestamp != 0)
+	if (_filter_timestamp != 0)
+	{
 		WTSLogger::info("Filters configuration file %s modified, will be reloaded", _filter_file.c_str());
+		if (_notifier)
+			_notifier->notifyEvent("Filter file has been reloaded");
+	}
 
 	std::string content;
 	StdFile::read_file_content(_filter_file.c_str(), content);

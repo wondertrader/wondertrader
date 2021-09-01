@@ -116,9 +116,9 @@ void WtCtaEngine::run(bool bAsync /* = false */)
 	}
 }
 
-void WtCtaEngine::init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtDataManager* dataMgr, IHotMgr* hotMgr)
+void WtCtaEngine::init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtDataManager* dataMgr, IHotMgr* hotMgr, EventNotifier* notifier /* = NULL */)
 {
-	WtEngine::init(cfg, bdMgr, dataMgr, hotMgr);
+	WtEngine::init(cfg, bdMgr, dataMgr, hotMgr, notifier);
 
 	_cfg = cfg;
 	_cfg->retain();

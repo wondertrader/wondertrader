@@ -113,6 +113,26 @@ void EventNotifier::notifyLog(const char* tag, const char* message)
 		_publisher(_mq_sid, "LOG", data.c_str(), data.size());
 }
 
+void EventNotifier::notifyEvent(const char* message)
+{
+	std::string data;
+	{
+		rj::Document root(rj::kObjectType);
+		rj::Document::AllocatorType &allocator = root.GetAllocator();
+
+		root.AddMember("time", TimeUtils::getLocalTimeNow(), allocator);
+		root.AddMember("message", rj::Value(message, allocator), allocator);
+
+		rj::StringBuffer sb;
+		rj::PrettyWriter<rj::StringBuffer> writer(sb);
+		root.Accept(writer);
+
+		data = sb.GetString();
+	}
+	if (_publisher)
+		_publisher(_mq_sid, "GRP_EVENT", data.c_str(), data.size());
+}
+
 void EventNotifier::notify(const char* trader, const char* message)
 {
 	std::string data;

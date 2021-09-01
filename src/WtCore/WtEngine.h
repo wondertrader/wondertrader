@@ -42,6 +42,8 @@ class WTSPortFundInfo;
 class WtDataManager;
 class TraderAdapterMgr;
 
+class EventNotifier;
+
 typedef std::function<void()>	TaskItem;
 
 class WtRiskMonWrapper
@@ -136,7 +138,7 @@ public:
 	virtual void handle_push_quote(WTSTickData* newTick, uint32_t hotFlag) override;
 
 public:
-	virtual void init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtDataManager* dataMgr, IHotMgr* hotMgr);
+	virtual void init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtDataManager* dataMgr, IHotMgr* hotMgr, EventNotifier* notifier);
 
 	virtual void run(bool bAsync = false) = 0;
 
@@ -208,6 +210,7 @@ protected:
 	//////////////////////////////////////////////////////////////////////////
 	//信号过滤器
 	WtFilterMgr		_filter_mgr;
+	EventNotifier*	_notifier;
 
 	//////////////////////////////////////////////////////////////////////////
 	//手续费模板
