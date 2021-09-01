@@ -1335,7 +1335,8 @@ WTSKlineSlice* CtaStraBaseCtx::stra_get_bars(const char* stdCode, const char* pe
 			if(!isDay)
 				lastBartime += 199000000000;
 
-			if(lastBartime >= _last_cond_min)
+			//如果最后一条已闭合的K线的时间大于条件单设置时间，说明条件单已经过期了，则需要清理
+			if(lastBartime > _last_cond_min)
 			{
 				stra_log_text(fmt::format("Conditions expired, setup time: {}, time of last bar of main kbars: {}, all cleared", _last_cond_min, lastBartime).c_str());
 				_condtions.clear();
