@@ -445,11 +445,19 @@ bool trans_bars(WtString barFile, FuncGetBarItem getter, int count, WtString per
 	std::string buffer;
 	buffer.resize(sizeof(WTSBarStruct)*count);
 	WTSBarStruct* bars = (WTSBarStruct*)buffer.c_str();
+	int realCnt = 0;
 	for(int i = 0; i < count; i++)
 	{
 		bool bSucc = getter(&bars[i], i);
 		if (!bSucc)
 			break;
+
+		realCnt++;
+	}
+
+	if (realCnt != count)
+	{
+		buffer.resize(sizeof(WTSBarStruct)*realCnt);
 	}
 
 	if (cbLogger)
@@ -489,11 +497,19 @@ bool trans_ticks(WtString tickFile, FuncGetTickItem getter, int count, FuncLogCa
 	std::string buffer;
 	buffer.resize(sizeof(WTSTickStruct)*count);
 	WTSTickStruct* ticks = (WTSTickStruct*)buffer.c_str();
+	int realCnt = 0;
 	for (int i = 0; i < count; i++)
 	{
 		bool bSucc = getter(&ticks[i], i);
 		if (!bSucc)
 			break;
+
+		realCnt++;
+	}
+
+	if(realCnt != count)
+	{
+		buffer.resize(sizeof(WTSTickStruct)*realCnt);
 	}
 
 	if (cbLogger)
