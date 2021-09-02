@@ -90,6 +90,7 @@ public:
 private:
 	WTSTickData* _last_tick;	//上一笔行情
 	double		_target_pos;	//目标仓位
+	StdUniqueMutex	_mtx_calc;
 
 	WTSCommodityInfo*	_comm_info;
 	WTSSessionInfo*		_sess_info;

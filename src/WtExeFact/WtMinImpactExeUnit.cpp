@@ -212,6 +212,13 @@ void WtMinImpactExeUnit::do_calc()
 	if (_cancel_cnt != 0)
 		return;
 
+	//这里加一个锁，主要原因是实盘过程中发现
+	//在修改目标仓位的时候，会触发一次do_calc
+	//而ontick也会触发一次do_calc，两次调用是从两个线程分别触发的，所以会出现同时触发的情况
+	//如果不加锁，就会引起问题
+	//这种情况在原来的SimpleExecUnit没有出现，因为SimpleExecUnit只在set_position的时候触发
+	StdUniqueLock lock(_mtx_calc);
+
 	double newVol = get_real_target(_target_pos);
 	const char* stdCode = _code.c_str();
 
@@ -363,10 +370,10 @@ void WtMinImpactExeUnit::set_position(const char* stdCode, double newVol)
 	if (_code.compare(stdCode) != 0)
 		return;
 
-	if (_target_pos != newVol)
-	{
-		_target_pos = newVol;
-	}
+	if (decimal::eq(_target_pos, newVol))
+		return;
+
+	_target_pos = newVol;
 
 	do_calc();
 }
