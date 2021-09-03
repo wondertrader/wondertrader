@@ -270,7 +270,7 @@ extern std::string getBinDir();
 
 void WtBtRunner::init(const char* logProfile /* = "" */, bool isFile /* = true */)
 {
-	WTSLogger::init(logProfile, isFile, this);
+	WTSLogger::init(logProfile, isFile);
 
 	WtHelper::setInstDir(getBinDir().c_str());
 }
@@ -387,14 +387,6 @@ const char* LOG_TAGS[] = {
 	"fatal",
 	"none",
 };
-
-void WtBtRunner::handleLogAppend(WTSLogLevel ll, const char* msg)
-{
-	if (_terminated)
-		return;
-
-	//_notifier.notifyLog(LOG_TAGS[ll - 100], msg);
-}
 
 bool WtBtRunner::initEvtNotifier(WTSVariant* cfg)
 {

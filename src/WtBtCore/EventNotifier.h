@@ -34,10 +34,8 @@ public:
 
 public:
 	bool	init(WTSVariant* cfg);
-	void	notifyLog(const char* tag, const char* message);
 	void	notifyEvent(const char* evtType);
 	void	notifyData(const char* topic, void* data , uint32_t dataLen);
-	void	notifyProgress(double percent);
 	void	notifyFund(const char* topic, uint32_t uDate, double total_profit, double dynprofit, double dynbalance, double total_fee);
 	
 

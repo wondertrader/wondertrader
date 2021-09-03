@@ -12,7 +12,6 @@
 #include "../WtBtCore/EventNotifier.h"
 #include "../WtBtCore/HisDataReplayer.h"
 #include "../Includes/WTSMarcos.h"
-#include "../Includes/ILogHandler.h"
 
 
 NS_OTP_BEGIN
@@ -35,7 +34,7 @@ class CtaMocker;
 class HftMocker;
 class ExecMocker;
 
-class WtBtRunner : public ILogHandler
+class WtBtRunner
 {
 public:
 	WtBtRunner();
@@ -108,11 +107,6 @@ public:
 			_cb_evt(isBegin ? EVENT_SESSION_BEGIN : EVENT_SESSION_END, uDate, 0);
 		}
 	}
-
-//////////////////////////////////////////////////////////////////////////
-//ILogHandler
-public:
-	virtual void handleLogAppend(WTSLogLevel ll, const char* msg) override;
 
 private:
 	FuncStraInitCallback	_cb_cta_init;

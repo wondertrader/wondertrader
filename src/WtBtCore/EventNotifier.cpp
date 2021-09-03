@@ -38,7 +38,6 @@ EventNotifier::EventNotifier()
 
 EventNotifier::~EventNotifier()
 {
-	printf("removing notifier\r\n");
 	if (_remover && _mq_sid != 0)
 		_remover(_mq_sid);
 }
@@ -86,28 +85,6 @@ bool EventNotifier::init(WTSVariant* cfg)
 	return true;
 }
 
-void EventNotifier::notifyLog(const char* tag, const char* message)
-{
-	std::string data;
-	{
-		rj::Document root(rj::kObjectType);
-		rj::Document::AllocatorType &allocator = root.GetAllocator();
-
-		root.AddMember("tag", rj::Value(tag, allocator), allocator);
-		root.AddMember("time", TimeUtils::getLocalTimeNow(), allocator);
-		root.AddMember("message", rj::Value(message, allocator), allocator);
-
-		rj::StringBuffer sb;
-		rj::PrettyWriter<rj::StringBuffer> writer(sb);
-		root.Accept(writer);
-
-		data = sb.GetString();
-	}
-
-	if (_publisher)
-		_publisher(_mq_sid, "BT_LOG", data.c_str(), data.size());
-}
-
 void EventNotifier::notifyEvent(const char* evtType)
 {
 	if (_publisher)
@@ -118,14 +95,6 @@ void EventNotifier::notifyData(const char* topic, void* data , uint32_t dataLen)
 {
 	if (_publisher)
 		_publisher(_mq_sid, topic, (const char*)data, dataLen);
-}
-
-void EventNotifier::notifyProgress(double percent)
-{
-	std::string output = StrUtil::printf("{\"progress\":%.f}", percent);
-
-	if (_publisher)
-		_publisher(_mq_sid, "BT_PROGRESS", (const char*)output.c_str(), output.size());
 }
 
 void EventNotifier::notifyFund(const char* topic, uint32_t uDate, double total_profit, double dynprofit, double dynbalance, double total_fee)
