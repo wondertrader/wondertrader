@@ -53,8 +53,8 @@ MQServer::~MQServer()
 	if (m_thrdCast)
 		m_thrdCast->join();
 
-	if (_sock >= 0)
-		nn_close(_sock);
+	//if (_sock >= 0)
+	//	nn_close(_sock);
 }
 
 bool MQServer::init(const char* url, bool confirm /* = false */)
