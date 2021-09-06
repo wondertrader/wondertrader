@@ -64,3 +64,8 @@ void ExpSelMocker::on_strategy_schedule(uint32_t curDate, uint32_t curTime)
 
 	getRunner().on_schedule_event(curDate, curTime);
 }
+
+void ExpSelMocker::on_bactest_end()
+{
+	getRunner().on_backtest_end();
+}

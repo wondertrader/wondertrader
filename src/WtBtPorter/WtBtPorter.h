@@ -45,6 +45,8 @@ extern "C"
 
 	EXPORT_FLAG	void		release_backtest();
 
+	EXPORT_FLAG	void		clear_cache();
+
 
 	//////////////////////////////////////////////////////////////////////////
 	//CTA²ßÂÔ½Ó¿Ú

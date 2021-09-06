@@ -33,10 +33,11 @@ typedef unsigned long		WtUInt32;
 typedef unsigned long long	WtUInt64;
 typedef const char*			WtString;
 
-static const WtUInt32	EVENT_ENGINE_INIT = 1;	//框架初始化
-static const WtUInt32	EVENT_SESSION_BEGIN = 2;	//交易日开始
-static const WtUInt32	EVENT_SESSION_END = 3;	//交易日结束
-static const WtUInt32	EVENT_ENGINE_SCHDL = 4;	//框架调度
+static const WtUInt32	EVENT_ENGINE_INIT		= 1;	//框架初始化
+static const WtUInt32	EVENT_SESSION_BEGIN		= 2;	//交易日开始
+static const WtUInt32	EVENT_SESSION_END		= 3;	//交易日结束
+static const WtUInt32	EVENT_ENGINE_SCHDL		= 4;	//框架调度
+static const WtUInt32	EVENT_BACKTEST_END		= 5;	//回测结束
 
 /*
 *	回调函数定义

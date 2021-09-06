@@ -70,3 +70,8 @@ void ExpCtaMocker::on_mainkline_updated(uint32_t curDate, uint32_t curTime)
 
 	getRunner().on_schedule_event(curDate, curTime);
 }
+
+void ExpCtaMocker::on_bactest_end()
+{
+	getRunner().on_backtest_end();
+}

@@ -82,6 +82,8 @@ public:
 
 	void	enable_tick(bool bEnabled = true);
 
+	void	clear_cache();
+
 	CtaMocker*			cta_mocker() { return _cta_mocker; }
 	SelMocker*			sel_mocker() { return _sel_mocker; }
 	HftMocker*			hft_mocker() { return _hft_mocker; }
@@ -106,6 +108,12 @@ public:
 		{
 			_cb_evt(isBegin ? EVENT_SESSION_BEGIN : EVENT_SESSION_END, uDate, 0);
 		}
+	}
+
+	inline void on_backtest_end()
+	{
+		if (_cb_evt)
+			_cb_evt(EVENT_BACKTEST_END, 0, 0);
 	}
 
 private:

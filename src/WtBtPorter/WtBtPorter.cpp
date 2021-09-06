@@ -190,6 +190,11 @@ const char* get_version()
 	return _ver.c_str();
 }
 
+void clear_cache()
+{
+	getRunner().clear_cache();
+}
+
 void write_log(WtUInt32 level, const char* message, const char* catName)
 {
 	if (strlen(catName) > 0)

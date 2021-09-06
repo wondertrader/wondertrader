@@ -175,6 +175,8 @@ void SelMocker::handle_replay_done()
 		_emit_times, _total_calc_time, _total_calc_time / _emit_times).c_str());
 
 	dump_outputs();
+
+	this->on_bactest_end();
 }
 
 void SelMocker::handle_tick(const char* stdCode, WTSTickData* curTick)

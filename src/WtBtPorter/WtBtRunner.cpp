@@ -378,6 +378,11 @@ void WtBtRunner::enable_tick(bool bEnabled /* = true */)
 	_replayer.enable_tick(bEnabled);
 }
 
+void WtBtRunner::clear_cache()
+{
+	_replayer.clear_cache();
+}
+
 const char* LOG_TAGS[] = {
 	"all",
 	"debug",

@@ -25,6 +25,9 @@ public:
 	virtual void on_session_end(uint32_t uDate) override;
 
 
+	virtual void on_bactest_end() override;
+
+
 	virtual void on_order(uint32_t localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled, const char* userTag) override;
 
 

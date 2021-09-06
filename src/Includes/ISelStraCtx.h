@@ -41,6 +41,11 @@ public:
 	virtual void on_tick(const char* stdCode, WTSTickData* newTick, bool bEmitStrategy = true) = 0;
 	virtual void on_bar(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar) = 0;
 	virtual bool on_schedule(uint32_t curDate, uint32_t curTime, uint32_t fireTime) = 0;
+	/*
+	 *	回测结束事件
+	 *	只在回测下才会触发
+	 */
+	virtual void on_bactest_end() {};
 
 	virtual void on_bar_close(const char* stdCode, const char* period, WTSBarStruct* newBar) = 0;
 	virtual void on_tick_updated(const char* stdCode, WTSTickData* newTick){}

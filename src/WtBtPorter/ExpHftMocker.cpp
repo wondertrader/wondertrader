@@ -107,3 +107,8 @@ void ExpHftMocker::on_trade(uint32_t localid, const char* stdCode, bool isBuy, d
 
 	getRunner().hft_on_trade(_context_id, localid, stdCode, isBuy, vol, price, userTag);
 }
+
+void ExpHftMocker::on_bactest_end()
+{
+	getRunner().on_backtest_end();
+}

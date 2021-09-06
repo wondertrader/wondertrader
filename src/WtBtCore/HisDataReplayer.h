@@ -191,6 +191,7 @@ private:
 
 	void		reset();
 
+
 	void		dump_btstate(const char* stdCode, WTSKlinePeriod period, uint32_t times, uint64_t stime, uint64_t etime, double progress, int64_t elapse);
 	void		notify_state(const char* stdCode, WTSKlinePeriod period, uint32_t times, uint64_t stime, uint64_t etime, double progress);
 
@@ -200,6 +201,8 @@ public:
 	bool init(WTSVariant* cfg, EventNotifier* notifier = NULL);
 
 	void run(bool bNeedDump = false);
+
+	void clear_cache();
 
 	inline void set_time_range(uint64_t stime, uint64_t etime)
 	{

@@ -251,6 +251,8 @@ void HftMocker::handle_session_end(uint32_t curTDate)
 void HftMocker::handle_replay_done()
 {
 	dump_outputs();
+
+	this->on_bactest_end();
 }
 
 void HftMocker::on_bar(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar)

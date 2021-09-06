@@ -302,7 +302,7 @@ void HisDataReplayer::register_task(uint32_t taskid, uint32_t date, uint32_t tim
 	WTSLogger::info("Timed task registration succeed, frequency: %s", period);
 }
 
-void HisDataReplayer::reset()
+void HisDataReplayer::clear_cache()
 {
 	_ticks_cache.clear();
 	_orddtl_cache.clear();
@@ -310,8 +310,46 @@ void HisDataReplayer::reset()
 	_trans_cache.clear();
 
 	_bars_cache.clear();
+
+	WTSLogger::warn("All cached data cleared");
+}
+
+void HisDataReplayer::reset()
+{
+	//重置不会清除掉缓存，而是将读取的标记还原，这样不用重复加载主句
+	for(auto& m : _ticks_cache)
+	{
+		HftDataList<WTSTickStruct>& cacheItem = (HftDataList<WTSTickStruct>&)m.second;
+		cacheItem._cursor = UINT_MAX;
+	}
+
+	for (auto& m : _orddtl_cache)
+	{
+		HftDataList<WTSOrdDtlStruct>& cacheItem = (HftDataList<WTSOrdDtlStruct>&)m.second;
+		cacheItem._cursor = UINT_MAX;
+	}
+
+	for (auto& m : _ordque_cache)
+	{
+		HftDataList<WTSOrdQueStruct>& cacheItem = (HftDataList<WTSOrdQueStruct>&)m.second;
+		cacheItem._cursor = UINT_MAX;
+	}
+
+	for (auto& m : _trans_cache)
+	{
+		HftDataList<WTSTransStruct>& cacheItem = (HftDataList<WTSTransStruct>&)m.second;
+		cacheItem._cursor = UINT_MAX;
+	}
+
+	for (auto& m : _bars_cache)
+	{
+		BarsList& cacheItem = (BarsList&)m.second;
+		cacheItem._cursor = UINT_MAX;
+
+		WTSLogger::info("Reading flag of %s has been reset", m.first.c_str());
+	}
+
 	_unbars_cache.clear();
-	_day_cache.clear();
 
 	_day_cache.clear();
 	_ticker_keys.clear();
@@ -1756,7 +1794,6 @@ WTSKlineSlice* HisDataReplayer::get_kline_slice(const char* stdCode, const char*
 		BarsList& rawBars = _bars_cache[rawKey];
 		WTSKlineSlice* rawKline = WTSKlineSlice::create(stdCode, kp, realTimes, &rawBars._bars[0], rawBars._bars.size());
 		rawKline->setCode(stdCode);
-		//memcpy(rawKline->getDataRef().data(), rawBars._bars.data(), sizeof(WTSBarStruct)*rawBars._bars.size());
 
 		static WTSDataFactory dataFact;
 		WTSKlineData* kData = dataFact.extractKlineData(rawKline, kp, realTimes, sInfo, true);

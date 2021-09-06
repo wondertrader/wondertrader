@@ -41,6 +41,11 @@ public:
 	virtual void on_bar(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar) {}
 	virtual void on_session_begin(uint32_t uTDate) {}
 	virtual void on_session_end(uint32_t uTDate) {}
+	/*
+	 *	回测结束事件
+	 *	只在回测下才会触发
+	 */
+	virtual void on_bactest_end() {};
 
 	//策略接口
 	virtual bool		stra_cancel(uint32_t localid) = 0;
