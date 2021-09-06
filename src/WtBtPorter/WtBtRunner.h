@@ -75,8 +75,9 @@ public:
 
 	void	init(const char* logProfile = "", bool isFile = true);
 	void	config(const char* cfgFile, bool isFile = true);
-	void	run(bool bNeedDump = false);
+	void	run(bool bNeedDump = false, bool bAsync = false);
 	void	release();
+	void	stop();
 
 	void	set_time_range(WtUInt64 stime, WtUInt64 etime);
 
@@ -153,6 +154,8 @@ private:
 	EventNotifier	_notifier;
 
 	bool			_inited;
-	bool			_terminated;
+	bool			_running;
+
+	StdThreadPtr	_worker;
 };
 

@@ -37,7 +37,7 @@ extern "C"
 
 	EXPORT_FLAG	CtxHandler	init_sel_mocker(const char* name, WtUInt32 date, WtUInt32 time, const char* period, const char* trdtpl = "CHINA", const char* session = "TRADING", int slippage = 0);
 
-	EXPORT_FLAG	void		run_backtest(bool bNeedDump);
+	EXPORT_FLAG	void		run_backtest(bool bNeedDump, bool bAsync);
 
 	EXPORT_FLAG	void		write_log(WtUInt32 level, const char* message, const char* catName);
 
@@ -46,6 +46,8 @@ extern "C"
 	EXPORT_FLAG	void		release_backtest();
 
 	EXPORT_FLAG	void		clear_cache();
+
+	EXPORT_FLAG	void		stop_backtest();
 
 
 	//////////////////////////////////////////////////////////////////////////

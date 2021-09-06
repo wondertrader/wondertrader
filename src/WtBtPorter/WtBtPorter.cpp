@@ -164,9 +164,14 @@ void enable_tick(bool bEnabled /* = true */)
 	getRunner().enable_tick(bEnabled);
 }
 
-void run_backtest(bool bNeedDump)
+void run_backtest(bool bNeedDump, bool bAsync)
 {
-	getRunner().run(bNeedDump);
+	getRunner().run(bNeedDump, bAsync);
+}
+
+void stop_backtest()
+{
+	getRunner().stop();
 }
 
 void release_backtest()

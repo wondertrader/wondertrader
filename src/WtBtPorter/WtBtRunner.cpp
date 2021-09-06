@@ -68,7 +68,7 @@ WtBtRunner::WtBtRunner()
 
 	, _cb_hft_sessevt(NULL)
 	, _inited(false)
-	, _terminated(false)
+	, _running(false)
 {
 	install_signal_hooks([](const char* message) {
 		WTSLogger::error(message);
@@ -348,23 +348,41 @@ void WtBtRunner::config(const char* cfgFile, bool isFile /* = true */)
 	}
 }
 
-void WtBtRunner::run(bool bNeedDump /* = false */)
+void WtBtRunner::run(bool bNeedDump /* = false */, bool bAsync /* = false */)
 {
-	try
-	{
-		_replayer.run(bNeedDump);
-	}
-	catch(...)
-	{
-		print_stack_trace([](const char* message) {
-			WTSLogger::error(message);
-		});
-	}
+	if (_running)
+		return;
+
+	_worker.reset(new StdThread([this, bNeedDump]() {
+		_running = true;
+		try
+		{
+			_replayer.run(bNeedDump);
+		}
+		catch (...)
+		{
+			print_stack_trace([](const char* message) {
+				WTSLogger::error(message);
+			});
+		}
+		_running = false;
+
+	}));
+
+	if (!bAsync)
+		_worker->join();
+}
+
+void WtBtRunner::stop()
+{
+	if (!_running)
+		return;
+
+	_replayer.stop();
 }
 
 void WtBtRunner::release()
 {
-	_terminated = true;
 	WTSLogger::stop();
 }
 

@@ -201,6 +201,8 @@ public:
 	bool init(WTSVariant* cfg, EventNotifier* notifier = NULL);
 
 	void run(bool bNeedDump = false);
+	
+	void stop();
 
 	void clear_cache();
 
@@ -297,6 +299,7 @@ private:
 	uint64_t		_end_time;
 
 	bool			_running;
+	bool			_terminated;
 	//////////////////////////////////////////////////////////////////////////
 	//手续费模板
 	typedef struct _FeeItem

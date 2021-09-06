@@ -486,6 +486,21 @@ uint32_t HisDataReplayer::locate_barindex(const std::string& key, uint64_t now, 
 	return idx;
 }
 
+void HisDataReplayer::stop()
+{
+	if(!_running)
+	{
+		WTSLogger::error("Backtesting is not running, no need to stop");
+		return;
+	}
+
+	if (_terminated)
+		return;
+
+	_terminated = true;
+	WTSLogger::error("Terminating flag reset to true, backtesting will quit at next bar");
+}
+
 void HisDataReplayer::run(bool bNeedDump/* = false*/)
 {
 	if(_running)
@@ -495,6 +510,7 @@ void HisDataReplayer::run(bool bNeedDump/* = false*/)
 	}
 
 	_running = true;
+	_terminated = false;
 	reset();
 
 	int64_t now = TimeUtils::getLocalTimeNano();
@@ -562,7 +578,7 @@ void HisDataReplayer::run(bool bNeedDump/* = false*/)
 
 			WTSLogger::log_raw(LL_INFO, fmt::format("Start to replay back data from {}...", _begin_time).c_str());
 
-			for (;;)
+			for (;!_terminated;)
 			{
 				bool isDay = barList._period == KP_DAY;
 				if (barList._cursor != UINT_MAX)
@@ -712,7 +728,8 @@ void HisDataReplayer::run(bool bNeedDump/* = false*/)
 			bool bIsPreDay = endtime > _task->_time;
 			if (bIsPreDay)
 				_cur_date = TimeUtils::getNextDate(_cur_date, -1);
-			for (;;)
+
+			for (;!_terminated;)
 			{
 				bool fired = false;
 				//获取上一个交易日的日期
@@ -852,7 +869,7 @@ void HisDataReplayer::run(bool bNeedDump/* = false*/)
 			if (_listener)
 				_listener->handle_session_begin(_cur_tdate);
 
-			for(;;)
+			for(;!_terminated;)
 			{
 				//要考虑到跨日的情况
 				uint32_t mins = sInfo->timeToMinutes(_cur_time);
