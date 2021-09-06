@@ -64,7 +64,7 @@ void run_bt()
 	config_backtest("configbt.json", true);
 
 
-	run_backtest(true);
+	run_backtest(true, false);
 
 	//init_cta_mocker("test2");
 
