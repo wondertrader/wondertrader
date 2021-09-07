@@ -33,6 +33,9 @@
     <ClInclude Include="WTSCmpHelper.hpp">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="CsvHelper.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WTSLogger.cpp">
@@ -48,6 +51,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="WTSHotMgr.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="CsvHelper.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

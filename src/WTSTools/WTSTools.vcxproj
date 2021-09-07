@@ -173,6 +173,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CsvHelper.h" />
     <ClInclude Include="WTSBaseDataMgr.h" />
     <ClInclude Include="WTSCmpHelper.hpp" />
     <ClInclude Include="WTSDataFactory.h" />
@@ -181,6 +182,7 @@
     <ClInclude Include="WTSLogger.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CsvHelper.cpp" />
     <ClCompile Include="WTSBaseDataMgr.cpp" />
     <ClCompile Include="WTSDataFactory.cpp" />
     <ClCompile Include="WTSExpFactory.cpp" />

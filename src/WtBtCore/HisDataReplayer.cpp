@@ -27,6 +27,7 @@
 #include "../WTSTools/WTSLogger.h"
 #include "../WTSTools/WTSDataFactory.h"
 #include "../WTSTools/WTSCmpHelper.hpp"
+#include "../WTSTools/CsvHelper.h"
 
 #include "../Share/JsonToVariant.hpp"
 #include "../Share/CodeHelper.hpp"
@@ -2775,7 +2776,6 @@ bool HisDataReplayer::cacheRawTicksFromCSV(const std::string& key, const char* s
 
 		if (!StdFile::exists(csvfile.c_str()))
 		{
-			//WTSLogger::error("历史Tick数据文件%s不存在", csvfile.c_str());
 			WTSLogger::error("Back tick data file %s not exists", csvfile.c_str());
 			return false;
 		}
@@ -2783,7 +2783,6 @@ bool HisDataReplayer::cacheRawTicksFromCSV(const std::string& key, const char* s
 		std::ifstream ifs;
 		ifs.open(csvfile.c_str());
 
-		//WTSLogger::info("正在读取数据文件%s...", csvfile.c_str());
 		WTSLogger::info("Reading data from %s...", csvfile.c_str());
 
 		char buffer[1024];
@@ -2917,65 +2916,42 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 
 		if (!StdFile::exists(csvfile.c_str()))
 		{
-			//WTSLogger::error("历史K线数据文件%s不存在", csvfile.c_str());
 			WTSLogger::error("Back kbar data file %s not exists", csvfile.c_str());
 			return false;
 		}
 
-		std::ifstream ifs;
-		ifs.open(csvfile.c_str());
+		CsvReader reader;
+		reader.load_from_file(csvfile.c_str());
 
-		//WTSLogger::info("正在读取数据文件%s...", csvfile.c_str());
 		WTSLogger::info("Reading data from %s...", csvfile.c_str());
 
-		char buffer[512];
-		bool headerskipped = false;
 		BarsList& barList = bForBars ? _bars_cache[key] : _unbars_cache[key];
 		barList._code = stdCode;
 		barList._period = period;
-		while (!ifs.eof())
+		while (reader.next_row())
 		{
-			ifs.getline(buffer, 512);
-			if (strlen(buffer) == 0)
-				continue;
-
-			//跳过头部
-			if (!headerskipped)
-			{
-				headerskipped = true;
-				continue;
-			}
-
 			//逐行读取
-			StringVector ay = StrUtil::split(buffer, ",");
 			WTSBarStruct bs;
-			bs.date = strToDate(ay[0].c_str());
+			bs.date = strToDate(reader.get_string("date"));
 			if (period != KP_DAY)
-				bs.time = TimeUtils::timeToMinBar(bs.date, strToTime(ay[1].c_str()));
-			bs.open = strtod(ay[2].c_str(), NULL);
-			bs.high = strtod(ay[3].c_str(), NULL);
-			bs.low = strtod(ay[4].c_str(), NULL);
-			bs.close = strtod(ay[5].c_str(), NULL);
-			bs.vol = strtoul(ay[6].c_str(), NULL, 10);
-			if(ay.size() > 7)
-				bs.money = strtod(ay[7].c_str(), NULL);
-			if (ay.size() > 8)
-				bs.hold = strtod(ay[8].c_str(), NULL);
-			if (ay.size() > 9)
-				bs.add = strtod(ay[9].c_str(), NULL);
-			if (ay.size() > 10)
-				bs.settle = strtod(ay[10].c_str(), NULL);
+				bs.time = TimeUtils::timeToMinBar(bs.date, strToTime(reader.get_string("time")));
+			bs.open = reader.get_double("open");
+			bs.high = reader.get_double("high");
+			bs.low = reader.get_double("low");
+			bs.close = reader.get_double("close");
+			bs.vol = reader.get_uint32("volume");
+			bs.money = reader.get_double("turnover");
+			bs.hold = reader.get_uint32("open_interest");
+			bs.add = reader.get_int32("diff_interest");
+			bs.settle = reader.get_double("settle");
 			barList._bars.emplace_back(bs);
 
 			if (barList._bars.size() % 1000 == 0)
 			{
-				//WTSLogger::info("已读取数据%u条", barList._bars.size());
 				WTSLogger::info("%u lines of data loaded", barList._bars.size());
 			}
 		}
 		barList._count = barList._bars.size();
-		ifs.close();
-		//WTSLogger::info("数据文件%s全部读取完成, 共%u条", csvfile.c_str(), barList._bars.size());
 		WTSLogger::info("Data file %s all loaded, totally %u items", csvfile.c_str(), barList._bars.size());
 
 		BlockType btype;

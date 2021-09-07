@@ -15,6 +15,7 @@
 #include "../Includes/WTSTypes.h"
 #include "../WtDataWriter/DataDefine.h"
 #include "../WTSTools/WTSCmpHelper.hpp"
+#include "../WTSTools/CsvHelper.h"
 
 #include "../Includes/WTSDataDef.hpp"
 #include "../WTSTools/WTSDataFactory.h"
@@ -150,22 +151,24 @@ void dump_bars(WtString binFolder, WtString csvFolder, WtString strFilter /* = "
 			cbLogger(StrUtil::printf("正在写入%s...", filename.c_str()).c_str());
 
 		std::stringstream ss;
-		ss << "date,time,open,high,low,close,settle,turnover,volume,open_interest,diff_interest" << std::endl;
+		ss << "date,time,open,high,low,close,settle,volume,turnover,open_interest,diff_interest" << std::endl;
+		ss.setf(std::ios::fixed);
 
 		for (uint32_t i = 0; i < kcnt; i++)
 		{
 			const WTSBarStruct& curBar = klineBlk->_bars[i];
+			uint32_t barTime = curBar.time % 10000 * 100;
 			ss << curBar.date << ","
-				<< curBar.time << ","
+				<< barTime << ","
                 << curBar.open << ","
 				<< curBar.high << ","
 				<< curBar.low << ","
 				<< curBar.close << ","
+				<< curBar.settle << ","
 				<< curBar.vol << ","
 				<< curBar.money << ","
 				<< curBar.hold << ","
-				<< curBar.add << ","
-				<< curBar.settle << std::endl;
+				<< curBar.add << std::endl;
 		}
 
 		BoostFile::write_file_contents(filename.c_str(), ss.str().c_str(), (uint32_t)ss.str().size());
@@ -335,46 +338,35 @@ void trans_csv_bars(WtString csvFolder, WtString binFolder, WtString period, Fun
 
 		const std::string& path = iter->path().string();
 
-		std::ifstream ifs;
-		ifs.open(path.c_str());
-
 		if(cbLogger)
 			cbLogger(StrUtil::printf("正在读取数据文件%s...", path.c_str()).c_str());
 
-		char buffer[512];
-		bool headerskipped = false;
-		std::vector<WTSBarStruct> bars;
-		while (!ifs.eof())
+		CsvReader reader(",");
+		if(!reader.load_from_file(path.c_str()))
 		{
-			ifs.getline(buffer, 512);
-			if (strlen(buffer) == 0)
-				continue;
+			if (cbLogger)
+				cbLogger(StrUtil::printf("读取数据文件%s失败...", path.c_str()).c_str());
+			continue;
+		}
 
-			//跳过头部
-			if (!headerskipped)
-			{
-				headerskipped = true;
-				continue;
-			}
+		std::vector<WTSBarStruct> bars;
 
+		while(reader.next_row())
+		{
 			//逐行读取
-			StringVector ay = StrUtil::split(buffer, ",");
 			WTSBarStruct bs;
-			bs.date = strToDate(ay[0].c_str());
-			bs.time = TimeUtils::timeToMinBar(bs.date, strToTime(ay[1].c_str()));
-			bs.open = strtod(ay[2].c_str(), NULL);
-			bs.high = strtod(ay[3].c_str(), NULL);
-			bs.low = strtod(ay[4].c_str(), NULL);
-			bs.close = strtod(ay[5].c_str(), NULL);
-			bs.vol = strtoul(ay[6].c_str(), NULL, 10);
-			if (ay.size() > 7)
-				bs.money = strtod(ay[7].c_str(), NULL);
-			if (ay.size() > 8)
-				bs.hold = (uint32_t)strtod(ay[8].c_str(), NULL);
-			if (ay.size() > 9)
-				bs.add = (int32_t)strtod(ay[9].c_str(), NULL);
-			if (ay.size() > 10)
-				bs.settle = strtod(ay[10].c_str(), NULL);
+			bs.date = strToDate(reader.get_string("date"));
+			if(kp != KP_DAY)
+				bs.time = TimeUtils::timeToMinBar(bs.date, strToTime(reader.get_string("time")));
+			bs.open = reader.get_double("open");
+			bs.high = reader.get_double("high");
+			bs.low = reader.get_double("low");
+			bs.close = reader.get_double("close");
+			bs.vol = reader.get_uint32("volume");
+			bs.money = reader.get_double("turnover");
+			bs.hold = reader.get_uint32("open_interest");
+			bs.add = reader.get_int32("diff_interest");
+			bs.settle = reader.get_double("settle");
 			bars.emplace_back(bs);
 
 			if (bars.size() % 1000 == 0)
@@ -383,7 +375,6 @@ void trans_csv_bars(WtString csvFolder, WtString binFolder, WtString period, Fun
 					cbLogger(StrUtil::printf("已读取数据%u条", bars.size()).c_str());
 			}
 		}
-		ifs.close();
 		if (cbLogger)
 			cbLogger(StrUtil::printf("数据文件%s全部读取完成,共%u条", path.c_str(), bars.size()).c_str());
 
