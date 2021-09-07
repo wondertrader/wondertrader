@@ -113,6 +113,49 @@ public:
 		return ret;
 	}
 
+	/** Returns a std::stringVector that contains all the substd::strings delimited
+	by the characters in the passed <code>delims</code> argument.
+	@param
+	delims A list of delimiter characters to split by
+	@param
+	maxSplits The maximum number of splits to perform (0 for unlimited splits). If this
+	parameters is > 0, the splitting process will stop after this many splits, left to right.
+	*/
+	static inline void split(const std::string& str, StringVector& ret, const std::string& delims = "\t\n ", unsigned int maxSplits = 0)
+	{
+		unsigned int numSplits = 0;
+
+		// Use STL methods
+		size_t start, pos;
+		start = 0;
+		do
+		{
+			pos = str.find_first_of(delims, start);
+			if (pos == start)
+			{
+				ret.emplace_back("");
+				// Do nothing
+				start = pos + 1;
+			}
+			else if (pos == std::string::npos || (maxSplits && numSplits == maxSplits))
+			{
+				// Copy the rest of the std::string
+				ret.emplace_back(str.substr(start));
+				break;
+			}
+			else
+			{
+				// Copy up to delimiter
+				ret.emplace_back(str.substr(start, pos - start));
+				start = pos + 1;
+			}
+			// parse up to next real data
+			//start = str.find_first_not_of(delims, start);
+			++numSplits;
+
+		} while (pos != std::string::npos);
+	}
+
 	/** Upper-cases all the characters in the std::string.
 	*/
 	static inline void toLowerCase( std::string& str )
