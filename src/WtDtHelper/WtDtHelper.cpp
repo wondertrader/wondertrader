@@ -357,7 +357,7 @@ void trans_csv_bars(WtString csvFolder, WtString binFolder, WtString period, Fun
 			WTSBarStruct bs;
 			bs.date = strToDate(reader.get_string("date"));
 			if(kp != KP_DAY)
-				bs.time = TimeUtils::timeToMinBar(bs.date, strToTime(reader.get_string("time")));
+				bs.time = TimeUtils::timeToMinBar(bs.date, strToTime(reader.get_string("time"), true));
 			bs.open = reader.get_double("open");
 			bs.high = reader.get_double("high");
 			bs.low = reader.get_double("low");
