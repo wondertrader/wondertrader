@@ -16,7 +16,6 @@
 #include "../Share/StrUtil.hpp"
 #include "../Share/StdUtils.hpp"
 #include "../Includes/WTSVariant.hpp"
-#include "../Share/BoostFile.hpp"
 #include "../Share/TimeUtils.hpp"
 #include "../Includes/IHotMgr.h"
 #include "../Share/decimal.h"

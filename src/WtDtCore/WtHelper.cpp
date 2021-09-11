@@ -10,7 +10,6 @@
 #include "WtHelper.h"
 
 #include "../Share/StrUtil.hpp"
-#include "../Share/BoostFile.hpp"
 
 #ifdef _WIN32
 #include <direct.h>

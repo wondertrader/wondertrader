@@ -11,6 +11,7 @@
 #include "../Includes/ICtaStraCtx.h"
 #include "../Includes/FasterDefs.h"
 #include "../Includes/WTSDataDef.hpp"
+
 #include "../Share/BoostFile.hpp"
 
 class CtaStrategy;

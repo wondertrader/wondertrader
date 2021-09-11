@@ -14,9 +14,8 @@
 #include "../Includes/FasterDefs.h"
 #include "../Includes/ICtaStraCtx.h"
 #include "../Includes/CtaStrategyDefs.h"
-
 #include "../Includes/WTSDataDef.hpp"
-#include "../Share/BoostFile.hpp"
+
 #include "../Share/DLLHelper.hpp"
 
 NS_OTP_BEGIN

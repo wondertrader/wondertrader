@@ -1,7 +1,7 @@
 #include "WtDataReader.h"
 
 #include "../Includes/WTSVariant.hpp"
-#include "../Share/BoostFile.hpp"
+#include "../Share/StdUtils.hpp"
 #include "../Share/TimeUtils.hpp"
 #include "../Share/CodeHelper.hpp"
 #include "../Share/StdUtils.hpp"
@@ -135,14 +135,14 @@ void WtDataReader::init(WTSVariant* cfg, IBaseDataMgr* bdMgr, IHotMgr* hotMgr)
 
 bool WtDataReader::loadStkAdjFactorsFromFile(const char* adjfile)
 {
-	if(!BoostFile::exists(adjfile))
+	if(!StdFile::exists(adjfile))
 	{
 		WTSLogger::error("除权因子文件%s不存在", adjfile);
 		return false;
 	}
 
 	std::string content;
-	BoostFile::read_file_contents(adjfile, content);
+	StdFile::read_file_content(adjfile, content);
 
 	rj::Document doc;
 	doc.Parse(content.c_str());

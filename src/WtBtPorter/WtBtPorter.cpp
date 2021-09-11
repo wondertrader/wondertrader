@@ -10,6 +10,8 @@
 #include "WtBtPorter.h"
 #include "WtBtRunner.h"
 
+#include <boost/filesystem.hpp>
+
 #include "../WtBtCore/WtHelper.h"
 #include "../WtBtCore/CtaMocker.h"
 #include "../WtBtCore/SelMocker.h"

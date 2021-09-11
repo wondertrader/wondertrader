@@ -77,6 +77,13 @@ public:
 		fclose(f);
 	}
 
+	static inline void write_file_content(const char* filename, const void* data, std::size_t length)
+	{
+		FILE* f = fopen(filename, "wb");
+		fwrite(data, sizeof(char), length, f);
+		fclose(f);
+	}
+
 	static inline bool exists(const char* filename)
 	{
 #if _WIN32

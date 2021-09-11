@@ -13,11 +13,13 @@
 #include <stdarg.h>
 #include <math.h>
 
+#include <boost/filesystem.hpp>
+
 #include "../Includes/WTSVariant.hpp"
 #include "../Includes/WTSContractInfo.hpp"
 #include "../Share/decimal.h"
 #include "../Share/TimeUtils.hpp"
-#include "../Share/BoostFile.hpp"
+#include "../Share/StdUtils.hpp"
 #include "../Share/StrUtil.hpp"
 
 #include "../WTSTools/WTSLogger.h"
@@ -748,24 +750,24 @@ void HftMocker::dump_outputs()
 	std::string filename = folder + "trades.csv";
 	std::string content = "code,time,direct,action,price,qty,fee,usertag\n";
 	content += _trade_logs.str();
-	BoostFile::write_file_contents(filename.c_str(), content.c_str(), content.size());
+	StdFile::write_file_content(filename.c_str(), (void*)content.c_str(), content.size());
 
 	filename = folder + "closes.csv";
 	content = "code,direct,opentime,openprice,closetime,closeprice,qty,profit,maxprofit,maxloss,totalprofit,entertag,exittag\n";
 	content += _close_logs.str();
-	BoostFile::write_file_contents(filename.c_str(), content.c_str(), content.size());
+	StdFile::write_file_content(filename.c_str(), (void*)content.c_str(), content.size());
 
 
 	filename = folder + "funds.csv";
 	content = "date,closeprofit,positionprofit,dynbalance,fee\n";
 	content += _fund_logs.str();
-	BoostFile::write_file_contents(filename.c_str(), content.c_str(), content.size());
+	StdFile::write_file_content(filename.c_str(), (void*)content.c_str(), content.size());
 
 
 	filename = folder + "signals.csv";
 	content = "time, action, position, price\n";
 	content += _sig_logs.str();
-	BoostFile::write_file_contents(filename.c_str(), content.c_str(), content.size());
+	StdFile::write_file_content(filename.c_str(), (void*)content.c_str(), content.size());
 }
 
 void HftMocker::log_trade(const char* stdCode, bool isLong, bool isOpen, uint64_t curTime, double price, double qty, double fee, const char* userTag/* = ""*/)

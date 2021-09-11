@@ -9,9 +9,10 @@
  */
 #include "HftStrategyMgr.h"
 
+#include <boost/filesystem.hpp>
+
 #include "../Share/StrUtil.hpp"
 #include "../Share/StdUtils.hpp"
-#include "../Share/BoostFile.hpp"
 
 #include "../WTSTools/WTSLogger.h"
 

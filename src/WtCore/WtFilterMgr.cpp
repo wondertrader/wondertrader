@@ -3,11 +3,11 @@
 
 #include "../Share/CodeHelper.hpp"
 #include "../Share/JsonToVariant.hpp"
-
 #include "../Share/StdUtils.hpp"
-#include "../Share/BoostFile.hpp"
 
 #include "../WTSTools/WTSLogger.h"
+
+#include <boost/filesystem.hpp>
 
 #include <rapidjson/document.h>
 namespace rj = rapidjson;

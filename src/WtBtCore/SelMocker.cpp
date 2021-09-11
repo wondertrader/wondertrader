@@ -14,6 +14,7 @@
 #include <exception>
 #include <rapidjson/document.h>
 #include <rapidjson/prettywriter.h>
+#include <boost/filesystem.hpp>
 
 #include "../Share/StdUtils.hpp"
 #include "../Share/StrUtil.hpp"
@@ -62,24 +63,24 @@ void SelMocker::dump_outputs()
 	std::string filename = folder + "trades.csv";
 	std::string content = "code,time,direct,action,price,qty,tag,fee\n";
 	content += _trade_logs.str();
-	BoostFile::write_file_contents(filename.c_str(), content.c_str(), content.size());
+	StdFile::write_file_content(filename.c_str(), (void*)content.c_str(), content.size());
 
 	filename = folder + "closes.csv";
 	content = "code,direct,opentime,openprice,closetime,closeprice,qty,profit,totalprofit,entertag,exittag\n";
 	content += _close_logs.str();
-	BoostFile::write_file_contents(filename.c_str(), content.c_str(), content.size());
+	StdFile::write_file_content(filename.c_str(), (void*)content.c_str(), content.size());
 
 
 	filename = folder + "funds.csv";
 	content = "date,closeprofit,positionprofit,dynbalance,fee\n";
 	content += _fund_logs.str();
-	BoostFile::write_file_contents(filename.c_str(), content.c_str(), content.size());
+	StdFile::write_file_content(filename.c_str(), (void*)content.c_str(), content.size());
 
 
 	filename = folder + "signals.csv";
 	content = "code,target,sigprice,gentime,usertag\n";
 	content += _sig_logs.str();
-	BoostFile::write_file_contents(filename.c_str(), content.c_str(), content.size());
+	StdFile::write_file_content(filename.c_str(), (void*)content.c_str(), content.size());
 }
 
 void SelMocker::log_signal(const char* stdCode, double target, double price, uint64_t gentime, const char* usertag /* = "" */)

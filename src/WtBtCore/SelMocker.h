@@ -14,9 +14,8 @@
 #include "../Includes/FasterDefs.h"
 #include "../Includes/ISelStraCtx.h"
 #include "../Includes/SelStrategyDefs.h"
-
 #include "../Includes/WTSDataDef.hpp"
-#include "../Share/BoostFile.hpp"
+
 #include "../Share/DLLHelper.hpp"
 
 class SelStrategy;
