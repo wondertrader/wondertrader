@@ -1534,6 +1534,7 @@ void HisDataReplayer::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTD
 	for (auto it = _bars_cache.begin(); it != _bars_cache.end(); it++)
 	{
 		BarsList& barsList = (BarsList&)it->second;
+		double factor = barsList._factor;
 		if (barsList._period != KP_DAY)
 		{
 			//如果历史数据指标不在尾部, 说明是回测模式, 要继续回放历史数据
@@ -1559,7 +1560,7 @@ void HisDataReplayer::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTD
 									curTS.action_date = _cur_date;
 									curTS.action_time = _cur_time * 100000;
 
-									curTS.price = nextBar.open;
+									curTS.price = nextBar.open / factor;
 									curTS.volume = nextBar.vol;
 
 									//更新开高低三个字段
@@ -1576,7 +1577,7 @@ void HisDataReplayer::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTD
 									_listener->handle_tick(barsList._code.c_str(), curTick);
 									curTick->release();
 
-									curTS.price = nextBar.high;
+									curTS.price = nextBar.high / factor;
 									curTS.volume = nextBar.vol;
 									curTS.high = max(curTS.price, curTS.high);
 									curTS.low = min(curTS.price, curTS.low);
@@ -1585,7 +1586,7 @@ void HisDataReplayer::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTD
 									_listener->handle_tick(barsList._code.c_str(), curTick);
 									curTick->release();
 
-									curTS.price = nextBar.low;
+									curTS.price = nextBar.low / factor;
 									curTS.high = max(curTS.price, curTS.high);
 									curTS.low = min(curTS.price, curTS.low);
 									update_price(barsList._code.c_str(), curTS.price);
@@ -1593,7 +1594,7 @@ void HisDataReplayer::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTD
 									_listener->handle_tick(barsList._code.c_str(), curTick);
 									curTick->release();
 
-									curTS.price = nextBar.close;
+									curTS.price = nextBar.close / factor;
 									curTS.high = max(curTS.price, curTS.high);
 									curTS.low = min(curTS.price, curTS.low);
 									update_price(barsList._code.c_str(), curTS.price);
@@ -1656,27 +1657,27 @@ void HisDataReplayer::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTD
 									curTS.action_date = _cur_date;
 									curTS.action_time = curTime * 100000;
 
-									curTS.price = nextBar.open;
+									curTS.price = nextBar.open / factor;
 									curTS.volume = nextBar.vol;
 									update_price(barsList._code.c_str(), curTS.price);
 									WTSTickData* curTick = WTSTickData::create(curTS);
 									_listener->handle_tick(realCode.c_str(), curTick);
 									curTick->release();
 
-									curTS.price = nextBar.high;
+									curTS.price = nextBar.high / factor;
 									curTS.volume = nextBar.vol;
 									update_price(barsList._code.c_str(), curTS.price);
 									curTick = WTSTickData::create(curTS);
 									_listener->handle_tick(realCode.c_str(), curTick);
 									curTick->release();
 
-									curTS.price = nextBar.low;
+									curTS.price = nextBar.low / factor;
 									update_price(barsList._code.c_str(), curTS.price);
 									curTick = WTSTickData::create(curTS);
 									_listener->handle_tick(realCode.c_str(), curTick);
 									curTick->release();
 
-									curTS.price = nextBar.close;
+									curTS.price = nextBar.close / factor;
 									update_price(barsList._code.c_str(), curTS.price);
 									curTick = WTSTickData::create(curTS);
 									_listener->handle_tick(realCode.c_str(), curTick);
