@@ -133,3 +133,21 @@
 * WtBtPorter的dump_bars接口修改为通过回调返回数据，而不是直接导出到csv
 * WtPorter新增dump_bars接口，用法同WtBtPorter
 * 其他Bug修正和细节优化
+
+
+### 0.7.0
+* 新增一个WtDtServo模块，用于提供直接访问WonderTrader落地的数据文件的接口，主要包括按照时间区间获取数据get_bars_by_range、get_ticks_by_range，以及按照条数获取数据get_bars_by_count、get_ticks_by_count两大类接口
+* 根据WtDtServo的需求，优化了WtDataWriter模块数据处理流程
+* 回测框架支持重复回测，即在同一个进程中可以多次调用run_backtest接口。可以通过调用clear_cache释放已加载的历史数据，如果不释放，在下一次回测之前只会将数据访问标记重置，从而减少多次回测的IO开销
+* 新增一个基于nanomsg封装的pub/sub消息队列WtMsgQue模块，该模块采用C接口封装，可以单独使用，主要作为实盘和回测消息通知模块EventNotifier的基础组件使用。提供了MQServer和MQClient两个类，可以很方便上手
+* 实盘框架的EventNotifier，调用WtMsgQue的MQServer，向外推送日志、成交、风控等消息
+* 回测框架的EventNotifier，调用WtMsgQue的MQServer，向外推送回测进度、每日结算的资金信息等消息
+* WtExecFact新增一个最小冲击算法执行单元WtMinImpactExeUnit，对大单进行拆单发送，可以设定时间间隔、每次发单的固定数量或按照对价挂单量的比例
+* 改造了回测框架的一些数据的落地，主要针对远程回测监控提供一些基础特性
+* 开平策略管理器ActionPolicyMgr，新增了一个净今仓和净昨仓的检查，主要针对中金所的特殊规则（如果同事有今仓和昨仓，中金所处理平仓一定是优先平今的，这样会推高手续费）做的兼容性设置
+* WtPorter和WtBtPorter获取数据的回调接口，从原来的每条数据回调一次，改成直接整块数据块回调，减少回调函数的调用次数，数据读取性能大概能提升10%左右
+* 实盘框架完善了自动清理过期主力合约的机制。在净头寸的机制下，普通的清理方案，只能让净头寸降到0，实际上过期主力合约要求双边持仓都要降到0，所以这里要专门单独处理。
+* 实现了股票后复权数据的兼容处理，当获取历史数据代码如SSE.600000H，则是后复权数据，如果后缀为Q，则是前复权数据。后复权数据要求最新的K线数据要实时复权，所以内部数据处理的机制也做了一些兼容性调整
+* WtsTools工程下，新增一个CsvReader类，方便从csv文件加载历史数据
+* 回测框架支持异步回测，同时提供stop_backtest接口，可以从外部手动停止回测，主要是为了适配强化学习框架gym的训练环境
+* 其他细节优化和Bug修正
