@@ -1,5 +1,7 @@
 #include "CsvHelper.h"
 
+#include <limits.h>
+
 #include "../Share/StdUtils.hpp"
 #include "../Share/StrUtil.hpp"
 

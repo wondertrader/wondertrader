@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <stdint.h>
 #include <fstream>
+#include <vector>
 
 class CsvReader
 {
