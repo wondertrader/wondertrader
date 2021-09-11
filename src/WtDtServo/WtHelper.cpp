@@ -14,7 +14,7 @@
 #ifdef _WIN32
 #include <direct.h>
 #else	//UNIX
-#include <stdio.h>
+#include <unistd.h>
 #endif
 
 std::string WtHelper::_bin_dir;
