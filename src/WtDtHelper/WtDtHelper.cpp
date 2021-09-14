@@ -34,7 +34,7 @@ USING_NS_OTP;
 #define my_stricmp strcasecmp
 #endif
 
-uint32_t strToTime(const char* strTime, bool bHasSec = false)
+uint32_t strToTime(const char* strTime, bool bKeepSec = false)
 {
 	std::string str;
 	const char *pos = strTime;
@@ -48,7 +48,7 @@ uint32_t strToTime(const char* strTime, bool bHasSec = false)
 	}
 
 	uint32_t ret = strtoul(str.c_str(), NULL, 10);
-	if (ret > 10000 && !bHasSec)
+	if (ret > 10000 && !bKeepSec)
 		ret /= 100;
 
 	return ret;
@@ -158,7 +158,8 @@ void dump_bars(WtString binFolder, WtString csvFolder, WtString strFilter /* = "
 		{
 			const WTSBarStruct& curBar = klineBlk->_bars[i];
 			uint32_t barTime = curBar.time % 10000 * 100;
-			ss << curBar.date << ","
+			uint32_t barDate = curBar.time / 10000 + 19900000;
+			ss << barDate << ","
 				<< barTime << ","
                 << curBar.open << ","
 				<< curBar.high << ","
@@ -357,7 +358,7 @@ void trans_csv_bars(WtString csvFolder, WtString binFolder, WtString period, Fun
 			WTSBarStruct bs;
 			bs.date = strToDate(reader.get_string("date"));
 			if(kp != KP_DAY)
-				bs.time = TimeUtils::timeToMinBar(bs.date, strToTime(reader.get_string("time"), true));
+				bs.time = TimeUtils::timeToMinBar(bs.date, strToTime(reader.get_string("time")));
 			bs.open = reader.get_double("open");
 			bs.high = reader.get_double("high");
 			bs.low = reader.get_double("low");
