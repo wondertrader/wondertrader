@@ -19,7 +19,12 @@ bool CsvReader::load_from_file(const char* filename)
 	_ifs.open(filename);
 
 	_ifs.getline(_buffer, 1024);
-	StringVector fields = StrUtil::split(_buffer, _item_splitter.c_str());
+	//≈–∂œ «≤ª «UTF-8BOM ±‡¬Î
+	static char flag[] = { (char)0xEF, (char)0xBB, (char)0xBF };
+	char* buf = _buffer;
+	if (memcmp(_buffer, flag, sizeof(char) * 3) == 0)
+		buf += 3;
+	StringVector fields = StrUtil::split(buf, _item_splitter.c_str());
 	for (uint32_t i = 0; i < fields.size(); i++)
 	{
 		std::string field = StrUtil::trim(fields[i].c_str());
