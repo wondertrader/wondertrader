@@ -2241,49 +2241,55 @@ void WtDataWriter::proc_loop()
 		if(!_disable_tick)
 		{
 			TickBlockPair *tBlkPair = getTickBlock(ct, uDate, false);
-			if (tBlkPair != NULL && tBlkPair->_block->_size > 0)
+			if (tBlkPair != NULL)
 			{
-				_sink->outputWriterLog(LL_INFO, "Transfering tick data of %s...", fullcode.c_str());
-				StdUniqueLock lock(tBlkPair->_mutex);
+				if(tBlkPair->_fstream)
+					tBlkPair->_fstream.reset();
 
-				std::stringstream ss;
-				ss << _base_dir << "his/ticks/" << ct->getExchg() << "/" << tBlkPair->_block->_date << "/";
-				std::string path = ss.str();
-				_sink->outputWriterLog(LL_INFO, path.c_str());
-				BoostFile::create_directories(ss.str().c_str());
-				std::string filename = StrUtil::printf("%s%s.dsb", path.c_str(), code.c_str());
-
-				bool bNew = false;
-				if (!BoostFile::exists(filename.c_str()))
-					bNew = true;
-
-				_sink->outputWriterLog(LL_INFO, "Openning data storage file: %s", filename.c_str());
-				BoostFile f;
-				if (f.create_new_file(filename.c_str()))
+				if (tBlkPair->_block->_size > 0)
 				{
-					//先压缩数据
-					std::string cmp_data = WTSCmpHelper::compress_data(tBlkPair->_block->_ticks, sizeof(WTSTickStruct)*tBlkPair->_block->_size);
+					_sink->outputWriterLog(LL_INFO, "Transfering tick data of %s...", fullcode.c_str());
+					StdUniqueLock lock(tBlkPair->_mutex);
 
-					BlockHeaderV2 header;
-					strcpy(header._blk_flag, BLK_FLAG);
-					header._type = BT_HIS_Ticks;
-					header._version = BLOCK_VERSION_CMP;
-					header._size = cmp_data.size();
-					f.write_file(&header, sizeof(header));
+					std::stringstream ss;
+					ss << _base_dir << "his/ticks/" << ct->getExchg() << "/" << tBlkPair->_block->_date << "/";
+					std::string path = ss.str();
+					_sink->outputWriterLog(LL_INFO, path.c_str());
+					BoostFile::create_directories(ss.str().c_str());
+					std::string filename = StrUtil::printf("%s%s.dsb", path.c_str(), code.c_str());
 
-					f.write_file(cmp_data.c_str(), cmp_data.size());
-					f.close_file();
+					bool bNew = false;
+					if (!BoostFile::exists(filename.c_str()))
+						bNew = true;
 
-					count += tBlkPair->_block->_size;
+					_sink->outputWriterLog(LL_INFO, "Openning data storage file: %s", filename.c_str());
+					BoostFile f;
+					if (f.create_new_file(filename.c_str()))
+					{
+						//先压缩数据
+						std::string cmp_data = WTSCmpHelper::compress_data(tBlkPair->_block->_ticks, sizeof(WTSTickStruct)*tBlkPair->_block->_size);
 
-					//最后将缓存清空
-					//memset(tBlkPair->_block->_ticks, 0, sizeof(WTSTickStruct)*tBlkPair->_block->_size);
-					tBlkPair->_block->_size = 0;
-				}
-				else
-				{
-					//_sink->outputWriterLog(LL_ERROR, "历史数据文件%s打开失败,tick数据收盘作业失败", filename.c_str());
-					_sink->outputWriterLog(LL_ERROR, "ClosingTask of tick failed: openning history data file %s failed", filename.c_str());
+						BlockHeaderV2 header;
+						strcpy(header._blk_flag, BLK_FLAG);
+						header._type = BT_HIS_Ticks;
+						header._version = BLOCK_VERSION_CMP;
+						header._size = cmp_data.size();
+						f.write_file(&header, sizeof(header));
+
+						f.write_file(cmp_data.c_str(), cmp_data.size());
+						f.close_file();
+
+						count += tBlkPair->_block->_size;
+
+						//最后将缓存清空
+						//memset(tBlkPair->_block->_ticks, 0, sizeof(WTSTickStruct)*tBlkPair->_block->_size);
+						tBlkPair->_block->_size = 0;
+					}
+					else
+					{
+						//_sink->outputWriterLog(LL_ERROR, "历史数据文件%s打开失败,tick数据收盘作业失败", filename.c_str());
+						_sink->outputWriterLog(LL_ERROR, "ClosingTask of tick failed: openning history data file %s failed", filename.c_str());
+					}
 				}
 			}
 

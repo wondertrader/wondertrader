@@ -119,13 +119,10 @@ private:
 		StdUniqueMutex	_mutex;
 		uint64_t		_lasttime;
 
-		std::shared_ptr< std::ofstream>	_fstream;
-
 		_TransBlockPair()
 		{
 			_block = NULL;
 			_file = NULL;
-			_fstream = NULL;
 			_lasttime = 0;
 		}
 	} TransBlockPair;
@@ -138,13 +135,10 @@ private:
 		StdUniqueMutex	_mutex;
 		uint64_t		_lasttime;
 
-		std::shared_ptr< std::ofstream>	_fstream;
-
 		_OdeDtlBlockPair()
 		{
 			_block = NULL;
 			_file = NULL;
-			_fstream = NULL;
 			_lasttime = 0;
 		}
 	} OrdDtlBlockPair;
@@ -157,13 +151,10 @@ private:
 		StdUniqueMutex	_mutex;
 		uint64_t		_lasttime;
 
-		std::shared_ptr< std::ofstream>	_fstream;
-
 		_OdeQueBlockPair()
 		{
 			_block = NULL;
 			_file = NULL;
-			_fstream = NULL;
 			_lasttime = 0;
 		}
 	} OrdQueBlockPair;
