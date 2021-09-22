@@ -24,7 +24,19 @@ bool CsvReader::load_from_file(const char* filename)
 	char* buf = _buffer;
 	if (memcmp(_buffer, flag, sizeof(char) * 3) == 0)
 		buf += 3;
-	StringVector fields = StrUtil::split(buf, _item_splitter.c_str());
+
+	std::string row = buf;
+
+	//替换掉一些字段的特殊符号
+	StrUtil::replace(row, "<", "");
+	StrUtil::replace(row, ">", "");
+	StrUtil::replace(row, "\"", "");
+	StrUtil::replace(row, "'", "");
+
+	//将字段名转成小写
+	StrUtil::toLowerCase(row);
+
+	StringVector fields = StrUtil::split(row, _item_splitter.c_str());
 	for (uint32_t i = 0; i < fields.size(); i++)
 	{
 		std::string field = StrUtil::trim(fields[i].c_str());
