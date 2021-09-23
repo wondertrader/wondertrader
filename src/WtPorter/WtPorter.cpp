@@ -498,7 +498,7 @@ void cta_log_text(CtxHandler cHandle, const char* message)
 	if (ctx == NULL)
 		return;
 
-	ctx->stra_log_text(message);
+	ctx->stra_log_info(message);
 }
 
 void cta_save_userdata(CtxHandler cHandle, const char* key, const char* val)
@@ -561,7 +561,7 @@ void sel_log_text(CtxHandler cHandle, const char* message)
 	if (ctx == NULL)
 		return;
 
-	ctx->stra_log_text(message);
+	ctx->stra_log_info(message);
 }
 
 double sel_get_price(const char* stdCode)
@@ -901,7 +901,7 @@ void hft_log_text(CtxHandler cHandle, const char* message)
 	if (ctx == NULL)
 		return;
 
-	ctx->stra_log_text(message);
+	ctx->stra_log_info(message);
 }
 
 void hft_sub_ticks(CtxHandler cHandle, const char* stdCode)

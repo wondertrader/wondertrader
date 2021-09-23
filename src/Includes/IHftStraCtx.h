@@ -80,7 +80,9 @@ public:
 	virtual void stra_sub_order_details(const char* stdCode) = 0;
 	virtual void stra_sub_transactions(const char* stdCode) = 0;
 
-	virtual void stra_log_text(const char* fmt, ...) = 0;
+	virtual void stra_log_info(const char* fmt, ...) = 0;
+	virtual void stra_log_debug(const char* fmt, ...) = 0;
+	virtual void stra_log_error(const char* fmt, ...) = 0;
 
 	virtual void stra_save_user_data(const char* key, const char* val) {}
 

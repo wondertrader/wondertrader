@@ -217,7 +217,7 @@ OrderIDs HftStraBaseCtx::stra_buy(const char* stdCode, double price, double qty,
 
 		if (_trader && !_trader->checkOrderLimits(realCode.c_str()))
 		{
-			stra_log_text("%s 已被禁止交易", realCode.c_str());
+			stra_log_info("%s 已被禁止交易", realCode.c_str());
 			return OrderIDs();
 		}
 
@@ -239,7 +239,7 @@ OrderIDs HftStraBaseCtx::stra_buy(const char* stdCode, double price, double qty,
 
 		if (_trader && !_trader->checkOrderLimits(realCode.c_str()))
 		{
-			stra_log_text("%s 已被禁止交易", realCode.c_str());
+			stra_log_info("%s 已被禁止交易", realCode.c_str());
 			return OrderIDs();
 		}
 
@@ -254,7 +254,7 @@ OrderIDs HftStraBaseCtx::stra_buy(const char* stdCode, double price, double qty,
 	{
 		if (!_trader->checkOrderLimits(stdCode))
 		{
-			stra_log_text("%s 已被禁止交易", stdCode);
+			stra_log_info("%s 已被禁止交易", stdCode);
 			return OrderIDs();
 		}
 
@@ -280,7 +280,7 @@ OrderIDs HftStraBaseCtx::stra_sell(const char* stdCode, double price, double qty
 
 		if (_trader && !_trader->checkOrderLimits(realCode.c_str()))
 		{
-			stra_log_text("%s 已被禁止交易", realCode.c_str());
+			stra_log_info("%s 已被禁止交易", realCode.c_str());
 			return OrderIDs();
 		}
 
@@ -302,7 +302,7 @@ OrderIDs HftStraBaseCtx::stra_sell(const char* stdCode, double price, double qty
 
 		if (_trader && !_trader->checkOrderLimits(realCode.c_str()))
 		{
-			stra_log_text("%s 已被禁止交易", realCode.c_str());
+			stra_log_info("%s 已被禁止交易", realCode.c_str());
 			return OrderIDs();
 		}
 
@@ -317,7 +317,7 @@ OrderIDs HftStraBaseCtx::stra_sell(const char* stdCode, double price, double qty
 	{
 		if (_trader && !_trader->checkOrderLimits(stdCode))
 		{
-			stra_log_text("%s 已被禁止交易", stdCode);
+			stra_log_info("%s 已被禁止交易", stdCode);
 			return OrderIDs();
 		}
 
@@ -491,28 +491,28 @@ WTSTickData* HftStraBaseCtx::stra_get_last_tick(const char* stdCode)
 void HftStraBaseCtx::stra_sub_ticks(const char* stdCode)
 {
 	_engine->sub_tick(id(), stdCode);
-	stra_log_text("Market Data subscribed: %s", stdCode);
+	stra_log_info("Market Data subscribed: %s", stdCode);
 }
 
 void HftStraBaseCtx::stra_sub_order_details(const char* stdCode)
 {
 	_engine->sub_order_detail(id(), stdCode);
-	stra_log_text("Order details subscribed: %s", stdCode);
+	stra_log_info("Order details subscribed: %s", stdCode);
 }
 
 void HftStraBaseCtx::stra_sub_order_queues(const char* stdCode)
 {
 	_engine->sub_order_queue(id(), stdCode);
-	stra_log_text("Order queues subscribed: %s", stdCode);
+	stra_log_info("Order queues subscribed: %s", stdCode);
 }
 
 void HftStraBaseCtx::stra_sub_transactions(const char* stdCode)
 {
 	_engine->sub_transaction(id(), stdCode);
-	stra_log_text("Transactions subscribed: %s", stdCode);
+	stra_log_info("Transactions subscribed: %s", stdCode);
 }
 
-void HftStraBaseCtx::stra_log_text(const char* fmt, ...)
+void HftStraBaseCtx::stra_log_info(const char* fmt, ...)
 {
 	char szBuf[256] = { 0 };
 	uint32_t length = sprintf(szBuf, "[%s]", _name.c_str());
@@ -520,6 +520,29 @@ void HftStraBaseCtx::stra_log_text(const char* fmt, ...)
 	va_list args;
 	va_start(args, fmt);
 	WTSLogger::vlog2("strategy", LL_INFO, szBuf, args);
+	va_end(args);
+}
+
+void HftStraBaseCtx::stra_log_debug(const char* fmt, ...)
+{
+	char szBuf[256] = { 0 };
+	uint32_t length = sprintf(szBuf, "[%s]", _name.c_str());
+	strcat(szBuf, fmt);
+	va_list args;
+	va_start(args, fmt);
+	WTSLogger::vlog_dyn("strategy", _name.c_str(), LL_DEBUG, szBuf, args);
+	va_end(args);
+}
+
+
+void HftStraBaseCtx::stra_log_error(const char* fmt, ...)
+{
+	char szBuf[256] = { 0 };
+	uint32_t length = sprintf(szBuf, "[%s]", _name.c_str());
+	strcat(szBuf, fmt);
+	va_list args;
+	va_start(args, fmt);
+	WTSLogger::vlog_dyn("strategy", _name.c_str(), LL_ERROR, szBuf, args);
 	va_end(args);
 }
 
@@ -760,7 +783,7 @@ void HftStraBaseCtx::do_set_position(const char* stdCode, double qty, double pri
 	if (decimal::eq(pInfo._volume, qty))
 		return;
 
-	stra_log_text("Target position updated: %.0f -> %0.f", pInfo._volume, qty);
+	stra_log_info("Target position updated: %.0f -> %0.f", pInfo._volume, qty);
 
 	WTSCommodityInfo* commInfo = _engine->get_commodity_info(stdCode);
 

@@ -177,7 +177,7 @@ void WtHftStraDemo::check_orders()
 			{
 				_ctx->stra_cancel(localid);
 				_cancel_cnt++;
-				_ctx->stra_log_text("cancelcnt -> %u", _cancel_cnt);
+				_ctx->stra_log_info("cancelcnt -> %u", _cancel_cnt);
 			}
 			_mtx_ords.unlock();
 		}
@@ -214,7 +214,7 @@ void WtHftStraDemo::on_order(IHftStraCtx* ctx, uint32_t localid, const char* std
 		if (_cancel_cnt > 0)
 		{
 			_cancel_cnt--;
-			_ctx->stra_log_text("cancelcnt -> %u", _cancel_cnt);
+			_ctx->stra_log_info("cancelcnt -> %u", _cancel_cnt);
 		}
 		_mtx_ords.unlock();
 	}
@@ -227,7 +227,7 @@ void WtHftStraDemo::on_channel_ready(IHftStraCtx* ctx)
 	if (!decimal::eq(undone, 0) && _orders.empty())
 	{
 		//这说明有未完成单不在监控之中,先撤掉
-		_ctx->stra_log_text("%s有不在管理中的未完成单 %f 手,全部撤销", _code.c_str(), undone);
+		_ctx->stra_log_info("%s有不在管理中的未完成单 %f 手,全部撤销", _code.c_str(), undone);
 
 		bool isBuy = (undone > 0);
 		OrderIDs ids = _ctx->stra_cancel(_code.c_str(), isBuy, undone);
@@ -237,7 +237,7 @@ void WtHftStraDemo::on_channel_ready(IHftStraCtx* ctx)
 		}
 		_cancel_cnt += ids.size();
 
-		_ctx->stra_log_text("cancelcnt -> %u", _cancel_cnt);
+		_ctx->stra_log_info("cancelcnt -> %u", _cancel_cnt);
 	}
 
 	_channel_ready = true;

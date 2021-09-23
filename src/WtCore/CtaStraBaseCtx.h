@@ -127,7 +127,9 @@ public:
 
 	virtual void stra_sub_ticks(const char* stdCode) override;
 
-	virtual void stra_log_text(const char* fmt, ...) override;
+	virtual void stra_log_info(const char* fmt, ...) override;
+	virtual void stra_log_debug(const char* fmt, ...) override;
+	virtual void stra_log_error(const char* fmt, ...) override;
 
 	virtual void stra_save_user_data(const char* key, const char* val) override;
 

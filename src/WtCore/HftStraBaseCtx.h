@@ -76,7 +76,9 @@ public:
 
 	virtual WTSTickData* stra_get_last_tick(const char* stdCode) override;
 
-	virtual void stra_log_text(const char* fmt, ...) override;
+	virtual void stra_log_info(const char* fmt, ...) override;
+	virtual void stra_log_debug(const char* fmt, ...) override;
+	virtual void stra_log_error(const char* fmt, ...) override;
 
 	virtual double stra_get_position(const char* stdCode) override;
 	virtual double stra_get_position_profit(const char* stdCode) override;

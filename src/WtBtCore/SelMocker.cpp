@@ -682,11 +682,27 @@ uint32_t SelMocker::stra_get_time()
 	return _replayer->get_min_time();
 }
 
-void SelMocker::stra_log_text(const char* fmt, ...)
+void SelMocker::stra_log_info(const char* fmt, ...)
 {
 	va_list args;
 	va_start(args, fmt);
 	WTSLogger::vlog_dyn("strategy", _name.c_str(), LL_INFO, fmt, args);
+	va_end(args);
+}
+
+void SelMocker::stra_log_debug(const char* fmt, ...)
+{
+	va_list args;
+	va_start(args, fmt);
+	WTSLogger::vlog_dyn("strategy", _name.c_str(), LL_DEBUG, fmt, args);
+	va_end(args);
+}
+
+void SelMocker::stra_log_error(const char* fmt, ...)
+{
+	va_list args;
+	va_start(args, fmt);
+	WTSLogger::vlog_dyn("strategy", _name.c_str(), LL_ERROR, fmt, args);
 	va_end(args);
 }
 

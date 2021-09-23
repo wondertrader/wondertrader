@@ -518,7 +518,7 @@ bool HftMocker::procOrder(uint32_t localid)
 	if(_error_rate>0 && genRand(10000)<=_error_rate)
 	{
 		on_order(localid, ordInfo._code, ordInfo._isBuy, ordInfo._total, ordInfo._left, ordInfo._price, true, ordInfo._usertag);
-		stra_log_text("Random error order: %u", localid);
+		stra_log_info("Random error order: %u", localid);
 		return true;
 	}
 	else
@@ -717,11 +717,27 @@ void HftMocker::stra_sub_transactions(const char* stdCode)
 	_replayer->sub_transaction(_context_id, stdCode);
 }
 
-void HftMocker::stra_log_text(const char* fmt, ...)
+void HftMocker::stra_log_info(const char* fmt, ...)
 {
 	va_list args;
 	va_start(args, fmt);
 	WTSLogger::vlog_dyn("strategy", _name.c_str(), LL_INFO, fmt, args);
+	va_end(args);
+}
+
+void HftMocker::stra_log_debug(const char* fmt, ...)
+{
+	va_list args;
+	va_start(args, fmt);
+	WTSLogger::vlog_dyn("strategy", _name.c_str(), LL_DEBUG, fmt, args);
+	va_end(args);
+}
+
+void HftMocker::stra_log_error(const char* fmt, ...)
+{
+	va_list args;
+	va_start(args, fmt);
+	WTSLogger::vlog_dyn("strategy", _name.c_str(), LL_ERROR, fmt, args);
 	va_end(args);
 }
 
@@ -797,7 +813,7 @@ void HftMocker::do_set_position(const char* stdCode, double qty, double price /*
 	if (decimal::eq(pInfo._volume, qty))
 		return;
 
-	stra_log_text("[%04u.%05u] %s position updated: %.0f -> %0.f", _replayer->get_min_time(), _replayer->get_secs(), stdCode, pInfo._volume, qty);
+	stra_log_info("[%04u.%05u] %s position updated: %.0f -> %0.f", _replayer->get_min_time(), _replayer->get_secs(), stdCode, pInfo._volume, qty);
 
 	WTSCommodityInfo* commInfo = _replayer->get_commodity_info(stdCode);
 

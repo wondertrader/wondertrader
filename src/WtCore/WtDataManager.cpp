@@ -96,6 +96,8 @@ void WtDataManager::on_all_bar_updated(uint32_t updateTime)
 	if (_bar_notifies.empty())
 		return;
 
+	WTSLogger::debug("All bars updated, on_bar will be triggered");
+
 	for (const NotifyItem& item : _bar_notifies)
 	{
 		_engine->on_bar(item._code.c_str(), item._period.c_str(), item._times, item._newBar);
