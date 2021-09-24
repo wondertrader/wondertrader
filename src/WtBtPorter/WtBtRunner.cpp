@@ -69,6 +69,7 @@ WtBtRunner::WtBtRunner()
 	, _cb_hft_sessevt(NULL)
 	, _inited(false)
 	, _running(false)
+	, _async(false)
 {
 	install_signal_hooks([](const char* message) {
 		WTSLogger::error(message);
@@ -124,7 +125,7 @@ void WtBtRunner::registerHftCallbacks(FuncStraInitCallback cbInit, FuncStraTickC
 	WTSLogger::info("Callbacks of HFT engine registration done");
 }
 
-uint32_t WtBtRunner::initCtaMocker(const char* name, int32_t slippage/* = 0*/)
+uint32_t WtBtRunner::initCtaMocker(const char* name, int32_t slippage /* = 0 */, bool hook /* = false */)
 {
 	if(_cta_mocker)
 	{
@@ -133,11 +134,12 @@ uint32_t WtBtRunner::initCtaMocker(const char* name, int32_t slippage/* = 0*/)
 	}
 
 	_cta_mocker = new ExpCtaMocker(&_replayer, name, slippage, &_notifier);
+	if(hook) _cta_mocker->install_hook();
 	_replayer.register_sink(_cta_mocker, name);
 	return _cta_mocker->id();
 }
 
-uint32_t WtBtRunner::initHftMocker(const char* name)
+uint32_t WtBtRunner::initHftMocker(const char* name, bool hook/* = false*/)
 {
 	if (_hft_mocker)
 	{
@@ -146,6 +148,7 @@ uint32_t WtBtRunner::initHftMocker(const char* name)
 	}
 
 	_hft_mocker = new ExpHftMocker(&_replayer, name);
+	if (hook) _hft_mocker->install_hook();
 	_replayer.register_sink(_hft_mocker, name);
 	return _hft_mocker->id();
 }
@@ -316,14 +319,14 @@ void WtBtRunner::config(const char* cfgFile, bool isFile /* = true */)
 		const char* name = cfgMode->getCString("name");
 		int32_t slippage = cfgMode->getInt32("slippage");
 		_cta_mocker = new ExpCtaMocker(&_replayer, name, slippage, &_notifier);
-		_cta_mocker->initCtaFactory(cfgMode);
+		_cta_mocker->init_cta_factory(cfgMode);
 		_replayer.register_sink(_cta_mocker, name);
 	}
 	else if (strcmp(mode, "hft") == 0 && cfgMode)
 	{
 		const char* name = cfgMode->getCString("name");
 		_hft_mocker = new ExpHftMocker(&_replayer, name);
-		_hft_mocker->initHftFactory(cfgMode);
+		_hft_mocker->init_hft_factory(cfgMode);
 		_replayer.register_sink(_hft_mocker, name);
 	}
 	else if (strcmp(mode, "sel") == 0 && cfgMode)
@@ -331,7 +334,7 @@ void WtBtRunner::config(const char* cfgFile, bool isFile /* = true */)
 		const char* name = cfgMode->getCString("name");
 		int32_t slippage = cfgMode->getInt32("slippage");
 		_sel_mocker = new ExpSelMocker(&_replayer, name, slippage);
-		_sel_mocker->initSelFactory(cfgMode);
+		_sel_mocker->init_sel_factory(cfgMode);
 		_replayer.register_sink(_sel_mocker, name);
 
 		WTSVariant* cfgTask = cfgMode->get("task");
@@ -352,6 +355,17 @@ void WtBtRunner::run(bool bNeedDump /* = false */, bool bAsync /* = false */)
 {
 	if (_running)
 		return;
+
+	_async = bAsync;
+
+	WTSLogger::info("Backtesting will run in %s mode", _async ? "async" : "sync");
+
+	if (_cta_mocker)
+		_cta_mocker->enable_hook(_async);
+	else if (_hft_mocker)
+		_hft_mocker->enable_hook(_async);
+
+	_replayer.prepare();
 
 	_worker.reset(new StdThread([this, bNeedDump]() {
 		_running = true;
@@ -379,6 +393,15 @@ void WtBtRunner::stop()
 		return;
 
 	_replayer.stop();
+
+	if (_cta_mocker)
+		_cta_mocker->step_calc();
+
+	if (_hft_mocker)
+		_hft_mocker->step_tick();
+
+	if(_worker)
+		_worker->join();
 }
 
 void WtBtRunner::release()

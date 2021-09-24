@@ -30,7 +30,7 @@ public:
 
 public:
 	//////////////////////////////////////////////////////////////////////////
-	//ITickListener
+	//IDataSink
 	virtual void	handle_tick(const char* stdCode, WTSTickData* curTick) override;
 	virtual void	handle_order_queue(const char* stdCode, WTSOrdQueData* curOrdQue) override;
 	virtual void	handle_order_detail(const char* stdCode, WTSOrdDtlData* curOrdDtl) override;
@@ -44,6 +44,11 @@ public:
 	virtual void	handle_session_end(uint32_t curTDate) override;
 
 	virtual void	handle_replay_done() override;
+
+	virtual void	on_tick_updated(const char* stdCode, WTSTickData* newTick) override;
+	virtual void	on_ordque_updated(const char* stdCode, WTSOrdQueData* newOrdQue) override;
+	virtual void	on_orddtl_updated(const char* stdCode, WTSOrdDtlData* newOrdDtl) override;
+	virtual void	on_trans_updated(const char* stdCode, WTSTransData* newTrans) override;
 
 	//////////////////////////////////////////////////////////////////////////
 	//IHftStraCtx
@@ -127,7 +132,10 @@ public:
 	virtual void on_entrust(uint32_t localid, const char* stdCode, bool bSuccess, const char* message, const char* userTag);
 
 public:
-	bool	initHftFactory(WTSVariant* cfg);
+	bool	init_hft_factory(WTSVariant* cfg);
+	void	install_hook();
+	void	enable_hook(bool bEnabled = true);
+	void	step_tick();
 
 private:
 	typedef std::function<void()> Task;
@@ -271,5 +279,11 @@ private:
 
 protected:
 	uint32_t		_context_id;
+
+	StdUniqueMutex	_mtx_calc;
+	StdCondVariable	_cond_calc;
+	bool			_has_hook;		//这是人为控制是否启用钩子
+	bool			_hook_valid;	//这是根据是否是异步回测模式而确定钩子是否可用
+	std::atomic<bool>	_resumed;	//临时变量，用于控制状态
 };
 

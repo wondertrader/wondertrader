@@ -214,14 +214,14 @@ void write_log(WtUInt32 level, const char* message, const char* catName)
 	}
 }
 
-CtxHandler init_cta_mocker(const char* name, int slippage/* = 0*/)
+CtxHandler init_cta_mocker(const char* name, int slippage/* = 0*/, bool hook/* = false*/)
 {
-	return getRunner().initCtaMocker(name, slippage);
+	return getRunner().initCtaMocker(name, slippage, hook);
 }
 
-CtxHandler init_hft_mocker(const char* name)
+CtxHandler init_hft_mocker(const char* name, bool hook/* = false*/)
 {
-	return getRunner().initHftMocker(name);
+	return getRunner().initHftMocker(name, hook);
 }
 
 CtxHandler init_sel_mocker(const char* name, WtUInt32 date, WtUInt32 time, const char* period, const char* trdtpl/* = "CHINA"*/, const char* session/* = "TRADING"*/, int slippage/* = 0*/)
@@ -514,6 +514,20 @@ void cta_sub_ticks(CtxHandler cHandle, const char* stdCode)
 
 	ctx->stra_sub_ticks(stdCode);
 }
+
+void cta_step(CtxHandler cHandle)
+{
+	//只有异步模式才有意义
+	if (!getRunner().isAsync())
+		return;
+
+	CtaMocker* ctx = getRunner().cta_mocker();
+	if (ctx == NULL)
+		return;
+
+	ctx->step_calc();
+}
+
 #pragma endregion "CTA策略接口"
 
 #pragma region "选股策略接口"
@@ -1000,5 +1014,14 @@ WtString hft_load_userdata(CtxHandler cHandle, const char* key, const char* defV
 		return defVal;
 
 	return mocker->stra_load_user_data(key, defVal);
+}
+
+void hft_step(CtxHandler cHandle)
+{
+	HftMocker* mocker = getRunner().hft_mocker();
+	if (mocker == NULL)
+		return;
+
+	mocker->step_tick();
 }
 #pragma endregion "HFT策略接口"

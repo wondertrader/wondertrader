@@ -101,7 +101,7 @@ void SelMocker::log_close(const char* stdCode, bool isLong, uint64_t openTime, d
 		<< totalprofit << "," << enterTag << "," << exitTag << "\n";
 }
 
-bool SelMocker::initSelFactory(WTSVariant* cfg)
+bool SelMocker::init_sel_factory(WTSVariant* cfg)
 {
 	if (cfg == NULL)
 		return false;

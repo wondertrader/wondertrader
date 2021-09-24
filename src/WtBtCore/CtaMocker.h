@@ -9,6 +9,7 @@
  */
 #pragma once
 #include <sstream>
+#include <atomic>
 #include "HisDataReplayer.h"
 
 #include "../Includes/FasterDefs.h"
@@ -17,6 +18,7 @@
 #include "../Includes/WTSDataDef.hpp"
 
 #include "../Share/DLLHelper.hpp"
+#include "../Share/StdUtils.hpp"
 
 NS_OTP_BEGIN
 class EventNotifier;
@@ -79,7 +81,10 @@ private:
 	inline CondList& get_cond_entrusts(const char* stdCode);
 
 public:
-	bool	initCtaFactory(WTSVariant* cfg);
+	bool	init_cta_factory(WTSVariant* cfg);
+	void	install_hook();
+	void	enable_hook(bool bEnabled = true);
+	void	step_calc();
 
 public:
 	//////////////////////////////////////////////////////////////////////////
@@ -242,11 +247,6 @@ protected:
 	typedef faster_hashmap<std::string, SigInfo>	SignalMap;
 	SignalMap		_sig_map;
 
-	//BoostFilePtr	_trade_logs;
-	//BoostFilePtr	_close_logs;
-	//BoostFilePtr	_fund_logs;
-	//BoostFilePtr	_sig_logs;
-
 	std::stringstream	_trade_logs;
 	std::stringstream	_close_logs;
 	std::stringstream	_fund_logs;
@@ -300,4 +300,10 @@ protected:
 
 	CtaStrategy*	_strategy;
 	EventNotifier*	_notifier;
+
+	StdUniqueMutex	_mtx_calc;
+	StdCondVariable	_cond_calc;
+	bool			_has_hook;		//这是人为控制是否启用钩子
+	bool			_hook_valid;	//这是根据是否是异步回测模式而确定钩子是否可用
+	std::atomic<bool>		_resumed;	//临时变量，用于控制状态
 };

@@ -47,6 +47,11 @@ public:
 	 */
 	virtual void on_bactest_end() {};
 
+	virtual void on_tick_updated(const char* stdCode, WTSTickData* newTick) {}
+	virtual void on_ordque_updated(const char* stdCode, WTSOrdQueData* newOrdQue) {}
+	virtual void on_orddtl_updated(const char* stdCode, WTSOrdDtlData* newOrdDtl) {}
+	virtual void on_trans_updated(const char* stdCode, WTSTransData* newTrans) {}
+
 	//²ßÂÔ½Ó¿Ú
 	virtual bool		stra_cancel(uint32_t localid) = 0;
 	virtual OrderIDs	stra_cancel(const char* stdCode, bool isBuy, double qty) = 0;

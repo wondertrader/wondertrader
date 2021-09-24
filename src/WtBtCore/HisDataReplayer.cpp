@@ -499,22 +499,20 @@ void HisDataReplayer::stop()
 		return;
 
 	_terminated = true;
-	WTSLogger::error("Terminating flag reset to true, backtesting will quit at next bar");
+	WTSLogger::warn("Terminating flag reset to true, backtesting will quit at next bar");
 }
 
-void HisDataReplayer::run(bool bNeedDump/* = false*/)
+bool HisDataReplayer::prepare()
 {
-	if(_running)
+	if (_running)
 	{
 		WTSLogger::error("Cannot run more than one backtesting task at the same time");
-		return;
+		return false;
 	}
 
 	_running = true;
 	_terminated = false;
 	reset();
-
-	int64_t now = TimeUtils::getLocalTimeNano();
 
 	_cur_date = (uint32_t)(_begin_time / 10000);
 	_cur_time = (uint32_t)(_begin_time % 10000);
@@ -524,11 +522,16 @@ void HisDataReplayer::run(bool bNeedDump/* = false*/)
 	if (_notifier)
 		_notifier->notifyEvent("BT_START");
 
-	_listener->handle_init();	
+	_listener->handle_init();
 
 	if (!_tick_enabled)
 		checkUnbars();
 
+	return true;
+}
+
+void HisDataReplayer::run(bool bNeedDump/* = false*/)
+{
 	if(_task == NULL)
 	{
 		//如果没有时间调度任务,则采用主K线回放的模式
@@ -562,148 +565,12 @@ void HisDataReplayer::run(bool bNeedDump/* = false*/)
 
 		if(!_main_key.empty())
 		{
-			BarsList& barList = _bars_cache[_main_key];
-			WTSSessionInfo* sInfo = get_session_info(barList._code.c_str(), true);
-			std::string commId = CodeHelper::stdCodeToStdCommID(barList._code.c_str());
-
-			uint32_t sIdx = locate_barindex(_main_key, _begin_time, false);
-			uint32_t eIdx = locate_barindex(_main_key, _end_time, true);
-
-			uint32_t total_barcnt = eIdx - sIdx + 1;
-			uint32_t replayed_barcnt = 0;
-
-			notify_state(barList._code.c_str(), barList._period, barList._times, _begin_time, _end_time, 0);
-
-			if (bNeedDump)
-				dump_btstate(barList._code.c_str(), barList._period, barList._times, _begin_time, _end_time, 100.0, TimeUtils::getLocalTimeNano() - now);
-
-			WTSLogger::log_raw(LL_INFO, fmt::format("Start to replay back data from {}...", _begin_time).c_str());
-
-			for (;!_terminated;)
-			{
-				bool isDay = barList._period == KP_DAY;
-				if (barList._cursor != UINT_MAX)
-				{
-					uint64_t nextBarTime = 0;
-					if (isDay)
-						nextBarTime = (uint64_t)barList._bars[barList._cursor].date * 10000 + sInfo->getCloseTime();
-					else
-					{
-						nextBarTime = (uint64_t)barList._bars[barList._cursor].time;
-						nextBarTime += 199000000000;
-					}
-
-					if (nextBarTime > _end_time)
-					{
-						WTSLogger::log_raw(LL_INFO, fmt::format("{} is beyond ending time {},replaying done", nextBarTime, _end_time).c_str());
-						_listener->handle_replay_done();
-						notify_state(barList._code.c_str(), barList._period, barList._times, _begin_time, _end_time, 100);
-						if (_notifier)
-							_notifier->notifyEvent("BT_END");
-						break;
-					}
-
-					uint32_t nextDate = (uint32_t)(nextBarTime / 10000);
-					uint32_t nextTime = (uint32_t)(nextBarTime % 10000);
-
-					uint32_t nextTDate = _bd_mgr.calcTradingDate(commId.c_str(), nextDate, nextTime, false);
-					if (_opened_tdate != nextTDate)
-					{
-						_listener->handle_session_begin(nextTDate);
-						_opened_tdate = nextTDate;
-						_cur_tdate = nextTDate;
-					}
-
-					uint64_t curBarTime = (uint64_t)_cur_date * 10000 + _cur_time;
-					if (_tick_enabled)
-					{
-						//如果开启了tick回放,则直接回放tick数据
-						//如果tick回放失败，说明tick数据不存在，则需要模拟tick
-						_tick_simulated = !replayHftDatas(curBarTime, nextBarTime);
-					}
-
-					_cur_date = nextDate;
-					_cur_time = nextTime;
-					_cur_secs = 0;
-
-					uint32_t offTime = sInfo->offsetTime(_cur_time);
-					bool isEndTDate = (offTime >= sInfo->getCloseTime(true));
-
-					if (!_tick_enabled)
-					{
-						checkUnbars();
-						replayUnbars(curBarTime, nextBarTime, (isDay || isEndTDate) ? nextTDate : 0);
-					}
-
-					onMinuteEnd(nextDate, nextTime, (isDay || isEndTDate) ? nextTDate : 0, _tick_simulated);
-
-					replayed_barcnt += 1;
-
-					if (isEndTDate && _closed_tdate != _cur_tdate)
-					{
-						_listener->handle_session_end(_cur_tdate);
-						_closed_tdate = _cur_tdate;
-						_day_cache.clear();
-					}
-
-					notify_state(barList._code.c_str(), barList._period, barList._times, _begin_time, _end_time, replayed_barcnt*100.0 / total_barcnt);
-
-					if (barList._cursor >= barList._bars.size())
-					{
-						//WTSLogger::info("全部数据都已回放,回放结束");
-						WTSLogger::info("All back data replayed, replaying done");
-						_listener->handle_replay_done();
-						notify_state(barList._code.c_str(), barList._period, barList._times, _begin_time, _end_time, 100);
-						if (_notifier)
-							_notifier->notifyEvent("BT_END");
-						break;
-					}
-				}
-				else
-				{
-					//WTSLogger::info("数据尚未初始化,回放直接退出");
-					WTSLogger::info("No back data initialized, replaying canceled");
-					_listener->handle_replay_done();
-					notify_state(barList._code.c_str(), barList._period, barList._times, _begin_time, _end_time, 100);
-					if (_notifier)
-						_notifier->notifyEvent("BT_END");
-					break;
-				}
-			}
-
-			if (_closed_tdate != _cur_tdate)
-			{
-				_listener->handle_session_end(_cur_tdate);
-			}
-
-			if (bNeedDump)
-			{
-				dump_btstate(barList._code.c_str(), barList._period, barList._times, _begin_time, _end_time, 100.0, TimeUtils::getLocalTimeNano()-now);
-			}
+			//如果订阅了K线，则按照主K线进行回放
+			run_by_bars(bNeedDump);
 		}
 		else if(_tick_enabled)
 		{
-			uint32_t edt = (uint32_t)(_end_time / 10000);
-			uint32_t etime = (uint32_t)(_end_time % 10000);
-			uint64_t end_tdate = _bd_mgr.calcTradingDate(DEFAULT_SESSIONID, edt, etime, true);
-
-			while(_cur_tdate <= end_tdate)
-			{
-				if(checkAllTicks(_cur_tdate))
-				{
-					WTSLogger::info("Start to replay tick data of %u...", _cur_tdate);
-					_listener->handle_session_begin(_cur_tdate);
-					replayHftDatasByDay(_cur_tdate);
-					_listener->handle_session_end(_cur_tdate);
-				}
-
-				_cur_tdate = TimeUtils::getNextDate(_cur_tdate);
-			}
-
-			WTSLogger::info("All back data replayed, replaying done");
-			_listener->handle_replay_done();
-			if (_notifier)
-				_notifier->notifyEvent("BT_END");
+			run_by_ticks(bNeedDump);
 		}
 		else
 		{
@@ -716,257 +583,410 @@ void HisDataReplayer::run(bool bNeedDump/* = false*/)
 	}
 	else //if(_task != NULL)
 	{
-		//时间调度任务不为空,则按照时间调度任务回放
-		WTSSessionInfo* sInfo = NULL;
-		const char* DEF_SESS = (strlen(_task->_session) == 0) ? DEFAULT_SESSIONID : _task->_session;
-		sInfo = _bd_mgr.getSession(DEF_SESS);
-		WTSLogger::log_raw(LL_INFO, fmt::format("Start to backtest with task frequency from {}...", _begin_time).c_str());
-
-		//分钟即任务和日级别任务分开写
-		if (_task->_period != TPT_Minute)
-		{
-			uint32_t endtime = TimeUtils::getNextMinute(_task->_time, -1);
-			bool bIsPreDay = endtime > _task->_time;
-			if (bIsPreDay)
-				_cur_date = TimeUtils::getNextDate(_cur_date, -1);
-
-			for (;!_terminated;)
-			{
-				bool fired = false;
-				//获取上一个交易日的日期
-				uint32_t preTDate = TimeUtils::getNextDate(_cur_tdate, -1);
-				if (_cur_time == endtime)
-				{
-					if (!_bd_mgr.isHoliday(_task->_trdtpl, _cur_date, true))
-					{
-						uint32_t weekDay = TimeUtils::getWeekDay(_cur_date);
-
-
-						bool bHasHoliday = false;
-						uint32_t days = 1;
-						while (_bd_mgr.isHoliday(_task->_trdtpl, preTDate, true))
-						{
-							bHasHoliday = true;
-							preTDate = TimeUtils::getNextDate(preTDate, -1);
-							days++;
-						}
-						uint32_t preWD = TimeUtils::getWeekDay(preTDate);
-
-						switch (_task->_period)
-						{
-						case TPT_Daily:
-							fired = true;
-							break;
-						case TPT_Minute:
-							break;
-						case TPT_Monthly:
-							//if (preTDate % 1000000 < _task->_day && _cur_date % 1000000 >= _task->_day)
-							//	fired = true;
-							if (_cur_date % 1000000 == _task->_day)
-								fired = true;
-							else if (bHasHoliday)
-							{
-								//上一个交易日在上个月,且当前日期大于触发日期
-								//说明这个月的开始日期在节假日内,顺延到今天
-								if ((preTDate % 10000 / 100 < _cur_date % 10000 / 100) && _cur_date % 1000000 > _task->_day)
-								{
-									fired = true;
-								}
-								else if (preTDate % 1000000 < _task->_day && _cur_date % 1000000 > _task->_day)
-								{
-									//上一个交易日在同一个月,且小于触发日期,但是今天大于触发日期,说明正确触发日期到节假日内,顺延到今天
-									fired = true;
-								}
-							}
-							break;
-						case TPT_Weekly:
-							//if (preWD < _task->_day && weekDay >= _task->_day)
-							//	fired = true;
-							if (weekDay == _task->_day)
-								fired = true;
-							else if (bHasHoliday)
-							{
-								if (days >= 7 && weekDay > _task->_day)
-								{
-									fired = true;
-								}
-								else if (preWD > weekDay && weekDay > _task->_day)
-								{
-									//上一个交易日的星期大于今天的星期,说明换了一周了
-									fired = true;
-								}
-								else if (preWD < _task->_day && weekDay > _task->_day)
-								{
-									fired = true;
-								}
-							}
-							break;
-						case TPT_Yearly:
-							if (preTDate % 10000 < _task->_day && _cur_date % 10000 >= _task->_day)
-								fired = true;
-							break;
-						}
-					}
-				}
-
-				if (!fired)
-				{
-					//调整时间
-					//如果当前时间小于任务时间,则直接赋值即可
-					//如果当前时间大于任务时间,则至少要等下一天
-					if (_cur_time < endtime)
-					{
-						_cur_time = endtime;
-						continue;
-					}
-
-					uint32_t newTDate = _bd_mgr.calcTradingDate(DEF_SESS, _cur_date, _cur_time, true);
-
-					if (newTDate != _cur_tdate)
-					{
-						_cur_tdate = newTDate;
-						if (_listener)
-							_listener->handle_session_begin(newTDate);
-						if (_listener)
-							_listener->handle_session_end(newTDate);
-					}
-				}
-				else
-				{
-					//用前一分钟作为结束时间
-					uint32_t curDate = _cur_date;
-					uint32_t curTime = endtime;
-					bool bEndSession = sInfo->offsetTime(curTime) >= sInfo->getCloseTime(true);
-					if (_listener)
-						_listener->handle_session_begin(_cur_tdate);
-					onMinuteEnd(curDate, curTime, bEndSession ? _cur_tdate : preTDate);
-					if (_listener)
-						_listener->handle_session_end(_cur_tdate);
-				}
-
-				_cur_date = TimeUtils::getNextDate(_cur_date);
-				_cur_time = endtime;
-				_cur_tdate = _bd_mgr.calcTradingDate(DEF_SESS, _cur_date, _cur_time, true);
-
-				uint64_t nextTime = (uint64_t)_cur_date * 10000 + _cur_time;
-				if (nextTime > _end_time)
-				{
-					//WTSLogger::info("按任务周期回测结束");
-					WTSLogger::info("Backtesting with task frequency is done");
-					if (_listener)
-					{
-						_listener->handle_session_end(_cur_tdate);
-						_listener->handle_replay_done();
-						if (_notifier)
-							_notifier->notifyEvent("BT_END");
-					}
-
-					break;
-				}
-			}
-		}
-		else
-		{
-			if (_listener)
-				_listener->handle_session_begin(_cur_tdate);
-
-			for(;!_terminated;)
-			{
-				//要考虑到跨日的情况
-				uint32_t mins = sInfo->timeToMinutes(_cur_time);
-				//如果一开始不能整除,则直接修正一下
-				if(mins % _task->_time != 0)
-				{
-					mins = mins / _task->_time + _task->_time;
-					_cur_time = sInfo->minuteToTime(mins);
-				}
-
-				bool bNewTDate = false;
-				if(mins < sInfo->getTradingMins())
-				{
-					onMinuteEnd(_cur_date, _cur_time, 0);
-				}
-				else
-				{
-					bNewTDate = true;
-					mins = sInfo->getTradingMins();
-					_cur_time = sInfo->getCloseTime();
-
-					onMinuteEnd(_cur_date, _cur_time, _cur_tdate);
-
-					if (_listener)
-						_listener->handle_session_end(_cur_tdate);
-				}
-		
-				
-				if(bNewTDate)
-				{
-					//换日了
-					mins = _task->_time;
-					uint32_t nextTDate = _bd_mgr.getNextTDate(_task->_trdtpl, _cur_tdate, 1, true);
-
-					if(sInfo->getOffsetMins() != 0)
-					{
-						if(sInfo->getOffsetMins() > 0)
-						{
-							//真实时间后移,说明夜盘算作下一天的
-							_cur_date = _cur_tdate;
-							_cur_tdate = nextTDate;
-						}
-						else
-						{
-							//真实时间前移,说明夜盘是上一天的,这种情况就不需要动了
-							_cur_tdate = nextTDate;
-							_cur_date = _cur_tdate;
-						}
-					}
-
-					_cur_time = sInfo->minuteToTime(mins);
-
-					if (_listener)
-						_listener->handle_session_begin(nextTDate);
-				}
-				else
-				{
-					mins += _task->_time;
-					uint32_t newTime = sInfo->minuteToTime(mins);
-					bool bNewDay = newTime < _cur_time;
-					if(bNewDay)
-						_cur_date = TimeUtils::getNextDate(_cur_date);
-
-					uint32_t dayMins = _cur_time / 100 * 60 + _cur_time % 100;
-					uint32_t nextDMins = newTime / 100 * 60 + newTime % 100;
-
-					//是否到了一个新的小节
-					bool bNewSec = (nextDMins - dayMins > _task->_time) && !bNewDay;
-
-					while(bNewSec && _bd_mgr.isHoliday(_task->_trdtpl, _cur_date, true))
-						_cur_date = TimeUtils::getNextDate(_cur_date);
-
-					_cur_time = newTime;
-				}
-				
-				uint64_t nextTime = (uint64_t)_cur_date * 10000 + _cur_time;
-				if (nextTime > _end_time)
-				{
-					//WTSLogger::info("按任务周期回测结束");
-					WTSLogger::info("Backtesting with task frequency is done");
-					if (_listener)
-					{
-						_listener->handle_session_end(_cur_tdate);
-						_listener->handle_replay_done();
-						if (_notifier)
-							_notifier->notifyEvent("BT_END");
-					}
-					break;
-				}
-			}
-		}
+		run_by_tasks(bNeedDump);
 	}
 
 	_running = false;
 }
 
+void HisDataReplayer::run_by_ticks(bool bNeedDump /* = false */)
+{
+	//如果没有订阅K线，且tick回测是打开的，则按照每日的tick进行回放
+	uint32_t edt = (uint32_t)(_end_time / 10000);
+	uint32_t etime = (uint32_t)(_end_time % 10000);
+	uint64_t end_tdate = _bd_mgr.calcTradingDate(DEFAULT_SESSIONID, edt, etime, true);
+
+	while (_cur_tdate <= end_tdate && !_terminated)
+	{
+		if (checkAllTicks(_cur_tdate))
+		{
+			WTSLogger::info("Start to replay tick data of %u...", _cur_tdate);
+			_listener->handle_session_begin(_cur_tdate);
+			replayHftDatasByDay(_cur_tdate);
+			_listener->handle_session_end(_cur_tdate);
+		}
+
+		_cur_tdate = TimeUtils::getNextDate(_cur_tdate);
+	}
+
+	if (_terminated)
+		WTSLogger::debug("Replaying by ticks terminated forcely");
+
+	WTSLogger::info("All back data replayed, replaying done");
+	_listener->handle_replay_done();
+	if (_notifier)
+		_notifier->notifyEvent("BT_END");
+}
+
+void HisDataReplayer::run_by_bars(bool bNeedDump /* = false */)
+{
+	int64_t now = TimeUtils::getLocalTimeNano();
+
+	BarsList& barList = _bars_cache[_main_key];
+	WTSSessionInfo* sInfo = get_session_info(barList._code.c_str(), true);
+	std::string commId = CodeHelper::stdCodeToStdCommID(barList._code.c_str());
+
+	uint32_t sIdx = locate_barindex(_main_key, _begin_time, false);
+	uint32_t eIdx = locate_barindex(_main_key, _end_time, true);
+
+	uint32_t total_barcnt = eIdx - sIdx + 1;
+	uint32_t replayed_barcnt = 0;
+
+	notify_state(barList._code.c_str(), barList._period, barList._times, _begin_time, _end_time, 0);
+
+	if (bNeedDump)
+		dump_btstate(barList._code.c_str(), barList._period, barList._times, _begin_time, _end_time, 100.0, TimeUtils::getLocalTimeNano() - now);
+
+	WTSLogger::log_raw(LL_INFO, fmt::format("Start to replay back data from {}...", _begin_time).c_str());
+
+	for (; !_terminated;)
+	{
+		bool isDay = barList._period == KP_DAY;
+		if (barList._cursor != UINT_MAX)
+		{
+			uint64_t nextBarTime = 0;
+			if (isDay)
+				nextBarTime = (uint64_t)barList._bars[barList._cursor].date * 10000 + sInfo->getCloseTime();
+			else
+			{
+				nextBarTime = (uint64_t)barList._bars[barList._cursor].time;
+				nextBarTime += 199000000000;
+			}
+
+			if (nextBarTime > _end_time)
+			{
+				WTSLogger::log_raw(LL_INFO, fmt::format("{} is beyond ending time {},replaying done", nextBarTime, _end_time).c_str());
+				break;
+			}
+
+			uint32_t nextDate = (uint32_t)(nextBarTime / 10000);
+			uint32_t nextTime = (uint32_t)(nextBarTime % 10000);
+
+			uint32_t nextTDate = _bd_mgr.calcTradingDate(commId.c_str(), nextDate, nextTime, false);
+			if (_opened_tdate != nextTDate)
+			{
+				_listener->handle_session_begin(nextTDate);
+				_opened_tdate = nextTDate;
+				_cur_tdate = nextTDate;
+			}
+
+			uint64_t curBarTime = (uint64_t)_cur_date * 10000 + _cur_time;
+			if (_tick_enabled)
+			{
+				//如果开启了tick回放,则直接回放tick数据
+				//如果tick回放失败，说明tick数据不存在，则需要模拟tick
+				_tick_simulated = !replayHftDatas(curBarTime, nextBarTime);
+			}
+
+			_cur_date = nextDate;
+			_cur_time = nextTime;
+			_cur_secs = 0;
+
+			uint32_t offTime = sInfo->offsetTime(_cur_time);
+			bool isEndTDate = (offTime >= sInfo->getCloseTime(true));
+
+			if (!_tick_enabled)
+			{
+				checkUnbars();
+				replayUnbars(curBarTime, nextBarTime, (isDay || isEndTDate) ? nextTDate : 0);
+			}
+
+			onMinuteEnd(nextDate, nextTime, (isDay || isEndTDate) ? nextTDate : 0, _tick_simulated);
+
+			replayed_barcnt += 1;
+
+			if (isEndTDate && _closed_tdate != _cur_tdate)
+			{
+				_listener->handle_session_end(_cur_tdate);
+				_closed_tdate = _cur_tdate;
+				_day_cache.clear();
+			}
+
+			notify_state(barList._code.c_str(), barList._period, barList._times, _begin_time, _end_time, replayed_barcnt*100.0 / total_barcnt);
+
+			if (barList._cursor >= barList._bars.size())
+			{
+				//WTSLogger::info("全部数据都已回放,回放结束");
+				WTSLogger::info("All back data replayed, replaying done");
+				break;
+			}
+		}
+		else
+		{
+			//WTSLogger::info("数据尚未初始化,回放直接退出");
+			WTSLogger::info("No back data initialized, replaying canceled");
+			break;
+		}
+	}
+
+	if (_terminated)
+		WTSLogger::debug("Replaying by bars terminated forcely");
+
+	_listener->handle_replay_done();
+	notify_state(barList._code.c_str(), barList._period, barList._times, _begin_time, _end_time, 100);
+	if (_notifier)
+		_notifier->notifyEvent("BT_END");
+
+	if (_closed_tdate != _cur_tdate)
+	{
+		_listener->handle_session_end(_cur_tdate);
+	}
+
+	if (bNeedDump)
+	{
+		dump_btstate(barList._code.c_str(), barList._period, barList._times, _begin_time, _end_time, 100.0, TimeUtils::getLocalTimeNano() - now);
+	}
+}
+
+void HisDataReplayer::run_by_tasks(bool bNeedDump /* = false */)
+{
+	//时间调度任务不为空,则按照时间调度任务回放
+	WTSSessionInfo* sInfo = NULL;
+	const char* DEF_SESS = (strlen(_task->_session) == 0) ? DEFAULT_SESSIONID : _task->_session;
+	sInfo = _bd_mgr.getSession(DEF_SESS);
+	WTSLogger::log_raw(LL_INFO, fmt::format("Start to backtest with task frequency from {}...", _begin_time).c_str());
+
+	//分钟即任务和日级别任务分开写
+	if (_task->_period != TPT_Minute)
+	{
+		uint32_t endtime = TimeUtils::getNextMinute(_task->_time, -1);
+		bool bIsPreDay = endtime > _task->_time;
+		if (bIsPreDay)
+			_cur_date = TimeUtils::getNextDate(_cur_date, -1);
+
+		for (; !_terminated;)
+		{
+			bool fired = false;
+			//获取上一个交易日的日期
+			uint32_t preTDate = TimeUtils::getNextDate(_cur_tdate, -1);
+			if (_cur_time == endtime)
+			{
+				if (!_bd_mgr.isHoliday(_task->_trdtpl, _cur_date, true))
+				{
+					uint32_t weekDay = TimeUtils::getWeekDay(_cur_date);
+
+
+					bool bHasHoliday = false;
+					uint32_t days = 1;
+					while (_bd_mgr.isHoliday(_task->_trdtpl, preTDate, true))
+					{
+						bHasHoliday = true;
+						preTDate = TimeUtils::getNextDate(preTDate, -1);
+						days++;
+					}
+					uint32_t preWD = TimeUtils::getWeekDay(preTDate);
+
+					switch (_task->_period)
+					{
+					case TPT_Daily:
+						fired = true;
+						break;
+					case TPT_Minute:
+						break;
+					case TPT_Monthly:
+						//if (preTDate % 1000000 < _task->_day && _cur_date % 1000000 >= _task->_day)
+						//	fired = true;
+						if (_cur_date % 1000000 == _task->_day)
+							fired = true;
+						else if (bHasHoliday)
+						{
+							//上一个交易日在上个月,且当前日期大于触发日期
+							//说明这个月的开始日期在节假日内,顺延到今天
+							if ((preTDate % 10000 / 100 < _cur_date % 10000 / 100) && _cur_date % 1000000 > _task->_day)
+							{
+								fired = true;
+							}
+							else if (preTDate % 1000000 < _task->_day && _cur_date % 1000000 > _task->_day)
+							{
+								//上一个交易日在同一个月,且小于触发日期,但是今天大于触发日期,说明正确触发日期到节假日内,顺延到今天
+								fired = true;
+							}
+						}
+						break;
+					case TPT_Weekly:
+						//if (preWD < _task->_day && weekDay >= _task->_day)
+						//	fired = true;
+						if (weekDay == _task->_day)
+							fired = true;
+						else if (bHasHoliday)
+						{
+							if (days >= 7 && weekDay > _task->_day)
+							{
+								fired = true;
+							}
+							else if (preWD > weekDay && weekDay > _task->_day)
+							{
+								//上一个交易日的星期大于今天的星期,说明换了一周了
+								fired = true;
+							}
+							else if (preWD < _task->_day && weekDay > _task->_day)
+							{
+								fired = true;
+							}
+						}
+						break;
+					case TPT_Yearly:
+						if (preTDate % 10000 < _task->_day && _cur_date % 10000 >= _task->_day)
+							fired = true;
+						break;
+					}
+				}
+			}
+
+			if (!fired)
+			{
+				//调整时间
+				//如果当前时间小于任务时间,则直接赋值即可
+				//如果当前时间大于任务时间,则至少要等下一天
+				if (_cur_time < endtime)
+				{
+					_cur_time = endtime;
+					continue;
+				}
+
+				uint32_t newTDate = _bd_mgr.calcTradingDate(DEF_SESS, _cur_date, _cur_time, true);
+
+				if (newTDate != _cur_tdate)
+				{
+					_cur_tdate = newTDate;
+					if (_listener)
+						_listener->handle_session_begin(newTDate);
+					if (_listener)
+						_listener->handle_session_end(newTDate);
+				}
+			}
+			else
+			{
+				//用前一分钟作为结束时间
+				uint32_t curDate = _cur_date;
+				uint32_t curTime = endtime;
+				bool bEndSession = sInfo->offsetTime(curTime) >= sInfo->getCloseTime(true);
+				if (_listener)
+					_listener->handle_session_begin(_cur_tdate);
+				onMinuteEnd(curDate, curTime, bEndSession ? _cur_tdate : preTDate);
+				if (_listener)
+					_listener->handle_session_end(_cur_tdate);
+			}
+
+			_cur_date = TimeUtils::getNextDate(_cur_date);
+			_cur_time = endtime;
+			_cur_tdate = _bd_mgr.calcTradingDate(DEF_SESS, _cur_date, _cur_time, true);
+
+			uint64_t nextTime = (uint64_t)_cur_date * 10000 + _cur_time;
+			if (nextTime > _end_time)
+			{
+				//WTSLogger::info("按任务周期回测结束");
+				WTSLogger::info("Backtesting with task frequency is done");
+				if (_listener)
+				{
+					_listener->handle_session_end(_cur_tdate);
+					_listener->handle_replay_done();
+					if (_notifier)
+						_notifier->notifyEvent("BT_END");
+				}
+
+				break;
+			}
+		}
+	}
+	else
+	{
+		if (_listener)
+			_listener->handle_session_begin(_cur_tdate);
+
+		for (; !_terminated;)
+		{
+			//要考虑到跨日的情况
+			uint32_t mins = sInfo->timeToMinutes(_cur_time);
+			//如果一开始不能整除,则直接修正一下
+			if (mins % _task->_time != 0)
+			{
+				mins = mins / _task->_time + _task->_time;
+				_cur_time = sInfo->minuteToTime(mins);
+			}
+
+			bool bNewTDate = false;
+			if (mins < sInfo->getTradingMins())
+			{
+				onMinuteEnd(_cur_date, _cur_time, 0);
+			}
+			else
+			{
+				bNewTDate = true;
+				mins = sInfo->getTradingMins();
+				_cur_time = sInfo->getCloseTime();
+
+				onMinuteEnd(_cur_date, _cur_time, _cur_tdate);
+
+				if (_listener)
+					_listener->handle_session_end(_cur_tdate);
+			}
+
+
+			if (bNewTDate)
+			{
+				//换日了
+				mins = _task->_time;
+				uint32_t nextTDate = _bd_mgr.getNextTDate(_task->_trdtpl, _cur_tdate, 1, true);
+
+				if (sInfo->getOffsetMins() != 0)
+				{
+					if (sInfo->getOffsetMins() > 0)
+					{
+						//真实时间后移,说明夜盘算作下一天的
+						_cur_date = _cur_tdate;
+						_cur_tdate = nextTDate;
+					}
+					else
+					{
+						//真实时间前移,说明夜盘是上一天的,这种情况就不需要动了
+						_cur_tdate = nextTDate;
+						_cur_date = _cur_tdate;
+					}
+				}
+
+				_cur_time = sInfo->minuteToTime(mins);
+
+				if (_listener)
+					_listener->handle_session_begin(nextTDate);
+			}
+			else
+			{
+				mins += _task->_time;
+				uint32_t newTime = sInfo->minuteToTime(mins);
+				bool bNewDay = newTime < _cur_time;
+				if (bNewDay)
+					_cur_date = TimeUtils::getNextDate(_cur_date);
+
+				uint32_t dayMins = _cur_time / 100 * 60 + _cur_time % 100;
+				uint32_t nextDMins = newTime / 100 * 60 + newTime % 100;
+
+				//是否到了一个新的小节
+				bool bNewSec = (nextDMins - dayMins > _task->_time) && !bNewDay;
+
+				while (bNewSec && _bd_mgr.isHoliday(_task->_trdtpl, _cur_date, true))
+					_cur_date = TimeUtils::getNextDate(_cur_date);
+
+				_cur_time = newTime;
+			}
+
+			uint64_t nextTime = (uint64_t)_cur_date * 10000 + _cur_time;
+			if (nextTime > _end_time)
+			{
+				//WTSLogger::info("按任务周期回测结束");
+				WTSLogger::info("Backtesting with task frequency is done");
+				if (_listener)
+				{
+					_listener->handle_session_end(_cur_tdate);
+					_listener->handle_replay_done();
+					if (_notifier)
+						_notifier->notifyEvent("BT_END");
+				}
+				break;
+			}
+		}
+	}
+}
 void HisDataReplayer::replayUnbars(uint64_t stime, uint64_t nowTime, uint32_t endTDate /* = 0 */)
 {
 	//uint64_t nowTime = (uint64_t)uDate * 10000 + uTime;

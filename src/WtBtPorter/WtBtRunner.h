@@ -52,8 +52,8 @@ public:
 		_cb_evt = cbEvt;
 	}
 
-	uint32_t	initCtaMocker(const char* name, int32_t slippage = 0);
-	uint32_t	initHftMocker(const char* name);
+	uint32_t	initCtaMocker(const char* name, int32_t slippage = 0, bool hook = false);
+	uint32_t	initHftMocker(const char* name, bool hook = false);
 	uint32_t	initSelMocker(const char* name, uint32_t date, uint32_t time, const char* period, const char* trdtpl = "CHINA", const char* session = "TRADING", int32_t slippage = 0);
 
 	bool	initEvtNotifier(WTSVariant* cfg);
@@ -85,10 +85,12 @@ public:
 
 	void	clear_cache();
 
-	CtaMocker*			cta_mocker() { return _cta_mocker; }
-	SelMocker*			sel_mocker() { return _sel_mocker; }
-	HftMocker*			hft_mocker() { return _hft_mocker; }
-	HisDataReplayer&	replayer() { return _replayer; }
+	inline CtaMocker*		cta_mocker() { return _cta_mocker; }
+	inline SelMocker*		sel_mocker() { return _sel_mocker; }
+	inline HftMocker*		hft_mocker() { return _hft_mocker; }
+	inline HisDataReplayer&	replayer() { return _replayer; }
+
+	inline bool	isAsync() const { return _async; }
 
 public:
 	inline void on_initialize_event()
@@ -157,5 +159,6 @@ private:
 	bool			_running;
 
 	StdThreadPtr	_worker;
+	bool			_async;
 };
 

@@ -197,9 +197,14 @@ private:
 
 	uint32_t	locate_barindex(const std::string& key, uint64_t curTime, bool bUpperBound = false);
 
+	void	run_by_bars(bool bNeedDump = false);
+	void	run_by_tasks(bool bNeedDump = false);
+	void	run_by_ticks(bool bNeedDump = false);
+
 public:
 	bool init(WTSVariant* cfg, EventNotifier* notifier = NULL);
 
+	bool prepare();
 	void run(bool bNeedDump = false);
 	
 	void stop();

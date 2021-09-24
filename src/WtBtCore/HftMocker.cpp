@@ -88,6 +88,9 @@ HftMocker::HftMocker(HisDataReplayer* replayer, const char* name)
 	, _stopped(false)
 	, _use_newpx(false)
 	, _error_rate(0)
+	, _has_hook(false)
+	, _hook_valid(true)
+	, _resumed(false)
 {
 	_commodities = CommodityMap::create();
 
@@ -168,7 +171,7 @@ void HftMocker::postTask(Task task)
 	}
 }
 
-bool HftMocker::initHftFactory(WTSVariant* cfg)
+bool HftMocker::init_hft_factory(WTSVariant* cfg)
 {
 	if (cfg == NULL)
 		return false;
@@ -263,6 +266,37 @@ void HftMocker::on_bar(const char* stdCode, const char* period, uint32_t times, 
 		_strategy->on_bar(this, stdCode, period, times, newBar);
 }
 
+void HftMocker::enable_hook(bool bEnabled /* = true */)
+{
+	_hook_valid = bEnabled;
+
+	WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Calculating hook %s", bEnabled ? "enabled" : "disabled");
+}
+
+void HftMocker::install_hook()
+{
+	_has_hook = true;
+
+	WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Calculating hook installed");
+}
+
+void HftMocker::step_tick()
+{
+	if (!_has_hook)
+		return;
+
+	WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Notify calc thread, wait for calc done");
+	while (!_resumed)
+		_cond_calc.notify_all();
+
+	{
+		StdUniqueLock lock(_mtx_calc);
+		_cond_calc.wait(_mtx_calc);
+		WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Calc done notified");
+		_resumed = false;
+	}
+}
+
 void HftMocker::on_tick(const char* stdCode, WTSTickData* newTick)
 {
 	_price_map[stdCode] = newTick->price();
@@ -292,12 +326,37 @@ void HftMocker::on_tick(const char* stdCode, WTSTickData* newTick)
 		}
 	}
 
+	if (_has_hook && _hook_valid)
+	{
+		WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Waiting for resume notify");
+		StdUniqueLock lock(_mtx_calc);
+		_cond_calc.wait(_mtx_calc);
+		WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Calc resumed");
+		_resumed = true;
+	}
+
+	on_tick_updated(stdCode, newTick);
+
+	if (_has_hook && _hook_valid)
+	{
+		WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Calc done, notify control thread");
+		while (_resumed)
+			_cond_calc.notify_all();
+	}
+}
+
+void HftMocker::on_tick_updated(const char* stdCode, WTSTickData* newTick)
+{
 	if (_strategy)
 		_strategy->on_tick(this, stdCode, newTick);
-
 }
 
 void HftMocker::on_order_queue(const char* stdCode, WTSOrdQueData* newOrdQue)
+{
+	on_ordque_updated(stdCode, newOrdQue);
+}
+
+void HftMocker::on_ordque_updated(const char* stdCode, WTSOrdQueData* newOrdQue)
 {
 	if (_strategy)
 		_strategy->on_order_queue(this, stdCode, newOrdQue);
@@ -305,11 +364,21 @@ void HftMocker::on_order_queue(const char* stdCode, WTSOrdQueData* newOrdQue)
 
 void HftMocker::on_order_detail(const char* stdCode, WTSOrdDtlData* newOrdDtl)
 {
+	on_orddtl_updated(stdCode, newOrdDtl);
+}
+
+void HftMocker::on_orddtl_updated(const char* stdCode, WTSOrdDtlData* newOrdDtl)
+{
 	if (_strategy)
 		_strategy->on_order_detail(this, stdCode, newOrdDtl);
 }
 
 void HftMocker::on_transaction(const char* stdCode, WTSTransData* newTrans)
+{
+	on_trans_updated(stdCode, newTrans);
+}
+
+void HftMocker::on_trans_updated(const char* stdCode, WTSTransData* newTrans)
 {
 	if (_strategy)
 		_strategy->on_transaction(this, stdCode, newTrans);

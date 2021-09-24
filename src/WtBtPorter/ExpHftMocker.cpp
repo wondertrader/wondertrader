@@ -73,31 +73,23 @@ void ExpHftMocker::on_order(uint32_t localid, const char* stdCode, bool isBuy, d
 	getRunner().hft_on_order(_context_id, localid, stdCode, isBuy, totalQty, leftQty, price, isCanceled, userTag);
 }
 
-void ExpHftMocker::on_tick(const char* stdCode, WTSTickData* newTick)
+void ExpHftMocker::on_tick_updated(const char* stdCode, WTSTickData* newTick)
 {
-	HftMocker::on_tick(stdCode, newTick);
-
 	getRunner().ctx_on_tick(_context_id, stdCode, newTick, ET_HFT);
 }
 
-void ExpHftMocker::on_order_queue(const char* stdCode, WTSOrdQueData* newOrdQue)
+void ExpHftMocker::on_ordque_updated(const char* stdCode, WTSOrdQueData* newOrdQue)
 {
-	HftMocker::on_order_queue(stdCode, newOrdQue);
-
 	getRunner().hft_on_order_queue(_context_id, stdCode, newOrdQue);
 }
 
-void ExpHftMocker::on_order_detail(const char* stdCode, WTSOrdDtlData* newOrdDtl)
+void ExpHftMocker::on_orddtl_updated(const char* stdCode, WTSOrdDtlData* newOrdDtl)
 {
-	HftMocker::on_order_detail(stdCode, newOrdDtl);
-
 	getRunner().hft_on_order_detail(_context_id, stdCode, newOrdDtl);
 }
 
-void ExpHftMocker::on_transaction(const char* stdCode, WTSTransData* newTrans)
+void ExpHftMocker::on_trans_updated(const char* stdCode, WTSTransData* newTrans)
 {
-	HftMocker::on_transaction(stdCode, newTrans);
-
 	getRunner().hft_on_transaction(_context_id, stdCode, newTrans);
 }
 

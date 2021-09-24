@@ -4,6 +4,7 @@
 
 #include "../Includes/WTSStruct.h"
 #include "../Share/DLLHelper.hpp"
+#include "../Share/StdUtils.hpp"
 
 void on_getbar(CtxHandler ctxid, const char* code, const char* period, WTSBarStruct* bar, WtUInt32 count, bool isLast)
 {
@@ -57,21 +58,22 @@ void run_bt()
 #endif
 	register_cta_callbacks(on_init, on_tick, on_calc, on_bar, on_session_event);
 
-	init_cta_mocker("test");
+	auto id = init_cta_mocker("test", 0, true);
 
 	init_backtest("logcfgbt.json", true);
 
 	config_backtest("configbt.json", true);
 
+	run_backtest(true, true);
 
-	run_backtest(true, false);
+	for(int i = 0; i < 20; i++)
+	{
+		printf("%d\r\n", i);
+		cta_resume_calc(id);
 
-	//init_cta_mocker("test2");
-
-	//set_time_range(202107010930, 202107161500);
-	//enable_tick(false);
-
-	//run_backtest();
+		if (i == 5)
+			stop_backtest();
+	}
 
 	printf("press enter key to exit\n");
 	getchar();

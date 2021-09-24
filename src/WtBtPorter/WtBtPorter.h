@@ -31,9 +31,9 @@ extern "C"
 
 	EXPORT_FLAG	void		enable_tick(bool bEnabled = true);
 
-	EXPORT_FLAG	CtxHandler	init_cta_mocker(const char* name, int slippage = 0);
+	EXPORT_FLAG	CtxHandler	init_cta_mocker(const char* name, int slippage = 0, bool hook = false);
 
-	EXPORT_FLAG	CtxHandler	init_hft_mocker(const char* name);
+	EXPORT_FLAG	CtxHandler	init_hft_mocker(const char* name, bool hook = false);
 
 	EXPORT_FLAG	CtxHandler	init_sel_mocker(const char* name, WtUInt32 date, WtUInt32 time, const char* period, const char* trdtpl = "CHINA", const char* session = "TRADING", int slippage = 0);
 
@@ -106,6 +106,8 @@ extern "C"
 	EXPORT_FLAG	WtString	cta_load_userdata(CtxHandler cHandle, const char* key, const char* defVal);
 
 	EXPORT_FLAG	void		cta_sub_ticks(CtxHandler cHandle, const char* stdCode);
+
+	EXPORT_FLAG	void		cta_step(CtxHandler cHandle);
 #pragma endregion "CTA接口"
 
 	//////////////////////////////////////////////////////////////////////////
@@ -185,6 +187,8 @@ extern "C"
 	EXPORT_FLAG	void		hft_save_userdata(CtxHandler cHandle, const char* key, const char* val);
 
 	EXPORT_FLAG	WtString	hft_load_userdata(CtxHandler cHandle, const char* key, const char* defVal);
+
+	EXPORT_FLAG	void		hft_step(CtxHandler cHandle);
 #pragma endregion "HFT接口"
 #ifdef __cplusplus
 }

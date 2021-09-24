@@ -66,6 +66,9 @@ CtaMocker::CtaMocker(HisDataReplayer* replayer, const char* name, int32_t slippa
 	, _schedule_times(0)
 	, _total_closeprofit(0)
 	, _notifier(notifier)
+	, _has_hook(false)
+	, _hook_valid(true)
+	, _resumed(false)
 {
 	_context_id = makeCtxId();
 }
@@ -124,7 +127,7 @@ void CtaMocker::log_close(const char* stdCode, bool isLong, uint64_t openTime, d
 		<< totalprofit << "," << enterTag << "," << exitTag << "," << openBarNo << "," << closeBarNo << "\n";
 }
 
-bool CtaMocker::initCtaFactory(WTSVariant* cfg)
+bool CtaMocker::init_cta_factory(WTSVariant* cfg)
 {
 	if (cfg == NULL)
 		return false;
@@ -457,6 +460,36 @@ void CtaMocker::on_mainkline_updated(uint32_t curDate, uint32_t curTime)
 		_strategy->on_schedule(this, curDate, curTime);
 }
 
+void CtaMocker::enable_hook(bool bEnabled /* = true */)
+{
+	_hook_valid = bEnabled;
+
+	WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Calculating hook %s", bEnabled?"enabled":"disabled");
+}
+
+void CtaMocker::install_hook()
+{
+	_has_hook = true;
+
+	WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Calculating hook installed");
+}
+
+void CtaMocker::step_calc()
+{
+	if (!_has_hook)
+		return;
+
+	WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Notify calc thread, wait for calc done");
+	while (!_resumed)
+		_cond_calc.notify_all();
+
+	{
+		StdUniqueLock lock(_mtx_calc);
+		_cond_calc.wait(_mtx_calc);
+		WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Calc done notified");
+		_resumed = false;
+	}
+}
 
 bool CtaMocker::on_schedule(uint32_t curDate, uint32_t curTime)
 {
@@ -499,11 +532,28 @@ bool CtaMocker::on_schedule(uint32_t curDate, uint32_t curTime)
 			if (offTime <= sInfo->getCloseTime(true))
 			{
 				_condtions.clear();
+				if(_has_hook && _hook_valid)
+				{
+					WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Waiting for resume notify");
+					StdUniqueLock lock(_mtx_calc);
+					_cond_calc.wait(_mtx_calc);
+					WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Calc resumed");
+					_resumed = true;
+				}
+
 				on_mainkline_updated(curDate, curTime);
 				emmited = true;
 
 				_emit_times++;
 				_total_calc_time += ticker.micro_seconds();
+
+
+				if (_has_hook && _hook_valid)
+				{
+					WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Calc done, notify control thread");
+					while(_resumed)
+						_cond_calc.notify_all();
+				}
 			}
 			else
 			{
@@ -516,6 +566,7 @@ bool CtaMocker::on_schedule(uint32_t curDate, uint32_t curTime)
 	_is_in_schedule = false;//调度结束,修改标记
 	return emmited;
 }
+
 
 void CtaMocker::on_session_begin(uint32_t curTDate)
 {

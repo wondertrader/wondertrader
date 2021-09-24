@@ -43,7 +43,7 @@ private:
 	void	append_signal(const char* stdCode, double qty, const char* userTag = "", double price = 0.0);
 
 public:
-	bool	initSelFactory(WTSVariant* cfg);
+	bool	init_sel_factory(WTSVariant* cfg);
 
 public:
 	//////////////////////////////////////////////////////////////////////////
