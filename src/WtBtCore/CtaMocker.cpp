@@ -471,7 +471,7 @@ void CtaMocker::install_hook()
 {
 	_has_hook = true;
 
-	WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Calculating hook installed");
+	WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "CTA hook installed");
 }
 
 void CtaMocker::step_calc()

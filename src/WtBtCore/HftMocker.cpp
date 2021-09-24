@@ -277,7 +277,7 @@ void HftMocker::install_hook()
 {
 	_has_hook = true;
 
-	WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Calculating hook installed");
+	WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "HFT hook installed");
 }
 
 void HftMocker::step_tick()

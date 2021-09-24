@@ -1018,6 +1018,10 @@ WtString hft_load_userdata(CtxHandler cHandle, const char* key, const char* defV
 
 void hft_step(CtxHandler cHandle)
 {
+	//只有异步模式才有意义
+	if (!getRunner().isAsync())
+		return;
+
 	HftMocker* mocker = getRunner().hft_mocker();
 	if (mocker == NULL)
 		return;
