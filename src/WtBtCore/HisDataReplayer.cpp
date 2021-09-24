@@ -499,7 +499,7 @@ void HisDataReplayer::stop()
 		return;
 
 	_terminated = true;
-	WTSLogger::warn("Terminating flag reset to true, backtesting will quit at next bar");
+	WTSLogger::warn("Terminating flag reset to true, backtesting will quit at next round");
 }
 
 bool HisDataReplayer::prepare()
@@ -1330,7 +1330,7 @@ uint64_t HisDataReplayer::getNextOrdQueTime(uint32_t curTDate, uint64_t stime /*
 uint64_t HisDataReplayer::replayHftDatasByDay(uint32_t curTDate)
 {
 	uint64_t total_ticks = 0;
-	for (;;)
+	for (;!_terminated;)
 	{
 		//先确定下一笔tick的时间
 		uint64_t nextTime = min(UINT64_MAX, getNextTickTime(curTDate));
