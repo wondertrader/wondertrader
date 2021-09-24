@@ -46,19 +46,19 @@ int main()
 	if (strcmp(mode, "cta") == 0)
 	{
 		CtaMocker* mocker = new CtaMocker(&replayer, "cta", slippage);
-		mocker->initCtaFactory(cfg->get("cta"));
+		mocker->init_cta_factory(cfg->get("cta"));
 		replayer.register_sink(mocker, "cta");
 	}
 	else if (strcmp(mode, "hft") == 0)
 	{
 		HftMocker* mocker = new HftMocker(&replayer, "hft");
-		mocker->initHftFactory(cfg->get("hft"));
+		mocker->init_hft_factory(cfg->get("hft"));
 		replayer.register_sink(mocker, "hft");
 	}
 	else if (strcmp(mode, "sel") == 0)
 	{
 		SelMocker* mocker = new SelMocker(&replayer, "sel", slippage);
-		mocker->initSelFactory(cfg->get("cta"));
+		mocker->init_sel_factory(cfg->get("cta"));
 		replayer.register_sink(mocker, "sel");
 	}
 	else if (strcmp(mode, "exec") == 0)

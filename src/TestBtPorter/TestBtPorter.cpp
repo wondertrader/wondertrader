@@ -69,7 +69,7 @@ void run_bt()
 	for(int i = 0; i < 20; i++)
 	{
 		printf("%d\r\n", i);
-		cta_resume_calc(id);
+		cta_step(id);
 
 		if (i == 5)
 			stop_backtest();
