@@ -196,12 +196,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Common\mdump.h" />
+    <ClInclude Include="ExpParser.h" />
     <ClInclude Include="PorterDefs.h" />
     <ClInclude Include="WtDtPorter.h" />
     <ClInclude Include="WtDtRunner.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Common\mdump.cpp" />
+    <ClCompile Include="ExpParser.cpp" />
     <ClCompile Include="WtDtPorter.cpp" />
     <ClCompile Include="WtDtRunner.cpp" />
   </ItemGroup>

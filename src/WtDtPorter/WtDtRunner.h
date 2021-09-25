@@ -8,6 +8,8 @@
  * \brief 
  */
 #pragma once
+#include "PorterDefs.h"
+
 #include "../WtDtCore/DataManager.h"
 #include "../WtDtCore/ParserAdapter.h"
 #include "../WtDtCore/StateMonitor.h"
@@ -32,6 +34,20 @@ public:
 	void	initialize(const char* cfgFile, const char* logCfg, const char* modDir = "");
 	void	start();
 
+//////////////////////////////////////////////////////////////////////////
+//À©Õ¹Parser
+public:
+	void registerParserPorter(FuncParserEvtCallback cbEvt, FuncParserSubCallback cbSub);
+
+	void parser_init(const char* id);
+	void parser_connect(const char* id);
+	void parser_release(const char* id);
+	void parser_disconnect(const char* id);
+	void parser_subscribe(const char* id, const char* code);
+	void parser_unsubscribe(const char* id, const char* code);
+
+	void on_parser_quote(const char* id, WTSTickStruct* curTick, bool bNeedSlice = true);
+
 private:
 	void	initDataMgr(WTSVariant* config);
 	void	initParsers(const char* filename);
@@ -44,5 +60,9 @@ private:
 	StateMonitor	m_stateMon;
 	UDPCaster		m_udpCaster;
 	DataManager		m_dataMgr;
+	ParserAdapterMgr	m_parsers;
+
+	FuncParserEvtCallback	_cb_parser_evt;
+	FuncParserSubCallback	_cb_parser_sub;
 };
 

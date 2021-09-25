@@ -22,6 +22,13 @@ extern "C"
 	EXPORT_FLAG	WtString	get_version();
 	EXPORT_FLAG	void		write_log(unsigned int level, const char* message, const char* catName);
 
+
+#pragma region "扩展Parser接口"
+	EXPORT_FLAG void		register_parser_callbacks(FuncParserEvtCallback cbEvt, FuncParserSubCallback cbSub);
+
+	EXPORT_FLAG	void		parser_push_quote(const char* id, WTSTickStruct* curTick, bool bNeedSlice);
+#pragma endregion "扩展Parser接口"
+
 #ifdef __cplusplus
 }
 #endif

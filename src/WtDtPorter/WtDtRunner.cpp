@@ -11,9 +11,11 @@
 #include "../WtDtCore/WtHelper.h"
 
 #include "../Includes/WTSSessionInfo.hpp"
-#include "../Share/DLLHelper.hpp"
 #include "../Includes/WTSVariant.hpp"
+#include "../Includes/WTSDataDef.hpp"
+
 #include "../Share/JsonToVariant.hpp"
+#include "../Share/DLLHelper.hpp"
 
 #include "../WTSTools/WTSLogger.h"
 #include "../WTSUtils/SignalHook.hpp"
@@ -152,9 +154,11 @@ void WtDtRunner::initParsers(const char* filename)
 			{
 				WTSParams* params = cfgItem->toParams();
 
+				const char* id = cfgItem->getCString("id");
+
 				ParserAdapterPtr adapter(new ParserAdapter(&m_baseDataMgr, &m_dataMgr));
 				adapter->initAdapter(params, pFuncCreateParser, pFuncDeleteParser);
-				ParserAdapterMgr::addAdapter(adapter);
+				m_parsers.addAdapter(id, adapter);
 				params->release();
 			}
 
@@ -165,6 +169,64 @@ void WtDtRunner::initParsers(const char* filename)
 		}
 	}
 
-	WTSLogger::info("%u market data parsers loaded in total", ParserAdapterMgr::size());
+	WTSLogger::info("%u market data parsers loaded in total", m_parsers.size());
 	config->release();
 }
+
+#pragma region "Extended Parser"
+void WtDtRunner::registerParserPorter(FuncParserEvtCallback cbEvt, FuncParserSubCallback cbSub)
+{
+	_cb_parser_evt = cbEvt;
+	_cb_parser_sub = cbSub;
+
+	WTSLogger::info("Callbacks of Extented Parser registration done");
+}
+
+void WtDtRunner::parser_init(const char* id)
+{
+	if (_cb_parser_evt)
+		_cb_parser_evt(EVENT_PARSER_INIT, id);
+}
+
+void WtDtRunner::parser_connect(const char* id)
+{
+	if (_cb_parser_evt)
+		_cb_parser_evt(EVENT_PARSER_CONNECT, id);
+}
+
+void WtDtRunner::parser_disconnect(const char* id)
+{
+	if (_cb_parser_evt)
+		_cb_parser_evt(EVENT_PARSER_DISCONNECT, id);
+}
+
+void WtDtRunner::parser_release(const char* id)
+{
+	if (_cb_parser_evt)
+		_cb_parser_evt(EVENT_PARSER_RELEASE, id);
+}
+
+void WtDtRunner::parser_subscribe(const char* id, const char* code)
+{
+	if (_cb_parser_sub)
+		_cb_parser_sub(id, code, true);
+}
+
+void WtDtRunner::parser_unsubscribe(const char* id, const char* code)
+{
+	if (_cb_parser_sub)
+		_cb_parser_sub(id, code, false);
+}
+
+void WtDtRunner::on_parser_quote(const char* id, WTSTickStruct* curTick, bool bNeedSlice /* = true */)
+{
+	ParserAdapterPtr adapter = m_parsers.getAdapter(id);
+	if (adapter)
+	{
+		WTSTickData* newTick = WTSTickData::create(*curTick);
+		adapter->handleQuote(newTick, bNeedSlice);
+		newTick->release();
+	}
+}
+
+#pragma endregion 

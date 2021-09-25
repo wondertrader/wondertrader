@@ -151,3 +151,18 @@ void write_log(unsigned int level, const char* message, const char* catName)
 		WTSLogger::log_raw((WTSLogLevel)level, message);
 	}
 }
+
+#pragma region "扩展Parser接口"
+
+void parser_push_quote(const char* id, WTSTickStruct* curTick, bool bNeedSlice)
+{
+	getRunner().on_parser_quote(id, curTick, bNeedSlice);
+}
+
+void register_parser_callbacks(FuncParserEvtCallback cbEvt, FuncParserSubCallback cbSub)
+{
+	getRunner().registerParserPorter(cbEvt, cbSub);
+}
+
+
+#pragma endregion "扩展Parser接口"

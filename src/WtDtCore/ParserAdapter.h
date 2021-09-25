@@ -60,18 +60,23 @@ private:
 };
 
 typedef std::shared_ptr<ParserAdapter>	ParserAdapterPtr;
-typedef std::vector<ParserAdapterPtr>		ParserAdapterVec;
+typedef faster_hashmap<std::string, ParserAdapterPtr>	ParserAdapterMap;
 
 class ParserAdapterMgr : private boost::noncopyable
 {
 public:
-	static void addAdapter(ParserAdapterPtr& adapter);
+	void	release();
 
-	static void releaseAdapters();
+	void	run();
 
-	static uint32_t size(){ return (uint32_t)m_ayAdapters.size(); }
+	ParserAdapterPtr getAdapter(const char* id);
+
+	bool	addAdapter(const char* id, ParserAdapterPtr& adapter);
+
+	uint32_t size() const { return _adapters.size(); }
 
 public:
-	static ParserAdapterVec m_ayAdapters;
+	ParserAdapterMap _adapters;
 };
+
 

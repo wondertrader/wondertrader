@@ -24,6 +24,7 @@ boost::asio::io_service g_asyncIO;
 StateMonitor	g_stateMon;
 UDPCaster		g_udpCaster;
 DataManager		g_dataMgr;
+ParserAdapterMgr g_parsers;
 
 #ifdef _WIN32
 #include "../Common/mdump.h"
@@ -98,9 +99,10 @@ void initParsers(WTSVariant* cfg)
 			{
 				WTSParams* params = cfgItem->toParams();
 
+				const char* id = params->getCString("id");
 				ParserAdapterPtr adapter(new ParserAdapter(&g_baseDataMgr, &g_dataMgr));
 				adapter->initAdapter(params, pFuncCreateParser, pFuncDeleteParser);
-				ParserAdapterMgr::addAdapter(adapter);
+				g_parsers.addAdapter(id, adapter);
 				params->release();
 			}
 
@@ -112,7 +114,7 @@ void initParsers(WTSVariant* cfg)
 	}
 
 	//WTSLogger::info("一共加载%u个Parser", ParserAdapterMgr::size());
-	WTSLogger::info("%u market data parsers loaded in total", ParserAdapterMgr::size());
+	WTSLogger::info("%u market data parsers loaded in total", g_parsers.size());
 }
 
 void initialize()

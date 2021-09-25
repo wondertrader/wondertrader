@@ -207,20 +207,41 @@ IBaseDataMgr* ParserAdapter::getBaseDataMgr()
 
 //////////////////////////////////////////////////////////////////////////
 //ParserAdapterMgr
-ParserAdapterVec ParserAdapterMgr::m_ayAdapters;
-
-void ParserAdapterMgr::releaseAdapters()
+void ParserAdapterMgr::release()
 {
-	ParserAdapterVec::iterator it = m_ayAdapters.begin();
-	for(; it != m_ayAdapters.end(); it++)
+	for (auto it = _adapters.begin(); it != _adapters.end(); it++)
 	{
-		(*it)->release();
+		it->second->release();
 	}
 
-	m_ayAdapters.clear();
+	_adapters.clear();
 }
 
-void ParserAdapterMgr::addAdapter(ParserAdapterPtr& adapter)
+bool ParserAdapterMgr::addAdapter(const char* id, ParserAdapterPtr& adapter)
 {
-	m_ayAdapters.emplace_back(adapter);
+	if (adapter == NULL || strlen(id) == 0)
+		return false;
+
+	auto it = _adapters.find(id);
+	if (it != _adapters.end())
+	{
+		WTSLogger::error(" Same name of parsers: %s", id);
+		return false;
+	}
+
+	_adapters[id] = adapter;
+
+	return true;
+}
+
+
+ParserAdapterPtr ParserAdapterMgr::getAdapter(const char* id)
+{
+	auto it = _adapters.find(id);
+	if (it != _adapters.end())
+	{
+		return it->second;
+	}
+
+	return ParserAdapterPtr();
 }
