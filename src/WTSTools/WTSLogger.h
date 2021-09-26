@@ -72,6 +72,7 @@ public:
 
 private:
 	static bool					m_bInited;
+	static bool					m_bTpInited;
 	static bool					m_bStopped;
 	static ILogHandler*			m_logHandler;
 	static WTSLogLevel			m_logLevel;

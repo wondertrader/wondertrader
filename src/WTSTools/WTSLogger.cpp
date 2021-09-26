@@ -42,6 +42,7 @@ ILogHandler*		WTSLogger::m_logHandler	= NULL;
 WTSLogLevel			WTSLogger::m_logLevel	= LL_ALL;
 bool				WTSLogger::m_bStopped = false;
 bool				WTSLogger::m_bInited = false;
+bool				WTSLogger::m_bTpInited = false;
 SpdLoggerPtr		WTSLogger::m_rootLogger = NULL;
 WTSLogger::LogPatterns*	WTSLogger::m_mapPatterns = NULL;
 thread_local char	WTSLogger::m_buffer[];
@@ -163,6 +164,12 @@ void WTSLogger::initLogger(const char* catName, WTSVariant* cfgLogger)
 	}
 	else
 	{
+		if(!m_bTpInited)
+		{
+			spdlog::init_thread_pool(8192, 2);
+			m_bTpInited = true;
+		}
+
 		auto logger = std::make_shared<spdlog::async_logger>(catName, sinks.begin(), sinks.end(), spdlog::thread_pool(), spdlog::async_overflow_policy::block);
 		logger->set_level(str_to_level(cfgLogger->getCString("level")));
 		spdlog::register_logger(logger);
