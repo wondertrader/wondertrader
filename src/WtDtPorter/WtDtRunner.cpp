@@ -8,6 +8,8 @@
  * \brief 
  */
 #include "WtDtRunner.h"
+#include "ExpParser.h"
+
 #include "../WtDtCore/WtHelper.h"
 
 #include "../Includes/WTSSessionInfo.hpp"
@@ -35,6 +37,8 @@ WtDtRunner::~WtDtRunner()
 
 void WtDtRunner::start()
 {
+	m_parsers.run();
+
 	m_asyncIO.post([this](){
 		std::this_thread::sleep_for(std::chrono::milliseconds(5));
 		m_stateMon.run();
@@ -152,14 +156,11 @@ void WtDtRunner::initParsers(const char* filename)
 
 			if (pFuncCreateParser && pFuncDeleteParser)
 			{
-				WTSParams* params = cfgItem->toParams();
-
 				const char* id = cfgItem->getCString("id");
 
 				ParserAdapterPtr adapter(new ParserAdapter(&m_baseDataMgr, &m_dataMgr));
-				adapter->initAdapter(params, pFuncCreateParser, pFuncDeleteParser);
+				adapter->init(id, cfgItem);
 				m_parsers.addAdapter(id, adapter);
-				params->release();
 			}
 
 		}
@@ -227,6 +228,16 @@ void WtDtRunner::on_parser_quote(const char* id, WTSTickStruct* curTick, bool bN
 		adapter->handleQuote(newTick, bNeedSlice);
 		newTick->release();
 	}
+}
+
+bool WtDtRunner::createExtParser(const char* id)
+{
+	ParserAdapterPtr adapter(new ParserAdapter(&m_baseDataMgr, &m_dataMgr));
+	ExpParser* parser = new ExpParser(id);
+	adapter->initExt(id, parser);
+	m_parsers.addAdapter(id, adapter);
+	WTSLogger::info("Extended parser %s created", id);
+	return true;
 }
 
 #pragma endregion 

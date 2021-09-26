@@ -34,6 +34,8 @@ public:
 	void	initialize(const char* cfgFile, const char* logCfg, const char* modDir = "");
 	void	start();
 
+	bool	createExtParser(const char* id);
+
 //////////////////////////////////////////////////////////////////////////
 //À©Õ¹Parser
 public:

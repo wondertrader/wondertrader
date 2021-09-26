@@ -154,6 +154,11 @@ void write_log(unsigned int level, const char* message, const char* catName)
 
 #pragma region "À©Õ¹Parser½Ó¿Ú"
 
+bool create_ext_parser(const char* id)
+{
+	return getRunner().createExtParser(id);
+}
+
 void parser_push_quote(const char* id, WTSTickStruct* curTick, bool bNeedSlice)
 {
 	getRunner().on_parser_quote(id, curTick, bNeedSlice);

@@ -24,6 +24,8 @@ extern "C"
 
 
 #pragma region "À©Õ¹Parser½Ó¿Ú"
+	EXPORT_FLAG	bool		create_ext_parser(const char* id);
+
 	EXPORT_FLAG void		register_parser_callbacks(FuncParserEvtCallback cbEvt, FuncParserSubCallback cbSub);
 
 	EXPORT_FLAG	void		parser_push_quote(const char* id, WTSTickStruct* curTick, bool bNeedSlice);

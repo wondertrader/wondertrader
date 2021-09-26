@@ -14,22 +14,31 @@
 #include <boost/core/noncopyable.hpp>
 #include "../Includes/IParserApi.h"
 
-USING_NS_OTP;
+NS_OTP_BEGIN
+class WTSVariant;
+NS_OTP_END
 
+USING_NS_OTP;
 class wxMainFrame;
 class WTSBaseDataMgr;
 class DataManager;
 
-class ParserAdapter : public IParserSpi
+class ParserAdapter : public IParserSpi, private boost::noncopyable
 {
 public:
 	ParserAdapter(WTSBaseDataMgr * bgMgr, DataManager* dtMgr);
 	~ParserAdapter();
 
 public:
-	bool	initAdapter(WTSParams* params, FuncCreateParser funcCreate, FuncDeleteParser funcDelete);
+	bool	init(const char* id, WTSVariant* cfg);
+
+	bool	initExt(const char* id, IParserApi* api);
 
 	void	release();
+
+	bool	run();
+
+	const char* id() const { return _id.c_str(); }
 
 public:
 	virtual void handleSymbolList(const WTSArray* aySymbols) override;
@@ -47,16 +56,18 @@ public:
 	virtual IBaseDataMgr* getBaseDataMgr() override;
 
 private:
-	IParserApi*			m_pParser;
-	FuncCreateParser	m_funcCreate;
-	FuncDeleteParser	m_funcDelete;
-	WTSBaseDataMgr*		m_bdMgr;
-	DataManager*		m_dtMgr;
+	IParserApi*			_parser_api;
+	FuncDeleteParser	_remover;
+	WTSBaseDataMgr*		_bd_mgr;
+	DataManager*		_dt_mgr;
 
-	bool				m_bStopped;
+	bool				_stopped;
 
-	typedef std::set<std::string>	CodeFilter;
-	CodeFilter		m_codeFilters;
+	typedef faster_hashset<std::string>	ExchgFilter;
+	ExchgFilter			_exchg_filter;
+	ExchgFilter			_code_filter;
+	WTSVariant*			_cfg;
+	std::string			_id;
 };
 
 typedef std::shared_ptr<ParserAdapter>	ParserAdapterPtr;
