@@ -132,42 +132,11 @@ void WtDtRunner::initParsers(const char* filename)
 		if (!cfgItem->getBoolean("active"))
 			continue;
 
-		std::string module = DLLHelper::wrap_module(cfgItem->getCString("module"), "lib");
-		if (!StdFile::exists(module.c_str()))
-		{
-			module = WtHelper::get_module_dir();
-			module += "parsers/";
-			module += DLLHelper::wrap_module(cfgItem->getCString("module"), "lib");
-		}
-		DllHandle libParser = DLLHelper::load_library(module.c_str());
-		if (libParser)
-		{
-			FuncCreateParser pFuncCreateParser = (FuncCreateParser)DLLHelper::get_symbol(libParser, "createParser");
-			if (pFuncCreateParser == NULL)
-			{
-				WTSLogger::error("Initializing of market data parser failed: function createParser not found...");
-			}
+		const char* id = cfgItem->getCString("id");
 
-			FuncDeleteParser pFuncDeleteParser = (FuncDeleteParser)DLLHelper::get_symbol(libParser, "deleteParser");
-			if (pFuncDeleteParser == NULL)
-			{
-				WTSLogger::error("Initializing of market data parser failed: function deleteParser not found...");
-			}
-
-			if (pFuncCreateParser && pFuncDeleteParser)
-			{
-				const char* id = cfgItem->getCString("id");
-
-				ParserAdapterPtr adapter(new ParserAdapter(&m_baseDataMgr, &m_dataMgr));
-				adapter->init(id, cfgItem);
-				m_parsers.addAdapter(id, adapter);
-			}
-
-		}
-		else
-		{
-			WTSLogger::error("Initializing of market data parser failed: loading module %s failed...", module.c_str());
-		}
+		ParserAdapterPtr adapter(new ParserAdapter(&m_baseDataMgr, &m_dataMgr));
+		adapter->init(id, cfgItem);
+		m_parsers.addAdapter(id, adapter);
 	}
 
 	WTSLogger::info("%u market data parsers loaded in total", m_parsers.size());
