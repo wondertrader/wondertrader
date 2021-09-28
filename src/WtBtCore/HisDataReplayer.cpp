@@ -722,7 +722,6 @@ void HisDataReplayer::run_by_bars(bool bNeedDump /* = false */)
 	if (_terminated)
 		WTSLogger::debug("Replaying by bars terminated forcely");
 
-	_listener->handle_replay_done();
 	notify_state(barList._code.c_str(), barList._period, barList._times, _begin_time, _end_time, 100);
 	if (_notifier)
 		_notifier->notifyEvent("BT_END");
@@ -731,6 +730,8 @@ void HisDataReplayer::run_by_bars(bool bNeedDump /* = false */)
 	{
 		_listener->handle_session_end(_cur_tdate);
 	}
+
+	_listener->handle_replay_done();
 
 	if (bNeedDump)
 	{

@@ -195,11 +195,22 @@ void CtaMocker::handle_session_end(uint32_t curTDate)
 
 void CtaMocker::handle_replay_done()
 {
+	_in_backtest = false;
+
 	WTSLogger::log_dyn_raw("strategy", _name.c_str(), LL_INFO, fmt::format("Strategy has been scheduled for {} times,totally taking {} microsecs,average of {} microsecs",
 		_emit_times, _total_calc_time, _total_calc_time / _emit_times).c_str());
 
 	dump_outputs();
 
+	if (_has_hook && _hook_valid)
+	{
+		WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Replay done, notify control thread");
+		while(_hook_valid)
+			_cond_calc.notify_all();
+		WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Notify control thread the end done");
+	}
+
+	WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Notify strategy the end of backtest");
 	this->on_bactest_end();
 }
 
@@ -231,6 +242,7 @@ void CtaMocker::on_bar(const char* stdCode, const char* period, uint32_t times, 
 
 void CtaMocker::on_init()
 {
+	_in_backtest = true;
 	if (_strategy)
 		_strategy->on_init(this);
 
@@ -474,20 +486,32 @@ void CtaMocker::install_hook()
 	WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "CTA hook installed");
 }
 
-void CtaMocker::step_calc()
+bool CtaMocker::step_calc()
 {
 	if (!_has_hook)
-		return;
+		return false;
 
-	WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Notify calc thread, wait for calc done");
-	while (!_resumed)
+	while (!_resumed && _in_backtest)
 		_cond_calc.notify_all();
 
+	WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Notify calc thread, wait for calc done");
+
+	if(_in_backtest)
 	{
 		StdUniqueLock lock(_mtx_calc);
 		_cond_calc.wait(_mtx_calc);
 		WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Calc done notified");
 		_resumed = false;
+
+		if (!_in_backtest)
+			_hook_valid = false;
+
+		return true;
+	}
+	else
+	{
+		WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Backtest exit automatically");
+		return false;
 	}
 }
 

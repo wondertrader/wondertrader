@@ -107,7 +107,7 @@ extern "C"
 
 	EXPORT_FLAG	void		cta_sub_ticks(CtxHandler cHandle, const char* stdCode);
 
-	EXPORT_FLAG	void		cta_step(CtxHandler cHandle);
+	EXPORT_FLAG	bool		cta_step(CtxHandler cHandle);
 #pragma endregion "CTA½Ó¿Ú"
 
 	//////////////////////////////////////////////////////////////////////////

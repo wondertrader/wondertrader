@@ -515,17 +515,17 @@ void cta_sub_ticks(CtxHandler cHandle, const char* stdCode)
 	ctx->stra_sub_ticks(stdCode);
 }
 
-void cta_step(CtxHandler cHandle)
+bool cta_step(CtxHandler cHandle)
 {
 	//只有异步模式才有意义
 	if (!getRunner().isAsync())
-		return;
+		return false;
 
 	CtaMocker* ctx = getRunner().cta_mocker();
 	if (ctx == NULL)
-		return;
+		return false;
 
-	ctx->step_calc();
+	return ctx->step_calc();
 }
 
 #pragma endregion "CTA策略接口"
