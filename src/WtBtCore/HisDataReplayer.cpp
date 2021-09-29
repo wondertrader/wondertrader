@@ -731,12 +731,12 @@ void HisDataReplayer::run_by_bars(bool bNeedDump /* = false */)
 		_listener->handle_session_end(_cur_tdate);
 	}
 
-	_listener->handle_replay_done();
-
 	if (bNeedDump)
 	{
 		dump_btstate(barList._code.c_str(), barList._period, barList._times, _begin_time, _end_time, 100.0, TimeUtils::getLocalTimeNano() - now);
 	}
+
+	_listener->handle_replay_done();
 }
 
 void HisDataReplayer::run_by_tasks(bool bNeedDump /* = false */)

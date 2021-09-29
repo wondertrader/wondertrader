@@ -394,14 +394,20 @@ void WtBtRunner::stop()
 
 	_replayer.stop();
 
+	WTSLogger::debug("Notify to finish last round");
+
 	if (_cta_mocker)
 		_cta_mocker->step_calc();
 
 	if (_hft_mocker)
 		_hft_mocker->step_tick();
 
+	WTSLogger::debug("Last round ended");
+
 	if(_worker)
 		_worker->join();
+
+	WTSLogger::debug("Backtest stopped");
 }
 
 void WtBtRunner::release()

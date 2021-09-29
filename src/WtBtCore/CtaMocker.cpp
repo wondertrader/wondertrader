@@ -491,10 +491,15 @@ bool CtaMocker::step_calc()
 	if (!_has_hook)
 		return false;
 
+	bool bNotify = false;
 	while (!_resumed && _in_backtest)
+	{
 		_cond_calc.notify_all();
+		bNotify = true;
+	}
 
-	WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Notify calc thread, wait for calc done");
+	if(bNotify)
+		WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Notify calc thread, wait for calc done");
 
 	if(_in_backtest)
 	{
@@ -510,6 +515,7 @@ bool CtaMocker::step_calc()
 	}
 	else
 	{
+		_hook_valid = false;
 		WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Backtest exit automatically");
 		return false;
 	}
