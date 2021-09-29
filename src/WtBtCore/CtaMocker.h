@@ -308,4 +308,5 @@ protected:
 	std::atomic<bool>		_resumed;	//临时变量，用于控制状态
 
 	bool			_in_backtest;
+	bool			_wait_calc;
 };

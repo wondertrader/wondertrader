@@ -69,6 +69,8 @@ CtaMocker::CtaMocker(HisDataReplayer* replayer, const char* name, int32_t slippa
 	, _has_hook(false)
 	, _hook_valid(true)
 	, _resumed(false)
+	, _wait_calc(false)
+	, _in_backtest(false)
 {
 	_context_id = makeCtxId();
 }
@@ -205,7 +207,7 @@ void CtaMocker::handle_replay_done()
 	if (_has_hook && _hook_valid)
 	{
 		WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Replay done, notify control thread");
-		while(_hook_valid)
+		while(_wait_calc)
 			_cond_calc.notify_all();
 		WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Notify control thread the end done");
 	}
@@ -489,7 +491,9 @@ void CtaMocker::install_hook()
 bool CtaMocker::step_calc()
 {
 	if (!_has_hook)
+	{
 		return false;
+	}
 
 	bool bNotify = false;
 	while (!_resumed && _in_backtest)
@@ -503,13 +507,12 @@ bool CtaMocker::step_calc()
 
 	if(_in_backtest)
 	{
+		_wait_calc = true;
 		StdUniqueLock lock(_mtx_calc);
 		_cond_calc.wait(_mtx_calc);
+		_wait_calc = false;
 		WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Calc done notified");
 		_resumed = false;
-
-		if (!_in_backtest)
-			_hook_valid = false;
 
 		return true;
 	}
