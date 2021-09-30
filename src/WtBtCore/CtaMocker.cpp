@@ -199,8 +199,15 @@ void CtaMocker::handle_replay_done()
 {
 	_in_backtest = false;
 
-	WTSLogger::log_dyn_raw("strategy", _name.c_str(), LL_INFO, fmt::format("Strategy has been scheduled for {} times,totally taking {} microsecs,average of {} microsecs",
-		_emit_times, _total_calc_time, _total_calc_time / _emit_times).c_str());
+	if(_emit_times > 0)
+	{
+		WTSLogger::log_dyn_raw("strategy", _name.c_str(), LL_INFO, fmt::format("Strategy has been scheduled for {} times,totally taking {} microsecs,average of {} microsecs",
+			_emit_times, _total_calc_time, _total_calc_time / _emit_times).c_str());
+	}
+	else
+	{
+		WTSLogger::log_dyn_raw("strategy", _name.c_str(), LL_INFO, fmt::format("Strategy has been scheduled for {} times", _emit_times).c_str());
+	}
 
 	dump_outputs();
 

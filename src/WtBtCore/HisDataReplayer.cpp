@@ -714,7 +714,7 @@ void HisDataReplayer::run_by_bars(bool bNeedDump /* = false */)
 		else
 		{
 			//WTSLogger::info("数据尚未初始化,回放直接退出");
-			WTSLogger::info("No back data initialized, replaying canceled");
+			WTSLogger::error("No back data initialized, replaying canceled");
 			break;
 		}
 	}
