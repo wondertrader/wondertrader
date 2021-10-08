@@ -109,6 +109,10 @@ std::string getBinDir()
 	return _bin_dir;
 }
 
+void register_evt_callback(FuncEventCallback cbEvt)
+{
+	getRunner().registerEvtCallback(cbEvt);
+}
 
 void register_cta_callbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar, FuncSessionEvtCallback cbSessEvt)
 {

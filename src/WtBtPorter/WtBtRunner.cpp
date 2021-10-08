@@ -375,10 +375,12 @@ void WtBtRunner::run(bool bNeedDump /* = false */, bool bAsync /* = false */)
 		}
 		catch (...)
 		{
+			WTSLogger::error("Exception raised while worker running");
 			print_stack_trace([](const char* message) {
 				WTSLogger::error(message);
 			});
 		}
+		WTSLogger::debug("Worker thread of backtest finished");
 		_running = false;
 
 	}));
@@ -390,7 +392,15 @@ void WtBtRunner::run(bool bNeedDump /* = false */, bool bAsync /* = false */)
 void WtBtRunner::stop()
 {
 	if (!_running)
+	{
+		if (_worker)
+		{
+			_worker->join();
+			_worker.reset();
+		}
+
 		return;
+	}
 
 	_replayer.stop();
 
@@ -404,8 +414,11 @@ void WtBtRunner::stop()
 
 	WTSLogger::debug("Last round ended");
 
-	if(_worker)
+	if (_worker)
+	{
 		_worker->join();
+		_worker.reset();
+	}
 
 	WTSLogger::debug("Backtest stopped");
 }
