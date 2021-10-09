@@ -390,7 +390,14 @@ void WtBtRunner::run(bool bNeedDump /* = false */, bool bAsync /* = false */)
 void WtBtRunner::stop()
 {
 	if (!_running)
+	{
+		if (_worker)
+		{
+			_worker->join();
+			_worker.reset();
+		}
 		return;
+	}
 
 	_replayer.stop();
 
@@ -404,8 +411,13 @@ void WtBtRunner::stop()
 
 	WTSLogger::debug("Last round ended");
 
-	if(_worker)
+	if (_worker)
+	{
 		_worker->join();
+		_worker.reset();
+	}
+
+	WTSLogger::freeAllDynLoggers();
 
 	WTSLogger::debug("Backtest stopped");
 }
