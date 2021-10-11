@@ -273,6 +273,8 @@ void WtEngine::init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtDataManager* dataMgr
 
 	load_datas();
 
+	init_outputs();
+
 	WTSVariant* cfgRisk = cfg->get("riskmon");
 	if(cfgRisk)
 	{
@@ -770,6 +772,11 @@ double WtEngine::calc_fee(const char* stdCode, double price, double qty, uint32_
 
 void WtEngine::append_signal(const char* stdCode, double qty)
 {
+	/*
+	 *	这个函数的目的，是防止有时候需要重新同步组合头寸的时候
+	 *	如果没有最新价格导致计算出错的情况，所以这里加了一个等待
+	 *	ontick的时候会处理信号
+	 */
 	double curPx = get_cur_price(stdCode);
 	if(decimal::eq(curPx, 0.0))
 	{
@@ -814,6 +821,8 @@ void WtEngine::do_set_position(const char* stdCode, double qty)
 		double fee = calc_fee(stdCode, curPx, abs(qty), 0);
 		fundInfo._fees += fee;
 		fundInfo._balance -= fee;
+
+		log_trade(stdCode, dInfo._long, true, curTm, curPx, abs(diff), fee);
 	}
 	else
 	{//持仓方向和目标仓位方向不一致, 需要平仓
@@ -826,6 +835,12 @@ void WtEngine::do_set_position(const char* stdCode, double qty)
 		for (auto it = pInfo._details.begin(); it != pInfo._details.end(); it++)
 		{
 			DetailInfo& dInfo = *it;
+			if (decimal::eq(dInfo._volume, 0))
+			{
+				count++;
+				continue;
+			}
+
 			double maxQty = min(dInfo._volume, left);
 			if (decimal::eq(maxQty, 0))
 				continue;
@@ -848,6 +863,11 @@ void WtEngine::do_set_position(const char* stdCode, double qty)
 			double fee = calc_fee(stdCode, curPx, maxQty, dInfo._opentdate == curTDate ? 2 : 1);
 			fundInfo._fees += fee;
 			fundInfo._balance -= fee;
+
+			//这里写成交记录
+			log_trade(stdCode, dInfo._long, false, curTm, curPx, maxQty, fee);
+			//这里写平仓记录
+			log_close(stdCode, dInfo._long, dInfo._opentime, dInfo._price, curTm, curPx, maxQty, profit, pInfo._closeprofit);
 
 			if (left == 0)
 				break;
@@ -879,6 +899,8 @@ void WtEngine::do_set_position(const char* stdCode, double qty)
 			double fee = calc_fee(stdCode, curPx, abs(qty), 0);
 			fundInfo._fees += fee;
 			fundInfo._balance -= fee;
+
+			log_trade(stdCode, dInfo._long, true, curTm, curPx, abs(left), fee);
 		}
 	}
 
@@ -973,4 +995,60 @@ bool WtEngine::init_riskmon(WTSVariant* cfg)
 	_risk_mon->self()->init(this, cfg);
 
 	return true;
+}
+
+void WtEngine::init_outputs()
+{
+	std::string folder = WtHelper::getPortifolioDir();
+	std::string filename = folder + "trades.csv";
+	_trade_logs.reset(new BoostFile());
+	{
+		bool isNewFile = !BoostFile::exists(filename.c_str());
+		_trade_logs->create_or_open_file(filename.c_str());
+		if (isNewFile)
+		{
+			_trade_logs->write_file("code,time,direct,action,price,qty,fee\n");
+		}
+		else
+		{
+			_trade_logs->seek_to_end();
+		}
+	}
+
+	filename = folder + "closes.csv";
+	_close_logs.reset(new BoostFile());
+	{
+		bool isNewFile = !BoostFile::exists(filename.c_str());
+		_close_logs->create_or_open_file(filename.c_str());
+		if (isNewFile)
+		{
+			_close_logs->write_file("code,direct,opentime,openprice,closetime,closeprice,qty,profit,totalprofit\n");
+		}
+		else
+		{
+			_close_logs->seek_to_end();
+		}
+	}
+}
+
+void WtEngine::log_trade(const char* stdCode, bool isLong, bool isOpen, uint64_t curTime, double price, double qty, double fee /* = 0.0 */)
+{
+	if (_trade_logs)
+	{
+		std::stringstream ss;
+		ss << stdCode << "," << curTime << "," << (isLong ? "LONG" : "SHORT") << "," << (isOpen ? "OPEN" : "CLOSE") << "," << price << "," << qty << "," << fee << "\n";
+		_trade_logs->write_file(ss.str());
+	}
+}
+
+void WtEngine::log_close(const char* stdCode, bool isLong, uint64_t openTime, double openpx, uint64_t closeTime, double closepx, double qty, double profit, double totalprofit /* = 0 */)
+{
+	if (_close_logs)
+	{
+		std::stringstream ss;
+		ss << stdCode << "," << (isLong ? "LONG" : "SHORT") << "," << openTime << "," << openpx
+			<< "," << closeTime << "," << closepx << "," << qty << "," << profit << ","
+			<< totalprofit << "\n";
+		_close_logs->write_file(ss.str());
+	}
 }

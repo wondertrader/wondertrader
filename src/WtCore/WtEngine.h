@@ -22,6 +22,8 @@
 #include "../Share/StdUtils.hpp"
 #include "../Share/DLLHelper.hpp"
 
+#include "../Share/BoostFile.hpp"
+
 
 NS_OTP_BEGIN
 class WTSSessionInfo;
@@ -170,6 +172,12 @@ protected:
 
 	bool		init_riskmon(WTSVariant* cfg);
 
+private:
+	void		init_outputs();
+	inline void	log_trade(const char* stdCode, bool isLong, bool isOpen, uint64_t curTime, double price, double qty, double fee = 0.0);
+	inline void	log_close(const char* stdCode, bool isLong, uint64_t openTime, double openpx, uint64_t closeTime, double closepx, double qty,
+		double profit, double totalprofit = 0);
+
 
 protected:
 	uint32_t		_cur_date;	//当前日期
@@ -294,5 +302,8 @@ protected:
 	uint32_t		_risk_date;
 
 	TraderAdapterMgr*	_adapter_mgr;
+
+	BoostFilePtr	_trade_logs;
+	BoostFilePtr	_close_logs;
 };
 NS_OTP_END
