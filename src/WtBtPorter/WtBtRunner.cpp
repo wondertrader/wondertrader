@@ -398,7 +398,6 @@ void WtBtRunner::stop()
 			_worker->join();
 			_worker.reset();
 		}
-
 		return;
 	}
 
@@ -419,6 +418,8 @@ void WtBtRunner::stop()
 		_worker->join();
 		_worker.reset();
 	}
+
+	WTSLogger::freeAllDynLoggers();
 
 	WTSLogger::debug("Backtest stopped");
 }

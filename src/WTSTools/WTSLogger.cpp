@@ -46,6 +46,7 @@ bool				WTSLogger::m_bTpInited = false;
 SpdLoggerPtr		WTSLogger::m_rootLogger = NULL;
 WTSLogger::LogPatterns*	WTSLogger::m_mapPatterns = NULL;
 thread_local char	WTSLogger::m_buffer[];
+std::set<std::string>	WTSLogger::m_setDynLoggers;
 
 inline spdlog::level::level_enum str_to_level( const char* slvl)
 {
@@ -766,6 +767,9 @@ void WTSLogger::vlog_dyn(const char* patttern, const char* catName, WTSLogLevel 
 		return;
 
 	auto logger = getLogger(catName, patttern);
+	if (!logger)
+		return;
+
 	format_impl(m_buffer, format, args);
 
 	if (!m_bInited)
@@ -854,8 +858,22 @@ SpdLoggerPtr WTSLogger::getLogger(const char* logger, const char* pattern /* = "
 
 		initLogger(logger, cfg);
 
+		m_setDynLoggers.insert(logger);
+
 		return spdlog::get(logger);
 	}
 
 	return ret;
+}
+
+void WTSLogger::freeAllDynLoggers()
+{
+	for(const std::string& logger : m_setDynLoggers)
+	{
+		auto loggerPtr = spdlog::get(logger);
+		if(!loggerPtr)
+			continue;
+
+		spdlog::drop(logger);
+	}
 }

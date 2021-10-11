@@ -14,6 +14,7 @@
 #include <memory>
 #include <sstream>
 #include <thread>
+#include <set>
 
 #include <spdlog/spdlog.h>
 
@@ -68,6 +69,8 @@ public:
 
 	static void stop();
 
+	static void freeAllDynLoggers();
+
 	static SpdLoggerPtr getLogger(const char* logger, const char* pattern = "");
 
 private:
@@ -81,6 +84,7 @@ private:
 
 	typedef WTSHashMap<std::string>	LogPatterns;
 	static LogPatterns*			m_mapPatterns;
+	static std::set<std::string>	m_setDynLoggers;
 
 	static thread_local char	m_buffer[MAX_LOG_BUF_SIZE];
 };
