@@ -347,15 +347,9 @@ void WtSelEngine::handle_pos_change(const char* stdCode, double diffQty)
 		targetPos = decimal::rnd(abs(targetPos)*_risk_volscale)*symbol;
 	}
 
-	push_task([this, realCode, targetPos](){
-		append_signal(realCode.c_str(), targetPos);
-	});
+	append_signal(realCode.c_str(), targetPos);
+	save_datas();
 
-	//for (auto it = _executers.begin(); it != _executers.end(); it++)
-	//{
-	//	WtExecuterPtr& executer = (*it);
-	//	executer->on_position_changed(realCode.c_str(), targetPos);
-	//}
 	_exec_mgr.handle_pos_change(realCode.c_str(), targetPos);
 }
 

@@ -320,7 +320,7 @@ void CtaStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 					else
 						dInfo._open_barno = 0;
 
-					pInfo._details.push_back(dInfo);
+					pInfo._details.emplace_back(dInfo);
 				}
 
 				stra_log_info(fmt::format("Position confirmed,{} -> {}", stdCode, pInfo._volume).c_str());

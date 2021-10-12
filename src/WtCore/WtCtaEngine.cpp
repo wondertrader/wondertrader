@@ -276,9 +276,7 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 			pos = decimal::rnd(abs(pos)*_risk_volscale)*symbol;
 		}
 
-		push_task([this, stdCode, pos]() {
-			append_signal(stdCode.c_str(), pos);
-		});
+		append_signal(stdCode.c_str(), pos);
 	}
 
 	for(auto& m : _pos_map)
@@ -289,9 +287,7 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 			if(!decimal::eq(m.second._volume, 0))
 			{
 				//这里是通知WtEngine去更新组合持仓数据
-				push_task([this, stdCode](){
-					append_signal(stdCode.c_str(), 0);
-				});
+				append_signal(stdCode.c_str(), 0);
 
 				WTSLogger::error("Instrument %s not in target positions, setup to 0 automatically", stdCode.c_str());
 			}
@@ -363,9 +359,8 @@ void WtCtaEngine::handle_pos_change(const char* straName, const char* stdCode, d
 		targetPos = decimal::rnd(abs(targetPos)*_risk_volscale)*symbol;
 	}
 
-	push_task([this, realCode, targetPos]() {
-		append_signal(realCode.c_str(), targetPos);
-	});
+	append_signal(realCode.c_str(), targetPos);
+	save_datas();
 
 	_exec_mgr.handle_pos_change(realCode.c_str(), targetPos);
 }

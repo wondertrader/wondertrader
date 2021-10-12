@@ -122,13 +122,16 @@ void WtEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 				const SigInfo& sInfo = it->second;
 				double pos = sInfo._volume;
 				std::string code = stdCode;
-				push_task([this, code, pos](){
-					do_set_position(code.c_str(), pos);
-				});
+				//push_task([this, code, pos](){
+				//	do_set_position(code.c_str(), pos);
+				//});
+				do_set_position(code.c_str(), pos);
 				_sig_map.erase(it);
 			}
 
 		}
+
+		save_datas();
 	}
 
 	if (curTick->volume() == 0)
@@ -244,7 +247,6 @@ void WtEngine::setVolScale(double scale)
 	_risk_date = _cur_tdate;
 
 	WTSLogger::log2_raw("risk", LL_INFO, fmt::format("Position risk scale updated: {} - > {}", oldScale, scale).c_str());
-
 	save_datas();
 }
 
@@ -497,7 +499,7 @@ void WtEngine::load_datas()
 				const char* stdCode = pItem["code"].GetString();
 				PosInfo& pInfo = _pos_map[stdCode];
 				pInfo._closeprofit = pItem["closeprofit"].GetDouble();
-				pInfo._volume = pItem["volume"].GetInt();
+				pInfo._volume = pItem["volume"].GetDouble();
 				if (pInfo._volume == 0)
 					pInfo._dynprofit = 0;
 				else
@@ -510,27 +512,29 @@ void WtEngine::load_datas()
 				if (details.IsNull() || !details.IsArray() || details.Size() == 0)
 					continue;
 
-				pInfo._details.resize(details.Size());
-
 				for (uint32_t i = 0; i < details.Size(); i++)
 				{
 					const rj::Value& dItem = details[i];
-					DetailInfo& dInfo = pInfo._details[i];
+					DetailInfo dInfo;
 					dInfo._long = dItem["long"].GetBool();
 					dInfo._price = dItem["price"].GetDouble();
-					dInfo._volume = dItem["volume"].GetInt();
+					dInfo._volume = dItem["volume"].GetDouble();
 					dInfo._opentime = dItem["opentime"].GetUint64();
 					if (dItem.HasMember("opentdate"))
 						dInfo._opentdate = dItem["opentdate"].GetUint();
 
 					dInfo._profit = dItem["profit"].GetDouble();
-
+					pInfo._details.emplace_back(dInfo);
 				}
+
+				WTSLogger::debug(fmt::format("Porfolio position confirmed,{} -> {}", stdCode, pInfo._volume).c_str());
 			}
 		}
 
 		WTSFundStruct& fundInfo = _port_fund->fundInfo();
 		fundInfo._dynprofit = total_dynprofit;
+
+		WTSLogger::debug("%u position info of portfolio loaded", _pos_map.size());
 	}
 
 	if(root.HasMember("riskmon"))
@@ -903,8 +907,6 @@ void WtEngine::do_set_position(const char* stdCode, double qty)
 			log_trade(stdCode, dInfo._long, true, curTm, curPx, abs(left), fee);
 		}
 	}
-
-	save_datas();
 }
 
 void WtEngine::push_task(TaskItem task)
