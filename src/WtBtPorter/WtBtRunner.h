@@ -52,7 +52,7 @@ public:
 		_cb_evt = cbEvt;
 	}
 
-	uint32_t	initCtaMocker(const char* name, int32_t slippage = 0, bool hook = false);
+	uint32_t	initCtaMocker(const char* name, int32_t slippage = 0, bool hook = false, bool persistData = true);
 	uint32_t	initHftMocker(const char* name, bool hook = false);
 	uint32_t	initSelMocker(const char* name, uint32_t date, uint32_t time, const char* period, const char* trdtpl = "CHINA", const char* session = "TRADING", int32_t slippage = 0);
 

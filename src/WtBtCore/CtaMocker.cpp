@@ -54,7 +54,7 @@ inline uint32_t makeCtxId()
 }
 
 
-CtaMocker::CtaMocker(HisDataReplayer* replayer, const char* name, int32_t slippage /* = 0 */, EventNotifier* notifier/* = NULL*/)
+CtaMocker::CtaMocker(HisDataReplayer* replayer, const char* name, int32_t slippage /* = 0 */, bool persistData /* = true */, EventNotifier* notifier /* = NULL */)
 	: ICtaStraCtx(name)
 	, _replayer(replayer)
 	, _total_calc_time(0)
@@ -71,6 +71,7 @@ CtaMocker::CtaMocker(HisDataReplayer* replayer, const char* name, int32_t slippa
 	, _resumed(false)
 	, _wait_calc(false)
 	, _in_backtest(false)
+	, _persist_data(persistData)
 {
 	_context_id = makeCtxId();
 }
@@ -82,6 +83,9 @@ CtaMocker::~CtaMocker()
 
 void CtaMocker::dump_outputs()
 {
+	if (!_persist_data)
+		return;
+
 	std::string folder = WtHelper::getOutputDir();
 	folder += _name;
 	folder += "/";

@@ -63,7 +63,7 @@ typedef faster_hashmap<std::string, CondList>	CondEntrustMap;
 class CtaMocker : public ICtaStraCtx, public IDataSink
 {
 public:
-	CtaMocker(HisDataReplayer* replayer, const char* name, int32_t slippage = 0, EventNotifier* notifier = NULL);
+	CtaMocker(HisDataReplayer* replayer, const char* name, int32_t slippage = 0, bool persistData = true, EventNotifier* notifier = NULL);
 	virtual ~CtaMocker();
 
 private:
@@ -309,4 +309,6 @@ protected:
 
 	bool			_in_backtest;
 	bool			_wait_calc;
+
+	bool			_persist_data;
 };

@@ -14,8 +14,8 @@
 
 extern WtBtRunner& getRunner();
 
-ExpCtaMocker::ExpCtaMocker(HisDataReplayer* replayer, const char* name, int32_t slippage /* = 0 */, EventNotifier* notifier /* = NULL */)
-	: CtaMocker(replayer, name, slippage, notifier)
+ExpCtaMocker::ExpCtaMocker(HisDataReplayer* replayer, const char* name, int32_t slippage /* = 0 */, bool persistData/* = true*/, EventNotifier* notifier /* = NULL */)
+	: CtaMocker(replayer, name, slippage, persistData, notifier)
 {
 }
 

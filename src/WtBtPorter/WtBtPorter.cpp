@@ -218,9 +218,9 @@ void write_log(WtUInt32 level, const char* message, const char* catName)
 	}
 }
 
-CtxHandler init_cta_mocker(const char* name, int slippage/* = 0*/, bool hook/* = false*/)
+CtxHandler init_cta_mocker(const char* name, int slippage/* = 0*/, bool hook/* = false*/, bool persistData/* = true*/)
 {
-	return getRunner().initCtaMocker(name, slippage, hook);
+	return getRunner().initCtaMocker(name, slippage, hook, persistData);
 }
 
 CtxHandler init_hft_mocker(const char* name, bool hook/* = false*/)
