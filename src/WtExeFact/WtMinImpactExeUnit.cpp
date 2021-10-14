@@ -370,10 +370,13 @@ void WtMinImpactExeUnit::set_position(const char* stdCode, double newVol)
 	if (_code.compare(stdCode) != 0)
 		return;
 
-	if (decimal::eq(_target_pos, newVol))
+	//如果原来的目标仓位是DBL_MAX，说明已经进入清理逻辑
+	//如果这个时候又设置为0，则直接跳过了
+	if (is_clear(_target_pos) && decimal::eq(newVol, 0))
 		return;
 
-	_target_pos = newVol;
+	if (decimal::eq(_target_pos, newVol))
+		return;
 
 	do_calc();
 }
