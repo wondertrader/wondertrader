@@ -45,12 +45,14 @@ WtBtRunner::WtBtRunner()
 	, _cb_cta_init(NULL)
 	, _cb_cta_tick(NULL)
 	, _cb_cta_calc(NULL)
+	, _cb_cta_calc_done(NULL)
 	, _cb_cta_bar(NULL)
 	, _cb_cta_sessevt(NULL)
 
 	, _cb_sel_init(NULL)
 	, _cb_sel_tick(NULL)
 	, _cb_sel_calc(NULL)
+	, _cb_sel_calc_done(NULL)
 	, _cb_sel_bar(NULL)
 	, _cb_sel_sessevt(NULL)
 
@@ -81,7 +83,8 @@ WtBtRunner::~WtBtRunner()
 {
 }
 
-void WtBtRunner::registerCtaCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar, FuncSessionEvtCallback cbSessEvt)
+void WtBtRunner::registerCtaCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, 
+	FuncStraBarCallback cbBar, FuncSessionEvtCallback cbSessEvt, FuncStraCalcCallback cbCalcDone/* = NULL*/)
 {
 	_cb_cta_init = cbInit;
 	_cb_cta_tick = cbTick;
@@ -89,16 +92,21 @@ void WtBtRunner::registerCtaCallbacks(FuncStraInitCallback cbInit, FuncStraTickC
 	_cb_cta_bar = cbBar;
 	_cb_cta_sessevt = cbSessEvt;
 
+	_cb_cta_calc_done = cbCalcDone;
+
 	WTSLogger::info("Callbacks of CTA engine registration done");
 }
 
-void WtBtRunner::registerSelCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar, FuncSessionEvtCallback cbSessEvt)
+void WtBtRunner::registerSelCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, 
+	FuncStraBarCallback cbBar, FuncSessionEvtCallback cbSessEvt, FuncStraCalcCallback cbCalcDone/* = NULL*/)
 {
 	_cb_sel_init = cbInit;
 	_cb_sel_tick = cbTick;
 	_cb_sel_calc = cbCalc;
 	_cb_sel_bar = cbBar;
 	_cb_sel_sessevt = cbSessEvt;
+
+	_cb_sel_calc_done = cbCalcDone;
 
 	WTSLogger::info("Callbacks of SEL engine registration done");
 }
@@ -186,6 +194,17 @@ void WtBtRunner::ctx_on_calc(uint32_t id, uint32_t curDate, uint32_t curTime, En
 	{
 	case ET_CTA: if (_cb_cta_calc) _cb_cta_calc(id, curDate, curTime); break;
 	case ET_SEL: if (_cb_sel_calc) _cb_sel_calc(id, curDate, curTime); break;
+	default:
+		break;
+	}
+}
+
+void WtBtRunner::ctx_on_calc_done(uint32_t id, uint32_t curDate, uint32_t curTime, EngineType eType /* = ET_CTA */)
+{
+	switch (eType)
+	{
+	case ET_CTA: if (_cb_cta_calc_done) _cb_cta_calc_done(id, curDate, curTime); break;
+	case ET_SEL: if (_cb_sel_calc_done) _cb_sel_calc_done(id, curDate, curTime); break;
 	default:
 		break;
 	}

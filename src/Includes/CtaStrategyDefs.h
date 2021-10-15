@@ -68,6 +68,11 @@ public:
 	virtual void on_schedule(ICtaStraCtx* ctx, uint32_t uDate, uint32_t uTime){}
 
 	/*
+	 *	主体逻辑执行完成
+	 */
+	virtual void on_schedule_done(ICtaStraCtx* ctx, uint32_t uDate, uint32_t uTime) {}
+
+	/*
 	 *	tick数据
 	 */
 	virtual void on_tick(ICtaStraCtx* ctx, const char* stdCode, WTSTickData* newTick){}

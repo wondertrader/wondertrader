@@ -29,7 +29,9 @@ public:
 
 	virtual void on_bar_close(const char* stdCode, const char* period, WTSBarStruct* newBar) override;
 
-	virtual void on_mainkline_updated(uint32_t curDate, uint32_t curTime) override;
+	virtual void on_calculate(uint32_t curDate, uint32_t curTime) override;
+
+	virtual void on_calculate_done(uint32_t curDate, uint32_t curTime) override;
 
 	virtual void on_bactest_end() override;
 };

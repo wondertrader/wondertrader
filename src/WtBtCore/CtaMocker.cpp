@@ -68,7 +68,7 @@ CtaMocker::CtaMocker(HisDataReplayer* replayer, const char* name, int32_t slippa
 	, _notifier(notifier)
 	, _has_hook(false)
 	, _hook_valid(true)
-	, _resumed(false)
+	, _cur_step(0)
 	, _wait_calc(false)
 	, _in_backtest(false)
 	, _persist_data(persistData)
@@ -479,7 +479,7 @@ void CtaMocker::on_tick_updated(const char* code, WTSTickData* newTick)
 		_strategy->on_tick(this, code, newTick);
 }
 
-void CtaMocker::on_mainkline_updated(uint32_t curDate, uint32_t curTime)
+void CtaMocker::on_calculate(uint32_t curDate, uint32_t curTime)
 {
 	if (_strategy)
 		_strategy->on_schedule(this, curDate, curTime);
@@ -506,8 +506,11 @@ bool CtaMocker::step_calc()
 		return false;
 	}
 
+	//总共分为4个状态
+	//0-初始状态，1-oncalc，2-oncalc结束，3-oncalcdone
+	//所以，如果出于0/2，则说明没有在执行中，需要notify
 	bool bNotify = false;
-	while (!_resumed && _in_backtest)
+	while (_in_backtest && (_cur_step == 0 || _cur_step == 2))
 	{
 		_cond_calc.notify_all();
 		bNotify = true;
@@ -523,7 +526,7 @@ bool CtaMocker::step_calc()
 		_cond_calc.wait(_mtx_calc);
 		_wait_calc = false;
 		WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Calc done notified");
-		_resumed = false;
+		_cur_step = (_cur_step + 1) % 4;
 
 		return true;
 	}
@@ -582,20 +585,34 @@ bool CtaMocker::on_schedule(uint32_t curDate, uint32_t curTime)
 					StdUniqueLock lock(_mtx_calc);
 					_cond_calc.wait(_mtx_calc);
 					WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Calc resumed");
-					_resumed = true;
+					_cur_step = 1;
 				}
 
-				on_mainkline_updated(curDate, curTime);
+				on_calculate(curDate, curTime);
+
+				if (_has_hook && _hook_valid)
+				{
+					WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Calc done, notify control thread");
+					while (_cur_step==1)
+						_cond_calc.notify_all();
+
+					WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Waiting for resume notify");
+					StdUniqueLock lock(_mtx_calc);
+					_cond_calc.wait(_mtx_calc);
+					WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Calc resumed");
+					_cur_step = 3;
+				}
+
+				on_calculate_done(curDate, curTime);
 				emmited = true;
 
 				_emit_times++;
 				_total_calc_time += ticker.micro_seconds();
 
-
 				if (_has_hook && _hook_valid)
 				{
 					WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Calc done, notify control thread");
-					while(_resumed)
+					while(_cur_step == 3)
 						_cond_calc.notify_all();
 				}
 			}

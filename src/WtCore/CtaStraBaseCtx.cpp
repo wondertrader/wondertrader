@@ -833,7 +833,7 @@ bool CtaStraBaseCtx::on_schedule(uint32_t curDate, uint32_t curTime)
 			if(offTime <= sInfo->getCloseTime(true))
 			{
 				_condtions.clear();
-				on_mainkline_updated(curDate, curTime);
+				on_calculate(curDate, curTime);
 				stra_log_info("Strategy scheduled @ %u", curTime);
 				emmited = true;
 

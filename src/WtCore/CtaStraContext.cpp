@@ -65,7 +65,7 @@ void CtaStraContext::on_tick_updated(const char* code, WTSTickData* newTick)
 		_strategy->on_tick(this, code, newTick);
 }
 
-void CtaStraContext::on_mainkline_updated(uint32_t curDate, uint32_t curTime)
+void CtaStraContext::on_calculate(uint32_t curDate, uint32_t curTime)
 {
 	if (_strategy)
 		_strategy->on_schedule(this, curDate, curTime);

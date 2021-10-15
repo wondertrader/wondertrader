@@ -63,10 +63,16 @@ void ExpCtaMocker::on_bar_close(const char* code, const char* period, WTSBarStru
 	getRunner().ctx_on_bar(_context_id, code, period, newBar, ET_CTA);
 }
 
-void ExpCtaMocker::on_mainkline_updated(uint32_t curDate, uint32_t curTime)
+void ExpCtaMocker::on_calculate(uint32_t curDate, uint32_t curTime)
 {
-	CtaMocker::on_mainkline_updated(curDate, curTime);
+	CtaMocker::on_calculate(curDate, curTime);
 	getRunner().ctx_on_calc(_context_id, curDate, curTime, ET_CTA);
+}
+
+void ExpCtaMocker::on_calculate_done(uint32_t curDate, uint32_t curTime)
+{
+	CtaMocker::on_calculate_done(curDate, curTime);
+	getRunner().ctx_on_calc_done(_context_id, curDate, curTime, ET_CTA);
 
 	getRunner().on_schedule_event(curDate, curTime);
 }

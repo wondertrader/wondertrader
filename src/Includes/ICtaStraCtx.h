@@ -47,8 +47,15 @@ public:
 	 */
 	virtual void on_bactest_end() {};
 
+	/*
+	 *	重算结束
+	 *	设计目的是要把on_calculate分成两步
+	 *	方便一些外挂的逻辑接入进来，可以在on_calculate_done执行信号
+	 */
+	virtual void on_calculate_done(uint32_t curDate, uint32_t curTime) { };
+
 	virtual void on_bar_close(const char* stdCode, const char* period, WTSBarStruct* newBar) = 0;
-	virtual void on_mainkline_updated(uint32_t curDate, uint32_t curTime) = 0;
+	virtual void on_calculate(uint32_t curDate, uint32_t curTime) = 0;
 	virtual void on_tick_updated(const char* stdCode, WTSTickData* newTick){}
 
 	virtual void enum_position(FuncEnumCtaPosCallBack cb) = 0;

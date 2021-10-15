@@ -114,7 +114,7 @@ public:
 
 	virtual void on_tick_updated(const char* stdCode, WTSTickData* newTick) override;
 	virtual void on_bar_close(const char* stdCode, const char* period, WTSBarStruct* newBar) override;
-	virtual void on_mainkline_updated(uint32_t curDate, uint32_t curTime) override;
+	virtual void on_calculate(uint32_t curDate, uint32_t curTime) override;
 
 
 	//////////////////////////////////////////////////////////////////////////
@@ -305,7 +305,7 @@ protected:
 	StdCondVariable	_cond_calc;
 	bool			_has_hook;		//这是人为控制是否启用钩子
 	bool			_hook_valid;	//这是根据是否是异步回测模式而确定钩子是否可用
-	std::atomic<bool>		_resumed;	//临时变量，用于控制状态
+	std::atomic<uint32_t>		_cur_step;	//临时变量，用于控制状态
 
 	bool			_in_backtest;
 	bool			_wait_calc;

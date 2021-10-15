@@ -41,8 +41,10 @@ public:
 	~WtBtRunner();
 
 public:
-	void	registerCtaCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar, FuncSessionEvtCallback cbSessEvt);
-	void	registerSelCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar, FuncSessionEvtCallback cbSessEvt);
+	void	registerCtaCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, 
+		FuncStraBarCallback cbBar, FuncSessionEvtCallback cbSessEvt, FuncStraCalcCallback cbCalcDone = NULL);
+	void	registerSelCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, 
+		FuncStraBarCallback cbBar, FuncSessionEvtCallback cbSessEvt, FuncStraCalcCallback cbCalcDone = NULL);
 	void registerHftCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraBarCallback cbBar,
 		FuncHftChannelCallback cbChnl, FuncHftOrdCallback cbOrd, FuncHftTrdCallback cbTrd, FuncHftEntrustCallback cbEntrust,
 		FuncStraOrdDtlCallback cbOrdDtl, FuncStraOrdQueCallback cbOrdQue, FuncStraTransCallback cbTrans, FuncSessionEvtCallback cbSessEvt);
@@ -62,6 +64,7 @@ public:
 	void	ctx_on_session_event(uint32_t id, uint32_t curTDate, bool isBegin = true, EngineType eType = ET_CTA);
 	void	ctx_on_tick(uint32_t id, const char* stdCode, WTSTickData* newTick, EngineType eType);
 	void	ctx_on_calc(uint32_t id, uint32_t uDate, uint32_t uTime, EngineType eType);
+	void	ctx_on_calc_done(uint32_t id, uint32_t uDate, uint32_t uTime, EngineType eType);
 	void	ctx_on_bar(uint32_t id, const char* stdCode, const char* period, WTSBarStruct* newBar, EngineType eType);
 
 	void	hft_on_order_queue(uint32_t id, const char* stdCode, WTSOrdQueData* newOrdQue);
@@ -124,18 +127,19 @@ private:
 	FuncSessionEvtCallback	_cb_cta_sessevt;
 	FuncStraTickCallback	_cb_cta_tick;
 	FuncStraCalcCallback	_cb_cta_calc;
+	FuncStraCalcCallback	_cb_cta_calc_done;
 	FuncStraBarCallback		_cb_cta_bar;
 
 	FuncStraInitCallback	_cb_sel_init;
 	FuncSessionEvtCallback	_cb_sel_sessevt;
 	FuncStraTickCallback	_cb_sel_tick;
 	FuncStraCalcCallback	_cb_sel_calc;
+	FuncStraCalcCallback	_cb_sel_calc_done;
 	FuncStraBarCallback		_cb_sel_bar;
 
 	FuncStraInitCallback	_cb_hft_init;
 	FuncSessionEvtCallback	_cb_hft_sessevt;
 	FuncStraTickCallback	_cb_hft_tick;
-	FuncStraCalcCallback	_cb_hft_calc;
 	FuncStraBarCallback		_cb_hft_bar;
 	FuncHftChannelCallback	_cb_hft_chnl;
 	FuncHftOrdCallback		_cb_hft_ord;
