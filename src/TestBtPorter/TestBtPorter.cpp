@@ -38,6 +38,13 @@ void on_calc(CtxHandler ctxid, WtUInt32 curDate, WtUInt32 curTime)
 	//cta_get_ticks(ctxid, "CFFEX.IF.HOT", 100, on_gettick);
 }
 
+void on_calc_done(CtxHandler ctxid, WtUInt32 curDate, WtUInt32 curTime)
+{
+	printf("on_calc_done @ %u.%u\r\n", curDate, curTime);
+	//cta_get_ticks(ctxid, "CFFEX.IF.HOT", 100, on_gettick);
+}
+
+
 void on_bar(CtxHandler ctxid, const char* code, const char* period, WTSBarStruct* newBar)
 {
 	//printf("on_bar\r\n");
@@ -56,7 +63,7 @@ void run_bt()
 #else
 	DLLHelper::load_library("libWtBtPorter.so");
 #endif
-	register_cta_callbacks(on_init, on_tick, on_calc, on_bar, on_session_event);
+	register_cta_callbacks(on_init, on_tick, on_calc, on_bar, on_session_event, on_calc_done);
 
 	auto id = init_cta_mocker("test", 0, true);
 

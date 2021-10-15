@@ -59,7 +59,7 @@ void ExpCtaContext::on_bar_close(const char* stdCode, const char* period, WTSBar
 	getRunner().ctx_on_bar(_context_id, stdCode, period, newBar, ET_CTA);
 }
 
-void ExpCtaContext::on_mainkline_updated(uint32_t curDate, uint32_t curTime)
+void ExpCtaContext::on_calculate(uint32_t curDate, uint32_t curTime)
 {
 	getRunner().ctx_on_calc(_context_id, curDate, curTime, ET_CTA);
 }
