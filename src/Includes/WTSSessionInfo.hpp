@@ -364,7 +364,12 @@ public:
 		return count;
 	}
 
-
+	/*
+	 *	是否处于交易时间
+	 *	@uTime		时间，格式为hhmm
+	 *	@bStrict	是否严格检查，如果是严格检查
+	 *				则在每一交易时段最后一分钟，如1500，不属于交易时间
+	 */
 	bool	isInTradingTime(uint32_t uTime, bool bStrict = false)
 	{
 		uint32_t count = timeToMinutes(uTime);
