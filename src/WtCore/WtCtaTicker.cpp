@@ -160,7 +160,7 @@ void WtCtaRtTicker::run()
 		{
 			uint32_t offTime = _s_info->offsetTime(_engine->get_min_time());
 
-			if (_time != UINT_MAX && _s_info->isInTradingTime(_time / 100000, true))
+			if (_time != UINT_MAX && _s_info->isInTradingTime(_time / 100000, false))
 			{
 				std::this_thread::sleep_for(std::chrono::milliseconds(10));
 				uint64_t now = TimeUtils::getLocalTimeNow();

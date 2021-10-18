@@ -37,6 +37,7 @@ void on_mq_log(unsigned long id, const char* message, bool bServer)
 
 EventNotifier::EventNotifier()
 	: _mq_sid(0)
+	, _publisher(NULL)
 {
 	
 }
