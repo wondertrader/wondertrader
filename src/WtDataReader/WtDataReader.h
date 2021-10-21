@@ -69,7 +69,7 @@ private:
 	} TransBlockPair;
 	typedef faster_hashmap<std::string, TransBlockPair>	TransBlockFilesMap;
 
-	typedef struct _OdeDtlBlockPair
+	typedef struct _OdrDtlBlockPair
 	{
 		RTOrdDtlBlock*	_block;
 		BoostMFPtr		_file;
@@ -77,7 +77,7 @@ private:
 
 		std::shared_ptr< std::ofstream>	_fstream;
 
-		_OdeDtlBlockPair()
+		_OdrDtlBlockPair()
 		{
 			_block = NULL;
 			_file = NULL;
@@ -86,7 +86,7 @@ private:
 	} OrdDtlBlockPair;
 	typedef faster_hashmap<std::string, OrdDtlBlockPair>	OrdDtlBlockFilesMap;
 
-	typedef struct _OdeQueBlockPair
+	typedef struct _OdrQueBlockPair
 	{
 		RTOrdQueBlock*	_block;
 		BoostMFPtr		_file;
@@ -94,7 +94,7 @@ private:
 
 		std::shared_ptr< std::ofstream>	_fstream;
 
-		_OdeQueBlockPair()
+		_OdrQueBlockPair()
 		{
 			_block = NULL;
 			_file = NULL;
