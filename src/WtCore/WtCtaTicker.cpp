@@ -160,7 +160,7 @@ void WtCtaRtTicker::run()
 		{
 			uint32_t offTime = _s_info->offsetTime(_engine->get_min_time());
 
-			if (_time != UINT_MAX && _s_info->isInTradingTime(_time / 100000, false))
+			if (_time != UINT_MAX && _s_info->isInTradingTime(_time / 100000, true))
 			{
 				std::this_thread::sleep_for(std::chrono::milliseconds(10));
 				uint64_t now = TimeUtils::getLocalTimeNow();
@@ -209,7 +209,35 @@ void WtCtaRtTicker::run()
 			}
 			else //if(offTime >= _s_info->getOpenTime(true) && offTime <= _s_info->getCloseTime(true))
 			{
-				std::this_thread::sleep_for(std::chrono::seconds(10));
+				//到了这一步，如果发现上次触发的位置不等于总的分钟数，说明少了最后一分钟的闭合逻辑
+				uint32_t total_mins = _s_info->getTradingMins();
+				if(_last_emit_pos == 0 && _last_emit_pos < total_mins)
+				{
+					//触发数据回放模块
+					StdUniqueLock lock(_mtx);
+
+					//优先修改时间标记
+					_last_emit_pos = total_mins;
+
+					bool bEndingTDate = true;
+					uint32_t thisMin = _s_info->getCloseTime(false);
+					uint32_t offMin = _s_info->getCloseTime(true);
+
+					WTSLogger::info("Minute bar %u.%04u closed automatically", _date, thisMin);
+					if (_store)
+						_store->onMinuteEnd(_date, thisMin, _engine->getTradingDate());
+
+					//任务调度
+					_engine->on_schedule(_date, thisMin);
+
+					_engine->on_session_end();
+
+					WTSLogger::info("Tradingday %u ended forcely", _engine->getTradingDate());
+				}
+				else
+				{
+					std::this_thread::sleep_for(std::chrono::seconds(10));
+				}
 			}
 		}
 	}));
