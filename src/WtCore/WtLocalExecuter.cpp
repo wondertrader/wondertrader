@@ -465,12 +465,12 @@ void WtLocalExecuter::on_position(const char* stdCode, bool isLong, double prevo
 				{
 					std::string code = stdCode;
 					_pool->schedule([unit, code](){
-						unit->self()->set_position(code.c_str(), DBL_MAX);
+						unit->self()->clear_all_position(code.c_str());
 					});
 				}
 				else
 				{
-					unit->self()->set_position(stdCode, DBL_MAX);
+					unit->self()->clear_all_position(stdCode);
 				}
 			}
 		}

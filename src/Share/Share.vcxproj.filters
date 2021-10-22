@@ -216,5 +216,8 @@
     <ClInclude Include="..\Includes\ISelStraCtx.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
+    <ClInclude Include="..\Includes\ExecuteDefs.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

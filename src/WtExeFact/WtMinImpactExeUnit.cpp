@@ -378,5 +378,17 @@ void WtMinImpactExeUnit::set_position(const char* stdCode, double newVol)
 	if (decimal::eq(_target_pos, newVol))
 		return;
 
+	_target_pos = newVol;
+
+	do_calc();
+}
+
+void WtMinImpactExeUnit::clear_all_position(const char* stdCode)
+{
+	if (_code.compare(stdCode) != 0)
+		return;
+
+	_target_pos = DBL_MAX;
+
 	do_calc();
 }

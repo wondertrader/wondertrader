@@ -174,7 +174,7 @@ void WtCtaRtTicker::run()
 					_last_emit_pos = _cur_pos;
 
 					uint32_t thisMin = _s_info->minuteToTime(_cur_pos);
-					_time = thisMin;
+					_time = thisMin*100000;//这里要还原成毫秒为单位
 
 					//如果thisMin是0, 说明换日了
 					//这里是本地计时导致的换日, 说明日期其实还是老日期, 要自动+1
@@ -209,10 +209,12 @@ void WtCtaRtTicker::run()
 			}
 			else //if(offTime >= _s_info->getOpenTime(true) && offTime <= _s_info->getCloseTime(true))
 			{
-				//到了这一步，如果发现上次触发的位置不等于总的分钟数，说明少了最后一分钟的闭合逻辑
+				//收盘以后，如果发现上次触发的位置不等于总的分钟数，说明少了最后一分钟的闭合逻辑
 				uint32_t total_mins = _s_info->getTradingMins();
-				if(_last_emit_pos == 0 && _last_emit_pos < total_mins)
+				if(_time != UINT_MAX && _last_emit_pos != 0 && _last_emit_pos < total_mins && offTime >= _s_info->getCloseTime(true))
 				{
+					WTSLogger::warn("Tradingday %u will be ended forcely，last_emit_pos: %u, time: %u", _engine->getTradingDate(), _last_emit_pos.fetch_add(0), _time);
+
 					//触发数据回放模块
 					StdUniqueLock lock(_mtx);
 
@@ -232,7 +234,6 @@ void WtCtaRtTicker::run()
 
 					_engine->on_session_end();
 
-					WTSLogger::info("Tradingday %u ended forcely", _engine->getTradingDate());
 				}
 				else
 				{

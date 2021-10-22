@@ -78,6 +78,12 @@ public:
 	virtual void set_position(const char* stdCode, double newVol) override;
 
 	/*
+	 *	清理全部持仓
+	 *	stdCode	合约代码
+	 */
+	virtual void clear_all_position(const char* stdCode) override;
+
+	/*
 	 *	交易通道就绪回调
 	 */
 	virtual void on_channel_ready() override;

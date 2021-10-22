@@ -119,6 +119,7 @@
     <ClInclude Include="..\FasterLibs\tsl\robin_hash.h" />
     <ClInclude Include="..\FasterLibs\tsl\robin_map.h" />
     <ClInclude Include="..\FasterLibs\tsl\robin_set.h" />
+    <ClInclude Include="..\Includes\ExecuteDefs.h" />
     <ClInclude Include="..\Includes\FasterDefs.h" />
     <ClInclude Include="..\Includes\IBaseDataMgr.h" />
     <ClInclude Include="..\Includes\ICtaStraCtx.h" />

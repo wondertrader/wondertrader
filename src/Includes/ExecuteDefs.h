@@ -171,10 +171,16 @@ public:
 public:
 	/*
 	 *	设置新的目标仓位
-	 *	code	合约代码
+	 *	stdCode	合约代码
 	 *	newVol	新的目标仓位
 	 */
 	virtual void set_position(const char* stdCode, double newVol) = 0;
+
+	/*
+	 *	清理全部持仓，锁仓的情况下也要清理
+	 *	stdCode	合约代码	
+	 */
+	virtual void clear_all_position(const char* stdCode){}
 
 	/*
 	 *	tick数据回调
