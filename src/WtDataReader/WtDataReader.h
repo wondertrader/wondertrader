@@ -193,8 +193,8 @@ private:
 	bool		cacheHisBarsFromFile(const std::string& key, const char* stdCode, WTSKlinePeriod period);
 	bool		cacheHisBarsFromDB(const std::string& key, const char* stdCode, WTSKlinePeriod period);
 
-	uint32_t	readBarsFromCache(const std::string& key, uint64_t etime, uint32_t count, std::vector<WTSBarStruct>& ayBars, bool isDay = false);
-	WTSBarStruct*	indexBarFromCache(const std::string& key, uint64_t etime, uint32_t& count, bool isDay = false);
+	//uint32_t	readBarsFromCache(const std::string& key, uint64_t etime, uint32_t count, std::vector<WTSBarStruct>& ayBars, bool isDay = false);
+	//WTSBarStruct*	indexBarFromCache(const std::string& key, uint64_t etime, uint32_t& count, bool isDay = false);
 
 	bool	loadStkAdjFactorsFromFile(const char* adjfile);
 	bool	loadStkAdjFactorsFromDB();
@@ -224,14 +224,13 @@ private:
 		std::string		_exchg;
 		std::string		_code;
 		WTSKlinePeriod	_period;
-		uint32_t		_his_cursor;
 		uint32_t		_rt_cursor;
 		std::string		_raw_code;
 
 		std::vector<WTSBarStruct>	_bars;
 		double			_factor;
 
-		_BarsList() :_his_cursor(UINT_MAX), _rt_cursor(UINT_MAX), _factor(DBL_MAX){}
+		_BarsList() :_rt_cursor(UINT_MAX), _factor(DBL_MAX){}
 	} BarsList;
 
 	typedef faster_hashmap<std::string, BarsList> BarsCache;

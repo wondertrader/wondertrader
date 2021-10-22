@@ -1889,130 +1889,130 @@ bool WtDataReader::cacheHisBarsFromFile(const std::string& key, const char* stdC
 	return true;
 }
 
-WTSBarStruct* WtDataReader::indexBarFromCache(const std::string& key, uint64_t etime, uint32_t& count, bool isDay /* = false */)
-{
-	uint32_t curDate, curTime;
-	if (etime == 0)
-	{
-		curDate = _sink->get_date();
-		curTime = _sink->get_min_time();
-	}
-	else
-	{
-		curDate = (uint32_t)(etime / 10000);
-		curTime = (uint32_t)(etime % 10000);
-	}
+//WTSBarStruct* WtDataReader::indexBarFromCache(const std::string& key, uint64_t etime, uint32_t& count, bool isDay /* = false */)
+//{
+//	uint32_t curDate, curTime;
+//	if (etime == 0)
+//	{
+//		curDate = _sink->get_date();
+//		curTime = _sink->get_min_time();
+//	}
+//	else
+//	{
+//		curDate = (uint32_t)(etime / 10000);
+//		curTime = (uint32_t)(etime % 10000);
+//	}
+//
+//	BarsList& barsList = _bars_cache[key];
+//	if (barsList._his_cursor == UINT_MAX)
+//	{
+//		//光标尚未初始化, 需要重新定位
+//		uint64_t nowTime = (uint64_t)curDate * 10000 + curTime;
+//		if (_last_time < nowTime)
+//		{
+//			_last_time = nowTime;
+//		}
+//
+//		WTSBarStruct bar;
+//		bar.date = curDate;
+//		bar.time = (curDate - 19900000) * 10000 + curTime;
+//		auto it = std::lower_bound(barsList._bars.begin(), barsList._bars.end(), bar, [isDay](const WTSBarStruct& a, const WTSBarStruct& b){
+//			if (isDay)
+//				return a.date < b.date;
+//			else
+//				return a.time < b.time;
+//		});
+//
+//
+//		if (it == barsList._bars.end())
+//			barsList._his_cursor = barsList._bars.size() - 1;
+//		else
+//		{
+//			if ((isDay && it->date > bar.date) || (!isDay && it->time > bar.time))
+//			{
+//				it--;
+//			}
+//
+//			barsList._his_cursor = it - barsList._bars.begin();
+//		}
+//	}
+//
+//	uint32_t sIdx = 0;
+//	if (count <= barsList._his_cursor + 1)
+//	{
+//		sIdx = barsList._his_cursor - count + 1;
+//	}
+//
+//	uint32_t curCnt = barsList._his_cursor - sIdx + 1;
+//	count = curCnt;
+//	return &barsList._bars[sIdx];
+//}
 
-	BarsList& barsList = _bars_cache[key];
-	if (barsList._his_cursor == UINT_MAX)
-	{
-		//光标尚未初始化, 需要重新定位
-		uint64_t nowTime = (uint64_t)curDate * 10000 + curTime;
-		if (_last_time < nowTime)
-		{
-			_last_time = nowTime;
-		}
-
-		WTSBarStruct bar;
-		bar.date = curDate;
-		bar.time = (curDate - 19900000) * 10000 + curTime;
-		auto it = std::lower_bound(barsList._bars.begin(), barsList._bars.end(), bar, [isDay](const WTSBarStruct& a, const WTSBarStruct& b){
-			if (isDay)
-				return a.date < b.date;
-			else
-				return a.time < b.time;
-		});
-
-
-		if (it == barsList._bars.end())
-			barsList._his_cursor = barsList._bars.size() - 1;
-		else
-		{
-			if ((isDay && it->date > bar.date) || (!isDay && it->time > bar.time))
-			{
-				it--;
-			}
-
-			barsList._his_cursor = it - barsList._bars.begin();
-		}
-	}
-
-	uint32_t sIdx = 0;
-	if (count <= barsList._his_cursor + 1)
-	{
-		sIdx = barsList._his_cursor - count + 1;
-	}
-
-	uint32_t curCnt = barsList._his_cursor - sIdx + 1;
-	count = curCnt;
-	return &barsList._bars[sIdx];
-}
-
-uint32_t WtDataReader::readBarsFromCache(const std::string& key, uint64_t etime, uint32_t count, std::vector<WTSBarStruct>& ayBars, bool isDay /* = false */)
-{
-	uint32_t curDate, curTime;
-	if (etime == 0)
-	{
-		curDate = _sink->get_date();
-		curTime = _sink->get_min_time();
-	}
-	else
-	{
-		curDate = (uint32_t)(etime / 10000);
-		curTime = (uint32_t)(etime % 10000);
-	}
-
-	BarsList& barsList = _bars_cache[key];
-	if (barsList._his_cursor == UINT_MAX)
-	{
-		//光标尚未初始化, 需要重新定位
-		uint64_t nowTime = (uint64_t)curDate * 10000 + curTime;
-		if (_last_time < nowTime)
-		{
-			_last_time = nowTime;
-		}
-
-		WTSBarStruct bar;
-		bar.date = curDate;
-		bar.time = (curDate - 19900000) * 10000 + curTime;
-		auto it = std::lower_bound(barsList._bars.begin(), barsList._bars.end(), bar, [isDay](const WTSBarStruct& a, const WTSBarStruct& b){
-			if (isDay)
-				return a.date < b.date;
-			else
-				return a.time < b.time;
-		});
-		
-
-		if(it == barsList._bars.end())
-			barsList._his_cursor = barsList._bars.size() - 1;
-		else
-		{
-			if ((isDay && it->date > bar.date) || (!isDay && it->time > bar.time))
-			{
-				if (it == barsList._bars.begin())
-					return 0;
-				
-				it--;
-			}
-
-			barsList._his_cursor = it - barsList._bars.begin();
-		}
-	}
-
-	uint32_t sIdx = 0;
-	if (count <= barsList._his_cursor + 1)
-	{
-		sIdx = barsList._his_cursor - count + 1;
-	}
-
-	uint32_t curCnt = barsList._his_cursor - sIdx + 1;
-	if(curCnt > 0)
-	{
-		ayBars.resize(curCnt);
-		memcpy(ayBars.data(), &barsList._bars[sIdx], sizeof(WTSBarStruct)*curCnt);
-	}
-	return curCnt;
-}
+//uint32_t WtDataReader::readBarsFromCache(const std::string& key, uint64_t etime, uint32_t count, std::vector<WTSBarStruct>& ayBars, bool isDay /* = false */)
+//{
+//	uint32_t curDate, curTime;
+//	if (etime == 0)
+//	{
+//		curDate = _sink->get_date();
+//		curTime = _sink->get_min_time();
+//	}
+//	else
+//	{
+//		curDate = (uint32_t)(etime / 10000);
+//		curTime = (uint32_t)(etime % 10000);
+//	}
+//
+//	BarsList& barsList = _bars_cache[key];
+//	if (barsList._his_cursor == UINT_MAX)
+//	{
+//		//光标尚未初始化, 需要重新定位
+//		uint64_t nowTime = (uint64_t)curDate * 10000 + curTime;
+//		if (_last_time < nowTime)
+//		{
+//			_last_time = nowTime;
+//		}
+//
+//		WTSBarStruct bar;
+//		bar.date = curDate;
+//		bar.time = (curDate - 19900000) * 10000 + curTime;
+//		auto it = std::lower_bound(barsList._bars.begin(), barsList._bars.end(), bar, [isDay](const WTSBarStruct& a, const WTSBarStruct& b){
+//			if (isDay)
+//				return a.date < b.date;
+//			else
+//				return a.time < b.time;
+//		});
+//		
+//
+//		if(it == barsList._bars.end())
+//			barsList._his_cursor = barsList._bars.size() - 1;
+//		else
+//		{
+//			if ((isDay && it->date > bar.date) || (!isDay && it->time > bar.time))
+//			{
+//				if (it == barsList._bars.begin())
+//					return 0;
+//				
+//				it--;
+//			}
+//
+//			barsList._his_cursor = it - barsList._bars.begin();
+//		}
+//	}
+//
+//	uint32_t sIdx = 0;
+//	if (count <= barsList._his_cursor + 1)
+//	{
+//		sIdx = barsList._his_cursor - count + 1;
+//	}
+//
+//	uint32_t curCnt = barsList._his_cursor - sIdx + 1;
+//	if(curCnt > 0)
+//	{
+//		ayBars.resize(curCnt);
+//		memcpy(ayBars.data(), &barsList._bars[sIdx], sizeof(WTSBarStruct)*curCnt);
+//	}
+//	return curCnt;
+//}
 
 WTSKlineSlice* WtDataReader::readKlineSlice(const char* stdCode, WTSKlinePeriod period, uint32_t count, uint64_t etime /* = 0 */)
 {
@@ -2150,7 +2150,10 @@ WTSKlineSlice* WtDataReader::readKlineSlice(const char* stdCode, WTSKlinePeriod 
 	if (left > 0 && bHasHisData)
 	{
 		hisCnt = left;
-		hisHead = indexBarFromCache(key, etime, hisCnt, period == KP_DAY);
+		//历史数据，直接从缓存的历史数据尾部截取
+		BarsList& barList = _bars_cache[key];
+		hisCnt = min(hisCnt, barList._bars.size());
+		hisHead = &barList._bars[barList._bars.size() - hisCnt];//indexBarFromCache(key, etime, hisCnt, period == KP_DAY);
 	}
 
 	if (hisCnt + rtCnt > 0)
@@ -2391,30 +2394,30 @@ void WtDataReader::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTDate
 		BarsList& barsList = (BarsList&)it->second;
 		if (barsList._period != KP_DAY)
 		{
-			//如果历史数据指标不在尾部, 说明是回测模式, 要继续回放历史数据
-			if (barsList._bars.size() > barsList._his_cursor + 1)
-			{
-				for (;;)
-				{
-					WTSBarStruct& nextBar = barsList._bars[barsList._his_cursor + 1];
+			//因为实盘框架和回测框架剥离了，所以这里不需要回放历史数据了
+			//if (barsList._his_cursor != UINT_MAX && barsList._bars.size() > barsList._his_cursor + 1)
+			//{
+			//	for (;;)
+			//	{
+			//		WTSBarStruct& nextBar = barsList._bars[barsList._his_cursor + 1];
 
-					uint64_t barTime = 199000000000 + nextBar.time;
-					if (barTime <= nowTime)
-					{
-						_sink->on_bar(barsList._code.c_str(), barsList._period, &nextBar);
-					}
-					else
-					{
-						break;
-					}
+			//		uint64_t barTime = 199000000000 + nextBar.time;
+			//		if (barTime <= nowTime)
+			//		{
+			//			_sink->on_bar(barsList._code.c_str(), barsList._period, &nextBar);
+			//		}
+			//		else
+			//		{
+			//			break;
+			//		}
 
-					barsList._his_cursor++;
+			//		barsList._his_cursor++;
 
-					if (barsList._his_cursor == barsList._bars.size() - 1)
-						break;
-				}
-			}
-			else if (!barsList._raw_code.empty())
+			//		if (barsList._his_cursor == barsList._bars.size() - 1)
+			//			break;
+			//	}
+			//}
+			if (!barsList._raw_code.empty())
 			{
 				RTKlineBlockPair* kBlk = getRTKilneBlock(barsList._exchg.c_str(), barsList._raw_code.c_str(), barsList._period);
 				if (kBlk == NULL)
@@ -2467,30 +2470,32 @@ void WtDataReader::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTDate
 					barsList._rt_cursor = preCnt - 1;
 			}
 		}
-		else
-		{
-			if (barsList._his_cursor != UINT_MAX && barsList._bars.size() - 1 > barsList._his_cursor)
-			{
-				for (;;)
-				{
-					WTSBarStruct& nextBar = barsList._bars[barsList._his_cursor + 1];
+		//这一段逻辑没有用了，在实盘中日线是不会闭合的，所以也不存在当日K线闭合的情况
+		//实盘中都通过ontick处理当日实时数据
+		//else if (barsList._period == KP_DAY)
+		//{
+		//	if (barsList._his_cursor != UINT_MAX && barsList._bars.size() - 1 > barsList._his_cursor)
+		//	{
+		//		for (;;)
+		//		{
+		//			WTSBarStruct& nextBar = barsList._bars[barsList._his_cursor + 1];
 
-					if (nextBar.date <= endTDate)
-					{
-						_sink->on_bar(barsList._code.c_str(), barsList._period, &nextBar);
-					}
-					else
-					{
-						break;
-					}
+		//			if (nextBar.date <= endTDate)
+		//			{
+		//				_sink->on_bar(barsList._code.c_str(), barsList._period, &nextBar);
+		//			}
+		//			else
+		//			{
+		//				break;
+		//			}
 
-					barsList._his_cursor++;
+		//			barsList._his_cursor++;
 
-					if (barsList._his_cursor == barsList._bars.size() - 1)
-						break;
-				}
-			}
-		}
+		//			if (barsList._his_cursor == barsList._bars.size() - 1)
+		//				break;
+		//		}
+		//	}
+		//}
 	}
 
 	if (_sink)
