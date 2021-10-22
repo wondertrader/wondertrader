@@ -93,38 +93,6 @@ ExecuteUnitPtr WtLocalExecuter::getUnit(const char* stdCode, bool bAutoCreate /*
 	}
 }
 
-ExecuteUnitPtr WtLocalExecuter::getClearUnit(const char* stdCode, bool bAutoCreate /* = true */)
-{
-	std::string commID = CodeHelper::stdCodeToStdCommID(stdCode);
-
-	WTSVariant* policy = _config->get("policy");
-
-	auto it = _unit_map.find(stdCode);
-	if (it != _unit_map.end())
-	{
-		return it->second;
-	}
-
-	if (bAutoCreate)
-	{
-		WTSVariant* cfg = policy->get("clear");	//先找清仓专用执行策略
-		if(cfg == NULL)
-			cfg = policy->get("default");		//如果没有，则用default
-
-		const char* name = cfg->getCString("name");
-		ExecuteUnitPtr unit = _factory->createExeUnit(name);
-		if (unit != NULL)
-		{
-			_unit_map[stdCode] = unit;
-			unit->self()->init(this, stdCode, cfg);
-		}
-		return unit;
-	}
-	else
-	{
-		return ExecuteUnitPtr();
-	}
-}
 
 //////////////////////////////////////////////////////////////////////////
 //ExecuteContext
@@ -457,7 +425,7 @@ void WtLocalExecuter::on_position(const char* stdCode, bool isLong, double prevo
 			//上期主力合约,需要清理仓位
 			//writeLog("%s 为上一期主力合约,仓位即将自动清理");
 			writeLog("Position of %s, as prev hot contract, will be cleared", stdCode);
-			ExecuteUnitPtr unit = getClearUnit(stdCode);
+			ExecuteUnitPtr unit = getUnit(stdCode);
 			if (unit)
 			{
 				//unit->self()->set_position(stdCode, 0);

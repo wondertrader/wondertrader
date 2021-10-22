@@ -102,8 +102,6 @@ public:
 
 private:
 	ExecuteUnitPtr	getUnit(const char* code, bool bAutoCreate = true);
-	ExecuteUnitPtr	getClearUnit(const char* code, bool bAutoCreate = true);
-
 public:
 	//////////////////////////////////////////////////////////////////////////
 	//ExecuteContext
