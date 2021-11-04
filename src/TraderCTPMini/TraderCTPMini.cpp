@@ -158,7 +158,7 @@ bool TraderCTPMini::init(WTSParams* params)
 	if (param != NULL)
 		m_strModule = getBinDir() + DLLHelper::wrap_module(param->asCString(), "lib");
 	else
-		m_strModule = DLLHelper::wrap_module("thosttraderapi", "lib");
+		m_strModule = getBinDir() + DLLHelper::wrap_module("thosttraderapi", "lib");
 
 	m_hInstCTP = DLLHelper::load_library(m_strModule.c_str());
 #ifdef _WIN32
