@@ -2,8 +2,8 @@
     "replayer":{
         "mode":"csv",
         "path":"./storage/",
-        "stime":202012012100,
-        "etime":202101211500,
+        "stime":201909010900,
+        "etime":201912011500,
         "basefiles":{
             "session":"./common/sessions.json",
             "commodity":"./common/commodities.json",
@@ -11,16 +11,16 @@
             "holiday":"./common/holidays.json",
             "hot":"./common/hots.json"
         },
-        "fees":"fees.json",
+        "fees":"fees.json"
     },
     "env":{
         "mocker":"cta",
         "slippage": 1
     },
     "cta":{
-        "module":"WzCtaStraFact.dll",
+        "module":"WtCtaStraFact.dll",
         "strategy":{
-            "id": "dt_rb",
+            "id": "dt_if",
             "name": "DualThrust",
             "params": {
                 "code": "CFFEX.IF.HOT",

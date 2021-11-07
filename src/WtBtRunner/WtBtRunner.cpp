@@ -68,6 +68,8 @@ int main()
 		replayer.register_sink(mocker, "exec");
 	}
 
+	replayer.prepare();
+
 	replayer.run();
 
 	printf("press enter key to exit\r\n");
