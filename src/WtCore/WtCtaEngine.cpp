@@ -171,6 +171,15 @@ void WtCtaEngine::on_init()
 		});
 	}
 
+	//初始化仓位打印出来
+	for (auto it = target_pos.begin(); it != target_pos.end(); it++)
+	{
+		const std::string& stdCode = it->first;
+		double pos = it->second;
+
+		WTSLogger::log_raw(LL_INFO, fmt::format("Portfolio initial position of {} is {}", stdCode.c_str(), pos).c_str());
+	}
+
 	_exec_mgr.set_positions(target_pos);
 
 	if (_evt_listener)
