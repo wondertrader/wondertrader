@@ -15,6 +15,14 @@
 
 extern const char* FACT_NAME;
 
+const char* PriceModeNames[] =
+{
+	"BESTPX",		//最优价
+	"LASTPX",		//最新价
+	"MARKET",		//对手价
+	"AUTOPX"		//自动
+};
+
 inline double get_real_target(double target)
 {
 	if (target == DBL_MAX)
@@ -63,7 +71,6 @@ const char* WtMinImpactExeUnit::getName()
 	return "WtMinImpactExeUnit";
 }
 
-extern const char* PriceModeNames[4];
 void WtMinImpactExeUnit::init(ExecuteContext* ctx, const char* stdCode, WTSVariant* cfg)
 {
 	ExecuteUnit::init(ctx, stdCode, cfg);
@@ -373,12 +380,20 @@ void WtMinImpactExeUnit::set_position(const char* stdCode, double newVol)
 	//如果原来的目标仓位是DBL_MAX，说明已经进入清理逻辑
 	//如果这个时候又设置为0，则直接跳过了
 	if (is_clear(_target_pos) && decimal::eq(newVol, 0))
+	{
+		_ctx->writeLog("%s is in clearing processing，position can not be set to 0", stdCode);
 		return;
+	}
 
 	if (decimal::eq(_target_pos, newVol))
 		return;
 
 	_target_pos = newVol;
+
+	if (is_clear(_target_pos))
+		_ctx->writeLog("%s is set to be in clearing processing", stdCode);
+	else
+		_ctx->writeLog("Target position of %s is set tb be %f", stdCode, _target_pos);
 
 	do_calc();
 }
