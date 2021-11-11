@@ -133,7 +133,7 @@ void register_hft_callbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cb
 	getRunner().registerHftCallbacks(cbInit, cbTick, cbBar, cbChnl, cbOrd, cbTrd, cbEntrust, cbOrdDtl, cbOrdQue, cbTrans, cbSessEvt);
 }
 
-void init_backtest(const char* logProfile, bool isFile)
+void init_backtest(const char* logProfile, bool isFile, const char* outDir)
 {
 	static bool inited = false;
 
@@ -144,7 +144,7 @@ void init_backtest(const char* logProfile, bool isFile)
 	CMiniDumper::Enable(getModuleName(), true, WtHelper::getCWD().c_str());
 #endif
 
-	getRunner().init(logProfile, isFile);
+	getRunner().init(logProfile, isFile, outDir);
 
 	inited = true;
 }

@@ -27,7 +27,7 @@ extern "C"
 		FuncHftChannelCallback cbChnl, FuncHftOrdCallback cbOrd, FuncHftTrdCallback cbTrd, FuncHftEntrustCallback cbEntrust,
 		FuncStraOrdDtlCallback cbOrdDtl, FuncStraOrdQueCallback cbOrdQue, FuncStraTransCallback cbTrans, FuncSessionEvtCallback cbSessEvt);
 
-	EXPORT_FLAG	void		init_backtest(const char* logProfile, bool isFile);
+	EXPORT_FLAG	void		init_backtest(const char* logProfile, bool isFile, const char* outDir);
 
 	EXPORT_FLAG	void		config_backtest(const char* cfgfile, bool isFile);
 

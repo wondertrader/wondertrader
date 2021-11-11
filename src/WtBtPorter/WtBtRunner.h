@@ -76,7 +76,7 @@ public:
 	void	hft_on_trade(uint32_t cHandle, WtUInt32 localid, const char* stdCode, bool isBuy, double vol, double price, const char* userTag);
 	void	hft_on_entrust(uint32_t cHandle, WtUInt32 localid, const char* stdCode, bool bSuccess, const char* message, const char* userTag);
 
-	void	init(const char* logProfile = "", bool isFile = true);
+	void	init(const char* logProfile = "", bool isFile = true, const char* outDir = "./outputs_bt");
 	void	config(const char* cfgFile, bool isFile = true);
 	void	run(bool bNeedDump = false, bool bAsync = false);
 	void	release();

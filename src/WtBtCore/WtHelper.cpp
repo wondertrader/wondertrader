@@ -19,6 +19,7 @@
 #endif
 
 std::string WtHelper::_inst_dir;
+std::string WtHelper::_out_dir = "./outputs_bt";
 
 std::string WtHelper::getCWD()
 {
@@ -37,10 +38,14 @@ std::string WtHelper::getCWD()
 	return _cwd;
 }
 
+void WtHelper::setOutputDir(const char* out_dir)
+{
+	_out_dir = StrUtil::standardisePath(std::string(out_dir));
+}
+
 const char* WtHelper::getOutputDir()
 {
-	const char* folder = "./outputs_bt/";
-	if (!BoostFile::exists(folder))
-		BoostFile::create_directories(folder);
-	return folder;
+	if (!BoostFile::exists(_out_dir.c_str()))
+		BoostFile::create_directories(_out_dir.c_str());
+	return _out_dir.c_str();
 }

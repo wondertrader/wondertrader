@@ -290,11 +290,12 @@ void WtBtRunner::hft_on_trade(uint32_t cHandle, WtUInt32 localid, const char* st
 
 extern std::string getBinDir();
 
-void WtBtRunner::init(const char* logProfile /* = "" */, bool isFile /* = true */)
+void WtBtRunner::init(const char* logProfile /* = "" */, bool isFile /* = true */, const char* outDir/* = "./outputs_bt"*/)
 {
 	WTSLogger::init(logProfile, isFile);
 
 	WtHelper::setInstDir(getBinDir().c_str());
+	WtHelper::setOutputDir(outDir);
 }
 
 void WtBtRunner::config(const char* cfgFile, bool isFile /* = true */)
