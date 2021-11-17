@@ -149,33 +149,83 @@ void WtCtaEngine::on_init()
 		CtaContextPtr& ctx = (CtaContextPtr&)it->second;
 		ctx->on_init();
 
-		ctx->enum_position([this, &target_pos](const char* stdCode, double qty){
-			std::string realCode = stdCode;
-			if (CodeHelper::isStdFutHotCode(stdCode))
+		ctx->enum_position([this, &target_pos, ctx](const char* stdCode, double qty){
+
+			double oldQty = qty;
+			bool bFilterd = _filter_mgr.is_filtered_by_strategy(ctx->name(), qty);
+			if (!bFilterd)
 			{
-				CodeHelper::CodeInfo cInfo;
-				CodeHelper::extractStdCode(stdCode, cInfo);
-				std::string code = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
-				realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), cInfo._exchg);
+				if (!decimal::eq(qty, oldQty))
+				{
+					//输出日志
+					//WTSLogger::info(fmt::format("[Filters] 策略{}的{}的目标仓位被策略过滤器调整: {} -> {}", ctx->name(), stdCode, oldQty, qty).c_str());
+					WTSLogger::info(fmt::format("[Filters] Target position of {} of strategy {} reset by strategy filter: {} -> {}", stdCode, ctx->name(), oldQty, qty).c_str());
+				}
+
+				std::string realCode = stdCode;
+				if (CodeHelper::isStdFutHotCode(stdCode))
+				{
+					CodeHelper::CodeInfo cInfo;
+					CodeHelper::extractStdCode(stdCode, cInfo);
+					std::string code = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
+					realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), cInfo._exchg);
+				}
+				else if (CodeHelper::isStdFut2ndCode(stdCode))
+				{
+					CodeHelper::CodeInfo cInfo;
+					CodeHelper::extractStdCode(stdCode, cInfo);
+					std::string code = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
+					realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), cInfo._exchg);
+				}
+
+				double& vol = target_pos[realCode];
+				vol += qty;
 			}
-			else if (CodeHelper::isStdFut2ndCode(stdCode))
+			else
 			{
-				CodeHelper::CodeInfo cInfo;
-				CodeHelper::extractStdCode(stdCode, cInfo);
-				std::string code = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
-				realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), cInfo._exchg);
+				//输出日志
+				//WTSLogger::info("[过滤器] 策略%s的%s的目标仓位被策略过滤器忽略", ctx->name(), stdCode);
+				WTSLogger::info("[Filters] Target position of %s of strategy %s ignored by strategy filter", stdCode, ctx->name());
 			}
 
-			double& vol = target_pos[realCode];
-			vol += qty;
+			//if (CodeHelper::isStdFutHotCode(stdCode))
+			//{
+			//	CodeHelper::CodeInfo cInfo;
+			//	CodeHelper::extractStdCode(stdCode, cInfo);
+			//	std::string code = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
+			//	realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), cInfo._exchg);
+			//}
+			//else if (CodeHelper::isStdFut2ndCode(stdCode))
+			//{
+			//	CodeHelper::CodeInfo cInfo;
+			//	CodeHelper::extractStdCode(stdCode, cInfo);
+			//	std::string code = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
+			//	realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), cInfo._exchg);
+			//}
+
+			//double& vol = target_pos[realCode];
+			//vol += qty;
 		});
+	}
+
+	bool bRiskEnabled = false;
+	if (!decimal::eq(_risk_volscale, 1.0) && _risk_date == _cur_tdate)
+	{
+		WTSLogger::info2("risk", "Risk scale of strategy group is %.2f", _risk_volscale);
+		bRiskEnabled = true;
 	}
 
 	//初始化仓位打印出来
 	for (auto it = target_pos.begin(); it != target_pos.end(); it++)
 	{
 		const std::string& stdCode = it->first;
-		double pos = it->second;
+		double& pos = (double&)it->second;
+
+		if (bRiskEnabled && !decimal::eq(pos, 0))
+		{
+			double symbol = pos / abs(pos);
+			pos = decimal::rnd(abs(pos)*_risk_volscale)*symbol;
+		}
 
 		WTSLogger::log_raw(LL_INFO, fmt::format("Portfolio initial position of {} is {}", stdCode.c_str(), pos).c_str());
 	}
