@@ -895,11 +895,11 @@ void TraderCTP::OnRspQryInvestorPosition(CThostFtdcInvestorPositionField *pInves
 						int availNew = pInvestorPosition->Position;
 						if (pInvestorPosition->PosiDirection == THOST_FTDC_PD_Long)
 						{
-							availNew -= pInvestorPosition->LongFrozen;
+							availNew -= pInvestorPosition->ShortFrozen;
 						}
 						else
 						{
-							availNew -= pInvestorPosition->ShortFrozen;
+							availNew -= pInvestorPosition->LongFrozen;
 						}
 						if (availNew < 0)
 							availNew = 0;
@@ -910,11 +910,11 @@ void TraderCTP::OnRspQryInvestorPosition(CThostFtdcInvestorPositionField *pInves
 						int availPre = pInvestorPosition->Position;
 						if (pInvestorPosition->PosiDirection == THOST_FTDC_PD_Long)
 						{
-							availPre -= pInvestorPosition->LongFrozen;
+							availPre -= pInvestorPosition->ShortFrozen;
 						}
 						else
 						{
-							availPre -= pInvestorPosition->ShortFrozen;
+							availPre -= pInvestorPosition->LongFrozen;
 						}
 						if (availPre < 0)
 							availPre = 0;
@@ -926,11 +926,11 @@ void TraderCTP::OnRspQryInvestorPosition(CThostFtdcInvestorPositionField *pInves
 					int availNew = pInvestorPosition->TodayPosition;
 					if (pInvestorPosition->PosiDirection == THOST_FTDC_PD_Long)
 					{
-						availNew -= pInvestorPosition->LongFrozen;
+						availNew -= pInvestorPosition->ShortFrozen;
 					}
 					else
 					{
-						availNew -= pInvestorPosition->ShortFrozen;
+						availNew -= pInvestorPosition->LongFrozen;
 					}
 					if (availNew < 0)
 						availNew = 0;
