@@ -70,6 +70,8 @@ HisDataReplayer::HisDataReplayer()
 	, _closed_tdate(0)
 	, _tick_simulated(true)
 	, _running(false)
+	, _begin_time(0)
+	, _end_time(0)
 {
 }
 
@@ -85,9 +87,15 @@ bool HisDataReplayer::init(WTSVariant* cfg, EventNotifier* notifier /* = NULL */
 
 	_mode = cfg->getCString("mode");
 	_base_dir = StrUtil::standardisePath(cfg->getCString("path"));
+	
+	bool isRangeCfg = (_begin_time == 0 || _end_time == 0);//是否从配置文件读取回测区间
+	if(_begin_time != 0)
+		_begin_time = cfg->getUInt64("stime");
 
-	_begin_time = cfg->getUInt64("stime");
-	_end_time = cfg->getUInt64("etime");
+	if(_end_time != 0)
+		_end_time = cfg->getUInt64("etime");
+
+	WTSLogger::info(fmt::format("Backtest time range is set to be [{},{}] via config", _begin_time, _end_time).c_str());
 
 	_tick_enabled = cfg->getBoolean("tick");
 
@@ -2883,6 +2891,8 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 	default: pname = ""; break;
 	}
 
+	bool isDay = (period == KP_DAY);
+
 	std::stringstream ss;
 	ss << _base_dir << "his/" << dirname << "/" << cInfo._exchg << "/";
 	if (!StdFile::exists(ss.str().c_str()))
@@ -2927,7 +2937,10 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 		barList._period = period;
 		barList._count = barcnt;
 
-		WTSLogger::info("%u items of back %s data of %s directly loaded from dsb file", barcnt, pname.c_str(), stdCode);
+		uint32_t stime = isDay ? barList._bars[0].date : barList._bars[0].time;
+		uint32_t etime = isDay ? barList._bars[barcnt-1].date : barList._bars[barcnt-1].time;
+
+		WTSLogger::info(fmt::format("{} items of back {} data of {} directly loaded from dsb file, from {} to {}", barcnt, pname.c_str(), stdCode, stime, etime).c_str());
 	}
 	else
 	{
@@ -2945,7 +2958,7 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 		CsvReader reader;
 		reader.load_from_file(csvfile.c_str());
 
-		WTSLogger::info("Reading data from %s...", csvfile.c_str());
+		WTSLogger::info("Reading data from %s，with fields: %s...", csvfile.c_str(), reader.fields());
 
 		BarsList& barList = bForBars ? _bars_cache[key] : _unbars_cache[key];
 		barList._code = stdCode;
@@ -2974,7 +2987,11 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 			}
 		}
 		barList._count = barList._bars.size();
-		WTSLogger::info("Data file %s all loaded, totally %u items", csvfile.c_str(), barList._bars.size());
+
+		uint32_t stime = isDay ? barList._bars[0].date : barList._bars[0].time;
+		uint32_t etime = isDay ? barList._bars[barList._count - 1].date : barList._bars[barList._count - 1].time;
+
+		WTSLogger::info(fmt::format("Data file {} all loaded, totally {} items, from {} to {}", csvfile.c_str(), barList._bars.size(), stime, etime).c_str());
 
 		BlockType btype;
 		switch (period)
@@ -3505,6 +3522,8 @@ bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* st
 	default: pname = "day"; break;
 	}
 
+	bool isDay = (period == KP_DAY);
+
 	BarsList& barList = bForBars ? _bars_cache[key] : _unbars_cache[key];
 	barList._code = stdCode;
 	barList._period = period;
@@ -3578,7 +3597,10 @@ bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* st
 				lastHotTime = hotAy->at(barcnt - 1).date;
 
 			//WTSLogger::info("主力%s历史%s数据直接缓存%u条", stdCode, pname.c_str(), barcnt);
-			WTSLogger::info("%u items of back %s data of hot contract %s directly loaded", barcnt, pname.c_str(), stdCode);
+			uint32_t stime = isDay ? barList._bars[0].date : barList._bars[0].time;
+			uint32_t etime = isDay ? barList._bars[barcnt - 1].date : barList._bars[barcnt - 1].time;
+
+			WTSLogger::info(fmt::format("{} items of back {} data of hot contract {} directly loaded, from {} to {}", barcnt, pname.c_str(), stdCode, stime, etime).c_str());
 
 			break;
 		}
