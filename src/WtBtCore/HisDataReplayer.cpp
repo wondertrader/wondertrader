@@ -98,6 +98,7 @@ bool HisDataReplayer::init(WTSVariant* cfg, EventNotifier* notifier /* = NULL */
 	WTSLogger::info(fmt::format("Backtest time range is set to be [{},{}] via config", _begin_time, _end_time).c_str());
 
 	_tick_enabled = cfg->getBoolean("tick");
+	WTSLogger::info("Tick data replaying is %s", _tick_enabled ? "enabled" : "disabled");
 
 	//基础数据文件
 	WTSVariant* cfgBF = cfg->get("basefiles");

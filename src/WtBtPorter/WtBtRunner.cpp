@@ -459,6 +459,8 @@ void WtBtRunner::set_time_range(WtUInt64 stime, WtUInt64 etime)
 void WtBtRunner::enable_tick(bool bEnabled /* = true */)
 {
 	_replayer.enable_tick(bEnabled);
+
+	WTSLogger::info("Tick data replaying is %s", bEnabled ? "enabled" : "disabled");
 }
 
 void WtBtRunner::clear_cache()
