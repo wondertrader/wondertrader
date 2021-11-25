@@ -89,10 +89,10 @@ bool HisDataReplayer::init(WTSVariant* cfg, EventNotifier* notifier /* = NULL */
 	_base_dir = StrUtil::standardisePath(cfg->getCString("path"));
 	
 	bool isRangeCfg = (_begin_time == 0 || _end_time == 0);//是否从配置文件读取回测区间
-	if(_begin_time != 0)
+	if(_begin_time == 0)
 		_begin_time = cfg->getUInt64("stime");
 
-	if(_end_time != 0)
+	if(_end_time == 0)
 		_end_time = cfg->getUInt64("etime");
 
 	WTSLogger::info(fmt::format("Backtest time range is set to be [{},{}] via config", _begin_time, _end_time).c_str());
