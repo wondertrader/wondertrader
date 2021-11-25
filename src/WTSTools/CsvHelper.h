@@ -39,6 +39,22 @@ public:
 
 	bool		next_row();
 
+	const char* fields() const 
+	{ 
+		static std::string s;
+		if(s.empty())
+		{
+			std::stringstream ss;
+			for (auto item : _fields_map)
+				ss << item.first << ",";
+
+			s = ss.str();
+			s = s.substr(0, s.size() - 1);
+		}
+
+		return s.c_str();
+	}
+
 private:
 	bool		check_cell(int32_t col);
 	int32_t		get_col_by_filed(const char* field);
