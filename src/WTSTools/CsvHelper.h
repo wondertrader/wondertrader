@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <fstream>
 #include <vector>
+#include <sstream>
 
 class CsvReader
 {
