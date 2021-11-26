@@ -36,6 +36,8 @@ private:
 public:
 	bool	init(WTSVariant* cfg, WtEngine* engine);
 
+	void	regsiter_loader(IHisDataLoader* loader) { _loader = loader; }
+
 	void	handle_push_quote(const char* stdCode, WTSTickData* newTick);
 
 	//////////////////////////////////////////////////////////////////////////
@@ -60,10 +62,12 @@ public:
 
 	virtual void		reader_log(WTSLogLevel ll, const char* fmt, ...) override;
 
-	IDataReader*	reader() { return _reader; }
+	inline IDataReader*	reader() { return _reader; }
+	inline IHisDataLoader*	loader() { return _loader; }
 
 private:
 	IDataReader*	_reader;
+	IHisDataLoader*	_loader;
 	WtEngine*		_engine;
 
 	faster_hashset<std::string> _subed_basic_bars;

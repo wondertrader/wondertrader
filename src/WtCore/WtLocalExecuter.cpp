@@ -416,8 +416,7 @@ void WtLocalExecuter::on_position(const char* stdCode, bool isLong, double prevo
 	IHotMgr* hotMgr = _stub->get_hot_mon();
 	if(CodeHelper::isStdFutCode(stdCode))
 	{
-		CodeHelper::CodeInfo cInfo;
-		CodeHelper::extractStdFutCode(stdCode, cInfo);
+		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdFutCode(stdCode);
 		std::string code = hotMgr->getPrevRawCode(cInfo._exchg, cInfo._product, tradingday);
 		writeLog("Prev hot contract of %s.%s on %u is %s", cInfo._exchg, cInfo._product, tradingday, code.c_str());
 		if (code == cInfo._code)

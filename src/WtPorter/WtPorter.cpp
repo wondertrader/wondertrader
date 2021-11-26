@@ -152,6 +152,11 @@ bool create_ext_executer(const char* id)
 	return getRunner().createExtExecuter(id);
 }
 
+void register_ext_data_loader(FuncLoadRawBars barLoader)
+{
+	getRunner().registerExtDataLoader(barLoader);
+}
+
 void init_porter(const char* logProfile, bool isFile, const char* genDir)
 {
 	static bool inited = false;

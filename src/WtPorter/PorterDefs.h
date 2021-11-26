@@ -84,3 +84,7 @@ typedef void(PORTER_FLAG *FuncParserSubCallback)(const char* id, const char* ful
 //扩展Executer回调函数
 typedef void(PORTER_FLAG *FuncExecInitCallback)(const char* id);
 typedef void(PORTER_FLAG *FuncExecCmdCallback)(const char* id, const char* StdCode, double targetPos);
+
+//////////////////////////////////////////////////////////////////////////
+//外部数据加载模块
+typedef bool(PORTER_FLAG *FuncLoadRawBars)(const char* stdCode, WTSKlinePeriod period);

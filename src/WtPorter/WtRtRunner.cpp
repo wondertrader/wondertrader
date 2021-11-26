@@ -76,6 +76,11 @@ WtRtRunner::WtRtRunner()
 	, _cb_evt(NULL)
 	, _is_hft(false)
 	, _is_sel(false)
+
+	, _ext_bar_loader(NULL)
+	, _feed_bars(NULL)
+	, _feed_count(0)
+	, _feed_factor(1.0)
 {
 	install_signal_hooks([](const char* message) {
 		WTSLogger::error(message);
@@ -173,6 +178,38 @@ void WtRtRunner::registerHftCallbacks(FuncStraInitCallback cbInit, FuncStraTickC
 	_cb_hft_sessevt = cbSessEvt;
 
 	WTSLogger::info("Callbacks of HFT engine registration done");
+}
+
+bool WtRtRunner::loadStdHisBars(void* obj, const char* key, const char* stdCode, WTSKlinePeriod period, FuncReadBars cb)
+{
+	StdUniqueLock lock(_feed_mtx);
+	if (_ext_bar_loader == NULL)
+		return false;
+
+	_feed_bars = NULL;
+	_feed_count = 0;
+
+	bool bSucc = _ext_bar_loader(stdCode, period);
+	if (!bSucc)
+		return false;
+
+	cb(obj, key, _feed_bars, _feed_count, _feed_factor);
+
+	return true;
+}
+
+
+void WtRtRunner::feedHisBars(WTSBarStruct* firstBar, uint32_t count, double factor)
+{
+	if (_ext_bar_loader == NULL)
+	{
+		WTSLogger::error("Cannot feed bars because of no extented bar loader registered.");
+		return;
+	}
+
+	_feed_bars = firstBar;
+	_feed_count = count;
+	_feed_factor = factor;
 }
 
 bool WtRtRunner::createExtParser(const char* id)
@@ -682,6 +719,9 @@ bool WtRtRunner::initDataMgr()
 	WTSVariant* cfg = _config->get("data");
 	if (cfg == NULL)
 		return false;
+
+	if (_ext_bar_loader != NULL)
+		_data_mgr.regsiter_loader(this);
 
 	_data_mgr.init(cfg, _engine);
 

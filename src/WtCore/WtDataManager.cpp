@@ -26,6 +26,7 @@ WTSDataFactory g_dataFact;
 WtDataManager::WtDataManager()
 	: _reader(NULL)
 	, _engine(NULL)
+	, _loader(NULL)
 	, _bars_cache(NULL)
 	, _ticks_cache(NULL)
 	, _rt_tick_map(NULL)
@@ -79,7 +80,7 @@ bool WtDataManager::initStore(WTSVariant* cfg)
 		return false;
 	}
 
-	_reader->init(cfg, this);
+	_reader->init(cfg, this, _loader);
 
 	return true;
 }

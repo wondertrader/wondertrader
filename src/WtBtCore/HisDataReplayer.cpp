@@ -72,6 +72,7 @@ HisDataReplayer::HisDataReplayer()
 	, _running(false)
 	, _begin_time(0)
 	, _end_time(0)
+	, _bt_loader(NULL)
 {
 }
 
@@ -81,9 +82,10 @@ HisDataReplayer::~HisDataReplayer()
 }
 
 
-bool HisDataReplayer::init(WTSVariant* cfg, EventNotifier* notifier /* = NULL */)
+bool HisDataReplayer::init(WTSVariant* cfg, EventNotifier* notifier /* = NULL */, IBtDataLoader* dataLoader /* = NULL */)
 {
 	_notifier = notifier;
+	_bt_loader = dataLoader;
 
 	_mode = cfg->getCString("mode");
 	_base_dir = StrUtil::standardisePath(cfg->getCString("path"));
@@ -1090,8 +1092,7 @@ void HisDataReplayer::replayUnbars(uint64_t stime, uint64_t nowTime, uint32_t en
 						if (nextBar.date <= uDate)
 							continue;
 
-						CodeHelper::CodeInfo cInfo;
-						CodeHelper::extractStdCode(barsList._code.c_str(), cInfo);
+						CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(barsList._code.c_str());
 
 						std::string realCode = barsList._code;
 						if (cInfo.isStock() && cInfo.isExright())
@@ -1668,8 +1669,7 @@ void HisDataReplayer::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTD
 								const std::string& ticker = _ticker_keys[barsList._code];
 								if (ticker == it->first)
 								{
-									CodeHelper::CodeInfo cInfo;
-									CodeHelper::extractStdCode(barsList._code.c_str(), cInfo);
+									CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(barsList._code.c_str());
 
 									std::string realCode = barsList._code;
 									if (cInfo.isStock() && cInfo._exright)
@@ -2676,8 +2676,7 @@ uint32_t strToDate(const char* strDate)
 
 bool HisDataReplayer::cacheRawTicksFromBin(const std::string& key, const char* stdCode, uint32_t uDate)
 {
-	CodeHelper::CodeInfo cInfo;
-	CodeHelper::extractStdCode(stdCode, cInfo);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
 	
 	std::string rawCode = cInfo._code;
@@ -2758,6 +2757,33 @@ bool HisDataReplayer::cacheRawTicksFromBin(const std::string& key, const char* s
 	ticksList._code = stdCode;
 	ticksList._date = uDate;
 	ticksList._count = tickcnt;
+
+	return true;
+}
+
+bool HisDataReplayer::cacheRawTicksFromLoader(const std::string& key, const char* stdCode, uint32_t uDate)
+{
+	if (NULL == _bt_loader)
+		return false;
+
+	auto& ticksList = _ticks_cache[key];
+	ticksList._cursor = UINT_MAX;
+	ticksList._code = stdCode;
+	ticksList._date = uDate;
+	ticksList._count = 0;
+
+	bool bSucc = _bt_loader->loadRawHisTicks(this, key.c_str(), stdCode, uDate, [](void* obj, const char* key, WTSTickStruct* firstTick, uint32_t count) {
+		HisDataReplayer* replayer = (HisDataReplayer*)obj;
+		auto& ticksList = replayer->_ticks_cache[key];
+		ticksList._items.resize(count);
+		ticksList._count = count;
+		memcpy(ticksList._items.data(), firstTick, sizeof(WTSTickStruct)*count);
+	});
+
+	if (!bSucc)
+		return false;
+
+	WTSLogger::info(fmt::format("{} items of back tick data of {} on {} loaded via extended loader", ticksList._count, stdCode, uDate).c_str());
 
 	return true;
 }
@@ -2876,10 +2902,51 @@ bool HisDataReplayer::cacheRawTicksFromCSV(const std::string& key, const char* s
 	return true;
 }
 
+bool HisDataReplayer::cacheRawBarsFromLoader(const std::string& key, const char* stdCode, WTSKlinePeriod period, bool bForBars /* = true */)
+{
+	if (NULL == _bt_loader)
+		return false;
+
+	BarsList& barList = bForBars ? _bars_cache[key] : _unbars_cache[key];
+	barList._code = stdCode;
+	barList._period = period;
+	barList._cursor = UINT_MAX;
+	barList._count = 0;
+
+	bool bSucc = _bt_loader->loadRawHisBars(this, key.c_str(), stdCode, period, bForBars, [](void* obj, const char* key, WTSBarStruct* firstBar, uint32_t count, bool bForBars) {
+		HisDataReplayer* replayer = (HisDataReplayer*)obj;
+		BarsList& barList = bForBars ? replayer->_bars_cache[key] : replayer->_unbars_cache[key];
+		barList._factor = 1.0;
+		barList._bars.resize(count);
+		barList._count = count;
+		memcpy(barList._bars.data(), firstBar, sizeof(WTSBarStruct)*count);
+	});
+
+	if (!bSucc)
+		return false;
+
+	bool isDay = (period == KP_DAY);
+
+	uint32_t stime = isDay ? barList._bars[0].date : barList._bars[0].time;
+	uint32_t etime = isDay ? barList._bars[barList._count - 1].date : barList._bars[barList._count - 1].time;
+
+	std::string pname;
+	switch (period)
+	{
+	case KP_Minute1: pname = "m1"; break;
+	case KP_Minute5: pname = "m5"; break;
+	case KP_DAY: pname = "d"; break;
+	default: pname = ""; break;
+	}
+
+	WTSLogger::info(fmt::format("{} items of back {} data of {} loaded via extended loader, from {} to {}", barList._count, pname.c_str(), stdCode, stime, etime).c_str());
+
+	return true;
+}
+
 bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* stdCode, WTSKlinePeriod period, bool bForBars/* = true*/)
 {
-	CodeHelper::CodeInfo cInfo;
-	CodeHelper::extractStdCode(stdCode, cInfo);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
 
 	std::string pname;
@@ -3026,8 +3093,7 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 
 bool HisDataReplayer::cacheRawBarsFromDB(const std::string& key, const char* stdCode, WTSKlinePeriod period, bool bForBars/* = true*/)
 {
-	CodeHelper::CodeInfo cInfo;
-	CodeHelper::extractStdCode(stdCode, cInfo);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
 
 	uint32_t curDate = TimeUtils::getCurDate();
@@ -3506,8 +3572,7 @@ bool HisDataReplayer::cacheRawBarsFromDB(const std::string& key, const char* std
 
 bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* stdCode, WTSKlinePeriod period, bool bForBars/* = true*/)
 {
-	CodeHelper::CodeInfo cInfo;
-	CodeHelper::extractStdCode(stdCode, cInfo);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
 
 	uint32_t curDate = TimeUtils::getCurDate();

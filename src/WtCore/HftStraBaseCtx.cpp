@@ -208,8 +208,7 @@ OrderIDs HftStraBaseCtx::stra_buy(const char* stdCode, double price, double qty,
 {
 	if(CodeHelper::isStdFutHotCode(stdCode))
 	{
-		CodeHelper::CodeInfo cInfo;
-		CodeHelper::extractStdCode(stdCode, cInfo);
+		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 		std::string code = _engine->get_hot_mgr()->getRawCode(cInfo._exchg, cInfo._product, _engine->get_trading_date());
 		std::string realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), cInfo._exchg);
 
@@ -230,8 +229,7 @@ OrderIDs HftStraBaseCtx::stra_buy(const char* stdCode, double price, double qty,
 	}
 	else if (CodeHelper::isStdFut2ndCode(stdCode))
 	{
-		CodeHelper::CodeInfo cInfo;
-		CodeHelper::extractStdCode(stdCode, cInfo);
+		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 		std::string code = _engine->get_hot_mgr()->getSecondRawCode(cInfo._exchg, cInfo._product, _engine->get_trading_date());
 		std::string realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), cInfo._exchg);
 
@@ -271,8 +269,7 @@ OrderIDs HftStraBaseCtx::stra_sell(const char* stdCode, double price, double qty
 {
 	if (CodeHelper::isStdFutHotCode(stdCode))
 	{
-		CodeHelper::CodeInfo cInfo;
-		CodeHelper::extractStdCode(stdCode, cInfo);
+		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 		std::string code = _engine->get_hot_mgr()->getRawCode(cInfo._exchg, cInfo._product, _engine->get_trading_date());
 		std::string realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), cInfo._exchg);
 
@@ -293,8 +290,7 @@ OrderIDs HftStraBaseCtx::stra_sell(const char* stdCode, double price, double qty
 	}
 	else if (CodeHelper::isStdFut2ndCode(stdCode))
 	{
-		CodeHelper::CodeInfo cInfo;
-		CodeHelper::extractStdCode(stdCode, cInfo);
+		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 		std::string code = _engine->get_hot_mgr()->getSecondRawCode(cInfo._exchg, cInfo._product, _engine->get_trading_date());
 		std::string realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), cInfo._exchg);
 
@@ -335,8 +331,7 @@ uint32_t HftStraBaseCtx::stra_enter_long(const char* stdCode, double price, doub
 	std::string realCode = stdCode;
 	if (CodeHelper::isStdFutHotCode(stdCode))
 	{
-		CodeHelper::CodeInfo cInfo;
-		CodeHelper::extractStdCode(stdCode, cInfo);
+		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 		std::string code = _engine->get_hot_mgr()->getRawCode(cInfo._exchg, cInfo._product, _engine->get_trading_date());
 		realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), cInfo._exchg);
 
@@ -344,8 +339,7 @@ uint32_t HftStraBaseCtx::stra_enter_long(const char* stdCode, double price, doub
 	}
 	else if (CodeHelper::isStdFut2ndCode(stdCode))
 	{
-		CodeHelper::CodeInfo cInfo;
-		CodeHelper::extractStdCode(stdCode, cInfo);
+		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 		std::string code = _engine->get_hot_mgr()->getSecondRawCode(cInfo._exchg, cInfo._product, _engine->get_trading_date());
 		realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), cInfo._exchg);
 
@@ -360,8 +354,7 @@ uint32_t HftStraBaseCtx::stra_exit_long(const char* stdCode, double price, doubl
 	std::string realCode = stdCode;
 	if (CodeHelper::isStdFutHotCode(stdCode))
 	{
-		CodeHelper::CodeInfo cInfo;
-		CodeHelper::extractStdCode(stdCode, cInfo);
+		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 		std::string code = _engine->get_hot_mgr()->getRawCode(cInfo._exchg, cInfo._product, _engine->get_trading_date());
 		realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), cInfo._exchg);
 
@@ -369,8 +362,7 @@ uint32_t HftStraBaseCtx::stra_exit_long(const char* stdCode, double price, doubl
 	}
 	else if (CodeHelper::isStdFut2ndCode(stdCode))
 	{
-		CodeHelper::CodeInfo cInfo;
-		CodeHelper::extractStdCode(stdCode, cInfo);
+		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 		std::string code = _engine->get_hot_mgr()->getSecondRawCode(cInfo._exchg, cInfo._product, _engine->get_trading_date());
 		realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), cInfo._exchg);
 
@@ -385,8 +377,7 @@ uint32_t HftStraBaseCtx::stra_enter_short(const char* stdCode, double price, dou
 	std::string realCode = stdCode;
 	if (CodeHelper::isStdFutHotCode(stdCode))
 	{
-		CodeHelper::CodeInfo cInfo;
-		CodeHelper::extractStdCode(stdCode, cInfo);
+		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 		std::string code = _engine->get_hot_mgr()->getRawCode(cInfo._exchg, cInfo._product, _engine->get_trading_date());
 		realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), cInfo._exchg);
 
@@ -394,8 +385,7 @@ uint32_t HftStraBaseCtx::stra_enter_short(const char* stdCode, double price, dou
 	}
 	else if (CodeHelper::isStdFut2ndCode(stdCode))
 	{
-		CodeHelper::CodeInfo cInfo;
-		CodeHelper::extractStdCode(stdCode, cInfo);
+		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 		std::string code = _engine->get_hot_mgr()->getSecondRawCode(cInfo._exchg, cInfo._product, _engine->get_trading_date());
 		realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), cInfo._exchg);
 
@@ -410,8 +400,7 @@ uint32_t HftStraBaseCtx::stra_exit_short(const char* stdCode, double price, doub
 	std::string realCode = stdCode;
 	if (CodeHelper::isStdFutHotCode(stdCode))
 	{
-		CodeHelper::CodeInfo cInfo;
-		CodeHelper::extractStdCode(stdCode, cInfo);
+		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 		std::string code = _engine->get_hot_mgr()->getRawCode(cInfo._exchg, cInfo._product, _engine->get_trading_date());
 		realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), cInfo._exchg);
 
@@ -419,8 +408,7 @@ uint32_t HftStraBaseCtx::stra_exit_short(const char* stdCode, double price, doub
 	}
 	else if (CodeHelper::isStdFut2ndCode(stdCode))
 	{
-		CodeHelper::CodeInfo cInfo;
-		CodeHelper::extractStdCode(stdCode, cInfo);
+		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 		std::string code = _engine->get_hot_mgr()->getSecondRawCode(cInfo._exchg, cInfo._product, _engine->get_trading_date());
 		realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), cInfo._exchg);
 
@@ -620,8 +608,7 @@ double HftStraBaseCtx::stra_get_position(const char* stdCode)
 {
 	if (CodeHelper::isStdFutHotCode(stdCode))
 	{
-		CodeHelper::CodeInfo cInfo;
-		CodeHelper::extractStdCode(stdCode, cInfo);
+		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 		std::string code = _engine->get_hot_mgr()->getRawCode(cInfo._exchg, cInfo._product, _engine->get_trading_date());
 		std::string realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), cInfo._exchg);
 
@@ -631,8 +618,7 @@ double HftStraBaseCtx::stra_get_position(const char* stdCode)
 	}
 	else if (CodeHelper::isStdFut2ndCode(stdCode))
 	{
-		CodeHelper::CodeInfo cInfo;
-		CodeHelper::extractStdCode(stdCode, cInfo);
+		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 		std::string code = _engine->get_hot_mgr()->getSecondRawCode(cInfo._exchg, cInfo._product, _engine->get_trading_date());
 		std::string realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), cInfo._exchg);
 
@@ -650,8 +636,7 @@ double HftStraBaseCtx::stra_get_undone(const char* stdCode)
 {
 	if (CodeHelper::isStdFutHotCode(stdCode))
 	{
-		CodeHelper::CodeInfo cInfo;
-		CodeHelper::extractStdCode(stdCode, cInfo);
+		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 		std::string code = _engine->get_hot_mgr()->getRawCode(cInfo._exchg, cInfo._product, _engine->get_trading_date());
 		std::string realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), cInfo._exchg);
 
@@ -661,8 +646,7 @@ double HftStraBaseCtx::stra_get_undone(const char* stdCode)
 	}
 	else if (CodeHelper::isStdFut2ndCode(stdCode))
 	{
-		CodeHelper::CodeInfo cInfo;
-		CodeHelper::extractStdCode(stdCode, cInfo);
+		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 		std::string code = _engine->get_hot_mgr()->getSecondRawCode(cInfo._exchg, cInfo._product, _engine->get_trading_date());
 		std::string realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), cInfo._exchg);
 

@@ -219,8 +219,7 @@ public:
 		if (!isComm)
 			pid = bscFutCodeToBscCommID(code);
 
-		std::string ret = StrUtil::printf("%s.%s.HOT", exchg, pid.c_str());
-		return ret;
+		return StrUtil::printf("%s.%s.HOT", exchg, pid.c_str());
 	}
 
 	static inline std::string bscCodeToStd2ndCode(const char* code, const char* exchg, bool isComm = false)
@@ -229,8 +228,7 @@ public:
 		if (!isComm)
 			pid = bscFutCodeToBscCommID(code);
 
-		std::string ret = StrUtil::printf("%s.%s.2ND", exchg, pid.c_str());
-		return ret;
+		return StrUtil::printf("%s.%s.2ND", exchg, pid.c_str());
 	}
 
 	static inline std::string stdCodeToStdHotCode(const char* stdCode)
@@ -240,7 +238,7 @@ public:
 		stdHotCode += ".";
 		stdHotCode += ay[1];
 		stdHotCode += ".HOT";
-		return stdHotCode;
+		return std::move(stdHotCode);
 	}
 
 	static inline std::string stdCodeToStd2ndCode(const char* stdCode)
@@ -250,7 +248,7 @@ public:
 		stdHotCode += ".";
 		stdHotCode += ay[1];
 		stdHotCode += ".2ND";
-		return stdHotCode;
+		return std::move(stdHotCode);
 	}
 
 	static inline std::string stdFutOptCodeToBscCode(const char* stdCode)
@@ -262,7 +260,7 @@ public:
 			StrUtil::replace(ret, ".", "-");
 		else
 			StrUtil::replace(ret, ".", "");
-		return ret;
+		return std::move(ret);
 	}
 
 	static inline std::string stdFutCodeToBscCode(const char* stdCode)
@@ -274,7 +272,7 @@ public:
 			bscCode += ay[2].substr(1);
 		else
 			bscCode += ay[2];
-		return bscCode;
+		return std::move(bscCode);
 	}
 
 	static inline std::string stdStkCodeToBscCode(const char* stdCode)
@@ -291,7 +289,7 @@ public:
 			bscCode += ay[1];
 		else
 			bscCode += ay[2];
-		return bscCode;
+		return std::move(bscCode);
 	}
 
 	static inline std::string stdCodeToBscCode(const char* stdCode)
@@ -304,8 +302,9 @@ public:
 			return stdFutCodeToBscCode(stdCode);
 	}
 
-	static inline void extractStdFutCode(const char* stdCode, CodeInfo& codeInfo)
+	static inline CodeInfo extractStdFutCode(const char* stdCode)
 	{
+		CodeInfo codeInfo;
 		codeInfo._hotflag = CodeHelper::isStdFutHotCode(stdCode) ? 1 : (CodeHelper::isStdFut2ndCode(stdCode) ? 2 : 0);
 		StringVector ay = StrUtil::split(stdCode, ".");
 		strcpy(codeInfo._exchg, ay[0].c_str());
@@ -326,10 +325,13 @@ public:
 		}
 		//commID = ay[1];
 		strcpy(codeInfo._product, ay[1].c_str());
+		return std::move(codeInfo);
 	}
 
-	static inline void extractStdStkCode(const char* stdCode, CodeInfo& codeInfo)
+	static inline CodeInfo extractStdStkCode(const char* stdCode)
 	{
+		CodeInfo codeInfo;
+
 		StringVector ay = StrUtil::split(stdCode, ".");
 		codeInfo._category = CC_Stock;
 		//exchg = ay[0];
@@ -378,6 +380,8 @@ public:
 				codeInfo._exright = 0;
 			}
 		}
+
+		return std::move(codeInfo);
 	}
 
 
@@ -398,8 +402,10 @@ public:
 		return -1;
 	}
 
-	static inline void extractStdFutOptCode(const char* stdCode, CodeInfo& codeInfo)
+	static inline CodeInfo extractStdFutOptCode(const char* stdCode)
 	{
+		CodeInfo codeInfo;
+
 		StringVector ay = StrUtil::split(stdCode, ".");
 		strcpy(codeInfo._exchg, ay[0].c_str());
 		codeInfo._category = CC_FutOption;
@@ -428,21 +434,23 @@ public:
 			strncpy(codeInfo._product, ay[1].c_str(), mpos);
 			strcat(codeInfo._product, "_o");
 		}
+
+		return std::move(codeInfo);
 	}
 
-	static inline void extractStdCode(const char* stdCode, CodeInfo& codeInfo)
+	static CodeInfo extractStdCode(const char* stdCode)
 	{
 		if (isStdStkCode(stdCode))
 		{
-			extractStdStkCode(stdCode, codeInfo);
+			return std::move(extractStdStkCode(stdCode));
 		}
 		else if(isStdFutOptCode(stdCode))
 		{
-			extractStdFutOptCode(stdCode, codeInfo);
+			return std::move(extractStdFutOptCode(stdCode));
 		}
 		else
 		{
-			extractStdFutCode(stdCode, codeInfo);
+			return std::move(extractStdFutCode(stdCode));
 		}
 	}
 

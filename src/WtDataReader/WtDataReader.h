@@ -6,13 +6,13 @@
 #include "../Includes/IDataReader.h"
 
 #include "../WtDataWriter/DataDefine.h"
-#include "../WtDataWriter/MysqlDB.hpp"
+//#include "../WtDataWriter/MysqlDB.hpp"
 #include "../Share/BoostMappingFile.hpp"
 
 NS_OTP_BEGIN
 
 typedef std::shared_ptr<BoostMappingFile> BoostMFPtr;
-typedef std::shared_ptr<MysqlDb>	MysqlDbPtr;
+//typedef std::shared_ptr<MysqlDb>	MysqlDbPtr;
 
 class WtDataReader : public IDataReader
 {
@@ -191,18 +191,20 @@ private:
 	 *	将历史数据放入缓存
 	 */
 	bool		cacheHisBarsFromFile(const std::string& key, const char* stdCode, WTSKlinePeriod period);
-	bool		cacheHisBarsFromDB(const std::string& key, const char* stdCode, WTSKlinePeriod period);
+	bool		cacheHisBarsFromLoader(const std::string& key, const char* stdCode, WTSKlinePeriod period);
 
 	//uint32_t	readBarsFromCache(const std::string& key, uint64_t etime, uint32_t count, std::vector<WTSBarStruct>& ayBars, bool isDay = false);
 	//WTSBarStruct*	indexBarFromCache(const std::string& key, uint64_t etime, uint32_t& count, bool isDay = false);
 
 	bool	loadStkAdjFactorsFromFile(const char* adjfile);
-	bool	loadStkAdjFactorsFromDB();
 
-	void	init_db();
+	//不在WtDataReader直接支持Mysql了，改成外接Loader
+	//bool	cacheHisBarsFromDB(const std::string& key, const char* stdCode, WTSKlinePeriod period);
+	//bool	loadStkAdjFactorsFromDB();
+	//void	init_db();
 
 public:
-	virtual void init(WTSVariant* cfg, IDataReaderSink* sink) override;
+	virtual void init(WTSVariant* cfg, IDataReaderSink* sink, IHisDataLoader* loader = NULL) override;
 
 	virtual void onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTDate = 0) override;
 
@@ -255,6 +257,8 @@ private:
 		return _adj_factors[key];
 	}
 
+	/* 
+	 * WtDataReader不再内置Mysql
 	typedef struct _DBConfig
 	{
 		bool	_active;
@@ -269,6 +273,7 @@ private:
 
 	DBConfig	_db_conf;
 	MysqlDbPtr	_db_conn;
+	*/
 };
 
 NS_OTP_END

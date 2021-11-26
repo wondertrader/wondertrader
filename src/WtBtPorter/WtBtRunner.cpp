@@ -72,6 +72,10 @@ WtBtRunner::WtBtRunner()
 	, _inited(false)
 	, _running(false)
 	, _async(false)
+
+	, _feed_bars(NULL)
+	, _feed_ticks(NULL)
+	, _feed_count(0)
 {
 	install_signal_hooks([](const char* message) {
 		WTSLogger::error(message);
@@ -81,6 +85,66 @@ WtBtRunner::WtBtRunner()
 
 WtBtRunner::~WtBtRunner()
 {
+}
+
+bool WtBtRunner::loadRawHisBars(void* obj, const char* key, const char* stdCode, WTSKlinePeriod period, bool bForBars, FuncReadBars cb)
+{
+	StdUniqueLock lock(_feed_mtx);
+	if (_ext_bar_loader == NULL)
+		return false;
+
+	_feed_bars = NULL;
+	_feed_count = 0;
+
+	bool bSucc = _ext_bar_loader(stdCode, period);
+	if (!bSucc)
+		return false;
+
+	cb(obj, key, _feed_bars, _feed_count, bForBars);
+
+	return true;
+}
+
+bool WtBtRunner::loadRawHisTicks(void* obj, const char* key, const char* stdCode, uint32_t uDate, FuncReadTicks cb)
+{
+	StdUniqueLock lock(_feed_mtx);
+	if (_ext_tick_loader == NULL)
+		return false;
+
+	_feed_ticks = NULL;
+	_feed_count = 0;
+
+	bool bSucc = _ext_tick_loader(stdCode, uDate);
+	if (!bSucc)
+		return false;
+
+	cb(obj, key, _feed_ticks, _feed_count);
+
+	return true;
+}
+
+void WtBtRunner::feedRawBars(WTSBarStruct* firstBar, uint32_t count)
+{
+	if(_ext_bar_loader == NULL)
+	{
+		WTSLogger::error("Cannot feed bars because of no extented bar loader registered.");
+		return;
+	}
+
+	_feed_bars = firstBar;
+	_feed_count = count;
+}
+
+void WtBtRunner::feedRawTicks(WTSTickStruct* firstTick, uint32_t count)
+{
+	if (_ext_tick_loader == NULL)
+	{
+		WTSLogger::error("Cannot feed bars because of no extented tick loader registered.");
+		return;
+	}
+
+	_feed_ticks = firstTick;
+	_feed_count = count;
 }
 
 void WtBtRunner::registerCtaCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, 
@@ -329,7 +393,9 @@ void WtBtRunner::config(const char* cfgFile, bool isFile /* = true */)
 	//初始化事件推送器
 	initEvtNotifier(cfg->get("notifier"));
 
-	_replayer.init(cfg->get("replayer"), &_notifier);
+	//如果注册了扩展数据加载器，则向HisDataReplayer注册loader
+	bool hasExtLoader = (_ext_bar_loader != NULL || _ext_tick_loader != NULL);
+	_replayer.init(cfg->get("replayer"), &_notifier, hasExtLoader ? this : NULL);
 
 	WTSVariant* cfgEnv = cfg->get("env");
 	const char* mode = cfgEnv->getCString("mocker");

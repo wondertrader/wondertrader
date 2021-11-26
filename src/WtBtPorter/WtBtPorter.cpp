@@ -133,6 +133,21 @@ void register_hft_callbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cb
 	getRunner().registerHftCallbacks(cbInit, cbTick, cbBar, cbChnl, cbOrd, cbTrd, cbEntrust, cbOrdDtl, cbOrdQue, cbTrans, cbSessEvt);
 }
 
+void register_ext_data_loader(FuncLoadRawBars barLoader, FuncLoadRawTicks tickLoader)
+{
+	getRunner().registerExtDataLoader(barLoader, tickLoader);
+}
+
+void feed_raw_bars(WTSBarStruct* firstBar, uint32_t count)
+{
+	getRunner().feedRawBars(firstBar, count);
+}
+
+void feed_raw_ticks(WTSTickStruct* firstTick, uint32_t count)
+{
+	getRunner().feedRawTicks(firstTick, count);
+}
+
 void init_backtest(const char* logProfile, bool isFile, const char* outDir)
 {
 	static bool inited = false;

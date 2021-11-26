@@ -57,6 +57,16 @@ public:
 	virtual void	handle_replay_done() {}
 };
 
+typedef void(*FuncReadBars)(void* obj, const char* key, WTSBarStruct* firstBar, uint32_t count, bool bForBars);
+typedef void(*FuncReadTicks)(void* obj, const char* key, WTSTickStruct* firstTick, uint32_t count);
+
+class IBtDataLoader
+{
+public:
+	virtual bool loadRawHisBars(void* obj, const char* key, const char* stdCode, WTSKlinePeriod period, bool bForBars, FuncReadBars cb) = 0;
+	virtual bool loadRawHisTicks(void* obj, const char* key, const char* stdCode, uint32_t uDate, FuncReadTicks cb) = 0;
+};
+
 class HisDataReplayer
 {
 
@@ -156,6 +166,16 @@ private:
 	 */
 	bool		cacheRawTicksFromCSV(const std::string& key, const char* stdCode, uint32_t uDate);
 
+	/*
+	 *	从外部加载器缓存历史数据
+	 */
+	bool		cacheRawBarsFromLoader(const std::string& key, const char* stdCode, WTSKlinePeriod period, bool bForBars = true);
+
+	/*
+	 *	从外部加载器缓存历史tick数据
+	 */
+	bool		cacheRawTicksFromLoader(const std::string& key, const char* stdCode, uint32_t uDate);
+
 	void		onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTDate = 0, bool tickSimulated = true);
 
 	void		loadFees(const char* filename);
@@ -202,7 +222,7 @@ private:
 	void	run_by_ticks(bool bNeedDump = false);
 
 public:
-	bool init(WTSVariant* cfg, EventNotifier* notifier = NULL);
+	bool init(WTSVariant* cfg, EventNotifier* notifier = NULL, IBtDataLoader* dataLoader = NULL);
 
 	bool prepare();
 	void run(bool bNeedDump = false);
@@ -269,6 +289,7 @@ public:
 
 private:
 	IDataSink*		_listener;
+	IBtDataLoader*	_bt_loader;
 	std::string		_stra_name;
 
 	TickCache		_ticks_cache;	//tick缓存

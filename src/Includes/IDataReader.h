@@ -80,6 +80,14 @@ public:
 	virtual void		reader_log(WTSLogLevel ll, const char* fmt, ...) = 0;
 };
 
+typedef void(*FuncReadBars)(void* obj, const char* key, WTSBarStruct* firstBar, uint32_t count, double factor);
+
+class IHisDataLoader
+{
+public:
+	virtual bool loadStdHisBars(void* obj, const char* key, const char* stdCode, WTSKlinePeriod period, FuncReadBars cb) = 0;
+};
+
 /*
  *	@brief	数据读取接口
  *
@@ -98,7 +106,7 @@ public:
 	 *	@param cfg	模块配置项
 	 *	@param sink	模块回调接口
 	 */
-	virtual void init(WTSVariant* cfg, IDataReaderSink* sink){ _sink = sink; }
+	virtual void init(WTSVariant* cfg, IDataReaderSink* sink, IHisDataLoader* loader = NULL) { _sink = sink; _loader = loader; }
 
 	/*
 	 *	@brief	分钟线闭合事件处理接口
@@ -169,7 +177,8 @@ public:
 	virtual double		getAdjFactor(const char* stdCode, uint32_t date = 0) { return 1.0; }
 
 protected:
-	IDataReaderSink* _sink;
+	IDataReaderSink*	_sink;
+	IHisDataLoader*		_loader;
 };
 
 //创建数据存储对象

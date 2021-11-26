@@ -13,6 +13,7 @@
 #include "PorterDefs.h"
 
 #include "../Includes/ILogHandler.h"
+#include "../Includes/IDataReader.h"
 
 #include "../WtCore/EventNotifier.h"
 #include "../WtCore/CtaStrategyMgr.h"
@@ -45,11 +46,18 @@ typedef enum tagEngineType
 	ET_SEL			//Ñ¡¹ÉÒýÇæ
 } EngineType;
 
-class WtRtRunner : public IEngineEvtListener, public ILogHandler
+class WtRtRunner : public IEngineEvtListener, public ILogHandler, public IHisDataLoader
 {
 public:
 	WtRtRunner();
 	~WtRtRunner();
+
+public:
+	//////////////////////////////////////////////////////////////////////////
+	//IBtDataLoader
+	virtual bool loadStdHisBars(void* obj, const char* key, const char* stdCode, WTSKlinePeriod period, FuncReadBars cb) override;
+
+	void feedHisBars(WTSBarStruct* firstBar, uint32_t count, double factor);
 
 public:
 	/*
@@ -74,6 +82,11 @@ public:
 	void registerParserPorter(FuncParserEvtCallback cbEvt, FuncParserSubCallback cbSub);
 
 	void registerExecuterPorter(FuncExecInitCallback cbInit, FuncExecCmdCallback cbExec);
+
+	void		registerExtDataLoader(FuncLoadRawBars barLoader)
+	{
+		_ext_bar_loader = barLoader;
+	}
 
 	bool			createExtParser(const char* id);
 	bool			createExtExecuter(const char* id);
@@ -226,5 +239,11 @@ private:
 
 	bool				_is_hft;
 	bool				_is_sel;
+
+	FuncLoadRawBars		_ext_bar_loader;
+	WTSBarStruct*		_feed_bars;
+	uint32_t			_feed_count;
+	double				_feed_factor;
+	StdUniqueMutex		_feed_mtx;
 };
 

@@ -34,11 +34,21 @@ class CtaMocker;
 class HftMocker;
 class ExecMocker;
 
-class WtBtRunner
+class WtBtRunner : public IBtDataLoader
 {
 public:
 	WtBtRunner();
 	~WtBtRunner();
+
+
+	//////////////////////////////////////////////////////////////////////////
+	//IBtDataLoader
+	virtual bool loadRawHisBars(void* obj, const char* key, const char* stdCode, WTSKlinePeriod period, bool bForBars, FuncReadBars cb) override;
+
+	virtual bool loadRawHisTicks(void* obj, const char* key, const char* stdCode, uint32_t uDate, FuncReadTicks cb) override;
+
+	void feedRawBars(WTSBarStruct* firstBar, uint32_t count);
+	void feedRawTicks(WTSTickStruct* firstTick, uint32_t count);
 
 public:
 	void	registerCtaCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, 
@@ -52,6 +62,12 @@ public:
 	void registerEvtCallback(FuncEventCallback cbEvt)
 	{
 		_cb_evt = cbEvt;
+	}
+
+	void		registerExtDataLoader(FuncLoadRawBars barLoader, FuncLoadRawTicks tickLoader)
+	{
+		_ext_bar_loader = barLoader;
+		_ext_tick_loader = tickLoader;
 	}
 
 	uint32_t	initCtaMocker(const char* name, int32_t slippage = 0, bool hook = false, bool persistData = true);
@@ -152,6 +168,9 @@ private:
 
 	FuncEventCallback		_cb_evt;
 
+	FuncLoadRawBars			_ext_bar_loader;
+	FuncLoadRawTicks		_ext_tick_loader;
+
 	CtaMocker*		_cta_mocker;
 	SelMocker*		_sel_mocker;
 	ExecMocker*		_exec_mocker;
@@ -164,5 +183,10 @@ private:
 
 	StdThreadPtr	_worker;
 	bool			_async;
+
+	WTSBarStruct*	_feed_bars;
+	WTSTickStruct*	_feed_ticks;
+	uint32_t		_feed_count;
+	StdUniqueMutex	_feed_mtx;
 };
 

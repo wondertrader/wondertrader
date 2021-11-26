@@ -14,10 +14,6 @@
 
 #include "../WTSTools/WTSCmpHelper.hpp"
 
-#ifdef _WIN32
-#pragma comment(lib, "libmysql.lib")
-#endif
-
 #include <rapidjson/document.h>
 namespace rj = rapidjson;
 
@@ -120,9 +116,10 @@ WtDataReader::~WtDataReader()
 {
 }
 
-void WtDataReader::init(WTSVariant* cfg, IDataReaderSink* sink)
+void WtDataReader::init(WTSVariant* cfg, IDataReaderSink* sink, IHisDataLoader* loader /* = NULL */)
 {
-	_sink = sink;
+	IDataReader::init(cfg, sink, loader);
+
 	_base_data_mgr = sink->get_basedata_mgr();
 	_hot_mgr = sink->get_hot_mgr();
 
@@ -132,6 +129,7 @@ void WtDataReader::init(WTSVariant* cfg, IDataReaderSink* sink)
 	_base_dir = cfg->getCString("path");
 	_base_dir = StrUtil::standardisePath(_base_dir);
 
+	/* WtDataReader不再内置Mysql的支持，改成外接的Loader来支持
 	WTSVariant* dbConf = cfg->get("db");
 	if (dbConf)
 	{
@@ -149,11 +147,13 @@ void WtDataReader::init(WTSVariant* cfg, IDataReaderSink* sink)
 	bool bAdjLoaded = false;
 	if (_db_conn)
 		bAdjLoaded = loadStkAdjFactorsFromDB();
+	*/
 	
-	if (!bAdjLoaded && cfg->has("adjfactor"))
+	if (cfg->has("adjfactor"))
 		loadStkAdjFactorsFromFile(cfg->getCString("adjfactor"));
 }
 
+/*
 void WtDataReader::init_db()
 {
 	if (!_db_conf._active)
@@ -233,6 +233,7 @@ bool WtDataReader::loadStkAdjFactorsFromDB()
 		_sink->reader_log(LL_INFO, "共加载%u只股票的%u条除权因子数据", stk_cnt, fct_cnt);
 	return true;
 }
+*/
 
 bool WtDataReader::loadStkAdjFactorsFromFile(const char* adjfile)
 {
@@ -299,8 +300,7 @@ bool WtDataReader::loadStkAdjFactorsFromFile(const char* adjfile)
 
 WTSTickSlice* WtDataReader::readTickSlice(const char* stdCode, uint32_t count, uint64_t etime /* = 0 */)
 {
-	CodeHelper::CodeInfo cInfo;
-	CodeHelper::extractStdCode(stdCode, cInfo);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
 
 	uint32_t curDate, curTime, curSecs;
@@ -446,8 +446,7 @@ WTSTickSlice* WtDataReader::readTickSlice(const char* stdCode, uint32_t count, u
 
 WTSOrdQueSlice* WtDataReader::readOrdQueSlice(const char* stdCode, uint32_t count, uint64_t etime /* = 0 */)
 {
-	CodeHelper::CodeInfo cInfo;
-	CodeHelper::extractStdCode(stdCode, cInfo);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
 
 	uint32_t curDate, curTime, curSecs;
@@ -586,8 +585,7 @@ WTSOrdQueSlice* WtDataReader::readOrdQueSlice(const char* stdCode, uint32_t coun
 
 WTSOrdDtlSlice* WtDataReader::readOrdDtlSlice(const char* stdCode, uint32_t count, uint64_t etime /* = 0 */)
 {
-	CodeHelper::CodeInfo cInfo;
-	CodeHelper::extractStdCode(stdCode, cInfo);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
 
 	uint32_t curDate, curTime, curSecs;
@@ -726,8 +724,7 @@ WTSOrdDtlSlice* WtDataReader::readOrdDtlSlice(const char* stdCode, uint32_t coun
 
 WTSTransSlice* WtDataReader::readTransSlice(const char* stdCode, uint32_t count, uint64_t etime /* = 0 */)
 {
-	CodeHelper::CodeInfo cInfo;
-	CodeHelper::extractStdCode(stdCode, cInfo);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
 
 	uint32_t curDate, curTime, curSecs;
@@ -864,6 +861,7 @@ WTSTransSlice* WtDataReader::readTransSlice(const char* stdCode, uint32_t count,
 	}
 }
 
+/*
 bool WtDataReader::cacheHisBarsFromDB(const std::string& key, const char* stdCode, WTSKlinePeriod period)
 {
 	CodeHelper::CodeInfo cInfo;
@@ -1324,11 +1322,33 @@ bool WtDataReader::cacheHisBarsFromDB(const std::string& key, const char* stdCod
 	if (_sink) _sink->reader_log(LL_INFO, "%u items of back %s data of %s cached", realCnt, pname.c_str(), stdCode);
 	return true;
 }
+*/
+
+bool WtDataReader::cacheHisBarsFromLoader(const std::string& key, const char* stdCode, WTSKlinePeriod period)
+{
+	if (NULL == _loader)
+		return false;
+
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
+
+	BarsList& barList = _bars_cache[key];
+	barList._code = stdCode;
+	barList._period = period;
+	barList._exchg = cInfo._exchg;
+
+	return _loader->loadStdHisBars(this, key.c_str(), stdCode, period, [](void* obj, const char* key, WTSBarStruct* firstBar, uint32_t count, double factor) {
+		WtDataReader* reader = (WtDataReader*)obj;
+		BarsList& barList = reader->_bars_cache[key];
+		barList._factor = 1.0;
+		barList._bars.resize(count);
+		memcpy(barList._bars.data(), firstBar, sizeof(WTSBarStruct)*count);
+	});
+}
 
 bool WtDataReader::cacheHisBarsFromFile(const std::string& key, const char* stdCode, WTSKlinePeriod period)
 {
-	CodeHelper::CodeInfo cInfo;
-	CodeHelper::extractStdCode(stdCode, cInfo);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
 
 	uint32_t curDate = TimeUtils::getCurDate();
@@ -2016,8 +2036,7 @@ bool WtDataReader::cacheHisBarsFromFile(const std::string& key, const char* stdC
 
 WTSKlineSlice* WtDataReader::readKlineSlice(const char* stdCode, WTSKlinePeriod period, uint32_t count, uint64_t etime /* = 0 */)
 {
-	CodeHelper::CodeInfo cInfo;
-	CodeHelper::extractStdCode(stdCode, cInfo);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
 
 	std::string key = StrUtil::printf("%s#%u", stdCode, period);
@@ -2025,8 +2044,8 @@ WTSKlineSlice* WtDataReader::readKlineSlice(const char* stdCode, WTSKlinePeriod 
 	bool bHasHisData = false;
 	if (it == _bars_cache.end())
 	{
-		if(_db_conn)
-			bHasHisData = cacheHisBarsFromDB(key, stdCode, period);
+		if(NULL != _loader)
+			bHasHisData = cacheHisBarsFromLoader(key, stdCode, period);
 		else
 			bHasHisData = cacheHisBarsFromFile(key, stdCode, period);
 	}
@@ -2506,8 +2525,7 @@ void WtDataReader::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTDate
 
 double WtDataReader::getAdjFactor(const char* stdCode, uint32_t date /* = 0 */)
 {
-	CodeHelper::CodeInfo cInfo;
-	CodeHelper::extractStdCode(stdCode, cInfo);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 	if (!cInfo.isStock())
 		return 1.0;
 

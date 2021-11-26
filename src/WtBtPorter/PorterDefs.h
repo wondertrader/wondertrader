@@ -66,3 +66,8 @@ typedef void(PORTER_FLAG *FuncHftTrdCallback)(CtxHandler cHandle, WtUInt32 local
 typedef void(PORTER_FLAG *FuncHftEntrustCallback)(CtxHandler cHandle, WtUInt32 localid, const char* stdCode, bool bSuccess, const char* message, const char* userTag);
 
 typedef void(PORTER_FLAG *FuncEventCallback)(WtUInt32 evtId, WtUInt32 curDate, WtUInt32 curTime);
+
+//////////////////////////////////////////////////////////////////////////
+//外部数据加载模块
+typedef bool(PORTER_FLAG *FuncLoadRawBars)(const char* stdCode, WTSKlinePeriod period);
+typedef bool(PORTER_FLAG *FuncLoadRawTicks)(const char* stdCode, uint32_t uDate);

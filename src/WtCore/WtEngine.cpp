@@ -89,8 +89,7 @@ WTSCommodityInfo* WtEngine::get_commodity_info(const char* stdCode)
 
 WTSContractInfo* WtEngine::get_contract_info(const char* stdCode)
 {
-	CodeHelper::CodeInfo cInfo;
-	CodeHelper::extractStdCode(stdCode, cInfo);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 	return _base_data_mgr->getContract(cInfo._code, cInfo._exchg);
 }
 
@@ -654,8 +653,7 @@ void WtEngine::sub_tick(uint32_t sid, const char* stdCode)
 		SIDSet& sids = _tick_sub_map[stdCode];
 		sids.insert(sid);
 
-		CodeHelper::CodeInfo cInfo;
-		CodeHelper::extractStdFutCode(stdCode, cInfo);
+		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdFutCode(stdCode);
 		std::string rawCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
 		std::string stdRawCode = CodeHelper::bscFutCodeToStdCode(rawCode.c_str(), cInfo._exchg);
 		_ticksubed_raw_codes.insert(stdRawCode);
@@ -665,8 +663,7 @@ void WtEngine::sub_tick(uint32_t sid, const char* stdCode)
 		SIDSet& sids = _tick_sub_map[stdCode];
 		sids.insert(sid);
 
-		CodeHelper::CodeInfo cInfo;
-		CodeHelper::extractStdFutCode(stdCode, cInfo);
+		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdFutCode(stdCode);
 		std::string rawCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
 		std::string stdRawCode = CodeHelper::bscFutCodeToStdCode(rawCode.c_str(), cInfo._exchg);
 		_ticksubed_raw_codes.insert(stdRawCode);

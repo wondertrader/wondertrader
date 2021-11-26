@@ -447,8 +447,7 @@ uint32_t TraderAdapter::doEntrust(WTSEntrust* entrust)
 		entrust->setEntrustID(entrustid);
 	}
 
-	CodeHelper::CodeInfo cInfo;
-	CodeHelper::extractStdCode(entrust->getCode(), cInfo);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(entrust->getCode());
 	entrust->setCode(cInfo._code);
 	entrust->setExchange(cInfo._exchg);
 
@@ -471,8 +470,7 @@ uint32_t TraderAdapter::doEntrust(WTSEntrust* entrust)
 
 WTSContractInfo* TraderAdapter::getContract(const char* stdCode)
 {
-	CodeHelper::CodeInfo cInfo;
-	CodeHelper::extractStdCode(stdCode, cInfo);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 	return _bd_mgr->getContract(cInfo._code, cInfo._exchg);
 }
 
@@ -1232,8 +1230,7 @@ bool TraderAdapter::cancel(uint32_t localid)
 
 OrderIDs TraderAdapter::cancel(const char* stdCode, bool isBuy, double qty /* = 0 */)
 {
-	CodeHelper::CodeInfo cInfo;
-	CodeHelper::extractStdCode(stdCode, cInfo);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 
 	OrderIDs ret;
 

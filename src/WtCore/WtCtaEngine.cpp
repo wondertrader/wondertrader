@@ -165,15 +165,13 @@ void WtCtaEngine::on_init()
 				std::string realCode = stdCode;
 				if (CodeHelper::isStdFutHotCode(stdCode))
 				{
-					CodeHelper::CodeInfo cInfo;
-					CodeHelper::extractStdCode(stdCode, cInfo);
+					CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 					std::string code = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
 					realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), cInfo._exchg);
 				}
 				else if (CodeHelper::isStdFut2ndCode(stdCode))
 				{
-					CodeHelper::CodeInfo cInfo;
-					CodeHelper::extractStdCode(stdCode, cInfo);
+					CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 					std::string code = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
 					realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), cInfo._exchg);
 				}
@@ -291,15 +289,13 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 				std::string realCode = stdCode;
 				if (CodeHelper::isStdFutHotCode(stdCode))
 				{
-					CodeHelper::CodeInfo cInfo;
-					CodeHelper::extractStdCode(stdCode, cInfo);
+					CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 					std::string code = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
 					realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), cInfo._exchg);
 				}
 				else if (CodeHelper::isStdFut2ndCode(stdCode))
 				{
-					CodeHelper::CodeInfo cInfo;
-					CodeHelper::extractStdCode(stdCode, cInfo);
+					CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 					std::string code = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
 					realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), cInfo._exchg);
 				}
@@ -390,15 +386,13 @@ void WtCtaEngine::handle_pos_change(const char* straName, const char* stdCode, d
 	std::string realCode = stdCode;
 	if (CodeHelper::isStdFutHotCode(stdCode))
 	{
-		CodeHelper::CodeInfo cInfo;
-		CodeHelper::extractStdCode(stdCode, cInfo);
+		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 		std::string code = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
 		realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), cInfo._exchg);
 	}
 	else if (CodeHelper::isStdFut2ndCode(stdCode))
 	{
-		CodeHelper::CodeInfo cInfo;
-		CodeHelper::extractStdCode(stdCode, cInfo);
+		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 		std::string code = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
 		realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), cInfo._exchg);
 	}
