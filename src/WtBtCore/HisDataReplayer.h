@@ -10,7 +10,7 @@
 #pragma once
 #include <string>
 #include "DataDefine.h"
-#include "../WtDataWriter/MysqlDB.hpp"
+//#include "../WtDataWriter/MysqlDB.hpp"
 
 #include "../Includes/FasterDefs.h"
 #include "../Includes/WTSMarcos.h"
@@ -37,7 +37,7 @@ class WTSTransData;
 class EventNotifier;
 NS_OTP_END
 
-typedef std::shared_ptr<MysqlDb>	MysqlDbPtr;
+//typedef std::shared_ptr<MysqlDb>	MysqlDbPtr;
 
 USING_NS_OTP;
 
@@ -153,8 +153,9 @@ private:
 
 	/*
 	 *	从数据库缓存历史数据
+	 *	改用扩展数据加载器，不再内置mysql
 	 */
-	bool		cacheRawBarsFromDB(const std::string& key, const char* stdCode, WTSKlinePeriod period, bool bForBars = true);
+	//bool		cacheRawBarsFromDB(const std::string& key, const char* stdCode, WTSKlinePeriod period, bool bForBars = true);
 
 	/*
 	 *	从自定义数据文件缓存历史tick数据
@@ -198,9 +199,9 @@ private:
 
 	bool		loadStkAdjFactors(const char* adjfile);
 
-	bool		loadStkAdjFactorsFromDB();
+	//bool		loadStkAdjFactorsFromDB();
 
-	void		initDB();
+	//void		initDB();
 
 	bool		checkAllTicks(uint32_t uDate);
 
@@ -374,20 +375,20 @@ private:
 		return _adj_factors[key];
 	}
 
-	typedef struct _DBConfig
-	{
-		bool	_active;
-		char	_host[64];
-		int32_t	_port;
-		char	_dbname[32];
-		char	_user[32];
-		char	_pass[32];
+	//typedef struct _DBConfig
+	//{
+	//	bool	_active;
+	//	char	_host[64];
+	//	int32_t	_port;
+	//	char	_dbname[32];
+	//	char	_user[32];
+	//	char	_pass[32];
 
-		_DBConfig() { memset(this, 0, sizeof(_DBConfig)); }
-	} DBConfig;
+	//	_DBConfig() { memset(this, 0, sizeof(_DBConfig)); }
+	//} DBConfig;
 
-	DBConfig	_db_conf;
-	MysqlDbPtr	_db_conn;
+	//DBConfig	_db_conf;
+	//MysqlDbPtr	_db_conn;
 
 	EventNotifier*	_notifier;
 };

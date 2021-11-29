@@ -55,6 +55,21 @@ void on_session_event(CtxHandler cHandle, WtUInt32 curTDate, bool isBegin)
 
 }
 
+bool on_load_his_bars(const char* stdCode, const char* period)
+{
+	WTSBarStruct bars[10];
+	memset(&bars[0], 0, sizeof(WTSBarStruct) * 10);
+
+	for(int i = 0; i < 10; i++)
+	{
+		bars[i].open = i + 1003;
+	}
+
+	feed_raw_bars(&bars[0], 10);
+
+	return true;
+}
+
 
 void run_bt()
 {
@@ -64,6 +79,8 @@ void run_bt()
 	DLLHelper::load_library("libWtBtPorter.so");
 #endif
 	register_cta_callbacks(on_init, on_tick, on_calc, on_bar, on_session_event, on_calc_done);
+
+	register_ext_data_loader(on_load_his_bars, NULL);
 
 	auto id = init_cta_mocker("test", 0, true);
 

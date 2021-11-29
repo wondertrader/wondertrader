@@ -36,9 +36,9 @@
 #include <rapidjson/prettywriter.h>
 namespace rj = rapidjson;
 
-#ifdef _WIN32
-#pragma comment(lib, "libmysql.lib")
-#endif
+//#ifdef _WIN32
+//#pragma comment(lib, "libmysql.lib")
+//#endif
 
 #ifdef _WIN32
 #define my_stricmp _stricmp
@@ -124,26 +124,26 @@ bool HisDataReplayer::init(WTSVariant* cfg, EventNotifier* notifier /* = NULL */
 
 	loadFees(cfg->getCString("fees"));
 
-	if(_mode.compare("db") == 0)
-	{
-		WTSVariant* dbConf = cfg->get("db");
-		if (dbConf)
-		{
-			strcpy(_db_conf._host, dbConf->getCString("host"));
-			strcpy(_db_conf._dbname, dbConf->getCString("dbname"));
-			strcpy(_db_conf._user, dbConf->getCString("user"));
-			strcpy(_db_conf._pass, dbConf->getCString("pass"));
-			_db_conf._port = dbConf->getInt32("port");
+	//if(_mode.compare("db") == 0)
+	//{
+	//	WTSVariant* dbConf = cfg->get("db");
+	//	if (dbConf)
+	//	{
+	//		strcpy(_db_conf._host, dbConf->getCString("host"));
+	//		strcpy(_db_conf._dbname, dbConf->getCString("dbname"));
+	//		strcpy(_db_conf._user, dbConf->getCString("user"));
+	//		strcpy(_db_conf._pass, dbConf->getCString("pass"));
+	//		_db_conf._port = dbConf->getInt32("port");
 
-			_db_conf._active = (strlen(_db_conf._host) > 0) && (strlen(_db_conf._dbname) > 0) && (_db_conf._port != 0);
-			if (_db_conf._active)
-				initDB();
-		}
-	}
+	//		_db_conf._active = (strlen(_db_conf._host) > 0) && (strlen(_db_conf._dbname) > 0) && (_db_conf._port != 0);
+	//		if (_db_conf._active)
+	//			initDB();
+	//	}
+	//}
 
 	bool bAdjLoaded = false;
-	if (_db_conn)
-		bAdjLoaded = loadStkAdjFactorsFromDB();
+	//if (_db_conn)
+	//	bAdjLoaded = loadStkAdjFactorsFromDB();
 
 	if (!bAdjLoaded && cfg->has("adjfactor"))
 		loadStkAdjFactors(cfg->getCString("adjfactor"));
@@ -151,6 +151,7 @@ bool HisDataReplayer::init(WTSVariant* cfg, EventNotifier* notifier /* = NULL */
 	return true;
 }
 
+/*
 void HisDataReplayer::initDB()
 {
 	if (!_db_conf._active)
@@ -221,6 +222,7 @@ bool HisDataReplayer::loadStkAdjFactorsFromDB()
 	WTSLogger::info("%u items of adjust factors for %u stocks loaded", fct_cnt, stk_cnt);
 	return true;
 }
+*/
 
 bool HisDataReplayer::loadStkAdjFactors(const char* adjfile)
 {
@@ -1793,14 +1795,18 @@ WTSKlineSlice* HisDataReplayer::get_kline_slice(const char* stdCode, const char*
 			std::string rawKey = StrUtil::printf("%s#%s#%u", stdCode, period, 1);
 			if (_bars_cache.find(rawKey) == _bars_cache.end())
 			{
-				if (_mode == "csv")
+				if(NULL != _bt_loader)
+				{
+					bHasHisData = cacheRawBarsFromLoader(rawKey, stdCode, kp);
+				}
+				else if (_mode == "csv")
 				{
 					bHasHisData = cacheRawBarsFromCSV(rawKey, stdCode, kp);
 				}
-				else if (_mode == "db")
-				{
-					bHasHisData = cacheRawBarsFromDB(rawKey, stdCode, kp);
-				}
+				//else if (_mode == "db")
+				//{
+				//	bHasHisData = cacheRawBarsFromDB(rawKey, stdCode, kp);
+				//}
 				else
 				{
 					bHasHisData = cacheRawBarsFromBin(rawKey, stdCode, kp);
@@ -1813,14 +1819,18 @@ WTSKlineSlice* HisDataReplayer::get_kline_slice(const char* stdCode, const char*
 		}
 		else
 		{
-			if (_mode == "csv")
+			if (NULL != _bt_loader)
+			{
+				bHasHisData = cacheRawBarsFromLoader(key, stdCode, kp);
+			}
+			else if (_mode == "csv")
 			{
 				bHasHisData = cacheRawBarsFromCSV(key, stdCode, kp);
 			}
-			else if (_mode == "db")
-			{
-				bHasHisData = cacheRawBarsFromDB(key, stdCode, kp);
-			}
+			//else if (_mode == "db")
+			//{
+			//	bHasHisData = cacheRawBarsFromDB(key, stdCode, kp);
+			//}
 			else
 			{
 				bHasHisData = cacheRawBarsFromBin(key, stdCode, kp);
@@ -2232,7 +2242,11 @@ bool HisDataReplayer::checkOrderDetails(const char* stdCode, uint32_t uDate)
 	if (bNeedCache)
 	{
 		bool hasTicks = false;
-		if (_mode == "csv")
+		if(NULL != _bt_loader)
+		{
+			hasTicks = cacheRawTicksFromLoader(stdCode, stdCode, uDate);
+		}
+		else if (_mode == "csv")
 		{
 			hasTicks = cacheRawTicksFromCSV(stdCode, stdCode, uDate);
 		}
@@ -2265,7 +2279,11 @@ bool HisDataReplayer::checkOrderQueues(const char* stdCode, uint32_t uDate)
 	if (bNeedCache)
 	{
 		bool hasTicks = false;
-		if (_mode == "csv")
+		if (NULL != _bt_loader)
+		{
+			hasTicks = cacheRawTicksFromLoader(stdCode, stdCode, uDate);
+		}
+		else if (_mode == "csv")
 		{
 			hasTicks = cacheRawTicksFromCSV(stdCode, stdCode, uDate);
 		}
@@ -2335,7 +2353,11 @@ bool HisDataReplayer::checkTicks(const char* stdCode, uint32_t uDate)
 	if (bNeedCache)
 	{
 		bool hasTicks = false;
-		if (_mode == "csv")
+		if (NULL != _bt_loader)
+		{
+			hasTicks = cacheRawTicksFromLoader(stdCode, stdCode, uDate);
+		}
+		else if (_mode == "csv")
 		{
 			hasTicks = cacheRawTicksFromCSV(stdCode, stdCode, uDate);
 		}
@@ -2587,14 +2609,18 @@ void HisDataReplayer::checkUnbars()
 		//如果订阅了tick,但是没有对应的K线数据,则自动加载1分钟线到内存中
 		bool bHasHisData = false;
 		std::string key = StrUtil::printf("%s#m#1", stdCode);
-		if (_mode == "csv")
+		if (NULL != _bt_loader)
+		{
+			bHasHisData = cacheRawBarsFromLoader(key, stdCode, KP_Minute1, false);
+		}
+		else if (_mode == "csv")
 		{
 			bHasHisData = cacheRawBarsFromCSV(key, stdCode, KP_Minute1, false);
 		}
-		else if (_mode == "db")
-		{
-			bHasHisData = cacheRawBarsFromDB(key, stdCode, KP_Minute1, false);
-		}
+		//else if (_mode == "db")
+		//{
+		//	bHasHisData = cacheRawBarsFromDB(key, stdCode, KP_Minute1, false);
+		//}
 		else
 		{
 			bHasHisData = cacheRawBarsFromBin(key, stdCode, KP_Minute1, false);
@@ -3091,7 +3117,8 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 	return true;
 }
 
-bool HisDataReplayer::cacheRawBarsFromDB(const std::string& key, const char* stdCode, WTSKlinePeriod period, bool bForBars/* = true*/)
+/*
+bool HisDataReplayer::cacheRawBarsFromDB(const std::string& key, const char* stdCode, WTSKlinePeriod period, bool bForBars)
 {
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
@@ -3569,6 +3596,7 @@ bool HisDataReplayer::cacheRawBarsFromDB(const std::string& key, const char* std
 	WTSLogger::info("%u items of back %s data of contract %s cached", realCnt, pname.c_str(), stdCode);
 	return true;
 }
+*/
 
 bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* stdCode, WTSKlinePeriod period, bool bForBars/* = true*/)
 {

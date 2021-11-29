@@ -57,7 +57,7 @@ public:
 	//IBtDataLoader
 	virtual bool loadStdHisBars(void* obj, const char* key, const char* stdCode, WTSKlinePeriod period, FuncReadBars cb) override;
 
-	void feedHisBars(WTSBarStruct* firstBar, uint32_t count, double factor);
+	void feedRawBars(WTSBarStruct* bars, uint32_t count, double factor);
 
 public:
 	/*
@@ -83,7 +83,7 @@ public:
 
 	void registerExecuterPorter(FuncExecInitCallback cbInit, FuncExecCmdCallback cbExec);
 
-	void		registerExtDataLoader(FuncLoadRawBars barLoader)
+	void		registerExtDataLoader(FuncLoadRawBars barLoader, FuncLoadRawTicks tickLoader)
 	{
 		_ext_bar_loader = barLoader;
 	}
@@ -241,9 +241,11 @@ private:
 	bool				_is_sel;
 
 	FuncLoadRawBars		_ext_bar_loader;
-	WTSBarStruct*		_feed_bars;
-	uint32_t			_feed_count;
-	double				_feed_factor;
-	StdUniqueMutex		_feed_mtx;
+
+	void*			_feed_obj;
+	std::string		_feed_key;
+	FuncReadBars	_feeder_bars;
+	double			_feed_factor;
+	StdUniqueMutex	_feed_mtx;
 };
 

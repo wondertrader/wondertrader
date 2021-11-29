@@ -78,8 +78,6 @@ WtRtRunner::WtRtRunner()
 	, _is_sel(false)
 
 	, _ext_bar_loader(NULL)
-	, _feed_bars(NULL)
-	, _feed_count(0)
 	, _feed_factor(1.0)
 {
 	install_signal_hooks([](const char* message) {
@@ -186,20 +184,15 @@ bool WtRtRunner::loadStdHisBars(void* obj, const char* key, const char* stdCode,
 	if (_ext_bar_loader == NULL)
 		return false;
 
-	_feed_bars = NULL;
-	_feed_count = 0;
+	_feed_obj = obj;
+	_feed_key = key;
+	_feeder_bars = cb;
 
-	bool bSucc = _ext_bar_loader(stdCode, period);
-	if (!bSucc)
-		return false;
-
-	cb(obj, key, _feed_bars, _feed_count, _feed_factor);
-
-	return true;
+	return _ext_bar_loader(stdCode, period);
 }
 
 
-void WtRtRunner::feedHisBars(WTSBarStruct* firstBar, uint32_t count, double factor)
+void WtRtRunner::feedRawBars(WTSBarStruct* bars, uint32_t count, double factor)
 {
 	if (_ext_bar_loader == NULL)
 	{
@@ -207,10 +200,9 @@ void WtRtRunner::feedHisBars(WTSBarStruct* firstBar, uint32_t count, double fact
 		return;
 	}
 
-	_feed_bars = firstBar;
-	_feed_count = count;
-	_feed_factor = factor;
+	_feeder_bars(_feed_obj, _feed_key.c_str(), bars, count, factor);
 }
+
 
 bool WtRtRunner::createExtParser(const char* id)
 {

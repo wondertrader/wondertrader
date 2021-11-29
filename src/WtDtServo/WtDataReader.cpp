@@ -188,8 +188,7 @@ bool WtDataReader::loadStkAdjFactorsFromFile(const char* adjfile)
 
 WTSArray* WtDataReader::readTickSlicesByRange(const char* stdCode, uint64_t stime, uint64_t etime /* = 0 */)
 {
-	CodeHelper::CodeInfo cInfo;
-	CodeHelper::extractStdCode(stdCode, cInfo);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
 
 	WTSSessionInfo* sInfo = _base_data_mgr->getSession(_base_data_mgr->getCommodity(cInfo._exchg, cInfo._code)->getSession());
@@ -443,8 +442,7 @@ WTSArray* WtDataReader::readTickSlicesByRange(const char* stdCode, uint64_t stim
 
 WTSOrdQueSlice* WtDataReader::readOrdQueSliceByRange(const char* stdCode, uint64_t stime, uint64_t etime /* = 0 */)
 {
-	CodeHelper::CodeInfo cInfo;
-	CodeHelper::extractStdCode(stdCode, cInfo);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
 
 	uint32_t rDate, rTime, rSecs;
@@ -616,8 +614,7 @@ WTSOrdQueSlice* WtDataReader::readOrdQueSliceByRange(const char* stdCode, uint64
 
 WTSOrdDtlSlice* WtDataReader::readOrdDtlSliceByRange(const char* stdCode, uint64_t stime, uint64_t etime /* = 0 */)
 {
-	CodeHelper::CodeInfo cInfo;
-	CodeHelper::extractStdCode(stdCode, cInfo);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
 
 	uint32_t rDate, rTime, rSecs;
@@ -788,8 +785,7 @@ WTSOrdDtlSlice* WtDataReader::readOrdDtlSliceByRange(const char* stdCode, uint64
 
 WTSTransSlice* WtDataReader::readTransSliceByRange(const char* stdCode, uint64_t stime, uint64_t etime /* = 0 */)
 {
-	CodeHelper::CodeInfo cInfo;
-	CodeHelper::extractStdCode(stdCode, cInfo);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
 
 	uint32_t rDate, rTime, rSecs;
@@ -960,8 +956,7 @@ WTSTransSlice* WtDataReader::readTransSliceByRange(const char* stdCode, uint64_t
 
 bool WtDataReader::cacheHisBarsFromFile(const std::string& key, const char* stdCode, WTSKlinePeriod period)
 {
-	CodeHelper::CodeInfo cInfo;
-	CodeHelper::extractStdCode(stdCode, cInfo);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
 
 	uint32_t curDate = TimeUtils::getCurDate();
@@ -1674,8 +1669,7 @@ uint32_t WtDataReader::readBarsFromCacheByRange(const std::string& key, uint64_t
 
 WTSKlineSlice* WtDataReader::readKlineSliceByRange(const char* stdCode, WTSKlinePeriod period, uint64_t stime, uint64_t etime /* = 0 */)
 {
-	CodeHelper::CodeInfo cInfo;
-	CodeHelper::extractStdCode(stdCode, cInfo);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
 
 	std::string key = StrUtil::printf("%s#%u", stdCode, period);
@@ -2031,8 +2025,7 @@ WtDataReader::RTKlineBlockPair* WtDataReader::getRTKilneBlock(const char* exchg,
 
 WTSKlineSlice* WtDataReader::readKlineSliceByCount(const char* stdCode, WTSKlinePeriod period, uint32_t count, uint64_t etime /* = 0 */)
 {
-	CodeHelper::CodeInfo cInfo;
-	CodeHelper::extractStdCode(stdCode, cInfo);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
 
 	std::string key = StrUtil::printf("%s#%u", stdCode, period);
@@ -2146,8 +2139,7 @@ WTSKlineSlice* WtDataReader::readKlineSliceByCount(const char* stdCode, WTSKline
 
 WTSArray* WtDataReader::readTickSlicesByCount(const char* stdCode, uint32_t count, uint64_t etime /* = 0 */)
 {
-	CodeHelper::CodeInfo cInfo;
-	CodeHelper::extractStdCode(stdCode, cInfo);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
 
 	WTSSessionInfo* sInfo = _base_data_mgr->getSession(_base_data_mgr->getCommodity(cInfo._exchg, cInfo._code)->getSession());

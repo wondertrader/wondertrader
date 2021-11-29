@@ -152,9 +152,19 @@ bool create_ext_executer(const char* id)
 	return getRunner().createExtExecuter(id);
 }
 
-void register_ext_data_loader(FuncLoadRawBars barLoader)
+void register_ext_data_loader(FuncLoadRawBars barLoader, FuncLoadRawTicks tickLoader)
 {
-	getRunner().registerExtDataLoader(barLoader);
+	getRunner().registerExtDataLoader(barLoader, tickLoader);
+}
+
+void feed_raw_bars(WTSBarStruct* bars, uint32_t count, double factor)
+{
+	getRunner().feedRawBars(bars, count, factor);
+}
+
+void feed_raw_ticks(WTSTickStruct* ticks, uint32_t count)
+{
+	WTSLogger::error("API not implemented");
 }
 
 void init_porter(const char* logProfile, bool isFile, const char* genDir)

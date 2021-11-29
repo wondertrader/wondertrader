@@ -72,10 +72,6 @@ WtBtRunner::WtBtRunner()
 	, _inited(false)
 	, _running(false)
 	, _async(false)
-
-	, _feed_bars(NULL)
-	, _feed_ticks(NULL)
-	, _feed_count(0)
 {
 	install_signal_hooks([](const char* message) {
 		WTSLogger::error(message);
@@ -93,16 +89,25 @@ bool WtBtRunner::loadRawHisBars(void* obj, const char* key, const char* stdCode,
 	if (_ext_bar_loader == NULL)
 		return false;
 
-	_feed_bars = NULL;
-	_feed_count = 0;
+	_feed_obj = obj;
+	_feed_key = key;
+	_feed_flag = bForBars;
+	_feeder_bars = cb;
 
-	bool bSucc = _ext_bar_loader(stdCode, period);
-	if (!bSucc)
-		return false;
+	char * pstr;
+	switch (period)
+	{
+	case KP_DAY: pstr = "d1"; break;
+	case KP_Minute1: pstr = "m1"; break;
+	case KP_Minute5: pstr = "m5"; break;
+	default:
+		{
+			WTSLogger::error("Unsupported period of extended data loader");
+			return false;
+		}
+	}
 
-	cb(obj, key, _feed_bars, _feed_count, bForBars);
-
-	return true;
+	return _ext_bar_loader(stdCode, pstr);
 }
 
 bool WtBtRunner::loadRawHisTicks(void* obj, const char* key, const char* stdCode, uint32_t uDate, FuncReadTicks cb)
@@ -111,19 +116,14 @@ bool WtBtRunner::loadRawHisTicks(void* obj, const char* key, const char* stdCode
 	if (_ext_tick_loader == NULL)
 		return false;
 
-	_feed_ticks = NULL;
-	_feed_count = 0;
+	_feed_obj = obj;
+	_feed_key = key;
+	_feeder_ticks = cb;
 
-	bool bSucc = _ext_tick_loader(stdCode, uDate);
-	if (!bSucc)
-		return false;
-
-	cb(obj, key, _feed_ticks, _feed_count);
-
-	return true;
+	return _ext_tick_loader(stdCode, uDate);
 }
 
-void WtBtRunner::feedRawBars(WTSBarStruct* firstBar, uint32_t count)
+void WtBtRunner::feedRawBars(WTSBarStruct* bars, uint32_t count)
 {
 	if(_ext_bar_loader == NULL)
 	{
@@ -131,11 +131,10 @@ void WtBtRunner::feedRawBars(WTSBarStruct* firstBar, uint32_t count)
 		return;
 	}
 
-	_feed_bars = firstBar;
-	_feed_count = count;
+	_feeder_bars(_feed_obj, _feed_key.c_str(), bars, count, _feed_flag);
 }
 
-void WtBtRunner::feedRawTicks(WTSTickStruct* firstTick, uint32_t count)
+void WtBtRunner::feedRawTicks(WTSTickStruct* ticks, uint32_t count)
 {
 	if (_ext_tick_loader == NULL)
 	{
@@ -143,8 +142,7 @@ void WtBtRunner::feedRawTicks(WTSTickStruct* firstTick, uint32_t count)
 		return;
 	}
 
-	_feed_ticks = firstTick;
-	_feed_count = count;
+	_feeder_ticks(_feed_obj, _feed_key.c_str(), ticks, count);
 }
 
 void WtBtRunner::registerCtaCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, 

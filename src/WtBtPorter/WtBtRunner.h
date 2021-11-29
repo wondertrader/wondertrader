@@ -47,8 +47,8 @@ public:
 
 	virtual bool loadRawHisTicks(void* obj, const char* key, const char* stdCode, uint32_t uDate, FuncReadTicks cb) override;
 
-	void feedRawBars(WTSBarStruct* firstBar, uint32_t count);
-	void feedRawTicks(WTSTickStruct* firstTick, uint32_t count);
+	void feedRawBars(WTSBarStruct* bars, uint32_t count);
+	void feedRawTicks(WTSTickStruct* ticks, uint32_t count);
 
 public:
 	void	registerCtaCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, 
@@ -184,9 +184,11 @@ private:
 	StdThreadPtr	_worker;
 	bool			_async;
 
-	WTSBarStruct*	_feed_bars;
-	WTSTickStruct*	_feed_ticks;
-	uint32_t		_feed_count;
+	void*			_feed_obj;
+	std::string		_feed_key;
+	bool			_feed_flag;
+	FuncReadBars	_feeder_bars;
+	FuncReadTicks	_feeder_ticks;
 	StdUniqueMutex	_feed_mtx;
 };
 

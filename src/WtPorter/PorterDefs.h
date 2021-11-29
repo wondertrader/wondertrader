@@ -88,3 +88,4 @@ typedef void(PORTER_FLAG *FuncExecCmdCallback)(const char* id, const char* StdCo
 //////////////////////////////////////////////////////////////////////////
 //外部数据加载模块
 typedef bool(PORTER_FLAG *FuncLoadRawBars)(const char* stdCode, WTSKlinePeriod period);
+typedef bool(PORTER_FLAG *FuncLoadRawTicks)(const char* stdCode, uint32_t uDate);

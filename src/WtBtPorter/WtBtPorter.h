@@ -29,8 +29,9 @@ extern "C"
 
 	EXPORT_FLAG void		register_ext_data_loader(FuncLoadRawBars barLoader, FuncLoadRawTicks tickLoader);
 
-	EXPORT_FLAG void		feed_raw_bars(WTSBarStruct* firstBar, uint32_t count);
-	EXPORT_FLAG void		feed_raw_ticks(WTSTickStruct* firstTick, uint32_t count);
+	EXPORT_FLAG void		feed_raw_bars(WTSBarStruct* bars, uint32_t count);
+
+	EXPORT_FLAG void		feed_raw_ticks(WTSTickStruct* ticks, uint32_t count);
 
 	EXPORT_FLAG	void		init_backtest(const char* logProfile, bool isFile, const char* outDir);
 

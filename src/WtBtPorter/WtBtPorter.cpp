@@ -138,14 +138,14 @@ void register_ext_data_loader(FuncLoadRawBars barLoader, FuncLoadRawTicks tickLo
 	getRunner().registerExtDataLoader(barLoader, tickLoader);
 }
 
-void feed_raw_bars(WTSBarStruct* firstBar, uint32_t count)
+void feed_raw_bars(WTSBarStruct* bars, uint32_t count)
 {
-	getRunner().feedRawBars(firstBar, count);
+	getRunner().feedRawBars(bars, count);
 }
 
-void feed_raw_ticks(WTSTickStruct* firstTick, uint32_t count)
+void feed_raw_ticks(WTSTickStruct* ticks, uint32_t count)
 {
-	getRunner().feedRawTicks(firstTick, count);
+	getRunner().feedRawTicks(ticks, count);
 }
 
 void init_backtest(const char* logProfile, bool isFile, const char* outDir)
