@@ -40,7 +40,7 @@ bool DataManager::isSessionProceeded(const char* sid)
 	return _writer->isSessionProceeded(sid);
 }
 
-bool DataManager::init(WTSVariant* params, WTSBaseDataMgr* bdMgr, StateMonitor* stMonitor, UDPCaster* caster)
+bool DataManager::init(WTSVariant* params, WTSBaseDataMgr* bdMgr, StateMonitor* stMonitor, UDPCaster* caster /* = NULL */, IHisDataDumper* dumper /* = NULL */)
 {
 	_bd_mgr = bdMgr;
 	_state_mon = stMonitor;
@@ -85,7 +85,7 @@ bool DataManager::init(WTSVariant* params, WTSBaseDataMgr* bdMgr, StateMonitor* 
 
 	}
 
-	return _writer->init(params, this);
+	return _writer->init(params, this, dumper);
 }
 
 void DataManager::release()

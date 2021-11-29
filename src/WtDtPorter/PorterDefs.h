@@ -14,6 +14,7 @@
 
 NS_OTP_BEGIN
 struct WTSTickStruct;
+struct WTSBarStruct;
 NS_OTP_END
 
 USING_NS_OTP;
@@ -37,3 +38,9 @@ static const WtUInt32	EVENT_PARSER_RELEASE = 4;	//Parser释放
 
 typedef void(PORTER_FLAG *FuncParserEvtCallback)(WtUInt32 evtId, const char* id);
 typedef void(PORTER_FLAG *FuncParserSubCallback)(const char* id, const char* fullCode, bool isForSub);
+
+
+//////////////////////////////////////////////////////////////////////////
+//扩展Dumper回调函数
+typedef bool(PORTER_FLAG *FuncDumpBars)(const char* stdCode, const char* period, WTSBarStruct* bars, WtUInt32 count);
+typedef bool(PORTER_FLAG *FuncDumpTicks)(const char* stdCode, WtUInt32 uDate, WTSTickStruct* ticks, WtUInt32 count);

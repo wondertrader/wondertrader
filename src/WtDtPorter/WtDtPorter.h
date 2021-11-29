@@ -31,6 +31,8 @@ extern "C"
 	EXPORT_FLAG	void		parser_push_quote(const char* id, WTSTickStruct* curTick, bool bNeedSlice);
 #pragma endregion "À©Õ¹Parser½Ó¿Ú"
 
+	EXPORT_FLAG void		register_extended_dumper(FuncDumpBars barDumper, FuncDumpTicks tickDumper);
+
 #ifdef __cplusplus
 }
 #endif

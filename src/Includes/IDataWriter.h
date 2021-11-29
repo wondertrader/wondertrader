@@ -21,6 +21,8 @@ class WTSOrdDtlData;
 class WTSTransData;
 class WTSVariant;
 class IBaseDataMgr;
+struct WTSBarStruct;
+struct WTSTickStruct;
 
 class IDataWriterSink
 {
@@ -50,13 +52,22 @@ public:
 	virtual void outputWriterLog(WTSLogLevel ll, const char* format, ...) = 0;
 };
 
+class IHisDataDumper
+{
+public:
+	virtual bool dumpHisBars(const char* stdCode, const char* period, WTSBarStruct* bars, uint32_t count) = 0;
+	virtual bool dumpHisTicks(const char* stdCode, uint32_t uDate, WTSTickStruct* ticks, uint32_t count) = 0;
+};
+
 /*
  *	数据落地接口
  */
 class IDataWriter
 {
 public:
-	virtual bool init(WTSVariant* params, IDataWriterSink* sink) = 0;
+	IDataWriter():_dumper(NULL),_sink(NULL){}
+
+	virtual bool init(WTSVariant* params, IDataWriterSink* sink, IHisDataDumper* dumper = NULL) { _sink = sink; _dumper = dumper; return true; }
 	virtual void release() = 0;
 
 public:
@@ -73,6 +84,10 @@ public:
 	virtual bool isSessionProceeded(const char* sid) = 0;
 
 	virtual WTSTickData* getCurTick(const char* code, const char* exchg = "") = 0;
+
+protected:
+	IHisDataDumper*		_dumper;
+	IDataWriterSink*	_sink;
 };
 
 NS_OTP_END

@@ -24,6 +24,8 @@
 
 
 WtDtRunner::WtDtRunner()
+	: _dumper_for_bars(NULL)
+	, _dumper_for_ticks(NULL)
 {
 	install_signal_hooks([](const char* message) {
 		WTSLogger::error(message);
@@ -112,7 +114,8 @@ void WtDtRunner::initialize(const char* cfgFile, const char* logCfg, const char*
 
 void WtDtRunner::initDataMgr(WTSVariant* config)
 {
-	m_dataMgr.init(config, &m_baseDataMgr, &m_stateMon, &m_udpCaster);
+	bool bDumperEnabled = (_dumper_for_bars != NULL || _dumper_for_ticks != NULL);
+	m_dataMgr.init(config, &m_baseDataMgr, &m_stateMon, &m_udpCaster, bDumperEnabled ? this : NULL);
 }
 
 void WtDtRunner::initParsers(const char* filename)
@@ -210,3 +213,31 @@ bool WtDtRunner::createExtParser(const char* id)
 }
 
 #pragma endregion 
+
+void WtDtRunner::registerExtDumper(FuncDumpBars barDumper, FuncDumpTicks tickDumper)
+{
+	_dumper_for_bars = barDumper;
+	_dumper_for_ticks = tickDumper;
+}
+
+bool WtDtRunner::dumpHisTicks(const char* stdCode, uint32_t uDate, WTSTickStruct* ticks, uint32_t count)
+{
+	if (NULL == _dumper_for_ticks)
+	{
+		WTSLogger::error("Extended tick dumper not enabled");
+		return false;
+	}
+
+	return _dumper_for_ticks(stdCode, uDate, ticks, count);
+}
+
+bool WtDtRunner::dumpHisBars(const char* stdCode, const char* period, WTSBarStruct* bars, uint32_t count)
+{
+	if (NULL == _dumper_for_bars)
+	{
+		WTSLogger::error("Extended bar dumper not enabled");
+		return false;
+	}
+
+	return _dumper_for_bars(stdCode, period, bars, count);
+}

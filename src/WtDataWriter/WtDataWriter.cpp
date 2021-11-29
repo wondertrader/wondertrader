@@ -13,9 +13,9 @@
 
 #include "../WTSTools/WTSCmpHelper.hpp"
 
-#ifdef _WIN32
-#pragma comment(lib, "libmysql.lib")
-#endif
+//#ifdef _WIN32
+//#pragma comment(lib, "libmysql.lib")
+//#endif
 
 
 #include <set>
@@ -131,6 +131,7 @@ bool WtDataWriter::isSessionProceeded(const char* sid)
 	return (it->second >= TimeUtils::getCurDate());
 }
 
+/*
 void WtDataWriter::init_db()
 {
 	if (!_db_conf._active)
@@ -158,10 +159,12 @@ void WtDataWriter::init_db()
 		_db_conn.reset();
 	}
 }
+*/
 
-bool WtDataWriter::init(WTSVariant* params, IDataWriterSink* sink)
+bool WtDataWriter::init(WTSVariant* params, IDataWriterSink* sink, IHisDataDumper* dumper /* = NULL */)
 {
-	_sink = sink;
+	IDataWriter::init(params, sink, dumper);
+
 	_bd_mgr = sink->getBDMgr();
 	_save_tick_log = params->getBoolean("savelog");
 
@@ -196,19 +199,19 @@ bool WtDataWriter::init(WTSVariant* params, IDataWriterSink* sink)
 		}
 	}
 
-	WTSVariant* dbConf = params->get("db");
-	if(dbConf)
-	{
-		strcpy(_db_conf._host, dbConf->getCString("host"));
-		strcpy(_db_conf._dbname, dbConf->getCString("dbname"));
-		strcpy(_db_conf._user, dbConf->getCString("user"));
-		strcpy(_db_conf._pass, dbConf->getCString("pass"));
-		_db_conf._port = dbConf->getInt32("port");
+	//WTSVariant* dbConf = params->get("db");
+	//if(dbConf)
+	//{
+	//	strcpy(_db_conf._host, dbConf->getCString("host"));
+	//	strcpy(_db_conf._dbname, dbConf->getCString("dbname"));
+	//	strcpy(_db_conf._user, dbConf->getCString("user"));
+	//	strcpy(_db_conf._pass, dbConf->getCString("pass"));
+	//	_db_conf._port = dbConf->getInt32("port");
 
-		_db_conf._active = (strlen(_db_conf._host) > 0) && (strlen(_db_conf._dbname) > 0) && (_db_conf._port != 0);
-		if (_db_conf._active)
-			init_db();
-	}
+	//	_db_conf._active = (strlen(_db_conf._host) > 0) && (strlen(_db_conf._dbname) > 0) && (_db_conf._port != 0);
+	//	if (_db_conf._active)
+	//		init_db();
+	//}
 
 	loadCache();
 
@@ -1602,6 +1605,156 @@ void WtDataWriter::check_loop()
 	}
 }
 
+uint32_t WtDataWriter::dump_hisdata_via_dumper(WTSContractInfo* ct)
+{
+	if (ct == NULL ||_dumper == NULL)
+		return 0;
+
+	std::string key = ct->getFullCode();
+
+	uint32_t count = 0;
+
+	//从缓存中读取最新tick,更新到历史日线
+	auto it = _tick_cache_idx.find(key);
+	if (it != _tick_cache_idx.end())
+	{
+		uint32_t idx = it->second;
+
+		const TickCacheItem& tci = _tick_cache_block->_ticks[idx];
+		const WTSTickStruct& ts = tci._tick;
+
+		WTSBarStruct bsDay;
+		bsDay.open = ts.open;
+		bsDay.high = ts.high;
+		bsDay.low = ts.low;
+		bsDay.close = ts.price;
+		bsDay.settle = ts.settle_price;
+		bsDay.vol = ts.total_volume;
+		bsDay.money = ts.total_turnover;
+		bsDay.hold = ts.open_interest;
+		bsDay.add = ts.diff_interest;
+
+		bool bSucc = _dumper->dumpHisBars(key.c_str(), "d1", &bsDay, 1);
+		if(!bSucc)
+		{
+			_sink->outputWriterLog(LL_ERROR, "Closing Task of day bar of %s failed via extended dumper", ct->getFullCode());
+		}
+		else
+		{
+			count++;
+		}
+		//char sql[512] = { 0 };
+		//sprintf(sql, "REPLACE INTO tb_kline_day(exchange,code,date,open,high,low,close,settle,volume,turnover,interest,diff_interest) "
+		//	"VALUES('%s','%s',%u,%f,%f,%f,%f,%f,%u,%f,%u,%d);", ct->getExchg(), ct->getCode(), ts.trading_date, ts.open, ts.high, ts.low, ts.price,
+		//	ts.settle_price, ts.total_volume, ts.total_turnover, ts.open_interest, ts.diff_interest);
+
+		//MysqlQuery query(db);
+		//if (!query.exec(sql))
+		//{
+		//	_sink->outputWriterLog(LL_ERROR, "ClosingTask of day bar failed: %s", query.errormsg());
+		//}
+		//else
+		//{
+		//	count++;
+		//}
+	}
+
+	//转移实时1分钟线
+	KBlockPair* kBlkPair = getKlineBlock(ct, KP_Minute1, false);
+	if (kBlkPair != NULL && kBlkPair->_block->_size > 0)
+	{
+		uint32_t size = kBlkPair->_block->_size;
+		_sink->outputWriterLog(LL_INFO, "Transfering min1 bars of %s...", ct->getFullCode());
+		StdUniqueLock lock(kBlkPair->_mutex);
+
+		bool bSucc = _dumper->dumpHisBars(key.c_str(), "m1", kBlkPair->_block->_bars, size);
+		if (!bSucc)
+		{
+			_sink->outputWriterLog(LL_ERROR, "Closing Task of m1 bar of %s failed via extended dumper", ct->getFullCode());
+		}
+		else
+		{
+			count += size;
+			kBlkPair->_block->_size = 0;
+		}
+
+		//std::string sql = "REPLACE INTO tb_kline_min1(exchange,code,date,time,open,high,low,close,volume,turnover,interest,diff_interest) VALUES";
+		//for (uint32_t i = 0; i < size; i++)
+		//{
+		//	const WTSBarStruct& bs = kBlkPair->_block->_bars[i];
+		//	sql += StrUtil::printf("('%s','%s',%u,%u,%f,%f,%f,%f,%u,%f,%u,%d),", ct->getExchg(), ct->getCode(), bs.date, bs.time, bs.open,
+		//		bs.high, bs.low, bs.close, bs.vol, bs.money, bs.hold, bs.add);
+		//}
+		//sql = sql.substr(0, sql.size() - 1);
+		//sql += ";";
+
+		//MysqlQuery query(db);
+		//if (!query.exec(sql))
+		//{
+		//	_sink->outputWriterLog(LL_ERROR, "ClosingTask of min1 bar failed: %s", query.errormsg());
+		//}
+		//else
+		//{
+		//	count += size;
+		//	//最后将缓存清空
+		//	kBlkPair->_block->_size = 0;
+		//}
+	}
+
+	if (kBlkPair)
+		releaseBlock(kBlkPair);
+
+	//第四步,转移实时5分钟线
+	kBlkPair = getKlineBlock(ct, KP_Minute5, false);
+	if (kBlkPair != NULL && kBlkPair->_block->_size > 0)
+	{
+		uint32_t size = kBlkPair->_block->_size;
+		//_sink->outputWriterLog(LL_INFO, "开始转移%s的5分钟数据", ct->getFullCode());
+		_sink->outputWriterLog(LL_INFO, "Transfering min5 bars of %s...", ct->getFullCode());
+		StdUniqueLock lock(kBlkPair->_mutex);
+
+		bool bSucc = _dumper->dumpHisBars(key.c_str(), "m5", kBlkPair->_block->_bars, size);
+		if (!bSucc)
+		{
+			_sink->outputWriterLog(LL_ERROR, "Closing Task of m5 bar of %s failed via extended dumper", ct->getFullCode());
+		}
+		else
+		{
+			count += size;
+			kBlkPair->_block->_size = 0;
+		}
+
+		//std::string sql = "REPLACE INTO tb_kline_min5(exchange,code,date,time,open,high,low,close,volume,turnover,interest,diff_interest) VALUES";
+		//for (uint32_t i = 0; i < size; i++)
+		//{
+		//	const WTSBarStruct& bs = kBlkPair->_block->_bars[i];
+		//	sql += StrUtil::printf("('%s','%s',%u,%u,%f,%f,%f,%f,%u,%f,%u,%d),", ct->getExchg(), ct->getCode(), bs.date, bs.time, bs.open,
+		//		bs.high, bs.low, bs.close, bs.vol, bs.money, bs.hold, bs.add);
+		//}
+		//sql = sql.substr(0, sql.size() - 1);
+		//sql += ";";
+
+		//MysqlQuery query(db);
+		//if (!query.exec(sql))
+		//{
+		//	//_sink->outputWriterLog(LL_ERROR, "min5数据收盘作业失败: %s", query.errormsg());
+		//	_sink->outputWriterLog(LL_ERROR, "ClosingTask of min5 bar failed: %s", query.errormsg());
+		//}
+		//else
+		//{
+		//	count += size;
+		//	//最后将缓存清空
+		//	kBlkPair->_block->_size = 0;
+		//}
+	}
+
+	if (kBlkPair)
+		releaseBlock(kBlkPair);
+
+	return count;
+}
+
+/*
 uint32_t WtDataWriter::dump_hisdata_to_db(WTSContractInfo* ct)
 {
 	if (ct == NULL)
@@ -1715,6 +1868,7 @@ uint32_t WtDataWriter::dump_hisdata_to_db(WTSContractInfo* ct)
 
 	return count;
 }
+*/
 
 uint32_t WtDataWriter::dump_hisdata_to_file(WTSContractInfo* ct)
 {
@@ -2251,44 +2405,60 @@ void WtDataWriter::proc_loop()
 					_sink->outputWriterLog(LL_INFO, "Transfering tick data of %s...", fullcode.c_str());
 					StdUniqueLock lock(tBlkPair->_mutex);
 
-					std::stringstream ss;
-					ss << _base_dir << "his/ticks/" << ct->getExchg() << "/" << tBlkPair->_block->_date << "/";
-					std::string path = ss.str();
-					_sink->outputWriterLog(LL_INFO, path.c_str());
-					BoostFile::create_directories(ss.str().c_str());
-					std::string filename = StrUtil::printf("%s%s.dsb", path.c_str(), code.c_str());
-
-					bool bNew = false;
-					if (!BoostFile::exists(filename.c_str()))
-						bNew = true;
-
-					_sink->outputWriterLog(LL_INFO, "Openning data storage file: %s", filename.c_str());
-					BoostFile f;
-					if (f.create_new_file(filename.c_str()))
+					if (NULL == _dumper)
 					{
-						//先压缩数据
-						std::string cmp_data = WTSCmpHelper::compress_data(tBlkPair->_block->_ticks, sizeof(WTSTickStruct)*tBlkPair->_block->_size);
+						std::stringstream ss;
+						ss << _base_dir << "his/ticks/" << ct->getExchg() << "/" << tBlkPair->_block->_date << "/";
+						std::string path = ss.str();
+						_sink->outputWriterLog(LL_INFO, path.c_str());
+						BoostFile::create_directories(ss.str().c_str());
+						std::string filename = StrUtil::printf("%s%s.dsb", path.c_str(), code.c_str());
 
-						BlockHeaderV2 header;
-						strcpy(header._blk_flag, BLK_FLAG);
-						header._type = BT_HIS_Ticks;
-						header._version = BLOCK_VERSION_CMP;
-						header._size = cmp_data.size();
-						f.write_file(&header, sizeof(header));
+						bool bNew = false;
+						if (!BoostFile::exists(filename.c_str()))
+							bNew = true;
 
-						f.write_file(cmp_data.c_str(), cmp_data.size());
-						f.close_file();
+						_sink->outputWriterLog(LL_INFO, "Openning data storage file: %s", filename.c_str());
+						BoostFile f;
+						if (f.create_new_file(filename.c_str()))
+						{
+							//先压缩数据
+							std::string cmp_data = WTSCmpHelper::compress_data(tBlkPair->_block->_ticks, sizeof(WTSTickStruct)*tBlkPair->_block->_size);
 
-						count += tBlkPair->_block->_size;
+							BlockHeaderV2 header;
+							strcpy(header._blk_flag, BLK_FLAG);
+							header._type = BT_HIS_Ticks;
+							header._version = BLOCK_VERSION_CMP;
+							header._size = cmp_data.size();
+							f.write_file(&header, sizeof(header));
 
-						//最后将缓存清空
-						//memset(tBlkPair->_block->_ticks, 0, sizeof(WTSTickStruct)*tBlkPair->_block->_size);
-						tBlkPair->_block->_size = 0;
+							f.write_file(cmp_data.c_str(), cmp_data.size());
+							f.close_file();
+
+							count += tBlkPair->_block->_size;
+
+							//最后将缓存清空
+							//memset(tBlkPair->_block->_ticks, 0, sizeof(WTSTickStruct)*tBlkPair->_block->_size);
+							tBlkPair->_block->_size = 0;
+						}
+						else
+						{
+							//_sink->outputWriterLog(LL_ERROR, "历史数据文件%s打开失败,tick数据收盘作业失败", filename.c_str());
+							_sink->outputWriterLog(LL_ERROR, "ClosingTask of tick failed: openning history data file %s failed", filename.c_str());
+						}
 					}
 					else
 					{
-						//_sink->outputWriterLog(LL_ERROR, "历史数据文件%s打开失败,tick数据收盘作业失败", filename.c_str());
-						_sink->outputWriterLog(LL_ERROR, "ClosingTask of tick failed: openning history data file %s failed", filename.c_str());
+						bool bSucc = _dumper->dumpHisTicks(fullcode.c_str(), tBlkPair->_block->_date, tBlkPair->_block->_ticks, tBlkPair->_block->_size);
+						if(bSucc)
+						{
+							count += tBlkPair->_block->_size;
+							tBlkPair->_block->_size = 0;
+						}
+						else
+						{
+							_sink->outputWriterLog(LL_ERROR, "ClosingTask of tick of %s on %u via extended loader failed", fullcode.c_str(), tBlkPair->_block->_date);
+						}
 					}
 				}
 			}
@@ -2465,8 +2635,8 @@ void WtDataWriter::proc_loop()
 		}
 
 		//转移历史K线
-		if(_db_conn)
-			count += dump_hisdata_to_db(ct);
+		if(_dumper)
+			count += dump_hisdata_via_dumper(ct);
 		else
 			count += dump_hisdata_to_file(ct);
 

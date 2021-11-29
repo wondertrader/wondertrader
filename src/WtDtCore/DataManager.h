@@ -34,7 +34,8 @@ public:
 	~DataManager();
 
 public:
-	bool init(WTSVariant* params, WTSBaseDataMgr* bdMgr, StateMonitor* stMonitor, UDPCaster* caster = NULL);
+	bool init(WTSVariant* params, WTSBaseDataMgr* bdMgr, StateMonitor* stMonitor, UDPCaster* caster = NULL, IHisDataDumper* dumper = NULL);
+
 	void release();
 
 	bool writeTick(WTSTickData* curTick, bool bNeedSlice = true);

@@ -171,3 +171,8 @@ void register_parser_callbacks(FuncParserEvtCallback cbEvt, FuncParserSubCallbac
 
 
 #pragma endregion "À©Õ¹Parser½Ó¿Ú"
+
+void register_extended_dumper(FuncDumpBars barDumper, FuncDumpTicks tickDumper)
+{
+	getRunner().registerExtDumper(barDumper, tickDumper);
+}

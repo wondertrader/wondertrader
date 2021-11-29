@@ -1,6 +1,6 @@
 #pragma once
 #include "DataDefine.h"
-#include "MysqlDB.hpp"
+//#include "MysqlDB.hpp"
 
 #include "../Includes/FasterDefs.h"
 #include "../Includes/IDataWriter.h"
@@ -10,7 +10,7 @@
 #include <queue>
 
 typedef std::shared_ptr<BoostMappingFile> BoostMFPtr;
-typedef std::shared_ptr<MysqlDb>	MysqlDbPtr;
+//typedef std::shared_ptr<MysqlDb>	MysqlDbPtr;
 
 NS_OTP_BEGIN
 class WTSContractInfo;
@@ -32,15 +32,17 @@ private:
 
 	void  check_loop();
 
-	void  init_db();
+	//void  init_db();
 
 	uint32_t  dump_hisdata_to_file(WTSContractInfo* ct);
 
-	uint32_t  dump_hisdata_to_db(WTSContractInfo* ct);
+	//uint32_t  dump_hisdata_to_db(WTSContractInfo* ct);
+
+	uint32_t  dump_hisdata_via_dumper(WTSContractInfo* ct);
 
 
 public:
-	virtual bool init(WTSVariant* params, IDataWriterSink* sink) override;
+	virtual bool init(WTSVariant* params, IDataWriterSink* sink, IHisDataDumper* dumper = NULL) override;
 	virtual void release() override;
 
 	virtual bool writeTick(WTSTickData* curTick, bool bNeedSlice = true) override;
@@ -58,23 +60,22 @@ public:
 	virtual WTSTickData* getCurTick(const char* code, const char* exchg = "") override;
 
 private:
-	IDataWriterSink*	_sink;
 	IBaseDataMgr*		_bd_mgr;
 
-	typedef struct _DBConfig
-	{
-		bool	_active;
-		char	_host[64];
-		int32_t	_port;
-		char	_dbname[32];
-		char	_user[32];
-		char	_pass[32];
+	//typedef struct _DBConfig
+	//{
+	//	bool	_active;
+	//	char	_host[64];
+	//	int32_t	_port;
+	//	char	_dbname[32];
+	//	char	_user[32];
+	//	char	_pass[32];
 
-		_DBConfig() { memset(this, 0, sizeof(_DBConfig)); }
-	} DBConfig;
+	//	_DBConfig() { memset(this, 0, sizeof(_DBConfig)); }
+	//} DBConfig;
 
-	DBConfig	_db_conf;
-	MysqlDbPtr	_db_conn;
+	//DBConfig	_db_conf;
+	//MysqlDbPtr	_db_conn;
 
 	typedef struct _KBlockPair
 	{

@@ -24,7 +24,7 @@ NS_OTP_BEGIN
 class WTSVariant;
 NS_OTP_END
 
-class WtDtRunner
+class WtDtRunner : public IHisDataDumper
 {
 public:
 	WtDtRunner();
@@ -35,6 +35,12 @@ public:
 	void	start();
 
 	bool	createExtParser(const char* id);
+
+	//////////////////////////////////////////////////////////////////////////
+	//IHisDataDumper
+	virtual bool dumpHisBars(const char* stdCode, const char* period, WTSBarStruct* bars, uint32_t count) override;
+
+	virtual bool dumpHisTicks(const char* stdCode, uint32_t uDate, WTSTickStruct* ticks, uint32_t count) override;
 
 //////////////////////////////////////////////////////////////////////////
 //À©Õ¹Parser
@@ -50,9 +56,14 @@ public:
 
 	void on_parser_quote(const char* id, WTSTickStruct* curTick, bool bNeedSlice = true);
 
+//////////////////////////////////////////////////////////////////////////
+//À©Õ¹Dumper
+public:
+	void registerExtDumper(FuncDumpBars barDumper, FuncDumpTicks tickDumper);
+
 private:
-	void	initDataMgr(WTSVariant* config);
-	void	initParsers(const char* filename);
+	void initDataMgr(WTSVariant* config);
+	void initParsers(const char* filename);
 
 private:
 
@@ -66,5 +77,8 @@ private:
 
 	FuncParserEvtCallback	_cb_parser_evt;
 	FuncParserSubCallback	_cb_parser_sub;
+
+	FuncDumpBars	_dumper_for_bars;
+	FuncDumpTicks	_dumper_for_ticks;
 };
 
