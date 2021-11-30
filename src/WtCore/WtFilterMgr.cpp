@@ -173,12 +173,18 @@ bool WtFilterMgr::is_filtered_by_strategy(const char* straName, double& targetPo
 	if (it != _stra_filters.end())
 	{
 		const FilterItem& fItem = it->second;
+		if(isDiff)
+		{
+			//如果过滤器触发，并且是增量头寸，则直接过滤掉
+			return true;
+		}
+
 		WTSLogger::info("[Filters] Strategy filter %s triggered, action: %s", straName, fItem._action <= FA_Redirect ? FLTACT_NAMEs[fItem._action] : "Unknown");
 		if (fItem._action == FA_Ignore)
 		{
 			return true;
 		}
-		else if (fItem._action == FA_Redirect && !isDiff)
+		else if (fItem._action == FA_Redirect)
 		{
 			//只有不是增量的时候,才有效
 			targetPos = fItem._target;
