@@ -15,6 +15,9 @@
 NS_OTP_BEGIN
 struct WTSTickStruct;
 struct WTSBarStruct;
+struct WTSOrdDtlStruct;
+struct WTSOrdQueStruct;
+struct WTSTransStruct;
 NS_OTP_END
 
 USING_NS_OTP;
@@ -42,5 +45,8 @@ typedef void(PORTER_FLAG *FuncParserSubCallback)(const char* id, const char* ful
 
 //////////////////////////////////////////////////////////////////////////
 //扩展Dumper回调函数
-typedef bool(PORTER_FLAG *FuncDumpBars)(const char* stdCode, const char* period, WTSBarStruct* bars, WtUInt32 count);
-typedef bool(PORTER_FLAG *FuncDumpTicks)(const char* stdCode, WtUInt32 uDate, WTSTickStruct* ticks, WtUInt32 count);
+typedef bool(PORTER_FLAG *FuncDumpBars)(const char* id, const char* stdCode, const char* period, WTSBarStruct* bars, WtUInt32 count);
+typedef bool(PORTER_FLAG *FuncDumpTicks)(const char* id, const char* stdCode, WtUInt32 uDate, WTSTickStruct* ticks, WtUInt32 count);
+typedef bool(PORTER_FLAG *FuncDumpOrdQue)(const char* id, const char* stdCode, WtUInt32 uDate, WTSOrdQueStruct* items, WtUInt32 count);
+typedef bool(PORTER_FLAG *FuncDumpOrdDtl)(const char* id, const char* stdCode, WtUInt32 uDate, WTSOrdDtlStruct* items, WtUInt32 count);
+typedef bool(PORTER_FLAG *FuncDumpTrans)(const char* id, const char* stdCode, WtUInt32 uDate, WTSTransStruct* items, WtUInt32 count);

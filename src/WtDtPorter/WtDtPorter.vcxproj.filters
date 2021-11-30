@@ -30,6 +30,9 @@
     <ClInclude Include="ExpParser.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="ExpDumper.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WtDtPorter.cpp">
@@ -42,6 +45,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="ExpParser.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ExpDumper.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

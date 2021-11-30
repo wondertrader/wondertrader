@@ -26,6 +26,9 @@
 WtDtRunner::WtDtRunner()
 	: _dumper_for_bars(NULL)
 	, _dumper_for_ticks(NULL)
+	, _dumper_for_ordque(NULL)
+	, _dumper_for_orddtl(NULL)
+	, _dumper_for_trans(NULL)
 {
 	install_signal_hooks([](const char* message) {
 		WTSLogger::error(message);
@@ -115,7 +118,7 @@ void WtDtRunner::initialize(const char* cfgFile, const char* logCfg, const char*
 void WtDtRunner::initDataMgr(WTSVariant* config)
 {
 	bool bDumperEnabled = (_dumper_for_bars != NULL || _dumper_for_ticks != NULL);
-	m_dataMgr.init(config, &m_baseDataMgr, &m_stateMon, &m_udpCaster, bDumperEnabled ? this : NULL);
+	m_dataMgr.init(config, &m_baseDataMgr, &m_stateMon, &m_udpCaster);
 }
 
 void WtDtRunner::initParsers(const char* filename)
@@ -214,13 +217,31 @@ bool WtDtRunner::createExtParser(const char* id)
 
 #pragma endregion 
 
+bool WtDtRunner::createExtDumper(const char* id)
+{
+	ExpDumperPtr dumper(new ExpDumper(id));
+	_dumpers[id] = dumper;
+
+	m_dataMgr.add_ext_dumper(id, dumper.get());
+
+	WTSLogger::info("Extended dumper %s created", id);
+	return true;
+}
+
 void WtDtRunner::registerExtDumper(FuncDumpBars barDumper, FuncDumpTicks tickDumper)
 {
 	_dumper_for_bars = barDumper;
 	_dumper_for_ticks = tickDumper;
 }
 
-bool WtDtRunner::dumpHisTicks(const char* stdCode, uint32_t uDate, WTSTickStruct* ticks, uint32_t count)
+void WtDtRunner::registerExtHftDataDumper(FuncDumpOrdQue ordQueDumper, FuncDumpOrdDtl ordDtlDumper, FuncDumpTrans transDumper)
+{
+	_dumper_for_ordque = ordQueDumper;
+	_dumper_for_orddtl = ordDtlDumper;
+	_dumper_for_trans = transDumper;
+}
+
+bool WtDtRunner::dumpHisTicks(const char* id, const char* stdCode, uint32_t uDate, WTSTickStruct* ticks, uint32_t count)
 {
 	if (NULL == _dumper_for_ticks)
 	{
@@ -228,10 +249,10 @@ bool WtDtRunner::dumpHisTicks(const char* stdCode, uint32_t uDate, WTSTickStruct
 		return false;
 	}
 
-	return _dumper_for_ticks(stdCode, uDate, ticks, count);
+	return _dumper_for_ticks(id, stdCode, uDate, ticks, count);
 }
 
-bool WtDtRunner::dumpHisBars(const char* stdCode, const char* period, WTSBarStruct* bars, uint32_t count)
+bool WtDtRunner::dumpHisBars(const char* id, const char* stdCode, const char* period, WTSBarStruct* bars, uint32_t count)
 {
 	if (NULL == _dumper_for_bars)
 	{
@@ -239,5 +260,38 @@ bool WtDtRunner::dumpHisBars(const char* stdCode, const char* period, WTSBarStru
 		return false;
 	}
 
-	return _dumper_for_bars(stdCode, period, bars, count);
+	return _dumper_for_bars(id, stdCode, period, bars, count);
+}
+
+bool WtDtRunner::dumpHisOrdDtl(const char* id, const char* stdCode, uint32_t uDate, WTSOrdDtlStruct* items, uint32_t count)
+{
+	if (NULL == _dumper_for_orddtl)
+	{
+		WTSLogger::error("Extended order detail dumper not enabled");
+		return false;
+	}
+
+	return _dumper_for_orddtl(id, stdCode, uDate, items, count);
+}
+
+bool WtDtRunner::dumpHisOrdQue(const char* id, const char* stdCode, uint32_t uDate, WTSOrdQueStruct* items, uint32_t count)
+{
+	if (NULL == _dumper_for_ordque)
+	{
+		WTSLogger::error("Extended order queue dumper not enabled");
+		return false;
+	}
+
+	return _dumper_for_ordque(id, stdCode, uDate, items, count);
+}
+
+bool WtDtRunner::dumpHisTrans(const char* id, const char* stdCode, uint32_t uDate, WTSTransStruct* items, uint32_t count)
+{
+	if (NULL == _dumper_for_trans)
+	{
+		WTSLogger::error("Extended transaction dumper not enabled");
+		return false;
+	}
+
+	return _dumper_for_trans(id, stdCode, uDate, items, count);
 }

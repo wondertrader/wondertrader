@@ -9,6 +9,7 @@
  */
 #pragma once
 #include "PorterDefs.h"
+#include "ExpDumper.h"
 
 #include "../WtDtCore/DataManager.h"
 #include "../WtDtCore/ParserAdapter.h"
@@ -24,7 +25,7 @@ NS_OTP_BEGIN
 class WTSVariant;
 NS_OTP_END
 
-class WtDtRunner : public IHisDataDumper
+class WtDtRunner
 {
 public:
 	WtDtRunner();
@@ -36,11 +37,6 @@ public:
 
 	bool	createExtParser(const char* id);
 
-	//////////////////////////////////////////////////////////////////////////
-	//IHisDataDumper
-	virtual bool dumpHisBars(const char* stdCode, const char* period, WTSBarStruct* bars, uint32_t count) override;
-
-	virtual bool dumpHisTicks(const char* stdCode, uint32_t uDate, WTSTickStruct* ticks, uint32_t count) override;
 
 //////////////////////////////////////////////////////////////////////////
 //À©Õ¹Parser
@@ -59,7 +55,21 @@ public:
 //////////////////////////////////////////////////////////////////////////
 //À©Õ¹Dumper
 public:
+	bool createExtDumper(const char* id);
+
 	void registerExtDumper(FuncDumpBars barDumper, FuncDumpTicks tickDumper);
+
+	void registerExtHftDataDumper(FuncDumpOrdQue ordQueDumper, FuncDumpOrdDtl ordDtlDumper, FuncDumpTrans transDumper);
+
+	bool dumpHisBars(const char* id, const char* stdCode, const char* period, WTSBarStruct* bars, uint32_t count);
+
+	bool dumpHisTicks(const char* id, const char* stdCode, uint32_t uDate, WTSTickStruct* ticks, uint32_t count);
+
+	bool dumpHisOrdQue(const char* id, const char* stdCode, uint32_t uDate, WTSOrdQueStruct* item, uint32_t count);
+
+	bool dumpHisOrdDtl(const char* id, const char* stdCode, uint32_t uDate, WTSOrdDtlStruct* items, uint32_t count);
+
+	bool dumpHisTrans(const char* id, const char* stdCode, uint32_t uDate, WTSTransStruct* items, uint32_t count);
 
 private:
 	void initDataMgr(WTSVariant* config);
@@ -80,5 +90,13 @@ private:
 
 	FuncDumpBars	_dumper_for_bars;
 	FuncDumpTicks	_dumper_for_ticks;
+
+	FuncDumpOrdQue	_dumper_for_ordque;
+	FuncDumpOrdDtl	_dumper_for_orddtl;
+	FuncDumpTrans	_dumper_for_trans;
+
+	typedef std::shared_ptr<ExpDumper> ExpDumperPtr;
+	typedef std::map<std::string, ExpDumperPtr>  ExpDumpers;
+	ExpDumpers		_dumpers;
 };
 

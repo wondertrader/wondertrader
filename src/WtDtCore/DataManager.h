@@ -34,7 +34,9 @@ public:
 	~DataManager();
 
 public:
-	bool init(WTSVariant* params, WTSBaseDataMgr* bdMgr, StateMonitor* stMonitor, UDPCaster* caster = NULL, IHisDataDumper* dumper = NULL);
+	bool init(WTSVariant* params, WTSBaseDataMgr* bdMgr, StateMonitor* stMonitor, UDPCaster* caster = NULL);
+
+	void add_ext_dumper(const char* id, IHisDataDumper* dumper);
 
 	void release();
 

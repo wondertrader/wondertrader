@@ -161,9 +161,9 @@ void WtDataWriter::init_db()
 }
 */
 
-bool WtDataWriter::init(WTSVariant* params, IDataWriterSink* sink, IHisDataDumper* dumper /* = NULL */)
+bool WtDataWriter::init(WTSVariant* params, IDataWriterSink* sink)
 {
-	IDataWriter::init(params, sink, dumper);
+	IDataWriter::init(params, sink);
 
 	_bd_mgr = sink->getBDMgr();
 	_save_tick_log = params->getBoolean("savelog");
@@ -368,7 +368,7 @@ void* WtDataWriter::resizeRTBlock(BoostMFPtr& mfPtr, uint32_t nCount)
 	uint64_t uOldSize = sizeof(HeaderType) + sizeof(T)*tBlock->_capacity;
 	uint64_t uNewSize = sizeof(HeaderType) + sizeof(T)*nCount;
 	std::string data;
-	data.resize(uNewSize - uOldSize, 0);
+	data.resize((std::size_t)(uNewSize - uOldSize), 0);
 	try
 	{
 		BoostFile f;
@@ -1607,7 +1607,7 @@ void WtDataWriter::check_loop()
 
 uint32_t WtDataWriter::dump_hisdata_via_dumper(WTSContractInfo* ct)
 {
-	if (ct == NULL ||_dumper == NULL)
+	if (ct == NULL || _dumpers.empty())
 		return 0;
 
 	std::string key = ct->getFullCode();
@@ -1634,29 +1634,22 @@ uint32_t WtDataWriter::dump_hisdata_via_dumper(WTSContractInfo* ct)
 		bsDay.hold = ts.open_interest;
 		bsDay.add = ts.diff_interest;
 
-		bool bSucc = _dumper->dumpHisBars(key.c_str(), "d1", &bsDay, 1);
-		if(!bSucc)
+		for(auto& item : _dumpers)
 		{
-			_sink->outputWriterLog(LL_ERROR, "Closing Task of day bar of %s failed via extended dumper", ct->getFullCode());
-		}
-		else
-		{
-			count++;
-		}
-		//char sql[512] = { 0 };
-		//sprintf(sql, "REPLACE INTO tb_kline_day(exchange,code,date,open,high,low,close,settle,volume,turnover,interest,diff_interest) "
-		//	"VALUES('%s','%s',%u,%f,%f,%f,%f,%f,%u,%f,%u,%d);", ct->getExchg(), ct->getCode(), ts.trading_date, ts.open, ts.high, ts.low, ts.price,
-		//	ts.settle_price, ts.total_volume, ts.total_turnover, ts.open_interest, ts.diff_interest);
+			const char* id = item.first.c_str();
+			IHisDataDumper* dumper = item.second;
+			if(dumper == NULL)
+				continue;
 
-		//MysqlQuery query(db);
-		//if (!query.exec(sql))
-		//{
-		//	_sink->outputWriterLog(LL_ERROR, "ClosingTask of day bar failed: %s", query.errormsg());
-		//}
-		//else
-		//{
-		//	count++;
-		//}
+			bool bSucc = dumper->dumpHisBars(key.c_str(), "d1", &bsDay, 1);
+			if (!bSucc)
+			{
+				_sink->outputWriterLog(LL_ERROR, "Closing Task of day bar of %s failed via extended dumper %s", ct->getFullCode(), id);
+			}
+		}
+
+		count++;
+
 	}
 
 	//转移实时1分钟线
@@ -1667,38 +1660,22 @@ uint32_t WtDataWriter::dump_hisdata_via_dumper(WTSContractInfo* ct)
 		_sink->outputWriterLog(LL_INFO, "Transfering min1 bars of %s...", ct->getFullCode());
 		StdUniqueLock lock(kBlkPair->_mutex);
 
-		bool bSucc = _dumper->dumpHisBars(key.c_str(), "m1", kBlkPair->_block->_bars, size);
-		if (!bSucc)
+		for (auto& item : _dumpers)
 		{
-			_sink->outputWriterLog(LL_ERROR, "Closing Task of m1 bar of %s failed via extended dumper", ct->getFullCode());
-		}
-		else
-		{
-			count += size;
-			kBlkPair->_block->_size = 0;
+			const char* id = item.first.c_str();
+			IHisDataDumper* dumper = item.second;
+			if (dumper == NULL)
+				continue;
+
+			bool bSucc = dumper->dumpHisBars(key.c_str(), "m1", kBlkPair->_block->_bars, size);
+			if (!bSucc)
+			{
+				_sink->outputWriterLog(LL_ERROR, "Closing Task of m1 bar of %s failed via extended dumper %s", ct->getFullCode(), id);
+			}
 		}
 
-		//std::string sql = "REPLACE INTO tb_kline_min1(exchange,code,date,time,open,high,low,close,volume,turnover,interest,diff_interest) VALUES";
-		//for (uint32_t i = 0; i < size; i++)
-		//{
-		//	const WTSBarStruct& bs = kBlkPair->_block->_bars[i];
-		//	sql += StrUtil::printf("('%s','%s',%u,%u,%f,%f,%f,%f,%u,%f,%u,%d),", ct->getExchg(), ct->getCode(), bs.date, bs.time, bs.open,
-		//		bs.high, bs.low, bs.close, bs.vol, bs.money, bs.hold, bs.add);
-		//}
-		//sql = sql.substr(0, sql.size() - 1);
-		//sql += ";";
-
-		//MysqlQuery query(db);
-		//if (!query.exec(sql))
-		//{
-		//	_sink->outputWriterLog(LL_ERROR, "ClosingTask of min1 bar failed: %s", query.errormsg());
-		//}
-		//else
-		//{
-		//	count += size;
-		//	//最后将缓存清空
-		//	kBlkPair->_block->_size = 0;
-		//}
+		count++;
+		kBlkPair->_block->_size = 0;
 	}
 
 	if (kBlkPair)
@@ -1713,39 +1690,22 @@ uint32_t WtDataWriter::dump_hisdata_via_dumper(WTSContractInfo* ct)
 		_sink->outputWriterLog(LL_INFO, "Transfering min5 bars of %s...", ct->getFullCode());
 		StdUniqueLock lock(kBlkPair->_mutex);
 
-		bool bSucc = _dumper->dumpHisBars(key.c_str(), "m5", kBlkPair->_block->_bars, size);
-		if (!bSucc)
+		for (auto& item : _dumpers)
 		{
-			_sink->outputWriterLog(LL_ERROR, "Closing Task of m5 bar of %s failed via extended dumper", ct->getFullCode());
-		}
-		else
-		{
-			count += size;
-			kBlkPair->_block->_size = 0;
+			const char* id = item.first.c_str();
+			IHisDataDumper* dumper = item.second;
+			if (dumper == NULL)
+				continue;
+
+			bool bSucc = dumper->dumpHisBars(key.c_str(), "m5", kBlkPair->_block->_bars, size);
+			if (!bSucc)
+			{
+				_sink->outputWriterLog(LL_ERROR, "Closing Task of m5 bar of %s failed via extended dumper %s", ct->getFullCode(), id);
+			}
 		}
 
-		//std::string sql = "REPLACE INTO tb_kline_min5(exchange,code,date,time,open,high,low,close,volume,turnover,interest,diff_interest) VALUES";
-		//for (uint32_t i = 0; i < size; i++)
-		//{
-		//	const WTSBarStruct& bs = kBlkPair->_block->_bars[i];
-		//	sql += StrUtil::printf("('%s','%s',%u,%u,%f,%f,%f,%f,%u,%f,%u,%d),", ct->getExchg(), ct->getCode(), bs.date, bs.time, bs.open,
-		//		bs.high, bs.low, bs.close, bs.vol, bs.money, bs.hold, bs.add);
-		//}
-		//sql = sql.substr(0, sql.size() - 1);
-		//sql += ";";
-
-		//MysqlQuery query(db);
-		//if (!query.exec(sql))
-		//{
-		//	//_sink->outputWriterLog(LL_ERROR, "min5数据收盘作业失败: %s", query.errormsg());
-		//	_sink->outputWriterLog(LL_ERROR, "ClosingTask of min5 bar failed: %s", query.errormsg());
-		//}
-		//else
-		//{
-		//	count += size;
-		//	//最后将缓存清空
-		//	kBlkPair->_block->_size = 0;
-		//}
+		count++;
+		kBlkPair->_block->_size = 0;
 	}
 
 	if (kBlkPair)
@@ -2405,8 +2365,19 @@ void WtDataWriter::proc_loop()
 					_sink->outputWriterLog(LL_INFO, "Transfering tick data of %s...", fullcode.c_str());
 					StdUniqueLock lock(tBlkPair->_mutex);
 
-					if (NULL == _dumper)
+					for (auto& item : _dumpers)
 					{
+						const char* id = item.first.c_str();
+						IHisDataDumper* dumper = item.second;
+						bool bSucc = dumper->dumpHisTicks(fullcode.c_str(), tBlkPair->_block->_date, tBlkPair->_block->_ticks, tBlkPair->_block->_size);
+						if (!bSucc)
+						{
+							_sink->outputWriterLog(LL_ERROR, "ClosingTask of tick of %s on %u via extended dumper %s failed", fullcode.c_str(), tBlkPair->_block->_date, id);
+						}
+					}
+
+					{//////////////////////////////////////////////////////////////////////////
+						//dump tick data to dsb file
 						std::stringstream ss;
 						ss << _base_dir << "his/ticks/" << ct->getExchg() << "/" << tBlkPair->_block->_date << "/";
 						std::string path = ss.str();
@@ -2447,19 +2418,6 @@ void WtDataWriter::proc_loop()
 							_sink->outputWriterLog(LL_ERROR, "ClosingTask of tick failed: openning history data file %s failed", filename.c_str());
 						}
 					}
-					else
-					{
-						bool bSucc = _dumper->dumpHisTicks(fullcode.c_str(), tBlkPair->_block->_date, tBlkPair->_block->_ticks, tBlkPair->_block->_size);
-						if(bSucc)
-						{
-							count += tBlkPair->_block->_size;
-							tBlkPair->_block->_size = 0;
-						}
-						else
-						{
-							_sink->outputWriterLog(LL_ERROR, "ClosingTask of tick of %s on %u via extended loader failed", fullcode.c_str(), tBlkPair->_block->_date);
-						}
-					}
 				}
 			}
 
@@ -2477,44 +2435,57 @@ void WtDataWriter::proc_loop()
 				_sink->outputWriterLog(LL_INFO, "Transfering transaction data of %s...", fullcode.c_str());
 				StdUniqueLock lock(tBlkPair->_mutex);
 
-				std::stringstream ss;
-				ss << _base_dir << "his/trans/" << ct->getExchg() << "/" << tBlkPair->_block->_date << "/";
-				std::string path = ss.str();
-				_sink->outputWriterLog(LL_INFO, path.c_str());
-				BoostFile::create_directories(ss.str().c_str());
-				std::string filename = StrUtil::printf("%s%s.dsb", path.c_str(), code.c_str());
-
-				bool bNew = false;
-				if (!BoostFile::exists(filename.c_str()))
-					bNew = true;
-
-				_sink->outputWriterLog(LL_INFO, "Openning data storage file: %s", filename.c_str());
-				BoostFile f;
-				if (f.create_new_file(filename.c_str()))
+				for (auto& item : _dumpers)
 				{
-					//先压缩数据
-					std::string cmp_data = WTSCmpHelper::compress_data(tBlkPair->_block->_trans, sizeof(WTSTransStruct)*tBlkPair->_block->_size);
-
-					BlockHeaderV2 header;
-					strcpy(header._blk_flag, BLK_FLAG);
-					header._type = BT_HIS_Trnsctn;
-					header._version = BLOCK_VERSION_CMP;
-					header._size = cmp_data.size();
-					f.write_file(&header, sizeof(header));
-
-					f.write_file(cmp_data.c_str(), cmp_data.size());
-					f.close_file();
-
-					count += tBlkPair->_block->_size;
-
-					//最后将缓存清空
-					//memset(tBlkPair->_block->_ticks, 0, sizeof(WTSTickStruct)*tBlkPair->_block->_size);
-					tBlkPair->_block->_size = 0;
+					const char* id = item.first.c_str();
+					IHisDataDumper* dumper = item.second;
+					bool bSucc = dumper->dumpHisTrans(fullcode.c_str(), tBlkPair->_block->_date, tBlkPair->_block->_trans, tBlkPair->_block->_size);
+					if (!bSucc)
+					{
+						_sink->outputWriterLog(LL_ERROR, "ClosingTask of transaction of %s on %u via extended dumper %s failed", fullcode.c_str(), tBlkPair->_block->_date, id);
+					}
 				}
-				else
+
 				{
-					//_sink->outputWriterLog(LL_ERROR, "历史数据文件%s打开失败,trans数据收盘作业失败", filename.c_str());
-					_sink->outputWriterLog(LL_ERROR, "ClosingTask of transaction failed: openning history data file %s failed", filename.c_str());
+					std::stringstream ss;
+					ss << _base_dir << "his/trans/" << ct->getExchg() << "/" << tBlkPair->_block->_date << "/";
+					std::string path = ss.str();
+					_sink->outputWriterLog(LL_INFO, path.c_str());
+					BoostFile::create_directories(ss.str().c_str());
+					std::string filename = StrUtil::printf("%s%s.dsb", path.c_str(), code.c_str());
+
+					bool bNew = false;
+					if (!BoostFile::exists(filename.c_str()))
+						bNew = true;
+
+					_sink->outputWriterLog(LL_INFO, "Openning data storage file: %s", filename.c_str());
+					BoostFile f;
+					if (f.create_new_file(filename.c_str()))
+					{
+						//先压缩数据
+						std::string cmp_data = WTSCmpHelper::compress_data(tBlkPair->_block->_trans, sizeof(WTSTransStruct)*tBlkPair->_block->_size);
+
+						BlockHeaderV2 header;
+						strcpy(header._blk_flag, BLK_FLAG);
+						header._type = BT_HIS_Trnsctn;
+						header._version = BLOCK_VERSION_CMP;
+						header._size = cmp_data.size();
+						f.write_file(&header, sizeof(header));
+
+						f.write_file(cmp_data.c_str(), cmp_data.size());
+						f.close_file();
+
+						count += tBlkPair->_block->_size;
+
+						//最后将缓存清空
+						//memset(tBlkPair->_block->_ticks, 0, sizeof(WTSTickStruct)*tBlkPair->_block->_size);
+						tBlkPair->_block->_size = 0;
+					}
+					else
+					{
+						//_sink->outputWriterLog(LL_ERROR, "历史数据文件%s打开失败,trans数据收盘作业失败", filename.c_str());
+						_sink->outputWriterLog(LL_ERROR, "ClosingTask of transaction failed: openning history data file %s failed", filename.c_str());
+					}
 				}
 			}
 
@@ -2532,44 +2503,57 @@ void WtDataWriter::proc_loop()
 				_sink->outputWriterLog(LL_INFO, "Transfering order detail data of %s...", fullcode.c_str());
 				StdUniqueLock lock(tBlkPair->_mutex);
 
-				std::stringstream ss;
-				ss << _base_dir << "his/orders/" << ct->getExchg() << "/" << tBlkPair->_block->_date << "/";
-				std::string path = ss.str();
-				_sink->outputWriterLog(LL_INFO, path.c_str());
-				BoostFile::create_directories(ss.str().c_str());
-				std::string filename = StrUtil::printf("%s%s.dsb", path.c_str(), code.c_str());
-
-				bool bNew = false;
-				if (!BoostFile::exists(filename.c_str()))
-					bNew = true;
-
-				_sink->outputWriterLog(LL_INFO, "Openning data storage file: %s", filename.c_str());
-				BoostFile f;
-				if (f.create_new_file(filename.c_str()))
+				for (auto& item : _dumpers)
 				{
-					//先压缩数据
-					std::string cmp_data = WTSCmpHelper::compress_data(tBlkPair->_block->_details, sizeof(WTSOrdDtlStruct)*tBlkPair->_block->_size);
-
-					BlockHeaderV2 header;
-					strcpy(header._blk_flag, BLK_FLAG);
-					header._type = BT_HIS_OrdDetail;
-					header._version = BLOCK_VERSION_CMP;
-					header._size = cmp_data.size();
-					f.write_file(&header, sizeof(header));
-
-					f.write_file(cmp_data.c_str(), cmp_data.size());
-					f.close_file();
-
-					count += tBlkPair->_block->_size;
-
-					//最后将缓存清空
-					//memset(tBlkPair->_block->_ticks, 0, sizeof(WTSTickStruct)*tBlkPair->_block->_size);
-					tBlkPair->_block->_size = 0;
+					const char* id = item.first.c_str();
+					IHisDataDumper* dumper = item.second;
+					bool bSucc = dumper->dumpHisOrdDtl(fullcode.c_str(), tBlkPair->_block->_date, tBlkPair->_block->_details, tBlkPair->_block->_size);
+					if (!bSucc)
+					{
+						_sink->outputWriterLog(LL_ERROR, "ClosingTask of order details of %s on %u via extended dumper %s failed", fullcode.c_str(), tBlkPair->_block->_date, id);
+					}
 				}
-				else
+
 				{
-					//_sink->outputWriterLog(LL_ERROR, "历史数据文件%s打开失败,orders数据收盘作业失败", filename.c_str());
-					_sink->outputWriterLog(LL_ERROR, "ClosingTask of order detail failed: openning history data file %s failed", filename.c_str());
+					std::stringstream ss;
+					ss << _base_dir << "his/orders/" << ct->getExchg() << "/" << tBlkPair->_block->_date << "/";
+					std::string path = ss.str();
+					_sink->outputWriterLog(LL_INFO, path.c_str());
+					BoostFile::create_directories(ss.str().c_str());
+					std::string filename = StrUtil::printf("%s%s.dsb", path.c_str(), code.c_str());
+
+					bool bNew = false;
+					if (!BoostFile::exists(filename.c_str()))
+						bNew = true;
+
+					_sink->outputWriterLog(LL_INFO, "Openning data storage file: %s", filename.c_str());
+					BoostFile f;
+					if (f.create_new_file(filename.c_str()))
+					{
+						//先压缩数据
+						std::string cmp_data = WTSCmpHelper::compress_data(tBlkPair->_block->_details, sizeof(WTSOrdDtlStruct)*tBlkPair->_block->_size);
+
+						BlockHeaderV2 header;
+						strcpy(header._blk_flag, BLK_FLAG);
+						header._type = BT_HIS_OrdDetail;
+						header._version = BLOCK_VERSION_CMP;
+						header._size = cmp_data.size();
+						f.write_file(&header, sizeof(header));
+
+						f.write_file(cmp_data.c_str(), cmp_data.size());
+						f.close_file();
+
+						count += tBlkPair->_block->_size;
+
+						//最后将缓存清空
+						//memset(tBlkPair->_block->_ticks, 0, sizeof(WTSTickStruct)*tBlkPair->_block->_size);
+						tBlkPair->_block->_size = 0;
+					}
+					else
+					{
+						//_sink->outputWriterLog(LL_ERROR, "历史数据文件%s打开失败,orders数据收盘作业失败", filename.c_str());
+						_sink->outputWriterLog(LL_ERROR, "ClosingTask of order detail failed: openning history data file %s failed", filename.c_str());
+					}
 				}
 			}
 
@@ -2587,47 +2571,58 @@ void WtDataWriter::proc_loop()
 				_sink->outputWriterLog(LL_INFO, "Transfering order queue data of %s...", fullcode.c_str());
 				StdUniqueLock lock(tBlkPair->_mutex);
 
-				std::stringstream ss;
-				ss << _base_dir << "his/queue/" << ct->getExchg() << "/" << tBlkPair->_block->_date << "/";
-				std::string path = ss.str();
-				_sink->outputWriterLog(LL_INFO, path.c_str());
-				BoostFile::create_directories(ss.str().c_str());
-				std::string filename = StrUtil::printf("%s%s.dsb", path.c_str(), code.c_str());
-
-				bool bNew = false;
-				if (!BoostFile::exists(filename.c_str()))
-					bNew = true;
-
-				_sink->outputWriterLog(LL_INFO, "Openning data storage file: %s", filename.c_str());
-				BoostFile f;
-				if (f.create_new_file(filename.c_str()))
+				for (auto& item : _dumpers)
 				{
-					//先压缩数据
-					std::string cmp_data = WTSCmpHelper::compress_data(tBlkPair->_block->_queues, sizeof(WTSOrdQueStruct)*tBlkPair->_block->_size);
-
-					BlockHeaderV2 header;
-					strcpy(header._blk_flag, BLK_FLAG);
-					header._type = BT_HIS_OrdQueue;
-					header._version = BLOCK_VERSION_CMP;
-					header._size = cmp_data.size();
-					f.write_file(&header, sizeof(header));
-
-					f.write_file(cmp_data.c_str(), cmp_data.size());
-					f.close_file();
-
-					count += tBlkPair->_block->_size;
-
-					//最后将缓存清空
-					//memset(tBlkPair->_block->_ticks, 0, sizeof(WTSTickStruct)*tBlkPair->_block->_size);
-					tBlkPair->_block->_size = 0;
-				}
-				else
-				{
-					//_sink->outputWriterLog(LL_ERROR, "历史数据文件%s打开失败,queue数据收盘作业失败", filename.c_str());
-					_sink->outputWriterLog(LL_ERROR, "ClosingTask of order queue failed: openning history data file %s failed", filename.c_str());
+					const char* id = item.first.c_str();
+					IHisDataDumper* dumper = item.second;
+					bool bSucc = dumper->dumpHisOrdQue(fullcode.c_str(), tBlkPair->_block->_date, tBlkPair->_block->_queues, tBlkPair->_block->_size);
+					if (!bSucc)
+					{
+						_sink->outputWriterLog(LL_ERROR, "ClosingTask of order queues of %s on %u via extended dumper %s failed", fullcode.c_str(), tBlkPair->_block->_date, id);
+					}
 				}
 
+				{
+					std::stringstream ss;
+					ss << _base_dir << "his/queue/" << ct->getExchg() << "/" << tBlkPair->_block->_date << "/";
+					std::string path = ss.str();
+					_sink->outputWriterLog(LL_INFO, path.c_str());
+					BoostFile::create_directories(ss.str().c_str());
+					std::string filename = StrUtil::printf("%s%s.dsb", path.c_str(), code.c_str());
 
+					bool bNew = false;
+					if (!BoostFile::exists(filename.c_str()))
+						bNew = true;
+
+					_sink->outputWriterLog(LL_INFO, "Openning data storage file: %s", filename.c_str());
+					BoostFile f;
+					if (f.create_new_file(filename.c_str()))
+					{
+						//先压缩数据
+						std::string cmp_data = WTSCmpHelper::compress_data(tBlkPair->_block->_queues, sizeof(WTSOrdQueStruct)*tBlkPair->_block->_size);
+
+						BlockHeaderV2 header;
+						strcpy(header._blk_flag, BLK_FLAG);
+						header._type = BT_HIS_OrdQueue;
+						header._version = BLOCK_VERSION_CMP;
+						header._size = cmp_data.size();
+						f.write_file(&header, sizeof(header));
+
+						f.write_file(cmp_data.c_str(), cmp_data.size());
+						f.close_file();
+
+						count += tBlkPair->_block->_size;
+
+						//最后将缓存清空
+						//memset(tBlkPair->_block->_ticks, 0, sizeof(WTSTickStruct)*tBlkPair->_block->_size);
+						tBlkPair->_block->_size = 0;
+					}
+					else
+					{
+						//_sink->outputWriterLog(LL_ERROR, "历史数据文件%s打开失败,queue数据收盘作业失败", filename.c_str());
+						_sink->outputWriterLog(LL_ERROR, "ClosingTask of order queue failed: openning history data file %s failed", filename.c_str());
+					}
+				}
 			}
 
 			if (tBlkPair)
@@ -2635,10 +2630,9 @@ void WtDataWriter::proc_loop()
 		}
 
 		//转移历史K线
-		if(_dumper)
-			count += dump_hisdata_via_dumper(ct);
-		else
-			count += dump_hisdata_to_file(ct);
+		dump_hisdata_via_dumper(ct);
+
+		count += dump_hisdata_to_file(ct);
 
 		//_sink->outputWriterLog(LL_INFO, "%s[%s]已完成收盘, 本次作业共处理数据%u条", ct->getCode(), ct->getExchg(), count);
 		_sink->outputWriterLog(LL_INFO, "ClosingTask of %s[%s] done, %u datas processed totally", ct->getCode(), ct->getExchg(), count);

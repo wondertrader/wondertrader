@@ -172,7 +172,20 @@ void register_parser_callbacks(FuncParserEvtCallback cbEvt, FuncParserSubCallbac
 
 #pragma endregion "扩展Parser接口"
 
+#pragma region "扩展Dumper接口"
+bool create_ext_dumper(const char* id)
+{
+	return getRunner().createExtDumper(id);
+}
+
 void register_extended_dumper(FuncDumpBars barDumper, FuncDumpTicks tickDumper)
 {
 	getRunner().registerExtDumper(barDumper, tickDumper);
 }
+
+void register_extended_hftdata_dumper(FuncDumpOrdQue ordQueDumper, FuncDumpOrdDtl ordDtlDumper, FuncDumpTrans transDumper)
+{
+	getRunner().registerExtHftDataDumper(ordQueDumper, ordDtlDumper, transDumper);
+}
+#pragma endregion "扩展Dumper接口"
+

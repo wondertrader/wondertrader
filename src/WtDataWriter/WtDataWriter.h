@@ -42,7 +42,7 @@ private:
 
 
 public:
-	virtual bool init(WTSVariant* params, IDataWriterSink* sink, IHisDataDumper* dumper = NULL) override;
+	virtual bool init(WTSVariant* params, IDataWriterSink* sink) override;
 	virtual void release() override;
 
 	virtual bool writeTick(WTSTickData* curTick, bool bNeedSlice = true) override;
