@@ -176,6 +176,7 @@ bool WtFilterMgr::is_filtered_by_strategy(const char* straName, double& targetPo
 		if(isDiff)
 		{
 			//如果过滤器触发，并且是增量头寸，则直接过滤掉
+			WTSLogger::info("[Filters] Strategy filter %s triggered, the change of position ignored directly", straName);
 			return true;
 		}
 
