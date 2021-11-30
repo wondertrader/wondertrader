@@ -60,7 +60,7 @@
         {
             "active":true,
             "id":"simnow",
-            "module":"libTraderCTP.so",
+            "module":"TraderCTP",
             "front":"tcp://180.168.146.187:10101",
             "broker":"9999",
             "user":"your account",
@@ -90,7 +90,7 @@
         {
 			"id":"parser0",
             "active":true,
-            "module":"libParserCTP.so",
+            "module":"ParserCTP",
             "front":"tcp://180.168.146.187:10111",
             "broker":"9999",
             "user":"your account",
