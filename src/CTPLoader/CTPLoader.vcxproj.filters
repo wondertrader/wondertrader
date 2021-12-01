@@ -29,23 +29,23 @@
     <ClInclude Include="TraderSpi.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="ThostTraderApi\ThostFtdcTraderApi.h">
+    <ClInclude Include="..\API\CTP6.3.15\ThostFtdcTraderApi.h">
       <Filter>ctp</Filter>
     </ClInclude>
-    <ClInclude Include="ThostTraderApi\ThostFtdcUserApiDataType.h">
+    <ClInclude Include="..\API\CTP6.3.15\ThostFtdcUserApiDataType.h">
       <Filter>ctp</Filter>
     </ClInclude>
-    <ClInclude Include="ThostTraderApi\ThostFtdcUserApiStruct.h">
+    <ClInclude Include="..\API\CTP6.3.15\ThostFtdcUserApiStruct.h">
       <Filter>ctp</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="ThostTraderApi\error.dtd">
+    <None Include="..\API\CTP6.3.15\error.dtd">
       <Filter>ctp</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="ThostTraderApi\error.xml">
+    <Xml Include="..\API\CTP6.3.15\error.xml">
       <Filter>ctp</Filter>
     </Xml>
   </ItemGroup>

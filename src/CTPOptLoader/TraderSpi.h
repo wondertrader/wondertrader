@@ -1,6 +1,6 @@
 #pragma once
 //v3.5.8P4
-#include "./ThostTraderApi/ThostFtdcTraderApi.h"
+#include "../API/CTPOpt3.5.8/ThostFtdcTraderApi.h"
 
 class CTraderSpi : public CThostFtdcTraderSpi
 {

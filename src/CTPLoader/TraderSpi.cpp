@@ -5,7 +5,6 @@
 #include <fstream>
 #include <exception>
 
-#include "./ThostTraderApi/ThostFtdcTraderApi.h"
 #include "../Share/StrUtil.hpp"
 #include "../Includes/WTSTypes.h"
 

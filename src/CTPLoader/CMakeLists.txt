@@ -29,10 +29,6 @@ SET(SRC
 	${PROJECT_SOURCE_DIR}/CTPLoader.cpp
 	${PROJECT_SOURCE_DIR}/TraderSpi.cpp
 	${PROJECT_SOURCE_DIR}/TraderSpi.h
-	
-	${PROJECT_SOURCE_DIR}/ThostTraderApi/ThostFtdcTraderApi.h
-	${PROJECT_SOURCE_DIR}/ThostTraderApi/ThostFtdcUserApiDataType.h
-	${PROJECT_SOURCE_DIR}/ThostTraderApi/ThostFtdcUserApiStruct.h
 )
 
 INCLUDE_DIRECTORIES(${INCS})

@@ -4,7 +4,6 @@
 #include <stdint.h>
 #include <fstream>
 
-#include "./ThostTraderApi/ThostFtdcTraderApi.h"
 #include "../Share/StrUtil.hpp"
 #include "../Includes/WTSTypes.h"
 
