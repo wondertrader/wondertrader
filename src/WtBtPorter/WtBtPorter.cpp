@@ -133,9 +133,9 @@ void register_hft_callbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cb
 	getRunner().registerHftCallbacks(cbInit, cbTick, cbBar, cbChnl, cbOrd, cbTrd, cbEntrust, cbOrdDtl, cbOrdQue, cbTrans, cbSessEvt);
 }
 
-void register_ext_data_loader(FuncLoadRawBars barLoader, FuncLoadRawTicks tickLoader)
+void register_ext_data_loader(FuncLoadRawBars barLoader, FuncLoadRawTicks tickLoader, bool bAutoTrans)
 {
-	getRunner().registerExtDataLoader(barLoader, tickLoader);
+	getRunner().registerExtDataLoader(barLoader, tickLoader, bAutoTrans);
 }
 
 void feed_raw_bars(WTSBarStruct* bars, uint32_t count)

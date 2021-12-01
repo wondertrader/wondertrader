@@ -2933,39 +2933,132 @@ bool HisDataReplayer::cacheRawBarsFromLoader(const std::string& key, const char*
 	if (NULL == _bt_loader)
 		return false;
 
-	BarsList& barList = bForBars ? _bars_cache[key] : _unbars_cache[key];
-	barList._code = stdCode;
-	barList._period = period;
-	barList._cursor = UINT_MAX;
-	barList._count = 0;
-
-	bool bSucc = _bt_loader->loadRawHisBars(this, key.c_str(), stdCode, period, bForBars, [](void* obj, const char* key, WTSBarStruct* firstBar, uint32_t count, bool bForBars) {
-		HisDataReplayer* replayer = (HisDataReplayer*)obj;
-		BarsList& barList = bForBars ? replayer->_bars_cache[key] : replayer->_unbars_cache[key];
-		barList._factor = 1.0;
-		barList._bars.resize(count);
-		barList._count = count;
-		memcpy(barList._bars.data(), firstBar, sizeof(WTSBarStruct)*count);
-	});
-
-	if (!bSucc)
-		return false;
-
-	bool isDay = (period == KP_DAY);
-
-	uint32_t stime = isDay ? barList._bars[0].date : barList._bars[0].time;
-	uint32_t etime = isDay ? barList._bars[barList._count - 1].date : barList._bars[barList._count - 1].time;
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
 
 	std::string pname;
+	std::string dirname;
 	switch (period)
 	{
-	case KP_Minute1: pname = "m1"; break;
-	case KP_Minute5: pname = "m5"; break;
-	case KP_DAY: pname = "d"; break;
+	case KP_Minute1: pname = "m1"; dirname = "min1"; break;
+	case KP_Minute5: pname = "m5"; dirname = "min5"; break;
+	case KP_DAY: pname = "d"; dirname = "day"; break;
 	default: pname = ""; break;
 	}
 
-	WTSLogger::info(fmt::format("{} items of back {} data of {} loaded via extended loader, from {} to {}", barList._count, pname.c_str(), stdCode, stime, etime).c_str());
+	bool isDay = (period == KP_DAY);
+
+	std::stringstream ss;
+	ss << _base_dir << "his/" << dirname << "/" << cInfo._exchg << "/";
+	if (!StdFile::exists(ss.str().c_str()))
+		BoostFile::create_directories(ss.str().c_str());
+
+	if (cInfo.isHot() && cInfo.isFuture())
+	{
+		ss << cInfo._exchg << "." << cInfo._product << "_HOT.dsb";
+	}
+	else if (cInfo.isSecond() && cInfo.isFuture())
+	{
+		ss << cInfo._exchg << "." << cInfo._product << "_2ND.dsb";
+	}
+	else if (cInfo.isExright() && cInfo.isStock())
+	{
+
+	}
+	else
+		ss << cInfo._code << ".dsb";
+	std::string filename = ss.str();
+
+	bool bHit = false;
+	if(_bt_loader->isAutoTrans() && StdFile::exists(filename.c_str()))
+	{
+		//如果支持自动转储，则先读取已经转储的dsb文件
+		std::string content;
+		StdFile::read_file_content(filename.c_str(), content);
+		if (content.size() < sizeof(HisKlineBlockV2))
+		{
+			WTSLogger::error("Sizechecking of back kbar data file %s failed", filename.c_str());
+		}
+		else
+		{
+			HisKlineBlockV2* kBlock = (HisKlineBlockV2*)content.c_str();
+			std::string rawData = WTSCmpHelper::uncompress_data(kBlock->_data, (uint32_t)kBlock->_size);
+			uint32_t barcnt = rawData.size() / sizeof(WTSBarStruct);
+
+			BarsList& barList = bForBars ? _bars_cache[key] : _unbars_cache[key];
+			barList._bars.resize(barcnt);
+			memcpy(barList._bars.data(), rawData.data(), rawData.size());
+			barList._cursor = UINT_MAX;
+			barList._code = stdCode;
+			barList._period = period;
+			barList._count = barcnt;
+
+			uint32_t stime = isDay ? barList._bars[0].date : barList._bars[0].time;
+			uint32_t etime = isDay ? barList._bars[barcnt - 1].date : barList._bars[barcnt - 1].time;
+
+			WTSLogger::info(fmt::format("{} items of back {} data of {} directly loaded from dsb file, from {} to {}", barcnt, pname.c_str(), stdCode, stime, etime).c_str());
+			bHit = true;
+		}
+	}
+
+	if(!bHit)
+	{
+		//如果没有转储的历史数据文件, 则从csv加载
+		WTSLogger::info("Reading data via extended loader...");
+
+		BarsList& barList = bForBars ? _bars_cache[key] : _unbars_cache[key];
+		barList._code = stdCode;
+		barList._period = period;
+		barList._cursor = UINT_MAX;
+		barList._count = 0;
+
+		bool bSucc = _bt_loader->loadRawHisBars(this, key.c_str(), stdCode, period, bForBars, [](void* obj, const char* key, WTSBarStruct* firstBar, uint32_t count, bool bForBars) {
+			HisDataReplayer* replayer = (HisDataReplayer*)obj;
+			BarsList& barList = bForBars ? replayer->_bars_cache[key] : replayer->_unbars_cache[key];
+			barList._factor = 1.0;
+			barList._bars.resize(count);
+			barList._count = count;
+			memcpy(barList._bars.data(), firstBar, sizeof(WTSBarStruct)*count);
+		});
+
+		if (!bSucc)
+			return false;
+
+		bool isDay = (period == KP_DAY);
+
+		uint32_t stime = isDay ? barList._bars[0].date : barList._bars[0].time;
+		uint32_t etime = isDay ? barList._bars[barList._count - 1].date : barList._bars[barList._count - 1].time;
+
+		WTSLogger::info(fmt::format("{} items of back {} data of {} loaded via extended loader, from {} to {}", barList._count, pname.c_str(), stdCode, stime, etime).c_str());
+
+		if(_bt_loader->isAutoTrans())
+		{
+			BlockType btype;
+			switch (period)
+			{
+			case KP_Minute1: btype = BT_HIS_Minute1; break;
+			case KP_Minute5: btype = BT_HIS_Minute5; break;
+			default: btype = BT_HIS_Day; break;
+			}
+
+			HisKlineBlockV2 kBlock;
+			strcpy(kBlock._blk_flag, BLK_FLAG);
+			kBlock._type = btype;
+			kBlock._version = BLOCK_VERSION_CMP;
+
+			std::string cmpData = WTSCmpHelper::compress_data(barList._bars.data(), sizeof(WTSBarStruct)*barList._count);
+			kBlock._size = cmpData.size();
+
+			BoostFile bf;
+			if (bf.create_new_file(filename.c_str()))
+			{
+				bf.write_file(&kBlock, sizeof(HisKlineBlockV2));
+			}
+			bf.write_file(cmpData);
+			bf.close_file();
+			WTSLogger::info("Bars transfered to file %s", filename.c_str());
+		}
+	}
 
 	return true;
 }

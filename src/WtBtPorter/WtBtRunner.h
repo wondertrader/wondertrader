@@ -47,6 +47,11 @@ public:
 
 	virtual bool loadRawHisTicks(void* obj, const char* key, const char* stdCode, uint32_t uDate, FuncReadTicks cb) override;
 
+	virtual bool isAutoTrans() override
+	{
+		return _loader_auto_trans;
+	}
+
 	void feedRawBars(WTSBarStruct* bars, uint32_t count);
 	void feedRawTicks(WTSTickStruct* ticks, uint32_t count);
 
@@ -64,10 +69,11 @@ public:
 		_cb_evt = cbEvt;
 	}
 
-	void		registerExtDataLoader(FuncLoadRawBars barLoader, FuncLoadRawTicks tickLoader)
+	void		registerExtDataLoader(FuncLoadRawBars barLoader, FuncLoadRawTicks tickLoader, bool bAutoTrans = true)
 	{
 		_ext_bar_loader = barLoader;
 		_ext_tick_loader = tickLoader;
+		_loader_auto_trans = bAutoTrans;
 	}
 
 	uint32_t	initCtaMocker(const char* name, int32_t slippage = 0, bool hook = false, bool persistData = true);
@@ -168,8 +174,9 @@ private:
 
 	FuncEventCallback		_cb_evt;
 
-	FuncLoadRawBars			_ext_bar_loader;
-	FuncLoadRawTicks		_ext_tick_loader;
+	FuncLoadRawBars			_ext_bar_loader;	//K线加载器
+	FuncLoadRawTicks		_ext_tick_loader;	//tick加载器
+	bool					_loader_auto_trans;	//是否自动转储
 
 	CtaMocker*		_cta_mocker;
 	SelMocker*		_sel_mocker;

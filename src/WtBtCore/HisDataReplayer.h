@@ -65,6 +65,8 @@ class IBtDataLoader
 public:
 	virtual bool loadRawHisBars(void* obj, const char* key, const char* stdCode, WTSKlinePeriod period, bool bForBars, FuncReadBars cb) = 0;
 	virtual bool loadRawHisTicks(void* obj, const char* key, const char* stdCode, uint32_t uDate, FuncReadTicks cb) = 0;
+
+	virtual bool isAutoTrans() { return true; }
 };
 
 class HisDataReplayer
