@@ -80,7 +80,7 @@ void run_bt()
 #endif
 	register_cta_callbacks(on_init, on_tick, on_calc, on_bar, on_session_event, on_calc_done);
 
-	register_ext_data_loader(on_load_his_bars, NULL);
+	register_ext_data_loader(on_load_his_bars, NULL, false);
 
 	auto id = init_cta_mocker("test", 0, true);
 
