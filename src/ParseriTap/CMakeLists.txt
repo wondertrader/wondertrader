@@ -24,13 +24,7 @@ ENDIF ()
 SET(SRC  
 	${PROJECT_SOURCE_DIR}/ParseriTap.cpp
 	${PROJECT_SOURCE_DIR}/ParseriTap.h
-	
-	${PROJECT_SOURCE_DIR}/TapQuote/TapAPICommDef.h
-	${PROJECT_SOURCE_DIR}/TapQuote/TapAPIError.h
-	${PROJECT_SOURCE_DIR}/TapQuote/TapQuoteAPI.h
-	${PROJECT_SOURCE_DIR}/TapQuote/TapQuoteAPIDataType.h
 )
-SET(LNKS "${LNKS} ${PROJECT_SOURCE_DIR}/TapQuote")
 
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin)
 

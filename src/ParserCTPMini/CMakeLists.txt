@@ -24,12 +24,7 @@ ENDIF ()
 SET(SRC  
 	${PROJECT_SOURCE_DIR}/ParserCTPMini.cpp
 	${PROJECT_SOURCE_DIR}/ParserCTPMini.h
-	
-	${PROJECT_SOURCE_DIR}/ThostTraderApi/ThostFtdcMdApi.h
-	${PROJECT_SOURCE_DIR}/ThostTraderApi/ThostFtdcUserApiDataType.h
-	${PROJECT_SOURCE_DIR}/ThostTraderApi/ThostFtdcUserApiStruct.h
 )
-SET(LNKS "${LNKS} ${PROJECT_SOURCE_DIR}/ThostTraderApi")
 
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin)
 

@@ -23,18 +23,8 @@ ENDIF ()
 
 SET(SRC  
 	${PROJECT_SOURCE_DIR}/TraderXTP.cpp
-	${PROJECT_SOURCE_DIR}/TraderXTP.h
-	
-	${PROJECT_SOURCE_DIR}/XTPApi/xoms_api_fund_struct.h
-	${PROJECT_SOURCE_DIR}/XTPApi/xoms_api_struct.h
-	${PROJECT_SOURCE_DIR}/XTPApi/xquote_api_struct.h
-	${PROJECT_SOURCE_DIR}/XTPApi/xtp_api_data_type.h
-	${PROJECT_SOURCE_DIR}/XTPApi/xtp_api_struct.h
-	${PROJECT_SOURCE_DIR}/XTPApi/xtp_api_struct_common.h
-	${PROJECT_SOURCE_DIR}/XTPApi/xtp_trader_api.h
-	
+	${PROJECT_SOURCE_DIR}/TraderXTP.h	
 )
-SET(LNKS "${LNKS} ${PROJECT_SOURCE_DIR}/XTPApi")
 
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin)
 

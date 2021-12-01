@@ -24,17 +24,11 @@ ENDIF ()
 SET(SRC  
 	${PROJECT_SOURCE_DIR}/TraderFemas.cpp
 	${PROJECT_SOURCE_DIR}/TraderFemas.h
-	
-	${PROJECT_SOURCE_DIR}/ustptraderapi/USTPFtdcTraderApi.h
-	${PROJECT_SOURCE_DIR}/ustptraderapi/USTPFtdcUserApiDataType.h
-	${PROJECT_SOURCE_DIR}/ustptraderapi/USTPFtdcUserApiStruct.h
 )
-SET(LNKS "${LNKS} ${PROJECT_SOURCE_DIR}/ustptraderapi")
 
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin)
 
 INCLUDE_DIRECTORIES(${INCS})
-LINK_DIRECTORIES(${LNKS})
 ADD_LIBRARY(TraderFemas SHARED ${SRC})
 
 IF (WIN32)

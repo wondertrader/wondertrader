@@ -24,12 +24,7 @@ ENDIF ()
 SET(SRC  
 	${PROJECT_SOURCE_DIR}/ParserFemas.cpp
 	${PROJECT_SOURCE_DIR}/ParserFemas.h
-	
-	${PROJECT_SOURCE_DIR}/ustptraderapi/USTPFtdcMduserApi.h
-	${PROJECT_SOURCE_DIR}/ustptraderapi/USTPFtdcUserApiDataType.h
-	${PROJECT_SOURCE_DIR}/ustptraderapi/USTPFtdcUserApiStruct.h
 )
-SET(LNKS "${LNKS} ${PROJECT_SOURCE_DIR}/ustptraderapi")
 
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin)
 

@@ -24,13 +24,7 @@ ENDIF ()
 SET(SRC  
 	${PROJECT_SOURCE_DIR}/TraderiTap.cpp
 	${PROJECT_SOURCE_DIR}/TraderiTap.h
-	
-	${PROJECT_SOURCE_DIR}/iTapTradeApi/iTapAPICommDef.h
-	${PROJECT_SOURCE_DIR}/iTapTradeApi/iTapAPIError.h
-	${PROJECT_SOURCE_DIR}/iTapTradeApi/iTapTradeAPI.h
-	${PROJECT_SOURCE_DIR}/iTapTradeApi/iTapTradeAPIDataType.h
 )
-SET(LNKS "${LNKS} ${PROJECT_SOURCE_DIR}/iTapTradeApi")
 
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin)
 
