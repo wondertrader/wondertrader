@@ -24,16 +24,16 @@
     <ClInclude Include="HttpClient.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="iTapTradeApi\iTapAPICommDef.h">
+    <ClInclude Include="..\API\iTap9.3.3.3\iTapAPICommDef.h">
       <Filter>iTapTradeApi</Filter>
     </ClInclude>
-    <ClInclude Include="iTapTradeApi\iTapAPIError.h">
+    <ClInclude Include="..\API\iTap9.3.3.3\iTapAPIError.h">
       <Filter>iTapTradeApi</Filter>
     </ClInclude>
-    <ClInclude Include="iTapTradeApi\iTapTradeAPI.h">
+    <ClInclude Include="..\API\iTap9.3.3.3\iTapTradeAPI.h">
       <Filter>iTapTradeApi</Filter>
     </ClInclude>
-    <ClInclude Include="iTapTradeApi\iTapTradeAPIDataType.h">
+    <ClInclude Include="..\API\iTap9.3.3.3\iTapTradeAPIDataType.h">
       <Filter>iTapTradeApi</Filter>
     </ClInclude>
   </ItemGroup>

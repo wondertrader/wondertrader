@@ -18,17 +18,17 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ThostTraderApi\ThostFtdcTraderApi.h">
-      <Filter>CTP</Filter>
-    </ClInclude>
-    <ClInclude Include="ThostTraderApi\ThostFtdcUserApiDataType.h">
-      <Filter>CTP</Filter>
-    </ClInclude>
-    <ClInclude Include="ThostTraderApi\ThostFtdcUserApiStruct.h">
-      <Filter>CTP</Filter>
-    </ClInclude>
     <ClInclude Include="TraderCTPMini.h">
       <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\API\CTPMini1.5.8\ThostFtdcTraderApi.h">
+      <Filter>CTP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\API\CTPMini1.5.8\ThostFtdcUserApiDataType.h">
+      <Filter>CTP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\API\CTPMini1.5.8\ThostFtdcUserApiStruct.h">
+      <Filter>CTP</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

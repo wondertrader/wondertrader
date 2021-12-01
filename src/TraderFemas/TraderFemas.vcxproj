@@ -171,10 +171,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\API\Femas3.02\USTPFtdcTraderApi.h" />
+    <ClInclude Include="..\API\Femas3.02\USTPFtdcUserApiDataType.h" />
+    <ClInclude Include="..\API\Femas3.02\USTPFtdcUserApiStruct.h" />
     <ClInclude Include="TraderFemas.h" />
-    <ClInclude Include="ustptraderapi\USTPFtdcTraderApi.h" />
-    <ClInclude Include="ustptraderapi\USTPFtdcUserApiDataType.h" />
-    <ClInclude Include="ustptraderapi\USTPFtdcUserApiStruct.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TraderFemas.cpp" />

@@ -178,14 +178,14 @@
     <ClCompile Include="ParserXTP.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\API\XTP1.1.19.2\xoms_api_fund_struct.h" />
+    <ClInclude Include="..\API\XTP1.1.19.2\xoms_api_struct.h" />
+    <ClInclude Include="..\API\XTP1.1.19.2\xquote_api_struct.h" />
+    <ClInclude Include="..\API\XTP1.1.19.2\xtp_api_data_type.h" />
+    <ClInclude Include="..\API\XTP1.1.19.2\xtp_api_struct.h" />
+    <ClInclude Include="..\API\XTP1.1.19.2\xtp_api_struct_common.h" />
+    <ClInclude Include="..\API\XTP1.1.19.2\xtp_quote_api.h" />
     <ClInclude Include="ParserXTP.h" />
-    <ClInclude Include="XTPQuoteApi\xoms_api_fund_struct.h" />
-    <ClInclude Include="XTPQuoteApi\xoms_api_struct.h" />
-    <ClInclude Include="XTPQuoteApi\xquote_api_struct.h" />
-    <ClInclude Include="XTPQuoteApi\xtp_api_data_type.h" />
-    <ClInclude Include="XTPQuoteApi\xtp_api_struct.h" />
-    <ClInclude Include="XTPQuoteApi\xtp_api_struct_common.h" />
-    <ClInclude Include="XTPQuoteApi\xtp_quote_api.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -13,7 +13,7 @@
 #include "../Share/TimeUtils.hpp"
 #include "../Share/StrUtil.hpp"
 
-#include "./iTapTradeApi/iTapAPIError.h"
+#include "../API/iTap9.3.3.3/iTapAPIError.h"
 
 
 #ifdef _WIN32

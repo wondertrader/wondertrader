@@ -26,13 +26,13 @@
     <ClInclude Include="ParserCTPMini.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="ThostTraderApi\ThostFtdcMdApi.h">
+    <ClInclude Include="..\API\CTPMini1.5.8\ThostFtdcMdApi.h">
       <Filter>CTPApi</Filter>
     </ClInclude>
-    <ClInclude Include="ThostTraderApi\ThostFtdcUserApiDataType.h">
+    <ClInclude Include="..\API\CTPMini1.5.8\ThostFtdcUserApiDataType.h">
       <Filter>CTPApi</Filter>
     </ClInclude>
-    <ClInclude Include="ThostTraderApi\ThostFtdcUserApiStruct.h">
+    <ClInclude Include="..\API\CTPMini1.5.8\ThostFtdcUserApiStruct.h">
       <Filter>CTPApi</Filter>
     </ClInclude>
   </ItemGroup>

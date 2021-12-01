@@ -172,11 +172,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\API\iTap9.3.3.3\iTapAPICommDef.h" />
+    <ClInclude Include="..\API\iTap9.3.3.3\iTapAPIError.h" />
+    <ClInclude Include="..\API\iTap9.3.3.3\TapQuoteAPI.h" />
+    <ClInclude Include="..\API\iTap9.3.3.3\TapQuoteAPIDataType.h" />
     <ClInclude Include="ParseriTap.h" />
-    <ClInclude Include="TapQuote\TapAPICommDef.h" />
-    <ClInclude Include="TapQuote\TapAPIError.h" />
-    <ClInclude Include="TapQuote\TapQuoteAPI.h" />
-    <ClInclude Include="TapQuote\TapQuoteAPIDataType.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ParseriTap.cpp" />

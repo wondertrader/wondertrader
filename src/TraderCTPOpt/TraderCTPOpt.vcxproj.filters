@@ -18,17 +18,17 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ThostTraderApi\ThostFtdcTraderApi.h">
-      <Filter>CTP</Filter>
-    </ClInclude>
-    <ClInclude Include="ThostTraderApi\ThostFtdcUserApiDataType.h">
-      <Filter>CTP</Filter>
-    </ClInclude>
-    <ClInclude Include="ThostTraderApi\ThostFtdcUserApiStruct.h">
-      <Filter>CTP</Filter>
-    </ClInclude>
     <ClInclude Include="TraderCTPOpt.h">
       <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\API\CTPOpt3.5.8\ThostFtdcTraderApi.h">
+      <Filter>CTP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\API\CTPOpt3.5.8\ThostFtdcUserApiDataType.h">
+      <Filter>CTP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\API\CTPOpt3.5.8\ThostFtdcUserApiStruct.h">
+      <Filter>CTP</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -37,12 +37,12 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="ThostTraderApi\error.dtd">
+    <None Include="..\API\CTPOpt3.5.8\error.dtd">
       <Filter>CTP</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="ThostTraderApi\error.xml">
+    <Xml Include="..\API\CTPOpt3.5.8\error.xml">
       <Filter>CTP</Filter>
     </Xml>
   </ItemGroup>

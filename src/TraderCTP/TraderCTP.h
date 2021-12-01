@@ -17,8 +17,7 @@
 #include "../Includes/ITraderApi.h"
 #include "../Includes/WTSCollection.hpp"
 
-//CTP 6.3.15
-#include "./ThostTraderApi/ThostFtdcTraderApi.h"
+#include "../API/CTP6.3.15/ThostFtdcTraderApi.h"
 
 #include "../Share/IniHelper.hpp"
 #include "../Share/StdUtils.hpp"

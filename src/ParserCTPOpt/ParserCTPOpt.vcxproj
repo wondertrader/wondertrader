@@ -176,16 +176,16 @@
     <ClCompile Include="ParserCTPOpt.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\API\CTPOpt3.5.8\ThostFtdcMdApi.h" />
+    <ClInclude Include="..\API\CTPOpt3.5.8\ThostFtdcUserApiDataType.h" />
+    <ClInclude Include="..\API\CTPOpt3.5.8\ThostFtdcUserApiStruct.h" />
     <ClInclude Include="ParserCTPOpt.h" />
-    <ClInclude Include="ThostTraderApi\ThostFtdcMdApi.h" />
-    <ClInclude Include="ThostTraderApi\ThostFtdcUserApiDataType.h" />
-    <ClInclude Include="ThostTraderApi\ThostFtdcUserApiStruct.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="ThostTraderApi\error.dtd" />
+    <None Include="..\API\CTPOpt3.5.8\error.dtd" />
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="ThostTraderApi\error.xml" />
+    <Xml Include="..\API\CTPOpt3.5.8\error.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

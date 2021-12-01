@@ -10,8 +10,7 @@
 #pragma once
 #include "../Includes/IParserApi.h"
 #include "../Share/DLLHelper.hpp"
-//Femas v3.02
-#include "./ustptraderapi/USTPFtdcMduserApi.h"
+#include "../API/Femas3.02/USTPFtdcMduserApi.h"
 #include <map>
 
 NS_OTP_BEGIN

@@ -18,20 +18,20 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="TapQuote\TapAPICommDef.h">
-      <Filter>TapQuote</Filter>
-    </ClInclude>
-    <ClInclude Include="TapQuote\TapAPIError.h">
-      <Filter>TapQuote</Filter>
-    </ClInclude>
-    <ClInclude Include="TapQuote\TapQuoteAPI.h">
-      <Filter>TapQuote</Filter>
-    </ClInclude>
-    <ClInclude Include="TapQuote\TapQuoteAPIDataType.h">
-      <Filter>TapQuote</Filter>
-    </ClInclude>
     <ClInclude Include="ParseriTap.h">
       <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\API\iTap9.3.3.3\iTapAPICommDef.h">
+      <Filter>TapQuote</Filter>
+    </ClInclude>
+    <ClInclude Include="..\API\iTap9.3.3.3\iTapAPIError.h">
+      <Filter>TapQuote</Filter>
+    </ClInclude>
+    <ClInclude Include="..\API\iTap9.3.3.3\TapQuoteAPI.h">
+      <Filter>TapQuote</Filter>
+    </ClInclude>
+    <ClInclude Include="..\API\iTap9.3.3.3\TapQuoteAPIDataType.h">
+      <Filter>TapQuote</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

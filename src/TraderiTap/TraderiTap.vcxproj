@@ -179,11 +179,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\API\iTap9.3.3.3\iTapAPICommDef.h" />
+    <ClInclude Include="..\API\iTap9.3.3.3\iTapAPIError.h" />
+    <ClInclude Include="..\API\iTap9.3.3.3\iTapTradeAPI.h" />
+    <ClInclude Include="..\API\iTap9.3.3.3\iTapTradeAPIDataType.h" />
     <ClInclude Include="HttpClient.h" />
-    <ClInclude Include="iTapTradeApi\iTapAPICommDef.h" />
-    <ClInclude Include="iTapTradeApi\iTapAPIError.h" />
-    <ClInclude Include="iTapTradeApi\iTapTradeAPI.h" />
-    <ClInclude Include="iTapTradeApi\iTapTradeAPIDataType.h" />
     <ClInclude Include="TraderiTap.h" />
   </ItemGroup>
   <ItemGroup>

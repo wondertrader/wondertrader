@@ -179,19 +179,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="ThostTraderApi\ThostFtdcTraderApi.h" />
-    <ClInclude Include="ThostTraderApi\ThostFtdcUserApiDataType.h" />
-    <ClInclude Include="ThostTraderApi\ThostFtdcUserApiStruct.h" />
+    <ClInclude Include="..\API\CTP6.3.15\ThostFtdcTraderApi.h" />
+    <ClInclude Include="..\API\CTP6.3.15\ThostFtdcUserApiDataType.h" />
+    <ClInclude Include="..\API\CTP6.3.15\ThostFtdcUserApiStruct.h" />
     <ClInclude Include="TraderCTP.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TraderCTP.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="ThostTraderApi\error.dtd" />
+    <None Include="..\API\CTP6.3.15\error.dtd" />
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="ThostTraderApi\error.xml" />
+    <Xml Include="..\API\CTP6.3.15\error.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -21,13 +21,13 @@
     <ClInclude Include="TraderFemas.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="ustptraderapi\USTPFtdcTraderApi.h">
+    <ClInclude Include="..\API\Femas3.02\USTPFtdcTraderApi.h">
       <Filter>Femas</Filter>
     </ClInclude>
-    <ClInclude Include="ustptraderapi\USTPFtdcUserApiDataType.h">
+    <ClInclude Include="..\API\Femas3.02\USTPFtdcUserApiDataType.h">
       <Filter>Femas</Filter>
     </ClInclude>
-    <ClInclude Include="ustptraderapi\USTPFtdcUserApiStruct.h">
+    <ClInclude Include="..\API\Femas3.02\USTPFtdcUserApiStruct.h">
       <Filter>Femas</Filter>
     </ClInclude>
   </ItemGroup>

@@ -10,8 +10,7 @@
 #pragma once
 #include "../Includes/IParserApi.h"
 #include "../Share/DLLHelper.hpp"
-//CTP 6.3.15
-#include "./ThostTraderApi/ThostFtdcMdApi.h"
+#include "../API/CTP6.3.15/ThostFtdcMdApi.h"
 #include <map>
 
 NS_OTP_BEGIN

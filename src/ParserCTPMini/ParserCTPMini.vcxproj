@@ -176,10 +176,10 @@
     <ClCompile Include="ParserCTPMini.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\API\CTPMini1.5.8\ThostFtdcMdApi.h" />
+    <ClInclude Include="..\API\CTPMini1.5.8\ThostFtdcUserApiDataType.h" />
+    <ClInclude Include="..\API\CTPMini1.5.8\ThostFtdcUserApiStruct.h" />
     <ClInclude Include="ParserCTPMini.h" />
-    <ClInclude Include="ThostTraderApi\ThostFtdcMdApi.h" />
-    <ClInclude Include="ThostTraderApi\ThostFtdcUserApiDataType.h" />
-    <ClInclude Include="ThostTraderApi\ThostFtdcUserApiStruct.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
