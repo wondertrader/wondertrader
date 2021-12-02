@@ -10,7 +10,7 @@
 #pragma once
 #include <string>
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 #include <wtypes.h>
 typedef HMODULE		DllHandle;
 typedef void*		ProcHandle;
@@ -25,7 +25,7 @@ class DLLHelper
 public:
 	static DllHandle load_library(const char *filename)
 	{
-#ifdef _WIN32
+#ifdef _MSC_VER
 		return ::LoadLibrary(filename);
 #else
 		DllHandle ret = dlopen(filename, RTLD_NOW);
@@ -37,7 +37,7 @@ public:
 
 	static void free_library(DllHandle handle)
 	{
-#ifdef _WIN32
+#ifdef _MSC_VER
 		::FreeLibrary(handle);
 #else
 		dlclose(handle);
@@ -46,7 +46,7 @@ public:
 
 	static ProcHandle get_symbol(DllHandle handle, const char* name)
 	{
-#ifdef _WIN32
+#ifdef _MSC_VER
 		return ::GetProcAddress(handle, name);
 #else
 		return dlsym(handle, name);

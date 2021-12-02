@@ -14,7 +14,7 @@
 #include "../WTSTools/WTSLogger.h"
 #include "../Share/StrUtil.hpp"
 
-#include "../WTSUtils/SignalHook.hpp"
+//#include "../WTSUtils/SignalHook.hpp"
 
 #include <boost/asio.hpp>
 
@@ -26,7 +26,7 @@ UDPCaster		g_udpCaster;
 DataManager		g_dataMgr;
 ParserAdapterMgr g_parsers;
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 #include "../Common/mdump.h"
 DWORD g_dwMainThreadId = 0;
 BOOL WINAPI ConsoleCtrlhandler(DWORD dwCtrlType)
@@ -97,7 +97,7 @@ void initialize()
 	const char* id = config->getCString("id");
 	if (strlen(id) > 0)
 	{
-#ifdef _WIN32
+#ifdef _MSC_VER
 		HANDLE hHandle = ::CreateEvent(NULL, TRUE, TRUE, id);
 		DWORD dwErr = GetLastError();
 		if (hHandle != NULL && dwErr == ERROR_ALREADY_EXISTS)
@@ -170,7 +170,7 @@ int main()
 {
 	WTSLogger::init();
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 	_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_DEBUG);
 	_CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_DEBUG);
 	_CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_DEBUG);
@@ -184,9 +184,9 @@ int main()
 	CMiniDumper::Enable("QuoteFactory.exe", true);
 #endif
 
-	install_signal_hooks([](const char* message) {
-		WTSLogger::error(message);
-	});
+	//install_signal_hooks([](const char* message) {
+	//	WTSLogger::error(message);
+	//});
 
 	initialize();
 

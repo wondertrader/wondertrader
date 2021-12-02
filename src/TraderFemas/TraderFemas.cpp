@@ -21,7 +21,7 @@
 #include "../Share/StrUtil.hpp"
 #include "../Share/decimal.h"
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 #include <wtypes.h>
 HMODULE	g_dllModule = NULL;
 
@@ -61,7 +61,7 @@ std::string getBinDir()
 	{
 
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 		char strPath[MAX_PATH];
 		GetModuleFileName(g_dllModule, strPath, MAX_PATH);
 
@@ -166,7 +166,7 @@ bool TraderFemas::init(WTSParams* params)
 		m_strModule = DLLHelper::wrap_module("USTPtraderapiAF", "lib");
 
 	m_hInstCTP = DLLHelper::load_library(m_strModule.c_str());
-#ifdef _WIN32
+#ifdef _MSC_VER
 #	ifdef _WIN64
 	const char* creatorName = "?CreateFtdcTraderApi@CUstpFtdcTraderApi@@SAPEAV1@PEBD@Z";
 #	else

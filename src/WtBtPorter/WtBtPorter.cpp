@@ -25,12 +25,12 @@
 #include "../Includes/WTSVersion.h"
 
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 #include "../Common/mdump.h"
 #ifdef _WIN64
 char PLATFORM_NAME[] = "X64";
 #else
-char PLATFORM_NAME[] = "WIN32";
+char PLATFORM_NAME[] = "X86";
 #endif
 
 HMODULE	g_dllModule = NULL;
@@ -71,7 +71,7 @@ WtBtRunner& getRunner()
 	return runner;
 }
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 const char* getModuleName()
 {
 	static char MODULE_NAME[250] = { 0 };
@@ -93,7 +93,7 @@ std::string getBinDir()
 	{
 
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 		char strPath[MAX_PATH];
 		GetModuleFileName(g_dllModule, strPath, MAX_PATH);
 
@@ -155,7 +155,7 @@ void init_backtest(const char* logProfile, bool isFile, const char* outDir)
 	if (inited)
 		return;
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 	CMiniDumper::Enable(getModuleName(), true, WtHelper::getCWD().c_str());
 #endif
 

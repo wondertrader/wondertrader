@@ -16,7 +16,7 @@
 #include "../Share/StrUtil.hpp"
 #include "../Includes/WTSVersion.h"
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 #include "../Common/mdump.h"
 #ifdef _WIN64
 char PLATFORM_NAME[] = "X64";
@@ -31,7 +31,7 @@ std::string g_bin_dir;
 
 void inst_hlp() {}
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 #include <wtypes.h>
 HMODULE	g_dllModule = NULL;
 
@@ -73,7 +73,7 @@ const char* getModuleName()
 	static char MODULE_NAME[250] = { 0 };
 	if (strlen(MODULE_NAME) == 0)
 	{
-#ifdef _WIN32
+#ifdef _MSC_VER
 		GetModuleFileName(g_dllModule, MODULE_NAME, 250);
 		boost::filesystem::path p(MODULE_NAME);
 		strcpy(MODULE_NAME, p.filename().string().c_str());
@@ -90,7 +90,7 @@ const char* getBinDir()
 {
 	if (g_bin_dir.empty())
 	{
-#ifdef _WIN32
+#ifdef _MSC_VER
 		char strPath[MAX_PATH];
 		GetModuleFileName(g_dllModule, strPath, MAX_PATH);
 
@@ -113,7 +113,7 @@ WtDtRunner& getRunner()
 
 void initialize(WtString cfgFile, WtString logCfg)
 {
-#ifdef _WIN32
+#ifdef _MSC_VER
 	CMiniDumper::Enable(getModuleName(), true, WtHelper::get_cwd());
 #endif
 	getRunner().initialize(cfgFile, logCfg, getBinDir());

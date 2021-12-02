@@ -21,7 +21,7 @@
 
 #include <boost/filesystem.hpp>
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 #include <wtypes.h>
 HMODULE	g_dllModule = NULL;
 
@@ -61,7 +61,7 @@ std::string getBinDir()
 	{
 
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 		char strPath[MAX_PATH];
 		GetModuleFileName(g_dllModule, strPath, MAX_PATH);
 
@@ -161,7 +161,7 @@ bool TraderCTPMini::init(WTSParams* params)
 		m_strModule = getBinDir() + DLLHelper::wrap_module("thosttraderapi", "lib");
 
 	m_hInstCTP = DLLHelper::load_library(m_strModule.c_str());
-#ifdef _WIN32
+#ifdef _MSC_VER
 #	ifdef _WIN64
 	const char* creatorName = "?CreateFtdcTraderApi@CThostFtdcTraderApi@@SAPEAV1@PEBD@Z";
 #	else

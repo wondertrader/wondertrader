@@ -20,7 +20,7 @@
 #include "../Share/DLLHelper.hpp"
 
 #include "../WTSTools/WTSLogger.h"
-#include "../WTSUtils/SignalHook.hpp"
+//#include "../WTSUtils/SignalHook.hpp"
 
 
 WtDtRunner::WtDtRunner()
@@ -30,9 +30,9 @@ WtDtRunner::WtDtRunner()
 	, _dumper_for_orddtl(NULL)
 	, _dumper_for_trans(NULL)
 {
-	install_signal_hooks([](const char* message) {
-		WTSLogger::error(message);
-	});
+	//install_signal_hooks([](const char* message) {
+	//	WTSLogger::error(message);
+	//});
 }
 
 

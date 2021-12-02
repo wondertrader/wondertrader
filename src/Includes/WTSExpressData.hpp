@@ -12,7 +12,7 @@
 #include "WTSDataDef.hpp"
 #include "WTSMarcos.h"
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 #include <WTypes.h>
 #else
 typedef unsigned long	COLORREF;

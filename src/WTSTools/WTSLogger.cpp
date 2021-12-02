@@ -10,7 +10,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <sys/timeb.h>
-#ifdef _WIN32
+#ifdef _MSC_VER
 #include <time.h>
 #else
 #include <sys/time.h>
@@ -30,7 +30,7 @@
 #include <spdlog/sinks/ostream_sink.h>
 #include <spdlog/async.h>
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 #define my_stricmp _stricmp
 #else
 #define my_stricmp strcasecmp

@@ -24,7 +24,7 @@
 #define FLT_MAX 3.402823466e+38F        /* max value */
 #endif
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 #define INVALID_DOUBLE		DBL_MAX
 #define INVALID_INT32		INT_MAX
 #define INVALID_UINT32		UINT_MAX
@@ -43,7 +43,7 @@
 #define NS_OTP_END	}//namespace wts
 #define	USING_NS_OTP	using namespace otp
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 #	define EXPORT_FLAG __declspec(dllexport)
 #else
 #	define EXPORT_FLAG __attribute__((__visibility__("default")))

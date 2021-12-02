@@ -34,7 +34,7 @@ extern "C"
 
 void inst_hlp() {}
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 #include "../Common/mdump.h"
 #ifdef _WIN64
 char PLATFORM_NAME[] = "X64";
@@ -86,7 +86,7 @@ std::string getBinDir()
 	{
 
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 		char strPath[MAX_PATH];
 		GetModuleFileName(g_dllModule, strPath, MAX_PATH);
 
@@ -159,7 +159,7 @@ void WtDataReader::init_db()
 	if (!_db_conf._active)
 		return;
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 	std::string module = getBinDir() + "libmysql.dll";
 	DLLHelper::load_library(module.c_str());
 #endif

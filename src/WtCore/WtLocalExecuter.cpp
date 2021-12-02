@@ -464,7 +464,7 @@ bool WtExecuterFactory::loadFactories(const char* path)
 		if (boost::filesystem::is_directory(iter->path()))
 			continue;
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 		if (iter->path().extension() != ".dll")
 			continue;
 #else //_UNIX

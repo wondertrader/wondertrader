@@ -13,11 +13,6 @@
 
 #include "../WTSTools/WTSCmpHelper.hpp"
 
-//#ifdef _WIN32
-//#pragma comment(lib, "libmysql.lib")
-//#endif
-
-
 #include <set>
 
 extern "C"
@@ -45,7 +40,7 @@ static const uint32_t KLINE_SIZE_STEP = 200;
 const char CMD_CLEAR_CACHE[] = "CMD_CLEAR_CACHE";
 const char MARKER_FILE[] = "marker.ini";
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 #include <wtypes.h>
 HMODULE	g_dllModule = NULL;
 
@@ -85,7 +80,7 @@ std::string getBinDir()
 	{
 
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 		char strPath[MAX_PATH];
 		GetModuleFileName(g_dllModule, strPath, MAX_PATH);
 
@@ -137,7 +132,7 @@ void WtDataWriter::init_db()
 	if (!_db_conf._active)
 		return;
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 	std::string module = getBinDir() + "libmysql.dll";
 	DLLHelper::load_library(module.c_str());
 #endif

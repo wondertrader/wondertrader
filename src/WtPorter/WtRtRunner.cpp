@@ -29,9 +29,9 @@
 
 #include "../Includes/WTSContractInfo.hpp"
 
-#include "../WTSUtils/SignalHook.hpp"
+//#include "../WTSUtils/SignalHook.hpp"
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 #define my_stricmp _stricmp
 #else
 #define my_stricmp strcasecmp
@@ -80,9 +80,9 @@ WtRtRunner::WtRtRunner()
 	, _ext_bar_loader(NULL)
 	, _feed_factor(1.0)
 {
-	install_signal_hooks([](const char* message) {
-		WTSLogger::error(message);
-	});
+	//install_signal_hooks([](const char* message) {
+	//	WTSLogger::error(message);
+	//});
 }
 
 
@@ -846,9 +846,9 @@ void WtRtRunner::run(bool bAsync /* = false */)
 	}
 	catch (...)
 	{
-		print_stack_trace([](const char* message) {
-			WTSLogger::error(message);
-		});
+		//print_stack_trace([](const char* message) {
+		//	WTSLogger::error(message);
+		//});
 	}
 }
 

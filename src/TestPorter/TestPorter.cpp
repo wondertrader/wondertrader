@@ -83,7 +83,7 @@ void PORTER_FLAG on_transaction(CtxHandler cHandle, const char* stdCode, WTSTran
 
 void test_porter()
 {
-#ifdef _WIN32
+#ifdef _MSC_VER
 	DLLHelper::load_library("WtPorter.dll");
 #else
 	DLLHelper::load_library("libWtPorter.so");
@@ -104,7 +104,7 @@ void test_porter()
 
 void test_exec()
 {
-#ifdef _WIN32
+#ifdef _MSC_VER
 	DLLHelper::load_library("WtExecMon.dll");
 #else
 	DLLHelper::load_library("libWtExecMon.so");

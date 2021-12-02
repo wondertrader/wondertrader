@@ -18,16 +18,16 @@
 #include "../Share/StdUtils.hpp"
 
 #include "../WTSTools/WTSLogger.h"
-#include "../WTSUtils/SignalHook.hpp"
+//#include "../WTSUtils/SignalHook.hpp"
 
 
 WtDtRunner::WtDtRunner()
 	: _data_store(NULL)
 	, m_bInited(false)
 {
-	install_signal_hooks([](const char* message) {
-		WTSLogger::error(message);
-	});
+	//install_signal_hooks([](const char* message) {
+	//	WTSLogger::error(message);
+	//});
 }
 
 

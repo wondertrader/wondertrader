@@ -400,7 +400,7 @@ public:
 
 		while (1)
 		{
-#ifdef _WIN32
+#ifdef _MSC_VER
 			int n = _vsnprintf(buffer, size, pszFormat, argptr);
 #else
 			int n = vsnprintf(buffer, size, pszFormat, argptr);
@@ -461,7 +461,7 @@ public:
 			va_list argptrcopy;
 			va_copy(argptrcopy, argptr);
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 			len = _vsnprintf(buf, size, pszFormat, argptrcopy);
 #else
 			len = vsnprintf(buf, size, pszFormat, argptrcopy);
@@ -525,7 +525,7 @@ public:
 	static inline std::string fmtInt64(int64_t v)
 	{
 		char buf[64] = { 0 };
-#ifdef _WIN32
+#ifdef _MSC_VER
 		int pos = sprintf(buf, "%I64d", v);
 #else
 		int pos = sprintf(buf, "%lld", (long long)v);
@@ -536,7 +536,7 @@ public:
 	static inline std::string fmtUInt64(uint64_t v)
 	{
 		char buf[64] = { 0 };
-#ifdef _WIN32
+#ifdef _MSC_VER
 		int pos = sprintf(buf, "%I64u", v);
 #else
 		int pos = sprintf(buf, "%llu", (unsigned long long)v);

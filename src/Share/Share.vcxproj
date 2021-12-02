@@ -127,7 +127,6 @@
     <ClInclude Include="..\Includes\IDataManager.h" />
     <ClInclude Include="..\Includes\IDataReader.h" />
     <ClInclude Include="..\Includes\IDataWriter.h" />
-    <ClInclude Include="..\Includes\IExpFactory.h" />
     <ClInclude Include="..\Includes\IHftStraCtx.h" />
     <ClInclude Include="..\Includes\IHotMgr.h" />
     <ClInclude Include="..\Includes\IParserApi.h" />
@@ -138,7 +137,6 @@
     <ClInclude Include="..\Includes\WTSContractInfo.hpp" />
     <ClInclude Include="..\Includes\WTSDataDef.hpp" />
     <ClInclude Include="..\Includes\WTSError.hpp" />
-    <ClInclude Include="..\Includes\WTSExpressData.hpp" />
     <ClInclude Include="..\Includes\WTSHotItem.hpp" />
     <ClInclude Include="..\Includes\WTSMarcos.h" />
     <ClInclude Include="..\Includes\WTSObject.hpp" />

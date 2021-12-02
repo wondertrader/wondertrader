@@ -18,7 +18,7 @@
 #include "../Includes/IBaseDataMgr.h"
 #include "../Share/DLLHelper.hpp"
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 #include <wtypes.h>
 HMODULE	g_dllModule = NULL;
 
@@ -57,7 +57,7 @@ std::string getBinDir()
 	{
 
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 		char strPath[MAX_PATH];
 		GetModuleFileName(g_dllModule, strPath, MAX_PATH);
 
@@ -154,7 +154,7 @@ bool ParserXTP::init(WTSParams* config)
 
 	std::string dllpath = getBinDir() + DLLHelper::wrap_module(module.c_str(), "lib");;
 	m_hInst = DLLHelper::load_library(dllpath.c_str());
-#ifdef _WIN32
+#ifdef _MSC_VER
 #	ifdef _WIN64
 	const char* creatorName = "?CreateQuoteApi@QuoteApi@API@XTP@@SAPEAV123@EPEBDW4XTP_LOG_LEVEL@@@Z";
 #	else

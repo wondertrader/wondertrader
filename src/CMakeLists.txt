@@ -1,11 +1,16 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.0.0)
 
-PROJECT(WTSOtp)
+PROJECT(WonderTrader)
 
 #3. 环境判断
 IF (WIN32)
 	MESSAGE(STATUS "Operation System is windows")
 	MESSAGE(STATUS "Generator is ${CMAKE_GENERATOR}")
+ELSEIF (UNIX)
+	MESSAGE(STATUS "Operation System is UNIX-like OS's")
+ENDIF ()
+
+IF (MSVC)
 	IF("${CMAKE_GENERATOR}" MATCHES "(Win64|IA64)")
 		MESSAGE(STATUS "MyDepends is at $ENV{MyDepends141}")
 		MESSAGE(STATUS "Platform is x64")
@@ -13,9 +18,7 @@ IF (WIN32)
 		MESSAGE(STATUS "MyDepends is at $ENV{MyDepends141}")
 		MESSAGE(STATUS "Platform is x86")
 	ENDIF()
-ELSEIF (UNIX)
-	MESSAGE(STATUS "Operation System is UNIX-like OS's")
-ENDIF ()
+ENDIF()
 
 #basic libraries
 ADD_SUBDIRECTORY(WTSUtils)

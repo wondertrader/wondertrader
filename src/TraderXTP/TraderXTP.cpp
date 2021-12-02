@@ -22,13 +22,13 @@
 
 #include <boost/filesystem.hpp>
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 #define my_stricmp _stricmp
 #else
 #define my_stricmp strcasecmp
 #endif
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 #include <wtypes.h>
 HMODULE	g_dllModule = NULL;
 
@@ -68,7 +68,7 @@ std::string getBinDir()
 	{
 
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 		char strPath[MAX_PATH];
 		GetModuleFileName(g_dllModule, strPath, MAX_PATH);
 
@@ -617,7 +617,7 @@ bool TraderXTP::init(WTSParams *params)
 	std::string dllpath = getBinDir() + DLLHelper::wrap_module(module.c_str(), "lib");;
 
 	m_hInstXTP = DLLHelper::load_library(dllpath.c_str());
-#ifdef _WIN32
+#ifdef _MSC_VER
 #	ifdef _WIN64
 	const char* creatorName = "?CreateTraderApi@TraderApi@API@XTP@@SAPEAV123@EPEBDW4XTP_LOG_LEVEL@@@Z";
 #	else

@@ -14,7 +14,7 @@
 #include <boost/interprocess/detail/os_file_functions.hpp>
 #include <string>
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #endif
@@ -149,7 +149,7 @@ public:
 	bool read_file(void *data, std::size_t numdata)
 	{
 		unsigned long readbytes = 0;
-#ifdef _WIN32
+#ifdef _MSC_VER
 		int ret = ReadFile(_handle, data, (DWORD)numdata, &readbytes, NULL);
 #else
 		readbytes = read(_handle, data, (std::size_t)numdata);
@@ -160,7 +160,7 @@ public:
 	int read_file_length(void *data, std::size_t numdata)
 	{
 		unsigned long readbytes = 0;
-#ifdef _WIN32
+#ifdef _MSC_VER
 		int ret = ReadFile(_handle, data, (DWORD)numdata, &readbytes, NULL);
 #else
 		readbytes = read(_handle, data, (std::size_t)numdata);

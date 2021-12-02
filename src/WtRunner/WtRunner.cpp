@@ -19,7 +19,7 @@
 #include "../Share/StrUtil.hpp"
 #include "../Share/JsonToVariant.hpp"
 
-#include "../WTSUtils/SignalHook.hpp"
+//#include "../WTSUtils/SignalHook.hpp"
 
 #include <boost/circular_buffer.hpp>
 
@@ -50,9 +50,9 @@ WtRunner::WtRunner()
 	, _is_hft(false)
 	, _is_sel(false)
 {
-	install_signal_hooks([](const char* message) {
-		WTSLogger::error(message);
-	});
+	//install_signal_hooks([](const char* message) {
+	//	WTSLogger::error(message);
+	//});
 }
 
 
@@ -479,9 +479,9 @@ void WtRunner::run(bool bAsync /* = false */)
 	}
 	catch (...)
 	{
-		print_stack_trace([](const char* message) {
-			WTSLogger::error(message);
-		});
+		//print_stack_trace([](const char* message) {
+		//	WTSLogger::error(message);
+		//});
 	}
 }
 

@@ -16,7 +16,7 @@
 #include <stdint.h>
 #include <string>
 
-#if _WIN32
+#if _MSC_VER
 #include <io.h>
 #else
 #include <unistd.h>

@@ -49,7 +49,7 @@ bool WtSimpDataMgr::initStore(WTSVariant* cfg)
 	if (module.empty())
 	{
 		module = WtHelper::getInstDir();
-#ifdef _WIN32
+#ifdef _MSC_VER
 		module += "WtDataReader.dll";
 #else
 		module += "libWtDataReader.so";

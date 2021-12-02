@@ -14,7 +14,7 @@ std::string g_bin_dir;
 
 void inst_hlp() {}
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 HMODULE	g_dllModule = NULL;
 
 BOOL APIENTRY DllMain(
@@ -56,7 +56,7 @@ const char* getBaseFolder()
 {
 	if (g_bin_dir.empty())
 	{
-#ifdef _WIN32
+#ifdef _MSC_VER
 		char strPath[MAX_PATH];
 		GetModuleFileName(g_dllModule, strPath, MAX_PATH);
 
@@ -100,7 +100,7 @@ CTPCreator		g_ctpCreator = NULL;
 // «Î«Û±‡∫≈
 int iRequestID = 0;
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 #	define EXPORT_FLAG __declspec(dllexport)
 #else
 #	define EXPORT_FLAG __attribute__((__visibility__("default")))
@@ -134,7 +134,7 @@ int run(const char* cfgfile)
 	COMM_FILE = ini.readString("config", "commfile", "commodities.json");
 	CONT_FILE = ini.readString("config", "contfile", "contracts.json");
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 	MODULE_NAME = ini.readString("config", "module", "thosttraderapi_se.dll");
 #else
 	MODULE_NAME = ini.readString("config", "module", "thosttraderapi_se.so");
@@ -142,7 +142,7 @@ int run(const char* cfgfile)
 	if(!boost::filesystem::exists(MODULE_NAME.c_str()))
 	{
 		MODULE_NAME = getBaseFolder();
-#ifdef _WIN32
+#ifdef _MSC_VER
 		MODULE_NAME += "traders/thosttraderapi_se.dll";
 #else
 		MODULE_NAME += "traders/thosttraderapi_se.so";
@@ -190,7 +190,7 @@ int run(const char* cfgfile)
 
 	// ≥ı ºªØUserApi
 	DllHandle dllInst = DLLHelper::load_library(MODULE_NAME.c_str());
-#ifdef _WIN32
+#ifdef _MSC_VER
 #	ifdef _WIN64
 	g_ctpCreator = (CTPCreator)DLLHelper::get_symbol(dllInst, "?CreateFtdcTraderApi@CThostFtdcTraderApi@@SAPEAV1@PEBD@Z");
 #	else

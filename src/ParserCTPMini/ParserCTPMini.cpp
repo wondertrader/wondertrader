@@ -25,7 +25,7 @@
 #define FLT_MAX 3.402823466e+38F
 #endif
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 #include <wtypes.h>
 HMODULE	g_dllModule = NULL;
 
@@ -66,7 +66,7 @@ std::string getBinDir()
 	{
 
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 		char strPath[MAX_PATH];
 		GetModuleFileName(g_dllModule, strPath, MAX_PATH);
 
@@ -161,7 +161,7 @@ bool ParserCTPMini::init(WTSParams* config)
 	{
 		boost::filesystem::create_directories(boost::filesystem::path(path));
 	}
-#ifdef _WIN32
+#ifdef _MSC_VER
 #	ifdef _WIN64
 	const char* creatorName = "?CreateFtdcMdApi@CThostFtdcMdApi@@SAPEAV1@PEBD_N1@Z";
 #	else

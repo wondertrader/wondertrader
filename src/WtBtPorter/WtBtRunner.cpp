@@ -27,9 +27,9 @@
 #include "../WTSTools/WTSLogger.h"
 #include "../WTSTools/WTSCmpHelper.hpp"
 
-#include "../WTSUtils/SignalHook.hpp"
+//#include "../WTSUtils/SignalHook.hpp"
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 #define my_stricmp _stricmp
 #else
 #define my_stricmp strcasecmp
@@ -73,9 +73,9 @@ WtBtRunner::WtBtRunner()
 	, _running(false)
 	, _async(false)
 {
-	install_signal_hooks([](const char* message) {
-		WTSLogger::error(message);
-	});
+	//install_signal_hooks([](const char* message) {
+	//	WTSLogger::error(message);
+	//});
 }
 
 
@@ -380,7 +380,7 @@ void WtBtRunner::config(const char* cfgFile, bool isFile /* = true */)
 		return;
 	}
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 	std::string module = getBinDir() + "libmysql.dll";
 	DLLHelper::load_library(module.c_str());
 #endif
@@ -460,9 +460,9 @@ void WtBtRunner::run(bool bNeedDump /* = false */, bool bAsync /* = false */)
 		catch (...)
 		{
 			WTSLogger::error("Exception raised while worker running");
-			print_stack_trace([](const char* message) {
-				WTSLogger::error(message);
-			});
+			//print_stack_trace([](const char* message) {
+			//	WTSLogger::error(message);
+			//});
 		}
 		WTSLogger::debug("Worker thread of backtest finished");
 		_running = false;

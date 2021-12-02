@@ -153,9 +153,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="fmtlib.h" />
-    <ClInclude Include="SignalHook.hpp" />
-    <ClInclude Include="StackTracer\StackTracer.h" />
-    <ClInclude Include="StackTracer\StackWalker.h" />
     <ClInclude Include="zstdlib\bitstream.h" />
     <ClInclude Include="zstdlib\compiler.h" />
     <ClInclude Include="zstdlib\cover.h" />
@@ -190,8 +187,6 @@
     <ClInclude Include="zstdlib\zstd_opt.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="StackTracer\StackTracer.cpp" />
-    <ClCompile Include="StackTracer\StackWalker.cpp" />
     <ClCompile Include="zstdlib\cover.c" />
     <ClCompile Include="zstdlib\debug.c" />
     <ClCompile Include="zstdlib\divsufsort.c" />

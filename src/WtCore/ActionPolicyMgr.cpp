@@ -16,7 +16,7 @@
 
 #include "../WTSTools/WTSLogger.h"
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 #define my_stricmp _stricmp
 #else
 #define my_stricmp strcasecmp

@@ -10,7 +10,7 @@
 #pragma once
 #include <stdint.h>
 #include <sys/timeb.h>
-#ifdef _WIN32
+#ifdef _MSC_VER
 #include <time.h>
 #else
 #include <sys/time.h>

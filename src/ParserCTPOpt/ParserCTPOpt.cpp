@@ -29,7 +29,7 @@ std::string g_bin_dir;
 
 void inst_hlp() {}
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 #include <wtypes.h>
 HMODULE	g_dllModule = NULL;
 
@@ -71,7 +71,7 @@ const char* getBinDir()
 {
 	if (g_bin_dir.empty())
 	{
-#ifdef _WIN32
+#ifdef _MSC_VER
 		char strPath[MAX_PATH];
 		GetModuleFileName(g_dllModule, strPath, MAX_PATH);
 
@@ -167,7 +167,7 @@ bool ParserCTPOpt::init(WTSParams* config)
 	{
 		boost::filesystem::create_directories(boost::filesystem::path(path));
 	}	
-#ifdef _WIN32
+#ifdef _MSC_VER
 #	ifdef _WIN64
 	const char* creatorName = "?CreateFtdcMdApi@CThostFtdcMdApi@ctp_sopt@@SAPEAV12@PEBD_N1@Z";
 #	else

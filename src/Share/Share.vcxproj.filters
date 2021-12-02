@@ -123,9 +123,6 @@
     <ClInclude Include="..\Includes\IDataWriter.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="..\Includes\IExpFactory.h">
-      <Filter>Interfaces</Filter>
-    </ClInclude>
     <ClInclude Include="..\Includes\IHotMgr.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
@@ -154,9 +151,6 @@
       <Filter>Objects</Filter>
     </ClInclude>
     <ClInclude Include="..\Includes\WTSError.hpp">
-      <Filter>Objects</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Includes\WTSExpressData.hpp">
       <Filter>Objects</Filter>
     </ClInclude>
     <ClInclude Include="..\Includes\WTSHotItem.hpp">

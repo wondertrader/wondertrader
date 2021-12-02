@@ -21,9 +21,6 @@
     <ClInclude Include="WTSDataFactory.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="WTSExpFactory.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="WTSBaseDataMgr.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -42,9 +39,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="WTSDataFactory.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="WTSExpFactory.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="WTSBaseDataMgr.cpp">

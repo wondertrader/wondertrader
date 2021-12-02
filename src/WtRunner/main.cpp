@@ -13,7 +13,7 @@
 #include "../WTSTools/WTSLogger.h"
 #include "../Share/IniHelper.hpp"
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 #include "../Common/mdump.h"
 #endif
 
@@ -21,7 +21,7 @@
 
 int main()
 {
-#ifdef _WIN32
+#ifdef _MSC_VER
 	CMiniDumper::Enable("WtRunner.exe", true);
 #endif
 

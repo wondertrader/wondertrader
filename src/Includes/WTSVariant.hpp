@@ -18,7 +18,7 @@
 #include <vector>
 #include <map>
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 #define INT64_FMT	"%I64d"
 #define UINT64_FMT	"%I64u"
 #else

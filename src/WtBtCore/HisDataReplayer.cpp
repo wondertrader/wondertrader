@@ -36,11 +36,8 @@
 #include <rapidjson/prettywriter.h>
 namespace rj = rapidjson;
 
-//#ifdef _WIN32
-//#pragma comment(lib, "libmysql.lib")
-//#endif
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 #define my_stricmp _stricmp
 #else
 #define my_stricmp strcasecmp

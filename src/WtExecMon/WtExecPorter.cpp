@@ -10,12 +10,12 @@
 
 void inst_hlp() {}
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 #include "../Common/mdump.h"
 #ifdef _WIN64
 char PLATFORM_NAME[] = "X64";
 #else
-char PLATFORM_NAME[] = "WIN32";
+char PLATFORM_NAME[] = "X86";
 #endif
 
 HMODULE	g_dllModule = NULL;
@@ -66,7 +66,7 @@ const char* getModuleName()
 	static char MODULE_NAME[250] = { 0 };
 	if (strlen(MODULE_NAME) == 0)
 	{
-#ifdef _WIN32
+#ifdef _MSC_VER
 		GetModuleFileName(g_dllModule, MODULE_NAME, 250);
 		boost::filesystem::path p(MODULE_NAME);
 		strcpy(MODULE_NAME, p.filename().string().c_str());
@@ -86,7 +86,7 @@ const char* getBinDir()
 	{
 
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 		char strPath[MAX_PATH];
 		GetModuleFileName(g_dllModule, strPath, MAX_PATH);
 
@@ -108,7 +108,7 @@ void init_exec(WtString logCfg, bool isFile /*= true*/)
 
 	if (inited)
 		return;
-#ifdef _WIN32
+#ifdef _MSC_VER
 	CMiniDumper::Enable(getModuleName(), true, WtHelper::getCWD().c_str());
 #endif
 

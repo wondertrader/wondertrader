@@ -14,7 +14,7 @@
 
 #include <boost/filesystem.hpp>
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 #include <direct.h>
 #else	//UNIX
 #include <unistd.h>
@@ -34,7 +34,7 @@ std::string WtHelper::getCWD()
 	if(_cwd.empty())
 	{
 		char   buffer[256];
-#ifdef _WIN32
+#ifdef _MSC_VER
 		_getcwd(buffer, 255);
 #else	//UNIX
 		getcwd(buffer, 255);
