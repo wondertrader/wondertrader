@@ -5,7 +5,9 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.0.0)
 PROJECT(WtDataWriter LANGUAGES CXX)
 SET(CMAKE_CXX_STANDARD 11)
 
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+IF(GCC)
+	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+ENDIF()
 
 #3. 添加包含路径
 IF (MSVC)
@@ -38,12 +40,16 @@ ADD_LIBRARY(WtDataWriter SHARED ${SRCS} ${HDRS})
 
 SET(LIBS
 	WTSUtils
-
-	dl
-	pthread
-	boost_filesystem	
-	boost_thread
 )
+
+IF (MSVC)
+ELSE (GCC)
+	LIST(APPEND LIBS
+		dl
+		pthread
+		boost_filesystem
+		)
+ENDIF()
 TARGET_LINK_LIBRARIES(WtDataWriter ${LIBS})
 
 IF (MSVC)

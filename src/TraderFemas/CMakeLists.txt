@@ -35,17 +35,23 @@ INCLUDE_DIRECTORIES(${INCS})
 LINK_DIRECTORIES(${LNKS})
 ADD_LIBRARY(TraderFemas SHARED ${SRC})
 
-IF (WIN32)
+IF(MSVC)
 	SET(LIBS
-		boost_filesystem
-		dl
 		ws2_32
-	)
-ELSE(UNIX)
-	SET(LIBS
-		boost_filesystem
-		dl
-	)
+		)
+ELSE(GCC)
+	IF (WIN32)
+		SET(LIBS
+			boost_filesystem
+			dl
+			ws2_32
+		)
+	ELSE(UNIX)
+		SET(LIBS
+			boost_filesystem
+			dl
+		)
+	ENDIF()
 ENDIF()
 TARGET_LINK_LIBRARIES(TraderFemas ${LIBS})
 

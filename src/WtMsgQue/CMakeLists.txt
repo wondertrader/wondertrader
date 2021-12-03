@@ -5,7 +5,9 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.0.0)
 PROJECT(WtMsgQue LANGUAGES CXX)
 SET(CMAKE_CXX_STANDARD 11)
 
+IF(GCC)
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+ENDIF()
 
 #3. 添加包含路径
 IF (MSVC)
@@ -36,20 +38,28 @@ INCLUDE_DIRECTORIES(${INCS})
 LINK_DIRECTORIES(${LNKS})
 ADD_LIBRARY(WtMsgQue SHARED ${SRCS} ${HDRS})
 
-IF(WIN32)
+IF(MSVC)
 	SET(LIBS
-		dl
-		pthread
 		nanomsg
 		ws2_32
 		mswsock
-	)
-ELSE(UNIX)
-	SET(LIBS
-		dl
-		pthread
-		nanomsg
-	)
+		)
+ELSE(GCC)
+	IF(WIN32)
+		SET(LIBS
+			dl
+			pthread
+			nanomsg
+			ws2_32
+			mswsock
+		)
+	ELSE(UNIX)
+		SET(LIBS
+			dl
+			pthread
+			nanomsg
+		)
+	ENDIF()
 ENDIF()
 
 TARGET_LINK_LIBRARIES(WtMsgQue ${LIBS})

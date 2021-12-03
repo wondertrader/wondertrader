@@ -1,4 +1,3 @@
-
 #1. 确定CMake的最低版本需求
 CMAKE_MINIMUM_REQUIRED(VERSION 3.0.0)
 
@@ -6,7 +5,9 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.0.0)
 PROJECT(WtBtPorter LANGUAGES CXX)
 SET(CMAKE_CXX_STANDARD 11)
 
+IF (GCC)
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+ENDIF ()
 
 #3. 添加包含路径
 IF (MSVC)
@@ -33,19 +34,32 @@ SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/W
 file(GLOB SRCS *.cpp)
 file(GLOB HDRS *.h)
 
+IF(MSVC)
+	list (APPEND SRCS ../Common/mdump.cpp)
+ENDIF()
+
 INCLUDE_DIRECTORIES(${INCS})
 LINK_DIRECTORIES(${LNKS})
 ADD_LIBRARY(WtBtPorter SHARED ${SRCS} ${HDRS})
 
-SET(LIBS
-	WtBtCore
-	WTSTools
-	WTSUtils
+IF(MSVC)
+	SET(LIBS
+		WtBtCore
+		WTSTools
+		WTSUtils
+	)
+ELSE(GCC)
+	SET(LIBS
+		WtBtCore
+		WTSTools
+		WTSUtils
 
-	dl
-	pthread
-	boost_filesystem	
-)
+		dl
+		pthread
+		boost_filesystem
+	)
+ENDIF()
+
 
 TARGET_LINK_LIBRARIES(WtBtPorter ${LIBS})
 IF (WIN32)

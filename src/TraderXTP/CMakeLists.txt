@@ -36,17 +36,25 @@ INCLUDE_DIRECTORIES(${INCS})
 LINK_DIRECTORIES(${LNKS})
 ADD_LIBRARY(TraderXTP SHARED ${SRC})
 
-IF(WIN32)
+IF(MSVC)
 	SET(LIBS
-		boost_filesystem
 		ws2_32
-		dl
-	)
-ELSE(UNIX)
-	SET(LIBS
-		boost_thread
-		boost_filesystem
-	)
+		)
+ELSE(GCC)
+	IF(WIN32)
+		SET(LIBS
+			dl
+			boost_thread
+			boost_filesystem
+			ws2_32
+			)
+	ELSE(UNIX)
+		SET(LIBS
+			dl
+			boost_thread
+			boost_filesystem
+			)
+	ENDIF()
 ENDIF()
 TARGET_LINK_LIBRARIES(TraderXTP ${LIBS})
 

@@ -35,12 +35,15 @@ INCLUDE_DIRECTORIES(${INCS})
 LINK_DIRECTORIES(${LNKS})
 ADD_LIBRARY(TraderCTPMini SHARED ${SRC})
 
-SET(LIBS
-	boost_thread
-	boost_filesystem
-	dl
-)
-TARGET_LINK_LIBRARIES(TraderCTPMini ${LIBS})
+IF(MSVC)
+ELSE(GCC)
+	SET(LIBS
+		boost_thread
+		boost_filesystem
+		dl
+		)
+	TARGET_LINK_LIBRARIES(TraderCTPMini ${LIBS})
+ENDIF()
 
 IF (MSVC)
 ELSE (GCC)

@@ -6,7 +6,9 @@ cmake_minimum_required(VERSION 3.0.0)
 project(WtBtCore LANGUAGES CXX)
 SET(CMAKE_CXX_STANDARD 11)
 
+IF (GCC)
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+ENDIF()
 
 #3. 添加包含路径
 IF (MSVC)

@@ -5,7 +5,9 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.0.0)
 PROJECT(WtDtPorter LANGUAGES CXX)
 SET(CMAKE_CXX_STANDARD 11)
 
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+IF(GCC)
+	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+ENDIF()
 
 #3. 添加包含路径
 IF (MSVC)
@@ -32,34 +34,32 @@ SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/W
 file(GLOB SRCS *.cpp)
 file(GLOB HDRS *.h)
 
+IF(MSVC)
+	list (APPEND SRCS ../Common/mdump.cpp)
+ENDIF()
+
 INCLUDE_DIRECTORIES(${INCS})
 LINK_DIRECTORIES(${LNKS})
 ADD_LIBRARY(WtDtPorter SHARED ${SRCS} ${HDRS})
 
-IF(WIN32)
-	SET(LIBS
-		WtDtCore
-		WTSTools
-		WTSUtils
-
-		dl
-		pthread
-		boost_filesystem
-		boost_thread
-
-		ws2_32
+SET(LIBS
+	WtDtCore
+	WTSTools
+	WTSUtils
 	)
-ELSE(UNIX)
-	SET(LIBS
-		WtDtCore
-		WTSTools
-		WTSUtils
-
+IF(MSVC)
+ELSE(GCC)
+	LIST(APPEND LIBS
 		dl
 		pthread
 		boost_filesystem
 		boost_thread
 		)
+	IF(WIN32)
+		LIST(APPEND LIBS
+			ws2_32
+		)
+	ENDIF()
 ENDIF()
 
 TARGET_LINK_LIBRARIES(WtDtPorter ${LIBS})

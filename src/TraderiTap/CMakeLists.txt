@@ -36,20 +36,19 @@ INCLUDE_DIRECTORIES(${INCS})
 LINK_DIRECTORIES(${LNKS})
 ADD_LIBRARY(TraderiTap SHARED ${SRC})
 
-IF (WIN32)
+IF(MSVC)
+ELSE(GCC)
 	SET(LIBS
 		boost_filesystem
 		dl
-		curl
-		ws2_32
-		wldap32
-	)
-ELSE(UNIX)
-	SET(LIBS
-		boost_filesystem
-		dl
-		curl
-	)
+		curl)
+
+	IF (WIN32)
+		LIST(APPEND LIBS
+			ws2_32
+			wldap32
+			)
+	ENDIF()
 ENDIF()
 TARGET_LINK_LIBRARIES(TraderiTap ${LIBS})
 

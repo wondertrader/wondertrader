@@ -29,28 +29,29 @@ SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bi
 #7. 添加源码
 FILE( GLOB SRCS *.cpp)
 
+IF(MSVC)
+	list (APPEND SRCS ../Common/mdump.cpp)
+ENDIF()
+
 INCLUDE_DIRECTORIES(${INCS})
 LINK_DIRECTORIES(${LNKS})
 
-if(WIN32)
-	SET(LIBS
-		WTSTools
-		WTSUtils
-		WtDtCore
+SET(LIBS
+	WTSTools
+	WTSUtils
+	WtDtCore)
 
-		boost_filesystem
+IF(MSVC)
+	LIST(APPEND LIBS ws2_32)
+ELSE(GCC)
+	LIST(APPEND LIBS
 		dl
-		ws2_32
-	)
-ELSE(UNIX)
-	SET(LIBS
-		WTSTools
-		WTSUtils
-		WtDtCore
-
 		boost_filesystem
-		dl
-	)
+		)
+	if(WIN32)
+		LIST(APPEND LIBS
+			ws2_32)
+	ENDIF()
 ENDIF()
 
 #9. 生成可执行文件

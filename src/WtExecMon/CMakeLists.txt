@@ -5,8 +5,9 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.0.0)
 PROJECT(WtExecMon LANGUAGES CXX)
 SET(CMAKE_CXX_STANDARD 11)
 
+IF(GCC)
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
-
+ENDIF()
 
 #3. 添加包含路径
 IF (MSVC)
@@ -33,6 +34,10 @@ SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/W
 file(GLOB SRCS *.cpp)
 file(GLOB HDRS *.h)
 
+IF(MSVC)
+	list (APPEND SRCS ../Common/mdump.cpp)
+ENDIF()
+
 INCLUDE_DIRECTORIES(${INCS})
 LINK_DIRECTORIES(${LNKS})
 ADD_LIBRARY(WtExecMon SHARED ${SRCS} ${HDRS})
@@ -40,12 +45,15 @@ ADD_LIBRARY(WtExecMon SHARED ${SRCS} ${HDRS})
 SET(LIBS
 	WtCore
 	WTSTools
-	
-	dl
-	pthread
-	boost_filesystem
-	boost_thread
-)
+	WTSUtils)
+
+IF(GCC)
+	LIST(APPEND LIBS
+		dl
+		pthread
+		boost_filesystem
+		boost_thread)
+ENDIF()
 
 TARGET_LINK_LIBRARIES(WtExecMon ${LIBS})
 IF (MSVC)

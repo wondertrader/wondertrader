@@ -36,11 +36,14 @@ INCLUDE_DIRECTORIES(${INCS})
 LINK_DIRECTORIES(${LNKS})
 ADD_LIBRARY(ParserFemas SHARED ${SRC})
 
-SET(LIBS
-	boost_filesystem
-	dl
-)
-TARGET_LINK_LIBRARIES(ParserFemas ${LIBS})
+IF(MSVC)
+ELSE(GCC)
+	SET(LIBS
+		boost_filesystem
+		dl
+	)
+	TARGET_LINK_LIBRARIES(ParserFemas ${LIBS})
+ENDIF()
 
 IF (MSVC)
 ELSE (GCC)

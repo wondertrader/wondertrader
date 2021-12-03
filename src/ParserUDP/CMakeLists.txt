@@ -36,14 +36,20 @@ INCLUDE_DIRECTORIES(${INCS})
 LINK_DIRECTORIES(${LNKS})
 ADD_LIBRARY(ParserUDP SHARED ${SRC})
 
-IF (WIN32)
+IF(GCC)
+	IF (WIN32)
+		SET(LIBS
+			boost_thread
+			ws2_32
+		)
+	ELSE(UNIX)
+		SET(LIBS
+			boost_thread
+		)
+	ENDIF()
+ELSE(MSVC)
 	SET(LIBS
-		boost_thread
 		ws2_32
-	)
-ELSE(UNIX)
-	SET(LIBS
-		boost_thread
 	)
 ENDIF()
 TARGET_LINK_LIBRARIES(ParserUDP ${LIBS})

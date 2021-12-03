@@ -34,11 +34,15 @@ SET(LIBS
 	WtBtCore
 	WTSTools
 	WTSUtils
-
-	boost_filesystem
-	pthread
-	dl
 )
+
+IF(MSVC)
+ELSE(GCC)
+	LIST(APPEND LIBS
+		boost_filesystem
+		pthread
+		dl)
+ENDIF()
 
 #9. 生成可执行文件
 ADD_EXECUTABLE(WtBtRunner WtBtRunner.cpp)

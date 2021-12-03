@@ -5,6 +5,7 @@ PROJECT(WonderTrader)
 #3. 环境判断
 IF (WIN32)
 	MESSAGE(STATUS "Operation System is windows")
+	add_definitions (-D_CRT_SECURE_NO_WARNINGS)
 ELSEIF (UNIX)
 	MESSAGE(STATUS "Operation System is UNIX-like OS's")
 ENDIF ()

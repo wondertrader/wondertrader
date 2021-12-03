@@ -35,12 +35,15 @@ INCLUDE_DIRECTORIES(${INCS})
 LINK_DIRECTORIES(${LNKS})
 ADD_LIBRARY(ParserCTP SHARED ${SRC})
 
-SET(LIBS
-	boost_thread
-	boost_filesystem
-	dl
-)
-TARGET_LINK_LIBRARIES(ParserCTP ${LIBS})
+IF (MSVC)
+ELSE (GCC)
+	SET(LIBS
+		boost_thread
+		boost_filesystem
+		dl
+	)
+	TARGET_LINK_LIBRARIES(ParserCTP ${LIBS})
+ENDIF()
 
 IF (MSVC)
 ELSE (GCC)
