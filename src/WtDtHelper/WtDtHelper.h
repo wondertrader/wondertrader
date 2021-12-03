@@ -22,11 +22,9 @@ NS_OTP_END
 USING_NS_OTP;
 
 #ifdef _WIN32
-#	define EXPORT_FLAG __declspec(dllexport)
 #	define PORTER_FLAG _cdecl
 #else
 #	define PORTER_FLAG __attribute__((_cdecl))
-#	define EXPORT_FLAG __attribute__((__visibility__("default")))
 #endif
 
 #ifndef NULL

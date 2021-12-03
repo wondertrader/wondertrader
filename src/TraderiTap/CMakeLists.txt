@@ -6,8 +6,8 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.0.0)
 PROJECT(TraderiTap LANGUAGES CXX)
 SET(CMAKE_CXX_STANDARD 11)
 
-
-IF (WIN32)
+#3. 添加包含路径
+IF (MSVC)
 	IF("${CMAKE_GENERATOR}" MATCHES "(Win64|IA64)")
 		SET(INCS $ENV{MyDepends141}/include)
 		SET(LNKS $ENV{MyDepends141}/lib/x64)
@@ -15,15 +15,19 @@ IF (WIN32)
 		SET(INCS $ENV{MyDepends141}/include)
 		SET(LNKS $ENV{MyDepends141}/lib/x86)
 	ENDIF()
-ELSE (UNIX)
-	SET (MyDeps "/home/mydeps")
+ELSE (GCC)
+	IF(WIN32)
+		SET (MyDeps $ENV{MyDependsGcc})
+	ELSE()
+		SET (MyDeps "/home/mydeps")
+	ENDIF()
 	SET(INCS ${MyDeps}/include)
 	SET(LNKS ${MyDeps}/lib)
 ENDIF ()
 
 SET(SRC  
 	${PROJECT_SOURCE_DIR}/TraderiTap.cpp
-	${PROJECT_SOURCE_DIR}/TraderiTap.h
+	${PROJECT_SOURCE_DIR}/HttpClient.cpp
 )
 
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin)
@@ -33,7 +37,24 @@ LINK_DIRECTORIES(${LNKS})
 ADD_LIBRARY(TraderiTap SHARED ${SRC})
 
 IF (WIN32)
-ELSE (UNIX)
+	SET(LIBS
+		boost_filesystem
+		dl
+		curl
+		ws2_32
+		wldap32
+	)
+ELSE(UNIX)
+	SET(LIBS
+		boost_filesystem
+		dl
+		curl
+	)
+ENDIF()
+TARGET_LINK_LIBRARIES(TraderiTap ${LIBS})
+
+IF (MSVC)
+ELSE (GCC)
 	SET_TARGET_PROPERTIES(TraderiTap PROPERTIES
 		CXX_VISIBILITY_PRESET hidden
 		C_VISIBILITY_PRESET hidden

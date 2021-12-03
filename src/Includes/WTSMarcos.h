@@ -43,8 +43,10 @@
 #define NS_OTP_END	}//namespace wts
 #define	USING_NS_OTP	using namespace otp
 
+#ifndef EXPORT_FLAG
 #ifdef _MSC_VER
 #	define EXPORT_FLAG __declspec(dllexport)
 #else
 #	define EXPORT_FLAG __attribute__((__visibility__("default")))
+#endif
 #endif

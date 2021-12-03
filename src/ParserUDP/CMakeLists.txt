@@ -6,8 +6,8 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.0.0)
 PROJECT(ParserUDP LANGUAGES CXX)
 SET(CMAKE_CXX_STANDARD 11)
 
-
-IF (WIN32)
+#3. 添加包含路径
+IF (MSVC)
 	IF("${CMAKE_GENERATOR}" MATCHES "(Win64|IA64)")
 		SET(INCS $ENV{MyDepends141}/include)
 		SET(LNKS $ENV{MyDepends141}/lib/x64)
@@ -15,8 +15,12 @@ IF (WIN32)
 		SET(INCS $ENV{MyDepends141}/include)
 		SET(LNKS $ENV{MyDepends141}/lib/x86)
 	ENDIF()
-ELSE (UNIX)
-	SET (MyDeps "/home/mydeps")
+ELSE (GCC)
+	IF(WIN32)
+		SET (MyDeps $ENV{MyDependsGcc})
+	ELSE()
+		SET (MyDeps "/home/mydeps")
+	ENDIF()
 	SET(INCS ${MyDeps}/include)
 	SET(LNKS ${MyDeps}/lib)
 ENDIF ()
@@ -32,13 +36,20 @@ INCLUDE_DIRECTORIES(${INCS})
 LINK_DIRECTORIES(${LNKS})
 ADD_LIBRARY(ParserUDP SHARED ${SRC})
 
-SET(LIBS
-	boost_thread
-)
+IF (WIN32)
+	SET(LIBS
+		boost_thread
+		ws2_32
+	)
+ELSE(UNIX)
+	SET(LIBS
+		boost_thread
+	)
+ENDIF()
 TARGET_LINK_LIBRARIES(ParserUDP ${LIBS})
 
-IF (WIN32)
-ELSE (UNIX)
+IF (MSVC)
+ELSE (GCC)
 	SET_TARGET_PROPERTIES(ParserUDP PROPERTIES
 		CXX_VISIBILITY_PRESET hidden
 		C_VISIBILITY_PRESET hidden

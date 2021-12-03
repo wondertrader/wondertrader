@@ -6,10 +6,8 @@ cmake_minimum_required(VERSION 3.0.0)
 project(CTPLoader LANGUAGES CXX)
 SET(CMAKE_CXX_STANDARD 11)
 
-
 #4. 添加包含文件目录
 IF (MSVC)
-	message("MSVC ON WIN32")
 	IF("${CMAKE_GENERATOR}" MATCHES "(Win64|IA64)")
 		SET(INCS $ENV{MyDepends141}/include)
 		SET(LNKS $ENV{MyDepends141}/lib/x64)
@@ -19,9 +17,7 @@ IF (MSVC)
 	ENDIF()
 ELSE (GCC)
 	IF(WIN32)
-		message("GCC ON WIN32")
 		SET (MyDeps $ENV{MyDependsGcc})
-		message("${MyDeps}")
 	ELSE()
 		SET (MyDeps "/home/mydeps")
 	ENDIF()
@@ -41,7 +37,7 @@ SET(SRC
 INCLUDE_DIRECTORIES(${INCS})
 LINK_DIRECTORIES(${LNKS})
 
-SET(LIBS	
+SET(LIBS
 	boost_filesystem
 	dl
 )

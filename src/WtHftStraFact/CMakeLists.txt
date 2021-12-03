@@ -1,4 +1,3 @@
-
 #1. 确定CMake的最低版本需求
 CMAKE_MINIMUM_REQUIRED(VERSION 3.0.0)
 
@@ -6,17 +5,21 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.0.0)
 PROJECT(WtHftStraFact LANGUAGES CXX)
 SET(CMAKE_CXX_STANDARD 11)
 
-#3. 环境判断
-IF (WIN32)
+#3. 添加包含路径
+IF (MSVC)
 	IF("${CMAKE_GENERATOR}" MATCHES "(Win64|IA64)")
-		SET(INCS $ENV{MyX64Deps12}/include)
-		SET(LNKS $ENV{MyX64Deps12}/lib)
+		SET(INCS $ENV{MyDepends141}/include)
+		SET(LNKS $ENV{MyDepends141}/lib/x64)
 	ELSE()
-		SET(INCS $ENV{MyDepends12}/include)
-		SET(LNKS $ENV{MyDepends12}/lib)
+		SET(INCS $ENV{MyDepends141}/include)
+		SET(LNKS $ENV{MyDepends141}/lib/x86)
 	ENDIF()
-ELSE (UNIX)
-	SET (MyDeps "/home/mydeps")
+ELSE (GCC)
+	IF(WIN32)
+		SET (MyDeps $ENV{MyDependsGcc})
+	ELSE()
+		SET (MyDeps "/home/mydeps")
+	ENDIF()
 	SET(INCS ${MyDeps}/include)
 	SET(LNKS ${MyDeps}/lib)
 ENDIF ()

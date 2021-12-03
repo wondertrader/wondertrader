@@ -1,4 +1,3 @@
-
 #1. 确定CMake的最低版本需求
 CMAKE_MINIMUM_REQUIRED(VERSION 3.0.0)
 
@@ -6,7 +5,8 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.0.0)
 PROJECT(QuoteFactory LANGUAGES CXX)
 SET(CMAKE_CXX_STANDARD 11)
 
-IF (WIN32)
+#3. 添加包含路径
+IF (MSVC)
 	IF("${CMAKE_GENERATOR}" MATCHES "(Win64|IA64)")
 		SET(INCS $ENV{MyDepends141}/include)
 		SET(LNKS $ENV{MyDepends141}/lib/x64)
@@ -14,8 +14,12 @@ IF (WIN32)
 		SET(INCS $ENV{MyDepends141}/include)
 		SET(LNKS $ENV{MyDepends141}/lib/x86)
 	ENDIF()
-ELSE (UNIX)
-	SET (MyDeps "/home/mydeps")
+ELSE (GCC)
+	IF(WIN32)
+		SET (MyDeps $ENV{MyDependsGcc})
+	ELSE()
+		SET (MyDeps "/home/mydeps")
+	ENDIF()
 	SET(INCS ${MyDeps}/include)
 	SET(LNKS ${MyDeps}/lib)
 ENDIF ()
@@ -28,17 +32,26 @@ FILE( GLOB SRCS *.cpp)
 INCLUDE_DIRECTORIES(${INCS})
 LINK_DIRECTORIES(${LNKS})
 
-SET(LIBS
-	${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/libs/libWTSTools.a
-	${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/libs/libWTSUtils.a
-	${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/libs/libWtDtCore.a
-	
-	boost_thread
-	boost_filesystem
-	
-	pthread
-	dl
-)
+if(WIN32)
+	SET(LIBS
+		WTSTools
+		WTSUtils
+		WtDtCore
+
+		boost_filesystem
+		dl
+		ws2_32
+	)
+ELSE(UNIX)
+	SET(LIBS
+		WTSTools
+		WTSUtils
+		WtDtCore
+
+		boost_filesystem
+		dl
+	)
+ENDIF()
 
 #9. 生成可执行文件
 ADD_EXECUTABLE(QuoteFactory ${SRCS})
@@ -46,7 +59,29 @@ TARGET_LINK_LIBRARIES(QuoteFactory ${LIBS})
 
 file(MAKE_DIRECTORY ${EXECUTABLE_OUTPUT_PATH}/parsers/)
 
-add_custom_command(TARGET QuoteFactory POST_BUILD
+IF(WIN32)
+	add_custom_command(TARGET QuoteFactory POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E
+		copy ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/libParserCTP.dll ${EXECUTABLE_OUTPUT_PATH}/parsers/
+
+		COMMAND ${CMAKE_COMMAND} -E
+		copy ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/libParserXTP.dll ${EXECUTABLE_OUTPUT_PATH}/parsers/
+
+		COMMAND ${CMAKE_COMMAND} -E
+		copy ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/libParseriTap.dll ${EXECUTABLE_OUTPUT_PATH}/parsers/
+
+		COMMAND ${CMAKE_COMMAND} -E
+		copy ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/libParserFemas.dll ${EXECUTABLE_OUTPUT_PATH}/parsers/
+
+		COMMAND ${CMAKE_COMMAND} -E
+		copy ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/libParserCTPMini.dll ${EXECUTABLE_OUTPUT_PATH}/parsers/
+
+		COMMAND ${CMAKE_COMMAND} -E
+		copy ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/libWtDataWriter.dll ${EXECUTABLE_OUTPUT_PATH}/
+
+		COMMENT "depends modules copied")
+ELSE(UNIX)
+	add_custom_command(TARGET QuoteFactory POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E
 		copy ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/libParserCTP.so ${EXECUTABLE_OUTPUT_PATH}/parsers/
 		
@@ -66,5 +101,6 @@ add_custom_command(TARGET QuoteFactory POST_BUILD
 		copy ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/libWtDataWriter.so ${EXECUTABLE_OUTPUT_PATH}/
 		
 		COMMENT "depends modules copied")
+ENDIF()
 
 

@@ -1,4 +1,3 @@
-
 #1. 确定CMake的最低版本需求
 CMAKE_MINIMUM_REQUIRED(VERSION 3.0.0)
 
@@ -9,8 +8,8 @@ SET(CMAKE_CXX_STANDARD 11)
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
 
 
-#3. 环境判断
-IF (WIN32)
+#3. 添加包含路径
+IF (MSVC)
 	IF("${CMAKE_GENERATOR}" MATCHES "(Win64|IA64)")
 		SET(INCS $ENV{MyDepends141}/include)
 		SET(LNKS $ENV{MyDepends141}/lib/x64)
@@ -18,8 +17,12 @@ IF (WIN32)
 		SET(INCS $ENV{MyDepends141}/include)
 		SET(LNKS $ENV{MyDepends141}/lib/x86)
 	ENDIF()
-ELSE (UNIX)
-	SET (MyDeps "/home/mydeps")
+ELSE (GCC)
+	IF(WIN32)
+		SET (MyDeps $ENV{MyDependsGcc})
+	ELSE()
+		SET (MyDeps "/home/mydeps")
+	ENDIF()
 	SET(INCS ${MyDeps}/include)
 	SET(LNKS ${MyDeps}/lib)
 ENDIF ()
@@ -35,17 +38,18 @@ LINK_DIRECTORIES(${LNKS})
 ADD_LIBRARY(WtExecMon SHARED ${SRCS} ${HDRS})
 
 SET(LIBS
-	${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/libs/libWtCore.a
-	${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/libs/libWTSTools.a
+	WtCore
+	WTSTools
 	
 	dl
 	pthread
-	boost_filesystem	
+	boost_filesystem
+	boost_thread
 )
 
 TARGET_LINK_LIBRARIES(WtExecMon ${LIBS})
-IF (WIN32)
-ELSE (UNIX)
+IF (MSVC)
+ELSE (GCC)
 	SET_TARGET_PROPERTIES(WtExecMon PROPERTIES
 		CXX_VISIBILITY_PRESET hidden
 		VISIBILITY_INLINES_HIDDEN 1)

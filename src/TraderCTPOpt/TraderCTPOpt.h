@@ -13,9 +13,6 @@
 #include <queue>
 #include <stdint.h>
 
-#include <boost/asio/io_service.hpp>
-#include <boost/asio/strand.hpp>
-
 #include "../Includes/WTSTypes.h"
 #include "../Includes/ITraderApi.h"
 #include "../Includes/WTSCollection.hpp"

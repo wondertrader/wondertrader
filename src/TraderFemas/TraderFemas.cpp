@@ -12,14 +12,12 @@
 #include "../Includes/WTSError.hpp"
 #include "../Includes/IBaseDataMgr.h"
 #include "../Includes/WTSTradeDef.hpp"
-#include "../Includes/WTSDataDef.hpp"
-#include "../Includes/WTSParams.hpp"
 #include "../Includes/WTSContractInfo.hpp"
-#include "../Share/StdUtils.hpp"
 #include "../Share/TimeUtils.hpp"
-#include "../Share/BoostFile.hpp"
 #include "../Share/StrUtil.hpp"
 #include "../Share/decimal.h"
+
+#include <boost/filesystem.hpp>
 
 #ifdef _MSC_VER
 #include <wtypes.h>
@@ -214,7 +212,7 @@ void TraderFemas::connect()
 	std::stringstream ss;
 	ss << m_strFlowDir << "flows/" << m_strBroker << "/" << m_strUser << "/";
 	std::string path = ss.str();
-	BoostFile::create_directories(path.c_str());
+	boost::filesystem::create_directories(path.c_str());
 	m_pUserAPI = m_funcCreator(path.c_str());
 	m_pUserAPI->RegisterSpi(this);
 	if(m_bQuickStart)

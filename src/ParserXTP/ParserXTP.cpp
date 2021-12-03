@@ -11,12 +11,13 @@
 #include "../Share/StrUtil.hpp"
 #include "../Share/TimeUtils.hpp"
 #include "../Includes/WTSDataDef.hpp"
-#include "../Share/BoostFile.hpp"
 #include "../Includes/WTSContractInfo.hpp"
 #include "../Includes/WTSParams.hpp"
 #include "../Share/StrUtil.hpp"
 #include "../Includes/IBaseDataMgr.h"
 #include "../Share/DLLHelper.hpp"
+
+#include <boost/filesystem.hpp>
 
 #ifdef _MSC_VER
 #include <wtypes.h>
@@ -150,7 +151,7 @@ bool ParserXTP::init(WTSParams* config)
 		module = "xtpquoteapi";
 
 	std::string path = StrUtil::printf("%s/%s/", m_strFlowDir.c_str(), m_strUser.c_str());
-	BoostFile::create_directories(path.c_str());
+	boost::filesystem::create_directories(path.c_str());
 
 	std::string dllpath = getBinDir() + DLLHelper::wrap_module(module.c_str(), "lib");;
 	m_hInst = DLLHelper::load_library(dllpath.c_str());

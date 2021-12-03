@@ -5,10 +5,11 @@ PROJECT(WonderTrader)
 #3. 环境判断
 IF (WIN32)
 	MESSAGE(STATUS "Operation System is windows")
-	MESSAGE(STATUS "Generator is ${CMAKE_GENERATOR}")
 ELSEIF (UNIX)
 	MESSAGE(STATUS "Operation System is UNIX-like OS's")
 ENDIF ()
+
+MESSAGE(STATUS "Generator is ${CMAKE_GENERATOR}")
 
 IF (MSVC)
 	IF("${CMAKE_GENERATOR}" MATCHES "(Win64|IA64)")
@@ -18,6 +19,13 @@ IF (MSVC)
 		MESSAGE(STATUS "MyDepends is at $ENV{MyDepends141}")
 		MESSAGE(STATUS "Platform is x86")
 	ENDIF()
+ELSE (GCC)
+	IF(WIN32)
+		MESSAGE(STATUS "MyDepends is at $ENV{MyDependsGcc}")
+	ELSE(UNIX)
+		MESSAGE(STATUS "MyDepends is at /home/mydeps")
+	ENDIF()
+	MESSAGE(STATUS "Platform is x64")
 ENDIF()
 
 #basic libraries

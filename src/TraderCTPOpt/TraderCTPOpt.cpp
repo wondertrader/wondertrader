@@ -14,9 +14,7 @@
 #include "../Includes/WTSTradeDef.hpp"
 #include "../Includes/WTSDataDef.hpp"
 #include "../Includes/WTSParams.hpp"
-#include "../Share/TimeUtils.hpp"
 #include "../Includes/IBaseDataMgr.h"
-#include "../Share/DLLHelper.hpp"
 #include "../Share/decimal.h"
 #include "../Share/StrUtil.hpp"
 
@@ -24,7 +22,7 @@
 
 void inst_hlp(){}
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 #include <wtypes.h>
 HMODULE	g_dllModule = NULL;
 
@@ -70,7 +68,7 @@ std::string getBinDir()
 	{
 
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 		char strPath[MAX_PATH];
 		GetModuleFileName(g_dllModule, strPath, MAX_PATH);
 

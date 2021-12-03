@@ -4,16 +4,16 @@
 #include "../Includes/WTSError.hpp"
 #include "../Includes/WTSContractInfo.hpp"
 #include "../Includes/WTSTradeDef.hpp"
-#include "../Includes/WTSDataDef.hpp"
 #include "../Includes/WTSParams.hpp"
 #include "../Includes/IBaseDataMgr.h"
 
 #include "../Share/StdUtils.hpp"
-#include "../Share/BoostFile.hpp"
 #include "../Share/TimeUtils.hpp"
 #include "../Share/StrUtil.hpp"
 
 #include "../API/iTap9.3.3.3/iTapAPIError.h"
+
+#include <boost/filesystem.hpp>
 
 
 #ifdef _MSC_VER
@@ -263,8 +263,8 @@ void TraderiTap::reconnect()
 	TAPIINT32 CreateErrorCode = TAPIERROR_SUCCEED;
 	TapAPIApplicationInfo stAppInfo;
 	strcpy(stAppInfo.AuthCode, m_strAppKey.c_str());
-	if (!BoostFile::exists(".\\ESFLogs\\"))
-		BoostFile::create_directory(".\\ESFLogs\\");
+	if (!boost::filesystem::exists(".\\ESFLogs\\"))
+        boost::filesystem::create_directory(".\\ESFLogs\\");
 	strcpy(stAppInfo.KeyOperationLogPath, ".\\ESFLogs\\");
 	m_pUserAPI = m_funcCreator(&stAppInfo, CreateErrorCode);
 	if (m_pUserAPI == NULL)

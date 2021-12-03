@@ -8,15 +8,14 @@
  * \brief 
  */
 #include "ExecMocker.h"
-#include "HisDataReplayer.h"
 #include "WtHelper.h"
 
 #include "../Includes/WTSVariant.hpp"
 #include "../Share/TimeUtils.hpp"
 #include "../Share/decimal.h"
-#include "../Share/BoostFile.hpp"
-
 #include "../WTSTools/WTSLogger.h"
+
+#include <boost/filesystem.hpp>
 
 #define PRICE_DOUBLE_TO_INT_P(x) ((int32_t)((x)*10000.0 + 0.5))
 #define PRICE_DOUBLE_TO_INT_N(x) ((int32_t)((x)*10000.0 - 0.5))
@@ -142,7 +141,7 @@ void ExecMocker::handle_init()
 
 	std::string folder = WtHelper::getOutputDir();
 	folder += "exec/";
-	BoostFile::create_directories(folder.c_str());
+	boost::filesystem::create_directories(folder.c_str());
 
 	std::stringstream ss;
 	ss << folder << "trades_" << _id << ".csv";

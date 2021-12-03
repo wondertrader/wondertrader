@@ -8,11 +8,12 @@
 #include "../Includes/WTSError.hpp"
 
 #include "../Share/TimeUtils.hpp"
-#include "../Share/BoostFile.hpp"
+#include "../Share/StdUtils.hpp"
 #include "../Share/decimal.h"
 #include "../Share/StrUtil.hpp"
 
 #include <boost/bind.hpp>
+#include <boost/filesystem.hpp>
 
 #include <rapidjson/document.h>
 #include <rapidjson/prettywriter.h>
@@ -522,7 +523,7 @@ bool TraderMocker::init(WTSParams *params)
 	std::stringstream ss;
 	ss << "./mocker_" << _mocker_id << "/";
 	std::string path = ss.str();
-	BoostFile::create_directories(path.c_str());
+	boost::filesystem::create_directories(path.c_str());
 
 	_pos_file = path;
 	_pos_file += "positions.json";
@@ -532,11 +533,11 @@ bool TraderMocker::init(WTSParams *params)
 
 void TraderMocker::load_positions()
 {
-	if (!BoostFile::exists(_pos_file.c_str()))
+	if (!boost::filesystem::exists(_pos_file.c_str()))
 		return;
 
 	std::string json;
-	BoostFile::read_file_contents(_pos_file.c_str(), json);
+	StdFile::read_file_content(_pos_file.c_str(), json);
 
 	rj::Document root;
 	root.Parse(json.c_str());
@@ -613,15 +614,11 @@ void TraderMocker::save_positions()
 	}
 
 	{
-		BoostFile bf;
-		if (bf.create_new_file(_pos_file.c_str()))
-		{
-			rj::StringBuffer sb;
-			rj::PrettyWriter<rj::StringBuffer> writer(sb);
-			root.Accept(writer);
-			bf.write_file(sb.GetString());
-			bf.close_file();
-		}
+        rj::StringBuffer sb;
+        rj::PrettyWriter<rj::StringBuffer> writer(sb);
+        root.Accept(writer);
+        StdFile::write_file_content(_pos_file.c_str(), sb.GetString());
+
 	}
 }
 

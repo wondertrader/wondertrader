@@ -21,7 +21,6 @@
 #include "../Includes/WTSContractInfo.hpp"
 #include "../Includes/WTSSessionInfo.hpp"
 
-#include "../Share/BoostFile.hpp"
 #include "../Share/decimal.h"
 
 #include "../WTSTools/WTSLogger.h"
@@ -31,6 +30,8 @@
 
 #include "../Share/JsonToVariant.hpp"
 #include "../Share/CodeHelper.hpp"
+
+#include <boost/filesystem.hpp>
 
 #include <rapidjson/document.h>
 #include <rapidjson/prettywriter.h>
@@ -223,14 +224,14 @@ bool HisDataReplayer::loadStkAdjFactorsFromDB()
 
 bool HisDataReplayer::loadStkAdjFactors(const char* adjfile)
 {
-	if (!BoostFile::exists(adjfile))
+	if (!boost::filesystem::exists(adjfile))
 	{
 		WTSLogger::error("Adjust factor file %s not exists", adjfile);
 		return false;
 	}
 
 	std::string content;
-	BoostFile::read_file_contents(adjfile, content);
+	StdFile::read_file_content(adjfile, content);
 
 	rj::Document doc;
 	doc.Parse(content.c_str());
@@ -420,7 +421,7 @@ void HisDataReplayer::dump_btstate(const char* stdCode, WTSKlinePeriod period, u
 	folder += "/";
 	boost::filesystem::create_directories(folder.c_str());
 	std::string filename = folder + "btenv.json";
-	BoostFile::write_file_contents(filename.c_str(), output.c_str(), output.size());
+	StdFile::write_file_content(filename.c_str(), output.c_str(), output.size());
 }
 
 void HisDataReplayer::notify_state(const char* stdCode, WTSKlinePeriod period, uint32_t times, uint64_t stime, uint64_t etime, double progress)
@@ -2911,13 +2912,7 @@ bool HisDataReplayer::cacheRawTicksFromCSV(const std::string& key, const char* s
 		std::string cmpData = WTSCmpHelper::compress_data(tickList._items.data(), sizeof(WTSTickStruct)*tickList._count);
 		tBlock._size = cmpData.size();
 
-		BoostFile bf;
-		if (bf.create_new_file(filename.c_str()))
-		{
-			bf.write_file(&tBlock, sizeof(HisTickBlockV2));
-		}
-		bf.write_file(cmpData);
-		bf.close_file();
+		StdFile::write_file_content(filename.c_str(), cmpData.c_str(), cmpData.size());
 		//WTSLogger::info("数据已转储至%s", filename.c_str());
 		WTSLogger::info("Data dumped to file %s", filename.c_str());
 	}
@@ -2948,7 +2943,7 @@ bool HisDataReplayer::cacheRawBarsFromLoader(const std::string& key, const char*
 	std::stringstream ss;
 	ss << _base_dir << "his/" << dirname << "/" << cInfo._exchg << "/";
 	if (!StdFile::exists(ss.str().c_str()))
-		BoostFile::create_directories(ss.str().c_str());
+        boost::filesystem::create_directories(ss.str().c_str());
 
 	if (cInfo.isHot() && cInfo.isFuture())
 	{
@@ -3046,13 +3041,7 @@ bool HisDataReplayer::cacheRawBarsFromLoader(const std::string& key, const char*
 			std::string cmpData = WTSCmpHelper::compress_data(barList._bars.data(), sizeof(WTSBarStruct)*barList._count);
 			kBlock._size = cmpData.size();
 
-			BoostFile bf;
-			if (bf.create_new_file(filename.c_str()))
-			{
-				bf.write_file(&kBlock, sizeof(HisKlineBlockV2));
-			}
-			bf.write_file(cmpData);
-			bf.close_file();
+			StdFile::write_file_content(filename.c_str(), cmpData.c_str(), cmpData.size());
 			WTSLogger::info("Bars transfered to file %s", filename.c_str());
 		}
 	}
@@ -3080,7 +3069,7 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 	std::stringstream ss;
 	ss << _base_dir << "his/" << dirname << "/" << cInfo._exchg << "/";
 	if (!StdFile::exists(ss.str().c_str()))
-		BoostFile::create_directories(ss.str().c_str());
+		boost::filesystem::create_directories(ss.str().c_str());
 
 	if(cInfo.isHot() && cInfo.isFuture())
 	{
@@ -3193,14 +3182,7 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 		std::string cmpData = WTSCmpHelper::compress_data(barList._bars.data(), sizeof(WTSBarStruct)*barList._count);
 		kBlock._size = cmpData.size();
 
-		BoostFile bf;
-		if (bf.create_new_file(filename.c_str()))
-		{
-			bf.write_file(&kBlock, sizeof(HisKlineBlockV2));
-		}
-		bf.write_file(cmpData);
-		bf.close_file();
-		//WTSLogger::info("数据已转储至%s", filename.c_str());
+		StdFile::write_file_content(filename.c_str(), cmpData.c_str(), cmpData.size());
 		WTSLogger::info("Data dumped to file %s", filename.c_str());
 	}
 

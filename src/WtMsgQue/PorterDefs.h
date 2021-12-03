@@ -13,8 +13,10 @@ typedef const char*			WtString;
 typedef void(PORTER_FLAG *FuncMQCallback)(WtUInt32 id, const char* topic, const char* data, WtUInt32 dataLen);
 typedef void(PORTER_FLAG *FuncLogCallback)(WtUInt32 id, const char* message, bool bServer);
 
-#ifdef _WIN32
+#ifndef EXPORT_FLAG
+#ifdef _MSC_VER
 #	define EXPORT_FLAG __declspec(dllexport)
 #else
 #	define EXPORT_FLAG __attribute__((__visibility__("default")))
+#endif
 #endif

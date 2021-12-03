@@ -6,9 +6,8 @@ cmake_minimum_required(VERSION 3.0.0)
 project(MiniLoader LANGUAGES CXX)
 SET(CMAKE_CXX_STANDARD 11)
 
-
 #4. 添加包含文件目录
-IF (WIN32)
+IF (MSVC)
 	IF("${CMAKE_GENERATOR}" MATCHES "(Win64|IA64)")
 		SET(INCS $ENV{MyDepends141}/include)
 		SET(LNKS $ENV{MyDepends141}/lib/x64)
@@ -16,11 +15,16 @@ IF (WIN32)
 		SET(INCS $ENV{MyDepends141}/include)
 		SET(LNKS $ENV{MyDepends141}/lib/x86)
 	ENDIF()
-ELSE (UNIX)
-	SET (MyDeps "/home/mydeps")
+ELSE (GCC)
+	IF(WIN32)
+		SET (MyDeps $ENV{MyDependsGcc})
+	ELSE()
+		SET (MyDeps "/home/mydeps")
+	ENDIF()
 	SET(INCS ${MyDeps}/include)
 	SET(LNKS ${MyDeps}/lib)
 ENDIF ()
+
 
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/MiniLoader)
 
@@ -41,8 +45,8 @@ SET(LIBS
 
 #9. 生成可执行文件
 ADD_LIBRARY(MiniLoader SHARED ${SRC})
-IF (WIN32)
-ELSE (UNIX)
+IF (MSVC)
+ELSE (GCC)
 	TARGET_LINK_LIBRARIES(MiniLoader ${LIBS})
 ENDIF ()
 
