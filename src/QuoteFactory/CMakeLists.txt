@@ -47,6 +47,7 @@ ELSE(GCC)
 	LIST(APPEND LIBS
 		dl
 		boost_filesystem
+        pthread
 		)
 	if(WIN32)
 		LIST(APPEND LIBS
