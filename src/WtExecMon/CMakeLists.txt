@@ -43,7 +43,8 @@ SET(LIBS
 	WTSTools
 	WTSUtils)
 
-IF(GCC)
+IF (MSVC)
+ELSE (GCC)
 	LIST(APPEND LIBS
 		dl
 		pthread

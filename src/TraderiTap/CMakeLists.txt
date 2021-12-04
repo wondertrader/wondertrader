@@ -27,6 +27,7 @@ ENDIF ()
 
 SET(SRC  
 	${PROJECT_SOURCE_DIR}/TraderiTap.cpp
+    ${PROJECT_SOURCE_DIR}/HttpClient.cpp
 )
 
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin)
@@ -35,9 +36,11 @@ INCLUDE_DIRECTORIES(${INCS})
 LINK_DIRECTORIES(${LNKS})
 ADD_LIBRARY(TraderiTap SHARED ${SRC})
 
+SET(LIBS curl)
+        
 IF(MSVC)
 ELSE(GCC)
-	SET(LIBS
+	LIST(APPEND LIBS
 		boost_filesystem
 		dl)
 

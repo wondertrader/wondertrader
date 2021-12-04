@@ -1455,7 +1455,7 @@ bool WtDataReader::cacheHisBarsFromFile(const std::string& key, const char* stdC
 			return false;
 
 		bool bAllCovered = false;
-		for (auto it = secs.rbegin(); it != secs.rend() && left > 0; it++)
+		for (auto it = secs.rbegin(); it != secs.rend(); it++)
 		{
 			//const char* curCode = it->first.c_str();
 			//uint32_t rightDt = it->second.second;
