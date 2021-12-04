@@ -38,6 +38,9 @@
 #define INVALID_UINT64		0xffffffffffffffffULL
 #endif
 
+#ifndef NULL
+#define NULL 0
+#endif
 
 #define NS_OTP_BEGIN	namespace otp{
 #define NS_OTP_END	}//namespace wts

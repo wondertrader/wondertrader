@@ -11,5 +11,7 @@
 *.sdf
 .vs
 cmake-build-debug
+cmake-build-relwithdebinfo
 build_Debug
+build_RelWithDebInfo
 .idea

@@ -275,7 +275,7 @@ bool HisDataReplayer::loadStkAdjFactors(const char* adjfile)
 			adjFact._factor = 1;
 			fctrLst.emplace_back(adjFact);
 
-			std::sort(fctrLst.begin(), fctrLst.end(), [](AdjFactor& left, AdjFactor& right) {
+			std::sort(fctrLst.begin(), fctrLst.end(), [](const AdjFactor& left, const AdjFactor& right) {
 				return left._date < right._date;
 			});
 		}
