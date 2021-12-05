@@ -1,0 +1,5460 @@
+{
+    "CFFEX": {
+        "IC2108": {
+            "name": "ÖÐÖ¤2108",
+            "code": "IC2108",
+            "exchg": "CFFEX",
+            "product": "IC",
+            "maxlimitqty": 20,
+            "maxmarketqty": 10
+        },
+        "IC2109": {
+            "name": "ÖÐÖ¤2109",
+            "code": "IC2109",
+            "exchg": "CFFEX",
+            "product": "IC",
+            "maxlimitqty": 20,
+            "maxmarketqty": 10
+        },
+        "IC2112": {
+            "name": "ÖÐÖ¤2112",
+            "code": "IC2112",
+            "exchg": "CFFEX",
+            "product": "IC",
+            "maxlimitqty": 20,
+            "maxmarketqty": 10
+        },
+        "IC2203": {
+            "name": "ÖÐÖ¤2203",
+            "code": "IC2203",
+            "exchg": "CFFEX",
+            "product": "IC",
+            "maxlimitqty": 20,
+            "maxmarketqty": 10
+        },
+        "IF2108": {
+            "name": "»¦Éî2108",
+            "code": "IF2108",
+            "exchg": "CFFEX",
+            "product": "IF",
+            "maxlimitqty": 20,
+            "maxmarketqty": 10
+        },
+        "IF2109": {
+            "name": "»¦Éî2109",
+            "code": "IF2109",
+            "exchg": "CFFEX",
+            "product": "IF",
+            "maxlimitqty": 20,
+            "maxmarketqty": 10
+        },
+        "IF2112": {
+            "name": "»¦Éî2112",
+            "code": "IF2112",
+            "exchg": "CFFEX",
+            "product": "IF",
+            "maxlimitqty": 20,
+            "maxmarketqty": 10
+        },
+        "IF2203": {
+            "name": "»¦Éî2203",
+            "code": "IF2203",
+            "exchg": "CFFEX",
+            "product": "IF",
+            "maxlimitqty": 20,
+            "maxmarketqty": 10
+        },
+        "IH2108": {
+            "name": "ÉÏÖ¤2108",
+            "code": "IH2108",
+            "exchg": "CFFEX",
+            "product": "IH",
+            "maxlimitqty": 20,
+            "maxmarketqty": 10
+        },
+        "IH2109": {
+            "name": "ÉÏÖ¤2109",
+            "code": "IH2109",
+            "exchg": "CFFEX",
+            "product": "IH",
+            "maxlimitqty": 20,
+            "maxmarketqty": 10
+        },
+        "IH2112": {
+            "name": "ÉÏÖ¤2112",
+            "code": "IH2112",
+            "exchg": "CFFEX",
+            "product": "IH",
+            "maxlimitqty": 20,
+            "maxmarketqty": 10
+        },
+        "IH2203": {
+            "name": "ÉÏÖ¤2203",
+            "code": "IH2203",
+            "exchg": "CFFEX",
+            "product": "IH",
+            "maxlimitqty": 20,
+            "maxmarketqty": 10
+        },
+        "T2109": {
+            "name": "10ÄêÕ®2109",
+            "code": "T2109",
+            "exchg": "CFFEX",
+            "product": "T",
+            "maxlimitqty": 50,
+            "maxmarketqty": 0
+        },
+        "T2112": {
+            "name": "10ÄêÕ®2112",
+            "code": "T2112",
+            "exchg": "CFFEX",
+            "product": "T",
+            "maxlimitqty": 50,
+            "maxmarketqty": 30
+        },
+        "T2203": {
+            "name": "10ÄêÕ®2203",
+            "code": "T2203",
+            "exchg": "CFFEX",
+            "product": "T",
+            "maxlimitqty": 50,
+            "maxmarketqty": 30
+        },
+        "TF2109": {
+            "name": "5ÄêÕ®2109",
+            "code": "TF2109",
+            "exchg": "CFFEX",
+            "product": "TF",
+            "maxlimitqty": 50,
+            "maxmarketqty": 0
+        },
+        "TF2112": {
+            "name": "5ÄêÕ®2112",
+            "code": "TF2112",
+            "exchg": "CFFEX",
+            "product": "TF",
+            "maxlimitqty": 50,
+            "maxmarketqty": 30
+        },
+        "TF2203": {
+            "name": "5ÄêÕ®2203",
+            "code": "TF2203",
+            "exchg": "CFFEX",
+            "product": "TF",
+            "maxlimitqty": 50,
+            "maxmarketqty": 30
+        },
+        "TS2109": {
+            "name": "2ÄêÕ®2109",
+            "code": "TS2109",
+            "exchg": "CFFEX",
+            "product": "TS",
+            "maxlimitqty": 50,
+            "maxmarketqty": 0
+        },
+        "TS2112": {
+            "name": "2ÄêÕ®2112",
+            "code": "TS2112",
+            "exchg": "CFFEX",
+            "product": "TS",
+            "maxlimitqty": 50,
+            "maxmarketqty": 30
+        },
+        "TS2203": {
+            "name": "2ÄêÕ®2203",
+            "code": "TS2203",
+            "exchg": "CFFEX",
+            "product": "TS",
+            "maxlimitqty": 50,
+            "maxmarketqty": 30
+        }
+    },
+    "CZCE": {
+        "AP110": {
+            "name": "Æ»¹û110",
+            "code": "AP110",
+            "exchg": "CZCE",
+            "product": "AP",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "AP111": {
+            "name": "Æ»¹û111",
+            "code": "AP111",
+            "exchg": "CZCE",
+            "product": "AP",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "AP112": {
+            "name": "Æ»¹û112",
+            "code": "AP112",
+            "exchg": "CZCE",
+            "product": "AP",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "AP201": {
+            "name": "Æ»¹û201",
+            "code": "AP201",
+            "exchg": "CZCE",
+            "product": "AP",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "AP203": {
+            "name": "Æ»¹û203",
+            "code": "AP203",
+            "exchg": "CZCE",
+            "product": "AP",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "AP204": {
+            "name": "Æ»¹û204",
+            "code": "AP204",
+            "exchg": "CZCE",
+            "product": "AP",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "AP205": {
+            "name": "Æ»¹û205",
+            "code": "AP205",
+            "exchg": "CZCE",
+            "product": "AP",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "CF109": {
+            "name": "Ö£ÃÞ109",
+            "code": "CF109",
+            "exchg": "CZCE",
+            "product": "CF",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "CF111": {
+            "name": "Ö£ÃÞ111",
+            "code": "CF111",
+            "exchg": "CZCE",
+            "product": "CF",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "CF201": {
+            "name": "Ö£ÃÞ201",
+            "code": "CF201",
+            "exchg": "CZCE",
+            "product": "CF",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "CF203": {
+            "name": "Ö£ÃÞ203",
+            "code": "CF203",
+            "exchg": "CZCE",
+            "product": "CF",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "CF205": {
+            "name": "Ö£ÃÞ205",
+            "code": "CF205",
+            "exchg": "CZCE",
+            "product": "CF",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "CF207": {
+            "name": "Ö£ÃÞ207",
+            "code": "CF207",
+            "exchg": "CZCE",
+            "product": "CF",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "CJ109": {
+            "name": "ºìÔæ109",
+            "code": "CJ109",
+            "exchg": "CZCE",
+            "product": "CJ",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "CJ112": {
+            "name": "ºìÔæ112",
+            "code": "CJ112",
+            "exchg": "CZCE",
+            "product": "CJ",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "CJ201": {
+            "name": "ºìÔæ201",
+            "code": "CJ201",
+            "exchg": "CZCE",
+            "product": "CJ",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "CJ203": {
+            "name": "ºìÔæ203",
+            "code": "CJ203",
+            "exchg": "CZCE",
+            "product": "CJ",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "CJ205": {
+            "name": "ºìÔæ205",
+            "code": "CJ205",
+            "exchg": "CZCE",
+            "product": "CJ",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "CJ207": {
+            "name": "ºìÔæ207",
+            "code": "CJ207",
+            "exchg": "CZCE",
+            "product": "CJ",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "CY108": {
+            "name": "ÃÞÉ´108",
+            "code": "CY108",
+            "exchg": "CZCE",
+            "product": "CY",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "CY109": {
+            "name": "ÃÞÉ´109",
+            "code": "CY109",
+            "exchg": "CZCE",
+            "product": "CY",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "CY110": {
+            "name": "ÃÞÉ´110",
+            "code": "CY110",
+            "exchg": "CZCE",
+            "product": "CY",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "CY111": {
+            "name": "ÃÞÉ´111",
+            "code": "CY111",
+            "exchg": "CZCE",
+            "product": "CY",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "CY112": {
+            "name": "ÃÞÉ´112",
+            "code": "CY112",
+            "exchg": "CZCE",
+            "product": "CY",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "CY201": {
+            "name": "ÃÞÉ´201",
+            "code": "CY201",
+            "exchg": "CZCE",
+            "product": "CY",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "CY202": {
+            "name": "ÃÞÉ´202",
+            "code": "CY202",
+            "exchg": "CZCE",
+            "product": "CY",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "CY203": {
+            "name": "ÃÞÉ´203",
+            "code": "CY203",
+            "exchg": "CZCE",
+            "product": "CY",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "CY204": {
+            "name": "ÃÞÉ´204",
+            "code": "CY204",
+            "exchg": "CZCE",
+            "product": "CY",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "CY205": {
+            "name": "ÃÞÉ´205",
+            "code": "CY205",
+            "exchg": "CZCE",
+            "product": "CY",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "CY206": {
+            "name": "ÃÞÉ´206",
+            "code": "CY206",
+            "exchg": "CZCE",
+            "product": "CY",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "CY207": {
+            "name": "ÃÞÉ´207",
+            "code": "CY207",
+            "exchg": "CZCE",
+            "product": "CY",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "FG108": {
+            "name": "²£Á§108",
+            "code": "FG108",
+            "exchg": "CZCE",
+            "product": "FG",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "FG109": {
+            "name": "²£Á§109",
+            "code": "FG109",
+            "exchg": "CZCE",
+            "product": "FG",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "FG110": {
+            "name": "²£Á§110",
+            "code": "FG110",
+            "exchg": "CZCE",
+            "product": "FG",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "FG111": {
+            "name": "²£Á§111",
+            "code": "FG111",
+            "exchg": "CZCE",
+            "product": "FG",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "FG112": {
+            "name": "²£Á§112",
+            "code": "FG112",
+            "exchg": "CZCE",
+            "product": "FG",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "FG201": {
+            "name": "²£Á§201",
+            "code": "FG201",
+            "exchg": "CZCE",
+            "product": "FG",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "FG202": {
+            "name": "²£Á§202",
+            "code": "FG202",
+            "exchg": "CZCE",
+            "product": "FG",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "FG203": {
+            "name": "²£Á§203",
+            "code": "FG203",
+            "exchg": "CZCE",
+            "product": "FG",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "FG204": {
+            "name": "²£Á§204",
+            "code": "FG204",
+            "exchg": "CZCE",
+            "product": "FG",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "FG205": {
+            "name": "²£Á§205",
+            "code": "FG205",
+            "exchg": "CZCE",
+            "product": "FG",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "FG206": {
+            "name": "²£Á§206",
+            "code": "FG206",
+            "exchg": "CZCE",
+            "product": "FG",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "FG207": {
+            "name": "²£Á§207",
+            "code": "FG207",
+            "exchg": "CZCE",
+            "product": "FG",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "JR109": {
+            "name": "¾¬µ¾109",
+            "code": "JR109",
+            "exchg": "CZCE",
+            "product": "JR",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "JR111": {
+            "name": "¾¬µ¾111",
+            "code": "JR111",
+            "exchg": "CZCE",
+            "product": "JR",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "JR201": {
+            "name": "¾¬µ¾201",
+            "code": "JR201",
+            "exchg": "CZCE",
+            "product": "JR",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "JR203": {
+            "name": "¾¬µ¾203",
+            "code": "JR203",
+            "exchg": "CZCE",
+            "product": "JR",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "JR205": {
+            "name": "¾¬µ¾205",
+            "code": "JR205",
+            "exchg": "CZCE",
+            "product": "JR",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "JR207": {
+            "name": "¾¬µ¾207",
+            "code": "JR207",
+            "exchg": "CZCE",
+            "product": "JR",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "LR109": {
+            "name": "ÍíôÌµ¾109",
+            "code": "LR109",
+            "exchg": "CZCE",
+            "product": "LR",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "LR111": {
+            "name": "ÍíôÌµ¾111",
+            "code": "LR111",
+            "exchg": "CZCE",
+            "product": "LR",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "LR201": {
+            "name": "ÍíôÌµ¾201",
+            "code": "LR201",
+            "exchg": "CZCE",
+            "product": "LR",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "LR203": {
+            "name": "ÍíôÌµ¾203",
+            "code": "LR203",
+            "exchg": "CZCE",
+            "product": "LR",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "LR205": {
+            "name": "ÍíôÌµ¾205",
+            "code": "LR205",
+            "exchg": "CZCE",
+            "product": "LR",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "LR207": {
+            "name": "ÍíôÌµ¾207",
+            "code": "LR207",
+            "exchg": "CZCE",
+            "product": "LR",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "MA108": {
+            "name": "Ö£´¼108",
+            "code": "MA108",
+            "exchg": "CZCE",
+            "product": "MA",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "MA109": {
+            "name": "Ö£´¼109",
+            "code": "MA109",
+            "exchg": "CZCE",
+            "product": "MA",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "MA110": {
+            "name": "Ö£´¼110",
+            "code": "MA110",
+            "exchg": "CZCE",
+            "product": "MA",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "MA111": {
+            "name": "Ö£´¼111",
+            "code": "MA111",
+            "exchg": "CZCE",
+            "product": "MA",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "MA112": {
+            "name": "Ö£´¼112",
+            "code": "MA112",
+            "exchg": "CZCE",
+            "product": "MA",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "MA201": {
+            "name": "Ö£´¼201",
+            "code": "MA201",
+            "exchg": "CZCE",
+            "product": "MA",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "MA202": {
+            "name": "Ö£´¼202",
+            "code": "MA202",
+            "exchg": "CZCE",
+            "product": "MA",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "MA203": {
+            "name": "Ö£´¼203",
+            "code": "MA203",
+            "exchg": "CZCE",
+            "product": "MA",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "MA204": {
+            "name": "Ö£´¼204",
+            "code": "MA204",
+            "exchg": "CZCE",
+            "product": "MA",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "MA205": {
+            "name": "Ö£´¼205",
+            "code": "MA205",
+            "exchg": "CZCE",
+            "product": "MA",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "MA206": {
+            "name": "Ö£´¼206",
+            "code": "MA206",
+            "exchg": "CZCE",
+            "product": "MA",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "MA207": {
+            "name": "Ö£´¼207",
+            "code": "MA207",
+            "exchg": "CZCE",
+            "product": "MA",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "OI109": {
+            "name": "²ËÓÍ109",
+            "code": "OI109",
+            "exchg": "CZCE",
+            "product": "OI",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "OI111": {
+            "name": "²ËÓÍ111",
+            "code": "OI111",
+            "exchg": "CZCE",
+            "product": "OI",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "OI201": {
+            "name": "²ËÓÍ201",
+            "code": "OI201",
+            "exchg": "CZCE",
+            "product": "OI",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "OI203": {
+            "name": "²ËÓÍ203",
+            "code": "OI203",
+            "exchg": "CZCE",
+            "product": "OI",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "OI205": {
+            "name": "²ËÓÍ205",
+            "code": "OI205",
+            "exchg": "CZCE",
+            "product": "OI",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "OI207": {
+            "name": "²ËÓÍ207",
+            "code": "OI207",
+            "exchg": "CZCE",
+            "product": "OI",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "PF108": {
+            "name": "¶ÌÏË108",
+            "code": "PF108",
+            "exchg": "CZCE",
+            "product": "PF",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "PF109": {
+            "name": "¶ÌÏË109",
+            "code": "PF109",
+            "exchg": "CZCE",
+            "product": "PF",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "PF110": {
+            "name": "¶ÌÏË110",
+            "code": "PF110",
+            "exchg": "CZCE",
+            "product": "PF",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "PF111": {
+            "name": "¶ÌÏË111",
+            "code": "PF111",
+            "exchg": "CZCE",
+            "product": "PF",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "PF112": {
+            "name": "¶ÌÏË112",
+            "code": "PF112",
+            "exchg": "CZCE",
+            "product": "PF",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "PF201": {
+            "name": "¶ÌÏË201",
+            "code": "PF201",
+            "exchg": "CZCE",
+            "product": "PF",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "PF202": {
+            "name": "¶ÌÏË202",
+            "code": "PF202",
+            "exchg": "CZCE",
+            "product": "PF",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "PF203": {
+            "name": "¶ÌÏË203",
+            "code": "PF203",
+            "exchg": "CZCE",
+            "product": "PF",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "PF204": {
+            "name": "¶ÌÏË204",
+            "code": "PF204",
+            "exchg": "CZCE",
+            "product": "PF",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "PF205": {
+            "name": "¶ÌÏË205",
+            "code": "PF205",
+            "exchg": "CZCE",
+            "product": "PF",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "PF206": {
+            "name": "¶ÌÏË206",
+            "code": "PF206",
+            "exchg": "CZCE",
+            "product": "PF",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "PF207": {
+            "name": "¶ÌÏË207",
+            "code": "PF207",
+            "exchg": "CZCE",
+            "product": "PF",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "PK110": {
+            "name": "»¨Éú110",
+            "code": "PK110",
+            "exchg": "CZCE",
+            "product": "PK",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "PK111": {
+            "name": "»¨Éú111",
+            "code": "PK111",
+            "exchg": "CZCE",
+            "product": "PK",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "PK112": {
+            "name": "»¨Éú112",
+            "code": "PK112",
+            "exchg": "CZCE",
+            "product": "PK",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "PK201": {
+            "name": "»¨Éú201",
+            "code": "PK201",
+            "exchg": "CZCE",
+            "product": "PK",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "PK203": {
+            "name": "»¨Éú203",
+            "code": "PK203",
+            "exchg": "CZCE",
+            "product": "PK",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "PK204": {
+            "name": "»¨Éú204",
+            "code": "PK204",
+            "exchg": "CZCE",
+            "product": "PK",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "PM109": {
+            "name": "ÆÕÂó109",
+            "code": "PM109",
+            "exchg": "CZCE",
+            "product": "PM",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "PM111": {
+            "name": "ÆÕÂó111",
+            "code": "PM111",
+            "exchg": "CZCE",
+            "product": "PM",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "PM201": {
+            "name": "ÆÕÂó201",
+            "code": "PM201",
+            "exchg": "CZCE",
+            "product": "PM",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "PM203": {
+            "name": "ÆÕÂó203",
+            "code": "PM203",
+            "exchg": "CZCE",
+            "product": "PM",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "PM205": {
+            "name": "ÆÕÂó205",
+            "code": "PM205",
+            "exchg": "CZCE",
+            "product": "PM",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "PM207": {
+            "name": "ÆÕÂó207",
+            "code": "PM207",
+            "exchg": "CZCE",
+            "product": "PM",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "RI109": {
+            "name": "ÔçôÌµ¾109",
+            "code": "RI109",
+            "exchg": "CZCE",
+            "product": "RI",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "RI111": {
+            "name": "ÔçôÌµ¾111",
+            "code": "RI111",
+            "exchg": "CZCE",
+            "product": "RI",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "RI201": {
+            "name": "ÔçôÌµ¾201",
+            "code": "RI201",
+            "exchg": "CZCE",
+            "product": "RI",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "RI203": {
+            "name": "ÔçôÌµ¾203",
+            "code": "RI203",
+            "exchg": "CZCE",
+            "product": "RI",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "RI205": {
+            "name": "ÔçôÌµ¾205",
+            "code": "RI205",
+            "exchg": "CZCE",
+            "product": "RI",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "RI207": {
+            "name": "ÔçôÌµ¾207",
+            "code": "RI207",
+            "exchg": "CZCE",
+            "product": "RI",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "RM108": {
+            "name": "²ËÆÉ108",
+            "code": "RM108",
+            "exchg": "CZCE",
+            "product": "RM",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "RM109": {
+            "name": "²ËÆÉ109",
+            "code": "RM109",
+            "exchg": "CZCE",
+            "product": "RM",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "RM111": {
+            "name": "²ËÆÉ111",
+            "code": "RM111",
+            "exchg": "CZCE",
+            "product": "RM",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "RM201": {
+            "name": "²ËÆÉ201",
+            "code": "RM201",
+            "exchg": "CZCE",
+            "product": "RM",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "RM203": {
+            "name": "²ËÆÉ203",
+            "code": "RM203",
+            "exchg": "CZCE",
+            "product": "RM",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "RM205": {
+            "name": "²ËÆÉ205",
+            "code": "RM205",
+            "exchg": "CZCE",
+            "product": "RM",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "RM207": {
+            "name": "²ËÆÉ207",
+            "code": "RM207",
+            "exchg": "CZCE",
+            "product": "RM",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "RS108": {
+            "name": "²Ë×Ñ108",
+            "code": "RS108",
+            "exchg": "CZCE",
+            "product": "RS",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "RS109": {
+            "name": "²Ë×Ñ109",
+            "code": "RS109",
+            "exchg": "CZCE",
+            "product": "RS",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "RS111": {
+            "name": "²Ë×Ñ111",
+            "code": "RS111",
+            "exchg": "CZCE",
+            "product": "RS",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "RS207": {
+            "name": "²Ë×Ñ207",
+            "code": "RS207",
+            "exchg": "CZCE",
+            "product": "RS",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "SA108": {
+            "name": "´¿¼î108",
+            "code": "SA108",
+            "exchg": "CZCE",
+            "product": "SA",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "SA109": {
+            "name": "´¿¼î109",
+            "code": "SA109",
+            "exchg": "CZCE",
+            "product": "SA",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "SA110": {
+            "name": "´¿¼î110",
+            "code": "SA110",
+            "exchg": "CZCE",
+            "product": "SA",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "SA111": {
+            "name": "´¿¼î111",
+            "code": "SA111",
+            "exchg": "CZCE",
+            "product": "SA",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "SA112": {
+            "name": "´¿¼î112",
+            "code": "SA112",
+            "exchg": "CZCE",
+            "product": "SA",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "SA201": {
+            "name": "´¿¼î201",
+            "code": "SA201",
+            "exchg": "CZCE",
+            "product": "SA",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "SA202": {
+            "name": "´¿¼î202",
+            "code": "SA202",
+            "exchg": "CZCE",
+            "product": "SA",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "SA203": {
+            "name": "´¿¼î203",
+            "code": "SA203",
+            "exchg": "CZCE",
+            "product": "SA",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "SA204": {
+            "name": "´¿¼î204",
+            "code": "SA204",
+            "exchg": "CZCE",
+            "product": "SA",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "SA205": {
+            "name": "´¿¼î205",
+            "code": "SA205",
+            "exchg": "CZCE",
+            "product": "SA",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "SA206": {
+            "name": "´¿¼î206",
+            "code": "SA206",
+            "exchg": "CZCE",
+            "product": "SA",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "SA207": {
+            "name": "´¿¼î207",
+            "code": "SA207",
+            "exchg": "CZCE",
+            "product": "SA",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "SF108": {
+            "name": "¹èÌú108",
+            "code": "SF108",
+            "exchg": "CZCE",
+            "product": "SF",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "SF109": {
+            "name": "¹èÌú109",
+            "code": "SF109",
+            "exchg": "CZCE",
+            "product": "SF",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "SF110": {
+            "name": "¹èÌú110",
+            "code": "SF110",
+            "exchg": "CZCE",
+            "product": "SF",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "SF111": {
+            "name": "¹èÌú111",
+            "code": "SF111",
+            "exchg": "CZCE",
+            "product": "SF",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "SF112": {
+            "name": "¹èÌú112",
+            "code": "SF112",
+            "exchg": "CZCE",
+            "product": "SF",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "SF201": {
+            "name": "¹èÌú201",
+            "code": "SF201",
+            "exchg": "CZCE",
+            "product": "SF",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "SF202": {
+            "name": "¹èÌú202",
+            "code": "SF202",
+            "exchg": "CZCE",
+            "product": "SF",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "SF203": {
+            "name": "¹èÌú203",
+            "code": "SF203",
+            "exchg": "CZCE",
+            "product": "SF",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "SF204": {
+            "name": "¹èÌú204",
+            "code": "SF204",
+            "exchg": "CZCE",
+            "product": "SF",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "SF205": {
+            "name": "¹èÌú205",
+            "code": "SF205",
+            "exchg": "CZCE",
+            "product": "SF",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "SF206": {
+            "name": "¹èÌú206",
+            "code": "SF206",
+            "exchg": "CZCE",
+            "product": "SF",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "SF207": {
+            "name": "¹èÌú207",
+            "code": "SF207",
+            "exchg": "CZCE",
+            "product": "SF",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "SM108": {
+            "name": "ÃÌ¹è108",
+            "code": "SM108",
+            "exchg": "CZCE",
+            "product": "SM",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "SM109": {
+            "name": "ÃÌ¹è109",
+            "code": "SM109",
+            "exchg": "CZCE",
+            "product": "SM",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "SM110": {
+            "name": "ÃÌ¹è110",
+            "code": "SM110",
+            "exchg": "CZCE",
+            "product": "SM",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "SM111": {
+            "name": "ÃÌ¹è111",
+            "code": "SM111",
+            "exchg": "CZCE",
+            "product": "SM",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "SM112": {
+            "name": "ÃÌ¹è112",
+            "code": "SM112",
+            "exchg": "CZCE",
+            "product": "SM",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "SM201": {
+            "name": "ÃÌ¹è201",
+            "code": "SM201",
+            "exchg": "CZCE",
+            "product": "SM",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "SM202": {
+            "name": "ÃÌ¹è202",
+            "code": "SM202",
+            "exchg": "CZCE",
+            "product": "SM",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "SM203": {
+            "name": "ÃÌ¹è203",
+            "code": "SM203",
+            "exchg": "CZCE",
+            "product": "SM",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "SM204": {
+            "name": "ÃÌ¹è204",
+            "code": "SM204",
+            "exchg": "CZCE",
+            "product": "SM",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "SM205": {
+            "name": "ÃÌ¹è205",
+            "code": "SM205",
+            "exchg": "CZCE",
+            "product": "SM",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "SM206": {
+            "name": "ÃÌ¹è206",
+            "code": "SM206",
+            "exchg": "CZCE",
+            "product": "SM",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "SM207": {
+            "name": "ÃÌ¹è207",
+            "code": "SM207",
+            "exchg": "CZCE",
+            "product": "SM",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "SR109": {
+            "name": "°×ÌÇ109",
+            "code": "SR109",
+            "exchg": "CZCE",
+            "product": "SR",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "SR111": {
+            "name": "°×ÌÇ111",
+            "code": "SR111",
+            "exchg": "CZCE",
+            "product": "SR",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "SR201": {
+            "name": "°×ÌÇ201",
+            "code": "SR201",
+            "exchg": "CZCE",
+            "product": "SR",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "SR203": {
+            "name": "°×ÌÇ203",
+            "code": "SR203",
+            "exchg": "CZCE",
+            "product": "SR",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "SR205": {
+            "name": "°×ÌÇ205",
+            "code": "SR205",
+            "exchg": "CZCE",
+            "product": "SR",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "SR207": {
+            "name": "°×ÌÇ207",
+            "code": "SR207",
+            "exchg": "CZCE",
+            "product": "SR",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "TA108": {
+            "name": "PTA108",
+            "code": "TA108",
+            "exchg": "CZCE",
+            "product": "TA",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "TA109": {
+            "name": "PTA109",
+            "code": "TA109",
+            "exchg": "CZCE",
+            "product": "TA",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "TA110": {
+            "name": "PTA110",
+            "code": "TA110",
+            "exchg": "CZCE",
+            "product": "TA",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "TA111": {
+            "name": "PTA111",
+            "code": "TA111",
+            "exchg": "CZCE",
+            "product": "TA",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "TA112": {
+            "name": "PTA112",
+            "code": "TA112",
+            "exchg": "CZCE",
+            "product": "TA",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "TA201": {
+            "name": "PTA201",
+            "code": "TA201",
+            "exchg": "CZCE",
+            "product": "TA",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "TA202": {
+            "name": "PTA202",
+            "code": "TA202",
+            "exchg": "CZCE",
+            "product": "TA",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "TA203": {
+            "name": "PTA203",
+            "code": "TA203",
+            "exchg": "CZCE",
+            "product": "TA",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "TA204": {
+            "name": "PTA204",
+            "code": "TA204",
+            "exchg": "CZCE",
+            "product": "TA",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "TA205": {
+            "name": "PTA205",
+            "code": "TA205",
+            "exchg": "CZCE",
+            "product": "TA",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "TA206": {
+            "name": "PTA206",
+            "code": "TA206",
+            "exchg": "CZCE",
+            "product": "TA",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "TA207": {
+            "name": "PTA207",
+            "code": "TA207",
+            "exchg": "CZCE",
+            "product": "TA",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "UR108": {
+            "name": "ÄòËØ108",
+            "code": "UR108",
+            "exchg": "CZCE",
+            "product": "UR",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "UR109": {
+            "name": "ÄòËØ109",
+            "code": "UR109",
+            "exchg": "CZCE",
+            "product": "UR",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "UR110": {
+            "name": "ÄòËØ110",
+            "code": "UR110",
+            "exchg": "CZCE",
+            "product": "UR",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "UR111": {
+            "name": "ÄòËØ111",
+            "code": "UR111",
+            "exchg": "CZCE",
+            "product": "UR",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "UR112": {
+            "name": "ÄòËØ112",
+            "code": "UR112",
+            "exchg": "CZCE",
+            "product": "UR",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "UR201": {
+            "name": "ÄòËØ201",
+            "code": "UR201",
+            "exchg": "CZCE",
+            "product": "UR",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "UR202": {
+            "name": "ÄòËØ202",
+            "code": "UR202",
+            "exchg": "CZCE",
+            "product": "UR",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "UR203": {
+            "name": "ÄòËØ203",
+            "code": "UR203",
+            "exchg": "CZCE",
+            "product": "UR",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "UR204": {
+            "name": "ÄòËØ204",
+            "code": "UR204",
+            "exchg": "CZCE",
+            "product": "UR",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "UR205": {
+            "name": "ÄòËØ205",
+            "code": "UR205",
+            "exchg": "CZCE",
+            "product": "UR",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "UR206": {
+            "name": "ÄòËØ206",
+            "code": "UR206",
+            "exchg": "CZCE",
+            "product": "UR",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "UR207": {
+            "name": "ÄòËØ207",
+            "code": "UR207",
+            "exchg": "CZCE",
+            "product": "UR",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "WH109": {
+            "name": "Ö£Âó109",
+            "code": "WH109",
+            "exchg": "CZCE",
+            "product": "WH",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "WH111": {
+            "name": "Ö£Âó111",
+            "code": "WH111",
+            "exchg": "CZCE",
+            "product": "WH",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "WH201": {
+            "name": "Ö£Âó201",
+            "code": "WH201",
+            "exchg": "CZCE",
+            "product": "WH",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "WH203": {
+            "name": "Ö£Âó203",
+            "code": "WH203",
+            "exchg": "CZCE",
+            "product": "WH",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "WH205": {
+            "name": "Ö£Âó205",
+            "code": "WH205",
+            "exchg": "CZCE",
+            "product": "WH",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "WH207": {
+            "name": "Ö£Âó207",
+            "code": "WH207",
+            "exchg": "CZCE",
+            "product": "WH",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "ZC108": {
+            "name": "Ö£Ãº108",
+            "code": "ZC108",
+            "exchg": "CZCE",
+            "product": "ZC",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "ZC109": {
+            "name": "Ö£Ãº109",
+            "code": "ZC109",
+            "exchg": "CZCE",
+            "product": "ZC",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "ZC110": {
+            "name": "Ö£Ãº110",
+            "code": "ZC110",
+            "exchg": "CZCE",
+            "product": "ZC",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "ZC111": {
+            "name": "Ö£Ãº111",
+            "code": "ZC111",
+            "exchg": "CZCE",
+            "product": "ZC",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "ZC112": {
+            "name": "Ö£Ãº112",
+            "code": "ZC112",
+            "exchg": "CZCE",
+            "product": "ZC",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "ZC201": {
+            "name": "Ö£Ãº201",
+            "code": "ZC201",
+            "exchg": "CZCE",
+            "product": "ZC",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "ZC202": {
+            "name": "Ö£Ãº202",
+            "code": "ZC202",
+            "exchg": "CZCE",
+            "product": "ZC",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "ZC203": {
+            "name": "Ö£Ãº203",
+            "code": "ZC203",
+            "exchg": "CZCE",
+            "product": "ZC",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "ZC204": {
+            "name": "Ö£Ãº204",
+            "code": "ZC204",
+            "exchg": "CZCE",
+            "product": "ZC",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "ZC205": {
+            "name": "Ö£Ãº205",
+            "code": "ZC205",
+            "exchg": "CZCE",
+            "product": "ZC",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "ZC206": {
+            "name": "Ö£Ãº206",
+            "code": "ZC206",
+            "exchg": "CZCE",
+            "product": "ZC",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        },
+        "ZC207": {
+            "name": "Ö£Ãº207",
+            "code": "ZC207",
+            "exchg": "CZCE",
+            "product": "ZC",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 200
+        }
+    },
+    "DCE": {
+        "a2109": {
+            "name": "¶¹Ò»2109",
+            "code": "a2109",
+            "exchg": "DCE",
+            "product": "a",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "a2111": {
+            "name": "¶¹Ò»2111",
+            "code": "a2111",
+            "exchg": "DCE",
+            "product": "a",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "a2201": {
+            "name": "¶¹Ò»2201",
+            "code": "a2201",
+            "exchg": "DCE",
+            "product": "a",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "a2203": {
+            "name": "¶¹Ò»2203",
+            "code": "a2203",
+            "exchg": "DCE",
+            "product": "a",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "a2205": {
+            "name": "¶¹Ò»2205",
+            "code": "a2205",
+            "exchg": "DCE",
+            "product": "a",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "a2207": {
+            "name": "¶¹Ò»2207",
+            "code": "a2207",
+            "exchg": "DCE",
+            "product": "a",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "b2108": {
+            "name": "¶¹¶þ2108",
+            "code": "b2108",
+            "exchg": "DCE",
+            "product": "b",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "b2109": {
+            "name": "¶¹¶þ2109",
+            "code": "b2109",
+            "exchg": "DCE",
+            "product": "b",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "b2110": {
+            "name": "¶¹¶þ2110",
+            "code": "b2110",
+            "exchg": "DCE",
+            "product": "b",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "b2111": {
+            "name": "¶¹¶þ2111",
+            "code": "b2111",
+            "exchg": "DCE",
+            "product": "b",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "b2112": {
+            "name": "¶¹¶þ2112",
+            "code": "b2112",
+            "exchg": "DCE",
+            "product": "b",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "b2201": {
+            "name": "¶¹¶þ2201",
+            "code": "b2201",
+            "exchg": "DCE",
+            "product": "b",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "b2202": {
+            "name": "¶¹¶þ2202",
+            "code": "b2202",
+            "exchg": "DCE",
+            "product": "b",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "b2203": {
+            "name": "¶¹¶þ2203",
+            "code": "b2203",
+            "exchg": "DCE",
+            "product": "b",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "b2204": {
+            "name": "¶¹¶þ2204",
+            "code": "b2204",
+            "exchg": "DCE",
+            "product": "b",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "b2205": {
+            "name": "¶¹¶þ2205",
+            "code": "b2205",
+            "exchg": "DCE",
+            "product": "b",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "b2206": {
+            "name": "¶¹¶þ2206",
+            "code": "b2206",
+            "exchg": "DCE",
+            "product": "b",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "b2207": {
+            "name": "¶¹¶þ2207",
+            "code": "b2207",
+            "exchg": "DCE",
+            "product": "b",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "bb2108": {
+            "name": "½º°å2108",
+            "code": "bb2108",
+            "exchg": "DCE",
+            "product": "bb",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "bb2109": {
+            "name": "½º°å2109",
+            "code": "bb2109",
+            "exchg": "DCE",
+            "product": "bb",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "bb2110": {
+            "name": "½º°å2110",
+            "code": "bb2110",
+            "exchg": "DCE",
+            "product": "bb",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "bb2111": {
+            "name": "½º°å2111",
+            "code": "bb2111",
+            "exchg": "DCE",
+            "product": "bb",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "bb2112": {
+            "name": "½º°å2112",
+            "code": "bb2112",
+            "exchg": "DCE",
+            "product": "bb",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "bb2201": {
+            "name": "½º°å2201",
+            "code": "bb2201",
+            "exchg": "DCE",
+            "product": "bb",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "bb2202": {
+            "name": "½º°å2202",
+            "code": "bb2202",
+            "exchg": "DCE",
+            "product": "bb",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "bb2203": {
+            "name": "½º°å2203",
+            "code": "bb2203",
+            "exchg": "DCE",
+            "product": "bb",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "bb2204": {
+            "name": "½º°å2204",
+            "code": "bb2204",
+            "exchg": "DCE",
+            "product": "bb",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "bb2205": {
+            "name": "½º°å2205",
+            "code": "bb2205",
+            "exchg": "DCE",
+            "product": "bb",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "bb2206": {
+            "name": "½º°å2206",
+            "code": "bb2206",
+            "exchg": "DCE",
+            "product": "bb",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "bb2207": {
+            "name": "½º°å2207",
+            "code": "bb2207",
+            "exchg": "DCE",
+            "product": "bb",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "c2109": {
+            "name": "ÓñÃ×2109",
+            "code": "c2109",
+            "exchg": "DCE",
+            "product": "c",
+            "maxlimitqty": 2000,
+            "maxmarketqty": 2000
+        },
+        "c2111": {
+            "name": "ÓñÃ×2111",
+            "code": "c2111",
+            "exchg": "DCE",
+            "product": "c",
+            "maxlimitqty": 2000,
+            "maxmarketqty": 2000
+        },
+        "c2201": {
+            "name": "ÓñÃ×2201",
+            "code": "c2201",
+            "exchg": "DCE",
+            "product": "c",
+            "maxlimitqty": 2000,
+            "maxmarketqty": 2000
+        },
+        "c2203": {
+            "name": "ÓñÃ×2203",
+            "code": "c2203",
+            "exchg": "DCE",
+            "product": "c",
+            "maxlimitqty": 2000,
+            "maxmarketqty": 2000
+        },
+        "c2205": {
+            "name": "ÓñÃ×2205",
+            "code": "c2205",
+            "exchg": "DCE",
+            "product": "c",
+            "maxlimitqty": 2000,
+            "maxmarketqty": 2000
+        },
+        "c2207": {
+            "name": "ÓñÃ×2207",
+            "code": "c2207",
+            "exchg": "DCE",
+            "product": "c",
+            "maxlimitqty": 2000,
+            "maxmarketqty": 2000
+        },
+        "cs2109": {
+            "name": "µí·Û2109",
+            "code": "cs2109",
+            "exchg": "DCE",
+            "product": "cs",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "cs2111": {
+            "name": "µí·Û2111",
+            "code": "cs2111",
+            "exchg": "DCE",
+            "product": "cs",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "cs2201": {
+            "name": "µí·Û2201",
+            "code": "cs2201",
+            "exchg": "DCE",
+            "product": "cs",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "cs2203": {
+            "name": "µí·Û2203",
+            "code": "cs2203",
+            "exchg": "DCE",
+            "product": "cs",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "cs2205": {
+            "name": "µí·Û2205",
+            "code": "cs2205",
+            "exchg": "DCE",
+            "product": "cs",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "cs2207": {
+            "name": "µí·Û2207",
+            "code": "cs2207",
+            "exchg": "DCE",
+            "product": "cs",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "eb2108": {
+            "name": "±½ÒÒÏ©2108",
+            "code": "eb2108",
+            "exchg": "DCE",
+            "product": "eb",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "eb2109": {
+            "name": "±½ÒÒÏ©2109",
+            "code": "eb2109",
+            "exchg": "DCE",
+            "product": "eb",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "eb2110": {
+            "name": "±½ÒÒÏ©2110",
+            "code": "eb2110",
+            "exchg": "DCE",
+            "product": "eb",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "eb2111": {
+            "name": "±½ÒÒÏ©2111",
+            "code": "eb2111",
+            "exchg": "DCE",
+            "product": "eb",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "eb2112": {
+            "name": "±½ÒÒÏ©2112",
+            "code": "eb2112",
+            "exchg": "DCE",
+            "product": "eb",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "eb2201": {
+            "name": "±½ÒÒÏ©2201",
+            "code": "eb2201",
+            "exchg": "DCE",
+            "product": "eb",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "eb2202": {
+            "name": "±½ÒÒÏ©2202",
+            "code": "eb2202",
+            "exchg": "DCE",
+            "product": "eb",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "eb2203": {
+            "name": "±½ÒÒÏ©2203",
+            "code": "eb2203",
+            "exchg": "DCE",
+            "product": "eb",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "eb2204": {
+            "name": "±½ÒÒÏ©2204",
+            "code": "eb2204",
+            "exchg": "DCE",
+            "product": "eb",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "eb2205": {
+            "name": "±½ÒÒÏ©2205",
+            "code": "eb2205",
+            "exchg": "DCE",
+            "product": "eb",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "eb2206": {
+            "name": "±½ÒÒÏ©2206",
+            "code": "eb2206",
+            "exchg": "DCE",
+            "product": "eb",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "eb2207": {
+            "name": "±½ÒÒÏ©2207",
+            "code": "eb2207",
+            "exchg": "DCE",
+            "product": "eb",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "eg2108": {
+            "name": "ÒÒ¶þ´¼2108",
+            "code": "eg2108",
+            "exchg": "DCE",
+            "product": "eg",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "eg2109": {
+            "name": "ÒÒ¶þ´¼2109",
+            "code": "eg2109",
+            "exchg": "DCE",
+            "product": "eg",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "eg2110": {
+            "name": "ÒÒ¶þ´¼2110",
+            "code": "eg2110",
+            "exchg": "DCE",
+            "product": "eg",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "eg2111": {
+            "name": "ÒÒ¶þ´¼2111",
+            "code": "eg2111",
+            "exchg": "DCE",
+            "product": "eg",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "eg2112": {
+            "name": "ÒÒ¶þ´¼2112",
+            "code": "eg2112",
+            "exchg": "DCE",
+            "product": "eg",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "eg2201": {
+            "name": "ÒÒ¶þ´¼2201",
+            "code": "eg2201",
+            "exchg": "DCE",
+            "product": "eg",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "eg2202": {
+            "name": "ÒÒ¶þ´¼2202",
+            "code": "eg2202",
+            "exchg": "DCE",
+            "product": "eg",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "eg2203": {
+            "name": "ÒÒ¶þ´¼2203",
+            "code": "eg2203",
+            "exchg": "DCE",
+            "product": "eg",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "eg2204": {
+            "name": "ÒÒ¶þ´¼2204",
+            "code": "eg2204",
+            "exchg": "DCE",
+            "product": "eg",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "eg2205": {
+            "name": "ÒÒ¶þ´¼2205",
+            "code": "eg2205",
+            "exchg": "DCE",
+            "product": "eg",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "eg2206": {
+            "name": "ÒÒ¶þ´¼2206",
+            "code": "eg2206",
+            "exchg": "DCE",
+            "product": "eg",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "eg2207": {
+            "name": "ÒÒ¶þ´¼2207",
+            "code": "eg2207",
+            "exchg": "DCE",
+            "product": "eg",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "fb2108": {
+            "name": "ÏË°å2108",
+            "code": "fb2108",
+            "exchg": "DCE",
+            "product": "fb",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "fb2109": {
+            "name": "ÏË°å2109",
+            "code": "fb2109",
+            "exchg": "DCE",
+            "product": "fb",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "fb2110": {
+            "name": "ÏË°å2110",
+            "code": "fb2110",
+            "exchg": "DCE",
+            "product": "fb",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "fb2111": {
+            "name": "ÏË°å2111",
+            "code": "fb2111",
+            "exchg": "DCE",
+            "product": "fb",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "fb2112": {
+            "name": "ÏË°å2112",
+            "code": "fb2112",
+            "exchg": "DCE",
+            "product": "fb",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "fb2201": {
+            "name": "ÏË°å2201",
+            "code": "fb2201",
+            "exchg": "DCE",
+            "product": "fb",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "fb2202": {
+            "name": "ÏË°å2202",
+            "code": "fb2202",
+            "exchg": "DCE",
+            "product": "fb",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "fb2203": {
+            "name": "ÏË°å2203",
+            "code": "fb2203",
+            "exchg": "DCE",
+            "product": "fb",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "fb2204": {
+            "name": "ÏË°å2204",
+            "code": "fb2204",
+            "exchg": "DCE",
+            "product": "fb",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "fb2205": {
+            "name": "ÏË°å2205",
+            "code": "fb2205",
+            "exchg": "DCE",
+            "product": "fb",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "fb2206": {
+            "name": "ÏË°å2206",
+            "code": "fb2206",
+            "exchg": "DCE",
+            "product": "fb",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "fb2207": {
+            "name": "ÏË°å2207",
+            "code": "fb2207",
+            "exchg": "DCE",
+            "product": "fb",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "i2108": {
+            "name": "Ìú¿óÊ¯2108",
+            "code": "i2108",
+            "exchg": "DCE",
+            "product": "i",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "i2109": {
+            "name": "Ìú¿óÊ¯2109",
+            "code": "i2109",
+            "exchg": "DCE",
+            "product": "i",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "i2110": {
+            "name": "Ìú¿óÊ¯2110",
+            "code": "i2110",
+            "exchg": "DCE",
+            "product": "i",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "i2111": {
+            "name": "Ìú¿óÊ¯2111",
+            "code": "i2111",
+            "exchg": "DCE",
+            "product": "i",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "i2112": {
+            "name": "Ìú¿óÊ¯2112",
+            "code": "i2112",
+            "exchg": "DCE",
+            "product": "i",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "i2201": {
+            "name": "Ìú¿óÊ¯2201",
+            "code": "i2201",
+            "exchg": "DCE",
+            "product": "i",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "i2202": {
+            "name": "Ìú¿óÊ¯2202",
+            "code": "i2202",
+            "exchg": "DCE",
+            "product": "i",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "i2203": {
+            "name": "Ìú¿óÊ¯2203",
+            "code": "i2203",
+            "exchg": "DCE",
+            "product": "i",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "i2204": {
+            "name": "Ìú¿óÊ¯2204",
+            "code": "i2204",
+            "exchg": "DCE",
+            "product": "i",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "i2205": {
+            "name": "Ìú¿óÊ¯2205",
+            "code": "i2205",
+            "exchg": "DCE",
+            "product": "i",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "i2206": {
+            "name": "Ìú¿óÊ¯2206",
+            "code": "i2206",
+            "exchg": "DCE",
+            "product": "i",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "i2207": {
+            "name": "Ìú¿óÊ¯2207",
+            "code": "i2207",
+            "exchg": "DCE",
+            "product": "i",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "j2108": {
+            "name": "½¹Ì¿2108",
+            "code": "j2108",
+            "exchg": "DCE",
+            "product": "j",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "j2109": {
+            "name": "½¹Ì¿2109",
+            "code": "j2109",
+            "exchg": "DCE",
+            "product": "j",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "j2110": {
+            "name": "½¹Ì¿2110",
+            "code": "j2110",
+            "exchg": "DCE",
+            "product": "j",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "j2111": {
+            "name": "½¹Ì¿2111",
+            "code": "j2111",
+            "exchg": "DCE",
+            "product": "j",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "j2112": {
+            "name": "½¹Ì¿2112",
+            "code": "j2112",
+            "exchg": "DCE",
+            "product": "j",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "j2201": {
+            "name": "½¹Ì¿2201",
+            "code": "j2201",
+            "exchg": "DCE",
+            "product": "j",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "j2202": {
+            "name": "½¹Ì¿2202",
+            "code": "j2202",
+            "exchg": "DCE",
+            "product": "j",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "j2203": {
+            "name": "½¹Ì¿2203",
+            "code": "j2203",
+            "exchg": "DCE",
+            "product": "j",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "j2204": {
+            "name": "½¹Ì¿2204",
+            "code": "j2204",
+            "exchg": "DCE",
+            "product": "j",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "j2205": {
+            "name": "½¹Ì¿2205",
+            "code": "j2205",
+            "exchg": "DCE",
+            "product": "j",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "j2206": {
+            "name": "½¹Ì¿2206",
+            "code": "j2206",
+            "exchg": "DCE",
+            "product": "j",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "j2207": {
+            "name": "½¹Ì¿2207",
+            "code": "j2207",
+            "exchg": "DCE",
+            "product": "j",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "jd2108": {
+            "name": "¼¦µ°2108",
+            "code": "jd2108",
+            "exchg": "DCE",
+            "product": "jd",
+            "maxlimitqty": 300,
+            "maxmarketqty": 300
+        },
+        "jd2109": {
+            "name": "¼¦µ°2109",
+            "code": "jd2109",
+            "exchg": "DCE",
+            "product": "jd",
+            "maxlimitqty": 300,
+            "maxmarketqty": 300
+        },
+        "jd2110": {
+            "name": "¼¦µ°2110",
+            "code": "jd2110",
+            "exchg": "DCE",
+            "product": "jd",
+            "maxlimitqty": 300,
+            "maxmarketqty": 300
+        },
+        "jd2111": {
+            "name": "¼¦µ°2111",
+            "code": "jd2111",
+            "exchg": "DCE",
+            "product": "jd",
+            "maxlimitqty": 300,
+            "maxmarketqty": 300
+        },
+        "jd2112": {
+            "name": "¼¦µ°2112",
+            "code": "jd2112",
+            "exchg": "DCE",
+            "product": "jd",
+            "maxlimitqty": 300,
+            "maxmarketqty": 300
+        },
+        "jd2201": {
+            "name": "¼¦µ°2201",
+            "code": "jd2201",
+            "exchg": "DCE",
+            "product": "jd",
+            "maxlimitqty": 300,
+            "maxmarketqty": 300
+        },
+        "jd2202": {
+            "name": "¼¦µ°2202",
+            "code": "jd2202",
+            "exchg": "DCE",
+            "product": "jd",
+            "maxlimitqty": 300,
+            "maxmarketqty": 300
+        },
+        "jd2203": {
+            "name": "¼¦µ°2203",
+            "code": "jd2203",
+            "exchg": "DCE",
+            "product": "jd",
+            "maxlimitqty": 300,
+            "maxmarketqty": 300
+        },
+        "jd2204": {
+            "name": "¼¦µ°2204",
+            "code": "jd2204",
+            "exchg": "DCE",
+            "product": "jd",
+            "maxlimitqty": 300,
+            "maxmarketqty": 300
+        },
+        "jd2205": {
+            "name": "¼¦µ°2205",
+            "code": "jd2205",
+            "exchg": "DCE",
+            "product": "jd",
+            "maxlimitqty": 300,
+            "maxmarketqty": 300
+        },
+        "jd2206": {
+            "name": "¼¦µ°2206",
+            "code": "jd2206",
+            "exchg": "DCE",
+            "product": "jd",
+            "maxlimitqty": 300,
+            "maxmarketqty": 300
+        },
+        "jd2207": {
+            "name": "¼¦µ°2207",
+            "code": "jd2207",
+            "exchg": "DCE",
+            "product": "jd",
+            "maxlimitqty": 300,
+            "maxmarketqty": 300
+        },
+        "jm2108": {
+            "name": "½¹Ãº2108",
+            "code": "jm2108",
+            "exchg": "DCE",
+            "product": "jm",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "jm2109": {
+            "name": "½¹Ãº2109",
+            "code": "jm2109",
+            "exchg": "DCE",
+            "product": "jm",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "jm2110": {
+            "name": "½¹Ãº2110",
+            "code": "jm2110",
+            "exchg": "DCE",
+            "product": "jm",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "jm2111": {
+            "name": "½¹Ãº2111",
+            "code": "jm2111",
+            "exchg": "DCE",
+            "product": "jm",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "jm2112": {
+            "name": "½¹Ãº2112",
+            "code": "jm2112",
+            "exchg": "DCE",
+            "product": "jm",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "jm2201": {
+            "name": "½¹Ãº2201",
+            "code": "jm2201",
+            "exchg": "DCE",
+            "product": "jm",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "jm2202": {
+            "name": "½¹Ãº2202",
+            "code": "jm2202",
+            "exchg": "DCE",
+            "product": "jm",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "jm2203": {
+            "name": "½¹Ãº2203",
+            "code": "jm2203",
+            "exchg": "DCE",
+            "product": "jm",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "jm2204": {
+            "name": "½¹Ãº2204",
+            "code": "jm2204",
+            "exchg": "DCE",
+            "product": "jm",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "jm2205": {
+            "name": "½¹Ãº2205",
+            "code": "jm2205",
+            "exchg": "DCE",
+            "product": "jm",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "jm2206": {
+            "name": "½¹Ãº2206",
+            "code": "jm2206",
+            "exchg": "DCE",
+            "product": "jm",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "jm2207": {
+            "name": "½¹Ãº2207",
+            "code": "jm2207",
+            "exchg": "DCE",
+            "product": "jm",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "l2108": {
+            "name": "ËÜÁÏ2108",
+            "code": "l2108",
+            "exchg": "DCE",
+            "product": "l",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "l2109": {
+            "name": "ËÜÁÏ2109",
+            "code": "l2109",
+            "exchg": "DCE",
+            "product": "l",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "l2110": {
+            "name": "ËÜÁÏ2110",
+            "code": "l2110",
+            "exchg": "DCE",
+            "product": "l",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "l2111": {
+            "name": "ËÜÁÏ2111",
+            "code": "l2111",
+            "exchg": "DCE",
+            "product": "l",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "l2112": {
+            "name": "ËÜÁÏ2112",
+            "code": "l2112",
+            "exchg": "DCE",
+            "product": "l",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "l2201": {
+            "name": "ËÜÁÏ2201",
+            "code": "l2201",
+            "exchg": "DCE",
+            "product": "l",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "l2202": {
+            "name": "ËÜÁÏ2202",
+            "code": "l2202",
+            "exchg": "DCE",
+            "product": "l",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "l2203": {
+            "name": "ËÜÁÏ2203",
+            "code": "l2203",
+            "exchg": "DCE",
+            "product": "l",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "l2204": {
+            "name": "ËÜÁÏ2204",
+            "code": "l2204",
+            "exchg": "DCE",
+            "product": "l",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "l2205": {
+            "name": "ËÜÁÏ2205",
+            "code": "l2205",
+            "exchg": "DCE",
+            "product": "l",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "l2206": {
+            "name": "ËÜÁÏ2206",
+            "code": "l2206",
+            "exchg": "DCE",
+            "product": "l",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "l2207": {
+            "name": "ËÜÁÏ2207",
+            "code": "l2207",
+            "exchg": "DCE",
+            "product": "l",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "lh2109": {
+            "name": "ÉúÖí2109",
+            "code": "lh2109",
+            "exchg": "DCE",
+            "product": "lh",
+            "maxlimitqty": 50,
+            "maxmarketqty": 50
+        },
+        "lh2111": {
+            "name": "ÉúÖí2111",
+            "code": "lh2111",
+            "exchg": "DCE",
+            "product": "lh",
+            "maxlimitqty": 50,
+            "maxmarketqty": 50
+        },
+        "lh2201": {
+            "name": "ÉúÖí2201",
+            "code": "lh2201",
+            "exchg": "DCE",
+            "product": "lh",
+            "maxlimitqty": 50,
+            "maxmarketqty": 50
+        },
+        "lh2203": {
+            "name": "ÉúÖí2203",
+            "code": "lh2203",
+            "exchg": "DCE",
+            "product": "lh",
+            "maxlimitqty": 50,
+            "maxmarketqty": 50
+        },
+        "lh2205": {
+            "name": "ÉúÖí2205",
+            "code": "lh2205",
+            "exchg": "DCE",
+            "product": "lh",
+            "maxlimitqty": 50,
+            "maxmarketqty": 50
+        },
+        "lh2207": {
+            "name": "ÉúÖí2207",
+            "code": "lh2207",
+            "exchg": "DCE",
+            "product": "lh",
+            "maxlimitqty": 50,
+            "maxmarketqty": 50
+        },
+        "m2108": {
+            "name": "¶¹ÆÉ2108",
+            "code": "m2108",
+            "exchg": "DCE",
+            "product": "m",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "m2109": {
+            "name": "¶¹ÆÉ2109",
+            "code": "m2109",
+            "exchg": "DCE",
+            "product": "m",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "m2111": {
+            "name": "¶¹ÆÉ2111",
+            "code": "m2111",
+            "exchg": "DCE",
+            "product": "m",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "m2112": {
+            "name": "¶¹ÆÉ2112",
+            "code": "m2112",
+            "exchg": "DCE",
+            "product": "m",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "m2201": {
+            "name": "¶¹ÆÉ2201",
+            "code": "m2201",
+            "exchg": "DCE",
+            "product": "m",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "m2203": {
+            "name": "¶¹ÆÉ2203",
+            "code": "m2203",
+            "exchg": "DCE",
+            "product": "m",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "m2205": {
+            "name": "¶¹ÆÉ2205",
+            "code": "m2205",
+            "exchg": "DCE",
+            "product": "m",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "m2207": {
+            "name": "¶¹ÆÉ2207",
+            "code": "m2207",
+            "exchg": "DCE",
+            "product": "m",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "p2108": {
+            "name": "×ØéµÓÍ2108",
+            "code": "p2108",
+            "exchg": "DCE",
+            "product": "p",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "p2109": {
+            "name": "×ØéµÓÍ2109",
+            "code": "p2109",
+            "exchg": "DCE",
+            "product": "p",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "p2110": {
+            "name": "×ØéµÓÍ2110",
+            "code": "p2110",
+            "exchg": "DCE",
+            "product": "p",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "p2111": {
+            "name": "×ØéµÓÍ2111",
+            "code": "p2111",
+            "exchg": "DCE",
+            "product": "p",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "p2112": {
+            "name": "×ØéµÓÍ2112",
+            "code": "p2112",
+            "exchg": "DCE",
+            "product": "p",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "p2201": {
+            "name": "×ØéµÓÍ2201",
+            "code": "p2201",
+            "exchg": "DCE",
+            "product": "p",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "p2202": {
+            "name": "×ØéµÓÍ2202",
+            "code": "p2202",
+            "exchg": "DCE",
+            "product": "p",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "p2203": {
+            "name": "×ØéµÓÍ2203",
+            "code": "p2203",
+            "exchg": "DCE",
+            "product": "p",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "p2204": {
+            "name": "×ØéµÓÍ2204",
+            "code": "p2204",
+            "exchg": "DCE",
+            "product": "p",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "p2205": {
+            "name": "×ØéµÓÍ2205",
+            "code": "p2205",
+            "exchg": "DCE",
+            "product": "p",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "p2206": {
+            "name": "×ØéµÓÍ2206",
+            "code": "p2206",
+            "exchg": "DCE",
+            "product": "p",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "p2207": {
+            "name": "×ØéµÓÍ2207",
+            "code": "p2207",
+            "exchg": "DCE",
+            "product": "p",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "pg2108": {
+            "name": "Òº»¯Æø2108",
+            "code": "pg2108",
+            "exchg": "DCE",
+            "product": "pg",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "pg2109": {
+            "name": "Òº»¯Æø2109",
+            "code": "pg2109",
+            "exchg": "DCE",
+            "product": "pg",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "pg2110": {
+            "name": "Òº»¯Æø2110",
+            "code": "pg2110",
+            "exchg": "DCE",
+            "product": "pg",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "pg2111": {
+            "name": "Òº»¯Æø2111",
+            "code": "pg2111",
+            "exchg": "DCE",
+            "product": "pg",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "pg2112": {
+            "name": "Òº»¯Æø2112",
+            "code": "pg2112",
+            "exchg": "DCE",
+            "product": "pg",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "pg2201": {
+            "name": "Òº»¯Æø2201",
+            "code": "pg2201",
+            "exchg": "DCE",
+            "product": "pg",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "pg2202": {
+            "name": "Òº»¯Æø2202",
+            "code": "pg2202",
+            "exchg": "DCE",
+            "product": "pg",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "pg2203": {
+            "name": "Òº»¯Æø2203",
+            "code": "pg2203",
+            "exchg": "DCE",
+            "product": "pg",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "pg2204": {
+            "name": "Òº»¯Æø2204",
+            "code": "pg2204",
+            "exchg": "DCE",
+            "product": "pg",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "pg2205": {
+            "name": "Òº»¯Æø2205",
+            "code": "pg2205",
+            "exchg": "DCE",
+            "product": "pg",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "pg2206": {
+            "name": "Òº»¯Æø2206",
+            "code": "pg2206",
+            "exchg": "DCE",
+            "product": "pg",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "pg2207": {
+            "name": "Òº»¯Æø2207",
+            "code": "pg2207",
+            "exchg": "DCE",
+            "product": "pg",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "pp2108": {
+            "name": "¾Û±ûÏ©2108",
+            "code": "pp2108",
+            "exchg": "DCE",
+            "product": "pp",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "pp2109": {
+            "name": "¾Û±ûÏ©2109",
+            "code": "pp2109",
+            "exchg": "DCE",
+            "product": "pp",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "pp2110": {
+            "name": "¾Û±ûÏ©2110",
+            "code": "pp2110",
+            "exchg": "DCE",
+            "product": "pp",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "pp2111": {
+            "name": "¾Û±ûÏ©2111",
+            "code": "pp2111",
+            "exchg": "DCE",
+            "product": "pp",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "pp2112": {
+            "name": "¾Û±ûÏ©2112",
+            "code": "pp2112",
+            "exchg": "DCE",
+            "product": "pp",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "pp2201": {
+            "name": "¾Û±ûÏ©2201",
+            "code": "pp2201",
+            "exchg": "DCE",
+            "product": "pp",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "pp2202": {
+            "name": "¾Û±ûÏ©2202",
+            "code": "pp2202",
+            "exchg": "DCE",
+            "product": "pp",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "pp2203": {
+            "name": "¾Û±ûÏ©2203",
+            "code": "pp2203",
+            "exchg": "DCE",
+            "product": "pp",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "pp2204": {
+            "name": "¾Û±ûÏ©2204",
+            "code": "pp2204",
+            "exchg": "DCE",
+            "product": "pp",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "pp2205": {
+            "name": "¾Û±ûÏ©2205",
+            "code": "pp2205",
+            "exchg": "DCE",
+            "product": "pp",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "pp2206": {
+            "name": "¾Û±ûÏ©2206",
+            "code": "pp2206",
+            "exchg": "DCE",
+            "product": "pp",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "pp2207": {
+            "name": "¾Û±ûÏ©2207",
+            "code": "pp2207",
+            "exchg": "DCE",
+            "product": "pp",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "rr2108": {
+            "name": "¾¬Ã×2108",
+            "code": "rr2108",
+            "exchg": "DCE",
+            "product": "rr",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "rr2109": {
+            "name": "¾¬Ã×2109",
+            "code": "rr2109",
+            "exchg": "DCE",
+            "product": "rr",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "rr2110": {
+            "name": "¾¬Ã×2110",
+            "code": "rr2110",
+            "exchg": "DCE",
+            "product": "rr",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "rr2111": {
+            "name": "¾¬Ã×2111",
+            "code": "rr2111",
+            "exchg": "DCE",
+            "product": "rr",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "rr2112": {
+            "name": "¾¬Ã×2112",
+            "code": "rr2112",
+            "exchg": "DCE",
+            "product": "rr",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "rr2201": {
+            "name": "¾¬Ã×2201",
+            "code": "rr2201",
+            "exchg": "DCE",
+            "product": "rr",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "rr2202": {
+            "name": "¾¬Ã×2202",
+            "code": "rr2202",
+            "exchg": "DCE",
+            "product": "rr",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "rr2203": {
+            "name": "¾¬Ã×2203",
+            "code": "rr2203",
+            "exchg": "DCE",
+            "product": "rr",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "rr2204": {
+            "name": "¾¬Ã×2204",
+            "code": "rr2204",
+            "exchg": "DCE",
+            "product": "rr",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "rr2205": {
+            "name": "¾¬Ã×2205",
+            "code": "rr2205",
+            "exchg": "DCE",
+            "product": "rr",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "rr2206": {
+            "name": "¾¬Ã×2206",
+            "code": "rr2206",
+            "exchg": "DCE",
+            "product": "rr",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "rr2207": {
+            "name": "¾¬Ã×2207",
+            "code": "rr2207",
+            "exchg": "DCE",
+            "product": "rr",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "v2108": {
+            "name": "PVC2108",
+            "code": "v2108",
+            "exchg": "DCE",
+            "product": "v",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "v2109": {
+            "name": "PVC2109",
+            "code": "v2109",
+            "exchg": "DCE",
+            "product": "v",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "v2110": {
+            "name": "PVC2110",
+            "code": "v2110",
+            "exchg": "DCE",
+            "product": "v",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "v2111": {
+            "name": "PVC2111",
+            "code": "v2111",
+            "exchg": "DCE",
+            "product": "v",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "v2112": {
+            "name": "PVC2112",
+            "code": "v2112",
+            "exchg": "DCE",
+            "product": "v",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "v2201": {
+            "name": "PVC2201",
+            "code": "v2201",
+            "exchg": "DCE",
+            "product": "v",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "v2202": {
+            "name": "PVC2202",
+            "code": "v2202",
+            "exchg": "DCE",
+            "product": "v",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "v2203": {
+            "name": "PVC2203",
+            "code": "v2203",
+            "exchg": "DCE",
+            "product": "v",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "v2204": {
+            "name": "PVC2204",
+            "code": "v2204",
+            "exchg": "DCE",
+            "product": "v",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "v2205": {
+            "name": "PVC2205",
+            "code": "v2205",
+            "exchg": "DCE",
+            "product": "v",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "v2206": {
+            "name": "PVC2206",
+            "code": "v2206",
+            "exchg": "DCE",
+            "product": "v",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "v2207": {
+            "name": "PVC2207",
+            "code": "v2207",
+            "exchg": "DCE",
+            "product": "v",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "y2108": {
+            "name": "¶¹ÓÍ2108",
+            "code": "y2108",
+            "exchg": "DCE",
+            "product": "y",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "y2109": {
+            "name": "¶¹ÓÍ2109",
+            "code": "y2109",
+            "exchg": "DCE",
+            "product": "y",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "y2111": {
+            "name": "¶¹ÓÍ2111",
+            "code": "y2111",
+            "exchg": "DCE",
+            "product": "y",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "y2112": {
+            "name": "¶¹ÓÍ2112",
+            "code": "y2112",
+            "exchg": "DCE",
+            "product": "y",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "y2201": {
+            "name": "¶¹ÓÍ2201",
+            "code": "y2201",
+            "exchg": "DCE",
+            "product": "y",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "y2203": {
+            "name": "¶¹ÓÍ2203",
+            "code": "y2203",
+            "exchg": "DCE",
+            "product": "y",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "y2205": {
+            "name": "¶¹ÓÍ2205",
+            "code": "y2205",
+            "exchg": "DCE",
+            "product": "y",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        },
+        "y2207": {
+            "name": "¶¹ÓÍ2207",
+            "code": "y2207",
+            "exchg": "DCE",
+            "product": "y",
+            "maxlimitqty": 1000,
+            "maxmarketqty": 1000
+        }
+    },
+    "INE": {
+        "bc2108": {
+            "name": "¹ú¼ÊÍ­2108",
+            "code": "bc2108",
+            "exchg": "INE",
+            "product": "bc",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "bc2109": {
+            "name": "¹ú¼ÊÍ­2109",
+            "code": "bc2109",
+            "exchg": "INE",
+            "product": "bc",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "bc2110": {
+            "name": "¹ú¼ÊÍ­2110",
+            "code": "bc2110",
+            "exchg": "INE",
+            "product": "bc",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "bc2111": {
+            "name": "¹ú¼ÊÍ­2111",
+            "code": "bc2111",
+            "exchg": "INE",
+            "product": "bc",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "bc2112": {
+            "name": "¹ú¼ÊÍ­2112",
+            "code": "bc2112",
+            "exchg": "INE",
+            "product": "bc",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "bc2201": {
+            "name": "¹ú¼ÊÍ­2201",
+            "code": "bc2201",
+            "exchg": "INE",
+            "product": "bc",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "bc2202": {
+            "name": "¹ú¼ÊÍ­2202",
+            "code": "bc2202",
+            "exchg": "INE",
+            "product": "bc",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "bc2203": {
+            "name": "¹ú¼ÊÍ­2203",
+            "code": "bc2203",
+            "exchg": "INE",
+            "product": "bc",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "bc2204": {
+            "name": "¹ú¼ÊÍ­2204",
+            "code": "bc2204",
+            "exchg": "INE",
+            "product": "bc",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "bc2205": {
+            "name": "¹ú¼ÊÍ­2205",
+            "code": "bc2205",
+            "exchg": "INE",
+            "product": "bc",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "bc2206": {
+            "name": "¹ú¼ÊÍ­2206",
+            "code": "bc2206",
+            "exchg": "INE",
+            "product": "bc",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "bc2207": {
+            "name": "¹ú¼ÊÍ­2207",
+            "code": "bc2207",
+            "exchg": "INE",
+            "product": "bc",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "lu2108": {
+            "name": "µÍÁòÓÍ2108",
+            "code": "lu2108",
+            "exchg": "INE",
+            "product": "lu",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "lu2109": {
+            "name": "µÍÁòÓÍ2109",
+            "code": "lu2109",
+            "exchg": "INE",
+            "product": "lu",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "lu2110": {
+            "name": "µÍÁòÓÍ2110",
+            "code": "lu2110",
+            "exchg": "INE",
+            "product": "lu",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "lu2111": {
+            "name": "µÍÁòÓÍ2111",
+            "code": "lu2111",
+            "exchg": "INE",
+            "product": "lu",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "lu2112": {
+            "name": "µÍÁòÓÍ2112",
+            "code": "lu2112",
+            "exchg": "INE",
+            "product": "lu",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "lu2201": {
+            "name": "µÍÁòÓÍ2201",
+            "code": "lu2201",
+            "exchg": "INE",
+            "product": "lu",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "lu2202": {
+            "name": "µÍÁòÓÍ2202",
+            "code": "lu2202",
+            "exchg": "INE",
+            "product": "lu",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "lu2203": {
+            "name": "µÍÁòÓÍ2203",
+            "code": "lu2203",
+            "exchg": "INE",
+            "product": "lu",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "lu2204": {
+            "name": "µÍÁòÓÍ2204",
+            "code": "lu2204",
+            "exchg": "INE",
+            "product": "lu",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "lu2205": {
+            "name": "µÍÁòÓÍ2205",
+            "code": "lu2205",
+            "exchg": "INE",
+            "product": "lu",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "lu2206": {
+            "name": "µÍÁòÓÍ2206",
+            "code": "lu2206",
+            "exchg": "INE",
+            "product": "lu",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "lu2207": {
+            "name": "µÍÁòÓÍ2207",
+            "code": "lu2207",
+            "exchg": "INE",
+            "product": "lu",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "nr2108": {
+            "name": "20½º2108",
+            "code": "nr2108",
+            "exchg": "INE",
+            "product": "nr",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "nr2109": {
+            "name": "20½º2109",
+            "code": "nr2109",
+            "exchg": "INE",
+            "product": "nr",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "nr2110": {
+            "name": "20½º2110",
+            "code": "nr2110",
+            "exchg": "INE",
+            "product": "nr",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "nr2111": {
+            "name": "20½º2111",
+            "code": "nr2111",
+            "exchg": "INE",
+            "product": "nr",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "nr2112": {
+            "name": "20½º2112",
+            "code": "nr2112",
+            "exchg": "INE",
+            "product": "nr",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "nr2201": {
+            "name": "20½º2201",
+            "code": "nr2201",
+            "exchg": "INE",
+            "product": "nr",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "nr2202": {
+            "name": "20½º2202",
+            "code": "nr2202",
+            "exchg": "INE",
+            "product": "nr",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "nr2203": {
+            "name": "20½º2203",
+            "code": "nr2203",
+            "exchg": "INE",
+            "product": "nr",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "nr2204": {
+            "name": "20½º2204",
+            "code": "nr2204",
+            "exchg": "INE",
+            "product": "nr",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "nr2205": {
+            "name": "20½º2205",
+            "code": "nr2205",
+            "exchg": "INE",
+            "product": "nr",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "nr2206": {
+            "name": "20½º2206",
+            "code": "nr2206",
+            "exchg": "INE",
+            "product": "nr",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "nr2207": {
+            "name": "20½º2207",
+            "code": "nr2207",
+            "exchg": "INE",
+            "product": "nr",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "sc2108": {
+            "name": "Ô­ÓÍ2108",
+            "code": "sc2108",
+            "exchg": "INE",
+            "product": "sc",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "sc2109": {
+            "name": "Ô­ÓÍ2109",
+            "code": "sc2109",
+            "exchg": "INE",
+            "product": "sc",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "sc2110": {
+            "name": "Ô­ÓÍ2110",
+            "code": "sc2110",
+            "exchg": "INE",
+            "product": "sc",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "sc2111": {
+            "name": "Ô­ÓÍ2111",
+            "code": "sc2111",
+            "exchg": "INE",
+            "product": "sc",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "sc2112": {
+            "name": "Ô­ÓÍ2112",
+            "code": "sc2112",
+            "exchg": "INE",
+            "product": "sc",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "sc2201": {
+            "name": "Ô­ÓÍ2201",
+            "code": "sc2201",
+            "exchg": "INE",
+            "product": "sc",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "sc2202": {
+            "name": "Ô­ÓÍ2202",
+            "code": "sc2202",
+            "exchg": "INE",
+            "product": "sc",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "sc2203": {
+            "name": "Ô­ÓÍ2203",
+            "code": "sc2203",
+            "exchg": "INE",
+            "product": "sc",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "sc2204": {
+            "name": "Ô­ÓÍ2204",
+            "code": "sc2204",
+            "exchg": "INE",
+            "product": "sc",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "sc2205": {
+            "name": "Ô­ÓÍ2205",
+            "code": "sc2205",
+            "exchg": "INE",
+            "product": "sc",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "sc2206": {
+            "name": "Ô­ÓÍ2206",
+            "code": "sc2206",
+            "exchg": "INE",
+            "product": "sc",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "sc2207": {
+            "name": "Ô­ÓÍ2207",
+            "code": "sc2207",
+            "exchg": "INE",
+            "product": "sc",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "sc2209": {
+            "name": "Ô­ÓÍ2209",
+            "code": "sc2209",
+            "exchg": "INE",
+            "product": "sc",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "sc2212": {
+            "name": "Ô­ÓÍ2212",
+            "code": "sc2212",
+            "exchg": "INE",
+            "product": "sc",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "sc2303": {
+            "name": "Ô­ÓÍ2303",
+            "code": "sc2303",
+            "exchg": "INE",
+            "product": "sc",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "sc2306": {
+            "name": "Ô­ÓÍ2306",
+            "code": "sc2306",
+            "exchg": "INE",
+            "product": "sc",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "sc2309": {
+            "name": "Ô­ÓÍ2309",
+            "code": "sc2309",
+            "exchg": "INE",
+            "product": "sc",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "sc2312": {
+            "name": "Ô­ÓÍ2312",
+            "code": "sc2312",
+            "exchg": "INE",
+            "product": "sc",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "sc2403": {
+            "name": "Ô­ÓÍ2403",
+            "code": "sc2403",
+            "exchg": "INE",
+            "product": "sc",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "sc2406": {
+            "name": "Ô­ÓÍ2406",
+            "code": "sc2406",
+            "exchg": "INE",
+            "product": "sc",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        }
+    },
+    "SHFE": {
+        "ag2108": {
+            "name": "»¦Òø2108",
+            "code": "ag2108",
+            "exchg": "SHFE",
+            "product": "ag",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "ag2109": {
+            "name": "»¦Òø2109",
+            "code": "ag2109",
+            "exchg": "SHFE",
+            "product": "ag",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "ag2110": {
+            "name": "»¦Òø2110",
+            "code": "ag2110",
+            "exchg": "SHFE",
+            "product": "ag",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "ag2111": {
+            "name": "»¦Òø2111",
+            "code": "ag2111",
+            "exchg": "SHFE",
+            "product": "ag",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "ag2112": {
+            "name": "»¦Òø2112",
+            "code": "ag2112",
+            "exchg": "SHFE",
+            "product": "ag",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "ag2201": {
+            "name": "»¦Òø2201",
+            "code": "ag2201",
+            "exchg": "SHFE",
+            "product": "ag",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "ag2202": {
+            "name": "»¦Òø2202",
+            "code": "ag2202",
+            "exchg": "SHFE",
+            "product": "ag",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "ag2203": {
+            "name": "»¦Òø2203",
+            "code": "ag2203",
+            "exchg": "SHFE",
+            "product": "ag",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "ag2204": {
+            "name": "»¦Òø2204",
+            "code": "ag2204",
+            "exchg": "SHFE",
+            "product": "ag",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "ag2205": {
+            "name": "»¦Òø2205",
+            "code": "ag2205",
+            "exchg": "SHFE",
+            "product": "ag",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "ag2206": {
+            "name": "»¦Òø2206",
+            "code": "ag2206",
+            "exchg": "SHFE",
+            "product": "ag",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "ag2207": {
+            "name": "»¦Òø2207",
+            "code": "ag2207",
+            "exchg": "SHFE",
+            "product": "ag",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "al2108": {
+            "name": "»¦ÂÁ2108",
+            "code": "al2108",
+            "exchg": "SHFE",
+            "product": "al",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "al2109": {
+            "name": "»¦ÂÁ2109",
+            "code": "al2109",
+            "exchg": "SHFE",
+            "product": "al",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "al2110": {
+            "name": "»¦ÂÁ2110",
+            "code": "al2110",
+            "exchg": "SHFE",
+            "product": "al",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "al2111": {
+            "name": "»¦ÂÁ2111",
+            "code": "al2111",
+            "exchg": "SHFE",
+            "product": "al",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "al2112": {
+            "name": "»¦ÂÁ2112",
+            "code": "al2112",
+            "exchg": "SHFE",
+            "product": "al",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "al2201": {
+            "name": "»¦ÂÁ2201",
+            "code": "al2201",
+            "exchg": "SHFE",
+            "product": "al",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "al2202": {
+            "name": "»¦ÂÁ2202",
+            "code": "al2202",
+            "exchg": "SHFE",
+            "product": "al",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "al2203": {
+            "name": "»¦ÂÁ2203",
+            "code": "al2203",
+            "exchg": "SHFE",
+            "product": "al",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "al2204": {
+            "name": "»¦ÂÁ2204",
+            "code": "al2204",
+            "exchg": "SHFE",
+            "product": "al",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "al2205": {
+            "name": "»¦ÂÁ2205",
+            "code": "al2205",
+            "exchg": "SHFE",
+            "product": "al",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "al2206": {
+            "name": "»¦ÂÁ2206",
+            "code": "al2206",
+            "exchg": "SHFE",
+            "product": "al",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "al2207": {
+            "name": "»¦ÂÁ2207",
+            "code": "al2207",
+            "exchg": "SHFE",
+            "product": "al",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "au2108": {
+            "name": "»¦½ð2108",
+            "code": "au2108",
+            "exchg": "SHFE",
+            "product": "au",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "au2109": {
+            "name": "»¦½ð2109",
+            "code": "au2109",
+            "exchg": "SHFE",
+            "product": "au",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "au2110": {
+            "name": "»¦½ð2110",
+            "code": "au2110",
+            "exchg": "SHFE",
+            "product": "au",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "au2112": {
+            "name": "»¦½ð2112",
+            "code": "au2112",
+            "exchg": "SHFE",
+            "product": "au",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "au2202": {
+            "name": "»¦½ð2202",
+            "code": "au2202",
+            "exchg": "SHFE",
+            "product": "au",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "au2204": {
+            "name": "»¦½ð2204",
+            "code": "au2204",
+            "exchg": "SHFE",
+            "product": "au",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "au2206": {
+            "name": "»¦½ð2206",
+            "code": "au2206",
+            "exchg": "SHFE",
+            "product": "au",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "au2208": {
+            "name": "»¦½ð2208",
+            "code": "au2208",
+            "exchg": "SHFE",
+            "product": "au",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "bu2108": {
+            "name": "Á¤Çà2108",
+            "code": "bu2108",
+            "exchg": "SHFE",
+            "product": "bu",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "bu2109": {
+            "name": "Á¤Çà2109",
+            "code": "bu2109",
+            "exchg": "SHFE",
+            "product": "bu",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "bu2110": {
+            "name": "Á¤Çà2110",
+            "code": "bu2110",
+            "exchg": "SHFE",
+            "product": "bu",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "bu2111": {
+            "name": "Á¤Çà2111",
+            "code": "bu2111",
+            "exchg": "SHFE",
+            "product": "bu",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "bu2112": {
+            "name": "Á¤Çà2112",
+            "code": "bu2112",
+            "exchg": "SHFE",
+            "product": "bu",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "bu2201": {
+            "name": "Á¤Çà2201",
+            "code": "bu2201",
+            "exchg": "SHFE",
+            "product": "bu",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "bu2203": {
+            "name": "Á¤Çà2203",
+            "code": "bu2203",
+            "exchg": "SHFE",
+            "product": "bu",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "bu2206": {
+            "name": "Á¤Çà2206",
+            "code": "bu2206",
+            "exchg": "SHFE",
+            "product": "bu",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "bu2209": {
+            "name": "Á¤Çà2209",
+            "code": "bu2209",
+            "exchg": "SHFE",
+            "product": "bu",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "bu2212": {
+            "name": "Á¤Çà2212",
+            "code": "bu2212",
+            "exchg": "SHFE",
+            "product": "bu",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "bu2303": {
+            "name": "Á¤Çà2303",
+            "code": "bu2303",
+            "exchg": "SHFE",
+            "product": "bu",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "bu2306": {
+            "name": "Á¤Çà2306",
+            "code": "bu2306",
+            "exchg": "SHFE",
+            "product": "bu",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "cu2108": {
+            "name": "»¦Í­2108",
+            "code": "cu2108",
+            "exchg": "SHFE",
+            "product": "cu",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "cu2109": {
+            "name": "»¦Í­2109",
+            "code": "cu2109",
+            "exchg": "SHFE",
+            "product": "cu",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "cu2110": {
+            "name": "»¦Í­2110",
+            "code": "cu2110",
+            "exchg": "SHFE",
+            "product": "cu",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "cu2111": {
+            "name": "»¦Í­2111",
+            "code": "cu2111",
+            "exchg": "SHFE",
+            "product": "cu",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "cu2112": {
+            "name": "»¦Í­2112",
+            "code": "cu2112",
+            "exchg": "SHFE",
+            "product": "cu",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "cu2201": {
+            "name": "»¦Í­2201",
+            "code": "cu2201",
+            "exchg": "SHFE",
+            "product": "cu",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "cu2202": {
+            "name": "»¦Í­2202",
+            "code": "cu2202",
+            "exchg": "SHFE",
+            "product": "cu",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "cu2203": {
+            "name": "»¦Í­2203",
+            "code": "cu2203",
+            "exchg": "SHFE",
+            "product": "cu",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "cu2204": {
+            "name": "»¦Í­2204",
+            "code": "cu2204",
+            "exchg": "SHFE",
+            "product": "cu",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "cu2205": {
+            "name": "»¦Í­2205",
+            "code": "cu2205",
+            "exchg": "SHFE",
+            "product": "cu",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "cu2206": {
+            "name": "»¦Í­2206",
+            "code": "cu2206",
+            "exchg": "SHFE",
+            "product": "cu",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "cu2207": {
+            "name": "»¦Í­2207",
+            "code": "cu2207",
+            "exchg": "SHFE",
+            "product": "cu",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "fu2108": {
+            "name": "È¼ÓÍ2108",
+            "code": "fu2108",
+            "exchg": "SHFE",
+            "product": "fu",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "fu2109": {
+            "name": "È¼ÓÍ2109",
+            "code": "fu2109",
+            "exchg": "SHFE",
+            "product": "fu",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "fu2110": {
+            "name": "È¼ÓÍ2110",
+            "code": "fu2110",
+            "exchg": "SHFE",
+            "product": "fu",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "fu2111": {
+            "name": "È¼ÓÍ2111",
+            "code": "fu2111",
+            "exchg": "SHFE",
+            "product": "fu",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "fu2112": {
+            "name": "È¼ÓÍ2112",
+            "code": "fu2112",
+            "exchg": "SHFE",
+            "product": "fu",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "fu2201": {
+            "name": "È¼ÓÍ2201",
+            "code": "fu2201",
+            "exchg": "SHFE",
+            "product": "fu",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "fu2202": {
+            "name": "È¼ÓÍ2202",
+            "code": "fu2202",
+            "exchg": "SHFE",
+            "product": "fu",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "fu2203": {
+            "name": "È¼ÓÍ2203",
+            "code": "fu2203",
+            "exchg": "SHFE",
+            "product": "fu",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "fu2204": {
+            "name": "È¼ÓÍ2204",
+            "code": "fu2204",
+            "exchg": "SHFE",
+            "product": "fu",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "fu2205": {
+            "name": "È¼ÓÍ2205",
+            "code": "fu2205",
+            "exchg": "SHFE",
+            "product": "fu",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "fu2206": {
+            "name": "È¼ÓÍ2206",
+            "code": "fu2206",
+            "exchg": "SHFE",
+            "product": "fu",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "fu2207": {
+            "name": "È¼ÓÍ2207",
+            "code": "fu2207",
+            "exchg": "SHFE",
+            "product": "fu",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "hc2108": {
+            "name": "ÈÈ¾í2108",
+            "code": "hc2108",
+            "exchg": "SHFE",
+            "product": "hc",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "hc2109": {
+            "name": "ÈÈ¾í2109",
+            "code": "hc2109",
+            "exchg": "SHFE",
+            "product": "hc",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "hc2110": {
+            "name": "ÈÈ¾í2110",
+            "code": "hc2110",
+            "exchg": "SHFE",
+            "product": "hc",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "hc2111": {
+            "name": "ÈÈ¾í2111",
+            "code": "hc2111",
+            "exchg": "SHFE",
+            "product": "hc",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "hc2112": {
+            "name": "ÈÈ¾í2112",
+            "code": "hc2112",
+            "exchg": "SHFE",
+            "product": "hc",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "hc2201": {
+            "name": "ÈÈ¾í2201",
+            "code": "hc2201",
+            "exchg": "SHFE",
+            "product": "hc",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "hc2202": {
+            "name": "ÈÈ¾í2202",
+            "code": "hc2202",
+            "exchg": "SHFE",
+            "product": "hc",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "hc2203": {
+            "name": "ÈÈ¾í2203",
+            "code": "hc2203",
+            "exchg": "SHFE",
+            "product": "hc",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "hc2204": {
+            "name": "ÈÈ¾í2204",
+            "code": "hc2204",
+            "exchg": "SHFE",
+            "product": "hc",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "hc2205": {
+            "name": "ÈÈ¾í2205",
+            "code": "hc2205",
+            "exchg": "SHFE",
+            "product": "hc",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "hc2206": {
+            "name": "ÈÈ¾í2206",
+            "code": "hc2206",
+            "exchg": "SHFE",
+            "product": "hc",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "hc2207": {
+            "name": "ÈÈ¾í2207",
+            "code": "hc2207",
+            "exchg": "SHFE",
+            "product": "hc",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "ni2108": {
+            "name": "»¦Äø2108",
+            "code": "ni2108",
+            "exchg": "SHFE",
+            "product": "ni",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "ni2109": {
+            "name": "»¦Äø2109",
+            "code": "ni2109",
+            "exchg": "SHFE",
+            "product": "ni",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "ni2110": {
+            "name": "»¦Äø2110",
+            "code": "ni2110",
+            "exchg": "SHFE",
+            "product": "ni",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "ni2111": {
+            "name": "»¦Äø2111",
+            "code": "ni2111",
+            "exchg": "SHFE",
+            "product": "ni",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "ni2112": {
+            "name": "»¦Äø2112",
+            "code": "ni2112",
+            "exchg": "SHFE",
+            "product": "ni",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "ni2201": {
+            "name": "»¦Äø2201",
+            "code": "ni2201",
+            "exchg": "SHFE",
+            "product": "ni",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "ni2202": {
+            "name": "»¦Äø2202",
+            "code": "ni2202",
+            "exchg": "SHFE",
+            "product": "ni",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "ni2203": {
+            "name": "»¦Äø2203",
+            "code": "ni2203",
+            "exchg": "SHFE",
+            "product": "ni",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "ni2204": {
+            "name": "»¦Äø2204",
+            "code": "ni2204",
+            "exchg": "SHFE",
+            "product": "ni",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "ni2205": {
+            "name": "»¦Äø2205",
+            "code": "ni2205",
+            "exchg": "SHFE",
+            "product": "ni",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "ni2206": {
+            "name": "»¦Äø2206",
+            "code": "ni2206",
+            "exchg": "SHFE",
+            "product": "ni",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "ni2207": {
+            "name": "»¦Äø2207",
+            "code": "ni2207",
+            "exchg": "SHFE",
+            "product": "ni",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "pb2108": {
+            "name": "»¦Ç¦2108",
+            "code": "pb2108",
+            "exchg": "SHFE",
+            "product": "pb",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "pb2109": {
+            "name": "»¦Ç¦2109",
+            "code": "pb2109",
+            "exchg": "SHFE",
+            "product": "pb",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "pb2110": {
+            "name": "»¦Ç¦2110",
+            "code": "pb2110",
+            "exchg": "SHFE",
+            "product": "pb",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "pb2111": {
+            "name": "»¦Ç¦2111",
+            "code": "pb2111",
+            "exchg": "SHFE",
+            "product": "pb",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "pb2112": {
+            "name": "»¦Ç¦2112",
+            "code": "pb2112",
+            "exchg": "SHFE",
+            "product": "pb",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "pb2201": {
+            "name": "»¦Ç¦2201",
+            "code": "pb2201",
+            "exchg": "SHFE",
+            "product": "pb",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "pb2202": {
+            "name": "»¦Ç¦2202",
+            "code": "pb2202",
+            "exchg": "SHFE",
+            "product": "pb",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "pb2203": {
+            "name": "»¦Ç¦2203",
+            "code": "pb2203",
+            "exchg": "SHFE",
+            "product": "pb",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "pb2204": {
+            "name": "»¦Ç¦2204",
+            "code": "pb2204",
+            "exchg": "SHFE",
+            "product": "pb",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "pb2205": {
+            "name": "»¦Ç¦2205",
+            "code": "pb2205",
+            "exchg": "SHFE",
+            "product": "pb",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "pb2206": {
+            "name": "»¦Ç¦2206",
+            "code": "pb2206",
+            "exchg": "SHFE",
+            "product": "pb",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "pb2207": {
+            "name": "»¦Ç¦2207",
+            "code": "pb2207",
+            "exchg": "SHFE",
+            "product": "pb",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "rb2108": {
+            "name": "ÂÝÎÆ2108",
+            "code": "rb2108",
+            "exchg": "SHFE",
+            "product": "rb",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "rb2109": {
+            "name": "ÂÝÎÆ2109",
+            "code": "rb2109",
+            "exchg": "SHFE",
+            "product": "rb",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "rb2110": {
+            "name": "ÂÝÎÆ2110",
+            "code": "rb2110",
+            "exchg": "SHFE",
+            "product": "rb",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "rb2111": {
+            "name": "ÂÝÎÆ2111",
+            "code": "rb2111",
+            "exchg": "SHFE",
+            "product": "rb",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "rb2112": {
+            "name": "ÂÝÎÆ2112",
+            "code": "rb2112",
+            "exchg": "SHFE",
+            "product": "rb",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "rb2201": {
+            "name": "ÂÝÎÆ2201",
+            "code": "rb2201",
+            "exchg": "SHFE",
+            "product": "rb",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "rb2202": {
+            "name": "ÂÝÎÆ2202",
+            "code": "rb2202",
+            "exchg": "SHFE",
+            "product": "rb",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "rb2203": {
+            "name": "ÂÝÎÆ2203",
+            "code": "rb2203",
+            "exchg": "SHFE",
+            "product": "rb",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "rb2204": {
+            "name": "ÂÝÎÆ2204",
+            "code": "rb2204",
+            "exchg": "SHFE",
+            "product": "rb",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "rb2205": {
+            "name": "ÂÝÎÆ2205",
+            "code": "rb2205",
+            "exchg": "SHFE",
+            "product": "rb",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "rb2206": {
+            "name": "ÂÝÎÆ2206",
+            "code": "rb2206",
+            "exchg": "SHFE",
+            "product": "rb",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "rb2207": {
+            "name": "ÂÝÎÆ2207",
+            "code": "rb2207",
+            "exchg": "SHFE",
+            "product": "rb",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "ru2108": {
+            "name": "Ïð½º2108",
+            "code": "ru2108",
+            "exchg": "SHFE",
+            "product": "ru",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "ru2109": {
+            "name": "Ïð½º2109",
+            "code": "ru2109",
+            "exchg": "SHFE",
+            "product": "ru",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "ru2110": {
+            "name": "Ïð½º2110",
+            "code": "ru2110",
+            "exchg": "SHFE",
+            "product": "ru",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "ru2111": {
+            "name": "Ïð½º2111",
+            "code": "ru2111",
+            "exchg": "SHFE",
+            "product": "ru",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "ru2201": {
+            "name": "Ïð½º2201",
+            "code": "ru2201",
+            "exchg": "SHFE",
+            "product": "ru",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "ru2203": {
+            "name": "Ïð½º2203",
+            "code": "ru2203",
+            "exchg": "SHFE",
+            "product": "ru",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "ru2204": {
+            "name": "Ïð½º2204",
+            "code": "ru2204",
+            "exchg": "SHFE",
+            "product": "ru",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "ru2205": {
+            "name": "Ïð½º2205",
+            "code": "ru2205",
+            "exchg": "SHFE",
+            "product": "ru",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "ru2206": {
+            "name": "Ïð½º2206",
+            "code": "ru2206",
+            "exchg": "SHFE",
+            "product": "ru",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "ru2207": {
+            "name": "Ïð½º2207",
+            "code": "ru2207",
+            "exchg": "SHFE",
+            "product": "ru",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "sn2108": {
+            "name": "»¦Îý2108",
+            "code": "sn2108",
+            "exchg": "SHFE",
+            "product": "sn",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "sn2109": {
+            "name": "»¦Îý2109",
+            "code": "sn2109",
+            "exchg": "SHFE",
+            "product": "sn",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "sn2110": {
+            "name": "»¦Îý2110",
+            "code": "sn2110",
+            "exchg": "SHFE",
+            "product": "sn",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "sn2111": {
+            "name": "»¦Îý2111",
+            "code": "sn2111",
+            "exchg": "SHFE",
+            "product": "sn",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "sn2112": {
+            "name": "»¦Îý2112",
+            "code": "sn2112",
+            "exchg": "SHFE",
+            "product": "sn",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "sn2201": {
+            "name": "»¦Îý2201",
+            "code": "sn2201",
+            "exchg": "SHFE",
+            "product": "sn",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "sn2202": {
+            "name": "»¦Îý2202",
+            "code": "sn2202",
+            "exchg": "SHFE",
+            "product": "sn",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "sn2203": {
+            "name": "»¦Îý2203",
+            "code": "sn2203",
+            "exchg": "SHFE",
+            "product": "sn",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "sn2204": {
+            "name": "»¦Îý2204",
+            "code": "sn2204",
+            "exchg": "SHFE",
+            "product": "sn",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "sn2205": {
+            "name": "»¦Îý2205",
+            "code": "sn2205",
+            "exchg": "SHFE",
+            "product": "sn",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "sn2206": {
+            "name": "»¦Îý2206",
+            "code": "sn2206",
+            "exchg": "SHFE",
+            "product": "sn",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "sn2207": {
+            "name": "»¦Îý2207",
+            "code": "sn2207",
+            "exchg": "SHFE",
+            "product": "sn",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "sp2108": {
+            "name": "Ö½½¬2108",
+            "code": "sp2108",
+            "exchg": "SHFE",
+            "product": "sp",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "sp2109": {
+            "name": "Ö½½¬2109",
+            "code": "sp2109",
+            "exchg": "SHFE",
+            "product": "sp",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "sp2110": {
+            "name": "Ö½½¬2110",
+            "code": "sp2110",
+            "exchg": "SHFE",
+            "product": "sp",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "sp2111": {
+            "name": "Ö½½¬2111",
+            "code": "sp2111",
+            "exchg": "SHFE",
+            "product": "sp",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "sp2112": {
+            "name": "Ö½½¬2112",
+            "code": "sp2112",
+            "exchg": "SHFE",
+            "product": "sp",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "sp2201": {
+            "name": "Ö½½¬2201",
+            "code": "sp2201",
+            "exchg": "SHFE",
+            "product": "sp",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "sp2202": {
+            "name": "Ö½½¬2202",
+            "code": "sp2202",
+            "exchg": "SHFE",
+            "product": "sp",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "sp2203": {
+            "name": "Ö½½¬2203",
+            "code": "sp2203",
+            "exchg": "SHFE",
+            "product": "sp",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "sp2204": {
+            "name": "Ö½½¬2204",
+            "code": "sp2204",
+            "exchg": "SHFE",
+            "product": "sp",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "sp2205": {
+            "name": "Ö½½¬2205",
+            "code": "sp2205",
+            "exchg": "SHFE",
+            "product": "sp",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "sp2206": {
+            "name": "Ö½½¬2206",
+            "code": "sp2206",
+            "exchg": "SHFE",
+            "product": "sp",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "sp2207": {
+            "name": "Ö½½¬2207",
+            "code": "sp2207",
+            "exchg": "SHFE",
+            "product": "sp",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "ss2108": {
+            "name": "²»Ðâ¸Ö2108",
+            "code": "ss2108",
+            "exchg": "SHFE",
+            "product": "ss",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "ss2109": {
+            "name": "²»Ðâ¸Ö2109",
+            "code": "ss2109",
+            "exchg": "SHFE",
+            "product": "ss",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "ss2110": {
+            "name": "²»Ðâ¸Ö2110",
+            "code": "ss2110",
+            "exchg": "SHFE",
+            "product": "ss",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "ss2111": {
+            "name": "²»Ðâ¸Ö2111",
+            "code": "ss2111",
+            "exchg": "SHFE",
+            "product": "ss",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "ss2112": {
+            "name": "²»Ðâ¸Ö2112",
+            "code": "ss2112",
+            "exchg": "SHFE",
+            "product": "ss",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "ss2201": {
+            "name": "²»Ðâ¸Ö2201",
+            "code": "ss2201",
+            "exchg": "SHFE",
+            "product": "ss",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "ss2202": {
+            "name": "²»Ðâ¸Ö2202",
+            "code": "ss2202",
+            "exchg": "SHFE",
+            "product": "ss",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "ss2203": {
+            "name": "²»Ðâ¸Ö2203",
+            "code": "ss2203",
+            "exchg": "SHFE",
+            "product": "ss",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "ss2204": {
+            "name": "²»Ðâ¸Ö2204",
+            "code": "ss2204",
+            "exchg": "SHFE",
+            "product": "ss",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "ss2205": {
+            "name": "²»Ðâ¸Ö2205",
+            "code": "ss2205",
+            "exchg": "SHFE",
+            "product": "ss",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "ss2206": {
+            "name": "²»Ðâ¸Ö2206",
+            "code": "ss2206",
+            "exchg": "SHFE",
+            "product": "ss",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "ss2207": {
+            "name": "²»Ðâ¸Ö2207",
+            "code": "ss2207",
+            "exchg": "SHFE",
+            "product": "ss",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "wr2108": {
+            "name": "Ïß²Ä2108",
+            "code": "wr2108",
+            "exchg": "SHFE",
+            "product": "wr",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "wr2109": {
+            "name": "Ïß²Ä2109",
+            "code": "wr2109",
+            "exchg": "SHFE",
+            "product": "wr",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "wr2110": {
+            "name": "Ïß²Ä2110",
+            "code": "wr2110",
+            "exchg": "SHFE",
+            "product": "wr",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "wr2111": {
+            "name": "Ïß²Ä2111",
+            "code": "wr2111",
+            "exchg": "SHFE",
+            "product": "wr",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "wr2112": {
+            "name": "Ïß²Ä2112",
+            "code": "wr2112",
+            "exchg": "SHFE",
+            "product": "wr",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "wr2201": {
+            "name": "Ïß²Ä2201",
+            "code": "wr2201",
+            "exchg": "SHFE",
+            "product": "wr",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "wr2202": {
+            "name": "Ïß²Ä2202",
+            "code": "wr2202",
+            "exchg": "SHFE",
+            "product": "wr",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "wr2203": {
+            "name": "Ïß²Ä2203",
+            "code": "wr2203",
+            "exchg": "SHFE",
+            "product": "wr",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "wr2204": {
+            "name": "Ïß²Ä2204",
+            "code": "wr2204",
+            "exchg": "SHFE",
+            "product": "wr",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "wr2205": {
+            "name": "Ïß²Ä2205",
+            "code": "wr2205",
+            "exchg": "SHFE",
+            "product": "wr",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "wr2206": {
+            "name": "Ïß²Ä2206",
+            "code": "wr2206",
+            "exchg": "SHFE",
+            "product": "wr",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "wr2207": {
+            "name": "Ïß²Ä2207",
+            "code": "wr2207",
+            "exchg": "SHFE",
+            "product": "wr",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "zn2108": {
+            "name": "»¦Ð¿2108",
+            "code": "zn2108",
+            "exchg": "SHFE",
+            "product": "zn",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "zn2109": {
+            "name": "»¦Ð¿2109",
+            "code": "zn2109",
+            "exchg": "SHFE",
+            "product": "zn",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "zn2110": {
+            "name": "»¦Ð¿2110",
+            "code": "zn2110",
+            "exchg": "SHFE",
+            "product": "zn",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "zn2111": {
+            "name": "»¦Ð¿2111",
+            "code": "zn2111",
+            "exchg": "SHFE",
+            "product": "zn",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "zn2112": {
+            "name": "»¦Ð¿2112",
+            "code": "zn2112",
+            "exchg": "SHFE",
+            "product": "zn",
+            "maxlimitqty": 500,
+            "maxmarketqty": 30
+        },
+        "zn2201": {
+            "name": "»¦Ð¿2201",
+            "code": "zn2201",
+            "exchg": "SHFE",
+            "product": "zn",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "zn2202": {
+            "name": "»¦Ð¿2202",
+            "code": "zn2202",
+            "exchg": "SHFE",
+            "product": "zn",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "zn2203": {
+            "name": "»¦Ð¿2203",
+            "code": "zn2203",
+            "exchg": "SHFE",
+            "product": "zn",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "zn2204": {
+            "name": "»¦Ð¿2204",
+            "code": "zn2204",
+            "exchg": "SHFE",
+            "product": "zn",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "zn2205": {
+            "name": "»¦Ð¿2205",
+            "code": "zn2205",
+            "exchg": "SHFE",
+            "product": "zn",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "zn2206": {
+            "name": "»¦Ð¿2206",
+            "code": "zn2206",
+            "exchg": "SHFE",
+            "product": "zn",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        },
+        "zn2207": {
+            "name": "»¦Ð¿2207",
+            "code": "zn2207",
+            "exchg": "SHFE",
+            "product": "zn",
+            "maxlimitqty": 500,
+            "maxmarketqty": 500
+        }
+    }
+}

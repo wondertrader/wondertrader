@@ -5,13 +5,13 @@
         "stime":201909010900,
         "etime":201912011500,
         "basefiles":{
-            "session":"./common/sessions.json",
-            "commodity":"./common/commodities.json",
-            "contract":"./common/contracts.json",
-            "holiday":"./common/holidays.json",
-            "hot":"./common/hots.json"
+            "session":"../common/sessions.json",
+            "commodity":"../common/commodities.json",
+            "contract":"../common/contracts.json",
+            "holiday":"../common/holidays.json",
+            "hot":"../common/hots.json"
         },
-        "fees":"fees.json"
+        "fees":"../common/fees.json"
     },
     "env":{
         "mocker":"cta",
