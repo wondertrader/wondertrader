@@ -13,7 +13,6 @@
 #define MAX_INSTRUMENT_LENGTH	32
 #define MAX_EXCHANGE_LENGTH		10
 
-#define CHECK_NULL(x)			if(NULL==x)return;
 #define STATIC_CONVERT(x,T)		static_cast<T>(x)
 
 #ifndef DBL_MAX
@@ -39,11 +38,15 @@
 #endif
 
 #ifndef NULL
+#ifdef __cplusplus
 #define NULL 0
+#else
+#define NULL ((void *)0)
+#endif
 #endif
 
 #define NS_OTP_BEGIN	namespace otp{
-#define NS_OTP_END	}//namespace wts
+#define NS_OTP_END	}//namespace opt
 #define	USING_NS_OTP	using namespace otp
 
 #ifndef EXPORT_FLAG
@@ -53,3 +56,15 @@
 #	define EXPORT_FLAG __attribute__((__visibility__("default")))
 #endif
 #endif
+
+#ifndef PORTER_FLAG
+#ifdef _MSC_VER
+#	define PORTER_FLAG _cdecl
+#else
+#	define PORTER_FLAG 
+#endif
+#endif
+
+typedef unsigned long		WtUInt32;
+typedef unsigned long long	WtUInt64;
+typedef const char*			WtString;

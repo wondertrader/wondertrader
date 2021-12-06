@@ -22,16 +22,7 @@ NS_OTP_END
 
 USING_NS_OTP;
 
-#ifdef _WIN32
-#	define PORTER_FLAG _cdecl
-#else
-#	define PORTER_FLAG __attribute__((_cdecl))
-#endif
-
 typedef unsigned long		CtxHandler;
-typedef unsigned long		WtUInt32;
-typedef unsigned long long	WtUInt64;
-typedef const char*			WtString;
 
 static const WtUInt32	EVENT_ENGINE_INIT		= 1;	//框架初始化
 static const WtUInt32	EVENT_SESSION_BEGIN		= 2;	//交易日开始
