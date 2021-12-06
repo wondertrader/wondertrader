@@ -603,7 +603,8 @@ bool CtaMocker::on_schedule(uint32_t curDate, uint32_t curTime)
 					_cur_step = 3;
 				}
 
-				on_calculate_done(curDate, curTime);
+				if(_has_hook)
+					on_calculate_done(curDate, curTime);
 				emmited = true;
 
 				_emit_times++;
