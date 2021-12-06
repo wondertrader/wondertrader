@@ -49,6 +49,25 @@ typedef enum tagCoverMode
 } CoverMode;
 
 /*
+ *	持仓模式
+ */
+typedef enum tagHoldingMode
+{
+	HM_T0,		//t+0持仓
+	HM_T1,		//t+1持仓
+} HoldingMode;
+
+/*
+ *	交易模式
+ */
+typedef enum tagTradingMode
+{
+	TM_Both,	//多空都支持
+	TM_Long,	//只能做多
+	TM_Short	//只能做空
+} TradingMode;
+
+/*
 *	价格模式
 */
 typedef enum tagPriceMode
@@ -275,33 +294,6 @@ typedef enum tagTraderEvent
 	WTE_Login,						//登录
 	WTE_Logout						//注销
 }WTSTraderEvent;
-
-/*
- *	指标类型
- */
-typedef enum tagExpressType
-{
-	WET_Unique,
-	WET_SubExp
-} WTSExpressType;
-
-/*
- *	指标线类型
- */
-typedef enum tagExpressLineType
-{
-	WELT_Polyline,	//线条	
-	WELT_VolStick,	//量柱
-	WELT_StickLine,	//柱状线
-	WELT_AStickLine,	//柱状线绝对值
-} WTSExpressLineType;
-
-//指标线风格
-typedef enum tagExpLineStyle
-{
-	ELS_LINE_VISIBLE = 0x00000001,	//线条可见
-	ELS_TITLE_VISIBLE = 0x00000002	//标题可见
-} ExpLineStyle;
 
 /*
  *	买卖方向类型

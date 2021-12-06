@@ -41,6 +41,14 @@ public:
 	inline void	setCategory(ContractCategory cat){ m_ccCategory = cat; }
 	inline void	setCoverMode(CoverMode cm){ m_coverMode = cm; }
 	inline void	setPriceMode(PriceMode pm){ m_priceMode = pm; }
+	inline void	setTradingMode(TradingMode tm) { m_tradeMode = tm; }
+	inline void	setHoldingMode(HoldingMode hm) { m_holdMode = hm; }
+
+	inline bool canShort() const { return m_tradeMode == TM_Both || m_tradeMode == TM_Short; }
+	inline bool canLong() const { return m_tradeMode == TM_Both || m_tradeMode == TM_Long; }
+
+	inline bool isT1() const { return m_holdMode == HM_T1; }
+
 	inline void	setPrecision(uint32_t prec){ m_uPrecision = prec; }
 
 	inline const char* getName()	const{ return m_strName.c_str(); }
@@ -58,6 +66,8 @@ public:
 	inline ContractCategory		getCategoty() const{ return m_ccCategory; }
 	inline CoverMode			getCoverMode() const{ return m_coverMode; }
 	inline PriceMode			getPriceMode() const{ return m_priceMode; }
+	inline HoldingMode			getHoldingMode() const { return m_holdMode; }
+	inline TradingMode			getTradingMode() const { return m_tradeMode; }
 
 	inline void		addCode(const char* code){ m_setCodes.insert(code); }
 	inline const faster_hashset<std::string>& getCodes() const{ return m_setCodes; }
@@ -77,24 +87,26 @@ public:
 	inline uint32_t	getSellQtyUnit() const { return m_selQtyUnit; }
 
 private:
-	std::string	m_strName;
-	std::string	m_strExchg;
-	std::string	m_strProduct;
-	std::string	m_strCurrency;
-	std::string m_strSession;
-	std::string m_strTrdTpl;
-	std::string m_strFullPid;
+	std::string	m_strName;		//品种名称
+	std::string	m_strExchg;		//交易所代码
+	std::string	m_strProduct;	//品种ID
+	std::string	m_strCurrency;	//币种
+	std::string m_strSession;	//交易时间模板
+	std::string m_strTrdTpl;	//节假日模板
+	std::string m_strFullPid;	//全品种ID，如CFFEX.IF
 
-	uint32_t	m_uVolScale;
-	double		m_fPriceTick;
-	uint32_t	m_uPrecision;
+	uint32_t	m_uVolScale;	//合约放大倍数
+	double		m_fPriceTick;	//最小价格变动单位
+	uint32_t	m_uPrecision;	//价格精度
 
-	uint32_t	m_buyQtyUnit;
-	uint32_t	m_selQtyUnit;
+	uint32_t	m_buyQtyUnit;	//买入数量单位
+	uint32_t	m_selQtyUnit;	//卖出数量单位
 
-	ContractCategory	m_ccCategory;
-	CoverMode			m_coverMode;
-	PriceMode			m_priceMode;
+	ContractCategory	m_ccCategory;	//品种分类，期货、股票、期权等
+	CoverMode			m_coverMode;	//平仓类型
+	PriceMode			m_priceMode;	//价格类型
+	HoldingMode			m_holdMode;		//持仓类型
+	TradingMode			m_tradeMode;	//交易类型
 
 	faster_hashset<std::string> m_setCodes;
 };
