@@ -191,6 +191,7 @@ protected:
 	WTSArray*					m_ayTrades;
 	WTSArray*					m_ayOrders;
 	WTSArray*					m_ayPosDetail;
+	WTSArray*					m_ayFunds;
 
 	IBaseDataMgr*				m_bdMgr;
 
@@ -210,4 +211,3 @@ protected:
 
 	IniHelper		m_iniHelper;
 };
-

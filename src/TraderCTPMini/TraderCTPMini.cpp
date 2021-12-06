@@ -121,6 +121,7 @@ TraderCTPMini::TraderCTPMini()
 	, m_ayOrders(NULL)
 	, m_ayTrades(NULL)
 	, m_ayPosDetail(NULL)
+	, m_ayFunds(NULL)
 	, m_wrapperState(WS_NOTLOGIN)
 	, m_uLastQryTime(0)
 	, m_iRequestID(0)
@@ -197,6 +198,9 @@ void TraderCTPMini::release()
 
 	if (m_ayTrades)
 		m_ayTrades->clear();
+
+	if (m_ayFunds)
+		m_ayFunds->clear();
 }
 
 void TraderCTPMini::connect()
@@ -717,36 +721,36 @@ void TraderCTPMini::OnRspQryTradingAccount(CThostFtdcTradingAccountField *pTradi
 		//triggerQuery();
 	}
 
-	if (bIsLast && !IsErrorRspInfo(pRspInfo))
+	if (!IsErrorRspInfo(pRspInfo) && pTradingAccount)
 	{
+		if (NULL == m_ayFunds)
+			m_ayFunds = WTSArray::create();
+
 		WTSAccountInfo* accountInfo = WTSAccountInfo::create();
 		accountInfo->setDescription(StrUtil::printf("%s-%s", m_strBroker.c_str(), m_strUser.c_str()).c_str());
 		//accountInfo->setUsername(m_strUserName.c_str());
-		if(pTradingAccount)
-		{
-			accountInfo->setPreBalance(pTradingAccount->PreBalance);
-			accountInfo->setCloseProfit(pTradingAccount->CloseProfit);
-			accountInfo->setDynProfit(pTradingAccount->PositionProfit);
-			accountInfo->setMargin(pTradingAccount->CurrMargin);
-			accountInfo->setAvailable(pTradingAccount->Available);
-			accountInfo->setCommission(pTradingAccount->Commission);
-			accountInfo->setFrozenMargin(pTradingAccount->FrozenMargin);
-			accountInfo->setFrozenCommission(pTradingAccount->FrozenCommission);
-			accountInfo->setDeposit(pTradingAccount->Deposit);
-			accountInfo->setWithdraw(pTradingAccount->Withdraw);
-			accountInfo->setBalance(accountInfo->getPreBalance() + accountInfo->getCloseProfit() - accountInfo->getCommission() + accountInfo->getDeposit() - accountInfo->getWithdraw());
-		}
-		else if(m_sink)
-			m_sink->handleTraderLog(LL_ERROR, "[TraderCTPMini][%s-%s] Account data is NULL", m_strBroker.c_str(), m_strUser.c_str());
+		accountInfo->setPreBalance(pTradingAccount->PreBalance);
+		accountInfo->setCloseProfit(pTradingAccount->CloseProfit);
+		accountInfo->setDynProfit(pTradingAccount->PositionProfit);
+		accountInfo->setMargin(pTradingAccount->CurrMargin);
+		accountInfo->setAvailable(pTradingAccount->Available);
+		accountInfo->setCommission(pTradingAccount->Commission);
+		accountInfo->setFrozenMargin(pTradingAccount->FrozenMargin);
+		accountInfo->setFrozenCommission(pTradingAccount->FrozenCommission);
+		accountInfo->setDeposit(pTradingAccount->Deposit);
+		accountInfo->setWithdraw(pTradingAccount->Withdraw);
+		accountInfo->setBalance(accountInfo->getPreBalance() + accountInfo->getCloseProfit() - accountInfo->getCommission() + accountInfo->getDeposit() - accountInfo->getWithdraw());
 		
 		accountInfo->setCurrency("CNY");
+		m_ayFunds->append(accountInfo, false);
+	}
 
-		WTSArray * ay = WTSArray::create();
-		ay->append(accountInfo, false);
+	if(bIsLast)
+	{
 		if (m_sink)
-			m_sink->onRspAccount(ay);
+			m_sink->onRspAccount(m_ayFunds);
 
-		ay->release();
+		m_ayFunds->clear();
 	}
 }
 
