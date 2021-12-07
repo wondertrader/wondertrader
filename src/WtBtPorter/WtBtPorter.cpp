@@ -20,7 +20,7 @@
 #include "../Includes/WTSVersion.h"
 
 
-#ifdef _MSC_VER
+#ifdef _WIN32
 #ifdef _WIN64
 char PLATFORM_NAME[] = "X64";
 #else

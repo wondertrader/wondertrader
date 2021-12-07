@@ -72,7 +72,7 @@ int run(const char* cfgfile)
 	COMM_FILE = ini.readString("config", "commfile", "commodities.json");
 	CONT_FILE = ini.readString("config", "contfile", "contracts.json");
 
-#ifdef _MSC_VER
+#ifdef _WIN32
 	MODULE_NAME = ini.readString("config", "module", "soptthosttraderapi_se.dll");
 #else
 	MODULE_NAME = ini.readString("config", "module", "soptthosttraderapi_se.so");
@@ -80,7 +80,7 @@ int run(const char* cfgfile)
 	if(!boost::filesystem::exists(MODULE_NAME.c_str()))
 	{
 		MODULE_NAME = getBinDir();
-#ifdef _MSC_VER
+#ifdef _WIN32
 		MODULE_NAME += "traders/soptthosttraderapi_se.dll";
 #else
 		MODULE_NAME += "traders/soptthosttraderapi_se.so";
@@ -127,6 +127,8 @@ int run(const char* cfgfile)
 
 	// 初始化UserApi
 	DllHandle dllInst = DLLHelper::load_library(MODULE_NAME.c_str());
+	if (dllInst == NULL)
+		printf("加载模块%s失败\r\n", MODULE_NAME.c_str());
 #ifdef _WIN32
 #	ifdef _WIN64
 	g_ctpCreator = (CTPCreator)DLLHelper::get_symbol(dllInst, "?CreateFtdcTraderApi@CThostFtdcTraderApi@ctp_sopt@@SAPEAV12@PEBD@Z");

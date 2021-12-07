@@ -40,63 +40,6 @@ static const uint32_t KLINE_SIZE_STEP = 200;
 const char CMD_CLEAR_CACHE[] = "CMD_CLEAR_CACHE";
 const char MARKER_FILE[] = "marker.ini";
 
-#ifdef _MSC_VER
-#include <wtypes.h>
-HMODULE	g_dllModule = NULL;
-
-BOOL APIENTRY DllMain(
-	HANDLE hModule,
-	DWORD  ul_reason_for_call,
-	LPVOID lpReserved
-)
-{
-	switch (ul_reason_for_call)
-	{
-	case DLL_PROCESS_ATTACH:
-		g_dllModule = (HMODULE)hModule;
-		break;
-	}
-	return TRUE;
-}
-#else
-#include <dlfcn.h>
-
-char PLATFORM_NAME[] = "UNIX";
-
-std::string	g_moduleName;
-
-__attribute__((constructor))
-void on_load(void) {
-	Dl_info dl_info;
-	dladdr((void *)on_load, &dl_info);
-	g_moduleName = dl_info.dli_fname;
-}
-#endif
-
-std::string getBinDir()
-{
-	static std::string _bin_dir;
-	if (_bin_dir.empty())
-	{
-
-
-#ifdef _MSC_VER
-		char strPath[MAX_PATH];
-		GetModuleFileName(g_dllModule, strPath, MAX_PATH);
-
-		_bin_dir = StrUtil::standardisePath(strPath, false);
-#else
-		_bin_dir = g_moduleName;
-#endif
-
-		uint32_t nPos = _bin_dir.find_last_of('/');
-		_bin_dir = _bin_dir.substr(0, nPos + 1);
-	}
-
-	return _bin_dir;
-}
-
-
 
 WtDataWriter::WtDataWriter()
 	: _terminated(false)
@@ -126,35 +69,6 @@ bool WtDataWriter::isSessionProceeded(const char* sid)
 	return (it->second >= TimeUtils::getCurDate());
 }
 
-/*
-void WtDataWriter::init_db()
-{
-	if (!_db_conf._active)
-		return;
-
-#ifdef _MSC_VER
-	std::string module = getBinDir() + "libmysql.dll";
-	DLLHelper::load_library(module.c_str());
-#endif
-
-	_db_conn.reset(new MysqlDb);
-	my_bool autoreconnect = true;
-	_db_conn->options(MYSQL_OPT_RECONNECT, &autoreconnect);
-	_db_conn->options(MYSQL_SET_CHARSET_NAME, "utf8");
-
-	if (_db_conn->connect(_db_conf._dbname, _db_conf._host, _db_conf._user, _db_conf._pass, _db_conf._port, CLIENT_MULTI_STATEMENTS | CLIENT_MULTI_RESULTS))
-	{
-		if(_sink)
-			_sink->outputWriterLog(LL_INFO, "Mysql connected[%s:%d]", _db_conf._host, _db_conf._port);
-	}
-	else
-	{
-		if (_sink)
-			_sink->outputWriterLog(LL_ERROR, "Mysql connecting failed[%s:%d]:%s", _db_conf._host, _db_conf._port, _db_conn->errstr());
-		_db_conn.reset();
-	}
-}
-*/
 
 bool WtDataWriter::init(WTSVariant* params, IDataWriterSink* sink)
 {

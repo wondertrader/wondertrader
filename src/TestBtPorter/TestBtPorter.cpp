@@ -73,7 +73,7 @@ bool on_load_his_bars(const char* stdCode, const char* period)
 
 void run_bt()
 {
-#ifdef _MSC_VER
+#ifdef _WIN32
 	DLLHelper::load_library("WtBtPorter.dll");
 #else
 	DLLHelper::load_library("libWtBtPorter.so");

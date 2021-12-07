@@ -31,20 +31,6 @@ WtRtRunner& getRunner()
 	return runner;
 }
 
-#ifdef _MSC_VER
-const char* getModuleName()
-{
-	static char MODULE_NAME[250] = { 0 };
-	if (strlen(MODULE_NAME) == 0)
-	{
-		GetModuleFileName(g_dllModule, MODULE_NAME, 250);
-		boost::filesystem::path p(MODULE_NAME);
-		strcpy(MODULE_NAME, p.filename().string().c_str());
-	}
-
-	return MODULE_NAME;
-}
-#endif
 
 void register_evt_callback(FuncEventCallback cbEvt)
 {
@@ -109,9 +95,6 @@ void init_porter(const char* logProfile, bool isFile, const char* genDir)
 
 	if (inited)
 		return;
-#ifdef _MSC_VER
-	CMiniDumper::Enable(getModuleName(), true, WtHelper::getCWD().c_str());
-#endif
 
 	getRunner().init(logProfile, isFile, genDir);
 

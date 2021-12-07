@@ -9,9 +9,23 @@
 #include "../Share/ModuleHelper.hpp"
 #include "../Share/TimeUtils.hpp"
 
-//#include "../WTSUtils/SignalHook.hpp"
+#ifdef _MSC_VER
+#include "../Common/mdump.h"
+#include <boost/filesystem.hpp>
+const char* getModuleName()
+{
+	static char MODULE_NAME[250] = { 0 };
+	if (strlen(MODULE_NAME) == 0)
+	{
 
-extern const char* getBinDir();
+		GetModuleFileName(g_dllModule, MODULE_NAME, 250);
+		boost::filesystem::path p(MODULE_NAME);
+		strcpy(MODULE_NAME, p.filename().string().c_str());
+	}
+
+	return MODULE_NAME;
+}
+#endif
 
 WtExecRunner::WtExecRunner()
 {
@@ -22,6 +36,10 @@ WtExecRunner::WtExecRunner()
 
 bool WtExecRunner::init(const char* logCfg /* = "logcfgexec.json" */, bool isFile /* = true */)
 {
+#ifdef _MSC_VER
+	CMiniDumper::Enable(getModuleName(), true, WtHelper::getCWD().c_str());
+#endif
+
 	if(isFile)
 	{
 		std::string path = WtHelper::getCWD() + logCfg;

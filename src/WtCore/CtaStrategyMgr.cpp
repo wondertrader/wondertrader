@@ -42,7 +42,7 @@ bool CtaStrategyMgr::loadFactories(const char* path)
 		if (boost::filesystem::is_directory(iter->path()))
 			continue;
 
-#ifdef _MSC_VER
+#ifdef _WIN32
 		if (iter->path().extension() != ".dll")
 			continue;
 #else //_UNIX
