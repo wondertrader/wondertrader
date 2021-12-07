@@ -7,70 +7,13 @@
 #include "../Includes/WTSParams.hpp"
 #include "../Includes/IBaseDataMgr.h"
 
+#include "../Share/ModuleHelper.hpp"
 #include "../Share/StdUtils.hpp"
 #include "../Share/TimeUtils.hpp"
-#include "../Share/StrUtil.hpp"
 
 #include "../API/iTap9.3.3.3/iTapAPIError.h"
 
 #include <boost/filesystem.hpp>
-
-
-#ifdef _MSC_VER
-#include <wtypes.h>
-HMODULE	g_dllModule = NULL;
-
-BOOL APIENTRY DllMain(
-	HANDLE hModule,
-	DWORD  ul_reason_for_call,
-	LPVOID lpReserved
-	)
-{
-	switch (ul_reason_for_call)
-	{
-	case DLL_PROCESS_ATTACH:
-		g_dllModule = (HMODULE)hModule;
-		break;
-	}
-	return TRUE;
-}
-#else
-#include <dlfcn.h>
-
-char PLATFORM_NAME[] = "UNIX";
-
-std::string	g_moduleName;
-
-__attribute__((constructor))
-void on_load(void) {
-	Dl_info dl_info;
-	dladdr((void *)on_load, &dl_info);
-	g_moduleName = dl_info.dli_fname;
-}
-#endif
-
-std::string getBinDir()
-{
-	static std::string _bin_dir;
-	if (_bin_dir.empty())
-	{
-
-
-#ifdef _MSC_VER
-		char strPath[MAX_PATH];
-		GetModuleFileName(g_dllModule, strPath, MAX_PATH);
-
-		_bin_dir = StrUtil::standardisePath(strPath, false);
-#else
-		_bin_dir = g_moduleName;
-#endif
-
-		uint32_t nPos = _bin_dir.find_last_of('/');
-		_bin_dir = _bin_dir.substr(0, nPos + 1);
-	}
-
-	return _bin_dir;
-}
 
 uint32_t strToTime(const char* strTime)
 {
@@ -714,10 +657,9 @@ void TAP_CDECL TraderiTap::OnRspQryPosition(ITapTrade::TAPIUINT32 sessionID, ITa
 		std::string code = StrUtil::printf("%s%s", productO2I(info->CommodityNo), info->ContractNo);
 		const char* exchg = exchgO2I(info->ExchangeNo);
 		WTSContractInfo* contract = m_bdMgr->getContract(code.c_str(), exchg);
-		WTSCommodityInfo* commInfo = m_bdMgr->getCommodity(contract);
 		if (contract)
 		{
-
+			WTSCommodityInfo* commInfo = m_bdMgr->getCommodity(contract);
 			std::string key = StrUtil::printf("%s-%d", code.c_str(), info->MatchSide);
 			WTSPositionItem* pos = (WTSPositionItem*)m_mapPosition->get(key);
 			if (pos == NULL)

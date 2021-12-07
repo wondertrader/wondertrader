@@ -9,17 +9,13 @@
  */
 #include "WtDataManager.h"
 #include "WtDtRunner.h"
-#include "WtDataReader.h"
 #include "WtHelper.h"
 
 #include "../Includes/WTSDataDef.hpp"
 #include "../Includes/WTSVariant.hpp"
-#include "../Includes/IBaseDataMgr.h"
 #include "../Includes/WTSContractInfo.hpp"
 
 #include "../Share/StrUtil.hpp"
-#include "../Share/DLLHelper.hpp"
-#include "../Share/StdUtils.hpp"
 #include "../Share/TimeUtils.hpp"
 #include "../Share/CodeHelper.hpp"
 

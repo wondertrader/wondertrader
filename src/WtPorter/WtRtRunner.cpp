@@ -23,21 +23,10 @@
 #include "../WTSTools/WTSLogger.h"
 
 #include "../Share/JsonToVariant.hpp"
-#include "../Share/StdUtils.hpp"
 #include "../Share/TimeUtils.hpp"
-#include "../Share/CodeHelper.hpp"
+#include "../Share/ModuleHelper.hpp"
 
 #include "../Includes/WTSContractInfo.hpp"
-
-//#include "../WTSUtils/SignalHook.hpp"
-
-#ifdef _MSC_VER
-#define my_stricmp _stricmp
-#else
-#define my_stricmp strcasecmp
-#endif
-
-extern const char* getBinDir();
 
 WtRtRunner::WtRtRunner()
 	: _data_store(NULL)
@@ -250,15 +239,15 @@ uint32_t WtRtRunner::createHftContext(const char* name, const char* trader, bool
 uint32_t WtRtRunner::createSelContext(const char* name, uint32_t date, uint32_t time, const char* period, const char* trdtpl /* = "CHINA" */, const char* session/* ="TRADING" */)
 {
 	TaskPeriodType ptype;
-	if (my_stricmp(period, "d") == 0)
+	if (wt_stricmp(period, "d") == 0)
 		ptype = TPT_Daily;
-	else if (my_stricmp(period, "w") == 0)
+	else if (wt_stricmp(period, "w") == 0)
 		ptype = TPT_Weekly;
-	else if (my_stricmp(period, "m") == 0)
+	else if (wt_stricmp(period, "m") == 0)
 		ptype = TPT_Monthly;
-	else if (my_stricmp(period, "y") == 0)
+	else if (wt_stricmp(period, "y") == 0)
 		ptype = TPT_Yearly;
-	else if (my_stricmp(period, "min") == 0)
+	else if (wt_stricmp(period, "min") == 0)
 		ptype = TPT_Minute;
 	else
 		ptype = TPT_None;
@@ -597,13 +586,13 @@ bool WtRtRunner::initSelStrategies()
 		const char* period = cfgItem->getCString("period");
 
 		TaskPeriodType ptype;
-		if (my_stricmp(period, "d") == 0)
+		if (wt_stricmp(period, "d") == 0)
 			ptype = TPT_Daily;
-		else if (my_stricmp(period, "w") == 0)
+		else if (wt_stricmp(period, "w") == 0)
 			ptype = TPT_Weekly;
-		else if (my_stricmp(period, "m") == 0)
+		else if (wt_stricmp(period, "m") == 0)
 			ptype = TPT_Monthly;
-		else if (my_stricmp(period, "y") == 0)
+		else if (wt_stricmp(period, "y") == 0)
 			ptype = TPT_Yearly;
 		else
 			ptype = TPT_None;
@@ -668,16 +657,16 @@ bool WtRtRunner::initEngine()
 
 	const char* name = cfg->getCString("name");
 
-	if (strlen(name) == 0 || my_stricmp(name, "cta") == 0)
+	if (strlen(name) == 0 || wt_stricmp(name, "cta") == 0)
 	{
 		_is_hft = false;
 		_is_sel = false;
 	}
-	else if (my_stricmp(name, "sel") == 0)
+	else if (wt_stricmp(name, "sel") == 0)
 	{
 		_is_sel = true;
 	}
-	else //if (my_stricmp(name, "hft") == 0)
+	else //if (wt_stricmp(name, "hft") == 0)
 	{
 		_is_hft = true;
 	}

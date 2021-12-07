@@ -3,7 +3,6 @@
 
 #include "../Share/CodeHelper.hpp"
 #include "../Share/JsonToVariant.hpp"
-#include "../Share/StdUtils.hpp"
 
 #include "../WTSTools/WTSLogger.h"
 
@@ -11,12 +10,6 @@
 
 #include <rapidjson/document.h>
 namespace rj = rapidjson;
-
-#ifdef _MSC_VER
-#define my_stricmp _stricmp
-#else
-#define my_stricmp strcasecmp
-#endif
 
 USING_NS_OTP;
 
@@ -85,9 +78,9 @@ void WtFilterMgr::load_filters(const char* fileName)
 			WTSVariant* cfgItem = filterStra->get(key.c_str());
 			const char* action = cfgItem->getCString("action");
 			FilterAction fAct = FA_None;
-			if (my_stricmp(action, "ignore") == 0)
+			if (wt_stricmp(action, "ignore") == 0)
 				fAct = FA_Ignore;
-			else if (my_stricmp(action, "redirect") == 0)
+			else if (wt_stricmp(action, "redirect") == 0)
 				fAct = FA_Redirect;
 
 			if (fAct == FA_None)
@@ -116,9 +109,9 @@ void WtFilterMgr::load_filters(const char* fileName)
 			WTSVariant* cfgItem = filterCodes->get(stdCode.c_str());
 			const char* action = cfgItem->getCString("action");
 			FilterAction fAct = FA_None;
-			if (my_stricmp(action, "ignore") == 0)
+			if (wt_stricmp(action, "ignore") == 0)
 				fAct = FA_Ignore;
-			else if (my_stricmp(action, "redirect") == 0)
+			else if (wt_stricmp(action, "redirect") == 0)
 				fAct = FA_Redirect;
 
 			if (fAct == FA_None)

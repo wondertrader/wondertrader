@@ -9,23 +9,20 @@
 */
 #include "SelMocker.h"
 #include "WtHelper.h"
-#include "HisDataReplayer.h"
 
 #include <exception>
-#include <rapidjson/document.h>
-#include <rapidjson/prettywriter.h>
 #include <boost/filesystem.hpp>
 
 #include "../Share/StdUtils.hpp"
 #include "../Share/StrUtil.hpp"
 #include "../Includes/WTSContractInfo.hpp"
 #include "../Includes/WTSSessionInfo.hpp"
-#include "../Includes/WTSTradeDef.hpp"
 #include "../Share/decimal.h"
 #include "../Includes/WTSVariant.hpp"
 
 #include "../WTSTools/WTSLogger.h"
 
+#include <rapidjson/document.h>
 namespace rj = rapidjson;
 
 inline uint32_t makeSelCtxId()

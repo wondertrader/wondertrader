@@ -9,14 +9,11 @@
  */
 #include "WtLocalExecuter.h"
 #include "TraderAdapter.h"
-#include "../Includes/IDataManager.h"
 #include "WtEngine.h"
 
 #include "../Share/CodeHelper.hpp"
-#include "../Share/StrUtil.hpp"
-#include "../Share/StdUtils.hpp"
+#include "../Includes/IDataManager.h"
 #include "../Includes/WTSVariant.hpp"
-#include "../Share/TimeUtils.hpp"
 #include "../Includes/IHotMgr.h"
 #include "../Share/decimal.h"
 

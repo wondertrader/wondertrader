@@ -12,14 +12,12 @@
 #include "../Share/TimeUtils.hpp"
 #include "../Share/BoostFile.hpp"
 
-#include "../Includes/WTSTypes.h"
 #include "../WtDataWriter/DataDefine.h"
 #include "../WTSTools/WTSCmpHelper.hpp"
 #include "../WTSTools/CsvHelper.h"
-
-#include "../Includes/WTSDataDef.hpp"
 #include "../WTSTools/WTSDataFactory.h"
 
+#include "../Includes/WTSDataDef.hpp"
 #include "../Includes/WTSSessionInfo.hpp"
 
 #include <rapidjson/document.h>
@@ -28,11 +26,6 @@ namespace rj = rapidjson;
 
 USING_NS_OTP;
 
-#ifdef _MSC_VER
-#define my_stricmp _stricmp
-#else
-#define my_stricmp strcasecmp
-#endif
 
 uint32_t strToTime(const char* strTime, bool bKeepSec = false)
 {
@@ -320,9 +313,9 @@ void trans_csv_bars(WtString csvFolder, WtString binFolder, WtString period, Fun
 		BoostFile::create_directories(binFolder);
 
 	WTSKlinePeriod kp = KP_DAY;
-	if (my_stricmp(period, "m1") == 0)
+	if (wt_stricmp(period, "m1") == 0)
 		kp = KP_Minute1;
-	else if (my_stricmp(period, "m5") == 0)
+	else if (wt_stricmp(period, "m5") == 0)
 		kp = KP_Minute5;
 	else
 		kp = KP_DAY;
@@ -421,11 +414,11 @@ void trans_csv_bars(WtString csvFolder, WtString binFolder, WtString period, Fun
 //	}
 //
 //	BlockType bType = BT_HIS_Day;
-//	if (my_stricmp(period, "m1") == 0)
+//	if (wt_stricmp(period, "m1") == 0)
 //		bType = BT_HIS_Minute1;
-//	else if (my_stricmp(period, "m5") == 0)
+//	else if (wt_stricmp(period, "m5") == 0)
 //		bType = BT_HIS_Minute5;
-//	else if(my_stricmp(period, "d") == 0)
+//	else if(wt_stricmp(period, "d") == 0)
 //		bType = BT_HIS_Day;
 //	else
 //	{
@@ -714,15 +707,15 @@ WtUInt32 resample_bars(WtString barFile, FuncGetBarsCallback cb, FuncCountDataCa
 	WtString period, WtUInt32 times, WtString sessInfo, FuncLogCallback cbLogger /* = NULL */)
 {
 	WTSKlinePeriod kp;
-	if(my_stricmp(period, "m1") == 0)
+	if(wt_stricmp(period, "m1") == 0)
 	{
 		kp = KP_Minute1;
 	}
-	else if (my_stricmp(period, "m5") == 0)
+	else if (wt_stricmp(period, "m5") == 0)
 	{
 		kp = KP_Minute5;
 	}
-	else if (my_stricmp(period, "d") == 0)
+	else if (wt_stricmp(period, "d") == 0)
 	{
 		kp = KP_DAY;
 	}
@@ -936,11 +929,11 @@ bool store_bars(WtString barFile, WTSBarStruct* firstBar, int count, WtString pe
 	}
 
 	BlockType bType = BT_HIS_Day;
-	if (my_stricmp(period, "m1") == 0)
+	if (wt_stricmp(period, "m1") == 0)
 		bType = BT_HIS_Minute1;
-	else if (my_stricmp(period, "m5") == 0)
+	else if (wt_stricmp(period, "m5") == 0)
 		bType = BT_HIS_Minute5;
-	else if (my_stricmp(period, "d") == 0)
+	else if (wt_stricmp(period, "d") == 0)
 		bType = BT_HIS_Day;
 	else
 	{

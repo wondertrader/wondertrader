@@ -12,7 +12,6 @@
 
 #include "../Share/StrUtil.hpp"
 #include "../Includes/WTSDataDef.hpp"
-#include "../Includes/WTSCollection.hpp"
 #include "../Includes/WTSContractInfo.hpp"
 #include "../Includes/WTSVariant.hpp"
 

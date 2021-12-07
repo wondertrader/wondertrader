@@ -8,83 +8,17 @@
  * \brief 
  */
 #include "ParserCTP.h"
-#include "../Share/StrUtil.hpp"
-#include "../Share/TimeUtils.hpp"
+
 #include "../Includes/WTSDataDef.hpp"
-#include "../Share/StdUtils.hpp"
 #include "../Includes/WTSContractInfo.hpp"
 #include "../Includes/WTSParams.hpp"
-#include "../Share/StrUtil.hpp"
 #include "../Includes/IBaseDataMgr.h"
-#include "../Includes/IBaseDataMgr.h"
-#include "../Share/DLLHelper.hpp"
+
+#include "../Share/ModuleHelper.hpp"
+#include "../Share/TimeUtils.hpp"
+#include "../Share/StdUtils.hpp"
 
 #include <boost/filesystem.hpp>
-
-#ifndef FLT_MAX
-#define FLT_MAX 3.402823466e+38F
-#endif
-
-std::string g_bin_dir;
-
-void inst_hlp() {}
-
-#ifdef _MSC_VER
-#include <wtypes.h>
-HMODULE	g_dllModule = NULL;
-
-BOOL APIENTRY DllMain(
-	HANDLE hModule,
-	DWORD  ul_reason_for_call,
-	LPVOID lpReserved
-	)
-{
-	switch (ul_reason_for_call)
-	{
-	case DLL_PROCESS_ATTACH:
-		g_dllModule = (HMODULE)hModule;
-		break;
-	}
-	return TRUE;
-}
-#else
-#include <dlfcn.h>
-
-char PLATFORM_NAME[] = "UNIX";
-
-const std::string& getInstPath()
-{
-	static std::string moduleName;
-	if (moduleName.empty())
-	{
-		Dl_info dl_info;
-		dladdr((void *)inst_hlp, &dl_info);
-		moduleName = dl_info.dli_fname;
-		//printf("1:%s\n", moduleName.c_str());
-	}
-
-	return moduleName;
-}
-#endif
-
-const char* getBinDir()
-{
-	if (g_bin_dir.empty())
-	{
-#ifdef _MSC_VER
-		char strPath[MAX_PATH];
-		GetModuleFileName(g_dllModule, strPath, MAX_PATH);
-
-		g_bin_dir = StrUtil::standardisePath(strPath, false);
-#else
-		g_bin_dir = getInstPath();
-#endif
-		boost::filesystem::path p(g_bin_dir);
-		g_bin_dir = p.branch_path().string() + "/";
-	}
-
-	return g_bin_dir.c_str();
-	}
 
 extern "C"
 {
@@ -169,7 +103,7 @@ bool ParserCTP::init(WTSParams* config)
 	{
 		boost::filesystem::create_directories(boost::filesystem::path(path));
 	}	
-#ifdef _MSC_VER
+#ifdef _WIN32
 #	ifdef _WIN64
 	const char* creatorName = "?CreateFtdcMdApi@CThostFtdcMdApi@@SAPEAV1@PEBD_N1@Z";
 #	else

@@ -1,10 +1,8 @@
 #include "WtDataReader.h"
 
 #include "../Includes/WTSVariant.hpp"
-#include "../Share/StdUtils.hpp"
 #include "../Share/TimeUtils.hpp"
 #include "../Share/CodeHelper.hpp"
-#include "../Share/StdUtils.hpp"
 #include "../Share/DLLHelper.hpp"
 
 #include "../Includes/WTSContractInfo.hpp"

@@ -5,18 +5,12 @@
 #include "../WtDtCore/WtHelper.h"
 
 #include "../Includes/WTSSessionInfo.hpp"
-#include "../Share/DLLHelper.hpp"
 #include "../Share/JsonToVariant.hpp"
-#include "../Includes/WTSVariant.hpp"
 
 #include "../WTSTools/WTSHotMgr.h"
 #include "../WTSTools/WTSBaseDataMgr.h"
 #include "../WTSTools/WTSLogger.h"
 #include "../Share/StrUtil.hpp"
-
-//#include "../WTSUtils/SignalHook.hpp"
-
-#include <boost/asio.hpp>
 
 WTSBaseDataMgr	g_baseDataMgr;
 WTSHotMgr		g_hotMgr;
@@ -93,23 +87,6 @@ void initialize()
 
 	WTSVariant* config = WTSVariant::createObject();
 	jsonToVariant(document, config);
-
-	const char* id = config->getCString("id");
-	if (strlen(id) > 0)
-	{
-#ifdef _MSC_VER
-		HANDLE hHandle = ::CreateEvent(NULL, TRUE, TRUE, id);
-		DWORD dwErr = GetLastError();
-		if (hHandle != NULL && dwErr == ERROR_ALREADY_EXISTS)
-		{
-			ExitProcess(0);
-			return;
-		}
-#else
-		WTSLogger::error("Single instance mode of QuoteFactory is not OK on linux yet.");
-#endif
-	}
-
 
 	//加载市场信息
 	WTSVariant* cfgBF = config->get("basefiles");

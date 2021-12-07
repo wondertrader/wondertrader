@@ -10,8 +10,6 @@
 #include "WtBtPorter.h"
 #include "WtBtRunner.h"
 
-#include <boost/filesystem.hpp>
-
 #include "../WtBtCore/WtHelper.h"
 #include "../WtBtCore/CtaMocker.h"
 #include "../WtBtCore/SelMocker.h"
@@ -19,94 +17,24 @@
 
 #include "../WTSTools/WTSLogger.h"
 
-#include "../Share/decimal.h"
-#include "../Share/StrUtil.hpp"
-#include "../Includes/WTSTradeDef.hpp"
 #include "../Includes/WTSVersion.h"
 
 
 #ifdef _MSC_VER
-#include "../Common/mdump.h"
 #ifdef _WIN64
 char PLATFORM_NAME[] = "X64";
 #else
 char PLATFORM_NAME[] = "X86";
 #endif
-
-HMODULE	g_dllModule = NULL;
-
-BOOL APIENTRY DllMain(
-	HANDLE hModule,
-	DWORD  ul_reason_for_call,
-	LPVOID lpReserved
-	)
-{
-	switch (ul_reason_for_call)
-	{
-	case DLL_PROCESS_ATTACH:
-		g_dllModule = (HMODULE)hModule;
-		break;
-	}
-	return TRUE;
-}
-
 #else
 char PLATFORM_NAME[] = "UNIX";
-
-std::string	g_moduleName;
-
-__attribute__((constructor))
-void on_load(void) {
-	Dl_info dl_info;
-	dladdr((void *)on_load, &dl_info);
-	g_moduleName = dl_info.dli_fname;
-}
 #endif
-
 
 
 WtBtRunner& getRunner()
 {
 	static WtBtRunner runner;
 	return runner;
-}
-
-#ifdef _MSC_VER
-const char* getModuleName()
-{
-	static char MODULE_NAME[250] = { 0 };
-	if (strlen(MODULE_NAME) == 0)
-	{
-		GetModuleFileName(g_dllModule, MODULE_NAME, 250);
-		boost::filesystem::path p(MODULE_NAME);
-		strcpy(MODULE_NAME, p.filename().string().c_str());
-	}
-
-	return MODULE_NAME;
-}
-#endif
-
-std::string getBinDir()
-{
-	static std::string _bin_dir;
-	if (_bin_dir.empty())
-	{
-
-
-#ifdef _MSC_VER
-		char strPath[MAX_PATH];
-		GetModuleFileName(g_dllModule, strPath, MAX_PATH);
-
-		_bin_dir = StrUtil::standardisePath(strPath, false);
-#else
-		_bin_dir = g_moduleName;
-#endif
-
-		WtUInt32 nPos = _bin_dir.find_last_of('/');
-		_bin_dir = _bin_dir.substr(0, nPos + 1);
-	}
-
-	return _bin_dir;
 }
 
 void register_evt_callback(FuncEventCallback cbEvt)
@@ -154,10 +82,6 @@ void init_backtest(const char* logProfile, bool isFile, const char* outDir)
 
 	if (inited)
 		return;
-
-#ifdef _MSC_VER
-	CMiniDumper::Enable(getModuleName(), true, WtHelper::getCWD().c_str());
-#endif
 
 	getRunner().init(logProfile, isFile, outDir);
 

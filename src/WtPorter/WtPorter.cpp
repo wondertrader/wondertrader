@@ -13,58 +13,16 @@
 #include "../WtCore/WtHelper.h"
 #include "../WTSTools/WTSLogger.h"
 #include "../Includes/WTSTradeDef.hpp"
-
-#include "../Share/decimal.h"
-#include "../Share/StrUtil.hpp"
 #include "../Includes/WTSVersion.h"
 
-std::string g_bin_dir;
-
-void inst_hlp() {}
-
-#ifdef _MSC_VER
-#include "../Common/mdump.h"
-#ifdef _WIN64
-char PLATFORM_NAME[] = "X64";
-#else
-char PLATFORM_NAME[] = "X86";
+#ifdef _WIN32
+#   ifdef _WIN64
+    char PLATFORM_NAME[] = "X64";
+#   else
+    char PLATFORM_NAME[] = "X86";
 #endif
-
-HMODULE	g_dllModule = NULL;
-
-BOOL APIENTRY DllMain(
-	HANDLE hModule,
-	DWORD  ul_reason_for_call,
-	LPVOID lpReserved
-	)
-{
-	switch (ul_reason_for_call)
-	{
-	case DLL_PROCESS_ATTACH:
-		g_dllModule = (HMODULE)hModule;
-		break;
-	}
-	return TRUE;
-}
-
 #else
-#include <dlfcn.h>
-
-char PLATFORM_NAME[] = "UNIX";
-
-const std::string& getInstPath()
-{
-	static std::string moduleName;
-	if (moduleName.empty())
-	{
-		Dl_info dl_info;
-		dladdr((void *)inst_hlp, &dl_info);
-		moduleName = dl_info.dli_fname;
-		//printf("1:%s\n", moduleName.c_str());
-	}
-
-	return moduleName;
-}
+    char PLATFORM_NAME[] = "UNIX";
 #endif
 
 WtRtRunner& getRunner()
@@ -73,42 +31,20 @@ WtRtRunner& getRunner()
 	return runner;
 }
 
+#ifdef _MSC_VER
 const char* getModuleName()
 {
 	static char MODULE_NAME[250] = { 0 };
 	if (strlen(MODULE_NAME) == 0)
 	{
-#ifdef _MSC_VER
 		GetModuleFileName(g_dllModule, MODULE_NAME, 250);
 		boost::filesystem::path p(MODULE_NAME);
 		strcpy(MODULE_NAME, p.filename().string().c_str());
-#else
-		boost::filesystem::path p(getInstPath());
-		strcpy(MODULE_NAME, p.filename().string().c_str());
-#endif
 	}
 
 	return MODULE_NAME;
 }
-
-const char* getBinDir()
-{
-	if (g_bin_dir.empty())
-	{
-#ifdef _MSC_VER
-		char strPath[MAX_PATH];
-		GetModuleFileName(g_dllModule, strPath, MAX_PATH);
-
-		g_bin_dir = StrUtil::standardisePath(strPath, false);
-#else
-		g_bin_dir = getInstPath();
 #endif
-		boost::filesystem::path p(g_bin_dir);
-		g_bin_dir = p.branch_path().string() + "/";
-	}
-
-	return g_bin_dir.c_str();
-}
 
 void register_evt_callback(FuncEventCallback cbEvt)
 {

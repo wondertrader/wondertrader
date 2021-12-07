@@ -14,7 +14,6 @@
 #include "../Share/TimeUtils.hpp"
 #include "../Includes/WTSSessionInfo.hpp"
 #include "../Includes/IBaseDataMgr.h"
-#include "../Includes/WTSDataDef.hpp"
 #include "../Includes/IHotMgr.h"
 #include "../Share/CodeHelper.hpp"
 

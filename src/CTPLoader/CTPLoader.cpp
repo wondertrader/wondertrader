@@ -5,72 +5,12 @@
 #include "TraderSpi.h"
 
 #include "../Share/IniHelper.hpp"
-#include "../Share/StrUtil.hpp"
+#include "../Share/ModuleHelper.hpp"
 #include "../Share/DLLHelper.hpp"
 #include "../Share/StdUtils.hpp"
+
+
 #include <boost/filesystem.hpp>
-
-std::string g_bin_dir;
-
-void inst_hlp() {}
-
-#ifdef _MSC_VER
-HMODULE	g_dllModule = NULL;
-
-BOOL APIENTRY DllMain(
-	HANDLE hModule,
-	DWORD  ul_reason_for_call,
-	LPVOID lpReserved
-)
-{
-	switch (ul_reason_for_call)
-	{
-	case DLL_PROCESS_ATTACH:
-		g_dllModule = (HMODULE)hModule;
-		break;
-	}
-	return TRUE;
-}
-
-#else
-#include <dlfcn.h>
-
-char PLATFORM_NAME[] = "UNIX";
-
-const std::string& getInstPath()
-{
-	static std::string moduleName;
-	if (moduleName.empty())
-	{
-		Dl_info dl_info;
-		dladdr((void *)inst_hlp, &dl_info);
-		moduleName = dl_info.dli_fname;
-		//printf("1:%s\n", moduleName.c_str());
-	}
-
-	return moduleName;
-}
-#endif
-
-const char* getBaseFolder()
-{
-	if (g_bin_dir.empty())
-	{
-#ifdef _MSC_VER
-		char strPath[MAX_PATH];
-		GetModuleFileName(g_dllModule, strPath, MAX_PATH);
-
-		g_bin_dir = StrUtil::standardisePath(strPath, false);
-#else
-		g_bin_dir = getInstPath();
-#endif
-		boost::filesystem::path p(g_bin_dir);
-		g_bin_dir = p.branch_path().string() + "/";
-	}
-
-	return g_bin_dir.c_str();
-}
-
 
 // UserApi对象
 CThostFtdcTraderApi* pUserApi;
@@ -141,7 +81,7 @@ int run(const char* cfgfile)
 #endif
 	if(!boost::filesystem::exists(MODULE_NAME.c_str()))
 	{
-		MODULE_NAME = getBaseFolder();
+		MODULE_NAME = getBinDir();
 #ifdef _MSC_VER
 		MODULE_NAME += "traders/thosttraderapi_se.dll";
 #else
@@ -190,7 +130,7 @@ int run(const char* cfgfile)
 
 	// 初始化UserApi
 	DllHandle dllInst = DLLHelper::load_library(MODULE_NAME.c_str());
-#ifdef _MSC_VER
+#ifdef _WIN32
 #	ifdef _WIN64
 	g_ctpCreator = (CTPCreator)DLLHelper::get_symbol(dllInst, "?CreateFtdcTraderApi@CThostFtdcTraderApi@@SAPEAV1@PEBD@Z");
 #	else

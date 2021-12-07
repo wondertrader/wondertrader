@@ -10,11 +10,8 @@
 #include "MQClient.h"
 #include "MQManager.h"
 
-#include "../Share/StrUtil.hpp"
-
 #include <spdlog/fmt/fmt.h>
 #include <atomic>
-
 
 #ifndef NN_STATIC_LIB
 #define NN_STATIC_LIB

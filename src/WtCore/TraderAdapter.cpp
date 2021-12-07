@@ -24,14 +24,11 @@
 #include "../Includes/WTSVariant.hpp"
 #include "../Includes/WTSTradeDef.hpp"
 #include "../Includes/WTSRiskDef.hpp"
-#include "../Share/StrUtil.hpp"
 #include "../Share/TimeUtils.hpp"
 #include "../Includes/WTSSessionInfo.hpp"
 
 #include "../Includes/WTSContractInfo.hpp"
 #include "../Includes/IBaseDataMgr.h"
-#include "../Share/DLLHelper.hpp"
-#include "../Share/StdUtils.hpp"
 #include "../Share/decimal.h"
 
 #include <exception>

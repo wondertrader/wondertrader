@@ -38,12 +38,6 @@
 namespace rj = rapidjson;
 
 
-#ifdef _MSC_VER
-#define my_stricmp _stricmp
-#else
-#define my_stricmp strcasecmp
-#endif
-
 uint64_t readFileContent(const char* filename, std::string& content)
 {
 	FILE* f = fopen(filename, "rb");
@@ -288,15 +282,15 @@ bool HisDataReplayer::loadStkAdjFactors(const char* adjfile)
 void HisDataReplayer::register_task(uint32_t taskid, uint32_t date, uint32_t time, const char* period, const char* trdtpl /* = "CHINA" */, const char* session /* = "TRADING" */)
 {
 	TaskPeriodType ptype;
-	if (my_stricmp(period, "d") == 0)
+	if (wt_stricmp(period, "d") == 0)
 		ptype = TPT_Daily;
-	else if (my_stricmp(period, "w") == 0)
+	else if (wt_stricmp(period, "w") == 0)
 		ptype = TPT_Weekly;
-	else if (my_stricmp(period, "m") == 0)
+	else if (wt_stricmp(period, "m") == 0)
 		ptype = TPT_Monthly;
-	else if (my_stricmp(period, "y") == 0)
+	else if (wt_stricmp(period, "y") == 0)
 		ptype = TPT_Yearly;
-	else if (my_stricmp(period, "min") == 0)
+	else if (wt_stricmp(period, "min") == 0)
 		ptype = TPT_Minute;
 	else
 		ptype = TPT_None;

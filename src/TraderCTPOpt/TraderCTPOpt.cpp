@@ -8,6 +8,7 @@
  * \brief 
  */
 #include "TraderCTPOpt.h"
+
 #include "../Includes/WTSError.hpp"
 #include "../Includes/WTSContractInfo.hpp"
 #include "../Includes/WTSSessionInfo.hpp"
@@ -15,77 +16,14 @@
 #include "../Includes/WTSDataDef.hpp"
 #include "../Includes/WTSParams.hpp"
 #include "../Includes/IBaseDataMgr.h"
+
+#include "../Share/ModuleHelper.hpp"
 #include "../Share/decimal.h"
-#include "../Share/StrUtil.hpp"
 
 #include <boost/filesystem.hpp>
 
-void inst_hlp(){}
-
-#ifdef _MSC_VER
-#include <wtypes.h>
-HMODULE	g_dllModule = NULL;
-
-BOOL APIENTRY DllMain(
-	HANDLE hModule,
-	DWORD  ul_reason_for_call,
-	LPVOID lpReserved
-	)
-{
-	switch (ul_reason_for_call)
-	{
-	case DLL_PROCESS_ATTACH:
-		g_dllModule = (HMODULE)hModule;
-		break;
-	}
-	return TRUE;
-}
-#else
-#include <dlfcn.h>
-
-char PLATFORM_NAME[] = "UNIX";
-
-std::string	g_moduleName;
-
-const std::string& getInstPath()
-{
-	static std::string moduleName;
-	if (moduleName.empty())
-	{
-		Dl_info dl_info;
-		dladdr((void *)inst_hlp, &dl_info);
-		moduleName = dl_info.dli_fname;
-	}
-
-	return moduleName;
-}
-#endif
-
-std::string getBinDir()
-{
-	static std::string _bin_dir;
-	if (_bin_dir.empty())
-	{
-
-
-#ifdef _MSC_VER
-		char strPath[MAX_PATH];
-		GetModuleFileName(g_dllModule, strPath, MAX_PATH);
-
-		_bin_dir = StrUtil::standardisePath(strPath, false);
-#else
-		_bin_dir = getInstPath();
-#endif
-		boost::filesystem::path p(_bin_dir);
-		_bin_dir = p.branch_path().string() + "/";
-	}
-
-	return _bin_dir;
-}
-
 const char* ENTRUST_SECTION = "entrusts";
 const char* ORDER_SECTION = "orders";
-
 
 uint32_t strToTime(const char* strTime)
 {
@@ -652,6 +590,10 @@ int TraderCTPOpt::orderInsert(WTSEntrust* entrust)
 		return -1;
 	}
 
+	WTSContractInfo* ct = m_bdMgr->getContract(entrust->getCode(), entrust->getExchg());
+	if (ct == NULL)
+		return -1;
+
 	CThostFtdcInputOrderField req;
 	memset(&req, 0, sizeof(req));
 	///经纪公司代码
@@ -687,7 +629,6 @@ int TraderCTPOpt::orderInsert(WTSEntrust* entrust)
 		m_iniHelper.save();
 	}
 
-	WTSContractInfo* ct = m_bdMgr->getContract(entrust->getCode(), entrust->getExchg());
 	WTSCommodityInfo* commInfo = m_bdMgr->getCommodity(ct);
 
 	///用户代码
@@ -1217,6 +1158,9 @@ void TraderCTPOpt::OnRspQryInvestorPosition(CThostFtdcInvestorPositionField *pIn
 			m_mapPosition = PositionMap::create();
 
 		WTSContractInfo* contract = m_bdMgr->getContract(pInvestorPosition->InstrumentID, pInvestorPosition->ExchangeID);
+		if (contract == NULL)
+			return;
+
 		WTSCommodityInfo* commInfo = m_bdMgr->getCommodity(contract);
 		if (contract)
 		{

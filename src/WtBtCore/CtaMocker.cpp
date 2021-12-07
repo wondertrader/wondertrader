@@ -12,20 +12,17 @@
 #include "EventNotifier.h"
 
 #include <exception>
-#include <rapidjson/document.h>
-#include <rapidjson/prettywriter.h>
 #include <boost/filesystem.hpp>
 
-#include "../Share/StdUtils.hpp"
 #include "../Includes/WTSContractInfo.hpp"
 #include "../Includes/WTSSessionInfo.hpp"
-#include "../Includes/WTSTradeDef.hpp"
 #include "../Share/decimal.h"
 #include "../Includes/WTSVariant.hpp"
 #include "../Share/CodeHelper.hpp"
 
 #include "../WTSTools/WTSLogger.h"
 
+#include <rapidjson/document.h>
 namespace rj = rapidjson;
 
 const char* CMP_ALG_NAMES[] =

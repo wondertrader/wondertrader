@@ -17,26 +17,29 @@
 #include "../WtBtCore/ExecMocker.h"
 #include "../WtBtCore/WtHelper.h"
 
-#include "../Includes/WTSDataDef.hpp"
-
 #include "../Share/TimeUtils.hpp"
 #include "../Share/JsonToVariant.hpp"
-#include "../Share/StrUtil.hpp"
-#include "../Share/DLLHelper.hpp"
+#include "../Share/ModuleHelper.hpp"
 
 #include "../WTSTools/WTSLogger.h"
-#include "../WTSTools/WTSCmpHelper.hpp"
-
-//#include "../WTSUtils/SignalHook.hpp"
 
 #ifdef _MSC_VER
-#define my_stricmp _stricmp
-#else
-#define my_stricmp strcasecmp
+#include "../Common/mdump.h"
+#include <boost/filesystem.hpp>
+ //这个主要是给MiniDumper用的
+const char* getModuleName()
+{
+	static char MODULE_NAME[250] = { 0 };
+	if (strlen(MODULE_NAME) == 0)
+	{
+		GetModuleFileName(g_dllModule, MODULE_NAME, 250);
+		boost::filesystem::path p(MODULE_NAME);
+		strcpy(MODULE_NAME, p.filename().string().c_str());
+	}
+
+	return MODULE_NAME;
+}
 #endif
-
-extern std::string getBinDir();
-
 
 WtBtRunner::WtBtRunner()
 	: _cta_mocker(NULL)
@@ -73,9 +76,6 @@ WtBtRunner::WtBtRunner()
 	, _running(false)
 	, _async(false)
 {
-	//install_signal_hooks([](const char* message) {
-	//	WTSLogger::error(message);
-	//});
 }
 
 
@@ -94,20 +94,20 @@ bool WtBtRunner::loadRawHisBars(void* obj, const char* key, const char* stdCode,
 	_feed_flag = bForBars;
 	_feeder_bars = cb;
 
-	char * pstr;
 	switch (period)
 	{
-	case KP_DAY: pstr = "d1"; break;
-	case KP_Minute1: pstr = "m1"; break;
-	case KP_Minute5: pstr = "m5"; break;
+	case KP_DAY:
+        return _ext_bar_loader(stdCode, "d1");
+	case KP_Minute1:
+        return _ext_bar_loader(stdCode, "m1");
+	case KP_Minute5:
+        return _ext_bar_loader(stdCode, "m5");
 	default:
 		{
 			WTSLogger::error("Unsupported period of extended data loader");
 			return false;
 		}
 	}
-
-	return _ext_bar_loader(stdCode, pstr);
 }
 
 bool WtBtRunner::loadRawHisTicks(void* obj, const char* key, const char* stdCode, uint32_t uDate, FuncReadTicks cb)
@@ -350,13 +350,15 @@ void WtBtRunner::hft_on_trade(uint32_t cHandle, WtUInt32 localid, const char* st
 		_cb_hft_trd(cHandle, localid, stdCode, isBuy, vol, price, userTag);
 }
 
-extern std::string getBinDir();
-
 void WtBtRunner::init(const char* logProfile /* = "" */, bool isFile /* = true */, const char* outDir/* = "./outputs_bt"*/)
 {
+#ifdef _MSC_VER
+	CMiniDumper::Enable(getModuleName(), true, WtHelper::getCWD().c_str());
+#endif
+
 	WTSLogger::init(logProfile, isFile);
 
-	WtHelper::setInstDir(getBinDir().c_str());
+	WtHelper::setInstDir(getBinDir());
 	WtHelper::setOutputDir(outDir);
 }
 
@@ -380,10 +382,6 @@ void WtBtRunner::config(const char* cfgFile, bool isFile /* = true */)
 		return;
 	}
 
-#ifdef _MSC_VER
-	std::string module = getBinDir() + "libmysql.dll";
-	DLLHelper::load_library(module.c_str());
-#endif
 
 	WTSVariant* cfg = WTSVariant::createObject();
 	jsonToVariant(root, cfg);

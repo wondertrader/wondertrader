@@ -10,9 +10,7 @@
 #include "StateMonitor.h"
 #include "DataManager.h"
 
-#include "../Share/StdUtils.hpp"
 #include "../Share/TimeUtils.hpp"
-#include "../Share/StrUtil.hpp"
 #include "../Includes/WTSContractInfo.hpp"
 #include "../Includes/WTSSessionInfo.hpp"
 

@@ -12,14 +12,21 @@
 #include "../WtBtCore/ExecMocker.h"
 #include "../WtBtCore/HftMocker.h"
 #include "../WtBtCore/SelMocker.h"
+#include "../WtBtCore/WtHelper.h"
 
 #include "../WTSTools/WTSLogger.h"
 
-#include "../Share/StdUtils.hpp"
 #include "../Share/JsonToVariant.hpp"
+#ifdef _MSC_VER
+#include "../Common/mdump.h"
+#endif
 
 int main()
 {
+#ifdef _MSC_VER
+    CMiniDumper::Enable("WtBtRunner.exe", true, WtHelper::getCWD().c_str());
+#endif
+
 	WTSLogger::init("logcfg.json");
 
 	std::string filename = "config.json";

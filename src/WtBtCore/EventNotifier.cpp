@@ -10,7 +10,6 @@
 #include "EventNotifier.h"
 #include "WtHelper.h"
 
-#include "../Share/StrUtil.hpp"
 #include "../Share/TimeUtils.hpp"
 #include "../Share/DLLHelper.hpp"
 
@@ -20,7 +19,6 @@
 #include <rapidjson/document.h>
 #include <rapidjson/prettywriter.h>
 namespace rj = rapidjson;
-
 
 USING_NS_OTP;
 

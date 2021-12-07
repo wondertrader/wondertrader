@@ -10,8 +10,6 @@
 #include "ExpCtaMocker.h"
 #include "WtBtRunner.h"
 
-#include "../Share/StrUtil.hpp"
-
 extern WtBtRunner& getRunner();
 
 ExpCtaMocker::ExpCtaMocker(HisDataReplayer* replayer, const char* name, int32_t slippage /* = 0 */, bool persistData/* = true*/, EventNotifier* notifier /* = NULL */)

@@ -16,12 +16,6 @@
 
 #include "../WTSTools/WTSLogger.h"
 
-#ifdef _MSC_VER
-#define my_stricmp _stricmp
-#else
-#define my_stricmp strcasecmp
-#endif
-
 USING_NS_OTP;
 
 ActionPolicyMgr::ActionPolicyMgr()
@@ -73,13 +67,13 @@ bool ActionPolicyMgr::init(const char* filename)
 				uint32_t uLimit = vObj->getUInt32("limit");
 				uint32_t uLimitS = vObj->getUInt32("limit_s");
 				uint32_t uLimitL = vObj->getUInt32("limit_l");
-				if (my_stricmp(action, "open") == 0)
+				if (wt_stricmp(action, "open") == 0)
 					aRule._atype = AT_Open;
-				else if (my_stricmp(action, "close") == 0)
+				else if (wt_stricmp(action, "close") == 0)
 					aRule._atype = AT_Close;
-				else if (my_stricmp(action, "closetoday") == 0)
+				else if (wt_stricmp(action, "closetoday") == 0)
 					aRule._atype = AT_CloseToday;
-				else if (my_stricmp(action, "closeyestoday") == 0)
+				else if (wt_stricmp(action, "closeyestoday") == 0)
 					aRule._atype = AT_CloseYestoday;
 				else 
 				{

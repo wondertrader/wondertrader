@@ -12,9 +12,7 @@
 #include "../Includes/WTSVariant.hpp"
 #include "../Includes/WTSSessionInfo.hpp"
 #include "../Includes/WTSContractInfo.hpp"
-#include "../Includes/WTSDataDef.hpp"
 #include "../Share/CodeHelper.hpp"
-#include "../Share/StdUtils.hpp"
 #include "../Share/decimal.h"
 
 #include <rapidjson/document.h>

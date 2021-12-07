@@ -68,3 +68,9 @@
 typedef unsigned long		WtUInt32;
 typedef unsigned long long	WtUInt64;
 typedef const char*			WtString;
+
+#ifdef _MSC_VER
+#define wt_stricmp _stricmp
+#else
+#define wt_stricmp strcasecmp
+#endif

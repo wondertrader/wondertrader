@@ -403,6 +403,9 @@ bool WtDataWriter::writeTick(WTSTickData* curTick, bool bNeedSlice /* = true */)
 		do
 		{
 			WTSContractInfo* ct = _bd_mgr->getContract(curTick->code(), curTick->exchg());
+			if(ct == NULL)
+				break;
+
 			WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(ct);
 
 			//再根据状态过滤
@@ -446,6 +449,9 @@ bool WtDataWriter::writeOrderQueue(WTSOrdQueData* curOrdQue)
 		do
 		{
 			WTSContractInfo* ct = _bd_mgr->getContract(curOrdQue->code(), curOrdQue->exchg());
+			if (ct == NULL)
+				break;
+
 			WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(ct);
 
 			//再根据状态过滤
@@ -541,6 +547,9 @@ bool WtDataWriter::writeOrderDetail(WTSOrdDtlData* curOrdDtl)
 		{
 
 			WTSContractInfo* ct = _bd_mgr->getContract(curOrdDtl->code(), curOrdDtl->exchg());
+			if (ct == NULL)
+				break;
+
 			WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(ct);
 
 			//再根据状态过滤
@@ -595,6 +604,9 @@ bool WtDataWriter::writeTransaction(WTSTransData* curTrans)
 		{
 
 			WTSContractInfo* ct = _bd_mgr->getContract(curTrans->code(), curTrans->exchg());
+			if (ct == NULL)
+				break;
+
 			WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(ct);
 
 			//再根据状态过滤

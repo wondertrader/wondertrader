@@ -8,7 +8,6 @@
 #include "../Includes/WTSError.hpp"
 
 #include "../Share/TimeUtils.hpp"
-#include "../Share/StdUtils.hpp"
 #include "../Share/decimal.h"
 #include "../Share/StrUtil.hpp"
 

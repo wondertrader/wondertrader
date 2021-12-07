@@ -8,71 +8,16 @@
  * \brief 
  */
 #include "ParserXTP.h"
-#include "../Share/StrUtil.hpp"
-#include "../Share/TimeUtils.hpp"
+
 #include "../Includes/WTSDataDef.hpp"
 #include "../Includes/WTSContractInfo.hpp"
 #include "../Includes/WTSParams.hpp"
-#include "../Share/StrUtil.hpp"
 #include "../Includes/IBaseDataMgr.h"
-#include "../Share/DLLHelper.hpp"
+
+#include "../Share/TimeUtils.hpp"
+#include "../Share/ModuleHelper.hpp"
 
 #include <boost/filesystem.hpp>
-
-#ifdef _MSC_VER
-#include <wtypes.h>
-HMODULE	g_dllModule = NULL;
-
-BOOL APIENTRY DllMain(
-	HANDLE hModule,
-	DWORD  ul_reason_for_call,
-	LPVOID lpReserved
-	)
-{
-	switch (ul_reason_for_call)
-	{
-	case DLL_PROCESS_ATTACH:
-		g_dllModule = (HMODULE)hModule;
-		break;
-	}
-	return TRUE;
-}
-#else
-#include <dlfcn.h>
-
-std::string	g_moduleName;
-
-__attribute__((constructor))
-void on_load(void) {
-	Dl_info dl_info;
-	dladdr((void *)on_load, &dl_info);
-	g_moduleName = dl_info.dli_fname;
-}
-#endif
-
-
-std::string getBinDir()
-{
-	static std::string _bin_dir;
-	if (_bin_dir.empty())
-	{
-
-
-#ifdef _MSC_VER
-		char strPath[MAX_PATH];
-		GetModuleFileName(g_dllModule, strPath, MAX_PATH);
-
-		_bin_dir = StrUtil::standardisePath(strPath, false);
-#else
-		_bin_dir = g_moduleName;
-#endif
-
-		uint32_t nPos = _bin_dir.find_last_of('/');
-		_bin_dir = _bin_dir.substr(0, nPos + 1);
-	}
-
-	return _bin_dir;
-}
 
 extern "C"
 {
@@ -155,7 +100,7 @@ bool ParserXTP::init(WTSParams* config)
 
 	std::string dllpath = getBinDir() + DLLHelper::wrap_module(module.c_str(), "lib");;
 	m_hInst = DLLHelper::load_library(dllpath.c_str());
-#ifdef _MSC_VER
+#ifdef _WIN32
 #	ifdef _WIN64
 	const char* creatorName = "?CreateQuoteApi@QuoteApi@API@XTP@@SAPEAV123@EPEBDW4XTP_LOG_LEVEL@@@Z";
 #	else

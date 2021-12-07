@@ -15,19 +15,8 @@
 
 #include "../Includes/WTSVariant.hpp"
 #include "../WTSTools/WTSLogger.h"
-#include "../Share/StdUtils.hpp"
 #include "../Share/StrUtil.hpp"
 #include "../Share/JsonToVariant.hpp"
-
-//#include "../WTSUtils/SignalHook.hpp"
-
-#include <boost/circular_buffer.hpp>
-
-#ifdef _WIN32
-#define my_stricmp _stricmp
-#else
-#define my_stricmp strcasecmp
-#endif
 
 
 const char* getBinDir()
@@ -50,9 +39,6 @@ WtRunner::WtRunner()
 	, _is_hft(false)
 	, _is_sel(false)
 {
-	//install_signal_hooks([](const char* message) {
-	//	WTSLogger::error(message);
-	//});
 }
 
 
@@ -314,16 +300,16 @@ bool WtRunner::initEngine()
 
 	const char* name = cfg->getCString("name");
 	
-	if (strlen(name) == 0 || my_stricmp(name, "cta") == 0)
+	if (strlen(name) == 0 || wt_stricmp(name, "cta") == 0)
 	{
 		_is_hft = false;
 		_is_sel = false;
 	}
-	else if (my_stricmp(name, "sel") == 0)
+	else if (wt_stricmp(name, "sel") == 0)
 	{
 		_is_sel = true;
 	}
-	else //if (my_stricmp(name, "hft") == 0)
+	else //if (wt_stricmp(name, "hft") == 0)
 	{
 		_is_hft = true;
 	}

@@ -14,8 +14,6 @@
 #include "../Share/StrUtil.hpp"
 #include "../Includes/WTSDataDef.hpp"
 #include "../Includes/WTSVariant.hpp"
-#include "../Share/DLLHelper.hpp"
-#include "../Share/StdUtils.hpp"
 
 #include "../WTSTools/WTSLogger.h"
 #include "../WTSTools/WTSDataFactory.h"

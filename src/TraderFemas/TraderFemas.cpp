@@ -13,67 +13,12 @@
 #include "../Includes/IBaseDataMgr.h"
 #include "../Includes/WTSTradeDef.hpp"
 #include "../Includes/WTSContractInfo.hpp"
+
+#include "../Share/ModuleHelper.hpp"
 #include "../Share/TimeUtils.hpp"
-#include "../Share/StrUtil.hpp"
 #include "../Share/decimal.h"
 
 #include <boost/filesystem.hpp>
-
-#ifdef _MSC_VER
-#include <wtypes.h>
-HMODULE	g_dllModule = NULL;
-
-BOOL APIENTRY DllMain(
-	HANDLE hModule,
-	DWORD  ul_reason_for_call,
-	LPVOID lpReserved
-	)
-{
-	switch (ul_reason_for_call)
-	{
-	case DLL_PROCESS_ATTACH:
-		g_dllModule = (HMODULE)hModule;
-		break;
-	}
-	return TRUE;
-}
-#else
-#include <dlfcn.h>
-
-char PLATFORM_NAME[] = "UNIX";
-
-std::string	g_moduleName;
-
-__attribute__((constructor))
-void on_load(void) {
-	Dl_info dl_info;
-	dladdr((void *)on_load, &dl_info);
-	g_moduleName = dl_info.dli_fname;
-}
-#endif
-
-std::string getBinDir()
-{
-	static std::string _bin_dir;
-	if (_bin_dir.empty())
-	{
-
-
-#ifdef _MSC_VER
-		char strPath[MAX_PATH];
-		GetModuleFileName(g_dllModule, strPath, MAX_PATH);
-
-		_bin_dir = StrUtil::standardisePath(strPath, false);
-#else
-		_bin_dir = g_moduleName;
-#endif
-
-		uint32_t nPos = _bin_dir.find_last_of('/');
-		_bin_dir = _bin_dir.substr(0, nPos + 1);
-	}
-
-	return _bin_dir;
-}
 
 extern "C"
 {
@@ -380,6 +325,9 @@ int TraderFemas::orderInsert(WTSEntrust* entrust)
 	strcpy(req.InstrumentID, entrust->getCode());
 
 	WTSContractInfo* ct = m_bdMgr->getContract(entrust->getCode(), entrust->getExchg());
+	if (ct == NULL)
+		return -1;
+
 	WTSCommodityInfo* commInfo = m_bdMgr->getCommodity(ct);
 	strcpy(req.ExchangeID, wrapExchg(commInfo->getExchg()));
 
@@ -706,9 +654,9 @@ void TraderFemas::OnRspQryInvestorPosition(CUstpFtdcRspInvestorPositionField *pR
 			m_ayPosition = WTSArray::create();
 
 		WTSContractInfo* contract = m_bdMgr->getContract(pRspInvestorPosition->InstrumentID, pRspInvestorPosition->ExchangeID);
-		WTSCommodityInfo* commInfo = m_bdMgr->getCommodity(contract);
 		if (contract)
 		{
+			WTSCommodityInfo* commInfo = m_bdMgr->getCommodity(contract);
 			WTSPositionItem *pos = WTSPositionItem::create(pRspInvestorPosition->InstrumentID, commInfo->getCurrency(), commInfo->getExchg());
 			pos->setDirection(wrapPosDirection(pRspInvestorPosition->Direction));
 			pos->setNewPosition(pRspInvestorPosition->Position - pRspInvestorPosition->YdPosition);

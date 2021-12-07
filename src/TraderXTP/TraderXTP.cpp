@@ -10,79 +10,15 @@
 #include "TraderXTP.h"
 
 #include "../Includes/IBaseDataMgr.h"
-#include "../Share/StrUtil.hpp"
-
 #include "../Includes/WTSContractInfo.hpp"
 #include "../Includes/WTSSessionInfo.hpp"
 #include "../Includes/WTSTradeDef.hpp"
 #include "../Includes/WTSError.hpp"
 #include "../Includes/WTSParams.hpp"
-#include "../Share/StdUtils.hpp"
-#include "../Share/decimal.h"
+
+#include "../Share/ModuleHelper.hpp"
 
 #include <boost/filesystem.hpp>
-
-#ifdef _MSC_VER
-#define my_stricmp _stricmp
-#else
-#define my_stricmp strcasecmp
-#endif
-
-#ifdef _MSC_VER
-#include <wtypes.h>
-HMODULE	g_dllModule = NULL;
-
-BOOL APIENTRY DllMain(
-	HANDLE hModule,
-	DWORD  ul_reason_for_call,
-	LPVOID lpReserved
-	)
-{
-	switch (ul_reason_for_call)
-	{
-	case DLL_PROCESS_ATTACH:
-		g_dllModule = (HMODULE)hModule;
-		break;
-	}
-	return TRUE;
-}
-#else
-#include <dlfcn.h>
-
-char PLATFORM_NAME[] = "UNIX";
-
-std::string	g_moduleName;
-
-__attribute__((constructor))
-void on_load(void) {
-	Dl_info dl_info;
-	dladdr((void *)on_load, &dl_info);
-	g_moduleName = dl_info.dli_fname;
-}
-#endif
-
-std::string getBinDir()
-{
-	static std::string _bin_dir;
-	if (_bin_dir.empty())
-	{
-
-
-#ifdef _MSC_VER
-		char strPath[MAX_PATH];
-		GetModuleFileName(g_dllModule, strPath, MAX_PATH);
-
-		_bin_dir = StrUtil::standardisePath(strPath, false);
-#else
-		_bin_dir = g_moduleName;
-#endif
-
-		uint32_t nPos = _bin_dir.find_last_of('/');
-		_bin_dir = _bin_dir.substr(0, nPos + 1);
-	}
-
-	return _bin_dir;
-}
 
 extern "C"
 {
@@ -500,9 +436,9 @@ void TraderXTP::OnQueryPosition(XTPQueryStkPositionRsp *position, XTPRI *error_i
 			exchg = "SZSE";
 		code += position->ticker;
 		WTSContractInfo* contract = _bd_mgr->getContract(code.c_str(), exchg.c_str());
-		WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(contract);
 		if (contract)
 		{
+			WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(contract);
 			std::string key = StrUtil::printf("%s-%d", code.c_str(), position->position_direction);
 			WTSPositionItem* pos = (WTSPositionItem*)_positions->get(key);
 			if (pos == NULL)
@@ -828,7 +764,7 @@ int TraderXTP::orderInsert(WTSEntrust* entrust)
 	
 	req.order_client_id = _client;
 	strcpy(req.ticker, entrust->getCode());
-	req.market = my_stricmp(entrust->getExchg(), "SSE") == 0 ? XTP_MKT_SH_A : XTP_MKT_SZ_A;
+	req.market = wt_stricmp(entrust->getExchg(), "SSE") == 0 ? XTP_MKT_SH_A : XTP_MKT_SZ_A;
 	req.price = entrust->getPrice();
 	req.quantity = (int64_t)entrust->getVolume();
 	req.price_type = XTP_PRICE_LIMIT;

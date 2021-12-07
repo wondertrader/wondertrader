@@ -12,15 +12,12 @@
 #include "WtCtaTicker.h"
 #include "WtHelper.h"
 
-#include "../Share/DLLHelper.hpp"
 #include "../Share/CodeHelper.hpp"
-#include "../Share/TimeUtils.hpp"
 #include "../Includes/WTSContractInfo.hpp"
 #include "../Includes/WTSDataDef.hpp"
 #include "../Includes/WTSVariant.hpp"
 #include "../Includes/IBaseDataMgr.h"
 #include "../Includes/IHotMgr.h"
-#include "../Share/StdUtils.hpp"
 
 #include "../WTSTools/WTSLogger.h"
 

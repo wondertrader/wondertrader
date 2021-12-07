@@ -30,12 +30,6 @@
 #include <spdlog/sinks/ostream_sink.h>
 #include <spdlog/async.h>
 
-#ifdef _MSC_VER
-#define my_stricmp _stricmp
-#else
-#define my_stricmp strcasecmp
-#endif
-
 const char* DYN_PATTERN = "dyn_pattern";
 
 ILogHandler*		WTSLogger::m_logHandler	= NULL;
@@ -50,23 +44,23 @@ std::set<std::string>	WTSLogger::m_setDynLoggers;
 
 inline spdlog::level::level_enum str_to_level( const char* slvl)
 {
-	if(my_stricmp(slvl, "debug") == 0)
+	if(wt_stricmp(slvl, "debug") == 0)
 	{
 		return spdlog::level::debug;
 	}
-	else if (my_stricmp(slvl, "info") == 0)
+	else if (wt_stricmp(slvl, "info") == 0)
 	{
 		return spdlog::level::info;
 	}
-	else if (my_stricmp(slvl, "warn") == 0)
+	else if (wt_stricmp(slvl, "warn") == 0)
 	{
 		return spdlog::level::warn;
 	}
-	else if (my_stricmp(slvl, "error") == 0)
+	else if (wt_stricmp(slvl, "error") == 0)
 	{
 		return spdlog::level::err;
 	}
-	else if (my_stricmp(slvl, "fatal") == 0)
+	else if (wt_stricmp(slvl, "fatal") == 0)
 	{
 		return spdlog::level::critical;
 	}

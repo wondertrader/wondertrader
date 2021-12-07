@@ -3,56 +3,16 @@
 
 #include "../WtCore/WtHelper.h"
 #include "../WTSTools/WTSLogger.h"
-
-#include "../Share/StrUtil.hpp"
 #include "../Includes/WTSVersion.h"
 
-
-void inst_hlp() {}
-
-#ifdef _MSC_VER
-#include "../Common/mdump.h"
-#ifdef _WIN64
-char PLATFORM_NAME[] = "X64";
+#ifdef _WIN32
+#   ifdef _WIN64
+    char PLATFORM_NAME[] = "X64";
+#   else
+    char PLATFORM_NAME[] = "X86";
+#   endif
 #else
-char PLATFORM_NAME[] = "X86";
-#endif
-
-HMODULE	g_dllModule = NULL;
-
-BOOL APIENTRY DllMain(
-	HANDLE hModule,
-	DWORD  ul_reason_for_call,
-	LPVOID lpReserved
-)
-{
-	switch (ul_reason_for_call)
-	{
-	case DLL_PROCESS_ATTACH:
-		g_dllModule = (HMODULE)hModule;
-		break;
-	}
-	return TRUE;
-}
-
-#else
-#include <dlfcn.h>
-
-char PLATFORM_NAME[] = "UNIX";
-
-const std::string& getInstPath()
-{
-	static std::string moduleName;
-	if (moduleName.empty())
-	{
-		Dl_info dl_info;
-		dladdr((void *)inst_hlp, &dl_info);
-		moduleName = dl_info.dli_fname;
-		//printf("1:%s\n", moduleName.c_str());
-	}
-
-	return moduleName;
-}
+    char PLATFORM_NAME[] = "linux";
 #endif
 
 WtExecRunner& getRunner()
@@ -61,46 +21,22 @@ WtExecRunner& getRunner()
 	return runner;
 }
 
+#ifdef _MSC_VER
+#include "../Common/mdump.h"
 const char* getModuleName()
 {
 	static char MODULE_NAME[250] = { 0 };
 	if (strlen(MODULE_NAME) == 0)
 	{
-#ifdef _MSC_VER
+
 		GetModuleFileName(g_dllModule, MODULE_NAME, 250);
 		boost::filesystem::path p(MODULE_NAME);
 		strcpy(MODULE_NAME, p.filename().string().c_str());
-#else
-		boost::filesystem::path p(getInstPath());
-		strcpy(MODULE_NAME, p.filename().string().c_str());
-#endif
 	}
 
 	return MODULE_NAME;
 }
-
-const char* getBinDir()
-{
-	static std::string _bin_dir;
-	if (_bin_dir.empty())
-	{
-
-
-#ifdef _MSC_VER
-		char strPath[MAX_PATH];
-		GetModuleFileName(g_dllModule, strPath, MAX_PATH);
-
-		_bin_dir = StrUtil::standardisePath(strPath, false);
-#else
-		_bin_dir = getInstPath();
 #endif
-
-		uint32_t nPos = _bin_dir.find_last_of('/');
-		_bin_dir = _bin_dir.substr(0, nPos + 1);
-	}
-
-	return _bin_dir.c_str();
-}
 
 void init_exec(WtString logCfg, bool isFile /*= true*/)
 {

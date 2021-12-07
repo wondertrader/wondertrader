@@ -13,7 +13,7 @@
 #include "../WtDtCore/WtHelper.h"
 #include "../WTSTools/WTSLogger.h"
 
-#include "../Share/StrUtil.hpp"
+#include "../Share/ModuleHelper.hpp"
 #include "../Includes/WTSVersion.h"
 
 #ifdef _MSC_VER
@@ -21,89 +21,29 @@
 #ifdef _WIN64
 char PLATFORM_NAME[] = "X64";
 #else
-char PLATFORM_NAME[] = "WIN32";
+char PLATFORM_NAME[] = "X86";
 #endif
 #else
 char PLATFORM_NAME[] = "UNIX";
 #endif
 
-std::string g_bin_dir;
-
-void inst_hlp() {}
-
 #ifdef _MSC_VER
-#include <wtypes.h>
-HMODULE	g_dllModule = NULL;
-
-BOOL APIENTRY DllMain(
-	HANDLE hModule,
-	DWORD  ul_reason_for_call,
-	LPVOID lpReserved
-	)
-{
-	switch (ul_reason_for_call)
-	{
-	case DLL_PROCESS_ATTACH:
-		g_dllModule = (HMODULE)hModule;
-		break;
-	}
-	return TRUE;
-}
-
-#else
-#include <dlfcn.h>
-
-const std::string& getInstPath()
-{
-	static std::string moduleName;
-	if (moduleName.empty())
-	{
-		Dl_info dl_info;
-		dladdr((void *)inst_hlp, &dl_info);
-		moduleName = dl_info.dli_fname;
-		//printf("1:%s\n", moduleName.c_str());
-	}
-
-	return moduleName;
-}
-#endif
-
+#include "../Common/mdump.h"
+#include <boost/filesystem.hpp>
+ //这个主要是给MiniDumper用的
 const char* getModuleName()
 {
 	static char MODULE_NAME[250] = { 0 };
 	if (strlen(MODULE_NAME) == 0)
 	{
-#ifdef _MSC_VER
 		GetModuleFileName(g_dllModule, MODULE_NAME, 250);
 		boost::filesystem::path p(MODULE_NAME);
 		strcpy(MODULE_NAME, p.filename().string().c_str());
-#else
-		boost::filesystem::path p(getInstPath());
-		strcpy(MODULE_NAME, p.filename().string().c_str());
-#endif
 	}
 
 	return MODULE_NAME;
 }
-
-const char* getBinDir()
-{
-	if (g_bin_dir.empty())
-	{
-#ifdef _MSC_VER
-		char strPath[MAX_PATH];
-		GetModuleFileName(g_dllModule, strPath, MAX_PATH);
-
-		g_bin_dir = StrUtil::standardisePath(strPath, false);
-#else
-		g_bin_dir = getInstPath();
 #endif
-		boost::filesystem::path p(g_bin_dir);
-		g_bin_dir = p.branch_path().string() + "/";
-	}
-
-	return g_bin_dir.c_str();
-}
 
 WtDtRunner& getRunner()
 {

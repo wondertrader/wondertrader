@@ -10,14 +10,11 @@
 #include "HftStraBaseCtx.h"
 #include "WtHftEngine.h"
 #include "TraderAdapter.h"
-#include "WtHftEngine.h"
 #include "WtHelper.h"
 
 #include "../Includes/WTSContractInfo.hpp"
 
 #include "../Share/CodeHelper.hpp"
-#include "../Share/StrUtil.hpp"
-#include "../Share/StdUtils.hpp"
 #include "../Share/decimal.h"
 
 #include "../WTSTools/WTSLogger.h"

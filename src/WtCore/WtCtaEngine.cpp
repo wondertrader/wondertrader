@@ -16,7 +16,6 @@
 #include "TraderAdapter.h"
 
 #include "../Share/CodeHelper.hpp"
-#include "../Share/StrUtil.hpp"
 #include "../Includes/WTSVariant.hpp"
 #include "../Share/TimeUtils.hpp"
 #include "../Includes/IBaseDataMgr.h"
@@ -24,7 +23,6 @@
 #include "../Includes/WTSContractInfo.hpp"
 #include "../Includes/WTSRiskDef.hpp"
 #include "../Share/decimal.h"
-#include "../Share/StdUtils.hpp"
 
 #include "../WTSTools/WTSLogger.h"
 

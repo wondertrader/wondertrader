@@ -16,8 +16,6 @@
 #include "WtHelper.h"
 
 #include "../Share/CodeHelper.hpp"
-#include "../Share/StrUtil.hpp"
-#include "../Share/StdUtils.hpp"
 #include "../Includes/WTSVariant.hpp"
 
 #include "../WTSTools/WTSLogger.h"

@@ -1,75 +1,14 @@
 #include <string>
 #include <map>
 //v6.3.15
-#include "../API/CTP6.3.15/ThostFtdcTraderApi.h"
+#include "../API/CTPMini1.5.8/ThostFtdcTraderApi.h"
 #include "TraderSpi.h"
 
 #include "../Share/IniHelper.hpp"
-#include "../Share/StrUtil.hpp"
+#include "../Share/ModuleHelper.hpp"
 #include "../Share/StdUtils.hpp"
 #include "../Share/DLLHelper.hpp"
 #include <boost/filesystem.hpp>
-
-std::string g_bin_dir;
-
-void inst_hlp() {}
-
-#ifdef _MSC_VER
-HMODULE	g_dllModule = NULL;
-
-BOOL APIENTRY DllMain(
-	HANDLE hModule,
-	DWORD  ul_reason_for_call,
-	LPVOID lpReserved
-)
-{
-	switch (ul_reason_for_call)
-	{
-	case DLL_PROCESS_ATTACH:
-		g_dllModule = (HMODULE)hModule;
-		break;
-	}
-	return TRUE;
-}
-
-#else
-#include <dlfcn.h>
-
-char PLATFORM_NAME[] = "UNIX";
-
-const std::string& getInstPath()
-{
-	static std::string moduleName;
-	if (moduleName.empty())
-	{
-		Dl_info dl_info;
-		dladdr((void *)inst_hlp, &dl_info);
-		moduleName = dl_info.dli_fname;
-		//printf("1:%s\n", moduleName.c_str());
-	}
-
-	return moduleName;
-}
-#endif
-
-const char* getBaseFolder()
-{
-	if (g_bin_dir.empty())
-	{
-#ifdef _MSC_VER
-		char strPath[MAX_PATH];
-		GetModuleFileName(g_dllModule, strPath, MAX_PATH);
-
-		g_bin_dir = StrUtil::standardisePath(strPath, false);
-#else
-		g_bin_dir = getInstPath();
-#endif
-		boost::filesystem::path p(g_bin_dir);
-		g_bin_dir = p.branch_path().string() + "/";
-	}
-
-	return g_bin_dir.c_str();
-}
 
 // UserApi对象
 CThostFtdcTraderApi* pUserApi;
@@ -133,15 +72,12 @@ int run(const char* cfgfile)
 	COMM_FILE = ini.readString("config", "commfile", "commodities.json");
 	CONT_FILE = ini.readString("config", "contfile", "contracts.json");
 
-#ifdef _MSC_VER
-	MODULE_NAME = ini.readString("config", "module", "thosttraderapi.dll");
-#else
-	MODULE_NAME = ini.readString("config", "module", "thosttraderapi.so");
-#endif
-	if(!boost::filesystem::exists(MODULE_NAME.c_str()))
+	MODULE_NAME = ini.readString("config", "module");
+
+	if(MODULE_NAME.empty() || !boost::filesystem::exists(MODULE_NAME.c_str()))
 	{
-		MODULE_NAME = getBaseFolder();
-#ifdef _MSC_VER
+		MODULE_NAME = getBinDir();
+#ifdef _WIN32
 		MODULE_NAME += "traders/thosttraderapi.dll";
 #else
 		MODULE_NAME += "traders/thosttraderapi.so";
@@ -160,7 +96,7 @@ int run(const char* cfgfile)
 		StringVector ayFiles = StrUtil::split(map_files, ",");
 		for (const std::string& fName : ayFiles)
 		{
-			printf("开始读取映射文件%s...", fName.c_str());
+			printf("开始读取映射文件%s...\r\n", fName.c_str());
 			IniHelper iniMap;
 			if (!StdFile::exists(fName.c_str()))
 				continue;
@@ -187,7 +123,9 @@ int run(const char* cfgfile)
 
 	// 初始化UserApi
 	DllHandle dllInst = DLLHelper::load_library(MODULE_NAME.c_str());
-#ifdef _MSC_VER
+	if (dllInst == NULL)
+		printf("加载模块%s失败\r\n", MODULE_NAME.c_str());
+#ifdef _WIN32
 #	ifdef _WIN64
 	const char* creatorName = "?CreateFtdcTraderApi@CThostFtdcTraderApi@@SAPEAV1@PEBD@Z";
 #	else
@@ -197,6 +135,8 @@ int run(const char* cfgfile)
 	const char* creatorName = "_ZN19CThostFtdcTraderApi19CreateFtdcTraderApiEPKc";
 #endif
 	g_ctpCreator = (CTPCreator)DLLHelper::get_symbol(dllInst, creatorName);
+	if(g_ctpCreator == NULL)
+		printf("加载CreateFtdcTraderApi失败\r\n");
 	pUserApi = g_ctpCreator("");			// 创建UserApi
 	CTraderSpi* pUserSpi = new CTraderSpi();
 	pUserApi->RegisterSpi((CThostFtdcTraderSpi*)pUserSpi);			// 注册事件类

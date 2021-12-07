@@ -11,7 +11,6 @@
 #include "WtHelper.h"
 
 #include <stdarg.h>
-#include <math.h>
 
 #include <boost/filesystem.hpp>
 
@@ -19,7 +18,6 @@
 #include "../Includes/WTSContractInfo.hpp"
 #include "../Share/decimal.h"
 #include "../Share/TimeUtils.hpp"
-#include "../Share/StdUtils.hpp"
 #include "../Share/StrUtil.hpp"
 
 #include "../WTSTools/WTSLogger.h"

@@ -8,86 +8,22 @@
  * \brief 
  */
 #include "TraderCTP.h"
+
 #include "../Includes/WTSError.hpp"
 #include "../Includes/WTSContractInfo.hpp"
 #include "../Includes/WTSSessionInfo.hpp"
 #include "../Includes/WTSTradeDef.hpp"
 #include "../Includes/WTSDataDef.hpp"
 #include "../Includes/WTSParams.hpp"
-#include "../Share/TimeUtils.hpp"
 #include "../Includes/IBaseDataMgr.h"
-#include "../Share/DLLHelper.hpp"
+
 #include "../Share/decimal.h"
-#include "../Share/StrUtil.hpp"
+#include "../Share/ModuleHelper.hpp"
 
 #include <boost/filesystem.hpp>
 
-void inst_hlp(){}
-
-#ifdef _MSC_VER
-#include <wtypes.h>
-HMODULE	g_dllModule = NULL;
-
-BOOL APIENTRY DllMain(
-	HANDLE hModule,
-	DWORD  ul_reason_for_call,
-	LPVOID lpReserved
-	)
-{
-	switch (ul_reason_for_call)
-	{
-	case DLL_PROCESS_ATTACH:
-		g_dllModule = (HMODULE)hModule;
-		break;
-	}
-	return TRUE;
-}
-#else
-#include <dlfcn.h>
-
-char PLATFORM_NAME[] = "UNIX";
-
-std::string	g_moduleName;
-
-const std::string& getInstPath()
-{
-	static std::string moduleName;
-	if (moduleName.empty())
-	{
-		Dl_info dl_info;
-		dladdr((void *)inst_hlp, &dl_info);
-		moduleName = dl_info.dli_fname;
-	}
-
-	return moduleName;
-}
-#endif
-
-std::string getBinDir()
-{
-	static std::string _bin_dir;
-	if (_bin_dir.empty())
-	{
-
-
-#ifdef _MSC_VER
-		char strPath[MAX_PATH];
-		GetModuleFileName(g_dllModule, strPath, MAX_PATH);
-
-		_bin_dir = StrUtil::standardisePath(strPath, false);
-#else
-		_bin_dir = getInstPath();
-#endif
-		boost::filesystem::path p(_bin_dir);
-		_bin_dir = p.branch_path().string() + "/";
-	}
-
-	return _bin_dir;
-}
-
 const char* ENTRUST_SECTION = "entrusts";
 const char* ORDER_SECTION = "orders";
-
 
 uint32_t strToTime(const char* strTime)
 {
@@ -167,7 +103,7 @@ bool TraderCTP::init(WTSParams* params)
 		m_strModule = getBinDir() + DLLHelper::wrap_module("thosttraderapi_se", "");
 
 	m_hInstCTP = DLLHelper::load_library(m_strModule.c_str());
-#ifdef _MSC_VER
+#ifdef _WIN32
 #	ifdef _WIN64
 	const char* creatorName = "?CreateFtdcTraderApi@CThostFtdcTraderApi@@SAPEAV1@PEBD@Z";
 #	else
@@ -409,6 +345,8 @@ int TraderCTP::orderInsert(WTSEntrust* entrust)
 	}
 
 	WTSContractInfo* ct = m_bdMgr->getContract(entrust->getCode(), entrust->getExchg());
+	if (ct == NULL)
+		return -1;
 
 	///ÓÃ»§´úÂë
 	//	TThostFtdcUserIDType	UserID;
@@ -849,9 +787,9 @@ void TraderCTP::OnRspQryInvestorPosition(CThostFtdcInvestorPositionField *pInves
 			m_mapPosition = PositionMap::create();
 
 		WTSContractInfo* contract = m_bdMgr->getContract(pInvestorPosition->InstrumentID, pInvestorPosition->ExchangeID);
-		WTSCommodityInfo* commInfo = m_bdMgr->getCommodity(contract);
 		if (contract)
 		{
+			WTSCommodityInfo* commInfo = m_bdMgr->getCommodity(contract);
 			std::string key = StrUtil::printf("%s-%d", pInvestorPosition->InstrumentID, pInvestorPosition->PosiDirection);
 			WTSPositionItem* pos = (WTSPositionItem*)m_mapPosition->get(key);
 			if(pos == NULL)

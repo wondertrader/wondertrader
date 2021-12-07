@@ -13,7 +13,6 @@
 
 #include <boost/bind.hpp>
 
-
 #define UDP_MSG_SUBSCRIBE	0x100
 #define UDP_MSG_PUSHTICK	0x200
 #define UDP_MSG_PUSHORDQUE	0x201	//Î¯ÍÐ¶ÓÁÐ

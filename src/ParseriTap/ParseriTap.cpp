@@ -1,73 +1,14 @@
 #include "ParseriTap.h"
 #include "../API/iTap9.3.3.3/TapAPIError.h"
 
-#include "../Share/StrUtil.hpp"
-#include "../Share/TimeUtils.hpp"
 #include "../Includes/WTSDataDef.hpp"
-#include "../Share/StdUtils.hpp"
 #include "../Includes/IBaseDataMgr.h"
 #include "../Includes/WTSParams.hpp"
 #include "../Includes/WTSContractInfo.hpp"
-#include "../Share/DLLHelper.hpp"
 
-
-#ifdef _MSC_VER
-#include <wtypes.h>
-HMODULE	g_dllModule = NULL;
-
-BOOL APIENTRY DllMain(
-	HANDLE hModule,
-	DWORD  ul_reason_for_call,
-	LPVOID lpReserved
-	)
-{
-	switch (ul_reason_for_call)
-	{
-	case DLL_PROCESS_ATTACH:
-		g_dllModule = (HMODULE)hModule;
-		break;
-	}
-	return TRUE;
-}
-#else
-#include <dlfcn.h>
-
-char PLATFORM_NAME[] = "UNIX";
-
-std::string	g_moduleName;
-
-__attribute__((constructor))
-void on_load(void) {
-	Dl_info dl_info;
-	dladdr((void *)on_load, &dl_info);
-	g_moduleName = dl_info.dli_fname;
-}
-#endif
-
-
-std::string getBinDir()
-{
-	static std::string _bin_dir;
-	if (_bin_dir.empty())
-	{
-
-
-#ifdef _MSC_VER
-		char strPath[MAX_PATH];
-		GetModuleFileName(g_dllModule, strPath, MAX_PATH);
-
-		_bin_dir = StrUtil::standardisePath(strPath, false);
-#else
-		_bin_dir = g_moduleName;
-#endif
-
-		uint32_t nPos = _bin_dir.find_last_of('/');
-		_bin_dir = _bin_dir.substr(0, nPos + 1);
-	}
-
-	return _bin_dir;
-}
-
+#include "../Share/TimeUtils.hpp"
+#include "../Share/StdUtils.hpp"
+#include "../Share/ModuleHelper.hpp"
 
 extern "C"
 {
@@ -467,20 +408,20 @@ void ParseriTap::subscribe()
 				code = fullcode;
 			}
 
-			WTSContractInfo* contractInfo = m_bdMgr->getContract(code.c_str(), exchg.c_str());
-			//char* code = (char*)(*it).c_str();
-			//code += strlen(contractInfo->getProduct());
+			WTSContractInfo* cInfo = m_bdMgr->getContract(code.c_str(), exchg.c_str());
+			if(cInfo)
+			{
+				TapAPIContract stContract;
+				memset(&stContract, 0, sizeof(stContract));
+				strcpy(stContract.Commodity.ExchangeNo, exchgI2O(cInfo->getExchg()));
+				stContract.Commodity.CommodityType = TAPI_COMMODITY_TYPE_FUTURES;
+				strcpy(stContract.Commodity.CommodityNo, productI2O(cInfo->getProduct()));
+				strcpy(stContract.ContractNo1, code.substr(strlen(cInfo->getProduct())).c_str());
+				stContract.CallOrPutFlag1 = TAPI_CALLPUT_FLAG_NONE;
+				stContract.CallOrPutFlag2 = TAPI_CALLPUT_FLAG_NONE;
 
-			TapAPIContract stContract;
-			memset(&stContract, 0, sizeof(stContract));
-			strcpy(stContract.Commodity.ExchangeNo, exchgI2O(contractInfo->getExchg()));
-			stContract.Commodity.CommodityType = TAPI_COMMODITY_TYPE_FUTURES;
-			strcpy(stContract.Commodity.CommodityNo, productI2O(contractInfo->getProduct()));
-			strcpy(stContract.ContractNo1, code.substr(strlen(contractInfo->getProduct())).c_str());
-			stContract.CallOrPutFlag1 = TAPI_CALLPUT_FLAG_NONE;
-			stContract.CallOrPutFlag2 = TAPI_CALLPUT_FLAG_NONE;
-
-			m_pUserAPI->SubscribeQuote(&m_uSessionID, &stContract);
+				m_pUserAPI->SubscribeQuote(&m_uSessionID, &stContract);
+			}
 		}
 	}
 }
@@ -514,14 +455,16 @@ void ParseriTap::unsubscribe(const CodeSet& vecSymbols)
 				code = fullcode;
 			}
 
-			WTSContractInfo* contractInfo = m_bdMgr->getContract(code.c_str(), exchg.c_str());
+			WTSContractInfo* cInfo = m_bdMgr->getContract(code.c_str(), exchg.c_str());
+			if(cInfo == NULL)
+				continue;
 
 			TapAPIContract stContract;
 			memset(&stContract, 0, sizeof(stContract));
-			strcpy(stContract.Commodity.ExchangeNo, exchgI2O(contractInfo->getExchg()));
+			strcpy(stContract.Commodity.ExchangeNo, exchgI2O(cInfo->getExchg()));
 			stContract.Commodity.CommodityType = TAPI_COMMODITY_TYPE_FUTURES;
-			strcpy(stContract.Commodity.CommodityNo, productI2O(contractInfo->getProduct()));
-			strcpy(stContract.ContractNo1, code.substr(strlen(contractInfo->getProduct())).c_str());
+			strcpy(stContract.Commodity.CommodityNo, productI2O(cInfo->getProduct()));
+			strcpy(stContract.ContractNo1, code.substr(strlen(cInfo->getProduct())).c_str());
 			stContract.CallOrPutFlag1 = TAPI_CALLPUT_FLAG_NONE;
 			stContract.CallOrPutFlag2 = TAPI_CALLPUT_FLAG_NONE;
 
@@ -568,14 +511,16 @@ void ParseriTap::subscribe(const CodeSet &vecSymbols)
 					code = fullcode;
 				}
 
-				WTSContractInfo* contractInfo = m_bdMgr->getContract(code.c_str(), exchg.c_str());
+				WTSContractInfo* cInfo = m_bdMgr->getContract(code.c_str(), exchg.c_str());
+				if(cInfo == NULL)
+					continue;
 
 				TapAPIContract stContract;
 				memset(&stContract, 0, sizeof(stContract));
-				strcpy(stContract.Commodity.ExchangeNo, exchgI2O(contractInfo->getExchg()));
+				strcpy(stContract.Commodity.ExchangeNo, exchgI2O(cInfo->getExchg()));
 				stContract.Commodity.CommodityType = TAPI_COMMODITY_TYPE_FUTURES;
-				strcpy(stContract.Commodity.CommodityNo, productI2O(contractInfo->getProduct()));
-				strcpy(stContract.ContractNo1, code.substr(strlen(contractInfo->getProduct())).c_str());
+				strcpy(stContract.Commodity.CommodityNo, productI2O(cInfo->getProduct()));
+				strcpy(stContract.ContractNo1, code.substr(strlen(cInfo->getProduct())).c_str());
 				stContract.CallOrPutFlag1 = TAPI_CALLPUT_FLAG_NONE;
 				stContract.CallOrPutFlag2 = TAPI_CALLPUT_FLAG_NONE;
 
