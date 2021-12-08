@@ -1,8 +1,6 @@
 #pragma once
 #include <signal.h>
-#include <functional>
-
-typedef std::function<void(const char*)> TracerLogCallback;
+#include "./StackTracer/StackTracer.h"
 TracerLogCallback g_cbSignalLog = NULL;
 
 void handle_signal(int signum)
@@ -26,7 +24,7 @@ void handle_signal(int signum)
 	case SIGABRT_COMPAT:  // SIGABRT compatible with other platforms, same as SIGABRT
 		sprintf(buf, "app stopped by signal %d", signum);
 		g_cbSignalLog(buf);
-		//print_stack_trace(g_cbSignalLog);
+		print_stack_trace(g_cbSignalLog);
 		exit(signum);
 		break;
 #else
@@ -63,13 +61,13 @@ void handle_signal(int signum)
 	case SIGPROF:      // terminate process    profiling timer alarm (see setitimer(2))
 		sprintf(buf, "app terminated by signal %d", signum);
 		g_cbSignalLog(buf);
-		//print_stack_trace(g_cbSignalLog);
+		print_stack_trace(g_cbSignalLog);
 		exit(signum);
 	case SIGUSR1:      // terminate process    User defined signal 1
 	case SIGUSR2:      // terminate process    User defined signal 2
 		sprintf(buf, "app caught user defined signal %d", signum);
 		g_cbSignalLog(buf);
-		//print_stack_trace(g_cbSignalLog);
+		print_stack_trace(g_cbSignalLog);
 		exit(signum);
 	case SIGQUIT:      // create core image    quit program
 	case SIGILL:       // create core image    illegal instruction
@@ -78,7 +76,7 @@ void handle_signal(int signum)
 	case SIGFPE:       // create core image    floating-point exception
 	case SIGBUS:       // create core image    bus error
 		g_cbSignalLog("bus error");
-		//print_stack_trace(g_cbSignalLog);
+		print_stack_trace(g_cbSignalLog);
 		exit(signum);
 	case SIGSEGV:      // create core image    segmentation violation
 		g_cbSignalLog("segmentation violation");

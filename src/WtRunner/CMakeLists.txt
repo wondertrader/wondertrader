@@ -14,7 +14,7 @@ IF (MSVC)
 		SET(INCS $ENV{MyDepends141}/include)
 		SET(LNKS $ENV{MyDepends141}/lib/x86)
 	ENDIF()
-ELSE (GCC)
+ELSE (GNU)
 	IF(WIN32)
 		SET (MyDeps $ENV{MyDependsGcc})
 	ELSE()
@@ -45,7 +45,7 @@ SET(LIBS
 
 IF (MSVC)
 	LIST(APPEND LIBS ws2_32)
-ELSE(GCC)
+ELSE(GNU)
 	LIST(APPEND LIBS
 		dl
 		pthread

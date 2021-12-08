@@ -14,7 +14,7 @@ IF (MSVC)
 		SET(INCS $ENV{MyDepends141}/include)
 		SET(LNKS $ENV{MyDepends141}/lib/x86)
 	ENDIF()
-ELSE (GCC)
+ELSE (GNU)
 	IF(WIN32)
 		SET (MyDeps $ENV{MyDependsGcc})
 	ELSE()
@@ -44,7 +44,7 @@ IF(MSVC)
 		WTSTools
 		WTSUtils
 	)
-ELSE(GCC)
+ELSE(GNU)
 	SET(LIBS
 		WtBtCore
 		WTSTools

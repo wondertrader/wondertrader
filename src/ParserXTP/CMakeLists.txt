@@ -15,7 +15,7 @@ IF (MSVC)
 		SET(INCS $ENV{MyDepends141}/include)
 		SET(LNKS $ENV{MyDepends141}/lib/x86)
 	ENDIF()
-ELSE (GCC)
+ELSE (GNU)
 	IF(WIN32)
 		SET (MyDeps $ENV{MyDependsGcc})
 	ELSE()
@@ -37,7 +37,7 @@ LINK_DIRECTORIES(${LNKS})
 ADD_LIBRARY(ParserXTP SHARED ${SRC})
 
 IF (MSVC)
-ELSE (GCC)
+ELSE (GNU)
 	SET(LIBS
 		boost_filesystem
 		dl
@@ -46,7 +46,7 @@ ELSE (GCC)
 ENDIF()
 
 IF (MSVC)
-ELSE (GCC)
+ELSE (GNU)
 	SET_TARGET_PROPERTIES(ParserXTP PROPERTIES
 		CXX_VISIBILITY_PRESET hidden
 		C_VISIBILITY_PRESET hidden

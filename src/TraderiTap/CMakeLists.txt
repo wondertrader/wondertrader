@@ -15,7 +15,7 @@ IF (MSVC)
 		SET(INCS $ENV{MyDepends141}/include)
 		SET(LNKS $ENV{MyDepends141}/lib/x86)
 	ENDIF()
-ELSE (GCC)
+ELSE (GNU)
 	IF(WIN32)
 		SET (MyDeps $ENV{MyDependsGcc})
 	ELSE()
@@ -39,7 +39,7 @@ ADD_LIBRARY(TraderiTap SHARED ${SRC})
 SET(LIBS curl)
         
 IF(MSVC)
-ELSE(GCC)
+ELSE(GNU)
 	LIST(APPEND LIBS
 		boost_filesystem
 		dl)
@@ -54,7 +54,7 @@ ENDIF()
 TARGET_LINK_LIBRARIES(TraderiTap ${LIBS})
 
 IF (MSVC)
-ELSE (GCC)
+ELSE (GNU)
 	SET_TARGET_PROPERTIES(TraderiTap PROPERTIES
 		CXX_VISIBILITY_PRESET hidden
 		C_VISIBILITY_PRESET hidden

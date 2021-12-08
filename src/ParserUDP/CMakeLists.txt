@@ -15,7 +15,7 @@ IF (MSVC)
 		SET(INCS $ENV{MyDepends141}/include)
 		SET(LNKS $ENV{MyDepends141}/lib/x86)
 	ENDIF()
-ELSE (GCC)
+ELSE (GNU)
 	IF(WIN32)
 		SET (MyDeps $ENV{MyDependsGcc})
 	ELSE()
@@ -40,7 +40,7 @@ IF(MSVC)
 	SET(LIBS
 		ws2_32
 	)
-ELSE(GCC)
+ELSE(GNU)
 	IF (WIN32)
 		SET(LIBS
 			boost_thread
@@ -55,7 +55,7 @@ ENDIF()
 TARGET_LINK_LIBRARIES(ParserUDP ${LIBS})
 
 IF (MSVC)
-ELSE (GCC)
+ELSE (GNU)
 	SET_TARGET_PROPERTIES(ParserUDP PROPERTIES
 		CXX_VISIBILITY_PRESET hidden
 		C_VISIBILITY_PRESET hidden

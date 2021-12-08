@@ -14,7 +14,7 @@ IF (MSVC)
 		SET(INCS $ENV{MyDepends141}/include)
 		SET(LNKS $ENV{MyDepends141}/lib/x86)
 	ENDIF()
-ELSE (GCC)
+ELSE (GNU)
 	IF(WIN32)
 		SET (MyDeps $ENV{MyDependsGcc})
 	ELSE()
@@ -39,7 +39,7 @@ SET(LIBS
     WTSTools
 )
 IF (MSVC)
-ELSE (GCC)
+ELSE (GNU)
 	LIST(APPEND LIBS
 		dl
 		boost_filesystem
@@ -48,7 +48,7 @@ ENDIF()
 
 TARGET_LINK_LIBRARIES(WtDtHelper ${LIBS})
 IF (MSVC)
-ELSE (GCC)
+ELSE (GNU)
 	SET_TARGET_PROPERTIES(WtDtHelper PROPERTIES
 		CXX_VISIBILITY_PRESET hidden
 		VISIBILITY_INLINES_HIDDEN 1)
