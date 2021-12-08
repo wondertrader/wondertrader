@@ -50,12 +50,12 @@ int iRequestID = 0;
 extern "C"
 {
 #endif
-	EXPORT_FLAG int run(const char* cfgfile);
+	EXPORT_FLAG int run(const char* cfgfile, bool bAsync);
 #ifdef __cplusplus
 }
 #endif
 
-int run(const char* cfgfile)
+int run(const char* cfgfile, bool bAsync = false)
 {
 	std::string cfg = cfgfile;
 	IniHelper ini;
@@ -149,6 +149,9 @@ int run(const char* cfgfile)
 	pUserApi->RegisterFront((char*)FRONT_ADDR.c_str());				// connect
 	pUserApi->Init();
 
-	pUserApi->Join();
+    //如果不是异步，则等待API返回
+    if(!bAsync)
+	    pUserApi->Join();
+
 	return 0;
 }

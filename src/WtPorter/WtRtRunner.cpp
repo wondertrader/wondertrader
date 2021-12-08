@@ -858,9 +858,9 @@ void WtRtRunner::run(bool bAsync /* = false */)
 	}
 	catch (...)
 	{
-		//print_stack_trace([](const char* message) {
-		//	WTSLogger::error(message);
-		//});
+		print_stack_trace([](const char* message) {
+			WTSLogger::error(message);
+		});
 	}
 }
 

@@ -40,17 +40,25 @@ WtDtRunner::~WtDtRunner()
 {
 }
 
-void WtDtRunner::start()
+void WtDtRunner::start(bool bAsync/* = false*/)
 {
 	m_parsers.run();
 
-	m_asyncIO.post([this](){
+    if(!bAsync)
+    {
+		m_asyncIO.post([this]() {
+			std::this_thread::sleep_for(std::chrono::milliseconds(5));
+			m_stateMon.run();
+		});
+
+        boost::asio::io_service::work work(m_asyncIO);
+        m_asyncIO.run();
+    }
+	else
+	{
 		std::this_thread::sleep_for(std::chrono::milliseconds(5));
 		m_stateMon.run();
-	});
-
-	boost::asio::io_service::work work(m_asyncIO);
-	m_asyncIO.run();
+	}
 }
 
 void WtDtRunner::initialize(const char* cfgFile, const char* logCfg, const char* modDir /* = "" */)

@@ -8,6 +8,7 @@
 #include "../Share/JsonToVariant.hpp"
 #include "../Share/ModuleHelper.hpp"
 #include "../Share/TimeUtils.hpp"
+#include "../WTSUtils/SignalHook.hpp"
 
 #ifdef _MSC_VER
 #include "../Common/mdump.h"
@@ -29,9 +30,9 @@ const char* getModuleName()
 
 WtExecRunner::WtExecRunner()
 {
-	//install_signal_hooks([](const char* message) {
-	//	WTSLogger::error(message);
-	//});
+	install_signal_hooks([](const char* message) {
+		WTSLogger::error(message);
+	});
 }
 
 bool WtExecRunner::init(const char* logCfg /* = "logcfgexec.json" */, bool isFile /* = true */)
@@ -141,7 +142,7 @@ bool WtExecRunner::config(const char* cfgFile, bool isFile /* = true */)
 }
 
 
-void WtExecRunner::run(bool bAsync /* = false */)
+void WtExecRunner::run()
 {
 	try
 	{
@@ -150,9 +151,9 @@ void WtExecRunner::run(bool bAsync /* = false */)
 	}
 	catch (...)
 	{
-		//print_stack_trace([](const char* message) {
-		//	WTSLogger::error(message);
-		//});
+		print_stack_trace([](const char* message) {
+			WTSLogger::error(message);
+		});
 	}
 }
 

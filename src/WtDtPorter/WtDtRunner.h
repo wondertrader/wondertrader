@@ -33,13 +33,13 @@ public:
 
 public:
 	void	initialize(const char* cfgFile, const char* logCfg, const char* modDir = "");
-	void	start();
+	void	start(bool bAsync = false);
 
 	bool	createExtParser(const char* id);
 
 
 //////////////////////////////////////////////////////////////////////////
-//À©Õ¹Parser
+//æ‰©å±•Parser
 public:
 	void registerParserPorter(FuncParserEvtCallback cbEvt, FuncParserSubCallback cbSub);
 
@@ -53,7 +53,7 @@ public:
 	void on_parser_quote(const char* id, WTSTickStruct* curTick, bool bNeedSlice = true);
 
 //////////////////////////////////////////////////////////////////////////
-//À©Õ¹Dumper
+//æ‰©å±•Dumper
 public:
 	bool createExtDumper(const char* id);
 

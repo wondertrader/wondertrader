@@ -28,7 +28,7 @@ public:
 
 	bool config(const char* cfgFile, bool isFile = true);
 
-	void run(bool bAsync = false);
+	void run();
 
 	void release();
 

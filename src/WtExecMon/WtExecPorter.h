@@ -2,13 +2,6 @@
 #include <stdint.h>
 #include "../Includes/WTSMarcos.h"
 
-
-#ifdef _WIN32
-#	define PORTER_FLAG _cdecl
-#else
-#	define PORTER_FLAG __attribute__((_cdecl))
-#endif
-
 typedef const char*			WtString;
 
 #ifdef __cplusplus
@@ -22,7 +15,7 @@ extern "C"
 
 	EXPORT_FLAG	void		run_exec();
 
-	EXPORT_FLAG	void		write_log(unsigned long level, WtString message, WtString catName);
+	EXPORT_FLAG	void		write_log(unsigned int level, WtString message, WtString catName);
 
 	EXPORT_FLAG	WtString	get_version();
 

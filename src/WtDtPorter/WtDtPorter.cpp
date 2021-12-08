@@ -58,9 +58,9 @@ void initialize(WtString cfgFile, WtString logCfg)
 	getRunner().initialize(cfgFile, logCfg, getBinDir());
 }
 
-void start()
+void start(bool bAsync/* = false*/)
 {
-	getRunner().start();
+	getRunner().start(bAsync);
 }
 
 const char* get_version()
