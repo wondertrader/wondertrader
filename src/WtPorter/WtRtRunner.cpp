@@ -21,6 +21,7 @@
 #include "../WtCore/SelStraContext.h"
 
 #include "../WTSTools/WTSLogger.h"
+#include "../WTSUtils/SignalHook.hpp"
 
 #include "../Share/JsonToVariant.hpp"
 #include "../Share/TimeUtils.hpp"
@@ -69,9 +70,9 @@ WtRtRunner::WtRtRunner()
 	, _ext_bar_loader(NULL)
 	, _feed_factor(1.0)
 {
-	//install_signal_hooks([](const char* message) {
-	//	WTSLogger::error(message);
-	//});
+	install_signal_hooks([](const char* message) {
+		WTSLogger::error(message);
+	});
 }
 
 

@@ -12,7 +12,7 @@
 
 #include "../Includes/WTSSessionInfo.hpp"
 #include "../Includes/WTSVariant.hpp"
-
+#include "../WTSUtils/SignalHook.hpp"
 #include "../Share/JsonToVariant.hpp"
 
 #include "../WTSTools/WTSLogger.h"
@@ -22,6 +22,9 @@ WtDtRunner::WtDtRunner()
 	: _data_store(NULL)
 	, m_bInited(false)
 {
+	install_signal_hooks([](const char* message) {
+		WTSLogger::error(message);
+	});
 }
 
 

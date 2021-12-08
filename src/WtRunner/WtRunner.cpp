@@ -15,6 +15,7 @@
 
 #include "../Includes/WTSVariant.hpp"
 #include "../WTSTools/WTSLogger.h"
+#include "../WTSUtils/SignalHook.hpp"
 #include "../Share/StrUtil.hpp"
 #include "../Share/JsonToVariant.hpp"
 
@@ -39,6 +40,9 @@ WtRunner::WtRunner()
 	, _is_hft(false)
 	, _is_sel(false)
 {
+	install_signal_hooks([](const char* message) {
+		WTSLogger::error(message);
+	});
 }
 
 

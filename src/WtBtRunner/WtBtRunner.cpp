@@ -16,6 +16,8 @@
 
 #include "../WTSTools/WTSLogger.h"
 
+#include "../WTSUtils/SignalHook.hpp"
+
 #include "../Share/JsonToVariant.hpp"
 #ifdef _MSC_VER
 #include "../Common/mdump.h"
@@ -28,6 +30,10 @@ int main()
 #endif
 
 	WTSLogger::init("logcfg.json");
+
+	install_signal_hooks([](const char* message) {
+		WTSLogger::error(message);
+	});
 
 	std::string filename = "config.json";
 
