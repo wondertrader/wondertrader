@@ -16,8 +16,7 @@
 #include "../Share/ModuleHelper.hpp"
 #include "../Includes/WTSVersion.h"
 
-#ifdef _MSC_VER
-#include "../Common/mdump.h"
+#ifdef _WIN32
 #ifdef _WIN64
 char PLATFORM_NAME[] = "X64";
 #else

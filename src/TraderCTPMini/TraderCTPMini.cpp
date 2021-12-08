@@ -106,7 +106,7 @@ bool TraderCTPMini::init(WTSParams* params)
 		m_strModule = getBinDir() + DLLHelper::wrap_module("thosttraderapi", "lib");
 
 	m_hInstCTP = DLLHelper::load_library(m_strModule.c_str());
-#ifdef _MSC_VER
+#ifdef _WIN32
 #	ifdef _WIN64
 	const char* creatorName = "?CreateFtdcTraderApi@CThostFtdcTraderApi@@SAPEAV1@PEBD@Z";
 #	else

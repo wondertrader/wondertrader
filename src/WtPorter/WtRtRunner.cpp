@@ -29,6 +29,24 @@
 
 #include "../Includes/WTSContractInfo.hpp"
 
+#ifdef _MSC_VER
+#include "../Common/mdump.h"
+#include <boost/filesystem.hpp>
+ //这个主要是给MiniDumper用的
+const char* getModuleName()
+{
+	static char MODULE_NAME[250] = { 0 };
+	if (strlen(MODULE_NAME) == 0)
+	{
+		GetModuleFileName(g_dllModule, MODULE_NAME, 250);
+		boost::filesystem::path p(MODULE_NAME);
+		strcpy(MODULE_NAME, p.filename().string().c_str());
+	}
+
+	return MODULE_NAME;
+}
+#endif
+
 WtRtRunner::WtRtRunner()
 	: _data_store(NULL)
 	, _cb_cta_init(NULL)
@@ -82,6 +100,10 @@ WtRtRunner::~WtRtRunner()
 
 bool WtRtRunner::init(const char* logCfg /* = "logcfg.prop" */, bool isFile /* = true */, const char* genDir)
 {
+#ifdef _MSC_VER
+	CMiniDumper::Enable(getModuleName(), true, WtHelper::getCWD().c_str());
+#endif
+
 	if(isFile)
 	{
 		std::string path = WtHelper::getCWD() + logCfg;

@@ -37,5 +37,11 @@ SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/libs)
 file(GLOB SRCS "*.cpp" "./zstdlib/*.c")
 file(GLOB HDRS "*.h" "./zstdlib/*.h")
 
+IF(MSVC)
+LIST(APPEND SRCS "./StackTracer/*.cpp")
+ELSE (GCC)
+LIST(APPEND SRCS "./StackTracer/StackTracer.cpp")
+ENDIF()
+
 #8. 编译成动态库，并生成库文件
 add_library(WTSUtils STATIC ${SRCS} ${HDRS})

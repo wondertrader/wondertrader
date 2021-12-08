@@ -12,7 +12,7 @@
     char PLATFORM_NAME[] = "X86";
 #   endif
 #else
-    char PLATFORM_NAME[] = "linux";
+    char PLATFORM_NAME[] = "UNIX";
 #endif
 
 WtExecRunner& getRunner()
@@ -21,32 +21,12 @@ WtExecRunner& getRunner()
 	return runner;
 }
 
-#ifdef _MSC_VER
-#include "../Common/mdump.h"
-const char* getModuleName()
-{
-	static char MODULE_NAME[250] = { 0 };
-	if (strlen(MODULE_NAME) == 0)
-	{
-
-		GetModuleFileName(g_dllModule, MODULE_NAME, 250);
-		boost::filesystem::path p(MODULE_NAME);
-		strcpy(MODULE_NAME, p.filename().string().c_str());
-	}
-
-	return MODULE_NAME;
-}
-#endif
-
 void init_exec(WtString logCfg, bool isFile /*= true*/)
 {
 	static bool inited = false;
 
 	if (inited)
 		return;
-#ifdef _MSC_VER
-	CMiniDumper::Enable(getModuleName(), true, WtHelper::getCWD().c_str());
-#endif
 
 	getRunner().init(logCfg);
 

@@ -32,12 +32,6 @@
 #include <rapidjson/prettywriter.h>
 namespace rj = rapidjson;
 
-#ifdef _MSC_VER
-#define my_stricmp _stricmp
-#else
-#define my_stricmp strcasecmp
-#endif
-
 
 USING_NS_OTP;
 

@@ -109,7 +109,7 @@ bool TraderFemas::init(WTSParams* params)
 		m_strModule = DLLHelper::wrap_module("USTPtraderapiAF", "lib");
 
 	m_hInstCTP = DLLHelper::load_library(m_strModule.c_str());
-#ifdef _MSC_VER
+#ifdef _WIN32
 #	ifdef _WIN64
 	const char* creatorName = "?CreateFtdcTraderApi@CUstpFtdcTraderApi@@SAPEAV1@PEBD@Z";
 #	else
