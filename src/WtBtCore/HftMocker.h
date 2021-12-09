@@ -92,7 +92,7 @@ public:
 
 	virtual WTSTickData* stra_get_last_tick(const char* stdCode) override;
 
-	virtual double stra_get_position(const char* stdCode) override;
+	virtual double stra_get_position(const char* stdCode, bool bOnlyValid = false) override;
 
 	virtual double stra_get_position_profit(const char* stdCode) override;
 
@@ -245,6 +245,7 @@ private:
 		double		_volume;
 		double		_closeprofit;
 		double		_dynprofit;
+		double		_frozen;
 
 		std::vector<DetailInfo> _details;
 
@@ -253,7 +254,10 @@ private:
 			_volume = 0;
 			_closeprofit = 0;
 			_dynprofit = 0;
+			_frozen = 0;
 		}
+
+		inline double valid() const { return _volume - _frozen; }
 	} PosInfo;
 	typedef faster_hashmap<std::string, PosInfo> PositionMap;
 	PositionMap		_pos_map;

@@ -396,7 +396,7 @@ void TraderAdapter::release()
 	}
 }
 
-double TraderAdapter::getPosition(const char* stdCode, int32_t flag /* = 3 */)
+double TraderAdapter::getPosition(const char* stdCode, bool bValidOnly, int32_t flag /* = 3 */)
 {
 	auto it = _positions.find(stdCode);
 	if (it == _positions.end())
@@ -406,12 +406,18 @@ double TraderAdapter::getPosition(const char* stdCode, int32_t flag /* = 3 */)
 	const PosItem& pItem = it->second;
 	if(flag & 1)
 	{
-		ret += (pItem.l_newvol + pItem.l_prevol);
+		if(bValidOnly)
+			ret += (pItem.l_newavail + pItem.l_preavail);
+		else
+			ret += (pItem.l_newvol + pItem.l_prevol);
 	}
 
 	if (flag & 2)
 	{
-		ret -= pItem.s_newvol + pItem.s_prevol;
+		if (bValidOnly)
+			ret -= (pItem.s_newavail + pItem.s_preavail);
+		else
+			ret -= pItem.s_newvol + pItem.s_prevol;
 	}
 	return ret;
 }
@@ -2020,6 +2026,7 @@ void TraderAdapter::onPushTrade(WTSTradeInfo* tradeRecord)
 		fmt::format("[{}] Trade notified, instrument: {}, usertag: {}, trdqty: {}, trdprice: {}", 
 			_id.c_str(), stdCode.c_str(), tradeRecord->getUserTag(), tradeRecord->getVolume(), tradeRecord->getPrice()).c_str());
 
+	//如果是自己的订单，则更新未完成单
 	uint32_t localid = 0;
 	if (StrUtil::startsWith(tradeRecord->getUserTag(), _order_pattern, false))
 	{
@@ -2049,7 +2056,7 @@ void TraderAdapter::onPushTrade(WTSTradeInfo* tradeRecord)
 		{
 			pItem.l_newvol += vol;
 
-			if(commInfo->getCategoty() != CC_Stock)
+			if(!commInfo->isT1())	//如果不是T1，则更新可用持仓
 				pItem.l_newavail += vol;
 
 			statItem.l_openvol += vol;
@@ -2076,7 +2083,7 @@ void TraderAdapter::onPushTrade(WTSTradeInfo* tradeRecord)
 		if (isOpen)
 		{
 			pItem.s_newvol += vol;
-			if (commInfo->getCategoty() != CC_Stock)
+			if (!commInfo->isT1())	//如果不是T1，则更新可用持仓
 				pItem.s_newavail += vol;
 
 			statItem.s_openvol += vol;

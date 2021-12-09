@@ -341,13 +341,13 @@ void cta_get_all_position(CtxHandler cHandle, FuncGetPositionCallback cb)
 	cb(cHandle, "", 0, true);
 }
 
-double cta_get_position(CtxHandler cHandle, const char* stdCode, const char* openTag)
+double cta_get_position(CtxHandler cHandle, const char* stdCode, bool bOnlyValid, const char* openTag)
 {
 	CtaMocker* ctx = getRunner().cta_mocker();
 	if (ctx == NULL)
 		return 0;
 
-	return ctx->stra_get_position(stdCode, openTag);
+	return ctx->stra_get_position(stdCode, bOnlyValid, openTag);
 }
 
 double cta_get_fund_data(CtxHandler cHandle, int flag)
@@ -475,7 +475,7 @@ bool cta_step(CtxHandler cHandle)
 
 #pragma endregion "CTA策略接口"
 
-#pragma region "选股策略接口"
+#pragma region "SEL策略接口"
 void sel_save_userdata(CtxHandler cHandle, const char* key, const char* val)
 {
 	SelMocker* ctx = getRunner().sel_mocker();
@@ -534,13 +534,13 @@ void sel_get_all_position(CtxHandler cHandle, FuncGetPositionCallback cb)
 	cb(cHandle, "", 0, true);
 }
 
-double sel_get_position(CtxHandler cHandle, const char* stdCode, const char* openTag)
+double sel_get_position(CtxHandler cHandle, const char* stdCode, bool bOnlyValid, const char* openTag)
 {
 	SelMocker* ctx = getRunner().sel_mocker();
 	if (ctx == NULL)
 		return 0;
 
-	return ctx->stra_get_position(stdCode, openTag);
+	return ctx->stra_get_position(stdCode, bOnlyValid, openTag);
 }
 
 WtUInt32 sel_get_bars(CtxHandler cHandle, const char* stdCode, const char* period, WtUInt32 barCnt, FuncGetBarsCallback cb)
@@ -631,16 +631,16 @@ void sel_sub_ticks(CtxHandler cHandle, const char* stdCode)
 	ctx->stra_sub_ticks(stdCode);
 }
 
-#pragma endregion "选股策略接口"
+#pragma endregion "SEL策略接口"
 
 #pragma region "HFT策略接口"
-double hft_get_position(CtxHandler cHandle, const char* stdCode)
+double hft_get_position(CtxHandler cHandle, const char* stdCode, bool bOnlyValid)
 {
 	HftMocker* mocker = getRunner().hft_mocker();
 	if (mocker == NULL)
 		return 0;
 
-	return mocker->stra_get_position(stdCode);
+	return mocker->stra_get_position(stdCode, bOnlyValid);
 }
 
 double hft_get_position_profit(CtxHandler cHandle, const char* stdCode)

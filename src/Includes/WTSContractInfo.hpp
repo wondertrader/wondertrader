@@ -42,12 +42,9 @@ public:
 	inline void	setCoverMode(CoverMode cm){ m_coverMode = cm; }
 	inline void	setPriceMode(PriceMode pm){ m_priceMode = pm; }
 	inline void	setTradingMode(TradingMode tm) { m_tradeMode = tm; }
-	inline void	setHoldingMode(HoldingMode hm) { m_holdMode = hm; }
 
-	inline bool canShort() const { return m_tradeMode == TM_Both || m_tradeMode == TM_Short; }
-	inline bool canLong() const { return m_tradeMode == TM_Both || m_tradeMode == TM_Long; }
-
-	inline bool isT1() const { return m_holdMode == HM_T1; }
+	inline bool canShort() const { return m_tradeMode == TM_Both; }
+	inline bool isT1() const { return m_tradeMode == TM_LongT1; }
 
 	inline void	setPrecision(uint32_t prec){ m_uPrecision = prec; }
 
@@ -66,7 +63,6 @@ public:
 	inline ContractCategory		getCategoty() const{ return m_ccCategory; }
 	inline CoverMode			getCoverMode() const{ return m_coverMode; }
 	inline PriceMode			getPriceMode() const{ return m_priceMode; }
-	inline HoldingMode			getHoldingMode() const { return m_holdMode; }
 	inline TradingMode			getTradingMode() const { return m_tradeMode; }
 
 	inline void		addCode(const char* code){ m_setCodes.insert(code); }
@@ -105,7 +101,6 @@ private:
 	ContractCategory	m_ccCategory;	//品种分类，期货、股票、期权等
 	CoverMode			m_coverMode;	//平仓类型
 	PriceMode			m_priceMode;	//价格类型
-	HoldingMode			m_holdMode;		//持仓类型
 	TradingMode			m_tradeMode;	//交易类型
 
 	faster_hashset<std::string> m_setCodes;

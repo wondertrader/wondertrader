@@ -49,22 +49,13 @@ typedef enum tagCoverMode
 } CoverMode;
 
 /*
- *	持仓模式
- */
-typedef enum tagHoldingMode
-{
-	HM_T0,		//t+0持仓
-	HM_T1,		//t+1持仓
-} HoldingMode;
-
-/*
  *	交易模式
  */
 typedef enum tagTradingMode
 {
 	TM_Both,	//多空都支持
 	TM_Long,	//只能做多
-	TM_Short	//只能做空
+	TM_LongT1	//做多T+1
 } TradingMode;
 
 /*

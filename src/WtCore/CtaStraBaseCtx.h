@@ -99,7 +99,7 @@ public:
 	virtual void stra_exit_long(const char* stdCode, double qty, const char* userTag = "", double limitprice = 0.0, double stopprice = 0.0) override;
 	virtual void stra_exit_short(const char* stdCode, double qty, const char* userTag = "", double limitprice = 0.0, double stopprice = 0.0) override;
 
-	virtual double stra_get_position(const char* stdCode, const char* userTag = "") override;
+	virtual double stra_get_position(const char* stdCode, bool bOnlyValid = false, const char* userTag = "") override;
 	virtual void stra_set_position(const char* stdCode, double qty, const char* userTag = "", double limitprice = 0.0, double stopprice = 0.0) override;
 	virtual double stra_get_price(const char* stdCode) override;
 
@@ -185,6 +185,8 @@ protected:
 		uint64_t	_last_entertime;
 		uint64_t	_last_exittime;
 
+		double		_frozen;
+
 		std::vector<DetailInfo> _details;
 
 		_PosInfo()
@@ -194,6 +196,7 @@ protected:
 			_dynprofit = 0;
 			_last_entertime = 0;
 			_last_exittime = 0;
+			_frozen = 0;
 		}
 	} PosInfo;
 	typedef faster_hashmap<std::string, PosInfo> PositionMap;

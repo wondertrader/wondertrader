@@ -54,7 +54,7 @@ public:
 	virtual void enum_position(FuncEnumSelPositionCallBack cb) = 0;
 
 	//²ßÂÔ½Ó¿Ú
-	virtual double stra_get_position(const char* stdCode, const char* userTag = "") = 0;
+	virtual double stra_get_position(const char* stdCode, bool bOnlyValid = false, const char* userTag = "") = 0;
 	virtual void stra_set_position(const char* stdCode, double qty, const char* userTag = "") = 0;
 
 	virtual double stra_get_price(const char* stdCode) = 0;

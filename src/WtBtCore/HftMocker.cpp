@@ -474,8 +474,15 @@ OrderIDs HftMocker::stra_cancel(const char* stdCode, bool isBuy, double qty /* =
 	return ret;
 }
 
-otp::OrderIDs HftMocker::stra_buy(const char* stdCode, double price, double qty, const char* userTag)
+OrderIDs HftMocker::stra_buy(const char* stdCode, double price, double qty, const char* userTag)
 {
+	WTSCommodityInfo* commInfo = _replayer->get_commodity_info(stdCode);
+	if (commInfo == NULL)
+	{
+		stra_log_error("Cannot find corresponding commodity info of %s", stdCode);
+		return OrderIDs();
+	}
+
 	uint32_t localid = makeLocalOrderID();
 
 	OrderInfo order;
@@ -496,12 +503,6 @@ otp::OrderIDs HftMocker::stra_buy(const char* stdCode, double price, double qty,
 	postTask([this, localid](){
 		const OrderInfo& ordInfo = _orders[localid];
 		on_entrust(localid, ordInfo._code, true, "下单成功", ordInfo._usertag);
-		//bool bNeedErase = procOrder(localid);
-		//if(bNeedErase)
-		//{
-		//	auto it = _orders.find(localid);
-		//	_orders.erase(it);
-		//}
 	});
 
 	OrderIDs ids;
@@ -651,8 +652,26 @@ bool HftMocker::procOrder(uint32_t localid)
 	return false;
 }
 
-otp::OrderIDs HftMocker::stra_sell(const char* stdCode, double price, double qty, const char* userTag)
+OrderIDs HftMocker::stra_sell(const char* stdCode, double price, double qty, const char* userTag)
 {
+	WTSCommodityInfo* commInfo = _replayer->get_commodity_info(stdCode);
+	if (commInfo == NULL)
+	{
+		stra_log_error("Cannot find corresponding commodity info of %s", stdCode);
+		return OrderIDs();
+	}
+
+	//如果不能做空，则要看可用持仓
+	if(!commInfo->canShort())
+	{
+		double curPos = stra_get_position(stdCode, true);//只读可用持仓
+		if(decimal::gt(qty, curPos))
+		{
+			stra_log_error("No enough position of %s to sell", stdCode);
+			return OrderIDs();
+		}
+	}
+
 	uint32_t localid = makeLocalOrderID();
 
 	OrderInfo order;
@@ -672,12 +691,6 @@ otp::OrderIDs HftMocker::stra_sell(const char* stdCode, double price, double qty
 	postTask([this, localid]() {
 		const OrderInfo& ordInfo = _orders[localid];
 		on_entrust(localid, ordInfo._code, true, "下单成功", ordInfo._usertag);
-		//bool bNeedErase = procOrder(localid);
-		//if (bNeedErase)
-		//{
-		//	auto it = _orders.find(localid);
-		//	_orders.erase(it);
-		//}
 	});
 
 	OrderIDs ids;
@@ -732,10 +745,17 @@ WTSTickData* HftMocker::stra_get_last_tick(const char* stdCode)
 	return _replayer->get_last_tick(stdCode);
 }
 
-double HftMocker::stra_get_position(const char* stdCode)
+double HftMocker::stra_get_position(const char* stdCode, bool bOnlyValid/* = false*/)
 {
 	const PosInfo& pInfo = _pos_map[stdCode];
-	return pInfo._volume;
+	if (bOnlyValid)
+	{
+		//这里理论上，只有多头才会进到这里
+		//其他地方要保证，空头持仓的话，_frozen要为0
+		return pInfo._volume - pInfo._frozen;
+	}
+	else
+		return pInfo._volume;
 }
 
 double HftMocker::stra_get_position_profit(const char* stdCode)
@@ -883,15 +903,24 @@ void HftMocker::do_set_position(const char* stdCode, double qty, double price /*
 	stra_log_info("[%04u.%05u] %s position updated: %.0f -> %0.f", _replayer->get_min_time(), _replayer->get_secs(), stdCode, pInfo._volume, qty);
 
 	WTSCommodityInfo* commInfo = _replayer->get_commodity_info(stdCode);
+	if (commInfo == NULL)
+		return;
 
 	//成交价
 	double trdPx = curPx;
 
 	double diff = qty - pInfo._volume;
-
+	bool isBuy = decimal::gt(diff, 0.0);
 	if (decimal::gt(pInfo._volume*diff, 0))//当前持仓和仓位变化方向一致, 增加一条明细, 增加数量即可
 	{
 		pInfo._volume = qty;
+		//如果T+1，则冻结仓位要增加
+		if (commInfo->isT1())
+		{
+			//ASSERT(diff>0);
+			pInfo._frozen += diff;
+			stra_log_debug("%s frozen position up to %.0f", stdCode, pInfo._frozen);
+		}
 
 		DetailInfo dInfo;
 		dInfo._long = decimal::gt(qty, 0);
@@ -962,6 +991,13 @@ void HftMocker::do_set_position(const char* stdCode, double qty, double price /*
 		{
 			left = left * qty / abs(qty);
 
+			//如果T+1，则冻结仓位要增加
+			if (commInfo->isT1())
+			{
+				pInfo._frozen += left;
+				stra_log_debug("%s frozen position up to %.0f", stdCode, pInfo._frozen);
+			}
+
 			DetailInfo dInfo;
 			dInfo._long = decimal::gt(qty, 0);
 			dInfo._price = trdPx;
@@ -974,7 +1010,6 @@ void HftMocker::do_set_position(const char* stdCode, double qty, double price /*
 			//这里还需要写一笔成交记录
 			double fee = _replayer->calc_fee(stdCode, trdPx, abs(left), 0);
 			_fund_info._total_fees += fee;
-			//_engine->mutate_fund(fee, FFT_Fee);
 			log_trade(stdCode, dInfo._long, true, curTm, trdPx, abs(left), fee, userTag);
 		}
 	}

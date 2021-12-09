@@ -80,7 +80,7 @@ public:
 	virtual void stra_log_debug(const char* fmt, ...) override;
 	virtual void stra_log_error(const char* fmt, ...) override;
 
-	virtual double stra_get_position(const char* stdCode) override;
+	virtual double stra_get_position(const char* stdCode, bool bOnlyValid = false) override;
 	virtual double stra_get_position_profit(const char* stdCode) override;
 	virtual double stra_get_price(const char* stdCode) override;
 	virtual double stra_get_undone(const char* stdCode) override;

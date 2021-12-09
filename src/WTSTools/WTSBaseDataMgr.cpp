@@ -323,11 +323,6 @@ bool WTSBaseDataMgr::loadCommodities(const char* filename)
 			pCommInfo->setCoverMode((CoverMode)jPInfo["covermode"].GetUint());
 			pCommInfo->setPriceMode((PriceMode)jPInfo["pricemode"].GetUint());
 
-			if (!jPInfo["holdmode"].IsNull())
-				pCommInfo->setHoldingMode((HoldingMode)jPInfo["holdmode"].GetUint());
-			else
-				pCommInfo->setHoldingMode(HM_T0);
-
 			if (!jPInfo["trademode"].IsNull())
 				pCommInfo->setTradingMode((TradingMode)jPInfo["trademode"].GetUint());
 			else

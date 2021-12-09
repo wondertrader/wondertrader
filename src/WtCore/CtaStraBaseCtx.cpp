@@ -282,10 +282,17 @@ void CtaStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 				pInfo._volume = pItem["volume"].GetDouble();
 				pInfo._last_entertime = pItem["lastentertime"].GetUint64();
 				pInfo._last_exittime = pItem["lastexittime"].GetUint64();
+				if (pItem.HasMember("frozen"))
+					pInfo._frozen = pItem["frozen"].GetDouble();
+
 				if (pInfo._volume == 0)
+				{
 					pInfo._dynprofit = 0;
+					pInfo._frozen = 0;
+				}
 				else
 					pInfo._dynprofit = pItem["dynprofit"].GetDouble();
+				
 
 				total_profit += pInfo._closeprofit;
 				total_dynprofit += pInfo._dynprofit;
@@ -436,6 +443,7 @@ void CtaStraBaseCtx::save_data(uint32_t flag /* = 0xFFFFFFFF */)
 			pItem.AddMember("dynprofit", pInfo._dynprofit, allocator);
 			pItem.AddMember("lastentertime", pInfo._last_entertime, allocator);
 			pItem.AddMember("lastexittime", pInfo._last_exittime, allocator);
+			pItem.AddMember("frozen", pInfo._frozen, allocator);
 
 			rj::Value details(rj::kArrayType);
 			for (auto dit = pInfo._details.begin(); dit != pInfo._details.end(); dit++)
@@ -872,7 +880,14 @@ bool CtaStraBaseCtx::on_schedule(uint32_t curDate, uint32_t curTime)
 
 void CtaStraBaseCtx::on_session_begin(uint32_t uTDate)
 {
-
+	//每个交易日开始，要把冻结持仓置零
+	for (auto it : _pos_map)
+	{
+		const char* stdCode = it.first.c_str();
+		PosInfo& pInfo = it.second;
+		pInfo._frozen = 0;
+		stra_log_debug("%s frozen position reset to 0 on %u", stdCode, uTDate);
+	}
 }
 
 void CtaStraBaseCtx::enum_position(FuncEnumCtaPosCallBack cb)
@@ -934,6 +949,13 @@ CondList& CtaStraBaseCtx::get_cond_entrusts(const char* stdCode)
 //策略接口
 void CtaStraBaseCtx::stra_enter_long(const char* stdCode, double qty, const char* userTag /* = "" */, double limitprice, double stopprice)
 {
+	WTSCommodityInfo* commInfo = _engine->get_commodity_info(stdCode);
+	if (commInfo == NULL)
+	{
+		stra_log_error("Cannot find corresponding commodity info of %s", stdCode);
+		return;
+	}
+
 	_engine->sub_tick(id(), stdCode);
 	
 	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式, 则直接触发
@@ -979,6 +1001,19 @@ void CtaStraBaseCtx::stra_enter_long(const char* stdCode, double qty, const char
 
 void CtaStraBaseCtx::stra_enter_short(const char* stdCode, double qty, const char* userTag /* = "" */, double limitprice, double stopprice)
 {
+	WTSCommodityInfo* commInfo = _engine->get_commodity_info(stdCode);
+	if (commInfo == NULL)
+	{
+		stra_log_error("Cannot find corresponding commodity info of %s", stdCode);
+		return;
+	}
+
+	if (!commInfo->canShort())
+	{
+		stra_log_error("Cannot short on %s", stdCode);
+		return;
+	}
+
 	_engine->sub_tick(id(), stdCode);
 	
 	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式, 则直接触发
@@ -1024,7 +1059,17 @@ void CtaStraBaseCtx::stra_enter_short(const char* stdCode, double qty, const cha
 
 void CtaStraBaseCtx::stra_exit_long(const char* stdCode, double qty, const char* userTag /* = "" */, double limitprice, double stopprice)
 {
-	_engine->sub_tick(id(), stdCode);
+	WTSCommodityInfo* commInfo = _engine->get_commodity_info(stdCode);
+	if (commInfo == NULL)
+	{
+		stra_log_error("Cannot find corresponding commodity info of %s", stdCode);
+		return;
+	}
+
+	//读取可平持仓
+	double curQty = stra_get_position(stdCode, true);
+	if (decimal::le(curQty, 0))
+		return;
 	
 	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式, 则直接触发
 	{
@@ -1065,7 +1110,18 @@ void CtaStraBaseCtx::stra_exit_long(const char* stdCode, double qty, const char*
 
 void CtaStraBaseCtx::stra_exit_short(const char* stdCode, double qty, const char* userTag /* = "" */, double limitprice, double stopprice)
 {
-	_engine->sub_tick(id(), stdCode);
+	WTSCommodityInfo* commInfo = _engine->get_commodity_info(stdCode);
+	if (commInfo == NULL)
+	{
+		stra_log_error("Cannot find corresponding commodity info of %s", stdCode);
+		return;
+	}
+
+	if (!commInfo->canShort())
+	{
+		stra_log_error("Cannot short on %s", stdCode);
+		return;
+	}
 	
 	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式, 则直接触发
 	{
@@ -1184,10 +1240,20 @@ void CtaStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 	double diff = qty - pInfo._volume;
 
 	WTSCommodityInfo* commInfo = _engine->get_commodity_info(stdCode);
+	if (commInfo == NULL)
+		return;
 
 	if (decimal::gt(pInfo._volume*diff, 0))
 	{//当前持仓和仓位变化方向一致, 增加一条明细, 增加数量即可
 		pInfo._volume = qty;
+
+		//如果T+1，则冻结仓位要增加
+		if (commInfo->isT1())
+		{
+			//ASSERT(diff>0);
+			pInfo._frozen += diff;
+			stra_log_debug("%s frozen position up to %.0f", stdCode, pInfo._frozen);
+		}
 
 		DetailInfo dInfo;
 		dInfo._long = decimal::gt(qty, 0);
@@ -1266,6 +1332,13 @@ void CtaStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 		if (decimal::gt(left, 0))
 		{
 			left = left * qty / abs(qty);
+
+			//如果T+1，则冻结仓位要增加
+			if (commInfo->isT1())
+			{
+				pInfo._frozen += left;
+				stra_log_debug("%s frozen position up to %.0f", stdCode, pInfo._frozen);
+			}
 
 			DetailInfo dInfo;
 			dInfo._long = decimal::gt(qty, 0);
@@ -1517,7 +1590,7 @@ double CtaStraBaseCtx::stra_get_last_enterprice(const char* stdCode)
 	return pInfo._details[pInfo._details.size() - 1]._price;
 }
 
-double CtaStraBaseCtx::stra_get_position(const char* stdCode, const char* userTag /* = "" */)
+double CtaStraBaseCtx::stra_get_position(const char* stdCode, bool bOnlyValid /* = false */, const char* userTag /* = "" */)
 {
 	auto it = _pos_map.find(stdCode);
 	if (it == _pos_map.end())
@@ -1525,7 +1598,17 @@ double CtaStraBaseCtx::stra_get_position(const char* stdCode, const char* userTa
 
 	const PosInfo& pInfo = it->second;
 	if (strlen(userTag) == 0)
-		return pInfo._volume;
+	{
+		//只有userTag为空的时候时候，才会用bOnlyValid
+		if (bOnlyValid)
+		{
+			//这里理论上，只有多头才会进到这里
+			//其他地方要保证，空头持仓的话，_frozen要为0
+			return pInfo._volume - pInfo._frozen;
+		}
+		else
+			return pInfo._volume;
+	}
 
 	for (auto it = pInfo._details.begin(); it != pInfo._details.end(); it++)
 	{

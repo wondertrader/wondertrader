@@ -268,10 +268,16 @@ void SelStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 				PosInfo& pInfo = _pos_map[stdCode];
 				pInfo._closeprofit = pItem["closeprofit"].GetDouble();
 				pInfo._volume = pItem["volume"].GetDouble();
+				if (pItem.HasMember("frozen"))
+					pInfo._frozen = pItem["frozen"].GetDouble();
+
 				if (pInfo._volume == 0)
+				{
 					pInfo._dynprofit = 0;
+					pInfo._frozen = 0;
+				}
 				else
-					pInfo._dynprofit = pItem["dynprofit"].GetDouble();
+					pInfo._dynprofit = pItem["dynprofit"].GetDouble();				
 
 				total_profit += pInfo._closeprofit;
 				total_dynprofit += pInfo._dynprofit;
@@ -357,6 +363,7 @@ void SelStraBaseCtx::save_data(uint32_t flag /* = 0xFFFFFFFF */)
 			pItem.AddMember("volume", pInfo._volume, allocator);
 			pItem.AddMember("closeprofit", pInfo._closeprofit, allocator);
 			pItem.AddMember("dynprofit", pInfo._dynprofit, allocator);
+			pItem.AddMember("frozen", pInfo._frozen, allocator);
 
 			rj::Value details(rj::kArrayType);
 			for (auto dit = pInfo._details.begin(); dit != pInfo._details.end(); dit++)
@@ -589,7 +596,14 @@ bool SelStraBaseCtx::on_schedule(uint32_t curDate, uint32_t curTime, uint32_t fi
 
 void SelStraBaseCtx::on_session_begin(uint32_t uTDate)
 {
-
+	//每个交易日开始，要把冻结持仓置零
+	for (auto it : _pos_map)
+	{
+		const char* stdCode = it.first.c_str();
+		PosInfo& pInfo = it.second;
+		pInfo._frozen = 0;
+		stra_log_debug("%s frozen position reset to 0 on %u", stdCode, uTDate);
+	}
 }
 
 void SelStraBaseCtx::enum_position(FuncEnumSelPositionCallBack cb)
@@ -655,6 +669,37 @@ double SelStraBaseCtx::stra_get_price(const char* stdCode)
 
 void SelStraBaseCtx::stra_set_position(const char* stdCode, double qty, const char* userTag /* = "" */)
 {
+	WTSCommodityInfo* commInfo = _engine->get_commodity_info(stdCode);
+	if (commInfo == NULL)
+	{
+		stra_log_error("Cannot find corresponding commodity info of %s", stdCode);
+		return;
+	}
+
+	//如果不能做空，则目标仓位不能设置负数
+	if (!commInfo->canShort() && decimal::lt(qty, 0))
+	{
+		stra_log_error("Cannot short on %s", stdCode);
+		return;
+	}
+
+	double total = stra_get_position(stdCode, false);
+	//如果目标仓位和当前仓位是一致的，直接退出
+	if (decimal::eq(total, qty))
+		return;
+
+	if (commInfo->isT1())
+	{
+		double valid = stra_get_position(stdCode, true);
+		double frozen = total - valid;
+		//如果是T+1规则，则目标仓位不能小于冻结仓位
+		if (decimal::lt(qty, frozen))
+		{
+			stra_log_error(fmt::format("New position of {} cannot be set to {} due to {} being frozen", stdCode, qty, frozen).c_str());
+			return;
+		}
+	}
+
 	append_signal(stdCode, qty, userTag);
 }
 
@@ -687,10 +732,19 @@ void SelStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 	double diff = qty - pInfo._volume;
 
 	WTSCommodityInfo* commInfo = _engine->get_commodity_info(stdCode);
+	if (commInfo == NULL)
+		return;
 
 	if (decimal::gt(pInfo._volume*diff, 0))//当前持仓和目标仓位方向一致, 增加一条明细, 增加数量即可
 	{
 		pInfo._volume = qty;
+		//如果T+1，则冻结仓位要增加
+		if (commInfo->isT1())
+		{
+			//ASSERT(diff>0);
+			pInfo._frozen += diff;
+			stra_log_debug("%s frozen position up to %.0f", stdCode, pInfo._frozen);
+		}
 
 		DetailInfo dInfo;
 		dInfo._long = decimal::gt(qty, 0);
@@ -760,6 +814,14 @@ void SelStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 		if (decimal::gt(left, 0))
 		{
 			left = left * qty / abs(qty);
+
+			//如果T+1，则冻结仓位要增加
+			if (commInfo->isT1())
+			{
+				//ASSERT(diff>0);
+				pInfo._frozen += diff;
+				stra_log_debug("%s frozen position up to %.0f", stdCode, pInfo._frozen);
+			}
 
 			DetailInfo dInfo;
 			dInfo._long = decimal::gt(qty, 0);
@@ -908,7 +970,7 @@ void SelStraBaseCtx::stra_save_user_data(const char* key, const char* val)
 	_ud_modified = true;
 }
 
-double SelStraBaseCtx::stra_get_position(const char* stdCode, const char* userTag /* = "" */)
+double SelStraBaseCtx::stra_get_position(const char* stdCode, bool bOnlyValid /* = false */, const char* userTag /* = "" */)
 {
 	auto it = _pos_map.find(stdCode);
 	if (it == _pos_map.end())
@@ -916,7 +978,17 @@ double SelStraBaseCtx::stra_get_position(const char* stdCode, const char* userTa
 
 	const PosInfo& pInfo = it->second;
 	if (strlen(userTag) == 0)
-		return pInfo._volume;
+	{
+		//只有userTag为空的时候时候，才会用bOnlyValid
+		if (bOnlyValid)
+		{
+			//这里理论上，只有多头才会进到这里
+			//其他地方要保证，空头持仓的话，_frozen要为0
+			return pInfo._volume - pInfo._frozen;
+		}
+		else
+			return pInfo._volume;
+	}
 
 	for (auto it = pInfo._details.begin(); it != pInfo._details.end(); it++)
 	{

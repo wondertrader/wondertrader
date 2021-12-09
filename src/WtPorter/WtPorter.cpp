@@ -341,13 +341,13 @@ void cta_get_all_position(CtxHandler cHandle, FuncGetPositionCallback cb)
 	cb(cHandle, "", 0, true);
 }
 
-double cta_get_position(CtxHandler cHandle, const char* stdCode, const char* openTag)
+double cta_get_position(CtxHandler cHandle, const char* stdCode, bool bOnlyValid, const char* openTag)
 {
 	CtaContextPtr ctx = getRunner().getCtaContext(cHandle);
 	if (ctx == NULL)
 		return 0;
 
-	return ctx->stra_get_position(stdCode, openTag);
+	return ctx->stra_get_position(stdCode, bOnlyValid, openTag);
 }
 
 double cta_get_fund_data(CtxHandler cHandle, int flag)
@@ -529,13 +529,13 @@ void sel_get_all_position(CtxHandler cHandle, FuncGetPositionCallback cb)
 	cb(cHandle, "", 0, true);
 }
 
-double sel_get_position(CtxHandler cHandle, const char* stdCode, const char* openTag)
+double sel_get_position(CtxHandler cHandle, const char* stdCode, bool bOnlyValid, const char* openTag)
 {
 	SelContextPtr ctx = getRunner().getSelContext(cHandle);
 	if (ctx == NULL)
 		return 0;
 
-	return ctx->stra_get_position(stdCode, openTag);
+	return ctx->stra_get_position(stdCode, bOnlyValid, openTag);
 }
 
 WtUInt32 sel_get_bars(CtxHandler cHandle, const char* stdCode, const char* period, WtUInt32 barCnt, FuncGetBarsCallback cb)
@@ -633,13 +633,13 @@ CtxHandler create_hft_context(const char* name, const char* trader, bool agent)
 	return getRunner().createHftContext(name, trader, agent);
 }
 
-double hft_get_position(CtxHandler cHandle, const char* stdCode)
+double hft_get_position(CtxHandler cHandle, const char* stdCode, bool bOnlyValid)
 {
 	HftContextPtr ctx = getRunner().getHftContext(cHandle);
 	if (ctx == NULL)
 		return 0;
 
-	return ctx->stra_get_position(stdCode);
+	return ctx->stra_get_position(stdCode, bOnlyValid);
 }
 
 double hft_get_position_profit(CtxHandler cHandle, const char* stdCode)

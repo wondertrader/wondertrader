@@ -264,6 +264,24 @@ OrderIDs HftStraBaseCtx::stra_buy(const char* stdCode, double price, double qty,
 
 OrderIDs HftStraBaseCtx::stra_sell(const char* stdCode, double price, double qty, const char* userTag)
 {
+	WTSCommodityInfo* commInfo = _engine->get_commodity_info(stdCode);
+	if (commInfo == NULL)
+	{
+		stra_log_error("Cannot find corresponding commodity info of %s", stdCode);
+		return OrderIDs();
+	}
+
+	//如果不能做空，则要看可用持仓
+	if (!commInfo->canShort())
+	{
+		double curPos = stra_get_position(stdCode, true);//只读可用持仓
+		if (decimal::gt(qty, curPos))
+		{
+			stra_log_error("No enough position of %s to sell", stdCode);
+			return OrderIDs();
+		}
+	}
+
 	if (CodeHelper::isStdFutHotCode(stdCode))
 	{
 		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
@@ -613,7 +631,7 @@ double HftStraBaseCtx::stra_get_position_profit(const char* stdCode)
 	return pInfo._dynprofit;
 }
 
-double HftStraBaseCtx::stra_get_position(const char* stdCode)
+double HftStraBaseCtx::stra_get_position(const char* stdCode, bool bOnlyValid /* = false */)
 {
 	if (CodeHelper::isStdFutHotCode(stdCode))
 	{
@@ -623,7 +641,7 @@ double HftStraBaseCtx::stra_get_position(const char* stdCode)
 
 		_code_map[realCode] = stdCode;
 
-		return _trader->getPosition(realCode.c_str());
+		return _trader->getPosition(realCode.c_str(), bOnlyValid);
 	}
 	else if (CodeHelper::isStdFut2ndCode(stdCode))
 	{
@@ -633,11 +651,11 @@ double HftStraBaseCtx::stra_get_position(const char* stdCode)
 
 		_code_map[realCode] = stdCode;
 
-		return _trader->getPosition(realCode.c_str());
+		return _trader->getPosition(realCode.c_str(), bOnlyValid);
 	}
 	else
 	{
-		return _trader->getPosition(stdCode);
+		return _trader->getPosition(stdCode, bOnlyValid);
 	}
 }
 

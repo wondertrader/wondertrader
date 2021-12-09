@@ -82,7 +82,7 @@ extern "C"
 
 	EXPORT_FLAG	double		cta_get_position_avgpx(CtxHandler cHandle, const char* stdCode);
 
-	EXPORT_FLAG	double		cta_get_position(CtxHandler cHandle, const char* stdCode, const char* openTag);
+	EXPORT_FLAG	double		cta_get_position(CtxHandler cHandle, const char* stdCode, bool bOnlyValid, const char* openTag);
 
 	EXPORT_FLAG	void		cta_set_position(CtxHandler cHandle, const char* stdCode, double qty, const char* uesrTag, double limitprice, double stopprice);
 
@@ -121,10 +121,10 @@ extern "C"
 
 	//////////////////////////////////////////////////////////////////////////
 	//选股策略接口
-#pragma  region "选股接口"
+#pragma  region "SEL接口"
 	EXPORT_FLAG	CtxHandler	create_sel_context(const char* name, uint32_t date, uint32_t time, const char* period, const char* trdtpl = "CHINA", const char* session = "TRADING");
 
-	EXPORT_FLAG	double		sel_get_position(CtxHandler cHandle, const char* stdCode, const char* openTag);
+	EXPORT_FLAG	double		sel_get_position(CtxHandler cHandle, const char* stdCode, bool bOnlyValid, const char* openTag);
 
 	EXPORT_FLAG	void		sel_set_position(CtxHandler cHandle, const char* stdCode, double qty, const char* uesrTag);
 
@@ -147,14 +147,14 @@ extern "C"
 	EXPORT_FLAG	WtString	sel_load_userdata(CtxHandler cHandle, const char* key, const char* defVal);
 
 	EXPORT_FLAG	void		sel_sub_ticks(CtxHandler cHandle, const char* stdCode);
-#pragma endregion "选股接口"
+#pragma endregion "SEL接口"
 
 	//////////////////////////////////////////////////////////////////////////
 	//HFT策略接口
 #pragma  region "HFT接口"
 	EXPORT_FLAG	CtxHandler	create_hft_context(const char* name, const char* trader, bool agent);
 
-	EXPORT_FLAG	double		hft_get_position(CtxHandler cHandle, const char* stdCode);
+	EXPORT_FLAG	double		hft_get_position(CtxHandler cHandle, const char* stdCode, bool bOnlyValid);
 
 	EXPORT_FLAG	double		hft_get_position_profit(CtxHandler cHandle, const char* stdCode);
 

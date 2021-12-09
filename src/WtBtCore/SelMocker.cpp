@@ -334,6 +334,14 @@ bool SelMocker::on_schedule(uint32_t curDate, uint32_t curTime, uint32_t fireTim
 
 void SelMocker::on_session_begin(uint32_t curTDate)
 {
+	//每个交易日开始，要把冻结持仓置零
+	for (auto it : _pos_map)
+	{
+		const char* stdCode = it.first.c_str();
+		PosInfo& pInfo = it.second;
+		pInfo._frozen = 0;
+		stra_log_debug("%s frozen position reset to 0 on %u", stdCode, curTDate);
+	}
 }
 
 void SelMocker::enum_position(FuncEnumSelPositionCallBack cb)
@@ -394,6 +402,37 @@ double SelMocker::stra_get_price(const char* stdCode)
 
 void SelMocker::stra_set_position(const char* stdCode, double qty, const char* userTag /* = "" */)
 {
+	WTSCommodityInfo* commInfo = _replayer->get_commodity_info(stdCode);
+	if (commInfo == NULL)
+	{
+		stra_log_error("Cannot find corresponding commodity info of %s", stdCode);
+		return;
+	}
+
+	//如果不能做空，则目标仓位不能设置负数
+	if (!commInfo->canShort() && decimal::lt(qty, 0))
+	{
+		stra_log_error("Cannot short on %s", stdCode);
+		return;
+	}
+
+	double total = stra_get_position(stdCode, false);
+	//如果目标仓位和当前仓位是一致的，直接退出
+	if (decimal::eq(total, qty))
+		return;
+
+	if (commInfo->isT1())
+	{
+		double valid = stra_get_position(stdCode, true);
+		double frozen = total - valid;
+		//如果是T+1规则，则目标仓位不能小于冻结仓位
+		if (decimal::lt(qty, frozen))
+		{
+			stra_log_error(fmt::format("New position of {} cannot be set to {} due to {} being frozen", stdCode, qty, frozen).c_str());
+			return;
+		}
+	}
+
 	_replayer->sub_tick(id(), stdCode);
 	append_signal(stdCode, qty, userTag);
 }
@@ -428,104 +467,50 @@ void SelMocker::do_set_position(const char* stdCode, double qty, double price /*
 		return;
 
 	WTSCommodityInfo* commInfo = _replayer->get_commodity_info(stdCode);
+	if (commInfo == NULL)
+		return;
 
 	//成交价
 	double trdPx = curPx;
-
-	if (decimal::gt(pInfo._volume*qty, 0))//当前持仓和目标仓位方向一致,增加一条明细,增加数量即可
+	double diff = qty - pInfo._volume;
+	bool isBuy = decimal::gt(diff, 0.0);
+	if (decimal::gt(pInfo._volume*diff, 0))//当前持仓和仓位变动方向一致,增加一条明细,增加数量即可
 	{
-		//目标仓位绝对值大于当前仓位绝对值,则是继续开仓,增加一条记录即可
-		if (decimal::gt(abs(qty), abs(pInfo._volume)))
+		pInfo._volume = qty;
+
+		//如果T+1，则冻结仓位要增加
+		if (commInfo->isT1())
 		{
-			double diff = abs(qty - pInfo._volume);
-			pInfo._volume = qty;
-
-			if (_slippage != 0)
-			{
-				bool isBuy = decimal::gt(qty, 0.0);
-				trdPx += _slippage * commInfo->getPriceTick()*(isBuy ? 1 : -1);
-			}
-
-			DetailInfo dInfo;
-			dInfo._long = decimal::gt(qty, 0);
-			dInfo._price = trdPx;
-			dInfo._volume = diff;
-			dInfo._opentime = curTm;
-			dInfo._opentdate = curTDate;
-			strcpy(dInfo._opentag, userTag);
-			pInfo._details.emplace_back(dInfo);
-
-			double fee = _replayer->calc_fee(stdCode, trdPx, abs(diff), 0);
-			_fund_info._total_fees += fee;
-			
-			log_trade(stdCode, dInfo._long, true, curTm, trdPx, abs(diff), userTag, fee);
+			//ASSERT(diff>0);
+			pInfo._frozen += diff;
+			stra_log_debug("%s frozen position up to %.0f", stdCode, pInfo._frozen);
 		}
-		else
-		{
-			//目标仓位绝对值小于当前仓位绝对值,则要平仓
-			double left = abs(qty - pInfo._volume);
-
-			if (_slippage != 0)
-			{
-				//平仓的话,方向是反的
-				bool isBuy = !decimal::gt(qty, 0.0);
-				trdPx += _slippage * commInfo->getPriceTick()*(isBuy ? 1 : -1);
-			}
-
-			pInfo._volume = qty;
-			if (decimal::eq(pInfo._volume, 0))
-				pInfo._dynprofit = 0;
-			uint32_t count = 0;
-			for (auto it = pInfo._details.begin(); it != pInfo._details.end(); it++)
-			{
-				DetailInfo& dInfo = *it;
-				double maxQty = min(dInfo._volume, left);
-				if (decimal::eq(maxQty, 0))
-					continue;
-
-				dInfo._volume -= maxQty;
-				left -= maxQty;
-
-				if (decimal::eq(dInfo._volume, 0))
-					count++;
-
-				double profit = (trdPx - dInfo._price) * maxQty * commInfo->getVolScale();
-				if (!dInfo._long)
-					profit *= -1;
-				pInfo._closeprofit += profit;
-				pInfo._dynprofit = pInfo._dynprofit*dInfo._volume / (dInfo._volume + maxQty);//浮盈也要做等比缩放
-				_fund_info._total_profit += profit;
-
-				double fee = _replayer->calc_fee(stdCode, trdPx, maxQty, dInfo._opentdate == curTDate ? 2 : 1);
-				_fund_info._total_fees += fee;
-				
-				//这里写成交记录
-				log_trade(stdCode, dInfo._long, false, curTm, trdPx, maxQty, userTag, fee);
-				//这里写平仓记录
-				log_close(stdCode, dInfo._long, dInfo._opentime, dInfo._price, curTm, trdPx, maxQty, profit, pInfo._closeprofit, dInfo._opentag, userTag);
-
-				if (left == 0)
-					break;
-			}
-
-			//需要清理掉已经平仓完的明细
-			while (count > 0)
-			{
-				auto it = pInfo._details.begin();
-				pInfo._details.erase(it);
-				count--;
-			}
-		}
-	}
-	else
-	{//持仓方向和目标仓位方向不一致,需要平仓
-		double left = abs(pInfo._volume) + abs(qty);
 
 		if (_slippage != 0)
 		{
-			bool isBuy = decimal::gt(qty, 0.0);
 			trdPx += _slippage * commInfo->getPriceTick()*(isBuy ? 1 : -1);
 		}
+
+		DetailInfo dInfo;
+		dInfo._long = decimal::gt(qty, 0);
+		dInfo._price = trdPx;
+		dInfo._volume = abs(diff);
+		dInfo._opentime = curTm;
+		dInfo._opentdate = curTDate;
+		strcpy(dInfo._opentag, userTag);
+		pInfo._details.emplace_back(dInfo);
+
+		double fee = _replayer->calc_fee(stdCode, trdPx, abs(diff), 0);
+		_fund_info._total_fees += fee;
+
+		log_trade(stdCode, dInfo._long, true, curTm, trdPx, abs(diff), userTag, fee);
+	}
+	else
+	{//持仓方向和目标仓位方向不一致,需要平仓
+		double left = abs(diff);
+		bool isBuy = decimal::gt(diff, 0.0);
+		if (_slippage != 0)
+			trdPx += _slippage * commInfo->getPriceTick()*(isBuy ? 1 : -1);
 
 		pInfo._volume = qty;
 		if (decimal::eq(pInfo._volume, 0))
@@ -538,6 +523,9 @@ void SelMocker::do_set_position(const char* stdCode, double qty, double price /*
 			if (decimal::eq(maxQty, 0))
 				continue;
 
+			double maxProf = dInfo._max_profit * maxQty / dInfo._volume;
+			double maxLoss = dInfo._max_loss * maxQty / dInfo._volume;
+
 			dInfo._volume -= maxQty;
 			left -= maxQty;
 
@@ -547,6 +535,7 @@ void SelMocker::do_set_position(const char* stdCode, double qty, double price /*
 			double profit = (trdPx - dInfo._price) * maxQty * commInfo->getVolScale();
 			if (!dInfo._long)
 				profit *= -1;
+
 			pInfo._closeprofit += profit;
 			pInfo._dynprofit = pInfo._dynprofit*dInfo._volume / (dInfo._volume + maxQty);//浮盈也要做等比缩放
 			_fund_info._total_profit += profit;
@@ -556,7 +545,8 @@ void SelMocker::do_set_position(const char* stdCode, double qty, double price /*
 			//这里写成交记录
 			log_trade(stdCode, dInfo._long, false, curTm, trdPx, maxQty, userTag, fee);
 			//这里写平仓记录
-			log_close(stdCode, dInfo._long, dInfo._opentime, dInfo._price, curTm, trdPx, maxQty, profit, pInfo._closeprofit, dInfo._opentag, userTag);
+			log_close(stdCode, dInfo._long, dInfo._opentime, dInfo._price, curTm, 
+				trdPx, maxQty, profit, pInfo._closeprofit, dInfo._opentag, userTag);
 
 			if (left == 0)
 				break;
@@ -575,6 +565,13 @@ void SelMocker::do_set_position(const char* stdCode, double qty, double price /*
 		{
 			left = left * qty / abs(qty);
 
+			//如果T+1，则冻结仓位要增加
+			if (commInfo->isT1())
+			{
+				pInfo._frozen += left;
+				stra_log_debug("%s frozen position up to %.0f", stdCode, pInfo._frozen);
+			}
+
 			DetailInfo dInfo;
 			dInfo._long = decimal::gt(qty, 0);
 			dInfo._price = trdPx;
@@ -584,11 +581,9 @@ void SelMocker::do_set_position(const char* stdCode, double qty, double price /*
 			strcpy(dInfo._opentag, userTag);
 			pInfo._details.emplace_back(dInfo);
 
-			//TODO: 
 			//这里还需要写一笔成交记录
-			double fee = _replayer->calc_fee(stdCode, trdPx, abs(qty), 0);
+			double fee = _replayer->calc_fee(stdCode, trdPx, abs(left), 0);
 			_fund_info._total_fees += fee;
-
 			log_trade(stdCode, dInfo._long, true, curTm, trdPx, abs(left), userTag, fee);
 		}
 	}
@@ -718,7 +713,7 @@ void SelMocker::stra_save_user_data(const char* key, const char* val)
 	_ud_modified = true;
 }
 
-double SelMocker::stra_get_position(const char* stdCode, const char* userTag /* = "" */)
+double SelMocker::stra_get_position(const char* stdCode, bool bOnlyValid/* = false*/, const char* userTag /* = "" */)
 {
 	auto it = _pos_map.find(stdCode);
 	if (it == _pos_map.end())
@@ -726,7 +721,17 @@ double SelMocker::stra_get_position(const char* stdCode, const char* userTag /* 
 
 	const PosInfo& pInfo = it->second;
 	if (strlen(userTag) == 0)
-		return pInfo._volume;
+	{
+		//只有userTag为空的时候时候，才会用bOnlyValid
+		if (bOnlyValid)
+		{
+			//这里理论上，只有多头才会进到这里
+			//其他地方要保证，空头持仓的话，_frozen要为0
+			return pInfo._volume - pInfo._frozen;
+		}
+		else
+			return pInfo._volume;
+	}
 
 	for (auto it = pInfo._details.begin(); it != pInfo._details.end(); it++)
 	{

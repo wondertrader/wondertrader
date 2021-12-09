@@ -629,6 +629,14 @@ bool CtaMocker::on_schedule(uint32_t curDate, uint32_t curTime)
 
 void CtaMocker::on_session_begin(uint32_t curTDate)
 {
+	//每个交易日开始，要把冻结持仓置零
+	for (auto it : _pos_map)
+	{
+		const char* stdCode = it.first.c_str();
+		PosInfo& pInfo = it.second;
+		pInfo._frozen = 0;
+		stra_log_debug("%s frozen position reset to 0 on %u", stdCode, curTDate);
+	}
 }
 
 void CtaMocker::enum_position(FuncEnumCtaPosCallBack cb)
@@ -691,16 +699,20 @@ CondList& CtaMocker::get_cond_entrusts(const char* stdCode)
 //策略接口
 void CtaMocker::stra_enter_long(const char* stdCode, double qty, const char* userTag /* = "" */, double limitprice, double stopprice)
 {
+	WTSCommodityInfo* commInfo = _replayer->get_commodity_info(stdCode);
+	if(commInfo == NULL)
+	{
+		stra_log_error("Cannot find corresponding commodity info of %s", stdCode);
+		return;
+	}
+
 	_replayer->sub_tick(_context_id, stdCode);
 	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式,则直接触发
 	{
 		double curQty = stra_get_position(stdCode);
-		//if (curQty < 0)
 		if(decimal::lt(curQty, 0))
-			//do_set_position(stdCode, qty, userTag, !_is_in_schedule);
 			append_signal(stdCode, qty, userTag);
 		else
-			//do_set_position(stdCode, curQty + qty, userTag, !_is_in_schedule);
 			append_signal(stdCode, curQty + qty, userTag);
 	}
 	else
@@ -732,16 +744,26 @@ void CtaMocker::stra_enter_long(const char* stdCode, double qty, const char* use
 
 void CtaMocker::stra_enter_short(const char* stdCode, double qty, const char* userTag /* = "" */, double limitprice, double stopprice)
 {
+	WTSCommodityInfo* commInfo = _replayer->get_commodity_info(stdCode);
+	if (commInfo == NULL)
+	{
+		stra_log_error("Cannot find corresponding commodity info of %s", stdCode);
+		return;
+	}
+
+	if(!commInfo->canShort())
+	{
+		stra_log_error("Cannot short on %s", stdCode);
+		return;
+	}
+
 	_replayer->sub_tick(_context_id, stdCode);
 	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式,则直接触发
 	{
 		double curQty = stra_get_position(stdCode);
-		//if (curQty > 0)
 		if(decimal::gt(curQty, 0))
-			//do_set_position(stdCode, -qty, userTag, !_is_in_schedule);
 			append_signal(stdCode, -qty, userTag);
 		else
-			//do_set_position(stdCode, curQty - qty, userTag, !_is_in_schedule);
 			append_signal(stdCode, curQty - qty, userTag);
 
 	}
@@ -774,15 +796,21 @@ void CtaMocker::stra_enter_short(const char* stdCode, double qty, const char* us
 
 void CtaMocker::stra_exit_long(const char* stdCode, double qty, const char* userTag /* = "" */, double limitprice, double stopprice)
 {
+	WTSCommodityInfo* commInfo = _replayer->get_commodity_info(stdCode);
+	if (commInfo == NULL)
+	{
+		stra_log_error("Cannot find corresponding commodity info of %s", stdCode);
+		return;
+	}
+
+	//读取可平持仓
+	double curQty = stra_get_position(stdCode, true);
+	if (decimal::le(curQty, 0))
+		return;
+
 	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式,则直接触发
 	{
-		double curQty = stra_get_position(stdCode);
-		//if (curQty <= 0)
-		if(decimal::le(curQty, 0))
-			return;
-
 		double maxQty = min(curQty, qty);
-		//do_set_position(stdCode, curQty - maxQty, userTag, !_is_in_schedule);
 		append_signal(stdCode, curQty - qty, userTag);
 	}
 	else
@@ -814,15 +842,26 @@ void CtaMocker::stra_exit_long(const char* stdCode, double qty, const char* user
 
 void CtaMocker::stra_exit_short(const char* stdCode, double qty, const char* userTag /* = "" */, double limitprice, double stopprice)
 {
+	WTSCommodityInfo* commInfo = _replayer->get_commodity_info(stdCode);
+	if (commInfo == NULL)
+	{
+		stra_log_error("Cannot find corresponding commodity info of %s", stdCode);
+		return;
+	}
+
+	if (!commInfo->canShort())
+	{
+		stra_log_error("Cannot short on %s", stdCode);
+		return;
+	}
+
 	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式,则直接触发
 	{
 		double curQty = stra_get_position(stdCode);
-		//if (curQty >= 0)
 		if(decimal::ge(curQty, 0))
 			return;
 
 		double maxQty = min(abs(curQty), qty);
-		//do_set_position(stdCode, curQty + maxQty, userTag, !_is_in_schedule);
 		append_signal(stdCode, curQty + maxQty, userTag);
 	}
 	else
@@ -862,23 +901,47 @@ double CtaMocker::stra_get_price(const char* stdCode)
 
 void CtaMocker::stra_set_position(const char* stdCode, double qty, const char* userTag /* = "" */, double limitprice /* = 0.0 */, double stopprice /* = 0.0 */)
 {
-	_replayer->sub_tick(_context_id, stdCode);
-	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式,则直接触发
+	WTSCommodityInfo* commInfo = _replayer->get_commodity_info(stdCode);
+	if (commInfo == NULL)
 	{
-		//do_set_position(stdCode, qty, userTag, !_is_in_schedule);
+		stra_log_error("Cannot find corresponding commodity info of %s", stdCode);
+		return;
+	}
+
+	//如果不能做空，则目标仓位不能设置负数
+	if (!commInfo->canShort() && decimal::lt(qty, 0))
+	{
+		stra_log_error("Cannot short on %s", stdCode);
+		return;
+	}
+
+	double total = stra_get_position(stdCode, false);
+	//如果目标仓位和当前仓位是一致的，直接退出
+	if (decimal::eq(total, qty))
+		return;
+
+	if(commInfo->isT1())
+	{
+		double valid = stra_get_position(stdCode, true);
+		double frozen = total - valid;
+		//如果是T+1规则，则目标仓位不能小于冻结仓位
+		if(decimal::lt(qty, frozen))
+		{
+			stra_log_error(fmt::format("New position of {} cannot be set to {} due to {} being frozen", stdCode, qty, frozen).c_str());
+			return;
+		}
+	}
+
+	_replayer->sub_tick(_context_id, stdCode);
+	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//没有设置触发条件，则直接添加信号
+	{
 		append_signal(stdCode, qty, userTag);
 	}
 	else
 	{
 		CondList& condList = get_cond_entrusts(stdCode);
 
-		double curQty = stra_get_position(stdCode);
-		//如果目标仓位和当前仓位是一致的，则不再设置条件单
-		if (decimal::eq(curQty, qty))
-			return;
-
-		bool isBuy = decimal::gt(qty, curQty);
-
+		bool isBuy = decimal::gt(qty, total);
 
 		CondEntrust entrust;
 		strcpy(entrust._code, stdCode);
@@ -933,6 +996,8 @@ void CtaMocker::do_set_position(const char* stdCode, double qty, double price /*
 		return;
 
 	WTSCommodityInfo* commInfo = _replayer->get_commodity_info(stdCode);
+	if (commInfo == NULL)
+		return;
 
 	//成交价
 	double trdPx = curPx;
@@ -942,6 +1007,14 @@ void CtaMocker::do_set_position(const char* stdCode, double qty, double price /*
 	if (decimal::gt(pInfo._volume*diff, 0))//当前持仓和仓位变化方向一致, 增加一条明细, 增加数量即可
 	{
 		pInfo._volume = qty;
+
+		//如果T+1，则冻结仓位要增加
+		if (commInfo->isT1())
+		{
+			//ASSERT(diff>0);
+			pInfo._frozen += diff;
+			stra_log_debug("%s frozen position up to %.0f", stdCode, pInfo._frozen);
+		}
 		
 		if (_slippage != 0)
 		{
@@ -967,7 +1040,6 @@ void CtaMocker::do_set_position(const char* stdCode, double qty, double price /*
 	else
 	{//持仓方向和仓位变化方向不一致,需要平仓
 		double left = abs(diff);
-		bool isBuy = decimal::gt(diff, 0.0);
 		if (_slippage != 0)
 			trdPx += _slippage * commInfo->getPriceTick()*(isBuy ? 1 : -1);
 
@@ -1025,6 +1097,13 @@ void CtaMocker::do_set_position(const char* stdCode, double qty, double price /*
 		{
 			left = left * qty / abs(qty);
 
+			//如果T+1，则冻结仓位要增加
+			if (commInfo->isT1())
+			{
+				pInfo._frozen += left;
+				stra_log_debug("%s frozen position up to %.0f", stdCode, pInfo._frozen);
+			}
+
 			DetailInfo dInfo;
 			dInfo._long = decimal::gt(qty, 0);
 			dInfo._price = trdPx;
@@ -1038,7 +1117,6 @@ void CtaMocker::do_set_position(const char* stdCode, double qty, double price /*
 			//这里还需要写一笔成交记录
 			double fee = _replayer->calc_fee(stdCode, trdPx, abs(left), 0);
 			_fund_info._total_fees += fee;
-			//_engine->mutate_fund(fee, FFT_Fee);
 			log_trade(stdCode, dInfo._long, true, curTm, trdPx, abs(left), userTag, fee, _schedule_times);
 
 			pInfo._last_entertime = curTm;
@@ -1233,7 +1311,7 @@ double CtaMocker::stra_get_last_enterprice(const char* stdCode)
 	return pInfo._details[pInfo._details.size() - 1]._price;
 }
 
-double CtaMocker::stra_get_position(const char* stdCode, const char* userTag /* = "" */)
+double CtaMocker::stra_get_position(const char* stdCode, bool bOnlyValid /* = false */, const char* userTag /* = "" */)
 {
 	auto it = _pos_map.find(stdCode);
 	if (it == _pos_map.end())
@@ -1241,7 +1319,17 @@ double CtaMocker::stra_get_position(const char* stdCode, const char* userTag /* 
 
 	const PosInfo& pInfo = it->second;
 	if (strlen(userTag) == 0)
-		return pInfo._volume;
+	{
+		//只有userTag为空的时候时候，才会用bOnlyValid
+		if(bOnlyValid)
+		{
+			//这里理论上，只有多头才会进到这里
+			//其他地方要保证，空头持仓的话，_frozen要为0
+			return pInfo._volume - pInfo._frozen;
+		}
+		else
+			return pInfo._volume;
+	}
 
 	for (auto it = pInfo._details.begin(); it != pInfo._details.end(); it++)
 	{

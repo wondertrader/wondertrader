@@ -71,7 +71,7 @@ public:
 	virtual WTSTransSlice*	stra_get_transaction(const char* stdCode, uint32_t count) = 0;
 	virtual WTSTickData*	stra_get_last_tick(const char* stdCode) = 0;
 
-	virtual double stra_get_position(const char* stdCode) = 0;
+	virtual double stra_get_position(const char* stdCode, bool bOnlyValid = false) = 0;
 	virtual double stra_get_position_profit(const char* stdCode) = 0;
 	virtual double stra_get_price(const char* stdCode) = 0;
 	virtual double stra_get_undone(const char* stdCode) = 0;
