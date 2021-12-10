@@ -186,6 +186,7 @@ protected:
 		uint64_t	_last_exittime;
 
 		double		_frozen;
+		uint32_t	_frozen_date;
 
 		std::vector<DetailInfo> _details;
 
@@ -197,6 +198,7 @@ protected:
 			_last_entertime = 0;
 			_last_exittime = 0;
 			_frozen = 0;
+			_frozen_date = 0;
 		}
 	} PosInfo;
 	typedef faster_hashmap<std::string, PosInfo> PositionMap;

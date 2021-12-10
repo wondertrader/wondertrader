@@ -269,7 +269,10 @@ void SelStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 				pInfo._closeprofit = pItem["closeprofit"].GetDouble();
 				pInfo._volume = pItem["volume"].GetDouble();
 				if (pItem.HasMember("frozen"))
+				{
 					pInfo._frozen = pItem["frozen"].GetDouble();
+					pInfo._frozen_date = pItem["frozendate"].GetUint();
+				}
 
 				if (pInfo._volume == 0)
 				{
@@ -364,6 +367,7 @@ void SelStraBaseCtx::save_data(uint32_t flag /* = 0xFFFFFFFF */)
 			pItem.AddMember("closeprofit", pInfo._closeprofit, allocator);
 			pItem.AddMember("dynprofit", pInfo._dynprofit, allocator);
 			pItem.AddMember("frozen", pInfo._frozen, allocator);
+			pItem.AddMember("frozendate", pInfo._frozen_date, allocator);
 
 			rj::Value details(rj::kArrayType);
 			for (auto dit = pInfo._details.begin(); dit != pInfo._details.end(); dit++)
@@ -601,8 +605,19 @@ void SelStraBaseCtx::on_session_begin(uint32_t uTDate)
 	{
 		const char* stdCode = it.first.c_str();
 		PosInfo& pInfo = it.second;
-		pInfo._frozen = 0;
-		stra_log_debug("%s frozen position reset to 0 on %u", stdCode, uTDate);
+		if (pInfo._frozen_date < uTDate && !decimal::eq(pInfo._frozen, 0))
+		{
+			stra_log_debug("%.0f of %s frozen on %u released on %u", pInfo._frozen, stdCode, pInfo._frozen_date, uTDate);
+
+			pInfo._frozen = 0;
+			pInfo._frozen_date = 0;
+		}
+	}
+
+	if (_ud_modified)
+	{
+		save_userdata();
+		_ud_modified = false;
 	}
 }
 
@@ -653,6 +668,12 @@ void SelStraBaseCtx::on_session_end(uint32_t uTDate)
 		_fund_info._total_profit + _fund_info._total_dynprofit - _fund_info._total_fees, _fund_info._total_fees));
 
 	save_data();
+
+	if (_ud_modified)
+	{
+		save_userdata();
+		_ud_modified = false;
+	}
 }
 
 

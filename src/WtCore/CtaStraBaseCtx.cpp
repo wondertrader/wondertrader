@@ -283,7 +283,10 @@ void CtaStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 				pInfo._last_entertime = pItem["lastentertime"].GetUint64();
 				pInfo._last_exittime = pItem["lastexittime"].GetUint64();
 				if (pItem.HasMember("frozen"))
+				{
 					pInfo._frozen = pItem["frozen"].GetDouble();
+					pInfo._frozen_date = pItem["frozendate"].GetUint();
+				}
 
 				if (pInfo._volume == 0)
 				{
@@ -444,6 +447,7 @@ void CtaStraBaseCtx::save_data(uint32_t flag /* = 0xFFFFFFFF */)
 			pItem.AddMember("lastentertime", pInfo._last_entertime, allocator);
 			pItem.AddMember("lastexittime", pInfo._last_exittime, allocator);
 			pItem.AddMember("frozen", pInfo._frozen, allocator);
+			pItem.AddMember("frozendate", pInfo._frozen_date, allocator);
 
 			rj::Value details(rj::kArrayType);
 			for (auto dit = pInfo._details.begin(); dit != pInfo._details.end(); dit++)
@@ -885,8 +889,19 @@ void CtaStraBaseCtx::on_session_begin(uint32_t uTDate)
 	{
 		const char* stdCode = it.first.c_str();
 		PosInfo& pInfo = it.second;
-		pInfo._frozen = 0;
-		stra_log_debug("%s frozen position reset to 0 on %u", stdCode, uTDate);
+		if(pInfo._frozen_date < uTDate && !decimal::eq(pInfo._frozen, 0))
+		{
+			stra_log_debug("%.0f of %s frozen on %u released on %u", pInfo._frozen, stdCode, pInfo._frozen_date, uTDate);
+
+			pInfo._frozen = 0;
+			pInfo._frozen_date = 0;
+		}
+	}
+
+	if (_ud_modified)
+	{
+		save_userdata();
+		_ud_modified = false;
 	}
 }
 
@@ -937,6 +952,12 @@ void CtaStraBaseCtx::on_session_end(uint32_t uTDate)
 		_fund_info._total_profit + _fund_info._total_dynprofit - _fund_info._total_fees, _fund_info._total_fees));
 
 	save_data();
+
+	if (_ud_modified)
+	{
+		save_userdata();
+		_ud_modified = false;
+	}
 }
 
 CondList& CtaStraBaseCtx::get_cond_entrusts(const char* stdCode)
@@ -1073,11 +1094,6 @@ void CtaStraBaseCtx::stra_exit_long(const char* stdCode, double qty, const char*
 	
 	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式, 则直接触发
 	{
-		double curQty = stra_get_position(stdCode);
-		//如果持仓为空,则不需要再执行退出多头的逻辑了
-		if (decimal::le(curQty, 0))
-			return;
-
 		double maxQty = min(curQty, qty);
 		append_signal(stdCode, curQty - maxQty, userTag);
 	}
@@ -1122,14 +1138,14 @@ void CtaStraBaseCtx::stra_exit_short(const char* stdCode, double qty, const char
 		stra_log_error("Cannot short on %s", stdCode);
 		return;
 	}
+
+	double curQty = stra_get_position(stdCode);
+	//如果持仓是多,则不需要执行退出空头的逻辑了
+	if (decimal::ge(curQty, 0))
+		return;
 	
 	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式, 则直接触发
 	{
-		double curQty = stra_get_position(stdCode);
-		//如果持仓是多,则不需要执行退出空头的逻辑了
-		if (decimal::ge(curQty, 0))
-			return ;
-
 		double maxQty = min(abs(curQty), qty);
 		append_signal(stdCode, curQty + maxQty, userTag);
 	}

@@ -634,8 +634,12 @@ void CtaMocker::on_session_begin(uint32_t curTDate)
 	{
 		const char* stdCode = it.first.c_str();
 		PosInfo& pInfo = it.second;
-		pInfo._frozen = 0;
-		stra_log_debug("%s frozen position reset to 0 on %u", stdCode, curTDate);
+		if (!decimal::eq(pInfo._frozen, 0))
+		{
+			pInfo._frozen = 0;
+			//stra_log_debug("%s frozen position reset to 0 on %u", stdCode, curTDate);
+			stra_log_debug("%.0f of %s frozen released on %u", pInfo._frozen, stdCode, curTDate);
+		}
 	}
 }
 
@@ -855,12 +859,12 @@ void CtaMocker::stra_exit_short(const char* stdCode, double qty, const char* use
 		return;
 	}
 
+	double curQty = stra_get_position(stdCode);
+	if (decimal::ge(curQty, 0))
+		return;
+
 	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式,则直接触发
 	{
-		double curQty = stra_get_position(stdCode);
-		if(decimal::ge(curQty, 0))
-			return;
-
 		double maxQty = min(abs(curQty), qty);
 		append_signal(stdCode, curQty + maxQty, userTag);
 	}

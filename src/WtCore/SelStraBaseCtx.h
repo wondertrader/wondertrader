@@ -129,6 +129,7 @@ protected:
 		double		_closeprofit;
 		double		_dynprofit;
 		double		_frozen;
+		uint32_t	_frozen_date;
 
 		std::vector<DetailInfo> _details;
 
@@ -138,6 +139,7 @@ protected:
 			_closeprofit = 0;
 			_dynprofit = 0;
 			_frozen = 0;
+			_frozen_date = 0;
 		}
 	} PosInfo;
 	typedef faster_hashmap<std::string, PosInfo> PositionMap;

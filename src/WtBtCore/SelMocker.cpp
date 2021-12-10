@@ -339,8 +339,12 @@ void SelMocker::on_session_begin(uint32_t curTDate)
 	{
 		const char* stdCode = it.first.c_str();
 		PosInfo& pInfo = it.second;
-		pInfo._frozen = 0;
-		stra_log_debug("%s frozen position reset to 0 on %u", stdCode, curTDate);
+		if (!decimal::eq(pInfo._frozen, 0))
+		{
+			pInfo._frozen = 0;
+			//stra_log_debug("%s frozen position reset to 0 on %u", stdCode, curTDate);
+			stra_log_debug("%.0f of %s frozen released on %u", pInfo._frozen, stdCode, curTDate);
+		}
 	}
 }
 
