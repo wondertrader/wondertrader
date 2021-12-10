@@ -172,7 +172,7 @@ int TraderMocker::orderInsert(WTSEntrust* entrust)
 			}
 
 			//检查方向的合法性
-			if(commInfo->getCategoty() == CC_Stock && entrust->getDirection() == WDT_SHORT)
+			if(!commInfo->canShort() && entrust->getDirection() == WDT_SHORT)
 			{
 				bPass = false;
 				msg = "股票不能做空";
