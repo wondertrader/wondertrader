@@ -77,13 +77,13 @@ private:
 
 private:
 
-	WTSBaseDataMgr	m_baseDataMgr;
-	WTSHotMgr		m_hotMgr;
-	boost::asio::io_service m_asyncIO;
-	StateMonitor	m_stateMon;
-	UDPCaster		m_udpCaster;
-	DataManager		m_dataMgr;
-	ParserAdapterMgr	m_parsers;
+	WTSBaseDataMgr	_bd_mgr;
+	WTSHotMgr		_hot_mgr;
+	boost::asio::io_service _async_io;
+	StateMonitor	_state_mon;
+	UDPCaster		_udp_caster;
+	DataManager		_data_mgr;
+	ParserAdapterMgr	_parsers;
 
 	FuncParserEvtCallback	_cb_parser_evt;
 	FuncParserSubCallback	_cb_parser_sub;

@@ -78,16 +78,36 @@ bool WtExecRunner::config(const char* cfgFile, bool isFile /* = true */)
 		WTSLogger::info("Trading sessions loaded");
 	}
 
-	if (cfgBF->get("commodity"))
+	WTSVariant* cfgItem = cfgBF->get("commodity");
+	if (cfgItem)
 	{
-		_bd_mgr.loadCommodities(cfgBF->getCString("commodity"));
-		WTSLogger::info("Commodities loaded");
+		if (cfgItem->type() == WTSVariant::VT_String)
+		{
+			_bd_mgr.loadCommodities(cfgItem->asCString());
+		}
+		else if (cfgItem->type() == WTSVariant::VT_Array)
+		{
+			for (uint32_t i = 0; i < cfgItem->size(); i++)
+			{
+				_bd_mgr.loadCommodities(cfgItem->get(i)->asCString());
+			}
+		}
 	}
 
-	if (cfgBF->get("contract"))
+	cfgItem = cfgBF->get("contract");
+	if (cfgItem)
 	{
-		_bd_mgr.loadContracts(cfgBF->getCString("contract"));
-		WTSLogger::info("Contracts loaded");
+		if (cfgItem->type() == WTSVariant::VT_String)
+		{
+			_bd_mgr.loadContracts(cfgItem->asCString());
+		}
+		else if (cfgItem->type() == WTSVariant::VT_Array)
+		{
+			for (uint32_t i = 0; i < cfgItem->size(); i++)
+			{
+				_bd_mgr.loadContracts(cfgItem->get(i)->asCString());
+			}
+		}
 	}
 
 	if (cfgBF->get("holiday"))

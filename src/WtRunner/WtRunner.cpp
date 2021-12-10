@@ -82,11 +82,37 @@ bool WtRunner::config(const char* cfgFile)
 	if (cfgBF->get("session"))
 		_bd_mgr.loadSessions(cfgBF->getCString("session"));
 
-	if (cfgBF->get("commodity"))
-		_bd_mgr.loadCommodities(cfgBF->getCString("commodity"));
+	WTSVariant* cfgItem = cfgBF->get("commodity");
+	if (cfgItem)
+	{
+		if (cfgItem->type() == WTSVariant::VT_String)
+		{
+			_bd_mgr.loadCommodities(cfgItem->asCString());
+		}
+		else if (cfgItem->type() == WTSVariant::VT_Array)
+		{
+			for (uint32_t i = 0; i < cfgItem->size(); i++)
+			{
+				_bd_mgr.loadCommodities(cfgItem->get(i)->asCString());
+			}
+		}
+	}
 
-	if (cfgBF->get("contract"))
-		_bd_mgr.loadContracts(cfgBF->getCString("contract"));
+	cfgItem = cfgBF->get("contract");
+	if (cfgItem)
+	{
+		if (cfgItem->type() == WTSVariant::VT_String)
+		{
+			_bd_mgr.loadContracts(cfgItem->asCString());
+		}
+		else if (cfgItem->type() == WTSVariant::VT_Array)
+		{
+			for (uint32_t i = 0; i < cfgItem->size(); i++)
+			{
+				_bd_mgr.loadContracts(cfgItem->get(i)->asCString());
+			}
+		}
+	}
 
 	if (cfgBF->get("holiday"))
 		_bd_mgr.loadHolidays(cfgBF->getCString("holiday"));

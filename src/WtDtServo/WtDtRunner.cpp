@@ -20,7 +20,7 @@
 
 WtDtRunner::WtDtRunner()
 	: _data_store(NULL)
-	, m_bInited(false)
+	, _is_inited(false)
 {
 	install_signal_hooks([](const char* message) {
 		WTSLogger::error(message);
@@ -34,7 +34,7 @@ WtDtRunner::~WtDtRunner()
 
 void WtDtRunner::initialize(const char* cfgFile, bool isFile /* = true */, const char* modDir /* = "" */)
 {
-	if(m_bInited)
+	if(_is_inited)
 	{
 		WTSLogger::error("WtDtServo has already been initialized");
 		return;
@@ -65,37 +65,57 @@ void WtDtRunner::initialize(const char* cfgFile, bool isFile /* = true */, const
 	WTSVariant* cfgBF = config->get("basefiles");
 	if (cfgBF->get("session"))
 	{
-		m_baseDataMgr.loadSessions(cfgBF->getCString("session"));
+		_bd_mgr.loadSessions(cfgBF->getCString("session"));
 		WTSLogger::info("Trading sessions loaded");
 	}
 
-	if (cfgBF->get("commodity"))
+	WTSVariant* cfgItem = cfgBF->get("commodity");
+	if (cfgItem)
 	{
-		m_baseDataMgr.loadCommodities(cfgBF->getCString("commodity"));
-		WTSLogger::info("Commodities loaded");
+		if (cfgItem->type() == WTSVariant::VT_String)
+		{
+			_bd_mgr.loadCommodities(cfgItem->asCString());
+		}
+		else if (cfgItem->type() == WTSVariant::VT_Array)
+		{
+			for (uint32_t i = 0; i < cfgItem->size(); i++)
+			{
+				_bd_mgr.loadCommodities(cfgItem->get(i)->asCString());
+			}
+		}
 	}
 
-	if (cfgBF->get("contract"))
+	cfgItem = cfgBF->get("contract");
+	if (cfgItem)
 	{
-		m_baseDataMgr.loadContracts(cfgBF->getCString("contract"));
-		WTSLogger::info("Contracts loades");
+		if (cfgItem->type() == WTSVariant::VT_String)
+		{
+			_bd_mgr.loadContracts(cfgItem->asCString());
+		}
+		else if (cfgItem->type() == WTSVariant::VT_Array)
+		{
+			for (uint32_t i = 0; i < cfgItem->size(); i++)
+			{
+				_bd_mgr.loadContracts(cfgItem->get(i)->asCString());
+			}
+		}
 	}
 
 	if (cfgBF->get("holiday"))
 	{
-		m_baseDataMgr.loadHolidays(cfgBF->getCString("holiday"));
+		_bd_mgr.loadHolidays(cfgBF->getCString("holiday"));
 		WTSLogger::info("Holidays loaded");
 	}
 
 	if (cfgBF->get("hot"))
 	{
-		m_hotMgr.loadHots(cfgBF->getCString("hot"));
+		_hot_mgr.loadHots(cfgBF->getCString("hot"));
 		WTSLogger::info("Hot rules loaded");
 	}
 
 	if (cfgBF->get("second"))
 	{
-		m_hotMgr.loadSeconds(cfgBF->getCString("second"));
+		_hot_mgr.loadSeconds(cfgBF->getCString("second"));
 		WTSLogger::info("Second rules loaded");
 	}
 
@@ -103,7 +123,7 @@ void WtDtRunner::initialize(const char* cfgFile, bool isFile /* = true */, const
 
 	config->release();
 
-	m_bInited = true;
+	_is_inited = true;
 }
 
 void WtDtRunner::initDataMgr(WTSVariant* config)
@@ -118,7 +138,7 @@ void WtDtRunner::initDataMgr(WTSVariant* config)
 
 WTSKlineSlice* WtDtRunner::get_bars_by_range(const char* stdCode, const char* period, uint64_t beginTime, uint64_t endTime /* = 0 */)
 {
-	if(!m_bInited)
+	if(!_is_inited)
 	{
 		WTSLogger::error("WtDtServo not initialized");
 		return NULL;
@@ -165,7 +185,7 @@ WTSKlineSlice* WtDtRunner::get_bars_by_range(const char* stdCode, const char* pe
 
 WTSArray* WtDtRunner::get_ticks_by_range(const char* stdCode, uint64_t beginTime, uint64_t endTime /* = 0 */)
 {
-	if (!m_bInited)
+	if (!_is_inited)
 	{
 		WTSLogger::error("WtDtServo not initialized");
 		return NULL;
@@ -182,7 +202,7 @@ WTSArray* WtDtRunner::get_ticks_by_range(const char* stdCode, uint64_t beginTime
 
 WTSKlineSlice* WtDtRunner::get_bars_by_count(const char* stdCode, const char* period, uint32_t count, uint64_t endTime /* = 0 */)
 {
-	if (!m_bInited)
+	if (!_is_inited)
 	{
 		WTSLogger::error("WtDtServo not initialized");
 		return NULL;
@@ -229,7 +249,7 @@ WTSKlineSlice* WtDtRunner::get_bars_by_count(const char* stdCode, const char* pe
 
 WTSArray* WtDtRunner::get_ticks_by_count(const char* stdCode, uint32_t count, uint64_t endTime /* = 0 */)
 {
-	if (!m_bInited)
+	if (!_is_inited)
 	{
 		WTSLogger::error("WtDtServo not initialized");
 		return NULL;

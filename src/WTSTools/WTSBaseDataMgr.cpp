@@ -346,6 +346,7 @@ bool WTSBaseDataMgr::loadCommodities(const char* filename)
 		}
 	}
 
+	WTSLogger::info("Commodities configuration file %s loaded", filename);
 	return true;
 }
 
@@ -414,6 +415,7 @@ bool WTSBaseDataMgr::loadContracts(const char* filename)
 		}
 	}
 
+	WTSLogger::info("Contracts configuration file %s loaded", filename);
 	return true;
 }
 

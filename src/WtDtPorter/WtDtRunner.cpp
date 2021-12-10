@@ -42,22 +42,22 @@ WtDtRunner::~WtDtRunner()
 
 void WtDtRunner::start(bool bAsync/* = false*/)
 {
-	m_parsers.run();
+	_parsers.run();
 
     if(!bAsync)
     {
-		m_asyncIO.post([this]() {
+		_async_io.post([this]() {
 			std::this_thread::sleep_for(std::chrono::milliseconds(5));
-			m_stateMon.run();
+			_state_mon.run();
 		});
 
-        boost::asio::io_service::work work(m_asyncIO);
-        m_asyncIO.run();
+        boost::asio::io_service::work work(_async_io);
+        _async_io.run();
     }
 	else
 	{
 		std::this_thread::sleep_for(std::chrono::milliseconds(5));
-		m_stateMon.run();
+		_state_mon.run();
 	}
 }
 
@@ -78,45 +78,65 @@ void WtDtRunner::initialize(const char* cfgFile, const char* logCfg, const char*
 	WTSVariant* cfgBF = config->get("basefiles");
 	if (cfgBF->get("session"))
 	{
-		m_baseDataMgr.loadSessions(cfgBF->getCString("session"));
+		_bd_mgr.loadSessions(cfgBF->getCString("session"));
 		WTSLogger::info("Trading sessions loaded");
 	}
 
-	if (cfgBF->get("commodity"))
+	WTSVariant* cfgItem = cfgBF->get("commodity");
+	if (cfgItem)
 	{
-		m_baseDataMgr.loadCommodities(cfgBF->getCString("commodity"));
-		WTSLogger::info("Commodities loaded");
+		if (cfgItem->type() == WTSVariant::VT_String)
+		{
+			_bd_mgr.loadCommodities(cfgItem->asCString());
+		}
+		else if (cfgItem->type() == WTSVariant::VT_Array)
+		{
+			for (uint32_t i = 0; i < cfgItem->size(); i++)
+			{
+				_bd_mgr.loadCommodities(cfgItem->get(i)->asCString());
+			}
+		}
 	}
 
-	if (cfgBF->get("contract"))
+	cfgItem = cfgBF->get("contract");
+	if (cfgItem)
 	{
-		m_baseDataMgr.loadContracts(cfgBF->getCString("contract"));
-		WTSLogger::info("Contracts loades");
+		if (cfgItem->type() == WTSVariant::VT_String)
+		{
+			_bd_mgr.loadContracts(cfgItem->asCString());
+		}
+		else if (cfgItem->type() == WTSVariant::VT_Array)
+		{
+			for (uint32_t i = 0; i < cfgItem->size(); i++)
+			{
+				_bd_mgr.loadContracts(cfgItem->get(i)->asCString());
+			}
+		}
 	}
 
 	if (cfgBF->get("holiday"))
 	{
-		m_baseDataMgr.loadHolidays(cfgBF->getCString("holiday"));
+		_bd_mgr.loadHolidays(cfgBF->getCString("holiday"));
 		WTSLogger::info("Holidays loaded");
 	}
 
 	if (cfgBF->get("hot"))
 	{
-		m_hotMgr.loadHots(cfgBF->getCString("hot"));
+		_hot_mgr.loadHots(cfgBF->getCString("hot"));
 		WTSLogger::info("Hot rules loaded");
 	}
 
 	if (cfgBF->get("second"))
 	{
-		m_hotMgr.loadSeconds(cfgBF->getCString("second"));
+		_hot_mgr.loadSeconds(cfgBF->getCString("second"));
 		WTSLogger::info("Second rules loaded");
 	}
 
-	m_udpCaster.init(config->get("broadcaster"), &m_baseDataMgr, &m_dataMgr);
+	_udp_caster.init(config->get("broadcaster"), &_bd_mgr, &_data_mgr);
 
 	initDataMgr(config->get("writer"));
 
-	m_stateMon.initialize(config->getCString("statemonitor"), &m_baseDataMgr, &m_dataMgr);
+	_state_mon.initialize(config->getCString("statemonitor"), &_bd_mgr, &_data_mgr);
 
 	initParsers(config->getCString("parsers"));
 
@@ -126,7 +146,7 @@ void WtDtRunner::initialize(const char* cfgFile, const char* logCfg, const char*
 void WtDtRunner::initDataMgr(WTSVariant* config)
 {
 	bool bDumperEnabled = (_dumper_for_bars != NULL || _dumper_for_ticks != NULL);
-	m_dataMgr.init(config, &m_baseDataMgr, &m_stateMon, &m_udpCaster);
+	_data_mgr.init(config, &_bd_mgr, &_state_mon, &_udp_caster);
 }
 
 void WtDtRunner::initParsers(const char* filename)
@@ -148,12 +168,12 @@ void WtDtRunner::initParsers(const char* filename)
 
 		const char* id = cfgItem->getCString("id");
 
-		ParserAdapterPtr adapter(new ParserAdapter(&m_baseDataMgr, &m_dataMgr));
+		ParserAdapterPtr adapter(new ParserAdapter(&_bd_mgr, &_data_mgr));
 		adapter->init(id, cfgItem);
-		m_parsers.addAdapter(id, adapter);
+		_parsers.addAdapter(id, adapter);
 	}
 
-	WTSLogger::info("%u market data parsers loaded in total", m_parsers.size());
+	WTSLogger::info("%u market data parsers loaded in total", _parsers.size());
 	config->release();
 }
 
@@ -204,7 +224,7 @@ void WtDtRunner::parser_unsubscribe(const char* id, const char* code)
 
 void WtDtRunner::on_parser_quote(const char* id, WTSTickStruct* curTick, bool bNeedSlice /* = true */)
 {
-	ParserAdapterPtr adapter = m_parsers.getAdapter(id);
+	ParserAdapterPtr adapter = _parsers.getAdapter(id);
 	if (adapter)
 	{
 		WTSTickData* newTick = WTSTickData::create(*curTick);
@@ -215,10 +235,10 @@ void WtDtRunner::on_parser_quote(const char* id, WTSTickStruct* curTick, bool bN
 
 bool WtDtRunner::createExtParser(const char* id)
 {
-	ParserAdapterPtr adapter(new ParserAdapter(&m_baseDataMgr, &m_dataMgr));
+	ParserAdapterPtr adapter(new ParserAdapter(&_bd_mgr, &_data_mgr));
 	ExpParser* parser = new ExpParser(id);
 	adapter->initExt(id, parser);
-	m_parsers.addAdapter(id, adapter);
+	_parsers.addAdapter(id, adapter);
 	WTSLogger::info("Extended parser %s created", id);
 	return true;
 }
@@ -230,7 +250,7 @@ bool WtDtRunner::createExtDumper(const char* id)
 	ExpDumperPtr dumper(new ExpDumper(id));
 	_dumpers[id] = dumper;
 
-	m_dataMgr.add_ext_dumper(id, dumper.get());
+	_data_mgr.add_ext_dumper(id, dumper.get());
 
 	WTSLogger::info("Extended dumper %s created", id);
 	return true;

@@ -98,16 +98,36 @@ void initialize()
 		WTSLogger::info("Trading sessions loaded");
 	}
 
-	if (cfgBF->get("commodity"))
+	WTSVariant* cfgItem = cfgBF->get("commodity");
+	if (cfgItem)
 	{
-		g_baseDataMgr.loadCommodities(cfgBF->getCString("commodity"));
-		WTSLogger::info("Commodities loaded");
+		if (cfgItem->type() == WTSVariant::VT_String)
+		{
+			g_baseDataMgr.loadCommodities(cfgItem->asCString());
+		}
+		else if (cfgItem->type() == WTSVariant::VT_Array)
+		{
+			for (uint32_t i = 0; i < cfgItem->size(); i++)
+			{
+				g_baseDataMgr.loadCommodities(cfgItem->get(i)->asCString());
+			}
+		}
 	}
 
-	if (cfgBF->get("contract"))
+	cfgItem = cfgBF->get("contract");
+	if (cfgItem)
 	{
-		g_baseDataMgr.loadContracts(cfgBF->getCString("contract"));
-		WTSLogger::info("Contracts loaded");
+		if (cfgItem->type() == WTSVariant::VT_String)
+		{
+			g_baseDataMgr.loadContracts(cfgItem->asCString());
+		}
+		else if (cfgItem->type() == WTSVariant::VT_Array)
+		{
+			for (uint32_t i = 0; i < cfgItem->size(); i++)
+			{
+				g_baseDataMgr.loadContracts(cfgItem->get(i)->asCString());
+			}
+		}
 	}
 
 	if (cfgBF->get("holiday"))
