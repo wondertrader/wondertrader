@@ -39,6 +39,11 @@ public:
 
 	void check_orders(uint32_t expiresecs, uint64_t curTime, EnumOrderCallback callback);
 
+	inline void clear_orders()
+	{
+		_orders.clear();
+	}
+
 private:
 	typedef std::pair<uint64_t, bool> OrderPair;	//uint64_t - entertime, bool - cancancel
 	typedef std::unordered_map<uint32_t, OrderPair> IDMap;

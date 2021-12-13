@@ -131,8 +131,12 @@ void WtMinImpactExeUnit::on_channel_ready()
 
 	if(!decimal::eq(undone, 0) && !_orders_mon.has_order())
 	{
-		//这说明有未完成单不在监控之中,先撤掉
-		//_ctx->writeLog("%s有不在管理中的未完成单 %f ,全部撤销", _code.c_str(), undone);
+		/*
+		 *	如果未完成单不为0，而OMS没有订单
+		 *	这说明有未完成单不在监控之中,全部撤销掉
+		 *	因为这些订单没有本地订单号，无法直接进行管理
+		 *	这种情况，就是刚启动的时候，上次的未完成单或者外部的挂单
+		 */
 		_ctx->writeLog("Unmanaged live orders with qty %f of %s found, cancel all", undone, _code.c_str());
 
 		bool isBuy = (undone > 0);
@@ -141,6 +145,22 @@ void WtMinImpactExeUnit::on_channel_ready()
 		_cancel_cnt += ids.size();
 
 		_ctx->writeLog("[%s@%d]cancelcnt -> %u", __FILE__, __LINE__, _cancel_cnt);
+	}
+	else if (decimal::eq(undone, 0) && _orders_mon.has_order())
+	{
+		/*
+		 *	By Wesey @ 2021.12.13
+		 *	如果未完成单为0，但是OMS中是有订单的
+		 *	说明OMS中是错单，需要清理掉，不然超时撤单就会出错
+		 *	这种情况，一般是断线重连以后，之前下出去的订单，并没有真正发送到柜台
+		 *	所以这里需要清理掉本地订单
+		 */
+		_ctx->writeLog("Local orders of %s not confirmed in trading channel, clear all", _code.c_str());
+		_orders_mon.clear_orders();
+	}
+	else
+	{
+		_ctx->writeLog("Unrecognized condition while channle ready, %.2f live orders of %s exists, local orders %sexist", undone, _code.c_str(), _orders_mon.has_order() ? "" : "not ");
 	}
 
 
