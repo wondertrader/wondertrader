@@ -242,7 +242,7 @@ void SelMocker::update_dyn_profit(const char* stdCode, double price)
 	}
 
 	double total_dynprofit = 0;
-	for (auto v : _pos_map)
+	for (auto& v : _pos_map)
 	{
 		const PosInfo& pInfo = v.second;
 		total_dynprofit += pInfo._dynprofit;
@@ -350,7 +350,7 @@ void SelMocker::on_session_begin(uint32_t curTDate)
 void SelMocker::enum_position(FuncEnumSelPositionCallBack cb)
 {
 	faster_hashmap<std::string, double> desPos;
-	for (auto it : _pos_map)
+	for (auto& it : _pos_map)
 	{
 		const char* stdCode = it.first.c_str();
 		const PosInfo& pInfo = it.second;

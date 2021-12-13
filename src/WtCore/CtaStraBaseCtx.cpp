@@ -638,7 +638,7 @@ void CtaStraBaseCtx::update_dyn_profit(const char* stdCode, double price)
 	}
 
 	double total_dynprofit = 0;
-	for(auto v : _pos_map)
+	for(auto& v : _pos_map)
 	{
 		const PosInfo& pInfo = v.second;
 		total_dynprofit += pInfo._dynprofit;
@@ -908,7 +908,7 @@ void CtaStraBaseCtx::on_session_begin(uint32_t uTDate)
 void CtaStraBaseCtx::enum_position(FuncEnumCtaPosCallBack cb)
 {
 	std::unordered_map<std::string, double> desPos;
-	for (auto it:_pos_map)
+	for (auto& it:_pos_map)
 	{
 		const char* stdCode = it.first.c_str();
 		const PosInfo& pInfo = it.second;

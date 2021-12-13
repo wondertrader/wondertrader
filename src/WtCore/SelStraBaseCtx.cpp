@@ -624,7 +624,7 @@ void SelStraBaseCtx::on_session_begin(uint32_t uTDate)
 void SelStraBaseCtx::enum_position(FuncEnumSelPositionCallBack cb)
 {
 	faster_hashmap<std::string, double> desPos;
-	for (auto it : _pos_map)
+	for (auto& it : _pos_map)
 	{
 		const char* stdCode = it.first.c_str();
 		const PosInfo& pInfo = it.second;
