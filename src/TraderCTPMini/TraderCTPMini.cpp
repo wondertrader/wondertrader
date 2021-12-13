@@ -93,7 +93,6 @@ bool TraderCTPMini::init(WTSParams* params)
 	m_strAuthCode = params->getCString("authcode");
 
 	m_strFlowDir = params->getCString("flowdir");
-
 	if (m_strFlowDir.empty())
 		m_strFlowDir = "CTPMiniTDFlow";
 
@@ -150,7 +149,7 @@ void TraderCTPMini::release()
 void TraderCTPMini::connect()
 {
 	std::stringstream ss;
-	ss << "./ctpminidata/flows/" << m_strBroker << "/" << m_strUser << "/";
+	ss << m_strFlowDir << "flows/" << m_strBroker << "/" << m_strUser << "/";
 	boost::filesystem::create_directories(ss.str().c_str());
 	m_pUserAPI = m_funcCreator(ss.str().c_str());
 	m_pUserAPI->RegisterSpi(this);
@@ -552,7 +551,7 @@ void TraderCTPMini::OnFrontDisconnected(int nReason)
 
 void TraderCTPMini::OnHeartBeatWarning(int nTimeLapse)
 {
-
+	m_sink->handleTraderLog(LL_DEBUG, "[TraderCTPMini][%s-%s] Heartbeating...", m_strBroker.c_str(), m_strUser.c_str());
 }
 
 void TraderCTPMini::OnRspAuthenticate(CThostFtdcRspAuthenticateField *pRspAuthenticateField, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
@@ -563,7 +562,7 @@ void TraderCTPMini::OnRspAuthenticate(CThostFtdcRspAuthenticateField *pRspAuthen
 	}
 	else
 	{
-		m_sink->handleTraderLog(LL_INFO, "[TraderCTPMini][%s-%s] Authentication failed: %s", m_strBroker.c_str(), m_strUser.c_str(), pRspInfo->ErrorMsg);
+		m_sink->handleTraderLog(LL_ERROR, "[TraderCTPMini][%s-%s] Authentication failed: %s", m_strBroker.c_str(), m_strUser.c_str(), pRspInfo->ErrorMsg);
 		m_wrapperState = WS_LOGINFAILED;
 
 		if (m_sink)
@@ -589,7 +588,7 @@ void TraderCTPMini::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, C
 			m_strBroker.c_str(), m_strUser.c_str(), m_strAppID.c_str(), m_sessionID, pRspUserLogin->LoginTime);
 
 		std::stringstream ss;
-		ss << "./ctpdata/local/" << m_strBroker << "/";
+		ss << m_strFlowDir << "local/" << m_strBroker << "/";
 		std::string path = StrUtil::standardisePath(ss.str());
 		if (!StdFile::exists(path.c_str()))
 			boost::filesystem::create_directories(path.c_str());
@@ -617,7 +616,7 @@ void TraderCTPMini::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, C
 	}
 	else
 	{
-		m_sink->handleTraderLog(LL_INFO, "[TraderCTPMini][%s-%s] Login failed: %s", m_strBroker.c_str(), m_strUser.c_str(), pRspInfo->ErrorMsg);
+		m_sink->handleTraderLog(LL_ERROR, "[TraderCTPMini][%s-%s] Login failed: %s", m_strBroker.c_str(), m_strUser.c_str(), pRspInfo->ErrorMsg);
 		m_wrapperState = WS_LOGINFAILED;
 
 		if (m_sink)

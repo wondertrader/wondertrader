@@ -570,7 +570,7 @@ void TraderCTP::OnFrontDisconnected(int nReason)
 
 void TraderCTP::OnHeartBeatWarning(int nTimeLapse)
 {
-
+	m_sink->handleTraderLog(LL_DEBUG, "[TraderCTP][%s-%s] Heartbeating...", m_strBroker.c_str(), m_strUser.c_str());
 }
 
 void TraderCTP::OnRspAuthenticate(CThostFtdcRspAuthenticateField *pRspAuthenticateField, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
@@ -581,7 +581,7 @@ void TraderCTP::OnRspAuthenticate(CThostFtdcRspAuthenticateField *pRspAuthentica
 	}
 	else
 	{
-		m_sink->handleTraderLog(LL_INFO, "[TraderCTP][%s-%s] Authentiation failed: %s", m_strBroker.c_str(), m_strUser.c_str(), pRspInfo->ErrorMsg);
+		m_sink->handleTraderLog(LL_ERROR, "[TraderCTP][%s-%s] Authentiation failed: %s", m_strBroker.c_str(), m_strUser.c_str(), pRspInfo->ErrorMsg);
 		m_wrapperState = WS_LOGINFAILED;
 
 		if (m_sink)
@@ -633,7 +633,7 @@ void TraderCTP::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, CThos
 	}
 	else
 	{
-		m_sink->handleTraderLog(LL_INFO, "[TraderCTP][%s-%s] Login failed: %s", m_strBroker.c_str(), m_strUser.c_str(), pRspInfo->ErrorMsg);
+		m_sink->handleTraderLog(LL_ERROR, "[TraderCTP][%s-%s] Login failed: %s", m_strBroker.c_str(), m_strUser.c_str(), pRspInfo->ErrorMsg);
 		m_wrapperState = WS_LOGINFAILED;
 
 		if (m_sink)

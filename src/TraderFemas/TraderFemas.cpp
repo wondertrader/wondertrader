@@ -511,7 +511,7 @@ void TraderFemas::OnQryFrontDisconnected(int nReason)
 
 void TraderFemas::OnHeartBeatWarning( int nTimeLapse )
 {
-
+	m_sink->handleTraderLog(LL_DEBUG, "[TraderFemas][%s-%s] Heartbeating...", m_strBroker.c_str(), m_strUser.c_str());
 }
 
 void TraderFemas::OnRspQueryUserLogin(CUstpFtdcRspUserLoginField *pRspUserLogin, CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
@@ -530,7 +530,7 @@ void TraderFemas::OnRspDSUserCertification(CUstpFtdcDSUserCertRspDataField *pDSU
 	}
 	else
 	{
-		m_sink->handleTraderLog(LL_INFO, "[%s-%s] Authentiation failed: %s", m_strBroker.c_str(), m_strUser.c_str(), pRspInfo->ErrorMsg);
+		m_sink->handleTraderLog(LL_ERROR, "[TraderFemas][%s-%s] Authentiation failed: %s", m_strBroker.c_str(), m_strUser.c_str(), pRspInfo->ErrorMsg);
 		m_wrapperState = WS_LOGINFAILED;
 
 		if (m_sink)
@@ -551,16 +551,16 @@ void TraderFemas::OnRspUserLogin( CUstpFtdcRspUserLoginField *pRspUserLogin, CUs
 		///获取当前交易日
 		m_lDate = atoi(m_pUserAPI->GetTradingDay());
 
-		m_sink->handleTraderLog(LL_INFO,"[%s-%s] Login succeed...", m_strBroker.c_str(), m_strUser.c_str());
+		m_sink->handleTraderLog(LL_INFO,"[TraderFemas][%s-%s] Login succeed...", m_strBroker.c_str(), m_strUser.c_str());
 
 		//据说飞马不支持结算,所以查不到结算单
-		m_sink->handleTraderLog(LL_INFO, "[%s-%s] Querying confirming state of settlement data...", m_strBroker.c_str(), m_strUser.c_str());
+		m_sink->handleTraderLog(LL_INFO, "[TraderFemas][%s-%s] Querying confirming state of settlement data...", m_strBroker.c_str(), m_strUser.c_str());
 		if (m_bQryOnline)
 			onInitialized();
 	}
 	else
 	{
-		m_sink->handleTraderLog(LL_INFO,"[%s-%s] Login failed: %s", m_strBroker.c_str(), m_strUser.c_str(), pRspInfo->ErrorMsg);
+		m_sink->handleTraderLog(LL_ERROR,"[TraderFemas][%s-%s] Login failed: %s", m_strBroker.c_str(), m_strUser.c_str(), pRspInfo->ErrorMsg);
 		m_wrapperState = WS_LOGINFAILED;
 
 		if(m_sink)
@@ -778,7 +778,7 @@ void TraderFemas::OnRspQryOrder(CUstpFtdcOrderField *pOrder, CUstpFtdcRspInfoFie
 
 void TraderFemas::onInitialized()
 {
-	m_sink->handleTraderLog(LL_INFO, "[%s-%s] Trading channel initialized...", m_strBroker.c_str(), m_strUser.c_str());
+	m_sink->handleTraderLog(LL_INFO, "[TraderFemas][%s-%s] Trading channel initialized...", m_strBroker.c_str(), m_strUser.c_str());
 	m_wrapperState = WS_ALLREADY;
 	if (m_sink)
 		m_sink->onLoginResult(true, "", m_lDate);
@@ -787,7 +787,7 @@ void TraderFemas::onInitialized()
 void TraderFemas::OnRspError( CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast )
 {
 	if (m_sink)
-		m_sink->handleTraderLog(LL_ERROR, "[TraderFemas] Error occured: %s, request id: %d", pRspInfo->ErrorMsg, nRequestID);
+		m_sink->handleTraderLog(LL_ERROR, "[TraderFemas][TraderFemas] Error occured: %s, request id: %d", pRspInfo->ErrorMsg, nRequestID);
 }
 
 void TraderFemas::OnRtnOrder( CUstpFtdcOrderField *pOrder )

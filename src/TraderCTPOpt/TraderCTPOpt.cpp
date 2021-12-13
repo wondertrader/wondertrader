@@ -290,7 +290,7 @@ void TraderCTPOpt::release()
 void TraderCTPOpt::connect()
 {
 	std::stringstream ss;
-	ss << "./ctpoptdata/flows/" << m_strBroker << "/" << m_strUser << "/";
+	ss << m_strFlowDir << "flows/" << m_strBroker << "/" << m_strUser << "/";
 	boost::filesystem::create_directories(ss.str().c_str());
 	m_pUserAPI = m_funcCreator(ss.str().c_str());
 	m_pUserAPI->RegisterSpi(this);
@@ -845,7 +845,7 @@ void TraderCTPOpt::OnFrontDisconnected(int nReason)
 
 void TraderCTPOpt::OnHeartBeatWarning(int nTimeLapse)
 {
-
+	m_bscSink->handleTraderLog(LL_DEBUG, "[TraderCTPOpt][%s-%s] Heartbeating...", m_strBroker.c_str(), m_strUser.c_str());
 }
 
 void TraderCTPOpt::OnRspAuthenticate(CThostFtdcRspAuthenticateField *pRspAuthenticateField, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
@@ -856,7 +856,7 @@ void TraderCTPOpt::OnRspAuthenticate(CThostFtdcRspAuthenticateField *pRspAuthent
 	}
 	else
 	{
-		m_bscSink->handleTraderLog(LL_INFO, "[TraderCTPOpt][%s-%s] Authentiation failed: %s", m_strBroker.c_str(), m_strUser.c_str(), pRspInfo->ErrorMsg);
+		m_bscSink->handleTraderLog(LL_ERROR, "[TraderCTPOpt][%s-%s] Authentiation failed: %s", m_strBroker.c_str(), m_strUser.c_str(), pRspInfo->ErrorMsg);
 		m_wrapperState = WS_LOGINFAILED;
 
 		if (m_bscSink)
@@ -882,7 +882,7 @@ void TraderCTPOpt::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, CT
 			m_strBroker.c_str(), m_strUser.c_str(), m_strAppID.c_str(), m_sessionID, pRspUserLogin->LoginTime);
 
 		std::stringstream ss;
-		ss << "./ctpdata/local/" << m_strBroker << "/";
+		ss << m_strFlowDir << "local/" << m_strBroker << "/";
 		std::string path = StrUtil::standardisePath(ss.str());
 		if (!StdFile::exists(path.c_str()))
 			boost::filesystem::create_directories(path.c_str());
@@ -908,7 +908,7 @@ void TraderCTPOpt::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, CT
 	}
 	else
 	{
-		m_bscSink->handleTraderLog(LL_INFO, "[TraderCTPOpt][%s-%s] Login failed: %s", m_strBroker.c_str(), m_strUser.c_str(), pRspInfo->ErrorMsg);
+		m_bscSink->handleTraderLog(LL_ERROR, "[TraderCTPOpt][%s-%s] Login failed: %s", m_strBroker.c_str(), m_strUser.c_str(), pRspInfo->ErrorMsg);
 		m_wrapperState = WS_LOGINFAILED;
 
 		if (m_bscSink)
