@@ -630,15 +630,14 @@ bool CtaMocker::on_schedule(uint32_t curDate, uint32_t curTime)
 void CtaMocker::on_session_begin(uint32_t curTDate)
 {
 	//每个交易日开始，要把冻结持仓置零
-	for (auto it : _pos_map)
+	for (auto& it : _pos_map)
 	{
 		const char* stdCode = it.first.c_str();
-		PosInfo& pInfo = it.second;
+		PosInfo& pInfo = (PosInfo&)it.second;
 		if (!decimal::eq(pInfo._frozen, 0))
 		{
-			pInfo._frozen = 0;
-			//stra_log_debug("%s frozen position reset to 0 on %u", stdCode, curTDate);
 			stra_log_debug("%.0f of %s frozen released on %u", pInfo._frozen, stdCode, curTDate);
+			pInfo._frozen = 0;
 		}
 	}
 }
