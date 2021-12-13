@@ -88,9 +88,6 @@ IF(WIN32)
 		COMMAND ${CMAKE_COMMAND} -E
 		copy ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/libParserFemas.dll ${LIBRARY_OUTPUT_PATH}/parsers/
 
-		COMMAND ${CMAKE_COMMAND} -E
-		copy ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/libParseriTap.dll ${LIBRARY_OUTPUT_PATH}/parsers/
-
 		COMMENT "depends modules copied")
 ELSE(UNIX)
 	add_custom_command(TARGET WtDtPorter POST_BUILD
@@ -111,9 +108,6 @@ ELSE(UNIX)
 		
 		COMMAND ${CMAKE_COMMAND} -E
 		copy ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/libParserFemas.so ${LIBRARY_OUTPUT_PATH}/parsers/
-		
-		COMMAND ${CMAKE_COMMAND} -E
-		copy ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/libParseriTap.so ${LIBRARY_OUTPUT_PATH}/parsers/
 		
 		COMMENT "depends modules copied")
 ENDIF()

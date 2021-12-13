@@ -88,9 +88,6 @@ IF(WIN32)
 		copy ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/libTraderFemas.dll ${EXECUTABLE_OUTPUT_PATH}/traders/
 		
 		COMMAND ${CMAKE_COMMAND} -E
-		copy ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/libTraderiTap.dll ${EXECUTABLE_OUTPUT_PATH}/traders/
-		
-		COMMAND ${CMAKE_COMMAND} -E
 		copy ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/libWtExeFact.dll ${EXECUTABLE_OUTPUT_PATH}/executer/
 		
 		COMMAND ${CMAKE_COMMAND} -E
@@ -122,9 +119,6 @@ ELSE(UNIX)
 
 		COMMAND ${CMAKE_COMMAND} -E
 		copy ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/libTraderFemas.so ${EXECUTABLE_OUTPUT_PATH}/traders/
-
-		COMMAND ${CMAKE_COMMAND} -E
-		copy ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/libTraderiTap.so ${EXECUTABLE_OUTPUT_PATH}/traders/
 
 		COMMAND ${CMAKE_COMMAND} -E
 		copy ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/libWtExeFact.so ${EXECUTABLE_OUTPUT_PATH}/executer/
