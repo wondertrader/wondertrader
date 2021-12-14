@@ -252,7 +252,7 @@ bool WTSBaseDataMgr::loadSessions(const char* filename)
 
 		WTSSessionInfo* sInfo = WTSSessionInfo::create(id.c_str(), name, offset);
 
-		if (!jVal["auction"].IsNull())
+		if (jVal.HasMember("auction"))
 		{
 			const rj::Value& jAuc = jVal["auction"];
 			sInfo->setAuctionTime(jAuc["from"].GetUint(), jAuc["to"].GetUint());
@@ -315,7 +315,7 @@ bool WTSBaseDataMgr::loadCommodities(const char* filename)
 			pCommInfo->setPriceTick(jPInfo["pricetick"].GetDouble());
 			pCommInfo->setVolScale(jPInfo["volscale"].GetUint());
 
-			if (!jPInfo["category"].IsNull())
+			if (jPInfo.HasMember("category"))
 				pCommInfo->setCategory((ContractCategory)jPInfo["category"].GetUint());
 			else
 				pCommInfo->setCategory(CC_Future);
@@ -323,7 +323,7 @@ bool WTSBaseDataMgr::loadCommodities(const char* filename)
 			pCommInfo->setCoverMode((CoverMode)jPInfo["covermode"].GetUint());
 			pCommInfo->setPriceMode((PriceMode)jPInfo["pricemode"].GetUint());
 
-			if (!jPInfo["trademode"].IsNull())
+			if (jPInfo.HasMember("trademode"))
 				pCommInfo->setTradingMode((TradingMode)jPInfo["trademode"].GetUint());
 			else
 				pCommInfo->setTradingMode(TM_Both);
