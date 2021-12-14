@@ -179,8 +179,12 @@ private:
 	IDataManager*		_data_mgr;
 	WTSVariant*			_config;
 
-	double			_scale;
-	bool			_channel_ready;
+	double				_scale;		//放大倍数
+	bool				_auto_clear;//是否自动清理上一期的主力合约头寸	
+	bool				_channel_ready;
+
+	faster_hashset<std::string>	_clear_includes;	//自动清理包含品种
+	faster_hashset<std::string>	_clear_excludes;	//自动清理排除品种
 
 	faster_hashmap<std::string, double> _target_pos;
 

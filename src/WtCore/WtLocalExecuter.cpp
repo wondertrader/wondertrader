@@ -27,6 +27,8 @@ WtLocalExecuter::WtLocalExecuter(WtExecuterFactory* factory, const char* name, I
 	, _factory(factory)
 	, _data_mgr(dataMgr)
 	, _channel_ready(false)
+	, _scale(1.0)
+	, _auto_clear(true)
 {
 }
 
@@ -50,8 +52,45 @@ bool WtLocalExecuter::init(WTSVariant* params)
 	if(poolsize > 0)
 	{
 		_pool.reset(new boost::threadpool::pool(poolsize));
-		writeLog("Executer thread poolsize %u", poolsize);
 	}
+
+	/*
+	 *	By Wesley @ 2021.12.14
+	 *	从配置文件中读取自动清理的策略
+	 *	active: 是否启用
+	 *	includes: 包含列表，格式如CFFEX.IF
+	 *	excludes: 排除列表，格式如CFFEX.IF
+	 */
+	WTSVariant* cfgClear = params->get("clear");
+	if(cfgClear)
+	{
+		_auto_clear = cfgClear->getBoolean("active");
+		WTSVariant* cfgItem = cfgClear->get("includes");
+		if(cfgItem)
+		{
+			if (cfgItem->type() == WTSVariant::VT_String)
+				_clear_includes.insert(cfgItem->asCString());
+			else if (cfgItem->type() == WTSVariant::VT_Array)
+			{
+				for(uint32_t i = 0; i < cfgItem->size(); i++)
+					_clear_includes.insert(cfgItem->get(i)->asCString());
+			}
+		}
+
+		cfgItem = cfgClear->get("excludes");
+		if (cfgItem)
+		{
+			if (cfgItem->type() == WTSVariant::VT_String)
+				_clear_excludes.insert(cfgItem->asCString());
+			else if (cfgItem->type() == WTSVariant::VT_Array)
+			{
+				for (uint32_t i = 0; i < cfgItem->size(); i++)
+					_clear_excludes.insert(cfgItem->get(i)->asCString());
+			}
+		}
+	}
+
+	writeLog(fmt::format("Local executer inited, scale: {}, auto_clear: {}, thread poolsize: {}", _scale, _auto_clear, poolsize).c_str());
 
 	return true;
 }
@@ -410,33 +449,67 @@ void WtLocalExecuter::on_channel_lost()
 
 void WtLocalExecuter::on_position(const char* stdCode, bool isLong, double prevol, double preavail, double newvol, double newavail, uint32_t tradingday)
 {
+	/*
+	 *	By Wesley @ 2021.12.14
+	 *	先检查自动清理过期主力合约的标记是否为true
+	 *	如果不为true，则直接退出该逻辑
+	 */
+	if (!_auto_clear)
+		return;
+
+	//如果不是期货合约，直接退出
+	if (!CodeHelper::isStdFutCode(stdCode))
+		return;
+
 	IHotMgr* hotMgr = _stub->get_hot_mon();
-	if(CodeHelper::isStdFutCode(stdCode))
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdFutCode(stdCode);
+	//获取上一期的主力合约
+	std::string prevCode = hotMgr->getPrevRawCode(cInfo._exchg, cInfo._product, tradingday);
+
+	//如果当前合约不是上一期的主力合约，则直接退出
+	if (prevCode != cInfo._code)
+		return;
+
+	writeLog("Prev hot contract of %s.%s on %u is %s", cInfo._exchg, cInfo._product, tradingday, prevCode.c_str());
+
+	std::string fullPid = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
+
+	//先检查排除列表
+	//如果在排除列表中，则直接退出
+	auto it = _clear_excludes.find(fullPid);
+	if(it != _clear_excludes.end())
 	{
-		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdFutCode(stdCode);
-		std::string code = hotMgr->getPrevRawCode(cInfo._exchg, cInfo._product, tradingday);
-		writeLog("Prev hot contract of %s.%s on %u is %s", cInfo._exchg, cInfo._product, tradingday, code.c_str());
-		if (code == cInfo._code)
+		writeLog("Position of %s, as prev hot contract, won't be cleared for it's in exclude list", stdCode);
+		return;
+	}
+
+	//如果包含列表不为空，再检查是否在包含列表中
+	//如果为空，则全部清理，不再进入该逻辑
+	if(!_clear_includes.empty())
+	{
+		it = _clear_includes.find(fullPid);
+		if (it == _clear_includes.end())
 		{
-			//上期主力合约,需要清理仓位
-			//writeLog("%s 为上一期主力合约,仓位即将自动清理");
-			writeLog("Position of %s, as prev hot contract, will be cleared", stdCode);
-			ExecuteUnitPtr unit = getUnit(stdCode);
-			if (unit)
-			{
-				//unit->self()->set_position(stdCode, 0);
-				if (_pool)
-				{
-					std::string code = stdCode;
-					_pool->schedule([unit, code](){
-						unit->self()->clear_all_position(code.c_str());
-					});
-				}
-				else
-				{
-					unit->self()->clear_all_position(stdCode);
-				}
-			}
+			writeLog("Position of %s, as prev hot contract, won't be cleared for it's not in include list", stdCode);
+			return;
+		}
+	}
+
+	//最后再进行自动清理
+	writeLog("Position of %s, as prev hot contract, will be cleared", stdCode);
+	ExecuteUnitPtr unit = getUnit(stdCode);
+	if (unit)
+	{
+		if (_pool)
+		{
+			std::string code = stdCode;
+			_pool->schedule([unit, code](){
+				unit->self()->clear_all_position(code.c_str());
+			});
+		}
+		else
+		{
+			unit->self()->clear_all_position(stdCode);
 		}
 	}
 }
