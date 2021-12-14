@@ -212,7 +212,7 @@ void WtCtaRtTicker::run()
 				uint32_t total_mins = _s_info->getTradingMins();
 				if(_time != UINT_MAX && _last_emit_pos != 0 && _last_emit_pos < total_mins && offTime >= _s_info->getCloseTime(true))
 				{
-					WTSLogger::warn("Tradingday %u will be ended forcely，last_emit_pos: %u, time: %u", _engine->getTradingDate(), _last_emit_pos.fetch_add(0), _time);
+					WTSLogger::warn("Tradingday %u will be ended forcely, last_emit_pos: %u, time: %u", _engine->getTradingDate(), _last_emit_pos.fetch_add(0), _time);
 
 					//触发数据回放模块
 					StdUniqueLock lock(_mtx);

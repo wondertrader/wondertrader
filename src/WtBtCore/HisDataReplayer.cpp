@@ -159,11 +159,7 @@ bool HisDataReplayer::init(WTSVariant* cfg, EventNotifier* notifier /* = NULL */
 	//	}
 	//}
 
-	bool bAdjLoaded = false;
-	//if (_db_conn)
-	//	bAdjLoaded = loadStkAdjFactorsFromDB();
-
-	if (!bAdjLoaded && cfg->has("adjfactor"))
+	if (cfg->has("adjfactor"))
 		loadStkAdjFactors(cfg->getCString("adjfactor"));
 
 	return true;
@@ -3166,7 +3162,7 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 		CsvReader reader;
 		reader.load_from_file(csvfile.c_str());
 
-		WTSLogger::info("Reading data from %s£¬with fields: %s...", csvfile.c_str(), reader.fields());
+		WTSLogger::info("Reading data from %s, with fields: %s...", csvfile.c_str(), reader.fields());
 
 		BarsList& barList = bForBars ? _bars_cache[key] : _unbars_cache[key];
 		barList._code = stdCode;

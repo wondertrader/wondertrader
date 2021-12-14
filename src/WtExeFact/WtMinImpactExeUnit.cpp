@@ -401,7 +401,7 @@ void WtMinImpactExeUnit::set_position(const char* stdCode, double newVol)
 	//如果这个时候又设置为0，则直接跳过了
 	if (is_clear(_target_pos) && decimal::eq(newVol, 0))
 	{
-		_ctx->writeLog("%s is in clearing processing，position can not be set to 0", stdCode);
+		_ctx->writeLog("%s is in clearing processing, position can not be set to 0", stdCode);
 		return;
 	}
 
