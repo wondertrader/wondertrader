@@ -70,9 +70,18 @@ void initParsers(WTSVariant* cfg)
 			continue;
 
 		const char* id = cfgItem->getCString("id");
+		// By Wesley @ 2021.12.14
+		// 如果id为空，则生成自动id
+		std::string realid = id;
+		if (realid.empty())
+		{
+			static uint32_t auto_parserid = 1000;
+			realid = StrUtil::printf("auto_parser_%u", auto_parserid++);
+		}
+
 		ParserAdapterPtr adapter(new ParserAdapter(&g_baseDataMgr, &g_dataMgr));
-		adapter->init(id, cfgItem);
-		g_parsers.addAdapter(id, adapter);
+		adapter->init(realid.c_str(), cfgItem);
+		g_parsers.addAdapter(realid.c_str(), adapter);
 	}
 
 	WTSLogger::info("%u market data parsers loaded in total", g_parsers.size());

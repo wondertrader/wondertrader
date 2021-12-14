@@ -192,10 +192,18 @@ bool WtExecRunner::initParsers(WTSVariant* cfgParser)
 
 		const char* id = cfgItem->getCString("id");
 
-		ParserAdapterPtr adapter(new ParserAdapter);
-		adapter->init(id, cfgItem, this, &_bd_mgr, &_hot_mgr);
+		// By Wesley @ 2021.12.14
+		// 如果id为空，则生成自动id
+		std::string realid = id;
+		if (realid.empty())
+		{
+			static uint32_t auto_parserid = 1000;
+			realid = StrUtil::printf("auto_parser_%u", auto_parserid++);
+		}
 
-		_parsers.addAdapter(id, adapter);
+		ParserAdapterPtr adapter(new ParserAdapter);
+		adapter->init(realid.c_str(), cfgItem, this, &_bd_mgr, &_hot_mgr);
+		_parsers.addAdapter(realid.c_str(), adapter);
 
 		count++;
 	}
@@ -229,9 +237,24 @@ bool WtExecRunner::initExecuters()
 		if (!executer->init(cfgItem))
 			return false;
 
-		TraderAdapterPtr trader = _traders.getAdapter(cfgItem->getCString("trader"));
-		executer->setTrader(trader.get());
-		trader->addSink(executer.get());
+		const char* tid = cfgItem->getCString("trader");
+		if (strlen(tid) == 0)
+		{
+			WTSLogger::error("No Trader configured for Executer %s", id);
+		}
+		else
+		{
+			TraderAdapterPtr trader = _traders.getAdapter(tid);
+			if (trader)
+			{
+				executer->setTrader(trader.get());
+				trader->addSink(executer.get());
+			}
+			else
+			{
+				WTSLogger::error("Trader %s not exists, cannot configured for executer %s", tid, id);
+			}
+		}
 
 		_exe_mgr.add_executer(executer);
 

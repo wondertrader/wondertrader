@@ -18,6 +18,7 @@
 
 #include "../Share/JsonToVariant.hpp"
 #include "../Share/DLLHelper.hpp"
+#include "../Share/StrUtil.hpp"
 
 #include "../WTSTools/WTSLogger.h"
 #include "../WTSUtils/SignalHook.hpp"
@@ -168,9 +169,18 @@ void WtDtRunner::initParsers(const char* filename)
 
 		const char* id = cfgItem->getCString("id");
 
+		// By Wesley @ 2021.12.14
+		// 如果id为空，则生成自动id
+		std::string realid = id;
+		if (realid.empty())
+		{
+			static uint32_t auto_parserid = 1000;
+			realid = StrUtil::printf("auto_parser_%u", auto_parserid++);
+		}
+		
 		ParserAdapterPtr adapter(new ParserAdapter(&_bd_mgr, &_data_mgr));
-		adapter->init(id, cfgItem);
-		_parsers.addAdapter(id, adapter);
+		adapter->init(realid.c_str(), cfgItem);
+		_parsers.addAdapter(realid.c_str(), adapter);
 	}
 
 	WTSLogger::info("%u market data parsers loaded in total", _parsers.size());
