@@ -606,6 +606,7 @@ WTSKlineSlice* SelMocker::stra_get_bars(const char* stdCode, const char* period,
 	else
 	{
 		basePeriod = period;
+		key.append("1");
 	}
 
 	WTSKlineSlice* kline = _replayer->get_kline_slice(stdCode, basePeriod.c_str(), count, times, false);

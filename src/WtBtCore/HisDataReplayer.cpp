@@ -2924,6 +2924,10 @@ bool HisDataReplayer::cacheRawTicksFromCSV(const std::string& key, const char* s
 		//WTSLogger::info("数据文件%s全部读取完成, 共%u条", csvfile.c_str(), tickList._items.size());
 		WTSLogger::info("Data file %s all loaded, totally %u items", csvfile.c_str(), tickList._items.size());
 
+		/*
+		 *	By Wesley @ 2021.12.14
+		 *	这一段之前有bug，之前没有把文件头写到文件里，所以转储的dsb解析的时候会抛出异常
+		 */
 		std::string content;
 		content.resize(sizeof(HisTickBlockV2));
 		HisTickBlockV2 *pBlk = (HisTickBlockV2*)content.data();
@@ -3055,6 +3059,10 @@ bool HisDataReplayer::cacheRawBarsFromLoader(const std::string& key, const char*
 			default: btype = BT_HIS_Day; break;
 			}
 
+			/*
+			 *	By Wesley @ 2021.12.14
+			 *	这一段之前有bug，之前没有把文件头写到文件里，所以转储的dsb解析的时候会抛出异常
+			 */
 			std::string content;
 			content.resize(sizeof(HisKlineBlockV2));
 			HisKlineBlockV2 *kBlock = (HisKlineBlockV2*)content.data();
@@ -3201,6 +3209,10 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 		default: btype = BT_HIS_Day; break;
 		}
 
+		/*
+		 *	By Wesley @ 2021.12.14
+		 *	这一段之前有bug，之前没有把文件头写到文件里，所以转储的dsb解析的时候会抛出异常
+		 */
 		std::string content;
 		content.resize(sizeof(HisKlineBlockV2));
 		HisKlineBlockV2 *kBlock = (HisKlineBlockV2*)content.data();

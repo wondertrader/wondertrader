@@ -1130,14 +1130,6 @@ void CtaMocker::do_set_position(const char* stdCode, double qty, double price /*
 WTSKlineSlice* CtaMocker::stra_get_bars(const char* stdCode, const char* period, uint32_t count, bool isMain /* = false */)
 {
 	std::string key = StrUtil::printf("%s#%s", stdCode, period);
-	if (isMain)
-	{
-		if (_main_key.empty())
-			_main_key = key;
-		else if (_main_key != key)
-			throw std::runtime_error("Main k bars can only be setup once");
-	}
-
 	std::string basePeriod = "";
 	uint32_t times = 1;
 	if (strlen(period) > 1)
@@ -1148,6 +1140,15 @@ WTSKlineSlice* CtaMocker::stra_get_bars(const char* stdCode, const char* period,
 	else
 	{
 		basePeriod = period;
+		key.append("1");
+	}
+
+	if (isMain)
+	{
+		if (_main_key.empty())
+			_main_key = key;
+		else if (_main_key != key)
+			throw std::runtime_error("Main k bars can only be setup once");
 	}
 
 	WTSKlineSlice* kline = _replayer->get_kline_slice(stdCode, basePeriod.c_str(), count, times, isMain);
