@@ -2924,17 +2924,19 @@ bool HisDataReplayer::cacheRawTicksFromCSV(const std::string& key, const char* s
 		//WTSLogger::info("数据文件%s全部读取完成, 共%u条", csvfile.c_str(), tickList._items.size());
 		WTSLogger::info("Data file %s all loaded, totally %u items", csvfile.c_str(), tickList._items.size());
 
-		HisTickBlockV2 tBlock;
-		strcpy(tBlock._blk_flag, BLK_FLAG);
-		tBlock._type = BT_HIS_Ticks;
-		tBlock._version = BLOCK_VERSION_CMP;
-		
-		std::string cmpData = WTSCmpHelper::compress_data(tickList._items.data(), sizeof(WTSTickStruct)*tickList._count);
-		tBlock._size = cmpData.size();
+		std::string content;
+		content.resize(sizeof(HisTickBlockV2));
+		HisTickBlockV2 *pBlk = (HisTickBlockV2*)content.data();
+		strcpy(pBlk->_blk_flag, BLK_FLAG);
+		pBlk->_type = BT_HIS_Ticks;
+		pBlk->_version = BLOCK_VERSION_CMP;
 
-		StdFile::write_file_content(filename.c_str(), cmpData.c_str(), cmpData.size());
-		//WTSLogger::info("数据已转储至%s", filename.c_str());
-		WTSLogger::info("Data dumped to file %s", filename.c_str());
+		std::string cmpData = WTSCmpHelper::compress_data(tickList._items.data(), sizeof(WTSTickStruct)*tickList._count);
+		pBlk->_size = cmpData.size();
+		content.append(cmpData);
+
+		StdFile::write_file_content(filename.c_str(), content.c_str(), content.size());
+		WTSLogger::info("Ticks transfered to file %s", filename.c_str());
 	}
 
 	return true;
@@ -3053,15 +3055,18 @@ bool HisDataReplayer::cacheRawBarsFromLoader(const std::string& key, const char*
 			default: btype = BT_HIS_Day; break;
 			}
 
-			HisKlineBlockV2 kBlock;
-			strcpy(kBlock._blk_flag, BLK_FLAG);
-			kBlock._type = btype;
-			kBlock._version = BLOCK_VERSION_CMP;
+			std::string content;
+			content.resize(sizeof(HisKlineBlockV2));
+			HisKlineBlockV2 *kBlock = (HisKlineBlockV2*)content.data();
+			strcpy(kBlock->_blk_flag, BLK_FLAG);
+			kBlock->_type = btype;
+			kBlock->_version = BLOCK_VERSION_CMP;
 
 			std::string cmpData = WTSCmpHelper::compress_data(barList._bars.data(), sizeof(WTSBarStruct)*barList._count);
-			kBlock._size = cmpData.size();
+			kBlock->_size = cmpData.size();
+			content.append(cmpData);
 
-			StdFile::write_file_content(filename.c_str(), cmpData.c_str(), cmpData.size());
+			StdFile::write_file_content(filename.c_str(), content.c_str(), content.size());
 			WTSLogger::info("Bars transfered to file %s", filename.c_str());
 		}
 	}
@@ -3088,6 +3093,8 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 
 	std::stringstream ss;
 	ss << _base_dir << "his/" << dirname << "/" << cInfo._exchg << "/";
+
+	//这里自动创建，是因为后面转储需要
 	if (!StdFile::exists(ss.str().c_str()))
 		boost::filesystem::create_directories(ss.str().c_str());
 
@@ -3194,501 +3201,23 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 		default: btype = BT_HIS_Day; break;
 		}
 
-		HisKlineBlockV2 kBlock;
-		strcpy(kBlock._blk_flag, BLK_FLAG);
-		kBlock._type = btype;
-		kBlock._version = BLOCK_VERSION_CMP;
+		std::string content;
+		content.resize(sizeof(HisKlineBlockV2));
+		HisKlineBlockV2 *kBlock = (HisKlineBlockV2*)content.data();
+		strcpy(kBlock->_blk_flag, BLK_FLAG);
+		kBlock->_type = btype;
+		kBlock->_version = BLOCK_VERSION_CMP;
 
 		std::string cmpData = WTSCmpHelper::compress_data(barList._bars.data(), sizeof(WTSBarStruct)*barList._count);
-		kBlock._size = cmpData.size();
+		kBlock->_size = cmpData.size();
+		content.append(cmpData);
 
-		StdFile::write_file_content(filename.c_str(), cmpData.c_str(), cmpData.size());
-		WTSLogger::info("Data dumped to file %s", filename.c_str());
+		StdFile::write_file_content(filename.c_str(), content.c_str(), content.size());
+		WTSLogger::info("Bars transfered to file %s", filename.c_str());
 	}
 
 	return true;
 }
-
-/*
-bool HisDataReplayer::cacheRawBarsFromDB(const std::string& key, const char* stdCode, WTSKlinePeriod period, bool bForBars)
-{
-	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
-	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
-
-	uint32_t curDate = TimeUtils::getCurDate();
-	uint32_t curTime = TimeUtils::getCurMin() / 100;
-
-	uint32_t endTDate = _bd_mgr.calcTradingDate(stdPID.c_str(), curDate, curTime, false);
-
-	std::string tbname, pname;
-	switch (period)
-	{
-	case KP_Minute1:
-		tbname = "tb_kline_min1";
-		pname = "min1";
-		break;
-	case KP_Minute5:
-		tbname = "tb_kline_min5";
-		pname = "min5";
-		break;
-	default:
-		tbname = "tb_kline_day";
-		pname = "day";
-		break;
-	}
-
-	BarsList& barList = bForBars ? _bars_cache[key] : _unbars_cache[key];
-	barList._code = stdCode;
-	barList._period = period;
-
-	std::vector<std::vector<WTSBarStruct>*> barsSections;
-	bool isDay = (period == KP_DAY);
-
-	uint32_t realCnt = 0;
-	if (!cInfo.isFlat() && cInfo.isFuture())//如果是读取期货主力连续数据
-	{
-		const char* flag = cInfo.isHot() ? "HOT" : "2ND";
-
-		//先按照HOT代码进行读取, 如rb.HOT
-		std::vector<WTSBarStruct>* hotAy = NULL;
-		uint32_t lastHotTime = 0;
-		for (;;)
-		{
-			char sql[256] = { 0 };
-			if (isDay)
-				sprintf(sql, "SELECT `date`,0,open,high,low,close,settle,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%s.%s' ORDER BY `date`;",
-					tbname.c_str(), cInfo._exchg, cInfo._product, flag);
-			else
-				sprintf(sql, "SELECT `date`,`time`,open,high,low,close,0,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%s.%s' ORDER BY `time`;",
-					tbname.c_str(), cInfo._exchg, cInfo._product, flag);
-
-			MysqlQuery query(*_db_conn);
-			if (!query.exec(sql))
-			{
-				WTSLogger::error("Loading back kbar data from database failed: %s", query.errormsg());
-			}
-			else
-			{
-				uint32_t barcnt = (uint32_t)query.num_rows();
-				if (barcnt > 0)
-				{
-					hotAy = new std::vector<WTSBarStruct>();
-					hotAy->resize(barcnt);
-
-					uint32_t idx = 0;
-					while (query.fetch_row())
-					{
-						WTSBarStruct& bs = hotAy->at(idx);
-						bs.date		= query.getuint(0);
-						bs.time		= query.getuint(1);
-						bs.open		= query.getdouble(2);
-						bs.high		= query.getdouble(3);
-						bs.low		= query.getdouble(4);
-						bs.close	= query.getdouble(5);
-						bs.settle	= query.getdouble(6);
-						bs.vol		= query.getuint(7);
-						bs.money	= query.getdouble(8);
-						bs.hold		= query.getuint(9);
-						bs.add		= query.getdouble(10);
-						idx++;
-					}
-
-					if (period != KP_DAY)
-						lastHotTime = hotAy->at(barcnt - 1).time;
-					else
-						lastHotTime = hotAy->at(barcnt - 1).date;
-				}
-
-				//WTSLogger::info("主力合约%s历史%s数据直接缓存%u条", stdCode, pname.c_str(), barcnt);
-				WTSLogger::info("%u items of back %s data of hot contract %s directly loaded", barcnt, pname.c_str(), stdCode);
-			}
-
-			break;
-		}
-
-		HotSections secs;
-		if (cInfo.isHot())
-		{
-			if (!_hot_mgr.splitHotSecions(cInfo._exchg, cInfo._product, 19900102, endTDate, secs))
-				return false;
-		}
-		else if (cInfo.isSecond())
-		{
-			if (!_hot_mgr.splitSecondSecions(cInfo._exchg, cInfo._product, 19900102, endTDate, secs))
-				return false;
-		}
-
-		if (secs.empty())
-			return false;
-
-		bool bAllCovered = false;
-		for (auto it = secs.rbegin(); it != secs.rend() && left > 0; it++)
-		{
-			const HotSection& hotSec = *it;
-			const char* curCode = hotSec._code.c_str();
-			uint32_t rightDt = hotSec._e_date;
-			uint32_t leftDt = hotSec._s_date;
-
-			//要先将日期转换为边界时间
-			uint32_t stime, etime;
-			if (!isDay)
-			{
-				uint64_t sTime = _bd_mgr.getBoundaryTime(stdPID.c_str(), leftDt, false, true);
-				uint64_t eTime = _bd_mgr.getBoundaryTime(stdPID.c_str(), rightDt, false, false);
-
-				stime = ((uint32_t)(sTime / 10000) - 19900000) * 10000 + (uint32_t)(sTime % 10000);
-
-				if (stime < lastHotTime)	//如果边界时间小于主力的最后一根Bar的时间, 说明已经有交叉了, 则不需要再处理了
-				{
-					bAllCovered = true;
-					stime = lastHotTime + 1;
-				}
-
-				etime = ((uint32_t)(eTime / 10000) - 19900000) * 10000 + (uint32_t)(eTime % 10000);
-
-				if (etime <= lastHotTime)	//右边界时间小于最后一条Hot时间, 说明全部交叉了, 没有再找的必要了
-					break;
-			}
-			else
-			{
-				stime = leftDt;
-				if (stime < lastHotTime)	//如果边界时间小于主力的最后一根Bar的时间, 说明已经有交叉了, 则不需要再处理了
-				{
-					bAllCovered = true;
-					stime = lastHotTime + 1;
-				}
-
-				etime = rightDt;
-
-				if (etime <= lastHotTime)
-					break;
-			}
-
-			char sql[256] = { 0 };
-			if (isDay)
-				sprintf(sql, "SELECT `date`,0,open,high,low,close,settle,volume,turnover,interest,diff_interest FROM %s "
-					"WHERE exchange='%s' AND code='%s' AND `date`>=%u AND `date`<=%u ORDER BY `date`;",
-					tbname.c_str(), cInfo._exchg, curCode, stime, etime);
-			else
-				sprintf(sql, "SELECT `date`,`time`,open,high,low,close,0,volume,turnover,interest,diff_interest FROM %s "
-					"WHERE exchange='%s' AND code='%s' AND `time`>=%u AND `time`<=%u ORDER BY `time`;",
-					tbname.c_str(), cInfo._exchg, curCode, stime, etime);
-
-			MysqlQuery query(*_db_conn);
-			if (!query.exec(sql))
-			{
-				//WTSLogger::error("历史K线读取失败: %s", query.errormsg());
-				WTSLogger::error("Loading back kbar data from database failed: %s", query.errormsg());
-			}
-			else
-			{
-				uint32_t barcnt = (uint32_t)query.num_rows();
-				if(barcnt)
-				{
-					auto tempAy = new std::vector<WTSBarStruct>();
-					tempAy->resize(barcnt);
-
-					uint32_t idx = 0;
-					while (query.fetch_row())
-					{
-						WTSBarStruct& bs = tempAy->at(idx);
-						bs.date		= query.getuint(0);
-						bs.time		= query.getuint(1);
-						bs.open		= query.getdouble(2);
-						bs.high		= query.getdouble(3);
-						bs.low		= query.getdouble(4);
-						bs.close	= query.getdouble(5);
-						bs.settle	= query.getdouble(6);
-						bs.vol		= query.getuint(7);
-						bs.money	= query.getdouble(8);
-						bs.hold		= query.getuint(9);
-						bs.add		= query.getdouble(10);
-						idx++;
-					}
-
-					realCnt += barcnt;
-
-					barsSections.emplace_back(tempAy);
-				}
-
-				if (bAllCovered)
-					break;
-			}
-		}
-
-		if (hotAy)
-		{
-			barsSections.emplace_back(hotAy);
-			realCnt += hotAy->size();
-		}
-	}
-	else if (cInfo.isExright() && cInfo.isStock())//如果是读取股票复权数据
-	{
-		std::vector<WTSBarStruct>* hotAy = NULL;
-		uint32_t lastQTime = 0;
-
-		do
-		{
-			char flag = cInfo._exright == 1 ? 'Q' : 'H';
-			char sql[256] = { 0 };
-			if (isDay)
-				sprintf(sql, "SELECT `date`,0,open,high,low,close,settle,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%s%c' ORDER BY `date`;",
-					tbname.c_str(), cInfo._exchg, cInfo._code, flag);
-			else
-				sprintf(sql, "SELECT `date`,`time`,open,high,low,close,0,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%s%c' ORDER BY `time`;",
-					tbname.c_str(), cInfo._exchg, cInfo._code, flag);
-
-			MysqlQuery query(*_db_conn);
-			if (!query.exec(sql))
-			{
-				//WTSLogger::error("历史K线读取失败: %s", query.errormsg());
-				WTSLogger::error("Loading back kbar data from database failed: %s", query.errormsg());
-			}
-			else
-			{
-				uint32_t barcnt = (uint32_t)query.num_rows();
-				if(barcnt > 0)
-				{
-					hotAy = new std::vector<WTSBarStruct>();
-					hotAy->resize(barcnt);
-
-					uint32_t idx = 0;
-					while (query.fetch_row())
-					{
-						WTSBarStruct& bs = hotAy->at(idx);
-						bs.date		= query.getuint(0);
-						bs.time		= query.getuint(1);
-						bs.open		= query.getdouble(2);
-						bs.high		= query.getdouble(3);
-						bs.low		= query.getdouble(4);
-						bs.close	= query.getdouble(5);
-						bs.settle	= query.getdouble(6);
-						bs.vol		= query.getuint(7);
-						bs.money	= query.getdouble(8);
-						bs.hold		= query.getuint(9);
-						bs.add		= query.getdouble(10);
-						idx++;
-					}
-
-					if (period != KP_DAY)
-						lastQTime = hotAy->at(barcnt - 1).time;
-					else
-						lastQTime = hotAy->at(barcnt - 1).date;
-				}
-
-				//WTSLogger::error("股票%s历史%s复权数据直接缓存%u条", stdCode, pname.c_str(), barcnt);
-				WTSLogger::info("%u items of adjusted back %s data of stock %s directly loaded", barcnt, pname.c_str(), stdCode);
-			}
-
-		} while (false);
-
-		bool bAllCovered = false;
-		do
-		{
-			const char* curCode = cInfo._code;
-
-			//要先将日期转换为边界时间
-			WTSBarStruct sBar;
-			if (period != KP_DAY)
-			{
-				sBar.date = TimeUtils::minBarToDate(lastQTime);
-
-				sBar.time = lastQTime + 1;
-			}
-			else
-			{
-				sBar.date = lastQTime + 1;
-			}
-
-			char sql[256] = { 0 };
-			if (isDay)
-				sprintf(sql, "SELECT `date`,0,open,high,low,close,settle,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%s' AND date>=%u ORDER BY `date`;",
-					tbname.c_str(), cInfo._exchg, cInfo._code, lastQTime + 1);
-			else
-				sprintf(sql, "SELECT `date`,`time`,open,high,low,close,0,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%s' AND time>=%u ORDER BY `time`;",
-					tbname.c_str(), cInfo._exchg, cInfo._code, lastQTime + 1);
-
-			MysqlQuery query(*_db_conn);
-			if (!query.exec(sql))
-			{
-				//WTSLogger::error("历史K线读取失败: %s", query.errormsg());
-				WTSLogger::error("Loading back kbar data from database failed: %s", query.errormsg());
-			}
-			else
-			{
-				uint32_t barcnt = (uint32_t)query.num_rows();
-				if (barcnt > 0)
-				{
-					auto tempAy = new std::vector<WTSBarStruct>();
-					tempAy->resize(barcnt);
-
-					uint32_t idx = 0;
-					while (query.fetch_row())
-					{
-						WTSBarStruct& bs = tempAy->at(idx);
-						bs.date		= query.getuint(0);
-						bs.time		= query.getuint(1);
-						bs.open		= query.getdouble(2);
-						bs.high		= query.getdouble(3);
-						bs.low		= query.getdouble(4);
-						bs.close	= query.getdouble(5);
-						bs.settle	= query.getdouble(6);
-						bs.vol		= query.getuint(7);
-						bs.money	= query.getdouble(8);
-						bs.hold		= query.getuint(9);
-						bs.add		= query.getdouble(10);
-						idx++;
-					}
-
-					realCnt += barcnt;
-
-					auto& ayFactors = getAdjFactors(cInfo._code, cInfo._exchg);
-					if (!ayFactors.empty())
-					{
-						//做复权处理
-						int32_t lastIdx = barcnt;
-						WTSBarStruct bar;
-						WTSBarStruct* firstBar = tempAy->data();
-
-						//根据复权类型确定基础因子
-						//如果是前复权，则历史数据会变小，以最后一个复权因子为基础因子
-						//如果是后复权，则新数据会变大，基础因子为1
-						double baseFactor = 1.0;
-						if (cInfo._exright == 1)
-							baseFactor = ayFactors.back()._factor;
-						else if (cInfo._exright == 2)
-							barList._factor = ayFactors.back()._factor;
-
-						for (auto it = ayFactors.rbegin(); it != ayFactors.rend(); it++)
-						{
-							const AdjFactor& adjFact = *it;
-							bar.date = adjFact._date;
-
-							//调整因子
-							double factor = adjFact._factor / baseFactor;
-
-							WTSBarStruct* pBar = NULL;
-							pBar = std::lower_bound(firstBar, firstBar + lastIdx - 1, bar, [period](const WTSBarStruct& a, const WTSBarStruct& b) {
-								return a.date < b.date;
-							});
-
-							if (pBar->date < bar.date)
-								continue;
-
-							WTSBarStruct* endBar = pBar;
-							if (pBar != NULL)
-							{
-								int32_t curIdx = pBar - firstBar;
-								while (pBar && curIdx < lastIdx)
-								{
-									pBar->open *= factor;
-									pBar->high *= factor;
-									pBar->low *= factor;
-									pBar->close *= factor;
-
-									pBar++;
-									curIdx++;
-								}
-								lastIdx = endBar - firstBar;
-							}
-
-							if (lastIdx == 0)
-							{
-								break;
-							}
-						}
-					}
-
-					barsSections.emplace_back(tempAy);
-				}
-			}
-
-		} while (false);
-
-		if (hotAy)
-		{
-			barsSections.emplace_back(hotAy);
-			realCnt += hotAy->size();
-		}
-	}
-	else
-	{
-		std::string timecond = "";
-		if(!bForBars)
-		{
-			if (isDay)
-				timecond = StrUtil::printf("AND `date` >= %u ", _cur_tdate);
-			else
-				timecond = StrUtil::printf("AND `time` >= %u%04u ", _cur_date-19900000, _cur_time);
-		}
-
-		//读取历史的
-		char sql[256] = { 0 };
-		if (isDay)
-			sprintf(sql, "SELECT `date`,0,open,high,low,close,settle,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%s' %sORDER BY `date`;",
-				tbname.c_str(), cInfo._exchg, cInfo._code, timecond.c_str());
-		else
-			sprintf(sql, "SELECT `date`,`time`,open,high,low,close,0,volume,turnover,interest,diff_interest FROM %s WHERE exchange='%s' AND code='%s' %sORDER BY `time`;",
-				tbname.c_str(), cInfo._exchg, cInfo._code, timecond.c_str());
-
-		MysqlQuery query(*_db_conn);
-		if (!query.exec(sql))
-		{
-			//WTSLogger::error("历史K线读取失败: %s", query.errormsg());
-			WTSLogger::error("Loading back kbar data from database failed: %s", query.errormsg());
-		}
-		else
-		{
-			uint32_t barcnt = (uint32_t)query.num_rows();
-			if(barcnt > 0)
-			{
-				auto tempAy = new std::vector<WTSBarStruct>();
-				tempAy->resize(barcnt);
-
-				uint32_t idx = 0;
-				while (query.fetch_row())
-				{
-					WTSBarStruct& bs = tempAy->at(idx);
-					bs.date		= query.getuint(0);
-					bs.time		= query.getuint(1);
-					bs.open		= query.getdouble(2);
-					bs.high		= query.getdouble(3);
-					bs.low		= query.getdouble(4);
-					bs.close	= query.getdouble(5);
-					bs.settle	= query.getdouble(6);
-					bs.vol		= query.getuint(7);
-					bs.money	= query.getdouble(8);
-					bs.hold		= query.getuint(9);
-					bs.add		= query.getdouble(10);
-					idx++;
-				}
-
-				realCnt += barcnt;
-
-				barsSections.emplace_back(tempAy);
-			}
-		}
-	}
-
-	if (realCnt > 0)
-	{
-		barList._bars.resize(realCnt);
-
-		uint32_t curIdx = 0;
-		for (auto it = barsSections.rbegin(); it != barsSections.rend(); it++)
-		{
-			std::vector<WTSBarStruct>* tempAy = *it;
-			memcpy(barList._bars.data() + curIdx, tempAy->data(), tempAy->size() * sizeof(WTSBarStruct));
-			curIdx += tempAy->size();
-			delete tempAy;
-		}
-		barsSections.clear();
-	}
-
-	WTSLogger::info("%u items of back %s data of contract %s cached", realCnt, pname.c_str(), stdCode);
-	return true;
-}
-*/
 
 bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* stdCode, WTSKlinePeriod period, bool bForBars/* = true*/)
 {
