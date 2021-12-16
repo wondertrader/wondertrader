@@ -280,7 +280,7 @@ const char* WTSHotMgr::getHotCode(const char* exchg, const char* rawCode, uint32
 			return it->second.c_str();
 	}
 
-	std::string product = CodeHelper::bscFutCodeToBscCommID(rawCode);
+	std::string product = CodeHelper::rawFutCodeToRawCommID(rawCode);
 
 	if(m_pExchgHotMap == NULL)
 		return "";
@@ -321,7 +321,7 @@ bool WTSHotMgr::isHot(const char* exchg, const char* rawCode, uint32_t dt)
 	if (dt == 0)
 		dt = TimeUtils::getCurDate();
 
-	std::string product = CodeHelper::bscFutCodeToBscCommID(rawCode);
+	std::string product = CodeHelper::rawFutCodeToRawCommID(rawCode);
 
 	if(strlen(exchg) == 0)
 		false;
@@ -700,7 +700,7 @@ const char* WTSHotMgr::getSecondCode(const char* exchg, const char* rawCode, uin
 			return it->second.c_str();
 	}
 
-	std::string product = CodeHelper::bscFutCodeToBscCommID(rawCode);
+	std::string product = CodeHelper::rawFutCodeToRawCommID(rawCode);
 
 	if (m_pExchgScndMap == NULL)
 		return "";
@@ -741,7 +741,7 @@ bool WTSHotMgr::isSecond(const char* exchg, const char* rawCode, uint32_t dt)
 	if (dt == 0)
 		dt = TimeUtils::getCurDate();
 
-	std::string product = CodeHelper::bscFutCodeToBscCommID(rawCode);
+	std::string product = CodeHelper::rawFutCodeToRawCommID(rawCode);
 
 	if (strlen(exchg) == 0)
 		false;
