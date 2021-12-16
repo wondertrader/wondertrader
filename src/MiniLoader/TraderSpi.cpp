@@ -61,6 +61,7 @@ typedef struct _Commodity
 	ContractCategory	m_ccCategory;
 	CoverMode			m_coverMode;
 	PriceMode			m_priceMode;
+	TradingMode			m_tradeMode;
 
 } Commodity;
 typedef std::map<std::string, Commodity> CommodityMap;
@@ -322,6 +323,7 @@ void CTraderSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CTho
 							pm = PM_Limit;
 					}
 					commInfo.m_priceMode = pm;
+					commInfo.m_tradeMode = TM_Both;
 
 					if (pInstrument->PriceTick < 0.001)
 						commInfo.m_uPrecision = 4;
@@ -370,6 +372,7 @@ void CTraderSpi::DumpToJson()
 			jComm.AddMember("covermode", (uint32_t)commInfo.m_coverMode, allocator);
 			jComm.AddMember("pricemode", (uint32_t)commInfo.m_priceMode, allocator);
 			jComm.AddMember("category", (uint32_t)commInfo.m_ccCategory, allocator);
+			jComm.AddMember("trademode", (uint32_t)commInfo.m_tradeMode, allocator);
 			jComm.AddMember("precision", commInfo.m_uPrecision, allocator);
 			jComm.AddMember("pricetick", commInfo.m_fPriceTick, allocator);
 			jComm.AddMember("volscale", commInfo.m_uVolScale, allocator);
