@@ -49,7 +49,7 @@ public:
 		if(left)
 			ret.erase(0, ret.find_first_not_of(delims));
 
-		return ret;
+		return std::move(ret);
 	}
 
 	//去掉所有空格
@@ -110,7 +110,7 @@ public:
 			++numSplits;
 
 		} while (pos != std::string::npos);
-		return ret;
+		return std::move(ret);
 	}
 
 	/** Returns a std::stringVector that contains all the substd::strings delimited
@@ -187,7 +187,7 @@ public:
 			strRet.end(),
 			strRet.begin(),
 			(int(*)(int))tolower);
-		return strRet;
+		return std::move(strRet);
 	}
 
 	static inline std::string makeUpperCase(const char* str)
@@ -198,7 +198,7 @@ public:
 			strRet.end(),
 			strRet.begin(),
 			(int(*)(int))toupper);
-		return strRet;
+		return std::move(strRet);
 	}
 
 	/** Converts the contents of the std::string to a float.
@@ -264,7 +264,7 @@ public:
 		if (path[path.length() - 1] != '/' && bIsDir)
 			path += '/';
 
-		return path;
+		return std::move(path);
 	}
 
 	/** Method for splitting a fully qualified filename into the base name
@@ -369,7 +369,7 @@ public:
 	static inline const std::string BLANK()
 	{
 		static const std::string temp = std::string("");
-		return temp;
+		return std::move(temp);
 	}
 
 	//地球人都知道,恶心的std::string是没有CString的Format这个函数的,所以我们自己造
@@ -379,7 +379,7 @@ public:
 		va_start(argptr, pszFormat);
 		std::string result=printf(pszFormat,argptr);
 		va_end(argptr);
-		return result;
+		return std::move(result);
 	}
 
 	//地球人都知道,恶心的std::string是没有CString的Format这个函数的,所以我们自己造
@@ -389,7 +389,7 @@ public:
 		va_start(argptr, pszFormat);
 		std::string result=printf2(pszFormat,argptr);
 		va_end(argptr);
-		return result;
+		return std::move(result);
 	}
 
 	//地球人都知道,恶心的std::string是没有CString的Format这个函数的,所以我们自己造
@@ -440,7 +440,7 @@ public:
 		{
 			ret += " ";
 		}
-		return ret;
+		return std::move(ret);
 	}
 
 	//地球人都知道,恶心的std::string是没有CString的Format这个函数的,所以我们自己造
@@ -476,7 +476,7 @@ public:
 			size *= 2;
 		}
 		ret.resize(len);
-		return ret;
+		return std::move(ret);
 	}
 
 	//取得右边的N个字符
@@ -484,13 +484,13 @@ public:
 	{
 		if(nCount>src.length())
 			return BLANK();
-		return src.substr(src.length()-nCount,nCount);
+		return std::move(src.substr(src.length()-nCount,nCount));
 	}
 
 	//取左边的N个字符
 	static inline std::string left(const std::string &src,size_t nCount)
 	{
-		return src.substr(0,nCount);
+		return std::move(src.substr(0,nCount));
 	}
 
 	static inline size_t charCount(const std::string &src,char ch)
