@@ -1081,10 +1081,30 @@ WTSOrderInfo* TraderCTPMini::makeOrderInfo(CThostFtdcOrderField* orderField)
 	pRet->setCode(orderField->InstrumentID);
 	pRet->setExchange(contract->getExchg());
 
-	pRet->setOrderDate(strtoul(orderField->InsertDate, NULL, 10));
+	/*
+	 *	By Wesley @ 2021.12.16
+	 *	mini返回的InsertDate是空，所以这里要改成用交易日来重算，但是夜盘很麻烦，只能大概处理一下了
+	 */
 	std::string strTime = orderField->InsertTime;
 	StrUtil::replace(strTime, ":", "");
 	uint32_t uTime = strtoul(strTime.c_str(), NULL, 10);
+
+	uint32_t insertDate = m_lDate;
+	uint32_t uHour = uTime / 10000;
+	//下单时间是夜盘，则直接用交易日倒推下单日期
+	if(uHour >= 21)
+	{
+		uint32_t wd = TimeUtils::getWeekDay(insertDate);
+		//如果是周一，则直接用上周五的日期
+		//因为节假日前一天不会有夜盘，所以只可能是周五
+		//如果不是周一，则直接用前一天的日期
+		if(wd == 1)
+			insertDate = TimeUtils::getNextDate(m_lDate, -3);
+		else
+			insertDate = TimeUtils::getNextDate(m_lDate, -1);
+	}
+	pRet->setOrderDate(insertDate);
+	
 	pRet->setOrderTime(TimeUtils::makeTime(pRet->getOrderDate(), strtoul(strTime.c_str(), NULL, 10) * 1000));
 
 	pRet->setOrderState(wrapOrderState(orderField->OrderStatus));
@@ -1170,24 +1190,25 @@ WTSTradeInfo* TraderCTPMini::makeTradeRecord(CThostFtdcTradeField *tradeField)
 	std::string strTime = tradeField->TradeTime;
 	StrUtil::replace(strTime, ":", "");
 	uint32_t uTime = strtoul(strTime.c_str(), NULL, 10);
-	uint32_t uDate = strtoul(tradeField->TradeDate, NULL, 10);
 
-	//if(uDate == m_pContractMgr->getTradingDate())
-	//{
-	//	//如果当前日期和交易日一致,且时间大于21点,说明是夜盘,也就是实际日期要单独计算
-	//	if (uTime / 10000 >= 21)
-	//	{
-	//		uDate = m_pMarketMgr->getPrevTDate(commInfo->getExchg(), uDate, 1);
-	//	}
-	//	else if(uTime <= 3)
-	//	{
-	//		//如果在3点以内,就要先获取上一个交易日,再获取下一个自然日
-	//		//这样做的目的是,遇到周五晚上的情况,可以处理过来
-	//		uDate = m_pMarketMgr->getPrevTDate(commInfo->getExchg(), uDate, 1);
-	//		uDate = TimeUtils::getNextDate(uDate);
-	//	}
-	//}
-
+	/*
+	 *	By Wesley @ 2021.12.16
+	 *	mini返回的InsertDate是空，所以这里要改成用交易日来重算，但是夜盘很麻烦，只能大概处理一下了
+	 */
+	uint32_t uDate = m_lDate;
+	uint32_t uHour = uTime / 10000;
+	//下单时间是夜盘，则直接用交易日倒推下单日期
+	if (uHour >= 21)
+	{
+		uint32_t wd = TimeUtils::getWeekDay(uDate);
+		//如果是周一，则直接用上周五的日期
+		//因为节假日前一天不会有夜盘，所以只可能是周五
+		//如果不是周一，则直接用前一天的日期
+		if (wd == 1)
+			uDate = TimeUtils::getNextDate(m_lDate, -3);
+		else
+			uDate = TimeUtils::getNextDate(m_lDate, -1);
+	}
 	pRet->setTradeDate(uDate);
 	pRet->setTradeTime(TimeUtils::makeTime(uDate, uTime * 1000));
 
