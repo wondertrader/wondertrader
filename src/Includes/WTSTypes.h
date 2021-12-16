@@ -15,16 +15,17 @@ NS_OTP_BEGIN
 /*
  *	合约分类
  */
+//从CTP复制过来的
 typedef enum tagContractCategory
 {
 	CC_Stock,			//股票
 	CC_Future,			//期货
-	CC_FutOption,		//期货期权
+	CC_FutOption,		//期货期权，商品期权是这个分类
 	CC_Combination,		//组合
 	CC_Spot,			//即期
 	CC_EFP,				//期转现
-	CC_SpotOption,		//现货期权
-	CC_ETFOption		//个股期权
+	CC_SpotOption,		//现货期权，股指期权是这个分类
+	CC_ETFOption		//个股期权，ETF期权是这个分类
 } ContractCategory;
 
 /*
