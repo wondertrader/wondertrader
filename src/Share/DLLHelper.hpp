@@ -25,18 +25,28 @@ class DLLHelper
 public:
 	static DllHandle load_library(const char *filename)
 	{
+		try
+		{
 #ifdef _MSC_VER
-		return ::LoadLibrary(filename);
+			return ::LoadLibrary(filename);
 #else
-		DllHandle ret = dlopen(filename, RTLD_NOW);
-		if(ret == NULL)
-			printf("%s\n", dlerror());
-		return ret;
+			DllHandle ret = dlopen(filename, RTLD_NOW);
+			if (ret == NULL)
+				printf("%s\n", dlerror());
+			return ret;
 #endif
+		}
+		catch(...)
+		{
+			return NULL;
+		}
 	}
 
 	static void free_library(DllHandle handle)
 	{
+		if (NULL == handle)
+			return;
+
 #ifdef _MSC_VER
 		::FreeLibrary(handle);
 #else
@@ -46,6 +56,9 @@ public:
 
 	static ProcHandle get_symbol(DllHandle handle, const char* name)
 	{
+		if (NULL == handle)
+			return NULL;
+
 #ifdef _MSC_VER
 		return ::GetProcAddress(handle, name);
 #else
