@@ -162,7 +162,7 @@ protected:
 
 	void		append_signal(const char* stdCode, double qty);
 
-	void		do_set_position(const char* stdCode, double qty);
+	void		do_set_position(const char* stdCode, double qty, double curPx = -1);
 
 	void		task_loop();
 

@@ -102,6 +102,7 @@ void WtEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 
 	//先检查是否要信号要触发
 	{
+		bool bTriggered = false;
 		auto it = _sig_map.find(stdCode);
 		if (it != _sig_map.end())
 		{
@@ -112,11 +113,9 @@ void WtEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 				const SigInfo& sInfo = it->second;
 				double pos = sInfo._volume;
 				std::string code = stdCode;
-				//push_task([this, code, pos](){
-				//	do_set_position(code.c_str(), pos);
-				//});
-				do_set_position(code.c_str(), pos);
+				do_set_position(code.c_str(), pos, curTick->price());
 				_sig_map.erase(it);
+				bTriggered = true;
 			}
 
 		}
@@ -124,6 +123,7 @@ void WtEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 		save_datas();
 	}
 
+	//如果成交量为0，价格也不会有变动
 	if (curTick->volume() == 0)
 		return;
 
@@ -765,10 +765,18 @@ double WtEngine::calc_fee(const char* stdCode, double price, double qty, uint32_
 void WtEngine::append_signal(const char* stdCode, double qty)
 {
 	/*
-	 *	这个函数的目的，是防止有时候需要重新同步组合头寸的时候
-	 *	如果没有最新价格导致计算出错的情况，所以这里加了一个等待
-	 *	ontick的时候会处理信号
+	 *	By Wesley @ 2021.12.16
+	 *	这里发现一个问题，就是组合的理论成交价和策略的理论成交价不一致
+	 *	检查以后发现，策略的理论成交价会在下一个tick更新
+	 *	但是组合的理论成交价这一个tick就直接更新了
+	 *	这就导致组合成交价永远比策略提前一个tick
+	 *	这里做一个修正，等下一个tick进来，触发signal
 	 */
+	SigInfo& sInfo = _sig_map[stdCode];
+	sInfo._volume = qty;
+	sInfo._gentime = (uint64_t)_cur_date * 1000000000 + (uint64_t)_cur_raw_time * 100000 + _cur_secs;
+
+	/*
 	double curPx = get_cur_price(stdCode);
 	if(decimal::eq(curPx, 0.0))
 	{
@@ -780,12 +788,16 @@ void WtEngine::append_signal(const char* stdCode, double qty)
 	{
 		do_set_position(stdCode, qty);
 	}
+	*/
 }
 
-void WtEngine::do_set_position(const char* stdCode, double qty)
+void WtEngine::do_set_position(const char* stdCode, double qty, double curPx /* = -1 */)
 {
 	PosInfo& pInfo = _pos_map[stdCode];
-	double curPx = get_cur_price(stdCode);
+
+	if(decimal::lt(curPx, 0))
+		curPx = get_cur_price(stdCode);
+
 	uint64_t curTm = (uint64_t)_cur_date * 10000 + _cur_time;
 	uint32_t curTDate = _cur_tdate;
 
