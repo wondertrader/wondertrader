@@ -165,13 +165,13 @@ void WtCtaEngine::on_init()
 				{
 					CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 					std::string code = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
-					realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), cInfo._exchg);
+					realCode = CodeHelper::rawFutCodeToStdCode(code.c_str(), cInfo._exchg);
 				}
 				else if (CodeHelper::isStdFut2ndCode(stdCode))
 				{
 					CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 					std::string code = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
-					realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), cInfo._exchg);
+					realCode = CodeHelper::rawFutCodeToStdCode(code.c_str(), cInfo._exchg);
 				}
 
 				double& vol = target_pos[realCode];
@@ -189,14 +189,14 @@ void WtCtaEngine::on_init()
 			//	CodeHelper::CodeInfo cInfo;
 			//	CodeHelper::extractStdCode(stdCode, cInfo);
 			//	std::string code = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
-			//	realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), cInfo._exchg);
+			//	realCode = CodeHelper::rawFutCodeToStdCode(code.c_str(), cInfo._exchg);
 			//}
 			//else if (CodeHelper::isStdFut2ndCode(stdCode))
 			//{
 			//	CodeHelper::CodeInfo cInfo;
 			//	CodeHelper::extractStdCode(stdCode, cInfo);
 			//	std::string code = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
-			//	realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), cInfo._exchg);
+			//	realCode = CodeHelper::rawFutCodeToStdCode(code.c_str(), cInfo._exchg);
 			//}
 
 			//double& vol = target_pos[realCode];
@@ -289,13 +289,13 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 				{
 					CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 					std::string code = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
-					realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), cInfo._exchg);
+					realCode = CodeHelper::rawFutCodeToStdCode(code.c_str(), cInfo._exchg);
 				}
 				else if (CodeHelper::isStdFut2ndCode(stdCode))
 				{
 					CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 					std::string code = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
-					realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), cInfo._exchg);
+					realCode = CodeHelper::rawFutCodeToStdCode(code.c_str(), cInfo._exchg);
 				}
 
 				double& vol = target_pos[realCode];
@@ -386,13 +386,13 @@ void WtCtaEngine::handle_pos_change(const char* straName, const char* stdCode, d
 	{
 		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 		std::string code = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
-		realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), cInfo._exchg);
+		realCode = CodeHelper::rawFutCodeToStdCode(code.c_str(), cInfo._exchg);
 	}
 	else if (CodeHelper::isStdFut2ndCode(stdCode))
 	{
 		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 		std::string code = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
-		realCode = CodeHelper::bscFutCodeToStdCode(code.c_str(), cInfo._exchg);
+		realCode = CodeHelper::rawFutCodeToStdCode(code.c_str(), cInfo._exchg);
 	}
 
 	PosInfo& pItem = _pos_map[realCode];
