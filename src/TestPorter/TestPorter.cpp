@@ -1,10 +1,11 @@
 // TestPorter.cpp : 定义控制台应用程序的入口点。
 //
 #include "../WtPorter/WtPorter.h"
-#include "../WtExecMon/WtExecPorter.h"
+//#include "../WtExecMon/WtExecPorter.h"
 
 #include "../Includes/WTSStruct.h"
 #include "../Share/DLLHelper.hpp"
+#include "../Share/CodeHelper.hpp"
 
 void PORTER_FLAG on_init(CtxHandler ctxid)
 {
@@ -102,6 +103,7 @@ void test_porter()
 	release_porter();
 }
 
+/*
 void test_exec()
 {
 #ifdef _WIN32
@@ -123,10 +125,38 @@ void test_exec()
 
 	release_exec();
 }
+*/
+
+void test_codehelper()
+{
+	{
+		//股票代码测试
+		auto r = CodeHelper::isStdStkCode("SSE.600000");
+		r = CodeHelper::isStdStkCode("SSE.STK.600000Q");
+		r = CodeHelper::isStdStkCode("SSE.STK.600000H");
+		r = CodeHelper::isStdStkCode("SSE.ETF.1108600");
+		r = CodeHelper::isStdStkCode("SSE.ETF.1108600Q");
+		r = CodeHelper::isStdStkCode("SSE.ETF.1108600H");
+
+		r = CodeHelper::isSimpStkCode("SSE.600000");
+		r = CodeHelper::isSimpStkCode("SSE.600000Q");
+		r = CodeHelper::isSimpStkCode("SSE.600000H");
+
+		auto s = CodeHelper::rawStkCodeToStdCode("600000", "SSE");
+		s = CodeHelper::rawStkCodeToStdCode("600000", "SSE", "STK");
+		s = CodeHelper::rawStkCodeToStdCode("000001", "SSE", "IDX");
+
+		s = CodeHelper::stdStkCodeToBscCode("SSE.STK.600000Q");
+
+		auto c = CodeHelper::extractStdStkCode("SSE.STK.600000Q");
+		c = CodeHelper::extractStdStkCode("SSE.STK.600000");
+		c = CodeHelper::extractStdStkCode("SSE.ETF.1108600Q");
+	}
+}
 
 int main()
 {
-	printf("start...\r\n");
-	test_porter();
+	test_codehelper();
+	getchar();
 	return 0;
 }
