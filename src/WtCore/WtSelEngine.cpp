@@ -343,7 +343,7 @@ void WtSelEngine::handle_pos_change(const char* stdCode, double diffQty)
 		targetPos = decimal::rnd(abs(targetPos)*_risk_volscale)*symbol;
 	}
 
-	append_signal(realCode.c_str(), targetPos);
+	append_signal(realCode.c_str(), targetPos, false);
 	save_datas();
 
 	_exec_mgr.handle_pos_change(realCode.c_str(), targetPos);

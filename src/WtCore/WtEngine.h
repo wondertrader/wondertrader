@@ -160,7 +160,7 @@ protected:
 
 	void		save_datas();
 
-	void		append_signal(const char* stdCode, double qty);
+	void		append_signal(const char* stdCode, double qty, bool bStandBy);
 
 	void		do_set_position(const char* stdCode, double qty, double curPx = -1);
 

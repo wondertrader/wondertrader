@@ -762,7 +762,7 @@ double WtEngine::calc_fee(const char* stdCode, double price, double qty, uint32_
 	return (int32_t)(ret * 100 + 0.5) / 100.0;
 }
 
-void WtEngine::append_signal(const char* stdCode, double qty)
+void WtEngine::append_signal(const char* stdCode, double qty, bool bStandBy /* = true */)
 {
 	/*
 	 *	By Wesley @ 2021.12.16
@@ -771,10 +771,19 @@ void WtEngine::append_signal(const char* stdCode, double qty)
 	 *	但是组合的理论成交价这一个tick就直接更新了
 	 *	这就导致组合成交价永远比策略提前一个tick
 	 *	这里做一个修正，等下一个tick进来，触发signal
+	 *	如果是bar内触发的，bStandBy为false，则直接修改持仓
 	 */
-	SigInfo& sInfo = _sig_map[stdCode];
-	sInfo._volume = qty;
-	sInfo._gentime = (uint64_t)_cur_date * 1000000000 + (uint64_t)_cur_raw_time * 100000 + _cur_secs;
+	double curPx = get_cur_price(stdCode);
+	if(bStandBy || decimal::eq(curPx, 0.0))
+	{
+		SigInfo& sInfo = _sig_map[stdCode];
+		sInfo._volume = qty;
+		sInfo._gentime = (uint64_t)_cur_date * 1000000000 + (uint64_t)_cur_raw_time * 100000 + _cur_secs;
+	}
+	else
+	{
+		do_set_position(stdCode, qty);
+	}
 
 	/*
 	double curPx = get_cur_price(stdCode);
