@@ -2,17 +2,16 @@
 #include <string>
 #include <stdint.h>
 
+#include "DataDefine.h"
+
 #include "../Includes/FasterDefs.h"
 #include "../Includes/IDataReader.h"
 
-#include "../WtDataWriter/DataDefine.h"
-//#include "../WtDataWriter/MysqlDB.hpp"
 #include "../Share/BoostMappingFile.hpp"
 
 NS_OTP_BEGIN
 
 typedef std::shared_ptr<BoostMappingFile> BoostMFPtr;
-//typedef std::shared_ptr<MysqlDb>	MysqlDbPtr;
 
 class WtDataReader : public IDataReader
 {

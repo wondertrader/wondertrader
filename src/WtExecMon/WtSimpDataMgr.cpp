@@ -47,14 +47,10 @@ bool WtSimpDataMgr::initStore(WTSVariant* cfg)
 
 	std::string module = cfg->getCString("module");
 	if (module.empty())
-	{
-		module = WtHelper::getInstDir();
-#ifdef _WIN32
-		module += "WtDataReader.dll";
-#else
-		module += "libWtDataReader.so";
-#endif
-	}
+		module = WtHelper::getInstDir() + DLLHelper::wrap_module("WtDataStorage");
+	else
+		module = WtHelper::getInstDir() + DLLHelper::wrap_module(module.c_str());
+
 	DllHandle hInst = DLLHelper::load_library(module.c_str());
 	if (hInst == NULL)
 	{

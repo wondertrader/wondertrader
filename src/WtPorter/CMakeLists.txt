@@ -93,7 +93,7 @@ IF(WIN32)
 		copy ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/libWtExeFact.dll ${LIBRARY_OUTPUT_PATH}/executer/
 		
 		COMMAND ${CMAKE_COMMAND} -E
-		copy ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/libWtDataReader.dll ${LIBRARY_OUTPUT_PATH}/
+		copy ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/libWtDataStorage.dll ${LIBRARY_OUTPUT_PATH}/
 		
 		COMMAND ${CMAKE_COMMAND} -E
 		copy ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/libWtRiskMonFact.dll ${LIBRARY_OUTPUT_PATH}/
@@ -129,7 +129,7 @@ ELSE(UNIX)
 		copy ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/libWtExeFact.so ${LIBRARY_OUTPUT_PATH}/executer/
 
 		COMMAND ${CMAKE_COMMAND} -E
-		copy ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/libWtDataReader.so ${LIBRARY_OUTPUT_PATH}/
+		copy ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/libWtDataStorage.so ${LIBRARY_OUTPUT_PATH}/
 
 		COMMAND ${CMAKE_COMMAND} -E
 		copy ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/libWtRiskMonFact.so ${LIBRARY_OUTPUT_PATH}/

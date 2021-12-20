@@ -12,7 +12,7 @@
 #include "../Share/TimeUtils.hpp"
 #include "../Share/BoostFile.hpp"
 
-#include "../WtDataWriter/DataDefine.h"
+#include "../WtDataStorage/DataDefine.h"
 #include "../WTSTools/WTSCmpHelper.hpp"
 #include "../WTSTools/CsvHelper.h"
 #include "../WTSTools/WTSDataFactory.h"

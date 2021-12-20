@@ -48,14 +48,9 @@ bool DataManager::init(WTSVariant* params, WTSBaseDataMgr* bdMgr, StateMonitor* 
 
 	std::string module = params->getCString("module");
 	if (module.empty())
-	{
-		module = WtHelper::get_module_dir();
-#ifdef _WIN32
-		module += "WtDataWriter.dll";
-#else
-		module += "libWtDataWriter.so";
-#endif
-	}
+		module = WtHelper::get_module_dir() + DLLHelper::wrap_module("WtDataStorage");
+	else
+		module = WtHelper::get_module_dir() + DLLHelper::wrap_module(module.c_str());
 	
 	DllHandle libParser = DLLHelper::load_library(module.c_str());
 	if (libParser)

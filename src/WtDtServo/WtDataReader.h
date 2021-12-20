@@ -4,7 +4,7 @@
 
 #include "../Includes/FasterDefs.h"
 
-#include "../WtDataWriter/DataDefine.h"
+#include "../WtDataStorage/DataDefine.h"
 #include "../Share/BoostMappingFile.hpp"
 #include "../Share/StdUtils.hpp"
 

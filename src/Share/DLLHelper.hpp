@@ -72,12 +72,12 @@ public:
 #ifdef _WIN32
 		std::string ret = name;
 		ret += ".dll";
-		return ret;
+		return std::move(ret);
 #else
 		std::string ret(unixPrefix);
 		ret += name;
 		ret += ".so";
-		return ret;
+		return std::move(ret);
 #endif
 	}
 };

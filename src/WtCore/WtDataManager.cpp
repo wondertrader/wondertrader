@@ -51,7 +51,7 @@ bool WtDataManager::initStore(WTSVariant* cfg)
 
 	std::string module = cfg->getCString("module");
 	if (module.empty())
-		module = WtHelper::getInstDir() + DLLHelper::wrap_module("WtDataReader");
+		module = WtHelper::getInstDir() + DLLHelper::wrap_module("WtDataStorage");
 	else
 		module = WtHelper::getInstDir() + DLLHelper::wrap_module(module.c_str());
 

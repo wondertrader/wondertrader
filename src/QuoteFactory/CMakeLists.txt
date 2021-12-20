@@ -76,7 +76,7 @@ IF(WIN32)
 		copy ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/libParserCTPMini.dll ${EXECUTABLE_OUTPUT_PATH}/parsers/
 
 		COMMAND ${CMAKE_COMMAND} -E
-		copy ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/libWtDataWriter.dll ${EXECUTABLE_OUTPUT_PATH}/
+		copy ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/libWtDataStorage.dll ${EXECUTABLE_OUTPUT_PATH}/
 
 		COMMENT "depends modules copied")
 ELSE(UNIX)
@@ -94,7 +94,7 @@ ELSE(UNIX)
 		copy ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/libParserCTPMini.so ${EXECUTABLE_OUTPUT_PATH}/parsers/
 		
 		COMMAND ${CMAKE_COMMAND} -E
-		copy ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/libWtDataWriter.so ${EXECUTABLE_OUTPUT_PATH}/
+		copy ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/libWtDataStorage.so ${EXECUTABLE_OUTPUT_PATH}/
 		
 		COMMENT "depends modules copied")
 ENDIF()

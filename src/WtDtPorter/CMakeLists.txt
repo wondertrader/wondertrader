@@ -71,7 +71,7 @@ file(MAKE_DIRECTORY ${LIBRARY_OUTPUT_PATH}/parsers/)
 IF(WIN32)
 	add_custom_command(TARGET WtDtPorter POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E
-		copy ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/libWtDataWriter.dll ${LIBRARY_OUTPUT_PATH}/
+		copy ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/libWtDataStorage.dll ${LIBRARY_OUTPUT_PATH}/
 
 		COMMAND ${CMAKE_COMMAND} -E
 		copy ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/libParserCTP.dll ${LIBRARY_OUTPUT_PATH}/parsers/
@@ -92,7 +92,7 @@ IF(WIN32)
 ELSE(UNIX)
 	add_custom_command(TARGET WtDtPorter POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E
-		copy ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/libWtDataWriter.so ${LIBRARY_OUTPUT_PATH}/
+		copy ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/libWtDataStorage.so ${LIBRARY_OUTPUT_PATH}/
 		
 		COMMAND ${CMAKE_COMMAND} -E
 		copy ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/libParserCTP.so ${LIBRARY_OUTPUT_PATH}/parsers/
