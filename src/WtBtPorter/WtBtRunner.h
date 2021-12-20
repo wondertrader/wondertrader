@@ -43,9 +43,13 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	//IBtDataLoader
-	virtual bool loadRawHisBars(void* obj, const char* key, const char* stdCode, WTSKlinePeriod period, bool bForBars, FuncReadBars cb) override;
+	virtual bool loadFinalHisBars(void* obj, const char* stdCode, WTSKlinePeriod period, FuncReadBars cb) override;
 
-	virtual bool loadRawHisTicks(void* obj, const char* key, const char* stdCode, uint32_t uDate, FuncReadTicks cb) override;
+	virtual bool loadRawHisBars(void* obj, const char* stdCode, WTSKlinePeriod period, FuncReadBars cb) override;
+
+	virtual bool loadAllAdjFactors(void* obj, FuncReadFactors cb) override;
+
+	virtual bool loadRawHisTicks(void* obj, const char* stdCode, uint32_t uDate, FuncReadTicks cb) override;
 
 	virtual bool isAutoTrans() override
 	{
@@ -54,6 +58,7 @@ public:
 
 	void feedRawBars(WTSBarStruct* bars, uint32_t count);
 	void feedRawTicks(WTSTickStruct* ticks, uint32_t count);
+	void feedAdjFactors(const char* stdCode, uint32_t* dates, double* factors, uint32_t count);
 
 public:
 	void	registerCtaCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, 
@@ -69,9 +74,11 @@ public:
 		_cb_evt = cbEvt;
 	}
 
-	void		registerExtDataLoader(FuncLoadRawBars barLoader, FuncLoadRawTicks tickLoader, bool bAutoTrans = true)
+	void		registerExtDataLoader(FuncLoadFnlBars fnlBarLoader, FuncLoadRawBars rawBarLoader, FuncLoadAdjFactors fctLoader, FuncLoadRawTicks tickLoader, bool bAutoTrans = true)
 	{
-		_ext_bar_loader = barLoader;
+		_ext_fnl_bar_loader = fnlBarLoader;
+		_ext_raw_bar_loader = rawBarLoader;
+		_ext_adj_fct_loader = fctLoader;
 		_ext_tick_loader = tickLoader;
 		_loader_auto_trans = bAutoTrans;
 	}
@@ -174,7 +181,9 @@ private:
 
 	FuncEventCallback		_cb_evt;
 
-	FuncLoadRawBars			_ext_bar_loader;	//K线加载器
+	FuncLoadFnlBars			_ext_fnl_bar_loader;//最终K线加载器
+	FuncLoadRawBars			_ext_raw_bar_loader;//原始K线加载器
+	FuncLoadAdjFactors		_ext_adj_fct_loader;//复权因子加载器
 	FuncLoadRawTicks		_ext_tick_loader;	//tick加载器
 	bool					_loader_auto_trans;	//是否自动转储
 
@@ -192,10 +201,9 @@ private:
 	bool			_async;
 
 	void*			_feed_obj;
-	std::string		_feed_key;
-	bool			_feed_flag;
 	FuncReadBars	_feeder_bars;
 	FuncReadTicks	_feeder_ticks;
+	FuncReadFactors	_feeder_fcts;
 	StdUniqueMutex	_feed_mtx;
 };
 

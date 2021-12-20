@@ -85,8 +85,9 @@ WtRtRunner::WtRtRunner()
 	, _is_hft(false)
 	, _is_sel(false)
 
-	, _ext_bar_loader(NULL)
-	, _feed_factor(1.0)
+	, _ext_fnl_bar_loader(NULL)
+	, _ext_raw_bar_loader(NULL)
+	, _ext_adj_fct_loader(NULL)
 {
 	install_signal_hooks([](const char* message) {
 		WTSLogger::error(message);
@@ -190,29 +191,83 @@ void WtRtRunner::registerHftCallbacks(FuncStraInitCallback cbInit, FuncStraTickC
 	WTSLogger::info("Callbacks of HFT engine registration done");
 }
 
-bool WtRtRunner::loadStdHisBars(void* obj, const char* key, const char* stdCode, WTSKlinePeriod period, FuncReadBars cb)
+bool WtRtRunner::loadFinalHisBars(void* obj, const char* stdCode, WTSKlinePeriod period, FuncReadBars cb)
 {
 	StdUniqueLock lock(_feed_mtx);
-	if (_ext_bar_loader == NULL)
+	if (_ext_fnl_bar_loader == NULL)
 		return false;
 
 	_feed_obj = obj;
-	_feed_key = key;
 	_feeder_bars = cb;
 
-	return _ext_bar_loader(stdCode, period);
+	switch (period)
+	{
+	case KP_DAY:
+		return _ext_fnl_bar_loader(stdCode, "d1");
+	case KP_Minute1:
+		return _ext_fnl_bar_loader(stdCode, "m1");
+	case KP_Minute5:
+		return _ext_fnl_bar_loader(stdCode, "m5");
+	default:
+	{
+		WTSLogger::error("Unsupported period of extended data loader");
+		return false;
+	}
+	}
+}
+
+bool WtRtRunner::loadRawHisBars(void* obj, const char* stdCode, WTSKlinePeriod period, FuncReadBars cb)
+{
+	StdUniqueLock lock(_feed_mtx);
+	if (_ext_raw_bar_loader == NULL)
+		return false;
+
+	_feed_obj = obj;
+	_feeder_bars = cb;
+
+	switch (period)
+	{
+	case KP_DAY:
+		return _ext_raw_bar_loader(stdCode, "d1");
+	case KP_Minute1:
+		return _ext_raw_bar_loader(stdCode, "m1");
+	case KP_Minute5:
+		return _ext_raw_bar_loader(stdCode, "m5");
+	default:
+	{
+		WTSLogger::error("Unsupported period of extended data loader");
+		return false;
+	}
+	}
+}
+
+bool WtRtRunner::loadAllAdjFactors(void* obj, FuncReadFactors cb)
+{
+	StdUniqueLock lock(_feed_mtx);
+	if (_ext_adj_fct_loader == NULL)
+		return false;
+
+	_feed_obj = obj;
+	_feeder_fcts = cb;
+
+	return _ext_adj_fct_loader();
+}
+
+void WtRtRunner::feedAdjFactors(const char* stdCode, uint32_t* dates, double* factors, uint32_t count)
+{
+	_feeder_fcts(_feed_obj, stdCode, dates, factors, count);
 }
 
 
-void WtRtRunner::feedRawBars(WTSBarStruct* bars, uint32_t count, double factor)
+void WtRtRunner::feedRawBars(WTSBarStruct* bars, uint32_t count)
 {
-	if (_ext_bar_loader == NULL)
+	if (_ext_fnl_bar_loader == NULL)
 	{
 		WTSLogger::error("Cannot feed bars because of no extented bar loader registered.");
 		return;
 	}
 
-	_feeder_bars(_feed_obj, _feed_key.c_str(), bars, count, factor);
+	_feeder_bars(_feed_obj, bars, count);
 }
 
 
@@ -744,8 +799,7 @@ bool WtRtRunner::initDataMgr()
 	if (cfg == NULL)
 		return false;
 
-	if (_ext_bar_loader != NULL)
-		_data_mgr.regsiter_loader(this);
+	_data_mgr.regsiter_loader(this);
 
 	_data_mgr.init(cfg, _engine);
 

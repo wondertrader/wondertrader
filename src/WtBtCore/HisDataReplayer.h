@@ -10,7 +10,6 @@
 #pragma once
 #include <string>
 #include "DataDefine.h"
-//#include "../WtDataWriter/MysqlDB.hpp"
 
 #include "../Includes/FasterDefs.h"
 #include "../Includes/WTSMarcos.h"
@@ -57,14 +56,62 @@ public:
 	virtual void	handle_replay_done() {}
 };
 
-typedef void(*FuncReadBars)(void* obj, const char* key, WTSBarStruct* firstBar, uint32_t count, bool bForBars);
-typedef void(*FuncReadTicks)(void* obj, const char* key, WTSTickStruct* firstTick, uint32_t count);
+/*
+ *	历史数据加载器的回调函数
+ *	@obj	回传用的，原样返回即可
+ *	@key	数据缓存的key
+ *	@bars	K线数据
+ *	@count	K线条数
+ *	@factor	复权因子，最新的复权因子，如果是后复权，则factor不为1.0，如果是前复权，则factor必须为1.0
+ */
+typedef void(*FuncReadBars)(void* obj, WTSBarStruct* firstBar, uint32_t count);
+
+/*
+ *	加载复权因子回调
+ *	@obj	回传用的，原样返回即可
+ *	@stdCode	合约代码
+ *	@dates
+ */
+typedef void(*FuncReadFactors)(void* obj, const char* stdCode, uint32_t* dates, double* factors, uint32_t count);
+
+typedef void(*FuncReadTicks)(void* obj, WTSTickStruct* firstTick, uint32_t count);
 
 class IBtDataLoader
 {
 public:
-	virtual bool loadRawHisBars(void* obj, const char* key, const char* stdCode, WTSKlinePeriod period, bool bForBars, FuncReadBars cb) = 0;
-	virtual bool loadRawHisTicks(void* obj, const char* key, const char* stdCode, uint32_t uDate, FuncReadTicks cb) = 0;
+	/*
+	 *	加载最终历史K线数据
+	 *	和loadRawHisBars的区别在于，loadFinalHisBars，系统认为是最终所需数据，不在进行加工，例如复权数据、主力合约数据
+	 *	loadRawHisBars是加载未加工的原始数据的接口
+	 *
+	 *	@obj	回传用的，原样返回即可
+	 *	@key	数据缓存的key
+	 *	@stdCode	合约代码
+	 *	@period	K线周期
+	 *	@cb		回调函数
+	 */
+	virtual bool loadFinalHisBars(void* obj, const char* stdCode, WTSKlinePeriod period, FuncReadBars cb) = 0;
+
+	/*
+	 *	加载原始历史K线数据
+	 *
+	 *	@obj	回传用的，原样返回即可
+	 *	@key	数据缓存的key
+	 *	@stdCode	合约代码
+	 *	@period	K线周期
+	 *	@cb		回调函数
+	 */
+	virtual bool loadRawHisBars(void* obj, const char* stdCode, WTSKlinePeriod period, FuncReadBars cb) = 0;
+
+	/*
+	 *	加载全部除权因子
+	 */
+	virtual bool loadAllAdjFactors(void* obj, FuncReadFactors cb) = 0;
+
+	/*
+	 *	加载历史Tick数据
+	 */
+	virtual bool loadRawHisTicks(void* obj, const char* stdCode, uint32_t uDate, FuncReadTicks cb) = 0;
 
 	virtual bool isAutoTrans() { return true; }
 };
@@ -151,13 +198,7 @@ private:
 	/*
 	 *	从csv文件缓存历史数据
 	 */
-	bool		cacheRawBarsFromCSV(const std::string& key, const char* stdCode, WTSKlinePeriod period, bool bForBars = true);
-
-	/*
-	 *	从数据库缓存历史数据
-	 *	改用扩展数据加载器，不再内置mysql
-	 */
-	//bool		cacheRawBarsFromDB(const std::string& key, const char* stdCode, WTSKlinePeriod period, bool bForBars = true);
+	bool		cacheRawBarsFromCSV(const std::string& key, const char* stdCode, WTSKlinePeriod period, bool bSubbed = true);
 
 	/*
 	 *	从自定义数据文件缓存历史tick数据
@@ -172,12 +213,22 @@ private:
 	/*
 	 *	从外部加载器缓存历史数据
 	 */
-	bool		cacheRawBarsFromLoader(const std::string& key, const char* stdCode, WTSKlinePeriod period, bool bForBars = true);
+	bool		cacheFinalBarsFromLoader(const std::string& key, const char* stdCode, WTSKlinePeriod period, bool bSubbed = true);
 
 	/*
 	 *	从外部加载器缓存历史tick数据
 	 */
 	bool		cacheRawTicksFromLoader(const std::string& key, const char* stdCode, uint32_t uDate);
+
+	/*
+	 *	缓存整合的期货合约历史K线（针对.HOT//2ND）
+	 */
+	bool		cacheIntegratedFutBars(const std::string& key, const char* stdCode, WTSKlinePeriod period, bool bSubbed = true);
+
+	/*
+	 *	缓存复权股票K线数据
+	 */
+	bool		cacheAdjustedStkBars(const std::string& key, const char* stdCode, WTSKlinePeriod period, bool bSubbed = true);
 
 	void		onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTDate = 0, bool tickSimulated = true);
 
@@ -201,9 +252,7 @@ private:
 
 	bool		loadStkAdjFactors(const char* adjfile);
 
-	//bool		loadStkAdjFactorsFromDB();
-
-	//void		initDB();
+	bool		loadStkAdjFactorsFromLoader();
 
 	bool		checkAllTicks(uint32_t uDate);
 
@@ -376,21 +425,6 @@ private:
 		sprintf(key, "%s.%s", exchg, code);
 		return _adj_factors[key];
 	}
-
-	//typedef struct _DBConfig
-	//{
-	//	bool	_active;
-	//	char	_host[64];
-	//	int32_t	_port;
-	//	char	_dbname[32];
-	//	char	_user[32];
-	//	char	_pass[32];
-
-	//	_DBConfig() { memset(this, 0, sizeof(_DBConfig)); }
-	//} DBConfig;
-
-	//DBConfig	_db_conf;
-	//MysqlDbPtr	_db_conn;
 
 	EventNotifier*	_notifier;
 };

@@ -73,6 +73,12 @@ WtBtRunner::WtBtRunner()
 	, _cb_hft_trans(NULL)
 
 	, _cb_hft_sessevt(NULL)
+
+	, _ext_fnl_bar_loader(NULL)
+	, _ext_raw_bar_loader(NULL)
+	, _ext_adj_fct_loader(NULL)
+	, _ext_tick_loader(NULL)
+
 	, _inited(false)
 	, _running(false)
 	, _async(false)
@@ -87,25 +93,23 @@ WtBtRunner::~WtBtRunner()
 {
 }
 
-bool WtBtRunner::loadRawHisBars(void* obj, const char* key, const char* stdCode, WTSKlinePeriod period, bool bForBars, FuncReadBars cb)
+bool WtBtRunner::loadRawHisBars(void* obj, const char* stdCode, WTSKlinePeriod period, FuncReadBars cb)
 {
 	StdUniqueLock lock(_feed_mtx);
-	if (_ext_bar_loader == NULL)
+	if (_ext_raw_bar_loader == NULL)
 		return false;
 
 	_feed_obj = obj;
-	_feed_key = key;
-	_feed_flag = bForBars;
 	_feeder_bars = cb;
 
 	switch (period)
 	{
 	case KP_DAY:
-        return _ext_bar_loader(stdCode, "d1");
+        return _ext_raw_bar_loader(stdCode, "d1");
 	case KP_Minute1:
-        return _ext_bar_loader(stdCode, "m1");
+        return _ext_raw_bar_loader(stdCode, "m1");
 	case KP_Minute5:
-        return _ext_bar_loader(stdCode, "m5");
+        return _ext_raw_bar_loader(stdCode, "m5");
 	default:
 		{
 			WTSLogger::error("Unsupported period of extended data loader");
@@ -114,14 +118,47 @@ bool WtBtRunner::loadRawHisBars(void* obj, const char* key, const char* stdCode,
 	}
 }
 
-bool WtBtRunner::loadRawHisTicks(void* obj, const char* key, const char* stdCode, uint32_t uDate, FuncReadTicks cb)
+bool WtBtRunner::loadFinalHisBars(void* obj, const char* stdCode, WTSKlinePeriod period, FuncReadBars cb)
+{
+	StdUniqueLock lock(_feed_mtx);
+	if (_ext_fnl_bar_loader == NULL)
+		return false;
+
+	_feed_obj = obj;
+	_feeder_bars = cb;
+
+	switch (period)
+	{
+	case KP_DAY:
+		return _ext_fnl_bar_loader(stdCode, "d1");
+	case KP_Minute1:
+		return _ext_fnl_bar_loader(stdCode, "m1");
+	case KP_Minute5:
+		return _ext_fnl_bar_loader(stdCode, "m5");
+	default:
+		{
+			WTSLogger::error("Unsupported period of extended data loader");
+			return false;
+		}
+	}
+}
+
+bool WtBtRunner::loadAllAdjFactors(void* obj, FuncReadFactors cb)
+{
+	StdUniqueLock lock(_feed_mtx);
+	if (_ext_adj_fct_loader == NULL)
+		return false;
+
+	return _ext_adj_fct_loader();
+}
+
+bool WtBtRunner::loadRawHisTicks(void* obj, const char* stdCode, uint32_t uDate, FuncReadTicks cb)
 {
 	StdUniqueLock lock(_feed_mtx);
 	if (_ext_tick_loader == NULL)
 		return false;
 
 	_feed_obj = obj;
-	_feed_key = key;
 	_feeder_ticks = cb;
 
 	return _ext_tick_loader(stdCode, uDate);
@@ -129,24 +166,35 @@ bool WtBtRunner::loadRawHisTicks(void* obj, const char* key, const char* stdCode
 
 void WtBtRunner::feedRawBars(WTSBarStruct* bars, uint32_t count)
 {
-	if(_ext_bar_loader == NULL)
+	if(_ext_fnl_bar_loader == NULL && _ext_raw_bar_loader == NULL)
 	{
 		WTSLogger::error("Cannot feed bars because of no extented bar loader registered.");
 		return;
 	}
 
-	_feeder_bars(_feed_obj, _feed_key.c_str(), bars, count, _feed_flag);
+	_feeder_bars(_feed_obj, bars, count);
+}
+
+void WtBtRunner::feedAdjFactors(const char* stdCode, uint32_t* dates, double* factors, uint32_t count)
+{
+	if(_ext_adj_fct_loader == NULL)
+	{
+		WTSLogger::error("Cannot feed adjusting factors because of no extented adjusting factor loader registered.");
+		return;
+	}
+
+	_feeder_fcts(_feed_obj, stdCode, dates, factors, count);
 }
 
 void WtBtRunner::feedRawTicks(WTSTickStruct* ticks, uint32_t count)
 {
 	if (_ext_tick_loader == NULL)
 	{
-		WTSLogger::error("Cannot feed bars because of no extented tick loader registered.");
+		WTSLogger::error("Cannot feed ticks because of no extented tick loader registered.");
 		return;
 	}
 
-	_feeder_ticks(_feed_obj, _feed_key.c_str(), ticks, count);
+	_feeder_ticks(_feed_obj, ticks, count);
 }
 
 void WtBtRunner::registerCtaCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, 
@@ -393,9 +441,7 @@ void WtBtRunner::config(const char* cfgFile, bool isFile /* = true */)
 	//初始化事件推送器
 	initEvtNotifier(cfg->get("notifier"));
 
-	//如果注册了扩展数据加载器，则向HisDataReplayer注册loader
-	bool hasExtLoader = (_ext_bar_loader != NULL || _ext_tick_loader != NULL);
-	_replayer.init(cfg->get("replayer"), &_notifier, hasExtLoader ? this : NULL);
+	_replayer.init(cfg->get("replayer"), &_notifier, this);
 
 	WTSVariant* cfgEnv = cfg->get("env");
 	const char* mode = cfgEnv->getCString("mocker");

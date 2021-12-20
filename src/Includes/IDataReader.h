@@ -80,12 +80,59 @@ public:
 	virtual void		reader_log(WTSLogLevel ll, const char* fmt, ...) = 0;
 };
 
-typedef void(*FuncReadBars)(void* obj, const char* key, WTSBarStruct* firstBar, uint32_t count, double factor);
 
+/*
+ *	历史数据加载器的回调函数
+ *	@obj	回传用的，原样返回即可
+ *	@key	数据缓存的key
+ *	@bars	K线数据
+ *	@count	K线条数
+ *	@factor	复权因子，最新的复权因子，如果是后复权，则factor不为1.0，如果是前复权，则factor必须为1.0
+ */
+typedef void(*FuncReadBars)(void* obj, WTSBarStruct* bars, uint32_t count);
+
+/*
+ *	加载复权因子回调
+ *	@obj	回传用的，原样返回即可
+ *	@stdCode	合约代码
+ *	@dates	
+ */
+typedef void(*FuncReadFactors)(void* obj, const char* stdCode, uint32_t* dates, double* factors, uint32_t count);
+
+/*
+ *	历史数据加载器
+ */
 class IHisDataLoader
 {
 public:
-	virtual bool loadStdHisBars(void* obj, const char* key, const char* stdCode, WTSKlinePeriod period, FuncReadBars cb) = 0;
+	/*
+	 *	加载最终历史K线数据
+	 *	和loadRawHisBars的区别在于，loadFinalHisBars，系统认为是最终所需数据，不在进行加工，例如复权数据、主力合约数据
+	 *	loadRawHisBars是加载未加工的原始数据的接口
+	 *
+	 *	@obj	回传用的，原样返回即可
+	 *	@key	数据缓存的key
+	 *	@stdCode	合约代码
+	 *	@period	K线周期
+	 *	@cb		回调函数
+	 */
+	virtual bool loadFinalHisBars(void* obj, const char* stdCode, WTSKlinePeriod period, FuncReadBars cb) = 0;
+
+	/*
+	 *	加载原始历史K线数据
+	 *
+	 *	@obj	回传用的，原样返回即可
+	 *	@key	数据缓存的key
+	 *	@stdCode	合约代码
+	 *	@period	K线周期
+	 *	@cb		回调函数
+	 */
+	virtual bool loadRawHisBars(void* obj, const char* stdCode, WTSKlinePeriod period, FuncReadBars cb) = 0;
+
+	/*
+	 *	加载全部除权因子
+	 */
+	virtual bool loadAllAdjFactors(void* obj, FuncReadFactors cb) = 0;
 };
 
 /*

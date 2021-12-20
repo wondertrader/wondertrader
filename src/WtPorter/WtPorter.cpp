@@ -74,17 +74,22 @@ bool create_ext_executer(const char* id)
 	return getRunner().createExtExecuter(id);
 }
 
-void register_ext_data_loader(FuncLoadRawBars barLoader, FuncLoadRawTicks tickLoader)
+void register_ext_data_loader(FuncLoadFnlBars fnlBarLoader, FuncLoadRawBars rawBarLoader, FuncLoadAdjFactors fctLoader, FuncLoadRawTicks tickLoader)
 {
-	getRunner().registerExtDataLoader(barLoader, tickLoader);
+	getRunner().registerExtDataLoader(fnlBarLoader, rawBarLoader, fctLoader, tickLoader);
 }
 
-void feed_raw_bars(WTSBarStruct* bars, uint32_t count, double factor)
+void feed_raw_bars(WTSBarStruct* bars, WtUInt32 count)
 {
-	getRunner().feedRawBars(bars, count, factor);
+	getRunner().feedRawBars(bars, count);
 }
 
-void feed_raw_ticks(WTSTickStruct* ticks, uint32_t count)
+void feed_adj_factors(WtString stdCode, WtUInt32* dates, double* factors, WtUInt32 count)
+{
+	getRunner().feedAdjFactors(stdCode, (uint32_t*)dates, factors, count);
+}
+
+void feed_raw_ticks(WTSTickStruct* ticks, WtUInt32 count)
 {
 	WTSLogger::error("API not implemented");
 }

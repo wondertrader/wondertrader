@@ -55,9 +55,15 @@ public:
 public:
 	//////////////////////////////////////////////////////////////////////////
 	//IBtDataLoader
-	virtual bool loadStdHisBars(void* obj, const char* key, const char* stdCode, WTSKlinePeriod period, FuncReadBars cb) override;
+	virtual bool loadFinalHisBars(void* obj, const char* stdCode, WTSKlinePeriod period, FuncReadBars cb) override;
 
-	void feedRawBars(WTSBarStruct* bars, uint32_t count, double factor);
+	virtual bool loadRawHisBars(void* obj, const char* stdCode, WTSKlinePeriod period, FuncReadBars cb) override;
+
+	virtual bool loadAllAdjFactors(void* obj, FuncReadFactors cb) override;
+
+	void feedRawBars(WTSBarStruct* bars, uint32_t count);
+
+	void feedAdjFactors(const char* stdCode, uint32_t* dates, double* factors, uint32_t count);
 
 public:
 	/*
@@ -83,9 +89,11 @@ public:
 
 	void registerExecuterPorter(FuncExecInitCallback cbInit, FuncExecCmdCallback cbExec);
 
-	void		registerExtDataLoader(FuncLoadRawBars barLoader, FuncLoadRawTicks tickLoader)
+	void		registerExtDataLoader(FuncLoadFnlBars fnlBarLoader, FuncLoadRawBars rawBarLoader, FuncLoadAdjFactors fctLoader, FuncLoadRawTicks tickLoader = NULL)
 	{
-		_ext_bar_loader = barLoader;
+		_ext_fnl_bar_loader = fnlBarLoader;
+		_ext_raw_bar_loader = rawBarLoader;
+		_ext_adj_fct_loader = fctLoader;
 	}
 
 	bool			createExtParser(const char* id);
@@ -240,12 +248,13 @@ private:
 	bool				_is_hft;
 	bool				_is_sel;
 
-	FuncLoadRawBars		_ext_bar_loader;
+	FuncLoadFnlBars		_ext_fnl_bar_loader;
+	FuncLoadRawBars		_ext_raw_bar_loader;
+	FuncLoadAdjFactors	_ext_adj_fct_loader;
 
 	void*			_feed_obj;
-	std::string		_feed_key;
 	FuncReadBars	_feeder_bars;
-	double			_feed_factor;
+	FuncReadFactors	_feeder_fcts;
 	StdUniqueMutex	_feed_mtx;
 };
 

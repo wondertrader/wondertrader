@@ -142,85 +142,37 @@ bool HisDataReplayer::init(WTSVariant* cfg, EventNotifier* notifier /* = NULL */
 
 	loadFees(cfg->getCString("fees"));
 
-	//if(_mode.compare("db") == 0)
-	//{
-	//	WTSVariant* dbConf = cfg->get("db");
-	//	if (dbConf)
-	//	{
-	//		strcpy(_db_conf._host, dbConf->getCString("host"));
-	//		strcpy(_db_conf._dbname, dbConf->getCString("dbname"));
-	//		strcpy(_db_conf._user, dbConf->getCString("user"));
-	//		strcpy(_db_conf._pass, dbConf->getCString("pass"));
-	//		_db_conf._port = dbConf->getInt32("port");
 
-	//		_db_conf._active = (strlen(_db_conf._host) > 0) && (strlen(_db_conf._dbname) > 0) && (_db_conf._port != 0);
-	//		if (_db_conf._active)
-	//			initDB();
-	//	}
-	//}
+	/*
+	 *	By Wesley @ 2021.12.20
+	 *	先从extloader加载除权因子
+	 *	如果加载失败，并且配置了除权因子文件，再加载除权因子文件
+	 */
+	bool bLoaded = loadStkAdjFactorsFromLoader();
 
-	if (cfg->has("adjfactor"))
+	if (!bLoaded && cfg->has("adjfactor"))
 		loadStkAdjFactors(cfg->getCString("adjfactor"));
 
 	return true;
 }
 
-/*
-void HisDataReplayer::initDB()
+bool HisDataReplayer::loadStkAdjFactorsFromLoader()
 {
-	if (!_db_conf._active)
-		return;
-
-	_db_conn.reset(new MysqlDb);
-	my_bool autoreconnect = true;
-	_db_conn->options(MYSQL_OPT_RECONNECT, &autoreconnect);
-	_db_conn->options(MYSQL_SET_CHARSET_NAME, "utf8");
-
-	if (_db_conn->connect(_db_conf._dbname, _db_conf._host, _db_conf._user, _db_conf._pass, _db_conf._port, CLIENT_MULTI_STATEMENTS | CLIENT_MULTI_RESULTS))
-	{
-		WTSLogger::info("Database connection succeed[%s:%d]", _db_conf._host, _db_conf._port);
-	}
-	else
-	{
-		WTSLogger::error("Database connection failed[%s:%d]:%s", _db_conf._host, _db_conf._port, _db_conn->errstr());
-		_db_conn.reset();
-	}
-}
-
-bool HisDataReplayer::loadStkAdjFactorsFromDB()
-{
-	MysqlQuery query(*_db_conn);
-	if (!query.exec("SELECT exchange,code,date,factor FROM tb_adj_factors ORDER BY exchange,code,date DESC;"))
-	{
-		WTSLogger::error("Error occured while querying adjust factors:%s", query.errormsg());
+	if (NULL == _bt_loader)
 		return false;
-	}
 
-	uint32_t stk_cnt = 0;
-	uint32_t fct_cnt = 0;
-	while (query.fetch_row())
-	{
-		const char* exchg = query.getstr(0);
-		const char* code = query.getstr(1);
-		uint32_t uDate = query.getuint(2);
-		double factor = query.getdouble(3);
+	return _bt_loader->loadAllAdjFactors(this, [](void* obj, const char* stdCode, uint32_t* dates, double* factors, uint32_t count) {
+		HisDataReplayer* replayer = (HisDataReplayer*)obj;
+		AdjFactorList& fctrLst = replayer->_adj_factors[stdCode];
 
-		std::string key = StrUtil::printf("%s.%s", exchg, code);
-		if (_adj_factors.find(key) == _adj_factors.end())
-			stk_cnt++;
+		for (uint32_t i = 0; i < count; i++)
+		{
+			AdjFactor adjFact;
+			adjFact._date = dates[i];
+			adjFact._factor = factors[i];
 
-		AdjFactorList& fctrLst = _adj_factors[key];
-		AdjFactor adjFact;
-		adjFact._date = uDate;
-		adjFact._factor = factor;
-
-		fctrLst.emplace_back(adjFact);
-		fct_cnt++;
-	}
-
-	for(auto& m : _adj_factors)
-	{
-		AdjFactorList& fctrLst = (AdjFactorList&)m.second;
+			fctrLst.emplace_back(adjFact);
+		}
 
 		//一定要把第一条加进去，不然如果是前复权的话，可能会漏处理最早的数据
 		AdjFactor adjFact;
@@ -228,15 +180,11 @@ bool HisDataReplayer::loadStkAdjFactorsFromDB()
 		adjFact._factor = 1;
 		fctrLst.emplace_back(adjFact);
 
-		std::sort(fctrLst.begin(), fctrLst.end(), [](AdjFactor& left, AdjFactor& right) {
+		std::sort(fctrLst.begin(), fctrLst.end(), [](const AdjFactor& left, const AdjFactor& right) {
 			return left._date < right._date;
 		});
-	}
-
-	WTSLogger::info("%u items of adjust factors for %u stocks loaded", fct_cnt, stk_cnt);
-	return true;
+	});
 }
-*/
 
 bool HisDataReplayer::loadStkAdjFactors(const char* adjfile)
 {
@@ -1809,22 +1757,25 @@ WTSKlineSlice* HisDataReplayer::get_kline_slice(const char* stdCode, const char*
 			std::string rawKey = StrUtil::printf("%s#%s#%u", stdCode, period, 1);
 			if (_bars_cache.find(rawKey) == _bars_cache.end())
 			{
+				/*
+				 *	By Wesley @ 2021.12.20
+				 *	先从extloader加载数据，如果加载不到，再走原来的历史数据存储引擎加载
+				 */
 				if(NULL != _bt_loader)
+					bHasHisData = cacheFinalBarsFromLoader(rawKey, stdCode, kp);
+				
+				if(!bHasHisData)
 				{
-					bHasHisData = cacheRawBarsFromLoader(rawKey, stdCode, kp);
+					if (_mode == "csv")
+					{
+						bHasHisData = cacheRawBarsFromCSV(rawKey, stdCode, kp);
+					}
+					else
+					{
+						bHasHisData = cacheRawBarsFromBin(rawKey, stdCode, kp);
+					}
 				}
-				else if (_mode == "csv")
-				{
-					bHasHisData = cacheRawBarsFromCSV(rawKey, stdCode, kp);
-				}
-				//else if (_mode == "db")
-				//{
-				//	bHasHisData = cacheRawBarsFromDB(rawKey, stdCode, kp);
-				//}
-				else
-				{
-					bHasHisData = cacheRawBarsFromBin(rawKey, stdCode, kp);
-				}
+				
 			}
 			else
 			{
@@ -1833,22 +1784,27 @@ WTSKlineSlice* HisDataReplayer::get_kline_slice(const char* stdCode, const char*
 		}
 		else
 		{
+			/*
+			 *	By Wesley @ 2021.12.20
+			 *	先从extloader加载数据，如果加载不到，再走原来的历史数据存储引擎加载
+			 */
 			if (NULL != _bt_loader)
 			{
-				bHasHisData = cacheRawBarsFromLoader(key, stdCode, kp);
+				bHasHisData = cacheFinalBarsFromLoader(key, stdCode, kp);
 			}
-			else if (_mode == "csv")
+
+			if(!bHasHisData)
 			{
-				bHasHisData = cacheRawBarsFromCSV(key, stdCode, kp);
+				if (_mode == "csv")
+				{
+					bHasHisData = cacheRawBarsFromCSV(key, stdCode, kp);
+				}
+				else
+				{
+					bHasHisData = cacheRawBarsFromBin(key, stdCode, kp);
+				}
 			}
-			//else if (_mode == "db")
-			//{
-			//	bHasHisData = cacheRawBarsFromDB(key, stdCode, kp);
-			//}
-			else
-			{
-				bHasHisData = cacheRawBarsFromBin(key, stdCode, kp);
-			}
+			
 		}
 	}
 	else
@@ -2623,22 +2579,29 @@ void HisDataReplayer::checkUnbars()
 		//如果订阅了tick,但是没有对应的K线数据,则自动加载1分钟线到内存中
 		bool bHasHisData = false;
 		std::string key = StrUtil::printf("%s#m#1", stdCode);
+
+		/*
+		 *	By Wesley @ 2021.12.20
+		 *	先从extloader加载最终的K线数据
+		 *	如果加载不到，再从配置的历史数据存储引擎加载数据
+		 */
 		if (NULL != _bt_loader)
 		{
-			bHasHisData = cacheRawBarsFromLoader(key, stdCode, KP_Minute1, false);
+			bHasHisData = cacheFinalBarsFromLoader(key, stdCode, KP_Minute1, false);
 		}
-		else if (_mode == "csv")
+
+		if(bHasHisData)
 		{
-			bHasHisData = cacheRawBarsFromCSV(key, stdCode, KP_Minute1, false);
+			if (_mode == "csv")
+			{
+				bHasHisData = cacheRawBarsFromCSV(key, stdCode, KP_Minute1, false);
+			}
+			else
+			{
+				bHasHisData = cacheRawBarsFromBin(key, stdCode, KP_Minute1, false);
+			}
 		}
-		//else if (_mode == "db")
-		//{
-		//	bHasHisData = cacheRawBarsFromDB(key, stdCode, KP_Minute1, false);
-		//}
-		else
-		{
-			bHasHisData = cacheRawBarsFromBin(key, stdCode, KP_Minute1, false);
-		}
+		
 		
 		if (!bHasHisData)
 			continue;
@@ -2812,12 +2775,11 @@ bool HisDataReplayer::cacheRawTicksFromLoader(const std::string& key, const char
 	ticksList._date = uDate;
 	ticksList._count = 0;
 
-	bool bSucc = _bt_loader->loadRawHisTicks(this, key.c_str(), stdCode, uDate, [](void* obj, const char* key, WTSTickStruct* firstTick, uint32_t count) {
-		HisDataReplayer* replayer = (HisDataReplayer*)obj;
-		auto& ticksList = replayer->_ticks_cache[key];
-		ticksList._items.resize(count);
-		ticksList._count = count;
-		memcpy(ticksList._items.data(), firstTick, sizeof(WTSTickStruct)*count);
+	bool bSucc = _bt_loader->loadRawHisTicks(&ticksList, stdCode, uDate, [](void* obj, WTSTickStruct* firstTick, uint32_t count) {
+		HftDataList<WTSTickStruct>* ticks = (HftDataList<WTSTickStruct>*)obj;
+		ticks->_items.resize(count);
+		ticks->_count = count;
+		memcpy(ticks->_items.data(), firstTick, sizeof(WTSTickStruct)*count);
 	});
 
 	if (!bSucc)
@@ -2942,7 +2904,7 @@ bool HisDataReplayer::cacheRawTicksFromCSV(const std::string& key, const char* s
 	return true;
 }
 
-bool HisDataReplayer::cacheRawBarsFromLoader(const std::string& key, const char* stdCode, WTSKlinePeriod period, bool bForBars /* = true */)
+bool HisDataReplayer::cacheFinalBarsFromLoader(const std::string& key, const char* stdCode, WTSKlinePeriod period, bool bSubbed /* = true */)
 {
 	if (NULL == _bt_loader)
 		return false;
@@ -2999,7 +2961,7 @@ bool HisDataReplayer::cacheRawBarsFromLoader(const std::string& key, const char*
 			std::string rawData = WTSCmpHelper::uncompress_data(kBlock->_data, (uint32_t)kBlock->_size);
 			uint32_t barcnt = rawData.size() / sizeof(WTSBarStruct);
 
-			BarsList& barList = bForBars ? _bars_cache[key] : _unbars_cache[key];
+			BarsList& barList = bSubbed ? _bars_cache[key] : _unbars_cache[key];
 			barList._bars.resize(barcnt);
 			memcpy(barList._bars.data(), rawData.data(), rawData.size());
 			barList._cursor = UINT_MAX;
@@ -3020,19 +2982,18 @@ bool HisDataReplayer::cacheRawBarsFromLoader(const std::string& key, const char*
 		//如果没有转储的历史数据文件, 则从csv加载
 		WTSLogger::info("Reading data via extended loader...");
 
-		BarsList& barList = bForBars ? _bars_cache[key] : _unbars_cache[key];
+		BarsList& barList = bSubbed ? _bars_cache[key] : _unbars_cache[key];
 		barList._code = stdCode;
 		barList._period = period;
 		barList._cursor = UINT_MAX;
 		barList._count = 0;
 
-		bool bSucc = _bt_loader->loadRawHisBars(this, key.c_str(), stdCode, period, bForBars, [](void* obj, const char* key, WTSBarStruct* firstBar, uint32_t count, bool bForBars) {
-			HisDataReplayer* replayer = (HisDataReplayer*)obj;
-			BarsList& barList = bForBars ? replayer->_bars_cache[key] : replayer->_unbars_cache[key];
-			barList._factor = 1.0;
-			barList._bars.resize(count);
-			barList._count = count;
-			memcpy(barList._bars.data(), firstBar, sizeof(WTSBarStruct)*count);
+		std::string buffer;
+		bool bSucc = _bt_loader->loadFinalHisBars(&barList, stdCode, period, [](void* obj, WTSBarStruct* firstBar, uint32_t count) {
+			BarsList* bars = (BarsList*)obj;
+			bars->_count = count;
+			bars->_bars.resize(count);
+			memcpy((void*)bars->_bars.data(), firstBar, sizeof(WTSBarStruct)*count);
 		});
 
 		if (!bSucc)
@@ -3078,7 +3039,7 @@ bool HisDataReplayer::cacheRawBarsFromLoader(const std::string& key, const char*
 	return true;
 }
 
-bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* stdCode, WTSKlinePeriod period, bool bForBars/* = true*/)
+bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* stdCode, WTSKlinePeriod period, bool bSubbed/* = true*/)
 {
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
@@ -3133,7 +3094,7 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 		std::string rawData = WTSCmpHelper::uncompress_data(kBlock->_data, (uint32_t)kBlock->_size);
 		uint32_t barcnt = rawData.size() / sizeof(WTSBarStruct);
 
-		BarsList& barList = bForBars ? _bars_cache[key] : _unbars_cache[key];
+		BarsList& barList = bSubbed ? _bars_cache[key] : _unbars_cache[key];
 		barList._bars.resize(barcnt);
 		memcpy(barList._bars.data(), rawData.data(), rawData.size());
 		barList._cursor = UINT_MAX;
@@ -3164,7 +3125,7 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 
 		WTSLogger::info("Reading data from %s, with fields: %s...", csvfile.c_str(), reader.fields());
 
-		BarsList& barList = bForBars ? _bars_cache[key] : _unbars_cache[key];
+		BarsList& barList = bSubbed ? _bars_cache[key] : _unbars_cache[key];
 		barList._code = stdCode;
 		barList._period = period;
 		while (reader.next_row())
@@ -3227,7 +3188,577 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 	return true;
 }
 
-bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* stdCode, WTSKlinePeriod period, bool bForBars/* = true*/)
+bool HisDataReplayer::cacheIntegratedFutBars(const std::string& key, const char* stdCode, WTSKlinePeriod period, bool bSubbed /* = true */)
+{
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
+
+	uint32_t curDate = TimeUtils::getCurDate();
+	uint32_t curTime = TimeUtils::getCurMin() / 100;
+
+	uint32_t endTDate = _bd_mgr.calcTradingDate(stdPID.c_str(), curDate, curTime, false);
+
+	std::string pname;
+	switch (period)
+	{
+	case KP_Minute1: pname = "min1"; break;
+	case KP_Minute5: pname = "min5"; break;
+	default: pname = "day"; break;
+	}
+
+	BarsList& barList = _bars_cache[key];
+	barList._code = stdCode;
+	barList._period = period;
+
+	std::vector<std::vector<WTSBarStruct>*> barsSections;
+
+	uint32_t realCnt = 0;
+	bool isDay = (period == KP_DAY);
+
+	const char* hot_flag = cInfo.isHot() ? "HOT" : "2ND";
+
+	std::vector<WTSBarStruct>* hotAy = NULL;
+	uint32_t lastHotTime = 0;
+	do
+	{
+		/*
+		 *	By Wesley @ 2021.12.20
+		 *	本来这里是要先调用_loader->loadRawHisBars从外部加载器读取主力合约数据的
+		 *	但是上层会调用一次loadFinalHisBars，这里再调用loadRawHisBars就冗余了，所以直接跳过
+		 */
+		std::stringstream ss;
+		ss << _base_dir << "his/" << pname << "/" << cInfo._exchg << "/" << cInfo._exchg << "." << cInfo._product << "_" << hot_flag << ".dsb";
+		std::string filename = ss.str();
+		if (!StdFile::exists(filename.c_str()))
+			break;
+
+		std::string content;
+		StdFile::read_file_content(filename.c_str(), content);
+		if (content.size() < sizeof(HisKlineBlock))
+		{
+			WTSLogger::error("Sizechecking of back kbar data file %s failed", filename.c_str());
+			break;
+		}
+
+		HisKlineBlock* kBlock = (HisKlineBlock*)content.c_str();
+		std::string buffer;
+		if (kBlock->_version == BLOCK_VERSION_CMP)
+		{
+			if (content.size() < sizeof(HisKlineBlockV2))
+			{
+				WTSLogger::error("Sizechecking of back kbar data file %s failed", filename.c_str());
+				break;
+			}
+
+			HisKlineBlockV2* kBlockV2 = (HisKlineBlockV2*)content.c_str();
+			if (kBlockV2->_size == 0)
+				break;
+
+			buffer = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
+		}
+		else
+		{
+			content.erase(0, sizeof(HisKlineBlock));
+			buffer.swap(content);
+		}
+
+		uint32_t barcnt = buffer.size() / sizeof(WTSBarStruct);
+		if (barcnt <= 0)
+			break;
+
+		hotAy = new std::vector<WTSBarStruct>();
+		hotAy->resize(barcnt);
+		memcpy(hotAy->data(), buffer.data(), buffer.size());
+
+		if (period != KP_DAY)
+			lastHotTime = hotAy->at(barcnt - 1).time;
+		else
+			lastHotTime = hotAy->at(barcnt - 1).date;
+
+		uint32_t stime = isDay ? barList._bars[0].date : barList._bars[0].time;
+		uint32_t etime = isDay ? barList._bars[barcnt - 1].date : barList._bars[barcnt - 1].time;
+
+		WTSLogger::info(fmt::format("{} items of back {} data of hot contract {} directly loaded, from {} to {}", barcnt, pname.c_str(), stdCode, stime, etime).c_str());
+
+	} while (false);
+
+	HotSections secs;
+	if (cInfo.isHot())
+	{
+		if (!_hot_mgr.splitHotSecions(cInfo._exchg, cInfo._product, 19900102, endTDate, secs))
+			return false;
+	}
+	else if (cInfo.isSecond())
+	{
+		if (!_hot_mgr.splitSecondSecions(cInfo._exchg, cInfo._product, 19900102, endTDate, secs))
+			return false;
+	}
+
+	if (secs.empty())
+		return false;
+
+	bool bAllCovered = false;
+	for (auto it = secs.rbegin(); it != secs.rend(); it++)
+	{
+		const HotSection& hotSec = *it;
+		const char* curCode = hotSec._code.c_str();
+		uint32_t rightDt = hotSec._e_date;
+		uint32_t leftDt = hotSec._s_date;
+
+		//要先将日期转换为边界时间
+		WTSBarStruct sBar, eBar;
+		if (period != KP_DAY)
+		{
+			uint64_t sTime = _bd_mgr.getBoundaryTime(stdPID.c_str(), leftDt, false, true);
+			uint64_t eTime = _bd_mgr.getBoundaryTime(stdPID.c_str(), rightDt, false, false);
+
+			sBar.date = leftDt;
+			sBar.time = ((uint32_t)(sTime / 10000) - 19900000) * 10000 + (uint32_t)(sTime % 10000);
+
+			if (sBar.time < lastHotTime)	//如果边界时间小于主力的最后一根Bar的时间, 说明已经有交叉了, 则不需要再处理了
+			{
+				bAllCovered = true;
+				sBar.time = lastHotTime + 1;
+			}
+
+			eBar.date = rightDt;
+			eBar.time = ((uint32_t)(eTime / 10000) - 19900000) * 10000 + (uint32_t)(eTime % 10000);
+
+			if (eBar.time <= lastHotTime)	//右边界时间小于最后一条Hot时间, 说明全部交叉了, 没有再找的必要了
+				break;
+		}
+		else
+		{
+			sBar.date = leftDt;
+			if (sBar.date < lastHotTime)	//如果边界时间小于主力的最后一根Bar的时间, 说明已经有交叉了, 则不需要再处理了
+			{
+				bAllCovered = true;
+				sBar.date = lastHotTime + 1;
+			}
+
+			eBar.date = rightDt;
+
+			if (eBar.date <= lastHotTime)
+				break;
+		}
+
+		/*
+		 *	By Wesley @ 2021.12.20
+		 *	先从extloader读取分月合约的K线数据
+		 *	如果没有读到，再从文件读取
+		 */
+		bool bLoaded = false;
+		std::string buffer;
+		if (NULL != _bt_loader)
+		{
+			//分月合约代码
+			std::string wCode = StrUtil::printf("%s.%s.%s", cInfo._exchg, cInfo._product, (char*)curCode + strlen(cInfo._product));
+			bLoaded = _bt_loader->loadRawHisBars(&buffer, wCode.c_str(), period, [](void* obj, WTSBarStruct* bars, uint32_t count) {
+				std::string* buff = (std::string*)obj;
+				buff->resize(sizeof(WTSBarStruct)*count);
+				memcpy((void*)buff->c_str(), bars, sizeof(WTSBarStruct)*count);
+			});
+		}
+
+		if (!bLoaded)
+		{
+			std::stringstream ss;
+			ss << _base_dir << "his/" << pname << "/" << cInfo._exchg << "/" << curCode << ".dsb";
+			std::string filename = ss.str();
+			if (!StdFile::exists(filename.c_str()))
+				continue;
+
+			std::string content;
+			StdFile::read_file_content(filename.c_str(), content);
+			if (content.size() < sizeof(HisKlineBlock))
+			{
+				WTSLogger::error("Sizechecking of back kbar data file %s failed", filename.c_str());
+				return false;
+			}
+
+			HisKlineBlock* kBlock = (HisKlineBlock*)content.c_str();
+			WTSBarStruct* firstBar = NULL;
+			uint32_t barcnt = 0;
+			if (kBlock->_version == BLOCK_VERSION_CMP)
+			{
+				if (content.size() < sizeof(HisKlineBlockV2))
+				{
+					WTSLogger::error("Sizechecking of back kbar data file %s failed", filename.c_str());
+					break;
+				}
+
+				HisKlineBlockV2* kBlockV2 = (HisKlineBlockV2*)content.c_str();
+				if (kBlockV2->_size == 0)
+					break;
+
+				buffer = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
+			}
+			else
+			{
+				content.erase(0, sizeof(HisKlineBlock));
+				buffer.swap(content);
+			}
+		}
+
+		uint32_t barcnt = buffer.size() / sizeof(WTSBarStruct);
+		if (barcnt <= 0)
+			break;
+
+		WTSBarStruct* firstBar = (WTSBarStruct*)buffer.data();
+
+		WTSBarStruct* pBar = std::lower_bound(firstBar, firstBar + (barcnt - 1), sBar, [period](const WTSBarStruct& a, const WTSBarStruct& b) {
+			if (period == KP_DAY)
+			{
+				return a.date < b.date;
+			}
+			else
+			{
+				return a.time < b.time;
+			}
+		});
+
+		uint32_t sIdx = pBar - firstBar;
+		if ((period == KP_DAY && pBar->date < sBar.date) || (period != KP_DAY && pBar->time < sBar.time))	//早于边界时间
+		{
+			//早于边界时间, 说明没有数据了, 因为lower_bound会返回大于等于目标位置的数据
+			continue;
+		}
+
+		pBar = std::lower_bound(firstBar + sIdx, firstBar + (barcnt - 1), eBar, [period](const WTSBarStruct& a, const WTSBarStruct& b) {
+			if (period == KP_DAY)
+			{
+				return a.date < b.date;
+			}
+			else
+			{
+				return a.time < b.time;
+			}
+		});
+		uint32_t eIdx = pBar - firstBar;
+		if ((period == KP_DAY && pBar->date > eBar.date) || (period != KP_DAY && pBar->time > eBar.time))
+		{
+			pBar--;
+			eIdx--;
+		}
+
+		if (eIdx < sIdx)
+			continue;
+
+		uint32_t curCnt = eIdx - sIdx + 1;
+		std::vector<WTSBarStruct>* tempAy = new std::vector<WTSBarStruct>();
+		tempAy->resize(curCnt);
+		memcpy(tempAy->data(), &firstBar[sIdx], sizeof(WTSBarStruct)*curCnt);
+		realCnt += curCnt;
+
+		barsSections.emplace_back(tempAy);
+
+		if (bAllCovered)
+			break;
+	}
+
+	if (hotAy)
+	{
+		barsSections.emplace_back(hotAy);
+		realCnt += hotAy->size();
+	}
+
+	if (realCnt > 0)
+	{
+		barList._bars.resize(realCnt);
+
+		uint32_t curIdx = 0;
+		for (auto it = barsSections.rbegin(); it != barsSections.rend(); it++)
+		{
+			std::vector<WTSBarStruct>* tempAy = *it;
+			memcpy(barList._bars.data() + curIdx, tempAy->data(), tempAy->size() * sizeof(WTSBarStruct));
+			curIdx += tempAy->size();
+			delete tempAy;
+		}
+		barsSections.clear();
+	}
+
+	WTSLogger::info("%u items of back %s data of %s cached", realCnt, pname.c_str(), stdCode);
+
+	return true;
+}
+
+bool HisDataReplayer::cacheAdjustedStkBars(const std::string& key, const char* stdCode, WTSKlinePeriod period, bool bSubbed /* = true */)
+{
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
+
+	uint32_t curDate = TimeUtils::getCurDate();
+	uint32_t curTime = TimeUtils::getCurMin() / 100;
+
+	uint32_t endTDate = _bd_mgr.calcTradingDate(stdPID.c_str(), curDate, curTime, false);
+
+	std::string pname;
+	switch (period)
+	{
+	case KP_Minute1: pname = "min1"; break;
+	case KP_Minute5: pname = "min5"; break;
+	default: pname = "day"; break;
+	}
+
+	BarsList& barList = _bars_cache[key];
+	barList._code = stdCode;
+	barList._period = period;
+
+	std::vector<std::vector<WTSBarStruct>*> barsSections;
+
+	uint32_t realCnt = 0;
+
+	std::vector<WTSBarStruct>* hotAy = NULL;
+	uint32_t lastQTime = 0;
+
+	do
+	{
+		//先直接读取复权过的历史数据,路径如/his/day/sse/SH600000Q.dsb
+
+		/*
+		 *	By Wesley @ 2021.12.20
+		 *	本来这里是要先调用_loader->loadRawHisBars从外部加载器读取主力合约数据的
+		 *	但是上层会调用一次loadFinalHisBars，这里再调用loadRawHisBars就冗余了，所以直接跳过
+		 */
+		std::stringstream ss;
+		ss << _base_dir << "his/" << pname << "/" << cInfo._exchg << "/" << cInfo._code << (cInfo._exright == 1 ? "Q" : "H") << ".dsb";
+		std::string filename = ss.str();
+		if (!StdFile::exists(filename.c_str()))
+			break;
+
+		std::string content;
+		StdFile::read_file_content(filename.c_str(), content);
+		if (content.size() < sizeof(HisKlineBlock))
+		{
+			WTSLogger::error("Sizechecking of back kbar data file %s failed", filename.c_str());
+			break;
+		}
+
+		HisKlineBlock* kBlock = (HisKlineBlock*)content.c_str();
+		std::string buffer;
+		if (kBlock->_version == BLOCK_VERSION_CMP)
+		{
+			if (content.size() < sizeof(HisKlineBlockV2))
+			{
+				WTSLogger::error("Sizechecking of back kbar data file %s failed", filename.c_str());
+				break;
+			}
+
+			HisKlineBlockV2* kBlockV2 = (HisKlineBlockV2*)content.c_str();
+			if (kBlockV2->_size == 0)
+				break;
+
+			buffer = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
+		}
+		else
+		{
+			content.erase(0, sizeof(HisKlineBlock));
+		}
+
+		uint32_t barcnt = buffer.size() / sizeof(WTSBarStruct);
+		if (barcnt <= 0)
+			break;
+
+		hotAy = new std::vector<WTSBarStruct>();
+		hotAy->resize(barcnt);
+		memcpy(hotAy->data(), buffer.data(), buffer.size());
+
+		if (period != KP_DAY)
+			lastQTime = hotAy->at(barcnt - 1).time;
+		else
+			lastQTime = hotAy->at(barcnt - 1).date;
+
+		WTSLogger::info("%u items of adjusted back %s data of stock %s directly loaded", barcnt, pname.c_str(), stdCode);
+	} while (false);
+
+	bool bAllCovered = false;
+	do
+	{
+		const char* curCode = cInfo._code;
+
+		//要先将日期转换为边界时间
+		WTSBarStruct sBar;
+		if (period != KP_DAY)
+		{
+			sBar.date = TimeUtils::minBarToDate(lastQTime);
+
+			sBar.time = lastQTime + 1;
+		}
+		else
+		{
+			sBar.date = lastQTime + 1;
+		}
+
+		/*
+		 *	By Wesley @ 2021.12.20
+		 *	先从extloader读取未复权K线数据
+		 *	如果没有读到，再从文件读取
+		 */
+		bool bLoaded = false;
+		std::string buffer;
+		if (NULL != _bt_loader)
+		{
+			std::string wCode = StrUtil::printf("%s.%s", cInfo._exchg, curCode);
+			bLoaded = _bt_loader->loadRawHisBars(&buffer, wCode.c_str(), period, [](void* obj, WTSBarStruct* bars, uint32_t count) {
+				std::string* buff = (std::string*)obj;
+				buff->resize(sizeof(WTSBarStruct)*count);
+				memcpy((void*)buff->c_str(), bars, sizeof(WTSBarStruct)*count);
+			});
+		}
+
+		if (!bLoaded)
+		{
+			std::stringstream ss;
+			ss << _base_dir << "his/" << pname << "/" << cInfo._exchg << "/" << curCode << ".dsb";
+			std::string filename = ss.str();
+			if (!StdFile::exists(filename.c_str()))
+				continue;
+
+			std::string content;
+			StdFile::read_file_content(filename.c_str(), content);
+			if (content.size() < sizeof(HisKlineBlock))
+			{
+				WTSLogger::error("Sizechecking of back kbar data file %s failed", filename.c_str());
+				return false;
+			}
+
+			HisKlineBlock* kBlock = (HisKlineBlock*)content.c_str();
+			WTSBarStruct* firstBar = NULL;
+			uint32_t barcnt = 0;
+			if (kBlock->_version == BLOCK_VERSION_CMP)
+			{
+				if (content.size() < sizeof(HisKlineBlockV2))
+				{
+					WTSLogger::error("Sizechecking of back kbar data file %s failed", filename.c_str());
+					break;
+				}
+
+				HisKlineBlockV2* kBlockV2 = (HisKlineBlockV2*)content.c_str();
+				if (kBlockV2->_size == 0)
+					break;
+
+				buffer = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
+			}
+			else
+			{
+				content.erase(0, sizeof(HisKlineBlock));
+				buffer.swap(content);
+			}
+		}
+
+		uint32_t barcnt = buffer.size() / sizeof(WTSBarStruct);
+		if (barcnt <= 0)
+			break;
+
+		WTSBarStruct* firstBar = (WTSBarStruct*)buffer.data();
+
+		WTSBarStruct* pBar = std::lower_bound(firstBar, firstBar + (barcnt - 1), sBar, [period](const WTSBarStruct& a, const WTSBarStruct& b) {
+			if (period == KP_DAY)
+			{
+				return a.date < b.date;
+			}
+			else
+			{
+				return a.time < b.time;
+			}
+		});
+
+		if (pBar != NULL)
+		{
+			uint32_t sIdx = pBar - firstBar;
+			uint32_t curCnt = barcnt - sIdx;
+			std::vector<WTSBarStruct>* tempAy = new std::vector<WTSBarStruct>();
+			tempAy->resize(curCnt);
+			memcpy(tempAy->data(), &firstBar[sIdx], sizeof(WTSBarStruct)*curCnt);
+			realCnt += curCnt;
+
+			auto& ayFactors = getAdjFactors(cInfo._code, cInfo._exchg);
+			if (!ayFactors.empty())
+			{
+				//做复权处理
+				int32_t lastIdx = curCnt;
+				WTSBarStruct bar;
+				firstBar = tempAy->data();
+
+				//根据复权类型确定基础因子
+				//如果是前复权，则历史数据会变小，以最后一个复权因子为基础因子
+				//如果是后复权，则新数据会变大，基础因子为1
+				double baseFactor = 1.0;
+				if (cInfo._exright == 1)
+					baseFactor = ayFactors.back()._factor;
+				else if (cInfo._exright == 2)
+					barList._factor = ayFactors.back()._factor;
+
+				for (auto it = ayFactors.rbegin(); it != ayFactors.rend(); it++)
+				{
+					const AdjFactor& adjFact = *it;
+					bar.date = adjFact._date;
+
+					//调整因子
+					double factor = adjFact._factor / baseFactor;
+
+					WTSBarStruct* pBar = NULL;
+					pBar = std::lower_bound(firstBar, firstBar + lastIdx - 1, bar, [period](const WTSBarStruct& a, const WTSBarStruct& b) {
+						return a.date < b.date;
+					});
+
+					if (pBar->date < bar.date)
+						continue;
+
+					WTSBarStruct* endBar = pBar;
+					if (pBar != NULL)
+					{
+						int32_t curIdx = pBar - firstBar;
+						while (pBar && curIdx < lastIdx)
+						{
+							pBar->open *= factor;
+							pBar->high *= factor;
+							pBar->low *= factor;
+							pBar->close *= factor;
+
+							pBar++;
+							curIdx++;
+						}
+						lastIdx = endBar - firstBar;
+					}
+
+					if (lastIdx == 0)
+						break;
+				}
+			}
+
+			barsSections.emplace_back(tempAy);
+		}
+	} while (false);
+
+	if (hotAy)
+	{
+		barsSections.emplace_back(hotAy);
+		realCnt += hotAy->size();
+	}
+
+	if (realCnt > 0)
+	{
+		barList._bars.resize(realCnt);
+
+		uint32_t curIdx = 0;
+		for (auto it = barsSections.rbegin(); it != barsSections.rend(); it++)
+		{
+			std::vector<WTSBarStruct>* tempAy = *it;
+			memcpy(barList._bars.data() + curIdx, tempAy->data(), tempAy->size() * sizeof(WTSBarStruct));
+			curIdx += tempAy->size();
+			delete tempAy;
+		}
+		barsSections.clear();
+	}
+
+	WTSLogger::info("%u items of back %s data of %s cached", realCnt, pname.c_str(), stdCode);
+
+	return true;
+}
+
+
+bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* stdCode, WTSKlinePeriod period, bool bSubbed/* = true*/)
 {
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
@@ -3247,7 +3778,7 @@ bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* st
 
 	bool isDay = (period == KP_DAY);
 
-	BarsList& barList = bForBars ? _bars_cache[key] : _unbars_cache[key];
+	BarsList& barList = bSubbed ? _bars_cache[key] : _unbars_cache[key];
 	barList._code = stdCode;
 	barList._period = period;
 
@@ -3256,470 +3787,31 @@ bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* st
 	uint32_t realCnt = 0;
 	if (!cInfo.isFlat() && cInfo.isFuture())//如果是读取期货主力连续数据
 	{
-		const char* hot_flag = cInfo.isHot() ? "HOT" : "2ND";
-
-		//先按照HOT代码进行读取, 如rb.HOT
-		std::vector<WTSBarStruct>* hotAy = NULL;
-		uint32_t lastHotTime = 0;
-		for (;;)
-		{
-			std::stringstream ss;
-			ss << _base_dir << "his/" << pname << "/" << cInfo._exchg << "/" << cInfo._exchg << "." << cInfo._product << "_" << hot_flag << ".dsb";
-			std::string filename = ss.str();
-			if (!StdFile::exists(filename.c_str()))
-				break;
-
-			std::string content;
-			StdFile::read_file_content(filename.c_str(), content);
-			if (content.size() < sizeof(HisKlineBlock))
-			{
-				//WTSLogger::error("历史K线数据文件%s大小校验失败", filename.c_str());
-				WTSLogger::error("Sizechecking of back kbar data file %s failed", filename.c_str());
-				break;
-			}
-
-			HisKlineBlock* kBlock = (HisKlineBlock*)content.c_str();
-			uint32_t barcnt = 0;
-			if (kBlock->_version == BLOCK_VERSION_CMP)
-			{
-				if (content.size() < sizeof(HisKlineBlockV2))
-				{
-					//WTSLogger::error("历史K线数据文件%s大小校验失败", filename.c_str());
-					WTSLogger::error("Sizechecking of back kbar data file %s failed", filename.c_str());
-					break;
-				}
-
-				HisKlineBlockV2* kBlockV2 = (HisKlineBlockV2*)content.c_str();
-				if (kBlockV2->_size == 0)
-					break;
-
-				std::string rawData = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
-				barcnt = rawData.size() / sizeof(WTSBarStruct);
-				if (barcnt <= 0)
-					break;
-
-				hotAy = new std::vector<WTSBarStruct>();
-				hotAy->resize(barcnt);
-				memcpy(hotAy->data(), rawData.data(), rawData.size());
-			}
-			else
-			{
-				barcnt = (content.size() - sizeof(HisKlineBlock)) / sizeof(WTSBarStruct);
-				if (barcnt <= 0)
-					break;
-
-				HisKlineBlock* kBlock = (HisKlineBlock*)content.c_str();
-				hotAy = new std::vector<WTSBarStruct>();
-				hotAy->resize(barcnt);
-				memcpy(hotAy->data(), kBlock->_bars, sizeof(WTSBarStruct)*barcnt);
-			}
-
-			if (period != KP_DAY)
-				lastHotTime = hotAy->at(barcnt - 1).time;
-			else
-				lastHotTime = hotAy->at(barcnt - 1).date;
-
-			//WTSLogger::info("主力%s历史%s数据直接缓存%u条", stdCode, pname.c_str(), barcnt);
-			uint32_t stime = isDay ? barList._bars[0].date : barList._bars[0].time;
-			uint32_t etime = isDay ? barList._bars[barcnt - 1].date : barList._bars[barcnt - 1].time;
-
-			WTSLogger::info(fmt::format("{} items of back {} data of hot contract {} directly loaded, from {} to {}", barcnt, pname.c_str(), stdCode, stime, etime).c_str());
-
-			break;
-		}
-
-		HotSections secs;
-		if(cInfo.isHot())
-		{
-			if (!_hot_mgr.splitHotSecions(cInfo._exchg, cInfo._product, 19900102, endTDate, secs))
-				return false;
-		}
-		else if (cInfo.isSecond())
-		{
-			if (!_hot_mgr.splitSecondSecions(cInfo._exchg, cInfo._product, 19900102, endTDate, secs))
-				return false;
-		}
-
-		if (secs.empty())
-			return false;
-
-		bool bAllCovered = false;
-		for (auto it = secs.rbegin(); it != secs.rend(); it++)
-		{
-			//const char* curCode = it->first.c_str();
-			//uint32_t rightDt = it->second.second;
-			//uint32_t leftDt = it->second.first;
-			const HotSection& hotSec = *it;
-			const char* curCode = hotSec._code.c_str();
-			uint32_t rightDt = hotSec._e_date;
-			uint32_t leftDt = hotSec._s_date;
-
-			//要先将日期转换为边界时间
-			WTSBarStruct sBar, eBar;
-			if (period != KP_DAY)
-			{
-				uint64_t sTime = _bd_mgr.getBoundaryTime(stdPID.c_str(), leftDt, false, true);
-				uint64_t eTime = _bd_mgr.getBoundaryTime(stdPID.c_str(), rightDt, false, false);
-
-				sBar.date = leftDt;
-				sBar.time = ((uint32_t)(sTime / 10000) - 19900000) * 10000 + (uint32_t)(sTime % 10000);
-
-				if (sBar.time < lastHotTime)	//如果边界时间小于主力的最后一根Bar的时间, 说明已经有交叉了, 则不需要再处理了
-				{
-					bAllCovered = true;
-					sBar.time = lastHotTime + 1;
-				}
-
-				eBar.date = rightDt;
-				eBar.time = ((uint32_t)(eTime / 10000) - 19900000) * 10000 + (uint32_t)(eTime % 10000);
-
-				if (eBar.time <= lastHotTime)	//右边界时间小于最后一条Hot时间, 说明全部交叉了, 没有再找的必要了
-					break;
-			}
-			else
-			{
-				sBar.date = leftDt;
-				if (sBar.date < lastHotTime)	//如果边界时间小于主力的最后一根Bar的时间, 说明已经有交叉了, 则不需要再处理了
-				{
-					bAllCovered = true;
-					sBar.date = lastHotTime + 1;
-				}
-
-				eBar.date = rightDt;
-
-				if (eBar.date <= lastHotTime)
-					break;
-			}
-
-			std::stringstream ss;
-			ss << _base_dir << "his/" << pname << "/" << cInfo._exchg << "/" << curCode << ".dsb";
-			std::string filename = ss.str();
-			if (!StdFile::exists(filename.c_str()))
-				continue;
-
-			{
-				std::string content;
-				StdFile::read_file_content(filename.c_str(), content);
-				if (content.size() < sizeof(HisKlineBlock))
-				{
-					//WTSLogger::error("历史K线数据文件%s大小校验失败", filename.c_str());
-					WTSLogger::error("Sizechecking of back kbar data file %s failed", filename.c_str());
-					return false;
-				}
-
-				HisKlineBlock* kBlock = (HisKlineBlock*)content.c_str();
-				WTSBarStruct* firstBar = NULL;
-				uint32_t barcnt = 0;
-				std::string rawData;
-				if (kBlock->_version == BLOCK_VERSION_CMP)
-				{
-					if (content.size() < sizeof(HisKlineBlockV2))
-					{
-						//WTSLogger::error("历史K线数据文件%s大小校验失败", filename.c_str());
-						WTSLogger::error("Sizechecking of back kbar data file %s failed", filename.c_str());
-						break;
-					}
-
-					HisKlineBlockV2* kBlockV2 = (HisKlineBlockV2*)content.c_str();
-					if (kBlockV2->_size == 0)
-						break;
-
-					rawData = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
-					barcnt = rawData.size() / sizeof(WTSBarStruct);
-					if (barcnt <= 0)
-						break;
-
-					firstBar = (WTSBarStruct*)rawData.data();
-				}
-				else
-				{
-					barcnt = (content.size() - sizeof(HisKlineBlock)) / sizeof(WTSBarStruct);
-					if (barcnt <= 0)
-						continue;
-
-					firstBar = kBlock->_bars;
-				}
-
-				WTSBarStruct* pBar = std::lower_bound(firstBar, firstBar + (barcnt - 1), sBar, [period](const WTSBarStruct& a, const WTSBarStruct& b){
-					if (period == KP_DAY)
-					{
-						return a.date < b.date;
-					}
-					else
-					{
-						return a.time < b.time;
-					}
-				});
-
-				uint32_t sIdx = pBar - firstBar;
-				if ((period == KP_DAY && pBar->date < sBar.date) || (period != KP_DAY && pBar->time < sBar.time))	//早于边界时间
-				{
-					//早于边界时间, 说明没有数据了, 因为lower_bound会返回大于等于目标位置的数据
-					continue;
-				}
-
-				pBar = std::lower_bound(firstBar + sIdx, firstBar + (barcnt - 1), eBar, [period](const WTSBarStruct& a, const WTSBarStruct& b){
-					if (period == KP_DAY)
-					{
-						return a.date < b.date;
-					}
-					else
-					{
-						return a.time < b.time;
-					}
-				});
-				uint32_t eIdx = pBar - firstBar;
-				if ((period == KP_DAY && pBar->date > eBar.date) || (period != KP_DAY && pBar->time > eBar.time))
-				{
-					pBar--;
-					eIdx--;
-				}
-
-				if (eIdx < sIdx)
-					continue;
-
-				uint32_t curCnt = eIdx - sIdx + 1;
-				std::vector<WTSBarStruct>* tempAy = new std::vector<WTSBarStruct>();
-				tempAy->resize(curCnt);
-				memcpy(tempAy->data(), &firstBar[sIdx], sizeof(WTSBarStruct)*curCnt);
-				realCnt += curCnt;
-
-				barsSections.emplace_back(tempAy);
-
-				if (bAllCovered)
-					break;
-			}
-		}
-
-		if (hotAy)
-		{
-			barsSections.emplace_back(hotAy);
-			realCnt += hotAy->size();
-		}
+		return cacheIntegratedFutBars(key, stdCode, period);
 	}
 	else if (cInfo.isExright() && cInfo.isStock())//如果是读取股票复权数据
 	{
-		std::vector<WTSBarStruct>* hotAy = NULL;
-		uint32_t lastQTime = 0;
-
-		do
-		{
-			//先直接读取复权过的历史数据,路径如/his/day/sse/SH600000Q.dsb
-			std::stringstream ss;
-			ss << _base_dir << "his/" << pname << "/" << cInfo._exchg << "/" << cInfo._code << (cInfo._exright==1?"Q":"H") << ".dsb";
-			std::string filename = ss.str();
-			if (!StdFile::exists(filename.c_str()))
-				break;
-
-			std::string content;
-			StdFile::read_file_content(filename.c_str(), content);
-			if (content.size() < sizeof(HisKlineBlock))
-			{
-				//WTSLogger::error("历史K线数据文件%s大小校验失败", filename.c_str());
-				WTSLogger::error("Sizechecking of back kbar data file %s failed", filename.c_str());
-				break;
-			}
-
-			HisKlineBlock* kBlock = (HisKlineBlock*)content.c_str();
-			uint32_t barcnt = 0;
-			if (kBlock->_version == BLOCK_VERSION_CMP)
-			{
-				if (content.size() < sizeof(HisKlineBlockV2))
-				{
-					//WTSLogger::error("历史K线数据文件%s大小校验失败", filename.c_str());
-					WTSLogger::error("Sizechecking of back kbar data file %s failed", filename.c_str());
-					break;
-				}
-
-				HisKlineBlockV2* kBlockV2 = (HisKlineBlockV2*)content.c_str();
-				if (kBlockV2->_size == 0)
-					break;
-
-				std::string rawData = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
-				barcnt = rawData.size() / sizeof(WTSBarStruct);
-				if (barcnt <= 0)
-					break;
-
-				hotAy = new std::vector<WTSBarStruct>();
-				hotAy->resize(barcnt);
-				memcpy(hotAy->data(), rawData.data(), rawData.size());
-			}
-			else
-			{
-				barcnt = (content.size() - sizeof(HisKlineBlock)) / sizeof(WTSBarStruct);
-				if (barcnt <= 0)
-					break;
-
-				HisKlineBlock* kBlock = (HisKlineBlock*)content.c_str();
-				hotAy = new std::vector<WTSBarStruct>();
-				hotAy->resize(barcnt);
-				memcpy(hotAy->data(), kBlock->_bars, sizeof(WTSBarStruct)*barcnt);
-			}
-
-			if (period != KP_DAY)
-				lastQTime = hotAy->at(barcnt - 1).time;
-			else
-				lastQTime = hotAy->at(barcnt - 1).date;
-
-			//WTSLogger::info("%s历史%s复权数据直接缓存%u条", stdCode, pname.c_str(), barcnt);
-			WTSLogger::info("%u items of adjusted back %s data of stock %s directly loaded", barcnt, pname.c_str(), stdCode);
-			break;
-		} while (false);
-
-		bool bAllCovered = false;
-		do
-		{
-			const char* curCode = cInfo._code;
-
-			//要先将日期转换为边界时间
-			WTSBarStruct sBar;
-			if (period != KP_DAY)
-			{
-				sBar.date = TimeUtils::minBarToDate(lastQTime);
-
-				sBar.time = lastQTime + 1;
-			}
-			else
-			{
-				sBar.date = lastQTime + 1;
-			}
-
-			std::stringstream ss;
-			ss << _base_dir << "his/" << pname << "/" << cInfo._exchg << "/" << curCode << ".dsb";
-			std::string filename = ss.str();
-			if (!StdFile::exists(filename.c_str()))
-				continue;
-
-			{
-				std::string content;
-				StdFile::read_file_content(filename.c_str(), content);
-				if (content.size() < sizeof(HisKlineBlock))
-				{
-					//WTSLogger::error("历史K线数据文件%s大小校验失败", filename.c_str());
-					WTSLogger::error("Sizechecking of back kbar data file %s failed", filename.c_str());
-					return false;
-				}
-
-				HisKlineBlock* kBlock = (HisKlineBlock*)content.c_str();
-				WTSBarStruct* firstBar = NULL;
-				uint32_t barcnt = 0;
-				std::string rawData;
-				if (kBlock->_version == BLOCK_VERSION_CMP)
-				{
-					if (content.size() < sizeof(HisKlineBlockV2))
-					{
-						//WTSLogger::error("历史K线数据文件%s大小校验失败", filename.c_str());
-						WTSLogger::error("Sizechecking of back kbar data file %s failed", filename.c_str());
-						break;
-					}
-
-					HisKlineBlockV2* kBlockV2 = (HisKlineBlockV2*)content.c_str();
-					if (kBlockV2->_size == 0)
-						break;
-
-					rawData = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
-					barcnt = rawData.size() / sizeof(WTSBarStruct);
-					if (barcnt <= 0)
-						break;
-
-					firstBar = (WTSBarStruct*)rawData.data();
-				}
-				else
-				{
-					barcnt = (content.size() - sizeof(HisKlineBlock)) / sizeof(WTSBarStruct);
-					if (barcnt <= 0)
-						continue;
-
-					firstBar = kBlock->_bars;
-				}
-
-				WTSBarStruct* pBar = std::lower_bound(firstBar, firstBar + (barcnt - 1), sBar, [period](const WTSBarStruct& a, const WTSBarStruct& b){
-					if (period == KP_DAY)
-					{
-						return a.date < b.date;
-					}
-					else
-					{
-						return a.time < b.time;
-					}
-				});
-
-				if (pBar != NULL)
-				{
-					uint32_t sIdx = pBar - firstBar;
-					uint32_t curCnt = barcnt - sIdx;
-					std::vector<WTSBarStruct>* tempAy = new std::vector<WTSBarStruct>();
-					tempAy->resize(curCnt);
-					memcpy(tempAy->data(), &firstBar[sIdx], sizeof(WTSBarStruct)*curCnt);
-					realCnt += curCnt;
-
-					auto& ayFactors = getAdjFactors(cInfo._code, cInfo._exchg);
-					if (!ayFactors.empty())
-					{
-						//做复权处理
-						int32_t lastIdx = curCnt;
-						WTSBarStruct bar;
-						firstBar = tempAy->data();
-
-						//根据复权类型确定基础因子
-						//如果是前复权，则历史数据会变小，以最后一个复权因子为基础因子
-						//如果是后复权，则新数据会变大，基础因子为1
-						double baseFactor = 1.0;
-						if (cInfo._exright == 1)
-							baseFactor = ayFactors.back()._factor;
-						else if (cInfo._exright == 2)
-							barList._factor = ayFactors.back()._factor;
-
-						for (auto it = ayFactors.rbegin(); it != ayFactors.rend(); it++)
-						{
-							const AdjFactor& adjFact = *it;
-							bar.date = adjFact._date;
-
-							//调整因子
-							double factor = adjFact._factor / baseFactor;
-
-							WTSBarStruct* pBar = NULL;
-							pBar = std::lower_bound(firstBar, firstBar + lastIdx - 1, bar, [period](const WTSBarStruct& a, const WTSBarStruct& b) {
-								return a.date < b.date;
-							});
-
-							if(pBar->date < bar.date)
-								continue;
-
-							WTSBarStruct* endBar = pBar;
-							if (pBar != NULL)
-							{
-								int32_t curIdx = pBar - firstBar;
-								while (pBar && curIdx < lastIdx)
-								{
-									pBar->open *= factor;
-									pBar->high *= factor;
-									pBar->low *= factor;
-									pBar->close *= factor;
-
-									pBar++;
-									curIdx++;
-								}
-								lastIdx = endBar - firstBar;
-							}
-
-							if (lastIdx == 0)
-								break;
-						}
-					}
-
-					barsSections.emplace_back(tempAy);
-				}
-			}
-		} while (false);
-
-		if (hotAy)
-		{
-			barsSections.emplace_back(hotAy);
-			realCnt += hotAy->size();
-		}
+		return cacheAdjustedStkBars(key, stdCode, period, bSubbed);
 	}
-	else
+	
+
+	/*
+	 *	By Wesley @ 2021.12.20
+	 *	先从extloader读取
+	 *	如果没有读到，再从文件读取
+	 */
+	bool bLoaded = false;
+	std::string buffer;
+	if (NULL != _bt_loader)
+	{
+		bLoaded = _bt_loader->loadRawHisBars(&buffer, stdCode, period, [](void* obj, WTSBarStruct* bars, uint32_t count) {
+			std::string* buff = (std::string*)obj;
+			buff->resize(sizeof(WTSBarStruct)*count);
+			memcpy((void*)buff->c_str(), bars, sizeof(WTSBarStruct)*count);
+		});
+	}
+
+	if(!bLoaded)
 	{
 		//读取历史的
 		std::stringstream ss;
@@ -3732,20 +3824,16 @@ bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* st
 			StdFile::read_file_content(filename.c_str(), content);
 			if (content.size() < sizeof(HisKlineBlock))
 			{
-				//WTSLogger::error("历史K线数据文件%s大小校验失败", filename.c_str());
 				WTSLogger::error("Sizechecking of back kbar data file %s failed", filename.c_str());
 				return false;
 			}
 
 			HisKlineBlock* kBlock = (HisKlineBlock*)content.c_str();
 			WTSBarStruct* firstBar = NULL;
-			uint32_t barcnt = 0;
-			std::string rawData;
 			if (kBlock->_version == BLOCK_VERSION_CMP)
 			{
 				if (content.size() < sizeof(HisKlineBlockV2))
 				{
-					//WTSLogger::error("历史K线数据文件%s大小校验失败", filename.c_str());
 					WTSLogger::error("Sizechecking of back kbar data file %s failed", filename.c_str());
 					return false;
 				}
@@ -3754,37 +3842,34 @@ bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* st
 				if (kBlockV2->_size == 0)
 					return false;
 
-				rawData = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
-				barcnt = rawData.size() / sizeof(WTSBarStruct);
-				if (barcnt <= 0)
-					return false;
-
-				firstBar = (WTSBarStruct*)rawData.data();
+				buffer = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
 			}
 			else
 			{
-				barcnt = (content.size() - sizeof(HisKlineBlock)) / sizeof(WTSBarStruct);
-				if (barcnt <= 0)
-					return false;
-
-				firstBar = kBlock->_bars;
-			}
-
-			if (barcnt > 0)
-			{
-
-				uint32_t sIdx = 0;
-				uint32_t idx = barcnt - 1;
-				uint32_t curCnt = (idx - sIdx + 1);
-
-				std::vector<WTSBarStruct>* tempAy = new std::vector<WTSBarStruct>();
-				tempAy->resize(curCnt);
-				memcpy(tempAy->data(), &firstBar[sIdx], sizeof(WTSBarStruct)*curCnt);
-				realCnt += curCnt;
-
-				barsSections.emplace_back(tempAy);
+				content.erase(0, sizeof(HisKlineBlock));
+				buffer.swap(content);
 			}
 		}
+	}
+
+	uint32_t barcnt = buffer.size() / sizeof(WTSBarStruct);
+	if (barcnt <= 0)
+		return false;
+
+	WTSBarStruct* firstBar = (WTSBarStruct*)buffer.data();
+	if (barcnt > 0)
+	{
+
+		uint32_t sIdx = 0;
+		uint32_t idx = barcnt - 1;
+		uint32_t curCnt = (idx - sIdx + 1);
+
+		std::vector<WTSBarStruct>* tempAy = new std::vector<WTSBarStruct>();
+		tempAy->resize(curCnt);
+		memcpy(tempAy->data(), &firstBar[sIdx], sizeof(WTSBarStruct)*curCnt);
+		realCnt += curCnt;
+
+		barsSections.emplace_back(tempAy);
 	}
 
 	if (realCnt > 0)

@@ -60,5 +60,7 @@ typedef void(PORTER_FLAG *FuncEventCallback)(WtUInt32 evtId, WtUInt32 curDate, W
 
 //////////////////////////////////////////////////////////////////////////
 //外部数据加载模块
+typedef bool(PORTER_FLAG *FuncLoadFnlBars)(const char* stdCode, const char* period);
 typedef bool(PORTER_FLAG *FuncLoadRawBars)(const char* stdCode, const char* period);
+typedef bool(PORTER_FLAG *FuncLoadAdjFactors)();
 typedef bool(PORTER_FLAG *FuncLoadRawTicks)(const char* stdCode, uint32_t uDate);

@@ -27,11 +27,13 @@ extern "C"
 		FuncHftChannelCallback cbChnl, FuncHftOrdCallback cbOrd, FuncHftTrdCallback cbTrd, FuncHftEntrustCallback cbEntrust,
 		FuncStraOrdDtlCallback cbOrdDtl, FuncStraOrdQueCallback cbOrdQue, FuncStraTransCallback cbTrans, FuncSessionEvtCallback cbSessEvt);
 
-	EXPORT_FLAG void		register_ext_data_loader(FuncLoadRawBars barLoader, FuncLoadRawTicks tickLoader, bool bAutoTrans);
+	EXPORT_FLAG void		register_ext_data_loader(FuncLoadFnlBars fnlBarLoader, FuncLoadRawBars rawBarLoader, FuncLoadAdjFactors fctLoader, FuncLoadRawTicks tickLoader, bool bAutoTrans);
 
-	EXPORT_FLAG void		feed_raw_bars(WTSBarStruct* bars, uint32_t count);
+	EXPORT_FLAG void		feed_raw_bars(WTSBarStruct* bars, WtUInt32 count);
 
-	EXPORT_FLAG void		feed_raw_ticks(WTSTickStruct* ticks, uint32_t count);
+	EXPORT_FLAG void		feed_raw_ticks(WTSTickStruct* ticks, WtUInt32 count);
+
+	EXPORT_FLAG void		feed_adj_factors(WtString stdCode, WtUInt32* dates, double* factors, WtUInt32 count);
 
 	EXPORT_FLAG	void		init_backtest(const char* logProfile, bool isFile, const char* outDir);
 

@@ -186,21 +186,18 @@ private:
 	OrdDtlBlockPair* getRTOrdDtlBlock(const char* exchg, const char* code);
 	TransBlockPair* getRTTransBlock(const char* exchg, const char* code);
 
+	bool	cacheIntegratedFutBars(const std::string& key, const char* stdCode, WTSKlinePeriod period);
+	bool	cacheAdjustedStkBars(const std::string& key, const char* stdCode, WTSKlinePeriod period);
+
 	/*
 	 *	将历史数据放入缓存
 	 */
-	bool		cacheHisBarsFromFile(const std::string& key, const char* stdCode, WTSKlinePeriod period);
-	bool		cacheHisBarsFromLoader(const std::string& key, const char* stdCode, WTSKlinePeriod period);
+	bool	cacheHisBarsFromFile(const std::string& key, const char* stdCode, WTSKlinePeriod period);
+	bool	cacheFinalBarsFromLoader(const std::string& key, const char* stdCode, WTSKlinePeriod period);
 
-	//uint32_t	readBarsFromCache(const std::string& key, uint64_t etime, uint32_t count, std::vector<WTSBarStruct>& ayBars, bool isDay = false);
-	//WTSBarStruct*	indexBarFromCache(const std::string& key, uint64_t etime, uint32_t& count, bool isDay = false);
 
 	bool	loadStkAdjFactorsFromFile(const char* adjfile);
-
-	//不在WtDataReader直接支持Mysql了，改成外接Loader
-	//bool	cacheHisBarsFromDB(const std::string& key, const char* stdCode, WTSKlinePeriod period);
-	//bool	loadStkAdjFactorsFromDB();
-	//void	init_db();
+	bool	loadStkAdjFactorsFromLoader();
 
 public:
 	virtual void init(WTSVariant* cfg, IDataReaderSink* sink, IHisDataLoader* loader = NULL) override;
@@ -255,24 +252,6 @@ private:
 		sprintf(key, "%s.%s", exchg, code);
 		return _adj_factors[key];
 	}
-
-	/* 
-	 * WtDataReader不再内置Mysql
-	typedef struct _DBConfig
-	{
-		bool	_active;
-		char	_host[64];
-		int32_t	_port;
-		char	_dbname[32];
-		char	_user[32];
-		char	_pass[32];
-
-		_DBConfig() { memset(this, 0, sizeof(_DBConfig)); }
-	} DBConfig;
-
-	DBConfig	_db_conf;
-	MysqlDbPtr	_db_conn;
-	*/
 };
 
 NS_OTP_END
