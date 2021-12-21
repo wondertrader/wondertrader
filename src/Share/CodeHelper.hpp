@@ -106,7 +106,7 @@ public:
 	{
 		using namespace boost::xpressive;
 		/* 定义正则表达式 */
-		static cregex reg_stk = cregex::compile("^[A-Z]+.([A-Z]+.)?\\d{6,16}(Q?|H)$");
+		static cregex reg_stk = cregex::compile("^[A-Z]+.\\d{6,16}(Q?|H)$");
 		return 	regex_match(code, reg_stk);
 	}
 
