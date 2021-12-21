@@ -12,6 +12,7 @@
 #include "../Includes/WTSContractInfo.hpp"
 #include "../Includes/WTSSessionInfo.hpp"
 #include "../Share/decimal.h"
+#include "../Share/StrUtil.hpp"
 
 extern const char* FACT_NAME;
 
@@ -313,7 +314,7 @@ void WtMinImpactExeUnit::do_calc()
 	uint64_t curTickTime = (uint64_t)_last_tick->actiondate() * 1000000000 + _last_tick->actiontime();
 	if (curTickTime <= _last_tick_time)
 	{
-		_ctx->writeLog("No tick of %s updated, execute later", _code.c_str());
+		_ctx->writeLog("No tick of %s updated, %s <= %s, execute later", _code.c_str(), StrUtil::fmtUInt64(curTickTime).c_str(), StrUtil::fmtUInt64(_last_tick_time).c_str());
 		return;
 	}
 
