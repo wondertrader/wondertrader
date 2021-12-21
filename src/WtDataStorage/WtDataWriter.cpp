@@ -1345,10 +1345,13 @@ bool WtDataWriter::updateCache(WTSContractInfo* ct, WTSTickData* curTick, bool b
 			return false;
 		}
 
-		//时间戳相同,但是成交量大于等于原来的,这种情况一般是郑商所,这里的处理方式就是时间戳+500毫秒
-		if(newTick.action_date == item._tick.action_date && newTick.action_time == item._tick.action_time && newTick.total_volume >= item._tick.total_volume)
+		//时间戳相同,但是成交量大于等于原来的,这种情况一般是郑商所,这里的处理方式就是时间戳+200毫秒
+		//By Wesley @ 2021.12.21
+		//今天发现居然一秒出现了4笔，实在是有点无语
+		//只能把500毫秒的变化量改成200，并且改成发生时间小于等于上一笔的判断
+		if(newTick.action_date == item._tick.action_date && newTick.action_time <= item._tick.action_time && newTick.total_volume >= item._tick.total_volume)
 		{
-			newTick.action_time += 500;
+			newTick.action_time += 200;
 		}
 
 		//这里就要看需不需要预处理了
