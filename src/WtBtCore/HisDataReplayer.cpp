@@ -1816,6 +1816,12 @@ WTSKlineSlice* HisDataReplayer::get_kline_slice(const char* stdCode, const char*
 		return NULL;
 
 	WTSSessionInfo* sInfo = get_session_info(stdCode, true);
+	if(sInfo == NULL)
+	{
+		WTSLogger::error("Cannot find corresponding session of %s", stdCode);
+		return NULL;
+	}
+
 	bool isClosed = (sInfo->offsetTime(_cur_time) >= sInfo->getCloseTime(true));
 	if (realTimes != 1 && !bHasCache)
 	{	

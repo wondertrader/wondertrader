@@ -103,60 +103,9 @@ void test_porter()
 	release_porter();
 }
 
-/*
-void test_exec()
-{
-#ifdef _WIN32
-	DLLHelper::load_library("WtExecMon.dll");
-#else
-	DLLHelper::load_library("libWtExecMon.so");
-#endif
-
-	init_exec("logcfgexec.json");
-
-	config_exec("config_exec.json");
-
-	run_exec();
-
-	set_position("CFFEX.IF.2007", 1);
-
-	printf("press enter key to exit\n");
-	getchar();
-
-	release_exec();
-}
-*/
-
-void test_codehelper()
-{
-	{
-		//π…∆±¥˙¬Î≤‚ ‘
-		auto r = CodeHelper::isStdStkCode("SSE.600000");
-		r = CodeHelper::isStdStkCode("SSE.STK.600000Q");
-		r = CodeHelper::isStdStkCode("SSE.STK.600000H");
-		r = CodeHelper::isStdStkCode("SSE.ETF.1108600");
-		r = CodeHelper::isStdStkCode("SSE.ETF.1108600Q");
-		r = CodeHelper::isStdStkCode("SSE.ETF.1108600H");
-
-		r = CodeHelper::isSimpStkCode("SSE.600000");
-		r = CodeHelper::isSimpStkCode("SSE.600000Q");
-		r = CodeHelper::isSimpStkCode("SSE.600000H");
-
-		auto s = CodeHelper::rawStkCodeToStdCode("600000", "SSE");
-		s = CodeHelper::rawStkCodeToStdCode("600000", "SSE", "STK");
-		s = CodeHelper::rawStkCodeToStdCode("000001", "SSE", "IDX");
-
-		s = CodeHelper::stdStkCodeToBscCode("SSE.STK.600000Q");
-
-		auto c = CodeHelper::extractStdStkCode("SSE.STK.600000Q");
-		c = CodeHelper::extractStdStkCode("SSE.STK.600000");
-		c = CodeHelper::extractStdStkCode("SSE.ETF.1108600Q");
-	}
-}
-
 int main()
 {
-	test_codehelper();
+	test_porter();
 	getchar();
 	return 0;
 }
