@@ -127,12 +127,24 @@ bool WtDataReader::loadStkAdjFactorsFromFile(const char* adjfile)
 		const rj::Value& itemExchg = mExchg.value;
 		for(auto& mCode : itemExchg.GetObject())
 		{
-			const char* code = mCode.name.GetString();
+			std::string code = mCode.name.GetString();
 			const rj::Value& ayFacts = mCode.value;
 			if(!ayFacts.IsArray() )
 				continue;
 
-			std::string key = StrUtil::printf("%s.%s", exchg, code);
+			/*
+			 *	By Wesley @ 2021.12.21
+			 *	先检查code的格式是不是包含PID，如STK.600000
+			 *	如果包含PID，则直接格式化，如果不包含，则强制为STK
+			 */
+			bool bHasPID = (code.find('.') != std::string::npos);
+
+			std::string key;
+			if (bHasPID)
+				StrUtil::printf("%s.%s", exchg, code);
+			else
+				StrUtil::printf("%s.STK.s", exchg, code);
+
 			stk_cnt++;
 
 			AdjFactorList& fctrLst = _adj_factors[key];
@@ -1155,7 +1167,7 @@ bool WtDataReader::cacheAdjustedStkBars(const std::string& key, const char* stdC
 		 */
 		bool bLoaded = false;
 		std::string buffer;
-		std::string rawCode = StrUtil::printf("%s.%s", cInfo._exchg, curCode);
+		std::string rawCode = StrUtil::printf("%s.%s.%s", cInfo._exchg, cInfo._product, curCode);
 		if (NULL != _loader)
 		{
 			bLoaded = _loader->loadRawHisBars(&buffer, rawCode.c_str(), period, [](void* obj, WTSBarStruct* bars, uint32_t count) {
@@ -1232,7 +1244,7 @@ bool WtDataReader::cacheAdjustedStkBars(const std::string& key, const char* stdC
 			memcpy(ayRaw->data(), &firstBar[sIdx], sizeof(WTSBarStruct)*curCnt);
 			realCnt += curCnt;
 
-			auto& ayFactors = getAdjFactors(cInfo._code, cInfo._exchg);
+			auto& ayFactors = getAdjFactors(cInfo._code, cInfo._exchg, cInfo._product);
 			if (!ayFactors.empty())
 			{
 				//做复权处理
@@ -1959,10 +1971,10 @@ double WtDataReader::getAdjFactor(const char* stdCode, uint32_t date /* = 0 */)
 	}
 }
 
-const WtDataReader::AdjFactorList& WtDataReader::getAdjFactors(const char* code, const char* exchg)
+const WtDataReader::AdjFactorList& WtDataReader::getAdjFactors(const char* code, const char* exchg, const char* pid)
 {
 	char key[20] = { 0 };
-	sprintf(key, "%s.%s", exchg, code);
+	sprintf(key, "%s.%s.%s", exchg, pid, code);
 
 	auto it = _adj_factors.find(key);
 	if (it == _adj_factors.end())

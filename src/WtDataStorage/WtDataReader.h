@@ -246,7 +246,7 @@ private:
 	typedef faster_hashmap<std::string, AdjFactorList>	AdjFactorMap;
 	AdjFactorMap	_adj_factors;
 
-	const AdjFactorList& getAdjFactors(const char* code, const char* exchg);
+	const AdjFactorList& getAdjFactors(const char* code, const char* exchg, const char* pid);
 	
 };
 

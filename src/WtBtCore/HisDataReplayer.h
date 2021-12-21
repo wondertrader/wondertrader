@@ -255,7 +255,7 @@ private:
 
 	void		checkUnbars();
 
-	bool		loadStkAdjFactors(const char* adjfile);
+	bool		loadStkAdjFactorsFromFile(const char* adjfile);
 
 	bool		loadStkAdjFactorsFromLoader();
 
@@ -424,7 +424,7 @@ private:
 	typedef faster_hashmap<std::string, AdjFactorList>	AdjFactorMap;
 	AdjFactorMap	_adj_factors;
 
-	const AdjFactorList& getAdjFactors(const char* code, const char* exchg);
+	const AdjFactorList& getAdjFactors(const char* code, const char* exchg, const char* pid);
 
 	EventNotifier*	_notifier;
 };

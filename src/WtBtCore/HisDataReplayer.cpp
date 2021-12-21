@@ -151,7 +151,7 @@ bool HisDataReplayer::init(WTSVariant* cfg, EventNotifier* notifier /* = NULL */
 	bool bLoaded = loadStkAdjFactorsFromLoader();
 
 	if (!bLoaded && cfg->has("adjfactor"))
-		loadStkAdjFactors(cfg->getCString("adjfactor"));
+		loadStkAdjFactorsFromFile(cfg->getCString("adjfactor"));
 
 	return true;
 }
@@ -189,7 +189,7 @@ bool HisDataReplayer::loadStkAdjFactorsFromLoader()
 	return ret;
 }
 
-bool HisDataReplayer::loadStkAdjFactors(const char* adjfile)
+bool HisDataReplayer::loadStkAdjFactorsFromFile(const char* adjfile)
 {
 	if (!boost::filesystem::exists(adjfile))
 	{
@@ -217,12 +217,23 @@ bool HisDataReplayer::loadStkAdjFactors(const char* adjfile)
 		const rj::Value& itemExchg = mExchg.value;
 		for (auto& mCode : itemExchg.GetObject())
 		{
-			const char* code = mCode.name.GetString();
+			std::string code = mCode.name.GetString();
 			const rj::Value& ayFacts = mCode.value;
 			if (!ayFacts.IsArray())
 				continue;
 
-			std::string key = StrUtil::printf("%s.%s", exchg, code);
+			/*
+			 *	By Wesley @ 2021.12.21
+			 *	先检查code的格式是不是包含PID，如STK.600000
+			 *	如果包含PID，则直接格式化，如果不包含，则强制为STK
+			 */
+			bool bHasPID = (code.find('.') != std::string::npos);
+
+			std::string key;
+			if(bHasPID)
+				StrUtil::printf("%s.%s", exchg, code);
+			else
+				StrUtil::printf("%s.STK.s", exchg, code);
 			stk_cnt++;
 
 			AdjFactorList& fctrLst = _adj_factors[key];
@@ -3492,10 +3503,10 @@ bool HisDataReplayer::cacheIntegratedFutBars(const std::string& key, const char*
 	return true;
 }
 
-const HisDataReplayer::AdjFactorList& HisDataReplayer::getAdjFactors(const char* code, const char* exchg)
+const HisDataReplayer::AdjFactorList& HisDataReplayer::getAdjFactors(const char* code, const char* exchg, const char* pid /* = "" */)
 {
 	char key[20] = { 0 };
-	sprintf(key, "%s.%s", exchg, code);
+	sprintf(key, "%s.%s.%s", exchg, pid, code);
 
 	auto it = _adj_factors.find(key);
 	if (it == _adj_factors.end())
@@ -3649,7 +3660,7 @@ bool HisDataReplayer::cacheAdjustedStkBars(const std::string& key, const char* s
 		std::string buffer;
 		if (NULL != _bt_loader)
 		{
-			std::string wCode = StrUtil::printf("%s.%s", cInfo._exchg, curCode);
+			std::string wCode = StrUtil::printf("%s.%s.%s", cInfo._exchg, cInfo._product, curCode);
 			bLoaded = _bt_loader->loadRawHisBars(&buffer, wCode.c_str(), period, [](void* obj, WTSBarStruct* bars, uint32_t count) {
 				std::string* buff = (std::string*)obj;
 				buff->resize(sizeof(WTSBarStruct)*count);
@@ -3723,7 +3734,7 @@ bool HisDataReplayer::cacheAdjustedStkBars(const std::string& key, const char* s
 			memcpy(tempAy->data(), &firstBar[sIdx], sizeof(WTSBarStruct)*curCnt);
 			realCnt += curCnt;
 
-			auto& ayFactors = getAdjFactors(cInfo._code, cInfo._exchg);
+			auto& ayFactors = getAdjFactors(cInfo._code, cInfo._exchg, cInfo._product);
 			if (!ayFactors.empty())
 			{
 				//做复权处理
