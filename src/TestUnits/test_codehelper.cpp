@@ -39,6 +39,9 @@ TEST(test_codehelper, test_raw_to_std)
 	EXPECT_EQ(CodeHelper::rawStkCodeToStdCode("600000", "SSE", "STK"), "SSE.STK.600000");
 	EXPECT_EQ(CodeHelper::rawStkCodeToStdCode("000001", "SSE", "IDX"), "SSE.IDX.000001");
 	EXPECT_EQ(CodeHelper::rawStkCodeToStdCode("510300", "SSE", "ETF"), "SSE.ETF.510300");
+
+	EXPECT_EQ(CodeHelper::rawFutCodeToStdCode("IF2112", "CFFEX"), "CFFEX.IF.2112");
+	EXPECT_EQ(CodeHelper::rawFutCodeToStdCode("MA112", "CZCE"), "CZCE.MA.2112");
 }
 
 TEST(test_codehelper, test_extract)
