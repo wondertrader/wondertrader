@@ -56,7 +56,7 @@ void WtHftRtTicker::trigger_price(WTSTickData* curTick, uint32_t hotFlag /* = 0 
 		if (hotFlag !=0)
 		{
 			WTSTickData* hotTick = WTSTickData::create(curTick->getTickStruct());
-			std::string hotCode = (hotFlag != 1) ? CodeHelper::stdCodeToStdHotCode(stdCode.c_str()) : CodeHelper::stdCodeToStd2ndCode(stdCode.c_str());
+			std::string hotCode = (hotFlag == 1) ? CodeHelper::stdCodeToStdHotCode(stdCode.c_str()) : CodeHelper::stdCodeToStd2ndCode(stdCode.c_str());
 			strcpy(hotTick->getTickStruct().code, hotCode.c_str());
 			_engine->on_tick(hotCode.c_str(), hotTick);
 			hotTick->release();
