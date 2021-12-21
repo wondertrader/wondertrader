@@ -133,6 +133,11 @@ public:
 	 *	加载全部除权因子
 	 */
 	virtual bool loadAllAdjFactors(void* obj, FuncReadFactors cb) = 0;
+
+	/*
+	 *	加指定合约除权因子
+	 */
+	virtual bool loadAdjFactors(void* obj, const char* stdCode, FuncReadFactors cb) = 0;
 };
 
 /*

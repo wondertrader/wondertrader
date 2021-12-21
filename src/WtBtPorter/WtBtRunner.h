@@ -49,6 +49,8 @@ public:
 
 	virtual bool loadAllAdjFactors(void* obj, FuncReadFactors cb) override;
 
+	virtual bool loadAdjFactors(void* obj, const char* stdCode, FuncReadFactors cb) override;
+
 	virtual bool loadRawHisTicks(void* obj, const char* stdCode, uint32_t uDate, FuncReadTicks cb) override;
 
 	virtual bool isAutoTrans() override

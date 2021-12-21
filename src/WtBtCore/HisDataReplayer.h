@@ -85,7 +85,6 @@ public:
 	 *	loadRawHisBars是加载未加工的原始数据的接口
 	 *
 	 *	@obj	回传用的，原样返回即可
-	 *	@key	数据缓存的key
 	 *	@stdCode	合约代码
 	 *	@period	K线周期
 	 *	@cb		回调函数
@@ -96,7 +95,6 @@ public:
 	 *	加载原始历史K线数据
 	 *
 	 *	@obj	回传用的，原样返回即可
-	 *	@key	数据缓存的key
 	 *	@stdCode	合约代码
 	 *	@period	K线周期
 	 *	@cb		回调函数
@@ -107,6 +105,13 @@ public:
 	 *	加载全部除权因子
 	 */
 	virtual bool loadAllAdjFactors(void* obj, FuncReadFactors cb) = 0;
+
+	/*
+	 *	根据合约加载除权因子
+	 *
+	 *	@stdCode	合约代码
+	 */
+	virtual bool loadAdjFactors(void* obj, const char* stdCode, FuncReadFactors cb) = 0;
 
 	/*
 	 *	加载历史Tick数据
@@ -419,12 +424,7 @@ private:
 	typedef faster_hashmap<std::string, AdjFactorList>	AdjFactorMap;
 	AdjFactorMap	_adj_factors;
 
-	inline const AdjFactorList& getAdjFactors(const char* code, const char* exchg)
-	{
-		char key[20] = { 0 };
-		sprintf(key, "%s.%s", exchg, code);
-		return _adj_factors[key];
-	}
+	const AdjFactorList& getAdjFactors(const char* code, const char* exchg);
 
 	EventNotifier*	_notifier;
 };

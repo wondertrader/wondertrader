@@ -246,12 +246,8 @@ private:
 	typedef faster_hashmap<std::string, AdjFactorList>	AdjFactorMap;
 	AdjFactorMap	_adj_factors;
 
-	inline const AdjFactorList& getAdjFactors(const char* code, const char* exchg)
-	{
-		char key[20] = { 0 };
-		sprintf(key, "%s.%s", exchg, code);
-		return _adj_factors[key];
-	}
+	const AdjFactorList& getAdjFactors(const char* code, const char* exchg);
+	
 };
 
 NS_OTP_END

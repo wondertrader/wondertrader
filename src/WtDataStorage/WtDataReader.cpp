@@ -1958,3 +1958,44 @@ double WtDataReader::getAdjFactor(const char* stdCode, uint32_t date /* = 0 */)
 		return (*it)._factor;
 	}
 }
+
+const WtDataReader::AdjFactorList& WtDataReader::getAdjFactors(const char* code, const char* exchg)
+{
+	char key[20] = { 0 };
+	sprintf(key, "%s.%s", exchg, code);
+
+	auto it = _adj_factors.find(key);
+	if (it == _adj_factors.end())
+	{
+		//By Wesley @ 2021.12.21
+		//如果没有复权因子，就从extloader按需读一次
+		if (_loader)
+		{
+			_loader->loadAdjFactors(this, key, [](void* obj, const char* stdCode, uint32_t* dates, double* factors, uint32_t count) {
+				WtDataReader* self = (WtDataReader*)obj;
+				AdjFactorList& fctrLst = self->_adj_factors[stdCode];
+
+				for (uint32_t i = 0; i < count; i++)
+				{
+					AdjFactor adjFact;
+					adjFact._date = dates[i];
+					adjFact._factor = factors[i];
+
+					fctrLst.emplace_back(adjFact);
+				}
+
+				//一定要把第一条加进去，不然如果是前复权的话，可能会漏处理最早的数据
+				AdjFactor adjFact;
+				adjFact._date = 19900101;
+				adjFact._factor = 1;
+				fctrLst.emplace_back(adjFact);
+
+				std::sort(fctrLst.begin(), fctrLst.end(), [](const AdjFactor& left, const AdjFactor& right) {
+					return left._date < right._date;
+				});
+			});
+		}
+	}
+
+	return _adj_factors[key];
+}

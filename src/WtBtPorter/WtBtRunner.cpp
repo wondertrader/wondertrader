@@ -149,7 +149,16 @@ bool WtBtRunner::loadAllAdjFactors(void* obj, FuncReadFactors cb)
 	if (_ext_adj_fct_loader == NULL)
 		return false;
 
-	return _ext_adj_fct_loader();
+	return _ext_adj_fct_loader("");
+}
+
+bool WtBtRunner::loadAdjFactors(void* obj, const char* stdCode, FuncReadFactors cb)
+{
+	StdUniqueLock lock(_feed_mtx);
+	if (_ext_adj_fct_loader == NULL)
+		return false;
+
+	return _ext_adj_fct_loader(stdCode);
 }
 
 bool WtBtRunner::loadRawHisTicks(void* obj, const char* stdCode, uint32_t uDate, FuncReadTicks cb)

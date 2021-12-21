@@ -61,6 +61,8 @@ public:
 
 	virtual bool loadAllAdjFactors(void* obj, FuncReadFactors cb) override;
 
+	virtual bool loadAdjFactors(void* obj, const char* stdCode, FuncReadFactors cb) override;
+
 	void feedRawBars(WTSBarStruct* bars, uint32_t count);
 
 	void feedAdjFactors(const char* stdCode, uint32_t* dates, double* factors, uint32_t count);

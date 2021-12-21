@@ -161,7 +161,7 @@ bool HisDataReplayer::loadStkAdjFactorsFromLoader()
 	if (NULL == _bt_loader)
 		return false;
 
-	return _bt_loader->loadAllAdjFactors(this, [](void* obj, const char* stdCode, uint32_t* dates, double* factors, uint32_t count) {
+	bool ret = _bt_loader->loadAllAdjFactors(this, [](void* obj, const char* stdCode, uint32_t* dates, double* factors, uint32_t count) {
 		HisDataReplayer* replayer = (HisDataReplayer*)obj;
 		AdjFactorList& fctrLst = replayer->_adj_factors[stdCode];
 
@@ -184,6 +184,9 @@ bool HisDataReplayer::loadStkAdjFactorsFromLoader()
 			return left._date < right._date;
 		});
 	});
+
+	if (ret) WTSLogger::info("Adjusting factors of %u contracts loaded via extended loader");
+	return ret;
 }
 
 bool HisDataReplayer::loadStkAdjFactors(const char* adjfile)
@@ -3364,6 +3367,7 @@ bool HisDataReplayer::cacheIntegratedFutBars(const std::string& key, const char*
 				buff->resize(sizeof(WTSBarStruct)*count);
 				memcpy((void*)buff->c_str(), bars, sizeof(WTSBarStruct)*count);
 			});
+
 		}
 
 		if (!bLoaded)
@@ -3486,6 +3490,47 @@ bool HisDataReplayer::cacheIntegratedFutBars(const std::string& key, const char*
 	WTSLogger::info("%u items of back %s data of %s cached", realCnt, pname.c_str(), stdCode);
 
 	return true;
+}
+
+const HisDataReplayer::AdjFactorList& HisDataReplayer::getAdjFactors(const char* code, const char* exchg)
+{
+	char key[20] = { 0 };
+	sprintf(key, "%s.%s", exchg, code);
+
+	auto it = _adj_factors.find(key);
+	if (it == _adj_factors.end())
+	{
+		//By Wesley @ 2021.12.21
+		//如果没有复权因子，就从extloader按需读一次
+		if (_bt_loader)
+		{
+			_bt_loader->loadAdjFactors(this, key, [](void* obj, const char* stdCode, uint32_t* dates, double* factors, uint32_t count) {
+				HisDataReplayer* self = (HisDataReplayer*)obj;
+				AdjFactorList& fctrLst = self->_adj_factors[stdCode];
+
+				for (uint32_t i = 0; i < count; i++)
+				{
+					AdjFactor adjFact;
+					adjFact._date = dates[i];
+					adjFact._factor = factors[i];
+
+					fctrLst.emplace_back(adjFact);
+				}
+
+				//一定要把第一条加进去，不然如果是前复权的话，可能会漏处理最早的数据
+				AdjFactor adjFact;
+				adjFact._date = 19900101;
+				adjFact._factor = 1;
+				fctrLst.emplace_back(adjFact);
+
+				std::sort(fctrLst.begin(), fctrLst.end(), [](const AdjFactor& left, const AdjFactor& right) {
+					return left._date < right._date;
+				});
+			});
+		}
+	}
+
+	return _adj_factors[key];
 }
 
 bool HisDataReplayer::cacheAdjustedStkBars(const std::string& key, const char* stdCode, WTSKlinePeriod period, bool bSubbed /* = true */)
