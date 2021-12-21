@@ -149,6 +149,9 @@ bool WtBtRunner::loadAllAdjFactors(void* obj, FuncReadFactors cb)
 	if (_ext_adj_fct_loader == NULL)
 		return false;
 
+	_feed_obj = obj;
+	_feeder_fcts = cb;
+
 	return _ext_adj_fct_loader("");
 }
 
@@ -157,6 +160,9 @@ bool WtBtRunner::loadAdjFactors(void* obj, const char* stdCode, FuncReadFactors 
 	StdUniqueLock lock(_feed_mtx);
 	if (_ext_adj_fct_loader == NULL)
 		return false;
+
+	_feed_obj = obj;
+	_feeder_fcts = cb;
 
 	return _ext_adj_fct_loader(stdCode);
 }
