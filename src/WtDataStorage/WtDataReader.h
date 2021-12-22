@@ -210,7 +210,7 @@ public:
 	virtual WTSTransSlice*	readTransSlice(const char* stdCode, uint32_t count, uint64_t etime = 0) override;
 	virtual WTSKlineSlice*	readKlineSlice(const char* stdCode, WTSKlinePeriod period, uint32_t count, uint64_t etime = 0) override;
 
-	virtual double getAdjFactor(const char* stdCode, uint32_t date = 0) override;
+	virtual double getAdjFactorByDate(const char* stdCode, uint32_t date = 0) override;
 
 private:
 	std::string		_base_dir;

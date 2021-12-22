@@ -226,7 +226,7 @@ public:
 	 *	@param	stdCode	标准品种代码,如SSE.600000
 	 *	@param	date	指定日期,格式yyyyMMdd，默认为0，为0则按当前日期处理
 	 */
-	virtual double		getAdjFactor(const char* stdCode, uint32_t date = 0) { return 1.0; }
+	virtual double		getAdjFactorByDate(const char* stdCode, uint32_t date = 0) { return 1.0; }
 
 protected:
 	IDataReaderSink*	_sink;

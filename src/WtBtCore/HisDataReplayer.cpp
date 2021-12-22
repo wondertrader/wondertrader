@@ -185,7 +185,7 @@ bool HisDataReplayer::loadStkAdjFactorsFromLoader()
 		});
 	});
 
-	if (ret) WTSLogger::info("Adjusting factors of %u contracts loaded via extended loader");
+	if (ret) WTSLogger::info("Adjusting factors of %u contracts loaded via extended loader", _adj_factors.size());
 	return ret;
 }
 
@@ -231,9 +231,9 @@ bool HisDataReplayer::loadStkAdjFactorsFromFile(const char* adjfile)
 
 			std::string key;
 			if(bHasPID)
-				StrUtil::printf("%s.%s", exchg, code);
+				key = StrUtil::printf("%s.%s", exchg, code);
 			else
-				StrUtil::printf("%s.STK.s", exchg, code);
+				key = StrUtil::printf("%s.STK.s", exchg, code);
 			stk_cnt++;
 
 			AdjFactorList& fctrLst = _adj_factors[key];
@@ -259,7 +259,7 @@ bool HisDataReplayer::loadStkAdjFactorsFromFile(const char* adjfile)
 		}
 	}
 
-	WTSLogger::info("%u items of adjust factors for %u stocks loaded", fct_cnt, stk_cnt);
+	WTSLogger::info("%u items of adjust factors for %u stocks loaded from %s", fct_cnt, stk_cnt, adjfile);
 	return true;
 }
 
@@ -1074,11 +1074,7 @@ void HisDataReplayer::replayUnbars(uint64_t stime, uint64_t nowTime, uint32_t en
 
 						std::string realCode = barsList._code;
 						if (cInfo.isStock() && cInfo.isExright())
-						{
-							realCode = cInfo._exchg;
-							realCode += ".";
-							realCode += cInfo._code;
-						}
+							realCode = cInfo.pureStdCode();
 
 						WTSSessionInfo* sInfo = get_session_info(realCode.c_str(), true);
 						uint32_t curTime = sInfo->getOpenTime();
@@ -1651,11 +1647,7 @@ void HisDataReplayer::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTD
 
 									std::string realCode = barsList._code;
 									if (cInfo.isStock() && cInfo._exright)
-									{
-										realCode = cInfo._exchg;
-										realCode += ".";
-										realCode += cInfo._code;
-									}
+										realCode = cInfo.pureStdCode();
 
 									WTSSessionInfo* sInfo = get_session_info(realCode.c_str(), true);
 									uint32_t curTime = sInfo->getCloseTime();
@@ -3515,6 +3507,7 @@ const HisDataReplayer::AdjFactorList& HisDataReplayer::getAdjFactors(const char*
 		//如果没有复权因子，就从extloader按需读一次
 		if (_bt_loader)
 		{
+            WTSLogger::info("No adjusting factors of %s cached, searching via extented loader...", key);
 			_bt_loader->loadAdjFactors(this, key, [](void* obj, const char* stdCode, uint32_t* dates, double* factors, uint32_t count) {
 				HisDataReplayer* self = (HisDataReplayer*)obj;
 				AdjFactorList& fctrLst = self->_adj_factors[stdCode];
@@ -3537,6 +3530,8 @@ const HisDataReplayer::AdjFactorList& HisDataReplayer::getAdjFactors(const char*
 				std::sort(fctrLst.begin(), fctrLst.end(), [](const AdjFactor& left, const AdjFactor& right) {
 					return left._date < right._date;
 				});
+
+                WTSLogger::info("%u items of adjusting factors of %s loaded via extended loader", count, stdCode);
 			});
 		}
 	}
@@ -3570,9 +3565,10 @@ bool HisDataReplayer::cacheAdjustedStkBars(const std::string& key, const char* s
 
 	uint32_t realCnt = 0;
 
-	std::vector<WTSBarStruct>* hotAy = NULL;
+	std::vector<WTSBarStruct>* adjustedBars = NULL;
 	uint32_t lastQTime = 0;
 
+	WTSLogger::info("Loading adjusted bars of %s...", stdCode);
 	do
 	{
 		//先直接读取复权过的历史数据,路径如/his/day/sse/SH600000Q.dsb
@@ -3621,19 +3617,19 @@ bool HisDataReplayer::cacheAdjustedStkBars(const std::string& key, const char* s
 		if (barcnt <= 0)
 			break;
 
-		hotAy = new std::vector<WTSBarStruct>();
-		hotAy->resize(barcnt);
-		memcpy(hotAy->data(), buffer.data(), buffer.size());
+		adjustedBars = new std::vector<WTSBarStruct>();
+		adjustedBars->resize(barcnt);
+		memcpy(adjustedBars->data(), buffer.data(), buffer.size());
 
 		if (period != KP_DAY)
-			lastQTime = hotAy->at(barcnt - 1).time;
+			lastQTime = adjustedBars->at(barcnt - 1).time;
 		else
-			lastQTime = hotAy->at(barcnt - 1).date;
+			lastQTime = adjustedBars->at(barcnt - 1).date;
 
 		WTSLogger::info("%u items of adjusted back %s data of stock %s directly loaded", barcnt, pname.c_str(), stdCode);
 	} while (false);
 
-	bool bAllCovered = false;
+	WTSLogger::info("Loading raw bars of %s...", stdCode);
 	do
 	{
 		const char* curCode = cInfo._code;
@@ -3666,6 +3662,9 @@ bool HisDataReplayer::cacheAdjustedStkBars(const std::string& key, const char* s
 				buff->resize(sizeof(WTSBarStruct)*count);
 				memcpy((void*)buff->c_str(), bars, sizeof(WTSBarStruct)*count);
 			});
+
+			if (bLoaded)
+				WTSLogger::debug("Raw bars of %s loaded via extended loader", stdCode);
 		}
 
 		if (!bLoaded)
@@ -3706,6 +3705,8 @@ bool HisDataReplayer::cacheAdjustedStkBars(const std::string& key, const char* s
 				content.erase(0, sizeof(HisKlineBlock));
 				buffer.swap(content);
 			}
+
+			WTSLogger::debug("Raw bars of %s loaded from dsb file", stdCode);
 		}
 
 		uint32_t barcnt = buffer.size() / sizeof(WTSBarStruct);
@@ -3737,6 +3738,7 @@ bool HisDataReplayer::cacheAdjustedStkBars(const std::string& key, const char* s
 			auto& ayFactors = getAdjFactors(cInfo._code, cInfo._exchg, cInfo._product);
 			if (!ayFactors.empty())
 			{
+				WTSLogger::info("Adjusting bars of %s with adjusting factors...", stdCode);
 				//做复权处理
 				int32_t lastIdx = curCnt;
 				WTSBarStruct bar;
@@ -3788,15 +3790,19 @@ bool HisDataReplayer::cacheAdjustedStkBars(const std::string& key, const char* s
 						break;
 				}
 			}
+			else
+			{
+				WTSLogger::info("No adjusting factors of %s found, ajusting task skipped...", stdCode);
+			}
 
 			barsSections.emplace_back(tempAy);
 		}
 	} while (false);
 
-	if (hotAy)
+	if (adjustedBars)
 	{
-		barsSections.emplace_back(hotAy);
-		realCnt += hotAy->size();
+		barsSections.emplace_back(adjustedBars);
+		realCnt += adjustedBars->size();
 	}
 
 	if (realCnt > 0)

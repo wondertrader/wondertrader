@@ -50,6 +50,15 @@ public:
 
 		inline bool isOption() const { return _category == CC_SpotOption || _category == CC_FutOption || _category == CC_ETFOption; }
 
+		inline const char* pureStdCode() const
+		{
+			static char buffer[64] = { 0 };
+			if (strlen(buffer) == 0)
+				sprintf(buffer, "%s.%s.%s", _exchg, _product, _code);
+
+			return buffer;
+		}
+
 		_CodeInfo()
 		{
 			memset(this, 0, sizeof(_CodeInfo));
@@ -94,19 +103,7 @@ public:
 	{
 		using namespace boost::xpressive;
 		/* 定义正则表达式 */
-		static cregex reg_stk = cregex::compile("^[A-Z]+.([A-Z]+.)?\\d{6,16}(Q?|H)$");
-		return 	regex_match(code, reg_stk);
-	}
-
-	/*
-	 *	是否是简化的股票代码
-	 *	格式如SSE.STK.600000[Q|H]
-	 */
-	static inline bool	isSimpStkCode(const char* code)
-	{
-		using namespace boost::xpressive;
-		/* 定义正则表达式 */
-		static cregex reg_stk = cregex::compile("^[A-Z]+.\\d{6,16}(Q?|H)$");
+		static cregex reg_stk = cregex::compile("^[A-Z]+.[A-Z]+.\\d{6,16}(Q?|H)$");
 		return 	regex_match(code, reg_stk);
 	}
 
@@ -157,22 +154,9 @@ public:
 	 */
 	static inline std::string stdCodeToStdCommID(const char* stdCode)
 	{
-		if (isSimpStkCode(stdCode))
-		{
-			auto idx = find(stdCode, '.', true);
-
-			std::string stdCommID;
-			stdCommID.resize(idx + 4);
-			strncpy((char*)stdCommID.data(), stdCode, idx);
-			strcpy((char*)stdCommID.data() + idx, ".STK");
-			return std::move(stdCommID);
-		}
-		else
-		{
-			auto idx = find(stdCode, '.', true);
-			std::string stdCommID(stdCode, idx);
-			return std::move(stdCommID);
-		}
+		auto idx = find(stdCode, '.', true);
+		std::string stdCommID(stdCode, idx);
+		return std::move(stdCommID);
 	}
 
 	/*
@@ -228,12 +212,9 @@ public:
 	 *	原始股票代码转标准代码
 	 *	-- 暂时没有地方调用 --
 	 */
-	static inline std::string rawStkCodeToStdCode(const char* code, const char* exchg, const char* pid = "")
+	static inline std::string rawStkCodeToStdCode(const char* code, const char* exchg, const char* pid)
 	{
-		if(strlen(pid) == 0)
-			return std::move(StrUtil::printf("%s.%s", exchg, code));
-		else
-			return std::move(StrUtil::printf("%s.%s.%s", exchg, pid, code));
+		return std::move(StrUtil::printf("%s.%s.%s", exchg, pid, code));
 	}
 
 	/*
@@ -346,19 +327,8 @@ public:
 	 */
 	static inline std::string stdStkCodeToRawCode(const char* stdCode)
 	{
-		StringVector ay = StrUtil::split(stdCode, ".");
-		std::string exchg = ay[0];
-		std::string rawCode;
-		if (exchg.compare("SSE") == 0)
-			rawCode = "SH";
-		else
-			rawCode = "SZ";
-
-		if (ay.size() == 2)
-			rawCode += ay[1];
-		else
-			rawCode += ay[2];
-		return std::move(rawCode);
+		auto idx = find(stdCode, '.', true);
+		return std::move(stdCode + idx + 1);
 	}
 
 	/*
@@ -413,9 +383,10 @@ public:
 
 		StringVector ay = StrUtil::split(stdCode, ".");
 		codeInfo._category = CC_Stock;
-		//exchg = ay[0];
 		strcpy(codeInfo._exchg, ay[0].c_str());
-		if (ay.size() > 2)
+		//By Wesley @ 2021.12.22
+		//不再兼容简写的股票代码，如SSE.600000
+		//if (ay.size() > 2)
 		{
 			//commID = ay[1];
 			strcpy(codeInfo._product, ay[1].c_str());
@@ -433,29 +404,6 @@ public:
 			else
 			{
 				strcpy(codeInfo._code, ay[2].c_str());
-				codeInfo._exright = 0;
-			}
-		}
-		else
-		{
-			//commID = "STK";
-			bool isSH = strcmp(codeInfo._exchg, "SSE") == 0;
-			bool isIdx = (isSH && ay[1][0] == '0') || (!isSH && strncmp(ay[1].c_str(), "39", 2) == 0);//是否是指数,上交所的指数以'0'开头,深交所以'39'开头
-			strcpy(codeInfo._product, isIdx ? "IDX" : "STK");
-			//rawCode = ay[1];
-			if (ay[1].back() == 'Q')
-			{
-				strcpy(codeInfo._code, ay[1].substr(0, ay[1].size() - 1).c_str());
-				codeInfo._exright = 1;
-			}
-			else if (ay[1].back() == 'H')
-			{
-				strcpy(codeInfo._code, ay[1].substr(0, ay[1].size() - 1).c_str());
-				codeInfo._exright = 2;
-			}
-			else
-			{
-				strcpy(codeInfo._code, ay[1].c_str());
 				codeInfo._exright = 0;
 			}
 		}

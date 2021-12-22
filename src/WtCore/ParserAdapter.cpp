@@ -287,7 +287,7 @@ void ParserAdapter::handleQuote(WTSTickData *quote, bool bNeedSlice)
 	}
 	else if(commInfo->getCategoty() == CC_Stock)
 	{
-		stdCode = CodeHelper::rawStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
+		stdCode = CodeHelper::rawStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg(), cInfo->getProduct());
 	}
 	else if (commInfo->getCategoty() == CC_ETFOption || commInfo->getCategoty() == CC_SpotOption)
 	{
@@ -318,7 +318,7 @@ void ParserAdapter::handleOrderQueue(WTSOrdQueData* ordQueData)
 		return;
 
 	WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(cInfo);
-	std::string stdCode = CodeHelper::rawStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
+	std::string stdCode = CodeHelper::rawStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg(), commInfo->getProduct());
 	ordQueData->setCode(stdCode.c_str());
 
 	if (_stub)
@@ -341,7 +341,7 @@ void ParserAdapter::handleOrderDetail(WTSOrdDtlData* ordDtlData)
 		return;
 
 	WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(cInfo);
-	std::string stdCode = CodeHelper::rawStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
+	std::string stdCode = CodeHelper::rawStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg(), commInfo->getProduct());
 	ordDtlData->setCode(stdCode.c_str());
 
 	if (_stub)
@@ -364,7 +364,7 @@ void ParserAdapter::handleTransaction(WTSTransData* transData)
 		return;
 
 	WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(cInfo);
-	std::string stdCode = CodeHelper::rawStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
+	std::string stdCode = CodeHelper::rawStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg(), commInfo->getProduct());
 	transData->setCode(stdCode.c_str());
 
 	if (_stub)

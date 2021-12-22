@@ -74,7 +74,7 @@ bool WtDataReader::loadStkAdjFactorsFromLoader()
 	if (NULL == _loader)
 		return false;
 
-	return _loader->loadAllAdjFactors(&_adj_factors, [](void* obj, const char* stdCode, uint32_t* dates, double* factors, uint32_t count) {
+	bool ret = _loader->loadAllAdjFactors(&_adj_factors, [](void* obj, const char* stdCode, uint32_t* dates, double* factors, uint32_t count) {
 		AdjFactorMap* fact_map = (AdjFactorMap*)obj;
 		AdjFactorList& fctrLst = (*fact_map)[stdCode];
 
@@ -97,6 +97,9 @@ bool WtDataReader::loadStkAdjFactorsFromLoader()
 			return left._date < right._date;
 		});
 	});
+
+	if (ret && _sink) _sink->reader_log(LL_INFO, "Adjusting factors of %u contracts loaded via extended loader", _adj_factors.size());
+	return ret;
 }
 
 bool WtDataReader::loadStkAdjFactorsFromFile(const char* adjfile)
@@ -141,9 +144,9 @@ bool WtDataReader::loadStkAdjFactorsFromFile(const char* adjfile)
 
 			std::string key;
 			if (bHasPID)
-				StrUtil::printf("%s.%s", exchg, code);
+				key = StrUtil::printf("%s.%s", exchg, code);
 			else
-				StrUtil::printf("%s.STK.s", exchg, code);
+				key = StrUtil::printf("%s.STK.s", exchg, code);
 
 			stk_cnt++;
 
@@ -751,12 +754,27 @@ bool WtDataReader::cacheFinalBarsFromLoader(const std::string& key, const char* 
 	barList._period = period;
 	barList._exchg = cInfo._exchg;
 
-	return _loader->loadFinalHisBars(&barList, stdCode, period, [](void* obj, WTSBarStruct* firstBar, uint32_t count) {
+	std::string pname;
+	switch (period)
+	{
+	case KP_Minute1: pname = "m1"; break;
+	case KP_Minute5: pname = "m5"; break;
+	case KP_DAY: pname = "d"; break;
+	default: pname = ""; break;
+	}
+
+	if(_sink) _sink->reader_log(LL_INFO, "Reading final bars of %s via extended loader...", stdCode);
+	bool ret = _loader->loadFinalHisBars(&barList, stdCode, period, [](void* obj, WTSBarStruct* firstBar, uint32_t count) {
 		BarsList* bars = (BarsList*)obj;
 		bars->_factor = 1.0;
 		bars->_bars.resize(count);
 		memcpy(bars->_bars.data(), firstBar, sizeof(WTSBarStruct)*count);
 	});
+
+	if(ret)
+		if (_sink) _sink->reader_log(LL_INFO, "%s items of back {} data of {} loaded via extended loader", barList._bars.size(), pname.c_str(), stdCode);
+
+	return ret;
 }
 
 
@@ -1938,7 +1956,7 @@ void WtDataReader::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTDate
 	_last_time = nowTime;
 }
 
-double WtDataReader::getAdjFactor(const char* stdCode, uint32_t date /* = 0 */)
+double WtDataReader::getAdjFactorByDate(const char* stdCode, uint32_t date /* = 0 */)
 {
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 	if (!cInfo.isStock())
@@ -1946,7 +1964,7 @@ double WtDataReader::getAdjFactor(const char* stdCode, uint32_t date /* = 0 */)
 
 	AdjFactor factor = { date, 1.0 };
 
-	std::string key = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._code);
+	std::string key = cInfo.pureStdCode();
 	const AdjFactorList& factList = _adj_factors[key];
 	if (factList.empty())
 		return 1.0;
@@ -1983,6 +2001,7 @@ const WtDataReader::AdjFactorList& WtDataReader::getAdjFactors(const char* code,
 		//如果没有复权因子，就从extloader按需读一次
 		if (_loader)
 		{
+			if(_sink) _sink->reader_log(LL_INFO, "No adjusting factors of %s cached, searching via extented loader...", key);
 			_loader->loadAdjFactors(this, key, [](void* obj, const char* stdCode, uint32_t* dates, double* factors, uint32_t count) {
 				WtDataReader* self = (WtDataReader*)obj;
 				AdjFactorList& fctrLst = self->_adj_factors[stdCode];
@@ -2005,6 +2024,8 @@ const WtDataReader::AdjFactorList& WtDataReader::getAdjFactors(const char* code,
 				std::sort(fctrLst.begin(), fctrLst.end(), [](const AdjFactor& left, const AdjFactor& right) {
 					return left._date < right._date;
 				});
+
+				if (self->_sink) self->_sink->reader_log(LL_INFO, "%u items of adjusting factors of %s loaded via extended loader", count, stdCode);
 			});
 		}
 	}

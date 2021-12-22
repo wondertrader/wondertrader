@@ -1164,11 +1164,7 @@ WTSKlineSlice* CtaMocker::stra_get_bars(const char* stdCode, const char* period,
 
 		std::string realCode = stdCode;
 		if(cInfo._category == CC_Stock && cInfo.isExright())
-		{
-			realCode = cInfo._exchg;
-			realCode += ".";
-			realCode += cInfo._code;
-		}
+			realCode = StrUtil::printf("%s.%s.%s", cInfo._exchg, cInfo._product, cInfo._code);
 		_replayer->sub_tick(id(), realCode.c_str());
 	}
 

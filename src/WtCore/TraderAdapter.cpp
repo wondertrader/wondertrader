@@ -1193,7 +1193,7 @@ bool TraderAdapter::doCancel(WTSOrderInfo* ordInfo)
 	else if (commInfo->getCategoty() == CC_FutOption)
 		stdCode = CodeHelper::rawFutOptCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
 	else if(commInfo->getCategoty() == CC_Stock)
-		stdCode = CodeHelper::rawStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
+		stdCode = CodeHelper::rawStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg(), cInfo->getProduct());
 	else
 		stdCode = CodeHelper::rawStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg(), commInfo->getProduct());
 	//³·µ¥ÆµÂÊ¼ì²é
@@ -1413,7 +1413,7 @@ void TraderAdapter::onRspEntrust(WTSEntrust* entrust, WTSError *err)
 		else if (commInfo->getCategoty() == CC_FutOption)
 			stdCode = CodeHelper::rawFutOptCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
 		else if (commInfo->getCategoty() == CC_Stock)
-			stdCode = CodeHelper::rawStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
+			stdCode = CodeHelper::rawStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg(), cInfo->getProduct());
 		else
 			stdCode = CodeHelper::rawStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg(), commInfo->getProduct());
 
@@ -1500,7 +1500,7 @@ void TraderAdapter::onRspPosition(const WTSArray* ayPositions)
 			else if (commInfo->getCategoty() == CC_FutOption)
 				stdCode = CodeHelper::rawFutOptCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
 			else if (commInfo->getCategoty() == CC_Stock)
-				stdCode = CodeHelper::rawStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
+				stdCode = CodeHelper::rawStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg(), cInfo->getProduct());
 			else
 				stdCode = CodeHelper::rawStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg(), commInfo->getProduct());
 			PosItem& pos = _positions[stdCode];
@@ -1571,7 +1571,7 @@ void TraderAdapter::onRspOrders(const WTSArray* ayOrders)
 			else if (commInfo->getCategoty() == CC_FutOption)
 				stdCode = CodeHelper::rawFutOptCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
 			else if (commInfo->getCategoty() == CC_Stock)
-				stdCode = CodeHelper::rawStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
+				stdCode = CodeHelper::rawStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg(), cInfo->getProduct());
 			else
 				stdCode = CodeHelper::rawStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg(), commInfo->getProduct());
 
@@ -1680,7 +1680,7 @@ void TraderAdapter::onRspTrades(const WTSArray* ayTrades)
 			else if (commInfo->getCategoty() == CC_FutOption)
 				stdCode = CodeHelper::rawFutOptCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
 			else if (commInfo->getCategoty() == CC_Stock)
-				stdCode = CodeHelper::rawStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
+				stdCode = CodeHelper::rawStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg(), cInfo->getProduct());
 			else
 				stdCode = CodeHelper::rawStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg(), commInfo->getProduct());
 
@@ -1771,7 +1771,7 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 	else if (commInfo->getCategoty() == CC_FutOption)
 		stdCode = CodeHelper::rawFutOptCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
 	else if (commInfo->getCategoty() == CC_Stock)
-		stdCode = CodeHelper::rawStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
+		stdCode = CodeHelper::rawStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg(), cInfo->getProduct());
 	else
 		stdCode = CodeHelper::rawStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg(), commInfo->getProduct());
 
@@ -2018,7 +2018,7 @@ void TraderAdapter::onPushTrade(WTSTradeInfo* tradeRecord)
 	else if (commInfo->getCategoty() == CC_FutOption)
 		stdCode = CodeHelper::rawFutOptCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
 	else if (commInfo->getCategoty() == CC_Stock)
-		stdCode = CodeHelper::rawStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
+		stdCode = CodeHelper::rawStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg(), cInfo->getProduct());
 	else
 		stdCode = CodeHelper::rawStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg(), commInfo->getProduct());
 

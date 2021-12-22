@@ -268,10 +268,10 @@ private:
 	typedef faster_hashmap<std::string, AdjFactorList>	AdjFactorMap;
 	AdjFactorMap	_adj_factors;
 
-	inline const AdjFactorList& getAdjFactors(const char* code, const char* exchg)
+	inline const AdjFactorList& getAdjFactors(const char* code, const char* exchg, const char* pid)
 	{
 		char key[20] = { 0 };
-		sprintf(key, "%s.%s", exchg, code);
+		sprintf(key, "%s.%s.%s", exchg, pid, code);
 		return _adj_factors[key];
 	}
 };

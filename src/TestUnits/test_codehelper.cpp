@@ -4,7 +4,7 @@
 TEST(test_codehelper, test_std_stk_code)
 {
 	//π…∆±¥˙¬Î≤‚ ‘
-	EXPECT_TRUE(CodeHelper::isStdStkCode("SSE.600000"));
+	EXPECT_FALSE(CodeHelper::isStdStkCode("SSE.600000"));
 	EXPECT_TRUE(CodeHelper::isStdStkCode("SSE.STK.600000Q"));
 	EXPECT_TRUE(CodeHelper::isStdStkCode("SSE.STK.600000H"));
 	EXPECT_TRUE(CodeHelper::isStdStkCode("SSE.ETF.1108600"));
@@ -16,26 +16,9 @@ TEST(test_codehelper, test_std_stk_code)
 
 }
 
-TEST(test_codehelper, test_simp_stk_code)
-{
-	EXPECT_FALSE(CodeHelper::isSimpStkCode("SSE.STK.600000"));
-	EXPECT_FALSE(CodeHelper::isSimpStkCode("SSE.STK.600000Q"));
-	EXPECT_FALSE(CodeHelper::isSimpStkCode("SSE.STK.600000H"));
-	EXPECT_FALSE(CodeHelper::isSimpStkCode("SSE.ETF.510050"));
-	EXPECT_FALSE(CodeHelper::isSimpStkCode("SSE.ETF.510050Q"));
-	EXPECT_FALSE(CodeHelper::isSimpStkCode("SSE.ETF.510050H"));
-	EXPECT_FALSE(CodeHelper::isSimpStkCode("CFFEX.IF.2101"));
-	EXPECT_FALSE(CodeHelper::isSimpStkCode("CFFEX.IF.HOT"));
-	EXPECT_FALSE(CodeHelper::isSimpStkCode("CFFEX.IF.2ND"));
-	EXPECT_TRUE(CodeHelper::isSimpStkCode("SSE.600000"));
-	EXPECT_TRUE(CodeHelper::isSimpStkCode("SSE.600000Q"));
-	EXPECT_TRUE(CodeHelper::isSimpStkCode("SSE.600000H"));
-
-}
 
 TEST(test_codehelper, test_raw_to_std)
 {
-	EXPECT_EQ(CodeHelper::rawStkCodeToStdCode("600000", "SSE"), "SSE.600000");
 	EXPECT_EQ(CodeHelper::rawStkCodeToStdCode("600000", "SSE", "STK"), "SSE.STK.600000");
 	EXPECT_EQ(CodeHelper::rawStkCodeToStdCode("000001", "SSE", "IDX"), "SSE.IDX.000001");
 	EXPECT_EQ(CodeHelper::rawStkCodeToStdCode("510300", "SSE", "ETF"), "SSE.ETF.510300");

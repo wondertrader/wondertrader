@@ -159,12 +159,23 @@ bool WtDataReader::loadStkAdjFactorsFromFile(const char* adjfile)
 		const rj::Value& itemExchg = mExchg.value;
 		for(auto& mCode : itemExchg.GetObject())
 		{
-			const char* code = mCode.name.GetString();
+			std::string code = mCode.name.GetString();
 			const rj::Value& ayFacts = mCode.value;
 			if(!ayFacts.IsArray() )
 				continue;
 
-			std::string key = StrUtil::printf("%s.%s", exchg, code);
+			/*
+			 *	By Wesley @ 2021.12.21
+			 *	先检查code的格式是不是包含PID，如STK.600000
+			 *	如果包含PID，则直接格式化，如果不包含，则强制为STK
+			 */
+			bool bHasPID = (code.find('.') != std::string::npos);
+
+			std::string key;
+			if (bHasPID)
+				key = StrUtil::printf("%s.%s", exchg, code);
+			else
+				key = StrUtil::printf("%s.STK.s", exchg, code);
 			stk_cnt++;
 
 			AdjFactorList& fctrLst = _adj_factors[key];
@@ -1367,7 +1378,7 @@ bool WtDataReader::cacheHisBarsFromFile(const std::string& key, const char* stdC
 					memcpy(tempAy->data(), &firstBar[sIdx], sizeof(WTSBarStruct)*curCnt);
 					realCnt += curCnt;
 
-					auto& ayFactors = getAdjFactors(cInfo._code, cInfo._exchg);
+					auto& ayFactors = getAdjFactors(cInfo._code, cInfo._exchg, cInfo._product);
 					if(!ayFactors.empty())
 					{
 						//做前复权处理
