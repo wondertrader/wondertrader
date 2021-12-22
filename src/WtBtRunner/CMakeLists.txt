@@ -44,9 +44,23 @@ ELSE(GNU)
 		dl)
 ENDIF()
 
+#添加源码
+file(GLOB SRCS *.cpp)
+file(GLOB HDRS *.h)
+
+IF(MSVC)
+	list (APPEND SRCS ../Common/mdump.cpp)
+ENDIF()
+
 #9. 生成可执行文件
-ADD_EXECUTABLE(WtBtRunner WtBtRunner.cpp)
+ADD_EXECUTABLE(WtBtRunner ${SRCS} ${HDRS})
 TARGET_LINK_LIBRARIES(WtBtRunner ${LIBS})
+
+IF (MSVC)
+ELSE (GNU)
+	SET_TARGET_PROPERTIES(WtBtRunner PROPERTIES
+        LINK_FLAGS_RELEASE -s)
+ENDIF ()
 
 #SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/WtBtPorter)
 #ADD_EXECUTABLE(TestBtPorter ../TestBtPorter/TestBtPorter.cpp)

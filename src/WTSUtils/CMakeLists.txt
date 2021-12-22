@@ -38,7 +38,7 @@ file(GLOB SRCS "*.cpp" "./zstdlib/*.c")
 file(GLOB HDRS "*.h" "./zstdlib/*.h")
 
 IF(MSVC)
-LIST(APPEND SRCS "./StackTracer/*.cpp")
+LIST(APPEND SRCS "./StackTracer/StackTracer.cpp" "./StackTracer/StackWalker.cpp")
 ELSE (GNU)
 LIST(APPEND SRCS "./StackTracer/StackTracer.cpp")
 ENDIF()
