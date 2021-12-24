@@ -5,30 +5,11 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.0.0)
 PROJECT(WtHftStraFact LANGUAGES CXX)
 SET(CMAKE_CXX_STANDARD 11)
 
-#3. 添加包含路径
-IF (MSVC)
-	IF("${CMAKE_GENERATOR}" MATCHES "(Win64|IA64)")
-		SET(INCS $ENV{MyDepends141}/include)
-		SET(LNKS $ENV{MyDepends141}/lib/x64)
-	ELSE()
-		SET(INCS $ENV{MyDepends141}/include)
-		SET(LNKS $ENV{MyDepends141}/lib/x86)
-	ENDIF()
-ELSE (GNU)
-	IF(WIN32)
-		SET (MyDeps $ENV{MyDependsGcc})
-	ELSE()
-		SET (MyDeps "/home/mydeps")
-	ENDIF()
-	SET(INCS ${MyDeps}/include)
-	SET(LNKS ${MyDeps}/lib)
-ENDIF ()
-
 #7. 添加源码
 file(GLOB SRCS "*.cpp")
 file(GLOB HDRS "*.h")
 
-SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin)
+SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../build_${PLATFORM}/${CMAKE_BUILD_TYPE}/bin)
 
 INCLUDE_DIRECTORIES(${INCS})
 LINK_DIRECTORIES(${LNKS})

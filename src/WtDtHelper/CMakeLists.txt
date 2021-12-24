@@ -5,26 +5,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.0.0)
 PROJECT(WtDtHelper LANGUAGES CXX)
 SET(CMAKE_CXX_STANDARD 11)
 
-#3. 添加包含路径
-IF (MSVC)
-	IF("${CMAKE_GENERATOR}" MATCHES "(Win64|IA64)")
-		SET(INCS $ENV{MyDepends141}/include)
-		SET(LNKS $ENV{MyDepends141}/lib/x64)
-	ELSE()
-		SET(INCS $ENV{MyDepends141}/include)
-		SET(LNKS $ENV{MyDepends141}/lib/x86)
-	ENDIF()
-ELSE (GNU)
-	IF(WIN32)
-		SET (MyDeps $ENV{MyDependsGcc})
-	ELSE()
-		SET (MyDeps "/home/mydeps")
-	ENDIF()
-	SET(INCS ${MyDeps}/include)
-	SET(LNKS ${MyDeps}/lib)
-ENDIF ()
-
-SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/WtDtPorter)
+SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../build_${PLATFORM}/${CMAKE_BUILD_TYPE}/bin/WtDtPorter)
 
 #7. 添加源码
 file(GLOB SRCS *.cpp)
@@ -39,7 +20,7 @@ SET(LIBS
     WTSTools
 )
 IF (MSVC)
-ELSE (GNU)
+ELSE (GNUCC)
 	LIST(APPEND LIBS
 		dl
 		boost_filesystem
@@ -48,7 +29,7 @@ ENDIF()
 
 TARGET_LINK_LIBRARIES(WtDtHelper ${LIBS})
 IF (MSVC)
-ELSE (GNU)
+ELSE (GNUCC)
 	SET_TARGET_PROPERTIES(WtDtHelper PROPERTIES
 		CXX_VISIBILITY_PRESET hidden
 		VISIBILITY_INLINES_HIDDEN 1

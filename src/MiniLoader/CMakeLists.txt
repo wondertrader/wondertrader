@@ -6,27 +6,7 @@ cmake_minimum_required(VERSION 3.0.0)
 project(MiniLoader LANGUAGES CXX)
 SET(CMAKE_CXX_STANDARD 11)
 
-#4. 添加包含文件目录
-IF (MSVC)
-	IF("${CMAKE_GENERATOR}" MATCHES "(Win64|IA64)")
-		SET(INCS $ENV{MyDepends141}/include)
-		SET(LNKS $ENV{MyDepends141}/lib/x64)
-	ELSE()
-		SET(INCS $ENV{MyDepends141}/include)
-		SET(LNKS $ENV{MyDepends141}/lib/x86)
-	ENDIF()
-ELSE (GNU)
-	IF(WIN32)
-		SET (MyDeps $ENV{MyDependsGcc})
-	ELSE()
-		SET (MyDeps "/home/mydeps")
-	ENDIF()
-	SET(INCS ${MyDeps}/include)
-	SET(LNKS ${MyDeps}/lib)
-ENDIF ()
-
-
-SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../build_${CMAKE_BUILD_TYPE}/bin/Loader)
+SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../build_${PLATFORM}/${CMAKE_BUILD_TYPE}/bin/Loader)
 
 #7. 添加源码
 SET(SRC  
@@ -46,12 +26,12 @@ SET(LIBS
 #9. 生成可执行文件
 ADD_LIBRARY(MiniLoader SHARED ${SRC})
 IF (MSVC)
-ELSE (GNU)
+ELSE (GNUCC)
 	TARGET_LINK_LIBRARIES(MiniLoader ${LIBS})
 ENDIF ()
 
 IF (MSVC)
-ELSE (GNU)
+ELSE (GNUCC)
 	SET_TARGET_PROPERTIES(MiniLoader PROPERTIES
 		CXX_VISIBILITY_PRESET hidden
 		C_VISIBILITY_PRESET hidden

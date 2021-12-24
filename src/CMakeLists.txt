@@ -13,20 +13,42 @@ MESSAGE(STATUS "Generator is ${CMAKE_GENERATOR}")
 
 IF (MSVC)
 	ADD_DEFINITIONS (-D_CRT_SECURE_NO_WARNINGS)
-	IF("${CMAKE_GENERATOR}" MATCHES "(Win64|IA64)")
+	IF(CMAKE_CL_64)
+		SET(INCS $ENV{MyDepends141}/include)
+		SET(LNKS $ENV{MyDepends141}/lib/x64)
+
 		MESSAGE(STATUS "MyDepends is at $ENV{MyDepends141}")
 		MESSAGE(STATUS "Platform is x64")
+		SET(PLATFORM x64)
 	ELSE()
+		SET(INCS $ENV{MyDepends141}/include)
+		SET(LNKS $ENV{MyDepends141}/lib/x86)
+
 		MESSAGE(STATUS "MyDepends is at $ENV{MyDepends141}")
 		MESSAGE(STATUS "Platform is x86")
+		SET(PLATFORM x86)
 	ENDIF()
-ELSE (GNU)
+	SET(PREFIX )
+	SET(SUFFIX .dll)
+ELSE (GNUCC)
 	IF(WIN32)
+		SET (MyDeps $ENV{MyDependsGcc})
+		SET(SUFFIX .dll)
+
 		MESSAGE(STATUS "MyDepends is at $ENV{MyDependsGcc}")
 	ELSE(UNIX)
+		SET (MyDeps "/home/mydeps")
+		SET(SUFFIX .so)
+
 		MESSAGE(STATUS "MyDepends is at /home/mydeps")
 	ENDIF()
+
+	SET(INCS ${MyDeps}/include)
+	SET(LNKS ${MyDeps}/lib)
+
 	MESSAGE(STATUS "Platform is x64")
+	SET(PLATFORM x64)
+	SET(PREFIX lib)
 ENDIF()
 
 #basic libraries
@@ -73,4 +95,16 @@ ADD_SUBDIRECTORY(WtCore)
 ADD_SUBDIRECTORY(WtPorter)
 ADD_SUBDIRECTORY(WtExecMon)
 ADD_SUBDIRECTORY(WtRunner)
+
+#test projects
+ADD_SUBDIRECTORY(TestBtPorter)
+ADD_SUBDIRECTORY(TestDtPorter)
+ADD_SUBDIRECTORY(TestExecPorter)
+ADD_SUBDIRECTORY(TestPorter)
+ADD_SUBDIRECTORY(TestTrader)
+
+# I just compiled gtest library with vs2017
+IF(MSVC)
+ADD_SUBDIRECTORY(TestUnits)
+ENDIF()
 
