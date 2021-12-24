@@ -17,7 +17,6 @@
 #include "../Includes/WTSDataDef.hpp"
 #include "../Share/StrUtil.hpp"
 #include "../Share/TimeUtils.hpp"
-#include "../Share/StdUtils.hpp"
 #include "../Includes/WTSContractInfo.hpp"
 #include "../Includes/WTSSessionInfo.hpp"
 
@@ -33,22 +32,8 @@
 
 #include <boost/filesystem.hpp>
 
-#include <rapidjson/document.h>
 #include <rapidjson/prettywriter.h>
 namespace rj = rapidjson;
-
-
-uint64_t readFileContent(const char* filename, std::string& content)
-{
-	FILE* f = fopen(filename, "rb");
-	fseek(f, 0, SEEK_END);
-	uint32_t length = ftell(f);
-	content.resize(length);   // allocate memory for a buffer of appropriate dimension
-	fseek(f, 0, 0);
-	fread((void*)content.data(), sizeof(char), length, f);
-	fclose(f);
-	return length;
-}
 
 
 HisDataReplayer::HisDataReplayer()
@@ -231,9 +216,9 @@ bool HisDataReplayer::loadStkAdjFactorsFromFile(const char* adjfile)
 
 			std::string key;
 			if(bHasPID)
-				key = StrUtil::printf("%s.%s", exchg, code);
+				key = StrUtil::printf("%s.%s", exchg, code.c_str());
 			else
-				key = StrUtil::printf("%s.STK.s", exchg, code);
+				key = StrUtil::printf("%s.STK.s", exchg, code.c_str());
 			stk_cnt++;
 
 			AdjFactorList& fctrLst = _adj_factors[key];
@@ -982,9 +967,9 @@ void HisDataReplayer::replayUnbars(uint64_t stime, uint64_t nowTime, uint32_t en
 	//uint64_t nowTime = (uint64_t)uDate * 10000 + uTime;
 	uint32_t uDate = (uint32_t)(stime / 10000);
 
-	for (auto it = _unbars_cache.begin(); it != _unbars_cache.end(); it++)
+	for (auto& item : _unbars_cache)
 	{
-		BarsList& barsList = (BarsList&)it->second;
+		BarsList& barsList = (BarsList&)item.second;
 		if (barsList._period != KP_DAY)
 		{
 			//如果历史数据指标不在尾部, 说明是回测模式, 要继续回放历史数据

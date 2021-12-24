@@ -10,7 +10,6 @@
 #include "WTSBaseDataMgr.h"
 
 #include "../Includes/WTSContractInfo.hpp"
-#include "../Includes/WTSCollection.hpp"
 #include "../Includes/WTSSessionInfo.hpp"
 
 #include "../Share/StrUtil.hpp"

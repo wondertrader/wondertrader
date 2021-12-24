@@ -173,9 +173,9 @@ bool WtDataReader::loadStkAdjFactorsFromFile(const char* adjfile)
 
 			std::string key;
 			if (bHasPID)
-				key = StrUtil::printf("%s.%s", exchg, code);
+				key = StrUtil::printf("%s.%s", exchg, code.c_str());
 			else
-				key = StrUtil::printf("%s.STK.s", exchg, code);
+				key = StrUtil::printf("%s.STK.s", exchg, code.c_str());
 			stk_cnt++;
 
 			AdjFactorList& fctrLst = _adj_factors[key];
