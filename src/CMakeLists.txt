@@ -101,10 +101,10 @@ ADD_SUBDIRECTORY(TestBtPorter)
 ADD_SUBDIRECTORY(TestDtPorter)
 ADD_SUBDIRECTORY(TestExecPorter)
 ADD_SUBDIRECTORY(TestPorter)
-ADD_SUBDIRECTORY(TestTrader)
 
-# I just compiled gtest library with vs2017
+# Only used on win
 IF(MSVC)
+ADD_SUBDIRECTORY(TestTrader)
 ADD_SUBDIRECTORY(TestUnits)
 ENDIF()
 

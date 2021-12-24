@@ -45,7 +45,8 @@ void test_porter()
 	start();
 }
 
-void main()
+int main()
 {
 	test_porter();
+    return 0;
 }
