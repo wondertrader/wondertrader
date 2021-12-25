@@ -14,7 +14,7 @@
 #include <string>
 #include <sstream>
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 
 class WTSCommodityInfo: public WTSObject
 {
@@ -68,7 +68,7 @@ public:
 	inline void		addCode(const char* code){ m_setCodes.insert(code); }
 	inline const faster_hashset<std::string>& getCodes() const{ return m_setCodes; }
 
-	inline void	setEntrustQtyUnit(uint32_t buyQtyUnit, uint32_t sellQtyUnit)
+	inline void	setEntrustQtyUnit(double buyQtyUnit, double sellQtyUnit)
 	{
 		m_buyQtyUnit = buyQtyUnit;
 		m_selQtyUnit = sellQtyUnit;
@@ -79,8 +79,8 @@ public:
 		return (m_ccCategory == CC_FutOption || m_ccCategory == CC_ETFOption || m_ccCategory == CC_SpotOption);
 	}
 
-	inline uint32_t	getBuyQtyUnit() const { return m_buyQtyUnit; }
-	inline uint32_t	getSellQtyUnit() const { return m_selQtyUnit; }
+	inline double	getBuyQtyUnit() const { return m_buyQtyUnit; }
+	inline double	getSellQtyUnit() const { return m_selQtyUnit; }
 
 private:
 	std::string	m_strName;		//品种名称
@@ -95,8 +95,8 @@ private:
 	double		m_fPriceTick;	//最小价格变动单位
 	uint32_t	m_uPrecision;	//价格精度
 
-	uint32_t	m_buyQtyUnit;	//买入数量单位
-	uint32_t	m_selQtyUnit;	//卖出数量单位
+	double		m_buyQtyUnit;	//买入数量单位
+	double		m_selQtyUnit;	//卖出数量单位
 
 	ContractCategory	m_ccCategory;	//品种分类，期货、股票、期权等
 	CoverMode			m_coverMode;	//平仓类型
@@ -165,4 +165,4 @@ private:
 };
 
 
-NS_OTP_END
+NS_WTP_END

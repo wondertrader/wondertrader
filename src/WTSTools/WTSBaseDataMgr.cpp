@@ -327,12 +327,12 @@ bool WTSBaseDataMgr::loadCommodities(const char* filename)
 			else
 				pCommInfo->setTradingMode(TM_Both);
 
-			uint32_t buyQtyUnit = 1;
-			uint32_t sellQtyUnit = 1;
+			double buyQtyUnit = 1;
+			double sellQtyUnit = 1;
 			if (jPInfo.HasMember("buyqtyunit"))
-				buyQtyUnit = jPInfo["buyqtyunit"].GetUint();
+				buyQtyUnit = jPInfo["buyqtyunit"].GetDouble();
 			if (jPInfo.HasMember("sellqtyunit"))
-				sellQtyUnit = jPInfo["sellqtyunit"].GetUint();
+				sellQtyUnit = jPInfo["sellqtyunit"].GetDouble();
 			pCommInfo->setEntrustQtyUnit(buyQtyUnit, sellQtyUnit);
 
 			std::string key = StrUtil::printf("%s.%s", exchg.c_str(), pid.c_str());
