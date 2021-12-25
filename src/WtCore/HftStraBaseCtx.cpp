@@ -207,7 +207,7 @@ OrderIDs HftStraBaseCtx::stra_buy(const char* stdCode, double price, double qty,
 	{
 		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 		std::string code = _engine->get_hot_mgr()->getRawCode(cInfo._exchg, cInfo._product, _engine->get_trading_date());
-		std::string realCode = CodeHelper::rawFutCodeToStdCode(code.c_str(), cInfo._exchg);
+		std::string realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
 
 		_code_map[realCode] = stdCode;
 
@@ -228,7 +228,7 @@ OrderIDs HftStraBaseCtx::stra_buy(const char* stdCode, double price, double qty,
 	{
 		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 		std::string code = _engine->get_hot_mgr()->getSecondRawCode(cInfo._exchg, cInfo._product, _engine->get_trading_date());
-		std::string realCode = CodeHelper::rawFutCodeToStdCode(code.c_str(), cInfo._exchg);
+		std::string realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
 
 		_code_map[realCode] = stdCode;
 
@@ -286,7 +286,7 @@ OrderIDs HftStraBaseCtx::stra_sell(const char* stdCode, double price, double qty
 	{
 		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 		std::string code = _engine->get_hot_mgr()->getRawCode(cInfo._exchg, cInfo._product, _engine->get_trading_date());
-		std::string realCode = CodeHelper::rawFutCodeToStdCode(code.c_str(), cInfo._exchg);
+		std::string realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
 
 		_code_map[realCode] = stdCode;
 
@@ -307,7 +307,7 @@ OrderIDs HftStraBaseCtx::stra_sell(const char* stdCode, double price, double qty
 	{
 		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 		std::string code = _engine->get_hot_mgr()->getSecondRawCode(cInfo._exchg, cInfo._product, _engine->get_trading_date());
-		std::string realCode = CodeHelper::rawFutCodeToStdCode(code.c_str(), cInfo._exchg);
+		std::string realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
 
 		_code_map[realCode] = stdCode;
 
@@ -348,7 +348,7 @@ uint32_t HftStraBaseCtx::stra_enter_long(const char* stdCode, double price, doub
 	{
 		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 		std::string code = _engine->get_hot_mgr()->getRawCode(cInfo._exchg, cInfo._product, _engine->get_trading_date());
-		realCode = CodeHelper::rawFutCodeToStdCode(code.c_str(), cInfo._exchg);
+		realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
 
 		_code_map[realCode] = stdCode;
 	}
@@ -356,7 +356,7 @@ uint32_t HftStraBaseCtx::stra_enter_long(const char* stdCode, double price, doub
 	{
 		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 		std::string code = _engine->get_hot_mgr()->getSecondRawCode(cInfo._exchg, cInfo._product, _engine->get_trading_date());
-		realCode = CodeHelper::rawFutCodeToStdCode(code.c_str(), cInfo._exchg);
+		realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
 
 		_code_map[realCode] = stdCode;
 	}
@@ -371,7 +371,7 @@ uint32_t HftStraBaseCtx::stra_exit_long(const char* stdCode, double price, doubl
 	{
 		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 		std::string code = _engine->get_hot_mgr()->getRawCode(cInfo._exchg, cInfo._product, _engine->get_trading_date());
-		realCode = CodeHelper::rawFutCodeToStdCode(code.c_str(), cInfo._exchg);
+		realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
 
 		_code_map[realCode] = stdCode;
 	}
@@ -379,7 +379,7 @@ uint32_t HftStraBaseCtx::stra_exit_long(const char* stdCode, double price, doubl
 	{
 		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 		std::string code = _engine->get_hot_mgr()->getSecondRawCode(cInfo._exchg, cInfo._product, _engine->get_trading_date());
-		realCode = CodeHelper::rawFutCodeToStdCode(code.c_str(), cInfo._exchg);
+		realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
 
 		_code_map[realCode] = stdCode;
 	}
@@ -394,7 +394,7 @@ uint32_t HftStraBaseCtx::stra_enter_short(const char* stdCode, double price, dou
 	{
 		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 		std::string code = _engine->get_hot_mgr()->getRawCode(cInfo._exchg, cInfo._product, _engine->get_trading_date());
-		realCode = CodeHelper::rawFutCodeToStdCode(code.c_str(), cInfo._exchg);
+		realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
 
 		_code_map[realCode] = stdCode;
 	}
@@ -402,7 +402,7 @@ uint32_t HftStraBaseCtx::stra_enter_short(const char* stdCode, double price, dou
 	{
 		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 		std::string code = _engine->get_hot_mgr()->getSecondRawCode(cInfo._exchg, cInfo._product, _engine->get_trading_date());
-		realCode = CodeHelper::rawFutCodeToStdCode(code.c_str(), cInfo._exchg);
+		realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
 
 		_code_map[realCode] = stdCode;
 	}
@@ -417,7 +417,7 @@ uint32_t HftStraBaseCtx::stra_exit_short(const char* stdCode, double price, doub
 	{
 		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 		std::string code = _engine->get_hot_mgr()->getRawCode(cInfo._exchg, cInfo._product, _engine->get_trading_date());
-		realCode = CodeHelper::rawFutCodeToStdCode(code.c_str(), cInfo._exchg);
+		realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
 
 		_code_map[realCode] = stdCode;
 	}
@@ -425,7 +425,7 @@ uint32_t HftStraBaseCtx::stra_exit_short(const char* stdCode, double price, doub
 	{
 		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 		std::string code = _engine->get_hot_mgr()->getSecondRawCode(cInfo._exchg, cInfo._product, _engine->get_trading_date());
-		realCode = CodeHelper::rawFutCodeToStdCode(code.c_str(), cInfo._exchg);
+		realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
 
 		_code_map[realCode] = stdCode;
 	}
@@ -637,7 +637,7 @@ double HftStraBaseCtx::stra_get_position(const char* stdCode, bool bOnlyValid /*
 	{
 		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 		std::string code = _engine->get_hot_mgr()->getRawCode(cInfo._exchg, cInfo._product, _engine->get_trading_date());
-		std::string realCode = CodeHelper::rawFutCodeToStdCode(code.c_str(), cInfo._exchg);
+		std::string realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
 
 		_code_map[realCode] = stdCode;
 
@@ -647,7 +647,7 @@ double HftStraBaseCtx::stra_get_position(const char* stdCode, bool bOnlyValid /*
 	{
 		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 		std::string code = _engine->get_hot_mgr()->getSecondRawCode(cInfo._exchg, cInfo._product, _engine->get_trading_date());
-		std::string realCode = CodeHelper::rawFutCodeToStdCode(code.c_str(), cInfo._exchg);
+		std::string realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
 
 		_code_map[realCode] = stdCode;
 
@@ -665,7 +665,7 @@ double HftStraBaseCtx::stra_get_undone(const char* stdCode)
 	{
 		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 		std::string code = _engine->get_hot_mgr()->getRawCode(cInfo._exchg, cInfo._product, _engine->get_trading_date());
-		std::string realCode = CodeHelper::rawFutCodeToStdCode(code.c_str(), cInfo._exchg);
+		std::string realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
 
 		_code_map[realCode] = stdCode;
 
@@ -675,7 +675,7 @@ double HftStraBaseCtx::stra_get_undone(const char* stdCode)
 	{
 		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 		std::string code = _engine->get_hot_mgr()->getSecondRawCode(cInfo._exchg, cInfo._product, _engine->get_trading_date());
-		std::string realCode = CodeHelper::rawFutCodeToStdCode(code.c_str(), cInfo._exchg);
+		std::string realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
 
 		_code_map[realCode] = stdCode;
 

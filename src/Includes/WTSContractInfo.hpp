@@ -79,6 +79,16 @@ public:
 		return (m_ccCategory == CC_FutOption || m_ccCategory == CC_ETFOption || m_ccCategory == CC_SpotOption);
 	}
 
+	inline bool isFuture() const
+	{
+		return m_ccCategory == CC_Future;
+	}
+
+	inline bool isStock() const
+	{
+		return m_ccCategory == CC_Stock;
+	}
+
 	inline double	getBuyQtyUnit() const { return m_buyQtyUnit; }
 	inline double	getSellQtyUnit() const { return m_selQtyUnit; }
 

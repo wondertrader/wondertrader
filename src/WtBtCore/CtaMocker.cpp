@@ -1161,9 +1161,9 @@ WTSKlineSlice* CtaMocker::stra_get_bars(const char* stdCode, const char* period,
 	{
 		//double lastClose = kline->close(-1);
 		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
-
+		WTSCommodityInfo* commInfo = _replayer->get_commodity_info(stdCode);
 		std::string realCode = stdCode;
-		if(cInfo._category == CC_Stock && cInfo.isExright())
+		if(commInfo->isStock() && cInfo.isExright())
 			realCode = StrUtil::printf("%s.%s.%s", cInfo._exchg, cInfo._product, cInfo._code);
 		_replayer->sub_tick(id(), realCode.c_str());
 	}

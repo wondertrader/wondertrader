@@ -1059,10 +1059,11 @@ void HisDataReplayer::replayUnbars(uint64_t stime, uint64_t nowTime, uint32_t en
 							continue;
 
 						CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(barsList._code.c_str());
+						WTSCommodityInfo* commInfo = _bd_mgr.getCommodity(cInfo._exchg, cInfo._product);
 
 						std::string realCode = barsList._code;
-						if (cInfo.isStock() && cInfo.isExright())
-							realCode = cInfo.pureStdCode();
+						if (commInfo->isStock() && cInfo.isExright())
+							realCode = realCode.substr(0, realCode.size() - 1);
 
 						WTSSessionInfo* sInfo = get_session_info(realCode.c_str(), true);
 						uint32_t curTime = sInfo->getOpenTime();
@@ -1632,10 +1633,11 @@ void HisDataReplayer::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTD
 								if (ticker == it->first)
 								{
 									CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(barsList._code.c_str());
+									WTSCommodityInfo* commInfo = _bd_mgr.getCommodity(cInfo._exchg, cInfo._product);
 
 									std::string realCode = barsList._code;
-									if (cInfo.isStock() && cInfo._exright)
-										realCode = cInfo.pureStdCode();
+									if (commInfo->isStock() && cInfo._exright)
+										realCode = realCode.substr(0, realCode.size() - 1);
 
 									WTSSessionInfo* sInfo = get_session_info(realCode.c_str(), true);
 									uint32_t curTime = sInfo->getCloseTime();
@@ -1696,7 +1698,6 @@ void HisDataReplayer::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTD
 WTSKlineSlice* HisDataReplayer::get_kline_slice(const char* stdCode, const char* period, uint32_t count, uint32_t times /* = 1 */, bool isMain /* = false */)
 {
 	std::string key = StrUtil::printf("%s#%s#%u", stdCode, period, times);
-	bool isStk = CodeHelper::isStdStkCode(stdCode);
 	if (isMain)
 		_main_key = key;
 
@@ -2910,6 +2911,7 @@ bool HisDataReplayer::cacheFinalBarsFromLoader(const std::string& key, const cha
 		return false;
 
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+	WTSCommodityInfo* commInfo = _bd_mgr.getCommodity(cInfo._exchg, cInfo._product);
 	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
 
 	std::string pname;
@@ -2929,15 +2931,15 @@ bool HisDataReplayer::cacheFinalBarsFromLoader(const std::string& key, const cha
 	if (!StdFile::exists(ss.str().c_str()))
         boost::filesystem::create_directories(ss.str().c_str());
 
-	if (cInfo.isHot() && cInfo.isFuture())
+	if (cInfo.isHot() && commInfo->isFuture())
 	{
 		ss << cInfo._exchg << "." << cInfo._product << "_HOT.dsb";
 	}
-	else if (cInfo.isSecond() && cInfo.isFuture())
+	else if (cInfo.isSecond() && commInfo->isFuture())
 	{
 		ss << cInfo._exchg << "." << cInfo._product << "_2ND.dsb";
 	}
-	else if (cInfo.isExright() && cInfo.isStock())
+	else if (cInfo.isExright() && commInfo->isStock())
 	{
 
 	}
@@ -3042,6 +3044,7 @@ bool HisDataReplayer::cacheFinalBarsFromLoader(const std::string& key, const cha
 bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* stdCode, WTSKlinePeriod period, bool bSubbed/* = true*/)
 {
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+	WTSCommodityInfo* commInfo = _bd_mgr.getCommodity(cInfo._exchg, cInfo._product);
 	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
 
 	std::string pname;
@@ -3063,15 +3066,15 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 	if (!StdFile::exists(ss.str().c_str()))
 		boost::filesystem::create_directories(ss.str().c_str());
 
-	if(cInfo.isHot() && cInfo.isFuture())
+	if(cInfo.isHot() && commInfo->isFuture())
 	{
 		ss << cInfo._exchg << "." << cInfo._product << "_HOT.dsb";
 	}
-	else if (cInfo.isSecond() && cInfo.isFuture())
+	else if (cInfo.isSecond() && commInfo->isFuture())
 	{
 		ss << cInfo._exchg << "." << cInfo._product << "_2ND.dsb";
 	}
-	else if (cInfo.isExright() && cInfo.isStock())
+	else if (cInfo.isExright() && commInfo->isStock())
 	{
 
 	}
@@ -3817,6 +3820,7 @@ bool HisDataReplayer::cacheAdjustedStkBars(const std::string& key, const char* s
 bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* stdCode, WTSKlinePeriod period, bool bSubbed/* = true*/)
 {
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+	WTSCommodityInfo* commInfo = _bd_mgr.getCommodity(cInfo._exchg, cInfo._product);
 	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
 
 	uint32_t curDate = TimeUtils::getCurDate();
@@ -3841,11 +3845,11 @@ bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* st
 	std::vector<std::vector<WTSBarStruct>*> barsSections;
 
 	uint32_t realCnt = 0;
-	if (!cInfo.isFlat() && cInfo.isFuture())//如果是读取期货主力连续数据
+	if (!cInfo.isFlat() && commInfo->isFuture())//如果是读取期货主力连续数据
 	{
 		return cacheIntegratedFutBars(key, stdCode, period);
 	}
-	else if (cInfo.isExright() && cInfo.isStock())//如果是读取股票复权数据
+	else if (cInfo.isExright() && commInfo->isStock())//如果是读取股票复权数据
 	{
 		return cacheAdjustedStkBars(key, stdCode, period, bSubbed);
 	}

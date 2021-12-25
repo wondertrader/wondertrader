@@ -25,7 +25,8 @@ typedef enum tagContractCategory
 	CC_Spot,			//即期
 	CC_EFP,				//期转现
 	CC_SpotOption,		//现货期权，股指期权是这个分类
-	CC_ETFOption		//个股期权，ETF期权是这个分类
+	CC_ETFOption,		//个股期权，ETF期权是这个分类
+	CC_Crypto			//加密货币
 } ContractCategory;
 
 /*

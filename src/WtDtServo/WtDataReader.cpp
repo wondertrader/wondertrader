@@ -198,6 +198,7 @@ bool WtDataReader::loadStkAdjFactorsFromFile(const char* adjfile)
 WTSArray* WtDataReader::readTickSlicesByRange(const char* stdCode, uint64_t stime, uint64_t etime /* = 0 */)
 {
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
 	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
 
 	WTSSessionInfo* sInfo = _base_data_mgr->getSession(_base_data_mgr->getCommodity(cInfo._exchg, cInfo._code)->getSession());
@@ -231,14 +232,14 @@ WTSArray* WtDataReader::readTickSlicesByRange(const char* stdCode, uint64_t stim
 	{
 		std::string curCode = cInfo._code;
 		std::string hotCode;
-		if (cInfo.isHot() && cInfo._category == CC_Future)
+		if (cInfo.isHot() && commInfo->isFuture())
 		{
 			curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, nowTDate);
 			WTSLogger::info("Hot contract of %u confirmed: %s -> %s", curTDate, stdCode, curCode.c_str());
 			hotCode = cInfo._product;
 			hotCode += "_HOT";
 		}
-		else if (cInfo.isSecond() && cInfo._category == CC_Future)
+		else if (cInfo.isSecond() && commInfo->isFuture())
 		{
 			curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, nowTDate);
 			WTSLogger::info("Second contract of %u confirmed: %s -> %s", curTDate, stdCode, curCode.c_str());
@@ -384,9 +385,9 @@ WTSArray* WtDataReader::readTickSlicesByRange(const char* stdCode, uint64_t stim
 	while(hasToday)
 	{
 		std::string curCode = cInfo._code;
-		if (cInfo.isHot() && cInfo._category == CC_Future)
+		if (cInfo.isHot() && commInfo->isFuture())
 			curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, curTDate);
-		else if (cInfo.isSecond() && cInfo._category == CC_Future)
+		else if (cInfo.isSecond() && commInfo->isFuture())
 			curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, curTDate);
 
 		TickBlockPair* tPair = getRTTickBlock(cInfo._exchg, curCode.c_str());
@@ -452,6 +453,7 @@ WTSArray* WtDataReader::readTickSlicesByRange(const char* stdCode, uint64_t stim
 WTSOrdQueSlice* WtDataReader::readOrdQueSliceByRange(const char* stdCode, uint64_t stime, uint64_t etime /* = 0 */)
 {
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
 	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
 
 	uint32_t rDate, rTime, rSecs;
@@ -473,9 +475,9 @@ WTSOrdQueSlice* WtDataReader::readOrdQueSliceByRange(const char* stdCode, uint64
 	bool isToday = (endTDate == curTDate);
 
 	std::string curCode = cInfo._code;
-	if (cInfo.isHot() && cInfo._category == CC_Future)
+	if (cInfo.isHot() && commInfo->isFuture())
 		curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, endTDate);
-	else if (cInfo.isSecond() && cInfo._category == CC_Future)
+	else if (cInfo.isSecond() && commInfo->isFuture())
 		curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, endTDate);
 
 	//比较时间的对象
@@ -624,6 +626,7 @@ WTSOrdQueSlice* WtDataReader::readOrdQueSliceByRange(const char* stdCode, uint64
 WTSOrdDtlSlice* WtDataReader::readOrdDtlSliceByRange(const char* stdCode, uint64_t stime, uint64_t etime /* = 0 */)
 {
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
 	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
 
 	uint32_t rDate, rTime, rSecs;
@@ -645,9 +648,9 @@ WTSOrdDtlSlice* WtDataReader::readOrdDtlSliceByRange(const char* stdCode, uint64
 	bool isToday = (endTDate == curTDate);
 
 	std::string curCode = cInfo._code;
-	if (cInfo.isHot() && cInfo._category == CC_Future)
+	if (cInfo.isHot() && commInfo->isFuture())
 		curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, endTDate);
-	else if (cInfo.isSecond() && cInfo._category == CC_Future)
+	else if (cInfo.isSecond() && commInfo->isFuture())
 		curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, endTDate);
 
 	//比较时间的对象
@@ -795,6 +798,7 @@ WTSOrdDtlSlice* WtDataReader::readOrdDtlSliceByRange(const char* stdCode, uint64
 WTSTransSlice* WtDataReader::readTransSliceByRange(const char* stdCode, uint64_t stime, uint64_t etime /* = 0 */)
 {
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
 	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
 
 	uint32_t rDate, rTime, rSecs;
@@ -816,9 +820,9 @@ WTSTransSlice* WtDataReader::readTransSliceByRange(const char* stdCode, uint64_t
 	bool isToday = (endTDate == curTDate);
 
 	std::string curCode = cInfo._code;
-	if (cInfo.isHot() && cInfo._category == CC_Future)
+	if (cInfo.isHot() && commInfo->isFuture())
 		curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, endTDate);
-	else if (cInfo.isSecond() && cInfo._category == CC_Future)
+	else if (cInfo.isSecond() && commInfo->isFuture())
 		curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, endTDate);
 
 	//比较时间的对象
@@ -966,6 +970,7 @@ WTSTransSlice* WtDataReader::readTransSliceByRange(const char* stdCode, uint64_t
 bool WtDataReader::cacheHisBarsFromFile(const std::string& key, const char* stdCode, WTSKlinePeriod period)
 {
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
 	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
 
 	uint32_t curDate = TimeUtils::getCurDate();
@@ -989,7 +994,7 @@ bool WtDataReader::cacheHisBarsFromFile(const std::string& key, const char* stdC
 	std::vector<std::vector<WTSBarStruct>*> barsSections;
 
 	uint32_t realCnt = 0;
-	if (!cInfo.isFlat() && cInfo._category == CC_Future)//如果是读取期货主力连续数据
+	if (!cInfo.isFlat() && commInfo->isFuture())//如果是读取期货主力连续数据
 	{
 		const char* hot_flag = cInfo.isHot() ? "HOT" : "2ND";
 
@@ -1223,7 +1228,7 @@ bool WtDataReader::cacheHisBarsFromFile(const std::string& key, const char* stdC
 			realCnt += hotAy->size();
 		}
 	}
-	else if(cInfo.isExright() && cInfo._category == CC_Stock)//如果是读取股票复权数据
+	else if(cInfo.isExright() && commInfo->isStock())//如果是读取股票复权数据
 	{
 		std::vector<WTSBarStruct>* hotAy = NULL;
 		uint32_t lastQTime = 0;
@@ -1679,6 +1684,7 @@ uint32_t WtDataReader::readBarsFromCacheByRange(const std::string& key, uint64_t
 WTSKlineSlice* WtDataReader::readKlineSliceByRange(const char* stdCode, WTSKlinePeriod period, uint64_t stime, uint64_t etime /* = 0 */)
 {
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
 	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
 
 	std::string key = StrUtil::printf("%s#%u", stdCode, period);
@@ -1724,12 +1730,12 @@ WTSKlineSlice* WtDataReader::readKlineSliceByRange(const char* stdCode, WTSKline
 	bool bHasToday = (endTDate >= curTDate);
 	std::string raw_code = cInfo._code;
 
-	if (cInfo.isHot() && cInfo._category == CC_Future)
+	if (cInfo.isHot() && commInfo->isFuture())
 	{
 		raw_code = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, curTDate);
 		WTSLogger::info( "Hot contract of %u confirmed: %s -> %s", curTDate, stdCode, raw_code.c_str());
 	}
-	else if (cInfo.isSecond() && cInfo._category == CC_Future)
+	else if (cInfo.isSecond() && commInfo->isFuture())
 	{
 		raw_code = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, curTDate);
 		WTSLogger::info( "Second contract of %u confirmed: %s -> %s", curTDate, stdCode, raw_code.c_str());
@@ -2035,6 +2041,7 @@ WtDataReader::RTKlineBlockPair* WtDataReader::getRTKilneBlock(const char* exchg,
 WTSKlineSlice* WtDataReader::readKlineSliceByCount(const char* stdCode, WTSKlinePeriod period, uint32_t count, uint64_t etime /* = 0 */)
 {
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
 	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
 
 	std::string key = StrUtil::printf("%s#%u", stdCode, period);
@@ -2078,12 +2085,12 @@ WTSKlineSlice* WtDataReader::readKlineSliceByCount(const char* stdCode, WTSKline
 	bool bHasToday = (endTDate >= curTDate);
 	std::string raw_code = cInfo._code;
 
-	if (cInfo.isHot() && cInfo._category == CC_Future)
+	if (cInfo.isHot() && commInfo->isFuture())
 	{
 		raw_code = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, curTDate);
 		WTSLogger::info("Hot contract of %u confirmed: %s -> %s", curTDate, stdCode, raw_code.c_str());
 	}
-	else if (cInfo.isSecond() && cInfo._category == CC_Future)
+	else if (cInfo.isSecond() && commInfo->isFuture())
 	{
 		raw_code = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, curTDate);
 		WTSLogger::info("Second contract of %u confirmed: %s -> %s", curTDate, stdCode, raw_code.c_str());
@@ -2149,6 +2156,7 @@ WTSKlineSlice* WtDataReader::readKlineSliceByCount(const char* stdCode, WTSKline
 WTSArray* WtDataReader::readTickSlicesByCount(const char* stdCode, uint32_t count, uint64_t etime /* = 0 */)
 {
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
 	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
 
 	WTSSessionInfo* sInfo = _base_data_mgr->getSession(_base_data_mgr->getCommodity(cInfo._exchg, cInfo._code)->getSession());
@@ -2171,12 +2179,12 @@ WTSArray* WtDataReader::readTickSlicesByCount(const char* stdCode, uint32_t coun
 	while (hasToday)
 	{
 		std::string curCode = cInfo._code;
-		if (cInfo.isHot() && cInfo._category == CC_Future)
+		if (cInfo.isHot() && commInfo->isFuture())
 		{
 			curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, curTDate);
 			WTSLogger::info("Hot contract of %u confirmed: %s -> %s", curTDate, stdCode, curCode.c_str());
 		}
-		else if (cInfo.isSecond() && cInfo._category == CC_Future)
+		else if (cInfo.isSecond() && commInfo->isFuture())
 		{
 			curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, curTDate);
 			WTSLogger::info("Second contract of %u confirmed: %s -> %s", curTDate, stdCode, curCode.c_str());
@@ -2235,14 +2243,14 @@ WTSArray* WtDataReader::readTickSlicesByCount(const char* stdCode, uint32_t coun
 
 		std::string curCode = cInfo._code;
 		std::string hotCode;
-		if (cInfo.isHot() && cInfo._category == CC_Future)
+		if (cInfo.isHot() && commInfo->isFuture())
 		{
 			curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, nowTDate);
 			hotCode = cInfo._product;
 			hotCode += "_HOT";
 			WTSLogger::info("Hot contract of %u confirmed: %s -> %s", curTDate, stdCode, curCode.c_str());
 		}
-		else if (cInfo.isSecond() && cInfo._category == CC_Future)
+		else if (cInfo.isSecond() && commInfo->isFuture())
 		{
 			curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, nowTDate);
 			hotCode = cInfo._product;

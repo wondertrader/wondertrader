@@ -278,24 +278,21 @@ void ParserAdapter::handleQuote(WTSTickData *quote, bool bNeedSlice)
 	WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(cInfo);
 
 	std::string stdCode;
-	if (commInfo->getCategoty() == CC_Future)
+	if (commInfo->getCategoty() == CC_FutOption)
 	{
-		stdCode = CodeHelper::rawFutCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
+		stdCode = CodeHelper::rawFutOptCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
+	}
+	else if(CodeHelper::isMonthlyCode(quote->code()))
+	{
+		//如果是分月合约，则进行主力和次主力的判断
+		stdCode = CodeHelper::rawMonthCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
 		std::string hotCode = _hot_mgr->getHotCode(quote->exchg(), quote->code(), 0);
 		std::string scndCode = _hot_mgr->getSecondCode(quote->exchg(), quote->code(), 0);
 		hotflag = !hotCode.empty() ? 1 : (!scndCode.empty() ? 2 : 0);
 	}
-	else if(commInfo->getCategoty() == CC_Stock)
+	else
 	{
-		stdCode = CodeHelper::rawStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg(), cInfo->getProduct());
-	}
-	else if (commInfo->getCategoty() == CC_ETFOption || commInfo->getCategoty() == CC_SpotOption)
-	{
-		stdCode = CodeHelper::rawStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg(), commInfo->getProduct());
-	}
-	else if (commInfo->getCategoty() == CC_FutOption)
-	{
-		stdCode = CodeHelper::rawFutOptCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
+		stdCode = CodeHelper::rawFlatCodeToStdCode(cInfo->getCode(), cInfo->getExchg(), cInfo->getProduct());
 	}
 	quote->setCode(stdCode.c_str());
 
@@ -318,7 +315,7 @@ void ParserAdapter::handleOrderQueue(WTSOrdQueData* ordQueData)
 		return;
 
 	WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(cInfo);
-	std::string stdCode = CodeHelper::rawStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg(), commInfo->getProduct());
+	std::string stdCode = CodeHelper::rawFlatCodeToStdCode(cInfo->getCode(), cInfo->getExchg(), commInfo->getProduct());
 	ordQueData->setCode(stdCode.c_str());
 
 	if (_stub)
@@ -341,7 +338,7 @@ void ParserAdapter::handleOrderDetail(WTSOrdDtlData* ordDtlData)
 		return;
 
 	WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(cInfo);
-	std::string stdCode = CodeHelper::rawStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg(), commInfo->getProduct());
+	std::string stdCode = CodeHelper::rawFlatCodeToStdCode(cInfo->getCode(), cInfo->getExchg(), commInfo->getProduct());
 	ordDtlData->setCode(stdCode.c_str());
 
 	if (_stub)
@@ -364,7 +361,7 @@ void ParserAdapter::handleTransaction(WTSTransData* transData)
 		return;
 
 	WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(cInfo);
-	std::string stdCode = CodeHelper::rawStkCodeToStdCode(cInfo->getCode(), cInfo->getExchg(), commInfo->getProduct());
+	std::string stdCode = CodeHelper::rawFlatCodeToStdCode(cInfo->getCode(), cInfo->getExchg(), commInfo->getProduct());
 	transData->setCode(stdCode.c_str());
 
 	if (_stub)

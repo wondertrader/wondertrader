@@ -644,9 +644,9 @@ void WtEngine::sub_tick(uint32_t sid, const char* stdCode)
 		SIDSet& sids = _tick_sub_map[stdCode];
 		sids.insert(sid);
 
-		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdFutCode(stdCode);
+		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 		std::string rawCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
-		std::string stdRawCode = CodeHelper::rawFutCodeToStdCode(rawCode.c_str(), cInfo._exchg);
+		std::string stdRawCode = CodeHelper::rawMonthCodeToStdCode(rawCode.c_str(), cInfo._exchg);
 		_ticksubed_raw_codes.insert(stdRawCode);
 	}
 	else if (CodeHelper::isStdFut2ndCode(stdCode))
@@ -654,9 +654,9 @@ void WtEngine::sub_tick(uint32_t sid, const char* stdCode)
 		SIDSet& sids = _tick_sub_map[stdCode];
 		sids.insert(sid);
 
-		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdFutCode(stdCode);
+		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 		std::string rawCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
-		std::string stdRawCode = CodeHelper::rawFutCodeToStdCode(rawCode.c_str(), cInfo._exchg);
+		std::string stdRawCode = CodeHelper::rawMonthCodeToStdCode(rawCode.c_str(), cInfo._exchg);
 		_ticksubed_raw_codes.insert(stdRawCode);
 	}
 	else

@@ -457,12 +457,12 @@ void WtLocalExecuter::on_position(const char* stdCode, bool isLong, double prevo
 	if (!_auto_clear)
 		return;
 
-	//如果不是期货合约，直接退出
-	if (!CodeHelper::isStdFutCode(stdCode))
+	//如果不是分月期货合约，直接退出
+	if (!CodeHelper::isStdMonthlyFutCode(stdCode))
 		return;
 
 	IHotMgr* hotMgr = _stub->get_hot_mon();
-	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdFutCode(stdCode);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 	//获取上一期的主力合约
 	std::string prevCode = hotMgr->getPrevRawCode(cInfo._exchg, cInfo._product, tradingday);
 
