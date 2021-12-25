@@ -639,6 +639,7 @@ void HisDataReplayer::run_by_bars(bool bNeedDump /* = false */)
 			uint32_t nextTDate = _bd_mgr.calcTradingDate(commId.c_str(), nextDate, nextTime, false);
 			if (_opened_tdate != nextTDate)
 			{
+				WTSLogger::debug("Tradingday %u begins", nextTDate);
 				_listener->handle_session_begin(nextTDate);
 				_opened_tdate = nextTDate;
 				_cur_tdate = nextTDate;
@@ -671,6 +672,7 @@ void HisDataReplayer::run_by_bars(bool bNeedDump /* = false */)
 
 			if (isEndTDate && _closed_tdate != _cur_tdate)
 			{
+				WTSLogger::debug("Tradingday %u ends", nextTDate);
 				_listener->handle_session_end(_cur_tdate);
 				_closed_tdate = _cur_tdate;
 				_day_cache.clear();
@@ -702,6 +704,7 @@ void HisDataReplayer::run_by_bars(bool bNeedDump /* = false */)
 
 	if (_closed_tdate != _cur_tdate)
 	{
+		WTSLogger::debug("Tradingday %u ends", _cur_tdate);
 		_listener->handle_session_end(_cur_tdate);
 	}
 

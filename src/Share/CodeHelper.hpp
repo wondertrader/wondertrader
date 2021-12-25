@@ -13,7 +13,7 @@
 
 #include <boost/xpressive/xpressive_dynamic.hpp>
 
-USING_NS_OTP;
+USING_NS_WTP;
 
 //主力合约后缀
 static const char* SUFFIX_HOT = ".HOT";
@@ -162,6 +162,7 @@ public:
 	/*
 	 *	从基础合约代码提取基础品种代码
 	 *	如ag1912 -> ag
+	 *	这个只有分月期货品种才有意义
 	 */
 	static inline std::string rawFutCodeToRawCommID(const char* code)
 	{
@@ -354,19 +355,27 @@ public:
 		codeInfo._hotflag = CodeHelper::isStdFutHotCode(stdCode) ? 1 : (CodeHelper::isStdFut2ndCode(stdCode) ? 2 : 0);
 		StringVector ay = StrUtil::split(stdCode, ".");
 		strcpy(codeInfo._exchg, ay[0].c_str());
-		strcpy(codeInfo._code, ay[1].c_str());
 		codeInfo._category = CC_Future;
 		if (codeInfo.isFlat())
 		{
-			if (strcmp(codeInfo._exchg, "CZCE") == 0 && ay[2].size() == 4)
+			if(isalpha(ay[2].at(0)))
 			{
-				//rawCode += ay[2].substr(1);
-				strcat(codeInfo._code + strlen(codeInfo._code), ay[2].substr(1).c_str());
+				//如果最后部分是字母，则不是分月合约
+				strcpy(codeInfo._code, ay[2].c_str());
 			}
 			else
 			{
-				//rawCode += ay[2];
-				strcat(codeInfo._code + strlen(codeInfo._code), ay[2].c_str());
+				strcpy(codeInfo._code, ay[1].c_str());
+				if (strcmp(codeInfo._exchg, "CZCE") == 0 && ay[2].size() == 4)
+				{
+					//rawCode += ay[2].substr(1);
+					strcat(codeInfo._code + strlen(codeInfo._code), ay[2].substr(1).c_str());
+				}
+				else
+				{
+					//rawCode += ay[2];
+					strcat(codeInfo._code + strlen(codeInfo._code), ay[2].c_str());
+				}
 			}
 		}
 		//commID = ay[1];

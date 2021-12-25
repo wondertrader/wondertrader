@@ -21,5 +21,8 @@
     <ClCompile Include="test_codehelper.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="test_session.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

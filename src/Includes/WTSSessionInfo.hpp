@@ -13,7 +13,7 @@
 #include "WTSObject.hpp"
 #include "../Share/TimeUtils.hpp"
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 
 static const char* DEFAULT_SESSIONID = "TRADING";
 
@@ -324,10 +324,18 @@ public:
 		if(m_tradingTimes.empty())
 			return 0;
 
+		uint32_t ret = 0;
 		if(bOffseted)
-			return m_tradingTimes[m_tradingTimes.size()-1].second;
+			ret = m_tradingTimes[m_tradingTimes.size()-1].second;
 		else
-			return originalTime(m_tradingTimes[m_tradingTimes.size()-1].second);
+			ret = originalTime(m_tradingTimes[m_tradingTimes.size()-1].second);
+
+		// By Wesley @ 2021.12.25
+		// 如果收盘时间是0点，无法跟开盘时间进行比较，所以这里要做一个修正
+		if (ret == 0 && bOffseted)
+			ret = 2400;
+
+		return ret;
 	}
 
 	inline uint32_t getTradingSeconds()
@@ -344,6 +352,10 @@ public:
 			uint32_t minute = (e%100 - s%100);
 			count += hour*60+minute;
 		}
+
+		//By Welsey @ 2021.12.25
+		//这种只能是全天候交易时段
+		if (count == 0) count = 1440;
 		return count*60;
 	}
 
@@ -361,6 +373,9 @@ public:
 			uint32_t minute = (e % 100 - s % 100);
 			count += hour * 60 + minute;
 		}
+		//By Welsey @ 2021.12.25
+		//这种只能是全天候交易时段
+		if (count == 0) count = 1440;
 		return count;
 	}
 
@@ -429,9 +444,9 @@ public:
 	{
 		int32_t curMinute = (uTime/100)*60 + uTime%100;
 		curMinute += m_uOffsetMins;
-		if(curMinute >= 1440)
+		if(curMinute > 1440)
 			curMinute -= 1440;
-		else if(curMinute < 0)
+		else if(curMinute <= 0)
 			curMinute += 1440;
 
 		return (curMinute/60)*100 + curMinute%60;
@@ -452,4 +467,4 @@ public:
 	}
 };
 
-NS_OTP_END
+NS_WTP_END
