@@ -29,7 +29,7 @@ namespace rj = rapidjson;
 extern boost::asio::io_service g_asyncIO;
 
 
-USING_NS_OTP;
+USING_NS_WTP;
 
 WtHftEngine::WtHftEngine()
 	: _cfg(NULL)

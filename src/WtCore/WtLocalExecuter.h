@@ -17,7 +17,7 @@
 #include "../Share/DLLHelper.hpp"
 #include "../Share/threadpool.hpp"
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 class WTSVariant;
 class IDataManager;
 class TraderAdapter;
@@ -195,4 +195,4 @@ private:
 typedef std::shared_ptr<IExecCommand> ExecCmdPtr;
 typedef std::shared_ptr<WtLocalExecuter> WtExecuterPtr;
 
-NS_OTP_END
+NS_WTP_END

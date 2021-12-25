@@ -12,11 +12,11 @@
 typedef std::shared_ptr<BoostMappingFile> BoostMFPtr;
 //typedef std::shared_ptr<MysqlDb>	MysqlDbPtr;
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 class WTSContractInfo;
-NS_OTP_END
+NS_WTP_END
 
-USING_NS_OTP;
+USING_NS_WTP;
 
 class WtDataWriter : public IDataWriter
 {

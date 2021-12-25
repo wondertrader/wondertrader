@@ -5,7 +5,7 @@
 #include "../Share/decimal.h"
 #include "../WTSTools/WTSLogger.h"
 
-USING_NS_OTP;
+USING_NS_WTP;
 
 WtDistExecuter::WtDistExecuter(const char* name)
 	: IExecCommand(name)

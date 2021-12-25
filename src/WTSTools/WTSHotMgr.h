@@ -13,12 +13,12 @@
 #include "../Includes/WTSCollection.hpp"
 #include <string>
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 	class IMarketMgr;
 	class WTSHotItem;
-NS_OTP_END
+NS_WTP_END
 
-USING_NS_OTP;
+USING_NS_WTP;
 
 //»»ÔÂÖ÷Á¦Ó³Éä
 typedef WTSMap<uint32_t>		WTSDateHotMap;

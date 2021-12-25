@@ -16,7 +16,7 @@
 #include "../Share/DLLHelper.hpp"
 #include "MatchEngine.h"
 
-USING_NS_OTP;
+USING_NS_WTP;
 
 class ExecMocker : public ExecuteContext, public IDataSink, public IMatchSink
 {

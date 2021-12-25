@@ -26,7 +26,7 @@ using namespace std;
 #pragma warning(disable:4267)
 
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 /*
  *	数值数组的内部封装
  *	采用std::vector实现
@@ -1629,4 +1629,4 @@ public:
 	}
 };
 
-NS_OTP_END
+NS_WTP_END

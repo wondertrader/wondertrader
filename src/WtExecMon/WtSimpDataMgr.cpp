@@ -20,7 +20,7 @@
 #include "../WTSTools/WTSLogger.h"
 #include "../WTSTools/WTSDataFactory.h"
 
-USING_NS_OTP;
+USING_NS_WTP;
 
 
 WTSDataFactory g_dataFact;

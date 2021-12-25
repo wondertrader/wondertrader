@@ -2,7 +2,7 @@
 #include <functional>
 #include "WtLocalExecuter.h"
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 class WtFilterMgr;
 
 typedef std::function<void(ExecCmdPtr)> EnumExecuterCb;
@@ -31,4 +31,4 @@ private:
 
 	WtFilterMgr*	_filter_mgr;
 };
-NS_OTP_END
+NS_WTP_END

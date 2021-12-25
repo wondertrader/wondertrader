@@ -23,7 +23,7 @@
  *	风控模块只处理高效的风控策略
  */
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 class WTSVariant;
 class WTSPortFundInfo;
 
@@ -156,4 +156,4 @@ typedef IRiskMonitorFact* (*FuncCreateRiskMonFact)();
 //删除执行工厂
 typedef void(*FuncDeleteRiskMonFact)(IRiskMonitorFact* &fact);
 
-NS_OTP_END
+NS_WTP_END

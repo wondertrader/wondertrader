@@ -20,7 +20,7 @@
 #include <nanomsg/pubsub.h>
 
 
-USING_NS_OTP;
+USING_NS_WTP;
 
 #pragma warning(disable:4200)
 

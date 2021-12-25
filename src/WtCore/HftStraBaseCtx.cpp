@@ -24,7 +24,7 @@
 #include <rapidjson/prettywriter.h>
 namespace rj = rapidjson;
 
-USING_NS_OTP;
+USING_NS_WTP;
 
 inline uint32_t makeHftCtxId()
 {

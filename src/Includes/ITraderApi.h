@@ -14,7 +14,7 @@
 #include <functional>
 #include "WTSTypes.h"
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 class WTSParams;
 class WTSEntrust;
 class WTSOrderInfo;
@@ -218,8 +218,8 @@ public:
 
 };
 
-NS_OTP_END
+NS_WTP_END
 
 //获取IDataMgr的函数指针类型
-typedef otp::ITraderApi* (*FuncCreateTrader)();
-typedef void(*FuncDeleteTrader)(otp::ITraderApi* &trader);
+typedef wtp::ITraderApi* (*FuncCreateTrader)();
+typedef void(*FuncDeleteTrader)(wtp::ITraderApi* &trader);

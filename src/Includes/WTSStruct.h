@@ -15,7 +15,7 @@
 
 #pragma warning(disable:4200)
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 
 #pragma pack(push, 1)
 
@@ -149,4 +149,4 @@ struct WTSTransStruct
 
 #pragma pack(pop)
 
-NS_OTP_END
+NS_WTP_END

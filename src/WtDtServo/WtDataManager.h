@@ -19,7 +19,7 @@
 
 class WtDtRunner;
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 class WTSVariant;
 class WTSTickData;
 class WTSKlineSlice;
@@ -78,4 +78,4 @@ private:
 	BarCacheMap	_bars_cache;
 };
 
-NS_OTP_END
+NS_WTP_END

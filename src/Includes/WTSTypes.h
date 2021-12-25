@@ -10,7 +10,7 @@
 #pragma once
 #include "WTSMarcos.h"
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 
 /*
  *	合约分类
@@ -320,4 +320,4 @@ typedef enum tagOrdDetailType
 	ODT_LimitPrice	= '2'	//限价
 } WTSOrdDetailType;
 
-NS_OTP_END
+NS_WTP_END

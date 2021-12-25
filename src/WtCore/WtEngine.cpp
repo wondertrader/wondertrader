@@ -33,7 +33,7 @@
 namespace rj = rapidjson;
 
 
-USING_NS_OTP;
+USING_NS_WTP;
 
 WtEngine::WtEngine()
 	:_port_fund(NULL)

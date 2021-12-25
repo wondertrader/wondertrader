@@ -20,11 +20,11 @@
 #include "../Share/DLLHelper.hpp"
 #include "../Share/StdUtils.hpp"
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 class EventNotifier;
-NS_OTP_END
+NS_WTP_END
 
-USING_NS_OTP;
+USING_NS_WTP;
 
 class HisDataReplayer;
 class CtaStrategy;

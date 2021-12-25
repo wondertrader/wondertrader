@@ -12,12 +12,12 @@
 #include <stdint.h>
 #include "../Includes/WTSTypes.h"
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 struct WTSBarStruct;
 struct WTSTickStruct;
-NS_OTP_END
+NS_WTP_END
 
-USING_NS_OTP;
+USING_NS_WTP;
 
 typedef void(PORTER_FLAG *FuncGetBarsCallback)(WTSBarStruct* bar, WtUInt32 count, bool isLast);
 typedef void(PORTER_FLAG *FuncGetTicksCallback)(WTSTickStruct* tick, WtUInt32 count, bool isLast);

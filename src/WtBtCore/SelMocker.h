@@ -20,7 +20,7 @@
 
 class SelStrategy;
 
-USING_NS_OTP;
+USING_NS_WTP;
 
 class HisDataReplayer;
 

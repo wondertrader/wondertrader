@@ -15,7 +15,7 @@
 
 #include "ITrdNotifySink.h"
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 
 class WtHftEngine;
 class TraderAdapter;
@@ -213,4 +213,4 @@ private:
 	PriceMap		_price_map;
 };
 
-NS_OTP_END
+NS_WTP_END

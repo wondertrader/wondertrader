@@ -23,7 +23,7 @@ typedef void(*FuncLogCallback)(unsigned long, const char*, bool);
 typedef void(*FuncRegCallbacks)(FuncLogCallback);
 
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 class WTSVariant;
 
 class EventNotifier
@@ -48,4 +48,4 @@ private:
 	FuncRegCallbacks	_register;
 };
 
-NS_OTP_END
+NS_WTP_END

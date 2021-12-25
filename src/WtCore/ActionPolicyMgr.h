@@ -15,7 +15,7 @@
 #include "../Includes/FasterDefs.h"
 
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 class WTSVariant;
 
 typedef enum tagActionType
@@ -61,4 +61,4 @@ private:
 	faster_hashmap<std::string, std::string> _comm_rule_map;	//品种规则映射
 };
 
-NS_OTP_END
+NS_WTP_END

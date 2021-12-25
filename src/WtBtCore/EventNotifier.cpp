@@ -20,7 +20,7 @@
 #include <rapidjson/prettywriter.h>
 namespace rj = rapidjson;
 
-USING_NS_OTP;
+USING_NS_WTP;
 
 void on_mq_log(unsigned long id, const char* message, bool bServer)
 {

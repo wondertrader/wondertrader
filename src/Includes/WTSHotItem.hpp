@@ -10,7 +10,7 @@
 #pragma once
 #include "WTSObject.hpp"
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 class WTSHotItem : public WTSObject
 {
 protected:
@@ -49,4 +49,4 @@ private:
 	double		_oldclose;
 	double		_newclose;
 };
-NS_OTP_END
+NS_WTP_END

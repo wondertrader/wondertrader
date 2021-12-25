@@ -28,7 +28,7 @@ typedef struct _HotSection
 } HotSection;
 typedef std::vector<HotSection>	HotSections;
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 
 #define HOTS_MARKET		"HOTS_MARKET"
 #define SECONDS_MARKET	"SECONDS_MARKET"
@@ -102,4 +102,4 @@ public:
 	 */
 	virtual bool		splitSecondSecions(const char* exchg, const char* hotCode, uint32_t sDt, uint32_t eDt, HotSections& sections) = 0;
 };
-NS_OTP_END
+NS_WTP_END

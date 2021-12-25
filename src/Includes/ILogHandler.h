@@ -11,10 +11,10 @@
 #include "WTSMarcos.h"
 #include "WTSTypes.h"
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 class ILogHandler
 {
 public:
 	virtual void handleLogAppend(WTSLogLevel ll, const char* msg)	= 0;
 };
-NS_OTP_END
+NS_WTP_END

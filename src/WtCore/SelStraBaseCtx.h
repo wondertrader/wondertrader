@@ -14,7 +14,7 @@
 
 #include "../Share/BoostFile.hpp"
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 
 class WtSelEngine;
 
@@ -193,4 +193,4 @@ protected:
 };
 
 
-NS_OTP_END
+NS_WTP_END

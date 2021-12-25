@@ -14,13 +14,13 @@
 #include "../Includes/WTSMarcos.h"
 
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 class WTSTickData;
 struct WTSBarStruct;
 class WTSVariant;
-NS_OTP_END
+NS_WTP_END
 
-USING_NS_OTP;
+USING_NS_WTP;
 
 typedef enum tagEngineType
 {

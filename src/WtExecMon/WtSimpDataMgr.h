@@ -7,7 +7,7 @@
 
 class WtExecRunner;
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 class WTSVariant;
 class WTSHisTickData;
 class WTSKlineData;
@@ -74,4 +74,4 @@ private:
 
 };
 
-NS_OTP_END
+NS_WTP_END

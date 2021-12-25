@@ -14,7 +14,7 @@
 #include "../Includes/WTSMarcos.h"
 #include "../Share/StdUtils.hpp"
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 class MQManager;
 
 class MQServer
@@ -58,4 +58,4 @@ private:
 	PubDataQue		m_dataQue;
 };
 
-NS_OTP_END
+NS_WTP_END

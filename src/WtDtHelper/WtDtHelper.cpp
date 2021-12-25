@@ -24,7 +24,7 @@
 
 namespace rj = rapidjson;
 
-USING_NS_OTP;
+USING_NS_WTP;
 
 
 uint32_t strToTime(const char* strTime, bool bKeepSec = false)

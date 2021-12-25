@@ -12,7 +12,7 @@
 #include <atomic>
 #include "WTSMarcos.h"
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 class WTSObject
 {
 public:
@@ -49,4 +49,4 @@ protected:
 	volatile std::atomic<uint32_t>	m_uRefs;
 };
 
-NS_OTP_END
+NS_WTP_END

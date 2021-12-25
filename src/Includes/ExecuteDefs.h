@@ -11,7 +11,7 @@
 #include "../Includes/WTSDataDef.hpp"
 #include "../Includes/WTSCollection.hpp"
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 class WTSTickData;
 class WTSHisTickData;
 class WTSVariant;
@@ -265,4 +265,4 @@ typedef IExecuterFact* (*FuncCreateExeFact)();
 //É¾³ýÖ´ÐÐ¹¤³§
 typedef void(*FuncDeleteExeFact)(IExecuterFact* &fact);
 
-NS_OTP_END
+NS_WTP_END

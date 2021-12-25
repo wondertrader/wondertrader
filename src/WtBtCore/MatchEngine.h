@@ -9,12 +9,12 @@
 #include "../Includes/WTSCollection.hpp"
 #include "../Includes/FasterDefs.h"
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 class WTSTickData;
 class WTSVariant;
-NS_OTP_END
+NS_WTP_END
 
-USING_NS_OTP;
+USING_NS_WTP;
 
 typedef std::vector<uint32_t> OrderIDs;
 

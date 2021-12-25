@@ -14,11 +14,11 @@
 #include <boost/core/noncopyable.hpp>
 #include "../Includes/IParserApi.h"
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 class WTSVariant;
-NS_OTP_END
+NS_WTP_END
 
-USING_NS_OTP;
+USING_NS_WTP;
 class wxMainFrame;
 class WTSBaseDataMgr;
 class DataManager;

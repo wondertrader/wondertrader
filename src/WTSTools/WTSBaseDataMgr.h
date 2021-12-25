@@ -13,7 +13,7 @@
 
 #include "../Includes/FasterDefs.h"
 
-USING_NS_OTP;
+USING_NS_WTP;
 typedef faster_hashmap<std::string, TradingDayTpl>	TradingDayTplMap;
 
 typedef WTSHashMap<std::string>		WTSContractList;

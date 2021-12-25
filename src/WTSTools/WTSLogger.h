@@ -20,12 +20,12 @@
 
 typedef std::shared_ptr<spdlog::logger> SpdLoggerPtr;
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 class ILogHandler;
 class WTSVariant;
-NS_OTP_END
+NS_WTP_END
 
-USING_NS_OTP;
+USING_NS_WTP;
 
 #define MAX_LOG_BUF_SIZE 2048
 

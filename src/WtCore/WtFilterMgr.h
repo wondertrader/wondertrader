@@ -3,7 +3,7 @@
 #include "../Includes/FasterDefs.h"
 #include "../Includes/WTSMarcos.h"
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 
 class EventNotifier;
 
@@ -83,5 +83,5 @@ private:
 	EventNotifier*	_notifier;
 };
 
-NS_OTP_END
+NS_WTP_END
 

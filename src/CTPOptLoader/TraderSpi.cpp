@@ -14,7 +14,7 @@ namespace rj = rapidjson;
 #include "TraderSpi.h"
 
 
-USING_NS_OTP;
+USING_NS_WTP;
 
 extern std::map<std::string, std::string>	MAP_NAME;
 extern std::map<std::string, std::string>	MAP_SESSION;

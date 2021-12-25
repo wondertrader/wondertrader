@@ -10,7 +10,7 @@
 #pragma once
 #include "WTSObject.hpp"
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 typedef struct _TradeStatInfo
 {
 	char		_code[MAX_INSTRUMENT_LENGTH];
@@ -168,4 +168,4 @@ private:
 	WTSFundStruct	_fund_info;
 };
 
-NS_OTP_END
+NS_WTP_END

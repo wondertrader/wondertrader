@@ -18,7 +18,7 @@
 #include <map>
 
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 
 class WTSParams : public WTSObject
 {
@@ -513,4 +513,4 @@ private:
 	ValueType	_type;
 };
 
-NS_OTP_END
+NS_WTP_END

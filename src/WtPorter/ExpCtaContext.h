@@ -10,7 +10,7 @@
 #pragma once
 #include "../WtCore/CtaStraBaseCtx.h"
 
-USING_NS_OTP;
+USING_NS_WTP;
 
 class ExpCtaContext : public CtaStraBaseCtx
 {

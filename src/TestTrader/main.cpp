@@ -24,7 +24,7 @@ bool		g_exitNow = false;
 bool		g_riskAct = false;
 std::set<std::string>	g_blkList;
 
-USING_NS_OTP;
+USING_NS_WTP;
 
 typedef enum tagTradeAccountType
 {

@@ -13,7 +13,7 @@
 
 #include "../Includes/WTSMarcos.h"
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 class WTSVariant;
 class IHftStraCtx;
 class WTSTickData;
@@ -21,9 +21,9 @@ class WTSOrdDtlData;
 class WTSOrdQueData;
 class WTSTransData;
 struct WTSBarStruct;
-NS_OTP_END
+NS_WTP_END
 
-USING_NS_OTP;
+USING_NS_WTP;
 
 class HftStrategy
 {

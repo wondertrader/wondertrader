@@ -1,7 +1,7 @@
 #pragma once
 #include "../Includes/WTSTypes.h"
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 class WTSTickSlice;
 class WTSKlineSlice;
 class WTSTickData;
@@ -22,4 +22,4 @@ public:
 	virtual WTSTickData* grab_last_tick(const char* code) { return NULL; }
 };
 
-NS_OTP_END
+NS_WTP_END

@@ -17,7 +17,7 @@
 #pragma comment(lib, "nanomsg.lib")
 #endif
 
-USING_NS_OTP;
+USING_NS_WTP;
 
 MQManager& getMgr()
 {

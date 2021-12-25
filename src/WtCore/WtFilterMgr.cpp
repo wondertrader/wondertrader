@@ -11,7 +11,7 @@
 #include <rapidjson/document.h>
 namespace rj = rapidjson;
 
-USING_NS_OTP;
+USING_NS_WTP;
 
 void WtFilterMgr::load_filters(const char* fileName)
 {

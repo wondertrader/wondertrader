@@ -17,7 +17,7 @@
 
 #include <deque>
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 
 //////////////////////////////////////////////////////////////////////////
 //WTSArray
@@ -802,4 +802,4 @@ protected:
 	std::deque<WTSObject*>	_queue;
 };
 
-NS_OTP_END
+NS_WTP_END

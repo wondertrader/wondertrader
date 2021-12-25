@@ -13,11 +13,11 @@
 #include "../API/XTP1.1.19.2/xtp_quote_api.h"
 #include <map>
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 class WTSTickData;
-NS_OTP_END
+NS_WTP_END
 
-USING_NS_OTP;
+USING_NS_WTP;
 
 class ParserXTP :	public IParserApi, public XTP::API::QuoteSpi
 {

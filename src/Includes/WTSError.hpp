@@ -11,7 +11,7 @@
 #include "WTSObject.hpp"
 #include "WTSTypes.h"
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 
 class WTSError : public WTSObject
 {
@@ -38,4 +38,4 @@ protected:
 };
 
 
-NS_OTP_END
+NS_WTP_END

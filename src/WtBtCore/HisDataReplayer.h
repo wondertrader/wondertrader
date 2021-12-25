@@ -18,7 +18,7 @@
 #include "../WTSTools/WTSHotMgr.h"
 #include "../WTSTools/WTSBaseDataMgr.h"
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 class WTSTickData;
 class WTSVariant;
 class WTSKlineSlice;
@@ -34,11 +34,11 @@ class WTSOrdQueData;
 class WTSTransData;
 
 class EventNotifier;
-NS_OTP_END
+NS_WTP_END
 
 //typedef std::shared_ptr<MysqlDb>	MysqlDbPtr;
 
-USING_NS_OTP;
+USING_NS_WTP;
 
 class IDataSink
 {

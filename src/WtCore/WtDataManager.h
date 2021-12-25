@@ -15,7 +15,7 @@
 #include "../Includes/FasterDefs.h"
 #include "../Includes/WTSCollection.hpp"
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 class WTSVariant;
 class WTSTickData;
 class WTSKlineSlice;
@@ -87,4 +87,4 @@ private:
 	std::vector<NotifyItem> _bar_notifies;
 };
 
-NS_OTP_END
+NS_WTP_END

@@ -456,7 +456,7 @@ void WtBtRunner::config(const char* cfgFile, bool isFile /* = true */)
 	//初始化事件推送器
 	initEvtNotifier(cfg->get("notifier"));
 
-	_replayer.init(cfg->get("replayer"), &_notifier, this);
+	_replayer.init(cfg->get("replayer"), &_notifier, _ext_fnl_bar_loader != NULL ? this : NULL);
 
 	WTSVariant* cfgEnv = cfg->get("env");
 	const char* mode = cfgEnv->getCString("mocker");

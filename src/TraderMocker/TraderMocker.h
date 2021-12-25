@@ -11,11 +11,11 @@
 #include "../Includes/WTSCollection.hpp"
 
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 	class WTSTickData;
-NS_OTP_END
+NS_WTP_END
 
-USING_NS_OTP;
+USING_NS_WTP;
 
 /*
  *	·ÂÕæ½»Ò×Æ÷

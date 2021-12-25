@@ -19,7 +19,7 @@
 
 #include "../WTSTools/WTSLogger.h"
 
-USING_NS_OTP;
+USING_NS_WTP;
 
 
 WtSelRtTicker::WtSelRtTicker(WtSelEngine* engine)

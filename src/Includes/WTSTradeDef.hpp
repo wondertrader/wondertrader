@@ -17,7 +17,7 @@
 #include <map>
 #include<chrono>
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 //////////////////////////////////////////////////////////////////////////
 //委托数据结构,用户客户端向服务端发起
 class WTSEntrust : public WTSObject
@@ -653,4 +653,4 @@ protected:
 };
 
 
-NS_OTP_END
+NS_WTP_END

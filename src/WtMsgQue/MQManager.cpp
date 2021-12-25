@@ -2,7 +2,7 @@
 
 #include <spdlog/fmt/fmt.h>
 
-USING_NS_OTP;
+USING_NS_WTP;
 
 WtUInt32 MQManager::create_server(const char* url, bool confirm)
 {

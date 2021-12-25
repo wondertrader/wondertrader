@@ -16,7 +16,7 @@
 
 class CtaStrategy;
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 
 class WtCtaEngine;
 
@@ -256,4 +256,4 @@ protected:
 };
 
 
-NS_OTP_END
+NS_WTP_END

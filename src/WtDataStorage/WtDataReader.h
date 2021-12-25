@@ -9,7 +9,7 @@
 
 #include "../Share/BoostMappingFile.hpp"
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 
 typedef std::shared_ptr<BoostMappingFile> BoostMFPtr;
 
@@ -250,4 +250,4 @@ private:
 	
 };
 
-NS_OTP_END
+NS_WTP_END

@@ -11,9 +11,9 @@
 #include <stdint.h>
 #include "../Includes/WTSTypes.h"
 
-//USING_NS_OTP;
+//USING_NS_WTP;
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 class WTSKlineData;
 class WTSHisTrendData;
 class WTSTickData;
@@ -75,4 +75,4 @@ public:
 	virtual bool			mergeKlineData(WTSKlineData* klineData, WTSKlineData* newKline)											= 0;
 };
 
-NS_OTP_END
+NS_WTP_END

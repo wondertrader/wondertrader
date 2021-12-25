@@ -16,16 +16,16 @@
 #include <boost/asio.hpp>
 #include <queue>
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 	class WTSTickData;
 	class WTSQueue;
 	class WTSVariant;
 	class WTSOrdDtlData;
 	class WTSOrdQueData;
 	class WTSTransData;
-NS_OTP_END
+NS_WTP_END
 
-USING_NS_OTP;
+USING_NS_WTP;
 class WTSBaseDataMgr;
 class DataManager;
 

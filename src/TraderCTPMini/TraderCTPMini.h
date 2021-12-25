@@ -23,7 +23,7 @@
 #include "../Share/StdUtils.hpp"
 #include "../Share/DLLHelper.hpp"
 
-USING_NS_OTP;
+USING_NS_WTP;
 
 class TraderCTPMini : public ITraderApi, public CThostFtdcTraderSpi
 {

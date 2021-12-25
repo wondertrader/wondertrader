@@ -8,7 +8,7 @@
 #include "../Share/BoostMappingFile.hpp"
 #include "../Share/StdUtils.hpp"
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 class WTSVariant;
 class WTSTickSlice;
 class WTSKlineSlice;
@@ -276,4 +276,4 @@ private:
 	}
 };
 
-NS_OTP_END
+NS_WTP_END

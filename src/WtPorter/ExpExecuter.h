@@ -1,7 +1,7 @@
 #pragma once
 #include "../WtCore/IExecCommand.h"
 
-USING_NS_OTP;
+USING_NS_WTP;
 
 class ExpExecuter : public IExecCommand
 {

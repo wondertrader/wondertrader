@@ -13,15 +13,15 @@
 #include "../Share/StdUtils.hpp"
 #include "../Share/BoostMappingFile.hpp"
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 class WTSTickData;
 class WTSOrdQueData;
 class WTSOrdDtlData;
 class WTSTransData;
 class WTSVariant;
-NS_OTP_END
+NS_WTP_END
 
-USING_NS_OTP;
+USING_NS_WTP;
 
 class WTSBaseDataMgr;
 class StateMonitor;

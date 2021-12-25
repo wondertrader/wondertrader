@@ -21,9 +21,9 @@
 
 #include <boost/asio.hpp>
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 class WTSVariant;
-NS_OTP_END
+NS_WTP_END
 
 class WtDtRunner
 {

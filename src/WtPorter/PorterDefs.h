@@ -12,15 +12,15 @@
 #include <stdint.h>
 #include "../Includes/WTSTypes.h"
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 struct WTSBarStruct;
 struct WTSTickStruct;
 struct WTSOrdDtlStruct;
 struct WTSOrdQueStruct;
 struct WTSTransStruct;
-NS_OTP_END
+NS_WTP_END
 
-USING_NS_OTP;
+USING_NS_WTP;
 
 typedef unsigned long		CtxHandler;
 

@@ -13,12 +13,12 @@
 
 #include "WtDataManager.h"
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 class WTSVariant;
 class WtDataStorage;
 class WTSKlineSlice;
 class WTSTickSlice;
-NS_OTP_END
+NS_WTP_END
 
 class WtDtRunner
 {

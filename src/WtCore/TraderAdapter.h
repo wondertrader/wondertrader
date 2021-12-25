@@ -15,7 +15,7 @@
 #include "../Share/BoostFile.hpp"
 #include "../Share/StdUtils.hpp"
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 class WTSVariant;
 class ActionPolicyMgr;
 class WTSContractInfo;
@@ -257,4 +257,4 @@ private:
 	TraderAdapterMap	_adapters;
 };
 
-NS_OTP_END
+NS_WTP_END

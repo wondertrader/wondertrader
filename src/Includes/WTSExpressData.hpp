@@ -22,7 +22,7 @@ typedef unsigned long	DWORD;
 #define RGB(r,g,b)	((COLORREF)(((BYTE)(r)|((WORD)((BYTE)(g))<<8))|(((DWORD)(BYTE)(b))<<16)))
 #endif
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 
 //////////////////////////////////////////////////////////////////////////
 //线型类,指标用到
@@ -382,4 +382,4 @@ protected:
 	double			m_dBaseLine;
 };
 
-NS_OTP_END
+NS_WTP_END

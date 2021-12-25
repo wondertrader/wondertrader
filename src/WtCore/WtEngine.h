@@ -25,7 +25,7 @@
 #include "../Share/BoostFile.hpp"
 
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 class WTSSessionInfo;
 class WTSCommodityInfo;
 class WTSContractInfo;
@@ -306,4 +306,4 @@ protected:
 	BoostFilePtr	_trade_logs;
 	BoostFilePtr	_close_logs;
 };
-NS_OTP_END
+NS_WTP_END

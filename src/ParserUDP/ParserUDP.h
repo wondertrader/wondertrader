@@ -17,7 +17,7 @@
 #include <boost/array.hpp>
 #include <boost/asio/io_service.hpp>
 
-USING_NS_OTP;
+USING_NS_WTP;
 using namespace boost::asio;
 
 class ParserUDP : public IParserApi

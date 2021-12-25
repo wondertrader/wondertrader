@@ -12,7 +12,7 @@
 #include "WtExecMgr.h"
 #include "WtEngine.h"
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 class WTSVariant;
 typedef std::shared_ptr<ICtaStraCtx> CtaContextPtr;
 
@@ -79,5 +79,5 @@ private:
 	WTSVariant*		_cfg;
 };
 
-NS_OTP_END
+NS_WTP_END
 

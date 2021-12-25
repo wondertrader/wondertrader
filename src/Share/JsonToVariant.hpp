@@ -14,7 +14,7 @@
 
 namespace rj = rapidjson;
 
-USING_NS_OTP;
+USING_NS_WTP;
 
 bool static jsonToVariant(const rj::Value& root, WTSVariant* params)
 {

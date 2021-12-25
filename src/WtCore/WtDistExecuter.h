@@ -1,7 +1,7 @@
 #pragma once
 #include "IExecCommand.h"
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 class WTSVariant;
 
 class WtDistExecuter : public IExecCommand
@@ -39,5 +39,5 @@ private:
 
 	faster_hashmap<std::string, double> _target_pos;
 };
-NS_OTP_END
+NS_WTP_END
 

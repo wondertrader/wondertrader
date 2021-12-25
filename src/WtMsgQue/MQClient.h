@@ -15,7 +15,7 @@
 #include "../Includes/FasterDefs.h"
 #include "../Share/StdUtils.hpp"
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 class MQManager;
 
 class MQClient
@@ -67,4 +67,4 @@ private:
 	faster_hashset<std::string> _topics;
 };
 
-NS_OTP_END
+NS_WTP_END

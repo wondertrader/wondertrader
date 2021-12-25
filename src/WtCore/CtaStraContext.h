@@ -12,11 +12,11 @@
 
 #include "../Includes/WTSDataDef.hpp"
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 class WtCtaEngine;
-NS_OTP_END
+NS_WTP_END
 
-USING_NS_OTP;
+USING_NS_WTP;
 
 class CtaStrategy;
 

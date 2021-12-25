@@ -1,7 +1,7 @@
 #pragma once
 #include "../Includes/IDataWriter.h"
 
-USING_NS_OTP;
+USING_NS_WTP;
 
 class ExpDumper : public IHisDataDumper
 {

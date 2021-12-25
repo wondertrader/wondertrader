@@ -15,7 +15,7 @@
 #include "../Includes/IParserApi.h"
 
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 class WTSVariant;
 class IHotMgr;
 
@@ -115,4 +115,4 @@ public:
 	ParserAdapterMap _adapters;
 };
 
-NS_OTP_END
+NS_WTP_END

@@ -7,7 +7,7 @@
 
 #include <memory>
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 
 typedef enum tagTaskPeriodType
 {
@@ -103,4 +103,4 @@ private:
 	WTSVariant*		_cfg;
 };
 
-NS_OTP_END
+NS_WTP_END

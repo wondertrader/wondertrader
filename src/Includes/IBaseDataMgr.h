@@ -16,7 +16,7 @@
 
 typedef faster_hashset<std::string> ContractSet;
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 class WTSContractInfo;
 class WTSArray;
 class WTSSessionInfo;
@@ -50,4 +50,4 @@ public:
 	virtual uint32_t			calcTradingDate(const char* stdPID, uint32_t uDate, uint32_t uTime, bool isSession = false) = 0;
 	virtual uint64_t			getBoundaryTime(const char* stdPID, uint32_t tDate, bool isSession = false, bool isStart = true) = 0;
 };
-NS_OTP_END
+NS_WTP_END

@@ -14,7 +14,7 @@
 
 typedef faster_hashset<std::string> CodeSet;
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 class WTSTickData;
 class WTSOrdQueData;
 class WTSOrdDtlData;
@@ -102,9 +102,9 @@ protected:
 	IDataWriterSink*	_sink;
 };
 
-NS_OTP_END
+NS_WTP_END
 
 
 //获取IDataWriter的函数指针类型
-typedef otp::IDataWriter* (*FuncCreateWriter)();
-typedef void(*FuncDeleteWriter)(otp::IDataWriter* &writer);
+typedef wtp::IDataWriter* (*FuncCreateWriter)();
+typedef void(*FuncDeleteWriter)(wtp::IDataWriter* &writer);

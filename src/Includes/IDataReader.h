@@ -13,7 +13,7 @@
 #include "../Includes/WTSMarcos.h"
 #include "../Includes/WTSTypes.h"
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 class WTSKlineData;
 class WTSKlineSlice;
 class WTSTickSlice;
@@ -238,4 +238,4 @@ typedef IDataReader* (*FuncCreateDataReader)();
 //删除数据存储对象
 typedef void(*FuncDeleteDataReader)(IDataReader* store);
 
-NS_OTP_END
+NS_WTP_END

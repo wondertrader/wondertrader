@@ -11,7 +11,7 @@
 #include <stdint.h>
 #include "../Includes/WTSMarcos.h"
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 
 class ITrdNotifySink
 {
@@ -47,4 +47,4 @@ public:
 	virtual void on_entrust(uint32_t localid, const char* stdCode, bool bSuccess, const char* message){}
 };
 
-NS_OTP_END
+NS_WTP_END

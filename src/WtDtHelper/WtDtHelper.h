@@ -11,15 +11,15 @@
 
 #include "../Includes/WTSTypes.h"
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 struct WTSBarStruct;
 struct WTSTickStruct;
 struct WTSOrdDtlStruct;
 struct WTSOrdQueStruct;
 struct WTSTransStruct;
-NS_OTP_END
+NS_WTP_END
 
-USING_NS_OTP;
+USING_NS_WTP;
 
 typedef void(PORTER_FLAG *FuncLogCallback)(WtString message);
 typedef void(PORTER_FLAG *FuncGetBarsCallback)(WTSBarStruct* bar, WtUInt32 count, bool isLast);

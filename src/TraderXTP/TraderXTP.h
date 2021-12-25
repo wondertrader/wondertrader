@@ -21,7 +21,7 @@
 #include "../Share/StdUtils.hpp"
 #include "../Share/DLLHelper.hpp"
 
-USING_NS_OTP;
+USING_NS_WTP;
 
 class TraderXTP : public XTP::API::TraderSpi, public ITraderApi
 {

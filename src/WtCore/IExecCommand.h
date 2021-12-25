@@ -2,7 +2,7 @@
 #include "../Includes/FasterDefs.h"
 #include <stdint.h>
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 class WTSCommodityInfo;
 class WTSSessionInfo;
 class IHotMgr;
@@ -48,4 +48,4 @@ protected:
 	IExecuterStub*	_stub;
 	std::string		_name;
 };
-NS_OTP_END
+NS_WTP_END

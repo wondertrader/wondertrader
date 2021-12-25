@@ -27,7 +27,7 @@
 #endif
 
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 
 /*
  *	WTSVariant是一个通用数据容器,设计目标是Json的Value类
@@ -789,4 +789,4 @@ private:
 	ValueType	_type;
 };
 
-NS_OTP_END
+NS_WTP_END

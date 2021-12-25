@@ -11,7 +11,7 @@
 
 #include "WTSMarcos.h"
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 class WTSSessionInfo;
 
 /*
@@ -29,4 +29,4 @@ public:
 	 */
 	virtual WTSSessionInfo* getSession(const char* code, const char* exchg = "")	= 0;
 };
-NS_OTP_END
+NS_WTP_END

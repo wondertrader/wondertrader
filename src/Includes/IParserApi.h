@@ -15,7 +15,7 @@
 
 typedef faster_hashset<std::string> CodeSet;
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 class WTSTickData;
 class WTSOrdDtlData;
 class WTSOrdQueData;
@@ -135,8 +135,8 @@ public:
 	virtual void registerSpi(IParserSpi* listener)		= 0;
 };
 
-NS_OTP_END
+NS_WTP_END
 
 //获取IDataMgr的函数指针类型
-typedef otp::IParserApi* (*FuncCreateParser)();
-typedef void(*FuncDeleteParser)(otp::IParserApi* &parser);
+typedef wtp::IParserApi* (*FuncCreateParser)();
+typedef void(*FuncDeleteParser)(wtp::IParserApi* &parser);

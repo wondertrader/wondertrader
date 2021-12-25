@@ -14,7 +14,7 @@
 
 #include "../Includes/WTSMarcos.h"
 
-NS_OTP_BEGIN
+NS_WTP_BEGIN
 class WTSCommodityInfo;
 class WTSTickSlice;
 class WTSKlineSlice;
@@ -97,4 +97,4 @@ protected:
 	std::string _name;
 };
 
-NS_OTP_END
+NS_WTP_END
