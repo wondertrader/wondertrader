@@ -72,7 +72,7 @@ void WtStraDtSel::on_schedule(ISelStraCtx* ctx, uint32_t uDate, uint32_t uTime)
 
 		std::string code = curCode;
 		if (_isstk)
-			code += "Q";
+			code += "-";
 		WTSKlineSlice *kline = ctx->stra_get_bars(code.c_str(), _period.c_str(), _count);
 		if (kline == NULL)
 		{

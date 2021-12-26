@@ -1109,7 +1109,7 @@ bool WtDataReader::cacheAdjustedStkBars(const std::string& key, const char* stdC
 		 *	本来这里是要先调用_loader->loadRawHisBars从外部加载器读取复权数据的
 		 *	但是上层会调用一次loadFinalHisBars，这里再调用loadRawHisBars就冗余了，所以直接跳过
 		 */
-		char flag = cInfo._exright == 1 ? 'Q' : 'H';
+		char flag = cInfo._exright == 1 ? SUFFIX_QFQ : SUFFIX_HFQ;
 		std::stringstream ss;
 		ss << _base_dir << "his/" << pname << "/" << cInfo._exchg << "/" << cInfo._code << flag << ".dsb";
 		std::string filename = ss.str();

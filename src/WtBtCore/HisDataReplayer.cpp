@@ -3570,7 +3570,7 @@ bool HisDataReplayer::cacheAdjustedStkBars(const std::string& key, const char* s
 		 *	但是上层会调用一次loadFinalHisBars，这里再调用loadRawHisBars就冗余了，所以直接跳过
 		 */
 		std::stringstream ss;
-		ss << _base_dir << "his/" << pname << "/" << cInfo._exchg << "/" << cInfo._code << (cInfo._exright == 1 ? "Q" : "H") << ".dsb";
+		ss << _base_dir << "his/" << pname << "/" << cInfo._exchg << "/" << cInfo._code << (cInfo._exright == 1 ? SUFFIX_QFQ : SUFFIX_HFQ) << ".dsb";
 		std::string filename = ss.str();
 		if (!StdFile::exists(filename.c_str()))
 			break;

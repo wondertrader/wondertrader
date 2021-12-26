@@ -21,6 +21,12 @@ static const char* SUFFIX_HOT = ".HOT";
 //次主力合约后缀
 static const char* SUFFIX_2ND = ".2ND";
 
+//前复权合约代码后缀
+static const char SUFFIX_QFQ = '-';
+
+//后复权合约代码后缀
+static const char SUFFIX_HFQ = '+';
+
 class CodeHelper
 {
 public:
@@ -382,10 +388,10 @@ public:
 			//codeInfo._category = CC_Stock;
 			strcpy(codeInfo._exchg, ay[0].c_str());
 			strcpy(codeInfo._product, ay[1].c_str());
-			if (ay[2].back() == 'Q' || ay[2].back() == 'Q')
+			if (ay[2].back() == SUFFIX_QFQ || ay[2].back() == SUFFIX_HFQ)
 			{
 				strcpy(codeInfo._code, ay[2].substr(0, ay[2].size() - 1).c_str());
-				codeInfo._exright = (ay[2].back() == 'Q')?1:2;
+				codeInfo._exright = (ay[2].back() == SUFFIX_QFQ)?1:2;
 			}
 			else if(isdigit(ay[2].back()))
 			{

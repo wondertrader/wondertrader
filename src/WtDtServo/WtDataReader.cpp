@@ -1236,7 +1236,7 @@ bool WtDataReader::cacheHisBarsFromFile(const std::string& key, const char* stdC
 		do
 		{
 			//先直接读取复权过的历史数据,路径如/his/day/sse/SH600000Q.dsb
-			char flag = cInfo._exright == 1 ? 'Q' : 'H';
+			char flag = cInfo._exright == 1 ? SUFFIX_QFQ : SUFFIX_HFQ;
 			std::stringstream ss;
 			ss << _base_dir << "his/" << pname << "/" << cInfo._exchg << "/" << cInfo._code << flag << ".dsb";
 			std::string filename = ss.str();

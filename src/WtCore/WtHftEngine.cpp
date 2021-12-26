@@ -182,7 +182,7 @@ void WtHftEngine::handle_push_transaction(WTSTransData* curTrans)
 void WtHftEngine::sub_order_detail(uint32_t sid, const char* stdCode)
 {
 	std::size_t length = strlen(stdCode);
-	if (stdCode[length - 1] == 'Q' || stdCode[length - 1] == 'H')
+	if (stdCode[length - 1] == SUFFIX_QFQ || stdCode[length - 1] == SUFFIX_HFQ)
 		length--;
 
 	SIDSet& sids = _orddtl_sub_map[std::string(stdCode, length)];
@@ -192,7 +192,7 @@ void WtHftEngine::sub_order_detail(uint32_t sid, const char* stdCode)
 void WtHftEngine::sub_order_queue(uint32_t sid, const char* stdCode)
 {
 	std::size_t length = strlen(stdCode);
-	if (stdCode[length - 1] == 'Q' || stdCode[length - 1] == 'H')
+	if (stdCode[length - 1] == SUFFIX_QFQ || stdCode[length - 1] == SUFFIX_HFQ)
 		length--;
 
 	SIDSet& sids = _ordque_sub_map[std::string(stdCode, length)];
@@ -202,7 +202,7 @@ void WtHftEngine::sub_order_queue(uint32_t sid, const char* stdCode)
 void WtHftEngine::sub_transaction(uint32_t sid, const char* stdCode)
 {
 	std::size_t length = strlen(stdCode);
-	if (stdCode[length - 1] == 'Q' || stdCode[length - 1] == 'H')
+	if (stdCode[length - 1] == SUFFIX_QFQ || stdCode[length - 1] == SUFFIX_HFQ)
 		length--;
 
 	SIDSet& sids = _trans_sub_map[std::string(stdCode, length)];
