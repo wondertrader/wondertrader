@@ -2698,9 +2698,9 @@ bool HisDataReplayer::cacheRawTicksFromBin(const std::string& key, const char* s
 	//先检查有没有HOT、SND的主力次主力的tick文件
 	if(!cInfo.isFlat())
 	{
-		const char* hot_flag = cInfo.isFlat() ? "" : (cInfo.isHot() ? "HOT" : "2ND");
+		const char* hot_flag = cInfo.isHot() ? FILE_SUF_HOT : FILE_SUF_2ND;
 		std::stringstream ss;
-		ss << _base_dir << "his/ticks/" << cInfo._exchg << "/" << uDate << "/" << cInfo._product << "_" << hot_flag << ".dsb";
+		ss << _base_dir << "his/ticks/" << cInfo._exchg << "/" << uDate << "/" << cInfo._product << hot_flag << ".dsb";
 		filename = ss.str();
 		if (StdFile::exists(filename.c_str()))
 			bHit = true;
@@ -3218,7 +3218,7 @@ bool HisDataReplayer::cacheIntegratedFutBars(const std::string& key, const char*
 	uint32_t realCnt = 0;
 	bool isDay = (period == KP_DAY);
 
-	const char* hot_flag = cInfo.isHot() ? "HOT" : "2ND";
+	const char* hot_flag = cInfo.isHot() ? FILE_SUF_HOT : FILE_SUF_2ND;
 
 	std::vector<WTSBarStruct>* hotAy = NULL;
 	uint32_t lastHotTime = 0;
@@ -3230,7 +3230,7 @@ bool HisDataReplayer::cacheIntegratedFutBars(const std::string& key, const char*
 		 *	但是上层会调用一次loadFinalHisBars，这里再调用loadRawHisBars就冗余了，所以直接跳过
 		 */
 		std::stringstream ss;
-		ss << _base_dir << "his/" << pname << "/" << cInfo._exchg << "/" << cInfo._exchg << "." << cInfo._product << "_" << hot_flag << ".dsb";
+		ss << _base_dir << "his/" << pname << "/" << cInfo._exchg << "/" << cInfo._exchg << "." << cInfo._product << hot_flag << ".dsb";
 		std::string filename = ss.str();
 		if (!StdFile::exists(filename.c_str()))
 			break;

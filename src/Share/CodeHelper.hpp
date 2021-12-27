@@ -17,9 +17,11 @@ USING_NS_WTP;
 
 //主力合约后缀
 static const char* SUFFIX_HOT = ".HOT";
+static const char* FILE_SUF_HOT = "_HOT";
 
 //次主力合约后缀
 static const char* SUFFIX_2ND = ".2ND";
+static const char* FILE_SUF_2ND = "_2ND";
 
 //前复权合约代码后缀
 static const char SUFFIX_QFQ = '-';

@@ -996,7 +996,7 @@ bool WtDataReader::cacheHisBarsFromFile(const std::string& key, const char* stdC
 	uint32_t realCnt = 0;
 	if (!cInfo.isFlat() && commInfo->isFuture())//如果是读取期货主力连续数据
 	{
-		const char* hot_flag = cInfo.isHot() ? "HOT" : "2ND";
+		const char* hot_flag = cInfo.isHot() ? FILE_SUF_HOT : FILE_SUF_2ND;
 
 		//先按照HOT代码进行读取, 如rb.HOT
 		std::vector<WTSBarStruct>* hotAy = NULL;
@@ -1004,7 +1004,7 @@ bool WtDataReader::cacheHisBarsFromFile(const std::string& key, const char* stdC
 		for (;;)
 		{
 			std::stringstream ss;
-			ss << _base_dir << "his/" << pname << "/" << cInfo._exchg << "/" << cInfo._exchg << "." << cInfo._product << "_" << hot_flag << ".dsb";
+			ss << _base_dir << "his/" << pname << "/" << cInfo._exchg << "/" << cInfo._exchg << "." << cInfo._product << hot_flag << ".dsb";
 			std::string filename = ss.str();
 			if (!StdFile::exists(filename.c_str()))
 				break;
