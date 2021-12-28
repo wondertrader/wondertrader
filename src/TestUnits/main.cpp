@@ -1,10 +1,4 @@
-#include <gtest/gtest.h>
-#ifdef _DEBUG
-#pragma  comment(lib, "gtestd")
-#else
-#pragma  comment(lib, "gtest")
-#endif
-
+#include "gtest/gtest/gtest.h"
 
 int main(int argc, char **argv)
 {

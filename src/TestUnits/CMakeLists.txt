@@ -9,7 +9,7 @@ SET(CMAKE_CXX_STANDARD 11)
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../build_${PLATFORM}/${CMAKE_BUILD_TYPE}/bin/TestUnits)
 
 #7. 添加源码
-file(GLOB SRCS *.cpp)
+file(GLOB SRCS *.cpp ./gtest/*.cc)
 
 SET(LIBS)
 

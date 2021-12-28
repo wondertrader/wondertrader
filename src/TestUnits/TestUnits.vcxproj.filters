@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="gtest">
+      <UniqueIdentifier>{9f9e0411-ba62-4b5b-8046-e4d31ecaac11}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -24,5 +27,34 @@
     <ClCompile Include="test_session.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="gtest\gtest-port.cc">
+      <Filter>gtest</Filter>
+    </ClCompile>
+    <ClCompile Include="gtest\gtest-printers.cc">
+      <Filter>gtest</Filter>
+    </ClCompile>
+    <ClCompile Include="gtest\gtest-test-part.cc">
+      <Filter>gtest</Filter>
+    </ClCompile>
+    <ClCompile Include="gtest\gtest-typed-test.cc">
+      <Filter>gtest</Filter>
+    </ClCompile>
+    <ClCompile Include="gtest\gtest.cc">
+      <Filter>gtest</Filter>
+    </ClCompile>
+    <ClCompile Include="gtest\gtest-filepath.cc">
+      <Filter>gtest</Filter>
+    </ClCompile>
+    <ClCompile Include="gtest\gtest-death-test.cc">
+      <Filter>gtest</Filter>
+    </ClCompile>
+    <ClCompile Include="test_lmdb.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="gtest\gtest-internal-inl.h">
+      <Filter>gtest</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

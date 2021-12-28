@@ -1,5 +1,5 @@
 #include "../Share/CodeHelper.hpp"
-#include <gtest/gtest.h>
+#include "gtest/gtest/gtest.h"
 
 TEST(test_codehelper, test_raw_to_std)
 {
@@ -13,14 +13,14 @@ TEST(test_codehelper, test_raw_to_std)
 
 TEST(test_codehelper, test_extract)
 {
-	auto c = CodeHelper::extractStdCode("SSE.STK.600000Q");
+	auto c = CodeHelper::extractStdCode("SSE.STK.600000-");
 	EXPECT_STREQ(c._exchg, "SSE");
 	EXPECT_STREQ(c._code, "600000");
 	EXPECT_STREQ(c._product, "STK");
 	EXPECT_TRUE(c.isExright());
 	EXPECT_EQ(c._exright, 1);
 
-	c = CodeHelper::extractStdCode("SSE.STK.600000H");
+	c = CodeHelper::extractStdCode("SSE.STK.600000+");
 	EXPECT_STREQ(c._exchg, "SSE");
 	EXPECT_STREQ(c._code, "600000");
 	EXPECT_STREQ(c._product, "STK");
@@ -34,14 +34,14 @@ TEST(test_codehelper, test_extract)
 	EXPECT_FALSE(c.isExright());
 	EXPECT_EQ(c._exright, 0);
 
-	c = CodeHelper::extractStdCode("SSE.ETF.1108600Q");
+	c = CodeHelper::extractStdCode("SSE.ETF.1108600-");
 	EXPECT_STREQ(c._exchg, "SSE");
 	EXPECT_STREQ(c._code, "1108600");
 	EXPECT_STREQ(c._product, "ETF");
 	EXPECT_TRUE(c.isExright());
 	EXPECT_EQ(c._exright, 1);
 
-	c = CodeHelper::extractStdCode("SSE.ETF.1108600H");
+	c = CodeHelper::extractStdCode("SSE.ETF.1108600+");
 	EXPECT_STREQ(c._exchg, "SSE");
 	EXPECT_STREQ(c._code, "1108600");
 	EXPECT_STREQ(c._product, "ETF");
@@ -75,4 +75,11 @@ TEST(test_codehelper, test_extract)
 	EXPECT_STREQ(c._product, "IF");
 	EXPECT_FALSE(c.isHot());
 	EXPECT_TRUE(c.isSecond());
+
+	c = CodeHelper::extractStdCode("BINANCE.DC.BTCUSDT");
+	EXPECT_STREQ(c._exchg, "BINANCE");
+	EXPECT_STREQ(c._code, "BTCUSDT");
+	EXPECT_STREQ(c._product, "DC");
+	EXPECT_FALSE(c.isHot());
+	EXPECT_FALSE(c.isSecond());
 }
