@@ -33,7 +33,7 @@ public:
 
 public:
 	void	initialize(const char* cfgFile, const char* logCfg, const char* modDir = "");
-	void	start(bool bAsync = false);
+	void	start(bool bAsync = false, bool bAlldayMode = false);
 
 	bool	createExtParser(const char* id);
 
@@ -78,7 +78,7 @@ private:
 private:
 
 	WTSBaseDataMgr	_bd_mgr;
-	WTSHotMgr		_hot_mgr;
+//	WTSHotMgr		_hot_mgr;
 	boost::asio::io_service _async_io;
 	StateMonitor	_state_mon;
 	UDPCaster		_udp_caster;

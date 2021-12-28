@@ -552,7 +552,7 @@ uint32_t WTSBaseDataMgr::calcTradingDate(const char* stdPID, uint32_t uDate, uin
 
 	uint32_t weekday = TimeUtils::getWeekDay(uDate);
 
-	uint32_t offMin = sInfo->offsetTime(uTime);
+	uint32_t offMin = sInfo->offsetTime(uTime, true);
 	if (sInfo->getOffsetMins() > 0)
 	{
 		//如果向后偏移,且当前时间大于偏移时间,说明向后跨日了

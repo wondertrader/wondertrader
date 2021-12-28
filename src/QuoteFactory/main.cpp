@@ -56,9 +56,10 @@ const char* getBinDir()
 }
 
 
-void initDataMgr(WTSVariant* config)
+void initDataMgr(WTSVariant* config, bool bAlldayMode = false)
 {
-	g_dataMgr.init(config, &g_baseDataMgr, &g_stateMon, &g_udpCaster);
+	//如果是全天模式，则不传递状态机给DataManager
+	g_dataMgr.init(config, &g_baseDataMgr, bAlldayMode ? NULL : &g_stateMon, &g_udpCaster);
 }
 
 void initParsers(WTSVariant* cfg)
@@ -145,32 +146,45 @@ void initialize()
 		WTSLogger::info("Holidays loaded");
 	}
 
-	if (cfgBF->get("hot"))
-	{
-		g_hotMgr.loadHots(cfgBF->getCString("hot"));
-		WTSLogger::info("Hot rules loaded");
-	}
+	//By Wesley @ 2021.12.27
+	//datakit不需要主力映射规则
+	//if (cfgBF->get("hot"))
+	//{
+	//	g_hotMgr.loadHots(cfgBF->getCString("hot"));
+	//	WTSLogger::info("Hot rules loaded");
+	//}
 
-	if (cfgBF->get("second"))
-	{
-		g_hotMgr.loadSeconds(cfgBF->getCString("second"));
-		WTSLogger::info("Second rules loaded");
-	}
+	//if (cfgBF->get("second"))
+	//{
+	//	g_hotMgr.loadSeconds(cfgBF->getCString("second"));
+	//	WTSLogger::info("Second rules loaded");
+	//}
 
 	g_udpCaster.init(config->get("broadcaster"), &g_baseDataMgr, &g_dataMgr);
 
 	initDataMgr(config->get("writer"));
 
-	g_stateMon.initialize("statemonitor.json", &g_baseDataMgr, &g_dataMgr);
+	//By Wesley @ 2021.12.27
+	//全天候模式，不需要再使用状态机
+	bool bAlldayMode = config->getBoolean("allday");
+	if (!bAlldayMode)
+		g_stateMon.initialize("statemonitor.json", &g_baseDataMgr, &g_dataMgr);
+	else
+		WTSLogger::info("QuoteFactory will run in allday mode");
 
 	initParsers(config->get("parsers"));
 
 	config->release();
 
-	g_asyncIO.post([](){
+	g_asyncIO.post([bAlldayMode](){
 		g_parsers.run();
-		std::this_thread::sleep_for(std::chrono::milliseconds(5));
-		g_stateMon.run();
+
+		//全天候模式，不启动状态机
+		if(!bAlldayMode)
+		{
+			std::this_thread::sleep_for(std::chrono::milliseconds(5));
+			g_stateMon.run();
+		}
 	});
 }
 

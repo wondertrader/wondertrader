@@ -187,8 +187,7 @@ public:
 	 *	@param count	要读取的tick条数
 	 *	@param etime	结束时间,精确到毫秒,格式如yyyyMMddhhmmssmmm,如果要读取到最后一条,etime为0,默认为0
 	 */
-	virtual WTSOrdDtlSlice*	readOrdDtlSlice(const char* stdCode, uint32_t count, uint64_t etime = 0) = 0;
-
+	virtual WTSOrdDtlSlice*	readOrdDtlSlice(const char* stdCode, uint32_t count, uint64_t etime = 0) { return NULL; }
 	/*
 	 *	@brief	读取委托队列数据切片
 	 *	@details 切片不会复制数据,只把缓存中的数据指针传递出来,所以叫做切片
@@ -197,7 +196,7 @@ public:
 	 *	@param count	要读取的tick条数
 	 *	@param etime	结束时间,精确到毫秒,格式如yyyyMMddhhmmssmmm,如果要读取到最后一条,etime为0,默认为0
 	 */
-	virtual WTSOrdQueSlice*	readOrdQueSlice(const char* stdCode, uint32_t count, uint64_t etime = 0) = 0;
+	virtual WTSOrdQueSlice*	readOrdQueSlice(const char* stdCode, uint32_t count, uint64_t etime = 0) { return NULL; }
 
 	/*
 	 *	@brief	读取逐笔成交数据切片
@@ -207,7 +206,7 @@ public:
 	 *	@param count	要读取的tick条数
 	 *	@param etime	结束时间,精确到毫秒,格式如yyyyMMddhhmmssmmm,如果要读取到最后一条,etime为0,默认为0
 	 */
-	virtual WTSTransSlice*	readTransSlice(const char* stdCode, uint32_t count, uint64_t etime = 0) = 0;
+	virtual WTSTransSlice*	readTransSlice(const char* stdCode, uint32_t count, uint64_t etime = 0) { return NULL; }
 
 	/*
 	 *	@brief 读取K线序列,并返回一个存储容器类

@@ -122,7 +122,7 @@ void WtSelRtTicker::on_tick(WTSTickData* curTick, uint32_t hotFlag /* = 0 */)
 
 			_engine->on_minute_end(_date, thisMin);
 
-			uint32_t offMin = _s_info->offsetTime(thisMin);
+			uint32_t offMin = _s_info->offsetTime(thisMin, true);
 			if (offMin == _s_info->getCloseTime(true))
 			{
 				_engine->on_session_end();
@@ -203,7 +203,7 @@ void WtSelRtTicker::run()
 
 					_engine->on_minute_end(_date, thisMin);
 
-					uint32_t offMin = _s_info->offsetTime(thisMin);
+					uint32_t offMin = _s_info->offsetTime(thisMin, true);
 					if (offMin >= _s_info->getCloseTime(true))
 					{
 						_engine->on_session_end();

@@ -112,7 +112,7 @@ bool StateMonitor::initialize(const char* filename, WTSBaseDataMgr* bdMgr, DataM
 			uint32_t curDate = TimeUtils::getCurDate();
 			uint32_t curMin = TimeUtils::getCurMin() / 100;
 			uint32_t offDate = ssInfo->getOffsetDate(curDate, curMin);
-			uint32_t offMin = ssInfo->offsetTime(curMin);
+			uint32_t offMin = ssInfo->offsetTime(curMin, true);
 
 			//先获取基准的交易日
 
@@ -178,9 +178,9 @@ void StateMonitor::run()
 					{
 					case SS_ORIGINAL:
 						{
-							uint32_t offTime = mInfo->offsetTime(curMin);
-							uint32_t offInitTime = mInfo->offsetTime(sInfo->_init_time);
-							uint32_t offCloseTime = mInfo->offsetTime(sInfo->_close_time);
+							uint32_t offTime = mInfo->offsetTime(curMin, true);
+							uint32_t offInitTime = mInfo->offsetTime(sInfo->_init_time, true);
+							uint32_t offCloseTime = mInfo->offsetTime(sInfo->_close_time, false);
 							uint32_t aucStartTime = mInfo->getAuctionStartTime(true);
 
 							bool isAllHoliday = true;
@@ -267,7 +267,7 @@ void StateMonitor::run()
 						break;
 					case SS_INITIALIZED:
 						{
-							uint32_t offTime = mInfo->offsetTime(curMin);
+							uint32_t offTime = mInfo->offsetTime(curMin, true);
 							uint32_t offAucSTime = mInfo->getAuctionStartTime(true);
 							if (offAucSTime == -1 || offTime >= mInfo->getAuctionStartTime(true))
 							{
@@ -296,8 +296,8 @@ void StateMonitor::run()
 						break;
 					case SS_RECEIVING:
 						{
-							uint32_t offTime = mInfo->offsetTime(curMin);
-							uint32_t offCloseTime = mInfo->offsetTime(sInfo->_close_time);
+							uint32_t offTime = mInfo->offsetTime(curMin, true);
+							uint32_t offCloseTime = mInfo->offsetTime(sInfo->_close_time, false);
 							if (offTime >= offCloseTime)
 							{
 								sInfo->_state = SS_CLOSED;
@@ -357,7 +357,7 @@ void StateMonitor::run()
 							
 							if (!isAllHoliday)
 							{
-								uint32_t offTime = mInfo->offsetTime(curMin);
+								uint32_t offTime = mInfo->offsetTime(curMin, true);
 								if (sInfo->isInSections(offTime))
 								{
 									sInfo->_state = SS_RECEIVING;
@@ -373,8 +373,8 @@ void StateMonitor::run()
 						break;
 					case SS_CLOSED:
 						{
-							uint32_t offTime = mInfo->offsetTime(curMin);
-							uint32_t offProcTime = mInfo->offsetTime(sInfo->_proc_time);
+							uint32_t offTime = mInfo->offsetTime(curMin, true);
+							uint32_t offProcTime = mInfo->offsetTime(sInfo->_proc_time, true);
 							if (offTime >= offProcTime)
 							{
 								if(!_dt_mgr->isSessionProceeded(sInfo->_session))
@@ -406,8 +406,8 @@ void StateMonitor::run()
 					case SS_PROCED:
 					case SS_Holiday:
 						{
-							uint32_t offTime = mInfo->offsetTime(curMin);
-							uint32_t offInitTime = mInfo->offsetTime(sInfo->_init_time);
+							uint32_t offTime = mInfo->offsetTime(curMin, true);
+							uint32_t offInitTime = mInfo->offsetTime(sInfo->_init_time, true);
 							if (offTime >= 0 && offTime < offInitTime)
 							{
 								bool isAllHoliday = true;

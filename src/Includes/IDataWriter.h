@@ -85,15 +85,15 @@ public:
 public:
 	virtual bool writeTick(WTSTickData* curTick, bool bNeedSlice = true) = 0;
 
-	virtual bool writeOrderQueue(WTSOrdQueData* curOrdQue) = 0;
+	virtual bool writeOrderQueue(WTSOrdQueData* curOrdQue) { return false; }
 
-	virtual bool writeOrderDetail(WTSOrdDtlData* curOrdDetail) = 0;
+	virtual bool writeOrderDetail(WTSOrdDtlData* curOrdDetail) { return false; }
 
-	virtual bool writeTransaction(WTSTransData* curTrans) = 0;
+	virtual bool writeTransaction(WTSTransData* curTrans) { return false; }
 
-	virtual void transHisData(const char* sid) = 0;
+	virtual void transHisData(const char* sid) {}
 
-	virtual bool isSessionProceeded(const char* sid) = 0;
+	virtual bool isSessionProceeded(const char* sid) { return true; }
 
 	virtual WTSTickData* getCurTick(const char* code, const char* exchg = "") = 0;
 

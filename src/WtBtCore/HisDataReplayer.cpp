@@ -657,7 +657,7 @@ void HisDataReplayer::run_by_bars(bool bNeedDump /* = false */)
 			_cur_time = nextTime;
 			_cur_secs = 0;
 
-			uint32_t offTime = sInfo->offsetTime(_cur_time);
+			uint32_t offTime = sInfo->offsetTime(_cur_time, true);
 			bool isEndTDate = (offTime >= sInfo->getCloseTime(true));
 
 			if (!_tick_enabled)
@@ -838,7 +838,7 @@ void HisDataReplayer::run_by_tasks(bool bNeedDump /* = false */)
 				//用前一分钟作为结束时间
 				uint32_t curDate = _cur_date;
 				uint32_t curTime = endtime;
-				bool bEndSession = sInfo->offsetTime(curTime) >= sInfo->getCloseTime(true);
+				bool bEndSession = sInfo->offsetTime(curTime, true) >= sInfo->getCloseTime(true);
 				if (_listener)
 					_listener->handle_session_begin(_cur_tdate);
 				onMinuteEnd(curDate, curTime, bEndSession ? _cur_tdate : preTDate);
@@ -1817,7 +1817,7 @@ WTSKlineSlice* HisDataReplayer::get_kline_slice(const char* stdCode, const char*
 		return NULL;
 	}
 
-	bool isClosed = (sInfo->offsetTime(_cur_time) >= sInfo->getCloseTime(true));
+	bool isClosed = (sInfo->offsetTime(_cur_time, true) >= sInfo->getCloseTime(true));
 	if (realTimes != 1 && !bHasCache)
 	{	
 		std::string rawKey = StrUtil::printf("%s#%s#%u", stdCode, period, 1);

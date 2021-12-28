@@ -17,7 +17,6 @@
 #include "../Includes/WTSDataDef.hpp"
 
 #include "../Share/JsonToVariant.hpp"
-#include "../Share/DLLHelper.hpp"
 #include "../Share/StrUtil.hpp"
 
 #include "../WTSTools/WTSLogger.h"
@@ -41,7 +40,7 @@ WtDtRunner::~WtDtRunner()
 {
 }
 
-void WtDtRunner::start(bool bAsync/* = false*/)
+void WtDtRunner::start(bool bAsync /* = false */, bool bAlldayMode /* = false */)
 {
 	_parsers.run();
 
@@ -121,23 +120,29 @@ void WtDtRunner::initialize(const char* cfgFile, const char* logCfg, const char*
 		WTSLogger::info("Holidays loaded");
 	}
 
-	if (cfgBF->get("hot"))
-	{
-		_hot_mgr.loadHots(cfgBF->getCString("hot"));
-		WTSLogger::info("Hot rules loaded");
-	}
-
-	if (cfgBF->get("second"))
-	{
-		_hot_mgr.loadSeconds(cfgBF->getCString("second"));
-		WTSLogger::info("Second rules loaded");
-	}
+    /*
+     *  By Wesley @ 2021.12.27
+     *  数据组件实际上不需要单独处理主力合约
+     */
+//	if (cfgBF->get("hot"))//	{
+//		_hot_mgr.loadHots(cfgBF->getCString("hot"));
+//		WTSLogger::info("Hot rules loaded");
+//	}
+//
+//	if (cfgBF->get("second"))
+//	{
+//		_hot_mgr.loadSeconds(cfgBF->getCString("second"));
+//		WTSLogger::info("Second rules loaded");
+//	}
 
 	_udp_caster.init(config->get("broadcaster"), &_bd_mgr, &_data_mgr);
 
 	initDataMgr(config->get("writer"));
 
-	_state_mon.initialize(config->getCString("statemonitor"), &_bd_mgr, &_data_mgr);
+    //By Wesley @ 2021.12.27
+    //全天候落地的话，不需要加载statemonitor
+    if(config->has("statemonitor"))
+	    _state_mon.initialize(config->getCString("statemonitor"), &_bd_mgr, &_data_mgr);
 
 	initParsers(config->getCString("parsers"));
 

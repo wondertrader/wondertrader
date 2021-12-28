@@ -220,7 +220,8 @@ public:
 
 	static inline bool isMonthlyCode(const char* code)
 	{
-		return isdigit(code[strlen(code) - 1]);
+		//最后3/4位都是数字，才是分月合约
+		return isdigit(code[strlen(code) - 1]) && (isalpha(code[strlen(code) - 3]) || isalpha(code[strlen(code) - 4]));
 	}
 
 	/*
@@ -395,9 +396,9 @@ public:
 				strcpy(codeInfo._code, ay[2].substr(0, ay[2].size() - 1).c_str());
 				codeInfo._exright = (ay[2].back() == SUFFIX_QFQ)?1:2;
 			}
-			else if(isdigit(ay[2].back()))
+			else if(ay[2].size()==4 && isdigit(ay[2].back()))
 			{
-				//如果最后一段是数字，说明是分月合约
+				//如果最后一段是4位数字，说明是分月合约
 				//TODO: 这样的判断存在一个假设，最后一位是数字的一定是期货分月合约，以后可能会有问题，先注释一下
 				//那么code得加上品种id
 				//郑商所得单独处理一下，这个只能hardcode了

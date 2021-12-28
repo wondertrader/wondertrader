@@ -840,7 +840,7 @@ bool CtaStraBaseCtx::on_schedule(uint32_t curDate, uint32_t curTime)
 		{	
 			TimeUtils::Ticker ticker;
 
-			uint32_t offTime = sInfo->offsetTime(curTime);
+			uint32_t offTime = sInfo->offsetTime(curTime, true);
 			if(offTime <= sInfo->getCloseTime(true))
 			{
 				_condtions.clear();

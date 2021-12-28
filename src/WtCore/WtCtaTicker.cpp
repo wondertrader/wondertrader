@@ -102,7 +102,7 @@ void WtCtaRtTicker::on_tick(WTSTickData* curTick, uint32_t hotFlag /* = 0 */)
 			uint32_t thisMin = _s_info->minuteToTime(_cur_pos);
 			
 			bool bEndingTDate = false;
-			uint32_t offMin = _s_info->offsetTime(thisMin);
+			uint32_t offMin = _s_info->offsetTime(thisMin, true);
 			if (offMin == _s_info->getCloseTime(true))
 				bEndingTDate = true;
 
@@ -157,7 +157,7 @@ void WtCtaRtTicker::run()
 	_thrd.reset(new StdThread([this](){
 		while(!_stopped)
 		{
-			uint32_t offTime = _s_info->offsetTime(_engine->get_min_time());
+			uint32_t offTime = _s_info->offsetTime(_engine->get_min_time(), true);
 
 			if (_time != UINT_MAX && _s_info->isInTradingTime(_time / 100000, true))
 			{
@@ -187,7 +187,7 @@ void WtCtaRtTicker::run()
 					}
 
 					bool bEndingTDate = false;
-					uint32_t offMin = _s_info->offsetTime(thisMin);
+					uint32_t offMin = _s_info->offsetTime(thisMin, true);
 					if (offMin == _s_info->getCloseTime(true))
 						bEndingTDate = true;
 

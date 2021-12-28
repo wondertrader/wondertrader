@@ -108,20 +108,6 @@ bool WtDataWriter::init(WTSVariant* params, IDataWriterSink* sink)
 		}
 	}
 
-	//WTSVariant* dbConf = params->get("db");
-	//if(dbConf)
-	//{
-	//	strcpy(_db_conf._host, dbConf->getCString("host"));
-	//	strcpy(_db_conf._dbname, dbConf->getCString("dbname"));
-	//	strcpy(_db_conf._user, dbConf->getCString("user"));
-	//	strcpy(_db_conf._pass, dbConf->getCString("pass"));
-	//	_db_conf._port = dbConf->getInt32("port");
-
-	//	_db_conf._active = (strlen(_db_conf._host) > 0) && (strlen(_db_conf._dbname) > 0) && (_db_conf._port != 0);
-	//	if (_db_conf._active)
-	//		init_db();
-	//}
-
 	loadCache();
 
 	_proc_chk.reset(new StdThread(boost::bind(&WtDataWriter::check_loop, this)));

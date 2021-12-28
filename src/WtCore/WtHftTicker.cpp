@@ -122,7 +122,7 @@ void WtHftRtTicker::on_tick(WTSTickData* curTick, uint32_t hotFlag/* = 0*/)
 
 			_engine->on_minute_end(_date, thisMin);
 
-			uint32_t offMin = _s_info->offsetTime(thisMin);
+			uint32_t offMin = _s_info->offsetTime(thisMin, true);
 			if (offMin == _s_info->getCloseTime(true))
 			{
 				_engine->on_session_end();
@@ -165,7 +165,7 @@ void WtHftRtTicker::run()
 	_engine->on_session_begin();
 
 	//先检查当前时间, 如果大于
-	uint32_t offTime = _s_info->offsetTime(_engine->get_min_time());
+	uint32_t offTime = _s_info->offsetTime(_engine->get_min_time(), true);
 
 	_thrd.reset(new StdThread([this, offTime](){
 		while (!_stopped)
@@ -203,7 +203,7 @@ void WtHftRtTicker::run()
 
 					_engine->on_minute_end(_date, thisMin);
 
-					uint32_t offMin = _s_info->offsetTime(thisMin);
+					uint32_t offMin = _s_info->offsetTime(thisMin, true);
 					if (offMin >= _s_info->getCloseTime(true))
 					{
 						_engine->on_session_end();

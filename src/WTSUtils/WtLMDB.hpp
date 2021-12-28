@@ -17,10 +17,11 @@ typedef std::function<void(const ValueArray&, const ValueArray&)> LMDBQueryCallb
 class WtLMDB
 {
 public:
-	WtLMDB()
+	WtLMDB(bool bReadOnly = false)
 		: _env(NULL)
 		, _dbi(0)
 		, _errno(0)
+		, _readonly(bReadOnly)
 	{}
 
 	~WtLMDB()
@@ -67,6 +68,8 @@ public:
 
 	inline bool has_error() const { return _errno != MDB_SUCCESS; }
 
+	inline bool is_readonly() const { return _readonly; }
+
 	inline const char* errmsg()
 	{
 		return mdb_strerror(_errno);
@@ -76,18 +79,19 @@ private:
 	MDB_env*	_env;
 	MDB_dbi		_dbi;
 	int			_errno;
+	bool		_readonly;
 };
 
 class WtLMDBQuery
 {
 public:
-	WtLMDBQuery(WtLMDB& db, bool bReadOnly = true)
-		: _readonly(bReadOnly)
-		, _txn(NULL)
+	WtLMDBQuery(WtLMDB& db)
+		: _txn(NULL)
 		, _commited(false)
 		, _db(db)
 	{
-		_db.update_errno(mdb_txn_begin(_db.env(), NULL, (bReadOnly ? MDB_RDONLY : 0), &_txn));
+		_readonly = db.is_readonly();
+		_db.update_errno(mdb_txn_begin(_db.env(), NULL, (_readonly ? MDB_RDONLY : 0), &_txn));
 		_dbi = _db.update_dbi(_txn);
 	}
 	

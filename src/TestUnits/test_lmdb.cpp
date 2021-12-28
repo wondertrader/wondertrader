@@ -13,12 +13,12 @@ TEST(test_lmdb, test_constructor)
 
 TEST(test_lmdb, test_query)
 {
-	WtLMDB db;
-	EXPECT_TRUE(db.open("./testdb"));
-
 	{	
 		//–¥≤È—Ø
-		WtLMDBQuery query(db, false);
+		WtLMDB db(false);
+		EXPECT_TRUE(db.open("./testdb"));
+
+		WtLMDBQuery query(db);
 		EXPECT_FALSE(db.has_error());
 		for(int i = 0; i < 100; i++)
 		{
@@ -33,7 +33,10 @@ TEST(test_lmdb, test_query)
 
 	{
 		//∂¡≤È—Ø
-		WtLMDBQuery query(db, true);
+		WtLMDB db(true);
+		EXPECT_TRUE(db.open("./testdb"));
+
+		WtLMDBQuery query(db);
 		EXPECT_FALSE(db.has_error());
 		EXPECT_FALSE(query.put(std::string("key1"), std::string("value1")));
 
