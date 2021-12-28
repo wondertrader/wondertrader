@@ -19,6 +19,9 @@
     <Filter Include="StackTracer">
       <UniqueIdentifier>{803926c3-564f-497b-91a0-84a0f13955e5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="lmdb">
+      <UniqueIdentifier>{47157edc-7ac8-4754-a539-0800df1ddc15}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="zstdlib\bitstream.h">
@@ -129,6 +132,15 @@
     <ClInclude Include="StackTracer\StackWalker.h">
       <Filter>StackTracer</Filter>
     </ClInclude>
+    <ClInclude Include="lmdb\lmdb.h">
+      <Filter>lmdb</Filter>
+    </ClInclude>
+    <ClInclude Include="lmdb\midl.h">
+      <Filter>lmdb</Filter>
+    </ClInclude>
+    <ClInclude Include="WtLMDB.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="zstdlib\cover.c">
@@ -229,6 +241,12 @@
     </ClCompile>
     <ClCompile Include="StackTracer\StackWalker.cpp">
       <Filter>StackTracer</Filter>
+    </ClCompile>
+    <ClCompile Include="lmdb\mdb.c">
+      <Filter>lmdb</Filter>
+    </ClCompile>
+    <ClCompile Include="lmdb\midl.c">
+      <Filter>lmdb</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

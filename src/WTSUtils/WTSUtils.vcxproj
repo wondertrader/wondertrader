@@ -153,9 +153,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="fmtlib.h" />
+    <ClInclude Include="lmdb\lmdb.h" />
+    <ClInclude Include="lmdb\midl.h" />
     <ClInclude Include="SignalHook.hpp" />
     <ClInclude Include="StackTracer\StackTracer.h" />
     <ClInclude Include="StackTracer\StackWalker.h" />
+    <ClInclude Include="WtLMDB.hpp" />
     <ClInclude Include="zstdlib\bitstream.h" />
     <ClInclude Include="zstdlib\compiler.h" />
     <ClInclude Include="zstdlib\cover.h" />
@@ -190,6 +193,8 @@
     <ClInclude Include="zstdlib\zstd_opt.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="lmdb\mdb.c" />
+    <ClCompile Include="lmdb\midl.c" />
     <ClCompile Include="StackTracer\StackTracer.cpp" />
     <ClCompile Include="StackTracer\StackWalker.cpp" />
     <ClCompile Include="zstdlib\cover.c" />
