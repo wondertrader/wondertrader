@@ -37,7 +37,7 @@ public:
 	}
 
 	inline void	setVolScale(uint32_t volScale){ m_uVolScale = volScale; }
-	inline void	setPriceTick(double pxTick){ m_fPriceTick = pxTick; }
+	inline void	setPriceTick(double pxTick){ m_dPriceTick = pxTick; }
 	inline void	setCategory(ContractCategory cat){ m_ccCategory = cat; }
 	inline void	setCoverMode(CoverMode cm){ m_coverMode = cm; }
 	inline void	setPriceMode(PriceMode pm){ m_priceMode = pm; }
@@ -45,8 +45,6 @@ public:
 
 	inline bool canShort() const { return m_tradeMode == TM_Both; }
 	inline bool isT1() const { return m_tradeMode == TM_LongT1; }
-
-	inline void	setPrecision(uint32_t prec){ m_uPrecision = prec; }
 
 	inline const char* getName()	const{ return m_strName.c_str(); }
 	inline const char* getExchg()	const{ return m_strExchg.c_str(); }
@@ -57,8 +55,8 @@ public:
 	inline const char* getFullPid()	const{ return m_strFullPid.c_str(); }
 
 	inline uint32_t	getVolScale()	const{ return m_uVolScale; }
-	inline double		getPriceTick()	const{ return m_fPriceTick; }
-	inline uint32_t	getPrecision()	const{ return m_uPrecision; }
+	inline double	getPriceTick()	const{ return m_dPriceTick; }
+	//inline uint32_t	getPrecision()	const{ return m_uPrecision; }
 
 	inline ContractCategory		getCategoty() const{ return m_ccCategory; }
 	inline CoverMode			getCoverMode() const{ return m_coverMode; }
@@ -68,11 +66,8 @@ public:
 	inline void		addCode(const char* code){ m_setCodes.insert(code); }
 	inline const faster_hashset<std::string>& getCodes() const{ return m_setCodes; }
 
-	inline void	setEntrustQtyUnit(double buyQtyUnit, double sellQtyUnit)
-	{
-		m_buyQtyUnit = buyQtyUnit;
-		m_selQtyUnit = sellQtyUnit;
-	}
+	inline void	setLotsTick(double lotsTick){ m_dLotTick = lotsTick; }
+	inline void	setMinLots(double minLots) { m_dMinLots = minLots; }
 
 	inline bool isOption() const
 	{
@@ -89,8 +84,8 @@ public:
 		return m_ccCategory == CC_Stock;
 	}
 
-	inline double	getBuyQtyUnit() const { return m_buyQtyUnit; }
-	inline double	getSellQtyUnit() const { return m_selQtyUnit; }
+	inline double	getLotsTick() const { return m_dLotTick; }
+	inline double	getMinLots() const { return m_dMinLots; }
 
 private:
 	std::string	m_strName;		//品种名称
@@ -102,11 +97,11 @@ private:
 	std::string m_strFullPid;	//全品种ID，如CFFEX.IF
 
 	uint32_t	m_uVolScale;	//合约放大倍数
-	double		m_fPriceTick;	//最小价格变动单位
-	uint32_t	m_uPrecision;	//价格精度
+	double		m_dPriceTick;	//最小价格变动单位
+	//uint32_t	m_uPrecision;	//价格精度
 
-	double		m_buyQtyUnit;	//买入数量单位
-	double		m_selQtyUnit;	//卖出数量单位
+	double		m_dLotTick;		//数量精度
+	double		m_dMinLots;		//最小交易数量
 
 	ContractCategory	m_ccCategory;	//品种分类，期货、股票、期权等
 	CoverMode			m_coverMode;	//平仓类型
@@ -168,7 +163,6 @@ private:
 
 	std::string m_strFullPid;
 	std::string m_strFullCode;
-
 
 	uint32_t	m_maxMktQty;
 	uint32_t	m_maxLmtQty;
