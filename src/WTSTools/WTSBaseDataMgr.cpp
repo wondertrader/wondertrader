@@ -272,6 +272,34 @@ bool WTSBaseDataMgr::loadSessions(const char* filename)
 	return true;
 }
 
+void parseCommodity(WTSCommodityInfo* pCommInfo, const rj::Value& jPInfo)
+{
+	pCommInfo->setPriceTick(jPInfo["pricetick"].GetDouble());
+	pCommInfo->setVolScale(jPInfo["volscale"].GetUint());
+
+	if (jPInfo.HasMember("category"))
+		pCommInfo->setCategory((ContractCategory)jPInfo["category"].GetUint());
+	else
+		pCommInfo->setCategory(CC_Future);
+
+	pCommInfo->setCoverMode((CoverMode)jPInfo["covermode"].GetUint());
+	pCommInfo->setPriceMode((PriceMode)jPInfo["pricemode"].GetUint());
+
+	if (jPInfo.HasMember("trademode"))
+		pCommInfo->setTradingMode((TradingMode)jPInfo["trademode"].GetUint());
+	else
+		pCommInfo->setTradingMode(TM_Both);
+
+	double lotsTick = 1;
+	double minLots = 1;
+	if (jPInfo.HasMember("lotstick"))
+		lotsTick = jPInfo["lotstick"].GetDouble();
+	if (jPInfo.HasMember("minlots"))
+		minLots = jPInfo["minlots"].GetDouble();
+	pCommInfo->setLotsTick(lotsTick);
+	pCommInfo->setMinLots(minLots);
+}
+
 bool WTSBaseDataMgr::loadCommodities(const char* filename)
 {
 	if (!StdFile::exists(filename))
@@ -305,35 +333,12 @@ bool WTSBaseDataMgr::loadCommodities(const char* filename)
 
 			if (strlen(sid) == 0)
 			{
-				WTSLogger::error("Not corresponding session ID of instrument %s", pid.c_str());
+				WTSLogger::error("No session configured for %s.%s", exchg.c_str(), pid.c_str());
 				continue;
 			}
 
 			WTSCommodityInfo* pCommInfo = WTSCommodityInfo::create(pid.c_str(), name, exchg.c_str(), sid, hid);
-			pCommInfo->setPrecision(jPInfo["precision"].GetUint());
-			pCommInfo->setPriceTick(jPInfo["pricetick"].GetDouble());
-			pCommInfo->setVolScale(jPInfo["volscale"].GetUint());
-
-			if (jPInfo.HasMember("category"))
-				pCommInfo->setCategory((ContractCategory)jPInfo["category"].GetUint());
-			else
-				pCommInfo->setCategory(CC_Future);
-
-			pCommInfo->setCoverMode((CoverMode)jPInfo["covermode"].GetUint());
-			pCommInfo->setPriceMode((PriceMode)jPInfo["pricemode"].GetUint());
-
-			if (jPInfo.HasMember("trademode"))
-				pCommInfo->setTradingMode((TradingMode)jPInfo["trademode"].GetUint());
-			else
-				pCommInfo->setTradingMode(TM_Both);
-
-			double buyQtyUnit = 1;
-			double sellQtyUnit = 1;
-			if (jPInfo.HasMember("buyqtyunit"))
-				buyQtyUnit = jPInfo["buyqtyunit"].GetDouble();
-			if (jPInfo.HasMember("sellqtyunit"))
-				sellQtyUnit = jPInfo["sellqtyunit"].GetDouble();
-			pCommInfo->setEntrustQtyUnit(buyQtyUnit, sellQtyUnit);
+			parseCommodity(pCommInfo, jPInfo);
 
 			std::string key = StrUtil::printf("%s.%s", exchg.c_str(), pid.c_str());
 			if (m_mapCommodities == NULL)
@@ -376,9 +381,49 @@ bool WTSBaseDataMgr::loadContracts(const char* filename)
 			const std::string& code = cMember.name.GetString();
 			const rj::Value& jcInfo = cMember.value;
 
-			WTSCommodityInfo* commInfo = getCommodity(jcInfo["exchg"].GetString(), jcInfo["product"].GetString());
+			/*
+			 *	By Wesley @ 2021.12.28
+			 *	这里做一个兼容，如果product为空,先检查是否配置了rules属性，如果配置了rules属性，把合约单独当成品种自动加入
+			 *	如果没有配置rules，则直接跳过该合约
+			 */
+			WTSCommodityInfo* commInfo = NULL;
+			if(jcInfo.HasMember("product"))
+			{
+				commInfo = getCommodity(jcInfo["exchg"].GetString(), jcInfo["product"].GetString());
+			}
+			else if(jcInfo.HasMember("rules"))
+			{
+				const char* pid = code.c_str();
+				const rj::Value& jPInfo = jcInfo["rules"];
+				const char* name = jcInfo["name"].GetString();
+				std::string sid = jPInfo["session"].GetString();
+				std::string hid;
+				if(jPInfo.HasMember("holiday"))
+					jPInfo["holiday"].GetString();
+
+				//这里不能像解析commodity那样处理，直接赋值为ALLDAY
+				if (sid.empty())
+					sid = "ALLDAY";
+
+				WTSCommodityInfo* pCommInfo = WTSCommodityInfo::create(pid, name, exchg.c_str(), sid.c_str(), hid.c_str());
+				parseCommodity(pCommInfo, jPInfo);
+
+				std::string key = StrUtil::printf("%s.%s", exchg.c_str(), pid);
+				if (m_mapCommodities == NULL)
+					m_mapCommodities = WTSCommodityMap::create();
+
+				m_mapCommodities->add(key, pCommInfo, false);
+
+				m_mapSessionCode[sid].insert(key);
+
+				WTSLogger::debug("Commodity %s has been automatically added", key.c_str());
+			}
+
 			if (commInfo == NULL)
+			{
+				WTSLogger::error("Commodity %s.%s not found, contract %s skipped", jcInfo["exchg"].GetString(), jcInfo["product"].GetString(), code.c_str());
 				continue;
+			}
 
 			WTSContractInfo* cInfo = WTSContractInfo::create(code.c_str(),
 				jcInfo["name"].GetString(),
