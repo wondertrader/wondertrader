@@ -53,14 +53,6 @@ public:
 		inline bool isSecond() const { return _hotflag == 2; }
 		inline bool isFlat() const { return _hotflag == 0; }
 
-		//inline bool isFuture() const { return _category == CC_Future; }
-		//inline bool isStock() const { return _category == CC_Stock; }
-		//inline bool isFutOpt() const { return _category == CC_FutOption; }
-		//inline bool isETFOpt() const { return _category == CC_ETFOption; }
-		//inline bool isSpotOpt() const { return _category == CC_SpotOption; }
-
-		//inline bool isOption() const { return _category == CC_SpotOption || _category == CC_FutOption || _category == CC_ETFOption; }
-
 		inline const char* stdCommID() const
 		{
 			static char buffer[64] = { 0 };
@@ -154,8 +146,21 @@ public:
 	static inline std::string stdCodeToStdCommID(const char* stdCode)
 	{
 		auto idx = find(stdCode, '.', true);
-		std::string stdCommID(stdCode, idx);
-		return std::move(stdCommID);
+		auto idx2 = find(stdCode, '.', false);
+		if(idx != idx2)
+		{
+			//前后两个.不是同一个，说明是三段的代码
+			//提取前两段作为品种代码
+			std::string stdCommID(stdCode, idx);
+			return std::move(stdCommID);
+		}
+		else
+		{
+			//两段的代码，直接返回
+			//主要针对某些交易所，每个合约的交易规则都不同的情况
+			//这种情况，就把合约直接当成品种来用
+			return std::move(stdCode);
+		}
 	}
 
 	/*
@@ -388,33 +393,43 @@ public:
 			 */
 			CodeInfo codeInfo;
 			StringVector ay = StrUtil::split(stdCode, ".");
-			//codeInfo._category = CC_Stock;
 			strcpy(codeInfo._exchg, ay[0].c_str());
 			strcpy(codeInfo._product, ay[1].c_str());
-			if (ay[2].back() == SUFFIX_QFQ || ay[2].back() == SUFFIX_HFQ)
+			if(ay.size() == 3)
 			{
-				strcpy(codeInfo._code, ay[2].substr(0, ay[2].size() - 1).c_str());
-				codeInfo._exright = (ay[2].back() == SUFFIX_QFQ)?1:2;
-			}
-			else if(ay[2].size()==4 && isdigit(ay[2].back()))
-			{
-				//如果最后一段是4位数字，说明是分月合约
-				//TODO: 这样的判断存在一个假设，最后一位是数字的一定是期货分月合约，以后可能会有问题，先注释一下
-				//那么code得加上品种id
-				//郑商所得单独处理一下，这个只能hardcode了
-				if(strcmp(codeInfo._product, "CZCE") == 0)
-					sprintf(codeInfo._code, "%s%s", codeInfo._product, ay[2].c_str()+1);
+				if (ay[2].back() == SUFFIX_QFQ || ay[2].back() == SUFFIX_HFQ)
+				{
+					strcpy(codeInfo._code, ay[2].substr(0, ay[2].size() - 1).c_str());
+					codeInfo._exright = (ay[2].back() == SUFFIX_QFQ) ? 1 : 2;
+				}
+				else if (ay[2].size() == 4 && isdigit(ay[2].back()))
+				{
+					//如果最后一段是4位数字，说明是分月合约
+					//TODO: 这样的判断存在一个假设，最后一位是数字的一定是期货分月合约，以后可能会有问题，先注释一下
+					//那么code得加上品种id
+					//郑商所得单独处理一下，这个只能hardcode了
+					if (strcmp(codeInfo._product, "CZCE") == 0)
+						sprintf(codeInfo._code, "%s%s", codeInfo._product, ay[2].c_str() + 1);
+					else
+						sprintf(codeInfo._code, "%s%s", codeInfo._product, ay[2].c_str());
+				}
 				else
-					sprintf(codeInfo._code, "%s%s", codeInfo._product, ay[2].c_str());
+				{
+					codeInfo._hotflag = CodeHelper::isStdFutHotCode(stdCode) ? 1 : (CodeHelper::isStdFut2ndCode(stdCode) ? 2 : 0);
+					if (codeInfo._hotflag == 0)
+						strcpy(codeInfo._code, ay[2].c_str());
+					else
+						strcpy(codeInfo._code, codeInfo._product);
+				}
 			}
 			else
 			{
-				codeInfo._hotflag = CodeHelper::isStdFutHotCode(stdCode) ? 1 : (CodeHelper::isStdFut2ndCode(stdCode) ? 2 : 0);
-				if(codeInfo._hotflag == 0)
-					strcpy(codeInfo._code, ay[2].c_str());
-				else
-					strcpy(codeInfo._code, codeInfo._product);
+				//By Wesley @ 2021.12.29
+				//如果是两段的合约代码，如OKEX.BTC-USDT
+				//则品种代码和合约代码一致
+				strcpy(codeInfo._code, ay[1].c_str());
 			}
+			
 
 			return codeInfo;
 		}
