@@ -332,19 +332,19 @@ public:
 		return uYear*100 + uMonth;
 	}
 
-	static inline uint32_t timeToMinBar(uint32_t uDate, uint32_t uTime)
+	static inline uint64_t timeToMinBar(uint32_t uDate, uint32_t uTime)
 	{
-		return (uDate-19900000)*10000 + uTime;
+		return (uint64_t)((uDate-19900000)*10000) + uTime;
 	}
 
-	static inline uint32_t minBarToDate(uint32_t minTime)
+	static inline uint32_t minBarToDate(uint64_t minTime)
 	{
-		return minTime/10000 + 19900000;
+		return (uint32_t)(minTime/10000 + 19900000);
 	}
 
-	static inline uint32_t minBarToTime(uint32_t minTime)
+	static inline uint32_t minBarToTime(uint64_t minTime)
 	{
-		return minTime%10000;
+		return (uint32_t)(minTime%10000);
 	}
 
 	static inline bool isWeekends(uint32_t uDate)
