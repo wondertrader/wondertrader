@@ -458,75 +458,75 @@ public:
 	*	读取指定位置的成交量
 	*	如果超出范围则返回INVALID_VALUE
 	*/
-	uint32_t	volume(int32_t idx) const
+	double	volume(int32_t idx) const
 	{
 		idx = translateIdx(idx);
 
 		if (idx < 0 || idx >= size())
-			return INVALID_UINT32;
+			return DBL_MAX;
 
 		if (idx < m_iHisCnt)
 			if (m_bsHisBegin == NULL)
-				return INVALID_UINT32;
+				return DBL_MAX;
 			else
 				return (m_bsHisBegin + idx)->vol;
 		else if (idx < size())
 			if (m_bsRtBegin == NULL)
-				return INVALID_UINT32;
+				return DBL_MAX;
 			else
 				return (m_bsRtBegin + (idx - m_iHisCnt))->vol;
 
-		return INVALID_UINT32;
+		return DBL_MAX;
 	}
 
 	/*
 	*	读取指定位置的总持
 	*	如果超出范围则返回INVALID_VALUE
 	*/
-	uint32_t	openinterest(int32_t idx) const
+	double	openinterest(int32_t idx) const
 	{
 		idx = translateIdx(idx);
 
 		if (idx < 0 || idx >= size())
-			return INVALID_UINT32;
+			return DBL_MAX;
 
 		if (idx < m_iHisCnt)
 			if (m_bsHisBegin == NULL)
-				return INVALID_UINT32;
+				return DBL_MAX;
 			else
 				return (m_bsHisBegin + idx)->hold;
 		else if (idx < size())
 			if (m_bsRtBegin == NULL)
-				return INVALID_UINT32;
+				return DBL_MAX;
 			else
 				return (m_bsRtBegin + (idx - m_iHisCnt))->hold;
 
-		return INVALID_UINT32;
+		return DBL_MAX;
 	}
 
 	/*
 	*	读取指定位置的增仓
 	*	如果超出范围则返回INVALID_VALUE
 	*/
-	int32_t	additional(int32_t idx) const
+	double	additional(int32_t idx) const
 	{
 		idx = translateIdx(idx);
 
 		if (idx < 0 || idx >= size())
-			return INVALID_INT32;
+			return DBL_MAX;
 
 		if (idx < m_iHisCnt)
 			if (m_bsHisBegin == NULL)
-				return INVALID_INT32;
+				return DBL_MAX;
 			else
 				return (m_bsHisBegin + idx)->add;
 		else if (idx < size())
 			if (m_bsRtBegin == NULL)
-				return INVALID_INT32;
+				return DBL_MAX;
 			else
 				return (m_bsRtBegin + (idx - m_iHisCnt))->add;
 
-		return INVALID_INT32;
+		return DBL_MAX;
 	}
 
 	/*
@@ -583,7 +583,7 @@ public:
 	*	读取指定位置的时间
 	*	如果超出范围则返回INVALID_VALUE
 	*/
-	uint32_t	time(int32_t idx) const
+	uint64_t	time(int32_t idx) const
 	{
 		idx = translateIdx(idx);
 
@@ -859,12 +859,12 @@ public:
 	 *	读取指定位置的成交量
 	 *	如果超出范围则返回INVALID_VALUE
 	 */
-	inline uint32_t	volume(int32_t idx) const
+	inline double	volume(int32_t idx) const
 	{
 		idx = translateIdx(idx);
 
 		if(idx < 0 || idx >= (int32_t)m_vecBarData.size())
-			return INVALID_UINT32;
+			return INVALID_DOUBLE;
 
 		return m_vecBarData[idx].vol;
 	}
@@ -873,7 +873,7 @@ public:
 	 *	读取指定位置的总持
 	 *	如果超出范围则返回INVALID_VALUE
 	 */
-	inline uint32_t	openinterest(int32_t idx) const
+	inline double	openinterest(int32_t idx) const
 	{
 		idx = translateIdx(idx);
 
@@ -887,12 +887,12 @@ public:
 	 *	读取指定位置的增仓
 	 *	如果超出范围则返回INVALID_VALUE
 	 */
-	inline int32_t	additional(int32_t idx) const
+	inline double	additional(int32_t idx) const
 	{
 		idx = translateIdx(idx);
 
 		if(idx < 0 || idx >= (int32_t)m_vecBarData.size())
-			return INVALID_INT32;
+			return INVALID_DOUBLE;
 
 		return m_vecBarData[idx].add;
 	}	
@@ -929,7 +929,7 @@ public:
 	 *	读取指定位置的时间
 	 *	如果超出范围则返回INVALID_VALUE
 	 */
-	inline uint32_t	time(int32_t idx) const
+	inline uint64_t	time(int32_t idx) const
 	{
 		idx = translateIdx(idx);
 
@@ -1117,23 +1117,23 @@ public:
 	//昨收价,如果是期货则是昨结算
 	inline double	preclose() const{ return m_tickStruct.pre_close; }
 	inline double	presettle() const{ return m_tickStruct.pre_settle; }
-	inline int32_t	preinterest() const{ return m_tickStruct.pre_interest; }
+	inline double	preinterest() const{ return m_tickStruct.pre_interest; }
 
 	inline double	upperlimit() const{ return m_tickStruct.upper_limit; }
 	inline double	lowerlimit() const{ return m_tickStruct.lower_limit; }
 	//成交量
-	inline uint32_t	totalvolume() const{ return m_tickStruct.total_volume; }
+	inline double	totalvolume() const{ return m_tickStruct.total_volume; }
 
 	//成交量
-	inline uint32_t	volume() const{ return m_tickStruct.volume; }
+	inline double	volume() const{ return m_tickStruct.volume; }
 
 	//结算价
 	inline double	settlepx() const{ return m_tickStruct.settle_price; }
 
 	//总持
-	inline uint32_t	openinterest() const{ return m_tickStruct.open_interest; }
+	inline double	openinterest() const{ return m_tickStruct.open_interest; }
 
-	inline int32_t	additional() const{ return m_tickStruct.diff_interest; }
+	inline double	additional() const{ return m_tickStruct.diff_interest; }
 
 	//成交额
 	inline double	totalturnover() const{ return m_tickStruct.total_turnover; }
@@ -1179,7 +1179,7 @@ public:
 	 *	读取指定档位的委买量
 	 *	@idx 0-9
 	 */
-	inline uint32_t	bidqty(int idx) const
+	inline double	bidqty(int idx) const
 	{
 		if(idx < 0 || idx >= 10) 
 			return -1;
@@ -1191,7 +1191,7 @@ public:
 	 *	读取指定档位的委卖量
 	 *	@idx 0-9
 	 */
-	inline uint32_t	askqty(int idx) const
+	inline double	askqty(int idx) const
 	{
 		if(idx < 0 || idx >= 10) 
 			return -1;
@@ -1211,39 +1211,6 @@ private:
 	uint64_t		m_uLocalTime;	//本地时间
 
 	WTSTickData():m_uLocalTime(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count()){}
-};
-
-/*
- *	K线数据封装,派生于通用的基础类,便于传递
- */
-class WTSBarData : public WTSObject
-{
-public:
-	inline static WTSBarData* create()
-	{
-		WTSBarData* pRet = new WTSBarData;
-		return pRet;
-	}
-
-	inline static WTSBarData* create(WTSBarStruct& barData, uint16_t market, const char* code)
-	{
-		WTSBarData* pRet = new WTSBarData;
-		pRet->m_market = market;
-		pRet->m_strCode = code;
-		memcpy(&pRet->m_barStruct, &barData, sizeof(WTSBarStruct));
-
-		return pRet;
-	}
-
-	inline WTSBarStruct&	getBarStruct(){return m_barStruct;}
-
-	inline uint16_t	getMarket(){return m_market;}
-	inline const char* getCode(){return m_strCode.c_str();}
-
-private:
-	WTSBarStruct	m_barStruct;
-	uint16_t		m_market;
-	std::string		m_strCode;
 };
 
 class WTSOrdQueData : public WTSObject
