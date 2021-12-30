@@ -11,7 +11,7 @@
 #include <limits.h>
 
 #define MAX_INSTRUMENT_LENGTH	32
-#define MAX_EXCHANGE_LENGTH		10
+#define MAX_EXCHANGE_LENGTH		16
 
 #define STATIC_CONVERT(x,T)		static_cast<T>(x)
 
