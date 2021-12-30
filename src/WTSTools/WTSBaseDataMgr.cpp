@@ -387,32 +387,34 @@ bool WTSBaseDataMgr::loadContracts(const char* filename)
 			 *	如果没有配置rules，则直接跳过该合约
 			 */
 			WTSCommodityInfo* commInfo = NULL;
+			std::string pid;
 			if(jcInfo.HasMember("product"))
 			{
-				commInfo = getCommodity(jcInfo["exchg"].GetString(), jcInfo["product"].GetString());
+				pid = jcInfo["product"].GetString();
+				commInfo = getCommodity(jcInfo["exchg"].GetString(), pid.c_str());
 			}
 			else if(jcInfo.HasMember("rules"))
 			{
-				const char* pid = code.c_str();
+				pid = code.c_str();
 				const rj::Value& jPInfo = jcInfo["rules"];
 				const char* name = jcInfo["name"].GetString();
 				std::string sid = jPInfo["session"].GetString();
 				std::string hid;
 				if(jPInfo.HasMember("holiday"))
-					jPInfo["holiday"].GetString();
+					hid = jPInfo["holiday"].GetString();
 
 				//这里不能像解析commodity那样处理，直接赋值为ALLDAY
 				if (sid.empty())
 					sid = "ALLDAY";
 
-				WTSCommodityInfo* pCommInfo = WTSCommodityInfo::create(pid, name, exchg.c_str(), sid.c_str(), hid.c_str());
-				parseCommodity(pCommInfo, jPInfo);
+				commInfo = WTSCommodityInfo::create(pid.c_str(), name, exchg.c_str(), sid.c_str(), hid.c_str());
+				parseCommodity(commInfo, jPInfo);
 
-				std::string key = StrUtil::printf("%s.%s", exchg.c_str(), pid);
+				std::string key = StrUtil::printf("%s.%s", exchg.c_str(), pid.c_str());
 				if (m_mapCommodities == NULL)
 					m_mapCommodities = WTSCommodityMap::create();
 
-				m_mapCommodities->add(key, pCommInfo, false);
+				m_mapCommodities->add(key, commInfo, false);
 
 				m_mapSessionCode[sid].insert(key);
 
@@ -428,7 +430,7 @@ bool WTSBaseDataMgr::loadContracts(const char* filename)
 			WTSContractInfo* cInfo = WTSContractInfo::create(code.c_str(),
 				jcInfo["name"].GetString(),
 				jcInfo["exchg"].GetString(),
-				jcInfo["product"].GetString());
+				pid.c_str());
 
 			uint32_t maxMktQty = 0;
 			uint32_t maxLmtQty = 0;
