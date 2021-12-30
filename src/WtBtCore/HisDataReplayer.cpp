@@ -35,6 +35,97 @@
 #include <rapidjson/prettywriter.h>
 namespace rj = rapidjson;
 
+/*
+ *	处理块数据
+ */
+bool proc_block_data(std::string& content, bool isBar, bool bKeepHead = true)
+{
+	BlockHeader* header = (BlockHeader*)content.data();
+
+	bool bCmped = header->is_compressed();
+	bool bOldVer = header->is_old_version();
+
+	//如果既没有压缩，也不是老版本结构体，则直接返回
+	if (!bCmped && !bOldVer)
+		return true;
+
+	std::string buffer;
+	if (bCmped)
+	{
+		BlockHeaderV2* blkV2 = (BlockHeaderV2*)content.c_str();
+
+		if (content.size() != (sizeof(BlockHeaderV2) + blkV2->_size))
+		{
+			WTSLogger::error("Size check failed while processing %s data", isBar ? "bar" : "tick");
+			return false;
+		}
+
+		//将文件头后面的数据进行解压
+		buffer = WTSCmpHelper::uncompress_data(content.data() + BLOCK_HEADER_SIZE, (uint32_t)blkV2->_size);
+	}
+	else
+	{
+		if (!bOldVer)
+		{
+			//如果不是老版本，直接返回
+			if (!bKeepHead)
+				content.erase(0, BLOCK_HEADER_SIZE);
+			return true;
+		}
+		else
+		{
+			buffer.append(content.data() + BLOCK_HEADER_SIZE, content.size() - BLOCK_HEADER_SIZE);
+		}
+	}
+
+	if (bOldVer)
+	{
+		if (isBar)
+		{
+			std::string bufV2;
+			uint32_t barcnt = buffer.size() / sizeof(WTSBarStructOld);
+			bufV2.resize(barcnt * sizeof(WTSBarStruct));
+			WTSBarStruct* newBar = (WTSBarStruct*)bufV2.data();
+			WTSBarStructOld* oldBar = (WTSBarStructOld*)buffer.data();
+			for (uint32_t idx = 0; idx < barcnt; idx++)
+			{
+				newBar[idx] = oldBar[idx];
+			}
+			buffer.swap(bufV2);
+		}
+		else
+		{
+			uint32_t tick_cnt = buffer.size() / sizeof(WTSTickStructOld);
+			std::string bufv2;
+			bufv2.resize(sizeof(WTSTickStruct)*tick_cnt);
+			WTSTickStruct* newTick = (WTSTickStruct*)bufv2.data();
+			WTSTickStructOld* oldTick = (WTSTickStructOld*)buffer.data();
+			for (uint32_t i = 0; i < tick_cnt; i++)
+			{
+				newTick[i] = oldTick[i];
+			}
+			buffer.swap(bufv2);
+		}
+	}
+
+	if (bKeepHead)
+	{
+		//原来的缓存，resize到文件头大小，再追加最终的数据
+		content.resize(BLOCK_HEADER_SIZE);
+		content.append(buffer);
+
+		//修改数据块的版本号
+		header = (BlockHeader*)content.data();
+		header->_version = BLOCK_VERSION_RAW_V2;
+	}
+	else
+	{
+		//不保留块头，直接跟数据做一个swap
+		content.swap(buffer);
+	}
+
+	return true;
+}
 
 HisDataReplayer::HisDataReplayer()
 	: _listener(NULL)
@@ -2725,37 +2816,12 @@ bool HisDataReplayer::cacheRawTicksFromBin(const std::string& key, const char* s
 		return false;
 	}
 
-	HisTickBlock* tBlock = (HisTickBlock*)content.c_str();
-	HisTickBlockV2* tBlockV2 = NULL;
-	if(tBlock->_version == BLOCK_VERSION_CMP)
-	{
-		//压缩版本,要重新检查文件大小
-		tBlockV2 = (HisTickBlockV2*)content.c_str();
-
-		if (content.size() != (sizeof(HisTickBlockV2) + tBlockV2->_size))
-		{
-			//WTSLogger::error("历史Tick数据文件%s大小校验失败", filename.c_str());
-			WTSLogger::error("Sizechecking of back tick data file %s failed", filename.c_str());
-			return false;
-		}
-	}
-
+	proc_block_data(content, false, false);	
 	auto& ticksList = _ticks_cache[key];
 	uint32_t tickcnt = 0;
-	if (tBlockV2 == NULL)
-	{
-		tickcnt = (content.size() - sizeof(HisTickBlock)) / sizeof(WTSTickStruct);
-		ticksList._items.resize(tickcnt);
-		memcpy(ticksList._items.data(), tBlock->_ticks, sizeof(WTSTickStruct)*tickcnt);
-	}
-	else
-	{
-		//需要解压
-		std::string buf = WTSCmpHelper::uncompress_data(tBlockV2->_data, (uint32_t)tBlockV2->_size);
-		tickcnt = buf.size() / sizeof(WTSTickStruct);
-		ticksList._items.resize(tickcnt);
-		memcpy(ticksList._items.data(), buf.data(), buf.size());
-	}	
+	tickcnt = content.size() / sizeof(WTSTickStruct);
+	ticksList._items.resize(tickcnt);
+	memcpy(ticksList._items.data(), content.data(), content.size());
 	
 	ticksList._cursor = UINT_MAX;
 	ticksList._code = stdCode;
@@ -2815,13 +2881,11 @@ bool HisDataReplayer::cacheRawTicksFromCSV(const std::string& key, const char* s
 			return false;
 		}
 
-		HisTickBlockV2* tBlock = (HisTickBlockV2*)content.data();
-		std::string rawData = WTSCmpHelper::uncompress_data(tBlock->_data, (uint32_t)tBlock->_size);
-		uint32_t tickcnt = rawData.size() / sizeof(WTSTickStruct);
-
+		proc_block_data(content, false, false);
+		uint32_t tickcnt = content.size() / sizeof(WTSTickStruct);
 		auto& ticksList = _ticks_cache[key];
 		ticksList._items.resize(tickcnt);
-		memcpy(ticksList._items.data(), rawData.data(), rawData.size());
+		memcpy(ticksList._items.data(), content.data(), content.size());
 		ticksList._cursor = UINT_MAX;
 		ticksList._code = stdCode;
 		ticksList._date = uDate;
@@ -2869,7 +2933,7 @@ bool HisDataReplayer::cacheRawTicksFromCSV(const std::string& key, const char* s
 			ticks.action_date = strToDate(ay[0].c_str());
 			ticks.action_time = strToTime(ay[1].c_str(), true) * 1000;
 			ticks.price = strtod(ay[2].c_str(), NULL);
-			ticks.volume = strtoul(ay[3].c_str(), NULL, 10);
+			ticks.volume = strtod(ay[3].c_str(), NULL);
 			tickList._items.emplace_back(ticks);
 
 			if (tickList._items.size() % 1000 == 0)
@@ -2892,7 +2956,7 @@ bool HisDataReplayer::cacheRawTicksFromCSV(const std::string& key, const char* s
 		HisTickBlockV2 *pBlk = (HisTickBlockV2*)content.data();
 		strcpy(pBlk->_blk_flag, BLK_FLAG);
 		pBlk->_type = BT_HIS_Ticks;
-		pBlk->_version = BLOCK_VERSION_CMP;
+		pBlk->_version = BLOCK_VERSION_CMP_V2;
 
 		std::string cmpData = WTSCmpHelper::compress_data(tickList._items.data(), sizeof(WTSTickStruct)*tickList._count);
 		pBlk->_size = cmpData.size();
@@ -2971,8 +3035,8 @@ bool HisDataReplayer::cacheFinalBarsFromLoader(const std::string& key, const cha
 			barList._period = period;
 			barList._count = barcnt;
 
-			uint32_t stime = isDay ? barList._bars[0].date : barList._bars[0].time;
-			uint32_t etime = isDay ? barList._bars[barcnt - 1].date : barList._bars[barcnt - 1].time;
+			uint64_t stime = isDay ? barList._bars[0].date : barList._bars[0].time;
+			uint64_t etime = isDay ? barList._bars[barcnt - 1].date : barList._bars[barcnt - 1].time;
 
 			WTSLogger::info(fmt::format("{} items of back {} data of {} directly loaded from dsb file, from {} to {}", barcnt, pname.c_str(), stdCode, stime, etime).c_str());
 			bHit = true;
@@ -3003,8 +3067,8 @@ bool HisDataReplayer::cacheFinalBarsFromLoader(const std::string& key, const cha
 
 		bool isDay = (period == KP_DAY);
 
-		uint32_t stime = isDay ? barList._bars[0].date : barList._bars[0].time;
-		uint32_t etime = isDay ? barList._bars[barList._count - 1].date : barList._bars[barList._count - 1].time;
+		uint64_t stime = isDay ? barList._bars[0].date : barList._bars[0].time;
+		uint64_t etime = isDay ? barList._bars[barList._count - 1].date : barList._bars[barList._count - 1].time;
 
 		WTSLogger::info(fmt::format("{} items of back {} data of {} loaded via extended loader, from {} to {}", barList._count, pname.c_str(), stdCode, stime, etime).c_str());
 
@@ -3027,7 +3091,7 @@ bool HisDataReplayer::cacheFinalBarsFromLoader(const std::string& key, const cha
 			HisKlineBlockV2 *kBlock = (HisKlineBlockV2*)content.data();
 			strcpy(kBlock->_blk_flag, BLK_FLAG);
 			kBlock->_type = btype;
-			kBlock->_version = BLOCK_VERSION_CMP;
+			kBlock->_version = BLOCK_VERSION_CMP_V2;
 
 			std::string cmpData = WTSCmpHelper::compress_data(barList._bars.data(), sizeof(WTSBarStruct)*barList._count);
 			kBlock->_size = cmpData.size();
@@ -3093,6 +3157,8 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 			return false;
 		}
 
+		//By Wesley @ 2021.12.30
+		//转储的数据不做检查，直接重新生成即可
 		HisKlineBlockV2* kBlock = (HisKlineBlockV2*)content.c_str();
 		std::string rawData = WTSCmpHelper::uncompress_data(kBlock->_data, (uint32_t)kBlock->_size);
 		uint32_t barcnt = rawData.size() / sizeof(WTSBarStruct);
@@ -3105,8 +3171,8 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 		barList._period = period;
 		barList._count = barcnt;
 
-		uint32_t stime = isDay ? barList._bars[0].date : barList._bars[0].time;
-		uint32_t etime = isDay ? barList._bars[barcnt-1].date : barList._bars[barcnt-1].time;
+		uint64_t stime = isDay ? barList._bars[0].date : barList._bars[0].time;
+		uint64_t etime = isDay ? barList._bars[barcnt-1].date : barList._bars[barcnt-1].time;
 
 		WTSLogger::info(fmt::format("{} items of back {} data of {} directly loaded from dsb file, from {} to {}", barcnt, pname.c_str(), stdCode, stime, etime).c_str());
 	}
@@ -3156,8 +3222,8 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 		}
 		barList._count = barList._bars.size();
 
-		uint32_t stime = isDay ? barList._bars[0].date : barList._bars[0].time;
-		uint32_t etime = isDay ? barList._bars[barList._count - 1].date : barList._bars[barList._count - 1].time;
+		uint64_t stime = isDay ? barList._bars[0].date : barList._bars[0].time;
+		uint64_t etime = isDay ? barList._bars[barList._count - 1].date : barList._bars[barList._count - 1].time;
 
 		WTSLogger::info(fmt::format("Data file {} all loaded, totally {} items, from {} to {}", csvfile.c_str(), barList._bars.size(), stime, etime).c_str());
 
@@ -3178,7 +3244,7 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 		HisKlineBlockV2 *kBlock = (HisKlineBlockV2*)content.data();
 		strcpy(kBlock->_blk_flag, BLK_FLAG);
 		kBlock->_type = btype;
-		kBlock->_version = BLOCK_VERSION_CMP;
+		kBlock->_version = BLOCK_VERSION_CMP_V2;
 
 		std::string cmpData = WTSCmpHelper::compress_data(barList._bars.data(), sizeof(WTSBarStruct)*barList._count);
 		kBlock->_size = cmpData.size();
@@ -3221,7 +3287,7 @@ bool HisDataReplayer::cacheIntegratedFutBars(const std::string& key, const char*
 	const char* hot_flag = cInfo.isHot() ? FILE_SUF_HOT : FILE_SUF_2ND;
 
 	std::vector<WTSBarStruct>* hotAy = NULL;
-	uint32_t lastHotTime = 0;
+	uint64_t lastHotTime = 0;
 	do
 	{
 		/*
@@ -3243,43 +3309,22 @@ bool HisDataReplayer::cacheIntegratedFutBars(const std::string& key, const char*
 			break;
 		}
 
-		HisKlineBlock* kBlock = (HisKlineBlock*)content.c_str();
-		std::string buffer;
-		if (kBlock->_version == BLOCK_VERSION_CMP)
-		{
-			if (content.size() < sizeof(HisKlineBlockV2))
-			{
-				WTSLogger::error("Sizechecking of back kbar data file %s failed", filename.c_str());
-				break;
-			}
-
-			HisKlineBlockV2* kBlockV2 = (HisKlineBlockV2*)content.c_str();
-			if (kBlockV2->_size == 0)
-				break;
-
-			buffer = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
-		}
-		else
-		{
-			content.erase(0, sizeof(HisKlineBlock));
-			buffer.swap(content);
-		}
-
-		uint32_t barcnt = buffer.size() / sizeof(WTSBarStruct);
+		proc_block_data(content, true, false);
+		uint32_t barcnt = content.size() / sizeof(WTSBarStruct);
 		if (barcnt <= 0)
 			break;
 
 		hotAy = new std::vector<WTSBarStruct>();
 		hotAy->resize(barcnt);
-		memcpy(hotAy->data(), buffer.data(), buffer.size());
+		memcpy(hotAy->data(), content.data(), content.size());
 
 		if (period != KP_DAY)
 			lastHotTime = hotAy->at(barcnt - 1).time;
 		else
 			lastHotTime = hotAy->at(barcnt - 1).date;
 
-		uint32_t stime = isDay ? barList._bars[0].date : barList._bars[0].time;
-		uint32_t etime = isDay ? barList._bars[barcnt - 1].date : barList._bars[barcnt - 1].time;
+		uint64_t stime = isDay ? barList._bars[0].date : barList._bars[0].time;
+		uint64_t etime = isDay ? barList._bars[barcnt - 1].date : barList._bars[barcnt - 1].time;
 
 		WTSLogger::info(fmt::format("{} items of back {} data of hot contract {} directly loaded, from {} to {}", barcnt, pname.c_str(), stdCode, stime, etime).c_str());
 
@@ -3336,7 +3381,7 @@ bool HisDataReplayer::cacheIntegratedFutBars(const std::string& key, const char*
 			if (sBar.date < lastHotTime)	//如果边界时间小于主力的最后一根Bar的时间, 说明已经有交叉了, 则不需要再处理了
 			{
 				bAllCovered = true;
-				sBar.date = lastHotTime + 1;
+				sBar.date = (uint32_t)lastHotTime + 1;
 			}
 
 			eBar.date = rightDt;
@@ -3380,33 +3425,14 @@ bool HisDataReplayer::cacheIntegratedFutBars(const std::string& key, const char*
 				return false;
 			}
 
-			HisKlineBlock* kBlock = (HisKlineBlock*)content.c_str();
-			WTSBarStruct* firstBar = NULL;
-			uint32_t barcnt = 0;
-			if (kBlock->_version == BLOCK_VERSION_CMP)
-			{
-				if (content.size() < sizeof(HisKlineBlockV2))
-				{
-					WTSLogger::error("Sizechecking of back kbar data file %s failed", filename.c_str());
-					break;
-				}
-
-				HisKlineBlockV2* kBlockV2 = (HisKlineBlockV2*)content.c_str();
-				if (kBlockV2->_size == 0)
-					break;
-
-				buffer = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
-			}
-			else
-			{
-				content.erase(0, sizeof(HisKlineBlock));
-				buffer.swap(content);
-			}
+			proc_block_data(content, true, false);
+			buffer.swap(content);
 		}
 
-		uint32_t barcnt = buffer.size() / sizeof(WTSBarStruct);
-		if (barcnt <= 0)
+		if (buffer.empty())
 			break;
+
+		uint32_t barcnt = buffer.size() / sizeof(WTSBarStruct);
 
 		WTSBarStruct* firstBar = (WTSBarStruct*)buffer.data();
 
@@ -3557,7 +3583,7 @@ bool HisDataReplayer::cacheAdjustedStkBars(const std::string& key, const char* s
 	uint32_t realCnt = 0;
 
 	std::vector<WTSBarStruct>* adjustedBars = NULL;
-	uint32_t lastQTime = 0;
+	uint64_t lastQTime = 0;
 
 	WTSLogger::info("Loading adjusted bars of %s...", stdCode);
 	do
@@ -3583,34 +3609,14 @@ bool HisDataReplayer::cacheAdjustedStkBars(const std::string& key, const char* s
 			break;
 		}
 
-		HisKlineBlock* kBlock = (HisKlineBlock*)content.c_str();
-		std::string buffer;
-		if (kBlock->_version == BLOCK_VERSION_CMP)
-		{
-			if (content.size() < sizeof(HisKlineBlockV2))
-			{
-				WTSLogger::error("Sizechecking of back kbar data file %s failed", filename.c_str());
-				break;
-			}
-
-			HisKlineBlockV2* kBlockV2 = (HisKlineBlockV2*)content.c_str();
-			if (kBlockV2->_size == 0)
-				break;
-
-			buffer = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
-		}
-		else
-		{
-			content.erase(0, sizeof(HisKlineBlock));
-		}
-
-		uint32_t barcnt = buffer.size() / sizeof(WTSBarStruct);
+		proc_block_data(content, true, false);
+		uint32_t barcnt = content.size() / sizeof(WTSBarStruct);
 		if (barcnt <= 0)
 			break;
 
 		adjustedBars = new std::vector<WTSBarStruct>();
 		adjustedBars->resize(barcnt);
-		memcpy(adjustedBars->data(), buffer.data(), buffer.size());
+		memcpy(adjustedBars->data(), content.data(), content.size());
 
 		if (period != KP_DAY)
 			lastQTime = adjustedBars->at(barcnt - 1).time;
@@ -3635,7 +3641,7 @@ bool HisDataReplayer::cacheAdjustedStkBars(const std::string& key, const char* s
 		}
 		else
 		{
-			sBar.date = lastQTime + 1;
+			sBar.date = (uint32_t)lastQTime + 1;
 		}
 
 		/*
@@ -3673,36 +3679,17 @@ bool HisDataReplayer::cacheAdjustedStkBars(const std::string& key, const char* s
 				WTSLogger::error("Sizechecking of back kbar data file %s failed", filename.c_str());
 				return false;
 			}
-
-			HisKlineBlock* kBlock = (HisKlineBlock*)content.c_str();
-			WTSBarStruct* firstBar = NULL;
-			uint32_t barcnt = 0;
-			if (kBlock->_version == BLOCK_VERSION_CMP)
-			{
-				if (content.size() < sizeof(HisKlineBlockV2))
-				{
-					WTSLogger::error("Sizechecking of back kbar data file %s failed", filename.c_str());
-					break;
-				}
-
-				HisKlineBlockV2* kBlockV2 = (HisKlineBlockV2*)content.c_str();
-				if (kBlockV2->_size == 0)
-					break;
-
-				buffer = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
-			}
-			else
-			{
-				content.erase(0, sizeof(HisKlineBlock));
-				buffer.swap(content);
-			}
+			
+			proc_block_data(content, true, false);
+			buffer.swap(content);
 
 			WTSLogger::debug("Raw bars of %s loaded from dsb file", stdCode);
 		}
 
-		uint32_t barcnt = buffer.size() / sizeof(WTSBarStruct);
-		if (barcnt <= 0)
+		if (buffer.empty())
 			break;
+		
+		uint32_t barcnt = buffer.size() / sizeof(WTSBarStruct);
 
 		WTSBarStruct* firstBar = (WTSBarStruct*)buffer.data();
 
@@ -3888,33 +3875,15 @@ bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* st
 				return false;
 			}
 
-			HisKlineBlock* kBlock = (HisKlineBlock*)content.c_str();
-			WTSBarStruct* firstBar = NULL;
-			if (kBlock->_version == BLOCK_VERSION_CMP)
-			{
-				if (content.size() < sizeof(HisKlineBlockV2))
-				{
-					WTSLogger::error("Sizechecking of back kbar data file %s failed", filename.c_str());
-					return false;
-				}
-
-				HisKlineBlockV2* kBlockV2 = (HisKlineBlockV2*)content.c_str();
-				if (kBlockV2->_size == 0)
-					return false;
-
-				buffer = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
-			}
-			else
-			{
-				content.erase(0, sizeof(HisKlineBlock));
-				buffer.swap(content);
-			}
+			proc_block_data(content, true, false);
+			buffer.swap(content);
 		}
 	}
 
-	uint32_t barcnt = buffer.size() / sizeof(WTSBarStruct);
-	if (barcnt <= 0)
+	if (buffer.empty())
 		return false;
+
+	uint32_t barcnt = buffer.size() / sizeof(WTSBarStruct);
 
 	WTSBarStruct* firstBar = (WTSBarStruct*)buffer.data();
 	if (barcnt > 0)

@@ -9,7 +9,7 @@
  */
 #pragma once
 #include <string>
-#include "DataDefine.h"
+#include "../WtDataStorage/DataDefine.h"
 
 #include "../Includes/FasterDefs.h"
 #include "../Includes/WTSMarcos.h"
