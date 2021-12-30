@@ -1639,48 +1639,35 @@ bool WtDataWriter::dump_day_data(WTSContractInfo* ct, WTSBarStruct* newBar)
 			else
 			{
 				std::vector<WTSBarStruct>	bars;
-				std::vector<WTSBarStruct>	bars_old;
-				if (kBlock->_version == BLOCK_VERSION_RAW)	//如果老的文件是非压缩版本,则直接把K线读到缓存里去
+				std::string buffer;
+				bool bOldVer = kBlock->is_old_version();
+				if (!kBlock->is_compressed())	//如果老的文件是非压缩版本,则直接把K线读到缓存里去
 				{
-					HisKlineBlockOld* kBlockOld = (HisKlineBlockOld*)content.data();
-					uint32_t barcnt = (uint32_t)(flength - BLOCK_HEADER_SIZE) / sizeof(WTSBarStructOld);
-					bars_old.resize(barcnt);
-					memcpy(bars_old.data(), kBlockOld->_bars, (uint32_t)(flength - BLOCK_HEADER_SIZE));
+					content.erase(0, BLOCK_HEADER_SIZE);
+					buffer.swap(content);
 				}
-				else if (kBlock->_version == BLOCK_VERSION_CMP)	//压缩版本
+				else //压缩版本
 				{
 					//现在就需要把数据解压以后读到缓存里去
 					HisKlineBlockV2* kBlockV2 = (HisKlineBlockV2*)content.data();
-					std::string rawData = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
-					uint32_t barcnt = rawData.size() / sizeof(WTSBarStructOld);
-					bars_old.resize(barcnt);
-					memcpy(bars_old.data(), rawData.data(), rawData.size());
-				}
-				else if (kBlock->_version == BLOCK_VERSION_RAW_V2)	//如果新结构体未压缩
-				{
-					uint32_t barcnt = (uint32_t)(flength - BLOCK_HEADER_SIZE) / sizeof(WTSBarStruct);
-					bars.resize(barcnt);
-					memcpy(bars.data(), kBlock->_bars, (uint32_t)(flength - BLOCK_HEADER_SIZE));
-				}
-				else if (kBlock->_version == BLOCK_VERSION_CMP_V2)	//压缩版本
-				{
-					//现在就需要把数据解压以后读到缓存里去
-					HisKlineBlockV2* kBlockV2 = (HisKlineBlockV2*)content.data();
-					std::string rawData = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
-					uint32_t barcnt = rawData.size() / sizeof(WTSBarStruct);
-					bars.resize(barcnt);
-					memcpy(bars.data(), rawData.data(), rawData.size());
+					buffer = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
 				}
 
 				//By Wesley @ 2021.12.30
 				//这里加一段老结构体转新结构体的逻辑
-				if(bars.empty() && !bars_old.empty())
+				uint32_t barcnt = buffer.size() / (bOldVer ? sizeof(WTSBarStructOld) : sizeof(WTSBarStruct));
+				bars.resize(barcnt);
+				if(bOldVer)
 				{
-					bars.resize(bars_old.size());
-					for(std::size_t idx = 0; idx < bars_old.size(); idx++)
+					WTSBarStructOld* oldBars = (WTSBarStructOld*)buffer.data();
+					for(uint32_t idx = 0; idx < barcnt; idx++)
 					{
-						bars[idx] = bars_old[idx];
+						bars[idx] = oldBars[idx];
 					}
+				}
+				else
+				{
+					memcpy(bars.data(), buffer.data(), buffer.size());
 				}
 
 				//开始比较K线时间标签,主要为了防止数据重复写
@@ -1701,7 +1688,7 @@ bool WtDataWriter::dump_day_data(WTSContractInfo* ct, WTSBarStruct* newBar)
 
 				//如果老的文件已经是压缩版本,或者最终数据大小大于100条,则进行压缩
 				bool bNeedCompress = false;
-				if (kBlock->_version == BLOCK_VERSION_CMP || kBlock->_version == BLOCK_VERSION_CMP_V2 || bars.size() > 100)
+				if (kBlock->is_compressed() || bars.size() > 100)
 				{
 					bNeedCompress = true;
 				}
@@ -1810,47 +1797,46 @@ uint32_t WtDataWriter::dump_hisdata_to_file(WTSContractInfo* ct)
 			BoostFile f;
 			if (f.create_or_open_file(filename.c_str()))
 			{
-				std::string newData;
+				std::string buffer;
 				bool bOldVer = false;
 				if (!bNew)
 				{
 					std::string content;
 					BoostFile::read_file_contents(filename.c_str(), content);
 					HisKlineBlock* kBlock = (HisKlineBlock*)content.data();
-					if (kBlock->_version == BLOCK_VERSION_RAW || kBlock->_version == BLOCK_VERSION_RAW_V2)
+					bOldVer = kBlock->is_old_version();
+					if (!kBlock->is_compressed())
 					{
 						//未压缩就直接复制数据
-						newData.resize(content.size() - BLOCK_HEADER_SIZE);
-						memcpy((void*)newData.data(), kBlock->_bars, content.size() - BLOCK_HEADER_SIZE);
+						content.erase(0, BLOCK_HEADER_SIZE);
+						buffer.swap(content);
 					}
 					else //if (kBlock->_version == BLOCK_VERSION_CMP)
 					{
 						HisKlineBlockV2* kBlockV2 = (HisKlineBlockV2*)content.data();
-						newData = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
+						buffer = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
 					}
-
-					bOldVer = (kBlock->_version == BLOCK_VERSION_RAW || kBlock->_version == BLOCK_VERSION_CMP);
 				}
 
 				//如果是老版本的结构体，做一个转换
 				if(bOldVer)
 				{
-					std::string newVerData;
-					uint32_t barcnt = newData.size() / sizeof(WTSBarStructOld);
-					newVerData.resize(barcnt * sizeof(WTSBarStruct));
-					WTSBarStruct* newBar = (WTSBarStruct*)newVerData.data();
-					WTSBarStructOld* oldBar = (WTSBarStructOld*)newData.data();
+					std::string bufV2;
+					uint32_t barcnt = buffer.size() / sizeof(WTSBarStructOld);
+					bufV2.resize(barcnt * sizeof(WTSBarStruct));
+					WTSBarStruct* newBar = (WTSBarStruct*)bufV2.data();
+					WTSBarStructOld* oldBar = (WTSBarStructOld*)buffer.data();
 					for(uint32_t idx = 0; idx < barcnt; idx++)
 					{
 						newBar[idx] = oldBar[idx];
 					}
-					newData.swap(newVerData);
+					buffer.swap(bufV2);
 				}
 
 				//追加新的数据
-				newData.append((const char*)kBlkPair->_block->_bars, sizeof(WTSBarStruct)*size);
+				buffer.append((const char*)kBlkPair->_block->_bars, sizeof(WTSBarStruct)*size);
 
-				std::string cmpData = WTSCmpHelper::compress_data(newData.data(), newData.size());
+				std::string cmpData = WTSCmpHelper::compress_data(buffer.data(), buffer.size());
 
 				f.truncate_file(0);
 				f.seek_to_begin(0);
@@ -1904,46 +1890,45 @@ uint32_t WtDataWriter::dump_hisdata_to_file(WTSContractInfo* ct)
 			BoostFile f;
 			if (f.create_or_open_file(filename.c_str()))
 			{
-				std::string newData;
+				std::string buffer;
 				bool bOldVer = false;
 				if (!bNew)
 				{
 					std::string content;
 					BoostFile::read_file_contents(filename.c_str(), content);
 					HisKlineBlock* kBlock = (HisKlineBlock*)content.data();
-					if (kBlock->_version == BLOCK_VERSION_RAW || kBlock->_version == BLOCK_VERSION_RAW_V2)
+					bOldVer = kBlock->is_old_version();
+					if (!kBlock->is_compressed())
 					{
 						//未压缩就直接复制数据
-						newData.resize(content.size() - BLOCK_HEADER_SIZE);
-						memcpy((void*)newData.data(), kBlock->_bars, content.size() - BLOCK_HEADER_SIZE);
+						content.erase(0, BLOCK_HEADER_SIZE);
+						buffer.swap(content);
 					}
 					else //if (kBlock->_version == BLOCK_VERSION_CMP)
 					{
 						HisKlineBlockV2* kBlockV2 = (HisKlineBlockV2*)content.data();
-						newData = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
+						buffer = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
 					}
-
-					bOldVer = (kBlock->_version == BLOCK_VERSION_RAW || kBlock->_version == BLOCK_VERSION_CMP);
 				}
 
 				//如果是老版本的结构体，做一个转换
 				if (bOldVer)
 				{
-					std::string newVerData;
-					uint32_t barcnt = newData.size() / sizeof(WTSBarStructOld);
-					newVerData.resize(barcnt * sizeof(WTSBarStruct));
-					WTSBarStruct* newBar = (WTSBarStruct*)newVerData.data();
-					WTSBarStructOld* oldBar = (WTSBarStructOld*)newData.data();
+					std::string bufV2;
+					uint32_t barcnt = buffer.size() / sizeof(WTSBarStructOld);
+					bufV2.resize(barcnt * sizeof(WTSBarStruct));
+					WTSBarStruct* newBar = (WTSBarStruct*)bufV2.data();
+					WTSBarStructOld* oldBar = (WTSBarStructOld*)buffer.data();
 					for (uint32_t idx = 0; idx < barcnt; idx++)
 					{
 						newBar[idx] = oldBar[idx];
 					}
-					newData.swap(newVerData);
+					buffer.swap(bufV2);
 				}
 
-				newData.append((const char*)kBlkPair->_block->_bars, sizeof(WTSBarStruct)*size);
+				buffer.append((const char*)kBlkPair->_block->_bars, sizeof(WTSBarStruct)*size);
 
-				std::string cmpData = WTSCmpHelper::compress_data(newData.data(), newData.size());
+				std::string cmpData = WTSCmpHelper::compress_data(buffer.data(), buffer.size());
 
 				f.truncate_file(0);
 				f.seek_to_begin(0);

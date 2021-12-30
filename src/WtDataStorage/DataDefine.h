@@ -38,6 +38,14 @@ typedef struct _BlockHeader
 	char		_blk_flag[FLAG_SIZE];
 	uint16_t	_type;
 	uint16_t	_version;
+
+	inline bool is_old_version() const {
+		return (_version == BLOCK_VERSION_CMP || _version == BLOCK_VERSION_RAW);
+	}
+
+	inline bool is_compressed() const {
+		return (_version == BLOCK_VERSION_CMP || _version == BLOCK_VERSION_CMP_V2);
+	}
 } BlockHeader;
 
 typedef struct _BlockHeaderV2
@@ -47,6 +55,14 @@ typedef struct _BlockHeaderV2
 	uint16_t	_version;
 
 	uint64_t	_size;		//压缩后的数据大小
+
+	inline bool is_old_version() const {
+		return (_version == BLOCK_VERSION_CMP || _version == BLOCK_VERSION_RAW);
+	}
+
+	inline bool is_compressed() const {
+		return (_version == BLOCK_VERSION_CMP || _version == BLOCK_VERSION_CMP_V2);
+	}
 } BlockHeaderV2;
 
 #define BLOCK_HEADER_SIZE	sizeof(BlockHeader)
