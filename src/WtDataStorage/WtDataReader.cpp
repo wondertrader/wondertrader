@@ -270,7 +270,7 @@ WTSTickSlice* WtDataReader::readTickSlice(const char* stdCode, uint32_t count, u
 			}
 
 			HisTickBlock* tBlock = (HisTickBlock*)tBlkPair._buffer.c_str();
-			if (tBlock->_version == BLOCK_VERSION_CMP)
+			if (tBlock->_version == BLOCK_VERSION_CMP || tBlock->_version == BLOCK_VERSION_CMP_V2)
 			{
 				//压缩版本,要重新检查文件大小
 				HisTickBlockV2* tBlockV2 = (HisTickBlockV2*)tBlkPair._buffer.c_str();
@@ -284,10 +284,43 @@ WTSTickSlice* WtDataReader::readTickSlice(const char* stdCode, uint32_t count, u
 				//需要解压
 				std::string buf = WTSCmpHelper::uncompress_data(tBlockV2->_data, (uint32_t)tBlockV2->_size);
 
+				//这里解压出来如果是老结构体要转换一下
+				if(tBlock->_version == BLOCK_VERSION_CMP)
+				{
+					uint32_t tick_cnt = buf.size() / sizeof(WTSTickStructOld);
+					std::string bufv2;
+					bufv2.resize(sizeof(WTSTickStruct)*tick_cnt);
+					WTSTickStruct* newTick = (WTSTickStruct*)bufv2.data();
+					WTSTickStructOld* oldTick = (WTSTickStructOld*)buf.data();
+					for (uint32_t i = 0; i < tick_cnt; i++)
+					{
+						newTick[i] = oldTick[i];
+					}
+					buf.swap(bufv2);
+				}
+
 				//将原来的buffer只保留一个头部,并将所有tick数据追加到尾部
 				tBlkPair._buffer.resize(sizeof(HisTickBlock));
 				tBlkPair._buffer.append(buf);
-				tBlockV2->_version = BLOCK_VERSION_RAW;
+				tBlockV2->_version = BLOCK_VERSION_RAW_V2;
+			}
+			else
+			{
+				//这里解压出来如果是老结构体要转换一下
+				if (tBlock->_version == BLOCK_VERSION_RAW)
+				{
+					uint32_t tick_cnt = (tBlkPair._buffer.size() - sizeof(HisTickBlock)) / sizeof(WTSTickStructOld);
+					std::string bufv2;
+					bufv2.resize(sizeof(WTSTickStruct)*tick_cnt);
+					WTSTickStruct* newTick = (WTSTickStruct*)bufv2.data();
+					WTSTickStructOld* oldTick = (WTSTickStructOld*)tBlock->_ticks;
+					for (uint32_t i = 0; i < tick_cnt; i++)
+					{
+						newTick[i] = oldTick[i];
+					}
+					tBlkPair._buffer.resize(sizeof(HisTickBlock));
+					tBlkPair._buffer.append(bufv2);
+				}
 			}
 			
 			tBlkPair._block = (HisTickBlock*)tBlkPair._buffer.c_str();
@@ -428,7 +461,7 @@ WTSOrdQueSlice* WtDataReader::readOrdQueSlice(const char* stdCode, uint32_t coun
 			//将原来的buffer只保留一个头部,并将所有tick数据追加到尾部
 			hisBlkPair._buffer.resize(sizeof(HisOrdQueBlock));
 			hisBlkPair._buffer.append(buf);
-			tBlockV2->_version = BLOCK_VERSION_RAW;
+			tBlockV2->_version = BLOCK_VERSION_RAW_V2;
 
 			hisBlkPair._block = (HisOrdQueBlock*)hisBlkPair._buffer.c_str();
 		}
@@ -568,7 +601,7 @@ WTSOrdDtlSlice* WtDataReader::readOrdDtlSlice(const char* stdCode, uint32_t coun
 			//将原来的buffer只保留一个头部,并将所有tick数据追加到尾部
 			hisBlkPair._buffer.resize(sizeof(HisOrdDtlBlock));
 			hisBlkPair._buffer.append(buf);
-			tBlockV2->_version = BLOCK_VERSION_RAW;
+			tBlockV2->_version = BLOCK_VERSION_RAW_V2;
 
 			hisBlkPair._block = (HisOrdDtlBlock*)hisBlkPair._buffer.c_str();
 		}
@@ -708,7 +741,7 @@ WTSTransSlice* WtDataReader::readTransSlice(const char* stdCode, uint32_t count,
 			//将原来的buffer只保留一个头部,并将所有tick数据追加到尾部
 			hisBlkPair._buffer.resize(sizeof(HisTransBlock));
 			hisBlkPair._buffer.append(buf);
-			tBlockV2->_version = BLOCK_VERSION_RAW;
+			tBlockV2->_version = BLOCK_VERSION_RAW_V2;
 
 			hisBlkPair._block = (HisTransBlock*)hisBlkPair._buffer.c_str();
 		}
@@ -813,7 +846,7 @@ bool WtDataReader::cacheIntegratedFutBars(const std::string& key, const char* st
 
 	//先按照HOT代码进行读取, 如rb.HOT
 	std::vector<WTSBarStruct>* hotAy = NULL;
-	uint32_t lastHotTime = 0;
+	uint64_t lastHotTime = 0;
 	do
 	{
 		/*
@@ -837,7 +870,7 @@ bool WtDataReader::cacheIntegratedFutBars(const std::string& key, const char* st
 
 		HisKlineBlock* kBlock = (HisKlineBlock*)content.c_str();
 		std::string buffer;
-		if (kBlock->_version == BLOCK_VERSION_CMP)
+		if (kBlock->_version == BLOCK_VERSION_CMP || kBlock->_version == BLOCK_VERSION_CMP_V2)
 		{
 			if (content.size() < sizeof(HisKlineBlockV2))
 			{
@@ -850,11 +883,41 @@ bool WtDataReader::cacheIntegratedFutBars(const std::string& key, const char* st
 				break;
 
 			buffer = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
+
+			//老版本压缩，需要转一下
+			if (kBlock->_version == BLOCK_VERSION_CMP)
+			{
+				std::string bufV2;
+				uint32_t barcnt = buffer.size() / sizeof(WTSBarStructOld);
+				bufV2.resize(barcnt * sizeof(WTSBarStruct));
+				WTSBarStruct* newBar = (WTSBarStruct*)bufV2.data();
+				WTSBarStructOld* oldBar = (WTSBarStructOld*)buffer.data();
+				for (uint32_t idx = 0; idx < barcnt; idx++)
+				{
+					newBar[idx] = oldBar[idx];
+				}
+				buffer.swap(bufV2);
+			}
 		}
 		else
 		{
 			content.erase(0, sizeof(HisKlineBlock));
 			buffer.swap(content);
+
+			//老版本压缩，需要转一下
+			if (kBlock->_version == BLOCK_VERSION_RAW)
+			{
+				std::string bufV2;
+				uint32_t barcnt = buffer.size() / sizeof(WTSBarStructOld);
+				bufV2.resize(barcnt * sizeof(WTSBarStruct));
+				WTSBarStruct* newBar = (WTSBarStruct*)bufV2.data();
+				WTSBarStructOld* oldBar = (WTSBarStructOld*)buffer.data();
+				for (uint32_t idx = 0; idx < barcnt; idx++)
+				{
+					newBar[idx] = oldBar[idx];
+				}
+				buffer.swap(bufV2);
+			}
 		}
 
 		uint32_t barcnt = buffer.size() / sizeof(WTSBarStruct);
@@ -924,7 +987,7 @@ bool WtDataReader::cacheIntegratedFutBars(const std::string& key, const char* st
 			if (sBar.date < lastHotTime)	//如果边界时间小于主力的最后一根Bar的时间, 说明已经有交叉了, 则不需要再处理了
 			{
 				bAllCovered = true;
-				sBar.date = lastHotTime + 1;
+				sBar.date = (uint32_t)lastHotTime + 1;
 			}
 
 			eBar.date = rightDt;
@@ -969,7 +1032,7 @@ bool WtDataReader::cacheIntegratedFutBars(const std::string& key, const char* st
 			HisKlineBlock* kBlock = (HisKlineBlock*)content.c_str();
 			WTSBarStruct* firstBar = NULL;
 			uint32_t barcnt = 0;
-			if (kBlock->_version == BLOCK_VERSION_CMP)
+			if (kBlock->_version == BLOCK_VERSION_CMP || kBlock->_version == BLOCK_VERSION_CMP_V2)
 			{
 				if (content.size() < sizeof(HisKlineBlockV2))
 				{
@@ -982,11 +1045,41 @@ bool WtDataReader::cacheIntegratedFutBars(const std::string& key, const char* st
 					break;
 
 				buffer = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
+
+				//老版本压缩，需要转一下
+				if (kBlock->_version == BLOCK_VERSION_CMP)
+				{
+					std::string bufV2;
+					uint32_t barcnt = buffer.size() / sizeof(WTSBarStructOld);
+					bufV2.resize(barcnt * sizeof(WTSBarStruct));
+					WTSBarStruct* newBar = (WTSBarStruct*)bufV2.data();
+					WTSBarStructOld* oldBar = (WTSBarStructOld*)buffer.data();
+					for (uint32_t idx = 0; idx < barcnt; idx++)
+					{
+						newBar[idx] = oldBar[idx];
+					}
+					buffer.swap(bufV2);
+				}
 			}
 			else
 			{
 				content.erase(0, sizeof(HisKlineBlock));
 				buffer.swap(content);
+
+				//老版本压缩，需要转一下
+				if (kBlock->_version == BLOCK_VERSION_RAW)
+				{
+					std::string bufV2;
+					uint32_t barcnt = buffer.size() / sizeof(WTSBarStructOld);
+					bufV2.resize(barcnt * sizeof(WTSBarStruct));
+					WTSBarStruct* newBar = (WTSBarStruct*)bufV2.data();
+					WTSBarStructOld* oldBar = (WTSBarStructOld*)buffer.data();
+					for (uint32_t idx = 0; idx < barcnt; idx++)
+					{
+						newBar[idx] = oldBar[idx];
+					}
+					buffer.swap(bufV2);
+				}
 			}
 		}
 
@@ -1100,7 +1193,7 @@ bool WtDataReader::cacheAdjustedStkBars(const std::string& key, const char* stdC
 	uint32_t realCnt = 0;
 
 	std::vector<WTSBarStruct>* ayAdjusted = NULL;
-	uint32_t lastQTime = 0;
+	uint64_t lastQTime = 0;
 
 	do
 	{
@@ -1126,7 +1219,7 @@ bool WtDataReader::cacheAdjustedStkBars(const std::string& key, const char* stdC
 
 		HisKlineBlock* kBlock = (HisKlineBlock*)content.c_str();
 		std::string buffer;
-		if (kBlock->_version == BLOCK_VERSION_CMP)
+		if (kBlock->_version == BLOCK_VERSION_CMP || kBlock->_version == BLOCK_VERSION_CMP_V2)
 		{
 			if (content.size() < sizeof(HisKlineBlockV2))
 			{
@@ -1139,11 +1232,41 @@ bool WtDataReader::cacheAdjustedStkBars(const std::string& key, const char* stdC
 				break;
 
 			buffer = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
+
+			//老版本压缩，需要转一下
+			if (kBlock->_version == BLOCK_VERSION_CMP)
+			{
+				std::string bufV2;
+				uint32_t barcnt = buffer.size() / sizeof(WTSBarStructOld);
+				bufV2.resize(barcnt * sizeof(WTSBarStruct));
+				WTSBarStruct* newBar = (WTSBarStruct*)bufV2.data();
+				WTSBarStructOld* oldBar = (WTSBarStructOld*)buffer.data();
+				for (uint32_t idx = 0; idx < barcnt; idx++)
+				{
+					newBar[idx] = oldBar[idx];
+				}
+				buffer.swap(bufV2);
+			}
 		}
 		else
 		{
 			content.erase(0, sizeof(HisKlineBlock));
 			buffer.swap(content);
+
+			//老版本压缩，需要转一下
+			if (kBlock->_version == BLOCK_VERSION_RAW)
+			{
+				std::string bufV2;
+				uint32_t barcnt = buffer.size() / sizeof(WTSBarStructOld);
+				bufV2.resize(barcnt * sizeof(WTSBarStruct));
+				WTSBarStruct* newBar = (WTSBarStruct*)bufV2.data();
+				WTSBarStructOld* oldBar = (WTSBarStructOld*)buffer.data();
+				for (uint32_t idx = 0; idx < barcnt; idx++)
+				{
+					newBar[idx] = oldBar[idx];
+				}
+				buffer.swap(bufV2);
+			}
 		}
 
 		uint32_t barcnt = buffer.size() / sizeof(WTSBarStruct);
@@ -1179,7 +1302,7 @@ bool WtDataReader::cacheAdjustedStkBars(const std::string& key, const char* stdC
 		}
 		else
 		{
-			sBar.date = lastQTime + 1;
+			sBar.date = (uint32_t)lastQTime + 1;
 		}
 
 		/*
@@ -1218,7 +1341,7 @@ bool WtDataReader::cacheAdjustedStkBars(const std::string& key, const char* stdC
 			HisKlineBlock* kBlock = (HisKlineBlock*)content.c_str();
 			WTSBarStruct* firstBar = NULL;
 			uint32_t barcnt = 0;
-			if (kBlock->_version == BLOCK_VERSION_CMP)
+			if (kBlock->_version == BLOCK_VERSION_CMP || kBlock->_version == BLOCK_VERSION_CMP_V2)
 			{
 				if (content.size() < sizeof(HisKlineBlockV2))
 				{
@@ -1231,11 +1354,41 @@ bool WtDataReader::cacheAdjustedStkBars(const std::string& key, const char* stdC
 					break;
 
 				buffer = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
+
+				//老版本压缩，需要转一下
+				if (kBlock->_version == BLOCK_VERSION_CMP)
+				{
+					std::string bufV2;
+					uint32_t barcnt = buffer.size() / sizeof(WTSBarStructOld);
+					bufV2.resize(barcnt * sizeof(WTSBarStruct));
+					WTSBarStruct* newBar = (WTSBarStruct*)bufV2.data();
+					WTSBarStructOld* oldBar = (WTSBarStructOld*)buffer.data();
+					for (uint32_t idx = 0; idx < barcnt; idx++)
+					{
+						newBar[idx] = oldBar[idx];
+					}
+					buffer.swap(bufV2);
+				}
 			}
 			else
 			{
 				content.erase(0, sizeof(HisKlineBlock));
 				buffer.swap(content);
+
+				//老版本压缩，需要转一下
+				if (kBlock->_version == BLOCK_VERSION_RAW)
+				{
+					std::string bufV2;
+					uint32_t barcnt = buffer.size() / sizeof(WTSBarStructOld);
+					bufV2.resize(barcnt * sizeof(WTSBarStruct));
+					WTSBarStruct* newBar = (WTSBarStruct*)bufV2.data();
+					WTSBarStructOld* oldBar = (WTSBarStructOld*)buffer.data();
+					for (uint32_t idx = 0; idx < barcnt; idx++)
+					{
+						newBar[idx] = oldBar[idx];
+					}
+					buffer.swap(bufV2);
+				}
 			}
 		}
 
@@ -1428,7 +1581,7 @@ bool WtDataReader::cacheHisBarsFromFile(const std::string& key, const char* stdC
 			HisKlineBlock* kBlock = (HisKlineBlock*)content.c_str();
 			WTSBarStruct* firstBar = NULL;
 			uint32_t barcnt = 0;
-			if (kBlock->_version == BLOCK_VERSION_CMP)
+			if (kBlock->_version == BLOCK_VERSION_CMP || kBlock->_version == BLOCK_VERSION_CMP_V2)
 			{
 				if (content.size() < sizeof(HisKlineBlockV2))
 				{
@@ -1441,11 +1594,41 @@ bool WtDataReader::cacheHisBarsFromFile(const std::string& key, const char* stdC
 					return false;
 
 				buffer = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
+
+				//老版本压缩，需要转一下
+				if (kBlock->_version == BLOCK_VERSION_CMP)
+				{
+					std::string bufV2;
+					uint32_t barcnt = buffer.size() / sizeof(WTSBarStructOld);
+					bufV2.resize(barcnt * sizeof(WTSBarStruct));
+					WTSBarStruct* newBar = (WTSBarStruct*)bufV2.data();
+					WTSBarStructOld* oldBar = (WTSBarStructOld*)buffer.data();
+					for (uint32_t idx = 0; idx < barcnt; idx++)
+					{
+						newBar[idx] = oldBar[idx];
+					}
+					buffer.swap(bufV2);
+				}
 			}
 			else
 			{
 				content.erase(0, sizeof(HisKlineBlock));
 				buffer.swap(content);
+
+				//老版本压缩，需要转一下
+				if (kBlock->_version == BLOCK_VERSION_RAW)
+				{
+					std::string bufV2;
+					uint32_t barcnt = buffer.size() / sizeof(WTSBarStructOld);
+					bufV2.resize(barcnt * sizeof(WTSBarStruct));
+					WTSBarStruct* newBar = (WTSBarStruct*)bufV2.data();
+					WTSBarStructOld* oldBar = (WTSBarStructOld*)buffer.data();
+					for (uint32_t idx = 0; idx < barcnt; idx++)
+					{
+						newBar[idx] = oldBar[idx];
+					}
+					buffer.swap(bufV2);
+				}
 			}
 		}
 	}

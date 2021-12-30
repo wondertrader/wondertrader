@@ -433,7 +433,7 @@ void WtDataWriterAD::pipeToM1Bars(WTSContractInfo* ct, const WTSBarStruct& bar)
 	WtLMDBPtr db = get_k_db(ct->getExchg(), KP_Minute1);
 	if(db)
 	{
-		LMDBBarKey key(ct->getExchg(), ct->getCode(), bar.time);
+		LMDBBarKey key(ct->getExchg(), ct->getCode(), (uint32_t)bar.time);
 		WtLMDBQuery query(*db);
 		if(!query.put((void*)&key, sizeof(key), (void*)&bar, sizeof(bar)))
 		{
@@ -464,7 +464,7 @@ void WtDataWriterAD::pipeToM5Bars(WTSContractInfo* ct, const WTSBarStruct& bar)
 	WtLMDBPtr db = get_k_db(ct->getExchg(), KP_Minute5);
 	if (db)
 	{
-		LMDBBarKey key(ct->getExchg(), ct->getCode(), bar.time);
+		LMDBBarKey key(ct->getExchg(), ct->getCode(), (uint32_t)bar.time);
 		WtLMDBQuery query(*db);
 		if (!query.put((void*)&key, sizeof(key), (void*)&bar, sizeof(bar)))
 		{
@@ -541,13 +541,13 @@ void WtDataWriterAD::updateBarCache(WTSContractInfo* ct, WTSTickData* curTick)
 
 		//拼接1分钟线
 		uint32_t barMins = minutes + 1;
-		uint32_t barTime = sInfo->minuteToTime(barMins);
+		uint64_t barTime = sInfo->minuteToTime(barMins);
 		uint32_t barDate = uDate;
 		if (barTime == 0)
 		{
 			barDate = TimeUtils::getNextDate(barDate);
 		}
-		barTime = TimeUtils::timeToMinBar(barDate, barTime);
+		barTime = TimeUtils::timeToMinBar(barDate, (uint32_t)barTime);
 
 		bool bNewBar = false;
 		if (lastBar == NULL || barTime > lastBar->time)
@@ -631,13 +631,13 @@ void WtDataWriterAD::updateBarCache(WTSContractInfo* ct, WTSTickData* curTick)
 
 		//拼接5分钟线
 		uint32_t barMins = (minutes / 5) * 5 + 5;
-		uint32_t barTime = sInfo->minuteToTime(barMins);
+		uint64_t barTime = sInfo->minuteToTime(barMins);
 		uint32_t barDate = uDate;
 		if (barTime == 0)
 		{
 			barDate = TimeUtils::getNextDate(barDate);
 		}
-		barTime = TimeUtils::timeToMinBar(barDate, barTime);
+		barTime = TimeUtils::timeToMinBar(barDate, (uint32_t)barTime);
 
 		bool bNewBar = false;
 		if (lastBar == NULL || barTime > lastBar->time)

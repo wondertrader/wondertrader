@@ -34,6 +34,9 @@ private:
 
 	uint32_t  dump_hisdata_via_dumper(WTSContractInfo* ct);
 
+private:
+	bool	dump_day_data(WTSContractInfo* ct, WTSBarStruct* newBar);
+
 
 public:
 	virtual bool init(WTSVariant* params, IDataWriterSink* sink) override;

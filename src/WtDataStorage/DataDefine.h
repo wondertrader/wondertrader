@@ -28,8 +28,10 @@ typedef enum tagBlockType
 	BT_HIS_OrdQueue		= 27	//历史委托队列
 } BlockType;
 
-#define BLOCK_VERSION_RAW	1	//普通版本
-#define BLOCK_VERSION_CMP	2	//压缩版本
+#define BLOCK_VERSION_RAW		0x01	//老结构体未压缩
+#define BLOCK_VERSION_CMP		0x02	//老结构体压缩
+#define BLOCK_VERSION_RAW_V2	0x03	//新结构体未压缩
+#define BLOCK_VERSION_CMP_V2	0x04	//新结构体压缩
 
 typedef struct _BlockHeader
 {
@@ -68,7 +70,15 @@ typedef struct _RTKlineBlock : _RTDayBlockHeader
 	WTSBarStruct	_bars[0];
 } RTKlineBlock;
 
+typedef struct _RTKlineBlockOld : _RTDayBlockHeader
+{
+	WTSBarStructOld	_bars[0];
+} RTKlineBlockOld;
+
 //tick数据数据块
+//By Wesley @ 2021.12.30
+//实时tick缓存，直接用新版本的tick结构
+//切换程序一定要在盘后进行！！！
 typedef struct _RTTickBlock : RTDayBlockHeader
 {
 	WTSTickStruct	_ticks[0];
@@ -158,5 +168,11 @@ typedef struct _HisKlineBlockV2 : BlockHeaderV2
 {
 	char			_data[0];
 } HisKlineBlockV2;
+
+//历史K线数据
+typedef struct _HisKlineBlockOld : BlockHeader
+{
+	WTSBarStructOld	_bars[0];
+} HisKlineBlockOld;
 
 #pragma pack(pop)

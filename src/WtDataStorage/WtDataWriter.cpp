@@ -643,7 +643,7 @@ WtDataWriter::OrdQueBlockPair* WtDataWriter::getOrdQueBlock(WTSContractInfo* ct,
 		{
 			pBlock->_block->_capacity = TICK_SIZE_STEP;
 			pBlock->_block->_size = 0;
-			pBlock->_block->_version = BLOCK_VERSION_RAW;
+			pBlock->_block->_version = BLOCK_VERSION_RAW_V2;
 			pBlock->_block->_type = BT_RT_OrdQueue;
 			pBlock->_block->_date = curDate;
 			strcpy(pBlock->_block->_blk_flag, BLK_FLAG);
@@ -736,7 +736,7 @@ WtDataWriter::OrdDtlBlockPair* WtDataWriter::getOrdDtlBlock(WTSContractInfo* ct,
 		{
 			pBlock->_block->_capacity = TICK_SIZE_STEP;
 			pBlock->_block->_size = 0;
-			pBlock->_block->_version = BLOCK_VERSION_RAW;
+			pBlock->_block->_version = BLOCK_VERSION_RAW_V2;
 			pBlock->_block->_type = BT_RT_OrdDetail;
 			pBlock->_block->_date = curDate;
 			strcpy(pBlock->_block->_blk_flag, BLK_FLAG);
@@ -830,7 +830,7 @@ WtDataWriter::TransBlockPair* WtDataWriter::getTransBlock(WTSContractInfo* ct, u
 		{
 			pBlock->_block->_capacity = TICK_SIZE_STEP;
 			pBlock->_block->_size = 0;
-			pBlock->_block->_version = BLOCK_VERSION_RAW;
+			pBlock->_block->_version = BLOCK_VERSION_RAW_V2;
 			pBlock->_block->_type = BT_RT_Trnsctn;
 			pBlock->_block->_date = curDate;
 			strcpy(pBlock->_block->_blk_flag, BLK_FLAG);
@@ -932,7 +932,7 @@ WtDataWriter::TickBlockPair* WtDataWriter::getTickBlock(WTSContractInfo* ct, uin
 		{
 			pBlock->_block->_capacity = TICK_SIZE_STEP;
 			pBlock->_block->_size = 0;
-			pBlock->_block->_version = BLOCK_VERSION_RAW;
+			pBlock->_block->_version = BLOCK_VERSION_RAW_V2;
 			pBlock->_block->_type = BT_RT_Ticks;
 			pBlock->_block->_date = curDate;
 			strcpy(pBlock->_block->_blk_flag, BLK_FLAG);
@@ -1006,13 +1006,13 @@ void WtDataWriter::pipeToKlines(WTSContractInfo* ct, WTSTickData* curTick)
 
 			//拼接1分钟线
 			uint32_t barMins = minutes + 1;
-			uint32_t barTime = sInfo->minuteToTime(barMins);
+			uint64_t barTime = sInfo->minuteToTime(barMins);
 			uint32_t barDate = uDate;
 			if (barTime == 0)
 			{
 				barDate = TimeUtils::getNextDate(barDate);
 			}
-			barTime = TimeUtils::timeToMinBar(barDate, barTime);
+			barTime = TimeUtils::timeToMinBar(barDate, (uint32_t)barTime);
 
 			bool bNew = false;
 			if (lastBar == NULL || barTime > lastBar->time)
@@ -1076,13 +1076,13 @@ void WtDataWriter::pipeToKlines(WTSContractInfo* ct, WTSTickData* curTick)
 			}
 
 			uint32_t barMins = (minutes / 5) * 5 + 5;
-			uint32_t barTime = sInfo->minuteToTime(barMins);
+			uint64_t barTime = sInfo->minuteToTime(barMins);
 			uint32_t barDate = uDate;
 			if (barTime == 0)
 			{
 				barDate = TimeUtils::getNextDate(barDate);
 			}
-			barTime = TimeUtils::timeToMinBar(barDate, barTime);
+			barTime = TimeUtils::timeToMinBar(barDate, (uint32_t)barTime);
 
 			bool bNew = false;
 			if (lastBar == NULL || barTime > lastBar->time)
@@ -1223,7 +1223,7 @@ WtDataWriter::KBlockPair* WtDataWriter::getKlineBlock(WTSContractInfo* ct, WTSKl
 			//memset(pBlock->_block, 0, pBlock->_file->size());
 			pBlock->_block->_capacity = KLINE_SIZE_STEP;
 			pBlock->_block->_size = 0;
-			pBlock->_block->_version = BLOCK_VERSION_RAW;
+			pBlock->_block->_version = BLOCK_VERSION_RAW_V2;
 			pBlock->_block->_type = bType;
 			pBlock->_block->_date = TimeUtils::getCurDate();
 			strcpy(pBlock->_block->_blk_flag, BLK_FLAG);
@@ -1588,6 +1588,165 @@ uint32_t WtDataWriter::dump_hisdata_via_dumper(WTSContractInfo* ct)
 	return count;
 }
 
+bool WtDataWriter::dump_day_data(WTSContractInfo* ct, WTSBarStruct* newBar)
+{
+	std::stringstream ss;
+	ss << _base_dir << "his/day/" << ct->getExchg() << "/";
+	std::string path = ss.str();
+	BoostFile::create_directories(ss.str().c_str());
+	std::string filename = StrUtil::printf("%s%s.dsb", path.c_str(), ct->getCode());
+
+	bool bNew = false;
+	if (!BoostFile::exists(filename.c_str()))
+		bNew = true;
+
+	BoostFile f;
+	if (f.create_or_open_file(filename.c_str()))
+	{
+		bool bNeedWrite = true;
+		if (bNew)
+		{
+			BlockHeader header;
+			strcpy(header._blk_flag, BLK_FLAG);
+			header._type = BT_HIS_Day;
+			header._version = BLOCK_VERSION_RAW_V2;
+
+			f.write_file(&header, sizeof(header));
+
+			f.write_file(newBar, sizeof(WTSBarStruct));
+		}
+		else
+		{
+			//日线必须要检查一下
+			std::string content;
+			BoostFile::read_file_contents(filename.c_str(), content);
+			uint64_t flength = content.size();
+
+			HisKlineBlock* kBlock = (HisKlineBlock*)content.data();
+			if (strcmp(kBlock->_blk_flag, BLK_FLAG) != 0)
+			{
+				_sink->outputWriterLog(LL_ERROR, "File checking of history data file %s failed, clear and rebuild...", filename.c_str());
+				f.truncate_file(0);
+				BlockHeader header;
+				strcpy(header._blk_flag, BLK_FLAG);
+				header._type = BT_HIS_Day;
+				header._version = BLOCK_VERSION_RAW_V2;
+
+				f.write_file(&header, sizeof(header));
+
+				f.write_file(newBar, sizeof(WTSBarStruct));
+			}
+			else
+			{
+				std::vector<WTSBarStruct>	bars;
+				std::vector<WTSBarStruct>	bars_old;
+				if (kBlock->_version == BLOCK_VERSION_RAW)	//如果老的文件是非压缩版本,则直接把K线读到缓存里去
+				{
+					HisKlineBlockOld* kBlockOld = (HisKlineBlockOld*)content.data();
+					uint32_t barcnt = (uint32_t)(flength - BLOCK_HEADER_SIZE) / sizeof(WTSBarStructOld);
+					bars_old.resize(barcnt);
+					memcpy(bars_old.data(), kBlockOld->_bars, (uint32_t)(flength - BLOCK_HEADER_SIZE));
+				}
+				else if (kBlock->_version == BLOCK_VERSION_CMP)	//压缩版本
+				{
+					//现在就需要把数据解压以后读到缓存里去
+					HisKlineBlockV2* kBlockV2 = (HisKlineBlockV2*)content.data();
+					std::string rawData = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
+					uint32_t barcnt = rawData.size() / sizeof(WTSBarStructOld);
+					bars_old.resize(barcnt);
+					memcpy(bars_old.data(), rawData.data(), rawData.size());
+				}
+				else if (kBlock->_version == BLOCK_VERSION_RAW_V2)	//如果新结构体未压缩
+				{
+					uint32_t barcnt = (uint32_t)(flength - BLOCK_HEADER_SIZE) / sizeof(WTSBarStruct);
+					bars.resize(barcnt);
+					memcpy(bars.data(), kBlock->_bars, (uint32_t)(flength - BLOCK_HEADER_SIZE));
+				}
+				else if (kBlock->_version == BLOCK_VERSION_CMP_V2)	//压缩版本
+				{
+					//现在就需要把数据解压以后读到缓存里去
+					HisKlineBlockV2* kBlockV2 = (HisKlineBlockV2*)content.data();
+					std::string rawData = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
+					uint32_t barcnt = rawData.size() / sizeof(WTSBarStruct);
+					bars.resize(barcnt);
+					memcpy(bars.data(), rawData.data(), rawData.size());
+				}
+
+				//By Wesley @ 2021.12.30
+				//这里加一段老结构体转新结构体的逻辑
+				if(bars.empty() && !bars_old.empty())
+				{
+					bars.resize(bars_old.size());
+					for(std::size_t idx = 0; idx < bars_old.size(); idx++)
+					{
+						bars[idx] = bars_old[idx];
+					}
+				}
+
+				//开始比较K线时间标签,主要为了防止数据重复写
+				if (!bars.empty())
+				{
+					WTSBarStruct& oldBS = bars.at(bars.size() - 1);	//先取出最后一条K线
+
+					if (oldBS.date == newBar->date && memcmp(&oldBS, newBar, sizeof(WTSBarStruct)) != 0)
+					{
+						//日期相同且数据不同,则用最新的替换最后一条
+						oldBS = *newBar;
+					}
+					else if (oldBS.date < newBar->date)	//老的K线日期小于新的,则直接追加到后面
+					{
+						bars.emplace_back(*newBar);
+					}
+				}
+
+				//如果老的文件已经是压缩版本,或者最终数据大小大于100条,则进行压缩
+				bool bNeedCompress = false;
+				if (kBlock->_version == BLOCK_VERSION_CMP || kBlock->_version == BLOCK_VERSION_CMP_V2 || bars.size() > 100)
+				{
+					bNeedCompress = true;
+				}
+
+				if (bNeedCompress)
+				{
+					std::string cmpData = WTSCmpHelper::compress_data(bars.data(), bars.size() * sizeof(WTSBarStruct));
+					BlockHeaderV2 header;
+					strcpy(header._blk_flag, BLK_FLAG);
+					header._type = BT_HIS_Day;
+					header._version = BLOCK_VERSION_CMP_V2;
+					header._size = cmpData.size();
+
+					f.truncate_file(0);
+					f.seek_to_begin();
+					f.write_file(&header, sizeof(header));
+
+					f.write_file(cmpData.data(), cmpData.size());
+				}
+				else
+				{
+					BlockHeader header;
+					strcpy(header._blk_flag, BLK_FLAG);
+					header._type = BT_HIS_Day;
+					header._version = BLOCK_VERSION_RAW_V2;
+
+					f.truncate_file(0);
+					f.seek_to_begin();
+					f.write_file(&header, sizeof(header));
+					f.write_file(bars.data(), bars.size() * sizeof(WTSBarStruct));
+				}
+			}
+		}
+
+		f.close_file();
+
+		return true;
+	}
+	else
+	{
+		_sink->outputWriterLog(LL_ERROR, "ClosingTask of day bar failed: openning history data file %s failed", filename.c_str());
+		return false;
+	}
+}
+
 uint32_t WtDataWriter::dump_hisdata_to_file(WTSContractInfo* ct)
 {
 	if (ct == NULL)
@@ -1621,134 +1780,7 @@ uint32_t WtDataWriter::dump_hisdata_to_file(WTSContractInfo* ct)
 			bs.money = ts.total_turnover;
 			bs.add = ts.open_interest - ts.pre_interest;
 
-			std::stringstream ss;
-			ss << _base_dir << "his/day/" << ct->getExchg() << "/";
-			std::string path = ss.str();
-			BoostFile::create_directories(ss.str().c_str());
-			std::string filename = StrUtil::printf("%s%s.dsb", path.c_str(), ct->getCode());
-
-			bool bNew = false;
-			if (!BoostFile::exists(filename.c_str()))
-				bNew = true;
-
-			BoostFile f;
-			if (f.create_or_open_file(filename.c_str()))
-			{
-				bool bNeedWrite = true;
-				if (bNew)
-				{
-					BlockHeader header;
-					strcpy(header._blk_flag, BLK_FLAG);
-					header._type = BT_HIS_Day;
-					header._version = BLOCK_VERSION_RAW;
-
-					f.write_file(&header, sizeof(header));
-
-					f.write_file(&bs, sizeof(WTSBarStruct));
-					count++;
-				}
-				else
-				{
-					//日线必须要检查一下
-					std::string content;
-					BoostFile::read_file_contents(filename.c_str(), content);
-					uint64_t flength = content.size();
-
-					HisKlineBlock* kBlock = (HisKlineBlock*)content.data();
-					if (strcmp(kBlock->_blk_flag, BLK_FLAG) != 0)
-					{
-						_sink->outputWriterLog(LL_ERROR, "File checking of history data file %s failed, clear and rebuild...", filename.c_str());
-						f.truncate_file(0);
-						BlockHeader header;
-						strcpy(header._blk_flag, BLK_FLAG);
-						header._type = BT_HIS_Day;
-						header._version = BLOCK_VERSION_RAW;
-
-						f.write_file(&header, sizeof(header));
-
-						f.write_file(&bs, sizeof(WTSBarStruct));
-						count++;
-					}
-					else
-					{
-						std::vector<WTSBarStruct>	bars;
-						if (kBlock->_version == BLOCK_VERSION_RAW)	//如果老的文件是非压缩版本,则直接把K线读到缓存里去
-						{
-							uint32_t barcnt = (uint32_t)(flength - BLOCK_HEADER_SIZE) / sizeof(WTSBarStruct);
-							bars.resize(barcnt);
-							memcpy(bars.data(), kBlock->_bars, (uint32_t)(flength - BLOCK_HEADER_SIZE));
-						}
-						else if (kBlock->_version == BLOCK_VERSION_CMP)	//压缩版本
-						{
-							//现在就需要把数据解压以后读到缓存里去
-							HisKlineBlockV2* kBlockV2 = (HisKlineBlockV2*)content.data();
-							std::string rawData = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
-							uint32_t barcnt = rawData.size() / sizeof(WTSBarStruct);
-							bars.resize(barcnt);
-							memcpy(bars.data(), rawData.data(), rawData.size());
-						}
-
-						//开始比较K线时间标签,主要为了防止数据重复写
-						if (!bars.empty())
-						{
-							WTSBarStruct& oldBS = bars.at(bars.size() - 1);	//先取出最后一条K线
-
-							if (oldBS.date == bs.date && memcmp(&oldBS, &bs, sizeof(WTSBarStruct)) != 0)
-							{
-								//日期相同且数据不同,则用最新的替换最后一条
-								oldBS = bs;
-							}
-							else if (oldBS.date < bs.date)	//老的K线日期小于新的,则直接追加到后面
-							{
-								bars.emplace_back(bs);
-							}
-						}
-
-						//如果老的文件已经是压缩版本,或者最终数据大小大于100条,则进行压缩
-						bool bNeedCompress = false;
-						if (kBlock->_version == BLOCK_VERSION_CMP || bars.size() > 100)
-						{
-							bNeedCompress = true;
-						}
-
-						if (bNeedCompress)
-						{
-							std::string cmpData = WTSCmpHelper::compress_data(bars.data(), bars.size() * sizeof(WTSBarStruct));
-							BlockHeaderV2 header;
-							strcpy(header._blk_flag, BLK_FLAG);
-							header._type = BT_HIS_Day;
-							header._version = BLOCK_VERSION_CMP;
-							header._size = cmpData.size();
-
-							f.truncate_file(0);
-							f.seek_to_begin();
-							f.write_file(&header, sizeof(header));
-
-							f.write_file(cmpData.data(), cmpData.size());
-							count++;
-						}
-						else
-						{
-							BlockHeader header;
-							strcpy(header._blk_flag, BLK_FLAG);
-							header._type = BT_HIS_Day;
-							header._version = BLOCK_VERSION_RAW;
-
-							f.truncate_file(0);
-							f.seek_to_begin();
-							f.write_file(&header, sizeof(header));
-							f.write_file(bars.data(), bars.size() * sizeof(WTSBarStruct));
-							count++;
-						}
-					}
-				}
-
-				f.close_file();
-			}
-			else
-			{
-				_sink->outputWriterLog(LL_ERROR, "ClosingTask of day bar failed: openning history data file %s failed", filename.c_str());
-			}
+			dump_day_data(ct, &bs);
 		}
 	}
 
@@ -1779,23 +1811,43 @@ uint32_t WtDataWriter::dump_hisdata_to_file(WTSContractInfo* ct)
 			if (f.create_or_open_file(filename.c_str()))
 			{
 				std::string newData;
+				bool bOldVer = false;
 				if (!bNew)
 				{
 					std::string content;
 					BoostFile::read_file_contents(filename.c_str(), content);
 					HisKlineBlock* kBlock = (HisKlineBlock*)content.data();
-					if (kBlock->_version == BLOCK_VERSION_RAW)
+					if (kBlock->_version == BLOCK_VERSION_RAW || kBlock->_version == BLOCK_VERSION_RAW_V2)
 					{
-						uint32_t barcnt = (content.size() - BLOCK_HEADER_SIZE) / sizeof(WTSBarStruct);
-						newData.resize(sizeof(WTSBarStruct)*barcnt);
-						memcpy((void*)newData.data(), kBlock->_bars, sizeof(WTSBarStruct)*barcnt);
+						//未压缩就直接复制数据
+						newData.resize(content.size() - BLOCK_HEADER_SIZE);
+						memcpy((void*)newData.data(), kBlock->_bars, content.size() - BLOCK_HEADER_SIZE);
 					}
 					else //if (kBlock->_version == BLOCK_VERSION_CMP)
 					{
 						HisKlineBlockV2* kBlockV2 = (HisKlineBlockV2*)content.data();
 						newData = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
 					}
+
+					bOldVer = (kBlock->_version == BLOCK_VERSION_RAW || kBlock->_version == BLOCK_VERSION_CMP);
 				}
+
+				//如果是老版本的结构体，做一个转换
+				if(bOldVer)
+				{
+					std::string newVerData;
+					uint32_t barcnt = newData.size() / sizeof(WTSBarStructOld);
+					newVerData.resize(barcnt * sizeof(WTSBarStruct));
+					WTSBarStruct* newBar = (WTSBarStruct*)newVerData.data();
+					WTSBarStructOld* oldBar = (WTSBarStructOld*)newData.data();
+					for(uint32_t idx = 0; idx < barcnt; idx++)
+					{
+						newBar[idx] = oldBar[idx];
+					}
+					newData.swap(newVerData);
+				}
+
+				//追加新的数据
 				newData.append((const char*)kBlkPair->_block->_bars, sizeof(WTSBarStruct)*size);
 
 				std::string cmpData = WTSCmpHelper::compress_data(newData.data(), newData.size());
@@ -1806,7 +1858,7 @@ uint32_t WtDataWriter::dump_hisdata_to_file(WTSContractInfo* ct)
 				BlockHeaderV2 header;
 				strcpy(header._blk_flag, BLK_FLAG);
 				header._type = BT_HIS_Minute1;
-				header._version = BLOCK_VERSION_CMP;
+				header._version = BLOCK_VERSION_CMP_V2;
 				header._size = cmpData.size();
 				f.write_file(&header, sizeof(header));
 				f.write_file(cmpData);
@@ -1853,23 +1905,42 @@ uint32_t WtDataWriter::dump_hisdata_to_file(WTSContractInfo* ct)
 			if (f.create_or_open_file(filename.c_str()))
 			{
 				std::string newData;
+				bool bOldVer = false;
 				if (!bNew)
 				{
 					std::string content;
 					BoostFile::read_file_contents(filename.c_str(), content);
 					HisKlineBlock* kBlock = (HisKlineBlock*)content.data();
-					if (kBlock->_version == BLOCK_VERSION_RAW)
+					if (kBlock->_version == BLOCK_VERSION_RAW || kBlock->_version == BLOCK_VERSION_RAW_V2)
 					{
-						uint32_t barcnt = (content.size() - BLOCK_HEADER_SIZE) / sizeof(WTSBarStruct);
-						newData.resize(sizeof(WTSBarStruct)*barcnt);
-						memcpy((void*)newData.data(), kBlock->_bars, sizeof(WTSBarStruct)*barcnt);
+						//未压缩就直接复制数据
+						newData.resize(content.size() - BLOCK_HEADER_SIZE);
+						memcpy((void*)newData.data(), kBlock->_bars, content.size() - BLOCK_HEADER_SIZE);
 					}
 					else //if (kBlock->_version == BLOCK_VERSION_CMP)
 					{
 						HisKlineBlockV2* kBlockV2 = (HisKlineBlockV2*)content.data();
 						newData = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
 					}
+
+					bOldVer = (kBlock->_version == BLOCK_VERSION_RAW || kBlock->_version == BLOCK_VERSION_CMP);
 				}
+
+				//如果是老版本的结构体，做一个转换
+				if (bOldVer)
+				{
+					std::string newVerData;
+					uint32_t barcnt = newData.size() / sizeof(WTSBarStructOld);
+					newVerData.resize(barcnt * sizeof(WTSBarStruct));
+					WTSBarStruct* newBar = (WTSBarStruct*)newVerData.data();
+					WTSBarStructOld* oldBar = (WTSBarStructOld*)newData.data();
+					for (uint32_t idx = 0; idx < barcnt; idx++)
+					{
+						newBar[idx] = oldBar[idx];
+					}
+					newData.swap(newVerData);
+				}
+
 				newData.append((const char*)kBlkPair->_block->_bars, sizeof(WTSBarStruct)*size);
 
 				std::string cmpData = WTSCmpHelper::compress_data(newData.data(), newData.size());
@@ -1880,7 +1951,7 @@ uint32_t WtDataWriter::dump_hisdata_to_file(WTSContractInfo* ct)
 				BlockHeaderV2 header;
 				strcpy(header._blk_flag, BLK_FLAG);
 				header._type = BT_HIS_Minute5;
-				header._version = BLOCK_VERSION_CMP;
+				header._version = BLOCK_VERSION_CMP_V2;
 				header._size = cmpData.size();
 				f.write_file(&header, sizeof(header));
 				f.write_file(cmpData);
@@ -1991,7 +2062,7 @@ void WtDataWriter::proc_loop()
 				newCache->_capacity = scale*CACHE_SIZE_STEP;
 				newCache->_type = BT_RT_Cache;
 				newCache->_size = setCodes.size();
-				newCache->_version = BLOCK_VERSION_RAW;
+				newCache->_version = BLOCK_VERSION_RAW_V2;
 				strcpy(newCache->_blk_flag, BLK_FLAG);
 
 				faster_hashmap<std::string, uint32_t> newIdxMap;
@@ -2149,7 +2220,7 @@ void WtDataWriter::proc_loop()
 							BlockHeaderV2 header;
 							strcpy(header._blk_flag, BLK_FLAG);
 							header._type = BT_HIS_Ticks;
-							header._version = BLOCK_VERSION_CMP;
+							header._version = BLOCK_VERSION_CMP_V2;
 							header._size = cmp_data.size();
 							f.write_file(&header, sizeof(header));
 
@@ -2216,7 +2287,7 @@ void WtDataWriter::proc_loop()
 						BlockHeaderV2 header;
 						strcpy(header._blk_flag, BLK_FLAG);
 						header._type = BT_HIS_Trnsctn;
-						header._version = BLOCK_VERSION_CMP;
+						header._version = BLOCK_VERSION_CMP_V2;
 						header._size = cmp_data.size();
 						f.write_file(&header, sizeof(header));
 
@@ -2282,7 +2353,7 @@ void WtDataWriter::proc_loop()
 						BlockHeaderV2 header;
 						strcpy(header._blk_flag, BLK_FLAG);
 						header._type = BT_HIS_OrdDetail;
-						header._version = BLOCK_VERSION_CMP;
+						header._version = BLOCK_VERSION_CMP_V2;
 						header._size = cmp_data.size();
 						f.write_file(&header, sizeof(header));
 
@@ -2348,7 +2419,7 @@ void WtDataWriter::proc_loop()
 						BlockHeaderV2 header;
 						strcpy(header._blk_flag, BLK_FLAG);
 						header._type = BT_HIS_OrdQueue;
-						header._version = BLOCK_VERSION_CMP;
+						header._version = BLOCK_VERSION_CMP_V2;
 						header._size = cmp_data.size();
 						f.write_file(&header, sizeof(header));
 
