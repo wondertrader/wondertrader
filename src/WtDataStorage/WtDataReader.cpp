@@ -32,6 +32,94 @@ extern "C"
 	}
 };
 
+/*
+ *	处理块数据
+ */
+bool WtDataReader::proc_block_data(std::string& content, bool isBar, bool bKeepHead /* = true */)
+{
+	BlockHeader* header = (BlockHeader*)content.data();
+
+	bool bCmped = header->is_compressed();
+	bool bOldVer = header->is_old_version();
+
+	//如果既没有压缩，也不是老版本结构体，则直接返回
+	if (!bCmped && !bOldVer)
+		return true;
+
+	std::string buffer;
+	if (bCmped)
+	{
+		BlockHeaderV2* blkV2 = (BlockHeaderV2*)content.c_str();
+
+		if (content.size() != (sizeof(BlockHeaderV2) + blkV2->_size))
+		{
+			_sink->reader_log(LL_ERROR, "Size check failed while processing %s data", isBar ? "bar" : "tick");
+			return false;
+		}
+
+		//将文件头后面的数据进行解压
+		buffer = WTSCmpHelper::uncompress_data(content.data() + BLOCK_HEADER_SIZE, (uint32_t)blkV2->_size);
+	}
+	else
+	{
+		if (!bOldVer)
+		{
+			//如果不是老版本，直接返回
+			if (!bKeepHead)
+				content.erase(0, BLOCK_HEADER_SIZE);
+			return true;
+		}
+		else
+		{
+			buffer.append(content.data() + BLOCK_HEADER_SIZE, content.size() - BLOCK_HEADER_SIZE);
+		}
+	}
+
+	if (bOldVer)
+	{
+		if (isBar)
+		{
+			std::string bufV2;
+			uint32_t barcnt = buffer.size() / sizeof(WTSBarStructOld);
+			bufV2.resize(barcnt * sizeof(WTSBarStruct));
+			WTSBarStruct* newBar = (WTSBarStruct*)bufV2.data();
+			WTSBarStructOld* oldBar = (WTSBarStructOld*)buffer.data();
+			for (uint32_t idx = 0; idx < barcnt; idx++)
+			{
+				newBar[idx] = oldBar[idx];
+			}
+			buffer.swap(bufV2);
+		}
+		else
+		{
+			uint32_t tick_cnt = buffer.size() / sizeof(WTSTickStructOld);
+			std::string bufv2;
+			bufv2.resize(sizeof(WTSTickStruct)*tick_cnt);
+			WTSTickStruct* newTick = (WTSTickStruct*)bufv2.data();
+			WTSTickStructOld* oldTick = (WTSTickStructOld*)buffer.data();
+			for (uint32_t i = 0; i < tick_cnt; i++)
+			{
+				newTick[i] = oldTick[i];
+			}
+			buffer.swap(bufv2);
+		}
+	}
+
+	if (bKeepHead)
+	{
+		content.resize(BLOCK_HEADER_SIZE);
+		content.append(buffer);
+		header = (BlockHeader*)content.data();
+		header->_version = BLOCK_VERSION_RAW_V2;
+	}
+	else
+	{
+		content.swap(buffer);
+	}
+
+	return true;
+}
+
 
 WtDataReader::WtDataReader()
 	: _last_time(0)
@@ -269,60 +357,7 @@ WTSTickSlice* WtDataReader::readTickSlice(const char* stdCode, uint32_t count, u
 				return NULL;
 			}
 
-			HisTickBlock* tBlock = (HisTickBlock*)tBlkPair._buffer.c_str();
-			if (tBlock->_version == BLOCK_VERSION_CMP || tBlock->_version == BLOCK_VERSION_CMP_V2)
-			{
-				//压缩版本,要重新检查文件大小
-				HisTickBlockV2* tBlockV2 = (HisTickBlockV2*)tBlkPair._buffer.c_str();
-
-				if (tBlkPair._buffer.size() != (sizeof(HisTickBlockV2) + tBlockV2->_size))
-				{
-					if (_sink) _sink->reader_log(LL_ERROR, "历史Tick数据文件%s大小校验失败", filename.c_str());
-					return NULL;
-				}
-
-				//需要解压
-				std::string buf = WTSCmpHelper::uncompress_data(tBlockV2->_data, (uint32_t)tBlockV2->_size);
-
-				//这里解压出来如果是老结构体要转换一下
-				if(tBlock->_version == BLOCK_VERSION_CMP)
-				{
-					uint32_t tick_cnt = buf.size() / sizeof(WTSTickStructOld);
-					std::string bufv2;
-					bufv2.resize(sizeof(WTSTickStruct)*tick_cnt);
-					WTSTickStruct* newTick = (WTSTickStruct*)bufv2.data();
-					WTSTickStructOld* oldTick = (WTSTickStructOld*)buf.data();
-					for (uint32_t i = 0; i < tick_cnt; i++)
-					{
-						newTick[i] = oldTick[i];
-					}
-					buf.swap(bufv2);
-				}
-
-				//将原来的buffer只保留一个头部,并将所有tick数据追加到尾部
-				tBlkPair._buffer.resize(sizeof(HisTickBlock));
-				tBlkPair._buffer.append(buf);
-				tBlockV2->_version = BLOCK_VERSION_RAW_V2;
-			}
-			else
-			{
-				//这里解压出来如果是老结构体要转换一下
-				if (tBlock->_version == BLOCK_VERSION_RAW)
-				{
-					uint32_t tick_cnt = (tBlkPair._buffer.size() - sizeof(HisTickBlock)) / sizeof(WTSTickStructOld);
-					std::string bufv2;
-					bufv2.resize(sizeof(WTSTickStruct)*tick_cnt);
-					WTSTickStruct* newTick = (WTSTickStruct*)bufv2.data();
-					WTSTickStructOld* oldTick = (WTSTickStructOld*)tBlock->_ticks;
-					for (uint32_t i = 0; i < tick_cnt; i++)
-					{
-						newTick[i] = oldTick[i];
-					}
-					tBlkPair._buffer.resize(sizeof(HisTickBlock));
-					tBlkPair._buffer.append(bufv2);
-				}
-			}
-			
+			proc_block_data(tBlkPair._buffer, false, true);			
 			tBlkPair._block = (HisTickBlock*)tBlkPair._buffer.c_str();
 		}
 		
@@ -808,8 +843,8 @@ bool WtDataReader::cacheFinalBarsFromLoader(const std::string& key, const char* 
 		memcpy(bars->_bars.data(), firstBar, sizeof(WTSBarStruct)*count);
 	});
 
-	if(ret)
-		if (_sink) _sink->reader_log(LL_INFO, "%s items of back {} data of {} loaded via extended loader", barList._bars.size(), pname.c_str(), stdCode);
+	if(ret && _sink)
+		_sink->reader_log(LL_INFO, "%s items of back {} data of {} loaded via extended loader", barList._bars.size(), pname.c_str(), stdCode);
 
 	return ret;
 }
@@ -867,66 +902,16 @@ bool WtDataReader::cacheIntegratedFutBars(const std::string& key, const char* st
 			if (_sink) _sink->reader_log(LL_ERROR, "历史K线数据文件%s大小校验失败", filename.c_str());
 			break;
 		}
-
-		HisKlineBlock* kBlock = (HisKlineBlock*)content.c_str();
-		std::string buffer;
-		if (kBlock->_version == BLOCK_VERSION_CMP || kBlock->_version == BLOCK_VERSION_CMP_V2)
-		{
-			if (content.size() < sizeof(HisKlineBlockV2))
-			{
-				if (_sink) _sink->reader_log(LL_ERROR, "历史K线数据文件%s大小校验失败", filename.c_str());
-				break;
-			}
-
-			HisKlineBlockV2* kBlockV2 = (HisKlineBlockV2*)content.c_str();
-			if (kBlockV2->_size == 0)
-				break;
-
-			buffer = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
-
-			//老版本压缩，需要转一下
-			if (kBlock->_version == BLOCK_VERSION_CMP)
-			{
-				std::string bufV2;
-				uint32_t barcnt = buffer.size() / sizeof(WTSBarStructOld);
-				bufV2.resize(barcnt * sizeof(WTSBarStruct));
-				WTSBarStruct* newBar = (WTSBarStruct*)bufV2.data();
-				WTSBarStructOld* oldBar = (WTSBarStructOld*)buffer.data();
-				for (uint32_t idx = 0; idx < barcnt; idx++)
-				{
-					newBar[idx] = oldBar[idx];
-				}
-				buffer.swap(bufV2);
-			}
-		}
-		else
-		{
-			content.erase(0, sizeof(HisKlineBlock));
-			buffer.swap(content);
-
-			//老版本压缩，需要转一下
-			if (kBlock->_version == BLOCK_VERSION_RAW)
-			{
-				std::string bufV2;
-				uint32_t barcnt = buffer.size() / sizeof(WTSBarStructOld);
-				bufV2.resize(barcnt * sizeof(WTSBarStruct));
-				WTSBarStruct* newBar = (WTSBarStruct*)bufV2.data();
-				WTSBarStructOld* oldBar = (WTSBarStructOld*)buffer.data();
-				for (uint32_t idx = 0; idx < barcnt; idx++)
-				{
-					newBar[idx] = oldBar[idx];
-				}
-				buffer.swap(bufV2);
-			}
-		}
-
-		uint32_t barcnt = buffer.size() / sizeof(WTSBarStruct);
-		if (barcnt <= 0)
+		proc_block_data(content, true, false);
+		
+		if(content.empty())
 			break;
+
+		uint32_t barcnt = content.size() / sizeof(WTSBarStruct);
 
 		hotAy = new std::vector<WTSBarStruct>();
 		hotAy->resize(barcnt);
-		memcpy(hotAy->data(), buffer.data(), buffer.size());
+		memcpy(hotAy->data(), content.data(), buffer.size());
 
 		if (period != KP_DAY)
 			lastHotTime = hotAy->at(barcnt - 1).time;
@@ -1028,64 +1013,14 @@ bool WtDataReader::cacheIntegratedFutBars(const std::string& key, const char* st
 				if (_sink) _sink->reader_log(LL_ERROR, "历史K线数据文件%s大小校验失败", filename.c_str());
 				return false;
 			}
-
-			HisKlineBlock* kBlock = (HisKlineBlock*)content.c_str();
-			WTSBarStruct* firstBar = NULL;
-			uint32_t barcnt = 0;
-			if (kBlock->_version == BLOCK_VERSION_CMP || kBlock->_version == BLOCK_VERSION_CMP_V2)
-			{
-				if (content.size() < sizeof(HisKlineBlockV2))
-				{
-					if (_sink) _sink->reader_log(LL_ERROR, "历史K线数据文件%s大小校验失败", filename.c_str());
-					break;
-				}
-
-				HisKlineBlockV2* kBlockV2 = (HisKlineBlockV2*)content.c_str();
-				if (kBlockV2->_size == 0)
-					break;
-
-				buffer = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
-
-				//老版本压缩，需要转一下
-				if (kBlock->_version == BLOCK_VERSION_CMP)
-				{
-					std::string bufV2;
-					uint32_t barcnt = buffer.size() / sizeof(WTSBarStructOld);
-					bufV2.resize(barcnt * sizeof(WTSBarStruct));
-					WTSBarStruct* newBar = (WTSBarStruct*)bufV2.data();
-					WTSBarStructOld* oldBar = (WTSBarStructOld*)buffer.data();
-					for (uint32_t idx = 0; idx < barcnt; idx++)
-					{
-						newBar[idx] = oldBar[idx];
-					}
-					buffer.swap(bufV2);
-				}
-			}
-			else
-			{
-				content.erase(0, sizeof(HisKlineBlock));
-				buffer.swap(content);
-
-				//老版本压缩，需要转一下
-				if (kBlock->_version == BLOCK_VERSION_RAW)
-				{
-					std::string bufV2;
-					uint32_t barcnt = buffer.size() / sizeof(WTSBarStructOld);
-					bufV2.resize(barcnt * sizeof(WTSBarStruct));
-					WTSBarStruct* newBar = (WTSBarStruct*)bufV2.data();
-					WTSBarStructOld* oldBar = (WTSBarStructOld*)buffer.data();
-					for (uint32_t idx = 0; idx < barcnt; idx++)
-					{
-						newBar[idx] = oldBar[idx];
-					}
-					buffer.swap(bufV2);
-				}
-			}
+			proc_block_data(content, true, false);
+			buffer.swap(content);
 		}
+		
+		if(buffer.empty())
+			break;
 
 		uint32_t barcnt = buffer.size() / sizeof(WTSBarStruct);
-		if (barcnt <= 0)
-			break;
 
 		WTSBarStruct* firstBar = (WTSBarStruct*)buffer.data();
 
@@ -1217,66 +1152,13 @@ bool WtDataReader::cacheAdjustedStkBars(const std::string& key, const char* stdC
 			break;
 		}
 
-		HisKlineBlock* kBlock = (HisKlineBlock*)content.c_str();
-		std::string buffer;
-		if (kBlock->_version == BLOCK_VERSION_CMP || kBlock->_version == BLOCK_VERSION_CMP_V2)
-		{
-			if (content.size() < sizeof(HisKlineBlockV2))
-			{
-				if (_sink) _sink->reader_log(LL_ERROR, "历史K线数据文件%s大小校验失败", filename.c_str());
-				break;
-			}
+		proc_block_data(content, true, false);
 
-			HisKlineBlockV2* kBlockV2 = (HisKlineBlockV2*)content.c_str();
-			if (kBlockV2->_size == 0)
-				break;
-
-			buffer = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
-
-			//老版本压缩，需要转一下
-			if (kBlock->_version == BLOCK_VERSION_CMP)
-			{
-				std::string bufV2;
-				uint32_t barcnt = buffer.size() / sizeof(WTSBarStructOld);
-				bufV2.resize(barcnt * sizeof(WTSBarStruct));
-				WTSBarStruct* newBar = (WTSBarStruct*)bufV2.data();
-				WTSBarStructOld* oldBar = (WTSBarStructOld*)buffer.data();
-				for (uint32_t idx = 0; idx < barcnt; idx++)
-				{
-					newBar[idx] = oldBar[idx];
-				}
-				buffer.swap(bufV2);
-			}
-		}
-		else
-		{
-			content.erase(0, sizeof(HisKlineBlock));
-			buffer.swap(content);
-
-			//老版本压缩，需要转一下
-			if (kBlock->_version == BLOCK_VERSION_RAW)
-			{
-				std::string bufV2;
-				uint32_t barcnt = buffer.size() / sizeof(WTSBarStructOld);
-				bufV2.resize(barcnt * sizeof(WTSBarStruct));
-				WTSBarStruct* newBar = (WTSBarStruct*)bufV2.data();
-				WTSBarStructOld* oldBar = (WTSBarStructOld*)buffer.data();
-				for (uint32_t idx = 0; idx < barcnt; idx++)
-				{
-					newBar[idx] = oldBar[idx];
-				}
-				buffer.swap(bufV2);
-			}
-		}
-
-		uint32_t barcnt = buffer.size() / sizeof(WTSBarStruct);
-		if (barcnt <= 0)
-			break;
+		uint32_t barcnt = content.size() / sizeof(WTSBarStruct);
 
 		ayAdjusted = new std::vector<WTSBarStruct>();
 		ayAdjusted->resize(barcnt);
-		memcpy(ayAdjusted->data(), buffer.data(), buffer.size());
-
+		memcpy(ayAdjusted->data(), content.data(), content.size());
 
 		if (period != KP_DAY)
 			lastQTime = ayAdjusted->at(barcnt - 1).time;
@@ -1322,6 +1204,7 @@ bool WtDataReader::cacheAdjustedStkBars(const std::string& key, const char* stdC
 			});
 		}
 
+		bool bOldVer = false;
 		if (!bLoaded)
 		{
 			std::stringstream ss;
@@ -1338,63 +1221,14 @@ bool WtDataReader::cacheAdjustedStkBars(const std::string& key, const char* stdC
 				return false;
 			}
 
-			HisKlineBlock* kBlock = (HisKlineBlock*)content.c_str();
-			WTSBarStruct* firstBar = NULL;
-			uint32_t barcnt = 0;
-			if (kBlock->_version == BLOCK_VERSION_CMP || kBlock->_version == BLOCK_VERSION_CMP_V2)
-			{
-				if (content.size() < sizeof(HisKlineBlockV2))
-				{
-					if (_sink) _sink->reader_log(LL_ERROR, "历史K线数据文件%s大小校验失败", filename.c_str());
-					break;
-				}
-
-				HisKlineBlockV2* kBlockV2 = (HisKlineBlockV2*)content.c_str();
-				if (kBlockV2->_size == 0)
-					break;
-
-				buffer = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
-
-				//老版本压缩，需要转一下
-				if (kBlock->_version == BLOCK_VERSION_CMP)
-				{
-					std::string bufV2;
-					uint32_t barcnt = buffer.size() / sizeof(WTSBarStructOld);
-					bufV2.resize(barcnt * sizeof(WTSBarStruct));
-					WTSBarStruct* newBar = (WTSBarStruct*)bufV2.data();
-					WTSBarStructOld* oldBar = (WTSBarStructOld*)buffer.data();
-					for (uint32_t idx = 0; idx < barcnt; idx++)
-					{
-						newBar[idx] = oldBar[idx];
-					}
-					buffer.swap(bufV2);
-				}
-			}
-			else
-			{
-				content.erase(0, sizeof(HisKlineBlock));
-				buffer.swap(content);
-
-				//老版本压缩，需要转一下
-				if (kBlock->_version == BLOCK_VERSION_RAW)
-				{
-					std::string bufV2;
-					uint32_t barcnt = buffer.size() / sizeof(WTSBarStructOld);
-					bufV2.resize(barcnt * sizeof(WTSBarStruct));
-					WTSBarStruct* newBar = (WTSBarStruct*)bufV2.data();
-					WTSBarStructOld* oldBar = (WTSBarStructOld*)buffer.data();
-					for (uint32_t idx = 0; idx < barcnt; idx++)
-					{
-						newBar[idx] = oldBar[idx];
-					}
-					buffer.swap(bufV2);
-				}
-			}
+			proc_block_data(content, true, false);
+			buffer.swap(content);
 		}
 
-		uint32_t barcnt = buffer.size() / sizeof(WTSBarStruct);
-		if (barcnt <= 0)
+		if(buffer.empty())
 			break;
+
+		uint32_t barcnt = buffer.size() / sizeof(WTSBarStruct);
 
 		WTSBarStruct* firstBar = (WTSBarStruct*)buffer.data();
 
@@ -1578,70 +1412,20 @@ bool WtDataReader::cacheHisBarsFromFile(const std::string& key, const char* stdC
 				return false;
 			}
 
-			HisKlineBlock* kBlock = (HisKlineBlock*)content.c_str();
-			WTSBarStruct* firstBar = NULL;
-			uint32_t barcnt = 0;
-			if (kBlock->_version == BLOCK_VERSION_CMP || kBlock->_version == BLOCK_VERSION_CMP_V2)
-			{
-				if (content.size() < sizeof(HisKlineBlockV2))
-				{
-					if (_sink) _sink->reader_log(LL_ERROR, "历史K线数据文件%s大小校验失败", filename.c_str());
-					return false;
-				}
-
-				HisKlineBlockV2* kBlockV2 = (HisKlineBlockV2*)content.c_str();
-				if (kBlockV2->_size == 0)
-					return false;
-
-				buffer = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
-
-				//老版本压缩，需要转一下
-				if (kBlock->_version == BLOCK_VERSION_CMP)
-				{
-					std::string bufV2;
-					uint32_t barcnt = buffer.size() / sizeof(WTSBarStructOld);
-					bufV2.resize(barcnt * sizeof(WTSBarStruct));
-					WTSBarStruct* newBar = (WTSBarStruct*)bufV2.data();
-					WTSBarStructOld* oldBar = (WTSBarStructOld*)buffer.data();
-					for (uint32_t idx = 0; idx < barcnt; idx++)
-					{
-						newBar[idx] = oldBar[idx];
-					}
-					buffer.swap(bufV2);
-				}
-			}
-			else
-			{
-				content.erase(0, sizeof(HisKlineBlock));
-				buffer.swap(content);
-
-				//老版本压缩，需要转一下
-				if (kBlock->_version == BLOCK_VERSION_RAW)
-				{
-					std::string bufV2;
-					uint32_t barcnt = buffer.size() / sizeof(WTSBarStructOld);
-					bufV2.resize(barcnt * sizeof(WTSBarStruct));
-					WTSBarStruct* newBar = (WTSBarStruct*)bufV2.data();
-					WTSBarStructOld* oldBar = (WTSBarStructOld*)buffer.data();
-					for (uint32_t idx = 0; idx < barcnt; idx++)
-					{
-						newBar[idx] = oldBar[idx];
-					}
-					buffer.swap(bufV2);
-				}
-			}
+			proc_block_data(content, true, false);
+			buffer.swap(content);
 		}
 	}
 
-	uint32_t barcnt = buffer.size() / sizeof(WTSBarStruct);
-	if (barcnt <= 0)
+	if (buffer.empty())
 		return false;
+
+	uint32_t barcnt = buffer.size() / sizeof(WTSBarStruct);
 
 	WTSBarStruct* firstBar = (WTSBarStruct*)buffer.data();
 
 	if (barcnt > 0)
 	{
-
 		uint32_t sIdx = 0;
 		uint32_t idx = barcnt - 1;
 		uint32_t curCnt = (idx - sIdx + 1);

@@ -199,6 +199,8 @@ private:
 	bool	loadStkAdjFactorsFromFile(const char* adjfile);
 	bool	loadStkAdjFactorsFromLoader();
 
+	bool	proc_block_data(std::string& content, bool isBar, bool bKeepHead = true);
+
 public:
 	virtual void init(WTSVariant* cfg, IDataReaderSink* sink, IHisDataLoader* loader = NULL) override;
 
