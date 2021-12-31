@@ -91,7 +91,7 @@ private:
 		double		_price;
 		uint32_t	_state;
 		uint64_t	_time;
-		uint32_t	_queue;
+		double		_queue;
 		bool		_positive;
 
 		_OrderInfo()
@@ -103,7 +103,7 @@ private:
 	typedef faster_hashmap<uint32_t, OrderInfo> Orders;
 	Orders	_orders;
 
-	typedef std::map<uint32_t, uint32_t>	LOBItems;
+	typedef std::map<uint32_t, double>	LOBItems;
 
 	typedef struct _LmtOrdBook
 	{

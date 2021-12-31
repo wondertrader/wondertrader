@@ -9,6 +9,7 @@
  */
 #pragma once
 #include "WTSMarcos.h"
+#include <stdint.h>
 
 NS_WTP_BEGIN
 
@@ -296,34 +297,28 @@ typedef enum tagTraderEvent
 /*
  *	买卖方向类型
  */
-typedef enum tagBSDirectType
-{
-	BDT_Buy		= 'B',	//买入	
-	BDT_Sell	= 'S',	//卖出
-	BDT_Unknown = ' ',	//未知
-	BDT_Borrow	= 'G',	//借入
-	BDT_Lend	= 'F'	//借出
-} WTSBSDirectType;
+typedef uint32_t WTSBSDirectType;
+#define BDT_Buy		'B'	//买入	
+#define BDT_Sell	'S'	//卖出
+#define BDT_Unknown ' '	//未知
+#define BDT_Borrow	'G'	//借入
+#define BDT_Lend	'F'	//借出
 
 /*
  *	成交类型
  */
-typedef enum tagTransType
-{
-	TT_Unknown	= 'U',	//未知类型
-	TT_Match	= 'M',	//撮合成交
-	TT_Cancel	= 'C'	//撤单
-} WTSTransType;
+typedef uint32_t WTSTransType;
+#define TT_Unknown	'U'	//未知类型
+#define TT_Match	'M'	//撮合成交
+#define TT_Cancel	'C'	//撤单
 
 /*
- *	
+ *	委托明细类型
  */
-typedef enum tagOrdDetailType
-{
-	ODT_Unknown		= 0,	//未知类型
-	ODT_BestPrice	= 'U',	//本方最优
-	ODT_AnyPrice	= '1',	//市价
-	ODT_LimitPrice	= '2'	//限价
-} WTSOrdDetailType;
+typedef uint32_t WTSOrdDetailType;
+#define ODT_Unknown		0	//未知类型
+#define ODT_BestPrice	'U'	//本方最优
+#define ODT_AnyPrice	'1'	//市价
+#define ODT_LimitPrice	'2'	//限价
 
 NS_WTP_END

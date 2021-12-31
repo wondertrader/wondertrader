@@ -911,7 +911,7 @@ bool WtDataReader::cacheIntegratedFutBars(const std::string& key, const char* st
 
 		hotAy = new std::vector<WTSBarStruct>();
 		hotAy->resize(barcnt);
-		memcpy(hotAy->data(), content.data(), buffer.size());
+		memcpy(hotAy->data(), content.data(), content.size());
 
 		if (period != KP_DAY)
 			lastHotTime = hotAy->at(barcnt - 1).time;
