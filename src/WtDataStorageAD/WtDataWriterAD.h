@@ -29,8 +29,6 @@ private:
 	void* resizeRTBlock(BoostMFPtr& mfPtr, uint32_t nCount);
 
 public:
-	virtual const char* getFactName()override { return "WtDataStorageFact"; }
-
 	virtual bool init(WTSVariant* params, IDataWriterSink* sink) override;
 	virtual void release() override;
 

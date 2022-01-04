@@ -7,7 +7,6 @@
 #include "../Share/BoostFile.hpp"
 #include "../Share/StrUtil.hpp"
 #include "../Share/IniHelper.hpp"
-#include "../Share/DLLHelper.hpp"
 
 #include "../Includes/IBaseDataMgr.h"
 

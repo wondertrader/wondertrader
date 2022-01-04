@@ -162,15 +162,18 @@ void initialize()
 
 	g_udpCaster.init(config->get("broadcaster"), &g_baseDataMgr, &g_dataMgr);
 
-	initDataMgr(config->get("writer"));
-
 	//By Wesley @ 2021.12.27
 	//全天候模式，不需要再使用状态机
 	bool bAlldayMode = config->getBoolean("allday");
 	if (!bAlldayMode)
+	{
 		g_stateMon.initialize("statemonitor.json", &g_baseDataMgr, &g_dataMgr);
+	}
 	else
+	{
 		WTSLogger::info("QuoteFactory will run in allday mode");
+	}
+	initDataMgr(config->get("writer"), bAlldayMode);
 
 	initParsers(config->get("parsers"));
 

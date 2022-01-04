@@ -1,11 +1,9 @@
 #include "WtDataReader.h"
 
 #include "../Includes/WTSVariant.hpp"
-#include "../Share/ModuleHelper.hpp"
 #include "../Share/TimeUtils.hpp"
 #include "../Share/CodeHelper.hpp"
 #include "../Share/StdUtils.hpp"
-#include "../Share/DLLHelper.hpp"
 
 #include "../Includes/WTSContractInfo.hpp"
 #include "../Includes/IBaseDataMgr.h"
@@ -1606,7 +1604,9 @@ WTSKlineSlice* WtDataReader::readKlineSlice(const char* stdCode, WTSKlinePeriod 
 
 	if (hisCnt + rtCnt > 0)
 	{
-		WTSKlineSlice* slice = WTSKlineSlice::create(stdCode, period, 1, hisHead, hisCnt, rtHead, rtCnt);
+		WTSKlineSlice* slice = WTSKlineSlice::create(stdCode, period, 1, hisHead, hisCnt);
+		if (rtCnt > 0)
+			slice->appendBlock(rtHead, rtCnt);
 		return slice;
 	}
 

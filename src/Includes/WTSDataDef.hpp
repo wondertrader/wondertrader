@@ -201,29 +201,25 @@ public:
 class WTSKlineSlice : public WTSObject
 {
 private:
-	char			m_strCode[MAX_INSTRUMENT_LENGTH];
-	WTSKlinePeriod	m_kpPeriod;
-	uint32_t		m_uTimes;
-	WTSBarStruct*	m_bsHisBegin;
-	int32_t			m_iHisCnt;
-	WTSBarStruct*	m_bsRtBegin;
-	int32_t			m_iRtCnt;
+	char			_code[MAX_INSTRUMENT_LENGTH];
+	WTSKlinePeriod	_period;
+	uint32_t		_times;
+	typedef std::pair<WTSBarStruct*, uint32_t> BarBlock;
+	std::vector<BarBlock> _blocks;
+	uint32_t		_count;
 
 protected:
 	WTSKlineSlice()
-		:m_kpPeriod(KP_Minute1)
-		, m_uTimes(1)
-		, m_iHisCnt(0)
-		, m_bsHisBegin(NULL)
-		, m_iRtCnt(0)
-		, m_bsRtBegin(NULL)
+		: _period(KP_Minute1)
+		, _times(1)
+		, _count(0)
 	{
 
 	}
 
 	inline int32_t		translateIdx(int32_t idx) const
 	{
-		int32_t totalCnt = m_iHisCnt + m_iRtCnt;
+		int32_t totalCnt = _count;
 		if (idx < 0)
 		{
 			return max(0, totalCnt + idx);
@@ -234,65 +230,89 @@ protected:
 
 
 public:
-	static WTSKlineSlice* create(const char* code, WTSKlinePeriod period, uint32_t times, WTSBarStruct* hisHead, int32_t hisCnt, WTSBarStruct* rtHead = NULL, int32_t rtCnt = 0)
+	static WTSKlineSlice* create(const char* code, WTSKlinePeriod period, uint32_t times, WTSBarStruct* bars, int32_t count)
 	{
-		if (hisHead == NULL && rtHead == NULL)
-			return NULL;
-
-		if (hisCnt == 0 && rtCnt == 0)
+		if (bars == NULL || count == 0)
 			return NULL;
 
 		WTSKlineSlice *pRet = new WTSKlineSlice;
-		strcpy(pRet->m_strCode, code);
-		pRet->m_kpPeriod = period;
-		pRet->m_uTimes = times;
-		pRet->m_bsHisBegin = hisHead;
-		pRet->m_iHisCnt = hisCnt;
-
-		pRet->m_bsRtBegin = rtHead;
-		pRet->m_iRtCnt = rtCnt;
+		strcpy(pRet->_code, code);
+		pRet->_period = period;
+		pRet->_times = times;
+		pRet->_blocks.emplace_back(BarBlock(bars, count));
+		pRet->_count = count;
 
 		return pRet;
 	}
 
-	inline WTSBarStruct*	get_his_addr()
+	inline bool appendBlock(WTSBarStruct* bars, uint32_t count)
 	{
-		return m_bsHisBegin;
+		if (bars == NULL || count == 0)
+			return false;
+
+		_count += count;
+		_blocks.emplace_back(BarBlock(bars, count));
+		return true;
 	}
 
-	inline int32_t	get_his_count()
+	inline std::size_t	get_block_counts() const
 	{
-		return m_iHisCnt;
+		return _blocks.size();
 	}
 
-	inline WTSBarStruct*	get_rt_addr()
+	inline WTSBarStruct*	get_block_addr(std::size_t blkIdx)
 	{
-		return m_bsRtBegin;
+		if (blkIdx >= _blocks.size())
+			return NULL;
+
+		return _blocks[blkIdx].first;
 	}
 
-	inline int32_t	get_rt_count()
+	inline uint32_t get_block_size(std::size_t blkIdx)
 	{
-		return m_iRtCnt;
+		if (blkIdx >= _blocks.size())
+			return INVALID_UINT32;
+
+		return _blocks[blkIdx].second;
 	}
 
 	inline WTSBarStruct*	at(int32_t idx)
 	{
-		idx = translateIdx(idx);
-
-		if (idx < 0 || idx >= size())
+		if (_count == 0)
 			return NULL;
-		
-		return idx < m_iHisCnt ? &m_bsHisBegin[idx] : &m_bsRtBegin[idx - m_iHisCnt];
+
+		idx = translateIdx(idx);
+		do
+		{
+			for (auto& item : _blocks)
+			{
+				if ((uint32_t)idx >= item.second)
+					idx -= item.second;
+				else
+					return item.first + idx;
+			}
+		} while (false);
+
+		return NULL;
 	}
 
 	inline const WTSBarStruct*	at(int32_t idx) const
 	{
-		idx = translateIdx(idx);
-
-		if (idx < 0 || idx >= size())
+		if (_count == 0)
 			return NULL;
 
-		return idx < m_iHisCnt ? &m_bsHisBegin[idx] : &m_bsRtBegin[idx - m_iHisCnt];
+		idx = translateIdx(idx);
+		do
+		{
+			for (auto& item : _blocks)
+			{
+				if ((uint32_t)idx >= item.second)
+					idx -= item.second;
+				else
+					return item.first + idx;
+			}
+		} while (false);
+		return NULL;
 	}
 
 
@@ -344,265 +364,15 @@ public:
 	/*
 	*	返回K线的大小
 	*/
-	inline int32_t	size() const{ return m_iHisCnt + m_iRtCnt; }
-	inline bool	empty() const{ return (m_iHisCnt + m_iRtCnt) == 0; }
+	inline int32_t	size() const{ return _count; }
+	inline bool	empty() const{ return _count == 0; }
 
 	/*
 	*	返回K线对象的合约代码
 	*/
-	inline const char*	code() const{ return m_strCode; }
-	inline void		setCode(const char* code){ strcpy(m_strCode, code); }
+	inline const char*	code() const{ return _code; }
+	inline void		setCode(const char* code){ strcpy(_code, code); }
 
-
-	/*
-	*	读取指定位置的开盘价
-	*	如果超出范围则返回INVALID_VALUE
-	*/
-	double	open(int32_t idx) const
-	{
-		idx = translateIdx(idx);
-
-		if (idx < 0 || idx >= size())
-			return INVALID_DOUBLE;
-
-		if (idx < m_iHisCnt)
-			if (m_bsHisBegin == NULL)
-				return INVALID_DOUBLE;
-			else
-				return (m_bsHisBegin + idx)->open;
-		else if (idx < size())
-			if (m_bsRtBegin == NULL)
-				return INVALID_DOUBLE;
-			else
-				return (m_bsRtBegin + (idx - m_iHisCnt))->open;
-
-		return INVALID_DOUBLE;
-	}
-
-	/*
-	*	读取指定位置的最高价
-	*	如果超出范围则返回INVALID_VALUE
-	*/
-	double	high(int32_t idx) const
-	{
-		idx = translateIdx(idx);
-
-		if (idx < 0 || idx >= size())
-			return INVALID_DOUBLE;
-
-		if (idx < m_iHisCnt)
-			if (m_bsHisBegin == NULL)
-				return INVALID_DOUBLE;
-			else
-				return (m_bsHisBegin + idx)->high;
-		else if (idx < size())
-			if (m_bsRtBegin == NULL)
-				return INVALID_DOUBLE;
-			else
-				return (m_bsRtBegin + (idx - m_iHisCnt))->high;
-
-		return INVALID_DOUBLE;
-	}
-
-	/*
-	*	读取指定位置的最低价
-	*	如果超出范围则返回INVALID_VALUE
-	*/
-	double	low(int32_t idx) const
-	{
-		idx = translateIdx(idx);
-
-		if (idx < 0 || idx >= size())
-			return INVALID_DOUBLE;
-
-		if (idx < m_iHisCnt)
-			if (m_bsHisBegin == NULL)
-				return INVALID_DOUBLE;
-			else
-				return (m_bsHisBegin + idx)->low;
-		else if (idx < size())
-			if (m_bsRtBegin == NULL)
-				return INVALID_DOUBLE;
-			else
-				return (m_bsRtBegin + (idx - m_iHisCnt))->low;
-
-		return INVALID_DOUBLE;
-	}
-
-	/*
-	*	读取指定位置的收盘价
-	*	如果超出范围则返回INVALID_VALUE
-	*/
-	double	close(int32_t idx) const
-	{
-		idx = translateIdx(idx);
-
-		if (idx < 0 || idx >= size())
-			return INVALID_DOUBLE;
-
-		if (idx < m_iHisCnt)
-			if (m_bsHisBegin == NULL)
-				return INVALID_DOUBLE;
-			else
-				return (m_bsHisBegin + idx)->close;
-		else if (idx < size())
-			if (m_bsRtBegin == NULL)
-				return INVALID_DOUBLE;
-			else
-				return (m_bsRtBegin + (idx - m_iHisCnt))->close;
-
-		return INVALID_DOUBLE;
-	}
-
-	/*
-	*	读取指定位置的成交量
-	*	如果超出范围则返回INVALID_VALUE
-	*/
-	double	volume(int32_t idx) const
-	{
-		idx = translateIdx(idx);
-
-		if (idx < 0 || idx >= size())
-			return DBL_MAX;
-
-		if (idx < m_iHisCnt)
-			if (m_bsHisBegin == NULL)
-				return DBL_MAX;
-			else
-				return (m_bsHisBegin + idx)->vol;
-		else if (idx < size())
-			if (m_bsRtBegin == NULL)
-				return DBL_MAX;
-			else
-				return (m_bsRtBegin + (idx - m_iHisCnt))->vol;
-
-		return DBL_MAX;
-	}
-
-	/*
-	*	读取指定位置的总持
-	*	如果超出范围则返回INVALID_VALUE
-	*/
-	double	openinterest(int32_t idx) const
-	{
-		idx = translateIdx(idx);
-
-		if (idx < 0 || idx >= size())
-			return DBL_MAX;
-
-		if (idx < m_iHisCnt)
-			if (m_bsHisBegin == NULL)
-				return DBL_MAX;
-			else
-				return (m_bsHisBegin + idx)->hold;
-		else if (idx < size())
-			if (m_bsRtBegin == NULL)
-				return DBL_MAX;
-			else
-				return (m_bsRtBegin + (idx - m_iHisCnt))->hold;
-
-		return DBL_MAX;
-	}
-
-	/*
-	*	读取指定位置的增仓
-	*	如果超出范围则返回INVALID_VALUE
-	*/
-	double	additional(int32_t idx) const
-	{
-		idx = translateIdx(idx);
-
-		if (idx < 0 || idx >= size())
-			return DBL_MAX;
-
-		if (idx < m_iHisCnt)
-			if (m_bsHisBegin == NULL)
-				return DBL_MAX;
-			else
-				return (m_bsHisBegin + idx)->add;
-		else if (idx < size())
-			if (m_bsRtBegin == NULL)
-				return DBL_MAX;
-			else
-				return (m_bsRtBegin + (idx - m_iHisCnt))->add;
-
-		return DBL_MAX;
-	}
-
-	/*
-	*	读取指定位置的成交额
-	*	如果超出范围则返回INVALID_VALUE
-	*/
-	double	money(int32_t idx) const
-	{
-		idx = translateIdx(idx);
-
-		if (idx < 0 || idx >= size())
-			return INVALID_DOUBLE;
-
-		if (idx < m_iHisCnt)
-			if (m_bsHisBegin == NULL)
-				return INVALID_DOUBLE;
-			else
-				return (m_bsHisBegin + idx)->money;
-		else if (idx < size())
-			if (m_bsRtBegin == NULL)
-				return INVALID_DOUBLE;
-			else
-				return (m_bsRtBegin + (idx - m_iHisCnt))->money;
-
-		return INVALID_DOUBLE;
-	}
-
-	/*
-	*	读取指定位置的日期
-	*	如果超出范围则返回INVALID_VALUE
-	*/
-	uint32_t	date(int32_t idx) const
-	{
-		idx = translateIdx(idx);
-
-		if (idx < 0 || idx >= size())
-			return INVALID_UINT32;
-
-		if (idx < m_iHisCnt)
-			if (m_bsHisBegin == NULL)
-				return INVALID_UINT32;
-			else
-				return (m_bsHisBegin + idx)->date;
-		else if (idx < size())
-			if (m_bsRtBegin == NULL)
-				return INVALID_UINT32;
-			else
-				return (m_bsRtBegin + (idx - m_iHisCnt))->date;
-
-		return INVALID_UINT32;
-	}
-
-	/*
-	*	读取指定位置的时间
-	*	如果超出范围则返回INVALID_VALUE
-	*/
-	uint64_t	time(int32_t idx) const
-	{
-		idx = translateIdx(idx);
-
-		if (idx < 0 || idx >= size())
-			return INVALID_UINT32;
-
-		if (idx < m_iHisCnt)
-			if (m_bsHisBegin == NULL)
-				return INVALID_UINT32;
-			else
-				return (m_bsHisBegin + idx)->time;
-		else if (idx < size())
-			if (m_bsRtBegin == NULL)
-				return INVALID_UINT32;
-			else
-				return (m_bsRtBegin + (idx - m_iHisCnt))->time;
-
-		return INVALID_UINT32;
-	}
 
 	/*
 	*	将指定范围内的某个特定字段的数据全部抓取出来
@@ -612,10 +382,7 @@ public:
 	*/
 	WTSValueArray*	extractData(WTSKlineFieldType type, int32_t head = 0, int32_t tail = -1) const
 	{
-		if (m_bsHisBegin == NULL && m_bsRtBegin == NULL)
-			return NULL;
-
-		if (m_iHisCnt == 0 && m_iRtCnt == 0)
+		if (_count == 0)
 			return NULL;
 
 		head = translateIdx(head);
@@ -630,7 +397,7 @@ public:
 
 		for (int32_t i = begin; i <= end; i++)
 		{
-			const WTSBarStruct& day = i < m_iHisCnt ? m_bsHisBegin[i] : m_bsRtBegin[i - m_iHisCnt];
+			const WTSBarStruct& day = *at(i);
 			switch (type)
 			{
 			case KFT_OPEN:
@@ -1397,46 +1164,68 @@ public:
 class WTSTickSlice : public WTSObject
 {
 private:
-	char			m_strCode[MAX_INSTRUMENT_LENGTH];
-	WTSTickStruct*	m_ptrBegin;
-	uint32_t		m_uCount;
+	char			_code[MAX_INSTRUMENT_LENGTH];
+	typedef std::pair<WTSTickStruct*, uint32_t> TickBlock;
+	std::vector<TickBlock> _blocks;
+	uint32_t		_count;
 
 protected:
-	WTSTickSlice():m_ptrBegin(NULL),m_uCount(0){}
+	WTSTickSlice(){}
 	inline int32_t		translateIdx(int32_t idx) const
 	{
 		if (idx < 0)
 		{
-			return max(0, (int32_t)m_uCount + idx);
+			return max(0, (int32_t)_count + idx);
 		}
 
 		return idx;
 	}
 
 public:
-	static inline WTSTickSlice* create(const char* code, WTSTickStruct* firstTick, uint32_t count)
+	static inline WTSTickSlice* create(const char* code, WTSTickStruct* ticks, uint32_t count)
 	{
-		if (count == 0 || firstTick == NULL)
-			return NULL;
+		if (ticks == NULL || count == 0)
+			return false;
 
 		WTSTickSlice* slice = new WTSTickSlice();
-		strcpy(slice->m_strCode, code);
-		slice->m_ptrBegin = firstTick;
-		slice->m_uCount = count;
+		strcpy(slice->_code, code);
+		slice->_blocks.emplace_back(TickBlock(ticks, count));
+		slice->_count = count;
 
 		return slice;
 	}
 
-	inline uint32_t size() const{ return m_uCount; }
+	inline bool appendBlock(WTSTickStruct* ticks, uint32_t count)
+	{
+		if (ticks == NULL || count == 0)
+			return false;
 
-	inline bool empty() const{ return (m_uCount == 0) || (m_ptrBegin == NULL); }
+		_count += count;
+		_blocks.emplace_back(TickBlock(ticks, count));
+		return true;
+	}
+
+	inline uint32_t size() const{ return _count; }
+
+	inline bool empty() const{ return (_count == 0); }
 
 	inline const WTSTickStruct* at(int32_t idx)
 	{
-		if (m_ptrBegin == NULL)
+		if (_count == 0)
 			return NULL;
+
 		idx = translateIdx(idx);
-		return m_ptrBegin + idx;
+		do 
+		{
+			for(auto& item : _blocks)
+			{
+				if ((uint32_t)idx >= item.second)
+					idx -= item.second;
+				else
+					return item.first + idx;
+			}
+		} while (false);
+		return NULL;
 	}
 };
 

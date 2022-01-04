@@ -24,8 +24,6 @@ public:
 
 
 public:
-	virtual const char* getFactName()override { return "WtDataStorageFact"; }
-
 	virtual void init(WTSVariant* cfg, IDataReaderSink* sink, IHisDataLoader* loader = NULL) override;
 
 	virtual void onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTDate = 0) override;
