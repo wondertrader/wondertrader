@@ -463,30 +463,15 @@ void WTSLogger::log_raw(WTSLogLevel ll, const char* message)
 		switch (ll)
 		{
 		case LL_DEBUG:
-			debug_imp(logger, message);
-			if (m_logHandler)
-				m_logHandler->handleLogAppend(LL_DEBUG, message);
-			break;
+			debug_imp(logger, message); break;
 		case LL_INFO:
-			info_imp(logger, message);
-			if (m_logHandler)
-				m_logHandler->handleLogAppend(LL_INFO, message);
-			break;
+			info_imp(logger, message); break;
 		case LL_WARN:
-			warn_imp(logger, message);
-			if (m_logHandler)
-				m_logHandler->handleLogAppend(LL_WARN, message);
-			break;
+			warn_imp(logger, message); break;
 		case LL_ERROR:
-			error_imp(logger, message);
-			if (m_logHandler)
-				m_logHandler->handleLogAppend(LL_ERROR, message);
-			break;
+			error_imp(logger, message); break;
 		case LL_FATAL:
-			fatal_imp(logger, message);
-			if (m_logHandler)
-				m_logHandler->handleLogAppend(LL_FATAL, message);
-			break;
+			fatal_imp(logger, message); break;
 		default:
 			break;
 		}
@@ -674,29 +659,19 @@ void WTSLogger::log2_raw(const char* catName, WTSLogLevel ll, const char* messag
 		switch (ll)
 		{
 		case LL_DEBUG:
-			logger->debug(message); 
-			if (m_logHandler)
-				m_logHandler->handleLogAppend(LL_DEBUG, message);
+			debug_imp(logger, m_buffer);
 			break;
 		case LL_INFO:
-			logger->info(message);
-			if (m_logHandler)
-				m_logHandler->handleLogAppend(LL_INFO, message);
+			info_imp(logger, m_buffer);
 			break;
 		case LL_WARN:
-			logger->warn(message);
-			if (m_logHandler)
-				m_logHandler->handleLogAppend(LL_WARN, message);
+			warn_imp(logger, m_buffer);
 			break;
 		case LL_ERROR:
-			logger->error(message);
-			if (m_logHandler)
-				m_logHandler->handleLogAppend(LL_ERROR, message);
+			error_imp(logger, m_buffer);
 			break;
 		case LL_FATAL:
-			logger->critical(message);
-			if (m_logHandler)
-				m_logHandler->handleLogAppend(LL_FATAL, message);
+			fatal_imp(logger, m_buffer);
 			break;
 		default:
 			break;
