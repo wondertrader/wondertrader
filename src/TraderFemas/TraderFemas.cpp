@@ -78,7 +78,7 @@ TraderFemas::~TraderFemas()
 {
 }
 
-bool TraderFemas::init(WTSParams* params)
+bool TraderFemas::init(WTSVariant* params)
 {
 	m_strFront = params->getCString("front");
 	m_strBroker = params->getCString("broker");
@@ -102,7 +102,7 @@ bool TraderFemas::init(WTSParams* params)
 
 	m_strFlowDir = StrUtil::standardisePath(m_strFlowDir);
 
-	WTSParams* param = params->get("ctpmodule");
+	WTSVariant* param = params->get("ctpmodule");
 	if (param != NULL)
 		m_strModule = getBinDir() + DLLHelper::wrap_module(param->asCString(), "");
 	else

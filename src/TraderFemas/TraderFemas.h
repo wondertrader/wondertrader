@@ -65,7 +65,7 @@ private:
 //////////////////////////////////////////////////////////////////////////
 //ITraderApi½Ó¿Ú
 public:
-	virtual bool init(WTSParams* params);
+	virtual bool init(WTSVariant* params);
 
 	virtual void release();
 

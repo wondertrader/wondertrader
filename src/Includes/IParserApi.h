@@ -20,7 +20,7 @@ class WTSTickData;
 class WTSOrdDtlData;
 class WTSOrdQueData;
 class WTSTransData;
-class WTSParams;
+class WTSVariant;
 class WTSArray;
 class IBaseDataMgr;
 
@@ -93,7 +93,7 @@ public:
 	 *	@config	模块配置
 	 *	返回值	是否初始化成功
 	 */
-	virtual bool init(WTSParams* config)			= 0;
+	virtual bool init(WTSVariant* config)			= 0;
 
 	/*
 	 *	释放解析模块

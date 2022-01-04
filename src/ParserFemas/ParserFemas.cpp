@@ -11,7 +11,7 @@
 
 #include "../Includes/WTSDataDef.hpp"
 #include "../Includes/WTSContractInfo.hpp"
-#include "../Includes/WTSParams.hpp"
+#include "../Includes/WTSVariant.hpp"
 #include "../Includes/IBaseDataMgr.h"
 
 #include "../Share/StdUtils.hpp"
@@ -76,7 +76,7 @@ ParserFemas::~ParserFemas()
 	m_pUserAPI = NULL;
 }
 
-bool ParserFemas::init(WTSParams* config)
+bool ParserFemas::init(WTSVariant* config)
 {
 	m_strFrontAddr = config->getCString("front");
 	m_strBroker = config->getCString("broker");

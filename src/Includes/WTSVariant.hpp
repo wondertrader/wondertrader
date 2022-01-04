@@ -12,7 +12,6 @@
 #include "WTSTypes.h"
 #include "WTSObject.hpp"
 #include "WTSCollection.hpp"
-#include "WTSParams.hpp"
 
 #include <string>
 #include <vector>
@@ -723,59 +722,8 @@ public:
 
 	inline ValueType type() const{ return _type; }
 
-	WTSParams* toParams()
-	{
-		WTSParams* ret = NULL;
-		if (_type == VT_Array)
-			ret = WTSParams::createArray();
-		else if (_type == VT_Object)
-			ret = WTSParams::createObject();
-		else
-			return NULL;
-
-		if (_type == VT_Object && _value._map != NULL)
-		{
-			auto it = _value._map->begin();
-			for (; it != _value._map->end(); it++)
-			{
-				WTSVariant* val = (WTSVariant*)it->second;
-				const char* key = it->first.c_str();
-				if (val->type() == VT_Object || val->type() == VT_Array)
-				{
-					ret->append(key, val->toParams(), false);
-				}
-				else
-				{
-					ret->append(key, val->asCString(), "");
-				}
-			}
-		}
-		else if (_type == VT_Array && _value._array != NULL)
-		{
-			ChildrenArray::Iterator it = _value._array->begin();
-			for (; it != _value._array->end(); it++)
-			{
-				WTSVariant* val = (WTSVariant*)(*it);
-				if (val->type() == VT_Object || val->type() == VT_Array)
-				{
-					ret->append(val->toParams(), false);
-				}
-				else
-				{
-					ret->append(val->asCString(), "");
-				}
-			}
-		}
-		else
-		{
-			ret->append(this->asCString(), "");
-		}
-
-		return ret;
-	}
-
-	bool isArray() const{ return _type == VT_Array; }
-	bool isObject() const{ return _type == VT_Object; }
+	inline bool isArray() const{ return _type == VT_Array; }
+	inline bool isObject() const{ return _type == VT_Object; }
 
 private:
 	union ValueHolder

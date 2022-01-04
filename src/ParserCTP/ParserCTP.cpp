@@ -11,7 +11,7 @@
 
 #include "../Includes/WTSDataDef.hpp"
 #include "../Includes/WTSContractInfo.hpp"
-#include "../Includes/WTSParams.hpp"
+#include "../Includes/WTSVariant.hpp"
 #include "../Includes/IBaseDataMgr.h"
 
 #include "../Share/ModuleHelper.hpp"
@@ -79,7 +79,7 @@ ParserCTP::~ParserCTP()
 	m_pUserAPI = NULL;
 }
 
-bool ParserCTP::init(WTSParams* config)
+bool ParserCTP::init(WTSVariant* config)
 {
 	m_strFrontAddr = config->getCString("front");
 	m_strBroker = config->getCString("broker");

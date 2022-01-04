@@ -14,7 +14,7 @@
 #include "../Includes/WTSSessionInfo.hpp"
 #include "../Includes/WTSTradeDef.hpp"
 #include "../Includes/WTSError.hpp"
-#include "../Includes/WTSParams.hpp"
+#include "../Includes/WTSVariant.hpp"
 
 #include "../Share/ModuleHelper.hpp"
 
@@ -528,7 +528,7 @@ void TraderXTP::OnQueryAsset(XTPQueryAssetRsp *asset, XTPRI *error_info, int req
 #pragma endregion "XTP::API:TraderSpi"
 
 #pragma region "ITraderApi"
-bool TraderXTP::init(WTSParams *params)
+bool TraderXTP::init(WTSVariant *params)
 {
 	_user = params->getCString("user");
 	_pass = params->getCString("pass");

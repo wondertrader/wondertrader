@@ -5,7 +5,7 @@
 #include "IniFile.hpp"
 
 #include "..\Includes\ITraderApi.h"
-#include "..\Includes\WTSParams.hpp"
+#include "..\Includes\WTSVariant.hpp"
 #include "..\Includes\WTSTradeDef.hpp"
 #include "..\Includes\WTSError.hpp"
 #include "..\Includes\WTSCollection.hpp"
@@ -60,7 +60,7 @@ class TraderSpi : public ITraderSpi
 public:
 	TraderSpi() :m_bLogined(false), m_mapOrds(NULL){}
 
-	bool init(WTSParams* params, const char* ttype)
+	bool init(WTSVariant* params, const char* ttype)
 	{
 		m_pParams = params;
 		if (m_pParams)
@@ -544,7 +544,7 @@ private:
 	ITraderApi*			m_pTraderApi;
 	FuncDeleteTrader	m_funcDelTrader;
 	std::string			m_strModule;
-	WTSParams*			m_pParams;
+	WTSVariant*			m_pParams;
 
 	typedef WTSHashMap<std::string>	WTSObjectMap;
 	WTSObjectMap*		m_mapOrds;
@@ -596,7 +596,7 @@ void main()
 	WTSLogger::info("风控开关: %s", g_riskAct ? "开" : "关");
 
 
-	WTSParams* params = WTSParams::createObject();
+	WTSVariant* params = WTSVariant::createObject();
 
 	std::string module = IniFile::ReadConfigString("config", "trader", "", cfg.c_str());
 	std::string profile = IniFile::ReadConfigString("config", "profile", "", cfg.c_str());

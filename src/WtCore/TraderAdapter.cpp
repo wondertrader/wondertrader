@@ -193,15 +193,11 @@ bool TraderAdapter::init(const char* id, WTSVariant* params, IBaseDataMgr* bdMgr
 
 	_remover = (FuncDeleteTrader)DLLHelper::get_symbol(hInst, "deleteTrader");
 
-	WTSParams* cfg = params->toParams();
-	if (!_trader_api->init(cfg))
+	if (!_trader_api->init(params))
 	{
 		WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR, "[%s] Entrance function deleteTrader not found", id);
-		cfg->release();
 		return false;
 	}
-
-	cfg->release();
 
 	return true;
 }

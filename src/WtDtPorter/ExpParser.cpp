@@ -3,7 +3,7 @@
 
 extern WtDtRunner& getRunner();
 
-bool ExpParser::init(WTSParams* config)
+bool ExpParser::init(WTSVariant* config)
 {
 	getRunner().parser_init(_id.c_str());
 	return true;

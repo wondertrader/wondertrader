@@ -62,7 +62,7 @@ public:
 public:
 	//////////////////////////////////////////////////////////////////////////
 	//ITraderApi ½Ó¿Ú
-	virtual bool init(WTSParams *params) override;
+	virtual bool init(WTSVariant *params) override;
 
 	virtual void release() override;
 

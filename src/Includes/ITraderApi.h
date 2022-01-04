@@ -15,7 +15,7 @@
 #include "WTSTypes.h"
 
 NS_WTP_BEGIN
-class WTSParams;
+class WTSVariant;
 class WTSEntrust;
 class WTSOrderInfo;
 class WTSTradeInfo;
@@ -136,7 +136,7 @@ public:
 	/*
 	 *	初始化解析管理器
 	 */
-	virtual bool init(WTSParams *params) = 0;
+	virtual bool init(WTSVariant *params) = 0;
 
 	/*
 	 *	释放解析管理器

@@ -126,6 +126,7 @@
     <ClInclude Include="..\Includes\IDataFactory.h" />
     <ClInclude Include="..\Includes\IDataManager.h" />
     <ClInclude Include="..\Includes\IDataReader.h" />
+    <ClInclude Include="..\Includes\IDataStorage.h" />
     <ClInclude Include="..\Includes\IDataWriter.h" />
     <ClInclude Include="..\Includes\IHftStraCtx.h" />
     <ClInclude Include="..\Includes\IHotMgr.h" />
@@ -140,7 +141,6 @@
     <ClInclude Include="..\Includes\WTSHotItem.hpp" />
     <ClInclude Include="..\Includes\WTSMarcos.h" />
     <ClInclude Include="..\Includes\WTSObject.hpp" />
-    <ClInclude Include="..\Includes\WTSParams.hpp" />
     <ClInclude Include="..\Includes\WTSRiskDef.hpp" />
     <ClInclude Include="..\Includes\WTSSessionInfo.hpp" />
     <ClInclude Include="..\Includes\WTSStruct.h" />

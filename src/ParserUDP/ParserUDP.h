@@ -28,7 +28,7 @@ public:
 
 	//IQuoteParser ½Ó¿Ú
 public:
-	virtual bool init(WTSParams* config) override;
+	virtual bool init(WTSVariant* config) override;
 
 	virtual void release() override;
 

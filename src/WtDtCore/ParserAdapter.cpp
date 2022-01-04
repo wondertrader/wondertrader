@@ -15,7 +15,7 @@
 #include "../Share/StrUtil.hpp"
 #include "../Share/DLLHelper.hpp"
 
-#include "../Includes/WTSParams.hpp"
+#include "../Includes/WTSVariant.hpp"
 #include "../Includes/WTSContractInfo.hpp"
 #include "../Includes/WTSDataDef.hpp"
 #include "../Includes/WTSVariant.hpp"
@@ -162,8 +162,7 @@ bool ParserAdapter::init(const char* id, WTSVariant* cfg)
 	{
 		_parser_api->registerSpi(this);
 
-		WTSParams* params = cfg->toParams();
-		if (_parser_api->init(params))
+		if (_parser_api->init(cfg))
 		{
 			ContractSet contractSet;
 			if (!_code_filter.empty())//优先判断合约过滤器
@@ -224,8 +223,6 @@ bool ParserAdapter::init(const char* id, WTSVariant* cfg)
 		{
 			WTSLogger::log_dyn("parser", _id.c_str(), LL_ERROR, "[%s] Parser initializing failed: api initializing failed...", _id.c_str());
 		}
-
-		params->release();
 	}
 	else
 	{
