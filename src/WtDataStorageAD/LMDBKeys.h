@@ -19,6 +19,7 @@ static uint32_t reverseEndian(uint32_t src)
 	return x + y + z + w;
 }
 
+#pragma pack(push, 1)
 typedef struct _LMDBHftKey
 {
 	char		_exchg[MAX_EXCHANGE_LENGTH];
@@ -45,9 +46,10 @@ public:
 
 	_LMDBBarKey(const char* exchg, const char* code, uint32_t bartime)
 	{
-		memset(this, 0, sizeof(_LMDBHftKey));
+		memset(this, 0, sizeof(_LMDBBarKey));
 		strcpy(_exchg, exchg);
 		strcpy(_code, code);
 		_bartime = reverseEndian(bartime);
 	}
 } LMDBBarKey;
+#pragma pack(pop)

@@ -29,6 +29,8 @@ private:
 	void* resizeRTBlock(BoostMFPtr& mfPtr, uint32_t nCount);
 
 public:
+	virtual const char* getFactName()override { return "WtDataStorageFact"; }
+
 	virtual bool init(WTSVariant* params, IDataWriterSink* sink) override;
 	virtual void release() override;
 
@@ -47,18 +49,22 @@ private:
 	RTTickCache*	_tick_cache_block;
 
 	//m1»º´æ
-	StdUniqueMutex	_mtx_m1_cache;
-	std::string		_cache_file_m1;
-	faster_hashmap<std::string, uint32_t> _m1_cache_idx;
-	BoostMFPtr		_m1_cache_file;
-	RTBarCache*		_m1_cache_block;
+	typedef struct _RTBarCacheWrapper
+	{
+		StdUniqueMutex	_mtx;
+		std::string		_filename;
+		faster_hashmap<std::string, uint32_t> _idx;
+		BoostMFPtr		_file_ptr;
+		RTBarCache*		_cache_block;
 
-	//m5»º´æ
-	StdUniqueMutex	_mtx_m5_cache;
-	std::string		_cache_file_m5;
-	faster_hashmap<std::string, uint32_t> _m5_cache_idx;
-	BoostMFPtr		_m5_cache_file;
-	RTBarCache*		_m5_cache_block;
+		_RTBarCacheWrapper():_cache_block(NULL),_file_ptr(NULL){}
+
+		inline bool empty() const { return _cache_block == NULL; }
+	} RTBarCacheWrapper;
+
+	RTBarCacheWrapper _m1_cache;
+	RTBarCacheWrapper _m5_cache;
+	RTBarCacheWrapper _d1_cache;
 
 	typedef std::function<void()> TaskInfo;
 	std::queue<TaskInfo>	_tasks;
@@ -107,7 +113,7 @@ private:
 
 	void pipeToTicks(WTSContractInfo* ct, WTSTickData* curTick);
 
-	void pipeToDayBars(WTSContractInfo* ct, const WTSTickStruct& tick);
+	void pipeToDayBars(WTSContractInfo* ct, const WTSBarStruct& bar);
 
 	void pipeToM1Bars(WTSContractInfo* ct, const WTSBarStruct& bar);
 

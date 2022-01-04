@@ -8,13 +8,8 @@
 #include "../Share/BoostFile.hpp"
 #include "../Share/StrUtil.hpp"
 #include "../Share/IniHelper.hpp"
-#include "../Share/DLLHelper.hpp"
 
 #include "../Includes/IBaseDataMgr.h"
-
-#include "../WTSTools/WTSCmpHelper.hpp"
-
-#include <set>
 
 extern "C"
 {
@@ -34,7 +29,7 @@ extern "C"
 	}
 };
 
-static const uint32_t CACHE_SIZE_STEP = 400;
+static const uint32_t CACHE_SIZE_STEP_AD = 400;
 
 
 WtDataWriterAD::WtDataWriterAD()
@@ -45,8 +40,6 @@ WtDataWriterAD::WtDataWriterAD()
 	, _disable_min5(false)
 	, _disable_tick(false)
 	, _tick_cache_block(nullptr)
-	, _m1_cache_block(nullptr)
-	, _m5_cache_block(nullptr)
 {
 }
 
@@ -66,8 +59,9 @@ bool WtDataWriterAD::init(WTSVariant* params, IDataWriterSink* sink)
 		BoostFile::create_directories(_base_dir.c_str());
 
 	_cache_file_tick = "cache_tick.dmb";
-	_cache_file_m1 = "cache_m1.dmb";
-	_cache_file_m5 = "cache_m5.dmb";
+	_m1_cache._filename = "cache_m1.dmb";
+	_m5_cache._filename = "cache_m5.dmb";
+	_d1_cache._filename = "cache_d1.dmb";
 
 	_log_group_size = params->getUInt32("groupsize");
 
@@ -99,7 +93,7 @@ void WtDataWriterAD::loadCache()
 		std::string filename = _base_dir + _cache_file_tick;
 		if (!BoostFile::exists(filename.c_str()))
 		{
-			uint64_t uSize = sizeof(RTTickCache) + sizeof(TickCacheItem) * CACHE_SIZE_STEP;
+			uint64_t uSize = sizeof(RTTickCache) + sizeof(TickCacheItem) * CACHE_SIZE_STEP_AD;
 			BoostFile bf;
 			bf.create_new_file(filename.c_str());
 			bf.truncate_file((uint32_t)uSize);
@@ -117,7 +111,7 @@ void WtDataWriterAD::loadCache()
 		{
 			memset(_tick_cache_block, 0, _tick_cache_file->size());
 
-			_tick_cache_block->_capacity = CACHE_SIZE_STEP;
+			_tick_cache_block->_capacity = CACHE_SIZE_STEP_AD;
 			_tick_cache_block->_type = BT_RT_Cache;
 			_tick_cache_block->_size = 0;
 			_tick_cache_block->_version = 1;
@@ -134,13 +128,13 @@ void WtDataWriterAD::loadCache()
 		}
 	}
 
-	if (_m1_cache_file == NULL)
+	if (_m1_cache.empty())
 	{
 		bool bNew = false;
-		std::string filename = _base_dir + _cache_file_m1;
+		std::string filename = _base_dir + _m1_cache._filename;
 		if (!BoostFile::exists(filename.c_str()))
 		{
-			uint64_t uSize = sizeof(RTBarCache) + sizeof(BarCacheItem) * CACHE_SIZE_STEP;
+			uint64_t uSize = sizeof(RTBarCache) + sizeof(BarCacheItem) * CACHE_SIZE_STEP_AD;
 			BoostFile bf;
 			bf.create_new_file(filename.c_str());
 			bf.truncate_file((uint32_t)uSize);
@@ -148,40 +142,40 @@ void WtDataWriterAD::loadCache()
 			bNew = true;
 		}
 
-		_m1_cache_file.reset(new BoostMappingFile);
-		_m1_cache_file->map(filename.c_str());
-		_m1_cache_block = (RTBarCache*)_m1_cache_file->addr();
+		_m1_cache._file_ptr.reset(new BoostMappingFile);
+		_m1_cache._file_ptr->map(filename.c_str());
+		_m1_cache._cache_block = (RTBarCache*)_m1_cache._file_ptr->addr();
 
-		_m1_cache_block->_size = min(_m1_cache_block->_size, _m1_cache_block->_capacity);
+		_m1_cache._cache_block->_size = min(_m1_cache._cache_block->_size, _m1_cache._cache_block->_capacity);
 
 		if (bNew)
 		{
-			memset(_m1_cache_block, 0, _m1_cache_file->size());
+			memset(_m1_cache._cache_block, 0, _m1_cache._file_ptr->size());
 
-			_m1_cache_block->_capacity = CACHE_SIZE_STEP;
-			_m1_cache_block->_type = BT_RT_Cache;
-			_m1_cache_block->_size = 0;
-			_m1_cache_block->_version = 1;
-			strcpy(_m1_cache_block->_blk_flag, BLK_FLAG);
+			_m1_cache._cache_block->_capacity = CACHE_SIZE_STEP_AD;
+			_m1_cache._cache_block->_type = BT_RT_Cache;
+			_m1_cache._cache_block->_size = 0;
+			_m1_cache._cache_block->_version = 1;
+			strcpy(_m1_cache._cache_block->_blk_flag, BLK_FLAG);
 		}
 		else
 		{
-			for (uint32_t i = 0; i < _m1_cache_block->_size; i++)
+			for (uint32_t i = 0; i < _m1_cache._cache_block->_size; i++)
 			{
-				const BarCacheItem& item = _m1_cache_block->_items[i];
+				const BarCacheItem& item = _m1_cache._cache_block->_items[i];
 				std::string key = StrUtil::printf("%s.%s", item._exchg, item._code);
-				_m1_cache_idx[key] = i;
+				_m1_cache._idx[key] = i;
 			}
 		}
 	}
 
-	if (_m5_cache_file == NULL)
+	if (_m5_cache.empty())
 	{
 		bool bNew = false;
-		std::string filename = _base_dir + _cache_file_m5;
+		std::string filename = _base_dir + _m5_cache._filename;
 		if (!BoostFile::exists(filename.c_str()))
 		{
-			uint64_t uSize = sizeof(RTBarCache) + sizeof(BarCacheItem) * CACHE_SIZE_STEP;
+			uint64_t uSize = sizeof(RTBarCache) + sizeof(BarCacheItem) * CACHE_SIZE_STEP_AD;
 			BoostFile bf;
 			bf.create_new_file(filename.c_str());
 			bf.truncate_file((uint32_t)uSize);
@@ -189,29 +183,70 @@ void WtDataWriterAD::loadCache()
 			bNew = true;
 		}
 
-		_m5_cache_file.reset(new BoostMappingFile);
-		_m5_cache_file->map(filename.c_str());
-		_m5_cache_block = (RTBarCache*)_m5_cache_file->addr();
+		_m5_cache._file_ptr.reset(new BoostMappingFile);
+		_m5_cache._file_ptr->map(filename.c_str());
+		_m5_cache._cache_block = (RTBarCache*)_m5_cache._file_ptr->addr();
 
-		_m5_cache_block->_size = min(_m5_cache_block->_size, _m5_cache_block->_capacity);
+		_m5_cache._cache_block->_size = min(_m5_cache._cache_block->_size, _m5_cache._cache_block->_capacity);
 
 		if (bNew)
 		{
-			memset(_m1_cache_block, 0, _m5_cache_file->size());
+			memset(_m1_cache._cache_block, 0, _m5_cache._file_ptr->size());
 
-			_m5_cache_block->_capacity = CACHE_SIZE_STEP;
-			_m5_cache_block->_type = BT_RT_Cache;
-			_m5_cache_block->_size = 0;
-			_m5_cache_block->_version = 1;
-			strcpy(_m5_cache_block->_blk_flag, BLK_FLAG);
+			_m5_cache._cache_block->_capacity = CACHE_SIZE_STEP_AD;
+			_m5_cache._cache_block->_type = BT_RT_Cache;
+			_m5_cache._cache_block->_size = 0;
+			_m5_cache._cache_block->_version = 1;
+			strcpy(_m5_cache._cache_block->_blk_flag, BLK_FLAG);
 		}
 		else
 		{
-			for (uint32_t i = 0; i < _m5_cache_block->_size; i++)
+			for (uint32_t i = 0; i < _m5_cache._cache_block->_size; i++)
 			{
-				const BarCacheItem& item = _m5_cache_block->_items[i];
+				const BarCacheItem& item = _m5_cache._cache_block->_items[i];
 				std::string key = StrUtil::printf("%s.%s", item._exchg, item._code);
-				_m5_cache_idx[key] = i;
+				_m5_cache._idx[key] = i;
+			}
+		}
+	}
+
+	if (_d1_cache.empty())
+	{
+		bool bNew = false;
+		std::string filename = _base_dir + _d1_cache._filename;
+		if (!BoostFile::exists(filename.c_str()))
+		{
+			uint64_t uSize = sizeof(RTBarCache) + sizeof(BarCacheItem) * CACHE_SIZE_STEP_AD;
+			BoostFile bf;
+			bf.create_new_file(filename.c_str());
+			bf.truncate_file((uint32_t)uSize);
+			bf.close_file();
+			bNew = true;
+		}
+
+		_d1_cache._file_ptr.reset(new BoostMappingFile);
+		_d1_cache._file_ptr->map(filename.c_str());
+		_d1_cache._cache_block = (RTBarCache*)_d1_cache._file_ptr->addr();
+
+		_d1_cache._cache_block->_size = min(_d1_cache._cache_block->_size, _d1_cache._cache_block->_capacity);
+
+		if (bNew)
+		{
+			memset(_m1_cache._cache_block, 0, _d1_cache._file_ptr->size());
+
+			_d1_cache._cache_block->_capacity = CACHE_SIZE_STEP_AD;
+			_d1_cache._cache_block->_type = BT_RT_Cache;
+			_d1_cache._cache_block->_size = 0;
+			_d1_cache._cache_block->_version = 1;
+			strcpy(_d1_cache._cache_block->_blk_flag, BLK_FLAG);
+		}
+		else
+		{
+			for (uint32_t i = 0; i < _d1_cache._cache_block->_size; i++)
+			{
+				const BarCacheItem& item = _d1_cache._cache_block->_items[i];
+				std::string key = StrUtil::printf("%s.%s", item._exchg, item._code);
+				_d1_cache._idx[key] = i;
 			}
 		}
 	}
@@ -353,8 +388,6 @@ void WtDataWriterAD::pushTask(TaskInfo task)
 void WtDataWriterAD::pipeToTicks(WTSContractInfo* ct, WTSTickData* curTick)
 {
 	//直接落地
-	const char* key = ct->getFullCode();
-
 	WtLMDBPtr db = get_t_db(ct->getExchg(), ct->getCode());
 	if (db)
 	{
@@ -362,7 +395,7 @@ void WtDataWriterAD::pipeToTicks(WTSContractInfo* ct, WTSTickData* curTick)
 		WtLMDBQuery query(*db);
 		if (!query.put((void*)&key, sizeof(key), &curTick->getTickStruct(), sizeof(WTSTickStruct)))
 		{
-			_sink->outputWriterLog(LL_ERROR, "pipe tick of %s to db failed", ct->getFullCode());
+			_sink->outputWriterLog(LL_ERROR, "pipe tick of %s to db failed: %s", ct->getFullCode(), db->errmsg());
 		}
 	}
 
@@ -373,7 +406,7 @@ void WtDataWriterAD::pipeToTicks(WTSContractInfo* ct, WTSTickData* curTick)
 		if (dumper == NULL)
 			continue;
 
-		bool bSucc = dumper->dumpHisTicks(key, curTick->tradingdate(), &curTick->getTickStruct(), 1);
+		bool bSucc = dumper->dumpHisTicks(ct->getFullCode(), curTick->tradingdate(), &curTick->getTickStruct(), 1);
 		if (!bSucc)
 		{
 			_sink->outputWriterLog(LL_ERROR, "pipe tick data of %s via extended dumper %s failed", ct->getFullCode(), id);
@@ -381,30 +414,15 @@ void WtDataWriterAD::pipeToTicks(WTSContractInfo* ct, WTSTickData* curTick)
 	}
 }
 
-void WtDataWriterAD::pipeToDayBars(WTSContractInfo* ct, const WTSTickStruct& ts)
+void WtDataWriterAD::pipeToDayBars(WTSContractInfo* ct, const WTSBarStruct& bar)
 {
 	//直接落地
-	const char* key = ct->getFullCode();
-
-	WTSBarStruct bar;
-	bar.date = ts.trading_date;
-	bar.time = 0;
-	bar.open = ts.open;
-	bar.close = ts.price;
-	bar.high = ts.high;
-	bar.low = ts.low;
-	bar.settle = ts.settle_price;
-	bar.vol = ts.total_volume;
-	bar.hold = ts.open_interest;
-	bar.money = ts.total_turnover;
-	bar.add = ts.open_interest - ts.pre_interest;
-
 	WtLMDBPtr db = get_k_db(ct->getExchg(), KP_DAY);
 	if (db)
 	{
 		LMDBBarKey key(ct->getExchg(), ct->getCode(), bar.date);
 		WtLMDBQuery query(*db);
-		if (!query.put((void*)&key, sizeof(key), (void*)&bar, sizeof(bar)))
+		if (!query.put((void*)&key, sizeof(key), (void*)&bar, sizeof(WTSBarStruct)))
 		{
 			_sink->outputWriterLog(LL_ERROR, "pipe day bar @ %u of %s to db failed", bar.date, ct->getFullCode());
 		}
@@ -417,7 +435,7 @@ void WtDataWriterAD::pipeToDayBars(WTSContractInfo* ct, const WTSTickStruct& ts)
 		if (dumper == NULL)
 			continue;
 
-		bool bSucc = dumper->dumpHisBars(key, "d1", &bar, 1);
+		bool bSucc = dumper->dumpHisBars(ct->getFullCode(), "d1", (WTSBarStruct*)&bar, 1);
 		if (!bSucc)
 		{
 			_sink->outputWriterLog(LL_ERROR, "pipe day bar @%u of %s via extended dumper %s failed", bar.date, ct->getFullCode(), id);
@@ -428,16 +446,14 @@ void WtDataWriterAD::pipeToDayBars(WTSContractInfo* ct, const WTSTickStruct& ts)
 void WtDataWriterAD::pipeToM1Bars(WTSContractInfo* ct, const WTSBarStruct& bar)
 {
 	//直接落地
-	const char* key = ct->getFullCode();
-
 	WtLMDBPtr db = get_k_db(ct->getExchg(), KP_Minute1);
 	if(db)
 	{
 		LMDBBarKey key(ct->getExchg(), ct->getCode(), (uint32_t)bar.time);
 		WtLMDBQuery query(*db);
-		if(!query.put((void*)&key, sizeof(key), (void*)&bar, sizeof(bar)))
+		if(!query.put((void*)&key, sizeof(key), (void*)&bar, sizeof(WTSBarStruct)))
 		{
-			_sink->outputWriterLog(LL_ERROR, "pipe m1 bar @ %u of %s to db failed", bar.time, ct->getFullCode());
+			_sink->outputWriterLog(LL_ERROR, "pipe m1 bar @ %u of %s to db failed", (uint32_t)bar.time, ct->getFullCode());
 		}
 	}
 
@@ -448,7 +464,7 @@ void WtDataWriterAD::pipeToM1Bars(WTSContractInfo* ct, const WTSBarStruct& bar)
 		if (dumper == NULL)
 			continue;
 
-		bool bSucc = dumper->dumpHisBars(key, "m1", (WTSBarStruct*)&bar, 1);
+		bool bSucc = dumper->dumpHisBars(ct->getFullCode(), "m1", (WTSBarStruct*)&bar, 1);
 		if (!bSucc)
 		{
 			_sink->outputWriterLog(LL_ERROR, "pipe m1 bar @%u of %s via extended dumper %s failed", bar.time, ct->getFullCode(), id);
@@ -459,8 +475,6 @@ void WtDataWriterAD::pipeToM1Bars(WTSContractInfo* ct, const WTSBarStruct& bar)
 void WtDataWriterAD::pipeToM5Bars(WTSContractInfo* ct, const WTSBarStruct& bar)
 {
 	//直接落地
-	const char* key = ct->getFullCode();
-
 	WtLMDBPtr db = get_k_db(ct->getExchg(), KP_Minute5);
 	if (db)
 	{
@@ -468,7 +482,7 @@ void WtDataWriterAD::pipeToM5Bars(WTSContractInfo* ct, const WTSBarStruct& bar)
 		WtLMDBQuery query(*db);
 		if (!query.put((void*)&key, sizeof(key), (void*)&bar, sizeof(bar)))
 		{
-			_sink->outputWriterLog(LL_ERROR, "pipe m5 bar @ %u of %s to db failed", bar.time, ct->getFullCode());
+			_sink->outputWriterLog(LL_ERROR, "pipe m5 bar @ %u of %s to db failed", (uint32_t)bar.time, ct->getFullCode());
 		}
 	}
 
@@ -479,7 +493,7 @@ void WtDataWriterAD::pipeToM5Bars(WTSContractInfo* ct, const WTSBarStruct& bar)
 		if (dumper == NULL)
 			continue;
 
-		bool bSucc = dumper->dumpHisBars(key, "m5", (WTSBarStruct*)&bar, 1);
+		bool bSucc = dumper->dumpHisBars(ct->getFullCode(), "m5", (WTSBarStruct*)&bar, 1);
 		if (!bSucc)
 		{
 			_sink->outputWriterLog(LL_ERROR, "pipe m5 bar of %s via extended dumper %s failed", ct->getFullCode(), id);
@@ -507,30 +521,107 @@ void WtDataWriterAD::updateBarCache(WTSContractInfo* ct, WTSTickData* curTick)
 
 	std::string key = StrUtil::printf("%s.%s", curTick->exchg(), curTick->code());
 
-	//更新1分钟线
-	if (!_disable_min1 && _m1_cache_block)
+	//更新日线
+	if (!_disable_day && _d1_cache._cache_block)
 	{
-		StdUniqueLock lock(_mtx_m1_cache);
+		StdUniqueLock lock(_d1_cache._mtx);
 		uint32_t idx = 0;
 		bool bNewCode = false;
-		if (_m1_cache_idx.find(key) == _m1_cache_idx.end())
+		if (_d1_cache._idx.find(key) == _d1_cache._idx.end())
 		{
-			idx = _m1_cache_block->_size;
-			_m1_cache_idx[key] = _m1_cache_block->_size;
-			_m1_cache_block->_size += 1;
-			if (_m1_cache_block->_size >= _m1_cache_block->_capacity)
+			idx = _d1_cache._cache_block->_size;
+			_d1_cache._idx[key] = _d1_cache._cache_block->_size;
+			_d1_cache._cache_block->_size += 1;
+			if (_d1_cache._cache_block->_size >= _d1_cache._cache_block->_capacity)
 			{
-				_m1_cache_block = (RTBarCache*)resizeRTBlock<RTBarCache, BarCacheItem>(_m1_cache_file, _m1_cache_block->_capacity + CACHE_SIZE_STEP);
-				_sink->outputWriterLog(LL_INFO, "m1 cache resized to %u items", _m1_cache_block->_capacity);
+				_d1_cache._cache_block = (RTBarCache*)resizeRTBlock<RTBarCache, BarCacheItem>(_d1_cache._file_ptr, _d1_cache._cache_block->_capacity + CACHE_SIZE_STEP_AD);
+				_sink->outputWriterLog(LL_INFO, "day cache resized to %u items", _d1_cache._cache_block->_capacity);
 			}
 			bNewCode = true;
 		}
 		else
 		{
-			idx = _m1_cache_idx[key];
+			idx = _d1_cache._idx[key];
 		}
 
-		BarCacheItem& item = (BarCacheItem&)_m1_cache_block->_items[idx];
+		BarCacheItem& item = (BarCacheItem&)_d1_cache._cache_block->_items[idx];
+		if (bNewCode)
+		{
+			strcpy(item._exchg, curTick->exchg());
+			strcpy(item._code, curTick->code());
+		}
+		WTSBarStruct* lastBar = &item._bar;
+
+		//检查日期是否一致
+		uint32_t barDate = curTick->tradingdate();
+
+		bool bNewBar = false;
+		if (lastBar == NULL || barDate > lastBar->date)
+		{
+			bNewBar = true;
+		}
+
+		WTSBarStruct* newBar = lastBar;
+		if (bNewBar)
+		{
+			//这里要将lastBar往外写
+			//如果是新的合约，说明还没数据，不往外写
+			if (!bNewCode)
+			{
+				pipeToDayBars(ct, *lastBar);
+			}
+
+			newBar->date = curTick->tradingdate();
+			newBar->time = barDate;
+			newBar->open = curTick->price();
+			newBar->high = curTick->price();
+			newBar->low = curTick->price();
+			newBar->close = curTick->price();
+
+			newBar->vol = curTick->volume();
+			newBar->money = curTick->turnover();
+			newBar->hold = curTick->openinterest();
+			newBar->add = curTick->additional();
+		}
+		else
+		{
+			newBar->close = curTick->price();
+			newBar->high = max(curTick->price(), newBar->high);
+			newBar->low = min(curTick->price(), newBar->low);
+
+			newBar->vol += curTick->volume();
+			newBar->money += curTick->turnover();
+			newBar->vol += curTick->volume();
+			newBar->money += curTick->turnover();
+			newBar->hold = curTick->openinterest();
+			newBar->add += curTick->additional();
+		}
+	}
+
+	//更新1分钟线
+	if (!_disable_min1 && _m1_cache._cache_block)
+	{
+		StdUniqueLock lock(_m1_cache._mtx);
+		uint32_t idx = 0;
+		bool bNewCode = false;
+		if (_m1_cache._idx.find(key) == _m1_cache._idx.end())
+		{
+			idx = _m1_cache._cache_block->_size;
+			_m1_cache._idx[key] = _m1_cache._cache_block->_size;
+			_m1_cache._cache_block->_size += 1;
+			if (_m1_cache._cache_block->_size >= _m1_cache._cache_block->_capacity)
+			{
+				_m1_cache._cache_block = (RTBarCache*)resizeRTBlock<RTBarCache, BarCacheItem>(_m1_cache._file_ptr, _m1_cache._cache_block->_capacity + CACHE_SIZE_STEP_AD);
+				_sink->outputWriterLog(LL_INFO, "m1 cache resized to %u items", _m1_cache._cache_block->_capacity);
+			}
+			bNewCode = true;
+		}
+		else
+		{
+			idx = _m1_cache._idx[key];
+		}
+
+		BarCacheItem& item = (BarCacheItem&)_m1_cache._cache_block->_items[idx];
 		if(bNewCode)
 		{
 			strcpy(item._exchg, curTick->exchg());
@@ -599,29 +690,29 @@ void WtDataWriterAD::updateBarCache(WTSContractInfo* ct, WTSTickData* curTick)
 	}
 
 	//更新5分钟线
-	if (!_disable_min5 && _m5_cache_block)
+	if (!_disable_min5 && _m5_cache._cache_block)
 	{
-		StdUniqueLock lock(_mtx_m5_cache);
+		StdUniqueLock lock(_m1_cache._mtx);
 		uint32_t idx = 0;
 		bool bNewCode = false;
-		if (_m5_cache_idx.find(key) == _m5_cache_idx.end())
+		if (_m1_cache._idx.find(key) == _m1_cache._idx.end())
 		{
-			idx = _m5_cache_block->_size;
-			_m5_cache_idx[key] = _m5_cache_block->_size;
-			_m5_cache_block->_size += 1;
-			if (_m5_cache_block->_size >= _m5_cache_block->_capacity)
+			idx = _m5_cache._cache_block->_size;
+			_m1_cache._idx[key] = _m5_cache._cache_block->_size;
+			_m5_cache._cache_block->_size += 1;
+			if (_m5_cache._cache_block->_size >= _m5_cache._cache_block->_capacity)
 			{
-				_m5_cache_block = (RTBarCache*)resizeRTBlock<RTBarCache, BarCacheItem>(_m5_cache_file, _m5_cache_block->_capacity + CACHE_SIZE_STEP);
-				_sink->outputWriterLog(LL_INFO, "m1 cache resized to %u items", _m5_cache_block->_capacity);
+				_m5_cache._cache_block = (RTBarCache*)resizeRTBlock<RTBarCache, BarCacheItem>(_m5_cache._file_ptr, _m5_cache._cache_block->_capacity + CACHE_SIZE_STEP_AD);
+				_sink->outputWriterLog(LL_INFO, "m1 cache resized to %u items", _m5_cache._cache_block->_capacity);
 			}
 			bNewCode = true;
 		}
 		else
 		{
-			idx = _m5_cache_idx[key];
+			idx = _m1_cache._idx[key];
 		}
 
-		BarCacheItem& item = (BarCacheItem&)_m5_cache_block->_items[idx];
+		BarCacheItem& item = (BarCacheItem&)_m5_cache._cache_block->_items[idx];
 		if (bNewCode)
 		{
 			strcpy(item._exchg, curTick->exchg());
@@ -717,7 +808,7 @@ bool WtDataWriterAD::updateTickCache(WTSContractInfo* ct, WTSTickData* curTick, 
 		_tick_cache_block->_size += 1;
 		if(_tick_cache_block->_size >= _tick_cache_block->_capacity)
 		{
-			_tick_cache_block = (RTTickCache*)resizeRTBlock<RTTickCache, TickCacheItem>(_tick_cache_file, _tick_cache_block->_capacity + CACHE_SIZE_STEP);
+			_tick_cache_block = (RTTickCache*)resizeRTBlock<RTTickCache, TickCacheItem>(_tick_cache_file, _tick_cache_block->_capacity + CACHE_SIZE_STEP_AD);
 			_sink->outputWriterLog(LL_INFO, "Tick Cache resized to %u items", _tick_cache_block->_capacity);
 		}
 	}
@@ -738,10 +829,6 @@ bool WtDataWriterAD::updateTickCache(WTSContractInfo* ct, WTSTickData* curTick, 
 
 	if (curTick->tradingdate() > item._date)
 	{
-		//新数据交易日大于老数据,则认为是新一天的数据
-		//把老的tick转储为日线
-		pipeToDayBars(ct, item._tick);
-
 		item._date = curTick->tradingdate();
 		memcpy(&item._tick, &newTick, sizeof(WTSTickStruct));
 		if (bNeedSlice)
@@ -832,8 +919,9 @@ WtDataWriterAD::WtLMDBPtr WtDataWriterAD::get_k_db(const char* exchg, WTSKlinePe
 	if (it != the_map->end())
 		return std::move(it->second);
 
-	WtLMDBPtr dbPtr = std::move(std::make_shared<WtLMDB>(new WtLMDB(false)));
-	std::string path = StrUtil::printf("%s/%s/%s/", _base_dir.c_str(), subdir.c_str(), exchg);
+	WtLMDBPtr dbPtr(new WtLMDB(false));
+	std::string path = StrUtil::printf("%s%s/%s/", _base_dir.c_str(), subdir.c_str(), exchg);
+	boost::filesystem::create_directories(path);
 	if(!dbPtr->open(path.c_str()))
 	{
 		if (_sink) _sink->outputWriterLog(LL_ERROR, "Opening %s db at %s failed: %s", subdir.c_str(), path.c_str(), dbPtr->errmsg());
@@ -851,8 +939,9 @@ WtDataWriterAD::WtLMDBPtr WtDataWriterAD::get_t_db(const char* exchg, const char
 	if (it != _tick_dbs.end())
 		return std::move(it->second);
 
-	WtLMDBPtr dbPtr = std::move(std::make_shared<WtLMDB>(new WtLMDB(false)));
-	std::string path = StrUtil::printf("%s/ticks/%s/%s", _base_dir.c_str(), exchg, code);
+	WtLMDBPtr dbPtr(new WtLMDB(false));
+	std::string path = StrUtil::printf("%sticks/%s/%s", _base_dir.c_str(), exchg, code);
+	boost::filesystem::create_directories(path);
 	if (!dbPtr->open(path.c_str()))
 	{
 		if (_sink) _sink->outputWriterLog(LL_ERROR, "Opening tick db at %s failed: %s", path.c_str(), dbPtr->errmsg());
