@@ -115,7 +115,7 @@ public:
 	/*
 	 *	写日志
 	 */
-	virtual void writeLog(const char* fmt, ...) = 0;
+	virtual void writeLog(const char* message) = 0;
 
 	/*
 	 *	获取品种参数

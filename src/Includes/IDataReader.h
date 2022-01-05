@@ -77,7 +77,7 @@ public:
 	/*
 	 *	@brief	输出数据读取模块的日志
 	 */
-	virtual void		reader_log(WTSLogLevel ll, const char* fmt, ...) = 0;
+	virtual void		reader_log(WTSLogLevel ll, const char* message) = 0;
 };
 
 

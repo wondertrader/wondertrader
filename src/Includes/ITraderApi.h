@@ -101,7 +101,7 @@ class ITraderSpi
 {
 public:
 	virtual IBaseDataMgr*	getBaseDataMgr() = 0;
-	virtual void handleTraderLog(WTSLogLevel ll, const char* format, ...){}
+	virtual void handleTraderLog(WTSLogLevel ll, const char* message){}
 
 	virtual IStkTraderSpi* getStkSpi(){ return NULL; }
 	virtual IOptTraderSpi* getOptSpi(){ return NULL; }
@@ -120,7 +120,7 @@ public:
 	virtual void onPushOrder(WTSOrderInfo* orderInfo){}
 	virtual void onPushTrade(WTSTradeInfo* tradeRecord){}
 
-	virtual void onTraderError(WTSError*	err){}
+	virtual void onTraderError(WTSError* err){}
 };
 
 //下单接口管理接口

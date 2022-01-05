@@ -73,7 +73,7 @@ public:
 	 *	@ll			日志级别
 	 *	@message	日志内容
 	 */
-	virtual void handleParserLog(WTSLogLevel ll, const char* format, ...)	= 0;
+	virtual void handleParserLog(WTSLogLevel ll, const char* message)	= 0;
 
 public:
 	virtual IBaseDataMgr*	getBaseDataMgr()	= 0;
