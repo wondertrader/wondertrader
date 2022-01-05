@@ -156,8 +156,8 @@ void WtCtaEngine::on_init()
 				if (!decimal::eq(qty, oldQty))
 				{
 					//输出日志
-					//WTSLogger::info(fmt::format("[Filters] 策略{}的{}的目标仓位被策略过滤器调整: {} -> {}", ctx->name(), stdCode, oldQty, qty).c_str());
-					WTSLogger::info(fmt::format("[Filters] Target position of {} of strategy {} reset by strategy filter: {} -> {}", stdCode, ctx->name(), oldQty, qty).c_str());
+					WTSLogger::info_f("[Filters] Target position of {} of strategy {} reset by strategy filter: {} -> {}", 
+						stdCode, ctx->name(), oldQty, qty);
 				}
 
 				std::string realCode = stdCode;
@@ -189,7 +189,7 @@ void WtCtaEngine::on_init()
 	bool bRiskEnabled = false;
 	if (!decimal::eq(_risk_volscale, 1.0) && _risk_date == _cur_tdate)
 	{
-		WTSLogger::info2("risk", "Risk scale of strategy group is %.2f", _risk_volscale);
+		WTSLogger::log_by_cat("risk", LL_INFO, "Risk scale of strategy group is %.2f", _risk_volscale);
 		bRiskEnabled = true;
 	}
 
@@ -205,7 +205,7 @@ void WtCtaEngine::on_init()
 			pos = decimal::rnd(abs(pos)*_risk_volscale)*symbol;
 		}
 
-		WTSLogger::log_raw(LL_INFO, fmt::format("Portfolio initial position of {} is {}", stdCode.c_str(), pos).c_str());
+		WTSLogger::info_f("Portfolio initial position of {} is {}", stdCode.c_str(), pos);
 	}
 
 	_exec_mgr.set_positions(target_pos);
@@ -262,8 +262,8 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 				if(!decimal::eq(qty, oldQty))
 				{
 					//输出日志
-					//WTSLogger::info(fmt::format("[Filters] 策略{}的{}的目标仓位被策略过滤器调整: {} -> {}", ctx->name(), stdCode, oldQty, qty).c_str());
-					WTSLogger::info(fmt::format("[Filters] Target position of {} of strategy {} reset by strategy filter: {} -> {}", stdCode, ctx->name(), oldQty, qty).c_str());
+					WTSLogger::info_f("[Filters] Target position of {} of strategy {} reset by strategy filter: {} -> {}", 
+						stdCode, ctx->name(), oldQty, qty);
 				}
 
 				std::string realCode = stdCode;
@@ -295,7 +295,7 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 	bool bRiskEnabled = false;
 	if(!decimal::eq(_risk_volscale, 1.0) && _risk_date == _cur_tdate)
 	{
-		WTSLogger::info2("risk", "Risk scale of strategy group is %.2f", _risk_volscale);
+		WTSLogger::log_by_cat("risk", LL_INFO, "Risk scale of strategy group is %.2f", _risk_volscale);
 		bRiskEnabled = true;
 	}
 
@@ -383,7 +383,7 @@ void WtCtaEngine::handle_pos_change(const char* straName, const char* stdCode, d
 	bool bRiskEnabled = false;
 	if (!decimal::eq(_risk_volscale, 1.0) && _risk_date == _cur_tdate)
 	{
-		WTSLogger::info2("risk", "Risk scale of strategy group is %.2f", _risk_volscale);
+		WTSLogger::log_by_cat("risk", LL_INFO, "Risk scale of strategy group is %.2f", _risk_volscale);
 		bRiskEnabled = true;
 	}
 	if (bRiskEnabled && !decimal::eq(targetPos, 0))

@@ -162,9 +162,9 @@ WTSKlineSlice* WtDataManager::get_kline_slice_by_range(const char* stdCode, WTSK
 			{
 				uint64_t barTime = 0;
 				if (period == KP_DAY)
-					barTime = rawData->date(0);
+					barTime = rawData->at(0)->date;
 				else
-					barTime = 199000000000 + rawData->time(0);
+					barTime = 199000000000 + rawData->at(0)->time;
 				
 				//只有时间上次记录的最后一条时间，才可以用于更新K线
 				if(barTime <= barCache._last_bartime)
@@ -241,7 +241,7 @@ WTSKlineSlice* WtDataManager::get_kline_slice_by_range(const char* stdCode, WTSK
 	sIdx = sit - bars.begin();
 	uint32_t rtCnt = eIdx - sIdx + 1;
 	WTSBarStruct* rtHead = barCache._bars->at(sIdx);
-	WTSKlineSlice* slice = WTSKlineSlice::create(stdCode, period, times, NULL, 0, rtHead, rtCnt);
+	WTSKlineSlice* slice = WTSKlineSlice::create(stdCode, period, times, rtHead, rtCnt);
 	return slice;
 }
 
@@ -323,9 +323,9 @@ WTSKlineSlice* WtDataManager::get_kline_slice_by_count(const char* stdCode, WTSK
 			{
 				uint64_t barTime = 0;
 				if (period == KP_DAY)
-					barTime = rawData->date(0);
+					barTime = rawData->at(0)->date;
 				else
-					barTime = 199000000000 + rawData->time(0);
+					barTime = 199000000000 + rawData->at(0)->time;
 
 				//只有时间上次记录的最后一条时间，才可以用于更新K线
 				if (barTime <= barCache._last_bartime)
@@ -397,7 +397,7 @@ WTSKlineSlice* WtDataManager::get_kline_slice_by_count(const char* stdCode, WTSK
 	sIdx = (eIdx + 1 >= count) ? (eIdx + 1 - count) : 0;
 	uint32_t rtCnt = eIdx - sIdx + 1;
 	WTSBarStruct* rtHead = barCache._bars->at(sIdx);
-	WTSKlineSlice* slice = WTSKlineSlice::create(stdCode, period, times, NULL, 0, rtHead, rtCnt);
+	WTSKlineSlice* slice = WTSKlineSlice::create(stdCode, period, times, rtHead, rtCnt);
 	return slice;
 }
 

@@ -78,7 +78,7 @@ public:
 	*	@ll			日志级别
 	*	@message	日志内容
 	*/
-	virtual void outputWriterLog(WTSLogLevel ll, const char* format, ...) override;
+	virtual void outputLog(WTSLogLevel ll, const char* message) override;
 
 private:
 	IDataWriter*		_writer;

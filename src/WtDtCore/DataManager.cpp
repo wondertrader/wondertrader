@@ -197,12 +197,9 @@ uint32_t DataManager::getTradingDate(const char* pid)
 	return  _bd_mgr->getTradingDate(pid);
 }
 
-void DataManager::outputWriterLog(WTSLogLevel ll, const char* format, ...)
+void DataManager::outputLog(WTSLogLevel ll, const char* message)
 {
-	va_list args;
-	va_start(args, format);
-	WTSLogger::vlog(ll, format, args);
-	va_end(args);
+	WTSLogger::log_raw(ll, message);
 }
 
 #pragma endregion "IDataWriterSink"

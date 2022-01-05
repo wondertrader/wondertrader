@@ -30,9 +30,6 @@ public:
 	virtual void on_tick(const char* stdCode, WTSTickData* newTick) override;
 
 private:
-	void		writeLog(const char* fmt, ...);
-
-private:
 	WTSVariant*			_config;
 
 	uint32_t			_scale;

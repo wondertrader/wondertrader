@@ -14,8 +14,7 @@
 #include <boost/bind.hpp>
 
  //By Wesley @ 2022.01.05
-#define FMT_HEADER_ONLY
-#include <fmt/format.h>
+#include "../Share/fmtlib.h"
 template<typename... Args>
 inline void write_log(IParserSpi* sink, WTSLogLevel ll, const char* format, const Args&... args)
 {

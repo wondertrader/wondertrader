@@ -202,12 +202,14 @@ void CtaMocker::handle_replay_done()
 
 	if(_emit_times > 0)
 	{
-		WTSLogger::log_dyn_raw("strategy", _name.c_str(), LL_INFO, fmt::format("Strategy has been scheduled for {} times,totally taking {} microsecs,average of {} microsecs",
-			_emit_times, _total_calc_time, _total_calc_time / _emit_times).c_str());
+		WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_INFO, 
+			"Strategy has been scheduled for {} times,totally taking {} microsecs,average of {} microsecs",
+			_emit_times, _total_calc_time, _total_calc_time / _emit_times);
 	}
 	else
 	{
-		WTSLogger::log_dyn_raw("strategy", _name.c_str(), LL_INFO, fmt::format("Strategy has been scheduled for {} times", _emit_times).c_str());
+		WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_INFO, 
+			"Strategy has been scheduled for {} times", _emit_times);
 	}
 
 	dump_outputs();
@@ -414,7 +416,9 @@ void CtaMocker::on_tick(const char* stdCode, WTSTickData* newTick, bool bEmitStr
 				double price = curPrice;
 				double curQty = stra_get_position(stdCode);
 				//_replayer->is_tick_enabled() ? newTick->price() : entrust._target;	//如果开启了tick回测,则用tick数据的价格,如果没有开启,则只能用条件单价格
-				WTSLogger::log_dyn_raw("strategy", _name.c_str(), LL_INFO, fmt::format("Condition order triggered[newprice: {}{}{}], instrument: {}, {} {}", cur_px, CMP_ALG_NAMES[entrust._alg], entrust._target, stdCode, ACTION_NAMES[entrust._action], entrust._qty).c_str());
+				WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_INFO, 
+					"Condition order triggered[newprice: {}{}{}], instrument: {}, {} {}", 
+					cur_px, CMP_ALG_NAMES[entrust._alg], entrust._target, stdCode, ACTION_NAMES[entrust._action], entrust._qty);
 				switch (entrust._action)
 				{
 				case COND_ACTION_OL:
@@ -636,7 +640,7 @@ void CtaMocker::on_session_begin(uint32_t curTDate)
 		PosInfo& pInfo = (PosInfo&)it.second;
 		if (!decimal::eq(pInfo._frozen, 0))
 		{
-			stra_log_debug("%.0f of %s frozen released on %u", pInfo._frozen, stdCode, curTDate);
+			log_debug("%.0f of %s frozen released on %u", pInfo._frozen, stdCode, curTDate);
 			pInfo._frozen = 0;
 		}
 	}
@@ -705,7 +709,7 @@ void CtaMocker::stra_enter_long(const char* stdCode, double qty, const char* use
 	WTSCommodityInfo* commInfo = _replayer->get_commodity_info(stdCode);
 	if(commInfo == NULL)
 	{
-		stra_log_error("Cannot find corresponding commodity info of %s", stdCode);
+		log_error("Cannot find corresponding commodity info of %s", stdCode);
 		return;
 	}
 
@@ -750,13 +754,13 @@ void CtaMocker::stra_enter_short(const char* stdCode, double qty, const char* us
 	WTSCommodityInfo* commInfo = _replayer->get_commodity_info(stdCode);
 	if (commInfo == NULL)
 	{
-		stra_log_error("Cannot find corresponding commodity info of %s", stdCode);
+		log_error("Cannot find corresponding commodity info of %s", stdCode);
 		return;
 	}
 
 	if(!commInfo->canShort())
 	{
-		stra_log_error("Cannot short on %s", stdCode);
+		log_error("Cannot short on %s", stdCode);
 		return;
 	}
 
@@ -802,7 +806,7 @@ void CtaMocker::stra_exit_long(const char* stdCode, double qty, const char* user
 	WTSCommodityInfo* commInfo = _replayer->get_commodity_info(stdCode);
 	if (commInfo == NULL)
 	{
-		stra_log_error("Cannot find corresponding commodity info of %s", stdCode);
+		log_error("Cannot find corresponding commodity info of %s", stdCode);
 		return;
 	}
 
@@ -848,13 +852,13 @@ void CtaMocker::stra_exit_short(const char* stdCode, double qty, const char* use
 	WTSCommodityInfo* commInfo = _replayer->get_commodity_info(stdCode);
 	if (commInfo == NULL)
 	{
-		stra_log_error("Cannot find corresponding commodity info of %s", stdCode);
+		log_error("Cannot find corresponding commodity info of %s", stdCode);
 		return;
 	}
 
 	if (!commInfo->canShort())
 	{
-		stra_log_error("Cannot short on %s", stdCode);
+		log_error("Cannot short on %s", stdCode);
 		return;
 	}
 
@@ -907,14 +911,14 @@ void CtaMocker::stra_set_position(const char* stdCode, double qty, const char* u
 	WTSCommodityInfo* commInfo = _replayer->get_commodity_info(stdCode);
 	if (commInfo == NULL)
 	{
-		stra_log_error("Cannot find corresponding commodity info of %s", stdCode);
+		log_error("Cannot find corresponding commodity info of %s", stdCode);
 		return;
 	}
 
 	//如果不能做空，则目标仓位不能设置负数
 	if (!commInfo->canShort() && decimal::lt(qty, 0))
 	{
-		stra_log_error("Cannot short on %s", stdCode);
+		log_error("Cannot short on %s", stdCode);
 		return;
 	}
 
@@ -930,7 +934,7 @@ void CtaMocker::stra_set_position(const char* stdCode, double qty, const char* u
 		//如果是T+1规则，则目标仓位不能小于冻结仓位
 		if(decimal::lt(qty, frozen))
 		{
-			stra_log_error(fmt::format("New position of {} cannot be set to {} due to {} being frozen", stdCode, qty, frozen).c_str());
+			WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_ERROR, "New position of {} cannot be set to {} due to {} being frozen", stdCode, qty, frozen);
 			return;
 		}
 	}
@@ -1016,7 +1020,7 @@ void CtaMocker::do_set_position(const char* stdCode, double qty, double price /*
 		{
 			//ASSERT(diff>0);
 			pInfo._frozen += diff;
-			stra_log_debug("%s frozen position up to %.0f", stdCode, pInfo._frozen);
+			log_debug("%s frozen position up to %.0f", stdCode, pInfo._frozen);
 		}
 		
 		if (_slippage != 0)
@@ -1104,7 +1108,7 @@ void CtaMocker::do_set_position(const char* stdCode, double qty, double price /*
 			if (commInfo->isT1())
 			{
 				pInfo._frozen += left;
-				stra_log_debug("%s frozen position up to %.0f", stdCode, pInfo._frozen);
+				log_debug("%s frozen position up to %.0f", stdCode, pInfo._frozen);
 			}
 
 			DetailInfo dInfo;
@@ -1223,28 +1227,19 @@ double CtaMocker::stra_get_fund_data(int flag)
 	}
 }
 
-void CtaMocker::stra_log_info(const char* fmt, ...)
+void CtaMocker::stra_log_info(const char* message)
 {
-	va_list args;
-	va_start(args, fmt);
-	WTSLogger::vlog_dyn("strategy", _name.c_str(), LL_INFO, fmt, args);
-	va_end(args);
+	WTSLogger::log_dyn_raw("strategy", _name.c_str(), LL_INFO, message);
 }
 
-void CtaMocker::stra_log_debug(const char* fmt, ...)
+void CtaMocker::stra_log_debug(const char* message)
 {
-	va_list args;
-	va_start(args, fmt);
-	WTSLogger::vlog_dyn("strategy", _name.c_str(), LL_DEBUG, fmt, args);
-	va_end(args);
+	WTSLogger::log_dyn_raw("strategy", _name.c_str(), LL_DEBUG, message);
 }
 
-void CtaMocker::stra_log_error(const char* fmt, ...)
+void CtaMocker::stra_log_error(const char* message)
 {
-	va_list args;
-	va_start(args, fmt);
-	WTSLogger::vlog_dyn("strategy", _name.c_str(), LL_ERROR, fmt, args);
-	va_end(args);
+	WTSLogger::log_dyn_raw("strategy", _name.c_str(), LL_ERROR, message);
 }
 
 const char* CtaMocker::stra_load_user_data(const char* key, const char* defVal /*= ""*/)

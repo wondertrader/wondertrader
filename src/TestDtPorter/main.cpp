@@ -1,10 +1,11 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include "../WtDtHelper/WtDtHelper.h"
 #include "../WtDtPorter/WtDtPorter.h"
 #include "../Includes/WTSDataDef.hpp"
 
 void on_get_bar(WTSBarStruct* bar, WtUInt32 count, bool isLast)
 {
-	printf("%u\r\n", bar->time);
+	printf("%u.%llu\r\n", bar->date, bar->time);
 }
 
 void on_bar_cnt(WtUInt32 dataCnt)

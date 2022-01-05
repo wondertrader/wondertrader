@@ -1790,7 +1790,9 @@ WTSKlineSlice* WtDataReader::readKlineSliceByRange(const char* stdCode, WTSKline
 
 	if (hisCnt + rtCnt > 0)
 	{
-		WTSKlineSlice* slice = WTSKlineSlice::create(stdCode, period, 1, hisHead, hisCnt, rtHead, rtCnt);
+		WTSKlineSlice* slice = WTSKlineSlice::create(stdCode, period, 1, hisHead, hisCnt);
+		if (rtCnt > 0)
+			slice->appendBlock(rtHead, rtCnt);
 		return slice;
 	}
 
@@ -2127,7 +2129,9 @@ WTSKlineSlice* WtDataReader::readKlineSliceByCount(const char* stdCode, WTSKline
 
 	if (hisCnt + rtCnt > 0)
 	{
-		WTSKlineSlice* slice = WTSKlineSlice::create(stdCode, period, 1, hisHead, hisCnt, rtHead, rtCnt);
+		WTSKlineSlice* slice = WTSKlineSlice::create(stdCode, period, 1, hisHead, hisCnt);
+		if (rtCnt > 0)
+			slice->appendBlock(rtHead, rtCnt);
 		return slice;
 	}
 

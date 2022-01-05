@@ -35,24 +35,10 @@ typedef enum tagTradeAccountType
 	TAT_CTPMiniTest
 }TraderType;
 
-void log(const char* fmt, ...)
+template<typename... Args>
+void log(const char* format, const Args& ...args)
 {
-	//char szBuf[512] = { 0 };
-	va_list args;
-	va_start(args, fmt);
-	WTSLogger::vlog(LL_INFO, fmt, args);
-	va_end(args);
-
-	//printf(szBuf);
-	//printf("\r\n");
-	
-}
-
-void log_raw(const char* message)
-{
-	printf(message);
-	printf("\r\n");
-	//WTSLogger::info(message);
+	WTSLogger::log_raw(LL_INFO, fmt::sprintf(format, args...).c_str());
 }
 
 class TraderSpi : public ITraderSpi
@@ -353,12 +339,9 @@ public:
 		}
 	}
 
-	virtual void handleTraderLog(WTSLogLevel ll, const char* format, ...)
+	virtual void handleTraderLog(WTSLogLevel ll, const char* message) override
 	{
-		va_list args;
-		va_start(args, format);
-		WTSLogger::vlog(LL_INFO, format, args);
-		va_end(args);
+		WTSLogger::log_raw(ll, message);
 	}
 
 	virtual void onLoginResult(bool bSucc, const char* msg, uint32_t tradingdate)
@@ -461,7 +444,7 @@ public:
 	virtual void onRspSettlementInfo(uint32_t uDate, const char* content)
 	{
 		log("[%s]%u结算单已接收", m_pParams->getCString("user"), uDate);
-		log_raw(content);
+		log(content);
 		StdUniqueLock lock(g_mtxOpt);
 		g_condOpt.notify_all();
 	}

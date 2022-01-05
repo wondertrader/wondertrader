@@ -32,8 +32,8 @@ typedef struct _LMDBHftKey
 		memset(this, 0, sizeof(_LMDBHftKey));
 		strcpy(_exchg, exchg);
 		strcpy(_code, code);
-		_date = reverseEndian(_date);
-		_time = reverseEndian(_time);
+		_date = reverseEndian(date);
+		_time = reverseEndian(time);
 	}
 } LMDBHftKey;
 

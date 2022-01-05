@@ -111,7 +111,8 @@ void ExecMocker::handle_session_end(uint32_t curTDate)
 	_matcher.clear();
 	_undone = 0;
 
-	WTSLogger::info(fmt::format("Total entrust:{}, total quantity:{}, total cancels:{}, total cancel quantity:{}, total signals:{}", _ord_cnt, _ord_qty, _cacl_cnt, _cacl_qty, _sig_cnt).c_str());
+	WTSLogger::info_f("Total entrust:{}, total quantity:{}, total cancels:{}, total cancel quantity:{}, total signals:{}", 
+		_ord_cnt, _ord_qty, _cacl_cnt, _cacl_qty, _sig_cnt);
 }
 
 void ExecMocker::handle_tick(const char* stdCode, WTSTickData* curTick)
@@ -252,12 +253,9 @@ OrderIDs ExecMocker::cancel(const char* stdCode, bool isBuy, double qty /*= 0*/)
 	return ret;
 }
 
-void ExecMocker::writeLog(const char* fmt, ...)
+void ExecMocker::writeLog(const char* message)
 {
-	va_list args;
-	va_start(args, fmt);
-	WTSLogger::vlog_dyn("executer", _id.c_str(), LL_INFO, fmt, args);
-	va_end(args);
+	WTSLogger::log_dyn_raw("executer", _id.c_str(), LL_INFO, message);
 }
 
 void ExecMocker::handle_entrust(uint32_t localid, const char* stdCode, bool bSuccess, const char* message, uint64_t ordTime)

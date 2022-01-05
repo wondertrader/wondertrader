@@ -102,6 +102,7 @@ public:
 
 private:
 	ExecuteUnitPtr	getUnit(const char* code, bool bAutoCreate = true);
+
 public:
 	//////////////////////////////////////////////////////////////////////////
 	//ExecuteContext
@@ -117,7 +118,7 @@ public:
 	virtual OrderIDs	sell(const char* code, double price, double qty, bool bForceClose = false) override;
 	virtual bool		cancel(uint32_t localid) override;
 	virtual OrderIDs	cancel(const char* code, bool isBuy, double qty) override;
-	virtual void		writeLog(const char* fmt, ...) override;
+	virtual void		writeLog(const char* message) override;
 
 	virtual WTSCommodityInfo*	getCommodityInfo(const char* stdCode) override;
 	virtual WTSSessionInfo*		getSessionInfo(const char* stdCode) override;

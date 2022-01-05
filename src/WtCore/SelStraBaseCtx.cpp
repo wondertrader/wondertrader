@@ -262,7 +262,7 @@ void SelStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 				const char* stdCode = pItem["code"].GetString();
 				if (!CodeHelper::isStdFutHotCode(stdCode) && !CodeHelper::isStdFut2ndCode(stdCode) && _engine->get_contract_info(stdCode) == NULL)
 				{
-					stra_log_info("%s not exists or expired, position ignored", stdCode);
+					log_info("%s not exists or expired, position ignored", stdCode);
 					continue;
 				}
 				PosInfo& pInfo = _pos_map[stdCode];
@@ -309,7 +309,7 @@ void SelStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 					strcpy(dInfo._opentag, dItem["opentag"].GetString());
 				}
 
-				stra_log_info("Strategy position confirmed, %s -> %d", stdCode, pInfo._volume);
+				log_info("Strategy position confirmed, %s -> %d", stdCode, pInfo._volume);
 			}
 		}
 
@@ -328,7 +328,7 @@ void SelStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 				const char* stdCode = m.name.GetString();
 				if (!CodeHelper::isStdFutHotCode(stdCode) && !CodeHelper::isStdFut2ndCode(stdCode) && _engine->get_contract_info(stdCode) == NULL)
 				{
-					stra_log_info("%s not exists or expired, signal ignored", stdCode);
+					log_info("%s not exists or expired, signal ignored", stdCode);
 					continue;
 				}
 
@@ -340,7 +340,7 @@ void SelStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 				sInfo._sigprice = jItem["sigprice"].GetDouble();
 				sInfo._gentime = jItem["gentime"].GetUint64();
 
-				stra_log_info(fmt::format("{} untouched signal recovered, target pos: {}", stdCode, sInfo._volume).c_str());
+				WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_INFO, "{} untouched signal recovered, target pos: {}", stdCode, sInfo._volume);
 				stra_sub_ticks(stdCode);
 			}
 		}
@@ -562,7 +562,7 @@ bool SelStraBaseCtx::on_schedule(uint32_t curDate, uint32_t curTime, uint32_t fi
 
 	TimeUtils::Ticker ticker;
 	on_strategy_schedule(curDate, fireTime);
-	stra_log_info("Strategy scheduled @ %u", curTime);
+	log_info("Strategy scheduled @ %u", curTime);
 
 	faster_hashset<std::string> to_clear;
 	for (auto& v : _pos_map)
@@ -585,8 +585,8 @@ bool SelStraBaseCtx::on_schedule(uint32_t curDate, uint32_t curTime, uint32_t fi
 	_total_calc_time += ticker.micro_seconds();
 
 	if (_emit_times % 20 == 0)
-		stra_log_info(fmt::format("Strategy scheduled {} times, {} microsecs elapsed, {} microsecs per time in average",
-			_emit_times, _total_calc_time, _total_calc_time / _emit_times).c_str());
+		WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_INFO, "Strategy scheduled {} times, {} microsecs elapsed, {} microsecs per time in average",
+			_emit_times, _total_calc_time, _total_calc_time / _emit_times);
 
 	if (_ud_modified)
 	{
@@ -607,7 +607,7 @@ void SelStraBaseCtx::on_session_begin(uint32_t uTDate)
 		PosInfo& pInfo = (PosInfo&)it.second;
 		if (pInfo._frozen_date < uTDate && !decimal::eq(pInfo._frozen, 0))
 		{
-			stra_log_debug("%.0f of %s frozen on %u released on %u", pInfo._frozen, stdCode, pInfo._frozen_date, uTDate);
+			log_debug("%.0f of %s frozen on %u released on %u", pInfo._frozen, stdCode, pInfo._frozen_date, uTDate);
 
 			pInfo._frozen = 0;
 			pInfo._frozen_date = 0;
@@ -693,14 +693,14 @@ void SelStraBaseCtx::stra_set_position(const char* stdCode, double qty, const ch
 	WTSCommodityInfo* commInfo = _engine->get_commodity_info(stdCode);
 	if (commInfo == NULL)
 	{
-		stra_log_error("Cannot find corresponding commodity info of %s", stdCode);
+		log_error("Cannot find corresponding commodity info of %s", stdCode);
 		return;
 	}
 
 	//如果不能做空，则目标仓位不能设置负数
 	if (!commInfo->canShort() && decimal::lt(qty, 0))
 	{
-		stra_log_error("Cannot short on %s", stdCode);
+		log_error("Cannot short on %s", stdCode);
 		return;
 	}
 
@@ -716,7 +716,7 @@ void SelStraBaseCtx::stra_set_position(const char* stdCode, double qty, const ch
 		//如果是T+1规则，则目标仓位不能小于冻结仓位
 		if (decimal::lt(qty, frozen))
 		{
-			stra_log_error(fmt::format("New position of {} cannot be set to {} due to {} being frozen", stdCode, qty, frozen).c_str());
+			WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_ERROR, "New position of {} cannot be set to {} due to {} being frozen", stdCode, qty, frozen);
 			return;
 		}
 	}
@@ -764,7 +764,7 @@ void SelStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 		{
 			//ASSERT(diff>0);
 			pInfo._frozen += diff;
-			stra_log_debug("%s frozen position up to %.0f", stdCode, pInfo._frozen);
+			log_debug("%s frozen position up to %.0f", stdCode, pInfo._frozen);
 		}
 
 		DetailInfo dInfo;
@@ -841,7 +841,7 @@ void SelStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 			{
 				//ASSERT(diff>0);
 				pInfo._frozen += diff;
-				stra_log_debug("%s frozen position up to %.0f", stdCode, pInfo._frozen);
+				log_debug("%s frozen position up to %.0f", stdCode, pInfo._frozen);
 			}
 
 			DetailInfo dInfo;
@@ -899,7 +899,7 @@ WTSKlineSlice* SelStraBaseCtx::stra_get_bars(const char* stdCode, const char* pe
 
 	if (kline)
 	{
-		double lastClose = kline->close(-1);
+		double lastClose = kline->at(-1)->close;
 		_price_map[stdCode] = lastClose;
 	}
 
@@ -919,7 +919,7 @@ WTSTickData* SelStraBaseCtx::stra_get_last_tick(const char* stdCode)
 void SelStraBaseCtx::stra_sub_ticks(const char* code)
 {
 	_engine->sub_tick(_context_id, code);
-	stra_log_info("Market data subscribed: %s", code);
+	log_info("Market data subscribed: %s", code);
 }
 
 WTSCommodityInfo* SelStraBaseCtx::stra_get_comminfo(const char* stdCode)
@@ -942,38 +942,19 @@ uint32_t SelStraBaseCtx::stra_get_time()
 	return _is_in_schedule ? _schedule_time : _engine->get_min_time();
 }
 
-void SelStraBaseCtx::stra_log_info(const char* fmt, ...)
+void SelStraBaseCtx::stra_log_info(const char* message)
 {
-	char szBuf[256] = { 0 };
-	uint32_t length = sprintf(szBuf, "[%s]", _name.c_str());
-	strcat(szBuf, fmt);
-	va_list args;
-	va_start(args, fmt);
-	WTSLogger::vlog_dyn("strategy", _name.c_str(), LL_INFO, szBuf, args);
-	va_end(args);
+	WTSLogger::log_dyn_raw("strategy", _name.c_str(), LL_INFO, message);
 }
 
-void SelStraBaseCtx::stra_log_debug(const char* fmt, ...)
+void SelStraBaseCtx::stra_log_debug(const char* message)
 {
-	char szBuf[256] = { 0 };
-	uint32_t length = sprintf(szBuf, "[%s]", _name.c_str());
-	strcat(szBuf, fmt);
-	va_list args;
-	va_start(args, fmt);
-	WTSLogger::vlog_dyn("strategy", _name.c_str(), LL_DEBUG, szBuf, args);
-	va_end(args);
+	WTSLogger::log_dyn_raw("strategy", _name.c_str(), LL_DEBUG, message);
 }
 
-
-void SelStraBaseCtx::stra_log_error(const char* fmt, ...)
+void SelStraBaseCtx::stra_log_error(const char* message)
 {
-	char szBuf[256] = { 0 };
-	uint32_t length = sprintf(szBuf, "[%s]", _name.c_str());
-	strcat(szBuf, fmt);
-	va_list args;
-	va_start(args, fmt);
-	WTSLogger::vlog_dyn("strategy", _name.c_str(), LL_ERROR, szBuf, args);
-	va_end(args);
+	WTSLogger::log_dyn_raw("strategy", _name.c_str(), LL_ERROR, message);
 }
 
 const char* SelStraBaseCtx::stra_load_user_data(const char* key, const char* defVal /*= ""*/)

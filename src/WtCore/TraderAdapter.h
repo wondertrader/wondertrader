@@ -184,7 +184,7 @@ public:
 
 	virtual IBaseDataMgr* getBaseDataMgr() override;
 
-	virtual void handleTraderLog(WTSLogLevel ll, const char* format, ...) override;
+	virtual void handleTraderLog(WTSLogLevel ll, const char* message) override;
 
 private:
 	WTSVariant*			_cfg;

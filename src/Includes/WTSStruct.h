@@ -172,8 +172,8 @@ struct WTSTickStruct
 
 	WTSTickStruct& operator = (const WTSTickStructOld& tick)
 	{
-		strcpy(exchg, tick.exchg);
-		strcpy(code, tick.code);
+		strncpy(exchg, tick.exchg, MAX_EXCHANGE_LENGTH);
+		strncpy(code, tick.code, MAX_INSTRUMENT_LENGTH);
 
 		price = tick.price;
 		open = tick.open;

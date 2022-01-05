@@ -20,6 +20,21 @@
 
 #include <boost/filesystem.hpp>
 
+ //By Wesley @ 2022.01.05
+#include "../Share/fmtlib.h"
+template<typename... Args>
+inline void write_log(ITraderSpi* sink, WTSLogLevel ll, const char* format, const Args&... args)
+{
+	if (sink == NULL)
+		return;
+
+	static thread_local char buffer[512] = { 0 };
+	std::string s = std::move(fmt::sprintf(format, args...));
+	strcpy(buffer, s.c_str());
+
+	sink->handleTraderLog(ll, buffer);
+}
+
 extern "C"
 {
 	EXPORT_FLAG ITraderApi* createTrader()
@@ -305,7 +320,7 @@ void TraderXTP::OnDisconnected(uint64_t session_id, int reason)
 void TraderXTP::OnError(XTPRI *error_info)
 {
 	if (_sink && error_info)
-		_sink->handleTraderLog(LL_ERROR, error_info->error_msg);
+		write_log(_sink,LL_ERROR, error_info->error_msg);
 }
 
 void TraderXTP::OnOrderEvent(XTPOrderInfo *order_info, XTPRI *error_info, uint64_t session_id)
@@ -612,11 +627,11 @@ void TraderXTP::reconnect()
 	{
 		if (_sink)
 			_sink->handleEvent(WTE_Connect, -1);
-		_sink->handleTraderLog(LL_ERROR, "[TraderrXTP] Module initializing failed");
+		write_log(_sink,LL_ERROR, "[TraderrXTP] Module initializing failed");
 
 		StdThreadPtr thrd(new StdThread([this](){
 			std::this_thread::sleep_for(std::chrono::seconds(2));
-			_sink->handleTraderLog(LL_WARN, "[TraderrXTP] %s reconnecting...", _user.c_str());
+			write_log(_sink,LL_WARN, "[TraderrXTP] %s reconnecting...", _user.c_str());
 			reconnect();
 		}));
 		return;
@@ -701,7 +716,7 @@ int TraderXTP::login(const char* user, const char* pass, const char* productInfo
 	if (iResult == 0)
 	{
 		auto error_info = _api->GetApiLastError();
-		_sink->handleTraderLog(LL_ERROR, "[TraderXTP] Login failed: %s", error_info->error_msg);
+		write_log(_sink,LL_ERROR, "[TraderXTP] Login failed: %s", error_info->error_msg);
 		std::string msg = error_info->error_msg;
 		_state = TS_LOGINFAILED;
 		_asyncio.post([this, msg]{
@@ -729,10 +744,10 @@ int TraderXTP::login(const char* user, const char* pass, const char* productInfo
 			_ini.writeUInt("marker", "date", _tradingday);
 			_ini.save();
 
-			_sink->handleTraderLog(LL_INFO, "[TraderXTP] [%s] Trading date changed [%u -> %u], local cache cleared...", _user.c_str(), lastDate, _tradingday);
+			write_log(_sink,LL_INFO, "[TraderXTP] [%s] Trading date changed [%u -> %u], local cache cleared...", _user.c_str(), lastDate, _tradingday);
 		}		
 
-		_sink->handleTraderLog(LL_INFO, "[TraderXTP] [%s] Login succeed, trading date: %u...", _user.c_str(), _tradingday);
+		write_log(_sink,LL_INFO, "[TraderXTP] [%s] Login succeed, trading date: %u...", _user.c_str(), _tradingday);
 
 		_state = TS_LOGINED;
 		_asyncio.post([this]{
@@ -783,7 +798,7 @@ int TraderXTP::orderInsert(WTSEntrust* entrust)
 	if (iResult == 0)
 	{
 		auto error_info = _api->GetApiLastError();
-		_sink->handleTraderLog(LL_ERROR, "[TraderXTP] Order inserting failed: %s", error_info->error_msg);
+		write_log(_sink,LL_ERROR, "[TraderXTP] Order inserting failed: %s", error_info->error_msg);
 	}
 
 	return 0;
@@ -800,7 +815,7 @@ int TraderXTP::orderAction(WTSEntrustAction* action)
 	if (iResult != 0)
 	{
 		auto error_info = _api->GetApiLastError();
-		_sink->handleTraderLog(LL_ERROR, "[TraderXTP] Order cancelling failed: %s", error_info->error_msg);
+		write_log(_sink,LL_ERROR, "[TraderXTP] Order cancelling failed: %s", error_info->error_msg);
 	}
 
 	return 0;
@@ -817,7 +832,7 @@ int TraderXTP::queryAccount()
 	if (iResult != 0)
 	{
 		auto error_info = _api->GetApiLastError();
-		_sink->handleTraderLog(LL_ERROR, "[TraderXTP] Account querying failed: %s", error_info->error_msg);
+		write_log(_sink,LL_ERROR, "[TraderXTP] Account querying failed: %s", error_info->error_msg);
 	}
 
 	return 0;
@@ -829,7 +844,7 @@ int TraderXTP::queryPositions()
 	if (iResult != 0)
 	{
 		auto error_info = _api->GetApiLastError();
-		_sink->handleTraderLog(LL_ERROR, "[TraderXTP] Positions querying failed: %s", error_info->error_msg);
+		write_log(_sink,LL_ERROR, "[TraderXTP] Positions querying failed: %s", error_info->error_msg);
 	}
 
 	return 0;
@@ -843,7 +858,7 @@ int TraderXTP::queryOrders()
 	if (iResult != 0)
 	{
 		auto error_info = _api->GetApiLastError();
-		_sink->handleTraderLog(LL_ERROR, "[TraderXTP] Orders querying failed: %s", error_info->error_msg);
+		write_log(_sink,LL_ERROR, "[TraderXTP] Orders querying failed: %s", error_info->error_msg);
 	}
 
 	return 0;
@@ -857,7 +872,7 @@ int TraderXTP::queryTrades()
 	if (iResult != 0)
 	{
 		auto error_info = _api->GetApiLastError();
-		_sink->handleTraderLog(LL_ERROR, "[TraderXTP] Trades querying failed: %s", error_info->error_msg);
+		write_log(_sink,LL_ERROR, "[TraderXTP] Trades querying failed: %s", error_info->error_msg);
 	}
 
 	return 0;

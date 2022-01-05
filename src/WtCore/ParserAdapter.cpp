@@ -366,15 +366,12 @@ void ParserAdapter::handleTransaction(WTSTransData* transData)
 }
 
 
-void ParserAdapter::handleParserLog(WTSLogLevel ll, const char* format, ...)
+void ParserAdapter::handleParserLog(WTSLogLevel ll, const char* message)
 {
 	if (_stopped)
 		return;
 
-	va_list args;
-	va_start(args, format);
-	WTSLogger::vlog_dyn("parser", _id.c_str(), ll, format, args);
-	va_end(args);
+	WTSLogger::log_dyn_raw("parser", _id.c_str(), ll, message);
 }
 
 

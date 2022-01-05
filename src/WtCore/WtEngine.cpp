@@ -199,15 +199,11 @@ void WtEngine::update_fund_dynprofit()
 	}
 }
 
-void WtEngine::writeRiskLog(const char* fmt, ...)
+void WtEngine::writeRiskLog(const char* message)
 {
-	char szBuf[2048] = { 0 };
-	uint32_t length = sprintf(szBuf, "[RiskControl]");
-	strcat(szBuf, fmt);
-	va_list args;
-	va_start(args, fmt);
-	WTSLogger::vlog2("risk", LL_INFO, szBuf, args);
-	va_end(args);
+	static thread_local char szBuf[2048] = { 0 };
+	sprintf(szBuf, "[RiskControl] %s", message);
+	WTSLogger::log_raw_by_cat("risk", LL_INFO, szBuf);
 }
 
 uint32_t WtEngine::getCurDate()
@@ -236,7 +232,7 @@ void WtEngine::setVolScale(double scale)
 	_risk_volscale = scale;
 	_risk_date = _cur_tdate;
 
-	WTSLogger::log2_raw("risk", LL_INFO, fmt::format("Position risk scale updated: {} - > {}", oldScale, scale).c_str());
+	WTSLogger::log_by_cat_f("risk", LL_INFO, "Position risk scale updated: {} - > {}", oldScale, scale);
 	save_datas();
 }
 
@@ -517,7 +513,7 @@ void WtEngine::load_datas()
 					pInfo._details.emplace_back(dInfo);
 				}
 
-				WTSLogger::debug(fmt::format("Porfolio position confirmed,{} -> {}", stdCode, pInfo._volume).c_str());
+				WTSLogger::debug_f("Porfolio position confirmed,{} -> {}", stdCode, pInfo._volume);
 			}
 		}
 
@@ -982,7 +978,7 @@ bool WtEngine::init_riskmon(WTSVariant* cfg)
 	DllHandle hInst = DLLHelper::load_library(dllpath.c_str());
 	if (hInst == NULL)
 	{
-		WTSLogger::error2("risk", "Riskmon module %s loading failed", dllpath.c_str());
+		WTSLogger::log_by_cat("risk", LL_ERROR, "Riskmon module %s loading failed", dllpath.c_str());
 		return false;
 	}
 
@@ -990,7 +986,7 @@ bool WtEngine::init_riskmon(WTSVariant* cfg)
 	if (creator == NULL)
 	{
 		DLLHelper::free_library(hInst);
-		WTSLogger::error2("risk", "Riskmon module %s is not compatible", module.c_str());
+		WTSLogger::log_by_cat("risk", LL_ERROR, "Riskmon module %s is not compatible", module.c_str());
 		return false;
 	}
 

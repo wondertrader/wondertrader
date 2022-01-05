@@ -1,5 +1,4 @@
-// TestPorter.cpp : 定义控制台应用程序的入口点。
-//
+#define _CRT_SECURE_NO_WARNINGS
 #include "../WtBtPorter/WtBtPorter.h"
 
 #include "../Includes/WTSStruct.h"
@@ -9,7 +8,7 @@
 void on_getbar(CtxHandler ctxid, const char* code, const char* period, WTSBarStruct* bar, WtUInt32 count, bool isLast)
 {
 	if (bar)
-		printf("on_getbar@%u\r\n", bar->time);
+		printf("on_getbar@%u.%llu\r\n", bar->date, bar->time);
 	else
 		int x = 1;
 }

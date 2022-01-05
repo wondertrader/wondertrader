@@ -29,8 +29,6 @@ extern "C"
 };
 
 
-
-
 WtExeFact::WtExeFact()
 {
 }

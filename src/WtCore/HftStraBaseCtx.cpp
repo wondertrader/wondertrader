@@ -213,7 +213,7 @@ OrderIDs HftStraBaseCtx::stra_buy(const char* stdCode, double price, double qty,
 
 		if (_trader && !_trader->checkOrderLimits(realCode.c_str()))
 		{
-			stra_log_info("%s 已被禁止交易", realCode.c_str());
+			log_info("%s 已被禁止交易", realCode.c_str());
 			return OrderIDs();
 		}
 
@@ -234,7 +234,7 @@ OrderIDs HftStraBaseCtx::stra_buy(const char* stdCode, double price, double qty,
 
 		if (_trader && !_trader->checkOrderLimits(realCode.c_str()))
 		{
-			stra_log_info("%s 已被禁止交易", realCode.c_str());
+			log_info("%s 已被禁止交易", realCode.c_str());
 			return OrderIDs();
 		}
 
@@ -249,7 +249,7 @@ OrderIDs HftStraBaseCtx::stra_buy(const char* stdCode, double price, double qty,
 	{
 		if (!_trader->checkOrderLimits(stdCode))
 		{
-			stra_log_info("%s 已被禁止交易", stdCode);
+			log_info("%s 已被禁止交易", stdCode);
 			return OrderIDs();
 		}
 
@@ -267,7 +267,7 @@ OrderIDs HftStraBaseCtx::stra_sell(const char* stdCode, double price, double qty
 	WTSCommodityInfo* commInfo = _engine->get_commodity_info(stdCode);
 	if (commInfo == NULL)
 	{
-		stra_log_error("Cannot find corresponding commodity info of %s", stdCode);
+		log_error("Cannot find corresponding commodity info of %s", stdCode);
 		return OrderIDs();
 	}
 
@@ -277,7 +277,7 @@ OrderIDs HftStraBaseCtx::stra_sell(const char* stdCode, double price, double qty
 		double curPos = stra_get_position(stdCode, true);//只读可用持仓
 		if (decimal::gt(qty, curPos))
 		{
-			stra_log_error("No enough position of %s to sell", stdCode);
+			log_error("No enough position of %s to sell", stdCode);
 			return OrderIDs();
 		}
 	}
@@ -292,7 +292,7 @@ OrderIDs HftStraBaseCtx::stra_sell(const char* stdCode, double price, double qty
 
 		if (_trader && !_trader->checkOrderLimits(realCode.c_str()))
 		{
-			stra_log_info("%s 已被禁止交易", realCode.c_str());
+			log_info("%s 已被禁止交易", realCode.c_str());
 			return OrderIDs();
 		}
 
@@ -313,7 +313,7 @@ OrderIDs HftStraBaseCtx::stra_sell(const char* stdCode, double price, double qty
 
 		if (_trader && !_trader->checkOrderLimits(realCode.c_str()))
 		{
-			stra_log_info("%s 已被禁止交易", realCode.c_str());
+			log_info("%s 已被禁止交易", realCode.c_str());
 			return OrderIDs();
 		}
 
@@ -328,7 +328,7 @@ OrderIDs HftStraBaseCtx::stra_sell(const char* stdCode, double price, double qty
 	{
 		if (_trader && !_trader->checkOrderLimits(stdCode))
 		{
-			stra_log_info("%s 已被禁止交易", stdCode);
+			log_info("%s 已被禁止交易", stdCode);
 			return OrderIDs();
 		}
 
@@ -506,59 +506,40 @@ WTSTickData* HftStraBaseCtx::stra_get_last_tick(const char* stdCode)
 void HftStraBaseCtx::stra_sub_ticks(const char* stdCode)
 {
 	_engine->sub_tick(id(), stdCode);
-	stra_log_info("Market Data subscribed: %s", stdCode);
+	log_info("Market Data subscribed: %s", stdCode);
 }
 
 void HftStraBaseCtx::stra_sub_order_details(const char* stdCode)
 {
 	_engine->sub_order_detail(id(), stdCode);
-	stra_log_info("Order details subscribed: %s", stdCode);
+	log_info("Order details subscribed: %s", stdCode);
 }
 
 void HftStraBaseCtx::stra_sub_order_queues(const char* stdCode)
 {
 	_engine->sub_order_queue(id(), stdCode);
-	stra_log_info("Order queues subscribed: %s", stdCode);
+	log_info("Order queues subscribed: %s", stdCode);
 }
 
 void HftStraBaseCtx::stra_sub_transactions(const char* stdCode)
 {
 	_engine->sub_transaction(id(), stdCode);
-	stra_log_info("Transactions subscribed: %s", stdCode);
+	log_info("Transactions subscribed: %s", stdCode);
 }
 
-void HftStraBaseCtx::stra_log_info(const char* fmt, ...)
+void HftStraBaseCtx::stra_log_info(const char* message)
 {
-	char szBuf[256] = { 0 };
-	uint32_t length = sprintf(szBuf, "[%s]", _name.c_str());
-	strcat(szBuf, fmt);
-	va_list args;
-	va_start(args, fmt);
-	WTSLogger::vlog2("strategy", LL_INFO, szBuf, args);
-	va_end(args);
+	WTSLogger::log_dyn_raw("strategy", _name.c_str(), LL_INFO, message);
 }
 
-void HftStraBaseCtx::stra_log_debug(const char* fmt, ...)
+void HftStraBaseCtx::stra_log_debug(const char* message)
 {
-	char szBuf[256] = { 0 };
-	uint32_t length = sprintf(szBuf, "[%s]", _name.c_str());
-	strcat(szBuf, fmt);
-	va_list args;
-	va_start(args, fmt);
-	WTSLogger::vlog_dyn("strategy", _name.c_str(), LL_DEBUG, szBuf, args);
-	va_end(args);
+	WTSLogger::log_dyn_raw("strategy", _name.c_str(), LL_DEBUG, message);
 }
 
-
-void HftStraBaseCtx::stra_log_error(const char* fmt, ...)
+void HftStraBaseCtx::stra_log_error(const char* message)
 {
-	char szBuf[256] = { 0 };
-	uint32_t length = sprintf(szBuf, "[%s]", _name.c_str());
-	strcat(szBuf, fmt);
-	va_list args;
-	va_start(args, fmt);
-	WTSLogger::vlog_dyn("strategy", _name.c_str(), LL_ERROR, szBuf, args);
-	va_end(args);
+	WTSLogger::log_dyn_raw("strategy", _name.c_str(), LL_ERROR, message);
 }
 
 void HftStraBaseCtx::on_trade(uint32_t localid, const char* stdCode, bool isBuy, double vol, double price)
@@ -794,7 +775,7 @@ void HftStraBaseCtx::do_set_position(const char* stdCode, double qty, double pri
 	if (decimal::eq(pInfo._volume, qty))
 		return;
 
-	stra_log_info("Target position updated: %.0f -> %0.f", pInfo._volume, qty);
+	log_info("Target position updated: %.0f -> %0.f", pInfo._volume, qty);
 
 	WTSCommodityInfo* commInfo = _engine->get_commodity_info(stdCode);
 

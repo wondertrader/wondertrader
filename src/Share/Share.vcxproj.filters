@@ -213,5 +213,8 @@
     <ClInclude Include="ModuleHelper.hpp">
       <Filter>Utils</Filter>
     </ClInclude>
+    <ClInclude Include="fmtlib.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -54,7 +54,7 @@ public:
 	/*
 	 *	写日志
 	 */
-	virtual void	writeRiskLog(const char* fmt, ...) = 0;
+	virtual void	writeRiskLog(const char* message) = 0;
 
 	/*
 	 *	获取当前日期

@@ -75,7 +75,7 @@ public:
 		*/
 	virtual void handleTransaction(WTSTransData* transData) override;
 
-	virtual void handleParserLog(WTSLogLevel ll, const char* format, ...) override;
+	virtual void handleParserLog(WTSLogLevel ll, const char* message) override;
 
 	virtual IBaseDataMgr* getBaseDataMgr() override { return _bd_mgr; }
 

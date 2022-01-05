@@ -18,6 +18,21 @@
 #include <rapidjson/prettywriter.h>
 namespace rj = rapidjson;
 
+//By Wesley @ 2022.01.05
+#include "../Share/fmtlib.h"
+template<typename... Args>
+inline void write_log(ITraderSpi* sink, WTSLogLevel ll, const char* format, const Args&... args)
+{
+	if (sink == NULL)
+		return;
+
+	static thread_local char buffer[512] = { 0 };
+	std::string s = std::move(fmt::sprintf(format, args...));
+	strcpy(buffer, s.c_str());
+
+	sink->handleTraderLog(ll, buffer);
+}
+
 extern "C"
 {
 	EXPORT_FLAG ITraderApi* createTrader()
@@ -281,7 +296,7 @@ int TraderMocker::orderInsert(WTSEntrust* entrust)
 
 			if(_listener)
 			{
-				_listener->handleTraderLog(LL_INFO, "共有%u个品种有待撮合订单", _codes.size());
+				write_log(_listener,LL_INFO, "共有%u个品种有待撮合订单", _codes.size());
 			}
 
 			if (_orders == NULL)
@@ -474,7 +489,7 @@ int32_t TraderMocker::match_once()
 
 				if (count > 0)
 				{
-					//_listener->handleTraderLog(LL_INFO, "[TraderMocker]触发 %s.%s 开多 %u 条,价格:%u", tick->exchg(), tick->code(), iCount, uPrice);
+					//write_log(_listener,LL_INFO, "[TraderMocker]触发 %s.%s 开多 %u 条,价格:%u", tick->exchg(), tick->code(), iCount, uPrice);
 					for (const std::string& oid : to_erase)
 					{
 						_awaits->remove(oid);
@@ -570,7 +585,7 @@ void TraderMocker::load_positions()
 	}
 
 	if (_listener)
-		_listener->handleTraderLog(LL_INFO, "[TraderMocker]共加载%u条持仓数据", _positions.size());
+		write_log(_listener,LL_INFO, "[TraderMocker]共加载%u条持仓数据", _positions.size());
 }
 
 void TraderMocker::save_positions()
@@ -747,7 +762,7 @@ int TraderMocker::orderAction(WTSEntrustAction* action)
 		 */
 		if(ordInfo == NULL)
 		{
-			_listener->handleTraderLog(LL_ERROR, "订单%s不存在或者已完成", action->getOrderID());
+			write_log(_listener,LL_ERROR, "订单%s不存在或者已完成", action->getOrderID());
 			WTSError* err = WTSError::create(WEC_ORDERCANCEL, "订单不存在或者处于不可撤销状态");
 			if (_listener)
 				_listener->onTraderError(err);
@@ -920,7 +935,7 @@ void TraderMocker::handle_read(const boost::system::error_code& e, std::size_t b
 	if (e)
 	{
 		if (_listener)
-			_listener->handleTraderLog(LL_ERROR, "[TraderMocker]UDP行情接收出错:%s(%d)", e.message().c_str(), e.value());
+			write_log(_listener,LL_ERROR, "[TraderMocker]UDP行情接收出错:%s(%d)", e.message().c_str(), e.value());
 
 		if (!_terminated)
 		{

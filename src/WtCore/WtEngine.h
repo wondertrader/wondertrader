@@ -128,7 +128,7 @@ public:
 
 	virtual bool isInTrading() override;
 
-	virtual void writeRiskLog(const char* fmt, ...) override;
+	virtual void writeRiskLog(const char* message) override;
 
 	virtual uint32_t	getCurDate() override;
 	virtual uint32_t	getCurTime() override;

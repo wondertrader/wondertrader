@@ -25,6 +25,20 @@
 const char* ENTRUST_SECTION = "entrusts";
 const char* ORDER_SECTION = "orders";
 
+//By Wesley @ 2022.01.05
+#include "../Share/fmtlib.h"
+template<typename... Args>
+inline void write_log(ITraderSpi* sink, WTSLogLevel ll, const char* format, const Args&... args)
+{
+	if (sink == NULL)
+		return;
+
+	static thread_local char buffer[512] = { 0 };
+	fmt::format_to(buffer, format, args...);
+
+	sink->handleTraderLog(ll, buffer);
+}
+
 uint32_t strToTime(const char* strTime)
 {
 	std::string str;
@@ -279,7 +293,7 @@ int TraderCTPMini::doLogin()
 	int iResult = m_pUserAPI->ReqUserLogin(&req, genRequestID());
 	if (iResult != 0)
 	{
-		m_sink->handleTraderLog(LL_ERROR, "[TraderCTPMini] Sending login request failed: %d", iResult);
+		write_log(m_sink, LL_ERROR, "[TraderCTPMini] Sending login request failed: {}", iResult);
 	}
 
 	return 0;
@@ -299,7 +313,7 @@ int TraderCTPMini::logout()
 	int iResult = m_pUserAPI->ReqUserLogout(&req, genRequestID());
 	if (iResult != 0)
 	{
-		m_sink->handleTraderLog(LL_ERROR, "[TraderCTPMini] Sending logout request failed: %d", iResult);
+		write_log(m_sink, LL_ERROR, "[TraderCTPMini] Sending logout request failed: {}", iResult);
 	}
 
 	return 0;
@@ -337,7 +351,7 @@ int TraderCTPMini::orderInsert(WTSEntrust* entrust)
 		extractEntrustID(entrust->getEntrustID(), fid, sid, orderref);
 		//entrust->setEntrustID(entrust->getUserTag());
 		///报单引用
-		sprintf(req.OrderRef, "%d", orderref);
+		sprintf(req.OrderRef, "%u", orderref);
 	}
 
 	if (strlen(entrust->getUserTag()) > 0)
@@ -393,7 +407,7 @@ int TraderCTPMini::orderInsert(WTSEntrust* entrust)
 	int iResult = m_pUserAPI->ReqOrderInsert(&req, genRequestID());
 	if (iResult != 0)
 	{
-		m_sink->handleTraderLog(LL_ERROR, "[TraderCTPMini] Order inserting failed: %d", iResult);
+		write_log(m_sink, LL_ERROR, "[TraderCTPMini] Order inserting failed: {}", iResult);
 	}
 
 	return 0;
@@ -436,7 +450,7 @@ int TraderCTPMini::orderAction(WTSEntrustAction* action)
 	int iResult = m_pUserAPI->ReqOrderAction(&req, genRequestID());
 	if (iResult != 0)
 	{
-		m_sink->handleTraderLog(LL_ERROR, "[TraderCTPMini] Sending cancel request failed: %d", iResult);
+		write_log(m_sink, LL_ERROR, "[TraderCTPMini] Sending cancel request failed: {}", iResult);
 	}
 
 	return 0;
@@ -543,7 +557,7 @@ void TraderCTPMini::OnFrontConnected()
 
 void TraderCTPMini::OnFrontDisconnected(int nReason)
 {
-	//m_sink->handleTraderLog(LL_ERROR, "[TraderCTPMini]CTP交易服务器已断开");
+	//write_log(m_sink, LL_ERROR, "[TraderCTPMini]CTP交易服务器已断开");
 	m_wrapperState = WS_NOTLOGIN;
 	if (m_sink)
 		m_sink->handleEvent(WTE_Close, nReason);
@@ -551,7 +565,7 @@ void TraderCTPMini::OnFrontDisconnected(int nReason)
 
 void TraderCTPMini::OnHeartBeatWarning(int nTimeLapse)
 {
-	m_sink->handleTraderLog(LL_DEBUG, "[TraderCTPMini][%s-%s] Heartbeating...", m_strBroker.c_str(), m_strUser.c_str());
+	write_log(m_sink, LL_DEBUG, "[TraderCTPMini][{}-{}] Heartbeating...", m_strBroker.c_str(), m_strUser.c_str());
 }
 
 void TraderCTPMini::OnRspAuthenticate(CThostFtdcRspAuthenticateField *pRspAuthenticateField, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
@@ -562,7 +576,7 @@ void TraderCTPMini::OnRspAuthenticate(CThostFtdcRspAuthenticateField *pRspAuthen
 	}
 	else
 	{
-		m_sink->handleTraderLog(LL_ERROR, "[TraderCTPMini][%s-%s] Authentication failed: %s", m_strBroker.c_str(), m_strUser.c_str(), pRspInfo->ErrorMsg);
+		write_log(m_sink, LL_ERROR, "[TraderCTPMini][{}-{}] Authentication failed: {}", m_strBroker.c_str(), m_strUser.c_str(), pRspInfo->ErrorMsg);
 		m_wrapperState = WS_LOGINFAILED;
 
 		if (m_sink)
@@ -584,7 +598,7 @@ void TraderCTPMini::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, C
 		///获取当前交易日
 		m_lDate = atoi(m_pUserAPI->GetTradingDay());
 
-		m_sink->handleTraderLog(LL_INFO, "[TraderCTPMini][%s-%s] Login succeed, AppID: %s, Sessionid: %u, login time: %s...",
+		write_log(m_sink, LL_INFO, "[TraderCTPMini][{}-{}] Login succeed, AppID: {}, Sessionid: {}, login time: {}...",
 			m_strBroker.c_str(), m_strUser.c_str(), m_strAppID.c_str(), m_sessionID, pRspUserLogin->LoginTime);
 
 		std::stringstream ss;
@@ -604,19 +618,19 @@ void TraderCTPMini::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, C
 			m_iniHelper.writeUInt("marker", "date", m_lDate);
 			m_iniHelper.save();
 
-			m_sink->handleTraderLog(LL_INFO, "[TraderCTPMini][%s-%s] Trading date changed [%u -> %u], local cache cleard...", m_strBroker.c_str(), m_strUser.c_str(), lastDate, m_lDate);
+			write_log(m_sink, LL_INFO, "[TraderCTPMini][{}-{}] Trading date changed [{} -> {}], local cache cleard...", m_strBroker.c_str(), m_strUser.c_str(), lastDate, m_lDate);
 		}
 
-		m_sink->handleTraderLog(LL_INFO, "[TraderCTPMini][%s-%s] Login succeed, trading date: %u...", m_strBroker.c_str(), m_strUser.c_str(), m_lDate);
+		write_log(m_sink, LL_INFO, "[TraderCTPMini][{}-{}] Login succeed, trading date: {}...", m_strBroker.c_str(), m_strUser.c_str(), m_lDate);
 
-		m_sink->handleTraderLog(LL_INFO, "[TraderCTPMini][%s-%s] Trading channel initialized...", m_strBroker.c_str(), m_strUser.c_str());
+		write_log(m_sink, LL_INFO, "[TraderCTPMini][{}-{}] Trading channel initialized...", m_strBroker.c_str(), m_strUser.c_str());
 		m_wrapperState = WS_ALLREADY;
 		if (m_sink)
 			m_sink->onLoginResult(true, "", m_lDate);
 	}
 	else
 	{
-		m_sink->handleTraderLog(LL_ERROR, "[TraderCTPMini][%s-%s] Login failed: %s", m_strBroker.c_str(), m_strUser.c_str(), pRspInfo->ErrorMsg);
+		write_log(m_sink, LL_ERROR, "[TraderCTPMini][{}-{}] Login failed: {}", m_strBroker.c_str(), m_strUser.c_str(), pRspInfo->ErrorMsg);
 		m_wrapperState = WS_LOGINFAILED;
 
 		if (m_sink)
@@ -673,7 +687,7 @@ void TraderCTPMini::OnRspQryTradingAccount(CThostFtdcTradingAccountField *pTradi
 			m_ayFunds = WTSArray::create();
 
 		WTSAccountInfo* accountInfo = WTSAccountInfo::create();
-		accountInfo->setDescription(StrUtil::printf("%s-%s", m_strBroker.c_str(), m_strUser.c_str()).c_str());
+		accountInfo->setDescription(StrUtil::printf("{}-{}", m_strBroker.c_str(), m_strUser.c_str()).c_str());
 		//accountInfo->setUsername(m_strUserName.c_str());
 		accountInfo->setPreBalance(pTradingAccount->PreBalance);
 		accountInfo->setCloseProfit(pTradingAccount->CloseProfit);
@@ -717,7 +731,7 @@ void TraderCTPMini::OnRspQryInvestorPosition(CThostFtdcInvestorPositionField *pI
 		if (contract)
 		{
 			WTSCommodityInfo* commInfo = m_bdMgr->getCommodity(contract);
-			std::string key = StrUtil::printf("%s-%d", pInvestorPosition->InstrumentID, pInvestorPosition->PosiDirection);
+			std::string key = StrUtil::printf("{}-{}", pInvestorPosition->InstrumentID, pInvestorPosition->PosiDirection);
 			WTSPositionItem* pos = (WTSPositionItem*)m_mapPosition->get(key);
 			if(pos == NULL)
 			{

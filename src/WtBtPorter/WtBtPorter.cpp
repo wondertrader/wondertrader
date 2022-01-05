@@ -151,11 +151,11 @@ void write_log(WtUInt32 level, const char* message, const char* catName)
 {
 	if (strlen(catName) > 0)
 	{
-		WTSLogger::log2(catName, (WTSLogLevel)level, message);
+		WTSLogger::log_raw_by_cat(catName, (WTSLogLevel)level, message);
 	}
 	else
 	{
-		WTSLogger::log((WTSLogLevel)level, message);
+		WTSLogger::log_raw((WTSLogLevel)level, message);
 	}
 }
 
@@ -221,24 +221,10 @@ WtUInt32 cta_get_bars(CtxHandler cHandle, const char* stdCode, const char* perio
 		WTSKlineSlice* kData = ctx->stra_get_bars(stdCode, period, barCnt, isMain);
 		if (kData)
 		{
-			uint32_t left = barCnt;
-			uint32_t reaCnt = min(barCnt, (WtUInt32)kData->size());
+			WtUInt32 reaCnt = (WtUInt32)kData->size();
 
-			if (kData->get_his_count() > 0)
-			{
-				uint32_t thisCnt = min(left, (uint32_t)kData->get_his_count());
-				left -= thisCnt;
-				reaCnt += thisCnt;
-				cb(cHandle, stdCode, period, kData->get_his_addr(), thisCnt, left == 0);
-			}
-
-			if (left > 0 && kData->get_rt_count() > 0)
-			{
-				uint32_t thisCnt = min(left, (uint32_t)kData->get_rt_count());
-				left -= thisCnt;
-				reaCnt += thisCnt;
-				cb(cHandle, stdCode, period, kData->get_rt_addr(), thisCnt, true);
-			}
+			for (uint32_t i = 0; i < kData->get_block_counts(); i++)
+				cb(cHandle, stdCode, period, kData->get_block_addr(i), kData->get_block_size(i), i == kData->get_block_counts()-1);
 
 			kData->release();
 			return reaCnt;
@@ -553,24 +539,10 @@ WtUInt32 sel_get_bars(CtxHandler cHandle, const char* stdCode, const char* perio
 		WTSKlineSlice* kData = ctx->stra_get_bars(stdCode, period, barCnt);
 		if (kData)
 		{
-			uint32_t left = barCnt;
-			uint32_t reaCnt = min(barCnt, (WtUInt32)kData->size());
+			WtUInt32 reaCnt = (WtUInt32)kData->size();
 
-			if (kData->get_his_count() > 0)
-			{
-				uint32_t thisCnt = min(left, (uint32_t)kData->get_his_count());
-				left -= thisCnt;
-				reaCnt += thisCnt;
-				cb(cHandle, stdCode, period, kData->get_his_addr(), thisCnt, left == 0);
-			}
-
-			if (left > 0 && kData->get_rt_count() > 0)
-			{
-				uint32_t thisCnt = min(left, (uint32_t)kData->get_rt_count());
-				left -= thisCnt;
-				reaCnt += thisCnt;
-				cb(cHandle, stdCode, period, kData->get_rt_addr(), thisCnt, true);
-			}
+			for (uint32_t i = 0; i < kData->get_block_counts(); i++)
+				cb(cHandle, stdCode, period, kData->get_block_addr(i), kData->get_block_size(i), i == kData->get_block_counts() - 1);
 
 			kData->release();
 			return reaCnt;
@@ -692,24 +664,10 @@ WtUInt32 hft_get_bars(CtxHandler cHandle, const char* stdCode, const char* perio
 		WTSKlineSlice* kData = mocker->stra_get_bars(stdCode, period, barCnt);
 		if (kData)
 		{
-			uint32_t left = barCnt;
-			uint32_t reaCnt = min(barCnt, (WtUInt32)kData->size());
+			WtUInt32 reaCnt = (WtUInt32)kData->size();
 
-			if (kData->get_his_count() > 0)
-			{
-				uint32_t thisCnt = min(left, (uint32_t)kData->get_his_count());
-				left -= thisCnt;
-				reaCnt += thisCnt;
-				cb(cHandle, stdCode, period, kData->get_his_addr(), thisCnt, left == 0);
-			}
-
-			if (left > 0 && kData->get_rt_count() > 0)
-			{
-				uint32_t thisCnt = min(left, (uint32_t)kData->get_rt_count());
-				left -= thisCnt;
-				reaCnt += thisCnt;
-				cb(cHandle, stdCode, period, kData->get_rt_addr(), thisCnt, true);
-			}
+			for (uint32_t i = 0; i < kData->get_block_counts(); i++)
+				cb(cHandle, stdCode, period, kData->get_block_addr(i), kData->get_block_size(i), i == kData->get_block_counts() - 1);
 
 			kData->release();
 			return reaCnt;

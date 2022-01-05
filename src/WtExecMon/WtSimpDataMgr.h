@@ -49,7 +49,7 @@ public:
 	virtual uint32_t	get_min_time()override;
 	virtual uint32_t	get_secs() override;
 
-	virtual void		reader_log(WTSLogLevel ll, const char* fmt, ...) override;
+	virtual void		reader_log(WTSLogLevel ll, const char* message) override;
 
 	inline IDataReader* reader() { return _reader; }
 

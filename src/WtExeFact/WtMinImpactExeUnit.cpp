@@ -13,6 +13,7 @@
 #include "../Includes/WTSSessionInfo.hpp"
 #include "../Share/decimal.h"
 #include "../Share/StrUtil.hpp"
+#include "../Share/fmtlib.h"
 
 extern const char* FACT_NAME;
 
@@ -92,8 +93,8 @@ void WtMinImpactExeUnit::init(ExecuteContext* ctx, const char* stdCode, WTSVaria
 	_order_lots = cfg->getDouble("lots");		//单次发单手数
 	_qty_rate = cfg->getDouble("rate");			//下单手数比例
 
-	ctx->writeLog("MiniImpactExecUnit %s inited, order price: %s ± %d ticks, order expired: %u secs, order timespan:%u millisec, order qty: %s @ %.2f",
-		stdCode, PriceModeNames[_price_mode + 1], _price_offset, _expire_secs, _entrust_span, _by_rate ? "byrate" : "byvol", _by_rate ? _qty_rate : _order_lots);
+	ctx->writeLog(fmt::sprintf("MiniImpactExecUnit %s inited, order price: %s ± %d ticks, order expired: %u secs, order timespan:%u millisec, order qty: %s @ %.2f",
+		stdCode, PriceModeNames[_price_mode + 1], _price_offset, _expire_secs, _entrust_span, _by_rate ? "byrate" : "byvol", _by_rate ? _qty_rate : _order_lots).c_str());
 }
 
 void WtMinImpactExeUnit::on_order(uint32_t localid, const char* stdCode, bool isBuy, double leftover, double price, bool isCanceled)
@@ -108,7 +109,7 @@ void WtMinImpactExeUnit::on_order(uint32_t localid, const char* stdCode, bool is
 			if (_cancel_cnt > 0)
 			{
 				_cancel_cnt--;
-				_ctx->writeLog("[%s@%d] Order of %s cancelling done, cancelcnt -> %u", __FILE__, __LINE__, _code.c_str(), _cancel_cnt);
+				_ctx->writeLog(fmt::sprintf("[%s@%d] Order of %s cancelling done, cancelcnt -> %u", __FILE__, __LINE__, _code.c_str(), _cancel_cnt).c_str());
 			}
 		}
 
@@ -119,8 +120,8 @@ void WtMinImpactExeUnit::on_order(uint32_t localid, const char* stdCode, bool is
 	//如果有撤单,也触发重新计算
 	if (isCanceled)
 	{
-		//_ctx->writeLog("%s的订单%u已撤销,重新触发执行逻辑", stdCode, localid);
-		_ctx->writeLog("Order %u of %s canceled, recalc will be done", localid, stdCode);
+		//ctx->writeLog(fmt::sprintf("%s的订单%u已撤销,重新触发执行逻辑", stdCode, localid);
+		_ctx->writeLog(fmt::sprintf("Order %u of %s canceled, recalc will be done", localid, stdCode).c_str());
 		_cancel_times++;
 		do_calc();
 	}
@@ -138,14 +139,14 @@ void WtMinImpactExeUnit::on_channel_ready()
 		 *	因为这些订单没有本地订单号，无法直接进行管理
 		 *	这种情况，就是刚启动的时候，上次的未完成单或者外部的挂单
 		 */
-		_ctx->writeLog("Unmanaged live orders with qty %f of %s found, cancel all", undone, _code.c_str());
+		_ctx->writeLog(fmt::sprintf("Unmanaged live orders with qty %f of %s found, cancel all", undone, _code.c_str()).c_str());
 
 		bool isBuy = (undone > 0);
 		OrderIDs ids = _ctx->cancel(_code.c_str(), isBuy);
 		_orders_mon.push_order(ids.data(), ids.size(), _ctx->getCurTime());
 		_cancel_cnt += ids.size();
 
-		_ctx->writeLog("[%s@%d]cancelcnt -> %u", __FILE__, __LINE__, _cancel_cnt);
+		_ctx->writeLog(fmt::sprintf("[%s@%d]cancelcnt -> %u", __FILE__, __LINE__, _cancel_cnt).c_str());
 	}
 	else if (decimal::eq(undone, 0) && _orders_mon.has_order())
 	{
@@ -156,12 +157,13 @@ void WtMinImpactExeUnit::on_channel_ready()
 		 *	这种情况，一般是断线重连以后，之前下出去的订单，并没有真正发送到柜台
 		 *	所以这里需要清理掉本地订单
 		 */
-		_ctx->writeLog("Local orders of %s not confirmed in trading channel, clear all", _code.c_str());
+		_ctx->writeLog(fmt::sprintf("Local orders of %s not confirmed in trading channel, clear all", _code.c_str()).c_str());
 		_orders_mon.clear_orders();
 	}
 	else
 	{
-		_ctx->writeLog("Unrecognized condition while channle ready, %.2f live orders of %s exists, local orders %sexist", undone, _code.c_str(), _orders_mon.has_order() ? "" : "not ");
+		_ctx->writeLog(fmt::sprintf("Unrecognized condition while channle ready, %.2f live orders of %s exists, local orders %sexist",
+			undone, _code.c_str(), _orders_mon.has_order() ? "" : "not ").c_str());
 	}
 
 
@@ -208,7 +210,7 @@ void WtMinImpactExeUnit::on_tick(WTSTickData* newTick)
 			if (_ctx->cancel(localid))
 			{
 				_cancel_cnt++;
-				_ctx->writeLog("[%s@%d] Expired order of %s canceled, cancelcnt -> %u", __FILE__, __LINE__, _code.c_str(), _cancel_cnt);
+				_ctx->writeLog(fmt::sprintf("[%s@%d] Expired order of %s canceled, cancelcnt -> %u", __FILE__, __LINE__, _code.c_str(), _cancel_cnt).c_str());
 			}
 		});
 	}
@@ -264,7 +266,7 @@ void WtMinImpactExeUnit::do_calc()
 		{
 			_orders_mon.push_order(ids.data(), ids.size(), _ctx->getCurTime());
 			_cancel_cnt += ids.size();
-			_ctx->writeLog("[%s@%d] live opposite order of %s canceled, cancelcnt -> %u", __FILE__, __LINE__, _code.c_str(), _cancel_cnt);
+			_ctx->writeLog(fmt::sprintf("[%s@%d] live opposite order of %s canceled, cancelcnt -> %u", __FILE__, __LINE__, _code.c_str(), _cancel_cnt).c_str());
 		}
 		return;
 	}
@@ -285,7 +287,7 @@ void WtMinImpactExeUnit::do_calc()
 
 	if (_last_tick == NULL)
 	{
-		_ctx->writeLog("No lastest tick data of %s, execute later", _code.c_str());
+		_ctx->writeLog(fmt::sprintf("No lastest tick data of %s, execute later", _code.c_str()).c_str());
 		return;
 	}
 
@@ -303,7 +305,7 @@ void WtMinImpactExeUnit::do_calc()
 
 		//如果还有都头仓位，则将目标仓位设置为非0，强制触发
 		newVol = -min(lPos, _order_lots);
-		_ctx->writeLog("Clearing process triggered, target position of %s has been set to %f", _code.c_str(), newVol);
+		_ctx->writeLog(fmt::sprintf("Clearing process triggered, target position of %s has been set to %f", _code.c_str(), newVol).c_str());
 	}
 
 	bool bForceClose = is_clear(_target_pos);
@@ -314,7 +316,8 @@ void WtMinImpactExeUnit::do_calc()
 	uint64_t curTickTime = (uint64_t)_last_tick->actiondate() * 1000000000 + _last_tick->actiontime();
 	if (curTickTime <= _last_tick_time)
 	{
-		_ctx->writeLog("No tick of %s updated, %s <= %s, execute later", _code.c_str(), StrUtil::fmtUInt64(curTickTime).c_str(), StrUtil::fmtUInt64(_last_tick_time).c_str());
+		_ctx->writeLog(fmt::sprintf("No tick of %s updated, %s <= %s, execute later",
+			_code.c_str(), StrUtil::fmtUInt64(curTickTime).c_str(), StrUtil::fmtUInt64(_last_tick_time).c_str()).c_str());
 		return;
 	}
 
@@ -367,14 +370,14 @@ void WtMinImpactExeUnit::do_calc()
 	bool isCanCancel = true;
 	if (!decimal::eq(_last_tick->upperlimit(), 0) && decimal::gt(buyPx, _last_tick->upperlimit()))
 	{
-		_ctx->writeLog("Buy price %f of %s modified to upper limit price", buyPx, _code.c_str(), _last_tick->upperlimit());
+		_ctx->writeLog(fmt::sprintf("Buy price %f of %s modified to upper limit price", buyPx, _code.c_str(), _last_tick->upperlimit()).c_str());
 		buyPx = _last_tick->upperlimit();
 		isCanCancel = false;	//如果价格被修正为涨跌停价，订单不可撤销
 	}
 	
 	if (!decimal::eq(_last_tick->lowerlimit(), 0) && decimal::lt(sellPx, _last_tick->lowerlimit()))
 	{
-		_ctx->writeLog("Sell price %f of %s modified to lower limit price", buyPx, _code.c_str(), _last_tick->upperlimit());
+		_ctx->writeLog(fmt::sprintf("Sell price %f of %s modified to lower limit price", buyPx, _code.c_str(), _last_tick->upperlimit()).c_str());
 		sellPx = _last_tick->lowerlimit();
 		isCanCancel = false;	//如果价格被修正为涨跌停价，订单不可撤销
 	}
@@ -402,7 +405,7 @@ void WtMinImpactExeUnit::set_position(const char* stdCode, double newVol)
 	//如果这个时候又设置为0，则直接跳过了
 	if (is_clear(_target_pos) && decimal::eq(newVol, 0))
 	{
-		_ctx->writeLog("%s is in clearing processing, position can not be set to 0", stdCode);
+		_ctx->writeLog(fmt::sprintf("%s is in clearing processing, position can not be set to 0", stdCode).c_str());
 		return;
 	}
 
@@ -412,9 +415,9 @@ void WtMinImpactExeUnit::set_position(const char* stdCode, double newVol)
 	_target_pos = newVol;
 
 	if (is_clear(_target_pos))
-		_ctx->writeLog("%s is set to be in clearing processing", stdCode);
+		_ctx->writeLog(fmt::sprintf("%s is set to be in clearing processing", stdCode).c_str());
 	else
-		_ctx->writeLog("Target position of %s is set tb be %f", stdCode, _target_pos);
+		_ctx->writeLog(fmt::sprintf("Target position of %s is set tb be %f", stdCode, _target_pos).c_str());
 
 	do_calc();
 }

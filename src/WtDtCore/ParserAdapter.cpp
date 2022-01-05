@@ -322,18 +322,12 @@ void ParserAdapter::handleQuote( WTSTickData *quote, bool bNeedSlice )
 		return;
 }
 
-void ParserAdapter::handleParserLog( WTSLogLevel ll, const char* format, ... )
+void ParserAdapter::handleParserLog( WTSLogLevel ll, const char* message)
 {
 	if (_stopped)
 		return;
 
-	char szBuf[2048] = {0};
-	va_list args;
-	va_start(args, format);        
-	vsprintf(szBuf, format, args);
-	va_end(args);
-
-	WTSLogger::log2("parser", ll, szBuf);
+	WTSLogger::log_raw_by_cat("parser", ll, message);
 }
 
 IBaseDataMgr* ParserAdapter::getBaseDataMgr()

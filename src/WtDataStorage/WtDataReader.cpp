@@ -15,6 +15,20 @@
 #include <rapidjson/document.h>
 namespace rj = rapidjson;
 
+//By Wesley @ 2022.01.05
+#include "../Share/fmtlib.h"
+template<typename... Args>
+inline void pipe_reader_log(IDataReaderSink* sink, WTSLogLevel ll, const char* format, const Args&... args)
+{
+	if (sink == NULL)
+		return;
+
+	static thread_local char buffer[512] = { 0 };
+	fmt::format_to(buffer, format, args...);
+
+	sink->reader_log(ll, buffer);
+}
+
 extern "C"
 {
 	EXPORT_FLAG IDataReader* createDataReader()
@@ -51,7 +65,7 @@ bool WtDataReader::proc_block_data(std::string& content, bool isBar, bool bKeepH
 
 		if (content.size() != (sizeof(BlockHeaderV2) + blkV2->_size))
 		{
-			_sink->reader_log(LL_ERROR, "Size check failed while processing %s data", isBar ? "bar" : "tick");
+			pipe_reader_log(_sink, LL_ERROR, "Size check failed while processing {} data", isBar ? "bar" : "tick");
 			return false;
 		}
 
@@ -184,7 +198,7 @@ bool WtDataReader::loadStkAdjFactorsFromLoader()
 		});
 	});
 
-	if (ret && _sink) _sink->reader_log(LL_INFO, "Adjusting factors of %u contracts loaded via extended loader", _adj_factors.size());
+	if (ret && _sink) pipe_reader_log(_sink,LL_INFO, "Adjusting factors of {} contracts loaded via extended loader", _adj_factors.size());
 	return ret;
 }
 
@@ -192,7 +206,7 @@ bool WtDataReader::loadStkAdjFactorsFromFile(const char* adjfile)
 {
 	if(!StdFile::exists(adjfile))
 	{
-		if (_sink) _sink->reader_log(LL_ERROR, "除权因子文件%s不存在", adjfile);
+		pipe_reader_log(_sink,LL_ERROR, "Adjusting factors file {} not exists", adjfile);
 		return false;
 	}
 
@@ -204,7 +218,7 @@ bool WtDataReader::loadStkAdjFactorsFromFile(const char* adjfile)
 
 	if(doc.HasParseError())
 	{
-		if (_sink) _sink->reader_log(LL_ERROR, "除权因子文件%s解析失败", adjfile);
+		pipe_reader_log(_sink,LL_ERROR, "Parsing adjusting factors file {} failed", adjfile);
 		return false;
 	}
 
@@ -259,7 +273,7 @@ bool WtDataReader::loadStkAdjFactorsFromFile(const char* adjfile)
 		}
 	}
 
-	if (_sink) _sink->reader_log(LL_INFO, "共加载%u只股票的%u条除权因子数据", stk_cnt, fct_cnt);
+	pipe_reader_log(_sink,LL_INFO, "{} adjusting factors of {} tickers loaded", fct_cnt, stk_cnt);
 	return true;
 }
 
@@ -350,7 +364,7 @@ WTSTickSlice* WtDataReader::readTickSlice(const char* stdCode, uint32_t count, u
 			StdFile::read_file_content(filename.c_str(), tBlkPair._buffer);
 			if (tBlkPair._buffer.size() < sizeof(HisTickBlock))
 			{
-				if (_sink) _sink->reader_log(LL_ERROR, "历史Tick数据文件%s大小校验失败", filename.c_str());
+				pipe_reader_log(_sink,LL_ERROR, "Sizechecking of his tick data file {} failed", filename);
 				tBlkPair._buffer.clear();
 				return NULL;
 			}
@@ -475,7 +489,7 @@ WTSOrdQueSlice* WtDataReader::readOrdQueSlice(const char* stdCode, uint32_t coun
 			StdFile::read_file_content(filename.c_str(), hisBlkPair._buffer);
 			if (hisBlkPair._buffer.size() < sizeof(HisOrdQueBlockV2))
 			{
-				if (_sink) _sink->reader_log(LL_ERROR, "历史委托队列数据文件%s大小校验失败", filename.c_str());
+				pipe_reader_log(_sink,LL_ERROR, "历史委托队列数据文件{}大小校验失败", filename);
 				hisBlkPair._buffer.clear();
 				return NULL;
 			}
@@ -484,7 +498,7 @@ WTSOrdQueSlice* WtDataReader::readOrdQueSlice(const char* stdCode, uint32_t coun
 
 			if (hisBlkPair._buffer.size() != (sizeof(HisOrdQueBlockV2) + tBlockV2->_size))
 			{
-				if (_sink) _sink->reader_log(LL_ERROR, "历史委托队列数据文件%s大小校验失败", filename.c_str());
+				pipe_reader_log(_sink,LL_ERROR, "历史委托队列数据文件{}大小校验失败", filename);
 				return NULL;
 			}
 
@@ -615,7 +629,7 @@ WTSOrdDtlSlice* WtDataReader::readOrdDtlSlice(const char* stdCode, uint32_t coun
 			StdFile::read_file_content(filename.c_str(), hisBlkPair._buffer);
 			if (hisBlkPair._buffer.size() < sizeof(HisOrdDtlBlockV2))
 			{
-				if (_sink) _sink->reader_log(LL_ERROR, "历史逐笔委托数据文件%s大小校验失败", filename.c_str());
+				pipe_reader_log(_sink,LL_ERROR, "历史逐笔委托数据文件{}大小校验失败", filename.c_str());
 				hisBlkPair._buffer.clear();
 				return NULL;
 			}
@@ -624,7 +638,7 @@ WTSOrdDtlSlice* WtDataReader::readOrdDtlSlice(const char* stdCode, uint32_t coun
 
 			if (hisBlkPair._buffer.size() != (sizeof(HisOrdDtlBlockV2) + tBlockV2->_size))
 			{
-				if (_sink) _sink->reader_log(LL_ERROR, "历史逐笔委托数据文件%s大小校验失败", filename.c_str());
+				pipe_reader_log(_sink,LL_ERROR, "历史逐笔委托数据文件{}大小校验失败", filename.c_str());
 				return NULL;
 			}
 
@@ -755,7 +769,7 @@ WTSTransSlice* WtDataReader::readTransSlice(const char* stdCode, uint32_t count,
 			StdFile::read_file_content(filename.c_str(), hisBlkPair._buffer);
 			if (hisBlkPair._buffer.size() < sizeof(HisTransBlockV2))
 			{
-				if (_sink) _sink->reader_log(LL_ERROR, "历史逐笔成交数据文件%s大小校验失败", filename.c_str());
+				pipe_reader_log(_sink,LL_ERROR, "历史逐笔成交数据文件{}大小校验失败", filename.c_str());
 				hisBlkPair._buffer.clear();
 				return NULL;
 			}
@@ -764,7 +778,7 @@ WTSTransSlice* WtDataReader::readTransSlice(const char* stdCode, uint32_t count,
 
 			if (hisBlkPair._buffer.size() != (sizeof(HisTransBlockV2) + tBlockV2->_size))
 			{
-				if (_sink) _sink->reader_log(LL_ERROR, "历史逐笔成交数据文件%s大小校验失败", filename.c_str());
+				pipe_reader_log(_sink,LL_ERROR, "历史逐笔成交数据文件{}大小校验失败", filename.c_str());
 				return NULL;
 			}
 
@@ -833,7 +847,8 @@ bool WtDataReader::cacheFinalBarsFromLoader(const std::string& key, const char* 
 	default: pname = ""; break;
 	}
 
-	if(_sink) _sink->reader_log(LL_INFO, "Reading final bars of %s via extended loader...", stdCode);
+	pipe_reader_log(_sink,LL_INFO, "Reading final bars of {} via extended loader...", stdCode);
+
 	bool ret = _loader->loadFinalHisBars(&barList, stdCode, period, [](void* obj, WTSBarStruct* firstBar, uint32_t count) {
 		BarsList* bars = (BarsList*)obj;
 		bars->_factor = 1.0;
@@ -841,8 +856,8 @@ bool WtDataReader::cacheFinalBarsFromLoader(const std::string& key, const char* 
 		memcpy(bars->_bars.data(), firstBar, sizeof(WTSBarStruct)*count);
 	});
 
-	if(ret && _sink)
-		_sink->reader_log(LL_INFO, "%s items of back {} data of {} loaded via extended loader", barList._bars.size(), pname.c_str(), stdCode);
+	if(ret)
+		pipe_reader_log(_sink,LL_INFO, "{} items of back {} data of {} loaded via extended loader", barList._bars.size(), pname.c_str(), stdCode);
 
 	return ret;
 }
@@ -897,7 +912,7 @@ bool WtDataReader::cacheIntegratedFutBars(const std::string& key, const char* st
 		StdFile::read_file_content(filename.c_str(), content);
 		if (content.size() < sizeof(HisKlineBlock))
 		{
-			if (_sink) _sink->reader_log(LL_ERROR, "历史K线数据文件%s大小校验失败", filename.c_str());
+			pipe_reader_log(_sink,LL_ERROR, "历史K线数据文件{}大小校验失败", filename);
 			break;
 		}
 		proc_block_data(content, true, false);
@@ -916,7 +931,7 @@ bool WtDataReader::cacheIntegratedFutBars(const std::string& key, const char* st
 		else
 			lastHotTime = hotAy->at(barcnt - 1).date;
 
-		if (_sink) _sink->reader_log(LL_INFO, "%u items of back %s data of wrapped contract %s directly loaded", barcnt, pname.c_str(), stdCode);
+		pipe_reader_log(_sink,LL_INFO, "{} items of back {} data of wrapped contract {} directly loaded", barcnt, pname.c_str(), stdCode);
 	} while (false);
 
 	HotSections secs;
@@ -1008,7 +1023,7 @@ bool WtDataReader::cacheIntegratedFutBars(const std::string& key, const char* st
 			StdFile::read_file_content(filename.c_str(), content);
 			if (content.size() < sizeof(HisKlineBlock))
 			{
-				if (_sink) _sink->reader_log(LL_ERROR, "历史K线数据文件%s大小校验失败", filename.c_str());
+				pipe_reader_log(_sink,LL_ERROR, "历史K线数据文件{}大小校验失败", filename.c_str());
 				return false;
 			}
 			proc_block_data(content, true, false);
@@ -1093,7 +1108,7 @@ bool WtDataReader::cacheIntegratedFutBars(const std::string& key, const char* st
 		barsSections.clear();
 	}
 
-	if (_sink) _sink->reader_log(LL_INFO, "%u items of back %s data of %s cached", realCnt, pname.c_str(), stdCode);
+	pipe_reader_log(_sink,LL_INFO, "{} items of back {} data of {} cached", realCnt, pname.c_str(), stdCode);
 
 	return true;
 }
@@ -1146,7 +1161,7 @@ bool WtDataReader::cacheAdjustedStkBars(const std::string& key, const char* stdC
 		StdFile::read_file_content(filename.c_str(), content);
 		if (content.size() < sizeof(HisKlineBlock))
 		{
-			if (_sink) _sink->reader_log(LL_ERROR, "历史K线数据文件%s大小校验失败", filename.c_str());
+			pipe_reader_log(_sink,LL_ERROR, "历史K线数据文件{}大小校验失败", filename.c_str());
 			break;
 		}
 
@@ -1163,7 +1178,7 @@ bool WtDataReader::cacheAdjustedStkBars(const std::string& key, const char* stdC
 		else
 			lastQTime = ayAdjusted->at(barcnt - 1).date;
 
-		if (_sink) _sink->reader_log(LL_INFO, "%u items of adjusted back %s data of stock %s directly loaded", barcnt, pname.c_str(), stdCode);
+		pipe_reader_log(_sink,LL_INFO, "{} items of adjusted back {} data of stock {} directly loaded", barcnt, pname.c_str(), stdCode);
 	} while (false);
 
 
@@ -1215,7 +1230,7 @@ bool WtDataReader::cacheAdjustedStkBars(const std::string& key, const char* stdC
 			StdFile::read_file_content(filename.c_str(), content);
 			if (content.size() < sizeof(HisKlineBlock))
 			{
-				if (_sink) _sink->reader_log(LL_ERROR, "历史K线数据文件%s大小校验失败", filename.c_str());
+				pipe_reader_log(_sink,LL_ERROR, "历史K线数据文件{}大小校验失败", filename.c_str());
 				return false;
 			}
 
@@ -1331,7 +1346,7 @@ bool WtDataReader::cacheAdjustedStkBars(const std::string& key, const char* stdC
 		barsSections.clear();
 	}
 
-	if (_sink) _sink->reader_log(LL_INFO, "%u items of back %s data of %s cached", realCnt, pname.c_str(), stdCode);
+	pipe_reader_log(_sink,LL_INFO, "{} items of back {} data of {} cached", realCnt, pname.c_str(), stdCode);
 
 	return true;
 }
@@ -1406,7 +1421,7 @@ bool WtDataReader::cacheHisBarsFromFile(const std::string& key, const char* stdC
 			StdFile::read_file_content(filename.c_str(), content);
 			if (content.size() < sizeof(HisKlineBlock))
 			{
-				if (_sink) _sink->reader_log(LL_ERROR, "历史K线数据文件%s大小校验失败", filename.c_str());
+				pipe_reader_log(_sink,LL_ERROR, "历史K线数据文件{}大小校验失败", filename.c_str());
 				return false;
 			}
 
@@ -1451,7 +1466,7 @@ bool WtDataReader::cacheHisBarsFromFile(const std::string& key, const char* stdC
 		barsSections.clear();
 	}
 
-	if (_sink) _sink->reader_log(LL_INFO, "%u items of back %s data of %s cached", realCnt, pname.c_str(), stdCode);
+	pipe_reader_log(_sink,LL_INFO, "{} items of back {} data of {} cached", realCnt, pname.c_str(), stdCode);
 	return true;
 }
 
@@ -1518,12 +1533,12 @@ WTSKlineSlice* WtDataReader::readKlineSlice(const char* stdCode, WTSKlinePeriod 
 	if (cInfo.isHot() && commInfo->isFuture())
 	{
 		_bars_cache[key]._raw_code = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, curTDate);
-		if (_sink) _sink->reader_log(LL_INFO, "Hot contract of %u confirmed: %s -> %s", curTDate, stdCode, _bars_cache[key]._raw_code.c_str());
+		pipe_reader_log(_sink,LL_INFO, "Hot contract on {}  confirmed: {} -> {}", curTDate, stdCode, _bars_cache[key]._raw_code.c_str());
 	}
 	else if (cInfo.isSecond() && commInfo->isFuture())
 	{
 		_bars_cache[key]._raw_code = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, curTDate);
-		if (_sink) _sink->reader_log(LL_INFO, "Second contract of %u confirmed: %s -> %s", curTDate, stdCode, _bars_cache[key]._raw_code.c_str());
+		pipe_reader_log(_sink,LL_INFO, "Second contract on {} confirmed: {} -> {}", curTDate, stdCode, _bars_cache[key]._raw_code.c_str());
 	}
 	else
 	{
@@ -1977,7 +1992,7 @@ const WtDataReader::AdjFactorList& WtDataReader::getAdjFactors(const char* code,
 		//如果没有复权因子，就从extloader按需读一次
 		if (_loader)
 		{
-			if(_sink) _sink->reader_log(LL_INFO, "No adjusting factors of %s cached, searching via extented loader...", key);
+			if(_sink) pipe_reader_log(_sink,LL_INFO, "No adjusting factors of {} cached, searching via extented loader...", key);
 			_loader->loadAdjFactors(this, key, [](void* obj, const char* stdCode, uint32_t* dates, double* factors, uint32_t count) {
 				WtDataReader* self = (WtDataReader*)obj;
 				AdjFactorList& fctrLst = self->_adj_factors[stdCode];
@@ -2001,7 +2016,7 @@ const WtDataReader::AdjFactorList& WtDataReader::getAdjFactors(const char* code,
 					return left._date < right._date;
 				});
 
-				if (self->_sink) self->_sink->reader_log(LL_INFO, "%u items of adjusting factors of %s loaded via extended loader", count, stdCode);
+				pipe_reader_log(self->_sink, LL_INFO, "{} items of adjusting factors of {} loaded via extended loader", count, stdCode);
 			});
 		}
 	}

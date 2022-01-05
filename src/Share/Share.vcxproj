@@ -153,6 +153,7 @@
     <ClInclude Include="CodeHelper.hpp" />
     <ClInclude Include="decimal.h" />
     <ClInclude Include="DLLHelper.hpp" />
+    <ClInclude Include="fmtlib.h" />
     <ClInclude Include="ILogHandler.h" />
     <ClInclude Include="IniFile.hpp" />
     <ClInclude Include="IniHelper.hpp" />

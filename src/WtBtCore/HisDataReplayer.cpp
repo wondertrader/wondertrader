@@ -165,7 +165,7 @@ bool HisDataReplayer::init(WTSVariant* cfg, EventNotifier* notifier /* = NULL */
 	if(_end_time == 0)
 		_end_time = cfg->getUInt64("etime");
 
-	WTSLogger::info(fmt::format("Backtest time range is set to be [{},{}] via config", _begin_time, _end_time).c_str());
+	WTSLogger::info_f("Backtest time range is set to be [{},{}] via config", _begin_time, _end_time);
 
 	_tick_enabled = cfg->getBoolean("tick");
 	WTSLogger::info("Tick data replaying is %s", _tick_enabled ? "enabled" : "disabled");
@@ -702,7 +702,7 @@ void HisDataReplayer::run_by_bars(bool bNeedDump /* = false */)
 	if (bNeedDump)
 		dump_btstate(barList._code.c_str(), barList._period, barList._times, _begin_time, _end_time, 100.0, TimeUtils::getLocalTimeNano() - now);
 
-	WTSLogger::log_raw(LL_INFO, fmt::format("Start to replay back data from {}...", _begin_time).c_str());
+	WTSLogger::info_f("Start to replay back data from {}...", _begin_time);
 
 	for (; !_terminated;)
 	{
@@ -720,7 +720,7 @@ void HisDataReplayer::run_by_bars(bool bNeedDump /* = false */)
 
 			if (nextBarTime > _end_time)
 			{
-				WTSLogger::log_raw(LL_INFO, fmt::format("{} is beyond ending time {},replaying done", nextBarTime, _end_time).c_str());
+				WTSLogger::info_f("{} is beyond ending time {},replaying done", nextBarTime, _end_time);
 				break;
 			}
 
@@ -813,7 +813,7 @@ void HisDataReplayer::run_by_tasks(bool bNeedDump /* = false */)
 	WTSSessionInfo* sInfo = NULL;
 	const char* DEF_SESS = (strlen(_task->_session) == 0) ? DEFAULT_SESSIONID : _task->_session;
 	sInfo = _bd_mgr.getSession(DEF_SESS);
-	WTSLogger::log_raw(LL_INFO, fmt::format("Start to backtest with task frequency from {}...", _begin_time).c_str());
+	WTSLogger::info_f("Start to backtest with task frequency from {}...", _begin_time);
 
 	//分钟即任务和日级别任务分开写
 	if (_task->_period != TPT_Minute)
@@ -2852,7 +2852,7 @@ bool HisDataReplayer::cacheRawTicksFromLoader(const std::string& key, const char
 	if (!bSucc)
 		return false;
 
-	WTSLogger::info(fmt::format("{} items of back tick data of {} on {} loaded via extended loader", ticksList._count, stdCode, uDate).c_str());
+	WTSLogger::info_f("{} items of back tick data of {} on {} loaded via extended loader", ticksList._count, stdCode, uDate);
 
 	return true;
 }
@@ -3038,7 +3038,7 @@ bool HisDataReplayer::cacheFinalBarsFromLoader(const std::string& key, const cha
 			uint64_t stime = isDay ? barList._bars[0].date : barList._bars[0].time;
 			uint64_t etime = isDay ? barList._bars[barcnt - 1].date : barList._bars[barcnt - 1].time;
 
-			WTSLogger::info(fmt::format("{} items of back {} data of {} directly loaded from dsb file, from {} to {}", barcnt, pname.c_str(), stdCode, stime, etime).c_str());
+			WTSLogger::info_f("{} items of back {} data of {} directly loaded from dsb file, from {} to {}", barcnt, pname.c_str(), stdCode, stime, etime);
 			bHit = true;
 		}
 	}
@@ -3070,7 +3070,7 @@ bool HisDataReplayer::cacheFinalBarsFromLoader(const std::string& key, const cha
 		uint64_t stime = isDay ? barList._bars[0].date : barList._bars[0].time;
 		uint64_t etime = isDay ? barList._bars[barList._count - 1].date : barList._bars[barList._count - 1].time;
 
-		WTSLogger::info(fmt::format("{} items of back {} data of {} loaded via extended loader, from {} to {}", barList._count, pname.c_str(), stdCode, stime, etime).c_str());
+		WTSLogger::info_f("{} items of back {} data of {} loaded via extended loader, from {} to {}", barList._count, pname.c_str(), stdCode, stime, etime);
 
 		if(_bt_loader->isAutoTrans())
 		{
@@ -3098,7 +3098,7 @@ bool HisDataReplayer::cacheFinalBarsFromLoader(const std::string& key, const cha
 			content.append(cmpData);
 
 			StdFile::write_file_content(filename.c_str(), content.c_str(), content.size());
-			WTSLogger::info("Bars transfered to file %s", filename.c_str());
+			WTSLogger::info_f("Bars transfered to file {}", filename);
 		}
 	}
 
@@ -3153,7 +3153,7 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 		if (content.size() < sizeof(HisKlineBlockV2))
 		{
 			//WTSLogger::error("历史K线数据文件%s大小校验失败", filename.c_str());
-			WTSLogger::error("Sizechecking of back kbar data file %s failed", filename.c_str());
+			WTSLogger::error_f("Sizechecking of back kbar data file {} failed", filename);
 			return false;
 		}
 
@@ -3174,7 +3174,7 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 		uint64_t stime = isDay ? barList._bars[0].date : barList._bars[0].time;
 		uint64_t etime = isDay ? barList._bars[barcnt-1].date : barList._bars[barcnt-1].time;
 
-		WTSLogger::info(fmt::format("{} items of back {} data of {} directly loaded from dsb file, from {} to {}", barcnt, pname.c_str(), stdCode, stime, etime).c_str());
+		WTSLogger::info_f("{} items of back {} data of {} directly loaded from dsb file, from {} to {}", barcnt, pname.c_str(), stdCode, stime, etime);
 	}
 	else
 	{
@@ -3185,14 +3185,14 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 
 		if (!StdFile::exists(csvfile.c_str()))
 		{
-			WTSLogger::error("Back kbar data file %s not exists", csvfile.c_str());
+			WTSLogger::error_f("Back kbar data file {} not exists", csvfile);
 			return false;
 		}
 
 		CsvReader reader;
 		reader.load_from_file(csvfile.c_str());
 
-		WTSLogger::info("Reading data from %s, with fields: %s...", csvfile.c_str(), reader.fields());
+		WTSLogger::info_f("Reading data from {}, with fields: {}...", csvfile, reader.fields());
 
 		BarsList& barList = bSubbed ? _bars_cache[key] : _unbars_cache[key];
 		barList._code = stdCode;
@@ -3225,7 +3225,7 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 		uint64_t stime = isDay ? barList._bars[0].date : barList._bars[0].time;
 		uint64_t etime = isDay ? barList._bars[barList._count - 1].date : barList._bars[barList._count - 1].time;
 
-		WTSLogger::info(fmt::format("Data file {} all loaded, totally {} items, from {} to {}", csvfile.c_str(), barList._bars.size(), stime, etime).c_str());
+		WTSLogger::info_f("Data file {} all loaded, totally {} items, from {} to {}", csvfile.c_str(), barList._bars.size(), stime, etime);
 
 		BlockType btype;
 		switch (period)
@@ -3251,7 +3251,7 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 		content.append(cmpData);
 
 		StdFile::write_file_content(filename.c_str(), content.c_str(), content.size());
-		WTSLogger::info("Bars transfered to file %s", filename.c_str());
+		WTSLogger::info_f("Bars transfered to file {}", filename);
 	}
 
 	return true;
@@ -3326,7 +3326,7 @@ bool HisDataReplayer::cacheIntegratedFutBars(const std::string& key, const char*
 		uint64_t stime = isDay ? barList._bars[0].date : barList._bars[0].time;
 		uint64_t etime = isDay ? barList._bars[barcnt - 1].date : barList._bars[barcnt - 1].time;
 
-		WTSLogger::info(fmt::format("{} items of back {} data of hot contract {} directly loaded, from {} to {}", barcnt, pname.c_str(), stdCode, stime, etime).c_str());
+		WTSLogger::info_f("{} items of back {} data of hot contract {} directly loaded, from {} to {}", barcnt, pname.c_str(), stdCode, stime, etime);
 
 	} while (false);
 

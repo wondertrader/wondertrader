@@ -117,12 +117,9 @@ uint32_t WtSimpDataMgr::get_secs()
 	return _cur_secs;
 }
 
-void WtSimpDataMgr::reader_log(WTSLogLevel ll, const char* fmt, ...)
+void WtSimpDataMgr::reader_log(WTSLogLevel ll, const char* message)
 {
-	va_list args;
-	va_start(args, fmt);
-	WTSLogger::vlog(ll, fmt, args);
-	va_end(args);
+	WTSLogger::log_raw(ll, message);
 }
 
 void WtSimpDataMgr::on_bar(const char* code, WTSKlinePeriod period, WTSBarStruct* newBar)
@@ -231,6 +228,6 @@ WTSKlineSlice* WtSimpDataMgr::get_kline_slice(const char* stdCode, WTSKlinePerio
 	uint32_t rtCnt = min(kData->size(), count);
 	sIdx = kData->size() - rtCnt;
 	WTSBarStruct* rtHead = kData->at(sIdx);
-	WTSKlineSlice* slice = WTSKlineSlice::create(stdCode, period, times, NULL, 0, rtHead, rtCnt);
+	WTSKlineSlice* slice = WTSKlineSlice::create(stdCode, period, times, rtHead, rtCnt);
 	return slice;
 }

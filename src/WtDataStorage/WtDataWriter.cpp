@@ -9,10 +9,23 @@
 #include "../Share/IniHelper.hpp"
 
 #include "../Includes/IBaseDataMgr.h"
-
 #include "../WTSTools/WTSCmpHelper.hpp"
 
 #include <set>
+
+//By Wesley @ 2022.01.05
+#include "../Share/fmtlib.h"
+template<typename... Args>
+inline void pipe_writer_log(IDataWriterSink* sink, WTSLogLevel ll, const char* format, const Args&... args)
+{
+	if (sink == NULL)
+		return;
+
+	static thread_local char buffer[512] = { 0 };
+	fmt::format_to(buffer, format, args...);
+
+	sink->outputLog(ll, buffer);
+}
 
 extern "C"
 {
@@ -159,7 +172,7 @@ void DataManager::preloadRtCaches(const char* exchg)
 	if (!_preload_enable || _preloaded)
 		return;
 
-	_sink->outputWriterLog(LL_INFO, "开始预加载实时数据缓存文件...");
+	pipe_writer_log(_sink, LL_INFO, "开始预加载实时数据缓存文件...");
 	TimeUtils::Ticker ticker;
 	uint32_t cnt = 0;
 	uint32_t codecnt = 0;
@@ -198,7 +211,7 @@ void DataManager::preloadRtCaches(const char* exchg)
 
 	if (ayCts != NULL)
 		ayCts->release();
-	_sink->outputWriterLog(LL_INFO, "预加载%个品种的实时数据缓存文件%u个,耗时%s微秒", codecnt, cnt, WTSLogger::fmtInt64(ticker.micro_seconds()));
+	pipe_writer_log(_sink, LL_INFO, "预加载%个品种的实时数据缓存文件{}个,耗时{}微秒", codecnt, cnt, WTSLogger::fmtInt64(ticker.micro_seconds()));
 	_preloaded = true;
 }
 */
@@ -273,7 +286,7 @@ void* WtDataWriter::resizeRTBlock(BoostMFPtr& mfPtr, uint32_t nCount)
 	}
 	catch(std::exception& ex)
 	{
-		_sink->outputWriterLog(LL_ERROR, "Exception occured while expanding RT cache file of %s[%u]: %s", filename, uNewSize, ex.what());
+		pipe_writer_log(_sink, LL_ERROR, "Exception occured while expanding RT cache file of {}[{}]: {}", filename, uNewSize, ex.what());
 		return mfPtr->addr();
 	}
 
@@ -328,7 +341,7 @@ bool WtDataWriter::writeTick(WTSTickData* curTick, bool bNeedSlice /* = true */)
 			_tcnt_map[curTick->exchg()]++;
 			if (_tcnt_map[curTick->exchg()] % _log_group_size == 0)
 			{
-				_sink->outputWriterLog(LL_INFO, "%s ticks received from exchange %s", StrUtil::fmtUInt64(_tcnt_map[curTick->exchg()]).c_str(), curTick->exchg());
+				pipe_writer_log(_sink, LL_INFO, "{} ticks received from exchange {}", _tcnt_map[curTick->exchg()], curTick->exchg());
 			}
 		} while (false);
 
@@ -382,7 +395,7 @@ bool WtDataWriter::writeOrderQueue(WTSOrdQueData* curOrdQue)
 			_tcnt_map[curOrdQue->exchg()]++;
 			if (_tcnt_map[curOrdQue->exchg()] % _log_group_size == 0)
 			{
-				_sink->outputWriterLog(LL_INFO, "%s orderques received from exchange %s", StrUtil::fmtUInt64(_tcnt_map[curOrdQue->exchg()]).c_str(), curOrdQue->exchg());
+				pipe_writer_log(_sink, LL_INFO, "{} orderques received from exchange {}", _tcnt_map[curOrdQue->exchg()], curOrdQue->exchg());
 			}
 		} while (false);
 		curOrdQue->release();
@@ -479,7 +492,7 @@ bool WtDataWriter::writeOrderDetail(WTSOrdDtlData* curOrdDtl)
 			_tcnt_map[curOrdDtl->exchg()]++;
 			if (_tcnt_map[curOrdDtl->exchg()] % _log_group_size == 0)
 			{
-				_sink->outputWriterLog(LL_INFO, "%s orderdetails received from exchange %s", StrUtil::fmtUInt64(_tcnt_map[curOrdDtl->exchg()]).c_str(), curOrdDtl->exchg());
+				pipe_writer_log(_sink, LL_INFO, "{} orderdetails received from exchange {}", _tcnt_map[curOrdDtl->exchg()], curOrdDtl->exchg());
 			}
 		} while (false);
 
@@ -535,7 +548,7 @@ bool WtDataWriter::writeTransaction(WTSTransData* curTrans)
 			_tcnt_map[curTrans->exchg()]++;
 			if (_tcnt_map[curTrans->exchg()] % _log_group_size == 0)
 			{
-				_sink->outputWriterLog(LL_INFO, "%s transactions received from exchange %s", StrUtil::fmtUInt64(_tcnt_map[curTrans->exchg()]).c_str(), curTrans->exchg());
+				pipe_writer_log(_sink, LL_INFO, "{} transactions received from exchange {}", _tcnt_map[curTrans->exchg()], curTrans->exchg());
 			}
 		} while (false);
 
@@ -608,7 +621,7 @@ WtDataWriter::OrdQueBlockPair* WtDataWriter::getOrdQueBlock(WTSContractInfo* ct,
 			if (!bAutoCreate)
 				return NULL;
 
-			_sink->outputWriterLog(LL_INFO, "Data file %s not exists, initializing...", path.c_str());
+			pipe_writer_log(_sink, LL_INFO, "Data file {} not exists, initializing...", path.c_str());
 
 			uint64_t uSize = sizeof(RTDayBlockHeader) + sizeof(WTSOrdQueStruct) * TICK_SIZE_STEP;
 
@@ -623,7 +636,7 @@ WtDataWriter::OrdQueBlockPair* WtDataWriter::getOrdQueBlock(WTSContractInfo* ct,
 		pBlock->_file.reset(new BoostMappingFile);
 		if (!pBlock->_file->map(path.c_str()))
 		{
-			_sink->outputWriterLog(LL_INFO, "Mapping file %s failed", path.c_str());
+			pipe_writer_log(_sink, LL_INFO, "Mapping file {} failed", path.c_str());
 			pBlock->_file.reset();
 			return NULL;
 		}
@@ -631,7 +644,7 @@ WtDataWriter::OrdQueBlockPair* WtDataWriter::getOrdQueBlock(WTSContractInfo* ct,
 
 		if (!isNew &&  pBlock->_block->_date != curDate)
 		{
-			_sink->outputWriterLog(LL_INFO, "date[%u] of orderqueue cache block[%s] is different from current date[%u], reinitializing...", pBlock->_block->_date, path.c_str(), curDate);
+			pipe_writer_log(_sink, LL_INFO, "date[{}] of orderqueue cache block[{}] is different from current date[{}], reinitializing...", pBlock->_block->_date, path.c_str(), curDate);
 			pBlock->_block->_size = 0;
 			pBlock->_block->_date = curDate;
 
@@ -662,7 +675,7 @@ WtDataWriter::OrdQueBlockPair* WtDataWriter::getOrdQueBlock(WTSContractInfo* ct,
 					pBlock->_block->_capacity = oldCnt;
 					pBlock->_block->_size = oldCnt;
 
-					_sink->outputWriterLog(LL_WARN, "Oderqueue cache file of %s on date %u repaired", ct->getCode(), curDate);
+					pipe_writer_log(_sink, LL_WARN, "Oderqueue cache file of {} on date {} repaired", ct->getCode(), curDate);
 				}
 
 			} while (false);
@@ -701,7 +714,7 @@ WtDataWriter::OrdDtlBlockPair* WtDataWriter::getOrdDtlBlock(WTSContractInfo* ct,
 			if (!bAutoCreate)
 				return NULL;
 
-			_sink->outputWriterLog(LL_INFO, "Data file %s not exists, initializing...", path.c_str());
+			pipe_writer_log(_sink, LL_INFO, "Data file {} not exists, initializing...", path.c_str());
 
 			uint64_t uSize = sizeof(RTDayBlockHeader) + sizeof(WTSOrdDtlStruct) * TICK_SIZE_STEP;
 
@@ -716,7 +729,7 @@ WtDataWriter::OrdDtlBlockPair* WtDataWriter::getOrdDtlBlock(WTSContractInfo* ct,
 		pBlock->_file.reset(new BoostMappingFile);
 		if (!pBlock->_file->map(path.c_str()))
 		{
-			_sink->outputWriterLog(LL_INFO, "Mapping file %s failed", path.c_str());
+			pipe_writer_log(_sink, LL_INFO, "Mapping file {} failed", path.c_str());
 			pBlock->_file.reset();
 			return NULL;
 		}
@@ -724,7 +737,7 @@ WtDataWriter::OrdDtlBlockPair* WtDataWriter::getOrdDtlBlock(WTSContractInfo* ct,
 
 		if (!isNew &&  pBlock->_block->_date != curDate)
 		{
-			_sink->outputWriterLog(LL_INFO, "date[%u] of orderdetail cache block[%s] is different from current date[%u], reinitializing...", pBlock->_block->_date, path.c_str(), curDate);
+			pipe_writer_log(_sink, LL_INFO, "date[{}] of orderdetail cache block[{}] is different from current date[{}], reinitializing...", pBlock->_block->_date, path.c_str(), curDate);
 			pBlock->_block->_size = 0;
 			pBlock->_block->_date = curDate;
 
@@ -755,7 +768,7 @@ WtDataWriter::OrdDtlBlockPair* WtDataWriter::getOrdDtlBlock(WTSContractInfo* ct,
 					pBlock->_block->_capacity = oldCnt;
 					pBlock->_block->_size = oldCnt;
 
-					_sink->outputWriterLog(LL_WARN, "Orderdetail cache file of %s on date %u repaired", ct->getCode(), curDate);
+					pipe_writer_log(_sink, LL_WARN, "Orderdetail cache file of {} on date {} repaired", ct->getCode(), curDate);
 				}
 
 				break;
@@ -795,7 +808,7 @@ WtDataWriter::TransBlockPair* WtDataWriter::getTransBlock(WTSContractInfo* ct, u
 			if (!bAutoCreate)
 				return NULL;
 
-			_sink->outputWriterLog(LL_INFO, "Data file %s not exists, initializing...", path.c_str());
+			pipe_writer_log(_sink, LL_INFO, "Data file {} not exists, initializing...", path.c_str());
 
 			uint64_t uSize = sizeof(RTDayBlockHeader) + sizeof(WTSTransStruct) * TICK_SIZE_STEP;
 
@@ -810,7 +823,7 @@ WtDataWriter::TransBlockPair* WtDataWriter::getTransBlock(WTSContractInfo* ct, u
 		pBlock->_file.reset(new BoostMappingFile);
 		if (!pBlock->_file->map(path.c_str()))
 		{
-			_sink->outputWriterLog(LL_INFO, "Mapping file %s failed", path.c_str());
+			pipe_writer_log(_sink, LL_INFO, "Mapping file {} failed", path.c_str());
 			pBlock->_file.reset();
 			return NULL;
 		}
@@ -818,7 +831,7 @@ WtDataWriter::TransBlockPair* WtDataWriter::getTransBlock(WTSContractInfo* ct, u
 
 		if (!isNew &&  pBlock->_block->_date != curDate)
 		{
-			_sink->outputWriterLog(LL_INFO, "date[%u] of transaction cache block[%s] is different from current date[%u], reinitializing...", pBlock->_block->_date, path.c_str(), curDate);
+			pipe_writer_log(_sink, LL_INFO, "date[{}] of transaction cache block[{}] is different from current date[{}], reinitializing...", pBlock->_block->_date, path.c_str(), curDate);
 			pBlock->_block->_size = 0;
 			pBlock->_block->_date = curDate;
 
@@ -849,7 +862,7 @@ WtDataWriter::TransBlockPair* WtDataWriter::getTransBlock(WTSContractInfo* ct, u
 					pBlock->_block->_capacity = oldCnt;
 					pBlock->_block->_size = oldCnt;
 
-					_sink->outputWriterLog(LL_WARN, "Transaction cache file of %s on date %u repaired", ct->getCode(), curDate);
+					pipe_writer_log(_sink, LL_WARN, "Transaction cache file of {} on date {} repaired", ct->getCode(), curDate);
 				}
 
 				break;
@@ -898,7 +911,7 @@ WtDataWriter::TickBlockPair* WtDataWriter::getTickBlock(WTSContractInfo* ct, uin
 			if (!bAutoCreate)
 				return NULL;
 
-			_sink->outputWriterLog(LL_INFO, "Data file %s not exists, initializing...", path.c_str());
+			pipe_writer_log(_sink, LL_INFO, "Data file {} not exists, initializing...", path.c_str());
 
 			uint64_t uSize = sizeof(RTTickBlock) + sizeof(WTSTickStruct) * TICK_SIZE_STEP;
 			BoostFile bf;
@@ -912,7 +925,7 @@ WtDataWriter::TickBlockPair* WtDataWriter::getTickBlock(WTSContractInfo* ct, uin
 		pBlock->_file.reset(new BoostMappingFile);
 		if(!pBlock->_file->map(path.c_str()))
 		{
-			_sink->outputWriterLog(LL_INFO, "Mapping file %s failed", path.c_str());
+			pipe_writer_log(_sink, LL_INFO, "Mapping file {} failed", path.c_str());
 			pBlock->_file.reset();
 			return NULL;
 		}
@@ -920,7 +933,7 @@ WtDataWriter::TickBlockPair* WtDataWriter::getTickBlock(WTSContractInfo* ct, uin
 
 		if (!isNew &&  pBlock->_block->_date != curDate)
 		{
-			_sink->outputWriterLog(LL_INFO, "date[%u] of tick cache block[%s] is different from current date[%u], reinitializing...", pBlock->_block->_date, path.c_str(), curDate);
+			pipe_writer_log(_sink, LL_INFO, "date[{}] of tick cache block[{}] is different from current date[{}], reinitializing...", pBlock->_block->_date, path.c_str(), curDate);
 			pBlock->_block->_size = 0;
 			pBlock->_block->_date = curDate;
 
@@ -951,7 +964,7 @@ WtDataWriter::TickBlockPair* WtDataWriter::getTickBlock(WTSContractInfo* ct, uin
 					pBlock->_block->_capacity = oldCnt;
 					pBlock->_block->_size = oldCnt;
 
-					_sink->outputWriterLog(LL_WARN, "Tick cache file of %s on date %u repaired", ct->getCode(), curDate);
+					pipe_writer_log(_sink, LL_WARN, "Tick cache file of {} on date {} repaired", ct->getCode(), curDate);
 				}
 				
 				break;
@@ -1186,7 +1199,7 @@ WtDataWriter::KBlockPair* WtDataWriter::getKlineBlock(WTSContractInfo* ct, WTSKl
 			if (!bAutoCreate)
 				return NULL;
 
-			_sink->outputWriterLog(LL_INFO, "Data file %s not exists, initializing...", path.c_str());
+			pipe_writer_log(_sink, LL_INFO, "Data file {} not exists, initializing...", path.c_str());
 
 			uint64_t uSize = sizeof(RTKlineBlock) + sizeof(WTSBarStruct) * KLINE_SIZE_STEP;
 			BoostFile bf;
@@ -1204,7 +1217,7 @@ WtDataWriter::KBlockPair* WtDataWriter::getKlineBlock(WTSContractInfo* ct, WTSKl
 		}
 		else
 		{
-			_sink->outputWriterLog(LL_ERROR, "Mapping file %s failed", path.c_str());
+			pipe_writer_log(_sink, LL_ERROR, "Mapping file {} failed", path.c_str());
 			pBlock->_file.reset();
 			return NULL;
 		}
@@ -1257,7 +1270,7 @@ bool WtDataWriter::updateCache(WTSContractInfo* ct, WTSTickData* curTick, bool b
 {
 	if (curTick == NULL || _tick_cache_block == NULL)
 	{
-		_sink->outputWriterLog(LL_ERROR, "Tick cache data not initialized");
+		pipe_writer_log(_sink, LL_ERROR, "Tick cache data not initialized");
 		return false;
 	}
 
@@ -1272,7 +1285,7 @@ bool WtDataWriter::updateCache(WTSContractInfo* ct, WTSTickData* curTick, bool b
 		if(_tick_cache_block->_size >= _tick_cache_block->_capacity)
 		{
 			_tick_cache_block = (RTTickCache*)resizeRTBlock<RTTickCache, TickCacheItem>(_tick_cache_file, _tick_cache_block->_capacity + CACHE_SIZE_STEP);
-			_sink->outputWriterLog(LL_INFO, "Tick Cache resized to %u items", _tick_cache_block->_capacity);
+			pipe_writer_log(_sink, LL_INFO, "Tick Cache resized to {} items", _tick_cache_block->_capacity);
 		}
 	}
 	else
@@ -1284,7 +1297,7 @@ bool WtDataWriter::updateCache(WTSContractInfo* ct, WTSTickData* curTick, bool b
 	TickCacheItem& item = _tick_cache_block->_ticks[idx];
 	if (curTick->tradingdate() < item._date)
 	{
-		_sink->outputWriterLog(LL_INFO, "Tradingday[%u] of %s is less than cached tradingday[%u]", curTick->tradingdate(), curTick->code(), item._date);
+		pipe_writer_log(_sink, LL_INFO, "Tradingday[{}] of {} is less than cached tradingday[{}]", curTick->tradingdate(), curTick->code(), item._date);
 		return false;
 	}
 
@@ -1308,7 +1321,7 @@ bool WtDataWriter::updateCache(WTSContractInfo* ct, WTSTickData* curTick, bool b
 
 		//	newTick.trading_date, curTick->exchg(), curTick->code(), curTick->volume(),
 		//	curTick->turnover(), curTick->openinterest(), curTick->additional());
-		_sink->outputWriterLog(LL_INFO, "First tick of new tradingday %u,%s.%s,%f,%u,%f,%u,%d", 
+		pipe_writer_log(_sink, LL_INFO, "First tick of new tradingday {},{}.{},{},{},{},{},{}", 
 			newTick.trading_date, curTick->exchg(), curTick->code(), curTick->price(), curTick->volume(),
 			curTick->turnover(), curTick->openinterest(), curTick->additional());
 	}
@@ -1320,12 +1333,12 @@ bool WtDataWriter::updateCache(WTSContractInfo* ct, WTSTickData* curTick, bool b
 		uint32_t tdate = sInfo->getOffsetDate(curTick->actiondate(), curTick->actiontime() / 100000);
 		if (tdate > curTick->tradingdate())
 		{
-			_sink->outputWriterLog(LL_ERROR, "Last tick of %s.%s with time %u.%u has an exception, abandoned", curTick->exchg(), curTick->code(), curTick->actiondate(), curTick->actiontime());
+			pipe_writer_log(_sink, LL_ERROR, "Last tick of {}.{} with time {}.{} has an exception, abandoned", curTick->exchg(), curTick->code(), curTick->actiondate(), curTick->actiontime());
 			return false;
 		}
 		else if (curTick->totalvolume() < item._tick.total_volume)
 		{
-			_sink->outputWriterLog(LL_ERROR, "Last tick of %s.%s with time %u.%u, volume %u is less than cached volume %u, abandoned", 
+			pipe_writer_log(_sink, LL_ERROR, "Last tick of {}.{} with time {}.{}, volume {} is less than cached volume {}, abandoned", 
 				curTick->exchg(), curTick->code(), curTick->actiondate(), curTick->actiontime(), curTick->totalvolume(), item._tick.total_volume);
 			return false;
 		}
@@ -1417,7 +1430,7 @@ void WtDataWriter::check_loop()
 			TickBlockPair* tBlk = (TickBlockPair*)it->second;
 			if (tBlk->_lasttime != 0 && (now - tBlk->_lasttime > expire_secs))
 			{
-				_sink->outputWriterLog(LL_INFO, "tick cache %s mapping expired, automatically closed", key.c_str());
+				pipe_writer_log(_sink, LL_INFO, "tick cache {} mapping expired, automatically closed", key.c_str());
 				releaseBlock<TickBlockPair>(tBlk);
 			}
 		}
@@ -1428,7 +1441,7 @@ void WtDataWriter::check_loop()
 			TransBlockPair* tBlk = (TransBlockPair*)it->second;
 			if (tBlk->_lasttime != 0 && (now - tBlk->_lasttime > expire_secs))
 			{
-				_sink->outputWriterLog(LL_INFO, "trans cache %s mapping expired, automatically closed", key.c_str());
+				pipe_writer_log(_sink, LL_INFO, "trans cache {} mapping expired, automatically closed", key.c_str());
 				releaseBlock<TransBlockPair>(tBlk);
 			}
 		}
@@ -1439,7 +1452,7 @@ void WtDataWriter::check_loop()
 			OrdDtlBlockPair* tBlk = (OrdDtlBlockPair*)it->second;
 			if (tBlk->_lasttime != 0 && (now - tBlk->_lasttime > expire_secs))
 			{
-				_sink->outputWriterLog(LL_INFO, "order cache %s mapping expired, automatically closed", key.c_str());
+				pipe_writer_log(_sink, LL_INFO, "order cache {} mapping expired, automatically closed", key.c_str());
 				releaseBlock<OrdDtlBlockPair>(tBlk);
 			}
 		}
@@ -1450,7 +1463,7 @@ void WtDataWriter::check_loop()
 			OrdQueBlockPair* tBlk = (OrdQueBlockPair*)v.second;
 			if (tBlk->_lasttime != 0 && (now - tBlk->_lasttime > expire_secs))
 			{
-				_sink->outputWriterLog(LL_INFO, "queue cache %s mapping expired, automatically closed", key.c_str());
+				pipe_writer_log(_sink, LL_INFO, "queue cache {} mapping expired, automatically closed", key.c_str());
 				releaseBlock<OrdQueBlockPair>(tBlk);
 			}
 		}
@@ -1461,7 +1474,7 @@ void WtDataWriter::check_loop()
 			KBlockPair* kBlk = (KBlockPair*)it->second;
 			if (kBlk->_lasttime != 0 && (now - kBlk->_lasttime > expire_secs))
 			{
-				_sink->outputWriterLog(LL_INFO, "min1 cache %s mapping expired, automatically closed", key.c_str());
+				pipe_writer_log(_sink, LL_INFO, "min1 cache {} mapping expired, automatically closed", key.c_str());
 				releaseBlock<KBlockPair>(kBlk);
 			}
 		}
@@ -1472,7 +1485,7 @@ void WtDataWriter::check_loop()
 			KBlockPair* kBlk = (KBlockPair*)it->second;
 			if (kBlk->_lasttime != 0 && (now - kBlk->_lasttime > expire_secs))
 			{
-				_sink->outputWriterLog(LL_INFO, "min5 cache %s mapping expired, automatically closed", key.c_str());
+				pipe_writer_log(_sink, LL_INFO, "min5 cache {} mapping expired, automatically closed", key.c_str());
 				releaseBlock<KBlockPair>(kBlk);
 			}
 		}
@@ -1518,7 +1531,7 @@ uint32_t WtDataWriter::dump_hisdata_via_dumper(WTSContractInfo* ct)
 			bool bSucc = dumper->dumpHisBars(key.c_str(), "d1", &bsDay, 1);
 			if (!bSucc)
 			{
-				_sink->outputWriterLog(LL_ERROR, "Closing Task of day bar of %s failed via extended dumper %s", ct->getFullCode(), id);
+				pipe_writer_log(_sink, LL_ERROR, "Closing Task of day bar of {} failed via extended dumper {}", ct->getFullCode(), id);
 			}
 		}
 
@@ -1531,7 +1544,7 @@ uint32_t WtDataWriter::dump_hisdata_via_dumper(WTSContractInfo* ct)
 	if (kBlkPair != NULL && kBlkPair->_block->_size > 0)
 	{
 		uint32_t size = kBlkPair->_block->_size;
-		_sink->outputWriterLog(LL_INFO, "Transfering min1 bars of %s...", ct->getFullCode());
+		pipe_writer_log(_sink, LL_INFO, "Transfering min1 bars of {}...", ct->getFullCode());
 		StdUniqueLock lock(kBlkPair->_mutex);
 
 		for (auto& item : _dumpers)
@@ -1544,7 +1557,7 @@ uint32_t WtDataWriter::dump_hisdata_via_dumper(WTSContractInfo* ct)
 			bool bSucc = dumper->dumpHisBars(key.c_str(), "m1", kBlkPair->_block->_bars, size);
 			if (!bSucc)
 			{
-				_sink->outputWriterLog(LL_ERROR, "Closing Task of m1 bar of %s failed via extended dumper %s", ct->getFullCode(), id);
+				pipe_writer_log(_sink, LL_ERROR, "Closing Task of m1 bar of {} failed via extended dumper {}", ct->getFullCode(), id);
 			}
 		}
 
@@ -1560,7 +1573,7 @@ uint32_t WtDataWriter::dump_hisdata_via_dumper(WTSContractInfo* ct)
 	if (kBlkPair != NULL && kBlkPair->_block->_size > 0)
 	{
 		uint32_t size = kBlkPair->_block->_size;
-		_sink->outputWriterLog(LL_INFO, "Transfering min5 bars of %s...", ct->getFullCode());
+		pipe_writer_log(_sink, LL_INFO, "Transfering min5 bars of {}...", ct->getFullCode());
 		StdUniqueLock lock(kBlkPair->_mutex);
 
 		for (auto& item : _dumpers)
@@ -1573,7 +1586,7 @@ uint32_t WtDataWriter::dump_hisdata_via_dumper(WTSContractInfo* ct)
 			bool bSucc = dumper->dumpHisBars(key.c_str(), "m5", kBlkPair->_block->_bars, size);
 			if (!bSucc)
 			{
-				_sink->outputWriterLog(LL_ERROR, "Closing Task of m5 bar of %s failed via extended dumper %s", ct->getFullCode(), id);
+				pipe_writer_log(_sink, LL_ERROR, "Closing Task of m5 bar of {} failed via extended dumper {}", ct->getFullCode(), id);
 			}
 		}
 
@@ -1624,7 +1637,7 @@ bool WtDataWriter::dump_day_data(WTSContractInfo* ct, WTSBarStruct* newBar)
 			HisKlineBlock* kBlock = (HisKlineBlock*)content.data();
 			if (strcmp(kBlock->_blk_flag, BLK_FLAG) != 0)
 			{
-				_sink->outputWriterLog(LL_ERROR, "File checking of history data file %s failed, clear and rebuild...", filename.c_str());
+				pipe_writer_log(_sink, LL_ERROR, "File checking of history data file {} failed, clear and rebuild...", filename.c_str());
 				f.truncate_file(0);
 				BlockHeader header;
 				strcpy(header._blk_flag, BLK_FLAG);
@@ -1728,7 +1741,7 @@ bool WtDataWriter::dump_day_data(WTSContractInfo* ct, WTSBarStruct* newBar)
 	}
 	else
 	{
-		_sink->outputWriterLog(LL_ERROR, "ClosingTask of day bar failed: openning history data file %s failed", filename.c_str());
+		pipe_writer_log(_sink, LL_ERROR, "ClosingTask of day bar failed: openning history data file {} failed", filename.c_str());
 		return false;
 	}
 }
@@ -1777,7 +1790,7 @@ uint32_t WtDataWriter::dump_hisdata_to_file(WTSContractInfo* ct)
 		if (kBlkPair != NULL && kBlkPair->_block->_size > 0)
 		{
 			uint32_t size = kBlkPair->_block->_size;
-			_sink->outputWriterLog(LL_INFO, "Transfering min1 bars of %s...", ct->getFullCode());
+			pipe_writer_log(_sink, LL_INFO, "Transfering min1 bars of {}...", ct->getFullCode());
 			StdUniqueLock lock(kBlkPair->_mutex);
 
 			std::stringstream ss;
@@ -1791,7 +1804,7 @@ uint32_t WtDataWriter::dump_hisdata_to_file(WTSContractInfo* ct)
 			if (!BoostFile::exists(filename.c_str()))
 				bNew = true;
 
-			_sink->outputWriterLog(LL_INFO, "Openning data storage faile: %s", filename.c_str());
+			pipe_writer_log(_sink, LL_INFO, "Openning data storage faile: {}", filename.c_str());
 
 			BoostFile f;
 			if (f.create_or_open_file(filename.c_str()))
@@ -1855,7 +1868,7 @@ uint32_t WtDataWriter::dump_hisdata_to_file(WTSContractInfo* ct)
 			}
 			else
 			{
-				_sink->outputWriterLog(LL_ERROR, "ClosingTask of min1 bar failed: openning history data file %s failed", filename.c_str());
+				pipe_writer_log(_sink, LL_ERROR, "ClosingTask of min1 bar failed: openning history data file {} failed", filename.c_str());
 			}
 		}
 
@@ -1870,7 +1883,7 @@ uint32_t WtDataWriter::dump_hisdata_to_file(WTSContractInfo* ct)
 		if (kBlkPair != NULL && kBlkPair->_block->_size > 0)
 		{
 			uint32_t size = kBlkPair->_block->_size;
-			_sink->outputWriterLog(LL_INFO, "Transfering min5 bar of %s...", ct->getFullCode());
+			pipe_writer_log(_sink, LL_INFO, "Transfering min5 bar of {}...", ct->getFullCode());
 			StdUniqueLock lock(kBlkPair->_mutex);
 
 			std::stringstream ss;
@@ -1884,7 +1897,7 @@ uint32_t WtDataWriter::dump_hisdata_to_file(WTSContractInfo* ct)
 			if (!BoostFile::exists(filename.c_str()))
 				bNew = true;
 
-			_sink->outputWriterLog(LL_INFO, "Openning data storage file: %s", filename.c_str());
+			pipe_writer_log(_sink, LL_INFO, "Openning data storage file: {}", filename.c_str());
 
 			BoostFile f;
 			if (f.create_or_open_file(filename.c_str()))
@@ -1946,7 +1959,7 @@ uint32_t WtDataWriter::dump_hisdata_to_file(WTSContractInfo* ct)
 			}
 			else
 			{
-				_sink->outputWriterLog(LL_ERROR, "ClosingTask of min5 bar failed: openning history data file %s failed", filename.c_str());
+				pipe_writer_log(_sink, LL_ERROR, "ClosingTask of min5 bar failed: openning history data file {} failed", filename.c_str());
 			}
 		}
 
@@ -1977,7 +1990,7 @@ void WtDataWriter::proc_loop()
 		}
 		catch(std::exception& e)
 		{
-			_sink->outputWriterLog(LL_ERROR, e.what());
+			pipe_writer_log(_sink, LL_ERROR, e.what());
 			continue;
 		}
 
@@ -2021,7 +2034,7 @@ void WtDataWriter::proc_loop()
 				}
 				else
 				{
-					_sink->outputWriterLog(LL_WARN, "%s[%s] expired, cache will be cleared", ay[1].c_str(), ay[0].c_str());
+					pipe_writer_log(_sink, LL_WARN, "{}[{}] expired, cache will be cleared", ay[1].c_str(), ay[0].c_str());
 
 					//删除已经过期代码的实时tick文件
 					std::string path = StrUtil::printf("%srt/ticks/%s/%s.dmb", _base_dir.c_str(), ay[0].c_str(), ay[1].c_str());
@@ -2078,7 +2091,7 @@ void WtDataWriter::proc_loop()
 				_tick_cache_file->map(filename.c_str());
 				_tick_cache_block = (RTTickCache*)_tick_cache_file->addr();
 				
-				_sink->outputWriterLog(LL_INFO, "%u expired cache cleared totally", diff);
+				pipe_writer_log(_sink, LL_INFO, "{} expired cache cleared totally", diff);
 			}
 
 			//将当日的日线快照落地到一个快照文件
@@ -2102,7 +2115,7 @@ void WtDataWriter::proc_loop()
 			{
 				if(try_count >= 5)
 				{
-					_sink->outputWriterLog(LL_ERROR, "Too many trys to clear rt cache files，skip");
+					pipe_writer_log(_sink, LL_ERROR, "Too many trys to clear rt cache files，skip");
 					break;
 				}
 
@@ -2125,7 +2138,7 @@ void WtDataWriter::proc_loop()
 				}
 				catch (...)
 				{
-					_sink->outputWriterLog(LL_ERROR, "Error occured while clearing rt cache files，retry in 300s");
+					pipe_writer_log(_sink, LL_ERROR, "Error occured while clearing rt cache files，retry in 300s");
 					std::this_thread::sleep_for(std::chrono::seconds(300));
 					continue;
 				}
@@ -2143,7 +2156,7 @@ void WtDataWriter::proc_loop()
 			iniHelper.load(filename.c_str());
 			iniHelper.writeInt("markers", sid.c_str(), curDate);
 			iniHelper.save();
-			_sink->outputWriterLog(LL_INFO, "ClosingTask mark of Trading session [%s] updated: %u", sid.c_str(), curDate);
+			pipe_writer_log(_sink, LL_INFO, "ClosingTask mark of Trading session [{}] updated: {}", sid.c_str(), curDate);
 		}
 
 		auto pos = fullcode.find(".");
@@ -2167,7 +2180,7 @@ void WtDataWriter::proc_loop()
 
 				if (tBlkPair->_block->_size > 0)
 				{
-					_sink->outputWriterLog(LL_INFO, "Transfering tick data of %s...", fullcode.c_str());
+					pipe_writer_log(_sink, LL_INFO, "Transfering tick data of {}...", fullcode.c_str());
 					StdUniqueLock lock(tBlkPair->_mutex);
 
 					for (auto& item : _dumpers)
@@ -2177,7 +2190,7 @@ void WtDataWriter::proc_loop()
 						bool bSucc = dumper->dumpHisTicks(fullcode.c_str(), tBlkPair->_block->_date, tBlkPair->_block->_ticks, tBlkPair->_block->_size);
 						if (!bSucc)
 						{
-							_sink->outputWriterLog(LL_ERROR, "ClosingTask of tick of %s on %u via extended dumper %s failed", fullcode.c_str(), tBlkPair->_block->_date, id);
+							pipe_writer_log(_sink, LL_ERROR, "ClosingTask of tick of {} on {} via extended dumper {} failed", fullcode.c_str(), tBlkPair->_block->_date, id);
 						}
 					}
 
@@ -2186,7 +2199,7 @@ void WtDataWriter::proc_loop()
 						std::stringstream ss;
 						ss << _base_dir << "his/ticks/" << ct->getExchg() << "/" << tBlkPair->_block->_date << "/";
 						std::string path = ss.str();
-						_sink->outputWriterLog(LL_INFO, path.c_str());
+						pipe_writer_log(_sink, LL_INFO, path.c_str());
 						BoostFile::create_directories(ss.str().c_str());
 						std::string filename = StrUtil::printf("%s%s.dsb", path.c_str(), code.c_str());
 
@@ -2194,7 +2207,7 @@ void WtDataWriter::proc_loop()
 						if (!BoostFile::exists(filename.c_str()))
 							bNew = true;
 
-						_sink->outputWriterLog(LL_INFO, "Openning data storage file: %s", filename.c_str());
+						pipe_writer_log(_sink, LL_INFO, "Openning data storage file: {}", filename.c_str());
 						BoostFile f;
 						if (f.create_new_file(filename.c_str()))
 						{
@@ -2219,7 +2232,7 @@ void WtDataWriter::proc_loop()
 						}
 						else
 						{
-							_sink->outputWriterLog(LL_ERROR, "ClosingTask of tick failed: openning history data file %s failed", filename.c_str());
+							pipe_writer_log(_sink, LL_ERROR, "ClosingTask of tick failed: openning history data file {} failed", filename.c_str());
 						}
 					}
 				}
@@ -2235,7 +2248,7 @@ void WtDataWriter::proc_loop()
 			TransBlockPair *tBlkPair = getTransBlock(ct, uDate, false);
 			if (tBlkPair != NULL && tBlkPair->_block->_size > 0)
 			{
-				_sink->outputWriterLog(LL_INFO, "Transfering transaction data of %s...", fullcode.c_str());
+				pipe_writer_log(_sink, LL_INFO, "Transfering transaction data of {}...", fullcode.c_str());
 				StdUniqueLock lock(tBlkPair->_mutex);
 
 				for (auto& item : _dumpers)
@@ -2245,7 +2258,7 @@ void WtDataWriter::proc_loop()
 					bool bSucc = dumper->dumpHisTrans(fullcode.c_str(), tBlkPair->_block->_date, tBlkPair->_block->_trans, tBlkPair->_block->_size);
 					if (!bSucc)
 					{
-						_sink->outputWriterLog(LL_ERROR, "ClosingTask of transaction of %s on %u via extended dumper %s failed", fullcode.c_str(), tBlkPair->_block->_date, id);
+						pipe_writer_log(_sink, LL_ERROR, "ClosingTask of transaction of {} on {} via extended dumper {} failed", fullcode.c_str(), tBlkPair->_block->_date, id);
 					}
 				}
 
@@ -2253,7 +2266,7 @@ void WtDataWriter::proc_loop()
 					std::stringstream ss;
 					ss << _base_dir << "his/trans/" << ct->getExchg() << "/" << tBlkPair->_block->_date << "/";
 					std::string path = ss.str();
-					_sink->outputWriterLog(LL_INFO, path.c_str());
+					pipe_writer_log(_sink, LL_INFO, path.c_str());
 					BoostFile::create_directories(ss.str().c_str());
 					std::string filename = StrUtil::printf("%s%s.dsb", path.c_str(), code.c_str());
 
@@ -2261,7 +2274,7 @@ void WtDataWriter::proc_loop()
 					if (!BoostFile::exists(filename.c_str()))
 						bNew = true;
 
-					_sink->outputWriterLog(LL_INFO, "Openning data storage file: %s", filename.c_str());
+					pipe_writer_log(_sink, LL_INFO, "Openning data storage file: {}", filename.c_str());
 					BoostFile f;
 					if (f.create_new_file(filename.c_str()))
 					{
@@ -2286,7 +2299,7 @@ void WtDataWriter::proc_loop()
 					}
 					else
 					{
-						_sink->outputWriterLog(LL_ERROR, "ClosingTask of transaction failed: openning history data file %s failed", filename.c_str());
+						pipe_writer_log(_sink, LL_ERROR, "ClosingTask of transaction failed: openning history data file {} failed", filename.c_str());
 					}
 				}
 			}
@@ -2301,7 +2314,7 @@ void WtDataWriter::proc_loop()
 			OrdDtlBlockPair *tBlkPair = getOrdDtlBlock(ct, uDate, false);
 			if (tBlkPair != NULL && tBlkPair->_block->_size > 0)
 			{
-				_sink->outputWriterLog(LL_INFO, "Transfering order detail data of %s...", fullcode.c_str());
+				pipe_writer_log(_sink, LL_INFO, "Transfering order detail data of {}...", fullcode.c_str());
 				StdUniqueLock lock(tBlkPair->_mutex);
 
 				for (auto& item : _dumpers)
@@ -2311,7 +2324,7 @@ void WtDataWriter::proc_loop()
 					bool bSucc = dumper->dumpHisOrdDtl(fullcode.c_str(), tBlkPair->_block->_date, tBlkPair->_block->_details, tBlkPair->_block->_size);
 					if (!bSucc)
 					{
-						_sink->outputWriterLog(LL_ERROR, "ClosingTask of order details of %s on %u via extended dumper %s failed", fullcode.c_str(), tBlkPair->_block->_date, id);
+						pipe_writer_log(_sink, LL_ERROR, "ClosingTask of order details of {} on {} via extended dumper {} failed", fullcode.c_str(), tBlkPair->_block->_date, id);
 					}
 				}
 
@@ -2319,7 +2332,7 @@ void WtDataWriter::proc_loop()
 					std::stringstream ss;
 					ss << _base_dir << "his/orders/" << ct->getExchg() << "/" << tBlkPair->_block->_date << "/";
 					std::string path = ss.str();
-					_sink->outputWriterLog(LL_INFO, path.c_str());
+					pipe_writer_log(_sink, LL_INFO, path.c_str());
 					BoostFile::create_directories(ss.str().c_str());
 					std::string filename = StrUtil::printf("%s%s.dsb", path.c_str(), code.c_str());
 
@@ -2327,7 +2340,7 @@ void WtDataWriter::proc_loop()
 					if (!BoostFile::exists(filename.c_str()))
 						bNew = true;
 
-					_sink->outputWriterLog(LL_INFO, "Openning data storage file: %s", filename.c_str());
+					pipe_writer_log(_sink, LL_INFO, "Openning data storage file: {}", filename.c_str());
 					BoostFile f;
 					if (f.create_new_file(filename.c_str()))
 					{
@@ -2352,7 +2365,7 @@ void WtDataWriter::proc_loop()
 					}
 					else
 					{
-						_sink->outputWriterLog(LL_ERROR, "ClosingTask of order detail failed: openning history data file %s failed", filename.c_str());
+						pipe_writer_log(_sink, LL_ERROR, "ClosingTask of order detail failed: openning history data file {} failed", filename.c_str());
 					}
 				}
 			}
@@ -2367,7 +2380,7 @@ void WtDataWriter::proc_loop()
 			OrdQueBlockPair *tBlkPair = getOrdQueBlock(ct, uDate, false);
 			if (tBlkPair != NULL && tBlkPair->_block->_size > 0)
 			{
-				_sink->outputWriterLog(LL_INFO, "Transfering order queue data of %s...", fullcode.c_str());
+				pipe_writer_log(_sink, LL_INFO, "Transfering order queue data of {}...", fullcode.c_str());
 				StdUniqueLock lock(tBlkPair->_mutex);
 
 				for (auto& item : _dumpers)
@@ -2377,7 +2390,7 @@ void WtDataWriter::proc_loop()
 					bool bSucc = dumper->dumpHisOrdQue(fullcode.c_str(), tBlkPair->_block->_date, tBlkPair->_block->_queues, tBlkPair->_block->_size);
 					if (!bSucc)
 					{
-						_sink->outputWriterLog(LL_ERROR, "ClosingTask of order queues of %s on %u via extended dumper %s failed", fullcode.c_str(), tBlkPair->_block->_date, id);
+						pipe_writer_log(_sink, LL_ERROR, "ClosingTask of order queues of {} on {} via extended dumper {} failed", fullcode.c_str(), tBlkPair->_block->_date, id);
 					}
 				}
 
@@ -2385,7 +2398,7 @@ void WtDataWriter::proc_loop()
 					std::stringstream ss;
 					ss << _base_dir << "his/queue/" << ct->getExchg() << "/" << tBlkPair->_block->_date << "/";
 					std::string path = ss.str();
-					_sink->outputWriterLog(LL_INFO, path.c_str());
+					pipe_writer_log(_sink, LL_INFO, path.c_str());
 					BoostFile::create_directories(ss.str().c_str());
 					std::string filename = StrUtil::printf("%s%s.dsb", path.c_str(), code.c_str());
 
@@ -2393,7 +2406,7 @@ void WtDataWriter::proc_loop()
 					if (!BoostFile::exists(filename.c_str()))
 						bNew = true;
 
-					_sink->outputWriterLog(LL_INFO, "Openning data storage file: %s", filename.c_str());
+					pipe_writer_log(_sink, LL_INFO, "Openning data storage file: {}", filename.c_str());
 					BoostFile f;
 					if (f.create_new_file(filename.c_str()))
 					{
@@ -2418,7 +2431,7 @@ void WtDataWriter::proc_loop()
 					}
 					else
 					{
-						_sink->outputWriterLog(LL_ERROR, "ClosingTask of order queue failed: openning history data file %s failed", filename.c_str());
+						pipe_writer_log(_sink, LL_ERROR, "ClosingTask of order queue failed: openning history data file {} failed", filename.c_str());
 					}
 				}
 			}
@@ -2432,6 +2445,6 @@ void WtDataWriter::proc_loop()
 
 		count += dump_hisdata_to_file(ct);
 
-		_sink->outputWriterLog(LL_INFO, "ClosingTask of %s[%s] done, %u datas processed totally", ct->getCode(), ct->getExchg(), count);
+		pipe_writer_log(_sink, LL_INFO, "ClosingTask of {}[{}] done, {} datas processed totally", ct->getCode(), ct->getExchg(), count);
 	}
 }

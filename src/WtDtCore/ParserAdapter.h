@@ -51,7 +51,7 @@ public:
 
 	virtual void handleOrderDetail(WTSOrdDtlData* ordDetailData) override;
 
-	virtual void handleParserLog(WTSLogLevel ll, const char* format, ...) override;
+	virtual void handleParserLog(WTSLogLevel ll, const char* message) override;
 
 	virtual IBaseDataMgr* getBaseDataMgr() override;
 

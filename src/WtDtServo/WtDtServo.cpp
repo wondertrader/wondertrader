@@ -82,11 +82,8 @@ WtUInt32 get_bars_by_range(const char* stdCode, const char* period, WtUInt64 beg
 	{
 		uint32_t reaCnt = kData->size();
 
-		if (kData->get_his_count() > 0)
-			cb(kData->get_his_addr(), kData->get_his_count(), kData->get_rt_count() == 0);
-
-		if (kData->get_rt_count() > 0)
-			cb(kData->get_rt_addr(), kData->get_rt_count(), true);
+		for (std::size_t i = 0; i < kData->get_block_counts(); i++)
+			cb(kData->get_block_addr(i), kData->get_block_size(i), i == kData->get_block_counts() - 1);
 
 		kData->release();
 		return reaCnt;
@@ -129,11 +126,8 @@ WtUInt32 get_bars_by_count(const char* stdCode, const char* period, WtUInt32 cou
 	{
 		uint32_t reaCnt = kData->size();
 
-		if (kData->get_his_count() > 0)
-			cb(kData->get_his_addr(), kData->get_his_count(), kData->get_rt_count() == 0);
-
-		if (kData->get_rt_count() > 0)
-			cb(kData->get_rt_addr(), kData->get_rt_count(), true);
+		for(std::size_t i = 0; i< kData->get_block_counts(); i++)
+			cb(kData->get_block_addr(i), kData->get_block_size(i), i == kData->get_block_counts()-1);
 
 		kData->release();
 		return reaCnt;

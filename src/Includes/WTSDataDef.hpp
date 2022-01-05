@@ -230,7 +230,7 @@ protected:
 
 
 public:
-	static WTSKlineSlice* create(const char* code, WTSKlinePeriod period, uint32_t times, WTSBarStruct* bars, int32_t count)
+	static WTSKlineSlice* create(const char* code, WTSKlinePeriod period, uint32_t times, WTSBarStruct* bars = NULL, int32_t count = 0)
 	{
 		if (bars == NULL || count == 0)
 			return NULL;
@@ -239,7 +239,8 @@ public:
 		strcpy(pRet->_code, code);
 		pRet->_period = period;
 		pRet->_times = times;
-		pRet->_blocks.emplace_back(BarBlock(bars, count));
+		if(bars)
+			pRet->_blocks.emplace_back(BarBlock(bars, count));
 		pRet->_count = count;
 
 		return pRet;

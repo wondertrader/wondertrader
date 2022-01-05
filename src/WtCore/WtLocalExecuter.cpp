@@ -90,7 +90,7 @@ bool WtLocalExecuter::init(WTSVariant* params)
 		}
 	}
 
-	writeLog(fmt::format("Local executer inited, scale: {}, auto_clear: {}, thread poolsize: {}", _scale, _auto_clear, poolsize).c_str());
+	WTSLogger::log_dyn_f("executer", _name.c_str(), LL_INFO, "Local executer inited, scale: {}, auto_clear: {}, thread poolsize: {}", _scale, _auto_clear, poolsize);
 
 	return true;
 }
@@ -195,15 +195,11 @@ OrderIDs WtLocalExecuter::cancel(const char* stdCode, bool isBuy, double qty)
 	return _trader->cancel(stdCode, isBuy, qty);
 }
 
-void WtLocalExecuter::writeLog(const char* fmt, ...)
+void WtLocalExecuter::writeLog(const char* message)
 {
-	char szBuf[2048] = { 0 };
-	uint32_t length = sprintf(szBuf, "[%s]", _name.c_str());
-	strcat(szBuf, fmt);
-	va_list args;
-	va_start(args, fmt);
-	WTSLogger::vlog_dyn("executer", _name.c_str(), LL_INFO, szBuf, args);
-	va_end(args);
+	static thread_local char szBuf[2048] = { 0 };
+	fmt::format_to(szBuf, "[{}]{}", _name.c_str(), message);
+	WTSLogger::log_dyn_raw("executer", _name.c_str(), LL_INFO, szBuf);
 }
 
 WTSCommodityInfo* WtLocalExecuter::getCommodityInfo(const char* stdCode)
@@ -242,12 +238,12 @@ void WtLocalExecuter::on_position_changed(const char* stdCode, double targetPos)
 
 	if(!decimal::eq(oldVol, targetPos))
 	{
-		writeLog(fmt::format("Target position of {} changed: {} -> {}", stdCode, oldVol, targetPos).c_str());
+		WTSLogger::log_dyn_f("executer", _name.c_str(), LL_INFO, "Target position of {} changed: {} -> {}", stdCode, oldVol, targetPos);
 	}
 
 	if (_trader && !_trader->checkOrderLimits(stdCode))
 	{
-		writeLog("%s is disabled", stdCode);
+		WTSLogger::log_dyn_f("executer", _name.c_str(), LL_INFO, "{} is disabled", stdCode);
 		return;
 	}
 
@@ -269,12 +265,12 @@ void WtLocalExecuter::set_position(const faster_hashmap<std::string, double>& ta
 		_target_pos[stdCode] = newVol;
 		if(!decimal::eq(oldVol, newVol))
 		{
-			writeLog(fmt::format("Target position of {} changed: {} -> {}", stdCode, oldVol, newVol).c_str());
+			WTSLogger::log_dyn_f("executer", _name.c_str(), LL_INFO, "Target position of {} changed: {} -> {}", stdCode, oldVol, newVol);
 		}
 
 		if (_trader && !_trader->checkOrderLimits(stdCode))
 		{
-			writeLog("%s is disabled", stdCode);
+			WTSLogger::log_dyn_f("executer", _name.c_str(), LL_INFO, "{} is disabled", stdCode);
 			continue;
 		}
 
@@ -470,7 +466,7 @@ void WtLocalExecuter::on_position(const char* stdCode, bool isLong, double prevo
 	if (prevCode != cInfo._code)
 		return;
 
-	writeLog("Prev hot contract of %s.%s on %u is %s", cInfo._exchg, cInfo._product, tradingday, prevCode.c_str());
+	WTSLogger::log_dyn_f("executer", _name.c_str(), LL_INFO, "Prev hot contract of {}.{} on {} is {}", cInfo._exchg, cInfo._product, tradingday, prevCode);
 
 	std::string fullPid = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
 
@@ -479,7 +475,7 @@ void WtLocalExecuter::on_position(const char* stdCode, bool isLong, double prevo
 	auto it = _clear_excludes.find(fullPid);
 	if(it != _clear_excludes.end())
 	{
-		writeLog("Position of %s, as prev hot contract, won't be cleared for it's in exclude list", stdCode);
+		WTSLogger::log_dyn_f("executer", _name.c_str(), LL_INFO, "Position of {}, as prev hot contract, won't be cleared for it's in exclude list", stdCode);
 		return;
 	}
 
@@ -490,13 +486,13 @@ void WtLocalExecuter::on_position(const char* stdCode, bool isLong, double prevo
 		it = _clear_includes.find(fullPid);
 		if (it == _clear_includes.end())
 		{
-			writeLog("Position of %s, as prev hot contract, won't be cleared for it's not in include list", stdCode);
+			WTSLogger::log_dyn_f("executer", _name.c_str(), LL_INFO, "Position of {}, as prev hot contract, won't be cleared for it's not in include list", stdCode);
 			return;
 		}
 	}
 
 	//最后再进行自动清理
-	writeLog("Position of %s, as prev hot contract, will be cleared", stdCode);
+	WTSLogger::log_dyn_f("executer", _name.c_str(), LL_INFO, "Position of {}, as prev hot contract, will be cleared", stdCode);
 	ExecuteUnitPtr unit = getUnit(stdCode);
 	if (unit)
 	{
@@ -566,7 +562,7 @@ bool WtExecuterFactory::loadFactories(const char* path)
 
 		_factories[fInfo._fact->getName()] = fInfo;
 
-		WTSLogger::info("Executer factory %s loaded", fInfo._fact->getName());
+		WTSLogger::info_f("Executer factory {} loaded", fInfo._fact->getName());
 	}
 
 	return true;
@@ -582,7 +578,7 @@ ExecuteUnitPtr WtExecuterFactory::createExeUnit(const char* factname, const char
 	ExecuteUnit* unit = fInfo._fact->createExeUnit(unitname);
 	if(unit == NULL)
 	{
-		WTSLogger::error("Createing execution unit failed: %s.%s", factname, unitname);
+		WTSLogger::error_f("Createing execution unit failed: {}.{}", factname, unitname);
 		return ExecuteUnitPtr();
 	}
 	return ExecuteUnitPtr(new ExeUnitWrapper(unit, fInfo._fact));
@@ -605,7 +601,7 @@ ExecuteUnitPtr WtExecuterFactory::createExeUnit(const char* name)
 	ExecuteUnit* unit = fInfo._fact->createExeUnit(unitname);
 	if (unit == NULL)
 	{
-		WTSLogger::error("Createing execution unit failed: %s", name);
+		WTSLogger::error_f("Createing execution unit failed: {}", name);
 		return ExecuteUnitPtr();
 	}
 	return ExecuteUnitPtr(new ExeUnitWrapper(unit, fInfo._fact));

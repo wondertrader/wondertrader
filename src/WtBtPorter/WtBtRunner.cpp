@@ -580,7 +580,7 @@ void WtBtRunner::set_time_range(WtUInt64 stime, WtUInt64 etime)
 {
 	_replayer.set_time_range(stime, etime);
 
-	WTSLogger::info(fmt::format("Backtest time range is set to be [{},{}] mannually", stime, etime).c_str());
+	WTSLogger::info_f("Backtest time range is set to be [{},{}] mannually", stime, etime);
 }
 
 void WtBtRunner::enable_tick(bool bEnabled /* = true */)
