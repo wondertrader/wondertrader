@@ -159,9 +159,6 @@
     <ClInclude Include="..\Includes\WTSObject.hpp">
       <Filter>Objects</Filter>
     </ClInclude>
-    <ClInclude Include="..\Includes\WTSParams.hpp">
-      <Filter>Objects</Filter>
-    </ClInclude>
     <ClInclude Include="..\Includes\WTSRiskDef.hpp">
       <Filter>Objects</Filter>
     </ClInclude>
@@ -215,9 +212,6 @@
     </ClInclude>
     <ClInclude Include="ModuleHelper.hpp">
       <Filter>Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Includes\IDataStorage.h">
-      <Filter>Interfaces</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

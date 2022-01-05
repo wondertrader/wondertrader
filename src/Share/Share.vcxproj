@@ -126,7 +126,6 @@
     <ClInclude Include="..\Includes\IDataFactory.h" />
     <ClInclude Include="..\Includes\IDataManager.h" />
     <ClInclude Include="..\Includes\IDataReader.h" />
-    <ClInclude Include="..\Includes\IDataStorage.h" />
     <ClInclude Include="..\Includes\IDataWriter.h" />
     <ClInclude Include="..\Includes\IHftStraCtx.h" />
     <ClInclude Include="..\Includes\IHotMgr.h" />
