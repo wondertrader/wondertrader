@@ -20,6 +20,7 @@ inline void pipe_reader_log(IDataReaderSink* sink, WTSLogLevel ll, const char* f
 		return;
 
 	static thread_local char buffer[512] = { 0 };
+	memset(buffer, 0, 512);
 	fmt::format_to(buffer, format, args...);
 
 	sink->reader_log(ll, buffer);
@@ -69,6 +70,8 @@ void WtDataReaderAD::init(WTSVariant* cfg, IDataReaderSink* sink, IHisDataLoader
 	_d1_cache._filename = "cache_d1.dmb";
 	_m1_cache._filename = "cache_m1.dmb";
 	_m5_cache._filename = "cache_m5.dmb";
+
+	pipe_reader_log(sink, LL_INFO, "WtDataReaderAD initialized, root data folder is {}", _base_dir);
 }
 
 WTSTickSlice* WtDataReaderAD::readTickSlice(const char* stdCode, uint32_t count, uint64_t etime /* = 0 */)
@@ -130,10 +133,7 @@ WTSTickSlice* WtDataReaderAD::readTickSlice(const char* stdCode, uint32_t count,
 	//这里要改成从lmdb读取
 	WtLMDBPtr db = get_t_db(cInfo._exchg, cInfo._code);
 	if (db == NULL)
-	{
-		pipe_reader_log(_sink, LL_ERROR, "Cannot get tick db stub of {}.{}", cInfo._exchg, cInfo._code);
 		return NULL;
-	}
 
 	if(reload_flag == 1)
 	{
@@ -142,7 +142,7 @@ WTSTickSlice* WtDataReaderAD::readTickSlice(const char* stdCode, uint32_t count,
 		WtLMDBQuery query(*db);
 		LMDBHftKey lKey(cInfo._exchg, cInfo._code, (uint32_t)(last_access_time / 1000000000), (uint32_t)(last_access_time % 1000000000));
 		LMDBHftKey rKey(cInfo._exchg, cInfo._code, (uint32_t)(etime / 1000000000), (uint32_t)(etime % 1000000000));
-		query.get_range(std::string((const char*)&lKey, sizeof(lKey)), 
+		int cnt = query.get_range(std::string((const char*)&lKey, sizeof(lKey)), 
 			std::string((const char*)&rKey, sizeof(rKey)), [this, &tickList](const ValueArray& ayKeys, const ValueArray& ayVals) {
 			for(const std::string& item : ayVals)
 			{
@@ -150,13 +150,15 @@ WTSTickSlice* WtDataReaderAD::readTickSlice(const char* stdCode, uint32_t count,
 				tickList._ticks.push_back(*curTick);
 			}
 		});
+		if(cnt > 0)
+			pipe_reader_log(_sink, LL_DEBUG, "{} ticks after {} of {} append to cache", cnt, last_access_time, stdCode);
 	}
 	else if(reload_flag == 2)
 	{
 		//全部更新，从结束时间往前读取即可
 		WtLMDBQuery query(*db);
 		LMDBHftKey rKey(cInfo._exchg, cInfo._code, (uint32_t)(etime / 1000000000), (uint32_t)(etime % 1000000000));
-		query.get_lowers(std::string((const char*)&rKey, sizeof(rKey)),
+		int cnt = query.get_lowers(std::string((const char*)&rKey, sizeof(rKey)),
 			count, [this, &tickList](const ValueArray& ayKeys, const ValueArray& ayVals) {
 			tickList._ticks.resize(ayVals.size());
 			for (std::size_t i = 0; i < ayVals.size(); i++)
@@ -165,6 +167,8 @@ WTSTickSlice* WtDataReaderAD::readTickSlice(const char* stdCode, uint32_t count,
 				memcpy(&tickList._ticks[i], item.data(), item.size());
 			}
 		});
+
+		pipe_reader_log(_sink, LL_DEBUG, "{} ticks of {} loaded to cache for the first time", cnt, stdCode);
 	}
 
 	tickList._last_req_time = etime;
@@ -231,7 +235,7 @@ bool WtDataReaderAD::cacheBarsFromStorage(const std::string& key, const char* st
 
 	WtLMDBQuery query(*db);
 	LMDBBarKey rKey(cInfo._exchg, cInfo._code, 0xffffffff);
-	query.get_lowers(std::string((const char*)&rKey, sizeof(rKey)), 
+	int cnt = query.get_lowers(std::string((const char*)&rKey, sizeof(rKey)), 
 		count, [this, &barList](const ValueArray& ayKeys, const ValueArray& ayVals) {
 		if (ayVals.empty())
 			return;
@@ -239,16 +243,18 @@ bool WtDataReaderAD::cacheBarsFromStorage(const std::string& key, const char* st
 		for(const std::string& item : ayVals)
 			barList._bars.push_back(*(WTSBarStruct*)item.data());
 	});
+
+	pipe_reader_log(_sink, LL_DEBUG, "{} {} bars of {} loaded to cache", cnt, PERIOD_NAME[period], stdCode);
 	return true;
 }
 
-void WtDataReaderAD::update_cache_from_lmdb(BarsList& barsList, const char* exchg, const char* code, WTSKlinePeriod period, uint32_t lastBarTime)
+void WtDataReaderAD::update_cache_from_lmdb(BarsList& barsList, const char* exchg, const char* code, WTSKlinePeriod period, uint32_t& lastBarTime)
 {
 	bool isDay = (period == KP_DAY);
 	WtLMDBPtr db = get_k_db(exchg, period);
 	WtLMDBQuery query(*db);
 	LMDBBarKey lKey(exchg, code, lastBarTime);
-	query.get_uppers(std::string((const char*)&lKey, sizeof(lKey)), 9999, [this, &barsList, isDay, lastBarTime](const ValueArray& ayKeys, const ValueArray& ayVals) {
+	int cnt = query.get_uppers(std::string((const char*)&lKey, sizeof(lKey)), 9999, [this, &barsList, isDay, &lastBarTime](const ValueArray& ayKeys, const ValueArray& ayVals) {
 
 		for (const std::string& item : ayVals)
 		{
@@ -262,9 +268,77 @@ void WtDataReaderAD::update_cache_from_lmdb(BarsList& barsList, const char* exch
 			else
 			{
 				barsList._bars.push_back(*curBar);
+				lastBarTime = (uint32_t)curBarTime;
+				_sink->on_bar(barsList._code.c_str(), barsList._period, &barsList._bars.back());
 			}
 		}
 	});
+
+	pipe_reader_log(_sink, LL_DEBUG, "{} bars of {}.{} updated to {}", 
+		PERIOD_NAME[period], exchg, code, isDay?barsList._bars.back().date:barsList._bars.back().time);
+}
+
+WTSBarStruct* WtDataReaderAD::get_rt_cache_bar(const char* exchg, const char* code, WTSKlinePeriod period)
+{
+	RTBarCacheWrapper* wrapper = NULL;
+	if (period == KP_DAY)
+		wrapper = &_d1_cache;
+	else if (period == KP_Minute1)
+		wrapper = &_m1_cache;
+	else if (period == KP_Minute5)
+		wrapper = &_m5_cache;
+
+	bool isDay = (period == KP_DAY);
+
+	if (wrapper != NULL)
+	{
+		if (wrapper->empty())
+		{
+			//如果缓存为空，则加载缓存
+			do
+			{
+
+				//缓存为空，先自动加载
+				std::string filename = _base_dir + wrapper->_filename;
+				if (!StdFile::exists(filename.c_str()))
+					break;
+
+				wrapper->_file_ptr.reset(new BoostMappingFile);
+				wrapper->_file_ptr->map(filename.c_str());
+				wrapper->_cache_block = (RTBarCache*)wrapper->_file_ptr->addr();
+
+				wrapper->_cache_block->_size = min(wrapper->_cache_block->_size, wrapper->_cache_block->_capacity);
+				wrapper->_last_size = wrapper->_cache_block->_size;
+
+				for (uint32_t i = 0; i < wrapper->_cache_block->_size; i++)
+				{
+					const BarCacheItem& item = wrapper->_cache_block->_items[i];
+					wrapper->_idx[StrUtil::printf("%s.%s", item._exchg, item._code)] = i;
+				}
+			} while (false);
+		}
+		else
+		{
+			//如果缓存不为空，检查一下有没有新的合约进来，如果有的话，就把索引更新一下
+			if (wrapper->_last_size != wrapper->_cache_block->_size)
+			{
+				for (uint32_t i = wrapper->_last_size; i < wrapper->_cache_block->_size; i++)
+				{
+					const BarCacheItem& item = wrapper->_cache_block->_items[i];
+					wrapper->_idx[StrUtil::printf("%s.%s", item._exchg, item._code)] = i;
+				}
+			}
+		}
+
+		//最后看缓存里有没有改合约对应的K线缓存
+		auto it = wrapper->_idx.find(StrUtil::printf("%s.%s", exchg, code));
+		if (it != wrapper->_idx.end())
+		{
+			return &wrapper->_cache_block->_items[it->second]._bar;
+		}
+	}
+
+	return NULL;
 }
 
 WTSKlineSlice* WtDataReaderAD::readKlineSlice(const char* stdCode, WTSKlinePeriod period, uint32_t count, uint64_t etime /* = 0 */)
@@ -339,74 +413,24 @@ WTSKlineSlice* WtDataReaderAD::readKlineSlice(const char* stdCode, WTSKlinePerio
 		//则从缓存中读取
 		if(lastBarTime < etime)
 		{
-			RTBarCacheWrapper* wrapper = NULL;
-			if (period == KP_DAY)
-				wrapper = &_d1_cache;
-			else if (period == KP_Minute1)
-				wrapper = &_m1_cache;
-			else if (period == KP_Minute5)
-				wrapper = &_m5_cache;
-
-			if(wrapper != NULL)
+			WTSBarStruct* rtBar = get_rt_cache_bar(cInfo._exchg, curCode.c_str(), period);
+			if(rtBar != NULL)
 			{
-				if(wrapper->empty())
+				uint64_t cacheBarTime = isDay ? rtBar->date : rtBar->time;
+				if (cacheBarTime > etime)
 				{
-					//如果缓存为空，则加载缓存
-					do
-					{
-
-						//缓存为空，先自动加载
-						std::string filename = _base_dir + wrapper->_filename;
-						if (!StdFile::exists(filename.c_str()))
-							break;
-
-						wrapper->_file_ptr.reset(new BoostMappingFile);
-						wrapper->_file_ptr->map(filename.c_str());
-						wrapper->_cache_block = (RTBarCache*)wrapper->_file_ptr->addr();
-
-						wrapper->_cache_block->_size = min(wrapper->_cache_block->_size, wrapper->_cache_block->_capacity);
-						wrapper->_last_size = wrapper->_cache_block->_size;
-
-						for (uint32_t i = 0; i < wrapper->_cache_block->_size; i++)
-						{
-							const BarCacheItem& item = wrapper->_cache_block->_items[i];
-							wrapper->_idx[StrUtil::printf("%s.%s", item._exchg, item._code)] = i;
-						}
-					} while (false);
+					//缓存的K线时间戳大于截止时间，说明检查的过程中Writer已经将数据转储到lmdb中了
+					//这个时候就再读一次lmdb
+					update_cache_from_lmdb(barsList, cInfo._exchg, curCode.c_str(), period, lastBarTime);
+					barsList._last_from_cache = false;
 				}
 				else
 				{
-					//如果缓存不为空，检查一下有没有新的合约进来，如果有的话，就把索引更新一下
-					if(wrapper->_last_size != wrapper->_cache_block->_size)
-					{
-						for (uint32_t i = wrapper->_last_size; i < wrapper->_cache_block->_size; i++)
-						{
-							const BarCacheItem& item = wrapper->_cache_block->_items[i];
-							wrapper->_idx[StrUtil::printf("%s.%s", item._exchg, item._code)] = i;
-						}
-					}
-				}
-
-				//最后看缓存里有没有改合约对应的K线缓存
-				auto it = wrapper->_idx.find(StrUtil::printf("%s.%s", cInfo._exchg, curCode.c_str()));
-				if(it != wrapper->_idx.end())
-				{
-					WTSBarStruct cacheBar;
-					memcpy(&cacheBar, &wrapper->_cache_block->_items[it->second]._bar, sizeof(WTSBarStruct));
-					uint64_t cacheBarTime = isDay ? cacheBar.date : cacheBar.time;
-					if(cacheBarTime > etime)
-					{
-						//缓存的K线时间戳大于截止时间，说明检查的过程中Writer已经将数据转储到lmdb中了
-						//这个时候就再读一次lmdb
-						update_cache_from_lmdb(barsList, cInfo._exchg, curCode.c_str(), period, lastBarTime);
-						barsList._last_from_cache = false;
-					}
-					else
-					{
-						//如果缓存的K线时间没有超过etime，则将缓存中的最后一条K线追加到队列中
-						barsList._bars.push_back(cacheBar);
-						barsList._last_from_cache = true;
-					}
+					//如果缓存的K线时间没有超过etime，则将缓存中的最后一条K线追加到队列中
+					barsList._bars.push_back(*rtBar);
+					barsList._last_from_cache = true;
+					pipe_reader_log(_sink, LL_DEBUG,
+						"{} bars @  {} of {} updated from cache instead of lmdb in {}", PERIOD_NAME[period], etime, stdCode, __FUNCTION__);
 				}
 			}
 		}
@@ -446,13 +470,45 @@ void WtDataReaderAD::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTDa
 	if (nowTime <= _last_time)
 		return;
 
+	uint64_t endBarTime = (uDate - 19900000) * 10000 + uTime;
+
 	for (auto it = _bars_cache.begin(); it != _bars_cache.end(); it++)
 	{
 		BarsList& barsList = (BarsList&)it->second;
+		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(barsList._code.c_str());
 		if (barsList._period != KP_DAY)
 		{
-			CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(barsList._code.c_str());
-			update_cache_from_lmdb(barsList, barsList._exchg.c_str(), cInfo._code, barsList._period, (uint32_t)(nowTime - 19900000));
+			uint32_t lastBarTime = (uint32_t)barsList._bars.back().time;
+			update_cache_from_lmdb(barsList, barsList._exchg.c_str(), cInfo._code, barsList._period, lastBarTime);
+			if(lastBarTime < endBarTime)
+			{
+				WTSBarStruct* rtBar = get_rt_cache_bar(cInfo._exchg, cInfo._code, barsList._period);
+				if(rtBar->time > lastBarTime && rtBar->time <=endBarTime)
+				{
+					barsList._bars.push_back(*rtBar);
+					barsList._last_from_cache = true;
+					_sink->on_bar(barsList._code.c_str(), barsList._period, rtBar);
+					pipe_reader_log(_sink, LL_DEBUG,
+						"{} bars @ {} of {} updated from cache instead of lmdb in {}", PERIOD_NAME[barsList._period], endBarTime, barsList._code, __FUNCTION__);
+				}
+			}
+		}
+		else if(endTDate != 0)
+		{
+			uint32_t lastBarTime = barsList._bars.back().date;
+			update_cache_from_lmdb(barsList, barsList._exchg.c_str(), cInfo._code, barsList._period, lastBarTime);
+			if (lastBarTime < endBarTime)
+			{
+				WTSBarStruct* rtBar = get_rt_cache_bar(cInfo._exchg, cInfo._code, barsList._period);
+				if (rtBar->date > lastBarTime && rtBar->date <= endBarTime)
+				{
+					barsList._bars.push_back(*rtBar);
+					barsList._last_from_cache = true;
+					_sink->on_bar(barsList._code.c_str(), barsList._period, rtBar);
+					pipe_reader_log(_sink, LL_DEBUG,
+						"{} bars @  of {} updated from cache instead of lmdb in {}", PERIOD_NAME[barsList._period], endBarTime, barsList._code, __FUNCTION__);
+				}
+			}
 		}
 	}
 
@@ -493,8 +549,12 @@ WtDataReaderAD::WtLMDBPtr WtDataReaderAD::get_k_db(const char* exchg, WTSKlinePe
 	boost::filesystem::create_directories(path);
 	if (!dbPtr->open(path.c_str()))
 	{
-		pipe_reader_log(_sink, LL_ERROR, "Opening {} db at {} failed: {}", subdir, path, dbPtr->errmsg());
+		pipe_reader_log(_sink, LL_ERROR, "Opening {} db if {} failed: {}", subdir, exchg, dbPtr->errmsg());
 		return std::move(WtLMDBPtr());
+	}
+	else
+	{
+		pipe_reader_log(_sink, LL_DEBUG, "{} db of {} opened", subdir, exchg);
 	}
 
 	(*the_map)[exchg] = dbPtr;
@@ -513,8 +573,12 @@ WtDataReaderAD::WtLMDBPtr WtDataReaderAD::get_t_db(const char* exchg, const char
 	boost::filesystem::create_directories(path);
 	if (!dbPtr->open(path.c_str()))
 	{
-		pipe_reader_log(_sink, LL_ERROR, "Opening tick db at {} failed: {}", path, dbPtr->errmsg());
+		pipe_reader_log(_sink, LL_ERROR, "Opening tick db of {}.{} failed: {}", exchg, code, dbPtr->errmsg());
 		return std::move(WtLMDBPtr());
+	}
+	else
+	{
+		pipe_reader_log(_sink, LL_DEBUG, "Tick db of {}.{} opened", exchg, code);
 	}
 
 	_tick_dbs[exchg] = dbPtr;

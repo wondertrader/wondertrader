@@ -98,9 +98,11 @@ private:
 	/*
 	 *	从LMDB中更新缓存的数据
 	 */
-	void	update_cache_from_lmdb(BarsList& barsList, const char* exchg, const char* code, WTSKlinePeriod period, uint32_t lastBarTime);
+	void	update_cache_from_lmdb(BarsList& barsList, const char* exchg, const char* code, WTSKlinePeriod period, uint32_t& lastBarTime);
 
 	std::string	read_bars_to_buffer(const char* exchg, const char* code, WTSKlinePeriod period);
+
+	WTSBarStruct* get_rt_cache_bar(const char* exchg, const char* code, WTSKlinePeriod period);
 
 private:
 	//////////////////////////////////////////////////////////////////////////
