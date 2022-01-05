@@ -64,6 +64,7 @@ private:
 	std::string	_hots;
 	int			_bport;
 	int			_sport;
+	uint32_t	_gpsize;
 
 	ip::udp::endpoint	_broad_ep;
 	ip::udp::endpoint	_server_ep;

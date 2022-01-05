@@ -98,6 +98,9 @@ bool ParserUDP::init( WTSVariant* config )
 	_hots = config->getCString("host");
 	_bport = config->getInt32("bport");
 	_sport = config->getInt32("sport");
+	_gpsize = config->getUInt32("gpsize");
+	if (_gpsize == 0)
+		_gpsize = 1000;
 
 	ip::address addr = ip::address::from_string(_hots);
 	_server_ep = ip::udp::endpoint(addr, _sport);
@@ -344,7 +347,7 @@ void ParserUDP::extract_buffer(uint32_t length, bool isBroad /* = true */)
 
 		static uint32_t recv_cnt = 0;
 		recv_cnt++;
-		if (recv_cnt % 10000 == 0)
+		if (recv_cnt % _gpsize == 0)
 			write_log(_sink, LL_DEBUG, "[ParserUDP] {} ticks received in total", recv_cnt);
 	}
 	else if (header->_type == UDP_MSG_PUSHORDDTL)
@@ -358,7 +361,7 @@ void ParserUDP::extract_buffer(uint32_t length, bool isBroad /* = true */)
 
 		static uint32_t recv_cnt = 0;
 		recv_cnt++;
-		if (recv_cnt % 10000 == 0)
+		if (recv_cnt % _gpsize == 0)
 			write_log(_sink, LL_DEBUG, "[ParserUDP] {} order details received in total", recv_cnt);
 	}
 	else if (header->_type == UDP_MSG_PUSHORDQUE)
@@ -372,7 +375,7 @@ void ParserUDP::extract_buffer(uint32_t length, bool isBroad /* = true */)
 
 		static uint32_t recv_cnt = 0;
 		recv_cnt++;
-		if (recv_cnt % 10000 == 0)
+		if (recv_cnt % _gpsize == 0)
 			write_log(_sink, LL_DEBUG, "[ParserUDP] {} order queues received in total", recv_cnt);
 	}
 	else if (header->_type == UDP_MSG_PUSHTRANS)
@@ -386,7 +389,7 @@ void ParserUDP::extract_buffer(uint32_t length, bool isBroad /* = true */)
 
 		static uint32_t recv_cnt = 0;
 		recv_cnt++;
-		if (recv_cnt % 10000 == 0)
+		if (recv_cnt % _gpsize == 0)
 			write_log(_sink, LL_DEBUG, "[ParserUDP] {} transactions received in total", recv_cnt);
 	}
 }
