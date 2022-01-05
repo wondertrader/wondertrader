@@ -20,6 +20,7 @@ inline void pipe_writer_log(IDataWriterSink* sink, WTSLogLevel ll, const char* f
 		return;
 
 	static thread_local char buffer[512] = { 0 };
+	memset(buffer, 0, 512);
 	fmt::format_to(buffer, format, args...);
 
 	sink->outputLog(ll, buffer);
@@ -205,7 +206,7 @@ void WtDataWriterAD::loadCache()
 
 		if (bNew)
 		{
-			memset(_m1_cache._cache_block, 0, _m5_cache._file_ptr->size());
+			memset(_m5_cache._cache_block, 0, _m5_cache._file_ptr->size());
 
 			_m5_cache._cache_block->_capacity = CACHE_SIZE_STEP_AD;
 			_m5_cache._cache_block->_type = BT_RT_Cache;
@@ -246,7 +247,7 @@ void WtDataWriterAD::loadCache()
 
 		if (bNew)
 		{
-			memset(_m1_cache._cache_block, 0, _d1_cache._file_ptr->size());
+			memset(_d1_cache._cache_block, 0, _d1_cache._file_ptr->size());
 
 			_d1_cache._cache_block->_capacity = CACHE_SIZE_STEP_AD;
 			_d1_cache._cache_block->_type = BT_RT_Cache;
@@ -440,6 +441,10 @@ void WtDataWriterAD::pipeToDayBars(WTSContractInfo* ct, const WTSBarStruct& bar)
 		{
 			pipe_writer_log(_sink, LL_ERROR, "pipe day bar @ {} of {} to db failed", bar.date, ct->getFullCode());
 		}
+		else
+		{
+			pipe_writer_log(_sink, LL_DEBUG, "day bar @ {} of {} piped to db", bar.date, ct->getFullCode());
+		}
 	}
 
 	for (auto& item : _dumpers)
@@ -469,6 +474,10 @@ void WtDataWriterAD::pipeToM1Bars(WTSContractInfo* ct, const WTSBarStruct& bar)
 		{
 			pipe_writer_log(_sink, LL_ERROR, "pipe m1 bar @ {} of {} to db failed", bar.time, ct->getFullCode());
 		}
+		else
+		{
+			pipe_writer_log(_sink, LL_DEBUG, "m1 bar @ {} of {} piped to db", bar.time, ct->getFullCode());
+		}
 	}
 
 	for (auto& item : _dumpers)
@@ -497,6 +506,10 @@ void WtDataWriterAD::pipeToM5Bars(WTSContractInfo* ct, const WTSBarStruct& bar)
 		if (!query.put((void*)&key, sizeof(key), (void*)&bar, sizeof(bar)))
 		{
 			pipe_writer_log(_sink, LL_ERROR, "pipe m5 bar @ {} of {} to db failed", bar.time, ct->getFullCode());
+		}
+		else
+		{
+			pipe_writer_log(_sink, LL_DEBUG, "m5 bar @ {} of {} piped to db", bar.time, ct->getFullCode());
 		}
 	}
 
@@ -706,13 +719,13 @@ void WtDataWriterAD::updateBarCache(WTSContractInfo* ct, WTSTickData* curTick)
 	//更新5分钟线
 	if (!_disable_min5 && _m5_cache._cache_block)
 	{
-		StdUniqueLock lock(_m1_cache._mtx);
+		StdUniqueLock lock(_m5_cache._mtx);
 		uint32_t idx = 0;
 		bool bNewCode = false;
-		if (_m1_cache._idx.find(key) == _m1_cache._idx.end())
+		if (_m5_cache._idx.find(key) == _m5_cache._idx.end())
 		{
 			idx = _m5_cache._cache_block->_size;
-			_m1_cache._idx[key] = _m5_cache._cache_block->_size;
+			_m5_cache._idx[key] = _m5_cache._cache_block->_size;
 			_m5_cache._cache_block->_size += 1;
 			if (_m5_cache._cache_block->_size >= _m5_cache._cache_block->_capacity)
 			{
@@ -723,7 +736,7 @@ void WtDataWriterAD::updateBarCache(WTSContractInfo* ct, WTSTickData* curTick)
 		}
 		else
 		{
-			idx = _m1_cache._idx[key];
+			idx = _m5_cache._idx[key];
 		}
 
 		BarCacheItem& item = (BarCacheItem&)_m5_cache._cache_block->_items[idx];
