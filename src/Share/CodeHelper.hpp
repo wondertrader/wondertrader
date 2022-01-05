@@ -220,7 +220,10 @@ public:
 	 */
 	static inline std::string rawFlatCodeToStdCode(const char* code, const char* exchg, const char* pid)
 	{
-		return std::move(StrUtil::printf("%s.%s.%s", exchg, pid, code));
+		if(strcmp(code, pid) == 0 || strlen(pid) == 0)
+			return std::move(StrUtil::printf("%s.%s", exchg, pid));
+		else
+			return std::move(StrUtil::printf("%s.%s.%s", exchg, pid, code));
 	}
 
 	static inline bool isMonthlyCode(const char* code)
