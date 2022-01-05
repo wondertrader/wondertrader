@@ -89,9 +89,14 @@ WtRtRunner::WtRtRunner()
 	, _ext_raw_bar_loader(NULL)
 	, _ext_adj_fct_loader(NULL)
 {
+#if _WIN32
+#pragma message("Signal hooks disabled in WIN32")
+#else
+#pragma message("Signal hooks disabled in UNIX")
 	install_signal_hooks([](const char* message) {
 		WTSLogger::error(message);
 	});
+#endif
 }
 
 
