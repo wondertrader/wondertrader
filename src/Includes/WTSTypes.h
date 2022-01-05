@@ -104,6 +104,16 @@ typedef enum tagKlinePeriod
 	KP_Month
 } WTSKlinePeriod;
 
+static const char* PERIOD_NAME[] = 
+{
+	"tick",
+	"min1",
+	"min5",
+	"day",
+	"week",
+	"month"
+};
+
 /*
  *	日志级别
  */
