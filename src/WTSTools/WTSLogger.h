@@ -39,11 +39,13 @@ inline void fmt_print_impl(char* buf, const char* format, const Args&... args)
 	static std::string s;
 	s = std::move(fmt::sprintf(format, args...));
 	strcpy(buf, s.c_str());
+	buf[s.size()] = '\0';
 }
 
 template<typename... Args>
 inline void fmt_format_impl(char* buf, const char* format, const Args&... args)
 {
+	memset(buf, 0, MAX_LOG_BUF_SIZE);
 	fmt::format_to(buf, format, args...);
 }
 
