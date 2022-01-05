@@ -20,6 +20,21 @@
 
 #include <boost/filesystem.hpp>
 
+ //By Wesley @ 2022.01.05
+#define FMT_HEADER_ONLY
+#include <fmt/format.h>
+template<typename... Args>
+inline void write_log(IParserSpi* sink, WTSLogLevel ll, const char* format, const Args&... args)
+{
+	if (sink == NULL)
+		return;
+
+	static thread_local char buffer[512] = { 0 };
+	fmt::format_to(buffer, format, args...);
+
+	sink->handleParserLog(ll, buffer);
+}
+
 extern "C"
 {
 	EXPORT_FLAG IParserApi* createParser()
@@ -156,7 +171,7 @@ void ParserCTP::OnFrontConnected()
 {
 	if(m_sink)
 	{
-		m_sink->handleParserLog(LL_INFO, "[ParserCTP] Market data server connected");
+		write_log(m_sink, LL_INFO, "[ParserCTP] Market data server connected");
 		m_sink->handleEvent(WPE_Connect, 0);
 	}
 
@@ -191,7 +206,7 @@ void ParserCTP::OnFrontDisconnected( int nReason )
 {
 	if(m_sink)
 	{
-		m_sink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserCTP] Market data server disconnected: %d...", nReason).c_str());
+		write_log(m_sink, LL_ERROR, StrUtil::printf("[ParserCTP] Market data server disconnected: {}", nReason).c_str());
 		m_sink->handleEvent(WPE_Close, 0);
 	}
 }
@@ -333,7 +348,7 @@ void ParserCTP::OnRspSubMarketData( CThostFtdcSpecificInstrumentField *pSpecific
 void ParserCTP::OnHeartBeatWarning( int nTimeLapse )
 {
 	if(m_sink)
-		m_sink->handleParserLog(LL_INFO, StrUtil::printf("[ParserCTP] Heartbeating, elapse: %d...", nTimeLapse).c_str());
+		write_log(m_sink, LL_INFO, StrUtil::printf("[ParserCTP] Heartbeating, elapse: {}", nTimeLapse).c_str());
 }
 
 void ParserCTP::ReqUserLogin()
@@ -352,7 +367,7 @@ void ParserCTP::ReqUserLogin()
 	if(iResult != 0)
 	{
 		if(m_sink)
-			m_sink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserCTP] Sending login request failed: %d", iResult).c_str());
+			write_log(m_sink, LL_ERROR, StrUtil::printf("[ParserCTP] Sending login request failed: {}", iResult).c_str());
 	}
 }
 
@@ -381,12 +396,12 @@ void ParserCTP::SubscribeMarketData()
 		if(iResult != 0)
 		{
 			if(m_sink)
-				m_sink->handleParserLog(LL_ERROR, StrUtil::printf("[ParserCTP] Sending md subscribe request failed: %d", iResult).c_str());
+				write_log(m_sink, LL_ERROR, StrUtil::printf("[ParserCTP] Sending md subscribe request failed: {}", iResult).c_str());
 		}
 		else
 		{
 			if(m_sink)
-				m_sink->handleParserLog(LL_INFO, StrUtil::printf("[ParserCTP] Market data of %u contracts subscribed in total", nCount).c_str());
+				write_log(m_sink, LL_INFO, StrUtil::printf("[ParserCTP] Market data of {} contracts subscribed in total", nCount).c_str());
 		}
 	}
 	codeFilter.clear();
