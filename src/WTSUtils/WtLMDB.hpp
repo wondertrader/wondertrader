@@ -250,6 +250,13 @@ public:
 		std::vector<std::string> ayKeys, ayVals;
 		_errno = mdb_cursor_get(cursor, &rKey, &mData, MDB_SET_RANGE);
 		_db.update_errno(_errno);
+
+		if (_errno == MDB_NOTFOUND)
+		{
+			_errno = mdb_cursor_get(cursor, &rKey, &mData, MDB_LAST);
+			_db.update_errno(_errno);
+		}
+
 		for (; _errno != MDB_NOTFOUND;)
 		{
 			//往前查找，所以如果拿到的key，比右边界大，则直接往前退回一条
@@ -313,6 +320,27 @@ public:
 		cb(ayKeys, ayVals);
 		mdb_cursor_close(cursor);
 		return cnt;
+	}
+
+	inline int get_all(LMDBQueryCallback cb)
+	{
+		MDB_cursor* cursor;
+		int _errno = mdb_cursor_open(_txn, _dbi, &cursor);
+		if (_errno != MDB_SUCCESS)
+			return 0;
+
+		MDB_val bKey, mData;
+		std::vector<std::string> ayKeys, ayVals;
+		for (; _errno != MDB_NOTFOUND;)
+		{
+			_errno = mdb_cursor_get(cursor, &bKey, &mData, MDB_NEXT);
+			_db.update_errno(_errno);
+
+			ayKeys.emplace_back(std::string((const char*)bKey.mv_data, bKey.mv_size));
+			ayVals.emplace_back(std::string((const char*)mData.mv_data, mData.mv_size));
+		}
+		cb(ayKeys, ayVals);
+		return ayVals.size();
 	}
 
 private:

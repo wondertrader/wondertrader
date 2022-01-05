@@ -11,6 +11,20 @@
 
 #include "../Includes/IBaseDataMgr.h"
 
+//By Wesley @ 2022.01.05
+#include "../Share/fmtlib.h"
+template<typename... Args>
+inline void pipe_writer_log(IDataWriterSink* sink, WTSLogLevel ll, const char* format, const Args&... args)
+{
+	if (sink == NULL)
+		return;
+
+	static thread_local char buffer[512] = { 0 };
+	fmt::format_to(buffer, format, args...);
+
+	sink->outputLog(ll, buffer);
+}
+
 extern "C"
 {
 	EXPORT_FLAG IDataWriter* createWriter()
@@ -278,7 +292,7 @@ void* WtDataWriterAD::resizeRTBlock(BoostMFPtr& mfPtr, uint32_t nCount)
 	}
 	catch(std::exception& ex)
 	{
-		_sink->outputWriterLog(LL_ERROR, "Exception occured while expanding RT cache file of %s[%u]: %s", filename, uNewSize, ex.what());
+		pipe_writer_log(_sink, LL_ERROR, "Exception occured while expanding RT cache file of {}[{}]: {}", filename, uNewSize, ex.what());
 		return mfPtr->addr();
 	}
 
@@ -333,7 +347,7 @@ bool WtDataWriterAD::writeTick(WTSTickData* curTick, bool bNeedSlice /* = true *
 			_tcnt_map[curTick->exchg()]++;
 			if (_tcnt_map[curTick->exchg()] % _log_group_size == 0)
 			{
-				_sink->outputWriterLog(LL_INFO, "%s ticks received from exchange %s", StrUtil::fmtUInt64(_tcnt_map[curTick->exchg()]).c_str(), curTick->exchg());
+				pipe_writer_log(_sink, LL_INFO, "{} ticks received from exchange {}",_tcnt_map[curTick->exchg()], curTick->exchg());
 			}
 		} while (false);
 
@@ -395,7 +409,7 @@ void WtDataWriterAD::pipeToTicks(WTSContractInfo* ct, WTSTickData* curTick)
 		WtLMDBQuery query(*db);
 		if (!query.put((void*)&key, sizeof(key), &curTick->getTickStruct(), sizeof(WTSTickStruct)))
 		{
-			_sink->outputWriterLog(LL_ERROR, "pipe tick of %s to db failed: %s", ct->getFullCode(), db->errmsg());
+			pipe_writer_log(_sink, LL_ERROR, "pipe tick of {} to db failed: {}", ct->getFullCode(), db->errmsg());
 		}
 	}
 
@@ -409,7 +423,7 @@ void WtDataWriterAD::pipeToTicks(WTSContractInfo* ct, WTSTickData* curTick)
 		bool bSucc = dumper->dumpHisTicks(ct->getFullCode(), curTick->tradingdate(), &curTick->getTickStruct(), 1);
 		if (!bSucc)
 		{
-			_sink->outputWriterLog(LL_ERROR, "pipe tick data of %s via extended dumper %s failed", ct->getFullCode(), id);
+			pipe_writer_log(_sink, LL_ERROR, "pipe tick data of {} via extended dumper {} failed", ct->getFullCode(), id);
 		}
 	}
 }
@@ -424,7 +438,7 @@ void WtDataWriterAD::pipeToDayBars(WTSContractInfo* ct, const WTSBarStruct& bar)
 		WtLMDBQuery query(*db);
 		if (!query.put((void*)&key, sizeof(key), (void*)&bar, sizeof(WTSBarStruct)))
 		{
-			_sink->outputWriterLog(LL_ERROR, "pipe day bar @ %u of %s to db failed", bar.date, ct->getFullCode());
+			pipe_writer_log(_sink, LL_ERROR, "pipe day bar @ {} of {} to db failed", bar.date, ct->getFullCode());
 		}
 	}
 
@@ -438,7 +452,7 @@ void WtDataWriterAD::pipeToDayBars(WTSContractInfo* ct, const WTSBarStruct& bar)
 		bool bSucc = dumper->dumpHisBars(ct->getFullCode(), "d1", (WTSBarStruct*)&bar, 1);
 		if (!bSucc)
 		{
-			_sink->outputWriterLog(LL_ERROR, "pipe day bar @%u of %s via extended dumper %s failed", bar.date, ct->getFullCode(), id);
+			pipe_writer_log(_sink, LL_ERROR, "pipe day bar @ {} of {} via extended dumper {} failed", bar.date, ct->getFullCode(), id);
 		}
 	}
 }
@@ -453,7 +467,7 @@ void WtDataWriterAD::pipeToM1Bars(WTSContractInfo* ct, const WTSBarStruct& bar)
 		WtLMDBQuery query(*db);
 		if(!query.put((void*)&key, sizeof(key), (void*)&bar, sizeof(WTSBarStruct)))
 		{
-			_sink->outputWriterLog(LL_ERROR, "pipe m1 bar @ %u of %s to db failed", (uint32_t)bar.time, ct->getFullCode());
+			pipe_writer_log(_sink, LL_ERROR, "pipe m1 bar @ {} of {} to db failed", bar.time, ct->getFullCode());
 		}
 	}
 
@@ -467,7 +481,7 @@ void WtDataWriterAD::pipeToM1Bars(WTSContractInfo* ct, const WTSBarStruct& bar)
 		bool bSucc = dumper->dumpHisBars(ct->getFullCode(), "m1", (WTSBarStruct*)&bar, 1);
 		if (!bSucc)
 		{
-			_sink->outputWriterLog(LL_ERROR, "pipe m1 bar @%u of %s via extended dumper %s failed", bar.time, ct->getFullCode(), id);
+			pipe_writer_log(_sink, LL_ERROR, "pipe m1 bar @ {} of {} via extended dumper {} failed", bar.time, ct->getFullCode(), id);
 		}
 	}
 }
@@ -482,7 +496,7 @@ void WtDataWriterAD::pipeToM5Bars(WTSContractInfo* ct, const WTSBarStruct& bar)
 		WtLMDBQuery query(*db);
 		if (!query.put((void*)&key, sizeof(key), (void*)&bar, sizeof(bar)))
 		{
-			_sink->outputWriterLog(LL_ERROR, "pipe m5 bar @ %u of %s to db failed", (uint32_t)bar.time, ct->getFullCode());
+			pipe_writer_log(_sink, LL_ERROR, "pipe m5 bar @ {} of {} to db failed", bar.time, ct->getFullCode());
 		}
 	}
 
@@ -496,7 +510,7 @@ void WtDataWriterAD::pipeToM5Bars(WTSContractInfo* ct, const WTSBarStruct& bar)
 		bool bSucc = dumper->dumpHisBars(ct->getFullCode(), "m5", (WTSBarStruct*)&bar, 1);
 		if (!bSucc)
 		{
-			_sink->outputWriterLog(LL_ERROR, "pipe m5 bar of %s via extended dumper %s failed", ct->getFullCode(), id);
+			pipe_writer_log(_sink, LL_ERROR, "pipe m5 bar @ {} of {} via extended dumper {} failed", bar.time, ct->getFullCode(), id);
 		}
 	}
 }
@@ -535,7 +549,7 @@ void WtDataWriterAD::updateBarCache(WTSContractInfo* ct, WTSTickData* curTick)
 			if (_d1_cache._cache_block->_size >= _d1_cache._cache_block->_capacity)
 			{
 				_d1_cache._cache_block = (RTBarCache*)resizeRTBlock<RTBarCache, BarCacheItem>(_d1_cache._file_ptr, _d1_cache._cache_block->_capacity + CACHE_SIZE_STEP_AD);
-				_sink->outputWriterLog(LL_INFO, "day cache resized to %u items", _d1_cache._cache_block->_capacity);
+				pipe_writer_log(_sink, LL_INFO, "day cache resized to {} items", _d1_cache._cache_block->_capacity);
 			}
 			bNewCode = true;
 		}
@@ -612,7 +626,7 @@ void WtDataWriterAD::updateBarCache(WTSContractInfo* ct, WTSTickData* curTick)
 			if (_m1_cache._cache_block->_size >= _m1_cache._cache_block->_capacity)
 			{
 				_m1_cache._cache_block = (RTBarCache*)resizeRTBlock<RTBarCache, BarCacheItem>(_m1_cache._file_ptr, _m1_cache._cache_block->_capacity + CACHE_SIZE_STEP_AD);
-				_sink->outputWriterLog(LL_INFO, "m1 cache resized to %u items", _m1_cache._cache_block->_capacity);
+				pipe_writer_log(_sink, LL_INFO, "m1 cache resized to {} items", _m1_cache._cache_block->_capacity);
 			}
 			bNewCode = true;
 		}
@@ -703,7 +717,7 @@ void WtDataWriterAD::updateBarCache(WTSContractInfo* ct, WTSTickData* curTick)
 			if (_m5_cache._cache_block->_size >= _m5_cache._cache_block->_capacity)
 			{
 				_m5_cache._cache_block = (RTBarCache*)resizeRTBlock<RTBarCache, BarCacheItem>(_m5_cache._file_ptr, _m5_cache._cache_block->_capacity + CACHE_SIZE_STEP_AD);
-				_sink->outputWriterLog(LL_INFO, "m1 cache resized to %u items", _m5_cache._cache_block->_capacity);
+				pipe_writer_log(_sink, LL_INFO, "m5 cache resized to {} items", _m5_cache._cache_block->_capacity);
 			}
 			bNewCode = true;
 		}
@@ -794,7 +808,7 @@ bool WtDataWriterAD::updateTickCache(WTSContractInfo* ct, WTSTickData* curTick, 
 {
 	if (curTick == NULL || _tick_cache_block == NULL)
 	{
-		_sink->outputWriterLog(LL_ERROR, "Tick cache data not initialized");
+		pipe_writer_log(_sink, LL_ERROR, "Tick cache data not initialized");
 		return false;
 	}
 
@@ -809,7 +823,7 @@ bool WtDataWriterAD::updateTickCache(WTSContractInfo* ct, WTSTickData* curTick, 
 		if(_tick_cache_block->_size >= _tick_cache_block->_capacity)
 		{
 			_tick_cache_block = (RTTickCache*)resizeRTBlock<RTTickCache, TickCacheItem>(_tick_cache_file, _tick_cache_block->_capacity + CACHE_SIZE_STEP_AD);
-			_sink->outputWriterLog(LL_INFO, "Tick Cache resized to %u items", _tick_cache_block->_capacity);
+			pipe_writer_log(_sink, LL_INFO, "Tick Cache resized to {} items", _tick_cache_block->_capacity);
 		}
 	}
 	else
@@ -821,7 +835,7 @@ bool WtDataWriterAD::updateTickCache(WTSContractInfo* ct, WTSTickData* curTick, 
 	TickCacheItem& item = _tick_cache_block->_items[idx];
 	if (curTick->tradingdate() < item._date)
 	{
-		_sink->outputWriterLog(LL_INFO, "Tradingday[%u] of %s is less than cached tradingday[%u]", curTick->tradingdate(), curTick->code(), item._date);
+		pipe_writer_log(_sink, LL_INFO, "Tradingday[{}] of {} is less than cached tradingday[{}]", curTick->tradingdate(), curTick->code(), item._date);
 		return false;
 	}
 
@@ -844,7 +858,7 @@ bool WtDataWriterAD::updateTickCache(WTSContractInfo* ct, WTSTickData* curTick, 
 
 		//	newTick.trading_date, curTick->exchg(), curTick->code(), curTick->volume(),
 		//	curTick->turnover(), curTick->openinterest(), curTick->additional());
-		_sink->outputWriterLog(LL_INFO, "First tick of new tradingday %u,%s.%s,%f,%u,%f,%u,%d", 
+		pipe_writer_log(_sink, LL_INFO, "First tick of new tradingday {},{}.{},{},{},{},{},{}", 
 			newTick.trading_date, curTick->exchg(), curTick->code(), curTick->price(), curTick->volume(),
 			curTick->turnover(), curTick->openinterest(), curTick->additional());
 	}
@@ -856,12 +870,12 @@ bool WtDataWriterAD::updateTickCache(WTSContractInfo* ct, WTSTickData* curTick, 
 		uint32_t tdate = sInfo->getOffsetDate(curTick->actiondate(), curTick->actiontime() / 100000);
 		if (tdate > curTick->tradingdate())
 		{
-			_sink->outputWriterLog(LL_ERROR, "Last tick of %s.%s with time %u.%u has an exception, abandoned", curTick->exchg(), curTick->code(), curTick->actiondate(), curTick->actiontime());
+			pipe_writer_log(_sink, LL_ERROR, "Last tick of {}.{} with time {}.{} has an exception, abandoned", curTick->exchg(), curTick->code(), curTick->actiondate(), curTick->actiontime());
 			return false;
 		}
 		else if (curTick->totalvolume() < item._tick.total_volume)
 		{
-			_sink->outputWriterLog(LL_ERROR, "Last tick of %s.%s with time %u.%u, volume %u is less than cached volume %u, abandoned", 
+			pipe_writer_log(_sink, LL_ERROR, "Last tick of {}.{} with time {}.{}, volume {} is less than cached volume {}, abandoned", 
 				curTick->exchg(), curTick->code(), curTick->actiondate(), curTick->actiontime(), curTick->totalvolume(), item._tick.total_volume);
 			return false;
 		}
@@ -924,7 +938,7 @@ WtDataWriterAD::WtLMDBPtr WtDataWriterAD::get_k_db(const char* exchg, WTSKlinePe
 	boost::filesystem::create_directories(path);
 	if(!dbPtr->open(path.c_str()))
 	{
-		if (_sink) _sink->outputWriterLog(LL_ERROR, "Opening %s db at %s failed: %s", subdir.c_str(), path.c_str(), dbPtr->errmsg());
+		if (_sink) pipe_writer_log(_sink, LL_ERROR, "Opening {} db at {} failed: {}", subdir, path, dbPtr->errmsg());
 		return std::move(WtLMDBPtr());
 	}
 
@@ -944,7 +958,7 @@ WtDataWriterAD::WtLMDBPtr WtDataWriterAD::get_t_db(const char* exchg, const char
 	boost::filesystem::create_directories(path);
 	if (!dbPtr->open(path.c_str()))
 	{
-		if (_sink) _sink->outputWriterLog(LL_ERROR, "Opening tick db at %s failed: %s", path.c_str(), dbPtr->errmsg());
+		if (_sink) pipe_writer_log(_sink, LL_ERROR, "Opening tick db at {} failed: %s", path, dbPtr->errmsg());
 		return std::move(WtLMDBPtr());
 	}
 

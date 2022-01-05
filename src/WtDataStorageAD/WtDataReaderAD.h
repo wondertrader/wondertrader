@@ -67,7 +67,7 @@ private:
 
 		boost::circular_buffer<WTSBarStruct>	_bars;
 
-		_BarsList(){}
+		_BarsList():_last_from_cache(false),_last_req_time(0){}
 	} BarsList;
 
 	typedef struct _TicksList
@@ -95,6 +95,9 @@ private:
 	 */
 	bool	cacheBarsFromStorage(const std::string& key, const char* stdCode, WTSKlinePeriod period, uint32_t count);
 
+	/*
+	 *	从LMDB中更新缓存的数据
+	 */
 	void	update_cache_from_lmdb(BarsList& barsList, const char* exchg, const char* code, WTSKlinePeriod period, uint32_t lastBarTime);
 
 	std::string	read_bars_to_buffer(const char* exchg, const char* code, WTSKlinePeriod period);
