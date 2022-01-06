@@ -157,7 +157,6 @@
     <ClInclude Include="ILogHandler.h" />
     <ClInclude Include="IniFile.hpp" />
     <ClInclude Include="IniHelper.hpp" />
-    <ClInclude Include="JsonToVariant.hpp" />
     <ClInclude Include="ModuleHelper.hpp" />
     <ClInclude Include="StdUtils.hpp" />
     <ClInclude Include="threadpool.hpp" />

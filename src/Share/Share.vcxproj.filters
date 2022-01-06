@@ -57,9 +57,6 @@
     <ClInclude Include="IniHelper.hpp">
       <Filter>Utils</Filter>
     </ClInclude>
-    <ClInclude Include="JsonToVariant.hpp">
-      <Filter>Utils</Filter>
-    </ClInclude>
     <ClInclude Include="StdUtils.hpp">
       <Filter>Utils</Filter>
     </ClInclude>
