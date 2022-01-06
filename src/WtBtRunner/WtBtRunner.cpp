@@ -15,10 +15,11 @@
 #include "../WtBtCore/WtHelper.h"
 
 #include "../WTSTools/WTSLogger.h"
-
 #include "../WTSUtils/SignalHook.hpp"
 
-#include "../Share/JsonToVariant.hpp"
+#include "../WTSTools/WTSCfgLoader.h"
+#include "../Includes/WTSVariant.hpp"
+
 #ifdef _MSC_VER
 #include "../Common/mdump.h"
 #endif
@@ -41,19 +42,15 @@ int main()
 #endif
 
 	std::string filename = "config.json";
+	if(_access(filename.c_str(), 0) != 0)
+		filename = "config.yaml";
 
-	std::string content;
-	StdFile::read_file_content(filename.c_str(), content);
-
-	rj::Document root;
-	if (root.Parse(content.c_str()).HasParseError())
+	WTSVariant* cfg = WTSCfgLoader::load_from_file(filename.c_str());
+	if (cfg == NULL)
 	{
-		WTSLogger::info("Parsing configuration file failed");
+		WTSLogger::info("Loading configuration file failed");
 		return -1;
 	}
-
-	WTSVariant* cfg = WTSVariant::createObject();
-	jsonToVariant(root, cfg);
 
 	HisDataReplayer replayer;
 	replayer.init(cfg->get("replayer"));

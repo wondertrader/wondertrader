@@ -18,10 +18,11 @@
 #include "../WtBtCore/WtHelper.h"
 
 #include "../Share/TimeUtils.hpp"
-#include "../Share/JsonToVariant.hpp"
 #include "../Share/ModuleHelper.hpp"
 
 #include "../WTSTools/WTSLogger.h"
+#include "../WTSTools/WTSCfgLoader.h"
+#include "../Includes/WTSVariant.hpp"
 #include "../WTSUtils/SignalHook.hpp"
 
 #ifdef _MSC_VER
@@ -441,22 +442,13 @@ void WtBtRunner::config(const char* cfgFile, bool isFile /* = true */)
 		WTSLogger::error("WtBtEngine has already been inited");
 		return;
 	}
-	std::string content;
-	if (isFile)
-		StdFile::read_file_content(cfgFile, content);
-	else
-		content = cfgFile;
 
-	rj::Document root;
-	if (root.Parse(content.c_str()).HasParseError())
+	WTSVariant* cfg = isFile ? WTSCfgLoader::load_from_file(cfgFile) : WTSCfgLoader::load_from_content(cfgFile);
+	if(cfg == NULL)
 	{
-		WTSLogger::info("Parsing configuration file failed");
+		WTSLogger::error("Loading config failed");
 		return;
 	}
-
-
-	WTSVariant* cfg = WTSVariant::createObject();
-	jsonToVariant(root, cfg);
 
 	//初始化事件推送器
 	initEvtNotifier(cfg->get("notifier"));

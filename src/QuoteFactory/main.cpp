@@ -5,11 +5,12 @@
 #include "../WtDtCore/WtHelper.h"
 
 #include "../Includes/WTSSessionInfo.hpp"
-#include "../Share/JsonToVariant.hpp"
+#include "../Includes/WTSVariant.hpp"
 
 #include "../WTSTools/WTSHotMgr.h"
 #include "../WTSTools/WTSBaseDataMgr.h"
 #include "../WTSTools/WTSLogger.h"
+#include "../WTSTools/WTSCfgLoader.h"
 #include "../Share/StrUtil.hpp"
 
 #include "../WTSUtils/SignalHook.hpp"
@@ -92,13 +93,16 @@ void initialize()
 {
 	WtHelper::set_module_dir(getBinDir());
 
-	std::string json;
-	StdFile::read_file_content("QFConfig.json", json);
-	rj::Document document;
-	document.Parse(json.c_str());
+	std::string filename("QFConfig.json");
+	if (!StdFile::exists(filename.c_str()))
+		filename = "QFConfig.yaml";
 
-	WTSVariant* config = WTSVariant::createObject();
-	jsonToVariant(document, config);
+	WTSVariant* config = WTSCfgLoader::load_from_file(filename.c_str());
+	if(config == NULL)
+	{
+		WTSLogger::error_f("Loading config file {} failed", filename);
+		return;
+	}
 
 	//加载市场信息
 	WTSVariant* cfgBF = config->get("basefiles");

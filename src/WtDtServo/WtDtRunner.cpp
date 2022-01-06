@@ -13,8 +13,8 @@
 #include "../Includes/WTSSessionInfo.hpp"
 #include "../Includes/WTSVariant.hpp"
 #include "../WTSUtils/SignalHook.hpp"
-#include "../Share/JsonToVariant.hpp"
 
+#include "../WTSTools/WTSCfgLoader.h"
 #include "../WTSTools/WTSLogger.h"
 
 
@@ -48,23 +48,12 @@ void WtDtRunner::initialize(const char* cfgFile, bool isFile /* = true */, const
 	WTSLogger::init();
 	WtHelper::set_module_dir(modDir);
 
-	std::string json;
-	if (isFile)
-		StdFile::read_file_content(cfgFile, json);
-	else
-		json = cfgFile;
-
-	if(json.empty())
+	WTSVariant* config = isFile ? WTSCfgLoader::load_from_file(cfgFile) : WTSCfgLoader::load_from_content(cfgFile);
+	if(config == NULL)
 	{
-		throw std::runtime_error("configuration file not exists");
+		WTSLogger::error("Loading config failed");
 		return;
 	}
-
-	rj::Document document;
-	document.Parse(json.c_str());
-
-	WTSVariant* config = WTSVariant::createObject();
-	jsonToVariant(document, config);
 
 	//基础数据文件
 	WTSVariant* cfgBF = config->get("basefiles");

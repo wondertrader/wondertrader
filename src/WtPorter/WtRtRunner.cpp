@@ -21,13 +21,14 @@
 #include "../WtCore/SelStraContext.h"
 
 #include "../WTSTools/WTSLogger.h"
+#include "../WTSTools/WTSCfgLoader.h"
 #include "../WTSUtils/SignalHook.hpp"
 
-#include "../Share/JsonToVariant.hpp"
 #include "../Share/TimeUtils.hpp"
 #include "../Share/ModuleHelper.hpp"
 
 #include "../Includes/WTSContractInfo.hpp"
+#include "../Includes/WTSVariant.hpp"
 
 #ifdef _MSC_VER
 #include "../Common/mdump.h"
@@ -460,18 +461,7 @@ void WtRtRunner::hft_on_trade(uint32_t cHandle, WtUInt32 localid, const char* st
 
 bool WtRtRunner::config(const char* cfgFile, bool isFile /* = true */)
 {
-	_config = WTSVariant::createObject();
-	{
-		std::string json;
-		if (isFile)
-			StdFile::read_file_content(cfgFile, json);
-		else
-			json = cfgFile;
-
-		rj::Document document;
-		document.Parse(json.c_str());
-		jsonToVariant(document, _config);
-	}
+	_config = isFile ? WTSCfgLoader::load_from_file(cfgFile) : WTSCfgLoader::load_from_content(cfgFile, false);
 
 	//基础数据文件
 	WTSVariant* cfgBF = _config->get("basefiles");
@@ -550,22 +540,22 @@ bool WtRtRunner::config(const char* cfgFile, bool isFile /* = true */)
 			const char* filename = cfgParser->asCString();
 			if (StdFile::exists(filename))
 			{
-				WTSLogger::info("Reading parser configuration from %s……", filename);
-				std::string json;
-				StdFile::read_file_content(filename, json);
-
-				rj::Document document;
-				document.Parse(json.c_str());
-				WTSVariant* var = WTSVariant::createObject();
-				jsonToVariant(document, var);
-
-				if (!initParsers(var->get("parsers")))
-					WTSLogger::error("Loading parsers failed");
-				var->release();
+				WTSLogger::info_f("Reading parser config from {}...", filename);
+				WTSVariant* var = WTSCfgLoader::load_from_file(filename);
+				if (var)
+				{
+					if (!initParsers(var->get("parsers")))
+						WTSLogger::error("Loading parsers failed");
+					var->release();
+				}
+				else
+				{
+					WTSLogger::error_f("Loading parser config {} failed", filename);
+				}
 			}
 			else
 			{
-				WTSLogger::error("Parser configuration %s not exists", filename);
+				WTSLogger::error_f("Parser configuration {} not exists", filename);
 			}
 		}
 		else if (cfgParser->type() == WTSVariant::VT_Array)
@@ -583,18 +573,18 @@ bool WtRtRunner::config(const char* cfgFile, bool isFile /* = true */)
 			const char* filename = cfgTraders->asCString();
 			if (StdFile::exists(filename))
 			{
-				WTSLogger::info("Reading trader configuration from %s……", filename);
-				std::string json;
-				StdFile::read_file_content(filename, json);
-
-				rj::Document document;
-				document.Parse(json.c_str());
-				WTSVariant* var = WTSVariant::createObject();
-				jsonToVariant(document, var);
-
-				if (!initTraders(var->get("traders")))
-					WTSLogger::error("Loading traders failed");
-				var->release();
+				WTSLogger::info_f("Reading trader config from {}...", filename);
+				WTSVariant* var = WTSCfgLoader::load_from_file(filename);
+				if (var)
+				{
+					if (!initTraders(var->get("traders")))
+						WTSLogger::error("Loading traders failed");
+					var->release();
+				}
+				else
+				{
+					WTSLogger::error_f("Loading trader config {} failed", filename);
+				}
 			}
 			else
 			{
@@ -621,18 +611,18 @@ bool WtRtRunner::config(const char* cfgFile, bool isFile /* = true */)
 				const char* filename = cfgExec->asCString();
 				if (StdFile::exists(filename))
 				{
-					WTSLogger::info("Reading executer configuration from %s……", filename);
-					std::string json;
-					StdFile::read_file_content(filename, json);
-
-					rj::Document document;
-					document.Parse(json.c_str());
-					WTSVariant* var = WTSVariant::createObject();
-					jsonToVariant(document, var);
-
-					if (!initExecuters(var->get("executers")))
-						WTSLogger::error("Loading executer failed");
-					var->release();
+					WTSLogger::info_f("Reading executer config from {}...", filename);
+					WTSVariant* var = WTSCfgLoader::load_from_file(filename);
+					if (var)
+					{
+						if (!initTraders(var->get("executers")))
+							WTSLogger::error("Loading executers failed");
+						var->release();
+					}
+					else
+					{
+						WTSLogger::error_f("Loading executer config {} failed", filename);
+					}
 				}
 				else
 				{

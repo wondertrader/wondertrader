@@ -2,14 +2,11 @@
 #include "EventNotifier.h"
 
 #include "../Share/CodeHelper.hpp"
-#include "../Share/JsonToVariant.hpp"
-
+#include "../Includes/WTSVariant.hpp"
+#include "../WTSTools/WTSCfgLoader.h"
 #include "../WTSTools/WTSLogger.h"
 
 #include <boost/filesystem.hpp>
-
-#include <rapidjson/document.h>
-namespace rj = rapidjson;
 
 USING_NS_WTP;
 
@@ -38,29 +35,7 @@ void WtFilterMgr::load_filters(const char* fileName)
 			_notifier->notifyEvent("Filter file has been reloaded");
 	}
 
-	std::string content;
-	StdFile::read_file_content(_filter_file.c_str(), content);
-	if (content.empty())
-	{
-		WTSLogger::error_f("Filters configuration file {} is empty", _filter_file);
-		return;
-	}
-
-	rj::Document root;
-	root.Parse(content.c_str());
-
-	if (root.HasParseError())
-	{
-		WTSLogger::error_f("Filters configuration file {} parsing failed", _filter_file);
-		return;
-	}
-
-	WTSVariant* cfg = WTSVariant::createObject();
-	if (!jsonToVariant(root, cfg))
-	{
-		WTSLogger::error_f("Filters configuration file {} converting failed", _filter_file);
-		return;
-	}
+	WTSVariant* cfg = WTSCfgLoader::load_from_file(_filter_file.c_str());
 
 	_filter_timestamp = lastModTime;
 

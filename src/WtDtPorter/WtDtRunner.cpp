@@ -16,9 +16,9 @@
 #include "../Includes/WTSVariant.hpp"
 #include "../Includes/WTSDataDef.hpp"
 
-#include "../Share/JsonToVariant.hpp"
 #include "../Share/StrUtil.hpp"
 
+#include "../WTSTools/WTSCfgLoader.h"
 #include "../WTSTools/WTSLogger.h"
 #include "../WTSUtils/SignalHook.hpp"
 
@@ -71,13 +71,12 @@ void WtDtRunner::initialize(const char* cfgFile, const char* logCfg, const char*
 	WTSLogger::init(logCfg);
 	WtHelper::set_module_dir(modDir);
 
-	std::string json;
-	StdFile::read_file_content(cfgFile, json);
-	rj::Document document;
-	document.Parse(json.c_str());
-
-	WTSVariant* config = WTSVariant::createObject();
-	jsonToVariant(document, config);
+	WTSVariant* config = WTSCfgLoader::load_from_file(cfgFile);
+	if(config == NULL)
+	{
+		WTSLogger::error_f("Loading config file {} failed", cfgFile);
+		return;
+	}
 
 	//基础数据文件
 	WTSVariant* cfgBF = config->get("basefiles");
@@ -162,13 +161,13 @@ void WtDtRunner::initDataMgr(WTSVariant* config)
 
 void WtDtRunner::initParsers(const char* filename)
 {
-	std::string json;
-	StdFile::read_file_content(filename, json);
-	rj::Document document;
-	document.Parse(json.c_str());
+	WTSVariant* config = WTSCfgLoader::load_from_file(filename);
+	if(config == NULL)
+	{
+		WTSLogger::error_f("Loading parser file {} failed", filename);
+		return;
+	}
 
-	WTSVariant* config = WTSVariant::createObject();
-	jsonToVariant(document, config);
 	WTSVariant* cfg = config->get("parsers");
 
 	for (uint32_t idx = 0; idx < cfg->size(); idx++)

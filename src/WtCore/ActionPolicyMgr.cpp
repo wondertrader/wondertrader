@@ -9,12 +9,11 @@
  */
 #include "ActionPolicyMgr.h"
 
-#include <assert.h>
-
-#include "../Share/JsonToVariant.hpp"
 #include "../Share/StdUtils.hpp"
-
 #include "../WTSTools/WTSLogger.h"
+
+#include "../Includes/WTSVariant.hpp"
+#include "../WTSTools/WTSCfgLoader.h"
 
 USING_NS_WTP;
 
@@ -29,26 +28,7 @@ ActionPolicyMgr::~ActionPolicyMgr()
 
 bool ActionPolicyMgr::init(const char* filename)
 {
-	std::string json;
-	StdFile::read_file_content(filename, json);
-	if (json.empty())
-	{
-		WTSLogger::error("Action policy configuration file %s loading failed", filename);
-		return false;
-	}
-
-	rj::Document document;
-	document.Parse(json.c_str());
-
-	if (document.HasParseError())
-	{
-		WTSLogger::error("Action policy configuration file %s parsing failed", filename);
-		return false;
-	}
-
-	WTSVariant* cfg = WTSVariant::createObject();
-	jsonToVariant(document, cfg);
-
+	WTSVariant* cfg = WTSCfgLoader::load_from_file(filename);
 	auto keys = cfg->memberNames();
 	for (auto it = keys.begin(); it != keys.end(); it++)
 	{

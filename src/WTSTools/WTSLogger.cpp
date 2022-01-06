@@ -17,8 +17,9 @@
 #endif
 
 #include "WTSLogger.h"
+#include "WTSCfgLoader.h"
 #include "../Includes/ILogHandler.h"
-#include "../Share/JsonToVariant.hpp"
+#include "../Includes/WTSVariant.hpp"
 #include "../Share/StdUtils.hpp"
 #include "../Share/StrUtil.hpp"
 #include "../Share/TimeUtils.hpp"
@@ -174,20 +175,9 @@ void WTSLogger::init(const char* propFile /* = "logcfg.json" */, bool isFile /* 
 	if (isFile && !StdFile::exists(propFile))
 		return;
 
-	std::string content;
-	if (isFile)
-		StdFile::read_file_content(propFile, content);
-	else
-		content = propFile;
-
-	rj::Document root;
-	if (root.Parse(content.c_str()).HasParseError())
-	{
+	WTSVariant* cfg = isFile ? WTSCfgLoader::load_from_file(propFile) : WTSCfgLoader::load_from_content(propFile, false);
+	if (cfg == NULL)
 		return;
-	}
-
-	WTSVariant* cfg = WTSVariant::createObject();
-	jsonToVariant(root, cfg);
 
 	auto keys = cfg->memberNames();
 	for (std::string& key : keys)

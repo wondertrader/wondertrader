@@ -19,6 +19,7 @@
 #include "../Share/TimeUtils.hpp"
 #include "../Includes/WTSContractInfo.hpp"
 #include "../Includes/WTSSessionInfo.hpp"
+#include "../Includes/WTSVariant.hpp"
 
 #include "../Share/decimal.h"
 
@@ -26,12 +27,13 @@
 #include "../WTSTools/WTSDataFactory.h"
 #include "../WTSTools/WTSCmpHelper.hpp"
 #include "../WTSTools/CsvHelper.h"
+#include "../WTSTools/WTSCfgLoader.h"
 
-#include "../Share/JsonToVariant.hpp"
 #include "../Share/CodeHelper.hpp"
 
 #include <boost/filesystem.hpp>
 
+#include <rapidjson/document.h>
 #include <rapidjson/prettywriter.h>
 namespace rj = rapidjson;
 
@@ -2500,36 +2502,14 @@ void HisDataReplayer::loadFees(const char* filename)
 
 	if (!StdFile::exists(filename))
 	{
-		//WTSLogger::error("手续费模板文件%s不存在", filename);
-		WTSLogger::error("Fees template file %s not exists", filename);
+		WTSLogger::error_f("Fees template file {} not exists", filename);
 		return;
 	}
 
-
-	std::string content;
-	StdFile::read_file_content(filename, content);
-	if (content.empty())
+	WTSVariant* cfg = WTSCfgLoader::load_from_file(filename);
+	if (cfg == NULL)
 	{
-		//WTSLogger::error("手续费模板文件%s为空", filename);
-		WTSLogger::error("Fees template file %s is empty", filename);
-		return;
-	}
-
-	rj::Document root;
-	root.Parse(content.c_str());
-
-	if (root.HasParseError())
-	{
-		//WTSLogger::error("手续费模板文件%s解析失败", filename);
-		WTSLogger::error("Parsing fees template file %s failed", filename);
-		return;
-	}
-
-	WTSVariant* cfg = WTSVariant::createObject();
-	if (!jsonToVariant(root, cfg))
-	{
-		//WTSLogger::error("手续费模板文件%s转换失败", filename);
-		WTSLogger::error("Converting fees template file %s failed", filename);
+		WTSLogger::error_f("Converting fees template file {} failed", filename);
 		return;
 	}
 

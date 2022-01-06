@@ -13,7 +13,6 @@
 
 #include "../Share/TimeUtils.hpp"
 #include "../Share/StrUtil.hpp"
-#include "../Share/JsonToVariant.hpp"
 #include "../Share/decimal.h"
 #include "../Share/CodeHelper.hpp"
 
@@ -22,11 +21,13 @@
 
 #include "../Includes/WTSContractInfo.hpp"
 #include "../Includes/WTSSessionInfo.hpp"
+#include "../Includes/WTSVariant.hpp"
 
 #include "../Includes/WTSDataDef.hpp"
 #include "../Includes/WTSRiskDef.hpp"
 
 #include "../WTSTools/WTSLogger.h"
+#include "../WTSTools/WTSCfgLoader.h"
 
 #include <rapidjson/document.h>
 #include <rapidjson/prettywriter.h>
@@ -679,28 +680,10 @@ void WtEngine::load_fees(const char* filename)
 		return;
 	}
 
-
-	std::string content;
-	StdFile::read_file_content(filename, content);
-	if (content.empty())
+	WTSVariant* cfg = WTSCfgLoader::load_from_file(filename);
+	if (cfg == NULL)
 	{
-		WTSLogger::error("Fee templates file %s is empty", filename);
-		return;
-	}
-
-	rj::Document root;
-	root.Parse(content.c_str());
-
-	if (root.HasParseError())
-	{
-		WTSLogger::error("Fee templates file %s parsing failed", filename);
-		return;
-	}
-
-	WTSVariant* cfg = WTSVariant::createObject();
-	if (!jsonToVariant(root, cfg))
-	{
-		WTSLogger::error("Fee templates file %s converting failed", filename);
+		WTSLogger::error("Fee templates file %s loading failed", filename);
 		return;
 	}
 

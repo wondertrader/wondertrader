@@ -2,10 +2,11 @@
 
 #include "../WtCore/WtHelper.h"
 #include "../WTSTools/WTSLogger.h"
+#include "../WTSTools/WTSCfgLoader.h"
 
 #include "../Includes/WTSContractInfo.hpp"
+#include "../Includes/WTSVariant.hpp"
 #include "../Share/CodeHelper.hpp"
-#include "../Share/JsonToVariant.hpp"
 #include "../Share/ModuleHelper.hpp"
 #include "../Share/TimeUtils.hpp"
 #include "../WTSUtils/SignalHook.hpp"
@@ -63,17 +64,12 @@ bool WtExecRunner::init(const char* logCfg /* = "logcfgexec.json" */, bool isFil
 
 bool WtExecRunner::config(const char* cfgFile, bool isFile /* = true */)
 {
-	std::string json;
-	if (isFile)
-		StdFile::read_file_content(cfgFile, json);
-	else
-		json = cfgFile;
-
-	rj::Document document;
-	document.Parse(json.c_str());
-
-	_config = WTSVariant::createObject();
-	jsonToVariant(document, _config);
+	_config = isFile ? WTSCfgLoader::load_from_file(cfgFile) : WTSCfgLoader::load_from_content(cfgFile);
+	if(_config == NULL)
+	{
+		WTSLogger::log_raw(LL_ERROR, "Loading config file failed");
+		return false;
+	}
 
 	//基础数据文件
 	WTSVariant* cfgBF = _config->get("basefiles");
@@ -133,32 +129,36 @@ bool WtExecRunner::config(const char* cfgFile, bool isFile /* = true */)
 	const char* cfgParser = _config->getCString("parsers");
 	if (StdFile::exists(cfgParser))
 	{
-		std::string json;
-		StdFile::read_file_content(cfgParser, json);
-
-		rj::Document document;
-		document.Parse(json.c_str());
-		WTSVariant* var = WTSVariant::createObject();
-		jsonToVariant(document, var);
-
-		initParsers(var);
-		var->release();
+		WTSLogger::info_f("Reading parser config from {}...", cfgParser);
+		WTSVariant* var = WTSCfgLoader::load_from_file(cfgParser);
+		if (var)
+		{
+			if (!initParsers(var))
+				WTSLogger::error("Loading parsers failed");
+			var->release();
+		}
+		else
+		{
+			WTSLogger::error_f("Loading parser config {} failed", cfgParser);
+		}
 	}
 
 	//初始化交易通道
 	const char* cfgTraders = _config->getCString("traders");
 	if (StdFile::exists(cfgTraders))
 	{
-		std::string json;
-		StdFile::read_file_content(cfgTraders, json);
-
-		rj::Document document;
-		document.Parse(json.c_str());
-		WTSVariant* var = WTSVariant::createObject();
-		jsonToVariant(document, var);
-
-		initTraders(var);
-		var->release();
+		WTSLogger::info_f("Reading parser config from {}...", cfgTraders);
+		WTSVariant* var = WTSCfgLoader::load_from_file(cfgTraders);
+		if (var)
+		{
+			if (!initTraders(var))
+				WTSLogger::error("Loading parsers failed");
+			var->release();
+		}
+		else
+		{
+			WTSLogger::error_f("Loading parser config {} failed", cfgTraders);
+		}
 	}
 
 	initExecuters();

@@ -15,9 +15,9 @@
 
 #include "../Includes/WTSVariant.hpp"
 #include "../WTSTools/WTSLogger.h"
+#include "../WTSTools/WTSCfgLoader.h"
 #include "../WTSUtils/SignalHook.hpp"
 #include "../Share/StrUtil.hpp"
-#include "../Share/JsonToVariant.hpp"
 
 
 const char* getBinDir()
@@ -67,20 +67,12 @@ bool WtRunner::init()
 
 bool WtRunner::config(const char* cfgFile)
 {
-	std::string json;
-	BoostFile::read_file_contents(cfgFile, json);
-	rj::Document document;
-	document.Parse(json.c_str());
-
-	if(document.HasParseError())
+	_config = WTSCfgLoader::load_from_file(cfgFile);
+	if(_config == NULL)
 	{
-		auto ec = document.GetParseError();
-		WTSLogger::error("Configuration file parsing failed");
+		WTSLogger::error_f("Loading config file {} failed", cfgFile);
 		return false;
 	}
-
-	_config = WTSVariant::createObject();
-	jsonToVariant(document, _config);
 
 	//基础数据文件
 	WTSVariant* cfgBF = _config->get("basefiles");
@@ -146,22 +138,22 @@ bool WtRunner::config(const char* cfgFile)
 			const char* filename = cfgParser->asCString();
 			if (StdFile::exists(filename))
 			{
-				WTSLogger::info("Reading parser configuration from %s……", filename);
-				std::string json;
-				StdFile::read_file_content(filename, json);
-
-				rj::Document document;
-				document.Parse(json.c_str());
-				WTSVariant* var = WTSVariant::createObject();
-				jsonToVariant(document, var);
-
-				if (!initParsers(var->get("parsers")))
-					WTSLogger::error("Loading parsers failed");
-				var->release();
+				WTSLogger::info_f("Reading parser config from {}...", filename);
+				WTSVariant* var = WTSCfgLoader::load_from_file(filename);
+				if(var)
+				{
+					if (!initParsers(var->get("parsers")))
+						WTSLogger::error("Loading parsers failed");
+					var->release();
+				}
+				else
+				{
+					WTSLogger::error_f("Loading parser config {} failed", filename);
+				}
 			}
 			else
 			{
-				WTSLogger::error("Parser configuration %s not exists", filename);
+				WTSLogger::error_f("Parser configuration {} not exists", filename);
 			}
 		}
 		else if (cfgParser->type() == WTSVariant::VT_Array)
@@ -179,18 +171,18 @@ bool WtRunner::config(const char* cfgFile)
 			const char* filename = cfgTraders->asCString();
 			if (StdFile::exists(filename))
 			{
-				WTSLogger::info("Reading trader configuration from %s……", filename);
-				std::string json;
-				StdFile::read_file_content(filename, json);
-
-				rj::Document document;
-				document.Parse(json.c_str());
-				WTSVariant* var = WTSVariant::createObject();
-				jsonToVariant(document, var);
-
-				if (!initTraders(var->get("traders")))
-					WTSLogger::error("Loading traders failed");
-				var->release();
+				WTSLogger::info_f("Reading trader config from {}...", filename);
+				WTSVariant* var = WTSCfgLoader::load_from_file(filename);
+				if (var)
+				{
+					if (!initTraders(var->get("traders")))
+						WTSLogger::error("Loading traders failed");
+					var->release();
+				}
+				else
+				{
+					WTSLogger::error_f("Loading trader config {} failed", filename);
+				}
 			}
 			else
 			{
@@ -216,18 +208,18 @@ bool WtRunner::config(const char* cfgFile)
 				const char* filename = cfgExec->asCString();
 				if (StdFile::exists(filename))
 				{
-					WTSLogger::info("Reading executer configuration from %s……", filename);
-					std::string json;
-					StdFile::read_file_content(filename, json);
-
-					rj::Document document;
-					document.Parse(json.c_str());
-					WTSVariant* var = WTSVariant::createObject();
-					jsonToVariant(document, var);
-
-					if (!initExecuters(var->get("executers")))
-						WTSLogger::error("Loading executer failed");
-					var->release();
+					WTSLogger::info_f("Reading executer config from {}...", filename);
+					WTSVariant* var = WTSCfgLoader::load_from_file(filename);
+					if (var)
+					{
+						if (!initTraders(var->get("executers")))
+							WTSLogger::error("Loading executers failed");
+						var->release();
+					}
+					else
+					{
+						WTSLogger::error_f("Loading executer config {} failed", filename);
+					}
 				}
 				else
 				{

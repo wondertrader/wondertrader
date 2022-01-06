@@ -301,7 +301,11 @@ WTSKlineSlice* WtDataManager::get_kline_slice(const char* stdCode, WTSKlinePerio
 		}
 
 		if (kData)
+		{
 			_bars_cache->add(key, kData, false);
+			WTSLogger::debug_f("{} bars of {} resampled every {} bars: {} -> {}", 
+				PERIOD_NAME[period], stdCode, times, realCount, kData->size());
+		}
 	}
 
 	int32_t sIdx = 0;
