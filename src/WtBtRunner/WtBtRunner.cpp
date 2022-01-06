@@ -19,6 +19,7 @@
 
 #include "../WTSTools/WTSCfgLoader.h"
 #include "../Includes/WTSVariant.hpp"
+#include "../Share/StdUtils.hpp"
 
 #ifdef _MSC_VER
 #include "../Common/mdump.h"
@@ -30,19 +31,23 @@ int main()
     CMiniDumper::Enable("WtBtRunner.exe", true, WtHelper::getCWD().c_str());
 #endif
 
-	WTSLogger::init("logcfg.json");
+	std::string filename = "logcfg.json";
+	if (!StdFile::exists(filename.c_str()))
+		filename = "logcfg.yaml";
+
+	WTSLogger::init(filename.c_str());
 
 #if _WIN32
 #pragma message("Signal hooks disabled in WIN32")
 #else
-#pragma message("Signal hooks disabled in UNIX")
+#pragma message("Signal hooks enabled in UNIX")
 	install_signal_hooks([](const char* message) {
 		WTSLogger::error(message);
 	});
 #endif
 
-	std::string filename = "config.json";
-	if(_access(filename.c_str(), 0) != 0)
+	filename = "config.json";
+	if(!StdFile::exists(filename.c_str()))
 		filename = "config.yaml";
 
 	WTSVariant* cfg = WTSCfgLoader::load_from_file(filename.c_str());
