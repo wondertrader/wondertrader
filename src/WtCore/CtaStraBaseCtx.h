@@ -13,6 +13,7 @@
 #include "../Includes/WTSDataDef.hpp"
 
 #include "../Share/BoostFile.hpp"
+#include "../Share/fmtlib.h"
 
 class CtaStrategy;
 

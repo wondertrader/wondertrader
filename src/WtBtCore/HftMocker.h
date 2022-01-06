@@ -19,6 +19,7 @@
 
 #include "../Share/StdUtils.hpp"
 #include "../Share/DLLHelper.hpp"
+#include "../Share/fmtlib.h"
 
 class HisDataReplayer;
 

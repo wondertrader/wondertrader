@@ -14,8 +14,10 @@ ENDIF()
 
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../build_${PLATFORM}/${CMAKE_BUILD_TYPE}/libs)
 
+LIST(APPEND INCS "./yamlcpp")
+
 #7. 添加源码
-file(GLOB SRCS "*.cpp" "./zstdlib/*.c")
+file(GLOB SRCS "*.cpp" "./zstdlib/*.c" "./yamlcpp/*.cpp")
 file(GLOB HDRS "*.h" "./zstdlib/*.h")
 
 IF(MSVC)
@@ -23,6 +25,8 @@ LIST(APPEND SRCS "./StackTracer/StackTracer.cpp" "./StackTracer/StackWalker.cpp"
 ELSE (GNUCC)
 LIST(APPEND SRCS "./StackTracer/StackTracer.cpp")
 ENDIF()
+
+INCLUDE_DIRECTORIES(${INCS})
 
 #8. 编译成动态库，并生成库文件
 add_library(WTSUtils STATIC ${SRCS} ${HDRS})

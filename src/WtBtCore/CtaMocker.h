@@ -19,6 +19,7 @@
 
 #include "../Share/DLLHelper.hpp"
 #include "../Share/StdUtils.hpp"
+#include "../Share/fmtlib.h"
 
 NS_WTP_BEGIN
 class EventNotifier;

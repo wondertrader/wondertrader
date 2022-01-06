@@ -14,6 +14,7 @@
 #include "WTSCollection.hpp"
 
 #include <string>
+#include <string.h>
 #include <vector>
 #include <map>
 

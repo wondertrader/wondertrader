@@ -15,7 +15,7 @@
 #include "../Includes/ISelStraCtx.h"
 #include "../Includes/SelStrategyDefs.h"
 #include "../Includes/WTSDataDef.hpp"
-
+#include "../Share/fmtlib.h"
 #include "../Share/DLLHelper.hpp"
 
 class SelStrategy;
