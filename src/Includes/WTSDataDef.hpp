@@ -1186,7 +1186,7 @@ public:
 	static inline WTSTickSlice* create(const char* code, WTSTickStruct* ticks, uint32_t count)
 	{
 		if (ticks == NULL || count == 0)
-			return false;
+			return NULL;
 
 		WTSTickSlice* slice = new WTSTickSlice();
 		strcpy(slice->_code, code);
