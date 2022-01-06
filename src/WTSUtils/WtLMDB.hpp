@@ -340,7 +340,7 @@ public:
 			ayVals.emplace_back(std::string((const char*)mData.mv_data, mData.mv_size));
 		}
 		cb(ayKeys, ayVals);
-		return ayVals.size();
+		return (int)ayVals.size();
 	}
 
 private:

@@ -254,7 +254,7 @@ public:
 			//郑商所上期所期权代码格式ZC2010P11600
 
 			//先从后往前定位到P或C的位置
-			int idx = strlen(code) - 1;
+			std::size_t idx = strlen(code) - 1;
 			for(; idx >= 0; idx--)
 			{
 				if(!isdigit(code[idx]))
@@ -325,12 +325,12 @@ public:
 		if (strlen(code) == 0)
 			return -1;
 
-		int idx = 0;
-		int len = strlen(code);
+		std::size_t idx = 0;
+		std::size_t len = strlen(code);
 		while(idx < len)
 		{
 			if (isdigit(code[idx]))
-				return idx;
+				return (int)idx;
 
 			idx++;
 		}
