@@ -59,18 +59,17 @@ protected:
 	WTSVariant() :_type(VT_Null){}
 
 private:
-	static WTSVariant* create(int32_t i32)
+	static inline WTSVariant* create(int32_t i32)
 	{
 		WTSVariant* ret = new WTSVariant();
 		ret->_type = VT_Int32;
 		char s[32] = { 0 };
 		sprintf(s, "%d", i32);
 		ret->_value._string = new std::string(s);
-		//ret->_value._string = new std::string(StrUtil::printf("%d", i32));
 		return ret;
 	}
 
-	static WTSVariant* create(uint32_t u32)
+	static inline WTSVariant* create(uint32_t u32)
 	{
 		WTSVariant* ret = new WTSVariant();
 		ret->_type = VT_Uint32;
@@ -80,40 +79,37 @@ private:
 		return ret;
 	}
 
-	static WTSVariant* create(int64_t i64)
+	static inline WTSVariant* create(int64_t i64)
 	{
 		WTSVariant* ret = new WTSVariant();
 		ret->_type = VT_Int64;
 		char s[32] = { 0 };
 		sprintf(s, INT64_FMT, i64);
 		ret->_value._string = new std::string(s);
-		//ret->_value._string = new std::string(StrUtil::printf(INT64_FMT, i64));
 		return ret;
 	}
 
-	static WTSVariant* create(uint64_t u64)
+	static inline WTSVariant* create(uint64_t u64)
 	{
 		WTSVariant* ret = new WTSVariant();
 		ret->_type = VT_Uint64;
 		char s[32] = { 0 };
 		sprintf(s, UINT64_FMT, u64);
 		ret->_value._string = new std::string(s);
-		//ret->_value._string = new std::string(StrUtil::printf(UINT64_FMT, u64));
 		return ret;
 	}
 
-	static WTSVariant* create(double _real)
+	static inline WTSVariant* create(double _real)
 	{
 		WTSVariant* ret = new WTSVariant();
 		ret->_type = VT_Real;
 		char s[32] = { 0 };
-		sprintf(s, "%f", _real);
+		sprintf(s, "%.10f", _real);
 		ret->_value._string = new std::string(s);
-		//ret->_value._string = new std::string(StrUtil::printf("%f", _real));
 		return ret;
 	}
 
-	static WTSVariant* create(const char* _string)
+	static inline WTSVariant* create(const char* _string)
 	{
 		WTSVariant* ret = new WTSVariant();
 		ret->_type = VT_String;
@@ -121,7 +117,7 @@ private:
 		return ret;
 	}
 
-	static WTSVariant* create(bool _bool)
+	static inline WTSVariant* create(bool _bool)
 	{
 		WTSVariant* ret = new WTSVariant();
 		ret->_type = VT_Boolean;
@@ -130,7 +126,7 @@ private:
 	}
 
 public:
-	static WTSVariant* createObject()
+	static inline WTSVariant* createObject()
 	{
 		WTSVariant* ret = new WTSVariant();
 		ret->_type = VT_Object;
@@ -138,7 +134,7 @@ public:
 		return ret;
 	}
 
-	static WTSVariant* createArray()
+	static inline WTSVariant* createArray()
 	{
 		WTSVariant* ret = new WTSVariant();
 		ret->_type = VT_Array;
@@ -146,7 +142,7 @@ public:
 		return ret;
 	}
 
-	bool		has(const char* key) const
+	inline bool has(const char* key) const
 	{
 		if (_type != VT_Object)
 			return false;
@@ -158,7 +154,7 @@ public:
 		return true;
 	}
 
-	int32_t		asInt32() const
+	inline int32_t asInt32() const
 	{
 		switch (_type)
 		{
@@ -176,7 +172,7 @@ public:
 		}
 	}
 
-	uint32_t	asUInt32() const
+	inline uint32_t asUInt32() const
 	{
 		switch (_type)
 		{
@@ -194,7 +190,7 @@ public:
 		}
 	}
 
-	int64_t		asInt64() const
+	inline int64_t asInt64() const
 	{
 		switch (_type)
 		{
@@ -212,7 +208,7 @@ public:
 		}
 	}
 
-	uint64_t	asUInt64() const
+	inline uint64_t asUInt64() const
 	{
 		switch (_type)
 		{
@@ -230,7 +226,7 @@ public:
 		}
 	}
 
-	double		asDouble() const
+	inline double asDouble() const
 	{
 		switch (_type)
 		{
@@ -248,7 +244,7 @@ public:
 		}
 	}
 
-	std::string	asString() const
+	inline std::string	asString() const
 	{
 		switch (_type)
 		{
@@ -267,7 +263,7 @@ public:
 		}
 	}
 
-	const char* asCString() const
+	inline const char* asCString() const
 	{
 		if (_type != VT_Object && _type != VT_Array && _value._string != NULL)
 			return _value._string->c_str();
@@ -275,17 +271,17 @@ public:
 		return "";
 	}
 
-	bool asBoolean() const
+	inline bool asBoolean() const
 	{
 		if (_value._string)
 		{
-			return _value._string->compare("true") == 0;
+			return wt_stricmp(_value._string->c_str(), "true") == 0 || wt_stricmp(_value._string->c_str(), "yes") == 0;
 		}
 
 		return false;
 	}
 
-	int32_t		getInt32(const char* name) const
+	inline int32_t getInt32(const char* name) const
 	{
 		WTSVariant* p = get(name);
 		if (p)
@@ -294,7 +290,7 @@ public:
 		return 0;
 	}
 
-	uint32_t	getUInt32(const char* name) const
+	inline uint32_t getUInt32(const char* name) const
 	{
 		WTSVariant* p = get(name);
 		if (p)
@@ -303,7 +299,7 @@ public:
 		return 0;
 	}
 
-	int64_t		getInt64(const char* name) const
+	inline int64_t getInt64(const char* name) const
 	{
 		WTSVariant* p = get(name);
 		if (p)
@@ -312,7 +308,7 @@ public:
 		return 0;
 	}
 
-	uint64_t	getUInt64(const char* name) const
+	inline uint64_t getUInt64(const char* name) const
 	{
 		WTSVariant* p = get(name);
 		if (p)
@@ -321,7 +317,7 @@ public:
 		return 0;
 	}
 
-	double		getDouble(const char* name) const
+	inline double getDouble(const char* name) const
 	{
 		WTSVariant* p = get(name);
 		if (p)
@@ -330,7 +326,7 @@ public:
 		return 0.0;
 	}
 
-	std::string	getString(const char* name) const
+	inline std::string getString(const char* name) const
 	{
 		WTSVariant* p = get(name);
 		if (p)
@@ -339,7 +335,7 @@ public:
 		return "";
 	}
 
-	const char* getCString(const char* name) const
+	inline const char* getCString(const char* name) const
 	{
 		WTSVariant* p = get(name);
 		if (p)
@@ -348,7 +344,7 @@ public:
 		return "";
 	}
 
-	bool getBoolean(const char* name) const
+	inline bool getBoolean(const char* name) const
 	{
 		WTSVariant* p = get(name);
 		if (p)
@@ -357,7 +353,7 @@ public:
 		return false;
 	}
 
-	WTSVariant* get(const char* name) const
+	inline WTSVariant* get(const char* name) const
 	{
 		if (_type != VT_Object)
 			return NULL;
@@ -369,7 +365,7 @@ public:
 		return ret;
 	}
 
-	WTSVariant* get(const std::string& name) const
+	inline WTSVariant* get(const std::string& name) const
 	{
 		if (_type != VT_Object)
 			return NULL;
@@ -381,7 +377,7 @@ public:
 		return ret;
 	}
 
-	WTSVariant* get(uint32_t idx) const
+	inline WTSVariant* get(uint32_t idx) const
 	{
 		if (_type != VT_Array)
 			return NULL;
@@ -393,7 +389,7 @@ public:
 		return ret;
 	}
 
-	bool append(const char* _name, const char* _string)
+	inline bool append(const char* _name, const char* _string)
 	{
 		if (_type != VT_Object)
 			return false;
@@ -410,7 +406,7 @@ public:
 		return true;
 	}
 
-	bool append(const char* _name, int32_t _i32)
+	inline bool append(const char* _name, int32_t _i32)
 	{
 		if (_type != VT_Object)
 			return false;
@@ -427,7 +423,7 @@ public:
 		return true;
 	}
 
-	bool append(const char* _name, uint32_t _u32)
+	inline bool append(const char* _name, uint32_t _u32)
 	{
 		if (_type != VT_Object)
 			return false;
@@ -444,7 +440,7 @@ public:
 		return true;
 	}
 
-	bool append(const char* _name, int64_t _i64)
+	inline bool append(const char* _name, int64_t _i64)
 	{
 		if (_type != VT_Object)
 			return false;
@@ -461,7 +457,7 @@ public:
 		return true;
 	}
 
-	bool append(const char* _name, uint64_t _u64)
+	inline bool append(const char* _name, uint64_t _u64)
 	{
 		if (_type != VT_Object)
 			return false;
@@ -478,7 +474,7 @@ public:
 		return true;
 	}
 
-	bool append(const char* _name, double _real)
+	inline bool append(const char* _name, double _real)
 	{
 		if (_type != VT_Object)
 			return false;
@@ -495,7 +491,7 @@ public:
 		return true;
 	}
 
-	bool append(const char* _name, bool _bool)
+	inline bool append(const char* _name, bool _bool)
 	{
 		if (_type != VT_Object)
 			return false;
@@ -512,7 +508,7 @@ public:
 		return true;
 	}
 
-	bool append(const char* _name, WTSVariant *item, bool bAutoRetain = true)
+	inline bool append(const char* _name, WTSVariant *item, bool bAutoRetain = true)
 	{
 		if (_type != VT_Object || NULL == item)
 			return false;
@@ -527,7 +523,7 @@ public:
 		return true;
 	}
 
-	bool append(const char* _str)
+	inline bool append(const char* _str)
 	{
 		if (_type != VT_Array)
 			return false;
@@ -544,7 +540,7 @@ public:
 		return true;
 	}
 
-	bool append(int32_t _i32)
+	inline bool append(int32_t _i32)
 	{
 		if (_type != VT_Array)
 			return false;
@@ -561,7 +557,7 @@ public:
 		return true;
 	}
 
-	bool append(uint32_t _u32)
+	inline bool append(uint32_t _u32)
 	{
 		if (_type != VT_Array)
 			return false;
@@ -578,7 +574,7 @@ public:
 		return true;
 	}
 
-	bool append(int64_t _i64)
+	inline bool append(int64_t _i64)
 	{
 		if (_type != VT_Array)
 			return false;
@@ -595,7 +591,7 @@ public:
 		return true;
 	}
 
-	bool append(uint64_t _u64)
+	inline bool append(uint64_t _u64)
 	{
 		if (_type != VT_Array)
 			return false;
@@ -612,7 +608,7 @@ public:
 		return true;
 	}
 
-	bool append(double _real)
+	inline bool append(double _real)
 	{
 		if (_type != VT_Array)
 			return false;
@@ -629,7 +625,7 @@ public:
 		return true;
 	}
 
-	bool append(bool _bool)
+	inline bool append(bool _bool)
 	{
 		if (_type != VT_Array)
 			return false;
@@ -646,7 +642,7 @@ public:
 		return true;
 	}
 
-	bool append(WTSVariant *item, bool bAutoRetain = true)
+	inline bool append(WTSVariant *item, bool bAutoRetain = true)
 	{
 		if (_type != VT_Array || NULL == item)
 			return false;
@@ -661,7 +657,7 @@ public:
 		return true;
 	}
 
-	uint32_t size() const
+	inline uint32_t size() const
 	{
 		if (_type != VT_Array && _type != VT_Object)
 			return 0;
@@ -676,7 +672,7 @@ public:
 		}
 	}
 
-	MemberNames memberNames() const
+	inline MemberNames memberNames() const
 	{
 		MemberNames names;
 		if (_type == VT_Object && _value._map != NULL)
@@ -688,7 +684,7 @@ public:
 			}
 		}
 
-		return names;
+		return std::move(names);
 	}
 
 	virtual void release()
