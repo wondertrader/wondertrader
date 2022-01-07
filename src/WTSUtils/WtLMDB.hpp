@@ -1,11 +1,18 @@
 #pragma once
 #include <stdint.h>
 #include <string>
-#include <io.h>
-#include <direct.h>
 #include <functional>
 #include <vector>
 #include <algorithm>
+
+#if _WIN32
+#include <direct.h>
+#include <io.h>
+#else
+#include <string.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#endif
 
 #include "../Includes/WTSMarcos.h"
 #include "lmdb/lmdb.h"
@@ -49,9 +56,18 @@ public:
 
 	bool open(const char* path, uint32_t mapsize = 8*1024*1024)
 	{
-		if(_access(path, 0) != 0)
+#if _MSC_VER
+        int ret = _access(path, 0);
+#else
+        int ret = access(path, 0);
+#endif
+		if(ret != 0)
 		{
+#if _WIN32
 			_mkdir(path);
+#else
+			mkdir(path, 777);
+#endif
 		}
 
 		int _errno = mdb_env_create(&_env);
