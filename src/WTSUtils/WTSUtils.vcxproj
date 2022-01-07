@@ -152,13 +152,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="fmtlib.h" />
     <ClInclude Include="lmdb\lmdb.h" />
     <ClInclude Include="lmdb\midl.h" />
     <ClInclude Include="SignalHook.hpp" />
     <ClInclude Include="StackTracer\StackTracer.h" />
     <ClInclude Include="StackTracer\StackWalker.h" />
     <ClInclude Include="WtLMDB.hpp" />
+    <ClInclude Include="WTSCfgLoader.h" />
+    <ClInclude Include="WTSCmpHelper.hpp" />
     <ClInclude Include="yamlcpp\collectionstack.h" />
     <ClInclude Include="yamlcpp\directives.h" />
     <ClInclude Include="yamlcpp\emitterstate.h" />
@@ -218,6 +219,7 @@
     <ClCompile Include="lmdb\midl.c" />
     <ClCompile Include="StackTracer\StackTracer.cpp" />
     <ClCompile Include="StackTracer\StackWalker.cpp" />
+    <ClCompile Include="WTSCfgLoader.cpp" />
     <ClCompile Include="yamlcpp\binary.cpp" />
     <ClCompile Include="yamlcpp\convert.cpp" />
     <ClCompile Include="yamlcpp\depthguard.cpp" />

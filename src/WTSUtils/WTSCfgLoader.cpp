@@ -2,9 +2,14 @@
 #include "../Share/StrUtil.hpp"
 #include "../Share/StdUtils.hpp"
 
+#ifdef _WIN32
+#include "../Share/charconv.hpp"
+#endif
+
 #include "../Includes/WTSVariant.hpp"
 #include <rapidjson/document.h>
 namespace rj = rapidjson;
+
 
 bool json_to_variant(const rj::Value& root, WTSVariant* params)
 {
@@ -208,6 +213,13 @@ WTSVariant* WTSCfgLoader::load_from_file(const char* filename)
 	StdFile::read_file_content(filename, content);
 	if (content.empty())
 		return NULL;
+
+	//By Wesley @ 2022.01.07
+	//Linux下得是UTF8
+	//Win下得是GBK
+#ifdef _WIN32
+	content = UTF8toChar(content);
+#endif
 
 	if (StrUtil::endsWith(filename, ".json"))
 		return load_from_json(content.c_str());
