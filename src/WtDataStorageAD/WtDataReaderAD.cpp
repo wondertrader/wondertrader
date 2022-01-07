@@ -200,7 +200,7 @@ std::string WtDataReaderAD::read_bars_to_buffer(const char* exchg, const char* c
 	//直接从LMDB读取
 	WtLMDBPtr db = get_k_db(exchg, period);
 	if (db == NULL)
-		return false;
+		return "";
 
 	std::string buffer;
 	WtLMDBQuery query(*db);

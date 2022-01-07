@@ -71,26 +71,26 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\WtPorter\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>$(MyDepends141)\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(MyDepends141)\include;$(ProjectDir)\gtest;$(IncludePath)</IncludePath>
     <LibraryPath>$(MyDepends141)\lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\WtPorter\</OutDir>
-    <IncludePath>$(MyDepends141)\include;.\gtest\;$(IncludePath)</IncludePath>
+    <IncludePath>$(MyDepends141)\include;$(ProjectDir)\gtest;$(IncludePath)</IncludePath>
     <LibraryPath>$(MyDepends141)\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\WtPorter\</OutDir>
-    <IncludePath>$(MyDepends141)\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(MyDepends141)\include;$(ProjectDir)\gtest;$(IncludePath)</IncludePath>
     <LibraryPath>$(MyDepends141)\lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\WtPorter\</OutDir>
-    <IncludePath>$(MyDepends141)\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(MyDepends141)\include;$(ProjectDir)\gtest;$(IncludePath)</IncludePath>
     <LibraryPath>$(MyDepends141)\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

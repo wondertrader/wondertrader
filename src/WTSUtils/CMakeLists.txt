@@ -17,7 +17,7 @@ SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../build_${PLATFORM}/${CMAKE_BUILD
 LIST(APPEND INCS "./yamlcpp")
 
 #7. 添加源码
-file(GLOB SRCS "*.cpp" "./zstdlib/*.c" "./yamlcpp/*.cpp")
+file(GLOB SRCS "*.cpp" "./zstdlib/*.c" "./yamlcpp/*.cpp" "./lmdb/*.c")
 file(GLOB HDRS "*.h" "./zstdlib/*.h")
 
 IF(MSVC)

@@ -5,6 +5,7 @@
 #include <direct.h>
 #include <functional>
 #include <vector>
+#include <algorithm>
 
 #include "../Includes/WTSMarcos.h"
 #include "lmdb/lmdb.h"

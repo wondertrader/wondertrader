@@ -22,7 +22,7 @@ SET(LIBS
 IF (MSVC)
 ELSE (GNUCC)
 	LIST(APPEND LIBS
-		dl
+		dl iconv
 		pthread
 		boost_filesystem
 		)

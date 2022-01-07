@@ -21,5 +21,6 @@ xcopy ..\%plat%\%env%\TraderFemas.dll ..\%plat%\%env%\WtPorter\traders\ /C /Y
 xcopy ..\%plat%\%env%\WtExeFact.dll ..\%plat%\%env%\WtPorter\executer\ /C /Y
 
 xcopy ..\%plat%\%env%\WtDataStorage.dll ..\%plat%\%env%\WtPorter\ /C /Y
+xcopy ..\%plat%\%env%\WtDataStorageAD.dll ..\%plat%\%env%\WtPorter\ /C /Y
 xcopy ..\%plat%\%env%\WtRiskMonFact.dll ..\%plat%\%env%\WtPorter\ /C /Y
 xcopy ..\%plat%\%env%\WtMsgQue.dll ..\%plat%\%env%\WtPorter\ /C /Y
