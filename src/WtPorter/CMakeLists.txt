@@ -25,7 +25,7 @@ IF (MSVC)
 	LIST(APPEND LIBS ws2_32)
 ELSE(GNUCC)
 	LIST(APPEND LIBS
-		dl
+		dl iconv
 		pthread
 		boost_filesystem
 		boost_thread)

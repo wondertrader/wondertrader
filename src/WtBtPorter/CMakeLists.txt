@@ -34,6 +34,7 @@ ELSE(GNUCC)
 		dl
 		pthread
 		boost_filesystem
+		iconv
 	)
 ENDIF()
 
