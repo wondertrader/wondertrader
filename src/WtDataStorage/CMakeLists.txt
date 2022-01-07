@@ -22,10 +22,13 @@ SET(LIBS
 IF (MSVC)
 ELSE (GNUCC)
 	LIST(APPEND LIBS
-		dl iconv
+		dl
 		pthread
 		boost_filesystem
 		)
+	if(WIN32)
+		LIST(APPEND LIBS iconv)
+	ENDIF()
 ENDIF()
 TARGET_LINK_LIBRARIES(WtDataStorage ${LIBS})
 

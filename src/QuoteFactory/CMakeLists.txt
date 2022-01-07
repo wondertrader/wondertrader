@@ -28,11 +28,11 @@ ELSE(GNUCC)
 	LIST(APPEND LIBS
 		dl
 		boost_filesystem
-        pthread iconv
+        	pthread
 		)
 	if(WIN32)
 		LIST(APPEND LIBS
-			ws2_32)
+			ws2_32 iconv)
 	ENDIF()
 ENDIF()
 

@@ -34,8 +34,10 @@ ELSE(GNUCC)
 		dl
 		pthread
 		boost_filesystem
-		iconv
 	)
+	if(WIN32)
+		LIST(APPEND LIBS iconv)
+	ENDIF()
 ENDIF()
 
 

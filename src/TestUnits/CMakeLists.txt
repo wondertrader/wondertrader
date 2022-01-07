@@ -13,10 +13,11 @@ file(GLOB SRCS *.cpp ./gtest/*.cc)
 
 SET(LIBS
 	WTSUtils)
-
 IF (MSVC)
 ELSE(GNUCC)
-	LIST(APPEND LIBS iconv)
+	IF(WIN32)
+		LIST(APPEND LIBS iconv)
+	ENDIF()
 ENDIF()
 
 LIST(APPEND INCS "./gtest")
