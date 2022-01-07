@@ -28,7 +28,7 @@ int main()
 	WtRunner runner;
 	runner.init();
 
-	runner.config("config.json");
+	runner.config();
 
 	runner.run(false);
 	return 0;

@@ -2,7 +2,7 @@
 
 #include "../WtCore/WtHelper.h"
 #include "../WTSTools/WTSLogger.h"
-#include "../WTSTools/WTSCfgLoader.h"
+#include "../WTSUtils/WTSCfgLoader.h"
 
 #include "../Includes/WTSContractInfo.hpp"
 #include "../Includes/WTSVariant.hpp"

@@ -17,7 +17,7 @@
 #include "../WTSTools/WTSLogger.h"
 #include "../WTSUtils/SignalHook.hpp"
 
-#include "../WTSTools/WTSCfgLoader.h"
+#include "../WTSUtils/WTSCfgLoader.h"
 #include "../Includes/WTSVariant.hpp"
 #include "../Share/StdUtils.hpp"
 
@@ -31,9 +31,9 @@ int main()
     CMiniDumper::Enable("WtBtRunner.exe", true, WtHelper::getCWD().c_str());
 #endif
 
-	std::string filename = "logcfg.json";
+	std::string filename = "logcfgbt.json";
 	if (!StdFile::exists(filename.c_str()))
-		filename = "logcfg.yaml";
+		filename = "logcfgbt.yaml";
 
 	WTSLogger::init(filename.c_str());
 
@@ -46,14 +46,14 @@ int main()
 	});
 #endif
 
-	filename = "config.json";
+	filename = "configbt.json";
 	if(!StdFile::exists(filename.c_str()))
-		filename = "config.yaml";
+		filename = "configbt.yaml";
 
 	WTSVariant* cfg = WTSCfgLoader::load_from_file(filename.c_str());
 	if (cfg == NULL)
 	{
-		WTSLogger::info("Loading configuration file failed");
+		WTSLogger::info_f("Loading configuration file {} failed", filename);
 		return -1;
 	}
 

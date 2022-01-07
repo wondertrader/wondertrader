@@ -3,7 +3,7 @@
 
 #include "../Share/CodeHelper.hpp"
 #include "../Includes/WTSVariant.hpp"
-#include "../WTSTools/WTSCfgLoader.h"
+#include "../WTSUtils/WTSCfgLoader.h"
 #include "../WTSTools/WTSLogger.h"
 
 #include <boost/filesystem.hpp>

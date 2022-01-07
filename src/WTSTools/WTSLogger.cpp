@@ -17,7 +17,7 @@
 #endif
 
 #include "WTSLogger.h"
-#include "WTSCfgLoader.h"
+#include "../WTSUtils/WTSCfgLoader.h"
 #include "../Includes/ILogHandler.h"
 #include "../Includes/WTSVariant.hpp"
 #include "../Share/StdUtils.hpp"

@@ -15,7 +15,7 @@
 
 #include "../Includes/WTSVariant.hpp"
 #include "../WTSTools/WTSLogger.h"
-#include "../WTSTools/WTSCfgLoader.h"
+#include "../WTSUtils/WTSCfgLoader.h"
 #include "../WTSUtils/SignalHook.hpp"
 #include "../Share/StrUtil.hpp"
 
@@ -57,7 +57,9 @@ WtRunner::~WtRunner()
 
 bool WtRunner::init()
 {
-	std::string path = WtHelper::getCWD() + "logcfg.json";
+	std::string path = "logcfg.json";
+	if(!StdFile::exists(path.c_str()))
+		path = "logcfg.yaml";
 	WTSLogger::init(path.c_str());
 
 	WtHelper::setInstDir(getBinDir());
@@ -65,8 +67,12 @@ bool WtRunner::init()
 	return true;
 }
 
-bool WtRunner::config(const char* cfgFile)
+bool WtRunner::config()
 {
+	std::string cfgFile = "config.json";
+	if (!StdFile::exists(cfgFile.c_str()))
+		cfgFile = "config.yaml";
+
 	_config = WTSCfgLoader::load_from_file(cfgFile);
 	if(_config == NULL)
 	{

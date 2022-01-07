@@ -1,5 +1,5 @@
 #include "gtest/gtest/gtest.h"
-#include "../WTSTools/WTSCfgLoader.h"
+#include "../WTSUtils/WTSCfgLoader.h"
 #include "../Includes/WTSVariant.hpp"
 
 USING_NS_WTP;

@@ -21,7 +21,7 @@
 #include "../WtCore/SelStraContext.h"
 
 #include "../WTSTools/WTSLogger.h"
-#include "../WTSTools/WTSCfgLoader.h"
+#include "../WTSUtils/WTSCfgLoader.h"
 #include "../WTSUtils/SignalHook.hpp"
 
 #include "../Share/TimeUtils.hpp"
@@ -123,7 +123,7 @@ bool WtRtRunner::init(const char* logCfg /* = "logcfg.prop" */, bool isFile /* =
 	
 
 	WtHelper::setInstDir(getBinDir());
-	WtHelper::setGenerateDir(genDir);
+	WtHelper::setGenerateDir(StrUtil::standardisePath(genDir).c_str());
 	return true;
 }
 

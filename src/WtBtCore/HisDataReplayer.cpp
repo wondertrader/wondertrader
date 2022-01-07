@@ -15,19 +15,20 @@
 
 #include "../Includes/WTSVariant.hpp"
 #include "../Includes/WTSDataDef.hpp"
-#include "../Share/StrUtil.hpp"
-#include "../Share/TimeUtils.hpp"
 #include "../Includes/WTSContractInfo.hpp"
 #include "../Includes/WTSSessionInfo.hpp"
 #include "../Includes/WTSVariant.hpp"
 
 #include "../Share/decimal.h"
+#include "../Share/StrUtil.hpp"
+#include "../Share/TimeUtils.hpp"
 
 #include "../WTSTools/WTSLogger.h"
 #include "../WTSTools/WTSDataFactory.h"
-#include "../WTSTools/WTSCmpHelper.hpp"
 #include "../WTSTools/CsvHelper.h"
-#include "../WTSTools/WTSCfgLoader.h"
+
+#include "../WTSUtils/WTSCmpHelper.hpp"
+#include "../WTSUtils/WTSCfgLoader.h"
 
 #include "../Share/CodeHelper.hpp"
 
@@ -269,7 +270,7 @@ bool HisDataReplayer::loadStkAdjFactorsFromLoader()
 
 bool HisDataReplayer::loadStkAdjFactorsFromFile(const char* adjfile)
 {
-	if (!boost::filesystem::exists(adjfile))
+	if (!StdFile::exists(adjfile))
 	{
 		WTSLogger::error("Adjust factor file %s not exists", adjfile);
 		return false;
@@ -278,26 +279,22 @@ bool HisDataReplayer::loadStkAdjFactorsFromFile(const char* adjfile)
 	std::string content;
 	StdFile::read_file_content(adjfile, content);
 
-	rj::Document doc;
-	doc.Parse(content.c_str());
-
-	if (doc.HasParseError())
+	WTSVariant* doc = WTSCfgLoader::load_from_file(adjfile);
+	if (doc == NULL)
 	{
-		WTSLogger::error("Parsing adjust factor file %s faield", adjfile);
+		WTSLogger::error_f("Parsing adjust factor file {} faield", adjfile);
 		return false;
 	}
 
 	uint32_t stk_cnt = 0;
 	uint32_t fct_cnt = 0;
-	for (auto& mExchg : doc.GetObject())
+	for (const std::string& exchg : doc->memberNames())
 	{
-		const char* exchg = mExchg.name.GetString();
-		const rj::Value& itemExchg = mExchg.value;
-		for (auto& mCode : itemExchg.GetObject())
+		WTSVariant* itemExchg = doc->get(exchg);
+		for (const std::string& code : itemExchg->memberNames())
 		{
-			std::string code = mCode.name.GetString();
-			const rj::Value& ayFacts = mCode.value;
-			if (!ayFacts.IsArray())
+			WTSVariant* ayFacts = itemExchg->get(code);
+			if (!ayFacts->isArray())
 				continue;
 
 			/*
@@ -315,11 +312,12 @@ bool HisDataReplayer::loadStkAdjFactorsFromFile(const char* adjfile)
 			stk_cnt++;
 
 			AdjFactorList& fctrLst = _adj_factors[key];
-			for (auto& fItem : ayFacts.GetArray())
+			for (uint32_t i = 0; i < ayFacts->size(); i++)
 			{
+				WTSVariant* fItem = ayFacts->get(i);
 				AdjFactor adjFact;
-				adjFact._date = fItem["date"].GetUint();
-				adjFact._factor = fItem["factor"].GetDouble();
+				adjFact._date = fItem->getUInt32("date");
+				adjFact._factor = fItem->getDouble("factor");
 
 				fctrLst.emplace_back(adjFact);
 				fct_cnt++;
@@ -337,7 +335,8 @@ bool HisDataReplayer::loadStkAdjFactorsFromFile(const char* adjfile)
 		}
 	}
 
-	WTSLogger::info("%u items of adjust factors for %u stocks loaded from %s", fct_cnt, stk_cnt, adjfile);
+	WTSLogger::info_f("{} items of adjust factors for {} tickers loaded from {}", fct_cnt, stk_cnt, adjfile);
+	doc->release();
 	return true;
 }
 

@@ -10,7 +10,8 @@
 #include "../Includes/IHotMgr.h"
 #include "../Includes/WTSDataDef.hpp"
 
-#include "../WTSTools/WTSCmpHelper.hpp"
+#include "../WTSUtils/WTSCmpHelper.hpp"
+#include "../WTSUtils/WTSCfgLoader.h"
 
 #include <rapidjson/document.h>
 namespace rj = rapidjson;
@@ -210,29 +211,22 @@ bool WtDataReader::loadStkAdjFactorsFromFile(const char* adjfile)
 		return false;
 	}
 
-	std::string content;
-    StdFile::read_file_content(adjfile, content);
-
-	rj::Document doc;
-	doc.Parse(content.c_str());
-
-	if(doc.HasParseError())
+	WTSVariant* doc = WTSCfgLoader::load_from_file(adjfile);
+	if(doc == NULL)
 	{
-		pipe_reader_log(_sink,LL_ERROR, "Parsing adjusting factors file {} failed", adjfile);
+		pipe_reader_log(_sink, LL_ERROR, "Loading adjusting factors file {} failed", adjfile);
 		return false;
 	}
 
 	uint32_t stk_cnt = 0;
 	uint32_t fct_cnt = 0;
-	for (auto& mExchg : doc.GetObject())
+	for (const std::string& exchg : doc->memberNames())
 	{
-		const char* exchg = mExchg.name.GetString();
-		const rj::Value& itemExchg = mExchg.value;
-		for(auto& mCode : itemExchg.GetObject())
+		WTSVariant* itemExchg = doc->get(exchg);
+		for(const std::string& code : itemExchg->memberNames())
 		{
-			std::string code = mCode.name.GetString();
-			const rj::Value& ayFacts = mCode.value;
-			if(!ayFacts.IsArray() )
+			WTSVariant* ayFacts = itemExchg->get(code);
+			if(!ayFacts->isArray() )
 				continue;
 
 			/*
@@ -251,11 +245,12 @@ bool WtDataReader::loadStkAdjFactorsFromFile(const char* adjfile)
 			stk_cnt++;
 
 			AdjFactorList& fctrLst = _adj_factors[key];
-			for (auto& fItem : ayFacts.GetArray())
+			for (uint32_t i = 0; i < ayFacts->size(); i++)
 			{
+				WTSVariant* fItem = ayFacts->get(i);
 				AdjFactor adjFact;
-				adjFact._date = fItem["date"].GetUint();
-				adjFact._factor = fItem["factor"].GetDouble();
+				adjFact._date = fItem->getUInt32("date");
+				adjFact._factor = fItem->getDouble("factor");
 
 				fctrLst.emplace_back(adjFact);
 				fct_cnt++;
@@ -274,6 +269,7 @@ bool WtDataReader::loadStkAdjFactorsFromFile(const char* adjfile)
 	}
 
 	pipe_reader_log(_sink,LL_INFO, "{} adjusting factors of {} tickers loaded", fct_cnt, stk_cnt);
+	doc->release();
 	return true;
 }
 

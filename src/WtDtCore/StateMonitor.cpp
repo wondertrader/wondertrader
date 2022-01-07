@@ -13,12 +13,11 @@
 #include "../Share/TimeUtils.hpp"
 #include "../Includes/WTSContractInfo.hpp"
 #include "../Includes/WTSSessionInfo.hpp"
+#include "../Includes/WTSVariant.hpp"
 
 #include "../WTSTools/WTSBaseDataMgr.h"
 #include "../WTSTools/WTSLogger.h"
-
-#include <rapidjson/document.h>
-namespace rj = rapidjson;
+#include "../WTSUtils/WTSCfgLoader.h"
 
 
 StateMonitor::StateMonitor()
@@ -40,37 +39,35 @@ bool StateMonitor::initialize(const char* filename, WTSBaseDataMgr* bdMgr, DataM
 
 	if (!StdFile::exists(filename))
 	{
-		WTSLogger::error("State configuration file %s not exists", filename);
+		WTSLogger::error("State config file %s not exists", filename);
 		return false;
 	}
 
-	std::string content;
-	StdFile::read_file_content(filename, content);
-	rj::Document root;
-	if (root.Parse(content.c_str()).HasParseError())
+	WTSVariant* config = WTSCfgLoader::load_from_file(filename);
+	if (config == NULL)
 	{
-		WTSLogger::error("Parsing state configuration failed");
+		WTSLogger::error("Loading state config failed");
 		return false;
 	}
 
-	for (auto& m : root.GetObject())
+	auto keys = config->memberNames();
+	for (const std::string& sid : keys)
 	{
-		const char* sid = m.name.GetString();
-		const rj::Value& jItem = m.value;
+		WTSVariant* jItem = config->get(sid.c_str());
 
-		WTSSessionInfo* ssInfo = _bd_mgr->getSession(sid);
+		WTSSessionInfo* ssInfo = _bd_mgr->getSession(sid.c_str());
 		if (ssInfo == NULL)
 		{
-			WTSLogger::error("Trading session template [%s] not exists,state control rule skipped", sid);
+			WTSLogger::error_f("Trading session template [{}] not exists,state control rule skipped", sid);
 			continue;
 		}
 
 		StatePtr sInfo(new StateInfo);
-		sInfo->_init_time = jItem["inittime"].GetUint();	//初始化时间,初始化以后数据才开始接收
-		sInfo->_close_time = jItem["closetime"].GetUint();	//收盘时间,收盘后数据不再接收了
-		sInfo->_proc_time = jItem["proctime"].GetUint();	//盘后处理时间,主要把实时数据转到历史去
+		sInfo->_init_time = jItem->getUInt32("inittime");	//初始化时间,初始化以后数据才开始接收
+		sInfo->_close_time = jItem->getUInt32("closetime");	//收盘时间,收盘后数据不再接收了
+		sInfo->_proc_time = jItem->getUInt32("proctime");	//盘后处理时间,主要把实时数据转到历史去
 
-		strcpy(sInfo->_session, sid);
+		strcpy(sInfo->_session, sid.c_str());
 
 		auto secInfo = ssInfo->getAuctionSection();//这里面是偏移过的时间,要注意了!!!
 		if (secInfo.first != 0 || secInfo.second != 0)
@@ -128,12 +125,11 @@ bool StateMonitor::initialize(const char* filename, WTSBaseDataMgr* bdMgr, DataM
 					(ssInfo->getOffsetMins() <= 0 && ! _bd_mgr->isTradingDate(pid, offDate))
 					)
 				{
-					WTSLogger::info("Instrument %s is in holiday", pid);
+					WTSLogger::info_f("Instrument {} is in holiday", pid);
 				}
 			}
 		}
 	}
-
 	return true;
 }
 

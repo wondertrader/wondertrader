@@ -18,7 +18,7 @@
 
 #include "../Share/StrUtil.hpp"
 
-#include "../WTSTools/WTSCfgLoader.h"
+#include "../WTSUtils/WTSCfgLoader.h"
 #include "../WTSTools/WTSLogger.h"
 #include "../WTSUtils/SignalHook.hpp"
 
@@ -141,12 +141,19 @@ void WtDtRunner::initialize(const char* cfgFile, const char* logCfg, const char*
 
 	_udp_caster.init(config->get("broadcaster"), &_bd_mgr, &_data_mgr);
 
-	initDataMgr(config->get("writer"));
+	//By Wesley @ 2021.12.27
+	//全天候模式，不需要再使用状态机
+	bool bAlldayMode = config->getBoolean("allday");
+	if (!bAlldayMode)
+	{
+		_state_mon.initialize(config->getCString("statemonitor"), &_bd_mgr, &_data_mgr);
+	}
+	else
+	{
+		WTSLogger::info("QuoteFactory will run in allday mode");
+	}
 
-    //By Wesley @ 2021.12.27
-    //全天候落地的话，不需要加载statemonitor
-    if(config->has("statemonitor"))
-	    _state_mon.initialize(config->getCString("statemonitor"), &_bd_mgr, &_data_mgr);
+	initDataMgr(config->get("writer"));
 
 	initParsers(config->getCString("parsers"));
 

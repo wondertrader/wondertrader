@@ -9,7 +9,7 @@
 #include "../Share/IniHelper.hpp"
 
 #include "../Includes/IBaseDataMgr.h"
-#include "../WTSTools/WTSCmpHelper.hpp"
+#include "../WTSUtils/WTSCmpHelper.hpp"
 
 #include <set>
 

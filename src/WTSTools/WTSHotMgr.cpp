@@ -8,7 +8,7 @@
  * \brief 
  */
 #include "WTSHotMgr.h"
-#include "WTSCfgLoader.h"
+#include "../WTSUtils/WTSCfgLoader.h"
 
 #include "../Includes/WTSHotItem.hpp"
 #include "../Includes/WTSVariant.hpp"

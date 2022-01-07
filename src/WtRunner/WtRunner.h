@@ -50,7 +50,7 @@ public:
 	 */
 	bool init();
 
-	bool config(const char* cfgFile);
+	bool config();
 
 	void run(bool bAsync = false);
 

@@ -10,7 +10,7 @@
 #include "../WTSTools/WTSHotMgr.h"
 #include "../WTSTools/WTSBaseDataMgr.h"
 #include "../WTSTools/WTSLogger.h"
-#include "../WTSTools/WTSCfgLoader.h"
+#include "../WTSUtils/WTSCfgLoader.h"
 #include "../Share/StrUtil.hpp"
 
 #include "../WTSUtils/SignalHook.hpp"
@@ -171,7 +171,7 @@ void initialize()
 	bool bAlldayMode = config->getBoolean("allday");
 	if (!bAlldayMode)
 	{
-		g_stateMon.initialize("statemonitor.json", &g_baseDataMgr, &g_dataMgr);
+		g_stateMon.initialize(config->getCString("statemonitor"), &g_baseDataMgr, &g_dataMgr);
 	}
 	else
 	{
@@ -197,6 +197,10 @@ void initialize()
 
 int main()
 {
+	std::string filename = "logcfgdt.json";
+	if (!StdFile::exists(filename.c_str()))
+		filename = "logcfgdt.yaml";
+
 	WTSLogger::init();
 
 #ifdef _MSC_VER

@@ -27,7 +27,7 @@
 #include "../Includes/WTSRiskDef.hpp"
 
 #include "../WTSTools/WTSLogger.h"
-#include "../WTSTools/WTSCfgLoader.h"
+#include "../WTSUtils/WTSCfgLoader.h"
 
 #include <rapidjson/document.h>
 #include <rapidjson/prettywriter.h>

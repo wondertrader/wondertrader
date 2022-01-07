@@ -13,7 +13,7 @@
 #include "../WTSTools/WTSLogger.h"
 
 #include "../Includes/WTSVariant.hpp"
-#include "../WTSTools/WTSCfgLoader.h"
+#include "../WTSUtils/WTSCfgLoader.h"
 
 USING_NS_WTP;
 

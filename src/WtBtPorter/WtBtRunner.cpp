@@ -21,7 +21,7 @@
 #include "../Share/ModuleHelper.hpp"
 
 #include "../WTSTools/WTSLogger.h"
-#include "../WTSTools/WTSCfgLoader.h"
+#include "../WTSUtils/WTSCfgLoader.h"
 #include "../Includes/WTSVariant.hpp"
 #include "../WTSUtils/SignalHook.hpp"
 

@@ -123,9 +123,6 @@
     <ClInclude Include="zstdlib\zbuff.h">
       <Filter>zstdlib</Filter>
     </ClInclude>
-    <ClInclude Include="fmtlib.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="SignalHook.hpp">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -206,6 +203,12 @@
     </ClInclude>
     <ClInclude Include="yamlcpp\token.h">
       <Filter>yaml-cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="WTSCfgLoader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="WTSCmpHelper.hpp">
+      <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -400,6 +403,9 @@
     </ClCompile>
     <ClCompile Include="yamlcpp\tag.cpp">
       <Filter>yaml-cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="WTSCfgLoader.cpp">
+      <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
