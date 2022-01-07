@@ -8,24 +8,17 @@
  * \brief 
  */
 #include "WTSBaseDataMgr.h"
+#include "WTSCfgLoader.h"
+#include "WTSLogger.h"
 
 #include "../Includes/WTSContractInfo.hpp"
 #include "../Includes/WTSSessionInfo.hpp"
+#include "../Includes/WTSVariant.hpp"
 
 #include "../Share/StrUtil.hpp"
 #include "../Share/StdUtils.hpp"
 
-#include "../WTSUtils/fmtlib.h"
-
-#include "WTSLogger.h"
-
-#include <rapidjson/document.h>
-
-
 const char* DEFAULT_HOLIDAY_TPL = "CHINA";
-
-namespace rj = rapidjson;
-
 
 WTSBaseDataMgr::WTSBaseDataMgr()
 	: m_mapExchgContract(NULL)
@@ -228,74 +221,74 @@ bool WTSBaseDataMgr::loadSessions(const char* filename)
 {
 	if (!StdFile::exists(filename))
 	{
-		WTSLogger::error("Trading sessions configuration file %s not exists", filename);
+		WTSLogger::error_f("Trading sessions configuration file {} not exists", filename);
 		return false;
 	}
 
-	std::string content;
-	StdFile::read_file_content(filename, content);
-	rj::Document root;
-	if (root.Parse(content.c_str()).HasParseError())
+	WTSVariant* root = WTSCfgLoader::load_from_file(filename);
+	if (root == NULL)
 	{
-		WTSLogger::error("Parsing trading session configuration file failed");
+		WTSLogger::error_f("Loading session config file {} failed", filename);
 		return false;
 	}
 
-	for(auto& m : root.GetObject())
+	for(const std::string& id : root->memberNames())
 	{
-		const std::string& id = m.name.GetString();
-		const rj::Value& jVal = m.value;
+		WTSVariant* jVal = root->get(id);
 
-		const char* name = jVal["name"].GetString();
-		int32_t offset = jVal["offset"].GetInt();
+		const char* name = jVal->getCString("name");
+		int32_t offset = jVal->getInt32("offset");
 
 		WTSSessionInfo* sInfo = WTSSessionInfo::create(id.c_str(), name, offset);
 
-		if (jVal.HasMember("auction"))
+		if (jVal->has("auction"))
 		{
-			const rj::Value& jAuc = jVal["auction"];
-			sInfo->setAuctionTime(jAuc["from"].GetUint(), jAuc["to"].GetUint());
+			WTSVariant* jAuc = jVal->get("auction");
+			sInfo->setAuctionTime(jAuc->getUInt32("from"), jAuc->getUInt32("to"));
 		}
 
-		const rj::Value& jSecs = jVal["sections"];
-		if (jSecs.IsNull() || !jSecs.IsArray())
+		WTSVariant* jSecs = jVal->get("sections");
+		if (jSecs == NULL || !jSecs->isArray())
 			continue;
 
-		for (const rj::Value& jSec : jSecs.GetArray())
+		for (uint32_t i = 0; i < jSecs->size(); i++)
 		{
-			sInfo->addTradingSection(jSec["from"].GetUint(), jSec["to"].GetUint());
+			WTSVariant* jSec = jSecs->get(i);
+			sInfo->addTradingSection(jSec->getUInt32("from"), jSec->getUInt32("to"));
 		}
 
 		m_mapSessions->add(id, sInfo);
 	}
 
+	root->release();
+
 	return true;
 }
 
-void parseCommodity(WTSCommodityInfo* pCommInfo, const rj::Value& jPInfo)
+void parseCommodity(WTSCommodityInfo* pCommInfo, WTSVariant* jPInfo)
 {
-	pCommInfo->setPriceTick(jPInfo["pricetick"].GetDouble());
-	pCommInfo->setVolScale(jPInfo["volscale"].GetUint());
+	pCommInfo->setPriceTick(jPInfo->getDouble("pricetick"));
+	pCommInfo->setVolScale(jPInfo->getUInt32("volscale"));
 
-	if (jPInfo.HasMember("category"))
-		pCommInfo->setCategory((ContractCategory)jPInfo["category"].GetUint());
+	if (jPInfo->has("category"))
+		pCommInfo->setCategory((ContractCategory)jPInfo->getUInt32("category"));
 	else
 		pCommInfo->setCategory(CC_Future);
 
-	pCommInfo->setCoverMode((CoverMode)jPInfo["covermode"].GetUint());
-	pCommInfo->setPriceMode((PriceMode)jPInfo["pricemode"].GetUint());
+	pCommInfo->setCoverMode((CoverMode)jPInfo->getUInt32("covermode"));
+	pCommInfo->setPriceMode((PriceMode)jPInfo->getUInt32("pricemode"));
 
-	if (jPInfo.HasMember("trademode"))
-		pCommInfo->setTradingMode((TradingMode)jPInfo["trademode"].GetUint());
+	if (jPInfo->has("trademode"))
+		pCommInfo->setTradingMode((TradingMode)jPInfo->getUInt32("trademode"));
 	else
 		pCommInfo->setTradingMode(TM_Both);
 
 	double lotsTick = 1;
 	double minLots = 1;
-	if (jPInfo.HasMember("lotstick"))
-		lotsTick = jPInfo["lotstick"].GetDouble();
-	if (jPInfo.HasMember("minlots"))
-		minLots = jPInfo["minlots"].GetDouble();
+	if (jPInfo->has("lotstick"))
+		lotsTick = jPInfo->getDouble("lotstick");
+	if (jPInfo->has("minlots"))
+		minLots = jPInfo->getDouble("minlots");
 	pCommInfo->setLotsTick(lotsTick);
 	pCommInfo->setMinLots(minLots);
 }
@@ -304,36 +297,32 @@ bool WTSBaseDataMgr::loadCommodities(const char* filename)
 {
 	if (!StdFile::exists(filename))
 	{
-		WTSLogger::error("Commodities configuration file %s not exists", filename);
+		WTSLogger::error_f("Commodities configuration file {} not exists", filename);
 		return false;
 	}
 
-	std::string content;
-	StdFile::read_file_content(filename, content);
-	rj::Document root;
-	if (root.Parse(content.c_str()).HasParseError())
+	WTSVariant* root = WTSCfgLoader::load_from_file(filename);
+	if (root == NULL)
 	{
-		WTSLogger::error("Loading commodities configuration file failed");
+		WTSLogger::error_f("Loading commodities config file {} failed", filename);
 		return false;
 	}
 
-	for(auto& m : root.GetObject())
+	for(const std::string& exchg : root->memberNames())
 	{
-		const std::string& exchg = m.name.GetString();
-		const rj::Value& jExchg = m.value;
+		WTSVariant* jExchg = root->get(exchg);
 
-		for (auto& mExchg : jExchg.GetObject())
+		for (const std::string& pid : jExchg->memberNames())
 		{
-			const std::string& pid = mExchg.name.GetString();
-			const rj::Value& jPInfo = mExchg.value;
+			WTSVariant* jPInfo = jExchg->get(pid);
 
-			const char* name = jPInfo["name"].GetString();
-			const char* sid = jPInfo["session"].GetString();
-			const char* hid = jPInfo["holiday"].GetString();
+			const char* name = jPInfo->getCString("name");
+			const char* sid = jPInfo->getCString("session");
+			const char* hid = jPInfo->getCString("holiday");
 
 			if (strlen(sid) == 0)
 			{
-				WTSLogger::error("No session configured for %s.%s", exchg.c_str(), pid.c_str());
+				WTSLogger::error_f("No session configured for {}.{}", exchg.c_str(), pid.c_str());
 				continue;
 			}
 
@@ -350,7 +339,8 @@ bool WTSBaseDataMgr::loadCommodities(const char* filename)
 		}
 	}
 
-	WTSLogger::info("Commodities configuration file %s loaded", filename);
+	WTSLogger::info_f("Commodities configuration file {} loaded", filename);
+	root->release();
 	return true;
 }
 
@@ -358,28 +348,24 @@ bool WTSBaseDataMgr::loadContracts(const char* filename)
 {
 	if (!StdFile::exists(filename))
 	{
-		WTSLogger::error("Contracts configuration file %s not exists", filename);
+		WTSLogger::error_f("Contracts configuration file {} not exists", filename);
 		return false;
 	}
 
-	std::string content;
-	StdFile::read_file_content(filename, content);
-	rj::Document root;
-	if (root.Parse(content.c_str()).HasParseError())
+	WTSVariant* root = WTSCfgLoader::load_from_file(filename);
+	if (root == NULL)
 	{
-		WTSLogger::error("Parsing contracts configuration file failed");
+		WTSLogger::error_f("Loading contracts config file {} failed", filename);
 		return false;
 	}
 
-	for(auto& m : root.GetObject())
+	for(const std::string& exchg : root->memberNames())
 	{
-		const std::string& exchg = m.name.GetString();
-		const rj::Value& jExchg = m.value;
+		WTSVariant* jExchg = root->get(exchg);
 
-		for(auto& cMember : jExchg.GetObject())
+		for(const std::string& code : jExchg->memberNames())
 		{
-			const std::string& code = cMember.name.GetString();
-			const rj::Value& jcInfo = cMember.value;
+			WTSVariant* jcInfo = jExchg->get(code);
 
 			/*
 			 *	By Wesley @ 2021.12.28
@@ -388,20 +374,20 @@ bool WTSBaseDataMgr::loadContracts(const char* filename)
 			 */
 			WTSCommodityInfo* commInfo = NULL;
 			std::string pid;
-			if(jcInfo.HasMember("product"))
+			if(jcInfo->has("product"))
 			{
-				pid = jcInfo["product"].GetString();
-				commInfo = getCommodity(jcInfo["exchg"].GetString(), pid.c_str());
+				pid = jcInfo->getCString("product");
+				commInfo = getCommodity(jcInfo->getCString("exchg"), pid.c_str());
 			}
-			else if(jcInfo.HasMember("rules"))
+			else if(jcInfo->has("rules"))
 			{
 				pid = code.c_str();
-				const rj::Value& jPInfo = jcInfo["rules"];
-				const char* name = jcInfo["name"].GetString();
-				std::string sid = jPInfo["session"].GetString();
+				WTSVariant* jPInfo = jcInfo->get("rules");
+				const char* name = jcInfo->getCString("name");
+				std::string sid = jPInfo->getCString("session");
 				std::string hid;
-				if(jPInfo.HasMember("holiday"))
-					hid = jPInfo["holiday"].GetString();
+				if(jPInfo->has("holiday"))
+					hid = jPInfo->getCString("holiday");
 
 				//这里不能像解析commodity那样处理，直接赋值为ALLDAY
 				if (sid.empty())
@@ -423,21 +409,21 @@ bool WTSBaseDataMgr::loadContracts(const char* filename)
 
 			if (commInfo == NULL)
 			{
-				WTSLogger::error("Commodity %s.%s not found, contract %s skipped", jcInfo["exchg"].GetString(), jcInfo["product"].GetString(), code.c_str());
+				WTSLogger::error("Commodity %s.%s not found, contract %s skipped", jcInfo->getCString("exchg"), jcInfo->getCString("product"), code.c_str());
 				continue;
 			}
 
 			WTSContractInfo* cInfo = WTSContractInfo::create(code.c_str(),
-				jcInfo["name"].GetString(),
-				jcInfo["exchg"].GetString(),
+				jcInfo->getCString("name"),
+				jcInfo->getCString("exchg"),
 				pid.c_str());
 
 			uint32_t maxMktQty = 0;
 			uint32_t maxLmtQty = 0;
-			if (jcInfo.HasMember("maxmarketqty"))
-				maxMktQty = jcInfo["maxmarketqty"].GetUint();
-			if (jcInfo.HasMember("maxlimitqty"))
-				maxLmtQty = jcInfo["maxlimitqty"].GetUint();
+			if (jcInfo->has("maxmarketqty"))
+				maxMktQty = jcInfo->getUInt32("maxmarketqty");
+			if (jcInfo->has("maxlimitqty"))
+				maxLmtQty = jcInfo->getUInt32("maxlimitqty");
 			cInfo->setVolumeLimits(maxMktQty, maxLmtQty);
 
 			WTSContractList* contractList = (WTSContractList*)m_mapExchgContract->get(cInfo->getExchg());
@@ -461,7 +447,8 @@ bool WTSBaseDataMgr::loadContracts(const char* filename)
 		}
 	}
 
-	WTSLogger::info("Contracts configuration file %s loaded", filename);
+	WTSLogger::info_f("Contracts configuration file {} loaded", filename);
+	root->release();
 	return true;
 }
 
@@ -469,32 +456,32 @@ bool WTSBaseDataMgr::loadHolidays(const char* filename)
 {
 	if (!StdFile::exists(filename))
 	{
-		WTSLogger::error("Holidays configuration file %s not exists", filename);
+		WTSLogger::error_f("Holidays configuration file {} not exists", filename);
 		return false;
 	}
 
-	std::string content;
-	StdFile::read_file_content(filename, content);
-	rj::Document root;
-	if (root.Parse(content.c_str()).HasParseError())
+	WTSVariant* root = WTSCfgLoader::load_from_file(filename);
+	if (root == NULL)
 	{
-		WTSLogger::error("Parsing holidays configuration file failed");
+		WTSLogger::error_f("Loading holidays config file {} failed", filename);
 		return false;
 	}
 
-	for (auto& m : root.GetObject())
+	for (const std::string& hid : root->memberNames())
 	{
-		const std::string& hid = m.name.GetString();
-		const rj::Value& jHolidays = m.value;
-		if(!jHolidays.IsArray())
+		WTSVariant* jHolidays = root->get(hid);
+		if(!jHolidays->isArray())
 			continue;
 
 		TradingDayTpl& trdDayTpl = m_mapTradingDay[hid];
-		for(const rj::Value& hItem : jHolidays.GetArray())
+		for(uint32_t i = 0; i < jHolidays->size(); i++)
 		{
-			trdDayTpl._holidays.insert(hItem.GetUint());
+			WTSVariant* hItem = jHolidays->get(i);
+			trdDayTpl._holidays.insert(hItem->asUInt32());
 		}
 	}
+
+	root->release();
 
 	return true;
 }
