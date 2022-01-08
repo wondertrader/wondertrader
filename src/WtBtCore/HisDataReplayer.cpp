@@ -83,6 +83,7 @@ bool proc_block_data(std::string& content, bool isBar, bool bKeepHead = true)
 
 	if (bOldVer)
 	{
+		WTSLogger::info("Transfering old version data to new version...");
 		if (isBar)
 		{
 			std::string bufV2;
@@ -272,7 +273,7 @@ bool HisDataReplayer::loadStkAdjFactorsFromFile(const char* adjfile)
 {
 	if (!StdFile::exists(adjfile))
 	{
-		WTSLogger::error("Adjust factor file %s not exists", adjfile);
+		WTSLogger::error_f("Adjust factor file {} not exists, skipped", adjfile);
 		return false;
 	}
 
@@ -2851,15 +2852,17 @@ bool HisDataReplayer::cacheRawTicksFromCSV(const std::string& key, const char* s
 	if (StdFile::exists(filename.c_str()))
 	{
 		//如果有格式化的历史数据文件, 则直接读取
+		WTSLogger::info_f("Reading data from {}...", filename);
 		std::string content;
 		StdFile::read_file_content(filename.c_str(), content);
 		if (content.size() < sizeof(HisTickBlockV2))
 		{
 			//WTSLogger::error("历史Tick数据文件%s大小校验失败", filename.c_str());
-			WTSLogger::error("Sizechecking of back tick data file %s failed", filename.c_str());
+			WTSLogger::error_f("Sizechecking of back tick data file {} failed", filename);
 			return false;
 		}
 
+		WTSLogger::info_f("Processing file content of {}...", filename);
 		proc_block_data(content, false, false);
 		uint32_t tickcnt = content.size() / sizeof(WTSTickStruct);
 		auto& ticksList = _ticks_cache[key];
@@ -2879,14 +2882,14 @@ bool HisDataReplayer::cacheRawTicksFromCSV(const std::string& key, const char* s
 
 		if (!StdFile::exists(csvfile.c_str()))
 		{
-			WTSLogger::error("Back tick data file %s not exists", csvfile.c_str());
+			WTSLogger::error_f("Back tick data file {} not exists", csvfile.c_str());
 			return false;
 		}
 
 		std::ifstream ifs;
 		ifs.open(csvfile.c_str());
 
-		WTSLogger::info("Reading data from %s...", csvfile.c_str());
+		WTSLogger::info_f("Reading data from {}...", csvfile.c_str());
 
 		char buffer[1024];
 		bool headerskipped = false;
@@ -2918,13 +2921,13 @@ bool HisDataReplayer::cacheRawTicksFromCSV(const std::string& key, const char* s
 			if (tickList._items.size() % 1000 == 0)
 			{
 				//WTSLogger::info("已读取数据%u条", tickList._items.size());
-				WTSLogger::info("%u lines of data loaded", tickList._items.size());
+				WTSLogger::info_f("{} items of data loaded", tickList._items.size());
 			}
 		}
 		tickList._count = tickList._items.size();
 		ifs.close();
 		//WTSLogger::info("数据文件%s全部读取完成, 共%u条", csvfile.c_str(), tickList._items.size());
-		WTSLogger::info("Data file %s all loaded, totally %u items", csvfile.c_str(), tickList._items.size());
+		WTSLogger::info_f("Data file {} all loaded, totally {} items", csvfile.c_str(), tickList._items.size());
 
 		/*
 		 *	By Wesley @ 2021.12.14
@@ -2942,7 +2945,7 @@ bool HisDataReplayer::cacheRawTicksFromCSV(const std::string& key, const char* s
 		content.append(cmpData);
 
 		StdFile::write_file_content(filename.c_str(), content.c_str(), content.size());
-		WTSLogger::info("Ticks transfered to file %s", filename.c_str());
+		WTSLogger::info_f("Ticks transfered to file {}", filename.c_str());
 	}
 
 	return true;
