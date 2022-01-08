@@ -206,7 +206,7 @@ void ParserCTP::OnFrontDisconnected( int nReason )
 {
 	if(m_sink)
 	{
-		write_log(m_sink, LL_ERROR, StrUtil::printf("[ParserCTP] Market data server disconnected: {}", nReason).c_str());
+		write_log(m_sink, LL_ERROR, "[ParserCTP] Market data server disconnected: {}", nReason);
 		m_sink->handleEvent(WPE_Close, 0);
 	}
 }
@@ -348,7 +348,7 @@ void ParserCTP::OnRspSubMarketData( CThostFtdcSpecificInstrumentField *pSpecific
 void ParserCTP::OnHeartBeatWarning( int nTimeLapse )
 {
 	if(m_sink)
-		write_log(m_sink, LL_INFO, StrUtil::printf("[ParserCTP] Heartbeating, elapse: {}", nTimeLapse).c_str());
+		write_log(m_sink, LL_INFO, "[ParserCTP] Heartbeating, elapse: {}", nTimeLapse);
 }
 
 void ParserCTP::ReqUserLogin()
@@ -367,7 +367,7 @@ void ParserCTP::ReqUserLogin()
 	if(iResult != 0)
 	{
 		if(m_sink)
-			write_log(m_sink, LL_ERROR, StrUtil::printf("[ParserCTP] Sending login request failed: {}", iResult).c_str());
+			write_log(m_sink, LL_ERROR, "[ParserCTP] Sending login request failed: {}", iResult);
 	}
 }
 
@@ -396,12 +396,12 @@ void ParserCTP::SubscribeMarketData()
 		if(iResult != 0)
 		{
 			if(m_sink)
-				write_log(m_sink, LL_ERROR, StrUtil::printf("[ParserCTP] Sending md subscribe request failed: {}", iResult).c_str());
+				write_log(m_sink, LL_ERROR, "[ParserCTP] Sending md subscribe request failed: {}", iResult);
 		}
 		else
 		{
 			if(m_sink)
-				write_log(m_sink, LL_INFO, StrUtil::printf("[ParserCTP] Market data of {} contracts subscribed in total", nCount).c_str());
+				write_log(m_sink, LL_INFO, "[ParserCTP] Market data of {} contracts subscribed in total", nCount);
 		}
 	}
 	codeFilter.clear();

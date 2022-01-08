@@ -202,7 +202,7 @@ void ParserFemas::OnFrontDisconnected( int nReason )
 {
 	if(m_sink)
 	{
-		write_log(m_sink, LL_ERROR, StrUtil::printf("[ParserFemas] Market data server disconnected: {}", nReason).c_str());
+		write_log(m_sink, LL_ERROR, "[ParserFemas] Market data server disconnected: {}", nReason);
 		m_sink->handleEvent(WPE_Close, 0);
 	}
 }
@@ -343,7 +343,7 @@ void ParserFemas::OnRspSubMarketData( CUstpFtdcSpecificInstrumentField *pSpecifi
 void ParserFemas::OnHeartBeatWarning( int nTimeLapse )
 {
 	if(m_sink)
-		write_log(m_sink, LL_INFO, StrUtil::printf("[ParserFemas] Heartbeating, elapse: {}", nTimeLapse).c_str());
+		write_log(m_sink, LL_INFO, "[ParserFemas] Heartbeating, elapse: {}", nTimeLapse);
 }
 
 void ParserFemas::ReqUserLogin()
@@ -362,7 +362,7 @@ void ParserFemas::ReqUserLogin()
 	if(iResult != 0)
 	{
 		if(m_sink)
-			write_log(m_sink, LL_ERROR, StrUtil::printf("[ParserFemas] Sending login request failed: {}", iResult).c_str());
+			write_log(m_sink, LL_ERROR, "[ParserFemas] Sending login request failed: {}", iResult);
 	}
 }
 
@@ -391,12 +391,12 @@ void ParserFemas::SubscribeMarketData()
 		if(iResult != 0)
 		{
 			if(m_sink)
-				write_log(m_sink, LL_ERROR, StrUtil::printf("[ParserFemas] Sending md subscribe request failed: {}", iResult).c_str());
+				write_log(m_sink, LL_ERROR, "[ParserFemas] Sending md subscribe request failed: {}", iResult);
 		}
 		else
 		{
 			if(m_sink)
-				write_log(m_sink, LL_INFO, StrUtil::printf("[ParserFemas] Market data of {} contracts subscribed in total", nCount).c_str());
+				write_log(m_sink, LL_INFO, "[ParserFemas] Market data of {} contracts subscribed in total", nCount);
 		}
 	}
 	codeFilter.clear();
@@ -434,12 +434,12 @@ void ParserFemas::subscribe(const CodeSet &vecSymbols)
 			if (iResult != 0)
 			{
 				if (m_sink)
-					write_log(m_sink, LL_ERROR, StrUtil::printf("[ParserFemas] Sending md subscribe request failed: {}", iResult).c_str());
+					write_log(m_sink, LL_ERROR, "[ParserFemas] Sending md subscribe request failed: {}", iResult);
 			}
 			else
 			{
 				if (m_sink)
-					write_log(m_sink, LL_INFO, StrUtil::printf("[ParserFemas] Market data of {} contracts subscribed in total", nCount).c_str());
+					write_log(m_sink, LL_INFO, "[ParserFemas] Market data of {} contracts subscribed in total", nCount);
 			}
 		}
 	}

@@ -200,7 +200,7 @@ void ParserCTPMini::OnFrontDisconnected( int nReason )
 {
 	if(m_sink)
 	{
-		write_log(m_sink, LL_ERROR, StrUtil::printf("[ParserCTPMini] Market data server disconnected: {}", nReason).c_str());
+		write_log(m_sink, LL_ERROR, "[ParserCTPMini] Market data server disconnected: {}", nReason);
 		m_sink->handleEvent(WPE_Close, 0);
 	}
 }
@@ -345,7 +345,7 @@ void ParserCTPMini::OnRspSubMarketData( CThostFtdcSpecificInstrumentField *pSpec
 void ParserCTPMini::OnHeartBeatWarning( int nTimeLapse )
 {
 	if(m_sink)
-		write_log(m_sink, LL_INFO, StrUtil::printf("[ParserCTPMini] Heartbeating, elapse: {}", nTimeLapse).c_str());
+		write_log(m_sink, LL_INFO, "[ParserCTPMini] Heartbeating, elapse: {}", nTimeLapse);
 }
 
 void ParserCTPMini::ReqUserLogin()
@@ -364,7 +364,7 @@ void ParserCTPMini::ReqUserLogin()
 	if(iResult != 0)
 	{
 		if(m_sink)
-			write_log(m_sink, LL_ERROR, StrUtil::printf("[ParserCTPMini] Sending login request failed: {}", iResult).c_str());
+			write_log(m_sink, LL_ERROR, "[ParserCTPMini] Sending login request failed: {}", iResult);
 	}
 }
 
@@ -393,12 +393,12 @@ void ParserCTPMini::SubscribeMarketData()
 		if(iResult != 0)
 		{
 			if(m_sink)
-				write_log(m_sink, LL_ERROR, StrUtil::printf("[ParserCTPMini] Sending md subscribe request failed: {}", iResult).c_str());
+				write_log(m_sink, LL_ERROR, "[ParserCTPMini] Sending md subscribe request failed: {}", iResult);
 		}
 		else
 		{
 			if(m_sink)
-				write_log(m_sink, LL_INFO, StrUtil::printf("[ParserCTPMini] Market data of {} contracts subscribed in total", nCount).c_str());
+				write_log(m_sink, LL_INFO, "[ParserCTPMini] Market data of {} contracts subscribed in total", nCount);
 		}
 	}
 	codeFilter.clear();
@@ -436,12 +436,12 @@ void ParserCTPMini::subscribe(const CodeSet &vecSymbols)
 			if(iResult != 0)
 			{
 				if (m_sink)
-					write_log(m_sink, LL_ERROR, StrUtil::printf("[ParserCTPMini] Sending md subscribe request failed: {}", iResult).c_str());
+					write_log(m_sink, LL_ERROR, "[ParserCTPMini] Sending md subscribe request failed: {}", iResult);
 			}
 			else
 			{
 				if (m_sink)
-					write_log(m_sink, LL_INFO, StrUtil::printf("[ParserCTPMini] Market data of {} contracts subscribed in total", nCount).c_str());
+					write_log(m_sink, LL_INFO, "[ParserCTPMini] Market data of {} contracts subscribed in total", nCount);
 			}
 		}
 	}

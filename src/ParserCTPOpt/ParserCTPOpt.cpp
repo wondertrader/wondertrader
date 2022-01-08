@@ -204,7 +204,7 @@ void ParserCTPOpt::OnFrontDisconnected( int nReason )
 {
 	if(m_sink)
 	{
-		write_log(m_sink, LL_ERROR, StrUtil::printf("[ParserCTPOpt] Market data server disconnected: {}", nReason).c_str());
+		write_log(m_sink, LL_ERROR, "[ParserCTPOpt] Market data server disconnected: {}", nReason);
 		m_sink->handleEvent(WPE_Close, 0);
 	}
 }
@@ -354,7 +354,7 @@ void ParserCTPOpt::OnRspSubMarketData( CThostFtdcSpecificInstrumentField *pSpeci
 void ParserCTPOpt::OnHeartBeatWarning( int nTimeLapse )
 {
 	if (m_sink)
-		write_log(m_sink, LL_INFO, StrUtil::printf("[ParserCTPOpt] Heartbeating, elapse: {}", nTimeLapse).c_str());
+		write_log(m_sink, LL_INFO, "[ParserCTPOpt] Heartbeating, elapse: {}", nTimeLapse);
 }
 
 void ParserCTPOpt::ReqUserLogin()
@@ -373,7 +373,7 @@ void ParserCTPOpt::ReqUserLogin()
 	if(iResult != 0)
 	{
 		if(m_sink)
-			write_log(m_sink, LL_ERROR, StrUtil::printf("[ParserCTPOpt] Sending login request failed: {}", iResult).c_str());
+			write_log(m_sink, LL_ERROR, "[ParserCTPOpt] Sending login request failed: {}", iResult);
 	}
 }
 
@@ -402,12 +402,12 @@ void ParserCTPOpt::SubscribeMarketData()
 		if (iResult != 0)
 		{
 			if (m_sink)
-				write_log(m_sink, LL_ERROR, StrUtil::printf("[ParserCTPOpt] Sending md subscribe request failed: {}", iResult).c_str());
+				write_log(m_sink, LL_ERROR, "[ParserCTPOpt] Sending md subscribe request failed: {}", iResult);
 		}
 		else
 		{
 			if (m_sink)
-				write_log(m_sink, LL_INFO, StrUtil::printf("[ParserCTPOpt] Market data of {} contracts subscribed in total", nCount).c_str());
+				write_log(m_sink, LL_INFO, "[ParserCTPOpt] Market data of {} contracts subscribed in total", nCount);
 		}
 	}
 	codeFilter.clear();
@@ -445,12 +445,12 @@ void ParserCTPOpt::subscribe(const CodeSet &vecSymbols)
 			if (iResult != 0)
 			{
 				if (m_sink)
-					write_log(m_sink, LL_ERROR, StrUtil::printf("[ParserCTPOpt] Sending md subscribe request failed: {}", iResult).c_str());
+					write_log(m_sink, LL_ERROR, "[ParserCTPOpt] Sending md subscribe request failed: {}", iResult);
 			}
 			else
 			{
 				if (m_sink)
-					write_log(m_sink, LL_INFO, StrUtil::printf("[ParserCTPOpt] Market data of {} contracts subscribed in total", nCount).c_str());
+					write_log(m_sink, LL_INFO, "[ParserCTPOpt] Market data of {} contracts subscribed in total", nCount);
 			}
 		}
 	}
