@@ -23,6 +23,10 @@ SET(LIBS
 	dl
 )
 
+IF(WIN32)
+LIST(APPEND LIBS iconv)
+ENDIF()
+
 #9. 生成可执行文件
 ADD_LIBRARY(MiniLoader SHARED ${SRC})
 IF (MSVC)
