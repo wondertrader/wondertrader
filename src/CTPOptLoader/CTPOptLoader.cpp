@@ -10,6 +10,10 @@
 #include "../Share/DLLHelper.hpp"
 #include <boost/filesystem.hpp>
 
+#ifdef _WIN32
+#include "../Share/charconv.hpp"
+#endif
+
 // UserApi对象
 CThostFtdcTraderApi* pUserApi;
 
@@ -100,7 +104,7 @@ int run(const char* cfgfile, bool bAsync)
 		StringVector ayFiles = StrUtil::split(map_files, ",");
 		for (const std::string& fName : ayFiles)
 		{
-			printf("开始读取映射文件%s...", fName.c_str());
+			printf("Reading mapping file %s...\r\n", fName.c_str());
 			IniHelper iniMap;
 			if (!StdFile::exists(fName.c_str()))
 				continue;
@@ -111,7 +115,11 @@ int run(const char* cfgfile, bool bAsync)
 			for (int i = 0; i < cout; i++)
 			{
 				MAP_NAME[ayKeys[i]] = ayVals[i];
-				printf("品种名称映射: %s - %s\r\n", ayKeys[i].c_str(), ayVals[i].c_str());
+#ifdef _WIN32
+				printf("Commodity name mapping: %s - %s\r\n", ayKeys[i].c_str(), UTF8toChar(ayVals[i]).c_str());
+#else
+				printf("Commodity name mapping: %s - %s\r\n", ayKeys[i].c_str(), ayVals[i].c_str());
+#endif
 			}
 
 			ayKeys.clear();
@@ -120,7 +128,7 @@ int run(const char* cfgfile, bool bAsync)
 			for (int i = 0; i < cout; i++)
 			{
 				MAP_SESSION[ayKeys[i]] = ayVals[i];
-				printf("交易时间映射: %s - %s\r\n", ayKeys[i].c_str(), ayVals[i].c_str());
+				printf("Trading session mapping: %s - %s\r\n", ayKeys[i].c_str(), ayVals[i].c_str());
 			}
 		}
 	}
@@ -128,7 +136,7 @@ int run(const char* cfgfile, bool bAsync)
 	// 初始化UserApi
 	DllHandle dllInst = DLLHelper::load_library(MODULE_NAME.c_str());
 	if (dllInst == NULL)
-		printf("加载模块%s失败\r\n", MODULE_NAME.c_str());
+		printf("Loading module %s failed\r\n", MODULE_NAME.c_str());
 #ifdef _WIN32
 #	ifdef _WIN64
 	g_ctpCreator = (CTPCreator)DLLHelper::get_symbol(dllInst, "?CreateFtdcTraderApi@CThostFtdcTraderApi@ctp_sopt@@SAPEAV12@PEBD@Z");
@@ -138,7 +146,9 @@ int run(const char* cfgfile, bool bAsync)
 #else
 	g_ctpCreator = (CTPCreator)DLLHelper::get_symbol(dllInst, "_ZN8ctp_sopt19CThostFtdcTraderApi19CreateFtdcTraderApiEPKc");
 #endif
-	pUserApi = g_ctpCreator("");			// 创建UserApi
+	if (g_ctpCreator == NULL)
+		printf("Loading CreateFtdcTraderApi failed\r\n");
+	pUserApi = g_ctpCreator("");			// 创建UserApi	
 	CTraderSpi* pUserSpi = new CTraderSpi();
 	pUserApi->RegisterSpi((CThostFtdcTraderSpi*)pUserSpi);			// 注册事件类
 	pUserApi->SubscribePublicTopic(THOST_TERT_QUICK);					// 注册公有流
