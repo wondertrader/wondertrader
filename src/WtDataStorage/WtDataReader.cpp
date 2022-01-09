@@ -71,7 +71,7 @@ bool WtDataReader::proc_block_data(std::string& content, bool isBar, bool bKeepH
 		}
 
 		//将文件头后面的数据进行解压
-		buffer = WTSCmpHelper::uncompress_data(content.data() + BLOCK_HEADER_SIZE, (uint32_t)blkV2->_size);
+		buffer = WTSCmpHelper::uncompress_data(content.data() + BLOCK_HEADERV2_SIZE, (uint32_t)blkV2->_size);
 	}
 	else
 	{
