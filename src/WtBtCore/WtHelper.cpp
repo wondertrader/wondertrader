@@ -19,7 +19,7 @@
 #endif
 
 std::string WtHelper::_inst_dir;
-std::string WtHelper::_out_dir = "./outputs_bt";
+std::string WtHelper::_out_dir = "./outputs_bt/";
 
 std::string WtHelper::getCWD()
 {
