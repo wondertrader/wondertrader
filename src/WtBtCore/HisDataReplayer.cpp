@@ -41,7 +41,7 @@ namespace rj = rapidjson;
 /*
  *	处理块数据
  */
-bool proc_block_data(std::string& content, bool isBar, bool bKeepHead = true)
+bool proc_block_data(const char* tag, std::string& content, bool isBar, bool bKeepHead = true)
 {
 	BlockHeader* header = (BlockHeader*)content.data();
 
@@ -59,7 +59,7 @@ bool proc_block_data(std::string& content, bool isBar, bool bKeepHead = true)
 
 		if (content.size() != (sizeof(BlockHeaderV2) + blkV2->_size))
 		{
-			WTSLogger::error("Size check failed while processing %s data", isBar ? "bar" : "tick");
+			WTSLogger::error_f("Size check failed while processing {} data of {}", isBar ? "bar" : "tick", tag);
 			return false;
 		}
 
@@ -83,7 +83,6 @@ bool proc_block_data(std::string& content, bool isBar, bool bKeepHead = true)
 
 	if (bOldVer)
 	{
-		WTSLogger::info("Transfering old version data to new version...");
 		if (isBar)
 		{
 			std::string bufV2;
@@ -96,6 +95,8 @@ bool proc_block_data(std::string& content, bool isBar, bool bKeepHead = true)
 				newBar[idx] = oldBar[idx];
 			}
 			buffer.swap(bufV2);
+
+			WTSLogger::debug_f("{} bars of {} transferd to new version...", barcnt, tag);
 		}
 		else
 		{
@@ -109,6 +110,8 @@ bool proc_block_data(std::string& content, bool isBar, bool bKeepHead = true)
 				newTick[i] = oldTick[i];
 			}
 			buffer.swap(bufv2);
+
+			WTSLogger::debug_f("{} ticks of {} transferd to new version...", tick_cnt, tag);
 		}
 	}
 
@@ -2802,7 +2805,7 @@ bool HisDataReplayer::cacheRawTicksFromBin(const std::string& key, const char* s
 		return false;
 	}
 
-	proc_block_data(content, false, false);	
+	proc_block_data(filename.c_str(), content, false, false);	
 	auto& ticksList = _ticks_cache[key];
 	uint32_t tickcnt = 0;
 	tickcnt = content.size() / sizeof(WTSTickStruct);
@@ -2869,7 +2872,7 @@ bool HisDataReplayer::cacheRawTicksFromCSV(const std::string& key, const char* s
 		}
 
 		WTSLogger::info_f("Processing file content of {}...", filename);
-		proc_block_data(content, false, false);
+		proc_block_data(filename.c_str(), content, false, false);
 		uint32_t tickcnt = content.size() / sizeof(WTSTickStruct);
 		auto& ticksList = _ticks_cache[key];
 		ticksList._items.resize(tickcnt);
@@ -3297,7 +3300,7 @@ bool HisDataReplayer::cacheIntegratedFutBars(const std::string& key, const char*
 			break;
 		}
 
-		proc_block_data(content, true, false);
+		proc_block_data(filename.c_str(), content, true, false);
 		uint32_t barcnt = content.size() / sizeof(WTSBarStruct);
 		if (barcnt <= 0)
 			break;
@@ -3413,7 +3416,7 @@ bool HisDataReplayer::cacheIntegratedFutBars(const std::string& key, const char*
 				return false;
 			}
 
-			proc_block_data(content, true, false);
+			proc_block_data(filename.c_str(), content, true, false);
 			buffer.swap(content);
 		}
 
@@ -3597,7 +3600,7 @@ bool HisDataReplayer::cacheAdjustedStkBars(const std::string& key, const char* s
 			break;
 		}
 
-		proc_block_data(content, true, false);
+		proc_block_data(filename.c_str(), content, true, false);
 		uint32_t barcnt = content.size() / sizeof(WTSBarStruct);
 		if (barcnt <= 0)
 			break;
@@ -3668,7 +3671,7 @@ bool HisDataReplayer::cacheAdjustedStkBars(const std::string& key, const char* s
 				return false;
 			}
 			
-			proc_block_data(content, true, false);
+			proc_block_data(filename.c_str(), content, true, false);
 			buffer.swap(content);
 
 			WTSLogger::debug("Raw bars of %s loaded from dsb file", stdCode);
@@ -3863,7 +3866,7 @@ bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* st
 				return false;
 			}
 
-			proc_block_data(content, true, false);
+			proc_block_data(filename.c_str(), content, true, false);
 			buffer.swap(content);
 		}
 	}
