@@ -583,10 +583,24 @@ uint32_t WTSBaseDataMgr::calcTradingDate(const char* stdPID, uint32_t uDate, uin
 	if (sInfo == NULL)
 		return uDate;
 	
+	uint32_t offMin = sInfo->offsetTime(uTime, true);
+	//7*24交易时间单独算
+	uint32_t total_mins = sInfo->getTradingMins();
+	if(total_mins == 1440)
+	{
+		if(sInfo->getOffsetMins() > 0 && uTime > offMin)
+		{
+			return TimeUtils::getNextDate(uDate, 1);
+		}
+		else if (sInfo->getOffsetMins() < 0 && uTime < offMin)
+		{
+			return TimeUtils::getNextDate(uDate, -1);
+		}
+
+		return uDate;
+	}
 
 	uint32_t weekday = TimeUtils::getWeekDay(uDate);
-
-	uint32_t offMin = sInfo->offsetTime(uTime, true);
 	if (sInfo->getOffsetMins() > 0)
 	{
 		//如果向后偏移,且当前时间大于偏移时间,说明向后跨日了
@@ -621,13 +635,6 @@ uint32_t WTSBaseDataMgr::calcTradingDate(const char* stdPID, uint32_t uDate, uin
 	{
 		//如果没有偏移,且在周末,则直接读取下一个交易日
 		return getNextTDate(tplid.c_str(), uDate, 1, isTpl);;
-	}
-	else if(offMin%2400 == 0)
-	{
-		//By Wesley @ 2021.12.25
-		//如果没有偏移，但是时间为2400或0，需要把交易日当做前一天
-		//因为这是前一天最后一条分钟线结束的时间
-		return TimeUtils::getNextDate(uDate, -1);
 	}
 
 	//其他情况,交易日=自然日
