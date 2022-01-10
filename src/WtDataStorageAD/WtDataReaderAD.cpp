@@ -235,13 +235,21 @@ bool WtDataReaderAD::cacheBarsFromStorage(const std::string& key, const char* st
 
 	WtLMDBQuery query(*db);
 	LMDBBarKey rKey(cInfo._exchg, cInfo._code, 0xffffffff);
+	LMDBBarKey lKey(cInfo._exchg, cInfo._code, 0);
 	int cnt = query.get_lowers(std::string((const char*)&rKey, sizeof(rKey)), 
-		count, [this, &barList](const ValueArray& ayKeys, const ValueArray& ayVals) {
+		count, [this, &barList, &lKey](const ValueArray& ayKeys, const ValueArray& ayVals) {
 		if (ayVals.empty())
 			return;
 
-		for(const std::string& item : ayVals)
-			barList._bars.push_back(*(WTSBarStruct*)item.data());
+		std::size_t cnt = ayVals.size();
+		for (std::size_t i = 0; i < cnt; i++)
+		{
+			//Òª¼ì²é×ó±ß½ç
+			if(memcmp(ayKeys[i].data(), (void*)&lKey, sizeof(lKey)) < 0)
+				continue;
+
+			barList._bars.push_back(*(WTSBarStruct*)ayVals[i].data());
+		}
 	});
 
 	pipe_reader_log(_sink, LL_DEBUG, "{} {} bars of {} loaded to cache", cnt, PERIOD_NAME[period], stdCode);
