@@ -729,14 +729,21 @@ void HisDataReplayer::run_by_bars(bool bNeedDump /* = false */)
 			uint32_t nextDate = (uint32_t)(nextBarTime / 10000);
 			uint32_t nextTime = (uint32_t)(nextBarTime % 10000);
 
-			uint32_t nextTDate = _bd_mgr.calcTradingDate(commId.c_str(), nextDate, nextTime, false);
-			if (_opened_tdate != nextTDate)
+			//By Wesley @ 2022.01.10
+			//如果和收盘时间一样，进行这个判断
+			//主要针对7*24小时的品种，其他的品种不需要
+			uint32_t nextTDate = _opened_tdate;
+			if(sInfo->offsetTime(nextTime, false) != sInfo->getCloseTime(true))
 			{
-				WTSLogger::debug("Tradingday %u begins", nextTDate);
-				_listener->handle_session_begin(nextTDate);
-				_opened_tdate = nextTDate;
-				_cur_tdate = nextTDate;
-			}
+				nextTDate = _bd_mgr.calcTradingDate(commId.c_str(), nextDate, nextTime, false);
+				if (_opened_tdate != nextTDate)
+				{
+					WTSLogger::debug("Tradingday %u begins", nextTDate);
+					_listener->handle_session_begin(nextTDate);
+					_opened_tdate = nextTDate;
+					_cur_tdate = nextTDate;
+				}
+			}			
 
 			uint64_t curBarTime = (uint64_t)_cur_date * 10000 + _cur_time;
 			if (_tick_enabled)
@@ -750,8 +757,7 @@ void HisDataReplayer::run_by_bars(bool bNeedDump /* = false */)
 			_cur_time = nextTime;
 			_cur_secs = 0;
 
-			uint32_t offTime = sInfo->offsetTime(_cur_time, true);
-			bool isEndTDate = (offTime >= sInfo->getCloseTime(true));
+			bool isEndTDate = (sInfo->offsetTime(_cur_time, false) >= sInfo->getCloseTime(true));
 
 			if (!_tick_enabled)
 			{
@@ -765,7 +771,7 @@ void HisDataReplayer::run_by_bars(bool bNeedDump /* = false */)
 
 			if (isEndTDate && _closed_tdate != _cur_tdate)
 			{
-				WTSLogger::debug("Tradingday %u ends", nextTDate);
+				WTSLogger::debug("Tradingday %u ends", _cur_tdate);
 				_listener->handle_session_end(_cur_tdate);
 				_closed_tdate = _cur_tdate;
 				_day_cache.clear();
