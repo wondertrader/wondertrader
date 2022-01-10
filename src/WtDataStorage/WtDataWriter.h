@@ -30,13 +30,14 @@ private:
 
 	void  check_loop();
 
-	uint32_t  dump_hisdata_to_file(WTSContractInfo* ct);
+	uint32_t  dump_bars_to_file(WTSContractInfo* ct);
 
-	uint32_t  dump_hisdata_via_dumper(WTSContractInfo* ct);
+	uint32_t  dump_bars_via_dumper(WTSContractInfo* ct);
 
 private:
 	bool	dump_day_data(WTSContractInfo* ct, WTSBarStruct* newBar);
 
+	bool	proc_block_data(const char* tag, std::string& content, bool isBar, bool bKeepHead = true);
 
 public:
 	virtual bool init(WTSVariant* params, IDataWriterSink* sink) override;
