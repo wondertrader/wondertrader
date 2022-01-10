@@ -213,5 +213,8 @@
     <ClInclude Include="fmtlib.h">
       <Filter>Utils</Filter>
     </ClInclude>
+    <ClInclude Include="..\Includes\IRdmDtReader.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -1183,15 +1183,18 @@ protected:
 	}
 
 public:
-	static inline WTSTickSlice* create(const char* code, WTSTickStruct* ticks, uint32_t count)
+	static inline WTSTickSlice* create(const char* code, WTSTickStruct* ticks = NULL, uint32_t count = 0)
 	{
 		if (ticks == NULL || count == 0)
 			return NULL;
 
 		WTSTickSlice* slice = new WTSTickSlice();
 		strcpy(slice->_code, code);
-		slice->_blocks.emplace_back(TickBlock(ticks, count));
-		slice->_count = count;
+		if(ticks != NULL)
+		{
+			slice->_blocks.emplace_back(TickBlock(ticks, count));
+			slice->_count = count;
+		}
 
 		return slice;
 	}
@@ -1204,6 +1207,37 @@ public:
 		_count += count;
 		_blocks.emplace_back(TickBlock(ticks, count));
 		return true;
+	}
+
+	inline bool insertBlock(std::size_t idx, WTSTickStruct* ticks, uint32_t count)
+	{
+		if (ticks == NULL || count == 0)
+			return false;
+
+		_count += count;
+		_blocks.insert(_blocks.begin()+idx, TickBlock(ticks, count));
+		return true;
+	}
+
+	inline std::size_t	get_block_counts() const
+	{
+		return _blocks.size();
+	}
+
+	inline WTSTickStruct*	get_block_addr(std::size_t blkIdx)
+	{
+		if (blkIdx >= _blocks.size())
+			return NULL;
+
+		return _blocks[blkIdx].first;
+	}
+
+	inline uint32_t get_block_size(std::size_t blkIdx)
+	{
+		if (blkIdx >= _blocks.size())
+			return INVALID_UINT32;
+
+		return _blocks[blkIdx].second;
 	}
 
 	inline uint32_t size() const{ return _count; }

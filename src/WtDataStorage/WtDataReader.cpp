@@ -48,7 +48,7 @@ extern "C"
 /*
  *	处理块数据
  */
-bool WtDataReader::proc_block_data(std::string& content, bool isBar, bool bKeepHead /* = true */)
+bool proc_block_data(std::string& content, bool isBar, bool bKeepHead /* = true */)
 {
 	BlockHeader* header = (BlockHeader*)content.data();
 
@@ -66,7 +66,6 @@ bool WtDataReader::proc_block_data(std::string& content, bool isBar, bool bKeepH
 
 		if (content.size() != (sizeof(BlockHeaderV2) + blkV2->_size))
 		{
-			pipe_reader_log(_sink, LL_ERROR, "Size check failed while processing {} data", isBar ? "bar" : "tick");
 			return false;
 		}
 

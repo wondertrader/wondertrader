@@ -148,7 +148,7 @@ public:
 class IDataReader
 {
 public:
-	IDataReader(){}
+	IDataReader() :_sink(NULL) {}
 	virtual ~IDataReader(){}
 
 public:

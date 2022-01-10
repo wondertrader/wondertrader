@@ -130,6 +130,7 @@
     <ClInclude Include="..\Includes\IHftStraCtx.h" />
     <ClInclude Include="..\Includes\IHotMgr.h" />
     <ClInclude Include="..\Includes\IParserApi.h" />
+    <ClInclude Include="..\Includes\IRdmDtReader.h" />
     <ClInclude Include="..\Includes\ISelStraCtx.h" />
     <ClInclude Include="..\Includes\ISessionMgr.h" />
     <ClInclude Include="..\Includes\ITraderApi.h" />
