@@ -26,6 +26,7 @@ inline void pipe_rdmreader_log(IRdmDtReaderSink* sink, WTSLogLevel ll, const cha
 		return;
 
 	static thread_local char buffer[512] = { 0 };
+	memset(buffer, 0, 512);
 	fmt::format_to(buffer, format, args...);
 
 	sink->reader_log(ll, buffer);

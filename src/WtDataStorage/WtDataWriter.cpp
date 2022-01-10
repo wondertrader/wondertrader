@@ -22,6 +22,7 @@ inline void pipe_writer_log(IDataWriterSink* sink, WTSLogLevel ll, const char* f
 		return;
 
 	static thread_local char buffer[512] = { 0 };
+	memset(buffer, 0, 512);
 	fmt::format_to(buffer, format, args...);
 
 	sink->outputLog(ll, buffer);
