@@ -506,19 +506,19 @@ bool WtRtRunner::config(const char* cfgFile, bool isFile /* = true */)
 	if (cfgBF->get("holiday"))
 	{
 		_bd_mgr.loadHolidays(cfgBF->getCString("holiday"));
-		WTSLogger::info("Holidays loaded");
+		WTSLogger::log_raw(LL_INFO, "Holidays loaded");
 	}
 
 	if (cfgBF->get("hot"))
 	{
 		_hot_mgr.loadHots(cfgBF->getCString("hot"));
-		WTSLogger::info("Hot rules loades");
+		WTSLogger::log_raw(LL_INFO, "Hot rules loades");
 	}
 
 	if (cfgBF->get("second"))
 	{
 		_hot_mgr.loadSeconds(cfgBF->getCString("second"));
-		WTSLogger::info("Second rules loades");
+		WTSLogger::log_raw(LL_INFO, "Second rules loades");
 	}
 
 	//初始化运行环境
@@ -810,7 +810,7 @@ bool WtRtRunner::initDataMgr()
 
 	_data_mgr.init(cfg, _engine);
 
-	WTSLogger::info("Data manager initialized");
+	WTSLogger::log_raw(LL_INFO, "Data manager initialized");
 	return true;
 }
 

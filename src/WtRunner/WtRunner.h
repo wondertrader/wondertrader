@@ -25,7 +25,7 @@
 #include "../WtCore/WtDistExecuter.h"
 #include "../WtCore/TraderAdapter.h"
 #include "../WtCore/ParserAdapter.h"
-#include "../WtCore/WtDataManager.h"
+#include "../WtCore/WtDtMgr.h"
 #include "../WtCore/ActionPolicyMgr.h"
 
 #include "../WTSTools/WTSHotMgr.h"
@@ -84,7 +84,7 @@ private:
 
 	WtDataStorage*		_data_store;
 
-	WtDataManager		_data_mgr;
+	WtDtMgr				_data_mgr;
 
 	WTSBaseDataMgr		_bd_mgr;
 	WTSHotMgr			_hot_mgr;
