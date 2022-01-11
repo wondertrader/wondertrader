@@ -9,6 +9,7 @@
  */
 #pragma once
 #include <string>
+#include "HisDataMgr.h"
 #include "../WtDataStorage/DataDefine.h"
 
 #include "../Includes/FasterDefs.h"
@@ -35,8 +36,6 @@ class WTSTransData;
 
 class EventNotifier;
 NS_WTP_END
-
-//typedef std::shared_ptr<MysqlDb>	MysqlDbPtr;
 
 USING_NS_WTP;
 
@@ -228,12 +227,12 @@ private:
 	/*
 	 *	缓存整合的期货合约历史K线（针对.HOT//2ND）
 	 */
-	bool		cacheIntegratedFutBars(const std::string& key, const char* stdCode, WTSKlinePeriod period, bool bSubbed = true);
+	bool		cacheIntegratedFutBarsFromBin(const std::string& key, const char* stdCode, WTSKlinePeriod period, bool bSubbed = true);
 
 	/*
 	 *	缓存复权股票K线数据
 	 */
-	bool		cacheAdjustedStkBars(const std::string& key, const char* stdCode, WTSKlinePeriod period, bool bSubbed = true);
+	bool		cacheAdjustedStkBarsFromBin(const std::string& key, const char* stdCode, WTSKlinePeriod period, bool bSubbed = true);
 
 	void		onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTDate = 0, bool tickSimulated = true);
 
@@ -427,5 +426,7 @@ private:
 	const AdjFactorList& getAdjFactors(const char* code, const char* exchg, const char* pid);
 
 	EventNotifier*	_notifier;
+
+	HisDataMgr		_his_dt_mgr;
 };
 
