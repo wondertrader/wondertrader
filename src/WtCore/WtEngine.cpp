@@ -8,7 +8,7 @@
  * \brief 
  */
 #include "WtEngine.h"
-#include "WtDataManager.h"
+#include "WtDtMgr.h"
 #include "WtHelper.h"
 
 #include "../Share/TimeUtils.hpp"
@@ -245,7 +245,7 @@ WTSPortFundInfo* WtEngine::getFundInfo()
 	return _port_fund;
 }
 
-void WtEngine::init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtDataManager* dataMgr, IHotMgr* hotMgr, EventNotifier* notifier)
+void WtEngine::init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtDtMgr* dataMgr, IHotMgr* hotMgr, EventNotifier* notifier)
 {
 	_base_data_mgr = bdMgr;
 	_data_mgr = dataMgr;

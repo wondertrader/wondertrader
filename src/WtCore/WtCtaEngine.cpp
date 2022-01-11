@@ -10,7 +10,7 @@
 #define WIN32_LEAN_AND_MEAN
 
 #include "WtCtaEngine.h"
-#include "WtDataManager.h"
+#include "WtDtMgr.h"
 #include "WtCtaTicker.h"
 #include "WtHelper.h"
 #include "TraderAdapter.h"
@@ -114,7 +114,7 @@ void WtCtaEngine::run(bool bAsync /* = false */)
 	}
 }
 
-void WtCtaEngine::init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtDataManager* dataMgr, IHotMgr* hotMgr, EventNotifier* notifier /* = NULL */)
+void WtCtaEngine::init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtDtMgr* dataMgr, IHotMgr* hotMgr, EventNotifier* notifier /* = NULL */)
 {
 	WtEngine::init(cfg, bdMgr, dataMgr, hotMgr, notifier);
 

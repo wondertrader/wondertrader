@@ -1,5 +1,5 @@
 #include "WtSelEngine.h"
-#include "WtDataManager.h"
+#include "WtDtMgr.h"
 #include "WtSelTicker.h"
 #include "TraderAdapter.h"
 #include "WtHelper.h"
@@ -267,7 +267,7 @@ void WtSelEngine::run(bool bAsync /*= false*/)
 	_tm_ticker->run();
 }
 
-void WtSelEngine::init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtDataManager* dataMgr, IHotMgr* hotMgr, EventNotifier* notifier /* = NULL */)
+void WtSelEngine::init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtDtMgr* dataMgr, IHotMgr* hotMgr, EventNotifier* notifier /* = NULL */)
 {
 	WtEngine::init(cfg, bdMgr, dataMgr, hotMgr, notifier);
 

@@ -11,7 +11,7 @@
 
 #include "WtHftEngine.h"
 #include "WtHftTicker.h"
-#include "WtDataManager.h"
+#include "WtDtMgr.h"
 #include "TraderAdapter.h"
 #include "WtHelper.h"
 
@@ -50,7 +50,7 @@ WtHftEngine::~WtHftEngine()
 		_cfg->release();
 }
 
-void WtHftEngine::init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtDataManager* dataMgr, IHotMgr* hotMgr, EventNotifier* notifier /* = NULL */)
+void WtHftEngine::init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtDtMgr* dataMgr, IHotMgr* hotMgr, EventNotifier* notifier /* = NULL */)
 {
 	WtEngine::init(cfg, bdMgr, dataMgr, hotMgr, notifier);
 

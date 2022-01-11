@@ -7,7 +7,7 @@
  * 
  * \brief 
  */
-#include "WtDataManager.h"
+#include "WtDtMgr.h"
 #include "WtEngine.h"
 #include "WtHelper.h"
 
@@ -21,7 +21,7 @@
 
 WTSDataFactory g_dataFact;
 
-WtDataManager::WtDataManager()
+WtDtMgr::WtDtMgr()
 	: _reader(NULL)
 	, _engine(NULL)
 	, _loader(NULL)
@@ -32,7 +32,7 @@ WtDataManager::WtDataManager()
 }
 
 
-WtDataManager::~WtDataManager()
+WtDtMgr::~WtDtMgr()
 {
 	if (_bars_cache)
 		_bars_cache->release();
@@ -44,7 +44,7 @@ WtDataManager::~WtDataManager()
 		_rt_tick_map->release();
 }
 
-bool WtDataManager::initStore(WTSVariant* cfg)
+bool WtDtMgr::initStore(WTSVariant* cfg)
 {
 	if (cfg == NULL)
 		return false;
@@ -83,14 +83,14 @@ bool WtDataManager::initStore(WTSVariant* cfg)
 	return true;
 }
 
-bool WtDataManager::init(WTSVariant* cfg, WtEngine* engine)
+bool WtDtMgr::init(WTSVariant* cfg, WtEngine* engine)
 {
 	_engine = engine;
 
 	return initStore(cfg->get("store"));
 }
 
-void WtDataManager::on_all_bar_updated(uint32_t updateTime)
+void WtDtMgr::on_all_bar_updated(uint32_t updateTime)
 {
 	if (_bar_notifies.empty())
 		return;
@@ -105,37 +105,37 @@ void WtDataManager::on_all_bar_updated(uint32_t updateTime)
 	_bar_notifies.clear();
 }
 
-IBaseDataMgr* WtDataManager::get_basedata_mgr()
+IBaseDataMgr* WtDtMgr::get_basedata_mgr()
 { 
 	return _engine->get_basedata_mgr(); 
 }
 
-IHotMgr* WtDataManager::get_hot_mgr() 
+IHotMgr* WtDtMgr::get_hot_mgr() 
 { 
 	return _engine->get_hot_mgr(); 
 }
 
-uint32_t WtDataManager::get_date() 
+uint32_t WtDtMgr::get_date() 
 { 
 	return _engine->get_date(); 
 }
 
-uint32_t WtDataManager::get_min_time()
+uint32_t WtDtMgr::get_min_time()
 { 
 	return _engine->get_min_time(); 
 }
 
-uint32_t WtDataManager::get_secs() 
+uint32_t WtDtMgr::get_secs() 
 { 
 	return _engine->get_secs(); 
 }
 
-void WtDataManager::reader_log(WTSLogLevel ll, const char* message)
+void WtDtMgr::reader_log(WTSLogLevel ll, const char* message)
 {
 	WTSLogger::log_raw(ll, message);
 }
 
-void WtDataManager::on_bar(const char* code, WTSKlinePeriod period, WTSBarStruct* newBar)
+void WtDtMgr::on_bar(const char* code, WTSKlinePeriod period, WTSBarStruct* newBar)
 {
 	std::string key_pattern = StrUtil::printf("%s-%u", code, period);
 
@@ -194,7 +194,7 @@ void WtDataManager::on_bar(const char* code, WTSKlinePeriod period, WTSBarStruct
 	}
 }
 
-void WtDataManager::handle_push_quote(const char* stdCode, WTSTickData* newTick)
+void WtDtMgr::handle_push_quote(const char* stdCode, WTSTickData* newTick)
 {
 	if (newTick == NULL)
 		return;
@@ -217,7 +217,7 @@ void WtDataManager::handle_push_quote(const char* stdCode, WTSTickData* newTick)
 	}
 }
 
-WTSTickData* WtDataManager::grab_last_tick(const char* code)
+WTSTickData* WtDtMgr::grab_last_tick(const char* code)
 {
 	if (_rt_tick_map == NULL)
 		return NULL;
@@ -230,7 +230,7 @@ WTSTickData* WtDataManager::grab_last_tick(const char* code)
 	return curTick;
 }
 
-WTSTickSlice* WtDataManager::get_tick_slice(const char* stdCode, uint32_t count, uint64_t etime /* = 0 */)
+WTSTickSlice* WtDtMgr::get_tick_slice(const char* stdCode, uint32_t count, uint64_t etime /* = 0 */)
 {
 	if (_reader == NULL)
 		return NULL;
@@ -238,7 +238,7 @@ WTSTickSlice* WtDataManager::get_tick_slice(const char* stdCode, uint32_t count,
 	return _reader->readTickSlice(stdCode, count, etime);
 }
 
-WTSOrdQueSlice* WtDataManager::get_order_queue_slice(const char* stdCode, uint32_t count, uint64_t etime /* = 0 */)
+WTSOrdQueSlice* WtDtMgr::get_order_queue_slice(const char* stdCode, uint32_t count, uint64_t etime /* = 0 */)
 {
 	if (_reader == NULL)
 		return NULL;
@@ -246,7 +246,7 @@ WTSOrdQueSlice* WtDataManager::get_order_queue_slice(const char* stdCode, uint32
 	return _reader->readOrdQueSlice(stdCode, count, etime);
 }
 
-WTSOrdDtlSlice* WtDataManager::get_order_detail_slice(const char* stdCode, uint32_t count, uint64_t etime /* = 0 */)
+WTSOrdDtlSlice* WtDtMgr::get_order_detail_slice(const char* stdCode, uint32_t count, uint64_t etime /* = 0 */)
 {
 	if (_reader == NULL)
 		return NULL;
@@ -254,7 +254,7 @@ WTSOrdDtlSlice* WtDataManager::get_order_detail_slice(const char* stdCode, uint3
 	return _reader->readOrdDtlSlice(stdCode, count, etime);
 }
 
-WTSTransSlice* WtDataManager::get_transaction_slice(const char* stdCode, uint32_t count, uint64_t etime /* = 0 */)
+WTSTransSlice* WtDtMgr::get_transaction_slice(const char* stdCode, uint32_t count, uint64_t etime /* = 0 */)
 {
 	if (_reader == NULL)
 		return NULL;
@@ -262,7 +262,7 @@ WTSTransSlice* WtDataManager::get_transaction_slice(const char* stdCode, uint32_
 	return _reader->readTransSlice(stdCode, count, etime);
 }
 
-WTSKlineSlice* WtDataManager::get_kline_slice(const char* stdCode, WTSKlinePeriod period, uint32_t times, uint32_t count, uint64_t etime /* = 0 */)
+WTSKlineSlice* WtDtMgr::get_kline_slice(const char* stdCode, WTSKlinePeriod period, uint32_t times, uint32_t count, uint64_t etime /* = 0 */)
 {
 	if (_reader == NULL)
 		return NULL;

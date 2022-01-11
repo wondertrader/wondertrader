@@ -24,11 +24,11 @@ class IBaseDataMgr;
 class IBaseDataMgr;
 class WtEngine;
 
-class WtDataManager : public IDataReaderSink, public IDataManager
+class WtDtMgr : public IDataReaderSink, public IDataManager
 {
 public:
-	WtDataManager();
-	~WtDataManager();
+	WtDtMgr();
+	~WtDtMgr();
 
 private:
 	bool	initStore(WTSVariant* cfg);

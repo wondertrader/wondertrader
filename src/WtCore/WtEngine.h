@@ -41,7 +41,7 @@ class WTSTickSlice;
 class WTSKlineSlice;
 class WTSPortFundInfo;
 
-class WtDataManager;
+class WtDtMgr;
 class TraderAdapterMgr;
 
 class EventNotifier;
@@ -140,7 +140,7 @@ public:
 	virtual void handle_push_quote(WTSTickData* newTick, uint32_t hotFlag) override;
 
 public:
-	virtual void init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtDataManager* dataMgr, IHotMgr* hotMgr, EventNotifier* notifier);
+	virtual void init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtDtMgr* dataMgr, IHotMgr* hotMgr, EventNotifier* notifier);
 
 	virtual void run(bool bAsync = false) = 0;
 
@@ -188,7 +188,7 @@ protected:
 
 	IBaseDataMgr*	_base_data_mgr;	//基础数据管理器
 	IHotMgr*		_hot_mgr;		//主力管理器
-	WtDataManager*	_data_mgr;		//数据管理器
+	WtDtMgr*	_data_mgr;		//数据管理器
 	IEngineEvtListener*	_evt_listener;
 
 	typedef faster_hashset<uint32_t> SIDSet;

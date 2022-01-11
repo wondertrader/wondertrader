@@ -27,6 +27,10 @@ void WtCtaRtTicker::init(IDataReader* store, const char* sessionID)
 {
 	_store = store;
 	_s_info = _engine->get_session_info(sessionID);
+	if(_s_info == NULL)
+		WTSLogger::fatal_f("Session {} is invalid, CtaTicker cannot run correctly", sessionID);
+	else
+		WTSLogger::info_f("CtaTicker will drive engine with session {}", sessionID);
 
 	TimeUtils::getDateTime(_date, _time);
 }

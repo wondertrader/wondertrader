@@ -42,9 +42,6 @@
     <ClInclude Include="ParserAdapter.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="WtDataManager.h">
-      <Filter>Datas</Filter>
-    </ClInclude>
     <ClInclude Include="WtHelper.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -150,6 +147,9 @@
     <ClInclude Include="WtFilterMgr.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="WtDtMgr.h">
+      <Filter>Datas</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TraderAdapter.cpp">
@@ -157,9 +157,6 @@
     </ClCompile>
     <ClCompile Include="ParserAdapter.cpp">
       <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="WtDataManager.cpp">
-      <Filter>Datas</Filter>
     </ClCompile>
     <ClCompile Include="WtHelper.cpp">
       <Filter>源文件</Filter>
@@ -229,6 +226,9 @@
     </ClCompile>
     <ClCompile Include="WtFilterMgr.cpp">
       <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="WtDtMgr.cpp">
+      <Filter>Datas</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

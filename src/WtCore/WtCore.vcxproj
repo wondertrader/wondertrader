@@ -49,7 +49,7 @@
     <ClInclude Include="WtHelper.h" />
     <ClInclude Include="WtCtaTicker.h" />
     <ClInclude Include="CtaStraContext.h" />
-    <ClInclude Include="WtDataManager.h" />
+    <ClInclude Include="WtDtMgr.h" />
     <ClInclude Include="WtCtaEngine.h" />
     <ClInclude Include="WtLocalExecuter.h" />
     <ClInclude Include="CtaStrategyDefs.h" />
@@ -77,7 +77,7 @@
     <ClCompile Include="WtExecMgr.cpp" />
     <ClCompile Include="WtHelper.cpp" />
     <ClCompile Include="WtCtaTicker.cpp" />
-    <ClCompile Include="WtDataManager.cpp" />
+    <ClCompile Include="WtDtMgr.cpp" />
     <ClCompile Include="WtLocalExecuter.cpp" />
     <ClCompile Include="CtaStraContext.cpp" />
     <ClCompile Include="WtCtaEngine.cpp" />
