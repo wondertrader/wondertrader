@@ -87,12 +87,18 @@ bool UDPCaster::init(WTSVariant* cfg, WTSBaseDataMgr* bdMgr, DataManager* dtMgr)
 		}
 	}
 
-	start(cfg->getInt32("bport"));
+	//By Wesley @ 2022.01.11
+	//这是订阅端口，但是以前全部用的bport，属于笔误
+	//只能写一个兼容了
+	int32_t sport = cfg->getInt32("sport");
+	if (sport == 0)
+		sport = cfg->getInt32("bport");
+	start(sport);
 
 	return true;
 }
 
-void UDPCaster::start(int bport)
+void UDPCaster::start(int sport)
 {
 	if (!m_listFlatRecver.empty() || !m_listJsonRecver.empty() || !m_listRawRecver.empty())
 	{
@@ -101,7 +107,14 @@ void UDPCaster::start(int bport)
 		m_sktBroadcast->set_option(option);
 	}
 
-	m_sktSubscribe.reset(new UDPSocket(m_ioservice, boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(), bport)));
+	try
+	{
+		m_sktSubscribe.reset(new UDPSocket(m_ioservice, boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(), sport)));
+	}
+	catch(...)
+	{
+		WTSLogger::error_f("Exception raised while start subscribing service @ port {}", sport);
+	}
 
 	do_receive();
 
@@ -350,17 +363,28 @@ void UDPCaster::broadcast(WTSObject* data, uint32_t dataType)
 						}
 
 						//广播
+						boost::system::error_code ec;
 						for (auto it = m_listRawRecver.begin(); it != m_listRawRecver.end(); it++)
 						{
 							const UDPReceiverPtr& receiver = (*it);
-							m_sktBroadcast->send_to(boost::asio::buffer(buf_raw), receiver->_ep);
+							m_sktBroadcast->send_to(boost::asio::buffer(buf_raw), receiver->_ep, 0, ec);
+							if (ec)
+							{
+								WTSLogger::error_f("Error occured while sending to ({}:{}): {}({})", 
+									receiver->_ep.address().to_string(), receiver->_ep.port(), ec.value(), ec.message());
+							}
 						}
 
 						//组播
 						for (auto it = m_listRawGroup.begin(); it != m_listRawGroup.end(); it++)
 						{
 							const MulticastPair& item = *it;
-							it->first->send_to(boost::asio::buffer(buf_raw), item.second->_ep);
+							it->first->send_to(boost::asio::buffer(buf_raw), item.second->_ep, 0, ec);
+							if (ec)
+							{
+								WTSLogger::error_f("Error occured while sending to ({}:{}): {}({})",
+									item.second->_ep.address().to_string(), item.second->_ep.port(), ec.value(), ec.message());
+							}
 						}
 					}
 
