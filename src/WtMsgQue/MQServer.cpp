@@ -111,6 +111,8 @@ void MQServer::publish(const char* topic, const void* data, uint32_t dataLen)
 	{
 		m_thrdCast.reset(new StdThread([this](){
 
+			if (m_sendBuf.empty())
+				m_sendBuf.resize(1024 * 1024, 0);
 			while (!m_bTerminated)
 			{
 				int cnt = (int)nn_get_statistic(_sock, NN_STAT_CURRENT_CONNECTIONS);
@@ -133,17 +135,17 @@ void MQServer::publish(const char* topic, const void* data, uint32_t dataLen)
 
 					if (!pubData._data.empty())
 					{
-						static thread_local char buf_raw[8 * 1024 * 1024];
-						memset(buf_raw, 0, 8 * 1024 * 1024);
 						std::size_t len = sizeof(MQPacket) + pubData._data.size();
-						MQPacket* pack = (MQPacket*)buf_raw;
+						if (m_sendBuf.size() < len)
+							m_sendBuf.resize(m_sendBuf.size() * 2);
+						MQPacket* pack = (MQPacket*)m_sendBuf.data();
 						strncpy(pack->_topic, pubData._topic.c_str(), 32);
 						pack->_length = pubData._data.size();
 						memcpy(&pack->_data, pubData._data.data(), pubData._data.size());
 						int bytes_snd = 0;
 						for(;;)
 						{
-							int bytes = nn_send(_sock, buf_raw + bytes_snd, len - bytes_snd, 0);
+							int bytes = nn_send(_sock, m_sendBuf.data() + bytes_snd, len - bytes_snd, 0);
 							if (bytes >= 0)
 							{
 								bytes_snd += bytes;

@@ -56,6 +56,7 @@ private:
 	typedef std::queue<PubData> PubDataQue;
 
 	PubDataQue		m_dataQue;
+	std::string		m_sendBuf;
 };
 
 NS_WTP_END

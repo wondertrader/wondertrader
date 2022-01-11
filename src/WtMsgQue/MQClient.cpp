@@ -24,7 +24,7 @@ USING_NS_WTP;
 
 #pragma warning(disable:4200)
 
-#define  RECV_BUF_SIZE  8*1024*1024
+#define  RECV_BUF_SIZE  1024*1024
 
 inline uint32_t makeMQCientId()
 {
@@ -108,15 +108,14 @@ void MQClient::start()
 
 			while (!m_bTerminated)
 			{
-				static thread_local char buf[RECV_BUF_SIZE];
 				bool hasData = false;
 				for(;;)
 				{
-					int nBytes = nn_recv(_sock, buf, RECV_BUF_SIZE, NN_DONTWAIT);
+					int nBytes = nn_recv(_sock, _recv_buf, RECV_BUF_SIZE, NN_DONTWAIT);
 					if (nBytes > 0)
 					{
 						hasData = true;
-						_buffer.append(buf, nBytes);
+						_buffer.append(_recv_buf, nBytes);
 					}
 					else
 					{

@@ -12,7 +12,6 @@
 
 #ifdef _MSC_VER
 #pragma comment(lib, "Ws2_32.lib")
-#pragma comment(lib, "Wldap32.lib")
 #pragma comment(lib, "Mswsock.lib")
 #pragma comment(lib, "nanomsg.lib")
 #endif
