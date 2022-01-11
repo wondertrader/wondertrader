@@ -172,7 +172,7 @@ bool HisDataReplayer::init(WTSVariant* cfg, EventNotifier* notifier /* = NULL */
 	 *	因为store可能会变复杂，所以这里做一个兼容处理
 	 *	如果有store就读取store的path，如果没有store，就还读取root的path
 	 */
-	if (cfg->has("store"))
+	if (cfg->has("storage"))
 	{
 		_base_dir = StrUtil::standardisePath(cfg->get("store")->getCString("path"));
 	}
@@ -181,11 +181,11 @@ bool HisDataReplayer::init(WTSVariant* cfg, EventNotifier* notifier /* = NULL */
 		_base_dir = StrUtil::standardisePath(cfg->getCString("path"));
 	}
 	
-	if(_mode == "bin")
+	if(_mode == "storage")
 	{
-		if (cfg->has("store"))
+		if (cfg->has("storage"))
 		{
-			_his_dt_mgr.init(cfg->get("store"));
+			_his_dt_mgr.init(cfg->get("storage"));
 		}
 		else
 		{
@@ -1858,11 +1858,13 @@ WTSKlineSlice* HisDataReplayer::get_kline_slice(const char* stdCode, const char*
 
 	WTSKlinePeriod kp;
 	uint32_t realTimes = times;
+	uint32_t baseTimes = 1;
 	if (strcmp(period, "m") == 0)
 	{
 		if(times % 5 == 0)
 		{
 			kp = KP_Minute5;
+			baseTimes = 5;
 			realTimes /= 5;
 		}
 		else
@@ -1882,7 +1884,7 @@ WTSKlineSlice* HisDataReplayer::get_kline_slice(const char* stdCode, const char*
 	{
 		if (realTimes != 1)
 		{
-			std::string rawKey = StrUtil::printf("%s#%s#%u", stdCode, period, 1);
+			std::string rawKey = StrUtil::printf("%s#%s#%u", stdCode, period, baseTimes);
 			if (_bars_cache.find(rawKey) == _bars_cache.end())
 			{
 				/*
@@ -1953,7 +1955,7 @@ WTSKlineSlice* HisDataReplayer::get_kline_slice(const char* stdCode, const char*
 	bool isClosed = (sInfo->offsetTime(_cur_time, true) >= sInfo->getCloseTime(true));
 	if (realTimes != 1 && !bHasCache)
 	{	
-		std::string rawKey = StrUtil::printf("%s#%s#%u", stdCode, period, 1);
+		std::string rawKey = StrUtil::printf("%s#%s#%u", stdCode, period, baseTimes);
 		BarsList& rawBars = _bars_cache[rawKey];
 		WTSKlineSlice* rawKline = WTSKlineSlice::create(stdCode, kp, realTimes, &rawBars._bars[0], rawBars._bars.size());
 		rawKline->setCode(stdCode);
