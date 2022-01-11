@@ -147,11 +147,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="DataDefine.h" />
+    <ClInclude Include="WtBtDtReader.h" />
     <ClInclude Include="WtDataReader.h" />
     <ClInclude Include="WtDataWriter.h" />
     <ClInclude Include="WtRdmDtReader.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="WtBtDtReader.cpp" />
     <ClCompile Include="WtDataReader.cpp" />
     <ClCompile Include="WtDataWriter.cpp" />
     <ClCompile Include="WtRdmDtReader.cpp" />

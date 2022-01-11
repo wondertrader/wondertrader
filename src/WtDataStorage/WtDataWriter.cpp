@@ -617,7 +617,8 @@ WtDataWriter::OrdQueBlockPair* WtDataWriter::getOrdQueBlock(WTSContractInfo* ct,
 	if (pBlock->_block == NULL)
 	{
 		std::string path = StrUtil::printf("%srt/queue/%s/", _base_dir.c_str(), ct->getExchg());
-		BoostFile::create_directories(path.c_str());
+		if (bAutoCreate)
+			BoostFile::create_directories(path.c_str());
 		path += ct->getCode();
 		path += ".dmb";
 
@@ -710,7 +711,8 @@ WtDataWriter::OrdDtlBlockPair* WtDataWriter::getOrdDtlBlock(WTSContractInfo* ct,
 	if (pBlock->_block == NULL)
 	{
 		std::string path = StrUtil::printf("%srt/orders/%s/", _base_dir.c_str(), ct->getExchg());
-		BoostFile::create_directories(path.c_str());
+		if(bAutoCreate)
+			BoostFile::create_directories(path.c_str());
 		path += ct->getCode();
 		path += ".dmb";
 
@@ -804,7 +806,8 @@ WtDataWriter::TransBlockPair* WtDataWriter::getTransBlock(WTSContractInfo* ct, u
 	if (pBlock->_block == NULL)
 	{
 		std::string path = StrUtil::printf("%srt/trans/%s/", _base_dir.c_str(), ct->getExchg());
-		BoostFile::create_directories(path.c_str());
+		if (bAutoCreate)
+			BoostFile::create_directories(path.c_str());
 		path += ct->getCode();
 		path += ".dmb";
 
@@ -898,7 +901,8 @@ WtDataWriter::TickBlockPair* WtDataWriter::getTickBlock(WTSContractInfo* ct, uin
 	if(pBlock->_block == NULL)
 	{
 		std::string path = StrUtil::printf("%srt/ticks/%s/", _base_dir.c_str(), ct->getExchg());
-		BoostFile::create_directories(path.c_str());
+		if (bAutoCreate)
+			BoostFile::create_directories(path.c_str());
 
 		if(_save_tick_log)
 		{
@@ -1194,7 +1198,8 @@ WtDataWriter::KBlockPair* WtDataWriter::getKlineBlock(WTSContractInfo* ct, WTSKl
 	if (pBlock->_block == NULL)
 	{
 		std::string path = StrUtil::printf("%srt/%s/%s/", _base_dir.c_str(), subdir.c_str(), ct->getExchg());
-		BoostFile::create_directories(path.c_str());
+		if (bAutoCreate)
+			BoostFile::create_directories(path.c_str());
 
 		path += ct->getCode();
 		path += ".dmb";
@@ -1372,7 +1377,7 @@ bool WtDataWriter::updateCache(WTSContractInfo* ct, WTSTickData* curTick, bool b
 			memcpy(&item._tick, &newTick, sizeof(WTSTickStruct));
 		}
 
-		pipe_writer_log(_sink, LL_DEBUG, "Tick cache data updated {}[{}.{}]", newTick.code, newTick.action_date, newTick.action_time);
+		//pipe_writer_log(_sink, LL_DEBUG, "Tick cache data updated {}[{}.{}]", newTick.code, newTick.action_date, newTick.action_time);
 	}
 
 	return true;
@@ -1617,7 +1622,11 @@ bool WtDataWriter::proc_block_data(const char* tag, std::string& content, bool i
 
 	//如果既没有压缩，也不是老版本结构体，则直接返回
 	if (!bCmped && !bOldVer)
+	{
+		if (!bKeepHead)
+			content.erase(0, BLOCK_HEADER_SIZE);
 		return true;
+	}
 
 	std::string buffer;
 	if (bCmped)
@@ -1753,10 +1762,10 @@ bool WtDataWriter::dump_day_data(WTSContractInfo* ct, WTSBarStruct* newBar)
 			}
 
 			//如果老的文件已经是压缩版本,或者最终数据大小大于100条,则进行压缩
-			bool bNeedCompress = bCompressed || barcnt > 100;
+			bool bNeedCompress = bCompressed || (barcnt > 100);
 			if (bNeedCompress)
 			{
-				std::string cmpData = WTSCmpHelper::compress_data(content.data() + BLOCK_HEADER_SIZE, content.size()- BLOCK_HEADER_SIZE);
+				std::string cmpData = WTSCmpHelper::compress_data(content.data(), content.size());
 				BlockHeaderV2 header;
 				strcpy(header._blk_flag, BLK_FLAG);
 				header._type = BT_HIS_Day;
@@ -1779,7 +1788,7 @@ bool WtDataWriter::dump_day_data(WTSContractInfo* ct, WTSBarStruct* newBar)
 				f.truncate_file(0);
 				f.seek_to_begin();
 				f.write_file(&header, sizeof(header));
-				f.write_file(content.data() + BLOCK_HEADER_SIZE, content.size() - BLOCK_HEADER_SIZE);
+				f.write_file(content.data(), content.size());
 			}
 		}
 

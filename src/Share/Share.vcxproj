@@ -122,6 +122,7 @@
     <ClInclude Include="..\Includes\ExecuteDefs.h" />
     <ClInclude Include="..\Includes\FasterDefs.h" />
     <ClInclude Include="..\Includes\IBaseDataMgr.h" />
+    <ClInclude Include="..\Includes\IBtDtReader.h" />
     <ClInclude Include="..\Includes\ICtaStraCtx.h" />
     <ClInclude Include="..\Includes\IDataFactory.h" />
     <ClInclude Include="..\Includes\IDataManager.h" />

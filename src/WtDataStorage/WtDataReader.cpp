@@ -58,7 +58,11 @@ bool proc_block_data(std::string& content, bool isBar, bool bKeepHead /* = true 
 
 	//如果既没有压缩，也不是老版本结构体，则直接返回
 	if (!bCmped && !bOldVer)
+	{
+		if (!bKeepHead)
+			content.erase(0, BLOCK_HEADER_SIZE);
 		return true;
+	}
 
 	std::string buffer;
 	if (bCmped)
