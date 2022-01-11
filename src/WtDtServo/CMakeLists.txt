@@ -13,7 +13,7 @@ file(GLOB SRCS *.cpp)
 file(GLOB HDRS *.h)
 
 IF(MSVC)
-	list (APPEND SRCS ../Common/mdump.cpp)
+    list (APPEND SRCS ../Common/mdump.cpp)
 ENDIF()
 
 INCLUDE_DIRECTORIES(${INCS})
@@ -21,22 +21,25 @@ LINK_DIRECTORIES(${LNKS})
 ADD_LIBRARY(WtDtServo SHARED ${SRCS} ${HDRS})
 
 SET(LIBS
-	WTSTools
-	WTSUtils
+    WTSTools
+    WTSUtils
 )
 IF (MSVC)
 ELSE (GNUCC)
-	LIST(APPEND LIBS
-		dl
-		boost_filesystem
-		)
+    LIST(APPEND LIBS
+        dl
+        boost_filesystem
+        )
+    IF(WIN32)
+        LIST(APPEND LIBS iconv)
+    ENDIF()
 ENDIF()
 
 TARGET_LINK_LIBRARIES(WtDtServo ${LIBS})
 IF (MSVC)
 ELSE (GNUCC)
-	SET_TARGET_PROPERTIES(WtDtServo PROPERTIES
-		CXX_VISIBILITY_PRESET hidden
-		VISIBILITY_INLINES_HIDDEN 1
+    SET_TARGET_PROPERTIES(WtDtServo PROPERTIES
+        CXX_VISIBILITY_PRESET hidden
+        VISIBILITY_INLINES_HIDDEN 1
         LINK_FLAGS_RELEASE -s)
 ENDIF ()
