@@ -8,6 +8,7 @@
  * \brief 代码辅助类,封装到一起方便使用
  */
 #pragma once
+#include "fmtlib.h"
 #include "StrUtil.hpp"
 #include "../Includes/WTSTypes.h"
 
@@ -190,7 +191,7 @@ public:
 		if (!isComm)
 			pid = rawMonthCodeToRawCommID(code);
 
-		std::string ret = StrUtil::printf("%s.%s", exchg, pid.c_str());
+		std::string ret = fmt::format("{}.{}", exchg, pid);
 		if (!isComm)
 		{
 			ret += ".";
@@ -221,9 +222,9 @@ public:
 	static inline std::string rawFlatCodeToStdCode(const char* code, const char* exchg, const char* pid)
 	{
 		if(strcmp(code, pid) == 0 || strlen(pid) == 0)
-			return std::move(StrUtil::printf("%s.%s", exchg, pid));
+			return std::move(fmt::format("{}.{}", exchg, pid));
 		else
-			return std::move(StrUtil::printf("%s.%s.%s", exchg, pid, code));
+			return std::move(fmt::format("{}.{}.{}", exchg, pid, code));
 	}
 
 	static inline bool isMonthlyCode(const char* code)
@@ -245,7 +246,7 @@ public:
 		bool bMatch = regex_match(code, reg_stk);
 		if(bMatch)
 		{
-			std::string s = StrUtil::printf("%s.%s", exchg, code);
+			std::string s = std::move(fmt::format("{}.{}", exchg, code));
 			StrUtil::replace(s, "-", ".");
 			return std::move(s);
 		}
@@ -348,11 +349,11 @@ public:
 		strcpy(codeInfo._exchg, ay[0].c_str());
 		if(strcmp(codeInfo._exchg, "SHFE") == 0 || strcmp(codeInfo._exchg, "CZCE") == 0)
 		{
-			sprintf(codeInfo._code, "%s%s%s", ay[1].c_str(), ay[2].c_str(), ay[3].c_str());
+			fmt::format_to(codeInfo._code, "{}{}{}", ay[1], ay[2], ay[3]);
 		}
 		else
 		{
-			sprintf(codeInfo._code, "%s-%s-%s", ay[1].c_str(), ay[2].c_str(), ay[3].c_str());
+			fmt::format_to(codeInfo._code, "{}-{}-{}", ay[1], ay[2], ay[3]);
 		}
 
 		int mpos = indexCodeMonth(ay[1].c_str());
@@ -412,9 +413,9 @@ public:
 					//那么code得加上品种id
 					//郑商所得单独处理一下，这个只能hardcode了
 					if (strcmp(codeInfo._product, "CZCE") == 0)
-						sprintf(codeInfo._code, "%s%s", codeInfo._product, ay[2].c_str() + 1);
+						fmt::format_to(codeInfo._code, "{}{}", codeInfo._product, ay[2].c_str() + 1);
 					else
-						sprintf(codeInfo._code, "%s%s", codeInfo._product, ay[2].c_str());
+						fmt::format_to(codeInfo._code, "{}{}", codeInfo._product, ay[2]);
 				}
 				else
 				{
