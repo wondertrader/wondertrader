@@ -35,7 +35,7 @@ void WtFilterMgr::load_filters(const char* fileName)
 			_notifier->notifyEvent("Filter file has been reloaded");
 	}
 
-	WTSVariant* cfg = WTSCfgLoader::load_from_file(_filter_file.c_str());
+	WTSVariant* cfg = WTSCfgLoader::load_from_file(_filter_file.c_str(), true);
 
 	_filter_timestamp = lastModTime;
 

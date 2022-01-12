@@ -461,13 +461,14 @@ void WtRtRunner::hft_on_trade(uint32_t cHandle, WtUInt32 localid, const char* st
 
 bool WtRtRunner::config(const char* cfgFile, bool isFile /* = true */)
 {
-	_config = isFile ? WTSCfgLoader::load_from_file(cfgFile) : WTSCfgLoader::load_from_content(cfgFile, false);
+	_config = isFile ? WTSCfgLoader::load_from_file(cfgFile, true) : WTSCfgLoader::load_from_content(cfgFile, false, true);
 
 	//基础数据文件
 	WTSVariant* cfgBF = _config->get("basefiles");
+	bool isUTF8 = cfgBF->getBoolean("utf-8");
 	if (cfgBF->get("session"))
 	{
-		_bd_mgr.loadSessions(cfgBF->getCString("session"));
+		_bd_mgr.loadSessions(cfgBF->getCString("session"), isUTF8);
 		WTSLogger::info("Trading sessions loaded");
 	}
 
@@ -476,13 +477,13 @@ bool WtRtRunner::config(const char* cfgFile, bool isFile /* = true */)
 	{
 		if (cfgItem->type() == WTSVariant::VT_String)
 		{
-			_bd_mgr.loadCommodities(cfgItem->asCString());
+			_bd_mgr.loadCommodities(cfgItem->asCString(), isUTF8);
 		}
 		else if (cfgItem->type() == WTSVariant::VT_Array)
 		{
 			for (uint32_t i = 0; i < cfgItem->size(); i++)
 			{
-				_bd_mgr.loadCommodities(cfgItem->get(i)->asCString());
+				_bd_mgr.loadCommodities(cfgItem->get(i)->asCString(), isUTF8);
 			}
 		}
 	}
@@ -492,13 +493,13 @@ bool WtRtRunner::config(const char* cfgFile, bool isFile /* = true */)
 	{
 		if (cfgItem->type() == WTSVariant::VT_String)
 		{
-			_bd_mgr.loadContracts(cfgItem->asCString());
+			_bd_mgr.loadContracts(cfgItem->asCString(), isUTF8);
 		}
 		else if (cfgItem->type() == WTSVariant::VT_Array)
 		{
 			for (uint32_t i = 0; i < cfgItem->size(); i++)
 			{
-				_bd_mgr.loadContracts(cfgItem->get(i)->asCString());
+				_bd_mgr.loadContracts(cfgItem->get(i)->asCString(), isUTF8);
 			}
 		}
 	}
@@ -541,7 +542,7 @@ bool WtRtRunner::config(const char* cfgFile, bool isFile /* = true */)
 			if (StdFile::exists(filename))
 			{
 				WTSLogger::info_f("Reading parser config from {}...", filename);
-				WTSVariant* var = WTSCfgLoader::load_from_file(filename);
+				WTSVariant* var = WTSCfgLoader::load_from_file(filename, true);
 				if (var)
 				{
 					if (!initParsers(var->get("parsers")))
@@ -574,7 +575,7 @@ bool WtRtRunner::config(const char* cfgFile, bool isFile /* = true */)
 			if (StdFile::exists(filename))
 			{
 				WTSLogger::info_f("Reading trader config from {}...", filename);
-				WTSVariant* var = WTSCfgLoader::load_from_file(filename);
+				WTSVariant* var = WTSCfgLoader::load_from_file(filename, true);
 				if (var)
 				{
 					if (!initTraders(var->get("traders")))
@@ -612,7 +613,7 @@ bool WtRtRunner::config(const char* cfgFile, bool isFile /* = true */)
 				if (StdFile::exists(filename))
 				{
 					WTSLogger::info_f("Reading executer config from {}...", filename);
-					WTSVariant* var = WTSCfgLoader::load_from_file(filename);
+					WTSVariant* var = WTSCfgLoader::load_from_file(filename, true);
 					if (var)
 					{
 						if (!initTraders(var->get("executers")))

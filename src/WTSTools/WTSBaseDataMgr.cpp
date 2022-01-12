@@ -217,7 +217,7 @@ void WTSBaseDataMgr::release()
 	}
 }
 
-bool WTSBaseDataMgr::loadSessions(const char* filename)
+bool WTSBaseDataMgr::loadSessions(const char* filename, bool isUTF8)
 {
 	if (!StdFile::exists(filename))
 	{
@@ -225,7 +225,7 @@ bool WTSBaseDataMgr::loadSessions(const char* filename)
 		return false;
 	}
 
-	WTSVariant* root = WTSCfgLoader::load_from_file(filename);
+	WTSVariant* root = WTSCfgLoader::load_from_file(filename, isUTF8);
 	if (root == NULL)
 	{
 		WTSLogger::error_f("Loading session config file {} failed", filename);
@@ -293,7 +293,7 @@ void parseCommodity(WTSCommodityInfo* pCommInfo, WTSVariant* jPInfo)
 	pCommInfo->setMinLots(minLots);
 }
 
-bool WTSBaseDataMgr::loadCommodities(const char* filename)
+bool WTSBaseDataMgr::loadCommodities(const char* filename, bool isUTF8)
 {
 	if (!StdFile::exists(filename))
 	{
@@ -301,7 +301,7 @@ bool WTSBaseDataMgr::loadCommodities(const char* filename)
 		return false;
 	}
 
-	WTSVariant* root = WTSCfgLoader::load_from_file(filename);
+	WTSVariant* root = WTSCfgLoader::load_from_file(filename, isUTF8);
 	if (root == NULL)
 	{
 		WTSLogger::error_f("Loading commodities config file {} failed", filename);
@@ -344,7 +344,7 @@ bool WTSBaseDataMgr::loadCommodities(const char* filename)
 	return true;
 }
 
-bool WTSBaseDataMgr::loadContracts(const char* filename)
+bool WTSBaseDataMgr::loadContracts(const char* filename, bool isUTF8)
 {
 	if (!StdFile::exists(filename))
 	{
@@ -352,7 +352,7 @@ bool WTSBaseDataMgr::loadContracts(const char* filename)
 		return false;
 	}
 
-	WTSVariant* root = WTSCfgLoader::load_from_file(filename);
+	WTSVariant* root = WTSCfgLoader::load_from_file(filename, isUTF8);
 	if (root == NULL)
 	{
 		WTSLogger::error_f("Loading contracts config file {} failed", filename);
@@ -460,7 +460,7 @@ bool WTSBaseDataMgr::loadHolidays(const char* filename)
 		return false;
 	}
 
-	WTSVariant* root = WTSCfgLoader::load_from_file(filename);
+	WTSVariant* root = WTSCfgLoader::load_from_file(filename, true);
 	if (root == NULL)
 	{
 		WTSLogger::error_f("Loading holidays config file {} failed", filename);

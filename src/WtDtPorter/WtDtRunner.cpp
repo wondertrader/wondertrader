@@ -71,7 +71,7 @@ void WtDtRunner::initialize(const char* cfgFile, const char* logCfg, const char*
 	WTSLogger::init(logCfg);
 	WtHelper::set_module_dir(modDir);
 
-	WTSVariant* config = WTSCfgLoader::load_from_file(cfgFile);
+	WTSVariant* config = WTSCfgLoader::load_from_file(cfgFile, true);
 	if(config == NULL)
 	{
 		WTSLogger::error_f("Loading config file {} failed", cfgFile);
@@ -80,9 +80,10 @@ void WtDtRunner::initialize(const char* cfgFile, const char* logCfg, const char*
 
 	//基础数据文件
 	WTSVariant* cfgBF = config->get("basefiles");
+	bool isUTF8 = cfgBF->getBoolean("utf-8");
 	if (cfgBF->get("session"))
 	{
-		_bd_mgr.loadSessions(cfgBF->getCString("session"));
+		_bd_mgr.loadSessions(cfgBF->getCString("session"), isUTF8);
 		WTSLogger::info("Trading sessions loaded");
 	}
 
@@ -91,13 +92,13 @@ void WtDtRunner::initialize(const char* cfgFile, const char* logCfg, const char*
 	{
 		if (cfgItem->type() == WTSVariant::VT_String)
 		{
-			_bd_mgr.loadCommodities(cfgItem->asCString());
+			_bd_mgr.loadCommodities(cfgItem->asCString(), isUTF8);
 		}
 		else if (cfgItem->type() == WTSVariant::VT_Array)
 		{
 			for (uint32_t i = 0; i < cfgItem->size(); i++)
 			{
-				_bd_mgr.loadCommodities(cfgItem->get(i)->asCString());
+				_bd_mgr.loadCommodities(cfgItem->get(i)->asCString(), isUTF8);
 			}
 		}
 	}
@@ -107,13 +108,13 @@ void WtDtRunner::initialize(const char* cfgFile, const char* logCfg, const char*
 	{
 		if (cfgItem->type() == WTSVariant::VT_String)
 		{
-			_bd_mgr.loadContracts(cfgItem->asCString());
+			_bd_mgr.loadContracts(cfgItem->asCString(), isUTF8);
 		}
 		else if (cfgItem->type() == WTSVariant::VT_Array)
 		{
 			for (uint32_t i = 0; i < cfgItem->size(); i++)
 			{
-				_bd_mgr.loadContracts(cfgItem->get(i)->asCString());
+				_bd_mgr.loadContracts(cfgItem->get(i)->asCString(), isUTF8);
 			}
 		}
 	}
@@ -170,7 +171,7 @@ void WtDtRunner::initDataMgr(WTSVariant* config, bool bAlldayMode /* = false */)
 
 void WtDtRunner::initParsers(const char* filename)
 {
-	WTSVariant* config = WTSCfgLoader::load_from_file(filename);
+	WTSVariant* config = WTSCfgLoader::load_from_file(filename, true);
 	if(config == NULL)
 	{
 		WTSLogger::error_f("Loading parser file {} failed", filename);

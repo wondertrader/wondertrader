@@ -15,12 +15,12 @@ class WTSCfgLoader
 	static WTSVariant*	load_from_yaml(const char* content);
 
 public:
-	static WTSVariant*	load_from_file(const char* filename);
-	static WTSVariant*	load_from_content(const std::string& content, bool isYaml = false);
+	static WTSVariant*	load_from_file(const char* filename, bool isUTF8);
+	static WTSVariant*	load_from_content(const std::string& content, bool isYaml = false, bool isUTF8 = false);
 
-	static WTSVariant*	load_from_file(const std::string& filename)
+	static WTSVariant*	load_from_file(const std::string& filename, bool isUTF8)
 	{
-		return load_from_file(filename.c_str());
+		return load_from_file(filename.c_str(), isUTF8);
 	}
 };
 

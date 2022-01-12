@@ -215,7 +215,7 @@ bool WtDataReader::loadStkAdjFactorsFromFile(const char* adjfile)
 		return false;
 	}
 
-	WTSVariant* doc = WTSCfgLoader::load_from_file(adjfile);
+	WTSVariant* doc = WTSCfgLoader::load_from_file(adjfile, true);
 	if(doc == NULL)
 	{
 		pipe_reader_log(_sink, LL_ERROR, "Loading adjusting factors file {} failed", adjfile);

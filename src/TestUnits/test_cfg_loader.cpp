@@ -6,7 +6,7 @@ USING_NS_WTP;
 
 TEST(test_cfg_loader, test_yaml)
 {
-	WTSVariant* cfg = WTSCfgLoader::load_from_file("test.yaml");
+	WTSVariant* cfg = WTSCfgLoader::load_from_file("test.yaml", true);
 	EXPECT_TRUE(cfg != NULL);
 
 	EXPECT_TRUE(cfg->has("dict"));
@@ -51,7 +51,7 @@ TEST(test_cfg_loader, test_yaml)
 
 TEST(test_cfg_loader, test_json)
 {
-	WTSVariant* cfg = WTSCfgLoader::load_from_file("test.json");
+	WTSVariant* cfg = WTSCfgLoader::load_from_file("test.json", true);
 	EXPECT_TRUE(cfg != NULL);
 
 	EXPECT_TRUE(cfg->has("dict"));

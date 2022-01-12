@@ -52,9 +52,9 @@ public:
 	void		release();
 
 
-	bool		loadSessions(const char* filename);
-	bool		loadCommodities(const char* filename);
-	bool		loadContracts(const char* filename);
+	bool		loadSessions(const char* filename, bool isUTF8);
+	bool		loadCommodities(const char* filename, bool isUTF8);
+	bool		loadContracts(const char* filename, bool isUTF8);
 	bool		loadHolidays(const char* filename);
 
 public:

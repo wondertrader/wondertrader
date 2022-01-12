@@ -39,7 +39,7 @@ bool WTSHotMgr::loadHots(const char* filename)
 		return false;
 	}
 
-	WTSVariant* root = WTSCfgLoader::load_from_file(filename);
+	WTSVariant* root = WTSCfgLoader::load_from_file(filename, true);
 	if (root == NULL)
 		return false;
 
@@ -455,7 +455,7 @@ bool WTSHotMgr::loadSeconds(const char* filename)
 		return false;
 	}
 
-	WTSVariant* root = WTSCfgLoader::load_from_file(filename);
+	WTSVariant* root = WTSCfgLoader::load_from_file(filename, true);
 	if (root == NULL)
 		return false;
 

@@ -97,7 +97,7 @@ void initialize()
 	if (!StdFile::exists(filename.c_str()))
 		filename = "QFConfig.yaml";
 
-	WTSVariant* config = WTSCfgLoader::load_from_file(filename.c_str());
+	WTSVariant* config = WTSCfgLoader::load_from_file(filename.c_str(), true);
 	if(config == NULL)
 	{
 		WTSLogger::error_f("Loading config file {} failed", filename);
@@ -106,9 +106,10 @@ void initialize()
 
 	//加载市场信息
 	WTSVariant* cfgBF = config->get("basefiles");
+	bool isUTF8 = cfgBF->getBoolean("utf-8");
 	if (cfgBF->get("session"))
 	{
-		g_baseDataMgr.loadSessions(cfgBF->getCString("session"));
+		g_baseDataMgr.loadSessions(cfgBF->getCString("session"), isUTF8);
 		WTSLogger::info("Trading sessions loaded");
 	}
 
@@ -117,13 +118,13 @@ void initialize()
 	{
 		if (cfgItem->type() == WTSVariant::VT_String)
 		{
-			g_baseDataMgr.loadCommodities(cfgItem->asCString());
+			g_baseDataMgr.loadCommodities(cfgItem->asCString(), isUTF8);
 		}
 		else if (cfgItem->type() == WTSVariant::VT_Array)
 		{
 			for (uint32_t i = 0; i < cfgItem->size(); i++)
 			{
-				g_baseDataMgr.loadCommodities(cfgItem->get(i)->asCString());
+				g_baseDataMgr.loadCommodities(cfgItem->get(i)->asCString(), isUTF8);
 			}
 		}
 	}
@@ -133,13 +134,13 @@ void initialize()
 	{
 		if (cfgItem->type() == WTSVariant::VT_String)
 		{
-			g_baseDataMgr.loadContracts(cfgItem->asCString());
+			g_baseDataMgr.loadContracts(cfgItem->asCString(), isUTF8);
 		}
 		else if (cfgItem->type() == WTSVariant::VT_Array)
 		{
 			for (uint32_t i = 0; i < cfgItem->size(); i++)
 			{
-				g_baseDataMgr.loadContracts(cfgItem->get(i)->asCString());
+				g_baseDataMgr.loadContracts(cfgItem->get(i)->asCString(), isUTF8);
 			}
 		}
 	}

@@ -561,15 +561,15 @@ void main()
 
 	std::string file = IniFile::ReadConfigString("config", "session", "", cfg.c_str());
 	if(!file.empty())
-		g_bdMgr.loadSessions(file.c_str());
+		g_bdMgr.loadSessions(file.c_str(), true);
 
 	file = IniFile::ReadConfigString("config", "commodity", "", cfg.c_str());
 	if (!file.empty())
-		g_bdMgr.loadCommodities(file.c_str());
+		g_bdMgr.loadCommodities(file.c_str(), true);
 
 	file = IniFile::ReadConfigString("config", "contract", "", cfg.c_str());
 	if (!file.empty())
-		g_bdMgr.loadContracts(file.c_str());
+		g_bdMgr.loadContracts(file.c_str(), true);
 
 	file = IniFile::ReadConfigString("config", "holiday", "", cfg.c_str());
 	if (!file.empty())

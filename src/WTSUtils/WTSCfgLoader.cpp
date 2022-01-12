@@ -196,15 +196,24 @@ WTSVariant* WTSCfgLoader::load_from_yaml(const char* content)
 	return ret;
 }
 
-WTSVariant* WTSCfgLoader::load_from_content(const std::string& content, bool isYaml /* = false */)
+WTSVariant* WTSCfgLoader::load_from_content(const std::string& content, bool isYaml /* = false */, bool isUTF8 /* = true */)
 {
+	std::string buffer;
+#ifdef _WIN32
+	if (isUTF8)
+		buffer = UTF8toChar(content);
+#endif
+
+	if (buffer.empty())
+		buffer = content;
+
 	if (isYaml)
-		return load_from_yaml(content.c_str());
+		return load_from_yaml(buffer.c_str());
 	else
-		return load_from_json(content.c_str());
+		return load_from_json(buffer.c_str());
 }
 
-WTSVariant* WTSCfgLoader::load_from_file(const char* filename)
+WTSVariant* WTSCfgLoader::load_from_file(const char* filename, bool isUTF8 /* = true */)
 {
 	if (!StdFile::exists(filename))
 		return NULL;
@@ -218,7 +227,8 @@ WTSVariant* WTSCfgLoader::load_from_file(const char* filename)
 	//Linux下得是UTF8
 	//Win下得是GBK
 #ifdef _WIN32
-	content = UTF8toChar(content);
+	if(isUTF8)
+		content = UTF8toChar(content);
 #endif
 
 	if (StrUtil::endsWith(filename, ".json"))
