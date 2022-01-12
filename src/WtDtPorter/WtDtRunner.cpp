@@ -153,17 +153,19 @@ void WtDtRunner::initialize(const char* cfgFile, const char* logCfg, const char*
 		WTSLogger::info("QuoteFactory will run in allday mode");
 	}
 
-	initDataMgr(config->get("writer"));
+	initDataMgr(config->get("writer"), bAlldayMode);
 
-	initParsers(config->getCString("parsers"));
+	if (config->has("parsers"))
+		initParsers(config->getCString("parsers"));
+	else
+		WTSLogger::log_raw(LL_WARN, "No parsers config, skipped loading parsers");
 
 	config->release();
 }
 
-void WtDtRunner::initDataMgr(WTSVariant* config)
+void WtDtRunner::initDataMgr(WTSVariant* config, bool bAlldayMode /* = false */)
 {
-	bool bDumperEnabled = (_dumper_for_bars != NULL || _dumper_for_ticks != NULL);
-	_data_mgr.init(config, &_bd_mgr, &_state_mon, &_udp_caster);
+	_data_mgr.init(config, &_bd_mgr, bAlldayMode ? NULL : &_state_mon, &_udp_caster);
 }
 
 void WtDtRunner::initParsers(const char* filename)
@@ -248,7 +250,7 @@ void WtDtRunner::parser_unsubscribe(const char* id, const char* code)
 		_cb_parser_sub(id, code, false);
 }
 
-void WtDtRunner::on_parser_quote(const char* id, WTSTickStruct* curTick, bool bNeedSlice /* = true */)
+void WtDtRunner::on_ext_parser_quote(const char* id, WTSTickStruct* curTick, bool bNeedSlice /* = true */)
 {
 	ParserAdapterPtr adapter = _parsers.getAdapter(id);
 	if (adapter)
@@ -256,6 +258,10 @@ void WtDtRunner::on_parser_quote(const char* id, WTSTickStruct* curTick, bool bN
 		WTSTickData* newTick = WTSTickData::create(*curTick);
 		adapter->handleQuote(newTick, bNeedSlice);
 		newTick->release();
+	}
+	else
+	{
+		WTSLogger::warn_f("Parser {} not exists", id);
 	}
 }
 

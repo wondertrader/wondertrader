@@ -125,7 +125,7 @@ public:
 	void parser_subscribe(const char* id, const char* code);
 	void parser_unsubscribe(const char* id, const char* code);
 
-	void on_parser_quote(const char* id, WTSTickStruct* curTick, bool bNeedSlice = true);
+	void on_ext_parser_quote(const char* id, WTSTickStruct* curTick, bool bNeedSlice = true);
 
 
 //////////////////////////////////////////////////////////////////////////

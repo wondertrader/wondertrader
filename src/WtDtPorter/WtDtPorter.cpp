@@ -100,7 +100,7 @@ bool create_ext_parser(const char* id)
 
 void parser_push_quote(const char* id, WTSTickStruct* curTick, bool bNeedSlice)
 {
-	getRunner().on_parser_quote(id, curTick, bNeedSlice);
+	getRunner().on_ext_parser_quote(id, curTick, bNeedSlice);
 }
 
 void register_parser_callbacks(FuncParserEvtCallback cbEvt, FuncParserSubCallback cbSub)
