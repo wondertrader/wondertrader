@@ -181,7 +181,7 @@ bool HisDataReplayer::init(WTSVariant* cfg, EventNotifier* notifier /* = NULL */
 		_base_dir = StrUtil::standardisePath(cfg->getCString("path"));
 	}
 	
-	if(_mode == "storage")
+	if(_mode == "storage" || _mode == "bin")
 	{
 		if (cfg->has("storage"))
 		{
@@ -2977,7 +2977,6 @@ bool HisDataReplayer::cacheRawTicksFromCSV(const std::string& key, const char* s
 		}
 		tickList._count = tickList._items.size();
 		ifs.close();
-		//WTSLogger::info("数据文件%s全部读取完成, 共%u条", csvfile.c_str(), tickList._items.size());
 		WTSLogger::info_f("Data file {} all loaded, totally {} items", csvfile.c_str(), tickList._items.size());
 
 		/*
@@ -3144,14 +3143,14 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 	WTSCommodityInfo* commInfo = _bd_mgr.getCommodity(cInfo._exchg, cInfo._product);
 	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
 
-	std::string pname;
-	std::string dirname;
+	std::string p_suffix;
+	std::string dirname = PERIOD_NAME[period];
 	switch (period)
 	{
-	case KP_Minute1: pname = "m1"; dirname = "min1"; break;
-	case KP_Minute5: pname = "m5"; dirname = "min5"; break;
-	case KP_DAY: pname = "d"; dirname = "day"; break;
-	default: pname = ""; break;
+	case KP_Minute1: p_suffix = "m1"; break;
+	case KP_Minute5: p_suffix = "m5"; break;
+	case KP_DAY: p_suffix = "d"; break;
+	default: p_suffix = ""; break;
 	}
 
 	bool isDay = (period == KP_DAY);
@@ -3206,13 +3205,13 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 		uint64_t stime = isDay ? barList._bars[0].date : barList._bars[0].time;
 		uint64_t etime = isDay ? barList._bars[barcnt-1].date : barList._bars[barcnt-1].time;
 
-		WTSLogger::info_f("{} items of back {} data of {} directly loaded from dsb file, from {} to {}", barcnt, pname.c_str(), stdCode, stime, etime);
+		WTSLogger::info_f("{} items of back {} data of {} directly loaded from dsb file, from {} to {}", barcnt, p_suffix.c_str(), stdCode, stime, etime);
 	}
 	else
 	{
 		//如果没有格式化的历史数据文件, 则从csv加载
 		std::stringstream ss;
-		ss << _base_dir << "csv/" << stdCode << "_" << pname << ".csv";
+		ss << _base_dir << "csv/" << stdCode << "_" << p_suffix << ".csv";
 		std::string csvfile = ss.str();
 
 		if (!StdFile::exists(csvfile.c_str()))
@@ -3330,21 +3329,6 @@ bool HisDataReplayer::cacheIntegratedFutBarsFromBin(const std::string& key, cons
 		 *	@ 2022.01.11
 		 *	将直接从文件读取，改成从HisDtMgr读取
 		 */
-		//std::stringstream ss;
-		//ss << _base_dir << "his/" << pname << "/" << cInfo._exchg << "/" << cInfo._exchg << "." << cInfo._product << hot_flag << ".dsb";
-		//std::string filename = ss.str();
-		//if (!StdFile::exists(filename.c_str()))
-		//	break;
-
-		//std::string content;
-		//StdFile::read_file_content(filename.c_str(), content);
-		//if (content.size() < sizeof(HisKlineBlock))
-		//{
-		//	WTSLogger::error("Sizechecking of back kbar data file %s failed", filename.c_str());
-		//	break;
-		//}
-
-		//proc_block_data(filename.c_str(), content, true, false);
 		std::string content;
 		std::string wrappCode = StrUtil::printf("%s.%s%s", cInfo._exchg, cInfo._product, hot_flag);
 		bool bSucc = _his_dt_mgr.load_raw_bars(cInfo._exchg, wrappCode.c_str(), period, [&content](std::string& data) {
@@ -3458,22 +3442,6 @@ bool HisDataReplayer::cacheIntegratedFutBarsFromBin(const std::string& key, cons
 
 		if (!bLoaded)
 		{
-			//std::stringstream ss;
-			//ss << _base_dir << "his/" << pname << "/" << cInfo._exchg << "/" << curCode << ".dsb";
-			//std::string filename = ss.str();
-			//if (!StdFile::exists(filename.c_str()))
-			//	continue;
-
-			//std::string content;
-			//StdFile::read_file_content(filename.c_str(), content);
-			//if (content.size() < sizeof(HisKlineBlock))
-			//{
-			//	WTSLogger::error("Sizechecking of back kbar data file %s failed", filename.c_str());
-			//	return false;
-			//}
-
-			//proc_block_data(filename.c_str(), content, true, false);
-			//buffer.swap(content);
 			bLoaded = _his_dt_mgr.load_raw_bars(cInfo._exchg, curCode, period, [&buffer](std::string& data) {
 				buffer.swap(data);
 			});
@@ -3646,22 +3614,7 @@ bool HisDataReplayer::cacheAdjustedStkBarsFromBin(const std::string& key, const 
 		 *	@ 2022.01.11
 		 *	这里将文件读取改为从HisDtMgr封装的接口读取
 		 */
-		//std::stringstream ss;
-		//ss << _base_dir << "his/" << pname << "/" << cInfo._exchg << "/" << cInfo._code << (cInfo._exright == 1 ? SUFFIX_QFQ : SUFFIX_HFQ) << ".dsb";
-		//std::string filename = ss.str();
-		//if (!StdFile::exists(filename.c_str()))
-		//	break;
-
-		//std::string content;
-		//StdFile::read_file_content(filename.c_str(), content);
-		//if (content.size() < sizeof(HisKlineBlock))
-		//{
-		//	WTSLogger::error("Sizechecking of back kbar data file %s failed", filename.c_str());
-		//	break;
-		//}
-
-		//proc_block_data(filename.c_str(), content, true, false);
-		std::string wrappCode = StrUtil::printf("%s%s", cInfo._code, (cInfo._exright == 1 ? SUFFIX_QFQ : SUFFIX_HFQ));
+		std::string wrappCode = fmt::format("{}{}", cInfo._code, (cInfo._exright == 1 ? SUFFIX_QFQ : SUFFIX_HFQ));
 		std::string content;
 		bool bSucc = _his_dt_mgr.load_raw_bars(cInfo._exchg, wrappCode.c_str(), period, [&content](std::string& data) {
 			content.swap(data);
@@ -3689,7 +3642,7 @@ bool HisDataReplayer::cacheAdjustedStkBarsFromBin(const std::string& key, const 
 		WTSLogger::info_f("{} items of adjusted back {} data of {} directly loaded", barcnt, PERIOD_NAME[period], stdCode);
 	} while (false);
 
-	WTSLogger::info("Loading raw bars of %s...", stdCode);
+	WTSLogger::info_f("Loading raw bars of {}...", stdCode);
 	do
 	{
 		const char* curCode = cInfo._code;
@@ -3724,29 +3677,11 @@ bool HisDataReplayer::cacheAdjustedStkBarsFromBin(const std::string& key, const 
 			});
 
 			if (bLoaded)
-				WTSLogger::debug("Raw bars of %s loaded via extended loader", stdCode);
+				WTSLogger::debug_f("Raw bars of {} loaded via extended loader", stdCode);
 		}
 
 		if (!bLoaded)
 		{
-			//std::stringstream ss;
-			//ss << _base_dir << "his/" << pname << "/" << cInfo._exchg << "/" << curCode << ".dsb";
-			//std::string filename = ss.str();
-			//if (!StdFile::exists(filename.c_str()))
-			//	continue;
-
-			//std::string content;
-			//StdFile::read_file_content(filename.c_str(), content);
-			//if (content.size() < sizeof(HisKlineBlock))
-			//{
-			//	WTSLogger::error("Sizechecking of back kbar data file %s failed", filename.c_str());
-			//	return false;
-			//}
-			//
-			//proc_block_data(filename.c_str(), content, true, false);
-			//buffer.swap(content);
-
-			//WTSLogger::debug("Raw bars of %s loaded from dsb file", stdCode);
 			/*
 			 *	By Wesley @ 2022.01.11
 			 *	这里将文件读取改为从HisDtMgr封装的接口读取
@@ -3757,7 +3692,7 @@ bool HisDataReplayer::cacheAdjustedStkBarsFromBin(const std::string& key, const 
 
 			if (!bLoaded)
 			{
-				WTSLogger::error_f("Loading {} bars of {} via HisDtMgr failed", PERIOD_NAME[period], curCode);
+				WTSLogger::warn_f("Loading {} bars of {} via HisDtMgr failed", PERIOD_NAME[period], curCode);
 				continue;
 			}
 		}
@@ -3792,7 +3727,7 @@ bool HisDataReplayer::cacheAdjustedStkBarsFromBin(const std::string& key, const 
 			auto& ayFactors = getAdjFactors(cInfo._code, cInfo._exchg, cInfo._product);
 			if (!ayFactors.empty())
 			{
-				WTSLogger::info("Adjusting bars of %s with adjusting factors...", stdCode);
+				WTSLogger::info_f("Adjusting bars of {} with adjusting factors...", stdCode);
 				//做复权处理
 				int32_t lastIdx = curCnt;
 				WTSBarStruct bar;
@@ -3846,7 +3781,7 @@ bool HisDataReplayer::cacheAdjustedStkBarsFromBin(const std::string& key, const 
 			}
 			else
 			{
-				WTSLogger::info("No adjusting factors of %s found, ajusting task skipped...", stdCode);
+				WTSLogger::info_f("No adjusting factors of {} found, ajusting task skipped...", stdCode);
 			}
 
 			barsSections.emplace_back(tempAy);
@@ -3890,14 +3825,6 @@ bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* st
 	uint32_t curTime = TimeUtils::getCurMin() / 100;
 
 	uint32_t endTDate = _bd_mgr.calcTradingDate(stdPID.c_str(), curDate, curTime, false);
-
-	std::string pname;
-	switch (period)
-	{
-	case KP_Minute1: pname = "min1"; break;
-	case KP_Minute5: pname = "min5"; break;
-	default: pname = "day"; break;
-	}
 
 	bool isDay = (period == KP_DAY);
 
@@ -3960,7 +3887,7 @@ bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* st
 
 		if(!bLoaded)
 		{
-			WTSLogger::error_f("Loading {} bars of {} via HisDtMgr failed", PERIOD_NAME[period], stdCode);
+			WTSLogger::warn_f("Loading {} bars of {} via HisDtMgr failed", PERIOD_NAME[period], stdCode);
 		}
 	}
 
@@ -4001,6 +3928,6 @@ bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* st
 		barsSections.clear();
 	}
 
-	WTSLogger::info("%u items of back %s data of %s cached", realCnt, pname.c_str(), stdCode);
+	WTSLogger::info("{} items of back {} data of {} cached", realCnt, PERIOD_NAME[period], stdCode);
 	return true;
 }
