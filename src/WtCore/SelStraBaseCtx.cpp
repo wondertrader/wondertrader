@@ -125,7 +125,6 @@ void SelStraBaseCtx::log_signal(const char* stdCode, double target, double price
 		std::stringstream ss;
 		ss << stdCode << "," << target << "," << price << "," << gentime << "," << usertag << "\n";
 		_sig_logs->write_file(ss.str());
-		//_sig_logs->write_file(StrUtil::printf("%s,%f,%f,%s,%s\n", stdCode, target, price, StrUtil::fmtUInt64(gentime).c_str(), usertag));
 	}
 }
 
@@ -136,7 +135,6 @@ void SelStraBaseCtx::log_trade(const char* stdCode, bool isLong, bool isOpen, ui
 		std::stringstream ss;
 		ss << stdCode << "," << curTime << "," << (isLong ? "LONG" : "SHORT") << "," << (isOpen ? "OPEN" : "CLOSE") << "," << price << "," << qty << "," << userTag << "," << fee << "\n";
 		_trade_logs->write_file(ss.str());
-		//_trade_logs->write_file(StrUtil::printf("%s,%s,%s,%s,%f,%f,%s,%.2f\n", stdCode, StrUtil::fmtUInt64(curTime).c_str(), isLong ? "LONG" : "SHORT", isOpen ? "OPEN" : "CLOSE", price, qty, userTag, fee));
 	}
 }
 
@@ -150,9 +148,6 @@ void SelStraBaseCtx::log_close(const char* stdCode, bool isLong, uint64_t openTi
 			<< "," << closeTime << "," << closepx << "," << qty << "," << profit << ","
 			<< totalprofit << "," << enterTag << "," << exitTag << "\n";
 		_trade_logs->write_file(ss.str());
-
-		//_close_logs->write_file(StrUtil::printf("%s,%s,%s,%f,%s,%f,%f,%.2f,%.2f,%s,%s\n",
-		//	stdCode, isLong ? "LONG" : "SHORT", StrUtil::fmtUInt64(openTime).c_str(), openpx, StrUtil::fmtUInt64(closeTime).c_str(), closepx, qty, profit, totalprofit, enterTag, exitTag));
 	}
 }
 

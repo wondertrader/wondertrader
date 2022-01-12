@@ -31,10 +31,11 @@ bool HisDataMgr::init(WTSVariant* cfg)
 			_reader = pFuncCreator();
 		}
 
+		WTSLogger::debug_f("Back data storage module {} loaded", module);
 	}
 	else
 	{
-		WTSLogger::error("Initializing of data writer failed: loading module %s failed...", module.c_str());
+		WTSLogger::error_f("Loading module back data storage module {} failed", module);
 
 	}
 

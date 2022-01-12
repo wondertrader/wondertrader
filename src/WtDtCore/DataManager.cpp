@@ -72,7 +72,7 @@ bool DataManager::init(WTSVariant* params, WTSBaseDataMgr* bdMgr, StateMonitor* 
 			_writer = pFuncCreateWriter();
 			_remover = pFuncDeleteWriter;
 		}
-
+		WTSLogger::info_f("Data storage module {} loaded", module);
 	}
 	else
 	{

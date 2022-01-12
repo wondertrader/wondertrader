@@ -16,9 +16,10 @@
 
 #include "../Includes/WTSContractInfo.hpp"
 #include "../Includes/WTSSessionInfo.hpp"
-#include "../Share/decimal.h"
 #include "../Includes/WTSVariant.hpp"
 #include "../Share/CodeHelper.hpp"
+#include "../Share/decimal.h"
+#include "../Share/StrUtil.hpp"
 
 #include "../WTSTools/WTSLogger.h"
 

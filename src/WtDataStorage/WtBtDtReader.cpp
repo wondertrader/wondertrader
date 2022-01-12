@@ -73,6 +73,8 @@ void WtBtDtReader::init(WTSVariant* cfg, IBtDtReaderSink* sink)
 
 	_base_dir = cfg->getCString("path");
 	_base_dir = StrUtil::standardisePath(_base_dir);
+
+	pipe_btreader_log(_sink, LL_INFO, "WtBtDtReader initialized, root data dir is {}", _base_dir);
 }
 
 bool WtBtDtReader::read_raw_bars(const char* exchg, const char* code, WTSKlinePeriod period, std::string& buffer)
@@ -82,10 +84,11 @@ bool WtBtDtReader::read_raw_bars(const char* exchg, const char* code, WTSKlinePe
 	std::string filename = ss.str();
 	if (!StdFile::exists(filename.c_str()))
 	{
-		pipe_btreader_log(_sink, LL_ERROR, "Back {} data file {} not exists", PERIOD_NAME[period], filename);
+		pipe_btreader_log(_sink, LL_WARN, "Back {} data file {} not exists", PERIOD_NAME[period], filename);
 		return false;
 	}
 
+	pipe_btreader_log(_sink, LL_DEBUG, "Reading back {} bars from file {}...", PERIOD_NAME[period], filename);
 	StdFile::read_file_content(filename.c_str(), buffer);
 	bool bSucc = proc_block_data(buffer, true, false);
 	if(!bSucc)
@@ -101,7 +104,7 @@ bool WtBtDtReader::read_raw_ticks(const char* exchg, const char* code, uint32_t 
 	std::string filename = ss.str();
 	if (!StdFile::exists(filename.c_str()))
 	{
-		pipe_btreader_log(_sink, LL_ERROR, "Back tick data file {} not exists", filename);
+		pipe_btreader_log(_sink, LL_WARN, "Back tick data file {} not exists", filename);
 		return false;
 	}
 
