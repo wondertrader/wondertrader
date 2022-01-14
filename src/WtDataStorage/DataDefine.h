@@ -86,11 +86,6 @@ typedef struct _RTKlineBlock : _RTDayBlockHeader
 	WTSBarStruct	_bars[0];
 } RTKlineBlock;
 
-typedef struct _RTKlineBlockOld : _RTDayBlockHeader
-{
-	WTSBarStructOld	_bars[0];
-} RTKlineBlockOld;
-
 //tick数据数据块
 //By Wesley @ 2021.12.30
 //实时tick缓存，直接用新版本的tick结构
