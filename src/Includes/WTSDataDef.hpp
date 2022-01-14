@@ -232,9 +232,6 @@ protected:
 public:
 	static WTSKlineSlice* create(const char* code, WTSKlinePeriod period, uint32_t times, WTSBarStruct* bars = NULL, int32_t count = 0)
 	{
-		if (bars == NULL || count == 0)
-			return NULL;
-
 		WTSKlineSlice *pRet = new WTSKlineSlice;
 		strcpy(pRet->_code, code);
 		pRet->_period = period;
