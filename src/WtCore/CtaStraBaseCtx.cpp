@@ -28,10 +28,10 @@ namespace rj = rapidjson;
 const char* CMP_ALG_NAMES[] =
 {
 	"£½",
-	"£¾",
-	"£¼",
-	"¡Ý",
-	"¡Ü"
+	">",
+	"<",
+	">=",
+	"<="
 };
 
 const char* ACTION_NAMES[] =
