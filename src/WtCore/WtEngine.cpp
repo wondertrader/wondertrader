@@ -37,7 +37,7 @@ namespace rj = rapidjson;
 USING_NS_WTP;
 
 WtEngine::WtEngine()
-	:_port_fund(NULL)
+	: _port_fund(NULL)
 	, _risk_volscale(1.0)
 	, _risk_date(0)
 	, _terminated(false)
@@ -49,6 +49,7 @@ WtEngine::WtEngine()
 	_cur_secs = _cur_time % 100000;
 	_cur_time /= 100000;
 	_cur_raw_time = _cur_time;
+	_cur_tdate = _cur_date;
 
 	WtHelper::setTime(_cur_date, _cur_time, _cur_secs);
 }
