@@ -292,16 +292,26 @@ void* WtDataWriter::resizeRTBlock(BoostMFPtr& mfPtr, uint32_t nCount)
 	}
 	catch(std::exception& ex)
 	{
-		pipe_writer_log(_sink, LL_ERROR, "Exception occured while expanding RT cache file of {}[{}]: {}", filename, uNewSize, ex.what());
-		return mfPtr->addr();
-	}
-
-	BoostMappingFile* pNewMf = new BoostMappingFile();
-	if (!pNewMf->map(filename))
-	{
-		delete pNewMf;
+		pipe_writer_log(_sink, LL_ERROR, "Exception occured while expanding RT cache file {} to {}: {}", filename, uNewSize, ex.what());
 		return NULL;
 	}
+
+
+	mfPtr.reset();
+	BoostMappingFile* pNewMf = new BoostMappingFile();
+	try
+	{
+		if (!pNewMf->map(filename))
+		{
+			delete pNewMf;
+			return NULL;
+		}
+	}
+	catch (std::exception& ex)
+	{
+		pipe_writer_log(_sink, LL_ERROR, "Exception occured while mapping RT cache file {}: {}", filename, ex.what());
+		return NULL;
+	}	
 
 	mfPtr.reset(pNewMf);
 
@@ -573,11 +583,18 @@ void WtDataWriter::pipeToTicks(WTSContractInfo* ct, WTSTickData* curTick)
 
 	//先检查容量够不够,不够要扩
 	RTTickBlock* blk = pBlockPair->_block;
-	if(blk->_size >= blk->_capacity)
+	if(blk && blk->_size >= blk->_capacity)
 	{
 		pBlockPair->_file->sync();
 		pBlockPair->_block = (RTTickBlock*)resizeRTBlock<RTDayBlockHeader, WTSTickStruct>(pBlockPair->_file, blk->_capacity + TICK_SIZE_STEP);
 		blk = pBlockPair->_block;
+		if(blk) pipe_writer_log(_sink, LL_DEBUG, "RT tick block of {} resized to {}", ct->getFullCode(), blk->_capacity);
+	}
+	
+	if (blk == NULL)
+	{
+		pipe_writer_log(_sink, LL_DEBUG, "RT tick block of {} is not valid", ct->getFullCode());
+		return;
 	}
 
 	memcpy(&blk->_ticks[blk->_size], &curTick->getTickStruct(), sizeof(WTSTickStruct));
@@ -962,23 +979,24 @@ WtDataWriter::TickBlockPair* WtDataWriter::getTickBlock(WTSContractInfo* ct, uin
 		else
 		{
 			//检查缓存文件是否有问题,要自动恢复
-			for (;;)
+			do
 			{
 				uint64_t uSize = sizeof(RTTickBlock) + sizeof(WTSTickStruct) * pBlock->_block->_capacity;
-				uint64_t oldSize = pBlock->_file->size();
-				if (oldSize != uSize)
+				uint64_t realSz = pBlock->_file->size();
+				if (realSz != uSize)
 				{
-					uint32_t oldCnt = (uint32_t)((oldSize - sizeof(RTTickBlock)) / sizeof(WTSTickStruct));
+					uint32_t realCap = (uint32_t)((realSz - sizeof(RTTickBlock)) / sizeof(WTSTickStruct));
+					uint32_t markedCap = pBlock->_block->_capacity;
+					pipe_writer_log(_sink, LL_WARN, "Tick cache file of {} on {} repaired, real capiacity:{}, marked capacity:{}",
+						ct->getCode(), curDate, realCap, markedCap);
+
 					//文件大小不匹配,一般是因为capacity改了,但是实际没扩容
 					//这是做一次扩容即可
-					pBlock->_block->_capacity = oldCnt;
-					pBlock->_block->_size = oldCnt;
-
-					pipe_writer_log(_sink, LL_WARN, "Tick cache file of {} on date {} repaired", ct->getCode(), curDate);
+					pBlock->_block->_capacity = realCap;
+					pBlock->_block->_size = min(realCap,markedCap);
 				}
 				
-				break;
-			}
+			} while (false);
 			
 		}
 	}
@@ -1344,12 +1362,12 @@ bool WtDataWriter::updateCache(WTSContractInfo* ct, WTSTickData* curTick, bool b
 		uint32_t tdate = sInfo->getOffsetDate(curTick->actiondate(), curTick->actiontime() / 100000);
 		if (tdate > curTick->tradingdate())
 		{
-			pipe_writer_log(_sink, LL_ERROR, "Last tick of {}.{} with time {}.{} has an exception, abandoned", curTick->exchg(), curTick->code(), curTick->actiondate(), curTick->actiontime());
+			pipe_writer_log(_sink, LL_WARN, "Last tick of {}.{} with time {}.{} has an exception, abandoned", curTick->exchg(), curTick->code(), curTick->actiondate(), curTick->actiontime());
 			return false;
 		}
 		else if (curTick->totalvolume() < item._tick.total_volume)
 		{
-			pipe_writer_log(_sink, LL_ERROR, "Last tick of {}.{} with time {}.{}, volume {} is less than cached volume {}, abandoned", 
+			pipe_writer_log(_sink, LL_WARN, "Last tick of {}.{} with time {}.{}, volume {} is less than cached volume {}, abandoned",
 				curTick->exchg(), curTick->code(), curTick->actiondate(), curTick->actiontime(), curTick->totalvolume(), item._tick.total_volume);
 			return false;
 		}
@@ -1443,7 +1461,7 @@ void WtDataWriter::check_loop()
 			TickBlockPair* tBlk = (TickBlockPair*)it->second;
 			if (tBlk->_lasttime != 0 && (now - tBlk->_lasttime > expire_secs))
 			{
-				pipe_writer_log(_sink, LL_INFO, "tick cache {} mapping expired, automatically closed", key.c_str());
+				pipe_writer_log(_sink, LL_INFO, "tick cache of {} mapping expired, automatically closed", key.c_str());
 				releaseBlock<TickBlockPair>(tBlk);
 			}
 		}
@@ -1454,7 +1472,7 @@ void WtDataWriter::check_loop()
 			TransBlockPair* tBlk = (TransBlockPair*)it->second;
 			if (tBlk->_lasttime != 0 && (now - tBlk->_lasttime > expire_secs))
 			{
-				pipe_writer_log(_sink, LL_INFO, "trans cache {} mapping expired, automatically closed", key.c_str());
+				pipe_writer_log(_sink, LL_INFO, "trans cache o {} mapping expired, automatically closed", key.c_str());
 				releaseBlock<TransBlockPair>(tBlk);
 			}
 		}
@@ -1465,7 +1483,7 @@ void WtDataWriter::check_loop()
 			OrdDtlBlockPair* tBlk = (OrdDtlBlockPair*)it->second;
 			if (tBlk->_lasttime != 0 && (now - tBlk->_lasttime > expire_secs))
 			{
-				pipe_writer_log(_sink, LL_INFO, "order cache {} mapping expired, automatically closed", key.c_str());
+				pipe_writer_log(_sink, LL_INFO, "order cache of {} mapping expired, automatically closed", key.c_str());
 				releaseBlock<OrdDtlBlockPair>(tBlk);
 			}
 		}
@@ -1476,7 +1494,7 @@ void WtDataWriter::check_loop()
 			OrdQueBlockPair* tBlk = (OrdQueBlockPair*)v.second;
 			if (tBlk->_lasttime != 0 && (now - tBlk->_lasttime > expire_secs))
 			{
-				pipe_writer_log(_sink, LL_INFO, "queue cache {} mapping expired, automatically closed", key.c_str());
+				pipe_writer_log(_sink, LL_INFO, "queue cache of {} mapping expired, automatically closed", key.c_str());
 				releaseBlock<OrdQueBlockPair>(tBlk);
 			}
 		}
@@ -1487,7 +1505,7 @@ void WtDataWriter::check_loop()
 			KBlockPair* kBlk = (KBlockPair*)it->second;
 			if (kBlk->_lasttime != 0 && (now - kBlk->_lasttime > expire_secs))
 			{
-				pipe_writer_log(_sink, LL_INFO, "min1 cache {} mapping expired, automatically closed", key.c_str());
+				pipe_writer_log(_sink, LL_INFO, "min1 cache of {} mapping expired, automatically closed", key.c_str());
 				releaseBlock<KBlockPair>(kBlk);
 			}
 		}
@@ -1498,7 +1516,7 @@ void WtDataWriter::check_loop()
 			KBlockPair* kBlk = (KBlockPair*)it->second;
 			if (kBlk->_lasttime != 0 && (now - kBlk->_lasttime > expire_secs))
 			{
-				pipe_writer_log(_sink, LL_INFO, "min5 cache {} mapping expired, automatically closed", key.c_str());
+				pipe_writer_log(_sink, LL_INFO, "min5 cache of {} mapping expired, automatically closed", key.c_str());
 				releaseBlock<KBlockPair>(kBlk);
 			}
 		}
