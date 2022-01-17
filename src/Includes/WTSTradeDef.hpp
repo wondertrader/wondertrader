@@ -34,6 +34,8 @@ protected:
 		, m_priceType(WPT_ANYPRICE)
 		, m_timeCond(WTC_GFD)
 		, m_offsetType(WOT_OPEN)
+		, m_bIsNet(false)
+		, m_bIsBuy(true)
 	{
 	}
 
@@ -91,11 +93,18 @@ public:
 	inline void setSent() { m_uSndTm = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count(); }
 	inline uint64_t getSendTime() const { return m_uSndTm; }
 
+	inline void setNetDirection(bool isBuy) { m_bIsNet = true; m_bIsBuy = isBuy; }
+	inline bool isNet() const { return m_bIsNet; }
+	inline bool isBuy() const { return m_bIsBuy; }
+
 protected:
 	std::string		m_strExchg;
 	std::string		m_strCode;
 	double			m_dVolume;
 	double			m_iPrice;
+
+	bool			m_bIsNet;
+	bool			m_bIsBuy;
 
 	uint64_t		m_uSndTm;
 
@@ -358,6 +367,10 @@ public:
 	inline void setBusinessType(WTSBusinessType bType) { m_businessType = bType; }
 	inline WTSBusinessType	getBusinessType() const { return m_businessType; }
 
+	inline void setNetDirection(bool isBuy) { m_bIsNet = true; m_bIsBuy = isBuy; }
+	inline bool isNet() const { return m_bIsNet; }
+	inline bool isBuy() const { return m_bIsBuy; }
+
 protected:
 	std::string	m_strExchg;		//ÊÐ³¡
 	std::string m_strCode;			//´úÂë
@@ -369,6 +382,9 @@ protected:
 	uint64_t	m_uTradeTime;
 	double		m_dVolume;
 	double		m_dPrice;
+
+	bool		m_bIsNet;
+	bool		m_bIsBuy;
 
 	WTSDirectionType	m_direction;
 	WTSOffsetType		m_offsetType;
