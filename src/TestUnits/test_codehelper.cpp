@@ -9,6 +9,14 @@ TEST(test_codehelper, test_raw_to_std)
 
 	EXPECT_EQ(CodeHelper::rawMonthCodeToStdCode("IF2112", "CFFEX"), "CFFEX.IF.2112");
 	EXPECT_EQ(CodeHelper::rawMonthCodeToStdCode("MA112", "CZCE"), "CZCE.MA.2112");
+	EXPECT_EQ(CodeHelper::rawMonthCodeToStdCode("v2112", "DCE"), "DCE.v.2112");
+	
+	EXPECT_TRUE(CodeHelper::isMonthlyCode("MA221"));
+	EXPECT_TRUE(CodeHelper::isMonthlyCode("rb2001"));
+	EXPECT_TRUE(CodeHelper::isMonthlyCode("v2001"));
+
+	EXPECT_FALSE(CodeHelper::isMonthlyCode("600000"));
+	EXPECT_TRUE(CodeHelper::isMonthlyCode("BTC-USDT-220627"));
 }
 
 TEST(test_codehelper, test_extract)

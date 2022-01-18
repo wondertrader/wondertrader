@@ -229,8 +229,10 @@ public:
 
 	static inline bool isMonthlyCode(const char* code)
 	{
-		//最后3/4位都是数字，才是分月合约
-		return isdigit(code[strlen(code) - 1]) && (isalpha(code[strlen(code) - 3]) || isalpha(code[strlen(code) - 4]));
+		using namespace boost::xpressive;
+		//最后3-6位都是数字，才是分月合约
+		static cregex reg_stk = cregex::compile("^.*[A-z|-]\\d{3,6}$");	//CFFEX.IO.2007
+		return 	regex_match(code, reg_stk);
 	}
 
 	/*
@@ -242,7 +244,7 @@ public:
 	{
 		using namespace boost::xpressive;
 		/* 定义正则表达式 */
-		static cregex reg_stk = cregex::compile("^[A-Z|a-z]+\\d{4}-(C|P)-\\d+$");	//中金所、大商所格式IO2013-C-4000
+		static cregex reg_stk = cregex::compile("^[A-z]+\\d{4}-(C|P)-\\d+$");	//中金所、大商所格式IO2013-C-4000
 		bool bMatch = regex_match(code, reg_stk);
 		if(bMatch)
 		{
