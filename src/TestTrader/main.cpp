@@ -150,12 +150,12 @@ public:
 		return true;
 	}
 
-	bool entrustLmt()
+	bool entrustLmt(bool isNet)
 	{
 		char code[32] = { 0 };
 		char exchg[32] = { 0 };
 		double price = 0.0;
-		uint32_t qty = 0;
+		double qty = 0;
 		uint32_t bs = 0;
 		uint32_t offset = 0;
 
@@ -173,17 +173,30 @@ public:
 			printf("请输入数量: ");
 			std::cin >> qty;
 
-			printf("请输入方向,0-做多,1-做空: ");
-			std::cin >> bs;
-			if(bs != 0 && bs != 1)
-				continue;
+			if(isNet)
+			{
+				printf("请输入方向,0-买入,1-卖出: ");
+				std::cin >> bs;
+				if (bs != 0 && bs != 1)
+					continue;
 
-			printf("请输入开平,0-开仓,1-平仓: ");
-			std::cin >> offset;
-			if (offset != 0 && offset != 1)
-				continue;
+				printf("品种: %s.%s,价格: %f,数量: %f,方向: %s,确认y/n? ", exchg, code, price, qty, bs == 0 ? "买入" : "卖出");
+			}
+			else
+			{
+				printf("请输入方向,0-做多,1-做空: ");
+				std::cin >> bs;
+				if (bs != 0 && bs != 1)
+					continue;
 
-			printf("品种: %s.%s,价格: %f,数量: %u,方向: %s,开平: %s,确认y/n? ", exchg, code, price, qty, bs == 0 ? "做多" : "做空", offset == 0 ? "开仓" : "平仓");
+				printf("请输入开平,0-开仓,1-平仓: ");
+				std::cin >> offset;
+				if (offset != 0 && offset != 1)
+					continue;
+
+				printf("品种: %s.%s,价格: %f,数量: %f,方向: %s,开平: %s,确认y/n? ", exchg, code, price, qty, bs == 0 ? "做多" : "做空", offset == 0 ? "开仓" : "平仓");
+			}
+			
 			char c;
 			std::cin >> c;
 			if(c == 'y')
@@ -203,8 +216,16 @@ public:
 		bool bNeedToday = (strcmp(exchg, "SHFE") == 0 || strcmp(exchg, "INE") == 0);
 
 		WTSEntrust* entrust = WTSEntrust::create(code, qty, price, exchg);
-		entrust->setDirection(bs == 0 ? WDT_LONG : WDT_SHORT);
-		entrust->setOffsetType(offset == 0 ? WOT_OPEN : (bNeedToday?WOT_CLOSETODAY:WOT_CLOSE));
+		if(!isNet)
+		{
+			entrust->setDirection(bs == 0 ? WDT_LONG : WDT_SHORT);
+			entrust->setOffsetType(offset == 0 ? WOT_OPEN : (bNeedToday ? WOT_CLOSETODAY : WOT_CLOSE));
+		}
+		else
+		{
+			entrust->setNetDirection(bs == 0);
+		}
+		
 		entrust->setPriceType(WPT_LIMITPRICE);
 		entrust->setTimeCondition(WTC_GFD);
 
@@ -212,7 +233,10 @@ public:
 		m_pTraderApi->makeEntrustID(entrustid, 64);
 		entrust->setEntrustID(entrustid);
 
-		log("[%s]开始下单,品种: %s.%s,价格: %f,数量: %d,动作: %s%s", m_pParams->getCString("user"), exchg, code, price, qty, offset == 0 ? "开" : "平", bs == 0 ? "多" : "空");
+		if(!isNet)
+			log("[%s]开始下单,品种: %s.%s,价格: %f,数量: %f,动作: %s%s", m_pParams->getCString("user"), exchg, code, price, qty, offset == 0 ? "开" : "平", bs == 0 ? "多" : "空");
+		else
+			log("[%s]开始下单,品种: %s.%s,价格: %f,数量: %f,动作: %s", m_pParams->getCString("user"), exchg, code, price, qty, bs == 0 ? "买入" : "卖出");
 
 		m_pTraderApi->orderInsert(entrust);
 		entrust->release();
@@ -615,6 +639,7 @@ void main()
 		printf("6、限价下单\r\n");
 		printf("7、市价下单\r\n");
 		printf("8、撤单\r\n");
+		printf("9、净持仓交易\r\n");
 		printf("0、退出\r\n");
 
 		char cmd;
@@ -622,7 +647,7 @@ void main()
 		{
 			scanf("%c", &cmd);
 
-			if(cmd >= '0' && cmd <= '8')
+			if(cmd >= '0' && cmd <= '9')
 				break;
 		}
 
@@ -645,13 +670,16 @@ void main()
 			bSucc = trader->qrySettle();
 			break;
 		case '6': 
-			bSucc = trader->entrustLmt();
+			bSucc = trader->entrustLmt(false);
 			break;
 		case '7': 
 			bSucc = trader->entrustMkt();
 			break;
 		case '8': 
 			bSucc = trader->cancel();
+			break;
+		case '9':
+			bSucc = trader->entrustLmt(true);
 			break;
 		case '0': break;
 		default:
