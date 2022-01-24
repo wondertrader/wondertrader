@@ -228,8 +228,12 @@ WtUInt32 cta_get_bars(CtxHandler cHandle, const char* stdCode, const char* perio
 		{
 			WtUInt32 reaCnt = (WtUInt32)kData->size();
 
-			for (uint32_t i = 0; i < kData->get_block_counts(); i++)
-				cb(cHandle, stdCode, period, kData->get_block_addr(i), kData->get_block_size(i), i == kData->get_block_counts() - 1);
+			uint32_t blkCnt = kData->get_block_counts();
+			for (uint32_t i = 0; i < blkCnt; i++)
+			{
+				if(kData->get_block_addr(i) != NULL)
+					cb(cHandle, stdCode, period, kData->get_block_addr(i), kData->get_block_size(i), i == blkCnt - 1);
+			}
 
 			kData->release();
 			return reaCnt;

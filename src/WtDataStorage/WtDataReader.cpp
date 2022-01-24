@@ -1023,10 +1023,10 @@ bool WtDataReader::cacheIntegratedFutBars(const std::string& key, const char* st
 			StdFile::read_file_content(filename.c_str(), content);
 			if (content.size() < sizeof(HisKlineBlock))
 			{
-				pipe_reader_log(_sink,LL_ERROR, "历史K线数据文件{}大小校验失败", filename.c_str());
+				pipe_reader_log(_sink, LL_ERROR, "Sizechecking of his dta file {} failed", filename.c_str());
 				return false;
 			}
-			proc_block_data(content, true, false);
+			proc_block_data(content, true, false);	
 			buffer.swap(content);
 		}
 		
@@ -1558,13 +1558,20 @@ WTSKlineSlice* WtDataReader::readKlineSlice(const char* stdCode, WTSKlinePeriod 
 		if (kPair != NULL)
 		{
 			//读取当日的数据
-			WTSBarStruct* pBar = std::lower_bound(kPair->_block->_bars, kPair->_block->_bars + (kPair->_block->_size - 1), bar, [period](const WTSBarStruct& a, const WTSBarStruct& b){
+			WTSBarStruct* pBar = NULL;
+			pBar = std::lower_bound(kPair->_block->_bars, kPair->_block->_bars + (kPair->_block->_size - 1), bar, [period](const WTSBarStruct& a, const WTSBarStruct& b){
 				if (period == KP_DAY)
 					return a.date < b.date;
 				else
 					return a.time < b.time;
 			});
-			uint32_t idx = pBar - kPair->_block->_bars;
+
+			uint32_t idx = 0;
+			if (pBar != NULL)
+				idx = pBar - kPair->_block->_bars;
+			else
+				idx = kPair->_block->_size;
+
 			if ((period == KP_DAY && pBar->date > bar.date) || (period != KP_DAY && pBar->time > bar.time))
 			{
 				pBar--;
@@ -1604,7 +1611,6 @@ WTSKlineSlice* WtDataReader::readKlineSlice(const char* stdCode, WTSKlinePeriod 
 				rtHead = &kPair->_block->_bars[sIdx];
 				rtCnt = curCnt;
 			}
-			
 		}
 	}
 
@@ -1616,6 +1622,8 @@ WTSKlineSlice* WtDataReader::readKlineSlice(const char* stdCode, WTSKlinePeriod 
 		hisCnt = min(hisCnt, (uint32_t)barList._bars.size());
 		hisHead = &barList._bars[barList._bars.size() - hisCnt];//indexBarFromCache(key, etime, hisCnt, period == KP_DAY);
 	}
+
+	pipe_reader_log(_sink, LL_DEBUG, "His {} bars of {} loaded, {} from history, {} from realtime", PERIOD_NAME[period], stdCode, hisCnt, rtCnt);
 
 	if (hisCnt + rtCnt > 0)
 	{
@@ -1831,6 +1839,8 @@ WtDataReader::RTKlineBlockPair* WtDataReader::getRTKilneBlock(const char* exchg,
 	else if (block._last_cap != block._block->_capacity)
 	{
 		//说明文件大小已变, 需要重新映射
+		pipe_reader_log(_sink, LL_DEBUG, "RT {} block of {}.{} expanded to {}, remapping...", subdir.c_str(), exchg, code, block._block->_capacity);
+
 		block._file.reset(new BoostMappingFile());
 		block._last_cap = 0;
 		block._block = NULL;
@@ -1841,6 +1851,8 @@ WtDataReader::RTKlineBlockPair* WtDataReader::getRTKilneBlock(const char* exchg,
 		block._block = (RTKlineBlock*)block._file->addr();
 		block._last_cap = block._block->_capacity;
 	}
+
+	pipe_reader_log(_sink, LL_DEBUG, "RT {} block of {}.{} loaded", subdir.c_str(), exchg, code);
 
 	return &block;
 }
