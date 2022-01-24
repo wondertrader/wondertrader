@@ -206,7 +206,7 @@ bool HisDataReplayer::init(WTSVariant* cfg, EventNotifier* notifier /* = NULL */
 	WTSLogger::info_f("Backtest time range is set to be [{},{}] via config", _begin_time, _end_time);
 
 	_tick_enabled = cfg->getBoolean("tick");
-	WTSLogger::info("Tick data replaying is %s", _tick_enabled ? "enabled" : "disabled");
+	WTSLogger::info_f("Tick data replaying is {}", _tick_enabled ? "enabled" : "disabled");
 
 	//基础数据文件
 	WTSVariant* cfgBF = cfg->get("basefiles");
@@ -301,7 +301,7 @@ bool HisDataReplayer::loadStkAdjFactorsFromLoader()
 		});
 	});
 
-	if (ret) WTSLogger::info("Adjusting factors of %u contracts loaded via extended loader", _adj_factors.size());
+	if (ret) WTSLogger::info_f("Adjusting factors of {} contracts loaded via extended loader", _adj_factors.size());
 	return ret;
 }
 
@@ -403,7 +403,7 @@ void HisDataReplayer::register_task(uint32_t taskid, uint32_t date, uint32_t tim
 	_task->_period = ptype;
 	_task->_strict_time = true;
 
-	WTSLogger::info("Timed task registration succeed, frequency: %s", period);
+	WTSLogger::info_f("Timed task registration succeed, frequency: {}", period);
 }
 
 void HisDataReplayer::clear_cache()
@@ -415,7 +415,7 @@ void HisDataReplayer::clear_cache()
 
 	_bars_cache.clear();
 
-	WTSLogger::warn("All cached data cleared");
+	WTSLogger::log_raw(LL_WARN, "All cached data cleared");
 }
 
 void HisDataReplayer::reset()
@@ -450,7 +450,7 @@ void HisDataReplayer::reset()
 		BarsList& cacheItem = (BarsList&)m.second;
 		cacheItem._cursor = UINT_MAX;
 
-		WTSLogger::info("Reading flag of %s has been reset", m.first.c_str());
+		WTSLogger::info_f("Reading flag of {} has been reset", m.first.c_str());
 	}
 
 	_unbars_cache.clear();
@@ -594,7 +594,7 @@ void HisDataReplayer::stop()
 {
 	if(!_running)
 	{
-		WTSLogger::error("Backtesting is not running, no need to stop");
+		WTSLogger::log_raw(LL_ERROR, "Backtesting is not running, no need to stop");
 		return;
 	}
 
@@ -602,14 +602,14 @@ void HisDataReplayer::stop()
 		return;
 
 	_terminated = true;
-	WTSLogger::warn("Terminating flag reset to true, backtesting will quit at next round");
+	WTSLogger::log_raw(LL_WARN, "Terminating flag reset to true, backtesting will quit at next round");
 }
 
 bool HisDataReplayer::prepare()
 {
 	if (_running)
 	{
-		WTSLogger::error("Cannot run more than one backtesting task at the same time");
+		WTSLogger::log_raw(LL_ERROR, "Cannot run more than one backtesting task at the same time");
 		return false;
 	}
 
@@ -663,7 +663,7 @@ void HisDataReplayer::run(bool bNeedDump/* = false*/)
 				}
 			}
 
-			WTSLogger::info("Main K bars automatic determined: %s", _main_key.c_str());
+			WTSLogger::info_f("Main K bars automatic determined: {}", _main_key.c_str());
 		}
 
 		if(!_main_key.empty())
@@ -677,8 +677,7 @@ void HisDataReplayer::run(bool bNeedDump/* = false*/)
 		}
 		else
 		{
-			//WTSLogger::info("没有订阅主力K线且未开放tick回测,回放直接退出");
-			WTSLogger::info("Main K bars not subscribed and backtesting of tick data not available , replaying done");
+			WTSLogger::log_raw(LL_INFO, "Main K bars not subscribed and backtesting of tick data not available , replaying done");
 			_listener->handle_replay_done();
 			if (_notifier)
 				_notifier->notifyEvent("BT_END");
@@ -703,7 +702,7 @@ void HisDataReplayer::run_by_ticks(bool bNeedDump /* = false */)
 	{
 		if (checkAllTicks(_cur_tdate))
 		{
-			WTSLogger::info("Start to replay tick data of %u...", _cur_tdate);
+			WTSLogger::info_f("Start to replay tick data of {}...", _cur_tdate);
 			_listener->handle_session_begin(_cur_tdate);
 			replayHftDatasByDay(_cur_tdate);
 			_listener->handle_session_end(_cur_tdate);
@@ -715,7 +714,7 @@ void HisDataReplayer::run_by_ticks(bool bNeedDump /* = false */)
 	if (_terminated)
 		WTSLogger::debug("Replaying by ticks terminated forcely");
 
-	WTSLogger::info("All back data replayed, replaying done");
+	WTSLogger::log_raw(LL_INFO, "All back data replayed, replaying done");
 	_listener->handle_replay_done();
 	if (_notifier)
 		_notifier->notifyEvent("BT_END");
@@ -769,12 +768,12 @@ void HisDataReplayer::run_by_bars(bool bNeedDump /* = false */)
 			//如果和收盘时间一样，进行这个判断
 			//主要针对7*24小时的品种，其他的品种不需要
 			uint32_t nextTDate = _opened_tdate;
-			if(sInfo->offsetTime(nextTime, false) != sInfo->getCloseTime(true))
+			if(isDay || (!isDay && sInfo->offsetTime(nextTime, false) != sInfo->getCloseTime(true)))
 			{
 				nextTDate = _bd_mgr.calcTradingDate(commId.c_str(), nextDate, nextTime, false);
 				if (_opened_tdate != nextTDate)
 				{
-					WTSLogger::debug("Tradingday %u begins", nextTDate);
+					WTSLogger::debug_f("Tradingday {} begins", nextTDate);
 					_listener->handle_session_begin(nextTDate);
 					_opened_tdate = nextTDate;
 					_cur_tdate = nextTDate;
@@ -807,7 +806,7 @@ void HisDataReplayer::run_by_bars(bool bNeedDump /* = false */)
 
 			if (isEndTDate && _closed_tdate != _cur_tdate)
 			{
-				WTSLogger::debug("Tradingday %u ends", _cur_tdate);
+				WTSLogger::debug_f("Tradingday {} ends", _cur_tdate);
 				_listener->handle_session_end(_cur_tdate);
 				_closed_tdate = _cur_tdate;
 				_day_cache.clear();
@@ -817,15 +816,13 @@ void HisDataReplayer::run_by_bars(bool bNeedDump /* = false */)
 
 			if (barList._cursor >= barList._bars.size())
 			{
-				//WTSLogger::info("全部数据都已回放,回放结束");
-				WTSLogger::info("All back data replayed, replaying done");
+				WTSLogger::log_raw(LL_INFO, "All back data replayed, replaying done");
 				break;
 			}
 		}
 		else
 		{
-			//WTSLogger::info("数据尚未初始化,回放直接退出");
-			WTSLogger::error("No back data initialized, replaying canceled");
+			WTSLogger::log_raw(LL_ERROR, "No back data initialized, replaying canceled");
 			break;
 		}
 	}
@@ -839,7 +836,7 @@ void HisDataReplayer::run_by_bars(bool bNeedDump /* = false */)
 
 	if (_closed_tdate != _cur_tdate)
 	{
-		WTSLogger::debug("Tradingday %u ends", _cur_tdate);
+		WTSLogger::debug_f("Tradingday {} ends", _cur_tdate);
 		_listener->handle_session_end(_cur_tdate);
 	}
 
@@ -988,8 +985,7 @@ void HisDataReplayer::run_by_tasks(bool bNeedDump /* = false */)
 			uint64_t nextTime = (uint64_t)_cur_date * 10000 + _cur_time;
 			if (nextTime > _end_time)
 			{
-				//WTSLogger::info("按任务周期回测结束");
-				WTSLogger::info("Backtesting with task frequency is done");
+				WTSLogger::log_raw(LL_INFO, "Backtesting with task frequency is done");
 				if (_listener)
 				{
 					_listener->handle_session_end(_cur_tdate);
@@ -1086,8 +1082,7 @@ void HisDataReplayer::run_by_tasks(bool bNeedDump /* = false */)
 			uint64_t nextTime = (uint64_t)_cur_date * 10000 + _cur_time;
 			if (nextTime > _end_time)
 			{
-				//WTSLogger::info("按任务周期回测结束");
-				WTSLogger::info("Backtesting with task frequency is done");
+				WTSLogger::log_raw(LL_INFO, "Backtesting with task frequency is done");
 				if (_listener)
 				{
 					_listener->handle_session_end(_cur_tdate);
@@ -1950,7 +1945,7 @@ WTSKlineSlice* HisDataReplayer::get_kline_slice(const char* stdCode, const char*
 	WTSSessionInfo* sInfo = get_session_info(stdCode, true);
 	if(sInfo == NULL)
 	{
-		WTSLogger::error("Cannot find corresponding session of %s", stdCode);
+		WTSLogger::error_f("Cannot find corresponding session of {}", stdCode);
 		return NULL;
 	}
 
@@ -1975,11 +1970,11 @@ WTSKlineSlice* HisDataReplayer::get_kline_slice(const char* stdCode, const char*
 			barsList._count = kData->size();
 			barsList._bars.swap(kData->getDataRef());
 			kData->release();
-			WTSLogger::info("%u resampled %s%u back kline of %s ready", barsList._bars.size(), period, times, stdCode);
+			WTSLogger::info_f("{} resampled {}{} back kline of {} ready", barsList._bars.size(), period, times, stdCode);
 		}
 		else
 		{
-			WTSLogger::error("Resampling %s%u back kline of %s failed", period, times, stdCode);
+			WTSLogger::error_f("Resampling {}{} back kline of {} failed", period, times, stdCode);
 			return NULL;
 		}
 	}
@@ -2570,8 +2565,7 @@ void HisDataReplayer::loadFees(const char* filename)
 
 	cfg->release();
 
-	//WTSLogger::info("共加载%u条手续费模板", _fee_map.size());
-	WTSLogger::info("%u items of fees template loaded", _fee_map.size());
+	WTSLogger::info_f("{} items of fees template loaded", _fee_map.size());
 }
 
 
@@ -2910,7 +2904,6 @@ bool HisDataReplayer::cacheRawTicksFromCSV(const std::string& key, const char* s
 		StdFile::read_file_content(filename.c_str(), content);
 		if (content.size() < sizeof(HisTickBlockV2))
 		{
-			//WTSLogger::error("历史Tick数据文件%s大小校验失败", filename.c_str());
 			WTSLogger::error_f("Sizechecking of back tick data file {} failed", filename);
 			return false;
 		}
@@ -2973,7 +2966,6 @@ bool HisDataReplayer::cacheRawTicksFromCSV(const std::string& key, const char* s
 
 			if (tickList._items.size() % 1000 == 0)
 			{
-				//WTSLogger::info("已读取数据%u条", tickList._items.size());
 				WTSLogger::info_f("{} items of data loaded", tickList._items.size());
 			}
 		}
@@ -3053,7 +3045,7 @@ bool HisDataReplayer::cacheFinalBarsFromLoader(const std::string& key, const cha
 		StdFile::read_file_content(filename.c_str(), content);
 		if (content.size() < sizeof(HisKlineBlockV2))
 		{
-			WTSLogger::error("Sizechecking of back kbar data file %s failed", filename.c_str());
+			WTSLogger::error_f("Sizechecking of back kbar data file {} failed", filename.c_str());
 		}
 		else
 		{
@@ -3080,7 +3072,7 @@ bool HisDataReplayer::cacheFinalBarsFromLoader(const std::string& key, const cha
 	if(!bHit)
 	{
 		//如果没有转储的历史数据文件, 则从csv加载
-		WTSLogger::info("Reading data via extended loader...");
+		WTSLogger::log_raw(LL_INFO, "Reading data via extended loader...");
 
 		BarsList& barList = bSubbed ? _bars_cache[key] : _unbars_cache[key];
 		barList._code = stdCode;
@@ -3186,7 +3178,6 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 		StdFile::read_file_content(filename.c_str(), content);
 		if (content.size() < sizeof(HisKlineBlockV2))
 		{
-			//WTSLogger::error("历史K线数据文件%s大小校验失败", filename.c_str());
 			WTSLogger::error_f("Sizechecking of back kbar data file {} failed", filename);
 			return false;
 		}
@@ -3250,7 +3241,7 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 
 			if (barList._bars.size() % 1000 == 0)
 			{
-				WTSLogger::info("%u lines of data loaded", barList._bars.size());
+				WTSLogger::info_f("{} lines of data loaded", barList._bars.size());
 			}
 		}
 		barList._count = barList._bars.size();
@@ -3550,7 +3541,7 @@ const HisDataReplayer::AdjFactorList& HisDataReplayer::getAdjFactors(const char*
 		//如果没有复权因子，就从extloader按需读一次
 		if (_bt_loader)
 		{
-            WTSLogger::info("No adjusting factors of %s cached, searching via extented loader...", key);
+            WTSLogger::info_f("No adjusting factors of {} cached, searching via extented loader...", key);
 			_bt_loader->loadAdjFactors(this, key, [](void* obj, const char* stdCode, uint32_t* dates, double* factors, uint32_t count) {
 				HisDataReplayer* self = (HisDataReplayer*)obj;
 				AdjFactorList& fctrLst = self->_adj_factors[stdCode];
@@ -3574,7 +3565,7 @@ const HisDataReplayer::AdjFactorList& HisDataReplayer::getAdjFactors(const char*
 					return left._date < right._date;
 				});
 
-                WTSLogger::info("%u items of adjusting factors of %s loaded via extended loader", count, stdCode);
+                WTSLogger::info_f("{} items of adjusting factors of {} loaded via extended loader", count, stdCode);
 			});
 		}
 	}
@@ -3930,6 +3921,6 @@ bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* st
 		barsSections.clear();
 	}
 
-	WTSLogger::info("{} items of back {} data of {} cached", realCnt, PERIOD_NAME[period], stdCode);
+	WTSLogger::info_f("{} items of back {} data of {} cached", realCnt, PERIOD_NAME[period], stdCode);
 	return true;
 }
