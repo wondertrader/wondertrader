@@ -269,7 +269,7 @@ public:
 	inline uint32_t get_block_size(std::size_t blkIdx)
 	{
 		if (blkIdx >= _blocks.size())
-			return INVALID_UINT32;
+			return 0;
 
 		return _blocks[blkIdx].second;
 	}
