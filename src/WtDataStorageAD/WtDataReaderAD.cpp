@@ -158,7 +158,8 @@ WTSTickSlice* WtDataReaderAD::readTickSlice(const char* stdCode, uint32_t count,
 		//全部更新，从结束时间往前读取即可
 		WtLMDBQuery query(*db);
 		LMDBHftKey rKey(cInfo._exchg, cInfo._code, (uint32_t)(etime / 1000000000), (uint32_t)(etime % 1000000000));
-		int cnt = query.get_lowers(std::string((const char*)&rKey, sizeof(rKey)),
+		LMDBHftKey lKey(cInfo._exchg, cInfo._code, 0, 0);
+		int cnt = query.get_lowers(std::string((const char*)&lKey, sizeof(lKey)), std::string((const char*)&rKey, sizeof(rKey)),
 			count, [this, &tickList](const ValueArray& ayKeys, const ValueArray& ayVals) {
 			tickList._ticks.resize(ayVals.size());
 			for (std::size_t i = 0; i < ayVals.size(); i++)
@@ -236,7 +237,7 @@ bool WtDataReaderAD::cacheBarsFromStorage(const std::string& key, const char* st
 	WtLMDBQuery query(*db);
 	LMDBBarKey rKey(cInfo._exchg, cInfo._code, 0xffffffff);
 	LMDBBarKey lKey(cInfo._exchg, cInfo._code, 0);
-	int cnt = query.get_lowers(std::string((const char*)&rKey, sizeof(rKey)), 
+	int cnt = query.get_lowers(std::string((const char*)&lKey, sizeof(lKey)), std::string((const char*)&rKey, sizeof(rKey)),
 		count, [this, &barList, &lKey](const ValueArray& ayKeys, const ValueArray& ayVals) {
 		if (ayVals.empty())
 			return;
@@ -262,10 +263,17 @@ void WtDataReaderAD::update_cache_from_lmdb(BarsList& barsList, const char* exch
 	WtLMDBPtr db = get_k_db(exchg, period);
 	WtLMDBQuery query(*db);
 	LMDBBarKey lKey(exchg, code, lastBarTime);
-	int cnt = query.get_uppers(std::string((const char*)&lKey, sizeof(lKey)), 9999, [this, &barsList, isDay, &lastBarTime](const ValueArray& ayKeys, const ValueArray& ayVals) {
+	LMDBBarKey rKey(exchg, code, 0xFFFFFFFF);
+	int cnt = query.get_uppers(std::string((const char*)&lKey, sizeof(lKey)), std::string((const char*)&rKey, sizeof(rKey)), 
+		9999, [this, &barsList, isDay, &lastBarTime](const ValueArray& ayKeys, const ValueArray& ayVals) {
 
-		for (const std::string& item : ayVals)
+		std::size_t cnt = ayVals.size();
+		for (std::size_t idx = 0; idx < cnt; idx++)
 		{
+			const std::string& item = ayVals[idx];
+			const std::string& key = ayKeys[idx];
+			LMDBBarKey* barKey = (LMDBBarKey*)key.data();
+			printf("%u\r\n", reverseEndian(barKey->_bartime));
 			WTSBarStruct* curBar = (WTSBarStruct*)item.data();
 			uint64_t curBarTime = isDay ? curBar->date : curBar->time;
 			if (curBarTime == lastBarTime)
@@ -282,7 +290,7 @@ void WtDataReaderAD::update_cache_from_lmdb(BarsList& barsList, const char* exch
 		}
 	});
 
-	pipe_reader_log(_sink, LL_DEBUG, "{} bars of {}.{} updated to {}", 
+	pipe_reader_log(_sink, LL_DEBUG, "{} bars of {}.{} updated to {}",
 		PERIOD_NAME[period], exchg, code, isDay?barsList._bars.back().date:barsList._bars.back().time);
 }
 
@@ -487,6 +495,8 @@ void WtDataReaderAD::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTDa
 		if (barsList._period != KP_DAY)
 		{
 			uint32_t lastBarTime = (uint32_t)barsList._bars.back().time;
+			pipe_reader_log(_sink, LL_DEBUG,
+				"Updating {} bars of {} in section ({},{}]", PERIOD_NAME[barsList._period], barsList._code, lastBarTime, endBarTime);
 			update_cache_from_lmdb(barsList, barsList._exchg.c_str(), cInfo._code, barsList._period, lastBarTime);
 			if(lastBarTime < endBarTime)
 			{
@@ -504,6 +514,7 @@ void WtDataReaderAD::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTDa
 		else if(endTDate != 0)
 		{
 			uint32_t lastBarTime = barsList._bars.back().date;
+			endBarTime = uDate;
 			update_cache_from_lmdb(barsList, barsList._exchg.c_str(), cInfo._code, barsList._period, lastBarTime);
 			if (lastBarTime < endBarTime)
 			{
