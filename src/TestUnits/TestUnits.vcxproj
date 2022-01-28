@@ -189,6 +189,7 @@
     <ClCompile Include="test_codehelper.cpp" />
     <ClCompile Include="test_lmdb.cpp" />
     <ClCompile Include="test_session.cpp" />
+    <ClCompile Include="test_utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gtest\gtest-internal-inl.h" />

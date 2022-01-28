@@ -54,6 +54,9 @@
     <ClCompile Include="test_cfg_loader.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="test_utils.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gtest\gtest-internal-inl.h">
