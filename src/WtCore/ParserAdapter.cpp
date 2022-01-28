@@ -258,7 +258,7 @@ bool ParserAdapter::run()
 	return true;
 }
 
-void ParserAdapter::handleQuote(WTSTickData *quote, bool bNeedSlice)
+void ParserAdapter::handleQuote(WTSTickData *quote, uint32_t procFlag)
 {
 	if (quote == NULL || _stopped || quote->actiondate() == 0 || quote->tradingdate() == 0)
 		return;

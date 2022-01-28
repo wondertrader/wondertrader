@@ -55,7 +55,7 @@ public:
 	 *	@quote		实时行情
 	 *	@bNeedSlice	是否需要切片,如果是从外部接入的快照行情数据,则需要切片,如果是内部广播的就不需要切片
 	 */
-	virtual void handleQuote(WTSTickData *quote, bool bNeedSlice) override;
+	virtual void handleQuote(WTSTickData *quote, uint32_t procFlag) override;
 
 	/*
 	 *	处理委托队列数据（股票level2）
