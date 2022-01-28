@@ -141,15 +141,7 @@ public:
 
 	bool put(const std::string& key, const std::string& val)
 	{
-		MDB_val mKey, mData;
-		mKey.mv_data = (void*)key.data();
-		mKey.mv_size = key.size();
-
-		mData.mv_data = (void*)val.data();
-		mData.mv_size = val.size();
-		int _errno = mdb_put(_txn, _dbi, &mKey, &mData, 0);
-		_db.update_errno(_errno);
-		return (_errno == MDB_SUCCESS);
+		return put((void*)key.data(), key.size(), (void*)val.data(), val.size());
 	}
 
 	bool put(void* key, uint32_t klen, void* val, uint32_t vlen)
@@ -167,25 +159,12 @@ public:
 
 	std::string get(const std::string& key)
 	{
-		MDB_cursor* cursor;
-		int _errno = mdb_cursor_open(_txn, _dbi, &cursor);
-		_db.update_errno(_errno);
-		if (_errno != MDB_SUCCESS)
-			return std::move(std::string());
-
-		MDB_val mKey, mData;
-		mKey.mv_data = (void*)key.data();
-		mKey.mv_size = key.size();
-		_errno = mdb_cursor_get(cursor, &mKey, &mData, MDB_NEXT);
-		_db.update_errno(_errno);
-		if (_errno != MDB_SUCCESS)
-			return std::move(std::string());
-		
-		auto ret = std::string((char*)mData.mv_data, mData.mv_size);
-		mdb_cursor_close(cursor);
-		return std::move(ret);
+		return get((void*)key.data(), key.size());
 	}
 
+	/*
+	 *	读取指定key的数据
+	 */
 	std::string get(void* key, uint32_t klen)
 	{
 		MDB_cursor* cursor;
@@ -208,6 +187,9 @@ public:
 		return std::move(ret);
 	}
 
+	/*
+	 *	读取区间数据
+	 */
 	int get_range(const std::string& lower_key, const std::string& upper_key, LMDBQueryCallback cb)
 	{
 		MDB_cursor* cursor;
@@ -251,7 +233,14 @@ public:
 		return cnt;
 	}
 
-	int get_lowers(const std::string& upper_key, int count, LMDBQueryCallback cb)
+	/*
+	 *	读取upper_key之前的数据，从upper_key往前找，找到以后在做一个reverse
+	 *	@lower_key	下边界，这个必须要有，因为如果多个合约存一个库的话，不加的话可能会读到别的合约的数据
+	 *	@upper_key	上边界
+	 *	@count		目标数据条数
+	 *	@cb			回调函数
+	 */
+	int get_lowers(const std::string& lower_key, const std::string& upper_key, int count, LMDBQueryCallback cb)
 	{
 		MDB_cursor* cursor;
 		int _errno = mdb_cursor_open(_txn, _dbi, &cursor);
@@ -280,8 +269,12 @@ public:
 			if (memcmp(rKey.mv_data, upper_key.data(), upper_key.size()) > 0)
 			{
 				_errno = mdb_cursor_get(cursor, &rKey, &mData, MDB_PREV);
+				_db.update_errno(_errno);
 				continue;
 			}
+
+			if (memcmp(rKey.mv_data, lower_key.data(), lower_key.size()) < 0)
+				break;
 
 			//回调
 			ayKeys.emplace_back(std::string((char*)rKey.mv_data, rKey.mv_size));
@@ -304,7 +297,14 @@ public:
 		return cnt;
 	}
 
-	inline int get_uppers(const std::string& lower_key, int count, LMDBQueryCallback cb)
+	/*
+	 *	读取lower_key之后的数据，从lower_key往后找
+	 *	@lower_key	下边界
+	 *	@upper_key	上边界，这个必须要有，因为如果多个合约存一个库的话，不加的话可能会读到别的合约的数据
+	 *	@count		目标数据条数
+	 *	@cb			回调函数
+	 */
+	int get_uppers(const std::string& lower_key, const std::string& upper_key, int count, LMDBQueryCallback cb)
 	{
 		MDB_cursor* cursor;
 		int _errno = mdb_cursor_open(_txn, _dbi, &cursor);
@@ -321,6 +321,9 @@ public:
 		_db.update_errno(_errno);
 		for (; _errno != MDB_NOTFOUND;)
 		{
+			if (memcmp(bKey.mv_data, upper_key.data(), upper_key.size()) > 0)
+				break;
+
 			//回调
 			ayKeys.emplace_back(std::string((char*)bKey.mv_data, bKey.mv_size));
 			ayVals.emplace_back(std::string((char*)mData.mv_data, mData.mv_size));
