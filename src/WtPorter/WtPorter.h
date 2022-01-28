@@ -204,7 +204,7 @@ extern "C"
 #pragma endregion "HFT接口"
 
 #pragma region "扩展Parser接口"
-	EXPORT_FLAG	void		parser_push_quote(const char* id, WTSTickStruct* curTick, bool bNeedSlice);
+	EXPORT_FLAG	void		parser_push_quote(const char* id, WTSTickStruct* curTick, WtUInt32 uProcFlag);
 #pragma endregion "扩展Parser接口"
 
 #ifdef __cplusplus

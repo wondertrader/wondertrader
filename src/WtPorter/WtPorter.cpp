@@ -933,8 +933,8 @@ WtString hft_load_userdata(CtxHandler cHandle, const char* key, const char* defV
 #pragma endregion "HFT策略接口"
 
 #pragma region "扩展Parser接口"
-void parser_push_quote(const char* id, WTSTickStruct* curTick, bool bNeedSlice)
+void parser_push_quote(const char* id, WTSTickStruct* curTick, WtUInt32 uProcFlag)
 {
-	getRunner().on_ext_parser_quote(id, curTick, bNeedSlice);
+	getRunner().on_ext_parser_quote(id, curTick, uProcFlag);
 }
 #pragma endregion "扩展Parser接口"

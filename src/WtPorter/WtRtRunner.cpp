@@ -1075,13 +1075,13 @@ void WtRtRunner::parser_unsubscribe(const char* id, const char* code)
 		_cb_parser_sub(id, code, false);
 }
 
-void WtRtRunner::on_ext_parser_quote(const char* id, WTSTickStruct* curTick, bool bNeedSlice /* = true */)
+void WtRtRunner::on_ext_parser_quote(const char* id, WTSTickStruct* curTick, uint32_t uProcFlag)
 {
 	ParserAdapterPtr adapter = _parsers.getAdapter(id);
 	if (adapter)
 	{
 		WTSTickData* newTick = WTSTickData::create(*curTick);
-		adapter->handleQuote(newTick, bNeedSlice);
+		adapter->handleQuote(newTick, uProcFlag);
 		newTick->release();
 	}
 	else
