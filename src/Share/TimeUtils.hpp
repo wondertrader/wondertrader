@@ -236,7 +236,7 @@ public:
 		return ts * 1000+ millisec;
 	}
 
-	static inline int64_t makeTime(long lDate, long lTime)
+	static inline int64_t makeTime(long lDate, long lTime, bool isGM = false)
 	{
 
 		tm t;	
@@ -249,7 +249,7 @@ public:
 		t.tm_sec = (lTime%100000)/1000;
 		int millisec = lTime%1000;
 		//t.tm_isdst 	
-		time_t ts = mktime(&t);
+		time_t ts = isGM? _mkgmtime(&t):mktime(&t);
 		if (ts == -1) return 0;
 		return ts * 1000+ millisec;
 	}
