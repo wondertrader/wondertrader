@@ -306,7 +306,7 @@ void ParserAdapter::handleOrderQueue(WTSOrdQueData* ordQueData)
 	_dt_mgr->writeOrderQueue(ordQueData);
 }
 
-void ParserAdapter::handleQuote( WTSTickData *quote, bool bNeedSlice )
+void ParserAdapter::handleQuote( WTSTickData *quote, uint32_t procFlag )
 {
 	if (_stopped)
 		return;
@@ -318,7 +318,7 @@ void ParserAdapter::handleQuote( WTSTickData *quote, bool bNeedSlice )
 	if (contract == NULL)
 		return;
 
-	if (!_dt_mgr->writeTick(quote, bNeedSlice))
+	if (!_dt_mgr->writeTick(quote, procFlag))
 		return;
 }
 

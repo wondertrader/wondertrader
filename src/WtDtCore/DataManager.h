@@ -40,7 +40,7 @@ public:
 
 	void release();
 
-	bool writeTick(WTSTickData* curTick, bool bNeedSlice = true);
+	bool writeTick(WTSTickData* curTick, uint32_t procFlag);
 
 	bool writeOrderQueue(WTSOrdQueData* curOrdQue);
 
