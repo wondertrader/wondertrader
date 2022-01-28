@@ -83,7 +83,7 @@ public:
 	void	add_ext_dumper(const char* id, IHisDataDumper* dumper) { _dumpers[id] = dumper; }
 
 public:
-	virtual bool writeTick(WTSTickData* curTick, bool bNeedSlice = true) = 0;
+	virtual bool writeTick(WTSTickData* curTick, uint32_t procFlag) = 0;
 
 	virtual bool writeOrderQueue(WTSOrdQueData* curOrdQue) { return false; }
 

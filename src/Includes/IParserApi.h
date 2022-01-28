@@ -46,9 +46,9 @@ public:
 	/*
 	 *	处理实时行情
 	 *	@quote		实时行情
-	 *	@bNeedSlice	是否需要切片,如果是从外部接入的快照行情数据,则需要切片,如果是内部广播的就不需要切片
+	 *	@procFlag	处理标记，0-切片行情，无需处理(ParserUDP)；1-完整快照，需要切片(国内各路通道)；2-极简快照，需要缓存累加（主要针对日线、tick，m1和m5都是自动累加的，虚拟货币行情）
 	 */
-	virtual void handleQuote(WTSTickData *quote, bool bNeedSlice)	= 0;
+	virtual void handleQuote(WTSTickData *quote, uint32_t procFlag)	= 0;
 
 	/*
 	 *	处理委托队列数据（股票level2）
