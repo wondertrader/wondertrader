@@ -8,6 +8,7 @@
 #include "../Share/BoostFile.hpp"
 #include "../Share/StrUtil.hpp"
 #include "../Share/IniHelper.hpp"
+#include "../Share/decimal.h"
 
 #include "../Includes/IBaseDataMgr.h"
 
@@ -311,13 +312,13 @@ void* WtDataWriterAD::resizeRTBlock(BoostMFPtr& mfPtr, uint32_t nCount)
 	return mfPtr->addr();
 }
 
-bool WtDataWriterAD::writeTick(WTSTickData* curTick, bool bNeedSlice /* = true */)
+bool WtDataWriterAD::writeTick(WTSTickData* curTick, uint32_t procFlag)
 {
 	if (curTick == NULL)
 		return false;
 
 	curTick->retain();
-	pushTask([this, curTick, bNeedSlice](){
+	pushTask([this, curTick, procFlag](){
 
 		do
 		{
@@ -332,7 +333,7 @@ bool WtDataWriterAD::writeTick(WTSTickData* curTick, bool bNeedSlice /* = true *
 				break;
 
 			//先更新缓存
-			if (!updateTickCache(ct, curTick, bNeedSlice))
+			if (!updateTickCache(ct, curTick, procFlag))
 				break;
 
 			//写到tick缓存
@@ -817,7 +818,7 @@ WTSTickData* WtDataWriterAD::getCurTick(const char* code, const char* exchg/* = 
 	return WTSTickData::create(item._tick);
 }
 
-bool WtDataWriterAD::updateTickCache(WTSContractInfo* ct, WTSTickData* curTick, bool bNeedSlice /* = true */)
+bool WtDataWriterAD::updateTickCache(WTSContractInfo* ct, WTSTickData* curTick, uint32_t procFlag)
 {
 	if (curTick == NULL || _tick_cache_block == NULL)
 	{
@@ -857,9 +858,15 @@ bool WtDataWriterAD::updateTickCache(WTSContractInfo* ct, WTSTickData* curTick, 
 	if (curTick->tradingdate() > item._date)
 	{
 		item._date = curTick->tradingdate();
-		memcpy(&item._tick, &newTick, sizeof(WTSTickStruct));
-		if (bNeedSlice)
+		
+		if(procFlag == 0)
 		{
+			memcpy(&item._tick, &newTick, sizeof(WTSTickStruct));
+		}
+		else if (procFlag == 1)
+		{
+			memcpy(&item._tick, &newTick, sizeof(WTSTickStruct));
+
 			item._tick.volume = item._tick.total_volume;
 			item._tick.turn_over = item._tick.total_turnover;
 			item._tick.diff_interest = item._tick.open_interest - item._tick.pre_interest;
@@ -867,6 +874,30 @@ bool WtDataWriterAD::updateTickCache(WTSContractInfo* ct, WTSTickData* curTick, 
 			newTick.volume = newTick.total_volume;
 			newTick.turn_over = newTick.total_turnover;
 			newTick.diff_interest = newTick.open_interest - newTick.pre_interest;
+		}
+		else if(procFlag == 2)
+		{
+			double pre_close = item._tick.price;
+			double pre_interest = item._tick.open_interest;
+
+			if (decimal::eq(newTick.total_volume, 0))
+				newTick.total_volume = newTick.volume + item._tick.total_volume;
+
+			if (decimal::eq(newTick.total_turnover, 0))
+				newTick.total_turnover = newTick.turn_over + item._tick.total_turnover;
+
+			if (decimal::eq(newTick.open, 0))
+				newTick.open = newTick.price;
+
+			if (decimal::eq(newTick.high, 0))
+				newTick.high = newTick.price;
+
+			if (decimal::eq(newTick.low, 0))
+				newTick.low =newTick.price;
+
+			memcpy(&item._tick, &newTick, sizeof(WTSTickStruct));
+			item._tick.pre_close = pre_close;
+			item._tick.pre_interest = pre_interest;
 		}
 
 		//	newTick.trading_date, curTick->exchg(), curTick->code(), curTick->volume(),
@@ -886,7 +917,7 @@ bool WtDataWriterAD::updateTickCache(WTSContractInfo* ct, WTSTickData* curTick, 
 			pipe_writer_log(_sink, LL_ERROR, "Last tick of {}.{} with time {}.{} has an exception, abandoned", curTick->exchg(), curTick->code(), curTick->actiondate(), curTick->actiontime());
 			return false;
 		}
-		else if (curTick->totalvolume() < item._tick.total_volume)
+		else if (curTick->totalvolume() < item._tick.total_volume && procFlag != 2)
 		{
 			pipe_writer_log(_sink, LL_ERROR, "Last tick of {}.{} with time {}.{}, volume {} is less than cached volume {}, abandoned", 
 				curTick->exchg(), curTick->code(), curTick->actiondate(), curTick->actiontime(), curTick->totalvolume(), item._tick.total_volume);
@@ -903,15 +934,36 @@ bool WtDataWriterAD::updateTickCache(WTSContractInfo* ct, WTSTickData* curTick, 
 		}
 
 		//这里就要看需不需要预处理了
-		if(!bNeedSlice)
+		if(procFlag == 0)
 		{
 			memcpy(&item._tick, &newTick, sizeof(WTSTickStruct));
 		}
-		else
+		else if (procFlag == 1)
 		{
 			newTick.volume = newTick.total_volume - item._tick.total_volume;
 			newTick.turn_over = newTick.total_turnover - item._tick.total_turnover;
 			newTick.diff_interest = newTick.open_interest - item._tick.open_interest;
+
+			memcpy(&item._tick, &newTick, sizeof(WTSTickStruct));
+		}
+		else if (procFlag == 2)
+		{
+			//自动累加
+			//如果总成交量为0，则需要累加上一笔的总成交量
+			if(decimal::eq(newTick.total_volume, 0))
+				newTick.total_volume = newTick.volume + item._tick.total_volume;
+
+			if (decimal::eq(newTick.total_turnover, 0))
+				newTick.total_turnover = newTick.turn_over + item._tick.total_turnover;
+
+			if (decimal::eq(newTick.open, 0))
+				newTick.open = newTick.price;
+
+			if (decimal::eq(newTick.high, 0))
+				newTick.high = max(newTick.price, item._tick.high);
+
+			if (decimal::eq(newTick.low, 0))
+				newTick.low = max(newTick.price, item._tick.low);
 
 			memcpy(&item._tick, &newTick, sizeof(WTSTickStruct));
 		}
