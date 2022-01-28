@@ -274,7 +274,7 @@ void ParserXTP::OnDepthMarketData(XTPMD *market_data, int64_t bid1_qty[], int32_
 	}
 
 	if(m_sink)
-		m_sink->handleQuote(tick, true);
+		m_sink->handleQuote(tick, 1);
 
 	tick->release();
 }

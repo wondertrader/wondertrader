@@ -342,7 +342,7 @@ void ParserUDP::extract_buffer(uint32_t length, bool isBroad /* = true */)
 		UDPTickPacket* packet = (UDPTickPacket*)header;
 		WTSTickData* curTick = WTSTickData::create(packet->_data);
 		if (_sink)
-			_sink->handleQuote(curTick, false);
+			_sink->handleQuote(curTick, 0);
 
 		curTick->release();
 

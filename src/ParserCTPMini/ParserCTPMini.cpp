@@ -325,7 +325,7 @@ void ParserCTPMini::OnRtnDepthMarketData( CThostFtdcDepthMarketDataField *pDepth
 	quote.bid_qty[4] = pDepthMarketData->BidVolume5;
 
 	if(m_sink)
-		m_sink->handleQuote(tick, true);
+		m_sink->handleQuote(tick, 1);
 
 	tick->release();
 }
