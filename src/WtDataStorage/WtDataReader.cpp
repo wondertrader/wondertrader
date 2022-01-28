@@ -162,6 +162,7 @@ void WtDataReader::init(WTSVariant* cfg, IDataReaderSink* sink, IHisDataLoader* 
 
 	_base_dir = cfg->getCString("path");
 	_base_dir = StrUtil::standardisePath(_base_dir);
+	pipe_reader_log(sink, LL_DEBUG, "Storage initialized @ {}", _base_dir);
 	
 	/*
 	 *	By Wesley @ 2021.12.20
@@ -172,6 +173,8 @@ void WtDataReader::init(WTSVariant* cfg, IDataReaderSink* sink, IHisDataLoader* 
 
 	if (!bLoaded && cfg->has("adjfactor"))
 		loadStkAdjFactorsFromFile(cfg->getCString("adjfactor"));
+	else
+		pipe_reader_log(sink, LL_INFO, "No adjusting factor file configured, loading skipped");
 }
 
 bool WtDataReader::loadStkAdjFactorsFromLoader()
@@ -1590,6 +1593,9 @@ WTSKlineSlice* WtDataReader::readKlineSlice(const char* stdCode, WTSKlinePeriod 
 			if(cInfo._exright == 2 && commInfo->isStock())
 			{
 				//后复权数据要把最新的数据进行复权处理，所以要作为历史数据追加到尾部
+				//虽然后复权数据要进行复权处理，但是实时数据的位置标记也要更新到最新，不然OnMinuteEnd会从开盘开始回放的
+				_bars_cache[key]._rt_cursor = idx;
+
 				BarsList& barsList = _bars_cache[key];
 				double factor = barsList._factor;
 				uint32_t oldSize = barsList._bars.size();
