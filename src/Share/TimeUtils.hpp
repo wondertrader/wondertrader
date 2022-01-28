@@ -236,20 +236,40 @@ public:
 		return ts * 1000+ millisec;
 	}
 
-	static inline int64_t makeTime(long lDate, long lTime, bool isGM = false)
+	static inline int32_t getTZOffset()
 	{
+		static int32_t offset = 99;
+		if(offset == 99)
+		{
+			time_t now = time(NULL);
+			tm tm_ltm = *localtime(&now);
+			tm tm_gtm = *gmtime(&now);
 
+			time_t _gt = mktime(&tm_gtm);
+			tm _gtm2 = *localtime(&_gt);
+
+			offset = ((now - _gt) + (_gtm2.tm_isdst ? 3600 : 0)) / 60;
+			offset /= 60;
+		}
+
+		return offset;
+	}
+
+	static inline int64_t makeTime(long lDate, long lTimeWithMs, bool isGM = false)
+	{
 		tm t;	
 		memset(&t,0,sizeof(tm));
 		t.tm_year = lDate/10000 - 1900;
 		t.tm_mon = (lDate%10000)/100 - 1;
 		t.tm_mday = lDate % 100;
-		t.tm_hour = lTime/10000000;
-		t.tm_min = (lTime%10000000)/100000;
-		t.tm_sec = (lTime%100000)/1000;
-		int millisec = lTime%1000;
+		t.tm_hour = lTimeWithMs/10000000;
+		t.tm_min = (lTimeWithMs%10000000)/100000;
+		t.tm_sec = (lTimeWithMs%100000)/1000;
+		int millisec = lTimeWithMs%1000;
 		//t.tm_isdst 	
-		time_t ts = isGM? _mkgmtime(&t):mktime(&t);
+		time_t ts = mktime(&t);
+		if (isGM)
+			ts -= getTZOffset() * 3600;
 		if (ts == -1) return 0;
 		return ts * 1000+ millisec;
 	}
