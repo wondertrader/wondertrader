@@ -94,7 +94,7 @@
 * `wtpy`的`github`地址：<https://github.com/wondertrader/wtpy>
 
 * `wtpy`获取地址：<https://pypi.org/project/wtpy/>
-    `wtpy`可以直接在`python3.5`以上的版本安装
+    `wtpy`可以直接在`python3.8`以上的版本安装
 
     ``` shell
     pip install wtpy
