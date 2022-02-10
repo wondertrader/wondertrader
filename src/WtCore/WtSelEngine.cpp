@@ -68,10 +68,10 @@ void WtSelEngine::handle_push_quote(WTSTickData* curTick, uint32_t hotFlag)
 void WtSelEngine::on_bar(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar)
 {
 	std::string key = StrUtil::printf("%s-%s-%u", stdCode, period, times);
-	const SIDSet& sids = _bar_sub_map[key];
+	const SubList& sids = _bar_sub_map[key];
 	for (auto it = sids.begin(); it != sids.end(); it++)
 	{
-		uint32_t sid = *it;
+		uint32_t sid = it->first;
 		auto cit = _ctx_map.find(sid);
 		if (cit != _ctx_map.end())
 		{
@@ -94,10 +94,11 @@ void WtSelEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 		_exec_mgr.handle_tick(stdCode, curTick);
 	}
 
+	/*
 	auto sit = _tick_sub_map.find(stdCode);
 	if (sit != _tick_sub_map.end())
 	{
-		const SIDSet& sids = sit->second;
+		const SubList& sids = sit->second;
 		for (auto it = sids.begin(); it != sids.end(); it++)
 		{
 			uint32_t sid = *it;
@@ -107,6 +108,70 @@ void WtSelEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 				SelContextPtr& ctx = (SelContextPtr&)cit->second;
 				ctx->on_tick(stdCode, curTick);
 			}
+		}
+	}
+	*/
+
+	/*
+	 *	By Wesley @ 2022.02.07
+	 *	这里做了一个彻底的调整
+	 *	首先，看是否是全tick模式，如果是，则直接触发ontick
+	 *	然后，检查成交量是否为0，如果没有最新成交，就不触发ontick
+	 *	第三，检查订阅标记，如果标记为0，即无复权模式，则直接按照原始代码触发ontick
+	 *	第四，如果标记为1，即前复权模式，则将代码转成xxxx-，再触发ontick
+	 *	第五，如果标记为2，即后复权模式，则将代码转成xxxx+，再把tick数据做一个修正，再触发ontick
+	 */
+	if (_all_tick_mode || !decimal::eq(curTick->volume(), 0.0))
+	{
+		auto sit = _tick_sub_map.find(stdCode);
+		if (sit != _tick_sub_map.end())
+		{
+			const SubList& sids = sit->second;
+			for (auto it = sids.begin(); it != sids.end(); it++)
+			{
+				uint32_t sid = it->first;
+
+
+				auto cit = _ctx_map.find(sid);
+				if (cit != _ctx_map.end())
+				{
+					SelContextPtr& ctx = (SelContextPtr&)cit->second;
+					uint32_t opt = it->second.second;
+
+					if (opt == 0)
+					{
+						ctx->on_tick(stdCode, curTick);
+					}
+					else
+					{
+						std::string wCode = stdCode;
+						wCode = fmt::format("{}{}", stdCode, opt == 1 ? SUFFIX_QFQ : SUFFIX_HFQ);
+						if (opt == 1)
+						{
+							ctx->on_tick(wCode.c_str(), curTick);
+						}
+						else //(opt == 2)
+						{
+							WTSTickData* newTick = WTSTickData::create(curTick->getTickStruct());
+							WTSTickStruct& newTS = newTick->getTickStruct();
+
+							//这里做一个复权因子的处理
+							double factor = _data_mgr->get_adjusting_factor(stdCode, get_trading_date());
+							newTS.open *= factor;
+							newTS.high *= factor;
+							newTS.low *= factor;
+							newTS.price *= factor;
+
+							ctx->on_tick(wCode.c_str(), newTick);
+							newTick->release();
+						}
+					}
+
+				}
+
+
+			}
+
 		}
 	}
 }

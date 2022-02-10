@@ -44,6 +44,7 @@ WtEngine::WtEngine()
 	, _evt_listener(NULL)
 	, _adapter_mgr(NULL)
 	, _notifier(NULL)
+	, _all_tick_mode(false)
 {
 	TimeUtils::getDateTime(_cur_date, _cur_time);
 	_cur_secs = _cur_time % 100000;
@@ -258,6 +259,10 @@ void WtEngine::init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtDtMgr* dataMgr, IHot
 	_filter_mgr.set_notifier(notifier);
 
 	_filter_mgr.load_filters(cfg->getCString("filters"));
+
+	//全tick模式，即如果tick数据成交量为0，也触发ontick，默认为false，即只触发有成交量的tick
+	_all_tick_mode = cfg->getBoolean("alltick");
+
 
 	load_fees(cfg->getCString("fees"));
 
@@ -558,8 +563,8 @@ WTSKlineSlice* WtEngine::get_kline_slice(uint32_t sid, const char* stdCode, cons
 		return NULL;
 
 	std::string key = StrUtil::printf("%s-%s-%u", stdCode, period, times);
-	SIDSet& sids = _bar_sub_map[key];
-	sids.insert(sid);
+	SubList& sids = _bar_sub_map[key];
+	sids[sid] = std::make_pair(sid, 0);
 
 	WTSKlinePeriod kp;
 	if (strcmp(period, "m") == 0)
@@ -639,34 +644,39 @@ void WtEngine::sub_tick(uint32_t sid, const char* stdCode)
 	//因为执行器只识别原合约代码
 	if (CodeHelper::isStdFutHotCode(stdCode))
 	{
-		SIDSet& sids = _tick_sub_map[stdCode];
-		sids.insert(sid);
+		SubList& sids = _tick_sub_map[stdCode];
+		sids[sid] = std::make_pair(sid, 0);
 
 		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 		std::string rawCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
 		std::string stdRawCode = CodeHelper::rawMonthCodeToStdCode(rawCode.c_str(), cInfo._exchg);
-		_ticksubed_raw_codes.insert(stdRawCode);
+		//_ticksubed_raw_codes.insert(stdRawCode);
 	}
 	else if (CodeHelper::isStdFut2ndCode(stdCode))
 	{
-		SIDSet& sids = _tick_sub_map[stdCode];
-		sids.insert(sid);
+		SubList& sids = _tick_sub_map[stdCode];
+		sids[sid] = std::make_pair(sid, 0);
 
 		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 		std::string rawCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
 		std::string stdRawCode = CodeHelper::rawMonthCodeToStdCode(rawCode.c_str(), cInfo._exchg);
-		_ticksubed_raw_codes.insert(stdRawCode);
+		//_ticksubed_raw_codes.insert(stdRawCode);
 	}
 	else
 	{
 		std::size_t length = strlen(stdCode);
+		uint32_t flag = 0;
 		if (stdCode[length - 1] == SUFFIX_QFQ || stdCode[length - 1] == SUFFIX_HFQ)
+		{
 			length--;
 
-		SIDSet& sids = _tick_sub_map[std::string(stdCode, length)];
-		sids.insert(sid);
+			flag = (stdCode[length - 1] == SUFFIX_QFQ) ? 1 : 2;
+		}
 
-		_ticksubed_raw_codes.insert(std::string(stdCode, length));
+		SubList& sids = _tick_sub_map[std::string(stdCode, length)];
+		sids[sid] = std::make_pair(sid, flag);
+
+		//_ticksubed_raw_codes.insert(std::string(stdCode, length));
 	}
 }
 

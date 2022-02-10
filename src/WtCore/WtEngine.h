@@ -186,17 +186,24 @@ protected:
 	uint32_t		_cur_secs;	//当前秒数, 包含毫秒
 	uint32_t		_cur_tdate;	//当前交易日
 
+	double			_all_tick_mode;	//全tick模式，即如果tick数据成交量为0，也触发ontick，默认为false，即只触发有成交量的tick
+
 	IBaseDataMgr*	_base_data_mgr;	//基础数据管理器
 	IHotMgr*		_hot_mgr;		//主力管理器
-	WtDtMgr*	_data_mgr;		//数据管理器
+	WtDtMgr*		_data_mgr;		//数据管理器
 	IEngineEvtListener*	_evt_listener;
 
-	typedef faster_hashset<uint32_t> SIDSet;
-	typedef faster_hashmap<std::string, SIDSet>	StraSubMap;
+	//By Wesley @ 2022.02.07
+	//tick数据订阅项，first是contextid，second是订阅选项，0-原始订阅，1-前复权，2-后复权
+	typedef std::pair<uint32_t, uint32_t> SubOpt;
+	typedef faster_hashmap<uint32_t, SubOpt> SubList;
+	typedef faster_hashmap<std::string, SubList>	StraSubMap;
 	StraSubMap		_tick_sub_map;	//tick数据订阅表
 	StraSubMap		_bar_sub_map;	//K线数据订阅表
 
-	faster_hashset<std::string>		_ticksubed_raw_codes;	//tick订阅表（真实代码模式）
+	//By Wesley @ 2022.02.07 
+	//这个好像没有用到，不需要了
+	//faster_hashset<std::string>		_ticksubed_raw_codes;	//tick订阅表（真实代码模式）
 	
 
 	//////////////////////////////////////////////////////////////////////////
@@ -285,7 +292,7 @@ protected:
 	StdThreadPtr	_thrd_task;
 	TaskQueue		_task_queue;
 	StdUniqueMutex	_mtx_task;
-	StdCondVariable		_cond_task;
+	StdCondVariable	_cond_task;
 	bool			_terminated;
 
 	typedef struct _RiskMonFactInfo
