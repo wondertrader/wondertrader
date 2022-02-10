@@ -248,7 +248,7 @@ public:
 			time_t _gt = mktime(&tm_gtm);
 			tm _gtm2 = *localtime(&_gt);
 
-			offset = ((now - _gt) + (_gtm2.tm_isdst ? 3600 : 0)) / 60;
+			offset = (uint32_t)(((now - _gt) + (_gtm2.tm_isdst ? 3600 : 0)) / 60);
 			offset /= 60;
 		}
 
