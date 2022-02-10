@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Datas">
+      <UniqueIdentifier>{d0a3fbad-c6a2-420e-a58d-e98b65776dd8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common">
+      <UniqueIdentifier>{a7b2a95c-537d-468f-ba75-6d04db988e6a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Incs">
+      <UniqueIdentifier>{9f1bbb47-ad4c-461b-9a65-c33dc3af0cbc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="UFT">
+      <UniqueIdentifier>{f4b72665-a037-41d6-9b24-30deaa6dbe4e}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="TraderAdapter.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ParserAdapter.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="WtHelper.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="WtEngine.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Includes\HftStrategyDefs.h">
+      <Filter>Incs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Includes\IHftStraCtx.h">
+      <Filter>Incs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Includes\IDataReader.h">
+      <Filter>Incs</Filter>
+    </ClInclude>
+    <ClInclude Include="ITrdNotifySink.h">
+      <Filter>Incs</Filter>
+    </ClInclude>
+    <ClInclude Include="UftStraBaseCtx.h">
+      <Filter>UFT</Filter>
+    </ClInclude>
+    <ClInclude Include="UftStraContext.h">
+      <Filter>UFT</Filter>
+    </ClInclude>
+    <ClInclude Include="UftStrategyMgr.h">
+      <Filter>UFT</Filter>
+    </ClInclude>
+    <ClInclude Include="WtUftEngine.h">
+      <Filter>UFT</Filter>
+    </ClInclude>
+    <ClInclude Include="WtUftTicker.h">
+      <Filter>UFT</Filter>
+    </ClInclude>
+    <ClInclude Include="WtUftDtMgr.h">
+      <Filter>Datas</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="TraderAdapter.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ParserAdapter.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="WtHelper.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="WtEngine.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="UftStraBaseCtx.cpp">
+      <Filter>UFT</Filter>
+    </ClCompile>
+    <ClCompile Include="UftStraContext.cpp">
+      <Filter>UFT</Filter>
+    </ClCompile>
+    <ClCompile Include="UftStrategyMgr.cpp">
+      <Filter>UFT</Filter>
+    </ClCompile>
+    <ClCompile Include="WtUftEngine.cpp">
+      <Filter>UFT</Filter>
+    </ClCompile>
+    <ClCompile Include="WtUftTicker.cpp">
+      <Filter>UFT</Filter>
+    </ClCompile>
+    <ClCompile Include="WtUftDtMgr.cpp">
+      <Filter>Datas</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
