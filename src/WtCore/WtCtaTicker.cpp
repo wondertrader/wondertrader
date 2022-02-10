@@ -121,12 +121,15 @@ void WtCtaRtTicker::on_tick(WTSTickData* curTick, uint32_t hotFlag /* = 0 */)
 				_engine->on_session_end();
 		}
 
-		trigger_price(curTick, hotFlag);
+		//By Wesley @ 2022.02.09
+		//这里先修改时间，再调用trigger_price
+		//无论分钟线是否切换，先修改时间都是对的
 		if (_engine)
 		{
 			_engine->set_date_time(_date, curMin, curSec, rawMin);
 			_engine->set_trading_date(curTick->tradingdate());
 		}
+		trigger_price(curTick, hotFlag);
 
 		_cur_pos = minutes;
 	}
