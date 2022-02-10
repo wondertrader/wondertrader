@@ -91,24 +91,22 @@ void CtaMocker::dump_outputs()
 
 	std::string filename = folder + "trades.csv";
 	std::string content = "code,time,direct,action,price,qty,tag,fee,barno\n";
-	content += _trade_logs.str();
+	if(!_trade_logs.str().empty()) content += _trade_logs.str();
 	StdFile::write_file_content(filename.c_str(), (void*)content.c_str(), content.size());
 
 	filename = folder + "closes.csv";
 	content = "code,direct,opentime,openprice,closetime,closeprice,qty,profit,maxprofit,maxloss,totalprofit,entertag,exittag,openbarno,closebarno\n";
-	content += _close_logs.str();
+	if (!_close_logs.str().empty()) content += _close_logs.str();
 	StdFile::write_file_content(filename.c_str(), (void*)content.c_str(), content.size());
-
 
 	filename = folder + "funds.csv";
 	content = "date,closeprofit,positionprofit,dynbalance,fee\n";
-	content += _fund_logs.str();
+	if (!_fund_logs.str().empty()) content += _fund_logs.str();
 	StdFile::write_file_content(filename.c_str(), (void*)content.c_str(), content.size());
-
 
 	filename = folder + "signals.csv";
 	content = "code,target,sigprice,gentime,usertag\n";
-	content += _sig_logs.str();
+	if (!_sig_logs.str().empty()) content += _sig_logs.str();
 	StdFile::write_file_content(filename.c_str(), (void*)content.c_str(), content.size());
 }
 
@@ -217,10 +215,10 @@ void CtaMocker::handle_replay_done()
 
 	if (_has_hook && _hook_valid)
 	{
-		WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Replay done, notify control thread");
+		WTSLogger::log_dyn_raw("strategy", _name.c_str(), LL_DEBUG, "Replay done, notify control thread");
 		while(_wait_calc)
 			_cond_calc.notify_all();
-		WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Notify control thread the end done");
+		WTSLogger::log_dyn_raw("strategy", _name.c_str(), LL_DEBUG, "Notify control thread the end done");
 	}
 
 	WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Notify strategy the end of backtest");
@@ -685,7 +683,7 @@ void CtaMocker::on_session_end(uint32_t curTDate)
 		total_dynprofit += pInfo._dynprofit;
 	}
 
-	_fund_logs << StrUtil::printf("%d,%.2f,%.2f,%.2f,%.2f\n", curDate,
+	_fund_logs << fmt::format("{},{},{},{},{}\n", curDate,
 		_fund_info._total_profit, _fund_info._total_dynprofit,
 		_fund_info._total_profit + _fund_info._total_dynprofit - _fund_info._total_fees, _fund_info._total_fees);
 
