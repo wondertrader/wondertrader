@@ -314,8 +314,6 @@ WTSTickSlice* WtDataReader::readTickSlice(const char* stdCode, uint32_t count, u
 	else if (cInfo.isSecond() && commInfo->isFuture())
 		curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, endTDate);
 
-	std::vector<WTSTickStruct>	ayTicks;
-
 	//比较时间的对象
 	WTSTickStruct eTick;
 	eTick.action_date = curDate;
