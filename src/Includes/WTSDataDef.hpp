@@ -1084,8 +1084,9 @@ protected:
 	char						m_strCode[32];
 	std::vector<WTSTickStruct>	m_ayTicks;
 	bool						m_bValidOnly;
+	double						m_dFactor;
 
-	WTSHisTickData() :m_bValidOnly(false){}
+	WTSHisTickData() :m_bValidOnly(false), m_dFactor(1.0){}
 
 public:
 	/*
@@ -1095,12 +1096,13 @@ public:
 	 *	@param stdCode 合约代码
 	 *	@param nSize 预先分配的大小
 	 */
-	static inline WTSHisTickData* create(const char* stdCode, unsigned int nSize = 0, bool bValidOnly = false)
+	static inline WTSHisTickData* create(const char* stdCode, unsigned int nSize = 0, bool bValidOnly = false, double factor = 1.0)
 	{
 		WTSHisTickData *pRet = new WTSHisTickData;
 		strcpy(pRet->m_strCode, stdCode);
 		pRet->m_ayTicks.resize(nSize);
 		pRet->m_bValidOnly = bValidOnly;
+		pRet->m_dFactor = factor;
 
 		return pRet;
 	}
@@ -1111,12 +1113,12 @@ public:
 
 	 *	@param ayTicks tick数组对象指针
 	 */
-	static inline WTSHisTickData* create(const char* stdCode, const std::vector<WTSTickStruct>& ayTicks, bool bValidOnly = false)
+	static inline WTSHisTickData* create(const char* stdCode, bool bValidOnly = false, double factor = 1.0)
 	{
 		WTSHisTickData *pRet = new WTSHisTickData;
 		strcpy(pRet->m_strCode, stdCode);
-		pRet->m_ayTicks = ayTicks;
 		pRet->m_bValidOnly = bValidOnly;
+		pRet->m_dFactor = factor;
 
 		return pRet;
 	}
@@ -1150,6 +1152,11 @@ public:
 	inline void	appendTick(const WTSTickStruct& ts)
 	{
 		m_ayTicks.emplace_back(ts);
+		//复权修正
+		m_ayTicks.back().price *= m_dFactor;
+		m_ayTicks.back().open *= m_dFactor;
+		m_ayTicks.back().high *= m_dFactor;
+		m_ayTicks.back().low *= m_dFactor;
 	}
 };
 
