@@ -148,6 +148,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <DelayLoadDLLs>
       </DelayLoadDLLs>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
