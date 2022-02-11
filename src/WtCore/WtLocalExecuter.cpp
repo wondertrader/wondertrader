@@ -149,9 +149,9 @@ WTSTickData* WtLocalExecuter::grabLastTick(const char* stdCode)
 	return _data_mgr->grab_last_tick(stdCode);
 }
 
-double WtLocalExecuter::getPosition(const char* stdCode, int32_t flag /* = 3 */)
+double WtLocalExecuter::getPosition(const char* stdCode, bool validOnly /* = true */, int32_t flag /* = 3 */)
 {
-	return _trader->getPosition(stdCode, flag);
+	return _trader->getPosition(stdCode, validOnly, flag);
 }
 
 double WtLocalExecuter::getUndoneQty(const char* stdCode)

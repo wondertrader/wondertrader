@@ -183,7 +183,7 @@ WTSTickData* ExecMocker::grabLastTick(const char* stdCode)
 	return _replayer->get_last_tick(stdCode);
 }
 
-double ExecMocker::getPosition(const char* stdCode, int32_t flag /*= 3*/)
+double ExecMocker::getPosition(const char* stdCode, bool validOnly /* = true */, int32_t flag /* = 3 */)
 {
 	return _position;
 }
