@@ -44,7 +44,6 @@ WtEngine::WtEngine()
 	, _evt_listener(NULL)
 	, _adapter_mgr(NULL)
 	, _notifier(NULL)
-	, _all_tick_mode(false)
 {
 	TimeUtils::getDateTime(_cur_date, _cur_time);
 	_cur_secs = _cur_time % 100000;
@@ -259,10 +258,6 @@ void WtEngine::init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtDtMgr* dataMgr, IHot
 	_filter_mgr.set_notifier(notifier);
 
 	_filter_mgr.load_filters(cfg->getCString("filters"));
-
-	//全tick模式，即如果tick数据成交量为0，也触发ontick，默认为false，即只触发有成交量的tick
-	_all_tick_mode = cfg->getBoolean("alltick");
-
 
 	load_fees(cfg->getCString("fees"));
 
