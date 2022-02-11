@@ -620,16 +620,29 @@ void WtEngine::handle_push_quote(WTSTickData* curTick, uint32_t hotFlag)
 
 double WtEngine::get_cur_price(const char* stdCode)
 {
-	auto it = _price_map.find(stdCode);
+	auto len = strlen(stdCode);
+	char lastChar = stdCode[len - 1];
+	//前复权直接读取标准合约代码
+	bool bAdjusted = (lastChar == SUFFIX_QFQ || lastChar == SUFFIX_HFQ);
+	//前复权需要去掉－，后复权和未复权都直接查找
+	std::string sCode = (lastChar == SUFFIX_QFQ) ? std::string(stdCode, len - 1) : stdCode;
+	auto it = _price_map.find(sCode);
 	if(it == _price_map.end())
 	{
-		WTSTickData* lastTick = _data_mgr->grab_last_tick(stdCode);
+		//找不到的时候，先读取未复权的tick数据
+		std::string fCode = bAdjusted ? std::string(stdCode, len - 1) : stdCode;
+		WTSTickData* lastTick = _data_mgr->grab_last_tick(fCode.c_str());
 		if (lastTick == NULL)
 			return 0.0;
 
 		double ret = lastTick->price();
 		lastTick->release();
-		_price_map[stdCode] = ret;
+
+		//如果是后复权，则进行复权处理
+		if (lastChar == SUFFIX_HFQ)
+			ret *= _data_mgr->get_adjusting_factor(fCode.c_str(), get_trading_date());
+
+		_price_map[sCode] = ret;
 		return ret;
 	}
 	else
