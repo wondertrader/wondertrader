@@ -232,13 +232,10 @@ void WtUftEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 	/*
 	 *	By Wesley @ 2022.02.07
 	 *	这里做了一个彻底的调整
-	 *	首先，看是否是全tick模式，如果是，则直接触发ontick
-	 *	然后，检查成交量是否为0，如果没有最新成交，就不触发ontick
-	 *	第三，检查订阅标记，如果标记为0，即无复权模式，则直接按照原始代码触发ontick
-	 *	第四，如果标记为1，即前复权模式，则将代码转成xxxx-，再触发ontick
-	 *	第五，如果标记为2，即后复权模式，则将代码转成xxxx+，再把tick数据做一个修正，再触发ontick
+	 *	第一，检查订阅标记，如果标记为0，即无复权模式，则直接按照原始代码触发ontick
+	 *	第二，如果标记为1，即前复权模式，则将代码转成xxxx-，再触发ontick
+	 *	第三，如果标记为2，即后复权模式，则将代码转成xxxx+，再把tick数据做一个修正，再触发ontick
 	 */
-	if (_all_tick_mode || !decimal::eq(curTick->volume(), 0.0))
 	{
 		auto sit = _tick_sub_map.find(stdCode);
 		if (sit != _tick_sub_map.end())
@@ -248,13 +245,12 @@ void WtUftEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 			{
 				uint32_t sid = *it;
 
-
 				auto cit = _ctx_map.find(sid);
 				if (cit != _ctx_map.end())
 				{
 					UftContextPtr& ctx = (UftContextPtr&)cit->second;
 					ctx->on_tick(stdCode, curTick);
-				}				
+				}
 			}
 		}
 	}
