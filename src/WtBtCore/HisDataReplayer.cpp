@@ -172,7 +172,7 @@ bool HisDataReplayer::init(WTSVariant* cfg, EventNotifier* notifier /* = NULL */
 	 *	因为store可能会变复杂，所以这里做一个兼容处理
 	 *	如果有store就读取store的path，如果没有store，就还读取root的path
 	 */
-	if (cfg->has("storage"))
+	if (cfg->has("store"))
 	{
 		_base_dir = StrUtil::standardisePath(cfg->get("store")->getCString("path"));
 	}
@@ -183,9 +183,9 @@ bool HisDataReplayer::init(WTSVariant* cfg, EventNotifier* notifier /* = NULL */
 	
 	if(_mode == "storage" || _mode == "bin")
 	{
-		if (cfg->has("storage"))
+		if (cfg->has("store"))
 		{
-			_his_dt_mgr.init(cfg->get("storage"));
+			_his_dt_mgr.init(cfg->get("store"));
 		}
 		else
 		{
