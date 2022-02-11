@@ -898,9 +898,9 @@ void HftStraBaseCtx::update_dyn_profit(const char* stdCode, WTSTickData* newTick
 				DetailInfo& dInfo = *pit;
 				dInfo._profit = dInfo._volume*(price - dInfo._price)*commInfo->getVolScale()*(dInfo._long ? 1 : -1);
 				if (dInfo._profit > 0)
-					dInfo._max_profit = max(dInfo._profit, dInfo._max_profit);
+					dInfo._max_profit = std::max(dInfo._profit, dInfo._max_profit);
 				else if (dInfo._profit < 0)
-					dInfo._max_loss = min(dInfo._profit, dInfo._max_loss);
+					dInfo._max_loss = std::min(dInfo._profit, dInfo._max_loss);
 
 				dynprofit += dInfo._profit;
 			}

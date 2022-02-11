@@ -12,6 +12,8 @@
 
 #include "../Includes/IBaseDataMgr.h"
 
+using namespace std;
+
 //By Wesley @ 2022.01.05
 #include "../Share/fmtlib.h"
 template<typename... Args>

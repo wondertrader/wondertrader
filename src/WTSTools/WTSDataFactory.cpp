@@ -13,6 +13,8 @@
 #include "../Includes/WTSSessionInfo.hpp"
 #include "../Share/TimeUtils.hpp"
 
+using namespace std;
+
 
 WTSBarStruct* WTSDataFactory::updateKlineData(WTSKlineData* klineData, WTSTickData* tick, WTSSessionInfo* sInfo)
 {

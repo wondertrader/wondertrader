@@ -38,6 +38,8 @@
 #include <rapidjson/prettywriter.h>
 namespace rj = rapidjson;
 
+using namespace std;
+
 /*
  *	处理块数据
  */
@@ -2700,7 +2702,7 @@ void HisDataReplayer::checkUnbars()
 			bHasHisData = cacheFinalBarsFromLoader(key, stdCode, KP_Minute1, false);
 		}
 
-		if(bHasHisData)
+		if(!bHasHisData)
 		{
 			if (_mode == "csv")
 			{

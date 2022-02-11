@@ -10,6 +10,10 @@
 #pragma once
 #include <limits.h>
 
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+
 #define MAX_INSTRUMENT_LENGTH	32
 #define MAX_EXCHANGE_LENGTH		16
 

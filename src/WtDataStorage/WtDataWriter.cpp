@@ -12,6 +12,7 @@
 #include "../WTSUtils/WTSCmpHelper.hpp"
 
 #include <set>
+#include <algorithm>
 
 //By Wesley @ 2022.01.05
 #include "../Share/fmtlib.h"
@@ -1083,8 +1084,8 @@ void WtDataWriter::pipeToKlines(WTSContractInfo* ct, WTSTickData* curTick)
 				newBar = &blk->_bars[blk->_size - 1];
 
 				newBar->close = curTick->price();
-				newBar->high = max(curTick->price(), newBar->high);
-				newBar->low = min(curTick->price(), newBar->low);
+				newBar->high = std::max(curTick->price(), newBar->high);
+				newBar->low = std::min(curTick->price(), newBar->low);
 
 				newBar->vol += curTick->volume();
 				newBar->money += curTick->turnover();

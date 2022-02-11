@@ -31,6 +31,7 @@
 #include <rapidjson/prettywriter.h>
 
 namespace rj = rapidjson;
+using namespace std;
 
 uint32_t makeLocalOrderID()
 {

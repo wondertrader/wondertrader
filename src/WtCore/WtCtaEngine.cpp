@@ -491,12 +491,12 @@ void WtCtaEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 	fundInfo._dynprofit = dynprofit;
 	double dynbal = fundInfo._balance + dynprofit;
 	if (fundInfo._max_dyn_bal != DBL_MAX)
-		fundInfo._max_dyn_bal = max(fundInfo._max_dyn_bal, dynbal);
+		fundInfo._max_dyn_bal = std::max(fundInfo._max_dyn_bal, dynbal);
 	else
 		fundInfo._max_dyn_bal = dynbal;
 
 	if (fundInfo._min_dyn_bal != DBL_MAX)
-		fundInfo._min_dyn_bal = min(fundInfo._min_dyn_bal, dynbal);
+		fundInfo._min_dyn_bal = std::min(fundInfo._min_dyn_bal, dynbal);
 	else
 		fundInfo._min_dyn_bal = dynbal;
 	*/

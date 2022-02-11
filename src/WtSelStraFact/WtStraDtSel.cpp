@@ -107,8 +107,8 @@ void WtStraDtSel::on_schedule(ISelStraCtx* ctx, uint32_t uDate, uint32_t uTime)
 		double highPx = kline->at(-1)->high;
 		double lowPx = kline->at(-1)->low;
 
-		double upper_bound = openPx + _k1 * (max(hh - lc, hc - ll));
-		double lower_bound = openPx - _k2 * max(hh - lc, hc - ll);
+		double upper_bound = openPx + _k1 * (std::max(hh - lc, hc - ll));
+		double lower_bound = openPx - _k2 * std::max(hh - lc, hc - ll);
 
 		WTSCommodityInfo* commInfo = ctx->stra_get_comminfo(curCode.c_str());
 

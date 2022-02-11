@@ -286,7 +286,7 @@ void WtTWapExeUnit::do_calc()
 	if (leftTimes == 0)
 		curQty = diffQty;
 	else
-		curQty = max(1.0, round(abs(diffQty) / leftTimes)) * abs(diffQty) / diffQty;
+		curQty = std::max(1.0, round(abs(diffQty) / leftTimes)) * abs(diffQty) / diffQty;
 
 	//设定本轮目标仓位
 	_this_target = realPos + curQty;
