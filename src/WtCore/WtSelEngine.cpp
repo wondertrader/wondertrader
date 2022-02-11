@@ -162,6 +162,8 @@ void WtSelEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 							newTS.low *= factor;
 							newTS.price *= factor;
 
+							_price_map[wCode] = newTS.price;
+
 							ctx->on_tick(wCode.c_str(), newTick);
 							newTick->release();
 						}
