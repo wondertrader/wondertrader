@@ -74,8 +74,11 @@ private:
 	faster_hashset<std::string> _subed_basic_bars;
 	typedef WTSHashMap<std::string> DataCacheMap;
 	DataCacheMap*	_bars_cache;	//K线缓存
-	DataCacheMap*	_ticks_cache;	//历史Tick缓存
 	DataCacheMap*	_rt_tick_map;	//实时tick缓存
+	//By Wesley @ 2022.02.11
+	//这个只有后复权tick数据
+	//因为前复权和不复权，都不需要缓存
+	DataCacheMap*	_ticks_adjusted;	//复权tick缓存
 
 	typedef struct _NotifyItem
 	{

@@ -12,6 +12,8 @@
 #include "WtHelper.h"
 
 #include "../Share/StrUtil.hpp"
+#include "../Share/CodeHelper.hpp"
+
 #include "../Includes/WTSDataDef.hpp"
 #include "../Includes/WTSVariant.hpp"
 
@@ -26,7 +28,7 @@ WtDtMgr::WtDtMgr()
 	, _engine(NULL)
 	, _loader(NULL)
 	, _bars_cache(NULL)
-	, _ticks_cache(NULL)
+	, _ticks_adjusted(NULL)
 	, _rt_tick_map(NULL)
 {
 }
@@ -37,8 +39,8 @@ WtDtMgr::~WtDtMgr()
 	if (_bars_cache)
 		_bars_cache->release();
 
-	if (_ticks_cache)
-		_ticks_cache->release();
+	if (_ticks_adjusted)
+		_ticks_adjusted->release();
 
 	if (_rt_tick_map)
 		_rt_tick_map->release();
@@ -184,11 +186,10 @@ void WtDtMgr::on_bar(const char* code, WTSKlinePeriod period, WTSBarStruct* newB
 			{
 				//如果基础周期K线的时间和自定义周期K线的时间一致, 说明K线关闭了
 				//这里也要触发on_bar事件
-				times *= kData->times();
 				WTSBarStruct* lastBar = kData->at(-1);
 				//_engine->on_bar(code, speriod.c_str(), times, lastBar);
 				//更新完K线以后, 统一通知交易引擎
-				_bar_notifies.emplace_back(NotifyItem({ code, speriod, times, lastBar }));
+				_bar_notifies.emplace_back(NotifyItem({ code, speriod, times*kData->times(), lastBar }));
 			}
 		}
 	}
@@ -204,9 +205,9 @@ void WtDtMgr::handle_push_quote(const char* stdCode, WTSTickData* newTick)
 
 	_rt_tick_map->add(stdCode, newTick, true);
 
-	if(_ticks_cache != NULL)
+	if(_ticks_adjusted != NULL)
 	{
-		WTSHisTickData* tData = (WTSHisTickData*)_ticks_cache->get(stdCode);
+		WTSHisTickData* tData = (WTSHisTickData*)_ticks_adjusted->get(stdCode);
 		if (tData == NULL)
 			return;
 
@@ -243,7 +244,100 @@ WTSTickSlice* WtDtMgr::get_tick_slice(const char* stdCode, uint32_t count, uint6
 	if (_reader == NULL)
 		return NULL;
 
-	return _reader->readTickSlice(stdCode, count, etime);
+	/*
+	 *	By Wesley @ 2022.02.11
+	 *	这里要重新处理一下
+	 *	如果是不复权或者前复权，则直接读取底层的实时缓存即可
+	 */
+	auto len = strlen(stdCode);
+	bool isHFQ = (stdCode[len - 1] == SUFFIX_HFQ);
+
+	//不是后复权，缓存直接用底层缓存
+	if(!isHFQ)
+		return _reader->readTickSlice(stdCode, count, etime);
+
+	//先转成不带+的标准代码
+	std::string pureStdCode(stdCode, len - 1);
+
+	if (_ticks_adjusted == NULL)
+		_ticks_adjusted = DataCacheMap::create();
+
+	//如果缓存没有，先重新生成一下缓存
+	auto it = _ticks_adjusted->find(pureStdCode);
+	if (it == _ticks_adjusted->end())
+	{
+		//先读取全部tick数据
+		double factor = get_adjusting_factor(pureStdCode.c_str(), get_date());
+		WTSTickSlice* slice = _reader->readTickSlice(pureStdCode.c_str(), 999999, etime);
+		std::vector<WTSTickStruct> ayTicks;
+		ayTicks.resize(slice->size());
+		std::size_t offset = 0;
+		for (std::size_t bIdx = 0; bIdx < slice->get_block_counts(); bIdx++)
+		{
+			memcpy(&ayTicks[0] + offset, slice->get_block_addr(bIdx), slice->get_block_size(bIdx) * sizeof(WTSTickStruct));
+			offset += slice->get_block_size(bIdx);
+		}
+
+		//缓存的数据做一个复权处理
+		for (WTSTickStruct& tick : ayTicks)
+		{
+			tick.price *= factor;
+			tick.open *= factor;
+			tick.high *= factor;
+			tick.low *= factor;
+		}
+
+		//添加到缓存中
+		WTSHisTickData* hisTick = WTSHisTickData::create(stdCode, false, factor);
+		hisTick->getDataRef().swap(ayTicks);
+		_ticks_adjusted->add(pureStdCode, hisTick, false);
+	}
+
+	WTSHisTickData* hisTick = (WTSHisTickData*)_ticks_adjusted->get(pureStdCode);
+	uint32_t curDate, curTime, curSecs;
+	if (etime == 0)
+	{
+		curDate = get_date();
+		curTime = get_min_time();
+		curSecs = get_secs();
+
+		etime = (uint64_t)curDate * 1000000000 + curTime * 100000 + curSecs;
+	}
+	else
+	{
+		//20190807124533900
+		curDate = (uint32_t)(etime / 1000000000);
+		curTime = (uint32_t)(etime % 1000000000) / 100000;
+		curSecs = (uint32_t)(etime % 100000);
+	}
+
+	//比较时间的对象
+	WTSTickStruct eTick;
+	eTick.action_date = curDate;
+	eTick.action_time = curTime * 100000 + curSecs;
+
+	auto& ticks = hisTick->getDataRef();
+
+	WTSTickStruct* pTick = std::lower_bound(&ticks.front(), &ticks.back(), eTick, [](const WTSTickStruct& a, const WTSTickStruct& b) {
+		if (a.action_date != b.action_date)
+			return a.action_date < b.action_date;
+		else
+			return a.action_time < b.action_time;
+	});
+
+	uint32_t eIdx = pTick - &ticks.front();
+
+	//如果光标定位的tick时间比目标时间打, 则全部回退一个
+	if (pTick->action_date > eTick.action_date || pTick->action_time > eTick.action_time)
+	{
+		pTick--;
+		eIdx--;
+	}
+
+	uint32_t cnt = min(eIdx + 1, count);
+	uint32_t sIdx = eIdx + 1 - cnt;
+	WTSTickSlice* slice = WTSTickSlice::create(stdCode, &ticks.front() + sIdx, cnt);
+	return slice;
 }
 
 WTSOrdQueSlice* WtDtMgr::get_order_queue_slice(const char* stdCode, uint32_t count, uint64_t etime /* = 0 */)
