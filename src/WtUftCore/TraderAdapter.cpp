@@ -27,6 +27,7 @@
 #include "../Share/DLLHelper.hpp"
 
 #include <exception>
+#include <algorithm>
 #include <rapidjson/document.h>
 #include <rapidjson/prettywriter.h>
 
@@ -794,7 +795,7 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 				{
 					if (isToday)
 					{
-						pItem.l_newavail -= min(pItem.l_newavail, qty);	//如果是平今, 则只需要更新可平今仓
+						pItem.l_newavail -= std::min(pItem.l_newavail, qty);	//如果是平今, 则只需要更新可平今仓
 					}
 					else
 					{
@@ -802,30 +803,30 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 
 						//如果是平仓, 则先更新可平昨仓, 还有剩余, 再更新可平今仓
 						//如果品种区分平昨平今, 也按照这个流程, 因为平昨的总数量不可能超出昨仓
-						double maxQty = min(pItem.l_preavail, qty);
+						double maxQty = std::min(pItem.l_preavail, qty);
 						pItem.l_preavail -= maxQty;
 						left -= maxQty;
 
 						if (left > 0)
-							pItem.l_newavail -= min(pItem.l_newavail, left);
+							pItem.l_newavail -= std::min(pItem.l_newavail, left);
 					}
 				}
 				else //平空
 				{
 					if (isToday)
 					{
-						pItem.s_newavail -= min(pItem.s_newavail, qty);
+						pItem.s_newavail -= std::min(pItem.s_newavail, qty);
 					}
 					else
 					{
 						double left = qty;
 
-						double maxQty = min(pItem.s_preavail, qty);
+						double maxQty = std::min(pItem.s_preavail, qty);
 						pItem.s_preavail -= maxQty;
 						left -= maxQty;
 
 						if (left > 0)
-							pItem.s_newavail -= min(pItem.s_newavail, left);
+							pItem.s_newavail -= std::min(pItem.s_newavail, left);
 					}
 				}
 				printPosition(stdCode.c_str(), pItem);
@@ -966,7 +967,7 @@ void TraderAdapter::onPushTrade(WTSTradeInfo* tradeRecord)
 		else
 		{
 			double left = vol;
-			double maxVol = min(left, pItem.l_prevol);
+			double maxVol = std::min(left, pItem.l_prevol);
 			pItem.l_prevol -= maxVol;
 			left -= maxVol;
 			pItem.l_newvol -= left;
@@ -987,7 +988,7 @@ void TraderAdapter::onPushTrade(WTSTradeInfo* tradeRecord)
 		else
 		{
 			double left = vol;
-			double maxVol = min(left, pItem.s_prevol);
+			double maxVol = std::min(left, pItem.s_prevol);
 			pItem.s_prevol -= maxVol;
 			left -= maxVol;
 			pItem.s_newvol -= left;

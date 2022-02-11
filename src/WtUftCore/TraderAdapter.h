@@ -14,6 +14,7 @@
 #include "../Share/BoostFile.hpp"
 #include "../Share/StdUtils.hpp"
 #include "../Includes/WTSCollection.hpp"
+#include <algorithm>
 
 NS_WTP_BEGIN
 class WTSVariant;
