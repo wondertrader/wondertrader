@@ -27,8 +27,7 @@ namespace rj = rapidjson;
 
 #include <boost/asio.hpp>
 
-extern boost::asio::io_service g_asyncIO;
-
+boost::asio::io_service g_asyncIO;
 
 USING_NS_WTP;
 
@@ -51,9 +50,9 @@ WtUftEngine::~WtUftEngine()
 		_cfg->release();
 }
 
-void WtUftEngine::init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtUftDtMgr* dataMgr, IHotMgr* hotMgr, EventNotifier* notifier /* = NULL */)
+void WtUftEngine::init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtUftDtMgr* dataMgr)
 {
-	WtEngine::init(cfg, bdMgr, dataMgr, hotMgr, notifier);
+	WtEngine::init(cfg, bdMgr, dataMgr);
 
 	_cfg = cfg;
 	_cfg->retain();

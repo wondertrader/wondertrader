@@ -67,14 +67,13 @@ inline const char* formatAction(WTSDirectionType dType, WTSOffsetType oType)
 	}
 }
 
-TraderAdapter::TraderAdapter(EventNotifier* caster /* = NULL */)
+TraderAdapter::TraderAdapter()
 	: _id("")
 	, _cfg(NULL)
 	, _state(AS_NOTLOGIN)
 	, _trader_api(NULL)
 	, _orders(NULL)
 	, _undone_qty(0)
-	, _notifier(caster)
 {
 }
 
@@ -84,12 +83,11 @@ TraderAdapter::~TraderAdapter()
 
 }
 
-bool TraderAdapter::init(const char* id, WTSVariant* params, IBaseDataMgr* bdMgr, ActionPolicyMgr* policyMgr)
+bool TraderAdapter::init(const char* id, WTSVariant* params, IBaseDataMgr* bdMgr)
 {
 	if (params == NULL)
 		return false;
 
-	_policy_mgr = policyMgr;
 	_bd_mgr = bdMgr;
 	_id = id;
 
@@ -269,9 +267,10 @@ bool TraderAdapter::doCancel(WTSOrderInfo* ordInfo)
 		stdCode = CodeHelper::rawMonthCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
 	else
 		stdCode = CodeHelper::rawFlatCodeToStdCode(cInfo->getCode(), cInfo->getExchg(), cInfo->getProduct());
+
 	//³·µ¥ÆµÂÊ¼ì²é
-	if (!checkCancelLimits(stdCode.c_str()))
-		return false;
+	//if (!checkCancelLimits(stdCode.c_str()))
+	//	return false;
 
 	WTSEntrustAction* action = WTSEntrustAction::create(ordInfo->getCode(), cInfo->getExchg());
 	action->setEntrustID(ordInfo->getEntrustID());
@@ -302,7 +301,7 @@ bool TraderAdapter::cancel(uint32_t localid)
 	return bRet;
 }
 
-OrderIDs TraderAdapter::cancel(const char* stdCode, bool isBuy, double qty /* = 0 */)
+OrderIDs TraderAdapter::cancelAll(const char* stdCode)
 {
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 
@@ -318,22 +317,15 @@ OrderIDs TraderAdapter::cancel(const char* stdCode, bool isBuy, double qty /* = 
 			if(!orderInfo->isAlive())
 				continue;
 
-			bool bBuy = (orderInfo->getDirection() == WDT_LONG && orderInfo->getOffsetType() == WOT_OPEN) || (orderInfo->getDirection() == WDT_SHORT && orderInfo->getOffsetType() != WOT_OPEN);
-			if(bBuy != isBuy)
-				continue;
 
 			if (isAll || strcmp(orderInfo->getCode(), cInfo._code) == 0)
 			{
 				if(doCancel(orderInfo))
 				{
-					actQty += orderInfo->getVolLeft();
 					ret.emplace_back(it->first);
 					//_cancel_time_cache[orderInfo->getCode()].emplace_back(TimeUtils::getLocalTimeNow());
 				}
 			}
-
-			if (!decimal::eq(qty, 0) && decimal::ge(actQty, qty))
-				break;
 		}
 	}
 

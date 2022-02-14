@@ -46,7 +46,13 @@ public:
 
 	virtual void on_bar(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar) override;
 
+	virtual uint32_t stra_get_date() override;
+	virtual uint32_t stra_get_time() override;
+	virtual uint32_t stra_get_secs() override;
+
 	virtual bool stra_cancel(uint32_t localid) override;
+
+	virtual OrderIDs stra_cancel_all(const char* stdCode) override;
 
 	virtual uint32_t	stra_enter_long(const char* stdCode, double price, double qty) override;
 	virtual uint32_t	stra_enter_short(const char* stdCode, double price, double qty) override;
@@ -116,8 +122,6 @@ private:
 	}
 
 protected:
-	const char* get_inner_code(const char* stdCode);
-
 	inline const char* getOrderTag(uint32_t localid)
 	{
 		auto it = _orders.find(localid);

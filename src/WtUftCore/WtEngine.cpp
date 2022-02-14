@@ -99,7 +99,7 @@ void WtEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 	_price_map[stdCode] = curTick->price();
 }
 
-void WtEngine::init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtUftDtMgr* dataMgr, IHotMgr* hotMgr, EventNotifier* notifier)
+void WtEngine::init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtUftDtMgr* dataMgr)
 {
 	_base_data_mgr = bdMgr;
 	_data_mgr = dataMgr;

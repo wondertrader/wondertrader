@@ -17,12 +17,8 @@
 
 NS_WTP_BEGIN
 class WTSVariant;
-class ActionPolicyMgr;
 class WTSContractInfo;
 class WTSCommodityInfo;
-class WtLocalExecuter;
-class EventNotifier;
-
 class ITrdNotifySink;
 
 typedef std::vector<uint32_t> OrderIDs;
@@ -31,7 +27,7 @@ typedef WTSMap<uint32_t> OrderMap;
 class TraderAdapter : public ITraderSpi
 {
 public:
-	TraderAdapter(EventNotifier* caster = NULL);
+	TraderAdapter();
 	~TraderAdapter();
 
 	typedef enum tagAdapterState
@@ -100,7 +96,7 @@ public:
 	} RiskParams;
 
 public:
-	bool init(const char* id, WTSVariant* params, IBaseDataMgr* bdMgr, ActionPolicyMgr* policyMgr);
+	bool init(const char* id, WTSVariant* params, IBaseDataMgr* bdMgr);
 
 	void release();
 
@@ -142,12 +138,12 @@ public:
 	uint32_t closeShort(const char* stdCode, double price, double qty, bool isToday = false);
 	
 	bool	cancel(uint32_t localid);
-	OrderIDs cancel(const char* stdCode, bool isBuy, double qty = 0);
+	OrderIDs cancelAll(const char* stdCode);
 
 	inline bool	isTradeEnabled(const char* stdCode) const;
 
-	bool	checkCancelLimits(const char* stdCode);
-	bool	checkOrderLimits(const char* stdCode);
+	//bool	checkCancelLimits(const char* stdCode);
+	//bool	checkOrderLimits(const char* stdCode);
 
 public:
 	//////////////////////////////////////////////////////////////////////////
@@ -189,12 +185,9 @@ private:
 	FuncDeleteTrader	_remover;
 	AdapterState		_state;
 
-	EventNotifier*		_notifier;
-
 	faster_hashset<ITrdNotifySink*>	_sinks;
 
 	IBaseDataMgr*		_bd_mgr;
-	ActionPolicyMgr*	_policy_mgr;
 
 	faster_hashmap<std::string, PosItem> _positions;
 

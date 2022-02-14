@@ -115,7 +115,7 @@ public:
 	virtual void handle_push_quote(WTSTickData* newTick, uint32_t hotFlag) override;
 
 public:
-	virtual void init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtUftDtMgr* dataMgr, IHotMgr* hotMgr, EventNotifier* notifier);
+	virtual void init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtUftDtMgr* dataMgr);
 
 	virtual void run(bool bAsync = false) = 0;
 

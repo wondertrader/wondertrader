@@ -88,6 +88,15 @@ bool UftStraBaseCtx::stra_cancel(uint32_t localid)
 	return _trader->cancel(localid);
 }
 
+OrderIDs UftStraBaseCtx::stra_cancel_all(const char* stdCode)
+{
+	//³·µ¥ÆµÂÊ¼ì²é
+	//if (!_trader->checkCancelLimits(stdCode))
+	//	return OrderIDs();
+
+	return _trader->cancelAll(stdCode);
+}
+
 uint32_t UftStraBaseCtx::stra_enter_long(const char* stdCode, double price, double qty)
 {
 	return _trader->openLong(stdCode, price, qty);
@@ -261,3 +270,19 @@ double UftStraBaseCtx::stra_get_price(const char* stdCode)
 {
 	return _engine->get_cur_price(stdCode);
 }
+
+uint32_t UftStraBaseCtx::stra_get_date()
+{
+	return _engine->get_date();
+}
+
+uint32_t UftStraBaseCtx::stra_get_time()
+{
+	return _engine->get_raw_time();
+}
+
+uint32_t UftStraBaseCtx::stra_get_secs()
+{
+	return _engine->get_secs();
+}
+

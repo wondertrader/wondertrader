@@ -34,7 +34,6 @@ namespace rj = rapidjson;
 
 boost::asio::io_service g_asyncIO;
 
-
 WtCtaEngine::WtCtaEngine()
 	: _tm_ticker(NULL)
 {

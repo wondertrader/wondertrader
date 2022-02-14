@@ -52,11 +52,22 @@ public:
 	virtual void	on_trans_updated(const char* stdCode, WTSTransData* newTrans) {}
 
 	//策略接口
+
+	virtual uint32_t	stra_get_date() = 0;
+	virtual uint32_t	stra_get_time() = 0;
+	virtual uint32_t	stra_get_secs() = 0;
+
 	/*
 	 *	撤单接口
 	 *	@localid	本地单号
 	 */
 	virtual bool		stra_cancel(uint32_t localid) = 0;
+	
+	/*
+	 *	一键撤单接口
+	 *	@stdCode	合约代码
+	 */
+	virtual OrderIDs	stra_cancel_all(const char* stdCode) = 0;
 
 	/*
 	 *	开多
