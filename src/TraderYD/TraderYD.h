@@ -168,7 +168,7 @@ protected:
 
 	WTSPriceType		wrapPriceType(TThostFtdcOrderPriceTypeType priceType);
 	WTSDirectionType	wrapDirectionType(TThostFtdcDirectionType dirType, TThostFtdcOffsetFlagType offType);
-	WTSDirectionType	wrapPosDirection(TThostFtdcPosiDirectionType dirType);
+	WTSDirectionType	wrapPosDirection(int dirType);
 	WTSOffsetType		wrapOffsetType(TThostFtdcOffsetFlagType offType);
 	WTSTimeCondition	wrapTimeCondition(TThostFtdcTimeConditionType timeCond);
 	WTSOrderState		wrapOrderState(TThostFtdcOrderStatusType orderState);

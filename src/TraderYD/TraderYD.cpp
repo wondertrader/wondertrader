@@ -115,8 +115,6 @@ void TraderYD::notifyLogin(int errorNo, int maxOrderRef, bool isMonitor)
 
 		write_log(m_sink, LL_INFO, "[TraderYD][{}-{}] Login succeed, AppID: {}, Trading Day: {}",
 			m_strBroker.c_str(), m_strUser.c_str(), m_strAppID.c_str(), m_lDate);
-
-		queryAccount();
 	}
 	else
 	{
@@ -131,13 +129,20 @@ void TraderYD::notifyLogin(int errorNo, int maxOrderRef, bool isMonitor)
 
 void TraderYD::notifyFinishInit(void)
 {
-	throw std::logic_error("The method or operation is not implemented.");
+	queryAccount();
 }
 
 
 void TraderYD::notifyOrder(const YDOrder *pOrder, const YDInstrument *pInstrument, const YDAccount *pAccount)
 {
-	
+	WTSOrderInfo *orderInfo = makeOrderInfo(pOrder);
+	if (orderInfo)
+	{
+		if (m_sink)
+			m_sink->onPushOrder(orderInfo);
+
+		orderInfo->release();
+	}
 }
 
 
@@ -186,7 +191,7 @@ void TraderYD::notifyFailedCancelOrder(const YDFailedCancelOrder *pFailedCancelO
 
 void TraderYD::notifyAccount(const YDAccount *pAccount)
 {
-	throw std::logic_error("The method or operation is not implemented.");
+	
 }
 
 bool TraderYD::init(WTSVariant* params)
@@ -482,16 +487,9 @@ int TraderYD::queryAccount()
 			WTSAccountInfo* accountInfo = WTSAccountInfo::create();
 			accountInfo->setDescription(StrUtil::printf("{}-{}", m_strBroker.c_str(), m_strUser.c_str()).c_str());
 			//accountInfo->setUsername(m_strUserName.c_str());
-			accountInfo->setPreBalance(pTradingAccount->PreBalance);
-			accountInfo->setCloseProfit(pTradingAccount->CloseProfit);
-			accountInfo->setDynProfit(pTradingAccount->PositionProfit);
-			accountInfo->setMargin(pTradingAccount->CurrMargin);
-			accountInfo->setAvailable(pTradingAccount->Available);
-			accountInfo->setCommission(pTradingAccount->Commission);
-			accountInfo->setFrozenMargin(pTradingAccount->FrozenMargin);
-			accountInfo->setFrozenCommission(pTradingAccount->FrozenCommission);
-			accountInfo->setDeposit(pTradingAccount->Deposit);
-			accountInfo->setWithdraw(pTradingAccount->Withdraw);
+			accountInfo->setPreBalance(accInfo->PreBalance);
+			accountInfo->setDeposit(accInfo->Deposit);
+			accountInfo->setWithdraw(accInfo->Withdraw);
 			accountInfo->setBalance(accountInfo->getPreBalance() + accountInfo->getCloseProfit() - accountInfo->getCommission() + accountInfo->getDeposit() - accountInfo->getWithdraw());
 			accountInfo->setCurrency("CNY");
 
@@ -501,6 +499,8 @@ int TraderYD::queryAccount()
 				m_sink->onRspAccount(ay);
 
 			ay->release();
+
+			queryPositions();
 		});
 	}
 
@@ -517,11 +517,52 @@ int TraderYD::queryPositions()
 	{
 		StdUniqueLock lock(m_mtxQuery);
 		m_queQuery.push([this]() {
-			m_pUserAPI->getPrePosition()
+			WTSArray* ayPos = WTSArray::create();
+
+			int cnt = m_pUserAPI->getPrePositionCount();
+			for(int i = 0; i < cnt; i++)
+			{
+				YDPrePosition* pInfo = m_pUserAPI->getPrePosition(i);
+				YDInstrument* instInfo = pInfo->m_pInstrument;
+
+				WTSContractInfo* contract = m_bdMgr->getContract(instInfo->InstrumentID, instInfo->m_pExchange->ExchangeID);
+				if (contract)
+				{
+					WTSCommodityInfo* commInfo = contract->getCommInfo();
+					WTSPositionItem* pos = WTSPositionItem::create(contract->getCode(), commInfo->getCurrency(), commInfo->getExchg());
+					pos->setContractInfo(contract);
+
+					pos->setDirection(wrapPosDirection(pInfo->PosiDirection));
+					pos->setPrePosition(pInfo->PrePosition);
+					pos->setNewPosition(0);
+
+					pos->setMargin(0);
+					pos->setDynProfit(0);
+					pos->setPositionCost(pInfo->PrePosition*commInfo->getVolScale()*pInfo->PreSettlementPrice);
+
+					if (pos->getTotalPosition() != 0)
+					{
+						pos->setAvgPrice(pInfo->PreSettlementPrice);
+					}
+					else
+					{
+						pos->setAvgPrice(0);
+					}
+
+					pos->setAvailPrePos(pos->getPrePosition());
+					pos->setAvailNewPos(0);
+
+					ayPos->append(pos, false);
+				}
+			}
+
+			if (m_sink) m_sink->onRspPosition(ayPos);
+
+			ayPos->release();
+
+			queryOrders();
 		});
 	}
-
-	//triggerQuery();
 
 	return 0;
 }
@@ -536,15 +577,10 @@ int TraderYD::queryOrders()
 	{
 		StdUniqueLock lock(m_mtxQuery);
 		m_queQuery.push([this]() {
-			CThostFtdcQryOrderField req;
-			memset(&req, 0, sizeof(req));
-			strcpy(req.BrokerID, m_strBroker.c_str());
-			strcpy(req.InvestorID, m_strUser.c_str());
+			if (m_sink) m_sink->onRspOrders(NULL);
 
-			m_pUserAPI->ReqQryOrder(&req, genRequestID());
+			queryTrades();
 		});
-
-		//triggerQuery();
 	}
 
 	return 0;
@@ -560,12 +596,7 @@ int TraderYD::queryTrades()
 	{
 		StdUniqueLock lock(m_mtxQuery);
 		m_queQuery.push([this]() {
-			CThostFtdcQryTradeField req;
-			memset(&req, 0, sizeof(req));
-			strcpy(req.BrokerID, m_strBroker.c_str());
-			strcpy(req.InvestorID, m_strUser.c_str());
-
-			m_pUserAPI->ReqQryTrade(&req, genRequestID());
+			if (m_sink) m_sink->onRspTrades(NULL);
 		});
 	}
 
@@ -575,220 +606,6 @@ int TraderYD::queryTrades()
 int TraderYD::querySettlement(uint32_t uDate)
 {
 	return 0;
-}
-
-
-void TraderYD::OnRspQryInvestorPosition(CThostFtdcInvestorPositionField *pInvestorPosition, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
-{
-	if (bIsLast)
-	{
-		m_bInQuery = false;
-		//triggerQuery();
-	}
-
-	if (!IsErrorRspInfo(pRspInfo) && pInvestorPosition)
-	{
-		if (NULL == m_mapPosition)
-			m_mapPosition = PositionMap::create();
-
-		WTSContractInfo* contract = m_bdMgr->getContract(pInvestorPosition->InstrumentID, pInvestorPosition->ExchangeID);
-		if (contract)
-		{
-			WTSCommodityInfo* commInfo = m_bdMgr->getCommodity(contract);
-			std::string key = StrUtil::printf("{}-{}", pInvestorPosition->InstrumentID, pInvestorPosition->PosiDirection);
-			WTSPositionItem* pos = (WTSPositionItem*)m_mapPosition->get(key);
-			if(pos == NULL)
-			{
-				pos = WTSPositionItem::create(pInvestorPosition->InstrumentID, commInfo->getCurrency(), commInfo->getExchg());
-				m_mapPosition->add(key, pos, false);
-			}
-			pos->setDirection(wrapPosDirection(pInvestorPosition->PosiDirection));
-			if(commInfo->getCoverMode() == CM_CoverToday)
-			{
-				if (pInvestorPosition->PositionDate == THOST_FTDC_PSD_Today)
-					pos->setNewPosition(pInvestorPosition->Position);
-				else
-					pos->setPrePosition(pInvestorPosition->Position);
-			}
-			else
-			{
-				pos->setNewPosition(pInvestorPosition->TodayPosition);
-				pos->setPrePosition(pInvestorPosition->Position - pInvestorPosition->TodayPosition);
-			}
-
-			pos->setMargin(pos->getMargin() + pInvestorPosition->UseMargin);
-			pos->setDynProfit(pos->getDynProfit() + pInvestorPosition->PositionProfit);
-			pos->setPositionCost(pos->getPositionCost() + pInvestorPosition->PositionCost);
-
-			if (pos->getTotalPosition() != 0)
-			{
-				pos->setAvgPrice(pos->getPositionCost() / pos->getTotalPosition() / commInfo->getVolScale());
-			}
-			else
-			{
-				pos->setAvgPrice(0);
-			}
-
-			if (commInfo->getCategoty() != CC_Combination)
-			{
-				if (commInfo->getCoverMode() == CM_CoverToday)
-				{
-					if (pInvestorPosition->PositionDate == THOST_FTDC_PSD_Today)
-					{
-						int availNew = pInvestorPosition->Position;
-						if (pInvestorPosition->PosiDirection == THOST_FTDC_PD_Long)
-						{
-							availNew -= pInvestorPosition->ShortFrozen;
-						}
-						else
-						{
-							availNew -= pInvestorPosition->LongFrozen;
-						}
-						if (availNew < 0)
-							availNew = 0;
-						pos->setAvailNewPos(availNew);
-					}
-					else
-					{
-						int availPre = pInvestorPosition->Position;
-						if (pInvestorPosition->PosiDirection == THOST_FTDC_PD_Long)
-						{
-							availPre -= pInvestorPosition->ShortFrozen;
-						}
-						else
-						{
-							availPre -= pInvestorPosition->LongFrozen;
-						}
-						if (availPre < 0)
-							availPre = 0;
-						pos->setAvailPrePos(availPre);
-					}
-				}
-				else
-				{
-					int availNew = pInvestorPosition->TodayPosition;
-					if (pInvestorPosition->PosiDirection == THOST_FTDC_PD_Long)
-					{
-						availNew -= pInvestorPosition->ShortFrozen;
-					}
-					else
-					{
-						availNew -= pInvestorPosition->LongFrozen;
-					}
-					if (availNew < 0)
-						availNew = 0;
-					pos->setAvailNewPos(availNew);
-
-					double availPre = pos->getNewPosition() + pos->getPrePosition()
-						- pInvestorPosition->LongFrozen - pInvestorPosition->ShortFrozen
-						- pos->getAvailNewPos();
-					pos->setAvailPrePos(availPre);
-				}
-			}
-			else
-			{
-
-			}
-
-			if (decimal::lt(pos->getTotalPosition(), 0.0) && decimal::eq(pos->getMargin(), 0.0))
-			{
-				//有仓位,但是保证金为0,则说明是套利合约,单个合约的可用持仓全部置为0
-				pos->setAvailNewPos(0);
-				pos->setAvailPrePos(0);
-			}
-		}
-	}
-
-	if (bIsLast)
-	{
-
-		WTSArray* ayPos = WTSArray::create();
-
-		if(m_mapPosition && m_mapPosition->size() > 0)
-		{
-			for (auto it = m_mapPosition->begin(); it != m_mapPosition->end(); it++)
-			{
-				ayPos->append(it->second, true);
-			}
-		}
-
-		if (m_sink)
-			m_sink->onRspPosition(ayPos);
-
-		if (m_mapPosition)
-		{
-			m_mapPosition->release();
-			m_mapPosition = NULL;
-		}
-
-		ayPos->release();
-	}
-}
-
-
-void TraderYD::OnRspQryTrade(CThostFtdcTradeField *pTrade, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
-{
-	if (bIsLast)
-	{
-		m_bInQuery = false;
-		//triggerQuery();
-	}
-
-	if (!IsErrorRspInfo(pRspInfo) && pTrade)
-	{
-		if (NULL == m_ayTrades)
-			m_ayTrades = WTSArray::create();
-
-		WTSTradeInfo* trade = makeTradeRecord(pTrade);
-		if (trade)
-		{
-			m_ayTrades->append(trade, false);
-		}
-	}
-
-	if (bIsLast)
-	{
-		if (m_sink)
-			m_sink->onRspTrades(m_ayTrades);
-
-		if (NULL != m_ayTrades)
-			m_ayTrades->clear();
-	}
-}
-
-void TraderYD::OnRspQryOrder(CThostFtdcOrderField *pOrder, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
-{
-	if (bIsLast)
-	{
-		m_bInQuery = false;
-		//triggerQuery();
-	}
-
-	if (!IsErrorRspInfo(pRspInfo) && pOrder)
-	{
-		if (NULL == m_ayOrders)
-			m_ayOrders = WTSArray::create();
-
-		WTSOrderInfo* orderInfo = makeOrderInfo(pOrder);
-		if (orderInfo)
-		{
-			m_ayOrders->append(orderInfo, false);
-		}
-	}
-
-	if (bIsLast)
-	{
-		if (m_sink)
-			m_sink->onRspOrders(m_ayOrders);
-
-		if (m_ayOrders)
-			m_ayOrders->clear();
-	}
-}
-
-void TraderYD::OnRspError(CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
-{
-	int x = 0;
 }
 
 void TraderYD::OnRtnOrder(CThostFtdcOrderField *pOrder)
@@ -845,9 +662,9 @@ WTSDirectionType TraderYD::wrapDirectionType(TThostFtdcDirectionType dirType, TT
 			return WDT_LONG;
 }
 
-WTSDirectionType TraderYD::wrapPosDirection(TThostFtdcPosiDirectionType dirType)
+WTSDirectionType TraderYD::wrapPosDirection(int dirType)
 {
-	if (THOST_FTDC_PD_Long == dirType)
+	if (YD_PD_Long == dirType)
 		return WDT_LONG;
 	else
 		return WDT_SHORT;

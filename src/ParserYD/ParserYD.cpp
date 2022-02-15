@@ -54,33 +54,6 @@ extern "C"
 };
 
 
-inline uint32_t strToTime(const char* strTime)
-{
-	static char str[10] = { 0 };
-	const char *pos = strTime;
-	std::size_t idx = 0;
-	std::size_t len = strlen(strTime);
-	for(auto i = 0; i < len; i++)
-	{
-		if(strTime[i] != ':')
-		{
-			str[idx] = strTime[i];
-			idx++;
-		}
-	}
-	str[idx] = '\0';
-
-	return strtoul(str, NULL, 10);
-}
-
-inline double checkValid(double val)
-{
-	if (val == DBL_MAX || val == FLT_MAX)
-		return 0;
-
-	return val;
-}
-
 ParserYD::ParserYD()
 	: m_pUserAPI(NULL)
 	, m_uTradingDate(0)
@@ -165,7 +138,8 @@ void ParserYD::notifyMarketData(const YDMarketData *pDepthMarketData)
 
 	WTSTickData* tick = WTSTickData::create(instInfo->InstrumentID);
 	WTSTickStruct& quote = tick->getTickStruct();
-	strcpy(quote.exchg, exchgInfo->ExchangeID);
+	strcpy(quote.exchg, contract->getExchg());
+	tick->setContractInfo(contract);
 
 	quote.action_date = actDate;
 	quote.action_time = actTime;
