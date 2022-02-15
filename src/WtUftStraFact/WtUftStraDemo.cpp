@@ -53,7 +53,12 @@ bool WtUftStraDemo::init(WTSVariant* cfg)
 
 void WtUftStraDemo::on_entrust(uint32_t localid, bool bSuccess, const char* message, const char* userTag)
 {
-
+	if(!bSuccess)
+	{
+		auto it = _orders.find(localid);
+		if(it != _orders.end())
+			_orders.erase(it);
+	}
 }
 
 void WtUftStraDemo::on_init(IUftStraCtx* ctx)
@@ -137,7 +142,7 @@ void WtUftStraDemo::on_tick(IUftStraCtx* ctx, const char* code, WTSTickData* new
 
 			uint32_t localid;
 			if(decimal::lt(curPos, 0))
-				localid = ctx->stra_exit_short(code, targetPx, _lots);
+				localid = ctx->stra_exit_short(code, targetPx, _lots, true);
 			else
 				localid = ctx->stra_enter_long(code, targetPx, _lots);
 
@@ -153,7 +158,7 @@ void WtUftStraDemo::on_tick(IUftStraCtx* ctx, const char* code, WTSTickData* new
 
 			uint32_t localid;
 			if (decimal::gt(curPos, 0))
-				localid = ctx->stra_exit_long(code, targetPx, _lots);
+				localid = ctx->stra_exit_long(code, targetPx, _lots, true);
 			else
 				localid = ctx->stra_enter_short(code, targetPx, _lots);
 

@@ -14,7 +14,6 @@
 
 #include "../Includes/WTSContractInfo.hpp"
 
-#include "../Share/CodeHelper.hpp"
 #include "../Share/decimal.h"
 
 #include "../WTSTools/WTSLogger.h"

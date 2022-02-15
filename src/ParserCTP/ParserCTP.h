@@ -80,7 +80,7 @@ private:
 	/*
 	 *	订阅品种行情
 	 */
-	void SubscribeMarketData();
+	void DoSubscribeMD();
 	/*
 	 *	检查错误信息
 	 */

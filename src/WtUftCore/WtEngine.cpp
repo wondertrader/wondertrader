@@ -14,7 +14,6 @@
 #include "../Share/TimeUtils.hpp"
 #include "../Share/StrUtil.hpp"
 #include "../Share/decimal.h"
-#include "../Share/CodeHelper.hpp"
 
 #include "../Includes/IBaseDataMgr.h"
 #include "../Includes/IHotMgr.h"
@@ -29,17 +28,11 @@
 #include "../WTSTools/WTSLogger.h"
 #include "../WTSUtils/WTSCfgLoader.h"
 
-#include <rapidjson/document.h>
-#include <rapidjson/prettywriter.h>
-namespace rj = rapidjson;
-
 
 USING_NS_WTP;
 
 WtEngine::WtEngine()
-	: _evt_listener(NULL)
-	, _adapter_mgr(NULL)
-	, _all_tick_mode(false)
+	: _adapter_mgr(NULL)
 {
 	TimeUtils::getDateTime(_cur_date, _cur_time);
 	_cur_secs = _cur_time % 100000;
@@ -73,13 +66,18 @@ void WtEngine::set_trading_date(uint32_t curTDate)
 
 WTSCommodityInfo* WtEngine::get_commodity_info(const char* stdCode)
 {
-	return _base_data_mgr->getCommodity(CodeHelper::stdCodeToStdCommID(stdCode).c_str());
+	const StringVector& ay = StrUtil::split(stdCode, ".");
+	WTSContractInfo* cInfo = _base_data_mgr->getContract(ay[1].c_str(), ay[0].c_str());
+	if (cInfo == NULL)
+		return NULL;
+
+	return cInfo->getCommInfo();
 }
 
 WTSContractInfo* WtEngine::get_contract_info(const char* stdCode)
 {
-	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
-	return _base_data_mgr->getContract(cInfo._code, cInfo._exchg);
+	const StringVector& ay = StrUtil::split(stdCode, ".");
+	return _base_data_mgr->getContract(ay[1].c_str(), ay[0].c_str());
 }
 
 WTSSessionInfo* WtEngine::get_session_info(const char* sid, bool isCode /* = false */)
@@ -87,11 +85,13 @@ WTSSessionInfo* WtEngine::get_session_info(const char* sid, bool isCode /* = fal
 	if (!isCode)
 		return _base_data_mgr->getSession(sid);
 
-	WTSCommodityInfo* cInfo = _base_data_mgr->getCommodity(CodeHelper::stdCodeToStdCommID(sid).c_str());
+	const StringVector& ay = StrUtil::split(sid, ".");
+	WTSContractInfo* cInfo = _base_data_mgr->getContract(ay[1].c_str(), ay[0].c_str());
 	if (cInfo == NULL)
 		return NULL;
 
-	return _base_data_mgr->getSession(cInfo->getSession());
+	WTSCommodityInfo* commInfo = cInfo->getCommInfo();
+	return commInfo->getSessionInfo();
 }
 
 void WtEngine::on_tick(const char* stdCode, WTSTickData* curTick)
@@ -105,9 +105,6 @@ void WtEngine::init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtUftDtMgr* dataMgr)
 	_data_mgr = dataMgr;
 
 	WTSLogger::info("Platform running mode: Production");
-
-	//全tick模式，即如果tick数据成交量为0，也触发ontick，默认为false，即只触发有成交量的tick
-	_all_tick_mode = cfg->getBoolean("alltick");
 }
 
 WTSTickSlice* WtEngine::get_tick_slice(uint32_t sid, const char* code, uint32_t count)
@@ -156,36 +153,11 @@ WTSKlineSlice* WtEngine::get_kline_slice(uint32_t sid, const char* stdCode, cons
 }
 
 
-void WtEngine::handle_push_quote(WTSTickData* curTick, uint32_t hotFlag)
+void WtEngine::handle_push_quote(WTSTickData* curTick)
 {
 	std::string stdCode = curTick->code();
 	_data_mgr->handle_push_quote(stdCode.c_str(), curTick);
 	on_tick(stdCode.c_str(), curTick);
-
-	double price = curTick->price();
-
-	if(hotFlag == 1)
-	{
-		std::string hotCode = CodeHelper::stdCodeToStdHotCode(stdCode.c_str());
-		WTSTickData* hotTick = WTSTickData::create(curTick->getTickStruct());
-		hotTick->setCode(hotCode.c_str());
-		
-		_data_mgr->handle_push_quote(hotCode.c_str(), hotTick);
-		on_tick(hotCode.c_str(), hotTick);
-
-		hotTick->release();
-	}
-	else if (hotFlag == 2)
-	{
-		std::string scndCode = CodeHelper::stdCodeToStd2ndCode(stdCode.c_str());
-		WTSTickData* scndTick = WTSTickData::create(curTick->getTickStruct());
-		scndTick->setCode(scndCode.c_str());
-
-		_data_mgr->handle_push_quote(scndCode.c_str(), scndTick);
-		on_tick(scndCode.c_str(), scndTick);
-
-		scndTick->release();
-	}
 }
 
 double WtEngine::get_cur_price(const char* stdCode)

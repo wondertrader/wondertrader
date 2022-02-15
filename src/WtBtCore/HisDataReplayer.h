@@ -273,14 +273,37 @@ private:
 
 	uint32_t	locate_barindex(const std::string& key, uint64_t curTime, bool bUpperBound = false);
 
+	/*
+	 *	按照K线进行回测
+	 *
+	 *	@bNeedDump	是否将回测进度落地到文件中
+	 */
 	void	run_by_bars(bool bNeedDump = false);
+
+	/*
+	 *	按照定时任务进行回测
+	 *
+	 *	@bNeedDump	是否将回测进度落地到文件中
+	 */
 	void	run_by_tasks(bool bNeedDump = false);
+
+	/*
+	 *	按照tick进行回测
+	 *
+	 *	@bNeedDump	是否将回测进度落地到文件中
+	 */
 	void	run_by_ticks(bool bNeedDump = false);
 
 public:
 	bool init(WTSVariant* cfg, EventNotifier* notifier = NULL, IBtDataLoader* dataLoader = NULL);
 
 	bool prepare();
+
+	/*
+	 *	运行回测
+	 *
+	 *	@bNeedDump	是否将回测进度落地到文件中
+	 */
 	void run(bool bNeedDump = false);
 	
 	void stop();

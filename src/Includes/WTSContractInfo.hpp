@@ -15,6 +15,7 @@
 #include <sstream>
 
 NS_WTP_BEGIN
+class WTSSessionInfo;
 
 class WTSCommodityInfo: public WTSObject
 {
@@ -87,6 +88,9 @@ public:
 	inline double	getLotsTick() const { return m_dLotTick; }
 	inline double	getMinLots() const { return m_dMinLots; }
 
+	inline void		setSessionInfo(WTSSessionInfo* sInfo) { m_pSession = sInfo; }
+	inline WTSSessionInfo* getSessionInfo() const { return m_pSession; }
+
 private:
 	std::string	m_strName;		//品种名称
 	std::string	m_strExchg;		//交易所代码
@@ -109,6 +113,8 @@ private:
 	TradingMode			m_tradeMode;	//交易类型
 
 	faster_hashset<std::string> m_setCodes;
+
+	WTSSessionInfo*		m_pSession;
 };
 
 class WTSContractInfo :	public WTSObject
@@ -151,8 +157,11 @@ public:
 	inline uint32_t	getMaxMktVol() const{ return m_maxMktQty; }
 	inline uint32_t	getMaxLmtVol() const{ return m_maxLmtQty; }
 
+	inline void setCommInfo(WTSCommodityInfo* commInfo) { m_commInfo = commInfo; }
+	inline WTSCommodityInfo* getCommInfo() const { return m_commInfo; }
+
 protected:
-	WTSContractInfo(){}
+	WTSContractInfo():m_commInfo(NULL){}
 	virtual ~WTSContractInfo(){}
 
 private:
@@ -166,6 +175,8 @@ private:
 
 	uint32_t	m_maxMktQty;
 	uint32_t	m_maxLmtQty;
+
+	WTSCommodityInfo*	m_commInfo;
 };
 
 

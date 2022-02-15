@@ -77,11 +77,10 @@ WTSTickData* WtUftDtMgr::grab_last_tick(const char* code)
 	if (_rt_tick_map == NULL)
 		return NULL;
 
-	WTSTickData* curTick = (WTSTickData*)_rt_tick_map->get(code);
+	WTSTickData* curTick = (WTSTickData*)_rt_tick_map->grab(code);
 	if (curTick == NULL)
 		return NULL;
 
-	curTick->retain();
 	return curTick;
 }
 

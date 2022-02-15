@@ -953,7 +953,7 @@ WtDataWriter::TickBlockPair* WtDataWriter::getTickBlock(WTSContractInfo* ct, uin
 		pBlock->_file.reset(new BoostMappingFile);
 		if(!pBlock->_file->map(path.c_str()))
 		{
-			pipe_writer_log(_sink, LL_INFO, "Mapping file {} failed", path.c_str());
+			pipe_writer_log(_sink, LL_ERROR, "Mapping file {} failed", path.c_str());
 			pBlock->_file.reset();
 			return NULL;
 		}

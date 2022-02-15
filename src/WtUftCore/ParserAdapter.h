@@ -17,12 +17,11 @@
 
 NS_WTP_BEGIN
 class WTSVariant;
-class IHotMgr;
 
 class IParserStub
 {
 public:
-	virtual void			handle_push_quote(WTSTickData* curTick, uint32_t hotFlag = 0){}
+	virtual void			handle_push_quote(WTSTickData* curTick){}
 
 	virtual void			handle_push_order_detail(WTSOrdDtlData* curOrdDtl){}
 	virtual void			handle_push_order_queue(WTSOrdQueData* curOrdQue) {}
@@ -37,9 +36,7 @@ public:
 	~ParserAdapter();
 
 public:
-	bool	init(const char* id, WTSVariant* cfg, IParserStub* stub, IBaseDataMgr* bgMgr, IHotMgr* hotMgr = NULL);
-
-	bool	initExt(const char* id, IParserApi* api, IParserStub* stub, IBaseDataMgr* bgMgr, IHotMgr* hotMgr = NULL);
+	bool	init(const char* id, WTSVariant* cfg, IParserStub* stub, IBaseDataMgr* bgMgr);
 
 	void	release();
 
@@ -90,7 +87,6 @@ private:
 	ExchgFilter			_exchg_filter;
 	ExchgFilter			_code_filter;
 	IBaseDataMgr*		_bd_mgr;
-	IHotMgr*			_hot_mgr;
 	IParserStub*		_stub;
 	WTSVariant*			_cfg;
 	std::string			_id;

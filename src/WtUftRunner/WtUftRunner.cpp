@@ -201,11 +201,11 @@ bool WtUftRunner::initUftStrategies()
 	if (cfg == NULL || cfg->type() != WTSVariant::VT_Object)
 		return false;
 
-	cfg = cfg->get("hft");
+	cfg = cfg->get("uft");
 	if (cfg == NULL || cfg->type() != WTSVariant::VT_Array)
 		return false;
 
-	std::string path = WtHelper::getCWD() + "hft/";
+	std::string path = WtHelper::getCWD() + "uft/";
 	_uft_stra_mgr.loadFactories(path.c_str());
 
 	for (uint32_t idx = 0; idx < cfg->size(); idx++)
@@ -290,7 +290,7 @@ bool WtUftRunner::initParsers(WTSVariant* cfgParser)
 		}
 
 		ParserAdapterPtr adapter(new ParserAdapter);
-		adapter->init(realid.c_str(), cfgItem, _engine, &_bd_mgr, &_hot_mgr);
+		adapter->init(realid.c_str(), cfgItem, _engine, &_bd_mgr);
 		_parsers.addAdapter(realid.c_str(), adapter);
 
 		count++;

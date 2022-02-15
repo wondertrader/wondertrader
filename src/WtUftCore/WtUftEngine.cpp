@@ -16,14 +16,10 @@
 #include "WtHelper.h"
 
 #include "../Share/decimal.h"
-#include "../Share/CodeHelper.hpp"
+#include "../Share/StrUtil.hpp"
 #include "../Includes/WTSVariant.hpp"
 
 #include "../WTSTools/WTSLogger.h"
-
-#include <rapidjson/document.h>
-#include <rapidjson/prettywriter.h>
-namespace rj = rapidjson;
 
 #include <boost/asio.hpp>
 
@@ -70,40 +66,6 @@ void WtUftEngine::run(bool bAsync /*= false*/)
 	WTSVariant* cfgProd = _cfg->get("product");
 	_tm_ticker->init(cfgProd->getCString("session"));
 
-	//启动之前,先把运行中的策略落地
-	{
-		rj::Document root(rj::kObjectType);
-		rj::Document::AllocatorType &allocator = root.GetAllocator();
-
-		rj::Value jStraList(rj::kArrayType);
-		for (auto& m : _ctx_map)
-		{
-			const UftContextPtr& ctx = m.second;
-			jStraList.PushBack(rj::Value(ctx->name(), allocator), allocator);
-		}
-
-		root.AddMember("marks", jStraList, allocator);
-
-		rj::Value jChnlList(rj::kArrayType);
-		for (auto& m : _adapter_mgr->getAdapters())
-		{
-			const TraderAdapterPtr& adapter = m.second;
-			jChnlList.PushBack(rj::Value(adapter->id(), allocator), allocator);
-		}
-
-		root.AddMember("channels", jChnlList, allocator);
-
-		root.AddMember("engine", rj::Value("HFT", allocator), allocator);
-
-		std::string filename = WtHelper::getBaseDir();
-		filename += "marker.json";
-
-		rj::StringBuffer sb;
-		rj::PrettyWriter<rj::StringBuffer> writer(sb);
-		root.Accept(writer);
-		StdFile::write_file_content(filename.c_str(), sb.GetString());
-	}
-
 	_tm_ticker->run();
 
 	if (!bAsync)
@@ -113,10 +75,10 @@ void WtUftEngine::run(bool bAsync /*= false*/)
 	}
 }
 
-void WtUftEngine::handle_push_quote(WTSTickData* newTick, uint32_t hotFlag)
+void WtUftEngine::handle_push_quote(WTSTickData* newTick)
 {
 	if (_tm_ticker)
-		_tm_ticker->on_tick(newTick, hotFlag);
+		_tm_ticker->on_tick(newTick);
 }
 
 void WtUftEngine::handle_push_order_detail(WTSOrdDtlData* curOrdDtl)

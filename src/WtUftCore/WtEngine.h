@@ -67,14 +67,6 @@ private:
 };
 typedef std::shared_ptr<WtRiskMonWrapper>	WtRiskMonPtr;
 
-class IEngineEvtListener
-{
-public:
-	virtual void on_initialize_event() {}
-	virtual void on_schedule_event(uint32_t uDate, uint32_t uTime) {}
-	virtual void on_session_event(uint32_t uDate, bool isBegin = true) {}
-};
-
 class WtEngine : public IParserStub
 {
 public:
@@ -105,14 +97,9 @@ public:
 
 	double get_cur_price(const char* stdCode);
 
-	inline void regEventListener(IEngineEvtListener* listener)
-	{
-		_evt_listener = listener;
-	}
-
 	//////////////////////////////////////////////////////////////////////////
 	/// IParserStub接口
-	virtual void handle_push_quote(WTSTickData* newTick, uint32_t hotFlag) override;
+	virtual void handle_push_quote(WTSTickData* newTick) override;
 
 public:
 	virtual void init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtUftDtMgr* dataMgr);
@@ -132,11 +119,8 @@ protected:
 	uint32_t		_cur_secs;	//当前秒数, 包含毫秒
 	uint32_t		_cur_tdate;	//当前交易日
 
-	double			_all_tick_mode;	//全tick模式，即如果tick数据成交量为0，也触发ontick，默认为false，即只触发有成交量的tick
-
 	IBaseDataMgr*	_base_data_mgr;	//基础数据管理器
 	WtUftDtMgr*		_data_mgr;		//数据管理器
-	IEngineEvtListener*	_evt_listener;
 
 	//By Wesley @ 2022.02.07
 	//tick数据订阅项，first是contextid，second是订阅选项，0-原始订阅，1-前复权，2-后复权

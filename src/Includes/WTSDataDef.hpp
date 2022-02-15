@@ -27,6 +27,7 @@ using namespace std;
 
 
 NS_WTP_BEGIN
+class WTSContractInfo;
 /*
  *	数值数组的内部封装
  *	采用std::vector实现
@@ -971,11 +972,15 @@ public:
 
 	inline uint64_t getLocalTime() const { return m_uLocalTime; }
 
-private:
-	WTSTickStruct	m_tickStruct;
-	uint64_t		m_uLocalTime;	//本地时间
+	inline void setContractInfo(WTSContractInfo* cInfo) { m_pContract = cInfo; }
+	inline WTSContractInfo* getContractInfo() const { return m_pContract; }
 
-	WTSTickData():m_uLocalTime(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count()){}
+private:
+	WTSTickStruct		m_tickStruct;
+	uint64_t			m_uLocalTime;	//本地时间
+	WTSContractInfo*	m_pContract;
+
+	WTSTickData():m_pContract(NULL),m_uLocalTime(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count()){}
 };
 
 class WTSOrdQueData : public WTSObject

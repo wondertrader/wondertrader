@@ -60,7 +60,7 @@ inline uint32_t strToTime(const char* strTime)
 	const char *pos = strTime;
 	int idx = 0;
 	auto len = strlen(strTime);
-	for(auto i = 0; i < len; i++)
+	for(std::size_t i = 0; i < len; i++)
 	{
 		if(strTime[i] != ':')
 		{
@@ -190,7 +190,7 @@ void ParserCTP::OnRspUserLogin( CThostFtdcRspUserLoginField *pRspUserLogin, CTho
 		}
 
 		//订阅行情数据
-		SubscribeMarketData();
+		DoSubscribeMD();
 	}
 }
 
@@ -258,7 +258,7 @@ void ParserCTP::OnRtnDepthMarketData( CThostFtdcDepthMarketDataField *pDepthMark
 	if (contract == NULL)
 		return;
 
-	WTSCommodityInfo* pCommInfo = m_pBaseDataMgr->getCommodity(contract);
+	WTSCommodityInfo* pCommInfo = contract->getCommInfo();
 
 	//if (strcmp(contract->getExchg(), "CZCE") == 0)
 	//{
@@ -266,6 +266,8 @@ void ParserCTP::OnRtnDepthMarketData( CThostFtdcDepthMarketDataField *pDepthMark
 	//}
 
 	WTSTickData* tick = WTSTickData::create(pDepthMarketData->InstrumentID);
+	tick->setContractInfo(contract);
+
 	WTSTickStruct& quote = tick->getTickStruct();
 	strcpy(quote.exchg, pCommInfo->getExchg());
 	
@@ -371,7 +373,7 @@ void ParserCTP::ReqUserLogin()
 	}
 }
 
-void ParserCTP::SubscribeMarketData()
+void ParserCTP::DoSubscribeMD()
 {
 	CodeSet codeFilter = m_filterSubs;
 	if(codeFilter.empty())
@@ -401,7 +403,7 @@ void ParserCTP::SubscribeMarketData()
 		else
 		{
 			if(m_sink)
-				write_log(m_sink, LL_INFO, "[ParserCTP] Market data of {} contracts subscribed in total", nCount);
+				write_log(m_sink, LL_INFO, "[ParserCTP] Market data of {} contracts subscribed totally", nCount);
 		}
 	}
 	codeFilter.clear();
@@ -422,7 +424,7 @@ void ParserCTP::subscribe(const CodeSet &vecSymbols)
 	else
 	{
 		m_filterSubs = vecSymbols;
-		SubscribeMarketData();
+		DoSubscribeMD();
 	}
 }
 

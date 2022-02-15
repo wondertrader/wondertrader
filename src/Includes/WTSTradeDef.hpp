@@ -18,6 +18,8 @@
 #include<chrono>
 
 NS_WTP_BEGIN
+class WTSContractInfo;
+
 //////////////////////////////////////////////////////////////////////////
 //委托数据结构,用户客户端向服务端发起
 class WTSEntrust : public WTSObject
@@ -36,6 +38,7 @@ protected:
 		, m_offsetType(WOT_OPEN)
 		, m_bIsNet(false)
 		, m_bIsBuy(true)
+		, m_pContract(NULL)
 	{
 	}
 
@@ -97,6 +100,9 @@ public:
 	inline bool isNet() const { return m_bIsNet; }
 	inline bool isBuy() const { return m_bIsBuy; }
 
+	inline void setContractInfo(WTSContractInfo* cInfo) { m_pContract = cInfo; }
+	inline WTSContractInfo* getContractInfo() const { return m_pContract; }
+
 protected:
 	std::string		m_strExchg;
 	std::string		m_strCode;
@@ -117,6 +123,8 @@ protected:
 	std::string			m_strUserTag;
 
 	WTSBusinessType		m_businessType;
+
+	WTSContractInfo*	m_pContract;
 };
 
 
@@ -202,7 +210,7 @@ protected:
 
 	std::string		m_strOrderID;
 
-	WTSBusinessType	m_businessType;
+	WTSBusinessType		m_businessType;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -313,6 +321,7 @@ protected:
 		, m_uAmount(0)
 		, m_dPrice(0)
 		, m_businessType(BT_CASH)
+		, m_pContract(NULL)
 	{}
 	virtual ~WTSTradeInfo(){}
 
@@ -371,6 +380,9 @@ public:
 	inline bool isNet() const { return m_bIsNet; }
 	inline bool isBuy() const { return m_bIsBuy; }
 
+	inline void setContractInfo(WTSContractInfo* cInfo) { m_pContract = cInfo; }
+	inline WTSContractInfo* getContractInfo() const { return m_pContract; }
+
 protected:
 	std::string	m_strExchg;		//市场
 	std::string m_strCode;			//代码
@@ -393,7 +405,8 @@ protected:
 
 	double	m_uAmount;
 
-	WTSBusinessType	m_businessType;
+	WTSBusinessType		m_businessType;
+	WTSContractInfo*	m_pContract;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -447,6 +460,9 @@ public:
 	inline void setBusinessType(WTSBusinessType bType) { m_businessType = bType; }
 	inline WTSBusinessType	getBusinessType() const { return m_businessType; }
 
+	inline void setContractInfo(WTSContractInfo* cInfo) { m_pContract = cInfo; }
+	inline WTSContractInfo* getContractInfo() const { return m_pContract; }
+
 protected:
 	WTSPositionItem()
 		: m_direction(WDT_LONG)
@@ -460,6 +476,7 @@ protected:
 		, m_dTotalPosCost(0)
 		, m_strCurrency("CNY")
 		, m_businessType(BT_CASH)
+		, m_pContract(NULL)
 	{}
 	virtual ~WTSPositionItem(){}
 
@@ -477,7 +494,8 @@ protected:
 	double		m_dAvgPrice;		//持仓均价
 	double		m_dDynProfit;		//浮动盈亏
 
-	WTSBusinessType	m_businessType;
+	WTSBusinessType		m_businessType;
+	WTSContractInfo*	m_pContract;
 };
 
 
@@ -535,6 +553,8 @@ public:
 	inline void setBusinessType(WTSBusinessType bType) { m_businessType = bType; }
 	inline WTSBusinessType	getBusinessType() const { return m_businessType; }
 
+	inline void setContractInfo(WTSContractInfo* cInfo) { m_pContract = cInfo; }
+	inline WTSContractInfo* getContractInfo() const { return m_pContract; }
 
 protected:
 	WTSPositionDetail()
@@ -550,6 +570,7 @@ protected:
 		, m_dCloseProfitByTrade(0)
 		, m_dPreSettlePx(0)
 		, m_businessType(BT_CASH)
+		, m_pContract(NULL)
 	{}
 	virtual ~WTSPositionDetail(){}
 
@@ -570,7 +591,8 @@ protected:
 	double		m_dCloseProfitByTrade;
 	double		m_dPreSettlePx;
 
-	WTSBusinessType	m_businessType;
+	WTSBusinessType		m_businessType;
+	WTSContractInfo*	m_pContract;
 };
 
 

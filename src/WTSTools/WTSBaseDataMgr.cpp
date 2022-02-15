@@ -329,6 +329,9 @@ bool WTSBaseDataMgr::loadCommodities(const char* filename, bool isUTF8)
 			WTSCommodityInfo* pCommInfo = WTSCommodityInfo::create(pid.c_str(), name, exchg.c_str(), sid, hid);
 			parseCommodity(pCommInfo, jPInfo);
 
+			WTSSessionInfo* sInfo = getSession(sid);
+			pCommInfo->setSessionInfo(sInfo);
+
 			std::string key = StrUtil::printf("%s.%s", exchg.c_str(), pid.c_str());
 			if (m_mapCommodities == NULL)
 				m_mapCommodities = WTSCommodityMap::create();
@@ -395,6 +398,8 @@ bool WTSBaseDataMgr::loadContracts(const char* filename, bool isUTF8)
 
 				commInfo = WTSCommodityInfo::create(pid.c_str(), name, exchg.c_str(), sid.c_str(), hid.c_str());
 				parseCommodity(commInfo, jPInfo);
+				WTSSessionInfo* sInfo = getSession(sid.c_str());
+				commInfo->setSessionInfo(sInfo);
 
 				std::string key = StrUtil::printf("%s.%s", exchg.c_str(), pid.c_str());
 				if (m_mapCommodities == NULL)
@@ -417,6 +422,8 @@ bool WTSBaseDataMgr::loadContracts(const char* filename, bool isUTF8)
 				jcInfo->getCString("name"),
 				jcInfo->getCString("exchg"),
 				pid.c_str());
+
+			cInfo->setCommInfo(commInfo);
 
 			uint32_t maxMktQty = 0;
 			uint32_t maxLmtQty = 0;

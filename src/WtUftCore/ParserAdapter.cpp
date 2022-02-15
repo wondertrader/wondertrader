@@ -11,12 +11,12 @@
 #include "WtEngine.h"
 #include "WtHelper.h"
 
-#include "../Share/CodeHelper.hpp"
 #include "../Includes/WTSContractInfo.hpp"
 #include "../Includes/WTSDataDef.hpp"
 #include "../Includes/WTSVariant.hpp"
 #include "../Includes/IBaseDataMgr.h"
-#include "../Includes/IHotMgr.h"
+
+#include "../Share/StrUtil.hpp"
 
 #include "../WTSTools/WTSLogger.h"
 
@@ -39,55 +39,13 @@ ParserAdapter::~ParserAdapter()
 {
 }
 
-bool ParserAdapter::initExt(const char* id, IParserApi* api, IParserStub* stub, IBaseDataMgr* bgMgr, IHotMgr* hotMgr/* = NULL*/)
-{
-	if (api == NULL)
-		return false;
-
-	_parser_api = api;
-	_stub = stub;
-	_bd_mgr = bgMgr;
-	_hot_mgr = hotMgr;
-	_id = id;
-
-	if (_parser_api)
-	{
-		_parser_api->registerSpi(this);
-
-		if (_parser_api->init(NULL))
-		{
-			ContractSet contractSet;
-			WTSArray* ayContract = _bd_mgr->getContracts();
-			WTSArray::Iterator it = ayContract->begin();
-			for (; it != ayContract->end(); it++)
-			{
-				WTSContractInfo* contract = STATIC_CONVERT(*it, WTSContractInfo*);
-				WTSCommodityInfo* pCommInfo = _bd_mgr->getCommodity(contract);
-				contractSet.insert(contract->getFullCode());
-			}
-
-			ayContract->release();
-
-			_parser_api->subscribe(contractSet);
-			contractSet.clear();
-		}
-		else
-		{
-			WTSLogger::log_dyn("parser", _id.c_str(), LL_ERROR, "[%s] Parser initializing failed: api initializing failed...", _id.c_str());
-		}
-	}
-
-	return true;
-}
-
-bool ParserAdapter::init(const char* id, WTSVariant* cfg, IParserStub* stub, IBaseDataMgr* bgMgr, IHotMgr* hotMgr/* = NULL*/)
+bool ParserAdapter::init(const char* id, WTSVariant* cfg, IParserStub* stub, IBaseDataMgr* bgMgr)
 {
 	if (cfg == NULL)
 		return false;
 
 	_stub = stub;
 	_bd_mgr = bgMgr;
-	_hot_mgr = hotMgr;
 	_id = id;
 
 	if (_cfg != NULL)
@@ -167,56 +125,43 @@ bool ParserAdapter::init(const char* id, WTSVariant* cfg, IParserStub* stub, IBa
 		if (_parser_api->init(cfg))
 		{
 			ContractSet contractSet;
-			if (!_code_filter.empty())//优先判断合约过滤器
+			WTSArray* ay = _bd_mgr->getContracts();
+			for(auto it = ay->begin(); it != ay->end(); it++)
 			{
-				ExchgFilter::iterator it = _code_filter.begin();
-				for (; it != _code_filter.end(); it++)
+				WTSContractInfo* cInfo = STATIC_CONVERT(*it, WTSContractInfo*);
+
+				//先检查合约和品种是否符合条件
+				if(!_code_filter.empty())
 				{
-					//全代码,形式如SSE.600000,期货代码为CFFEX.IF2005
-					std::string code, exchg;
-					auto ay = StrUtil::split((*it).c_str(), ".");
-					if (ay.size() == 1)
-						code = ay[0];
+					auto cit = _code_filter.find(cInfo->getFullCode());
+					auto pit = _code_filter.find(cInfo->getFullPid());
+					if (cit != _code_filter.end() || pit != _code_filter.end())
+					{
+						contractSet.insert(cInfo->getFullCode());
+						continue;
+					}
+				}
+				
+				//再检查交易所是否符合条件
+				if (!_exchg_filter.empty())
+				{
+					auto eit = _exchg_filter.find(cInfo->getExchg());
+					if (eit != _code_filter.end())
+					{
+						contractSet.insert(cInfo->getFullCode());
+						continue;
+					}
 					else
 					{
-						exchg = ay[0];
-						code = ay[1];
+						continue;
 					}
-					WTSContractInfo* contract = _bd_mgr->getContract(code.c_str(), exchg.c_str());
-					WTSCommodityInfo* pCommInfo = _bd_mgr->getCommodity(contract);
-					contractSet.insert(contract->getFullCode());
-				}
-			}
-			else if (!_exchg_filter.empty())
-			{
-				ExchgFilter::iterator it = _exchg_filter.begin();
-				for (; it != _exchg_filter.end(); it++)
-				{
-					WTSArray* ayContract =_bd_mgr->getContracts((*it).c_str());
-					WTSArray::Iterator it = ayContract->begin();
-					for (; it != ayContract->end(); it++)
-					{
-						WTSContractInfo* contract = STATIC_CONVERT(*it, WTSContractInfo*);
-						WTSCommodityInfo* pCommInfo = _bd_mgr->getCommodity(contract);
-						contractSet.insert(contract->getFullCode());
-					}
-
-					ayContract->release();
-				}
-			}
-			else
-			{
-				WTSArray* ayContract =_bd_mgr->getContracts();
-				WTSArray::Iterator it = ayContract->begin();
-				for (; it != ayContract->end(); it++)
-				{
-					WTSContractInfo* contract = STATIC_CONVERT(*it, WTSContractInfo*);
-					WTSCommodityInfo* pCommInfo =_bd_mgr->getCommodity(contract);
-					contractSet.insert(contract->getFullCode());
 				}
 
-				ayContract->release();
+				if(_code_filter.empty() && _exchg_filter.empty())
+					contractSet.insert(cInfo->getFullCode());
+
 			}
+			ay->release();
 
 			_parser_api->subscribe(contractSet);
 			contractSet.clear();
@@ -262,37 +207,14 @@ void ParserAdapter::handleQuote(WTSTickData *quote, uint32_t procFlag)
 	if (quote == NULL || _stopped || quote->actiondate() == 0 || quote->tradingdate() == 0)
 		return;
 
-	if (!_exchg_filter.empty() && (_exchg_filter.find(quote->exchg()) == _exchg_filter.end()))
-		return;
-
-	uint32_t hotflag = 0;
-
-	WTSContractInfo* cInfo = _bd_mgr->getContract(quote->code(), quote->exchg());
+	WTSContractInfo* cInfo = quote->getContractInfo();
+	if (cInfo == NULL) cInfo = _bd_mgr->getContract(quote->code(), quote->exchg());
 	if (cInfo == NULL)
 		return;
 
-	WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(cInfo);
+	quote->setCode(cInfo->getFullCode());
 
-	std::string stdCode;
-	if (commInfo->getCategoty() == CC_FutOption)
-	{
-		stdCode = CodeHelper::rawFutOptCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
-	}
-	else if(CodeHelper::isMonthlyCode(quote->code()))
-	{
-		//如果是分月合约，则进行主力和次主力的判断
-		stdCode = CodeHelper::rawMonthCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
-		std::string hotCode = _hot_mgr->getHotCode(quote->exchg(), quote->code(), 0);
-		std::string scndCode = _hot_mgr->getSecondCode(quote->exchg(), quote->code(), 0);
-		hotflag = !hotCode.empty() ? 1 : (!scndCode.empty() ? 2 : 0);
-	}
-	else
-	{
-		stdCode = CodeHelper::rawFlatCodeToStdCode(cInfo->getCode(), cInfo->getExchg(), cInfo->getProduct());
-	}
-	quote->setCode(stdCode.c_str());
-
-	_stub->handle_push_quote(quote, hotflag);
+	_stub->handle_push_quote(quote);
 }
 
 void ParserAdapter::handleOrderQueue(WTSOrdQueData* ordQueData)
@@ -310,9 +232,7 @@ void ParserAdapter::handleOrderQueue(WTSOrdQueData* ordQueData)
 	if (cInfo == NULL)
 		return;
 
-	WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(cInfo);
-	std::string stdCode = CodeHelper::rawFlatCodeToStdCode(cInfo->getCode(), cInfo->getExchg(), commInfo->getProduct());
-	ordQueData->setCode(stdCode.c_str());
+	ordQueData->setCode(cInfo->getFullCode());
 
 	if (_stub)
 		_stub->handle_push_order_queue(ordQueData);
@@ -333,9 +253,7 @@ void ParserAdapter::handleOrderDetail(WTSOrdDtlData* ordDtlData)
 	if (cInfo == NULL)
 		return;
 
-	WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(cInfo);
-	std::string stdCode = CodeHelper::rawFlatCodeToStdCode(cInfo->getCode(), cInfo->getExchg(), commInfo->getProduct());
-	ordDtlData->setCode(stdCode.c_str());
+	ordDtlData->setCode(cInfo->getFullCode());
 
 	if (_stub)
 		_stub->handle_push_order_detail(ordDtlData);
@@ -356,9 +274,7 @@ void ParserAdapter::handleTransaction(WTSTransData* transData)
 	if (cInfo == NULL)
 		return;
 
-	WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(cInfo);
-	std::string stdCode = CodeHelper::rawFlatCodeToStdCode(cInfo->getCode(), cInfo->getExchg(), commInfo->getProduct());
-	transData->setCode(stdCode.c_str());
+	transData->setCode(cInfo->getFullCode());
 
 	if (_stub)
 		_stub->handle_push_transaction(transData);
