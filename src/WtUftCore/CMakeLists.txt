@@ -3,7 +3,7 @@
 cmake_minimum_required(VERSION 3.0.0)
 
 #2. 确定工程名
-project(WtCore LANGUAGES CXX)
+project(WtUftCore LANGUAGES CXX)
 SET(CMAKE_CXX_STANDARD 11)
 
 IF(MSVC)
@@ -20,4 +20,4 @@ file(GLOB HDRS *.h)
 INCLUDE_DIRECTORIES(${INCS})
 LINK_DIRECTORIES(${LNKS})
 
-ADD_LIBRARY(WtCore STATIC ${SRCS} ${HDRS})
+ADD_LIBRARY(WtUftCore STATIC ${SRCS} ${HDRS})
