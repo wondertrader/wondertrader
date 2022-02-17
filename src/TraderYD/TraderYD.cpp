@@ -122,8 +122,8 @@ extern "C"
 TraderYD::TraderYD()
 	: m_pUserAPI(NULL)
 	, m_mapPosition(NULL)
-	, m_ayOrders(NULL)
-	, m_ayTrades(NULL)
+	, m_mapOrders(NULL)
+	, m_mapTrades(NULL)
 	, m_wrapperState(WS_NOTLOGIN)
 	, m_uLastQryTime(0)
 	, m_iRequestID(0)
@@ -214,12 +214,17 @@ void TraderYD::notifyFinishInit()
 		accountInfo->setWithdraw(accInfo->Withdraw);
 		accountInfo->setBalance(accountInfo->getPreBalance() + accountInfo->getDeposit() - accountInfo->getWithdraw());
 		accountInfo->setCurrency("CNY");
+
+		if (m_ayFunds == NULL)
+			m_ayFunds = WTSArray::create();
+
+		m_ayFunds->append(accountInfo, false);
 	}
 
 	//再查持仓
 	{
 		if (NULL == m_mapPosition)
-			m_mapPosition = PositionMap::create();
+			m_mapPosition = DataMap::create();
 
 		int cnt = m_pUserAPI->getPrePositionCount();
 		for (int i = 0; i < cnt; i++)
@@ -231,7 +236,7 @@ void TraderYD::notifyFinishInit()
 			if (contract)
 			{
 				WTSCommodityInfo* commInfo = contract->getCommInfo();
-				std::string key = StrUtil::printf("{}-{}", contract->getCode(), pInfo->PositionDirection);
+				std::string key = StrUtil::printf("{}-{}", contract->getCode(), wrapPosDirection(pInfo->PositionDirection));
 				WTSPositionItem* pos = (WTSPositionItem*)m_mapPosition->get(key);
 				if (pos == NULL)
 				{
@@ -271,9 +276,88 @@ void TraderYD::notifyOrder(const YDOrder *pOrder, const YDInstrument *pInstrumen
 	if (orderInfo)
 	{
 		//先往缓存里丢
-		if (NULL == m_ayOrders)
-			m_ayOrders = WTSArray::create();
-		m_ayOrders->append(orderInfo, false);
+		if (NULL == m_mapOrders)
+			m_mapOrders = DataMap::create();
+
+		const char* oid = orderInfo->getOrderID();
+		auto it = m_mapOrders->find(oid);
+		if(it == m_mapOrders->end())
+		{
+			//如果该订单是第一次被推送
+			//则检查是否是平仓委托
+			//如果是平仓委托，需要调整冻结手数
+			if (orderInfo->getOffsetType() != WOT_OPEN)
+			{
+				std::string key = StrUtil::printf("{}-{}", orderInfo->getCode(), orderInfo->getDirection());
+				WTSPositionItem* pos = (WTSPositionItem*)m_mapPosition->get(key);
+				double preQty = pos->getPrePosition();
+				double newQty = pos->getNewPosition();
+				double availPre = pos->getAvailPrePos();
+				double availNew = pos->getAvailNewPos();
+
+				WTSCommodityInfo* commInfo = orderInfo->getContractInfo()->getCommInfo();
+				if(commInfo->getCoverMode() == CM_CoverToday)
+				{
+					if (orderInfo->getOffsetType() == WOT_CLOSETODAY)
+						availNew -= orderInfo->getVolume();
+					else
+						availPre -= orderInfo->getVolume();
+				}
+				else
+				{
+					//不区分平昨平今，则先冻结昨仓，再冻结今仓
+					double maxQty = min(availPre, orderInfo->getVolume());
+					availPre -= maxQty;
+					if(decimal::lt(orderInfo->getVolume(), maxQty))
+					{
+						availNew -= orderInfo->getVolume() - maxQty;
+					}
+				}
+
+				pos->setAvailPrePos(availPre);
+				pos->setAvailNewPos(availNew);
+			}
+		}
+		else
+		{
+			WTSOrderInfo* preOrd = (WTSOrderInfo*)it->second;
+			//如果订单不是第一次被推送，则看是否是撤单
+			//如果是撤单，并且之间订单状态还是有效的，则对平仓委托要释放冻结的手数
+			if(preOrd->isAlive() && orderInfo->getOrderState() == WOS_Canceled && orderInfo->getOffsetType() != WOT_OPEN)
+			{
+				std::string key = StrUtil::printf("{}-{}", orderInfo->getCode(), orderInfo->getDirection());
+				WTSPositionItem* pos = (WTSPositionItem*)m_mapPosition->get(key);
+				double preQty = pos->getPrePosition();
+				double newQty = pos->getNewPosition();
+				double availPre = pos->getAvailPrePos();
+				double availNew = pos->getAvailNewPos();
+
+				double untrade = orderInfo->getVolume() - orderInfo->getVolTraded();
+
+				WTSCommodityInfo* commInfo = orderInfo->getContractInfo()->getCommInfo();
+				if (commInfo->getCoverMode() == CM_CoverToday)
+				{
+					if (orderInfo->getOffsetType() == WOT_CLOSETODAY)
+						availNew += untrade;
+					else
+						availPre += untrade;
+				}
+				else
+				{
+					//不区分平昨平今，则先释放今仓，再释放昨仓
+					double maxQty = min(newQty-availNew , untrade);
+					availNew += maxQty;
+					if (decimal::lt(untrade, maxQty))
+					{
+						availPre += orderInfo->getVolume() - maxQty;
+					}
+				}
+
+				pos->setAvailPrePos(availPre);
+				pos->setAvailNewPos(availNew);
+			}
+		}
+		m_mapOrders->add(oid, orderInfo, false);
 
 		//如果已经追上了，则直接主推出去
 		if (m_sink && m_bCatchup)
@@ -290,9 +374,70 @@ void TraderYD::notifyTrade(const YDTrade *pTrade, const YDInstrument *pInstrumen
 	if (trdInfo)
 	{
 		//先往缓存里丢
-		if (NULL == m_ayTrades)
-			m_ayTrades = WTSArray::create();
-		m_ayTrades->append(trdInfo, false);
+		if (NULL == m_mapTrades)
+			m_mapTrades = DataMap::create();
+
+		const char* tid = trdInfo->getTradeID();
+		WTSContractInfo* contract = trdInfo->getContractInfo();
+		WTSCommodityInfo* commInfo = contract->getCommInfo();
+		auto it = m_mapTrades->find(tid);
+		if(it == m_mapTrades->end())
+		{
+			m_mapTrades->add(tid, trdInfo, false);
+
+			//成交回报，主要更新持仓
+			std::string key = StrUtil::printf("{}-{}", trdInfo->getCode(), trdInfo->getDirection());
+			WTSPositionItem* pos = (WTSPositionItem*)m_mapPosition->get(key);
+			if(pos == NULL)
+			{
+				pos = WTSPositionItem::create(contract->getCode(), commInfo->getCurrency(), commInfo->getExchg());
+				pos->setContractInfo(contract);
+				m_mapPosition->add(key, pos, false);
+			}
+
+			double preQty = pos->getPrePosition();
+			double newQty = pos->getNewPosition();
+			double availPre = pos->getAvailPrePos();
+			double availNew = pos->getAvailNewPos();
+
+			double qty = trdInfo->getVolume();
+
+			if(trdInfo->getOffsetType() == WOT_OPEN)
+			{
+				newQty += qty;
+				availNew += qty;
+
+				//开仓一定是今仓
+				pos->setNewPosition(newQty);
+				pos->setAvailNewPos(availNew);
+			}
+			else
+			{
+				//平仓要区分
+				if (commInfo->getCoverMode() == CM_CoverToday)
+				{
+					//平仓不用更新可用持仓
+					//因为可用持仓在订单回报的地方已经更新过了
+					if (trdInfo->getOffsetType() == WOT_CLOSETODAY)
+						newQty -= qty;
+					else
+						preQty -= qty;
+				}
+				else
+				{
+					//不区分平昨平今，则先减掉昨仓，在调整今仓
+					double maxQty = min(preQty, qty);
+					preQty -= maxQty;
+					if (decimal::lt(qty, maxQty))
+					{
+						newQty -= (qty - maxQty);
+					}
+				}
+
+				pos->setNewPosition(newQty);
+				pos->setPrePosition(preQty);
+			}
+		}
 
 		if (m_sink && m_bCatchup)
 			m_sink->onPushTrade(trdInfo);
@@ -351,14 +496,14 @@ void TraderYD::release()
 		m_pUserAPI = NULL;
 	}
 
-	if (m_ayOrders)
-		m_ayOrders->clear();
+	if (m_mapOrders)
+		m_mapOrders->clear();
 
 	if (m_mapPosition)
 		m_mapPosition->clear();
 
-	if (m_ayTrades)
-		m_ayTrades->clear();
+	if (m_mapTrades)
+		m_mapTrades->clear();
 }
 
 void TraderYD::connect()
@@ -650,9 +795,15 @@ int TraderYD::queryOrders()
 	{
 		StdUniqueLock lock(m_mtxQuery);
 		m_queQuery.push([this]() {
-			if (m_sink) m_sink->onRspOrders(NULL);
-
-			queryTrades();
+			WTSArray* ayOrders = WTSArray::create();
+			if(m_mapOrders)
+			{
+				for(auto it = m_mapOrders->begin(); it != m_mapOrders->end(); it++)
+				{
+					ayOrders->append(it->second, true);
+				}
+			}
+			if (m_sink) m_sink->onRspOrders(ayOrders);
 		});
 	}
 
@@ -669,7 +820,15 @@ int TraderYD::queryTrades()
 	{
 		StdUniqueLock lock(m_mtxQuery);
 		m_queQuery.push([this]() {
-			if (m_sink) m_sink->onRspTrades(NULL);
+			WTSArray* ayTrades = WTSArray::create();
+			if (m_mapTrades)
+			{
+				for (auto it = m_mapTrades->begin(); it != m_mapTrades->end(); it++)
+				{
+					ayTrades->append(it->second, true);
+				}
+			}
+			if (m_sink) m_sink->onRspTrades(ayTrades);
 		});
 	}
 

@@ -143,10 +143,10 @@ protected:
 	YDApi*						m_pUserAPI;
 	std::atomic<uint32_t>		m_iRequestID;
 
-	typedef WTSHashMap<std::string> PositionMap;
-	PositionMap*				m_mapPosition;
-	WTSArray*					m_ayTrades;
-	WTSArray*					m_ayOrders;
+	typedef WTSHashMap<std::string> DataMap;
+	DataMap*					m_mapPosition;
+	DataMap*					m_mapTrades;
+	DataMap*					m_mapOrders;
 	WTSArray*					m_ayFunds;
 
 	IBaseDataMgr*				m_bdMgr;
