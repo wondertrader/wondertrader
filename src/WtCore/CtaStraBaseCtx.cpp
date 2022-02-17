@@ -853,9 +853,9 @@ bool CtaStraBaseCtx::on_schedule(uint32_t curDate, uint32_t curTime)
 
 				if (_emit_times % 20 == 0)
 				{
-					WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_INFO, 
-						"Strategy scheduled {} times, {} microsecs elapsed, {} microsecs per time in average",
-						_emit_times, _total_calc_time, _total_calc_time / _emit_times);
+					WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_INFO,
+						"Strategy has been scheduled {} times, totally taking {} us, {:.3f} us each time",
+						_emit_times, _total_calc_time, _total_calc_time*1.0 / _emit_times);
 				}
 
 				if (_ud_modified)
