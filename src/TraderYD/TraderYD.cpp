@@ -61,6 +61,20 @@ inline WTSDirectionType wrapDirectionType(int dirType, int offsetType)
 			return WDT_LONG;
 }
 
+inline int wrapDirectionType(WTSDirectionType dirType, WTSOffsetType offsetType)
+{
+	if (WDT_LONG == dirType)
+		if (offsetType == WOT_OPEN)
+			return YD_D_Buy;
+		else
+			return YD_D_Sell;
+	else
+		if (offsetType == WOT_OPEN)
+			return YD_D_Sell;
+		else
+			return YD_D_Buy;
+}
+
 inline WTSPriceType wrapPriceType(int priceType)
 {
 	if (YD_ODT_Market == priceType)
@@ -69,6 +83,16 @@ inline WTSPriceType wrapPriceType(int priceType)
 		return WPT_LIMITPRICE;
 	else
 		return WPT_LASTPRICE;
+}
+
+inline int wrapPriceType(WTSPriceType priceType)
+{
+	if (WPT_ANYPRICE == priceType)
+		return YD_ODT_Market;
+	else if (WPT_LIMITPRICE == priceType)
+		return YD_ODT_Limit;
+	else
+		return YD_ODT_Market;
 }
 
 inline WTSOffsetType wrapOffsetType(int offType)
@@ -83,6 +107,20 @@ inline WTSOffsetType wrapOffsetType(int offType)
 		return WOT_CLOSEYESTERDAY;
 	else
 		return WOT_FORCECLOSE;
+}
+
+inline int wrapOffsetType(WTSOffsetType offType)
+{
+	if (WOT_OPEN == offType)
+		return YD_OF_Open;
+	else if (WOT_CLOSE == offType)
+		return YD_OF_Close;
+	else if (WOT_CLOSETODAY == offType)
+		return YD_OF_CloseToday;
+	else if (WOT_CLOSEYESTERDAY == offType)
+		return YD_OF_CloseYesterday;
+	else
+		return YD_OF_ForceClose;
 }
 
 inline WTSOrderState wrapOrderState(int orderState)
@@ -607,90 +645,53 @@ int TraderYD::orderInsert(WTSEntrust* entrust)
 		return -1;
 	}
 
-	/*
-	CThostFtdcInputOrderField req;
-	memset(&req, 0, sizeof(req));
-	///经纪公司代码
-	strcpy(req.BrokerID, m_strBroker.c_str());
-	///投资者代码
-	strcpy(req.InvestorID, m_strUser.c_str());
-	///合约代码
-	strcpy(req.InstrumentID, entrust->getCode());
+	const YDInstrument* pInst = m_pUserAPI->getInstrumentByID(entrust->getCode());
 
-	strcpy(req.ExchangeID, entrust->getExchg());
+	YDInputOrder req;
+	// inputOrder中的所有不用的字段，应当统一清0
+	memset(&req, 0, sizeof(req));
 
 	if (strlen(entrust->getUserTag()) == 0)
 	{
 		///报单引用
-		sprintf(req.OrderRef, "%u", m_orderRef.fetch_add(0));
-
-		//生成本地委托单号
-		//entrust->setEntrustID(generateEntrustID(m_frontID, m_sessionID, m_orderRef++).c_str());	
+		req.OrderRef = m_orderRef.fetch_add(0);
 	}
 	else
 	{
-		uint32_t fid, sid, orderref;
-		extractEntrustID(entrust->getEntrustID(), fid, sid, orderref);
-		//entrust->setEntrustID(entrust->getUserTag());
+		uint32_t orderref;
+		extractEntrustID(entrust->getEntrustID(), orderref);
 		///报单引用
-		sprintf(req.OrderRef, "%u", orderref);
+		req.OrderRef = orderref;
 	}
 
 	if (strlen(entrust->getUserTag()) > 0)
 	{
-		//m_mapEntrustTag[entrust->getEntrustID()] = entrust->getUserTag();
 		m_iniHelper.writeString(ENTRUST_SECTION, entrust->getEntrustID(), entrust->getUserTag());
 		m_iniHelper.save();
 	}
 
-	WTSContractInfo* ct = m_bdMgr->getContract(entrust->getCode(), entrust->getExchg());
-	if (ct == NULL)
-		return -1;
-
-	///用户代码
-	//	TThostFtdcUserIDType	UserID;
-	///报单价格条件: 限价
-	req.OrderPriceType = wrapPriceType(entrust->getPriceType(), strcmp(entrust->getExchg(), "CFFEX") == 0);
-	///买卖方向: 
+	req.Price = entrust->getPrice();
 	req.Direction = wrapDirectionType(entrust->getDirection(), entrust->getOffsetType());
-	///组合开平标志: 开仓
-	req.CombOffsetFlag[0] = wrapOffsetType(entrust->getOffsetType());
-	///组合投机套保标志
-	req.CombHedgeFlag[0] = THOST_FTDC_HF_Speculation;
-	///价格
-	req.LimitPrice = entrust->getPrice();
-	///数量: 1
-	req.VolumeTotalOriginal = (int)entrust->getVolume();
-	///有效期类型: 当日有效
-	req.TimeCondition = wrapTimeCondition(entrust->getTimeCondition());
-	///GTD日期
-	//	TThostFtdcDateType	GTDDate;
-	///成交量类型: 任何数量
-	req.VolumeCondition = THOST_FTDC_VC_AV;
-	///最小成交量: 1
-	req.MinVolume = 1;
-	///触发条件: 立即
-	req.ContingentCondition = THOST_FTDC_CC_Immediately;
-	///止损价
-	//	TThostFtdcPriceType	StopPrice;
-	///强平原因: 非强平
-	req.ForceCloseReason = THOST_FTDC_FCC_NotForceClose;
-	///自动挂起标志: 否
-	req.IsAutoSuspend = 0;
-	///业务单元
-	//	TThostFtdcBusinessUnitType	BusinessUnit;
-	///请求编号
-	//	TThostFtdcRequestIDType	RequestID;
-	///用户强评标志: 否
-	req.UserForceClose = 0;
-
-	int iResult = m_pUserAPI->ReqOrderInsert(&req, genRequestID());
-	if (iResult != 0)
+	req.OffsetFlag = wrapOffsetType(entrust->getOffsetType());
+	req.HedgeFlag = YD_HF_Speculation;
+	req.OrderVolume = (int)entrust->getVolume();
+	// 使用下一个下一个报单引用。YD服务器不检查OrderRef，只是将其用于在报单和成交回报中返回
+	// 用户可以自行选择OrderRef的编码方式
+	// 对于非本系统本次运行产生的报单，系统返回的OrderRef一律是-1
+	// YDClient产生的报单，OrderRef一律是0
+	// 这个例子使用限价单
+	req.OrderType = wrapPriceType(entrust->getPriceType());
+	// 说明是普通报单
+	req.YDOrderFlag = YD_YOF_Normal;
+	// 说明如何选择连接
+	req.ConnectionSelectionType = YD_CS_Any;
+	// 如果ConnectionSelectionType不是YD_CS_Any，需要指定ConnectionID，范围是0到对应的YDExchange中的ConnectionCount-1
+	req.ConnectionID = 0;
+	// inputOrder中的RealConnectionID和ErrorNo是在返回时由服务器填写的
+	if(!m_pUserAPI->insertOrder(&req, pInst))
 	{
-		write_log(m_sink, LL_ERROR, "[TraderYD] Order inserting failed: {}", iResult);
+		write_log(m_sink, LL_ERROR, "[TraderCTP] Order inserting failed");
 	}
-	*/
-
 	return 0;
 }
 
@@ -703,38 +704,23 @@ int TraderYD::orderAction(WTSEntrustAction* action)
 	if (!extractEntrustID(action->getEntrustID(), orderref))
 		return -1;
 
-	/*
-	CThostFtdcInputOrderActionField req;
+	const YDInstrument* pInst = m_pUserAPI->getInstrumentByID(action->getCode());
+	const YDExchange* pExchg = pInst->m_pExchange;
+	const YDAccount* pAccount = m_pUserAPI->getMyAccount();
+
+	YDCancelOrder req;
 	memset(&req, 0, sizeof(req));
-	///经纪公司代码
-	strcpy(req.BrokerID, m_strBroker.c_str());
-	///投资者代码
-	strcpy(req.InvestorID, m_strUser.c_str());
-	///报单引用
-	sprintf(req.OrderRef, "%u", orderref);
-	///请求编号
-	///前置编号
-	req.FrontID = frontid;
-	///会话编号
-	req.SessionID = sessionid;
-	///操作标志
-	req.ActionFlag = wrapActionFlag(action->getActionFlag());
-	///合约代码
-	strcpy(req.InstrumentID, action->getCode());
 
-	req.LimitPrice = action->getPrice();
+	req.OrderSysID = atoi(action->getOrderID());
+	req.YDOrderFlag = YD_YOF_Normal;
+	req.ConnectionSelectionType = YD_CS_Any;
+	req.ConnectionID = 0;
 
-	req.VolumeChange = (int32_t)action->getVolume();
-
-	strcpy(req.OrderSysID, action->getOrderID());
-	strcpy(req.ExchangeID, action->getExchg());
-
-	int iResult = m_pUserAPI->ReqOrderAction(&req, genRequestID());
-	if (iResult != 0)
+	if(!m_pUserAPI->cancelOrder(&req, pExchg, pAccount))
 	{
-		write_log(m_sink, LL_ERROR, "[TraderYD] Sending cancel request failed: {}", iResult);
+		write_log(m_sink, LL_ERROR, "[TraderYD] Sending cancel request failed");
 	}
-	*/
+
 	return 0;
 }
 
