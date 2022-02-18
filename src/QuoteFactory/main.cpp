@@ -96,6 +96,10 @@ void initialize()
 	std::string filename("QFConfig.json");
 	if (!StdFile::exists(filename.c_str()))
 		filename = "QFConfig.yaml";
+	if (!StdFile::exists(filename.c_str()))
+		filename = "dtcfg.json";
+	if (!StdFile::exists(filename.c_str()))
+		filename = "dtcfg.yaml";
 
 	WTSVariant* config = WTSCfgLoader::load_from_file(filename.c_str(), true);
 	if(config == NULL)
