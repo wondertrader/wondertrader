@@ -148,8 +148,10 @@
   <ItemGroup>
     <ClInclude Include="DataDefineAD.h" />
     <ClInclude Include="LMDBKeys.h" />
+    <ClInclude Include="WtBtDtReaderAD.h" />
     <ClInclude Include="WtDataReaderAD.h" />
     <ClInclude Include="WtDataWriterAD.h" />
+    <ClInclude Include="WtRdmDtReaderAD.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\WTSUtils\WTSUtils.vcxproj">
@@ -157,8 +159,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="WtBtDtReaderAD.cpp" />
     <ClCompile Include="WtDataReaderAD.cpp" />
     <ClCompile Include="WtDataWriterAD.cpp" />
+    <ClCompile Include="WtRdmDtReaderAD.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -27,12 +27,24 @@
     <ClInclude Include="LMDBKeys.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="WtBtDtReaderAD.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="WtRdmDtReaderAD.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WtDataReaderAD.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="WtDataWriterAD.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="WtBtDtReaderAD.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="WtRdmDtReaderAD.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
