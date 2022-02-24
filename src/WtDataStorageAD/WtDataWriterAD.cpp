@@ -409,7 +409,12 @@ void WtDataWriterAD::pipeToTicks(WTSContractInfo* ct, WTSTickData* curTick)
 	WtLMDBPtr db = get_t_db(ct->getExchg(), ct->getCode());
 	if (db)
 	{
-		LMDBHftKey key(ct->getExchg(), ct->getCode(), curTick->actiondate(), curTick->actiontime());
+		//这里要把时间转成便宜时间，并用交易日作为date
+		//这样可以根据交易日筛选历史tick数据
+		uint32_t actTime = curTick->actiontime();
+		uint32_t offTime = ct->getCommInfo()->getSessionInfo()->offsetTime(actTime / 100000, true) + actTime % 100000;
+
+		LMDBHftKey key(ct->getExchg(), ct->getCode(), curTick->tradingdate(), offTime);
 		WtLMDBQuery query(*db);
 		if (!query.put((void*)&key, sizeof(key), &curTick->getTickStruct(), sizeof(WTSTickStruct)))
 		{
