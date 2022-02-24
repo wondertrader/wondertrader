@@ -1,21 +1,8 @@
 #include "WtBtDtReader.h"
 
 #include "../Includes/WTSVariant.hpp"
-#include "../Share/TimeUtils.hpp"
-#include "../Share/CodeHelper.hpp"
-#include "../Share/DLLHelper.hpp"
-
-#include "../Includes/WTSContractInfo.hpp"
-#include "../Includes/IBaseDataMgr.h"
-#include "../Includes/IHotMgr.h"
-#include "../Includes/WTSDataDef.hpp"
-#include "../Includes/WTSSessionInfo.hpp"
-
+#include "../Share/StrUtil.hpp"
 #include "../WTSUtils/WTSCmpHelper.hpp"
-#include "../WTSUtils/WTSCfgLoader.h"
-
-#include <rapidjson/document.h>
-namespace rj = rapidjson;
 
 //By Wesley @ 2022.01.05
 #include "../Share/fmtlib.h"
