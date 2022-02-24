@@ -284,7 +284,7 @@ int TraderMocker::orderInsert(WTSEntrust* entrust)
 			ordInfo->setVolume(entrust->getVolume());
 			ordInfo->setVolLeft(entrust->getVolume());
 			ordInfo->setPriceType(entrust->getPriceType());
-			ordInfo->setTimeCondition(entrust->getTimeCondition());
+			ordInfo->setOrderFlag(entrust->getOrderFlag());
 
 			if (_listener != NULL)
 			{

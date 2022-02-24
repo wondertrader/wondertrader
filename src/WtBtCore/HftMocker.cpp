@@ -406,10 +406,16 @@ void HftMocker::on_session_begin(uint32_t curTDate)
 			pInfo._frozen = 0;
 		}
 	}
+
+	if (_strategy)
+		_strategy->on_session_begin(this, curTDate);
 }
 
 void HftMocker::on_session_end(uint32_t curTDate)
 {
+	if (_strategy)
+		_strategy->on_session_begin(this, curTDate);
+
 	uint32_t curDate = curTDate;// _replayer->get_trading_date();
 
 	double total_profit = 0;

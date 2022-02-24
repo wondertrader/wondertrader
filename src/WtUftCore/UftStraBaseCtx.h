@@ -54,10 +54,47 @@ public:
 
 	virtual OrderIDs stra_cancel_all(const char* stdCode) override;
 
-	virtual uint32_t	stra_enter_long(const char* stdCode, double price, double qty) override;
-	virtual uint32_t	stra_enter_short(const char* stdCode, double price, double qty) override;
-	virtual uint32_t	stra_exit_long(const char* stdCode, double price, double qty, bool isToday = false) override;
-	virtual uint32_t	stra_exit_short(const char* stdCode, double price, double qty, bool isToday = false) override;
+	/*
+	 *	下单接口: 开多
+	 *
+	 *	@stdCode	合约代码
+	 *	@price		下单价格，0则是市价单
+	 *	@qty		下单数量
+	 *	@flag		下单标志: 0-normal，1-fak，2-fok
+	 */
+	virtual uint32_t	stra_enter_long(const char* stdCode, double price, double qty, int flag = 0) override;
+
+	/*
+	 *	下单接口: 开空
+	 *
+	 *	@stdCode	合约代码
+	 *	@price		下单价格，0则是市价单
+	 *	@qty		下单数量
+	 *	@flag		下单标志: 0-normal，1-fak，2-fok
+	 */
+	virtual uint32_t	stra_enter_short(const char* stdCode, double price, double qty, int flag = 0) override;
+
+	/*
+	 *	下单接口: 平多
+	 *
+	 *	@stdCode	合约代码
+	 *	@price		下单价格，0则是市价单
+	 *	@qty		下单数量
+	 *	@isToday	是否今仓，默认false
+	 *	@flag		下单标志: 0-normal，1-fak，2-fok，默认0
+	 */
+	virtual uint32_t	stra_exit_long(const char* stdCode, double price, double qty, bool isToday = false, int flag = 0) override;
+
+	/*
+	 *	下单接口: 平空
+	 *
+	 *	@stdCode	合约代码
+	 *	@price		下单价格，0则是市价单
+	 *	@qty		下单数量
+	 *	@isToday	是否今仓，默认false
+	 *	@flag		下单标志: 0-normal，1-fak，2-fok，默认0
+	 */
+	virtual uint32_t	stra_exit_short(const char* stdCode, double price, double qty, bool isToday = false, int flag = 0) override;
 
 	virtual WTSCommodityInfo* stra_get_comminfo(const char* stdCode) override;
 

@@ -511,11 +511,11 @@ bool TraderAdapter::checkCancelLimits(const char* stdCode)
 			uint64_t eTime = cache[cnt - 1];
 			uint64_t sTime = eTime - riskPara->_cancel_stat_timespan * 1000;
 			auto tit = std::lower_bound(cache.begin(), cache.end(), sTime);
-			uint32_t sIdx = tit - cache.begin();
-			uint32_t times = cnt - sIdx - 1;
+			auto sIdx = tit - cache.begin();
+			auto times = cnt - sIdx - 1;
 			if (times > riskPara->_cancel_times_boundary)
 			{
-				WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR, "[%s] %s cancel %u times within %u seconds, beyond boundary %u times, adding to excluding list",
+				WTSLogger::log_dyn_f("trader", _id.c_str(), LL_ERROR, "[{}] {} cancel {} times within {} seconds, beyond boundary {} times, adding to excluding list",
 					_id.c_str(), stdCode, times, riskPara->_cancel_stat_timespan, riskPara->_cancel_times_boundary);
 				_exclude_codes.insert(stdCode);
 				return false;
@@ -576,11 +576,11 @@ bool TraderAdapter::checkOrderLimits(const char* stdCode)
 			uint64_t eTime = cache[cnt - 1];
 			uint64_t sTime = eTime - riskPara->_order_stat_timespan * 1000;
 			auto tit = std::lower_bound(cache.begin(), cache.end(), sTime);
-			uint32_t sIdx = tit - cache.begin();
-			uint32_t times = cnt - sIdx - 1;
+			auto sIdx = tit - cache.begin();
+			auto times = cnt - sIdx - 1;
 			if (times > riskPara->_order_times_boundary)
 			{
-				WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR, "[%s] %s entrust %u times within %u seconds, beyond boundary %u times, adding to excluding list",
+				WTSLogger::log_dyn_f("trader", _id.c_str(), LL_ERROR, "[{}] {} entrust {} times within {} seconds, beyond boundary {} times, adding to excluding list",
 					_id.c_str(), stdCode, times, riskPara->_order_stat_timespan, riskPara->_order_times_boundary);
 				_exclude_codes.insert(stdCode);
 				return false;
@@ -598,7 +598,7 @@ bool TraderAdapter::checkOrderLimits(const char* stdCode)
 	return true;
 }
 
-OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty, bool bForceClose/* = false*/)
+OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty, int flag, bool bForceClose)
 {
 	OrderIDs ret;
 	if (qty == 0)
@@ -681,7 +681,7 @@ OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty, bool 
 			for (;;)
 			{
 				double curQty = min(leftQty, unitQty);
-				uint32_t localid = openLong(stdCode, price, curQty);
+				uint32_t localid = openLong(stdCode, price, curQty, flag);
 				ret.emplace_back(localid);
 
 				leftQty -= curQty;
@@ -722,7 +722,7 @@ OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty, bool 
 				for (;;)
 				{
 					double curQty = min(leftQty, unitQty);
-					uint32_t localid = closeShort(stdCode, price, curQty, (commInfo->getCoverMode() == CM_CoverToday));//如果不支持平今, 则直接下平仓标记即可
+					uint32_t localid = closeShort(stdCode, price, curQty, (commInfo->getCoverMode() == CM_CoverToday), flag);//如果不支持平今, 则直接下平仓标记即可
 					ret.emplace_back(localid);
 
 					leftQty -= curQty;
@@ -767,7 +767,7 @@ OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty, bool 
 				for (;;)
 				{
 					double curQty = min(leftQty, unitQty);
-					uint32_t localid = closeShort(stdCode, price, curQty, false);//如果不支持平今, 则直接下平仓标记即可
+					uint32_t localid = closeShort(stdCode, price, curQty, false, flag);//如果不支持平今, 则直接下平仓标记即可
 					ret.emplace_back(localid);
 
 					leftQty -= curQty;
@@ -807,7 +807,7 @@ OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty, bool 
 					for (;;)
 					{
 						double curQty = min(leftQty, unitQty);
-						uint32_t localid = closeShort(stdCode, price, curQty, false);
+						uint32_t localid = closeShort(stdCode, price, curQty, false, flag);
 						ret.emplace_back(localid);
 
 						leftQty -= curQty;
@@ -833,7 +833,7 @@ OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty, bool 
 					for (;;)
 					{
 						double curQty = min(leftQty, unitQty);
-						uint32_t localid = closeShort(stdCode, price, curQty, false);
+						uint32_t localid = closeShort(stdCode, price, curQty, false, flag);
 						ret.emplace_back(localid);
 
 						leftQty -= curQty;
@@ -858,7 +858,7 @@ OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty, bool 
 					for (;;)
 					{
 						double curQty = min(leftQty, unitQty);
-						uint32_t localid = closeShort(stdCode, price, curQty, true);
+						uint32_t localid = closeShort(stdCode, price, curQty, true, flag);
 						ret.emplace_back(localid);
 
 						leftQty -= curQty;
@@ -888,7 +888,7 @@ OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty, bool 
 	return ret;
 }
 
-OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty, bool bForceClose/* = false*/)
+OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty, int flag, bool bForceClose)
 {
 	OrderIDs ret;
 	if (qty == 0)
@@ -970,7 +970,7 @@ OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty, bool
 			for (;;)
 			{
 				double curQty = min(leftQty, unitQty);
-				uint32_t localid = openShort(stdCode, price, curQty);
+				uint32_t localid = openShort(stdCode, price, curQty, flag);
 				ret.emplace_back(localid);
 
 				leftQty -= curQty;
@@ -1009,7 +1009,7 @@ OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty, bool
 				for (;;)
 				{
 					double curQty = min(leftQty, unitQty);
-					uint32_t localid = closeLong(stdCode, price, curQty, (commInfo->getCoverMode() == CM_CoverToday));//如果不支持平今, 则直接下平仓标记即可
+					uint32_t localid = closeLong(stdCode, price, curQty, (commInfo->getCoverMode() == CM_CoverToday), flag);//如果不支持平今, 则直接下平仓标记即可
 					ret.emplace_back(localid);
 
 					leftQty -= curQty;
@@ -1052,7 +1052,7 @@ OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty, bool
 				for (;;)
 				{
 					double curQty = min(leftQty, unitQty);
-					uint32_t localid = closeLong(stdCode, price, curQty, false);//如果不支持平今, 则直接下平仓标记即可
+					uint32_t localid = closeLong(stdCode, price, curQty, false, flag);//如果不支持平今, 则直接下平仓标记即可
 					ret.emplace_back(localid);
 
 					leftQty -= curQty;
@@ -1088,7 +1088,7 @@ OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty, bool
 					for (;;)
 					{
 						double curQty = min(leftQty, unitQty);
-						uint32_t localid = closeLong(stdCode, price, curQty, false);
+						uint32_t localid = closeLong(stdCode, price, curQty, false, flag);
 						ret.emplace_back(localid);
 
 						leftQty -= curQty;
@@ -1115,7 +1115,7 @@ OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty, bool
 						for (;;)
 						{
 							double curQty = min(leftQty, unitQty);
-							uint32_t localid = closeLong(stdCode, price, curQty, false);
+							uint32_t localid = closeLong(stdCode, price, curQty, false, flag);
 							ret.emplace_back(localid);
 
 							leftQty -= curQty;
@@ -1142,7 +1142,7 @@ OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty, bool
 						for (;;)
 						{
 							double curQty = min(leftQty, unitQty);
-							uint32_t localid = closeLong(stdCode, price, curQty, true);
+							uint32_t localid = closeLong(stdCode, price, curQty, true, flag);
 							ret.emplace_back(localid);
 
 							leftQty -= curQty;
@@ -1260,19 +1260,15 @@ OrderIDs TraderAdapter::cancel(const char* stdCode, bool isBuy, double qty /* = 
 	return ret;
 }
 
-uint32_t TraderAdapter::openLong(const char* stdCode, double price, double qty)
+uint32_t TraderAdapter::openLong(const char* stdCode, double price, double qty, int flag /* = 0 */)
 {
 	WTSEntrust* entrust = WTSEntrust::create(stdCode, qty, price);
-	if(price == 0.0)
-	{
+	if(decimal::eq(price, 0.0))
 		entrust->setPriceType(WPT_ANYPRICE);
-		entrust->setTimeCondition(WTC_IOC);
-	}
 	else
-	{
 		entrust->setPriceType(WPT_LIMITPRICE);
-		entrust->setTimeCondition(WTC_GFD);
-	}
+	entrust->setOrderFlag((WTSOrderFlag)(WOF_NOR + flag));
+
 	entrust->setDirection(WDT_LONG);
 	entrust->setOffsetType(WOT_OPEN);
 
@@ -1281,19 +1277,15 @@ uint32_t TraderAdapter::openLong(const char* stdCode, double price, double qty)
 	return ret;
 }
 
-uint32_t TraderAdapter::openShort(const char* stdCode, double price, double qty)
+uint32_t TraderAdapter::openShort(const char* stdCode, double price, double qty, int flag)
 {
 	WTSEntrust* entrust = WTSEntrust::create(stdCode, qty, price);
-	if (price == 0.0)
-	{
+	if (decimal::eq(price, 0.0))
 		entrust->setPriceType(WPT_ANYPRICE);
-		entrust->setTimeCondition(WTC_IOC);
-	}
 	else
-	{
 		entrust->setPriceType(WPT_LIMITPRICE);
-		entrust->setTimeCondition(WTC_GFD);
-	}
+	entrust->setOrderFlag((WTSOrderFlag)(WOF_NOR + flag));
+
 	entrust->setDirection(WDT_SHORT);
 	entrust->setOffsetType(WOT_OPEN);
 
@@ -1302,19 +1294,15 @@ uint32_t TraderAdapter::openShort(const char* stdCode, double price, double qty)
 	return ret;
 }
 
-uint32_t TraderAdapter::closeLong(const char* stdCode, double price, double qty, bool isToday /* = false */)
+uint32_t TraderAdapter::closeLong(const char* stdCode, double price, double qty, bool isToday, int flag)
 {
 	WTSEntrust* entrust = WTSEntrust::create(stdCode, qty, price);
-	if (price == 0.0)
-	{
+	if (decimal::eq(price, 0.0))
 		entrust->setPriceType(WPT_ANYPRICE);
-		entrust->setTimeCondition(WTC_IOC);
-	}
 	else
-	{
 		entrust->setPriceType(WPT_LIMITPRICE);
-		entrust->setTimeCondition(WTC_GFD);
-	}
+	entrust->setOrderFlag((WTSOrderFlag)(WOF_NOR + flag));
+
 	entrust->setDirection(WDT_LONG);
 	entrust->setOffsetType(isToday ? WOT_CLOSETODAY : WOT_CLOSE);
 
@@ -1323,19 +1311,15 @@ uint32_t TraderAdapter::closeLong(const char* stdCode, double price, double qty,
 	return ret;
 }
 
-uint32_t TraderAdapter::closeShort(const char* stdCode, double price, double qty, bool isToday /* = false */)
+uint32_t TraderAdapter::closeShort(const char* stdCode, double price, double qty, bool isToday, int flag)
 {
 	WTSEntrust* entrust = WTSEntrust::create(stdCode, qty, price);
-	if (price == 0.0)
-	{
+	if (decimal::eq(price, 0.0))
 		entrust->setPriceType(WPT_ANYPRICE);
-		entrust->setTimeCondition(WTC_IOC);
-	}
 	else
-	{
 		entrust->setPriceType(WPT_LIMITPRICE);
-		entrust->setTimeCondition(WTC_GFD);
-	}
+	entrust->setOrderFlag((WTSOrderFlag)(WOF_NOR + flag));
+
 	entrust->setDirection(WDT_SHORT);
 	entrust->setOffsetType(isToday ? WOT_CLOSETODAY : WOT_CLOSE);
 

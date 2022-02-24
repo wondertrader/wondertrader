@@ -142,9 +142,9 @@ void WtUftStraDemo::on_tick(IUftStraCtx* ctx, const char* code, WTSTickData* new
 
 			uint32_t localid;
 			if(decimal::lt(curPos, 0))
-				localid = ctx->stra_exit_short(code, targetPx, _lots, true);
+				localid = ctx->stra_exit_short(code, targetPx, _lots, true, UFT_OrderFlag_FAK);
 			else
-				localid = ctx->stra_enter_long(code, targetPx, _lots);
+				localid = ctx->stra_enter_long(code, targetPx, _lots, UFT_OrderFlag_FAK);
 
 			_mtx_ords.lock();
 			_orders.insert(localid);
@@ -158,9 +158,9 @@ void WtUftStraDemo::on_tick(IUftStraCtx* ctx, const char* code, WTSTickData* new
 
 			uint32_t localid;
 			if (decimal::gt(curPos, 0))
-				localid = ctx->stra_exit_long(code, targetPx, _lots, true);
+				localid = ctx->stra_exit_long(code, targetPx, _lots, true, UFT_OrderFlag_FAK);
 			else
-				localid = ctx->stra_enter_short(code, targetPx, _lots);
+				localid = ctx->stra_enter_short(code, targetPx, _lots, UFT_OrderFlag_FAK);
 
 			_mtx_ords.lock();
 			_orders.insert(localid);

@@ -364,8 +364,23 @@ int TraderFemas::orderInsert(WTSEntrust* entrust)
 	req.HedgeFlag = USTP_FTDC_CHF_Speculation;
 	req.LimitPrice = entrust->getPrice();
 	req.Volume = (int)entrust->getVolume();
-	req.TimeCondition = wrapTimeCondition(entrust->getTimeCondition());
-	req.VolumeCondition = USTP_FTDC_VC_AV;
+
+	if (entrust->getOrderFlag() == WOF_NOR)
+	{
+		req.TimeCondition = USTP_FTDC_TC_GFD;
+		req.VolumeCondition = USTP_FTDC_VC_AV;
+	}
+	else if (entrust->getOrderFlag() == WOF_FAK)
+	{
+		req.TimeCondition = USTP_FTDC_TC_IOC;
+		req.VolumeCondition = USTP_FTDC_VC_AV;
+	}
+	else if (entrust->getOrderFlag() == WOF_FOK)
+	{
+		req.TimeCondition = USTP_FTDC_TC_IOC;
+		req.VolumeCondition = USTP_FTDC_VC_CV;
+	}
+
 	req.ForceCloseReason = USTP_FTDC_FCR_NotForceClose;
 
 	int iResult = m_pUserAPI->ReqOrderInsert(&req, genRequestID());
@@ -961,8 +976,19 @@ WTSOrderInfo* TraderFemas::makeOrderInfo(CUstpFtdcOrderField* orderField)
 	pRet->setVolume(orderField->Volume);
 	pRet->setDirection(wrapDirectionType(orderField->Direction, orderField->OffsetFlag));
 	pRet->setPriceType(wrapPriceType(orderField->OrderPriceType));
-	pRet->setTimeCondition(wrapTimeCondition(orderField->TimeCondition));
 	pRet->setOffsetType(wrapOffsetType(orderField->OffsetFlag));
+
+	if (orderField->TimeCondition == USTP_FTDC_TC_GFD)
+	{
+		pRet->setOrderFlag(WOF_NOR);
+	}
+	else if (orderField->TimeCondition == USTP_FTDC_TC_IOC)
+	{
+		if (orderField->VolumeCondition == USTP_FTDC_VC_AV || orderField->VolumeCondition == USTP_FTDC_VC_MV)
+			pRet->setOrderFlag(WOF_FAK);
+		else
+			pRet->setOrderFlag(WOF_FOK);
+	}
 
 	pRet->setVolTraded(orderField->VolumeTraded);
 	pRet->setVolLeft(orderField->VolumeRemain);
@@ -999,7 +1025,18 @@ WTSEntrust* TraderFemas::makeEntrust(CUstpFtdcInputOrderField *entrustField)
 	pRet->setDirection(wrapDirectionType(entrustField->Direction, entrustField->OffsetFlag));
 	pRet->setPriceType(wrapPriceType(entrustField->OrderPriceType));
 	pRet->setOffsetType(wrapOffsetType(entrustField->OffsetFlag));
-	pRet->setTimeCondition(wrapTimeCondition(entrustField->TimeCondition));
+	
+	if (entrustField->TimeCondition == USTP_FTDC_TC_GFD)
+	{
+		pRet->setOrderFlag(WOF_NOR);
+	}
+	else if (entrustField->TimeCondition == USTP_FTDC_TC_IOC)
+	{
+		if (entrustField->VolumeCondition == USTP_FTDC_VC_AV || entrustField->VolumeCondition == USTP_FTDC_VC_MV)
+			pRet->setOrderFlag(WOF_FAK);
+		else
+			pRet->setOrderFlag(WOF_FOK);
+	}
 
 	pRet->setEntrustID(entrustField->UserOrderLocalID);
 	pRet->setUserTag(entrustField->UserOrderLocalID);

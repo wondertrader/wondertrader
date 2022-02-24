@@ -34,7 +34,7 @@ protected:
 		, m_businessType(BT_CASH)
 		, m_direction(WDT_LONG)
 		, m_priceType(WPT_ANYPRICE)
-		, m_timeCond(WTC_GFD)
+		, m_orderFlag(WOF_NOR)
 		, m_offsetType(WOT_OPEN)
 		, m_bIsNet(false)
 		, m_bIsBuy(true)
@@ -67,12 +67,12 @@ public:
 
 	inline void setDirection(WTSDirectionType dType){m_direction = dType;}
 	inline void setPriceType(WTSPriceType pType){m_priceType = pType;}
-	inline void setTimeCondition(WTSTimeCondition tCond){m_timeCond = tCond;}
+	inline void setOrderFlag(WTSOrderFlag oFlag){m_orderFlag = oFlag;}
 	inline void setOffsetType(WTSOffsetType oType){m_offsetType = oType;}
 
 	inline WTSDirectionType	getDirection() const{return m_direction;}
 	inline WTSPriceType		getPriceType() const{return m_priceType;}
-	inline WTSTimeCondition	getTimeCondition() const{return m_timeCond;}
+	inline WTSOrderFlag		getOrderFlag() const{return m_orderFlag;}
 	inline WTSOffsetType	getOffsetType() const{return m_offsetType;}
 
 	inline void setBusinessType(WTSBusinessType bType) { m_businessType = bType; }
@@ -116,7 +116,7 @@ protected:
 
 	WTSDirectionType	m_direction;
 	WTSPriceType		m_priceType;
-	WTSTimeCondition	m_timeCond;
+	WTSOrderFlag		m_orderFlag;
 	WTSOffsetType		m_offsetType;
 	std::string			m_strEntrustID;
 
@@ -246,7 +246,7 @@ public:
 
 			pRet->m_direction = entrust->getDirection();
 			pRet->m_offsetType = entrust->getOffsetType();
-			pRet->m_timeCond = entrust->getTimeCondition();
+			pRet->m_orderFlag = entrust->getOrderFlag();
 			pRet->m_priceType = entrust->getPriceType();
 			pRet->m_strEntrustID = entrust->getEntrustID();
 			pRet->m_strUserTag = entrust->getUserTag();

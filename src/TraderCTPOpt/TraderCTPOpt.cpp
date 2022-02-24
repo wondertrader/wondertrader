@@ -659,14 +659,23 @@ int TraderCTPOpt::orderInsert(WTSEntrust* entrust)
 	req.LimitPrice = entrust->getPrice();
 	///数量: 1
 	req.VolumeTotalOriginal = (int)entrust->getVolume();
-	///有效期类型: 当日有效
-	req.TimeCondition = wrapTimeCondition(entrust->getTimeCondition());
-	///GTD日期
-	//	TThostFtdcDateType	GTDDate;
-	///成交量类型: 任何数量
-	req.VolumeCondition = THOST_FTDC_VC_AV;
-	///最小成交量: 1
-	req.MinVolume = 1;
+
+	if (entrust->getOrderFlag() == WOF_NOR)
+	{
+		req.TimeCondition = THOST_FTDC_TC_GFD;
+		req.VolumeCondition = THOST_FTDC_VC_AV;
+	}
+	else if (entrust->getOrderFlag() == WOF_FAK)
+	{
+		req.TimeCondition = THOST_FTDC_TC_IOC;
+		req.VolumeCondition = THOST_FTDC_VC_AV;
+	}
+	else if (entrust->getOrderFlag() == WOF_FOK)
+	{
+		req.TimeCondition = THOST_FTDC_TC_IOC;
+		req.VolumeCondition = THOST_FTDC_VC_CV;
+	}
+
 	///触发条件: 立即
 	req.ContingentCondition = THOST_FTDC_CC_Immediately;
 	///止损价
@@ -1411,8 +1420,19 @@ WTSOrderInfo* TraderCTPOpt::makeOrderInfo(CThostFtdcOrderField* orderField)
 	pRet->setVolume(orderField->VolumeTotalOriginal);
 	pRet->setDirection(wrapDirectionType(orderField->Direction, orderField->CombOffsetFlag[0]));
 	pRet->setPriceType(wrapPriceType(orderField->OrderPriceType));
-	pRet->setTimeCondition(wrapTimeCondition(orderField->TimeCondition));
 	pRet->setOffsetType(wrapOffsetType(orderField->CombOffsetFlag[0]));
+
+	if (orderField->TimeCondition == THOST_FTDC_TC_GFD)
+	{
+		pRet->setOrderFlag(WOF_NOR);
+	}
+	else if (orderField->TimeCondition == THOST_FTDC_TC_IOC)
+	{
+		if (orderField->VolumeCondition == THOST_FTDC_VC_AV || orderField->VolumeCondition == THOST_FTDC_VC_MV)
+			pRet->setOrderFlag(WOF_FAK);
+		else
+			pRet->setOrderFlag(WOF_FOK);
+	}
 
 	pRet->setVolTraded(orderField->VolumeTraded);
 	pRet->setVolLeft(orderField->VolumeTotal);
@@ -1470,7 +1490,18 @@ WTSEntrust* TraderCTPOpt::makeEntrust(CThostFtdcInputOrderField *entrustField)
 	pRet->setDirection(wrapDirectionType(entrustField->Direction, entrustField->CombOffsetFlag[0]));
 	pRet->setPriceType(wrapPriceType(entrustField->OrderPriceType));
 	pRet->setOffsetType(wrapOffsetType(entrustField->CombOffsetFlag[0]));
-	pRet->setTimeCondition(wrapTimeCondition(entrustField->TimeCondition));
+
+	if (entrustField->TimeCondition == THOST_FTDC_TC_GFD)
+	{
+		pRet->setOrderFlag(WOF_NOR);
+	}
+	else if (entrustField->TimeCondition == THOST_FTDC_TC_IOC)
+	{
+		if (entrustField->VolumeCondition == THOST_FTDC_VC_AV || entrustField->VolumeCondition == THOST_FTDC_VC_MV)
+			pRet->setOrderFlag(WOF_FAK);
+		else
+			pRet->setOrderFlag(WOF_FOK);
+	}
 
 	pRet->setEntrustID(generateEntrustID(m_frontID, m_sessionID, atoi(entrustField->OrderRef)).c_str());
 

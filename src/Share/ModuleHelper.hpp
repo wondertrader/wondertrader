@@ -50,7 +50,7 @@ static const char* getBinDir()
 #else
 		g_bin_dir = getInstPath();
 #endif
-		uint32_t nPos = g_bin_dir.find_last_of('/');
+		std::size_t nPos = g_bin_dir.find_last_of('/');
 		g_bin_dir = g_bin_dir.substr(0, nPos + 1);
 	}
 

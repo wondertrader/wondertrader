@@ -201,7 +201,7 @@ const char* HftStraBaseCtx::get_inner_code(const char* stdCode)
 	return it->second.c_str();
 }
 
-OrderIDs HftStraBaseCtx::stra_buy(const char* stdCode, double price, double qty, const char* userTag)
+OrderIDs HftStraBaseCtx::stra_buy(const char* stdCode, double price, double qty, const char* userTag, int flag /* = 0 */)
 {
 	if(CodeHelper::isStdFutHotCode(stdCode))
 	{
@@ -217,7 +217,7 @@ OrderIDs HftStraBaseCtx::stra_buy(const char* stdCode, double price, double qty,
 			return OrderIDs();
 		}
 
-		auto ids = _trader->buy(realCode.c_str(), price, qty);
+		auto ids = _trader->buy(realCode.c_str(), price, qty, flag, false);
 		for(auto localid : ids)
 		{
 			_orders[localid] = userTag;
@@ -238,7 +238,7 @@ OrderIDs HftStraBaseCtx::stra_buy(const char* stdCode, double price, double qty,
 			return OrderIDs();
 		}
 
-		auto ids = _trader->buy(realCode.c_str(), price, qty);
+		auto ids = _trader->buy(realCode.c_str(), price, qty, flag, false);
 		for (auto localid : ids)
 		{
 			_orders[localid] = userTag;
@@ -253,7 +253,7 @@ OrderIDs HftStraBaseCtx::stra_buy(const char* stdCode, double price, double qty,
 			return OrderIDs();
 		}
 
-		auto ids = _trader->buy(stdCode, price, qty);
+		auto ids = _trader->buy(stdCode, price, qty, flag, false);
 		for (auto localid : ids)
 		{
 			_orders[localid] = userTag;
@@ -262,7 +262,7 @@ OrderIDs HftStraBaseCtx::stra_buy(const char* stdCode, double price, double qty,
 	}
 }
 
-OrderIDs HftStraBaseCtx::stra_sell(const char* stdCode, double price, double qty, const char* userTag)
+OrderIDs HftStraBaseCtx::stra_sell(const char* stdCode, double price, double qty, const char* userTag, int flag/* = 0*/)
 {
 	WTSCommodityInfo* commInfo = _engine->get_commodity_info(stdCode);
 	if (commInfo == NULL)
@@ -296,7 +296,7 @@ OrderIDs HftStraBaseCtx::stra_sell(const char* stdCode, double price, double qty
 			return OrderIDs();
 		}
 
-		auto ids = _trader->sell(realCode.c_str(), price, qty);
+		auto ids = _trader->sell(realCode.c_str(), price, qty, flag, false);
 		for (auto localid : ids)
 		{
 			_orders[localid] = userTag;
@@ -317,7 +317,7 @@ OrderIDs HftStraBaseCtx::stra_sell(const char* stdCode, double price, double qty
 			return OrderIDs();
 		}
 
-		auto ids = _trader->sell(realCode.c_str(), price, qty);
+		auto ids = _trader->sell(realCode.c_str(), price, qty, flag, false);
 		for (auto localid : ids)
 		{
 			_orders[localid] = userTag;
@@ -332,7 +332,7 @@ OrderIDs HftStraBaseCtx::stra_sell(const char* stdCode, double price, double qty
 			return OrderIDs();
 		}
 
-		auto ids = _trader->sell(stdCode, price, qty);
+		auto ids = _trader->sell(stdCode, price, qty, flag, false);
 		for (auto localid : ids)
 		{
 			_orders[localid] = userTag;
@@ -341,7 +341,7 @@ OrderIDs HftStraBaseCtx::stra_sell(const char* stdCode, double price, double qty
 	}
 }
 
-uint32_t HftStraBaseCtx::stra_enter_long(const char* stdCode, double price, double qty, const char* userTag)
+uint32_t HftStraBaseCtx::stra_enter_long(const char* stdCode, double price, double qty, const char* userTag, int flag/* = 0*/)
 {
 	std::string realCode = stdCode;
 	if (CodeHelper::isStdFutHotCode(stdCode))
@@ -361,10 +361,10 @@ uint32_t HftStraBaseCtx::stra_enter_long(const char* stdCode, double price, doub
 		_code_map[realCode] = stdCode;
 	}
 
-	return _trader->openLong(realCode.c_str(), price, qty);
+	return _trader->openLong(realCode.c_str(), price, qty, flag);
 }
 
-uint32_t HftStraBaseCtx::stra_exit_long(const char* stdCode, double price, double qty, const char* userTag, bool isToday/* = false*/)
+uint32_t HftStraBaseCtx::stra_exit_long(const char* stdCode, double price, double qty, const char* userTag, bool isToday/* = false*/, int flag/* = 0*/)
 {
 	std::string realCode = stdCode;
 	if (CodeHelper::isStdFutHotCode(stdCode))
@@ -384,10 +384,10 @@ uint32_t HftStraBaseCtx::stra_exit_long(const char* stdCode, double price, doubl
 		_code_map[realCode] = stdCode;
 	}
 
-	return _trader->closeLong(realCode.c_str(), price, qty, isToday);
+	return _trader->closeLong(realCode.c_str(), price, qty, isToday, flag);
 }
 
-uint32_t HftStraBaseCtx::stra_enter_short(const char* stdCode, double price, double qty, const char* userTag)
+uint32_t HftStraBaseCtx::stra_enter_short(const char* stdCode, double price, double qty, const char* userTag, int flag/* = 0*/)
 {
 	std::string realCode = stdCode;
 	if (CodeHelper::isStdFutHotCode(stdCode))
@@ -407,10 +407,10 @@ uint32_t HftStraBaseCtx::stra_enter_short(const char* stdCode, double price, dou
 		_code_map[realCode] = stdCode;
 	}
 
-	return _trader->openShort(realCode.c_str(), price, qty);
+	return _trader->openShort(realCode.c_str(), price, qty, flag);
 }
 
-uint32_t HftStraBaseCtx::stra_exit_short(const char* stdCode, double price, double qty, const char* userTag, bool isToday/* = false*/)
+uint32_t HftStraBaseCtx::stra_exit_short(const char* stdCode, double price, double qty, const char* userTag, bool isToday/* = false*/, int flag/* = 0*/)
 {
 	std::string realCode = stdCode;
 	if (CodeHelper::isStdFutHotCode(stdCode))
@@ -430,7 +430,7 @@ uint32_t HftStraBaseCtx::stra_exit_short(const char* stdCode, double price, doub
 		_code_map[realCode] = stdCode;
 	}
 
-	return _trader->closeShort(realCode.c_str(), price, qty, isToday);
+	return _trader->closeShort(realCode.c_str(), price, qty, isToday, flag);
 }
 
 WTSCommodityInfo* HftStraBaseCtx::stra_get_comminfo(const char* stdCode)

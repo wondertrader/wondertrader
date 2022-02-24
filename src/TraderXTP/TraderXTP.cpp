@@ -200,7 +200,7 @@ WTSEntrust* TraderXTP::makeEntrust(XTPOrderInfo* order_info)
 	pRet->setDirection(wrapDirectionType(order_info->side, order_info->position_effect));
 	pRet->setPriceType(wrapPriceType(order_info->price_type));
 	pRet->setOffsetType(wrapOffsetType(order_info->position_effect));
-	pRet->setTimeCondition(WTC_GFD);
+	pRet->setOrderFlag(WOF_NOR);
 
 	pRet->setEntrustID(genEntrustID(order_info->order_client_id).c_str());
 
@@ -228,7 +228,7 @@ WTSOrderInfo* TraderXTP::makeOrderInfo(XTPQueryOrderRsp* order_info)
 	pRet->setVolume((uint32_t)order_info->quantity);
 	pRet->setDirection(wrapDirectionType(order_info->side, order_info->position_effect));
 	pRet->setPriceType(wrapPriceType(order_info->price_type));
-	pRet->setTimeCondition(WTC_GFD);
+	pRet->setOrderFlag(WOF_NOR);
 	pRet->setOffsetType(wrapOffsetType(order_info->position_effect));
 
 	pRet->setVolTraded((uint32_t)order_info->qty_traded);

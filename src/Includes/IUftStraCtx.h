@@ -21,6 +21,13 @@ class WTSKlineSlice;
 class WTSTickData;
 struct WTSBarStruct;
 
+/*
+ *	订单标记
+ */
+static const int UFT_OrderFlag_Nor = 0;
+static const int UFT_OrderFlag_FAK = 1;
+static const int UFT_OrderFlag_FOK = 2;
+
 class IUftStraCtx
 {
 public:
@@ -74,16 +81,18 @@ public:
 	 *	@stdCode	代码，格式如SSE.600000
 	 *	@price		委托价格
 	 *	@qty		下单数量
+	 *	@flag		下单标志: 0-normal，1-fak，2-fok，默认0
 	 */
-	virtual uint32_t	stra_enter_long(const char* stdCode, double price, double qty) { return 0; }
+	virtual uint32_t	stra_enter_long(const char* stdCode, double price, double qty, int flag = 0) { return 0; }
 
 	/*
 	 *	开空
 	 *	@stdCode	代码，格式如SSE.600000
 	 *	@price		委托价格
 	 *	@qty		下单数量
+	 *	@flag		下单标志: 0-normal，1-fak，2-fok，默认0
 	 */
-	virtual uint32_t	stra_enter_short(const char* stdCode, double price, double qty) { return 0; }
+	virtual uint32_t	stra_enter_short(const char* stdCode, double price, double qty, int flag = 0) { return 0; }
 
 	/*
 	 *	平多
@@ -91,8 +100,9 @@ public:
 	 *	@price		委托价格
 	 *	@qty		下单数量
 	 *	@isToday	是否今仓，SHFE、INE专用
+	 *	@flag		下单标志: 0-normal，1-fak，2-fok，默认0
 	 */
-	virtual uint32_t	stra_exit_long(const char* stdCode, double price, double qty, bool isToday = false) { return 0; }
+	virtual uint32_t	stra_exit_long(const char* stdCode, double price, double qty, bool isToday = false, int flag = 0) { return 0; }
 
 	/*
 	 *	平空
@@ -100,8 +110,9 @@ public:
 	 *	@price		委托价格
 	 *	@qty		下单数量
 	 *	@isToday	是否今仓，SHFE、INE专用
+	 *	@flag		下单标志: 0-normal，1-fak，2-fok，默认0
 	 */
-	virtual uint32_t	stra_exit_short(const char* stdCode, double price, double qty, bool isToday = false) { return 0; }
+	virtual uint32_t	stra_exit_short(const char* stdCode, double price, double qty, bool isToday = false, int flag = 0) { return 0; }
 
 	/*
 	 *	获取品种信息

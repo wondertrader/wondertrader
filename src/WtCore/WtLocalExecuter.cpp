@@ -168,7 +168,7 @@ OrderIDs WtLocalExecuter::buy(const char* stdCode, double price, double qty, boo
 {
 	if (!_channel_ready)
 		return OrderIDs();
-	return _trader->buy(stdCode, price, qty, bForceClose);
+	return _trader->buy(stdCode, price, qty, 0, bForceClose);
 }
 
 OrderIDs WtLocalExecuter::sell(const char* stdCode, double price, double qty, bool bForceClose/* = false*/)
@@ -176,7 +176,7 @@ OrderIDs WtLocalExecuter::sell(const char* stdCode, double price, double qty, bo
 	if (!_channel_ready)
 		return OrderIDs();
 
-	return _trader->sell(stdCode, price, qty, bForceClose);
+	return _trader->sell(stdCode, price, qty, 0, bForceClose);
 }
 
 bool WtLocalExecuter::cancel(uint32_t localid)

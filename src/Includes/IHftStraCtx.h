@@ -21,6 +21,13 @@ class WTSKlineSlice;
 class WTSTickData;
 struct WTSBarStruct;
 
+/*
+ *	订单标记
+ */
+static const int HFT_OrderFlag_Nor = 0;
+static const int HFT_OrderFlag_FAK = 1;
+static const int HFT_OrderFlag_FOK = 2;
+
 class IHftStraCtx
 {
 public:
@@ -55,13 +62,68 @@ public:
 	//策略接口
 	virtual bool		stra_cancel(uint32_t localid) = 0;
 	virtual OrderIDs	stra_cancel(const char* stdCode, bool isBuy, double qty) = 0;
-	virtual OrderIDs	stra_buy(const char* stdCode, double price, double qty, const char* userTag) = 0;
-	virtual OrderIDs	stra_sell(const char* stdCode, double price, double qty, const char* userTag) = 0;
 
-	virtual uint32_t	stra_enter_long(const char* stdCode, double price, double qty, const char* userTag) { return 0; }
-	virtual uint32_t	stra_enter_short(const char* stdCode, double price, double qty, const char* userTag) { return 0; }
-	virtual uint32_t	stra_exit_long(const char* stdCode, double price, double qty, const char* userTag, bool isToday = false) { return 0; }
-	virtual uint32_t	stra_exit_short(const char* stdCode, double price, double qty, const char* userTag, bool isToday = false) { return 0; }
+	/*
+	 *	下单接口: 买入
+	 *
+	 *	@stdCode	合约代码
+	 *	@price		下单价格，0则是市价单
+	 *	@qty		下单数量
+	 *	@flag		下单标志: 0-normal，1-fak，2-fok，默认0
+	 */
+	virtual OrderIDs	stra_buy(const char* stdCode, double price, double qty, const char* userTag, int flag = 0) = 0;
+
+	/*
+	 *	下单接口: 卖出
+	 *
+	 *	@stdCode	合约代码
+	 *	@price		下单价格，0则是市价单
+	 *	@qty		下单数量
+	 *	@flag		下单标志: 0-normal，1-fak，2-fok，默认0
+	 */
+	virtual OrderIDs	stra_sell(const char* stdCode, double price, double qty, const char* userTag, int flag = 0) = 0;
+
+	/*
+	 *	下单接口: 开多
+	 *
+	 *	@stdCode	合约代码
+	 *	@price		下单价格，0则是市价单
+	 *	@qty		下单数量
+	 *	@flag		下单标志: 0-normal，1-fak，2-fok
+	 */
+	virtual uint32_t	stra_enter_long(const char* stdCode, double price, double qty, const char* userTag, int flag = 0) { return 0; }
+
+	/*
+	 *	下单接口: 开空
+	 *
+	 *	@stdCode	合约代码
+	 *	@price		下单价格，0则是市价单
+	 *	@qty		下单数量
+	 *	@flag		下单标志: 0-normal，1-fak，2-fok
+	 */
+	virtual uint32_t	stra_enter_short(const char* stdCode, double price, double qty, const char* userTag, int flag = 0) { return 0; }
+
+	/*
+	 *	下单接口: 平多
+	 *
+	 *	@stdCode	合约代码
+	 *	@price		下单价格，0则是市价单
+	 *	@qty		下单数量
+	 *	@isToday	是否今仓，默认false
+	 *	@flag		下单标志: 0-normal，1-fak，2-fok，默认0
+	 */
+	virtual uint32_t	stra_exit_long(const char* stdCode, double price, double qty, const char* userTag, bool isToday = false, int flag = 0) { return 0; }
+
+	/*
+	 *	下单接口: 平空
+	 *
+	 *	@stdCode	合约代码
+	 *	@price		下单价格，0则是市价单
+	 *	@qty		下单数量
+	 *	@isToday	是否今仓，默认false
+	 *	@flag		下单标志: 0-normal，1-fak，2-fok，默认0
+	 */
+	virtual uint32_t	stra_exit_short(const char* stdCode, double price, double qty, const char* userTag, bool isToday = false, int flag = 0) { return 0; }
 
 	virtual WTSCommodityInfo* stra_get_comminfo(const char* stdCode) = 0;
 	virtual WTSKlineSlice*	stra_get_bars(const char* stdCode, const char* period, uint32_t count) = 0;

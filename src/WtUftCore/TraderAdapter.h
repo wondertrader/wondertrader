@@ -132,10 +132,47 @@ public:
 		return 0;
 	}
 
-	uint32_t openLong(const char* stdCode, double price, double qty);
-	uint32_t openShort(const char* stdCode, double price, double qty);
-	uint32_t closeLong(const char* stdCode, double price, double qty, bool isToday = false);
-	uint32_t closeShort(const char* stdCode, double price, double qty, bool isToday = false);
+	/*
+	 *	下单接口: 开多
+	 *	
+	 *	@stdCode	合约代码
+	 *	@price		下单价格，0则是市价单
+	 *	@qty		下单数量
+	 *	@flag		下单标志: 0-normal，1-fak，2-fok
+	 */
+	uint32_t openLong(const char* stdCode, double price, double qty, int flag);
+
+	/*
+	 *	下单接口: 开空
+	 *
+	 *	@stdCode	合约代码
+	 *	@price		下单价格，0则是市价单
+	 *	@qty		下单数量
+	 *	@flag		下单标志: 0-normal，1-fak，2-fok
+	 */
+	uint32_t openShort(const char* stdCode, double price, double qty, int flag);
+
+	/*
+	 *	下单接口: 平多
+	 *
+	 *	@stdCode	合约代码
+	 *	@price		下单价格，0则是市价单
+	 *	@qty		下单数量
+	 *	@isToday	是否今仓，默认false
+	 *	@flag		下单标志: 0-normal，1-fak，2-fok，默认0
+	 */
+	uint32_t closeLong(const char* stdCode, double price, double qty, bool isToday, int flag);
+
+	/*
+	 *	下单接口: 平空
+	 *
+	 *	@stdCode	合约代码
+	 *	@price		下单价格，0则是市价单
+	 *	@qty		下单数量
+	 *	@isToday	是否今仓，默认false
+	 *	@flag		下单标志: 0-normal，1-fak，2-fok，默认0
+	 */
+	uint32_t closeShort(const char* stdCode, double price, double qty, bool isToday, int flag);
 	
 	bool	cancel(uint32_t localid);
 	OrderIDs cancelAll(const char* stdCode);

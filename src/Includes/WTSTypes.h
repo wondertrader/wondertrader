@@ -172,6 +172,16 @@ typedef enum tagTimeCondition
 } WTSTimeCondition;
 
 /*
+ *	订单标志
+ */
+typedef enum tagOrderFlag
+{
+	WOF_NOR = '0',		//普通订单
+	WOF_FAK,			//fak
+	WOF_FOK,			//fok
+} WTSOrderFlag;
+
+/*
  *	开平方向
  */
 typedef enum tagOffsetType
@@ -246,7 +256,7 @@ typedef enum tagOrderType
 /*
  *	成交类型
  */
-typedef enum tagTrageType
+typedef enum tagTradeType
 {
 	WTT_Common				= '0',	//普通
 	WTT_OptionExecution		= '1',	//期权执行

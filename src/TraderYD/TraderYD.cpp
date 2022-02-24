@@ -75,24 +75,21 @@ inline int wrapDirectionType(WTSDirectionType dirType, WTSOffsetType offsetType)
 			return YD_D_Buy;
 }
 
-inline WTSPriceType wrapPriceType(int priceType)
+inline int wrapPriceType(WTSPriceType pType, WTSOrderFlag oFlag)
 {
-	if (YD_ODT_Market == priceType)
-		return WPT_ANYPRICE;
-	else if (YD_ODT_Limit == priceType)
-		return WPT_LIMITPRICE;
-	else
-		return WPT_LASTPRICE;
-}
+	if (WOF_FAK == oFlag)
+		return YD_ODT_FAK;
 
-inline int wrapPriceType(WTSPriceType priceType)
-{
-	if (WPT_ANYPRICE == priceType)
+	if (WOF_FOK == oFlag)
+		return YD_ODT_FOK;
+
+	if (WPT_ANYPRICE == pType)
 		return YD_ODT_Market;
-	else if (WPT_LIMITPRICE == priceType)
+
+	if (WPT_LIMITPRICE == pType)
 		return YD_ODT_Limit;
-	else
-		return YD_ODT_Market;
+	
+	return YD_ODT_Market;
 }
 
 inline WTSOffsetType wrapOffsetType(int offType)
@@ -680,7 +677,7 @@ int TraderYD::orderInsert(WTSEntrust* entrust)
 	// 对于非本系统本次运行产生的报单，系统返回的OrderRef一律是-1
 	// YDClient产生的报单，OrderRef一律是0
 	// 这个例子使用限价单
-	req.OrderType = wrapPriceType(entrust->getPriceType());
+	req.OrderType = wrapPriceType(entrust->getPriceType(), entrust->getOrderFlag());
 	// 说明是普通报单
 	req.YDOrderFlag = YD_YOF_Normal;
 	// 说明如何选择连接
@@ -833,9 +830,15 @@ WTSOrderInfo* TraderYD::makeOrderInfo(const YDOrder* orderField, const YDInstrum
 	pRet->setPrice(orderField->Price);
 	pRet->setVolume(orderField->OrderVolume);
 	pRet->setDirection(wrapDirectionType(orderField->Direction, orderField->OffsetFlag));
-	pRet->setPriceType(wrapPriceType(orderField->OrderType));
-	pRet->setTimeCondition(WTC_GFD);
 	pRet->setOffsetType(wrapOffsetType(orderField->OffsetFlag));
+
+	pRet->setPriceType(decimal::eq(orderField->Price, 0.0) ? WPT_ANYPRICE : WPT_LIMITPRICE);
+	if (orderField->OrderType == YD_ODT_FAK)
+		pRet->setOrderFlag(WOF_FAK);
+	else if (orderField->OrderType == YD_ODT_FOK)
+		pRet->setOrderFlag(WOF_FOK);
+	else
+		pRet->setOrderFlag(WOF_NOR);
 
 	pRet->setVolTraded(orderField->TradeVolume);
 	pRet->setVolLeft(orderField->OrderVolume - orderField->TradeVolume);
@@ -889,9 +892,15 @@ WTSEntrust* TraderYD::makeEntrust(const YDInputOrder *entrustField, const YDInst
 		ct->getExchg());
 
 	pRet->setDirection(wrapDirectionType(entrustField->Direction, entrustField->OffsetFlag));
-	pRet->setPriceType(wrapPriceType(entrustField->OrderType));
 	pRet->setOffsetType(wrapOffsetType(entrustField->OffsetFlag));
-	pRet->setTimeCondition(WTC_GFD);
+	
+	pRet->setPriceType(decimal::eq(entrustField->Price, 0.0) ? WPT_ANYPRICE : WPT_LIMITPRICE);
+	if (entrustField->OrderType == YD_ODT_FAK)
+		pRet->setOrderFlag(WOF_FAK);
+	else if (entrustField->OrderType == YD_ODT_FOK)
+		pRet->setOrderFlag(WOF_FOK);
+	else
+		pRet->setOrderFlag(WOF_NOR);
 
 	pRet->setEntrustID(generateEntrustID(entrustField->OrderRef).c_str());
 

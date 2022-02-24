@@ -96,24 +96,24 @@ OrderIDs UftStraBaseCtx::stra_cancel_all(const char* stdCode)
 	return _trader->cancelAll(stdCode);
 }
 
-uint32_t UftStraBaseCtx::stra_enter_long(const char* stdCode, double price, double qty)
+uint32_t UftStraBaseCtx::stra_enter_long(const char* stdCode, double price, double qty, int flag /* = 0 */)
 {
-	return _trader->openLong(stdCode, price, qty);
+	return _trader->openLong(stdCode, price, qty, flag);
 }
 
-uint32_t UftStraBaseCtx::stra_exit_long(const char* stdCode, double price, double qty, bool isToday/* = false*/)
+uint32_t UftStraBaseCtx::stra_exit_long(const char* stdCode, double price, double qty, bool isToday /* = false */, int flag /* = 0 */)
 {
-	return _trader->closeLong(stdCode, price, qty, isToday);
+	return _trader->closeLong(stdCode, price, qty, isToday, flag);
 }
 
-uint32_t UftStraBaseCtx::stra_enter_short(const char* stdCode, double price, double qty)
+uint32_t UftStraBaseCtx::stra_enter_short(const char* stdCode, double price, double qty, int flag /* = 0 */)
 {
-	return _trader->openShort(stdCode, price, qty);
+	return _trader->openShort(stdCode, price, qty, flag);
 }
 
-uint32_t UftStraBaseCtx::stra_exit_short(const char* stdCode, double price, double qty, bool isToday/* = false*/)
+uint32_t UftStraBaseCtx::stra_exit_short(const char* stdCode, double price, double qty, bool isToday /* = false */, int flag /* = 0 */)
 {
-	return _trader->closeShort(stdCode, price, qty, isToday);
+	return _trader->closeShort(stdCode, price, qty, isToday, flag);
 }
 
 WTSCommodityInfo* UftStraBaseCtx::stra_get_comminfo(const char* stdCode)
