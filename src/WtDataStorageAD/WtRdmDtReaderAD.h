@@ -48,24 +48,23 @@ private:
 		std::string		_exchg;
 		std::string		_code;
 		WTSKlinePeriod	_period;
-		//最后一条是否从缓存里读取的，如果是下次更新的时候要从lmdb更新一次，最后一条再按照原有逻辑处理
-		bool			_last_from_cache;
-		uint64_t		_last_req_time;
+		uint64_t		_last_bar_time;
 
-		boost::circular_buffer<WTSBarStruct>	_bars;
+		std::vector<WTSBarStruct>	_bars;
 
-		_BarsList() :_last_from_cache(false), _last_req_time(0) {}
+		_BarsList() :_last_bar_time(0){}
 	} BarsList;
 
 	typedef struct _TicksList
 	{
 		std::string		_exchg;
 		std::string		_code;
-		uint64_t		_last_req_time;
+		uint64_t		_first_tick_time;
+		uint64_t		_last_tick_time;
 
-		boost::circular_buffer<WTSTickStruct>	_ticks;
+		std::vector<WTSTickStruct>	_ticks;
 
-		_TicksList() :_last_req_time(0) {}
+		_TicksList() :_last_tick_time(0), _first_tick_time(UINT64_MAX){}
 	} TicksList;
 
 	typedef faster_hashmap<std::string, BarsList> BarsCache;

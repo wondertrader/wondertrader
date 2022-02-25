@@ -15,7 +15,7 @@
 //By Wesley @ 2022.01.05
 #include "../Share/fmtlib.h"
 template<typename... Args>
-inline void pipe_reader_log(IRdmDtReaderSink* sink, WTSLogLevel ll, const char* format, const Args&... args)
+inline void pipe_rdmreader_log(IRdmDtReaderSink* sink, WTSLogLevel ll, const char* format, const Args&... args)
 {
 	if (sink == NULL)
 		return;
@@ -67,7 +67,13 @@ void WtRdmDtReaderAD::init(WTSVariant* cfg, IRdmDtReaderSink* sink)
 	_base_dir = cfg->getCString("path");
 	_base_dir = StrUtil::standardisePath(_base_dir);
 
-	pipe_reader_log(sink, LL_INFO, "WtRdmDtReaderAD initialized, root data folder is {}", _base_dir);
+	pipe_rdmreader_log(sink, LL_INFO, "WtRdmDtReaderAD initialized, root data folder is {}", _base_dir);
+}
+
+WTSTickSlice* WtRdmDtReaderAD::readTickSlicesByCount(const char* stdCode, uint32_t count, uint64_t etime /* = 0 */)
+{
+	//TODO: 以后再来实现吧
+	return NULL;
 }
 
 WTSTickSlice* WtRdmDtReaderAD::readTickSlicesByRange(const char* stdCode, uint64_t stime, uint64_t etime /* = 0 */)
@@ -92,101 +98,160 @@ WTSTickSlice* WtRdmDtReaderAD::readTickSlicesByRange(const char* stdCode, uint64
 	uint32_t endTDate = _base_data_mgr->calcTradingDate(stdPID.c_str(), rDate, rTime, false);
 	uint32_t beginTDate = _base_data_mgr->calcTradingDate(stdPID.c_str(), lDate, lTime, false);
 
-	std::string curCode = cInfo._code;
-	if (cInfo.isHot() && commInfo->isFuture())
-		curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, endTDate);
-	else if (cInfo.isSecond() && commInfo->isFuture())
-		curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, endTDate);
+	std::string key = stdCode;
 
-	uint32_t reload_flag = 0; //重载标记，0-不需要重载，1-加载最新，2-全部重载
-	std::string key = StrUtil::printf("%s.%s", cInfo._exchg, curCode.c_str());
 	//先检查缓存
 	TicksList& tickList = _ticks_cache[key];
-	uint64_t last_access_time = 0;
-	do
-	{
-		if (tickList._ticks.capacity() < count)
-		{
-			//容量不够，全部重载
-			reload_flag = 2;
-			tickList._ticks.rset_capacity(count);
-			tickList._ticks.clear();	//清除原有数据
-		}
 
-		if (tickList._last_req_time < etime)
-		{
-			//请求时间不够，只拉取最新的
-			reload_flag = 1;
-			last_access_time = tickList._last_req_time;
-			break;
-		}
-
-	} while (false);
+	bool isEmpty = tickList._ticks.empty();
+	bool bNeedOlder = stime < tickList._first_tick_time;
+	bool bNeedNewer = etime > tickList._last_tick_time;
 
 	//这里要改成从lmdb读取
 	WtLMDBPtr db = get_t_db(cInfo._exchg, cInfo._code);
 	if (db == NULL)
 		return NULL;
 
-	if (reload_flag == 1)
+	if (isEmpty)
 	{
-		//增量更新，从上次的时间戳到本次的时间戳，读取最新的即可
-		last_access_time += 1;
+		//按照区间加载即可
 		WtLMDBQuery query(*db);
 		LMDBHftKey lKey(cInfo._exchg, cInfo._code, beginTDate, lTime * 100000 + lSecs);
 		LMDBHftKey rKey(cInfo._exchg, cInfo._code, endTDate, rTime * 100000 + rSecs);
 		int cnt = query.get_range(std::string((const char*)&lKey, sizeof(lKey)),
 			std::string((const char*)&rKey, sizeof(rKey)), [this, &tickList](const ValueArray& ayKeys, const ValueArray& ayVals) {
+			tickList._ticks.resize(ayVals.size());
+			std::size_t idx = 0;
 			for (const std::string& item : ayVals)
 			{
-				WTSTickStruct* curTick = (WTSTickStruct*)item.data();
-				tickList._ticks.push_back(*curTick);
+				memcpy(&tickList._ticks[idx], item.data(), item.size());
+				idx++;
 			}
 		});
+
 		if (cnt > 0)
-			pipe_reader_log(_sink, LL_DEBUG, "{} ticks after {} of {} append to cache", cnt, last_access_time, stdCode);
-	}
-	else if (reload_flag == 2)
-	{
-		//全部更新，从结束时间往前读取即可
-		WtLMDBQuery query(*db);
-		LMDBHftKey rKey(cInfo._exchg, cInfo._code, (uint32_t)(etime / 1000000000), (uint32_t)(etime % 1000000000));
-		LMDBHftKey lKey(cInfo._exchg, cInfo._code, 0, 0);
-		int cnt = query.get_lowers(std::string((const char*)&lKey, sizeof(lKey)), std::string((const char*)&rKey, sizeof(rKey)),
-			count, [this, &tickList](const ValueArray& ayKeys, const ValueArray& ayVals) {
-			tickList._ticks.resize(ayVals.size());
-			for (std::size_t i = 0; i < ayVals.size(); i++)
-			{
-				const std::string& item = ayVals[i];
-				memcpy(&tickList._ticks[i], item.data(), item.size());
-			}
-		});
+		{
+			WTSTickStruct& curTs = tickList._ticks.front();
+			tickList._first_tick_time = (uint64_t)curTs.trading_date * 1000000000 + sInfo->offsetTime(curTs.action_time / 100000, true) + curTs.action_time % 100000;
 
-		pipe_reader_log(_sink, LL_DEBUG, "{} ticks of {} loaded to cache for the first time", cnt, stdCode);
-	}
+			curTs = tickList._ticks.back();
+			tickList._last_tick_time = (uint64_t)curTs.trading_date * 1000000000 + sInfo->offsetTime(curTs.action_time / 100000, false) + curTs.action_time % 100000;
 
-	tickList._last_req_time = etime;
-
-	//全部读取完成以后，再生成切片
-	//这里要注意一下，因为读取tick是顺序的，但是返回是需要从后往前取指定条数的，所以应该先读取array_two
-	count = min((uint32_t)tickList._ticks.size(), count);	//先对count做一个修正
-	auto ayTwo = tickList._ticks.array_two();
-	auto cnt_2 = ayTwo.second;
-	if (cnt_2 >= count)
-	{
-		//如果array_two条数足够，则直接返回数据块
-		return WTSTickSlice::create(stdCode, &tickList._ticks[ayTwo.second - count], count);
+			pipe_rdmreader_log(_sink, LL_DEBUG, "{} ticks between [{},{}] of {} loaded to cache", cnt, tickList._first_tick_time, tickList._last_tick_time, stdCode);
+		}
 	}
 	else
 	{
-		//如果array_two条数不够，需要再从array_one提取
-		auto ayOne = tickList._ticks.array_one();
-		auto diff = count - cnt_2;
-		auto ret = WTSTickSlice::create(stdCode, &tickList._ticks[ayOne.second - diff], diff);
-		if (cnt_2 > 0)
-			ret->appendBlock(ayTwo.first, cnt_2);
-		return ret;
+		if (bNeedOlder)
+		{
+			//读取更早的数据
+			WtLMDBQuery query(*db);
+			LMDBHftKey rKey(cInfo._exchg, cInfo._code, (uint32_t)(tickList._first_tick_time / 1000000000), (uint32_t)(tickList._first_tick_time % 1000000000));
+			LMDBHftKey lKey(cInfo._exchg, cInfo._code, beginTDate, lTime * 100000 + lSecs);
+			int cnt = query.get_range(std::string((const char*)&lKey, sizeof(lKey)), std::string((const char*)&rKey, sizeof(rKey)),
+				[this, &tickList](const ValueArray& ayKeys, const ValueArray& ayVals) {
+				std::vector<WTSTickStruct> ayTicks;
+				ayTicks.resize(ayVals.size() + tickList._ticks.size());
+				std::size_t idx = 0;
+				for (const std::string& item : ayVals)
+				{
+					WTSTickStruct* curTick = (WTSTickStruct*)item.data();
+					memcpy(&ayTicks[idx], item.data(), item.size());
+					idx++;
+				}
+
+				//将原来的数据拷贝到后面，再做一个swap即可
+				memcpy(&ayTicks[idx], tickList._ticks.data(), sizeof(WTSTickStruct)*tickList._ticks.size());
+				tickList._ticks.swap(ayTicks);
+			});
+
+			if(cnt > 0)
+			{
+				const WTSTickStruct& curTs = tickList._ticks.front();
+				tickList._first_tick_time = (uint64_t)curTs.trading_date * 1000000000 + sInfo->offsetTime(curTs.action_time / 100000, false) + curTs.action_time % 100000;
+
+				pipe_rdmreader_log(_sink, LL_DEBUG, "{} prev ticks of {} loaded to cache", cnt, stdCode);
+			}
+		}
+
+		if (bNeedNewer)
+		{
+			//读取更新的数据
+			WtLMDBQuery query(*db);
+			LMDBHftKey lKey(cInfo._exchg, cInfo._code, (uint32_t)(tickList._last_tick_time / 1000000000), (uint32_t)(tickList._last_tick_time % 1000000000));
+			LMDBHftKey rKey(cInfo._exchg, cInfo._code, endTDate, rTime * 100000 + rSecs);
+			int cnt = query.get_range(std::string((const char*)&lKey, sizeof(lKey)), std::string((const char*)&rKey, sizeof(rKey)),
+				[this, &tickList](const ValueArray& ayKeys, const ValueArray& ayVals) {
+				for (const std::string& item : ayVals)
+				{
+					WTSTickStruct* curTick = (WTSTickStruct*)item.data();
+					tickList._ticks.emplace_back(*curTick);
+				}
+			});
+
+			if (cnt > 0)
+			{
+				const WTSTickStruct& curTs = tickList._ticks.back();
+				tickList._last_tick_time = (uint64_t)curTs.trading_date * 1000000000 + sInfo->offsetTime(curTs.action_time / 100000, true) + curTs.action_time % 100000;
+
+				pipe_rdmreader_log(_sink, LL_DEBUG, "{} newer ticks of {} loaded to cache", cnt, stdCode);
+			}
+		}
 	}
+
+	//全部读取完成以后，再生成切片
+	{
+		//比较时间的对象
+		WTSTickStruct sTick, eTick;
+		sTick.action_date = lDate;
+		sTick.action_time = (uint32_t)(stime % 1000000000);
+		eTick.action_date = rDate;
+		eTick.action_time = (uint32_t)(etime % 1000000000);
+
+		uint32_t cnt = 0;
+
+		WTSTickStruct* pTick = std::lower_bound(&tickList._ticks[0], &tickList._ticks[0] + (tickList._ticks.size() - 1), eTick, [](const WTSTickStruct& a, const WTSTickStruct& b) {
+			if (a.action_date != b.action_date)
+				return a.action_date < b.action_date;
+			else
+				return a.action_time < b.action_time;
+		});
+
+		uint32_t eIdx = pTick - &tickList._ticks[0];
+		if (pTick->action_date > eTick.action_date || pTick->action_time >= eTick.action_time)
+		{
+			pTick--;
+			eIdx--;
+		}
+
+		pTick = &tickList._ticks[0];
+		//如果第一条实时K线的时间大于开始日期，则实时K线要全部包含进去
+		if (pTick->action_date > sTick.action_date || (pTick->action_date == sTick.action_date && pTick->action_time > sTick.action_time))
+		{
+			cnt = eIdx + 1;
+		}
+		else
+		{
+			pTick = std::lower_bound(&tickList._ticks[0], &tickList._ticks[0] + (tickList._ticks.size() - 1), sTick, [](const WTSTickStruct& a, const WTSTickStruct& b) {
+				if (a.action_date != b.action_date)
+					return a.action_date < b.action_date;
+				else
+					return a.action_time < b.action_time;
+			});
+
+			uint32_t sIdx = pTick - &tickList._ticks[0];
+			cnt = eIdx - sIdx + 1;
+		}
+
+		WTSTickSlice* slice = WTSTickSlice::create(stdCode, pTick, cnt);
+		return slice;
+	}
+}
+
+WTSKlineSlice* WtRdmDtReaderAD::readKlineSliceByCount(const char* stdCode, WTSKlinePeriod period, uint32_t count, uint64_t etime /* = 0 */)
+{
+	//TODO: 以后再来实现吧
+	return NULL;
 }
 
 WTSKlineSlice* WtRdmDtReaderAD::readKlineSliceByRange(const char* stdCode, WTSKlinePeriod period, uint64_t stime, uint64_t etime /* = 0 */)
@@ -195,120 +260,129 @@ WTSKlineSlice* WtRdmDtReaderAD::readKlineSliceByRange(const char* stdCode, WTSKl
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
 	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
 
-	uint32_t curDate, curTime, curSecs;
-	if (etime == 0)
-	{
-		curDate = _sink->get_date();
-		curTime = _sink->get_min_time();
-		curSecs = _sink->get_secs();
+	uint32_t rDate, rTime, lDate, lTime;
+	rDate = (uint32_t)(etime / 10000);
+	rTime = (uint32_t)(etime % 10000);
+	lDate = (uint32_t)(stime / 10000);
+	lTime = (uint32_t)(stime % 10000);
 
-		etime = (uint64_t)curDate * 1000000000 + curTime * 100000 + curSecs;
-	}
-	else
-	{
-		//20190807124533900
-		curDate = (uint32_t)(etime / 1000000000);
-		curTime = (uint32_t)(etime % 1000000000) / 100000;
-		curSecs = (uint32_t)(etime % 100000);
-	}
+	uint32_t endTDate = _base_data_mgr->calcTradingDate(stdPID.c_str(), rDate, rTime, false);
+	uint32_t beginTDate = _base_data_mgr->calcTradingDate(stdPID.c_str(), lDate, lTime, false);
 
-	uint32_t endTDate = _base_data_mgr->calcTradingDate(stdPID.c_str(), curDate, curTime, false);
+	bool isDay = period == KP_DAY;
+	//转换成K线时间
+	etime = isDay ? endTDate : (etime - 19000000);
 
-	std::string curCode = cInfo._code;
-	if (cInfo.isHot() && commInfo->isFuture())
-		curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, endTDate);
-	else if (cInfo.isSecond() && commInfo->isFuture())
-		curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, endTDate);
-
+	//暂时不考虑HOT之类的，只针对7×24小时品种做一个实现
 	std::string key = StrUtil::printf("%s#%u", stdCode, period);
 	BarsList& barsList = _bars_cache[key];
-	if (barsList._bars.capacity() < count)
-	{
-		//容量不够，全部重载
-		barsList._bars.rset_capacity(count);
-		barsList._bars.clear();	//清除原有数据
-		cacheBarsFromStorage(key, stdCode, period, count);
-	}
 
-	//这里只需要检查一下RTBarCache的K线时间戳和etime是否一致
-	//如果一致，说明最后一条K线还没完成，但是系统要读取，这个时候就用缓存中的最后一条bar追加到最后
-	//如果不一致，说明Writer那边已经处理完成了，直接用缓存好的K线即可
-	//OnMinuteEnd的时候也要做类似的检查
+	bool bNeedNewer = (etime > barsList._last_bar_time);
+
 	if (barsList._bars.empty())
-		return NULL;
-
-	//数据条数做一个修正
-	count = min((uint32_t)barsList._bars.size(), count);
-
-	bool isDay = (period == KP_DAY);
-	etime = isDay ? curDate : ((curDate - 19900000) * 10000 + curTime);
-	if (barsList._last_req_time < etime)
 	{
-		//上次请求的时间，小于当前请求的时间，则要检查最后一条K线
-		WTSBarStruct& lastBar = barsList._bars.back();
-		uint32_t lastBarTime = isDay ? lastBar.date : (uint32_t)lastBar.time;
-		if (lastBarTime < etime)
-		{
-			//如果最后一条K线的时间小于当前时间，先从数LMDB更新最新的K线
-			update_cache_from_lmdb(barsList, cInfo._exchg, curCode.c_str(), period, lastBarTime);
+		//全部重载
+		WtLMDBPtr db = get_k_db(cInfo._exchg, period);
+		if (db == NULL)
+			return false;
 
-			lastBar = barsList._bars.back();
-			lastBarTime = isDay ? lastBar.date : (uint32_t)lastBar.time;
-		}
+		pipe_rdmreader_log(_sink, LL_DEBUG, "Reading back {} bars of {}.{}...", PERIOD_NAME[period], cInfo._exchg, cInfo._code);
+		WtLMDBQuery query(*db);
+		LMDBBarKey rKey(cInfo._exchg, cInfo._code, 0xffffffff);
+		LMDBBarKey lKey(cInfo._exchg, cInfo._code, 0);
+		int cnt = query.get_range(std::string((const char*)&lKey, sizeof(lKey)), std::string((const char*)&rKey, sizeof(rKey)),
+			[this, &barsList, &lKey](const ValueArray& ayKeys, const ValueArray& ayVals) {
+			if (ayVals.empty())
+				return;
 
-		//从lmdb读完了以后，再检查
-		//如果时间戳仍然小于截止时间
-		//则从缓存中读取
-		if (lastBarTime < etime)
-		{
-			WTSBarStruct* rtBar = get_rt_cache_bar(cInfo._exchg, curCode.c_str(), period);
-			if (rtBar != NULL)
+			std::size_t cnt = ayVals.size();
+			barsList._bars.resize(cnt);
+			std::size_t idx = 0;
+			for (const std::string& item : ayVals)
 			{
-				uint64_t cacheBarTime = isDay ? rtBar->date : rtBar->time;
-				if (cacheBarTime > etime)
-				{
-					//缓存的K线时间戳大于截止时间，说明检查的过程中Writer已经将数据转储到lmdb中了
-					//这个时候就再读一次lmdb
-					update_cache_from_lmdb(barsList, cInfo._exchg, curCode.c_str(), period, lastBarTime);
-					barsList._last_from_cache = false;
-				}
-				else
-				{
-					//如果缓存的K线时间没有超过etime，则将缓存中的最后一条K线追加到队列中
-					barsList._bars.push_back(*rtBar);
-					barsList._last_from_cache = true;
-					pipe_reader_log(_sink, LL_DEBUG,
-						"{} bars @  {} of {} updated from cache instead of lmdb in {}", PERIOD_NAME[period], etime, stdCode, __FUNCTION__);
-				}
+				memcpy(&barsList._bars[idx], item.data(), item.size());
+				idx++;
 			}
+		});
+	}
+	else if(bNeedNewer)
+	{
+		//加载更新的数据
+		WtLMDBPtr db = get_k_db(cInfo._exchg, period);
+		if (db == NULL)
+			return false;
+
+		pipe_rdmreader_log(_sink, LL_DEBUG, "Reading back {} bars of {}.{}...", PERIOD_NAME[period], cInfo._exchg, cInfo._code);
+		WtLMDBQuery query(*db);
+		LMDBBarKey rKey(cInfo._exchg, cInfo._code, 0xffffffff);
+		LMDBBarKey lKey(cInfo._exchg, cInfo._code, (uint32_t)barsList._last_bar_time);
+		int cnt = query.get_range(std::string((const char*)&lKey, sizeof(lKey)), std::string((const char*)&rKey, sizeof(rKey)),
+			[this, &barsList, &lKey](const ValueArray& ayKeys, const ValueArray& ayVals) {
+			if (ayVals.empty())
+				return;
+
+			std::size_t cnt = ayVals.size();
+			barsList._bars.resize(cnt);
+			std::size_t idx = 0;
+			for (const std::string& item : ayVals)
+			{
+				memcpy(&barsList._bars[idx], item.data(), item.size());
+				idx++;
+			}
+		});
+	}
+
+	//
+	{
+		WTSBarStruct eBar;
+		eBar.date = rDate;
+		eBar.time = (rDate - 19900000) * 10000 + rTime;
+
+		WTSBarStruct sBar;
+		sBar.date = lDate;
+		sBar.time = (lDate - 19900000) * 10000 + lTime;
+
+		WTSBarStruct* pHead = NULL;
+		uint32_t cnt = 0;
+
+		WTSBarStruct* pBar = std::lower_bound(&barsList._bars[0], &barsList._bars[0] + (barsList._bars.size() - 1), eBar, [isDay](const WTSBarStruct& a, const WTSBarStruct& b) {
+			if (isDay)
+				return a.date < b.date;
+			else
+				return a.time < b.time;
+		});
+
+		uint32_t idx = pBar - &barsList._bars[0];
+		if ((isDay && pBar->date > eBar.date) || (!isDay && pBar->time > eBar.time))
+		{
+			pBar--;
+			idx--;
 		}
+
+		pBar = &barsList._bars[0];
+		//如果第一条实时K线的时间大于开始日期，则实时K线要全部包含进去
+		if ((isDay && pBar->date > sBar.date) || (!isDay && pBar->time > sBar.time))
+		{
+			pHead = pBar;
+			cnt = idx + 1;
+		}
+		else
+		{
+			pBar = std::lower_bound(&barsList._bars[0], &barsList._bars[0] + (barsList._bars.size() - 1), sBar, [isDay](const WTSBarStruct& a, const WTSBarStruct& b) {
+				if (isDay)
+					return a.date < b.date;
+				else
+					return a.time < b.time;
+			});
+
+			uint32_t sIdx = pBar - &barsList._bars[0];
+			pHead = pBar;
+			cnt = idx - sIdx + 1;
+		}
+
+		WTSKlineSlice* slice = WTSKlineSlice::create(stdCode, period, 1, pHead, cnt);
+		return slice;
 	}
-
-	//全部处理完了以后，再从K线缓存里读取
-	barsList._last_req_time = etime;
-
-	//这里要注意一下，因为读取数据是顺序的，但是返回是需要从后往前取指定条数的，所以应该先读取array_two
-	count = min((uint32_t)barsList._bars.size(), count);	//先对count做一个修正
-	auto ayTwo = barsList._bars.array_two();
-	auto cnt_2 = ayTwo.second;
-	if (cnt_2 >= count)
-	{
-		//如果array_two条数足够，则直接返回数据块
-		return WTSKlineSlice::create(stdCode, period, 1, &barsList._bars[ayTwo.second - count], count);
-	}
-	else
-	{
-		//如果array_two条数不够，需要再从array_one提取
-		auto ayOne = barsList._bars.array_one();
-		auto diff = count - cnt_2;
-		auto ret = WTSKlineSlice::create(stdCode, period, 1, &barsList._bars[ayOne.second - diff], diff);
-		if (cnt_2 > 0)
-			ret->appendBlock(ayTwo.first, cnt_2);
-		return ret;
-	}
-
-
-	return NULL;
 }
 
 WtRdmDtReaderAD::WtLMDBPtr WtRdmDtReaderAD::get_k_db(const char* exchg, WTSKlinePeriod period)
@@ -342,12 +416,12 @@ WtRdmDtReaderAD::WtLMDBPtr WtRdmDtReaderAD::get_k_db(const char* exchg, WTSKline
 	boost::filesystem::create_directories(path);
 	if (!dbPtr->open(path.c_str()))
 	{
-		pipe_reader_log(_sink, LL_ERROR, "Opening {} db if {} failed: {}", subdir, exchg, dbPtr->errmsg());
+		pipe_rdmreader_log(_sink, LL_ERROR, "Opening {} db if {} failed: {}", subdir, exchg, dbPtr->errmsg());
 		return std::move(WtLMDBPtr());
 	}
 	else
 	{
-		pipe_reader_log(_sink, LL_DEBUG, "{} db of {} opened", subdir, exchg);
+		pipe_rdmreader_log(_sink, LL_DEBUG, "{} db of {} opened", subdir, exchg);
 	}
 
 	(*the_map)[exchg] = dbPtr;
@@ -366,12 +440,12 @@ WtRdmDtReaderAD::WtLMDBPtr WtRdmDtReaderAD::get_t_db(const char* exchg, const ch
 	boost::filesystem::create_directories(path);
 	if (!dbPtr->open(path.c_str()))
 	{
-		pipe_reader_log(_sink, LL_ERROR, "Opening tick db of {}.{} failed: {}", exchg, code, dbPtr->errmsg());
+		pipe_rdmreader_log(_sink, LL_ERROR, "Opening tick db of {}.{} failed: {}", exchg, code, dbPtr->errmsg());
 		return std::move(WtLMDBPtr());
 	}
 	else
 	{
-		pipe_reader_log(_sink, LL_DEBUG, "Tick db of {}.{} opened", exchg, code);
+		pipe_rdmreader_log(_sink, LL_DEBUG, "Tick db of {}.{} opened", exchg, code);
 	}
 
 	_tick_dbs[exchg] = dbPtr;

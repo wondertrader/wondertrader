@@ -63,23 +63,6 @@ void WtBtDtReaderAD::init(WTSVariant* cfg, IBtDtReaderSink* sink)
 
 bool WtBtDtReaderAD::read_raw_bars(const char* exchg, const char* code, WTSKlinePeriod period, std::string& buffer)
 {
-	//std::stringstream ss;
-	//ss << _base_dir << "his/" << PERIOD_NAME[period] << "/" << exchg << "/" << code << ".dsb";
-	//std::string filename = ss.str();
-	//if (!StdFile::exists(filename.c_str()))
-	//{
-	//	pipe_btreader_log(_sink, LL_WARN, "Back {} data file {} not exists", PERIOD_NAME[period], filename);
-	//	return false;
-	//}
-
-	//pipe_btreader_log(_sink, LL_DEBUG, "Reading back {} bars from file {}...", PERIOD_NAME[period], filename);
-	//StdFile::read_file_content(filename.c_str(), buffer);
-	//bool bSucc = proc_block_data(buffer, true, false);
-	//if (!bSucc)
-	//	pipe_btreader_log(_sink, LL_ERROR, "Processing back {} data from file {} failed", PERIOD_NAME[period], filename);
-
-	//return bSucc;
-
 	//直接从LMDB读取
 	WtLMDBPtr db = get_k_db(exchg, period);
 	if (db == NULL)
@@ -89,8 +72,8 @@ bool WtBtDtReaderAD::read_raw_bars(const char* exchg, const char* code, WTSKline
 	WtLMDBQuery query(*db);
 	LMDBBarKey rKey(exchg, code, 0xffffffff);
 	LMDBBarKey lKey(exchg, code, 0);
-	int cnt = query.get_lowers(std::string((const char*)&lKey, sizeof(lKey)), std::string((const char*)&rKey, sizeof(rKey)),
-		99999999, [this, &buffer, &lKey](const ValueArray& ayKeys, const ValueArray& ayVals) {
+	int cnt = query.get_range(std::string((const char*)&lKey, sizeof(lKey)), std::string((const char*)&rKey, sizeof(rKey)),
+		[this, &buffer, &lKey](const ValueArray& ayKeys, const ValueArray& ayVals) {
 		if (ayVals.empty())
 			return;
 
@@ -110,22 +93,6 @@ bool WtBtDtReaderAD::read_raw_bars(const char* exchg, const char* code, WTSKline
 
 bool WtBtDtReaderAD::read_raw_ticks(const char* exchg, const char* code, uint32_t uDate, std::string& buffer)
 {
-	//std::stringstream ss;
-	//ss << _base_dir << "his/ticks/" << exchg << "/" << uDate << "/" << code << ".dsb";
-	//std::string filename = ss.str();
-	//if (!StdFile::exists(filename.c_str()))
-	//{
-	//	pipe_btreader_log(_sink, LL_WARN, "Back tick data file {} not exists", filename);
-	//	return false;
-	//}
-
-	//StdFile::read_file_content(filename.c_str(), buffer);
-	//bool bSucc = proc_block_data(buffer, false, false);
-	//if (!bSucc)
-	//	pipe_btreader_log(_sink, LL_ERROR, "Processing back tick data from file {} failed", filename);
-
-	//return bSucc;
-
 	//直接从LMDB读取
 	WtLMDBPtr db = get_t_db(exchg, code);
 	if (db == NULL)
@@ -135,8 +102,8 @@ bool WtBtDtReaderAD::read_raw_ticks(const char* exchg, const char* code, uint32_
 	WtLMDBQuery query(*db);
 	LMDBHftKey rKey(exchg, code, uDate, 240000000);
 	LMDBHftKey lKey(exchg, code, uDate, 0);
-	int cnt = query.get_lowers(std::string((const char*)&lKey, sizeof(lKey)), std::string((const char*)&rKey, sizeof(rKey)),
-		99999999, [this, &buffer, &lKey](const ValueArray& ayKeys, const ValueArray& ayVals) {
+	int cnt = query.get_range(std::string((const char*)&lKey, sizeof(lKey)), std::string((const char*)&rKey, sizeof(rKey)),
+		[this, &buffer, &lKey](const ValueArray& ayKeys, const ValueArray& ayVals) {
 		if (ayVals.empty())
 			return;
 
