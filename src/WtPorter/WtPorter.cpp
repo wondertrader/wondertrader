@@ -871,7 +871,7 @@ WtString hft_cancel_all(CtxHandler cHandle, const char* stdCode, bool isBuy)
 	return ret.c_str();
 }
 
-WtString hft_buy(CtxHandler cHandle, const char* stdCode, double price, double qty, const char* userTag)
+WtString hft_buy(CtxHandler cHandle, const char* stdCode, double price, double qty, const char* userTag, int flag)
 {
 	HftContextPtr ctx = getRunner().getHftContext(cHandle);
 	if (ctx == NULL)
@@ -880,7 +880,7 @@ WtString hft_buy(CtxHandler cHandle, const char* stdCode, double price, double q
 	static std::string ret;
 
 	std::stringstream ss;
-	OrderIDs ids = ctx->stra_buy(stdCode, price, qty, userTag);
+	OrderIDs ids = ctx->stra_buy(stdCode, price, qty, userTag, flag);
 	for (uint32_t localid : ids)
 	{
 		ss << localid << ",";
@@ -892,7 +892,7 @@ WtString hft_buy(CtxHandler cHandle, const char* stdCode, double price, double q
 	return ret.c_str();
 }
 
-WtString hft_sell(CtxHandler cHandle, const char* stdCode, double price, double qty, const char* userTag)
+WtString hft_sell(CtxHandler cHandle, const char* stdCode, double price, double qty, const char* userTag, int flag)
 {
 	HftContextPtr ctx = getRunner().getHftContext(cHandle);
 	if (ctx == NULL)
@@ -901,7 +901,7 @@ WtString hft_sell(CtxHandler cHandle, const char* stdCode, double price, double 
 	static std::string ret;
 
 	std::stringstream ss;
-	OrderIDs ids = ctx->stra_sell(stdCode, price, qty, userTag);
+	OrderIDs ids = ctx->stra_sell(stdCode, price, qty, userTag, flag);
 	for (uint32_t localid : ids)
 	{
 		ss << localid << ",";

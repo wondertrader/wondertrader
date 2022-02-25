@@ -861,7 +861,7 @@ WtString hft_cancel_all(CtxHandler cHandle, const char* stdCode, bool isBuy)
 	return ret.c_str();
 }
 
-WtString hft_buy(CtxHandler cHandle, const char* stdCode, double price, double qty, const char* userTag)
+WtString hft_buy(CtxHandler cHandle, const char* stdCode, double price, double qty, const char* userTag, int flag)
 {
 	HftMocker* mocker = getRunner().hft_mocker();
 	if (mocker == NULL)
@@ -870,7 +870,7 @@ WtString hft_buy(CtxHandler cHandle, const char* stdCode, double price, double q
 	static std::string ret;
 
 	std::stringstream ss;
-	OrderIDs ids = mocker->stra_buy(stdCode, price, qty, userTag);
+	OrderIDs ids = mocker->stra_buy(stdCode, price, qty, userTag, flag);
 	for (WtUInt32 localid : ids)
 	{
 		ss << localid << ",";
@@ -881,7 +881,7 @@ WtString hft_buy(CtxHandler cHandle, const char* stdCode, double price, double q
 	return ret.c_str();
 }
 
-WtString hft_sell(CtxHandler cHandle, const char* stdCode, double price, double qty, const char* userTag)
+WtString hft_sell(CtxHandler cHandle, const char* stdCode, double price, double qty, const char* userTag, int flag)
 {
 	HftMocker* mocker = getRunner().hft_mocker();
 	if (mocker == NULL)
@@ -890,7 +890,7 @@ WtString hft_sell(CtxHandler cHandle, const char* stdCode, double price, double 
 	static std::string ret;
 
 	std::stringstream ss;
-	OrderIDs ids = mocker->stra_sell(stdCode, price, qty, userTag);
+	OrderIDs ids = mocker->stra_sell(stdCode, price, qty, userTag, flag);
 	for (WtUInt32 localid : ids)
 	{
 		ss << localid << ",";
