@@ -490,7 +490,7 @@ OrderIDs HftMocker::stra_cancel(const char* stdCode, bool isBuy, double qty /* =
 	return ret;
 }
 
-OrderIDs HftMocker::stra_buy(const char* stdCode, double price, double qty, const char* userTag)
+OrderIDs HftMocker::stra_buy(const char* stdCode, double price, double qty, const char* userTag, int flag /* = 0 */)
 {
 	WTSCommodityInfo* commInfo = _replayer->get_commodity_info(stdCode);
 	if (commInfo == NULL)
@@ -668,7 +668,7 @@ bool HftMocker::procOrder(uint32_t localid)
 	return false;
 }
 
-OrderIDs HftMocker::stra_sell(const char* stdCode, double price, double qty, const char* userTag)
+OrderIDs HftMocker::stra_sell(const char* stdCode, double price, double qty, const char* userTag, int flag /* = 0 */)
 {
 	WTSCommodityInfo* commInfo = _replayer->get_commodity_info(stdCode);
 	if (commInfo == NULL)

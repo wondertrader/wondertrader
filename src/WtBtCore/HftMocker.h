@@ -97,9 +97,9 @@ public:
 
 	virtual OrderIDs stra_cancel(const char* stdCode, bool isBuy, double qty = 0) override;
 
-	virtual OrderIDs stra_buy(const char* stdCode, double price, double qty, const char* userTag) override;
+	virtual OrderIDs stra_buy(const char* stdCode, double price, double qty, const char* userTag, int flag = 0) override;
 
-	virtual OrderIDs stra_sell(const char* stdCode, double price, double qty, const char* userTag) override;
+	virtual OrderIDs stra_sell(const char* stdCode, double price, double qty, const char* userTag, int flag = 0) override;
 
 	virtual WTSCommodityInfo* stra_get_comminfo(const char* stdCode) override;
 

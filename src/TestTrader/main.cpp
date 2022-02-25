@@ -227,7 +227,7 @@ public:
 		}
 		
 		entrust->setPriceType(WPT_LIMITPRICE);
-		entrust->setTimeCondition(WTC_GFD);
+		entrust->setOrderFlag(WOF_NOR);
 
 		char entrustid[64] = { 0 };
 		m_pTraderApi->makeEntrustID(entrustid, 64);
@@ -291,7 +291,7 @@ public:
 		entrust->setDirection(bs == 0 ? WDT_LONG : WDT_SHORT);
 		entrust->setOffsetType(offset == 0 ? WOT_OPEN : (bNeedToday ? WOT_CLOSETODAY : WOT_CLOSE));
 		entrust->setPriceType(WPT_ANYPRICE);
-		entrust->setTimeCondition(WTC_IOC);
+		entrust->setOrderFlag(WOF_NOR);
 
 		char entrustid[64] = { 0 };
 		m_pTraderApi->makeEntrustID(entrustid, 64);
