@@ -279,13 +279,13 @@ WTSKlineSlice* WtRdmDtReaderAD::readKlineSliceByRange(const char* stdCode, WTSKl
 
 	bool bNeedNewer = (etime > barsList._last_bar_time);
 
+	//全部重载
+	WtLMDBPtr db = get_k_db(cInfo._exchg, period);
+	if (db == NULL)
+		return NULL;
+
 	if (barsList._bars.empty())
 	{
-		//全部重载
-		WtLMDBPtr db = get_k_db(cInfo._exchg, period);
-		if (db == NULL)
-			return false;
-
 		pipe_rdmreader_log(_sink, LL_DEBUG, "Reading back {} bars of {}.{}...", PERIOD_NAME[period], cInfo._exchg, cInfo._code);
 		WtLMDBQuery query(*db);
 		LMDBBarKey rKey(cInfo._exchg, cInfo._code, 0xffffffff);
@@ -308,10 +308,6 @@ WTSKlineSlice* WtRdmDtReaderAD::readKlineSliceByRange(const char* stdCode, WTSKl
 	else if(bNeedNewer)
 	{
 		//加载更新的数据
-		WtLMDBPtr db = get_k_db(cInfo._exchg, period);
-		if (db == NULL)
-			return false;
-
 		pipe_rdmreader_log(_sink, LL_DEBUG, "Reading back {} bars of {}.{}...", PERIOD_NAME[period], cInfo._exchg, cInfo._code);
 		WtLMDBQuery query(*db);
 		LMDBBarKey rKey(cInfo._exchg, cInfo._code, 0xffffffff);
