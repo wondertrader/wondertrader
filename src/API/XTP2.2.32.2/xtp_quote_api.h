@@ -146,10 +146,10 @@ namespace XTP {
 			virtual void OnUnSubscribeAllTickByTick(XTP_EXCHANGE_TYPE exchange_id, XTPRI *error_info) {};
 
 
-			///查询可交易合约的应答
-			///@param ticker_info 可交易合约信息
-			///@param error_info 查询可交易合约时发生错误时返回的错误信息，当error_info为空，或者error_info.error_id为0时，表明没有错误
-			///@param is_last 是否此次查询可交易合约的最后一个应答，当为最后一个的时候为true，如果为false，表示还有其他后续消息响应
+			///查询合约部分静态信息的应答
+			///@param ticker_info 合约部分静态信息
+			///@param error_info 查询合约部分静态信息时发生错误时返回的错误信息，当error_info为空，或者error_info.error_id为0时，表明没有错误
+			///@param is_last 是否此次查询合约部分静态信息的最后一个应答，当为最后一个的时候为true，如果为false，表示还有其他后续消息响应
 			virtual void OnQueryAllTickers(XTPQSI* ticker_info, XTPRI *error_info, bool is_last) {};
 
 			///查询合约的最新价格信息应答
@@ -193,6 +193,12 @@ namespace XTP {
 			///@param error_info 取消订阅合约时发生错误时返回的错误信息，当error_info为空，或者error_info.error_id为0时，表明没有错误
 			///@remark 需要快速返回
 			virtual void OnUnSubscribeAllOptionTickByTick(XTP_EXCHANGE_TYPE exchange_id, XTPRI *error_info) {};
+
+			///查询合约完整静态信息的应答
+			///@param ticker_info 合约完整静态信息
+			///@param error_info 查询合约完整静态信息时发生错误时返回的错误信息，当error_info为空，或者error_info.error_id为0时，表明没有错误
+			///@param is_last 是否此次查询合约完整静态信息的最后一个应答，当为最后一个的时候为true，如果为false，表示还有其他后续消息响应
+			virtual void OnQueryAllTickersFullInfo(XTPQFI* ticker_info, XTPRI *error_info, bool is_last) {};
 		};
 	}
 }
@@ -218,7 +224,7 @@ namespace XTP {
 		public:
 			///创建QuoteApi
 			///@param client_id （必须输入）用于区分同一用户的不同客户端，由用户自定义
-			///@param save_file_path （必须输入）存贮订阅信息文件的目录，请设定一个有可写权限的真实存在的路径
+			///@param save_file_path （必须输入）存贮订阅信息文件的目录，请设定一个有可写权限的真实存在的路径，如果路径不存在的话，可能会因为写冲突而造成断线
 			///@param log_level 日志输出级别
 			///@return 创建出的UserApi
 			///@remark 如果一个账户需要在多个客户端登录，请使用不同的client_id，系统允许一个账户同时登录多个客户端，但是对于同一账户，相同的client_id只能保持一个session连接，后面的登录在前一个session存续期间，无法连接
@@ -243,7 +249,7 @@ namespace XTP {
 			///@remark 可以在调用api接口失败时调用，例如login失败时
 			virtual XTPRI *GetApiLastError() = 0;
 
-			///设置采用UDP方式连接时的接收缓冲区大小
+			///设置采用UDP方式连接时的单个队列接收缓冲区大小，目前可能最大使用4个缓冲区队列
 			///@remark 需要在Login之前调用，默认大小和最小设置均为64MB。此缓存大小单位为MB，请输入2的次方数，例如128MB请输入128。
 			virtual void SetUDPBufferSize(uint32_t buff_size) = 0;
 
@@ -256,6 +262,33 @@ namespace XTP {
 			///@param interval 心跳检测时间间隔，单位为秒
 			///@remark 此函数必须在Login之前调用
 			virtual void SetHeartBeatInterval(uint32_t interval) = 0;
+
+			///使用UDP接收行情时，设置接收行情线程绑定的cpu，此版本不建议使用，只为跟之前的版本兼容，请替换使用SetUDPRecvThreadAffinityArray函数
+			///@param cpu_no 设置绑定的cpu，例如绑定cpu 0，可以设置0，绑定cpu 2，可以设置2，建议绑定后面的cpu
+			///@remark 此版本不建议使用,请替换使用SetUDPRecvThreadAffinityArray函数，如果调用则必须在Login之前调用，否则不会生效，与SetUDPRecvThreadAffinityArray一起使用时，仅第一个被调用的生效
+			virtual void SetUDPRecvThreadAffinity(int32_t cpu_no) = 0;
+
+			///使用UDP接收行情时，设置接收行情线程绑定的cpu集合
+			///@param cpu_no_array 设置绑定的cpu集合数组
+			///@param count cpu集合数组长度
+			///@remark 此函数可不调用，如果调用则必须在Login之前调用，否则不会生效。绑核时，将从数组前面的核开始使用
+			virtual void SetUDPRecvThreadAffinityArray(int32_t cpu_no_array[], int32_t count) = 0;
+
+			///使用UDP接收行情时，设置解析行情线程绑定的cpu，此版本不建议使用，只为跟之前的版本兼容，请替换使用SetUDPParseThreadAffinityArray函数
+			///@param cpu_no 设置绑定的cpu，例如绑定cpu 0，可以设置0，绑定cpu 2，可以设置2，建议绑定后面的cpu
+			///@remark 此版本不建议使用，请替换使用SetUDPParseThreadAffinityArray函数，如果调用则必须在Login之前调用，否则不会生效，与SetUDPParseThreadAffinityArray一起使用时，仅第一个被调用的生效
+			virtual void SetUDPParseThreadAffinity(int32_t cpu_no) = 0;
+
+			///使用UDP接收行情时，设置解析行情线程绑定的cpu集合
+			///@param cpu_no_array 设置绑定的cpu集合数组
+			///@param count cpu集合数组长度
+			///@remark 此函数可不调用，如果调用则必须在Login之前调用，否则不会生效。绑核时，将从数组前面的核开始使用
+			virtual void SetUDPParseThreadAffinityArray(int32_t cpu_no_array[], int32_t count) = 0;
+
+			///设定UDP收行情时是否输出异步日志
+			///@param flag 是否输出标识，默认为true，如果不想输出“udpseq”开头的异步日志，请设置此参数为false
+			///@remark 此函数可不调用，如果调用则必须在Login之前调用，否则不会生效
+			virtual void SetUDPSeqLogOutPutFlag(bool flag = true) = 0;
 
 			///订阅行情，包括股票、指数和期权。
 			///@return 订阅接口调用是否成功，“0”表示接口调用成功，非“0”表示接口调用出错
@@ -348,8 +381,9 @@ namespace XTP {
 			///@param user 登陆用户名
 			///@param password 登陆密码
 			///@param sock_type “1”代表TCP，“2”代表UDP
+			///@param local_ip 本地网卡地址，类似“127.0.0.1”
 			///@remark 此函数为同步阻塞式，不需要异步等待登录成功，当函数返回即可进行后续操作，此api只能有一个连接
-			virtual int Login(const char* ip, int port, const char* user, const char* password, XTP_PROTOCOL_TYPE sock_type) = 0;
+			virtual int Login(const char* ip, int port, const char* user, const char* password, XTP_PROTOCOL_TYPE sock_type, const char* local_ip = NULL) = 0;
 
 
 			///登出请求
@@ -357,20 +391,20 @@ namespace XTP {
 			///@remark 此函数为同步阻塞式，不需要异步等待登出，当函数返回即可进行后续操作
 			virtual int Logout() = 0;
 
-			///获取当前交易日可交易合约
-			///@return 查询是否成功，“0”表示查询成功，非“0”表示查询不成功
-			///@param exchange_id 交易所代码
+			///获取当前交易日合约部分静态信息
+			///@return 发送查询请求是否成功，“0”表示发送查询请求成功，非“0”表示发送查询请求不成功
+			///@param exchange_id 交易所代码，必须提供 1-上海 2-深圳
 			virtual int QueryAllTickers(XTP_EXCHANGE_TYPE exchange_id) = 0;
 
 			///获取合约的最新价格信息
-			///@return 查询是否成功，“0”表示查询成功，非“0”表示查询不成功
+			///@return 发送查询请求是否成功，“0”表示发送查询请求成功，非“0”表示发送查询请求不成功
 			///@param ticker 合约ID数组，注意合约代码必须以'\0'结尾，不包含空格  
 			///@param count 要查询的合约个数
 			///@param exchange_id 交易所代码
 			virtual int QueryTickersPriceInfo(char *ticker[], int count, XTP_EXCHANGE_TYPE exchange_id) = 0;
 
 			///获取所有合约的最新价格信息
-			///@return 查询是否成功，“0”表示查询成功，非“0”表示查询不成功
+			///@return 发送查询请求是否成功，“0”表示发送查询请求成功，非“0”表示发送查询请求不成功
 			virtual int QueryAllTickersPriceInfo() = 0;
 
 			///订阅全市场的期权行情
@@ -408,6 +442,11 @@ namespace XTP {
 			///@param exchange_id 表示当前退订的市场，如果为XTP_EXCHANGE_UNKNOWN，表示沪深全市场，XTP_EXCHANGE_SH表示为上海全市场，XTP_EXCHANGE_SZ表示为深圳全市场
 			///@remark 需要与订阅全市场期权逐笔行情接口配套使用
 			virtual int UnSubscribeAllOptionTickByTick(XTP_EXCHANGE_TYPE exchange_id = XTP_EXCHANGE_UNKNOWN) = 0;
+
+			///获取所有合约的详细静态信息，包括指数等非可交易的
+			///@return 发送查询请求是否成功，“0”表示发送查询请求成功，非“0”表示发送查询请求不成功
+			///@param exchange_id 交易所代码，必须提供 1-上海 2-深圳
+			virtual int QueryAllTickersFullInfo(XTP_EXCHANGE_TYPE exchange_id) = 0;
 
 
 		protected:

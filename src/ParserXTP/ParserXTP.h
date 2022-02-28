@@ -10,7 +10,7 @@
 #pragma once
 #include "../Includes/IParserApi.h"
 #include "../Share/DLLHelper.hpp"
-#include "../API/XTP1.1.19.2/xtp_quote_api.h"
+#include "../API/XTP2.2.32.2/xtp_quote_api.h"
 #include <map>
 
 NS_WTP_BEGIN

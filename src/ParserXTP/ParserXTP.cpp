@@ -288,7 +288,7 @@ void ParserXTP::OnSubMarketData(XTPST *ticker, XTPRI *error_info, bool is_last)
 	else
 	{
 		if(m_sink)
-			write_log(m_sink, LL_ERROR, "[ParserXTP] Market data subscribe faile, code: {}.{}", ticker->exchange_id == XTP_EXCHANGE_SH ? "SSE." : "SZSE.", ticker->ticker);
+			write_log(m_sink, LL_ERROR, "[ParserXTP] Market data subscribe faile, code: {}.{}", ticker->exchange_id == XTP_EXCHANGE_SH ? "SSE" : "SZSE", ticker->ticker);
 	}
 }
 
