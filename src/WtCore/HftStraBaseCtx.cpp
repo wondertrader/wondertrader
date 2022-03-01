@@ -505,6 +505,13 @@ WTSTickData* HftStraBaseCtx::stra_get_last_tick(const char* stdCode)
 
 void HftStraBaseCtx::stra_sub_ticks(const char* stdCode)
 {
+	/*
+	 *	By Wesley @ 2022.03.01
+	 *	主动订阅tick会在本地记一下
+	 *	tick数据回调的时候先检查一下
+	 */
+	_tick_subs.insert(stdCode);
+
 	_engine->sub_tick(id(), stdCode);
 	log_info("Market Data subscribed: %s", stdCode);
 }

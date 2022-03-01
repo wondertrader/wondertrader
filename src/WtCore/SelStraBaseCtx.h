@@ -213,6 +213,9 @@ protected:
 	} StraFundInfo;
 
 	StraFundInfo		_fund_info;
+
+	//tick¶©ÔÄÁÐ±í
+	faster_hashset<std::string> _tick_subs;
 };
 
 

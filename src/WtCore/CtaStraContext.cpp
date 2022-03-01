@@ -61,6 +61,10 @@ void CtaStraContext::on_session_end(uint32_t uTDate)
 
 void CtaStraContext::on_tick_updated(const char* code, WTSTickData* newTick)
 {
+	auto it = _tick_subs.find(code);
+	if (it == _tick_subs.end())
+		return;
+
 	if (_strategy)
 		_strategy->on_tick(this, code, newTick);
 }

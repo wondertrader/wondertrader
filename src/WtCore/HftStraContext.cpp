@@ -50,8 +50,12 @@ void HftStraContext::on_tick(const char* stdCode, WTSTickData* newTick)
 {
 	update_dyn_profit(stdCode, newTick);
 
-	if (_strategy)
-		_strategy->on_tick(this, stdCode, newTick);
+	auto it = _tick_subs.find(stdCode);
+	if (it != _tick_subs.end())
+	{
+		if (_strategy)
+			_strategy->on_tick(this, stdCode, newTick);
+	}
 
 	HftStraBaseCtx::on_tick(stdCode, newTick);
 }

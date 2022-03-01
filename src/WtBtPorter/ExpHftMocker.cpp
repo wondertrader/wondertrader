@@ -75,6 +75,10 @@ void ExpHftMocker::on_order(uint32_t localid, const char* stdCode, bool isBuy, d
 
 void ExpHftMocker::on_tick_updated(const char* stdCode, WTSTickData* newTick)
 {
+	auto it = _tick_subs.find(code);
+	if (it == _tick_subs.end())
+		return;
+
 	getRunner().ctx_on_tick(_context_id, stdCode, newTick, ET_HFT);
 }
 

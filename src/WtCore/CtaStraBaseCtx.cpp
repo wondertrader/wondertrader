@@ -1468,6 +1468,13 @@ WTSTickData* CtaStraBaseCtx::stra_get_last_tick(const char* stdCode)
 
 void CtaStraBaseCtx::stra_sub_ticks(const char* code)
 {
+	/*
+	 *	By Wesley @ 2022.03.01
+	 *	主动订阅tick会在本地记一下
+	 *	tick数据回调的时候先检查一下
+	 */
+	_tick_subs.insert(code);
+
 	_engine->sub_tick(_context_id, code);
 	log_info("Market data subscribed: %s", code);
 }

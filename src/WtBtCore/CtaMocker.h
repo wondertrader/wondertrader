@@ -337,5 +337,9 @@ protected:
 	bool			_in_backtest;
 	bool			_wait_calc;
 
+	//是否对回测结果持久化
 	bool			_persist_data;
+
+	//tick订阅列表
+	faster_hashset<std::string> _tick_subs;
 };

@@ -76,7 +76,11 @@ void ExpHftContext::on_tick(const char* code, WTSTickData* newTick)
 {
 	update_dyn_profit(code, newTick);
 
-	getRunner().ctx_on_tick(_context_id, code, newTick, ET_HFT);
+	auto it = _tick_subs.find(code);
+	if (it != _tick_subs.end())
+	{
+		getRunner().ctx_on_tick(_context_id, code, newTick, ET_HFT);
+	}
 
 	HftStraBaseCtx::on_tick(code, newTick);
 }

@@ -345,6 +345,10 @@ void HftMocker::on_tick(const char* stdCode, WTSTickData* newTick)
 
 void HftMocker::on_tick_updated(const char* stdCode, WTSTickData* newTick)
 {
+	auto it = _tick_subs.find(stdCode);
+	if (it == _tick_subs.end())
+		return;
+
 	if (_strategy)
 		_strategy->on_tick(this, stdCode, newTick);
 }
@@ -802,6 +806,13 @@ uint32_t HftMocker::stra_get_secs()
 
 void HftMocker::stra_sub_ticks(const char* stdCode)
 {
+	/*
+	 *	By Wesley @ 2022.03.01
+	 *	主动订阅tick会在本地记一下
+	 *	tick数据回调的时候先检查一下
+	 */
+	_tick_subs.insert(stdCode);
+
 	_replayer->sub_tick(_context_id, stdCode);
 }
 

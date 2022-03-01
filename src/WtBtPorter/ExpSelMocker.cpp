@@ -42,7 +42,9 @@ void ExpSelMocker::on_session_end(uint32_t uDate)
 
 void ExpSelMocker::on_tick_updated(const char* stdCode, WTSTickData* newTick)
 {
-	SelMocker::on_tick_updated(stdCode, newTick);
+	auto it = _tick_subs.find(code);
+	if (it == _tick_subs.end())
+		return;
 
 	//向外部回调
 	getRunner().ctx_on_tick(_context_id, stdCode, newTick, ET_SEL);

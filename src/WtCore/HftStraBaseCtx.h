@@ -231,6 +231,9 @@ protected:
 
 	bool			_data_agent;	//数据托管
 
+	//tick订阅列表
+	faster_hashset<std::string> _tick_subs;
+
 private:
 	typedef struct _DetailInfo
 	{

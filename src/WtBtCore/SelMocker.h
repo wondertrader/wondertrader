@@ -257,4 +257,7 @@ protected:
 	StraFactInfo	_factory;
 
 	SelStrategy*	_strategy;
+
+	//tick¶©ÔÄÁĞ±í
+	faster_hashset<std::string> _tick_subs;
 };

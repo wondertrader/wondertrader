@@ -50,6 +50,10 @@ void ExpCtaContext::on_session_end(uint32_t uDate)
 
 void ExpCtaContext::on_tick_updated(const char* stdCode, WTSTickData* newTick)
 {
+	auto it = _tick_subs.find(stdCode);
+	if (it == _tick_subs.end())
+		return;
+
 	getRunner().ctx_on_tick(_context_id, stdCode, newTick, ET_CTA);
 }
 

@@ -288,6 +288,10 @@ void SelMocker::on_bar_close(const char* code, const char* period, WTSBarStruct*
 
 void SelMocker::on_tick_updated(const char* code, WTSTickData* newTick)
 {
+	auto it = _tick_subs.find(code);
+	if (it == _tick_subs.end())
+		return;
+
 	if (_strategy)
 		_strategy->on_tick(this, code, newTick);
 }
@@ -653,6 +657,13 @@ WTSTickData* SelMocker::stra_get_last_tick(const char* stdCode)
 
 void SelMocker::stra_sub_ticks(const char* code)
 {
+	/*
+	 *	By Wesley @ 2022.03.01
+	 *	主动订阅tick会在本地记一下
+	 *	tick数据回调的时候先检查一下
+	 */
+	_tick_subs.insert(code);
+
 	_replayer->sub_tick(_context_id, code);
 }
 

@@ -911,10 +911,17 @@ WTSTickData* SelStraBaseCtx::stra_get_last_tick(const char* stdCode)
 	return _engine->get_last_tick(_context_id, stdCode);
 }
 
-void SelStraBaseCtx::stra_sub_ticks(const char* code)
+void SelStraBaseCtx::stra_sub_ticks(const char* stdCode)
 {
-	_engine->sub_tick(_context_id, code);
-	log_info("Market data subscribed: %s", code);
+	/*
+	 *	By Wesley @ 2022.03.01
+	 *	主动订阅tick会在本地记一下
+	 *	tick数据回调的时候先检查一下
+	 */
+	_tick_subs.insert(stdCode);
+
+	_engine->sub_tick(_context_id, stdCode);
+	log_info("Market data subscribed: %s", stdCode);
 }
 
 WTSCommodityInfo* SelStraBaseCtx::stra_get_comminfo(const char* stdCode)

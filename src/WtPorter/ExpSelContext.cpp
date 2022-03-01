@@ -48,5 +48,9 @@ void ExpSelContext::on_bar_close(const char* stdCode, const char* period, WTSBar
 
 void ExpSelContext::on_tick_updated(const char* stdCode, WTSTickData* newTick)
 {
+	auto it = _tick_subs.find(stdCode);
+	if (it == _tick_subs.end())
+		return;
+
 	getRunner().ctx_on_tick(_context_id, stdCode, newTick, ET_SEL);
 }

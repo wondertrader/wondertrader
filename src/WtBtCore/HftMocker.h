@@ -312,5 +312,8 @@ protected:
 	bool			_has_hook;		//这是人为控制是否启用钩子
 	bool			_hook_valid;	//这是根据是否是异步回测模式而确定钩子是否可用
 	std::atomic<bool>	_resumed;	//临时变量，用于控制状态
+
+	//tick订阅列表
+	faster_hashset<std::string> _tick_subs;
 };
 
