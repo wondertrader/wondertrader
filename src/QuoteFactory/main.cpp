@@ -206,7 +206,7 @@ int main()
 	if (!StdFile::exists(filename.c_str()))
 		filename = "logcfgdt.yaml";
 
-	WTSLogger::init();
+	WTSLogger::init(filename.c_str());
 
 #ifdef _MSC_VER
 	_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_DEBUG);
