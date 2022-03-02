@@ -26,6 +26,97 @@ namespace rj = rapidjson;
 
 USING_NS_WTP;
 
+/*
+ *	处理块数据
+ */
+bool proc_block_data(std::string& content, bool isBar, bool bKeepHead /* = true */)
+{
+	BlockHeader* header = (BlockHeader*)content.data();
+
+	bool bCmped = header->is_compressed();
+	bool bOldVer = header->is_old_version();
+
+	//如果既没有压缩，也不是老版本结构体，则直接返回
+	if (!bCmped && !bOldVer)
+	{
+		if (!bKeepHead)
+			content.erase(0, BLOCK_HEADER_SIZE);
+		return true;
+	}
+
+	std::string buffer;
+	if (bCmped)
+	{
+		BlockHeaderV2* blkV2 = (BlockHeaderV2*)content.c_str();
+
+		if (content.size() != (sizeof(BlockHeaderV2) + blkV2->_size))
+		{
+			return false;
+		}
+
+		//将文件头后面的数据进行解压
+		buffer = WTSCmpHelper::uncompress_data(content.data() + BLOCK_HEADERV2_SIZE, (uint32_t)blkV2->_size);
+	}
+	else
+	{
+		if (!bOldVer)
+		{
+			//如果不是老版本，直接返回
+			if (!bKeepHead)
+				content.erase(0, BLOCK_HEADER_SIZE);
+			return true;
+		}
+		else
+		{
+			buffer.append(content.data() + BLOCK_HEADER_SIZE, content.size() - BLOCK_HEADER_SIZE);
+		}
+	}
+
+	if (bOldVer)
+	{
+		if (isBar)
+		{
+			std::string bufV2;
+			uint32_t barcnt = buffer.size() / sizeof(WTSBarStructOld);
+			bufV2.resize(barcnt * sizeof(WTSBarStruct));
+			WTSBarStruct* newBar = (WTSBarStruct*)bufV2.data();
+			WTSBarStructOld* oldBar = (WTSBarStructOld*)buffer.data();
+			for (uint32_t idx = 0; idx < barcnt; idx++)
+			{
+				newBar[idx] = oldBar[idx];
+			}
+			buffer.swap(bufV2);
+		}
+		else
+		{
+			uint32_t tick_cnt = buffer.size() / sizeof(WTSTickStructOld);
+			std::string bufv2;
+			bufv2.resize(sizeof(WTSTickStruct)*tick_cnt);
+			WTSTickStruct* newTick = (WTSTickStruct*)bufv2.data();
+			WTSTickStructOld* oldTick = (WTSTickStructOld*)buffer.data();
+			for (uint32_t i = 0; i < tick_cnt; i++)
+			{
+				newTick[i] = oldTick[i];
+			}
+			buffer.swap(bufv2);
+		}
+	}
+
+	if (bKeepHead)
+	{
+		content.resize(BLOCK_HEADER_SIZE);
+		content.append(buffer);
+		header = (BlockHeader*)content.data();
+		header->_version = BLOCK_VERSION_RAW_V2;
+	}
+	else
+	{
+		content.swap(buffer);
+	}
+
+	return true;
+}
+
 
 uint32_t strToTime(const char* strTime, bool bKeepSec = false)
 {
@@ -105,34 +196,9 @@ void dump_bars(WtString binFolder, WtString csvFolder, WtString strFilter /* = "
 			continue;
 		}
 
-		HisKlineBlock* tBlock = (HisKlineBlock*)buffer.c_str();
-		if (tBlock->_version == BLOCK_VERSION_CMP)
-		{
-			//压缩版本,要重新检查文件大小
-			HisKlineBlockV2* kBlockV2 = (HisKlineBlockV2*)buffer.c_str();
+		proc_block_data(buffer, true, false);
 
-			if (buffer.size() != (sizeof(HisKlineBlockV2) + kBlockV2->_size))
-			{
-				if (cbLogger)
-					cbLogger(StrUtil::printf("文件%s头部校验失败", binFolder).c_str());
-				continue;
-			}
-
-			//需要解压
-			if (cbLogger)
-				cbLogger(StrUtil::printf("正在解压数据...").c_str());
-			std::string buf = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
-
-			//将原来的buffer只保留一个头部,并将所有tick数据追加到尾部
-			buffer.resize(sizeof(HisTickBlock));
-			buffer.append(buf);
-			kBlockV2 = (HisKlineBlockV2*)buffer.c_str();
-			kBlockV2->_version = BLOCK_VERSION_RAW;
-		}
-
-		HisKlineBlock* klineBlk = (HisKlineBlock*)buffer.c_str();
-
-		auto kcnt = (buffer.size() - sizeof(HisKlineBlock)) / sizeof(WTSBarStruct);
+		auto kcnt = buffer.size() / sizeof(WTSBarStruct);
 		if (kcnt <= 0)
 			continue;
 
@@ -143,13 +209,15 @@ void dump_bars(WtString binFolder, WtString csvFolder, WtString strFilter /* = "
 		if (cbLogger)
 			cbLogger(StrUtil::printf("正在写入%s...", filename.c_str()).c_str());
 
+		WTSBarStruct* bars = (WTSBarStruct*)buffer.data();
+
 		std::stringstream ss;
 		ss << "date,time,open,high,low,close,settle,volume,turnover,open_interest,diff_interest" << std::endl;
 		ss.setf(std::ios::fixed);
 
 		for (uint32_t i = 0; i < kcnt; i++)
 		{
-			const WTSBarStruct& curBar = klineBlk->_bars[i];
+			const WTSBarStruct& curBar = bars[i];
 			uint32_t barTime = (uint32_t)(curBar.time % 10000 * 100);
 			uint32_t barDate = (uint32_t)(curBar.time / 10000 + 19900000);
 			ss << barDate << ","
@@ -214,34 +282,9 @@ void dump_ticks(WtString binFolder, WtString csvFolder, WtString strFilter /* = 
 			continue;
 		}
 
-		HisTickBlock* tBlock = (HisTickBlock*)buffer.c_str();
-		if (tBlock->_version == BLOCK_VERSION_CMP)
-		{
-			//压缩版本,要重新检查文件大小
-			HisTickBlockV2* tBlockV2 = (HisTickBlockV2*)buffer.c_str();
+		proc_block_data(buffer, false, false);
 
-			if (buffer.size() != (sizeof(HisTickBlockV2) + tBlockV2->_size))
-			{
-				if (cbLogger)
-					cbLogger(StrUtil::printf("文件%s头部校验失败", binFolder).c_str());
-				continue;
-			}
-
-			//需要解压
-			if (cbLogger)
-				cbLogger(StrUtil::printf("正在解压数据...").c_str());
-			std::string buf = WTSCmpHelper::uncompress_data(tBlockV2->_data, (uint32_t)tBlockV2->_size);
-
-			//将原来的buffer只保留一个头部,并将所有tick数据追加到尾部
-			buffer.resize(sizeof(HisTickBlock));
-			buffer.append(buf);
-			tBlockV2 = (HisTickBlockV2*)buffer.c_str();
-			tBlockV2->_version = BLOCK_VERSION_RAW;
-		}
-
-		HisTickBlock* tickBlk = (HisTickBlock*)buffer.c_str();
-
-		auto tcnt = (buffer.size() - sizeof(HisTickBlock)) / sizeof(WTSTickStruct);
+		auto tcnt = buffer.size() / sizeof(WTSTickStruct);
 		if (tcnt <= 0)
 			continue;
 
@@ -251,6 +294,8 @@ void dump_ticks(WtString binFolder, WtString csvFolder, WtString strFilter /* = 
 
 		if (cbLogger)
 			cbLogger(StrUtil::printf("正在写入%s...", filename.c_str()).c_str());
+
+		WTSTickStruct* ticks = (WTSTickStruct*)buffer.data();
 
 		std::stringstream ss;
 		ss.setf(std::ios::fixed, std::ios::floatfield);
@@ -266,7 +311,7 @@ void dump_ticks(WtString binFolder, WtString csvFolder, WtString strFilter /* = 
 
 		for (uint32_t i = 0; i < tcnt; i++)
 		{
-			const WTSTickStruct& curTick = tickBlk->_ticks[i];
+			const WTSTickStruct& curTick = ticks[i];
 			ss << curTick.code << ","
 				<< curTick.trading_date << ","
 				<< curTick.action_date << ","
@@ -356,10 +401,10 @@ void trans_csv_bars(WtString csvFolder, WtString binFolder, WtString period, Fun
 			bs.high = reader.get_double("high");
 			bs.low = reader.get_double("low");
 			bs.close = reader.get_double("close");
-			bs.vol = reader.get_uint32("volume");
+			bs.vol = reader.get_double("volume");
 			bs.money = reader.get_double("turnover");
-			bs.hold = reader.get_uint32("open_interest");
-			bs.add = reader.get_int32("diff_interest");
+			bs.hold = reader.get_double("open_interest");
+			bs.add = reader.get_double("diff_interest");
 			bs.settle = reader.get_double("settle");
 			bars.emplace_back(bs);
 
@@ -539,56 +584,18 @@ WtUInt32 read_dsb_ticks(WtString tickFile, FuncGetTicksCallback cb, FuncCountDat
 		return 0;
 	}
 
-	HisTickBlock* tBlock = (HisTickBlock*)content.c_str();
-	bool bOldVer = tBlock->is_old_version();
-	std::string buffer;
-	if (tBlock->is_compressed())
-	{
-		//压缩版本,要重新检查文件大小
-		HisTickBlockV2* tBlockV2 = (HisTickBlockV2*)content.c_str();
+	proc_block_data(content, true, false);
 
-		if (content.size() != (sizeof(HisTickBlockV2) + tBlockV2->_size))
-		{
-			if (cbLogger)
-				cbLogger(StrUtil::printf("文件%s头部校验失败", tickFile).c_str());
-			return 0;
-		}
-
-		//需要解压
-		if (cbLogger)
-			cbLogger(StrUtil::printf("正在解压数据...").c_str());
-		buffer = WTSCmpHelper::uncompress_data(tBlockV2->_data, (uint32_t)tBlockV2->_size);
-	}
-	else
-	{
-		content.erase(0, BLOCK_HEADER_SIZE);
-		buffer.swap(content);
-	}
-
-	if (buffer.empty())
+	if (content.empty())
 	{
 		cbCnt(0);
 		return 0;
 	}
 
-	if (bOldVer)
-	{
-		uint32_t tick_cnt = buffer.size() / sizeof(WTSTickStructOld);
-		std::string bufv2;
-		bufv2.resize(sizeof(WTSTickStruct)*tick_cnt);
-		WTSTickStruct* newTick = (WTSTickStruct*)bufv2.data();
-		WTSTickStructOld* oldTick = (WTSTickStructOld*)buffer.data();
-		for (uint32_t i = 0; i < tick_cnt; i++)
-		{
-			newTick[i] = oldTick[i];
-		}
-		buffer.swap(bufv2);
-	}
-
-	auto tcnt = buffer.size() / sizeof(WTSTickStruct);
+	auto tcnt = content.size() / sizeof(WTSTickStruct);
 
 	cbCnt(tcnt);
-	cb((WTSTickStruct*)buffer.data(), tcnt, true);
+	cb((WTSTickStruct*)content.data(), tcnt, true);
 
 	if (cbLogger)
 		cbLogger(StrUtil::printf("%s读取完成,共%u条tick数据", tickFile, tcnt).c_str());
@@ -611,55 +618,18 @@ WtUInt32 read_dsb_bars(WtString barFile, FuncGetBarsCallback cb, FuncCountDataCa
 		return 0;
 	}
 
-	HisKlineBlock* tBlock = (HisKlineBlock*)content.c_str();
-	std::string buffer;
-	bool bOldVer = tBlock->is_old_version();
-	if (tBlock->is_compressed())
-	{
-		//压缩版本,要重新检查文件大小
-		HisKlineBlockV2* kBlockV2 = (HisKlineBlockV2*)content.c_str();
+	proc_block_data(content, true, false);
 
-		if (content.size() != (sizeof(HisKlineBlockV2) + kBlockV2->_size))
-		{
-			if (cbLogger)
-				cbLogger(StrUtil::printf("文件%s头部校验失败", barFile).c_str());
-			return 0;
-		}
-
-		//需要解压
-		if (cbLogger)
-			cbLogger(StrUtil::printf("正在解压数据...").c_str());
-		buffer = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
-	}
-	else
-	{
-		content.erase(0, BLOCK_HEADER_SIZE);
-		buffer.swap(content);
-	}
-
-	if(buffer.empty())
+	if(content.empty())
 	{
 		cbCnt(0);
 		return 0;
 	}
 
-	if(bOldVer)
-	{
-		std::string bufV2;
-		uint32_t barcnt = buffer.size() / sizeof(WTSBarStructOld);
-		bufV2.resize(barcnt * sizeof(WTSBarStruct));
-		WTSBarStruct* newBar = (WTSBarStruct*)bufV2.data();
-		WTSBarStructOld* oldBar = (WTSBarStructOld*)buffer.data();
-		for (uint32_t idx = 0; idx < barcnt; idx++)
-		{
-			newBar[idx] = oldBar[idx];
-		}
-		buffer.swap(bufV2);
-	}
 
-	auto kcnt = buffer.size() / sizeof(WTSBarStruct);
+	auto kcnt = content.size() / sizeof(WTSBarStruct);
 	cbCnt(kcnt);
-	cb((WTSBarStruct*)buffer.data(), kcnt, true);
+	cb((WTSBarStruct*)content.data(), kcnt, true);
 
 	if (cbLogger)
 		cbLogger(StrUtil::printf("%s读取完成,共%u条bar", barFile, kcnt).c_str());
