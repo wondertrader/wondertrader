@@ -28,21 +28,21 @@ class TestParser: public IParserApi
 public:
 	void	run(uint32_t times)
 	{
+		WTSTickData* newTick = WTSTickData::create("rb2205");
 		TimeUtils::Ticker ticker;
 		for(uint32_t i = 0; i < times; i++)
 		{
-			WTSTickData* newTick = WTSTickData::create("rb2205");
 			WTSTickStruct& ts = newTick->getTickStruct();
 			strcpy(ts.exchg, "SHFE");
 			ts.trading_date = TimeUtils::getCurDate();
 			TimeUtils::getDateTime(ts.action_date, ts.action_time);
 
 			_parser_spi->handleQuote(newTick, 0);
-			newTick->release();
 		}
 		auto total = ticker.nano_seconds();
 		double t2t = total*1.0 / times;
-		printf("%u ticks simulated in %.0f ns, Inner Tick-2-Trade: %.3f ns", times, total*1.0, t2t);
+		printf("%u ticks simulated in %.0f ns, Inner Tick-2-Trade: %.3f ns\r\n", times, total*1.0, t2t);
+		newTick->release();
 	}
 
 public:

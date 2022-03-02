@@ -21,6 +21,7 @@ int main()
 	runner.init();
 
 	runner.run();
+	printf("press enter key to exit\r\n");
 	getchar();
 	return 0;
 }
