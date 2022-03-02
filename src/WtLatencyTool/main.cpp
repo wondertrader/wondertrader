@@ -21,6 +21,7 @@ int main()
 	runner.init();
 
 	runner.run();
+	getchar();
 	return 0;
 }
 
