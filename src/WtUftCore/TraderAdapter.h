@@ -98,6 +98,8 @@ public:
 public:
 	bool init(const char* id, WTSVariant* params, IBaseDataMgr* bdMgr);
 
+	bool initExt(const char* id, ITraderApi* api, IBaseDataMgr* bdMgr);
+
 	void release();
 
 	bool run();

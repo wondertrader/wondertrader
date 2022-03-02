@@ -50,15 +50,16 @@ void ExpCtaMocker::on_session_end(uint32_t uCurDate)
 
 void ExpCtaMocker::on_tick_updated(const char* stdCode, WTSTickData* newTick)
 {
-	CtaMocker::on_tick_updated(stdCode, newTick);
+	auto it = _tick_subs.find(stdCode);
+	if (it == _tick_subs.end())
+		return;
+
 	getRunner().ctx_on_tick(_context_id, stdCode, newTick, ET_CTA);
 }
 
 void ExpCtaMocker::on_bar_close(const char* code, const char* period, WTSBarStruct* newBar)
 {
-	auto it = _tick_subs.find(code);
-	if (it == _tick_subs.end())
-		return;
+	CtaMocker::on_bar_close(code, period, newBar);
 
 	//要向外部回调
 	getRunner().ctx_on_bar(_context_id, code, period, newBar, ET_CTA);

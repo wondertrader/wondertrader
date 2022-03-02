@@ -42,7 +42,7 @@ void ExpSelMocker::on_session_end(uint32_t uDate)
 
 void ExpSelMocker::on_tick_updated(const char* stdCode, WTSTickData* newTick)
 {
-	auto it = _tick_subs.find(code);
+	auto it = _tick_subs.find(stdCode);
 	if (it == _tick_subs.end())
 		return;
 

@@ -179,6 +179,73 @@ bool ParserAdapter::init(const char* id, WTSVariant* cfg, IParserStub* stub, IBa
 	return true;
 }
 
+bool ParserAdapter::initExt(const char* id, IParserApi* api, IParserStub* stub, IBaseDataMgr* bgMgr)
+{
+	if (api == NULL)
+		return false;
+
+	_parser_api = api;
+	_stub = stub;
+	_bd_mgr = bgMgr;
+	_id = id;
+
+	if (_parser_api)
+	{
+		_parser_api->registerSpi(this);
+
+		if (_parser_api->init(NULL))
+		{
+			ContractSet contractSet;
+			WTSArray* ay = _bd_mgr->getContracts();
+			for (auto it = ay->begin(); it != ay->end(); it++)
+			{
+				WTSContractInfo* cInfo = STATIC_CONVERT(*it, WTSContractInfo*);
+
+				//先检查合约和品种是否符合条件
+				if (!_code_filter.empty())
+				{
+					auto cit = _code_filter.find(cInfo->getFullCode());
+					auto pit = _code_filter.find(cInfo->getFullPid());
+					if (cit != _code_filter.end() || pit != _code_filter.end())
+					{
+						contractSet.insert(cInfo->getFullCode());
+						continue;
+					}
+				}
+
+				//再检查交易所是否符合条件
+				if (!_exchg_filter.empty())
+				{
+					auto eit = _exchg_filter.find(cInfo->getExchg());
+					if (eit != _code_filter.end())
+					{
+						contractSet.insert(cInfo->getFullCode());
+						continue;
+					}
+					else
+					{
+						continue;
+					}
+				}
+
+				if (_code_filter.empty() && _exchg_filter.empty())
+					contractSet.insert(cInfo->getFullCode());
+
+			}
+			ay->release();
+
+			_parser_api->subscribe(contractSet);
+			contractSet.clear();
+		}
+		else
+		{
+			WTSLogger::log_dyn("parser", _id.c_str(), LL_ERROR, "[%s] Parser initializing failed: api initializing failed...", _id.c_str());
+		}
+	}
+
+	return true;
+}
+
 void ParserAdapter::release()
 {
 	_stopped = true;

@@ -37,6 +37,7 @@ public:
 
 public:
 	bool	init(const char* id, WTSVariant* cfg, IParserStub* stub, IBaseDataMgr* bgMgr);
+	bool	initExt(const char* id, IParserApi* api, IParserStub* stub, IBaseDataMgr* bgMgr);
 
 	void	release();
 

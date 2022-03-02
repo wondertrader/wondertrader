@@ -51,7 +51,7 @@ void WtUftEngine::init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtUftDtMgr* dataMgr
 	WtEngine::init(cfg, bdMgr, dataMgr);
 
 	_cfg = cfg;
-	_cfg->retain();
+	if(_cfg) _cfg->retain();
 }
 
 void WtUftEngine::run(bool bAsync /*= false*/)
@@ -63,8 +63,15 @@ void WtUftEngine::run(bool bAsync /*= false*/)
 	}
 
 	_tm_ticker = new WtUftRtTicker(this);
-	WTSVariant* cfgProd = _cfg->get("product");
-	_tm_ticker->init(cfgProd->getCString("session"));
+	if(_cfg && _cfg->has("product"))
+	{
+		WTSVariant* cfgProd = _cfg->get("product");
+		_tm_ticker->init(cfgProd->getCString("session"));
+	}
+	else
+	{
+		_tm_ticker->init("ALLDAY");
+	}
 
 	_tm_ticker->run();
 
@@ -172,7 +179,8 @@ void WtUftEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 {
 	WtEngine::on_tick(stdCode, curTick);
 
-	_data_mgr->handle_push_quote(stdCode, curTick);
+	if(_data_mgr)
+		_data_mgr->handle_push_quote(stdCode, curTick);
 
 	//auto sit = _tick_sub_map.find(stdCode);
 	//if (sit != _tick_sub_map.end())

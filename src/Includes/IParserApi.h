@@ -93,46 +93,46 @@ public:
 	 *	@config	模块配置
 	 *	返回值	是否初始化成功
 	 */
-	virtual bool init(WTSVariant* config)			= 0;
+	virtual bool init(WTSVariant* config) { return false; }
 
 	/*
 	 *	释放解析模块
 	 *	用于退出时
 	 */
-	virtual void release()							= 0;
+	virtual void release(){}
 
 	/*
 	 *	开始连接服务器
 	 *	@返回值	连接命令是否发送成功
 	 */
-	virtual bool connect()							= 0;
+	virtual bool connect() { return false; }
 
 	/*
 	 *	断开连接
 	 *	@返回值	命令是否发送成功
 	 */
-	virtual bool disconnect()						= 0;
+	virtual bool disconnect() { return false; }
 
 	/*
 	 *	是否已连接
 	 *	@返回值	是否已连接
 	 */
-	virtual bool isConnected()						= 0;
+	virtual bool isConnected() { return false; }
 
 	/*
 	 *	订阅合约列表
 	 */
-	virtual void subscribe(const CodeSet& setCodes)		= 0;
+	virtual void subscribe(const CodeSet& setCodes){}
 
 	/*
 	 *	退订合约列表
 	 */
-	virtual void unsubscribe(const CodeSet& setCodes)	= 0;
+	virtual void unsubscribe(const CodeSet& setCodes){}
 
 	/*
 	 *	注册回调接口
 	 */
-	virtual void registerSpi(IParserSpi* listener)		= 0;
+	virtual void registerSpi(IParserSpi* spi) {}
 };
 
 NS_WTP_END

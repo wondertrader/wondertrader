@@ -83,6 +83,18 @@ TraderAdapter::~TraderAdapter()
 
 }
 
+bool TraderAdapter::initExt(const char* id, ITraderApi* api, IBaseDataMgr* bdMgr)
+{
+	_bd_mgr = bdMgr;
+	_id = id;
+
+	_order_pattern = StrUtil::printf("wtp.%s", id);
+
+	api->init(NULL);
+	_trader_api = api;
+	return true;
+}
+
 bool TraderAdapter::init(const char* id, WTSVariant* params, IBaseDataMgr* bdMgr)
 {
 	if (params == NULL)
