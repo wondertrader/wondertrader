@@ -13,6 +13,7 @@
 #include "../Includes/WTSVariant.hpp"
 #include "../Includes/IParserApi.h"
 #include "../Includes/ITraderApi.h"
+#include "../Includes/WTSContractInfo.hpp"
 
 #include "../WTSTools/WTSLogger.h"
 #include "../WTSUtils/WTSCfgLoader.h"
@@ -23,36 +24,123 @@
 
 USING_NS_WTP;
 
+inline double checkValid(double x)
+{
+	return ((x == DBL_MAX || x == FLT_MAX) ? 0.0 : x);
+}
+
+
+inline uint32_t strToTime(const char* strTime)
+{
+	static char str[10] = { 0 };
+	const char *pos = strTime;
+	int idx = 0;
+	auto len = strlen(strTime);
+	for (std::size_t i = 0; i < len; i++)
+	{
+		if (strTime[i] != ':')
+		{
+			str[idx] = strTime[i];
+			idx++;
+		}
+	}
+	str[idx] = '\0';
+
+	return strtoul(str, NULL, 10);
+}
+
 class TestParser: public IParserApi
 {
 public:
 	void	run(uint32_t times)
 	{
-		WTSTickData* newTick = WTSTickData::create("rb2205");
+		srand(time(NULL));
 		TimeUtils::Ticker ticker;
 		for(uint32_t i = 0; i < times; i++)
 		{
-			WTSTickStruct& ts = newTick->getTickStruct();
-			strcpy(ts.exchg, "SHFE");
-			ts.trading_date = TimeUtils::getCurDate();
-			TimeUtils::getDateTime(ts.action_date, ts.action_time);
+			uint32_t actDate = 20220303;// strtoul("20220303", NULL, 10);
+			uint32_t actTime = 100523 * 1000 + 500; //strToTime("10:05:23") * 1000 + 500;
 
-			_parser_spi->handleQuote(newTick, 0);
+			WTSContractInfo* contract = _bd_mgr->getContract("rb2205", "SHFE");
+			if (contract == NULL)
+				return;
+
+			double x = rand();
+
+			WTSCommodityInfo* pCommInfo = contract->getCommInfo();
+
+			WTSTickData* tick = WTSTickData::create("rb2205");
+			tick->setContractInfo(contract);
+
+			WTSTickStruct& quote = tick->getTickStruct();
+			strcpy(quote.exchg, pCommInfo->getExchg());
+
+			quote.action_date = actDate;
+			quote.action_time = actTime;
+
+			quote.price = x;
+			quote.open = x;
+			quote.high = x;
+			quote.low = x;
+			quote.total_volume = 0;
+			quote.trading_date = 20220303;
+			quote.settle_price = x;
+
+			quote.open_interest = 0;
+
+			quote.upper_limit = x;
+			quote.lower_limit = x;
+
+			quote.pre_close = x;
+			quote.pre_settle = x;
+			quote.pre_interest = 0;
+
+			//委卖价格
+			quote.ask_prices[0] = x;
+			quote.ask_prices[1] = x;
+			quote.ask_prices[2] = x;
+			quote.ask_prices[3] = x;
+			quote.ask_prices[4] = x;
+
+			//委买价格
+			quote.bid_prices[0] = x;
+			quote.bid_prices[1] = x;
+			quote.bid_prices[2] = x;
+			quote.bid_prices[3] = x;
+			quote.bid_prices[4] = x;
+
+			//委卖量
+			quote.ask_qty[0] = 0;
+			quote.ask_qty[1] = 0;
+			quote.ask_qty[2] = 0;
+			quote.ask_qty[3] = 0;
+			quote.ask_qty[4] = 0;
+
+			//委买量
+			quote.bid_qty[0] = 0;
+			quote.bid_qty[1] = 0;
+			quote.bid_qty[2] = 0;
+			quote.bid_qty[3] = 0;
+			quote.bid_qty[4] = 0;
+
+			_parser_spi->handleQuote(tick, 0);
+			tick->release();
 		}
 		auto total = ticker.nano_seconds();
 		double t2t = total*1.0 / times;
 		printf("%u ticks simulated in %.0f ns, Inner Tick-2-Trade: %.3f ns\r\n", times, total*1.0, t2t);
-		newTick->release();
 	}
 
 public:
 	virtual void registerSpi(IParserSpi* listener) override
 	{
 		_parser_spi = listener;
+		_bd_mgr = listener->getBaseDataMgr();
 	}
 
 private:
-	IParserSpi* _parser_spi;
+	IParserSpi*		_parser_spi;
+	IBaseDataMgr*	_bd_mgr;
 };
 
 TestParser* theParser = NULL;

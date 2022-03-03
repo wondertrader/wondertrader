@@ -292,14 +292,14 @@ void ParserCTP::OnRtnDepthMarketData( CThostFtdcDepthMarketDataField *pDepthMark
 			quote.total_turnover = pDepthMarketData->Turnover;
 	}
 
-	quote.open_interest = (uint32_t)pDepthMarketData->OpenInterest;
+	quote.open_interest = pDepthMarketData->OpenInterest;
 
 	quote.upper_limit = checkValid(pDepthMarketData->UpperLimitPrice);
 	quote.lower_limit = checkValid(pDepthMarketData->LowerLimitPrice);
 
 	quote.pre_close = checkValid(pDepthMarketData->PreClosePrice);
 	quote.pre_settle = checkValid(pDepthMarketData->PreSettlementPrice);
-	quote.pre_interest = (uint32_t)pDepthMarketData->PreOpenInterest;
+	quote.pre_interest = pDepthMarketData->PreOpenInterest;
 
 	//Î¯Âô¼Û¸ñ
 	quote.ask_prices[0] = checkValid(pDepthMarketData->AskPrice1);
