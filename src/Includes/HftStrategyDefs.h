@@ -33,18 +33,18 @@ public:
 
 public:
 	/*
-	*	执行单元名称
-	*/
+	 *	执行单元名称
+	 */
 	virtual const char* getName() = 0;
 
 	/*
-	*	所属执行器工厂名称
-	*/
+	 *	所属执行器工厂名称
+	 */
 	virtual const char* getFactName() = 0;
 
 	/*
-	*	初始化
-	*/
+	 *	初始化
+	 */
 	virtual bool init(WTSVariant* cfg){ return true; }
 
 	virtual const char* id() const { return _id.c_str(); }
@@ -83,23 +83,23 @@ public:
 
 public:
 	/*
-	*	获取工厂名
-	*/
+	 *	获取工厂名
+	 */
 	virtual const char* getName() = 0;
 
 	/*
-	*	枚举策略
-	*/
+	 *	枚举策略
+	 */
 	virtual void enumStrategy(FuncEnumHftStrategyCallback cb) = 0;
 
 	/*
-	*	根据名称创建执行单元
-	*/
+	 *	根据名称创建执行单元
+	 */
 	virtual HftStrategy* createStrategy(const char* name, const char* id) = 0;
 
 	/*
-	*	删除执行单元
-	*/
+	 *	删除执行单元
+	 */
 	virtual bool deleteStrategy(HftStrategy* stra) = 0;
 };
 

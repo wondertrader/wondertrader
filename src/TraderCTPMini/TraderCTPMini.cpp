@@ -696,7 +696,7 @@ void TraderCTPMini::OnRspQryTradingAccount(CThostFtdcTradingAccountField *pTradi
 			m_ayFunds = WTSArray::create();
 
 		WTSAccountInfo* accountInfo = WTSAccountInfo::create();
-		accountInfo->setDescription(StrUtil::printf("{}-{}", m_strBroker.c_str(), m_strUser.c_str()).c_str());
+		accountInfo->setDescription(fmt::format("{}-{}", m_strBroker.c_str(), m_strUser.c_str()).c_str());
 		//accountInfo->setUsername(m_strUserName.c_str());
 		accountInfo->setPreBalance(pTradingAccount->PreBalance);
 		accountInfo->setCloseProfit(pTradingAccount->CloseProfit);
@@ -740,7 +740,7 @@ void TraderCTPMini::OnRspQryInvestorPosition(CThostFtdcInvestorPositionField *pI
 		if (contract)
 		{
 			WTSCommodityInfo* commInfo = m_bdMgr->getCommodity(contract);
-			std::string key = StrUtil::printf("{}-{}", pInvestorPosition->InstrumentID, pInvestorPosition->PosiDirection);
+			std::string key = fmt::format("{}-{}", pInvestorPosition->InstrumentID, pInvestorPosition->PosiDirection);
 			WTSPositionItem* pos = (WTSPositionItem*)m_mapPosition->get(key);
 			if(pos == NULL)
 			{

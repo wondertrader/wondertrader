@@ -74,7 +74,7 @@ void ExpHftContext::on_order(uint32_t localid, const char* stdCode, bool isBuy, 
 
 void ExpHftContext::on_position(const char* stdCode, bool isLong, double prevol, double preavail, double newvol, double newavail, uint32_t tradingday)
 {
-	
+	getRunner().hft_on_position(_context_id, stdCode, isLong, prevol, preavail, newvol, newavail);
 }
 
 void ExpHftContext::on_tick(const char* code, WTSTickData* newTick)
