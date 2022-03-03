@@ -110,6 +110,12 @@ void HftStraContext::on_order(uint32_t localid, const char* stdCode, bool isBuy,
 	HftStraBaseCtx::on_order(localid, innerCode, isBuy, totalQty, leftQty, price, isCanceled);
 }
 
+void HftStraContext::on_position(const char* stdCode, bool isLong, double prevol, double preavail, double newvol, double newavail, uint32_t tradingday)
+{
+	if (_strategy)
+		_strategy->on_position(this, stdCode, isLong, prevol, preavail, newvol, newavail);
+}
+
 void HftStraContext::on_channel_ready()
 {
 	if (_strategy)

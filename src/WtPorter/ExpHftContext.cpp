@@ -72,6 +72,11 @@ void ExpHftContext::on_order(uint32_t localid, const char* stdCode, bool isBuy, 
 	HftStraBaseCtx::on_order(localid, stdCode, isBuy, totalQty, leftQty, price, isCanceled);
 }
 
+void ExpHftContext::on_position(const char* stdCode, bool isLong, double prevol, double preavail, double newvol, double newavail, uint32_t tradingday)
+{
+	
+}
+
 void ExpHftContext::on_tick(const char* code, WTSTickData* newTick)
 {
 	update_dyn_profit(code, newTick);
