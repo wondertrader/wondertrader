@@ -160,10 +160,12 @@ TraderYD::TraderYD()
 	, m_mapOrders(NULL)
 	, m_mapTrades(NULL)
 	, m_wrapperState(WS_NOTLOGIN)
+	, m_ayFunds(NULL)
 	, m_uLastQryTime(0)
 	, m_iRequestID(0)
 	, m_bCatchup(false)
 	, m_bStopped(false)
+	, m_bApiInited(false)
 {
 }
 
@@ -191,8 +193,8 @@ void TraderYD::notifyLogin(int errorNo, int maxOrderRef, bool isMonitor)
 		///获取当前交易日
 		m_lDate = m_pUserAPI->getTradingDay();
 
-		write_log(m_sink, LL_INFO, "[TraderYD] {} Login succeed, AppID: {}, Trading Day: {}",
-			m_strUser.c_str(), m_strAppID.c_str(), m_lDate);
+		write_log(m_sink, LL_INFO, "[TraderYD] {} Login succeed, Trading Day: {}",
+			m_strUser.c_str(), m_lDate);
 	}
 	else
 	{
@@ -506,9 +508,6 @@ bool TraderYD::init(WTSVariant* config)
 	m_strUser = config->getCString("user");
 	m_strPass = config->getCString("pass");
 
-	m_strAppID = config->getCString("appid");
-	m_strAuthCode = config->getCString("authcode");
-
 	std::string module = config->getCString("ydmodule");
 	if (module.empty())
 		module = "yd";
@@ -548,6 +547,28 @@ void TraderYD::connect()
 	if (m_pUserAPI)
 	{
 		m_pUserAPI->start(this);
+	}
+
+	if (m_thrdWorker == NULL)
+	{
+		m_thrdWorker.reset(new StdThread([this]() {
+			while (!m_bStopped)
+			{
+				if (m_queQuery.empty())
+				{
+					std::this_thread::sleep_for(std::chrono::milliseconds(1));
+					continue;
+				}
+
+				CommonExecuter& handler = m_queQuery.front();
+				handler();
+
+				{
+					StdUniqueLock lock(m_mtxQuery);
+					m_queQuery.pop();
+				}
+			}
+		}));
 	}
 }
 
@@ -616,7 +637,7 @@ int TraderYD::doLogin()
 		return 0;
 	}
 
-	if (!m_pUserAPI->login(m_strUser.c_str(), m_strPass.c_str(), m_strAppID.c_str(), m_strAuthCode.c_str()))
+	if (!m_pUserAPI->login(m_strUser.c_str(), m_strPass.c_str(), NULL, NULL))
 	{
 		if (m_sink)
 			write_log(m_sink, LL_ERROR, "[TraderYD] Sending login request failed");
@@ -827,6 +848,7 @@ WTSOrderInfo* TraderYD::makeOrderInfo(const YDOrder* orderField, const YDInstrum
 		return NULL;
 
 	WTSOrderInfo* pRet = WTSOrderInfo::create();
+	pRet->setContractInfo(contract);
 	pRet->setPrice(orderField->Price);
 	pRet->setVolume(orderField->OrderVolume);
 	pRet->setDirection(wrapDirectionType(orderField->Direction, orderField->OffsetFlag));
@@ -890,6 +912,7 @@ WTSEntrust* TraderYD::makeEntrust(const YDInputOrder *entrustField, const YDInst
 		entrustField->OrderVolume,
 		entrustField->Price,
 		ct->getExchg());
+	pRet->setContractInfo(ct);
 
 	pRet->setDirection(wrapDirectionType(entrustField->Direction, entrustField->OffsetFlag));
 	pRet->setOffsetType(wrapOffsetType(entrustField->OffsetFlag));
@@ -927,6 +950,7 @@ WTSTradeInfo* TraderYD::makeTradeRecord(const YDTrade *tradeField, const YDInstr
 	WTSSessionInfo* sInfo = commInfo->getSessionInfo();
 
 	WTSTradeInfo *pRet = WTSTradeInfo::create(contract->getCode(), commInfo->getExchg());
+	pRet->setContractInfo(contract);
 	pRet->setVolume(tradeField->Volume);
 	pRet->setPrice(tradeField->Price);
 	pRet->setTradeID(fmt::format("{}",tradeField->TradeID).c_str());

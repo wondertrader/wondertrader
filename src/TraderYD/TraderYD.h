@@ -124,9 +124,6 @@ protected:
 	std::string		m_strUser;
 	std::string		m_strPass;
 
-	std::string		m_strAppID;
-	std::string		m_strAuthCode;
-
 	bool			m_bCatchup;
 	bool			m_bApiInited;
 
