@@ -414,7 +414,7 @@ public:
 					//TODO: 这样的判断存在一个假设，最后一位是数字的一定是期货分月合约，以后可能会有问题，先注释一下
 					//那么code得加上品种id
 					//郑商所得单独处理一下，这个只能hardcode了
-					if (strcmp(codeInfo._product, "CZCE") == 0)
+					if (strcmp(codeInfo._exchg, "CZCE") == 0)
 						fmt::format_to(codeInfo._code, "{}{}", codeInfo._product, ay[2].c_str() + 1);
 					else
 						fmt::format_to(codeInfo._code, "{}{}", codeInfo._product, ay[2]);
