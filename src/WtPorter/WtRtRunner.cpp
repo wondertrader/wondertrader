@@ -73,7 +73,7 @@ WtRtRunner::WtRtRunner()
 	, _cb_hft_orddtl(NULL)
 	, _cb_hft_ordque(NULL)
 	, _cb_hft_trans(NULL)
-
+	, _cb_hft_position(NULL)
 	, _cb_hft_sessevt(NULL)
 
 	, _cb_exec_cmd(NULL)
@@ -177,7 +177,7 @@ void WtRtRunner::registerSelCallbacks(FuncStraInitCallback cbInit, FuncStraTickC
 
 void WtRtRunner::registerHftCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraBarCallback cbBar, 
 	FuncHftChannelCallback cbChnl, FuncHftOrdCallback cbOrd, FuncHftTrdCallback cbTrd, FuncHftEntrustCallback cbEntrust,
-	FuncStraOrdDtlCallback cbOrdDtl, FuncStraOrdQueCallback cbOrdQue, FuncStraTransCallback cbTrans, FuncSessionEvtCallback cbSessEvt)
+	FuncStraOrdDtlCallback cbOrdDtl, FuncStraOrdQueCallback cbOrdQue, FuncStraTransCallback cbTrans, FuncSessionEvtCallback cbSessEvt, FuncHftPosCallback cbPosition)
 {
 	_cb_hft_init = cbInit;
 	_cb_hft_tick = cbTick;
@@ -193,6 +193,8 @@ void WtRtRunner::registerHftCallbacks(FuncStraInitCallback cbInit, FuncStraTickC
 	_cb_hft_trans = cbTrans;
 
 	_cb_hft_sessevt = cbSessEvt;
+
+	_cb_hft_position = cbPosition;
 
 	WTSLogger::info("Callbacks of HFT engine registration done");
 }
@@ -457,6 +459,12 @@ void WtRtRunner::hft_on_trade(uint32_t cHandle, WtUInt32 localid, const char* st
 {
 	if (_cb_hft_trd)
 		_cb_hft_trd(cHandle, localid, stdCode, isBuy, vol, price, userTag);
+}
+
+void WtRtRunner::hft_on_position(uint32_t cHandle, const char* stdCode, bool isLong, double prevol, double preavail, double newvol, double newavail)
+{
+	if (_cb_hft_position)
+		_cb_hft_position(cHandle, stdCode, isLong, prevol, preavail, newvol, newavail);
 }
 
 bool WtRtRunner::config(const char* cfgFile, bool isFile /* = true */)

@@ -83,7 +83,7 @@ public:
 	void registerSelCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar, FuncSessionEvtCallback cbSessEvt);
 	void registerHftCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraBarCallback cbBar,
 		FuncHftChannelCallback cbChnl, FuncHftOrdCallback cbOrd, FuncHftTrdCallback cbTrd, FuncHftEntrustCallback cbEntrust,
-		FuncStraOrdDtlCallback cbOrdDtl, FuncStraOrdQueCallback cbOrdQue, FuncStraTransCallback cbTrans, FuncSessionEvtCallback cbSessEvt);
+		FuncStraOrdDtlCallback cbOrdDtl, FuncStraOrdQueCallback cbOrdQue, FuncStraTransCallback cbTrans, FuncSessionEvtCallback cbSessEvt, FuncHftPosCallback cbPosition);
 
 	void registerEvtCallback(FuncEventCallback cbEvt);
 
@@ -212,6 +212,7 @@ private:
 	FuncHftOrdCallback		_cb_hft_ord;
 	FuncHftTrdCallback		_cb_hft_trd;
 	FuncHftEntrustCallback	_cb_hft_entrust;
+	FuncHftPosCallback		_cb_hft_position;
 
 	FuncStraOrdQueCallback	_cb_hft_ordque;
 	FuncStraOrdDtlCallback	_cb_hft_orddtl;
