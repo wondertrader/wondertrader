@@ -67,7 +67,7 @@ bool HisDataReplayer::init(WTSVariant* cfg, EventNotifier* notifier /* = NULL */
 	_mode = cfg->getCString("mode");
 	_base_dir = StrUtil::standardisePath(cfg->getCString("path"));
 	
-	bool isRangeCfg = (_begin_time == 0 || _end_time == 0);//ÊÇ·ñ´ÓÅäÖÃÎÄ¼ş¶ÁÈ¡»Ø²âÇø¼ä
+	bool isRangeCfg = (_begin_time == 0 || _end_time == 0);//æ˜¯å¦ä»é…ç½®æ–‡ä»¶è¯»å–å›æµ‹åŒºé—´
 	if(_begin_time == 0)
 		_begin_time = cfg->getUInt64("stime");
 
@@ -79,7 +79,7 @@ bool HisDataReplayer::init(WTSVariant* cfg, EventNotifier* notifier /* = NULL */
 	_tick_enabled = cfg->getBoolean("tick");
 	WTSLogger::info("Tick data replaying is %s", _tick_enabled ? "enabled" : "disabled");
 
-	//»ù´¡Êı¾İÎÄ¼ş
+	//åŸºç¡€æ•°æ®æ–‡ä»¶
 	WTSVariant* cfgBF = cfg->get("basefiles");
 	if (cfgBF->get("session"))
 		_bd_mgr.loadSessions(cfgBF->getCString("session"));
@@ -130,8 +130,8 @@ bool HisDataReplayer::init(WTSVariant* cfg, EventNotifier* notifier /* = NULL */
 
 	/*
 	 *	By Wesley @ 2021.12.20
-	 *	ÏÈ´Óextloader¼ÓÔØ³ıÈ¨Òò×Ó
-	 *	Èç¹û¼ÓÔØÊ§°Ü£¬²¢ÇÒÅäÖÃÁË³ıÈ¨Òò×ÓÎÄ¼ş£¬ÔÙ¼ÓÔØ³ıÈ¨Òò×ÓÎÄ¼ş
+	 *	å…ˆä»extloaderåŠ è½½é™¤æƒå› å­
+	 *	å¦‚æœåŠ è½½å¤±è´¥ï¼Œå¹¶ä¸”é…ç½®äº†é™¤æƒå› å­æ–‡ä»¶ï¼Œå†åŠ è½½é™¤æƒå› å­æ–‡ä»¶
 	 */
 	bool bLoaded = loadStkAdjFactorsFromLoader();
 
@@ -159,7 +159,7 @@ bool HisDataReplayer::loadStkAdjFactorsFromLoader()
 			fctrLst.emplace_back(adjFact);
 		}
 
-		//Ò»¶¨Òª°ÑµÚÒ»Ìõ¼Ó½øÈ¥£¬²»È»Èç¹ûÊÇÇ°¸´È¨µÄ»°£¬¿ÉÄÜ»áÂ©´¦Àí×îÔçµÄÊı¾İ
+		//ä¸€å®šè¦æŠŠç¬¬ä¸€æ¡åŠ è¿›å»ï¼Œä¸ç„¶å¦‚æœæ˜¯å‰å¤æƒçš„è¯ï¼Œå¯èƒ½ä¼šæ¼å¤„ç†æœ€æ—©çš„æ•°æ®
 		AdjFactor adjFact;
 		adjFact._date = 19900101;
 		adjFact._factor = 1;
@@ -209,8 +209,8 @@ bool HisDataReplayer::loadStkAdjFactorsFromFile(const char* adjfile)
 
 			/*
 			 *	By Wesley @ 2021.12.21
-			 *	ÏÈ¼ì²écodeµÄ¸ñÊ½ÊÇ²»ÊÇ°üº¬PID£¬ÈçSTK.600000
-			 *	Èç¹û°üº¬PID£¬ÔòÖ±½Ó¸ñÊ½»¯£¬Èç¹û²»°üº¬£¬ÔòÇ¿ÖÆÎªSTK
+			 *	å…ˆæ£€æŸ¥codeçš„æ ¼å¼æ˜¯ä¸æ˜¯åŒ…å«PIDï¼Œå¦‚STK.600000
+			 *	å¦‚æœåŒ…å«PIDï¼Œåˆ™ç›´æ¥æ ¼å¼åŒ–ï¼Œå¦‚æœä¸åŒ…å«ï¼Œåˆ™å¼ºåˆ¶ä¸ºSTK
 			 */
 			bool bHasPID = (code.find('.') != std::string::npos);
 
@@ -232,7 +232,7 @@ bool HisDataReplayer::loadStkAdjFactorsFromFile(const char* adjfile)
 				fct_cnt++;
 			}
 
-			//Ò»¶¨Òª°ÑµÚÒ»Ìõ¼Ó½øÈ¥£¬²»È»Èç¹ûÊÇÇ°¸´È¨µÄ»°£¬¿ÉÄÜ»áÂ©´¦Àí×îÔçµÄÊı¾İ
+			//ä¸€å®šè¦æŠŠç¬¬ä¸€æ¡åŠ è¿›å»ï¼Œä¸ç„¶å¦‚æœæ˜¯å‰å¤æƒçš„è¯ï¼Œå¯èƒ½ä¼šæ¼å¤„ç†æœ€æ—©çš„æ•°æ®
 			AdjFactor adjFact;
 			adjFact._date = 19900101;
 			adjFact._factor = 1;
@@ -291,7 +291,7 @@ void HisDataReplayer::clear_cache()
 
 void HisDataReplayer::reset()
 {
-	//ÖØÖÃ²»»áÇå³ıµô»º´æ£¬¶øÊÇ½«¶ÁÈ¡µÄ±ê¼Ç»¹Ô­£¬ÕâÑù²»ÓÃÖØ¸´¼ÓÔØÖ÷¾ä
+	//é‡ç½®ä¸ä¼šæ¸…é™¤æ‰ç¼“å­˜ï¼Œè€Œæ˜¯å°†è¯»å–çš„æ ‡è®°è¿˜åŸï¼Œè¿™æ ·ä¸ç”¨é‡å¤åŠ è½½ä¸»å¥
 	for(auto& m : _ticks_cache)
 	{
 		HftDataList<WTSTickStruct>& cacheItem = (HftDataList<WTSTickStruct>&)m.second;
@@ -448,7 +448,7 @@ uint32_t HisDataReplayer::locate_barindex(const std::string& key, uint64_t now, 
 	else
 	{
 		if(bUpperBound)
-		{//Èç¹ûÊÇÕÒÉÏ±ß½ç£¬ÔòÒª±È½ÏÊ±¼äÏòÏÂĞŞÕı£¬ÒòÎªlower_boundº¯ÊıÕÒµÄÊÇ´óÓÚµÈÓÚcurTimeµÄKÏß
+		{//å¦‚æœæ˜¯æ‰¾ä¸Šè¾¹ç•Œï¼Œåˆ™è¦æ¯”è¾ƒæ—¶é—´å‘ä¸‹ä¿®æ­£ï¼Œå› ä¸ºlower_boundå‡½æ•°æ‰¾çš„æ˜¯å¤§äºç­‰äºcurTimeçš„Kçº¿
 			if ((isDay && it->date > bar.date) || (!isDay && it->time > bar.time))
 			{
 				it--;
@@ -508,9 +508,9 @@ void HisDataReplayer::run(bool bNeedDump/* = false*/)
 {
 	if(_task == NULL)
 	{
-		//Èç¹ûÃ»ÓĞÊ±¼äµ÷¶ÈÈÎÎñ,Ôò²ÉÓÃÖ÷KÏß»Ø·ÅµÄÄ£Ê½
+		//å¦‚æœæ²¡æœ‰æ—¶é—´è°ƒåº¦ä»»åŠ¡,åˆ™é‡‡ç”¨ä¸»Kçº¿å›æ”¾çš„æ¨¡å¼
 
-		//Èç¹ûÃ»ÓĞÈ·¶¨Ö÷KÏß,ÔòÈ·¶¨Ò»¸öÖÜÆÚ×î¶ÌµÄÖ÷KÏß
+		//å¦‚æœæ²¡æœ‰ç¡®å®šä¸»Kçº¿,åˆ™ç¡®å®šä¸€ä¸ªå‘¨æœŸæœ€çŸ­çš„ä¸»Kçº¿
 		if (_main_key.empty() && !_bars_cache.empty())
 		{
 			WTSKlinePeriod minPeriod = KP_DAY;
@@ -539,7 +539,7 @@ void HisDataReplayer::run(bool bNeedDump/* = false*/)
 
 		if(!_main_key.empty())
 		{
-			//Èç¹û¶©ÔÄÁËKÏß£¬Ôò°´ÕÕÖ÷KÏß½øĞĞ»Ø·Å
+			//å¦‚æœè®¢é˜…äº†Kçº¿ï¼Œåˆ™æŒ‰ç…§ä¸»Kçº¿è¿›è¡Œå›æ”¾
 			run_by_bars(bNeedDump);
 		}
 		else if(_tick_enabled)
@@ -548,7 +548,7 @@ void HisDataReplayer::run(bool bNeedDump/* = false*/)
 		}
 		else
 		{
-			//WTSLogger::info("Ã»ÓĞ¶©ÔÄÖ÷Á¦KÏßÇÒÎ´¿ª·Åtick»Ø²â,»Ø·ÅÖ±½ÓÍË³ö");
+			//WTSLogger::info("æ²¡æœ‰è®¢é˜…ä¸»åŠ›Kçº¿ä¸”æœªå¼€æ”¾tickå›æµ‹,å›æ”¾ç›´æ¥é€€å‡º");
 			WTSLogger::info("Main K bars not subscribed and backtesting of tick data not available , replaying done");
 			_listener->handle_replay_done();
 			if (_notifier)
@@ -565,7 +565,7 @@ void HisDataReplayer::run(bool bNeedDump/* = false*/)
 
 void HisDataReplayer::run_by_ticks(bool bNeedDump /* = false */)
 {
-	//Èç¹ûÃ»ÓĞ¶©ÔÄKÏß£¬ÇÒtick»Ø²âÊÇ´ò¿ªµÄ£¬Ôò°´ÕÕÃ¿ÈÕµÄtick½øĞĞ»Ø·Å
+	//å¦‚æœæ²¡æœ‰è®¢é˜…Kçº¿ï¼Œä¸”tickå›æµ‹æ˜¯æ‰“å¼€çš„ï¼Œåˆ™æŒ‰ç…§æ¯æ—¥çš„tickè¿›è¡Œå›æ”¾
 	uint32_t edt = (uint32_t)(_end_time / 10000);
 	uint32_t etime = (uint32_t)(_end_time % 10000);
 	uint64_t end_tdate = _bd_mgr.calcTradingDate(DEFAULT_SESSIONID, edt, etime, true);
@@ -647,8 +647,8 @@ void HisDataReplayer::run_by_bars(bool bNeedDump /* = false */)
 			uint64_t curBarTime = (uint64_t)_cur_date * 10000 + _cur_time;
 			if (_tick_enabled)
 			{
-				//Èç¹û¿ªÆôÁËtick»Ø·Å,ÔòÖ±½Ó»Ø·ÅtickÊı¾İ
-				//Èç¹ûtick»Ø·ÅÊ§°Ü£¬ËµÃ÷tickÊı¾İ²»´æÔÚ£¬ÔòĞèÒªÄ£Äâtick
+				//å¦‚æœå¼€å¯äº†tickå›æ”¾,åˆ™ç›´æ¥å›æ”¾tickæ•°æ®
+				//å¦‚æœtickå›æ”¾å¤±è´¥ï¼Œè¯´æ˜tickæ•°æ®ä¸å­˜åœ¨ï¼Œåˆ™éœ€è¦æ¨¡æ‹Ÿtick
 				_tick_simulated = !replayHftDatas(curBarTime, nextBarTime);
 			}
 
@@ -680,14 +680,14 @@ void HisDataReplayer::run_by_bars(bool bNeedDump /* = false */)
 
 			if (barList._cursor >= barList._bars.size())
 			{
-				//WTSLogger::info("È«²¿Êı¾İ¶¼ÒÑ»Ø·Å,»Ø·Å½áÊø");
+				//WTSLogger::info("å…¨éƒ¨æ•°æ®éƒ½å·²å›æ”¾,å›æ”¾ç»“æŸ");
 				WTSLogger::info("All back data replayed, replaying done");
 				break;
 			}
 		}
 		else
 		{
-			//WTSLogger::info("Êı¾İÉĞÎ´³õÊ¼»¯,»Ø·ÅÖ±½ÓÍË³ö");
+			//WTSLogger::info("æ•°æ®å°šæœªåˆå§‹åŒ–,å›æ”¾ç›´æ¥é€€å‡º");
 			WTSLogger::error("No back data initialized, replaying canceled");
 			break;
 		}
@@ -715,13 +715,13 @@ void HisDataReplayer::run_by_bars(bool bNeedDump /* = false */)
 
 void HisDataReplayer::run_by_tasks(bool bNeedDump /* = false */)
 {
-	//Ê±¼äµ÷¶ÈÈÎÎñ²»Îª¿Õ,Ôò°´ÕÕÊ±¼äµ÷¶ÈÈÎÎñ»Ø·Å
+	//æ—¶é—´è°ƒåº¦ä»»åŠ¡ä¸ä¸ºç©º,åˆ™æŒ‰ç…§æ—¶é—´è°ƒåº¦ä»»åŠ¡å›æ”¾
 	WTSSessionInfo* sInfo = NULL;
 	const char* DEF_SESS = (strlen(_task->_session) == 0) ? DEFAULT_SESSIONID : _task->_session;
 	sInfo = _bd_mgr.getSession(DEF_SESS);
 	WTSLogger::log_raw(LL_INFO, fmt::format("Start to backtest with task frequency from {}...", _begin_time).c_str());
 
-	//·ÖÖÓ¼´ÈÎÎñºÍÈÕ¼¶±ğÈÎÎñ·Ö¿ªĞ´
+	//åˆ†é’Ÿå³ä»»åŠ¡å’Œæ—¥çº§åˆ«ä»»åŠ¡åˆ†å¼€å†™
 	if (_task->_period != TPT_Minute)
 	{
 		uint32_t endtime = TimeUtils::getNextMinute(_task->_time, -1);
@@ -732,7 +732,7 @@ void HisDataReplayer::run_by_tasks(bool bNeedDump /* = false */)
 		for (; !_terminated;)
 		{
 			bool fired = false;
-			//»ñÈ¡ÉÏÒ»¸ö½»Ò×ÈÕµÄÈÕÆÚ
+			//è·å–ä¸Šä¸€ä¸ªäº¤æ˜“æ—¥çš„æ—¥æœŸ
 			uint32_t preTDate = TimeUtils::getNextDate(_cur_tdate, -1);
 			if (_cur_time == endtime)
 			{
@@ -765,15 +765,15 @@ void HisDataReplayer::run_by_tasks(bool bNeedDump /* = false */)
 							fired = true;
 						else if (bHasHoliday)
 						{
-							//ÉÏÒ»¸ö½»Ò×ÈÕÔÚÉÏ¸öÔÂ,ÇÒµ±Ç°ÈÕÆÚ´óÓÚ´¥·¢ÈÕÆÚ
-							//ËµÃ÷Õâ¸öÔÂµÄ¿ªÊ¼ÈÕÆÚÔÚ½Ú¼ÙÈÕÄÚ,Ë³ÑÓµ½½ñÌì
+							//ä¸Šä¸€ä¸ªäº¤æ˜“æ—¥åœ¨ä¸Šä¸ªæœˆ,ä¸”å½“å‰æ—¥æœŸå¤§äºè§¦å‘æ—¥æœŸ
+							//è¯´æ˜è¿™ä¸ªæœˆçš„å¼€å§‹æ—¥æœŸåœ¨èŠ‚å‡æ—¥å†…,é¡ºå»¶åˆ°ä»Šå¤©
 							if ((preTDate % 10000 / 100 < _cur_date % 10000 / 100) && _cur_date % 1000000 > _task->_day)
 							{
 								fired = true;
 							}
 							else if (preTDate % 1000000 < _task->_day && _cur_date % 1000000 > _task->_day)
 							{
-								//ÉÏÒ»¸ö½»Ò×ÈÕÔÚÍ¬Ò»¸öÔÂ,ÇÒĞ¡ÓÚ´¥·¢ÈÕÆÚ,µ«ÊÇ½ñÌì´óÓÚ´¥·¢ÈÕÆÚ,ËµÃ÷ÕıÈ·´¥·¢ÈÕÆÚµ½½Ú¼ÙÈÕÄÚ,Ë³ÑÓµ½½ñÌì
+								//ä¸Šä¸€ä¸ªäº¤æ˜“æ—¥åœ¨åŒä¸€ä¸ªæœˆ,ä¸”å°äºè§¦å‘æ—¥æœŸ,ä½†æ˜¯ä»Šå¤©å¤§äºè§¦å‘æ—¥æœŸ,è¯´æ˜æ­£ç¡®è§¦å‘æ—¥æœŸåˆ°èŠ‚å‡æ—¥å†…,é¡ºå»¶åˆ°ä»Šå¤©
 								fired = true;
 							}
 						}
@@ -791,7 +791,7 @@ void HisDataReplayer::run_by_tasks(bool bNeedDump /* = false */)
 							}
 							else if (preWD > weekDay && weekDay > _task->_day)
 							{
-								//ÉÏÒ»¸ö½»Ò×ÈÕµÄĞÇÆÚ´óÓÚ½ñÌìµÄĞÇÆÚ,ËµÃ÷»»ÁËÒ»ÖÜÁË
+								//ä¸Šä¸€ä¸ªäº¤æ˜“æ—¥çš„æ˜ŸæœŸå¤§äºä»Šå¤©çš„æ˜ŸæœŸ,è¯´æ˜æ¢äº†ä¸€å‘¨äº†
 								fired = true;
 							}
 							else if (preWD < _task->_day && weekDay > _task->_day)
@@ -810,9 +810,9 @@ void HisDataReplayer::run_by_tasks(bool bNeedDump /* = false */)
 
 			if (!fired)
 			{
-				//µ÷ÕûÊ±¼ä
-				//Èç¹ûµ±Ç°Ê±¼äĞ¡ÓÚÈÎÎñÊ±¼ä,ÔòÖ±½Ó¸³Öµ¼´¿É
-				//Èç¹ûµ±Ç°Ê±¼ä´óÓÚÈÎÎñÊ±¼ä,ÔòÖÁÉÙÒªµÈÏÂÒ»Ìì
+				//è°ƒæ•´æ—¶é—´
+				//å¦‚æœå½“å‰æ—¶é—´å°äºä»»åŠ¡æ—¶é—´,åˆ™ç›´æ¥èµ‹å€¼å³å¯
+				//å¦‚æœå½“å‰æ—¶é—´å¤§äºä»»åŠ¡æ—¶é—´,åˆ™è‡³å°‘è¦ç­‰ä¸‹ä¸€å¤©
 				if (_cur_time < endtime)
 				{
 					_cur_time = endtime;
@@ -832,7 +832,7 @@ void HisDataReplayer::run_by_tasks(bool bNeedDump /* = false */)
 			}
 			else
 			{
-				//ÓÃÇ°Ò»·ÖÖÓ×÷Îª½áÊøÊ±¼ä
+				//ç”¨å‰ä¸€åˆ†é’Ÿä½œä¸ºç»“æŸæ—¶é—´
 				uint32_t curDate = _cur_date;
 				uint32_t curTime = endtime;
 				bool bEndSession = sInfo->offsetTime(curTime) >= sInfo->getCloseTime(true);
@@ -850,7 +850,7 @@ void HisDataReplayer::run_by_tasks(bool bNeedDump /* = false */)
 			uint64_t nextTime = (uint64_t)_cur_date * 10000 + _cur_time;
 			if (nextTime > _end_time)
 			{
-				//WTSLogger::info("°´ÈÎÎñÖÜÆÚ»Ø²â½áÊø");
+				//WTSLogger::info("æŒ‰ä»»åŠ¡å‘¨æœŸå›æµ‹ç»“æŸ");
 				WTSLogger::info("Backtesting with task frequency is done");
 				if (_listener)
 				{
@@ -871,9 +871,9 @@ void HisDataReplayer::run_by_tasks(bool bNeedDump /* = false */)
 
 		for (; !_terminated;)
 		{
-			//Òª¿¼ÂÇµ½¿çÈÕµÄÇé¿ö
+			//è¦è€ƒè™‘åˆ°è·¨æ—¥çš„æƒ…å†µ
 			uint32_t mins = sInfo->timeToMinutes(_cur_time);
-			//Èç¹ûÒ»¿ªÊ¼²»ÄÜÕû³ı,ÔòÖ±½ÓĞŞÕıÒ»ÏÂ
+			//å¦‚æœä¸€å¼€å§‹ä¸èƒ½æ•´é™¤,åˆ™ç›´æ¥ä¿®æ­£ä¸€ä¸‹
 			if (mins % _task->_time != 0)
 			{
 				mins = mins / _task->_time + _task->_time;
@@ -900,7 +900,7 @@ void HisDataReplayer::run_by_tasks(bool bNeedDump /* = false */)
 
 			if (bNewTDate)
 			{
-				//»»ÈÕÁË
+				//æ¢æ—¥äº†
 				mins = _task->_time;
 				uint32_t nextTDate = _bd_mgr.getNextTDate(_task->_trdtpl, _cur_tdate, 1, true);
 
@@ -908,13 +908,13 @@ void HisDataReplayer::run_by_tasks(bool bNeedDump /* = false */)
 				{
 					if (sInfo->getOffsetMins() > 0)
 					{
-						//ÕæÊµÊ±¼äºóÒÆ,ËµÃ÷Ò¹ÅÌËã×÷ÏÂÒ»ÌìµÄ
+						//çœŸå®æ—¶é—´åç§»,è¯´æ˜å¤œç›˜ç®—ä½œä¸‹ä¸€å¤©çš„
 						_cur_date = _cur_tdate;
 						_cur_tdate = nextTDate;
 					}
 					else
 					{
-						//ÕæÊµÊ±¼äÇ°ÒÆ,ËµÃ÷Ò¹ÅÌÊÇÉÏÒ»ÌìµÄ,ÕâÖÖÇé¿ö¾Í²»ĞèÒª¶¯ÁË
+						//çœŸå®æ—¶é—´å‰ç§»,è¯´æ˜å¤œç›˜æ˜¯ä¸Šä¸€å¤©çš„,è¿™ç§æƒ…å†µå°±ä¸éœ€è¦åŠ¨äº†
 						_cur_tdate = nextTDate;
 						_cur_date = _cur_tdate;
 					}
@@ -936,7 +936,7 @@ void HisDataReplayer::run_by_tasks(bool bNeedDump /* = false */)
 				uint32_t dayMins = _cur_time / 100 * 60 + _cur_time % 100;
 				uint32_t nextDMins = newTime / 100 * 60 + newTime % 100;
 
-				//ÊÇ·ñµ½ÁËÒ»¸öĞÂµÄĞ¡½Ú
+				//æ˜¯å¦åˆ°äº†ä¸€ä¸ªæ–°çš„å°èŠ‚
 				bool bNewSec = (nextDMins - dayMins > _task->_time) && !bNewDay;
 
 				while (bNewSec && _bd_mgr.isHoliday(_task->_trdtpl, _cur_date, true))
@@ -948,7 +948,7 @@ void HisDataReplayer::run_by_tasks(bool bNeedDump /* = false */)
 			uint64_t nextTime = (uint64_t)_cur_date * 10000 + _cur_time;
 			if (nextTime > _end_time)
 			{
-				//WTSLogger::info("°´ÈÎÎñÖÜÆÚ»Ø²â½áÊø");
+				//WTSLogger::info("æŒ‰ä»»åŠ¡å‘¨æœŸå›æµ‹ç»“æŸ");
 				WTSLogger::info("Backtesting with task frequency is done");
 				if (_listener)
 				{
@@ -972,7 +972,7 @@ void HisDataReplayer::replayUnbars(uint64_t stime, uint64_t nowTime, uint32_t en
 		BarsList& barsList = (BarsList&)item.second;
 		if (barsList._period != KP_DAY)
 		{
-			//Èç¹ûÀúÊ·Êı¾İÖ¸±ê²»ÔÚÎ²²¿, ËµÃ÷ÊÇ»Ø²âÄ£Ê½, Òª¼ÌĞø»Ø·ÅÀúÊ·Êı¾İ
+			//å¦‚æœå†å²æ•°æ®æŒ‡æ ‡ä¸åœ¨å°¾éƒ¨, è¯´æ˜æ˜¯å›æµ‹æ¨¡å¼, è¦ç»§ç»­å›æ”¾å†å²æ•°æ®
 			if (barsList._bars.size() > barsList._cursor)
 			{
 				for (;;)
@@ -985,7 +985,7 @@ void HisDataReplayer::replayUnbars(uint64_t stime, uint64_t nowTime, uint32_t en
 						if(barTime <= stime)
 							continue;
 
-						//¿ª¸ßµÍÊÕ
+						//å¼€é«˜ä½æ”¶
 						WTSTickStruct& curTS = _day_cache[barsList._code];
 						strcpy(curTS.code, barsList._code.c_str());
 						curTS.action_date = _cur_date;
@@ -994,7 +994,7 @@ void HisDataReplayer::replayUnbars(uint64_t stime, uint64_t nowTime, uint32_t en
 						curTS.price = nextBar.open;
 						curTS.volume = nextBar.vol;
 
-						//¸üĞÂ¿ª¸ßµÍÈı¸ö×Ö¶Î
+						//æ›´æ–°å¼€é«˜ä½ä¸‰ä¸ªå­—æ®µ
 						if (decimal::eq(curTS.open, 0))
 							curTS.open = curTS.price;
 						curTS.high = max(curTS.price, curTS.high);
@@ -1063,7 +1063,7 @@ void HisDataReplayer::replayUnbars(uint64_t stime, uint64_t nowTime, uint32_t en
 
 						WTSSessionInfo* sInfo = get_session_info(realCode.c_str(), true);
 						uint32_t curTime = sInfo->getOpenTime();
-						//¿ª¸ßµÍÊÕ
+						//å¼€é«˜ä½æ”¶
 						WTSTickStruct curTS;
 						strcpy(curTS.code, realCode.c_str());
 						curTS.action_date = _cur_date;
@@ -1302,7 +1302,7 @@ uint64_t HisDataReplayer::replayHftDatasByDay(uint32_t curTDate)
 	uint64_t total_ticks = 0;
 	for (;!_terminated;)
 	{
-		//ÏÈÈ·¶¨ÏÂÒ»±ÊtickµÄÊ±¼ä
+		//å…ˆç¡®å®šä¸‹ä¸€ç¬”tickçš„æ—¶é—´
 		uint64_t nextTime = min(UINT64_MAX, getNextTickTime(curTDate));
 		nextTime = min(nextTime, getNextOrdDtlTime(curTDate));
 		nextTime = min(nextTime, getNextOrdQueTime(curTDate));
@@ -1311,16 +1311,18 @@ uint64_t HisDataReplayer::replayHftDatasByDay(uint32_t curTDate)
 		if(nextTime == UINT64_MAX)
 			break;
 
-		//ÔÙ¸ù¾İÊ±¼ä»Ø·ÅtickÊı¾İ
+		//å†æ ¹æ®æ—¶é—´å›æ”¾tickæ•°æ®
 		_cur_date = (uint32_t)(nextTime / 1000000000);
 		_cur_time = nextTime % 1000000000 / 100000;
 		_cur_secs = nextTime % 100000;
 
-		//1¡¢Ê×ÏÈ»Ø·ÅÎ¯ÍĞÃ÷Ï¸
+		//1ã€é¦–å…ˆå›æ”¾å§”æ‰˜æ˜ç»†
 		for (auto& v : _orddtl_sub_map)
 		{
 			const char* stdCode = v.first.c_str();
 			auto& itemList = _orddtl_cache[stdCode];
+			if (itemList._cursor > itemList._count)
+				continue;
 			auto& nextItem = itemList._items[itemList._cursor - 1];
 			uint64_t lastTime = (uint64_t)nextItem.action_date * 1000000000 + nextItem.action_time;
 			if (lastTime <= nextTime)
@@ -1335,11 +1337,13 @@ uint64_t HisDataReplayer::replayHftDatasByDay(uint32_t curTDate)
 			}
 		}
 
-		//2¡¢Æä´ÎÔÙ»Ø·Å³É½»Ã÷Ï¸
+		//2ã€å…¶æ¬¡å†å›æ”¾æˆäº¤æ˜ç»†
 		for (auto& v : _trans_sub_map)
 		{
 			const char* stdCode = v.first.c_str();
 			auto& itemList = _trans_cache[stdCode];
+			if (itemList._cursor > itemList._count)
+				continue;
 			auto& nextItem = itemList._items[itemList._cursor - 1];
 			uint64_t lastTime = (uint64_t)nextItem.action_date * 1000000000 + nextItem.action_time;
 			if (lastTime <= nextTime)
@@ -1354,12 +1358,14 @@ uint64_t HisDataReplayer::replayHftDatasByDay(uint32_t curTDate)
 			}
 		}
 
-		//3¡¢µÚÈı²½ÔÙ»Ø·ÅtickÊı¾İ
+		//3ã€ç¬¬ä¸‰æ­¥å†å›æ”¾tickæ•°æ®
 		for (auto& v : _tick_sub_map)
 		{
 			//std::string stdCode = v.first;
 			const char* stdCode = v.first.c_str();
 			auto& tickList = _ticks_cache[stdCode];
+			if (tickList._cursor > tickList._count)
+				continue;
 			WTSTickStruct& nextTick = tickList._items[tickList._cursor - 1];
 			uint64_t lastTime = (uint64_t)nextTick.action_date * 1000000000 + nextTick.action_time;
 			if (lastTime <= nextTime)
@@ -1375,11 +1381,13 @@ uint64_t HisDataReplayer::replayHftDatasByDay(uint32_t curTDate)
 			}
 		}
 		
-		//4¡¢×îºó»Ø·ÅÎ¯ÍĞ¶ÓÁĞ
+		//4ã€æœ€åå›æ”¾å§”æ‰˜é˜Ÿåˆ—
 		for (auto& v : _ordque_sub_map)
 		{
 			const char* stdCode = v.first.c_str();
 			auto& itemList = _ordque_cache[stdCode];
+			if (itemList._cursor > itemList._count)
+				continue;
 			auto& nextItem = itemList._items[itemList._cursor - 1];
 			uint64_t lastTime = (uint64_t)nextItem.action_date * 1000000000 + nextItem.action_time;
 			if (lastTime <= nextTime)
@@ -1417,11 +1425,13 @@ bool HisDataReplayer::replayHftDatas(uint64_t stime, uint64_t etime)
 		_cur_time = nextTime % 1000000000 / 100000;
 		_cur_secs = nextTime % 100000;
 		
-		//1¡¢Ê×ÏÈ»Ø·ÅÎ¯ÍĞÃ÷Ï¸
+		//1ã€é¦–å…ˆå›æ”¾å§”æ‰˜æ˜ç»†
 		for (auto& v : _orddtl_sub_map)
 		{
 			const char* stdCode = v.first.c_str();
 			auto& itemList = _orddtl_cache[stdCode];
+			if (itemList._cursor > itemList._count)
+				continue;
 			auto& nextItem = itemList._items[itemList._cursor - 1];
 			uint64_t lastTime = (uint64_t)nextItem.action_date * 1000000000 + nextItem.action_time;
 			if (lastTime <= nextTime)
@@ -1435,11 +1445,13 @@ bool HisDataReplayer::replayHftDatas(uint64_t stime, uint64_t etime)
 			}
 		}
 
-		//2¡¢Æä´ÎÔÙ»Ø·Å³É½»Ã÷Ï¸
+		//2ã€å…¶æ¬¡å†å›æ”¾æˆäº¤æ˜ç»†
 		for (auto& v : _trans_sub_map)
 		{
 			const char* stdCode = v.first.c_str();
 			auto& itemList = _trans_cache[stdCode];
+			if (itemList._cursor > itemList._count)
+				continue;
 			auto& nextItem = itemList._items[itemList._cursor - 1];
 			uint64_t lastTime = (uint64_t)nextItem.action_date * 1000000000 + nextItem.action_time;
 			if (lastTime <= nextTime)
@@ -1453,11 +1465,13 @@ bool HisDataReplayer::replayHftDatas(uint64_t stime, uint64_t etime)
 			}
 		}
 
-		//3¡¢µÚÈı²½ÔÙ»Ø·ÅtickÊı¾İ
+		//3ã€ç¬¬ä¸‰æ­¥å†å›æ”¾tickæ•°æ®
 		for (auto& v : _tick_sub_map)
 		{
 			const char* stdCode = v.first.c_str();
 			auto& itemList = _ticks_cache[stdCode];
+			if (itemList._cursor > itemList._count)
+				continue;
 			auto& nextItem = itemList._items[itemList._cursor - 1];
 			uint64_t lastTime = (uint64_t)nextItem.action_date * 1000000000 + nextItem.action_time;
 			if (lastTime <= nextTime)
@@ -1472,11 +1486,13 @@ bool HisDataReplayer::replayHftDatas(uint64_t stime, uint64_t etime)
 			}
 		}
 
-		//4¡¢×îºó»Ø·ÅÎ¯ÍĞ¶ÓÁĞ
+		//4ã€æœ€åå›æ”¾å§”æ‰˜é˜Ÿåˆ—
 		for (auto& v : _ordque_sub_map)
 		{
 			const char* stdCode = v.first.c_str();
 			auto& itemList = _ordque_cache[stdCode];
+			if (itemList._cursor > itemList._count)
+				continue;
 			auto& nextItem = itemList._items[itemList._cursor - 1];
 			uint64_t lastTime = (uint64_t)nextItem.action_date * 1000000000 + nextItem.action_time;
 			if (lastTime <= nextTime)
@@ -1496,12 +1512,12 @@ bool HisDataReplayer::replayHftDatas(uint64_t stime, uint64_t etime)
 
 void HisDataReplayer::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTDate /* = 0 */, bool tickSimulated /* = true */)
 {
-	//ÕâÀïÓ¦¸Ã´¥·¢¼ì²é
+	//è¿™é‡Œåº”è¯¥è§¦å‘æ£€æŸ¥
 	uint64_t nowTime = (uint64_t)uDate * 10000 + uTime;
 
 	//if(_task && endTDate != 0)
 	//{
-	//	//Èç¹ûÊÇ½»Ò×ÈÕ½áÊø,ÇåÀíµô·ÖÖÓÏß»º´æ,²»È»³ÔÄÚ´æÌ«¶à
+	//	//å¦‚æœæ˜¯äº¤æ˜“æ—¥ç»“æŸ,æ¸…ç†æ‰åˆ†é’Ÿçº¿ç¼“å­˜,ä¸ç„¶åƒå†…å­˜å¤ªå¤š
 	//	std::set<std::string> to_clear;
 	//	for (auto it = _bars_cache.begin(); it != _bars_cache.end(); it++)
 	//	{
@@ -1527,7 +1543,7 @@ void HisDataReplayer::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTD
 		double factor = barsList._factor;
 		if (barsList._period != KP_DAY)
 		{
-			//Èç¹ûÀúÊ·Êı¾İÖ¸±ê²»ÔÚÎ²²¿, ËµÃ÷ÊÇ»Ø²âÄ£Ê½, Òª¼ÌĞø»Ø·ÅÀúÊ·Êı¾İ
+			//å¦‚æœå†å²æ•°æ®æŒ‡æ ‡ä¸åœ¨å°¾éƒ¨, è¯´æ˜æ˜¯å›æµ‹æ¨¡å¼, è¦ç»§ç»­å›æ”¾å†å²æ•°æ®
 			if (barsList._bars.size() > barsList._cursor)
 			{
 				for (;;)
@@ -1544,7 +1560,7 @@ void HisDataReplayer::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTD
 								const std::string& ticker = _ticker_keys[barsList._code];
 								if (ticker == it->first)
 								{
-									//¿ª¸ßµÍÊÕ
+									//å¼€é«˜ä½æ”¶
 									WTSTickStruct& curTS = _day_cache[barsList._code];
 									strcpy(curTS.code, barsList._code.c_str());
 									curTS.action_date = _cur_date;
@@ -1553,7 +1569,7 @@ void HisDataReplayer::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTD
 									curTS.price = nextBar.open / factor;
 									curTS.volume = nextBar.vol;
 
-									//¸üĞÂ¿ª¸ßµÍÈı¸ö×Ö¶Î
+									//æ›´æ–°å¼€é«˜ä½ä¸‰ä¸ªå­—æ®µ
 									if (decimal::eq(curTS.open, 0))
 										curTS.open = curTS.price;
 									curTS.high = max(curTS.price, curTS.high);
@@ -1636,7 +1652,7 @@ void HisDataReplayer::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTD
 
 									WTSSessionInfo* sInfo = get_session_info(realCode.c_str(), true);
 									uint32_t curTime = sInfo->getCloseTime();
-									//¿ª¸ßµÍÊÕ
+									//å¼€é«˜ä½æ”¶
 									WTSTickStruct curTS;
 									strcpy(curTS.code, realCode.c_str());
 									curTS.action_date = _cur_date;
@@ -1698,7 +1714,7 @@ WTSKlineSlice* HisDataReplayer::get_kline_slice(const char* stdCode, const char*
 		_main_key = key;
 
 	//if(!_tick_enabled)
-	//²»×öÅĞ¶Ï,Ö÷ÒªÎªÁË·ÀÖ¹Ã»ÓĞtickÊı¾İ,¶ø²ÉÓÃµÚ¶ş·½°¸
+	//ä¸åšåˆ¤æ–­,ä¸»è¦ä¸ºäº†é˜²æ­¢æ²¡æœ‰tickæ•°æ®,è€Œé‡‡ç”¨ç¬¬äºŒæ–¹æ¡ˆ
 	{
 		if(_ticker_keys.find(stdCode) == _ticker_keys.end())
 			_ticker_keys[stdCode] = key;
@@ -1750,7 +1766,7 @@ WTSKlineSlice* HisDataReplayer::get_kline_slice(const char* stdCode, const char*
 			{
 				/*
 				 *	By Wesley @ 2021.12.20
-				 *	ÏÈ´Óextloader¼ÓÔØÊı¾İ£¬Èç¹û¼ÓÔØ²»µ½£¬ÔÙ×ßÔ­À´µÄÀúÊ·Êı¾İ´æ´¢ÒıÇæ¼ÓÔØ
+				 *	å…ˆä»extloaderåŠ è½½æ•°æ®ï¼Œå¦‚æœåŠ è½½ä¸åˆ°ï¼Œå†èµ°åŸæ¥çš„å†å²æ•°æ®å­˜å‚¨å¼•æ“åŠ è½½
 				 */
 				if(NULL != _bt_loader)
 					bHasHisData = cacheFinalBarsFromLoader(rawKey, stdCode, kp);
@@ -1777,7 +1793,7 @@ WTSKlineSlice* HisDataReplayer::get_kline_slice(const char* stdCode, const char*
 		{
 			/*
 			 *	By Wesley @ 2021.12.20
-			 *	ÏÈ´Óextloader¼ÓÔØÊı¾İ£¬Èç¹û¼ÓÔØ²»µ½£¬ÔÙ×ßÔ­À´µÄÀúÊ·Êı¾İ´æ´¢ÒıÇæ¼ÓÔØ
+			 *	å…ˆä»extloaderåŠ è½½æ•°æ®ï¼Œå¦‚æœåŠ è½½ä¸åˆ°ï¼Œå†èµ°åŸæ¥çš„å†å²æ•°æ®å­˜å‚¨å¼•æ“åŠ è½½
 			 */
 			if (NULL != _bt_loader)
 			{
@@ -1846,7 +1862,7 @@ WTSKlineSlice* HisDataReplayer::get_kline_slice(const char* stdCode, const char*
 	BarsList& kBlkPair = _bars_cache[key];
 	if (kBlkPair._cursor == UINT_MAX)
 	{
-		//»¹Ã»ÓĞ¾­¹ı³õÊ¼¶¨Î»
+		//è¿˜æ²¡æœ‰ç»è¿‡åˆå§‹å®šä½
 		WTSBarStruct bar;
 		bar.date = _cur_tdate;
 		if(kp != KP_DAY)
@@ -2022,8 +2038,8 @@ WTSTickSlice* HisDataReplayer::get_tick_slice(const char* stdCode, uint32_t coun
 		}
 	}
 	
-	//cursorÊÇÏÂÒ»±ÊtickµÄindex+1£¬´óÓÚµ±Ç°½ØÖ¹Ê±¼äµÄ
-	//ËùÒÔÒª»ñÈ¡µ±Ç°½ØÖ¹Ê±¼äÖ®Ç°µÄ×îºóÒ»±Êtick£¬ĞèÒª-2
+	//cursoræ˜¯ä¸‹ä¸€ç¬”tickçš„index+1ï¼Œå¤§äºå½“å‰æˆªæ­¢æ—¶é—´çš„
+	//æ‰€ä»¥è¦è·å–å½“å‰æˆªæ­¢æ—¶é—´ä¹‹å‰çš„æœ€åä¸€ç¬”tickï¼Œéœ€è¦-2
 	uint32_t eIdx = tickList._cursor - 2;
 	uint32_t sIdx = 0;
 	if (eIdx >= count - 1)
@@ -2405,7 +2421,7 @@ void HisDataReplayer::loadFees(const char* filename)
 
 	if (!StdFile::exists(filename))
 	{
-		//WTSLogger::error("ÊÖĞø·ÑÄ£°åÎÄ¼ş%s²»´æÔÚ", filename);
+		//WTSLogger::error("æ‰‹ç»­è´¹æ¨¡æ¿æ–‡ä»¶%sä¸å­˜åœ¨", filename);
 		WTSLogger::error("Fees template file %s not exists", filename);
 		return;
 	}
@@ -2415,7 +2431,7 @@ void HisDataReplayer::loadFees(const char* filename)
 	StdFile::read_file_content(filename, content);
 	if (content.empty())
 	{
-		//WTSLogger::error("ÊÖĞø·ÑÄ£°åÎÄ¼ş%sÎª¿Õ", filename);
+		//WTSLogger::error("æ‰‹ç»­è´¹æ¨¡æ¿æ–‡ä»¶%sä¸ºç©º", filename);
 		WTSLogger::error("Fees template file %s is empty", filename);
 		return;
 	}
@@ -2425,7 +2441,7 @@ void HisDataReplayer::loadFees(const char* filename)
 
 	if (root.HasParseError())
 	{
-		//WTSLogger::error("ÊÖĞø·ÑÄ£°åÎÄ¼ş%s½âÎöÊ§°Ü", filename);
+		//WTSLogger::error("æ‰‹ç»­è´¹æ¨¡æ¿æ–‡ä»¶%sè§£æå¤±è´¥", filename);
 		WTSLogger::error("Parsing fees template file %s failed", filename);
 		return;
 	}
@@ -2433,7 +2449,7 @@ void HisDataReplayer::loadFees(const char* filename)
 	WTSVariant* cfg = WTSVariant::createObject();
 	if (!jsonToVariant(root, cfg))
 	{
-		//WTSLogger::error("ÊÖĞø·ÑÄ£°åÎÄ¼ş%s×ª»»Ê§°Ü", filename);
+		//WTSLogger::error("æ‰‹ç»­è´¹æ¨¡æ¿æ–‡ä»¶%sè½¬æ¢å¤±è´¥", filename);
 		WTSLogger::error("Converting fees template file %s failed", filename);
 		return;
 	}
@@ -2451,7 +2467,7 @@ void HisDataReplayer::loadFees(const char* filename)
 
 	cfg->release();
 
-	//WTSLogger::info("¹²¼ÓÔØ%uÌõÊÖĞø·ÑÄ£°å", _fee_map.size());
+	//WTSLogger::info("å…±åŠ è½½%uæ¡æ‰‹ç»­è´¹æ¨¡æ¿", _fee_map.size());
 	WTSLogger::info("%u items of fees template loaded", _fee_map.size());
 }
 
@@ -2573,14 +2589,14 @@ void HisDataReplayer::checkUnbars()
 		if (bHasBars)
 			continue;
 
-		//Èç¹û¶©ÔÄÁËtick,µ«ÊÇÃ»ÓĞ¶ÔÓ¦µÄKÏßÊı¾İ,Ôò×Ô¶¯¼ÓÔØ1·ÖÖÓÏßµ½ÄÚ´æÖĞ
+		//å¦‚æœè®¢é˜…äº†tick,ä½†æ˜¯æ²¡æœ‰å¯¹åº”çš„Kçº¿æ•°æ®,åˆ™è‡ªåŠ¨åŠ è½½1åˆ†é’Ÿçº¿åˆ°å†…å­˜ä¸­
 		bool bHasHisData = false;
 		std::string key = StrUtil::printf("%s#m#1", stdCode);
 
 		/*
 		 *	By Wesley @ 2021.12.20
-		 *	ÏÈ´Óextloader¼ÓÔØ×îÖÕµÄKÏßÊı¾İ
-		 *	Èç¹û¼ÓÔØ²»µ½£¬ÔÙ´ÓÅäÖÃµÄÀúÊ·Êı¾İ´æ´¢ÒıÇæ¼ÓÔØÊı¾İ
+		 *	å…ˆä»extloaderåŠ è½½æœ€ç»ˆçš„Kçº¿æ•°æ®
+		 *	å¦‚æœåŠ è½½ä¸åˆ°ï¼Œå†ä»é…ç½®çš„å†å²æ•°æ®å­˜å‚¨å¼•æ“åŠ è½½æ•°æ®
 		 */
 		if (NULL != _bt_loader)
 		{
@@ -2607,7 +2623,7 @@ void HisDataReplayer::checkUnbars()
 
 		BarsList& kBlkPair = _unbars_cache[key];
 		
-		//»¹Ã»ÓĞ¾­¹ı³õÊ¼¶¨Î»
+		//è¿˜æ²¡æœ‰ç»è¿‡åˆå§‹å®šä½
 		WTSBarStruct bar;
 		bar.date = _cur_tdate;
 		bar.time = (_cur_date - 19900000) * 10000 + _cur_time;
@@ -2691,7 +2707,7 @@ bool HisDataReplayer::cacheRawTicksFromBin(const std::string& key, const char* s
 
 	std::string filename;
 	bool bHit = false;
-	//ÏÈ¼ì²éÓĞÃ»ÓĞHOT¡¢SNDµÄÖ÷Á¦´ÎÖ÷Á¦µÄtickÎÄ¼ş
+	//å…ˆæ£€æŸ¥æœ‰æ²¡æœ‰HOTã€SNDçš„ä¸»åŠ›æ¬¡ä¸»åŠ›çš„tickæ–‡ä»¶
 	if(!cInfo.isFlat())
 	{
 		const char* hot_flag = cInfo.isFlat() ? "" : (cInfo.isHot() ? "HOT" : "2ND");
@@ -2702,7 +2718,7 @@ bool HisDataReplayer::cacheRawTicksFromBin(const std::string& key, const char* s
 			bHit = true;
 	}
 
-	//Èç¹ûÃ»ÓĞÕÒµ½£¬Ôò¶ÁÈ¡·ÖÔÂºÏÔ¼
+	//å¦‚æœæ²¡æœ‰æ‰¾åˆ°ï¼Œåˆ™è¯»å–åˆ†æœˆåˆçº¦
 	if (!bHit)
 	{
 		std::stringstream ss;
@@ -2725,12 +2741,12 @@ bool HisDataReplayer::cacheRawTicksFromBin(const std::string& key, const char* s
 	HisTickBlockV2* tBlockV2 = NULL;
 	if(tBlock->_version == BLOCK_VERSION_CMP)
 	{
-		//Ñ¹Ëõ°æ±¾,ÒªÖØĞÂ¼ì²éÎÄ¼ş´óĞ¡
+		//å‹ç¼©ç‰ˆæœ¬,è¦é‡æ–°æ£€æŸ¥æ–‡ä»¶å¤§å°
 		tBlockV2 = (HisTickBlockV2*)content.c_str();
 
 		if (content.size() != (sizeof(HisTickBlockV2) + tBlockV2->_size))
 		{
-			//WTSLogger::error("ÀúÊ·TickÊı¾İÎÄ¼ş%s´óĞ¡Ğ£ÑéÊ§°Ü", filename.c_str());
+			//WTSLogger::error("å†å²Tickæ•°æ®æ–‡ä»¶%så¤§å°æ ¡éªŒå¤±è´¥", filename.c_str());
 			WTSLogger::error("Sizechecking of back tick data file %s failed", filename.c_str());
 			return false;
 		}
@@ -2746,7 +2762,7 @@ bool HisDataReplayer::cacheRawTicksFromBin(const std::string& key, const char* s
 	}
 	else
 	{
-		//ĞèÒª½âÑ¹
+		//éœ€è¦è§£å‹
 		std::string buf = WTSCmpHelper::uncompress_data(tBlockV2->_data, (uint32_t)tBlockV2->_size);
 		tickcnt = buf.size() / sizeof(WTSTickStruct);
 		ticksList._items.resize(tickcnt);
@@ -2801,12 +2817,12 @@ bool HisDataReplayer::cacheRawTicksFromCSV(const std::string& key, const char* s
 	std::string filename = ss.str();
 	if (StdFile::exists(filename.c_str()))
 	{
-		//Èç¹ûÓĞ¸ñÊ½»¯µÄÀúÊ·Êı¾İÎÄ¼ş, ÔòÖ±½Ó¶ÁÈ¡
+		//å¦‚æœæœ‰æ ¼å¼åŒ–çš„å†å²æ•°æ®æ–‡ä»¶, åˆ™ç›´æ¥è¯»å–
 		std::string content;
 		StdFile::read_file_content(filename.c_str(), content);
 		if (content.size() < sizeof(HisTickBlockV2))
 		{
-			//WTSLogger::error("ÀúÊ·TickÊı¾İÎÄ¼ş%s´óĞ¡Ğ£ÑéÊ§°Ü", filename.c_str());
+			//WTSLogger::error("å†å²Tickæ•°æ®æ–‡ä»¶%så¤§å°æ ¡éªŒå¤±è´¥", filename.c_str());
 			WTSLogger::error("Sizechecking of back tick data file %s failed", filename.c_str());
 			return false;
 		}
@@ -2825,7 +2841,7 @@ bool HisDataReplayer::cacheRawTicksFromCSV(const std::string& key, const char* s
 	}
 	else
 	{
-		//Èç¹ûÃ»ÓĞ¸ñÊ½»¯µÄÀúÊ·Êı¾İÎÄ¼ş, Ôò´Ócsv¼ÓÔØ
+		//å¦‚æœæ²¡æœ‰æ ¼å¼åŒ–çš„å†å²æ•°æ®æ–‡ä»¶, åˆ™ä»csvåŠ è½½
 		std::stringstream ss;
 		ss << _base_dir << "csv/ticks/" << stdCode << "_tick_" << uDate << ".csv";
 		std::string csvfile = ss.str();
@@ -2852,14 +2868,14 @@ bool HisDataReplayer::cacheRawTicksFromCSV(const std::string& key, const char* s
 			if (strlen(buffer) == 0)
 				continue;
 
-			//Ìø¹ıÍ·²¿
+			//è·³è¿‡å¤´éƒ¨
 			if (!headerskipped)
 			{
 				headerskipped = true;
 				continue;
 			}
 
-			//ÖğĞĞ¶ÁÈ¡
+			//é€è¡Œè¯»å–
 			StringVector ay = StrUtil::split(buffer, ",");
 			WTSTickStruct ticks;
 			ticks.action_date = strToDate(ay[0].c_str());
@@ -2870,18 +2886,18 @@ bool HisDataReplayer::cacheRawTicksFromCSV(const std::string& key, const char* s
 
 			if (tickList._items.size() % 1000 == 0)
 			{
-				//WTSLogger::info("ÒÑ¶ÁÈ¡Êı¾İ%uÌõ", tickList._items.size());
+				//WTSLogger::info("å·²è¯»å–æ•°æ®%uæ¡", tickList._items.size());
 				WTSLogger::info("%u lines of data loaded", tickList._items.size());
 			}
 		}
 		tickList._count = tickList._items.size();
 		ifs.close();
-		//WTSLogger::info("Êı¾İÎÄ¼ş%sÈ«²¿¶ÁÈ¡Íê³É, ¹²%uÌõ", csvfile.c_str(), tickList._items.size());
+		//WTSLogger::info("æ•°æ®æ–‡ä»¶%så…¨éƒ¨è¯»å–å®Œæˆ, å…±%uæ¡", csvfile.c_str(), tickList._items.size());
 		WTSLogger::info("Data file %s all loaded, totally %u items", csvfile.c_str(), tickList._items.size());
 
 		/*
 		 *	By Wesley @ 2021.12.14
-		 *	ÕâÒ»¶ÎÖ®Ç°ÓĞbug£¬Ö®Ç°Ã»ÓĞ°ÑÎÄ¼şÍ·Ğ´µ½ÎÄ¼şÀï£¬ËùÒÔ×ª´¢µÄdsb½âÎöµÄÊ±ºò»áÅ×³öÒì³£
+		 *	è¿™ä¸€æ®µä¹‹å‰æœ‰bugï¼Œä¹‹å‰æ²¡æœ‰æŠŠæ–‡ä»¶å¤´å†™åˆ°æ–‡ä»¶é‡Œï¼Œæ‰€ä»¥è½¬å‚¨çš„dsbè§£æçš„æ—¶å€™ä¼šæŠ›å‡ºå¼‚å¸¸
 		 */
 		std::string content;
 		content.resize(sizeof(HisTickBlockV2));
@@ -2945,7 +2961,7 @@ bool HisDataReplayer::cacheFinalBarsFromLoader(const std::string& key, const cha
 	bool bHit = false;
 	if(_bt_loader->isAutoTrans() && StdFile::exists(filename.c_str()))
 	{
-		//Èç¹ûÖ§³Ö×Ô¶¯×ª´¢£¬ÔòÏÈ¶ÁÈ¡ÒÑ¾­×ª´¢µÄdsbÎÄ¼ş
+		//å¦‚æœæ”¯æŒè‡ªåŠ¨è½¬å‚¨ï¼Œåˆ™å…ˆè¯»å–å·²ç»è½¬å‚¨çš„dsbæ–‡ä»¶
 		std::string content;
 		StdFile::read_file_content(filename.c_str(), content);
 		if (content.size() < sizeof(HisKlineBlockV2))
@@ -2976,7 +2992,7 @@ bool HisDataReplayer::cacheFinalBarsFromLoader(const std::string& key, const cha
 
 	if(!bHit)
 	{
-		//Èç¹ûÃ»ÓĞ×ª´¢µÄÀúÊ·Êı¾İÎÄ¼ş, Ôò´Ócsv¼ÓÔØ
+		//å¦‚æœæ²¡æœ‰è½¬å‚¨çš„å†å²æ•°æ®æ–‡ä»¶, åˆ™ä»csvåŠ è½½
 		WTSLogger::info("Reading data via extended loader...");
 
 		BarsList& barList = bSubbed ? _bars_cache[key] : _unbars_cache[key];
@@ -3015,7 +3031,7 @@ bool HisDataReplayer::cacheFinalBarsFromLoader(const std::string& key, const cha
 
 			/*
 			 *	By Wesley @ 2021.12.14
-			 *	ÕâÒ»¶ÎÖ®Ç°ÓĞbug£¬Ö®Ç°Ã»ÓĞ°ÑÎÄ¼şÍ·Ğ´µ½ÎÄ¼şÀï£¬ËùÒÔ×ª´¢µÄdsb½âÎöµÄÊ±ºò»áÅ×³öÒì³£
+			 *	è¿™ä¸€æ®µä¹‹å‰æœ‰bugï¼Œä¹‹å‰æ²¡æœ‰æŠŠæ–‡ä»¶å¤´å†™åˆ°æ–‡ä»¶é‡Œï¼Œæ‰€ä»¥è½¬å‚¨çš„dsbè§£æçš„æ—¶å€™ä¼šæŠ›å‡ºå¼‚å¸¸
 			 */
 			std::string content;
 			content.resize(sizeof(HisKlineBlockV2));
@@ -3056,7 +3072,7 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 	std::stringstream ss;
 	ss << _base_dir << "his/" << dirname << "/" << cInfo._exchg << "/";
 
-	//ÕâÀï×Ô¶¯´´½¨£¬ÊÇÒòÎªºóÃæ×ª´¢ĞèÒª
+	//è¿™é‡Œè‡ªåŠ¨åˆ›å»ºï¼Œæ˜¯å› ä¸ºåé¢è½¬å‚¨éœ€è¦
 	if (!StdFile::exists(ss.str().c_str()))
 		boost::filesystem::create_directories(ss.str().c_str());
 
@@ -3077,12 +3093,12 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 	std::string filename = ss.str();
 	if (StdFile::exists(filename.c_str()))
 	{
-		//Èç¹ûÓĞ¸ñÊ½»¯µÄÀúÊ·Êı¾İÎÄ¼ş, ÔòÖ±½Ó¶ÁÈ¡
+		//å¦‚æœæœ‰æ ¼å¼åŒ–çš„å†å²æ•°æ®æ–‡ä»¶, åˆ™ç›´æ¥è¯»å–
 		std::string content;
 		StdFile::read_file_content(filename.c_str(), content);
 		if (content.size() < sizeof(HisKlineBlockV2))
 		{
-			//WTSLogger::error("ÀúÊ·KÏßÊı¾İÎÄ¼ş%s´óĞ¡Ğ£ÑéÊ§°Ü", filename.c_str());
+			//WTSLogger::error("å†å²Kçº¿æ•°æ®æ–‡ä»¶%så¤§å°æ ¡éªŒå¤±è´¥", filename.c_str());
 			WTSLogger::error("Sizechecking of back kbar data file %s failed", filename.c_str());
 			return false;
 		}
@@ -3106,7 +3122,7 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 	}
 	else
 	{
-		//Èç¹ûÃ»ÓĞ¸ñÊ½»¯µÄÀúÊ·Êı¾İÎÄ¼ş, Ôò´Ócsv¼ÓÔØ
+		//å¦‚æœæ²¡æœ‰æ ¼å¼åŒ–çš„å†å²æ•°æ®æ–‡ä»¶, åˆ™ä»csvåŠ è½½
 		std::stringstream ss;
 		ss << _base_dir << "csv/" << stdCode << "_" << pname << ".csv";
 		std::string csvfile = ss.str();
@@ -3127,7 +3143,7 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 		barList._period = period;
 		while (reader.next_row())
 		{
-			//ÖğĞĞ¶ÁÈ¡
+			//é€è¡Œè¯»å–
 			WTSBarStruct bs;
 			bs.date = strToDate(reader.get_string("date"));
 			if (period != KP_DAY)
@@ -3165,7 +3181,7 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 
 		/*
 		 *	By Wesley @ 2021.12.14
-		 *	ÕâÒ»¶ÎÖ®Ç°ÓĞbug£¬Ö®Ç°Ã»ÓĞ°ÑÎÄ¼şÍ·Ğ´µ½ÎÄ¼şÀï£¬ËùÒÔ×ª´¢µÄdsb½âÎöµÄÊ±ºò»áÅ×³öÒì³£
+		 *	è¿™ä¸€æ®µä¹‹å‰æœ‰bugï¼Œä¹‹å‰æ²¡æœ‰æŠŠæ–‡ä»¶å¤´å†™åˆ°æ–‡ä»¶é‡Œï¼Œæ‰€ä»¥è½¬å‚¨çš„dsbè§£æçš„æ—¶å€™ä¼šæŠ›å‡ºå¼‚å¸¸
 		 */
 		std::string content;
 		content.resize(sizeof(HisKlineBlockV2));
@@ -3220,8 +3236,8 @@ bool HisDataReplayer::cacheIntegratedFutBars(const std::string& key, const char*
 	{
 		/*
 		 *	By Wesley @ 2021.12.20
-		 *	±¾À´ÕâÀïÊÇÒªÏÈµ÷ÓÃ_loader->loadRawHisBars´ÓÍâ²¿¼ÓÔØÆ÷¶ÁÈ¡Ö÷Á¦ºÏÔ¼Êı¾İµÄ
-		 *	µ«ÊÇÉÏ²ã»áµ÷ÓÃÒ»´ÎloadFinalHisBars£¬ÕâÀïÔÙµ÷ÓÃloadRawHisBars¾ÍÈßÓàÁË£¬ËùÒÔÖ±½ÓÌø¹ı
+		 *	æœ¬æ¥è¿™é‡Œæ˜¯è¦å…ˆè°ƒç”¨_loader->loadRawHisBarsä»å¤–éƒ¨åŠ è½½å™¨è¯»å–ä¸»åŠ›åˆçº¦æ•°æ®çš„
+		 *	ä½†æ˜¯ä¸Šå±‚ä¼šè°ƒç”¨ä¸€æ¬¡loadFinalHisBarsï¼Œè¿™é‡Œå†è°ƒç”¨loadRawHisBarså°±å†—ä½™äº†ï¼Œæ‰€ä»¥ç›´æ¥è·³è¿‡
 		 */
 		std::stringstream ss;
 		ss << _base_dir << "his/" << pname << "/" << cInfo._exchg << "/" << cInfo._exchg << "." << cInfo._product << "_" << hot_flag << ".dsb";
@@ -3302,7 +3318,7 @@ bool HisDataReplayer::cacheIntegratedFutBars(const std::string& key, const char*
 		uint32_t rightDt = hotSec._e_date;
 		uint32_t leftDt = hotSec._s_date;
 
-		//ÒªÏÈ½«ÈÕÆÚ×ª»»Îª±ß½çÊ±¼ä
+		//è¦å…ˆå°†æ—¥æœŸè½¬æ¢ä¸ºè¾¹ç•Œæ—¶é—´
 		WTSBarStruct sBar, eBar;
 		if (period != KP_DAY)
 		{
@@ -3312,7 +3328,7 @@ bool HisDataReplayer::cacheIntegratedFutBars(const std::string& key, const char*
 			sBar.date = leftDt;
 			sBar.time = ((uint32_t)(sTime / 10000) - 19900000) * 10000 + (uint32_t)(sTime % 10000);
 
-			if (sBar.time < lastHotTime)	//Èç¹û±ß½çÊ±¼äĞ¡ÓÚÖ÷Á¦µÄ×îºóÒ»¸ùBarµÄÊ±¼ä, ËµÃ÷ÒÑ¾­ÓĞ½»²æÁË, Ôò²»ĞèÒªÔÙ´¦ÀíÁË
+			if (sBar.time < lastHotTime)	//å¦‚æœè¾¹ç•Œæ—¶é—´å°äºä¸»åŠ›çš„æœ€åä¸€æ ¹Barçš„æ—¶é—´, è¯´æ˜å·²ç»æœ‰äº¤å‰äº†, åˆ™ä¸éœ€è¦å†å¤„ç†äº†
 			{
 				bAllCovered = true;
 				sBar.time = lastHotTime + 1;
@@ -3321,13 +3337,13 @@ bool HisDataReplayer::cacheIntegratedFutBars(const std::string& key, const char*
 			eBar.date = rightDt;
 			eBar.time = ((uint32_t)(eTime / 10000) - 19900000) * 10000 + (uint32_t)(eTime % 10000);
 
-			if (eBar.time <= lastHotTime)	//ÓÒ±ß½çÊ±¼äĞ¡ÓÚ×îºóÒ»ÌõHotÊ±¼ä, ËµÃ÷È«²¿½»²æÁË, Ã»ÓĞÔÙÕÒµÄ±ØÒªÁË
+			if (eBar.time <= lastHotTime)	//å³è¾¹ç•Œæ—¶é—´å°äºæœ€åä¸€æ¡Hotæ—¶é—´, è¯´æ˜å…¨éƒ¨äº¤å‰äº†, æ²¡æœ‰å†æ‰¾çš„å¿…è¦äº†
 				break;
 		}
 		else
 		{
 			sBar.date = leftDt;
-			if (sBar.date < lastHotTime)	//Èç¹û±ß½çÊ±¼äĞ¡ÓÚÖ÷Á¦µÄ×îºóÒ»¸ùBarµÄÊ±¼ä, ËµÃ÷ÒÑ¾­ÓĞ½»²æÁË, Ôò²»ĞèÒªÔÙ´¦ÀíÁË
+			if (sBar.date < lastHotTime)	//å¦‚æœè¾¹ç•Œæ—¶é—´å°äºä¸»åŠ›çš„æœ€åä¸€æ ¹Barçš„æ—¶é—´, è¯´æ˜å·²ç»æœ‰äº¤å‰äº†, åˆ™ä¸éœ€è¦å†å¤„ç†äº†
 			{
 				bAllCovered = true;
 				sBar.date = lastHotTime + 1;
@@ -3341,14 +3357,14 @@ bool HisDataReplayer::cacheIntegratedFutBars(const std::string& key, const char*
 
 		/*
 		 *	By Wesley @ 2021.12.20
-		 *	ÏÈ´Óextloader¶ÁÈ¡·ÖÔÂºÏÔ¼µÄKÏßÊı¾İ
-		 *	Èç¹ûÃ»ÓĞ¶Áµ½£¬ÔÙ´ÓÎÄ¼ş¶ÁÈ¡
+		 *	å…ˆä»extloaderè¯»å–åˆ†æœˆåˆçº¦çš„Kçº¿æ•°æ®
+		 *	å¦‚æœæ²¡æœ‰è¯»åˆ°ï¼Œå†ä»æ–‡ä»¶è¯»å–
 		 */
 		bool bLoaded = false;
 		std::string buffer;
 		if (NULL != _bt_loader)
 		{
-			//·ÖÔÂºÏÔ¼´úÂë
+			//åˆ†æœˆåˆçº¦ä»£ç 
 			std::string wCode = StrUtil::printf("%s.%s.%s", cInfo._exchg, cInfo._product, (char*)curCode + strlen(cInfo._product));
 			bLoaded = _bt_loader->loadRawHisBars(&buffer, wCode.c_str(), period, [](void* obj, WTSBarStruct* bars, uint32_t count) {
 				std::string* buff = (std::string*)obj;
@@ -3416,9 +3432,9 @@ bool HisDataReplayer::cacheIntegratedFutBars(const std::string& key, const char*
 		});
 
 		uint32_t sIdx = pBar - firstBar;
-		if ((period == KP_DAY && pBar->date < sBar.date) || (period != KP_DAY && pBar->time < sBar.time))	//ÔçÓÚ±ß½çÊ±¼ä
+		if ((period == KP_DAY && pBar->date < sBar.date) || (period != KP_DAY && pBar->time < sBar.time))	//æ—©äºè¾¹ç•Œæ—¶é—´
 		{
-			//ÔçÓÚ±ß½çÊ±¼ä, ËµÃ÷Ã»ÓĞÊı¾İÁË, ÒòÎªlower_bound»á·µ»Ø´óÓÚµÈÓÚÄ¿±êÎ»ÖÃµÄÊı¾İ
+			//æ—©äºè¾¹ç•Œæ—¶é—´, è¯´æ˜æ²¡æœ‰æ•°æ®äº†, å› ä¸ºlower_boundä¼šè¿”å›å¤§äºç­‰äºç›®æ ‡ä½ç½®çš„æ•°æ®
 			continue;
 		}
 
@@ -3489,7 +3505,7 @@ const HisDataReplayer::AdjFactorList& HisDataReplayer::getAdjFactors(const char*
 	if (it == _adj_factors.end())
 	{
 		//By Wesley @ 2021.12.21
-		//Èç¹ûÃ»ÓĞ¸´È¨Òò×Ó£¬¾Í´Óextloader°´Ğè¶ÁÒ»´Î
+		//å¦‚æœæ²¡æœ‰å¤æƒå› å­ï¼Œå°±ä»extloaderæŒ‰éœ€è¯»ä¸€æ¬¡
 		if (_bt_loader)
 		{
             WTSLogger::info("No adjusting factors of %s cached, searching via extented loader...", key);
@@ -3506,7 +3522,7 @@ const HisDataReplayer::AdjFactorList& HisDataReplayer::getAdjFactors(const char*
 					fctrLst.emplace_back(adjFact);
 				}
 
-				//Ò»¶¨Òª°ÑµÚÒ»Ìõ¼Ó½øÈ¥£¬²»È»Èç¹ûÊÇÇ°¸´È¨µÄ»°£¬¿ÉÄÜ»áÂ©´¦Àí×îÔçµÄÊı¾İ
+				//ä¸€å®šè¦æŠŠç¬¬ä¸€æ¡åŠ è¿›å»ï¼Œä¸ç„¶å¦‚æœæ˜¯å‰å¤æƒçš„è¯ï¼Œå¯èƒ½ä¼šæ¼å¤„ç†æœ€æ—©çš„æ•°æ®
 				AdjFactor adjFact;
 				adjFact._date = 19900101;
 				adjFact._factor = 1;
@@ -3556,12 +3572,12 @@ bool HisDataReplayer::cacheAdjustedStkBars(const std::string& key, const char* s
 	WTSLogger::info("Loading adjusted bars of %s...", stdCode);
 	do
 	{
-		//ÏÈÖ±½Ó¶ÁÈ¡¸´È¨¹ıµÄÀúÊ·Êı¾İ,Â·¾¶Èç/his/day/sse/SH600000Q.dsb
+		//å…ˆç›´æ¥è¯»å–å¤æƒè¿‡çš„å†å²æ•°æ®,è·¯å¾„å¦‚/his/day/sse/SH600000Q.dsb
 
 		/*
 		 *	By Wesley @ 2021.12.20
-		 *	±¾À´ÕâÀïÊÇÒªÏÈµ÷ÓÃ_loader->loadRawHisBars´ÓÍâ²¿¼ÓÔØÆ÷¶ÁÈ¡Ö÷Á¦ºÏÔ¼Êı¾İµÄ
-		 *	µ«ÊÇÉÏ²ã»áµ÷ÓÃÒ»´ÎloadFinalHisBars£¬ÕâÀïÔÙµ÷ÓÃloadRawHisBars¾ÍÈßÓàÁË£¬ËùÒÔÖ±½ÓÌø¹ı
+		 *	æœ¬æ¥è¿™é‡Œæ˜¯è¦å…ˆè°ƒç”¨_loader->loadRawHisBarsä»å¤–éƒ¨åŠ è½½å™¨è¯»å–ä¸»åŠ›åˆçº¦æ•°æ®çš„
+		 *	ä½†æ˜¯ä¸Šå±‚ä¼šè°ƒç”¨ä¸€æ¬¡loadFinalHisBarsï¼Œè¿™é‡Œå†è°ƒç”¨loadRawHisBarså°±å†—ä½™äº†ï¼Œæ‰€ä»¥ç›´æ¥è·³è¿‡
 		 */
 		std::stringstream ss;
 		ss << _base_dir << "his/" << pname << "/" << cInfo._exchg << "/" << cInfo._code << (cInfo._exright == 1 ? "Q" : "H") << ".dsb";
@@ -3619,7 +3635,7 @@ bool HisDataReplayer::cacheAdjustedStkBars(const std::string& key, const char* s
 	{
 		const char* curCode = cInfo._code;
 
-		//ÒªÏÈ½«ÈÕÆÚ×ª»»Îª±ß½çÊ±¼ä
+		//è¦å…ˆå°†æ—¥æœŸè½¬æ¢ä¸ºè¾¹ç•Œæ—¶é—´
 		WTSBarStruct sBar;
 		if (period != KP_DAY)
 		{
@@ -3634,8 +3650,8 @@ bool HisDataReplayer::cacheAdjustedStkBars(const std::string& key, const char* s
 
 		/*
 		 *	By Wesley @ 2021.12.20
-		 *	ÏÈ´Óextloader¶ÁÈ¡Î´¸´È¨KÏßÊı¾İ
-		 *	Èç¹ûÃ»ÓĞ¶Áµ½£¬ÔÙ´ÓÎÄ¼ş¶ÁÈ¡
+		 *	å…ˆä»extloaderè¯»å–æœªå¤æƒKçº¿æ•°æ®
+		 *	å¦‚æœæ²¡æœ‰è¯»åˆ°ï¼Œå†ä»æ–‡ä»¶è¯»å–
 		 */
 		bool bLoaded = false;
 		std::string buffer;
@@ -3724,14 +3740,14 @@ bool HisDataReplayer::cacheAdjustedStkBars(const std::string& key, const char* s
 			if (!ayFactors.empty())
 			{
 				WTSLogger::info("Adjusting bars of %s with adjusting factors...", stdCode);
-				//×ö¸´È¨´¦Àí
+				//åšå¤æƒå¤„ç†
 				int32_t lastIdx = curCnt;
 				WTSBarStruct bar;
 				firstBar = tempAy->data();
 
-				//¸ù¾İ¸´È¨ÀàĞÍÈ·¶¨»ù´¡Òò×Ó
-				//Èç¹ûÊÇÇ°¸´È¨£¬ÔòÀúÊ·Êı¾İ»á±äĞ¡£¬ÒÔ×îºóÒ»¸ö¸´È¨Òò×ÓÎª»ù´¡Òò×Ó
-				//Èç¹ûÊÇºó¸´È¨£¬ÔòĞÂÊı¾İ»á±ä´ó£¬»ù´¡Òò×ÓÎª1
+				//æ ¹æ®å¤æƒç±»å‹ç¡®å®šåŸºç¡€å› å­
+				//å¦‚æœæ˜¯å‰å¤æƒï¼Œåˆ™å†å²æ•°æ®ä¼šå˜å°ï¼Œä»¥æœ€åä¸€ä¸ªå¤æƒå› å­ä¸ºåŸºç¡€å› å­
+				//å¦‚æœæ˜¯åå¤æƒï¼Œåˆ™æ–°æ•°æ®ä¼šå˜å¤§ï¼ŒåŸºç¡€å› å­ä¸º1
 				double baseFactor = 1.0;
 				if (cInfo._exright == 1)
 					baseFactor = ayFactors.back()._factor;
@@ -3743,7 +3759,7 @@ bool HisDataReplayer::cacheAdjustedStkBars(const std::string& key, const char* s
 					const AdjFactor& adjFact = *it;
 					bar.date = adjFact._date;
 
-					//µ÷ÕûÒò×Ó
+					//è°ƒæ•´å› å­
 					double factor = adjFact._factor / baseFactor;
 
 					WTSBarStruct* pBar = NULL;
@@ -3838,11 +3854,11 @@ bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* st
 	std::vector<std::vector<WTSBarStruct>*> barsSections;
 
 	uint32_t realCnt = 0;
-	if (!cInfo.isFlat() && cInfo.isFuture())//Èç¹ûÊÇ¶ÁÈ¡ÆÚ»õÖ÷Á¦Á¬ĞøÊı¾İ
+	if (!cInfo.isFlat() && cInfo.isFuture())//å¦‚æœæ˜¯è¯»å–æœŸè´§ä¸»åŠ›è¿ç»­æ•°æ®
 	{
 		return cacheIntegratedFutBars(key, stdCode, period);
 	}
-	else if (cInfo.isExright() && cInfo.isStock())//Èç¹ûÊÇ¶ÁÈ¡¹ÉÆ±¸´È¨Êı¾İ
+	else if (cInfo.isExright() && cInfo.isStock())//å¦‚æœæ˜¯è¯»å–è‚¡ç¥¨å¤æƒæ•°æ®
 	{
 		return cacheAdjustedStkBars(key, stdCode, period, bSubbed);
 	}
@@ -3850,8 +3866,8 @@ bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* st
 
 	/*
 	 *	By Wesley @ 2021.12.20
-	 *	ÏÈ´Óextloader¶ÁÈ¡
-	 *	Èç¹ûÃ»ÓĞ¶Áµ½£¬ÔÙ´ÓÎÄ¼ş¶ÁÈ¡
+	 *	å…ˆä»extloaderè¯»å–
+	 *	å¦‚æœæ²¡æœ‰è¯»åˆ°ï¼Œå†ä»æ–‡ä»¶è¯»å–
 	 */
 	bool bLoaded = false;
 	std::string buffer;
@@ -3866,13 +3882,13 @@ bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* st
 
 	if(!bLoaded)
 	{
-		//¶ÁÈ¡ÀúÊ·µÄ
+		//è¯»å–å†å²çš„
 		std::stringstream ss;
 		ss << _base_dir << "his/" << pname << "/" << cInfo._exchg << "/" << cInfo._code << ".dsb";
 		std::string filename = ss.str();
 		if (StdFile::exists(filename.c_str()))
 		{
-			//Èç¹ûÓĞ¸ñÊ½»¯µÄÀúÊ·Êı¾İÎÄ¼ş, ÔòÖ±½Ó¶ÁÈ¡
+			//å¦‚æœæœ‰æ ¼å¼åŒ–çš„å†å²æ•°æ®æ–‡ä»¶, åˆ™ç›´æ¥è¯»å–
 			std::string content;
 			StdFile::read_file_content(filename.c_str(), content);
 			if (content.size() < sizeof(HisKlineBlock))
