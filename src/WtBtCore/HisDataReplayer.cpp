@@ -2531,7 +2531,9 @@ WTSTickData* HisDataReplayer::get_last_tick(const char* stdCode)
 		uint32_t idx = tit - tickList._items.begin();
 		tickList._cursor = idx + 1;
 	}
-
+	
+	if (tickList._cursor > tickList._count)
+		return nullptr;
 	return WTSTickData::create(tickList._items[tickList._cursor - 1]);
 }
 
