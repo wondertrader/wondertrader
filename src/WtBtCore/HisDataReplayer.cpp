@@ -1251,11 +1251,27 @@ uint64_t HisDataReplayer::getNextTickTime(uint32_t curTDate, uint64_t stime /* =
 		if (!checkTicks(stdCode, curTDate))
 			continue;
 
+		WTSSessionInfo* sInfo = get_session_info(stdCode, true);
+
 		auto& tickList = _ticks_cache[stdCode];
 		if (tickList._cursor == UINT_MAX)
 		{
 			if (stime == UINT64_MAX)
-				tickList._cursor = 1;
+			{
+				//By Wesley @ 2022.03.06
+				//检查一下时间戳，如果不是交易时间的，就不回放了
+				uint32_t idx = 0;
+				while(true)
+				{
+					uint32_t oTime = sInfo->getOpenTime(true);
+					uint32_t tickMin = sInfo->offsetTime(tickList._items[idx].action_time / 100000);
+					if (sInfo->isInTradingTime(tickMin))
+					{
+						tickList._cursor = idx + 1;
+						break;
+					}
+				}
+			}
 			else
 			{
 				uint32_t uDate = (uint32_t)(stime / 10000);
@@ -1281,6 +1297,10 @@ uint64_t HisDataReplayer::getNextTickTime(uint32_t curTDate, uint64_t stime /* =
 			continue;
 
 		const WTSTickStruct& nextTick = tickList._items[tickList._cursor - 1];
+		//By Wesley @ 2022.03.06
+		//检查一下时间戳，如果不是交易时间的，就不回放了
+		if(!sInfo->isInTradingTime(nextTick.action_time/100000))
+			continue;
 		uint64_t lastTime = (uint64_t)nextTick.action_date * 1000000000 + nextTick.action_time;
 
 		nextTime = min(lastTime, nextTime);
@@ -1447,6 +1467,12 @@ uint64_t HisDataReplayer::replayHftDatasByDay(uint32_t curTDate)
 		if(nextTime == UINT64_MAX)
 			break;
 
+		/*
+		 *	By Wesley @ 2022.03.06
+		 *	下面的回放逻辑，都改成先修改光标cursor，再触发回调
+		 *	这个逻辑也符合实盘情况
+		 */
+
 		//再根据时间回放tick数据
 		_cur_date = (uint32_t)(nextTime / 1000000000);
 		_cur_time = nextTime % 1000000000 / 100000;
@@ -1467,12 +1493,13 @@ uint64_t HisDataReplayer::replayHftDatasByDay(uint32_t curTDate)
 			uint64_t lastTime = (uint64_t)nextItem.action_date * 1000000000 + nextItem.action_time;
 			if (lastTime <= nextTime)
 			{
+				itemList._cursor++;
+
 				WTSOrdDtlData* newData = WTSOrdDtlData::create(nextItem);
 				newData->setCode(stdCode);
 				_listener->handle_order_detail(stdCode, newData);
 				newData->release();
 
-				itemList._cursor++;
 				total_ticks++;
 			}
 		}
@@ -1492,12 +1519,13 @@ uint64_t HisDataReplayer::replayHftDatasByDay(uint32_t curTDate)
 			uint64_t lastTime = (uint64_t)nextItem.action_date * 1000000000 + nextItem.action_time;
 			if (lastTime <= nextTime)
 			{
+				itemList._cursor++;
+
 				WTSTransData* newData = WTSTransData::create(nextItem);
 				newData->setCode(stdCode);
 				_listener->handle_transaction(stdCode, newData);
 				newData->release();
-
-				itemList._cursor++;
+				
 				total_ticks++;
 			}
 		}
@@ -1518,13 +1546,14 @@ uint64_t HisDataReplayer::replayHftDatasByDay(uint32_t curTDate)
 			uint64_t lastTime = (uint64_t)nextTick.action_date * 1000000000 + nextTick.action_time;
 			if (lastTime <= nextTime)
 			{
+				tickList._cursor++;
+
 				update_price(stdCode, nextTick.price);
 				WTSTickData* newTick = WTSTickData::create(nextTick);
 				newTick->setCode(stdCode);
 				_listener->handle_tick(stdCode, newTick);
 				newTick->release();
-
-				tickList._cursor++;
+				
 				total_ticks++;
 			}
 		}
@@ -1544,12 +1573,13 @@ uint64_t HisDataReplayer::replayHftDatasByDay(uint32_t curTDate)
 			uint64_t lastTime = (uint64_t)nextItem.action_date * 1000000000 + nextItem.action_time;
 			if (lastTime <= nextTime)
 			{
+				itemList._cursor++;
+
 				WTSOrdQueData* newData = WTSOrdQueData::create(nextItem);
 				newData->setCode(stdCode);
 				_listener->handle_order_queue(stdCode, newData);
 				newData->release();
-
-				itemList._cursor++;
+				
 				total_ticks++;
 			}
 		}
