@@ -1457,6 +1457,12 @@ uint64_t HisDataReplayer::replayHftDatasByDay(uint32_t curTDate)
 		{
 			const char* stdCode = v.first.c_str();
 			auto& itemList = _orddtl_cache[stdCode];
+			//By Wesley @ 2022.03.06 
+			//这里加了一个数据的判断
+			//如果数据为空，则不再进行回放
+			if (itemList._items.empty())
+				continue;
+
 			auto& nextItem = itemList._items[itemList._cursor - 1];
 			uint64_t lastTime = (uint64_t)nextItem.action_date * 1000000000 + nextItem.action_time;
 			if (lastTime <= nextTime)
@@ -1476,6 +1482,12 @@ uint64_t HisDataReplayer::replayHftDatasByDay(uint32_t curTDate)
 		{
 			const char* stdCode = v.first.c_str();
 			auto& itemList = _trans_cache[stdCode];
+			//By Wesley @ 2022.03.06 
+			//这里加了一个数据的判断
+			//如果数据为空，则不再进行回放
+			if (itemList._items.empty())
+				continue;
+
 			auto& nextItem = itemList._items[itemList._cursor - 1];
 			uint64_t lastTime = (uint64_t)nextItem.action_date * 1000000000 + nextItem.action_time;
 			if (lastTime <= nextTime)
@@ -1495,7 +1507,13 @@ uint64_t HisDataReplayer::replayHftDatasByDay(uint32_t curTDate)
 		{
 			//std::string stdCode = v.first;
 			const char* stdCode = v.first.c_str();
-			auto& tickList = _ticks_cache[stdCode];
+			HftDataList<WTSTickStruct>& tickList = _ticks_cache[stdCode];
+			//By Wesley @ 2022.03.06 
+			//这里加了一个数据的判断
+			//如果数据为空，则不再进行回放
+			if(tickList._items.empty())
+				continue;
+
 			WTSTickStruct& nextTick = tickList._items[tickList._cursor - 1];
 			uint64_t lastTime = (uint64_t)nextTick.action_date * 1000000000 + nextTick.action_time;
 			if (lastTime <= nextTime)
@@ -1516,6 +1534,12 @@ uint64_t HisDataReplayer::replayHftDatasByDay(uint32_t curTDate)
 		{
 			const char* stdCode = v.first.c_str();
 			auto& itemList = _ordque_cache[stdCode];
+			//By Wesley @ 2022.03.06 
+			//这里加了一个数据的判断
+			//如果数据为空，则不再进行回放
+			if (itemList._items.empty())
+				continue;
+
 			auto& nextItem = itemList._items[itemList._cursor - 1];
 			uint64_t lastTime = (uint64_t)nextItem.action_date * 1000000000 + nextItem.action_time;
 			if (lastTime <= nextTime)
@@ -2448,9 +2472,12 @@ bool HisDataReplayer::checkTicks(const char* stdCode, uint32_t uDate)
 		bNeedCache = true;
 	else
 	{
-		auto& tickList = it->second;
+		HftDataList<WTSTickStruct>& tickList = (HftDataList<WTSTickStruct>&)it->second;
 		if (tickList._date != uDate)
+		{
+			tickList._items.clear();
 			bNeedCache = true;
+		}
 		else if (tickList._count == 0)
 			return false;
 	}
