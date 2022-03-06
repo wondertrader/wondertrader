@@ -1,9 +1,10 @@
 #include "WtTWapExeUnit.h"
 
-#include "../Share/TimeUtils.hpp"
-#include "../Includes/WTSVariant.hpp"
-#include "../Includes/WTSContractInfo.hpp"
-#include "../Share/decimal.h"
+#include "Share/TimeUtils.hpp"
+#include "Includes/WTSVariant.hpp"
+#include "Includes/WTSContractInfo.hpp"
+#include "Share/decimal.h"
+#include "Share/fmtlib.h"
 
 #include <math.h>
 
@@ -64,7 +65,7 @@ void WtTWapExeUnit::init(ExecuteContext* ctx, const char* stdCode, WTSVariant* c
 
 	_fire_span = (_total_secs - _tail_secs) / _total_times;		//单次发单时间间隔,要去掉尾部时间计算,这样的话,最后剩余的数量就有一个兜底发单的机制了
 
-	ctx->writeLog("执行单元WtTWapExeUnit[%s] 初始化完成,订单超时 %u 秒,执行时限 %u 秒,收尾时间 %u 秒", stdCode, _ord_sticky, _total_secs, _tail_secs);
+	ctx->writeLog(fmt::format("执行单元WtTWapExeUnit[{}] 初始化完成,订单超时 {} 秒,执行时限 {} 秒,收尾时间 {} 秒", stdCode, _ord_sticky, _total_secs, _tail_secs).c_str());
 }
 
 void WtTWapExeUnit::on_order(uint32_t localid, const char* stdCode, bool isBuy, double leftover, double price, bool isCanceled)
@@ -79,7 +80,7 @@ void WtTWapExeUnit::on_order(uint32_t localid, const char* stdCode, bool isBuy, 
 		if (_cancel_cnt > 0)
 			_cancel_cnt--;
 
-		_ctx->writeLog("@ %d cancelcnt -> %u", __LINE__, _cancel_cnt);
+		_ctx->writeLog(fmt::format("Order {} updated cancelcnt -> {}", _cancel_cnt).c_str());
 	}
 
 	//如果全部订单已撤销,这个时候一般是遇到要超时撤单
@@ -101,14 +102,14 @@ void WtTWapExeUnit::on_channel_ready()
 	if (undone != 0 && !_orders_mon.has_order())
 	{
 		//这说明有未完成单不在监控之中,先撤掉
-		_ctx->writeLog("%s有不在管理中的未完成单 %f,全部撤销", _code.c_str(), undone);
+		_ctx->writeLog(fmt::format("{} unmanaged orders of {}, cancel all", undone, _code).c_str());
 
 		bool isBuy = (undone > 0);
 		OrderIDs ids = _ctx->cancel(_code.c_str(), isBuy);
 		_orders_mon.push_order(ids.data(), ids.size(), _ctx->getCurTime());
 		_cancel_cnt += ids.size();
 
-		_ctx->writeLog("%s cancelcnt -> %u", __FUNCTION__, _cancel_cnt);
+		_ctx->writeLog(fmt::format("Unmanaged order updated cancelcnt to {}", _cancel_cnt).c_str());
 	}
 
 
@@ -163,28 +164,11 @@ void WtTWapExeUnit::on_tick(WTSTickData* newTick)
 				if (_ctx->cancel(localid))
 				{
 					_cancel_cnt++;
-					_ctx->writeLog("@ %d cancelcnt -> %u", __LINE__, _cancel_cnt);
+					_ctx->writeLog(fmt::format("Order expired, cancelcnt updated to {}", _cancel_cnt).c_str());
 					hasCancel = true;
 				}
 			});
 
-			/*
-			StdLocker<StdRecurMutex> lock(_mtx_ords);
-			for (auto v : _orders)
-			{
-				uint32_t localid = v.first;
-				uint64_t firetime = v.second;
-				if (now - firetime > _ord_sticky * 1000) //要撤单重挂
-				{
-					if (_ctx->cancel(localid))
-					{
-						_cancel_cnt++;
-						_ctx->writeLog("@ %d cancelcnt -> %u", __LINE__, _cancel_cnt);
-						hasCancel = true;
-					}
-				}
-			}
-			*/
 		}
 		
 		if (!hasCancel && (now - _last_fire_time >= _fire_span))
@@ -261,13 +245,13 @@ void WtTWapExeUnit::do_calc()
 	//有正在撤销的订单,则不能进行下一轮计算
 	if (_cancel_cnt != 0)
 	{
-		_ctx->writeLog("%s尚有未完成撤单指令,暂时退出本轮执行", _code.c_str());
+		_ctx->writeLog(fmt::format("{}尚有未完成撤单指令,暂时退出本轮执行", _code).c_str());
 		return;
 	}
 
 	if (_last_tick == NULL)
 	{
-		_ctx->writeLog("%s没有最新tick数据,退出执行逻辑", _code.c_str());
+		_ctx->writeLog(fmt::format("{}没有最新tick数据,退出执行逻辑", _code).c_str());
 		return;
 	}
 
@@ -277,7 +261,7 @@ void WtTWapExeUnit::do_calc()
 	//每一次发单要保障成交,所以如果有未完成单,说明上一轮没完成
 	if (undone != 0)
 	{
-		_ctx->writeLog("%s上一轮有挂单未完成,暂时退出本轮执行", _code.c_str());
+		_ctx->writeLog(fmt::format("{}上一轮有挂单未完成,暂时退出本轮执行", _code).c_str());
 		return;
 	}
 
@@ -302,7 +286,7 @@ void WtTWapExeUnit::do_calc()
 	if (leftTimes == 0)
 		curQty = diffQty;
 	else
-		curQty = max(1.0, round(abs(diffQty) / leftTimes)) * abs(diffQty) / diffQty;
+		curQty = std::max(1.0, round(abs(diffQty) / leftTimes)) * abs(diffQty) / diffQty;
 
 	//设定本轮目标仓位
 	_this_target = realPos + curQty;

@@ -4,7 +4,7 @@
 #include <thread>
 #include <mutex>
 
-#include "../Includes/HftStrategyDefs.h"
+#include "Includes/HftStrategyDefs.h"
 
 class WtHftStraDemo : public HftStrategy
 {

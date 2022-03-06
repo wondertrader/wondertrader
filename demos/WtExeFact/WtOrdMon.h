@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include <functional>
 
-#include "../Share/StdUtils.hpp"
+#include "Share/StdUtils.hpp"
 
 typedef std::function<void(uint32_t)> EnumOrderCallback;
 
@@ -38,6 +38,11 @@ public:
 	}
 
 	void check_orders(uint32_t expiresecs, uint64_t curTime, EnumOrderCallback callback);
+
+	inline void clear_orders()
+	{
+		_orders.clear();
+	}
 
 private:
 	typedef std::pair<uint64_t, bool> OrderPair;	//uint64_t - entertime, bool - cancancel

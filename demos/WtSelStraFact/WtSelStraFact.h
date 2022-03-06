@@ -1,7 +1,7 @@
 #pragma once
-#include "../Includes/SelStrategyDefs.h"
+#include "Includes/SelStrategyDefs.h"
 
-USING_NS_OTP;
+USING_NS_WTP;
 
 class WtSelStraFact : public ISelStrategyFact
 {

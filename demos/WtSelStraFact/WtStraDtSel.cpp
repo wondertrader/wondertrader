@@ -1,13 +1,14 @@
 #include "WtStraDtSel.h"
 
-#include "../Includes/ISelStraCtx.h"
+#include "Includes/ISelStraCtx.h"
 
-#include "../Includes/WTSContractInfo.hpp"
-#include "../Includes/WTSSessionInfo.hpp"
-#include "../Includes/WTSVariant.hpp"
-#include "../Includes/WTSDataDef.hpp"
-#include "../Share/decimal.h"
-#include "../Share/StrUtil.hpp"
+#include "Includes/WTSContractInfo.hpp"
+#include "Includes/WTSSessionInfo.hpp"
+#include "Includes/WTSVariant.hpp"
+#include "Includes/WTSDataDef.hpp"
+#include "Share/decimal.h"
+#include "Share/StrUtil.hpp"
+#include "Share/fmtlib.h"
 
 extern const char* FACT_NAME;
 
@@ -72,7 +73,7 @@ void WtStraDtSel::on_schedule(ISelStraCtx* ctx, uint32_t uDate, uint32_t uTime)
 
 		std::string code = curCode;
 		if (_isstk)
-			code += "Q";
+			code += "-";
 		WTSKlineSlice *kline = ctx->stra_get_bars(code.c_str(), _period.c_str(), _count);
 		if (kline == NULL)
 		{
@@ -102,12 +103,12 @@ void WtStraDtSel::on_schedule(ISelStraCtx* ctx, uint32_t uDate, uint32_t uTime)
 		double curPx = closes->at(-1);
 		closes->release();///!!!这个释放一定要做
 
-		double openPx = kline->open(-1);
-		double highPx = kline->high(-1);
-		double lowPx = kline->low(-1);
+		double openPx = kline->at(-1)->open;
+		double highPx = kline->at(-1)->high;
+		double lowPx = kline->at(-1)->low;
 
-		double upper_bound = openPx + _k1 * (max(hh - lc, hc - ll));
-		double lower_bound = openPx - _k2 * max(hh - lc, hc - ll);
+		double upper_bound = openPx + _k1 * (std::max(hh - lc, hc - ll));
+		double lower_bound = openPx - _k2 * std::max(hh - lc, hc - ll);
 
 		WTSCommodityInfo* commInfo = ctx->stra_get_comminfo(curCode.c_str());
 
@@ -118,13 +119,13 @@ void WtStraDtSel::on_schedule(ISelStraCtx* ctx, uint32_t uDate, uint32_t uTime)
 			{
 				ctx->stra_set_position(curCode.c_str(), 1 * trdUnit, "DT_EnterLong");
 				//向上突破
-				ctx->stra_log_text("%s 向上突破%.2f>=%.2f,多仓进场", curCode.c_str(), highPx, upper_bound);
+				ctx->stra_log_info(fmt::sprintf("%s 向上突破%.2f>=%.2f,多仓进场", curCode.c_str(), highPx, upper_bound).c_str());
 			}
 			else if (lowPx <= lower_bound && !_isstk)
 			{
 				ctx->stra_set_position(curCode.c_str(), -1 * trdUnit, "DT_EnterShort");
 				//向下突破
-				ctx->stra_log_text("%s 向下突破%.2f<=%.2f,空仓进场", curCode.c_str(), lowPx, lower_bound);
+				ctx->stra_log_info(fmt::sprintf("%s 向下突破%.2f<=%.2f,空仓进场", curCode.c_str(), lowPx, lower_bound).c_str());
 			}
 		}
 		//else if(curPos > 0)
@@ -134,7 +135,7 @@ void WtStraDtSel::on_schedule(ISelStraCtx* ctx, uint32_t uDate, uint32_t uTime)
 			{
 				//多仓出场
 				ctx->stra_set_position(curCode.c_str(), 0, "DT_ExitLong");
-				ctx->stra_log_text("%s 向下突破%.2f<=%.2f,多仓出场", curCode.c_str(), lowPx, lower_bound);
+				ctx->stra_log_info(fmt::sprintf("%s 向下突破%.2f<=%.2f,多仓出场", curCode.c_str(), lowPx, lower_bound).c_str());
 			}
 		}
 		//else if(curPos < 0)
@@ -144,7 +145,7 @@ void WtStraDtSel::on_schedule(ISelStraCtx* ctx, uint32_t uDate, uint32_t uTime)
 			{
 				//空仓出场
 				ctx->stra_set_position(curCode.c_str(), 0, "DT_ExitShort");
-				ctx->stra_log_text("%s 向上突破%.2f>=%.2f,空仓出场", curCode.c_str(), highPx, upper_bound);
+				ctx->stra_log_info(fmt::sprintf("%s 向上突破%.2f>=%.2f,空仓出场", curCode.c_str(), highPx, upper_bound).c_str());
 			}
 		}
 

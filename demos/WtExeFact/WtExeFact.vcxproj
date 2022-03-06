@@ -71,28 +71,28 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>$(MyDepends141)\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(MyDepends141)\include;$(SolutionDir)..\src;$(IncludePath)</IncludePath>
     <LibraryPath>$(MyDepends141)\lib\x86;$(LibraryPath)</LibraryPath>
     <TargetName>$(ProjectName)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
-    <IncludePath>$(MyDepends141)\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(MyDepends141)\include;$(SolutionDir)..\src;$(IncludePath)</IncludePath>
     <LibraryPath>$(MyDepends141)\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>$(MyDepends141)\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(MyDepends141)\include;$(SolutionDir)..\src;$(IncludePath)</IncludePath>
     <LibraryPath>$(MyDepends141)\lib\x86;$(LibraryPath)</LibraryPath>
     <TargetName>$(ProjectName)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
-    <IncludePath>$(MyDepends141)\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(MyDepends141)\include;$(SolutionDir)..\src;$(IncludePath)</IncludePath>
     <LibraryPath>$(MyDepends141)\lib\x64;$(LibraryPath)</LibraryPath>
     <TargetName>$(ProjectName)</TargetName>
   </PropertyGroup>
@@ -164,14 +164,12 @@
     <ClCompile Include="WtExeFact.cpp" />
     <ClCompile Include="WtMinImpactExeUnit.cpp" />
     <ClCompile Include="WtOrdMon.cpp" />
-    <ClCompile Include="WtSimpExeUnit.cpp" />
     <ClCompile Include="WtTWapExeUnit.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WtExeFact.h" />
     <ClInclude Include="WtMinImpactExeUnit.h" />
     <ClInclude Include="WtOrdMon.h" />
-    <ClInclude Include="WtSimpExeUnit.h" />
     <ClInclude Include="WtTWapExeUnit.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

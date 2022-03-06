@@ -7,10 +7,10 @@
  * 最小冲击执行单元
  */
 #pragma once
-#include "../Includes/ExecuteDefs.h"
+#include "Includes/ExecuteDefs.h"
 #include "WtOrdMon.h"
 
-USING_NS_OTP;
+USING_NS_WTP;
 
 class WtMinImpactExeUnit : public ExecuteUnit
 {
@@ -78,6 +78,12 @@ public:
 	virtual void set_position(const char* stdCode, double newVol) override;
 
 	/*
+	 *	清理全部持仓
+	 *	stdCode	合约代码
+	 */
+	virtual void clear_all_position(const char* stdCode) override;
+
+	/*
 	 *	交易通道就绪回调
 	 */
 	virtual void on_channel_ready() override;
@@ -90,6 +96,7 @@ public:
 private:
 	WTSTickData* _last_tick;	//上一笔行情
 	double		_target_pos;	//目标仓位
+	StdUniqueMutex	_mtx_calc;
 
 	WTSCommodityInfo*	_comm_info;
 	WTSSessionInfo*		_sess_info;

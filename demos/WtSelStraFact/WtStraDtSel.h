@@ -1,9 +1,9 @@
 #pragma once
-#include "../Includes/SelStrategyDefs.h"
+#include "Includes/SelStrategyDefs.h"
 
 #include <unordered_set>
 
-USING_NS_OTP;
+USING_NS_WTP;
 
 class WtStraDtSel : public SelStrategy
 {

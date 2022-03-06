@@ -8,7 +8,6 @@
  */
 #include "WtExeFact.h"
 
-#include "WtSimpExeUnit.h"
 #include "WtTWapExeUnit.h"
 #include "WtMinImpactExeUnit.h"
 
@@ -30,8 +29,6 @@ extern "C"
 };
 
 
-
-
 WtExeFact::WtExeFact()
 {
 }
@@ -48,16 +45,13 @@ const char* WtExeFact::getName()
 
 void WtExeFact::enumExeUnit(FuncEnumUnitCallback cb)
 {
-	cb(FACT_NAME, "WtSimpExeUnit", false);
 	cb(FACT_NAME, "WtTWapExeUnit", false);
 	cb(FACT_NAME, "WtMinImpactExeUnit", true);
 }
 
 ExecuteUnit* WtExeFact::createExeUnit(const char* name)
 {
-	if (strcmp(name, "WtSimpExeUnit") == 0)
-		return new WtSimpExeUnit();
-	else if (strcmp(name, "WtTWapExeUnit") == 0)
+	if (strcmp(name, "WtTWapExeUnit") == 0)
 		return new WtTWapExeUnit();
 	else if (strcmp(name, "WtMinImpactExeUnit") == 0)
 		return new WtMinImpactExeUnit();

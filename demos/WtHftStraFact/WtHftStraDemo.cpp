@@ -1,11 +1,12 @@
 #include "WtHftStraDemo.h"
-#include "../Includes/IHftStraCtx.h"
+#include "Includes/IHftStraCtx.h"
 
-#include "../Includes/WTSVariant.hpp"
-#include "../Includes/WTSDataDef.hpp"
-#include "../Includes/WTSContractInfo.hpp"
-#include "../Share/TimeUtils.hpp"
-#include "../Share/decimal.h"
+#include "Includes/WTSVariant.hpp"
+#include "Includes/WTSDataDef.hpp"
+#include "Includes/WTSContractInfo.hpp"
+#include "Share/TimeUtils.hpp"
+#include "Share/decimal.h"
+#include "Share/fmtlib.h"
 
 extern const char* FACT_NAME;
 
@@ -177,7 +178,7 @@ void WtHftStraDemo::check_orders()
 			{
 				_ctx->stra_cancel(localid);
 				_cancel_cnt++;
-				_ctx->stra_log_text("cancelcnt -> %u", _cancel_cnt);
+				_ctx->stra_log_info(fmt::format("Order expired, cancelcnt updated to {}", _cancel_cnt).c_str());
 			}
 			_mtx_ords.unlock();
 		}
@@ -214,7 +215,7 @@ void WtHftStraDemo::on_order(IHftStraCtx* ctx, uint32_t localid, const char* std
 		if (_cancel_cnt > 0)
 		{
 			_cancel_cnt--;
-			_ctx->stra_log_text("cancelcnt -> %u", _cancel_cnt);
+			_ctx->stra_log_info(fmt::format("cancelcnt -> {}", _cancel_cnt).c_str());
 		}
 		_mtx_ords.unlock();
 	}
@@ -227,7 +228,7 @@ void WtHftStraDemo::on_channel_ready(IHftStraCtx* ctx)
 	if (!decimal::eq(undone, 0) && _orders.empty())
 	{
 		//这说明有未完成单不在监控之中,先撤掉
-		_ctx->stra_log_text("%s有不在管理中的未完成单 %f 手,全部撤销", _code.c_str(), undone);
+		_ctx->stra_log_info(fmt::format("{}有不在管理中的未完成单 {} 手,全部撤销", _code, undone).c_str());
 
 		bool isBuy = (undone > 0);
 		OrderIDs ids = _ctx->stra_cancel(_code.c_str(), isBuy, undone);
@@ -237,7 +238,7 @@ void WtHftStraDemo::on_channel_ready(IHftStraCtx* ctx)
 		}
 		_cancel_cnt += ids.size();
 
-		_ctx->stra_log_text("cancelcnt -> %u", _cancel_cnt);
+		_ctx->stra_log_info(fmt::format("cancelcnt -> {}", _cancel_cnt).c_str());
 	}
 
 	_channel_ready = true;

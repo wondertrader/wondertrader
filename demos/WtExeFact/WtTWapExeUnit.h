@@ -1,9 +1,9 @@
 #pragma once
 #include "WtOrdMon.h"
-#include "../Includes/ExecuteDefs.h"
-#include "../Share/StdUtils.hpp"
+#include "Includes/ExecuteDefs.h"
+#include "Share/StdUtils.hpp"
 
-USING_NS_OTP;
+USING_NS_WTP;
 
 class WtTWapExeUnit : public ExecuteUnit
 {
