@@ -36,6 +36,8 @@ uint32_t makeLocalOrderID()
 
 std::vector<uint32_t> splitVolume(uint32_t vol)
 {
+	if (vol == 0) return std::move(std::vector<uint32_t>());
+
 	uint32_t minQty = 1;
 	uint32_t maxQty = 100;
 	uint32_t length = maxQty - minQty + 1;
@@ -63,7 +65,37 @@ std::vector<uint32_t> splitVolume(uint32_t vol)
 		}
 	}
 
-	return ret;
+	return std::move(ret);
+}
+
+std::vector<double> splitVolume(double vol, double minQty = 1.0, double maxQty = 100.0, double qtyTick = 1.0)
+{
+	auto length = (std::size_t)round((maxQty - minQty)/qtyTick) + 1;
+	std::vector<double> ret;
+	if (vol <= minQty)
+	{
+		ret.emplace_back(vol);
+	}
+	else
+	{
+		double left = vol;
+		srand((uint32_t)time(NULL));
+		while (left > 0)
+		{
+			double curVol = minQty + (rand() % length)*qtyTick;
+
+			if (curVol >= left)
+				curVol = left;
+
+			if (curVol == 0)
+				continue;
+
+			ret.emplace_back(curVol);
+			left -= curVol;
+		}
+	}
+
+	return std::move(ret);
 }
 
 uint32_t genRand(uint32_t maxVal = 10000)
@@ -503,6 +535,12 @@ OrderIDs HftMocker::stra_buy(const char* stdCode, double price, double qty, cons
 		return OrderIDs();
 	}
 
+	if (decimal::le(qty, 0))
+	{
+		log_error("Entrust error: qty {} <= 0", qty);
+		return OrderIDs();
+	}
+
 	uint32_t localid = makeLocalOrderID();
 
 	OrderInfo order;
@@ -620,6 +658,9 @@ bool HftMocker::procOrder(uint32_t localid)
 
 	double curPx = curTick->price();
 	double orderQty = ordInfo._isBuy ? curTick->askqty(0) : curTick->bidqty(0);	//看对手盘的数量
+	if (decimal::eq(orderQty, 0.0))
+		return false;
+
 	if (!_use_newpx)
 	{
 		curPx = ordInfo._isBuy ? curTick->askprice(0) : curTick->bidprice(0);
@@ -681,6 +722,12 @@ OrderIDs HftMocker::stra_sell(const char* stdCode, double price, double qty, con
 	if (commInfo == NULL)
 	{
 		log_error("Cannot find corresponding commodity info of %s", stdCode);
+		return OrderIDs();
+	}
+
+	if (decimal::le(qty, 0))
+	{
+		log_error("Entrust error: qty {} <= 0", qty);
 		return OrderIDs();
 	}
 
