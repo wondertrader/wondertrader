@@ -399,7 +399,7 @@ void HftMocker::on_init()
 
 void HftMocker::on_session_begin(uint32_t curTDate)
 {
-	//Ã¿¸ö½»Ò×ÈÕ¿ªÊ¼£¬Òª°Ñ¶³½á³Ö²ÖÖÃÁã
+	//æ¯ä¸ªäº¤æ˜“æ—¥å¼€å§‹ï¼Œè¦æŠŠå†»ç»“æŒä»“ç½®é›¶
 	for (auto& it : _pos_map)
 	{
 		const char* stdCode = it.first.c_str();
@@ -522,7 +522,7 @@ OrderIDs HftMocker::stra_buy(const char* stdCode, double price, double qty, cons
 
 	postTask([this, localid](){
 		const OrderInfo& ordInfo = _orders[localid];
-		on_entrust(localid, ordInfo._code, true, "ÏÂµ¥³É¹¦", ordInfo._usertag);
+		on_entrust(localid, ordInfo._code, true, "ä¸‹å•æˆåŠŸ", ordInfo._usertag);
 	});
 
 	OrderIDs ids;
@@ -602,7 +602,7 @@ bool HftMocker::procOrder(uint32_t localid)
 	StdLocker<StdRecurMutex> lock(_mtx_ords);
 	OrderInfo& ordInfo = (OrderInfo&)it->second;
 
-	//µÚÒ»²½,Èç¹ûÔÚ³·µ¥¸ÅÂÊÖĞ,ÔòÖ´ĞĞ³·µ¥
+	//ç¬¬ä¸€æ­¥,å¦‚æœåœ¨æ’¤å•æ¦‚ç‡ä¸­,åˆ™æ‰§è¡Œæ’¤å•
 	if(_error_rate>0 && genRand(10000)<=_error_rate)
 	{
 		on_order(localid, ordInfo._code, ordInfo._isBuy, ordInfo._total, ordInfo._left, ordInfo._price, true, ordInfo._usertag);
@@ -619,34 +619,37 @@ bool HftMocker::procOrder(uint32_t localid)
 		return false;
 
 	double curPx = curTick->price();
-	double orderQty = ordInfo._isBuy ? curTick->askqty(0) : curTick->bidqty(0);	//¿´¶ÔÊÖÅÌµÄÊıÁ¿
+	double orderQty = ordInfo._isBuy ? curTick->askqty(0) : curTick->bidqty(0);	//çœ‹å¯¹æ‰‹ç›˜çš„æ•°é‡
 	if (!_use_newpx)
 	{
 		curPx = ordInfo._isBuy ? curTick->askprice(0) : curTick->bidprice(0);
 		//if (curPx == 0.0)
 		if(decimal::eq(curPx, 0.0))
+		{
+			curTick->release();
 			return false;
+		}
 	}
 	curTick->release();
 
-	//Èç¹ûÃ»ÓĞ³É½»Ìõ¼ş,ÔòÍË³öÂß¼­
+	//å¦‚æœæ²¡æœ‰æˆäº¤æ¡ä»¶,åˆ™é€€å‡ºé€»è¾‘
 	if(!decimal::eq(ordInfo._price, 0.0))
 	{
 		if(ordInfo._isBuy && decimal::gt(curPx, ordInfo._price))
 		{
-			//Âòµ¥,µ«ÊÇµ±Ç°¼Û´óÓÚÏŞ¼Û,²»³É½»
+			//ä¹°å•,ä½†æ˜¯å½“å‰ä»·å¤§äºé™ä»·,ä¸æˆäº¤
 			return false;
 		}
 
 		if (!ordInfo._isBuy && decimal::lt(curPx, ordInfo._price))
 		{
-			//Âôµ¥,µ«ÊÇµ±Ç°¼ÛĞ¡ÓÚÏŞ¼Û,²»³É½»
+			//å–å•,ä½†æ˜¯å½“å‰ä»·å°äºé™ä»·,ä¸æˆäº¤
 			return false;
 		}
 	}
 
 	/*
-	 *	ÏÂÃæ¾ÍÒªÄ£Äâ³É½»ÁË
+	 *	ä¸‹é¢å°±è¦æ¨¡æ‹Ÿæˆäº¤äº†
 	 */
 	double maxQty = min(orderQty, ordInfo._left);
 	auto vols = splitVolume((uint32_t)maxQty);
@@ -681,10 +684,10 @@ OrderIDs HftMocker::stra_sell(const char* stdCode, double price, double qty, con
 		return OrderIDs();
 	}
 
-	//Èç¹û²»ÄÜ×ö¿Õ£¬ÔòÒª¿´¿ÉÓÃ³Ö²Ö
+	//å¦‚æœä¸èƒ½åšç©ºï¼Œåˆ™è¦çœ‹å¯ç”¨æŒä»“
 	if(!commInfo->canShort())
 	{
-		double curPos = stra_get_position(stdCode, true);//Ö»¶Á¿ÉÓÃ³Ö²Ö
+		double curPos = stra_get_position(stdCode, true);//åªè¯»å¯ç”¨æŒä»“
 		if(decimal::gt(qty, curPos))
 		{
 			log_error("No enough position of %s to sell", stdCode);
@@ -710,7 +713,7 @@ OrderIDs HftMocker::stra_sell(const char* stdCode, double price, double qty, con
 
 	postTask([this, localid]() {
 		const OrderInfo& ordInfo = _orders[localid];
-		on_entrust(localid, ordInfo._code, true, "ÏÂµ¥³É¹¦", ordInfo._usertag);
+		on_entrust(localid, ordInfo._code, true, "ä¸‹å•æˆåŠŸ", ordInfo._usertag);
 	});
 
 	OrderIDs ids;
@@ -770,8 +773,8 @@ double HftMocker::stra_get_position(const char* stdCode, bool bOnlyValid/* = fal
 	const PosInfo& pInfo = _pos_map[stdCode];
 	if (bOnlyValid)
 	{
-		//ÕâÀïÀíÂÛÉÏ£¬Ö»ÓĞ¶àÍ·²Å»á½øµ½ÕâÀï
-		//ÆäËûµØ·½Òª±£Ö¤£¬¿ÕÍ·³Ö²ÖµÄ»°£¬_frozenÒªÎª0
+		//è¿™é‡Œç†è®ºä¸Šï¼Œåªæœ‰å¤šå¤´æ‰ä¼šè¿›åˆ°è¿™é‡Œ
+		//å…¶ä»–åœ°æ–¹è¦ä¿è¯ï¼Œç©ºå¤´æŒä»“çš„è¯ï¼Œ_frozenè¦ä¸º0
 		return pInfo._volume - pInfo._frozen;
 	}
 	else
@@ -808,8 +811,8 @@ void HftMocker::stra_sub_ticks(const char* stdCode)
 {
 	/*
 	 *	By Wesley @ 2022.03.01
-	 *	Ö÷¶¯¶©ÔÄtick»áÔÚ±¾µØ¼ÇÒ»ÏÂ
-	 *	tickÊı¾İ»Øµ÷µÄÊ±ºòÏÈ¼ì²éÒ»ÏÂ
+	 *	ä¸»åŠ¨è®¢é˜…tickä¼šåœ¨æœ¬åœ°è®°ä¸€ä¸‹
+	 *	tickæ•°æ®å›è°ƒçš„æ—¶å€™å…ˆæ£€æŸ¥ä¸€ä¸‹
 	 */
 	_tick_subs.insert(stdCode);
 
@@ -914,7 +917,7 @@ void HftMocker::do_set_position(const char* stdCode, double qty, double price /*
 	uint64_t curTm = (uint64_t)_replayer->get_date() * 1000000000 + (uint64_t)_replayer->get_min_time()*100000 + _replayer->get_secs();
 	uint32_t curTDate = _replayer->get_trading_date();
 
-	//ÊÖÊıÏàµÈÔò²»ÓÃ²Ù×÷ÁË
+	//æ‰‹æ•°ç›¸ç­‰åˆ™ä¸ç”¨æ“ä½œäº†
 	if (decimal::eq(pInfo._volume, qty))
 		return;
 
@@ -924,15 +927,15 @@ void HftMocker::do_set_position(const char* stdCode, double qty, double price /*
 	if (commInfo == NULL)
 		return;
 
-	//³É½»¼Û
+	//æˆäº¤ä»·
 	double trdPx = curPx;
 
 	double diff = qty - pInfo._volume;
 	bool isBuy = decimal::gt(diff, 0.0);
-	if (decimal::gt(pInfo._volume*diff, 0))//µ±Ç°³Ö²ÖºÍ²ÖÎ»±ä»¯·½ÏòÒ»ÖÂ, Ôö¼ÓÒ»ÌõÃ÷Ï¸, Ôö¼ÓÊıÁ¿¼´¿É
+	if (decimal::gt(pInfo._volume*diff, 0))//å½“å‰æŒä»“å’Œä»“ä½å˜åŒ–æ–¹å‘ä¸€è‡´, å¢åŠ ä¸€æ¡æ˜ç»†, å¢åŠ æ•°é‡å³å¯
 	{
 		pInfo._volume = qty;
-		//Èç¹ûT+1£¬Ôò¶³½á²ÖÎ»ÒªÔö¼Ó
+		//å¦‚æœT+1ï¼Œåˆ™å†»ç»“ä»“ä½è¦å¢åŠ 
 		if (commInfo->isT1())
 		{
 			//ASSERT(diff>0);
@@ -955,7 +958,7 @@ void HftMocker::do_set_position(const char* stdCode, double qty, double price /*
 		log_trade(stdCode, dInfo._long, true, curTm, trdPx, abs(diff), fee, userTag);
 	}
 	else
-	{//³Ö²Ö·½ÏòºÍ²ÖÎ»±ä»¯·½Ïò²»Ò»ÖÂ,ĞèÒªÆ½²Ö
+	{//æŒä»“æ–¹å‘å’Œä»“ä½å˜åŒ–æ–¹å‘ä¸ä¸€è‡´,éœ€è¦å¹³ä»“
 		double left = abs(diff);
 
 		pInfo._volume = qty;
@@ -982,21 +985,21 @@ void HftMocker::do_set_position(const char* stdCode, double qty, double price /*
 			if (!dInfo._long)
 				profit *= -1;
 			pInfo._closeprofit += profit;
-			pInfo._dynprofit = pInfo._dynprofit*dInfo._volume / (dInfo._volume + maxQty);//¸¡Ó¯Ò²Òª×öµÈ±ÈËõ·Å
+			pInfo._dynprofit = pInfo._dynprofit*dInfo._volume / (dInfo._volume + maxQty);//æµ®ç›ˆä¹Ÿè¦åšç­‰æ¯”ç¼©æ”¾
 			_fund_info._total_profit += profit;
 
 			double fee = _replayer->calc_fee(stdCode, trdPx, maxQty, dInfo._opentdate == curTDate ? 2 : 1);
 			_fund_info._total_fees += fee;
-			//ÕâÀïĞ´³É½»¼ÇÂ¼
+			//è¿™é‡Œå†™æˆäº¤è®°å½•
 			log_trade(stdCode, dInfo._long, false, curTm, trdPx, maxQty, fee, userTag);
-			//ÕâÀïĞ´Æ½²Ö¼ÇÂ¼
+			//è¿™é‡Œå†™å¹³ä»“è®°å½•
 			log_close(stdCode, dInfo._long, dInfo._opentime, dInfo._price, curTm, trdPx, maxQty, profit, maxProf, maxLoss, pInfo._closeprofit, dInfo._usertag, userTag);
 
 			if (left == 0)
 				break;
 		}
 
-		//ĞèÒªÇåÀíµôÒÑ¾­Æ½²ÖÍêµÄÃ÷Ï¸
+		//éœ€è¦æ¸…ç†æ‰å·²ç»å¹³ä»“å®Œçš„æ˜ç»†
 		while (count > 0)
 		{
 			auto it = pInfo._details.begin();
@@ -1004,12 +1007,12 @@ void HftMocker::do_set_position(const char* stdCode, double qty, double price /*
 			count--;
 		}
 
-		//×îºó,Èç¹û»¹ÓĞÊ£ÓàµÄ,ÔòĞèÒª·´ÊÖÁË
+		//æœ€å,å¦‚æœè¿˜æœ‰å‰©ä½™çš„,åˆ™éœ€è¦åæ‰‹äº†
 		if (left > 0)
 		{
 			left = left * qty / abs(qty);
 
-			//Èç¹ûT+1£¬Ôò¶³½á²ÖÎ»ÒªÔö¼Ó
+			//å¦‚æœT+1ï¼Œåˆ™å†»ç»“ä»“ä½è¦å¢åŠ 
 			if (commInfo->isT1())
 			{
 				pInfo._frozen += left;
@@ -1025,7 +1028,7 @@ void HftMocker::do_set_position(const char* stdCode, double qty, double price /*
 			strcpy(dInfo._usertag, userTag);
 			pInfo._details.emplace_back(dInfo);
 
-			//ÕâÀï»¹ĞèÒªĞ´Ò»±Ê³É½»¼ÇÂ¼
+			//è¿™é‡Œè¿˜éœ€è¦å†™ä¸€ç¬”æˆäº¤è®°å½•
 			double fee = _replayer->calc_fee(stdCode, trdPx, abs(left), 0);
 			_fund_info._total_fees += fee;
 			log_trade(stdCode, dInfo._long, true, curTm, trdPx, abs(left), fee, userTag);
