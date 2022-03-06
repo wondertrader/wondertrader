@@ -576,12 +576,11 @@ void HftMocker::on_order(uint32_t localid, const char* stdCode, bool isBuy, doub
 
 void HftMocker::on_trade(uint32_t localid, const char* stdCode, bool isBuy, double vol, double price, const char* userTag/* = ""*/)
 {
-	if (_strategy)
-		_strategy->on_trade(this, localid, stdCode, isBuy, vol, price, userTag);
-
 	const PosInfo& posInfo = _pos_map[stdCode];
 	double curPos = posInfo._volume + vol * (isBuy ? 1 : -1);
 	do_set_position(stdCode, curPos, price, userTag);
+	if (_strategy)
+		_strategy->on_trade(this, localid, stdCode, isBuy, vol, price, userTag);
 }
 
 void HftMocker::on_entrust(uint32_t localid, const char* stdCode, bool bSuccess, const char* message, const char* userTag/* = ""*/)
