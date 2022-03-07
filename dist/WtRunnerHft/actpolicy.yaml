@@ -1,0 +1,46 @@
+default:                #默认开平策略：先平仓，再开仓
+    order:              #顺序
+    -   action: close   #开平动作：open-开仓，close-平仓，closetoday-平今，closeyestoday-平昨
+        limit: 0        #限手，0为不限制
+    -   action: open    
+        limit: 0
+#低日内佣金策略：平今>平昨>开仓
+lowinnerdayfee:
+    filters:            #品种过滤器，如果设定了该项，则这些品种就使用该策略
+    - DCE.a
+    - DCE.cs
+    - DCE.i
+    - DCE.j
+    - DCE.l
+    - DCE.m
+    - DCE.p
+    - DCE.pp
+    - SHFE.au
+    - SHFE.hc
+    - CZCE.ZC
+    - CZCE.CF
+    - CZCE.MA
+    - CZCE.SR
+    - CZCE.AP
+    order:
+    -   action: closetoday
+        limit: 0
+    -   action: closeyestoday
+        limit: 0
+    -   action: open
+        limit: 0
+        
+#股指开平策略：平昨>开仓>平今，开仓有限手500
+#如果是买入，先看是否有昨日空头，再开多仓，如果多仓已经打到限手，再平当日的空头
+stockindex:
+    filters:
+    - CFFEX.IF
+    - CFFEX.IC
+    - CFFEX.IH
+    order:
+    -   action: closeyestoday
+        limit: 0
+    -   action: open
+        limit: 500
+    -   action: closetoday
+        limit: 0

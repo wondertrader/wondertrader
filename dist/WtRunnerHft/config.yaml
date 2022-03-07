@@ -1,0 +1,35 @@
+#基础配置文件
+basefiles:
+    commodity: ../common/commodities.json   #品种列表
+    contract: ../common/contracts.json      #合约列表
+    holiday: ../common/holidays.json        #节假日列表
+    hot: ../common/hots.json                #主力合约映射表
+    session: ../common/sessions.json        #交易时间模板
+
+data:
+    store:
+        path: ../FUT_Data/      #数据存储根目录
+        
+strategies:
+    hft:
+    -   active: true
+        id: hft_demo
+        name: WtHftStraFact.SimpleHft
+        params:
+            code: CFFEX.IF.HOT
+            count: 50
+            offset: 1
+            second: 10
+            stock: false
+        trader: simnow
+
+#环境配置
+env:
+    name: hft               #引擎名称：cta/hft/sel
+    product:
+        session: SD0930    #驱动交易时间模板，TRADING是一个覆盖国内全部交易品种的最大的交易时间模板，从夜盘21点到凌晨1点，再到第二天15:15，详见sessions.json
+
+fees: ../common/fees.json   #佣金配置文件
+parsers: tdparsers.yaml     #行情通达配置文件
+traders: tdtraders.yaml     #交易通道配置文件
+bspolicy: actpolicy.yaml    #开平策略配置文件

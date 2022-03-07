@@ -10,32 +10,6 @@ data:
     store:
         path: ../FUT_Data/      #数据存储根目录
 
-strategies:
-    hft:
-    -   active: false
-        id: hft_demo
-        name: WtHftStraFact.SimpleHft
-        params:
-            code: CFFEX.IF.HOT
-            count: 50
-            offset: 1
-            second: 10
-            stock: false
-        trader: simnow
-    # CTA策略配置，当mocker为cta时会读取该配置项
-    cta:
-    -   active: true       # 模块名，linux下为xxxx.so
-        id: dt_if          # 策略ID，自定义的
-        name: WtCtaStraFact.DualThrust   # 策略名，要和factory中的匹配
-        params:                         # 策略初始化参数，这个根据策略的需要提供
-            code: CFFEX.IF.HOT
-            count: 50
-            days: 30
-            k1: 0.6
-            k2: 0.6
-            period: m5
-            stock: false
-
 #环境配置
 env:
     name: cta               #引擎名称：cta/hft/sel
@@ -55,6 +29,22 @@ env:
         multi_day_fd: 60.0      #多日跟踪止损阈值
         risk_scale: 0.3         #风控系数，即组合给执行器的目标仓位，是组合理论仓位的0.3倍，即真实仓位是三成仓
         risk_span: 30           #风控触发时间间隔，单位s。因为风控计算很频繁，如果已经触发风控，不需要每次重算都输出风控日志，加一个时间间隔，友好一些
+
+strategies:
+    # CTA策略配置，当mocker为cta时会读取该配置项
+    cta:
+    -   active: true       # 模块名，linux下为xxxx.so
+        id: dt_if          # 策略ID，自定义的
+        name: WtCtaStraFact.DualThrust   # 策略名，要和factory中的匹配
+        params:                         # 策略初始化参数，这个根据策略的需要提供
+            code: CFFEX.IF.HOT
+            count: 50
+            days: 30
+            k1: 0.6
+            k2: 0.6
+            period: m5
+            stock: false
+            
 fees: ../common/fees.json   #佣金配置文件
 executers: executers.yaml   #执行器配置文件
 filters: filters.yaml       #过滤器配置文件，这个主要是用于盘中不停机干预的

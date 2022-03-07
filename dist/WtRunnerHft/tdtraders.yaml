@@ -1,0 +1,20 @@
+traders:
+-   active: true
+    appid: simnow_client_test
+    authcode: '0000000000000000'
+    broker: '9999'
+    front: tcp://180.168.146.187:10201
+    id: simnow
+    module: TraderCTP
+    user: yoursimnowaccount
+    pass: yousimnowpassword
+    quick: true
+    riskmon:
+        active: true
+        policy:
+            default:
+                cancel_stat_timespan: 10
+                cancel_times_boundary: 20
+                cancel_total_limits: 470
+                order_stat_timespan: 10
+                order_times_boundary: 20
