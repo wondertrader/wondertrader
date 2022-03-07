@@ -43,17 +43,39 @@ public:
 		//去掉合约类型，这里不再进行判断
 		//整个CodeHelper会重构
 		//ContractCategory	_category;		//合约类型
-		union
-		{
-			uint8_t	_hotflag;	//主力标记，0-非主力，1-主力，2-次主力
-			uint8_t	_exright;	//是否是复权代码,如SH600000Q: 0-不复权, 1-前复权, 2-后复权
-		};
+		//union
+		//{
+		//	uint8_t	_hotflag;	//主力标记，0-非主力，1-主力，2-次主力
+		//	uint8_t	_exright;	//是否是复权代码,如SH600000Q: 0-不复权, 1-前复权, 2-后复权
+		//};
 
+		/*
+		 *	By Wesley @ 2022.03.07
+		 *	取消原来的union
+		 *	要把主力标记和复权标记分开处理
+		 *	因为后面要对主力合约做复权处理了
+		 */
+		uint8_t	_hotflag;	//主力标记，0-非主力，1-主力，2-次主力
+		uint8_t	_exright;	//是否是复权代码,如SH600000Q: 0-不复权, 1-前复权, 2-后复权
+
+		//是否是复权代码
 		inline bool isExright() const { return _exright != 0; }
+
+		//是否前复权代码
+		inline bool isForwardAdj() const { return _exright == 1; }
+
+		//是否后复权代码
+		inline bool isBackwardAdj() const { return _exright == 2; }
+
+		//是否主力代码
 		inline bool isHot() const { return _hotflag ==1; }
+		//是否次主力代码
 		inline bool isSecond() const { return _hotflag == 2; }
+
+		//是否普通代码
 		inline bool isFlat() const { return _hotflag == 0; }
 
+		//标准品种ID
 		inline const char* stdCommID() const
 		{
 			static char buffer[64] = { 0 };
