@@ -1,0 +1,18 @@
+parser:
+    async: false
+    level: debug
+    sinks:
+    -   filename: DtLogs/Parser.log
+        pattern: '[%Y.%m.%d %H:%M:%S - %-5l] %v'
+        truncate: false
+        type: daily_file_sink
+root:
+    async: false
+    level: debug
+    sinks:
+    -   filename: DtLogs/QuoteFact.log
+        pattern: '[%Y.%m.%d %H:%M:%S - %-5l] %v'
+        truncate: false
+        type: daily_file_sink
+    -   pattern: '[%m.%d %H:%M:%S - %^%-5l%$] %v'
+        type: console_sink

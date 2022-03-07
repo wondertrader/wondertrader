@@ -1,0 +1,19 @@
+dyn_pattern:
+    strategy:
+        async: false
+        level: debug
+        sinks:
+        -   filename: BtLogs/Strategy_%s.log
+            pattern: '[%Y.%m.%d %H:%M:%S - %-5l] %v'
+            truncate: true
+            type: basic_file_sink
+root:
+    async: false
+    level: debug
+    sinks:
+    -   filename: BtLogs/Runner.log
+        pattern: '[%Y.%m.%d %H:%M:%S - %-5l] %v'
+        truncate: true
+        type: basic_file_sink
+    -   pattern: '[%m.%d %H:%M:%S - %^%-5l%$] %v'
+        type: console_sink

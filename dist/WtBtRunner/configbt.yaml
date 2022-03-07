@@ -1,0 +1,48 @@
+replayer:
+    basefiles:
+        commodity: ../common/commodities.json
+        contract: ../common/contracts.json
+        holiday: ../common/holidays.json
+        hot: ../common/hots.json
+        session: ../common/sessions.json
+    fees: ../common/fees.json
+    stime: 201909010900             # CTA回测demo开始时间
+    etime: 201912011500             # CTA回测demo结束时间
+    hft_stime: 202101040900         # HFT回测demo开始时间，测试的时候去掉前缀hft_
+    hft_etime: 202101061500         # HFT回测demo结束时间，测试的时候去掉前缀hft_
+    mode: csv
+    path: ../storage/
+    tick: false                     # 是否开启tick回测，HFT回测时必须开启
+env:
+    mocker: cta                     # 回测引擎，cta/hft/sel
+    slippage: 1
+
+# CTA策略配置，当mocker为cta时会读取该配置项
+cta:
+    module: WtCtaStraFact.dll       # 模块名，linux下为xxxx.so
+    strategy:                       # 策略信息
+        id: dt_if                   # 策略ID，自定义的
+        name: DualThrust            # 策略名，要和factory中的匹配
+        params:                     # 策略初始化参数，这个根据策略的需要提供
+            code: CFFEX.IF.HOT
+            count: 50
+            days: 30
+            k1: 0.6
+            k2: 0.6
+            period: m5
+            stock: false
+
+# HFT策略配置，当mocker为hft时会读取该配置项
+hft:
+    module: WtHftStraFact.dll       # 模块名，linux下为xxxx.so
+    strategy:                       # 策略信息
+        id: hft_if                  # 策略ID，自定义的
+        name: SimpleHft             # 策略名，要和factory中的匹配
+        params:                     # 策略初始化参数，这个根据策略的需要提供
+            code: CFFEX.IF.HOT
+            second: 5
+            freq: 10
+            offset: 0
+            stock: false
+
+

@@ -1,0 +1,63 @@
+#基础配置文件
+basefiles:
+    commodity: ../common/commodities.json   #品种列表
+    contract: ../common/contracts.json      #合约列表
+    holiday: ../common/holidays.json        #节假日列表
+    hot: ../common/hots.json                #主力合约映射表
+    session: ../common/sessions.json        #交易时间模板
+#数据存储
+data:
+    store:
+        path: ../FUT_Data/      #数据存储根目录
+
+strategies:
+    hft:
+    -   active: false
+        id: hft_demo
+        name: WtHftStraFact.SimpleHft
+        params:
+            code: CFFEX.IF.HOT
+            count: 50
+            offset: 1
+            second: 10
+            stock: false
+        trader: simnow
+    # CTA策略配置，当mocker为cta时会读取该配置项
+    cta:
+    -   active: true       # 模块名，linux下为xxxx.so
+        id: dt_if          # 策略ID，自定义的
+        name: WtCtaStraFact.DualThrust   # 策略名，要和factory中的匹配
+        params:                         # 策略初始化参数，这个根据策略的需要提供
+            code: CFFEX.IF.HOT
+            count: 50
+            days: 30
+            k1: 0.6
+            k2: 0.6
+            period: m5
+            stock: false
+
+#环境配置
+env:
+    name: cta               #引擎名称：cta/hft/sel
+    product:
+        session: TRADING    #驱动交易时间模板，TRADING是一个覆盖国内全部交易品种的最大的交易时间模板，从夜盘21点到凌晨1点，再到第二天15:15，详见sessions.json
+    riskmon:                #组合风控设置
+        active: true            #是否开启
+        module: WtRiskMonFact   #风控模块名，会根据平台自动补齐模块前缀和后缀
+        name: SimpleRiskMon     #风控策略名，会自动创建对应的风控策略
+        #以下为风控指标参数，该风控策略的主要逻辑就是日内和多日的跟踪止损风控，如果回撤超过阈值，则降低仓位
+        base_amount: 5000000    #组合基础资金，WonderTrader只记录资金的增量，基础资金是用来模拟组合的基本资金用的，和增量相加得到动态权益
+        basic_ratio: 101        #日内高点百分比，即当日最高动态权益是上一次的101%才会触发跟踪侄止损
+        calc_span: 5            #计算时间间隔，单位s
+        inner_day_active: true  #日内跟踪止损是否启用
+        inner_day_fd: 20.0      #日内跟踪止损阈值，即如果收益率从高点回撤20%，则触发风控
+        multi_day_active: false #多日跟踪止损是否启用
+        multi_day_fd: 60.0      #多日跟踪止损阈值
+        risk_scale: 0.3         #风控系数，即组合给执行器的目标仓位，是组合理论仓位的0.3倍，即真实仓位是三成仓
+        risk_span: 30           #风控触发时间间隔，单位s。因为风控计算很频繁，如果已经触发风控，不需要每次重算都输出风控日志，加一个时间间隔，友好一些
+fees: ../common/fees.json   #佣金配置文件
+executers: executers.yaml   #执行器配置文件
+filters: filters.yaml       #过滤器配置文件，这个主要是用于盘中不停机干预的
+parsers: tdparsers.yaml     #行情通达配置文件
+traders: tdtraders.yaml     #交易通道配置文件
+bspolicy: actpolicy.yaml    #开平策略配置文件

@@ -1,0 +1,35 @@
+FD0900:
+    closetime: 1515
+    inittime: 850
+    name: 期白0900
+    proctime: 1600
+FD0915:
+    closetime: 1530
+    inittime: 900
+    name: 期白0915
+    proctime: 1600
+FN0100:
+    closetime: 1515
+    inittime: 2050
+    name: 期夜0100
+    proctime: 1600
+FN0230:
+    closetime: 1515
+    inittime: 2050
+    name: 期夜0230
+    proctime: 1600
+FN2300:
+    closetime: 1515
+    inittime: 2050
+    name: 期夜2300
+    proctime: 1600
+FN2330:
+    closetime: 1515
+    inittime: 2050
+    name: 期夜2330
+    proctime: 1600
+SD0930:
+    closetime: 1515
+    inittime: 915
+    name: 股白0930
+    proctime: 1600

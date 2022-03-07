@@ -1,0 +1,32 @@
+basefiles:
+    commodity: ../common/commodities.json
+    contract: ../common/contracts.json
+    holiday: ../common/holidays.json
+    session: ../common/sessions.json
+broadcaster:
+    active: true
+    bport: 3997
+    broadcast:
+    -   host: 255.255.255.255
+        port: 9001
+        type: 2
+    multicast_:
+    -   host: 224.169.169.169
+        port: 9002
+        sendport: 8997
+        type: 0
+    -   host: 224.169.169.169
+        port: 9003
+        sendport: 8998
+        type: 1
+    -   host: 224.169.169.169
+        port: 9004
+        sendport: 8999
+        type: 2
+parsers: mdparsers.yaml
+statemonitor: statemonitor.yaml
+writer:
+    async: true
+    groupsize: 100
+    path: ../FUT_Data
+    savelog: true
