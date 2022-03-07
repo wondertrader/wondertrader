@@ -604,6 +604,13 @@ OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty, int f
 	if (qty == 0)
 		return ret;
 
+	if (isSelfMatched(stdCode))
+	{
+		WTSLogger::log_dyn_f("trader", _id.c_str(), LL_ERROR,
+			"[{0}] Instructions on {1} are forbidden: {1} is in self matches", _id.c_str(), stdCode);
+		return ret;
+	}
+
 	WTSContractInfo* cInfo = getContract(stdCode);
 	WTSCommodityInfo* commInfo = getCommodify(stdCode);
 	WTSSessionInfo* sInfo = _bd_mgr->getSession(commInfo->getSession());
@@ -893,6 +900,13 @@ OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty, int 
 	OrderIDs ret;
 	if (qty == 0)
 		return ret;
+
+	if(isSelfMatched(stdCode))
+	{
+		WTSLogger::log_dyn_f("trader", _id.c_str(), LL_ERROR,
+			"[{0}] Instructions on {1} are forbidden: {1} is in self matches", _id.c_str(), stdCode);
+		return ret;
+	}
 
 	WTSContractInfo* cInfo = getContract(stdCode);
 	WTSCommodityInfo* commInfo = getCommodify(stdCode);
@@ -1687,6 +1701,8 @@ void TraderAdapter::onRspTrades(const WTSArray* ayTrades)
 				else
 					statItem.s_closevol += qty;
 			}
+
+			checkSelfMatch(stdCode.c_str(), tInfo);
 		}
 
 		for (auto it = _stat_map->begin(); it != _stat_map->end(); it++)
@@ -1706,6 +1722,43 @@ void TraderAdapter::onRspTrades(const WTSArray* ayTrades)
 
 		_trader_api->queryAccount();
 	}
+}
+
+bool TraderAdapter::checkSelfMatch(const char* stdCode, WTSTradeInfo* tInfo)
+{
+	if (tInfo == NULL)
+		return false;
+
+	const char* tid = tInfo->getTradeID();
+	const char* refid = tInfo->getRefOrder();
+
+	auto it = _trade_refs.find(tid);
+	if (it != _trade_refs.end())
+	{
+		/*
+		 *	By Wesley @ 2022.03.07
+		 *	如果成交单号已经存在，则检查关联订单号是否相同
+		 */
+		const std::string& oid = it->second;
+		if (oid.compare(refid) != 0)
+		{
+			//同一个成交单的关联订单ID不同，这一定是自成交了
+			WTSLogger::log_dyn_f("trader", _id.c_str(), LL_FATAL, 
+				"[{0}] Self matching detected on {1}!!! Instructions on {1} will be forbidden!!!", _id.c_str(), stdCode);
+			_self_matches.insert(stdCode);
+			return true;
+		}
+		else
+		{
+			//关联订单一样，说明是重复推送，不用管了
+		}
+	}
+	else
+	{
+		_trade_refs[tid] = refid;
+	}
+
+	return false;
 }
 
 inline const char* stateToName(WTSOrderState woState)
@@ -2086,6 +2139,8 @@ void TraderAdapter::onPushTrade(WTSTradeInfo* tradeRecord)
 	{
 		logTrade(localid, stdCode.c_str(), tradeRecord);
 	}
+
+	checkSelfMatch(stdCode.c_str(), tradeRecord);
 
 	if (_notifier)
 		_notifier->notify(id(), localid, stdCode.c_str(), tradeRecord);

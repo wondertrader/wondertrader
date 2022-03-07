@@ -157,6 +157,14 @@ public:
 	bool	checkCancelLimits(const char* stdCode);
 	bool	checkOrderLimits(const char* stdCode);
 
+	bool	checkSelfMatch(const char* stdCode, WTSTradeInfo* tInfo);
+
+	inline	bool isSelfMatched(const char* stdCode)
+	{
+		auto it = _self_matches.find(stdCode);
+		return it != _self_matches.end();
+	}
+
 public:
 	//////////////////////////////////////////////////////////////////////////
 	//ITraderSpi接口
@@ -209,6 +217,9 @@ private:
 	StdUniqueMutex _mtx_orders;
 	OrderMap*		_orders;
 	faster_hashset<std::string> _orderids;	//主要用于标记有没有处理过该订单
+
+	faster_hashmap<std::string, std::string>	_trade_refs;	//用于记录成交单和订单的匹配
+	faster_hashset<std::string>					_self_matches;	//自成交的合约
 
 	faster_hashmap<std::string, double> _undone_qty;	//未完成数量
 
