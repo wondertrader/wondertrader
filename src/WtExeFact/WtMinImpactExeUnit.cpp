@@ -335,36 +335,62 @@ void WtMinImpactExeUnit::do_calc()
 	}
 
 	double buyPx, sellPx;
-	if(_price_mode == -1)
-	{
-		buyPx = _last_tick->bidprice(0) + _comm_info->getPriceTick() * _price_offset;
-		sellPx = _last_tick->askprice(0) - _comm_info->getPriceTick() * _price_offset;
-	}
-	else if(_price_mode == 0)
-	{
-		buyPx = _last_tick->price() + _comm_info->getPriceTick() * _price_offset;
-		sellPx = _last_tick->price() - _comm_info->getPriceTick() * _price_offset;
-	}
-	else if(_price_mode == 1)
-	{
-		buyPx = _last_tick->askprice(0) + _comm_info->getPriceTick() * _price_offset;
-		sellPx = _last_tick->bidprice(0) - _comm_info->getPriceTick() * _price_offset;
-	}
-	else if(_price_mode == 2)
+	if (_price_mode == 2)
 	{
 		double mp = (_last_tick->bidqty(0) - _last_tick->askqty(0))*1.0 / (_last_tick->bidqty(0) + _last_tick->askqty(0));
 		bool isUp = (mp > 0);
-		if(isUp)
+		if (isUp)
 		{
-			buyPx = _last_tick->askprice(0) + _comm_info->getPriceTick() * _cancel_times;
-			sellPx = _last_tick->askprice(0) - _comm_info->getPriceTick() * _cancel_times;
+			buyPx = _last_tick->askprice(0);
+			sellPx = _last_tick->askprice(0);
 		}
 		else
 		{
-			buyPx = _last_tick->bidprice(0) + _comm_info->getPriceTick() * _cancel_times;
-			sellPx = _last_tick->bidprice(0) - _comm_info->getPriceTick() * _cancel_times;
+			buyPx = _last_tick->bidprice(0);
+			sellPx = _last_tick->bidprice(0);
 		}
+
+		if (decimal::eq(buyPx, 0.0))
+			buyPx = _last_tick->price();
+
+		if (decimal::eq(sellPx, 0.0))
+			sellPx = _last_tick->price();
+
+		buyPx += _comm_info->getPriceTick() * _cancel_times;
+		sellPx -= _comm_info->getPriceTick() * _cancel_times;
 	}
+	else
+	{
+		if (_price_mode == -1)
+		{
+			buyPx = _last_tick->bidprice(0);
+			sellPx = _last_tick->askprice(0);
+		}
+		else if (_price_mode == 0)
+		{
+			buyPx = _last_tick->price();
+			sellPx = _last_tick->price();
+		}
+		else if (_price_mode == 1)
+		{
+			buyPx = _last_tick->askprice(0);
+			sellPx = _last_tick->bidprice(0) - _comm_info->getPriceTick() * _price_offset;
+		}
+
+		/*
+		 *	By Wesley @ 2022.03.07
+		 *	如果最后价格为0，再做一个修正
+		 */
+		if (decimal::eq(buyPx, 0.0))
+			buyPx = decimal::eq(_last_tick->price(), 0.0)? _last_tick->preclose(): _last_tick->price();
+
+		if (decimal::eq(sellPx, 0.0))
+			sellPx = decimal::eq(_last_tick->price(), 0.0) ? _last_tick->preclose() : _last_tick->price();
+
+		buyPx += _comm_info->getPriceTick() * _price_offset;
+		sellPx -= _comm_info->getPriceTick() * _price_offset;
+	}
+	
 
 	//检查涨跌停价
 	bool isCanCancel = true;
