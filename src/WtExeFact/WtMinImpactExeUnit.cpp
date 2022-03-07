@@ -350,11 +350,15 @@ void WtMinImpactExeUnit::do_calc()
 			sellPx = _last_tick->bidprice(0);
 		}
 
+		/*
+		 *	By Wesley @ 2022.03.07
+		 *	如果最后价格为0，再做一个修正
+		 */
 		if (decimal::eq(buyPx, 0.0))
-			buyPx = _last_tick->price();
+			buyPx = decimal::eq(_last_tick->price(), 0.0) ? _last_tick->preclose() : _last_tick->price();
 
 		if (decimal::eq(sellPx, 0.0))
-			sellPx = _last_tick->price();
+			sellPx = decimal::eq(_last_tick->price(), 0.0) ? _last_tick->preclose() : _last_tick->price();
 
 		buyPx += _comm_info->getPriceTick() * _cancel_times;
 		sellPx -= _comm_info->getPriceTick() * _cancel_times;
