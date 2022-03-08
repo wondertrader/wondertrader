@@ -2885,7 +2885,7 @@ bool HisDataReplayer::cacheRawTicksFromBin(const std::string& key, const char* s
 		 *	By Wesley @ 2022.01.11
 		 *	这里将直接从文件读取，改成从HisDtMgr封装的接口加载
 		 */
-		std::string wrappCode = StrUtil::printf("%s_%s", cInfo._product, hot_flag);
+		std::string wrappCode = StrUtil::printf("%s%s", cInfo._product, hot_flag);
 		bHit = _his_dt_mgr.load_raw_ticks(cInfo._exchg, wrappCode.c_str(), uDate, [&content](std::string& data) {
 			content.swap(data);
 		});
