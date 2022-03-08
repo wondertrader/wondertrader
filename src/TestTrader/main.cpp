@@ -4,17 +4,17 @@
 
 #include "IniFile.hpp"
 
-#include "..\Includes\ITraderApi.h"
-#include "..\Includes\WTSVariant.hpp"
-#include "..\Includes\WTSTradeDef.hpp"
-#include "..\Includes\WTSError.hpp"
-#include "..\Includes\WTSCollection.hpp"
+#include "../Includes/ITraderApi.h"
+#include "../Includes/WTSVariant.hpp"
+#include "../Includes/WTSTradeDef.hpp"
+#include "../Includes/WTSError.hpp"
+#include "../Includes/WTSCollection.hpp"
 
-#include "..\Share\TimeUtils.hpp"
-#include "..\Share\StdUtils.hpp"
+#include "../Share/TimeUtils.hpp"
+#include "../Share/StdUtils.hpp"
 
-#include "..\WTSTools\WTSBaseDataMgr.h"
-#include "..\WTSTools\WTSLogger.h"
+#include "../WTSTools/WTSBaseDataMgr.h"
+#include "../WTSTools/WTSLogger.h"
 
 
 WTSBaseDataMgr	g_bdMgr;
@@ -314,7 +314,7 @@ public:
 			printf("请输入订单ID: ");
 			std::cin >> orderid;
 
-			printf("订单ID: %s,确认y/n? ", orderid);
+			printf("订单ID: %s,确认y\n? ", orderid);
 			char c;
 			std::cin >> c;
 			if (c == 'y')
@@ -327,7 +327,7 @@ public:
 		WTSOrderInfo* ordInfo = (WTSOrderInfo*)m_mapOrds->get(orderid);
 		if (ordInfo == NULL)
 		{
-			printf("订单不存在,请检查订单号是否有误,或者先查询订单\r\n");
+			log("订单不存在,请检查订单号是否有误,或者先查询订单");
 			return false;
 		}
 
@@ -575,7 +575,7 @@ std::string getBaseFolder()
 	return basePath;
 }
 
-void main()
+int main()
 {
 	WTSLogger::init();
 
@@ -700,4 +700,5 @@ void main()
 	//exit(9);
 	trader->release();
 	delete trader;
+	return 0;
 }

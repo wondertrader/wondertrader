@@ -11,10 +11,20 @@ SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../build_${PLATFORM}/${CMAKE_BU
 #7. 添加源码
 file(GLOB SRCS *.cpp)
 
-IF(MSVC)
-	SET(LIBS WTSTools)
-ELSE(GNUCCCC)
-	SET(LIBS WTSTools dl)
+SET(LIBS
+	WTSTools
+	WTSUtils
+	)
+    
+IF (MSVC)
+ELSE(GNUCC)
+	LIST(APPEND LIBS
+		dl
+		boost_filesystem)
+    IF(WIN32)
+		LIST(APPEND LIBS
+			iconv)
+	ENDIF()
 ENDIF()
 
 INCLUDE_DIRECTORIES(${INCS})

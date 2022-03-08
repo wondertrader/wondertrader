@@ -151,7 +151,7 @@ std::string getBaseFolder()
 	return basePath;
 }
 
-void main()
+int main()
 {
 	WTSLogger::init();
 
@@ -202,4 +202,6 @@ void main()
 	//exit(9);
 	parser->release();
 	delete parser;
+
+	return 0;
 }
