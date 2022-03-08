@@ -196,7 +196,18 @@ void dump_bars(WtString binFolder, WtString csvFolder, WtString strFilter /* = "
 			continue;
 		}
 
-		proc_block_data(buffer, true, false);
+		BlockHeader* bHeader = (BlockHeader*)buffer.data();
+
+		if(bHeader->_type < BT_HIS_Minute1 || bHeader->_type > BT_HIS_Day)
+		{
+			if (cbLogger)
+				cbLogger(StrUtil::printf("文件%s不是K线数据，跳过转换", binFolder).c_str());
+			continue;
+		}
+
+		bool isDay = (bHeader->_type == BT_HIS_Day);
+
+		proc_block_data(buffer, true, false);		
 
 		auto kcnt = buffer.size() / sizeof(WTSBarStruct);
 		if (kcnt <= 0)
@@ -218,11 +229,19 @@ void dump_bars(WtString binFolder, WtString csvFolder, WtString strFilter /* = "
 		for (uint32_t i = 0; i < kcnt; i++)
 		{
 			const WTSBarStruct& curBar = bars[i];
-			uint32_t barTime = (uint32_t)(curBar.time % 10000 * 100);
-			uint32_t barDate = (uint32_t)(curBar.time / 10000 + 19900000);
-			ss << barDate << ","
-				<< barTime << ","
-                << curBar.open << ","
+			if(isDay)
+			{
+				ss << curBar.date << ",0,";
+			}
+			else
+			{
+				uint32_t barTime = (uint32_t)(curBar.time % 10000 * 100);
+				uint32_t barDate = (uint32_t)(curBar.time / 10000 + 19900000);
+				ss << barDate << ","
+					<< barTime << ",";
+			}
+			
+			ss << curBar.open << ","
 				<< curBar.high << ","
 				<< curBar.low << ","
 				<< curBar.close << ","
