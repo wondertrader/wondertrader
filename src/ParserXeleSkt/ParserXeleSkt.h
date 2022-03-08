@@ -60,10 +60,13 @@ private:
 
 private:
 	std::string	_tcp_host;
-	int			_udp_port;
 	int			_tcp_port;
+	std::string	_mcast_host;
+	int			_mcast_port;
+	std::string	_local_host;
 	uint32_t	_gpsize;
 
+	ip::udp::endpoint	_mcast_ep;
 	ip::udp::endpoint	_udp_ep;
 	ip::tcp::endpoint	_tcp_ep;
 	io_service			_io_service;
@@ -72,7 +75,7 @@ private:
 
 	ip::udp::socket*	_udp_socket;
 
-	boost::array<char, 1024> _udp_buffer;
+	boost::array<char, 4096> _udp_buffer;
 
 	IParserSpi*		_sink;
 	IBaseDataMgr*	_bd_mgr;

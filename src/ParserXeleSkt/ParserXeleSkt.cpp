@@ -89,14 +89,18 @@ bool ParserXeleSkt::init( WTSVariant* config )
 {
 	_tcp_host = config->getCString("tcp_host");
 	_tcp_port = config->getInt32("tcp_port");
-	_udp_port = config->getInt32("udp_port");
+	_mcast_host = config->getCString("mcast_host");
+	_mcast_port = config->getInt32("mcast_port");
+	_local_host = config->getCString("local_host");
 	_gpsize = config->getUInt32("gpsize");
 	if (_gpsize == 0)
 		_gpsize = 1000;
 
 	ip::address addr = ip::address::from_string(_tcp_host);
 	_tcp_ep = ip::tcp::endpoint(addr, _tcp_port);
-	_udp_ep = ip::udp::endpoint(ip::address_v4::any(), _udp_port);
+
+	addr = ip::address::from_string("0.0.0.0");
+	_mcast_ep = ip::udp::endpoint(addr, _mcast_port);
 
 	return true;
 }
@@ -124,18 +128,17 @@ bool ParserXeleSkt::reconnect()
 
 		_udp_socket = new ip::udp::socket(_io_service);
 
-		_udp_socket->open(_udp_ep.protocol());
+		_udp_socket->open(_mcast_ep.protocol());
 		_udp_socket->set_option(ip::udp::socket::reuse_address(true));
-		_udp_socket->set_option(ip::udp::socket::broadcast(true));
-		_udp_socket->set_option(ip::udp::socket::receive_buffer_size(8 * 1024 * 1024));
-		_udp_socket->bind(_udp_ep);
-
+		_udp_socket->bind(_mcast_ep);
+		_udp_socket->set_option(ip::multicast::join_group(ip::make_address_v4(_mcast_host.c_str()), ip::make_address_v4(_local_host.c_str())));
 
 		_udp_socket->async_receive_from(buffer(_udp_buffer), _udp_ep,
 			boost::bind(&ParserXeleSkt::handle_udp_read, this,
 			boost::asio::placeholders::error,
 			boost::asio::placeholders::bytes_transferred));
 	}
+	write_log(_sink, LL_DEBUG, "Ready to receive from multicast tunnel {}:{}...", _mcast_host, _mcast_port);
 	return true;
 }
 
@@ -152,24 +155,28 @@ bool ParserXeleSkt::prepare()
 
 	if (_tick_cache == NULL)
 		_tick_cache = TickCache::create();
+	
+	write_log(_sink, LL_DEBUG, "Preparing snapshots via tcp tunnel {}:{}...", _tcp_host, _tcp_port);
 
 	boost::array<char, 4096> buffer;
-	for(;;)
+	std::string content;
+	auto snap_size = sizeof(CXeleShfeSnapShot) + sizeof(CXeleShfeMarketHead);
+	for (;;)
 	{
 		std::size_t reply_length = boost::asio::read(s, boost::asio::buffer(buffer), ec);
-		if(ec)
+		if (ec)
 		{
 			//接收错误
 			break;
 		}
 
-		if (reply_length == 0)
-		{
-			//接收完成
-			break;
-		}
+		if (reply_length > 0)
+			content.append(buffer.data(), reply_length);
+	}
 
-		CXeleShfeMarketHead *mh = reinterpret_cast<CXeleShfeMarketHead *>(buffer.data());
+	while (content.size() > snap_size)
+	{
+		CXeleShfeMarketHead *mh = (CXeleShfeMarketHead *)(content.data());
 		int8_t version = mh->Version;
 		if (version != XELE_MD_DATA_VERSION)
 			break;
@@ -178,57 +185,61 @@ bool ParserXeleSkt::prepare()
 		if (type != MESSAGE_SNAP_SHOT)
 			break;
 
-		CXeleShfeSnapShot *p = reinterpret_cast<CXeleShfeSnapShot *>(buffer.data() + sizeof(CXeleShfeMarketHead));
+		CXeleShfeSnapShot *p = (CXeleShfeSnapShot *)(content.data() + sizeof(CXeleShfeMarketHead));
 		int instrumentNo = p->InstrumentNo;
 		WTSContractInfo* ct = _bd_mgr->getContract(p->InstrumentID);
-		if(ct == NULL)
-			continue;
+		if (ct != NULL)
+		{
+			_price_scales[instrumentNo] = p->PriceTick;
 
-		_price_scales[instrumentNo] = p->PriceTick;
+			WTSTickData* tick = WTSTickData::create(p->InstrumentID);
+			tick->setContractInfo(ct);
 
-		WTSTickData* tick = WTSTickData::create(p->InstrumentID);
-		tick->setContractInfo(ct);
+			WTSTickStruct& quote = tick->getTickStruct();
+			strcpy(quote.exchg, ct->getExchg());
 
-		WTSTickStruct& quote = tick->getTickStruct();
-		strcpy(quote.exchg, ct->getExchg());
+			quote.action_date = strToTime(p->ActionDay);
+			quote.action_time = strToTime(p->UpdateTime) * 1000 + p->UpdateMilliSec;
 
-		quote.action_date = strToTime(p->ActionDay);
-		quote.action_time = strToTime(p->UpdateTime) * 1000 + p->UpdateMilliSec;
+			quote.price = p->LastPrice;
+			quote.open = p->OpenPrice;
+			quote.high = p->HighestPrice;
+			quote.low = p->LowestPrice;
+			quote.total_volume = p->Volume;
+			quote.trading_date = quote.action_date;
+			quote.settle_price = p->SettlementPrice;
+			quote.total_turnover = p->Turnover;
 
-		quote.price = p->ClosePrice;
-		quote.open = p->OpenPrice;
-		quote.high = p->HighestPrice;
-		quote.low = p->LowestPrice;
-		quote.total_volume = p->Volume;
-		quote.trading_date = quote.action_date;
-		quote.settle_price = p->SettlementPrice;
-		quote.total_turnover = p->Turnover;
+			quote.open_interest = p->OpenInterest;
 
-		quote.open_interest = p->OpenInterest;
+			quote.upper_limit = p->UpperLimitPrice;
+			quote.lower_limit = p->LowerLimitPrice;
 
-		quote.upper_limit = p->UpperLimitPrice;
-		quote.lower_limit = p->LowerLimitPrice;
+			quote.pre_close = p->PreClosePrice;
+			quote.pre_settle = p->PreSettlementPrice;
+			quote.pre_interest = p->PreOpenInterest;
 
-		quote.pre_close = p->PreClosePrice;
-		quote.pre_settle = p->PreSettlementPrice;
-		quote.pre_interest = p->PreOpenInterest;
+			//委卖价格
+			quote.ask_prices[0] = p->AskPrice;
+			//委买价格
+			quote.bid_prices[0] = p->BidPrice;
+			//委卖量
+			quote.ask_qty[0] = p->AskVolume;
+			//委买量
+			quote.bid_qty[0] = p->BidVolume;
 
-		//委卖价格
-		quote.ask_prices[0] = p->AskPrice;
-		//委买价格
-		quote.bid_prices[0] = p->BidPrice;
-		//委卖量
-		quote.ask_qty[0] = p->AskVolume;
-		//委买量
-		quote.bid_qty[0] = p->BidVolume;
+			_tick_cache->add(instrumentNo, tick, false);
 
-		_tick_cache->add(instrumentNo, tick, false);
+			if (_sink)
+				_sink->handleQuote(tick, 1);
+		}
 
-		if (_sink)
-			_sink->handleQuote(tick, 1);
+		content.erase(0, snap_size);
 	}
 	
 	s.close(ec);
+
+	write_log(_sink, LL_DEBUG, "Snapshots synced");
 }
 
 
@@ -236,7 +247,7 @@ bool ParserXeleSkt::connect()
 {
 	if(reconnect())
 	{
-		_thrd_parser.reset(new StdThread(boost::bind(&io_service::run, &_io_service)));
+		_io_service.run();
 	}
 	else
 	{
@@ -319,6 +330,7 @@ void ParserXeleSkt::handle_udp_read(const boost::system::error_code& e, std::siz
 	if(_stopped || bytes_transferred<=0)
 		return;
 
+	printf("%d\n", (int)bytes_transferred);
 	extract_buffer(bytes_transferred);
 
 	_udp_socket->async_receive_from(buffer(_udp_buffer), _udp_ep,
