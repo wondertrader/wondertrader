@@ -44,6 +44,7 @@ WtEngine::WtEngine()
 	, _evt_listener(NULL)
 	, _adapter_mgr(NULL)
 	, _notifier(NULL)
+	, _fund_udt_span(0)
 {
 	TimeUtils::getDateTime(_cur_date, _cur_time);
 	_cur_secs = _cur_time % 100000;
@@ -155,6 +156,10 @@ void WtEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 			pInfo->_dynprofit = dynprofit;
 		}
 	});
+
+	push_task([this]() {
+		update_fund_dynprofit();
+	});
 }
 
 void WtEngine::update_fund_dynprofit()
@@ -164,6 +169,13 @@ void WtEngine::update_fund_dynprofit()
 	{
 		//上次结算日期等于当前交易日,说明已经结算,不再更新了
 		return;
+	}
+
+	int64_t now = TimeUtils::getLocalTimeNow();
+	if(_fund_udt_span != 0)
+	{
+		if (now - fundInfo._update_time < _fund_udt_span * 1000)
+			return;
 	}
 
 	double profit = 0.0;
@@ -199,6 +211,8 @@ void WtEngine::update_fund_dynprofit()
 		fundInfo._min_md_dyn_bal._dyn_balance = dynbalance;
 		fundInfo._min_md_dyn_bal._date = _cur_tdate;
 	}
+
+	fundInfo._update_time = now;
 }
 
 void WtEngine::writeRiskLog(const char* message)
@@ -269,6 +283,13 @@ void WtEngine::init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtDtMgr* dataMgr, IHot
 	if(cfgRisk)
 	{
 		init_riskmon(cfgRisk);
+	}
+	else
+	{
+		//如果没有配置风控线程，则需要自己更新浮动盈亏
+		//把更新时间间隔设置为5s
+		_fund_udt_span = 5;
+		WTSLogger::log_raw(LL_WARN, "RiskMon is not configured, portfilio fund will be updated every 5s");
 	}
 }
 
@@ -355,6 +376,8 @@ void WtEngine::save_datas()
 
 		jFund.AddMember("maxmd", jMaxMD, allocator);
 		jFund.AddMember("minmd", jMinMD, allocator);
+
+		jFund.AddMember("update_time", fundInfo._update_time, allocator);
 
 		root.AddMember("fund", jFund, allocator);
 	}
@@ -473,6 +496,11 @@ void WtEngine::load_datas()
 			const rj::Value& jMinMD = jFund["minmd"];
 			fundInfo._min_md_dyn_bal._dyn_balance = jMinMD["dyn_balance"].GetDouble();
 			fundInfo._min_md_dyn_bal._date = jMinMD["date"].GetUint();
+
+			if(jFund.HasMember("update_time"))
+			{
+				fundInfo._update_time = jFund["update_time"].GetInt64();
+			}
 		}
 	}
 

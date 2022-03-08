@@ -185,6 +185,8 @@ protected:
 	uint32_t		_cur_secs;		//当前秒数, 包含毫秒
 	uint32_t		_cur_tdate;		//当前交易日
 
+	uint32_t		_fund_udt_span;	//组合资金更新时间间隔
+
 	IBaseDataMgr*	_base_data_mgr;	//基础数据管理器
 	IHotMgr*		_hot_mgr;		//主力管理器
 	WtDtMgr*		_data_mgr;		//数据管理器
