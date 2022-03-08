@@ -105,6 +105,8 @@ typedef struct _WTSFundStruct
 	double		_min_dyn_bal;	//日内最小净值
 	uint32_t	_min_time;		//日内低点产生时间
 
+	int64_t		_update_time;	//数据更新时间
+
 	typedef struct _DynBalPair
 	{
 		uint32_t	_date;
