@@ -1,4 +1,5 @@
 #include <iostream>
+#include <boost/filesystem.hpp>
 
 #include "../Includes/IParserApi.h"
 #include "../Includes/WTSVariant.hpp"
@@ -7,6 +8,8 @@
 
 #include "../Share/TimeUtils.hpp"
 #include "../Share/StdUtils.hpp"
+#include "../Share/DLLHelper.hpp"
+#include "../Share/StrUtil.hpp"
 
 #include "../WTSTools/WTSBaseDataMgr.h"
 #include "../WTSTools/WTSLogger.h"
@@ -76,14 +79,14 @@ public:
 
 	bool createParser(const char* moduleName)
 	{
-		HINSTANCE hInst = LoadLibrary(moduleName);
+        DllHandle hInst = DLLHelper::load_library(moduleName);
 		if (hInst == NULL)
 		{
 			log("模块{}加载失败", moduleName);
 			return false;
 		}
 
-		FuncCreateParser pCreator = (FuncCreateParser)GetProcAddress(hInst, "createParser");
+		FuncCreateParser pCreator = (FuncCreateParser)DLLHelper::get_symbol(hInst, "createParser");
 		if (NULL == pCreator)
 		{
 			log("接口创建函数读取失败");
@@ -97,7 +100,7 @@ public:
 			return false;
 		}
 
-		m_funcRemover = (FuncDeleteParser)GetProcAddress(hInst, "deleteParser");
+		m_funcRemover = (FuncDeleteParser)DLLHelper::get_symbol(hInst, "deleteParser");
 		return true;
 	}
 
@@ -136,15 +139,12 @@ std::string getBaseFolder()
 	static std::string basePath;
 	if (basePath.empty())
 	{
-		char path[MAX_PATH] = { 0 };
-		GetModuleFileName(GetModuleHandle(NULL), path, MAX_PATH);
+		basePath = boost::filesystem::initial_path<boost::filesystem::path>().string();
 
-		basePath = path;
-		auto pos = basePath.find_last_of('\\');
-		basePath = basePath.substr(0, pos + 1);
+		basePath = StrUtil::standardisePath(basePath);
 	}
 
-	return basePath;
+	return basePath.c_str();
 }
 
 int main()
