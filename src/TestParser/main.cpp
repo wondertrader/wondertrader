@@ -1,8 +1,4 @@
-#include <windows.h>
 #include <iostream>
-#include <mutex>
-
-#include "IniFile.hpp"
 
 #include "../Includes/IParserApi.h"
 #include "../Includes/WTSVariant.hpp"
@@ -14,7 +10,7 @@
 
 #include "../WTSTools/WTSBaseDataMgr.h"
 #include "../WTSTools/WTSLogger.h"
-
+#include "../WTSUtils/WTSCfgLoader.h"
 
 WTSBaseDataMgr	g_bdMgr;
 
@@ -157,45 +153,38 @@ int main()
 
 	WTSLogger::info("启动成功,当前系统版本号: v1.0");
 
-	std::string cfg = getBaseFolder() + "config.ini";
-
-	bool isUTF8 = IniFile::ReadConfigInt("config", "utf8", 0, cfg.c_str())==1;
-	std::string file = IniFile::ReadConfigString("config", "session", "", cfg.c_str());
-	if(!file.empty())
-		g_bdMgr.loadSessions(file.c_str(), isUTF8);
-
-	file = IniFile::ReadConfigString("config", "commodity", "", cfg.c_str());
-	if (!file.empty())
-		g_bdMgr.loadCommodities(file.c_str(), isUTF8);
-
-	file = IniFile::ReadConfigString("config", "contract", "", cfg.c_str());
-	if (!file.empty())
-		g_bdMgr.loadContracts(file.c_str(), isUTF8);
-
-	file = IniFile::ReadConfigString("config", "holiday", "", cfg.c_str());
-	if (!file.empty())
-		g_bdMgr.loadHolidays(file.c_str());
-
-
-	WTSVariant* params = WTSVariant::createObject();
-
-	std::string module = IniFile::ReadConfigString("config", "parser", "", cfg.c_str());
-	std::string profile = IniFile::ReadConfigString("config", "profile", "", cfg.c_str());
-
-	StringVector ayKeys, ayVals;
-	IniFile::ReadConfigSectionKeyValueArray(ayKeys, ayVals, profile.c_str(), cfg.c_str());
-	for (uint32_t i = 0; i < ayKeys.size(); i++)
+	WTSVariant* root = WTSCfgLoader::load_from_file("config.yaml", true);
+	if (root == NULL)
 	{
-		const char* key = ayKeys[i].c_str();
-		const char* val = ayVals[i].c_str();
+		WTSLogger::log_raw(LL_ERROR, "配置文件config.yaml加载失败");
+		return 0;
+	}
 
-		params->append(key, val);
+	WTSVariant* cfg = root->get("config");
+	bool isUTF8 = cfg->getBoolean("utf8");
+	if (cfg->has("session"))
+		g_bdMgr.loadSessions(cfg->getCString("session"), isUTF8);
+
+	if (cfg->has("commodity"))
+		g_bdMgr.loadCommodities(cfg->getCString("commodity"), isUTF8);
+
+	if (cfg->has("contract"))
+		g_bdMgr.loadContracts(cfg->getCString("contract"), isUTF8);
+
+	std::string module = cfg->getCString("parser");
+	std::string profile = cfg->getCString("profile");
+	WTSVariant* params = root->get(profile.c_str());
+	if (params == NULL)
+	{
+		WTSLogger::error_f("配置项{}不存在", profile);
+		return 0;
 	}
 
 	ParserSpi* parser = new ParserSpi;
 	parser->init(params, module.c_str());
 	parser->run();
-	params->release();
+
+	root->release();
 
 	getchar();
 	
