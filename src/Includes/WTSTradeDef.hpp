@@ -136,9 +136,9 @@ protected:
 
 //////////////////////////////////////////////////////////////////////////
 //委托操作: 撤单、改单
-class WTSEntrustAction : public WTSObject
+class WTSEntrustAction : public WTSPoolObject<WTSEntrustAction>
 {
-protected:
+public:
 	WTSEntrustAction()
 		: m_iPrice(0)
 		, m_strCode("")
@@ -154,7 +154,7 @@ protected:
 public:
 	static inline WTSEntrustAction* create(const char* code, const char* exchg = "", double vol = 0, double price = 0, WTSBusinessType bType = BT_CASH)
 	{
-		WTSEntrustAction* pRet = new WTSEntrustAction;
+		WTSEntrustAction* pRet = WTSEntrustAction::allocate();
 		if(pRet)
 		{
 			strcpy(pRet->m_strExchg, exchg);
@@ -399,9 +399,9 @@ private:
 };
 
 //////////////////////////////////////////////////////////////////////////
-class WTSTradeInfo : public WTSObject
+class WTSTradeInfo : public WTSPoolObject<WTSTradeInfo>
 {
-protected:
+public:
 	WTSTradeInfo()
 		: m_orderType(WORT_Normal)
 		, m_tradeType(WTT_Common)
@@ -416,7 +416,7 @@ protected:
 public:
 	static inline WTSTradeInfo* create(const char* code, const char* exchg = "", WTSBusinessType bType = BT_CASH)
 	{
-		WTSTradeInfo *pRet = new WTSTradeInfo;
+		WTSTradeInfo *pRet = WTSTradeInfo::allocate();
 		strcpy(pRet->m_strExchg, exchg);
 		strcpy(pRet->m_strCode, code);
 		pRet->m_businessType = bType;
@@ -499,12 +499,12 @@ protected:
 
 //////////////////////////////////////////////////////////////////////////
 //持仓信息
-class WTSPositionItem : public WTSObject
+class WTSPositionItem : public WTSPoolObject<WTSPositionItem>
 {
 public:
 	static inline WTSPositionItem* create(const char* code, const char* currency = "CNY", const char* exchg = "", WTSBusinessType bType = BT_CASH)
 	{
-		WTSPositionItem *pRet = new WTSPositionItem;
+		WTSPositionItem *pRet = WTSPositionItem::allocate();
 		strcpy(pRet->m_strExchg, exchg);
 		strcpy(pRet->m_strCode, code);
 		strcpy(pRet->m_strCurrency, currency);
@@ -551,7 +551,7 @@ public:
 	inline void setContractInfo(WTSContractInfo* cInfo) { m_pContract = cInfo; }
 	inline WTSContractInfo* getContractInfo() const { return m_pContract; }
 
-protected:
+public:
 	WTSPositionItem()
 		: m_direction(WDT_LONG)
 		, m_dPrePosition(0)
@@ -568,6 +568,7 @@ protected:
 	{}
 	virtual ~WTSPositionItem(){}
 
+protected:
 	char			m_strExchg[MAX_EXCHANGE_LENGTH];
 	char			m_strCode[MAX_INSTRUMENT_LENGTH];
 	char			m_strCurrency[8];
@@ -588,14 +589,14 @@ protected:
 
 //////////////////////////////////////////////////////////////////////////
 //账户信息
-class WTSAccountInfo : public WTSObject
+class WTSAccountInfo : public WTSPoolObject<WTSAccountInfo>
 {
-protected:
+public:
 	WTSAccountInfo():m_strCurrency("CNY"){}
 	virtual ~WTSAccountInfo(){}
 
 public:
-	static inline WTSAccountInfo* create(){return new WTSAccountInfo;}
+	static inline WTSAccountInfo* create(){return WTSAccountInfo::allocate();}
 
 	inline void	setDescription(const char* desc){m_strDescription = desc;}
 	inline void	setCurrency(const char* currency){ m_strCurrency = currency; }
