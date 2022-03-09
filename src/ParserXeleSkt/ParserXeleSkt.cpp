@@ -138,7 +138,7 @@ bool ParserXeleSkt::reconnect()
 			boost::asio::placeholders::error,
 			boost::asio::placeholders::bytes_transferred));
 	}
-	write_log(_sink, LL_DEBUG, "Ready to receive from multicast tunnel {}:{}...", _mcast_host, _mcast_port);
+	write_log(_sink, LL_INFO, "[ParserXeleSkt] Ready to receive from multicast tunnel {}:{}...", _mcast_host, _mcast_port);
 	return true;
 }
 
@@ -150,13 +150,14 @@ bool ParserXeleSkt::prepare()
 	s.connect(_tcp_ep, ec);
 	if(ec)
 	{
+		write_log(_sink, LL_ERROR, "[ParserXeleSkt] Preparing snapshots failed, connecting tcp tunnel {}:{} error: {}", _tcp_host, _tcp_port, ec.message());
 		return false;
 	}
 
 	if (_tick_cache == NULL)
 		_tick_cache = TickCache::create();
 	
-	write_log(_sink, LL_DEBUG, "Preparing snapshots via tcp tunnel {}:{}...", _tcp_host, _tcp_port);
+	write_log(_sink, LL_INFO, "[ParserXeleSkt] Preparing snapshots via tcp tunnel {}:{}...", _tcp_host, _tcp_port);
 
 	boost::array<char, 4096> buffer;
 	std::string content;
@@ -187,6 +188,7 @@ bool ParserXeleSkt::prepare()
 
 		CXeleShfeSnapShot *p = (CXeleShfeSnapShot *)(content.data() + sizeof(CXeleShfeMarketHead));
 		int instrumentNo = p->InstrumentNo;
+		write_log(_sink, LL_DEBUG, "[ParserXeleSkt] {}-{}", p->InstrumentID, instrumentNo);
 		WTSContractInfo* ct = _bd_mgr->getContract(p->InstrumentID);
 		if (ct != NULL)
 		{
@@ -239,7 +241,7 @@ bool ParserXeleSkt::prepare()
 	
 	s.close(ec);
 
-	write_log(_sink, LL_DEBUG, "Snapshots synced");
+	write_log(_sink, LL_INFO, "[ParserXeleSkt] All snapshots synced");
 }
 
 
@@ -302,7 +304,7 @@ void ParserXeleSkt::registerSpi( IParserSpi* listener )
 	_sink = listener;
 	if(bReplaced && _sink)
 	{
-		write_log(_sink, LL_WARN, "Listener is replaced");
+		write_log(_sink, LL_DEBUG, "[ParserXeleSkt] Listener is replaced");
 	}
 
 	if (_sink)
@@ -330,7 +332,6 @@ void ParserXeleSkt::handle_udp_read(const boost::system::error_code& e, std::siz
 	if(_stopped || bytes_transferred<=0)
 		return;
 
-	printf("%d\n", (int)bytes_transferred);
 	extract_buffer(bytes_transferred);
 
 	_udp_socket->async_receive_from(buffer(_udp_buffer), _udp_ep,
@@ -348,12 +349,12 @@ void ParserXeleSkt::handle_udp_read(const boost::system::error_code& e, std::siz
 void ParserXeleSkt::extract_buffer(uint32_t length)
 {
 	std::size_t len = 0;
-	while (true)
+	char * data = _udp_buffer.data();
+	while (length > len)
 	{
-		char * data = _udp_buffer.data();
-		CXeleShfeMarketHead *mh = reinterpret_cast<CXeleShfeMarketHead *>(data + len);
+		char * data = _udp_buffer.data() + len;
+		CXeleShfeMarketHead *mh = reinterpret_cast<CXeleShfeMarketHead *>(data);
 		int8_t version = mh->Version;
-		int len = 0;
 		if (version != XELE_MD_DATA_VERSION)
 			return;
 
@@ -361,7 +362,10 @@ void ParserXeleSkt::extract_buffer(uint32_t length)
 		if (type == MESSAGE_MARKET_DATA)
 		{
 			CXeleShfeMarketData *p = reinterpret_cast<CXeleShfeMarketData *>(data + sizeof(CXeleShfeMarketHead));
-			len += sizeof(CXeleShfeMarketHead) + sizeof(CXeleShfeMarketData);
+			static std::size_t packLen = sizeof(CXeleShfeMarketHead) + sizeof(CXeleShfeMarketData);
+			len += packLen;
+
+			//write_log(_sink, LL_DEBUG, "[ParserXeleSkt] Receiving market data, length: {}", packLen);
 
 			WTSTickData* tick = (WTSTickData*)_tick_cache->get(p->InstrumentNo);
 			if (tick != NULL)
@@ -378,7 +382,7 @@ void ParserXeleSkt::extract_buffer(uint32_t length)
 				WTSTickStruct& quote = tick->getTickStruct();
 				quote.action_date = actDate;
 				quote.action_time = actTime;
-				quote.price = p->LastPrice;
+				quote.price = p->LastPrice*scale;
 				quote.high = std::max(quote.high, p->LastPrice*scale);
 				quote.low = std::min(quote.low, p->LastPrice*scale);
 
@@ -401,12 +405,20 @@ void ParserXeleSkt::extract_buffer(uint32_t length)
 
 				if (_sink)
 					_sink->handleQuote(tick, 1);
+
+				static uint32_t recv_cnt = 0;
+				recv_cnt++;
+				if (recv_cnt % _gpsize == 0)
+					write_log(_sink, LL_DEBUG, "[ParserXeleSkt] {} ticks received in total", recv_cnt);
 			}
 		}
 		else if (type == MESSAGE_DEPTH)
 		{
-			CXeleShfeDepthMarketData *p = reinterpret_cast<CXeleShfeDepthMarketData *>(data + sizeof(CXeleShfeMarketHead));
-			len += sizeof(CXeleShfeMarketHead) + sizeof(CXeleShfeDepthMarketData);
+			CXeleShfeDepthMarketData *p = (CXeleShfeDepthMarketData *)(data + sizeof(CXeleShfeMarketHead));
+			static std::size_t packLen = sizeof(CXeleShfeMarketHead) + sizeof(CXeleShfeDepthMarketData);
+			len += packLen;
+
+			//write_log(_sink, LL_DEBUG, "[ParserXeleSkt] Receiving depth market data of {}, length: {}", p->InstrumentNo, packLen);
 
 			WTSTickData* tick = (WTSTickData*)_tick_cache->get(p->InstrumentNo);
 			if (tick != NULL)
@@ -423,7 +435,7 @@ void ParserXeleSkt::extract_buffer(uint32_t length)
 				WTSTickStruct& quote = tick->getTickStruct();
 				quote.action_date = actDate;
 				quote.action_time = actTime;
-				quote.price = p->LastPrice;
+				quote.price = p->LastPrice*scale;
 				quote.high = std::max(quote.high, p->LastPrice*scale);
 				quote.low = std::min(quote.low, p->LastPrice*scale);
 
@@ -465,15 +477,19 @@ void ParserXeleSkt::extract_buffer(uint32_t length)
 
 				if (_sink)
 					_sink->handleQuote(tick, 1);
+
+				static uint32_t recv_cnt = 0;
+				recv_cnt++;
+				if (recv_cnt % _gpsize == 0)
+					write_log(_sink, LL_DEBUG, "[ParserXeleSkt] {} depth ticks received in total", recv_cnt);
 			}
 		}
 		else if (type == MESSAGE_TYPE_HEART_BEAT) {
 			CXeleShfeHeartBeat *p = reinterpret_cast<CXeleShfeHeartBeat *>(data + sizeof(CXeleShfeMarketHead));
-			len += sizeof(CXeleShfeMarketHead) + sizeof(CXeleShfeHeartBeat);
+			static std::size_t packLen = sizeof(CXeleShfeMarketHead) + sizeof(CXeleShfeHeartBeat);
+			len += packLen;
+			write_log(_sink, LL_DEBUG, "[ParserXeleSkt] Receiving heartbeat packet, length: %d\n", packLen);
 		}
-
-		if(length <= len)
-			break;
 	}
 }
 
