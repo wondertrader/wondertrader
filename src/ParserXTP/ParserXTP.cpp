@@ -232,9 +232,10 @@ void ParserXTP::OnDepthMarketData(XTPMD *market_data, int64_t bid1_qty[], int32_
 			write_log(m_sink, LL_ERROR, "[ParserXTP] Instrument {}.{} not exists...", exchg.c_str(), market_data->ticker);
 		return;
 	}
-	WTSCommodityInfo* commInfo = m_pBaseDataMgr->getCommodity(ct);
+	WTSCommodityInfo* commInfo = ct->getCommInfo();
 
 	WTSTickData* tick = WTSTickData::create(code.c_str());
+	tick->setContractInfo(ct);
 	WTSTickStruct& quote = tick->getTickStruct();
 	strcpy(quote.exchg, commInfo->getExchg());
 	

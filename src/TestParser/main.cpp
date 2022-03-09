@@ -60,7 +60,6 @@ public:
 		for (; it != ayContract->end(); it++)
 		{
 			WTSContractInfo* contract = STATIC_CONVERT(*it, WTSContractInfo*);
-			WTSCommodityInfo* pCommInfo = g_bdMgr.getCommodity(contract);
 			contractSet.insert(contract->getFullCode());
 		}
 

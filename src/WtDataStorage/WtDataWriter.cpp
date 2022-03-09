@@ -331,11 +331,11 @@ bool WtDataWriter::writeTick(WTSTickData* curTick, uint32_t procFlag)
 
 		do
 		{
-			WTSContractInfo* ct = _bd_mgr->getContract(curTick->code(), curTick->exchg());
+			WTSContractInfo* ct = curTick->getContractInfo();
 			if(ct == NULL)
 				break;
 
-			WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(ct);
+			WTSCommodityInfo* commInfo = ct->getCommInfo();
 
 			//再根据状态过滤
 			if (!_sink->canSessionReceive(commInfo->getSession()))
@@ -381,7 +381,7 @@ bool WtDataWriter::writeOrderQueue(WTSOrdQueData* curOrdQue)
 			if (ct == NULL)
 				break;
 
-			WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(ct);
+			WTSCommodityInfo* commInfo = ct->getCommInfo();
 
 			//再根据状态过滤
 			if (!_sink->canSessionReceive(commInfo->getSession()))
@@ -478,7 +478,7 @@ bool WtDataWriter::writeOrderDetail(WTSOrdDtlData* curOrdDtl)
 			if (ct == NULL)
 				break;
 
-			WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(ct);
+			WTSCommodityInfo* commInfo = ct->getCommInfo();
 
 			//再根据状态过滤
 			if (!_sink->canSessionReceive(commInfo->getSession()))
@@ -534,7 +534,7 @@ bool WtDataWriter::writeTransaction(WTSTransData* curTrans)
 			if (ct == NULL)
 				break;
 
-			WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(ct);
+			WTSCommodityInfo* commInfo = ct->getCommInfo();
 
 			//再根据状态过滤
 			if (!_sink->canSessionReceive(commInfo->getSession()))

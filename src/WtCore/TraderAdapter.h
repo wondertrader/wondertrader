@@ -142,13 +142,13 @@ public:
 		return 0;
 	}
 
-	uint32_t openLong(const char* stdCode, double price, double qty, int flag);
-	uint32_t openShort(const char* stdCode, double price, double qty, int flag);
-	uint32_t closeLong(const char* stdCode, double price, double qty, bool isToday, int flag);
-	uint32_t closeShort(const char* stdCode, double price, double qty, bool isToday, int flag);
+	uint32_t openLong(const char* stdCode, double price, double qty, int flag, WTSContractInfo* cInfo = NULL);
+	uint32_t openShort(const char* stdCode, double price, double qty, int flag, WTSContractInfo* cInfo = NULL);
+	uint32_t closeLong(const char* stdCode, double price, double qty, bool isToday, int flag, WTSContractInfo* cInfo = NULL);
+	uint32_t closeShort(const char* stdCode, double price, double qty, bool isToday, int flag, WTSContractInfo* cInfo = NULL);
 	
-	OrderIDs buy(const char* stdCode, double price, double qty, int flag, bool bForceClose);
-	OrderIDs sell(const char* stdCode, double price, double qty, int flag, bool bForceClose);
+	OrderIDs buy(const char* stdCode, double price, double qty, int flag, bool bForceClose, WTSContractInfo* cInfo = NULL);
+	OrderIDs sell(const char* stdCode, double price, double qty, int flag, bool bForceClose, WTSContractInfo* cInfo = NULL);
 	bool	cancel(uint32_t localid);
 	OrderIDs cancel(const char* stdCode, bool isBuy, double qty = 0);
 

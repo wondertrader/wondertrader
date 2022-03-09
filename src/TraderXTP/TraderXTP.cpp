@@ -196,7 +196,7 @@ WTSEntrust* TraderXTP::makeEntrust(XTPOrderInfo* order_info)
 		(uint32_t)order_info->quantity,
 		order_info->price,
 		ct->getExchg());
-
+	pRet->setContractInfo(ct);
 	pRet->setDirection(wrapDirectionType(order_info->side, order_info->position_effect));
 	pRet->setPriceType(wrapPriceType(order_info->price_type));
 	pRet->setOffsetType(wrapOffsetType(order_info->position_effect));
@@ -224,6 +224,7 @@ WTSOrderInfo* TraderXTP::makeOrderInfo(XTPQueryOrderRsp* order_info)
 		return NULL;
 
 	WTSOrderInfo* pRet = WTSOrderInfo::create();
+	pRet->setContractInfo(contract);
 	pRet->setPrice(order_info->price);
 	pRet->setVolume((uint32_t)order_info->quantity);
 	pRet->setDirection(wrapDirectionType(order_info->side, order_info->position_effect));
@@ -281,12 +282,11 @@ WTSTradeInfo* TraderXTP::makeTradeInfo(XTPQueryTradeRsp* trade_info)
 	if (contract == NULL)
 		return NULL;
 
-	WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(contract);
-
-	WTSTradeInfo *pRet = WTSTradeInfo::create(code.c_str(), commInfo->getExchg());
+	WTSTradeInfo *pRet = WTSTradeInfo::create(code.c_str(), exchg.c_str());
 	pRet->setVolume((uint32_t)trade_info->quantity);
 	pRet->setPrice(trade_info->price);
 	pRet->setTradeID(trade_info->exec_id);
+	pRet->setContractInfo(contract);
 
 	uint32_t uTime = (uint32_t)(trade_info->trade_time % 1000000000);
 	uint32_t uDate = (uint32_t)(trade_info->trade_time / 1000000000);
@@ -301,7 +301,7 @@ WTSTradeInfo* TraderXTP::makeTradeInfo(XTPQueryTradeRsp* trade_info)
 	pRet->setRefOrder(StrUtil::fmtUInt64(trade_info->order_xtp_id).c_str());
 	pRet->setTradeType(WTT_Common);
 
-	double amount = commInfo->getVolScale()*trade_info->quantity*pRet->getPrice();
+	double amount = trade_info->quantity*pRet->getPrice();
 	pRet->setAmount(amount);
 
 	std::string usertag = _ini.readString(ORDER_SECTION, StrUtil::trim(pRet->getRefOrder()).c_str());
@@ -453,12 +453,13 @@ void TraderXTP::OnQueryPosition(XTPQueryStkPositionRsp *position, XTPRI *error_i
 		WTSContractInfo* contract = _bd_mgr->getContract(code.c_str(), exchg.c_str());
 		if (contract)
 		{
-			WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(contract);
+			WTSCommodityInfo* commInfo = contract->getCommInfo();
 			std::string key = StrUtil::printf("%s-%d", code.c_str(), position->position_direction);
 			WTSPositionItem* pos = (WTSPositionItem*)_positions->get(key);
 			if (pos == NULL)
 			{
 				pos = WTSPositionItem::create(code.c_str(), commInfo->getCurrency(), commInfo->getExchg());
+				pos->setContractInfo(contract);
 				_positions->add(key, pos, false);
 			}
 			pos->setDirection(wrapPosDirection(position->position_direction));

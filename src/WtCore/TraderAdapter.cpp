@@ -597,7 +597,7 @@ bool TraderAdapter::checkOrderLimits(const char* stdCode)
 	return true;
 }
 
-OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty, int flag, bool bForceClose)
+OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty, int flag, bool bForceClose, WTSContractInfo* cInfo /* = NULL */)
 {
 	OrderIDs ret;
 	if (qty == 0)
@@ -610,9 +610,9 @@ OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty, int f
 		return ret;
 	}
 
-	WTSContractInfo* cInfo = getContract(stdCode);
-	WTSCommodityInfo* commInfo = getCommodify(stdCode);
-	WTSSessionInfo* sInfo = _bd_mgr->getSession(commInfo->getSession());
+	if(cInfo == NULL) cInfo = getContract(stdCode);
+	WTSCommodityInfo* commInfo = cInfo->getCommInfo();
+	WTSSessionInfo* sInfo = commInfo->getSessionInfo();
 
 	if (!sInfo->isInTradingTime(WtHelper::getTime(), true))
 	{
@@ -894,7 +894,7 @@ OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty, int f
 	return ret;
 }
 
-OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty, int flag, bool bForceClose)
+OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty, int flag, bool bForceClose, WTSContractInfo* cInfo /* = NULL */)
 {
 	OrderIDs ret;
 	if (qty == 0)
@@ -907,9 +907,9 @@ OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty, int 
 		return ret;
 	}
 
-	WTSContractInfo* cInfo = getContract(stdCode);
-	WTSCommodityInfo* commInfo = getCommodify(stdCode);
-	WTSSessionInfo* sInfo = _bd_mgr->getSession(commInfo->getSession());
+	if (cInfo == NULL) cInfo = getContract(stdCode);
+	WTSCommodityInfo* commInfo = cInfo->getCommInfo();
+	WTSSessionInfo* sInfo = commInfo->getSessionInfo();
 
 	if(!sInfo->isInTradingTime(WtHelper::getTime(), true))
 	{
@@ -1191,8 +1191,8 @@ bool TraderAdapter::doCancel(WTSOrderInfo* ordInfo)
 	if (ordInfo == NULL || !ordInfo->isAlive())
 		return false;
 
-	WTSContractInfo* cInfo = _bd_mgr->getContract(ordInfo->getCode(), ordInfo->getExchg());
-	WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(cInfo);
+	WTSContractInfo* cInfo = ordInfo->getContractInfo();
+	WTSCommodityInfo* commInfo = cInfo->getCommInfo();
 	std::string stdCode;
 	if (commInfo->getCategoty() == CC_FutOption)
 		stdCode = CodeHelper::rawFutOptCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
@@ -1273,9 +1273,10 @@ OrderIDs TraderAdapter::cancel(const char* stdCode, bool isBuy, double qty /* = 
 	return ret;
 }
 
-uint32_t TraderAdapter::openLong(const char* stdCode, double price, double qty, int flag /* = 0 */)
+uint32_t TraderAdapter::openLong(const char* stdCode, double price, double qty, int flag, WTSContractInfo* cInfo /* = NULL */)
 {
 	WTSEntrust* entrust = WTSEntrust::create(stdCode, qty, price);
+	entrust->setContractInfo(cInfo == NULL ? getContract(stdCode) : cInfo);
 	if(decimal::eq(price, 0.0))
 		entrust->setPriceType(WPT_ANYPRICE);
 	else
@@ -1290,9 +1291,10 @@ uint32_t TraderAdapter::openLong(const char* stdCode, double price, double qty, 
 	return ret;
 }
 
-uint32_t TraderAdapter::openShort(const char* stdCode, double price, double qty, int flag)
+uint32_t TraderAdapter::openShort(const char* stdCode, double price, double qty, int flag, WTSContractInfo* cInfo /* = NULL */)
 {
 	WTSEntrust* entrust = WTSEntrust::create(stdCode, qty, price);
+	entrust->setContractInfo(cInfo == NULL ? getContract(stdCode) : cInfo);
 	if (decimal::eq(price, 0.0))
 		entrust->setPriceType(WPT_ANYPRICE);
 	else
@@ -1307,9 +1309,10 @@ uint32_t TraderAdapter::openShort(const char* stdCode, double price, double qty,
 	return ret;
 }
 
-uint32_t TraderAdapter::closeLong(const char* stdCode, double price, double qty, bool isToday, int flag)
+uint32_t TraderAdapter::closeLong(const char* stdCode, double price, double qty, bool isToday, int flag, WTSContractInfo* cInfo /* = NULL */)
 {
 	WTSEntrust* entrust = WTSEntrust::create(stdCode, qty, price);
+	entrust->setContractInfo(cInfo == NULL ? getContract(stdCode) : cInfo);
 	if (decimal::eq(price, 0.0))
 		entrust->setPriceType(WPT_ANYPRICE);
 	else
@@ -1324,9 +1327,10 @@ uint32_t TraderAdapter::closeLong(const char* stdCode, double price, double qty,
 	return ret;
 }
 
-uint32_t TraderAdapter::closeShort(const char* stdCode, double price, double qty, bool isToday, int flag)
+uint32_t TraderAdapter::closeShort(const char* stdCode, double price, double qty, bool isToday, int flag, WTSContractInfo* cInfo /* = NULL */)
 {
 	WTSEntrust* entrust = WTSEntrust::create(stdCode, qty, price);
+	entrust->setContractInfo(cInfo == NULL ? getContract(stdCode) : cInfo);
 	if (decimal::eq(price, 0.0))
 		entrust->setPriceType(WPT_ANYPRICE);
 	else
@@ -1393,8 +1397,8 @@ void TraderAdapter::onRspEntrust(WTSEntrust* entrust, WTSError *err)
 	if (err && err->getErrorCode() != WEC_NONE)
 	{
 		WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR,err->getMessage());
-		WTSContractInfo* cInfo = _bd_mgr->getContract(entrust->getCode(), entrust->getExchg());
-		WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(cInfo);
+		WTSContractInfo* cInfo = entrust->getContractInfo();
+		WTSCommodityInfo* commInfo = cInfo->getCommInfo();
 		std::string stdCode;
 		if (commInfo->getCategoty() == CC_FutOption)
 			stdCode = CodeHelper::rawFutOptCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
@@ -1477,11 +1481,11 @@ void TraderAdapter::onRspPosition(const WTSArray* ayPositions)
 		for (auto it = ayPositions->begin(); it != ayPositions->end(); it++)
 		{
 			WTSPositionItem* pItem = (WTSPositionItem*)(*it);
-			WTSContractInfo* cInfo = _bd_mgr->getContract(pItem->getCode(), pItem->getExchg());
+			WTSContractInfo* cInfo = pItem->getContractInfo();
 			if (cInfo == NULL)
 				continue;
 
-			WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(cInfo);
+			WTSCommodityInfo* commInfo = cInfo->getCommInfo();
 			std::string stdCode;
 			if (commInfo->getCategoty() == CC_FutOption)
 				stdCode = CodeHelper::rawFutOptCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
@@ -1544,13 +1548,13 @@ void TraderAdapter::onRspOrders(const WTSArray* ayOrders)
 			if (orderInfo == NULL)
 				continue;
 
-			WTSContractInfo* cInfo = _bd_mgr->getContract(orderInfo->getCode(), orderInfo->getExchg());
+			WTSContractInfo* cInfo = orderInfo->getContractInfo();
 			if (cInfo == NULL)
 				continue;
 
 			bool isBuy = (orderInfo->getDirection() == WDT_LONG && orderInfo->getOffsetType() == WOT_OPEN) || (orderInfo->getDirection() == WDT_SHORT && orderInfo->getOffsetType() != WOT_OPEN);
 
-			WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(cInfo);
+			WTSCommodityInfo* commInfo = cInfo->getCommInfo();
 			std::string stdCode;
 			if (commInfo->getCategoty() == CC_FutOption)
 				stdCode = CodeHelper::rawFutOptCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
@@ -1654,11 +1658,11 @@ void TraderAdapter::onRspTrades(const WTSArray* ayTrades)
 		{
 			WTSTradeInfo* tInfo = (WTSTradeInfo*)(*it);
 
-			WTSContractInfo* cInfo = _bd_mgr->getContract(tInfo->getCode(), tInfo->getExchg());
+			WTSContractInfo* cInfo = tInfo->getContractInfo();
 			if (cInfo == NULL)
 				continue;
 
-			WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(cInfo);
+			WTSCommodityInfo* commInfo = cInfo->getCommInfo();
 			std::string stdCode;
 			if (commInfo->getCategoty() == CC_Future)
 				stdCode = CodeHelper::rawMonthCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
@@ -1784,11 +1788,11 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 		return;
 
 
-	WTSContractInfo* cInfo = _bd_mgr->getContract(orderInfo->getCode(), orderInfo->getExchg());
+	WTSContractInfo* cInfo = orderInfo->getContractInfo();
 	if (cInfo == NULL)
 		return;
 
-	WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(cInfo);
+	WTSCommodityInfo* commInfo = cInfo->getCommInfo();
 	std::string stdCode;
 	if (commInfo->getCategoty() == CC_FutOption)
 		stdCode = CodeHelper::rawFutOptCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
@@ -2025,7 +2029,7 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 
 void TraderAdapter::onPushTrade(WTSTradeInfo* tradeRecord)
 {
-	WTSContractInfo* cInfo = _bd_mgr->getContract(tradeRecord->getCode(), tradeRecord->getExchg());
+	WTSContractInfo* cInfo = tradeRecord->getContractInfo();
 	if (cInfo == NULL)
 		return;
 
@@ -2033,7 +2037,7 @@ void TraderAdapter::onPushTrade(WTSTradeInfo* tradeRecord)
 	bool isOpen = (tradeRecord->getOffsetType() == WOT_OPEN);
 	bool isBuy = (tradeRecord->getDirection() == WDT_LONG && tradeRecord->getOffsetType() == WOT_OPEN) || (tradeRecord->getDirection() == WDT_SHORT && tradeRecord->getOffsetType() != WOT_OPEN);
 
-	WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(cInfo);
+	WTSCommodityInfo* commInfo = cInfo->getCommInfo();
 	std::string stdCode;
 	if (commInfo->getCategoty() == CC_Future)
 		stdCode = CodeHelper::rawMonthCodeToStdCode(cInfo->getCode(), cInfo->getExchg());

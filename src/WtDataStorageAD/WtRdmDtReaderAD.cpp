@@ -208,7 +208,7 @@ WTSTickSlice* WtRdmDtReaderAD::readTickSlicesByRange(const char* stdCode, uint64
 		eTick.action_date = rDate;
 		eTick.action_time = (uint32_t)(etime % 1000000000);
 
-		uint32_t cnt = 0;
+		std::size_t cnt = 0;
 
 		WTSTickStruct* pTick = std::lower_bound(&tickList._ticks[0], &tickList._ticks[0] + (tickList._ticks.size() - 1), eTick, [](const WTSTickStruct& a, const WTSTickStruct& b) {
 			if (a.action_date != b.action_date)
@@ -217,7 +217,7 @@ WTSTickSlice* WtRdmDtReaderAD::readTickSlicesByRange(const char* stdCode, uint64
 				return a.action_time < b.action_time;
 		});
 
-		uint32_t eIdx = pTick - &tickList._ticks[0];
+		std::size_t eIdx = pTick - &tickList._ticks[0];
 		if (pTick->action_date > eTick.action_date || pTick->action_time >= eTick.action_time)
 		{
 			pTick--;
@@ -239,7 +239,7 @@ WTSTickSlice* WtRdmDtReaderAD::readTickSlicesByRange(const char* stdCode, uint64
 					return a.action_time < b.action_time;
 			});
 
-			uint32_t sIdx = pTick - &tickList._ticks[0];
+			std::size_t sIdx = pTick - &tickList._ticks[0];
 			cnt = eIdx - sIdx + 1;
 		}
 
@@ -339,7 +339,7 @@ WTSKlineSlice* WtRdmDtReaderAD::readKlineSliceByRange(const char* stdCode, WTSKl
 		sBar.time = (lDate - 19900000) * 10000 + lTime;
 
 		WTSBarStruct* pHead = NULL;
-		uint32_t cnt = 0;
+		std::size_t cnt = 0;
 
 		WTSBarStruct* pBar = std::lower_bound(&barsList._bars[0], &barsList._bars[0] + (barsList._bars.size() - 1), eBar, [isDay](const WTSBarStruct& a, const WTSBarStruct& b) {
 			if (isDay)
@@ -348,7 +348,7 @@ WTSKlineSlice* WtRdmDtReaderAD::readKlineSliceByRange(const char* stdCode, WTSKl
 				return a.time < b.time;
 		});
 
-		uint32_t idx = pBar - &barsList._bars[0];
+		std::size_t idx = pBar - &barsList._bars[0];
 		if ((isDay && pBar->date > eBar.date) || (!isDay && pBar->time > eBar.time))
 		{
 			pBar--;
@@ -371,7 +371,7 @@ WTSKlineSlice* WtRdmDtReaderAD::readKlineSliceByRange(const char* stdCode, WTSKl
 					return a.time < b.time;
 			});
 
-			uint32_t sIdx = pBar - &barsList._bars[0];
+			std::size_t sIdx = pBar - &barsList._bars[0];
 			pHead = pBar;
 			cnt = idx - sIdx + 1;
 		}

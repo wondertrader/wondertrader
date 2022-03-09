@@ -149,7 +149,7 @@ int TraderMocker::orderInsert(WTSEntrust* entrust)
 	_io_service.post([this, entrust](){
 		StdUniqueLock lock(_mutex_api);
 
-		WTSContractInfo* ct = _bd_mgr->getContract(entrust->getCode(), entrust->getExchg());
+		WTSContractInfo* ct = entrust->getContractInfo();
 
 		/*
 		 *	1、开仓无需检查
@@ -168,7 +168,7 @@ int TraderMocker::orderInsert(WTSEntrust* entrust)
 				msg = "品种不存在";
 				break;
 			}
-			WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(ct);
+			WTSCommodityInfo* commInfo = ct->getCommInfo();
 
 			//检查价格类型的合法性
 			if (entrust->getPriceType() == WPT_ANYPRICE && commInfo->getPriceMode() == PM_Limit)
@@ -345,7 +345,7 @@ int32_t TraderMocker::match_once()
 		if (ct == NULL)
 			continue;
 
-		WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(ct);
+		WTSCommodityInfo* commInfo = ct->getCommInfo();
 
 		WTSTickData* curTick = (WTSTickData*)_ticks->grab(fullcode);
 		if (curTick && strcmp(curTick->code(), ct->getCode())==0)
@@ -770,8 +770,8 @@ int TraderMocker::orderAction(WTSEntrustAction* action)
 			return;
 		}
 
-		WTSContractInfo* ct = _bd_mgr->getContract(ordInfo->getCode(), ordInfo->getExchg());
-		WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(ct);
+		WTSContractInfo* ct = ordInfo->getContractInfo();
+		WTSCommodityInfo* commInfo = ct->getCommInfo();
 
 		bool bPass = false;
 		do 
@@ -872,7 +872,7 @@ int TraderMocker::queryPositions()
 			if(ct == NULL)
 				continue;
 
-			WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(ct);
+			WTSCommodityInfo* commInfo = ct->getCommInfo();
 
 			if(pItem._long._volume > 0)
 			{

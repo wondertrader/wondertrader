@@ -22,7 +22,7 @@ public:
 	virtual ~WTSObject(){}
 
 public:
-	uint32_t		retain(){ return m_uRefs.fetch_add(1) + 1; }
+	inline uint32_t		retain(){ return m_uRefs.fetch_add(1) + 1; }
 
 	virtual void	release()
 	{
@@ -43,9 +43,9 @@ public:
 		}
 	}
 
-	bool			isSingleRefs() { return m_uRefs == 1; }
+	inline bool			isSingleRefs() { return m_uRefs == 1; }
 
-	uint32_t		retainCount() { return m_uRefs; }
+	inline uint32_t		retainCount() { return m_uRefs; }
 
 protected:
 	volatile std::atomic<uint32_t>	m_uRefs;
@@ -65,7 +65,7 @@ public:
 public:
 	static T*	allocate()
 	{
-		static MyPool	_pool;
+		thread_local static MyPool	_pool;
 		T* ret = _pool.construct();
 		ret->_pool = &_pool;
 		return ret;

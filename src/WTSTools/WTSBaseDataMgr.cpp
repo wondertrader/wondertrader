@@ -77,13 +77,6 @@ WTSCommodityInfo* WTSBaseDataMgr::getCommodity(const char* exchg, const char* pi
 	return (WTSCommodityInfo*)m_mapCommodities->get(key);
 }
 
-WTSCommodityInfo* WTSBaseDataMgr::getCommodity(WTSContractInfo* ct)
-{
-	if (ct == NULL)
-		return NULL;
-
-	return getCommodity(ct->getExchg(), ct->getProduct());
-}
 
 WTSContractInfo* WTSBaseDataMgr::getContract(const char* code, const char* exchg)
 {
@@ -176,11 +169,7 @@ WTSSessionInfo* WTSBaseDataMgr::getSessionByCode(const char* code, const char* e
 	if (ct == NULL)
 		return NULL;
 
-	WTSCommodityInfo* commInfo = getCommodity(ct);
-	if (commInfo == NULL)
-		return NULL;
-
-	return getSession(commInfo->getSession());
+	return ct->getCommInfo()->getSessionInfo();
 }
 
 bool WTSBaseDataMgr::isHoliday(const char* pid, uint32_t uDate, bool isTpl /* = false */)

@@ -339,12 +339,11 @@ int TraderFemas::orderInsert(WTSEntrust* entrust)
 	///合约代码
 	strcpy(req.InstrumentID, entrust->getCode());
 
-	WTSContractInfo* ct = m_bdMgr->getContract(entrust->getCode(), entrust->getExchg());
+	WTSContractInfo* ct = entrust->getContractInfo();
 	if (ct == NULL)
 		return -1;
 
-	WTSCommodityInfo* commInfo = m_bdMgr->getCommodity(ct);
-	strcpy(req.ExchangeID, wrapExchg(commInfo->getExchg()));
+	strcpy(req.ExchangeID, wrapExchg(ct->getExchg()));
 
 	if(strlen(entrust->getUserTag()) == 0)
 	{
@@ -358,7 +357,7 @@ int TraderFemas::orderInsert(WTSEntrust* entrust)
 	//生成本地委托单号
 	//entrust->setEntrustID(req.UserOrderLocalID);
 
-	req.OrderPriceType = wrapPriceType(entrust->getPriceType(), strcmp(commInfo->getExchg(), "CFFEX") == 0);
+	req.OrderPriceType = wrapPriceType(entrust->getPriceType(), strcmp(ct->getExchg(), "CFFEX") == 0);
 	req.Direction = wrapDirectionType(entrust->getDirection(), entrust->getOffsetType());
 	req.OffsetFlag = wrapOffsetType(entrust->getOffsetType());
 	req.HedgeFlag = USTP_FTDC_CHF_Speculation;
@@ -686,8 +685,9 @@ void TraderFemas::OnRspQryInvestorPosition(CUstpFtdcRspInvestorPositionField *pR
 		WTSContractInfo* contract = m_bdMgr->getContract(pRspInvestorPosition->InstrumentID, pRspInvestorPosition->ExchangeID);
 		if (contract)
 		{
-			WTSCommodityInfo* commInfo = m_bdMgr->getCommodity(contract);
+			WTSCommodityInfo* commInfo = contract->getCommInfo();
 			WTSPositionItem *pos = WTSPositionItem::create(pRspInvestorPosition->InstrumentID, commInfo->getCurrency(), commInfo->getExchg());
+			pos->setContractInfo(contract);
 			pos->setDirection(wrapPosDirection(pRspInvestorPosition->Direction));
 			pos->setNewPosition(pRspInvestorPosition->Position - pRspInvestorPosition->YdPosition);
 			pos->setPrePosition(pRspInvestorPosition->YdPosition);
@@ -977,6 +977,7 @@ WTSOrderInfo* TraderFemas::makeOrderInfo(CUstpFtdcOrderField* orderField)
 	pRet->setDirection(wrapDirectionType(orderField->Direction, orderField->OffsetFlag));
 	pRet->setPriceType(wrapPriceType(orderField->OrderPriceType));
 	pRet->setOffsetType(wrapOffsetType(orderField->OffsetFlag));
+	pRet->setContractInfo(contract);
 
 	if (orderField->TimeCondition == USTP_FTDC_TC_GFD)
 	{
@@ -1017,10 +1018,16 @@ WTSOrderInfo* TraderFemas::makeOrderInfo(CUstpFtdcOrderField* orderField)
 
 WTSEntrust* TraderFemas::makeEntrust(CUstpFtdcInputOrderField *entrustField)
 {
+	WTSContractInfo* ct = m_bdMgr->getContract(entrustField->InstrumentID, entrustField->ExchangeID);
+	if (ct == NULL)
+		return NULL;
+
 	WTSEntrust* pRet = WTSEntrust::create( 
 		entrustField->InstrumentID, 
 		entrustField->Volume, 
 		entrustField->LimitPrice);
+
+	pRet->setContractInfo(ct);
 
 	pRet->setDirection(wrapDirectionType(entrustField->Direction, entrustField->OffsetFlag));
 	pRet->setPriceType(wrapPriceType(entrustField->OrderPriceType));
@@ -1059,12 +1066,13 @@ WTSTradeInfo* TraderFemas::makeTradeRecord(CUstpFtdcTradeField *tradeField)
 	if(contract == NULL)
 		return NULL;
 
-	WTSCommodityInfo* mInfo = m_bdMgr->getCommodity(contract);
+	WTSCommodityInfo* mInfo = contract->getCommInfo();
 
 	WTSTradeInfo *pRet = WTSTradeInfo::create(tradeField->InstrumentID);
 	pRet->setVolume(tradeField->TradeVolume);
 	pRet->setPrice(tradeField->TradePrice);
 	pRet->setTradeID(tradeField->TradeID);
+	pRet->setContractInfo(contract);
 
 	std::string strTime = tradeField->TradeTime;
 	StrUtil::replace(strTime, ":", "");

@@ -61,7 +61,6 @@ bool ParserAdapter::initExt(const char* id, IParserApi* api)
 			for (; it != ayContract->end(); it++)
 			{
 				WTSContractInfo* contract = STATIC_CONVERT(*it, WTSContractInfo*);
-				WTSCommodityInfo* pCommInfo = _bd_mgr->getCommodity(contract);
 				contractSet.insert(contract->getFullCode());
 			}
 
@@ -181,7 +180,6 @@ bool ParserAdapter::init(const char* id, WTSVariant* cfg)
 						code = ay[1];
 					}
 					WTSContractInfo* contract = _bd_mgr->getContract(code.c_str(), exchg.c_str());
-					WTSCommodityInfo* pCommInfo = _bd_mgr->getCommodity(contract);
 					contractSet.insert(contract->getFullCode());
 				}
 			}
@@ -195,7 +193,6 @@ bool ParserAdapter::init(const char* id, WTSVariant* cfg)
 					for (; it != ayContract->end(); it++)
 					{
 						WTSContractInfo* contract = STATIC_CONVERT(*it, WTSContractInfo*);
-						WTSCommodityInfo* pCommInfo = _bd_mgr->getCommodity(contract);
 						contractSet.insert(contract->getFullCode());
 					}
 
@@ -209,7 +206,6 @@ bool ParserAdapter::init(const char* id, WTSVariant* cfg)
 				for (; it != ayContract->end(); it++)
 				{
 					WTSContractInfo* contract = STATIC_CONVERT(*it, WTSContractInfo*);
-					WTSCommodityInfo* pCommInfo = _bd_mgr->getCommodity(contract);
 					contractSet.insert(contract->getFullCode());
 				}
 
@@ -314,7 +310,13 @@ void ParserAdapter::handleQuote( WTSTickData *quote, uint32_t procFlag )
 	if (quote->actiondate() == 0 || quote->tradingdate() == 0)
 		return;
 
-	WTSContractInfo* contract = _bd_mgr->getContract(quote->code(), quote->exchg());
+	WTSContractInfo* contract = quote->getContractInfo();
+	if (contract == NULL)
+	{
+		contract = _bd_mgr->getContract(quote->code(), quote->exchg());
+		quote->setContractInfo(contract);
+	}
+
 	if (contract == NULL)
 		return;
 

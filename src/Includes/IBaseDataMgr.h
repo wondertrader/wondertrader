@@ -36,7 +36,6 @@ class IBaseDataMgr
 public:
 	virtual WTSCommodityInfo*	getCommodity(const char* exchgpid)						= 0;
 	virtual WTSCommodityInfo*	getCommodity(const char* exchg, const char* pid)		= 0;
-	virtual WTSCommodityInfo*	getCommodity(WTSContractInfo* ct)						= 0;
 
 	virtual WTSContractInfo*	getContract(const char* code, const char* exchg = "")	= 0;
 	virtual WTSArray*			getContracts(const char* exchg = "")					= 0; 
