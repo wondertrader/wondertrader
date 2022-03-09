@@ -112,6 +112,11 @@ public:
 		return date * 1000000 + time;
 	}
 
+    /*
+     * 读取当前时间
+     * @date    当前日期，格式如20220309
+     * @time    当前时间，精确到毫秒，格式如103029500
+     */
 	static inline void getDateTime(uint32_t &date, uint32_t &time)
 	{
 		timeb now;
