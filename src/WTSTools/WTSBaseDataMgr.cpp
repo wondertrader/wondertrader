@@ -88,19 +88,12 @@ WTSCommodityInfo* WTSBaseDataMgr::getCommodity(WTSContractInfo* ct)
 WTSContractInfo* WTSBaseDataMgr::getContract(const char* code, const char* exchg)
 {
 	//如果直接找到对应的市场代码,则直接
-	auto it = m_mapExchgContract->find(exchg);
-	if(it != m_mapExchgContract->end())
+	
+	auto lKey = makeLongKey(code);
+
+	if (strlen(exchg) == 0)
 	{
-		WTSContractList* contractList = (WTSContractList*)it->second;
-		auto it = contractList->find(code);
-		if(it != contractList->end())
-		{
-			return (WTSContractInfo*)it->second;
-		}
-	}
-	else if (strlen(exchg) == 0)
-	{
-		auto it = m_mapContracts->find(code);
+		auto it = m_mapContracts->find(lKey);
 		if (it == m_mapContracts->end())
 			return NULL;
 
@@ -109,6 +102,21 @@ WTSContractInfo* WTSBaseDataMgr::getContract(const char* code, const char* exchg
 			return NULL;
 
 		return (WTSContractInfo*)ayInst->at(0);
+	}
+	else
+	{
+		auto sKey = makeShortKey(exchg);
+		auto it = m_mapExchgContract->find(sKey);
+		if (it != m_mapExchgContract->end())
+		{
+			WTSContractList* contractList = (WTSContractList*)it->second;
+			auto it = contractList->find(lKey);
+			if (it != contractList->end())
+			{
+				return (WTSContractInfo*)it->second;
+			}
+		}
+
 	}
 
 	return NULL;
@@ -119,7 +127,7 @@ WTSArray* WTSBaseDataMgr::getContracts(const char* exchg /* = "" */)
 	WTSArray* ay = WTSArray::create();
 	if(strlen(exchg) > 0)
 	{
-		auto it = m_mapExchgContract->find(exchg);
+		auto it = m_mapExchgContract->find(makeShortKey(exchg));
 		if (it != m_mapExchgContract->end())
 		{
 			WTSContractList* contractList = (WTSContractList*)it->second;
@@ -433,28 +441,29 @@ bool WTSBaseDataMgr::loadContracts(const char* filename, bool isUTF8)
 				maxLmtQty = jcInfo->getUInt32("maxlimitqty");
 			cInfo->setVolumeLimits(maxMktQty, maxLmtQty);
 
-			WTSContractList* contractList = (WTSContractList*)m_mapExchgContract->get(cInfo->getExchg());
+			WTSContractList* contractList = (WTSContractList*)m_mapExchgContract->get(makeShortKey(cInfo->getExchg()));
 			if (contractList == NULL)
 			{
 				contractList = WTSContractList::create();
-				m_mapExchgContract->add(cInfo->getExchg(), contractList, false);
+				m_mapExchgContract->add(makeShortKey(cInfo->getExchg()), contractList, false);
 			}
-			contractList->add(cInfo->getCode(), cInfo, false);
+			contractList->add(makeLongKey(cInfo->getCode()), cInfo, false);
 
 			commInfo->addCode(code.c_str());
 
-			WTSArray* ayInst = (WTSArray*)m_mapContracts->get(cInfo->getCode());
+			LongKey key = makeLongKey(cInfo->getCode());
+			WTSArray* ayInst = (WTSArray*)m_mapContracts->get(key);
 			if(ayInst == NULL)
 			{
 				ayInst = WTSArray::create();
-				m_mapContracts->add(cInfo->getCode(), ayInst, false);
+				m_mapContracts->add(key, ayInst, false);
 			}
 
 			ayInst->append(cInfo, true);
 		}
 	}
 
-	WTSLogger::info_f("Contracts configuration file {} loaded", filename);
+	WTSLogger::info_f("Contracts configuration file {} loaded, {} exchanges", filename, m_mapExchgContract->size());
 	root->release();
 	return true;
 }
