@@ -12,7 +12,7 @@
 #include <vector>
 #include <deque>
 #include <string.h>
-#include<chrono>
+#include <chrono>
 
 #include "WTSObject.hpp"
 
@@ -821,16 +821,18 @@ public:
  *	内部封装WTSTickStruct
  *	封装的主要目的是出于跨语言的考虑
  */
-class WTSTickData : public WTSObject
+class WTSTickData : public WTSPoolObject<WTSTickData>
 {
 public:
+	WTSTickData() :m_pContract(NULL) {}
+
 	/*
 	 *	创建一个tick数据对象
 	 *	@stdCode 合约代码
 	 */
 	static inline WTSTickData* create(const char* stdCode)
 	{
-		WTSTickData* pRet = new WTSTickData;
+		WTSTickData* pRet = WTSTickData::allocate();
 		strcpy(pRet->m_tickStruct.code, stdCode);
 
 		return pRet;
@@ -842,15 +844,18 @@ public:
 	 */
 	static inline WTSTickData* create(WTSTickStruct& tickData)
 	{
-		WTSTickData* pRet = new WTSTickData;
+		WTSTickData* pRet = allocate();
 		memcpy(&pRet->m_tickStruct, &tickData, sizeof(WTSTickStruct));
 
 		return pRet;
 	}
 
-	inline void setCode(const char* code)
+	inline void setCode(const char* code, std::size_t len = 0)
 	{
-		strcpy(m_tickStruct.code, code);
+		if(len == 0)
+			strcpy(m_tickStruct.code, code);
+		else
+			strncpy(m_tickStruct.code, code, len);
 	}
 
 	/*
@@ -970,17 +975,12 @@ public:
 	 */
 	inline WTSTickStruct&	getTickStruct(){ return m_tickStruct; }
 
-	inline uint64_t getLocalTime() const { return m_uLocalTime; }
-
 	inline void setContractInfo(WTSContractInfo* cInfo) { m_pContract = cInfo; }
 	inline WTSContractInfo* getContractInfo() const { return m_pContract; }
 
 private:
 	WTSTickStruct		m_tickStruct;
-	uint64_t			m_uLocalTime;	//本地时间
 	WTSContractInfo*	m_pContract;
-
-	WTSTickData():m_pContract(NULL),m_uLocalTime(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count()){}
 };
 
 class WTSOrdQueData : public WTSObject

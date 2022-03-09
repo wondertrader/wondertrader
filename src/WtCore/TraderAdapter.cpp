@@ -454,7 +454,6 @@ uint32_t TraderAdapter::doEntrust(WTSEntrust* entrust)
 	entrust->setUserTag(StrUtil::printf("%s.%u", _order_pattern.c_str(), localid).c_str());
 	
 	int32_t ret = _trader_api->orderInsert(entrust);
-	entrust->setSent();
 	if(ret < 0)
 	{
 		WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR, "[%s] Order placing failed: %d", _id.c_str(), ret);
