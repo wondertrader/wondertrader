@@ -68,6 +68,18 @@ public:
 		str.resize(destEnd-str.begin());
 	}
 
+	static inline std::size_t findFirst(const char* str, char ch)
+	{
+		std::size_t len = strlen(str);
+		for(std::size_t i = 0; i < len; i++)
+		{
+			if (str[i] == ch)
+				return i;
+		}
+
+		return std::string::npos;
+	}
+
 	/** Returns a std::stringVector that contains all the substd::strings delimited
 	by the characters in the passed <code>delims</code> argument.
 	@param
