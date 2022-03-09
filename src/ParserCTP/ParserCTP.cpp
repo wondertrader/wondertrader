@@ -85,6 +85,7 @@ ParserCTP::ParserCTP()
 	:m_pUserAPI(NULL)
 	,m_iRequestID(0)
 	,m_uTradingDate(0)
+    ,m_bLocaltime(false)
 {
 }
 
@@ -101,6 +102,13 @@ bool ParserCTP::init(WTSVariant* config)
 	m_strUserID = config->getCString("user");
 	m_strPassword = config->getCString("pass");
 	m_strFlowDir = config->getCString("flowdir");
+    /*
+     * By Wesley @ 2022.03.09
+     * 这个参数主要是给非标准CTP环境用的
+     * 如simnow全天候行情，openctp等环境
+     * 如果为true，就用本地时间戳，默认为false
+     */
+    m_bLocaltime = config->getBoolean("localtime");
 
 	if (m_strFlowDir.empty())
 		m_strFlowDir = "CTPMDFlow";
@@ -183,6 +191,10 @@ void ParserCTP::OnRspUserLogin( CThostFtdcRspUserLoginField *pRspUserLogin, CTho
 	if(bIsLast && !IsErrorRspInfo(pRspInfo))
 	{
 		m_uTradingDate = strtoul(m_pUserAPI->GetTradingDay(), NULL, 10);
+        //By Wesley @ 2022.03.09
+        //这里加一个判断，但是这样的交易日不准确，在夜盘会出错
+        if(m_uTradingDate == 0)
+            m_uTradingDate = TimeUtils::getCurDate();
 		
 		if(m_sink)
 		{
@@ -223,47 +235,48 @@ void ParserCTP::OnRtnDepthMarketData( CThostFtdcDepthMarketDataField *pDepthMark
 		return;
 	}
 
-	uint32_t actDate = strtoul(pDepthMarketData->ActionDay, NULL, 10);
-	uint32_t actTime = strToTime(pDepthMarketData->UpdateTime) * 1000 + pDepthMarketData->UpdateMillisec;
-	uint32_t actHour = actTime / 10000000;
+    WTSContractInfo* contract = m_pBaseDataMgr->getContract(pDepthMarketData->InstrumentID, pDepthMarketData->ExchangeID);
+    if (contract == NULL)
+        return;
 
-	if (actDate == m_uTradingDate && actHour >= 20)
-	{
-		//这样的时间是有问题,因为夜盘时发生日期不可能等于交易日
-		//这就需要手动设置一下
-		uint32_t curDate, curTime;
-		TimeUtils::getDateTime(curDate, curTime);
-		uint32_t curHour = curTime / 10000000;
+    uint32_t actDate, actTime, actHour;
 
-		//早上启动以后,会收到昨晚12点以前收盘的行情,这个时候可能会有发生日期=交易日的情况出现
-		//这笔数据直接丢掉
-		if (curHour >= 3 && curHour < 9)
-			return;
+    if(m_bLocaltime)
+    {
+        TimeUtils::getDateTime(actDate, actTime);
+        actHour = actTime / 10000000;
+    }
+    else
+    {
+        actDate = strtoul(pDepthMarketData->ActionDay, NULL, 10);
+        actTime = strToTime(pDepthMarketData->UpdateTime) * 1000 + pDepthMarketData->UpdateMillisec;
+        actHour = actTime / 10000000;
 
-		actDate = curDate;
+        if (actDate == m_uTradingDate && actHour >= 20) {
+            //这样的时间是有问题,因为夜盘时发生日期不可能等于交易日
+            //这就需要手动设置一下
+            uint32_t curDate, curTime;
+            TimeUtils::getDateTime(curDate, curTime);
+            uint32_t curHour = curTime / 10000000;
 
-		if (actHour == 23 && curHour == 0)
-		{
-			//行情时间慢于系统时间
-			actDate = TimeUtils::getNextDate(curDate, -1);
-		}
-		else if (actHour == 0 && curHour == 23)
-		{
-			//系统时间慢于行情时间
-			actDate = TimeUtils::getNextDate(curDate, 1);
-		}
-	}
+            //早上启动以后,会收到昨晚12点以前收盘的行情,这个时候可能会有发生日期=交易日的情况出现
+            //这笔数据直接丢掉
+            if (curHour >= 3 && curHour < 9)
+                return;
 
-	WTSContractInfo* contract = m_pBaseDataMgr->getContract(pDepthMarketData->InstrumentID, pDepthMarketData->ExchangeID);
-	if (contract == NULL)
-		return;
+            actDate = curDate;
+
+            if (actHour == 23 && curHour == 0) {
+                //行情时间慢于系统时间
+                actDate = TimeUtils::getNextDate(curDate, -1);
+            } else if (actHour == 0 && curHour == 23) {
+                //系统时间慢于行情时间
+                actDate = TimeUtils::getNextDate(curDate, 1);
+            }
+        }
+    }
 
 	WTSCommodityInfo* pCommInfo = contract->getCommInfo();
-
-	//if (strcmp(contract->getExchg(), "CZCE") == 0)
-	//{
-	//	actTime += (uint32_t)(TimeUtils::getLocalTimeNow() % 1000);
-	//}
 
 	WTSTickData* tick = WTSTickData::create(pDepthMarketData->InstrumentID);
 	tick->setContractInfo(contract);

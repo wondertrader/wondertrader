@@ -89,7 +89,6 @@ private:
 
 private:
 	uint32_t			m_uTradingDate;
-	LoginStatus			m_loginState;
 	CThostFtdcMdApi*	m_pUserAPI;
 
 	std::string			m_strFrontAddr;
@@ -97,6 +96,7 @@ private:
 	std::string			m_strUserID;
 	std::string			m_strPassword;
 	std::string			m_strFlowDir;
+	bool 				m_bLocaltime;	//是否使用本地时间戳
 
 	CodeSet				m_filterSubs;
 
