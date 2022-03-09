@@ -624,7 +624,7 @@ bool WtRtRunner::config(const char* cfgFile, bool isFile /* = true */)
 					WTSVariant* var = WTSCfgLoader::load_from_file(filename, true);
 					if (var)
 					{
-						if (!initTraders(var->get("executers")))
+						if (!initExecuters(var->get("executers")))
 							WTSLogger::error("Loading executers failed");
 						var->release();
 					}
