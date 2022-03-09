@@ -6,8 +6,6 @@
 #include "../Includes/WTSContractInfo.hpp"
 #include "../Includes/WTSDataDef.hpp"
 
-#include "../Share/TimeUtils.hpp"
-#include "../Share/StdUtils.hpp"
 #include "../Share/DLLHelper.hpp"
 #include "../Share/StrUtil.hpp"
 
