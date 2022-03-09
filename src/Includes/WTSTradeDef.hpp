@@ -22,9 +22,9 @@ class WTSContractInfo;
 
 //////////////////////////////////////////////////////////////////////////
 //委托数据结构,用户客户端向服务端发起
-class WTSEntrust : public WTSObject
+class WTSEntrust : public WTSPoolObject<WTSEntrust>
 {
-protected:
+public:
 	WTSEntrust()
 		: m_iPrice(0)
 		, m_strCode("")
@@ -46,7 +46,7 @@ protected:
 public:
 	static inline WTSEntrust* create(const char* code, double vol, double price, const char* exchg = "", WTSBusinessType bType = BT_CASH)
 	{
-		WTSEntrust* pRet = new WTSEntrust;
+		WTSEntrust* pRet = WTSEntrust::allocate();
 		if(pRet)
 		{
 			strcpy(pRet->m_strExchg, exchg);
@@ -232,9 +232,9 @@ protected:
 
 //////////////////////////////////////////////////////////////////////////
 //订单信息,查看订单状态变化等
-class WTSOrderInfo : public WTSEntrust
+class WTSOrderInfo : public WTSPoolObject<WTSOrderInfo>
 {
-protected:
+public:
 	WTSOrderInfo()
 		:m_orderState(WOS_Submitting)
 		,m_orderType(WORT_Normal)
@@ -252,7 +252,7 @@ protected:
 public:
 	static inline WTSOrderInfo* create(WTSEntrust* entrust = NULL)
 	{
-		WTSOrderInfo *pRet = new WTSOrderInfo;
+		WTSOrderInfo *pRet = WTSOrderInfo::allocate();
 
 		if(entrust != NULL)
 		{
@@ -275,6 +275,59 @@ public:
 		return pRet;
 	}
 
+public:
+	//这部分是和WTSEntrust同步的
+	inline void setExchange(const char* exchg, std::size_t len = 0) {
+		if (len == 0)
+			strcpy(m_strExchg, exchg);
+		else
+			strncpy(m_strExchg, exchg, len);
+	}
+	inline void setCode(const char* code, std::size_t len = 0) {
+		if (len == 0)
+			strcpy(m_strCode, code);
+		else
+			strncpy(m_strCode, code, len);
+	}
+
+	inline void setDirection(WTSDirectionType dType) { m_direction = dType; }
+	inline void setPriceType(WTSPriceType pType) { m_priceType = pType; }
+	inline void setOrderFlag(WTSOrderFlag oFlag) { m_orderFlag = oFlag; }
+	inline void setOffsetType(WTSOffsetType oType) { m_offsetType = oType; }
+
+	inline WTSDirectionType	getDirection() const { return m_direction; }
+	inline WTSPriceType		getPriceType() const { return m_priceType; }
+	inline WTSOrderFlag		getOrderFlag() const { return m_orderFlag; }
+	inline WTSOffsetType	getOffsetType() const { return m_offsetType; }
+
+	inline void setBusinessType(WTSBusinessType bType) { m_businessType = bType; }
+	inline WTSBusinessType	getBusinessType() const { return m_businessType; }
+
+	inline void setVolume(double volume) { m_dVolume = volume; }
+	inline void setPrice(double price) { m_iPrice = price; }
+
+	inline double getVolume() const { return m_dVolume; }
+	inline double getPrice() const { return m_iPrice; }
+
+	inline const char* getCode() const { return m_strCode; }
+	inline const char* getExchg() const { return m_strExchg; }
+
+	inline void setEntrustID(const char* eid) { strcpy(m_strEntrustID, eid); }
+	inline const char* getEntrustID() const { return m_strEntrustID; }
+	inline char* getEntrustID() { return m_strEntrustID; }
+
+	inline void setUserTag(const char* tag) { strcpy(m_strUserTag, tag); }
+	inline const char* getUserTag() const { return m_strUserTag; }
+	inline char* getUserTag() { return m_strUserTag; }
+
+	inline void setNetDirection(bool isBuy) { m_bIsNet = true; m_bIsBuy = isBuy; }
+	inline bool isNet() const { return m_bIsNet; }
+	inline bool isBuy() const { return m_bIsBuy; }
+
+	inline void setContractInfo(WTSContractInfo* cInfo) { m_pContract = cInfo; }
+	inline WTSContractInfo* getContractInfo() const { return m_pContract; }
+
+public:
 	inline void	setOrderDate(uint32_t uDate){m_uInsertDate = uDate;}
 	inline void	setOrderTime(uint64_t uTime){m_uInsertTime = uTime;}
 	inline void	setVolTraded(double vol){ m_dVolTraded = vol; }
@@ -312,6 +365,27 @@ public:
 	inline bool	isError() const{ return m_bIsError; }
 
 private:
+	//这部分成员和WTSEntrust一致
+	char			m_strExchg[MAX_EXCHANGE_LENGTH];
+	char			m_strCode[MAX_INSTRUMENT_LENGTH];
+	double			m_dVolume;
+	double			m_iPrice;
+
+	bool			m_bIsNet;
+	bool			m_bIsBuy;
+
+	WTSDirectionType	m_direction;
+	WTSPriceType		m_priceType;
+	WTSOrderFlag		m_orderFlag;
+	WTSOffsetType		m_offsetType;
+
+	char				m_strEntrustID[64];
+	char				m_strUserTag[64];
+
+	WTSBusinessType		m_businessType;
+	WTSContractInfo*	m_pContract;
+
+	//这部分是Order专有的成员
 	uint32_t	m_uInsertDate;
 	uint64_t	m_uInsertTime;
 	double		m_dVolTraded;
