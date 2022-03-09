@@ -19,12 +19,6 @@ WTSBaseDataMgr	g_bdMgr;
 
 USING_NS_WTP;
 
-template<typename... Args>
-void log(const char* format, const Args& ...args)
-{
-	WTSLogger::log_raw(LL_INFO, fmt::format(format, args...).c_str());
-}
-
 class ParserSpi : public IParserSpi
 {
 public:
@@ -82,21 +76,21 @@ public:
         DllHandle hInst = DLLHelper::load_library(moduleName);
 		if (hInst == NULL)
 		{
-			log("模块{}加载失败", moduleName);
+			WTSLogger::error_f("Loading module {} failed", moduleName);
 			return false;
 		}
 
 		FuncCreateParser pCreator = (FuncCreateParser)DLLHelper::get_symbol(hInst, "createParser");
 		if (NULL == pCreator)
 		{
-			log("接口创建函数读取失败");
+			WTSLogger::error_f("Entry function createParser not found");
 			return false;
 		}
 
 		_api = pCreator();
 		if (NULL == _api)
 		{
-			log("接口创建失败");
+			WTSLogger::error_f("Creating parser api failed");
 			return false;
 		}
 
@@ -112,7 +106,7 @@ public:
 
 	virtual void handleQuote(WTSTickData *quote, uint32_t procFlag) override
 	{
-		log("{}@{}.{}, price:{}, voume:{}", quote->code(), quote->actiondate(), quote->actiontime(), quote->price(), quote->totalvolume());
+		WTSLogger::info_f("{}@{}.{}, price:{}, voume:{}", quote->code(), quote->actiondate(), quote->actiontime(), quote->price(), quote->totalvolume());
 	}
 
 	virtual void handleSymbolList(const WTSArray* aySymbols) override
@@ -149,14 +143,12 @@ std::string getBaseFolder()
 
 int main()
 {
-	WTSLogger::init();
-
-	WTSLogger::info("启动成功,当前系统版本号: v1.0");
+	WTSLogger::init("logcfg.yaml");
 
 	WTSVariant* root = WTSCfgLoader::load_from_file("config.yaml", true);
 	if (root == NULL)
 	{
-		WTSLogger::log_raw(LL_ERROR, "配置文件config.yaml加载失败");
+		WTSLogger::log_raw(LL_ERROR, "Loading config.yaml failed");
 		return 0;
 	}
 
@@ -176,7 +168,7 @@ int main()
 	WTSVariant* params = root->get(profile.c_str());
 	if (params == NULL)
 	{
-		WTSLogger::error_f("配置项{}不存在", profile);
+		WTSLogger::error_f("Configure {} not exist", profile);
 		return 0;
 	}
 
