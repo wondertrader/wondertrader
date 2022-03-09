@@ -603,7 +603,7 @@ WtUInt32 read_dsb_ticks(WtString tickFile, FuncGetTicksCallback cb, FuncCountDat
 		return 0;
 	}
 
-	proc_block_data(content, true, false);
+	proc_block_data(content, false, false);
 
 	if (content.empty())
 	{
