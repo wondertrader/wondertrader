@@ -154,6 +154,12 @@ public:
 		_trader_spi = listener;
 	}
 
+	virtual bool makeEntrustID(char* buffer, int length) override
+	{
+		strcpy(buffer, "123456");
+		return true;
+	}
+
 	virtual int orderInsert(WTSEntrust* eutrust) override
 	{
 		return 0;

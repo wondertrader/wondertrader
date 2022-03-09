@@ -226,26 +226,28 @@ OrderMap* TraderAdapter::getOrders(const char* stdCode)
 
 uint32_t TraderAdapter::doEntrust(WTSEntrust* entrust)
 {
-	char entrustid[64] = { 0 };
-	if (_trader_api->makeEntrustID(entrustid, 64))
+	_trader_api->makeEntrustID(entrust->getEntrustID(), 64);
+
+	const char* stdCode = entrust->getCode();
+	std::size_t pos = StrUtil::findFirst(entrust->getCode(), '.');
+	entrust->setCode(stdCode + pos + 1);
+	entrust->setExchange(stdCode, pos);
+	if(entrust->getContractInfo() == NULL)
 	{
-		entrust->setEntrustID(entrustid);
+		WTSContractInfo* cInfo = _bd_mgr->getContract(entrust->getCode(), entrust->getExchg());
+		entrust->setContractInfo(cInfo);
 	}
 
-	StringVector ay = StrUtil::split(entrust->getCode(), ".");
-	entrust->setCode(ay[1].c_str());
-	entrust->setExchange(ay[0].c_str());
-	WTSContractInfo* cInfo = _bd_mgr->getContract(entrust->getCode(), entrust->getExchg());
-	entrust->setContractInfo(cInfo);
-
 	uint32_t localid = makeLocalOrderID();
-	entrust->setUserTag(StrUtil::printf("%s.%u", _order_pattern.c_str(), localid).c_str());
+	char* usertag = entrust->getUserTag();
+	strcpy(usertag, _order_pattern.c_str());
+	strcat(usertag, ".");
+	fmt::format_to(usertag + _order_pattern.size() + 1, "{}", localid);
 	
 	int32_t ret = _trader_api->orderInsert(entrust);
-	entrust->setSent();
 	if(ret < 0)
 	{
-		WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR, "[%s] Order placing failed: %d", _id.c_str(), ret);
+		WTSLogger::log_dyn_f("trader", _id.c_str(), LL_ERROR, "[{}] Order placing failed: {}", _id, ret);
 		return UINT_MAX;
 	}
 	//else
