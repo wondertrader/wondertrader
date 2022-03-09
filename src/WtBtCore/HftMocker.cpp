@@ -449,9 +449,6 @@ void HftMocker::on_session_begin(uint32_t curTDate)
 
 void HftMocker::on_session_end(uint32_t curTDate)
 {
-	if (_strategy)
-		_strategy->on_session_begin(this, curTDate);
-
 	uint32_t curDate = curTDate;// _replayer->get_trading_date();
 
 	double total_profit = 0;
@@ -468,6 +465,9 @@ void HftMocker::on_session_end(uint32_t curTDate)
 	_fund_logs << StrUtil::printf("%d,%.2f,%.2f,%.2f,%.2f\n", curDate,
 		_fund_info._total_profit, _fund_info._total_dynprofit,
 		_fund_info._total_profit + _fund_info._total_dynprofit - _fund_info._total_fees, _fund_info._total_fees);
+
+	if (_strategy)
+		_strategy->on_session_end(this, curTDate);
 }
 
 double HftMocker::stra_get_undone(const char* stdCode)
