@@ -38,6 +38,7 @@ WtUftEngine::~WtUftEngine()
 {
 	if (_tm_ticker)
 	{
+		_tm_ticker->stop();
 		delete _tm_ticker;
 		_tm_ticker = NULL;
 	}
