@@ -153,6 +153,7 @@
     <ClInclude Include="BoostMappingFile.hpp" />
     <ClInclude Include="charconv.hpp" />
     <ClInclude Include="CodeHelper.hpp" />
+    <ClInclude Include="CpuHelper.hpp" />
     <ClInclude Include="decimal.h" />
     <ClInclude Include="DLLHelper.hpp" />
     <ClInclude Include="fmtlib.h" />

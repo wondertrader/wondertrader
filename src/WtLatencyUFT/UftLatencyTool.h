@@ -51,6 +51,7 @@ namespace uft
 		WTSBaseDataMgr		_bd_mgr;
 
 		uint32_t			_times;
+		uint32_t			_core;
 	};
 }
 

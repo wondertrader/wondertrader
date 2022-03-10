@@ -219,5 +219,8 @@
     <ClInclude Include="..\Includes\IBtDtReader.h">
       <Filter>Interfaces</Filter>
     </ClInclude>
+    <ClInclude Include="CpuHelper.hpp">
+      <Filter>Utils</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
