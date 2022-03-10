@@ -407,7 +407,7 @@ void WtMinImpactExeUnit::do_calc()
 	
 	if (!decimal::eq(_last_tick->lowerlimit(), 0) && decimal::lt(sellPx, _last_tick->lowerlimit()))
 	{
-		_ctx->writeLog(fmt::sprintf("Sell price %f of %s modified to lower limit price", buyPx, _code.c_str(), _last_tick->upperlimit()).c_str());
+		_ctx->writeLog(fmt::sprintf("Sell price %f of %s modified to lower limit price", sellPx, _code.c_str(), _last_tick->lowerlimit()).c_str());
 		sellPx = _last_tick->lowerlimit();
 		isCanCancel = false;	//如果价格被修正为涨跌停价，订单不可撤销
 	}
