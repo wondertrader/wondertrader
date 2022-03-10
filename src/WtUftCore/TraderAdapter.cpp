@@ -270,7 +270,7 @@ WTSCommodityInfo* TraderAdapter::getCommodify(const char* stdCode)
 	if (cInfo == NULL)
 		return NULL;
 
-	return _bd_mgr->getCommodity(cInfo);
+	return cInfo->getCommInfo();
 }
 
 bool TraderAdapter::doCancel(WTSOrderInfo* ordInfo)
@@ -880,11 +880,12 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 
 void TraderAdapter::onPushTrade(WTSTradeInfo* tradeRecord)
 {
-	WTSContractInfo* cInfo = _bd_mgr->getContract(tradeRecord->getCode(), tradeRecord->getExchg());
+	WTSContractInfo* cInfo = tradeRecord->getContractInfo();
+	cInfo = _bd_mgr->getContract(tradeRecord->getCode(), tradeRecord->getExchg());
 	if (cInfo == NULL)
 		return;
 
-	WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(cInfo);
+	WTSCommodityInfo* commInfo = cInfo->getCommInfo();
 
 	bool isLong = (tradeRecord->getDirection() == WDT_LONG);
 	bool isOpen = (tradeRecord->getOffsetType() == WOT_OPEN);

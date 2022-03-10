@@ -359,7 +359,7 @@ int TraderCTP::orderInsert(WTSEntrust* entrust)
 		m_iniHelper.save();
 	}
 
-	WTSContractInfo* ct = m_bdMgr->getContract(entrust->getCode(), entrust->getExchg());
+	WTSContractInfo* ct = entrust->getContractInfo();
 	if (ct == NULL)
 		return -1;
 

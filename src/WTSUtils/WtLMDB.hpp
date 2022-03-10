@@ -54,7 +54,7 @@ public:
 		return _dbi;
 	}
 
-	bool open(const char* path, uint32_t mapsize = 8*1024*1024)
+	bool open(const char* path, std::size_t mapsize = 8*1024*1024)
 	{
 #if _MSC_VER
         int ret = _access(path, 0);
@@ -144,7 +144,7 @@ public:
 		return put((void*)key.data(), key.size(), (void*)val.data(), val.size());
 	}
 
-	bool put(void* key, uint32_t klen, void* val, uint32_t vlen)
+	bool put(void* key, std::size_t klen, void* val, std::size_t vlen)
 	{
 		MDB_val mKey, mData;
 		mKey.mv_data = key;
@@ -165,7 +165,7 @@ public:
 	/*
 	 *	读取指定key的数据
 	 */
-	std::string get(void* key, uint32_t klen)
+	std::string get(void* key, std::size_t klen)
 	{
 		MDB_cursor* cursor;
 		int _errno = mdb_cursor_open(_txn, _dbi, &cursor);

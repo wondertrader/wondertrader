@@ -63,7 +63,6 @@ bool ParserAdapter::initExt(const char* id, IParserApi* api, IParserStub* stub, 
 			for (; it != ayContract->end(); it++)
 			{
 				WTSContractInfo* contract = STATIC_CONVERT(*it, WTSContractInfo*);
-				WTSCommodityInfo* pCommInfo = _bd_mgr->getCommodity(contract);
 				contractSet.insert(contract->getFullCode());
 			}
 
@@ -184,7 +183,6 @@ bool ParserAdapter::init(const char* id, WTSVariant* cfg, IParserStub* stub, IBa
 						code = ay[1];
 					}
 					WTSContractInfo* contract = _bd_mgr->getContract(code.c_str(), exchg.c_str());
-					WTSCommodityInfo* pCommInfo = _bd_mgr->getCommodity(contract);
 					contractSet.insert(contract->getFullCode());
 				}
 			}
@@ -198,7 +196,6 @@ bool ParserAdapter::init(const char* id, WTSVariant* cfg, IParserStub* stub, IBa
 					for (; it != ayContract->end(); it++)
 					{
 						WTSContractInfo* contract = STATIC_CONVERT(*it, WTSContractInfo*);
-						WTSCommodityInfo* pCommInfo = _bd_mgr->getCommodity(contract);
 						contractSet.insert(contract->getFullCode());
 					}
 
@@ -212,7 +209,6 @@ bool ParserAdapter::init(const char* id, WTSVariant* cfg, IParserStub* stub, IBa
 				for (; it != ayContract->end(); it++)
 				{
 					WTSContractInfo* contract = STATIC_CONVERT(*it, WTSContractInfo*);
-					WTSCommodityInfo* pCommInfo =_bd_mgr->getCommodity(contract);
 					contractSet.insert(contract->getFullCode());
 				}
 
@@ -268,11 +264,17 @@ void ParserAdapter::handleQuote(WTSTickData *quote, uint32_t procFlag)
 
 	uint32_t hotflag = 0;
 
-	WTSContractInfo* cInfo = _bd_mgr->getContract(quote->code(), quote->exchg());
+	WTSContractInfo* cInfo = quote->getContractInfo();
+	if (cInfo == NULL)
+	{
+		cInfo = _bd_mgr->getContract(quote->code(), quote->exchg());
+		quote->setContractInfo(cInfo);
+	}
+
 	if (cInfo == NULL)
 		return;
 
-	WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(cInfo);
+	WTSCommodityInfo* commInfo = cInfo->getCommInfo();
 
 	std::string stdCode;
 	if (commInfo->getCategoty() == CC_FutOption)
@@ -311,7 +313,7 @@ void ParserAdapter::handleOrderQueue(WTSOrdQueData* ordQueData)
 	if (cInfo == NULL)
 		return;
 
-	WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(cInfo);
+	WTSCommodityInfo* commInfo = cInfo->getCommInfo();
 	std::string stdCode = CodeHelper::rawFlatCodeToStdCode(cInfo->getCode(), cInfo->getExchg(), commInfo->getProduct());
 	ordQueData->setCode(stdCode.c_str());
 
@@ -334,7 +336,7 @@ void ParserAdapter::handleOrderDetail(WTSOrdDtlData* ordDtlData)
 	if (cInfo == NULL)
 		return;
 
-	WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(cInfo);
+	WTSCommodityInfo* commInfo = cInfo->getCommInfo();
 	std::string stdCode = CodeHelper::rawFlatCodeToStdCode(cInfo->getCode(), cInfo->getExchg(), commInfo->getProduct());
 	ordDtlData->setCode(stdCode.c_str());
 
@@ -357,7 +359,7 @@ void ParserAdapter::handleTransaction(WTSTransData* transData)
 	if (cInfo == NULL)
 		return;
 
-	WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(cInfo);
+	WTSCommodityInfo* commInfo = cInfo->getCommInfo();
 	std::string stdCode = CodeHelper::rawFlatCodeToStdCode(cInfo->getCode(), cInfo->getExchg(), commInfo->getProduct());
 	transData->setCode(stdCode.c_str());
 

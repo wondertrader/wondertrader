@@ -264,7 +264,7 @@ void ParserCTPOpt::OnRtnDepthMarketData( CThostFtdcDepthMarketDataField *pDepthM
 	if (cInfo == NULL)
 		return;
 
-	WTSCommodityInfo* pCommInfo = m_pBaseDataMgr->getCommodity(cInfo);
+	WTSCommodityInfo* pCommInfo = cInfo->getCommInfo();
 
 	//if (strcmp(contract->getExchg(), "CZCE") == 0)
 	//{
@@ -272,6 +272,7 @@ void ParserCTPOpt::OnRtnDepthMarketData( CThostFtdcDepthMarketDataField *pDepthM
 	//}
 
 	WTSTickData* tick = WTSTickData::create(pDepthMarketData->InstrumentID);
+	tick->setContractInfo(cInfo);
 	WTSTickStruct& quote = tick->getTickStruct();
 	strcpy(quote.exchg, pCommInfo->getExchg());
 	

@@ -111,7 +111,6 @@ public:
 public:
 	virtual WTSCommodityInfo*	getCommodity(const char* stdPID) override;
 	virtual WTSCommodityInfo*	getCommodity(const char* exchg, const char* pid) override;
-	virtual WTSCommodityInfo*	getCommodity(WTSContractInfo* ct) override;
 
 	virtual WTSContractInfo*	getContract(const char* code, const char* exchg = "") override;
 	virtual WTSArray*			getContracts(const char* exchg = "") override;
