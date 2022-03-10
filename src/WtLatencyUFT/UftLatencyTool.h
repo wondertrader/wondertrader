@@ -49,6 +49,8 @@ namespace uft
 		WtUftEngine			_engine;
 
 		WTSBaseDataMgr		_bd_mgr;
+
+		uint32_t			_times;
 	};
 }
 

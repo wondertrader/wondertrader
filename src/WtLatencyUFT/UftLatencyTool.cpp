@@ -269,6 +269,9 @@ namespace uft
 			}
 		}
 
+		_times = _config->getUInt32("times");
+		WTSLogger::info_f("{} ticks will be simulated", _times);
+
 		initEngine(_config->get("env"));
 		initModules();
 		initStrategies();
@@ -329,7 +332,7 @@ namespace uft
 
 			_engine.run(true);
 
-			theParser->run(10000000);
+			theParser->run(_times);
 		}
 		catch (...)
 		{
