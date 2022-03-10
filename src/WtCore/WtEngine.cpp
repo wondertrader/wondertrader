@@ -123,7 +123,8 @@ void WtEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 
 		}
 
-		save_datas();
+		if(bTriggered)
+			save_datas();
 	}
 
 	//如果成交量为0，价格也不会有变动

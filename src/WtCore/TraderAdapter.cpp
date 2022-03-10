@@ -202,6 +202,34 @@ bool TraderAdapter::init(const char* id, WTSVariant* params, IBaseDataMgr* bdMgr
 	return true;
 }
 
+bool TraderAdapter::initExt(const char* id, ITraderApi* api, IBaseDataMgr* bdMgr, ActionPolicyMgr* policyMgr)
+{
+	if (api == NULL)
+		return false;
+
+	_policy_mgr = policyMgr;
+	_bd_mgr = bdMgr;
+	_id = id;
+
+	_order_pattern = StrUtil::printf("otp.%s", id);
+
+	if (_cfg != NULL)
+		return false;
+
+	_save_data = true;
+	if (_save_data)
+		initSaveData();
+
+	_trader_api = api;
+	if (!_trader_api->init(NULL))
+	{
+		WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR, "[%s] Trader initializing failed", id);
+		return false;
+	}
+
+	return true;
+}
+
 void TraderAdapter::initSaveData()
 {
 	/*std::string folder = WtHelper::getOutputDir();
