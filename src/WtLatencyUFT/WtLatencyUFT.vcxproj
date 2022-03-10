@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{6FB75341-B03E-45C0-ACAC-E3E40104FA40}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>WtLatencyTool</RootNamespace>
+    <RootNamespace>WtLatencyUFT</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -170,11 +170,11 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="WtLatencyTool.h" />
+    <ClInclude Include="UftLatencyTool.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="WtLatencyTool.cpp" />
+    <ClCompile Include="UftLatencyTool.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\WTSTools\WTSTools.vcxproj">

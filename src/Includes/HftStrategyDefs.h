@@ -54,18 +54,18 @@ public:
 	virtual void on_session_begin(IHftStraCtx* ctx, uint32_t uTDate) {}
 	virtual void on_session_end(IHftStraCtx* ctx, uint32_t uTDate) {}
 
-	virtual void on_tick(IHftStraCtx* ctx, const char* code, WTSTickData* newTick) = 0;
+	virtual void on_tick(IHftStraCtx* ctx, const char* code, WTSTickData* newTick) {}
 	virtual void on_order_queue(IHftStraCtx* ctx, const char* code, WTSOrdQueData* newOrdQue) {}
 	virtual void on_order_detail (IHftStraCtx* ctx, const char* code, WTSOrdDtlData* newOrdDtl) {}
 	virtual void on_transaction(IHftStraCtx* ctx, const char* code, WTSTransData* newTrans) {}
-	virtual void on_bar(IHftStraCtx* ctx, const char* code, const char* period, uint32_t times, WTSBarStruct* newBar) = 0;
+	virtual void on_bar(IHftStraCtx* ctx, const char* code, const char* period, uint32_t times, WTSBarStruct* newBar) {}
 
-	virtual void on_trade(IHftStraCtx* ctx, uint32_t localid, const char* stdCode, bool isBuy, double vol, double price, const char* userTag) = 0;
-	virtual void on_position(IHftStraCtx* ctx, const char* stdCode, bool isLong, double prevol, double preavail, double newvol, double newavail) = 0;
-	virtual void on_order(IHftStraCtx* ctx, uint32_t localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled, const char* userTag) = 0;
-	virtual void on_channel_ready(IHftStraCtx* ctx) = 0;
-	virtual void on_channel_lost(IHftStraCtx* ctx) = 0;
-	virtual void on_entrust(uint32_t localid, bool bSuccess, const char* message, const char* userTag) = 0;
+	virtual void on_trade(IHftStraCtx* ctx, uint32_t localid, const char* stdCode, bool isBuy, double vol, double price, const char* userTag) {}
+	virtual void on_position(IHftStraCtx* ctx, const char* stdCode, bool isLong, double prevol, double preavail, double newvol, double newavail) {}
+	virtual void on_order(IHftStraCtx* ctx, uint32_t localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled, const char* userTag) {}
+	virtual void on_channel_ready(IHftStraCtx* ctx) {}
+	virtual void on_channel_lost(IHftStraCtx* ctx) {}
+	virtual void on_entrust(uint32_t localid, bool bSuccess, const char* message, const char* userTag) {}
 
 protected:
 	std::string _id;

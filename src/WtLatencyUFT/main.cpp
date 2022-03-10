@@ -8,19 +8,14 @@
  * /brief 
  */
 
-#include "WtLatencyTool.h"
-
 #include "../WTSTools/WTSLogger.h"
 #include "../Share/IniHelper.hpp"
 
-//#include <vld.h>
+extern void test_uft();
 
 int main()
 {
-	WtLatencyTool runner;
-	runner.init();
-
-	runner.run();
+	test_uft();
 	printf("press enter key to exit\r\n");
 	getchar();
 	return 0;
