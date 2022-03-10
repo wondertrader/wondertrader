@@ -58,6 +58,7 @@ namespace hft
 		WtDtMgr				_dt_mgr;
 
 		uint32_t			_times;
+		uint32_t			_core;
 	};
 }
 

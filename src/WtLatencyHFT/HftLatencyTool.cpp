@@ -20,6 +20,7 @@
 
 #include "../Share/StrUtil.hpp"
 #include "../Share/TimeUtils.hpp"
+#include "../Share/CpuHelper.hpp"
 
 
 USING_NS_WTP;
@@ -272,8 +273,12 @@ namespace hft
 		}
 
 		_act_mgr.init("actpolicy.yaml");
+
 		_times = _config->getUInt32("times");
 		WTSLogger::info_f("{} ticks will be simulated", _times);
+
+		_core = _config->getUInt32("core");
+		WTSLogger::info_f("Testing thread will be bind to core {}", _core);
 
 		initEngine(_config->get("env"));
 		initModules();
@@ -328,6 +333,14 @@ namespace hft
 
 	void HftLatencyTool::run()
 	{
+		if (_core != 0)
+		{
+			if (!CpuHelper::bind_core(_core - 1))
+			{
+				WTSLogger::error_f("Binding to core {} failed", _core);
+			}
+		}
+
 		try
 		{
 			_parsers.run();
