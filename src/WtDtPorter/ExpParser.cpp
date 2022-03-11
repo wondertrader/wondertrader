@@ -28,13 +28,13 @@ bool ExpParser::disconnect()
 
 void ExpParser::subscribe(const CodeSet& setCodes)
 {
-	for(const std::string& code : setCodes)
+	for(const auto& code : setCodes)
 		getRunner().parser_subscribe(_id.c_str(), code.c_str());
 }
 
 void ExpParser::unsubscribe(const CodeSet& setCodes)
 {
-	for (const std::string& code : setCodes)
+	for (const auto& code : setCodes)
 		getRunner().parser_unsubscribe(_id.c_str(), code.c_str());
 }
 

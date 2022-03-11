@@ -140,7 +140,7 @@ CtaContextPtr WtCtaEngine::getContext(uint32_t id)
 
 void WtCtaEngine::on_init()
 {
-	faster_hashmap<std::string, double> target_pos;
+	faster_hashmap<LongKey, double> target_pos;
 	for (auto it = _ctx_map.begin(); it != _ctx_map.end(); it++)
 	{
 		CtaContextPtr& ctx = (CtaContextPtr&)it->second;
@@ -195,7 +195,7 @@ void WtCtaEngine::on_init()
 	//初始化仓位打印出来
 	for (auto it = target_pos.begin(); it != target_pos.end(); it++)
 	{
-		const std::string& stdCode = it->first;
+		const auto& stdCode = it->first;
 		double& pos = (double&)it->second;
 
 		if (bRiskEnabled && !decimal::eq(pos, 0))
@@ -246,7 +246,7 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 	//去检查一下过滤器
 	_filter_mgr.load_filters();
 
-	faster_hashmap<std::string, double> target_pos;
+	faster_hashmap<LongKey, double> target_pos;
 
 	for (auto it = _ctx_map.begin(); it != _ctx_map.end(); it++)
 	{
@@ -301,7 +301,7 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 	//处理组合理论部位
 	for (auto it = target_pos.begin(); it != target_pos.end(); it++)
 	{
-		std::string stdCode = it->first;
+		const auto& stdCode = it->first;
 		double& pos = (double&)it->second;
 
 		if (bRiskEnabled && !decimal::eq(pos, 0))
@@ -315,7 +315,7 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 
 	for(auto& m : _pos_map)
 	{
-		std::string stdCode = m.first;
+		const auto& stdCode = m.first;
 		if (target_pos.find(stdCode) == target_pos.end())
 		{
 			if(!decimal::eq(m.second._volume, 0))

@@ -18,14 +18,14 @@ void WtExecuterMgr::enum_executer(EnumExecuterCb cb)
 	}
 }
 
-void WtExecuterMgr::set_positions(faster_hashmap<std::string, double> target_pos)
+void WtExecuterMgr::set_positions(faster_hashmap<LongKey, double> target_pos)
 {
 	if(_filter_mgr != NULL)
 	{
-		faster_hashmap<std::string, double> des_port;
+		faster_hashmap<LongKey, double> des_port;
 		for(auto& m : target_pos)
 		{
-			const std::string& stdCode = m.first;
+			const auto& stdCode = m.first;
 			double& desVol = (double&)m.second;
 			double oldVol = desVol;
 
@@ -43,7 +43,7 @@ void WtExecuterMgr::set_positions(faster_hashmap<std::string, double> target_pos
 			else
 			{
 				// ‰≥ˆ»’÷æ
-				WTSLogger::info_f("[Filters] {} target position ignored by filter", stdCode);
+				WTSLogger::info_f("[Filters] {} target position ignored by filter", stdCode.c_str());
 			}
 		}
 

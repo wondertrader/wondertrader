@@ -14,9 +14,9 @@
 #include "WTSMarcos.h"
 #include "FasterDefs.h"
 
-typedef faster_hashset<std::string> ContractSet;
-
 NS_WTP_BEGIN
+typedef CodeSet ContractSet;
+
 class WTSContractInfo;
 class WTSArray;
 class WTSSessionInfo;

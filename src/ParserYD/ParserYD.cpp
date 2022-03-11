@@ -243,7 +243,7 @@ void ParserYD::DoSubscribe()
 	int nCount = 0;
 	for(auto& code : codeFilter)
 	{
-		std::size_t pos = code.find(".");
+		std::size_t pos = code.find('.');
 		const YDInstrument* instInfo = NULL;
 		if (pos != std::string::npos)
 		{
@@ -258,7 +258,7 @@ void ParserYD::DoSubscribe()
 			continue;
 
 		bool bRet = m_pUserAPI->subscribe(instInfo);
-		write_log(m_sink, LL_ERROR, "[ParserYD] Subscribe md of {} {}", code, bRet?"succeed":"failed");
+		write_log(m_sink, LL_ERROR, "[ParserYD] Subscribe md of {} {}", code.c_str(), bRet?"succeed":"failed");
 	}
 }
 

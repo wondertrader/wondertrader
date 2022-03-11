@@ -31,7 +31,7 @@ bool WtDistExecuter::init(WTSVariant* params)
 	return true;
 }
 
-void WtDistExecuter::set_position(const faster_hashmap<std::string, double>& targets)
+void WtDistExecuter::set_position(const faster_hashmap<LongKey, double>& targets)
 {
 	for (auto it = targets.begin(); it != targets.end(); it++)
 	{

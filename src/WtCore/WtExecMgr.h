@@ -21,7 +21,7 @@ public:
 
 	void	enum_executer(EnumExecuterCb cb);
 
-	void	set_positions(faster_hashmap<std::string, double> target_pos);
+	void	set_positions(faster_hashmap<LongKey, double> target_pos);
 	void	handle_pos_change(const char* stdCode, double targetPos);
 	void	handle_tick(const char* stdCode, WTSTickData* curTick);
 

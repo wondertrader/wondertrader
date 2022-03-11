@@ -177,7 +177,7 @@ void ParserUDP::subscribe()
 			length++;
 		}
 
-		std::size_t pos = code.find(".");
+		std::size_t pos = code.find('.');
 		if (pos != std::string::npos)
 			strcpy(req->_data + length, (char*)code.c_str() + pos + 1);
 		else
@@ -266,7 +266,7 @@ void ParserUDP::subscribe( const CodeSet &vecSymbols )
 	auto cit = vecSymbols.begin();
 	for(; cit != vecSymbols.end(); cit++)
 	{
-		const std::string &code = *cit;
+		const auto &code = *cit;
 		if(_set_subs.find(code) == _set_subs.end())
 		{
 			_set_subs.insert(code);

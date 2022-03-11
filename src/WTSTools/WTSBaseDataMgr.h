@@ -12,94 +12,18 @@
 #include "../Includes/WTSCollection.hpp"
 #include "../Includes/FasterDefs.h"
 
-#include <boost/container_hash/hash.hpp>
-
 USING_NS_WTP;
-typedef struct _Longkey //char[32]
-{
-	uint64_t	x[4];
 
-	_Longkey()
-	{
-		memset(this, 0, sizeof(_Longkey));
-	}
-
-	bool operator ==(const _Longkey& b) const
-	{
-		return (x[0] == b.x[0] && x[1] == b.x[1] && x[2] == b.x[2] && x[3] == b.x[3]);
-	}
-} LongKey;
-
-typedef struct _ShortKey //char[32]
-{
-	uint64_t	x[2];
-
-	_ShortKey()
-	{
-		memset(this, 0, sizeof(_ShortKey));
-	}
-
-	bool operator ==(const _ShortKey& b) const
-	{
-		return (x[0] == b.x[0] && x[1] == b.x[1]);
-	}
-} ShortKey;
-
-
-namespace std
-{
-	template<>
-	struct hash<LongKey>
-	{
-		size_t operator()(const LongKey& key) const
-		{
-			size_t ret = 17;
-			ret = ret * 31 + hash<uint64_t>()(key.x[0]);
-			ret = ret * 31 + hash<uint64_t>()(key.x[1]);
-			ret = ret * 31 + hash<uint64_t>()(key.x[2]);
-			ret = ret * 31 + hash<uint64_t>()(key.x[3]);
-			return ret;
-		}
-	};
-
-	template<>
-	struct hash<ShortKey>
-	{
-		size_t operator()(const ShortKey& key) const
-		{
-			size_t ret = 17;
-			ret = ret * 31 + hash<uint64_t>()(key.x[0]);
-			ret = ret * 31 + hash<uint64_t>()(key.x[1]);
-			return ret;
-		}
-	};
-}
-
-inline LongKey makeLongKey(const char* s)
-{
-	LongKey key;
-	strcpy((char*)&key, s);
-	return key;
-}
-
-inline ShortKey makeShortKey(const char* s)
-{
-	ShortKey key;
-	strcpy((char*)&key, s);
-	return key;
-}
-
-typedef faster_hashmap<std::string, TradingDayTpl>	TradingDayTplMap;
+typedef faster_hashmap<ShortKey, TradingDayTpl>	TradingDayTplMap;
 
 typedef WTSHashMap<LongKey>		WTSContractList;
 typedef WTSHashMap<ShortKey>	WTSExchgContract;
 typedef WTSHashMap<LongKey>		WTSContractMap;
 
-typedef WTSHashMap<std::string>		WTSSessionMap;
-typedef WTSHashMap<std::string>		WTSCommodityMap;
+typedef WTSHashMap<ShortKey>		WTSSessionMap;
+typedef WTSHashMap<ShortKey>		WTSCommodityMap;
 
-typedef faster_hashset<std::string> CodeSet;
-typedef faster_hashmap<std::string, CodeSet> SessionCodeMap;
+typedef faster_hashmap<ShortKey, CodeSet> SessionCodeMap;
 
 
 class WTSBaseDataMgr : public IBaseDataMgr

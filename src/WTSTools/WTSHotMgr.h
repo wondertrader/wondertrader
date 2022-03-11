@@ -68,8 +68,8 @@ public:
 private:
 	WTSExchgHotMap*	m_pExchgHotMap;
 	WTSExchgHotMap*	m_pExchgScndMap;
-	faster_hashmap<std::string, std::string>	m_curHotCodes;
-	faster_hashmap<std::string, std::string>	m_curSecCodes;
+	faster_hashmap<ShortKey, std::string>	m_curHotCodes;
+	faster_hashmap<ShortKey, std::string>	m_curSecCodes;
 	bool			m_bInitialized;
 };
 

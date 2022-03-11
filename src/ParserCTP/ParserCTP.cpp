@@ -398,7 +398,7 @@ void ParserCTP::DoSubscribeMD()
 	int nCount = 0;
 	for(auto& code : codeFilter)
 	{
-		std::size_t pos = code.find(".");
+		std::size_t pos = code.find('.');
 		if (pos != std::string::npos)
 			subscribe[nCount++] = (char*)code.c_str() + pos + 1;
 		else

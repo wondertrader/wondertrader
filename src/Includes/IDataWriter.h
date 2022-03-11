@@ -12,8 +12,6 @@
 #include "WTSTypes.h"
 #include "FasterDefs.h"
 
-typedef faster_hashset<std::string> CodeSet;
-
 NS_WTP_BEGIN
 class WTSTickData;
 class WTSOrdQueData;
@@ -66,7 +64,7 @@ public:
 	virtual bool dumpHisTrans(const char* stdCode, uint32_t uDate, WTSTransStruct* items, uint32_t count) { return false; }
 };
 
-typedef faster_hashmap<std::string, IHisDataDumper*> ExtDumpers;
+typedef faster_hashmap<ShortKey, IHisDataDumper*> ExtDumpers;
 
 /*
  *	数据落地接口

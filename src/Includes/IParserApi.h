@@ -13,8 +13,6 @@
 #include "WTSTypes.h"
 #include "FasterDefs.h"
 
-typedef faster_hashset<std::string> CodeSet;
-
 NS_WTP_BEGIN
 class WTSTickData;
 class WTSOrdDtlData;

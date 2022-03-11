@@ -410,11 +410,11 @@ void ParserXTP::subscribe(const CodeSet &vecSymbols)
 		{
 			if (strncmp(code.c_str(), "SSE.", 4) == 0)
 			{
-				m_fitSHSubs.insert(code.substr(4));
+				m_fitSHSubs.insert(code.c_str() + 4);
 			}
 			else if (strncmp(code.c_str(), "SZSE.", 5) == 0)
 			{
-				m_fitSZSubs.insert(code.substr(5));
+				m_fitSZSubs.insert(code.c_str() + 5);
 			}
 		}
 	}
@@ -425,13 +425,13 @@ void ParserXTP::subscribe(const CodeSet &vecSymbols)
 		{
 			if (strncmp(code.c_str(), "SSE.", 4) == 0)
 			{
-				m_fitSHSubs.insert(code.substr(4));
-				setSH.insert(code.substr(4));
+				m_fitSHSubs.insert(code.c_str() + 4);
+				setSH.insert(code.c_str() + 4);
 			}
 			else if (strncmp(code.c_str(), "SZSE.", 5) == 0)
 			{
-				m_fitSZSubs.insert(code.substr(5));
-				setSZ.insert(code.substr(5));
+				m_fitSZSubs.insert(code.c_str() + 5);
+				setSZ.insert(code.c_str() + 5);
 			}
 		}
 

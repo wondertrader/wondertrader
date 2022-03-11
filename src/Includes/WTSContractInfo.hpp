@@ -65,7 +65,7 @@ public:
 	inline TradingMode			getTradingMode() const { return m_tradeMode; }
 
 	inline void		addCode(const char* code){ m_setCodes.insert(code); }
-	inline const faster_hashset<std::string>& getCodes() const{ return m_setCodes; }
+	inline const CodeSet& getCodes() const{ return m_setCodes; }
 
 	inline void	setLotsTick(double lotsTick){ m_dLotTick = lotsTick; }
 	inline void	setMinLots(double minLots) { m_dMinLots = minLots; }
@@ -112,7 +112,7 @@ private:
 	PriceMode			m_priceMode;	//价格类型
 	TradingMode			m_tradeMode;	//交易类型
 
-	faster_hashset<std::string> m_setCodes;
+	CodeSet				m_setCodes;
 
 	WTSSessionInfo*		m_pSession;
 };

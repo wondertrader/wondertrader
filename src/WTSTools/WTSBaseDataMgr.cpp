@@ -82,7 +82,7 @@ WTSContractInfo* WTSBaseDataMgr::getContract(const char* code, const char* exchg
 {
 	//如果直接找到对应的市场代码,则直接
 	
-	auto lKey = makeLongKey(code);
+	auto lKey = LongKey(code);
 
 	if (strlen(exchg) == 0)
 	{
@@ -98,7 +98,7 @@ WTSContractInfo* WTSBaseDataMgr::getContract(const char* code, const char* exchg
 	}
 	else
 	{
-		auto sKey = makeShortKey(exchg);
+		auto sKey = ShortKey(exchg);
 		auto it = m_mapExchgContract->find(sKey);
 		if (it != m_mapExchgContract->end())
 		{
@@ -120,7 +120,7 @@ WTSArray* WTSBaseDataMgr::getContracts(const char* exchg /* = "" */)
 	WTSArray* ay = WTSArray::create();
 	if(strlen(exchg) > 0)
 	{
-		auto it = m_mapExchgContract->find(makeShortKey(exchg));
+		auto it = m_mapExchgContract->find(ShortKey(exchg));
 		if (it != m_mapExchgContract->end())
 		{
 			WTSContractList* contractList = (WTSContractList*)it->second;
@@ -182,7 +182,7 @@ bool WTSBaseDataMgr::isHoliday(const char* pid, uint32_t uDate, bool isTpl /* = 
 	if (!isTpl)
 		tplid = getTplIDByPID(pid);
 
-	auto it = m_mapTradingDay.find(tplid);
+	auto it = m_mapTradingDay.find(tplid.c_str());
 	if(it != m_mapTradingDay.end())
 	{
 		const TradingDayTpl& tpl = it->second;
@@ -254,7 +254,7 @@ bool WTSBaseDataMgr::loadSessions(const char* filename, bool isUTF8)
 			sInfo->addTradingSection(jSec->getUInt32("from"), jSec->getUInt32("to"));
 		}
 
-		m_mapSessions->add(id, sInfo);
+		m_mapSessions->add(id.c_str(), sInfo);
 	}
 
 	root->release();
@@ -430,17 +430,17 @@ bool WTSBaseDataMgr::loadContracts(const char* filename, bool isUTF8)
 				maxLmtQty = jcInfo->getUInt32("maxlimitqty");
 			cInfo->setVolumeLimits(maxMktQty, maxLmtQty);
 
-			WTSContractList* contractList = (WTSContractList*)m_mapExchgContract->get(makeShortKey(cInfo->getExchg()));
+			WTSContractList* contractList = (WTSContractList*)m_mapExchgContract->get(ShortKey(cInfo->getExchg()));
 			if (contractList == NULL)
 			{
 				contractList = WTSContractList::create();
-				m_mapExchgContract->add(makeShortKey(cInfo->getExchg()), contractList, false);
+				m_mapExchgContract->add(ShortKey(cInfo->getExchg()), contractList, false);
 			}
-			contractList->add(makeLongKey(cInfo->getCode()), cInfo, false);
+			contractList->add(LongKey(cInfo->getCode()), cInfo, false);
 
 			commInfo->addCode(code.c_str());
 
-			LongKey key = makeLongKey(cInfo->getCode());
+			LongKey key = LongKey(cInfo->getCode());
 			WTSArray* ayInst = (WTSArray*)m_mapContracts->get(key);
 			if(ayInst == NULL)
 			{

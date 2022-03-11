@@ -196,7 +196,7 @@ protected:
 	//tick数据订阅项，first是contextid，second是订阅选项，0-原始订阅，1-前复权，2-后复权
 	typedef std::pair<uint32_t, uint32_t> SubOpt;
 	typedef faster_hashmap<uint32_t, SubOpt> SubList;
-	typedef faster_hashmap<std::string, SubList>	StraSubMap;
+	typedef faster_hashmap<LongKey, SubList>	StraSubMap;
 	StraSubMap		_tick_sub_map;	//tick数据订阅表
 	StraSubMap		_bar_sub_map;	//K线数据订阅表
 
@@ -218,7 +218,7 @@ protected:
 			_gentime = 0;
 		}
 	}SigInfo;
-	typedef faster_hashmap<std::string, SigInfo>	SignalMap;
+	typedef faster_hashmap<LongKey, SigInfo>	SignalMap;
 	SignalMap		_sig_map;
 
 	//////////////////////////////////////////////////////////////////////////
@@ -240,7 +240,7 @@ protected:
 			memset(this, 0, sizeof(_FeeItem));
 		}
 	} FeeItem;
-	typedef faster_hashmap<std::string, FeeItem>	FeeMap;
+	typedef faster_hashmap<LongKey, FeeItem>	FeeMap;
 	FeeMap		_fee_map;
 	
 
@@ -278,12 +278,12 @@ protected:
 			_dynprofit = 0;
 		}
 	} PosInfo;
-	typedef faster_hashmap<std::string, PosInfo> PositionMap;
+	typedef faster_hashmap<LongKey, PosInfo> PositionMap;
 	PositionMap		_pos_map;
 
 	//////////////////////////////////////////////////////////////////////////
 	//
-	typedef faster_hashmap<std::string, double> PriceMap;
+	typedef faster_hashmap<LongKey, double> PriceMap;
 	PriceMap		_price_map;
 
 	//后台任务线程, 把风控和资金, 持仓更新都放到这个线程里去
@@ -312,6 +312,6 @@ protected:
 	BoostFilePtr	_trade_logs;
 	BoostFilePtr	_close_logs;
 
-	faster_hashmap<std::string, double>	_factors_cache;
+	faster_hashmap<LongKey, double>	_factors_cache;
 };
 NS_WTP_END

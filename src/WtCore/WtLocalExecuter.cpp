@@ -250,7 +250,7 @@ void WtLocalExecuter::on_position_changed(const char* stdCode, double targetPos)
 	unit->self()->set_position(stdCode, targetPos);
 }
 
-void WtLocalExecuter::set_position(const faster_hashmap<std::string, double>& targets)
+void WtLocalExecuter::set_position(const faster_hashmap<LongKey, double>& targets)
 {
 	for (auto it = targets.begin(); it != targets.end(); it++)
 	{

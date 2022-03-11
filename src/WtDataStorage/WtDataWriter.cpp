@@ -1413,7 +1413,7 @@ void WtDataWriter::transHisData(const char* sid)
 
 		for (auto it = pCommSet->begin(); it != pCommSet->end(); it++)
 		{
-			const std::string& key = *it;
+			const char* key = (*it).c_str();
 
 			const StringVector& ay = StrUtil::split(key, ".");
 			const char* exchg = ay[0].c_str();

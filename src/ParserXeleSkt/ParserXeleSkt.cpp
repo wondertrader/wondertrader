@@ -242,6 +242,8 @@ bool ParserXeleSkt::prepare()
 	s.close(ec);
 
 	write_log(_sink, LL_INFO, "[ParserXeleSkt] All snapshots synced");
+
+	return true;
 }
 
 
@@ -285,7 +287,7 @@ void ParserXeleSkt::subscribe( const CodeSet &vecSymbols )
 	auto cit = vecSymbols.begin();
 	for(; cit != vecSymbols.end(); cit++)
 	{
-		const std::string &code = *cit;
+		const auto &code = *cit;
 		if(_set_subs.find(code) == _set_subs.end())
 		{
 			_set_subs.insert(code);

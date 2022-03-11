@@ -300,14 +300,7 @@ WTSKlineSlice* WtDataManager::get_kline_slice_by_count(const char* stdCode, WTSK
 	barCache._period = period;
 	barCache._times = times;
 
-	char* tag = "unknown";
-	switch (period)
-	{
-	case KP_Minute1:tag = "min1"; break;
-	case KP_Minute5:tag = "min5"; break;
-	case KP_DAY:tag = "day"; break;
-	default:break;
-	}
+	const char* tag = PERIOD_NAME[period-KP_Tick];
 
 	if (barCache._bars == NULL)
 	{
