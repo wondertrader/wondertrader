@@ -19,12 +19,12 @@ public:
 	/*
 	 *	成交回报
 	 */
-	virtual void on_trade(uint32_t localid, const char* stdCode, bool isBuy, double vol, double price) = 0;
+	virtual void on_trade(uint32_t localid, const char* stdCode, bool isLong, uint32_t offset, double vol, double price) = 0;
 
 	/*
 	 *	订单回报
 	 */
-	virtual void on_order(uint32_t localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled = false) = 0;
+	virtual void on_order(uint32_t localid, const char* stdCode, bool isLong, uint32_t offset, double totalQty, double leftQty, double price, bool isCanceled = false) = 0;
 
 	/*
 	 *	持仓更新回调

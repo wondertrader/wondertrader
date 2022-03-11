@@ -58,12 +58,12 @@ public:
 	virtual void on_transaction(IUftStraCtx* ctx, const char* code, WTSTransData* newTrans) {}
 	virtual void on_bar(IUftStraCtx* ctx, const char* code, const char* period, uint32_t times, WTSBarStruct* newBar) {}
 
-	virtual void on_trade(IUftStraCtx* ctx, uint32_t localid, const char* stdCode, bool isBuy, double vol, double price, const char* userTag) {}
+	virtual void on_trade(IUftStraCtx* ctx, uint32_t localid, const char* stdCode, bool isLong, uint32_t offset, double vol, double price) {}
 	virtual void on_position(IUftStraCtx* ctx, const char* stdCode, bool isLong, double prevol, double preavail, double newvol, double newavail) {}
-	virtual void on_order(IUftStraCtx* ctx, uint32_t localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled, const char* userTag) {}
+	virtual void on_order(IUftStraCtx* ctx, uint32_t localid, const char* stdCode, bool isLong, uint32_t offset, double totalQty, double leftQty, double price, bool isCanceled) {}
 	virtual void on_channel_ready(IUftStraCtx* ctx) {}
 	virtual void on_channel_lost(IUftStraCtx* ctx) {}
-	virtual void on_entrust(uint32_t localid, bool bSuccess, const char* message, const char* userTag) {}
+	virtual void on_entrust(uint32_t localid, bool bSuccess, const char* message) {}
 
 protected:
 	std::string _id;

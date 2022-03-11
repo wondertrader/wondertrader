@@ -124,9 +124,9 @@ public:
 	virtual void stra_sub_transactions(const char* stdCode) override;
 
 	//////////////////////////////////////////////////////////////////////////
-	virtual void on_trade(uint32_t localid, const char* stdCode, bool isBuy, double vol, double price) override;
+	virtual void on_trade(uint32_t localid, const char* stdCode, bool isLong, uint32_t offset, double vol, double price) override;
 
-	virtual void on_order(uint32_t localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled) override;
+	virtual void on_order(uint32_t localid, const char* stdCode, bool isLong, uint32_t offset, double totalQty, double leftQty, double price, bool isCanceled) override;
 
 	virtual void on_channel_ready() override;
 

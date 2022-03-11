@@ -71,22 +71,22 @@ void UftStraContext::on_bar(const char* code, const char* period, uint32_t times
 	UftStraBaseCtx::on_bar(code, period, times, newBar);
 }
 
-void UftStraContext::on_trade(uint32_t localid, const char* stdCode, bool isBuy, double vol, double price)
+void UftStraContext::on_trade(uint32_t localid, const char* stdCode, bool isLong, uint32_t offset, double vol, double price)
 {
 	//const char* innerCode = get_inner_code(stdCode);
 	if (_strategy)
-		_strategy->on_trade(this, localid, stdCode, isBuy, vol, price, getOrderTag(localid));
+		_strategy->on_trade(this, localid, stdCode, isLong, offset, vol, price);
 
-	UftStraBaseCtx::on_trade(localid, stdCode, isBuy, vol, price);
+	UftStraBaseCtx::on_trade(localid, stdCode, isLong, offset, vol, price);
 }
 
-void UftStraContext::on_order(uint32_t localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled /* = false */)
+void UftStraContext::on_order(uint32_t localid, const char* stdCode, bool isLong, uint32_t offset, double totalQty, double leftQty, double price, bool isCanceled /* = false */)
 {
 	//const char* innerCode = get_inner_code(stdCode);
 	if (_strategy)
-		_strategy->on_order(this, localid, stdCode, isBuy, totalQty, leftQty, price, isCanceled, getOrderTag(localid));
+		_strategy->on_order(this, localid, stdCode, isLong, offset, totalQty, leftQty, price, isCanceled);
 
-	UftStraBaseCtx::on_order(localid, stdCode, isBuy, totalQty, leftQty, price, isCanceled);
+	UftStraBaseCtx::on_order(localid, stdCode, isLong, offset, totalQty, leftQty, price, isCanceled);
 }
 
 void UftStraContext::on_channel_ready()
@@ -108,7 +108,7 @@ void UftStraContext::on_channel_lost()
 void UftStraContext::on_entrust(uint32_t localid, const char* stdCode, bool bSuccess, const char* message)
 {
 	if (_strategy)
-		_strategy->on_entrust(localid, bSuccess, message, getOrderTag(localid));
+		_strategy->on_entrust(localid, bSuccess, message);
 
 	UftStraBaseCtx::on_entrust(localid, stdCode, bSuccess, message);
 }

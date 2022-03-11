@@ -872,9 +872,18 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 			_orders->add(localid, orderInfo);
 		}
 
+		uint32_t offset;
+		if (orderInfo->getOffsetType() == WOT_OPEN)
+			offset = 0;
+		else if (orderInfo->getOffsetType() == WOT_CLOSE)
+			offset = 1;
+		else
+			offset = 2;
+
 		//通知所有监听接口
 		for (auto sink : _sinks)
-			sink->on_order(localid, stdCode.c_str(), isBuy, orderInfo->getVolume(), orderInfo->getVolLeft(), orderInfo->getPrice(), orderInfo->getOrderState() == WOS_Canceled);
+			sink->on_order(localid, stdCode.c_str(), orderInfo->getDirection()==WDT_LONG, offset, 
+				orderInfo->getVolume(), orderInfo->getVolLeft(), orderInfo->getPrice(), orderInfo->getOrderState() == WOS_Canceled);
 	}
 }
 
@@ -960,8 +969,16 @@ void TraderAdapter::onPushTrade(WTSTradeInfo* tradeRecord)
 
 	printPosition(stdCode.c_str(), pItem);
 
+
+	uint32_t offset;
+	if (tradeRecord->getOffsetType() == WOT_OPEN)
+		offset = 0;
+	else if (tradeRecord->getOffsetType() == WOT_CLOSE)
+		offset = 1;
+	else
+		offset = 2;
 	for (auto sink : _sinks)
-		sink->on_trade(localid, stdCode.c_str(), isBuy, vol, tradeRecord->getPrice());
+		sink->on_trade(localid, stdCode.c_str(), isLong, offset, vol, tradeRecord->getPrice());
 
 	_trader_api->queryAccount();
 }

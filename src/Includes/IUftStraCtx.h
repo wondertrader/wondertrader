@@ -77,6 +77,26 @@ public:
 	virtual OrderIDs	stra_cancel_all(const char* stdCode) = 0;
 
 	/*
+	 *	下单接口: 买入
+	 *
+	 *	@stdCode	合约代码
+	 *	@price		下单价格，0则是市价单
+	 *	@qty		下单数量
+	 *	@flag		下单标志: 0-normal，1-fak，2-fok，默认0
+	 */
+	virtual OrderIDs	stra_buy(const char* stdCode, double price, double qty, int flag = 0) { return OrderIDs(); }
+
+	/*
+	 *	下单接口: 卖出
+	 *
+	 *	@stdCode	合约代码
+	 *	@price		下单价格，0则是市价单
+	 *	@qty		下单数量
+	 *	@flag		下单标志: 0-normal，1-fak，2-fok，默认0
+	 */
+	virtual OrderIDs	stra_sell(const char* stdCode, double price, double qty, int flag = 0) { return OrderIDs(); }
+
+	/*
 	 *	开多
 	 *	@stdCode	代码，格式如SSE.600000
 	 *	@price		委托价格

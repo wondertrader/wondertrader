@@ -51,7 +51,7 @@ bool WtUftStraDemo::init(WTSVariant* cfg)
 	return true;
 }
 
-void WtUftStraDemo::on_entrust(uint32_t localid, bool bSuccess, const char* message, const char* userTag)
+void WtUftStraDemo::on_entrust(uint32_t localid, bool bSuccess, const char* message)
 {
 	if(!bSuccess)
 	{
@@ -194,7 +194,7 @@ void WtUftStraDemo::on_bar(IUftStraCtx* ctx, const char* code, const char* perio
 	
 }
 
-void WtUftStraDemo::on_trade(IUftStraCtx* ctx, uint32_t localid, const char* stdCode, bool isBuy, double qty, double price, const char* userTag)
+void WtUftStraDemo::on_trade(IUftStraCtx* ctx, uint32_t localid, const char* stdCode, bool isLong, uint32_t offset, double qty, double price)
 {
 	
 }
@@ -204,7 +204,7 @@ void WtUftStraDemo::on_position(IUftStraCtx* ctx, const char* stdCode, bool isLo
 	
 }
 
-void WtUftStraDemo::on_order(IUftStraCtx* ctx, uint32_t localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled, const char* userTag)
+void WtUftStraDemo::on_order(IUftStraCtx* ctx, uint32_t localid, const char* stdCode, bool isLong, uint32_t offset, double totalQty, double leftQty, double price, bool isCanceled)
 {
 	//如果不是我发出去的订单,我就不管了
 	auto it = _orders.find(localid);

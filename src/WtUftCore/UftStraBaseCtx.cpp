@@ -225,12 +225,12 @@ void UftStraBaseCtx::stra_log_error(const char* message)
 	WTSLogger::log_dyn_raw("strategy", _name.c_str(), LL_ERROR, message);
 }
 
-void UftStraBaseCtx::on_trade(uint32_t localid, const char* stdCode, bool isBuy, double vol, double price)
+void UftStraBaseCtx::on_trade(uint32_t localid, const char* stdCode, bool isLong, uint32_t offset, double vol, double price)
 {
 
 }
 
-void UftStraBaseCtx::on_order(uint32_t localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled /* = false */)
+void UftStraBaseCtx::on_order(uint32_t localid, const char* stdCode, bool isLong, uint32_t offset, double totalQty, double leftQty, double price, bool isCanceled /* = false */)
 {
 
 }
