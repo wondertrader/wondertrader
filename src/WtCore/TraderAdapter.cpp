@@ -468,18 +468,17 @@ OrderMap* TraderAdapter::getOrders(const char* stdCode)
 
 uint32_t TraderAdapter::doEntrust(WTSEntrust* entrust)
 {
-	char entrustid[64] = { 0 };
-	if (_trader_api->makeEntrustID(entrustid, 64))
-	{
-		entrust->setEntrustID(entrustid);
-	}
+	_trader_api->makeEntrustID(entrust->getEntrustID(), 64);
 
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(entrust->getCode());
 	entrust->setCode(cInfo._code);
 	entrust->setExchange(cInfo._exchg);
 
 	uint32_t localid = makeLocalOrderID();
-	entrust->setUserTag(StrUtil::printf("%s.%u", _order_pattern.c_str(), localid).c_str());
+	char* usertag = entrust->getUserTag();
+	strcpy(usertag, _order_pattern.c_str());
+	strcat(usertag, ".");
+	fmt::format_to(usertag + _order_pattern.size() + 1, "{}", localid);
 	
 	int32_t ret = _trader_api->orderInsert(entrust);
 	if(ret < 0)
@@ -489,7 +488,8 @@ uint32_t TraderAdapter::doEntrust(WTSEntrust* entrust)
 	}
 	else
 	{
-		_order_time_cache[entrust->getCode()].emplace_back(TimeUtils::getLocalTimeNow());
+		int64_t now = TimeUtils::getLocalTimeNow();
+		_order_time_cache[entrust->getCode()].emplace_back(now);
 	}
 	return localid;
 }

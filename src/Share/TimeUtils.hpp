@@ -21,15 +21,63 @@
 
 #define CTIME_BUF_SIZE 64
 
-class TimeUtils {
+#define WIN32_LEAN_AND_MEAN
+
+#include <windows.h>
+
+typedef struct _KSYSTEM_TIME
+{
+	ULONG LowPart;
+	LONG High1Time;
+	LONG High2Time;
+} KSYSTEM_TIME, *PKSYSTEM_TIME;
+
+struct KUSER_SHARED_DATA
+{
+	ULONG TickCountLowDeprecated;
+	ULONG TickCountMultiplier;
+	volatile KSYSTEM_TIME InterruptTime;
+	volatile KSYSTEM_TIME SystemTime;
+	volatile KSYSTEM_TIME TimeZoneBias;
+};
+
+#define KI_USER_SHARED_DATA   0x7FFE0000
+#define SharedUserData   ((KUSER_SHARED_DATA * const)KI_USER_SHARED_DATA)
+
+#define TICKSPERSEC        10000000L
+
+
+class TimeUtils 
+{
 	
 public:
 
+	static int64_t GetSysTime()
+	{
+		LARGE_INTEGER SystemTime;
+		do
+		{
+			SystemTime.HighPart = SharedUserData->SystemTime.High1Time;
+			SystemTime.LowPart = SharedUserData->SystemTime.LowPart;
+		} 
+		while (SystemTime.HighPart != SharedUserData->SystemTime.High2Time);
+
+		return SystemTime.QuadPart;
+	}
+
+	static uint64_t mtime()
+	{
+		uint64_t t = GetSysTime();
+		t = t - 11644473600L * TICKSPERSEC;
+		return t;
+	}
+
 	static inline int64_t getLocalTimeNow(void)
 	{
-		timeb now;
-		ftime(&now);
-		return now.time * 1000 + now.millitm;
+		//timeb now;
+		//ftime(&now);
+		//return now.time * 1000 + now.millitm;
+		return mtime() / 10000;
 	}
 
 	static inline int64_t getLocalTimeNano(void)

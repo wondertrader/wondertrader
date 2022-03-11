@@ -90,6 +90,11 @@ public:
 			memset(this, 0, sizeof(_CodeInfo));
 			//_category = CC_Future;
 		}
+
+		inline void clear()
+		{
+			memset(this, 0, sizeof(_CodeInfo));
+		}
 	} CodeInfo;
 
 private:
@@ -126,7 +131,13 @@ public:
 	 */
 	static inline bool	isStdFutHotCode(const char* stdCode)
 	{
-		return StrUtil::endsWith(stdCode, SUFFIX_HOT, false);
+		//return StrUtil::endsWith(stdCode, SUFFIX_HOT, false);
+		static std::size_t SUF_LEN = strlen(SUFFIX_HOT);
+		auto len = strlen(stdCode);
+		if (len < SUF_LEN)
+			return false;
+
+		return strcmp(stdCode + len - SUF_LEN, SUFFIX_HOT) == 0;
 	}
 
 	/*
@@ -134,19 +145,108 @@ public:
 	 */
 	static inline bool	isStdFut2ndCode(const char* stdCode)
 	{
-		return StrUtil::endsWith(stdCode, SUFFIX_2ND, false);
+		//return StrUtil::endsWith(stdCode, SUFFIX_2ND, false);
+		static std::size_t SUF_LEN = strlen(SUFFIX_2ND);
+		auto len = strlen(stdCode);
+		if (len < SUF_LEN)
+			return false;
+
+		return strcmp(stdCode + len - SUF_LEN, SUFFIX_2ND) == 0;
 	}
 
 	/*
 	 *	是否是期货期权合约代码
 	 *	CFFEX.IO2007.C.4000
 	 */
-	static inline bool	isStdChnFutOptCode(const char* code)
+	static bool	isStdChnFutOptCode(const char* code)
 	{
 		using namespace boost::xpressive;
 		/* 定义正则表达式 */
-		static cregex reg_stk = cregex::compile("^[A-Z]+.[A-z]+\\d{4}.(C|P).\\d+$");	//CFFEX.IO2007.C.4000
-		return 	regex_match(code, reg_stk);
+		//static cregex reg_stk = cregex::compile("^[A-Z]+.[A-z]+\\d{4}.(C|P).\\d+$");	//CFFEX.IO2007.C.4000
+		//return 	regex_match(code, reg_stk);
+		auto len = strlen(code);
+		char state = 0;
+		uint32_t cnt = 0;
+		for(std::size_t i = 0; i < len; i++)
+		{
+			char ch = code[i];
+			if(state == 0)
+			{
+				if (!('A' <= ch && ch <= 'Z'))
+					return false;
+
+				state += 1;
+			}
+			else if (state == 1)
+			{
+				if ('A' <= ch && ch <= 'Z')
+					continue;
+
+				if (ch == '.')
+					state += 1;
+				else
+					return false;
+			}
+			else if (state == 2)
+			{
+				if (!('A' <= ch && ch <= 'z'))
+					return false;
+
+				state += 1;
+			}
+			else if (state == 3)
+			{
+				if ('A' <= ch && ch <= 'Z')
+					continue;
+
+				if ('0' <= ch && ch <= '9')
+					state += 1;
+				else
+					return false;
+			}
+			else if (state >= 4 && state <= 6)
+			{
+				if ('0' <= ch && ch <= '9')
+					state += 1;
+				else
+					return false;
+			}
+			else if (state == 7)
+			{
+				if (ch == '.')
+					state += 1;
+				else
+					return false;
+			}
+			else if (state == 8)
+			{
+				if (ch == 'C' || ch == 'P')
+					state += 1;
+				else
+					return false;
+			}
+			else if (state == 9)
+			{
+				if (ch == '.')
+					state += 1;
+				else
+					return false;
+			}
+			else if (state == 10)
+			{
+				if ('0' <= ch && ch <= '9')
+					state += 1;
+				else
+					return false;
+			}
+			else if (state == 11)
+			{
+				if ('0' <= ch && ch <= '9')
+					continue;
+				else
+					return false;
+			}
+		}
 	}
 
 	/*
@@ -365,7 +465,7 @@ public:
 	/*
 	 *	提取标准期货期权代码的信息
 	 */
-	static inline CodeInfo extractStdChnFutOptCode(const char* stdCode)
+	static CodeInfo extractStdChnFutOptCode(const char* stdCode)
 	{
 		CodeInfo codeInfo;
 
@@ -419,45 +519,52 @@ public:
 			 *	3、最后看看是不是HOT和2ND结尾的，如果是，则将product拷贝给code，如DCE.m.HOT
 			 *	4、如果都不是，则原样复制第三段，如BINANCE.DC.BTCUSDT/SSE.STK.600000
 			 */
-			CodeInfo codeInfo;
-			StringVector ay = StrUtil::split(stdCode, ".");
-			strcpy(codeInfo._exchg, ay[0].c_str());
-			strcpy(codeInfo._product, ay[1].c_str());
-			if(ay.size() == 3)
+			thread_local static CodeInfo codeInfo;
+			codeInfo.clear();
+			auto idx = StrUtil::findFirst(stdCode, '.');
+			strncpy(codeInfo._exchg, stdCode, idx);
+
+			auto idx2 = StrUtil::findFirst(stdCode + idx + 1, '.');
+			if (idx2 == std::string::npos)
 			{
-				if (ay[2].back() == SUFFIX_QFQ || ay[2].back() == SUFFIX_HFQ)
+				strcpy(codeInfo._product, stdCode + idx + 1);
+
+				//By Wesley @ 2021.12.29
+				//如果是两段的合约代码，如OKEX.BTC-USDT
+				//则品种代码和合约代码一致
+				strcpy(codeInfo._code, stdCode + idx + 1);
+			}
+			else
+			{
+				strncpy(codeInfo._product, stdCode + idx + 1, idx2);
+				const char* ext = stdCode + idx + idx2 + 2;
+				char lastCh = ext[strlen(ext) - 1];
+				if (lastCh == SUFFIX_QFQ || lastCh == SUFFIX_HFQ)
 				{
-					strcpy(codeInfo._code, ay[2].substr(0, ay[2].size() - 1).c_str());
-					codeInfo._exright = (ay[2].back() == SUFFIX_QFQ) ? 1 : 2;
+					strncpy(codeInfo._code, ext, strlen(ext) - 1);
+					codeInfo._exright = (lastCh == SUFFIX_QFQ) ? 1 : 2;
 				}
-				else if (ay[2].size() == 4 && isdigit(ay[2].back()))
+				else if (strlen(ext) == 4 && isdigit(lastCh))
 				{
 					//如果最后一段是4位数字，说明是分月合约
 					//TODO: 这样的判断存在一个假设，最后一位是数字的一定是期货分月合约，以后可能会有问题，先注释一下
 					//那么code得加上品种id
 					//郑商所得单独处理一下，这个只能hardcode了
+					strcpy(codeInfo._code, codeInfo._product);
 					if (strcmp(codeInfo._exchg, "CZCE") == 0)
-						fmt::format_to(codeInfo._code, "{}{}", codeInfo._product, ay[2].c_str() + 1);
+						strcat(codeInfo._code, ext + 1);
 					else
-						fmt::format_to(codeInfo._code, "{}{}", codeInfo._product, ay[2]);
+						strcat(codeInfo._code, ext);
 				}
 				else
 				{
 					codeInfo._hotflag = CodeHelper::isStdFutHotCode(stdCode) ? 1 : (CodeHelper::isStdFut2ndCode(stdCode) ? 2 : 0);
 					if (codeInfo._hotflag == 0)
-						strcpy(codeInfo._code, ay[2].c_str());
+						strcpy(codeInfo._code, ext);
 					else
 						strcpy(codeInfo._code, codeInfo._product);
 				}
-			}
-			else
-			{
-				//By Wesley @ 2021.12.29
-				//如果是两段的合约代码，如OKEX.BTC-USDT
-				//则品种代码和合约代码一致
-				strcpy(codeInfo._code, ay[1].c_str());
-			}
-			
+			}			
 
 			return codeInfo;
 		}

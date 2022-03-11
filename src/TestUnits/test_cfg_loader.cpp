@@ -8,6 +8,8 @@ TEST(test_cfg_loader, test_yaml)
 {
 	WTSVariant* cfg = WTSCfgLoader::load_from_file("test.yaml", true);
 	EXPECT_TRUE(cfg != NULL);
+	if (cfg == NULL)
+		return;
 
 	EXPECT_TRUE(cfg->has("dict"));
 	WTSVariant* dict = cfg->get("dict");
@@ -53,6 +55,8 @@ TEST(test_cfg_loader, test_json)
 {
 	WTSVariant* cfg = WTSCfgLoader::load_from_file("test.json", true);
 	EXPECT_TRUE(cfg != NULL);
+	if (cfg == NULL)
+		return;
 
 	EXPECT_TRUE(cfg->has("dict"));
 	WTSVariant* dict = cfg->get("dict");
