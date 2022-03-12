@@ -12,6 +12,7 @@
 #include "../WtBtCore/ExecMocker.h"
 #include "../WtBtCore/HftMocker.h"
 #include "../WtBtCore/SelMocker.h"
+#include "../WtBtCore/UftMocker.h"
 #include "../WtBtCore/WtHelper.h"
 
 #include "../WTSTools/WTSLogger.h"
@@ -86,6 +87,12 @@ int main()
 		ExecMocker* mocker = new ExecMocker(&replayer);
 		mocker->init(cfg->get("exec"));
 		replayer.register_sink(mocker, "exec");
+	}
+	else if (strcmp(mode, "uft") == 0)
+	{
+		UftMocker* mocker = new UftMocker(&replayer, "uft");
+		mocker->init_uft_factory(cfg->get("uft"));
+		replayer.register_sink(mocker, "uft");
 	}
 
 	replayer.prepare();

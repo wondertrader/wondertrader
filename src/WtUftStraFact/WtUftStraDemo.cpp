@@ -146,10 +146,14 @@ void WtUftStraDemo::on_tick(IUftStraCtx* ctx, const char* code, WTSTickData* new
 			else
 				localid = ctx->stra_enter_long(code, targetPx, _lots, UFT_OrderFlag_FAK);
 
-			_mtx_ords.lock();
-			_orders.insert(localid);
-			_mtx_ords.unlock();
-			_last_entry_time = now;
+			if(localid != 0)
+			{
+				_mtx_ords.lock();
+				_orders.insert(localid);
+				_mtx_ords.unlock();
+				_last_entry_time = now;
+			}
+			
 		}
 		else if (signal < 0 && decimal::ge(curPos, 0))
 		{//反向信号,且当前仓位大于0,或者仓位为0但不是股票,或者仓位为0但是基础仓位有修正
@@ -162,10 +166,13 @@ void WtUftStraDemo::on_tick(IUftStraCtx* ctx, const char* code, WTSTickData* new
 			else
 				localid = ctx->stra_enter_short(code, targetPx, _lots, UFT_OrderFlag_FAK);
 
-			_mtx_ords.lock();
-			_orders.insert(localid);
-			_mtx_ords.unlock();
-			_last_entry_time = now;
+			if (localid != 0)
+			{
+				_mtx_ords.lock();
+				_orders.insert(localid);
+				_mtx_ords.unlock();
+				_last_entry_time = now;
+			}
 		}
 	}
 }

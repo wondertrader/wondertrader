@@ -411,7 +411,7 @@ bool WTSBaseDataMgr::loadContracts(const char* filename, bool isUTF8)
 
 			if (commInfo == NULL)
 			{
-				WTSLogger::error("Commodity %s.%s not found, contract %s skipped", jcInfo->getCString("exchg"), jcInfo->getCString("product"), code.c_str());
+				WTSLogger::warn("Commodity %s.%s not found, contract %s skipped", jcInfo->getCString("exchg"), jcInfo->getCString("product"), code.c_str());
 				continue;
 			}
 

@@ -42,6 +42,9 @@
     <ClCompile Include="HisDataMgr.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="UftMocker.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CtaMocker.h">
@@ -69,6 +72,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="HisDataMgr.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="UftMocker.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

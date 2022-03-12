@@ -27,6 +27,7 @@
     <ClCompile Include="HisDataReplayer.cpp" />
     <ClCompile Include="MatchEngine.cpp" />
     <ClCompile Include="SelMocker.cpp" />
+    <ClCompile Include="UftMocker.cpp" />
     <ClCompile Include="WtHelper.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -38,6 +39,7 @@
     <ClInclude Include="HisDataReplayer.h" />
     <ClInclude Include="MatchEngine.h" />
     <ClInclude Include="SelMocker.h" />
+    <ClInclude Include="UftMocker.h" />
     <ClInclude Include="WtHelper.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
