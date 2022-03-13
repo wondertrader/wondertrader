@@ -6,15 +6,17 @@ replayer:
         hot: ../common/hots.json
         session: ../common/sessions.json
     fees: ../common/fees.json
-    stime: 201909010900             # CTA回测demo开始时间
-    etime: 201912011500             # CTA回测demo结束时间
+    cta_stime: 201909010900         # CTA回测demo开始时间，测试的时候去掉前缀cta_
+    cta_etime: 201912011500         # CTA回测demo结束时间，测试的时候去掉前缀cta_
     hft_stime: 202101040900         # HFT回测demo开始时间，测试的时候去掉前缀hft_
     hft_etime: 202101061500         # HFT回测demo结束时间，测试的时候去掉前缀hft_
+    stime: 202101040900             # UFT回测demo开始时间，测试的时候去掉前缀uft_
+    etime: 202101061500             # UFT回测demo结束时间，测试的时候去掉前缀uft_
     mode: csv
     path: ../storage/
-    tick: false                     # 是否开启tick回测，HFT回测时必须开启
+    tick: true                     # 是否开启tick回测，HFT回测时必须开启
 env:
-    mocker: cta                     # 回测引擎，cta/hft/sel
+    mocker: uft                     # 回测引擎，cta/hft/sel/uft
     slippage: 1
 
 # CTA策略配置，当mocker为cta时会读取该配置项
@@ -44,5 +46,18 @@ hft:
             freq: 10
             offset: 0
             stock: false
+
+# UFT策略配置，当mocker为uft时会读取该配置项
+uft:
+    module: WtUftStraFact.dll       # 模块名，linux下为xxxx.so
+    strategy:                       # 策略信息
+        id: uft_if                  # 策略ID，自定义的
+        name: SimpleUft             # 策略名，要和factory中的匹配
+        params:                     # 策略初始化参数，这个根据策略的需要提供
+            code: CFFEX.IF.HOT
+            second: 5
+            freq: 10
+            offset: 0
+            lots: 1
 
 
