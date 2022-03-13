@@ -158,7 +158,18 @@ private:
 		_BarsList() :_cursor(UINT_MAX), _count(0), _times(1), _factor(1){}
 	} BarsList;
 
-	typedef faster_hashmap<std::string, BarsList>	BarsCache;
+	/*
+	 *	By Wesley @ 2022.03.13
+	 *	这里把缓存改成智能指针
+	 *	因为有用户发现如果在oncalc的时候获取未在oninit中订阅的K线的时候
+	 *	因为使用BarList的引用，当K线缓存的map重新插入新的K线以后
+	 *	引用的地方失效了，会引用到错误地址
+	 *	我怀疑这里有可能是重新拷贝了一下数据
+	 *	这里改成智能指针就能避免这个问题，因为不管map自己的内存如何组织
+	 *	智能指针指向的地址都是不会变的
+	 */
+	typedef std::shared_ptr<BarsList> BarsListPtr;
+	typedef faster_hashmap<std::string, BarsListPtr>	BarsCache;
 
 	typedef enum tagTaskPeriodType
 	{
