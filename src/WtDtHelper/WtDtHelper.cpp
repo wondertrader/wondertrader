@@ -318,8 +318,8 @@ void dump_ticks(WtString binFolder, WtString csvFolder, WtString strFilter /* = 
 
 		std::stringstream ss;
 		ss.setf(std::ios::fixed, std::ios::floatfield);
-		ss.precision(3);
-		ss << "code,tradingdate,actiondate,actiontime,price,open,high,low,settle,preclose,"
+		ss.precision(6);
+		ss << "exchg,code,tradingdate,actiondate,actiontime,price,open,high,low,settle,preclose,"
 			<< "presettle,preinterest,total_volume,total_turnover,open_interest,volume,turnover,additional,";
 		for (int i = 0; i < 10; i++)
 		{
@@ -331,7 +331,7 @@ void dump_ticks(WtString binFolder, WtString csvFolder, WtString strFilter /* = 
 		for (uint32_t i = 0; i < tcnt; i++)
 		{
 			const WTSTickStruct& curTick = ticks[i];
-			ss << curTick.code << ","
+			ss << curTick.exchg << "," << curTick.code << ","
 				<< curTick.trading_date << ","
 				<< curTick.action_date << ","
 				<< curTick.action_time << ","
