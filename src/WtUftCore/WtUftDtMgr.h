@@ -22,7 +22,7 @@ class WTSKlineSlice;
 class WTSTickSlice;
 class IBaseDataMgr;
 class IBaseDataMgr;
-class WtEngine;
+class WtUftEngine;
 
 class WtUftDtMgr : public IDataManager
 {
@@ -31,7 +31,7 @@ public:
 	~WtUftDtMgr();
 
 public:
-	bool	init(WTSVariant* cfg, WtEngine* engine);
+	bool	init(WTSVariant* cfg, WtUftEngine* engine);
 
 	void	handle_push_quote(const char* stdCode, WTSTickData* newTick);
 
@@ -45,7 +45,7 @@ public:
 	virtual WTSTickData* grab_last_tick(const char* stdCode) override;
 
 private:
-	WtEngine*		_engine;
+	WtUftEngine*		_engine;
 
 	faster_hashset<std::string> _subed_basic_bars;
 	typedef WTSHashMap<std::string> DataCacheMap;

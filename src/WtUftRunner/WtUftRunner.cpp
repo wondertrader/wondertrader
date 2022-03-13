@@ -247,9 +247,8 @@ bool WtUftRunner::initEngine()
 
 	WTSLogger::info("Trading enviroment initialzied with engine: UFT");
 	_uft_engine.init(cfg, &_bd_mgr, &_data_mgr);
-	_engine = &_uft_engine;
 
-	_engine->set_adapter_mgr(&_traders);
+	_uft_engine.set_adapter_mgr(&_traders);
 
 	return true;
 }
@@ -261,7 +260,7 @@ bool WtUftRunner::initDataMgr()
 	if (cfg == NULL)
 		return false;
 
-	_data_mgr.init(cfg, _engine);
+	_data_mgr.init(cfg, &_uft_engine);
 	WTSLogger::info("Data manager initialized");
 
 	return true;
@@ -290,7 +289,7 @@ bool WtUftRunner::initParsers(WTSVariant* cfgParser)
 		}
 
 		ParserAdapterPtr adapter(new ParserAdapter);
-		adapter->init(realid.c_str(), cfgItem, _engine, &_bd_mgr);
+		adapter->init(realid.c_str(), cfgItem, &_uft_engine, &_bd_mgr);
 		_parsers.addAdapter(realid.c_str(), adapter);
 
 		count++;
@@ -334,7 +333,7 @@ void WtUftRunner::run(bool bAsync /* = false */)
 		_parsers.run();
 		_traders.run();
 
-		_engine->run(bAsync);
+		_uft_engine.run(bAsync);
 	}
 	catch (...)
 	{

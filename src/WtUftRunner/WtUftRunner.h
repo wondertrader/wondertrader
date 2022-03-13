@@ -64,8 +64,6 @@ private:
 	ParserAdapterMgr	_parsers;
 
 	WtUftEngine			_uft_engine;
-	WtEngine*			_engine;
-
 
 	WtUftDtMgr			_data_mgr;
 

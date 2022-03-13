@@ -42,7 +42,7 @@ WtUftDtMgr::~WtUftDtMgr()
 		_rt_tick_map->release();
 }
 
-bool WtUftDtMgr::init(WTSVariant* cfg, WtEngine* engine)
+bool WtUftDtMgr::init(WTSVariant* cfg, WtUftEngine* engine)
 {
 	_engine = engine;
 
