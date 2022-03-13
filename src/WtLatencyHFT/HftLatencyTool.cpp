@@ -203,7 +203,7 @@ namespace hft
 
 		virtual void on_tick(IHftStraCtx* ctx, const char* code, WTSTickData* newTick)
 		{
-			ctx->stra_buy("SHFE.rb.2205", 2300, 1, "", HFT_OrderFlag_Nor);
+			ctx->stra_sell("SHFE.rb.2205", 2300, 1, "", HFT_OrderFlag_Nor);
 		}
 	};
 

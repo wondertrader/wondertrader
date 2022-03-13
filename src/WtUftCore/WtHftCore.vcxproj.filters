@@ -12,9 +12,6 @@
     <Filter Include="Datas">
       <UniqueIdentifier>{d0a3fbad-c6a2-420e-a58d-e98b65776dd8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Common">
-      <UniqueIdentifier>{a7b2a95c-537d-468f-ba75-6d04db988e6a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Incs">
       <UniqueIdentifier>{9f1bbb47-ad4c-461b-9a65-c33dc3af0cbc}</UniqueIdentifier>
     </Filter>
@@ -35,9 +32,6 @@
     </ClInclude>
     <ClInclude Include="WtHelper.h">
       <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="WtEngine.h">
-      <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="..\Includes\IDataReader.h">
       <Filter>Incs</Filter>
@@ -79,9 +73,6 @@
     </ClCompile>
     <ClCompile Include="WtHelper.cpp">
       <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="WtEngine.cpp">
-      <Filter>Common</Filter>
     </ClCompile>
     <ClCompile Include="UftStraBaseCtx.cpp">
       <Filter>UFT</Filter>

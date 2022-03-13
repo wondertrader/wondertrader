@@ -136,7 +136,7 @@ void WtUftRtTicker::run()
 	uint32_t curTDate = _engine->get_basedata_mgr()->calcTradingDate(_s_info->id(), _engine->get_date(), _engine->get_min_time(), true);
 	_engine->set_trading_date(curTDate);
 
-	//_engine->on_session_begin();
+	_engine->on_session_begin();
 
 	//先检查当前时间, 如果大于
 	uint32_t offTime = _s_info->offsetTime(_engine->get_min_time(), true);
@@ -177,11 +177,11 @@ void WtUftRtTicker::run()
 
 					_engine->on_minute_end(_date, thisMin);
 
-					//uint32_t offMin = _s_info->offsetTime(thisMin, true);
-					//if (offMin >= _s_info->getCloseTime(true))
-					//{
-					//	_engine->on_session_end();
-					//}
+					uint32_t offMin = _s_info->offsetTime(thisMin, true);
+					if (offMin >= _s_info->getCloseTime(true))
+					{
+						_engine->on_session_end();
+					}
 
 					//145959000
 					if (_engine)

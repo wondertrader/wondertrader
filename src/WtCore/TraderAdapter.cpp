@@ -470,9 +470,11 @@ uint32_t TraderAdapter::doEntrust(WTSEntrust* entrust)
 {
 	_trader_api->makeEntrustID(entrust->getEntrustID(), 64);
 
-	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(entrust->getCode());
-	entrust->setCode(cInfo._code);
-	entrust->setExchange(cInfo._exchg);
+	WTSContractInfo* cInfo = entrust->getContractInfo();
+	if (cInfo == NULL) cInfo = getContract(entrust->getCode());
+
+	entrust->setCode(cInfo->getCode());
+	entrust->setExchange(cInfo->getExchg());
 
 	uint32_t localid = makeLocalOrderID();
 	char* usertag = entrust->getUserTag();
@@ -715,7 +717,7 @@ OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty, int f
 			for (;;)
 			{
 				double curQty = min(leftQty, unitQty);
-				uint32_t localid = openLong(stdCode, price, curQty, flag);
+				uint32_t localid = openLong(stdCode, price, curQty, flag, cInfo);
 				ret.emplace_back(localid);
 
 				leftQty -= curQty;
@@ -756,7 +758,7 @@ OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty, int f
 				for (;;)
 				{
 					double curQty = min(leftQty, unitQty);
-					uint32_t localid = closeShort(stdCode, price, curQty, (commInfo->getCoverMode() == CM_CoverToday), flag);//如果不支持平今, 则直接下平仓标记即可
+					uint32_t localid = closeShort(stdCode, price, curQty, (commInfo->getCoverMode() == CM_CoverToday), flag, cInfo);//如果不支持平今, 则直接下平仓标记即可
 					ret.emplace_back(localid);
 
 					leftQty -= curQty;
@@ -801,7 +803,7 @@ OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty, int f
 				for (;;)
 				{
 					double curQty = min(leftQty, unitQty);
-					uint32_t localid = closeShort(stdCode, price, curQty, false, flag);//如果不支持平今, 则直接下平仓标记即可
+					uint32_t localid = closeShort(stdCode, price, curQty, false, flag, cInfo);//如果不支持平今, 则直接下平仓标记即可
 					ret.emplace_back(localid);
 
 					leftQty -= curQty;
@@ -841,7 +843,7 @@ OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty, int f
 					for (;;)
 					{
 						double curQty = min(leftQty, unitQty);
-						uint32_t localid = closeShort(stdCode, price, curQty, false, flag);
+						uint32_t localid = closeShort(stdCode, price, curQty, false, flag, cInfo);
 						ret.emplace_back(localid);
 
 						leftQty -= curQty;
@@ -867,7 +869,7 @@ OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty, int f
 					for (;;)
 					{
 						double curQty = min(leftQty, unitQty);
-						uint32_t localid = closeShort(stdCode, price, curQty, false, flag);
+						uint32_t localid = closeShort(stdCode, price, curQty, false, flag, cInfo);
 						ret.emplace_back(localid);
 
 						leftQty -= curQty;
@@ -892,7 +894,7 @@ OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty, int f
 					for (;;)
 					{
 						double curQty = min(leftQty, unitQty);
-						uint32_t localid = closeShort(stdCode, price, curQty, true, flag);
+						uint32_t localid = closeShort(stdCode, price, curQty, true, flag, cInfo);
 						ret.emplace_back(localid);
 
 						leftQty -= curQty;
@@ -1011,7 +1013,7 @@ OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty, int 
 			for (;;)
 			{
 				double curQty = min(leftQty, unitQty);
-				uint32_t localid = openShort(stdCode, price, curQty, flag);
+				uint32_t localid = openShort(stdCode, price, curQty, flag, cInfo);
 				ret.emplace_back(localid);
 
 				leftQty -= curQty;
@@ -1050,7 +1052,7 @@ OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty, int 
 				for (;;)
 				{
 					double curQty = min(leftQty, unitQty);
-					uint32_t localid = closeLong(stdCode, price, curQty, (commInfo->getCoverMode() == CM_CoverToday), flag);//如果不支持平今, 则直接下平仓标记即可
+					uint32_t localid = closeLong(stdCode, price, curQty, (commInfo->getCoverMode() == CM_CoverToday), flag, cInfo);//如果不支持平今, 则直接下平仓标记即可
 					ret.emplace_back(localid);
 
 					leftQty -= curQty;
@@ -1093,7 +1095,7 @@ OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty, int 
 				for (;;)
 				{
 					double curQty = min(leftQty, unitQty);
-					uint32_t localid = closeLong(stdCode, price, curQty, false, flag);//如果不支持平今, 则直接下平仓标记即可
+					uint32_t localid = closeLong(stdCode, price, curQty, false, flag, cInfo);//如果不支持平今, 则直接下平仓标记即可
 					ret.emplace_back(localid);
 
 					leftQty -= curQty;
@@ -1129,7 +1131,7 @@ OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty, int 
 					for (;;)
 					{
 						double curQty = min(leftQty, unitQty);
-						uint32_t localid = closeLong(stdCode, price, curQty, false, flag);
+						uint32_t localid = closeLong(stdCode, price, curQty, false, flag, cInfo);
 						ret.emplace_back(localid);
 
 						leftQty -= curQty;
@@ -1156,7 +1158,7 @@ OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty, int 
 						for (;;)
 						{
 							double curQty = min(leftQty, unitQty);
-							uint32_t localid = closeLong(stdCode, price, curQty, false, flag);
+							uint32_t localid = closeLong(stdCode, price, curQty, false, flag, cInfo);
 							ret.emplace_back(localid);
 
 							leftQty -= curQty;
@@ -1183,7 +1185,7 @@ OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty, int 
 						for (;;)
 						{
 							double curQty = min(leftQty, unitQty);
-							uint32_t localid = closeLong(stdCode, price, curQty, true, flag);
+							uint32_t localid = closeLong(stdCode, price, curQty, true, flag, cInfo);
 							ret.emplace_back(localid);
 
 							leftQty -= curQty;

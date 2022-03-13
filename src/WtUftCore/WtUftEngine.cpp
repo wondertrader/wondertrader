@@ -17,7 +17,11 @@
 
 #include "../Share/decimal.h"
 #include "../Share/StrUtil.hpp"
+#include "../Share/TimeUtils.hpp"
+
 #include "../Includes/WTSVariant.hpp"
+#include "../Includes/IBaseDataMgr.h"
+#include "../Includes/WTSContractInfo.hpp"
 
 #include "../WTSTools/WTSLogger.h"
 
@@ -31,6 +35,13 @@ WtUftEngine::WtUftEngine()
 	: _cfg(NULL)
 	, _tm_ticker(NULL)
 {
+	TimeUtils::getDateTime(_cur_date, _cur_time);
+	_cur_secs = _cur_time % 100000;
+	_cur_time /= 100000;
+	_cur_raw_time = _cur_time;
+	_cur_tdate = _cur_date;
+
+	WtHelper::setTime(_cur_date, _cur_time, _cur_secs);
 }
 
 
@@ -47,9 +58,133 @@ WtUftEngine::~WtUftEngine()
 		_cfg->release();
 }
 
+void WtUftEngine::set_date_time(uint32_t curDate, uint32_t curTime, uint32_t curSecs /* = 0 */, uint32_t rawTime /* = 0 */)
+{
+	_cur_date = curDate;
+	_cur_time = curTime;
+	_cur_secs = curSecs;
+
+	if (rawTime == 0)
+		rawTime = curTime;
+
+	_cur_raw_time = rawTime;
+
+	WtHelper::setTime(_cur_date, _cur_raw_time, _cur_secs);
+}
+
+void WtUftEngine::set_trading_date(uint32_t curTDate)
+{
+	_cur_tdate = curTDate;
+
+	WtHelper::setTDate(curTDate);
+}
+
+WTSCommodityInfo* WtUftEngine::get_commodity_info(const char* stdCode)
+{
+	const StringVector& ay = StrUtil::split(stdCode, ".");
+	WTSContractInfo* cInfo = _base_data_mgr->getContract(ay[1].c_str(), ay[0].c_str());
+	if (cInfo == NULL)
+		return NULL;
+
+	return cInfo->getCommInfo();
+}
+
+WTSContractInfo* WtUftEngine::get_contract_info(const char* stdCode)
+{
+	const StringVector& ay = StrUtil::split(stdCode, ".");
+	return _base_data_mgr->getContract(ay[1].c_str(), ay[0].c_str());
+}
+
+WTSSessionInfo* WtUftEngine::get_session_info(const char* sid, bool isCode /* = false */)
+{
+	if (!isCode)
+		return _base_data_mgr->getSession(sid);
+
+	const StringVector& ay = StrUtil::split(sid, ".");
+	WTSContractInfo* cInfo = _base_data_mgr->getContract(ay[1].c_str(), ay[0].c_str());
+	if (cInfo == NULL)
+		return NULL;
+
+	WTSCommodityInfo* commInfo = cInfo->getCommInfo();
+	return commInfo->getSessionInfo();
+}
+
+WTSTickSlice* WtUftEngine::get_tick_slice(uint32_t sid, const char* code, uint32_t count)
+{
+	return NULL;
+	return _data_mgr->get_tick_slice(code, count);
+}
+
+WTSTickData* WtUftEngine::get_last_tick(uint32_t sid, const char* stdCode)
+{
+	return _data_mgr->grab_last_tick(stdCode);
+}
+
+WTSKlineSlice* WtUftEngine::get_kline_slice(uint32_t sid, const char* stdCode, const char* period, uint32_t count, uint32_t times /* = 1 */, uint64_t etime /* = 0 */)
+{
+	return NULL;
+	WTSCommodityInfo* cInfo = _base_data_mgr->getCommodity(stdCode);
+	if (cInfo == NULL)
+		return NULL;
+
+	WTSSessionInfo* sInfo = cInfo->getSessionInfo();
+
+	std::string key = fmt::format("{}-{}-{}", stdCode, period, times);
+	SubList& sids = _bar_sub_map[key];
+	sids.insert(sid);
+
+	WTSKlinePeriod kp;
+	if (strcmp(period, "m") == 0)
+	{
+		if (times % 5 == 0)
+		{
+			kp = KP_Minute5;
+			times /= 5;
+		}
+		else
+			kp = KP_Minute1;
+	}
+	else
+	{
+		kp = KP_DAY;
+	}
+
+	return _data_mgr->get_kline_slice(stdCode, kp, times, count, etime);
+}
+
+void WtUftEngine::sub_tick(uint32_t sid, const char* stdCode)
+{
+	SubList& sids = _tick_sub_map[stdCode];
+	sids.insert(sid);
+}
+
+double WtUftEngine::get_cur_price(const char* stdCode)
+{
+	auto it = _price_map.find(stdCode);
+	if (it == _price_map.end())
+	{
+		WTSTickData* lastTick = _data_mgr->grab_last_tick(stdCode);
+		if (lastTick == NULL)
+			return 0.0;
+
+		double ret = lastTick->price();
+		lastTick->release();
+		_price_map[stdCode] = ret;
+		return ret;
+	}
+	else
+	{
+		return it->second;
+	}
+}
+
+
 void WtUftEngine::init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtUftDtMgr* dataMgr)
 {
-	WtEngine::init(cfg, bdMgr, dataMgr);
+	_base_data_mgr = bdMgr;
+	_data_mgr = dataMgr;
+
+	WTSLogger::info("Platform running mode: Production");
 
 	_cfg = cfg;
 	if(_cfg) _cfg->retain();
@@ -176,36 +311,35 @@ void WtUftEngine::sub_transaction(uint32_t sid, const char* stdCode)
 	sids.insert(sid);
 }
 
+void WtUftEngine::on_session_begin()
+{
+	WTSLogger::info("Trading day %u begun", _cur_tdate);
+
+	for (auto it = _ctx_map.begin(); it != _ctx_map.end(); it++)
+	{
+		UftContextPtr& ctx = (UftContextPtr&)it->second;
+		ctx->on_session_begin(_cur_tdate);
+	}
+}
+
+void WtUftEngine::on_session_end()
+{
+	for (auto it = _ctx_map.begin(); it != _ctx_map.end(); it++)
+	{
+		UftContextPtr& ctx = (UftContextPtr&)it->second;
+		ctx->on_session_end(_cur_tdate);
+	}
+
+	WTSLogger::info("Trading day %u ended", _cur_tdate);
+}
+
 void WtUftEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 {
-	WtEngine::on_tick(stdCode, curTick);
+	_price_map[stdCode] = curTick->price();
 
 	if(_data_mgr)
 		_data_mgr->handle_push_quote(stdCode, curTick);
 
-	//auto sit = _tick_sub_map.find(stdCode);
-	//if (sit != _tick_sub_map.end())
-	//{
-	//	const SubList& sids = sit->second;
-	//	for (auto it = sids.begin(); it != sids.end(); it++)
-	//	{
-	//		uint32_t sid = it->first;
-	//		auto cit = _ctx_map.find(sid);
-	//		if (cit != _ctx_map.end())
-	//		{
-	//			HftContextPtr& ctx = (HftContextPtr&)cit->second;
-	//			ctx->on_tick(stdCode, curTick);
-	//		}
-	//	}
-	//}
-
-	/*
-	 *	By Wesley @ 2022.02.07
-	 *	这里做了一个彻底的调整
-	 *	第一，检查订阅标记，如果标记为0，即无复权模式，则直接按照原始代码触发ontick
-	 *	第二，如果标记为1，即前复权模式，则将代码转成xxxx-，再触发ontick
-	 *	第三，如果标记为2，即后复权模式，则将代码转成xxxx+，再把tick数据做一个修正，再触发ontick
-	 */
 	{
 		auto sit = _tick_sub_map.find(stdCode);
 		if (sit != _tick_sub_map.end())
@@ -228,7 +362,7 @@ void WtUftEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 
 void WtUftEngine::on_bar(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar)
 {
-	std::string key = StrUtil::printf("%s-%s-%u", stdCode, period, times);
+	std::string key = fmt::format("{}-{}-{}", stdCode, period, times);
 	const SubList& sids = _bar_sub_map[key];
 	for (auto it = sids.begin(); it != sids.end(); it++)
 	{
