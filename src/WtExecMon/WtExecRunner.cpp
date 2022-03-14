@@ -148,17 +148,17 @@ bool WtExecRunner::config(const char* cfgFile, bool isFile /* = true */)
 	const char* cfgTraders = _config->getCString("traders");
 	if (StdFile::exists(cfgTraders))
 	{
-		WTSLogger::info_f("Reading parser config from {}...", cfgTraders);
+		WTSLogger::info_f("Reading trader config from {}...", cfgTraders);
 		WTSVariant* var = WTSCfgLoader::load_from_file(cfgTraders, true);
 		if (var)
 		{
 			if (!initTraders(var))
-				WTSLogger::error("Loading parsers failed");
+				WTSLogger::error("Loading traders failed");
 			var->release();
 		}
 		else
 		{
-			WTSLogger::error_f("Loading parser config {} failed", cfgTraders);
+			WTSLogger::error_f("Loading trader config {} failed", cfgTraders);
 		}
 	}
 
