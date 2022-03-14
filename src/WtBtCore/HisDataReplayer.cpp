@@ -3147,7 +3147,7 @@ bool HisDataReplayer::cacheFinalBarsFromLoader(const std::string& key, const cha
 		barsList->_count = 0;
 
 		std::string buffer;
-		bool bSucc = _bt_loader->loadFinalHisBars(&barsList, stdCode, period, [](void* obj, WTSBarStruct* firstBar, uint32_t count) {
+		bool bSucc = _bt_loader->loadFinalHisBars(barsList.get(), stdCode, period, [](void* obj, WTSBarStruct* firstBar, uint32_t count) {
 			BarsList* bars = (BarsList*)obj;
 			bars->_count = count;
 			bars->_bars.resize(count);
