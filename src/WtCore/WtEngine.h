@@ -313,5 +313,8 @@ protected:
 	BoostFilePtr	_close_logs;
 
 	faster_hashmap<LongKey, double>	_factors_cache;
+
+	//用于标记是否可以推送tickle
+	bool			_ready;
 };
 NS_WTP_END

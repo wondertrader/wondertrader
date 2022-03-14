@@ -51,6 +51,8 @@ void WtSelEngine::on_session_begin()
 {
 	if (_evt_listener)
 		_evt_listener->on_session_event(_cur_tdate, true);
+
+	_ready = true;
 }
 
 void WtSelEngine::on_init()
@@ -119,6 +121,7 @@ void WtSelEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 	 *	第二，如果标记为1，即前复权模式，则将代码转成xxxx-，再触发ontick
 	 *	第三，如果标记为2，即后复权模式，则将代码转成xxxx+，再把tick数据做一个修正，再触发ontick
 	 */
+	if(_ready)
 	{
 		auto sit = _tick_sub_map.find(stdCode);
 		if (sit != _tick_sub_map.end())

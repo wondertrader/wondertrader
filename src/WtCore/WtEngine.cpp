@@ -45,6 +45,7 @@ WtEngine::WtEngine()
 	, _adapter_mgr(NULL)
 	, _notifier(NULL)
 	, _fund_udt_span(0)
+	, _ready(false)
 {
 	TimeUtils::getDateTime(_cur_date, _cur_time);
 	_cur_secs = _cur_time % 100000;
