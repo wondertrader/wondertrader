@@ -1,3 +1,24 @@
+### 0.9.0(重大版本)
+* 将数据读写模块WtDataReader和WtDataWriter统一整合为WtDataStorage，并将回测框架和WtDtServo中的随机读取模块整合到该模块中
+* （**重要**）新增一个基于LMDB实现的数据存储引擎WtDataStorageAD，主要针对7*24小时交易品种的存储场景
+* （**重要**）重构了底层数据结构WTSTickStruct和WTSBarStruct，修改了数据结构对齐方式以及部分字段类型，以兼容更多的交易品种，并且将所有读写的地方做了新老数据结构的兼容处理
+* 重构了CodeHelper模块，不再通过CodeHelper解析代码来判断合约类型，全部改成从WTSCommodityInfo来判断，并且将代码中按照种类处理代码格式的逻辑全部改成从一些文本规则转换标准代码，以兼容更多的代码规则
+* （**重要**）优化了WTSBaseDataMgr加载合约的流程，支持将合约直接当成品种进行处理，主要为了适应一些每个合约的交易规则都不同的场景
+* 修改了WTSKlineSlice和WTSTickSlice，改为多数据块的模式，使用更加灵活
+* 重构WTSLogger，全面改成兼容fmtlib的格式化语法
+* （**重要**）配置文件全面兼容yaml和json两种格式，并实现了一个WTSCfgLoader模块自动处理
+* 完善了对股票复权数据的处理
+* （**重要**）新增一个极速交易引擎UFTEngine(WtUftCore、WtUftStraFact、WtUftRunner三个工程)，独立于其他几个引擎，不做过多兼容处理，只为了针对极速交易场景
+* （**重要**）速度优化（时间函数、字符串函数、hash、对象池等优化），将UFTEngine的系统延迟优化到175纳秒以内，HFTEngine的系统延迟优化到1.5微秒以内
+* （**重要**）新增两个延迟测试工具WtLatencyHFT和WtLatencyUFT，分别用于测试HFTEngine和UFTEngine的系统延迟
+* （**重要**）内部细节调整，完善了对7*24小时品种的支持
+* （**重要**）TraderAdapter新增了自成交熔断机制
+* 新对接了易达交易柜台(TraderYD、PaserYD)
+* 新对接了艾克朗科行情接口(ParserXeleSkt)
+* 新增了一个绑核辅助模块CpuHelper
+* 其他细节优化和Bug修正
+
+
 ### 0.8.0(大版本)
 * （**重要**）实现了ExtDataLoder的机制，实盘和回测框架都可以通过应用层的扩展数据加载器加载历史数据（详见WtBtCore/HisDataReplayer和WtDataStorage/WtDtReader）
 * （**重要**）实现了ExtDataDumper的机制，如果向datakit注册了ExtDataDumper，在收盘作业的时候，就会通过ExtDataDumper将实时数据转储
