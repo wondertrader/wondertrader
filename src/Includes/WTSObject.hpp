@@ -57,6 +57,7 @@ class WTSPoolObject : public WTSObject
 private:
 	typedef boost::object_pool<T> MyPool;
 	MyPool*	_pool;
+	std::atomic<bool>* _flag;
 
 public:
 	WTSPoolObject():_pool(NULL){}
@@ -66,8 +67,17 @@ public:
 	static T*	allocate()
 	{
 		thread_local static MyPool	_pool;
+		//By Wesley @ 2022.03.15
+		//做一个假的spinlock
+		thread_local static std::atomic<bool> flag = false;
+		while (flag)
+			continue;
+
+		flag = true;
 		T* ret = _pool.construct();
+		flag = false;
 		ret->_pool = &_pool;
+		ret->_flag = &flag;
 		return ret;
 	}
 
@@ -82,7 +92,12 @@ public:
 			uint32_t cnt = m_uRefs.fetch_sub(1);
 			if (cnt == 1)
 			{
+				while (*_flag)
+					continue;
+
+				*_flag = true;
 				_pool->destroy((T*)this);
+				*_flag = false;
 			}
 		}
 		catch (...)
