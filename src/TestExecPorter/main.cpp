@@ -10,13 +10,13 @@ void test_exec()
 	DLLHelper::load_library("libWtExecMon.so");
 #endif
 
-	init_exec("logcfgexec.json");
+	init_exec("logcfgexec.yaml");
 
-	config_exec("config_exec.json");
+	config_exec("config_exec.yaml");
 
 	run_exec();
 
-	set_position("CFFEX.IF.2007", 1);
+	set_position("CFFEX.IF.HOT", 1);
 
 	printf("press enter key to exit\n");
 	getchar();

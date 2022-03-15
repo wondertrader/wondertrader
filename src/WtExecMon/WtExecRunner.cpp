@@ -162,7 +162,22 @@ bool WtExecRunner::config(const char* cfgFile, bool isFile /* = true */)
 		}
 	}
 
-	initExecuters();
+	const char* cfgExecuters = _config->getCString("executers");
+	if (StdFile::exists(cfgExecuters))
+	{
+		WTSLogger::info_f("Reading executer config from {}...", cfgExecuters);
+		WTSVariant* var = WTSCfgLoader::load_from_file(cfgExecuters, true);
+		if (var)
+		{
+			if (!initExecuters(var))
+				WTSLogger::error("Loading executers failed");
+			var->release();
+		}
+		else
+		{
+			WTSLogger::error_f("Loading executer config {} failed", cfgExecuters);
+		}
+	}
 
 	return true;
 }
@@ -219,9 +234,9 @@ bool WtExecRunner::initParsers(WTSVariant* cfgParser)
 	return true;
 }
 
-bool WtExecRunner::initExecuters()
+bool WtExecRunner::initExecuters(WTSVariant* cfgExecuter)
 {
-	WTSVariant* cfg = _config->get("executers");
+	WTSVariant* cfg = cfgExecuter->get("executers");
 	if (cfg == NULL || cfg->type() != WTSVariant::VT_Array)
 		return false;
 
