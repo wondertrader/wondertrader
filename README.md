@@ -128,8 +128,13 @@
 * 同时`wtpy`还内置了一个强大的监控服务组件`WtMonSvr`。该组件提供了远程的`webui`的监控界面，可以实时监控策略组合的运行情况，还提供全天`24×7`的自动调度服务，为你的交易保驾护航。
 
 #### `WonderTrader`怎么获取
-* `WonderTrader`的`github`地址：<https://github.com/wondertrader/wondertrader>
-* `wtpy`的`github`地址：<https://github.com/wondertrader/wtpy>
+* `WonderTrader`
+	> - `github`地址：<https://github.com/wondertrader/wondertrader>
+	> - `gitee`地址：<https://gitee.com/wondertrader/wondertrader>
+* `wtpy`
+	> - `github`地址：<https://github.com/wondertrader/wtpy>
+	> - `gitee`地址：<https://gitee.com/wondertrader/wtpy>
+
 * `wtpy`获取地址：<https://pypi.org/project/wtpy/>
     `wtpy`可以直接在`python3.8`以上的版本安装
 
