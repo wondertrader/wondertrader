@@ -51,13 +51,35 @@ protected:
 	volatile std::atomic<uint32_t>	m_uRefs;
 };
 
+class WTSSpinMutex
+{
+private:
+	std::atomic_flag	_flag = ATOMIC_FLAG_INIT;
+
+public:
+	WTSSpinMutex() = default;
+	WTSSpinMutex(const WTSSpinMutex&) = delete;
+	WTSSpinMutex& operator=(const WTSSpinMutex&) = delete;
+
+	void lock()
+	{
+		while(!_flag.test_and_set(std::memory_order_acquire))
+			;
+	}
+
+	void unlock()
+	{
+		_flag.clear(std::memory_order_release);
+	}
+};
+
 template<typename T>
 class WTSPoolObject : public WTSObject
 {
 private:
 	typedef boost::object_pool<T> MyPool;
-	MyPool*	_pool;
-	std::atomic<bool>* _flag;
+	MyPool*			_pool;
+	WTSSpinMutex*	_mutex;
 
 public:
 	WTSPoolObject():_pool(NULL){}
@@ -66,18 +88,14 @@ public:
 public:
 	static T*	allocate()
 	{
-		thread_local static MyPool	_pool;
-		//By Wesley @ 2022.03.15
-		//做一个假的spinlock
-		thread_local static std::atomic<bool> flag = false;
-		while (flag)
-			continue;
+		thread_local static MyPool			pool;
+		thread_local static WTSSpinMutex	mtx;
 
-		flag = true;
-		T* ret = _pool.construct();
-		flag = false;
-		ret->_pool = &_pool;
-		ret->_flag = &flag;
+		mtx.lock();
+		T* ret = pool.construct();
+		mtx.unlock();
+		ret->_pool = &pool;
+		ret->_mutex = &mtx;
 		return ret;
 	}
 
@@ -92,12 +110,9 @@ public:
 			uint32_t cnt = m_uRefs.fetch_sub(1);
 			if (cnt == 1)
 			{
-				while (*_flag)
-					continue;
-
-				*_flag = true;
+				_mutex->lock();
 				_pool->destroy((T*)this);
-				*_flag = false;
+				_mutex->unlock();
 			}
 		}
 		catch (...)
