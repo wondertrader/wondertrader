@@ -11,6 +11,7 @@
 #include <stdint.h>
 #include <atomic>
 #include <boost/pool/object_pool.hpp>
+#include <boost/smart_ptr/detail/spinlock.hpp>
 
 #include "WTSMarcos.h"
 
@@ -51,27 +52,7 @@ protected:
 	volatile std::atomic<uint32_t>	m_uRefs;
 };
 
-class WTSSpinMutex
-{
-private:
-	std::atomic_flag	_flag = ATOMIC_FLAG_INIT;
-
-public:
-	WTSSpinMutex() = default;
-	WTSSpinMutex(const WTSSpinMutex&) = delete;
-	WTSSpinMutex& operator=(const WTSSpinMutex&) = delete;
-
-	void lock()
-	{
-		while(!_flag.test_and_set(std::memory_order_acquire))
-			;
-	}
-
-	void unlock()
-	{
-		_flag.clear(std::memory_order_release);
-	}
-};
+typedef boost::detail::spinlock BoostSpinLock;
 
 template<typename T>
 class WTSPoolObject : public WTSObject
@@ -79,7 +60,7 @@ class WTSPoolObject : public WTSObject
 private:
 	typedef boost::object_pool<T> MyPool;
 	MyPool*			_pool;
-	WTSSpinMutex*	_mutex;
+	BoostSpinLock*	_mutex;
 
 public:
 	WTSPoolObject():_pool(NULL){}
@@ -89,7 +70,7 @@ public:
 	static T*	allocate()
 	{
 		thread_local static MyPool			pool;
-		thread_local static WTSSpinMutex	mtx;
+		thread_local static BoostSpinLock	mtx;
 
 		mtx.lock();
 		T* ret = pool.construct();
