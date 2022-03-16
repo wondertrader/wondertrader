@@ -183,7 +183,7 @@ bool HisDataReplayer::init(WTSVariant* cfg, EventNotifier* notifier /* = NULL */
 		_base_dir = StrUtil::standardisePath(cfg->getCString("path"));
 	}
 	
-	if(_mode == "storage" || _mode == "bin")
+	if(_mode == "storage" || _mode == "bin" || _mode == "wtp")
 	{
 		if (cfg->has("store"))
 		{
