@@ -13,7 +13,7 @@
 #include <boost/smart_ptr/detail/spinlock.hpp>
 
 #include "WTSMarcos.h"
-#include "../Share/ObjectPool.hpp"
+#include "../Share/MemUtils.hpp"
 
 NS_WTP_BEGIN
 class WTSObject
@@ -52,15 +52,13 @@ protected:
 	volatile std::atomic<uint32_t>	m_uRefs;
 };
 
-typedef boost::detail::spinlock BoostSpinLock;
-
 template<typename T>
 class WTSPoolObject : public WTSObject
 {
 private:
 	typedef ObjectPool<T> MyPool;
 	MyPool*			_pool;
-	BoostSpinLock*	_mutex;
+	SpinLock*	_mutex;
 
 public:
 	WTSPoolObject():_pool(NULL){}
@@ -69,8 +67,8 @@ public:
 public:
 	static T*	allocate()
 	{
-		thread_local static MyPool			pool;
-		thread_local static BoostSpinLock	mtx;
+		thread_local static MyPool		pool;
+		thread_local static SpinLock	mtx;
 
 		mtx.lock();
 		T* ret = pool.construct();
