@@ -27,9 +27,7 @@ class WTSEntrust : public WTSPoolObject<WTSEntrust>
 public:
 	WTSEntrust()
 		: m_iPrice(0)
-		, m_strCode("")
 		, m_dVolume(0)
-		, m_strExchg("")
 		, m_businessType(BT_CASH)
 		, m_direction(WDT_LONG)
 		, m_priceType(WPT_ANYPRICE)
@@ -141,7 +139,6 @@ class WTSEntrustAction : public WTSPoolObject<WTSEntrustAction>
 public:
 	WTSEntrustAction()
 		: m_iPrice(0)
-		, m_strCode("")
 		, m_dVolume(0)
 		, m_actionFlag(WAF_CANCEL)
 		, m_businessType(BT_CASH)
@@ -405,7 +402,6 @@ public:
 	WTSTradeInfo()
 		: m_orderType(WORT_Normal)
 		, m_tradeType(WTT_Common)
-		, m_strExchg("")
 		, m_uAmount(0)
 		, m_dPrice(0)
 		, m_businessType(BT_CASH)
@@ -562,7 +558,6 @@ public:
 		, m_dAvgPrice(0)
 		, m_dDynProfit(0)
 		, m_dTotalPosCost(0)
-		, m_strCurrency("CNY")
 		, m_businessType(BT_CASH)
 		, m_pContract(NULL)
 	{}
