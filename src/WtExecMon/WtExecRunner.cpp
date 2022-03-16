@@ -347,6 +347,8 @@ void WtExecRunner::handle_push_quote(WTSTickData* curTick, uint32_t hotFlag /* =
 {
 	std::string stdCode = curTick->code();
 	_data_mgr.handle_push_quote(stdCode.c_str(), curTick);
+
+	_exe_mgr.handle_tick(stdCode.c_str(), curTick);
 }
 
 void WtExecRunner::release()

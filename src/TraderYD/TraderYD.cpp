@@ -936,7 +936,7 @@ WTSEntrust* TraderYD::makeEntrust(const YDInputOrder *entrustField, const YDInst
 
 WTSError* TraderYD::makeError(int errorno, WTSErroCode ec)
 {
-	WTSError* pRet = WTSError::create(ec, StrUtil::printf("ErrorNo: %d", errorno).c_str());
+	WTSError* pRet = WTSError::create(ec, fmt::format("ErrorNo: {}", errorno).c_str());
 	return pRet;
 }
 
@@ -980,7 +980,7 @@ WTSTradeInfo* TraderYD::makeTradeRecord(const YDTrade *tradeField, const YDInstr
 
 std::string TraderYD::generateEntrustID(uint32_t orderRef)
 {
-	return StrUtil::printf("%s#%010u", m_strUser, orderRef);
+	return StrUtil::printf("%s#%010u", m_strUser.c_str(), orderRef);
 }
 
 bool TraderYD::extractEntrustID(const char* entrustid, uint32_t &orderRef)
