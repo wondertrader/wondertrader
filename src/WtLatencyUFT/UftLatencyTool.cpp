@@ -173,6 +173,7 @@ namespace uft
 
 		virtual int orderInsert(WTSEntrust* eutrust) override
 		{
+			//WTSLogger::debug_f("{}", __FUNCTION__);
 			return 0;
 		}
 
@@ -203,6 +204,7 @@ namespace uft
 
 		virtual void on_tick(IUftStraCtx* ctx, const char* code, WTSTickData* newTick)
 		{
+			//WTSLogger::debug_f("{}", __FUNCTION__);
 			ctx->stra_enter_long("SHFE.rb2205", 2300, 1, 0);
 		}
 	};
@@ -219,11 +221,9 @@ namespace uft
 
 	bool UftLatencyTool::init()
 	{
-		WTSLogger::init();
+		WTSLogger::init("logcfg.yaml");
 
-		std::string cfgFile = "config.json";
-		if (!StdFile::exists(cfgFile.c_str()))
-			cfgFile = "config.yaml";
+		std::string cfgFile = "config.yaml";
 
 		WTSVariant* _config = WTSCfgLoader::load_from_file(cfgFile, true);
 		if (_config == NULL)

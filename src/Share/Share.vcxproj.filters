@@ -222,5 +222,8 @@
     <ClInclude Include="CpuHelper.hpp">
       <Filter>Utils</Filter>
     </ClInclude>
+    <ClInclude Include="WtObjectPool.hpp">
+      <Filter>Utils</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
