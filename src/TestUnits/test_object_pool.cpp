@@ -70,17 +70,9 @@ TEST(test_object_pool, test_object_pool)
 	ticker.reset();
 	for (uint32_t i = 0; i < times; i++)
 	{
-		A* p = new A();
-		delete p;
-	}
-	uint64_t time_c = ticker.nano_seconds();
-
-	ticker.reset();
-	for (uint32_t i = 0; i < times; i++)
-	{
 		A* p = opt_pool.construct();
 		opt_pool.destroy(p);
 	}
 	uint64_t time_b = ticker.nano_seconds();
-	printf("new/delete: %I64d - boost::object_pool: %I64d - optimized_object_pool: %I64d\n", time_c, time_a, time_b);
+	printf("boost::object_pool: %I64d - optimized_object_pool: %I64d\n", time_a, time_b);
 }

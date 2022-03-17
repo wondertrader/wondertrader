@@ -217,7 +217,7 @@ protected:
 	WtHftEngine*	_engine;
 	TraderAdapter*	_trader;
 
-	faster_hashmap<std::string, std::string> _code_map;
+	faster_hashmap<LongKey, std::string> _code_map;
 
 	BoostFilePtr	_sig_logs;
 	BoostFilePtr	_close_logs;
@@ -225,14 +225,14 @@ protected:
 	BoostFilePtr	_fund_logs;
 
 	//用户数据
-	typedef faster_hashmap<std::string, std::string> StringHashMap;
+	typedef faster_hashmap<LongKey, std::string> StringHashMap;
 	StringHashMap	_user_datas;
 	bool			_ud_modified;
 
 	bool			_data_agent;	//数据托管
 
 	//tick订阅列表
-	faster_hashset<std::string> _tick_subs;
+	faster_hashset<LongKey> _tick_subs;
 
 private:
 	typedef struct _DetailInfo
@@ -268,7 +268,7 @@ private:
 			_dynprofit = 0;
 		}
 	} PosInfo;
-	typedef faster_hashmap<std::string, PosInfo> PositionMap;
+	typedef faster_hashmap<LongKey, PosInfo> PositionMap;
 	PositionMap		_pos_map;
 
 	typedef faster_hashmap<uint32_t, std::string> OrderMap;
@@ -288,7 +288,7 @@ private:
 
 	StraFundInfo		_fund_info;
 
-	typedef faster_hashmap<std::string, double> PriceMap;
+	typedef faster_hashmap<LongKey, double> PriceMap;
 	PriceMap		_price_map;
 };
 
