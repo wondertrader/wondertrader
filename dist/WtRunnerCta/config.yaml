@@ -34,15 +34,15 @@ strategies:
     # CTA策略配置，当mocker为cta时会读取该配置项
     cta:
     -   active: true       # 模块名，linux下为xxxx.so
-        id: dt_if          # 策略ID，自定义的
+        id: dt_rb          # 策略ID，自定义的
         name: WtCtaStraFact.DualThrust   # 策略名，要和factory中的匹配
         params:                         # 策略初始化参数，这个根据策略的需要提供
-            code: CFFEX.IF.HOT
+            code: CFFEX.rb.HOT
             count: 50
             days: 30
             k1: 0.6
             k2: 0.6
-            period: m5
+            period: m1
             stock: false
             
 fees: ../common/fees.json   #佣金配置文件

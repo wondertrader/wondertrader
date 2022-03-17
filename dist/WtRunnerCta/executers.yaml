@@ -1,6 +1,6 @@
 #一个组合可以配置多个执行器，所以executers是一个list
 executers:
--   active: true    #是否启用
+-   active: false    #是否启用
     id: exec        #执行器id，不可重复
     trader: simnow  #执行器绑定的交易通道id，如果不存在，无法执行
     scale: 1        #数量放大倍数，即该执行器的目标仓位，是组合理论目标仓位的多少倍，可以为小数 
