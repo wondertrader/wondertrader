@@ -162,7 +162,22 @@ bool WtExecRunner::config(const char* cfgFile, bool isFile /* = true */)
 		}
 	}
 
-	initExecuters();
+	const char* cfgExecuters = _config->getCString("executers");
+	if (StdFile::exists(cfgExecuters))
+	{
+		WTSLogger::info_f("Reading executer config from {}...", cfgExecuters);
+		WTSVariant* var = WTSCfgLoader::load_from_file(cfgExecuters, true);
+		if (var)
+		{
+			if (!initExecuters(var))
+				WTSLogger::error("Loading executers failed");
+			var->release();
+		}
+		else
+		{
+			WTSLogger::error_f("Loading executer config {} failed", cfgExecuters);
+		}
+	}
 
 	return true;
 }
@@ -219,9 +234,9 @@ bool WtExecRunner::initParsers(WTSVariant* cfgParser)
 	return true;
 }
 
-bool WtExecRunner::initExecuters()
+bool WtExecRunner::initExecuters(WTSVariant* cfgExecuter)
 {
-	WTSVariant* cfg = _config->get("executers");
+	WTSVariant* cfg = cfgExecuter->get("executers");
 	if (cfg == NULL || cfg->type() != WTSVariant::VT_Array)
 		return false;
 
@@ -328,10 +343,44 @@ WTSSessionInfo* WtExecRunner::get_session_info(const char* sid, bool isCode /* =
 	return _bd_mgr.getSession(cInfo->getSession());
 }
 
-void WtExecRunner::handle_push_quote(WTSTickData* curTick, uint32_t hotFlag /* = 0 */)
+void WtExecRunner::handle_push_quote(WTSTickData* quote, uint32_t hotFlag /* = 0 */)
 {
-	std::string stdCode = curTick->code();
-	_data_mgr.handle_push_quote(stdCode.c_str(), curTick);
+	WTSContractInfo* cInfo = quote->getContractInfo();
+	if (cInfo == NULL)
+	{
+		cInfo = _bd_mgr.getContract(quote->code(), quote->exchg());
+		quote->setContractInfo(cInfo);
+	}
+
+	if (cInfo == NULL)
+		return;
+
+	uint32_t uDate = quote->actiondate();
+	uint32_t uTime = quote->actiontime();
+	uint32_t curMin = uTime / 100000;
+	uint32_t curSec = uTime % 100000;
+	WtHelper::setTime(uDate, curMin, curSec);
+	WtHelper::setTDate(quote->tradingdate());
+
+	WTSCommodityInfo* commInfo = cInfo->getCommInfo();
+
+	std::string stdCode;
+	if (commInfo->getCategoty() == CC_FutOption)
+	{
+		stdCode = CodeHelper::rawFutOptCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
+	}
+	else if (CodeHelper::isMonthlyCode(quote->code()))
+	{
+		stdCode = CodeHelper::rawMonthCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
+	}
+	else
+	{
+		stdCode = CodeHelper::rawFlatCodeToStdCode(cInfo->getCode(), cInfo->getExchg(), cInfo->getProduct());
+	}
+	quote->setCode(stdCode.c_str());
+	_data_mgr.handle_push_quote(stdCode.c_str(), quote);
+
+	_exe_mgr.handle_tick(stdCode.c_str(), quote);
 }
 
 void WtExecRunner::release()

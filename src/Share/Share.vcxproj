@@ -161,6 +161,8 @@
     <ClInclude Include="IniFile.hpp" />
     <ClInclude Include="IniHelper.hpp" />
     <ClInclude Include="ModuleHelper.hpp" />
+    <ClInclude Include="ObjectPool.hpp" />
+    <ClInclude Include="SpinLock.hpp" />
     <ClInclude Include="StdUtils.hpp" />
     <ClInclude Include="threadpool.hpp" />
     <ClInclude Include="threadpool\detail\future.hpp" />
@@ -177,6 +179,7 @@
     <ClInclude Include="threadpool\task_adaptors.hpp" />
     <ClInclude Include="StrUtil.hpp" />
     <ClInclude Include="TimeUtils.hpp" />
+    <ClInclude Include="WtObjectPool.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

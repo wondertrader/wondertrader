@@ -234,7 +234,7 @@ public:
 	static WTSKlineSlice* create(const char* code, WTSKlinePeriod period, uint32_t times, WTSBarStruct* bars = NULL, int32_t count = 0)
 	{
 		WTSKlineSlice *pRet = new WTSKlineSlice;
-		strcpy(pRet->_code, code);
+		wt_strcpy(pRet->_code, code);
 		pRet->_period = period;
 		pRet->_times = times;
 		if(bars)
@@ -370,7 +370,7 @@ public:
 	*	返回K线对象的合约代码
 	*/
 	inline const char*	code() const{ return _code; }
-	inline void		setCode(const char* code){ strcpy(_code, code); }
+	inline void		setCode(const char* code){ wt_strcpy(_code, code); }
 
 
 	/*
@@ -480,7 +480,7 @@ public:
 	{
 		WTSKlineData *pRet = new WTSKlineData;
 		pRet->m_vecBarData.resize(size);
-		strcpy(pRet->m_strCode, code);
+		wt_strcpy(pRet->m_strCode, code);
 
 		return pRet;
 	}
@@ -563,7 +563,7 @@ public:
 	 *	返回K线对象的合约代码
 	 */
 	inline const char*	code() const{ return m_strCode; }
-	inline void		setCode(const char* code){ strcpy(m_strCode, code); }
+	inline void		setCode(const char* code){ wt_strcpy(m_strCode, code); }
 
 	/*
 	 *	读取指定位置的开盘价
@@ -833,7 +833,9 @@ public:
 	static inline WTSTickData* create(const char* stdCode)
 	{
 		WTSTickData* pRet = WTSTickData::allocate();
-		strcpy(pRet->m_tickStruct.code, stdCode);
+		auto len = strlen(stdCode);
+		memcpy(pRet->m_tickStruct.code, stdCode, len);
+		pRet->m_tickStruct.code[len] = 0;
 
 		return pRet;
 	}
@@ -852,10 +854,10 @@ public:
 
 	inline void setCode(const char* code, std::size_t len = 0)
 	{
-		if(len == 0)
-			strcpy(m_tickStruct.code, code);
-		else
-			strncpy(m_tickStruct.code, code, len);
+		len = (len == 0) ? strlen(code) : len;
+
+		memcpy(m_tickStruct.code, code, len);
+		m_tickStruct.code[len] = '\0';
 	}
 
 	/*
@@ -989,7 +991,7 @@ public:
 	static inline WTSOrdQueData* create(const char* code)
 	{
 		WTSOrdQueData* pRet = new WTSOrdQueData;
-		strcpy(pRet->m_oqStruct.code, code);
+		wt_strcpy(pRet->m_oqStruct.code, code);
 		return pRet;
 	}
 
@@ -1009,7 +1011,7 @@ public:
 	inline uint32_t actiondate() const{ return m_oqStruct.action_date; }
 	inline uint32_t actiontime() const { return m_oqStruct.action_time; }
 
-	inline void		setCode(const char* code) { strcpy(m_oqStruct.code, code); }
+	inline void		setCode(const char* code) { wt_strcpy(m_oqStruct.code, code); }
 
 private:
 	WTSOrdQueStruct	m_oqStruct;
@@ -1021,7 +1023,7 @@ public:
 	static inline WTSOrdDtlData* create(const char* code)
 	{
 		WTSOrdDtlData* pRet = new WTSOrdDtlData;
-		strcpy(pRet->m_odStruct.code, code);
+		wt_strcpy(pRet->m_odStruct.code, code);
 		return pRet;
 	}
 
@@ -1041,7 +1043,7 @@ public:
 	inline uint32_t actiondate() const{ return m_odStruct.action_date; }
 	inline uint32_t actiontime() const { return m_odStruct.action_time; }
 
-	inline void		setCode(const char* code) { strcpy(m_odStruct.code, code); }
+	inline void		setCode(const char* code) { wt_strcpy(m_odStruct.code, code); }
 
 private:
 	WTSOrdDtlStruct	m_odStruct;
@@ -1053,7 +1055,7 @@ public:
 	static inline WTSTransData* create(const char* code)
 	{
 		WTSTransData* pRet = new WTSTransData;
-		strcpy(pRet->m_tsStruct.code, code);
+		wt_strcpy(pRet->m_tsStruct.code, code);
 		return pRet;
 	}
 
@@ -1073,7 +1075,7 @@ public:
 
 	inline WTSTransStruct& getTransStruct(){ return m_tsStruct; }
 
-	inline void		setCode(const char* code) { strcpy(m_tsStruct.code, code); }
+	inline void		setCode(const char* code) { wt_strcpy(m_tsStruct.code, code); }
 
 private:
 	WTSTransStruct	m_tsStruct;
@@ -1104,7 +1106,7 @@ public:
 	static inline WTSHisTickData* create(const char* stdCode, unsigned int nSize = 0, bool bValidOnly = false, double factor = 1.0)
 	{
 		WTSHisTickData *pRet = new WTSHisTickData;
-		strcpy(pRet->m_strCode, stdCode);
+		wt_strcpy(pRet->m_strCode, stdCode);
 		pRet->m_ayTicks.resize(nSize);
 		pRet->m_bValidOnly = bValidOnly;
 		pRet->m_dFactor = factor;
@@ -1121,7 +1123,7 @@ public:
 	static inline WTSHisTickData* create(const char* stdCode, bool bValidOnly = false, double factor = 1.0)
 	{
 		WTSHisTickData *pRet = new WTSHisTickData;
-		strcpy(pRet->m_strCode, stdCode);
+		wt_strcpy(pRet->m_strCode, stdCode);
 		pRet->m_bValidOnly = bValidOnly;
 		pRet->m_dFactor = factor;
 
@@ -1198,7 +1200,7 @@ public:
 			return NULL;
 
 		WTSTickSlice* slice = new WTSTickSlice();
-		strcpy(slice->_code, code);
+		wt_strcpy(slice->_code, code);
 		if(ticks != NULL)
 		{
 			slice->_blocks.emplace_back(TickBlock(ticks, count));
@@ -1305,7 +1307,7 @@ public:
 			return NULL;
 
 		WTSOrdDtlSlice* slice = new WTSOrdDtlSlice();
-		strcpy(slice->m_strCode, code);
+		wt_strcpy(slice->m_strCode, code);
 		slice->m_ptrBegin = firstItem;
 		slice->m_uCount = count;
 
@@ -1357,7 +1359,7 @@ public:
 			return NULL;
 
 		WTSOrdQueSlice* slice = new WTSOrdQueSlice();
-		strcpy(slice->m_strCode, code);
+		wt_strcpy(slice->m_strCode, code);
 		slice->m_ptrBegin = firstItem;
 		slice->m_uCount = count;
 
@@ -1409,7 +1411,7 @@ public:
 			return NULL;
 
 		WTSTransSlice* slice = new WTSTransSlice();
-		strcpy(slice->m_strCode, code);
+		wt_strcpy(slice->m_strCode, code);
 		slice->m_ptrBegin = firstItem;
 		slice->m_uCount = count;
 

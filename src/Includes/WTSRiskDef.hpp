@@ -55,7 +55,7 @@ public:
 	static WTSTradeStateInfo* create(const char* code)
 	{
 		WTSTradeStateInfo* pRet = new WTSTradeStateInfo();
-		strcpy(pRet->_trd_stat_info._code, code);
+		wt_strcpy(pRet->_trd_stat_info._code, code);
 
 		return pRet;
 	}

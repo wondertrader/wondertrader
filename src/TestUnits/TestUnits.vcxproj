@@ -188,6 +188,7 @@
     <ClCompile Include="test_cfg_loader.cpp" />
     <ClCompile Include="test_codehelper.cpp" />
     <ClCompile Include="test_lmdb.cpp" />
+    <ClCompile Include="test_object_pool.cpp" />
     <ClCompile Include="test_session.cpp" />
     <ClCompile Include="test_utils.cpp" />
   </ItemGroup>

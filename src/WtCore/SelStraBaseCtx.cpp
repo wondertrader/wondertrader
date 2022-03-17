@@ -768,7 +768,7 @@ void SelStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 		dInfo._volume = abs(diff);
 		dInfo._opentime = curTm;
 		dInfo._opentdate = curTDate;
-		strcpy(dInfo._opentag, userTag);
+		wt_strcpy(dInfo._opentag, userTag);
 		pInfo._details.push_back(dInfo);
 
 		double fee = _engine->calc_fee(stdCode, curPx, abs(qty), 0);
@@ -845,7 +845,7 @@ void SelStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 			dInfo._volume = abs(left);
 			dInfo._opentime = curTm;
 			dInfo._opentdate = curTDate;
-			strcpy(dInfo._opentag, userTag);
+			wt_strcpy(dInfo._opentag, userTag);
 			pInfo._details.push_back(dInfo);
 
 			//TODO: 

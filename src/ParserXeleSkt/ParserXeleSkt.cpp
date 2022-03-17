@@ -198,7 +198,7 @@ bool ParserXeleSkt::prepare()
 			tick->setContractInfo(ct);
 
 			WTSTickStruct& quote = tick->getTickStruct();
-			strcpy(quote.exchg, ct->getExchg());
+			wt_strcpy(quote.exchg, ct->getExchg());
 
 			quote.action_date = strToTime(p->ActionDay);
 			quote.action_time = strToTime(p->UpdateTime) * 1000 + p->UpdateMilliSec;

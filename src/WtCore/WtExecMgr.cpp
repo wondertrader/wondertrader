@@ -53,7 +53,7 @@ void WtExecuterMgr::set_positions(faster_hashmap<LongKey, double> target_pos)
 	for (auto it = _executers.begin(); it != _executers.end(); it++)
 	{
 		ExecCmdPtr& executer = (*it);
-		if (_filter_mgr->is_filtered_by_executer(executer->name()))
+		if (_filter_mgr && _filter_mgr->is_filtered_by_executer(executer->name()))
 		{
 			WTSLogger::info_f("[Filters] Executer {} is filtered, all signals will be ignored", executer->name());
 			continue;
@@ -87,7 +87,7 @@ void WtExecuterMgr::handle_pos_change(const char* stdCode, double targetPos)
 	for (auto it = _executers.begin(); it != _executers.end(); it++)
 	{
 		ExecCmdPtr& executer = (*it);
-		if(_filter_mgr->is_filtered_by_executer(executer->name()))
+		if(_filter_mgr && _filter_mgr->is_filtered_by_executer(executer->name()))
 		{
 			WTSLogger::info_f("[Filters] All signals to executer {} are ignored by executer filter", executer->name());
 			continue;

@@ -10,9 +10,11 @@
 #pragma once
 #include <stdint.h>
 #include <atomic>
-#include <boost/pool/object_pool.hpp>
+#include <boost/smart_ptr/detail/spinlock.hpp>
 
 #include "WTSMarcos.h"
+#include "../Share/ObjectPool.hpp"
+#include "../Share/SpinLock.hpp"
 
 NS_WTP_BEGIN
 class WTSObject
@@ -55,8 +57,9 @@ template<typename T>
 class WTSPoolObject : public WTSObject
 {
 private:
-	typedef boost::object_pool<T> MyPool;
-	MyPool*	_pool;
+	typedef ObjectPool<T> MyPool;
+	MyPool*			_pool;
+	SpinLock*	_mutex;
 
 public:
 	WTSPoolObject():_pool(NULL){}
@@ -65,9 +68,14 @@ public:
 public:
 	static T*	allocate()
 	{
-		thread_local static MyPool	_pool;
-		T* ret = _pool.construct();
-		ret->_pool = &_pool;
+		thread_local static MyPool		pool;
+		thread_local static SpinLock	mtx;
+
+		mtx.lock();
+		T* ret = pool.construct();
+		mtx.unlock();
+		ret->_pool = &pool;
+		ret->_mutex = &mtx;
 		return ret;
 	}
 
@@ -82,7 +90,9 @@ public:
 			uint32_t cnt = m_uRefs.fetch_sub(1);
 			if (cnt == 1)
 			{
+				_mutex->lock();
 				_pool->destroy((T*)this);
+				_mutex->unlock();
 			}
 		}
 		catch (...)

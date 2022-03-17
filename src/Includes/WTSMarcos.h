@@ -9,6 +9,7 @@
  */
 #pragma once
 #include <limits.h>
+#include <string.h>
 
 #ifndef NOMINMAX
 #define NOMINMAX
@@ -78,3 +79,15 @@ typedef const char*			WtString;
 #else
 #define wt_stricmp strcasecmp
 #endif
+
+/*
+ *	By Wesley @ 2022.03.17
+ *	重写一个strcpy
+ *	核心的要点就是不用strcpy
+ */
+inline void wt_strcpy(char* des, const char* src, size_t len = 0)
+{
+	len = (len == 0) ? strlen(src) : len;
+	memcpy(des, src, len);
+	des[len] = '\0';
+}

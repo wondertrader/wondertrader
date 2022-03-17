@@ -801,7 +801,7 @@ void HftStraBaseCtx::do_set_position(const char* stdCode, double qty, double pri
 		dInfo._volume = abs(diff);
 		dInfo._opentime = curTm;
 		dInfo._opentdate = curTDate;
-		strcpy(dInfo._usertag, userTag);
+		wt_strcpy(dInfo._usertag, userTag);
 		pInfo._details.emplace_back(dInfo);
 
 		double fee = _engine->calc_fee(stdCode, trdPx, abs(diff), 0);
@@ -870,7 +870,7 @@ void HftStraBaseCtx::do_set_position(const char* stdCode, double qty, double pri
 			dInfo._volume = abs(left);
 			dInfo._opentime = curTm;
 			dInfo._opentdate = curTDate;
-			strcpy(dInfo._usertag, userTag);
+			wt_strcpy(dInfo._usertag, userTag);
 			pInfo._details.emplace_back(dInfo);
 
 			//这里还需要写一笔成交记录
