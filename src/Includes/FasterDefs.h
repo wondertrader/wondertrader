@@ -1,5 +1,6 @@
 #pragma once
 #include <string.h>
+#include <boost/container_hash/hash.hpp>
 #include "WTSMarcos.h"
 
 #include "../FasterLibs/tsl/robin_map.h"
@@ -12,21 +13,21 @@ NS_WTP_BEGIN
 
 typedef struct _Longkey //char[32]
 {
-	uint64_t	_buf[4];
+	uint64_t	_buf[4] = { 0 };
 
 	_Longkey()
 	{
-		memset(this, 0, sizeof(_Longkey));
 	}
 
 	_Longkey(const char* s)
 	{
-		strncpy((char*)_buf , s, 32);
+		auto len = strlen(s);
+		memcpy(_buf , s, len);
 	}
 
 	_Longkey(const std::string& s)
 	{
-		strncpy((char*)_buf, s.c_str(), 32);
+		memcpy(_buf, s.c_str(), s.size());
 	}
 
 	_Longkey(const _Longkey& rhs)
@@ -61,21 +62,21 @@ typedef faster_hashset<LongKey> CodeSet;
 
 typedef struct _ShortKey //char[32]
 {
-	uint64_t	_buf[2];
+	uint64_t	_buf[2] = { 0 };
 
 	_ShortKey()
 	{
-		memset(this, 0, sizeof(_ShortKey));
 	}
 
 	_ShortKey(const char* s)
 	{
-		strncpy((char*)&_buf, s, 16);
+		auto len = strlen(s);
+		memcpy(_buf, s, len);
 	}
 
 	_ShortKey(const std::string& s)
 	{
-		strncpy((char*)_buf, s.c_str(), 16);
+		memcpy(_buf, s.c_str(), s.size());
 	}
 
 	bool operator ==(const _ShortKey& b) const
@@ -110,10 +111,10 @@ namespace std
 		size_t operator()(const wtp::LongKey& key) const
 		{
 			size_t ret = 17;
-			ret = ret * 31 + hash<uint64_t>()(key._buf[0]);
-			ret = ret * 31 + hash<uint64_t>()(key._buf[1]);
-			ret = ret * 31 + hash<uint64_t>()(key._buf[2]);
-			ret = ret * 31 + hash<uint64_t>()(key._buf[3]);
+			ret = ret * 31 + boost::hash<uint64_t>()(key._buf[0]);
+			ret = ret * 31 + boost::hash<uint64_t>()(key._buf[1]);
+			ret = ret * 31 + boost::hash<uint64_t>()(key._buf[2]);
+			ret = ret * 31 + boost::hash<uint64_t>()(key._buf[3]);
 			return ret;
 		}
 	};
@@ -124,8 +125,8 @@ namespace std
 		size_t operator()(const wtp::ShortKey& key) const
 		{
 			size_t ret = 17;
-			ret = ret * 31 + hash<uint64_t>()(key._buf[0]);
-			ret = ret * 31 + hash<uint64_t>()(key._buf[1]);
+			ret = ret * 31 + boost::hash<uint64_t>()(key._buf[0]);
+			ret = ret * 31 + boost::hash<uint64_t>()(key._buf[1]);
 			return ret;
 		}
 	};

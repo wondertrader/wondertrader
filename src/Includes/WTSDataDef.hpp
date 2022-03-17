@@ -833,7 +833,9 @@ public:
 	static inline WTSTickData* create(const char* stdCode)
 	{
 		WTSTickData* pRet = WTSTickData::allocate();
-		strcpy(pRet->m_tickStruct.code, stdCode);
+		auto len = strlen(stdCode);
+		memcpy(pRet->m_tickStruct.code, stdCode, len);
+		pRet->m_tickStruct.code[len] = 0;
 
 		return pRet;
 	}

@@ -135,7 +135,7 @@ private:
 	//By Wesley @ 2022.02.07
 	//tick数据订阅项，first是contextid，second是订阅选项，0-原始订阅，1-前复权，2-后复权
 	typedef faster_hashset<uint32_t> SubList;
-	typedef faster_hashmap<std::string, SubList>	StraSubMap;
+	typedef faster_hashmap<LongKey, SubList>	StraSubMap;
 	StraSubMap		_tick_sub_map;	//tick数据订阅表
 	StraSubMap		_ordque_sub_map;	//委托队列订阅表
 	StraSubMap		_orddtl_sub_map;	//委托明细订阅表
@@ -144,7 +144,7 @@ private:
 
 	//////////////////////////////////////////////////////////////////////////
 	//
-	typedef faster_hashmap<std::string, double> PriceMap;
+	typedef faster_hashmap<LongKey, double> PriceMap;
 	PriceMap		_price_map;
 
 	TraderAdapterMgr*	_adapter_mgr;

@@ -47,8 +47,17 @@ public:
 		WTSEntrust* pRet = WTSEntrust::allocate();
 		if(pRet)
 		{
-			strcpy(pRet->m_strExchg, exchg);
-			strcpy(pRet->m_strCode, code);
+			//strcpy(pRet->m_strExchg, exchg);
+			//strcpy(pRet->m_strCode, code);
+
+			auto len = strlen(exchg);
+			memcpy(pRet->m_strExchg, exchg, len);
+			pRet->m_strExchg[len] = 0;
+
+			len = strlen(code);
+			memcpy(pRet->m_strCode, code, len);
+			pRet->m_strCode[len] = 0;
+
 			pRet->m_dVolume = vol;
 			pRet->m_iPrice = price;
 			pRet->m_businessType = bType;
@@ -59,17 +68,19 @@ public:
 	}
 
 public:
-	inline void setExchange(const char* exchg, std::size_t len = 0){
-        if(len == 0)
-            strcpy(m_strExchg, exchg);
-        else
-			strncpy(m_strExchg, exchg, len);
+	inline void setExchange(const char* exchg, std::size_t len = 0)
+	{
+		len = (len == 0) ? strlen(exchg) : len;
+
+		memcpy(m_strExchg, exchg, len);
+		m_strExchg[len] = '\0';
     }
-	inline void setCode(const char* code, std::size_t len = 0){
-		if (len == 0)
-			strcpy(m_strCode, code);
-		else
-			strncpy(m_strCode, code, len);
+	inline void setCode(const char* code, std::size_t len = 0)
+	{
+		len = (len == 0) ? strlen(code) : len;
+
+		memcpy(m_strCode, code, len);
+		m_strCode[len] = '\0';
     }
 
 	inline void setDirection(WTSDirectionType dType){m_direction = dType;}
