@@ -1452,7 +1452,7 @@ int TraderCTP::authenticate()
 	CThostFtdcReqAuthenticateField req;
 	memset(&req, 0, sizeof(req));
 	wt_strcpy(req.BrokerID, m_strBroker.c_str(), m_strBroker.size());
-	wt_strcpy(req.InvestorID, m_strUser.c_str(), m_strUser.size());
+	wt_strcpy(req.UserID, m_strUser.c_str(), m_strUser.size());
 	//strcpy(req.UserProductInfo, m_strProdInfo.c_str());
 	wt_strcpy(req.AuthCode, m_strAuthCode.c_str(), m_strAuthCode.size());
 	wt_strcpy(req.AppID, m_strAppID.c_str(), m_strAppID.size());
