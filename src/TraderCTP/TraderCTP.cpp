@@ -327,7 +327,7 @@ int TraderCTP::orderInsert(WTSEntrust* entrust)
 	CThostFtdcInputOrderField req;
 	memset(&req, 0, sizeof(req));
 	wt_strcpy(req.BrokerID, m_strBroker.c_str(), m_strBroker.size());
-	wt_strcpy(req.UserID, m_strUser.c_str(), m_strUser.size());
+	wt_strcpy(req.InvestorID, m_strUser.c_str(), m_strUser.size());
 
 	wt_strcpy(req.InstrumentID, entrust->getCode());
 	wt_strcpy(req.ExchangeID, entrust->getExchg());
@@ -390,6 +390,7 @@ int TraderCTP::orderInsert(WTSEntrust* entrust)
 		req.TimeCondition = THOST_FTDC_TC_IOC;
 		req.VolumeCondition = THOST_FTDC_VC_CV;
 	}
+	//req.MinVolume = 1;
 	
 	///触发条件: 立即
 	req.ContingentCondition = THOST_FTDC_CC_Immediately;
@@ -427,7 +428,7 @@ int TraderCTP::orderAction(WTSEntrustAction* action)
 	CThostFtdcInputOrderActionField req;
 	memset(&req, 0, sizeof(req));
 	wt_strcpy(req.BrokerID, m_strBroker.c_str(), m_strBroker.size());
-	wt_strcpy(req.UserID, m_strUser.c_str(), m_strUser.size());
+	wt_strcpy(req.InvestorID, m_strUser.c_str(), m_strUser.size());
 
 	///报单引用
 	fmt::format_to(req.OrderRef, "{}", orderref);
