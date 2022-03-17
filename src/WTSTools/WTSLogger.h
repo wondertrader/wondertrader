@@ -326,9 +326,9 @@ public:
 	}
 #pragma endregion "format style apis"
 public:
-	static void init(const char* propFile = "logcfg.json", bool isFile = true, ILogHandler* handler = NULL, WTSLogLevel logLevel = LL_DEBUG);
+	static void init(const char* propFile = "logcfg.json", bool isFile = true, ILogHandler* handler = NULL);
 
-	static void registerHandler(ILogHandler* handler = NULL, WTSLogLevel logLevel = LL_DEBUG);
+	static void registerHandler(ILogHandler* handler = NULL);
 
 	static void stop();
 
