@@ -38,7 +38,7 @@ inline void fmt_print_impl(char* buf, const char* format, const Args&... args)
 {
 	static std::string s;
 	s = std::move(fmt::sprintf(format, args...));
-	strcpy(buf, s.c_str());
+	memcpy(buf, s.c_str(), s.size());
 	buf[s.size()] = '\0';
 }
 

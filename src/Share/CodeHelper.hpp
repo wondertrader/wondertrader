@@ -410,8 +410,8 @@ public:
 		
 		std::string stdWrappedCode;
 		stdWrappedCode.resize(idx + strlen(SUFFIX_HOT) + 1);
-		strncpy((char*)stdWrappedCode.data(), stdCode, idx);
-		strcpy((char*)stdWrappedCode.data()+idx, SUFFIX_HOT);
+		memcpy((char*)stdWrappedCode.data(), stdCode, idx);
+		wt_strcpy((char*)stdWrappedCode.data()+idx, SUFFIX_HOT);
 		return std::move(stdWrappedCode);
 	}
 
@@ -426,8 +426,8 @@ public:
 
 		std::string stdWrappedCode;
 		stdWrappedCode.resize(idx + strlen(SUFFIX_2ND) + 1);
-		strncpy((char*)stdWrappedCode.data(), stdCode, idx);
-		strcpy((char*)stdWrappedCode.data() + idx, SUFFIX_2ND);
+		memcpy((char*)stdWrappedCode.data(), stdCode, idx);
+		wt_strcpy((char*)stdWrappedCode.data() + idx, SUFFIX_2ND);
 		return std::move(stdWrappedCode);
 	}
 
@@ -472,7 +472,7 @@ public:
 		CodeInfo codeInfo;
 
 		StringVector ay = StrUtil::split(stdCode, ".");
-		strcpy(codeInfo._exchg, ay[0].c_str());
+		wt_strcpy(codeInfo._exchg, ay[0].c_str());
 		if(strcmp(codeInfo._exchg, "SHFE") == 0 || strcmp(codeInfo._exchg, "CZCE") == 0)
 		{
 			fmt::format_to(codeInfo._code, "{}{}{}", ay[1], ay[2], ay[3]);
@@ -486,16 +486,16 @@ public:
 
 		if(strcmp(codeInfo._exchg, "CZCE") == 0)
 		{
-			strncpy(codeInfo._product, ay[1].c_str(), mpos);
+			memcpy(codeInfo._product, ay[1].c_str(), mpos);
 			strcat(codeInfo._product, ay[2].c_str());
 		}
 		else if (strcmp(codeInfo._exchg, "CFFEX") == 0)
 		{
-			strncpy(codeInfo._product, ay[1].c_str(), mpos);
+			memcpy(codeInfo._product, ay[1].c_str(), mpos);
 		}
 		else
 		{
-			strncpy(codeInfo._product, ay[1].c_str(), mpos);
+			memcpy(codeInfo._product, ay[1].c_str(), mpos);
 			strcat(codeInfo._product, "_o");
 		}
 
@@ -524,26 +524,26 @@ public:
 			thread_local static CodeInfo codeInfo;
 			codeInfo.clear();
 			auto idx = StrUtil::findFirst(stdCode, '.');
-			strncpy(codeInfo._exchg, stdCode, idx);
+			memcpy(codeInfo._exchg, stdCode, idx);
 
 			auto idx2 = StrUtil::findFirst(stdCode + idx + 1, '.');
 			if (idx2 == std::string::npos)
 			{
-				strcpy(codeInfo._product, stdCode + idx + 1);
+				wt_strcpy(codeInfo._product, stdCode + idx + 1);
 
 				//By Wesley @ 2021.12.29
 				//如果是两段的合约代码，如OKEX.BTC-USDT
 				//则品种代码和合约代码一致
-				strcpy(codeInfo._code, stdCode + idx + 1);
+				wt_strcpy(codeInfo._code, stdCode + idx + 1);
 			}
 			else
 			{
-				strncpy(codeInfo._product, stdCode + idx + 1, idx2);
+				memcpy(codeInfo._product, stdCode + idx + 1, idx2);
 				const char* ext = stdCode + idx + idx2 + 2;
 				char lastCh = ext[strlen(ext) - 1];
 				if (lastCh == SUFFIX_QFQ || lastCh == SUFFIX_HFQ)
 				{
-					strncpy(codeInfo._code, ext, strlen(ext) - 1);
+					memcpy(codeInfo._code, ext, strlen(ext) - 1);
 					codeInfo._exright = (lastCh == SUFFIX_QFQ) ? 1 : 2;
 				}
 				else if (strlen(ext) == 4 && isdigit(lastCh))
@@ -552,7 +552,7 @@ public:
 					//TODO: 这样的判断存在一个假设，最后一位是数字的一定是期货分月合约，以后可能会有问题，先注释一下
 					//那么code得加上品种id
 					//郑商所得单独处理一下，这个只能hardcode了
-					strcpy(codeInfo._code, codeInfo._product);
+					wt_strcpy(codeInfo._code, codeInfo._product);
 					if (strcmp(codeInfo._exchg, "CZCE") == 0)
 						strcat(codeInfo._code, ext + 1);
 					else
@@ -562,9 +562,9 @@ public:
 				{
 					codeInfo._hotflag = CodeHelper::isStdFutHotCode(stdCode) ? 1 : (CodeHelper::isStdFut2ndCode(stdCode) ? 2 : 0);
 					if (codeInfo._hotflag == 0)
-						strcpy(codeInfo._code, ext);
+						wt_strcpy(codeInfo._code, ext);
 					else
-						strcpy(codeInfo._code, codeInfo._product);
+						wt_strcpy(codeInfo._code, codeInfo._product);
 				}
 			}			
 

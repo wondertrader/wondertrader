@@ -84,7 +84,7 @@ namespace uft
 				tick->setContractInfo(contract);
 
 				WTSTickStruct& quote = tick->getTickStruct();
-				strcpy(quote.exchg, pCommInfo->getExchg());
+				wt_strcpy(quote.exchg, pCommInfo->getExchg());
 
 				quote.action_date = actDate;
 				quote.action_time = actTime;
@@ -139,7 +139,7 @@ namespace uft
 			}
 			auto total = ticker.nano_seconds();
 			double t2t = total * 1.0 / times;
-			printf("%u ticks simulated in %.0f ns, Inner Tick-2-Trade: %.3f ns\r\n", times, total*1.0, t2t);
+			WTSLogger::info("%u ticks simulated in %.0f ns, UftEngine Innner Latency: %.3f ns", times, total*1.0, t2t);
 		}
 
 	public:
@@ -167,7 +167,7 @@ namespace uft
 
 		virtual bool makeEntrustID(char* buffer, int length) override
 		{
-			strcpy(buffer, "123456");
+			wt_strcpy(buffer, "123456");
 			return true;
 		}
 

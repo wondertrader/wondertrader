@@ -240,7 +240,7 @@ uint32_t TraderAdapter::doEntrust(WTSEntrust* entrust)
 
 	uint32_t localid = makeLocalOrderID();
 	char* usertag = entrust->getUserTag();
-	strncpy(usertag, _order_pattern.c_str(), _order_pattern.size());
+	memcpy(usertag, _order_pattern.c_str(), _order_pattern.size());
 	usertag[_order_pattern.size()] = '.';
 	fmt::format_to(usertag + _order_pattern.size() + 1, "{}", localid);
 	

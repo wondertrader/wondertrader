@@ -355,9 +355,9 @@ void WtSelEngine::addContext(SelContextPtr ctx, uint32_t date, uint32_t time, Ta
 	}
 
 	TaskInfoPtr tInfo(new TaskInfo);
-	strcpy(tInfo->_name, ctx->name());
-	strcpy(tInfo->_trdtpl, trdtpl);
-	strcpy(tInfo->_session, sessionID);
+	wt_strcpy(tInfo->_name, ctx->name());
+	wt_strcpy(tInfo->_trdtpl, trdtpl);
+	wt_strcpy(tInfo->_session, sessionID);
 	tInfo->_day = date;
 	tInfo->_time = time;
 	tInfo->_period = period;

@@ -29,8 +29,8 @@ inline void write_log(ITraderSpi* sink, WTSLogLevel ll, const char* format, cons
 		return;
 
 	static thread_local char buffer[512] = { 0 };
-	std::string s = std::move(fmt::sprintf(format, args...));
-	strcpy(buffer, s.c_str());
+	memset(buffer, 0, 512);
+	fmt::format_to(buffer, format, args...);
 
 	sink->handleTraderLog(ll, buffer);
 }

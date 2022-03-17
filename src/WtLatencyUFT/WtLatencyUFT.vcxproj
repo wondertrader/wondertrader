@@ -180,7 +180,7 @@
     <ProjectReference Include="..\WTSTools\WTSTools.vcxproj">
       <Project>{8b249955-de56-41a3-a904-21dbbe40ab34}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\WtUftCore\WtHftCore.vcxproj">
+    <ProjectReference Include="..\WtUftCore\WtUftCore.vcxproj">
       <Project>{a68ad4dd-4faa-44f2-8275-59e227c13b5a}</Project>
     </ProjectReference>
   </ItemGroup>
