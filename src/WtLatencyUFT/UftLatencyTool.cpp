@@ -139,7 +139,7 @@ namespace uft
 			}
 			auto total = ticker.nano_seconds();
 			double t2t = total * 1.0 / times;
-			WTSLogger::info("%u ticks simulated in %.0f ns, UftEngine Innner Latency: %.3f ns", times, total*1.0, t2t);
+			WTSLogger::warn("%u ticks simulated in %.0f ns, UftEngine Innner Latency: %.3f ns", times, total*1.0, t2t);
 		}
 
 	public:
@@ -205,7 +205,8 @@ namespace uft
 		virtual void on_tick(IUftStraCtx* ctx, const char* code, WTSTickData* newTick)
 		{
 			//WTSLogger::debug_f("{}", __FUNCTION__);
-			ctx->stra_enter_long("SHFE.rb2205", 2300, 1, 0);
+			//ctx->stra_enter_long("SHFE.rb2205", 2300, 1, 0);
+			ctx->stra_enter_short("SHFE.rb2205", 2300, 1, 0);
 		}
 	};
 
@@ -271,10 +272,10 @@ namespace uft
 		}
 
 		_times = _config->getUInt32("times");
-		WTSLogger::info_f("{} ticks will be simulated", _times);
+		WTSLogger::warn_f("{} ticks will be simulated", _times);
 
 		_core = _config->getUInt32("core");
-		WTSLogger::info_f("Testing thread will be bind to core {}", _core);
+		WTSLogger::warn_f("Testing thread will be bind to core {}", _core);
 
 		initEngine(_config->get("env"));
 		initModules();
@@ -300,7 +301,7 @@ namespace uft
 
 	bool UftLatencyTool::initEngine(WTSVariant* cfg)
 	{
-		WTSLogger::info("Trading enviroment initialzied with engine: UFT");
+		WTSLogger::warn_f("Trading enviroment initialzied with engine: UFT");
 		_engine.init(cfg, &_bd_mgr, NULL);
 		_engine.set_adapter_mgr(&_traders);
 

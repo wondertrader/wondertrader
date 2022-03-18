@@ -33,7 +33,7 @@
 namespace rj = rapidjson;
 using namespace std;
 
-uint32_t makeLocalOrderID()
+inline uint32_t makeLocalOrderID()
 {
 	static std::atomic<uint32_t> _auto_order_id{ 0 };
 	if (_auto_order_id == 0)
@@ -230,8 +230,8 @@ void TraderAdapter::updateUndone(const char* stdCode, double qty, bool bOuput /*
 	double oldQty = undone;
 	undone += qty;
 
-	if(bOuput)
-		WTSLogger::log_dyn_f("trader", _id.c_str(), LL_INFO, "[{}] {} qty of undone order updated, {} -> {}", _id.c_str(), stdCode, oldQty, undone);
+	//if(bOuput)
+	//	WTSLogger::log_dyn_f("trader", _id.c_str(), LL_INFO, "[{}] {} qty of undone order updated, {} -> {}", _id.c_str(), stdCode, oldQty, undone);
 }
 
 uint32_t TraderAdapter::doEntrust(WTSEntrust* entrust)
