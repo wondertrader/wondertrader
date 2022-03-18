@@ -224,6 +224,16 @@ OrderMap* TraderAdapter::getOrders(const char* stdCode)
 	return ret;
 }
 
+void TraderAdapter::updateUndone(const char* stdCode, double qty, bool bOuput /* = false */)
+{
+	double& undone = _undone_qty[stdCode];
+	double oldQty = undone;
+	undone += qty;
+
+	if(bOuput)
+		WTSLogger::log_dyn_f("trader", _id.c_str(), LL_INFO, "[{}] {} qty of undone order updated, {} -> {}", _id.c_str(), stdCode, oldQty, undone);
+}
+
 uint32_t TraderAdapter::doEntrust(WTSEntrust* entrust)
 {
 	_trader_api->makeEntrustID(entrust->getEntrustID(), 64);
@@ -242,7 +252,8 @@ uint32_t TraderAdapter::doEntrust(WTSEntrust* entrust)
 	char* usertag = entrust->getUserTag();
 	memcpy(usertag, _order_pattern.c_str(), _order_pattern.size());
 	usertag[_order_pattern.size()] = '.';
-	fmt::format_to(usertag + _order_pattern.size() + 1, "{}", localid);
+	char* tail = fmt::format_to(usertag + _order_pattern.size() + 1, "{}", localid);
+	tail[0] = '\0';
 	
 	int32_t ret = _trader_api->orderInsert(entrust);
 	if(ret < 0)
@@ -358,6 +369,8 @@ uint32_t TraderAdapter::openLong(const char* stdCode, double price, double qty, 
 	entrust->setDirection(WDT_LONG);
 	entrust->setOffsetType(WOT_OPEN);
 
+	updateUndone(stdCode, qty);
+
 	uint32_t ret = doEntrust(entrust);
 	entrust->release();
 	return ret;
@@ -378,6 +391,8 @@ uint32_t TraderAdapter::openShort(const char* stdCode, double price, double qty,
 
 	entrust->setDirection(WDT_SHORT);
 	entrust->setOffsetType(WOT_OPEN);
+
+	updateUndone(stdCode, qty);
 
 	uint32_t ret = doEntrust(entrust);
 	entrust->release();
@@ -400,6 +415,8 @@ uint32_t TraderAdapter::closeLong(const char* stdCode, double price, double qty,
 	entrust->setDirection(WDT_LONG);
 	entrust->setOffsetType(isToday ? WOT_CLOSETODAY : WOT_CLOSE);
 
+	updateUndone(stdCode, qty);
+
 	uint32_t ret = doEntrust(entrust);
 	entrust->release();
 	return ret;
@@ -420,6 +437,8 @@ uint32_t TraderAdapter::closeShort(const char* stdCode, double price, double qty
 
 	entrust->setDirection(WDT_SHORT);
 	entrust->setOffsetType(isToday ? WOT_CLOSETODAY : WOT_CLOSE);
+
+	updateUndone(stdCode, qty);
 
 	uint32_t ret = doEntrust(entrust);
 	entrust->release();
@@ -507,12 +526,14 @@ void TraderAdapter::onRspEntrust(WTSEntrust* entrust, WTSError *err)
 		if (decimal::eq(oldQty, 0))
 			return;
 
-		bool isBuy = (isLong&&isOpen) || (!isLong && !isOpen);
-		double newQty = oldQty - qty*(isBuy ? 1 : -1);
-		_undone_qty[stdCode] = newQty;
+		//bool isBuy = (isLong&&isOpen) || (!isLong && !isOpen);
+		//double newQty = oldQty - qty*(isBuy ? 1 : -1);
+		//_undone_qty[stdCode] = newQty;
 
-		WTSLogger::log_dyn_f("trader", _id.c_str(), LL_INFO, 
-			"[{}] {} undone order updated, {} -> {}", _id.c_str(), stdCode.c_str(), oldQty, newQty);
+		//WTSLogger::log_dyn_f("trader", _id.c_str(), LL_INFO, 
+		//	"[{}] {} undone order updated, {} -> {}", _id.c_str(), stdCode.c_str(), oldQty, newQty);
+
+		updateUndone(stdCode.c_str(), qty);
 
 
 		if (strlen(entrust->getUserTag()) > 0)
@@ -634,7 +655,7 @@ void TraderAdapter::onRspOrders(const WTSArray* ayOrders)
 			}
 
 			double& curQty = _undone_qty[stdCode];
-			curQty += orderInfo->getVolLeft()*(isBuy ? 1 : -1);
+			curQty += orderInfo->getVolLeft();
 		}
 
 		for (auto it = _undone_qty.begin(); it != _undone_qty.end(); it++)
@@ -731,10 +752,11 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 		double qty = orderInfo->getVolume() - orderInfo->getVolTraded();
 
 		bool isBuy = (isLong&&isOpen) || (!isLong&&!isOpen);
-		double oldQty = _undone_qty[stdCode];
-		double newQty = oldQty - qty*(isBuy ? 1 : -1);
-		_undone_qty[stdCode] = newQty;
-		WTSLogger::log_dyn_f("trader", _id.c_str(), LL_INFO, "[{}] {} qty of undone order updated, {} -> {}", _id.c_str(), stdCode.c_str(), oldQty, newQty);
+		//double oldQty = _undone_qty[stdCode];
+		//double newQty = oldQty - qty*(isBuy ? 1 : -1);
+		//_undone_qty[stdCode] = newQty;
+		//WTSLogger::log_dyn_f("trader", _id.c_str(), LL_INFO, "[{}] {} qty of undone order updated, {} -> {}", _id.c_str(), stdCode.c_str(), oldQty, newQty);
+		updateUndone(stdCode.c_str(), -qty);
 
 		WTSLogger::log_dyn_f("trader", _id.c_str(), LL_INFO, "[{}] Order {} of {} canceled:{}, action: {}, leftqty: {}",
 			_id.c_str(), orderInfo->getUserTag(), stdCode.c_str(), orderInfo->getStateMsg(),
@@ -914,11 +936,12 @@ void TraderAdapter::onPushTrade(WTSTradeInfo* tradeRecord)
 		userTag += _order_pattern.size() + 1;
 		localid = strtoul(userTag, NULL, 10);
 
-		double oldQty = _undone_qty[stdCode];
-		double newQty = oldQty - tradeRecord->getVolume()*(isBuy ? 1 : -1);
-		_undone_qty[stdCode] = newQty;
-		WTSLogger::log_dyn_f("trader", _id.c_str(), LL_INFO, 
-			"[{}] {} qty of undone orders updated, {} -> {}", _id.c_str(), stdCode.c_str(), oldQty, newQty);
+		//double oldQty = _undone_qty[stdCode];
+		//double newQty = oldQty - tradeRecord->getVolume()*(isBuy ? 1 : -1);
+		//_undone_qty[stdCode] = newQty;
+		//WTSLogger::log_dyn_f("trader", _id.c_str(), LL_INFO, 
+		//	"[{}] {} qty of undone orders updated, {} -> {}", _id.c_str(), stdCode.c_str(), oldQty, newQty);
+		updateUndone(stdCode.c_str(), -tradeRecord->getVolume());
 	}
 
 	PosItem& pItem = _positions[stdCode];

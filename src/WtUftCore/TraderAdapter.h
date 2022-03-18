@@ -122,6 +122,8 @@ private:
 	inline WTSContractInfo* getContract(const char* stdCode);
 	inline WTSCommodityInfo* getCommodify(const char* stdCommID);
 
+	inline void updateUndone(const char* stdCode, double qty, bool bOuput = true);
+
 public:
 	double getPosition(const char* stdCode, bool bValidOnly, int32_t flag = 3);
 	OrderMap* getOrders(const char* stdCode);
