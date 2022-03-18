@@ -156,7 +156,7 @@ protected:
 	WTSError*		makeError(CThostFtdcRspInfoField* rspInfo, WTSErroCode ec = WEC_NONE);
 	WTSTradeInfo*	makeTradeRecord(CThostFtdcTradeField *tradeField);
 
-	std::string		generateEntrustID(uint32_t frontid, uint32_t sessionid, uint32_t orderRef);
+	void			generateEntrustID(char* buffer, uint32_t frontid, uint32_t sessionid, uint32_t orderRef);
 	bool			extractEntrustID(const char* entrustid, uint32_t &frontid, uint32_t &sessionid, uint32_t &orderRef);
 
 	//uint64_t		calcCommission(uint32_t qty, uint32_t price, WTSOffsetType flag, WTSContractInfo* ct);

@@ -131,6 +131,8 @@ private:
 
 	void	saveData(WTSArray* ayFunds = NULL);
 
+	inline void updateUndone(const char* stdCode, double qty, bool bOuput = true);
+
 public:
 	double getPosition(const char* stdCode, bool bValidOnly, int32_t flag = 3);
 	OrderMap* getOrders(const char* stdCode);

@@ -54,25 +54,25 @@ private:
 	bool		_w;
 };
 
-TEST(test_object_pool, test_object_pool)
-{
-	boost::object_pool<A> boost_pool;
-	enable_obj_pool<A> opt_pool;
-	uint32_t times = 100000000;
-	TimeUtils::Ticker ticker;
-	for(uint32_t i = 0; i < times; i++)
-	{
-		A* p = boost_pool.construct();
-		boost_pool.destroy(p);
-	}
-	uint64_t time_a = ticker.nano_seconds();
-
-	ticker.reset();
-	for (uint32_t i = 0; i < times; i++)
-	{
-		A* p = opt_pool.construct();
-		opt_pool.destroy(p);
-	}
-	uint64_t time_b = ticker.nano_seconds();
-	printf("boost::object_pool: %I64d - optimized_object_pool: %I64d\n", time_a, time_b);
-}
+//TEST(test_object_pool, test_object_pool)
+//{
+//	boost::object_pool<A> boost_pool;
+//	enable_obj_pool<A> opt_pool;
+//	uint32_t times = 100000000;
+//	TimeUtils::Ticker ticker;
+//	for(uint32_t i = 0; i < times; i++)
+//	{
+//		A* p = boost_pool.construct();
+//		boost_pool.destroy(p);
+//	}
+//	uint64_t time_a = ticker.nano_seconds();
+//
+//	ticker.reset();
+//	for (uint32_t i = 0; i < times; i++)
+//	{
+//		A* p = opt_pool.construct();
+//		opt_pool.destroy(p);
+//	}
+//	uint64_t time_b = ticker.nano_seconds();
+//	printf("boost::object_pool: %I64d - optimized_object_pool: %I64d\n", time_a, time_b);
+//}

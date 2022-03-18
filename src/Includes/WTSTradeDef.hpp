@@ -70,17 +70,11 @@ public:
 public:
 	inline void setExchange(const char* exchg, std::size_t len = 0)
 	{
-		len = (len == 0) ? strlen(exchg) : len;
-
-		memcpy(m_strExchg, exchg, len);
-		m_strExchg[len] = '\0';
+		wt_strcpy(m_strExchg, exchg, len);
     }
 	inline void setCode(const char* code, std::size_t len = 0)
 	{
-		len = (len == 0) ? strlen(code) : len;
-
-		memcpy(m_strCode, code, len);
-		m_strCode[len] = '\0';
+		wt_strcpy(m_strCode, code, len);
     }
 
 	inline void setDirection(WTSDirectionType dType){m_direction = dType;}

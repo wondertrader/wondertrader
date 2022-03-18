@@ -139,7 +139,7 @@ namespace hft
 			}
 			auto total = ticker.nano_seconds();
 			double t2t = total * 1.0 / times;
-			WTSLogger::info("%u ticks simulated in %.0f ns, HftEngine Innner Latency: %.3f ns", times, total*1.0, t2t);
+			WTSLogger::warn("%u ticks simulated in %.0f ns, HftEngine Innner Latency: %.3f ns", times, total*1.0, t2t);
 		}
 
 	public:
@@ -203,7 +203,8 @@ namespace hft
 
 		virtual void on_tick(IHftStraCtx* ctx, const char* code, WTSTickData* newTick)
 		{
-			ctx->stra_sell("SHFE.rb.2205", 2300, 1, "", HFT_OrderFlag_Nor);
+			//ctx->stra_sell("SHFE.rb.2205", 2300, 1, "", HFT_OrderFlag_Nor);
+			ctx->stra_buy("SHFE.rb.2205", 2300, 1, "", HFT_OrderFlag_Nor);
 		}
 	};
 
@@ -275,10 +276,10 @@ namespace hft
 		_act_mgr.init("actpolicy.yaml");
 
 		_times = _config->getUInt32("times");
-		WTSLogger::info_f("{} ticks will be simulated", _times);
+		WTSLogger::warn_f("{} ticks will be simulated", _times);
 
 		_core = _config->getUInt32("core");
-		WTSLogger::info_f("Testing thread will be bind to core {}", _core);
+		WTSLogger::warn_f("Testing thread will be bind to core {}", _core);
 
 		initEngine(_config->get("env"));
 		initModules();
@@ -304,7 +305,7 @@ namespace hft
 
 	bool HftLatencyTool::initEngine(WTSVariant* cfg)
 	{
-		WTSLogger::info("Trading enviroment initialzied with engine: HFT");
+		WTSLogger::warn("Trading enviroment initialzied with engine: HFT");
 		_engine.init(cfg, &_bd_mgr, &_dt_mgr, &_hot_mgr, NULL);
 		_engine.set_adapter_mgr(&_traders);
 

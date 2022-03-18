@@ -727,7 +727,7 @@ void HisDataReplayer::run_by_ticks(bool bNeedDump /* = false */)
 
 void HisDataReplayer::run_by_bars(bool bNeedDump /* = false */)
 {
-	int64_t now = TimeUtils::getLocalTimeNano();
+	TimeUtils::Ticker ticker;
 
 	BarsListPtr barsList = _bars_cache[_main_key];
 	WTSSessionInfo* sInfo = get_session_info(barsList->_code.c_str(), true);
@@ -742,7 +742,7 @@ void HisDataReplayer::run_by_bars(bool bNeedDump /* = false */)
 	notify_state(barsList->_code.c_str(), barsList->_period, barsList->_times, _begin_time, _end_time, 0);
 
 	if (bNeedDump)
-		dump_btstate(barsList->_code.c_str(), barsList->_period, barsList->_times, _begin_time, _end_time, 100.0, TimeUtils::getLocalTimeNano() - now);
+		dump_btstate(barsList->_code.c_str(), barsList->_period, barsList->_times, _begin_time, _end_time, 100.0, ticker.nano_seconds());
 
 	WTSLogger::info_f("Start to replay back data from {}...", _begin_time);
 
@@ -847,7 +847,7 @@ void HisDataReplayer::run_by_bars(bool bNeedDump /* = false */)
 
 	if (bNeedDump)
 	{
-		dump_btstate(barsList->_code.c_str(), barsList->_period, barsList->_times, _begin_time, _end_time, 100.0, TimeUtils::getLocalTimeNano() - now);
+		dump_btstate(barsList->_code.c_str(), barsList->_period, barsList->_times, _begin_time, _end_time, 100.0, ticker.nano_seconds());
 	}
 
 	_listener->handle_replay_done();

@@ -14,6 +14,8 @@
 #include "../Share/BoostFile.hpp"
 #include "../Share/fmtlib.h"
 
+#include <boost/circular_buffer.hpp>
+
 #include "ITrdNotifySink.h"
 
 NS_WTP_BEGIN
@@ -204,13 +206,37 @@ protected:
 
 	inline const char* getOrderTag(uint32_t localid)
 	{
-		auto it = _orders.find(localid);
+		thread_local static OrderTag oTag;
+		oTag._localid = localid;
+		auto it = std::lower_bound(_orders.begin(), _orders.end(), oTag, [](const OrderTag& a, const OrderTag& b) {
+			return a._localid < b._localid;
+		});
+
 		if (it == _orders.end())
 			return "";
 
-		return it->second.c_str();
+		return (*it)._usertag;
 	}
 
+
+	inline void setUserTag(uint32_t localid, const char* usertag)
+	{
+		_orders.push_back({ localid, usertag });
+	}
+
+	inline void eraseOrderTag(uint32_t localid)
+	{
+		thread_local static OrderTag oTag;
+		oTag._localid = localid;
+		auto it = std::lower_bound(_orders.begin(), _orders.end(), oTag, [](const OrderTag& a, const OrderTag& b) {
+			return a._localid < b._localid;
+		});
+
+		if (it == _orders.end())
+			return;
+
+		_orders.erase(it);
+	}
 
 protected:
 	uint32_t		_context_id;
@@ -271,8 +297,21 @@ private:
 	typedef faster_hashmap<LongKey, PosInfo> PositionMap;
 	PositionMap		_pos_map;
 
-	typedef faster_hashmap<uint32_t, std::string> OrderMap;
-	OrderMap		_orders;
+	typedef struct _OrderTag
+	{
+		uint32_t	_localid;
+		char		_usertag[64] = { 0 };
+
+		_OrderTag(){}
+		_OrderTag(uint32_t localid, const char* usertag)
+		{
+			_localid = localid;
+			wt_strcpy(_usertag, usertag);
+		}
+	} OrderTag;
+	//typedef faster_hashmap<uint32_t, LongKey> OrderMap;
+	//OrderMap		_orders;
+	boost::circular_buffer<OrderTag> _orders;
 
 	typedef struct _StraFundInfo
 	{

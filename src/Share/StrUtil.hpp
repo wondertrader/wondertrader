@@ -70,11 +70,16 @@ public:
 
 	static inline std::size_t findFirst(const char* str, char ch)
 	{
-		std::size_t len = strlen(str);
-		for(std::size_t i = 0; i < len; i++)
+		std::size_t i = 0;
+		for(;;)
 		{
 			if (str[i] == ch)
 				return i;
+
+			if(str[i] == '\0')
+				break;
+
+			i++;
 		}
 
 		return std::string::npos;

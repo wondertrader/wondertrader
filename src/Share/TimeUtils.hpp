@@ -18,7 +18,8 @@
 #include <string>
 #include <string.h>
 #include<chrono>
-/*
+
+#ifdef _MSC_VER
 #define CTIME_BUF_SIZE 64
 
 #define WIN32_LEAN_AND_MEAN
@@ -45,39 +46,37 @@ struct KUSER_SHARED_DATA
 #define SharedUserData   ((KUSER_SHARED_DATA * const)KI_USER_SHARED_DATA)
 
 #define TICKSPERSEC        10000000L
-*/
+#endif
 
 class TimeUtils 
 {
 	
 public:
-
-	//static int64_t GetSysTime()
-	//{
-	//	LARGE_INTEGER SystemTime;
-	//	do
-	//	{
-	//		SystemTime.HighPart = SharedUserData->SystemTime.High1Time;
-	//		SystemTime.LowPart = SharedUserData->SystemTime.LowPart;
-	//	} 
-	//	while (SystemTime.HighPart != SharedUserData->SystemTime.High2Time);
-
-	//	return SystemTime.QuadPart;
-	//}
-
-	//static uint64_t mtime()
-	//{
-	//	uint64_t t = GetSysTime();
-	//	t = t - 11644473600L * TICKSPERSEC;
-	//	return t;
-	//}
-
-	static inline int64_t getLocalTimeNow(void)
+	static inline int64_t getLocalTimeNowOld(void)
 	{
 		timeb now;
 		ftime(&now);
 		return now.time * 1000 + now.millitm;
-		//return mtime() / 10000;
+	}
+
+	static inline int64_t getLocalTimeNow(void)
+	{
+#ifdef _MSC_VER
+		LARGE_INTEGER SystemTime;
+		do
+		{
+			SystemTime.HighPart = SharedUserData->SystemTime.High1Time;
+			SystemTime.LowPart = SharedUserData->SystemTime.LowPart;
+		} while (SystemTime.HighPart != SharedUserData->SystemTime.High2Time);
+
+		uint64_t t = SystemTime.QuadPart;
+		t = t - 11644473600L * TICKSPERSEC;
+		return t / 10000;
+#else
+		static thread_local struct timespec tp;
+		clock_gettime(CLOCK_REALTIME, &tp);
+		return tp.tv_sec * 1000 + tp.tv_nsec / 1000000;
+#endif
 	}
 
 	static inline int64_t getLocalTimeNano(void)

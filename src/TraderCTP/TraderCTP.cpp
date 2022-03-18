@@ -34,8 +34,8 @@ inline void write_log(ITraderSpi* sink, WTSLogLevel ll, const char* format, cons
 		return;
 
 	static thread_local char buffer[512] = { 0 };
-	memset(buffer, 0, 512);
-	fmt::format_to(buffer, format, args...);
+	char* s = fmt::format_to(buffer, format, args...);
+	s[0] = '\0';
 
 	sink->handleTraderLog(ll, buffer);
 }
@@ -239,7 +239,7 @@ bool TraderCTP::makeEntrustID(char* buffer, int length)
 	{
 		memset(buffer, 0, length);
 		uint32_t orderref = m_orderRef.fetch_add(1) + 1;
-		sprintf(buffer, "%06u#%010u#%06u", m_frontID, m_sessionID, orderref);
+		fmt::format_to(buffer, "{:06d}#{:010d}#{:06d}", m_frontID, (uint32_t)m_sessionID, orderref);
 		return true;
 	}
 	catch (...)
@@ -336,7 +336,7 @@ int TraderCTP::orderInsert(WTSEntrust* entrust)
 	if (strlen(entrust->getUserTag()) == 0)
 	{
 		///报单引用
-		sprintf(req.OrderRef, "%u", m_orderRef.fetch_add(0));
+		fmt::format_to(req.OrderRef, "{}", m_orderRef.fetch_add(0));
 
 		//生成本地委托单号
 		//entrust->setEntrustID(generateEntrustID(m_frontID, m_sessionID, m_orderRef++).c_str());	
@@ -347,7 +347,7 @@ int TraderCTP::orderInsert(WTSEntrust* entrust)
 		extractEntrustID(entrust->getEntrustID(), fid, sid, orderref);
 		//entrust->setEntrustID(entrust->getUserTag());
 		///报单引用
-		sprintf(req.OrderRef, "%u", orderref);
+		fmt::format_to(req.OrderRef, "{}", orderref);
 	}
 
 	if (strlen(entrust->getUserTag()) > 0)
@@ -360,7 +360,7 @@ int TraderCTP::orderInsert(WTSEntrust* entrust)
 	WTSContractInfo* ct = entrust->getContractInfo();
 	if (ct == NULL)
 	{
-		write_log(m_sink, LL_ERROR, "[TraderCTP] Instrument {}.{} is not valid", entrust->getExchg(), entrust->getCode());
+		write_log(m_sink, LL_ERROR, "[TraderCTP] Instrument {} is not valid", entrust->getExchg(), entrust->getCode());
 		return -1;
 	}
 
@@ -1227,7 +1227,7 @@ WTSOrderInfo* TraderCTP::makeOrderInfo(CThostFtdcOrderField* orderField)
 	if (orderField->OrderSubmitStatus >= THOST_FTDC_OSS_InsertRejected)
 		pRet->setError(true);		
 
-	pRet->setEntrustID(generateEntrustID(orderField->FrontID, orderField->SessionID, atoi(orderField->OrderRef)).c_str());
+	generateEntrustID(pRet->getEntrustID(), orderField->FrontID, orderField->SessionID, atoi(orderField->OrderRef));
 	pRet->setOrderID(orderField->OrderSysID);
 
 	pRet->setStateMsg(orderField->StatusMsg);
@@ -1282,7 +1282,8 @@ WTSEntrust* TraderCTP::makeEntrust(CThostFtdcInputOrderField *entrustField)
 			pRet->setOrderFlag(WOF_FOK);
 	}
 
-	pRet->setEntrustID(generateEntrustID(m_frontID, m_sessionID, atoi(entrustField->OrderRef)).c_str());
+	//pRet->setEntrustID(generateEntrustID(m_frontID, m_sessionID, atoi(entrustField->OrderRef)).c_str());
+	generateEntrustID(pRet->getEntrustID(), m_frontID, m_sessionID, atoi(entrustField->OrderRef));
 
 	//StringMap::iterator it = m_mapEntrustTag.find(pRet->getEntrustID());
 	//if (it != m_mapEntrustTag.end())
@@ -1352,9 +1353,10 @@ WTSTradeInfo* TraderCTP::makeTradeRecord(CThostFtdcTradeField *tradeField)
 	return pRet;
 }
 
-std::string TraderCTP::generateEntrustID(uint32_t frontid, uint32_t sessionid, uint32_t orderRef)
+void TraderCTP::generateEntrustID(char* buffer, uint32_t frontid, uint32_t sessionid, uint32_t orderRef)
 {
-	return StrUtil::printf("%06u#%010u#%06u", frontid, sessionid, orderRef);
+	buffer = fmt::format_to(buffer, "{:06d}#{:010d}#{:06d}", frontid, sessionid, orderRef);
+	buffer[0] = '\0';
 }
 
 bool TraderCTP::extractEntrustID(const char* entrustid, uint32_t &frontid, uint32_t &sessionid, uint32_t &orderRef)
@@ -1439,8 +1441,8 @@ int TraderCTP::confirm()
 	wt_strcpy(req.BrokerID, m_strBroker.c_str(), m_strBroker.size());
 	wt_strcpy(req.InvestorID, m_strUser.c_str(), m_strUser.size());
 
-	sprintf(req.ConfirmDate, "%u", TimeUtils::getCurDate());
-	strncpy(req.ConfirmTime, TimeUtils::getLocalTime().c_str(), 8);
+	fmt::format_to(req.ConfirmDate, "{}", TimeUtils::getCurDate());
+	memcpy(req.ConfirmTime, TimeUtils::getLocalTime().c_str(), 8);
 
 	int iResult = m_pUserAPI->ReqSettlementInfoConfirm(&req, genRequestID());
 	if (iResult != 0)

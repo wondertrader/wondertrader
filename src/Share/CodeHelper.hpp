@@ -137,7 +137,7 @@ public:
 		if (len < SUF_LEN)
 			return false;
 
-		return strcmp(stdCode + len - SUF_LEN, SUFFIX_HOT) == 0;
+		return memcmp(stdCode + len - SUF_LEN, SUFFIX_HOT, SUF_LEN) == 0;
 	}
 
 	/*
@@ -151,7 +151,7 @@ public:
 		if (len < SUF_LEN)
 			return false;
 
-		return strcmp(stdCode + len - SUF_LEN, SUFFIX_2ND) == 0;
+		return memcmp(stdCode + len - SUF_LEN, SUFFIX_2ND, SUF_LEN) == 0;
 	}
 
 	/*
@@ -160,16 +160,18 @@ public:
 	 */
 	static bool	isStdChnFutOptCode(const char* code)
 	{
-		using namespace boost::xpressive;
 		/* 定义正则表达式 */
 		//static cregex reg_stk = cregex::compile("^[A-Z]+.[A-z]+\\d{4}.(C|P).\\d+$");	//CFFEX.IO2007.C.4000
 		//return 	regex_match(code, reg_stk);
 		auto len = strlen(code);
 		char state = 0;
-		uint32_t cnt = 0;
-		for(std::size_t i = 0; i < len; i++)
+		std::size_t i = 0;
+		for(; ; i++)
 		{
 			char ch = code[i];
+			if(ch == '\0')
+				break;
+
 			if(state == 0)
 			{
 				if (!('A' <= ch && ch <= 'Z'))
@@ -248,7 +250,7 @@ public:
 			}
 		}
 
-		return true;
+		return (state == 11);
 	}
 
 	/*
@@ -617,23 +619,24 @@ public:
 			{
 				memcpy(codeInfo._product, stdCode + idx + 1, idx2);
 				const char* ext = stdCode + idx + idx2 + 2;
-				char lastCh = ext[strlen(ext) - 1];
+				std::size_t extlen = strlen(ext);
+				char lastCh = ext[extlen - 1];
 				if (lastCh == SUFFIX_QFQ || lastCh == SUFFIX_HFQ)
 				{
-					memcpy(codeInfo._code, ext, strlen(ext) - 1);
+					memcpy(codeInfo._code, ext, extlen - 1);
 					codeInfo._exright = (lastCh == SUFFIX_QFQ) ? 1 : 2;
 				}
-				else if (strlen(ext) == 4 && isdigit(lastCh))
+				else if (extlen == 4 && '0' <= lastCh && lastCh <= '9')
 				{
 					//如果最后一段是4位数字，说明是分月合约
 					//TODO: 这样的判断存在一个假设，最后一位是数字的一定是期货分月合约，以后可能会有问题，先注释一下
 					//那么code得加上品种id
 					//郑商所得单独处理一下，这个只能hardcode了
-					wt_strcpy(codeInfo._code, codeInfo._product);
-					if (strcmp(codeInfo._exchg, "CZCE") == 0)
-						strcat(codeInfo._code, ext + 1);
+					auto i = wt_strcpy(codeInfo._code, codeInfo._product);
+					if (memcmp(codeInfo._exchg, "CZCE", 4) == 0)
+						memcpy(codeInfo._code + i, ext + 1, extlen-1);
 					else
-						strcat(codeInfo._code, ext);
+						memcpy(codeInfo._code + i, ext, extlen);
 				}
 				else
 				{

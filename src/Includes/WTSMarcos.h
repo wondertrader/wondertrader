@@ -85,9 +85,10 @@ typedef const char*			WtString;
  *	重写一个strcpy
  *	核心的要点就是不用strcpy
  */
-inline void wt_strcpy(char* des, const char* src, size_t len = 0)
+inline size_t wt_strcpy(char* des, const char* src, size_t len = 0)
 {
 	len = (len == 0) ? strlen(src) : len;
 	memcpy(des, src, len);
 	des[len] = '\0';
+	return len;
 }
