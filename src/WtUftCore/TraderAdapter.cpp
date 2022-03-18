@@ -230,8 +230,8 @@ uint32_t TraderAdapter::doEntrust(WTSEntrust* entrust)
 
 	const char* stdCode = entrust->getCode();
 	std::size_t pos = StrUtil::findFirst(entrust->getCode(), '.');
-	entrust->setCode(stdCode + pos + 1);
 	entrust->setExchange(stdCode, pos);
+	entrust->setCode(stdCode + pos + 1);
 	if(entrust->getContractInfo() == NULL)
 	{
 		WTSContractInfo* cInfo = _bd_mgr->getContract(entrust->getCode(), entrust->getExchg());
