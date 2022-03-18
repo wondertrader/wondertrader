@@ -321,6 +321,7 @@ int TraderCTP::orderInsert(WTSEntrust* entrust)
 {
 	if (m_pUserAPI == NULL || m_wrapperState != WS_ALLREADY)
 	{
+		write_log(m_sink, LL_ERROR, "[TraderCTP] Trading channel not ready");
 		return -1;
 	}
 
@@ -358,7 +359,10 @@ int TraderCTP::orderInsert(WTSEntrust* entrust)
 
 	WTSContractInfo* ct = entrust->getContractInfo();
 	if (ct == NULL)
+	{
+		write_log(m_sink, LL_ERROR, "[TraderCTP] Instrument {}.{} is not valid", entrust->getExchg(), entrust->getCode());
 		return -1;
+	}
 
 	///ÓÃ»§´úÂë
 	//	TThostFtdcUserIDType	UserID;
