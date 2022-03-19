@@ -260,6 +260,11 @@ double UftStraBaseCtx::stra_get_position(const char* stdCode, bool bOnlyValid /*
 	return _trader->getPosition(stdCode, bOnlyValid);
 }
 
+double UftStraBaseCtx::stra_enum_position(const char* stdCode)
+{
+	return _trader->enumPosition(stdCode);
+}
+
 double UftStraBaseCtx::stra_get_undone(const char* stdCode)
 {
 	return _trader->getUndoneQty(stdCode);

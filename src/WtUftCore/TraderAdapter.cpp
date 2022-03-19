@@ -197,8 +197,8 @@ double TraderAdapter::enumPosition(const char* stdCode /* = "" */)
 		{
 			sink->on_position(stdCode, true, pItem.l_prevol, pItem.l_preavail, pItem.l_newvol, pItem.l_newavail, _trading_day);
 			sink->on_position(stdCode, false, pItem.s_prevol, pItem.s_preavail, pItem.s_newvol, pItem.s_newavail, _trading_day);
-			ret += pItem.total_pos(true) + pItem.total_pos(false);
 		}
+		ret += pItem.total_pos(true) + pItem.total_pos(false);
 	}
 
 	return ret;

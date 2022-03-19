@@ -161,6 +161,8 @@ public:
 	 */
 	virtual double stra_get_position(const char* stdCode, bool bOnlyValid = false, int32_t iFlag = 3) override;
 
+	virtual double stra_enum_position(const char* stdCode) override;
+
 	virtual double stra_get_undone(const char* stdCode) override;
 
 	virtual double stra_get_price(const char* stdCode) override;

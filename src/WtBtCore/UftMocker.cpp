@@ -973,6 +973,25 @@ double UftMocker::stra_get_position(const char* stdCode, bool bOnlyValid /* = fa
 		return bOnlyValid ? (posInfo._long.valid() - posInfo._short.valid()) : (posInfo._long.volume() - posInfo._short.volume());
 }
 
+double UftMocker::stra_enum_position(const char* stdCode)
+{
+	uint32_t tdate = _replayer->get_trading_date();
+	double ret = 0;
+	bool bAll = (strlen(stdCode) == 0);
+	for (auto it = _pos_map.begin(); it != _pos_map.end(); it++)
+	{
+		if (!bAll && strcmp(it->first.c_str(), stdCode) != 0)
+			continue;
+
+		const PosInfo& pInfo = it->second;
+		_strategy->on_position(this, stdCode, true, pInfo._long._prevol, pInfo._long._preavail, pInfo._long._newvol, pInfo._long._newavail);
+		_strategy->on_position(this, stdCode, false, pInfo._short._prevol, pInfo._short._preavail, pInfo._short._newvol, pInfo._short._newavail);
+		ret += pInfo._long.volume() + pInfo._short.volume();
+	}
+
+	return ret;
+}
+
 double UftMocker::stra_get_price(const char* stdCode)
 {
 	return _replayer->get_cur_price(stdCode);
