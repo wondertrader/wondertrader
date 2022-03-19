@@ -205,8 +205,8 @@ namespace uft
 		virtual void on_tick(IUftStraCtx* ctx, const char* code, WTSTickData* newTick)
 		{
 			//WTSLogger::debug_f("{}", __FUNCTION__);
-			//ctx->stra_enter_long("SHFE.rb2205", 2300, 1, 0);
-			ctx->stra_enter_short("SHFE.rb2205", 2300, 1, 0);
+			ctx->stra_enter_long("SHFE.rb2205", 2300, 1, 0);
+			//ctx->stra_enter_short("SHFE.rb2205", 2300, 1, 0);
 		}
 	};
 

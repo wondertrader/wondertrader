@@ -132,6 +132,7 @@ void WtUftStraDemo::on_tick(IUftStraCtx* ctx, const char* code, WTSTickData* new
 	if (signal != 0)
 	{
 		double curPos = ctx->stra_get_position(code);
+		double prevol = _prev;
 
 		WTSCommodityInfo* cInfo = ctx->stra_get_comminfo(code);
 
@@ -208,7 +209,11 @@ void WtUftStraDemo::on_trade(IUftStraCtx* ctx, uint32_t localid, const char* std
 
 void WtUftStraDemo::on_position(IUftStraCtx* ctx, const char* stdCode, bool isLong, double prevol, double preavail, double newvol, double newavail)
 {
-	
+	if (_code != stdCode)
+		return;
+
+	_prev = prevol;
+	_ctx->stra_log_info(fmt::format("There are {} of {} before today", _prev, stdCode).c_str());
 }
 
 void WtUftStraDemo::on_order(IUftStraCtx* ctx, uint32_t localid, const char* stdCode, bool isLong, uint32_t offset, double totalQty, double leftQty, double price, bool isCanceled)

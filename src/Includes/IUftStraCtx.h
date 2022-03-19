@@ -193,6 +193,13 @@ public:
 	virtual double stra_get_position(const char* stdCode, bool bOnlyValid = false, int32_t iFlag = 3) = 0;
 
 	/*
+	 *	枚举持仓，会通过on_position回调进来
+	 *	@stdCode	代码，格式如SSE.600000，如果传空，则枚举全部的
+	 *	
+	 */
+	virtual double stra_enum_position(const char* stdCode) = 0;
+
+	/*
 	 *	获取最新价格
 	 *	@stdCode	代码，格式如SSE.600000
 	 */

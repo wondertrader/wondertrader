@@ -357,12 +357,12 @@ int TraderCTP::orderInsert(WTSEntrust* entrust)
 		m_iniHelper.save();
 	}
 
-	WTSContractInfo* ct = entrust->getContractInfo();
-	if (ct == NULL)
-	{
-		write_log(m_sink, LL_ERROR, "[TraderCTP] Instrument {} is not valid", entrust->getExchg(), entrust->getCode());
-		return -1;
-	}
+	//WTSContractInfo* ct = entrust->getContractInfo();
+	//if (ct == NULL)
+	//{
+	//	write_log(m_sink, LL_ERROR, "[TraderCTP] Instrument {} is not valid", entrust->getExchg(), entrust->getCode());
+	//	return -1;
+	//}
 
 	///ÓÃ»§´úÂë
 	//	TThostFtdcUserIDType	UserID;

@@ -79,21 +79,6 @@ public:
 
 	} PosItem;
 
-	typedef struct _RiskParams
-	{
-		uint32_t	_order_times_boundary;
-		uint32_t	_order_stat_timespan;
-		uint32_t	_order_total_limits;
-
-		uint32_t	_cancel_times_boundary;
-		uint32_t	_cancel_stat_timespan;
-		uint32_t	_cancel_total_limits;
-
-		_RiskParams()
-		{
-			memset(this, 0, sizeof(_RiskParams));
-		}
-	} RiskParams;
 
 public:
 	bool init(const char* id, WTSVariant* params, IBaseDataMgr* bdMgr);
@@ -125,7 +110,8 @@ private:
 	inline void updateUndone(const char* stdCode, double qty, bool bOuput = true);
 
 public:
-	double getPosition(const char* stdCode, bool bValidOnly, int32_t flag = 3);
+	double	getPosition(const char* stdCode, bool bValidOnly, int32_t flag = 3);
+	double	enumPosition(const char* stdCode = "");
 	OrderMap* getOrders(const char* stdCode);
 	double getUndoneQty(const char* stdCode)
 	{
@@ -236,7 +222,7 @@ private:
 	OrderMap*		_orders;
 	faster_hashset<std::string> _orderids;	//主要用于标记有没有处理过该订单
 
-	faster_hashmap<std::string, double> _undone_qty;	//未完成数量
+	faster_hashmap<LongKey, double> _undone_qty;	//未完成数量
 };
 
 typedef std::shared_ptr<TraderAdapter>				TraderAdapterPtr;

@@ -142,11 +142,6 @@ private:
 	StraSubMap		_trans_sub_map;		//成交明细订阅表
 	StraSubMap		_bar_sub_map;	//K线数据订阅表	
 
-	//////////////////////////////////////////////////////////////////////////
-	//
-	typedef faster_hashmap<LongKey, double> PriceMap;
-	PriceMap		_price_map;
-
 	TraderAdapterMgr*	_adapter_mgr;
 
 	typedef faster_hashmap<uint32_t, UftContextPtr> ContextMap;

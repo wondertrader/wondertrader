@@ -84,6 +84,11 @@ typedef struct _ShortKey //char[32]
 		return (_buf[0] == b._buf[0] && _buf[1] == b._buf[1]);
 	}
 
+	bool operator <(const _ShortKey& b) const
+	{
+		return memcmp((void*)_buf, (void*)b._buf, 16);
+	}
+
 	const char* c_str() const { return (const char*)_buf; }
 
 	inline std::size_t find(char ch) const

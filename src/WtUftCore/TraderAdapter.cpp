@@ -178,6 +178,32 @@ void TraderAdapter::release()
 	}
 }
 
+double TraderAdapter::enumPosition(const char* stdCode /* = "" */)
+{
+	/*
+	 *	By Wesley @ 2022.03.19
+	 *	这里改成回调的方式
+	 *	不然接口会设计得很复杂
+	 */
+	double ret = 0;
+	bool bAll = (strlen(stdCode) == 0);
+	for (auto it = _positions.begin(); it != _positions.end(); it++)
+	{
+		if (!bAll && strcmp(it->first.c_str(), stdCode) != 0)
+			continue;
+
+		const PosItem& pItem = it->second;
+		for (auto sink : _sinks)
+		{
+			sink->on_position(stdCode, true, pItem.l_prevol, pItem.l_preavail, pItem.l_newvol, pItem.l_newavail, _trading_day);
+			sink->on_position(stdCode, false, pItem.s_prevol, pItem.s_preavail, pItem.s_newvol, pItem.s_newavail, _trading_day);
+			ret += pItem.total_pos(true) + pItem.total_pos(false);
+		}
+	}
+
+	return ret;
+}
+
 double TraderAdapter::getPosition(const char* stdCode, bool bValidOnly, int32_t flag /* = 3 */)
 {
 	auto it = _positions.find(stdCode);
@@ -242,11 +268,11 @@ uint32_t TraderAdapter::doEntrust(WTSEntrust* entrust)
 	std::size_t pos = StrUtil::findFirst(entrust->getCode(), '.');
 	entrust->setExchange(stdCode, pos);
 	entrust->setCode(stdCode + pos + 1);
-	if(entrust->getContractInfo() == NULL)
-	{
-		WTSContractInfo* cInfo = _bd_mgr->getContract(entrust->getCode(), entrust->getExchg());
-		entrust->setContractInfo(cInfo);
-	}
+	//if(entrust->getContractInfo() == NULL)
+	//{
+	//	WTSContractInfo* cInfo = _bd_mgr->getContract(entrust->getCode(), entrust->getExchg());
+	//	entrust->setContractInfo(cInfo);
+	//}
 
 	uint32_t localid = makeLocalOrderID();
 	char* usertag = entrust->getUserTag();
@@ -533,7 +559,7 @@ void TraderAdapter::onRspEntrust(WTSEntrust* entrust, WTSError *err)
 		//WTSLogger::log_dyn_f("trader", _id.c_str(), LL_INFO, 
 		//	"[{}] {} undone order updated, {} -> {}", _id.c_str(), stdCode.c_str(), oldQty, newQty);
 
-		updateUndone(stdCode.c_str(), qty);
+		updateUndone(stdCode.c_str(), -qty);
 
 
 		if (strlen(entrust->getUserTag()) > 0)
@@ -881,18 +907,21 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 	//如果是wt发出去的单子则需要更新内部数据
 	if(localid != 0)
 	{
-		StdUniqueLock lock(_mtx_orders);
-		if (!orderInfo->isAlive() && _orders)
 		{
-			_orders->remove(localid);
-		}
-		else
-		{
-			if (_orders == NULL)
-				_orders = OrderMap::create();
+			StdUniqueLock lock(_mtx_orders);
+			if (!orderInfo->isAlive() && _orders)
+			{
+				_orders->remove(localid);
+			}
+			else
+			{
+				if (_orders == NULL)
+					_orders = OrderMap::create();
 
-			_orders->add(localid, orderInfo);
+				_orders->add(localid, orderInfo);
+			}
 		}
+		
 
 		uint32_t offset;
 		if (orderInfo->getOffsetType() == WOT_OPEN)

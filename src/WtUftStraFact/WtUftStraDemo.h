@@ -48,6 +48,7 @@ private:
 	uint32_t		_freq;
 	int32_t			_offset;
 	double			_lots;
+	double			_prev;
 
 	typedef std::unordered_set<uint32_t> IDSet;
 	IDSet			_orders;
