@@ -10,6 +10,7 @@
 #include "TraderAdapter.h"
 #include "WtHelper.h"
 #include "ITrdNotifySink.h"
+#include "ActionPolicyMgr.h"
 
 #include "../Includes/WTSError.hpp"
 #include "../Includes/WTSVariant.hpp"
@@ -17,6 +18,7 @@
 #include "../Includes/WTSSessionInfo.hpp"
 #include "../Includes/WTSContractInfo.hpp"
 #include "../Includes/IBaseDataMgr.h"
+#include "../Includes/WTSRiskDef.hpp"
 
 #include <atomic>
 
@@ -74,17 +76,20 @@ TraderAdapter::TraderAdapter()
 	, _trader_api(NULL)
 	, _orders(NULL)
 	, _undone_qty(0)
+	, _stat_map(NULL)
 {
 }
 
 
 TraderAdapter::~TraderAdapter()
 {
-
+	if (_stat_map)
+		_stat_map->release();
 }
 
-bool TraderAdapter::initExt(const char* id, ITraderApi* api, IBaseDataMgr* bdMgr)
+bool TraderAdapter::initExt(const char* id, ITraderApi* api, IBaseDataMgr* bdMgr, ActionPolicyMgr* policyMgr)
 {
+	_policy_mgr = policyMgr;
 	_bd_mgr = bdMgr;
 	_id = id;
 
@@ -95,11 +100,12 @@ bool TraderAdapter::initExt(const char* id, ITraderApi* api, IBaseDataMgr* bdMgr
 	return true;
 }
 
-bool TraderAdapter::init(const char* id, WTSVariant* params, IBaseDataMgr* bdMgr)
+bool TraderAdapter::init(const char* id, WTSVariant* params, IBaseDataMgr* bdMgr, ActionPolicyMgr* policyMgr)
 {
 	if (params == NULL)
 		return false;
 
+	_policy_mgr = policyMgr;
 	_bd_mgr = bdMgr;
 	_id = id;
 
@@ -161,6 +167,9 @@ bool TraderAdapter::run()
 {
 	if (_trader_api == NULL)
 		return false;
+
+	if (_stat_map == NULL)
+		_stat_map = TradeStatMap::create();
 
 	_trader_api->registerSpi(this);
 
@@ -296,18 +305,11 @@ uint32_t TraderAdapter::doEntrust(WTSEntrust* entrust)
 
 WTSContractInfo* TraderAdapter::getContract(const char* stdCode)
 {
-	StringVector ay = StrUtil::split(stdCode, ".");
-	return _bd_mgr->getContract(ay[1].c_str(), ay[0].c_str());
-}
-
-WTSCommodityInfo* TraderAdapter::getCommodify(const char* stdCode)
-{
-	StringVector ay = StrUtil::split(stdCode, ".");
-	WTSContractInfo* cInfo = _bd_mgr->getContract(ay[1].c_str(), ay[0].c_str());
-	if (cInfo == NULL)
-		return NULL;
-
-	return cInfo->getCommInfo();
+	char buf[64] = { 0 };
+	wt_strcpy(buf, stdCode);
+	auto idx = StrUtil::findFirst(buf, '.');
+	buf[idx] = '\0';
+	return _bd_mgr->getContract(buf + idx + 1, buf);
 }
 
 bool TraderAdapter::doCancel(WTSOrderInfo* ordInfo)
@@ -378,6 +380,552 @@ OrderIDs TraderAdapter::cancelAll(const char* stdCode)
 
 	return ret;
 }
+
+OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty, int flag, bool bForceClose, WTSContractInfo* cInfo /* = NULL */)
+{
+	OrderIDs ret;
+	if (qty == 0)
+		return ret;
+
+	if (cInfo == NULL) cInfo = getContract(stdCode);
+	WTSCommodityInfo* commInfo = cInfo->getCommInfo();
+	WTSSessionInfo* sInfo = commInfo->getSessionInfo();
+
+	WTSLogger::log_dyn_f("trader", _id.c_str(), LL_INFO, "[{}] Buying {} of quantity {}", _id.c_str(), stdCode, qty);
+
+	const PosItem& pItem = _positions[stdCode];
+	WTSTradeStateInfo* statInfo = (WTSTradeStateInfo*)_stat_map->get(stdCode);
+	if (statInfo == NULL)
+	{
+		statInfo = WTSTradeStateInfo::create(stdCode);
+		_stat_map->add(stdCode, statInfo, false);
+	}
+	TradeStatInfo& statItem = statInfo->statInfo();
+	const ActionRuleGroup& ruleGP = _policy_mgr->getActionRules(commInfo->getFullPid());
+
+	double left = qty;
+
+	double unitQty = (price == 0.0) ? cInfo->getMaxMktVol() : cInfo->getMaxLmtVol();
+	if (decimal::eq(unitQty, 0))
+		unitQty = DBL_MAX;
+
+	for (auto it = ruleGP.begin(); it != ruleGP.end(); it++)
+	{
+		const ActionRule& curRule = (*it);
+		if (curRule._atype == AT_Open && !bForceClose)
+		{
+			//先检查是否已经到了限额
+			//买入开仓, 即开多仓
+			double maxQty = left;
+
+			if (curRule._limit_l != 0)
+			{
+				if (statItem.l_openvol >= curRule._limit_l)
+				{
+					WTSLogger::log_dyn("trader", _id.c_str(), LL_WARN, "[%s] %s long position opened today is up to limit %u", _id.c_str(), stdCode, curRule._limit_l);
+					continue;
+				}
+				else
+				{
+					maxQty = min(maxQty, curRule._limit_l - statItem.l_openvol);
+				}
+			}
+
+			if (curRule._limit != 0)
+			{
+				if (statItem.l_openvol + statItem.s_openvol >= curRule._limit)
+				{
+					WTSLogger::log_dyn("trader", _id.c_str(), LL_WARN, "[%s] %s position opened today is up to limit %u", _id.c_str(), stdCode, curRule._limit);
+					continue;
+				}
+				else
+				{
+					maxQty = min(maxQty, curRule._limit - statItem.l_openvol - statItem.s_openvol);
+				}
+			}
+
+			//这里还要考虑单笔最大委托数量
+			double leftQty = maxQty;
+			for (;;)
+			{
+				double curQty = min(leftQty, unitQty);
+				uint32_t localid = openLong(stdCode, price, curQty, flag);
+				ret.emplace_back(localid);
+
+				leftQty -= curQty;
+
+				if (decimal::eq(leftQty, 0))
+					break;
+			}
+
+			left -= maxQty;
+
+			WTSLogger::log_dyn_f("trader", _id.c_str(), LL_INFO,
+				"[{}] Signal of buying {} of quantity {} triggered: Opening long of quantity {}", _id.c_str(), stdCode, qty, maxQty);
+		}
+		else if (curRule._atype == AT_CloseToday)
+		{
+			double maxQty = 0;
+			//如果要区分平昨平今的品种, 则只读取可平今仓即可
+			//如果不区分平昨平今的品种, 则读取全部可平, 因为读取可拼今仓也没意义
+			if (commInfo->getCoverMode() == CM_CoverToday)
+				maxQty = min(left, pItem.s_newavail);	//先看看可平今仓
+			else
+				maxQty = min(left, pItem.avail_pos(false));
+
+
+			//如果要检查净今仓，但是昨仓不为0，则跳过该条规则
+			if (!bForceClose && curRule._pure && !decimal::eq(pItem.s_prevol, 0.0))
+			{
+				WTSLogger::log_dyn_f("trader", _id.c_str(), LL_WARN,
+					"[{}] Closing new short position of {} skipped because of non-zero pre short position", _id.c_str(), stdCode);
+				continue;
+			}
+
+			//这里还要考虑单笔最大委托数量
+			//if (maxQty > 0)
+			if (decimal::gt(maxQty, 0))
+			{
+				double leftQty = maxQty;
+				for (;;)
+				{
+					double curQty = min(leftQty, unitQty);
+					uint32_t localid = closeShort(stdCode, price, curQty, (commInfo->getCoverMode() == CM_CoverToday), flag);//如果不支持平今, 则直接下平仓标记即可
+					ret.emplace_back(localid);
+
+					leftQty -= curQty;
+
+					//if (leftQty == 0)
+					if (decimal::eq(leftQty, 0))
+						break;
+				}
+				left -= maxQty;
+
+				if (commInfo->getCoverMode() == CM_CoverToday)
+				{
+					WTSLogger::log_dyn_f("trader", _id.c_str(), LL_INFO,
+						"[{}] Signal of buying {} of quantity {} triggered: Closing new short of quantity {}", _id.c_str(), stdCode, qty, maxQty);
+				}
+				else
+				{
+					WTSLogger::log_dyn_f("trader", _id.c_str(), LL_INFO,
+						"[{}] Signal of buying {} of quantity {} triggered: Closing short of quantity {}", _id.c_str(), stdCode, qty, maxQty);
+				}
+			}
+
+		}
+		else if (curRule._atype == AT_CloseYestoday)
+		{
+			//平昨比较简单, 因为不需要区分标记
+			double maxQty = min(left, pItem.s_preavail);
+
+			//如果要检查净昨仓，但是今仓不为0，则跳过该条规则
+			if (!bForceClose && curRule._pure && !decimal::eq(pItem.s_newvol, 0.0))
+			{
+				WTSLogger::log_dyn_f("trader", _id.c_str(), LL_WARN,
+					"[{}] Closing pre short position of {} skipped because of non-zero new short position", _id.c_str(), stdCode);
+				continue;
+			}
+
+			//这里还要考虑单笔最大委托数量
+			//if (maxQty > 0)
+			if (decimal::gt(maxQty, 0))
+			{
+				double leftQty = maxQty;
+				for (;;)
+				{
+					double curQty = min(leftQty, unitQty);
+					uint32_t localid = closeShort(stdCode, price, curQty, false, flag);//如果不支持平今, 则直接下平仓标记即可
+					ret.emplace_back(localid);
+
+					leftQty -= curQty;
+
+					//if (leftQty == 0)
+					if (decimal::eq(leftQty, 0))
+						break;
+				}
+
+				left -= maxQty;
+
+				if (commInfo->getCoverMode() == CM_CoverToday)
+				{
+					WTSLogger::log_dyn_f("trader", _id.c_str(), LL_INFO,
+						"[{}] Signal of buying {} of quantity {} triggered: Closing old short of quantity {}", _id.c_str(), stdCode, qty, maxQty);
+				}
+				else
+				{
+					WTSLogger::log_dyn_f("trader", _id.c_str(), LL_INFO,
+						"[{}] Signal of buying {} of quantity {} triggered: Closing short of quantity {}", _id.c_str(), stdCode, qty, maxQty);
+				}
+			}
+		}
+		else if (curRule._atype == AT_Close)
+		{
+			//如果只是平仓, 则分情况处理
+			//如果区分平昨平今, 则要先平昨再平今
+			//如果不区分平昨平今, 则统一平仓
+			if (commInfo->getCoverMode() != CM_CoverToday)
+			{
+				double maxQty = min(pItem.avail_pos(false), left);
+
+				//if (maxQty > 0)
+				if (decimal::gt(maxQty, 0))
+				{
+					double leftQty = maxQty;
+					for (;;)
+					{
+						double curQty = min(leftQty, unitQty);
+						uint32_t localid = closeShort(stdCode, price, curQty, false, flag);
+						ret.emplace_back(localid);
+
+						leftQty -= curQty;
+
+						//if (leftQty == 0)
+						if (decimal::eq(leftQty, 0))
+							break;
+					}
+					left -= maxQty;
+
+					WTSLogger::log_dyn_f("trader", _id.c_str(), LL_INFO,
+						"[{}] Signal of buying {} of quantity {} triggered: Closing short of quantity {}", _id.c_str(), stdCode, qty, maxQty);
+				}
+			}
+			else
+			{
+				//if (pItem.s_preavail > 0)
+				if (decimal::gt(pItem.s_preavail, 0))
+				{
+					//先将可平昨仓平仓
+					double maxQty = min(pItem.s_preavail, qty);
+					double leftQty = maxQty;
+					for (;;)
+					{
+						double curQty = min(leftQty, unitQty);
+						uint32_t localid = closeShort(stdCode, price, curQty, false, flag);
+						ret.emplace_back(localid);
+
+						leftQty -= curQty;
+
+						//if (leftQty == 0)
+						if (decimal::eq(leftQty, 0))
+							break;
+					}
+					left -= maxQty;
+
+					WTSLogger::log_dyn_f("trader", _id.c_str(), LL_INFO,
+						"[{}] Signal of buying {} of quantity {} triggered: Closing old short of quantity {}", _id.c_str(), stdCode, qty, maxQty);
+				}
+
+				//if (left > 0 && pItem.s_newavail > 0)
+				if (decimal::gt(left, 0) && decimal::gt(pItem.s_newavail, 0))
+				{
+					//再将可平今仓平仓
+					//TODO: 这里还有一个控制, 就是强制锁今仓的话, 这段逻辑就跳过去了
+					double maxQty = min(pItem.s_newavail, left);
+					double leftQty = maxQty;
+					for (;;)
+					{
+						double curQty = min(leftQty, unitQty);
+						uint32_t localid = closeShort(stdCode, price, curQty, true, flag);
+						ret.emplace_back(localid);
+
+						leftQty -= curQty;
+
+						//if (leftQty == 0)
+						if (decimal::eq(leftQty, 0))
+							break;
+					}
+					left -= maxQty;
+
+					WTSLogger::log_dyn_f("trader", _id.c_str(), LL_INFO,
+						"[{}] Signal of buying {} of quantity {} triggered: Closing new short of quantity {}", _id.c_str(), stdCode, qty, maxQty);
+				}
+			}
+		}
+
+		if (left == 0)
+			break;
+	}
+
+	if (left > 0)
+	{
+		WTSLogger::log_dyn_f("trader", _id.c_str(), LL_ERROR,
+			"[{}] Signal of buying {} of quantity {} left quantity of {} not triggered", _id.c_str(), stdCode, qty, left);
+	}
+
+	return ret;
+}
+
+OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty, int flag, bool bForceClose, WTSContractInfo* cInfo /* = NULL */)
+{
+	OrderIDs ret;
+	if (qty == 0)
+		return ret;
+
+	if (cInfo == NULL) cInfo = getContract(stdCode);
+	WTSCommodityInfo* commInfo = cInfo->getCommInfo();
+	WTSSessionInfo* sInfo = commInfo->getSessionInfo();
+
+	const PosItem& pItem = _positions[stdCode];
+	WTSTradeStateInfo* statInfo = (WTSTradeStateInfo*)_stat_map->get(stdCode);
+	if (statInfo == NULL)
+	{
+		statInfo = WTSTradeStateInfo::create(stdCode);
+		_stat_map->add(stdCode, statInfo, false);
+	}
+	TradeStatInfo& statItem = statInfo->statInfo();
+
+	const ActionRuleGroup& ruleGP = _policy_mgr->getActionRules(commInfo->getFullPid());
+
+	double left = qty;
+
+	double unitQty = (price == 0.0) ? cInfo->getMaxMktVol() : cInfo->getMaxLmtVol();
+	if (decimal::eq(unitQty, 0))
+		unitQty = DBL_MAX;
+
+	for (auto it = ruleGP.begin(); it != ruleGP.end(); it++)
+	{
+		const ActionRule& curRule = (*it);
+		if (curRule._atype == AT_Open && !bForceClose)
+		{
+			//先检查是否已经到了限额
+			//买入开仓, 即开多仓
+			double maxQty = left;
+
+			if (curRule._limit_s != 0)
+			{
+				if (statItem.s_openvol >= curRule._limit_s)
+				{
+					WTSLogger::log_dyn_f("trader", _id.c_str(), LL_WARN, "[{}] {} short position opened today is up to limit {}", _id.c_str(), stdCode, curRule._limit_l);
+					continue;
+				}
+				else
+				{
+					maxQty = min(maxQty, curRule._limit_s - statItem.s_openvol);
+				}
+			}
+
+			if (curRule._limit != 0)
+			{
+				if (statItem.l_openvol + statItem.s_openvol >= curRule._limit)
+				{
+					WTSLogger::log_dyn_f("trader", _id.c_str(), LL_WARN, "[{}] {} position opened today is up to limit {}", _id.c_str(), stdCode, curRule._limit);
+					continue;
+				}
+				else
+				{
+					maxQty = min(maxQty, curRule._limit - statItem.l_openvol - statItem.s_openvol);
+				}
+			}
+
+			//这里还要考虑单笔最大委托数量
+			double leftQty = maxQty;
+			for (;;)
+			{
+				double curQty = min(leftQty, unitQty);
+				uint32_t localid = openShort(stdCode, price, curQty, flag);
+				ret.emplace_back(localid);
+
+				leftQty -= curQty;
+
+				if (decimal::eq(leftQty, 0))
+					break;
+			}
+
+			left -= maxQty;
+
+			WTSLogger::log_dyn_f("trader", _id.c_str(), LL_INFO,
+				"[{}] Signal of selling {} of quantity {} triggered: Opening short of quantity {}", _id.c_str(), stdCode, qty, maxQty);
+		}
+		else if (curRule._atype == AT_CloseToday)
+		{
+			double maxQty = 0;
+			//如果要区分平昨平今的品种, 则只读取可平今仓即可
+			//如果不区分平昨平今的品种, 则读取全部可平, 因为读取可平今仓也没意义
+			if (commInfo->getCoverMode() == CM_CoverToday)
+				maxQty = min(left, pItem.l_newavail);	//先看看可平今仓
+			else
+				maxQty = min(left, pItem.avail_pos(true));
+
+			//如果要检查净今仓，但是昨仓不为0，则跳过该条规则
+			if (!bForceClose && curRule._pure && !decimal::eq(pItem.l_prevol, 0.0))
+			{
+				WTSLogger::log_dyn_f("trader", _id.c_str(), LL_WARN,
+					"[{}] Closing new long position of {} skipped because of non-zero pre long position", _id.c_str(), stdCode);
+				continue;
+			}
+
+			//这里还要考虑单笔最大委托数量
+			if (decimal::gt(maxQty, 0))
+			{
+				double leftQty = maxQty;
+				for (;;)
+				{
+					double curQty = min(leftQty, unitQty);
+					uint32_t localid = closeLong(stdCode, price, curQty, (commInfo->getCoverMode() == CM_CoverToday), flag);//如果不支持平今, 则直接下平仓标记即可
+					ret.emplace_back(localid);
+
+					leftQty -= curQty;
+
+					if (decimal::eq(leftQty, 0))
+						break;
+				}
+				left -= maxQty;
+
+				if (commInfo->getCoverMode() == CM_CoverToday)
+				{
+					WTSLogger::log_dyn_f("trader", _id.c_str(), LL_INFO,
+						"[{}] Signal of selling {} of quantity {} triggered: Closing new long of quantity {}", _id.c_str(), stdCode, qty, maxQty);
+				}
+				else
+				{
+					WTSLogger::log_dyn_f("trader", _id.c_str(), LL_INFO,
+						"[{}] Signal of selling {} of quantity {} triggered: Closing long of quantity {}", _id.c_str(), stdCode, qty, maxQty);
+				}
+			}
+
+		}
+		else if (curRule._atype == AT_CloseYestoday)
+		{
+			//平昨比较简单, 因为不需要区分标记
+			double maxQty = min(left, pItem.l_preavail);
+
+			//如果要检查净昨仓，但是今仓不为0，则跳过该条规则
+			if (!bForceClose && curRule._pure && !decimal::eq(pItem.l_newvol, 0.0))
+			{
+				WTSLogger::log_dyn_f("trader", _id.c_str(), LL_WARN,
+					"[{}] Closing pre long position of {} skipped because of non-zero new long position", _id.c_str(), stdCode);
+				continue;
+			}
+
+			//这里还要考虑单笔最大委托数量
+			if (decimal::gt(maxQty, 0))
+			{
+				double leftQty = maxQty;
+				for (;;)
+				{
+					double curQty = min(leftQty, unitQty);
+					uint32_t localid = closeLong(stdCode, price, curQty, false, flag);//如果不支持平今, 则直接下平仓标记即可
+					ret.emplace_back(localid);
+
+					leftQty -= curQty;
+
+					if (decimal::eq(leftQty, 0))
+						break;
+				}
+				left -= maxQty;
+
+				if (commInfo->getCoverMode() == CM_CoverToday)
+				{
+					WTSLogger::log_dyn_f("trader", _id.c_str(), LL_INFO,
+						"[{}] Signal of selling {} of quantity {} triggered: Closing old long of quantity {}", _id.c_str(), stdCode, qty, maxQty);
+				}
+				else
+				{
+					WTSLogger::log_dyn_f("trader", _id.c_str(), LL_INFO,
+						"[{}] Signal of selling {} of quantity {} triggered: Closing long of quantity {}", _id.c_str(), stdCode, qty, maxQty);
+				}
+			}
+		}
+		else if (curRule._atype == AT_Close)
+		{
+			//如果只是平仓, 则分情况处理
+			//如果区分平昨平今, 则要先平昨再平今
+			//如果不区分平昨平今, 则统一平仓
+			if (commInfo->getCoverMode() != CM_CoverToday)
+			{
+				double maxQty = min(pItem.avail_pos(true), left);	//不区分平昨平今, 则读取全部可平量
+				if (decimal::gt(maxQty, 0))
+				{
+					double leftQty = maxQty;
+					for (;;)
+					{
+						double curQty = min(leftQty, unitQty);
+						uint32_t localid = closeLong(stdCode, price, curQty, false, flag);
+						ret.emplace_back(localid);
+
+						leftQty -= curQty;
+
+						if (decimal::eq(leftQty, 0))
+							break;
+					}
+					left -= maxQty;
+
+					WTSLogger::log_dyn_f("trader", _id.c_str(), LL_INFO,
+						"[{}] Signal of selling {} of quantity {} triggered: Closing long of quantity {}", _id.c_str(), stdCode, qty, maxQty);
+				}
+
+			}
+			else
+			{
+				if (decimal::gt(left, 0) && decimal::gt(pItem.l_preavail, 0))
+				{
+					//先将可平昨仓平仓
+					double maxQty = min(pItem.l_preavail, qty);
+					if (decimal::gt(maxQty, 0))
+					{
+						double leftQty = maxQty;
+						for (;;)
+						{
+							double curQty = min(leftQty, unitQty);
+							uint32_t localid = closeLong(stdCode, price, curQty, false, flag);
+							ret.emplace_back(localid);
+
+							leftQty -= curQty;
+
+							if (decimal::eq(leftQty, 0))
+								break;
+						}
+						left -= maxQty;
+
+						WTSLogger::log_dyn_f("trader", _id.c_str(), LL_INFO,
+							"[{}] Signal of selling {} of quantity {} triggered: Closing old long of quantity {}", _id.c_str(), stdCode, qty, maxQty);
+					}
+
+				}
+
+				if (decimal::gt(left, 0) && decimal::gt(pItem.l_newavail, 0))
+				{
+					//再将可平今仓平仓
+					//TODO: 这里还有一个控制, 就是强制锁今仓的话, 这段逻辑就跳过去了
+					double maxQty = min(pItem.l_newavail, left);
+					if (decimal::gt(maxQty, 0))
+					{
+						double leftQty = maxQty;
+						for (;;)
+						{
+							double curQty = min(leftQty, unitQty);
+							uint32_t localid = closeLong(stdCode, price, curQty, true, flag);
+							ret.emplace_back(localid);
+
+							leftQty -= curQty;
+
+							if (decimal::eq(leftQty, 0))
+								break;
+						}
+						left -= maxQty;
+
+						WTSLogger::log_dyn_f("trader", _id.c_str(), LL_INFO,
+							"[{}] Signal of selling {} of quantity {} triggered: Closing new long of quantity {}", _id.c_str(), stdCode, qty, maxQty);
+					}
+
+				}
+			}
+		}
+
+		if (left == 0)
+			break;
+	}
+
+	if (left > 0)
+	{
+		WTSLogger::log_dyn_f("trader", _id.c_str(), LL_ERROR,
+			"[{}] Signal of buying {} of quantity {} left quantity of {} not triggered", _id.c_str(), stdCode, qty, left);
+	}
+
+	return ret;
+}
+
 
 uint32_t TraderAdapter::openLong(const char* stdCode, double price, double qty, int flag /* = 0 */)
 {
@@ -663,7 +1211,49 @@ void TraderAdapter::onRspOrders(const WTSArray* ayOrders)
 
 			std::string stdCode = cInfo->getFullCode();
 
-			_orderids.insert(orderInfo->getOrderID());			
+			_orderids.insert(orderInfo->getOrderID());		
+
+			//更新统计信息
+			WTSTradeStateInfo* statInfo = (WTSTradeStateInfo*)_stat_map->get(stdCode.c_str());
+			if (statInfo == NULL)
+			{
+				statInfo = WTSTradeStateInfo::create(stdCode.c_str());
+				_stat_map->add(stdCode, statInfo, false);
+			}
+			TradeStatInfo& statItem = statInfo->statInfo();
+			if (isBuy)
+			{
+				statItem.b_orders++;
+				statItem.b_ordqty += orderInfo->getVolume();
+
+				if (orderInfo->isError())
+				{
+					statItem.b_wrongs++;
+					statItem.b_wrongqty += orderInfo->getVolume() - orderInfo->getVolTraded();
+				}
+				else if (orderInfo->getOrderState() == WOS_Canceled)
+				{
+					statItem.b_cancels++;
+					statItem.b_canclqty += orderInfo->getVolume() - orderInfo->getVolTraded();
+				}
+
+			}
+			else
+			{
+				statItem.s_orders++;
+				statItem.s_ordqty += orderInfo->getVolume();
+
+				if (orderInfo->isError())
+				{
+					statItem.s_wrongs++;
+					statItem.s_wrongqty += orderInfo->getVolume() - orderInfo->getVolTraded();
+				}
+				else if (orderInfo->getOrderState() == WOS_Canceled)
+				{
+					statItem.s_cancels++;
+					statItem.s_canclqty += orderInfo->getVolume() - orderInfo->getVolTraded();
+				}
+			}
 
 			if (!orderInfo->isAlive())
 				continue;
@@ -717,11 +1307,53 @@ void TraderAdapter::onRspTrades(const WTSArray* ayTrades)
 		{
 			WTSTradeInfo* tInfo = (WTSTradeInfo*)(*it);
 
-			WTSContractInfo* cInfo = _bd_mgr->getContract(tInfo->getCode(), tInfo->getExchg());
+			WTSContractInfo* cInfo = tInfo->getContractInfo();
 			if (cInfo == NULL)
 				continue;
 
-			std::string stdCode = cInfo->getFullCode();
+			const char* stdCode = cInfo->getFullCode();
+
+			WTSTradeStateInfo* statInfo = (WTSTradeStateInfo*)_stat_map->get(stdCode);
+			if (statInfo == NULL)
+			{
+				statInfo = WTSTradeStateInfo::create(stdCode);
+				_stat_map->add(stdCode, statInfo, false);
+			}
+			TradeStatInfo& statItem = statInfo->statInfo();
+
+			bool isLong = (tInfo->getDirection() == WDT_LONG);
+			bool isOpen = (tInfo->getOffsetType() == WOT_OPEN);
+			bool isCloseT = (tInfo->getOffsetType() == WOT_CLOSETODAY);
+			double qty = tInfo->getVolume();
+
+			if (isLong)
+			{
+				if (isOpen)
+					statItem.l_openvol += qty;
+				else if (isCloseT)
+					statItem.l_closetvol += qty;
+				else
+					statItem.l_closevol += qty;
+			}
+			else
+			{
+				if (isOpen)
+					statItem.s_openvol += qty;
+				else if (isCloseT)
+					statItem.s_closetvol += qty;
+				else
+					statItem.s_closevol += qty;
+			}
+		}
+
+		for (auto it = _stat_map->begin(); it != _stat_map->end(); it++)
+		{
+			const char* stdCode = it->first.c_str();
+			WTSTradeStateInfo* pItem = (WTSTradeStateInfo*)it->second;
+			WTSLogger::log_dyn_f("trader", _id.c_str(), LL_INFO,
+				"[{}] {} action stats updated, long opened: {}, long closed: {}, new long closed: {}, short opened: {}, short closed: {}, new short closed: {}",
+				_id.c_str(), stdCode, pItem->open_volume_long(), pItem->close_volume_long(), pItem->closet_volume_long(),
+				pItem->open_volume_short(), pItem->close_volume_short(), pItem->closet_volume_short());
 		}
 	}
 
@@ -764,6 +1396,44 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 	std::string stdCode = cInfo->getFullCode();
 
 	bool isBuy = (orderInfo->getDirection() == WDT_LONG && orderInfo->getOffsetType() == WOT_OPEN) || (orderInfo->getDirection() == WDT_SHORT && orderInfo->getOffsetType() != WOT_OPEN);
+
+	//撤销的话, 要更新统计数据
+	if (orderInfo->getOrderState() == WOS_Canceled)
+	{
+		WTSTradeStateInfo* statInfo = (WTSTradeStateInfo*)_stat_map->get(stdCode.c_str());
+		if (statInfo == NULL)
+		{
+			statInfo = WTSTradeStateInfo::create(stdCode.c_str());
+			_stat_map->add(stdCode, statInfo, false);
+		}
+		TradeStatInfo& statItem = statInfo->statInfo();
+		if (isBuy)
+		{
+			if (orderInfo->isError())//错单要和撤单区分开
+			{
+				statItem.b_wrongs++;
+				statItem.b_wrongqty += orderInfo->getVolume() - orderInfo->getVolTraded();
+			}
+			else
+			{
+				statItem.b_cancels++;
+				statItem.b_canclqty += orderInfo->getVolume() - orderInfo->getVolTraded();
+			}
+		}
+		else
+		{
+			if (orderInfo->isError())//错单要和撤单区分开
+			{
+				statItem.s_wrongs++;
+				statItem.s_wrongqty += orderInfo->getVolume() - orderInfo->getVolTraded();
+			}
+			else
+			{
+				statItem.s_cancels++;
+				statItem.s_canclqty += orderInfo->getVolume() - orderInfo->getVolTraded();
+			}
+		}
+	}
 
 
 	WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO,"[%s] Order notified, instrument: %s, usertag: %s, state: %s", _id.c_str(), stdCode.c_str(), orderInfo->getUserTag(), stateToName(orderInfo->getOrderState()));
@@ -974,6 +1644,13 @@ void TraderAdapter::onPushTrade(WTSTradeInfo* tradeRecord)
 	}
 
 	PosItem& pItem = _positions[stdCode];
+	WTSTradeStateInfo* statInfo = (WTSTradeStateInfo*)_stat_map->get(stdCode.c_str());
+	if (statInfo == NULL)
+	{
+		statInfo = WTSTradeStateInfo::create(stdCode.c_str());
+		_stat_map->add(stdCode, statInfo, false);
+	}
+
 	double vol = tradeRecord->getVolume();
 	if(isLong)
 	{

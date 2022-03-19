@@ -22,6 +22,7 @@
     <ClInclude Include="..\Includes\IDataReader.h" />
     <ClInclude Include="..\Includes\IUftStraCtx.h" />
     <ClInclude Include="..\Includes\UftStrategyDefs.h" />
+    <ClInclude Include="ActionPolicyMgr.h" />
     <ClInclude Include="UftStraBaseCtx.h" />
     <ClInclude Include="UftStraContext.h" />
     <ClInclude Include="UftStrategyMgr.h" />
@@ -34,6 +35,7 @@
     <ClInclude Include="WtUftTicker.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ActionPolicyMgr.cpp" />
     <ClCompile Include="UftStraBaseCtx.cpp" />
     <ClCompile Include="UftStraContext.cpp" />
     <ClCompile Include="UftStrategyMgr.cpp" />

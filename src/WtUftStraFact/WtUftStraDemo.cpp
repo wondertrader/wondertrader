@@ -132,7 +132,6 @@ void WtUftStraDemo::on_tick(IUftStraCtx* ctx, const char* code, WTSTickData* new
 	if (signal != 0)
 	{
 		double curPos = ctx->stra_get_position(code);
-		double prevol = _prev;
 
 		WTSCommodityInfo* cInfo = ctx->stra_get_comminfo(code);
 
@@ -141,17 +140,13 @@ void WtUftStraDemo::on_tick(IUftStraCtx* ctx, const char* code, WTSTickData* new
 			//最新价+2跳下单
 			double targetPx = price + cInfo->getPriceTick() * _offset;
 
-			uint32_t localid;
-			if(decimal::lt(curPos, 0))
-				localid = ctx->stra_exit_short(code, targetPx, _lots, true, UFT_OrderFlag_FAK);
-			else
-				localid = ctx->stra_enter_long(code, targetPx, _lots, UFT_OrderFlag_FAK);
+			auto ids = ctx->stra_buy(code, targetPx, _lots, UFT_OrderFlag_FAK);
 
-			if(localid != 0)
 			{
-				_mtx_ords.lock();
-				_orders.insert(localid);
-				_mtx_ords.unlock();
+				_lck_ords.lock();
+				for (uint32_t localid : ids)
+					_orders.insert(localid);
+				_lck_ords.unlock();
 				_last_entry_time = now;
 			}
 			
@@ -161,17 +156,13 @@ void WtUftStraDemo::on_tick(IUftStraCtx* ctx, const char* code, WTSTickData* new
 			//最新价-2跳下单
 			double targetPx = price - cInfo->getPriceTick()*_offset;
 
-			uint32_t localid;
-			if (decimal::gt(curPos, 0))
-				localid = ctx->stra_exit_long(code, targetPx, _lots, true, UFT_OrderFlag_FAK);
-			else
-				localid = ctx->stra_enter_short(code, targetPx, _lots, UFT_OrderFlag_FAK);
+			auto ids = ctx->stra_sell(code, targetPx, _lots, UFT_OrderFlag_FAK);
 
-			if (localid != 0)
 			{
-				_mtx_ords.lock();
-				_orders.insert(localid);
-				_mtx_ords.unlock();
+				_lck_ords.lock();
+				for (uint32_t localid : ids)
+					_orders.insert(localid);
+				_lck_ords.unlock();
 				_last_entry_time = now;
 			}
 		}
@@ -185,14 +176,14 @@ void WtUftStraDemo::check_orders()
 		uint64_t now = TimeUtils::makeTime(_ctx->stra_get_date(), _ctx->stra_get_time() * 100000 + _ctx->stra_get_secs());
 		if (now - _last_entry_time >= _secs * 1000)	//如果超过一定时间没有成交完,则撤销
 		{
-			_mtx_ords.lock();
+			_lck_ords.lock();
 			for (auto localid : _orders)
 			{
 				_ctx->stra_cancel(localid);
 				_cancel_cnt++;
 				_ctx->stra_log_info(fmt::format("Order expired, cancelcnt updated to {}", _cancel_cnt).c_str());
 			}
-			_mtx_ords.unlock();
+			_lck_ords.unlock();
 		}
 	}
 }
@@ -226,14 +217,14 @@ void WtUftStraDemo::on_order(IUftStraCtx* ctx, uint32_t localid, const char* std
 	//如果已撤销或者剩余数量为0,则清除掉原有的id记录
 	if(isCanceled || leftQty == 0)
 	{
-		_mtx_ords.lock();
+		_lck_ords.lock();
 		_orders.erase(it);
 		if (_cancel_cnt > 0)
 		{
 			_cancel_cnt--;
 			_ctx->stra_log_info(fmt::format("cancelcnt -> {}", _cancel_cnt).c_str());
 		}
-		_mtx_ords.unlock();
+		_lck_ords.unlock();
 	}
 }
 

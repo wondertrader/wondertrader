@@ -124,6 +124,11 @@ bool WtUftRunner::config()
 	//初始化数据管理
 	initDataMgr();
 
+	if(!_act_policy.init(_config->getCString("bspolicy")))
+	{
+		WTSLogger::error_f("ActionPolicyMgr init failed, please check config");
+	}
+
 	//初始化行情通道
 	WTSVariant* cfgParser = _config->get("parsers");
 	if (cfgParser)
@@ -314,7 +319,7 @@ bool WtUftRunner::initTraders(WTSVariant* cfgTrader)
 		const char* id = cfgItem->getCString("id");
 
 		TraderAdapterPtr adapter(new TraderAdapter());
-		adapter->init(id, cfgItem, &_bd_mgr);
+		adapter->init(id, cfgItem, &_bd_mgr, &_act_policy);
 
 		_traders.addAdapter(id, adapter);
 

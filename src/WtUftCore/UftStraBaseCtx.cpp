@@ -96,6 +96,16 @@ OrderIDs UftStraBaseCtx::stra_cancel_all(const char* stdCode)
 	return _trader->cancelAll(stdCode);
 }
 
+OrderIDs UftStraBaseCtx::stra_buy(const char* stdCode, double price, double qty, int flag /* = 0 */)
+{
+	return _trader->buy(stdCode, price, qty, flag, false);
+}
+
+OrderIDs UftStraBaseCtx::stra_sell(const char* stdCode, double price, double qty, int flag /* = 0 */)
+{
+	return _trader->sell(stdCode, price, qty, flag, false);
+}
+
 uint32_t UftStraBaseCtx::stra_enter_long(const char* stdCode, double price, double qty, int flag /* = 0 */)
 {
 	return _trader->openLong(stdCode, price, qty, flag);

@@ -5,6 +5,7 @@
 #include <mutex>
 
 #include "../Includes/UftStrategyDefs.h"
+#include "../Share/SpinLock.hpp"
 
 class WtUftStraDemo : public UftStrategy
 {
@@ -52,7 +53,7 @@ private:
 
 	typedef std::unordered_set<uint32_t> IDSet;
 	IDSet			_orders;
-	std::mutex		_mtx_ords;
+	SpinLock		_lck_ords;
 
 	uint64_t		_last_entry_time;
 

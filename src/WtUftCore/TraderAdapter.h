@@ -20,6 +20,7 @@ class WTSVariant;
 class WTSContractInfo;
 class WTSCommodityInfo;
 class ITrdNotifySink;
+class ActionPolicyMgr;
 
 typedef std::vector<uint32_t> OrderIDs;
 typedef WTSMap<uint32_t> OrderMap;
@@ -81,9 +82,9 @@ public:
 
 
 public:
-	bool init(const char* id, WTSVariant* params, IBaseDataMgr* bdMgr);
+	bool init(const char* id, WTSVariant* params, IBaseDataMgr* bdMgr, ActionPolicyMgr* policyMgr);
 
-	bool initExt(const char* id, ITraderApi* api, IBaseDataMgr* bdMgr);
+	bool initExt(const char* id, ITraderApi* api, IBaseDataMgr* bdMgr, ActionPolicyMgr* policyMgr);
 
 	void release();
 
@@ -105,7 +106,6 @@ private:
 	inline void	printPosition(const char* stdCode, const PosItem& pItem);
 
 	inline WTSContractInfo* getContract(const char* stdCode);
-	inline WTSCommodityInfo* getCommodify(const char* stdCommID);
 
 	inline void updateUndone(const char* stdCode, double qty, bool bOuput = true);
 
@@ -121,6 +121,9 @@ public:
 
 		return 0;
 	}
+
+	OrderIDs buy(const char* stdCode, double price, double qty, int flag, bool bForceClose, WTSContractInfo* cInfo = NULL);
+	OrderIDs sell(const char* stdCode, double price, double qty, int flag, bool bForceClose, WTSContractInfo* cInfo = NULL);
 
 	/*
 	 *	下单接口: 开多
@@ -215,6 +218,7 @@ private:
 	faster_hashset<ITrdNotifySink*>	_sinks;
 
 	IBaseDataMgr*		_bd_mgr;
+	ActionPolicyMgr*	_policy_mgr;
 
 	faster_hashmap<std::string, PosItem> _positions;
 
@@ -223,6 +227,9 @@ private:
 	faster_hashset<std::string> _orderids;	//主要用于标记有没有处理过该订单
 
 	faster_hashmap<LongKey, double> _undone_qty;	//未完成数量
+
+	typedef WTSHashMap<LongKey>	TradeStatMap;
+	TradeStatMap*	_stat_map;	//统计数据
 };
 
 typedef std::shared_ptr<TraderAdapter>				TraderAdapterPtr;

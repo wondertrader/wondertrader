@@ -19,6 +19,7 @@
 #include "../WtUftCore/TraderAdapter.h"
 #include "../WtUftCore/ParserAdapter.h"
 #include "../WtUftCore/WtUftDtMgr.h"
+#include "../WtUftCore/ActionPolicyMgr.h"
 
 #include "../WTSTools/WTSHotMgr.h"
 #include "../WTSTools/WTSBaseDataMgr.h"
@@ -71,5 +72,7 @@ private:
 	WTSHotMgr			_hot_mgr;
 
 	UftStrategyMgr		_uft_stra_mgr;
+
+	ActionPolicyMgr		_act_policy;
 };
 
