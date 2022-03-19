@@ -321,7 +321,7 @@ namespace uft
 		{
 			TestTrader * tester = new TestTrader();
 			TraderAdapterPtr adapter(new TraderAdapter());
-			adapter->initExt("trader", tester, &_bd_mgr);
+			adapter->initExt("trader", tester, &_bd_mgr, NULL);
 			_traders.addAdapter("trader", adapter);
 		}
 
