@@ -1233,8 +1233,16 @@ void TraderAdapter::onRspOrders(const WTSArray* ayOrders)
 				}
 				else if (orderInfo->getOrderState() == WOS_Canceled)
 				{
-					statItem.b_cancels++;
-					statItem.b_canclqty += orderInfo->getVolume() - orderInfo->getVolTraded();
+					if (orderInfo->getOrderFlag() == WOF_NOR)
+					{
+						statItem.b_cancels++;
+						statItem.b_canclqty += orderInfo->getVolume() - orderInfo->getVolTraded();
+					}
+					else
+					{
+						statItem.b_auto_cancels++;
+						statItem.b_auto_canclqty += orderInfo->getVolume() - orderInfo->getVolTraded();
+					}
 				}
 
 			}
@@ -1250,8 +1258,16 @@ void TraderAdapter::onRspOrders(const WTSArray* ayOrders)
 				}
 				else if (orderInfo->getOrderState() == WOS_Canceled)
 				{
-					statItem.s_cancels++;
-					statItem.s_canclqty += orderInfo->getVolume() - orderInfo->getVolTraded();
+					if (orderInfo->getOrderFlag() == WOF_NOR)
+					{
+						statItem.s_cancels++;
+						statItem.s_canclqty += orderInfo->getVolume() - orderInfo->getVolTraded();
+					}
+					else
+					{
+						statItem.s_auto_cancels++;
+						statItem.s_auto_canclqty += orderInfo->getVolume() - orderInfo->getVolTraded();
+					}
 				}
 			}
 
@@ -1416,8 +1432,17 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 			}
 			else
 			{
-				statItem.b_cancels++;
-				statItem.b_canclqty += orderInfo->getVolume() - orderInfo->getVolTraded();
+				//只有普通订单的撤单才计入统计
+				if(orderInfo->getOrderFlag() == WOF_NOR)
+				{
+					statItem.b_cancels++;
+					statItem.b_canclqty += orderInfo->getVolume() - orderInfo->getVolTraded();
+				}
+				else
+				{
+					statItem.b_auto_cancels++;
+					statItem.b_auto_canclqty += orderInfo->getVolume() - orderInfo->getVolTraded();
+				}
 			}
 		}
 		else
@@ -1429,8 +1454,16 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 			}
 			else
 			{
-				statItem.s_cancels++;
-				statItem.s_canclqty += orderInfo->getVolume() - orderInfo->getVolTraded();
+				if (orderInfo->getOrderFlag() == WOF_NOR)
+				{
+					statItem.s_cancels++;
+					statItem.s_canclqty += orderInfo->getVolume() - orderInfo->getVolTraded();
+				}
+				else
+				{
+					statItem.s_auto_cancels++;
+					statItem.s_auto_canclqty += orderInfo->getVolume() - orderInfo->getVolTraded();
+				}
 			}
 		}
 	}
