@@ -2006,7 +2006,6 @@ WTSKlineSlice* HisDataReplayer::get_kline_slice(const char* stdCode, const char*
 	if (realTimes != 1 && !bHasCache)
 	{	
 		std::string rawKey = StrUtil::printf("%s#%s#%u", stdCode, period, baseTimes);
-		_bars_cache[rawKey].reset(new BarsList());
 		BarsListPtr& rawBars = _bars_cache[rawKey];
 		WTSKlineSlice* rawKline = WTSKlineSlice::create(stdCode, kp, realTimes, &rawBars->_bars[0], rawBars->_bars.size());
 		rawKline->setCode(stdCode);
