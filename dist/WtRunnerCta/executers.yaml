@@ -7,13 +7,13 @@ executers:
 
     policy:         #执行单元分配策略，系统根据该策略创建对一个的执行单元
         default:    #默认策略，根据品种ID设置，如SHFE.rb，如果没有针对品种设置，则使用默认策略
-            name: WtExeFact.WtMinImpactExeUnit, #执行单元名称
-            offset: 0,      #委托价偏移跳数
-            expire: 5,      #订单超时没秒数
-            pricemode: 1,   #基础价格模式，-1-己方最优，0-最新价，1-对手价
-            span: 500,      #下单时间间隔（tick驱动的）
-            byrate: false,  #是否按对手盘挂单量的比例挂单，配合rate使用
-            lots: 1,        #固定数量
+            name: WtExeFact.WtMinImpactExeUnit  #执行单元名称
+            offset: 0       #委托价偏移跳数
+            expire: 5       #订单超时没秒数
+            pricemode: 1    #基础价格模式，-1-己方最优，0-最新价，1-对手价
+            span: 500       #下单时间间隔（tick驱动的）
+            byrate: false   #是否按对手盘挂单量的比例挂单，配合rate使用
+            lots: 1         #固定数量
             rate: 0         #挂单比例，配合byrate使用
 
     clear:                  #过期主力自动清理配置
