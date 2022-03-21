@@ -135,8 +135,8 @@ private:
 		 * 游标，用于标记下一条数据的位置，或者说已经回放过的条数
 		 * 未初始化时，游标为UINT_MAX，一旦初始化，游标必然是大于0的
 		 */
-		uint32_t		_cursor;
-		uint32_t		_count;
+		std::size_t		_cursor;
+		std::size_t		_count;
 
 		std::vector<T> _items;
 

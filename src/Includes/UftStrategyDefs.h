@@ -63,12 +63,12 @@ public:
 	 *	回测时，生命周期中会调用多次
 	 *	如果有什么数据需要每天初始化，可以放到这个回调中处理，实盘就和回测保持一致了
 	 */
-	virtual void on_session_begin(IHftStraCtx* ctx, uint32_t uTDate) {}
+	virtual void on_session_begin(IUftStraCtx* ctx, uint32_t uTDate) {}
 
 	/*
 	 *	交易日结束事件
 	 */
-	virtual void on_session_end(IHftStraCtx* ctx, uint32_t uTDate) {}
+	virtual void on_session_end(IUftStraCtx* ctx, uint32_t uTDate) {}
 
 	/*
 	 *	tick推送

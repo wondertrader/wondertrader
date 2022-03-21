@@ -576,7 +576,7 @@ uint32_t HisDataReplayer::locate_barindex(const std::string& key, uint64_t now, 
 			return a.time < b.time;
 	});
 
-	uint32_t idx;
+	std::size_t idx;
 	if (it == barsList->_bars.end())
 		idx = barsList->_bars.size() - 1;
 	else
@@ -1295,7 +1295,7 @@ uint64_t HisDataReplayer::getNextTickTime(uint32_t curTDate, uint64_t stime /* =
 						return a.action_time < b.action_time;
 				});
 
-				uint32_t idx = tit - tickList._items.begin();
+				std::size_t idx = tit - tickList._items.begin();
 				tickList._cursor = idx + 1;
 			}
 		}
@@ -1347,7 +1347,7 @@ uint64_t HisDataReplayer::getNextTransTime(uint32_t curTDate, uint64_t stime /* 
 						return a.action_time < b.action_time;
 				});
 
-				uint32_t idx = tit - itemList._items.begin();
+				std::size_t idx = tit - itemList._items.begin();
 				itemList._cursor = idx + 1;
 			}
 		}
@@ -1395,7 +1395,7 @@ uint64_t HisDataReplayer::getNextOrdDtlTime(uint32_t curTDate, uint64_t stime /*
 						return a.action_time < b.action_time;
 				});
 
-				uint32_t idx = tit - itemList._items.begin();
+				std::size_t idx = tit - itemList._items.begin();
 				itemList._cursor = idx + 1;
 			}
 		}
@@ -1443,7 +1443,7 @@ uint64_t HisDataReplayer::getNextOrdQueTime(uint32_t curTDate, uint64_t stime /*
 						return a.action_time < b.action_time;
 				});
 
-				uint32_t idx = tit - itemList._items.begin();
+				std::size_t idx = tit - itemList._items.begin();
 				itemList._cursor = idx + 1;
 			}
 		}
@@ -1546,7 +1546,7 @@ uint64_t HisDataReplayer::replayHftDatasByDay(uint32_t curTDate)
 			//By Wesley @ 2022.03.06 
 			//这里加了一个数据的判断
 			//如果数据为空，则不再进行回放
-			if(tickList._items.empty() || itemList._cursor > itemList._count)
+			if(tickList._items.empty() || tickList._cursor > tickList._count)
 				continue;
 
 			WTSTickStruct& nextTick = tickList._items[tickList._cursor - 1];
@@ -2058,7 +2058,7 @@ WTSKlineSlice* HisDataReplayer::get_kline_slice(const char* stdCode, const char*
 				return a.time < b.time;
 		});
 
-		uint32_t eIdx = it - kBlkPair->_bars.begin();
+		std::size_t eIdx = it - kBlkPair->_bars.begin();
 
 		if (it != kBlkPair->_bars.end())
 		{
@@ -2199,7 +2199,7 @@ WTSTickSlice* HisDataReplayer::get_tick_slice(const char* stdCode, uint32_t coun
 		else
 		{
 			
-			uint32_t idx = tit - tickList._items.begin();
+			std::size_t idx = tit - tickList._items.begin();
 			const WTSTickStruct& thisTick = *tit;
 			if (thisTick.action_date > uDate || (thisTick.action_date == uDate && thisTick.action_time > uTime))
 			{
@@ -2264,7 +2264,7 @@ WTSOrdDtlSlice* HisDataReplayer::get_order_detail_slice(const char* stdCode, uin
 				return a.action_time < b.action_time;
 		});
 
-		uint32_t idx = tit - dataList._items.begin();
+		std::size_t idx = tit - dataList._items.begin();
 		dataList._cursor = idx + 1;
 	}
 
@@ -2312,7 +2312,7 @@ WTSOrdQueSlice* HisDataReplayer::get_order_queue_slice(const char* stdCode, uint
 				return a.action_time < b.action_time;
 		});
 
-		uint32_t idx = tit - dataList._items.begin();
+		std::size_t idx = tit - dataList._items.begin();
 		dataList._cursor = idx + 1;
 	}
 
@@ -2360,16 +2360,16 @@ WTSTransSlice* HisDataReplayer::get_transaction_slice(const char* stdCode, uint3
 				return a.action_time < b.action_time;
 		});
 
-		uint32_t idx = tit - dataList._items.begin();
+		std::size_t idx = tit - dataList._items.begin();
 		dataList._cursor = idx + 1;
 	}
 
-	uint32_t eIdx = dataList._cursor - 1;
-	uint32_t sIdx = 0;
+	std::size_t eIdx = dataList._cursor - 1;
+	std::size_t sIdx = 0;
 	if (eIdx >= count - 1)
 		sIdx = eIdx + 1 - count;
 
-	uint32_t realCnt = eIdx - sIdx + 1;
+	std::size_t realCnt = eIdx - sIdx + 1;
 	if (realCnt == 0)
 		return NULL;
 
@@ -2573,7 +2573,7 @@ WTSTickData* HisDataReplayer::get_last_tick(const char* stdCode)
 				return a.action_time < b.action_time;
 		});
 
-		uint32_t idx = tit - tickList._items.begin();
+		std::size_t idx = tit - tickList._items.begin();
 		tickList._cursor = idx + 1;
 	}
 	else if (tickList._cursor > tickList._count)
@@ -2794,7 +2794,7 @@ void HisDataReplayer::checkUnbars()
 			return a.time < b.time;
 		});
 
-		uint32_t eIdx = it - kBlkPair->_bars.begin();
+		std::size_t eIdx = it - kBlkPair->_bars.begin();
 
 		if (it != kBlkPair->_bars.end())
 		{
@@ -3550,7 +3550,7 @@ bool HisDataReplayer::cacheIntegratedFutBarsFromBin(const std::string& key, cons
 			}
 		});
 
-		uint32_t sIdx = pBar - firstBar;
+		std::size_t sIdx = pBar - firstBar;
 		if ((period == KP_DAY && pBar->date < sBar.date) || (period != KP_DAY && pBar->time < sBar.time))	//早于边界时间
 		{
 			//早于边界时间, 说明没有数据了, 因为lower_bound会返回大于等于目标位置的数据
@@ -3567,7 +3567,7 @@ bool HisDataReplayer::cacheIntegratedFutBarsFromBin(const std::string& key, cons
 				return a.time < b.time;
 			}
 		});
-		uint32_t eIdx = pBar - firstBar;
+		std::size_t eIdx = pBar - firstBar;
 		if ((period == KP_DAY && pBar->date > eBar.date) || (period != KP_DAY && pBar->time > eBar.time))
 		{
 			pBar--;
@@ -3780,7 +3780,7 @@ bool HisDataReplayer::cacheAdjustedStkBarsFromBin(const std::string& key, const 
 		if (buffer.empty())
 			break;
 		
-		uint32_t barcnt = buffer.size() / sizeof(WTSBarStruct);
+		std::size_t barcnt = buffer.size() / sizeof(WTSBarStruct);
 
 		WTSBarStruct* firstBar = (WTSBarStruct*)buffer.data();
 
@@ -3797,8 +3797,8 @@ bool HisDataReplayer::cacheAdjustedStkBarsFromBin(const std::string& key, const 
 
 		if (pBar != NULL)
 		{
-			uint32_t sIdx = pBar - firstBar;
-			uint32_t curCnt = barcnt - sIdx;
+			std::size_t sIdx = pBar - firstBar;
+			std::size_t curCnt = barcnt - sIdx;
 			std::vector<WTSBarStruct>* tempAy = new std::vector<WTSBarStruct>();
 			tempAy->resize(curCnt);
 			memcpy(tempAy->data(), &firstBar[sIdx], sizeof(WTSBarStruct)*curCnt);
@@ -3809,7 +3809,7 @@ bool HisDataReplayer::cacheAdjustedStkBarsFromBin(const std::string& key, const 
 			{
 				WTSLogger::info_f("Adjusting bars of {} with adjusting factors...", stdCode);
 				//做复权处理
-				int32_t lastIdx = curCnt;
+				std::size_t lastIdx = curCnt;
 				WTSBarStruct bar;
 				firstBar = tempAy->data();
 
@@ -3841,7 +3841,7 @@ bool HisDataReplayer::cacheAdjustedStkBarsFromBin(const std::string& key, const 
 					WTSBarStruct* endBar = pBar;
 					if (pBar != NULL)
 					{
-						int32_t curIdx = pBar - firstBar;
+						std::size_t curIdx = pBar - firstBar;
 						while (pBar && curIdx < lastIdx)
 						{
 							pBar->open *= factor;
