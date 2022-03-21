@@ -219,7 +219,7 @@ bool WtRunner::config()
 					WTSVariant* var = WTSCfgLoader::load_from_file(filename, isUTF8);
 					if (var)
 					{
-						if (!initTraders(var->get("executers")))
+						if (!initExecuters(var->get("executers")))
 							WTSLogger::error("Loading executers failed");
 						var->release();
 					}
