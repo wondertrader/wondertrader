@@ -120,3 +120,15 @@ void UftStraContext::on_position(const char* stdCode, bool isLong, double prevol
 
 	UftStraBaseCtx::on_position(stdCode, isLong, prevol, preavail, newvol, newavail, tradingday);
 }
+
+void UftStraContext::on_session_begin(uint32_t uTDate)
+{
+	if (_strategy)
+		_strategy->on_session_begin(this, uTDate);
+}
+
+void UftStraContext::on_session_end(uint32_t uTDate)
+{
+	if (_strategy)
+		_strategy->on_session_end(this, uTDate);
+}

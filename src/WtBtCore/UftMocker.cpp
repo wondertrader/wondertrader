@@ -324,10 +324,14 @@ void UftMocker::on_session_begin(uint32_t curTDate)
 			pInfo._newavail = 0;
 		}
 	}
+
+	_strategy->on_session_begin(this, curTDate);
 }
 
 void UftMocker::on_session_end(uint32_t curTDate)
 {
+	_strategy->on_session_end(this, curTDate);
+
 	uint32_t curDate = curTDate;// _replayer->get_trading_date();
 
 	double total_profit = 0;
