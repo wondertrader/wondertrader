@@ -1261,15 +1261,20 @@ uint64_t HisDataReplayer::getNextTickTime(uint32_t curTDate, uint64_t stime /* =
 		{
 			if (stime == UINT64_MAX)
 			{
-				//By Wesley @ 2022.03.06
-				//检查一下时间戳，如果不是交易时间的，就不回放了
-				uint32_t idx = 0;
-				while(true)
+				/*
+				 *	如果stime为UINT64_MAX
+				 *	则说明还没有初始化
+				 *	所以要确定第一笔是什么
+				 */
+				for(tickList._cursor = 1; ; tickList._cursor++)
 				{
-					uint32_t tickMin = tickList._items[idx].action_time / 100000;
+					//如果时间一直不满足，则直接跳出循环
+					if(tickList._cursor > tickList._count)
+						break;
+
+					uint32_t tickMin = tickList._items[tickList._cursor-1].action_time / 100000;
 					if (sInfo->isInTradingTime(tickMin))
 					{
-						tickList._cursor = idx + 1;
 						break;
 					}
 				}
@@ -1514,7 +1519,7 @@ uint64_t HisDataReplayer::replayHftDatasByDay(uint32_t curTDate)
 			//By Wesley @ 2022.03.06 
 			//这里加了一个数据的判断
 			//如果数据为空，则不再进行回放
-			if (itemList._items.empty())
+			if (itemList._items.empty() || itemList._cursor > itemList._count)
 				continue;
 
 			auto& nextItem = itemList._items[itemList._cursor - 1];
@@ -1541,7 +1546,7 @@ uint64_t HisDataReplayer::replayHftDatasByDay(uint32_t curTDate)
 			//By Wesley @ 2022.03.06 
 			//这里加了一个数据的判断
 			//如果数据为空，则不再进行回放
-			if(tickList._items.empty())
+			if(tickList._items.empty() || itemList._cursor > itemList._count)
 				continue;
 
 			WTSTickStruct& nextTick = tickList._items[tickList._cursor - 1];
@@ -1568,7 +1573,7 @@ uint64_t HisDataReplayer::replayHftDatasByDay(uint32_t curTDate)
 			//By Wesley @ 2022.03.06 
 			//这里加了一个数据的判断
 			//如果数据为空，则不再进行回放
-			if (itemList._items.empty())
+			if (itemList._items.empty() || itemList._cursor > itemList._count)
 				continue;
 
 			auto& nextItem = itemList._items[itemList._cursor - 1];
@@ -1614,8 +1619,9 @@ bool HisDataReplayer::replayHftDatas(uint64_t stime, uint64_t etime)
 		{
 			const char* stdCode = v.first.c_str();
 			auto& itemList = _orddtl_cache[stdCode];
-			if (itemList._cursor >= itemList._count)
+			if (itemList._cursor > itemList._count)
 				continue;
+
 			auto& nextItem = itemList._items[itemList._cursor - 1];
 			uint64_t lastTime = (uint64_t)nextItem.action_date * 1000000000 + nextItem.action_time;
 			if (lastTime <= nextTime)
@@ -1634,8 +1640,9 @@ bool HisDataReplayer::replayHftDatas(uint64_t stime, uint64_t etime)
 		{
 			const char* stdCode = v.first.c_str();
 			auto& itemList = _trans_cache[stdCode];
-			if (itemList._cursor >= itemList._count)
+			if (itemList._cursor = itemList._count)
 				continue;
+
 			auto& nextItem = itemList._items[itemList._cursor - 1];
 			uint64_t lastTime = (uint64_t)nextItem.action_date * 1000000000 + nextItem.action_time;
 			if (lastTime <= nextTime)
@@ -1654,8 +1661,9 @@ bool HisDataReplayer::replayHftDatas(uint64_t stime, uint64_t etime)
 		{
 			const char* stdCode = v.first.c_str();
 			auto& itemList = _ticks_cache[stdCode];
-			if (itemList._cursor >= itemList._count)
+			if (itemList._cursor > itemList._count)
 				continue;
+
 			auto& nextItem = itemList._items[itemList._cursor - 1];
 			uint64_t lastTime = (uint64_t)nextItem.action_date * 1000000000 + nextItem.action_time;
 			if (lastTime <= nextTime)
@@ -1675,8 +1683,9 @@ bool HisDataReplayer::replayHftDatas(uint64_t stime, uint64_t etime)
 		{
 			const char* stdCode = v.first.c_str();
 			auto& itemList = _ordque_cache[stdCode];
-			if (itemList._cursor >= itemList._count)
+			if (itemList._cursor > itemList._count)
 				continue;
+
 			auto& nextItem = itemList._items[itemList._cursor - 1];
 			uint64_t lastTime = (uint64_t)nextItem.action_date * 1000000000 + nextItem.action_time;
 			if (lastTime <= nextTime)
