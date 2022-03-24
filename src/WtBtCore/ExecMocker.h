@@ -8,7 +8,7 @@
  * \brief 
  */
 #pragma once
-#include <fstream>
+#include <sstream>
 #include "HisDataReplayer.h"
 
 #include "../Includes/ExecuteDefs.h"
@@ -42,6 +42,8 @@ public:
 	virtual void handle_session_begin(uint32_t curTDate) override;
 
 	virtual void handle_session_end(uint32_t curTDate) override;
+
+	virtual void handle_replay_done() override;
 
 	//////////////////////////////////////////////////////////////////////////
 	//ExecuteContext
@@ -101,7 +103,10 @@ private:
 	ExecuteUnit*	_exec_unit;
 	std::string		_code;
 	std::string		_period;
-	int32_t			_volunit;
+	double			_volunit;
+	int32_t			_volmode;
+
+	double			_target;
 
 	double			_position;
 	double			_undone;
@@ -109,7 +114,7 @@ private:
 	double			_sig_px;
 	uint64_t		_sig_time;
 
-	std::ofstream	_trade_logs;
+	std::stringstream	_trade_logs;
 	uint32_t	_ord_cnt;
 	double		_ord_qty;
 	uint32_t	_cacl_cnt;
