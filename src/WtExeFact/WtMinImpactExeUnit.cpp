@@ -277,19 +277,17 @@ void WtMinImpactExeUnit::do_calc()
 
 	double curPos = realPos;
 
-	//检查下单时间间隔
-	uint64_t now = TimeUtils::getLocalTimeNow();
-	if (now - _last_place_time < _entrust_span)
-		return;
-
-	if (_last_tick == NULL)
-		_last_tick = _ctx->grabLastTick(stdCode);
 
 	if (_last_tick == NULL)
 	{
 		_ctx->writeLog(fmt::sprintf("No lastest tick data of %s, execute later", _code.c_str()).c_str());
 		return;
 	}
+
+	//检查下单时间间隔
+	uint64_t now = TimeUtils::makeTime(_last_tick->actiondate(), _last_tick->actiontime());
+	if (now - _last_place_time < _entrust_span)
+		return;
 
 	if (decimal::eq(curPos, newVol))
 	{
