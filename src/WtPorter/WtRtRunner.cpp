@@ -667,6 +667,9 @@ bool WtRtRunner::initCtaStrategies()
 	for (uint32_t idx = 0; idx < cfg->size(); idx++)
 	{
 		WTSVariant* cfgItem = cfg->get(idx);
+		if (!cfgItem->getBoolean("active"))
+			continue;
+
 		const char* id = cfgItem->getCString("id");
 		const char* name = cfgItem->getCString("name");
 		CtaStrategyPtr stra = _cta_mgr.createStrategy(name, id);
@@ -692,6 +695,9 @@ bool WtRtRunner::initSelStrategies()
 	for (uint32_t idx = 0; idx < cfg->size(); idx++)
 	{
 		WTSVariant* cfgItem = cfg->get(idx);
+		if (!cfgItem->getBoolean("active"))
+			continue;
+
 		const char* id = cfgItem->getCString("id");
 		const char* name = cfgItem->getCString("name");
 
@@ -734,6 +740,9 @@ bool WtRtRunner::initHftStrategies()
 	for (uint32_t idx = 0; idx < cfg->size(); idx++)
 	{
 		WTSVariant* cfgItem = cfg->get(idx);
+		if (!cfgItem->getBoolean("active"))
+			continue;
+
 		const char* id = cfgItem->getCString("id");
 		const char* name = cfgItem->getCString("name");
 		bool bAgent = cfgItem->getBoolean("agent");
