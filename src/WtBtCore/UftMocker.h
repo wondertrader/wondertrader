@@ -33,21 +33,21 @@ private:
 	template<typename... Args>
 	void log_debug(const char* format, const Args& ...args)
 	{
-		std::string s = fmt::sprintf(format, args...);
+		std::string s = fmt::format(format, args...);
 		stra_log_debug(s.c_str());
 	}
 
 	template<typename... Args>
 	void log_info(const char* format, const Args& ...args)
 	{
-		std::string s = fmt::sprintf(format, args...);
+		std::string s = fmt::format(format, args...);
 		stra_log_info(s.c_str());
 	}
 
 	template<typename... Args>
 	void log_error(const char* format, const Args& ...args)
 	{
-		std::string s = fmt::sprintf(format, args...);
+		std::string s = fmt::format(format, args...);
 		stra_log_error(s.c_str());
 	}
 
@@ -339,7 +339,6 @@ private:
 	std::stringstream	_trade_logs;
 	std::stringstream	_close_logs;
 	std::stringstream	_fund_logs;
-	std::stringstream	_sig_logs;
 
 	typedef struct _StraFundInfo
 	{
