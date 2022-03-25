@@ -338,14 +338,11 @@ int TraderCTP::orderInsert(WTSEntrust* entrust)
 		///报单引用
 		fmt::format_to(req.OrderRef, "{}", m_orderRef.fetch_add(0));
 
-		//生成本地委托单号
-		//entrust->setEntrustID(generateEntrustID(m_frontID, m_sessionID, m_orderRef++).c_str());	
 	}
 	else
 	{
 		uint32_t fid, sid, orderref;
 		extractEntrustID(entrust->getEntrustID(), fid, sid, orderref);
-		//entrust->setEntrustID(entrust->getUserTag());
 		///报单引用
 		fmt::format_to(req.OrderRef, "{}", orderref);
 	}
@@ -357,15 +354,6 @@ int TraderCTP::orderInsert(WTSEntrust* entrust)
 		});
 	}
 
-	//WTSContractInfo* ct = entrust->getContractInfo();
-	//if (ct == NULL)
-	//{
-	//	write_log(m_sink, LL_ERROR, "[TraderCTP] Instrument {} is not valid", entrust->getExchg(), entrust->getCode());
-	//	return -1;
-	//}
-
-	///用户代码
-	//	TThostFtdcUserIDType	UserID;
 	///报单价格条件: 限价
 	req.OrderPriceType = wrapPriceType(entrust->getPriceType(), strcmp(entrust->getExchg(), "CFFEX") == 0);
 	///买卖方向: 
@@ -398,16 +386,10 @@ int TraderCTP::orderInsert(WTSEntrust* entrust)
 	
 	///触发条件: 立即
 	req.ContingentCondition = THOST_FTDC_CC_Immediately;
-	///止损价
-	//	TThostFtdcPriceType	StopPrice;
 	///强平原因: 非强平
 	req.ForceCloseReason = THOST_FTDC_FCC_NotForceClose;
 	///自动挂起标志: 否
 	req.IsAutoSuspend = 0;
-	///业务单元
-	//	TThostFtdcBusinessUnitType	BusinessUnit;
-	///请求编号
-	//	TThostFtdcRequestIDType	RequestID;
 	///用户强评标志: 否
 	req.UserForceClose = 0;
 
