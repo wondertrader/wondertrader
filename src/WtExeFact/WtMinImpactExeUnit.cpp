@@ -314,8 +314,8 @@ void WtMinImpactExeUnit::do_calc()
 	uint64_t curTickTime = (uint64_t)_last_tick->actiondate() * 1000000000 + _last_tick->actiontime();
 	if (curTickTime <= _last_tick_time)
 	{
-		_ctx->writeLog(fmt::sprintf("No tick of %s updated, %s <= %s, execute later",
-			_code.c_str(), StrUtil::fmtUInt64(curTickTime).c_str(), StrUtil::fmtUInt64(_last_tick_time).c_str()).c_str());
+		_ctx->writeLog(fmt::format("No tick of {} updated, {} <= {}, execute later",
+			_code, curTickTime, _last_tick_time).c_str());
 		return;
 	}
 
