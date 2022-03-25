@@ -218,8 +218,8 @@ protected:
 	CTPCreator		m_funcCreator;
 
 	//委托单标记缓存器
-	SimpleCache		m_eidCache;
+	WtKVCache		m_eidCache;
 	//订单标记缓存器
-	SimpleCache		m_oidCache;
+	WtKVCache		m_oidCache;
 };
 

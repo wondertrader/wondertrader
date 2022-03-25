@@ -168,7 +168,7 @@ public:
 					//文件大小不匹配,一般是因为capacity改了,但是实际没扩容
 					//这是做一次扩容即可
 					 _cache._block->_capacity = realCap;
-					 _cache._block->_size = min(realCap, markedCap);
+					 _cache._block->_size = (realCap < markedCap) ? realCap : markedCap;
 				}
 
 			} while (false);
