@@ -19,9 +19,9 @@
 
 #include "../API/CTP6.3.15/ThostFtdcTraderApi.h"
 
-#include "../Share/IniHelper.hpp"
 #include "../Share/StdUtils.hpp"
 #include "../Share/DLLHelper.hpp"
+#include "../Share/WtKVCache.hpp"
 
 USING_NS_WTP;
 
@@ -222,6 +222,9 @@ protected:
 	typedef CThostFtdcTraderApi* (*CTPCreator)(const char *);
 	CTPCreator		m_funcCreator;
 
-	IniHelper		m_iniHelper;
+	//委托单标记缓存器
+	SimpleCache		m_eidCache;
+	//订单标记缓存器
+	SimpleCache		m_oidCache;
 };
 

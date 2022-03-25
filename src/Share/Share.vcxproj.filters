@@ -231,7 +231,7 @@
     <ClInclude Include="SpinLock.hpp">
       <Filter>Utils</Filter>
     </ClInclude>
-    <ClInclude Include="SimpleCache.hpp">
+    <ClInclude Include="WtKVCache.hpp">
       <Filter>Utils</Filter>
     </ClInclude>
   </ItemGroup>

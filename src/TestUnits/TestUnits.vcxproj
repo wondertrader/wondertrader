@@ -190,7 +190,7 @@
     <ClCompile Include="test_lmdb.cpp" />
     <ClCompile Include="test_object_pool.cpp" />
     <ClCompile Include="test_session.cpp" />
-    <ClCompile Include="test_simplecache.cpp" />
+    <ClCompile Include="test_kvcache.cpp" />
     <ClCompile Include="test_utils.cpp" />
   </ItemGroup>
   <ItemGroup>

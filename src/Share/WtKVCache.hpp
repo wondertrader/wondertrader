@@ -17,12 +17,12 @@ NS_WTP_BEGIN
 
 typedef std::function<void(const char*)> CacheLogger;
 
-class SimpleCache
+class WtKVCache
 {
 public:
-	SimpleCache() {}
-	SimpleCache(const SimpleCache&) = delete;
-	SimpleCache& operator=(const SimpleCache&) = delete;
+	WtKVCache() {}
+	WtKVCache(const WtKVCache&) = delete;
+	WtKVCache& operator=(const WtKVCache&) = delete;
 
 private:
 	
