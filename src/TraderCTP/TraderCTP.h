@@ -132,7 +132,7 @@ public:
 
 	virtual void OnErrRtnOrderInsert(CThostFtdcInputOrderField *pInputOrder, CThostFtdcRspInfoField *pRspInfo) override;
 
-protected:
+private:
 	/*
 	*	ºÏ≤È¥ÌŒÛ–≈œ¢
 	*/
@@ -159,12 +159,7 @@ protected:
 	void			generateEntrustID(char* buffer, uint32_t frontid, uint32_t sessionid, uint32_t orderRef);
 	bool			extractEntrustID(const char* entrustid, uint32_t &frontid, uint32_t &sessionid, uint32_t &orderRef);
 
-	//uint64_t		calcCommission(uint32_t qty, uint32_t price, WTSOffsetType flag, WTSContractInfo* ct);
-	//uint64_t		calcMargin(uint32_t qty, uint32_t price, WTSDirectionType direct, WTSContractInfo* ct);
-
 	uint32_t		genRequestID();
-
-	//void			triggerQuery();
 
 protected:
 	std::string		m_strBroker;
