@@ -179,6 +179,7 @@
     <ClInclude Include="threadpool\task_adaptors.hpp" />
     <ClInclude Include="StrUtil.hpp" />
     <ClInclude Include="TimeUtils.hpp" />
+    <ClInclude Include="SimpleCache.hpp" />
     <ClInclude Include="WtObjectPool.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

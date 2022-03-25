@@ -231,5 +231,8 @@
     <ClInclude Include="SpinLock.hpp">
       <Filter>Utils</Filter>
     </ClInclude>
+    <ClInclude Include="SimpleCache.hpp">
+      <Filter>Utils</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

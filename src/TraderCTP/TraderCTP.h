@@ -187,7 +187,7 @@ protected:
 	std::string		m_strUserName;
 	std::string		m_strFlowDir;
 
-	ITraderSpi*	m_sink;
+	ITraderSpi*		m_sink;
 	uint64_t		m_uLastQryTime;
 
 	uint32_t					m_lDate;

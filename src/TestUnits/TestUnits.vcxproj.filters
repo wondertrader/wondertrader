@@ -60,6 +60,9 @@
     <ClCompile Include="test_fmt.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="test_simplecache.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gtest\gtest-internal-inl.h">
