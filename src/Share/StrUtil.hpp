@@ -538,26 +538,4 @@ public:
 
 		str = ret;
 	}
-
-	static inline std::string fmtInt64(int64_t v)
-	{
-		char buf[64] = { 0 };
-#ifdef _MSC_VER
-		int pos = sprintf(buf, "%I64d", v);
-#else
-		int pos = sprintf(buf, "%lld", (long long)v);
-#endif
-		return buf;
-	}
-
-	static inline std::string fmtUInt64(uint64_t v)
-	{
-		char buf[64] = { 0 };
-#ifdef _MSC_VER
-		int pos = sprintf(buf, "%I64u", v);
-#else
-		int pos = sprintf(buf, "%llu", (unsigned long long)v);
-#endif
-		return buf;
-	}
 };

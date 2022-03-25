@@ -159,11 +159,11 @@ public:
 	 *	CFFEX.IO2007.C.4000
 	 */
 	static bool	isStdChnFutOptCode(const char* code)
+	static bool	isStdChnFutOptCode(const char* code)
 	{
 		/* 定义正则表达式 */
 		//static cregex reg_stk = cregex::compile("^[A-Z]+.[A-z]+\\d{4}.(C|P).\\d+$");	//CFFEX.IO2007.C.4000
 		//return 	regex_match(code, reg_stk);
-		auto len = strlen(code);
 		char state = 0;
 		std::size_t i = 0;
 		for(; ; i++)
