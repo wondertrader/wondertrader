@@ -59,6 +59,9 @@ public:
 		return now.time * 1000 + now.millitm;
 	}
 
+	/*
+	 *	获取本地时间，精确到毫秒
+	 */
 	static inline int64_t getLocalTimeNow(void)
 	{
 #ifdef _MSC_VER
@@ -73,85 +76,33 @@ public:
 		t = t - 11644473600L * TICKSPERSEC;
 		return t / 10000;
 #else
-		static thread_local struct timespec tp;
-		clock_gettime(CLOCK_REALTIME, &tp);
-		return tp.tv_sec * 1000 + tp.tv_nsec / 1000000;
+		timeb now;
+		ftime(&now);
+		return now.time * 1000 + now.millitm;
 #endif
-	}
-
-	static inline int64_t getLocalTimeNano(void)
-	{
-		return std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
 	}
 
 	static inline std::string getLocalTime(bool bIncludeMilliSec = true)
 	{
-		timeb now;
-		ftime(&now);
-		tm * tNow = localtime(&(now.time));
+		uint64_t ltime = getLocalTimeNow();
+		time_t now = ltime / 1000;
+		uint32_t millitm = ltime % 1000;
+		tm * tNow = localtime(&now);
 
 		char str[64] = {0};
 		if(bIncludeMilliSec)
-			sprintf(str, "%02d:%02d:%02d,%03d", tNow->tm_hour, tNow->tm_min, tNow->tm_sec, now.millitm);
+			sprintf(str, "%02d:%02d:%02d,%03d", tNow->tm_hour, tNow->tm_min, tNow->tm_sec, millitm);
 		else
 			sprintf(str, "%02d:%02d:%02d", tNow->tm_hour, tNow->tm_min, tNow->tm_sec);
 		return str;
 	}
 
-	/*
-	static inline int64_t getNowFreqCount(void){
-		_LARGE_INTEGER count;    	
-		QueryPerformanceCounter(&count);
-		return count.QuadPart;
-	}
-	*/
-
-	static inline std::string now(void) 
-	{
-		using namespace std; // For time_t, time and ctime;
-		time_t now = time(0);
-		std::string str = ctime(&now);
-		return str;
-	}
-
-	/*
-	static inline int64_t getFrequency(void){              
-		LARGE_INTEGER f;              //计时器频率
-		QueryPerformanceFrequency(&f);
-		return (int64_t)f.QuadPart;
-	}
-	*/
-
-	static inline std::string getYYYYMMDD(void)
-	{
-		std::string yyyymmdd;
-		tm local;
-		time_t now;
-		time(&now);
-#ifdef _WIN32
-		localtime_s(&local, &now);
-#else
-		localtime_r(&now, &local);
-#endif
-		char year[5];
-		sprintf(year, "%d", local.tm_year + 1900);
-		char month[3];
-		sprintf(month, "%02d",local.tm_mon+1);
-		char day[3];
-		sprintf(day, "%02d",local.tm_mday);
-		std::string ofilename;
-		yyyymmdd.append(year);
-		yyyymmdd.append(month);
-		yyyymmdd.append(day);
-		return yyyymmdd;
-	}
-
 	static inline uint64_t getYYYYMMDDhhmmss()
 	{
-		timeb now;
-		ftime(&now);
+		uint64_t ltime = getLocalTimeNow();
+		time_t now = ltime / 1000;
 
-		tm * tNow = localtime(&(now.time));
+		tm * tNow = localtime(&now);
 
 		uint64_t date = (tNow->tm_year + 1900) * 10000 + (tNow->tm_mon + 1) * 100 + tNow->tm_mday;
 
@@ -166,24 +117,26 @@ public:
      */
 	static inline void getDateTime(uint32_t &date, uint32_t &time)
 	{
-		timeb now;
-		ftime(&now);
+		uint64_t ltime = getLocalTimeNow();
+		time_t now = ltime / 1000;
+		uint32_t millitm = ltime % 1000;
 
-		tm * tNow = localtime(&(now.time));
+		tm * tNow = localtime(&now);
 
 		date = (tNow->tm_year+1900)*10000 + (tNow->tm_mon+1)*100 + tNow->tm_mday;
 		
 		time = tNow->tm_hour*10000 + tNow->tm_min*100 + tNow->tm_sec;
 		time *= 1000;
-		time += now.millitm;
+		time += millitm;
 	}
 
 	static inline uint32_t getCurDate()
 	{
-		timeb now;
-		ftime(&now);
+		uint64_t ltime = getLocalTimeNow();
+		time_t now = ltime / 1000;
+		uint32_t millitm = ltime % 1000;
 
-		tm * tNow = localtime(&(now.time));
+		tm * tNow = localtime(&now);
 
 		uint32_t date = (tNow->tm_year+1900)*10000 + (tNow->tm_mon+1)*100 + tNow->tm_mday;
 
@@ -195,9 +148,7 @@ public:
 		time_t ts = 0;
 		if(uDate == 0)
 		{
-			timeb now;
-			ftime(&now);
-			ts = now.time;
+			ts = getLocalTimeNow();
 		}
 		else
 		{
@@ -216,76 +167,15 @@ public:
 
 	static inline uint32_t getCurMin()
 	{
-		timeb now;
-		ftime(&now);
+		uint64_t ltime = getLocalTimeNow();
+		time_t now = ltime / 1000;
+		uint32_t millitm = ltime % 1000;
 
-		tm * tNow = localtime(&(now.time));
+		tm * tNow = localtime(&now);
 
 		uint32_t time = tNow->tm_hour*10000 + tNow->tm_min*100 + tNow->tm_sec;
 
 		return time;
-	}
-
-	static inline std::string getYYYYMMDD_hhmmss(void)
-	{
-		std::string datetime_fmt_str = "";
-		tm local;
-		time_t now;
-		time(&now);
-#ifdef _WIN32
-		localtime_s(&local, &now);
-#else
-		localtime_r(&now, &local);
-#endif
-		char year[5] = {'\0'};
-		sprintf(year, "%d", local.tm_year + 1900);
-		char month[3]  = {'\0'};
-		sprintf(month, "%02d",local.tm_mon+1);
-		char day[3]  = {'\0'};
-		sprintf(day, "%02d",local.tm_mday);
-		char hh[3]  = {'\0'};
-		sprintf(hh, "%02d", local.tm_hour);
-		char mm[3]  = {'\0'};
-		sprintf(mm, "%02d", local.tm_min);
-		char ss[3]  = {'\0'};
-		sprintf(ss, "%02d", local.tm_sec);
-		std::string ofilename;
-		datetime_fmt_str.append(year);
-		datetime_fmt_str.append(month);
-		datetime_fmt_str.append(day);
-		datetime_fmt_str.append("_");
-		datetime_fmt_str.append(hh);
-		datetime_fmt_str.append(mm);
-		datetime_fmt_str.append(ss);
-		return datetime_fmt_str;
-	}
-
-	//20120512 09:15:00 -> 毫秒
-	//支持如下格式的字符串: 
-	// 20120512 09:15:00 or 20120512 09:15:00 999
-	// 20120512091500 or 20120512091500999
-	static inline int64_t makeTime(std::string time_str)
-	{
-	    //time_str = StringUtils::trim(time_str, ' ');
-		//time_str = StringUtils::trim(time_str, ':');
-		uint32_t len = (uint32_t)time_str.size();
-		if (len < 14) return 0;
-		tm t;	
-		memset(&t,0,sizeof(tm));
-		t.tm_year = atoi(time_str.substr(0, 4).c_str()) - 1900;
-		t.tm_mon = atoi(time_str.substr(4,2).c_str()) - 1;
-		t.tm_mday = atoi(time_str.substr(6,2).c_str());
-		t.tm_hour = atoi(time_str.substr(8,2).c_str());
-		t.tm_min = atoi(time_str.substr(10,2).c_str());
-		t.tm_sec = atoi(time_str.substr(12,2).c_str());
-		int millisec = 0;
-		if ( len == 17){ //说明还有毫秒
-			millisec = atoi(time_str.substr(14,3).c_str());
-		}
-		//t.tm_isdst 	
-		time_t ts = mktime(&t);
-		if (ts == -1) return 0;
-		return ts * 1000+ millisec;
 	}
 
 	static inline int32_t getTZOffset()
