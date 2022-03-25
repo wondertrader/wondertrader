@@ -159,7 +159,6 @@ public:
 	 *	CFFEX.IO2007.C.4000
 	 */
 	static bool	isStdChnFutOptCode(const char* code)
-	static bool	isStdChnFutOptCode(const char* code)
 	{
 		/* 定义正则表达式 */
 		//static cregex reg_stk = cregex::compile("^[A-Z]+.[A-z]+\\d{4}.(C|P).\\d+$");	//CFFEX.IO2007.C.4000
