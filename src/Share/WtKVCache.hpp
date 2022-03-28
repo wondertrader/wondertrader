@@ -1,5 +1,5 @@
 #pragma once
-#include "SpinLock.hpp"
+#include "SpinMutex.hpp"
 #include "BoostFile.hpp"
 #include "BoostMappingFile.hpp"
 
@@ -55,7 +55,7 @@ private:
 	} CacheBlockPair;
 
 	CacheBlockPair	_cache;
-	SpinLock		_lock;
+	SpinMutex		_lock;
 	faster_hashmap<LongKey, uint32_t> _indice;
 
 private:

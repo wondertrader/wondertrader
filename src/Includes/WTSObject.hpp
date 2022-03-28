@@ -14,7 +14,7 @@
 
 #include "WTSMarcos.h"
 #include "../Share/ObjectPool.hpp"
-#include "../Share/SpinLock.hpp"
+#include "../Share/SpinMutex.hpp"
 
 NS_WTP_BEGIN
 class WTSObject
@@ -59,7 +59,7 @@ class WTSPoolObject : public WTSObject
 private:
 	typedef ObjectPool<T> MyPool;
 	MyPool*			_pool;
-	SpinLock*	_mutex;
+	SpinMutex*	_mutex;
 
 public:
 	WTSPoolObject():_pool(NULL){}
@@ -69,7 +69,7 @@ public:
 	static T*	allocate()
 	{
 		thread_local static MyPool		pool;
-		thread_local static SpinLock	mtx;
+		thread_local static SpinMutex	mtx;
 
 		mtx.lock();
 		T* ret = pool.construct();

@@ -162,7 +162,7 @@
     <ClInclude Include="IniHelper.hpp" />
     <ClInclude Include="ModuleHelper.hpp" />
     <ClInclude Include="ObjectPool.hpp" />
-    <ClInclude Include="SpinLock.hpp" />
+    <ClInclude Include="SpinMutex.hpp" />
     <ClInclude Include="StdUtils.hpp" />
     <ClInclude Include="threadpool.hpp" />
     <ClInclude Include="threadpool\detail\future.hpp" />
