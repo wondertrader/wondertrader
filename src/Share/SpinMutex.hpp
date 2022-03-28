@@ -5,7 +5,7 @@
 #include <windows.h>
 #endif
 
-class SpinLock
+class SpinMutex
 {
 private:
 	std::atomic<bool> flag = { false };
@@ -33,4 +33,16 @@ public:
 	{
 		flag.store(false, std::memory_order_release);
 	}
+};
+
+class SpinLock
+{
+public:
+	SpinLock(SpinMutex& mtx) :_mutex(mtx) { _mutex.lock(); }
+	SpinLock(const SpinLock&) = delete;
+	SpinLock& operator=(const SpinLock&) = delete;
+	~SpinLock() { _mutex.unlock(); }
+
+private:
+	SpinMutex&	_mutex;
 };
