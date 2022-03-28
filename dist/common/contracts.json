@@ -1,16 +1,16 @@
 {
     "CFFEX": {
-        "IC2203": {
-            "name": "中证2203",
-            "code": "IC2203",
+        "IC2204": {
+            "name": "中证2204",
+            "code": "IC2204",
             "exchg": "CFFEX",
             "product": "IC",
             "maxlimitqty": 20,
             "maxmarketqty": 10
         },
-        "IC2204": {
-            "name": "中证2204",
-            "code": "IC2204",
+        "IC2205": {
+            "name": "中证2205",
+            "code": "IC2205",
             "exchg": "CFFEX",
             "product": "IC",
             "maxlimitqty": 20,
@@ -32,17 +32,17 @@
             "maxlimitqty": 20,
             "maxmarketqty": 10
         },
-        "IF2203": {
-            "name": "沪深2203",
-            "code": "IF2203",
+        "IF2204": {
+            "name": "沪深2204",
+            "code": "IF2204",
             "exchg": "CFFEX",
             "product": "IF",
             "maxlimitqty": 20,
             "maxmarketqty": 10
         },
-        "IF2204": {
-            "name": "沪深2204",
-            "code": "IF2204",
+        "IF2205": {
+            "name": "沪深2205",
+            "code": "IF2205",
             "exchg": "CFFEX",
             "product": "IF",
             "maxlimitqty": 20,
@@ -64,17 +64,17 @@
             "maxlimitqty": 20,
             "maxmarketqty": 10
         },
-        "IH2203": {
-            "name": "上证2203",
-            "code": "IH2203",
+        "IH2204": {
+            "name": "上证2204",
+            "code": "IH2204",
             "exchg": "CFFEX",
             "product": "IH",
             "maxlimitqty": 20,
             "maxmarketqty": 10
         },
-        "IH2204": {
-            "name": "上证2204",
-            "code": "IH2204",
+        "IH2205": {
+            "name": "上证2205",
+            "code": "IH2205",
             "exchg": "CFFEX",
             "product": "IH",
             "maxlimitqty": 20,
