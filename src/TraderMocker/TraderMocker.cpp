@@ -150,6 +150,8 @@ int TraderMocker::orderInsert(WTSEntrust* entrust)
 		StdUniqueLock lock(_mutex_api);
 
 		WTSContractInfo* ct = entrust->getContractInfo();
+		if(ct == NULL) 
+			ct = _bd_mgr->getContract(entrust->getCode(), entrust->getExchg());
 
 		/*
 		 *	1、开仓无需检查
@@ -269,14 +271,16 @@ int TraderMocker::orderInsert(WTSEntrust* entrust)
 		if(bPass)
 		{
 			WTSOrderInfo* ordInfo = WTSOrderInfo::create();
+			ordInfo->setContractInfo(ct);
 			ordInfo->setCode(entrust->getCode());
 			ordInfo->setExchange(entrust->getExchg());
 			ordInfo->setDirection(entrust->getDirection());
 			ordInfo->setOffsetType(entrust->getOffsetType());
 			ordInfo->setUserTag(entrust->getUserTag());
 			ordInfo->setPrice(entrust->getPrice());
-			char str[64];
-			sprintf(str, "mo.%u.%u", _mocker_id, makeOrderID());
+			thread_local static char str[64];
+			char* tail = fmt::format_to(str, "mo.{}.{}", _mocker_id, makeOrderID());
+			tail[0] = '\0';
 			ordInfo->setOrderID(str);
 			ordInfo->setStateMsg(msg.c_str());
 			ordInfo->setOrderState(WOS_NotTraded_Queuing);
@@ -404,6 +408,7 @@ int32_t TraderMocker::match_once()
 						WTSTradeInfo* trade = WTSTradeInfo::create(curTick->code(), curTick->exchg());
 						trade->setDirection(ordInfo->getDirection());
 						trade->setOffsetType(ordInfo->getOffsetType());
+						trade->setContractInfo(ct);
 
 						trade->setPrice(uPrice);
 						trade->setVolume(curVol);
@@ -877,6 +882,7 @@ int TraderMocker::queryPositions()
 			if(pItem._long._volume > 0)
 			{
 				WTSPositionItem* pInfo = WTSPositionItem::create(pItem._code, commInfo->getCurrency(), pItem._exchg);
+				pInfo->setContractInfo(ct);
 				pInfo->setDirection(WDT_LONG);
 				pInfo->setNewPosition(pItem._long._volume);
 				pInfo->setAvailNewPos(pItem._long._volume - pItem._long._frozen);
@@ -887,6 +893,7 @@ int TraderMocker::queryPositions()
 			if (pItem._short._volume > 0)
 			{
 				WTSPositionItem* pInfo = WTSPositionItem::create(pItem._code, commInfo->getCurrency(), pItem._exchg);
+				pInfo->setContractInfo(ct);
 				pInfo->setDirection(WDT_SHORT);
 				pInfo->setNewPosition(pItem._short._volume);
 				pInfo->setAvailNewPos(pItem._short._volume - pItem._short._frozen);
