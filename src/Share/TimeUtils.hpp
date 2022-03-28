@@ -148,7 +148,7 @@ public:
 		time_t ts = 0;
 		if(uDate == 0)
 		{
-			ts = getLocalTimeNow();
+			ts = getLocalTimeNow()/1000;
 		}
 		else
 		{
