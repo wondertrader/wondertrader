@@ -5,6 +5,7 @@
 #include "../Includes/IDataWriter.h"
 #include "../Share/StdUtils.hpp"
 #include "../Share/BoostMappingFile.hpp"
+#include "../Share/SpinMutex.hpp"
 
 #include <queue>
 
@@ -64,7 +65,7 @@ private:
 	{
 		RTKlineBlock*	_block;
 		BoostMFPtr		_file;
-		StdUniqueMutex	_mutex;
+		SpinMutex		_mutex;
 		uint64_t		_lasttime;
 
 		_KBlockPair()
@@ -75,13 +76,13 @@ private:
 		}
 
 	} KBlockPair;
-	typedef faster_hashmap<std::string, KBlockPair*>	KBlockFilesMap;
+	typedef faster_hashmap<LongKey, KBlockPair*>	KBlockFilesMap;
 
 	typedef struct _TickBlockPair
 	{
 		RTTickBlock*	_block;
 		BoostMFPtr		_file;
-		StdUniqueMutex	_mutex;
+		SpinMutex		_mutex;
 		uint64_t		_lasttime;
 
 		std::shared_ptr< std::ofstream>	_fstream;
@@ -94,13 +95,13 @@ private:
 			_lasttime = 0;
 		}
 	} TickBlockPair;
-	typedef faster_hashmap<std::string, TickBlockPair*>	TickBlockFilesMap;
+	typedef faster_hashmap<LongKey, TickBlockPair*>	TickBlockFilesMap;
 
 	typedef struct _TransBlockPair
 	{
 		RTTransBlock*	_block;
 		BoostMFPtr		_file;
-		StdUniqueMutex	_mutex;
+		SpinMutex		_mutex;
 		uint64_t		_lasttime;
 
 		_TransBlockPair()
@@ -110,13 +111,13 @@ private:
 			_lasttime = 0;
 		}
 	} TransBlockPair;
-	typedef faster_hashmap<std::string, TransBlockPair*>	TransBlockFilesMap;
+	typedef faster_hashmap<LongKey, TransBlockPair*>	TransBlockFilesMap;
 
 	typedef struct _OdeDtlBlockPair
 	{
 		RTOrdDtlBlock*	_block;
 		BoostMFPtr		_file;
-		StdUniqueMutex	_mutex;
+		SpinMutex		_mutex;
 		uint64_t		_lasttime;
 
 		_OdeDtlBlockPair()
@@ -126,13 +127,13 @@ private:
 			_lasttime = 0;
 		}
 	} OrdDtlBlockPair;
-	typedef faster_hashmap<std::string, OrdDtlBlockPair*>	OrdDtlBlockFilesMap;
+	typedef faster_hashmap<LongKey, OrdDtlBlockPair*>	OrdDtlBlockFilesMap;
 
 	typedef struct _OdeQueBlockPair
 	{
 		RTOrdQueBlock*	_block;
 		BoostMFPtr		_file;
-		StdUniqueMutex	_mutex;
+		SpinMutex		_mutex;
 		uint64_t		_lasttime;
 
 		_OdeQueBlockPair()
@@ -142,7 +143,7 @@ private:
 			_lasttime = 0;
 		}
 	} OrdQueBlockPair;
-	typedef faster_hashmap<std::string, OrdQueBlockPair*>	OrdQueBlockFilesMap;
+	typedef faster_hashmap<LongKey, OrdQueBlockPair*>	OrdQueBlockFilesMap;
 	
 
 	KBlockFilesMap	_rt_min1_blocks;
@@ -153,8 +154,8 @@ private:
 	OrdDtlBlockFilesMap _rt_orddtl_blocks;
 	OrdQueBlockFilesMap _rt_ordque_blocks;
 
-	StdUniqueMutex	_mtx_tick_cache;
-	faster_hashmap<std::string, uint32_t> _tick_cache_idx;
+	SpinMutex		_lck_tick_cache;
+	faster_hashmap<LongKey, uint32_t> _tick_cache_idx;
 	BoostMFPtr		_tick_cache_file;
 	RTTickCache*	_tick_cache_block;
 
@@ -169,8 +170,8 @@ private:
 	uint32_t		_log_group_size;
 	bool			_async_proc;
 
-	StdCondVariable	 _proc_cond;
-	StdUniqueMutex _proc_mtx;
+	StdCondVariable	_proc_cond;
+	StdUniqueMutex	_proc_mtx;
 	std::queue<std::string> _proc_que;
 	StdThreadPtr	_proc_thrd;
 	StdThreadPtr	_proc_chk;

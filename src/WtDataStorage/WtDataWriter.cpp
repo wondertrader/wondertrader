@@ -23,8 +23,8 @@ inline void pipe_writer_log(IDataWriterSink* sink, WTSLogLevel ll, const char* f
 		return;
 
 	static thread_local char buffer[512] = { 0 };
-	memset(buffer, 0, 512);
-	fmt::format_to(buffer, format, args...);
+	char* tail = fmt::format_to(buffer, format, args...);
+	tail[0] = '\0';
 
 	sink->outputLog(ll, buffer);
 }
@@ -261,7 +261,7 @@ void WtDataWriter::loadCache()
 		for (uint32_t i = 0; i < _tick_cache_block->_size; i++)
 		{
 			const TickCacheItem& item = _tick_cache_block->_ticks[i];
-			std::string key = StrUtil::printf("%s.%s", item._tick.exchg, item._tick.code);
+			std::string key = fmt::format("{}.{}", item._tick.exchg, item._tick.code);
 			_tick_cache_idx[key] = i;
 		}
 	}
@@ -354,7 +354,7 @@ bool WtDataWriter::writeTick(WTSTickData* curTick, uint32_t procFlag)
 
 			_sink->broadcastTick(curTick);
 
-			static faster_hashmap<std::string, uint64_t> _tcnt_map;
+			static faster_hashmap<ShortKey, uint64_t> _tcnt_map;
 			_tcnt_map[curTick->exchg()]++;
 			if (_tcnt_map[curTick->exchg()] % _log_group_size == 0)
 			{
@@ -391,7 +391,7 @@ bool WtDataWriter::writeOrderQueue(WTSOrdQueData* curOrdQue)
 			if (pBlockPair == NULL)
 				break;
 
-			StdUniqueLock lock(pBlockPair->_mutex);
+			SpinLock lock(pBlockPair->_mutex);
 
 			//先检查容量够不够,不够要扩
 			RTOrdQueBlock* blk = pBlockPair->_block;
@@ -488,7 +488,7 @@ bool WtDataWriter::writeOrderDetail(WTSOrdDtlData* curOrdDtl)
 			if (pBlockPair == NULL)
 				break;
 
-			StdUniqueLock lock(pBlockPair->_mutex);
+			SpinLock lock(pBlockPair->_mutex);
 
 			//先检查容量够不够,不够要扩
 			RTOrdDtlBlock* blk = pBlockPair->_block;
@@ -544,7 +544,7 @@ bool WtDataWriter::writeTransaction(WTSTransData* curTrans)
 			if (pBlockPair == NULL)
 				break;
 
-			StdUniqueLock lock(pBlockPair->_mutex);
+			SpinLock lock(pBlockPair->_mutex);
 
 			//先检查容量够不够,不够要扩
 			RTTransBlock* blk = pBlockPair->_block;
@@ -580,7 +580,7 @@ void WtDataWriter::pipeToTicks(WTSContractInfo* ct, WTSTickData* curTick)
 	if (pBlockPair == NULL)
 		return;
 
-	StdUniqueLock lock(pBlockPair->_mutex);
+	SpinLock lock(pBlockPair->_mutex);
 
 	//先检查容量够不够,不够要扩
 	RTTickBlock* blk = pBlockPair->_block;
@@ -624,7 +624,7 @@ WtDataWriter::OrdQueBlockPair* WtDataWriter::getOrdQueBlock(WTSContractInfo* ct,
 		return NULL;
 
 	OrdQueBlockPair* pBlock = NULL;
-	std::string key = StrUtil::printf("%s.%s", ct->getExchg(), ct->getCode());
+	const char* key = ct->getFullCode();
 	pBlock = _rt_ordque_blocks[key];
 	if(pBlock == NULL)
 	{
@@ -634,7 +634,7 @@ WtDataWriter::OrdQueBlockPair* WtDataWriter::getOrdQueBlock(WTSContractInfo* ct,
 
 	if (pBlock->_block == NULL)
 	{
-		std::string path = StrUtil::printf("%srt/queue/%s/", _base_dir.c_str(), ct->getExchg());
+		std::string path = fmt::format("{}rt/queue/{}/", _base_dir.c_str(), ct->getExchg());
 		if (bAutoCreate)
 			BoostFile::create_directories(path.c_str());
 		path += ct->getCode();
@@ -708,7 +708,7 @@ WtDataWriter::OrdQueBlockPair* WtDataWriter::getOrdQueBlock(WTSContractInfo* ct,
 		}
 	}
 
-	pBlock->_lasttime = time(NULL);
+	pBlock->_lasttime = TimeUtils::getLocalTimeNow() / 1000;
 	return pBlock;
 }
 
@@ -718,7 +718,7 @@ WtDataWriter::OrdDtlBlockPair* WtDataWriter::getOrdDtlBlock(WTSContractInfo* ct,
 		return NULL;
 
 	OrdDtlBlockPair* pBlock = NULL;
-	std::string key = StrUtil::printf("%s.%s", ct->getExchg(), ct->getCode());
+	const char* key = ct->getFullCode();
 	pBlock = _rt_orddtl_blocks[key];
 	if (pBlock == NULL)
 	{
@@ -728,7 +728,7 @@ WtDataWriter::OrdDtlBlockPair* WtDataWriter::getOrdDtlBlock(WTSContractInfo* ct,
 
 	if (pBlock->_block == NULL)
 	{
-		std::string path = StrUtil::printf("%srt/orders/%s/", _base_dir.c_str(), ct->getExchg());
+		std::string path = fmt::format("{}rt/orders/{}/", _base_dir.c_str(), ct->getExchg());
 		if(bAutoCreate)
 			BoostFile::create_directories(path.c_str());
 		path += ct->getCode();
@@ -803,7 +803,7 @@ WtDataWriter::OrdDtlBlockPair* WtDataWriter::getOrdDtlBlock(WTSContractInfo* ct,
 		}
 	}
 
-	pBlock->_lasttime = time(NULL);
+	pBlock->_lasttime = TimeUtils::getLocalTimeNow() / 1000;
 	return pBlock;
 }
 
@@ -813,7 +813,7 @@ WtDataWriter::TransBlockPair* WtDataWriter::getTransBlock(WTSContractInfo* ct, u
 		return NULL;
 
 	TransBlockPair* pBlock = NULL;
-	std::string key = StrUtil::printf("%s.%s", ct->getExchg(), ct->getCode());
+	const char* key = ct->getFullCode();
 	pBlock = _rt_trans_blocks[key];
 	if (pBlock == NULL)
 	{
@@ -823,7 +823,7 @@ WtDataWriter::TransBlockPair* WtDataWriter::getTransBlock(WTSContractInfo* ct, u
 
 	if (pBlock->_block == NULL)
 	{
-		std::string path = StrUtil::printf("%srt/trans/%s/", _base_dir.c_str(), ct->getExchg());
+		std::string path = fmt::format("{}rt/trans/{}/", _base_dir.c_str(), ct->getExchg());
 		if (bAutoCreate)
 			BoostFile::create_directories(path.c_str());
 		path += ct->getCode();
@@ -898,7 +898,7 @@ WtDataWriter::TransBlockPair* WtDataWriter::getTransBlock(WTSContractInfo* ct, u
 		}
 	}
 
-	pBlock->_lasttime = time(NULL);
+	pBlock->_lasttime = TimeUtils::getLocalTimeNow() / 1000;
 	return pBlock;
 }
 
@@ -908,7 +908,7 @@ WtDataWriter::TickBlockPair* WtDataWriter::getTickBlock(WTSContractInfo* ct, uin
 		return NULL;
 
 	TickBlockPair* pBlock = NULL;
-	std::string key = StrUtil::printf("%s.%s", ct->getExchg(), ct->getCode());
+	const char* key = ct->getFullCode();
 	pBlock = _rt_ticks_blocks[key];
 	if (pBlock == NULL)
 	{
@@ -918,7 +918,7 @@ WtDataWriter::TickBlockPair* WtDataWriter::getTickBlock(WTSContractInfo* ct, uin
 
 	if(pBlock->_block == NULL)
 	{
-		std::string path = StrUtil::printf("%srt/ticks/%s/", _base_dir.c_str(), ct->getExchg());
+		std::string path = fmt::format("{}rt/ticks/{}/", _base_dir.c_str(), ct->getExchg());
 		if (bAutoCreate)
 			BoostFile::create_directories(path.c_str());
 
@@ -1002,14 +1002,14 @@ WtDataWriter::TickBlockPair* WtDataWriter::getTickBlock(WTSContractInfo* ct, uin
 		}
 	}
 
-	pBlock->_lasttime = time(NULL);
+	pBlock->_lasttime = TimeUtils::getLocalTimeNow() / 1000;
 	return pBlock;
 }
 
 void WtDataWriter::pipeToKlines(WTSContractInfo* ct, WTSTickData* curTick)
 {
 	uint32_t uDate = curTick->actiondate();
-	WTSSessionInfo* sInfo = _bd_mgr->getSessionByCode(curTick->code(), curTick->exchg());
+	WTSSessionInfo* sInfo = ct->getCommInfo()->getSessionInfo();
 	uint32_t curTime = curTick->actiontime() / 100000;
 
 	uint32_t minutes = sInfo->timeToMinutes(curTime, false);
@@ -1030,7 +1030,7 @@ void WtDataWriter::pipeToKlines(WTSContractInfo* ct, WTSTickData* curTick)
 		KBlockPair* pBlockPair = getKlineBlock(ct, KP_Minute1);
 		if (pBlockPair && pBlockPair->_block)
 		{
-			StdUniqueLock lock(pBlockPair->_mutex);
+			SpinLock lock(pBlockPair->_mutex);
 			RTKlineBlock* blk = pBlockPair->_block;
 			if (blk->_size == blk->_capacity)
 			{
@@ -1101,7 +1101,7 @@ void WtDataWriter::pipeToKlines(WTSContractInfo* ct, WTSTickData* curTick)
 		KBlockPair* pBlockPair = getKlineBlock(ct, KP_Minute5);
 		if (pBlockPair && pBlockPair->_block)
 		{
-			StdUniqueLock lock(pBlockPair->_mutex);
+			SpinLock lock(pBlockPair->_mutex);
 			RTKlineBlock* blk = pBlockPair->_block;
 			if (blk->_size == blk->_capacity)
 			{
@@ -1172,7 +1172,7 @@ void WtDataWriter::releaseBlock(T* block)
 	if (block == NULL || block->_file == NULL)
 		return;
 
-	StdUniqueLock lock(block->_mutex);
+	SpinLock lock(block->_mutex);
 	block->_block = NULL;
 	block->_file.reset();
 	block->_lasttime = 0;
@@ -1184,7 +1184,7 @@ WtDataWriter::KBlockPair* WtDataWriter::getKlineBlock(WTSContractInfo* ct, WTSKl
 		return NULL;
 
 	KBlockPair* pBlock = NULL;
-	std::string key = StrUtil::printf("%s.%s", ct->getExchg(), ct->getCode());
+	const char* key = ct->getFullCode();
 
 	KBlockFilesMap* cache_map = NULL;
 	std::string subdir = "";
@@ -1272,7 +1272,7 @@ WtDataWriter::KBlockPair* WtDataWriter::getKlineBlock(WTSContractInfo* ct, WTSKl
 		}
 	}
 
-	pBlock->_lasttime = time(NULL);
+	pBlock->_lasttime = TimeUtils::getLocalTimeNow() / 1000;
 	return pBlock;
 }
 
@@ -1285,8 +1285,8 @@ WTSTickData* WtDataWriter::getCurTick(const char* code, const char* exchg/* = ""
 	if (ct == NULL)
 		return NULL;
 
-	std::string key = StrUtil::printf("%s.%s", ct->getExchg(), ct->getCode());
-	StdUniqueLock lock(_mtx_tick_cache);
+	const char* key = ct->getFullCode();
+	SpinLock lock(_lck_tick_cache);
 	auto it = _tick_cache_idx.find(key);
 	if (it == _tick_cache_idx.end())
 		return NULL;
@@ -1304,10 +1304,11 @@ bool WtDataWriter::updateCache(WTSContractInfo* ct, WTSTickData* curTick, uint32
 		return false;
 	}
 
-	StdUniqueLock lock(_mtx_tick_cache);
-	std::string key = StrUtil::printf("%s.%s", curTick->exchg(), curTick->code());
+	SpinLock lock(_lck_tick_cache);
+	const char* key = ct->getFullCode();
 	uint32_t idx = 0;
-	if (_tick_cache_idx.find(key) == _tick_cache_idx.end())
+	auto it = _tick_cache_idx.find(key);
+	if (it == _tick_cache_idx.end())
 	{
 		idx = _tick_cache_block->_size;
 		_tick_cache_idx[key] = _tick_cache_block->_size;
@@ -1320,7 +1321,7 @@ bool WtDataWriter::updateCache(WTSContractInfo* ct, WTSTickData* curTick, uint32
 	}
 	else
 	{
-		idx = _tick_cache_idx[key];
+		idx = it->second;
 	}
 
 
@@ -1359,7 +1360,7 @@ bool WtDataWriter::updateCache(WTSContractInfo* ct, WTSTickData* curTick, uint32
 	{
 		//如果缓存里的数据日期大于最新行情的日期
 		//或者缓存里的时间大于等于最新行情的时间,数据就不需要处理
-		WTSSessionInfo* sInfo = _bd_mgr->getSessionByCode(curTick->code(), curTick->exchg());
+		WTSSessionInfo* sInfo = ct->getCommInfo()->getSessionInfo();
 		uint32_t tdate = sInfo->getOffsetDate(curTick->actiondate(), curTick->actiontime() / 100000);
 		if (tdate > curTick->tradingdate())
 		{
@@ -1455,69 +1456,69 @@ void WtDataWriter::check_loop()
 	while(!_terminated)
 	{
 		std::this_thread::sleep_for(std::chrono::seconds(10));
-		uint64_t now = time(NULL);
+		uint64_t now = TimeUtils::getLocalTimeNow() / 1000;
 		for (auto it = _rt_ticks_blocks.begin(); it != _rt_ticks_blocks.end(); it++)
 		{
-			const std::string& key = it->first;
+			const char* key = it->first.c_str();
 			TickBlockPair* tBlk = (TickBlockPair*)it->second;
 			if (tBlk->_lasttime != 0 && (now - tBlk->_lasttime > expire_secs))
 			{
-				pipe_writer_log(_sink, LL_INFO, "tick cache of {} mapping expired, automatically closed", key.c_str());
+				pipe_writer_log(_sink, LL_INFO, "tick cache of {} mapping expired, automatically closed", key);
 				releaseBlock<TickBlockPair>(tBlk);
 			}
 		}
 
 		for (auto it = _rt_trans_blocks.begin(); it != _rt_trans_blocks.end(); it++)
 		{
-			const std::string& key = it->first;
+			const char* key = it->first.c_str();
 			TransBlockPair* tBlk = (TransBlockPair*)it->second;
 			if (tBlk->_lasttime != 0 && (now - tBlk->_lasttime > expire_secs))
 			{
-				pipe_writer_log(_sink, LL_INFO, "trans cache o {} mapping expired, automatically closed", key.c_str());
+				pipe_writer_log(_sink, LL_INFO, "trans cache o {} mapping expired, automatically closed", key);
 				releaseBlock<TransBlockPair>(tBlk);
 			}
 		}
 
 		for (auto it = _rt_orddtl_blocks.begin(); it != _rt_orddtl_blocks.end(); it++)
 		{
-			const std::string& key = it->first;
+			const char* key = it->first.c_str();
 			OrdDtlBlockPair* tBlk = (OrdDtlBlockPair*)it->second;
 			if (tBlk->_lasttime != 0 && (now - tBlk->_lasttime > expire_secs))
 			{
-				pipe_writer_log(_sink, LL_INFO, "order cache of {} mapping expired, automatically closed", key.c_str());
+				pipe_writer_log(_sink, LL_INFO, "order cache of {} mapping expired, automatically closed", key);
 				releaseBlock<OrdDtlBlockPair>(tBlk);
 			}
 		}
 
 		for (auto& v : _rt_ordque_blocks)
 		{
-			const std::string& key = v.first;
+			const char* key = v.first.c_str();
 			OrdQueBlockPair* tBlk = (OrdQueBlockPair*)v.second;
 			if (tBlk->_lasttime != 0 && (now - tBlk->_lasttime > expire_secs))
 			{
-				pipe_writer_log(_sink, LL_INFO, "queue cache of {} mapping expired, automatically closed", key.c_str());
+				pipe_writer_log(_sink, LL_INFO, "queue cache of {} mapping expired, automatically closed", key);
 				releaseBlock<OrdQueBlockPair>(tBlk);
 			}
 		}
 
 		for (auto it = _rt_min1_blocks.begin(); it != _rt_min1_blocks.end(); it++)
 		{
-			const std::string& key = it->first;
+			const char* key = it->first.c_str();
 			KBlockPair* kBlk = (KBlockPair*)it->second;
 			if (kBlk->_lasttime != 0 && (now - kBlk->_lasttime > expire_secs))
 			{
-				pipe_writer_log(_sink, LL_INFO, "min1 cache of {} mapping expired, automatically closed", key.c_str());
+				pipe_writer_log(_sink, LL_INFO, "min1 cache of {} mapping expired, automatically closed", key);
 				releaseBlock<KBlockPair>(kBlk);
 			}
 		}
 
 		for (auto it = _rt_min5_blocks.begin(); it != _rt_min5_blocks.end(); it++)
 		{
-			const std::string& key = it->first;
+			const char* key = it->first.c_str();
 			KBlockPair* kBlk = (KBlockPair*)it->second;
 			if (kBlk->_lasttime != 0 && (now - kBlk->_lasttime > expire_secs))
 			{
-				pipe_writer_log(_sink, LL_INFO, "min5 cache of {} mapping expired, automatically closed", key.c_str());
+				pipe_writer_log(_sink, LL_INFO, "min5 cache of {} mapping expired, automatically closed", key);
 				releaseBlock<KBlockPair>(kBlk);
 			}
 		}
@@ -1577,7 +1578,7 @@ uint32_t WtDataWriter::dump_bars_via_dumper(WTSContractInfo* ct)
 	{
 		uint32_t size = kBlkPair->_block->_size;
 		pipe_writer_log(_sink, LL_INFO, "Transfering min1 bars of {}...", ct->getFullCode());
-		StdUniqueLock lock(kBlkPair->_mutex);
+		SpinLock lock(kBlkPair->_mutex);
 
 		for (auto& item : _dumpers)
 		{
@@ -1606,7 +1607,7 @@ uint32_t WtDataWriter::dump_bars_via_dumper(WTSContractInfo* ct)
 	{
 		uint32_t size = kBlkPair->_block->_size;
 		pipe_writer_log(_sink, LL_INFO, "Transfering min5 bars of {}...", ct->getFullCode());
-		StdUniqueLock lock(kBlkPair->_mutex);
+		SpinLock lock(kBlkPair->_mutex);
 
 		for (auto& item : _dumpers)
 		{
@@ -1867,7 +1868,7 @@ uint32_t WtDataWriter::dump_bars_to_file(WTSContractInfo* ct)
 		{
 			uint32_t size = kBlkPair->_block->_size;
 			pipe_writer_log(_sink, LL_INFO, "Transfering min1 bars of {}...", ct->getFullCode());
-			StdUniqueLock lock(kBlkPair->_mutex);
+			SpinLock lock(kBlkPair->_mutex);
 
 			std::stringstream ss;
 			ss << _base_dir << "his/min1/" << ct->getExchg() << "/";
@@ -1934,7 +1935,7 @@ uint32_t WtDataWriter::dump_bars_to_file(WTSContractInfo* ct)
 		{
 			uint32_t size = kBlkPair->_block->_size;
 			pipe_writer_log(_sink, LL_INFO, "Transfering min5 bar of {}...", ct->getFullCode());
-			StdUniqueLock lock(kBlkPair->_mutex);
+			SpinLock lock(kBlkPair->_mutex);
 
 			std::stringstream ss;
 			ss << _base_dir << "his/min5/" << ct->getExchg() << "/";
@@ -2021,14 +2022,14 @@ void WtDataWriter::proc_loop()
 		if (fullcode.compare(CMD_CLEAR_CACHE) == 0)
 		{
 			//清理缓存
-			StdUniqueLock lock(_mtx_tick_cache);
+			SpinLock lock(_lck_tick_cache);
 
 			std::set<std::string> setCodes;
 			std::stringstream ss_snapshot;
 			ss_snapshot << "date,exchg,code,open,high,low,close,settle,volume,turnover,openinterest,upperlimit,lowerlimit,preclose,presettle,preinterest" << std::endl << std::fixed;
 			for (auto it = _tick_cache_idx.begin(); it != _tick_cache_idx.end(); it++)
 			{
-				const std::string& key = it->first;
+				const char* key = it->first.c_str();
 				const StringVector& ay = StrUtil::split(key, ".");
 				WTSContractInfo* ct = _bd_mgr->getContract(ay[1].c_str(), ay[0].c_str());
 				if (ct != NULL)
@@ -2086,7 +2087,7 @@ void WtDataWriter::proc_loop()
 				newCache->_version = BLOCK_VERSION_RAW_V2;
 				strcpy(newCache->_blk_flag, BLK_FLAG);
 
-				faster_hashmap<std::string, uint32_t> newIdxMap;
+				faster_hashmap<LongKey, uint32_t> newIdxMap;
 
 				uint32_t newIdx = 0;
 				for (const std::string& key : setCodes)
@@ -2205,7 +2206,7 @@ void WtDataWriter::proc_loop()
 				if (tBlkPair->_block->_size > 0)
 				{
 					pipe_writer_log(_sink, LL_INFO, "Transfering tick data of {}...", fullcode.c_str());
-					StdUniqueLock lock(tBlkPair->_mutex);
+					SpinLock lock(tBlkPair->_mutex);
 
 					for (auto& item : _dumpers)
 					{
@@ -2273,7 +2274,7 @@ void WtDataWriter::proc_loop()
 			if (tBlkPair != NULL && tBlkPair->_block->_size > 0)
 			{
 				pipe_writer_log(_sink, LL_INFO, "Transfering transaction data of {}...", fullcode.c_str());
-				StdUniqueLock lock(tBlkPair->_mutex);
+				SpinLock lock(tBlkPair->_mutex);
 
 				for (auto& item : _dumpers)
 				{
@@ -2339,7 +2340,7 @@ void WtDataWriter::proc_loop()
 			if (tBlkPair != NULL && tBlkPair->_block->_size > 0)
 			{
 				pipe_writer_log(_sink, LL_INFO, "Transfering order detail data of {}...", fullcode.c_str());
-				StdUniqueLock lock(tBlkPair->_mutex);
+				SpinLock lock(tBlkPair->_mutex);
 
 				for (auto& item : _dumpers)
 				{
@@ -2405,7 +2406,7 @@ void WtDataWriter::proc_loop()
 			if (tBlkPair != NULL && tBlkPair->_block->_size > 0)
 			{
 				pipe_writer_log(_sink, LL_INFO, "Transfering order queue data of {}...", fullcode.c_str());
-				StdUniqueLock lock(tBlkPair->_mutex);
+				SpinLock lock(tBlkPair->_mutex);
 
 				for (auto& item : _dumpers)
 				{
