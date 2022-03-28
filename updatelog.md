@@ -1,3 +1,14 @@
+### 0.9.2
+* 持续的性能优化，HFT引擎系统内延迟可以做到700ns左右（具体测试工具可以参考WtLatencyHFT）
+* UFT引擎集成ActionPolicy机制，开放buy和sell两个下单接口，简化下单接口调用方式
+* TraderAdapter订单统计，区分FAK/FOK撤单和普通撤单
+* 完善了回测引擎中处理动态订阅K线的一些细节
+* 新增一个基于mmap的快速kv缓存模块WtKVCache
+* TimeUtils中重写了getLocalTimeNow函数，win下读取时间的速度提升两三个量级
+* 实现了一个SpinLock，以后会逐步全面运用起来
+* 其他细节优化和bug修正
+
+
 ### 0.9.0(重大版本)
 * 将数据读写模块WtDataReader和WtDataWriter统一整合为WtDataStorage，并将回测框架和WtDtServo中的随机读取模块整合到该模块中
 * （**重要**）新增一个基于LMDB实现的数据存储引擎WtDataStorageAD，主要针对7*24小时交易品种的存储场景
