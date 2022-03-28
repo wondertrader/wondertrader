@@ -219,7 +219,7 @@ bool WtRunner::config()
 					WTSVariant* var = WTSCfgLoader::load_from_file(filename, isUTF8);
 					if (var)
 					{
-						if (!initTraders(var->get("executers")))
+						if (!initExecuters(var->get("executers")))
 							WTSLogger::error("Loading executers failed");
 						var->release();
 					}
@@ -296,6 +296,9 @@ bool WtRunner::initHftStrategies()
 	for (uint32_t idx = 0; idx < cfg->size(); idx++)
 	{
 		WTSVariant* cfgItem = cfg->get(idx);
+		if (!cfgItem->getBoolean("active"))
+			continue;
+
 		const char* id = cfgItem->getCString("id");
 		const char* name = cfgItem->getCString("name");
 		bool agent = cfgItem->getBoolean("agent");

@@ -139,7 +139,7 @@ void WtDtMgr::reader_log(WTSLogLevel ll, const char* message)
 
 void WtDtMgr::on_bar(const char* code, WTSKlinePeriod period, WTSBarStruct* newBar)
 {
-	std::string key_pattern = StrUtil::printf("%s-%u", code, period);
+	std::string key_pattern = fmt::format("{}-{}", code, period);
 
 	std::string speriod;
 	uint32_t times = 1;
@@ -175,8 +175,8 @@ void WtDtMgr::on_bar(const char* code, WTSKlinePeriod period, WTSBarStruct* newB
 
 	for (auto it = _bars_cache->begin(); it != _bars_cache->end(); it++)
 	{
-		const std::string& key = it->first;
-		if(!StrUtil::startsWith(key, key_pattern, false))
+		const char* key = it->first.c_str();
+		if(memcmp(key, key_pattern.c_str(), key_pattern.size()) != 0)
 			continue;
 
 		WTSKlineData* kData = (WTSKlineData*)it->second;

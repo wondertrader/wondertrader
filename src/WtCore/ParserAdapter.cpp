@@ -285,9 +285,9 @@ void ParserAdapter::handleQuote(WTSTickData *quote, uint32_t procFlag)
 	{
 		//如果是分月合约，则进行主力和次主力的判断
 		stdCode = CodeHelper::rawMonthCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
-		std::string hotCode = _hot_mgr->getHotCode(quote->exchg(), quote->code(), 0);
-		std::string scndCode = _hot_mgr->getSecondCode(quote->exchg(), quote->code(), 0);
-		hotflag = !hotCode.empty() ? 1 : (!scndCode.empty() ? 2 : 0);
+		bool bHot = _hot_mgr->isHot(quote->exchg(), quote->code(), 0);
+		bool b2nd = _hot_mgr->isSecond(quote->exchg(), quote->code(), 0);
+		hotflag = bHot ? 1 : (b2nd ? 2 : 0);
 	}
 	else
 	{

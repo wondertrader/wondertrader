@@ -60,10 +60,10 @@ private:
 		FuncCreateSelStraFact	_creator;
 		FuncDeleteSelStraFact	_remover;
 	} StraFactInfo;
-	typedef faster_hashmap<std::string, StraFactInfo> StraFactMap;
+	typedef faster_hashmap<LongKey, StraFactInfo> StraFactMap;
 	StraFactMap	_factories;
 
-	typedef faster_hashmap<std::string, SelStrategyPtr> StrategyMap;
+	typedef faster_hashmap<LongKey, SelStrategyPtr> StrategyMap;
 	StrategyMap	_strategies;
 };
 

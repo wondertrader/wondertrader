@@ -13,6 +13,8 @@ data:
 #环境配置
 env:
     name: cta               #引擎名称：cta/hft/sel
+    fees: ../common/fees.json   #佣金配置文件
+    filters: filters.yaml       #过滤器配置文件，这个主要是用于盘中不停机干预的
     product:
         session: TRADING    #驱动交易时间模板，TRADING是一个覆盖国内全部交易品种的最大的交易时间模板，从夜盘21点到凌晨1点，再到第二天15:15，详见sessions.json
     riskmon:                #组合风控设置
@@ -34,20 +36,19 @@ strategies:
     # CTA策略配置，当mocker为cta时会读取该配置项
     cta:
     -   active: true       # 模块名，linux下为xxxx.so
-        id: dt_if          # 策略ID，自定义的
+        id: dt_rb          # 策略ID，自定义的
         name: WtCtaStraFact.DualThrust   # 策略名，要和factory中的匹配
         params:                         # 策略初始化参数，这个根据策略的需要提供
-            code: CFFEX.IF.HOT
+            code: CFFEX.rb.HOT
             count: 50
             days: 30
             k1: 0.6
             k2: 0.6
-            period: m5
+            period: m1
             stock: false
             
-fees: ../common/fees.json   #佣金配置文件
+
 executers: executers.yaml   #执行器配置文件
-filters: filters.yaml       #过滤器配置文件，这个主要是用于盘中不停机干预的
 parsers: tdparsers.yaml     #行情通达配置文件
 traders: tdtraders.yaml     #交易通道配置文件
 bspolicy: actpolicy.yaml    #开平策略配置文件

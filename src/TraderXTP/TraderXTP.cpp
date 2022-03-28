@@ -247,7 +247,7 @@ WTSOrderInfo* TraderXTP::makeOrderInfo(XTPQueryOrderRsp* order_info)
 		pRet->setError(true);
 
 	pRet->setEntrustID(genEntrustID(order_info->order_client_id).c_str());
-	pRet->setOrderID(StrUtil::fmtUInt64(order_info->order_xtp_id).c_str());
+	pRet->setOrderID(fmt::format("{}", order_info->order_xtp_id).c_str());
 
 	pRet->setStateMsg("");
 
@@ -298,7 +298,7 @@ WTSTradeInfo* TraderXTP::makeTradeInfo(XTPQueryTradeRsp* trade_info)
 
 	pRet->setDirection(dType);
 	pRet->setOffsetType(wrapOffsetType(trade_info->position_effect));
-	pRet->setRefOrder(StrUtil::fmtUInt64(trade_info->order_xtp_id).c_str());
+	pRet->setRefOrder(fmt::format("{}", trade_info->order_xtp_id).c_str());
 	pRet->setTradeType(WTT_Common);
 
 	double amount = trade_info->quantity*pRet->getPrice();
@@ -678,7 +678,10 @@ bool TraderXTP::isConnected()
 
 std::string TraderXTP::genEntrustID(uint32_t orderRef)
 {
-	return StrUtil::printf("%s#%u#%s#%u", _user.c_str(), _tradingday, StrUtil::fmtUInt64(_sessionid).c_str(), orderRef);
+	static char buffer[64] = { 0 };
+	char* tail = fmt::format_to(buffer, "{}#{}#{}#{}", _user, _tradingday, _sessionid, orderRef);
+	tail[0] = '\0';
+	return buffer;
 }
 
 bool TraderXTP::makeEntrustID(char* buffer, int length)
@@ -688,9 +691,11 @@ bool TraderXTP::makeEntrustID(char* buffer, int length)
 
 	try
 	{
-		memset(buffer, 0, length);
+		//memset(buffer, 0, length);
 		uint32_t orderref = _ordref.fetch_add(1) + 1;
-		sprintf(buffer, "%s#%u#%s#%u", _user.c_str(), _tradingday, StrUtil::fmtUInt64(_sessionid).c_str(), orderref);
+		//sprintf(buffer, "%s#%u#%s#%u", _user.c_str(), _tradingday, StrUtil::fmtUInt64(_sessionid).c_str(), orderref);
+		char* tail = fmt::format_to(buffer, "{}#{}#{}#{}", _user, _tradingday, _sessionid, orderref);
+		tail[0] = '\0';
 		return true;
 	}
 	catch (...)

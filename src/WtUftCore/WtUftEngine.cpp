@@ -160,24 +160,14 @@ void WtUftEngine::sub_tick(uint32_t sid, const char* stdCode)
 
 double WtUftEngine::get_cur_price(const char* stdCode)
 {
-	auto it = _price_map.find(stdCode);
-	if (it == _price_map.end())
-	{
-		WTSTickData* lastTick = _data_mgr->grab_last_tick(stdCode);
-		if (lastTick == NULL)
-			return 0.0;
+	WTSTickData* lastTick = _data_mgr->grab_last_tick(stdCode);
+	if (lastTick == NULL)
+		return 0.0;
 
-		double ret = lastTick->price();
-		lastTick->release();
-		_price_map[stdCode] = ret;
-		return ret;
-	}
-	else
-	{
-		return it->second;
-	}
+	double ret = lastTick->price();
+	lastTick->release();
+	return ret;
 }
-
 
 void WtUftEngine::init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtUftDtMgr* dataMgr)
 {
@@ -335,8 +325,6 @@ void WtUftEngine::on_session_end()
 
 void WtUftEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 {
-	_price_map[stdCode] = curTick->price();
-
 	if(_data_mgr)
 		_data_mgr->handle_push_quote(stdCode, curTick);
 

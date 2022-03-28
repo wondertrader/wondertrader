@@ -814,11 +814,12 @@ bool CtaStraBaseCtx::on_schedule(uint32_t curDate, uint32_t curTime)
 
 	for (auto it = _kline_tags.begin(); it != _kline_tags.end(); it++)
 	{
-		const std::string& key = it->first;
+		const char* key = it->first.c_str();
 		KlineTag& marker = (KlineTag&)it->second;
 
-		StringVector ay = StrUtil::split(key, "#");
-		const char* stdCode = ay[0].c_str();
+		auto idx = StrUtil::findFirst(key, '#');
+
+		std::string stdCode(key, idx);
 
 		if (key == _main_key)
 		{
@@ -834,7 +835,7 @@ bool CtaStraBaseCtx::on_schedule(uint32_t curDate, uint32_t curTime)
 			}
 		}
 
-		WTSSessionInfo* sInfo = _engine->get_session_info(stdCode, true);
+		WTSSessionInfo* sInfo = _engine->get_session_info(stdCode.c_str(), true);
 
 		if (isMainUdt || _kline_tags.empty())
 		{	

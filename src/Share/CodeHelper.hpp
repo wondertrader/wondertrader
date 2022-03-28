@@ -137,7 +137,7 @@ public:
 		if (len < SUF_LEN)
 			return false;
 
-		return strcmp(stdCode + len - SUF_LEN, SUFFIX_HOT) == 0;
+		return memcmp(stdCode + len - SUF_LEN, SUFFIX_HOT, SUF_LEN) == 0;
 	}
 
 	/*
@@ -151,7 +151,7 @@ public:
 		if (len < SUF_LEN)
 			return false;
 
-		return strcmp(stdCode + len - SUF_LEN, SUFFIX_2ND) == 0;
+		return memcmp(stdCode + len - SUF_LEN, SUFFIX_2ND, SUF_LEN) == 0;
 	}
 
 	/*
@@ -160,16 +160,17 @@ public:
 	 */
 	static bool	isStdChnFutOptCode(const char* code)
 	{
-		using namespace boost::xpressive;
 		/* 定义正则表达式 */
 		//static cregex reg_stk = cregex::compile("^[A-Z]+.[A-z]+\\d{4}.(C|P).\\d+$");	//CFFEX.IO2007.C.4000
 		//return 	regex_match(code, reg_stk);
-		auto len = strlen(code);
 		char state = 0;
-		uint32_t cnt = 0;
-		for(std::size_t i = 0; i < len; i++)
+		std::size_t i = 0;
+		for(; ; i++)
 		{
 			char ch = code[i];
+			if(ch == '\0')
+				break;
+
 			if(state == 0)
 			{
 				if (!('A' <= ch && ch <= 'Z'))
@@ -248,7 +249,7 @@ public:
 			}
 		}
 
-		return true;
+		return (state == 11);
 	}
 
 	/*
@@ -276,15 +277,14 @@ public:
 		{
 			//前后两个.不是同一个，说明是三段的代码
 			//提取前两段作为品种代码
-			std::string stdCommID(stdCode, idx);
-			return std::move(stdCommID);
+			return std::string (stdCode, idx);
 		}
 		else
 		{
 			//两段的代码，直接返回
 			//主要针对某些交易所，每个合约的交易规则都不同的情况
 			//这种情况，就把合约直接当成品种来用
-			return std::move(stdCode);
+			return stdCode;
 		}
 	}
 
@@ -300,8 +300,7 @@ public:
 		while ('A' <= code[nLen] && code[nLen] <= 'z')
 			nLen++;
 
-		std::string strRet(code, nLen);
-		return std::move(strRet);
+		return std::string(code, nLen);
 	}
 
 	/*
@@ -311,32 +310,54 @@ public:
 	 */
 	static inline std::string rawMonthCodeToStdCode(const char* code, const char* exchg, bool isComm = false)
 	{
-		std::string pid = code;
-		if (!isComm)
-			pid = rawMonthCodeToRawCommID(code);
-
-		std::string ret = fmt::format("{}.{}", exchg, pid);
-		if (!isComm)
+		thread_local static char buffer[64] = { 0 };
+		std::size_t len = 0;
+		if(isComm)
 		{
-			ret += ".";
+			len = strlen(exchg);
+			memcpy(buffer, exchg, len);
+			buffer[len] = '.';
+			len += 1;
+
+			auto clen = strlen(code);
+			memcpy(buffer+len, code, clen);
+			len += clen;
+			buffer[len] = '\0';
+			len += 1;
+		}
+		else
+		{
+			std::string pid = rawMonthCodeToRawCommID(code);
+			len = strlen(exchg);
+			memcpy(buffer, exchg, len);
+			buffer[len] = '.';
+			len += 1;
+
+			memcpy(buffer + len, pid.c_str(), pid.size());
+			len += pid.size();
+			buffer[len] = '.';
+			len += 1;
 
 			char* s = (char*)code;
 			s += pid.size();
-			if(strlen(s) == 4)
+			if (strlen(s) == 4)
 			{
-				ret += s;
+				wt_strcpy(buffer + len, s, 4);
+				len += 4;
 			}
 			else
 			{
-				if (s[0] == '9')
-					ret += "1";
+				if (s[0] > '5')
+					buffer[len] = '1';
 				else
-					ret += "2";
-
-				ret += s;
+					buffer[len] = '2';
+				len += 1;
+				wt_strcpy(buffer + len, s, 3);
+				len += 3;
 			}
 		}
-		return std::move(ret);
+
+		return std::string(buffer, len);
 	}
 
 	/*
@@ -345,18 +366,75 @@ public:
 	 */
 	static inline std::string rawFlatCodeToStdCode(const char* code, const char* exchg, const char* pid)
 	{
-		if(strcmp(code, pid) == 0 || strlen(pid) == 0)
-			return std::move(fmt::format("{}.{}", exchg, pid));
+		thread_local static char buffer[64] = { 0 };
+		auto len = strlen(exchg);
+		memcpy(buffer, exchg, len);
+		buffer[len] = '.';
+		len += 1;
+
+		auto plen = strlen(pid);
+		auto clen = strlen(code);
+
+		if (strcmp(code, pid) == 0 || plen == 0)
+		{
+			memcpy(buffer + len, code, clen);
+			len += clen;
+			buffer[len] = '\0';
+		}
 		else
-			return std::move(fmt::format("{}.{}.{}", exchg, pid, code));
+		{
+			memcpy(buffer + len, pid, plen);
+			len += plen;
+			buffer[len] = '.';
+			len += 1;
+
+			memcpy(buffer + len, code, clen);
+			len += clen;
+			buffer[len] = '\0';
+		}
+
+		return buffer;
 	}
 
 	static inline bool isMonthlyCode(const char* code)
 	{
-		using namespace boost::xpressive;
+		//using namespace boost::xpressive;
 		//最后3-6位都是数字，才是分月合约
-		static cregex reg_stk = cregex::compile("^.*[A-z|-]\\d{3,6}$");	//CFFEX.IO.2007
-		return 	regex_match(code, reg_stk);
+		//static cregex reg_stk = cregex::compile("^.*[A-z|-]\\d{3,6}$");	//CFFEX.IO.2007
+		//return 	regex_match(code, reg_stk);
+		auto len = strlen(code);
+		char state = 0;
+		for (std::size_t i = 0; i < len; i++)
+		{
+			char ch = code[len - i - 1];
+			if (0 <= state && state < 3)
+			{
+				if (!('0' <= ch && ch <= '9'))
+					return false;
+
+				state += 1;
+			}
+			else if (3 <= state && state < 6)
+			{
+				if ('0' <= ch && ch <= '9')
+					state += 1;
+				else if (('A' <= ch && ch <= 'z') || ch == '-')
+				{
+					state = 7;
+					break;
+				}
+			}
+			else if (state == 6)
+			{
+				if (('A' <= ch && ch <= 'z') || ch == '-')
+				{
+					state = 7;
+					break;
+				}
+			}
+		}
+
+		return state == 7;
 	}
 
 	/*
@@ -374,7 +452,7 @@ public:
 		{
 			std::string s = std::move(fmt::format("{}.{}", exchg, code));
 			StrUtil::replace(s, "-", ".");
-			return std::move(s);
+			return s;
 		}
 		else
 		{
@@ -395,7 +473,7 @@ public:
 			s.append(&code[idx], 1);
 			s.append(".");
 			s.append(&code[idx + 1]);
-			return std::move(s);
+			return s;
 		}
 	}
 
@@ -412,7 +490,7 @@ public:
 		stdWrappedCode.resize(idx + strlen(SUFFIX_HOT) + 1);
 		memcpy((char*)stdWrappedCode.data(), stdCode, idx);
 		wt_strcpy((char*)stdWrappedCode.data()+idx, SUFFIX_HOT);
-		return std::move(stdWrappedCode);
+		return stdWrappedCode;
 	}
 
 	/*
@@ -428,7 +506,7 @@ public:
 		stdWrappedCode.resize(idx + strlen(SUFFIX_2ND) + 1);
 		memcpy((char*)stdWrappedCode.data(), stdCode, idx);
 		wt_strcpy((char*)stdWrappedCode.data() + idx, SUFFIX_2ND);
-		return std::move(stdWrappedCode);
+		return stdWrappedCode;
 	}
 
 	/*
@@ -444,7 +522,7 @@ public:
 			StrUtil::replace(ret, ".", "-");
 		else
 			StrUtil::replace(ret, ".", "");
-		return std::move(ret);
+		return ret;
 	}
 
 	static inline int indexCodeMonth(const char* code)
@@ -499,7 +577,7 @@ public:
 			strcat(codeInfo._product, "_o");
 		}
 
-		return std::move(codeInfo);
+		return codeInfo;
 	}
 
 	/*
@@ -510,7 +588,7 @@ public:
 		//期权的代码规则和其他都不一样，所以单独判断
 		if(isStdChnFutOptCode(stdCode))
 		{
-			return std::move(extractStdChnFutOptCode(stdCode));
+			return extractStdChnFutOptCode(stdCode);
 		}
 		else
 		{
@@ -540,23 +618,24 @@ public:
 			{
 				memcpy(codeInfo._product, stdCode + idx + 1, idx2);
 				const char* ext = stdCode + idx + idx2 + 2;
-				char lastCh = ext[strlen(ext) - 1];
+				std::size_t extlen = strlen(ext);
+				char lastCh = ext[extlen - 1];
 				if (lastCh == SUFFIX_QFQ || lastCh == SUFFIX_HFQ)
 				{
-					memcpy(codeInfo._code, ext, strlen(ext) - 1);
+					memcpy(codeInfo._code, ext, extlen - 1);
 					codeInfo._exright = (lastCh == SUFFIX_QFQ) ? 1 : 2;
 				}
-				else if (strlen(ext) == 4 && isdigit(lastCh))
+				else if (extlen == 4 && '0' <= lastCh && lastCh <= '9')
 				{
 					//如果最后一段是4位数字，说明是分月合约
 					//TODO: 这样的判断存在一个假设，最后一位是数字的一定是期货分月合约，以后可能会有问题，先注释一下
 					//那么code得加上品种id
 					//郑商所得单独处理一下，这个只能hardcode了
-					wt_strcpy(codeInfo._code, codeInfo._product);
-					if (strcmp(codeInfo._exchg, "CZCE") == 0)
-						strcat(codeInfo._code, ext + 1);
+					auto i = wt_strcpy(codeInfo._code, codeInfo._product);
+					if (memcmp(codeInfo._exchg, "CZCE", 4) == 0)
+						memcpy(codeInfo._code + i, ext + 1, extlen-1);
 					else
-						strcat(codeInfo._code, ext);
+						memcpy(codeInfo._code + i, ext, extlen);
 				}
 				else
 				{

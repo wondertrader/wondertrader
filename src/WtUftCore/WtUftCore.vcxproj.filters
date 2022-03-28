@@ -63,6 +63,9 @@
     <ClInclude Include="..\Includes\UftStrategyDefs.h">
       <Filter>Incs</Filter>
     </ClInclude>
+    <ClInclude Include="ActionPolicyMgr.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TraderAdapter.cpp">
@@ -91,6 +94,9 @@
     </ClCompile>
     <ClCompile Include="WtUftDtMgr.cpp">
       <Filter>Datas</Filter>
+    </ClCompile>
+    <ClCompile Include="ActionPolicyMgr.cpp">
+      <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

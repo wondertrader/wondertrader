@@ -20,6 +20,7 @@ class WTSVariant;
 class WTSContractInfo;
 class WTSCommodityInfo;
 class ITrdNotifySink;
+class ActionPolicyMgr;
 
 typedef std::vector<uint32_t> OrderIDs;
 typedef WTSMap<uint32_t> OrderMap;
@@ -79,26 +80,11 @@ public:
 
 	} PosItem;
 
-	typedef struct _RiskParams
-	{
-		uint32_t	_order_times_boundary;
-		uint32_t	_order_stat_timespan;
-		uint32_t	_order_total_limits;
-
-		uint32_t	_cancel_times_boundary;
-		uint32_t	_cancel_stat_timespan;
-		uint32_t	_cancel_total_limits;
-
-		_RiskParams()
-		{
-			memset(this, 0, sizeof(_RiskParams));
-		}
-	} RiskParams;
 
 public:
-	bool init(const char* id, WTSVariant* params, IBaseDataMgr* bdMgr);
+	bool init(const char* id, WTSVariant* params, IBaseDataMgr* bdMgr, ActionPolicyMgr* policyMgr);
 
-	bool initExt(const char* id, ITraderApi* api, IBaseDataMgr* bdMgr);
+	bool initExt(const char* id, ITraderApi* api, IBaseDataMgr* bdMgr, ActionPolicyMgr* policyMgr);
 
 	void release();
 
@@ -120,10 +106,12 @@ private:
 	inline void	printPosition(const char* stdCode, const PosItem& pItem);
 
 	inline WTSContractInfo* getContract(const char* stdCode);
-	inline WTSCommodityInfo* getCommodify(const char* stdCommID);
+
+	inline void updateUndone(const char* stdCode, double qty, bool bOuput = true);
 
 public:
-	double getPosition(const char* stdCode, bool bValidOnly, int32_t flag = 3);
+	double	getPosition(const char* stdCode, bool bValidOnly, int32_t flag = 3);
+	double	enumPosition(const char* stdCode = "");
 	OrderMap* getOrders(const char* stdCode);
 	double getUndoneQty(const char* stdCode)
 	{
@@ -133,6 +121,9 @@ public:
 
 		return 0;
 	}
+
+	OrderIDs buy(const char* stdCode, double price, double qty, int flag, bool bForceClose, WTSContractInfo* cInfo = NULL);
+	OrderIDs sell(const char* stdCode, double price, double qty, int flag, bool bForceClose, WTSContractInfo* cInfo = NULL);
 
 	/*
 	 *	下单接口: 开多
@@ -227,6 +218,7 @@ private:
 	faster_hashset<ITrdNotifySink*>	_sinks;
 
 	IBaseDataMgr*		_bd_mgr;
+	ActionPolicyMgr*	_policy_mgr;
 
 	faster_hashmap<std::string, PosItem> _positions;
 
@@ -234,7 +226,10 @@ private:
 	OrderMap*		_orders;
 	faster_hashset<std::string> _orderids;	//主要用于标记有没有处理过该订单
 
-	faster_hashmap<std::string, double> _undone_qty;	//未完成数量
+	faster_hashmap<LongKey, double> _undone_qty;	//未完成数量
+
+	typedef WTSHashMap<LongKey>	TradeStatMap;
+	TradeStatMap*	_stat_map;	//统计数据
 };
 
 typedef std::shared_ptr<TraderAdapter>				TraderAdapterPtr;

@@ -86,7 +86,7 @@ private:
 
 	bool				_stopped;
 
-	typedef faster_hashset<std::string>	ExchgFilter;
+	typedef faster_hashset<LongKey>	ExchgFilter;
 	ExchgFilter			_exchg_filter;
 	ExchgFilter			_code_filter;
 	IBaseDataMgr*		_bd_mgr;

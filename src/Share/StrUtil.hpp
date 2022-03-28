@@ -70,11 +70,16 @@ public:
 
 	static inline std::size_t findFirst(const char* str, char ch)
 	{
-		std::size_t len = strlen(str);
-		for(std::size_t i = 0; i < len; i++)
+		std::size_t i = 0;
+		for(;;)
 		{
 			if (str[i] == ch)
 				return i;
+
+			if(str[i] == '\0')
+				break;
+
+			i++;
 		}
 
 		return std::string::npos;
@@ -532,27 +537,5 @@ public:
 		ret += str.substr(lastPos, pos);
 
 		str = ret;
-	}
-
-	static inline std::string fmtInt64(int64_t v)
-	{
-		char buf[64] = { 0 };
-#ifdef _MSC_VER
-		int pos = sprintf(buf, "%I64d", v);
-#else
-		int pos = sprintf(buf, "%lld", (long long)v);
-#endif
-		return buf;
-	}
-
-	static inline std::string fmtUInt64(uint64_t v)
-	{
-		char buf[64] = { 0 };
-#ifdef _MSC_VER
-		int pos = sprintf(buf, "%I64u", v);
-#else
-		int pos = sprintf(buf, "%llu", (unsigned long long)v);
-#endif
-		return buf;
 	}
 };

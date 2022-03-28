@@ -51,13 +51,16 @@
     <ClCompile Include="test_lmdb.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="test_cfg_loader.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="test_utils.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="test_object_pool.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="test_fmt.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="test_kvcache.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

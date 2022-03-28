@@ -203,6 +203,13 @@ const char* HftStraBaseCtx::get_inner_code(const char* stdCode)
 
 OrderIDs HftStraBaseCtx::stra_buy(const char* stdCode, double price, double qty, const char* userTag, int flag /* = 0 */)
 {
+	WTSContractInfo* ct = _engine->get_contract_info(stdCode);
+	if (ct == NULL)
+	{
+		log_error("Cannot find corresponding contract info of %s", stdCode);
+		return OrderIDs();
+	}
+
 	if(CodeHelper::isStdFutHotCode(stdCode))
 	{
 		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
@@ -217,11 +224,10 @@ OrderIDs HftStraBaseCtx::stra_buy(const char* stdCode, double price, double qty,
 			return OrderIDs();
 		}
 
-		auto ids = _trader->buy(realCode.c_str(), price, qty, flag, false);
-		for(auto localid : ids)
-		{
-			_orders[localid] = userTag;
-		}
+		auto ids = _trader->buy(realCode.c_str(), price, qty, flag, false, ct);
+		for (auto localid : ids)
+			setUserTag(localid, userTag);
+
 		return ids;
 	}
 	else if (CodeHelper::isStdFut2ndCode(stdCode))
@@ -238,11 +244,9 @@ OrderIDs HftStraBaseCtx::stra_buy(const char* stdCode, double price, double qty,
 			return OrderIDs();
 		}
 
-		auto ids = _trader->buy(realCode.c_str(), price, qty, flag, false);
+		auto ids = _trader->buy(realCode.c_str(), price, qty, flag, false, ct);
 		for (auto localid : ids)
-		{
-			_orders[localid] = userTag;
-		}
+			setUserTag(localid, userTag);
 		return ids;
 	}
 	else
@@ -253,23 +257,23 @@ OrderIDs HftStraBaseCtx::stra_buy(const char* stdCode, double price, double qty,
 			return OrderIDs();
 		}
 
-		auto ids = _trader->buy(stdCode, price, qty, flag, false);
+		auto ids = _trader->buy(stdCode, price, qty, flag, false, ct);
 		for (auto localid : ids)
-		{
-			_orders[localid] = userTag;
-		}
+			setUserTag(localid, userTag);
 		return ids;
 	}
 }
 
 OrderIDs HftStraBaseCtx::stra_sell(const char* stdCode, double price, double qty, const char* userTag, int flag/* = 0*/)
 {
-	WTSCommodityInfo* commInfo = _engine->get_commodity_info(stdCode);
-	if (commInfo == NULL)
+	WTSContractInfo* ct = _engine->get_contract_info(stdCode);
+	if (ct == NULL)
 	{
-		log_error("Cannot find corresponding commodity info of %s", stdCode);
+		log_error("Cannot find corresponding contract info of %s", stdCode);
 		return OrderIDs();
 	}
+
+	WTSCommodityInfo* commInfo = ct->getCommInfo();
 
 	//如果不能做空，则要看可用持仓
 	if (!commInfo->canShort())
@@ -296,11 +300,9 @@ OrderIDs HftStraBaseCtx::stra_sell(const char* stdCode, double price, double qty
 			return OrderIDs();
 		}
 
-		auto ids = _trader->sell(realCode.c_str(), price, qty, flag, false);
+		auto ids = _trader->sell(realCode.c_str(), price, qty, flag, false, ct);
 		for (auto localid : ids)
-		{
-			_orders[localid] = userTag;
-		}
+			setUserTag(localid, userTag);
 		return ids;
 	}
 	else if (CodeHelper::isStdFut2ndCode(stdCode))
@@ -317,11 +319,9 @@ OrderIDs HftStraBaseCtx::stra_sell(const char* stdCode, double price, double qty
 			return OrderIDs();
 		}
 
-		auto ids = _trader->sell(realCode.c_str(), price, qty, flag, false);
+		auto ids = _trader->sell(realCode.c_str(), price, qty, flag, false, ct);
 		for (auto localid : ids)
-		{
-			_orders[localid] = userTag;
-		}
+			setUserTag(localid, userTag);
 		return ids;
 	}
 	else
@@ -332,11 +332,9 @@ OrderIDs HftStraBaseCtx::stra_sell(const char* stdCode, double price, double qty
 			return OrderIDs();
 		}
 
-		auto ids = _trader->sell(stdCode, price, qty, flag, false);
+		auto ids = _trader->sell(stdCode, price, qty, flag, false, ct);
 		for (auto localid : ids)
-		{
-			_orders[localid] = userTag;
-		}
+			setUserTag(localid, userTag);
 		return ids;
 	}
 }
@@ -574,6 +572,11 @@ void HftStraBaseCtx::on_order(uint32_t localid, const char* stdCode, bool isBuy,
 	{
 		save_userdata();
 		_ud_modified = false;
+	}
+
+	if(isCanceled || decimal::eq(leftQty, 0))
+	{
+		//订单结束了，要把订单号清理掉，不然开销太大
 	}
 }
 

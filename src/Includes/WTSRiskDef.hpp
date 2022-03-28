@@ -34,6 +34,12 @@ typedef struct _TradeStatInfo
 	uint32_t	s_cancels;	//撤卖笔数
 	double		s_canclqty;	//撤卖数量
 
+	//自动撤单统计
+	uint32_t	b_auto_cancels;		//撤买笔数
+	double		b_auto_canclqty;	//撤买数量
+	uint32_t	s_auto_cancels;		//撤卖笔数
+	double		s_auto_canclqty;	//撤卖数量
+
 	//错单统计
 	uint32_t	b_wrongs;	//错单笔数
 	double		b_wrongqty;	//错单数量

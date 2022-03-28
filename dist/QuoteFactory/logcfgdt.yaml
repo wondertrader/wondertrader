@@ -1,5 +1,5 @@
 parser:
-    async: false
+    async: true
     level: debug
     sinks:
     -   filename: DtLogs/Parser.log
@@ -7,7 +7,7 @@ parser:
         truncate: false
         type: daily_file_sink
 root:
-    async: false
+    async: true
     level: debug
     sinks:
     -   filename: DtLogs/QuoteFact.log

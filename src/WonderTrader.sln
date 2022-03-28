@@ -11,7 +11,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WTSUtilsLib", "WTSUtils\WTS
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Parsers", "Parsers", "{8CDD8944-E3DA-4FB4-9F50-F62418CEF62E}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Porter", "Porter", "{75B4CD74-4A4D-42A6-9CDF-860F1741FEF6}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Product", "Product", "{75B4CD74-4A4D-42A6-9CDF-860F1741FEF6}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WtPorter", "WtPorter\WtPorter.vcxproj", "{2FA13367-71A9-4B8F-9683-AB4F0C1E1C12}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -193,6 +193,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WtUftCore", "WtUftCore\WtUftCore.vcxproj", "{A68AD4DD-4FAA-44F2-8275-59E227C13B5A}"
 EndProject
 Global
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
 		Debug|x64 = Debug|x64
@@ -690,5 +693,8 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E24C8CF2-D218-402B-88C5-02BB2E3F3ACE}
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
 	EndGlobalSection
 EndGlobal

@@ -34,8 +34,8 @@ inline void write_log(ITraderSpi* sink, WTSLogLevel ll, const char* format, cons
 		return;
 
 	static thread_local char buffer[512] = { 0 };
-	memset(buffer, 0, 512);
-	fmt::format_to(buffer, format, args...);
+	char* s = fmt::format_to(buffer, format, args...);
+	s[0] = '\0';
 
 	sink->handleTraderLog(ll, buffer);
 }
@@ -239,7 +239,7 @@ bool TraderCTP::makeEntrustID(char* buffer, int length)
 	{
 		memset(buffer, 0, length);
 		uint32_t orderref = m_orderRef.fetch_add(1) + 1;
-		sprintf(buffer, "%06u#%010u#%06u", m_frontID, m_sessionID, orderref);
+		fmt::format_to(buffer, "{:06d}#{:010d}#{:06d}", m_frontID, (uint32_t)m_sessionID, orderref);
 		return true;
 	}
 	catch (...)
@@ -321,13 +321,14 @@ int TraderCTP::orderInsert(WTSEntrust* entrust)
 {
 	if (m_pUserAPI == NULL || m_wrapperState != WS_ALLREADY)
 	{
+		write_log(m_sink, LL_ERROR, "[TraderCTP] Trading channel not ready");
 		return -1;
 	}
 
 	CThostFtdcInputOrderField req;
 	memset(&req, 0, sizeof(req));
 	wt_strcpy(req.BrokerID, m_strBroker.c_str(), m_strBroker.size());
-	wt_strcpy(req.UserID, m_strUser.c_str(), m_strUser.size());
+	wt_strcpy(req.InvestorID, m_strUser.c_str(), m_strUser.size());
 
 	wt_strcpy(req.InstrumentID, entrust->getCode());
 	wt_strcpy(req.ExchangeID, entrust->getExchg());
@@ -335,33 +336,24 @@ int TraderCTP::orderInsert(WTSEntrust* entrust)
 	if (strlen(entrust->getUserTag()) == 0)
 	{
 		///报单引用
-		sprintf(req.OrderRef, "%u", m_orderRef.fetch_add(0));
+		fmt::format_to(req.OrderRef, "{}", m_orderRef.fetch_add(0));
 
-		//生成本地委托单号
-		//entrust->setEntrustID(generateEntrustID(m_frontID, m_sessionID, m_orderRef++).c_str());	
 	}
 	else
 	{
 		uint32_t fid, sid, orderref;
 		extractEntrustID(entrust->getEntrustID(), fid, sid, orderref);
-		//entrust->setEntrustID(entrust->getUserTag());
 		///报单引用
-		sprintf(req.OrderRef, "%u", orderref);
+		fmt::format_to(req.OrderRef, "{}", orderref);
 	}
 
 	if (strlen(entrust->getUserTag()) > 0)
 	{
-		//m_mapEntrustTag[entrust->getEntrustID()] = entrust->getUserTag();
-		m_iniHelper.writeString(ENTRUST_SECTION, entrust->getEntrustID(), entrust->getUserTag());
-		m_iniHelper.save();
+		m_eidCache.put(entrust->getEntrustID(), entrust->getUserTag(), 0, [this](const char* message) {
+			write_log(m_sink, LL_WARN, message);
+		});
 	}
 
-	WTSContractInfo* ct = entrust->getContractInfo();
-	if (ct == NULL)
-		return -1;
-
-	///用户代码
-	//	TThostFtdcUserIDType	UserID;
 	///报单价格条件: 限价
 	req.OrderPriceType = wrapPriceType(entrust->getPriceType(), strcmp(entrust->getExchg(), "CFFEX") == 0);
 	///买卖方向: 
@@ -390,19 +382,14 @@ int TraderCTP::orderInsert(WTSEntrust* entrust)
 		req.TimeCondition = THOST_FTDC_TC_IOC;
 		req.VolumeCondition = THOST_FTDC_VC_CV;
 	}
+	//req.MinVolume = 1;
 	
 	///触发条件: 立即
 	req.ContingentCondition = THOST_FTDC_CC_Immediately;
-	///止损价
-	//	TThostFtdcPriceType	StopPrice;
 	///强平原因: 非强平
 	req.ForceCloseReason = THOST_FTDC_FCC_NotForceClose;
 	///自动挂起标志: 否
 	req.IsAutoSuspend = 0;
-	///业务单元
-	//	TThostFtdcBusinessUnitType	BusinessUnit;
-	///请求编号
-	//	TThostFtdcRequestIDType	RequestID;
 	///用户强评标志: 否
 	req.UserForceClose = 0;
 
@@ -427,7 +414,7 @@ int TraderCTP::orderAction(WTSEntrustAction* action)
 	CThostFtdcInputOrderActionField req;
 	memset(&req, 0, sizeof(req));
 	wt_strcpy(req.BrokerID, m_strBroker.c_str(), m_strBroker.size());
-	wt_strcpy(req.UserID, m_strUser.c_str(), m_strUser.size());
+	wt_strcpy(req.InvestorID, m_strUser.c_str(), m_strUser.size());
 
 	///报单引用
 	fmt::format_to(req.OrderRef, "{}", orderref);
@@ -626,24 +613,30 @@ void TraderCTP::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, CThos
 		write_log(m_sink, LL_INFO, "[TraderCTP][{}-{}] Login succeed, AppID: {}, Sessionid: {}, login time: {}...",
 			m_strBroker.c_str(), m_strUser.c_str(), m_strAppID.c_str(), m_sessionID, pRspUserLogin->LoginTime);
 
-		std::stringstream ss;
-		ss << m_strFlowDir << "local/" << m_strBroker << "/";
-		std::string path = StrUtil::standardisePath(ss.str());
-		if (!StdFile::exists(path.c_str()))
-			boost::filesystem::create_directories(path.c_str());
-		ss << m_strUser << ".dat";
-
-		m_iniHelper.load(ss.str().c_str());
-		uint32_t lastDate = m_iniHelper.readUInt("marker", "date", 0);
-		if(lastDate != m_lDate)
 		{
-			//交易日不同,清理掉原来的数据
-			m_iniHelper.removeSection(ENTRUST_SECTION);
-			m_iniHelper.removeSection(ORDER_SECTION);
-			m_iniHelper.writeUInt("marker", "date", m_lDate);
-			m_iniHelper.save();
+			//初始化委托单缓存器
+			std::stringstream ss;
+			ss << m_strFlowDir << "local/" << m_strBroker << "/";
+			std::string path = StrUtil::standardisePath(ss.str());
+			if (!StdFile::exists(path.c_str()))
+				boost::filesystem::create_directories(path.c_str());
+			ss << m_strUser << "_eid.sc";
+			m_eidCache.init(ss.str().c_str(), m_lDate, [this](const char* message) {
+				write_log(m_sink, LL_WARN, message);
+			});
+		}
 
-			write_log(m_sink, LL_INFO, "[TraderCTP][{}-{}] Trading date changed[{} -> {}], local cache cleared...", m_strBroker.c_str(), m_strUser.c_str(), lastDate, m_lDate);
+		{
+			//初始化订单标记缓存器
+			std::stringstream ss;
+			ss << m_strFlowDir << "local/" << m_strBroker << "/";
+			std::string path = StrUtil::standardisePath(ss.str());
+			if (!StdFile::exists(path.c_str()))
+				boost::filesystem::create_directories(path.c_str());
+			ss << m_strUser << "_oid.sc";
+			m_oidCache.init(ss.str().c_str(), m_lDate, [this](const char* message) {
+				write_log(m_sink, LL_WARN, message);
+			});
 		}
 
 		write_log(m_sink, LL_INFO, "[TraderCTP][{}-{}] Login succeed, trading date: {}...", m_strBroker.c_str(), m_strUser.c_str(), m_lDate);
@@ -1222,25 +1215,26 @@ WTSOrderInfo* TraderCTP::makeOrderInfo(CThostFtdcOrderField* orderField)
 	if (orderField->OrderSubmitStatus >= THOST_FTDC_OSS_InsertRejected)
 		pRet->setError(true);		
 
-	pRet->setEntrustID(generateEntrustID(orderField->FrontID, orderField->SessionID, atoi(orderField->OrderRef)).c_str());
+	generateEntrustID(pRet->getEntrustID(), orderField->FrontID, orderField->SessionID, atoi(orderField->OrderRef));
 	pRet->setOrderID(orderField->OrderSysID);
 
 	pRet->setStateMsg(orderField->StatusMsg);
 
 
-	std::string usertag = m_iniHelper.readString(ENTRUST_SECTION, pRet->getEntrustID(), "");
-	if(usertag.empty())
+	const char* usertag = m_eidCache.get(pRet->getEntrustID());
+	if(strlen(usertag) == 0)
 	{
 		pRet->setUserTag(pRet->getEntrustID());
 	}
 	else
 	{
-		pRet->setUserTag(usertag.c_str());
+		pRet->setUserTag(usertag);
 
 		if (strlen(pRet->getOrderID()) > 0)
 		{
-			m_iniHelper.writeString(ORDER_SECTION, StrUtil::trim(pRet->getOrderID()).c_str(), usertag.c_str());
-			m_iniHelper.save();
+			m_oidCache.put(StrUtil::trim(pRet->getOrderID()).c_str(), usertag, 0, [this](const char* message) {
+				write_log(m_sink, LL_ERROR, message);
+			});
 		}
 	}
 
@@ -1277,16 +1271,12 @@ WTSEntrust* TraderCTP::makeEntrust(CThostFtdcInputOrderField *entrustField)
 			pRet->setOrderFlag(WOF_FOK);
 	}
 
-	pRet->setEntrustID(generateEntrustID(m_frontID, m_sessionID, atoi(entrustField->OrderRef)).c_str());
+	//pRet->setEntrustID(generateEntrustID(m_frontID, m_sessionID, atoi(entrustField->OrderRef)).c_str());
+	generateEntrustID(pRet->getEntrustID(), m_frontID, m_sessionID, atoi(entrustField->OrderRef));
 
-	//StringMap::iterator it = m_mapEntrustTag.find(pRet->getEntrustID());
-	//if (it != m_mapEntrustTag.end())
-	//{
-	//	pRet->setUserTag(it->second.c_str());
-	//}
-	std::string usertag = m_iniHelper.readString(ENTRUST_SECTION, pRet->getEntrustID());
-	if (!usertag.empty())
-		pRet->setUserTag(usertag.c_str());
+	const char* usertag = m_eidCache.get(pRet->getEntrustID());
+	if (strlen(usertag) > 0)
+		pRet->setUserTag(usertag);
 
 	return pRet;
 }
@@ -1335,21 +1325,17 @@ WTSTradeInfo* TraderCTP::makeTradeRecord(CThostFtdcTradeField *tradeField)
 	double amount = contract->getCommInfo()->getVolScale()*tradeField->Volume*pRet->getPrice();
 	pRet->setAmount(amount);
 
-	//StringMap::iterator it = m_mapOrderTag.find(pRet->getRefOrder());
-	//if (it != m_mapOrderTag.end())
-	//{
-	//	pRet->setUserTag(it->second.c_str());
-	//}
-	std::string usertag = m_iniHelper.readString(ORDER_SECTION, StrUtil::trim(pRet->getRefOrder()).c_str());
-	if (!usertag.empty())
-		pRet->setUserTag(usertag.c_str());
+	const char* usertag = m_oidCache.get(StrUtil::trim(pRet->getRefOrder()).c_str());
+	if (strlen(usertag))
+		pRet->setUserTag(usertag);
 
 	return pRet;
 }
 
-std::string TraderCTP::generateEntrustID(uint32_t frontid, uint32_t sessionid, uint32_t orderRef)
+void TraderCTP::generateEntrustID(char* buffer, uint32_t frontid, uint32_t sessionid, uint32_t orderRef)
 {
-	return StrUtil::printf("%06u#%010u#%06u", frontid, sessionid, orderRef);
+	buffer = fmt::format_to(buffer, "{:06d}#{:010d}#{:06d}", frontid, sessionid, orderRef);
+	buffer[0] = '\0';
 }
 
 bool TraderCTP::extractEntrustID(const char* entrustid, uint32_t &frontid, uint32_t &sessionid, uint32_t &orderRef)
@@ -1434,8 +1420,8 @@ int TraderCTP::confirm()
 	wt_strcpy(req.BrokerID, m_strBroker.c_str(), m_strBroker.size());
 	wt_strcpy(req.InvestorID, m_strUser.c_str(), m_strUser.size());
 
-	sprintf(req.ConfirmDate, "%u", TimeUtils::getCurDate());
-	strncpy(req.ConfirmTime, TimeUtils::getLocalTime().c_str(), 8);
+	fmt::format_to(req.ConfirmDate, "{}", TimeUtils::getCurDate());
+	memcpy(req.ConfirmTime, TimeUtils::getLocalTime().c_str(), 8);
 
 	int iResult = m_pUserAPI->ReqSettlementInfoConfirm(&req, genRequestID());
 	if (iResult != 0)

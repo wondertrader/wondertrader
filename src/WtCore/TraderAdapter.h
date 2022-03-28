@@ -131,6 +131,8 @@ private:
 
 	void	saveData(WTSArray* ayFunds = NULL);
 
+	inline void updateUndone(const char* stdCode, double qty, bool bOuput = true);
+
 public:
 	double getPosition(const char* stdCode, bool bValidOnly, int32_t flag = 3);
 	OrderMap* getOrders(const char* stdCode);
@@ -213,30 +215,30 @@ private:
 	IBaseDataMgr*		_bd_mgr;
 	ActionPolicyMgr*	_policy_mgr;
 
-	faster_hashmap<std::string, PosItem> _positions;
+	faster_hashmap<LongKey, PosItem> _positions;
 
 	StdUniqueMutex _mtx_orders;
 	OrderMap*		_orders;
-	faster_hashset<std::string> _orderids;	//主要用于标记有没有处理过该订单
+	faster_hashset<LongKey> _orderids;	//主要用于标记有没有处理过该订单
 
-	faster_hashmap<std::string, std::string>	_trade_refs;	//用于记录成交单和订单的匹配
-	faster_hashset<std::string>					_self_matches;	//自成交的合约
+	faster_hashmap<LongKey, std::string>		_trade_refs;	//用于记录成交单和订单的匹配
+	faster_hashset<LongKey>						_self_matches;	//自成交的合约
 
-	faster_hashmap<std::string, double> _undone_qty;	//未完成数量
+	faster_hashmap<LongKey, double> _undone_qty;	//未完成数量
 
-	typedef WTSHashMap<std::string>	TradeStatMap;
+	typedef WTSHashMap<LongKey>	TradeStatMap;
 	TradeStatMap*	_stat_map;	//统计数据
 
 	//这两个缓存时间内的容器,主要是为了控制瞬间流量而设置的
 	typedef std::vector<uint64_t> TimeCacheList;
-	typedef faster_hashmap<std::string, TimeCacheList> CodeTimeCacheMap;
+	typedef faster_hashmap<LongKey, TimeCacheList> CodeTimeCacheMap;
 	CodeTimeCacheMap	_order_time_cache;	//下单时间缓存
 	CodeTimeCacheMap	_cancel_time_cache;	//撤单时间缓存
 
 	//如果被风控了,就会进入到排除队列
-	faster_hashset<std::string>	_exclude_codes;
+	faster_hashset<LongKey>	_exclude_codes;
 	
-	typedef faster_hashmap<std::string, RiskParams>	RiskParamsMap;
+	typedef faster_hashmap<LongKey, RiskParams>	RiskParamsMap;
 	RiskParamsMap	_risk_params_map;
 	bool			_risk_mon_enabled;
 

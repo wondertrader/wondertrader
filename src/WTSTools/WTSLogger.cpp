@@ -35,7 +35,7 @@
 const char* DYN_PATTERN = "dyn_pattern";
 
 ILogHandler*		WTSLogger::m_logHandler	= NULL;
-WTSLogLevel			WTSLogger::m_logLevel	= LL_ALL;
+WTSLogLevel			WTSLogger::m_logLevel	= LL_NONE;
 bool				WTSLogger::m_bStopped = false;
 bool				WTSLogger::m_bInited = false;
 bool				WTSLogger::m_bTpInited = false;
@@ -69,6 +69,34 @@ inline spdlog::level::level_enum str_to_level( const char* slvl)
 	else
 	{
 		return spdlog::level::off;
+	}
+}
+
+inline WTSLogLevel str_to_ll(const char* slvl)
+{
+	if (wt_stricmp(slvl, "debug") == 0)
+	{
+		return LL_DEBUG;
+	}
+	else if (wt_stricmp(slvl, "info") == 0)
+	{
+		return LL_INFO;
+	}
+	else if (wt_stricmp(slvl, "warn") == 0)
+	{
+		return LL_WARN;
+	}
+	else if (wt_stricmp(slvl, "error") == 0)
+	{
+		return LL_ERROR;
+	}
+	else if (wt_stricmp(slvl, "fatal") == 0)
+	{
+		return LL_FATAL;
+	}
+	else
+	{
+		return LL_NONE;
 	}
 }
 
@@ -165,9 +193,14 @@ void WTSLogger::initLogger(const char* catName, WTSVariant* cfgLogger)
 		logger->set_level(str_to_level(cfgLogger->getCString("level")));
 		spdlog::register_logger(logger);
 	}
+
+	if(strcmp(catName, "root")==0)
+	{
+		m_logLevel = str_to_ll(cfgLogger->getCString("level"));
+	}
 }
 
-void WTSLogger::init(const char* propFile /* = "logcfg.json" */, bool isFile /* = true */, ILogHandler* handler /* = NULL */, WTSLogLevel logLevel /* = LL_INFO */)
+void WTSLogger::init(const char* propFile /* = "logcfg.json" */, bool isFile /* = true */, ILogHandler* handler /* = NULL */)
 {
 	if (m_bInited)
 		return;
@@ -205,15 +238,13 @@ void WTSLogger::init(const char* propFile /* = "logcfg.json" */, bool isFile /* 
 	spdlog::flush_every(std::chrono::seconds(2));
 
 	m_logHandler = handler;
-	m_logLevel = logLevel;
 
 	m_bInited = true;
 }
 
-void WTSLogger::registerHandler(ILogHandler* handler /* = NULL */, WTSLogLevel logLevel /* = LL_ALL */)
+void WTSLogger::registerHandler(ILogHandler* handler /* = NULL */)
 {
 	m_logHandler = handler;
-	m_logLevel = logLevel;
 }
 
 void WTSLogger::stop()
@@ -323,6 +354,8 @@ void WTSLogger::log_raw_by_cat(const char* catName, WTSLogLevel ll, const char* 
 		return;
 
 	auto logger = getLogger(catName);
+	if (logger == NULL)
+		logger = m_rootLogger;
 
 	if (!m_bInited)
 	{
@@ -363,6 +396,8 @@ void WTSLogger::log_dyn_raw(const char* patttern, const char* catName, WTSLogLev
 		return;
 
 	auto logger = getLogger(catName, patttern);
+	if (logger == NULL)
+		logger = m_rootLogger;
 
 	if (!m_bInited)
 	{
@@ -372,28 +407,25 @@ void WTSLogger::log_dyn_raw(const char* patttern, const char* catName, WTSLogLev
 		return;
 	}
 
-	if (logger)
+	switch (ll)
 	{
-		switch (ll)
-		{
-		case LL_DEBUG:
-			debug_imp(logger, message);
-			break;
-		case LL_INFO:
-			info_imp(logger, message);
-			break;
-		case LL_WARN:
-			warn_imp(logger, message);
-			break;
-		case LL_ERROR:
-			error_imp(logger, message);
-			break;
-		case LL_FATAL:
-			fatal_imp(logger, message);
-			break;
-		default:
-			break;
-		}
+	case LL_DEBUG:
+		debug_imp(logger, message);
+		break;
+	case LL_INFO:
+		info_imp(logger, message);
+		break;
+	case LL_WARN:
+		warn_imp(logger, message);
+		break;
+	case LL_ERROR:
+		error_imp(logger, message);
+		break;
+	case LL_FATAL:
+		fatal_imp(logger, message);
+		break;
+	default:
+		break;
 	}
 }
 

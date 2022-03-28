@@ -71,7 +71,7 @@ private:
 		FuncCreateExeFact	_creator;
 		FuncDeleteExeFact	_remover;
 	} ExeFactInfo;
-	typedef faster_hashmap<std::string, ExeFactInfo> ExeFactMap;
+	typedef faster_hashmap<LongKey, ExeFactInfo> ExeFactMap;
 
 	ExeFactMap	_factories;
 };
@@ -81,7 +81,7 @@ class WtLocalExecuter : public ExecuteContext,
 		public ITrdNotifySink, public IExecCommand
 {
 public:
-	typedef faster_hashmap<std::string, ExecuteUnitPtr> ExecuteUnitMap;
+	typedef faster_hashmap<LongKey, ExecuteUnitPtr> ExecuteUnitMap;
 
 public:
 	WtLocalExecuter(WtExecuterFactory* factory, const char* name, IDataManager* dataMgr);
@@ -184,10 +184,10 @@ private:
 	bool				_auto_clear;//是否自动清理上一期的主力合约头寸	
 	bool				_channel_ready;
 
-	faster_hashset<std::string>	_clear_includes;	//自动清理包含品种
-	faster_hashset<std::string>	_clear_excludes;	//自动清理排除品种
+	faster_hashset<LongKey>	_clear_includes;	//自动清理包含品种
+	faster_hashset<LongKey>	_clear_excludes;	//自动清理排除品种
 
-	faster_hashmap<std::string, double> _target_pos;
+	faster_hashmap<LongKey, double> _target_pos;
 
 	typedef std::shared_ptr<boost::threadpool::pool> ThreadPoolPtr;
 	ThreadPoolPtr		_pool;

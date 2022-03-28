@@ -1,10 +1,26 @@
 #include "../Share/TimeUtils.hpp"
+#include "../Share/fmtlib.h"
 #include "gtest/gtest/gtest.h"
 
 TEST(test_utils, test_timeutils)
 {
-	auto a = TimeUtils::makeTime(20220128, 142348500, false);
-	auto b = TimeUtils::makeTime(20220128, 142348500, true);
+	uint32_t times = 100000000;
+	TimeUtils::Ticker ticker;
+	uint64_t t;
+	for(uint32_t i = 0; i< times; i ++)
+	{
+		t = TimeUtils::getLocalTimeNowOld();
+	}
 
-	EXPECT_EQ(a - b, 8 * 3600000);
+	uint64_t a = ticker.nano_seconds();
+
+	ticker.reset();
+	for (uint32_t i = 0; i < times; i++)
+	{
+		t = TimeUtils::getLocalTimeNow();
+	}
+
+	uint64_t b = ticker.nano_seconds();
+
+	fmt::print("getLocalTimeNowOld: {} - getLocalTimeNow: {}\n", a, b);
 }

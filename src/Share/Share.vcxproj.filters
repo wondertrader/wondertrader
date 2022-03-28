@@ -228,7 +228,10 @@
     <ClInclude Include="ObjectPool.hpp">
       <Filter>Utils</Filter>
     </ClInclude>
-    <ClInclude Include="SpinLock.hpp">
+    <ClInclude Include="WtKVCache.hpp">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="SpinMutex.hpp">
       <Filter>Utils</Filter>
     </ClInclude>
   </ItemGroup>

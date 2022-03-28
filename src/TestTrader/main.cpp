@@ -222,6 +222,7 @@ public:
 		else
 			WTSLogger::info("[%s]开始下单,品种: %s.%s,价格: %f,数量: %f,动作: %s", m_pParams->getCString("user"), exchg, code, price, qty, bs == 0 ? "买入" : "卖出");
 
+		entrust->setContractInfo(g_bdMgr.getContract(code, exchg));
 		m_pTraderApi->orderInsert(entrust);
 		entrust->release();
 
@@ -558,7 +559,7 @@ std::string getBaseFolder()
 
 int main()
 {
-	WTSLogger::init();
+	WTSLogger::init("logcfg.yaml");
 
 	WTSLogger::info("启动成功,当前系统版本号: v1.0");
 

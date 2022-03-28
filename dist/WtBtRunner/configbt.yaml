@@ -16,7 +16,7 @@ replayer:
     path: ../storage/
     tick: true                     # 是否开启tick回测，HFT回测时必须开启
 env:
-    mocker: uft                     # 回测引擎，cta/hft/sel/uft
+    mocker: exec                     # 回测引擎，cta/hft/sel/uft/exec
     slippage: 1
 
 # CTA策略配置，当mocker为cta时会读取该配置项
@@ -60,4 +60,22 @@ uft:
             offset: 0
             lots: 1
 
-
+# 配置，当mocker为uft时会读取该配置项
+exec:
+    module: WtExeFact.dll           # 模块名，linux下为xxxx.so
+    code: CFFEX.IF.HOT              # 驱动合约代码
+    period: m5                      # 驱动周期
+    volunit: 50                     # 周期单位数量
+    volmode: 0                      # 数量模式，0-每个周期设定的目标头寸，正负反复，-1-一直卖，即目标头寸一直减少，1-一直卖
+    executer:
+      name: WtMinImpactExeUnit      # 执行单元名称
+      id: exec
+      params:
+        offset: 0
+        expire: 5
+        pricemode: 1
+        span: 500
+        byrate: false
+        lots: 1
+        rate: 0.1
+    

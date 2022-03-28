@@ -112,3 +112,23 @@ void UftStraContext::on_entrust(uint32_t localid, const char* stdCode, bool bSuc
 
 	UftStraBaseCtx::on_entrust(localid, stdCode, bSuccess, message);
 }
+
+void UftStraContext::on_position(const char* stdCode, bool isLong, double prevol, double preavail, double newvol, double newavail, uint32_t tradingday)
+{
+	if (_strategy)
+		_strategy->on_position(this, stdCode, isLong, prevol, preavail, newvol, newavail);
+
+	UftStraBaseCtx::on_position(stdCode, isLong, prevol, preavail, newvol, newavail, tradingday);
+}
+
+void UftStraContext::on_session_begin(uint32_t uTDate)
+{
+	if (_strategy)
+		_strategy->on_session_begin(this, uTDate);
+}
+
+void UftStraContext::on_session_end(uint32_t uTDate)
+{
+	if (_strategy)
+		_strategy->on_session_end(this, uTDate);
+}

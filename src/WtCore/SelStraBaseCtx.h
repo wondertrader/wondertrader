@@ -122,10 +122,10 @@ protected:
 		_KlineTag() :_closed(false){}
 
 	} KlineTag;
-	typedef faster_hashmap<std::string, KlineTag> KlineTags;
+	typedef faster_hashmap<LongKey, KlineTag> KlineTags;
 	KlineTags	_kline_tags;
 
-	typedef faster_hashmap<std::string, double> PriceMap;
+	typedef faster_hashmap<LongKey, double> PriceMap;
 	PriceMap		_price_map;
 
 	typedef struct _DetailInfo
@@ -165,7 +165,7 @@ protected:
 			_frozen_date = 0;
 		}
 	} PosInfo;
-	typedef faster_hashmap<std::string, PosInfo> PositionMap;
+	typedef faster_hashmap<LongKey, PosInfo> PositionMap;
 	PositionMap		_pos_map;
 
 	typedef struct _SigInfo
@@ -184,7 +184,7 @@ protected:
 			_gentime = 0;
 		}
 	}SigInfo;
-	typedef faster_hashmap<std::string, SigInfo>	SignalMap;
+	typedef faster_hashmap<LongKey, SigInfo>	SignalMap;
 	SignalMap		_sig_map;
 
 	BoostFilePtr	_trade_logs;
@@ -196,7 +196,7 @@ protected:
 	bool			_is_in_schedule;	//是否在自动调度中
 
 	//用户数据
-	typedef faster_hashmap<std::string, std::string> StringHashMap;
+	typedef faster_hashmap<LongKey, std::string> StringHashMap;
 	StringHashMap	_user_datas;
 	bool			_ud_modified;
 
@@ -215,7 +215,7 @@ protected:
 	StraFundInfo		_fund_info;
 
 	//tick订阅列表
-	faster_hashset<std::string> _tick_subs;
+	faster_hashset<LongKey> _tick_subs;
 };
 
 

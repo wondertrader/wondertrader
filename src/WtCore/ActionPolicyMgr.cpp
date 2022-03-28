@@ -29,6 +29,9 @@ ActionPolicyMgr::~ActionPolicyMgr()
 bool ActionPolicyMgr::init(const char* filename)
 {
 	WTSVariant* cfg = WTSCfgLoader::load_from_file(filename, true);
+	if (cfg == NULL)
+		return false;
+
 	auto keys = cfg->memberNames();
 	for (auto it = keys.begin(); it != keys.end(); it++)
 	{

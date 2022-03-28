@@ -140,16 +140,12 @@ void WtUftStraDemo::on_tick(IUftStraCtx* ctx, const char* code, WTSTickData* new
 			//最新价+2跳下单
 			double targetPx = price + cInfo->getPriceTick() * _offset;
 
-			uint32_t localid;
-			if(decimal::lt(curPos, 0))
-				localid = ctx->stra_exit_short(code, targetPx, _lots, true, UFT_OrderFlag_FAK);
-			else
-				localid = ctx->stra_enter_long(code, targetPx, _lots, UFT_OrderFlag_FAK);
+			auto ids = ctx->stra_buy(code, targetPx, _lots, UFT_OrderFlag_FAK);
 
-			if(localid != 0)
 			{
 				_mtx_ords.lock();
-				_orders.insert(localid);
+				for (uint32_t localid : ids)
+					_orders.insert(localid);
 				_mtx_ords.unlock();
 				_last_entry_time = now;
 			}
@@ -160,16 +156,12 @@ void WtUftStraDemo::on_tick(IUftStraCtx* ctx, const char* code, WTSTickData* new
 			//最新价-2跳下单
 			double targetPx = price - cInfo->getPriceTick()*_offset;
 
-			uint32_t localid;
-			if (decimal::gt(curPos, 0))
-				localid = ctx->stra_exit_long(code, targetPx, _lots, true, UFT_OrderFlag_FAK);
-			else
-				localid = ctx->stra_enter_short(code, targetPx, _lots, UFT_OrderFlag_FAK);
+			auto ids = ctx->stra_sell(code, targetPx, _lots, UFT_OrderFlag_FAK);
 
-			if (localid != 0)
 			{
 				_mtx_ords.lock();
-				_orders.insert(localid);
+				for (uint32_t localid : ids)
+					_orders.insert(localid);
 				_mtx_ords.unlock();
 				_last_entry_time = now;
 			}
@@ -208,7 +200,11 @@ void WtUftStraDemo::on_trade(IUftStraCtx* ctx, uint32_t localid, const char* std
 
 void WtUftStraDemo::on_position(IUftStraCtx* ctx, const char* stdCode, bool isLong, double prevol, double preavail, double newvol, double newavail)
 {
-	
+	if (_code != stdCode)
+		return;
+
+	_prev = prevol;
+	_ctx->stra_log_info(fmt::format("There are {} of {} before today", _prev, stdCode).c_str());
 }
 
 void WtUftStraDemo::on_order(IUftStraCtx* ctx, uint32_t localid, const char* stdCode, bool isLong, uint32_t offset, double totalQty, double leftQty, double price, bool isCanceled)

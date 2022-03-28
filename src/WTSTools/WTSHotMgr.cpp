@@ -259,16 +259,17 @@ const char* WTSHotMgr::getRawCode(const char* exchg, const char* pid, uint32_t d
 
 const char* WTSHotMgr::getHotCode(const char* exchg, const char* rawCode, uint32_t dt)
 {
-	//if (dt == 0)
-	//	dt = TimeUtils::getCurDate();
-
 	if(strlen(exchg) == 0)
 		return "";
 
 	if(dt == 0)
 	{
-		static char buf[64] = { 0 };
-		sprintf(buf, "%s.%s", exchg, rawCode);
+		thread_local static char buf[64] = { 0 };
+		auto len = strlen(exchg);
+		wt_strcpy(buf, exchg, len);
+		buf[len] = '.';
+		wt_strcpy(buf + len + 1, rawCode);
+
 		auto it = m_curHotCodes.find(buf);
 		if (it == m_curHotCodes.end())
 			return "";
@@ -314,13 +315,27 @@ const char* WTSHotMgr::getHotCode(const char* exchg, const char* rawCode, uint32
 
 bool WTSHotMgr::isHot(const char* exchg, const char* rawCode, uint32_t dt)
 {
+	if (strlen(exchg) == 0)
+		return "";
+
 	if (dt == 0)
-		dt = TimeUtils::getCurDate();
+	{
+		thread_local static char buf[64] = { 0 };
+		auto len = strlen(exchg);
+		wt_strcpy(buf, exchg, len);
+		buf[len] = '.';
+		wt_strcpy(buf + len + 1, rawCode);
+		len += strlen(rawCode)  + 1;
+		buf[len] = '\0';
+
+		auto it = m_curHotCodes.find(buf);
+		if (it == m_curHotCodes.end())
+			return false;
+		else
+			return true;
+	}
 
 	std::string product = CodeHelper::rawMonthCodeToRawCommID(rawCode);
-
-	if(strlen(exchg) == 0)
-		false;
 
 	if(m_pExchgHotMap == NULL)
 		false;
@@ -681,8 +696,11 @@ const char* WTSHotMgr::getSecondCode(const char* exchg, const char* rawCode, uin
 
 	if (dt == 0)
 	{
-		static char buf[64] = { 0 };
-		sprintf(buf, "%s.%s", exchg, rawCode);
+		thread_local static char buf[64] = { 0 };
+		auto len = strlen(exchg);
+		wt_strcpy(buf, exchg, len);
+		buf[len] = '.';
+		wt_strcpy(buf + len + 1, rawCode);
 		auto it = m_curSecCodes.find(buf);
 		if (it == m_curSecCodes.end())
 			return "";
@@ -728,13 +746,27 @@ const char* WTSHotMgr::getSecondCode(const char* exchg, const char* rawCode, uin
 
 bool WTSHotMgr::isSecond(const char* exchg, const char* rawCode, uint32_t dt)
 {
-	if (dt == 0)
-		dt = TimeUtils::getCurDate();
-
-	std::string product = CodeHelper::rawMonthCodeToRawCommID(rawCode);
+	//if (dt == 0)
+	//	dt = TimeUtils::getCurDate();
 
 	if (strlen(exchg) == 0)
 		false;
+
+	if (dt == 0)
+	{
+		thread_local static char buf[64] = { 0 };
+		auto len = strlen(exchg);
+		wt_strcpy(buf, exchg, len);
+		buf[len] = '.';
+		wt_strcpy(buf + len + 1, rawCode);
+		auto it = m_curSecCodes.find(buf);
+		if (it == m_curSecCodes.end())
+			return false;
+		else
+			return true;
+	}
+
+	std::string product = CodeHelper::rawMonthCodeToRawCommID(rawCode);
 
 	if (m_pExchgScndMap == NULL)
 		false;
