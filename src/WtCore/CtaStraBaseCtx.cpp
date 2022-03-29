@@ -722,25 +722,18 @@ void CtaStraBaseCtx::on_tick(const char* stdCode, WTSTickData* newTick, bool bEm
 					else
 						desQty = curQty + entrust._qty;
 
-					//uint64_t sigTime = (uint64_t)_engine->get_date() * 1000000000 + (uint64_t)_engine->get_raw_time() * 100000 + _engine->get_secs();
-					//log_signal(stdCode, desQty, curPrice, sigTime, entrust._usertag);						
-					//do_set_position(stdCode, desQty, entrust._usertag, true);
 					append_signal(stdCode, desQty, entrust._usertag);
 				}
 				break;
 				case COND_ACTION_CL:
 				{
 					double curQty = stra_get_position(stdCode);
-					if (decimal::le(curQty, 0))
-						return;
-
-					double maxQty = min(curQty, entrust._qty);
-					double desQty = curQty - maxQty;
-
-					//uint64_t sigTime = (uint64_t)_engine->get_date() * 1000000000 + (uint64_t)_engine->get_raw_time() * 100000 + _engine->get_secs();
-					//log_signal(stdCode, desQty, curPrice, sigTime, entrust._usertag);
-					//do_set_position(stdCode, desQty, entrust._usertag, true);
-					append_signal(stdCode, desQty, entrust._usertag);
+					if (decimal::gt(curQty, 0))
+					{
+						double maxQty = min(curQty, entrust._qty);
+						double desQty = curQty - maxQty;
+						append_signal(stdCode, desQty, entrust._usertag);
+					}
 				}
 				break;
 				case COND_ACTION_OS:
@@ -752,32 +745,22 @@ void CtaStraBaseCtx::on_tick(const char* stdCode, WTSTickData* newTick, bool bEm
 					else
 						desQty = curQty - entrust._qty;
 
-					//uint64_t sigTime = (uint64_t)_engine->get_date() * 1000000000 + (uint64_t)_engine->get_raw_time() * 100000 + _engine->get_secs();
-					//log_signal(stdCode, desQty, curPrice, sigTime, entrust._usertag);
-					//do_set_position(stdCode, desQty, entrust._usertag, true);
 					append_signal(stdCode, desQty, entrust._usertag);
 				}
 				break;
 				case COND_ACTION_CS:
 				{
 					double curQty = stra_get_position(stdCode);
-					if (decimal::ge(curQty, 0))
-						return;
-
-					double maxQty = min(abs(curQty), entrust._qty);
-					double desQty = curQty + maxQty;
-
-					//uint64_t sigTime = (uint64_t)_engine->get_date() * 1000000000 + (uint64_t)_engine->get_raw_time() * 100000 + _engine->get_secs();
-					//log_signal(stdCode, desQty, curPrice, sigTime, entrust._usertag);
-					//do_set_position(stdCode, desQty, entrust._usertag, true);
-					append_signal(stdCode, desQty, entrust._usertag);
+					if (decimal::lt(curQty, 0))
+					{
+						double maxQty = min(abs(curQty), entrust._qty);
+						double desQty = curQty + maxQty;
+						append_signal(stdCode, desQty, entrust._usertag);
+					}
 				}
 				break;
 				case COND_ACTION_SP: 
 				{
-					//uint64_t sigTime = (uint64_t)_engine->get_date() * 1000000000 + (uint64_t)_engine->get_raw_time() * 100000 + _engine->get_secs();
-					//log_signal(stdCode, entrust._qty, curPrice, sigTime, entrust._usertag);
-					//do_set_position(stdCode, entrust._qty, entrust._usertag, true);
 					append_signal(stdCode, entrust._qty, entrust._usertag);
 				}
 				break;
