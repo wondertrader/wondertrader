@@ -75,7 +75,7 @@ bool WTSHotMgr::loadHots(const char* filename)
 				lastCode = jHotItem->getCString("to");
 			}
 
-			std::string fullCode = StrUtil::printf("%s.%s", exchg.c_str(), lastCode.c_str());
+			std::string fullCode = fmt::format("{}.{}", exchg.c_str(), lastCode.c_str());
 			m_curHotCodes[fullCode] = pid + "0001";
 		}
 	}
@@ -506,7 +506,7 @@ bool WTSHotMgr::loadSeconds(const char* filename)
 				lastCode = jHotItem->getCString("to");
 			}
 
-			std::string fullCode = StrUtil::printf("%s.%s", exchg.c_str(), lastCode.c_str());
+			std::string fullCode = fmt::format("{}.{}", exchg.c_str(), lastCode.c_str());
 			m_curSecCodes[fullCode] = pid + "0002";
 		}
 	}

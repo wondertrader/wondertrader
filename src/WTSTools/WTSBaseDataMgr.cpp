@@ -329,7 +329,7 @@ bool WTSBaseDataMgr::loadCommodities(const char* filename, bool isUTF8)
 			WTSSessionInfo* sInfo = getSession(sid);
 			pCommInfo->setSessionInfo(sInfo);
 
-			std::string key = StrUtil::printf("%s.%s", exchg.c_str(), pid.c_str());
+			std::string key = fmt::format("{}.{}", exchg.c_str(), pid.c_str());
 			if (m_mapCommodities == NULL)
 				m_mapCommodities = WTSCommodityMap::create();
 
@@ -398,7 +398,7 @@ bool WTSBaseDataMgr::loadContracts(const char* filename, bool isUTF8)
 				WTSSessionInfo* sInfo = getSession(sid.c_str());
 				commInfo->setSessionInfo(sInfo);
 
-				std::string key = StrUtil::printf("%s.%s", exchg.c_str(), pid.c_str());
+				std::string key = fmt::format("{}.{}", exchg.c_str(), pid.c_str());
 				if (m_mapCommodities == NULL)
 					m_mapCommodities = WTSCommodityMap::create();
 
@@ -406,12 +406,12 @@ bool WTSBaseDataMgr::loadContracts(const char* filename, bool isUTF8)
 
 				m_mapSessionCode[sid].insert(key);
 
-				WTSLogger::debug("Commodity %s has been automatically added", key.c_str());
+				WTSLogger::debug_f("Commodity {} has been automatically added", key.c_str());
 			}
 
 			if (commInfo == NULL)
 			{
-				WTSLogger::warn("Commodity %s.%s not found, contract %s skipped", jcInfo->getCString("exchg"), jcInfo->getCString("product"), code.c_str());
+				WTSLogger::warn_f("Commodity {}.{} not found, contract {} skipped", jcInfo->getCString("exchg"), jcInfo->getCString("product"), code.c_str());
 				continue;
 			}
 

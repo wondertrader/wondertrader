@@ -10,6 +10,7 @@
 #pragma once
 #include "../Includes/WTSTypes.h"
 #include "../Includes/WTSCollection.hpp"
+#include "../Share/fmtlib.h"
 
 #include <memory>
 #include <sstream>
@@ -40,13 +41,6 @@ inline void fmt_print_impl(char* buf, const char* format, const Args&... args)
 	s = std::move(fmt::sprintf(format, args...));
 	memcpy(buf, s.c_str(), s.size());
 	buf[s.size()] = '\0';
-}
-
-template<typename... Args>
-inline void fmt_format_impl(char* buf, const char* format, const Args&... args)
-{
-	memset(buf, 0, MAX_LOG_BUF_SIZE);
-	fmt::format_to(buf, format, args...);
 }
 
 
@@ -213,7 +207,7 @@ public:
 		if (m_logLevel > LL_DEBUG || m_bStopped)
 			return;
 
-		fmt_format_impl(m_buffer, format, args...);
+		fmtutil::format_to(m_buffer, format, args...);
 
 		if (!m_bInited)
 		{
@@ -230,7 +224,7 @@ public:
 		if (m_logLevel > LL_INFO || m_bStopped)
 			return;
 
-		fmt_format_impl(m_buffer, format, args...);
+		fmtutil::format_to(m_buffer, format, args...);
 
 		if (!m_bInited)
 		{
@@ -247,7 +241,7 @@ public:
 		if (m_logLevel > LL_WARN || m_bStopped)
 			return;
 
-		fmt_format_impl(m_buffer, format, args...);
+		fmtutil::format_to(m_buffer, format, args...);
 
 		if (!m_bInited)
 		{
@@ -264,7 +258,7 @@ public:
 		if (m_logLevel > LL_ERROR || m_bStopped)
 			return;
 
-		fmt_format_impl(m_buffer, format, args...);
+		fmtutil::format_to(m_buffer, format, args...);
 
 		if (!m_bInited)
 		{
@@ -281,7 +275,7 @@ public:
 		if (m_logLevel > LL_FATAL || m_bStopped)
 			return;
 
-		fmt_format_impl(m_buffer, format, args...);
+		fmtutil::format_to(m_buffer, format, args...);
 
 		if (!m_bInited)
 		{
@@ -298,7 +292,7 @@ public:
 		if (m_logLevel > ll || m_bStopped)
 			return;
 
-		fmt_format_impl(m_buffer, format, args...);
+		fmtutil::format_to(m_buffer, format, args...);
 
 		log_raw(ll, m_buffer);
 	}
@@ -309,7 +303,7 @@ public:
 		if (m_logLevel > ll || m_bStopped)
 			return;
 
-		fmt_format_impl(m_buffer, format, args...);
+		fmtutil::format_to(m_buffer, format, args...);
 
 		log_raw_by_cat(catName, ll, m_buffer);
 	}
@@ -320,7 +314,7 @@ public:
 		if (m_logLevel > ll || m_bStopped)
 			return;
 
-		fmt_format_impl(m_buffer, format, args...);
+		fmtutil::format_to(m_buffer, format, args...);
 
 		log_dyn_raw(patttern, catName, ll, m_buffer);
 	}
