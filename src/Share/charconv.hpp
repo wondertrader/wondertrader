@@ -45,11 +45,11 @@ public :
 			std::size_t dst_len = string_len * 2 + 2;
 #ifdef _MSC_VER
 			wchar_t *buffer = new wchar_t[string_len + 1];
-			MultiByteToWideChar(CP_UTF8, 0, utf8_string, -1, buffer, string_len + 1);
+			MultiByteToWideChar(CP_UTF8, 0, utf8_string, -1, buffer, (int)string_len + 1);
 			buffer[string_len] = 0;
 
 			t_string = new char[string_len * 2 + 2];
-			WideCharToMultiByte(CP_ACP, 0, buffer, -1, t_string, dst_len, 0, 0);
+			WideCharToMultiByte(CP_ACP, 0, buffer, -1, t_string, (int)dst_len, 0, 0);
 			t_string[string_len * 2 + 1] = 0;
 			delete[] buffer;
 #else
@@ -140,12 +140,12 @@ public :
 
 			// Convert to Unicode if not already in unicode.
 			wchar_t *w_string = new wchar_t[string_len + 1];
-			MultiByteToWideChar(CP_ACP, 0, t_string, -1, w_string, string_len + 1);
+			MultiByteToWideChar(CP_ACP, 0, t_string, -1, w_string, (int)string_len + 1);
 			w_string[string_len] = 0;
 
 			// Convert from Unicode (2 bytes) to UTF8
 			utf8_string = new char[dst_len];
-			WideCharToMultiByte(CP_UTF8, 0, w_string, -1, utf8_string, dst_len, 0, 0);
+			WideCharToMultiByte(CP_UTF8, 0, w_string, -1, utf8_string, (int)dst_len, 0, 0);
 			utf8_string[string_len * 3] = 0;
 
 			if (w_string != (wchar_t *)t_string)

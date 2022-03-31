@@ -84,7 +84,7 @@ public:
 
 	bool	addAdapter(const char* id, ParserAdapterPtr& adapter);
 
-	uint32_t size() const { return _adapters.size(); }
+	uint32_t size() const { return (uint32_t)_adapters.size(); }
 
 public:
 	ParserAdapterMap _adapters;

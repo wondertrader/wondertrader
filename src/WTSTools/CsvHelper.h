@@ -16,7 +16,7 @@ public:
 	bool	load_from_file(const char* filename);
 
 public:
-	inline uint32_t	col_count() { return _fields_map.size(); }
+	inline uint32_t	col_count() { return (uint32_t)_fields_map.size(); }
 
 	int32_t		get_int32(int32_t col);
 	uint32_t	get_uint32(int32_t col);

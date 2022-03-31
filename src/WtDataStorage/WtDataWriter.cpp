@@ -2171,7 +2171,7 @@ void WtDataWriter::proc_loop()
 
 			continue;
 		}
-		else if (StrUtil::startsWith(fullcode, "MARK.", false))
+		else if (StrUtil::startsWith(fullcode.c_str(), "MARK.", false))
 		{
 			//如果指令以MARK.开头,说明是标记指令,要写一条标记
 			std::string filename = _base_dir + MARKER_FILE;

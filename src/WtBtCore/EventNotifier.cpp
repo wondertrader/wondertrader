@@ -86,7 +86,7 @@ bool EventNotifier::init(WTSVariant* cfg)
 void EventNotifier::notifyEvent(const char* evtType)
 {
 	if (_publisher)
-		_publisher(_mq_sid, "BT_EVENT", evtType, strlen(evtType));
+		_publisher(_mq_sid, "BT_EVENT", evtType, (unsigned long)strlen(evtType));
 }
 
 void EventNotifier::notifyData(const char* topic, void* data , uint32_t dataLen)
@@ -116,5 +116,5 @@ void EventNotifier::notifyFund(const char* topic, uint32_t uDate, double total_p
 	}
 
 	if (_publisher)
-		_publisher(_mq_sid, topic, (const char*)output.c_str(), output.size());
+		_publisher(_mq_sid, topic, (const char*)output.c_str(), (unsigned long)output.size());
 }

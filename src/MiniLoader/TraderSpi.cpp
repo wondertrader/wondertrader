@@ -103,7 +103,7 @@ std::string extractProductID(const char* instrument)
 std::string extractProductName(const char* cname)
 {
 	std::string strRet;
-	int idx = strlen(cname) - 1;
+	auto idx = strlen(cname) - 1;
 	while (isdigit(cname[idx]) && idx > 0)
 	{
 		idx--;

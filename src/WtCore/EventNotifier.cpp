@@ -106,7 +106,7 @@ void EventNotifier::notifyLog(const char* tag, const char* message)
 	}
 
 	if (_publisher)
-		_publisher(_mq_sid, "LOG", data.c_str(), data.size());
+		_publisher(_mq_sid, "LOG", data.c_str(), (unsigned long)data.size());
 }
 
 void EventNotifier::notifyEvent(const char* message)
@@ -126,7 +126,7 @@ void EventNotifier::notifyEvent(const char* message)
 		data = sb.GetString();
 	}
 	if (_publisher)
-		_publisher(_mq_sid, "GRP_EVENT", data.c_str(), data.size());
+		_publisher(_mq_sid, "GRP_EVENT", data.c_str(), (unsigned long)data.size());
 }
 
 void EventNotifier::notify(const char* trader, const char* message)
@@ -147,7 +147,7 @@ void EventNotifier::notify(const char* trader, const char* message)
 		data = sb.GetString();
 	}
 	if (_publisher)
-		_publisher(_mq_sid, "TRD_NOTIFY", data.c_str(), data.size());
+		_publisher(_mq_sid, "TRD_NOTIFY", data.c_str(), (unsigned long)data.size());
 }
 
 void EventNotifier::notify(const char* trader, uint32_t localid, const char* stdCode, WTSTradeInfo* trdInfo)
@@ -158,7 +158,7 @@ void EventNotifier::notify(const char* trader, uint32_t localid, const char* std
 	std::string data;
 	tradeToJson(trader, localid, stdCode, trdInfo, data);
 	if (_publisher)
-		_publisher(_mq_sid, "TRD_TRADE", data.c_str(), data.size());
+		_publisher(_mq_sid, "TRD_TRADE", data.c_str(), (unsigned long)data.size());
 }
 
 void EventNotifier::notify(const char* trader, uint32_t localid, const char* stdCode, WTSOrderInfo* ordInfo)
@@ -169,7 +169,7 @@ void EventNotifier::notify(const char* trader, uint32_t localid, const char* std
 	std::string data;
 	orderToJson(trader, localid, stdCode, ordInfo, data);
 	if (_publisher)
-		_publisher(_mq_sid, "TRD_ORDER", data.c_str(), data.size());
+		_publisher(_mq_sid, "TRD_ORDER", data.c_str(), (unsigned long)data.size());
 }
 
 void EventNotifier::tradeToJson(const char* trader, uint32_t localid, const char* stdCode, WTSTradeInfo* trdInfo, std::string& output)
