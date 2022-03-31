@@ -171,27 +171,21 @@ protected:
 	template<typename... Args>
 	void log_debug(const char* format, const Args& ...args)
 	{
-		thread_local static char buffer[512] = { 0 };
-		char* s = fmt::format_to(buffer, format, args...);
-		s[0] = '\0';
+		const char* buffer = fmtutil::format(format, args...);
 		stra_log_debug(buffer);
 	}
 
 	template<typename... Args>
 	void log_info(const char* format, const Args& ...args)
 	{
-		thread_local static char buffer[512] = { 0 };
-		char* s = fmt::format_to(buffer, format, args...);
-		s[0] = '\0';
+		const char* buffer = fmtutil::format(format, args...);
 		stra_log_info(buffer);
 	}
 
 	template<typename... Args>
 	void log_error(const char* format, const Args& ...args)
 	{
-		thread_local static char buffer[512] = { 0 };
-		char* s = fmt::format_to(buffer, format, args...);
-		s[0] = '\0';
+		const char* buffer = fmtutil::format(format, args...);
 		stra_log_error(buffer);
 	}
 

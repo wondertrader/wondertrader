@@ -438,19 +438,13 @@ WTSCommodityInfo* HftStraBaseCtx::stra_get_comminfo(const char* stdCode)
 
 WTSKlineSlice* HftStraBaseCtx::stra_get_bars(const char* stdCode, const char* period, uint32_t count)
 {
-	std::string basePeriod = "";
+	thread_local static char basePeriod[2] = { 0 };
+	basePeriod[0] = period[0];
 	uint32_t times = 1;
 	if (strlen(period) > 1)
-	{
-		basePeriod.append(period, 1);
 		times = strtoul(period + 1, NULL, 10);
-	}
-	else
-	{
-		basePeriod = period;
-	}
 
-	WTSKlineSlice* ret = _engine->get_kline_slice(_context_id, stdCode, basePeriod.c_str(), count, times);
+	WTSKlineSlice* ret = _engine->get_kline_slice(_context_id, stdCode, basePeriod, count, times);
 
 	if (ret)
 		_engine->sub_tick(id(), stdCode);
@@ -943,7 +937,7 @@ void HftStraBaseCtx::on_session_end(uint32_t uTDate)
 	//这里要把当日结算的数据写到日志文件里
 	//而且这里回测和实盘写法不同, 先留着, 后面来做
 	if (_fund_logs && _data_agent)
-		_fund_logs->write_file(StrUtil::printf("%d,%.2f,%.2f,%.2f,%.2f\n", curDate,
+		_fund_logs->write_file(fmt::format("{},{:f2},{:f2},{:f2},{:f2}\n", curDate,
 			_fund_info._total_profit, _fund_info._total_dynprofit,
 			_fund_info._total_profit + _fund_info._total_dynprofit - _fund_info._total_fees, _fund_info._total_fees));
 }

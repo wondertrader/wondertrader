@@ -70,8 +70,7 @@ void WtSelEngine::handle_push_quote(WTSTickData* curTick, uint32_t hotFlag)
 void WtSelEngine::on_bar(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar)
 {
 	thread_local static char key[64] = { 0 };
-	char * tail = fmt::format_to(key, "{}-{}-{}", stdCode, period, times);
-	tail[0] = '\0';
+	fmtutil::format_to(key, "{}-{}-{}", stdCode, period, times);
 
 	const SubList& sids = _bar_sub_map[key];
 	for (auto it = sids.begin(); it != sids.end(); it++)

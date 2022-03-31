@@ -319,7 +319,7 @@ void WtEngine::on_session_end()
 
 		//可能这里还需要写一条资金记录
 		//date,predynbalance,prebalance,balance,closeprofit,dynprofit,fee,maxdynbalance,maxtime,mindynbalance,mintime,mdmaxbalance,mdmaxdate,mdminbalance,mdmindate
-		fund_log->write_file(StrUtil::printf("%u,%f,%f,%f,%f,%f,%f,%f,%u,%f,%u,%f,%u,%f,%u\n", 
+		fund_log->write_file(fmt::format("{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}\n", 
 			_cur_tdate, fundInfo._predynbal, fundInfo._prebalance, fundInfo._balance, 
 			fundInfo._profit, fundInfo._dynprofit, fundInfo._fees, fundInfo._max_dyn_bal,
 			fundInfo._max_time, fundInfo._min_dyn_bal, fundInfo._min_time,
@@ -587,12 +587,15 @@ WTSKlineSlice* WtEngine::get_kline_slice(uint32_t sid, const char* stdCode, cons
 	if (sInfo == NULL)
 		return NULL;
 
-	std::string key = StrUtil::printf("%s-%s-%u", stdCode, period, times);
+	//std::string key = StrUtil::printf("%s-%s-%u", stdCode, period, times);
+	thread_local static char key[64] = { 0 };
+	fmtutil::format_to(key, "{}-{}-{}", stdCode, period, times);
+
 	SubList& sids = _bar_sub_map[key];
 	sids[sid] = std::make_pair(sid, 0);
 
 	WTSKlinePeriod kp;
-	if (strcmp(period, "m") == 0)
+	if (period[0] == 'm')
 	{
 		if (times % 5 == 0)
 		{
