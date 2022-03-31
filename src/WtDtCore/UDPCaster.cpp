@@ -194,7 +194,7 @@ void UDPCaster::do_receive()
 						delete data;
 						if (ec)
 						{
-							WTSLogger::error("Sending data on UDP failed: %s", ec.message().c_str());
+							WTSLogger::error_f("Sending data on UDP failed: {}", ec.message().c_str());
 						}
 					});
 				}
@@ -210,7 +210,7 @@ void UDPCaster::do_receive()
 				delete data;
 				if (ec)
 				{
-					WTSLogger::error("Sending data on UDP failed: %s", ec.message().c_str());
+					WTSLogger::error_f("Sending data on UDP failed: {}", ec.message().c_str());
 				}
 			});
 		}
@@ -514,7 +514,7 @@ void UDPCaster::handle_send_broad(const EndPoint& ep, const boost::system::error
 {
 	if(error)
 	{
-		WTSLogger::error("Broadcasting of market data failed, remote addr: %s, error message: %s", ep.address().to_string().c_str(), error.message().c_str());
+		WTSLogger::error_f("Broadcasting of market data failed, remote addr: {}, error message: {}", ep.address().to_string().c_str(), error.message().c_str());
 	}
 }
 
@@ -522,7 +522,7 @@ void UDPCaster::handle_send_multi(const EndPoint& ep, const boost::system::error
 {
 	if(error)
 	{
-		WTSLogger::error("Multicasting of market data failed, remote addr: %s, error message: %s", ep.address().to_string().c_str(), error.message().c_str());
+		WTSLogger::error_f("Multicasting of market data failed, remote addr: {}, error message: {}", ep.address().to_string().c_str(), error.message().c_str());
 	}
 }
 

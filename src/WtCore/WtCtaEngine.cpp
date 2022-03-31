@@ -323,7 +323,7 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 				//这里是通知WtEngine去更新组合持仓数据
 				append_signal(stdCode.c_str(), 0, true);
 
-				WTSLogger::error("Instrument %s not in target positions, setup to 0 automatically", stdCode.c_str());
+				WTSLogger::error_f("Instrument {} not in target positions, setup to 0 automatically", stdCode.c_str());
 			}
 
 			//因为组合持仓里会有过期的合约代码存在，所以这里在丢给执行以前要做一个检查

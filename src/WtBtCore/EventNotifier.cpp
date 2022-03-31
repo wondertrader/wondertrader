@@ -56,7 +56,7 @@ bool EventNotifier::init(WTSVariant* cfg)
 	DllHandle dllInst = DLLHelper::load_library(dllpath.c_str());
 	if (dllInst == NULL)
 	{
-		WTSLogger::error("MQ module %s loading failed", dllpath.c_str());
+		WTSLogger::error_f("MQ module %{} loading failed", dllpath.c_str());
 		return false;
 	}
 
@@ -64,7 +64,7 @@ bool EventNotifier::init(WTSVariant* cfg)
 	if (_creator == NULL)
 	{
 		DLLHelper::free_library(dllInst);
-		WTSLogger::error("MQ module %s is not compatible", dllpath.c_str());
+		WTSLogger::error_f("MQ module {} is not compatible", dllpath.c_str());
 		return false;
 	}
 

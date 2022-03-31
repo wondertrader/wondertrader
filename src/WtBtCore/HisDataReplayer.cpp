@@ -3961,7 +3961,7 @@ bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* st
 		//	StdFile::read_file_content(filename.c_str(), content);
 		//	if (content.size() < sizeof(HisKlineBlock))
 		//	{
-		//		WTSLogger::error("Sizechecking of back kbar data file %s failed", filename.c_str());
+		//		WTSLogger::error_f("Sizechecking of back kbar data file {} failed", filename.c_str());
 		//		return false;
 		//	}
 

@@ -61,13 +61,13 @@ bool WtDataManager::initStore(WTSVariant* cfg)
 		FuncCreateRdmDtReader pFuncCreateReader = (FuncCreateRdmDtReader)DLLHelper::get_symbol(libParser, "createRdmDtReader");
 		if (pFuncCreateReader == NULL)
 		{
-			WTSLogger::error("Initializing of random data reader failed: function createRdmDtReader not found...");
+			WTSLogger::error_f("Initializing of random data reader failed: function createRdmDtReader not found...");
 		}
 
 		FuncDeleteRdmDtReader pFuncDeleteReader = (FuncDeleteRdmDtReader)DLLHelper::get_symbol(libParser, "deleteRdmDtReader");
 		if (pFuncDeleteReader == NULL)
 		{
-			WTSLogger::error("Initializing of random data reader failed: function deleteRdmDtReader not found...");
+			WTSLogger::error_f("Initializing of random data reader failed: function deleteRdmDtReader not found...");
 		}
 
 		if (pFuncCreateReader && pFuncDeleteReader)

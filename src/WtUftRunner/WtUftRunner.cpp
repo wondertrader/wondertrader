@@ -41,7 +41,7 @@ WtUftRunner::WtUftRunner()
 //#else
 //#pragma message("Signal hooks enabled in UNIX")
 //	install_signal_hooks([](const char* message) {
-//		WTSLogger::error(message);
+//		WTSLogger::error_f(message);
 //	});
 //#endif
 }
@@ -143,7 +143,7 @@ bool WtUftRunner::config()
 				if(var)
 				{
 					if (!initParsers(var->get("parsers")))
-						WTSLogger::error("Loading parsers failed");
+						WTSLogger::error_f("Loading parsers failed");
 					var->release();
 				}
 				else
@@ -176,7 +176,7 @@ bool WtUftRunner::config()
 				if (var)
 				{
 					if (!initTraders(var->get("traders")))
-						WTSLogger::error("Loading traders failed");
+						WTSLogger::error_f("Loading traders failed");
 					var->release();
 				}
 				else
@@ -186,7 +186,7 @@ bool WtUftRunner::config()
 			}
 			else
 			{
-				WTSLogger::error("Trader configuration %s not exists", filename);
+				WTSLogger::error_f("Trader configuration {} not exists", filename);
 			}
 		}
 		else if (cfgTraders->type() == WTSVariant::VT_Array)
@@ -235,7 +235,7 @@ bool WtUftRunner::initUftStrategies()
 		}
 		else
 		{
-			WTSLogger::error("Trader %s not exists, binding trader to HFT strategy failed", traderid);
+			WTSLogger::error_f("Trader {} not exists, binding trader to HFT strategy failed", traderid);
 		}
 
 		_uft_engine.addContext(UftContextPtr(ctx));
@@ -343,7 +343,7 @@ void WtUftRunner::run(bool bAsync /* = false */)
 	catch (...)
 	{
 		//print_stack_trace([](const char* message) {
-		//	WTSLogger::error(message);
+		//	WTSLogger::error_f(message);
 		//});
 	}
 }

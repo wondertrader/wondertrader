@@ -30,7 +30,7 @@ bool CtaStrategyMgr::loadFactories(const char* path)
 {
 	if (!StdFile::exists(path))
 	{
-		WTSLogger::error("Directory %s of CTA strategy factory not exists", path);
+		WTSLogger::error_f("Directory {} of CTA strategy factory not exists", path);
 		return false;
 	}
 

@@ -1773,7 +1773,7 @@ bool TraderAdapterMgr::addAdapter(const char* tname, TraderAdapterPtr& adapter)
 	auto it = _adapters.find(tname);
 	if(it != _adapters.end())
 	{
-		WTSLogger::error("Same name of trading channels: %s", tname);
+		WTSLogger::error_f("Same name of trading channels: {}", tname);
 		return false;
 	}
 

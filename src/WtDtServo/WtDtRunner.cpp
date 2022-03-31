@@ -27,7 +27,7 @@ WtDtRunner::WtDtRunner()
 #else
 #pragma message("Signal hooks enabled in UNIX")
 	install_signal_hooks([](const char* message) {
-		WTSLogger::error(message);
+		WTSLogger::error_f(message);
 	});
 #endif
 }
@@ -41,7 +41,7 @@ void WtDtRunner::initialize(const char* cfgFile, bool isFile /* = true */, const
 {
 	if(_is_inited)
 	{
-		WTSLogger::error("WtDtServo has already been initialized");
+		WTSLogger::error_f("WtDtServo has already been initialized");
 		return;
 	}
 
@@ -51,7 +51,7 @@ void WtDtRunner::initialize(const char* cfgFile, bool isFile /* = true */, const
 	WTSVariant* config = isFile ? WTSCfgLoader::load_from_file(cfgFile, true) : WTSCfgLoader::load_from_content(cfgFile, false, true);
 	if(config == NULL)
 	{
-		WTSLogger::error("Loading config failed");
+		WTSLogger::error_f("Loading config failed");
 		return;
 	}
 
@@ -135,7 +135,7 @@ WTSKlineSlice* WtDtRunner::get_bars_by_range(const char* stdCode, const char* pe
 {
 	if(!_is_inited)
 	{
-		WTSLogger::error("WtDtServo not initialized");
+		WTSLogger::error_f("WtDtServo not initialized");
 		return NULL;
 	}
 
@@ -176,7 +176,7 @@ WTSTickSlice* WtDtRunner::get_ticks_by_range(const char* stdCode, uint64_t begin
 {
 	if (!_is_inited)
 	{
-		WTSLogger::error("WtDtServo not initialized");
+		WTSLogger::error_f("WtDtServo not initialized");
 		return NULL;
 	}
 
@@ -193,7 +193,7 @@ WTSKlineSlice* WtDtRunner::get_bars_by_count(const char* stdCode, const char* pe
 {
 	if (!_is_inited)
 	{
-		WTSLogger::error("WtDtServo not initialized");
+		WTSLogger::error_f("WtDtServo not initialized");
 		return NULL;
 	}
 
@@ -234,7 +234,7 @@ WTSTickSlice* WtDtRunner::get_ticks_by_count(const char* stdCode, uint32_t count
 {
 	if (!_is_inited)
 	{
-		WTSLogger::error("WtDtServo not initialized");
+		WTSLogger::error_f("WtDtServo not initialized");
 		return NULL;
 	}
 

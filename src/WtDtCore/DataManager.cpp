@@ -58,13 +58,13 @@ bool DataManager::init(WTSVariant* params, WTSBaseDataMgr* bdMgr, StateMonitor* 
 		FuncCreateWriter pFuncCreateWriter = (FuncCreateWriter)DLLHelper::get_symbol(libParser, "createWriter");
 		if (pFuncCreateWriter == NULL)
 		{
-			WTSLogger::error("Initializing of data writer failed: function createWriter not found...");
+			WTSLogger::error_f("Initializing of data writer failed: function createWriter not found...");
 		}
 
 		FuncDeleteWriter pFuncDeleteWriter = (FuncDeleteWriter)DLLHelper::get_symbol(libParser, "deleteWriter");
 		if (pFuncDeleteWriter == NULL)
 		{
-			WTSLogger::error("Initializing of data writer failed: function deleteWriter not found...");
+			WTSLogger::error_f("Initializing of data writer failed: function deleteWriter not found...");
 		}
 
 		if (pFuncCreateWriter && pFuncDeleteWriter)
@@ -76,7 +76,7 @@ bool DataManager::init(WTSVariant* params, WTSBaseDataMgr* bdMgr, StateMonitor* 
 	}
 	else
 	{
-		WTSLogger::error("Initializing of data writer failed: loading module %s failed...", module.c_str());
+		WTSLogger::error_f("Initializing of data writer failed: loading module %s failed...", module.c_str());
 
 	}
 

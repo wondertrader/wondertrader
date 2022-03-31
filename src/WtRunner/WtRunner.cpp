@@ -45,7 +45,7 @@ WtRunner::WtRunner()
 #else
 #pragma message("Signal hooks enabled in UNIX")
 	install_signal_hooks([](const char* message) {
-		WTSLogger::error(message);
+		WTSLogger::error_f(message);
 	});
 #endif
 }
@@ -150,7 +150,7 @@ bool WtRunner::config()
 				if(var)
 				{
 					if (!initParsers(var->get("parsers")))
-						WTSLogger::error("Loading parsers failed");
+						WTSLogger::error_f("Loading parsers failed");
 					var->release();
 				}
 				else
@@ -183,7 +183,7 @@ bool WtRunner::config()
 				if (var)
 				{
 					if (!initTraders(var->get("traders")))
-						WTSLogger::error("Loading traders failed");
+						WTSLogger::error_f("Loading traders failed");
 					var->release();
 				}
 				else
@@ -193,7 +193,7 @@ bool WtRunner::config()
 			}
 			else
 			{
-				WTSLogger::error("Trader configuration %s not exists", filename);
+				WTSLogger::error_f("Trader configuration {} not exists", filename);
 			}
 		}
 		else if (cfgTraders->type() == WTSVariant::VT_Array)
@@ -220,7 +220,7 @@ bool WtRunner::config()
 					if (var)
 					{
 						if (!initExecuters(var->get("executers")))
-							WTSLogger::error("Loading executers failed");
+							WTSLogger::error_f("Loading executers failed");
 						var->release();
 					}
 					else
@@ -230,7 +230,7 @@ bool WtRunner::config()
 				}
 				else
 				{
-					WTSLogger::error("Trader configuration %s not exists", filename);
+					WTSLogger::error_f("Trader configuration {} not exists", filename);
 				}
 			}
 			else if (cfgExec->type() == WTSVariant::VT_Array)
@@ -319,7 +319,7 @@ bool WtRunner::initHftStrategies()
 		}
 		else
 		{
-			WTSLogger::error("Trader %s not exists, binding trader to HFT strategy failed", traderid);
+			WTSLogger::error_f("Trader {} not exists, binding trader to HFT strategy failed", traderid);
 		}
 
 		_hft_engine.addContext(HftContextPtr(ctx));
@@ -510,7 +510,7 @@ void WtRunner::run(bool bAsync /* = false */)
 	catch (...)
 	{
 		//print_stack_trace([](const char* message) {
-		//	WTSLogger::error(message);
+		//	WTSLogger::error_f(message);
 		//});
 	}
 }

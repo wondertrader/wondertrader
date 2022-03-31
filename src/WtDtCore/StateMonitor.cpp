@@ -39,14 +39,14 @@ bool StateMonitor::initialize(const char* filename, WTSBaseDataMgr* bdMgr, DataM
 
 	if (!StdFile::exists(filename))
 	{
-		WTSLogger::error("State config file %s not exists", filename);
+		WTSLogger::error_f("State config file {} not exists", filename);
 		return false;
 	}
 
 	WTSVariant* config = WTSCfgLoader::load_from_file(filename, true);
 	if (config == NULL)
 	{
-		WTSLogger::error("Loading state config failed");
+		WTSLogger::error_f("Loading state config failed");
 		return false;
 	}
 

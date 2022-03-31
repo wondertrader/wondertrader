@@ -352,7 +352,7 @@ void WtSelEngine::addContext(SelContextPtr ctx, uint32_t date, uint32_t time, Ta
 	auto it = _tasks.find(ctx->id());
 	if(it != _tasks.end())
 	{
-		WTSLogger::error("Task registration failed: task id %u already registered", ctx->id());
+		WTSLogger::error_f("Task registration failed: task id {} already registered", ctx->id());
 		return;
 	}
 

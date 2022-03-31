@@ -35,7 +35,7 @@ WtDtRunner::WtDtRunner()
 #else
 #pragma message("Signal hooks enabled in UNIX")
 	install_signal_hooks([](const char* message) {
-		WTSLogger::error(message);
+		WTSLogger::error_f(message);
 	});
 #endif
 }
@@ -306,7 +306,7 @@ bool WtDtRunner::dumpHisTicks(const char* id, const char* stdCode, uint32_t uDat
 {
 	if (NULL == _dumper_for_ticks)
 	{
-		WTSLogger::error("Extended tick dumper not enabled");
+		WTSLogger::error_f("Extended tick dumper not enabled");
 		return false;
 	}
 
@@ -317,7 +317,7 @@ bool WtDtRunner::dumpHisBars(const char* id, const char* stdCode, const char* pe
 {
 	if (NULL == _dumper_for_bars)
 	{
-		WTSLogger::error("Extended bar dumper not enabled");
+		WTSLogger::error_f("Extended bar dumper not enabled");
 		return false;
 	}
 
@@ -328,7 +328,7 @@ bool WtDtRunner::dumpHisOrdDtl(const char* id, const char* stdCode, uint32_t uDa
 {
 	if (NULL == _dumper_for_orddtl)
 	{
-		WTSLogger::error("Extended order detail dumper not enabled");
+		WTSLogger::error_f("Extended order detail dumper not enabled");
 		return false;
 	}
 
@@ -339,7 +339,7 @@ bool WtDtRunner::dumpHisOrdQue(const char* id, const char* stdCode, uint32_t uDa
 {
 	if (NULL == _dumper_for_ordque)
 	{
-		WTSLogger::error("Extended order queue dumper not enabled");
+		WTSLogger::error_f("Extended order queue dumper not enabled");
 		return false;
 	}
 
@@ -350,7 +350,7 @@ bool WtDtRunner::dumpHisTrans(const char* id, const char* stdCode, uint32_t uDat
 {
 	if (NULL == _dumper_for_trans)
 	{
-		WTSLogger::error("Extended transaction dumper not enabled");
+		WTSLogger::error_f("Extended transaction dumper not enabled");
 		return false;
 	}
 

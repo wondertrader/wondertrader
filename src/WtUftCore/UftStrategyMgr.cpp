@@ -30,7 +30,7 @@ bool UftStrategyMgr::loadFactories(const char* path)
 {
 	if (!StdFile::exists(path))
 	{
-		WTSLogger::error("Directory %s of UFT strategy factory not exists", path);
+		WTSLogger::error_f("Directory {} of UFT strategy factory not exists", path);
 		return false;
 	}
 

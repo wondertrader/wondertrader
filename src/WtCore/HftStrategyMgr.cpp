@@ -30,7 +30,7 @@ bool HftStrategyMgr::loadFactories(const char* path)
 {
 	if (!StdFile::exists(path))
 	{
-		WTSLogger::error("Directory %s of HFT strategy factory not exists", path);
+		WTSLogger::error_f("Directory {} of HFT strategy factory not exists", path);
 		return false;
 	}
 

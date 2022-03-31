@@ -130,7 +130,7 @@ public:
 	}
 
 	template<typename... Args>
-	static void error(const char* format, const Args& ...args)
+	static void error_old(const char* format, const Args& ...args)
 	{
 		if (m_logLevel > LL_ERROR || m_bStopped)
 			return;
@@ -147,7 +147,7 @@ public:
 	}
 
 	template<typename... Args>
-	static void fatal(const char* format, const Args& ...args)
+	static void fatal_old(const char* format, const Args& ...args)
 	{
 		if (m_logLevel > LL_FATAL || m_bStopped)
 			return;

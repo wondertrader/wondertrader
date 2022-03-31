@@ -91,7 +91,7 @@ void feed_adj_factors(WtString stdCode, WtUInt32* dates, double* factors, WtUInt
 
 void feed_raw_ticks(WTSTickStruct* ticks, WtUInt32 count)
 {
-	WTSLogger::error("API not implemented");
+	WTSLogger::error_f("API not implemented");
 }
 
 void init_porter(const char* logProfile, bool isFile, const char* genDir)

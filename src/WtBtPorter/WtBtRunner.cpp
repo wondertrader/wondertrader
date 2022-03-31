@@ -89,7 +89,7 @@ WtBtRunner::WtBtRunner()
 #else
 #pragma message("Signal hooks enabled in UNIX")
 	install_signal_hooks([](const char* message) {
-		WTSLogger::error(message);
+		WTSLogger::error_f(message);
 	});
 #endif
 }
@@ -118,7 +118,7 @@ bool WtBtRunner::loadRawHisBars(void* obj, const char* stdCode, WTSKlinePeriod p
         return _ext_raw_bar_loader(stdCode, "m5");
 	default:
 		{
-			WTSLogger::error("Unsupported period of extended data loader");
+			WTSLogger::error_f("Unsupported period of extended data loader");
 			return false;
 		}
 	}
@@ -143,7 +143,7 @@ bool WtBtRunner::loadFinalHisBars(void* obj, const char* stdCode, WTSKlinePeriod
 		return _ext_fnl_bar_loader(stdCode, "m5");
 	default:
 		{
-			WTSLogger::error("Unsupported period of extended data loader");
+			WTSLogger::error_f("Unsupported period of extended data loader");
 			return false;
 		}
 	}
@@ -189,7 +189,7 @@ void WtBtRunner::feedRawBars(WTSBarStruct* bars, uint32_t count)
 {
 	if(_ext_fnl_bar_loader == NULL && _ext_raw_bar_loader == NULL)
 	{
-		WTSLogger::error("Cannot feed bars because of no extented bar loader registered.");
+		WTSLogger::error_f("Cannot feed bars because of no extented bar loader registered.");
 		return;
 	}
 
@@ -200,7 +200,7 @@ void WtBtRunner::feedAdjFactors(const char* stdCode, uint32_t* dates, double* fa
 {
 	if(_ext_adj_fct_loader == NULL)
 	{
-		WTSLogger::error("Cannot feed adjusting factors because of no extented adjusting factor loader registered.");
+		WTSLogger::error_f("Cannot feed adjusting factors because of no extented adjusting factor loader registered.");
 		return;
 	}
 
@@ -211,7 +211,7 @@ void WtBtRunner::feedRawTicks(WTSTickStruct* ticks, uint32_t count)
 {
 	if (_ext_tick_loader == NULL)
 	{
-		WTSLogger::error("Cannot feed ticks because of no extented tick loader registered.");
+		WTSLogger::error_f("Cannot feed ticks because of no extented tick loader registered.");
 		return;
 	}
 
@@ -439,14 +439,14 @@ void WtBtRunner::config(const char* cfgFile, bool isFile /* = true */)
 {
 	if(_inited)
 	{
-		WTSLogger::error("WtBtEngine has already been inited");
+		WTSLogger::error_f("WtBtEngine has already been inited");
 		return;
 	}
 
 	WTSVariant* cfg = isFile ? WTSCfgLoader::load_from_file(cfgFile, true) : WTSCfgLoader::load_from_content(cfgFile, false, true);
 	if(cfg == NULL)
 	{
-		WTSLogger::error("Loading config failed");
+		WTSLogger::error_f("Loading config failed");
 		return;
 	}
 
@@ -519,7 +519,7 @@ void WtBtRunner::run(bool bNeedDump /* = false */, bool bAsync /* = false */)
 		}
 		catch (...)
 		{
-			WTSLogger::error("Exception raised while worker running");
+			WTSLogger::error_f("Exception raised while worker running");
 			//print_stack_trace([](const char* message) {
 			//	WTSLogger::error(message);
 			//});

@@ -95,7 +95,7 @@ WtRtRunner::WtRtRunner()
 #else
 #pragma message("Signal hooks enabled in UNIX")
 	install_signal_hooks([](const char* message) {
-		WTSLogger::error(message);
+		WTSLogger::error_f(message);
 	});
 #endif
 }
@@ -218,7 +218,7 @@ bool WtRtRunner::loadFinalHisBars(void* obj, const char* stdCode, WTSKlinePeriod
 		return _ext_fnl_bar_loader(stdCode, "m5");
 	default:
 	{
-		WTSLogger::error("Unsupported period of extended data loader");
+		WTSLogger::error_f("Unsupported period of extended data loader");
 		return false;
 	}
 	}
@@ -243,7 +243,7 @@ bool WtRtRunner::loadRawHisBars(void* obj, const char* stdCode, WTSKlinePeriod p
 		return _ext_raw_bar_loader(stdCode, "m5");
 	default:
 	{
-		WTSLogger::error("Unsupported period of extended data loader");
+		WTSLogger::error_f("Unsupported period of extended data loader");
 		return false;
 	}
 	}
@@ -283,7 +283,7 @@ void WtRtRunner::feedRawBars(WTSBarStruct* bars, uint32_t count)
 {
 	if (_ext_fnl_bar_loader == NULL)
 	{
-		WTSLogger::error("Cannot feed bars because of no extented bar loader registered.");
+		WTSLogger::error_f("Cannot feed bars because of no extented bar loader registered.");
 		return;
 	}
 
@@ -329,7 +329,7 @@ uint32_t WtRtRunner::createHftContext(const char* name, const char* trader, bool
 	}
 	else
 	{
-		WTSLogger::error("Trader %s not exists, Binding trader to HFT strategy failed", trader);
+		WTSLogger::error_f("Trader {} not exists, Binding trader to HFT strategy failed", trader);
 	}
 	return ctx->id();
 }
@@ -554,7 +554,7 @@ bool WtRtRunner::config(const char* cfgFile, bool isFile /* = true */)
 				if (var)
 				{
 					if (!initParsers(var->get("parsers")))
-						WTSLogger::error("Loading parsers failed");
+						WTSLogger::error_f("Loading parsers failed");
 					var->release();
 				}
 				else
@@ -587,7 +587,7 @@ bool WtRtRunner::config(const char* cfgFile, bool isFile /* = true */)
 				if (var)
 				{
 					if (!initTraders(var->get("traders")))
-						WTSLogger::error("Loading traders failed");
+						WTSLogger::error_f("Loading traders failed");
 					var->release();
 				}
 				else
@@ -597,7 +597,7 @@ bool WtRtRunner::config(const char* cfgFile, bool isFile /* = true */)
 			}
 			else
 			{
-				WTSLogger::error("Trader configuration %s not exists", filename);
+				WTSLogger::error_f("Trader configuration {} not exists", filename);
 			}
 		}
 		else if (cfgTraders->type() == WTSVariant::VT_Array)
@@ -625,7 +625,7 @@ bool WtRtRunner::config(const char* cfgFile, bool isFile /* = true */)
 					if (var)
 					{
 						if (!initExecuters(var->get("executers")))
-							WTSLogger::error("Loading executers failed");
+							WTSLogger::error_f("Loading executers failed");
 						var->release();
 					}
 					else
@@ -635,7 +635,7 @@ bool WtRtRunner::config(const char* cfgFile, bool isFile /* = true */)
 				}
 				else
 				{
-					WTSLogger::error("Trader configuration %s not exists", filename);
+					WTSLogger::error_f("Trader configuration {} not exists", filename);
 				}
 			}
 			else if(cfgExec->type() == WTSVariant::VT_Array)
@@ -763,7 +763,7 @@ bool WtRtRunner::initHftStrategies()
 		}
 		else
 		{
-			WTSLogger::error("Trader %s not exists, Binding trader to HFT strategy failed", traderid);
+			WTSLogger::error_f("Trader {} not exists, Binding trader to HFT strategy failed", traderid);
 		}
 
 		_hft_engine.addContext(HftContextPtr(ctx));
@@ -897,7 +897,7 @@ bool WtRtRunner::initExecuters(WTSVariant* cfgExecuter)
 			const char* tid = cfgItem->getCString("trader");
 			if(strlen(tid) == 0)
 			{
-				WTSLogger::error("No Trader configured for Executer %s", id);
+				WTSLogger::error_f("No Trader configured for Executer {}", id);
 			}
 			else
 			{
@@ -909,7 +909,7 @@ bool WtRtRunner::initExecuters(WTSVariant* cfgExecuter)
 				}
 				else
 				{
-					WTSLogger::error("Trader %s not exists, cannot configured for executer %s", tid, id);
+					WTSLogger::error_f("Trader {} not exists, cannot configured for executer %s", tid, id);
 				}
 			}
 
@@ -981,7 +981,7 @@ void WtRtRunner::run(bool bAsync /* = false */)
 	catch (...)
 	{
 		print_stack_trace([](const char* message) {
-			WTSLogger::error(message);
+			WTSLogger::error_f(message);
 		});
 	}
 }

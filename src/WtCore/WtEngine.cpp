@@ -728,14 +728,14 @@ void WtEngine::load_fees(const char* filename)
 
 	if (!StdFile::exists(filename))
 	{
-		WTSLogger::error("Fee templates file %s not exists", filename);
+		WTSLogger::error_f("Fee templates file {} not exists", filename);
 		return;
 	}
 
 	WTSVariant* cfg = WTSCfgLoader::load_from_file(filename, true);
 	if (cfg == NULL)
 	{
-		WTSLogger::error("Fee templates file %s loading failed", filename);
+		WTSLogger::error_f("Fee templates file {} loading failed", filename);
 		return;
 	}
 
