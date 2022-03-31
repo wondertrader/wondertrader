@@ -44,26 +44,32 @@ private:
 	void	do_set_position(const char* stdCode, double qty, const char* userTag = "", bool bTriggered = false);
 	void	append_signal(const char* stdCode, double qty, const char* userTag = "");
 
-private:
+protected:
 	template<typename... Args>
 	void log_debug(const char* format, const Args& ...args)
 	{
-		std::string s = fmt::sprintf(format, args...);
-		stra_log_debug(s.c_str());
+		thread_local static char buffer[512] = { 0 };
+		char* s = fmt::format_to(buffer, format, args...);
+		s[0] = '\0';
+		stra_log_debug(buffer);
 	}
 
 	template<typename... Args>
 	void log_info(const char* format, const Args& ...args)
 	{
-		std::string s = fmt::sprintf(format, args...);
-		stra_log_info(s.c_str());
+		thread_local static char buffer[512] = { 0 };
+		char* s = fmt::format_to(buffer, format, args...);
+		s[0] = '\0';
+		stra_log_info(buffer);
 	}
 
 	template<typename... Args>
 	void log_error(const char* format, const Args& ...args)
 	{
-		std::string s = fmt::sprintf(format, args...);
-		stra_log_error(s.c_str());
+		thread_local static char buffer[512] = { 0 };
+		char* s = fmt::format_to(buffer, format, args...);
+		s[0] = '\0';
+		stra_log_error(buffer);
 	}
 
 public:

@@ -1856,7 +1856,7 @@ WtDataReader::RTKlineBlockPair* WtDataReader::getRTKilneBlock(const char* exchg,
 		block._last_cap = block._block->_capacity;
 	}
 
-	pipe_reader_log(_sink, LL_DEBUG, "RT {} block of {}.{} loaded", subdir.c_str(), exchg, code);
+	//pipe_reader_log(_sink, LL_DEBUG, "RT {} block of {}.{} loaded", subdir.c_str(), exchg, code);
 
 	return &block;
 }

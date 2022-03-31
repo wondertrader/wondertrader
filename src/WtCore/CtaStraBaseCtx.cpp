@@ -274,7 +274,7 @@ void CtaStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 				const char* stdCode = pItem["code"].GetString();
 				if (!CodeHelper::isStdFutHotCode(stdCode) && !CodeHelper::isStdFut2ndCode(stdCode) && _engine->get_contract_info(stdCode) == NULL)
 				{
-					log_info("%s not exists or expired, position ignored", stdCode);
+					log_info("{} not exists or expired, position ignored", stdCode);
 					continue;
 				}
 				PosInfo& pInfo = _pos_map[stdCode];
@@ -332,7 +332,7 @@ void CtaStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 					pInfo._details.emplace_back(dInfo);
 				}
 
-				WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_INFO, "Position confirmed,{} -> {}", stdCode, pInfo._volume);
+				log_info("Position confirmed,{} -> {}", stdCode, pInfo._volume);
 				stra_sub_ticks(stdCode);
 			}
 		}
@@ -353,7 +353,7 @@ void CtaStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 				const char* stdCode = m.name.GetString();
 				if (!CodeHelper::isStdFutHotCode(stdCode) && !CodeHelper::isStdFut2ndCode(stdCode) && _engine->get_contract_info(stdCode) == NULL)
 				{
-					log_info("%s not exists or expired, condition ignored", stdCode);
+					log_info("{} not exists or expired, condition ignored", stdCode);
 					continue;
 				}
 
@@ -375,13 +375,13 @@ void CtaStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 
 					condList.emplace_back(condInfo);
 
-					WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_INFO, "{} condition recovered, {} {}, condition: newprice {} {}",
+					log_info("{} condition recovered, {} {}, condition: newprice {} {}",
 						stdCode, ACTION_NAMES[condInfo._action], condInfo._qty, CMP_ALG_NAMES[condInfo._alg], condInfo._target);
 					count++;
 				}
 			}
 
-			WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_INFO, "{} conditions recovered, setup time: {}", count, _last_cond_min);
+			log_info("{} conditions recovered, setup time: {}", count, _last_cond_min);
 		}
 	}
 
@@ -396,7 +396,7 @@ void CtaStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 				const char* stdCode = m.name.GetString();
 				if (!CodeHelper::isStdFutHotCode(stdCode) && !CodeHelper::isStdFut2ndCode(stdCode) && _engine->get_contract_info(stdCode) == NULL)
 				{
-					log_info("%s not exists or expired, signal ignored", stdCode);
+					log_info("{} not exists or expired, signal ignored", stdCode);
 					continue;
 				}
 
@@ -408,7 +408,7 @@ void CtaStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 				sInfo._sigprice = jItem["sigprice"].GetDouble();
 				sInfo._gentime = jItem["gentime"].GetUint64();
 				
-				WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_INFO, "{} untouched signal recovered, target pos: {}", stdCode, sInfo._volume);
+				log_info("{} untouched signal recovered, target pos: {}", stdCode, sInfo._volume);
 				stra_sub_ticks(stdCode);
 			}
 		}
@@ -582,18 +582,18 @@ void CtaStraBaseCtx::on_bar(const char* stdCode, const char* period, uint32_t ti
 
 	std::string realPeriod;
 	if (period[0] == 'd')
-		realPeriod = StrUtil::printf("%s%u", period, times);
+		realPeriod = fmt::format("{}{}", period, times);
 	else
-		realPeriod = StrUtil::printf("m%u", times);
+		realPeriod = fmt::format("m{}", times);
 
-	std::string key = StrUtil::printf("%s#%s", stdCode, realPeriod.c_str());
+	std::string key = fmt::format("{}#{}", stdCode, realPeriod.c_str());
 	KlineTag& tag = _kline_tags[key];
 	tag._closed = true;
 
 	on_bar_close(stdCode, realPeriod.c_str(), newBar);
 
 	if(key == _main_key)
-		log_debug("Main KBars %s closed", key.c_str());
+		log_debug("Main KBars {} closed", key.c_str());
 }
 
 void CtaStraBaseCtx::on_init()
@@ -708,7 +708,7 @@ void CtaStraBaseCtx::on_tick(const char* stdCode, WTSTickData* newTick, bool bEm
 
 			if (isMatched)
 			{
-				WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_INFO, "Condition triggered[newprice {}{} targetprice {}], instrument: {}, {} {}",
+				log_info("Condition triggered[newprice {}{} targetprice {}], instrument: {}, {} {}",
 					curPrice, CMP_ALG_NAMES[entrust._alg], entrust._target, stdCode, ACTION_NAMES[entrust._action], entrust._qty);
 
 				switch (entrust._action)
@@ -829,7 +829,7 @@ bool CtaStraBaseCtx::on_schedule(uint32_t curDate, uint32_t curTime)
 			{
 				_condtions.clear();
 				on_calculate(curDate, curTime);
-				log_info("Strategy scheduled @ %u", curTime);
+				log_debug("Strategy {} scheduled @ {}", _context_id, curTime);
 				emmited = true;
 
 				_emit_times++;
@@ -837,8 +837,7 @@ bool CtaStraBaseCtx::on_schedule(uint32_t curDate, uint32_t curTime)
 
 				if (_emit_times % 20 == 0)
 				{
-					WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_INFO,
-						"Strategy has been scheduled {} times, totally taking {} us, {:.3f} us each time",
+					log_info("Strategy has been scheduled {} times, totally taking {} us, {:.3f} us each time",
 						_emit_times, _total_calc_time, _total_calc_time*1.0 / _emit_times);
 				}
 
@@ -856,7 +855,7 @@ bool CtaStraBaseCtx::on_schedule(uint32_t curDate, uint32_t curTime)
 			}
 			else
 			{
-				log_info("%u not in trading time, schedule canceled", curTime);
+				log_info("{} not in trading time, schedule canceled", curTime);
 			}
 			break;
 		}
@@ -876,7 +875,7 @@ void CtaStraBaseCtx::on_session_begin(uint32_t uTDate)
 		PosInfo& pInfo = (PosInfo&)it.second;
 		if(pInfo._frozen_date < uTDate && !decimal::eq(pInfo._frozen, 0))
 		{
-			log_debug("%.0f of %s frozen on %u released on %u", pInfo._frozen, stdCode, pInfo._frozen_date, uTDate);
+			log_debug("{} of %s frozen on {} released on {}", pInfo._frozen, stdCode, pInfo._frozen_date, uTDate);
 
 			pInfo._frozen = 0;
 			pInfo._frozen_date = 0;
@@ -958,7 +957,7 @@ void CtaStraBaseCtx::stra_enter_long(const char* stdCode, double qty, const char
 	WTSCommodityInfo* commInfo = _engine->get_commodity_info(stdCode);
 	if (commInfo == NULL)
 	{
-		log_error("Cannot find corresponding commodity info of %s", stdCode);
+		log_error("Cannot find corresponding commodity info of {}", stdCode);
 		return;
 	}
 
@@ -1010,13 +1009,13 @@ void CtaStraBaseCtx::stra_enter_short(const char* stdCode, double qty, const cha
 	WTSCommodityInfo* commInfo = _engine->get_commodity_info(stdCode);
 	if (commInfo == NULL)
 	{
-		log_error("Cannot find corresponding commodity info of %s", stdCode);
+		log_error("Cannot find corresponding commodity info of {}", stdCode);
 		return;
 	}
 
 	if (!commInfo->canShort())
 	{
-		log_error("Cannot short on %s", stdCode);
+		log_error("Cannot short on {}", stdCode);
 		return;
 	}
 
@@ -1068,7 +1067,7 @@ void CtaStraBaseCtx::stra_exit_long(const char* stdCode, double qty, const char*
 	WTSCommodityInfo* commInfo = _engine->get_commodity_info(stdCode);
 	if (commInfo == NULL)
 	{
-		log_error("Cannot find corresponding commodity info of %s", stdCode);
+		log_error("Cannot find corresponding commodity info of {}", stdCode);
 		return;
 	}
 
@@ -1114,13 +1113,13 @@ void CtaStraBaseCtx::stra_exit_short(const char* stdCode, double qty, const char
 	WTSCommodityInfo* commInfo = _engine->get_commodity_info(stdCode);
 	if (commInfo == NULL)
 	{
-		log_error("Cannot find corresponding commodity info of %s", stdCode);
+		log_error("Cannot find corresponding commodity info of {}", stdCode);
 		return;
 	}
 
 	if (!commInfo->canShort())
 	{
-		log_error("Cannot short on %s", stdCode);
+		log_error("Cannot short on {}", stdCode);
 		return;
 	}
 
@@ -1253,7 +1252,7 @@ void CtaStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 		{
 			//ASSERT(diff>0);
 			pInfo._frozen += diff;
-			log_debug("%s frozen position up to %.0f", stdCode, pInfo._frozen);
+			log_debug("{} frozen position updated to {}", stdCode, pInfo._frozen);
 		}
 
 		DetailInfo dInfo;
@@ -1338,7 +1337,7 @@ void CtaStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 			if (commInfo->isT1())
 			{
 				pInfo._frozen += left;
-				log_debug("%s frozen position up to %.0f", stdCode, pInfo._frozen);
+				log_debug("{} frozen position up to {}", stdCode, pInfo._frozen);
 			}
 
 			DetailInfo dInfo;
@@ -1377,7 +1376,7 @@ WTSKlineSlice* CtaStraBaseCtx::stra_get_bars(const char* stdCode, const char* pe
 		if (_main_key.empty())
 		{
 			_main_key = key;
-			log_debug("Main KBars confirmed：%s", key.c_str());
+			log_debug("Main KBars confirmed：{}", key.c_str());
 		}
 		else if (_main_key != key)
 			throw std::runtime_error("Main KBars already confirmed");
@@ -1417,8 +1416,7 @@ WTSKlineSlice* CtaStraBaseCtx::stra_get_bars(const char* stdCode, const char* pe
 			//如果最后一条已闭合的K线的时间大于条件单设置时间，说明条件单已经过期了，则需要清理
 			if(lastBartime > _last_cond_min)
 			{
-				WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_INFO, 
-					"Conditions expired, setup time: {}, time of last bar of main kbars: {}, all cleared", _last_cond_min, lastBartime);
+				log_info("Conditions expired, setup time: {}, time of last bar of main kbars: {}, all cleared", _last_cond_min, lastBartime);
 				_condtions.clear();
 			}
 		}
@@ -1460,7 +1458,7 @@ void CtaStraBaseCtx::stra_sub_ticks(const char* code)
 	_tick_subs.insert(code);
 
 	_engine->sub_tick(_context_id, code);
-	log_info("Market data subscribed: %s", code);
+	log_info("Market data subscribed: {}", code);
 }
 
 WTSCommodityInfo* CtaStraBaseCtx::stra_get_comminfo(const char* stdCode)

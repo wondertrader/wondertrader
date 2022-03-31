@@ -206,7 +206,7 @@ OrderIDs HftStraBaseCtx::stra_buy(const char* stdCode, double price, double qty,
 	WTSContractInfo* ct = _engine->get_contract_info(stdCode);
 	if (ct == NULL)
 	{
-		log_error("Cannot find corresponding contract info of %s", stdCode);
+		log_error("Cannot find corresponding contract info of {}", stdCode);
 		return OrderIDs();
 	}
 
@@ -220,7 +220,7 @@ OrderIDs HftStraBaseCtx::stra_buy(const char* stdCode, double price, double qty,
 
 		if (_trader && !_trader->checkOrderLimits(realCode.c_str()))
 		{
-			log_info("%s 已被禁止交易", realCode.c_str());
+			log_info("{} is forbidden to trade", realCode.c_str());
 			return OrderIDs();
 		}
 
@@ -240,7 +240,7 @@ OrderIDs HftStraBaseCtx::stra_buy(const char* stdCode, double price, double qty,
 
 		if (_trader && !_trader->checkOrderLimits(realCode.c_str()))
 		{
-			log_info("%s 已被禁止交易", realCode.c_str());
+			log_info("{} is forbidden to trade", realCode.c_str());
 			return OrderIDs();
 		}
 
@@ -253,7 +253,7 @@ OrderIDs HftStraBaseCtx::stra_buy(const char* stdCode, double price, double qty,
 	{
 		if (!_trader->checkOrderLimits(stdCode))
 		{
-			log_info("%s 已被禁止交易", stdCode);
+			log_info("{} is forbidden to trade", stdCode);
 			return OrderIDs();
 		}
 
@@ -269,7 +269,7 @@ OrderIDs HftStraBaseCtx::stra_sell(const char* stdCode, double price, double qty
 	WTSContractInfo* ct = _engine->get_contract_info(stdCode);
 	if (ct == NULL)
 	{
-		log_error("Cannot find corresponding contract info of %s", stdCode);
+		log_error("Cannot find corresponding contract info of {}", stdCode);
 		return OrderIDs();
 	}
 
@@ -281,7 +281,7 @@ OrderIDs HftStraBaseCtx::stra_sell(const char* stdCode, double price, double qty
 		double curPos = stra_get_position(stdCode, true);//只读可用持仓
 		if (decimal::gt(qty, curPos))
 		{
-			log_error("No enough position of %s to sell", stdCode);
+			log_error("No enough position of {} to sell", stdCode);
 			return OrderIDs();
 		}
 	}
@@ -296,7 +296,7 @@ OrderIDs HftStraBaseCtx::stra_sell(const char* stdCode, double price, double qty
 
 		if (_trader && !_trader->checkOrderLimits(realCode.c_str()))
 		{
-			log_info("%s 已被禁止交易", realCode.c_str());
+			log_info("{} is forbidden to trade", realCode.c_str());
 			return OrderIDs();
 		}
 
@@ -315,7 +315,7 @@ OrderIDs HftStraBaseCtx::stra_sell(const char* stdCode, double price, double qty
 
 		if (_trader && !_trader->checkOrderLimits(realCode.c_str()))
 		{
-			log_info("%s 已被禁止交易", realCode.c_str());
+			log_info("{} is forbidden to trade", realCode.c_str());
 			return OrderIDs();
 		}
 
@@ -328,7 +328,7 @@ OrderIDs HftStraBaseCtx::stra_sell(const char* stdCode, double price, double qty
 	{
 		if (_trader && !_trader->checkOrderLimits(stdCode))
 		{
-			log_info("%s 已被禁止交易", stdCode);
+			log_info("{} is forbidden to trade", stdCode);
 			return OrderIDs();
 		}
 
@@ -511,25 +511,25 @@ void HftStraBaseCtx::stra_sub_ticks(const char* stdCode)
 	_tick_subs.insert(stdCode);
 
 	_engine->sub_tick(id(), stdCode);
-	log_info("Market Data subscribed: %s", stdCode);
+	log_info("Market Data subscribed: {}", stdCode);
 }
 
 void HftStraBaseCtx::stra_sub_order_details(const char* stdCode)
 {
 	_engine->sub_order_detail(id(), stdCode);
-	log_info("Order details subscribed: %s", stdCode);
+	log_info("Order details subscribed: {}", stdCode);
 }
 
 void HftStraBaseCtx::stra_sub_order_queues(const char* stdCode)
 {
 	_engine->sub_order_queue(id(), stdCode);
-	log_info("Order queues subscribed: %s", stdCode);
+	log_info("Order queues subscribed: {}", stdCode);
 }
 
 void HftStraBaseCtx::stra_sub_transactions(const char* stdCode)
 {
 	_engine->sub_transaction(id(), stdCode);
-	log_info("Transactions subscribed: %s", stdCode);
+	log_info("Transactions subscribed: {}", stdCode);
 }
 
 void HftStraBaseCtx::stra_log_info(const char* message)
@@ -785,7 +785,7 @@ void HftStraBaseCtx::do_set_position(const char* stdCode, double qty, double pri
 	if (decimal::eq(pInfo._volume, qty))
 		return;
 
-	log_info("Target position updated: %.0f -> %0.f", pInfo._volume, qty);
+	log_info("Target position updated: {} -> {}", pInfo._volume, qty);
 
 	WTSCommodityInfo* commInfo = _engine->get_commodity_info(stdCode);
 
