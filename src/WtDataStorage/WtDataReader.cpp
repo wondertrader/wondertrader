@@ -24,9 +24,7 @@ inline void pipe_reader_log(IDataReaderSink* sink, WTSLogLevel ll, const char* f
 	if (sink == NULL)
 		return;
 
-	static thread_local char buffer[512] = { 0 };
-	memset(buffer, 0, 512);
-	fmt::format_to(buffer, format, args...);
+	const char* buffer = fmtutil::format(format, args...);
 
 	sink->reader_log(ll, buffer);
 }
@@ -284,7 +282,7 @@ WTSTickSlice* WtDataReader::readTickSlice(const char* stdCode, uint32_t count, u
 {
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
-	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
+	const char* stdPID = commInfo->getFullPid();
 
 	uint32_t curDate, curTime, curSecs;
 	if (etime == 0)
@@ -303,8 +301,8 @@ WTSTickSlice* WtDataReader::readTickSlice(const char* stdCode, uint32_t count, u
 		curSecs = (uint32_t)(etime % 100000);
 	}
 
-	uint32_t endTDate = _base_data_mgr->calcTradingDate(stdPID.c_str(), curDate, curTime, false);
-	uint32_t curTDate = _base_data_mgr->calcTradingDate(stdPID.c_str(), 0, 0, false);
+	uint32_t endTDate = _base_data_mgr->calcTradingDate(stdPID, curDate, curTime, false);
+	uint32_t curTDate = _base_data_mgr->calcTradingDate(stdPID, 0, 0, false);
 
 	bool isToday = (endTDate == curTDate);
 
@@ -350,7 +348,8 @@ WTSTickSlice* WtDataReader::readTickSlice(const char* stdCode, uint32_t count, u
 	}
 	else
 	{
-		std::string key = StrUtil::printf("%s-%d", stdCode, endTDate);
+		thread_local static char key[64] = { 0 };
+		fmtutil::format_to(key, "{}-{}", stdCode, endTDate);
 
 		auto it = _his_tick_map.find(key);
 		if(it == _his_tick_map.end())
@@ -409,7 +408,7 @@ WTSOrdQueSlice* WtDataReader::readOrdQueSlice(const char* stdCode, uint32_t coun
 {
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
-	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
+	const char* stdPID = commInfo->getFullPid();
 
 	uint32_t curDate, curTime, curSecs;
 	if (etime == 0)
@@ -428,8 +427,8 @@ WTSOrdQueSlice* WtDataReader::readOrdQueSlice(const char* stdCode, uint32_t coun
 		curSecs = (uint32_t)(etime % 100000);
 	}
 
-	uint32_t endTDate = _base_data_mgr->calcTradingDate(stdPID.c_str(), curDate, curTime, false);
-	uint32_t curTDate = _base_data_mgr->calcTradingDate(stdPID.c_str(), 0, 0, false);
+	uint32_t endTDate = _base_data_mgr->calcTradingDate(stdPID, curDate, curTime, false);
+	uint32_t curTDate = _base_data_mgr->calcTradingDate(stdPID, 0, 0, false);
 
 	bool isToday = (endTDate == curTDate);
 
@@ -475,7 +474,8 @@ WTSOrdQueSlice* WtDataReader::readOrdQueSlice(const char* stdCode, uint32_t coun
 	}
 	else
 	{
-		std::string key = StrUtil::printf("%s-%d", stdCode, endTDate);
+		thread_local static char key[64] = { 0 };
+		fmtutil::format_to(key, "{}-{}", stdCode, endTDate);
 
 		auto it = _his_ordque_map.find(key);
 		if (it == _his_ordque_map.end())
@@ -549,7 +549,7 @@ WTSOrdDtlSlice* WtDataReader::readOrdDtlSlice(const char* stdCode, uint32_t coun
 {
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
-	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
+	const char* stdPID = commInfo->getFullPid();
 
 	uint32_t curDate, curTime, curSecs;
 	if (etime == 0)
@@ -568,8 +568,8 @@ WTSOrdDtlSlice* WtDataReader::readOrdDtlSlice(const char* stdCode, uint32_t coun
 		curSecs = (uint32_t)(etime % 100000);
 	}
 
-	uint32_t endTDate = _base_data_mgr->calcTradingDate(stdPID.c_str(), curDate, curTime, false);
-	uint32_t curTDate = _base_data_mgr->calcTradingDate(stdPID.c_str(), 0, 0, false);
+	uint32_t endTDate = _base_data_mgr->calcTradingDate(stdPID, curDate, curTime, false);
+	uint32_t curTDate = _base_data_mgr->calcTradingDate(stdPID, 0, 0, false);
 
 	bool isToday = (endTDate == curTDate);
 
@@ -615,7 +615,8 @@ WTSOrdDtlSlice* WtDataReader::readOrdDtlSlice(const char* stdCode, uint32_t coun
 	}
 	else
 	{
-		std::string key = StrUtil::printf("%s-%d", stdCode, endTDate);
+		thread_local static char key[64] = { 0 };
+		fmtutil::format_to(key, "{}-{}", stdCode, endTDate);
 
 		auto it = _his_ordque_map.find(key);
 		if (it == _his_ordque_map.end())
@@ -689,7 +690,7 @@ WTSTransSlice* WtDataReader::readTransSlice(const char* stdCode, uint32_t count,
 {
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
-	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
+	const char* stdPID = commInfo->getFullPid();
 
 	uint32_t curDate, curTime, curSecs;
 	if (etime == 0)
@@ -708,8 +709,8 @@ WTSTransSlice* WtDataReader::readTransSlice(const char* stdCode, uint32_t count,
 		curSecs = (uint32_t)(etime % 100000);
 	}
 
-	uint32_t endTDate = _base_data_mgr->calcTradingDate(stdPID.c_str(), curDate, curTime, false);
-	uint32_t curTDate = _base_data_mgr->calcTradingDate(stdPID.c_str(), 0, 0, false);
+	uint32_t endTDate = _base_data_mgr->calcTradingDate(stdPID, curDate, curTime, false);
+	uint32_t curTDate = _base_data_mgr->calcTradingDate(stdPID, 0, 0, false);
 
 	bool isToday = (endTDate == curTDate);
 
@@ -755,7 +756,8 @@ WTSTransSlice* WtDataReader::readTransSlice(const char* stdCode, uint32_t count,
 	}
 	else
 	{
-		std::string key = StrUtil::printf("%s-%d", stdCode, endTDate);
+		thread_local static char key[64] = { 0 };
+		fmtutil::format_to(key, "{}-{}", stdCode, endTDate);
 
 		auto it = _his_ordque_map.find(key);
 		if (it == _his_ordque_map.end())
@@ -832,7 +834,7 @@ bool WtDataReader::cacheFinalBarsFromLoader(const std::string& key, const char* 
 		return false;
 
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
-	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
+	std::string stdPID = fmt::format("{}.{}", cInfo._exchg, cInfo._product);
 
 	BarsList& barList = _bars_cache[key];
 	barList._code = stdCode;
@@ -867,7 +869,7 @@ bool WtDataReader::cacheFinalBarsFromLoader(const std::string& key, const char* 
 bool WtDataReader::cacheIntegratedFutBars(const std::string& key, const char* stdCode, WTSKlinePeriod period)
 {
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
-	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
+	std::string stdPID = fmt::format("{}.{}", cInfo._exchg, cInfo._product);
 
 	uint32_t curDate = TimeUtils::getCurDate();
 	uint32_t curTime = TimeUtils::getCurMin() / 100;
@@ -1004,7 +1006,7 @@ bool WtDataReader::cacheIntegratedFutBars(const std::string& key, const char* st
 		std::string buffer;
 		if (NULL != _loader)
 		{
-			std::string wCode = StrUtil::printf("%s.%s.%s", cInfo._exchg, cInfo._product, (char*)curCode + strlen(cInfo._product));
+			std::string wCode = fmt::format("{}.{}.{}", cInfo._exchg, cInfo._product, (char*)curCode + strlen(cInfo._product));
 			bLoaded = _loader->loadRawHisBars(&buffer, wCode.c_str(), period, [](void* obj, WTSBarStruct* bars, uint32_t count) {
 				std::string* buff = (std::string*)obj;
 				buff->resize(sizeof(WTSBarStruct)*count);
@@ -1117,7 +1119,7 @@ bool WtDataReader::cacheIntegratedFutBars(const std::string& key, const char* st
 bool WtDataReader::cacheAdjustedStkBars(const std::string& key, const char* stdCode, WTSKlinePeriod period)
 {
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
-	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
+	std::string stdPID = fmt::format("{}.{}", cInfo._exchg, cInfo._product);
 
 	uint32_t curDate = TimeUtils::getCurDate();
 	uint32_t curTime = TimeUtils::getCurMin() / 100;
@@ -1208,7 +1210,7 @@ bool WtDataReader::cacheAdjustedStkBars(const std::string& key, const char* stdC
 		 */
 		bool bLoaded = false;
 		std::string buffer;
-		std::string rawCode = StrUtil::printf("%s.%s.%s", cInfo._exchg, cInfo._product, curCode);
+		std::string rawCode = fmt::format("{}.{}.{}", cInfo._exchg, cInfo._product, curCode);
 		if (NULL != _loader)
 		{
 			bLoaded = _loader->loadRawHisBars(&buffer, rawCode.c_str(), period, [](void* obj, WTSBarStruct* bars, uint32_t count) {
@@ -1356,12 +1358,12 @@ bool WtDataReader::cacheHisBarsFromFile(const std::string& key, const char* stdC
 {
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
-	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
+	const char* stdPID = commInfo->getFullPid();
 
 	uint32_t curDate = TimeUtils::getCurDate();
 	uint32_t curTime = TimeUtils::getCurMin() / 100;
 
-	uint32_t endTDate = _base_data_mgr->calcTradingDate(stdPID.c_str(), curDate, curTime, false);
+	uint32_t endTDate = _base_data_mgr->calcTradingDate(stdPID, curDate, curTime, false);
 
 	std::string pname;
 	switch (period)
@@ -1475,9 +1477,10 @@ WTSKlineSlice* WtDataReader::readKlineSlice(const char* stdCode, WTSKlinePeriod 
 {
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
-	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
+	const char* stdPID = commInfo->getFullPid();
 
-	std::string key = StrUtil::printf("%s#%u", stdCode, period);
+	thread_local static char key[64] = { 0 };
+	fmtutil::format_to(key, "{}#{}", stdCode, period);
 	auto it = _bars_cache.find(key);
 	bool bHasHisData = false;
 	if (it == _bars_cache.end())
@@ -1510,8 +1513,8 @@ WTSKlineSlice* WtDataReader::readKlineSlice(const char* stdCode, WTSKlinePeriod 
 		curTime = (uint32_t)(etime % 10000);
 	}
 
-	uint32_t endTDate = _base_data_mgr->calcTradingDate(stdPID.c_str(), curDate, curTime, false);
-	uint32_t curTDate = _base_data_mgr->calcTradingDate(stdPID.c_str(), 0, 0, false);
+	uint32_t endTDate = _base_data_mgr->calcTradingDate(stdPID, curDate, curTime, false);
+	uint32_t curTDate = _base_data_mgr->calcTradingDate(stdPID, 0, 0, false);
 	
 	WTSBarStruct* hisHead = NULL;
 	WTSBarStruct* rtHead = NULL;
@@ -1643,10 +1646,14 @@ WTSKlineSlice* WtDataReader::readKlineSlice(const char* stdCode, WTSKlinePeriod 
 
 WtDataReader::TickBlockPair* WtDataReader::getRTTickBlock(const char* exchg, const char* code)
 {
-	std::string key = StrUtil::printf("%s.%s", exchg, code);
+	//std::string key = StrUtil::printf("%s.%s", exchg, code);
+	thread_local static char key[64] = { 0 };
+	fmtutil::format_to(key, "{}#{}", exchg, code);
 
-	std::string path = StrUtil::printf("%srt/ticks/%s/%s.dmb", _base_dir.c_str(), exchg, code);
-	if (!StdFile::exists(path.c_str()))
+	thread_local static char path[256] = { 0 };
+	fmtutil::format_to(path, "{}rt/ticks/{}/{}.dmb", _base_dir.c_str(), exchg, code);
+
+	if (!StdFile::exists(path))
 		return NULL;
 
 	TickBlockPair& block = _rt_tick_map[key];
@@ -1657,7 +1664,7 @@ WtDataReader::TickBlockPair* WtDataReader::getRTTickBlock(const char* exchg, con
 			block._file.reset(new BoostMappingFile());
 		}
 
-		if (!block._file->map(path.c_str(), boost::interprocess::read_only, boost::interprocess::read_only))
+		if (!block._file->map(path, boost::interprocess::read_only, boost::interprocess::read_only))
 			return NULL;
 
 		block._block = (RTTickBlock*)block._file->addr();
@@ -1670,7 +1677,7 @@ WtDataReader::TickBlockPair* WtDataReader::getRTTickBlock(const char* exchg, con
 		block._last_cap = 0;
 		block._block = NULL;
 
-		if (!block._file->map(path.c_str(), boost::interprocess::read_only, boost::interprocess::read_only))
+		if (!block._file->map(path, boost::interprocess::read_only, boost::interprocess::read_only))
 			return NULL;
 
 		block._block = (RTTickBlock*)block._file->addr();
@@ -1682,10 +1689,15 @@ WtDataReader::TickBlockPair* WtDataReader::getRTTickBlock(const char* exchg, con
 
 WtDataReader::OrdDtlBlockPair* WtDataReader::getRTOrdDtlBlock(const char* exchg, const char* code)
 {
-	std::string key = StrUtil::printf("%s.%s", exchg, code);
+	//std::string key = StrUtil::printf("%s.%s", exchg, code);
+	//std::string path = StrUtil::printf("%srt/orders/%s/%s.dmb", _base_dir.c_str(), exchg, code);
+	thread_local static char key[64] = { 0 };
+	fmtutil::format_to(key, "{}#{}", exchg, code);
 
-	std::string path = StrUtil::printf("%srt/orders/%s/%s.dmb", _base_dir.c_str(), exchg, code);
-	if (!StdFile::exists(path.c_str()))
+	thread_local static char path[256] = { 0 };
+	fmtutil::format_to(path, "{}rt/orders/{}/{}.dmb", _base_dir.c_str(), exchg, code);
+
+	if (!StdFile::exists(path))
 		return NULL;
 
 	OrdDtlBlockPair& block = _rt_orddtl_map[key];
@@ -1696,7 +1708,7 @@ WtDataReader::OrdDtlBlockPair* WtDataReader::getRTOrdDtlBlock(const char* exchg,
 			block._file.reset(new BoostMappingFile());
 		}
 
-		if (!block._file->map(path.c_str(), boost::interprocess::read_only, boost::interprocess::read_only))
+		if (!block._file->map(path, boost::interprocess::read_only, boost::interprocess::read_only))
 			return NULL;
 
 		block._block = (RTOrdDtlBlock*)block._file->addr();
@@ -1709,7 +1721,7 @@ WtDataReader::OrdDtlBlockPair* WtDataReader::getRTOrdDtlBlock(const char* exchg,
 		block._last_cap = 0;
 		block._block = NULL;
 
-		if (!block._file->map(path.c_str(), boost::interprocess::read_only, boost::interprocess::read_only))
+		if (!block._file->map(path, boost::interprocess::read_only, boost::interprocess::read_only))
 			return NULL;
 
 		block._block = (RTOrdDtlBlock*)block._file->addr();
@@ -1721,10 +1733,16 @@ WtDataReader::OrdDtlBlockPair* WtDataReader::getRTOrdDtlBlock(const char* exchg,
 
 WtDataReader::OrdQueBlockPair* WtDataReader::getRTOrdQueBlock(const char* exchg, const char* code)
 {
-	std::string key = StrUtil::printf("%s.%s", exchg, code);
+	//std::string key = StrUtil::printf("%s.%s", exchg, code);
+	//std::string path = StrUtil::printf("%srt/queue/%s/%s.dmb", _base_dir.c_str(), exchg, code);
 
-	std::string path = StrUtil::printf("%srt/queue/%s/%s.dmb", _base_dir.c_str(), exchg, code);
-	if (!StdFile::exists(path.c_str()))
+	thread_local static char key[64] = { 0 };
+	fmtutil::format_to(key, "{}#{}", exchg, code);
+
+	thread_local static char path[256] = { 0 };
+	fmtutil::format_to(path, "{}rt/queue/{}/{}.dmb", _base_dir.c_str(), exchg, code);
+
+	if (!StdFile::exists(path))
 		return NULL;
 
 	OrdQueBlockPair& block = _rt_ordque_map[key];
@@ -1735,7 +1753,7 @@ WtDataReader::OrdQueBlockPair* WtDataReader::getRTOrdQueBlock(const char* exchg,
 			block._file.reset(new BoostMappingFile());
 		}
 
-		if (!block._file->map(path.c_str(), boost::interprocess::read_only, boost::interprocess::read_only))
+		if (!block._file->map(path, boost::interprocess::read_only, boost::interprocess::read_only))
 			return NULL;
 
 		block._block = (RTOrdQueBlock*)block._file->addr();
@@ -1748,7 +1766,7 @@ WtDataReader::OrdQueBlockPair* WtDataReader::getRTOrdQueBlock(const char* exchg,
 		block._last_cap = 0;
 		block._block = NULL;
 
-		if (!block._file->map(path.c_str(), boost::interprocess::read_only, boost::interprocess::read_only))
+		if (!block._file->map(path, boost::interprocess::read_only, boost::interprocess::read_only))
 			return NULL;
 
 		block._block = (RTOrdQueBlock*)block._file->addr();
@@ -1760,10 +1778,16 @@ WtDataReader::OrdQueBlockPair* WtDataReader::getRTOrdQueBlock(const char* exchg,
 
 WtDataReader::TransBlockPair* WtDataReader::getRTTransBlock(const char* exchg, const char* code)
 {
-	std::string key = StrUtil::printf("%s.%s", exchg, code);
+	//std::string key = StrUtil::printf("%s.%s", exchg, code);
+	//std::string path = StrUtil::printf("%srt/trans/%s/%s.dmb", _base_dir.c_str(), exchg, code);
 
-	std::string path = StrUtil::printf("%srt/trans/%s/%s.dmb", _base_dir.c_str(), exchg, code);
-	if (!StdFile::exists(path.c_str()))
+	thread_local static char key[64] = { 0 };
+	fmtutil::format_to(key, "{}#{}", exchg, code);
+
+	thread_local static char path[256] = { 0 };
+	fmtutil::format_to(path, "{}rt/trans/{}/{}.dmb", _base_dir.c_str(), exchg, code);
+
+	if (!StdFile::exists(path))
 		return NULL;
 
 	TransBlockPair& block = _rt_trans_map[key];
@@ -1774,7 +1798,7 @@ WtDataReader::TransBlockPair* WtDataReader::getRTTransBlock(const char* exchg, c
 			block._file.reset(new BoostMappingFile());
 		}
 
-		if (!block._file->map(path.c_str(), boost::interprocess::read_only, boost::interprocess::read_only))
+		if (!block._file->map(path, boost::interprocess::read_only, boost::interprocess::read_only))
 			return NULL;
 
 		block._block = (RTTransBlock*)block._file->addr();
@@ -1787,7 +1811,7 @@ WtDataReader::TransBlockPair* WtDataReader::getRTTransBlock(const char* exchg, c
 		block._last_cap = 0;
 		block._block = NULL;
 
-		if (!block._file->map(path.c_str(), boost::interprocess::read_only, boost::interprocess::read_only))
+		if (!block._file->map(path, boost::interprocess::read_only, boost::interprocess::read_only))
 			return NULL;
 
 		block._block = (RTTransBlock*)block._file->addr();
@@ -1802,7 +1826,9 @@ WtDataReader::RTKlineBlockPair* WtDataReader::getRTKilneBlock(const char* exchg,
 	if (period != KP_Minute1 && period != KP_Minute5)
 		return NULL;
 
-	std::string key = StrUtil::printf("%s.%s", exchg, code);
+	//std::string key = StrUtil::printf("%s.%s", exchg, code);
+	thread_local static char key[64] = { 0 };
+	fmtutil::format_to(key, "{}.{}", exchg, code);
 
 	RTKBlockFilesMap* cache_map = NULL;
 	std::string subdir = "";
@@ -1822,8 +1848,11 @@ WtDataReader::RTKlineBlockPair* WtDataReader::getRTKilneBlock(const char* exchg,
 	default: break;
 	}
 
-	std::string path = StrUtil::printf("%srt/%s/%s/%s.dmb", _base_dir.c_str(), subdir.c_str(), exchg, code);
-	if (!StdFile::exists(path.c_str()))
+	//std::string path = StrUtil::printf("%srt/%s/%s/%s.dmb", _base_dir.c_str(), subdir.c_str(), exchg, code);
+	thread_local static char path[256] = { 0 };
+	fmtutil::format_to(path, "{}rt/{}/{}/{}.dmb", _base_dir, subdir, exchg, code);
+
+	if (!StdFile::exists(path))
 		return NULL;
 
 	RTKlineBlockPair& block = (*cache_map)[key];
@@ -1834,11 +1863,12 @@ WtDataReader::RTKlineBlockPair* WtDataReader::getRTKilneBlock(const char* exchg,
 			block._file.reset(new BoostMappingFile());
 		}
 
-		if (!block._file->map(path.c_str(), boost::interprocess::read_only, boost::interprocess::read_only))
+		if (!block._file->map(path, boost::interprocess::read_only, boost::interprocess::read_only))
 			return NULL;
 
 		block._block = (RTKlineBlock*)block._file->addr();
 		block._last_cap = block._block->_capacity;
+		pipe_reader_log(_sink, LL_DEBUG, "RT {} block of {}.{} loaded", subdir.c_str(), exchg, code);
 	}
 	else if (block._last_cap != block._block->_capacity)
 	{
@@ -1849,14 +1879,12 @@ WtDataReader::RTKlineBlockPair* WtDataReader::getRTKilneBlock(const char* exchg,
 		block._last_cap = 0;
 		block._block = NULL;
 
-		if (!block._file->map(path.c_str(), boost::interprocess::read_only, boost::interprocess::read_only))
+		if (!block._file->map(path, boost::interprocess::read_only, boost::interprocess::read_only))
 			return NULL;
 
 		block._block = (RTKlineBlock*)block._file->addr();
 		block._last_cap = block._block->_capacity;
-	}
-
-	//pipe_reader_log(_sink, LL_DEBUG, "RT {} block of {}.{} loaded", subdir.c_str(), exchg, code);
+	}	
 
 	return &block;
 }

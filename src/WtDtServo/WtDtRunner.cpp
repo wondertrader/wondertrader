@@ -139,21 +139,15 @@ WTSKlineSlice* WtDtRunner::get_bars_by_range(const char* stdCode, const char* pe
 		return NULL;
 	}
 
-	std::string basePeriod = "";
+	thread_local static char basePeriod[2] = { 0 };
+	basePeriod[0] = period[0];
 	uint32_t times = 1;
 	if (strlen(period) > 1)
-	{
-		basePeriod.append(period, 1);
 		times = strtoul(period + 1, NULL, 10);
-	}
-	else
-	{
-		basePeriod = period;
-	}
 
 	WTSKlinePeriod kp;
 	uint32_t realTimes = times;
-	if (strcmp(basePeriod.c_str(), "m") == 0)
+	if (basePeriod[0] == 'm')
 	{
 		if (times % 5 == 0)
 		{
@@ -203,21 +197,15 @@ WTSKlineSlice* WtDtRunner::get_bars_by_count(const char* stdCode, const char* pe
 		return NULL;
 	}
 
-	std::string basePeriod = "";
+	thread_local static char basePeriod[2] = { 0 };
+	basePeriod[0] = period[0];
 	uint32_t times = 1;
 	if (strlen(period) > 1)
-	{
-		basePeriod.append(period, 1);
 		times = strtoul(period + 1, NULL, 10);
-	}
-	else
-	{
-		basePeriod = period;
-	}
 
 	WTSKlinePeriod kp;
 	uint32_t realTimes = times;
-	if (strcmp(basePeriod.c_str(), "m") == 0)
+	if (basePeriod[0] == 'm')
 	{
 		if (times % 5 == 0)
 		{

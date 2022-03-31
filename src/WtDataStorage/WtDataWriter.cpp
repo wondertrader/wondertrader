@@ -22,9 +22,7 @@ inline void pipe_writer_log(IDataWriterSink* sink, WTSLogLevel ll, const char* f
 	if (sink == NULL)
 		return;
 
-	static thread_local char buffer[512] = { 0 };
-	char* tail = fmt::format_to(buffer, format, args...);
-	tail[0] = '\0';
+	const char* buffer = fmtutil::format(format, args...);
 
 	sink->outputLog(ll, buffer);
 }
@@ -1216,24 +1214,30 @@ WtDataWriter::KBlockPair* WtDataWriter::getKlineBlock(WTSContractInfo* ct, WTSKl
 
 	if (pBlock->_block == NULL)
 	{
-		std::string path = StrUtil::printf("%srt/%s/%s/", _base_dir.c_str(), subdir.c_str(), ct->getExchg());
+		//std::string path = StrUtil::printf("%srt/%s/%s/", _base_dir.c_str(), subdir.c_str(), ct->getExchg());
+		thread_local static char path[256] = { 0 };
+		char * s = fmt::format_to(path, "{}rt/{}/{}/", _base_dir, subdir, ct->getExchg());
+		s[0] = '\0';
 		if (bAutoCreate)
-			BoostFile::create_directories(path.c_str());
+			BoostFile::create_directories(path);
 
-		path += ct->getCode();
-		path += ".dmb";
+		wt_strcpy(s, ct->getCode());
+		s += strlen(ct->getCode());
+		wt_strcpy(s, ".dmb");
+		s += 4;
+		s[0] = '\0';
 
 		bool isNew = false;
-		if (!BoostFile::exists(path.c_str()))
+		if (!BoostFile::exists(path))
 		{
 			if (!bAutoCreate)
 				return NULL;
 
-			pipe_writer_log(_sink, LL_INFO, "Data file {} not exists, initializing...", path.c_str());
+			pipe_writer_log(_sink, LL_INFO, "Data file {} not exists, initializing...", path);
 
 			uint64_t uSize = sizeof(RTKlineBlock) + sizeof(WTSBarStruct) * KLINE_SIZE_STEP;
 			BoostFile bf;
-			bf.create_new_file(path.c_str());
+			bf.create_new_file(path);
 			bf.truncate_file((uint32_t)uSize);
 			bf.close_file();
 
@@ -1241,13 +1245,13 @@ WtDataWriter::KBlockPair* WtDataWriter::getKlineBlock(WTSContractInfo* ct, WTSKl
 		}
 
 		pBlock->_file.reset(new BoostMappingFile);
-		if(pBlock->_file->map(path.c_str()))
+		if(pBlock->_file->map(path))
 		{
 			pBlock->_block = (RTKlineBlock*)pBlock->_file->addr();
 		}
 		else
 		{
-			pipe_writer_log(_sink, LL_ERROR, "Mapping file {} failed", path.c_str());
+			pipe_writer_log(_sink, LL_ERROR, "Mapping file {} failed", path);
 			pBlock->_file.reset();
 			return NULL;
 		}
