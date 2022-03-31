@@ -218,57 +218,60 @@ public:
 		return std::move(strRet);
 	}
 
-	/** Converts the contents of the std::string to a float.
-	@remarks
-	Assumes the only contents of the std::string are a valid parsable float. Defaults to  a
-	value of 0.0 if conversion is not possible.
-	*/
-	static inline float toFloat( const std::string& str )
+	/*
+	 *	检查是否以指定的字符串开始
+	 *	@str		要检查的字符串
+	 *	@pattern	要匹配的模板
+	 *	@ignroreCase是否忽略大小写
+	 */
+	static inline bool startsWith(const char* str, const char* pattern, bool ignoreCase = true)
 	{
-		return (float)atof(str.c_str());
-	}
-
-	static inline double toDouble( const std::string& str )
-	{
-		return atof(str.c_str());
-	}
-
-	/** Returns whether the std::string begins with the pattern passed in.
-	@param pattern The pattern to compare with.
-	@param lowerCase If true, the end of the std::string will be lower cased before
-	comparison, pattern should also be in lower case.
-	*/
-	static inline bool startsWith(const std::string& str, const std::string& pattern, bool lowerCase = true)
-	{
-		size_t thisLen = str.length();
-		size_t patternLen = pattern.length();
+		size_t thisLen = strlen(str);
+		size_t patternLen = strlen(pattern);
 		if (thisLen < patternLen || patternLen == 0)
 			return false;
 
-		std::string startOfThis = str.substr(0, patternLen);
-		if (lowerCase)
-			toLowerCase(startOfThis);
-
-		return (startOfThis == pattern);
+		if(ignoreCase)
+		{
+#ifdef _MSC_VER
+			return _strnicmp(str, pattern, patternLen) == 0;
+#else
+			return strncasecmp(str, pattern, patternLen) == 0;
+#endif
+		}
+		else
+		{
+			return strncmp(str, pattern, patternLen) == 0;
+		}
 	}
 
-	/** Returns whether the std::string ends with the pattern passed in.
-	@param pattern The pattern to compare with.
-	@param lowerCase If true, the end of the std::string will be lower cased before
-	comparison, pattern should also be in lower case.
-	*/
-	static inline bool endsWith(const std::string& str, const std::string& pattern, bool lowerCase = true)
+	/*
+	 *	检查是否以指定的字符串结束
+	 *	@str		要检查的字符串
+	 *	@pattern	要匹配的模板
+	 *	@ignroreCase是否忽略大小写
+	 */
+	static inline bool endsWith(const char* str, const char* pattern, bool ignoreCase = true)
 	{
-		size_t thisLen = str.length();
-		size_t patternLen = pattern.length();
+		size_t thisLen = strlen(str);
+		size_t patternLen = strlen(pattern);
 		if (thisLen < patternLen || patternLen == 0)
 			return false;
 
-		std::string endOfThis = str.substr(thisLen - patternLen, patternLen);
-		if (lowerCase)
-			toLowerCase(endOfThis);
+		const char* s = str + (thisLen - patternLen);
 
-		return (endOfThis == pattern);
+		if (ignoreCase)
+		{
+#ifdef _MSC_VER
+			return _strnicmp(s, pattern, patternLen) == 0;
+#else
+			return strncasecmp(s, pattern, patternLen) == 0;
+#endif
+		}
+		else
+		{
+			return strncmp(s, pattern, patternLen) == 0;
+		}
 	}
 
 	/** Method for standardising paths - use forward slashes only, end with slash.

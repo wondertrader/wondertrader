@@ -1660,7 +1660,7 @@ void TraderAdapter::onRspOrders(const WTSArray* ayOrders)
 			if (!orderInfo->isAlive())
 				continue;
 
-			if (!StrUtil::startsWith(orderInfo->getUserTag(), _order_pattern))
+			if (!StrUtil::startsWith(orderInfo->getUserTag(), _order_pattern.c_str(), true))
 				continue;;
 
 			char* userTag = (char*)orderInfo->getUserTag();
@@ -1913,7 +1913,7 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 	WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO,"[%s] Order notified, instrument: %s, usertag: %s, state: %s", _id.c_str(), stdCode.c_str(), orderInfo->getUserTag(), stateToName(orderInfo->getOrderState()));
 
 	//如果订单撤销, 并且是wt的订单, 则要先更新未完成数量
-	if (orderInfo->getOrderState() == WOS_Canceled && StrUtil::startsWith(orderInfo->getUserTag(), _order_pattern, false))
+	if (orderInfo->getOrderState() == WOS_Canceled && StrUtil::startsWith(orderInfo->getUserTag(), _order_pattern.c_str(), true))
 	{
 		//撤单的时候, 要更新未完成
 		bool isLong = (orderInfo->getDirection() == WDT_LONG);
@@ -2060,7 +2060,7 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 	uint32_t localid = 0;
 
 	//先看看是不是wt发出去的单子
-	if (StrUtil::startsWith(orderInfo->getUserTag(), _order_pattern))
+	if (StrUtil::startsWith(orderInfo->getUserTag(), _order_pattern.c_str(), true))
 	{
 		char* userTag = (char*)orderInfo->getUserTag();
 		userTag += _order_pattern.size() + 1;
@@ -2125,7 +2125,7 @@ void TraderAdapter::onPushTrade(WTSTradeInfo* tradeRecord)
 
 	//如果是自己的订单，则更新未完成单
 	uint32_t localid = 0;
-	if (StrUtil::startsWith(tradeRecord->getUserTag(), _order_pattern, false))
+	if (StrUtil::startsWith(tradeRecord->getUserTag(), _order_pattern.c_str(), true))
 	{
 		char* userTag = (char*)tradeRecord->getUserTag();
 		userTag += _order_pattern.size() + 1;
