@@ -506,7 +506,10 @@ void WtCtaEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 
 void WtCtaEngine::on_bar(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar)
 {
-	std::string key = StrUtil::printf("%s-%s-%u", stdCode, period, times);
+	thread_local static char key[64] = { 0 };
+	char * tail = fmt::format_to(key, "{}-{}-{}", stdCode, period, times);
+	tail[0] = '\0';
+
 	const SubList& sids = _bar_sub_map[key];
 	for (auto it = sids.begin(); it != sids.end(); it++)
 	{
@@ -519,7 +522,7 @@ void WtCtaEngine::on_bar(const char* stdCode, const char* period, uint32_t times
 		}
 	}
 
-	WTSLogger::info("KBar [%s#%s%d] @ %u closed", stdCode, period, times, period[0] == 'd' ? newBar->date : newBar->time);
+	WTSLogger::info_f("KBar [{}] @ {} closed", key, period[0] == 'd' ? newBar->date : newBar->time);
 }
 
 bool WtCtaEngine::isInTrading()

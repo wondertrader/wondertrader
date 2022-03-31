@@ -13,7 +13,6 @@
 
 #include <exception>
 
-#include "../Share/StrUtil.hpp"
 #include "../Includes/WTSContractInfo.hpp"
 
 

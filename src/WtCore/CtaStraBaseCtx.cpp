@@ -580,20 +580,21 @@ void CtaStraBaseCtx::on_bar(const char* stdCode, const char* period, uint32_t ti
 	if (newBar == NULL)
 		return;
 
-	std::string realPeriod;
-	if (period[0] == 'd')
-		realPeriod = fmt::format("{}{}", period, times);
-	else
-		realPeriod = fmt::format("m{}", times);
+	thread_local static char realPeriod[8] = { 0 };
+	char* tail = fmt::format_to(realPeriod, "{}{}", period[0], times);
+	tail[0] = '\0';
 
-	std::string key = fmt::format("{}#{}", stdCode, realPeriod.c_str());
+	thread_local static char key[64] = { 0 };
+	tail = fmt::format_to(key, "{}#{}", stdCode, realPeriod);
+	tail[0] = '\0';
+
 	KlineTag& tag = _kline_tags[key];
 	tag._closed = true;
 
-	on_bar_close(stdCode, realPeriod.c_str(), newBar);
+	on_bar_close(stdCode, realPeriod, newBar);
 
 	if(key == _main_key)
-		log_debug("Main KBars {} closed", key.c_str());
+		log_debug("Main KBars {} closed", key);
 }
 
 void CtaStraBaseCtx::on_init()
@@ -1370,13 +1371,16 @@ void CtaStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 
 WTSKlineSlice* CtaStraBaseCtx::stra_get_bars(const char* stdCode, const char* period, uint32_t count, bool isMain /* = false */)
 {
-	std::string key = StrUtil::printf("%s#%s", stdCode, period);
+	thread_local static char key[64] = { 0 };
+	char * tail = fmt::format_to(key, "{}#{}", stdCode, period);
+	tail[0] = '\0';
+
 	if (isMain)
 	{
 		if (_main_key.empty())
 		{
 			_main_key = key;
-			log_debug("Main KBars confirmed£º{}", key.c_str());
+			log_debug("Main KBars confirmed£º{}", key);
 		}
 		else if (_main_key != key)
 			throw std::runtime_error("Main KBars already confirmed");

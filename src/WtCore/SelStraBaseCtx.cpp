@@ -449,17 +449,17 @@ void SelStraBaseCtx::on_bar(const char* stdCode, const char* period, uint32_t ti
 	if (newBar == NULL)
 		return;
 
-	std::string realPeriod;
-	if (period[0] == 'd')
-		realPeriod = StrUtil::printf("%s%u", period, times);
-	else
-		realPeriod = StrUtil::printf("m%u", times);
+	thread_local static char realPeriod[8] = { 0 };
+	char* tail = fmt::format_to(realPeriod, "{}{}", period[0], times);
+	tail[0] = '\0';
 
-	std::string key = StrUtil::printf("%s#%s", stdCode, realPeriod.c_str());
+	thread_local static char key[64] = { 0 };
+	tail = fmt::format_to(key, "{}#{}", stdCode, realPeriod);
+	tail[0] = '\0';
 	KlineTag& tag = _kline_tags[key];
 	tag._closed = true;
 
-	on_bar_close(stdCode, realPeriod.c_str(), newBar);
+	on_bar_close(stdCode, realPeriod, newBar);
 }
 
 void SelStraBaseCtx::on_init()
@@ -654,9 +654,6 @@ void SelStraBaseCtx::on_session_end(uint32_t uTDate)
 		total_dynprofit += pInfo._dynprofit;
 	}
 
-	//TODO:
-	//这里要把当日结算的数据写到日志文件里
-	//而且这里回测和实盘写法不同, 先留着, 后面来做
 	if (_fund_logs)
 		_fund_logs->write_file(StrUtil::printf("%d,%.2f,%.2f,%.2f,%.2f\n", curDate,
 		_fund_info._total_profit, _fund_info._total_dynprofit,
@@ -864,7 +861,9 @@ void SelStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 
 WTSKlineSlice* SelStraBaseCtx::stra_get_bars(const char* stdCode, const char* period, uint32_t count)
 {
-	std::string key = StrUtil::printf("%s#%s", stdCode, period);
+	thread_local static char key[64] = { 0 };
+	char * tail = fmt::format_to(key, "{}#{}", stdCode, period);
+	tail[0] = '\0';
 
 	std::string basePeriod = "";
 	uint32_t times = 1;

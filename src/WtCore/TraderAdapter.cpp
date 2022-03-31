@@ -101,7 +101,7 @@ bool TraderAdapter::init(const char* id, WTSVariant* params, IBaseDataMgr* bdMgr
 	_bd_mgr = bdMgr;
 	_id = id;
 
-	_order_pattern = StrUtil::printf("otp.%s", id);
+	_order_pattern = fmt::format("otp.{}", id);
 
 	if (_cfg != NULL)
 		return false;
@@ -211,7 +211,7 @@ bool TraderAdapter::initExt(const char* id, ITraderApi* api, IBaseDataMgr* bdMgr
 	_bd_mgr = bdMgr;
 	_id = id;
 
-	_order_pattern = StrUtil::printf("otp.%s", id);
+	_order_pattern = fmt::format("otp.{}", id);
 
 	if (_cfg != NULL)
 		return false;
