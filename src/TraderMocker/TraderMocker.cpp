@@ -26,9 +26,7 @@ inline void write_log(ITraderSpi* sink, WTSLogLevel ll, const char* format, cons
 	if (sink == NULL)
 		return;
 
-	static thread_local char buffer[512] = { 0 };
-	std::string s = std::move(fmt::sprintf(format, args...));
-	strcpy(buffer, s.c_str());
+	const char* buffer = fmtutil::format(format, args...);
 
 	sink->handleTraderLog(ll, buffer);
 }
@@ -126,8 +124,7 @@ bool TraderMocker::makeEntrustID(char* buffer, int length)
 
 	try
 	{
-		memset(buffer, 0, length);
-		sprintf(buffer, "me.%u.%u.%u", TimeUtils::getCurDate(), _mocker_id, _auto_entrust_id++);
+		fmtutil::format_to(buffer, "me.{}.{}.{}", TimeUtils::getCurDate(), _mocker_id, _auto_entrust_id++);
 		return true;
 	}
 	catch (...)
@@ -279,8 +276,7 @@ int TraderMocker::orderInsert(WTSEntrust* entrust)
 			ordInfo->setUserTag(entrust->getUserTag());
 			ordInfo->setPrice(entrust->getPrice());
 			thread_local static char str[64];
-			char* tail = fmt::format_to(str, "mo.{}.{}", _mocker_id, makeOrderID());
-			tail[0] = '\0';
+			fmtutil::format_to(str, "mo.{}.{}", _mocker_id, makeOrderID());
 			ordInfo->setOrderID(str);
 			ordInfo->setStateMsg(msg.c_str());
 			ordInfo->setOrderState(WOS_NotTraded_Queuing);
@@ -300,7 +296,7 @@ int TraderMocker::orderInsert(WTSEntrust* entrust)
 
 			if(_listener)
 			{
-				write_log(_listener,LL_INFO, "共有%u个品种有待撮合订单", _codes.size());
+				write_log(_listener,LL_INFO, "共有{}个品种有待撮合订单", _codes.size());
 			}
 
 			if (_orders == NULL)
@@ -416,7 +412,7 @@ int32_t TraderMocker::match_once()
 						trade->setRefOrder(ordInfo->getOrderID());
 
 						char str[64];
-						sprintf(str, "mt.%u.%u", _mocker_id, makeTradeID());
+						fmtutil::format_to(str, "mt.{}.{}", _mocker_id, makeTradeID());
 						trade->setTradeID(str);
 
 						trade->setTradeTime(TimeUtils::getLocalTimeNow());
@@ -428,13 +424,13 @@ int32_t TraderMocker::match_once()
 						if (decimal::eq(ordInfo->getVolLeft(), 0))
 						{
 							ordInfo->setOrderState(WOS_AllTraded);
-							ordInfo->setStateMsg("全部成交");
+							ordInfo->setStateMsg("AllTrd");
 							to_erase.emplace_back(ordInfo->getOrderID());
 						}
 						else
 						{
 							ordInfo->setOrderState(WOS_PartTraded_Queuing);
-							ordInfo->setStateMsg("部分成交");
+							ordInfo->setStateMsg("PartTrd");
 						}
 
 						PosItem& pItem = _positions[ct->getFullCode()];
@@ -590,7 +586,7 @@ void TraderMocker::load_positions()
 	}
 
 	if (_listener)
-		write_log(_listener,LL_INFO, "[TraderMocker]共加载%u条持仓数据", _positions.size());
+		write_log(_listener, LL_INFO, "[TraderMocker]共加载{}条持仓数据", _positions.size());
 }
 
 void TraderMocker::save_positions()
@@ -767,7 +763,7 @@ int TraderMocker::orderAction(WTSEntrustAction* action)
 		 */
 		if(ordInfo == NULL)
 		{
-			write_log(_listener,LL_ERROR, "订单%s不存在或者已完成", action->getOrderID());
+			write_log(_listener,LL_ERROR, "订单{}不存在或者已完成", action->getOrderID());
 			WTSError* err = WTSError::create(WEC_ORDERCANCEL, "订单不存在或者处于不可撤销状态");
 			if (_listener)
 				_listener->onTraderError(err);
@@ -942,7 +938,7 @@ void TraderMocker::handle_read(const boost::system::error_code& e, std::size_t b
 	if (e)
 	{
 		if (_listener)
-			write_log(_listener,LL_ERROR, "[TraderMocker]UDP行情接收出错:%s(%d)", e.message().c_str(), e.value());
+			write_log(_listener,LL_ERROR, "[TraderMocker]UDP行情接收出错:{}({})", e.message().c_str(), e.value());
 
 		if (!_terminated)
 		{
@@ -994,7 +990,8 @@ void TraderMocker::extract_buffer(uint32_t length, bool isBroad /* = true */)
 	if (header->_type == UDP_MSG_PUSHTICK)
 	{
 		UDPTickPacket* packet = (UDPTickPacket*)header;
-		std::string fullcode = StrUtil::printf("%s.%s", packet->_data.exchg, packet->_data.code);
+		thread_local static fullcode[64] = {0}
+		fmtutil::format_to(fullcode, "{}.{}", packet->_data.exchg, packet->_data.code);
 		auto it = _codes.find(fullcode);
 		if (it == _codes.end())
 			return;

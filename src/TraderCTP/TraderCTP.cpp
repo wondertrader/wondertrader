@@ -335,7 +335,6 @@ int TraderCTP::orderInsert(WTSEntrust* entrust)
 	{
 		///报单引用
 		fmt::format_to(req.OrderRef, "{}", m_orderRef.fetch_add(0));
-
 	}
 	else
 	{

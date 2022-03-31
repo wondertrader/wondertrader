@@ -33,8 +33,7 @@ inline void write_log(ITraderSpi* sink, WTSLogLevel ll, const char* format, cons
 	if (sink == NULL)
 		return;
 
-	static thread_local char buffer[512] = { 0 };
-	fmt::format_to(buffer, format, args...);
+	const char* buffer = fmtutil::format(format, args...);
 
 	sink->handleTraderLog(ll, buffer);
 }
@@ -382,7 +381,7 @@ bool TraderCTPOpt::makeEntrustID(char* buffer, int length)
 	{
 		memset(buffer, 0, length);
 		uint32_t orderref = m_orderRef.fetch_add(1) + 1;
-		sprintf(buffer, "%06u#%010u#%06u", m_frontID, m_sessionID, orderref);
+		fmt::format_to(buffer, "{:06d}#{:010d}#{:06d}", m_frontID, (uint32_t)m_sessionID, orderref);
 		return true;
 	}
 	catch (...)
@@ -494,13 +493,15 @@ int TraderCTPOpt::orderInsertOpt(WTSEntrust* entrust)
 	if (strlen(entrust->getUserTag()) == 0)
 	{
 		///报单引用
-		sprintf(req.ExecOrderRef, "%u", m_orderRef.fetch_add(0));
+		fmt::format_to(req.OrderRef, "{}", m_orderRef.fetch_add(0));
+
 	}
 	else
 	{
 		uint32_t fid, sid, orderref;
 		extractEntrustID(entrust->getEntrustID(), fid, sid, orderref);
-		sprintf(req.ExecOrderRef, "%u", orderref);
+		///报单引用
+		fmt::format_to(req.OrderRef, "{}", orderref);
 	}
 
 	if (strlen(entrust->getUserTag()) > 0)
@@ -546,7 +547,7 @@ int TraderCTPOpt::orderActionOpt(WTSEntrustAction* action)
 	///投资者代码
 	strcpy(req.InvestorID, m_strUser.c_str());
 	///报单引用
-	sprintf(req.ExecOrderRef, "%u", orderref);
+	fmt::format_to(req.OrderRef, "{}", orderref);
 	///请求编号
 	///前置编号
 	req.FrontID = frontid;
@@ -622,18 +623,15 @@ int TraderCTPOpt::orderInsert(WTSEntrust* entrust)
 	if (strlen(entrust->getUserTag()) == 0)
 	{
 		///报单引用
-		sprintf(req.OrderRef, "%u", m_orderRef.fetch_add(0));
+		fmt::format_to(req.OrderRef, "{}", m_orderRef.fetch_add(0));
 
-		//生成本地委托单号
-		//entrust->setEntrustID(generateEntrustID(m_frontID, m_sessionID, m_orderRef++).c_str());	
 	}
 	else
 	{
 		uint32_t fid, sid, orderref;
 		extractEntrustID(entrust->getEntrustID(), fid, sid, orderref);
-		//entrust->setEntrustID(entrust->getUserTag());
 		///报单引用
-		sprintf(req.OrderRef, "%u", orderref);
+		fmt::format_to(req.OrderRef, "{}", orderref);
 	}
 
 	if (strlen(entrust->getUserTag()) > 0)
@@ -712,11 +710,10 @@ int TraderCTPOpt::orderAction(WTSEntrustAction* action)
 	CThostFtdcInputOrderActionField req;
 	memset(&req, 0, sizeof(req));
 	///经纪公司代码
-	strcpy(req.BrokerID, m_strBroker.c_str());
-	///投资者代码
-	strcpy(req.InvestorID, m_strUser.c_str());
+	wt_strcpy(req.BrokerID, m_strBroker.c_str(), m_strBroker.size());
+	wt_strcpy(req.InvestorID, m_strUser.c_str(), m_strUser.size());
 	///报单引用
-	sprintf(req.OrderRef, "%u", orderref);
+	fmt::format_to(req.OrderRef, "{}", orderref);
 	///请求编号
 	///前置编号
 	req.FrontID = frontid;
@@ -843,7 +840,7 @@ int TraderCTPOpt::querySettlement(uint32_t uDate)
 		memset(&req, 0, sizeof(req));
 		strcpy(req.BrokerID, m_strBroker.c_str());
 		strcpy(req.InvestorID, m_strUser.c_str());
-		sprintf(req.TradingDay, "%u", uDate);
+		fmt::format_to(req.TradingDay, "{}", uDate);
 
 		m_pUserAPI->ReqQrySettlementInfo(&req, genRequestID());
 	});
@@ -1665,19 +1662,30 @@ WTSTradeInfo* TraderCTPOpt::makeTradeRecord(CThostFtdcTradeField *tradeField)
 
 std::string TraderCTPOpt::generateEntrustID(uint32_t frontid, uint32_t sessionid, uint32_t orderRef)
 {
-	return StrUtil::printf("%06u#%010u#%06u", frontid, sessionid, orderRef);
+	fmtutil::format_to(buffer, "{:06d}#{:010d}#{:06d}", frontid, sessionid, orderRef);
 }
 
 bool TraderCTPOpt::extractEntrustID(const char* entrustid, uint32_t &frontid, uint32_t &sessionid, uint32_t &orderRef)
 {
 	//Market.FrontID.SessionID.OrderRef
-	const StringVector &vecString = StrUtil::split(entrustid, "#");
-	if (vecString.size() != 3)
+	thread_local static char buffer[64];
+	wt_strcpy(buffer, entrustid);
+	char* s = buffer;
+	auto idx = StrUtil::findFirst(s, '#');
+	if (idx == std::string::npos)
 		return false;
+	s[idx] = '\0';
+	frontid = strtoul(s, NULL, 10);
+	s++;
 
-	frontid = strtoul(vecString[0].c_str(), NULL, 10);
-	sessionid = strtoul(vecString[1].c_str(), NULL, 10);
-	orderRef = strtoul(vecString[2].c_str(), NULL, 10);
+	idx = StrUtil::findFirst(s, '#');
+	if (idx == std::string::npos)
+		return false;
+	s[idx] = '\0';
+	sessionid = strtoul(s, NULL, 10);
+	s++;
+
+	orderRef = strtoul(s, NULL, 10);
 
 	return true;
 }
@@ -1748,8 +1756,8 @@ int TraderCTPOpt::confirm()
 	strcpy(req.BrokerID, m_strBroker.c_str());
 	strcpy(req.InvestorID, m_strUser.c_str());
 
-	sprintf(req.ConfirmDate, "%u", TimeUtils::getCurDate());
-	strncpy(req.ConfirmTime, TimeUtils::getLocalTime().c_str(), 8);
+	fmt::format_to(req.ConfirmDate, "{}", TimeUtils::getCurDate());
+	memcpy(req.ConfirmTime, TimeUtils::getLocalTime().c_str(), 8);
 
 	int iResult = m_pUserAPI->ReqSettlementInfoConfirm(&req, genRequestID());
 	if (iResult != 0)
