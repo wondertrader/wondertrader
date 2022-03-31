@@ -86,7 +86,7 @@ void initParsers(WTSVariant* cfg)
 		g_parsers.addAdapter(realid.c_str(), adapter);
 	}
 
-	WTSLogger::info("%u market data parsers loaded in total", g_parsers.size());
+	WTSLogger::info_f("{} market data parsers loaded in total", g_parsers.size());
 }
 
 void initialize()
@@ -114,7 +114,7 @@ void initialize()
 	if (cfgBF->get("session"))
 	{
 		g_baseDataMgr.loadSessions(cfgBF->getCString("session"), isUTF8);
-		WTSLogger::info("Trading sessions loaded");
+		WTSLogger::info_f("Trading sessions loaded");
 	}
 
 	WTSVariant* cfgItem = cfgBF->get("commodity");
@@ -152,7 +152,7 @@ void initialize()
 	if (cfgBF->get("holiday"))
 	{
 		g_baseDataMgr.loadHolidays(cfgBF->getCString("holiday"));
-		WTSLogger::info("Holidays loaded");
+		WTSLogger::info_f("Holidays loaded");
 	}
 
 	//By Wesley @ 2021.12.27
@@ -160,13 +160,13 @@ void initialize()
 	//if (cfgBF->get("hot"))
 	//{
 	//	g_hotMgr.loadHots(cfgBF->getCString("hot"));
-	//	WTSLogger::info("Hot rules loaded");
+	//	WTSLogger::info_f("Hot rules loaded");
 	//}
 
 	//if (cfgBF->get("second"))
 	//{
 	//	g_hotMgr.loadSeconds(cfgBF->getCString("second"));
-	//	WTSLogger::info("Second rules loaded");
+	//	WTSLogger::info_f("Second rules loaded");
 	//}
 
 	g_udpCaster.init(config->get("broadcaster"), &g_baseDataMgr, &g_dataMgr);
@@ -180,7 +180,7 @@ void initialize()
 	}
 	else
 	{
-		WTSLogger::info("QuoteFactory will run in allday mode");
+		WTSLogger::info_f("QuoteFactory will run in allday mode");
 	}
 	initDataMgr(config->get("writer"), bAlldayMode);
 

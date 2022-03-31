@@ -174,7 +174,7 @@ void WtUftEngine::init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtUftDtMgr* dataMgr
 	_base_data_mgr = bdMgr;
 	_data_mgr = dataMgr;
 
-	WTSLogger::info("Platform running mode: Production");
+	WTSLogger::info_f("Platform running mode: Production");
 
 	_cfg = cfg;
 	if(_cfg) _cfg->retain();
@@ -303,7 +303,7 @@ void WtUftEngine::sub_transaction(uint32_t sid, const char* stdCode)
 
 void WtUftEngine::on_session_begin()
 {
-	WTSLogger::info("Trading day %u begun", _cur_tdate);
+	WTSLogger::info_f("Trading day {} begun", _cur_tdate);
 
 	for (auto it = _ctx_map.begin(); it != _ctx_map.end(); it++)
 	{
@@ -320,7 +320,7 @@ void WtUftEngine::on_session_end()
 		ctx->on_session_end(_cur_tdate);
 	}
 
-	WTSLogger::info("Trading day %u ended", _cur_tdate);
+	WTSLogger::info_f("Trading day {} ended", _cur_tdate);
 }
 
 void WtUftEngine::on_tick(const char* stdCode, WTSTickData* curTick)

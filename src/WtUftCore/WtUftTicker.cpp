@@ -57,7 +57,7 @@ void WtUftRtTicker::on_tick(WTSTickData* curTick)
 
 	if (_date != 0 && (uDate < _date || (uDate == _date && uTime < _time)))
 	{
-		//WTSLogger::info("行情时间%u小于本地时间%u", uTime, _time);
+		//WTSLogger::info_f("行情时间{}小于本地时间{}", uTime, _time);
 		if (_engine)
 			_engine->on_tick(curTick->code(), curTick);
 		return;
@@ -97,7 +97,7 @@ void WtUftRtTicker::on_tick(WTSTickData* curTick)
 
 			uint32_t thisMin = _s_info->minuteToTime(_cur_pos);
 
-			WTSLogger::info("Minute Bar %u.%04u Closed by data", _date, thisMin);
+			WTSLogger::info_f("Minute Bar {}.{:04d} Closed by data", _date, thisMin);
 			_engine->on_minute_end(_date, thisMin);
 		}
 			
@@ -168,10 +168,10 @@ void WtUftRtTicker::run()
 						uint32_t lastDate = _date;
 						_date = TimeUtils::getNextDate(_date);
 						_time = 0;
-						WTSLogger::info("Data automatically changed at time 00:00: %u -> %u", lastDate, _date);
+						WTSLogger::info_f("Data automatically changed at time 00:00: {} -> {}", lastDate, _date);
 					}
 
-					WTSLogger::info("Minute bar %u.%04u closed automatically", _date, thisMin);
+					WTSLogger::info_f("Minute bar {}.{:04d} closed automatically", _date, thisMin);
 					//if (_store)
 					//	_store->onMinuteEnd(_date, thisMin);
 

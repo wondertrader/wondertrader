@@ -305,11 +305,11 @@ WTSKlineSlice* WtDataManager::get_kline_slice_by_count(const char* stdCode, WTSK
 	if (barCache._bars == NULL)
 	{
 		//第一次将全部数据缓存到内存中
-		WTSLogger::info("Caching all %s bars of %s...", tag, stdCode);
+		WTSLogger::info_f("Caching all {} bars of {}...", tag, stdCode);
 		WTSKlineSlice* rawData = _reader->readKlineSliceByCount(stdCode, period, UINT_MAX, 0);
 		if (rawData != NULL)
 		{
-			WTSLogger::info("Resampling %u %s bars by %u TO 1 of %s...", rawData->size(), tag, times, stdCode);
+			WTSLogger::info_f("Resampling {} {} bars by {}-TO-1 of {}...", rawData->size(), tag, times, stdCode);
 			WTSKlineData* kData = g_dataFact.extractKlineData(rawData, period, times, sInfo, true);
 			barCache._bars = kData;
 
@@ -350,7 +350,7 @@ WTSKlineSlice* WtDataManager::get_kline_slice_by_count(const char* stdCode, WTSK
 		WTSKlineSlice* rawData = _reader->readKlineSliceByRange(stdCode, period, barCache._last_bartime, 0);
 		if (rawData != NULL)
 		{
-			WTSLogger::info("%u %s bars updated of %s, adding to cache...", rawData->size(), tag, stdCode);
+			WTSLogger::info_f("{} {} bars of {} updated, adding to cache...", rawData->size(), tag, stdCode);
 			for (int32_t idx = 0; idx < rawData->size(); idx++)
 			{
 				uint64_t barTime = 0;

@@ -71,7 +71,7 @@ bool UftStrategyMgr::loadFactories(const char* path)
 			fInfo._creator = creator;
 			fInfo._remover = (FuncDeleteUftStraFact)DLLHelper::get_symbol(hInst, "deleteStrategyFact");
 			fInfo._fact = pFact;
-			WTSLogger::info("UFT strategy factory[%s] loaded", pFact->getName());
+			WTSLogger::info_f("UFT strategy factory[{}] loaded", pFact->getName());
 
 			count++;
 		}
@@ -82,7 +82,7 @@ bool UftStrategyMgr::loadFactories(const char* path)
 		}
 	}
 
-	WTSLogger::info("%u UFT strategy factories in directory[%s] loaded", count, path);
+	WTSLogger::info_f("{} UFT strategy factories in directory[{}] loaded", count, path);
 
 	return true;
 }

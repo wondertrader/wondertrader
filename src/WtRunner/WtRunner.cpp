@@ -353,19 +353,19 @@ bool WtRunner::initEngine()
 
 	if (_is_hft)
 	{
-		WTSLogger::info("Trading enviroment initialzied with engine: HFT");
+		WTSLogger::info_f("Trading enviroment initialzied with engine: HFT");
 		_hft_engine.init(cfg, &_bd_mgr, &_data_mgr, &_hot_mgr, &_notifier);
 		_engine = &_hft_engine;
 	}
 	else if (_is_sel)
 	{
-		WTSLogger::info("Trading enviroment initialzied with engine: SEL");
+		WTSLogger::info_f("Trading enviroment initialzied with engine: SEL");
 		_sel_engine.init(cfg, &_bd_mgr, &_data_mgr, &_hot_mgr, &_notifier);
 		_engine = &_sel_engine;
 	}
 	else
 	{
-		WTSLogger::info("Trading enviroment initialzied with engine: CTA");
+		WTSLogger::info_f("Trading enviroment initialzied with engine: CTA");
 		_cta_engine.init(cfg, &_bd_mgr, &_data_mgr, &_hot_mgr, &_notifier);
 		_engine = &_cta_engine;
 	}
@@ -387,7 +387,7 @@ bool WtRunner::initDataMgr()
 		return false;
 
 	_data_mgr.init(cfg, _engine);
-	WTSLogger::info("Data manager initialized");
+	WTSLogger::info_f("Data manager initialized");
 
 	return true;
 }
@@ -421,7 +421,7 @@ bool WtRunner::initParsers(WTSVariant* cfgParser)
 		count++;
 	}
 
-	WTSLogger::info("%u parsers loaded", count);
+	WTSLogger::info_f("{} parsers loaded", count);
 	return true;
 }
 
@@ -466,7 +466,7 @@ bool WtRunner::initExecuters(WTSVariant* cfgExecuter)
 		count++;
 	}
 
-	WTSLogger::info("%u executers loaded", count);
+	WTSLogger::info_f("{} executers loaded", count);
 
 	return true;
 }
@@ -493,7 +493,7 @@ bool WtRunner::initTraders(WTSVariant* cfgTrader)
 		count++;
 	}
 
-	WTSLogger::info("%u traders loaded", count);
+	WTSLogger::info_f("{} traders loaded", count);
 
 	return true;
 }

@@ -77,7 +77,7 @@ bool WtExecRunner::config(const char* cfgFile, bool isFile /* = true */)
 	if (cfgBF->get("session"))
 	{
 		_bd_mgr.loadSessions(cfgBF->getCString("session"), isUTF8);
-		WTSLogger::info("Trading sessions loaded");
+		WTSLogger::info_f("Trading sessions loaded");
 	}
 
 	WTSVariant* cfgItem = cfgBF->get("commodity");
@@ -115,7 +115,7 @@ bool WtExecRunner::config(const char* cfgFile, bool isFile /* = true */)
 	if (cfgBF->get("holiday"))
 	{
 		_bd_mgr.loadHolidays(cfgBF->getCString("holiday"));
-		WTSLogger::info("Holidays loaded");
+		WTSLogger::info_f("Holidays loaded");
 	}
 
 
@@ -229,7 +229,7 @@ bool WtExecRunner::initParsers(WTSVariant* cfgParser)
 		count++;
 	}
 
-	WTSLogger::info("%u parsers loaded", count);
+	WTSLogger::info_f("{} parsers loaded", count);
 
 	return true;
 }
@@ -282,7 +282,7 @@ bool WtExecRunner::initExecuters(WTSVariant* cfgExecuter)
 		count++;
 	}
 
-	WTSLogger::info("%u executers loaded", count);
+	WTSLogger::info_f("{} executers loaded", count);
 
 	return true;
 }
@@ -309,7 +309,7 @@ bool WtExecRunner::initTraders(WTSVariant* cfgTrader)
 		count++;
 	}
 
-	WTSLogger::info("%u traders loaded", count);
+	WTSLogger::info_f("{} traders loaded", count);
 
 	return true;
 }
@@ -322,7 +322,7 @@ bool WtExecRunner::initDataMgr()
 
 	_data_mgr.init(cfg, this);
 
-	WTSLogger::info("Data Manager initialized");
+	WTSLogger::info_f("Data Manager initialized");
 	return true;
 }
 
@@ -401,7 +401,7 @@ bool WtExecRunner::initActionPolicy()
 		return false;
 
 	bool ret = _act_policy.init(action_file);
-	WTSLogger::info("Action policies initialized");
+	WTSLogger::info_f("Action policies initialized");
 	return ret;
 }
 

@@ -141,7 +141,7 @@ void WtRtRunner::registerParserPorter(FuncParserEvtCallback cbEvt, FuncParserSub
 	_cb_parser_evt = cbEvt;
 	_cb_parser_sub = cbSub;
 
-	WTSLogger::info("Callbacks of Extented Parser registration done");
+	WTSLogger::info_f("Callbacks of Extented Parser registration done");
 }
 
 void WtRtRunner::registerExecuterPorter(FuncExecInitCallback cbInit, FuncExecCmdCallback cbExec)
@@ -149,7 +149,7 @@ void WtRtRunner::registerExecuterPorter(FuncExecInitCallback cbInit, FuncExecCmd
 	_cb_exec_init = cbInit;
 	_cb_exec_cmd = cbExec;
 
-	WTSLogger::info("Callbacks of Extented Executer registration done");
+	WTSLogger::info_f("Callbacks of Extented Executer registration done");
 }
 
 void WtRtRunner::registerCtaCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar, FuncSessionEvtCallback cbSessEvt)
@@ -160,7 +160,7 @@ void WtRtRunner::registerCtaCallbacks(FuncStraInitCallback cbInit, FuncStraTickC
 	_cb_cta_bar = cbBar;
 	_cb_cta_sessevt = cbSessEvt;
 
-	WTSLogger::info("Callbacks of CTA engine registration done");
+	WTSLogger::info_f("Callbacks of CTA engine registration done");
 }
 
 void WtRtRunner::registerSelCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar, FuncSessionEvtCallback cbSessEvt)
@@ -172,7 +172,7 @@ void WtRtRunner::registerSelCallbacks(FuncStraInitCallback cbInit, FuncStraTickC
 
 	_cb_sel_sessevt = cbSessEvt;
 
-	WTSLogger::info("Callbacks of SEL engine registration done");
+	WTSLogger::info_f("Callbacks of SEL engine registration done");
 }
 
 void WtRtRunner::registerHftCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraBarCallback cbBar, 
@@ -196,7 +196,7 @@ void WtRtRunner::registerHftCallbacks(FuncStraInitCallback cbInit, FuncStraTickC
 
 	_cb_hft_position = cbPosition;
 
-	WTSLogger::info("Callbacks of HFT engine registration done");
+	WTSLogger::info_f("Callbacks of HFT engine registration done");
 }
 
 bool WtRtRunner::loadFinalHisBars(void* obj, const char* stdCode, WTSKlinePeriod period, FuncReadBars cb)
@@ -297,7 +297,7 @@ bool WtRtRunner::createExtParser(const char* id)
 	ExpParser* parser = new ExpParser(id);
 	adapter->initExt(id, parser, _engine, _engine->get_basedata_mgr(), _engine->get_hot_mgr());
 	_parsers.addAdapter(id, adapter);
-	WTSLogger::info("Extended parser created");
+	WTSLogger::info_f("Extended parser created");
 	return true;
 }
 
@@ -306,7 +306,7 @@ bool WtRtRunner::createExtExecuter(const char* id)
 	ExpExecuter* executer = new ExpExecuter(id);
 	executer->init();
 	_cta_engine.addExecuter(ExecCmdPtr(executer));
-	WTSLogger::info("Extended Executer created");
+	WTSLogger::info_f("Extended Executer created");
 	return true;
 }
 
@@ -477,7 +477,7 @@ bool WtRtRunner::config(const char* cfgFile, bool isFile /* = true */)
 	if (cfgBF->get("session"))
 	{
 		_bd_mgr.loadSessions(cfgBF->getCString("session"), isUTF8);
-		WTSLogger::info("Trading sessions loaded");
+		WTSLogger::info_f("Trading sessions loaded");
 	}
 
 	WTSVariant* cfgItem = cfgBF->get("commodity");
@@ -796,19 +796,19 @@ bool WtRtRunner::initEngine()
 
 	if (_is_hft)
 	{
-		WTSLogger::info("Trading environment initialized, engine name: HFT");
+		WTSLogger::info_f("Trading environment initialized, engine name: HFT");
 		_hft_engine.init(cfg, &_bd_mgr, &_data_mgr, &_hot_mgr, &_notifier);
 		_engine = &_hft_engine;
 	}
 	else if (_is_sel)
 	{
-		WTSLogger::info("Trading environment initialized, engine name: SEL");
+		WTSLogger::info_f("Trading environment initialized, engine name: SEL");
 		_sel_engine.init(cfg, &_bd_mgr, &_data_mgr, &_hot_mgr, &_notifier);
 		_engine = &_sel_engine;
 	}
 	else
 	{
-		WTSLogger::info("Trading environment initialized, engine name: CTA");
+		WTSLogger::info_f("Trading environment initialized, engine name: CTA");
 		_cta_engine.init(cfg, &_bd_mgr, &_data_mgr, &_hot_mgr, &_notifier);
 		_engine = &_cta_engine;
 	}
@@ -927,7 +927,7 @@ bool WtRtRunner::initExecuters(WTSVariant* cfgExecuter)
 		count++;
 	}
 
-	WTSLogger::info("%u executers loaded", count);
+	WTSLogger::info_f("{} executers loaded", count);
 
 	return true;
 }
@@ -964,7 +964,7 @@ bool WtRtRunner::initTraders(WTSVariant* cfgTraders)
 		count++;
 	}
 
-	WTSLogger::info("%u traders loaded", count);
+	WTSLogger::info_f("{} traders loaded", count);
 
 	return true;
 }
@@ -1013,7 +1013,7 @@ bool WtRtRunner::initActionPolicy()
 		return false;
 
 	bool ret = _act_policy.init(action_file);
-	WTSLogger::info("Action policies initialized");
+	WTSLogger::info_f("Action policies initialized");
 	return ret;
 }
 

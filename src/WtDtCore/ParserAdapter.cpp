@@ -385,5 +385,5 @@ void ParserAdapterMgr::run()
 		it->second->run();
 	}
 
-	WTSLogger::info("%u parsers started", _adapters.size());
+	WTSLogger::info_f("{} parsers started", _adapters.size());
 }

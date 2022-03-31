@@ -990,7 +990,7 @@ void TraderMocker::extract_buffer(uint32_t length, bool isBroad /* = true */)
 	if (header->_type == UDP_MSG_PUSHTICK)
 	{
 		UDPTickPacket* packet = (UDPTickPacket*)header;
-		thread_local static fullcode[64] = {0}
+		thread_local static char fullcode[64] = { 0 };
 		fmtutil::format_to(fullcode, "{}.{}", packet->_data.exchg, packet->_data.code);
 		auto it = _codes.find(fullcode);
 		if (it == _codes.end())

@@ -84,7 +84,7 @@ void WtDtRunner::initialize(const char* cfgFile, const char* logCfg, const char*
 	if (cfgBF->get("session"))
 	{
 		_bd_mgr.loadSessions(cfgBF->getCString("session"), isUTF8);
-		WTSLogger::info("Trading sessions loaded");
+		WTSLogger::info_f("Trading sessions loaded");
 	}
 
 	WTSVariant* cfgItem = cfgBF->get("commodity");
@@ -122,7 +122,7 @@ void WtDtRunner::initialize(const char* cfgFile, const char* logCfg, const char*
 	if (cfgBF->get("holiday"))
 	{
 		_bd_mgr.loadHolidays(cfgBF->getCString("holiday"));
-		WTSLogger::info("Holidays loaded");
+		WTSLogger::info_f("Holidays loaded");
 	}
 
     /*
@@ -131,13 +131,13 @@ void WtDtRunner::initialize(const char* cfgFile, const char* logCfg, const char*
      */
 //	if (cfgBF->get("hot"))//	{
 //		_hot_mgr.loadHots(cfgBF->getCString("hot"));
-//		WTSLogger::info("Hot rules loaded");
+//		WTSLogger::info_f("Hot rules loaded");
 //	}
 //
 //	if (cfgBF->get("second"))
 //	{
 //		_hot_mgr.loadSeconds(cfgBF->getCString("second"));
-//		WTSLogger::info("Second rules loaded");
+//		WTSLogger::info_f("Second rules loaded");
 //	}
 
 	_udp_caster.init(config->get("broadcaster"), &_bd_mgr, &_data_mgr);
@@ -151,7 +151,7 @@ void WtDtRunner::initialize(const char* cfgFile, const char* logCfg, const char*
 	}
 	else
 	{
-		WTSLogger::info("QuoteFactory will run in allday mode");
+		WTSLogger::info_f("QuoteFactory will run in allday mode");
 	}
 
 	initDataMgr(config->get("writer"), bAlldayMode);
@@ -202,7 +202,7 @@ void WtDtRunner::initParsers(const char* filename)
 		_parsers.addAdapter(realid.c_str(), adapter);
 	}
 
-	WTSLogger::info("%u market data parsers loaded in total", _parsers.size());
+	WTSLogger::info_f("{} market data parsers loaded in total", _parsers.size());
 	config->release();
 }
 
@@ -212,7 +212,7 @@ void WtDtRunner::registerParserPorter(FuncParserEvtCallback cbEvt, FuncParserSub
 	_cb_parser_evt = cbEvt;
 	_cb_parser_sub = cbSub;
 
-	WTSLogger::info("Callbacks of Extented Parser registration done");
+	WTSLogger::info_f("Callbacks of Extented Parser registration done");
 }
 
 void WtDtRunner::parser_init(const char* id)
@@ -272,7 +272,7 @@ bool WtDtRunner::createExtParser(const char* id)
 	ExpParser* parser = new ExpParser(id);
 	adapter->initExt(id, parser);
 	_parsers.addAdapter(id, adapter);
-	WTSLogger::info("Extended parser %s created", id);
+	WTSLogger::info_f("Extended parser {} created", id);
 	return true;
 }
 
@@ -285,7 +285,7 @@ bool WtDtRunner::createExtDumper(const char* id)
 
 	_data_mgr.add_ext_dumper(id, dumper.get());
 
-	WTSLogger::info("Extended dumper %s created", id);
+	WTSLogger::info_f("Extended dumper {} created", id);
 	return true;
 }
 

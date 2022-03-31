@@ -61,7 +61,7 @@ void WtDtRunner::initialize(const char* cfgFile, bool isFile /* = true */, const
 	if (cfgBF->get("session"))
 	{
 		_bd_mgr.loadSessions(cfgBF->getCString("session"), isUTF8);
-		WTSLogger::info("Trading sessions loaded");
+		WTSLogger::info_f("Trading sessions loaded");
 	}
 
 	WTSVariant* cfgItem = cfgBF->get("commodity");
@@ -99,19 +99,19 @@ void WtDtRunner::initialize(const char* cfgFile, bool isFile /* = true */, const
 	if (cfgBF->get("holiday"))
 	{
 		_bd_mgr.loadHolidays(cfgBF->getCString("holiday"));
-		WTSLogger::info("Holidays loaded");
+		WTSLogger::info_f("Holidays loaded");
 	}
 
 	if (cfgBF->get("hot"))
 	{
 		_hot_mgr.loadHots(cfgBF->getCString("hot"));
-		WTSLogger::info("Hot rules loaded");
+		WTSLogger::info_f("Hot rules loaded");
 	}
 
 	if (cfgBF->get("second"))
 	{
 		_hot_mgr.loadSeconds(cfgBF->getCString("second"));
-		WTSLogger::info("Second rules loaded");
+		WTSLogger::info_f("Second rules loaded");
 	}
 
 	initDataMgr(config->get("data"));
@@ -128,7 +128,7 @@ void WtDtRunner::initDataMgr(WTSVariant* config)
 
 	_data_mgr.init(config, this);
 
-	WTSLogger::info("Data manager initialized");
+	WTSLogger::info_f("Data manager initialized");
 }
 
 WTSKlineSlice* WtDtRunner::get_bars_by_range(const char* stdCode, const char* period, uint64_t beginTime, uint64_t endTime /* = 0 */)

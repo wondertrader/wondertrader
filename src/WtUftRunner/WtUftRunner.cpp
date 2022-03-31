@@ -250,7 +250,7 @@ bool WtUftRunner::initEngine()
 	if (cfg == NULL)
 		return false;
 
-	WTSLogger::info("Trading enviroment initialzied with engine: UFT");
+	WTSLogger::info_f("Trading enviroment initialzied with engine: UFT");
 	_uft_engine.init(cfg, &_bd_mgr, &_data_mgr);
 
 	_uft_engine.set_adapter_mgr(&_traders);
@@ -266,7 +266,7 @@ bool WtUftRunner::initDataMgr()
 		return false;
 
 	_data_mgr.init(cfg, &_uft_engine);
-	WTSLogger::info("Data manager initialized");
+	WTSLogger::info_f("Data manager initialized");
 
 	return true;
 }
@@ -300,7 +300,7 @@ bool WtUftRunner::initParsers(WTSVariant* cfgParser)
 		count++;
 	}
 
-	WTSLogger::info("%u parsers loaded", count);
+	WTSLogger::info_f("{} parsers loaded", count);
 	return true;
 }
 
@@ -326,7 +326,7 @@ bool WtUftRunner::initTraders(WTSVariant* cfgTrader)
 		count++;
 	}
 
-	WTSLogger::info("%u traders loaded", count);
+	WTSLogger::info_f("%{} traders loaded", count);
 
 	return true;
 }
