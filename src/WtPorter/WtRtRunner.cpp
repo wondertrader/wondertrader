@@ -852,7 +852,7 @@ bool WtRtRunner::initParsers(WTSVariant* cfgParsers)
 		if (realid.empty())
 		{
 			static uint32_t auto_parserid = 1000;
-			realid = StrUtil::printf("auto_parser_%u", auto_parserid++);
+			realid = fmt::format("auto_parser_{}", auto_parserid++);
 		}
 
 		ParserAdapterPtr adapter(new ParserAdapter);
@@ -862,7 +862,7 @@ bool WtRtRunner::initParsers(WTSVariant* cfgParsers)
 		count++;
 	}
 
-	WTSLogger::info("%u parsers loaded", count);
+	WTSLogger::info_f("{} parsers loaded", count);
 
 	return true;
 }
