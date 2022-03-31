@@ -229,7 +229,7 @@ void WtBtRunner::registerCtaCallbacks(FuncStraInitCallback cbInit, FuncStraTickC
 
 	_cb_cta_calc_done = cbCalcDone;
 
-	WTSLogger::info("Callbacks of CTA engine registration done");
+	WTSLogger::info_f("Callbacks of CTA engine registration done");
 }
 
 void WtBtRunner::registerSelCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, 
@@ -243,7 +243,7 @@ void WtBtRunner::registerSelCallbacks(FuncStraInitCallback cbInit, FuncStraTickC
 
 	_cb_sel_calc_done = cbCalcDone;
 
-	WTSLogger::info("Callbacks of SEL engine registration done");
+	WTSLogger::info_f("Callbacks of SEL engine registration done");
 }
 
 void WtBtRunner::registerHftCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraBarCallback cbBar,
@@ -265,7 +265,7 @@ void WtBtRunner::registerHftCallbacks(FuncStraInitCallback cbInit, FuncStraTickC
 
 	_cb_hft_sessevt = cbSessEvt;
 
-	WTSLogger::info("Callbacks of HFT engine registration done");
+	WTSLogger::info_f("Callbacks of HFT engine registration done");
 }
 
 uint32_t WtBtRunner::initCtaMocker(const char* name, int32_t slippage /* = 0 */, bool hook /* = false */, bool persistData /* = true */)
@@ -502,7 +502,7 @@ void WtBtRunner::run(bool bNeedDump /* = false */, bool bAsync /* = false */)
 
 	_async = bAsync;
 
-	WTSLogger::info("Backtesting will run in %s mode", _async ? "async" : "sync");
+	WTSLogger::info_f("Backtesting will run in {} mode", _async ? "async" : "sync");
 
 	if (_cta_mocker)
 		_cta_mocker->enable_hook(_async);
@@ -584,7 +584,7 @@ void WtBtRunner::enable_tick(bool bEnabled /* = true */)
 {
 	_replayer.enable_tick(bEnabled);
 
-	WTSLogger::info("Tick data replaying is %s", bEnabled ? "enabled" : "disabled");
+	WTSLogger::info_f("Tick data replaying is {}", bEnabled ? "enabled" : "disabled");
 }
 
 void WtBtRunner::clear_cache()

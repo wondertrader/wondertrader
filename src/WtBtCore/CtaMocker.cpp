@@ -159,7 +159,7 @@ bool CtaMocker::init_cta_factory(WTSVariant* cfg)
 		_strategy = _factory._fact->createStrategy(cfgStra->getCString("name"), cfgStra->getCString("id"));
 		if(_strategy)
 		{
-			WTSLogger::info("Strategy %s.%s is created,strategy ID: %s", _factory._fact->getName(), _strategy->getName(), _strategy->id());
+			WTSLogger::info_f("Strategy {}.{} is created,strategy ID: {}", _factory._fact->getName(), _strategy->getName(), _strategy->id());
 		}
 		_strategy->init(cfgStra->get("params"));
 		_name = _strategy->id();
@@ -256,7 +256,7 @@ void CtaMocker::on_init()
 	if (_strategy)
 		_strategy->on_init(this);
 
-	WTSLogger::info("CTA Strategy initialized, with slippage: %d", _slippage);
+	WTSLogger::info_f("CTA Strategy initialized, with slippage: {}", _slippage);
 }
 
 void CtaMocker::update_dyn_profit(const char* stdCode, double price)
