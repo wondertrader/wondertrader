@@ -221,7 +221,7 @@ void CtaMocker::handle_replay_done()
 		WTSLogger::log_dyn_raw("strategy", _name.c_str(), LL_DEBUG, "Notify control thread the end done");
 	}
 
-	WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Notify strategy the end of backtest");
+	WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_DEBUG, "Notify strategy the end of backtest");
 	this->on_bactest_end();
 }
 
@@ -492,14 +492,14 @@ void CtaMocker::enable_hook(bool bEnabled /* = true */)
 {
 	_hook_valid = bEnabled;
 
-	WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Calculating hook %s", bEnabled?"enabled":"disabled");
+	WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_DEBUG, "Calculating hook {}", bEnabled?"enabled":"disabled");
 }
 
 void CtaMocker::install_hook()
 {
 	_has_hook = true;
 
-	WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "CTA hook installed");
+	WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_DEBUG, "CTA hook installed");
 }
 
 bool CtaMocker::step_calc()
@@ -520,7 +520,7 @@ bool CtaMocker::step_calc()
 	}
 
 	if(bNotify)
-		WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Notify calc thread, wait for calc done");
+		WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_DEBUG, "Notify calc thread, wait for calc done");
 
 	if(_in_backtest)
 	{
@@ -528,7 +528,7 @@ bool CtaMocker::step_calc()
 		StdUniqueLock lock(_mtx_calc);
 		_cond_calc.wait(_mtx_calc);
 		_wait_calc = false;
-		WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Calc done notified");
+		WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_DEBUG, "Calc done notified");
 		_cur_step = (_cur_step + 1) % 4;
 
 		return true;
@@ -536,7 +536,7 @@ bool CtaMocker::step_calc()
 	else
 	{
 		_hook_valid = false;
-		WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Backtest exit automatically");
+		WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_DEBUG, "Backtest exit automatically");
 		return false;
 	}
 }
@@ -584,10 +584,10 @@ bool CtaMocker::on_schedule(uint32_t curDate, uint32_t curTime)
 				_condtions.clear();
 				if(_has_hook && _hook_valid)
 				{
-					WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Waiting for resume notify");
+					WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_DEBUG, "Waiting for resume notify");
 					StdUniqueLock lock(_mtx_calc);
 					_cond_calc.wait(_mtx_calc);
-					WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Calc resumed");
+					WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_DEBUG, "Calc resumed");
 					_cur_step = 1;
 				}
 
@@ -595,14 +595,14 @@ bool CtaMocker::on_schedule(uint32_t curDate, uint32_t curTime)
 
 				if (_has_hook && _hook_valid)
 				{
-					WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Calc done, notify control thread");
+					WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_DEBUG, "Calc done, notify control thread");
 					while (_cur_step==1)
 						_cond_calc.notify_all();
 
-					WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Waiting for resume notify");
+					WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_DEBUG, "Waiting for resume notify");
 					StdUniqueLock lock(_mtx_calc);
 					_cond_calc.wait(_mtx_calc);
-					WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Calc resumed");
+					WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_DEBUG, "Calc resumed");
 					_cur_step = 3;
 				}
 
@@ -615,14 +615,14 @@ bool CtaMocker::on_schedule(uint32_t curDate, uint32_t curTime)
 
 				if (_has_hook && _hook_valid)
 				{
-					WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Calc done, notify control thread");
+					WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_DEBUG, "Calc done, notify control thread");
 					while(_cur_step == 3)
 						_cond_calc.notify_all();
 				}
 			}
 			else
 			{
-				WTSLogger::log_dyn("strategy", _name.c_str(), LL_INFO, "%u is not trading time,strategy will not be scheduled", curTime);
+				WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_INFO, "{} is not trading time,strategy will not be scheduled", curTime);
 			}
 			break;
 		}

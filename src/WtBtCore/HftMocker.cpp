@@ -300,14 +300,14 @@ void HftMocker::enable_hook(bool bEnabled /* = true */)
 {
 	_hook_valid = bEnabled;
 
-	WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Calculating hook %s", bEnabled ? "enabled" : "disabled");
+	WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_DEBUG, "Calculating hook {}", bEnabled ? "enabled" : "disabled");
 }
 
 void HftMocker::install_hook()
 {
 	_has_hook = true;
 
-	WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "HFT hook installed");
+	WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_DEBUG, "HFT hook installed");
 }
 
 void HftMocker::step_tick()
@@ -315,14 +315,14 @@ void HftMocker::step_tick()
 	if (!_has_hook)
 		return;
 
-	WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Notify calc thread, wait for calc done");
+	WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_DEBUG, "Notify calc thread, wait for calc done");
 	while (!_resumed)
 		_cond_calc.notify_all();
 
 	{
 		StdUniqueLock lock(_mtx_calc);
 		_cond_calc.wait(_mtx_calc);
-		WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Calc done notified");
+		WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_DEBUG, "Calc done notified");
 		_resumed = false;
 	}
 }
@@ -358,10 +358,10 @@ void HftMocker::on_tick(const char* stdCode, WTSTickData* newTick)
 
 	if (_has_hook && _hook_valid)
 	{
-		WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Waiting for resume notify");
+		WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_DEBUG, "Waiting for resume notify");
 		StdUniqueLock lock(_mtx_calc);
 		_cond_calc.wait(_mtx_calc);
-		WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Calc resumed");
+		WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_DEBUG, "Calc resumed");
 		_resumed = true;
 	}
 
@@ -369,7 +369,7 @@ void HftMocker::on_tick(const char* stdCode, WTSTickData* newTick)
 
 	if (_has_hook && _hook_valid)
 	{
-		WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Calc done, notify control thread");
+		WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_DEBUG, "Calc done, notify control thread");
 		while (_resumed)
 			_cond_calc.notify_all();
 	}

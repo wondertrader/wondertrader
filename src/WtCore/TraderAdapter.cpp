@@ -136,24 +136,23 @@ bool TraderAdapter::init(const char* id, WTSVariant* params, IBaseDataMgr* bdMgr
 				rParam._order_times_boundary = vProdItem->getUInt32("order_times_boundary");
 				rParam._order_stat_timespan = vProdItem->getUInt32("order_stat_timespan");
 
-				WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO, "[%s] Risk control rule %s of trading channel loaded", _id.c_str(), product);
+				WTSLogger::log_dyn_f("trader", _id.c_str(), LL_INFO, "[{}] Risk control rule {} of trading channel loaded", _id.c_str(), product);
 			}
 
 			auto it = _risk_params_map.find("default");
 			if (it == _risk_params_map.end())
 			{
-				//WTSLogger::log_dyn("trader", _id.c_str(), LL_WARN, "[%s] 交易通道没有默认风控规则, 可能会有一些品种不会进行交易通道风控", _id.c_str());
-				WTSLogger::log_dyn("trader", _id.c_str(), LL_WARN, "[%s] Some instruments may not be monitored due to no default risk control rule of trading channel", _id.c_str());
+				WTSLogger::log_dyn_f("trader", _id.c_str(), LL_WARN, "[{}] Some instruments may not be monitored due to no default risk control rule of trading channel", _id.c_str());
 			}
 		}
 		else
 		{
-			WTSLogger::log_dyn("trader", _id.c_str(), LL_WARN, "[%s] Risk control rule of trading channel not activated", _id.c_str());
+			WTSLogger::log_dyn_f("trader", _id.c_str(), LL_WARN, "[{}] Risk control rule of trading channel not activated", _id.c_str());
 		}
 	}
 	else
 	{
-		WTSLogger::log_dyn("trader", _id.c_str(), LL_WARN, "[%s] No risk control rule setup of trading channel", _id.c_str());
+		WTSLogger::log_dyn_f("trader", _id.c_str(), LL_WARN, "[{}] No risk control rule setup of trading channel", _id.c_str());
 	}
 
 	if (params->getString("module").empty())
@@ -169,25 +168,25 @@ bool TraderAdapter::init(const char* id, WTSVariant* params, IBaseDataMgr* bdMgr
 	DllHandle hInst = DLLHelper::load_library(dllpath.c_str());
 	if (hInst == NULL)
 	{
-		WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR, "[%s] Loading trading module %s failed", _id.c_str(), dllpath.c_str());
+		WTSLogger::log_dyn_f("trader", _id.c_str(), LL_ERROR, "[{}] Loading trading module {} failed", _id.c_str(), dllpath.c_str());
 		return false;
 	}
 	else
 	{
-		WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO, "[%s] Trader module %s loaded", _id.c_str(), dllpath.c_str());
+		WTSLogger::log_dyn_f("trader", _id.c_str(), LL_INFO, "[{}] Trader module {} loaded", _id.c_str(), dllpath.c_str());
 	}
 
 	FuncCreateTrader pFunCreateTrader = (FuncCreateTrader)DLLHelper::get_symbol(hInst, "createTrader");
 	if (NULL == pFunCreateTrader)
 	{
-		WTSLogger::log_dyn("trader", _id.c_str(), LL_FATAL, "[%s] Entrance function createTrader not found", _id.c_str());
+		WTSLogger::log_dyn_f("trader", _id.c_str(), LL_FATAL, "[{}] Entrance function createTrader not found", _id.c_str());
 		return false;
 	}
 
 	_trader_api = pFunCreateTrader();
 	if (NULL == _trader_api)
 	{
-		WTSLogger::log_dyn("trader", _id.c_str(), LL_FATAL, "[%s] Creating trading api failed", _id.c_str());
+		WTSLogger::log_dyn_f("trader", _id.c_str(), LL_FATAL, "[{}] Creating trading api failed", _id.c_str());
 		return false;
 	}
 
@@ -195,7 +194,7 @@ bool TraderAdapter::init(const char* id, WTSVariant* params, IBaseDataMgr* bdMgr
 
 	if (!_trader_api->init(params))
 	{
-		WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR, "[%s] Entrance function deleteTrader not found", id);
+		WTSLogger::log_dyn_f("trader", _id.c_str(), LL_ERROR, "[{}] Entrance function deleteTrader not found", id);
 		return false;
 	}
 
@@ -223,7 +222,7 @@ bool TraderAdapter::initExt(const char* id, ITraderApi* api, IBaseDataMgr* bdMgr
 	_trader_api = api;
 	if (!_trader_api->init(NULL))
 	{
-		WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR, "[%s] Trader initializing failed", id);
+		WTSLogger::log_dyn_f("trader", _id.c_str(), LL_ERROR, "[{}] Trader initializing failed", id);
 		return false;
 	}
 
@@ -485,7 +484,7 @@ uint32_t TraderAdapter::doEntrust(WTSEntrust* entrust)
 	int32_t ret = _trader_api->orderInsert(entrust);
 	if(ret < 0)
 	{
-		WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR, "[%s] Order placing failed: %d", _id.c_str(), ret);
+		WTSLogger::log_dyn_f("trader", _id.c_str(), LL_ERROR, "[{}] Order placing failed: {}", _id.c_str(), ret);
 		return UINT_MAX;
 	}
 	else
@@ -533,7 +532,7 @@ bool TraderAdapter::checkCancelLimits(const char* stdCode)
 	WTSTradeStateInfo* statInfo = (WTSTradeStateInfo*)_stat_map->get(stdCode);
 	if (statInfo && riskPara->_cancel_total_limits != 0 && statInfo->total_cancels() >= riskPara->_cancel_total_limits )
 	{
-		WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR, "[%s] %s cancel %u times totaly, beyond boundary %u times, adding to excluding list",
+		WTSLogger::log_dyn_f("trader", _id.c_str(), LL_ERROR, "[{}] {} cancel {} times totaly, beyond boundary {} times, adding to excluding list",
 			_id.c_str(), stdCode, statInfo->total_cancels(), riskPara->_cancel_total_limits);
 		_exclude_codes.insert(stdCode);
 		return false;
@@ -598,7 +597,7 @@ bool TraderAdapter::checkOrderLimits(const char* stdCode)
 	WTSTradeStateInfo* statInfo = (WTSTradeStateInfo*)_stat_map->get(stdCode);
 	if (statInfo && riskPara->_order_total_limits != 0 && statInfo->total_orders() >= riskPara->_order_total_limits)
 	{
-		WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR, "[%s] %s entrust %u times totally, beyond boundary %u times, adding to excluding list",
+		WTSLogger::log_dyn_f("trader", _id.c_str(), LL_ERROR, "[{}] {} entrust {} times totally, beyond boundary {} times, adding to excluding list",
 			_id.c_str(), stdCode, statInfo->total_orders(), riskPara->_order_total_limits);
 		_exclude_codes.insert(stdCode);
 		return false;
@@ -697,7 +696,7 @@ OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty, int f
 			{
 				if (statItem.l_openvol >= curRule._limit_l)
 				{
-					WTSLogger::log_dyn("trader", _id.c_str(), LL_WARN, "[%s] %s long position opened today is up to limit %u", _id.c_str(), stdCode, curRule._limit_l);
+					WTSLogger::log_dyn_f("trader", _id.c_str(), LL_WARN, "[{}] {} long position opened today is up to limit {}", _id.c_str(), stdCode, curRule._limit_l);
 					continue;
 				}
 				else
@@ -710,7 +709,7 @@ OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty, int f
 			{
 				if (statItem.l_openvol + statItem.s_openvol >= curRule._limit)
 				{
-					WTSLogger::log_dyn("trader", _id.c_str(), LL_WARN, "[%s] %s position opened today is up to limit %u", _id.c_str(), stdCode, curRule._limit);
+					WTSLogger::log_dyn_f("trader", _id.c_str(), LL_WARN, "[{}] {} position opened today is up to limit {}", _id.c_str(), stdCode, curRule._limit);
 					continue;
 				}
 				else
@@ -1391,12 +1390,12 @@ void TraderAdapter::handleEvent(WTSTraderEvent e, int32_t ec)
 		}
 		else
 		{
-			WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR,"[%s] Trading channel connecting failed: %d", _id.c_str(), ec);
+			WTSLogger::log_dyn_f("trader", _id.c_str(), LL_ERROR,"[{}] Trading channel connecting failed: {}", _id.c_str(), ec);
 		}
 	}
 	else if(e == WTE_Close)
 	{
-		WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR,"[%s] Trading channel disconnected: %d", _id.c_str(), ec);
+		WTSLogger::log_dyn_f("trader", _id.c_str(), LL_ERROR,"[{}] Trading channel disconnected: {}", _id.c_str(), ec);
 		for (auto sink : _sinks)
 			sink->on_channel_lost();
 	}
@@ -1407,7 +1406,7 @@ void TraderAdapter::onLoginResult(bool bSucc, const char* msg, uint32_t tradingd
 	if(!bSucc)
 	{
 		_state = AS_LOGINFAILED;
-		WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR,"[%s] Trader login failed: %s", _id.c_str(), msg);
+		WTSLogger::log_dyn_f("trader", _id.c_str(), LL_ERROR,"[{}] Trader login failed: {}", _id.c_str(), msg);
 
 		if (_notifier)
 			_notifier->notify(id(), fmt::format("login failed: {}", msg).c_str());
@@ -1415,7 +1414,7 @@ void TraderAdapter::onLoginResult(bool bSucc, const char* msg, uint32_t tradingd
 	else
 	{
 		_state = AS_LOGINED;
-		WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO,"[%s] Trader login succeed, trading date: %u", _id.c_str(), tradingdate);
+		WTSLogger::log_dyn_f("trader", _id.c_str(), LL_INFO,"[{}] Trader login succeed, trading date: {}", _id.c_str(), tradingdate);
 		_trading_day = tradingdate;
 		_trader_api->queryPositions();	//查持仓
 	}
@@ -1430,7 +1429,7 @@ void TraderAdapter::onRspEntrust(WTSEntrust* entrust, WTSError *err)
 {
 	if (err && err->getErrorCode() != WEC_NONE)
 	{
-		WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR,err->getMessage());
+		WTSLogger::log_dyn_f("trader", _id.c_str(), LL_ERROR,err->getMessage());
 		WTSContractInfo* cInfo = entrust->getContractInfo();
 		WTSCommodityInfo* commInfo = cInfo->getCommInfo();
 		std::string stdCode;
@@ -1557,7 +1556,7 @@ void TraderAdapter::onRspPosition(const WTSArray* ayPositions)
 		}
 	}
 
-	WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO,"[%s] Position data updated", _id.c_str());
+	WTSLogger::log_dyn_f("trader", _id.c_str(), LL_INFO,"[{}] Position data updated", _id.c_str());
 
 	if (_state == AS_LOGINED)
 	{
@@ -1909,7 +1908,7 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 		}
 	}
 
-	WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO,"[%s] Order notified, instrument: %s, usertag: %s, state: %s", _id.c_str(), stdCode.c_str(), orderInfo->getUserTag(), stateToName(orderInfo->getOrderState()));
+	WTSLogger::log_dyn_f("trader", _id.c_str(), LL_INFO,"[{}] Order notified, instrument: {}, usertag: {}, state: {}", _id.c_str(), stdCode.c_str(), orderInfo->getUserTag(), stateToName(orderInfo->getOrderState()));
 
 	//如果订单撤销, 并且是wt的订单, 则要先更新未完成数量
 	if (orderInfo->getOrderState() == WOS_Canceled && StrUtil::startsWith(orderInfo->getUserTag(), _order_pattern.c_str(), true))
@@ -2224,7 +2223,7 @@ void TraderAdapter::onPushTrade(WTSTradeInfo* tradeRecord)
 void TraderAdapter::onTraderError(WTSError* err)
 {
 	if(err)
-		WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR,"[%s] Error of trading channel occured: %s", _id.c_str(), err->getMessage());
+		WTSLogger::log_dyn_f("trader", _id.c_str(), LL_ERROR,"[{}] Error of trading channel occured: {}", _id.c_str(), err->getMessage());
 
 	if (_notifier)
 		_notifier->notify(id(), fmt::format("Trading channel error: {}", err->getMessage()).c_str());

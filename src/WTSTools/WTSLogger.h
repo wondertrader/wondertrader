@@ -164,7 +164,7 @@ public:
 	}
 
 	template<typename... Args>
-	static void log(WTSLogLevel ll, const char* format, const Args& ...args)
+	static void log_old(WTSLogLevel ll, const char* format, const Args& ...args)
 	{
 		if (m_logLevel > ll || m_bStopped)
 			return;
@@ -175,7 +175,7 @@ public:
 	}
 
 	template<typename... Args>
-	static void log_by_cat(const char* catName, WTSLogLevel ll, const char* format, const Args& ...args)
+	static void log_by_cat_old(const char* catName, WTSLogLevel ll, const char* format, const Args& ...args)
 	{
 		if (m_logLevel > ll || m_bStopped)
 			return;
@@ -186,7 +186,7 @@ public:
 	}
 
 	template<typename... Args>
-	static void log_dyn(const char* patttern, const char* catName, WTSLogLevel ll, const char* format, const Args& ...args)
+	static void log_dyn_old(const char* patttern, const char* catName, WTSLogLevel ll, const char* format, const Args& ...args)
 	{
 		if (m_logLevel > ll || m_bStopped)
 			return;
