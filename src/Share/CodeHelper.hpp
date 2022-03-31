@@ -131,7 +131,6 @@ public:
 	 */
 	static inline bool	isStdFutHotCode(const char* stdCode)
 	{
-		//return StrUtil::endsWith(stdCode, SUFFIX_HOT, false);
 		static std::size_t SUF_LEN = strlen(SUFFIX_HOT);
 		auto len = strlen(stdCode);
 		if (len < SUF_LEN)
@@ -145,7 +144,6 @@ public:
 	 */
 	static inline bool	isStdFut2ndCode(const char* stdCode)
 	{
-		//return StrUtil::endsWith(stdCode, SUFFIX_2ND, false);
 		static std::size_t SUF_LEN = strlen(SUFFIX_2ND);
 		auto len = strlen(stdCode);
 		if (len < SUF_LEN)
