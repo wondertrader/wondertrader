@@ -71,7 +71,7 @@ bool CtaStrategyMgr::loadFactories(const char* path)
 			fInfo._remover = (FuncDeleteStraFact)DLLHelper::get_symbol(hInst, "deleteStrategyFact");
 			fInfo._fact = fact;
 
-			WTSLogger::info("CTA strategy factory[%s] loaded", fact->getName());
+			WTSLogger::info_f("CTA strategy factory[{}] loaded", fact->getName());
 
 			count++;
 		}
@@ -83,7 +83,7 @@ bool CtaStrategyMgr::loadFactories(const char* path)
 		
 	}
 
-	WTSLogger::info("%u CTA strategy factories in directory[%s] loaded", count, path);
+	WTSLogger::info_f("{} CTA strategy factories in directory[{}] loaded", count, path);
 
 	return true;
 }

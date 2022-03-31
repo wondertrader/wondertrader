@@ -269,7 +269,7 @@ void WtEngine::init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtDtMgr* dataMgr, IHot
 	_hot_mgr = hotMgr;
 	_notifier = notifier;
 
-	WTSLogger::info("Platform running mode: Production");
+	WTSLogger::info_f("Platform running mode: Production");
 
 	_filter_mgr.set_notifier(notifier);
 
@@ -752,7 +752,7 @@ void WtEngine::load_fees(const char* filename)
 
 	cfg->release();
 
-	WTSLogger::info("%u fee templates loaded", _fee_map.size());
+	WTSLogger::info_f("{} fee templates loaded", _fee_map.size());
 }
 
 double WtEngine::calc_fee(const char* stdCode, double price, double qty, uint32_t offset)
@@ -761,7 +761,7 @@ double WtEngine::calc_fee(const char* stdCode, double price, double qty, uint32_
 	auto it = _fee_map.find(stdPID);
 	if (it == _fee_map.end())
 	{
-		WTSLogger::warn("Fee template of %s not found, return 0.0 as default", stdCode);
+		WTSLogger::warn_f("Fee template of {} not found, return 0.0 as default", stdCode);
 		return 0.0;
 	}
 

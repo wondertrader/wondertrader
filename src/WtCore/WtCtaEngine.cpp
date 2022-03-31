@@ -179,8 +179,7 @@ void WtCtaEngine::on_init()
 			else
 			{
 				//输出日志
-				//WTSLogger::info("[过滤器] 策略%s的%s的目标仓位被策略过滤器忽略", ctx->name(), stdCode);
-				WTSLogger::info("[Filters] Target position of %s of strategy %s ignored by strategy filter", stdCode, ctx->name());
+				WTSLogger::info_f("[Filters] Target position of {} of strategy {} ignored by strategy filter", stdCode, ctx->name());
 			}
 		});
 	}
@@ -215,7 +214,7 @@ void WtCtaEngine::on_init()
 
 void WtCtaEngine::on_session_begin()
 {
-	WTSLogger::info("Trading day %u begun", _cur_tdate);
+	WTSLogger::info_f("Trading day {} begun", _cur_tdate);
 	for (auto it = _ctx_map.begin(); it != _ctx_map.end(); it++)
 	{
 		CtaContextPtr& ctx = (CtaContextPtr&)it->second;
@@ -238,7 +237,7 @@ void WtCtaEngine::on_session_end()
 		ctx->on_session_end(_cur_tdate);
 	}
 
-	WTSLogger::info("Trading day %u ended", _cur_tdate);
+	WTSLogger::info_f("Trading day {} ended", _cur_tdate);
 	if (_evt_listener)
 		_evt_listener->on_session_event(_cur_tdate, false);
 }
@@ -287,8 +286,7 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 			else
 			{
 				//输出日志
-				//WTSLogger::info("[过滤器] 策略%s的%s的目标仓位被策略过滤器忽略", ctx->name(), stdCode);
-				WTSLogger::info("[Filters] Target position of %s of strategy %s ignored by strategy filter", stdCode, ctx->name());
+				WTSLogger::info_f("[Filters] Target position of {} of strategy {} ignored by strategy filter", stdCode, ctx->name());
 			}
 		});
 	}
@@ -296,7 +294,7 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 	bool bRiskEnabled = false;
 	if(!decimal::eq(_risk_volscale, 1.0) && _risk_date == _cur_tdate)
 	{
-		WTSLogger::log_by_cat("risk", LL_INFO, "Risk scale of strategy group is %.2f", _risk_volscale);
+		WTSLogger::log_by_cat_f("risk", LL_INFO, "Risk scale of strategy group is {:f2}", _risk_volscale);
 		bRiskEnabled = true;
 	}
 
@@ -360,7 +358,7 @@ void WtCtaEngine::handle_pos_change(const char* straName, const char* stdCode, d
 	if(_filter_mgr.is_filtered_by_strategy(straName, diffQty, true))
 	{
 		//输出日志
-		WTSLogger::info("[Filters] Target position of %s of strategy %s ignored by strategy filter", stdCode, straName);
+		WTSLogger::info_f("[Filters] Target position of {} of strategy {} ignored by strategy filter", stdCode, straName);
 		return;
 	}
 

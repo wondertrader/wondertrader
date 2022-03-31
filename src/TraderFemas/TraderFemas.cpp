@@ -225,7 +225,7 @@ bool TraderFemas::makeEntrustID(char* buffer, int length)
 	{
 		uint32_t orderref = genLocalOrdID();
 		//sprintf(buffer, "%s%012d", m_strSessionID.c_str(), orderref);
-		fmtutil::format_to(buffer, "{}{:d012}", m_strSessionID.c_str(), orderref);
+		fmtutil::format_to(buffer, "{}{:012d}", m_strSessionID.c_str(), orderref);
 		return true;
 	}
 	catch(...)
@@ -345,7 +345,7 @@ int TraderFemas::orderInsert(WTSEntrust* entrust)
 	if(strlen(entrust->getUserTag()) == 0)
 	{
 		///报单引用
-		fmtutil::format_to(req.UserOrderLocalID, "{}{:d012}", m_strSessionID.c_str(), genLocalOrdID());
+		fmtutil::format_to(req.UserOrderLocalID, "{}{:012d}", m_strSessionID.c_str(), genLocalOrdID());
 	}
 	else
 	{
@@ -403,7 +403,7 @@ int TraderFemas::orderAction( WTSEntrustAction* action )
 	strcpy(req.InvestorID, m_strUser.c_str());
 	strcpy(req.UserID, m_strUser.c_str());
 	strcpy(req.UserOrderLocalID, action->getEntrustID());
-	fmtutil::format_to(req.UserOrderActionLocalID, "{}{:d012}", m_strSessionID.c_str(), genLocalOrdID());
+	fmtutil::format_to(req.UserOrderActionLocalID, "{}{:012d}", m_strSessionID.c_str(), genLocalOrdID());
 	req.ActionFlag = wrapActionFlag(action->getActionFlag());
 	req.LimitPrice = action->getPrice();
 

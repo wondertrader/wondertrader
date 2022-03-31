@@ -144,11 +144,11 @@ bool WtFilterMgr::is_filtered_by_strategy(const char* straName, double& targetPo
 		if(isDiff)
 		{
 			//如果过滤器触发，并且是增量头寸，则直接过滤掉
-			WTSLogger::info("[Filters] Strategy filter %s triggered, the change of position ignored directly", straName);
+			WTSLogger::info_f("[Filters] Strategy filter {} triggered, the change of position ignored directly", straName);
 			return true;
 		}
 
-		WTSLogger::info("[Filters] Strategy filter %s triggered, action: %s", straName, fItem._action <= FA_Redirect ? FLTACT_NAMEs[fItem._action] : "Unknown");
+		WTSLogger::info_f("[Filters] Strategy filter {} triggered, action: {}", straName, fItem._action <= FA_Redirect ? FLTACT_NAMEs[fItem._action] : "Unknown");
 		if (fItem._action == FA_Ignore)
 		{
 			return true;
@@ -171,7 +171,7 @@ bool WtFilterMgr::is_filtered_by_code(const char* stdCode, double& targetPos)
 	if (cit != _code_filters.end())
 	{
 		const FilterItem& fItem = cit->second;
-		WTSLogger::info("[Filters] Code filter %s triggered, action: %s", stdCode, fItem._action <= FA_Redirect ? FLTACT_NAMEs[fItem._action] : "Unknown");
+		WTSLogger::info_f("[Filters] Code filter {} triggered, action: {}", stdCode, fItem._action <= FA_Redirect ? FLTACT_NAMEs[fItem._action] : "Unknown");
 		if (fItem._action == FA_Ignore)
 		{
 			return true;
@@ -189,7 +189,7 @@ bool WtFilterMgr::is_filtered_by_code(const char* stdCode, double& targetPos)
 	if (cit != _code_filters.end())
 	{
 		const FilterItem& fItem = cit->second;
-		WTSLogger::info("[Filters] CommID filter %s triggered, action: %s", stdPID.c_str(), fItem._action <= FA_Redirect ? FLTACT_NAMEs[fItem._action] : "Unknown");
+		WTSLogger::info_f("[Filters] CommID filter {} triggered, action: {}", stdPID.c_str(), fItem._action <= FA_Redirect ? FLTACT_NAMEs[fItem._action] : "Unknown");
 		if (fItem._action == FA_Ignore)
 		{
 			return true;

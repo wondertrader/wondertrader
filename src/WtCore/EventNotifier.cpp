@@ -82,7 +82,7 @@ bool EventNotifier::init(WTSVariant* cfg)
 	//创建一个MQServer
 	_mq_sid = _creator(m_strURL.c_str());
 
-	WTSLogger::info("EventNotifier initialized with channel %s", m_strURL.c_str());
+	WTSLogger::info_f("EventNotifier initialized with channel {}", m_strURL.c_str());
 
 	return true;
 }
