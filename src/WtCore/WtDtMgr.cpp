@@ -97,7 +97,7 @@ void WtDtMgr::on_all_bar_updated(uint32_t updateTime)
 	if (_bar_notifies.empty())
 		return;
 
-	WTSLogger::debug("All bars updated, on_bar will be triggered");
+	WTSLogger::debug_f("All bars updated, on_bar will be triggered");
 
 	for (const NotifyItem& item : _bar_notifies)
 	{

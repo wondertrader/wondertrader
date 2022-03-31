@@ -717,7 +717,7 @@ void HisDataReplayer::run_by_ticks(bool bNeedDump /* = false */)
 	}
 
 	if (_terminated)
-		WTSLogger::debug("Replaying by ticks terminated forcely");
+		WTSLogger::debug_f("Replaying by ticks terminated forcely");
 
 	WTSLogger::log_raw(LL_INFO, "All back data replayed, replaying done");
 	_listener->handle_replay_done();
@@ -833,7 +833,7 @@ void HisDataReplayer::run_by_bars(bool bNeedDump /* = false */)
 	}
 
 	if (_terminated)
-		WTSLogger::debug("Replaying by bars terminated forcely");
+		WTSLogger::debug_f("Replaying by bars terminated forcely");
 
 	notify_state(barsList->_code.c_str(), barsList->_period, barsList->_times, _begin_time, _end_time, 100);
 	if (_notifier)

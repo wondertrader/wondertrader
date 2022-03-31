@@ -79,7 +79,7 @@ public:
 #pragma region "printf style apis"
 public:
 	template<typename... Args>
-	static void debug(const char* format, const Args& ...args)
+	static void debug_old(const char* format, const Args& ...args)
 	{
 		if (m_logLevel > LL_DEBUG || m_bStopped)
 			return;
@@ -96,7 +96,7 @@ public:
 	}
 
 	template<typename... Args>
-	static void info(const char* format, const Args& ...args)
+	static void info_old(const char* format, const Args& ...args)
 	{
 		if (m_logLevel > LL_INFO || m_bStopped)
 			return;
@@ -113,7 +113,7 @@ public:
 	}
 
 	template<typename... Args>
-	static void warn(const char* format, const Args& ...args)
+	static void warn_old(const char* format, const Args& ...args)
 	{
 		if (m_logLevel > LL_WARN || m_bStopped)
 			return;

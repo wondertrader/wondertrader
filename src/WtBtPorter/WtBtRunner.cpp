@@ -524,7 +524,7 @@ void WtBtRunner::run(bool bNeedDump /* = false */, bool bAsync /* = false */)
 			//	WTSLogger::error(message);
 			//});
 		}
-		WTSLogger::debug("Worker thread of backtest finished");
+		WTSLogger::debug_f("Worker thread of backtest finished");
 		_running = false;
 
 	}));
@@ -547,7 +547,7 @@ void WtBtRunner::stop()
 
 	_replayer.stop();
 
-	WTSLogger::debug("Notify to finish last round");
+	WTSLogger::debug_f("Notify to finish last round");
 
 	if (_cta_mocker)
 		_cta_mocker->step_calc();
@@ -555,7 +555,7 @@ void WtBtRunner::stop()
 	if (_hft_mocker)
 		_hft_mocker->step_tick();
 
-	WTSLogger::debug("Last round ended");
+	WTSLogger::debug_f("Last round ended");
 
 	if (_worker)
 	{
@@ -565,7 +565,7 @@ void WtBtRunner::stop()
 
 	WTSLogger::freeAllDynLoggers();
 
-	WTSLogger::debug("Backtest stopped");
+	WTSLogger::debug_f("Backtest stopped");
 }
 
 void WtBtRunner::release()

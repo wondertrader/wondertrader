@@ -139,7 +139,7 @@ namespace hft
 			}
 			auto total = ticker.nano_seconds();
 			double t2t = total * 1.0 / times;
-			WTSLogger::warn("%u ticks simulated in %.0f ns, HftEngine Innner Latency: %.3f ns", times, total*1.0, t2t);
+			WTSLogger::warn_f("{} ticks simulated in {:.0f} ns, HftEngine Innner Latency: {:03f} ns", times, total*1.0, t2t);
 		}
 
 	public:
@@ -305,7 +305,7 @@ namespace hft
 
 	bool HftLatencyTool::initEngine(WTSVariant* cfg)
 	{
-		WTSLogger::warn("Trading enviroment initialzied with engine: HFT");
+		WTSLogger::warn_f("Trading enviroment initialzied with engine: HFT");
 		_engine.init(cfg, &_bd_mgr, &_dt_mgr, &_hot_mgr, NULL);
 		_engine.set_adapter_mgr(&_traders);
 

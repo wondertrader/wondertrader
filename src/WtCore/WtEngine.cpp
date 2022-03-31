@@ -552,7 +552,7 @@ void WtEngine::load_datas()
 		WTSFundStruct& fundInfo = _port_fund->fundInfo();
 		fundInfo._dynprofit = total_dynprofit;
 
-		WTSLogger::debug("%u position info of portfolio loaded", _pos_map.size());
+		WTSLogger::debug_f("{} position info of portfolio loaded", _pos_map.size());
 	}
 
 	if(root.HasMember("riskmon"))
