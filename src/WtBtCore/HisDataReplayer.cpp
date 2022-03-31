@@ -1880,7 +1880,10 @@ void HisDataReplayer::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTD
 
 WTSKlineSlice* HisDataReplayer::get_kline_slice(const char* stdCode, const char* period, uint32_t count, uint32_t times /* = 1 */, bool isMain /* = false */)
 {
-	std::string key = StrUtil::printf("%s#%s#%u", stdCode, period, times);
+	//std::string key = StrUtil::printf("%s#%s#%u", stdCode, period, times);
+	thread_local static char key[64] = { 0 };
+	fmtutil::format_to(key, "{}#{}#{}", stdCode, period, times);
+
 	if (isMain)
 		_main_key = key;
 

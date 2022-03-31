@@ -462,7 +462,7 @@ void HftMocker::on_session_end(uint32_t curTDate)
 		total_dynprofit += pInfo._dynprofit;
 	}
 
-	_fund_logs << StrUtil::printf("%d,%.2f,%.2f,%.2f,%.2f\n", curDate,
+	_fund_logs << fmt::format("{},{:f2},{:f2},{:f2},{:f2}\n", curDate,
 		_fund_info._total_profit, _fund_info._total_dynprofit,
 		_fund_info._total_profit + _fund_info._total_dynprofit - _fund_info._total_fees, _fund_info._total_fees);
 
@@ -774,19 +774,13 @@ WTSCommodityInfo* HftMocker::stra_get_comminfo(const char* stdCode)
 
 WTSKlineSlice* HftMocker::stra_get_bars(const char* stdCode, const char* period, uint32_t count)
 {
-	std::string basePeriod = "";
+	thread_local static char basePeriod[2] = { 0 };
+	basePeriod[0] = period[0];
 	uint32_t times = 1;
 	if (strlen(period) > 1)
-	{
-		basePeriod.append(period, 1);
 		times = strtoul(period + 1, NULL, 10);
-	}
-	else
-	{
-		basePeriod = period;
-	}
 
-	return _replayer->get_kline_slice(stdCode, basePeriod.c_str(), count, times);
+	return _replayer->get_kline_slice(stdCode, basePeriod, count, times);
 }
 
 WTSTickSlice* HftMocker::stra_get_ticks(const char* stdCode, uint32_t count)

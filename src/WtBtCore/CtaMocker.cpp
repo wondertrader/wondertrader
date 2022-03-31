@@ -238,17 +238,16 @@ void CtaMocker::on_bar(const char* stdCode, const char* period, uint32_t times, 
 	if (newBar == NULL)
 		return;
 
-	std::string realPeriod;
-	if (period[0] == 'd')
-		realPeriod = StrUtil::printf("%s%u", period, times);
-	else
-		realPeriod = StrUtil::printf("m%u", times);
+	thread_local static char realPeriod[8] = { 0 };
+	fmtutil::format_to(realPeriod, "{}{}", period[0], times);
 
-	std::string key = StrUtil::printf("%s#%s", stdCode, realPeriod.c_str());
+	thread_local static char key[64] = { 0 };
+	fmtutil::format_to(key, "{}#{}", stdCode, realPeriod);
+
 	KlineTag& tag = _kline_tags[key];
 	tag._closed = true;
 
-	on_bar_close(stdCode, realPeriod.c_str(), newBar);
+	on_bar_close(stdCode, realPeriod, newBar);
 }
 
 void CtaMocker::on_init()
@@ -687,7 +686,7 @@ void CtaMocker::on_session_end(uint32_t curTDate)
 		total_dynprofit += pInfo._dynprofit;
 	}
 
-	_fund_logs << fmt::format("{},{},{},{},{}\n", curDate,
+	_fund_logs << fmt::format("{},{:f2},{:f2},{:f2},{:f2}\n", curDate,
 		_fund_info._total_profit, _fund_info._total_dynprofit,
 		_fund_info._total_profit + _fund_info._total_dynprofit - _fund_info._total_fees, _fund_info._total_fees);
 
@@ -1136,19 +1135,16 @@ void CtaMocker::do_set_position(const char* stdCode, double qty, double price /*
 
 WTSKlineSlice* CtaMocker::stra_get_bars(const char* stdCode, const char* period, uint32_t count, bool isMain /* = false */)
 {
-	std::string key = StrUtil::printf("%s#%s", stdCode, period);
-	std::string basePeriod = "";
+	thread_local static char key[64] = { 0 };
+	fmtutil::format_to(key, "{}#{}", stdCode, period);
+
+	thread_local static char basePeriod[2] = { 0 };
+	basePeriod[0] = period[0];
 	uint32_t times = 1;
 	if (strlen(period) > 1)
-	{
-		basePeriod.append(period, 1);
 		times = strtoul(period + 1, NULL, 10);
-	}
 	else
-	{
-		basePeriod = period;
-		key.append("1");
-	}
+		strcat(key, "1");
 
 	if (isMain)
 	{
@@ -1158,7 +1154,7 @@ WTSKlineSlice* CtaMocker::stra_get_bars(const char* stdCode, const char* period,
 			throw std::runtime_error("Main k bars can only be setup once");
 	}
 
-	WTSKlineSlice* kline = _replayer->get_kline_slice(stdCode, basePeriod.c_str(), count, times, isMain);
+	WTSKlineSlice* kline = _replayer->get_kline_slice(stdCode, basePeriod, count, times, isMain);
 
 	bool bFirst = (_kline_tags.find(key) == _kline_tags.end());
 	KlineTag& tag = _kline_tags[key];
@@ -1171,7 +1167,7 @@ WTSKlineSlice* CtaMocker::stra_get_bars(const char* stdCode, const char* period,
 		WTSCommodityInfo* commInfo = _replayer->get_commodity_info(stdCode);
 		std::string realCode = stdCode;
 		if(commInfo->isStock() && cInfo.isExright())
-			realCode = StrUtil::printf("%s.%s.%s", cInfo._exchg, cInfo._product, cInfo._code);
+			realCode = fmt::format("{}.{}.{}", cInfo._exchg, cInfo._product, cInfo._code);
 		_replayer->sub_tick(id(), realCode.c_str());
 	}
 

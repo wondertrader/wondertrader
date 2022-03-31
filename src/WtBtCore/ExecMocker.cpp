@@ -136,19 +136,13 @@ void ExecMocker::handle_tick(const char* stdCode, WTSTickData* curTick)
 
 void ExecMocker::handle_init()
 {
-	std::string basePeriod = "";
+	thread_local static char basePeriod[2] = { 0 };
+	basePeriod[0] = _period[0];
 	uint32_t times = 1;
 	if (_period.size() > 1)
-	{
-		basePeriod.append(_period.c_str(), 1);
 		times = strtoul(_period.c_str() + 1, NULL, 10);
-	}
-	else
-	{
-		basePeriod = _period;
-	}
 
-	WTSKlineSlice* kline = _replayer->get_kline_slice(_code.c_str(), basePeriod.c_str(),  10, times, true);
+	WTSKlineSlice* kline = _replayer->get_kline_slice(_code.c_str(), basePeriod,  10, times, true);
 	if (kline)
 		kline->release();
 

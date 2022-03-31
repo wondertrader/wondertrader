@@ -597,22 +597,18 @@ void SelMocker::do_set_position(const char* stdCode, double qty, double price /*
 
 WTSKlineSlice* SelMocker::stra_get_bars(const char* stdCode, const char* period, uint32_t count)
 {
-	std::string key = StrUtil::printf("%s#%s", stdCode, period);
+	thread_local static char key[64] = { 0 };
+	fmtutil::format_to(key, "{}#{}", stdCode, period);
 
-	std::string basePeriod = "";
+	thread_local static char basePeriod[2] = { 0 };
+	basePeriod[0] = period[0];
 	uint32_t times = 1;
 	if (strlen(period) > 1)
-	{
-		basePeriod.append(period, 1);
 		times = strtoul(period + 1, NULL, 10);
-	}
 	else
-	{
-		basePeriod = period;
-		key.append("1");
-	}
+		strcat(key, "1");
 
-	WTSKlineSlice* kline = _replayer->get_kline_slice(stdCode, basePeriod.c_str(), count, times, false);
+	WTSKlineSlice* kline = _replayer->get_kline_slice(stdCode, basePeriod, count, times, false);
 
 	KlineTag& tag = _kline_tags[key];
 	tag._closed = false;
