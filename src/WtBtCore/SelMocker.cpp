@@ -343,7 +343,7 @@ void SelMocker::on_session_begin(uint32_t curTDate)
 		PosInfo& pInfo = (PosInfo&)it.second;
 		if (!decimal::eq(pInfo._frozen, 0))
 		{
-			log_debug("%.0f of %s frozen released on %u", pInfo._frozen, stdCode, curTDate);
+			log_debug("{} of {} frozen released on {}", pInfo._frozen, stdCode, curTDate);
 			pInfo._frozen = 0;
 		}
 	}
@@ -410,14 +410,14 @@ void SelMocker::stra_set_position(const char* stdCode, double qty, const char* u
 	WTSCommodityInfo* commInfo = _replayer->get_commodity_info(stdCode);
 	if (commInfo == NULL)
 	{
-		log_error("Cannot find corresponding commodity info of %s", stdCode);
+		log_error("Cannot find corresponding commodity info of {}", stdCode);
 		return;
 	}
 
 	//如果不能做空，则目标仓位不能设置负数
 	if (!commInfo->canShort() && decimal::lt(qty, 0))
 	{
-		log_error("Cannot short on %s", stdCode);
+		log_error("Cannot short on {}", stdCode);
 		return;
 	}
 
@@ -489,7 +489,7 @@ void SelMocker::do_set_position(const char* stdCode, double qty, double price /*
 		{
 			//ASSERT(diff>0);
 			pInfo._frozen += diff;
-			log_debug("%s frozen position up to %.0f", stdCode, pInfo._frozen);
+			log_debug("{} frozen position up to {}", stdCode, pInfo._frozen);
 		}
 
 		if (_slippage != 0)
@@ -575,7 +575,7 @@ void SelMocker::do_set_position(const char* stdCode, double qty, double price /*
 			if (commInfo->isT1())
 			{
 				pInfo._frozen += left;
-				log_debug("%s frozen position up to %.0f", stdCode, pInfo._frozen);
+				log_debug("{} frozen position up to {}", stdCode, pInfo._frozen);
 			}
 
 			DetailInfo dInfo;

@@ -193,25 +193,25 @@ WTSTickData* UftStraBaseCtx::stra_get_last_tick(const char* stdCode)
 void UftStraBaseCtx::stra_sub_ticks(const char* stdCode)
 {
 	_engine->sub_tick(id(), stdCode);
-	log_info("Market Data subscribed: %s", stdCode);
+	log_info("Market Data subscribed: {}", stdCode);
 }
 
 void UftStraBaseCtx::stra_sub_order_details(const char* stdCode)
 {
 	_engine->sub_order_detail(id(), stdCode);
-	log_info("Order details subscribed: %s", stdCode);
+	log_info("Order details subscribed: {}", stdCode);
 }
 
 void UftStraBaseCtx::stra_sub_order_queues(const char* stdCode)
 {
 	_engine->sub_order_queue(id(), stdCode);
-	log_info("Order queues subscribed: %s", stdCode);
+	log_info("Order queues subscribed: {}", stdCode);
 }
 
 void UftStraBaseCtx::stra_sub_transactions(const char* stdCode)
 {
 	_engine->sub_transaction(id(), stdCode);
-	log_info("Transactions subscribed: %s", stdCode);
+	log_info("Transactions subscribed: {}", stdCode);
 }
 
 void UftStraBaseCtx::stra_log_info(const char* message)

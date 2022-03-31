@@ -33,16 +33,6 @@ USING_NS_WTP;
 
 #define MAX_LOG_BUF_SIZE 2048
 
-#include <spdlog/fmt/bundled/printf.h>
-template<typename... Args>
-inline void fmt_print_impl(char* buf, const char* format, const Args&... args)
-{
-	static std::string s;
-	s = std::move(fmt::sprintf(format, args...));
-	memcpy(buf, s.c_str(), s.size());
-	buf[s.size()] = '\0';
-}
-
 
 class WTSLogger
 {
@@ -74,132 +64,9 @@ public:
 	 */
 	static void log_dyn_raw(const char* patttern, const char* catName, WTSLogLevel ll, const char* message);
 
-//////////////////////////////////////////////////////////////////////////
-//printf风格接口
-#pragma region "printf style apis"
-public:
-	template<typename... Args>
-	static void debug_old(const char* format, const Args& ...args)
-	{
-		if (m_logLevel > LL_DEBUG || m_bStopped)
-			return;
-
-		fmt_print_impl(m_buffer, format, args...);
-
-		if (!m_bInited)
-		{
-			print_message(m_buffer);
-			return;
-		}
-
-		debug_imp(m_rootLogger, m_buffer);
-	}
-
-	template<typename... Args>
-	static void info_old(const char* format, const Args& ...args)
-	{
-		if (m_logLevel > LL_INFO || m_bStopped)
-			return;
-
-		fmt_print_impl(m_buffer, format, args...);
-
-		if (!m_bInited)
-		{
-			print_message(m_buffer);
-			return;
-		}
-
-		info_imp(m_rootLogger, m_buffer);
-	}
-
-	template<typename... Args>
-	static void warn_old(const char* format, const Args& ...args)
-	{
-		if (m_logLevel > LL_WARN || m_bStopped)
-			return;
-
-		fmt_print_impl(m_buffer, format, args...);
-
-		if (!m_bInited)
-		{
-			print_message(m_buffer);
-			return;
-		}
-
-		warn_imp(m_rootLogger, m_buffer);
-	}
-
-	template<typename... Args>
-	static void error_old(const char* format, const Args& ...args)
-	{
-		if (m_logLevel > LL_ERROR || m_bStopped)
-			return;
-
-		fmt_print_impl(m_buffer, format, args...);
-
-		if (!m_bInited)
-		{
-			print_message(m_buffer);
-			return;
-		}
-
-		error_imp(m_rootLogger, m_buffer);
-	}
-
-	template<typename... Args>
-	static void fatal_old(const char* format, const Args& ...args)
-	{
-		if (m_logLevel > LL_FATAL || m_bStopped)
-			return;
-
-		fmt_print_impl(m_buffer, format, args...);
-
-		if (!m_bInited)
-		{
-			print_message(m_buffer);
-			return;
-		}
-
-		fatal_imp(m_rootLogger, m_buffer);
-	}
-
-	template<typename... Args>
-	static void log_old(WTSLogLevel ll, const char* format, const Args& ...args)
-	{
-		if (m_logLevel > ll || m_bStopped)
-			return;
-
-		fmt_print_impl(m_buffer, format, args...);
-
-		log_raw(ll, m_buffer);
-	}
-
-	template<typename... Args>
-	static void log_by_cat_old(const char* catName, WTSLogLevel ll, const char* format, const Args& ...args)
-	{
-		if (m_logLevel > ll || m_bStopped)
-			return;
-
-		fmt_print_impl(m_buffer, format, args...);
-
-		log_raw_by_cat(catName, ll, m_buffer);
-	}
-
-	template<typename... Args>
-	static void log_dyn_old(const char* patttern, const char* catName, WTSLogLevel ll, const char* format, const Args& ...args)
-	{
-		if (m_logLevel > ll || m_bStopped)
-			return;
-
-		fmt_print_impl(m_buffer, format, args...);
-
-		log_dyn_raw(patttern, catName, ll, m_buffer);
-	}
-#pragma endregion "printf style apis"
 
 //////////////////////////////////////////////////////////////////////////
 //fmt::format风格接口
-#pragma region "format style apis"
 public:
 	template<typename... Args>
 	static void debug_f(const char* format, const Args& ...args)
@@ -318,7 +185,7 @@ public:
 
 		log_dyn_raw(patttern, catName, ll, m_buffer);
 	}
-#pragma endregion "format style apis"
+
 public:
 	static void init(const char* propFile = "logcfg.json", bool isFile = true, ILogHandler* handler = NULL);
 
@@ -338,7 +205,7 @@ private:
 	static SpdLoggerPtr			m_rootLogger;
 
 	typedef WTSHashMap<std::string>	LogPatterns;
-	static LogPatterns*			m_mapPatterns;
+	static LogPatterns*				m_mapPatterns;
 	static std::set<std::string>	m_setDynLoggers;
 
 	static thread_local char	m_buffer[MAX_LOG_BUF_SIZE];
