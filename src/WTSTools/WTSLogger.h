@@ -46,8 +46,6 @@ private:
 	static void initLogger(const char* catName, WTSVariant* cfgLogger);
 	static SpdLoggerPtr getLogger(const char* logger, const char* pattern = "");
 
-	static void print_message(const char* buffer);
-
 public:
 	/*
 	 *	Ö±½ÓÊä³ö

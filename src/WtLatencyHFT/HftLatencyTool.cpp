@@ -139,7 +139,7 @@ namespace hft
 			}
 			auto total = ticker.nano_seconds();
 			double t2t = total * 1.0 / times;
-			WTSLogger::warn_f("{} ticks simulated in {:.0f} ns, HftEngine Innner Latency: {:03f} ns", times, total*1.0, t2t);
+			WTSLogger::warn_f("{} ticks simulated in {:.0f} ns, HftEngine Innner Latency: {:.3f} ns", times, total*1.0, t2t);
 		}
 
 	public:

@@ -102,14 +102,14 @@ void WtSimpleRiskMon::run()
 						}
 						else
 						{
-							_ctx->writeRiskLog(fmt::format("Current PR: {:.2f}%, Current IDD: {:.2f}%", curBal*100.0 / predynbal, rate).c_str());
+							_ctx->writeRiskLog(fmt::format("Current Balance Ratio: {:.2f}%, Current IDD: {:.2f}%", curBal*100.0 / predynbal, rate).c_str());
 							//_limited = false;
 						}
 					}
 					else
 					{
 						//如果当日最大权益没有超过盈利边界条件
-						_ctx->writeRiskLog(fmt::format("Current PR: {:.2f}%", curBal*100.0 / predynbal).c_str());
+						_ctx->writeRiskLog(fmt::format("Current Balance Ratio: {:.2f}%", curBal*100.0 / predynbal).c_str());
 						//_limited = false;
 					}
 				}
@@ -124,7 +124,7 @@ void WtSimpleRiskMon::run()
 						double rate = (maxBal - curBal) * 100 / maxBal;
 						if (rate >= _multi_day_fd)
 						{
-							_ctx->writeRiskLog(fmt::format("Current MDD {:.2f}%, ≥MaxMDD {:.2f}%, Position down to 0.0%", rate, _multi_day_fd).c_str());
+							_ctx->writeRiskLog(fmt::format("Current MDD {:.2f}%, >= MaxMDD {:.2f}%, Position down to 0.0%", rate, _multi_day_fd).c_str());
 							_ctx->setVolScale(0.0);
 						}
 					}
