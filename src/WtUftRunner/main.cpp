@@ -11,7 +11,6 @@
 #include "WtUftRunner.h"
 
 #include "../WTSTools/WTSLogger.h"
-#include "../Share/IniHelper.hpp"
 
 #ifdef _MSC_VER
 #include "../Common/mdump.h"

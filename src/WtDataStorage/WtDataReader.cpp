@@ -2026,8 +2026,8 @@ double WtDataReader::getAdjFactorByDate(const char* stdCode, uint32_t date /* = 
 
 const WtDataReader::AdjFactorList& WtDataReader::getAdjFactors(const char* code, const char* exchg, const char* pid)
 {
-	char key[20] = { 0 };
-	sprintf(key, "%s.%s.%s", exchg, pid, code);
+	thread_local static char key[20] = { 0 };
+	fmtutil::format_to(key, "{}.{}.{}", exchg, pid, code);
 
 	auto it = _adj_factors.find(key);
 	if (it == _adj_factors.end())

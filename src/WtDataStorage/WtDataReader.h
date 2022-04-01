@@ -243,7 +243,7 @@ private:
 		double		_factor;
 	} AdjFactor;
 	typedef std::vector<AdjFactor> AdjFactorList;
-	typedef faster_hashmap<std::string, AdjFactorList>	AdjFactorMap;
+	typedef faster_hashmap<LongKey, AdjFactorList>	AdjFactorMap;
 	AdjFactorMap	_adj_factors;
 
 	const AdjFactorList& getAdjFactors(const char* code, const char* exchg, const char* pid);

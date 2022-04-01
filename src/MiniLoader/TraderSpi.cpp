@@ -6,6 +6,7 @@
 
 #include "../API/CTPMini1.5.8/ThostFtdcTraderApi.h"
 #include "../Share/StrUtil.hpp"
+#include "../Share/fmtlib.h"
 #include "../Includes/WTSTypes.h"
 
 #include <rapidjson/document.h>
@@ -177,7 +178,7 @@ void CTraderSpi::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin,
 		SESSION_ID = pRspUserLogin->SessionID;
 		int iNextOrderRef = atoi(pRspUserLogin->MaxOrderRef);
 		iNextOrderRef++;
-		sprintf(ORDER_REF, "%d", iNextOrderRef);
+		fmtutil::format_to(ORDER_REF, "{}", iNextOrderRef);
 		///获取当前交易日
 		m_lTradingDate = atoi(pUserApi->GetTradingDay());
 

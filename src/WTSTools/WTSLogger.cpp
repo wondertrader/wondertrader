@@ -125,7 +125,7 @@ inline void print_timetag(bool bWithSpace = true)
 		fmt::print(" ");
 }
 
-inline void print_message(const char* buffer)
+void WTSLogger::print_message(const char* buffer)
 {
 	print_timetag(true);
 	fmt::print(buffer);

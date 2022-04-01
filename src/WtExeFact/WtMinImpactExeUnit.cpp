@@ -120,7 +120,6 @@ void WtMinImpactExeUnit::on_order(uint32_t localid, const char* stdCode, bool is
 	//如果有撤单,也触发重新计算
 	if (isCanceled)
 	{
-		//ctx->writeLog(fmt::sprintf("%s的订单%u已撤销,重新触发执行逻辑", stdCode, localid);
 		_ctx->writeLog(fmt::format("Order {} of {} canceled, recalc will be done", localid, stdCode).c_str());
 		_cancel_times++;
 		do_calc();

@@ -587,9 +587,8 @@ bool TraderYD::makeEntrustID(char* buffer, int length)
 
 	try
 	{
-		memset(buffer, 0, length);
 		uint32_t orderref = m_orderRef.fetch_add(1) + 1;
-		sprintf(buffer, "%s#%010u", m_strUser.c_str(), orderref);
+		fmtutil::format_to(buffer, "{}#{:010d}", m_strUser.c_str(), orderref);
 		return true;
 	}
 	catch (...)

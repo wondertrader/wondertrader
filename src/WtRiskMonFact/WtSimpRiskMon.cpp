@@ -41,9 +41,6 @@ void WtSimpleRiskMon::init(WtPortContext* ctx, WTSVariant* cfg)
 	_base_amount = cfg->getDouble("base_amount");
 	_risk_scale = cfg->getDouble("risk_scale");
 
-	//ctx->writeRiskLog(fmt::sprintf("参数初始化完成, 监控时间间隔: %u 秒, 日内回撤: %s(%.2f%%), 多日回撤: %s(%.2f%%), 资金基数: %.1f, 门槛盈利: %.2f%%, 回撤时限: %u mins, 风险控制系数: %.2f",
-	//	_calc_span, _inner_day_active ? "开启" : "关闭", _inner_day_fd, _multi_day_active ? "开启" : "关闭", _multi_day_fd, _base_amount, _basic_ratio, _risk_span, _risk_scale);
-
 	ctx->writeRiskLog(fmt::format("Params inited, Checking frequency: {} s, MaxIDD: {}({:.2f}%), MaxMDD: {}({:.2f}%), Capital: {:.1f}, Profit Boudary: {:.2f}%, Calc Span: {} mins, Risk Scale: {:.2f}",
 		_calc_span, _inner_day_active ? "ON" : "OFF", _inner_day_fd, _multi_day_active ? "ON" : "OFF", _multi_day_fd, _base_amount, _basic_ratio, _risk_span, _risk_scale).c_str());
 }

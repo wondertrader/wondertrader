@@ -220,7 +220,8 @@ void WtEngine::update_fund_dynprofit()
 void WtEngine::writeRiskLog(const char* message)
 {
 	static thread_local char szBuf[2048] = { 0 };
-	sprintf(szBuf, "[RiskControl] %s", message);
+	auto len = wt_strcpy(szBuf, "[RiskControl] ");
+	wt_strcpy(szBuf + len, message);
 	WTSLogger::log_raw_by_cat("risk", LL_INFO, szBuf);
 }
 

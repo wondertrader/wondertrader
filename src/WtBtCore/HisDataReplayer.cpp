@@ -3619,8 +3619,8 @@ bool HisDataReplayer::cacheIntegratedFutBarsFromBin(const std::string& key, cons
 
 const HisDataReplayer::AdjFactorList& HisDataReplayer::getAdjFactors(const char* code, const char* exchg, const char* pid /* = "" */)
 {
-	char key[20] = { 0 };
-	sprintf(key, "%s.%s.%s", exchg, pid, code);
+	static char key[20] = { 0 };
+	fmtutil::format_to(key, "{}.{}.{}", exchg, pid, code);
 
 	auto it = _adj_factors.find(key);
 	if (it == _adj_factors.end())

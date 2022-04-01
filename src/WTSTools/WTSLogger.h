@@ -33,8 +33,6 @@ USING_NS_WTP;
 
 #define MAX_LOG_BUF_SIZE 2048
 
-inline void print_message(const char* buffer);
-
 
 class WTSLogger
 {
@@ -47,6 +45,8 @@ private:
 
 	static void initLogger(const char* catName, WTSVariant* cfgLogger);
 	static SpdLoggerPtr getLogger(const char* logger, const char* pattern = "");
+
+	static void print_message(const char* buffer);
 
 public:
 	/*
