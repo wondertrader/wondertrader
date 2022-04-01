@@ -114,7 +114,7 @@ inline void checkDirs(const char* filename)
 		boost::filesystem::create_directories(s.substr(0, pos).c_str());
 }
 
-static inline void print_timetag(bool bWithSpace = true)
+inline void print_timetag(bool bWithSpace = true)
 {
 	uint64_t now = TimeUtils::getLocalTimeNow();
 	time_t t = now / 1000;
@@ -125,7 +125,7 @@ static inline void print_timetag(bool bWithSpace = true)
 		fmt::print(" ");
 }
 
-static inline void print_message(const char* buffer)
+inline void print_message(const char* buffer)
 {
 	print_timetag(true);
 	fmt::print(buffer);
