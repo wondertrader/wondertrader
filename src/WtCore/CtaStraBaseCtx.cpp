@@ -930,7 +930,7 @@ void CtaStraBaseCtx::on_session_end(uint32_t uTDate)
 	//这里要把当日结算的数据写到日志文件里
 	//而且这里回测和实盘写法不同, 先留着, 后面来做
 	if (_fund_logs)
-		_fund_logs->write_file(fmt::format("{},{:f2},{:f2},{:f2},{:f2}\n", curDate, 
+		_fund_logs->write_file(fmt::format("{},{:.2f},{:.2f},{:.2f},{:.2f}\n", curDate, 
 		_fund_info._total_profit, _fund_info._total_dynprofit, 
 		_fund_info._total_profit + _fund_info._total_dynprofit - _fund_info._total_fees, _fund_info._total_fees));
 

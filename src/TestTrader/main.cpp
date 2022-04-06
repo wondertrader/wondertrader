@@ -388,7 +388,7 @@ public:
 			WTSAccountInfo* accInfo = (WTSAccountInfo*)ayAccounts->at(0);
 			if(accInfo)
 			{
-				WTSLogger::info_f("[{}]资金数据更新, 当前静态权益: {:f2}", m_pParams->getCString("user"), accInfo->getBalance());
+				WTSLogger::info_f("[{}]资金数据更新, 当前静态权益: {:.2f}", m_pParams->getCString("user"), accInfo->getBalance());
 			}
 		}
 

@@ -294,7 +294,7 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 	bool bRiskEnabled = false;
 	if(!decimal::eq(_risk_volscale, 1.0) && _risk_date == _cur_tdate)
 	{
-		WTSLogger::log_by_cat_f("risk", LL_INFO, "Risk scale of strategy group is {:f2}", _risk_volscale);
+		WTSLogger::log_by_cat_f("risk", LL_INFO, "Risk scale of strategy group is {:.2f}", _risk_volscale);
 		bRiskEnabled = true;
 	}
 

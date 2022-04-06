@@ -654,7 +654,7 @@ void SelStraBaseCtx::on_session_end(uint32_t uTDate)
 	}
 
 	if (_fund_logs)
-		_fund_logs->write_file(fmt::format("{},{:f2},{:f2},{:f2},{:f2}\n", curDate,
+		_fund_logs->write_file(fmt::format("{},{:.2f},{:.2f},{:.2f},{:.2f}\n", curDate,
 		_fund_info._total_profit, _fund_info._total_dynprofit,
 		_fund_info._total_profit + _fund_info._total_dynprofit - _fund_info._total_fees, _fund_info._total_fees));
 
