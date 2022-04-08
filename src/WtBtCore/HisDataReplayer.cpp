@@ -3098,7 +3098,8 @@ bool HisDataReplayer::cacheFinalBarsFromLoader(const std::string& key, const cha
 	}
 	else if (cInfo.isExright() && commInfo->isStock())
 	{
-
+		//复权数据，采用SSE.600000+.dsb这样的文件名
+		ss << cInfo._exchg << "." << cInfo._code << (cInfo._exright == 1 ? SUFFIX_QFQ : SUFFIX_HFQ) << ".dsb";
 	}
 	else
 		ss << cInfo._code << ".dsb";
@@ -3243,7 +3244,8 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 	}
 	else if (cInfo.isExright() && commInfo->isStock())
 	{
-
+		//复权数据，采用SSE.600000+.dsb这样的文件名
+		ss << cInfo._exchg << "." << cInfo._code << (cInfo._exright == 1 ? SUFFIX_QFQ : SUFFIX_HFQ) << ".dsb";
 	}
 	else
 		ss << cInfo._code << ".dsb";
