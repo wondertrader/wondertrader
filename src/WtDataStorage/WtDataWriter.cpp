@@ -1460,6 +1460,13 @@ void WtDataWriter::check_loop()
 	while(!_terminated)
 	{
 		std::this_thread::sleep_for(std::chrono::seconds(10));
+		/*
+		 *	By Wesley @ 2022.04.18
+		 *	如果收盘作业线程已经启动，则直接退出检查线程
+		 */
+		if(_proc_thrd != NULL)
+			break;
+
 		uint64_t now = TimeUtils::getLocalTimeNow() / 1000;
 		for (auto it = _rt_ticks_blocks.begin(); it != _rt_ticks_blocks.end(); it++)
 		{
