@@ -76,7 +76,7 @@ bool DataManager::init(WTSVariant* params, WTSBaseDataMgr* bdMgr, StateMonitor* 
 	}
 	else
 	{
-		WTSLogger::error_f("Initializing of data writer failed: loading module %s failed...", module.c_str());
+		WTSLogger::error_f("Initializing of data writer failed: loading module {} failed...", module.c_str());
 
 	}
 
