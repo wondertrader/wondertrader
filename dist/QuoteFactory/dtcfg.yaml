@@ -3,30 +3,23 @@ basefiles:
     contract: ../common/contracts.json
     holiday: ../common/holidays.json
     session: ../common/sessions.json
-broadcaster:
+    utf-8: true
+broadcaster:                    # UDP广播器配置项
     active: true
-    bport: 3997
-    broadcast:
-    -   host: 255.255.255.255
-        port: 9001
-        type: 2
-    multicast_:
-    -   host: 224.169.169.169
-        port: 9002
-        sendport: 8997
-        type: 0
-    -   host: 224.169.169.169
-        port: 9003
-        sendport: 8998
-        type: 1
-    -   host: 224.169.169.169
-        port: 9004
-        sendport: 8999
-        type: 2
+    bport: 3997                 # UDP查询端口，主要是用于查询最新的快照
+    broadcast:                  # 广播配置
+    -   host: 255.255.255.255   # 广播地址，255.255.255.255会向整个局域网广播，但是受限于路由器
+        port: 9001              # 广播端口，接收端口要和广播端口一致
+        type: 2                 # 数据类型，固定为2
 parsers: mdparsers.yaml
 statemonitor: statemonitor.yaml
 writer:
-    async: true
-    groupsize: 100
-    path: ../FUT_Data
-    savelog: false
+    module: WtDtStorage #数据存储模块
+    async: true         #同步落地还是异步落地，期货推荐同步，股票推荐异步
+    groupsize: 20       #日志分组大小，主要用于控制日志输出，当订阅合约较多时，推荐1000以上，当订阅的合约数较少时，推荐100以内
+    path: ../FUT_Data   #数据存储的路径
+    savelog: false      #是否保存tick到csv
+    disabletick: false    #不保存tick数据，默认false
+    disablemin1: false    #不保存min1数据，默认false
+    disablemin5: false    #不保存min5数据，默认false
+    disableday: false     #不保存day数据，默认false
