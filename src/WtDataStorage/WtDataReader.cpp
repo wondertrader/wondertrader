@@ -1907,7 +1907,10 @@ void WtDataReader::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTDate
 				if (kBlk == NULL)
 					continue;
 
+				//确定上一次的读取过的实时K线条数
 				uint32_t preCnt = 0;
+				//如果实时K线没有初始化过，则已读取的条数为0
+				//如果已经初始化过，则已读取的条数为光标+1
 				if (barsList._rt_cursor == UINT_MAX)
 					preCnt = 0;
 				else
@@ -1950,6 +1953,7 @@ void WtDataReader::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTDate
 					preCnt++;
 				}
 
+				//如果已处理的K线条数不为0，则修改光标位置
 				if (preCnt > 0)
 					barsList._rt_cursor = preCnt - 1;
 			}
