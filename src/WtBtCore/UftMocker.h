@@ -218,6 +218,7 @@ private:
 
 	bool			_use_newpx;
 	uint32_t		_error_rate;
+	bool			_match_this_tick;	//是否在当前tick撮合
 
 	typedef faster_hashmap<std::string, double> PriceMap;
 	PriceMap		_price_map;

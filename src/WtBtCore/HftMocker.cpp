@@ -118,6 +118,7 @@ HftMocker::HftMocker(HisDataReplayer* replayer, const char* name)
 	, _stopped(false)
 	, _use_newpx(false)
 	, _error_rate(0)
+	, _match_this_tick(false)
 	, _has_hook(false)
 	, _hook_valid(true)
 	, _resumed(false)
@@ -210,6 +211,9 @@ bool HftMocker::init_hft_factory(WTSVariant* cfg)
 	
 	_use_newpx = cfg->getBoolean("use_newpx");
 	_error_rate = cfg->getUInt32("error_rate");
+	_match_this_tick = cfg->getBoolean("match_this_tick");
+
+	log_info("UFT match params: use_newpx-{}, error_rate-{}, match_this_tick-{}", _use_newpx, _error_rate, _match_this_tick);
 
 	DllHandle hInst = DLLHelper::load_library(module);
 	if (hInst == NULL)
@@ -338,34 +342,70 @@ void HftMocker::on_tick(const char* stdCode, WTSTickData* newTick)
 
 	procTask();
 	
-	if (!_orders.empty())
+	//如果开启了同tick撮合，则先触发策略的ontick，再处理订单
+	//如果没开启同tick撮合，则先处理订单，再触发策略的ontick
+	if (_match_this_tick)
 	{
-		OrderIDs ids;
-		for (auto it = _orders.begin(); it != _orders.end(); it++)
+		if (_has_hook && _hook_valid)
 		{
-			uint32_t localid = it->first;
-			bool bNeedErase = procOrder(localid);
-			if (bNeedErase)
-				ids.emplace_back(localid);
+			WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_DEBUG, "Waiting for resume notify");
+			StdUniqueLock lock(_mtx_calc);
+			_cond_calc.wait(_mtx_calc);
+			WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_DEBUG, "Calc resumed");
+			_resumed = true;
 		}
 
-		for(uint32_t localid : ids)
+		on_tick_updated(stdCode, newTick);
+
+		if (!_orders.empty())
 		{
-			auto it = _orders.find(localid);
-			_orders.erase(it);
+			OrderIDs ids;
+			for (auto it = _orders.begin(); it != _orders.end(); it++)
+			{
+				uint32_t localid = it->first;
+				bool bNeedErase = procOrder(localid);
+				if (bNeedErase)
+					ids.emplace_back(localid);
+			}
+
+			for (uint32_t localid : ids)
+			{
+				auto it = _orders.find(localid);
+				_orders.erase(it);
+			}
 		}
 	}
-
-	if (_has_hook && _hook_valid)
+	else
 	{
-		WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_DEBUG, "Waiting for resume notify");
-		StdUniqueLock lock(_mtx_calc);
-		_cond_calc.wait(_mtx_calc);
-		WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_DEBUG, "Calc resumed");
-		_resumed = true;
-	}
+		if (!_orders.empty())
+		{
+			OrderIDs ids;
+			for (auto it = _orders.begin(); it != _orders.end(); it++)
+			{
+				uint32_t localid = it->first;
+				bool bNeedErase = procOrder(localid);
+				if (bNeedErase)
+					ids.emplace_back(localid);
+			}
 
-	on_tick_updated(stdCode, newTick);
+			for (uint32_t localid : ids)
+			{
+				auto it = _orders.find(localid);
+				_orders.erase(it);
+			}
+		}
+
+		if (_has_hook && _hook_valid)
+		{
+			WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_DEBUG, "Waiting for resume notify");
+			StdUniqueLock lock(_mtx_calc);
+			_cond_calc.wait(_mtx_calc);
+			WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_DEBUG, "Calc resumed");
+			_resumed = true;
+		}
+
+		on_tick_updated(stdCode, newTick);
+	}
 
 	if (_has_hook && _hook_valid)
 	{
