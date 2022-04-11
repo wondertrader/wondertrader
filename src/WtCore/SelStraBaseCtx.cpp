@@ -450,7 +450,7 @@ void SelStraBaseCtx::on_bar(const char* stdCode, const char* period, uint32_t ti
 		return;
 
 	thread_local static char realPeriod[8] = { 0 };
-	fmtutil::format_to(realPeriod, "{}{}", period[0], times);
+	fmtutil::format_to(realPeriod, "{}{}", period, times);
 
 	thread_local static char key[64] = { 0 };
 	fmtutil::format_to(key, "{}#{}", stdCode, realPeriod);

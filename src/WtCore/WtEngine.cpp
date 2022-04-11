@@ -584,9 +584,7 @@ WTSKlineSlice* WtEngine::get_kline_slice(uint32_t sid, const char* stdCode, cons
 	if (cInfo == NULL)
 		return NULL;
 
-	WTSSessionInfo* sInfo = _base_data_mgr->getSession(cInfo->getSession());
-	if (sInfo == NULL)
-		return NULL;
+	//WTSSessionInfo* sInfo = cInfo->getSessionInfo();
 
 	//std::string key = StrUtil::printf("%s-%s-%u", stdCode, period, times);
 	thread_local static char key[64] = { 0 };

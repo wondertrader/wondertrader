@@ -82,10 +82,17 @@ private:
 
 	typedef struct _NotifyItem
 	{
-		std::string _code;
-		std::string _period;
+		char		_code[MAX_INSTRUMENT_LENGTH];
+		char		_period[2] = { 0 };
 		uint32_t	_times;
 		WTSBarStruct* _newBar;
+
+		_NotifyItem(const char* code, char period, uint32_t times, WTSBarStruct* newBar)
+			: _times(times), _newBar(newBar)
+		{
+			wt_strcpy(_code, code);
+			_period[0] = period;
+		}
 	} NotifyItem;
 
 	std::vector<NotifyItem> _bar_notifies;

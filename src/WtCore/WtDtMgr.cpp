@@ -101,7 +101,7 @@ void WtDtMgr::on_all_bar_updated(uint32_t updateTime)
 
 	for (const NotifyItem& item : _bar_notifies)
 	{
-		_engine->on_bar(item._code.c_str(), item._period.c_str(), item._times, item._newBar);
+		_engine->on_bar(item._code, item._period, item._times, item._newBar);
 	}
 
 	_bar_notifies.clear();
@@ -141,20 +141,20 @@ void WtDtMgr::on_bar(const char* code, WTSKlinePeriod period, WTSBarStruct* newB
 {
 	std::string key_pattern = fmt::format("{}-{}", code, period);
 
-	std::string speriod;
+	char speriod;
 	uint32_t times = 1;
 	switch (period)
 	{
 	case KP_Minute1:
-		speriod = "m";
+		speriod = 'm';
 		times = 1;
 		break;
 	case KP_Minute5:
-		speriod = "m";
+		speriod = 'm';
 		times = 5;
 		break;
 	default:
-		speriod = "d";
+		speriod = 'd';
 		times = 1;
 		break;
 	}
@@ -164,7 +164,7 @@ void WtDtMgr::on_bar(const char* code, WTSKlinePeriod period, WTSBarStruct* newB
 		//如果是基础周期, 直接触发on_bar事件
 		//_engine->on_bar(code, speriod.c_str(), times, newBar);
 		//更新完K线以后, 统一通知交易引擎
-		_bar_notifies.emplace_back(NotifyItem({ code, speriod, times, newBar }));
+		_bar_notifies.emplace_back(NotifyItem(code, speriod, times, newBar));
 	}
 
 	//然后再处理非基础周期
@@ -189,7 +189,7 @@ void WtDtMgr::on_bar(const char* code, WTSKlinePeriod period, WTSBarStruct* newB
 				WTSBarStruct* lastBar = kData->at(-1);
 				//_engine->on_bar(code, speriod.c_str(), times, lastBar);
 				//更新完K线以后, 统一通知交易引擎
-				_bar_notifies.emplace_back(NotifyItem({ code, speriod, times*kData->times(), lastBar }));
+				_bar_notifies.emplace_back(NotifyItem(code, speriod, times*kData->times(), lastBar));
 			}
 		}
 	}
