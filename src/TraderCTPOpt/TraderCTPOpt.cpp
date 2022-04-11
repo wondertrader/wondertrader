@@ -1680,14 +1680,14 @@ bool TraderCTPOpt::extractEntrustID(const char* entrustid, uint32_t &frontid, ui
 		return false;
 	s[idx] = '\0';
 	frontid = strtoul(s, NULL, 10);
-	s++;
+	s += idx + 1;
 
 	idx = StrUtil::findFirst(s, '#');
 	if (idx == std::string::npos)
 		return false;
 	s[idx] = '\0';
 	sessionid = strtoul(s, NULL, 10);
-	s++;
+	s += idx + 1;
 
 	orderRef = strtoul(s, NULL, 10);
 

@@ -1282,7 +1282,6 @@ void TraderCTPMini::generateEntrustID(char* buffer, uint32_t frontid, uint32_t s
 
 bool TraderCTPMini::extractEntrustID(const char* entrustid, uint32_t &frontid, uint32_t &sessionid, uint32_t &orderRef)
 {
-	//Market.FrontID.SessionID.OrderRef
 	thread_local static char buffer[64];
 	wt_strcpy(buffer, entrustid);
 	char* s = buffer;
@@ -1291,16 +1290,17 @@ bool TraderCTPMini::extractEntrustID(const char* entrustid, uint32_t &frontid, u
 		return false;
 	s[idx] = '\0';
 	frontid = strtoul(s, NULL, 10);
-	s++;
+	s += idx + 1;
 
 	idx = StrUtil::findFirst(s, '#');
 	if (idx == std::string::npos)
 		return false;
 	s[idx] = '\0';
 	sessionid = strtoul(s, NULL, 10);
-	s++;
+	s += idx + 1;
 
 	orderRef = strtoul(s, NULL, 10);
+
 	return true;
 }
 
