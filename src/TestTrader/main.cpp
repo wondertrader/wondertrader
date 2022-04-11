@@ -362,7 +362,7 @@ public:
 		}
 		else
 		{
-			WTSLogger::info_f("[{}]µÇÂ¼Ê§°Ü: %s", m_pParams->getCString("user"), msg);
+			WTSLogger::info_f("[{}]µÇÂ¼Ê§°Ü: {}", m_pParams->getCString("user"), msg);
 			g_exitNow = true;
 		}
 
