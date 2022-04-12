@@ -48,6 +48,7 @@ bool WtLocalExecuter::init(WTSVariant* params)
 	_config->retain();
 
 	_scale = params->getDouble("scale");
+	_strict_sync  = params->getBoolean("strict_sync");
 	uint32_t poolsize = params->getUInt32("poolsize");
 	if(poolsize > 0)
 	{
@@ -90,7 +91,7 @@ bool WtLocalExecuter::init(WTSVariant* params)
 		}
 	}
 
-	WTSLogger::log_dyn_f("executer", _name.c_str(), LL_INFO, "Local executer inited, scale: {}, auto_clear: {}, thread poolsize: {}", _scale, _auto_clear, poolsize);
+	WTSLogger::log_dyn_f("executer", _name.c_str(), LL_INFO, "Local executer inited, scale: {}, auto_clear: {}, strict_sync: {}, thread poolsize: {}", _scale, _auto_clear, _strict_sync, poolsize);
 
 	return true;
 }
@@ -270,7 +271,7 @@ void WtLocalExecuter::set_position(const faster_hashmap<LongKey, double>& target
 
 		if (_trader && !_trader->checkOrderLimits(stdCode))
 		{
-			WTSLogger::log_dyn_f("executer", _name.c_str(), LL_INFO, "{} is disabled", stdCode);
+			WTSLogger::log_dyn_f("executer", _name.c_str(), LL_WARN, "{} is disabled due to entrust limit control ", stdCode);
 			continue;
 		}
 
@@ -287,6 +288,7 @@ void WtLocalExecuter::set_position(const faster_hashmap<LongKey, double>& target
 		}
 	}
 
+	//在原来的目标头寸中，但是不在新的目标头寸中，则需要自动设置为0
 	for (auto it = _target_pos.begin(); it != _target_pos.end(); it++)
 	{
 		const char* code = it->first.c_str();
@@ -294,6 +296,8 @@ void WtLocalExecuter::set_position(const faster_hashmap<LongKey, double>& target
 		auto tit = targets.find(code);
 		if(tit != targets.end())
 			continue;
+
+		WTSLogger::log_dyn_f("executer", _name.c_str(), LL_INFO, "{} is not in target, set to 0 automatically", code);
 
 		ExecuteUnitPtr unit = getUnit(code);
 		if (unit == NULL)
@@ -312,6 +316,36 @@ void WtLocalExecuter::set_position(const faster_hashmap<LongKey, double>& target
 		}
 
 		pos = 0;
+	}
+
+	//如果开启了严格同步，则需要检查通道持仓
+	//如果通道持仓不在管理中，则直接平掉
+	if(_strict_sync)
+	{
+		for(const LongKey& stdCode : _channel_holds)
+		{
+			auto it = _target_pos.find(stdCode.c_str());
+			if(it != _target_pos.end())
+				continue;
+
+			WTSLogger::log_dyn_f("executer", _name.c_str(), LL_INFO, "{} is not in management, set to 0 due to strict sync mode", stdCode.c_str());
+
+			ExecuteUnitPtr unit = getUnit(stdCode.c_str());
+			if (unit == NULL)
+				continue;
+
+			if (_pool)
+			{
+				std::string code = stdCode.c_str();
+				_pool->schedule([unit, code]() {
+					unit->self()->set_position(code.c_str(), 0);
+				});
+			}
+			else
+			{
+				unit->self()->set_position(stdCode.c_str(), 0);
+			}
+		}
 	}
 }
 
@@ -445,6 +479,8 @@ void WtLocalExecuter::on_channel_lost()
 
 void WtLocalExecuter::on_position(const char* stdCode, bool isLong, double prevol, double preavail, double newvol, double newavail, uint32_t tradingday)
 {
+	_channel_holds.insert(stdCode);
+
 	/*
 	 *	By Wesley @ 2021.12.14
 	 *	先检查自动清理过期主力合约的标记是否为true

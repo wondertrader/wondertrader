@@ -180,12 +180,15 @@ private:
 	IDataManager*		_data_mgr;
 	WTSVariant*			_config;
 
-	double				_scale;		//放大倍数
-	bool				_auto_clear;//是否自动清理上一期的主力合约头寸	
+	double				_scale;				//放大倍数
+	bool				_auto_clear;		//是否自动清理上一期的主力合约头寸
+	bool				_strict_sync;		//是否严格同步目标仓位
 	bool				_channel_ready;
 
 	faster_hashset<LongKey>	_clear_includes;	//自动清理包含品种
 	faster_hashset<LongKey>	_clear_excludes;	//自动清理排除品种
+
+	faster_hashset<LongKey> _channel_holds;		//通道持仓
 
 	faster_hashmap<LongKey, double> _target_pos;
 
