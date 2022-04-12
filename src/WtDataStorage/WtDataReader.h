@@ -213,7 +213,8 @@ public:
 	virtual double getAdjFactorByDate(const char* stdCode, uint32_t date = 0) override;
 
 private:
-	std::string		_base_dir;
+	std::string		_rt_dir;
+	std::string		_his_dir;
 	IBaseDataMgr*	_base_data_mgr;
 	IHotMgr*		_hot_mgr;
 

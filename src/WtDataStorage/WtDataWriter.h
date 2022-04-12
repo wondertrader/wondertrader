@@ -179,6 +179,8 @@ private:
 
 	bool			_save_tick_log;
 
+	bool			_disable_his;
+
 	bool			_disable_tick;
 	bool			_disable_min1;
 	bool			_disable_min5;

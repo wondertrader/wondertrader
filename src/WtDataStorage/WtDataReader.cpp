@@ -158,9 +158,18 @@ void WtDataReader::init(WTSVariant* cfg, IDataReaderSink* sink, IHisDataLoader* 
 	if (cfg == NULL)
 		return ;
 
-	_base_dir = cfg->getCString("path");
-	_base_dir = StrUtil::standardisePath(_base_dir);
-	pipe_reader_log(sink, LL_DEBUG, "Storage initialized @ {}", _base_dir);
+	std::string root_dir = cfg->getCString("path");
+	root_dir = StrUtil::standardisePath(root_dir);
+
+	_rt_dir = root_dir + "rt/";
+
+	_his_dir = cfg->getCString("his_path");
+	if(!_his_dir.empty())
+		_his_dir = StrUtil::standardisePath(_his_dir);
+	else
+		_rt_dir = root_dir + "his/";
+
+	pipe_reader_log(sink, LL_INFO, "WtDataReader initialized, rt dir is {}, hist dir is {}", _rt_dir, _his_dir);
 	
 	/*
 	 *	By Wesley @ 2021.12.20
@@ -355,7 +364,7 @@ WTSTickSlice* WtDataReader::readTickSlice(const char* stdCode, uint32_t count, u
 		if(it == _his_tick_map.end())
 		{
 			std::stringstream ss;
-			ss << _base_dir << "his/ticks/" << cInfo._exchg << "/" << endTDate << "/" << curCode << ".dsb";
+			ss << _his_dir << "ticks/" << cInfo._exchg << "/" << endTDate << "/" << curCode << ".dsb";
 			std::string filename = ss.str();
 			if (!StdFile::exists(filename.c_str()))
 				return NULL;
@@ -481,7 +490,7 @@ WTSOrdQueSlice* WtDataReader::readOrdQueSlice(const char* stdCode, uint32_t coun
 		if (it == _his_ordque_map.end())
 		{
 			std::stringstream ss;
-			ss << _base_dir << "his/queue/" << cInfo._exchg << "/" << endTDate << "/" << curCode << ".dsb";
+			ss << _his_dir << "queue/" << cInfo._exchg << "/" << endTDate << "/" << curCode << ".dsb";
 			std::string filename = ss.str();
 			if (!StdFile::exists(filename.c_str()))
 				return NULL;
@@ -622,7 +631,7 @@ WTSOrdDtlSlice* WtDataReader::readOrdDtlSlice(const char* stdCode, uint32_t coun
 		if (it == _his_ordque_map.end())
 		{
 			std::stringstream ss;
-			ss << _base_dir << "his/orders/" << cInfo._exchg << "/" << endTDate << "/" << curCode << ".dsb";
+			ss << _his_dir << "orders/" << cInfo._exchg << "/" << endTDate << "/" << curCode << ".dsb";
 			std::string filename = ss.str();
 			if (!StdFile::exists(filename.c_str()))
 				return NULL;
@@ -763,7 +772,7 @@ WTSTransSlice* WtDataReader::readTransSlice(const char* stdCode, uint32_t count,
 		if (it == _his_ordque_map.end())
 		{
 			std::stringstream ss;
-			ss << _base_dir << "his/trans/" << cInfo._exchg << "/" << endTDate << "/" << curCode << ".dsb";
+			ss << _his_dir << "trans/" << cInfo._exchg << "/" << endTDate << "/" << curCode << ".dsb";
 			std::string filename = ss.str();
 			if (!StdFile::exists(filename.c_str()))
 				return NULL;
@@ -906,7 +915,7 @@ bool WtDataReader::cacheIntegratedFutBars(const std::string& key, const char* st
 		 *	但是上层会调用一次loadFinalHisBars，这里再调用loadRawHisBars就冗余了，所以直接跳过
 		 */
 		std::stringstream ss;
-		ss << _base_dir << "his/" << pname << "/" << cInfo._exchg << "/" << cInfo._exchg << "." << cInfo._product << hot_flag << ".dsb";
+		ss << _his_dir << pname << "/" << cInfo._exchg << "/" << cInfo._exchg << "." << cInfo._product << hot_flag << ".dsb";
 		std::string filename = ss.str();
 		if (!StdFile::exists(filename.c_str()))
 			break;
@@ -1017,7 +1026,7 @@ bool WtDataReader::cacheIntegratedFutBars(const std::string& key, const char* st
 		if (!bLoaded)
 		{
 			std::stringstream ss;
-			ss << _base_dir << "his/" << pname << "/" << cInfo._exchg << "/" << curCode << ".dsb";
+			ss << _his_dir << pname << "/" << cInfo._exchg << "/" << curCode << ".dsb";
 			std::string filename = ss.str();
 			if (!StdFile::exists(filename.c_str()))
 				continue;
@@ -1155,7 +1164,7 @@ bool WtDataReader::cacheAdjustedStkBars(const std::string& key, const char* stdC
 		 */
 		char flag = cInfo._exright == 1 ? SUFFIX_QFQ : SUFFIX_HFQ;
 		std::stringstream ss;
-		ss << _base_dir << "his/" << pname << "/" << cInfo._exchg << "/" << cInfo._code << flag << ".dsb";
+		ss << _his_dir << pname << "/" << cInfo._exchg << "/" << cInfo._code << flag << ".dsb";
 		std::string filename = ss.str();
 		if (!StdFile::exists(filename.c_str()))
 			break;
@@ -1224,7 +1233,7 @@ bool WtDataReader::cacheAdjustedStkBars(const std::string& key, const char* stdC
 		if (!bLoaded)
 		{
 			std::stringstream ss;
-			ss << _base_dir << "his/" << pname << "/" << cInfo._exchg << "/" << curCode << ".dsb";
+			ss << _his_dir << pname << "/" << cInfo._exchg << "/" << curCode << ".dsb";
 			std::string filename = ss.str();
 			if (!StdFile::exists(filename.c_str()))
 				continue;
@@ -1415,7 +1424,7 @@ bool WtDataReader::cacheHisBarsFromFile(const std::string& key, const char* stdC
 	{
 		//读取历史的
 		std::stringstream ss;
-		ss << _base_dir << "his/" << pname << "/" << cInfo._exchg << "/" << cInfo._code << ".dsb";
+		ss << _his_dir << pname << "/" << cInfo._exchg << "/" << cInfo._code << ".dsb";
 		std::string filename = ss.str();
 		if (StdFile::exists(filename.c_str()))
 		{
@@ -1651,7 +1660,7 @@ WtDataReader::TickBlockPair* WtDataReader::getRTTickBlock(const char* exchg, con
 	fmtutil::format_to(key, "{}#{}", exchg, code);
 
 	thread_local static char path[256] = { 0 };
-	fmtutil::format_to(path, "{}rt/ticks/{}/{}.dmb", _base_dir.c_str(), exchg, code);
+	fmtutil::format_to(path, "{}ticks/{}/{}.dmb", _rt_dir.c_str(), exchg, code);
 
 	if (!StdFile::exists(path))
 		return NULL;
@@ -1695,7 +1704,7 @@ WtDataReader::OrdDtlBlockPair* WtDataReader::getRTOrdDtlBlock(const char* exchg,
 	fmtutil::format_to(key, "{}#{}", exchg, code);
 
 	thread_local static char path[256] = { 0 };
-	fmtutil::format_to(path, "{}rt/orders/{}/{}.dmb", _base_dir.c_str(), exchg, code);
+	fmtutil::format_to(path, "{}orders/{}/{}.dmb", _rt_dir.c_str(), exchg, code);
 
 	if (!StdFile::exists(path))
 		return NULL;
@@ -1740,7 +1749,7 @@ WtDataReader::OrdQueBlockPair* WtDataReader::getRTOrdQueBlock(const char* exchg,
 	fmtutil::format_to(key, "{}#{}", exchg, code);
 
 	thread_local static char path[256] = { 0 };
-	fmtutil::format_to(path, "{}rt/queue/{}/{}.dmb", _base_dir.c_str(), exchg, code);
+	fmtutil::format_to(path, "{}queue/{}/{}.dmb", _rt_dir.c_str(), exchg, code);
 
 	if (!StdFile::exists(path))
 		return NULL;
@@ -1785,7 +1794,7 @@ WtDataReader::TransBlockPair* WtDataReader::getRTTransBlock(const char* exchg, c
 	fmtutil::format_to(key, "{}#{}", exchg, code);
 
 	thread_local static char path[256] = { 0 };
-	fmtutil::format_to(path, "{}rt/trans/{}/{}.dmb", _base_dir.c_str(), exchg, code);
+	fmtutil::format_to(path, "{}trans/{}/{}.dmb", _rt_dir.c_str(), exchg, code);
 
 	if (!StdFile::exists(path))
 		return NULL;
@@ -1850,7 +1859,7 @@ WtDataReader::RTKlineBlockPair* WtDataReader::getRTKilneBlock(const char* exchg,
 
 	//std::string path = StrUtil::printf("%srt/%s/%s/%s.dmb", _base_dir.c_str(), subdir.c_str(), exchg, code);
 	thread_local static char path[256] = { 0 };
-	fmtutil::format_to(path, "{}rt/{}/{}/{}.dmb", _base_dir, subdir, exchg, code);
+	fmtutil::format_to(path, "{}{}/{}/{}.dmb", _rt_dir, subdir, exchg, code);
 
 	if (!StdFile::exists(path))
 		return NULL;
