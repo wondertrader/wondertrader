@@ -51,12 +51,12 @@ WtDtRunner& getRunner()
 	return runner;
 }
 
-void initialize(WtString cfgFile, bool isFile)
+void initialize(WtString cfgFile, bool isFile, WtString logCfg)
 {
 #ifdef _MSC_VER
 	CMiniDumper::Enable(getModuleName(), true, WtHelper::get_cwd());
 #endif
-	getRunner().initialize(cfgFile, isFile, getBinDir());
+	getRunner().initialize(cfgFile, isFile, getBinDir(), logCfg);
 }
 
 const char* get_version()
@@ -75,12 +75,13 @@ const char* get_version()
 	return _ver.c_str();
 }
 
-WtUInt32 get_bars_by_range(const char* stdCode, const char* period, WtUInt64 beginTime, WtUInt64 endTime, FuncGetBarsCallback cb)
+WtUInt32 get_bars_by_range(const char* stdCode, const char* period, WtUInt64 beginTime, WtUInt64 endTime, FuncGetBarsCallback cb, FuncCountDataCallback cbCnt)
 {
 	WTSKlineSlice* kData = getRunner().get_bars_by_range(stdCode, period, beginTime, endTime);
 	if (kData)
 	{
 		uint32_t reaCnt = kData->size();
+		cbCnt(kData->size());
 
 		for (std::size_t i = 0; i < kData->get_block_counts(); i++)
 			cb(kData->get_block_addr(i), kData->get_block_size(i), i == kData->get_block_counts() - 1);
@@ -94,13 +95,14 @@ WtUInt32 get_bars_by_range(const char* stdCode, const char* period, WtUInt64 beg
 	}
 }
 
-WtUInt32	get_ticks_by_range(const char* stdCode, WtUInt64 beginTime, WtUInt64 endTime, FuncGetTicksCallback cb)
+WtUInt32	get_ticks_by_range(const char* stdCode, WtUInt64 beginTime, WtUInt64 endTime, FuncGetTicksCallback cb, FuncCountDataCallback cbCnt)
 {
 	WTSTickSlice* slice = getRunner().get_ticks_by_range(stdCode, beginTime, endTime);
 	if (slice)
 	{
 		uint32_t reaCnt = 0;
 		uint32_t blkCnt = slice->get_block_counts();
+		cbCnt(slice->size());
 
 		for(uint32_t sIdx = 0; sIdx < blkCnt; sIdx++)
 		{
@@ -117,12 +119,13 @@ WtUInt32	get_ticks_by_range(const char* stdCode, WtUInt64 beginTime, WtUInt64 en
 	}
 }
 
-WtUInt32 get_bars_by_count(const char* stdCode, const char* period, WtUInt32 count, WtUInt64 endTime, FuncGetBarsCallback cb)
+WtUInt32 get_bars_by_count(const char* stdCode, const char* period, WtUInt32 count, WtUInt64 endTime, FuncGetBarsCallback cb, FuncCountDataCallback cbCnt)
 {
 	WTSKlineSlice* kData = getRunner().get_bars_by_count(stdCode, period, count, endTime);
 	if (kData)
 	{
 		uint32_t reaCnt = kData->size();
+		cbCnt(kData->size());
 
 		for(std::size_t i = 0; i< kData->get_block_counts(); i++)
 			cb(kData->get_block_addr(i), kData->get_block_size(i), i == kData->get_block_counts()-1);
@@ -136,13 +139,14 @@ WtUInt32 get_bars_by_count(const char* stdCode, const char* period, WtUInt32 cou
 	}
 }
 
-WtUInt32	get_ticks_by_count(const char* stdCode, WtUInt32 count, WtUInt64 endTime, FuncGetTicksCallback cb)
+WtUInt32	get_ticks_by_count(const char* stdCode, WtUInt32 count, WtUInt64 endTime, FuncGetTicksCallback cb, FuncCountDataCallback cbCnt)
 {
 	WTSTickSlice* slice = getRunner().get_ticks_by_count(stdCode, count, endTime);
 	if (slice)
 	{
 		uint32_t reaCnt = 0;
 		uint32_t blkCnt = slice->get_block_counts();
+		cbCnt(slice->size());
 
 		for (uint32_t sIdx = 0; sIdx < blkCnt; sIdx++)
 		{
@@ -151,6 +155,50 @@ WtUInt32	get_ticks_by_count(const char* stdCode, WtUInt32 count, WtUInt64 endTim
 		}
 
 		slice->release();
+		return reaCnt;
+	}
+	else
+	{
+		return 0;
+	}
+}
+
+WtUInt32 get_ticks_by_date(const char* stdCode, WtUInt32 uDate, FuncGetTicksCallback cb, FuncCountDataCallback cbCnt)
+{
+	WTSTickSlice* slice = getRunner().get_ticks_by_date(stdCode, uDate);
+	if (slice)
+	{
+		uint32_t reaCnt = 0;
+		uint32_t blkCnt = slice->get_block_counts();
+		cbCnt(slice->size());
+
+		for (uint32_t sIdx = 0; sIdx < blkCnt; sIdx++)
+		{
+			cb(slice->get_block_addr(sIdx), slice->get_block_size(sIdx), sIdx == blkCnt - 1);
+			reaCnt += slice->get_block_size(sIdx);
+		}
+
+		slice->release();
+		return reaCnt;
+	}
+	else
+	{
+		return 0;
+	}
+}
+
+WtUInt32 get_sbars_by_date(const char* stdCode, WtUInt32 secs, WtUInt32 uDate, FuncGetBarsCallback cb, FuncCountDataCallback cbCnt)
+{
+	WTSKlineSlice* kData = getRunner().get_sbars_by_date(stdCode, secs, uDate);
+	if (kData)
+	{
+		uint32_t reaCnt = kData->size();
+		cbCnt(kData->size());
+
+		for (std::size_t i = 0; i < kData->get_block_counts(); i++)
+			cb(kData->get_block_addr(i), kData->get_block_size(i), i == kData->get_block_counts() - 1);
+
+		kData->release();
 		return reaCnt;
 	}
 	else

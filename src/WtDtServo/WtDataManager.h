@@ -62,16 +62,17 @@ public:
 public:
 	bool	init(WTSVariant* cfg, WtDtRunner* runner);
 
-	void	handle_push_quote(const char* stdCode, WTSTickData* newTick);
-
 	WTSOrdQueSlice* get_order_queue_slice(const char* stdCode, uint64_t stime, uint64_t etime = 0);
 	WTSOrdDtlSlice* get_order_detail_slice(const char* stdCode, uint64_t stime, uint64_t etime = 0);
 	WTSTransSlice* get_transaction_slice(const char* stdCode, uint64_t stime, uint64_t etime = 0);
 
+	WTSTickSlice* get_tick_slice_by_date(const char* stdCode, uint32_t uDate = 0);
+	WTSKlineSlice* get_skline_slice_by_date(const char* stdCode, uint32_t secs, uint32_t uDate = 0);
+
 	WTSTickSlice* get_tick_slices_by_range(const char* stdCode, uint64_t stime, uint64_t etime = 0);
 	WTSKlineSlice* get_kline_slice_by_range(const char* stdCode, WTSKlinePeriod period, uint32_t times, uint64_t stime, uint64_t etime = 0);
 
-	WTSTickSlice* get_tick_slices_by_count(const char* stdCode, uint32_t count, uint64_t etime = 0);
+	WTSTickSlice* get_tick_slice_by_count(const char* stdCode, uint32_t count, uint64_t etime = 0);
 	WTSKlineSlice* get_kline_slice_by_count(const char* stdCode, WTSKlinePeriod period, uint32_t times, uint32_t count, uint64_t etime = 0);
 
 private:

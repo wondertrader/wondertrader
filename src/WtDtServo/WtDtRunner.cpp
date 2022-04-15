@@ -37,7 +37,7 @@ WtDtRunner::~WtDtRunner()
 {
 }
 
-void WtDtRunner::initialize(const char* cfgFile, bool isFile /* = true */, const char* modDir /* = "" */)
+void WtDtRunner::initialize(const char* cfgFile, bool isFile /* = true */, const char* modDir /* = "" */, const char* logCfg /* = "logcfg.yaml" */)
 {
 	if(_is_inited)
 	{
@@ -45,7 +45,7 @@ void WtDtRunner::initialize(const char* cfgFile, bool isFile /* = true */, const
 		return;
 	}
 
-	WTSLogger::init();
+	WTSLogger::init(logCfg);
 	WtHelper::set_module_dir(modDir);
 
 	WTSVariant* config = isFile ? WTSCfgLoader::load_from_file(cfgFile, true) : WTSCfgLoader::load_from_content(cfgFile, false, true);
@@ -189,6 +189,17 @@ WTSTickSlice* WtDtRunner::get_ticks_by_range(const char* stdCode, uint64_t begin
 	return _data_mgr.get_tick_slices_by_range(stdCode, beginTime, endTime);
 }
 
+WTSTickSlice* WtDtRunner::get_ticks_by_date(const char* stdCode, uint32_t uDate /* = 0 */)
+{
+	if (!_is_inited)
+	{
+		WTSLogger::error_f("WtDtServo not initialized");
+		return NULL;
+	}
+
+	return _data_mgr.get_tick_slice_by_date(stdCode, uDate);
+}
+
 WTSKlineSlice* WtDtRunner::get_bars_by_count(const char* stdCode, const char* period, uint32_t count, uint64_t endTime /* = 0 */)
 {
 	if (!_is_inited)
@@ -244,5 +255,16 @@ WTSTickSlice* WtDtRunner::get_ticks_by_count(const char* stdCode, uint32_t count
 		TimeUtils::getDateTime(curDate, curTime);
 		endTime = (uint64_t)curDate * 10000 + curTime;
 	}
-	return _data_mgr.get_tick_slices_by_count(stdCode, count, endTime);
+	return _data_mgr.get_tick_slice_by_count(stdCode, count, endTime);
+}
+
+WTSKlineSlice* WtDtRunner::get_sbars_by_date(const char* stdCode, uint32_t secs, uint32_t uDate /* = 0 */)
+{
+	if (!_is_inited)
+	{
+		WTSLogger::error_f("WtDtServo not initialized");
+		return NULL;
+	}
+
+	return _data_mgr.get_skline_slice_by_date(stdCode, secs, uDate);
 }

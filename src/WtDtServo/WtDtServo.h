@@ -16,17 +16,21 @@ extern "C"
 {
 #endif
 
-	EXPORT_FLAG void		initialize(WtString cfgFile, bool isFile);
+	EXPORT_FLAG void		initialize(WtString cfgFile, bool isFile, WtString logCfg);
 
 	EXPORT_FLAG	WtString	get_version();
 
-	EXPORT_FLAG	WtUInt32	get_bars_by_range(const char* stdCode, const char* period, WtUInt64 beginTime, WtUInt64 endTime, FuncGetBarsCallback cb);
+	EXPORT_FLAG	WtUInt32	get_bars_by_range(const char* stdCode, const char* period, WtUInt64 beginTime, WtUInt64 endTime, FuncGetBarsCallback cb, FuncCountDataCallback cbCnt);
 
-	EXPORT_FLAG	WtUInt32	get_ticks_by_range(const char* stdCode, WtUInt64 beginTime, WtUInt64 endTime, FuncGetTicksCallback cb);
+	EXPORT_FLAG	WtUInt32	get_ticks_by_range(const char* stdCode, WtUInt64 beginTime, WtUInt64 endTime, FuncGetTicksCallback cb, FuncCountDataCallback cbCnt);
 
-	EXPORT_FLAG	WtUInt32	get_bars_by_count(const char* stdCode, const char* period, WtUInt32 count, WtUInt64 endTime, FuncGetBarsCallback cb);
+	EXPORT_FLAG	WtUInt32	get_bars_by_count(const char* stdCode, const char* period, WtUInt32 count, WtUInt64 endTime, FuncGetBarsCallback cb, FuncCountDataCallback cbCnt);
 
-	EXPORT_FLAG	WtUInt32	get_ticks_by_count(const char* stdCode, WtUInt32 count, WtUInt64 endTime, FuncGetTicksCallback cb);
+	EXPORT_FLAG	WtUInt32	get_ticks_by_count(const char* stdCode, WtUInt32 count, WtUInt64 endTime, FuncGetTicksCallback cb, FuncCountDataCallback cbCnt);
+
+	EXPORT_FLAG	WtUInt32	get_ticks_by_date(const char* stdCode, WtUInt32 uDate, FuncGetTicksCallback cb, FuncCountDataCallback cbCnt);
+
+	EXPORT_FLAG	WtUInt32	get_sbars_by_date(const char* stdCode, WtUInt32 secs, WtUInt32 uDate, FuncGetBarsCallback cb, FuncCountDataCallback cbCnt);
 
 #ifdef __cplusplus
 }

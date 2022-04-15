@@ -108,7 +108,12 @@ WTSTickSlice* WtDataManager::get_tick_slices_by_range(const char* stdCode,uint64
 {
 	stime = stime * 100000;
 	etime = etime * 100000;
-	return _reader->readTickSlicesByRange(stdCode, stime, etime);
+	return _reader->readTickSliceByRange(stdCode, stime, etime);
+}
+
+WTSTickSlice* WtDataManager::get_tick_slice_by_date(const char* stdCode, uint32_t uDate /* = 0 */)
+{
+	return _reader->readTickSliceByDate(stdCode, uDate);
 }
 
 WTSOrdQueSlice* WtDataManager::get_order_queue_slice(const char* stdCode,uint64_t stime, uint64_t etime /* = 0 */)
@@ -144,10 +149,41 @@ WTSSessionInfo* WtDataManager::get_session_info(const char* sid, bool isCode /* 
 	return _bd_mgr->getSession(cInfo->getSession());
 }
 
+WTSKlineSlice* WtDataManager::get_skline_slice_by_date(const char* stdCode, uint32_t secs, uint32_t uDate /* = 0 */)
+{
+	std::string key = StrUtil::printf("%s-%u-s%u", stdCode, uDate, secs);
+
+	//只有非基础周期的会进到下面的步骤
+	WTSSessionInfo* sInfo = get_session_info(stdCode, true);
+	BarCache& barCache = _bars_cache[key];
+	barCache._period = KP_Tick;
+	barCache._times = secs;
+	if (barCache._bars == NULL)
+	{
+		//第一次将全部数据缓存到内存中
+		WTSTickSlice* ticks = _reader->readTickSliceByDate(stdCode, uDate);
+		if (ticks != NULL)
+		{
+			WTSKlineData* kData = g_dataFact.extractKlineData(ticks, secs, sInfo, false);
+			barCache._bars = kData;		
+			ticks->release();
+		}
+		else
+		{
+			return NULL;
+		}
+	}
+	
+	if (barCache._bars == NULL)
+		return NULL;
+
+	WTSBarStruct* rtHead = barCache._bars->at(0);
+	WTSKlineSlice* slice = WTSKlineSlice::create(stdCode, KP_Tick, secs, rtHead, barCache._bars->size());
+	return slice;
+}
+
 WTSKlineSlice* WtDataManager::get_kline_slice_by_range(const char* stdCode, WTSKlinePeriod period, uint32_t times,uint64_t stime, uint64_t etime /* = 0 */)
 {
-	std::string key = StrUtil::printf("%s-%u", stdCode, period);
-
 	if (times == 1)
 	{
 		return _reader->readKlineSliceByRange(stdCode, period, stime, etime);
@@ -155,7 +191,7 @@ WTSKlineSlice* WtDataManager::get_kline_slice_by_range(const char* stdCode, WTSK
 
 	//只有非基础周期的会进到下面的步骤
 	WTSSessionInfo* sInfo = get_session_info(stdCode, true);
-	key = StrUtil::printf("%s-%u-%u", stdCode, period, times);
+	std::string key = StrUtil::printf("%s-%u-%u", stdCode, period, times);
 	BarCache& barCache = _bars_cache[key];
 	barCache._period = period;
 	barCache._times = times;
@@ -433,8 +469,8 @@ WTSKlineSlice* WtDataManager::get_kline_slice_by_count(const char* stdCode, WTSK
 	return slice;
 }
 
-WTSTickSlice* WtDataManager::get_tick_slices_by_count(const char* stdCode, uint32_t count, uint64_t etime /* = 0 */)
+WTSTickSlice* WtDataManager::get_tick_slice_by_count(const char* stdCode, uint32_t count, uint64_t etime /* = 0 */)
 {
 	etime = etime * 100000;
-	return _reader->readTickSlicesByCount(stdCode, count, etime);
+	return _reader->readTickSliceByCount(stdCode, count, etime);
 }

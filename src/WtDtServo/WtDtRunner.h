@@ -27,7 +27,7 @@ public:
 	~WtDtRunner();
 
 public:
-	void	initialize(const char* cfgFile, bool isFile = true, const char* modDir = "");
+	void	initialize(const char* cfgFile, bool isFile = true, const char* modDir = "", const char* logCfg = "logcfg.yaml");
 
 	inline WTSBaseDataMgr& getBaseDataMgr() { return _bd_mgr; }
 	inline WTSHotMgr& getHotMgr() { return _hot_mgr; }
@@ -40,6 +40,10 @@ public:
 	WTSKlineSlice*	get_bars_by_count(const char* stdCode, const char* period, uint32_t count, uint64_t endTime = 0);
 
 	WTSTickSlice*	get_ticks_by_count(const char* stdCode, uint32_t count, uint64_t endTime = 0);
+
+	WTSTickSlice*	get_ticks_by_date(const char* stdCode, uint32_t uDate = 0);
+
+	WTSKlineSlice*	get_sbars_by_date(const char* stdCode, uint32_t secs, uint32_t uDate = 0);
 
 private:
 	void	initDataMgr(WTSVariant* config);
