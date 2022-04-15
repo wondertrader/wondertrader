@@ -167,7 +167,7 @@ void WtDataReader::init(WTSVariant* cfg, IDataReaderSink* sink, IHisDataLoader* 
 	if(!_his_dir.empty())
 		_his_dir = StrUtil::standardisePath(_his_dir);
 	else
-		_rt_dir = root_dir + "his/";
+		_his_dir = root_dir + "his/";
 
 	pipe_reader_log(sink, LL_INFO, "WtDataReader initialized, rt dir is {}, hist dir is {}", _rt_dir, _his_dir);
 	

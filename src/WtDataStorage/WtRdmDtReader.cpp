@@ -237,7 +237,124 @@ bool WtRdmDtReader::loadStkAdjFactorsFromFile(const char* adjfile)
 	return true;
 }
 
-WTSTickSlice* WtRdmDtReader::readTickSlicesByRange(const char* stdCode, uint64_t stime, uint64_t etime /* = 0 */)
+WTSTickSlice* WtRdmDtReader::readTickSliceByDate(const char* stdCode, uint32_t uDate )
+{
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
+	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
+
+	uint32_t curTDate = _base_data_mgr->calcTradingDate(stdPID.c_str(), 0, 0, false);
+	bool isToday = (uDate == curTDate);
+
+	if (uDate < curTDate)
+	{
+		std::string curCode = cInfo._code;
+		std::string hotCode;
+		if (cInfo.isHot() && commInfo->isFuture())
+		{
+			curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, uDate);
+			pipe_rdmreader_log(_sink, LL_INFO, "Hot contract of %u confirmed: %s -> %s", uDate, stdCode, curCode.c_str());
+			hotCode = cInfo._product;
+			hotCode += "_HOT";
+		}
+		else if (cInfo.isSecond() && commInfo->isFuture())
+		{
+			curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, uDate);
+			pipe_rdmreader_log(_sink, LL_INFO, "Second contract of %u confirmed: %s -> %s", uDate, stdCode, curCode.c_str());
+			hotCode = cInfo._product;
+			hotCode += "_2ND";
+		}
+
+		std::string key = StrUtil::printf("%s-%d", stdCode, uDate);
+
+		auto it = _his_tick_map.find(key);
+		bool bHasHisTick = (it != _his_tick_map.end());
+		if (!bHasHisTick)
+		{
+			for (;;)
+			{
+				std::string filename;
+				bool bHitHot = false;
+				if (!hotCode.empty())
+				{
+					std::stringstream ss;
+					ss << _base_dir << "his/ticks/" << cInfo._exchg << "/" << uDate << "/" << hotCode << ".dsb";
+					filename = ss.str();
+					if (StdFile::exists(filename.c_str()))
+					{
+						bHitHot = true;
+					}
+				}
+
+				if (!bHitHot)
+				{
+					std::stringstream ss;
+					ss << _base_dir << "his/ticks/" << cInfo._exchg << "/" << uDate << "/" << curCode << ".dsb";
+					filename = ss.str();
+					if (!StdFile::exists(filename.c_str()))
+					{
+						break;
+					}
+				}
+
+				HisTBlockPair& tBlkPair = _his_tick_map[key];
+				StdFile::read_file_content(filename.c_str(), tBlkPair._buffer);
+				if (tBlkPair._buffer.size() < sizeof(HisTickBlock))
+				{
+					pipe_rdmreader_log(_sink, LL_ERROR, "历史Tick数据文件%s大小校验失败", filename.c_str());
+					tBlkPair._buffer.clear();
+					break;
+				}
+
+				proc_block_data(tBlkPair._buffer, false, true);
+				tBlkPair._block = (HisTickBlock*)tBlkPair._buffer.c_str();
+				bHasHisTick = true;
+				break;
+			}
+		}
+
+		while (bHasHisTick)
+		{
+			HisTBlockPair& tBlkPair = _his_tick_map[key];
+			if (tBlkPair._block == NULL)
+				break;
+
+			HisTickBlock* tBlock = tBlkPair._block;
+
+			uint32_t tcnt = (tBlkPair._buffer.size() - sizeof(HisTickBlock)) / sizeof(WTSTickStruct);
+			if (tcnt <= 0)
+				break;
+
+			WTSTickSlice* slice = WTSTickSlice::create(stdCode, tBlock->_ticks, tcnt);
+			return slice;
+
+			break;
+		}
+	}
+	
+	while(isToday)
+	{
+		std::string curCode = cInfo._code;
+		if (cInfo.isHot() && commInfo->isFuture())
+			curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, curTDate);
+		else if (cInfo.isSecond() && commInfo->isFuture())
+			curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, curTDate);
+
+		TickBlockPair* tPair = getRTTickBlock(cInfo._exchg, curCode.c_str());
+		if (tPair == NULL || tPair->_block->_size == 0)
+			break;
+
+		StdUniqueLock lock(*tPair->_mtx);
+		RTTickBlock* tBlock = tPair->_block;
+		
+		WTSTickSlice* slice = WTSTickSlice::create(stdCode, tBlock->_ticks, tBlock->_size);
+		return slice;
+	}
+
+	return NULL;
+}
+
+WTSTickSlice* WtRdmDtReader::readTickSliceByRange(const char* stdCode, uint64_t stime, uint64_t etime /* = 0 */)
 {
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
@@ -369,7 +486,7 @@ WTSTickSlice* WtRdmDtReader::readTickSlicesByRange(const char* stdCode, uint64_t
 					return a.action_time < b.action_time;
 			});
 
-			uint32_t eIdx = pTick - tBlock->_ticks;
+			std::size_t eIdx = pTick - tBlock->_ticks;
 			if (pTick->action_date > eTick.action_date || pTick->action_time >= eTick.action_time)
 			{
 				pTick--;
@@ -393,7 +510,7 @@ WTSTickSlice* WtRdmDtReader::readTickSlicesByRange(const char* stdCode, uint64_t
 						return a.action_time < b.action_time;
 				});
 
-				uint32_t sIdx = pTick - tBlock->_ticks;
+				std::size_t sIdx = pTick - tBlock->_ticks;
 				//WTSTickSlice* slice = WTSTickSlice::create(stdCode, tBlock->_ticks + sIdx, eIdx - sIdx + 1);
 				//ayTicks->append(slice, false);
 				slice->appendBlock(tBlock->_ticks + sIdx, eIdx - sIdx + 1);
@@ -438,7 +555,7 @@ WTSTickSlice* WtRdmDtReader::readTickSlicesByRange(const char* stdCode, uint64_t
 				return a.action_time < b.action_time;
 		});
 
-		uint32_t eIdx = pTick - tBlock->_ticks;
+		std::size_t eIdx = pTick - tBlock->_ticks;
 
 		//如果光标定位的tick时间比目标时间大, 则全部回退一个
 		if (pTick->action_date > eTick.action_date || pTick->action_time > eTick.action_time)
@@ -464,7 +581,7 @@ WTSTickSlice* WtRdmDtReader::readTickSlicesByRange(const char* stdCode, uint64_t
 					return a.action_time < b.action_time;
 			});
 
-			uint32_t sIdx = pTick - tBlock->_ticks;
+			std::size_t sIdx = pTick - tBlock->_ticks;
 			//WTSTickSlice* slice = WTSTickSlice::create(stdCode, tBlock->_ticks + sIdx, eIdx - sIdx + 1);
 			//ayTicks->append(slice, false);
 			slice->appendBlock(tBlock->_ticks + sIdx, eIdx - sIdx + 1);
@@ -529,7 +646,7 @@ WTSOrdQueSlice* WtRdmDtReader::readOrdQueSliceByRange(const char* stdCode, uint6
 				return a.action_time < b.action_time;
 		});
 
-		uint32_t eIdx = pItem - rtBlock->_queues;
+		std::size_t eIdx = pItem - rtBlock->_queues;
 
 		//如果光标定位的tick时间比目标时间打, 则全部回退一个
 		if (pItem->action_date > eTick.action_date || pItem->action_time > eTick.action_time)
@@ -554,7 +671,7 @@ WTSOrdQueSlice* WtRdmDtReader::readOrdQueSliceByRange(const char* stdCode, uint6
 					return a.action_time < b.action_time;
 			});
 
-			uint32_t sIdx = pItem - rtBlock->_queues;
+			std::size_t sIdx = pItem - rtBlock->_queues;
 			WTSOrdQueSlice* slice = WTSOrdQueSlice::create(stdCode, rtBlock->_queues + sIdx, eIdx - sIdx + 1);
 			return slice;
 		}
@@ -617,7 +734,7 @@ WTSOrdQueSlice* WtRdmDtReader::readOrdQueSliceByRange(const char* stdCode, uint6
 				return a.action_time < b.action_time;
 		});
 
-		uint32_t eIdx = pItem - tBlock->_items;
+		std::size_t eIdx = pItem - tBlock->_items;
 		if (pItem->action_date > eTick.action_date || pItem->action_time >= eTick.action_time)
 		{
 			pItem--;
@@ -641,7 +758,7 @@ WTSOrdQueSlice* WtRdmDtReader::readOrdQueSliceByRange(const char* stdCode, uint6
 					return a.action_time < b.action_time;
 			});
 
-			uint32_t sIdx = pItem - tBlock->_items;
+			std::size_t sIdx = pItem - tBlock->_items;
 			WTSOrdQueSlice* slice = WTSOrdQueSlice::create(stdCode, tBlock->_items + sIdx, eIdx - sIdx + 1);
 			return slice;
 		}
@@ -702,7 +819,7 @@ WTSOrdDtlSlice* WtRdmDtReader::readOrdDtlSliceByRange(const char* stdCode, uint6
 				return a.action_time < b.action_time;
 		});
 
-		uint32_t eIdx = pItem - rtBlock->_details;
+		std::size_t eIdx = pItem - rtBlock->_details;
 
 		//如果光标定位的tick时间比目标时间打, 则全部回退一个
 		if (pItem->action_date > eTick.action_date || pItem->action_time > eTick.action_time)
@@ -727,7 +844,7 @@ WTSOrdDtlSlice* WtRdmDtReader::readOrdDtlSliceByRange(const char* stdCode, uint6
 					return a.action_time < b.action_time;
 			});
 
-			uint32_t sIdx = pItem - rtBlock->_details;
+			std::size_t sIdx = pItem - rtBlock->_details;
 			WTSOrdDtlSlice* slice = WTSOrdDtlSlice::create(stdCode, rtBlock->_details + sIdx, eIdx - sIdx + 1);
 			return slice;
 		}
@@ -790,7 +907,7 @@ WTSOrdDtlSlice* WtRdmDtReader::readOrdDtlSliceByRange(const char* stdCode, uint6
 				return a.action_time < b.action_time;
 		});
 
-		uint32_t eIdx = pItem - tBlock->_items;
+		std::size_t eIdx = pItem - tBlock->_items;
 		if (pItem->action_date > eTick.action_date || pItem->action_time >= eTick.action_time)
 		{
 			pItem--;
@@ -813,7 +930,7 @@ WTSOrdDtlSlice* WtRdmDtReader::readOrdDtlSliceByRange(const char* stdCode, uint6
 					return a.action_time < b.action_time;
 			});
 
-			uint32_t sIdx = pItem - tBlock->_items;
+			std::size_t sIdx = pItem - tBlock->_items;
 			WTSOrdDtlSlice* slice = WTSOrdDtlSlice::create(stdCode, tBlock->_items + sIdx, eIdx - sIdx + 1);
 			return slice;
 		}
@@ -874,7 +991,7 @@ WTSTransSlice* WtRdmDtReader::readTransSliceByRange(const char* stdCode, uint64_
 				return a.action_time < b.action_time;
 		});
 
-		uint32_t eIdx = pItem - rtBlock->_trans;
+		std::size_t eIdx = pItem - rtBlock->_trans;
 
 		//如果光标定位的tick时间比目标时间打, 则全部回退一个
 		if (pItem->action_date > eTick.action_date || pItem->action_time > eTick.action_time)
@@ -899,7 +1016,7 @@ WTSTransSlice* WtRdmDtReader::readTransSliceByRange(const char* stdCode, uint64_
 					return a.action_time < b.action_time;
 			});
 
-			uint32_t sIdx = pItem - rtBlock->_trans;
+			std::size_t sIdx = pItem - rtBlock->_trans;
 			WTSTransSlice* slice = WTSTransSlice::create(stdCode, rtBlock->_trans + sIdx, eIdx - sIdx + 1);
 			return slice;
 		}
@@ -962,7 +1079,7 @@ WTSTransSlice* WtRdmDtReader::readTransSliceByRange(const char* stdCode, uint64_
 				return a.action_time < b.action_time;
 		});
 
-		uint32_t eIdx = pItem - tBlock->_items;
+		std::size_t eIdx = pItem - tBlock->_items;
 		if (pItem->action_date > eTick.action_date || pItem->action_time >= eTick.action_time)
 		{
 			pItem--;
@@ -985,7 +1102,7 @@ WTSTransSlice* WtRdmDtReader::readTransSliceByRange(const char* stdCode, uint64_
 					return a.action_time < b.action_time;
 			});
 
-			uint32_t sIdx = pItem - tBlock->_items;
+			std::size_t sIdx = pItem - tBlock->_items;
 			WTSTransSlice* slice = WTSTransSlice::create(stdCode, tBlock->_items + sIdx, eIdx - sIdx + 1);
 			return slice;
 		}
@@ -1155,7 +1272,7 @@ bool WtRdmDtReader::cacheHisBarsFromFile(const std::string& key, const char* std
 					}
 				});
 
-				uint32_t sIdx = pBar - firstBar;
+				std::size_t sIdx = pBar - firstBar;
 				if ((period == KP_DAY && pBar->date < sBar.date) || (period != KP_DAY && pBar->time < sBar.time))	//早于边界时间
 				{
 					//早于边界时间, 说明没有数据了, 因为lower_bound会返回大于等于目标位置的数据
@@ -1172,7 +1289,8 @@ bool WtRdmDtReader::cacheHisBarsFromFile(const std::string& key, const char* std
 						return a.time < b.time;
 					}
 				});
-				uint32_t eIdx = pBar - firstBar;
+
+				std::size_t eIdx = pBar - firstBar;
 				if ((period == KP_DAY && pBar->date > eBar.date) || (period != KP_DAY && pBar->time > eBar.time))
 				{
 					pBar--;
@@ -1336,7 +1454,7 @@ bool WtRdmDtReader::cacheHisBarsFromFile(const std::string& key, const char* std
 
 				if(pBar != NULL)
 				{
-					uint32_t sIdx = pBar - firstBar;
+					std::size_t sIdx = pBar - firstBar;
 					uint32_t curCnt = barcnt - sIdx;
 					std::vector<WTSBarStruct>* tempAy = new std::vector<WTSBarStruct>();
 					tempAy->resize(curCnt);
@@ -1347,7 +1465,7 @@ bool WtRdmDtReader::cacheHisBarsFromFile(const std::string& key, const char* std
 					if(!ayFactors.empty())
 					{
 						//做前复权处理
-						int32_t lastIdx = curCnt;
+						std::size_t lastIdx = curCnt;
 						WTSBarStruct bar;
 						firstBar = tempAy->data();
 						for (auto& adjFact : ayFactors)
@@ -1366,7 +1484,7 @@ bool WtRdmDtReader::cacheHisBarsFromFile(const std::string& key, const char* std
 							WTSBarStruct* endBar = pBar;
 							if (pBar != NULL)
 							{
-								int32_t curIdx = pBar - firstBar;
+								std::size_t curIdx = pBar - firstBar;
 								while (pBar && curIdx < lastIdx)
 								{
 									pBar->open /= factor;
@@ -1468,7 +1586,7 @@ WTSBarStruct* WtRdmDtReader::indexBarFromCacheByRange(const std::string& key, ui
 	if (barsList._bars.empty())
 		return NULL;
 	
-	uint32_t eIdx,sIdx;
+	std::size_t eIdx,sIdx;
 	{
 		//光标尚未初始化, 需要重新定位
 		uint64_t nowTime = (uint64_t)rDate * 10000 + rTime;
@@ -1525,7 +1643,7 @@ WTSBarStruct* WtRdmDtReader::indexBarFromCacheByCount(const std::string& key, ui
 	if (barsList._bars.empty())
 		return NULL;
 
-	uint32_t eIdx, sIdx;
+	std::size_t eIdx, sIdx;
 	WTSBarStruct eBar;
 	eBar.date = rDate;
 	eBar.time = (rDate - 19900000) * 10000 + rTime;
@@ -1550,7 +1668,7 @@ WTSBarStruct* WtRdmDtReader::indexBarFromCacheByCount(const std::string& key, ui
 		eIdx = eit - barsList._bars.begin();
 	}
 
-	uint32_t curCnt = min(eIdx + 1, count);
+	uint32_t curCnt = min((uint32_t)eIdx + 1, count);
 	sIdx = eIdx + 1 - curCnt;
 	count = curCnt;
 	return &barsList._bars[sIdx];
@@ -1565,7 +1683,7 @@ uint32_t WtRdmDtReader::readBarsFromCacheByRange(const std::string& key, uint64_
 	lTime = (uint32_t)(stime % 10000);
 
 	BarsList& barsList = _bars_cache[key];
-	uint32_t eIdx,sIdx;
+	std::size_t eIdx,sIdx;
 	{
 		WTSBarStruct eBar;
 		eBar.date = rDate;
@@ -1706,7 +1824,7 @@ WTSKlineSlice* WtRdmDtReader::readKlineSliceByRange(const char* stdCode, WTSKlin
 				else
 					return a.time < b.time;
 			});
-			uint32_t idx = pBar - kPair->_block->_bars;
+			std::size_t idx = pBar - kPair->_block->_bars;
 			if ((isDay && pBar->date > eBar.date) || (!isDay && pBar->time > eBar.time))
 			{
 				pBar--;
@@ -1729,7 +1847,7 @@ WTSKlineSlice* WtRdmDtReader::readKlineSliceByRange(const char* stdCode, WTSKlin
 						return a.time < b.time;
 				});
 
-				uint32_t sIdx = pBar - kPair->_block->_bars;
+				std::size_t sIdx = pBar - kPair->_block->_bars;
 				rtHead = pBar;
 				rtCnt = idx - sIdx + 1;
 				bNeedHisData = false;
@@ -2060,7 +2178,7 @@ WTSKlineSlice* WtRdmDtReader::readKlineSliceByCount(const char* stdCode, WTSKlin
 				else
 					return a.time < b.time;
 			});
-			uint32_t idx = pBar - kPair->_block->_bars;
+			std::size_t idx = pBar - kPair->_block->_bars;
 			if ((isDay && pBar->date > eBar.date) || (!isDay && pBar->time > eBar.time))
 			{
 				pBar--;
@@ -2068,8 +2186,8 @@ WTSKlineSlice* WtRdmDtReader::readKlineSliceByCount(const char* stdCode, WTSKlin
 			}
 
 			//如果第一条实时K线的时间大于开始日期，则实时K线要全部包含进去
-			rtCnt = min(idx + 1, count);
-			uint32_t sIdx = idx + 1 - rtCnt;
+			rtCnt = min((uint32_t)idx + 1, count);
+			std::size_t sIdx = idx + 1 - rtCnt;
 			rtHead = kPair->_block->_bars + sIdx;
 			bNeedHisData = (rtCnt < count);
 		}
@@ -2092,7 +2210,7 @@ WTSKlineSlice* WtRdmDtReader::readKlineSliceByCount(const char* stdCode, WTSKlin
 	return NULL;
 }
 
-WTSTickSlice* WtRdmDtReader::readTickSlicesByCount(const char* stdCode, uint32_t count, uint64_t etime /* = 0 */)
+WTSTickSlice* WtRdmDtReader::readTickSliceByCount(const char* stdCode, uint32_t count, uint64_t etime /* = 0 */)
 {
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
@@ -2154,7 +2272,7 @@ WTSTickSlice* WtRdmDtReader::readTickSlicesByCount(const char* stdCode, uint32_t
 				return a.action_time < b.action_time;
 		});
 
-		uint32_t eIdx = pTick - tBlock->_ticks;
+		std::size_t eIdx = pTick - tBlock->_ticks;
 
 		//如果光标定位的tick时间比目标时间大, 则全部回退一个
 		if (pTick->action_date > eTick.action_date || pTick->action_time > eTick.action_time)
@@ -2163,10 +2281,8 @@ WTSTickSlice* WtRdmDtReader::readTickSlicesByCount(const char* stdCode, uint32_t
 			eIdx--;
 		}
 
-		uint32_t thisCnt = min(eIdx + 1, left);
+		uint32_t thisCnt = min((uint32_t)eIdx + 1, left);
 		uint32_t sIdx = eIdx + 1 - thisCnt;
-		//WTSTickSlice* slice = WTSTickSlice::create(stdCode, tBlock->_ticks + sIdx, thisCnt);
-		//ayTicks->append(slice, false);
 		slice->insertBlock(0, tBlock->_ticks + sIdx, thisCnt);
 		left -= thisCnt;
 		break;
@@ -2281,17 +2397,15 @@ WTSTickSlice* WtRdmDtReader::readTickSlicesByCount(const char* stdCode, uint32_t
 					return a.action_time < b.action_time;
 			});
 
-			uint32_t eIdx = pTick - tBlock->_ticks;
+			std::size_t eIdx = pTick - tBlock->_ticks;
 			if (pTick->action_date > eTick.action_date || pTick->action_time >= eTick.action_time)
 			{
 				pTick--;
 				eIdx--;
 			}
 
-			uint32_t thisCnt = min(eIdx + 1, left);
+			uint32_t thisCnt = min((uint32_t)eIdx + 1, left);
 			uint32_t sIdx = eIdx + 1 - thisCnt;
-			//WTSTickSlice* slice = WTSTickSlice::create(stdCode, tBlock->_ticks + sIdx, thisCnt);
-			//ayTicks->append(slice, false);
 			slice->insertBlock(0, tBlock->_ticks + sIdx, thisCnt);
 			left -= thisCnt;
 			break;
