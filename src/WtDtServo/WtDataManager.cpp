@@ -164,7 +164,7 @@ WTSKlineSlice* WtDataManager::get_skline_slice_by_date(const char* stdCode, uint
 		WTSTickSlice* ticks = _reader->readTickSliceByDate(stdCode, uDate);
 		if (ticks != NULL)
 		{
-			WTSKlineData* kData = g_dataFact.extractKlineData(ticks, secs, sInfo, false);
+			WTSKlineData* kData = g_dataFact.extractKlineData(ticks, secs, sInfo, true);
 			barCache._bars = kData;		
 			ticks->release();
 		}
@@ -180,6 +180,14 @@ WTSKlineSlice* WtDataManager::get_skline_slice_by_date(const char* stdCode, uint
 	WTSBarStruct* rtHead = barCache._bars->at(0);
 	WTSKlineSlice* slice = WTSKlineSlice::create(stdCode, KP_Tick, secs, rtHead, barCache._bars->size());
 	return slice;
+}
+
+WTSKlineSlice* WtDataManager::get_kline_slice_by_date(const char* stdCode, WTSKlinePeriod period, uint32_t times, uint32_t uDate /* = 0 */)
+{
+	std::string stdPID = CodeHelper::stdCodeToStdCommID(stdCode);
+	uint64_t stime = _bd_mgr->getBoundaryTime(stdPID.c_str(), uDate, false, true);
+	uint64_t etime = _bd_mgr->getBoundaryTime(stdPID.c_str(), uDate, false, false);
+	return get_kline_slice_by_range(stdCode, period, times, stime, etime);
 }
 
 WTSKlineSlice* WtDataManager::get_kline_slice_by_range(const char* stdCode, WTSKlinePeriod period, uint32_t times,uint64_t stime, uint64_t etime /* = 0 */)

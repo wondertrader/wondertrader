@@ -95,6 +95,26 @@ WtUInt32 get_bars_by_range(const char* stdCode, const char* period, WtUInt64 beg
 	}
 }
 
+WtUInt32 get_bars_by_date(const char* stdCode, const char* period, WtUInt32 uDate, FuncGetBarsCallback cb, FuncCountDataCallback cbCnt)
+{
+	WTSKlineSlice* kData = getRunner().get_bars_by_date(stdCode, period, uDate);
+	if (kData)
+	{
+		uint32_t reaCnt = kData->size();
+		cbCnt(kData->size());
+
+		for (std::size_t i = 0; i < kData->get_block_counts(); i++)
+			cb(kData->get_block_addr(i), kData->get_block_size(i), i == kData->get_block_counts() - 1);
+
+		kData->release();
+		return reaCnt;
+	}
+	else
+	{
+		return 0;
+	}
+}
+
 WtUInt32	get_ticks_by_range(const char* stdCode, WtUInt64 beginTime, WtUInt64 endTime, FuncGetTicksCallback cb, FuncCountDataCallback cbCnt)
 {
 	WTSTickSlice* slice = getRunner().get_ticks_by_range(stdCode, beginTime, endTime);

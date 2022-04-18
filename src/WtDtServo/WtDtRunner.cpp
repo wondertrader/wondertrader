@@ -172,6 +172,48 @@ WTSKlineSlice* WtDtRunner::get_bars_by_range(const char* stdCode, const char* pe
 	return _data_mgr.get_kline_slice_by_range(stdCode, kp, realTimes, beginTime, endTime);
 }
 
+WTSKlineSlice* WtDtRunner::get_bars_by_date(const char* stdCode, const char* period, uint32_t uDate /* = 0 */)
+{
+	if (!_is_inited)
+	{
+		WTSLogger::error_f("WtDtServo not initialized");
+		return NULL;
+	}
+
+	thread_local static char basePeriod[2] = { 0 };
+	basePeriod[0] = period[0];
+	uint32_t times = 1;
+	if (strlen(period) > 1)
+		times = strtoul(period + 1, NULL, 10);
+
+	WTSKlinePeriod kp;
+	uint32_t realTimes = times;
+	if (basePeriod[0] == 'm')
+	{
+		if (times % 5 == 0)
+		{
+			kp = KP_Minute5;
+			realTimes /= 5;
+		}
+		else
+		{
+			kp = KP_Minute1;
+		}
+	}
+	else
+	{
+		WTSLogger::log_raw(LL_ERROR, "get_bars_by_date only supports minute period");
+		return NULL;
+	}
+
+	if (uDate == 0)
+	{
+		uDate = TimeUtils::getCurDate();
+	}
+
+	return _data_mgr.get_kline_slice_by_date(stdCode, kp, realTimes, uDate);
+}
+
 WTSTickSlice* WtDtRunner::get_ticks_by_range(const char* stdCode, uint64_t beginTime, uint64_t endTime /* = 0 */)
 {
 	if (!_is_inited)
