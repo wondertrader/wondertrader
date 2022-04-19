@@ -1751,7 +1751,7 @@ void HisDataReplayer::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTD
 
 									update_price(barsList->_code.c_str(), curTS.price);
 									WTSTickData* curTick = WTSTickData::create(curTS);
-									_listener->handle_tick(barsList->_code.c_str(), curTick);
+									_listener->handle_tick(barsList->_code.c_str(), curTick, false);
 									curTick->release();
 
 									curTS.price = nextBar.high / factor;
@@ -1760,7 +1760,7 @@ void HisDataReplayer::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTD
 									curTS.low = min(curTS.price, curTS.low);
 									update_price(barsList->_code.c_str(), curTS.price);
 									curTick = WTSTickData::create(curTS);
-									_listener->handle_tick(barsList->_code.c_str(), curTick);
+									_listener->handle_tick(barsList->_code.c_str(), curTick, false);
 									curTick->release();
 
 									curTS.price = nextBar.low / factor;
@@ -1768,7 +1768,7 @@ void HisDataReplayer::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTD
 									curTS.low = min(curTS.price, curTS.low);
 									update_price(barsList->_code.c_str(), curTS.price);
 									curTick = WTSTickData::create(curTS);
-									_listener->handle_tick(barsList->_code.c_str(), curTick);
+									_listener->handle_tick(barsList->_code.c_str(), curTick, false);
 									curTick->release();
 
 									curTS.price = nextBar.close / factor;
@@ -1776,7 +1776,7 @@ void HisDataReplayer::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTD
 									curTS.low = min(curTS.price, curTS.low);
 									update_price(barsList->_code.c_str(), curTS.price);
 									curTick = WTSTickData::create(curTS);
-									_listener->handle_tick(barsList->_code.c_str(), curTick);
+									_listener->handle_tick(barsList->_code.c_str(), curTick, true);
 								}
 							}
 
@@ -1834,26 +1834,26 @@ void HisDataReplayer::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTD
 									curTS.volume = nextBar.vol;
 									update_price(barsList->_code.c_str(), curTS.price);
 									WTSTickData* curTick = WTSTickData::create(curTS);
-									_listener->handle_tick(realCode.c_str(), curTick);
+									_listener->handle_tick(realCode.c_str(), curTick, false);
 									curTick->release();
 
 									curTS.price = nextBar.high / factor;
 									curTS.volume = nextBar.vol;
 									update_price(barsList->_code.c_str(), curTS.price);
 									curTick = WTSTickData::create(curTS);
-									_listener->handle_tick(realCode.c_str(), curTick);
+									_listener->handle_tick(realCode.c_str(), curTick, false);
 									curTick->release();
 
 									curTS.price = nextBar.low / factor;
 									update_price(barsList->_code.c_str(), curTS.price);
 									curTick = WTSTickData::create(curTS);
-									_listener->handle_tick(realCode.c_str(), curTick);
+									_listener->handle_tick(realCode.c_str(), curTick, false);
 									curTick->release();
 
 									curTS.price = nextBar.close / factor;
 									update_price(barsList->_code.c_str(), curTS.price);
 									curTick = WTSTickData::create(curTS);
-									_listener->handle_tick(realCode.c_str(), curTick);
+									_listener->handle_tick(realCode.c_str(), curTick, true);
 								}
 							}
 

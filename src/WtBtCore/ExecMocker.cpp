@@ -117,7 +117,7 @@ void ExecMocker::handle_session_end(uint32_t curTDate)
 		_ord_cnt, _ord_qty, _cacl_cnt, _cacl_qty, _sig_cnt);
 }
 
-void ExecMocker::handle_tick(const char* stdCode, WTSTickData* curTick)
+void ExecMocker::handle_tick(const char* stdCode, WTSTickData* curTick, bool isBarEnd /* = true */)
 {
  	if (_last_tick)
 	{

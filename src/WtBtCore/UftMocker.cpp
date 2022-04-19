@@ -166,7 +166,7 @@ bool UftMocker::init_uft_factory(WTSVariant* cfg)
 	return true;
 }
 
-void UftMocker::handle_tick(const char* stdCode, WTSTickData* curTick)
+void UftMocker::handle_tick(const char* stdCode, WTSTickData* curTick, bool isBarEnd /* = true */)
 {
 	on_tick(stdCode, curTick);
 }

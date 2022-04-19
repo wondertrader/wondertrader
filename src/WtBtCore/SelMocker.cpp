@@ -175,9 +175,67 @@ void SelMocker::handle_replay_done()
 	this->on_bactest_end();
 }
 
-void SelMocker::handle_tick(const char* stdCode, WTSTickData* curTick)
+void SelMocker::handle_tick(const char* stdCode, WTSTickData* newTick, bool isBarEnd /* = true */)
 {
-	this->on_tick(stdCode, curTick, true);
+	_price_map[stdCode].first = newTick->price();
+	_price_map[stdCode].second = (uint64_t)newTick->actiondate() * 1000000000 + newTick->actiontime();
+
+	//先检查是否要信号要触发
+	{
+		auto it = _sig_map.find(stdCode);
+		if (it != _sig_map.end())
+		{
+			//if (sInfo->isInTradingTime(_replayer->get_raw_time(), true))
+			{
+				const SigInfo& sInfo = it->second;
+				double price;
+				if (decimal::eq(sInfo._desprice, 0.0))
+					price = newTick->price();
+				else
+					price = sInfo._desprice;
+				do_set_position(stdCode, sInfo._volume, price, sInfo._usertag.c_str(), sInfo._triggered);
+				_sig_map.erase(it);
+			}
+
+		}
+	}
+
+	update_dyn_profit(stdCode, newTick->price());
+
+	on_tick_updated(stdCode, newTick);
+
+	/*
+	 *	By Wesley @ 2022.04.19
+	 *	isBarEnd，如果是逐tick回放，这个永远都是true，永远也不会触发下面这段逻辑
+	 *	如果是模拟的tick数据，用收盘价模拟tick的时候，isBarEnd才会为true
+	 *	如果不是收盘价模拟的tick，那么直接在当前tick触发撮合逻辑
+	 *	这样做的目的是为了让在模拟tick触发的ontick中下单的信号能够正常处理
+	 *	而不至于在回测的时候成交价偏离太远
+	 */
+	if (!isBarEnd)
+	{
+		//先检查是否要信号要触发
+		{
+			auto it = _sig_map.find(stdCode);
+			if (it != _sig_map.end())
+			{
+				//if (sInfo->isInTradingTime(_replayer->get_raw_time(), true))
+				{
+					const SigInfo& sInfo = it->second;
+					double price;
+					if (decimal::eq(sInfo._desprice, 0.0))
+						price = newTick->price();
+					else
+						price = sInfo._desprice;
+					do_set_position(stdCode, sInfo._volume, price, sInfo._usertag.c_str(), sInfo._triggered);
+					_sig_map.erase(it);
+				}
+
+			}
+		}
+
+		update_dyn_profit(stdCode, newTick->price());
+	}
 }
 
 
@@ -251,33 +309,8 @@ void SelMocker::update_dyn_profit(const char* stdCode, double price)
 
 void SelMocker::on_tick(const char* stdCode, WTSTickData* newTick, bool bEmitStrategy /* = true */)
 {
-	_price_map[stdCode].first = newTick->price();
-	_price_map[stdCode].second = (uint64_t)newTick->actiondate() * 1000000000 + newTick->actiontime();
-
-	//先检查是否要信号要触发
-	{
-		auto it = _sig_map.find(stdCode);
-		if (it != _sig_map.end())
-		{
-			//if (sInfo->isInTradingTime(_replayer->get_raw_time(), true))
-			{
-				const SigInfo& sInfo = it->second;
-				double price;
-				if (decimal::eq(sInfo._desprice, 0.0))
-					price = newTick->price();
-				else
-					price = sInfo._desprice;
-				do_set_position(stdCode, sInfo._volume, price, sInfo._usertag.c_str(), sInfo._triggered);
-				_sig_map.erase(it);
-			}
-
-		}
-	}
-
-	update_dyn_profit(stdCode, newTick->price());
-
-	if (bEmitStrategy)
-		on_tick_updated(stdCode, newTick);
+	//By Wesley @ 2022.04.19
+	//这个逻辑迁移到handle_tick去了
 }
 
 void SelMocker::on_bar_close(const char* code, const char* period, WTSBarStruct* newBar)

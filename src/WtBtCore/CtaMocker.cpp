@@ -225,9 +225,219 @@ void CtaMocker::handle_replay_done()
 	this->on_bactest_end();
 }
 
-void CtaMocker::handle_tick(const char* stdCode, WTSTickData* curTick)
+void CtaMocker::handle_tick(const char* stdCode, WTSTickData* newTick, bool isBarEnd /* = true */)
 {
-	this->on_tick(stdCode, curTick, true);
+	double cur_px = newTick->price();
+
+	/*
+	 *	By Wesley @ 2022.04.19
+	 *	这里的逻辑改了一下
+	 *	如果缓存的价格不存在，则上一笔价格就用最新价
+	 *	这里主要是为了应对跨日价格跳空的情况
+	 */
+	double last_px = 0;
+	auto it = _price_map.find(stdCode);
+	if (it != _price_map.end())
+		last_px = it->second;
+	else
+		last_px = cur_px;
+	
+	_price_map[stdCode] = cur_px;
+
+	//先检查是否要信号要触发
+	//By Wesley @ 2022.04.19
+	//虽然这段逻辑下面也根据isBarEnd复制了一段
+	//但是这一段还是要保留
+	{
+		auto it = _sig_map.find(stdCode);
+		if (it != _sig_map.end())
+		{
+			//if (sInfo->isInTradingTime(_replayer->get_raw_time(), true))
+			{
+				const SigInfo& sInfo = it->second;
+				double price;
+				if (decimal::eq(sInfo._desprice, 0.0))
+					price = newTick->price();
+				else
+					price = sInfo._desprice;
+				do_set_position(stdCode, sInfo._volume, price, sInfo._usertag.c_str(), sInfo._triggered);
+				_sig_map.erase(it);
+			}
+
+		}
+	}
+
+	update_dyn_profit(stdCode, newTick->price());
+
+	//////////////////////////////////////////////////////////////////////////
+	//检查条件单
+	if (!_condtions.empty())
+	{
+		auto it = _condtions.find(stdCode);
+		if (it == _condtions.end())
+			return;
+
+		const CondList& condList = it->second;
+		double curPrice = cur_px;
+		for (const CondEntrust& entrust : condList)
+		{
+			/*
+			 * 如果开启了tick模式，就正常比较
+			 * 但是如果没有开启tick模式，逻辑就非常复杂
+			 * 因为不开回测的时候tick是用开高低收模拟出来的，如果直接按照目标价格触发，可能是有问题的
+			 * 首先要拿到上一笔价格，和当前最新价格做一个比价，得到左边界和右边界
+			 * 这里只能假设前后两笔价格之间是连续的，这样需要将两笔价格都加入判断
+			 * 当条件是等于时，如果目标价格在左右边界之间，说明目标价格在这期间是出现过的，则认为价格匹配
+			 * 当条件是大于的时候，我们需要判断右边界，即稍大的值是否满足条件，并取左边界与目标价中稍大的作为当前价
+			 * 当条件是小于的时候，我们需要判断左边界，即稍小的值是否满足条件，并取右边界与目标价中稍小的作为当前价
+			 */
+
+			double left_px = min(last_px, cur_px);
+			double right_px = max(last_px, cur_px);
+
+			bool isMatched = false;
+			if (!_replayer->is_tick_simulated())
+			{
+				//如果tick数据不是模拟的，则使用最新价格
+				switch (entrust._alg)
+				{
+				case WCT_Equal:
+					isMatched = decimal::eq(curPrice, entrust._target);
+					break;
+				case WCT_Larger:
+					isMatched = decimal::gt(curPrice, entrust._target);
+					break;
+				case WCT_LargerOrEqual:
+					isMatched = decimal::ge(curPrice, entrust._target);
+					break;
+				case WCT_Smaller:
+					isMatched = decimal::lt(curPrice, entrust._target);
+					break;
+				case WCT_SmallerOrEqual:
+					isMatched = decimal::le(curPrice, entrust._target);
+					break;
+				default:
+					break;
+				}
+			}
+			else
+			{
+				//如果tick数据是模拟的，则要处理一下
+				switch (entrust._alg)
+				{
+				case WCT_Equal:
+					isMatched = decimal::le(left_px, entrust._target) && decimal::ge(right_px, entrust._target);
+					curPrice = entrust._target;
+					break;
+				case WCT_Larger:
+					isMatched = decimal::gt(right_px, entrust._target);
+					curPrice = max(left_px, entrust._target);
+					break;
+				case WCT_LargerOrEqual:
+					isMatched = decimal::ge(right_px, entrust._target);
+					curPrice = max(left_px, entrust._target);
+					break;
+				case WCT_Smaller:
+					isMatched = decimal::lt(left_px, entrust._target);
+					curPrice = min(right_px, entrust._target);
+					break;
+				case WCT_SmallerOrEqual:
+					isMatched = decimal::le(left_px, entrust._target);
+					curPrice = min(right_px, entrust._target);
+					break;
+				default:
+					break;
+				}
+			}
+
+
+			if (isMatched)
+			{
+				double price = curPrice;
+				double curQty = stra_get_position(stdCode);
+				//_replayer->is_tick_enabled() ? newTick->price() : entrust._target;	//如果开启了tick回测,则用tick数据的价格,如果没有开启,则只能用条件单价格
+				WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_INFO,
+					"Condition order triggered[newprice: {}{}{}], instrument: {}, {} {}",
+					cur_px, CMP_ALG_NAMES[entrust._alg], entrust._target, stdCode, ACTION_NAMES[entrust._action], entrust._qty);
+				switch (entrust._action)
+				{
+				case COND_ACTION_OL:
+				{
+					if (decimal::lt(curQty, 0))
+						append_signal(stdCode, entrust._qty, entrust._usertag, price);
+					else
+						append_signal(stdCode, curQty + entrust._qty, entrust._usertag, price);
+				}
+				break;
+				case COND_ACTION_CL:
+				{
+					double maxQty = min(curQty, entrust._qty);
+					append_signal(stdCode, curQty - maxQty, entrust._usertag, price);
+				}
+				break;
+				case COND_ACTION_OS:
+				{
+					if (decimal::gt(curQty, 0))
+						append_signal(stdCode, -entrust._qty, entrust._usertag, price);
+					else
+						append_signal(stdCode, curQty - entrust._qty, entrust._usertag, price);
+				}
+				break;
+				case COND_ACTION_CS:
+				{
+					double maxQty = min(abs(curQty), entrust._qty);
+					append_signal(stdCode, curQty + maxQty, entrust._usertag, price);
+				}
+				break;
+				case COND_ACTION_SP:
+				{
+					append_signal(stdCode, entrust._qty, entrust._usertag, price);
+				}
+				default: break;
+				}
+
+				//同一个bar设置针对同一个合约的条件单,只可能触发一条
+				//所以这里直接清理掉即可
+				_condtions.erase(it);
+				break;
+			}
+		}
+	}
+
+	on_tick_updated(stdCode, newTick);
+
+	/*
+	 *	By Wesley @ 2022.04.19
+	 *	isBarEnd，如果是逐tick回放，这个永远都是true，永远也不会触发下面这段逻辑
+	 *	如果是模拟的tick数据，用收盘价模拟tick的时候，isBarEnd才会为true
+	 *	如果不是收盘价模拟的tick，那么直接在当前tick触发撮合逻辑
+	 *	这样做的目的是为了让在模拟tick触发的ontick中下单的信号能够正常处理
+	 *	而不至于在回测的时候成交价偏离太远
+	 */
+	if(!isBarEnd)
+	{
+		//先检查是否要信号要触发
+		{
+			auto it = _sig_map.find(stdCode);
+			if (it != _sig_map.end())
+			{
+				//if (sInfo->isInTradingTime(_replayer->get_raw_time(), true))
+				{
+					const SigInfo& sInfo = it->second;
+					double price;
+					if (decimal::eq(sInfo._desprice, 0.0))
+						price = newTick->price();
+					else
+						price = sInfo._desprice;
+					do_set_position(stdCode, sInfo._volume, price, sInfo._usertag.c_str(), sInfo._triggered);
+					_sig_map.erase(it);
+				}
+
+			}
+		}
+
+		update_dyn_profit(stdCode, newTick->price());
+	}
 }
 
 
@@ -301,169 +511,7 @@ void CtaMocker::update_dyn_profit(const char* stdCode, double price)
 
 void CtaMocker::on_tick(const char* stdCode, WTSTickData* newTick, bool bEmitStrategy /* = true */)
 {
-	double last_px = _price_map[stdCode];
-	double cur_px = newTick->price();
-	_price_map[stdCode] = cur_px;
-
-	//先检查是否要信号要触发
-	{
-		auto it = _sig_map.find(stdCode);
-		if (it != _sig_map.end())
-		{
-			//if (sInfo->isInTradingTime(_replayer->get_raw_time(), true))
-			{
-				const SigInfo& sInfo = it->second;
-				double price;
-				if (decimal::eq(sInfo._desprice, 0.0))
-					price = newTick->price();
-				else
-					price = sInfo._desprice;
-				do_set_position(stdCode, sInfo._volume, price, sInfo._usertag.c_str(), sInfo._triggered);
-				_sig_map.erase(it);
-			}
-
-		}
-	}
-
-	update_dyn_profit(stdCode, newTick->price());
-
-	//////////////////////////////////////////////////////////////////////////
-	//检查条件单
-	if (!_condtions.empty())
-	{
-		auto it = _condtions.find(stdCode);
-		if (it == _condtions.end())
-			return;
-
-		const CondList& condList = it->second;
-		double curPrice = cur_px;
-		for (const CondEntrust& entrust : condList)
-		{
-			/*
-			 * 如果开启了tick模式，就正常比较
-			 * 但是如果没有开启tick模式，逻辑就非常复杂
-			 * 因为不开回测的时候tick是用开高低收模拟出来的，如果直接按照目标价格触发，可能是有问题的
-			 * 首先要拿到上一笔价格，和当前最新价格做一个比价，得到左边界和右边界
-			 * 这里只能假设前后两笔价格之间是连续的，这样需要将两笔价格都加入判断
-			 * 当条件是等于时，如果目标价格在左右边界之间，说明目标价格在这期间是出现过的，则认为价格匹配
-			 * 当条件是大于的时候，我们需要判断右边界，即稍大的值是否满足条件，并取左边界与目标价中稍大的作为当前价
-			 * 当条件是小于的时候，我们需要判断左边界，即稍小的值是否满足条件，并取右边界与目标价中稍小的作为当前价
-			 */
-
-			double left_px = min(last_px, cur_px);
-			double right_px = max(last_px, cur_px);
-
-			bool isMatched = false;	
-			if(!_replayer->is_tick_simulated())
-			{
-				//如果tick数据不是模拟的，则使用最新价格
-				switch (entrust._alg)
-				{
-				case WCT_Equal:
-					isMatched = decimal::eq(curPrice, entrust._target);
-					break;
-				case WCT_Larger:
-					isMatched = decimal::gt(curPrice, entrust._target);
-					break;
-				case WCT_LargerOrEqual:
-					isMatched = decimal::ge(curPrice, entrust._target);
-					break;
-				case WCT_Smaller:
-					isMatched = decimal::lt(curPrice, entrust._target);
-					break;
-				case WCT_SmallerOrEqual:
-					isMatched = decimal::le(curPrice, entrust._target);
-					break;
-				default:
-					break;
-				}
-			}
-			else
-			{
-				//如果tick数据是模拟的，则要处理一下
-				switch (entrust._alg)
-				{
-				case WCT_Equal:
-					isMatched = decimal::le(left_px, entrust._target) && decimal::ge(right_px, entrust._target);
-					curPrice = entrust._target;
-					break;
-				case WCT_Larger:
-					isMatched = decimal::gt(right_px, entrust._target);
-					curPrice = max(left_px, entrust._target);
-					break;
-				case WCT_LargerOrEqual:
-					isMatched = decimal::ge(right_px, entrust._target);
-					curPrice = max(left_px, entrust._target);
-					break;
-				case WCT_Smaller:
-					isMatched = decimal::lt(left_px, entrust._target);
-					curPrice = min(right_px, entrust._target);
-					break;
-				case WCT_SmallerOrEqual:
-					isMatched = decimal::le(left_px, entrust._target);
-					curPrice = min(right_px, entrust._target);
-					break;
-				default:
-					break;
-				}
-			}
-			
-
-			if (isMatched)
-			{
-				double price = curPrice;
-				double curQty = stra_get_position(stdCode);
-				//_replayer->is_tick_enabled() ? newTick->price() : entrust._target;	//如果开启了tick回测,则用tick数据的价格,如果没有开启,则只能用条件单价格
-				WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_INFO, 
-					"Condition order triggered[newprice: {}{}{}], instrument: {}, {} {}", 
-					cur_px, CMP_ALG_NAMES[entrust._alg], entrust._target, stdCode, ACTION_NAMES[entrust._action], entrust._qty);
-				switch (entrust._action)
-				{
-				case COND_ACTION_OL:
-				{
-					if(decimal::lt(curQty, 0))
-						append_signal(stdCode, entrust._qty, entrust._usertag, price);
-					else
-						append_signal(stdCode, curQty + entrust._qty, entrust._usertag, price);
-				}
-				break;
-				case COND_ACTION_CL:
-				{
-					double maxQty = min(curQty, entrust._qty);
-					append_signal(stdCode, curQty - maxQty, entrust._usertag, price);
-				}
-				break;
-				case COND_ACTION_OS:
-				{
-					if(decimal::gt(curQty, 0))
-						append_signal(stdCode, -entrust._qty, entrust._usertag, price);
-					else
-						append_signal(stdCode, curQty - entrust._qty, entrust._usertag, price);
-				}
-				break;
-				case COND_ACTION_CS:
-				{
-					double maxQty = min(abs(curQty), entrust._qty);
-					append_signal(stdCode, curQty + maxQty, entrust._usertag, price);
-				}
-				break;
-				case COND_ACTION_SP:
-				{
-					append_signal(stdCode, entrust._qty, entrust._usertag, price);
-				}
-				default: break;
-				}
-
-				//同一个bar设置针对同一个合约的条件单,只可能触发一条
-				//所以这里直接清理掉即可
-				_condtions.erase(it);
-				break;
-			}
-		}
-	}
-
-	if (bEmitStrategy)
-		on_tick_updated(stdCode, newTick);
+	//这个逻辑全部迁移到handle_tick里去了
 }
 
 void CtaMocker::on_bar_close(const char* code, const char* period, WTSBarStruct* newBar)
@@ -646,6 +694,15 @@ void CtaMocker::on_session_begin(uint32_t curTDate)
 			pInfo._frozen = 0;
 		}
 	}
+
+	/*
+	 *	By Wesley @ 2022.04.19
+	 *	新交易日开始的时候，价格缓存清掉，要重新处理
+	 */
+	_price_map.clear();
+
+	if (_strategy)
+		_strategy->on_session_begin(this, curTDate);
 }
 
 void CtaMocker::enum_position(FuncEnumCtaPosCallBack cb)
@@ -673,6 +730,9 @@ void CtaMocker::enum_position(FuncEnumCtaPosCallBack cb)
 
 void CtaMocker::on_session_end(uint32_t curTDate)
 {
+	if (_strategy)
+		_strategy->on_session_end(this, curTDate);
+
 	uint32_t curDate = curTDate;//_replayer->get_trading_date();
 
 	double total_profit = 0;

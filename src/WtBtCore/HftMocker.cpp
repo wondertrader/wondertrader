@@ -241,7 +241,7 @@ bool HftMocker::init_hft_factory(WTSVariant* cfg)
 	return true;
 }
 
-void HftMocker::handle_tick(const char* stdCode, WTSTickData* curTick)
+void HftMocker::handle_tick(const char* stdCode, WTSTickData* curTick, bool isBarEnd /* = true */)
 {
 	on_tick(stdCode, curTick);
 }
