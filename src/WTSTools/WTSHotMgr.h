@@ -23,9 +23,9 @@ USING_NS_WTP;
 //换月主力映射
 typedef WTSMap<uint32_t>		WTSDateHotMap;
 //品种主力映射
-typedef WTSMap<std::string>		WTSProductHotMap;
+typedef WTSMap<ShortKey>		WTSProductHotMap;
 //分市场主力映射
-typedef WTSMap<std::string>		WTSExchgHotMap;
+typedef WTSMap<ShortKey>		WTSExchgHotMap;
 
 class WTSHotMgr : public IHotMgr
 {

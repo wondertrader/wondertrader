@@ -430,7 +430,7 @@ void WTSHotMgr::getHotCodes(const char* exchg, std::map<std::string, std::string
 	WTSExchgHotMap::ConstIterator cit = m_pExchgHotMap->begin();
 	for(; cit != m_pExchgHotMap->end(); cit++)
 	{
-		if (strlen(exchg) == 0 || cit->first.compare(exchg)==0)
+		if (strlen(exchg) == 0 || strcmp(cit->first.c_str(), exchg)==0)
 		{
 			WTSProductHotMap* pMap = (WTSProductHotMap*)cit->second;
 			WTSProductHotMap::ConstIterator pit = pMap->begin();
