@@ -86,6 +86,15 @@ private:
 
 	bool				_stopped;
 
+	/*
+	 *	检查时间设置项
+	 *	如果为true，则在收到行情的时候进行时间检查
+	 *	主要适用于直接从行情源接入
+	 *	因为直接从行情源接入很可能会有错误时间戳的数据进来
+	 *	该选项默认为false
+	 */
+	bool				_check_time;
+
 	typedef faster_hashset<LongKey>	ExchgFilter;
 	ExchgFilter			_exchg_filter;
 	ExchgFilter			_code_filter;

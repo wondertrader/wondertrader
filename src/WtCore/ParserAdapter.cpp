@@ -13,6 +13,8 @@
 #include "WtHelper.h"
 
 #include "../Share/CodeHelper.hpp"
+#include "../Share/TimeUtils.hpp"
+
 #include "../Includes/WTSContractInfo.hpp"
 #include "../Includes/WTSDataDef.hpp"
 #include "../Includes/WTSVariant.hpp"
@@ -95,6 +97,8 @@ bool ParserAdapter::init(const char* id, WTSVariant* cfg, IParserStub* stub, IBa
 
 	_cfg = cfg;
 	_cfg->retain();
+
+	_check_time = cfg->getBoolean("check_time");
 
 	{
 		//加载模块
@@ -228,6 +232,8 @@ bool ParserAdapter::init(const char* id, WTSVariant* cfg, IParserStub* stub, IBa
 		WTSLogger::log_dyn_f("parser", _id.c_str(), LL_ERROR, "[{}] Parser initializing failed: creating api failed...", _id.c_str());
 	}
 
+	WTSLogger::info_f("parser", _id.c_str(), LL_INFO, "[{}] Parser initialzied, check_time: {}", _id.c_str(), _check_time);
+
 	return true;
 }
 
@@ -254,6 +260,8 @@ bool ParserAdapter::run()
 	return true;
 }
 
+//合理毫秒数时间差
+const int RESONABLE_MILLISECS = 60 * 60 * 1000;
 void ParserAdapter::handleQuote(WTSTickData *quote, uint32_t procFlag)
 {
 	if (quote == NULL || _stopped || quote->actiondate() == 0 || quote->tradingdate() == 0)
@@ -261,8 +269,6 @@ void ParserAdapter::handleQuote(WTSTickData *quote, uint32_t procFlag)
 
 	if (!_exchg_filter.empty() && (_exchg_filter.find(quote->exchg()) == _exchg_filter.end()))
 		return;
-
-	uint32_t hotflag = 0;
 
 	WTSContractInfo* cInfo = quote->getContractInfo();
 	if (cInfo == NULL)
@@ -275,6 +281,27 @@ void ParserAdapter::handleQuote(WTSTickData *quote, uint32_t procFlag)
 		return;
 
 	WTSCommodityInfo* commInfo = cInfo->getCommInfo();
+	WTSSessionInfo* sInfo = commInfo->getSessionInfo();
+
+	if (_check_time)
+	{
+		int64_t tick_time = TimeUtils::makeTime(quote->actiondate(), quote->actiontime());
+		int64_t local_time = TimeUtils::getLocalTimeNow();
+
+		/*
+		 *	By Wesley @ 2022.04.20
+		 *	如果最新的tick时间，和本地时间相差太大
+		 *	则认为tick的时间戳是错误的
+		 *	这里要求本地时间是要时常进行校准的
+		 */
+		if (tick_time - local_time > RESONABLE_MILLISECS)
+		{
+			WTSLogger::warn_f("Tick of {} with wrong timestamp {}.{} received, skipped", cInfo->getFullCode(), quote->actiondate(), quote->actiontime());
+			return;
+		}
+	}
+
+	uint32_t hotflag = 0;
 
 	std::string stdCode;
 	if (commInfo->getCategoty() == CC_FutOption)
