@@ -12,6 +12,7 @@
 #include "../WtCore/WtHelper.h"
 #include "../WtCore/CtaStraContext.h"
 #include "../WtCore/HftStraContext.h"
+#include "../WtCore/WtDiffExecuter.h"
 
 #include "../Includes/WTSVariant.hpp"
 #include "../WTSTools/WTSLogger.h"
@@ -441,17 +442,61 @@ bool WtRunner::initExecuters(WTSVariant* cfgExecuter)
 			continue;
 
 		const char* id = cfgItem->getCString("id");
-		bool bLocal = cfgItem->getBoolean("local");
+		std::string name = cfgItem->getCString("name");	//local,diff,dist
+		if (name.empty())
+			name = "local";
 
-		if (bLocal)
+		if (name == "local")
 		{
 			WtLocalExecuter* executer = new WtLocalExecuter(&_exe_factory, id, &_data_mgr);
 			if (!executer->init(cfgItem))
 				return false;
 
-			TraderAdapterPtr trader = _traders.getAdapter(cfgItem->getCString("trader"));
-			executer->setTrader(trader.get());
-			trader->addSink(executer);
+			const char* tid = cfgItem->getCString("trader");
+			if (strlen(tid) == 0)
+			{
+				WTSLogger::error_f("No Trader configured for Executer {}", id);
+			}
+			else
+			{
+				TraderAdapterPtr trader = _traders.getAdapter(tid);
+				if (trader)
+				{
+					executer->setTrader(trader.get());
+					trader->addSink(executer);
+				}
+				else
+				{
+					WTSLogger::error_f("Trader {} not exists, cannot configured for executer %s", tid, id);
+				}
+			}
+
+			_cta_engine.addExecuter(ExecCmdPtr(executer));
+		}
+		else if (name == "diff")
+		{
+			WtDiffExecuter* executer = new WtDiffExecuter(&_exe_factory, id, &_data_mgr);
+			if (!executer->init(cfgItem))
+				return false;
+
+			const char* tid = cfgItem->getCString("trader");
+			if (strlen(tid) == 0)
+			{
+				WTSLogger::error_f("No Trader configured for Executer {}", id);
+			}
+			else
+			{
+				TraderAdapterPtr trader = _traders.getAdapter(tid);
+				if (trader)
+				{
+					executer->setTrader(trader.get());
+					trader->addSink(executer);
+				}
+				else
+				{
+					WTSLogger::error_f("Trader {} not exists, cannot configured for executer %s", tid, id);
+				}
+			}
 
 			_cta_engine.addExecuter(ExecCmdPtr(executer));
 		}

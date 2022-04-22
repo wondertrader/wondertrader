@@ -1,6 +1,9 @@
 #include "WtExecRunner.h"
 
 #include "../WtCore/WtHelper.h"
+#include "../WtCore/WtDiffExecuter.h"
+#include "../WtCore/WtDistExecuter.h"
+
 #include "../WTSTools/WTSLogger.h"
 #include "../WTSUtils/WTSCfgLoader.h"
 
@@ -252,33 +255,72 @@ bool WtExecRunner::initExecuters(WTSVariant* cfgExecuter)
 			continue;
 
 		const char* id = cfgItem->getCString("id");
+		std::string name = cfgItem->getCString("name");	//local,diff,dist
+		if (name.empty())
+			name = "local";
 
-		WtExecuterPtr executer(new WtLocalExecuter(&_exe_factory, id, &_data_mgr));
-		executer->setStub(this);
-		if (!executer->init(cfgItem))
-			return false;
+		if (name == "local")
+		{
+			WtLocalExecuter* executer = new WtLocalExecuter(&_exe_factory, id, &_data_mgr);
+			if (!executer->init(cfgItem))
+				return false;
 
-		const char* tid = cfgItem->getCString("trader");
-		if (strlen(tid) == 0)
-		{
-			WTSLogger::error_f("No Trader configured for Executer {}", id);
-		}
-		else
-		{
-			TraderAdapterPtr trader = _traders.getAdapter(tid);
-			if (trader)
+			const char* tid = cfgItem->getCString("trader");
+			if (strlen(tid) == 0)
 			{
-				executer->setTrader(trader.get());
-				trader->addSink(executer.get());
+				WTSLogger::error_f("No Trader configured for Executer {}", id);
 			}
 			else
 			{
-				WTSLogger::error_f("Trader {} not exists, cannot configured for executer {}", tid, id);
+				TraderAdapterPtr trader = _traders.getAdapter(tid);
+				if (trader)
+				{
+					executer->setTrader(trader.get());
+					trader->addSink(executer);
+				}
+				else
+				{
+					WTSLogger::error_f("Trader {} not exists, cannot configured for executer %s", tid, id);
+				}
 			}
+
+			_exe_mgr.add_executer(ExecCmdPtr(executer));
 		}
+		else if (name == "diff")
+		{
+			WtDiffExecuter* executer = new WtDiffExecuter(&_exe_factory, id, &_data_mgr);
+			if (!executer->init(cfgItem))
+				return false;
 
-		_exe_mgr.add_executer(executer);
+			const char* tid = cfgItem->getCString("trader");
+			if (strlen(tid) == 0)
+			{
+				WTSLogger::error_f("No Trader configured for Executer {}", id);
+			}
+			else
+			{
+				TraderAdapterPtr trader = _traders.getAdapter(tid);
+				if (trader)
+				{
+					executer->setTrader(trader.get());
+					trader->addSink(executer);
+				}
+				else
+				{
+					WTSLogger::error_f("Trader {} not exists, cannot configured for executer %s", tid, id);
+				}
+			}
 
+			_exe_mgr.add_executer(ExecCmdPtr(executer));
+		}
+		else
+		{
+			WtDistExecuter* executer = new WtDistExecuter(id);
+			if (!executer->init(cfgItem))
+				return false;
+
+			_exe_mgr.add_executer(ExecCmdPtr(executer));
+		}
 		count++;
 	}
 
