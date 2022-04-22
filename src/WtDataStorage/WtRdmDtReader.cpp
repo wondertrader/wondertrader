@@ -26,8 +26,7 @@ inline void pipe_rdmreader_log(IRdmDtReaderSink* sink, WTSLogLevel ll, const cha
 		return;
 
 	static thread_local char buffer[512] = { 0 };
-	memset(buffer, 0, 512);
-	fmt::format_to(buffer, format, args...);
+	fmtutil::format_to(buffer, format, args...);
 
 	sink->reader_log(ll, buffer);
 }
@@ -241,7 +240,7 @@ WTSTickSlice* WtRdmDtReader::readTickSliceByDate(const char* stdCode, uint32_t u
 {
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
-	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
+	std::string stdPID = fmt::format("{}.{}", cInfo._exchg, cInfo._product);
 
 	uint32_t curTDate = _base_data_mgr->calcTradingDate(stdPID.c_str(), 0, 0, false);
 	bool isToday = (uDate == curTDate);
@@ -253,19 +252,19 @@ WTSTickSlice* WtRdmDtReader::readTickSliceByDate(const char* stdCode, uint32_t u
 		if (cInfo.isHot() && commInfo->isFuture())
 		{
 			curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, uDate);
-			pipe_rdmreader_log(_sink, LL_INFO, "Hot contract of %u confirmed: %s -> %s", uDate, stdCode, curCode.c_str());
+			pipe_rdmreader_log(_sink, LL_INFO, "Hot contract on {} confirmed: {} -> {}", uDate, stdCode, curCode.c_str());
 			hotCode = cInfo._product;
 			hotCode += "_HOT";
 		}
 		else if (cInfo.isSecond() && commInfo->isFuture())
 		{
 			curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, uDate);
-			pipe_rdmreader_log(_sink, LL_INFO, "Second contract of %u confirmed: %s -> %s", uDate, stdCode, curCode.c_str());
+			pipe_rdmreader_log(_sink, LL_INFO, "Second contract on {} confirmed: {} -> {}", uDate, stdCode, curCode.c_str());
 			hotCode = cInfo._product;
 			hotCode += "_2ND";
 		}
 
-		std::string key = StrUtil::printf("%s-%d", stdCode, uDate);
+		std::string key = fmt::format("{}-{}", stdCode, uDate);
 
 		auto it = _his_tick_map.find(key);
 		bool bHasHisTick = (it != _his_tick_map.end());
@@ -301,7 +300,7 @@ WTSTickSlice* WtRdmDtReader::readTickSliceByDate(const char* stdCode, uint32_t u
 				StdFile::read_file_content(filename.c_str(), tBlkPair._buffer);
 				if (tBlkPair._buffer.size() < sizeof(HisTickBlock))
 				{
-					pipe_rdmreader_log(_sink, LL_ERROR, "历史Tick数据文件%s大小校验失败", filename.c_str());
+					pipe_rdmreader_log(_sink, LL_ERROR, "Sizechecking of tick data file {} failed", filename.c_str());
 					tBlkPair._buffer.clear();
 					break;
 				}
@@ -358,7 +357,7 @@ WTSTickSlice* WtRdmDtReader::readTickSliceByRange(const char* stdCode, uint64_t 
 {
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
-	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
+	std::string stdPID = fmt::format("{}.{}", cInfo._exchg, cInfo._product);
 
 	WTSSessionInfo* sInfo = _base_data_mgr->getSession(_base_data_mgr->getCommodity(cInfo._exchg, cInfo._code)->getSession());
 
@@ -394,19 +393,19 @@ WTSTickSlice* WtRdmDtReader::readTickSliceByRange(const char* stdCode, uint64_t 
 		if (cInfo.isHot() && commInfo->isFuture())
 		{
 			curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, nowTDate);
-			pipe_rdmreader_log(_sink, LL_INFO, "Hot contract of %u confirmed: %s -> %s", curTDate, stdCode, curCode.c_str());
+			pipe_rdmreader_log(_sink, LL_INFO, "Hot contract on {} confirmed: {} -> {}", curTDate, stdCode, curCode.c_str());
 			hotCode = cInfo._product;
 			hotCode += "_HOT";
 		}
 		else if (cInfo.isSecond() && commInfo->isFuture())
 		{
 			curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, nowTDate);
-			pipe_rdmreader_log(_sink, LL_INFO, "Second contract of %u confirmed: %s -> %s", curTDate, stdCode, curCode.c_str());
+			pipe_rdmreader_log(_sink, LL_INFO, "Second contract on {} confirmed: {} -> {}", curTDate, stdCode, curCode.c_str());
 			hotCode = cInfo._product;
 			hotCode += "_2ND";
 		}
 
-		std::string key = StrUtil::printf("%s-%d", stdCode, nowTDate);
+		std::string key = fmt::format("{}-{}", stdCode, nowTDate);
 
 		auto it = _his_tick_map.find(key);
 		bool bHasHisTick = (it != _his_tick_map.end());
@@ -442,7 +441,7 @@ WTSTickSlice* WtRdmDtReader::readTickSliceByRange(const char* stdCode, uint64_t 
 				StdFile::read_file_content(filename.c_str(), tBlkPair._buffer);
 				if (tBlkPair._buffer.size() < sizeof(HisTickBlock))
 				{
-					pipe_rdmreader_log(_sink, LL_ERROR, "历史Tick数据文件%s大小校验失败", filename.c_str());
+					pipe_rdmreader_log(_sink, LL_ERROR, "Sizechecking of tick data file {} failed", filename.c_str());
 					tBlkPair._buffer.clear();
 					break;
 				}
@@ -596,7 +595,7 @@ WTSOrdQueSlice* WtRdmDtReader::readOrdQueSliceByRange(const char* stdCode, uint6
 {
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
-	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
+	std::string stdPID = fmt::format("{}.{}", cInfo._exchg, cInfo._product);
 
 	uint32_t rDate, rTime, rSecs;
 	//20190807124533900
@@ -678,7 +677,7 @@ WTSOrdQueSlice* WtRdmDtReader::readOrdQueSliceByRange(const char* stdCode, uint6
 	}
 	else
 	{
-		std::string key = StrUtil::printf("%s-%d", stdCode, endTDate);
+		std::string key = fmt::format("{}-{}", stdCode, endTDate);
 
 		auto it = _his_ordque_map.find(key);
 		if (it == _his_ordque_map.end())
@@ -693,7 +692,7 @@ WTSOrdQueSlice* WtRdmDtReader::readOrdQueSliceByRange(const char* stdCode, uint6
 			StdFile::read_file_content(filename.c_str(), hisBlkPair._buffer);
 			if (hisBlkPair._buffer.size() < sizeof(HisOrdQueBlockV2))
 			{
-				pipe_rdmreader_log(_sink, LL_ERROR, "历史委托队列数据文件%s大小校验失败", filename.c_str());
+				pipe_rdmreader_log(_sink, LL_ERROR, "Sizechecking of orderqueue data file {} failed", filename.c_str());
 				hisBlkPair._buffer.clear();
 				return NULL;
 			}
@@ -702,7 +701,7 @@ WTSOrdQueSlice* WtRdmDtReader::readOrdQueSliceByRange(const char* stdCode, uint6
 
 			if (hisBlkPair._buffer.size() != (sizeof(HisOrdQueBlockV2) + tBlockV2->_size))
 			{
-				pipe_rdmreader_log(_sink, LL_ERROR, "历史委托队列数据文件%s大小校验失败", filename.c_str());
+				pipe_rdmreader_log(_sink, LL_ERROR, "Sizechecking of orderqueue data file {} failed", filename.c_str());
 				return NULL;
 			}
 
@@ -769,7 +768,7 @@ WTSOrdDtlSlice* WtRdmDtReader::readOrdDtlSliceByRange(const char* stdCode, uint6
 {
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
-	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
+	std::string stdPID = fmt::format("{}.{}", cInfo._exchg, cInfo._product);
 
 	uint32_t rDate, rTime, rSecs;
 	//20190807124533900
@@ -851,7 +850,7 @@ WTSOrdDtlSlice* WtRdmDtReader::readOrdDtlSliceByRange(const char* stdCode, uint6
 	}
 	else
 	{
-		std::string key = StrUtil::printf("%s-%d", stdCode, endTDate);
+		std::string key = fmt::format("{}-{}", stdCode, endTDate);
 
 		auto it = _his_ordque_map.find(key);
 		if (it == _his_ordque_map.end())
@@ -866,7 +865,7 @@ WTSOrdDtlSlice* WtRdmDtReader::readOrdDtlSliceByRange(const char* stdCode, uint6
 			StdFile::read_file_content(filename.c_str(), hisBlkPair._buffer);
 			if (hisBlkPair._buffer.size() < sizeof(HisOrdDtlBlockV2))
 			{
-				pipe_rdmreader_log(_sink, LL_ERROR, "历史逐笔委托数据文件%s大小校验失败", filename.c_str());
+				pipe_rdmreader_log(_sink, LL_ERROR, "Sizechecking of orderdetail data file {} failed", filename.c_str());
 				hisBlkPair._buffer.clear();
 				return NULL;
 			}
@@ -875,7 +874,7 @@ WTSOrdDtlSlice* WtRdmDtReader::readOrdDtlSliceByRange(const char* stdCode, uint6
 
 			if (hisBlkPair._buffer.size() != (sizeof(HisOrdDtlBlockV2) + tBlockV2->_size))
 			{
-				pipe_rdmreader_log(_sink, LL_ERROR, "历史逐笔委托数据文件%s大小校验失败", filename.c_str());
+				pipe_rdmreader_log(_sink, LL_ERROR, "Sizechecking of orderdetail data file {} failed", filename.c_str());
 				return NULL;
 			}
 
@@ -941,7 +940,7 @@ WTSTransSlice* WtRdmDtReader::readTransSliceByRange(const char* stdCode, uint64_
 {
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
-	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
+	std::string stdPID = fmt::format("{}.{}", cInfo._exchg, cInfo._product);
 
 	uint32_t rDate, rTime, rSecs;
 	//20190807124533900
@@ -1023,7 +1022,7 @@ WTSTransSlice* WtRdmDtReader::readTransSliceByRange(const char* stdCode, uint64_
 	}
 	else
 	{
-		std::string key = StrUtil::printf("%s-%d", stdCode, endTDate);
+		std::string key = fmt::format("{}-{}", stdCode, endTDate);
 
 		auto it = _his_ordque_map.find(key);
 		if (it == _his_ordque_map.end())
@@ -1038,7 +1037,7 @@ WTSTransSlice* WtRdmDtReader::readTransSliceByRange(const char* stdCode, uint64_
 			StdFile::read_file_content(filename.c_str(), hisBlkPair._buffer);
 			if (hisBlkPair._buffer.size() < sizeof(HisTransBlockV2))
 			{
-				pipe_rdmreader_log(_sink, LL_ERROR, "历史逐笔成交数据文件%s大小校验失败", filename.c_str());
+				pipe_rdmreader_log(_sink, LL_ERROR, "Sizechecking of transaction data file {} failed", filename.c_str());
 				hisBlkPair._buffer.clear();
 				return NULL;
 			}
@@ -1047,7 +1046,7 @@ WTSTransSlice* WtRdmDtReader::readTransSliceByRange(const char* stdCode, uint64_
 
 			if (hisBlkPair._buffer.size() != (sizeof(HisTransBlockV2) + tBlockV2->_size))
 			{
-				pipe_rdmreader_log(_sink, LL_ERROR, "历史逐笔成交数据文件%s大小校验失败", filename.c_str());
+				pipe_rdmreader_log(_sink, LL_ERROR, "Sizechecking of transaction data file {} failed", filename.c_str());
 				return NULL;
 			}
 
@@ -1113,7 +1112,7 @@ bool WtRdmDtReader::cacheHisBarsFromFile(const std::string& key, const char* std
 {
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
-	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
+	std::string stdPID = fmt::format("{}.{}", cInfo._exchg, cInfo._product);
 
 	uint32_t curDate = TimeUtils::getCurDate();
 	uint32_t curTime = TimeUtils::getCurMin() / 100;
@@ -1155,7 +1154,7 @@ bool WtRdmDtReader::cacheHisBarsFromFile(const std::string& key, const char* std
 			StdFile::read_file_content(filename.c_str(), content);
 			if (content.size() < sizeof(HisKlineBlock))
 			{
-				pipe_rdmreader_log(_sink, LL_ERROR, "Sizechecking of his kline data file %s failed", filename.c_str());
+				pipe_rdmreader_log(_sink, LL_ERROR, "Sizechecking of his kline data file {} failed", filename.c_str());
 				break;
 			}
 
@@ -1171,7 +1170,7 @@ bool WtRdmDtReader::cacheHisBarsFromFile(const std::string& key, const char* std
 			else
 				lastHotTime = hotAy->at(barcnt - 1).date;
 
-			pipe_rdmreader_log(_sink, LL_INFO, "%u items of back %s data of hot contract %s directly loaded", barcnt, pname.c_str(), stdCode);
+			pipe_rdmreader_log(_sink, LL_INFO, "{} items of back {} data of hot contract {} directly loaded", barcnt, pname.c_str(), stdCode);
 			break;
 		}
 
@@ -1249,7 +1248,7 @@ bool WtRdmDtReader::cacheHisBarsFromFile(const std::string& key, const char* std
 				StdFile::read_file_content(filename.c_str(), content);
 				if (content.size() < sizeof(HisKlineBlock))
 				{
-					pipe_rdmreader_log(_sink, LL_ERROR, "Sizechecking of his kline data file %s failed", filename.c_str());
+					pipe_rdmreader_log(_sink, LL_ERROR, "Sizechecking of his kline data file {} failed", filename.c_str());
 					return false;
 				}
 				
@@ -1338,7 +1337,7 @@ bool WtRdmDtReader::cacheHisBarsFromFile(const std::string& key, const char* std
 			StdFile::read_file_content(filename.c_str(), content);
 			if (content.size() < sizeof(HisKlineBlock))
 			{
-				pipe_rdmreader_log(_sink, LL_ERROR, "Sizechecking of his kline data file %s failed", filename.c_str());
+				pipe_rdmreader_log(_sink, LL_ERROR, "Sizechecking of his kline data file {} failed", filename.c_str());
 				break;
 			}
 
@@ -1350,7 +1349,7 @@ bool WtRdmDtReader::cacheHisBarsFromFile(const std::string& key, const char* std
 			{
 				if (content.size() < sizeof(HisKlineBlockV2))
 				{
-					pipe_rdmreader_log(_sink, LL_ERROR, "Sizechecking of his kline data file %s failed", filename.c_str());
+					pipe_rdmreader_log(_sink, LL_ERROR, "Sizechecking of his kline data file {} failed", filename.c_str());
 					break;
 				}
 
@@ -1394,7 +1393,7 @@ bool WtRdmDtReader::cacheHisBarsFromFile(const std::string& key, const char* std
 			else
 				lastQTime = hotAy->at(barcnt - 1).date;
 
-			pipe_rdmreader_log(_sink, LL_INFO, "%u history exrighted %s data of %s directly cached", barcnt, pname.c_str(), stdCode);
+			pipe_rdmreader_log(_sink, LL_INFO, "{} history exrighted {} data of {} directly cached", barcnt, pname.c_str(), stdCode);
 			break;
 		} while (false);
 
@@ -1430,7 +1429,7 @@ bool WtRdmDtReader::cacheHisBarsFromFile(const std::string& key, const char* std
 				StdFile::read_file_content(filename.c_str(), content);
 				if (content.size() < sizeof(HisKlineBlock))
 				{
-					pipe_rdmreader_log(_sink, LL_ERROR, "Sizechecking of his kline data file %s failed", filename.c_str());
+					pipe_rdmreader_log(_sink, LL_ERROR, "Sizechecking of his kline data file {} failed", filename.c_str());
 					return false;
 				}
 
@@ -1527,7 +1526,7 @@ bool WtRdmDtReader::cacheHisBarsFromFile(const std::string& key, const char* std
 			StdFile::read_file_content(filename.c_str(), content);
 			if (content.size() < sizeof(HisKlineBlock))
 			{
-				pipe_rdmreader_log(_sink, LL_ERROR, "Sizechecking of his kline data file %s failed", filename.c_str());
+				pipe_rdmreader_log(_sink, LL_ERROR, "Sizechecking of his kline data file {} failed", filename.c_str());
 				return false;
 			}
 
@@ -1570,7 +1569,7 @@ bool WtRdmDtReader::cacheHisBarsFromFile(const std::string& key, const char* std
 		barsSections.clear();
 	}
 
-	pipe_rdmreader_log(_sink, LL_INFO, "%u history %s data of %s cached", realCnt, pname.c_str(), stdCode);
+	pipe_rdmreader_log(_sink, LL_INFO, "{} history {} data of {} cached", realCnt, pname.c_str(), stdCode);
 	return true;
 }
 
@@ -1738,9 +1737,9 @@ WTSKlineSlice* WtRdmDtReader::readKlineSliceByRange(const char* stdCode, WTSKlin
 {
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
-	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
+	std::string stdPID = fmt::format("{}.{}", cInfo._exchg, cInfo._product);
 
-	std::string key = StrUtil::printf("%s#%u", stdCode, period);
+	std::string key = fmt::format("{}#{}", stdCode, period);
 	auto it = _bars_cache.find(key);
 	bool bHasHisData = false;
 	if (it == _bars_cache.end())
@@ -1786,12 +1785,12 @@ WTSKlineSlice* WtRdmDtReader::readKlineSliceByRange(const char* stdCode, WTSKlin
 	if (cInfo.isHot() && commInfo->isFuture())
 	{
 		raw_code = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, curTDate);
-		pipe_rdmreader_log(_sink, LL_INFO,  "Hot contract of %u confirmed: %s -> %s", curTDate, stdCode, raw_code.c_str());
+		pipe_rdmreader_log(_sink, LL_INFO,  "Hot contract on {} confirmed: {} -> {}", curTDate, stdCode, raw_code.c_str());
 	}
 	else if (cInfo.isSecond() && commInfo->isFuture())
 	{
 		raw_code = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, curTDate);
-		pipe_rdmreader_log(_sink, LL_INFO,  "Second contract of %u confirmed: %s -> %s", curTDate, stdCode, raw_code.c_str());
+		pipe_rdmreader_log(_sink, LL_INFO,  "Second contract on {} confirmed: {} -> {}", curTDate, stdCode, raw_code.c_str());
 	}
 	else
 	{
@@ -1874,9 +1873,9 @@ WTSKlineSlice* WtRdmDtReader::readKlineSliceByRange(const char* stdCode, WTSKlin
 
 WtRdmDtReader::TickBlockPair* WtRdmDtReader::getRTTickBlock(const char* exchg, const char* code)
 {
-	std::string key = StrUtil::printf("%s.%s", exchg, code);
+	std::string key = fmt::format("{}.{}", exchg, code);
 
-	std::string path = StrUtil::printf("%srt/ticks/%s/%s.dmb", _base_dir.c_str(), exchg, code);
+	std::string path = fmt::format("{}rt/ticks/{}/{}.dmb", _base_dir.c_str(), exchg, code);
 	if (!StdFile::exists(path.c_str()))
 		return NULL;
 
@@ -1914,9 +1913,9 @@ WtRdmDtReader::TickBlockPair* WtRdmDtReader::getRTTickBlock(const char* exchg, c
 
 WtRdmDtReader::OrdDtlBlockPair* WtRdmDtReader::getRTOrdDtlBlock(const char* exchg, const char* code)
 {
-	std::string key = StrUtil::printf("%s.%s", exchg, code);
+	std::string key = fmt::format("{}.{}", exchg, code);
 
-	std::string path = StrUtil::printf("%srt/orders/%s/%s.dmb", _base_dir.c_str(), exchg, code);
+	std::string path = fmt::format("{}rt/orders/{}/{}.dmb", _base_dir.c_str(), exchg, code);
 	if (!StdFile::exists(path.c_str()))
 		return NULL;
 
@@ -1954,9 +1953,9 @@ WtRdmDtReader::OrdDtlBlockPair* WtRdmDtReader::getRTOrdDtlBlock(const char* exch
 
 WtRdmDtReader::OrdQueBlockPair* WtRdmDtReader::getRTOrdQueBlock(const char* exchg, const char* code)
 {
-	std::string key = StrUtil::printf("%s.%s", exchg, code);
+	std::string key = fmt::format("{}.{}", exchg, code);
 
-	std::string path = StrUtil::printf("%srt/queue/%s/%s.dmb", _base_dir.c_str(), exchg, code);
+	std::string path = fmt::format("{}rt/queue/{}/{}.dmb", _base_dir.c_str(), exchg, code);
 	if (!StdFile::exists(path.c_str()))
 		return NULL;
 
@@ -1994,9 +1993,9 @@ WtRdmDtReader::OrdQueBlockPair* WtRdmDtReader::getRTOrdQueBlock(const char* exch
 
 WtRdmDtReader::TransBlockPair* WtRdmDtReader::getRTTransBlock(const char* exchg, const char* code)
 {
-	std::string key = StrUtil::printf("%s.%s", exchg, code);
+	std::string key = fmt::format("{}.{}", exchg, code);
 
-	std::string path = StrUtil::printf("%srt/trans/%s/%s.dmb", _base_dir.c_str(), exchg, code);
+	std::string path = fmt::format("{}rt/trans/{}/{}.dmb", _base_dir.c_str(), exchg, code);
 	if (!StdFile::exists(path.c_str()))
 		return NULL;
 
@@ -2037,7 +2036,7 @@ WtRdmDtReader::RTKlineBlockPair* WtRdmDtReader::getRTKilneBlock(const char* exch
 	if (period != KP_Minute1 && period != KP_Minute5)
 		return NULL;
 
-	std::string key = StrUtil::printf("%s.%s", exchg, code);
+	std::string key = fmt::format("{}.{}", exchg, code);
 
 	RTKBlockFilesMap* cache_map = NULL;
 	std::string subdir = "";
@@ -2057,7 +2056,7 @@ WtRdmDtReader::RTKlineBlockPair* WtRdmDtReader::getRTKilneBlock(const char* exch
 	default: break;
 	}
 
-	std::string path = StrUtil::printf("%srt/%s/%s/%s.dmb", _base_dir.c_str(), subdir.c_str(), exchg, code);
+	std::string path = fmt::format("{}rt/{}/{}/{}.dmb", _base_dir.c_str(), subdir.c_str(), exchg, code);
 	if (!StdFile::exists(path.c_str()))
 		return NULL;
 
@@ -2097,9 +2096,9 @@ WTSKlineSlice* WtRdmDtReader::readKlineSliceByCount(const char* stdCode, WTSKlin
 {
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
-	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
+	std::string stdPID = fmt::format("{}.{}", cInfo._exchg, cInfo._product);
 
-	std::string key = StrUtil::printf("%s#%u", stdCode, period);
+	std::string key = fmt::format("{}#{}", stdCode, period);
 	auto it = _bars_cache.find(key);
 	bool bHasHisData = false;
 	if (it == _bars_cache.end())
@@ -2143,12 +2142,12 @@ WTSKlineSlice* WtRdmDtReader::readKlineSliceByCount(const char* stdCode, WTSKlin
 	if (cInfo.isHot() && commInfo->isFuture())
 	{
 		raw_code = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, curTDate);
-		pipe_rdmreader_log(_sink, LL_INFO, "Hot contract of %u confirmed: %s -> %s", curTDate, stdCode, raw_code.c_str());
+		pipe_rdmreader_log(_sink, LL_INFO, "Hot contract on {} confirmed: {} -> {}", curTDate, stdCode, raw_code.c_str());
 	}
 	else if (cInfo.isSecond() && commInfo->isFuture())
 	{
 		raw_code = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, curTDate);
-		pipe_rdmreader_log(_sink, LL_INFO, "Second contract of %u confirmed: %s -> %s", curTDate, stdCode, raw_code.c_str());
+		pipe_rdmreader_log(_sink, LL_INFO, "Second contract on {} confirmed: {} -> {}", curTDate, stdCode, raw_code.c_str());
 	}
 	else
 	{
@@ -2214,7 +2213,7 @@ WTSTickSlice* WtRdmDtReader::readTickSliceByCount(const char* stdCode, uint32_t 
 {
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
-	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
+	std::string stdPID = fmt::format("{}.{}", cInfo._exchg, cInfo._product);
 
 	WTSSessionInfo* sInfo = _base_data_mgr->getSession(_base_data_mgr->getCommodity(cInfo._exchg, cInfo._code)->getSession());
 
@@ -2223,7 +2222,6 @@ WTSTickSlice* WtRdmDtReader::readTickSliceByCount(const char* stdCode, uint32_t 
 	rDate = (uint32_t)(etime / 1000000000);
 	rTime = (uint32_t)(etime % 1000000000) / 100000;
 	rSecs = (uint32_t)(etime % 100000);
-
 
 	uint32_t endTDate = _base_data_mgr->calcTradingDate(stdPID.c_str(), rDate, rTime, false);
 	uint32_t curTDate = _base_data_mgr->calcTradingDate(stdPID.c_str(), 0, 0, false);
@@ -2239,12 +2237,12 @@ WTSTickSlice* WtRdmDtReader::readTickSliceByCount(const char* stdCode, uint32_t 
 		if (cInfo.isHot() && commInfo->isFuture())
 		{
 			curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, curTDate);
-			pipe_rdmreader_log(_sink, LL_INFO, "Hot contract of %u confirmed: %s -> %s", curTDate, stdCode, curCode.c_str());
+			pipe_rdmreader_log(_sink, LL_INFO, "Hot contract on {} confirmed: {} -> {}", curTDate, stdCode, curCode.c_str());
 		}
 		else if (cInfo.isSecond() && commInfo->isFuture())
 		{
 			curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, curTDate);
-			pipe_rdmreader_log(_sink, LL_INFO, "Second contract of %u confirmed: %s -> %s", curTDate, stdCode, curCode.c_str());
+			pipe_rdmreader_log(_sink, LL_INFO, "Second contract on {} confirmed: {} -> {}", curTDate, stdCode, curCode.c_str());
 		}
 
 		TickBlockPair* tPair = getRTTickBlock(cInfo._exchg, curCode.c_str());
@@ -2304,17 +2302,17 @@ WTSTickSlice* WtRdmDtReader::readTickSliceByCount(const char* stdCode, uint32_t 
 			curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, nowTDate);
 			hotCode = cInfo._product;
 			hotCode += "_HOT";
-			pipe_rdmreader_log(_sink, LL_INFO, "Hot contract of %u confirmed: %s -> %s", curTDate, stdCode, curCode.c_str());
+			pipe_rdmreader_log(_sink, LL_INFO, "Hot contract on {} confirmed: {} -> {}", curTDate, stdCode, curCode.c_str());
 		}
 		else if (cInfo.isSecond() && commInfo->isFuture())
 		{
 			curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, nowTDate);
 			hotCode = cInfo._product;
 			hotCode += "_2ND";
-			pipe_rdmreader_log(_sink, LL_INFO, "Second contract of %u confirmed: %s -> %s", curTDate, stdCode, curCode.c_str());
+			pipe_rdmreader_log(_sink, LL_INFO, "Second contract on {} confirmed: {} -> {}", curTDate, stdCode, curCode.c_str());
 		}
 
-		std::string key = StrUtil::printf("%s-%d", stdCode, nowTDate);
+		std::string key = fmt::format("{}-{}", stdCode, nowTDate);
 
 		auto it = _his_tick_map.find(key);
 		bool bHasHisTick = (it != _his_tick_map.end());
@@ -2353,7 +2351,7 @@ WTSTickSlice* WtRdmDtReader::readTickSliceByCount(const char* stdCode, uint32_t 
 				StdFile::read_file_content(filename.c_str(), tBlkPair._buffer);
 				if (tBlkPair._buffer.size() < sizeof(HisTickBlock))
 				{
-					pipe_rdmreader_log(_sink, LL_ERROR, "Sizechecking of his tick data file %s failed", filename.c_str());
+					pipe_rdmreader_log(_sink, LL_ERROR, "Sizechecking of his tick data file {} failed", filename.c_str());
 					tBlkPair._buffer.clear();
 					break;
 				}
