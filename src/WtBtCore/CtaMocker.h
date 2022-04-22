@@ -81,6 +81,8 @@ private:
 
 	inline CondList& get_cond_entrusts(const char* stdCode);
 
+	void	proc_tick(const char* stdCode, double last_px, double cur_px);
+
 public:
 	bool	init_cta_factory(WTSVariant* cfg);
 	void	install_hook();

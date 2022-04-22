@@ -225,29 +225,8 @@ void CtaMocker::handle_replay_done()
 	this->on_bactest_end();
 }
 
-void CtaMocker::handle_tick(const char* stdCode, WTSTickData* newTick, bool isBarEnd /* = true */)
+void CtaMocker::proc_tick(const char* stdCode, double last_px, double cur_px)
 {
-	double cur_px = newTick->price();
-
-	/*
-	 *	By Wesley @ 2022.04.19
-	 *	这里的逻辑改了一下
-	 *	如果缓存的价格不存在，则上一笔价格就用最新价
-	 *	这里主要是为了应对跨日价格跳空的情况
-	 */
-	double last_px = 0;
-	auto it = _price_map.find(stdCode);
-	if (it != _price_map.end())
-		last_px = it->second;
-	else
-		last_px = cur_px;
-	
-	_price_map[stdCode] = cur_px;
-
-	//先检查是否要信号要触发
-	//By Wesley @ 2022.04.19
-	//虽然这段逻辑下面也根据isBarEnd复制了一段
-	//但是这一段还是要保留
 	{
 		auto it = _sig_map.find(stdCode);
 		if (it != _sig_map.end())
@@ -257,17 +236,16 @@ void CtaMocker::handle_tick(const char* stdCode, WTSTickData* newTick, bool isBa
 				const SigInfo& sInfo = it->second;
 				double price;
 				if (decimal::eq(sInfo._desprice, 0.0))
-					price = newTick->price();
+					price = cur_px;
 				else
 					price = sInfo._desprice;
 				do_set_position(stdCode, sInfo._volume, price, sInfo._usertag.c_str(), sInfo._triggered);
 				_sig_map.erase(it);
 			}
-
 		}
 	}
 
-	update_dyn_profit(stdCode, newTick->price());
+	update_dyn_profit(stdCode, cur_px);
 
 	//////////////////////////////////////////////////////////////////////////
 	//检查条件单
@@ -403,6 +381,32 @@ void CtaMocker::handle_tick(const char* stdCode, WTSTickData* newTick, bool isBa
 			}
 		}
 	}
+}
+
+void CtaMocker::handle_tick(const char* stdCode, WTSTickData* newTick, bool isBarEnd /* = true */)
+{
+	double cur_px = newTick->price();
+
+	/*
+	 *	By Wesley @ 2022.04.19
+	 *	这里的逻辑改了一下
+	 *	如果缓存的价格不存在，则上一笔价格就用最新价
+	 *	这里主要是为了应对跨日价格跳空的情况
+	 */
+	double last_px = 0;
+	auto it = _price_map.find(stdCode);
+	if (it != _price_map.end())
+		last_px = it->second;
+	else
+		last_px = cur_px;
+	
+	_price_map[stdCode] = cur_px;
+
+	//先检查是否要信号要触发
+	//By Wesley @ 2022.04.19
+	//虽然这段逻辑下面也根据isBarEnd复制了一段
+	//但是这一段还是要保留
+	proc_tick(stdCode, last_px, cur_px);
 
 	on_tick_updated(stdCode, newTick);
 
@@ -415,29 +419,7 @@ void CtaMocker::handle_tick(const char* stdCode, WTSTickData* newTick, bool isBa
 	 *	而不至于在回测的时候成交价偏离太远
 	 */
 	if(!isBarEnd)
-	{
-		//先检查是否要信号要触发
-		{
-			auto it = _sig_map.find(stdCode);
-			if (it != _sig_map.end())
-			{
-				//if (sInfo->isInTradingTime(_replayer->get_raw_time(), true))
-				{
-					const SigInfo& sInfo = it->second;
-					double price;
-					if (decimal::eq(sInfo._desprice, 0.0))
-						price = newTick->price();
-					else
-						price = sInfo._desprice;
-					do_set_position(stdCode, sInfo._volume, price, sInfo._usertag.c_str(), sInfo._triggered);
-					_sig_map.erase(it);
-				}
-
-			}
-		}
-
-		update_dyn_profit(stdCode, newTick->price());
-	}
+		proc_tick(stdCode, last_px, cur_px);
 }
 
 
