@@ -23,6 +23,8 @@ public:
 
 	virtual ExecuteUnit* createExeUnit(const char* name) override;
 
+	virtual ExecuteUnit* createDiffExeUnit(const char* name) override;
+
 	virtual bool deleteExeUnit(ExecuteUnit* unit) override;
 
 };

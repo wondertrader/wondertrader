@@ -161,12 +161,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="WtDiffMinImpactExeUnit.cpp" />
     <ClCompile Include="WtExeFact.cpp" />
     <ClCompile Include="WtMinImpactExeUnit.cpp" />
     <ClCompile Include="WtOrdMon.cpp" />
     <ClCompile Include="WtTWapExeUnit.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="WtDiffMinImpactExeUnit.h" />
     <ClInclude Include="WtExeFact.h" />
     <ClInclude Include="WtMinImpactExeUnit.h" />
     <ClInclude Include="WtOrdMon.h" />
