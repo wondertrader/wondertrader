@@ -150,6 +150,12 @@
     <ClInclude Include="WtDtMgr.h">
       <Filter>Datas</Filter>
     </ClInclude>
+    <ClInclude Include="WtDiffExecuter.h">
+      <Filter>Exec</Filter>
+    </ClInclude>
+    <ClInclude Include="WtExecuterFactory.h">
+      <Filter>Exec</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TraderAdapter.cpp">
@@ -229,6 +235,12 @@
     </ClCompile>
     <ClCompile Include="WtDtMgr.cpp">
       <Filter>Datas</Filter>
+    </ClCompile>
+    <ClCompile Include="WtDiffExecuter.cpp">
+      <Filter>Exec</Filter>
+    </ClCompile>
+    <ClCompile Include="WtExecuterFactory.cpp">
+      <Filter>Exec</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

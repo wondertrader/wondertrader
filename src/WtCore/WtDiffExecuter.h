@@ -8,6 +8,7 @@
  * \brief 
  */
 #pragma once
+
 #include "ITrdNotifySink.h"
 #include "IExecCommand.h"
 #include "WtExecuterFactory.h"
@@ -21,12 +22,12 @@ class TraderAdapter;
 class IHotMgr;
 
 //本地执行器
-class WtLocalExecuter : public ExecuteContext,
+class WtDiffExecuter : public ExecuteContext,
 		public ITrdNotifySink, public IExecCommand
 {
 public:
-	WtLocalExecuter(WtExecuterFactory* factory, const char* name, IDataManager* dataMgr);
-	virtual ~WtLocalExecuter();
+	WtDiffExecuter(WtExecuterFactory* factory, const char* name, IDataManager* dataMgr);
+	virtual ~WtDiffExecuter();
 
 public:
 	/*
@@ -35,7 +36,6 @@ public:
 	 */
 	bool init(WTSVariant* params);
 
-
 	inline void setTrader(TraderAdapter* adapter)
 	{
 		_trader = adapter;
@@ -43,6 +43,9 @@ public:
 
 private:
 	ExecuteUnitPtr	getUnit(const char* code, bool bAutoCreate = true);
+
+	void	save_data();
+	void	load_data();
 
 public:
 	//////////////////////////////////////////////////////////////////////////
@@ -122,31 +125,12 @@ private:
 	WTSVariant*			_config;
 
 	double				_scale;				//放大倍数
-	bool				_auto_clear;		//是否自动清理上一期的主力合约头寸
-	bool				_strict_sync;		//是否严格同步目标仓位
 	bool				_channel_ready;
 
-	typedef struct _CodeGroup
-	{
-		char	_name[32] = { 0 };
-		faster_hashmap<LongKey, double>	_items;
-	} CodeGroup;
-	typedef std::shared_ptr<CodeGroup> CodeGroupPtr;
-	typedef faster_hashmap<LongKey, CodeGroupPtr>	CodeGroups;
-	CodeGroups				_groups;			//合约组合（组合名称到组合的映射）
-	CodeGroups				_code_to_groups;	//合约代码到组合的映射
-
-	faster_hashset<LongKey>	_clear_includes;	//自动清理包含品种
-	faster_hashset<LongKey>	_clear_excludes;	//自动清理排除品种
-
-	faster_hashset<LongKey> _channel_holds;		//通道持仓
-
 	faster_hashmap<LongKey, double> _target_pos;
+	faster_hashmap<LongKey, double> _diff_pos;
 
 	typedef std::shared_ptr<boost::threadpool::pool> ThreadPoolPtr;
 	ThreadPoolPtr		_pool;
 };
-
-typedef std::shared_ptr<IExecCommand> ExecCmdPtr;
-
 NS_WTP_END

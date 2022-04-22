@@ -25,6 +25,8 @@ public:
 
 	static const char* getPortifolioDir();
 
+	static const char* getExecDataDir();
+
 	static inline void setTime(uint32_t date, uint32_t time, uint32_t secs = 0)
 	{
 		_cur_date = date;

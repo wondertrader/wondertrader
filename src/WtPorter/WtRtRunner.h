@@ -23,6 +23,7 @@
 #include "../WtCore/WtHftEngine.h"
 #include "../WtCore/WtSelEngine.h"
 #include "../WtCore/WtLocalExecuter.h"
+#include "../WtCore/WtDiffExecuter.h"
 #include "../WtCore/WtDistExecuter.h"
 #include "../WtCore/TraderAdapter.h"
 #include "../WtCore/ParserAdapter.h"
