@@ -21,11 +21,11 @@ NS_WTP_END
 USING_NS_WTP;
 
 //换月主力映射
-typedef WTSMap<uint32_t>		WTSDateHotMap;
+typedef WTSMap<uint32_t>			WTSDateHotMap;
 //品种主力映射
-typedef WTSMap<ShortKey>		WTSProductHotMap;
+typedef WTSHashMap<ShortKey>		WTSProductHotMap;
 //分市场主力映射
-typedef WTSMap<ShortKey>		WTSExchgHotMap;
+typedef WTSHashMap<ShortKey>		WTSExchgHotMap;
 
 class WTSHotMgr : public IHotMgr
 {
