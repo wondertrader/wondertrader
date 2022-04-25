@@ -583,19 +583,16 @@ OrderIDs HftMocker::stra_buy(const char* stdCode, double price, double qty, cons
 
 	uint32_t localid = makeLocalOrderID();
 
-	OrderInfo order;
-	order._localid = localid;
-	strcpy(order._code, stdCode);
-	strcpy(order._usertag, userTag);
-	order._isBuy = true;
-	order._price = price;
-	order._total = qty;
-	order._left = qty;
-
 	{
-		_mtx_ords.lock();
-		_orders[localid] = order;
-		_mtx_ords.unlock();
+		StdLocker<StdRecurMutex> lock(_mtx_ords);
+		OrderInfo& order = _orders[localid];
+		order._localid = localid;
+		strcpy(order._code, stdCode);
+		strcpy(order._usertag, userTag);
+		order._isBuy = true;
+		order._price = price;
+		order._total = qty;
+		order._left = qty;
 	}
 
 	postTask([this, localid](){
@@ -783,18 +780,16 @@ OrderIDs HftMocker::stra_sell(const char* stdCode, double price, double qty, con
 
 	uint32_t localid = makeLocalOrderID();
 
-	OrderInfo order;
-	order._localid = localid;
-	strcpy(order._code, stdCode);
-	strcpy(order._usertag, userTag);
-	order._isBuy = false;
-	order._price = price;
-	order._total = qty;
-	order._left = qty;
-
 	{
 		StdLocker<StdRecurMutex> lock(_mtx_ords);
-		_orders[localid] = order;
+		OrderInfo& order = _orders[localid];
+		order._localid = localid;
+		strcpy(order._code, stdCode);
+		strcpy(order._usertag, userTag);
+		order._isBuy = false;
+		order._price = price;
+		order._total = qty;
+		order._left = qty;
 	}
 
 	postTask([this, localid]() {

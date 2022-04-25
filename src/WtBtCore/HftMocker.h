@@ -233,6 +233,17 @@ private:
 			memset(this, 0, sizeof(_OrderInfo));
 		}
 
+		_OrderInfo(const struct _OrderInfo& rhs)
+		{
+			memcpy(this, &rhs, sizeof(_OrderInfo));
+		}
+
+		_OrderInfo& operator =(const struct _OrderInfo& rhs)
+		{
+			memcpy(this, &rhs, sizeof(_OrderInfo));
+			return *this;
+		}
+
 	} OrderInfo;
 	typedef faster_hashmap<uint32_t, OrderInfo> Orders;
 	StdRecurMutex	_mtx_ords;
