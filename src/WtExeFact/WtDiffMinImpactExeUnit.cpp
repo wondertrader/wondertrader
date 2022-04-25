@@ -202,10 +202,10 @@ void WtDiffMinImpactExeUnit::on_tick(WTSTickData* newTick)
 void WtDiffMinImpactExeUnit::on_trade(uint32_t localid, const char* stdCode, bool isBuy, double vol, double price)
 {
 	//如果是本地订单，则更新差量
-	if(localid != 0 && _code.compare(stdCode) == 0)
-	{
-		_left_diff -= vol * (isBuy ? 1 : -1);
-	}
+	if (!_orders_mon.has_order(localid))
+		return;
+
+	_left_diff -= vol * (isBuy ? 1 : -1);
 }
 
 void WtDiffMinImpactExeUnit::on_entrust(uint32_t localid, const char* stdCode, bool bSuccess, const char* message)
