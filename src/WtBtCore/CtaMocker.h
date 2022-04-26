@@ -69,6 +69,7 @@ public:
 
 private:
 	void	dump_outputs();
+	void	dump_stradata();
 	inline void log_signal(const char* stdCode, double target, double price, uint64_t gentime, const char* usertag = "");
 	inline void	log_trade(const char* stdCode, bool isLong, bool isOpen, uint64_t curTime, double price, double qty, const char* userTag = "", double fee = 0.0, uint32_t barNo = 0);
 	inline void	log_close(const char* stdCode, bool isLong, uint64_t openTime, double openpx, uint64_t closeTime, double closepx, double qty,
@@ -280,8 +281,9 @@ protected:
 	std::stringstream	_close_logs;
 	std::stringstream	_fund_logs;
 	std::stringstream	_sig_logs;
+	std::stringstream	_pos_logs;
 
-	CondEntrustMap	_condtions;
+	CondEntrustMap		_condtions;
 
 	//是否处于调度中的标记
 	bool			_is_in_schedule;	//是否在自动调度中
@@ -341,6 +343,10 @@ protected:
 
 	//是否对回测结果持久化
 	bool			_persist_data;
+
+	uint32_t		_cur_tdate;
+	uint32_t		_cur_bartime;
+	uint64_t		_last_cond_min;
 
 	//tick订阅列表
 	faster_hashset<std::string> _tick_subs;

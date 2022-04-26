@@ -340,6 +340,7 @@ private:
 	std::stringstream	_trade_logs;
 	std::stringstream	_close_logs;
 	std::stringstream	_fund_logs;
+	std::stringstream	_pos_logs;
 
 	typedef struct _StraFundInfo
 	{

@@ -375,6 +375,12 @@ void UftMocker::on_session_end(uint32_t curTDate)
 		const PosInfo& pInfo = it->second;
 		total_profit += pInfo.closeprofit();
 		total_dynprofit += pInfo.dynprofit();
+
+		if (!decimal::eq(pInfo._long.volume(), 0.0))
+			_pos_logs << fmt::format("{},{},LONG,{},{:.2f},{:.2f}\n", curTDate, stdCode, pInfo._long.volume(), pInfo._long._closeprofit, pInfo._long._dynprofit);
+
+		if (!decimal::eq(pInfo._short.volume(), 0.0))
+			_pos_logs << fmt::format("{},{},LONG,{},{:.2f},{:.2f}\n", curTDate, stdCode, pInfo._short.volume(), pInfo._short._closeprofit, pInfo._short._dynprofit);
 	}
 
 	_fund_logs << fmt::format("{},{:.2f},{:.2f},{:.2f},{:.2f}\n", curDate,
@@ -1105,6 +1111,11 @@ void UftMocker::dump_outputs()
 	filename = folder + "funds.csv";
 	content = "date,closeprofit,positionprofit,dynbalance,fee\n";
 	content += _fund_logs.str();
+	StdFile::write_file_content(filename.c_str(), (void*)content.c_str(), content.size());
+
+	filename = folder + "positions.csv";
+	content = "date,code,direct,volume,closeprofit,dynprofit\n";
+	if (!_pos_logs.str().empty()) content += _pos_logs.str();
 	StdFile::write_file_content(filename.c_str(), (void*)content.c_str(), content.size());
 }
 

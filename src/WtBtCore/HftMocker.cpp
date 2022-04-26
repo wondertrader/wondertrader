@@ -19,8 +19,13 @@
 #include "../Share/decimal.h"
 #include "../Share/TimeUtils.hpp"
 #include "../Share/StrUtil.hpp"
+#include "../Share/StdUtils.hpp"
 
 #include "../WTSTools/WTSLogger.h"
+
+#include <rapidjson/document.h>
+#include <rapidjson/prettywriter.h>
+namespace rj = rapidjson;
 
 uint32_t makeLocalOrderID()
 {
@@ -500,9 +505,15 @@ void HftMocker::on_session_end(uint32_t curTDate)
 		const PosInfo& pInfo = it->second;
 		total_profit += pInfo._closeprofit;
 		total_dynprofit += pInfo._dynprofit;
+
+		if (decimal::eq(pInfo._volume, 0.0))
+			continue;
+
+		_pos_logs << fmt::format("{},{},{},{:.2f},{:.2f}\n", curTDate, stdCode,
+			pInfo._volume, pInfo._closeprofit, pInfo._dynprofit);
 	}
 
-	_fund_logs << fmt::format("{},{:.2f},{:.2f},{:.2f},{:.2f}\n", curDate,
+	_fund_logs << fmt::format("{},{:.2f},{:.2f},{:.2f},{:.2f}\n", curTDate,
 		_fund_info._total_profit, _fund_info._total_dynprofit,
 		_fund_info._total_profit + _fund_info._total_dynprofit - _fund_info._total_fees, _fund_info._total_fees);
 
@@ -967,6 +978,30 @@ void HftMocker::dump_outputs()
 	content = "time, action, position, price\n";
 	content += _sig_logs.str();
 	StdFile::write_file_content(filename.c_str(), (void*)content.c_str(), content.size());
+
+	filename = folder + "positions.csv";
+	content = "date,code,volume,closeprofit,dynprofit\n";
+	if (!_pos_logs.str().empty()) content += _pos_logs.str();
+	StdFile::write_file_content(filename.c_str(), (void*)content.c_str(), content.size());
+
+	{
+		rj::Document root(rj::kObjectType);
+		rj::Document::AllocatorType &allocator = root.GetAllocator();
+		for (auto it = _user_datas.begin(); it != _user_datas.end(); it++)
+		{
+			root.AddMember(rj::Value(it->first.c_str(), allocator), rj::Value(it->second.c_str(), allocator), allocator);
+		}
+
+		filename = folder;
+		filename += "ud_";
+		filename += _name;
+		filename += ".json";
+
+		rj::StringBuffer sb;
+		rj::PrettyWriter<rj::StringBuffer> writer(sb);
+		root.Accept(writer);
+		StdFile::write_file_content(filename.c_str(), sb.GetString());
+	}
 }
 
 void HftMocker::log_trade(const char* stdCode, bool isLong, bool isOpen, uint64_t curTime, double price, double qty, double fee, const char* userTag/* = ""*/)

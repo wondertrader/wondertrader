@@ -24,6 +24,7 @@
 #include "../WTSTools/WTSLogger.h"
 
 #include <rapidjson/document.h>
+#include <rapidjson/prettywriter.h>
 namespace rj = rapidjson;
 
 const char* CMP_ALG_NAMES[] =
@@ -79,6 +80,140 @@ CtaMocker::~CtaMocker()
 {
 }
 
+void CtaMocker::dump_stradata()
+{
+	rj::Document root(rj::kObjectType);
+
+	{//持仓数据保存
+		rj::Value jPos(rj::kArrayType);
+
+		rj::Document::AllocatorType &allocator = root.GetAllocator();
+
+		for (auto it = _pos_map.begin(); it != _pos_map.end(); it++)
+		{
+			const char* stdCode = it->first.c_str();
+			const PosInfo& pInfo = it->second;
+
+			rj::Value pItem(rj::kObjectType);
+			pItem.AddMember("code", rj::Value(stdCode, allocator), allocator);
+			pItem.AddMember("volume", pInfo._volume, allocator);
+			pItem.AddMember("closeprofit", pInfo._closeprofit, allocator);
+			pItem.AddMember("dynprofit", pInfo._dynprofit, allocator);
+			pItem.AddMember("lastentertime", pInfo._last_entertime, allocator);
+			pItem.AddMember("lastexittime", pInfo._last_exittime, allocator);
+
+			rj::Value details(rj::kArrayType);
+			for (auto dit = pInfo._details.begin(); dit != pInfo._details.end(); dit++)
+			{
+				const DetailInfo& dInfo = *dit;
+				rj::Value dItem(rj::kObjectType);
+				dItem.AddMember("long", dInfo._long, allocator);
+				dItem.AddMember("price", dInfo._price, allocator);
+				dItem.AddMember("volume", dInfo._volume, allocator);
+				dItem.AddMember("opentime", dInfo._opentime, allocator);
+				dItem.AddMember("opentdate", dInfo._opentdate, allocator);
+
+				dItem.AddMember("profit", dInfo._profit, allocator);
+				dItem.AddMember("maxprofit", dInfo._max_profit, allocator);
+				dItem.AddMember("maxloss", dInfo._max_loss, allocator);
+				dItem.AddMember("opentag", rj::Value(dInfo._opentag, allocator), allocator);
+
+				details.PushBack(dItem, allocator);
+			}
+
+			pItem.AddMember("details", details, allocator);
+
+			jPos.PushBack(pItem, allocator);
+		}
+
+		root.AddMember("positions", jPos, allocator);
+	}
+
+	{//资金保存
+		rj::Value jFund(rj::kObjectType);
+		rj::Document::AllocatorType &allocator = root.GetAllocator();
+
+		jFund.AddMember("total_profit", _fund_info._total_profit, allocator);
+		jFund.AddMember("total_dynprofit", _fund_info._total_dynprofit, allocator);
+		jFund.AddMember("total_fees", _fund_info._total_fees, allocator);
+		jFund.AddMember("tdate", _cur_tdate, allocator);
+
+		root.AddMember("fund", jFund, allocator);
+	}
+
+	{//信号保存
+		rj::Value jSigs(rj::kObjectType);
+		rj::Document::AllocatorType &allocator = root.GetAllocator();
+
+		for (auto& m : _sig_map)
+		{
+			const char* stdCode = m.first.c_str();
+			const SigInfo& sInfo = m.second;
+
+			rj::Value jItem(rj::kObjectType);
+			jItem.AddMember("usertag", rj::Value(sInfo._usertag.c_str(), allocator), allocator);
+
+			jItem.AddMember("volume", sInfo._volume, allocator);
+			jItem.AddMember("sigprice", sInfo._sigprice, allocator);
+			jItem.AddMember("gentime", sInfo._gentime, allocator);
+
+			jSigs.AddMember(rj::Value(stdCode, allocator), jItem, allocator);
+		}
+
+		root.AddMember("signals", jSigs, allocator);
+	}
+
+	{//条件单保存
+		rj::Value jCond(rj::kObjectType);
+		rj::Value jItems(rj::kObjectType);
+
+		rj::Document::AllocatorType &allocator = root.GetAllocator();
+
+		for (auto it = _condtions.begin(); it != _condtions.end(); it++)
+		{
+			const char* code = it->first.c_str();
+			const CondList& condList = it->second;
+
+			rj::Value cArray(rj::kArrayType);
+			for (auto& condInfo : condList)
+			{
+				rj::Value cItem(rj::kObjectType);
+				cItem.AddMember("code", rj::Value(code, allocator), allocator);
+				cItem.AddMember("usertag", rj::Value(condInfo._usertag, allocator), allocator);
+
+				cItem.AddMember("field", (uint32_t)condInfo._field, allocator);
+				cItem.AddMember("alg", (uint32_t)condInfo._alg, allocator);
+				cItem.AddMember("target", condInfo._target, allocator);
+				cItem.AddMember("qty", condInfo._qty, allocator);
+				cItem.AddMember("action", (uint32_t)condInfo._action, allocator);
+
+				cArray.PushBack(cItem, allocator);
+			}
+
+			jItems.AddMember(rj::Value(code, allocator), cArray, allocator);
+		}
+		jCond.AddMember("settime", _last_cond_min, allocator);
+		jCond.AddMember("items", jItems, allocator);
+
+		root.AddMember("conditions", jCond, allocator);
+	}
+
+	{
+		std::string folder = WtHelper::getOutputDir();
+		folder += _name;
+		folder += "/";
+
+		std::string filename = folder;
+		filename += _name;
+		filename += ".json";
+
+		rj::StringBuffer sb;
+		rj::PrettyWriter<rj::StringBuffer> writer(sb);
+		root.Accept(writer);
+		StdFile::write_file_content(filename.c_str(), sb.GetString());
+	}
+}
+
 void CtaMocker::dump_outputs()
 {
 	if (!_persist_data)
@@ -108,6 +243,30 @@ void CtaMocker::dump_outputs()
 	content = "code,target,sigprice,gentime,usertag\n";
 	if (!_sig_logs.str().empty()) content += _sig_logs.str();
 	StdFile::write_file_content(filename.c_str(), (void*)content.c_str(), content.size());
+
+	filename = folder + "positions.csv";
+	content = "date,code,volume,closeprofit,dynprofit\n";
+	if (!_pos_logs.str().empty()) content += _pos_logs.str();
+	StdFile::write_file_content(filename.c_str(), (void*)content.c_str(), content.size());
+
+	{
+		rj::Document root(rj::kObjectType);
+		rj::Document::AllocatorType &allocator = root.GetAllocator();
+		for (auto it = _user_datas.begin(); it != _user_datas.end(); it++)
+		{
+			root.AddMember(rj::Value(it->first.c_str(), allocator), rj::Value(it->second.c_str(), allocator), allocator);
+		}
+
+		filename = folder;
+		filename += "ud_";
+		filename += _name;
+		filename += ".json";
+
+		rj::StringBuffer sb;
+		rj::PrettyWriter<rj::StringBuffer> writer(sb);
+		root.Accept(writer);
+		StdFile::write_file_content(filename.c_str(), sb.GetString());
+	}
 }
 
 void CtaMocker::log_signal(const char* stdCode, double target, double price, uint64_t gentime, const char* usertag /* = "" */)
@@ -212,6 +371,8 @@ void CtaMocker::handle_replay_done()
 	}
 
 	dump_outputs();
+
+	dump_stradata();
 
 	if (_has_hook && _hook_valid)
 	{
@@ -640,6 +801,9 @@ bool CtaMocker::on_schedule(uint32_t curDate, uint32_t curTime)
 					on_calculate_done(curDate, curTime);
 				emmited = true;
 
+				if (_condtions.empty())
+					_last_cond_min = (uint64_t)curDate * 10000 + curTime;
+
 				_emit_times++;
 				_total_calc_time += ticker.micro_seconds();
 
@@ -665,6 +829,8 @@ bool CtaMocker::on_schedule(uint32_t curDate, uint32_t curTime)
 
 void CtaMocker::on_session_begin(uint32_t curTDate)
 {
+	_cur_tdate = curTDate;
+
 	//每个交易日开始，要把冻结持仓置零
 	for (auto& it : _pos_map)
 	{
@@ -726,18 +892,21 @@ void CtaMocker::on_session_end(uint32_t curTDate)
 		const PosInfo& pInfo = it->second;
 		total_profit += pInfo._closeprofit;
 		total_dynprofit += pInfo._dynprofit;
+
+		if(decimal::eq(pInfo._volume, 0.0))
+			continue;
+
+		_pos_logs << fmt::format("{},{},{},{:.2f},{:.2f}\n", curDate, stdCode,
+			pInfo._volume, pInfo._closeprofit, pInfo._dynprofit);
 	}
 
 	_fund_logs << fmt::format("{},{:.2f},{:.2f},{:.2f},{:.2f}\n", curDate,
 		_fund_info._total_profit, _fund_info._total_dynprofit,
 		_fund_info._total_profit + _fund_info._total_dynprofit - _fund_info._total_fees, _fund_info._total_fees);
-
 	
 	if (_notifier)
 		_notifier->notifyFund("BT_FUND", curDate, _fund_info._total_profit, _fund_info._total_dynprofit,
 			_fund_info._total_profit + _fund_info._total_dynprofit - _fund_info._total_fees, _fund_info._total_fees);
-
-	//save_data();
 }
 
 CondList& CtaMocker::get_cond_entrusts(const char* stdCode)

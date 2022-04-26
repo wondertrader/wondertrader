@@ -211,6 +211,7 @@ protected:
 	std::stringstream	_close_logs;
 	std::stringstream	_fund_logs;
 	std::stringstream	_sig_logs;
+	std::stringstream	_pos_logs;
 
 	//是否处于调度中的标记
 	bool			_is_in_schedule;	//是否在自动调度中
