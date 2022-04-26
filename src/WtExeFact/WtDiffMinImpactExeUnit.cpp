@@ -19,8 +19,6 @@ extern const char* FACT_NAME;
 
 extern const char* PriceModeNames[4];
 
-extern bool is_clear(double target);
-
 WtDiffMinImpactExeUnit::WtDiffMinImpactExeUnit()
 	: _last_tick(NULL)
 	, _comm_info(NULL)
@@ -378,7 +376,7 @@ void WtDiffMinImpactExeUnit::set_position(const char* stdCode, double newVol)
 	if (_code.compare(stdCode) != 0)
 		return;
 
-	if (is_clear(newVol))
+	if (newVol == DBL_MAX)
 	{
 		_ctx->writeLog("Diff execute unit do not support clear command");
 		return;
