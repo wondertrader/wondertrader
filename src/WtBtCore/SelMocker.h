@@ -54,6 +54,7 @@ private:
 
 private:
 	void	dump_outputs();
+	void	dump_stradata();
 	inline void log_signal(const char* stdCode, double target, double price, uint64_t gentime, const char* usertag = "");
 	inline void	log_trade(const char* stdCode, bool isLong, bool isOpen, uint64_t curTime, double price, double qty, const char* userTag = "", double fee = 0.0);
 	inline void	log_close(const char* stdCode, bool isLong, uint64_t openTime, double openpx, uint64_t closeTime, double closepx, double qty,
@@ -258,6 +259,8 @@ protected:
 	StraFactInfo	_factory;
 
 	SelStrategy*	_strategy;
+
+	uint32_t		_cur_tdate;
 
 	//tick¶©ÔÄÁÐ±í
 	faster_hashset<std::string> _tick_subs;

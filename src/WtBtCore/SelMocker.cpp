@@ -51,6 +51,104 @@ SelMocker::~SelMocker()
 {
 }
 
+void SelMocker::dump_stradata()
+{
+	rj::Document root(rj::kObjectType);
+
+	{//持仓数据保存
+		rj::Value jPos(rj::kArrayType);
+
+		rj::Document::AllocatorType &allocator = root.GetAllocator();
+
+		for (auto it = _pos_map.begin(); it != _pos_map.end(); it++)
+		{
+			const char* stdCode = it->first.c_str();
+			const PosInfo& pInfo = it->second;
+
+			rj::Value pItem(rj::kObjectType);
+			pItem.AddMember("code", rj::Value(stdCode, allocator), allocator);
+			pItem.AddMember("volume", pInfo._volume, allocator);
+			pItem.AddMember("closeprofit", pInfo._closeprofit, allocator);
+			pItem.AddMember("dynprofit", pInfo._dynprofit, allocator);
+
+			rj::Value details(rj::kArrayType);
+			for (auto dit = pInfo._details.begin(); dit != pInfo._details.end(); dit++)
+			{
+				const DetailInfo& dInfo = *dit;
+				rj::Value dItem(rj::kObjectType);
+				dItem.AddMember("long", dInfo._long, allocator);
+				dItem.AddMember("price", dInfo._price, allocator);
+				dItem.AddMember("volume", dInfo._volume, allocator);
+				dItem.AddMember("opentime", dInfo._opentime, allocator);
+				dItem.AddMember("opentdate", dInfo._opentdate, allocator);
+
+				dItem.AddMember("profit", dInfo._profit, allocator);
+				dItem.AddMember("maxprofit", dInfo._max_profit, allocator);
+				dItem.AddMember("maxloss", dInfo._max_loss, allocator);
+				dItem.AddMember("opentag", rj::Value(dInfo._opentag, allocator), allocator);
+
+				details.PushBack(dItem, allocator);
+			}
+
+			pItem.AddMember("details", details, allocator);
+
+			jPos.PushBack(pItem, allocator);
+		}
+
+		root.AddMember("positions", jPos, allocator);
+	}
+
+	{//资金保存
+		rj::Value jFund(rj::kObjectType);
+		rj::Document::AllocatorType &allocator = root.GetAllocator();
+
+		jFund.AddMember("total_profit", _fund_info._total_profit, allocator);
+		jFund.AddMember("total_dynprofit", _fund_info._total_dynprofit, allocator);
+		jFund.AddMember("total_fees", _fund_info._total_fees, allocator);
+		jFund.AddMember("tdate", _cur_tdate, allocator);
+
+		root.AddMember("fund", jFund, allocator);
+	}
+
+	{//信号保存
+		rj::Value jSigs(rj::kObjectType);
+		rj::Document::AllocatorType &allocator = root.GetAllocator();
+
+		for (auto& m : _sig_map)
+		{
+			const char* stdCode = m.first.c_str();
+			const SigInfo& sInfo = m.second;
+
+			rj::Value jItem(rj::kObjectType);
+			jItem.AddMember("usertag", rj::Value(sInfo._usertag.c_str(), allocator), allocator);
+
+			jItem.AddMember("volume", sInfo._volume, allocator);
+			jItem.AddMember("sigprice", sInfo._sigprice, allocator);
+			jItem.AddMember("gentime", sInfo._gentime, allocator);
+
+			jSigs.AddMember(rj::Value(stdCode, allocator), jItem, allocator);
+		}
+
+		root.AddMember("signals", jSigs, allocator);
+	}
+
+	{
+		std::string folder = WtHelper::getOutputDir();
+		folder += _name;
+		folder += "/";
+
+		std::string filename = folder;
+		filename += _name;
+		filename += ".json";
+
+		rj::StringBuffer sb;
+		rj::PrettyWriter<rj::StringBuffer> writer(sb);
+		root.Accept(writer);
+		StdFile::write_file_content(filename.c_str(), sb.GetString());
+	}
+}
+
+
 void SelMocker::dump_outputs()
 {
 	std::string folder = WtHelper::getOutputDir();
@@ -199,6 +297,8 @@ void SelMocker::handle_replay_done()
 		_emit_times, _total_calc_time, _total_calc_time / _emit_times);
 
 	dump_outputs();
+
+	dump_stradata();
 
 	this->on_bactest_end();
 }
@@ -397,6 +497,7 @@ bool SelMocker::on_schedule(uint32_t curDate, uint32_t curTime, uint32_t fireTim
 
 void SelMocker::on_session_begin(uint32_t curTDate)
 {
+	_cur_tdate = curTDate;
 	//每个交易日开始，要把冻结持仓置零
 	for (auto& it : _pos_map)
 	{
