@@ -91,10 +91,10 @@ void WtDiffExecuter::load_data()
 	if(root.HasMember("targets"))
 	{
 		const rj::Value& jTargets = root["targets"];
-		for (auto& m : jTargets.GetObject())
+		for (const rj::Value& jItem : jTargets.GetArray())
 		{
-			const char* stdCode = m.name.GetString();
-			double pos = m.value.GetDouble();
+			const char* stdCode = jItem["code"].GetString();
+			double pos = jItem["target"].GetDouble();
 			_target_pos[stdCode] = pos;
 		}
 	}
@@ -102,10 +102,10 @@ void WtDiffExecuter::load_data()
 	if (root.HasMember("diffs"))
 	{
 		const rj::Value& jDiffs = root["diffs"];
-		for (auto& m : jDiffs.GetObject())
+		for (const rj::Value& jItem : jDiffs.GetArray())
 		{
-			const char* stdCode = m.name.GetString();
-			double pos = m.value.GetDouble();
+			const char* stdCode = jItem["code"].GetString();
+			double pos = jItem["diff"].GetDouble();
 			_diff_pos[stdCode] = pos;
 		}
 	}
@@ -124,10 +124,11 @@ void WtDiffExecuter::save_data()
 
 		for (auto& v : _target_pos)
 		{
-			const char* stdCode = v.first.c_str();
-			double pos = v.second;
+			rj::Value jItem(rj::kObjectType);
+			jItem.AddMember("code", rj::Value(v.first.c_str(), allocator), allocator);
+			jItem.AddMember("target", v.second, allocator);
 
-			jTarget.AddMember(rj::Value(stdCode, allocator), pos, allocator);
+			jTarget.PushBack(jItem, allocator);
 		}
 
 		root.AddMember("targets", jTarget, allocator);
@@ -138,10 +139,11 @@ void WtDiffExecuter::save_data()
 
 		for (auto& v : _diff_pos)
 		{
-			const char* stdCode = v.first.c_str();
-			double pos = v.second;
+			rj::Value jItem(rj::kObjectType);
+			jItem.AddMember("code", rj::Value(v.first.c_str(), allocator), allocator);
+			jItem.AddMember("diff", v.second, allocator);
 
-			jDiff.AddMember(rj::Value(stdCode, allocator), pos, allocator);
+			jDiff.PushBack(jItem, allocator);
 		}
 
 		root.AddMember("diffs", jDiff, allocator);
