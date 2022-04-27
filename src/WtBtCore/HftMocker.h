@@ -245,7 +245,8 @@ private:
 		}
 
 	} OrderInfo;
-	typedef faster_hashmap<uint32_t, OrderInfo> Orders;
+	typedef std::shared_ptr<OrderInfo> OrderInfoPtr;
+	typedef faster_hashmap<uint32_t, OrderInfoPtr> Orders;
 	StdRecurMutex	_mtx_ords;
 	Orders			_orders;
 

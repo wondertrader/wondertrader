@@ -364,6 +364,7 @@ void HftMocker::on_tick(const char* stdCode, WTSTickData* newTick)
 
 		if (!_orders.empty())
 		{
+			StdLocker<StdRecurMutex> lock(_mtx_ords);
 			OrderIDs ids;
 			for (auto it = _orders.begin(); it != _orders.end(); it++)
 			{
@@ -384,6 +385,7 @@ void HftMocker::on_tick(const char* stdCode, WTSTickData* newTick)
 	{
 		if (!_orders.empty())
 		{
+			StdLocker<StdRecurMutex> lock(_mtx_ords);
 			OrderIDs ids;
 			for (auto it = _orders.begin(); it != _orders.end(); it++)
 			{
@@ -526,7 +528,7 @@ double HftMocker::stra_get_undone(const char* stdCode)
 	double ret = 0;
 	for (auto it = _orders.begin(); it != _orders.end(); it++)
 	{
-		const OrderInfo& ordInfo = it->second;
+		const OrderInfo& ordInfo = *it->second.get();
 		if (strcmp(ordInfo._code, stdCode) == 0)
 		{
 			ret += ordInfo._left * ordInfo._isBuy ? 1 : -1;
@@ -560,7 +562,7 @@ OrderIDs HftMocker::stra_cancel(const char* stdCode, bool isBuy, double qty /* =
 	uint32_t cnt = 0;
 	for (auto it = _orders.begin(); it != _orders.end(); it++)
 	{
-		const OrderInfo& ordInfo = it->second;
+		const OrderInfo& ordInfo = *it->second.get();
 		if(ordInfo._isBuy == isBuy && strcmp(ordInfo._code, stdCode) == 0)
 		{
 			double left = ordInfo._left;
@@ -596,7 +598,8 @@ OrderIDs HftMocker::stra_buy(const char* stdCode, double price, double qty, cons
 
 	{
 		StdLocker<StdRecurMutex> lock(_mtx_ords);
-		OrderInfo& order = _orders[localid];
+		_orders[localid].reset(new OrderInfo);
+		OrderInfo& order = *_orders[localid].get();
 		order._localid = localid;
 		strcpy(order._code, stdCode);
 		strcpy(order._usertag, userTag);
@@ -607,8 +610,8 @@ OrderIDs HftMocker::stra_buy(const char* stdCode, double price, double qty, cons
 	}
 
 	postTask([this, localid](){
-		const OrderInfo& ordInfo = _orders[localid];
-		on_entrust(localid, ordInfo._code, true, "下单成功", ordInfo._usertag);
+		const OrderInfoPtr& ordInfo = _orders[localid];
+		on_entrust(localid, ordInfo->_code, true, "下单成功", ordInfo->_usertag);
 	});
 
 	OrderIDs ids;
@@ -793,7 +796,8 @@ OrderIDs HftMocker::stra_sell(const char* stdCode, double price, double qty, con
 
 	{
 		StdLocker<StdRecurMutex> lock(_mtx_ords);
-		OrderInfo& order = _orders[localid];
+		_orders[localid].reset(new OrderInfo);
+		OrderInfo& order = *_orders[localid].get();
 		order._localid = localid;
 		strcpy(order._code, stdCode);
 		strcpy(order._usertag, userTag);
@@ -804,8 +808,8 @@ OrderIDs HftMocker::stra_sell(const char* stdCode, double price, double qty, con
 	}
 
 	postTask([this, localid]() {
-		const OrderInfo& ordInfo = _orders[localid];
-		on_entrust(localid, ordInfo._code, true, "下单成功", ordInfo._usertag);
+		const OrderInfoPtr& ordInfo = _orders[localid];
+		on_entrust(localid, ordInfo->_code, true, "下单成功", ordInfo->_usertag);
 	});
 
 	OrderIDs ids;
