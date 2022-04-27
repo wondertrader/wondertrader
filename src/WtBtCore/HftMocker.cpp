@@ -376,8 +376,7 @@ void HftMocker::on_tick(const char* stdCode, WTSTickData* newTick)
 
 			for (uint32_t localid : ids)
 			{
-				auto it = _orders.find(localid);
-				_orders.erase(it);
+				_orders.erase(localid);
 			}
 		}
 	}
@@ -546,7 +545,8 @@ bool HftMocker::stra_cancel(uint32_t localid)
 			return;
 
 		StdLocker<StdRecurMutex> lock(_mtx_ords);
-		OrderInfo& ordInfo = (OrderInfo&)it->second;
+		//OrderInfo& ordInfo = (OrderInfo&)it->second;
+		OrderInfo& ordInfo = *it->second.get();
 		ordInfo._left = 0;
 
 		on_order(localid, ordInfo._code, ordInfo._isBuy, ordInfo._total, ordInfo._left, ordInfo._price, true, ordInfo._usertag);
@@ -688,7 +688,7 @@ bool HftMocker::procOrder(uint32_t localid)
 		return false;
 
 	StdLocker<StdRecurMutex> lock(_mtx_ords);
-	OrderInfo& ordInfo = (OrderInfo&)it->second;
+	OrderInfo& ordInfo = *it->second.get();
 
 	//第一步,如果在撤单概率中,则执行撤单
 	if(_error_rate>0 && genRand(10000)<=_error_rate)
