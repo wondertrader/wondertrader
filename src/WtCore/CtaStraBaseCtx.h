@@ -249,6 +249,7 @@ protected:
 	BoostFilePtr	_close_logs;
 	BoostFilePtr	_fund_logs;
 	BoostFilePtr	_sig_logs;
+	BoostFilePtr	_pos_logs;
 
 	CondEntrustMap	_condtions;
 	uint64_t		_last_cond_min;	//上次设置条件单的时间

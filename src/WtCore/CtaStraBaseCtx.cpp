@@ -135,6 +135,21 @@ void CtaStraBaseCtx::init_outputs()
 			_sig_logs->seek_to_end();
 		}
 	}
+
+	filename = folder + "positions.csv";
+	_pos_logs.reset(new BoostFile());	
+	{
+		bool isNewFile = !BoostFile::exists(filename.c_str());
+		_pos_logs->create_or_open_file(filename.c_str());
+		if (isNewFile)
+		{
+			_pos_logs->write_file("date,code,volume,closeprofit,dynprofit\n");
+		}
+		else
+		{
+			_pos_logs->seek_to_end();
+		}
+	}
 }
 
 void CtaStraBaseCtx::log_signal(const char* stdCode, double target, double price, uint64_t gentime, const char* usertag /* = "" */)
@@ -925,6 +940,13 @@ void CtaStraBaseCtx::on_session_end(uint32_t uTDate)
 		const PosInfo& pInfo = it->second;
 		total_profit += pInfo._closeprofit;
 		total_dynprofit += pInfo._dynprofit;
+
+		if (decimal::eq(pInfo._volume, 0.0))
+			continue;
+
+		if(_pos_logs)
+			_pos_logs->write_file(fmt::format("{},{},{},{:.2f},{:.2f}\n", curDate, stdCode,
+				pInfo._volume, pInfo._closeprofit, pInfo._dynprofit));
 	}
 
 	//这里要把当日结算的数据写到日志文件里

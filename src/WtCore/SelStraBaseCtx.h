@@ -191,6 +191,7 @@ protected:
 	BoostFilePtr	_close_logs;
 	BoostFilePtr	_fund_logs;
 	BoostFilePtr	_sig_logs;
+	BoostFilePtr	_pos_logs;
 
 	//是否处于调度中的标记
 	bool			_is_in_schedule;	//是否在自动调度中
