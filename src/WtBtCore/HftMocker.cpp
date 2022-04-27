@@ -527,10 +527,10 @@ double HftMocker::stra_get_undone(const char* stdCode)
 	double ret = 0;
 	for (auto it = _orders.begin(); it != _orders.end(); it++)
 	{
-		const OrderInfo& ordInfo = *it->second.get();
-		if (strcmp(ordInfo._code, stdCode) == 0)
+		OrderInfoPtr ordInfo = it->second;
+		if (strcmp(ordInfo->_code, stdCode) == 0)
 		{
-			ret += ordInfo._left * ordInfo._isBuy ? 1 : -1;
+			ret += ordInfo->_left * ordInfo->_isBuy ? 1 : -1;
 		}
 	}
 
@@ -540,16 +540,15 @@ double HftMocker::stra_get_undone(const char* stdCode)
 bool HftMocker::stra_cancel(uint32_t localid)
 {
 	postTask([this, localid](){
+		StdLocker<StdRecurMutex> lock(_mtx_ords);
 		auto it = _orders.find(localid);
 		if (it == _orders.end())
-			return;
+			return;		
 
-		StdLocker<StdRecurMutex> lock(_mtx_ords);
-		//OrderInfo& ordInfo = (OrderInfo&)it->second;
-		OrderInfo& ordInfo = *it->second.get();
-		ordInfo._left = 0;
+		OrderInfoPtr& ordInfo = (OrderInfoPtr&)it->second;
+		ordInfo->_left = 0;
 
-		on_order(localid, ordInfo._code, ordInfo._isBuy, ordInfo._total, ordInfo._left, ordInfo._price, true, ordInfo._usertag);
+		on_order(localid, ordInfo->_code, ordInfo->_isBuy, ordInfo->_total, ordInfo->_left, ordInfo->_price, true, ordInfo->_usertag);
 		_orders.erase(it);
 	});
 
@@ -562,10 +561,10 @@ OrderIDs HftMocker::stra_cancel(const char* stdCode, bool isBuy, double qty /* =
 	uint32_t cnt = 0;
 	for (auto it = _orders.begin(); it != _orders.end(); it++)
 	{
-		const OrderInfo& ordInfo = *it->second.get();
-		if(ordInfo._isBuy == isBuy && strcmp(ordInfo._code, stdCode) == 0)
+		OrderInfoPtr ordInfo = it->second;
+		if(ordInfo->_isBuy == isBuy && strcmp(ordInfo->_code, stdCode) == 0)
 		{
-			double left = ordInfo._left;
+			double left = ordInfo->_left;
 			stra_cancel(it->first);
 			ret.emplace_back(it->first);
 			cnt++;
@@ -596,17 +595,18 @@ OrderIDs HftMocker::stra_buy(const char* stdCode, double price, double qty, cons
 
 	uint32_t localid = makeLocalOrderID();
 
+	OrderInfoPtr order(new OrderInfo);
+	order->_localid = localid;
+	strcpy(order->_code, stdCode);
+	strcpy(order->_usertag, userTag);
+	order->_isBuy = true;
+	order->_price = price;
+	order->_total = qty;
+	order->_left = qty;
+
 	{
 		StdLocker<StdRecurMutex> lock(_mtx_ords);
-		_orders[localid].reset(new OrderInfo);
-		OrderInfo& order = *_orders[localid].get();
-		order._localid = localid;
-		strcpy(order._code, stdCode);
-		strcpy(order._usertag, userTag);
-		order._isBuy = true;
-		order._price = price;
-		order._total = qty;
-		order._left = qty;
+		_orders[localid] = order;		
 	}
 
 	postTask([this, localid](){
@@ -687,33 +687,32 @@ bool HftMocker::procOrder(uint32_t localid)
 	if (it == _orders.end())
 		return false;
 
-	StdLocker<StdRecurMutex> lock(_mtx_ords);
-	OrderInfo& ordInfo = *it->second.get();
+	OrderInfoPtr ordInfo = it->second;
 
 	//第一步,如果在撤单概率中,则执行撤单
 	if(_error_rate>0 && genRand(10000)<=_error_rate)
 	{
-		on_order(localid, ordInfo._code, ordInfo._isBuy, ordInfo._total, ordInfo._left, ordInfo._price, true, ordInfo._usertag);
+		on_order(localid, ordInfo->_code, ordInfo->_isBuy, ordInfo->_total, ordInfo->_left, ordInfo->_price, true, ordInfo->_usertag);
 		log_info("Random error order: {}", localid);
 		return true;
 	}
 	else
 	{
-		on_order(localid, ordInfo._code, ordInfo._isBuy, ordInfo._total, ordInfo._left, ordInfo._price, false, ordInfo._usertag);
+		on_order(localid, ordInfo->_code, ordInfo->_isBuy, ordInfo->_total, ordInfo->_left, ordInfo->_price, false, ordInfo->_usertag);
 	}
 
-	WTSTickData* curTick = stra_get_last_tick(ordInfo._code);
+	WTSTickData* curTick = stra_get_last_tick(ordInfo->_code);
 	if (curTick == NULL)
 		return false;
 
 	double curPx = curTick->price();
-	double orderQty = ordInfo._isBuy ? curTick->askqty(0) : curTick->bidqty(0);	//看对手盘的数量
+	double orderQty = ordInfo->_isBuy ? curTick->askqty(0) : curTick->bidqty(0);	//看对手盘的数量
 	if (decimal::eq(orderQty, 0.0))
 		return false;
 
 	if (!_use_newpx)
 	{
-		curPx = ordInfo._isBuy ? curTick->askprice(0) : curTick->bidprice(0);
+		curPx = ordInfo->_isBuy ? curTick->askprice(0) : curTick->bidprice(0);
 		//if (curPx == 0.0)
 		if(decimal::eq(curPx, 0.0))
 		{
@@ -724,15 +723,15 @@ bool HftMocker::procOrder(uint32_t localid)
 	curTick->release();
 
 	//如果没有成交条件,则退出逻辑
-	if(!decimal::eq(ordInfo._price, 0.0))
+	if(!decimal::eq(ordInfo->_price, 0.0))
 	{
-		if(ordInfo._isBuy && decimal::gt(curPx, ordInfo._price))
+		if(ordInfo->_isBuy && decimal::gt(curPx, ordInfo->_price))
 		{
 			//买单,但是当前价大于限价,不成交
 			return false;
 		}
 
-		if (!ordInfo._isBuy && decimal::lt(curPx, ordInfo._price))
+		if (!ordInfo->_isBuy && decimal::lt(curPx, ordInfo->_price))
 		{
 			//卖单,但是当前价小于限价,不成交
 			return false;
@@ -742,23 +741,23 @@ bool HftMocker::procOrder(uint32_t localid)
 	/*
 	 *	下面就要模拟成交了
 	 */
-	double maxQty = min(orderQty, ordInfo._left);
+	double maxQty = min(orderQty, ordInfo->_left);
 	auto vols = splitVolume((uint32_t)maxQty);
 	for(uint32_t curQty : vols)
 	{
-		on_trade(ordInfo._localid, ordInfo._code, ordInfo._isBuy, curQty, curPx, ordInfo._usertag);
+		on_trade(ordInfo->_localid, ordInfo->_code, ordInfo->_isBuy, curQty, curPx, ordInfo->_usertag);
 
-		ordInfo._left -= curQty;
-		on_order(localid, ordInfo._code, ordInfo._isBuy, ordInfo._total, ordInfo._left, ordInfo._price, false, ordInfo._usertag);
+		ordInfo->_left -= curQty;
+		on_order(localid, ordInfo->_code, ordInfo->_isBuy, ordInfo->_total, ordInfo->_left, ordInfo->_price, false, ordInfo->_usertag);
 
-		double curPos = stra_get_position(ordInfo._code);
+		double curPos = stra_get_position(ordInfo->_code);
 
 		_sig_logs << _replayer->get_date() << "." << _replayer->get_raw_time() << "." << _replayer->get_secs() << ","
-			<< (ordInfo._isBuy ? "+" : "-") << curQty << "," << curPos << "," << curPx << std::endl;
+			<< (ordInfo->_isBuy ? "+" : "-") << curQty << "," << curPos << "," << curPx << std::endl;
 	}
 
-	//if(ordInfo._left == 0)
-	if(decimal::eq(ordInfo._left, 0.0))
+	//if(ordInfo->_left == 0)
+	if(decimal::eq(ordInfo->_left, 0.0))
 	{
 		return true;
 	}
@@ -794,17 +793,18 @@ OrderIDs HftMocker::stra_sell(const char* stdCode, double price, double qty, con
 
 	uint32_t localid = makeLocalOrderID();
 
+	OrderInfoPtr order(new OrderInfo);
+	order->_localid = localid;
+	strcpy(order->_code, stdCode);
+	strcpy(order->_usertag, userTag);
+	order->_isBuy = false;
+	order->_price = price;
+	order->_total = qty;
+	order->_left = qty;
+
 	{
 		StdLocker<StdRecurMutex> lock(_mtx_ords);
-		_orders[localid].reset(new OrderInfo);
-		OrderInfo& order = *_orders[localid].get();
-		order._localid = localid;
-		strcpy(order._code, stdCode);
-		strcpy(order._usertag, userTag);
-		order._isBuy = false;
-		order._price = price;
-		order._total = qty;
-		order._left = qty;
+		_orders[localid] = order;
 	}
 
 	postTask([this, localid]() {
@@ -932,6 +932,11 @@ void HftMocker::stra_log_info(const char* message)
 void HftMocker::stra_log_debug(const char* message)
 {
 	WTSLogger::log_dyn_raw("strategy", _name.c_str(), LL_DEBUG, message);
+}
+
+void HftMocker::stra_log_warn(const char* message)
+{
+	WTSLogger::log_dyn_raw("strategy", _name.c_str(), LL_WARN, message);
 }
 
 void HftMocker::stra_log_error(const char* message)

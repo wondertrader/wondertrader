@@ -30,6 +30,12 @@ static const WtUInt32	EVENT_SESSION_END		= 3;	//交易日结束
 static const WtUInt32	EVENT_ENGINE_SCHDL		= 4;	//框架调度
 static const WtUInt32	EVENT_BACKTEST_END		= 5;	//回测结束
 
+//日志级别
+static const WtUInt32	LOG_LEVEL_DEBUG			= 0;
+static const WtUInt32	LOG_LEVEL_INFO			= 1;
+static const WtUInt32	LOG_LEVEL_WARN			= 2;
+static const WtUInt32	LOG_LEVEL_ERROR			= 3;
+
 /*
 *	回调函数定义
 */

@@ -134,6 +134,7 @@ public:
 
 	virtual void stra_log_info(const char* message) override;
 	virtual void stra_log_debug(const char* message) override;
+	virtual void stra_log_warn(const char* message) override;
 	virtual void stra_log_error(const char* message) override;
 
 	virtual double stra_get_position(const char* stdCode, bool bOnlyValid = false) override;

@@ -32,6 +32,13 @@ static const WtUInt32	EVENT_ENGINE_SCHDL	= 4;	//框架调度
 static const WtUInt32	CHNL_EVENT_READY	= 1000;	//通道就绪事件
 static const WtUInt32	CHNL_EVENT_LOST		= 1001;	//通道断开事件
 
+//日志级别
+static const WtUInt32	LOG_LEVEL_DEBUG		= 0;
+static const WtUInt32	LOG_LEVEL_INFO		= 1;
+static const WtUInt32	LOG_LEVEL_WARN		= 2;
+static const WtUInt32	LOG_LEVEL_ERROR		= 3;
+
+
 /*
 *	回调函数定义
 */

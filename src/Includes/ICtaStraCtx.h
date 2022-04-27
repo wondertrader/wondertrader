@@ -103,6 +103,7 @@ public:
 	virtual void stra_log_info(const char* message) = 0;
 	virtual void stra_log_debug(const char* message) = 0;
 	virtual void stra_log_error(const char* message) = 0;
+	virtual void stra_log_warn(const char* message) {}
 
 	virtual void stra_save_user_data(const char* key, const char* val){}
 

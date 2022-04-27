@@ -430,6 +430,31 @@ void cta_log_text(CtxHandler cHandle, const char* message)
 	ctx->stra_log_info(message);
 }
 
+void cta_log_level(CtxHandler cHandle, WtUInt32 level, const char* message)
+{
+	CtaContextPtr ctx = getRunner().getCtaContext(cHandle);
+	if (ctx == NULL)
+		return;
+
+	switch (level)
+	{
+	case LOG_LEVEL_DEBUG:
+		ctx->stra_log_debug(message);
+		break;
+	case LOG_LEVEL_INFO:
+		ctx->stra_log_info(message);
+		break;
+	case LOG_LEVEL_WARN:
+		ctx->stra_log_warn(message);
+		break;
+	case LOG_LEVEL_ERROR:
+		ctx->stra_log_error(message);
+		break;
+	default:
+		break;
+		}
+}
+
 void cta_save_userdata(CtxHandler cHandle, const char* key, const char* val)
 {
 	CtaContextPtr ctx = getRunner().getCtaContext(cHandle);
@@ -491,6 +516,31 @@ void sel_log_text(CtxHandler cHandle, const char* message)
 		return;
 
 	ctx->stra_log_info(message);
+}
+
+void sel_log_level(CtxHandler cHandle, WtUInt32 level, const char* message)
+{
+	SelContextPtr ctx = getRunner().getSelContext(cHandle);
+	if (ctx == NULL)
+		return;
+
+	switch (level)
+	{
+	case LOG_LEVEL_DEBUG:
+		ctx->stra_log_debug(message);
+		break;
+	case LOG_LEVEL_INFO:
+		ctx->stra_log_info(message);
+		break;
+	case LOG_LEVEL_WARN:
+		ctx->stra_log_warn(message);
+		break;
+	case LOG_LEVEL_ERROR:
+		ctx->stra_log_error(message);
+		break;
+	default:
+		break;
+	}
 }
 
 double sel_get_price(const char* stdCode)
@@ -803,6 +853,31 @@ void hft_log_text(CtxHandler cHandle, const char* message)
 		return;
 
 	ctx->stra_log_info(message);
+}
+
+void hft_log_level(CtxHandler cHandle, WtUInt32 level, const char* message)
+{
+	HftContextPtr ctx = getRunner().getHftContext(cHandle);
+	if (ctx == NULL)
+		return;
+
+	switch (level)
+	{
+	case LOG_LEVEL_DEBUG:
+		ctx->stra_log_debug(message);
+		break;
+	case LOG_LEVEL_INFO:
+		ctx->stra_log_info(message);
+		break;
+	case LOG_LEVEL_WARN:
+		ctx->stra_log_warn(message);
+		break;
+	case LOG_LEVEL_ERROR:
+		ctx->stra_log_error(message);
+		break;
+	default:
+		break;
+	}
 }
 
 void hft_sub_ticks(CtxHandler cHandle, const char* stdCode)

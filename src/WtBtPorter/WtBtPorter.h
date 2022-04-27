@@ -113,6 +113,8 @@ extern "C"
 
 	EXPORT_FLAG	void		cta_log_text(CtxHandler cHandle, const char* message);
 
+	EXPORT_FLAG	void		cta_log_level(CtxHandler cHandle, WtUInt32 level, const char* message);
+
 	EXPORT_FLAG	void		cta_save_userdata(CtxHandler cHandle, const char* key, const char* val);
 
 	EXPORT_FLAG	WtString	cta_load_userdata(CtxHandler cHandle, const char* key, const char* defVal);
@@ -142,6 +144,8 @@ extern "C"
 	EXPORT_FLAG void		sel_get_all_position(CtxHandler cHandle, FuncGetPositionCallback cb);
 
 	EXPORT_FLAG	void		sel_log_text(CtxHandler cHandle, const char* message);
+
+	EXPORT_FLAG	void		sel_log_level(CtxHandler cHandle, WtUInt32 level, const char* message);
 
 	EXPORT_FLAG	void		sel_save_userdata(CtxHandler cHandle, const char* key, const char* val);
 
@@ -179,6 +183,8 @@ extern "C"
 	EXPORT_FLAG	WtUInt32	hft_get_trans(CtxHandler cHandle, const char* stdCode, WtUInt32 tickCnt, FuncGetTransCallback cb);
 
 	EXPORT_FLAG	void		hft_log_text(CtxHandler cHandle, const char* message);
+
+	EXPORT_FLAG	void		hft_log_level(CtxHandler cHandle, WtUInt32 level, const char* message);
 
 	EXPORT_FLAG	void		hft_sub_ticks(CtxHandler cHandle, const char* stdCode);
 
