@@ -421,16 +421,7 @@ WtUInt32 cta_get_time()
 	return getRunner().getEngine()->get_min_time();
 }
 
-void cta_log_text(CtxHandler cHandle, const char* message)
-{
-	CtaContextPtr ctx = getRunner().getCtaContext(cHandle);
-	if (ctx == NULL)
-		return;
-
-	ctx->stra_log_info(message);
-}
-
-void cta_log_level(CtxHandler cHandle, WtUInt32 level, const char* message)
+void cta_log_text(CtxHandler cHandle, WtUInt32 level, const char* message)
 {
 	CtaContextPtr ctx = getRunner().getCtaContext(cHandle);
 	if (ctx == NULL)
@@ -509,16 +500,7 @@ WtString sel_load_userdata(CtxHandler cHandle, const char* key, const char* defV
 	return ctx->stra_load_user_data(key, defVal);
 }
 
-void sel_log_text(CtxHandler cHandle, const char* message)
-{
-	SelContextPtr ctx = getRunner().getSelContext(cHandle);
-	if (ctx == NULL)
-		return;
-
-	ctx->stra_log_info(message);
-}
-
-void sel_log_level(CtxHandler cHandle, WtUInt32 level, const char* message)
+void sel_log_text(CtxHandler cHandle, WtUInt32 level, const char* message)
 {
 	SelContextPtr ctx = getRunner().getSelContext(cHandle);
 	if (ctx == NULL)
@@ -846,16 +828,7 @@ WtUInt32 hft_get_trans(CtxHandler cHandle, const char* stdCode, WtUInt32 itemCnt
 	}
 }
 
-void hft_log_text(CtxHandler cHandle, const char* message)
-{
-	HftContextPtr ctx = getRunner().getHftContext(cHandle);
-	if (ctx == NULL)
-		return;
-
-	ctx->stra_log_info(message);
-}
-
-void hft_log_level(CtxHandler cHandle, WtUInt32 level, const char* message)
+void hft_log_text(CtxHandler cHandle, WtUInt32 level, const char* message)
 {
 	HftContextPtr ctx = getRunner().getHftContext(cHandle);
 	if (ctx == NULL)

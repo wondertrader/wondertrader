@@ -410,16 +410,7 @@ WtUInt32 cta_get_time()
 	return getRunner().replayer().get_min_time();
 }
 
-void cta_log_text(CtxHandler cHandle, const char* message)
-{
-	CtaMocker* ctx = getRunner().cta_mocker();
-	if (ctx == NULL)
-		return;
-
-	ctx->stra_log_info(message);
-}
-
-void cta_log_level(CtxHandler cHandle, WtUInt32 level, const char* message)
+void cta_log_text(CtxHandler cHandle, WtUInt32 level, const char* message)
 {
 	CtaMocker* ctx = getRunner().cta_mocker();
 	if (ctx == NULL)
@@ -505,16 +496,7 @@ WtString sel_load_userdata(CtxHandler cHandle, const char* key, const char* defV
 	return ctx->stra_load_user_data(key, defVal);
 }
 
-void sel_log_text(CtxHandler cHandle, const char* message)
-{
-	SelMocker* ctx = getRunner().sel_mocker();
-	if (ctx == NULL)
-		return;
-
-	ctx->stra_log_info(message);
-}
-
-void sel_log_level(CtxHandler cHandle, WtUInt32 level, const char* message)
+void sel_log_text(CtxHandler cHandle, WtUInt32 level, const char* message)
 {
 	SelMocker* ctx = getRunner().sel_mocker();
 	if (ctx == NULL)
@@ -837,16 +819,7 @@ WtUInt32 hft_get_trans(CtxHandler cHandle, const char* stdCode, WtUInt32 itemCnt
 	}
 }
 
-void hft_log_text(CtxHandler cHandle, const char* message)
-{
-	HftMocker* mocker = getRunner().hft_mocker();
-	if (mocker == NULL)
-		return;
-
-	mocker->stra_log_info(message);
-}
-
-void hft_log_level(CtxHandler cHandle, WtUInt32 level, const char* message)
+void hft_log_text(CtxHandler cHandle, WtUInt32 level, const char* message)
 {
 	HftMocker* ctx = getRunner().hft_mocker();
 	if (ctx == NULL)
