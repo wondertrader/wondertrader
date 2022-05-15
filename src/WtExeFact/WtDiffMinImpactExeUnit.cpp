@@ -385,6 +385,8 @@ void WtDiffMinImpactExeUnit::set_position(const char* stdCode, double newVol)
 	//这里就是最新的差量
 	_left_diff = newVol;
 
+	_ctx->writeLog(fmt::format("Diff of {} updated to {}", stdCode, _left_diff).c_str());
+
 	do_calc();
 }
 

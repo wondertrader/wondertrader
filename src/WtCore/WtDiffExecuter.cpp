@@ -305,13 +305,16 @@ void WtDiffExecuter::on_position_changed(const char* stdCode, double targetPos)
 	double oldVol = _target_pos[stdCode];
 	_target_pos[stdCode] = targetPos;
 
-	if(!decimal::eq(oldVol, targetPos))
-	{
-		WTSLogger::log_dyn_f("executer", _name.c_str(), LL_INFO, "Target position of {} changed: {} -> {}", stdCode, oldVol, targetPos);
-	}
+	if(decimal::eq(oldVol, targetPos))
+		return;
 
 	//更新差量
-	_diff_pos[stdCode] += targetPos - oldVol;
+	double& thisDiff = _diff_pos[stdCode];
+	double prevDiff = thisDiff;
+	thisDiff += (targetPos - oldVol);
+
+	//WTSLogger::log_dyn_f("executer", _name.c_str(), LL_INFO, "Target position of {} changed: {} -> {}", stdCode, oldVol, targetPos);
+	WTSLogger::log_dyn_f("executer", _name.c_str(), LL_INFO, "Target position of {} changed: {} -> {}, diff postion changed: {} -> {}", stdCode, oldVol, targetPos, prevDiff, thisDiff);
 
 	if (_trader && !_trader->checkOrderLimits(stdCode))
 	{
@@ -320,17 +323,17 @@ void WtDiffExecuter::on_position_changed(const char* stdCode, double targetPos)
 	}
 
 	//TODO 差量执行还要再看一下
-	//if (_pool)
-	//{
-	//	std::string code = stdCode;
-	//	_pool->schedule([unit, code, targetPos](){
-	//		unit->self()->set_position(code.c_str(), targetPos);
-	//	});
-	//}
-	//else
-	//{
-	//	unit->self()->set_position(stdCode, targetPos);
-	//}
+	if (_pool)
+	{
+		std::string code = stdCode;
+		_pool->schedule([unit, code, thisDiff]() {
+			unit->self()->set_position(code.c_str(), thisDiff);
+		});
+	}
+	else
+	{
+		unit->self()->set_position(stdCode, thisDiff);
+	}
 }
 
 void WtDiffExecuter::set_position(const faster_hashmap<LongKey, double>& targets)
@@ -346,13 +349,15 @@ void WtDiffExecuter::set_position(const faster_hashmap<LongKey, double>& targets
 		newVol = round(newVol*_scale);
 		double oldVol = _target_pos[stdCode];
 		_target_pos[stdCode] = newVol;
-		if(!decimal::eq(oldVol, newVol))
-		{
-			WTSLogger::log_dyn_f("executer", _name.c_str(), LL_INFO, "Target position of {} changed: {} -> {}", stdCode, oldVol, newVol);
+		if (decimal::eq(oldVol, newVol))
+			return;
 
-			//差量更新
-			_diff_pos[stdCode] += (newVol - oldVol);
-		}
+		//差量更新
+		double& thisDiff = _diff_pos[stdCode];
+		double prevDiff = thisDiff;
+		thisDiff += (newVol - oldVol);
+
+		WTSLogger::log_dyn_f("executer", _name.c_str(), LL_INFO, "Target position of {} changed: {} -> {}, diff postion changed: {} -> {}", stdCode, oldVol, newVol, prevDiff, thisDiff);
 
 		if (_trader && !_trader->checkOrderLimits(stdCode))
 		{
@@ -361,48 +366,53 @@ void WtDiffExecuter::set_position(const faster_hashmap<LongKey, double>& targets
 		}
 
 		//TODO 差量执行还要再看一下
-		//if (_pool)
-		//{
-		//	std::string code = stdCode;
-		//	_pool->schedule([unit, code, newVol](){
-		//		unit->self()->set_position(code.c_str(), newVol);
-		//	});
-		//}
-		//else
-		//{
-		//	unit->self()->set_position(stdCode, newVol);
-		//}
+		if (_pool)
+		{
+			std::string code = stdCode;
+			_pool->schedule([unit, code, thisDiff](){
+				unit->self()->set_position(code.c_str(), thisDiff);
+			});
+		}
+		else
+		{
+			unit->self()->set_position(stdCode, thisDiff);
+		}
 	}
 
 	//在原来的目标头寸中，但是不在新的目标头寸中，则需要自动设置为0
 	for (auto it = _target_pos.begin(); it != _target_pos.end(); it++)
 	{
-		const char* code = it->first.c_str();
+		const char* stdCode = it->first.c_str();
 		double& pos = (double&)it->second;
-		auto tit = targets.find(code);
+		auto tit = targets.find(stdCode);
 		if(tit != targets.end())
 			continue;
 
-		WTSLogger::log_dyn_f("executer", _name.c_str(), LL_INFO, "{} is not in target, set to 0 automatically", code);
+		WTSLogger::log_dyn_f("executer", _name.c_str(), LL_INFO, "{} is not in target, set to 0 automatically", stdCode);
 
-		ExecuteUnitPtr unit = getUnit(code);
+		ExecuteUnitPtr unit = getUnit(stdCode);
 		if (unit == NULL)
 			continue;
 
 		//差量更新
-		_diff_pos[code] +=  -pos;
+		//更新差量
+		double& thisDiff = _diff_pos[stdCode];
+		double prevDiff = thisDiff;
+		thisDiff -= -pos;
+		pos = 0;
 
 		//TODO 差量执行还要再看一下
-		//if (_pool)
-		//{
-		//	_pool->schedule([unit, code](){
-		//		unit->self()->set_position(code, 0);
-		//	});
-		//}
-		//else
-		//{
-		//	unit->self()->set_position(code, 0);
-		//}
+		if (_pool)
+		{
+			std::string code = stdCode;
+			_pool->schedule([unit, code, thisDiff](){
+				unit->self()->set_position(code.c_str(), thisDiff);
+			});
+		}
+		else
+		{
+			unit->self()->set_position(stdCode, thisDiff);
+		}
 
 		pos = 0;
 	}
@@ -440,7 +450,11 @@ void WtDiffExecuter::on_trade(uint32_t localid, const char* stdCode, bool isBuy,
 	if(localid != 0)
 	{
 		//如果localid不为0，则更新差量
-		_diff_pos[stdCode] -= vol * (isBuy ? 1 : -1);
+		double& curDiff = _diff_pos[stdCode];
+		double prevDiff = curDiff;
+		curDiff -= vol * (isBuy ? 1 : -1);
+
+		WTSLogger::log_dyn_f("executer", _name.c_str(), LL_INFO, "Diff of {} updated by trade: {} -> {}", prevDiff, curDiff);
 		save_data();
 	}
 
@@ -515,6 +529,10 @@ void WtDiffExecuter::on_channel_ready()
 				unitPtr->self()->on_channel_ready();
 			}
 		}
+	}
+
+	for(auto& v : _diff_pos)
+	{
 	}
 }
 
