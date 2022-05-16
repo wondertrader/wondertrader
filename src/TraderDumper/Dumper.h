@@ -19,7 +19,7 @@ public:
 
 	bool config(const char* cfgfile, bool isFile, const char* modDir);
 
-	void run();
+	void run(bool bOnce = true);
 
 	void release();
 

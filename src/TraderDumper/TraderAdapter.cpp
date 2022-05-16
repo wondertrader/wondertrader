@@ -41,6 +41,7 @@ TraderAdapter::TraderAdapter(TraderAdapterMgr* mgr)
 	, _cfg(NULL)
 	, _trader_api(NULL)
 	, _mgr(mgr)
+	, _done(false)
 {
 }
 
@@ -109,6 +110,7 @@ bool TraderAdapter::init(const char* id, WTSVariant* params, IBaseDataMgr* bdMgr
 		return false;
 	}
 
+	WTSLogger::info_f("[{}]交易接口初始化成功", id);
 	return true;
 }
 
@@ -144,6 +146,8 @@ void TraderAdapter::handleEvent(WTSTraderEvent e, int32_t ec)
 		else
 		{
 			WTSLogger::error_f("[{}]交易账号连接失败: {}", _id.c_str(), ec);
+			_mgr->decAlive();
+			_done = true;
 		}
 	}
 	else if(e == WTE_Close)
@@ -157,6 +161,8 @@ void TraderAdapter::onLoginResult(bool bSucc, const char* msg, uint32_t tradingd
 	if(!bSucc)
 	{
 		WTSLogger::error_f("[{}]交易账号登录失败: {}", _id.c_str(), msg);
+		_mgr->decAlive();
+		_done = true;
 	}
 	else
 	{
@@ -241,6 +247,8 @@ void TraderAdapter::onRspOrders(const WTSArray* ayOrders)
 	}
 
 	WTSLogger::info_f("[{}]订单明细已更新", _id.c_str());
+	_mgr->decAlive();
+	_done = true;
 }
 
 void TraderAdapter::onPushOrder(WTSOrderInfo* oInfo)
@@ -336,7 +344,8 @@ void TraderAdapterMgr::run()
 		it->second->run();
 	}
 
-	WTSLogger::info_f("%u个交易通道已启动", _adapters.size());
+	WTSLogger::info_f("{}个交易通道已启动", _adapters.size());
+	_live_cnt = _adapters.size();
 }
 
 void TraderAdapterMgr::release()
@@ -347,4 +356,23 @@ void TraderAdapterMgr::release()
 	}
 
 	_adapters.clear();
+}
+
+void TraderAdapterMgr::decAlive()
+{
+	_mutex.lock();
+	auto left = _live_cnt.fetch_sub(1);
+	_mutex.unlock();
+	left--;
+	if(left <= 2 && left > 0)
+	{
+		for (auto it = _adapters.begin(); it != _adapters.end(); it++)
+		{
+			TraderAdapterPtr trader = it->second;
+			if (!trader->isDone())
+				WTSLogger::info_f("{} is still working", trader->id());
+		}
+	}
+
+	WTSLogger::info_f("{}/{}", _live_cnt, _adapters.size());
 }

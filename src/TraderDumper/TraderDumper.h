@@ -12,7 +12,7 @@ extern "C"
 
 	EXPORT_FLAG	bool		config(const char* cfgfile, bool isFile);
 
-	EXPORT_FLAG	void		run();
+	EXPORT_FLAG	void		run(bool bOnce);
 
 	EXPORT_FLAG	void		release();
 

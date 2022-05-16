@@ -24,9 +24,9 @@ bool config(const char* cfgfile, bool isFile)
 	return getDumper().config(cfgfile, isFile, getBinDir());
 }
 
-void run()
+void run(bool bOnce)
 {
-	getDumper().run();
+	getDumper().run(bOnce);
 }
 
 void release()

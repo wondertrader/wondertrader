@@ -88,9 +88,20 @@ bool Dumper::config(const char* cfgfile, bool isFile, const char* modDir)
 	return true;
 }
 
-void Dumper::run()
+void Dumper::run(bool bOnce /* = true */)
 {
 	g_adapterMgr.run();
+
+	if(bOnce)
+	{
+		for (;;)
+		{
+			if (g_adapterMgr.isAnyAlive())
+				std::this_thread::sleep_for(std::chrono::seconds(1));
+			else
+				break;
+		}
+	}
 }
 
 void Dumper::release()

@@ -8,6 +8,7 @@
  * \brief 
  */
 #pragma once
+#include <atomic>
 #include <unordered_map>
 #include <boost/noncopyable.hpp>
 
@@ -41,6 +42,8 @@ public:
 	bool run();
 
 	inline const char* id() const{ return _id.c_str(); }
+
+	bool isDone() const { return _done; }
 
 public:
 	//////////////////////////////////////////////////////////////////////////
@@ -80,6 +83,7 @@ private:
 	IBaseDataMgr*		_bd_mgr;
 	uint32_t			_date;
 
+	bool				_done;
 };
 
 typedef std::shared_ptr<TraderAdapter>				TraderAdapterPtr;
@@ -100,8 +104,18 @@ public:
 
 	bool	addAdapter(const char* tname, TraderAdapterPtr& adapter);
 
+	bool	isAnyAlive() const {
+		return _live_cnt != 0;
+	}
+
+	std::size_t size() const { return _adapters.size(); }
+
+	void decAlive();
+
 private:
 	TraderAdapterMap		_adapters;
+	std::mutex				_mutex;
+	std::atomic<uint32_t>	_live_cnt;
 };
 
 NS_WTP_END
