@@ -354,6 +354,16 @@ void CtaMocker::handle_session_end(uint32_t curTDate)
 	this->on_session_end(curTDate);
 }
 
+void CtaMocker::handle_section_end(uint32_t curTDate, uint32_t curTime)
+{
+	/*
+	 *	By Wesley @ 2022.05.16
+	 *	如果小节结束，也需要清理掉价格缓存，防止小节跳空
+	 *	这种主要是针对夜盘交易
+	 */
+	_price_map.clear();
+}
+
 void CtaMocker::handle_replay_done()
 {
 	_in_backtest = false;

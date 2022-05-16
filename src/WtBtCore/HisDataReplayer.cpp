@@ -809,6 +809,9 @@ void HisDataReplayer::run_by_bars(bool bNeedDump /* = false */)
 
 			replayed_barcnt += 1;
 
+			if(sInfo->isLastOfSection(nextTime))
+				_listener->handle_section_end(nextDate, nextTime);
+
 			if (isEndTDate && _closed_tdate != _cur_tdate)
 			{
 				WTSLogger::debug_f("Tradingday {} ends", _cur_tdate);

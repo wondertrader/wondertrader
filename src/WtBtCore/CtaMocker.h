@@ -101,6 +101,8 @@ public:
 	virtual void	handle_session_begin(uint32_t curTDate) override;
 	virtual void	handle_session_end(uint32_t curTDate) override;
 
+	virtual void	handle_section_end(uint32_t curTDate, uint32_t curTime) override;
+
 	virtual void	handle_replay_done() override;
 
 	//////////////////////////////////////////////////////////////////////////
