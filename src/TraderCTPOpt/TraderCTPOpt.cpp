@@ -259,7 +259,7 @@ bool TraderCTPOpt::init(WTSVariant* params)
 	if (param != NULL)
 		m_strModule = getBinDir() + DLLHelper::wrap_module(param->asCString(), "");
 	else
-		m_strModule = DLLHelper::wrap_module("soptthosttraderapi_se", "");
+		m_strModule = getBinDir() + DLLHelper::wrap_module("soptthosttraderapi_se", "");
 
 	m_hInstCTP = DLLHelper::load_library(m_strModule.c_str());
 #ifdef _WIN32
