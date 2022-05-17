@@ -28,6 +28,16 @@ bool Dumper::config(const char* cfgfile, bool isFile, const char* modDir)
 	else
 		root = WTSCfgLoader::load_from_content(cfgfile, false);
 
+	WTSVariant* cfg = root->get("config");
+	if(cfg)
+	{
+		if(cfg->has("refresh_span"))
+		{
+			_refresh_span = cfg->getUInt32("refresh_span");
+		}
+		
+	}
+
 	//基础数据文件
 	WTSVariant* cfgBF = root->get("basefiles");
 	bool isUTF8 = cfgBF->getBoolean("utf-8");
@@ -69,7 +79,7 @@ bool Dumper::config(const char* cfgfile, bool isFile, const char* modDir)
 		}
 	}
 
-	WTSVariant* cfg = root->get("traders");
+	cfg = root->get("traders");
 	for (uint32_t idx = 0; idx < cfg->size(); idx++)
 	{
 		WTSVariant* cfgItem = cfg->get(idx);
@@ -84,6 +94,8 @@ bool Dumper::config(const char* cfgfile, bool isFile, const char* modDir)
 	}
 
 	root->release();
+
+	WTSLogger::info_f("交易数据落地模块初始化完成，主动刷新间隔:{}s", _refresh_span);
 
 	return true;
 }
@@ -102,10 +114,25 @@ void Dumper::run(bool bOnce /* = true */)
 				break;
 		}
 	}
+	else
+	{
+		_worker.reset(new StdThread([this]() {
+			
+			while(!_stopped)
+			{
+				std::this_thread::sleep_for(std::chrono::seconds(_refresh_span));
+				g_adapterMgr.refresh();
+			}
+			
+		}));
+	}
 }
 
 void Dumper::release()
 {
+	_stopped = true;
+	if (_worker)
+		_worker->join();
 }
 
 void Dumper::on_account(const char* channelid, uint32_t curTDate, const char* currency, double prebalance, 

@@ -1,11 +1,14 @@
 #pragma once
 #include "PorterDefs.h"
+#include "../Share/StdUtils.hpp"
 
 class Dumper
 {
 
 public:
-	Dumper(): _cb_account(nullptr), _cb_order(nullptr), _cb_trade(nullptr), _cb_position(nullptr){}
+	Dumper(): 
+		_cb_account(nullptr), _cb_order(nullptr), _cb_trade(nullptr), 
+		_cb_position(nullptr), _refresh_span(10), _stopped(false){}
 
 	void register_callbacks(FuncOnAccount cbAccount, FuncOnOrder cbOrder, FuncOnTrade cbTrade, FuncOnPosition cbPosition)
 	{
@@ -42,5 +45,10 @@ private:
 	FuncOnOrder		_cb_order;
 	FuncOnTrade		_cb_trade;
 	FuncOnPosition	_cb_position;
+
+	StdThreadPtr	_worker;
+
+	uint32_t		_refresh_span;
+	bool			_stopped;
 };
 

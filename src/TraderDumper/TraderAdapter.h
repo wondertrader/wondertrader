@@ -45,6 +45,9 @@ public:
 
 	bool isDone() const { return _done; }
 
+	void queryFund();
+	void queryPosition();
+
 public:
 	//////////////////////////////////////////////////////////////////////////
 	//ITraderSpi½Ó¿Ú
@@ -111,6 +114,8 @@ public:
 	std::size_t size() const { return _adapters.size(); }
 
 	void decAlive();
+
+	void refresh();
 
 private:
 	TraderAdapterMap		_adapters;

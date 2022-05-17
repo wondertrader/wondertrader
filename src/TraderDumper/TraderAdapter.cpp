@@ -178,6 +178,22 @@ void TraderAdapter::onLogout()
 	
 }
 
+void TraderAdapter::queryFund()
+{
+	if (_date == 0)
+		return;
+
+	_trader_api->queryAccount();
+}
+
+void TraderAdapter::queryPosition()
+{
+	if (_date == 0)
+		return;
+
+	_trader_api->queryPositions();
+}
+
 void TraderAdapter::onRspAccount(WTSArray* ayAccounts)
 {
 	if(ayAccounts && ayAccounts->size() > 0)
@@ -193,7 +209,8 @@ void TraderAdapter::onRspAccount(WTSArray* ayAccounts)
 
 	WTSLogger::info_f("[{}]资金数据已更新", _id.c_str());
 
-	_trader_api->queryTrades();
+	if(!_done)
+		_trader_api->queryTrades();
 }
 
 void TraderAdapter::onPushTrade(WTSTradeInfo* tInfo)
@@ -257,6 +274,13 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* oInfo)
 	if (cInfo == NULL)
 		return;
 
+	//如果订单回报中，订单状态是已结束，则刷新资金和持仓
+	if (!oInfo->isAlive())
+	{
+		_trader_api->queryAccount();
+		_trader_api->queryPositions();
+	}
+
 	getDumper().on_order(_id.c_str(), cInfo->getExchg(), cInfo->getCode(), _date, oInfo->getOrderID(), oInfo->getDirection(),
 		oInfo->getOffsetType(), oInfo->getVolume(), oInfo->getVolLeft(), oInfo->getVolTraded(), oInfo->getPrice(),
 		oInfo->getOrderType(), oInfo->getPriceType(), oInfo->getOrderTime(), oInfo->getOrderState(), oInfo->getStateMsg(), true);
@@ -285,7 +309,8 @@ void TraderAdapter::onRspPosition(const WTSArray* ayPositions)
 
 	WTSLogger::info_f("[{}]持仓数据已更新", _id.c_str());
 
-	_trader_api->queryAccount();
+	if (!_done)
+		_trader_api->queryAccount();
 }
 
 void TraderAdapter::onTraderError(WTSError* err)
@@ -363,16 +388,29 @@ void TraderAdapterMgr::decAlive()
 	_mutex.lock();
 	auto left = _live_cnt.fetch_sub(1);
 	_mutex.unlock();
-	left--;
+	if (left > 0)
+		left--;
 	if(left <= 2 && left > 0)
 	{
 		for (auto it = _adapters.begin(); it != _adapters.end(); it++)
 		{
 			TraderAdapterPtr trader = it->second;
 			if (!trader->isDone())
-				WTSLogger::info_f("{} is still working", trader->id());
+				WTSLogger::info_f("{} is still undone", trader->id());
 		}
 	}
 
-	WTSLogger::info_f("{}/{}", _live_cnt, _adapters.size());
+	WTSLogger::info_f("{}/{}", left, _adapters.size());
+}
+
+void TraderAdapterMgr::refresh()
+{
+	for (auto it = _adapters.begin(); it != _adapters.end(); it++)
+	{
+		TraderAdapterPtr trader = it->second;
+		if (!trader->isDone())
+			continue;
+		trader->queryPosition();
+		trader->queryFund();
+	}
 }
