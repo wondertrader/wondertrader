@@ -10,7 +10,7 @@ void ExpHftContext::on_bar(const char* code, const char* period, uint32_t times,
 		return;
 
 	thread_local static char realPeriod[8] = { 0 };
-	fmtutil::format_to(realPeriod, "{}{}", period[0], times);
+	fmtutil::format_to(realPeriod, "{}{}", period, times);
 
 	getRunner().ctx_on_bar(_context_id, code, realPeriod, newBar, ET_HFT);
 
