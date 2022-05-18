@@ -302,8 +302,8 @@ void TraderAdapter::onRspPosition(const WTSArray* ayPositions)
 			WTSCommodityInfo* commInfo = cInfo->getCommInfo();
 
 			getDumper().on_position(_id.c_str(), cInfo->getExchg(), cInfo->getCode(), _date, (pItem->getDirection() == WDT_LONG ? 0 : 1),
-				pItem->getTotalPosition(), pItem->getPositionCost(), pItem->getMargin(), pItem->getAvgPrice(), pItem->getDynProfit(),
-				commInfo->getVolScale(), idx == ayPositions->size()-1);
+				pItem->getTotalPosition(), pItem->getPositionCost(), pItem->getMargin(), pItem->getAvgPrice(),
+				pItem->getDynProfit(), commInfo->getVolScale(), idx == ayPositions->size() - 1);
 		}
 	}
 
@@ -364,13 +364,13 @@ TraderAdapterPtr TraderAdapterMgr::getAdapter(const char* tname)
 
 void TraderAdapterMgr::run()
 {
+	_live_cnt = _adapters.size();
 	for (auto it = _adapters.begin(); it != _adapters.end(); it++)
 	{
 		it->second->run();
 	}
 
 	WTSLogger::info_f("{}个交易通道已启动", _adapters.size());
-	_live_cnt = _adapters.size();
 }
 
 void TraderAdapterMgr::release()
