@@ -449,8 +449,8 @@ void HisDataReplayer::reset()
 
 	for (auto& m : _bars_cache)
 	{
-		BarsList& cacheItem = (BarsList&)m.second;
-		cacheItem._cursor = UINT_MAX;
+		BarsListPtr& cacheItem = (BarsListPtr&)m.second;
+		cacheItem->_cursor = UINT_MAX;
 
 		WTSLogger::info_f("Reading flag of {} has been reset", m.first.c_str());
 	}
