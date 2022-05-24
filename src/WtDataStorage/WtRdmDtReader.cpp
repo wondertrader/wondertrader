@@ -245,7 +245,9 @@ WTSTickSlice* WtRdmDtReader::readTickSliceByDate(const char* stdCode, uint32_t u
 	uint32_t curTDate = _base_data_mgr->calcTradingDate(stdPID.c_str(), 0, 0, false);
 	bool isToday = (uDate == curTDate);
 
-	if (uDate < curTDate)
+	//这里改成小于等于，主要针对盘后读取的情况
+	//如果已经做了收盘作业，实时数据就读不到了
+	if (uDate <= curTDate)
 	{
 		std::string curCode = cInfo._code;
 		std::string hotCode;
