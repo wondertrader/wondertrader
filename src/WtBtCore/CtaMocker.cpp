@@ -1540,6 +1540,15 @@ double CtaMocker::stra_get_last_enterprice(const char* stdCode)
 
 double CtaMocker::stra_get_position(const char* stdCode, bool bOnlyValid /* = false */, const char* userTag /* = "" */)
 {
+	//By Wesley @ 2022.05.22
+	//如果有信号，说明刚下了指令，还没等到下一个tick进来，用户就在读取仓位
+	//但是如果用户读取，还是要返回
+	auto sit = _sig_map.find(stdCode);
+	if (sit != _sig_map.end())
+	{
+		return sit->second._volume;
+	}
+
 	auto it = _pos_map.find(stdCode);
 	if (it == _pos_map.end())
 		return 0;
@@ -1548,24 +1557,15 @@ double CtaMocker::stra_get_position(const char* stdCode, bool bOnlyValid /* = fa
 	const PosInfo& pInfo = it->second;
 	if (strlen(userTag) == 0)
 	{
-		//只有userTag为空的时候时候，才会用bOnlyValid
-		if(bOnlyValid)
+		if (bOnlyValid)
 		{
+			//只有userTag为空的时候时候，才会用bOnlyValid
 			//这里理论上，只有多头才会进到这里
 			//其他地方要保证，空头持仓的话，_frozen要为0
-			ret += pInfo._volume - pInfo._frozen;
+			return pInfo._volume - pInfo._frozen;
 		}
 		else
-			ret += pInfo._volume;
-
-		//By Wesley @ 2022.05.22
-		//如果有信号，说明刚下了指令，还没等到下一个tick进来，用户就在读取仓位
-		//但是如果用户读取，还是要返回
-		auto sit = _sig_map.find(stdCode);
-		if (sit != _sig_map.end())
-			ret = sit->second._volume;
-
-		return ret;
+			return pInfo._volume;
 	}
 
 	for (auto it = pInfo._details.begin(); it != pInfo._details.end(); it++)
