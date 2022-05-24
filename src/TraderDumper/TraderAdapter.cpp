@@ -293,9 +293,6 @@ void TraderAdapter::onRspPosition(const WTSArray* ayPositions)
 		for (std::size_t idx = 0; idx < ((WTSArray*)ayPositions)->size(); idx++)
 		{
 			WTSPositionItem* pItem = (WTSPositionItem*)(((WTSArray*)ayPositions)->at(idx));
-			if(decimal::eq(pItem->getTotalPosition()))
-				continue;
-
 			WTSContractInfo* cInfo = _bd_mgr->getContract(pItem->getCode());
 			if (cInfo == NULL)
 				continue;
