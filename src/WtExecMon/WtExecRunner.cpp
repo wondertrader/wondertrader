@@ -284,6 +284,7 @@ bool WtExecRunner::initExecuters(WTSVariant* cfgExecuter)
 				}
 			}
 
+			executer->setStub(this);
 			_exe_mgr.add_executer(ExecCmdPtr(executer));
 		}
 		else if (name == "diff")
@@ -311,6 +312,7 @@ bool WtExecRunner::initExecuters(WTSVariant* cfgExecuter)
 				}
 			}
 
+			executer->setStub(this);
 			_exe_mgr.add_executer(ExecCmdPtr(executer));
 		}
 		else
@@ -319,6 +321,7 @@ bool WtExecRunner::initExecuters(WTSVariant* cfgExecuter)
 			if (!executer->init(cfgItem))
 				return false;
 
+			executer->setStub(this);
 			_exe_mgr.add_executer(ExecCmdPtr(executer));
 		}
 		count++;

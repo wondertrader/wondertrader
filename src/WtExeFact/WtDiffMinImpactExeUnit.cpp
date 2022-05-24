@@ -84,8 +84,11 @@ void WtDiffMinImpactExeUnit::on_order(uint32_t localid, const char* stdCode, boo
 			return;
 
 		if (isCanceled || leftover == 0)
-		{
-			_orders_mon.erase_order(localid);
+		{	
+			//By Wesley @ 2022.05.24
+			//这句要注释掉，因为需要早on_trade里处理一些数据
+			//这里如果从OMS中删除了订单号，ontrade就会判断失败
+			//_orders_mon.erase_order(localid);
 			if (_cancel_cnt > 0)
 			{
 				_cancel_cnt--;

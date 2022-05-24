@@ -268,7 +268,7 @@ OrderIDs WtDiffExecuter::cancel(const char* stdCode, bool isBuy, double qty)
 void WtDiffExecuter::writeLog(const char* message)
 {
 	static thread_local char szBuf[2048] = { 0 };
-	fmt::format_to(szBuf, "[{}]{}", _name.c_str(), message);
+	fmtutil::format_to(szBuf, "[{}]{}", _name.c_str(), message);
 	WTSLogger::log_dyn_raw("executer", _name.c_str(), LL_INFO, szBuf);
 }
 
@@ -296,7 +296,7 @@ uint64_t WtDiffExecuter::getCurTime()
 #pragma region 外部接口
 void WtDiffExecuter::on_position_changed(const char* stdCode, double targetPos)
 {
-	ExecuteUnitPtr unit = getUnit(stdCode);
+	ExecuteUnitPtr unit = getUnit(stdCode, true);
 	if (unit == NULL)
 		return;
 
@@ -447,28 +447,28 @@ void WtDiffExecuter::on_trade(uint32_t localid, const char* stdCode, bool isBuy,
 	if (unit == NULL)
 		return;
 
-	if(localid != 0)
-	{
-		//如果localid不为0，则更新差量
-		double& curDiff = _diff_pos[stdCode];
-		double prevDiff = curDiff;
-		curDiff -= vol * (isBuy ? 1 : -1);
+	if (localid == 0)
+		return;
 
-		WTSLogger::log_dyn_f("executer", _name.c_str(), LL_INFO, "Diff of {} updated by trade: {} -> {}", prevDiff, curDiff);
-		save_data();
-	}
+	//如果localid不为0，则更新差量
+	double& curDiff = _diff_pos[stdCode];
+	double prevDiff = curDiff;
+	curDiff -= vol * (isBuy ? 1 : -1);
+
+	WTSLogger::log_dyn_f("executer", _name.c_str(), LL_INFO, "Diff of {} updated by trade: {} -> {}", stdCode, prevDiff, curDiff);
+	save_data();
 
 	if (_pool)
 	{
 		std::string code = stdCode;
-		_pool->schedule([localid, unit, code, isBuy, vol, price](){
+		_pool->schedule([localid, unit, code, isBuy, vol, price]() {
 			unit->self()->on_trade(localid, code.c_str(), isBuy, vol, price);
 		});
 	}
 	else
 	{
 		unit->self()->on_trade(localid, stdCode, isBuy, vol, price);
-	}
+		}
 }
 
 void WtDiffExecuter::on_order(uint32_t localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled /* = false */)
@@ -533,6 +533,25 @@ void WtDiffExecuter::on_channel_ready()
 
 	for(auto& v : _diff_pos)
 	{
+		const char* stdCode = v.first.c_str();
+		ExecuteUnitPtr unit = getUnit(stdCode);
+		if (unit == NULL)
+			continue;
+		double thisDiff = _diff_pos[stdCode];
+
+		if (_pool)
+		{
+			std::string code = stdCode;
+			_pool->schedule([unit, code, thisDiff]() {
+				unit->self()->set_position(code.c_str(), thisDiff);
+			});
+		}
+		else
+		{
+			unit->self()->set_position(stdCode, thisDiff);
+		}
+
+		WTSLogger::log_dyn_f("executer", _name.c_str(), LL_INFO, "Diff of {} recovered to {}", stdCode, thisDiff);
 	}
 }
 
