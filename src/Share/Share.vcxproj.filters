@@ -150,9 +150,6 @@
     <ClInclude Include="..\Includes\WTSError.hpp">
       <Filter>Objects</Filter>
     </ClInclude>
-    <ClInclude Include="..\Includes\WTSHotItem.hpp">
-      <Filter>Objects</Filter>
-    </ClInclude>
     <ClInclude Include="..\Includes\WTSObject.hpp">
       <Filter>Objects</Filter>
     </ClInclude>
@@ -233,6 +230,9 @@
     </ClInclude>
     <ClInclude Include="SpinMutex.hpp">
       <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Includes\WTSSwitchItem.hpp">
+      <Filter>Objects</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

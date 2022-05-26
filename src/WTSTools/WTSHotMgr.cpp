@@ -10,7 +10,7 @@
 #include "WTSHotMgr.h"
 #include "../WTSUtils/WTSCfgLoader.h"
 
-#include "../Includes/WTSHotItem.hpp"
+#include "../Includes/WTSSwitchItem.hpp"
 #include "../Includes/WTSVariant.hpp"
 
 #include "../Share/StrUtil.hpp"
@@ -69,14 +69,14 @@ bool WTSHotMgr::loadHots(const char* filename)
 			for (uint32_t i = 0; i < jProduct->size(); i++)
 			{
 				WTSVariant* jHotItem = jProduct->get(i);
-				WTSHotItem* pItem = WTSHotItem::create(exchg.c_str(), pid.c_str(),
+				WTSSwitchItem* pItem = WTSSwitchItem::create(exchg.c_str(), pid.c_str(),
 					jHotItem->getCString("from"), jHotItem->getCString("to"), jHotItem->getUInt32("date"));
 				dateMap->add(pItem->switchdate(), pItem, false);
 				lastCode = jHotItem->getCString("to");
 			}
 
 			std::string fullCode = fmt::format("{}.{}", exchg.c_str(), lastCode.c_str());
-			m_curHotCodes[fullCode] = pid + "0001";
+			m_curHotCodes.insert(fullCode);
 		}
 	}
 
@@ -119,7 +119,7 @@ const char* WTSHotMgr::getPrevRawCode(const char* exchg, const char* pid, uint32
 
 			cit--;
 
-			WTSHotItem* pItem = STATIC_CONVERT(cit->second, WTSHotItem*);
+			WTSSwitchItem* pItem = STATIC_CONVERT(cit->second, WTSSwitchItem*);
 			return pItem->to();
 		}
 		else
@@ -131,7 +131,7 @@ const char* WTSHotMgr::getPrevRawCode(const char* exchg, const char* pid, uint32
 
 			cit--;
 
-			WTSHotItem* pItem = STATIC_CONVERT(cit->second, WTSHotItem*);
+			WTSSwitchItem* pItem = STATIC_CONVERT(cit->second, WTSSwitchItem*);
 			return pItem->to();
 		}
 	}
@@ -158,7 +158,7 @@ const char* WTSHotMgr::getPrevRawCode(const char* exchg, const char* pid, uint32
 
 				cit--;
 
-				WTSHotItem* pItem = STATIC_CONVERT(cit->second, WTSHotItem*);
+				WTSSwitchItem* pItem = STATIC_CONVERT(cit->second, WTSSwitchItem*);
 				return pItem->to();
 			}
 			else
@@ -170,12 +170,11 @@ const char* WTSHotMgr::getPrevRawCode(const char* exchg, const char* pid, uint32
 
 				cit--;
 
-				WTSHotItem* pItem = STATIC_CONVERT(dtMap->last(), WTSHotItem*);
+				WTSSwitchItem* pItem = STATIC_CONVERT(dtMap->last(), WTSSwitchItem*);
 				return pItem->to();
 			}
 		}
 	}
-
 
 	return "";
 }
@@ -212,12 +211,12 @@ const char* WTSHotMgr::getRawCode(const char* exchg, const char* pid, uint32_t d
 			if (cit == dtMap->end())
 				return "";
 
-			WTSHotItem* pItem = STATIC_CONVERT(cit->second, WTSHotItem*);
+			WTSSwitchItem* pItem = STATIC_CONVERT(cit->second, WTSSwitchItem*);
 			return pItem->to();
 		}
 		else
 		{
-			WTSHotItem* pItem = STATIC_CONVERT(dtMap->last(), WTSHotItem*);
+			WTSSwitchItem* pItem = STATIC_CONVERT(dtMap->last(), WTSSwitchItem*);
 			return pItem->to();
 		}
 	}
@@ -242,72 +241,15 @@ const char* WTSHotMgr::getRawCode(const char* exchg, const char* pid, uint32_t d
 				if (cit == dtMap->end())
 					return "";
 
-				WTSHotItem* pItem = STATIC_CONVERT(cit->second, WTSHotItem*);
+				WTSSwitchItem* pItem = STATIC_CONVERT(cit->second, WTSSwitchItem*);
 				return pItem->to();
 			}
 			else
 			{
-				WTSHotItem* pItem = STATIC_CONVERT(dtMap->last(), WTSHotItem*);
+				WTSSwitchItem* pItem = STATIC_CONVERT(dtMap->last(), WTSSwitchItem*);
 				return pItem->to();
 			}
 		}
-	}
-	
-
-	return "";
-}
-
-const char* WTSHotMgr::getHotCode(const char* exchg, const char* rawCode, uint32_t dt)
-{
-	if(strlen(exchg) == 0)
-		return "";
-
-	if(dt == 0)
-	{
-		thread_local static char buf[64] = { 0 };
-		auto len = strlen(exchg);
-		wt_strcpy(buf, exchg, len);
-		buf[len] = '.';
-		wt_strcpy(buf + len + 1, rawCode);
-
-		auto it = m_curHotCodes.find(buf);
-		if (it == m_curHotCodes.end())
-			return "";
-		else
-			return it->second.c_str();
-	}
-
-	std::string product = CodeHelper::rawMonthCodeToRawCommID(rawCode);
-
-	if(m_pExchgHotMap == NULL)
-		return "";
-
-	WTSProductHotMap* proMap = STATIC_CONVERT(m_pExchgHotMap->get(exchg), WTSProductHotMap*);
-	if(proMap == NULL)
-		return "";
-
-	WTSDateHotMap* dtMap = STATIC_CONVERT(proMap->get(product), WTSDateHotMap*);
-	if(dtMap == NULL)
-		return "";
-
-	WTSDateHotMap::ConstIterator cit = dtMap->lower_bound(dt);
-	if(cit != dtMap->end())
-	{
-		if(dt < cit->first)
-			cit--;
-
-		if(cit == dtMap->end())
-			return "";
-
-		WTSHotItem* pItem = STATIC_CONVERT(cit->second, WTSHotItem*);
-		if(strcmp(pItem->to(), rawCode) == 0)
-			return pItem->hot();
-	}
-	else
-	{
-		WTSHotItem* pItem = STATIC_CONVERT(dtMap->last(), WTSHotItem*);
-		if(strcmp(pItem->to(), rawCode) == 0)
-			return pItem->hot();
 	}
 
 	return "";
@@ -351,13 +293,13 @@ bool WTSHotMgr::isHot(const char* exchg, const char* rawCode, uint32_t dt)
 	WTSDateHotMap::ConstIterator cit = dtMap->lower_bound(dt);
 	if(cit != dtMap->end())
 	{
-		WTSHotItem* pItem = STATIC_CONVERT(cit->second, WTSHotItem*);
+		WTSSwitchItem* pItem = STATIC_CONVERT(cit->second, WTSSwitchItem*);
 		if(strcmp(pItem->to(), rawCode) == 0)
 			return true;
 	}
 	else if(dtMap->size() > 0)
 	{
-		WTSHotItem* pItem = (WTSHotItem*)dtMap->last();
+		WTSSwitchItem* pItem = (WTSSwitchItem*)dtMap->last();
 		if (strcmp(pItem->to(), rawCode) == 0)
 			return true;
 	}
@@ -390,11 +332,10 @@ bool WTSHotMgr::splitHotSecions(const char* exchg, const char* pid, uint32_t sDt
 	for (; cit != dtMap->end(); cit++)
 	{
 		uint32_t curDate = cit->first;
-		WTSHotItem* hotItem = (WTSHotItem*)cit->second;
+		WTSSwitchItem* hotItem = (WTSSwitchItem*)cit->second;
 		
 		if(curDate > eDt)
 		{
-			//sections[hotItem->from()] = HotSection(leftDate, eDt);
 			sections.emplace_back(HotSection(hotItem->from(), leftDate, eDt));
 		}
 		else if(leftDate < curDate)
@@ -402,7 +343,6 @@ bool WTSHotMgr::splitHotSecions(const char* exchg, const char* pid, uint32_t sDt
 			//如果开始日期小于当前切换的日期,则添加一段
 			if(strlen(hotItem->from()) > 0)//这里from为空,主要是第一条规则,如果真的遇到这种情况,也没有太好的办法,只能不要这一段数据了,一般情况下是够的
 			{
-				//sections[hotItem->from()] = HotSection(leftDate, TimeUtils::getNextDate(curDate, -1));
 				sections.emplace_back(HotSection(hotItem->from(), leftDate, TimeUtils::getNextDate(curDate, -1)));
 			}
 			
@@ -415,51 +355,11 @@ bool WTSHotMgr::splitHotSecions(const char* exchg, const char* pid, uint32_t sDt
 
 	if(leftDate >= lastDate && lastDate != 0)
 	{
-		//sections[curHot] = HotSection(leftDate, eDt);
 		sections.emplace_back(HotSection(curHot, leftDate, eDt));
 	}
 
 	return true;
 }
-
-void WTSHotMgr::getHotCodes(const char* exchg, std::map<std::string, std::string> &mapHots)
-{
-	if(m_pExchgHotMap == NULL)
-		return;
-
-	WTSExchgHotMap::ConstIterator cit = m_pExchgHotMap->begin();
-	for(; cit != m_pExchgHotMap->end(); cit++)
-	{
-		if (strlen(exchg) == 0 || strcmp(cit->first.c_str(), exchg)==0)
-		{
-			WTSProductHotMap* pMap = (WTSProductHotMap*)cit->second;
-			WTSProductHotMap::ConstIterator pit = pMap->begin();
-			for(; pit != pMap->end(); pit++)
-			{
-				WTSDateHotMap* dtMap = (WTSDateHotMap*)pit->second;
-				WTSHotItem* item = (WTSHotItem*)dtMap->last();
-				mapHots[item->hot()] = item->to();
-			}
-		}
-	}
-}
-
-bool WTSHotMgr::hasHotCodes()
-{
-	if (m_pExchgHotMap == NULL)
-		return false;
-
-	uint32_t cnt = 0;
-	WTSExchgHotMap::ConstIterator cit = m_pExchgHotMap->begin();
-	for (; cit != m_pExchgHotMap->end(); cit++)
-	{
-		WTSProductHotMap* pMap = (WTSProductHotMap*)cit->second;
-		cnt += pMap->size();
-	}
-
-	return cnt > 0;
-}
-
 #pragma endregion "主力接口"
 
 #pragma region "次主力接口"
@@ -500,14 +400,14 @@ bool WTSHotMgr::loadSeconds(const char* filename)
 			for (uint32_t i = 0; i < jProduct->size(); i++)
 			{
 				WTSVariant* jHotItem = jProduct->get(i);
-				WTSHotItem* pItem = WTSHotItem::create(exchg.c_str(), pid.c_str(),
+				WTSSwitchItem* pItem = WTSSwitchItem::create(exchg.c_str(), pid.c_str(),
 					jHotItem->getCString("from"), jHotItem->getCString("to"), jHotItem->getUInt32("date"));
 				dateMap->add(pItem->switchdate(), pItem, false);
 				lastCode = jHotItem->getCString("to");
 			}
 
 			std::string fullCode = fmt::format("{}.{}", exchg.c_str(), lastCode.c_str());
-			m_curSecCodes[fullCode] = pid + "0002";
+			m_curSecCodes.insert(fullCode);
 		}
 	}
 
@@ -548,7 +448,7 @@ const char* WTSHotMgr::getPrevSecondRawCode(const char* exchg, const char* pid, 
 
 			cit--;
 
-			WTSHotItem* pItem = STATIC_CONVERT(cit->second, WTSHotItem*);
+			WTSSwitchItem* pItem = STATIC_CONVERT(cit->second, WTSSwitchItem*);
 			return pItem->to();
 		}
 		else
@@ -560,7 +460,7 @@ const char* WTSHotMgr::getPrevSecondRawCode(const char* exchg, const char* pid, 
 
 			cit--;
 
-			WTSHotItem* pItem = STATIC_CONVERT(cit->second, WTSHotItem*);
+			WTSSwitchItem* pItem = STATIC_CONVERT(cit->second, WTSSwitchItem*);
 			return pItem->to();
 		}
 	}
@@ -587,7 +487,7 @@ const char* WTSHotMgr::getPrevSecondRawCode(const char* exchg, const char* pid, 
 
 				cit--;
 
-				WTSHotItem* pItem = STATIC_CONVERT(cit->second, WTSHotItem*);
+				WTSSwitchItem* pItem = STATIC_CONVERT(cit->second, WTSSwitchItem*);
 				return pItem->to();
 			}
 			else
@@ -599,7 +499,7 @@ const char* WTSHotMgr::getPrevSecondRawCode(const char* exchg, const char* pid, 
 
 				cit--;
 
-				WTSHotItem* pItem = STATIC_CONVERT(dtMap->last(), WTSHotItem*);
+				WTSSwitchItem* pItem = STATIC_CONVERT(dtMap->last(), WTSSwitchItem*);
 				return pItem->to();
 			}
 		}
@@ -641,12 +541,12 @@ const char* WTSHotMgr::getSecondRawCode(const char* exchg, const char* pid, uint
 			if (cit == dtMap->end())
 				return "";
 
-			WTSHotItem* pItem = STATIC_CONVERT(cit->second, WTSHotItem*);
+			WTSSwitchItem* pItem = STATIC_CONVERT(cit->second, WTSSwitchItem*);
 			return pItem->to();
 		}
 		else
 		{
-			WTSHotItem* pItem = STATIC_CONVERT(dtMap->last(), WTSHotItem*);
+			WTSSwitchItem* pItem = STATIC_CONVERT(dtMap->last(), WTSSwitchItem*);
 			return pItem->to();
 		}
 	}
@@ -671,75 +571,17 @@ const char* WTSHotMgr::getSecondRawCode(const char* exchg, const char* pid, uint
 				if (cit == dtMap->end())
 					return "";
 
-				WTSHotItem* pItem = STATIC_CONVERT(cit->second, WTSHotItem*);
+				WTSSwitchItem* pItem = STATIC_CONVERT(cit->second, WTSSwitchItem*);
 				return pItem->to();
 			}
 			else
 			{
-				WTSHotItem* pItem = STATIC_CONVERT(dtMap->last(), WTSHotItem*);
+				WTSSwitchItem* pItem = STATIC_CONVERT(dtMap->last(), WTSSwitchItem*);
 				return pItem->to();
 			}
 		}
 	}
 
-
-	return "";
-}
-
-const char* WTSHotMgr::getSecondCode(const char* exchg, const char* rawCode, uint32_t dt)
-{
-	//if (dt == 0)
-	//	dt = TimeUtils::getCurDate();
-
-	if (strlen(exchg) == 0)
-		return "";
-
-	if (dt == 0)
-	{
-		thread_local static char buf[64] = { 0 };
-		auto len = strlen(exchg);
-		wt_strcpy(buf, exchg, len);
-		buf[len] = '.';
-		wt_strcpy(buf + len + 1, rawCode);
-		auto it = m_curSecCodes.find(buf);
-		if (it == m_curSecCodes.end())
-			return "";
-		else
-			return it->second.c_str();
-	}
-
-	std::string product = CodeHelper::rawMonthCodeToRawCommID(rawCode);
-
-	if (m_pExchgScndMap == NULL)
-		return "";
-
-	WTSProductHotMap* proMap = STATIC_CONVERT(m_pExchgScndMap->get(exchg), WTSProductHotMap*);
-	if (proMap == NULL)
-		return "";
-
-	WTSDateHotMap* dtMap = STATIC_CONVERT(proMap->get(product), WTSDateHotMap*);
-	if (dtMap == NULL)
-		return "";
-
-	WTSDateHotMap::ConstIterator cit = dtMap->lower_bound(dt);
-	if (cit != dtMap->end())
-	{
-		if (dt < cit->first)
-			cit--;
-
-		if (cit == dtMap->end())
-			return "";
-
-		WTSHotItem* pItem = STATIC_CONVERT(cit->second, WTSHotItem*);
-		if (strcmp(pItem->to(), rawCode) == 0)
-			return pItem->hot();
-	}
-	else
-	{
-		WTSHotItem* pItem = STATIC_CONVERT(dtMap->last(), WTSHotItem*);
-		if (strcmp(pItem->to(), rawCode) == 0)
-			return pItem->hot();
-	}
 
 	return "";
 }
@@ -782,13 +624,13 @@ bool WTSHotMgr::isSecond(const char* exchg, const char* rawCode, uint32_t dt)
 	WTSDateHotMap::ConstIterator cit = dtMap->lower_bound(dt);
 	if (cit != dtMap->end())
 	{
-		WTSHotItem* pItem = STATIC_CONVERT(cit->second, WTSHotItem*);
+		WTSSwitchItem* pItem = STATIC_CONVERT(cit->second, WTSSwitchItem*);
 		if (strcmp(pItem->to(), rawCode) == 0)
 			return true;
 	}
 	else if (dtMap->size() > 0)
 	{
-		WTSHotItem* pItem = (WTSHotItem*)dtMap->last();
+		WTSSwitchItem* pItem = (WTSSwitchItem*)dtMap->last();
 		if (strcmp(pItem->to(), rawCode) == 0)
 			return true;
 	}
@@ -821,7 +663,7 @@ bool WTSHotMgr::splitSecondSecions(const char* exchg, const char* pid, uint32_t 
 	for (; cit != dtMap->end(); cit++)
 	{
 		uint32_t curDate = cit->first;
-		WTSHotItem* hotItem = (WTSHotItem*)cit->second;
+		WTSSwitchItem* hotItem = (WTSSwitchItem*)cit->second;
 
 		if (curDate > eDt)
 		{

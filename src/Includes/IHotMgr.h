@@ -51,13 +51,6 @@ public:
 	virtual const char* getPrevRawCode(const char* exchg, const char* pid, uint32_t dt) = 0;
 
 	/*
-	 *	获取主力代码
-	 *	@rawCode	分月代码
-	 *	@dt			日期(交易日)
-	 */
-	virtual const char* getHotCode(const char* exchg, const char* rawCode, uint32_t dt) = 0;
-
-	/*
 	 *	是否主力合约
 	 *	@rawCode	分月代码
 	 *	@dt			日期(交易日)
@@ -82,13 +75,6 @@ public:
 	 *	@dt		日期(交易日)
 	 */
 	virtual const char* getPrevSecondRawCode(const char* exchg, const char* pid, uint32_t dt) = 0;
-
-	/*
-	 *	获取次主力代码
-	 *	@rawCode	分月代码
-	 *	@dt			日期(交易日)
-	 */
-	virtual const char* getSecondCode(const char* exchg, const char* rawCode, uint32_t dt) = 0;
 
 	/*
 	 *	是否次主力合约
