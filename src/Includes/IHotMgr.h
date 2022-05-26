@@ -87,5 +87,25 @@ public:
 	 *	分割次主力段,将次主力合约在某个时段的分月合约全部提出取来
 	 */
 	virtual bool		splitSecondSecions(const char* exchg, const char* hotCode, uint32_t sDt, uint32_t eDt, HotSections& sections) = 0;
+
+	/*
+	 *	获取自定义主力合约的分月代码
+	 */
+	virtual const char* getCustomRawCode(const char* tag, const char* fullPid, uint32_t dt = 0) = 0;
+
+	/*
+	 *	获取自定义连续合约的上一期主力分月代码
+	 */
+	virtual const char* getPrevCustomRawCode(const char* tag, const char* fullPid, uint32_t dt = 0) = 0;
+
+	/*
+	 *	是否是自定义主力合约
+	 */
+	virtual bool		isCustomHot(const char* tag, const char* fullCode, uint32_t d = 0) = 0;
+
+	/*
+	 *	分隔自定义主力段,将次主力合约在某个时段的分月合约全部提出取来
+	 */
+	virtual bool		splitCustomSections(const char* tag, const char* hotCode, uint32_t sDt, uint32_t eDt, HotSections& sections) = 0;
 };
 NS_WTP_END
