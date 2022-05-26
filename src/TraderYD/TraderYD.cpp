@@ -244,8 +244,6 @@ void TraderYD::notifyFinishInit()
 		const YDAccount* accInfo = m_pUserAPI->getMyAccount();
 
 		WTSAccountInfo* accountInfo = WTSAccountInfo::create();
-		accountInfo->setDescription(m_strUser.c_str());
-		//accountInfo->setUsername(m_strUserName.c_str());
 		accountInfo->setPreBalance(accInfo->PreBalance);
 		accountInfo->setDeposit(accInfo->Deposit);
 		accountInfo->setWithdraw(accInfo->Withdraw);

@@ -611,7 +611,6 @@ public:
 public:
 	static inline WTSAccountInfo* create(){return WTSAccountInfo::allocate();}
 
-	inline void	setDescription(const char* desc){m_strDescription = desc;}
 	inline void	setCurrency(const char* currency){ m_strCurrency = currency; }
 
 	inline void	setBalance(double balance){m_dBalance = balance;}
@@ -638,11 +637,9 @@ public:
 	inline double	getFrozenCommission() const{return m_dFrozenCommission;}
 	inline double	getAvailable() const{return m_dAvailable;}
 
-	inline const char* getDescription() const{return m_strDescription.c_str();}
 	inline const char* getCurrency() const{ return m_strCurrency.c_str(); }
 
 protected:
-	std::string	m_strDescription;
 	std::string m_strCurrency;
 
 	double		m_dBalance;

@@ -843,7 +843,6 @@ int TraderMocker::queryAccount()
 		accountInfo->setFrozenCommission(0);
 		accountInfo->setDeposit(0);
 		accountInfo->setWithdraw(0);
-		accountInfo->setDescription("");
 		accountInfo->setDynProfit(0);
 
 		ay->append(accountInfo, false);

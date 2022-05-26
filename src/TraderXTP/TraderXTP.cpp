@@ -513,8 +513,6 @@ void TraderXTP::OnQueryAsset(XTPQueryAssetRsp *asset, XTPRI *error_info, int req
 	if (is_last && !IsErrorInfo(error_info) && asset)
 	{
 		WTSAccountInfo* accountInfo = WTSAccountInfo::create();
-		accountInfo->setDescription(_user.c_str());
-		//accountInfo->setUsername(m_strUserName.c_str());
 		accountInfo->setPreBalance(asset->orig_banlance);
 		accountInfo->setCloseProfit(0);
 		accountInfo->setDynProfit(0);

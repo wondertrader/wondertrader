@@ -642,8 +642,6 @@ void TraderFemas::OnRspQryInvestorAccount(CUstpFtdcRspInvestorAccountField *pRsp
 	if (bIsLast && !IsErrorRspInfo(pRspInfo))
 	{
 		WTSAccountInfo* accountInfo = WTSAccountInfo::create();
-		accountInfo->setDescription(fmt::format("{}-{}", m_strBroker.c_str(), m_strUser.c_str()).c_str());
-		//accountInfo->setUsername(m_strUserName.c_str());
 		accountInfo->setPreBalance(pRspInvestorAccount->PreBalance);
 		accountInfo->setCloseProfit(pRspInvestorAccount->CloseProfit);
 		accountInfo->setDynProfit(pRspInvestorAccount->PositionProfit);
