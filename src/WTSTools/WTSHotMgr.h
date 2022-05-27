@@ -79,10 +79,10 @@ public:
 
 
 private:
-	WTSExchgHotMap*	m_pExchgHotMap;
-	WTSExchgHotMap*	m_pExchgScndMap;
-	faster_hashset<ShortKey>	m_curHotCodes;
-	faster_hashset<ShortKey>	m_curSecCodes;
+	//WTSExchgHotMap*	m_pExchgHotMap;
+	//WTSExchgHotMap*	m_pExchgScndMap;
+	//faster_hashset<ShortKey>	m_curHotCodes;
+	//faster_hashset<ShortKey>	m_curSecCodes;
 	bool			m_bInitialized;
 
 	WTSCustomSwitchMap*	m_mapCustRules;

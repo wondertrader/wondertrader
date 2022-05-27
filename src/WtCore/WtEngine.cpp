@@ -84,7 +84,7 @@ WTSCommodityInfo* WtEngine::get_commodity_info(const char* stdCode)
 
 WTSContractInfo* WtEngine::get_contract_info(const char* stdCode)
 {
-	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
 	return _base_data_mgr->getContract(cInfo._code, cInfo._exchg);
 }
 
@@ -682,26 +682,36 @@ void WtEngine::sub_tick(uint32_t sid, const char* stdCode)
 {
 	//如果是主力合约代码, 如SHFE.ag.HOT, 那么要转换成原合约代码, SHFE.ag.1912
 	//因为执行器只识别原合约代码
-	if (CodeHelper::isStdFutHotCode(stdCode))
+	const char* ruleTag = _hot_mgr->getRuleTag(stdCode);
+	if(strlen(ruleTag) > 0)
 	{
 		SubList& sids = _tick_sub_map[stdCode];
 		sids[sid] = std::make_pair(sid, 0);
 
-		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
-		std::string rawCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
+		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
+		std::string rawCode = _hot_mgr->getCustomRawCode(ruleTag, cInfo.stdCommID(), _cur_tdate);
 		std::string stdRawCode = CodeHelper::rawMonthCodeToStdCode(rawCode.c_str(), cInfo._exchg);
-		//_ticksubed_raw_codes.insert(stdRawCode);
 	}
-	else if (CodeHelper::isStdFut2ndCode(stdCode))
-	{
-		SubList& sids = _tick_sub_map[stdCode];
-		sids[sid] = std::make_pair(sid, 0);
+	//if (CodeHelper::isStdFutHotCode(stdCode))
+	//{
+	//	SubList& sids = _tick_sub_map[stdCode];
+	//	sids[sid] = std::make_pair(sid, 0);
 
-		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
-		std::string rawCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
-		std::string stdRawCode = CodeHelper::rawMonthCodeToStdCode(rawCode.c_str(), cInfo._exchg);
-		//_ticksubed_raw_codes.insert(stdRawCode);
-	}
+	//	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+	//	std::string rawCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
+	//	std::string stdRawCode = CodeHelper::rawMonthCodeToStdCode(rawCode.c_str(), cInfo._exchg);
+	//	//_ticksubed_raw_codes.insert(stdRawCode);
+	//}
+	//else if (CodeHelper::isStdFut2ndCode(stdCode))
+	//{
+	//	SubList& sids = _tick_sub_map[stdCode];
+	//	sids[sid] = std::make_pair(sid, 0);
+
+	//	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+	//	std::string rawCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
+	//	std::string stdRawCode = CodeHelper::rawMonthCodeToStdCode(rawCode.c_str(), cInfo._exchg);
+	//	//_ticksubed_raw_codes.insert(stdRawCode);
+	//}
 	else
 	{
 		std::size_t length = strlen(stdCode);

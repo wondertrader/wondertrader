@@ -238,7 +238,7 @@ bool WtRdmDtReader::loadStkAdjFactorsFromFile(const char* adjfile)
 
 WTSTickSlice* WtRdmDtReader::readTickSliceByDate(const char* stdCode, uint32_t uDate )
 {
-	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
 	std::string stdPID = fmt::format("{}.{}", cInfo._exchg, cInfo._product);
 
@@ -253,7 +253,7 @@ WTSTickSlice* WtRdmDtReader::readTickSliceByDate(const char* stdCode, uint32_t u
 		std::string hotCode;
 		if (commInfo->isFuture())
 		{
-			const char* ruleTag = _hot_mgr->getRuleTag(stdCode);
+			const char* ruleTag = cInfo._ruletag;
 			if(strlen(ruleTag) > 0)
 			{
 				curCode = _hot_mgr->getCustomRawCode(ruleTag, cInfo.stdCommID(), uDate);
@@ -262,20 +262,20 @@ WTSTickSlice* WtRdmDtReader::readTickSliceByDate(const char* stdCode, uint32_t u
 				hotCode += "_";
 				hotCode += ruleTag;
 			}
-			else if (cInfo.isHot())
-			{
-				curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, uDate);
-				pipe_rdmreader_log(_sink, LL_INFO, "Hot contract on {} confirmed: {} -> {}", uDate, stdCode, curCode.c_str());
-				hotCode = cInfo._product;
-				hotCode += "_HOT";
-			}
-			else if (cInfo.isSecond())
-			{
-				curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, uDate);
-				pipe_rdmreader_log(_sink, LL_INFO, "Second contract on {} confirmed: {} -> {}", uDate, stdCode, curCode.c_str());
-				hotCode = cInfo._product;
-				hotCode += "_2ND";
-			}
+			//else if (cInfo.isHot())
+			//{
+			//	curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, uDate);
+			//	pipe_rdmreader_log(_sink, LL_INFO, "Hot contract on {} confirmed: {} -> {}", uDate, stdCode, curCode.c_str());
+			//	hotCode = cInfo._product;
+			//	hotCode += "_HOT";
+			//}
+			//else if (cInfo.isSecond())
+			//{
+			//	curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, uDate);
+			//	pipe_rdmreader_log(_sink, LL_INFO, "Second contract on {} confirmed: {} -> {}", uDate, stdCode, curCode.c_str());
+			//	hotCode = cInfo._product;
+			//	hotCode += "_2ND";
+			//}
 		}
 
 		std::string key = fmt::format("{}-{}", stdCode, uDate);
@@ -350,13 +350,13 @@ WTSTickSlice* WtRdmDtReader::readTickSliceByDate(const char* stdCode, uint32_t u
 		std::string curCode = cInfo._code;
 		if(commInfo->isFuture())
 		{
-			const char* ruleTag = _hot_mgr->getRuleTag(stdCode);
+			const char* ruleTag = cInfo._ruletag;
 			if (strlen(ruleTag) > 0)
 				curCode = _hot_mgr->getCustomRawCode(ruleTag, cInfo.stdCommID(), curTDate);
-			else if (cInfo.isHot())
-				curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, curTDate);
-			else if (cInfo.isSecond())
-				curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, curTDate);
+			//else if (cInfo.isHot())
+			//	curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, curTDate);
+			//else if (cInfo.isSecond())
+			//	curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, curTDate);
 		}
 		
 
@@ -376,7 +376,7 @@ WTSTickSlice* WtRdmDtReader::readTickSliceByDate(const char* stdCode, uint32_t u
 
 WTSTickSlice* WtRdmDtReader::readTickSliceByRange(const char* stdCode, uint64_t stime, uint64_t etime /* = 0 */)
 {
-	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
 	std::string stdPID = fmt::format("{}.{}", cInfo._exchg, cInfo._product);
 
@@ -413,7 +413,7 @@ WTSTickSlice* WtRdmDtReader::readTickSliceByRange(const char* stdCode, uint64_t 
 		std::string hotCode;
 		if(commInfo->isFuture())
 		{
-			const char* ruleTag = _hot_mgr->getRuleTag(stdCode);
+			const char* ruleTag = cInfo._ruletag;
 			if (strlen(ruleTag) > 0)
 			{
 				curCode = _hot_mgr->getCustomRawCode(ruleTag, cInfo.stdCommID(), nowTDate);
@@ -423,20 +423,20 @@ WTSTickSlice* WtRdmDtReader::readTickSliceByRange(const char* stdCode, uint64_t 
 				hotCode += "_";
 				hotCode += ruleTag;
 			}
-			else if (cInfo.isHot() && commInfo->isFuture())
-			{
-				curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, nowTDate);
-				pipe_rdmreader_log(_sink, LL_INFO, "Hot contract on {} confirmed: {} -> {}", curTDate, stdCode, curCode.c_str());
-				hotCode = cInfo._product;
-				hotCode += "_HOT";
-			}
-			else if (cInfo.isSecond() && commInfo->isFuture())
-			{
-				curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, nowTDate);
-				pipe_rdmreader_log(_sink, LL_INFO, "Second contract on {} confirmed: {} -> {}", curTDate, stdCode, curCode.c_str());
-				hotCode = cInfo._product;
-				hotCode += "_2ND";
-			}
+			//else if (cInfo.isHot() && commInfo->isFuture())
+			//{
+			//	curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, nowTDate);
+			//	pipe_rdmreader_log(_sink, LL_INFO, "Hot contract on {} confirmed: {} -> {}", curTDate, stdCode, curCode.c_str());
+			//	hotCode = cInfo._product;
+			//	hotCode += "_HOT";
+			//}
+			//else if (cInfo.isSecond() && commInfo->isFuture())
+			//{
+			//	curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, nowTDate);
+			//	pipe_rdmreader_log(_sink, LL_INFO, "Second contract on {} confirmed: {} -> {}", curTDate, stdCode, curCode.c_str());
+			//	hotCode = cInfo._product;
+			//	hotCode += "_2ND";
+			//}
 		}
 		
 
@@ -561,13 +561,13 @@ WTSTickSlice* WtRdmDtReader::readTickSliceByRange(const char* stdCode, uint64_t 
 		std::string curCode = cInfo._code;
 		if (commInfo->isFuture())
 		{
-			const char* ruleTag = _hot_mgr->getRuleTag(stdCode);
+			const char* ruleTag = cInfo._ruletag;
 			if (strlen(ruleTag) > 0)
 				curCode = _hot_mgr->getCustomRawCode(ruleTag, cInfo.stdCommID(), curTDate);
-			else if (cInfo.isHot())
-				curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, curTDate);
-			else if (cInfo.isSecond())
-				curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, curTDate);
+			//else if (cInfo.isHot())
+			//	curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, curTDate);
+			//else if (cInfo.isSecond())
+			//	curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, curTDate);
 		}
 
 		TickBlockPair* tPair = getRTTickBlock(cInfo._exchg, curCode.c_str());
@@ -634,7 +634,7 @@ WTSTickSlice* WtRdmDtReader::readTickSliceByRange(const char* stdCode, uint64_t 
 
 WTSOrdQueSlice* WtRdmDtReader::readOrdQueSliceByRange(const char* stdCode, uint64_t stime, uint64_t etime /* = 0 */)
 {
-	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
 	std::string stdPID = fmt::format("{}.{}", cInfo._exchg, cInfo._product);
 
@@ -659,13 +659,13 @@ WTSOrdQueSlice* WtRdmDtReader::readOrdQueSliceByRange(const char* stdCode, uint6
 	std::string curCode = cInfo._code;
 	if (commInfo->isFuture())
 	{
-		const char* ruleTag = _hot_mgr->getRuleTag(stdCode);
+		const char* ruleTag = cInfo._ruletag;
 		if (strlen(ruleTag) > 0)
 			curCode = _hot_mgr->getCustomRawCode(ruleTag, cInfo.stdCommID(), endTDate);
-		else if (cInfo.isHot())
-			curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, endTDate);
-		else if (cInfo.isSecond())
-			curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, endTDate);
+		//else if (cInfo.isHot())
+		//	curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, endTDate);
+		//else if (cInfo.isSecond())
+		//	curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, endTDate);
 	}
 
 	//比较时间的对象
@@ -813,7 +813,7 @@ WTSOrdQueSlice* WtRdmDtReader::readOrdQueSliceByRange(const char* stdCode, uint6
 
 WTSOrdDtlSlice* WtRdmDtReader::readOrdDtlSliceByRange(const char* stdCode, uint64_t stime, uint64_t etime /* = 0 */)
 {
-	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
 	std::string stdPID = fmt::format("{}.{}", cInfo._exchg, cInfo._product);
 
@@ -838,13 +838,13 @@ WTSOrdDtlSlice* WtRdmDtReader::readOrdDtlSliceByRange(const char* stdCode, uint6
 	std::string curCode = cInfo._code;
 	if (commInfo->isFuture())
 	{
-		const char* ruleTag = _hot_mgr->getRuleTag(stdCode);
+		const char* ruleTag = cInfo._ruletag;
 		if (strlen(ruleTag) > 0)
 			curCode = _hot_mgr->getCustomRawCode(ruleTag, cInfo.stdCommID(), endTDate);
-		else if (cInfo.isHot())
-			curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, endTDate);
-		else if (cInfo.isSecond())
-			curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, endTDate);
+		//else if (cInfo.isHot())
+		//	curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, endTDate);
+		//else if (cInfo.isSecond())
+		//	curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, endTDate);
 	}
 
 	//比较时间的对象
@@ -991,7 +991,7 @@ WTSOrdDtlSlice* WtRdmDtReader::readOrdDtlSliceByRange(const char* stdCode, uint6
 
 WTSTransSlice* WtRdmDtReader::readTransSliceByRange(const char* stdCode, uint64_t stime, uint64_t etime /* = 0 */)
 {
-	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
 	std::string stdPID = fmt::format("{}.{}", cInfo._exchg, cInfo._product);
 
@@ -1016,13 +1016,13 @@ WTSTransSlice* WtRdmDtReader::readTransSliceByRange(const char* stdCode, uint64_
 	std::string curCode = cInfo._code;
 	if (commInfo->isFuture())
 	{
-		const char* ruleTag = _hot_mgr->getRuleTag(stdCode);
+		const char* ruleTag = cInfo._ruletag;
 		if (strlen(ruleTag) > 0)
 			curCode = _hot_mgr->getCustomRawCode(ruleTag, cInfo.stdCommID(), endTDate);
-		else if (cInfo.isHot())
-			curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, endTDate);
-		else if (cInfo.isSecond())
-			curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, endTDate);
+		//else if (cInfo.isHot())
+		//	curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, endTDate);
+		//else if (cInfo.isSecond())
+		//	curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, endTDate);
 	}
 
 	//比较时间的对象
@@ -1169,7 +1169,7 @@ WTSTransSlice* WtRdmDtReader::readTransSliceByRange(const char* stdCode, uint64_
 
 bool WtRdmDtReader::cacheHisBarsFromFile(const std::string& key, const char* stdCode, WTSKlinePeriod period)
 {
-	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
 	std::string stdPID = fmt::format("{}.{}", cInfo._exchg, cInfo._product);
 
@@ -1194,9 +1194,9 @@ bool WtRdmDtReader::cacheHisBarsFromFile(const std::string& key, const char* std
 	std::vector<std::vector<WTSBarStruct>*> barsSections;
 
 	uint32_t realCnt = 0;
-	if (!cInfo.isFlat() && commInfo->isFuture())//如果是读取期货主力连续数据
+	const char* ruleTag = cInfo._ruletag;
+	if (strlen(ruleTag) > 0 && commInfo->isFuture())//如果是读取期货主力连续数据
 	{
-		const char* hot_flag = cInfo.isHot() ? FILE_SUF_HOT : FILE_SUF_2ND;
 
 		//先按照HOT代码进行读取, 如rb.HOT
 		std::vector<WTSBarStruct>* hotAy = NULL;
@@ -1204,7 +1204,7 @@ bool WtRdmDtReader::cacheHisBarsFromFile(const std::string& key, const char* std
 		for (;;)
 		{
 			std::stringstream ss;
-			ss << _base_dir << "his/" << pname << "/" << cInfo._exchg << "/" << cInfo._exchg << "." << cInfo._product << hot_flag << ".dsb";
+			ss << _base_dir << "his/" << pname << "/" << cInfo._exchg << "/" << cInfo._exchg << "." << cInfo._product << "_" << ruleTag << ".dsb";
 			std::string filename = ss.str();
 			if (!StdFile::exists(filename.c_str()))
 				break;
@@ -1234,14 +1234,20 @@ bool WtRdmDtReader::cacheHisBarsFromFile(const std::string& key, const char* std
 		}
 
 		HotSections secs;
-		if (cInfo.isHot())
+		//if (cInfo.isHot())
+		//{
+		//	if (!_hot_mgr->splitHotSecions(cInfo._exchg, cInfo._product, 19900102, endTDate, secs))
+		//		return false;
+		//}
+		//else if (cInfo.isSecond())
+		//{
+		//	if (!_hot_mgr->splitSecondSecions(cInfo._exchg, cInfo._product, 19900102, endTDate, secs))
+		//		return false;
+		//}
+
+		if (strlen(ruleTag) && commInfo->isFuture())
 		{
-			if (!_hot_mgr->splitHotSecions(cInfo._exchg, cInfo._product, 19900102, endTDate, secs))
-				return false;
-		}
-		else if (cInfo.isSecond())
-		{
-			if (!_hot_mgr->splitSecondSecions(cInfo._exchg, cInfo._product, 19900102, endTDate, secs))
+			if (!_hot_mgr->splitCustomSections(ruleTag, cInfo.stdCommID(), 19900102, endTDate, secs))
 				return false;
 		}
 
@@ -1794,7 +1800,7 @@ uint32_t WtRdmDtReader::readBarsFromCacheByRange(const std::string& key, uint64_
 
 WTSKlineSlice* WtRdmDtReader::readKlineSliceByRange(const char* stdCode, WTSKlinePeriod period, uint64_t stime, uint64_t etime /* = 0 */)
 {
-	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
 	std::string stdPID = fmt::format("{}.{}", cInfo._exchg, cInfo._product);
 
@@ -1843,23 +1849,23 @@ WTSKlineSlice* WtRdmDtReader::readKlineSliceByRange(const char* stdCode, WTSKlin
 
 	if (commInfo->isFuture())
 	{
-		const char* ruleTag = _hot_mgr->getRuleTag(stdCode);
+		const char* ruleTag = cInfo._ruletag;
 		if (strlen(ruleTag) > 0)
 		{
 			raw_code = _hot_mgr->getCustomRawCode(ruleTag, cInfo.stdCommID(), curTDate);
 
 			pipe_rdmreader_log(_sink, LL_INFO, "{} contract on {} confirmed: {} -> {}", ruleTag, curTDate, stdCode, raw_code);
 		}
-		else if (cInfo.isHot())
-		{
-			raw_code = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, curTDate);
-			pipe_rdmreader_log(_sink, LL_INFO, "Hot contract on {} confirmed: {} -> {}", curTDate, stdCode, raw_code);
-		}
-		else if (cInfo.isSecond())
-		{
-			raw_code = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, curTDate);
-			pipe_rdmreader_log(_sink, LL_INFO, "Second contract on {} confirmed: {} -> {}", curTDate, stdCode, raw_code);
-		}
+		//else if (cInfo.isHot())
+		//{
+		//	raw_code = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, curTDate);
+		//	pipe_rdmreader_log(_sink, LL_INFO, "Hot contract on {} confirmed: {} -> {}", curTDate, stdCode, raw_code);
+		//}
+		//else if (cInfo.isSecond())
+		//{
+		//	raw_code = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, curTDate);
+		//	pipe_rdmreader_log(_sink, LL_INFO, "Second contract on {} confirmed: {} -> {}", curTDate, stdCode, raw_code);
+		//}
 		else
 		{
 			raw_code = cInfo._code;
@@ -2167,7 +2173,7 @@ WtRdmDtReader::RTKlineBlockPair* WtRdmDtReader::getRTKilneBlock(const char* exch
 
 WTSKlineSlice* WtRdmDtReader::readKlineSliceByCount(const char* stdCode, WTSKlinePeriod period, uint32_t count, uint64_t etime /* = 0 */)
 {
-	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
 	std::string stdPID = fmt::format("{}.{}", cInfo._exchg, cInfo._product);
 
@@ -2212,16 +2218,22 @@ WTSKlineSlice* WtRdmDtReader::readKlineSliceByCount(const char* stdCode, WTSKlin
 	bool bHasToday = (endTDate >= curTDate);
 	std::string raw_code = cInfo._code;
 
-	if (cInfo.isHot() && commInfo->isFuture())
+	const char* ruleTag = cInfo._ruletag;
+	if (strlen(ruleTag) > 0)
 	{
-		raw_code = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, curTDate);
-		pipe_rdmreader_log(_sink, LL_INFO, "Hot contract on {} confirmed: {} -> {}", curTDate, stdCode, raw_code.c_str());
+		raw_code = _hot_mgr->getCustomRawCode(ruleTag, cInfo.stdCommID(), curTDate);
+		pipe_rdmreader_log(_sink, LL_INFO, "{} contract on {} confirmed: {} -> {}", ruleTag, curTDate, stdCode, raw_code.c_str());
 	}
-	else if (cInfo.isSecond() && commInfo->isFuture())
-	{
-		raw_code = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, curTDate);
-		pipe_rdmreader_log(_sink, LL_INFO, "Second contract on {} confirmed: {} -> {}", curTDate, stdCode, raw_code.c_str());
-	}
+	//else if (cInfo.isHot() && commInfo->isFuture())
+	//{
+	//	raw_code = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, curTDate);
+	//	pipe_rdmreader_log(_sink, LL_INFO, "Hot contract on {} confirmed: {} -> {}", curTDate, stdCode, raw_code.c_str());
+	//}
+	//else if (cInfo.isSecond() && commInfo->isFuture())
+	//{
+	//	raw_code = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, curTDate);
+	//	pipe_rdmreader_log(_sink, LL_INFO, "Second contract on {} confirmed: {} -> {}", curTDate, stdCode, raw_code.c_str());
+	//}
 	else
 	{
 		raw_code = cInfo._code;
@@ -2284,7 +2296,7 @@ WTSKlineSlice* WtRdmDtReader::readKlineSliceByCount(const char* stdCode, WTSKlin
 
 WTSTickSlice* WtRdmDtReader::readTickSliceByCount(const char* stdCode, uint32_t count, uint64_t etime /* = 0 */)
 {
-	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
 	std::string stdPID = fmt::format("{}.{}", cInfo._exchg, cInfo._product);
 
@@ -2309,23 +2321,23 @@ WTSTickSlice* WtRdmDtReader::readTickSliceByCount(const char* stdCode, uint32_t 
 		std::string curCode = cInfo._code;
 		if(commInfo->isFuture())
 		{
-			const char* ruleTag = _hot_mgr->getRuleTag(stdCode);
+			const char* ruleTag = cInfo._ruletag;
 			if (strlen(ruleTag) > 0)
 			{
 				curCode = _hot_mgr->getCustomRawCode(ruleTag, cInfo.stdCommID(), curTDate);
 
 				pipe_rdmreader_log(_sink, LL_INFO, "{} contract on {} confirmed: {} -> {}", ruleTag, curTDate, stdCode, curCode.c_str());
 			}
-			else if (cInfo.isHot())
-			{
-				curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, curTDate);
-				pipe_rdmreader_log(_sink, LL_INFO, "Hot contract on {} confirmed: {} -> {}", curTDate, stdCode, curCode.c_str());
-			}
-			else if (cInfo.isSecond())
-			{
-				curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, curTDate);
-				pipe_rdmreader_log(_sink, LL_INFO, "Second contract on {} confirmed: {} -> {}", curTDate, stdCode, curCode.c_str());
-			}
+			//else if (cInfo.isHot())
+			//{
+			//	curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, curTDate);
+			//	pipe_rdmreader_log(_sink, LL_INFO, "Hot contract on {} confirmed: {} -> {}", curTDate, stdCode, curCode.c_str());
+			//}
+			//else if (cInfo.isSecond())
+			//{
+			//	curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, curTDate);
+			//	pipe_rdmreader_log(_sink, LL_INFO, "Second contract on {} confirmed: {} -> {}", curTDate, stdCode, curCode.c_str());
+			//}
 		}		
 
 		TickBlockPair* tPair = getRTTickBlock(cInfo._exchg, curCode.c_str());
@@ -2382,7 +2394,7 @@ WTSTickSlice* WtRdmDtReader::readTickSliceByCount(const char* stdCode, uint32_t 
 		std::string hotCode;
 		if(commInfo->isFuture())
 		{
-			const char* ruleTag = _hot_mgr->getRuleTag(stdCode);
+			const char* ruleTag = cInfo._ruletag;
 			if (strlen(ruleTag) > 0)
 			{
 				curCode = _hot_mgr->getCustomRawCode(ruleTag, cInfo.stdCommID(), nowTDate);
@@ -2392,20 +2404,20 @@ WTSTickSlice* WtRdmDtReader::readTickSliceByCount(const char* stdCode, uint32_t 
 				hotCode += ruleTag;
 				pipe_rdmreader_log(_sink, LL_INFO, "{} contract on {} confirmed: {} -> {}", ruleTag, curTDate, stdCode, curCode.c_str());
 			}
-			else if (cInfo.isHot())
-			{
-				curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, nowTDate);
-				hotCode = cInfo._product;
-				hotCode += "_HOT";
-				pipe_rdmreader_log(_sink, LL_INFO, "Hot contract on {} confirmed: {} -> {}", curTDate, stdCode, curCode.c_str());
-			}
-			else if (cInfo.isSecond())
-			{
-				curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, nowTDate);
-				hotCode = cInfo._product;
-				hotCode += "_2ND";
-				pipe_rdmreader_log(_sink, LL_INFO, "Second contract on {} confirmed: {} -> {}", curTDate, stdCode, curCode.c_str());
-			}
+			//else if (cInfo.isHot())
+			//{
+			//	curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, nowTDate);
+			//	hotCode = cInfo._product;
+			//	hotCode += "_HOT";
+			//	pipe_rdmreader_log(_sink, LL_INFO, "Hot contract on {} confirmed: {} -> {}", curTDate, stdCode, curCode.c_str());
+			//}
+			//else if (cInfo.isSecond())
+			//{
+			//	curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, nowTDate);
+			//	hotCode = cInfo._product;
+			//	hotCode += "_2ND";
+			//	pipe_rdmreader_log(_sink, LL_INFO, "Second contract on {} confirmed: {} -> {}", curTDate, stdCode, curCode.c_str());
+			//}
 		}
 		
 

@@ -289,7 +289,7 @@ bool WtDataReader::loadStkAdjFactorsFromFile(const char* adjfile)
 
 WTSTickSlice* WtDataReader::readTickSlice(const char* stdCode, uint32_t count, uint64_t etime /* = 0 */)
 {
-	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
 	const char* stdPID = commInfo->getFullPid();
 
@@ -318,13 +318,13 @@ WTSTickSlice* WtDataReader::readTickSlice(const char* stdCode, uint32_t count, u
 	std::string curCode = cInfo._code;
 	if (commInfo->isFuture())
 	{
-		const char* ruleTag = _hot_mgr->getRuleTag(stdCode);
+		const char* ruleTag = cInfo._ruletag;
 		if (strlen(ruleTag) > 0)
 			curCode = _hot_mgr->getCustomRawCode(ruleTag, cInfo.stdCommID(), endTDate);
-		else if (cInfo.isHot())
-			curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, endTDate);
-		else if (cInfo.isSecond())
-			curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, endTDate);
+		//else if (cInfo.isHot())
+		//	curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, endTDate);
+		//else if (cInfo.isSecond())
+		//	curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, endTDate);
 	}
 
 	//比较时间的对象
@@ -421,7 +421,7 @@ WTSTickSlice* WtDataReader::readTickSlice(const char* stdCode, uint32_t count, u
 
 WTSOrdQueSlice* WtDataReader::readOrdQueSlice(const char* stdCode, uint32_t count, uint64_t etime /* = 0 */)
 {
-	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
 	const char* stdPID = commInfo->getFullPid();
 
@@ -450,13 +450,13 @@ WTSOrdQueSlice* WtDataReader::readOrdQueSlice(const char* stdCode, uint32_t coun
 	std::string curCode = cInfo._code;
 	if (commInfo->isFuture())
 	{
-		const char* ruleTag = _hot_mgr->getRuleTag(stdCode);
+		const char* ruleTag = cInfo._ruletag;
 		if (strlen(ruleTag) > 0)
 			curCode = _hot_mgr->getCustomRawCode(ruleTag, cInfo.stdCommID(), endTDate);
-		else if (cInfo.isHot())
-			curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, endTDate);
-		else if (cInfo.isSecond())
-			curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, endTDate);
+		//else if (cInfo.isHot())
+		//	curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, endTDate);
+		//else if (cInfo.isSecond())
+		//	curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, endTDate);
 	}
 
 	//比较时间的对象
@@ -568,7 +568,7 @@ WTSOrdQueSlice* WtDataReader::readOrdQueSlice(const char* stdCode, uint32_t coun
 
 WTSOrdDtlSlice* WtDataReader::readOrdDtlSlice(const char* stdCode, uint32_t count, uint64_t etime /* = 0 */)
 {
-	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
 	const char* stdPID = commInfo->getFullPid();
 
@@ -597,13 +597,13 @@ WTSOrdDtlSlice* WtDataReader::readOrdDtlSlice(const char* stdCode, uint32_t coun
 	std::string curCode = cInfo._code;
 	if (commInfo->isFuture())
 	{
-		const char* ruleTag = _hot_mgr->getRuleTag(stdCode);
+		const char* ruleTag = cInfo._ruletag;
 		if (strlen(ruleTag) > 0)
 			curCode = _hot_mgr->getCustomRawCode(ruleTag, cInfo.stdCommID(), endTDate);
-		else if (cInfo.isHot())
-			curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, endTDate);
-		else if (cInfo.isSecond())
-			curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, endTDate);
+		//else if (cInfo.isHot())
+		//	curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, endTDate);
+		//else if (cInfo.isSecond())
+		//	curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, endTDate);
 	}
 
 	//比较时间的对象
@@ -715,7 +715,7 @@ WTSOrdDtlSlice* WtDataReader::readOrdDtlSlice(const char* stdCode, uint32_t coun
 
 WTSTransSlice* WtDataReader::readTransSlice(const char* stdCode, uint32_t count, uint64_t etime /* = 0 */)
 {
-	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
 	const char* stdPID = commInfo->getFullPid();
 
@@ -744,13 +744,13 @@ WTSTransSlice* WtDataReader::readTransSlice(const char* stdCode, uint32_t count,
 	std::string curCode = cInfo._code;
 	if (commInfo->isFuture())
 	{
-		const char* ruleTag = _hot_mgr->getRuleTag(stdCode);
+		const char* ruleTag = cInfo._ruletag;
 		if (strlen(ruleTag) > 0)
 			curCode = _hot_mgr->getCustomRawCode(ruleTag, cInfo.stdCommID(), endTDate);
-		else if (cInfo.isHot())
-			curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, endTDate);
-		else if (cInfo.isSecond())
-			curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, endTDate);
+		//else if (cInfo.isHot())
+		//	curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, endTDate);
+		//else if (cInfo.isSecond())
+		//	curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, endTDate);
 	}
 
 	//比较时间的对象
@@ -866,7 +866,7 @@ bool WtDataReader::cacheFinalBarsFromLoader(const std::string& key, const char* 
 	if (NULL == _loader)
 		return false;
 
-	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
 	std::string stdPID = fmt::format("{}.{}", cInfo._exchg, cInfo._product);
 
 	BarsList& barList = _bars_cache[key];
@@ -901,7 +901,7 @@ bool WtDataReader::cacheFinalBarsFromLoader(const std::string& key, const char* 
 
 bool WtDataReader::cacheIntegratedFutBars(const std::string& key, const char* stdCode, WTSKlinePeriod period)
 {
-	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
 	std::string stdPID = fmt::format("{}.{}", cInfo._exchg, cInfo._product);
 
 	uint32_t curDate = TimeUtils::getCurDate();
@@ -926,7 +926,8 @@ bool WtDataReader::cacheIntegratedFutBars(const std::string& key, const char* st
 
 	uint32_t realCnt = 0;
 
-	const char* hot_flag = cInfo.isHot() ? FILE_SUF_HOT : FILE_SUF_2ND;
+	//const char* hot_flag = cInfo.isHot() ? FILE_SUF_HOT : FILE_SUF_2ND;
+	const char* ruleTag = cInfo._ruletag;
 
 	//先按照HOT代码进行读取, 如rb.HOT
 	std::vector<WTSBarStruct>* hotAy = NULL;
@@ -939,7 +940,7 @@ bool WtDataReader::cacheIntegratedFutBars(const std::string& key, const char* st
 		 *	但是上层会调用一次loadFinalHisBars，这里再调用loadRawHisBars就冗余了，所以直接跳过
 		 */
 		std::stringstream ss;
-		ss << _his_dir << pname << "/" << cInfo._exchg << "/" << cInfo._exchg << "." << cInfo._product << hot_flag << ".dsb";
+		ss << _his_dir << pname << "/" << cInfo._exchg << "/" << cInfo._exchg << "." << cInfo._product << "_" << ruleTag << ".dsb";
 		std::string filename = ss.str();
 		if (!StdFile::exists(filename.c_str()))
 			break;
@@ -971,14 +972,19 @@ bool WtDataReader::cacheIntegratedFutBars(const std::string& key, const char* st
 	} while (false);
 
 	HotSections secs;
-	if (cInfo.isHot())
+	//if (cInfo.isHot())
+	//{
+	//	if (!_hot_mgr->splitHotSecions(cInfo._exchg, cInfo._product, 19900102, endTDate, secs))
+	//		return false;
+	//}
+	//else if (cInfo.isSecond())
+	//{
+	//	if (!_hot_mgr->splitSecondSecions(cInfo._exchg, cInfo._product, 19900102, endTDate, secs))
+	//		return false;
+	//}
+	if (strlen(ruleTag) > 0)
 	{
-		if (!_hot_mgr->splitHotSecions(cInfo._exchg, cInfo._product, 19900102, endTDate, secs))
-			return false;
-	}
-	else if (cInfo.isSecond())
-	{
-		if (!_hot_mgr->splitSecondSecions(cInfo._exchg, cInfo._product, 19900102, endTDate, secs))
+		if (!_hot_mgr->splitCustomSections(ruleTag, cInfo.stdCommID(), 19900102, endTDate, secs))
 			return false;
 	}
 
@@ -1151,7 +1157,7 @@ bool WtDataReader::cacheIntegratedFutBars(const std::string& key, const char* st
 
 bool WtDataReader::cacheAdjustedStkBars(const std::string& key, const char* stdCode, WTSKlinePeriod period)
 {
-	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
 	std::string stdPID = fmt::format("{}.{}", cInfo._exchg, cInfo._product);
 
 	uint32_t curDate = TimeUtils::getCurDate();
@@ -1389,7 +1395,7 @@ bool WtDataReader::cacheAdjustedStkBars(const std::string& key, const char* stdC
 
 bool WtDataReader::cacheHisBarsFromFile(const std::string& key, const char* stdCode, WTSKlinePeriod period)
 {
-	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
 	const char* stdPID = commInfo->getFullPid();
 
@@ -1414,7 +1420,8 @@ bool WtDataReader::cacheHisBarsFromFile(const std::string& key, const char* stdC
 	std::vector<std::vector<WTSBarStruct>*> barsSections;
 
 	uint32_t realCnt = 0;
-	if (!cInfo.isFlat() && commInfo->isFuture())
+	const char* ruleTag = cInfo._ruletag;
+	if (strlen(ruleTag) > 0 && commInfo->isFuture())
 	{
 		//如果是读取期货主力连续数据
 		return cacheIntegratedFutBars(key, stdCode, period);
@@ -1508,7 +1515,7 @@ bool WtDataReader::cacheHisBarsFromFile(const std::string& key, const char* stdC
 
 WTSKlineSlice* WtDataReader::readKlineSlice(const char* stdCode, WTSKlinePeriod period, uint32_t count, uint64_t etime /* = 0 */)
 {
-	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
 	const char* stdPID = commInfo->getFullPid();
 
@@ -1569,22 +1576,22 @@ WTSKlineSlice* WtDataReader::readKlineSlice(const char* stdCode, WTSKlinePeriod 
 
 	if (commInfo->isFuture())
 	{
-		const char* ruleTag = _hot_mgr->getRuleTag(stdCode);
+		const char* ruleTag = cInfo._ruletag;
 		if (strlen(ruleTag) > 0)
 		{
 			_bars_cache[key]._raw_code = _hot_mgr->getCustomRawCode(ruleTag, cInfo.stdCommID(), curTDate);
 			pipe_reader_log(_sink, LL_INFO, "{} contract on {} confirmed with rule {}: {} -> {}", ruleTag, curTDate, stdCode, _bars_cache[key]._raw_code.c_str());
 		}
-		else if (cInfo.isHot() && commInfo->isFuture())
-		{
-			_bars_cache[key]._raw_code = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, curTDate);
-			pipe_reader_log(_sink, LL_INFO, "Hot contract on {}  confirmed: {} -> {}", curTDate, stdCode, _bars_cache[key]._raw_code.c_str());
-		}
-		else if (cInfo.isSecond() && commInfo->isFuture())
-		{
-			_bars_cache[key]._raw_code = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, curTDate);
-			pipe_reader_log(_sink, LL_INFO, "Second contract on {} confirmed: {} -> {}", curTDate, stdCode, _bars_cache[key]._raw_code.c_str());
-		}
+		//else if (cInfo.isHot())
+		//{
+		//	_bars_cache[key]._raw_code = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, curTDate);
+		//	pipe_reader_log(_sink, LL_INFO, "Hot contract on {}  confirmed: {} -> {}", curTDate, stdCode, _bars_cache[key]._raw_code.c_str());
+		//}
+		//else if (cInfo.isSecond())
+		//{
+		//	_bars_cache[key]._raw_code = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, curTDate);
+		//	pipe_reader_log(_sink, LL_INFO, "Second contract on {} confirmed: {} -> {}", curTDate, stdCode, _bars_cache[key]._raw_code.c_str());
+		//}
 		else
 		{
 			_bars_cache[key]._raw_code = cInfo._code;
@@ -2040,7 +2047,7 @@ void WtDataReader::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTDate
 
 double WtDataReader::getAdjFactorByDate(const char* stdCode, uint32_t date /* = 0 */)
 {
-	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
 	if (!commInfo->isStock())
 		return 1.0;

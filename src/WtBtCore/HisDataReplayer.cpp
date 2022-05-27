@@ -1206,7 +1206,7 @@ void HisDataReplayer::replayUnbars(uint64_t stime, uint64_t nowTime, uint32_t en
 						if (nextBar.date <= uDate)
 							continue;
 
-						CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(barsList->_code.c_str());
+						CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(barsList->_code.c_str(), &_hot_mgr);
 						WTSCommodityInfo* commInfo = _bd_mgr.getCommodity(cInfo._exchg, cInfo._product);
 
 						std::string realCode = barsList->_code;
@@ -1828,7 +1828,7 @@ void HisDataReplayer::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTD
 								const std::string& ticker = _ticker_keys[barsList->_code];
 								if (ticker == it->first)
 								{
-									CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(barsList->_code.c_str());
+									CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(barsList->_code.c_str(), &_hot_mgr);
 									WTSCommodityInfo* commInfo = _bd_mgr.getCommodity(cInfo._exchg, cInfo._product);
 
 									std::string realCode = barsList->_code;
@@ -2869,25 +2869,30 @@ uint32_t strToDate(const char* strDate)
 
 bool HisDataReplayer::cacheRawTicksFromBin(const std::string& key, const char* stdCode, uint32_t uDate)
 {
-	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, &_hot_mgr);
 	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
 	
 	std::string rawCode = cInfo._code;
-	if (cInfo.isHot())
+	if(strlen(cInfo._ruletag) > 0)
 	{
-		rawCode = _hot_mgr.getRawCode(cInfo._exchg, cInfo._product, uDate);
+		rawCode = _hot_mgr.getCustomRawCode(cInfo._ruletag, cInfo.stdCommID(), uDate);
 	}
-	else if(cInfo.isSecond())
-	{
-		rawCode = _hot_mgr.getSecondRawCode(cInfo._exchg, cInfo._product, uDate);
-	}
+	//else if (cInfo.isHot())
+	//{
+	//	rawCode = _hot_mgr.getRawCode(cInfo._exchg, cInfo._product, uDate);
+	//}
+	//else if(cInfo.isSecond())
+	//{
+	//	rawCode = _hot_mgr.getSecondRawCode(cInfo._exchg, cInfo._product, uDate);
+	//}
 
 	std::string content;
 	bool bHit = false;
 	//先检查有没有HOT、SND的主力次主力的tick文件
-	if(!cInfo.isFlat())
+	const char* ruleTag = cInfo._ruletag;
+	if(strlen(ruleTag) > 0)
 	{
-		const char* hot_flag = cInfo.isHot() ? FILE_SUF_HOT : FILE_SUF_2ND;
+		const char* hot_flag = ruleTag;
 		//std::stringstream ss;
 		//ss << _base_dir << "his/ticks/" << cInfo._exchg << "/" << uDate << "/" << cInfo._product << hot_flag << ".dsb";
 		//filename = ss.str();
@@ -2897,7 +2902,7 @@ bool HisDataReplayer::cacheRawTicksFromBin(const std::string& key, const char* s
 		 *	By Wesley @ 2022.01.11
 		 *	这里将直接从文件读取，改成从HisDtMgr封装的接口加载
 		 */
-		std::string wrappCode = StrUtil::printf("%s%s", cInfo._product, hot_flag);
+		std::string wrappCode = StrUtil::printf("%s_%s", cInfo._product, hot_flag);
 		bHit = _his_dt_mgr.load_raw_ticks(cInfo._exchg, wrappCode.c_str(), uDate, [&content](std::string& data) {
 			content.swap(data);
 		});
@@ -3080,7 +3085,7 @@ bool HisDataReplayer::cacheFinalBarsFromLoader(const std::string& key, const cha
 	if (NULL == _bt_loader)
 		return false;
 
-	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, &_hot_mgr);
 	WTSCommodityInfo* commInfo = _bd_mgr.getCommodity(cInfo._exchg, cInfo._product);
 	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
 
@@ -3101,13 +3106,11 @@ bool HisDataReplayer::cacheFinalBarsFromLoader(const std::string& key, const cha
 	if (!StdFile::exists(ss.str().c_str()))
         boost::filesystem::create_directories(ss.str().c_str());
 
-	if (cInfo.isHot() && commInfo->isFuture())
+	const char* ruleTag = cInfo._ruletag;
+
+	if (strlen(ruleTag) > 0 && commInfo->isFuture())
 	{
-		ss << cInfo._exchg << "." << cInfo._product << "_HOT.dsb";
-	}
-	else if (cInfo.isSecond() && commInfo->isFuture())
-	{
-		ss << cInfo._exchg << "." << cInfo._product << "_2ND.dsb";
+		ss << cInfo._exchg << "." << cInfo._product << "_" << ruleTag << ".dsb";
 	}
 	else if (cInfo.isExright() && commInfo->isStock())
 	{
@@ -3224,7 +3227,7 @@ bool HisDataReplayer::cacheFinalBarsFromLoader(const std::string& key, const cha
 
 bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* stdCode, WTSKlinePeriod period, bool bSubbed/* = true*/)
 {
-	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, &_hot_mgr);
 	WTSCommodityInfo* commInfo = _bd_mgr.getCommodity(cInfo._exchg, cInfo._product);
 	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
 
@@ -3247,13 +3250,10 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 	if (!StdFile::exists(ss.str().c_str()))
 		boost::filesystem::create_directories(ss.str().c_str());
 
-	if(cInfo.isHot() && commInfo->isFuture())
+	const char* ruleTag = cInfo._ruletag;
+	if (strlen(ruleTag) > 0 && commInfo->isFuture())
 	{
-		ss << cInfo._exchg << "." << cInfo._product << "_HOT.dsb";
-	}
-	else if (cInfo.isSecond() && commInfo->isFuture())
-	{
-		ss << cInfo._exchg << "." << cInfo._product << "_2ND.dsb";
+		ss << cInfo._exchg << "." << cInfo._product << "_" << ruleTag << ".dsb";
 	}
 	else if (cInfo.isExright() && commInfo->isStock())
 	{
@@ -3385,7 +3385,7 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 
 bool HisDataReplayer::cacheIntegratedFutBarsFromBin(const std::string& key, const char* stdCode, WTSKlinePeriod period, bool bSubbed /* = true */)
 {
-	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, &_hot_mgr);
 	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
 
 	uint32_t curDate = TimeUtils::getCurDate();
@@ -3411,7 +3411,8 @@ bool HisDataReplayer::cacheIntegratedFutBarsFromBin(const std::string& key, cons
 	uint32_t realCnt = 0;
 	bool isDay = (period == KP_DAY);
 
-	const char* hot_flag = cInfo.isHot() ? FILE_SUF_HOT : FILE_SUF_2ND;
+	//const char* hot_flag = cInfo.isHot() ? FILE_SUF_HOT : FILE_SUF_2ND;
+	const char* ruleTag = cInfo._ruletag;
 
 	std::vector<WTSBarStruct>* hotAy = NULL;
 	uint64_t lastHotTime = 0;
@@ -3426,7 +3427,7 @@ bool HisDataReplayer::cacheIntegratedFutBarsFromBin(const std::string& key, cons
 		 *	将直接从文件读取，改成从HisDtMgr读取
 		 */
 		std::string content;
-		std::string wrappCode = StrUtil::printf("%s.%s%s", cInfo._exchg, cInfo._product, hot_flag);
+		std::string wrappCode = StrUtil::printf("%s.%s_%s", cInfo._exchg, cInfo._product, ruleTag);
 		bool bSucc = _his_dt_mgr.load_raw_bars(cInfo._exchg, wrappCode.c_str(), period, [&content](std::string& data) {
 			content.swap(data);
 		});
@@ -3458,14 +3459,19 @@ bool HisDataReplayer::cacheIntegratedFutBarsFromBin(const std::string& key, cons
 	} while (false);
 
 	HotSections secs;
-	if (cInfo.isHot())
+	//if (cInfo.isHot())
+	//{
+	//	if (!_hot_mgr.splitHotSecions(cInfo._exchg, cInfo._product, 19900102, endTDate, secs))
+	//		return false;
+	//}
+	//else if (cInfo.isSecond())
+	//{
+	//	if (!_hot_mgr.splitSecondSecions(cInfo._exchg, cInfo._product, 19900102, endTDate, secs))
+	//		return false;
+	//}
+	if(strlen(ruleTag) > 0)
 	{
-		if (!_hot_mgr.splitHotSecions(cInfo._exchg, cInfo._product, 19900102, endTDate, secs))
-			return false;
-	}
-	else if (cInfo.isSecond())
-	{
-		if (!_hot_mgr.splitSecondSecions(cInfo._exchg, cInfo._product, 19900102, endTDate, secs))
+		if (!_hot_mgr.splitCustomSections(ruleTag, cInfo.stdCommID(), 19900102, endTDate, secs))
 			return false;
 	}
 
@@ -3678,7 +3684,7 @@ const HisDataReplayer::AdjFactorList& HisDataReplayer::getAdjFactors(const char*
 
 bool HisDataReplayer::cacheAdjustedStkBarsFromBin(const std::string& key, const char* stdCode, WTSKlinePeriod period, bool bSubbed /* = true */)
 {
-	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, &_hot_mgr);
 	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
 
 	uint32_t curDate = TimeUtils::getCurDate();
@@ -3914,7 +3920,7 @@ bool HisDataReplayer::cacheAdjustedStkBarsFromBin(const std::string& key, const 
 
 bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* stdCode, WTSKlinePeriod period, bool bSubbed/* = true*/)
 {
-	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, &_hot_mgr);
 	WTSCommodityInfo* commInfo = _bd_mgr.getCommodity(cInfo._exchg, cInfo._product);
 	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
 
@@ -3937,7 +3943,8 @@ bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* st
 	std::vector<std::vector<WTSBarStruct>*> barsSections;
 
 	uint32_t realCnt = 0;
-	if (!cInfo.isFlat() && commInfo->isFuture())//如果是读取期货主力连续数据
+	const char* ruleTag = cInfo._ruletag;
+	if (strlen(ruleTag) > 0 && commInfo->isFuture())//如果是读取期货主力连续数据
 	{
 		return cacheIntegratedFutBarsFromBin(key, stdCode, period);
 	}

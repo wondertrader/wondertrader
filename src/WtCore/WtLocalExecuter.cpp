@@ -557,7 +557,7 @@ void WtLocalExecuter::on_position(const char* stdCode, bool isLong, double prevo
 		return;
 
 	IHotMgr* hotMgr = _stub->get_hot_mon();
-	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, NULL);
 	//获取上一期的主力合约
 	std::string prevCode = hotMgr->getPrevRawCode(cInfo._exchg, cInfo._product, tradingday);
 

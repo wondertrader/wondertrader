@@ -507,7 +507,7 @@ void TraderAdapter::updateUndone(const char* stdCode, double qty, bool bOuput /*
 
 WTSContractInfo* TraderAdapter::getContract(const char* stdCode)
 {
-	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, NULL);
 	return _bd_mgr->getContract(cInfo._code, cInfo._exchg);
 }
 
@@ -1270,7 +1270,7 @@ bool TraderAdapter::cancel(uint32_t localid)
 
 OrderIDs TraderAdapter::cancel(const char* stdCode, bool isBuy, double qty /* = 0 */)
 {
-	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, NULL);
 
 	OrderIDs ret;
 

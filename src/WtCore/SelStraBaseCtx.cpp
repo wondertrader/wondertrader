@@ -18,6 +18,7 @@
 #include "../Share/StrUtil.hpp"
 #include "../Includes/WTSContractInfo.hpp"
 #include "../Includes/WTSSessionInfo.hpp"
+#include "../Includes/IHotMgr.h"
 #include "../Share/decimal.h"
 #include "../Share/CodeHelper.hpp"
 
@@ -270,7 +271,8 @@ void SelStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 			for (const rj::Value& pItem : jPos.GetArray())
 			{
 				const char* stdCode = pItem["code"].GetString();
-				if (!CodeHelper::isStdFutHotCode(stdCode) && !CodeHelper::isStdFut2ndCode(stdCode) && _engine->get_contract_info(stdCode) == NULL)
+				const char* ruleTag = _engine->get_hot_mgr()->getRuleTag(stdCode);
+				if (strlen(ruleTag) == 0 && _engine->get_contract_info(stdCode) == NULL)
 				{
 					log_info("{} not exists or expired, position ignored", stdCode);
 					continue;
@@ -336,7 +338,8 @@ void SelStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 			for (auto& m : jSignals.GetObject())
 			{
 				const char* stdCode = m.name.GetString();
-				if (!CodeHelper::isStdFutHotCode(stdCode) && !CodeHelper::isStdFut2ndCode(stdCode) && _engine->get_contract_info(stdCode) == NULL)
+				const char* ruleTag = _engine->get_hot_mgr()->getRuleTag(stdCode);
+				if (strlen(ruleTag) == 0 && _engine->get_contract_info(stdCode) == NULL)
 				{
 					log_info("{} not exists or expired, signal ignored", stdCode);
 					continue;

@@ -160,25 +160,25 @@ void WtCtaEngine::on_init()
 				}
 
 				std::string realCode = stdCode;
-				const char* ruleTag = _hot_mgr->getRuleTag(stdCode);
-				if(strlen(ruleTag) > 0)
+				//const char* ruleTag = _hot_mgr->getRuleTag(stdCode);
+				CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
+				if(strlen(cInfo._ruletag) > 0)
 				{
-					CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
-					std::string code = _hot_mgr->getCustomRawCode(ruleTag, cInfo.stdCommID(), _cur_tdate);
+					std::string code = _hot_mgr->getCustomRawCode(cInfo._ruletag, cInfo.stdCommID(), _cur_tdate);
 					realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
 				}
-				else if (CodeHelper::isStdFutHotCode(stdCode))
-				{
-					CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
-					std::string code = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
-					realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
-				}
-				else if (CodeHelper::isStdFut2ndCode(stdCode))
-				{
-					CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
-					std::string code = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
-					realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
-				}
+				//else if (CodeHelper::isStdFutHotCode(stdCode))
+				//{
+				//	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+				//	std::string code = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
+				//	realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
+				//}
+				//else if (CodeHelper::isStdFut2ndCode(stdCode))
+				//{
+				//	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+				//	std::string code = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
+				//	realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
+				//}
 
 				double& vol = target_pos[realCode];
 				vol += qty;
@@ -274,25 +274,24 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 				}
 
 				std::string realCode = stdCode;
-				const char* ruleTag = _hot_mgr->getRuleTag(stdCode);
-				if (strlen(ruleTag) > 0)
+				CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
+				if (strlen(cInfo._ruletag) > 0)
 				{
-					CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
-					std::string code = _hot_mgr->getCustomRawCode(ruleTag, cInfo.stdCommID(), _cur_tdate);
+					std::string code = _hot_mgr->getCustomRawCode(cInfo._ruletag, cInfo.stdCommID(), _cur_tdate);
 					realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
 				}
-				else if (CodeHelper::isStdFutHotCode(stdCode))
-				{
-					CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
-					std::string code = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
-					realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
-				}
-				else if (CodeHelper::isStdFut2ndCode(stdCode))
-				{
-					CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
-					std::string code = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
-					realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
-				}
+				//else if (CodeHelper::isStdFutHotCode(stdCode))
+				//{
+				//	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+				//	std::string code = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
+				//	realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
+				//}
+				//else if (CodeHelper::isStdFut2ndCode(stdCode))
+				//{
+				//	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+				//	std::string code = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
+				//	realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
+				//}
 
 				double& vol = target_pos[realCode];
 				vol += qty;
@@ -377,25 +376,25 @@ void WtCtaEngine::handle_pos_change(const char* straName, const char* stdCode, d
 	}
 
 	std::string realCode = stdCode;
-	const char* ruleTag = _hot_mgr->getRuleTag(stdCode);
-	if (strlen(ruleTag) > 0)
+	//const char* ruleTag = _hot_mgr->getRuleTag(stdCode);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
+	if (strlen(cInfo._ruletag) > 0)
 	{
-		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
-		std::string code = _hot_mgr->getCustomRawCode(ruleTag, cInfo.stdCommID(), _cur_tdate);
+		std::string code = _hot_mgr->getCustomRawCode(cInfo._ruletag, cInfo.stdCommID(), _cur_tdate);
 		realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
 	}
-	else if (CodeHelper::isStdFutHotCode(stdCode))
-	{
-		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
-		std::string code = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
-		realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
-	}
-	else if (CodeHelper::isStdFut2ndCode(stdCode))
-	{
-		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
-		std::string code = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
-		realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
-	}
+	//else if (CodeHelper::isStdFutHotCode(stdCode))
+	//{
+	//	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+	//	std::string code = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
+	//	realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
+	//}
+	//else if (CodeHelper::isStdFut2ndCode(stdCode))
+	//{
+	//	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+	//	std::string code = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
+	//	realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
+	//}
 
 	PosInfo& pItem = _pos_map[realCode];
 	double targetPos = pItem._volume + diffQty;

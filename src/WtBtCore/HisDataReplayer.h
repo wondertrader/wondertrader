@@ -389,6 +389,8 @@ public:
 		_price_map[stdCode] = price;
 	}
 
+	inline IHotMgr*	get_hot_mgr() { return &_hot_mgr; }
+
 private:
 	IDataSink*		_listener;
 	IBtDataLoader*	_bt_loader;
