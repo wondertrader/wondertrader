@@ -85,6 +85,19 @@ public:
 		return std::string::npos;
 	}
 
+	static inline std::size_t findLast(const char* str, char ch)
+	{
+		auto len = strlen(str);
+		std::size_t i = 0;
+		for (; i < len; i++)
+		{
+			if (str[len - 1 - i] == ch)
+				return len - 1 - i;
+		}
+
+		return std::string::npos;
+	}
+
 	/** Returns a std::stringVector that contains all the substd::strings delimited
 	by the characters in the passed <code>delims</code> argument.
 	@param

@@ -160,7 +160,14 @@ void WtCtaEngine::on_init()
 				}
 
 				std::string realCode = stdCode;
-				if (CodeHelper::isStdFutHotCode(stdCode))
+				const char* ruleTag = _hot_mgr->getRuleTag(stdCode);
+				if(strlen(ruleTag) > 0)
+				{
+					CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+					std::string code = _hot_mgr->getCustomRawCode(ruleTag, cInfo.stdCommID(), _cur_tdate);
+					realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
+				}
+				else if (CodeHelper::isStdFutHotCode(stdCode))
 				{
 					CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 					std::string code = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
@@ -267,7 +274,14 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 				}
 
 				std::string realCode = stdCode;
-				if (CodeHelper::isStdFutHotCode(stdCode))
+				const char* ruleTag = _hot_mgr->getRuleTag(stdCode);
+				if (strlen(ruleTag) > 0)
+				{
+					CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+					std::string code = _hot_mgr->getCustomRawCode(ruleTag, cInfo.stdCommID(), _cur_tdate);
+					realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
+				}
+				else if (CodeHelper::isStdFutHotCode(stdCode))
 				{
 					CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 					std::string code = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
@@ -363,7 +377,14 @@ void WtCtaEngine::handle_pos_change(const char* straName, const char* stdCode, d
 	}
 
 	std::string realCode = stdCode;
-	if (CodeHelper::isStdFutHotCode(stdCode))
+	const char* ruleTag = _hot_mgr->getRuleTag(stdCode);
+	if (strlen(ruleTag) > 0)
+	{
+		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+		std::string code = _hot_mgr->getCustomRawCode(ruleTag, cInfo.stdCommID(), _cur_tdate);
+		realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
+	}
+	else if (CodeHelper::isStdFutHotCode(stdCode))
 	{
 		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
 		std::string code = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, _cur_tdate);

@@ -100,10 +100,16 @@ WTSTickSlice* WtDataReaderAD::readTickSlice(const char* stdCode, uint32_t count,
 	uint32_t endTDate = _base_data_mgr->calcTradingDate(stdPID.c_str(), curDate, curTime, false);
 
 	std::string curCode = cInfo._code;
-	if (cInfo.isHot() && commInfo->isFuture())
-		curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, endTDate);
-	else if (cInfo.isSecond() && commInfo->isFuture())
-		curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, endTDate);
+	if (commInfo->isFuture())
+	{
+		const char* ruleTag = _hot_mgr->getRuleTag(stdCode);
+		if (strlen(ruleTag) > 0)
+			curCode = _hot_mgr->getCustomRawCode(ruleTag, cInfo.stdCommID(), endTDate);
+		else if (cInfo.isHot())
+			curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, endTDate);
+		else if (cInfo.isSecond())
+			curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, endTDate);
+	}
 
 	uint32_t reload_flag = 0; //重载标记，0-不需要重载，1-加载最新，2-全部重载
 	std::string key = StrUtil::printf("%s.%s", cInfo._exchg, curCode.c_str());
@@ -383,10 +389,16 @@ WTSKlineSlice* WtDataReaderAD::readKlineSlice(const char* stdCode, WTSKlinePerio
 	uint32_t endTDate = _base_data_mgr->calcTradingDate(stdPID.c_str(), curDate, curTime, false);
 
 	std::string curCode = cInfo._code;
-	if (cInfo.isHot() && commInfo->isFuture())
-		curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, endTDate);
-	else if (cInfo.isSecond() && commInfo->isFuture())
-		curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, endTDate);
+	if (commInfo->isFuture())
+	{
+		const char* ruleTag = _hot_mgr->getRuleTag(stdCode);
+		if (strlen(ruleTag) > 0)
+			curCode = _hot_mgr->getCustomRawCode(ruleTag, cInfo.stdCommID(), endTDate);
+		else if (cInfo.isHot())
+			curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, endTDate);
+		else if (cInfo.isSecond())
+			curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, endTDate);
+	}
 
 	std::string key = StrUtil::printf("%s#%u", stdCode, period);
 	BarsList& barsList = _bars_cache[key];

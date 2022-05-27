@@ -107,5 +107,10 @@ public:
 	 *	分隔自定义主力段,将次主力合约在某个时段的分月合约全部提出取来
 	 */
 	virtual bool		splitCustomSections(const char* tag, const char* hotCode, uint32_t sDt, uint32_t eDt, HotSections& sections) = 0;
+
+	/*
+	 *	根据标准合约代码，获取规则标签
+	 */
+	virtual const char* getRuleTag(const char* stdCode) = 0;
 };
 NS_WTP_END

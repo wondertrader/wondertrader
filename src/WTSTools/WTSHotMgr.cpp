@@ -32,6 +32,23 @@ WTSHotMgr::~WTSHotMgr()
 {
 }
 
+const char* WTSHotMgr::getRuleTag(const char* stdCode)
+{
+	if (m_mapCustRules == NULL)
+		return "";
+
+	auto idx = StrUtil::findLast(stdCode, '.');
+	if (idx == std::string::npos)
+		return "";
+
+	const char* tail = stdCode + idx + 1;
+	auto it = m_mapCustRules->find(tail);
+	if (it == m_mapCustRules->end())
+		return "";
+
+	return it->first.c_str();
+}
+
 #pragma region "次主力接口"
 bool WTSHotMgr::loadHots(const char* filename)
 {

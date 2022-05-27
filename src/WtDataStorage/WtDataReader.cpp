@@ -316,10 +316,16 @@ WTSTickSlice* WtDataReader::readTickSlice(const char* stdCode, uint32_t count, u
 	bool isToday = (endTDate == curTDate);
 
 	std::string curCode = cInfo._code;
-	if (cInfo.isHot() && commInfo->isFuture())
-		curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, endTDate);
-	else if (cInfo.isSecond() && commInfo->isFuture())
-		curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, endTDate);
+	if (commInfo->isFuture())
+	{
+		const char* ruleTag = _hot_mgr->getRuleTag(stdCode);
+		if (strlen(ruleTag) > 0)
+			curCode = _hot_mgr->getCustomRawCode(ruleTag, cInfo.stdCommID(), endTDate);
+		else if (cInfo.isHot())
+			curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, endTDate);
+		else if (cInfo.isSecond())
+			curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, endTDate);
+	}
 
 	//比较时间的对象
 	WTSTickStruct eTick;
@@ -442,10 +448,16 @@ WTSOrdQueSlice* WtDataReader::readOrdQueSlice(const char* stdCode, uint32_t coun
 	bool isToday = (endTDate == curTDate);
 
 	std::string curCode = cInfo._code;
-	if (cInfo.isHot() && commInfo->isFuture())
-		curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, endTDate);
-	else if (cInfo.isSecond() && commInfo->isFuture())
-		curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, endTDate);
+	if (commInfo->isFuture())
+	{
+		const char* ruleTag = _hot_mgr->getRuleTag(stdCode);
+		if (strlen(ruleTag) > 0)
+			curCode = _hot_mgr->getCustomRawCode(ruleTag, cInfo.stdCommID(), endTDate);
+		else if (cInfo.isHot())
+			curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, endTDate);
+		else if (cInfo.isSecond())
+			curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, endTDate);
+	}
 
 	//比较时间的对象
 	WTSOrdQueStruct eTick;
@@ -583,10 +595,16 @@ WTSOrdDtlSlice* WtDataReader::readOrdDtlSlice(const char* stdCode, uint32_t coun
 	bool isToday = (endTDate == curTDate);
 
 	std::string curCode = cInfo._code;
-	if (cInfo.isHot() && commInfo->isFuture())
-		curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, endTDate);
-	else if (cInfo.isSecond() && commInfo->isFuture())
-		curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, endTDate);
+	if (commInfo->isFuture())
+	{
+		const char* ruleTag = _hot_mgr->getRuleTag(stdCode);
+		if (strlen(ruleTag) > 0)
+			curCode = _hot_mgr->getCustomRawCode(ruleTag, cInfo.stdCommID(), endTDate);
+		else if (cInfo.isHot())
+			curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, endTDate);
+		else if (cInfo.isSecond())
+			curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, endTDate);
+	}
 
 	//比较时间的对象
 	WTSOrdDtlStruct eTick;
@@ -724,10 +742,16 @@ WTSTransSlice* WtDataReader::readTransSlice(const char* stdCode, uint32_t count,
 	bool isToday = (endTDate == curTDate);
 
 	std::string curCode = cInfo._code;
-	if (cInfo.isHot() && commInfo->isFuture())
-		curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, endTDate);
-	else if (cInfo.isSecond() && commInfo->isFuture())
-		curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, endTDate);
+	if (commInfo->isFuture())
+	{
+		const char* ruleTag = _hot_mgr->getRuleTag(stdCode);
+		if (strlen(ruleTag) > 0)
+			curCode = _hot_mgr->getCustomRawCode(ruleTag, cInfo.stdCommID(), endTDate);
+		else if (cInfo.isHot())
+			curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, endTDate);
+		else if (cInfo.isSecond())
+			curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, endTDate);
+	}
 
 	//比较时间的对象
 	WTSTransStruct eTick;
@@ -1543,15 +1567,28 @@ WTSKlineSlice* WtDataReader::readKlineSlice(const char* stdCode, WTSKlinePeriod 
 	//是否包含当天的
 	bool bHasToday = (endTDate == curTDate);
 
-	if (cInfo.isHot() && commInfo->isFuture())
+	if (commInfo->isFuture())
 	{
-		_bars_cache[key]._raw_code = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, curTDate);
-		pipe_reader_log(_sink,LL_INFO, "Hot contract on {}  confirmed: {} -> {}", curTDate, stdCode, _bars_cache[key]._raw_code.c_str());
-	}
-	else if (cInfo.isSecond() && commInfo->isFuture())
-	{
-		_bars_cache[key]._raw_code = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, curTDate);
-		pipe_reader_log(_sink,LL_INFO, "Second contract on {} confirmed: {} -> {}", curTDate, stdCode, _bars_cache[key]._raw_code.c_str());
+		const char* ruleTag = _hot_mgr->getRuleTag(stdCode);
+		if (strlen(ruleTag) > 0)
+		{
+			_bars_cache[key]._raw_code = _hot_mgr->getCustomRawCode(ruleTag, cInfo.stdCommID(), curTDate);
+			pipe_reader_log(_sink, LL_INFO, "{} contract on {} confirmed with rule {}: {} -> {}", ruleTag, curTDate, stdCode, _bars_cache[key]._raw_code.c_str());
+		}
+		else if (cInfo.isHot() && commInfo->isFuture())
+		{
+			_bars_cache[key]._raw_code = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, curTDate);
+			pipe_reader_log(_sink, LL_INFO, "Hot contract on {}  confirmed: {} -> {}", curTDate, stdCode, _bars_cache[key]._raw_code.c_str());
+		}
+		else if (cInfo.isSecond() && commInfo->isFuture())
+		{
+			_bars_cache[key]._raw_code = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, curTDate);
+			pipe_reader_log(_sink, LL_INFO, "Second contract on {} confirmed: {} -> {}", curTDate, stdCode, _bars_cache[key]._raw_code.c_str());
+		}
+		else
+		{
+			_bars_cache[key]._raw_code = cInfo._code;
+		}
 	}
 	else
 	{

@@ -45,6 +45,8 @@ public:
 	inline bool isInitialized() const {return m_bInitialized;}
 
 public:
+	virtual const char* getRuleTag(const char* stdCode) override;
+
 	//////////////////////////////////////////////////////////////////////////
 	//主力接口
 	virtual const char* getRawCode(const char* exchg, const char* pid, uint32_t dt = 0) override;

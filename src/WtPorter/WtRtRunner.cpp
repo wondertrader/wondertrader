@@ -521,13 +521,24 @@ bool WtRtRunner::config(const char* cfgFile, bool isFile /* = true */)
 	if (cfgBF->get("hot"))
 	{
 		_hot_mgr.loadHots(cfgBF->getCString("hot"));
-		WTSLogger::log_raw(LL_INFO, "Hot rules loades");
+		WTSLogger::log_raw(LL_INFO, "Hot rules loaded");
 	}
 
 	if (cfgBF->get("second"))
 	{
 		_hot_mgr.loadSeconds(cfgBF->getCString("second"));
-		WTSLogger::log_raw(LL_INFO, "Second rules loades");
+		WTSLogger::log_raw(LL_INFO, "Second rules loaded");
+	}
+
+	if(cfgBF->has("rules"))
+	{
+		auto cfgRules = cfgBF->get("rules");
+		auto tags = cfgRules->memberNames();
+		for(const std::string& ruleTag : tags)
+		{
+			_hot_mgr.loadCustomRules(ruleTag.c_str(), cfgRules->getCString(ruleTag.c_str()));
+			WTSLogger::info_f("{} rules loaded from {}", ruleTag, cfgRules->getCString(ruleTag.c_str()));
+		}
 	}
 
 	//初始化运行环境

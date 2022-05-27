@@ -258,8 +258,18 @@ bool HisDataReplayer::init(WTSVariant* cfg, EventNotifier* notifier /* = NULL */
 	if (cfgBF->get("second"))
 		_hot_mgr.loadSeconds(cfgBF->getCString("second"));
 
-	loadFees(cfg->getCString("fees"));
+	if (cfgBF->has("rules"))
+	{
+		auto cfgRules = cfgBF->get("rules");
+		auto tags = cfgRules->memberNames();
+		for (const std::string& ruleTag : tags)
+		{
+			_hot_mgr.loadCustomRules(ruleTag.c_str(), cfgRules->getCString(ruleTag.c_str()));
+			WTSLogger::info_f("{} rules loaded from {}", ruleTag, cfgRules->getCString(ruleTag.c_str()));
+		}
+	}
 
+	loadFees(cfg->getCString("fees"));
 
 	/*
 	 *	By Wesley @ 2021.12.20
