@@ -69,7 +69,7 @@ public:
 //fmt::format风格接口
 public:
 	template<typename... Args>
-	static void debug_f(const char* format, const Args& ...args)
+	static void debug(const char* format, const Args& ...args)
 	{
 		if (m_logLevel > LL_DEBUG || m_bStopped)
 			return;
@@ -86,7 +86,7 @@ public:
 	}
 
 	template<typename... Args>
-	static void info_f(const char* format, const Args& ...args)
+	static void info(const char* format, const Args& ...args)
 	{
 		if (m_logLevel > LL_INFO || m_bStopped)
 			return;
@@ -103,7 +103,7 @@ public:
 	}
 
 	template<typename... Args>
-	static void warn_f(const char* format, const Args& ...args)
+	static void warn(const char* format, const Args& ...args)
 	{
 		if (m_logLevel > LL_WARN || m_bStopped)
 			return;
@@ -120,7 +120,7 @@ public:
 	}
 
 	template<typename... Args>
-	static void error_f(const char* format, const Args& ...args)
+	static void error(const char* format, const Args& ...args)
 	{
 		if (m_logLevel > LL_ERROR || m_bStopped)
 			return;
@@ -137,7 +137,7 @@ public:
 	}
 
 	template<typename... Args>
-	static void fatal_f(const char* format, const Args& ...args)
+	static void fatal(const char* format, const Args& ...args)
 	{
 		if (m_logLevel > LL_FATAL || m_bStopped)
 			return;
@@ -154,7 +154,7 @@ public:
 	}
 
 	template<typename... Args>
-	static void log_f(WTSLogLevel ll, const char* format, const Args& ...args)
+	static void log(WTSLogLevel ll, const char* format, const Args& ...args)
 	{
 		if (m_logLevel > ll || m_bStopped)
 			return;
@@ -165,7 +165,7 @@ public:
 	}
 
 	template<typename... Args>
-	static void log_by_cat_f(const char* catName, WTSLogLevel ll, const char* format, const Args& ...args)
+	static void log_by_cat(const char* catName, WTSLogLevel ll, const char* format, const Args& ...args)
 	{
 		if (m_logLevel > ll || m_bStopped)
 			return;
@@ -176,7 +176,7 @@ public:
 	}
 
 	template<typename... Args>
-	static void log_dyn_f(const char* patttern, const char* catName, WTSLogLevel ll, const char* format, const Args& ...args)
+	static void log_dyn(const char* patttern, const char* catName, WTSLogLevel ll, const char* format, const Args& ...args)
 	{
 		if (m_logLevel > ll || m_bStopped)
 			return;

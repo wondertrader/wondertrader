@@ -84,7 +84,7 @@ void WtSelEngine::on_bar(const char* stdCode, const char* period, uint32_t times
 		}
 	}
 
-	WTSLogger::info_f("KBar [{}] @ {} closed", key, period[0] == 'd' ? newBar->date : newBar->time);
+	WTSLogger::info("KBar [{}] @ {} closed", key, period[0] == 'd' ? newBar->date : newBar->time);
 }
 
 void WtSelEngine::on_tick(const char* stdCode, WTSTickData* curTick)
@@ -352,7 +352,7 @@ void WtSelEngine::addContext(SelContextPtr ctx, uint32_t date, uint32_t time, Ta
 	auto it = _tasks.find(ctx->id());
 	if(it != _tasks.end())
 	{
-		WTSLogger::error_f("Task registration failed: task id {} already registered", ctx->id());
+		WTSLogger::error("Task registration failed: task id {} already registered", ctx->id());
 		return;
 	}
 
@@ -410,7 +410,7 @@ void WtSelEngine::handle_pos_change(const char* stdCode, double diffQty)
 	bool bRiskEnabled = false;
 	if (!decimal::eq(_risk_volscale, 1.0) && _risk_date == _cur_tdate)
 	{
-		WTSLogger::log_by_cat_f("risk", LL_INFO, "Risk scale of portfolio is {:.2f}", _risk_volscale);
+		WTSLogger::log_by_cat("risk", LL_INFO, "Risk scale of portfolio is {:.2f}", _risk_volscale);
 		bRiskEnabled = true;
 	}
 	if (bRiskEnabled && targetPos != 0)

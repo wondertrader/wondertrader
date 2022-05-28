@@ -43,7 +43,7 @@ int main()
 #else
 #pragma message("Signal hooks enabled in UNIX")
 	install_signal_hooks([](const char* message) {
-		WTSLogger::error_f(message);
+		WTSLogger::error(message);
 	});
 #endif
 
@@ -54,7 +54,7 @@ int main()
 	WTSVariant* cfg = WTSCfgLoader::load_from_file(filename.c_str(), true);
 	if (cfg == NULL)
 	{
-		WTSLogger::info_f("Loading configuration file {} failed", filename);
+		WTSLogger::info("Loading configuration file {} failed", filename);
 		return -1;
 	}
 

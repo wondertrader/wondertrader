@@ -30,7 +30,7 @@ bool UftStrategyMgr::loadFactories(const char* path)
 {
 	if (!StdFile::exists(path))
 	{
-		WTSLogger::error_f("Directory {} of UFT strategy factory not exists", path);
+		WTSLogger::error("Directory {} of UFT strategy factory not exists", path);
 		return false;
 	}
 
@@ -71,7 +71,7 @@ bool UftStrategyMgr::loadFactories(const char* path)
 			fInfo._creator = creator;
 			fInfo._remover = (FuncDeleteUftStraFact)DLLHelper::get_symbol(hInst, "deleteStrategyFact");
 			fInfo._fact = pFact;
-			WTSLogger::info_f("UFT strategy factory[{}] loaded", pFact->getName());
+			WTSLogger::info("UFT strategy factory[{}] loaded", pFact->getName());
 
 			count++;
 		}
@@ -82,7 +82,7 @@ bool UftStrategyMgr::loadFactories(const char* path)
 		}
 	}
 
-	WTSLogger::info_f("{} UFT strategy factories in directory[{}] loaded", count, path);
+	WTSLogger::info("{} UFT strategy factories in directory[{}] loaded", count, path);
 
 	return true;
 }

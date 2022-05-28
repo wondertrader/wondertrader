@@ -60,7 +60,7 @@ bool ActionPolicyMgr::init(const char* filename)
 					aRule._atype = AT_CloseYestoday;
 				else 
 				{
-					WTSLogger::error_f("Loading action policy failed: unrecognized type {}", action);
+					WTSLogger::error("Loading action policy failed: unrecognized type {}", action);
 					continue;
 				}
 
@@ -102,7 +102,7 @@ const ActionRuleGroup& ActionPolicyMgr::getActionRules(const char* pid)
 		if (it == _rules.end())
 		{
 			it = _rules.find("default");
-			WTSLogger::error_f("Action policy group {} not exists, changed to default group", gpName.c_str());
+			WTSLogger::error("Action policy group {} not exists, changed to default group", gpName.c_str());
 		}
 
 		assert(it != _rules.end());

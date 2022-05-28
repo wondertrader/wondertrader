@@ -318,7 +318,7 @@ bool CtaMocker::init_cta_factory(WTSVariant* cfg)
 		_strategy = _factory._fact->createStrategy(cfgStra->getCString("name"), cfgStra->getCString("id"));
 		if(_strategy)
 		{
-			WTSLogger::info_f("Strategy {}.{} is created,strategy ID: {}", _factory._fact->getName(), _strategy->getName(), _strategy->id());
+			WTSLogger::info("Strategy {}.{} is created,strategy ID: {}", _factory._fact->getName(), _strategy->getName(), _strategy->id());
 		}
 		_strategy->init(cfgStra->get("params"));
 		_name = _strategy->id();
@@ -370,13 +370,13 @@ void CtaMocker::handle_replay_done()
 
 	if(_emit_times > 0)
 	{
-		WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_INFO, 
+		WTSLogger::log_dyn("strategy", _name.c_str(), LL_INFO, 
 			"Strategy has been scheduled {} times, totally taking {} us, {:.3f} us each time",
 			_emit_times, _total_calc_time, _total_calc_time*1.0 / _emit_times);
 	}
 	else
 	{
-		WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_INFO, 
+		WTSLogger::log_dyn("strategy", _name.c_str(), LL_INFO, 
 			"Strategy has been scheduled for {} times", _emit_times);
 	}
 
@@ -392,7 +392,7 @@ void CtaMocker::handle_replay_done()
 		WTSLogger::log_dyn_raw("strategy", _name.c_str(), LL_DEBUG, "Notify control thread the end done");
 	}
 
-	WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_DEBUG, "Notify strategy the end of backtest");
+	WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Notify strategy the end of backtest");
 	this->on_bactest_end();
 }
 
@@ -505,7 +505,7 @@ void CtaMocker::proc_tick(const char* stdCode, double last_px, double cur_px)
 				double price = curPrice;
 				double curQty = stra_get_position(stdCode);
 				//_replayer->is_tick_enabled() ? newTick->price() : entrust._target;	//如果开启了tick回测,则用tick数据的价格,如果没有开启,则只能用条件单价格
-				WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_INFO,
+				WTSLogger::log_dyn("strategy", _name.c_str(), LL_INFO,
 					"Condition order triggered[newprice: {}{}{}], instrument: {}, {} {}",
 					cur_px, CMP_ALG_NAMES[entrust._alg], entrust._target, stdCode, ACTION_NAMES[entrust._action], entrust._qty);
 				switch (entrust._action)
@@ -619,7 +619,7 @@ void CtaMocker::on_init()
 	if (_strategy)
 		_strategy->on_init(this);
 
-	WTSLogger::info_f("CTA Strategy initialized, with slippage: {}", _slippage);
+	WTSLogger::info("CTA Strategy initialized, with slippage: {}", _slippage);
 }
 
 void CtaMocker::update_dyn_profit(const char* stdCode, double price)
@@ -693,14 +693,14 @@ void CtaMocker::enable_hook(bool bEnabled /* = true */)
 {
 	_hook_valid = bEnabled;
 
-	WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_DEBUG, "Calculating hook {}", bEnabled?"enabled":"disabled");
+	WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Calculating hook {}", bEnabled?"enabled":"disabled");
 }
 
 void CtaMocker::install_hook()
 {
 	_has_hook = true;
 
-	WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_DEBUG, "CTA hook installed");
+	WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "CTA hook installed");
 }
 
 bool CtaMocker::step_calc()
@@ -721,7 +721,7 @@ bool CtaMocker::step_calc()
 	}
 
 	if(bNotify)
-		WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_DEBUG, "Notify calc thread, wait for calc done");
+		WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Notify calc thread, wait for calc done");
 
 	if(_in_backtest)
 	{
@@ -729,7 +729,7 @@ bool CtaMocker::step_calc()
 		StdUniqueLock lock(_mtx_calc);
 		_cond_calc.wait(_mtx_calc);
 		_wait_calc = false;
-		WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_DEBUG, "Calc done notified");
+		WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Calc done notified");
 		_cur_step = (_cur_step + 1) % 4;
 
 		return true;
@@ -737,7 +737,7 @@ bool CtaMocker::step_calc()
 	else
 	{
 		_hook_valid = false;
-		WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_DEBUG, "Backtest exit automatically");
+		WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Backtest exit automatically");
 		return false;
 	}
 }
@@ -785,10 +785,10 @@ bool CtaMocker::on_schedule(uint32_t curDate, uint32_t curTime)
 				_condtions.clear();
 				if(_has_hook && _hook_valid)
 				{
-					WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_DEBUG, "Waiting for resume notify");
+					WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Waiting for resume notify");
 					StdUniqueLock lock(_mtx_calc);
 					_cond_calc.wait(_mtx_calc);
-					WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_DEBUG, "Calc resumed");
+					WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Calc resumed");
 					_cur_step = 1;
 				}
 
@@ -796,14 +796,14 @@ bool CtaMocker::on_schedule(uint32_t curDate, uint32_t curTime)
 
 				if (_has_hook && _hook_valid)
 				{
-					WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_DEBUG, "Calc done, notify control thread");
+					WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Calc done, notify control thread");
 					while (_cur_step==1)
 						_cond_calc.notify_all();
 
-					WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_DEBUG, "Waiting for resume notify");
+					WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Waiting for resume notify");
 					StdUniqueLock lock(_mtx_calc);
 					_cond_calc.wait(_mtx_calc);
-					WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_DEBUG, "Calc resumed");
+					WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Calc resumed");
 					_cur_step = 3;
 				}
 
@@ -819,14 +819,14 @@ bool CtaMocker::on_schedule(uint32_t curDate, uint32_t curTime)
 
 				if (_has_hook && _hook_valid)
 				{
-					WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_DEBUG, "Calc done, notify control thread");
+					WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "Calc done, notify control thread");
 					while(_cur_step == 3)
 						_cond_calc.notify_all();
 				}
 			}
 			else
 			{
-				WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_INFO, "{} is not trading time,strategy will not be scheduled", curTime);
+				WTSLogger::log_dyn("strategy", _name.c_str(), LL_INFO, "{} is not trading time,strategy will not be scheduled", curTime);
 			}
 			break;
 		}
@@ -1157,7 +1157,7 @@ void CtaMocker::stra_set_position(const char* stdCode, double qty, const char* u
 		//如果是T+1规则，则目标仓位不能小于冻结仓位
 		if(decimal::lt(qty, frozen))
 		{
-			WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_ERROR, "New position of {} cannot be set to {} due to {} being frozen", stdCode, qty, frozen);
+			WTSLogger::log_dyn("strategy", _name.c_str(), LL_ERROR, "New position of {} cannot be set to {} due to {} being frozen", stdCode, qty, frozen);
 			return;
 		}
 	}

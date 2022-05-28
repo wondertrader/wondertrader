@@ -27,7 +27,7 @@ WtDtRunner::WtDtRunner()
 #else
 #pragma message("Signal hooks enabled in UNIX")
 	install_signal_hooks([](const char* message) {
-		WTSLogger::error_f(message);
+		WTSLogger::error(message);
 	});
 #endif
 }
@@ -41,7 +41,7 @@ void WtDtRunner::initialize(const char* cfgFile, bool isFile /* = true */, const
 {
 	if(_is_inited)
 	{
-		WTSLogger::error_f("WtDtServo has already been initialized");
+		WTSLogger::error("WtDtServo has already been initialized");
 		return;
 	}
 
@@ -51,7 +51,7 @@ void WtDtRunner::initialize(const char* cfgFile, bool isFile /* = true */, const
 	WTSVariant* config = isFile ? WTSCfgLoader::load_from_file(cfgFile, true) : WTSCfgLoader::load_from_content(cfgFile, false, true);
 	if(config == NULL)
 	{
-		WTSLogger::error_f("Loading config failed");
+		WTSLogger::error("Loading config failed");
 		return;
 	}
 
@@ -61,7 +61,7 @@ void WtDtRunner::initialize(const char* cfgFile, bool isFile /* = true */, const
 	if (cfgBF->get("session"))
 	{
 		_bd_mgr.loadSessions(cfgBF->getCString("session"), isUTF8);
-		WTSLogger::info_f("Trading sessions loaded");
+		WTSLogger::info("Trading sessions loaded");
 	}
 
 	WTSVariant* cfgItem = cfgBF->get("commodity");
@@ -99,19 +99,19 @@ void WtDtRunner::initialize(const char* cfgFile, bool isFile /* = true */, const
 	if (cfgBF->get("holiday"))
 	{
 		_bd_mgr.loadHolidays(cfgBF->getCString("holiday"));
-		WTSLogger::info_f("Holidays loaded");
+		WTSLogger::info("Holidays loaded");
 	}
 
 	if (cfgBF->get("hot"))
 	{
 		_hot_mgr.loadHots(cfgBF->getCString("hot"));
-		WTSLogger::info_f("Hot rules loaded");
+		WTSLogger::info("Hot rules loaded");
 	}
 
 	if (cfgBF->get("second"))
 	{
 		_hot_mgr.loadSeconds(cfgBF->getCString("second"));
-		WTSLogger::info_f("Second rules loaded");
+		WTSLogger::info("Second rules loaded");
 	}
 
 	initDataMgr(config->get("data"));
@@ -128,14 +128,14 @@ void WtDtRunner::initDataMgr(WTSVariant* config)
 
 	_data_mgr.init(config, this);
 
-	WTSLogger::info_f("Data manager initialized");
+	WTSLogger::info("Data manager initialized");
 }
 
 WTSKlineSlice* WtDtRunner::get_bars_by_range(const char* stdCode, const char* period, uint64_t beginTime, uint64_t endTime /* = 0 */)
 {
 	if(!_is_inited)
 	{
-		WTSLogger::error_f("WtDtServo not initialized");
+		WTSLogger::error("WtDtServo not initialized");
 		return NULL;
 	}
 
@@ -176,7 +176,7 @@ WTSKlineSlice* WtDtRunner::get_bars_by_date(const char* stdCode, const char* per
 {
 	if (!_is_inited)
 	{
-		WTSLogger::error_f("WtDtServo not initialized");
+		WTSLogger::error("WtDtServo not initialized");
 		return NULL;
 	}
 
@@ -218,7 +218,7 @@ WTSTickSlice* WtDtRunner::get_ticks_by_range(const char* stdCode, uint64_t begin
 {
 	if (!_is_inited)
 	{
-		WTSLogger::error_f("WtDtServo not initialized");
+		WTSLogger::error("WtDtServo not initialized");
 		return NULL;
 	}
 
@@ -235,7 +235,7 @@ WTSTickSlice* WtDtRunner::get_ticks_by_date(const char* stdCode, uint32_t uDate 
 {
 	if (!_is_inited)
 	{
-		WTSLogger::error_f("WtDtServo not initialized");
+		WTSLogger::error("WtDtServo not initialized");
 		return NULL;
 	}
 
@@ -246,7 +246,7 @@ WTSKlineSlice* WtDtRunner::get_bars_by_count(const char* stdCode, const char* pe
 {
 	if (!_is_inited)
 	{
-		WTSLogger::error_f("WtDtServo not initialized");
+		WTSLogger::error("WtDtServo not initialized");
 		return NULL;
 	}
 
@@ -287,7 +287,7 @@ WTSTickSlice* WtDtRunner::get_ticks_by_count(const char* stdCode, uint32_t count
 {
 	if (!_is_inited)
 	{
-		WTSLogger::error_f("WtDtServo not initialized");
+		WTSLogger::error("WtDtServo not initialized");
 		return NULL;
 	}
 
@@ -304,7 +304,7 @@ WTSKlineSlice* WtDtRunner::get_sbars_by_date(const char* stdCode, uint32_t secs,
 {
 	if (!_is_inited)
 	{
-		WTSLogger::error_f("WtDtServo not initialized");
+		WTSLogger::error("WtDtServo not initialized");
 		return NULL;
 	}
 

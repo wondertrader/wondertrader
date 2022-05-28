@@ -70,25 +70,25 @@ bool ParserAdapter::init(const char* id, WTSVariant* cfg, IParserStub* stub, IBa
 		DllHandle hInst = DLLHelper::load_library(dllpath.c_str());
 		if (hInst == NULL)
 		{
-			WTSLogger::log_dyn_f("parser", _id.c_str(), LL_ERROR, "[{}] Parser module {} loading failed", _id.c_str(), dllpath.c_str());
+			WTSLogger::log_dyn("parser", _id.c_str(), LL_ERROR, "[{}] Parser module {} loading failed", _id.c_str(), dllpath.c_str());
 			return false;
 		}
 		else
 		{
-			WTSLogger::log_dyn_f("parser", _id.c_str(), LL_INFO, "[{}] Parser module %{} loaded", _id.c_str(), dllpath.c_str());
+			WTSLogger::log_dyn("parser", _id.c_str(), LL_INFO, "[{}] Parser module %{} loaded", _id.c_str(), dllpath.c_str());
 		}
 
 		FuncCreateParser pFuncCreateParser = (FuncCreateParser)DLLHelper::get_symbol(hInst, "createParser");
 		if (NULL == pFuncCreateParser)
 		{
-			WTSLogger::log_dyn_f("parser", _id.c_str(), LL_FATAL, "[{}] Entrance function createParser not found", _id.c_str());
+			WTSLogger::log_dyn("parser", _id.c_str(), LL_FATAL, "[{}] Entrance function createParser not found", _id.c_str());
 			return false;
 		}
 
 		_parser_api = pFuncCreateParser();
 		if (NULL == _parser_api)
 		{
-			WTSLogger::log_dyn_f("parser", _id.c_str(), LL_FATAL, "[{}] Creating parser api failed", _id.c_str());
+			WTSLogger::log_dyn("parser", _id.c_str(), LL_FATAL, "[{}] Creating parser api failed", _id.c_str());
 			return false;
 		}
 
@@ -168,12 +168,12 @@ bool ParserAdapter::init(const char* id, WTSVariant* cfg, IParserStub* stub, IBa
 		}
 		else
 		{
-			WTSLogger::log_dyn_f("parser", _id.c_str(), LL_ERROR, "[{}] Parser initializing failed: api initializing failed...", _id.c_str());
+			WTSLogger::log_dyn("parser", _id.c_str(), LL_ERROR, "[{}] Parser initializing failed: api initializing failed...", _id.c_str());
 		}
 	}
 	else
 	{
-		WTSLogger::log_dyn_f("parser", _id.c_str(), LL_ERROR, "[{}] Parser initializing failed: creating api failed...", _id.c_str());
+		WTSLogger::log_dyn("parser", _id.c_str(), LL_ERROR, "[{}] Parser initializing failed: creating api failed...", _id.c_str());
 	}
 
 	return true;
@@ -239,7 +239,7 @@ bool ParserAdapter::initExt(const char* id, IParserApi* api, IParserStub* stub, 
 		}
 		else
 		{
-			WTSLogger::log_dyn_f("parser", _id.c_str(), LL_ERROR, "[{}] Parser initializing failed: api initializing failed...", _id.c_str());
+			WTSLogger::log_dyn("parser", _id.c_str(), LL_ERROR, "[{}] Parser initializing failed: api initializing failed...", _id.c_str());
 		}
 	}
 
@@ -377,7 +377,7 @@ bool ParserAdapterMgr::addAdapter(const char* id, ParserAdapterPtr& adapter)
 	auto it = _adapters.find(id);
 	if (it != _adapters.end())
 	{
-		WTSLogger::error_f(" Same name of parsers: {}", id);
+		WTSLogger::error(" Same name of parsers: {}", id);
 		return false;
 	}
 
@@ -405,5 +405,5 @@ void ParserAdapterMgr::run()
 		it->second->run();
 	}
 
-	WTSLogger::info_f("{} parsers started", _adapters.size());
+	WTSLogger::info("{} parsers started", _adapters.size());
 }

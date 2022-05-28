@@ -44,7 +44,7 @@ bool Dumper::config(const char* cfgfile, bool isFile, const char* modDir)
 	if (cfgBF->get("session"))
 	{
 		g_bdMgr.loadSessions(cfgBF->getCString("session"), isUTF8);
-		WTSLogger::info_f("Trading sessions loaded");
+		WTSLogger::info("Trading sessions loaded");
 	}
 
 	WTSVariant* cfgItem = cfgBF->get("commodity");
@@ -95,7 +95,7 @@ bool Dumper::config(const char* cfgfile, bool isFile, const char* modDir)
 
 	root->release();
 
-	WTSLogger::info_f("交易数据落地模块初始化完成，主动刷新间隔:{}s", _refresh_span);
+	WTSLogger::info("交易数据落地模块初始化完成，主动刷新间隔:{}s", _refresh_span);
 
 	return true;
 }

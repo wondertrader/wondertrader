@@ -41,7 +41,7 @@ WtUftRunner::WtUftRunner()
 //#else
 //#pragma message("Signal hooks enabled in UNIX")
 //	install_signal_hooks([](const char* message) {
-//		WTSLogger::error_f(message);
+//		WTSLogger::error(message);
 //	});
 //#endif
 }
@@ -72,7 +72,7 @@ bool WtUftRunner::config()
 	_config = WTSCfgLoader::load_from_file(cfgFile, true);
 	if(_config == NULL)
 	{
-		WTSLogger::error_f("Loading config file {} failed", cfgFile);
+		WTSLogger::error("Loading config file {} failed", cfgFile);
 		return false;
 	}
 
@@ -126,7 +126,7 @@ bool WtUftRunner::config()
 
 	if(!_act_policy.init(_config->getCString("bspolicy")))
 	{
-		WTSLogger::error_f("ActionPolicyMgr init failed, please check config");
+		WTSLogger::error("ActionPolicyMgr init failed, please check config");
 	}
 
 	//初始化行情通道
@@ -138,22 +138,22 @@ bool WtUftRunner::config()
 			const char* filename = cfgParser->asCString();
 			if (StdFile::exists(filename))
 			{
-				WTSLogger::info_f("Reading parser config from {}...", filename);
+				WTSLogger::info("Reading parser config from {}...", filename);
 				WTSVariant* var = WTSCfgLoader::load_from_file(filename, isUTF8);
 				if(var)
 				{
 					if (!initParsers(var->get("parsers")))
-						WTSLogger::error_f("Loading parsers failed");
+						WTSLogger::error("Loading parsers failed");
 					var->release();
 				}
 				else
 				{
-					WTSLogger::error_f("Loading parser config {} failed", filename);
+					WTSLogger::error("Loading parser config {} failed", filename);
 				}
 			}
 			else
 			{
-				WTSLogger::error_f("Parser configuration {} not exists", filename);
+				WTSLogger::error("Parser configuration {} not exists", filename);
 			}
 		}
 		else if (cfgParser->type() == WTSVariant::VT_Array)
@@ -171,22 +171,22 @@ bool WtUftRunner::config()
 			const char* filename = cfgTraders->asCString();
 			if (StdFile::exists(filename))
 			{
-				WTSLogger::info_f("Reading trader config from {}...", filename);
+				WTSLogger::info("Reading trader config from {}...", filename);
 				WTSVariant* var = WTSCfgLoader::load_from_file(filename, isUTF8);
 				if (var)
 				{
 					if (!initTraders(var->get("traders")))
-						WTSLogger::error_f("Loading traders failed");
+						WTSLogger::error("Loading traders failed");
 					var->release();
 				}
 				else
 				{
-					WTSLogger::error_f("Loading trader config {} failed", filename);
+					WTSLogger::error("Loading trader config {} failed", filename);
 				}
 			}
 			else
 			{
-				WTSLogger::error_f("Trader configuration {} not exists", filename);
+				WTSLogger::error("Trader configuration {} not exists", filename);
 			}
 		}
 		else if (cfgTraders->type() == WTSVariant::VT_Array)
@@ -235,7 +235,7 @@ bool WtUftRunner::initUftStrategies()
 		}
 		else
 		{
-			WTSLogger::error_f("Trader {} not exists, binding trader to HFT strategy failed", traderid);
+			WTSLogger::error("Trader {} not exists, binding trader to HFT strategy failed", traderid);
 		}
 
 		_uft_engine.addContext(UftContextPtr(ctx));
@@ -250,7 +250,7 @@ bool WtUftRunner::initEngine()
 	if (cfg == NULL)
 		return false;
 
-	WTSLogger::info_f("Trading enviroment initialzied with engine: UFT");
+	WTSLogger::info("Trading enviroment initialzied with engine: UFT");
 	_uft_engine.init(cfg, &_bd_mgr, &_data_mgr);
 
 	_uft_engine.set_adapter_mgr(&_traders);
@@ -266,7 +266,7 @@ bool WtUftRunner::initDataMgr()
 		return false;
 
 	_data_mgr.init(cfg, &_uft_engine);
-	WTSLogger::info_f("Data manager initialized");
+	WTSLogger::info("Data manager initialized");
 
 	return true;
 }
@@ -300,7 +300,7 @@ bool WtUftRunner::initParsers(WTSVariant* cfgParser)
 		count++;
 	}
 
-	WTSLogger::info_f("{} parsers loaded", count);
+	WTSLogger::info("{} parsers loaded", count);
 	return true;
 }
 
@@ -326,7 +326,7 @@ bool WtUftRunner::initTraders(WTSVariant* cfgTrader)
 		count++;
 	}
 
-	WTSLogger::info_f("%{} traders loaded", count);
+	WTSLogger::info("%{} traders loaded", count);
 
 	return true;
 }
@@ -343,7 +343,7 @@ void WtUftRunner::run(bool bAsync /* = false */)
 	catch (...)
 	{
 		//print_stack_trace([](const char* message) {
-		//	WTSLogger::error_f(message);
+		//	WTSLogger::error(message);
 		//});
 	}
 }

@@ -23,7 +23,7 @@ bool HisDataMgr::init(WTSVariant* cfg)
 		FuncCreateBtDtReader pFuncCreator = (FuncCreateBtDtReader)DLLHelper::get_symbol(libParser, "createBtDtReader");
 		if (pFuncCreator == NULL)
 		{
-			WTSLogger::error_f("Initializing of backtest data reader failed: function createBtDtReader not found...");
+			WTSLogger::error("Initializing of backtest data reader failed: function createBtDtReader not found...");
 		}
 
 		if (pFuncCreator)
@@ -31,11 +31,11 @@ bool HisDataMgr::init(WTSVariant* cfg)
 			_reader = pFuncCreator();
 		}
 
-		WTSLogger::debug_f("Back data storage module {} loaded", module);
+		WTSLogger::debug("Back data storage module {} loaded", module);
 	}
 	else
 	{
-		WTSLogger::error_f("Loading module back data storage module {} failed", module);
+		WTSLogger::error("Loading module back data storage module {} failed", module);
 
 	}
 

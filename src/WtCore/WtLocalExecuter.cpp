@@ -115,7 +115,7 @@ bool WtLocalExecuter::init(WTSVariant* params)
 		}
 	}
 
-	WTSLogger::log_dyn_f("executer", _name.c_str(), LL_INFO, "Local executer inited, scale: {}, auto_clear: {}, strict_sync: {}, thread poolsize: {}, code_groups: {}", 
+	WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "Local executer inited, scale: {}, auto_clear: {}, strict_sync: {}, thread poolsize: {}, code_groups: {}", 
 		_scale, _auto_clear, _strict_sync, poolsize, _groups.size());
 
 	return true;
@@ -264,12 +264,12 @@ void WtLocalExecuter::on_position_changed(const char* stdCode, double targetPos)
 
 	if(!decimal::eq(oldVol, targetPos))
 	{
-		WTSLogger::log_dyn_f("executer", _name.c_str(), LL_INFO, "Target position of {} changed: {} -> {}", stdCode, oldVol, targetPos);
+		WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "Target position of {} changed: {} -> {}", stdCode, oldVol, targetPos);
 	}
 
 	if (_trader && !_trader->checkOrderLimits(stdCode))
 	{
-		WTSLogger::log_dyn_f("executer", _name.c_str(), LL_INFO, "{} is disabled", stdCode);
+		WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "{} is disabled", stdCode);
 		return;
 	}
 
@@ -329,12 +329,12 @@ void WtLocalExecuter::set_position(const faster_hashmap<LongKey, double>& target
 		_target_pos[stdCode] = newVol;
 		if(!decimal::eq(oldVol, newVol))
 		{
-			WTSLogger::log_dyn_f("executer", _name.c_str(), LL_INFO, "Target position of {} changed: {} -> {}", stdCode, oldVol, newVol);
+			WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "Target position of {} changed: {} -> {}", stdCode, oldVol, newVol);
 		}
 
 		if (_trader && !_trader->checkOrderLimits(stdCode))
 		{
-			WTSLogger::log_dyn_f("executer", _name.c_str(), LL_WARN, "{} is disabled due to entrust limit control ", stdCode);
+			WTSLogger::log_dyn("executer", _name.c_str(), LL_WARN, "{} is disabled due to entrust limit control ", stdCode);
 			continue;
 		}
 
@@ -360,7 +360,7 @@ void WtLocalExecuter::set_position(const faster_hashmap<LongKey, double>& target
 		if(tit != targets.end())
 			continue;
 
-		WTSLogger::log_dyn_f("executer", _name.c_str(), LL_INFO, "{} is not in target, set to 0 automatically", code);
+		WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "{} is not in target, set to 0 automatically", code);
 
 		ExecuteUnitPtr unit = getUnit(code);
 		if (unit == NULL)
@@ -391,7 +391,7 @@ void WtLocalExecuter::set_position(const faster_hashmap<LongKey, double>& target
 			if(it != _target_pos.end())
 				continue;
 
-			WTSLogger::log_dyn_f("executer", _name.c_str(), LL_INFO, "{} is not in management, set to 0 due to strict sync mode", stdCode.c_str());
+			WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "{} is not in management, set to 0 due to strict sync mode", stdCode.c_str());
 
 			ExecuteUnitPtr unit = getUnit(stdCode.c_str());
 			if (unit == NULL)
@@ -565,7 +565,7 @@ void WtLocalExecuter::on_position(const char* stdCode, bool isLong, double prevo
 	if (prevCode != cInfo._code)
 		return;
 
-	WTSLogger::log_dyn_f("executer", _name.c_str(), LL_INFO, "Prev hot contract of {}.{} on {} is {}", cInfo._exchg, cInfo._product, tradingday, prevCode);
+	WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "Prev hot contract of {}.{} on {} is {}", cInfo._exchg, cInfo._product, tradingday, prevCode);
 
 	thread_local static char fullPid[64] = { 0 };
 	fmtutil::format_to(fullPid, "{}.{}", cInfo._exchg, cInfo._product);
@@ -575,7 +575,7 @@ void WtLocalExecuter::on_position(const char* stdCode, bool isLong, double prevo
 	auto it = _clear_excludes.find(fullPid);
 	if(it != _clear_excludes.end())
 	{
-		WTSLogger::log_dyn_f("executer", _name.c_str(), LL_INFO, "Position of {}, as prev hot contract, won't be cleared for it's in exclude list", stdCode);
+		WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "Position of {}, as prev hot contract, won't be cleared for it's in exclude list", stdCode);
 		return;
 	}
 
@@ -586,13 +586,13 @@ void WtLocalExecuter::on_position(const char* stdCode, bool isLong, double prevo
 		it = _clear_includes.find(fullPid);
 		if (it == _clear_includes.end())
 		{
-			WTSLogger::log_dyn_f("executer", _name.c_str(), LL_INFO, "Position of {}, as prev hot contract, won't be cleared for it's not in include list", stdCode);
+			WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "Position of {}, as prev hot contract, won't be cleared for it's not in include list", stdCode);
 			return;
 		}
 	}
 
 	//最后再进行自动清理
-	WTSLogger::log_dyn_f("executer", _name.c_str(), LL_INFO, "Position of {}, as prev hot contract, will be cleared", stdCode);
+	WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "Position of {}, as prev hot contract, will be cleared", stdCode);
 	ExecuteUnitPtr unit = getUnit(stdCode);
 	if (unit)
 	{

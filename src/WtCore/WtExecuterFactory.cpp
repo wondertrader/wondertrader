@@ -15,7 +15,7 @@ bool WtExecuterFactory::loadFactories(const char* path)
 {
 	if (!StdFile::exists(path))
 	{
-		WTSLogger::error_f("Directory {} of executer factory not exists", path);
+		WTSLogger::error("Directory {} of executer factory not exists", path);
 		return false;
 	}
 
@@ -58,7 +58,7 @@ bool WtExecuterFactory::loadFactories(const char* path)
 
 		_factories[fInfo._fact->getName()] = fInfo;
 
-		WTSLogger::info_f("Executer factory {} loaded", fInfo._fact->getName());
+		WTSLogger::info("Executer factory {} loaded", fInfo._fact->getName());
 	}
 
 	return true;
@@ -74,7 +74,7 @@ ExecuteUnitPtr WtExecuterFactory::createExeUnit(const char* factname, const char
 	ExecuteUnit* unit = fInfo._fact->createExeUnit(unitname);
 	if (unit == NULL)
 	{
-		WTSLogger::error_f("Createing execution unit failed: {}.{}", factname, unitname);
+		WTSLogger::error("Createing execution unit failed: {}.{}", factname, unitname);
 		return ExecuteUnitPtr();
 	}
 	return ExecuteUnitPtr(new ExeUnitWrapper(unit, fInfo._fact));
@@ -90,7 +90,7 @@ ExecuteUnitPtr WtExecuterFactory::createDiffExeUnit(const char* factname, const 
 	ExecuteUnit* unit = fInfo._fact->createDiffExeUnit(unitname);
 	if (unit == NULL)
 	{
-		WTSLogger::error_f("Createing execution unit failed: {}.{}", factname, unitname);
+		WTSLogger::error("Createing execution unit failed: {}.{}", factname, unitname);
 		return ExecuteUnitPtr();
 	}
 	return ExecuteUnitPtr(new ExeUnitWrapper(unit, fInfo._fact));
@@ -113,7 +113,7 @@ ExecuteUnitPtr WtExecuterFactory::createExeUnit(const char* name)
 	ExecuteUnit* unit = fInfo._fact->createExeUnit(unitname);
 	if (unit == NULL)
 	{
-		WTSLogger::error_f("Createing execution unit failed: {}", name);
+		WTSLogger::error("Createing execution unit failed: {}", name);
 		return ExecuteUnitPtr();
 	}
 	return ExecuteUnitPtr(new ExeUnitWrapper(unit, fInfo._fact));
@@ -136,7 +136,7 @@ ExecuteUnitPtr WtExecuterFactory::createDiffExeUnit(const char* name)
 	ExecuteUnit* unit = fInfo._fact->createDiffExeUnit(unitname);
 	if (unit == NULL)
 	{
-		WTSLogger::error_f("Createing execution unit failed: {}", name);
+		WTSLogger::error("Createing execution unit failed: {}", name);
 		return ExecuteUnitPtr();
 	}
 	return ExecuteUnitPtr(new ExeUnitWrapper(unit, fInfo._fact));

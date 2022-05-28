@@ -35,7 +35,7 @@ WtDtRunner::WtDtRunner()
 #else
 #pragma message("Signal hooks enabled in UNIX")
 	install_signal_hooks([](const char* message) {
-		WTSLogger::error_f(message);
+		WTSLogger::error(message);
 	});
 #endif
 }
@@ -74,7 +74,7 @@ void WtDtRunner::initialize(const char* cfgFile, const char* logCfg, const char*
 	WTSVariant* config = WTSCfgLoader::load_from_file(cfgFile, true);
 	if(config == NULL)
 	{
-		WTSLogger::error_f("Loading config file {} failed", cfgFile);
+		WTSLogger::error("Loading config file {} failed", cfgFile);
 		return;
 	}
 
@@ -84,7 +84,7 @@ void WtDtRunner::initialize(const char* cfgFile, const char* logCfg, const char*
 	if (cfgBF->get("session"))
 	{
 		_bd_mgr.loadSessions(cfgBF->getCString("session"), isUTF8);
-		WTSLogger::info_f("Trading sessions loaded");
+		WTSLogger::info("Trading sessions loaded");
 	}
 
 	WTSVariant* cfgItem = cfgBF->get("commodity");
@@ -122,7 +122,7 @@ void WtDtRunner::initialize(const char* cfgFile, const char* logCfg, const char*
 	if (cfgBF->get("holiday"))
 	{
 		_bd_mgr.loadHolidays(cfgBF->getCString("holiday"));
-		WTSLogger::info_f("Holidays loaded");
+		WTSLogger::info("Holidays loaded");
 	}
 
     /*
@@ -131,13 +131,13 @@ void WtDtRunner::initialize(const char* cfgFile, const char* logCfg, const char*
      */
 //	if (cfgBF->get("hot"))//	{
 //		_hot_mgr.loadHots(cfgBF->getCString("hot"));
-//		WTSLogger::info_f("Hot rules loaded");
+//		WTSLogger::info("Hot rules loaded");
 //	}
 //
 //	if (cfgBF->get("second"))
 //	{
 //		_hot_mgr.loadSeconds(cfgBF->getCString("second"));
-//		WTSLogger::info_f("Second rules loaded");
+//		WTSLogger::info("Second rules loaded");
 //	}
 
 	_udp_caster.init(config->get("broadcaster"), &_bd_mgr, &_data_mgr);
@@ -151,7 +151,7 @@ void WtDtRunner::initialize(const char* cfgFile, const char* logCfg, const char*
 	}
 	else
 	{
-		WTSLogger::info_f("QuoteFactory will run in allday mode");
+		WTSLogger::info("QuoteFactory will run in allday mode");
 	}
 
 	initDataMgr(config->get("writer"), bAlldayMode);
@@ -174,7 +174,7 @@ void WtDtRunner::initParsers(const char* filename)
 	WTSVariant* config = WTSCfgLoader::load_from_file(filename, true);
 	if(config == NULL)
 	{
-		WTSLogger::error_f("Loading parser file {} failed", filename);
+		WTSLogger::error("Loading parser file {} failed", filename);
 		return;
 	}
 
@@ -202,7 +202,7 @@ void WtDtRunner::initParsers(const char* filename)
 		_parsers.addAdapter(realid.c_str(), adapter);
 	}
 
-	WTSLogger::info_f("{} market data parsers loaded in total", _parsers.size());
+	WTSLogger::info("{} market data parsers loaded in total", _parsers.size());
 	config->release();
 }
 
@@ -212,7 +212,7 @@ void WtDtRunner::registerParserPorter(FuncParserEvtCallback cbEvt, FuncParserSub
 	_cb_parser_evt = cbEvt;
 	_cb_parser_sub = cbSub;
 
-	WTSLogger::info_f("Callbacks of Extented Parser registration done");
+	WTSLogger::info("Callbacks of Extented Parser registration done");
 }
 
 void WtDtRunner::parser_init(const char* id)
@@ -262,7 +262,7 @@ void WtDtRunner::on_ext_parser_quote(const char* id, WTSTickStruct* curTick, uin
 	}
 	else
 	{
-		WTSLogger::warn_f("Parser {} not exists", id);
+		WTSLogger::warn("Parser {} not exists", id);
 	}
 }
 
@@ -272,7 +272,7 @@ bool WtDtRunner::createExtParser(const char* id)
 	ExpParser* parser = new ExpParser(id);
 	adapter->initExt(id, parser);
 	_parsers.addAdapter(id, adapter);
-	WTSLogger::info_f("Extended parser {} created", id);
+	WTSLogger::info("Extended parser {} created", id);
 	return true;
 }
 
@@ -285,7 +285,7 @@ bool WtDtRunner::createExtDumper(const char* id)
 
 	_data_mgr.add_ext_dumper(id, dumper.get());
 
-	WTSLogger::info_f("Extended dumper {} created", id);
+	WTSLogger::info("Extended dumper {} created", id);
 	return true;
 }
 
@@ -306,7 +306,7 @@ bool WtDtRunner::dumpHisTicks(const char* id, const char* stdCode, uint32_t uDat
 {
 	if (NULL == _dumper_for_ticks)
 	{
-		WTSLogger::error_f("Extended tick dumper not enabled");
+		WTSLogger::error("Extended tick dumper not enabled");
 		return false;
 	}
 
@@ -317,7 +317,7 @@ bool WtDtRunner::dumpHisBars(const char* id, const char* stdCode, const char* pe
 {
 	if (NULL == _dumper_for_bars)
 	{
-		WTSLogger::error_f("Extended bar dumper not enabled");
+		WTSLogger::error("Extended bar dumper not enabled");
 		return false;
 	}
 
@@ -328,7 +328,7 @@ bool WtDtRunner::dumpHisOrdDtl(const char* id, const char* stdCode, uint32_t uDa
 {
 	if (NULL == _dumper_for_orddtl)
 	{
-		WTSLogger::error_f("Extended order detail dumper not enabled");
+		WTSLogger::error("Extended order detail dumper not enabled");
 		return false;
 	}
 
@@ -339,7 +339,7 @@ bool WtDtRunner::dumpHisOrdQue(const char* id, const char* stdCode, uint32_t uDa
 {
 	if (NULL == _dumper_for_ordque)
 	{
-		WTSLogger::error_f("Extended order queue dumper not enabled");
+		WTSLogger::error("Extended order queue dumper not enabled");
 		return false;
 	}
 
@@ -350,7 +350,7 @@ bool WtDtRunner::dumpHisTrans(const char* id, const char* stdCode, uint32_t uDat
 {
 	if (NULL == _dumper_for_trans)
 	{
-		WTSLogger::error_f("Extended transaction dumper not enabled");
+		WTSLogger::error("Extended transaction dumper not enabled");
 		return false;
 	}
 

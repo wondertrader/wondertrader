@@ -60,14 +60,14 @@ bool WtDtMgr::initStore(WTSVariant* cfg)
 	DllHandle hInst = DLLHelper::load_library(module.c_str());
 	if(hInst == NULL)
 	{
-		WTSLogger::error_f("Loading data reader module {} failed", module.c_str());
+		WTSLogger::error("Loading data reader module {} failed", module.c_str());
 		return false;
 	}
 
 	FuncCreateDataReader funcCreator = (FuncCreateDataReader)DLLHelper::get_symbol(hInst, "createDataReader");
 	if(funcCreator == NULL)
 	{
-		WTSLogger::error_f("Loading data reader module {} failed, entrance function createDataReader not found", module.c_str());
+		WTSLogger::error("Loading data reader module {} failed, entrance function createDataReader not found", module.c_str());
 		DLLHelper::free_library(hInst);
 		return false;
 	}
@@ -75,7 +75,7 @@ bool WtDtMgr::initStore(WTSVariant* cfg)
 	_reader = funcCreator();
 	if(_reader == NULL)
 	{
-		WTSLogger::error_f("Creating instance of data reader module {} failed", module.c_str());
+		WTSLogger::error("Creating instance of data reader module {} failed", module.c_str());
 		DLLHelper::free_library(hInst);
 		return false;
 	}
@@ -97,7 +97,7 @@ void WtDtMgr::on_all_bar_updated(uint32_t updateTime)
 	if (_bar_notifies.empty())
 		return;
 
-	WTSLogger::debug_f("All bars updated, on_bar will be triggered");
+	WTSLogger::debug("All bars updated, on_bar will be triggered");
 
 	for (const NotifyItem& item : _bar_notifies)
 	{
@@ -409,7 +409,7 @@ WTSKlineSlice* WtDtMgr::get_kline_slice(const char* stdCode, WTSKlinePeriod peri
 		if (kData)
 		{
 			_bars_cache->add(key, kData, false);
-			WTSLogger::debug_f("{} bars of {} resampled every {} bars: {} -> {}", 
+			WTSLogger::debug("{} bars of {} resampled every {} bars: {} -> {}", 
 				PERIOD_NAME[period], stdCode, times, realCount, kData->size());
 		}
 	}

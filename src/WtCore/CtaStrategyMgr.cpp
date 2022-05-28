@@ -30,7 +30,7 @@ bool CtaStrategyMgr::loadFactories(const char* path)
 {
 	if (!StdFile::exists(path))
 	{
-		WTSLogger::error_f("Directory {} of CTA strategy factory not exists", path);
+		WTSLogger::error("Directory {} of CTA strategy factory not exists", path);
 		return false;
 	}
 
@@ -71,7 +71,7 @@ bool CtaStrategyMgr::loadFactories(const char* path)
 			fInfo._remover = (FuncDeleteStraFact)DLLHelper::get_symbol(hInst, "deleteStrategyFact");
 			fInfo._fact = fact;
 
-			WTSLogger::info_f("CTA strategy factory[{}] loaded", fact->getName());
+			WTSLogger::info("CTA strategy factory[{}] loaded", fact->getName());
 
 			count++;
 		}
@@ -83,7 +83,7 @@ bool CtaStrategyMgr::loadFactories(const char* path)
 		
 	}
 
-	WTSLogger::info_f("{} CTA strategy factories in directory[{}] loaded", count, path);
+	WTSLogger::info("{} CTA strategy factories in directory[{}] loaded", count, path);
 
 	return true;
 }

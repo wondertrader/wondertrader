@@ -251,7 +251,7 @@ void WtEngine::setVolScale(double scale)
 	_risk_volscale = scale;
 	_risk_date = _cur_tdate;
 
-	WTSLogger::log_by_cat_f("risk", LL_INFO, "Position risk scale updated: {} - > {}", oldScale, scale);
+	WTSLogger::log_by_cat("risk", LL_INFO, "Position risk scale updated: {} - > {}", oldScale, scale);
 	save_datas();
 }
 
@@ -270,7 +270,7 @@ void WtEngine::init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtDtMgr* dataMgr, IHot
 	_hot_mgr = hotMgr;
 	_notifier = notifier;
 
-	WTSLogger::info_f("Platform running mode: Production");
+	WTSLogger::info("Platform running mode: Production");
 
 	_filter_mgr.set_notifier(notifier);
 
@@ -546,14 +546,14 @@ void WtEngine::load_datas()
 					pInfo._details.emplace_back(dInfo);
 				}
 
-				WTSLogger::debug_f("Porfolio position confirmed,{} -> {}", stdCode, pInfo._volume);
+				WTSLogger::debug("Porfolio position confirmed,{} -> {}", stdCode, pInfo._volume);
 			}
 		}
 
 		WTSFundStruct& fundInfo = _port_fund->fundInfo();
 		fundInfo._dynprofit = total_dynprofit;
 
-		WTSLogger::debug_f("{} position info of portfolio loaded", _pos_map.size());
+		WTSLogger::debug("{} position info of portfolio loaded", _pos_map.size());
 	}
 
 	if(root.HasMember("riskmon"))
@@ -737,14 +737,14 @@ void WtEngine::load_fees(const char* filename)
 
 	if (!StdFile::exists(filename))
 	{
-		WTSLogger::error_f("Fee templates file {} not exists", filename);
+		WTSLogger::error("Fee templates file {} not exists", filename);
 		return;
 	}
 
 	WTSVariant* cfg = WTSCfgLoader::load_from_file(filename, true);
 	if (cfg == NULL)
 	{
-		WTSLogger::error_f("Fee templates file {} loading failed", filename);
+		WTSLogger::error("Fee templates file {} loading failed", filename);
 		return;
 	}
 
@@ -761,7 +761,7 @@ void WtEngine::load_fees(const char* filename)
 
 	cfg->release();
 
-	WTSLogger::info_f("{} fee templates loaded", _fee_map.size());
+	WTSLogger::info("{} fee templates loaded", _fee_map.size());
 }
 
 double WtEngine::calc_fee(const char* stdCode, double price, double qty, uint32_t offset)
@@ -770,7 +770,7 @@ double WtEngine::calc_fee(const char* stdCode, double price, double qty, uint32_
 	auto it = _fee_map.find(stdPID);
 	if (it == _fee_map.end())
 	{
-		WTSLogger::warn_f("Fee template of {} not found, return 0.0 as default", stdCode);
+		WTSLogger::warn("Fee template of {} not found, return 0.0 as default", stdCode);
 		return 0.0;
 	}
 
@@ -1022,7 +1022,7 @@ bool WtEngine::init_riskmon(WTSVariant* cfg)
 	DllHandle hInst = DLLHelper::load_library(dllpath.c_str());
 	if (hInst == NULL)
 	{
-		WTSLogger::log_by_cat_f("risk", LL_ERROR, "Riskmon module {} loading failed", dllpath.c_str());
+		WTSLogger::log_by_cat("risk", LL_ERROR, "Riskmon module {} loading failed", dllpath.c_str());
 		return false;
 	}
 
@@ -1030,7 +1030,7 @@ bool WtEngine::init_riskmon(WTSVariant* cfg)
 	if (creator == NULL)
 	{
 		DLLHelper::free_library(hInst);
-		WTSLogger::log_by_cat_f("risk", LL_ERROR, "Riskmon module {} is not compatible", module.c_str());
+		WTSLogger::log_by_cat("risk", LL_ERROR, "Riskmon module {} is not compatible", module.c_str());
 		return false;
 	}
 

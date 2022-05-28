@@ -82,21 +82,21 @@ bool TraderAdapter::init(const char* id, WTSVariant* params, IBaseDataMgr* bdMgr
 	DllHandle hInst = DLLHelper::load_library(module.c_str());
 	if (hInst == NULL)
 	{
-		WTSLogger::error_f("[{}]交易模块{}加载失败", _id.c_str(), module.c_str());
+		WTSLogger::error("[{}]交易模块{}加载失败", _id.c_str(), module.c_str());
 		return false;
 	}
 
 	FuncCreateTrader pFunCreateTrader = (FuncCreateTrader)DLLHelper::get_symbol(hInst, "createTrader");
 	if (NULL == pFunCreateTrader)
 	{
-		WTSLogger::error_f("[{}]交易接口创建函数读取失败", _id.c_str());
+		WTSLogger::error("[{}]交易接口创建函数读取失败", _id.c_str());
 		return false;
 	}
 
 	_trader_api = pFunCreateTrader();
 	if (NULL == _trader_api)
 	{
-		WTSLogger::error_f("[{}]交易接口创建失败", _id.c_str());
+		WTSLogger::error("[{}]交易接口创建失败", _id.c_str());
 		return false;
 	}
 
@@ -106,11 +106,11 @@ bool TraderAdapter::init(const char* id, WTSVariant* params, IBaseDataMgr* bdMgr
 	params->append("quick", true);
 	if (!_trader_api->init(params))
 	{
-		WTSLogger::error_f("[{}]交易接口启动失败: 交易接口初始化失败", id);
+		WTSLogger::error("[{}]交易接口启动失败: 交易接口初始化失败", id);
 		return false;
 	}
 
-	WTSLogger::info_f("[{}]交易接口初始化成功", id);
+	WTSLogger::info("[{}]交易接口初始化成功", id);
 	return true;
 }
 
@@ -145,14 +145,14 @@ void TraderAdapter::handleEvent(WTSTraderEvent e, int32_t ec)
 		}
 		else
 		{
-			WTSLogger::error_f("[{}]交易账号连接失败: {}", _id.c_str(), ec);
+			WTSLogger::error("[{}]交易账号连接失败: {}", _id.c_str(), ec);
 			_mgr->decAlive();
 			_done = true;
 		}
 	}
 	else if(e == WTE_Close)
 	{
-		WTSLogger::error_f("[{}]交易账号连接已断开: {}", _id.c_str(), ec);
+		WTSLogger::error("[{}]交易账号连接已断开: {}", _id.c_str(), ec);
 	}
 }
 
@@ -160,14 +160,14 @@ void TraderAdapter::onLoginResult(bool bSucc, const char* msg, uint32_t tradingd
 {
 	if(!bSucc)
 	{
-		WTSLogger::error_f("[{}]交易账号登录失败: {}", _id.c_str(), msg);
+		WTSLogger::error("[{}]交易账号登录失败: {}", _id.c_str(), msg);
 		_mgr->decAlive();
 		_done = true;
 	}
 	else
 	{
 		_date = tradingdate;
-		WTSLogger::info_f("[{}]交易账号登录成功, 当前交易日:{}", _id.c_str(), tradingdate);
+		WTSLogger::info("[{}]交易账号登录成功, 当前交易日:{}", _id.c_str(), tradingdate);
 
 		_trader_api->queryPositions();	//查持仓
 	}
@@ -207,7 +207,7 @@ void TraderAdapter::onRspAccount(WTSArray* ayAccounts)
 		}
 	}
 
-	WTSLogger::info_f("[{}]资金数据已更新", _id.c_str());
+	WTSLogger::info("[{}]资金数据已更新", _id.c_str());
 
 	if(!_done)
 		_trader_api->queryTrades();
@@ -241,7 +241,7 @@ void TraderAdapter::onRspTrades(const WTSArray* ayTrades)
 		}
 	}
 
-	WTSLogger::info_f("[{}]成交明细已更新", _id.c_str());
+	WTSLogger::info("[{}]成交明细已更新", _id.c_str());
 
 	_trader_api->queryOrders();
 }
@@ -263,7 +263,7 @@ void TraderAdapter::onRspOrders(const WTSArray* ayOrders)
 		}
 	}
 
-	WTSLogger::info_f("[{}]订单明细已更新", _id.c_str());
+	WTSLogger::info("[{}]订单明细已更新", _id.c_str());
 	_mgr->decAlive();
 	_done = true;
 }
@@ -304,7 +304,7 @@ void TraderAdapter::onRspPosition(const WTSArray* ayPositions)
 		}
 	}
 
-	WTSLogger::info_f("[{}]持仓数据已更新", _id.c_str());
+	WTSLogger::info("[{}]持仓数据已更新", _id.c_str());
 
 	if (!_done)
 		_trader_api->queryAccount();
@@ -313,7 +313,7 @@ void TraderAdapter::onRspPosition(const WTSArray* ayPositions)
 void TraderAdapter::onTraderError(WTSError* err)
 {
 	if(err)
-		WTSLogger::error_f("[{}]交易通道出现错误: {}", _id.c_str(), err->getMessage());
+		WTSLogger::error("[{}]交易通道出现错误: {}", _id.c_str(), err->getMessage());
 }
 
 IBaseDataMgr* TraderAdapter::getBaseDataMgr()
@@ -339,7 +339,7 @@ bool TraderAdapterMgr::addAdapter(const char* tname, TraderAdapterPtr& adapter)
 	auto it = _adapters.find(tname);
 	if(it != _adapters.end())
 	{
-		WTSLogger::error_f("交易通道名称相同: {}", tname);
+		WTSLogger::error("交易通道名称相同: {}", tname);
 		return false;
 	}
 
@@ -367,7 +367,7 @@ void TraderAdapterMgr::run()
 		it->second->run();
 	}
 
-	WTSLogger::info_f("{}个交易通道已启动", _adapters.size());
+	WTSLogger::info("{}个交易通道已启动", _adapters.size());
 }
 
 void TraderAdapterMgr::release()
@@ -393,11 +393,11 @@ void TraderAdapterMgr::decAlive()
 		{
 			TraderAdapterPtr trader = it->second;
 			if (!trader->isDone())
-				WTSLogger::info_f("{} is still undone", trader->id());
+				WTSLogger::info("{} is still undone", trader->id());
 		}
 	}
 
-	WTSLogger::info_f("{}/{}", left, _adapters.size());
+	WTSLogger::info("{}/{}", left, _adapters.size());
 }
 
 void TraderAdapterMgr::refresh()

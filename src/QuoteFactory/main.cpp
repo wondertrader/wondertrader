@@ -86,7 +86,7 @@ void initParsers(WTSVariant* cfg)
 		g_parsers.addAdapter(realid.c_str(), adapter);
 	}
 
-	WTSLogger::info_f("{} market data parsers loaded in total", g_parsers.size());
+	WTSLogger::info("{} market data parsers loaded in total", g_parsers.size());
 }
 
 void initialize()
@@ -104,7 +104,7 @@ void initialize()
 	WTSVariant* config = WTSCfgLoader::load_from_file(filename.c_str(), true);
 	if(config == NULL)
 	{
-		WTSLogger::error_f("Loading config file {} failed", filename);
+		WTSLogger::error("Loading config file {} failed", filename);
 		return;
 	}
 
@@ -114,7 +114,7 @@ void initialize()
 	if (cfgBF->get("session"))
 	{
 		g_baseDataMgr.loadSessions(cfgBF->getCString("session"), isUTF8);
-		WTSLogger::info_f("Trading sessions loaded");
+		WTSLogger::info("Trading sessions loaded");
 	}
 
 	WTSVariant* cfgItem = cfgBF->get("commodity");
@@ -152,7 +152,7 @@ void initialize()
 	if (cfgBF->get("holiday"))
 	{
 		g_baseDataMgr.loadHolidays(cfgBF->getCString("holiday"));
-		WTSLogger::info_f("Holidays loaded");
+		WTSLogger::info("Holidays loaded");
 	}
 
 	//By Wesley @ 2021.12.27
@@ -160,13 +160,13 @@ void initialize()
 	//if (cfgBF->get("hot"))
 	//{
 	//	g_hotMgr.loadHots(cfgBF->getCString("hot"));
-	//	WTSLogger::info_f("Hot rules loaded");
+	//	WTSLogger::info("Hot rules loaded");
 	//}
 
 	//if (cfgBF->get("second"))
 	//{
 	//	g_hotMgr.loadSeconds(cfgBF->getCString("second"));
-	//	WTSLogger::info_f("Second rules loaded");
+	//	WTSLogger::info("Second rules loaded");
 	//}
 
 	g_udpCaster.init(config->get("broadcaster"), &g_baseDataMgr, &g_dataMgr);
@@ -180,7 +180,7 @@ void initialize()
 	}
 	else
 	{
-		WTSLogger::info_f("QuoteFactory will run in allday mode");
+		WTSLogger::info("QuoteFactory will run in allday mode");
 	}
 	initDataMgr(config->get("writer"), bAlldayMode);
 
@@ -192,7 +192,7 @@ void initialize()
 			const char* filename = cfgParser->asCString();
 			if (StdFile::exists(filename))
 			{
-				WTSLogger::info_f("Reading parser config from {}...", filename);
+				WTSLogger::info("Reading parser config from {}...", filename);
 				WTSVariant* var = WTSCfgLoader::load_from_file(filename, isUTF8);
 				if (var)
 				{
@@ -201,12 +201,12 @@ void initialize()
 				}
 				else
 				{
-					WTSLogger::error_f("Loading parser config {} failed", filename);
+					WTSLogger::error("Loading parser config {} failed", filename);
 				}
 			}
 			else
 			{
-				WTSLogger::error_f("Parser configuration {} not exists", filename);
+				WTSLogger::error("Parser configuration {} not exists", filename);
 			}
 		}
 		else if (cfgParser->type() == WTSVariant::VT_Array)
@@ -256,7 +256,7 @@ int main()
 #else
 #pragma message("Signal hooks enabled in UNIX")
 	install_signal_hooks([](const char* message) {
-		WTSLogger::error_f(message);
+		WTSLogger::error(message);
 	});
 #endif
 

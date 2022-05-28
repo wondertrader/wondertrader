@@ -113,7 +113,7 @@ void UDPCaster::start(int sport)
 	}
 	catch(...)
 	{
-		WTSLogger::error_f("Exception raised while start subscribing service @ port {}", sport);
+		WTSLogger::error("Exception raised while start subscribing service @ port {}", sport);
 	}
 
 	do_receive();
@@ -194,7 +194,7 @@ void UDPCaster::do_receive()
 						delete data;
 						if (ec)
 						{
-							WTSLogger::error_f("Sending data on UDP failed: {}", ec.message().c_str());
+							WTSLogger::error("Sending data on UDP failed: {}", ec.message().c_str());
 						}
 					});
 				}
@@ -210,7 +210,7 @@ void UDPCaster::do_receive()
 				delete data;
 				if (ec)
 				{
-					WTSLogger::error_f("Sending data on UDP failed: {}", ec.message().c_str());
+					WTSLogger::error("Sending data on UDP failed: {}", ec.message().c_str());
 				}
 			});
 		}
@@ -370,7 +370,7 @@ void UDPCaster::broadcast(WTSObject* data, uint32_t dataType)
 							m_sktBroadcast->send_to(boost::asio::buffer(buf_raw), receiver->_ep, 0, ec);
 							if (ec)
 							{
-								WTSLogger::error_f("Error occured while sending to ({}:{}): {}({})", 
+								WTSLogger::error("Error occured while sending to ({}:{}): {}({})", 
 									receiver->_ep.address().to_string(), receiver->_ep.port(), ec.value(), ec.message());
 							}
 						}
@@ -382,7 +382,7 @@ void UDPCaster::broadcast(WTSObject* data, uint32_t dataType)
 							it->first->send_to(boost::asio::buffer(buf_raw), item.second->_ep, 0, ec);
 							if (ec)
 							{
-								WTSLogger::error_f("Error occured while sending to ({}:{}): {}({})",
+								WTSLogger::error("Error occured while sending to ({}:{}): {}({})",
 									item.second->_ep.address().to_string(), item.second->_ep.port(), ec.value(), ec.message());
 							}
 						}
@@ -403,7 +403,7 @@ void UDPCaster::handle_send_broad(const EndPoint& ep, const boost::system::error
 {
 	if(error)
 	{
-		WTSLogger::error_f("Broadcasting of market data failed, remote addr: {}, error message: {}", ep.address().to_string().c_str(), error.message().c_str());
+		WTSLogger::error("Broadcasting of market data failed, remote addr: {}, error message: {}", ep.address().to_string().c_str(), error.message().c_str());
 	}
 }
 
@@ -411,7 +411,7 @@ void UDPCaster::handle_send_multi(const EndPoint& ep, const boost::system::error
 {
 	if(error)
 	{
-		WTSLogger::error_f("Multicasting of market data failed, remote addr: {}, error message: {}", ep.address().to_string().c_str(), error.message().c_str());
+		WTSLogger::error("Multicasting of market data failed, remote addr: {}, error message: {}", ep.address().to_string().c_str(), error.message().c_str());
 	}
 }
 

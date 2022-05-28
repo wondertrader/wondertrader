@@ -251,7 +251,7 @@ bool SelMocker::init_sel_factory(WTSVariant* cfg)
 		_strategy = _factory._fact->createStrategy(cfgStra->getCString("name"), cfgStra->getCString("id"));
 		if (_strategy)
 		{
-			WTSLogger::info_f("Strategy {}.{} created,strategy ID: {}", _factory._fact->getName(), _strategy->getName(), _strategy->id());
+			WTSLogger::info("Strategy {}.{} created,strategy ID: {}", _factory._fact->getName(), _strategy->getName(), _strategy->id());
 		}
 		_strategy->init(cfgStra->get("params"));
 		_name = _strategy->id();
@@ -292,7 +292,7 @@ void SelMocker::handle_session_end(uint32_t uCurDate)
 
 void SelMocker::handle_replay_done()
 {
-	WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_INFO, 
+	WTSLogger::log_dyn("strategy", _name.c_str(), LL_INFO, 
 		"Strategy has been scheduled for {} times,totally taking {} microsecs,average of {} microsecs",
 		_emit_times, _total_calc_time, _total_calc_time / _emit_times);
 
@@ -392,7 +392,7 @@ void SelMocker::on_init()
 	if (_strategy)
 		_strategy->on_init(this);
 
-	WTSLogger::info_f("SEL Strategy initialized, with slippage: {}", _slippage);
+	WTSLogger::info("SEL Strategy initialized, with slippage: {}", _slippage);
 }
 
 void SelMocker::update_dyn_profit(const char* stdCode, double price)
@@ -600,7 +600,7 @@ void SelMocker::stra_set_position(const char* stdCode, double qty, const char* u
 		//如果是T+1规则，则目标仓位不能小于冻结仓位
 		if (decimal::lt(qty, frozen))
 		{
-			WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_ERROR, 
+			WTSLogger::log_dyn("strategy", _name.c_str(), LL_ERROR, 
 				"New position of {} cannot be set to {} due to {} being frozen", stdCode, qty, frozen);
 			return;
 		}

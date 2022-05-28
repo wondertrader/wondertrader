@@ -30,7 +30,7 @@ bool HftStrategyMgr::loadFactories(const char* path)
 {
 	if (!StdFile::exists(path))
 	{
-		WTSLogger::error_f("Directory {} of HFT strategy factory not exists", path);
+		WTSLogger::error("Directory {} of HFT strategy factory not exists", path);
 		return false;
 	}
 
@@ -71,7 +71,7 @@ bool HftStrategyMgr::loadFactories(const char* path)
 			fInfo._creator = creator;
 			fInfo._remover = (FuncDeleteHftStraFact)DLLHelper::get_symbol(hInst, "deleteStrategyFact");
 			fInfo._fact = pFact;
-			WTSLogger::info_f("HFT strategy factory[{}] loaded", pFact->getName());
+			WTSLogger::info("HFT strategy factory[{}] loaded", pFact->getName());
 
 			count++;
 		}
@@ -82,7 +82,7 @@ bool HftStrategyMgr::loadFactories(const char* path)
 		}
 	}
 
-	WTSLogger::info_f("{} HFT strategy factories in directory[{}] loaded", count, path);
+	WTSLogger::info("{} HFT strategy factories in directory[{}] loaded", count, path);
 
 	return true;
 }

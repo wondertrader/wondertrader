@@ -326,7 +326,7 @@ void WtHftEngine::on_bar(const char* stdCode, const char* period, uint32_t times
 
 void WtHftEngine::on_session_begin()
 {
-	WTSLogger::info_f("Trading day {} begun", _cur_tdate);
+	WTSLogger::info("Trading day {} begun", _cur_tdate);
 	WtEngine::on_session_begin();
 
 	for (auto it = _ctx_map.begin(); it != _ctx_map.end(); it++)
@@ -351,7 +351,7 @@ void WtHftEngine::on_session_end()
 		ctx->on_session_end(_cur_tdate);
 	}
 
-	WTSLogger::info_f("Trading day {} ended", _cur_tdate);
+	WTSLogger::info("Trading day {} ended", _cur_tdate);
 	if (_evt_listener)
 		_evt_listener->on_session_event(_cur_tdate, false);
 }

@@ -39,7 +39,7 @@ WtExecRunner::WtExecRunner()
 #else
 #pragma message("Signal hooks enabled in UNIX")
 	install_signal_hooks([](const char* message) {
-		WTSLogger::error_f(message);
+		WTSLogger::error(message);
 	});
 #endif
 }
@@ -80,7 +80,7 @@ bool WtExecRunner::config(const char* cfgFile, bool isFile /* = true */)
 	if (cfgBF->get("session"))
 	{
 		_bd_mgr.loadSessions(cfgBF->getCString("session"), isUTF8);
-		WTSLogger::info_f("Trading sessions loaded");
+		WTSLogger::info("Trading sessions loaded");
 	}
 
 	WTSVariant* cfgItem = cfgBF->get("commodity");
@@ -118,7 +118,7 @@ bool WtExecRunner::config(const char* cfgFile, bool isFile /* = true */)
 	if (cfgBF->get("holiday"))
 	{
 		_bd_mgr.loadHolidays(cfgBF->getCString("holiday"));
-		WTSLogger::info_f("Holidays loaded");
+		WTSLogger::info("Holidays loaded");
 	}
 
 
@@ -133,17 +133,17 @@ bool WtExecRunner::config(const char* cfgFile, bool isFile /* = true */)
 	const char* cfgParser = _config->getCString("parsers");
 	if (StdFile::exists(cfgParser))
 	{
-		WTSLogger::info_f("Reading parser config from {}...", cfgParser);
+		WTSLogger::info("Reading parser config from {}...", cfgParser);
 		WTSVariant* var = WTSCfgLoader::load_from_file(cfgParser, true);
 		if (var)
 		{
 			if (!initParsers(var))
-				WTSLogger::error_f("Loading parsers failed");
+				WTSLogger::error("Loading parsers failed");
 			var->release();
 		}
 		else
 		{
-			WTSLogger::error_f("Loading parser config {} failed", cfgParser);
+			WTSLogger::error("Loading parser config {} failed", cfgParser);
 		}
 	}
 
@@ -151,34 +151,34 @@ bool WtExecRunner::config(const char* cfgFile, bool isFile /* = true */)
 	const char* cfgTraders = _config->getCString("traders");
 	if (StdFile::exists(cfgTraders))
 	{
-		WTSLogger::info_f("Reading trader config from {}...", cfgTraders);
+		WTSLogger::info("Reading trader config from {}...", cfgTraders);
 		WTSVariant* var = WTSCfgLoader::load_from_file(cfgTraders, true);
 		if (var)
 		{
 			if (!initTraders(var))
-				WTSLogger::error_f("Loading traders failed");
+				WTSLogger::error("Loading traders failed");
 			var->release();
 		}
 		else
 		{
-			WTSLogger::error_f("Loading trader config {} failed", cfgTraders);
+			WTSLogger::error("Loading trader config {} failed", cfgTraders);
 		}
 	}
 
 	const char* cfgExecuters = _config->getCString("executers");
 	if (StdFile::exists(cfgExecuters))
 	{
-		WTSLogger::info_f("Reading executer config from {}...", cfgExecuters);
+		WTSLogger::info("Reading executer config from {}...", cfgExecuters);
 		WTSVariant* var = WTSCfgLoader::load_from_file(cfgExecuters, true);
 		if (var)
 		{
 			if (!initExecuters(var))
-				WTSLogger::error_f("Loading executers failed");
+				WTSLogger::error("Loading executers failed");
 			var->release();
 		}
 		else
 		{
-			WTSLogger::error_f("Loading executer config {} failed", cfgExecuters);
+			WTSLogger::error("Loading executer config {} failed", cfgExecuters);
 		}
 	}
 
@@ -196,7 +196,7 @@ void WtExecRunner::run()
 	catch (...)
 	{
 		print_stack_trace([](const char* message) {
-			WTSLogger::error_f(message);
+			WTSLogger::error(message);
 		});
 	}
 }
@@ -232,7 +232,7 @@ bool WtExecRunner::initParsers(WTSVariant* cfgParser)
 		count++;
 	}
 
-	WTSLogger::info_f("{} parsers loaded", count);
+	WTSLogger::info("{} parsers loaded", count);
 
 	return true;
 }
@@ -268,7 +268,7 @@ bool WtExecRunner::initExecuters(WTSVariant* cfgExecuter)
 			const char* tid = cfgItem->getCString("trader");
 			if (strlen(tid) == 0)
 			{
-				WTSLogger::error_f("No Trader configured for Executer {}", id);
+				WTSLogger::error("No Trader configured for Executer {}", id);
 			}
 			else
 			{
@@ -280,7 +280,7 @@ bool WtExecRunner::initExecuters(WTSVariant* cfgExecuter)
 				}
 				else
 				{
-					WTSLogger::error_f("Trader {} not exists, cannot configured for executer %s", tid, id);
+					WTSLogger::error("Trader {} not exists, cannot configured for executer %s", tid, id);
 				}
 			}
 
@@ -296,7 +296,7 @@ bool WtExecRunner::initExecuters(WTSVariant* cfgExecuter)
 			const char* tid = cfgItem->getCString("trader");
 			if (strlen(tid) == 0)
 			{
-				WTSLogger::error_f("No Trader configured for Executer {}", id);
+				WTSLogger::error("No Trader configured for Executer {}", id);
 			}
 			else
 			{
@@ -308,7 +308,7 @@ bool WtExecRunner::initExecuters(WTSVariant* cfgExecuter)
 				}
 				else
 				{
-					WTSLogger::error_f("Trader {} not exists, cannot configured for executer %s", tid, id);
+					WTSLogger::error("Trader {} not exists, cannot configured for executer %s", tid, id);
 				}
 			}
 
@@ -327,7 +327,7 @@ bool WtExecRunner::initExecuters(WTSVariant* cfgExecuter)
 		count++;
 	}
 
-	WTSLogger::info_f("{} executers loaded", count);
+	WTSLogger::info("{} executers loaded", count);
 
 	return true;
 }
@@ -354,7 +354,7 @@ bool WtExecRunner::initTraders(WTSVariant* cfgTrader)
 		count++;
 	}
 
-	WTSLogger::info_f("{} traders loaded", count);
+	WTSLogger::info("{} traders loaded", count);
 
 	return true;
 }
@@ -367,7 +367,7 @@ bool WtExecRunner::initDataMgr()
 
 	_data_mgr.init(cfg, this);
 
-	WTSLogger::info_f("Data Manager initialized");
+	WTSLogger::info("Data Manager initialized");
 	return true;
 }
 
@@ -446,7 +446,7 @@ bool WtExecRunner::initActionPolicy()
 		return false;
 
 	bool ret = _act_policy.init(action_file);
-	WTSLogger::info_f("Action policies initialized");
+	WTSLogger::info("Action policies initialized");
 	return ret;
 }
 

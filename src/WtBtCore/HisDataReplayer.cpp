@@ -65,7 +65,7 @@ bool proc_block_data(const char* tag, std::string& content, bool isBar, bool bKe
 
 		if (content.size() != (sizeof(BlockHeaderV2) + blkV2->_size))
 		{
-			WTSLogger::error_f("Size check failed while processing {} data of {}", isBar ? "bar" : "tick", tag);
+			WTSLogger::error("Size check failed while processing {} data of {}", isBar ? "bar" : "tick", tag);
 			return false;
 		}
 
@@ -102,7 +102,7 @@ bool proc_block_data(const char* tag, std::string& content, bool isBar, bool bKe
 			}
 			buffer.swap(bufV2);
 
-			WTSLogger::debug_f("{} bars of {} transferd to new version...", barcnt, tag);
+			WTSLogger::debug("{} bars of {} transferd to new version...", barcnt, tag);
 		}
 		else
 		{
@@ -117,7 +117,7 @@ bool proc_block_data(const char* tag, std::string& content, bool isBar, bool bKe
 			}
 			buffer.swap(bufv2);
 
-			WTSLogger::debug_f("{} ticks of {} transferd to new version...", tick_cnt, tag);
+			WTSLogger::debug("{} ticks of {} transferd to new version...", tick_cnt, tag);
 		}
 	}
 
@@ -205,10 +205,10 @@ bool HisDataReplayer::init(WTSVariant* cfg, EventNotifier* notifier /* = NULL */
 	if(_end_time == 0)
 		_end_time = cfg->getUInt64("etime");
 
-	WTSLogger::info_f("Backtest time range is set to be [{},{}] via config", _begin_time, _end_time);
+	WTSLogger::info("Backtest time range is set to be [{},{}] via config", _begin_time, _end_time);
 
 	_tick_enabled = cfg->getBoolean("tick");
-	WTSLogger::info_f("Tick data replaying is {}", _tick_enabled ? "enabled" : "disabled");
+	WTSLogger::info("Tick data replaying is {}", _tick_enabled ? "enabled" : "disabled");
 
 	//基础数据文件
 	WTSVariant* cfgBF = cfg->get("basefiles");
@@ -265,7 +265,7 @@ bool HisDataReplayer::init(WTSVariant* cfg, EventNotifier* notifier /* = NULL */
 		for (const std::string& ruleTag : tags)
 		{
 			_hot_mgr.loadCustomRules(ruleTag.c_str(), cfgRules->getCString(ruleTag.c_str()));
-			WTSLogger::info_f("{} rules loaded from {}", ruleTag, cfgRules->getCString(ruleTag.c_str()));
+			WTSLogger::info("{} rules loaded from {}", ruleTag, cfgRules->getCString(ruleTag.c_str()));
 		}
 	}
 
@@ -313,7 +313,7 @@ bool HisDataReplayer::loadStkAdjFactorsFromLoader()
 		});
 	});
 
-	if (ret) WTSLogger::info_f("Adjusting factors of {} contracts loaded via extended loader", _adj_factors.size());
+	if (ret) WTSLogger::info("Adjusting factors of {} contracts loaded via extended loader", _adj_factors.size());
 	return ret;
 }
 
@@ -321,7 +321,7 @@ bool HisDataReplayer::loadStkAdjFactorsFromFile(const char* adjfile)
 {
 	if (!StdFile::exists(adjfile))
 	{
-		WTSLogger::error_f("Adjust factor file {} not exists, skipped", adjfile);
+		WTSLogger::error("Adjust factor file {} not exists, skipped", adjfile);
 		return false;
 	}
 
@@ -331,7 +331,7 @@ bool HisDataReplayer::loadStkAdjFactorsFromFile(const char* adjfile)
 	WTSVariant* doc = WTSCfgLoader::load_from_file(adjfile, true);
 	if (doc == NULL)
 	{
-		WTSLogger::error_f("Parsing adjust factor file {} faield", adjfile);
+		WTSLogger::error("Parsing adjust factor file {} faield", adjfile);
 		return false;
 	}
 
@@ -384,7 +384,7 @@ bool HisDataReplayer::loadStkAdjFactorsFromFile(const char* adjfile)
 		}
 	}
 
-	WTSLogger::info_f("{} items of adjust factors for {} tickers loaded from {}", fct_cnt, stk_cnt, adjfile);
+	WTSLogger::info("{} items of adjust factors for {} tickers loaded from {}", fct_cnt, stk_cnt, adjfile);
 	doc->release();
 	return true;
 }
@@ -415,7 +415,7 @@ void HisDataReplayer::register_task(uint32_t taskid, uint32_t date, uint32_t tim
 	_task->_period = ptype;
 	_task->_strict_time = true;
 
-	WTSLogger::info_f("Timed task registration succeed, frequency: {}", period);
+	WTSLogger::info("Timed task registration succeed, frequency: {}", period);
 }
 
 void HisDataReplayer::clear_cache()
@@ -462,7 +462,7 @@ void HisDataReplayer::reset()
 		BarsListPtr& cacheItem = (BarsListPtr&)m.second;
 		cacheItem->_cursor = UINT_MAX;
 
-		WTSLogger::info_f("Reading flag of {} has been reset", m.first.c_str());
+		WTSLogger::info("Reading flag of {} has been reset", m.first.c_str());
 	}
 
 	_unbars_cache.clear();
@@ -678,7 +678,7 @@ void HisDataReplayer::run(bool bNeedDump/* = false*/)
 				}
 			}
 
-			WTSLogger::info_f("Main K bars automatic determined: {}", _main_key.c_str());
+			WTSLogger::info("Main K bars automatic determined: {}", _main_key.c_str());
 		}
 
 		if(!_main_key.empty())
@@ -717,7 +717,7 @@ void HisDataReplayer::run_by_ticks(bool bNeedDump /* = false */)
 	{
 		if (checkAllTicks(_cur_tdate))
 		{
-			WTSLogger::info_f("Start to replay tick data of {}...", _cur_tdate);
+			WTSLogger::info("Start to replay tick data of {}...", _cur_tdate);
 			_listener->handle_session_begin(_cur_tdate);
 			replayHftDatasByDay(_cur_tdate);
 			_listener->handle_session_end(_cur_tdate);
@@ -727,7 +727,7 @@ void HisDataReplayer::run_by_ticks(bool bNeedDump /* = false */)
 	}
 
 	if (_terminated)
-		WTSLogger::debug_f("Replaying by ticks terminated forcely");
+		WTSLogger::debug("Replaying by ticks terminated forcely");
 
 	WTSLogger::log_raw(LL_INFO, "All back data replayed, replaying done");
 	_listener->handle_replay_done();
@@ -754,7 +754,7 @@ void HisDataReplayer::run_by_bars(bool bNeedDump /* = false */)
 	if (bNeedDump)
 		dump_btstate(barsList->_code.c_str(), barsList->_period, barsList->_times, _begin_time, _end_time, 100.0, ticker.nano_seconds());
 
-	WTSLogger::info_f("Start to replay back data from {}...", _begin_time);
+	WTSLogger::info("Start to replay back data from {}...", _begin_time);
 
 	for (; !_terminated;)
 	{
@@ -772,7 +772,7 @@ void HisDataReplayer::run_by_bars(bool bNeedDump /* = false */)
 
 			if (nextBarTime > _end_time)
 			{
-				WTSLogger::info_f("{} is beyond ending time {},replaying done", nextBarTime, _end_time);
+				WTSLogger::info("{} is beyond ending time {},replaying done", nextBarTime, _end_time);
 				break;
 			}
 
@@ -788,7 +788,7 @@ void HisDataReplayer::run_by_bars(bool bNeedDump /* = false */)
 				nextTDate = _bd_mgr.calcTradingDate(commId.c_str(), nextDate, nextTime, false);
 				if (_opened_tdate != nextTDate)
 				{
-					WTSLogger::debug_f("Tradingday {} begins", nextTDate);
+					WTSLogger::debug("Tradingday {} begins", nextTDate);
 					_listener->handle_session_begin(nextTDate);
 					_opened_tdate = nextTDate;
 					_cur_tdate = nextTDate;
@@ -824,7 +824,7 @@ void HisDataReplayer::run_by_bars(bool bNeedDump /* = false */)
 
 			if (isEndTDate && _closed_tdate != _cur_tdate)
 			{
-				WTSLogger::debug_f("Tradingday {} ends", _cur_tdate);
+				WTSLogger::debug("Tradingday {} ends", _cur_tdate);
 				_listener->handle_session_end(_cur_tdate);
 				_closed_tdate = _cur_tdate;
 				_day_cache.clear();
@@ -846,7 +846,7 @@ void HisDataReplayer::run_by_bars(bool bNeedDump /* = false */)
 	}
 
 	if (_terminated)
-		WTSLogger::debug_f("Replaying by bars terminated forcely");
+		WTSLogger::debug("Replaying by bars terminated forcely");
 
 	notify_state(barsList->_code.c_str(), barsList->_period, barsList->_times, _begin_time, _end_time, 100);
 	if (_notifier)
@@ -854,7 +854,7 @@ void HisDataReplayer::run_by_bars(bool bNeedDump /* = false */)
 
 	if (_closed_tdate != _cur_tdate)
 	{
-		WTSLogger::debug_f("Tradingday {} ends", _cur_tdate);
+		WTSLogger::debug("Tradingday {} ends", _cur_tdate);
 		_listener->handle_session_end(_cur_tdate);
 	}
 
@@ -872,7 +872,7 @@ void HisDataReplayer::run_by_tasks(bool bNeedDump /* = false */)
 	WTSSessionInfo* sInfo = NULL;
 	const char* DEF_SESS = (strlen(_task->_session) == 0) ? DEFAULT_SESSIONID : _task->_session;
 	sInfo = _bd_mgr.getSession(DEF_SESS);
-	WTSLogger::info_f("Start to backtest with task frequency from {}...", _begin_time);
+	WTSLogger::info("Start to backtest with task frequency from {}...", _begin_time);
 
 	//分钟即任务和日级别任务分开写
 	if (_task->_period != TPT_Minute)
@@ -2014,7 +2014,7 @@ WTSKlineSlice* HisDataReplayer::get_kline_slice(const char* stdCode, const char*
 	WTSSessionInfo* sInfo = get_session_info(stdCode, true);
 	if(sInfo == NULL)
 	{
-		WTSLogger::error_f("Cannot find corresponding session of {}", stdCode);
+		WTSLogger::error("Cannot find corresponding session of {}", stdCode);
 		return NULL;
 	}
 
@@ -2040,11 +2040,11 @@ WTSKlineSlice* HisDataReplayer::get_kline_slice(const char* stdCode, const char*
 			barsList->_count = kData->size();
 			barsList->_bars.swap(kData->getDataRef());
 			kData->release();
-			WTSLogger::info_f("{} resampled {}{} back kline of {} ready", barsList->_bars.size(), period, times, stdCode);
+			WTSLogger::info("{} resampled {}{} back kline of {} ready", barsList->_bars.size(), period, times, stdCode);
 		}
 		else
 		{
-			WTSLogger::error_f("Resampling {}{} back kline of {} failed", period, times, stdCode);
+			WTSLogger::error("Resampling {}{} back kline of {} failed", period, times, stdCode);
 			return NULL;
 		}
 	}
@@ -2621,14 +2621,14 @@ void HisDataReplayer::loadFees(const char* filename)
 
 	if (!StdFile::exists(filename))
 	{
-		WTSLogger::error_f("Fees template file {} not exists", filename);
+		WTSLogger::error("Fees template file {} not exists", filename);
 		return;
 	}
 
 	WTSVariant* cfg = WTSCfgLoader::load_from_file(filename, true);
 	if (cfg == NULL)
 	{
-		WTSLogger::error_f("Converting fees template file {} failed", filename);
+		WTSLogger::error("Converting fees template file {} failed", filename);
 		return;
 	}
 
@@ -2645,7 +2645,7 @@ void HisDataReplayer::loadFees(const char* filename)
 
 	cfg->release();
 
-	WTSLogger::info_f("{} items of fees template loaded", _fee_map.size());
+	WTSLogger::info("{} items of fees template loaded", _fee_map.size());
 }
 
 
@@ -2925,7 +2925,7 @@ bool HisDataReplayer::cacheRawTicksFromBin(const std::string& key, const char* s
 
 	if(!bHit)
 	{
-		WTSLogger::warn_f("No ticks data of {} on {} found", stdCode, uDate);
+		WTSLogger::warn("No ticks data of {} on {} found", stdCode, uDate);
 		return false;
 	}
 
@@ -2964,7 +2964,7 @@ bool HisDataReplayer::cacheRawTicksFromLoader(const std::string& key, const char
 	if (!bSucc)
 		return false;
 
-	WTSLogger::info_f("{} items of back tick data of {} on {} loaded via extended loader", ticksList._count, stdCode, uDate);
+	WTSLogger::info("{} items of back tick data of {} on {} loaded via extended loader", ticksList._count, stdCode, uDate);
 
 	return true;
 }
@@ -2984,16 +2984,16 @@ bool HisDataReplayer::cacheRawTicksFromCSV(const std::string& key, const char* s
 	if (StdFile::exists(filename.c_str()))
 	{
 		//如果有格式化的历史数据文件, 则直接读取
-		WTSLogger::info_f("Reading data from {}...", filename);
+		WTSLogger::info("Reading data from {}...", filename);
 		std::string content;
 		StdFile::read_file_content(filename.c_str(), content);
 		if (content.size() < sizeof(HisTickBlockV2))
 		{
-			WTSLogger::error_f("Sizechecking of back tick data file {} failed", filename);
+			WTSLogger::error("Sizechecking of back tick data file {} failed", filename);
 			return false;
 		}
 
-		WTSLogger::info_f("Processing file content of {}...", filename);
+		WTSLogger::info("Processing file content of {}...", filename);
 		proc_block_data(filename.c_str(), content, false, false);
 		uint32_t tickcnt = content.size() / sizeof(WTSTickStruct);
 		auto& ticksList = _ticks_cache[key];
@@ -3013,14 +3013,14 @@ bool HisDataReplayer::cacheRawTicksFromCSV(const std::string& key, const char* s
 
 		if (!StdFile::exists(csvfile.c_str()))
 		{
-			WTSLogger::error_f("Back tick data file {} not exists", csvfile.c_str());
+			WTSLogger::error("Back tick data file {} not exists", csvfile.c_str());
 			return false;
 		}
 
 		std::ifstream ifs;
 		ifs.open(csvfile.c_str());
 
-		WTSLogger::info_f("Reading data from {}...", csvfile.c_str());
+		WTSLogger::info("Reading data from {}...", csvfile.c_str());
 
 		char buffer[1024];
 		bool headerskipped = false;
@@ -3051,12 +3051,12 @@ bool HisDataReplayer::cacheRawTicksFromCSV(const std::string& key, const char* s
 
 			if (tickList._items.size() % 1000 == 0)
 			{
-				WTSLogger::info_f("{} items of data loaded", tickList._items.size());
+				WTSLogger::info("{} items of data loaded", tickList._items.size());
 			}
 		}
 		tickList._count = tickList._items.size();
 		ifs.close();
-		WTSLogger::info_f("Data file {} all loaded, totally {} items", csvfile.c_str(), tickList._items.size());
+		WTSLogger::info("Data file {} all loaded, totally {} items", csvfile.c_str(), tickList._items.size());
 
 		/*
 		 *	By Wesley @ 2021.12.14
@@ -3074,7 +3074,7 @@ bool HisDataReplayer::cacheRawTicksFromCSV(const std::string& key, const char* s
 		content.append(cmpData);
 
 		StdFile::write_file_content(filename.c_str(), content.c_str(), content.size());
-		WTSLogger::info_f("Ticks transfered to file {}", filename.c_str());
+		WTSLogger::info("Ticks transfered to file {}", filename.c_str());
 	}
 
 	return true;
@@ -3129,7 +3129,7 @@ bool HisDataReplayer::cacheFinalBarsFromLoader(const std::string& key, const cha
 		StdFile::read_file_content(filename.c_str(), content);
 		if (content.size() < sizeof(HisKlineBlockV2))
 		{
-			WTSLogger::error_f("Sizechecking of back kbar data file {} failed", filename.c_str());
+			WTSLogger::error("Sizechecking of back kbar data file {} failed", filename.c_str());
 		}
 		else
 		{
@@ -3153,7 +3153,7 @@ bool HisDataReplayer::cacheFinalBarsFromLoader(const std::string& key, const cha
 			uint64_t stime = isDay ? barsList->_bars[0].date : barsList->_bars[0].time;
 			uint64_t etime = isDay ? barsList->_bars[barcnt - 1].date : barsList->_bars[barcnt - 1].time;
 
-			WTSLogger::info_f("{} items of back {} data of {} directly loaded from dsb file, from {} to {}", barcnt, pname.c_str(), stdCode, stime, etime);
+			WTSLogger::info("{} items of back {} data of {} directly loaded from dsb file, from {} to {}", barcnt, pname.c_str(), stdCode, stime, etime);
 			bHit = true;
 		}
 	}
@@ -3190,7 +3190,7 @@ bool HisDataReplayer::cacheFinalBarsFromLoader(const std::string& key, const cha
 		uint64_t stime = isDay ? barsList->_bars[0].date : barsList->_bars[0].time;
 		uint64_t etime = isDay ? barsList->_bars[barsList->_count - 1].date : barsList->_bars[barsList->_count - 1].time;
 
-		WTSLogger::info_f("{} items of back {} data of {} loaded via extended loader, from {} to {}", barsList->_count, pname.c_str(), stdCode, stime, etime);
+		WTSLogger::info("{} items of back {} data of {} loaded via extended loader, from {} to {}", barsList->_count, pname.c_str(), stdCode, stime, etime);
 
 		if(_bt_loader->isAutoTrans())
 		{
@@ -3218,7 +3218,7 @@ bool HisDataReplayer::cacheFinalBarsFromLoader(const std::string& key, const cha
 			content.append(cmpData);
 
 			StdFile::write_file_content(filename.c_str(), content.c_str(), content.size());
-			WTSLogger::info_f("Bars transfered to file {}", filename);
+			WTSLogger::info("Bars transfered to file {}", filename);
 		}
 	}
 
@@ -3270,7 +3270,7 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 		StdFile::read_file_content(filename.c_str(), content);
 		if (content.size() < sizeof(HisKlineBlockV2))
 		{
-			WTSLogger::error_f("Sizechecking of back kbar data file {} failed", filename);
+			WTSLogger::error("Sizechecking of back kbar data file {} failed", filename);
 			return false;
 		}
 
@@ -3295,7 +3295,7 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 		uint64_t stime = isDay ? barsList->_bars[0].date : barsList->_bars[0].time;
 		uint64_t etime = isDay ? barsList->_bars[barcnt-1].date : barsList->_bars[barcnt-1].time;
 
-		WTSLogger::info_f("{} items of back {} data of {} directly loaded from dsb file, from {} to {}", barcnt, p_suffix.c_str(), stdCode, stime, etime);
+		WTSLogger::info("{} items of back {} data of {} directly loaded from dsb file, from {} to {}", barcnt, p_suffix.c_str(), stdCode, stime, etime);
 	}
 	else
 	{
@@ -3306,14 +3306,14 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 
 		if (!StdFile::exists(csvfile.c_str()))
 		{
-			WTSLogger::error_f("Back kbar data file {} not exists", csvfile);
+			WTSLogger::error("Back kbar data file {} not exists", csvfile);
 			return false;
 		}
 
 		CsvReader reader;
 		reader.load_from_file(csvfile.c_str());
 
-		WTSLogger::info_f("Reading data from {}, with fields: {}...", csvfile, reader.fields());
+		WTSLogger::info("Reading data from {}, with fields: {}...", csvfile, reader.fields());
 
 		if (bSubbed)
 			_bars_cache[key].reset(new BarsList);
@@ -3343,7 +3343,7 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 
 			if (barsList->_bars.size() % 1000 == 0)
 			{
-				WTSLogger::info_f("{} lines of data loaded", barsList->_bars.size());
+				WTSLogger::info("{} lines of data loaded", barsList->_bars.size());
 			}
 		}
 		barsList->_count = barsList->_bars.size();
@@ -3351,7 +3351,7 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 		uint64_t stime = isDay ? barsList->_bars[0].date : barsList->_bars[0].time;
 		uint64_t etime = isDay ? barsList->_bars[barsList->_count - 1].date : barsList->_bars[barsList->_count - 1].time;
 
-		WTSLogger::info_f("Data file {} all loaded, totally {} items, from {} to {}", csvfile.c_str(), barsList->_bars.size(), stime, etime);
+		WTSLogger::info("Data file {} all loaded, totally {} items, from {} to {}", csvfile.c_str(), barsList->_bars.size(), stime, etime);
 
 		BlockType btype;
 		switch (period)
@@ -3377,7 +3377,7 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 		content.append(cmpData);
 
 		StdFile::write_file_content(filename.c_str(), content.c_str(), content.size());
-		WTSLogger::info_f("Bars transfered to file {}", filename);
+		WTSLogger::info("Bars transfered to file {}", filename);
 	}
 
 	return true;
@@ -3434,7 +3434,7 @@ bool HisDataReplayer::cacheIntegratedFutBarsFromBin(const std::string& key, cons
 
 		if(!bSucc)
 		{
-			WTSLogger::error_f("Loading {} bars of {} via HisDtMgr failed", PERIOD_NAME[period], stdCode);
+			WTSLogger::error("Loading {} bars of {} via HisDtMgr failed", PERIOD_NAME[period], stdCode);
 			break;
 		}
 
@@ -3454,7 +3454,7 @@ bool HisDataReplayer::cacheIntegratedFutBarsFromBin(const std::string& key, cons
 		uint64_t stime = isDay ? barsList->_bars[0].date : barsList->_bars[0].time;
 		uint64_t etime = isDay ? barsList->_bars[barcnt - 1].date : barsList->_bars[barcnt - 1].time;
 
-		WTSLogger::info_f("{} items of back {} data of hot contract {} directly loaded, from {} to {}", barcnt, pname.c_str(), stdCode, stime, etime);
+		WTSLogger::info("{} items of back {} data of hot contract {} directly loaded, from {} to {}", barcnt, pname.c_str(), stdCode, stime, etime);
 
 	} while (false);
 
@@ -3550,7 +3550,7 @@ bool HisDataReplayer::cacheIntegratedFutBarsFromBin(const std::string& key, cons
 
 			if (!bLoaded)
 			{
-				WTSLogger::error_f("Loading {} bars of {} via HisDtMgr failed", PERIOD_NAME[period], curCode);
+				WTSLogger::error("Loading {} bars of {} via HisDtMgr failed", PERIOD_NAME[period], curCode);
 				break;
 			}
 		}
@@ -3633,7 +3633,7 @@ bool HisDataReplayer::cacheIntegratedFutBarsFromBin(const std::string& key, cons
 		barsSections.clear();
 	}
 
-	WTSLogger::info_f("{} items of back {} data of {} cached", realCnt, pname, stdCode);
+	WTSLogger::info("{} items of back {} data of {} cached", realCnt, pname, stdCode);
 
 	return true;
 }
@@ -3650,7 +3650,7 @@ const HisDataReplayer::AdjFactorList& HisDataReplayer::getAdjFactors(const char*
 		//如果没有复权因子，就从extloader按需读一次
 		if (_bt_loader)
 		{
-            WTSLogger::info_f("No adjusting factors of {} cached, searching via extented loader...", key);
+            WTSLogger::info("No adjusting factors of {} cached, searching via extented loader...", key);
 			_bt_loader->loadAdjFactors(this, key, [](void* obj, const char* stdCode, uint32_t* dates, double* factors, uint32_t count) {
 				HisDataReplayer* self = (HisDataReplayer*)obj;
 				AdjFactorList& fctrLst = self->_adj_factors[stdCode];
@@ -3674,7 +3674,7 @@ const HisDataReplayer::AdjFactorList& HisDataReplayer::getAdjFactors(const char*
 					return left._date < right._date;
 				});
 
-                WTSLogger::info_f("{} items of adjusting factors of {} loaded via extended loader", count, stdCode);
+                WTSLogger::info("{} items of adjusting factors of {} loaded via extended loader", count, stdCode);
 			});
 		}
 	}
@@ -3704,7 +3704,7 @@ bool HisDataReplayer::cacheAdjustedStkBarsFromBin(const std::string& key, const 
 	std::vector<WTSBarStruct>* adjustedBars = NULL;
 	uint64_t lastQTime = 0;
 
-	WTSLogger::info_f("Loading adjusted bars of {}...", stdCode);
+	WTSLogger::info("Loading adjusted bars of {}...", stdCode);
 	do
 	{
 		//先直接读取复权过的历史数据,路径如/his/day/sse/SH600000Q.dsb
@@ -3725,7 +3725,7 @@ bool HisDataReplayer::cacheAdjustedStkBarsFromBin(const std::string& key, const 
 
 		if(!bSucc)
 		{
-			WTSLogger::error_f("Loading {} bars of {} via HisDtMgr failed", PERIOD_NAME[period], stdCode);
+			WTSLogger::error("Loading {} bars of {} via HisDtMgr failed", PERIOD_NAME[period], stdCode);
 			break;
 		}
 
@@ -3742,10 +3742,10 @@ bool HisDataReplayer::cacheAdjustedStkBarsFromBin(const std::string& key, const 
 		else
 			lastQTime = adjustedBars->at(barcnt - 1).date;
 
-		WTSLogger::info_f("{} items of adjusted back {} data of {} directly loaded", barcnt, PERIOD_NAME[period], stdCode);
+		WTSLogger::info("{} items of adjusted back {} data of {} directly loaded", barcnt, PERIOD_NAME[period], stdCode);
 	} while (false);
 
-	WTSLogger::info_f("Loading raw bars of {}...", stdCode);
+	WTSLogger::info("Loading raw bars of {}...", stdCode);
 	do
 	{
 		const char* curCode = cInfo._code;
@@ -3780,7 +3780,7 @@ bool HisDataReplayer::cacheAdjustedStkBarsFromBin(const std::string& key, const 
 			});
 
 			if (bLoaded)
-				WTSLogger::debug_f("Raw bars of {} loaded via extended loader", stdCode);
+				WTSLogger::debug("Raw bars of {} loaded via extended loader", stdCode);
 		}
 
 		if (!bLoaded)
@@ -3795,7 +3795,7 @@ bool HisDataReplayer::cacheAdjustedStkBarsFromBin(const std::string& key, const 
 
 			if (!bLoaded)
 			{
-				WTSLogger::warn_f("Loading {} bars of {} via HisDtMgr failed", PERIOD_NAME[period], curCode);
+				WTSLogger::warn("Loading {} bars of {} via HisDtMgr failed", PERIOD_NAME[period], curCode);
 				continue;
 			}
 		}
@@ -3830,7 +3830,7 @@ bool HisDataReplayer::cacheAdjustedStkBarsFromBin(const std::string& key, const 
 			auto& ayFactors = getAdjFactors(cInfo._code, cInfo._exchg, cInfo._product);
 			if (!ayFactors.empty())
 			{
-				WTSLogger::info_f("Adjusting bars of {} with adjusting factors...", stdCode);
+				WTSLogger::info("Adjusting bars of {} with adjusting factors...", stdCode);
 				//做复权处理
 				std::size_t lastIdx = curCnt;
 				WTSBarStruct bar;
@@ -3884,7 +3884,7 @@ bool HisDataReplayer::cacheAdjustedStkBarsFromBin(const std::string& key, const 
 			}
 			else
 			{
-				WTSLogger::info_f("No adjusting factors of {} found, ajusting task skipped...", stdCode);
+				WTSLogger::info("No adjusting factors of {} found, ajusting task skipped...", stdCode);
 			}
 
 			barsSections.emplace_back(tempAy);
@@ -3912,7 +3912,7 @@ bool HisDataReplayer::cacheAdjustedStkBarsFromBin(const std::string& key, const 
 		barsSections.clear();
 	}
 
-	WTSLogger::info_f("{} items of back {} data of {} cached", realCnt, PERIOD_NAME[period], stdCode);
+	WTSLogger::info("{} items of back {} data of {} cached", realCnt, PERIOD_NAME[period], stdCode);
 
 	return true;
 }
@@ -3983,7 +3983,7 @@ bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* st
 		//	StdFile::read_file_content(filename.c_str(), content);
 		//	if (content.size() < sizeof(HisKlineBlock))
 		//	{
-		//		WTSLogger::error_f("Sizechecking of back kbar data file {} failed", filename.c_str());
+		//		WTSLogger::error("Sizechecking of back kbar data file {} failed", filename.c_str());
 		//		return false;
 		//	}
 
@@ -3996,7 +3996,7 @@ bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* st
 
 		if(!bLoaded)
 		{
-			WTSLogger::warn_f("Loading {} bars of {} via HisDtMgr failed", PERIOD_NAME[period], stdCode);
+			WTSLogger::warn("Loading {} bars of {} via HisDtMgr failed", PERIOD_NAME[period], stdCode);
 		}
 	}
 
@@ -4037,6 +4037,6 @@ bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* st
 		barsSections.clear();
 	}
 
-	WTSLogger::info_f("{} items of back {} data of {} cached", realCnt, PERIOD_NAME[period], stdCode);
+	WTSLogger::info("{} items of back {} data of {} cached", realCnt, PERIOD_NAME[period], stdCode);
 	return true;
 }
