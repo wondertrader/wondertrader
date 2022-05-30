@@ -219,7 +219,7 @@ private:
 	/*
 	 *	将历史数据放入缓存
 	 */
-	bool		cacheHisBarsFromFile(const std::string& key, const char* stdCode, WTSKlinePeriod period);
+	bool		cacheHisBarsFromFile(void* codeInfo, const std::string& key, const char* stdCode, WTSKlinePeriod period);
 
 	uint32_t		readBarsFromCacheByRange(const std::string& key, uint64_t stime, uint64_t etime, std::vector<WTSBarStruct>& ayBars, bool isDay = false);
 	WTSBarStruct*	indexBarFromCacheByRange(const std::string& key, uint64_t stime, uint64_t etime, uint32_t& count, bool isDay = false);
@@ -259,6 +259,9 @@ private:
 		std::string		_code;
 		WTSKlinePeriod	_period;
 		std::string		_raw_code;
+		double			_factor;
+
+		_BarsList():_factor(1.0){}
 
 		std::vector<WTSBarStruct>	_bars;
 	} BarsList;

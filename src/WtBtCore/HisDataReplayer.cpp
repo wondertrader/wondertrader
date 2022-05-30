@@ -1832,7 +1832,7 @@ void HisDataReplayer::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTD
 									WTSCommodityInfo* commInfo = _bd_mgr.getCommodity(cInfo._exchg, cInfo._product);
 
 									std::string realCode = barsList->_code;
-									if (commInfo->isStock() && cInfo._exright)
+									if (cInfo.isExright())
 										realCode = realCode.substr(0, realCode.size() - 1);
 
 									WTSSessionInfo* sInfo = get_session_info(realCode.c_str(), true);
@@ -3087,7 +3087,7 @@ bool HisDataReplayer::cacheFinalBarsFromLoader(const std::string& key, const cha
 
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, &_hot_mgr);
 	WTSCommodityInfo* commInfo = _bd_mgr.getCommodity(cInfo._exchg, cInfo._product);
-	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
+	const char* stdPID = cInfo.stdCommID();
 
 	std::string pname;
 	std::string dirname;
@@ -3108,9 +3108,12 @@ bool HisDataReplayer::cacheFinalBarsFromLoader(const std::string& key, const cha
 
 	const char* ruleTag = cInfo._ruletag;
 
-	if (strlen(ruleTag) > 0 && commInfo->isFuture())
+	if (strlen(ruleTag) > 0)
 	{
-		ss << cInfo._exchg << "." << cInfo._product << "_" << ruleTag << ".dsb";
+		ss << cInfo._exchg << "." << cInfo._product << "_" << ruleTag;
+		if (cInfo.isExright())
+			ss << (cInfo._exright == 1 ? SUFFIX_QFQ : SUFFIX_HFQ);
+		ss << ".dsb";
 	}
 	else if (cInfo.isExright() && commInfo->isStock())
 	{
@@ -3383,15 +3386,15 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 	return true;
 }
 
-bool HisDataReplayer::cacheIntegratedFutBarsFromBin(const std::string& key, const char* stdCode, WTSKlinePeriod period, bool bSubbed /* = true */)
+bool HisDataReplayer::cacheIntegratedFutBarsFromBin(void* codeInfo, const std::string& key, const char* stdCode, WTSKlinePeriod period, bool bSubbed /* = true */)
 {
-	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, &_hot_mgr);
-	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
+	CodeHelper::CodeInfo* cInfo = (CodeHelper::CodeInfo*)codeInfo;
+	const char* stdPID = cInfo->stdCommID();
 
 	uint32_t curDate = TimeUtils::getCurDate();
 	uint32_t curTime = TimeUtils::getCurMin() / 100;
 
-	uint32_t endTDate = _bd_mgr.calcTradingDate(stdPID.c_str(), curDate, curTime, false);
+	uint32_t endTDate = _bd_mgr.calcTradingDate(stdPID, curDate, curTime, false);
 
 	std::string pname;
 	switch (period)
@@ -3412,7 +3415,7 @@ bool HisDataReplayer::cacheIntegratedFutBarsFromBin(const std::string& key, cons
 	bool isDay = (period == KP_DAY);
 
 	//const char* hot_flag = cInfo.isHot() ? FILE_SUF_HOT : FILE_SUF_2ND;
-	const char* ruleTag = cInfo._ruletag;
+	const char* ruleTag = cInfo->_ruletag;
 
 	std::vector<WTSBarStruct>* hotAy = NULL;
 	uint64_t lastHotTime = 0;
@@ -3427,8 +3430,10 @@ bool HisDataReplayer::cacheIntegratedFutBarsFromBin(const std::string& key, cons
 		 *	将直接从文件读取，改成从HisDtMgr读取
 		 */
 		std::string content;
-		std::string wrappCode = StrUtil::printf("%s.%s_%s", cInfo._exchg, cInfo._product, ruleTag);
-		bool bSucc = _his_dt_mgr.load_raw_bars(cInfo._exchg, wrappCode.c_str(), period, [&content](std::string& data) {
+		std::string wrappCode = StrUtil::printf("%s.%s_%s", cInfo->_exchg, cInfo->_product, ruleTag);
+		if (cInfo->isExright())
+			wrappCode += cInfo->_exright == 1 ? SUFFIX_QFQ : SUFFIX_HFQ;
+		bool bSucc = _his_dt_mgr.load_raw_bars(cInfo->_exchg, wrappCode.c_str(), period, [&content](std::string& data) {
 			content.swap(data);
 		});
 
@@ -3471,12 +3476,18 @@ bool HisDataReplayer::cacheIntegratedFutBarsFromBin(const std::string& key, cons
 	//}
 	if(strlen(ruleTag) > 0)
 	{
-		if (!_hot_mgr.splitCustomSections(ruleTag, cInfo.stdCommID(), 19900102, endTDate, secs))
+		if (!_hot_mgr.splitCustomSections(ruleTag, cInfo->stdCommID(), 19900102, endTDate, secs))
 			return false;
 	}
 
 	if (secs.empty())
 		return false;
+
+	double baseFactor = 1.0;
+	if (cInfo->_exright == 1)
+		baseFactor = secs.back()._factor;
+	else if (cInfo->_exright == 2)
+		barsList->_factor = secs.back()._factor;
 
 	bool bAllCovered = false;
 	for (auto it = secs.rbegin(); it != secs.rend(); it++)
@@ -3490,8 +3501,8 @@ bool HisDataReplayer::cacheIntegratedFutBarsFromBin(const std::string& key, cons
 		WTSBarStruct sBar, eBar;
 		if (period != KP_DAY)
 		{
-			uint64_t sTime = _bd_mgr.getBoundaryTime(stdPID.c_str(), leftDt, false, true);
-			uint64_t eTime = _bd_mgr.getBoundaryTime(stdPID.c_str(), rightDt, false, false);
+			uint64_t sTime = _bd_mgr.getBoundaryTime(stdPID, leftDt, false, true);
+			uint64_t eTime = _bd_mgr.getBoundaryTime(stdPID, rightDt, false, false);
 
 			sBar.date = leftDt;
 			sBar.time = ((uint32_t)(sTime / 10000) - 19900000) * 10000 + (uint32_t)(sTime % 10000);
@@ -3533,7 +3544,7 @@ bool HisDataReplayer::cacheIntegratedFutBarsFromBin(const std::string& key, cons
 		if (NULL != _bt_loader)
 		{
 			//分月合约代码
-			std::string wCode = StrUtil::printf("%s.%s.%s", cInfo._exchg, cInfo._product, (char*)curCode + strlen(cInfo._product));
+			std::string wCode = StrUtil::printf("%s.%s.%s", cInfo->_exchg, cInfo->_product, (char*)curCode + strlen(cInfo->_product));
 			bLoaded = _bt_loader->loadRawHisBars(&buffer, wCode.c_str(), period, [](void* obj, WTSBarStruct* bars, uint32_t count) {
 				std::string* buff = (std::string*)obj;
 				buff->resize(sizeof(WTSBarStruct)*count);
@@ -3544,7 +3555,7 @@ bool HisDataReplayer::cacheIntegratedFutBarsFromBin(const std::string& key, cons
 
 		if (!bLoaded)
 		{
-			bLoaded = _his_dt_mgr.load_raw_bars(cInfo._exchg, curCode, period, [&buffer](std::string& data) {
+			bLoaded = _his_dt_mgr.load_raw_bars(cInfo->_exchg, curCode, period, [&buffer](std::string& data) {
 				buffer.swap(data);
 			});
 
@@ -3601,6 +3612,19 @@ bool HisDataReplayer::cacheIntegratedFutBarsFromBin(const std::string& key, cons
 			continue;
 
 		uint32_t curCnt = eIdx - sIdx + 1;
+
+		if (cInfo->isExright())
+		{
+			double factor = hotSec._factor / baseFactor;
+			for (uint32_t idx = sIdx; idx <= eIdx; idx++)
+			{
+				firstBar[idx].open *= factor;
+				firstBar[idx].high *= factor;
+				firstBar[idx].low *= factor;
+				firstBar[idx].close *= factor;
+			}
+		}
+
 		std::vector<WTSBarStruct>* tempAy = new std::vector<WTSBarStruct>();
 		tempAy->resize(curCnt);
 		memcpy(tempAy->data(), &firstBar[sIdx], sizeof(WTSBarStruct)*curCnt);
@@ -3682,15 +3706,15 @@ const HisDataReplayer::AdjFactorList& HisDataReplayer::getAdjFactors(const char*
 	return _adj_factors[key];
 }
 
-bool HisDataReplayer::cacheAdjustedStkBarsFromBin(const std::string& key, const char* stdCode, WTSKlinePeriod period, bool bSubbed /* = true */)
+bool HisDataReplayer::cacheAdjustedStkBarsFromBin(void* codeInfo, const std::string& key, const char* stdCode, WTSKlinePeriod period, bool bSubbed /* = true */)
 {
-	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, &_hot_mgr);
-	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
+	CodeHelper::CodeInfo* cInfo = (CodeHelper::CodeInfo*)codeInfo;
+	const char* stdPID = cInfo->stdCommID();
 
 	uint32_t curDate = TimeUtils::getCurDate();
 	uint32_t curTime = TimeUtils::getCurMin() / 100;
 
-	uint32_t endTDate = _bd_mgr.calcTradingDate(stdPID.c_str(), curDate, curTime, false);
+	uint32_t endTDate = _bd_mgr.calcTradingDate(stdPID, curDate, curTime, false);
 
 	_bars_cache[key].reset(new BarsList());
 	BarsListPtr& barsList = _bars_cache[key];
@@ -3717,9 +3741,9 @@ bool HisDataReplayer::cacheAdjustedStkBarsFromBin(const std::string& key, const 
 		 *	@ 2022.01.11
 		 *	这里将文件读取改为从HisDtMgr封装的接口读取
 		 */
-		std::string wrappCode = fmt::format("{}{}", cInfo._code, (cInfo._exright == 1 ? SUFFIX_QFQ : SUFFIX_HFQ));
+		std::string wrappCode = fmt::format("{}{}", cInfo->_code, (cInfo->_exright == 1 ? SUFFIX_QFQ : SUFFIX_HFQ));
 		std::string content;
-		bool bSucc = _his_dt_mgr.load_raw_bars(cInfo._exchg, wrappCode.c_str(), period, [&content](std::string& data) {
+		bool bSucc = _his_dt_mgr.load_raw_bars(cInfo->_exchg, wrappCode.c_str(), period, [&content](std::string& data) {
 			content.swap(data);
 		});
 
@@ -3748,7 +3772,7 @@ bool HisDataReplayer::cacheAdjustedStkBarsFromBin(const std::string& key, const 
 	WTSLogger::info("Loading raw bars of {}...", stdCode);
 	do
 	{
-		const char* curCode = cInfo._code;
+		const char* curCode = cInfo->_code;
 
 		//要先将日期转换为边界时间
 		WTSBarStruct sBar;
@@ -3772,7 +3796,7 @@ bool HisDataReplayer::cacheAdjustedStkBarsFromBin(const std::string& key, const 
 		std::string buffer;
 		if (NULL != _bt_loader)
 		{
-			std::string wCode = StrUtil::printf("%s.%s.%s", cInfo._exchg, cInfo._product, curCode);
+			std::string wCode = StrUtil::printf("%s.%s.%s", cInfo->_exchg, cInfo->_product, curCode);
 			bLoaded = _bt_loader->loadRawHisBars(&buffer, wCode.c_str(), period, [](void* obj, WTSBarStruct* bars, uint32_t count) {
 				std::string* buff = (std::string*)obj;
 				buff->resize(sizeof(WTSBarStruct)*count);
@@ -3789,7 +3813,7 @@ bool HisDataReplayer::cacheAdjustedStkBarsFromBin(const std::string& key, const 
 			 *	By Wesley @ 2022.01.11
 			 *	这里将文件读取改为从HisDtMgr封装的接口读取
 			 */
-			bLoaded = _his_dt_mgr.load_raw_bars(cInfo._exchg, curCode, period, [&buffer](std::string& data) {
+			bLoaded = _his_dt_mgr.load_raw_bars(cInfo->_exchg, curCode, period, [&buffer](std::string& data) {
 				buffer.swap(data);
 			});
 
@@ -3827,7 +3851,7 @@ bool HisDataReplayer::cacheAdjustedStkBarsFromBin(const std::string& key, const 
 			memcpy(tempAy->data(), &firstBar[sIdx], sizeof(WTSBarStruct)*curCnt);
 			realCnt += curCnt;
 
-			auto& ayFactors = getAdjFactors(cInfo._code, cInfo._exchg, cInfo._product);
+			auto& ayFactors = getAdjFactors(cInfo->_code, cInfo->_exchg, cInfo->_product);
 			if (!ayFactors.empty())
 			{
 				WTSLogger::info("Adjusting bars of {} with adjusting factors...", stdCode);
@@ -3840,9 +3864,9 @@ bool HisDataReplayer::cacheAdjustedStkBarsFromBin(const std::string& key, const 
 				//如果是前复权，则历史数据会变小，以最后一个复权因子为基础因子
 				//如果是后复权，则新数据会变大，基础因子为1
 				double baseFactor = 1.0;
-				if (cInfo._exright == 1)
+				if (cInfo->_exright == 1)
 					baseFactor = ayFactors.back()._factor;
-				else if (cInfo._exright == 2)
+				else if (cInfo->_exright == 2)
 					barsList->_factor = ayFactors.back()._factor;
 
 				for (auto it = ayFactors.rbegin(); it != ayFactors.rend(); it++)
@@ -3922,12 +3946,12 @@ bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* st
 {
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, &_hot_mgr);
 	WTSCommodityInfo* commInfo = _bd_mgr.getCommodity(cInfo._exchg, cInfo._product);
-	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
+	const char* stdPID = cInfo.stdCommID();
 
 	uint32_t curDate = TimeUtils::getCurDate();
 	uint32_t curTime = TimeUtils::getCurMin() / 100;
 
-	uint32_t endTDate = _bd_mgr.calcTradingDate(stdPID.c_str(), curDate, curTime, false);
+	uint32_t endTDate = _bd_mgr.calcTradingDate(stdPID, curDate, curTime, false);
 
 	bool isDay = (period == KP_DAY);
 
@@ -3944,13 +3968,13 @@ bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* st
 
 	uint32_t realCnt = 0;
 	const char* ruleTag = cInfo._ruletag;
-	if (strlen(ruleTag) > 0 && commInfo->isFuture())//如果是读取期货主力连续数据
+	if (strlen(ruleTag) > 0)//如果是读取期货主力连续数据
 	{
-		return cacheIntegratedFutBarsFromBin(key, stdCode, period);
+		return cacheIntegratedFutBarsFromBin(&cInfo, key, stdCode, period);
 	}
 	else if (cInfo.isExright() && commInfo->isStock())//如果是读取股票复权数据
 	{
-		return cacheAdjustedStkBarsFromBin(key, stdCode, period, bSubbed);
+		return cacheAdjustedStkBarsFromBin(&cInfo, key, stdCode, period, bSubbed);
 	}
 	
 

@@ -17,6 +17,7 @@
 #include "../Share/TimeUtils.hpp"
 #include "../Share/CodeHelper.hpp"
 #include "../Share/StdUtils.hpp"
+#include "../Share/decimal.h"
 
 
 WTSHotMgr::WTSHotMgr()
@@ -35,10 +36,14 @@ const char* WTSHotMgr::getRuleTag(const char* stdCode)
 	if (m_mapCustRules == NULL)
 		return "";
 
+	auto len = strlen(stdCode);
+	if (stdCode[len - 1] == '+' || stdCode[len - 1] == '-')
+		len--;
+
 	auto idx = StrUtil::findLast(stdCode, '.');
 	if (idx == std::string::npos)
 	{
-		auto it = m_mapCustRules->find(stdCode);
+		auto it = m_mapCustRules->find(ShortKey(stdCode, len));
 		if (it == m_mapCustRules->end())
 			return "";
 
@@ -46,7 +51,7 @@ const char* WTSHotMgr::getRuleTag(const char* stdCode)
 	}
 
 	const char* tail = stdCode + idx + 1;
-	auto it = m_mapCustRules->find(tail);
+	auto it = m_mapCustRules->find(ShortKey(tail, len - idx - 1));
 	if (it == m_mapCustRules->end())
 		return "";
 
@@ -169,15 +174,21 @@ bool WTSHotMgr::loadCustomRules(const char* tag, const char* filename)
 			prodMap->add(fullPid.c_str(), dateMap, false);
 
 			std::string lastCode;
+			double factor = 1.0;
 			for (uint32_t i = 0; i < jProduct->size(); i++)
 			{
 				WTSVariant* jHotItem = jProduct->get(i);
 				WTSSwitchItem* pItem = WTSSwitchItem::create(
 					exchg.c_str(), pid.c_str(),
 					jHotItem->getCString("from"), jHotItem->getCString("to"), 
-					jHotItem->getUInt32("date"),
-					jHotItem->getDouble("oldclose"), jHotItem->getDouble("newclose"));
-				dateMap->add(pItem->switchdate(), pItem, false);
+					jHotItem->getUInt32("date"));
+
+				//计算复权因子
+				double oldclose = jHotItem->getDouble("oldclose");
+				double newclose = jHotItem->getDouble("newclose");
+				factor *= (decimal::eq(oldclose, 0.0) ? 1.0 : (newclose / oldclose));
+				pItem->set_factor(factor);
+				dateMap->add(pItem->switch_date(), pItem, false);
 				lastCode = jHotItem->getCString("to");
 			}
 
@@ -314,7 +325,7 @@ bool WTSHotMgr::isCustomHot(const char* tag, const char* fullCode, uint32_t dt /
 		WTSSwitchItem* pItem = STATIC_CONVERT(cit->second, WTSSwitchItem*);
 		//因为登记的换月日期是开始生效的交易日，如果是下午盘后确定主力的话
 		//那么dt就会是第二天，所以，dt必须大于等于切换日期
-		if (pItem->switchdate() > dt)
+		if (pItem->switch_date() > dt)
 			cit--;
 
 		pItem = STATIC_CONVERT(cit->second, WTSSwitchItem*);
@@ -348,6 +359,7 @@ bool WTSHotMgr::splitCustomSections(const char* tag, const char* fullPid, uint32
 	uint32_t lastDate = 0;
 	const char* curHot = "";
 	auto cit = dtMap->begin();
+	double prevFactor = 1.0;
 	for (; cit != dtMap->end(); cit++)
 	{
 		uint32_t curDate = cit->first;
@@ -355,26 +367,27 @@ bool WTSHotMgr::splitCustomSections(const char* tag, const char* fullPid, uint32
 
 		if (curDate > eDt)
 		{
-			sections.emplace_back(HotSection(hotItem->from(), leftDate, eDt));
+			sections.emplace_back(HotSection(hotItem->from(), leftDate, eDt, prevFactor));
 		}
 		else if (leftDate < curDate)
 		{
 			//如果开始日期小于当前切换的日期,则添加一段
 			if (strlen(hotItem->from()) > 0)//这里from为空,主要是第一条规则,如果真的遇到这种情况,也没有太好的办法,只能不要这一段数据了,一般情况下是够的
 			{
-				sections.emplace_back(HotSection(hotItem->from(), leftDate, TimeUtils::getNextDate(curDate, -1)));
+				sections.emplace_back(HotSection(hotItem->from(), leftDate, TimeUtils::getNextDate(curDate, -1), prevFactor));
 			}
 
 			leftDate = curDate;
 		}
 
 		lastDate = curDate;
+		prevFactor = hotItem->get_factor();
 		curHot = hotItem->to();
 	}
 
 	if (leftDate >= lastDate && lastDate != 0)
 	{
-		sections.emplace_back(HotSection(curHot, leftDate, eDt));
+		sections.emplace_back(HotSection(curHot, leftDate, eDt, prevFactor));
 	}
 
 	return true;

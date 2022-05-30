@@ -186,14 +186,14 @@ private:
 	OrdDtlBlockPair* getRTOrdDtlBlock(const char* exchg, const char* code);
 	TransBlockPair* getRTTransBlock(const char* exchg, const char* code);
 
-	bool	cacheIntegratedFutBars(const std::string& key, const char* stdCode, WTSKlinePeriod period);
-	bool	cacheAdjustedStkBars(const std::string& key, const char* stdCode, WTSKlinePeriod period);
+	bool	cacheIntegratedBars(void* codeInfo, const std::string& key, const char* stdCode, WTSKlinePeriod period);
+	bool	cacheAdjustedStkBars(void* codeInfo, const std::string& key, const char* stdCode, WTSKlinePeriod period);
 
 	/*
 	 *	将历史数据放入缓存
 	 */
-	bool	cacheHisBarsFromFile(const std::string& key, const char* stdCode, WTSKlinePeriod period);
-	bool	cacheFinalBarsFromLoader(const std::string& key, const char* stdCode, WTSKlinePeriod period);
+	bool	cacheHisBarsFromFile(void* codeInfo, const std::string& key, const char* stdCode, WTSKlinePeriod period);
+	bool	cacheFinalBarsFromLoader(void* codeInfo, const std::string& key, const char* stdCode, WTSKlinePeriod period);
 
 
 	bool	loadStkAdjFactorsFromFile(const char* adjfile);

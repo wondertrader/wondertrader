@@ -588,8 +588,12 @@ public:
 				{
 					memcpy(codeInfo._code, ext, extlen - 1);
 					codeInfo._exright = (lastCh == SUFFIX_QFQ) ? 1 : 2;
+
+					extlen--;
+					lastCh = ext[extlen - 1];
 				}
-				else if (extlen == 4 && '0' <= lastCh && lastCh <= '9')
+				
+				if (extlen == 4 && '0' <= lastCh && lastCh <= '9')
 				{
 					//如果最后一段是4位数字，说明是分月合约
 					//TODO: 这样的判断存在一个假设，最后一位是数字的一定是期货分月合约，以后可能会有问题，先注释一下
