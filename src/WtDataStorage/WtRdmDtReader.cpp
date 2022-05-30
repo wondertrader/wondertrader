@@ -1857,29 +1857,12 @@ WTSKlineSlice* WtRdmDtReader::readKlineSliceByRange(const char* stdCode, WTSKlin
 	bool bHasToday = (endTDate >= curTDate);
 	std::string raw_code = cInfo._code;
 
-	if (commInfo->isFuture())
+	const char* ruleTag = cInfo._ruletag;
+	if (strlen(ruleTag) > 0)
 	{
-		const char* ruleTag = cInfo._ruletag;
-		if (strlen(ruleTag) > 0)
-		{
-			raw_code = _hot_mgr->getCustomRawCode(ruleTag, cInfo.stdCommID(), curTDate);
+		raw_code = _hot_mgr->getCustomRawCode(ruleTag, cInfo.stdCommID(), curTDate);
 
-			pipe_rdmreader_log(_sink, LL_INFO, "{} contract on {} confirmed: {} -> {}", ruleTag, curTDate, stdCode, raw_code);
-		}
-		//else if (cInfo.isHot())
-		//{
-		//	raw_code = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, curTDate);
-		//	pipe_rdmreader_log(_sink, LL_INFO, "Hot contract on {} confirmed: {} -> {}", curTDate, stdCode, raw_code);
-		//}
-		//else if (cInfo.isSecond())
-		//{
-		//	raw_code = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, curTDate);
-		//	pipe_rdmreader_log(_sink, LL_INFO, "Second contract on {} confirmed: {} -> {}", curTDate, stdCode, raw_code);
-		//}
-		else
-		{
-			raw_code = cInfo._code;
-		}
+		pipe_rdmreader_log(_sink, LL_INFO, "{} contract on {} confirmed: {} -> {}", ruleTag, curTDate, stdCode, raw_code);
 	}
 	else
 	{
@@ -1898,49 +1881,127 @@ WTSKlineSlice* WtRdmDtReader::readKlineSliceByRange(const char* stdCode, WTSKlin
 
 	if (bHasToday)
 	{
+		//读取实时的
+
 		const char* curCode = raw_code.c_str();
 
-		//读取实时的
-		RTKlineBlockPair* kPair = getRTKilneBlock(cInfo._exchg, curCode, period);
-		if (kPair != NULL)
+		if(cInfo._exright != 2)
 		{
-			StdUniqueLock lock(*kPair->_mtx);
-			//读取当日的数据
-			WTSBarStruct* pBar = std::lower_bound(kPair->_block->_bars, kPair->_block->_bars + (kPair->_block->_size - 1), eBar, [isDay](const WTSBarStruct& a, const WTSBarStruct& b){
-				if (isDay)
-					return a.date < b.date;
-				else
-					return a.time < b.time;
-			});
-			std::size_t idx = pBar - kPair->_block->_bars;
-			if ((isDay && pBar->date > eBar.date) || (!isDay && pBar->time > eBar.time))
+			RTKlineBlockPair* kPair = getRTKilneBlock(cInfo._exchg, curCode, period);
+			if (kPair != NULL)
 			{
-				pBar--;
-				idx--;
-			}
-
-			pBar = &kPair->_block->_bars[0];
-			//如果第一条实时K线的时间大于开始日期，则实时K线要全部包含进去
-			if ((isDay && pBar->date > sBar.date) || (!isDay && pBar->time > sBar.time))
-			{
-				rtHead = &kPair->_block->_bars[0];
-				rtCnt = idx+1;
-			}
-			else
-			{
-				pBar = std::lower_bound(kPair->_block->_bars, kPair->_block->_bars + idx, sBar, [isDay](const WTSBarStruct& a, const WTSBarStruct& b) {
+				StdUniqueLock lock(*kPair->_mtx);
+				//读取当日的数据
+				WTSBarStruct* pBar = std::lower_bound(kPair->_block->_bars, kPair->_block->_bars + (kPair->_block->_size - 1), eBar, [isDay](const WTSBarStruct& a, const WTSBarStruct& b) {
 					if (isDay)
 						return a.date < b.date;
 					else
 						return a.time < b.time;
 				});
+				std::size_t idx = pBar - kPair->_block->_bars;
+				if ((isDay && pBar->date > eBar.date) || (!isDay && pBar->time > eBar.time))
+				{
+					pBar--;
+					idx--;
+				}
 
-				std::size_t sIdx = pBar - kPair->_block->_bars;
-				rtHead = pBar;
-				rtCnt = idx - sIdx + 1;
-				bNeedHisData = false;
+				pBar = &kPair->_block->_bars[0];
+				//如果第一条实时K线的时间大于开始日期，则实时K线要全部包含进去
+				if ((isDay && pBar->date > sBar.date) || (!isDay && pBar->time > sBar.time))
+				{
+					rtHead = &kPair->_block->_bars[0];
+					rtCnt = idx + 1;
+				}
+				else
+				{
+					pBar = std::lower_bound(kPair->_block->_bars, kPair->_block->_bars + idx, sBar, [isDay](const WTSBarStruct& a, const WTSBarStruct& b) {
+						if (isDay)
+							return a.date < b.date;
+						else
+							return a.time < b.time;
+					});
+
+					std::size_t sIdx = pBar - kPair->_block->_bars;
+					rtHead = pBar;
+					rtCnt = idx - sIdx + 1;
+					bNeedHisData = false;
+				}
 			}
 		}
+		else
+		{
+			RTKlineBlockPair* kPair = getRTKilneBlock(cInfo._exchg, curCode, period);
+			if (kPair != NULL)
+			{
+				//如果是后复权，实时数据是需要单独缓存的，所以这里处理会很复杂
+				BarsList& barsList = _bars_cache[key];
+
+				//1、先检查缓存中有多少实时数据
+				std::size_t oldSize = barsList._rt_bars.size();
+				std::size_t newSize = kPair->_block->_size;
+
+				//2、再看看原始实时数据有多少，如果不够，就要补充进来
+				if (newSize > oldSize)
+				{
+					barsList._rt_bars.resize(newSize);
+					auto idx = oldSize;
+					if (oldSize != 0)
+						idx--;
+
+					//因为每次拷贝，最后一条K线都有可能是未闭合的，所以需要把最后一条K线覆盖
+					memcpy(&barsList._rt_bars[idx], &kPair->_block->_bars[idx], sizeof(WTSBarStruct)*(newSize - oldSize + 1));
+
+					//最后做复权处理
+					double factor = barsList._factor;
+					for (; idx < newSize; idx++)
+					{
+						WTSBarStruct* pBar = &barsList._rt_bars[idx];
+						pBar->open *= factor;
+						pBar->high *= factor;
+						pBar->low *= factor;
+						pBar->close *= factor;
+					}
+				}
+
+				//最后做一个定位
+				auto it = std::lower_bound(barsList._rt_bars.begin(), barsList._rt_bars.end(), eBar, [isDay](const WTSBarStruct& a, const WTSBarStruct& b) {
+					if (isDay)
+						return a.date < b.date;
+					else
+						return a.time < b.time;
+				});
+				std::size_t idx = it - barsList._rt_bars.begin();
+				WTSBarStruct* pBar = &barsList._rt_bars[idx];
+				if ((isDay && pBar->date > eBar.date) || (!isDay && pBar->time > eBar.time))
+				{
+					pBar--;
+					idx--;
+				}
+
+				pBar = &barsList._rt_bars[0];
+				//如果第一条实时K线的时间大于开始日期，则实时K线要全部包含进去
+				if ((isDay && pBar->date > sBar.date) || (!isDay && pBar->time > sBar.time))
+				{
+					rtHead = &barsList._rt_bars[0];
+					rtCnt = idx + 1;
+				}
+				else
+				{
+					it = std::lower_bound(barsList._rt_bars.begin(), barsList._rt_bars.begin() + idx, sBar, [isDay](const WTSBarStruct& a, const WTSBarStruct& b) {
+						if (isDay)
+							return a.date < b.date;
+						else
+							return a.time < b.time;
+					});
+
+					std::size_t sIdx = it - barsList._rt_bars.begin();
+					rtHead = &barsList._rt_bars[sIdx];
+					rtCnt = idx - sIdx + 1;
+					bNeedHisData = false;
+				}
+			}
+		}	
+		
 	}
 
 	if (bNeedHisData)
@@ -2249,33 +2310,93 @@ WTSKlineSlice* WtRdmDtReader::readKlineSliceByCount(const char* stdCode, WTSKlin
 	if (bHasToday)
 	{
 		const char* curCode = raw_code.c_str();
-
-		//读取实时的
-		RTKlineBlockPair* kPair = getRTKilneBlock(cInfo._exchg, curCode, period);
-		if (kPair != NULL)
+		if(cInfo._exright != 2)
 		{
-			StdUniqueLock lock(*kPair->_mtx);
-			//读取当日的数据
-			WTSBarStruct* pBar = std::lower_bound(kPair->_block->_bars, kPair->_block->_bars + (kPair->_block->_size - 1), eBar, [isDay](const WTSBarStruct& a, const WTSBarStruct& b) {
-				if (isDay)
-					return a.date < b.date;
-				else
-					return a.time < b.time;
-			});
-			std::size_t idx = pBar - kPair->_block->_bars;
-			if ((isDay && pBar->date > eBar.date) || (!isDay && pBar->time > eBar.time))
+			//读取实时的
+			RTKlineBlockPair* kPair = getRTKilneBlock(cInfo._exchg, curCode, period);
+			if (kPair != NULL)
 			{
-				pBar--;
-				idx--;
-			}
+				StdUniqueLock lock(*kPair->_mtx);
+				//读取当日的数据
+				WTSBarStruct* pBar = std::lower_bound(kPair->_block->_bars, kPair->_block->_bars + (kPair->_block->_size - 1), eBar, [isDay](const WTSBarStruct& a, const WTSBarStruct& b) {
+					if (isDay)
+						return a.date < b.date;
+					else
+						return a.time < b.time;
+				});
+				std::size_t idx = pBar - kPair->_block->_bars;
+				if ((isDay && pBar->date > eBar.date) || (!isDay && pBar->time > eBar.time))
+				{
+					pBar--;
+					idx--;
+				}
 
-			//如果第一条实时K线的时间大于开始日期，则实时K线要全部包含进去
-			rtCnt = min((uint32_t)idx + 1, count);
-			std::size_t sIdx = idx + 1 - rtCnt;
-			rtHead = kPair->_block->_bars + sIdx;
-			bNeedHisData = (rtCnt < count);
+				//如果第一条实时K线的时间大于开始日期，则实时K线要全部包含进去
+				rtCnt = min((uint32_t)idx + 1, count);
+				std::size_t sIdx = idx + 1 - rtCnt;
+				rtHead = kPair->_block->_bars + sIdx;
+				bNeedHisData = (rtCnt < count);
+			}
+		}
+		else
+		{
+			RTKlineBlockPair* kPair = getRTKilneBlock(cInfo._exchg, curCode, period);
+			if (kPair != NULL)
+			{
+				//如果是后复权，实时数据是需要单独缓存的，所以这里处理会很复杂
+				BarsList& barsList = _bars_cache[key];
+
+				//1、先检查缓存中有多少实时数据
+				std::size_t oldSize = barsList._rt_bars.size();
+				std::size_t newSize = kPair->_block->_size;
+
+				//2、再看看原始实时数据有多少，如果不够，就要补充进来
+				if(newSize > oldSize)
+				{
+					barsList._rt_bars.resize(newSize);
+					auto idx = oldSize;
+					if (oldSize != 0)
+						idx--;
+
+					//因为每次拷贝，最后一条K线都有可能是未闭合的，所以需要把最后一条K线覆盖
+					memcpy(&barsList._rt_bars[idx], &kPair->_block->_bars[idx], sizeof(WTSBarStruct)*(newSize - oldSize + 1));
+
+					//最后做复权处理
+					double factor = barsList._factor;
+					for(; idx < newSize; idx++)
+					{
+						WTSBarStruct* pBar = &barsList._rt_bars[idx];
+						pBar->open *= factor;
+						pBar->high *= factor;
+						pBar->low *= factor;
+						pBar->close *= factor;
+					}
+				}
+
+				//最后做一个定位
+				auto it = std::lower_bound(barsList._rt_bars.begin(), barsList._rt_bars.end(), eBar, [isDay](const WTSBarStruct& a, const WTSBarStruct& b) {
+					if (isDay)
+						return a.date < b.date;
+					else
+						return a.time < b.time;
+				});
+				std::size_t idx = it - barsList._rt_bars.begin();
+				WTSBarStruct* pBar = &barsList._rt_bars[idx];
+				if ((isDay && pBar->date > eBar.date) || (!isDay && pBar->time > eBar.time))
+				{
+					pBar--;
+					idx--;
+				}
+
+				//如果第一条实时K线的时间大于开始日期，则实时K线要全部包含进去
+				rtCnt = min((uint32_t)idx + 1, count);
+				std::size_t sIdx = idx + 1 - rtCnt;
+				rtHead = &barsList._rt_bars[sIdx];
+				bNeedHisData = (rtCnt < count);
+			}
 		}
 	}
+	
 
 	if (bNeedHisData)
 	{

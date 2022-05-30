@@ -264,6 +264,7 @@ private:
 		_BarsList():_factor(1.0){}
 
 		std::vector<WTSBarStruct>	_bars;
+		std::vector<WTSBarStruct>	_rt_bars;	//如果是后复权，就需要把实时数据拷贝到这里来
 	} BarsList;
 
 	typedef faster_hashmap<std::string, BarsList> BarsCache;
