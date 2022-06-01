@@ -187,7 +187,21 @@ bool ParserAdapter::init(const char* id, WTSVariant* cfg, IParserStub* stub, IBa
 						code = ay[1];
 					}
 					WTSContractInfo* contract = _bd_mgr->getContract(code.c_str(), exchg.c_str());
-					contractSet.insert(contract->getFullCode());
+					if(contract)
+						contractSet.insert(contract->getFullCode());
+					else
+					{
+						//如果是品种ID，则将该品种下全部合约都加到订阅列表
+						WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(exchg.c_str(), code.c_str());
+						if(commInfo)
+						{
+							const auto& codes = commInfo->getCodes();
+							for(const std::string& c : codes)
+							{
+								contractSet.insert(fmt::format("{}.{}", exchg, c));
+							}							
+						}
+					}
 				}
 			}
 			else if (!_exchg_filter.empty())
