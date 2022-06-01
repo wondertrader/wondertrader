@@ -662,12 +662,16 @@ double WtEngine::get_cur_price(const char* stdCode)
 		if (lastTick == NULL)
 			return 0.0;
 
+		WTSContractInfo* cInfo = lastTick->getContractInfo();
+
 		double ret = lastTick->price();
 		lastTick->release();
 
 		//如果是后复权，则进行复权处理
 		if (lastChar == SUFFIX_HFQ)
-			ret *= _data_mgr->get_adjusting_factor(fCode.c_str(), get_trading_date());
+		{
+			ret *= get_exright_factor(stdCode, cInfo->getCommInfo());
+		}
 
 		_price_map[sCode] = ret;
 		return ret;
@@ -676,6 +680,26 @@ double WtEngine::get_cur_price(const char* stdCode)
 	{
 		return it->second;
 	}
+}
+
+double WtEngine::get_exright_factor(const char* stdCode, WTSCommodityInfo* commInfo /* = NULL */)
+{
+	if (commInfo == NULL)
+		commInfo = get_commodity_info(stdCode);
+
+	if (commInfo == NULL)
+		return 1.0;
+
+	if (commInfo->isStock())
+		return _data_mgr->get_adjusting_factor(stdCode, get_trading_date());
+	else
+	{
+		const char* ruleTag = _hot_mgr->getRuleTag(stdCode);
+		if(strlen(ruleTag) > 0)
+			return _hot_mgr->getRuleFactor(ruleTag, commInfo->getFullPid(), get_trading_date());
+	}
+
+	return 1.0;
 }
 
 void WtEngine::sub_tick(uint32_t sid, const char* stdCode)

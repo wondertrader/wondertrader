@@ -113,5 +113,7 @@ public:
 	 *	根据标准合约代码，获取规则标签
 	 */
 	virtual const char* getRuleTag(const char* stdCode) = 0;
+
+	virtual double		getRuleFactor(const char* ruleTag, const char* fullPid, uint32_t uDate = 0) = 0;
 };
 NS_WTP_END

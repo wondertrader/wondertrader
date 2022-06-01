@@ -47,6 +47,8 @@ public:
 public:
 	virtual const char* getRuleTag(const char* stdCode) override;
 
+	virtual double		getRuleFactor(const char* ruleTag, const char* fullPid, uint32_t uDate  = 0 ) override;
+
 	//////////////////////////////////////////////////////////////////////////
 	//主力接口
 	virtual const char* getRawCode(const char* exchg, const char* pid, uint32_t dt = 0) override;

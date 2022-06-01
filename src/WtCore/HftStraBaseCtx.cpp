@@ -778,6 +778,10 @@ double HftStraBaseCtx::stra_get_undone(const char* stdCode)
 
 double HftStraBaseCtx::stra_get_price(const char* stdCode)
 {
+	auto it = _price_map.find(stdCode);
+	if (it != _price_map.end())
+		return it->second;
+
 	return _engine->get_cur_price(stdCode);
 }
 

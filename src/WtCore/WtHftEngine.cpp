@@ -282,9 +282,10 @@ void WtHftEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 						{
 							WTSTickData* newTick = WTSTickData::create(curTick->getTickStruct());
 							WTSTickStruct& newTS = newTick->getTickStruct();
+							newTick->setContractInfo(curTick->getContractInfo());
 
 							//这里做一个复权因子的处理
-							double factor = _data_mgr->get_adjusting_factor(stdCode, get_trading_date());
+							double factor = get_exright_factor();
 							newTS.open *= factor;
 							newTS.high *= factor;
 							newTS.low *= factor;

@@ -1187,6 +1187,10 @@ void CtaStraBaseCtx::stra_exit_short(const char* stdCode, double qty, const char
 
 double CtaStraBaseCtx::stra_get_price(const char* stdCode)
 {
+	auto it = _price_map.find(stdCode);
+	if (it != _price_map.end())
+		return it->second;
+
 	if (_engine)
 		return _engine->get_cur_price(stdCode);
 	

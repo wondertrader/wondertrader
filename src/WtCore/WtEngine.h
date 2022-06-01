@@ -108,6 +108,8 @@ public:
 
 	double get_cur_price(const char* stdCode);
 
+	double get_exright_factor(const char* stdCode, WTSCommodityInfo* commInfo = NULL);
+
 	double calc_fee(const char* stdCode, double price, double qty, uint32_t offset);
 
 	inline void setRiskMonitor(WtRiskMonPtr& monitor)

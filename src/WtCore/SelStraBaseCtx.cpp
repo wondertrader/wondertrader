@@ -698,6 +698,10 @@ void SelStraBaseCtx::on_session_end(uint32_t uTDate)
 #pragma region "²ßÂÔ½Ó¿Ú"
 double SelStraBaseCtx::stra_get_price(const char* stdCode)
 {
+	auto it = _price_map.find(stdCode);
+	if (it != _price_map.end())
+		return it->second;
+
 	if (_engine)
 		return _engine->get_cur_price(stdCode);
 

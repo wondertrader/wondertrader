@@ -267,7 +267,7 @@ WTSTickSlice* WtDtMgr::get_tick_slice(const char* stdCode, uint32_t count, uint6
 	if (it == _ticks_adjusted->end())
 	{
 		//先读取全部tick数据
-		double factor = get_adjusting_factor(pureStdCode.c_str(), get_date());
+		double factor = _engine->get_exright_factor(stdCode, NULL);
 		WTSTickSlice* slice = _reader->readTickSlice(pureStdCode.c_str(), 999999, etime);
 		std::vector<WTSTickStruct> ayTicks;
 		ayTicks.resize(slice->size());

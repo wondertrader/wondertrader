@@ -58,6 +58,61 @@ const char* WTSHotMgr::getRuleTag(const char* stdCode)
 	return it->first.c_str();
 }
 
+double WTSHotMgr::getRuleFactor(const char* ruleTag, const char* fullPid, uint32_t uDate /* = 0 */ )
+{
+	if (m_mapCustRules == NULL)
+		return 1.0;
+
+	WTSProductHotMap* prodMap = (WTSProductHotMap*)m_mapCustRules->get(ruleTag);
+	if (prodMap == NULL)
+		return 1.0;
+
+	WTSDateHotMap* dtMap = STATIC_CONVERT(prodMap->get(fullPid), WTSDateHotMap*);
+	if (dtMap == NULL)
+		return 1.0;
+
+	if(uDate == 0)
+	{
+		WTSSwitchItem* pItem = STATIC_CONVERT(dtMap->rbegin()->second, WTSSwitchItem*);
+		return pItem->get_factor();
+	}
+
+	auto it = dtMap->lower_bound(uDate);
+	if(it == dtMap->end())
+	{
+		//找不到，说明记录的日期都比传入的日期小，所以返回最后一条的复权因子
+		WTSSwitchItem* pItem = STATIC_CONVERT(dtMap->rbegin()->second, WTSSwitchItem*);
+		return pItem->get_factor();
+	}
+	else
+	{
+		//找到了，就要看切换日期是否等于传入日期
+		//如果相等，说明刚好切换，那么就直接返回复权因子
+		WTSSwitchItem* pItem = STATIC_CONVERT(it->second, WTSSwitchItem*);
+		if (pItem->switch_date() == uDate)
+		{
+			return pItem->get_factor();
+		}
+		else
+		{
+			//如果切换日期大于传入日期，则要看前一个阶段
+			//如果已经是第一个了，则直接返回1.0
+			if (it == dtMap->begin())
+			{
+				return 1.0;
+			}
+			else
+			{
+				//如果不是第一个，则回退一个，再返回即可
+				it--;
+				WTSSwitchItem* pItem = STATIC_CONVERT(it->second, WTSSwitchItem*);
+				return pItem->get_factor();
+			}
+		}
+	}
+
+}
+
 #pragma region "次主力接口"
 bool WTSHotMgr::loadHots(const char* filename)
 {
@@ -349,11 +404,11 @@ bool WTSHotMgr::splitCustomSections(const char* tag, const char* fullPid, uint32
 
 	WTSProductHotMap* prodMap = (WTSProductHotMap*)m_mapCustRules->get(tag);
 	if (prodMap == NULL)
-		return "";
+		return false;
 
 	WTSDateHotMap* dtMap = STATIC_CONVERT(prodMap->get(fullPid), WTSDateHotMap*);
 	if (dtMap == NULL)
-		return "";
+		return false;
 
 	uint32_t leftDate = sDt;
 	uint32_t lastDate = 0;
