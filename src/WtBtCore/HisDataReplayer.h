@@ -9,6 +9,7 @@
  */
 #pragma once
 #include <string>
+#include <set>
 #include "HisDataMgr.h"
 #include "../WtDataStorage/DataDefine.h"
 
@@ -408,10 +409,14 @@ private:
 
 	std::string		_main_key;
 	std::string		_min_period;	//最小K线周期,这个主要用于未订阅品种的信号处理上
+	std::string		_main_period;	//主周期
 	bool			_tick_enabled;	//是否开启了tick回测
 	bool			_tick_simulated;	//是否需要模拟tick
 	std::map<std::string, WTSTickStruct>	_day_cache;	//每日Tick缓存,当tick回放未开放时,会用到该缓存
 	std::map<std::string, std::string>		_ticker_keys;
+
+	//By Wesley @ 2022.06.01
+	std::set<std::string>		_unsubbed_in_need;	//未订阅但需要的K线
 
 	uint32_t		_cur_date;
 	uint32_t		_cur_time;
@@ -454,8 +459,11 @@ private:
 
 	//////////////////////////////////////////////////////////////////////////
 	//
-	typedef faster_hashset<uint32_t> SIDSet;
-	typedef faster_hashmap<std::string, SIDSet>	StraSubMap;
+	//By Wesley @ 2022.02.07
+	//tick数据订阅项，first是contextid，second是订阅选项，0-原始订阅，1-前复权，2-后复权
+	typedef std::pair<uint32_t, uint32_t> SubOpt;
+	typedef faster_hashmap<uint32_t, SubOpt> SubList;
+	typedef faster_hashmap<LongKey, SubList>	StraSubMap;
 	StraSubMap		_tick_sub_map;		//tick数据订阅表
 	StraSubMap		_ordque_sub_map;	//orderqueue数据订阅表
 	StraSubMap		_orddtl_sub_map;	//orderdetail数据订阅表

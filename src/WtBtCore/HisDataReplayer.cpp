@@ -154,6 +154,7 @@ HisDataReplayer::HisDataReplayer()
 	, _begin_time(0)
 	, _end_time(0)
 	, _bt_loader(NULL)
+	, _min_period("d")
 {
 }
 
@@ -1335,8 +1336,8 @@ uint64_t HisDataReplayer::getNextTransTime(uint32_t curTDate, uint64_t stime /* 
 	uint64_t nextTime = UINT64_MAX;
 	for (auto v : _trans_sub_map)
 	{
-		std::string stdCode = v.first;
-		if (!checkTransactions(stdCode.c_str(), curTDate))
+		const char* stdCode = v.first.c_str();
+		if (!checkTransactions(stdCode, curTDate))
 			continue;
 
 		auto& itemList = _trans_cache[stdCode];
@@ -1383,8 +1384,8 @@ uint64_t HisDataReplayer::getNextOrdDtlTime(uint32_t curTDate, uint64_t stime /*
 	uint64_t nextTime = UINT64_MAX;
 	for (auto v : _orddtl_sub_map)
 	{
-		std::string stdCode = v.first;
-		if (!checkOrderDetails(stdCode.c_str(), curTDate))
+		const char* stdCode = v.first.c_str();
+		if (!checkOrderDetails(stdCode, curTDate))
 			continue;
 
 		auto& itemList = _orddtl_cache[stdCode];
@@ -1431,8 +1432,8 @@ uint64_t HisDataReplayer::getNextOrdQueTime(uint32_t curTDate, uint64_t stime /*
 	uint64_t nextTime = UINT64_MAX;
 	for (auto v : _ordque_sub_map)
 	{
-		std::string stdCode = v.first;
-		if (!checkOrderQueues(stdCode.c_str(), curTDate))
+		const char* stdCode = v.first.c_str();
+		if (!checkOrderQueues(stdCode, curTDate))
 			continue;
 
 		auto& itemList = _ordque_cache[stdCode];
@@ -1898,7 +1899,10 @@ WTSKlineSlice* HisDataReplayer::get_kline_slice(const char* stdCode, const char*
 	fmtutil::format_to(key, "{}#{}#{}", stdCode, period, times);
 
 	if (isMain)
+	{
 		_main_key = key;
+		_main_period = fmt::format("{}#{}", period, times);
+	}
 
 	//if(!_tick_enabled)
 	//不做判断,主要为了防止没有tick数据,而采用第二方案
@@ -1914,11 +1918,20 @@ WTSKlineSlice* HisDataReplayer::get_kline_slice(const char* stdCode, const char*
 				_ticker_keys[stdCode] = key;
 				_min_period = period;
 			}
-			else if (oldKey.at(0) == period[0] && times < strtoul(oldKey.substr(2, 1).c_str(), NULL, 10))
+			else if (oldKey.at(0) == period[0] && times < strtoul(oldKey.substr(2).c_str(), NULL, 10))
 			{
 				_ticker_keys[stdCode] = key;
 				_min_period = period;
 			}
+		}
+
+		auto len = strlen(stdCode);
+		char lastCh = stdCode[len - 1];
+		if(lastCh == SUFFIX_HFQ || lastCh == SUFFIX_QFQ)
+		{
+			//如果是复权数据，则要把原始数据放到需要的列表中，最后再做检查
+			std::string tickCode(stdCode, len - 1);
+			_unsubbed_in_need.insert(tickCode);
 		}
 	}
 
@@ -2702,8 +2715,23 @@ void HisDataReplayer::sub_tick(uint32_t sid, const char* stdCode)
 	if (strlen(stdCode) == 0)
 		return;
 
-	SIDSet& sids = _tick_sub_map[stdCode];
-	sids.insert(sid);
+	std::size_t length = strlen(stdCode);
+	uint32_t flag = 0;
+	if (stdCode[length - 1] == SUFFIX_QFQ || stdCode[length - 1] == SUFFIX_HFQ)
+	{
+		length--;
+
+		flag = (stdCode[length - 1] == SUFFIX_QFQ) ? 1 : 2;
+	}
+
+	std::string hitCode(stdCode, length);
+	SubList& sids = _tick_sub_map[hitCode];
+	sids[sid] = std::make_pair(sid, flag);
+
+	if (_tick_enabled)
+		return;
+
+	_unsubbed_in_need.insert(hitCode);
 }
 
 void HisDataReplayer::sub_order_detail(uint32_t sid, const char* stdCode)
@@ -2711,8 +2739,17 @@ void HisDataReplayer::sub_order_detail(uint32_t sid, const char* stdCode)
 	if (strlen(stdCode) == 0)
 		return;
 
-	SIDSet& sids = _orddtl_sub_map[stdCode];
-	sids.insert(sid);
+	std::size_t length = strlen(stdCode);
+	uint32_t flag = 0;
+	if (stdCode[length - 1] == SUFFIX_QFQ || stdCode[length - 1] == SUFFIX_HFQ)
+	{
+		length--;
+
+		flag = (stdCode[length - 1] == SUFFIX_QFQ) ? 1 : 2;
+	}
+
+	SubList& sids = _orddtl_sub_map[std::string(stdCode, length)];
+	sids[sid] = std::make_pair(sid, flag);
 }
 
 void HisDataReplayer::sub_order_queue(uint32_t sid, const char* stdCode)
@@ -2720,8 +2757,17 @@ void HisDataReplayer::sub_order_queue(uint32_t sid, const char* stdCode)
 	if (strlen(stdCode) == 0)
 		return;
 
-	SIDSet& sids = _ordque_sub_map[stdCode];
-	sids.insert(sid);
+	std::size_t length = strlen(stdCode);
+	uint32_t flag = 0;
+	if (stdCode[length - 1] == SUFFIX_QFQ || stdCode[length - 1] == SUFFIX_HFQ)
+	{
+		length--;
+
+		flag = (stdCode[length - 1] == SUFFIX_QFQ) ? 1 : 2;
+	}
+
+	SubList& sids = _ordque_sub_map[std::string(stdCode, length)];
+	sids[sid] = std::make_pair(sid, flag);
 }
 
 void HisDataReplayer::sub_transaction(uint32_t sid, const char* stdCode)
@@ -2729,15 +2775,23 @@ void HisDataReplayer::sub_transaction(uint32_t sid, const char* stdCode)
 	if (strlen(stdCode) == 0)
 		return;
 
-	SIDSet& sids = _trans_sub_map[stdCode];
-	sids.insert(sid);
+	std::size_t length = strlen(stdCode);
+	uint32_t flag = 0;
+	if (stdCode[length - 1] == SUFFIX_QFQ || stdCode[length - 1] == SUFFIX_HFQ)
+	{
+		length--;
+
+		flag = (stdCode[length - 1] == SUFFIX_QFQ) ? 1 : 2;
+	}
+
+	SubList& sids = _trans_sub_map[std::string(stdCode, length)];
+	sids[sid] = std::make_pair(sid, flag);
 }
 
 void HisDataReplayer::checkUnbars()
 {
-	for(auto& m : _tick_sub_map)
+	for(const std::string& stdCode : _unsubbed_in_need)
 	{
-		const char* stdCode = m.first.c_str();
 		bool bHasBars = false;
 		for (auto& m : _unbars_cache)
 		{
@@ -2768,7 +2822,23 @@ void HisDataReplayer::checkUnbars()
 
 		//如果订阅了tick,但是没有对应的K线数据,则自动加载1分钟线到内存中
 		bool bHasHisData = false;
-		std::string key = StrUtil::printf("%s#m#1", stdCode);
+		std::string key = fmt::format("{}#{}", stdCode, _main_period);
+
+		WTSKlinePeriod kp;
+		uint32_t realTimes = strtoul(_main_period.c_str() + 2, NULL, 10);
+		if (_main_period[0] == 'm')
+		{
+			if (realTimes % 5 == 0)
+			{
+				kp = KP_Minute5;
+			}
+			else
+			{
+				kp = KP_Minute1;
+			}
+		}
+		else
+			kp = KP_DAY;
 
 		/*
 		 *	By Wesley @ 2021.12.20
@@ -2777,26 +2847,25 @@ void HisDataReplayer::checkUnbars()
 		 */
 		if (NULL != _bt_loader)
 		{
-			bHasHisData = cacheFinalBarsFromLoader(key, stdCode, KP_Minute1, false);
+			bHasHisData = cacheFinalBarsFromLoader(key, stdCode.c_str(), kp, false);
 		}
 
 		if(!bHasHisData)
 		{
 			if (_mode == "csv")
 			{
-				bHasHisData = cacheRawBarsFromCSV(key, stdCode, KP_Minute1, false);
+				bHasHisData = cacheRawBarsFromCSV(key, stdCode.c_str(), kp, false);
 			}
 			else
 			{
-				bHasHisData = cacheRawBarsFromBin(key, stdCode, KP_Minute1, false);
+				bHasHisData = cacheRawBarsFromBin(key, stdCode.c_str(), kp, false);
 			}
 		}
-		
 		
 		if (!bHasHisData)
 			continue;
 
-		WTSSessionInfo* sInfo = get_session_info(stdCode, true);
+		WTSSessionInfo* sInfo = get_session_info(stdCode.c_str(), true);
 
 		BarsListPtr& kBlkPair = _unbars_cache[key];
 		
@@ -3404,8 +3473,11 @@ bool HisDataReplayer::cacheIntegratedFutBarsFromBin(void* codeInfo, const std::s
 	default: pname = "day"; break;
 	}
 
-	_bars_cache[key].reset(new BarsList());
-	BarsListPtr& barsList = _bars_cache[key];
+	if(bSubbed)
+		_bars_cache[key].reset(new BarsList());
+	else
+		_unbars_cache[key].reset(new BarsList());
+	BarsListPtr& barsList = bSubbed ? _bars_cache[key] : _unbars_cache[key];
 	barsList->_code = stdCode;
 	barsList->_period = period;
 
@@ -3970,7 +4042,7 @@ bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* st
 	const char* ruleTag = cInfo._ruletag;
 	if (strlen(ruleTag) > 0)//如果是读取期货主力连续数据
 	{
-		return cacheIntegratedFutBarsFromBin(&cInfo, key, stdCode, period);
+		return cacheIntegratedFutBarsFromBin(&cInfo, key, stdCode, period, bSubbed);
 	}
 	else if (cInfo.isExright() && commInfo->isStock())//如果是读取股票复权数据
 	{
