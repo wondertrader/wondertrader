@@ -120,6 +120,8 @@ public:
 
 	virtual void OnErrRtnOrderInsert(CThostFtdcInputOrderField *pInputOrder, CThostFtdcRspInfoField *pRspInfo) override;
 
+	virtual void OnRtnInstrumentStatus(CThostFtdcInstrumentStatusField *pInstrumentStatus) override;
+
 protected:
 	/*
 	*	ºÏ≤È¥ÌŒÛ–≈œ¢

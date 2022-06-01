@@ -326,6 +326,20 @@ typedef enum tagTraderEvent
 }WTSTraderEvent;
 
 /*
+ *	交易状态
+ */
+typedef enum tagTradeStatus
+{
+	TS_BeforeTrading	= '0',	//开盘前
+	TS_NotTrading		= '1',	//非交易
+	TS_Continous		= '2',	//连续竞价
+	TS_AuctionOrdering	= '3',	//集合竞价下单
+	TS_AuctionBalance	= '4',	//集合竞价平衡
+	TS_AuctionMatch		= '5',	//集合竞价撮合
+	TS_Closed			= '6'	//收盘
+}WTSTradeStatus;
+
+/*
  *	买卖方向类型
  */
 typedef uint32_t WTSBSDirectType;

@@ -1129,6 +1129,12 @@ void TraderFemas::OnErrRtnOrderAction(CUstpFtdcOrderActionField *pOrderAction, C
 
 }
 
+void TraderFemas::OnRtnInstrumentStatus(CUstpFtdcInstrumentStatusField *pInstrumentStatus)
+{
+	if (m_sink)
+		m_sink->onPushInstrumentStatus(pInstrumentStatus->ExchangeID, pInstrumentStatus->InstrumentID, (WTSTradeStatus)pInstrumentStatus->InstrumentStatus);
+}
+
 bool TraderFemas::isConnected()
 {
 	return (m_wrapperState == WS_ALLREADY);

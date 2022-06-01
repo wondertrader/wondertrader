@@ -1324,6 +1324,12 @@ void TraderCTPMini::OnErrRtnOrderInsert(CThostFtdcInputOrderField *pInputOrder, 
 	}
 }
 
+void TraderCTPMini::OnRtnInstrumentStatus(CThostFtdcInstrumentStatusField *pInstrumentStatus)
+{
+	if (m_sink)
+		m_sink->onPushInstrumentStatus(pInstrumentStatus->ExchangeID, pInstrumentStatus->InstrumentID, (WTSTradeStatus)pInstrumentStatus->InstrumentStatus);
+}
+
 bool TraderCTPMini::isConnected()
 {
 	return (m_wrapperState == WS_ALLREADY);
