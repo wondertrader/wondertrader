@@ -196,9 +196,9 @@ bool ParserAdapter::init(const char* id, WTSVariant* cfg, IParserStub* stub, IBa
 						if(commInfo)
 						{
 							const auto& codes = commInfo->getCodes();
-							for(const std::string& c : codes)
+							for(const auto& c : codes)
 							{
-								contractSet.insert(fmt::format("{}.{}", exchg, c));
+								contractSet.insert(fmt::format("{}.{}", exchg, c.c_str()));
 							}							
 						}
 					}
