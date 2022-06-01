@@ -53,8 +53,8 @@ bool WtStraDualThrust::init(WTSVariant* cfg)
 void WtStraDualThrust::on_schedule(ICtaStraCtx* ctx, uint32_t curDate, uint32_t curTime)
 {
 	std::string code = _code;
-	if (_isstk)
-		code += "-";
+	code += "+";
+
 	WTSKlineSlice *kline = ctx->stra_get_bars(code.c_str(), _period.c_str(), _count, true);
 	if(kline == NULL)
 	{
@@ -139,8 +139,8 @@ void WtStraDualThrust::on_schedule(ICtaStraCtx* ctx, uint32_t curDate, uint32_t 
 void WtStraDualThrust::on_init(ICtaStraCtx* ctx)
 {
 	std::string code = _code;
-	if (_isstk)
-		code += "-";
+	code += "+";
+	ctx->stra_sub_ticks(_code.c_str());
 	WTSKlineSlice *kline = ctx->stra_get_bars(code.c_str(), _period.c_str(), _count, true);
 	if (kline == NULL)
 	{
