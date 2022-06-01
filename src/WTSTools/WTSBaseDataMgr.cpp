@@ -319,7 +319,7 @@ bool WTSBaseDataMgr::loadCommodities(const char* filename, bool isUTF8)
 
 			if (strlen(sid) == 0)
 			{
-				WTSLogger::error("No session configured for {}.{}", exchg.c_str(), pid.c_str());
+				WTSLogger::warn("No session configured for {}.{}", exchg.c_str(), pid.c_str());
 				continue;
 			}
 
