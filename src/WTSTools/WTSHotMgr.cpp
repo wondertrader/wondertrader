@@ -126,7 +126,7 @@ const char* WTSHotMgr::getPrevRawCode(const char* exchg, const char* pid, uint32
 	static thread_local char fullPid[64] = { 0 };
 	fmtutil::format_to(fullPid, "{}.{}", exchg, pid);
 
-	return getPrevCustomRawCode("HOT", fullPid);
+	return getPrevCustomRawCode("HOT", fullPid, dt);
 }
 
 const char* WTSHotMgr::getRawCode(const char* exchg, const char* pid, uint32_t dt)
@@ -134,7 +134,7 @@ const char* WTSHotMgr::getRawCode(const char* exchg, const char* pid, uint32_t d
 	static thread_local char fullPid[64] = { 0 };
 	fmtutil::format_to(fullPid, "{}.{}", exchg, pid);
 
-	return getCustomRawCode("HOT", fullPid);
+	return getCustomRawCode("HOT", fullPid, dt);
 }
 
 bool WTSHotMgr::isHot(const char* exchg, const char* rawCode, uint32_t dt)
@@ -165,7 +165,7 @@ const char* WTSHotMgr::getPrevSecondRawCode(const char* exchg, const char* pid, 
 	static thread_local char fullPid[64] = { 0 };
 	fmtutil::format_to(fullPid, "{}.{}", exchg, pid);
 
-	return getPrevCustomRawCode("2ND", fullPid);
+	return getPrevCustomRawCode("2ND", fullPid, dt);
 }
 
 const char* WTSHotMgr::getSecondRawCode(const char* exchg, const char* pid, uint32_t dt)
@@ -173,7 +173,7 @@ const char* WTSHotMgr::getSecondRawCode(const char* exchg, const char* pid, uint
 	static thread_local char fullPid[64] = { 0 };
 	fmtutil::format_to(fullPid, "{}.{}", exchg, pid);
 
-	return getCustomRawCode("2ND", fullPid);
+	return getCustomRawCode("2ND", fullPid, dt);
 }
 
 bool WTSHotMgr::isSecond(const char* exchg, const char* rawCode, uint32_t dt)

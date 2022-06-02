@@ -71,11 +71,11 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	//通用接口
-	virtual const char* getCustomRawCode(const char* tag, const char* fullPid, uint32_t dt = 0) override;
+	virtual const char* getCustomRawCode(const char* tag, const char* fullPid, uint32_t dt) override;
 
-	virtual const char* getPrevCustomRawCode(const char* tag, const char* fullPid, uint32_t dt = 0) override;
+	virtual const char* getPrevCustomRawCode(const char* tag, const char* fullPid, uint32_t dt) override;
 
-	virtual bool		isCustomHot(const char* tag, const char* fullCode, uint32_t dt = 0) override;
+	virtual bool		isCustomHot(const char* tag, const char* fullCode, uint32_t dt) override;
 
 	virtual bool		splitCustomSections(const char* tag, const char* fullPid, uint32_t sDt, uint32_t eDt, HotSections& sections) override;
 

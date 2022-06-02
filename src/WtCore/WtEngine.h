@@ -108,6 +108,11 @@ public:
 
 	double get_cur_price(const char* stdCode);
 
+	/*
+	 *	获取复权因子
+	 *	@stdCode	合约代码
+	 *	@commInfo	品种信息
+	 */
 	double get_exright_factor(const char* stdCode, WTSCommodityInfo* commInfo = NULL);
 
 	double calc_fee(const char* stdCode, double price, double qty, uint32_t offset);
