@@ -407,25 +407,9 @@ void WtExecRunner::handle_push_quote(WTSTickData* quote, uint32_t hotFlag /* = 0
 	WtHelper::setTime(uDate, curMin, curSec);
 	WtHelper::setTDate(quote->tradingdate());
 
-	WTSCommodityInfo* commInfo = cInfo->getCommInfo();
+	_data_mgr.handle_push_quote(quote->code(), quote);
 
-	std::string stdCode;
-	if (commInfo->getCategoty() == CC_FutOption)
-	{
-		stdCode = CodeHelper::rawFutOptCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
-	}
-	else if (CodeHelper::isMonthlyCode(quote->code()))
-	{
-		stdCode = CodeHelper::rawMonthCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
-	}
-	else
-	{
-		stdCode = CodeHelper::rawFlatCodeToStdCode(cInfo->getCode(), cInfo->getExchg(), cInfo->getProduct());
-	}
-	quote->setCode(stdCode.c_str());
-	_data_mgr.handle_push_quote(stdCode.c_str(), quote);
-
-	_exe_mgr.handle_tick(stdCode.c_str(), quote);
+	_exe_mgr.handle_tick(quote->code(), quote);
 }
 
 void WtExecRunner::release()
