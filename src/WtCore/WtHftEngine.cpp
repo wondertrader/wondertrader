@@ -17,7 +17,9 @@
 
 #include "../Share/decimal.h"
 #include "../Share/CodeHelper.hpp"
+
 #include "../Includes/WTSVariant.hpp"
+#include "../Includes/WTSContractInfo.hpp"
 
 #include "../WTSTools/WTSLogger.h"
 
@@ -285,7 +287,7 @@ void WtHftEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 							newTick->setContractInfo(curTick->getContractInfo());
 
 							//这里做一个复权因子的处理
-							double factor = get_exright_factor();
+							double factor = get_exright_factor(stdCode, curTick->getContractInfo()->getCommInfo());
 							newTS.open *= factor;
 							newTS.high *= factor;
 							newTS.low *= factor;
