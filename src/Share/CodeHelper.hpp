@@ -566,7 +566,7 @@ public:
 			thread_local static CodeInfo codeInfo;
 			codeInfo.clear();
 			auto idx = StrUtil::findFirst(stdCode, '.');
-			memcpy(codeInfo._exchg, stdCode, idx);
+			wt_strcpy(codeInfo._exchg, stdCode, idx);
 
 			auto idx2 = StrUtil::findFirst(stdCode + idx + 1, '.');
 			if (idx2 == std::string::npos)
@@ -580,13 +580,12 @@ public:
 			}
 			else
 			{
-				memcpy(codeInfo._product, stdCode + idx + 1, idx2);
+				wt_strcpy(codeInfo._product, stdCode + idx + 1, idx2);
 				const char* ext = stdCode + idx + idx2 + 2;
 				std::size_t extlen = strlen(ext);
 				char lastCh = ext[extlen - 1];
 				if (lastCh == SUFFIX_QFQ || lastCh == SUFFIX_HFQ)
 				{
-					memcpy(codeInfo._code, ext, extlen - 1);
 					codeInfo._exright = (lastCh == SUFFIX_QFQ) ? 1 : 2;
 
 					extlen--;
@@ -601,15 +600,15 @@ public:
 					//郑商所得单独处理一下，这个只能hardcode了
 					auto i = wt_strcpy(codeInfo._code, codeInfo._product);
 					if (memcmp(codeInfo._exchg, "CZCE", 4) == 0)
-						memcpy(codeInfo._code + i, ext + 1, extlen-1);
+						wt_strcpy(codeInfo._code + i, ext + 1, extlen-1);
 					else
-						memcpy(codeInfo._code + i, ext, extlen);
+						wt_strcpy(codeInfo._code + i, ext, extlen);
 				}
 				else
 				{
 					const char* ruleTag = (hotMgr != NULL) ? hotMgr->getRuleTag(ext) :"";
 					if (strlen(ruleTag) == 0)
-						wt_strcpy(codeInfo._code, ext);
+						wt_strcpy(codeInfo._code, ext, extlen);
 					else
 					{
 						wt_strcpy(codeInfo._code, codeInfo._product);
