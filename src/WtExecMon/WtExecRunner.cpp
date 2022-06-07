@@ -390,14 +390,7 @@ WTSSessionInfo* WtExecRunner::get_session_info(const char* sid, bool isCode /* =
 
 void WtExecRunner::handle_push_quote(WTSTickData* quote, uint32_t hotFlag /* = 0 */)
 {
-	WTSContractInfo* cInfo = quote->getContractInfo();
-	if (cInfo == NULL)
-	{
-		cInfo = _bd_mgr.getContract(quote->code(), quote->exchg());
-		quote->setContractInfo(cInfo);
-	}
-
-	if (cInfo == NULL)
+	if (quote == NULL)
 		return;
 
 	uint32_t uDate = quote->actiondate();
