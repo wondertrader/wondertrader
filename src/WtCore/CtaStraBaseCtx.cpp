@@ -891,7 +891,7 @@ void CtaStraBaseCtx::on_session_begin(uint32_t uTDate)
 	{
 		const char* stdCode = it.first.c_str();
 		PosInfo& pInfo = (PosInfo&)it.second;
-		if(pInfo._frozen_date < uTDate && !decimal::eq(pInfo._frozen, 0))
+		if(pInfo._frozen_date!=0 && pInfo._frozen_date < uTDate && !decimal::eq(pInfo._frozen, 0))
 		{
 			log_debug("{} of %s frozen on {} released on {}", pInfo._frozen, stdCode, pInfo._frozen_date, uTDate);
 
@@ -1281,6 +1281,7 @@ void CtaStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 		{
 			//ASSERT(diff>0);
 			pInfo._frozen += diff;
+			pInfo._frozen_date = curTDate;
 			log_debug("{} frozen position updated to {}", stdCode, pInfo._frozen);
 		}
 
@@ -1366,6 +1367,7 @@ void CtaStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 			if (commInfo->isT1())
 			{
 				pInfo._frozen += left;
+				pInfo._frozen_date = curTDate;
 				log_debug("{} frozen position up to {}", stdCode, pInfo._frozen);
 			}
 
