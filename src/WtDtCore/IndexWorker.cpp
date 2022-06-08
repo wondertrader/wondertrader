@@ -65,8 +65,8 @@ bool IndexWorker::init(WTSVariant* config)
 			//如果是对象，则会有scale，作为权重缩放系数，这种主要用于多品种板块，不同品种权重不同
 			if (cfgItem->isObject())
 			{
-				std::string fullPid = cfgItem->getCString("code");
-				weight = cfgItem->getDouble("scale");
+				fullPid = cfgItem->getCString("code");
+				weight = cfgItem->getDouble("weight");
 				if (decimal::eq(weight, 0.0))
 					weight = 1.0;
 			}

@@ -28,7 +28,8 @@ ELSE(GNUCC)
 	LIST(APPEND LIBS
 		dl
 		boost_filesystem
-        	pthread
+        boost_thread
+        pthread
 		)
 	if(WIN32)
 		LIST(APPEND LIBS
