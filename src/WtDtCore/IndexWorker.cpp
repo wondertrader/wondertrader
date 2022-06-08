@@ -264,7 +264,7 @@ void IndexWorker::generate_tick()
 
 			uint64_t curTime = TimeUtils::makeTime(wFactor._tick.action_date, wFactor._tick.action_time);
 			maxTime = std::max(maxTime, curTime);
-			tDate = wFactor._tick.trading_date;
+			tDate = std::max(tDate, wFactor._tick.trading_date);
 
 			total_vol += wFactor._tick.total_volume;
 			total_amt += wFactor._tick.total_turnover;
@@ -334,6 +334,6 @@ void IndexWorker::generate_tick()
 	WTSTickData *newTick = WTSTickData::create(_cache);
 	newTick->setContractInfo(_cInfo);
 	_factor->push_tick(newTick);
-	WTSLogger::info("{}.{} - {}.{} - {}", _cache.exchg, _cache.code, _cache.action_date, _cache.action_time, _cache.price);
+	WTSLogger::debug("{}.{} - {}.{} - {}", _cache.exchg, _cache.code, _cache.action_date, _cache.action_time, _cache.price);
 	newTick->release();
 }
