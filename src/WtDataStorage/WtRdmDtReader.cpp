@@ -1570,10 +1570,10 @@ bool WtRdmDtReader::cacheHisBarsFromFile(void* codeInfo, const std::string& key,
 								std::size_t curIdx = pBar - firstBar;
 								while (pBar && curIdx < lastIdx)
 								{
-									pBar->open /= factor;
-									pBar->high /= factor;
-									pBar->low /= factor;
-									pBar->close /= factor;
+									pBar->open *= factor;
+									pBar->high *= factor;
+									pBar->low *= factor;
+									pBar->close *= factor;
 
 									pBar++;
 									curIdx++;
