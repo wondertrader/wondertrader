@@ -22,11 +22,12 @@ USING_NS_WTP;
 class wxMainFrame;
 class WTSBaseDataMgr;
 class DataManager;
+class IndexFactory;
 
 class ParserAdapter : public IParserSpi, private boost::noncopyable
 {
 public:
-	ParserAdapter(WTSBaseDataMgr * bgMgr, DataManager* dtMgr);
+	ParserAdapter(WTSBaseDataMgr * bgMgr, DataManager* dtMgr, IndexFactory *idxFactory);
 	~ParserAdapter();
 
 public:
@@ -60,6 +61,7 @@ private:
 	FuncDeleteParser	_remover;
 	WTSBaseDataMgr*		_bd_mgr;
 	DataManager*		_dt_mgr;
+	IndexFactory*		_idx_fact;
 
 	bool				_stopped;
 

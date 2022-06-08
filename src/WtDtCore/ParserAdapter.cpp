@@ -11,6 +11,7 @@
 #include "DataManager.h"
 #include "StateMonitor.h"
 #include "WtHelper.h"
+#include "IndexFactory.h"
 
 #include "../Share/StrUtil.hpp"
 #include "../Share/DLLHelper.hpp"
@@ -26,12 +27,13 @@
 
 //////////////////////////////////////////////////////////////////////////
 //ParserAdapter
-ParserAdapter::ParserAdapter(WTSBaseDataMgr * bgMgr, DataManager* dtMgr)
+ParserAdapter::ParserAdapter(WTSBaseDataMgr * bgMgr, DataManager* dtMgr, IndexFactory *idxFactory)
 	: _parser_api(NULL)
 	, _remover(NULL)
 	, _stopped(false)
 	, _bd_mgr(bgMgr)
 	, _dt_mgr(dtMgr)
+	, _idx_fact(idxFactory)
 	, _cfg(NULL)
 {
 }
@@ -336,6 +338,9 @@ void ParserAdapter::handleQuote( WTSTickData *quote, uint32_t procFlag )
 
 	if (!_dt_mgr->writeTick(quote, procFlag))
 		return;
+
+	if (_idx_fact)
+		_idx_fact->handle_quote(quote);
 }
 
 void ParserAdapter::handleParserLog( WTSLogLevel ll, const char* message)
