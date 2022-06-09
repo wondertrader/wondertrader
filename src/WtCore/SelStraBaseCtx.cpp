@@ -951,6 +951,11 @@ WTSCommodityInfo* SelStraBaseCtx::stra_get_comminfo(const char* stdCode)
 	return _engine->get_commodity_info(stdCode);
 }
 
+std::string SelStraBaseCtx::stra_get_rawcode(const char* stdCode)
+{
+	return _engine->get_rawcode(stdCode);
+}
+
 WTSSessionInfo* SelStraBaseCtx::stra_get_sessinfo(const char* stdCode)
 {
 	return _engine->get_session_info(stdCode, true);

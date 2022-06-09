@@ -376,6 +376,8 @@ public:
 	WTSCommodityInfo*	get_commodity_info(const char* stdCode);
 	double get_cur_price(const char* stdCode);
 
+	std::string get_rawcode(const char* stdCode);
+
 	void sub_tick(uint32_t sid, const char* stdCode);
 	void sub_order_queue(uint32_t sid, const char* stdCode);
 	void sub_order_detail(uint32_t sid, const char* stdCode);

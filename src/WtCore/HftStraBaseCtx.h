@@ -64,7 +64,7 @@ public:
 	 *	@qty		下单数量
 	 *	@flag		下单标志: 0-normal，1-fak，2-fok，默认0
 	 */
-	virtual OrderIDs stra_buy(const char* stdCode, double price, double qty, const char* userTag, int flag = 0) override;
+	virtual OrderIDs stra_buy(const char* stdCode, double price, double qty, const char* userTag, int flag = 0, bool bForceClose = false) override;
 
 	/*
 	 *	下单接口: 卖出
@@ -74,7 +74,7 @@ public:
 	 *	@qty		下单数量
 	 *	@flag		下单标志: 0-normal，1-fak，2-fok，默认0
 	 */
-	virtual OrderIDs stra_sell(const char* stdCode, double price, double qty, const char* userTag, int flag = 0) override;
+	virtual OrderIDs stra_sell(const char* stdCode, double price, double qty, const char* userTag, int flag = 0, bool bForceClose = false) override;
 
 	/*
 	 *	下单接口: 开多
@@ -132,12 +132,18 @@ public:
 
 	virtual WTSTickData* stra_get_last_tick(const char* stdCode) override;
 
+	/*
+	 *	获取分月合约代码
+	 */
+	virtual std::string		stra_get_rawcode(const char* stdCode) override;
+
 	virtual void stra_log_info(const char* message) override;
 	virtual void stra_log_debug(const char* message) override;
 	virtual void stra_log_warn(const char* message) override;
 	virtual void stra_log_error(const char* message) override;
 
 	virtual double stra_get_position(const char* stdCode, bool bOnlyValid = false) override;
+	virtual double stra_get_position_avgpx(const char* stdCode) override;
 	virtual double stra_get_position_profit(const char* stdCode) override;
 	virtual double stra_get_price(const char* stdCode) override;
 	virtual double stra_get_undone(const char* stdCode) override;

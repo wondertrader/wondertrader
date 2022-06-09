@@ -201,7 +201,7 @@ const char* HftStraBaseCtx::get_inner_code(const char* stdCode)
 	return it->second.c_str();
 }
 
-OrderIDs HftStraBaseCtx::stra_buy(const char* stdCode, double price, double qty, const char* userTag, int flag /* = 0 */)
+OrderIDs HftStraBaseCtx::stra_buy(const char* stdCode, double price, double qty, const char* userTag, int flag /* = 0 */, bool bForceClose /* = false */)
 {
 	WTSContractInfo* ct = _engine->get_contract_info(stdCode);
 	if (ct == NULL)
@@ -282,14 +282,14 @@ OrderIDs HftStraBaseCtx::stra_buy(const char* stdCode, double price, double qty,
 			return OrderIDs();
 		}
 
-		auto ids = _trader->buy(stdCode, price, qty, flag, false, ct);
+		auto ids = _trader->buy(stdCode, price, qty, flag, bForceClose, ct);
 		for (auto localid : ids)
 			setUserTag(localid, userTag);
 		return ids;
 	}
 }
 
-OrderIDs HftStraBaseCtx::stra_sell(const char* stdCode, double price, double qty, const char* userTag, int flag/* = 0*/)
+OrderIDs HftStraBaseCtx::stra_sell(const char* stdCode, double price, double qty, const char* userTag, int flag /* = 0 */, bool bForceClose /* = false */)
 {
 	WTSContractInfo* ct = _engine->get_contract_info(stdCode);
 	if (ct == NULL)
@@ -380,7 +380,7 @@ OrderIDs HftStraBaseCtx::stra_sell(const char* stdCode, double price, double qty
 			return OrderIDs();
 		}
 
-		auto ids = _trader->sell(stdCode, price, qty, flag, false, ct);
+		auto ids = _trader->sell(stdCode, price, qty, flag, bForceClose, ct);
 		for (auto localid : ids)
 			setUserTag(localid, userTag);
 		return ids;
@@ -513,6 +513,11 @@ uint32_t HftStraBaseCtx::stra_exit_short(const char* stdCode, double price, doub
 WTSCommodityInfo* HftStraBaseCtx::stra_get_comminfo(const char* stdCode)
 {
 	return _engine->get_commodity_info(stdCode);
+}
+
+std::string HftStraBaseCtx::stra_get_rawcode(const char* stdCode)
+{
+	return _engine->get_rawcode(stdCode);
 }
 
 WTSKlineSlice* HftStraBaseCtx::stra_get_bars(const char* stdCode, const char* period, uint32_t count)
@@ -698,6 +703,26 @@ double HftStraBaseCtx::stra_get_position_profit(const char* stdCode)
 
 	const PosInfo& pInfo = it->second;
 	return pInfo._dynprofit;
+}
+
+double HftStraBaseCtx::stra_get_position_avgpx(const char* stdCode)
+{
+	auto it = _pos_map.find(stdCode);
+	if (it == _pos_map.end())
+		return 0;
+
+	const PosInfo& pInfo = it->second;
+	if (pInfo._volume == 0)
+		return 0.0;
+
+	double amount = 0.0;
+	for (auto dit = pInfo._details.begin(); dit != pInfo._details.end(); dit++)
+	{
+		const DetailInfo& dInfo = *dit;
+		amount += dInfo._price*dInfo._volume;
+	}
+
+	return amount / pInfo._volume;
 }
 
 double HftStraBaseCtx::stra_get_position(const char* stdCode, bool bOnlyValid /* = false */)

@@ -158,6 +158,11 @@ public:
 
 	virtual void stra_sub_ticks(const char* stdCode) override;
 
+	/*
+	 *	获取分月合约代码
+	 */
+	virtual std::string		stra_get_rawcode(const char* stdCode) override;
+
 	virtual void stra_log_info(const char* message) override;
 	virtual void stra_log_debug(const char* message) override;
 	virtual void stra_log_warn(const char* message) override;
@@ -224,6 +229,8 @@ protected:
 		uint32_t	_opentdate;
 		double		_max_profit;
 		double		_max_loss;
+		double		_max_price;
+		double		_min_price;
 		double		_profit;
 		char		_opentag[32];
 		uint32_t	_open_barno;

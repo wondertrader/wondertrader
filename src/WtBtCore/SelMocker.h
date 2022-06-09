@@ -113,6 +113,11 @@ public:
 	virtual WTSTickSlice*	stra_get_ticks(const char* stdCode, uint32_t count) override;
 	virtual WTSTickData*	stra_get_last_tick(const char* stdCode) override;
 
+	/*
+	 *	获取分月合约代码
+	 */
+	virtual std::string		stra_get_rawcode(const char* stdCode) override;
+
 	virtual void stra_sub_ticks(const char* stdCode) override;
 
 	virtual void stra_log_info(const char* message) override;

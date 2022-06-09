@@ -91,12 +91,24 @@ public:
 
 	virtual uint64_t stra_get_detail_entertime(const char* stdCode, const char* userTag) = 0;
 	virtual double stra_get_detail_cost(const char* stdCode, const char* userTag) = 0;
+
+	/*
+	 *	读取持仓明细的浮盈
+	 *	@stdCode	合约代码
+	 *	@userTag	下单标记
+	 *	@flag		浮盈标志：0-浮动盈亏，1-最大浮盈，2-最高浮动价格，-1-最大浮亏，-2-最小浮动价格
+	 */
 	virtual double stra_get_detail_profit(const char* stdCode, const char* userTag, int flag = 0) = 0;
 
 	virtual WTSCommodityInfo* stra_get_comminfo(const char* stdCode) = 0;
 	virtual WTSKlineSlice*	stra_get_bars(const char* stdCode, const char* period, uint32_t count, bool isMain = false) = 0;
 	virtual WTSTickSlice*	stra_get_ticks(const char* stdCode, uint32_t count) = 0;
 	virtual WTSTickData*	stra_get_last_tick(const char* stdCode) = 0;
+
+	/*
+	 *	获取分月合约代码
+	 */
+	virtual std::string		stra_get_rawcode(const char* stdCode) = 0;
 
 	virtual void stra_sub_ticks(const char* stdCode) = 0;
 

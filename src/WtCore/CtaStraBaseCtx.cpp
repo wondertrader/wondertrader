@@ -648,6 +648,9 @@ void CtaStraBaseCtx::update_dyn_profit(const char* stdCode, double price)
 				else if (dInfo._profit < 0)
 					dInfo._max_loss = std::min(dInfo._profit, dInfo._max_loss);
 
+				dInfo._max_price = std::max(dInfo._max_price, price);
+				dInfo._min_price = std::min(dInfo._min_price, price);
+
 				dynprofit += dInfo._profit;
 			}
 
@@ -1288,6 +1291,8 @@ void CtaStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 		DetailInfo dInfo;
 		dInfo._long = decimal::gt(qty, 0);
 		dInfo._price = curPx;
+		dInfo._max_price = curPx;
+		dInfo._min_price = curPx;
 		dInfo._volume = abs(diff);
 		dInfo._opentime = curTm;
 		dInfo._opentdate = curTDate;
@@ -1374,6 +1379,8 @@ void CtaStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 			DetailInfo dInfo;
 			dInfo._long = decimal::gt(qty, 0);
 			dInfo._price = curPx;
+			dInfo._max_price = curPx;
+			dInfo._min_price = curPx;
 			dInfo._volume = abs(left);
 			dInfo._opentime = curTm;
 			dInfo._opentdate = curTDate;
@@ -1491,6 +1498,11 @@ void CtaStraBaseCtx::stra_sub_ticks(const char* code)
 WTSCommodityInfo* CtaStraBaseCtx::stra_get_comminfo(const char* stdCode)
 {
 	return _engine->get_commodity_info(stdCode);
+}
+
+std::string CtaStraBaseCtx::stra_get_rawcode(const char* stdCode)
+{
+	return _engine->get_rawcode(stdCode);
 }
 
 uint32_t CtaStraBaseCtx::stra_get_tdate()
@@ -1722,12 +1734,19 @@ double CtaStraBaseCtx::stra_get_detail_profit(const char* stdCode, const char* u
 		if (strcmp(dInfo._opentag, userTag) != 0)
 			continue;
 
-		if (flag == 0)
+		switch (flag)
+		{
+		case 0:
 			return dInfo._profit;
-		else if (flag > 0)
+		case 1:
 			return dInfo._max_profit;
-		else
+		case -1:
 			return dInfo._max_loss;
+		case 2:
+			return dInfo._max_price;
+		case -2:
+			return dInfo._min_price;
+		}
 	}
 
 	return 0.0;

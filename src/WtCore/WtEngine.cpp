@@ -88,6 +88,18 @@ WTSContractInfo* WtEngine::get_contract_info(const char* stdCode)
 	return _base_data_mgr->getContract(cInfo._code, cInfo._exchg);
 }
 
+std::string WtEngine::get_rawcode(const char* stdCode)
+{
+	CodeHelper::CodeInfo cInfo;
+	CodeHelper::extractStdCode(stdCode, _hot_mgr);
+	if (cInfo.hasRule())
+	{
+		return cInfo._code;
+	}
+
+	return "";
+}
+
 WTSSessionInfo* WtEngine::get_session_info(const char* sid, bool isCode /* = false */)
 {
 	if (!isCode)

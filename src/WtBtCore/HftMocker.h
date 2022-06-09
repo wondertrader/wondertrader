@@ -97,9 +97,9 @@ public:
 
 	virtual OrderIDs stra_cancel(const char* stdCode, bool isBuy, double qty = 0) override;
 
-	virtual OrderIDs stra_buy(const char* stdCode, double price, double qty, const char* userTag, int flag = 0) override;
+	virtual OrderIDs stra_buy(const char* stdCode, double price, double qty, const char* userTag, int flag = 0, bool bForceClose = false) override;
 
-	virtual OrderIDs stra_sell(const char* stdCode, double price, double qty, const char* userTag, int flag = 0) override;
+	virtual OrderIDs stra_sell(const char* stdCode, double price, double qty, const char* userTag, int flag = 0, bool bForceClose = false) override;
 
 	virtual WTSCommodityInfo* stra_get_comminfo(const char* stdCode) override;
 
@@ -115,7 +115,14 @@ public:
 
 	virtual WTSTickData* stra_get_last_tick(const char* stdCode) override;
 
+	/*
+	 *	获取分月合约代码
+	 */
+	virtual std::string		stra_get_rawcode(const char* stdCode) override;
+
 	virtual double stra_get_position(const char* stdCode, bool bOnlyValid = false) override;
+
+	virtual double stra_get_position_avgpx(const char* stdCode) override;
 
 	virtual double stra_get_position_profit(const char* stdCode) override;
 

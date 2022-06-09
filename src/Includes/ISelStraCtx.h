@@ -68,6 +68,11 @@ public:
 	virtual WTSTickSlice*	stra_get_ticks(const char* stdCode, uint32_t count) = 0;
 	virtual WTSTickData*	stra_get_last_tick(const char* stdCode) = 0;
 
+	/*
+	 *	获取分月合约代码
+	 */
+	virtual std::string		stra_get_rawcode(const char* stdCode) = 0;
+
 	virtual void stra_sub_ticks(const char* stdCode) = 0;
 
 	virtual void stra_log_info(const char* message) = 0;

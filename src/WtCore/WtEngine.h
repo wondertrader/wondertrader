@@ -99,6 +99,7 @@ public:
 	WTSSessionInfo*		get_session_info(const char* sid, bool isCode = false);
 	WTSCommodityInfo*	get_commodity_info(const char* stdCode);
 	WTSContractInfo*	get_contract_info(const char* stdCode);
+	std::string			get_rawcode(const char* stdCode);
 
 	WTSTickData*	get_last_tick(uint32_t sid, const char* stdCode);
 	WTSTickSlice*	get_tick_slice(uint32_t sid, const char* stdCode, uint32_t count);

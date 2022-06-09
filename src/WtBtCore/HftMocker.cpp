@@ -578,7 +578,7 @@ OrderIDs HftMocker::stra_cancel(const char* stdCode, bool isBuy, double qty /* =
 	return ret;
 }
 
-OrderIDs HftMocker::stra_buy(const char* stdCode, double price, double qty, const char* userTag, int flag /* = 0 */)
+OrderIDs HftMocker::stra_buy(const char* stdCode, double price, double qty, const char* userTag, int flag /* = 0 */, bool bForceClose /* = false */)
 {
 	WTSCommodityInfo* commInfo = _replayer->get_commodity_info(stdCode);
 	if (commInfo == NULL)
@@ -765,7 +765,7 @@ bool HftMocker::procOrder(uint32_t localid)
 	return false;
 }
 
-OrderIDs HftMocker::stra_sell(const char* stdCode, double price, double qty, const char* userTag, int flag /* = 0 */)
+OrderIDs HftMocker::stra_sell(const char* stdCode, double price, double qty, const char* userTag, int flag /* = 0 */, bool bForceClose /* = false */)
 {
 	WTSCommodityInfo* commInfo = _replayer->get_commodity_info(stdCode);
 	if (commInfo == NULL)
@@ -822,6 +822,11 @@ WTSCommodityInfo* HftMocker::stra_get_comminfo(const char* stdCode)
 	return _replayer->get_commodity_info(stdCode);
 }
 
+std::string HftMocker::stra_get_rawcode(const char* stdCode)
+{
+	return _replayer->get_rawcode(stdCode);
+}
+
 WTSKlineSlice* HftMocker::stra_get_bars(const char* stdCode, const char* period, uint32_t count)
 {
 	thread_local static char basePeriod[2] = { 0 };
@@ -873,8 +878,32 @@ double HftMocker::stra_get_position(const char* stdCode, bool bOnlyValid/* = fal
 
 double HftMocker::stra_get_position_profit(const char* stdCode)
 {
-	const PosInfo& pInfo = _pos_map[stdCode];
+	auto it = _pos_map.find(stdCode);
+	if (it == _pos_map.end())
+		return 0.0;
+
+	const PosInfo& pInfo = it->second;
 	return pInfo._dynprofit;
+}
+
+double HftMocker::stra_get_position_avgpx(const char* stdCode)
+{
+	auto it = _pos_map.find(stdCode);
+	if (it == _pos_map.end())
+		return 0.0;
+
+	const PosInfo& pInfo = it->second;
+	if (decimal::eq(pInfo._volume, 0.0))
+		return 0;
+
+	double amount = 0.0;
+	for (auto dit = pInfo._details.begin(); dit != pInfo._details.end(); dit++)
+	{
+		const DetailInfo& dInfo = *dit;
+		amount += dInfo._price*dInfo._volume;
+	}
+
+	return amount / pInfo._volume;
 }
 
 double HftMocker::stra_get_price(const char* stdCode)

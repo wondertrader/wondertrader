@@ -87,6 +87,11 @@ public:
 		{
 			memset(this, 0, sizeof(_CodeInfo));
 		}
+
+		inline bool hasRule() const
+		{
+			return strlen(_ruletag) > 0;
+		}
 	} CodeInfo;
 
 private:

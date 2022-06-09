@@ -835,6 +835,11 @@ WTSCommodityInfo* SelMocker::stra_get_comminfo(const char* stdCode)
 	return _replayer->get_commodity_info(stdCode);
 }
 
+std::string SelMocker::stra_get_rawcode(const char* stdCode)
+{
+	return _replayer->get_rawcode(stdCode);
+}
+
 WTSSessionInfo* SelMocker::stra_get_sessinfo(const char* stdCode)
 {
 	return _replayer->get_session_info(stdCode, true);

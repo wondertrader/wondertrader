@@ -2615,6 +2615,18 @@ WTSCommodityInfo* HisDataReplayer::get_commodity_info(const char* stdCode)
 	return _bd_mgr.getCommodity(CodeHelper::stdCodeToStdCommID(stdCode).c_str());
 }
 
+std::string HisDataReplayer::get_rawcode(const char* stdCode)
+{
+	CodeHelper::CodeInfo cInfo;
+	CodeHelper::extractStdCode(stdCode, &_hot_mgr);
+	if(cInfo.hasRule())
+	{
+		return _hot_mgr.getRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
+	}
+
+	return "";
+}
+
 WTSSessionInfo* HisDataReplayer::get_session_info(const char* sid, bool isCode /* = false */)
 {
 	if (!isCode)
