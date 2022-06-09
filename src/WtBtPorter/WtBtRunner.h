@@ -119,6 +119,8 @@ public:
 
 	void	clear_cache();
 
+	const char*	get_raw_stdcode(const char* stdCode);
+
 	inline CtaMocker*		cta_mocker() { return _cta_mocker; }
 	inline SelMocker*		sel_mocker() { return _sel_mocker; }
 	inline HftMocker*		hft_mocker() { return _hft_mocker; }

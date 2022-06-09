@@ -61,6 +61,8 @@ extern "C"
 
 	EXPORT_FLAG	void		stop_backtest();
 
+	EXPORT_FLAG	WtString	get_raw_stdcode(const char* stdCode);
+
 
 	//////////////////////////////////////////////////////////////////////////
 	//CTA²ßÂÔ½Ó¿Ú
@@ -157,6 +159,8 @@ extern "C"
 	EXPORT_FLAG	double		hft_get_position(CtxHandler cHandle, const char* stdCode, bool bOnlyValid);
 
 	EXPORT_FLAG	double		hft_get_position_profit(CtxHandler cHandle, const char* stdCode);
+
+	EXPORT_FLAG	double		hta_get_position_avgpx(CtxHandler cHandle, const char* stdCode);
 
 	EXPORT_FLAG	double		hft_get_undone(CtxHandler cHandle, const char* stdCode);
 

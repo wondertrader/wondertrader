@@ -140,6 +140,11 @@ const char* get_version()
 	return _ver.c_str();
 }
 
+const char* get_raw_stdcode(const char* stdCode, char* buffer)
+{
+	return getRunner().get_raw_stdcode(stdCode);
+}
+
 void write_log(WtUInt32 level, const char* message, const char* catName)
 {
 	if (strlen(catName) > 0)
@@ -664,6 +669,14 @@ double hft_get_position_profit(CtxHandler cHandle, const char* stdCode)
 	return ctx->stra_get_position_profit(stdCode);
 }
 
+double hft_get_position_avgpx(CtxHandler cHandle, const char* stdCode)
+{
+	HftContextPtr ctx = getRunner().getHftContext(cHandle);
+	if (ctx == NULL)
+		return 0;
+
+	return ctx->stra_get_position_avgpx(stdCode);
+}
 
 double hft_get_undone(CtxHandler cHandle, const char* stdCode)
 {

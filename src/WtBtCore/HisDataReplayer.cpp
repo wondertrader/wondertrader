@@ -2621,7 +2621,8 @@ std::string HisDataReplayer::get_rawcode(const char* stdCode)
 	CodeHelper::extractStdCode(stdCode, &_hot_mgr);
 	if(cInfo.hasRule())
 	{
-		return _hot_mgr.getRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
+		std::string code = _hot_mgr.getRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
+		return CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
 	}
 
 	return "";

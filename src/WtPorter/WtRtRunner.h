@@ -111,6 +111,8 @@ public:
 	HftContextPtr	getHftContext(uint32_t id);
 	WtEngine*		getEngine(){ return _engine; }
 
+	const char*	get_raw_stdcode(const char* stdCode);
+
 //////////////////////////////////////////////////////////////////////////
 //ILogHandler
 public:

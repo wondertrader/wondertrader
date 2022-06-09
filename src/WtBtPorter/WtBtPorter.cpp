@@ -126,6 +126,11 @@ void release_backtest()
 	getRunner().release();
 }
 
+WtString get_raw_stdcode(const char* stdCode, char* buffer)
+{
+	return getRunner().get_raw_stdcode(stdCode);
+}
+
 const char* get_version()
 {
 	static std::string _ver;
@@ -655,6 +660,16 @@ double hft_get_position_profit(CtxHandler cHandle, const char* stdCode)
 
 	return mocker->stra_get_position_profit(stdCode);
 }
+
+double hft_get_position_avgpx(CtxHandler cHandle, const char* stdCode)
+{
+	HftMocker* mocker = getRunner().hft_mocker();
+	if (mocker == NULL)
+		return 0;
+
+	return mocker->stra_get_position_avgpx(stdCode);
+}
+
 
 double hft_get_undone(CtxHandler cHandle, const char* stdCode)
 {

@@ -592,6 +592,13 @@ void WtBtRunner::clear_cache()
 	_replayer.clear_cache();
 }
 
+const char* WtBtRunner::get_raw_stdcode(const char* stdCode)
+{
+	static thread_local std::string s;
+	s = _replayer.get_rawcode(stdCode);
+	return s.c_str();
+}
+
 const char* LOG_TAGS[] = {
 	"all",
 	"debug",

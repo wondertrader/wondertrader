@@ -94,7 +94,8 @@ std::string WtEngine::get_rawcode(const char* stdCode)
 	CodeHelper::extractStdCode(stdCode, _hot_mgr);
 	if (cInfo.hasRule())
 	{
-		return cInfo._code;
+		std::string code = _hot_mgr->getCustomRawCode(cInfo._ruletag, cInfo.stdCommID());
+		return CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
 	}
 
 	return "";

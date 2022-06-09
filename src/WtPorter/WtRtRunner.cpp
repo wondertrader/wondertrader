@@ -357,6 +357,14 @@ uint32_t WtRtRunner::createSelContext(const char* name, uint32_t date, uint32_t 
 	return ctx->id();
 }
 
+const char* WtRtRunner::get_raw_stdcode(const char* stdCode)
+{
+	static thread_local std::string s;
+	s = _engine->get_rawcode(stdCode);
+	return s.c_str();
+}
+
+
 CtaContextPtr WtRtRunner::getCtaContext(uint32_t id)
 {
 	return _cta_engine.getContext(id);
