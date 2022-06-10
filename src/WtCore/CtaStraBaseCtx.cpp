@@ -336,6 +336,16 @@ void CtaStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 					if(dItem.HasMember("opentdate"))
 						dInfo._opentdate = dItem["opentdate"].GetUint();
 
+					if (dItem.HasMember("maxprice"))
+						dInfo._max_price = dItem["maxprice"].GetDouble();
+					else
+						dInfo._max_price = dInfo._price;
+
+					if (dItem.HasMember("minprice"))
+						dInfo._min_price = dItem["minprice"].GetDouble();
+					else
+						dInfo._min_price = dInfo._price;
+
 					dInfo._profit = dItem["profit"].GetDouble();
 					dInfo._max_profit = dItem["maxprofit"].GetDouble();
 					dInfo._max_loss = dItem["maxloss"].GetDouble();
@@ -475,6 +485,8 @@ void CtaStraBaseCtx::save_data(uint32_t flag /* = 0xFFFFFFFF */)
 				rj::Value dItem(rj::kObjectType);
 				dItem.AddMember("long", dInfo._long, allocator);
 				dItem.AddMember("price", dInfo._price, allocator);
+				dItem.AddMember("maxprice", dInfo._max_price, allocator);
+				dItem.AddMember("minprice", dInfo._min_price, allocator);
 				dItem.AddMember("volume", dInfo._volume, allocator);
 				dItem.AddMember("opentime", dInfo._opentime, allocator);
 				dItem.AddMember("opentdate", dInfo._opentdate, allocator);
