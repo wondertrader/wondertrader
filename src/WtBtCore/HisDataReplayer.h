@@ -375,6 +375,7 @@ public:
 	WTSSessionInfo*		get_session_info(const char* sid, bool isCode = false);
 	WTSCommodityInfo*	get_commodity_info(const char* stdCode);
 	double get_cur_price(const char* stdCode);
+	double get_day_price(const char* stdCode, int flag = 0);
 
 	std::string get_rawcode(const char* stdCode);
 

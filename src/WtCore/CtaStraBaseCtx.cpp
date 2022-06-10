@@ -1212,6 +1212,14 @@ double CtaStraBaseCtx::stra_get_price(const char* stdCode)
 	return 0.0;
 }
 
+double CtaStraBaseCtx::stra_get_day_price(const char* stdCode, int flag /* = 0 */)
+{
+	if (_engine)
+		return _engine->get_day_price(stdCode, flag);
+
+	return 0.0;
+}
+
 void CtaStraBaseCtx::stra_set_position(const char* stdCode, double qty, const char* userTag /* = "" */, double limitprice /* = 0.0 */, double stopprice /* = 0.0 */)
 {
 	_engine->sub_tick(id(), stdCode);

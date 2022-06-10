@@ -2723,6 +2723,61 @@ double HisDataReplayer::get_cur_price(const char* stdCode)
 	}
 }
 
+double HisDataReplayer::get_day_price(const char* stdCode, int flag /* = 0 */)
+{
+	if(_tick_enabled)
+	{
+		WTSTickData* lastTick = get_last_tick(stdCode);
+		if(lastTick != NULL)
+		{
+			const WTSTickStruct& curTs = lastTick->getTickStruct();
+
+			double price = 0.0;
+			switch (flag)
+			{
+			case 0:
+				price = curTs.open;
+				break;
+			case 1:
+				price = curTs.high;
+				break;
+			case 2:
+				price = curTs.low;
+				break;
+			case 3:
+				price = curTs.price;
+				break;
+			default:
+				break;
+			}
+
+			lastTick->release();
+
+			return price;
+		}
+	}
+
+	auto it = _day_cache.find(stdCode);
+	if (it == _day_cache.end())
+		return 0.0;
+
+	const WTSTickStruct& curTs = it->second;
+	double price = 0.0;
+	switch (flag)
+	{
+	case 0:
+		return curTs.open;
+	case 1:
+		return curTs.high;
+	case 2:
+		return curTs.low;
+	case 3:
+		return curTs.price;
+	default:
+		return 0.0;
+	}
+}
+
 void HisDataReplayer::sub_tick(uint32_t sid, const char* stdCode)
 {
 	if (strlen(stdCode) == 0)

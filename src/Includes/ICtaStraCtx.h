@@ -74,7 +74,18 @@ public:
 	 */
 	virtual double stra_get_position(const char* stdCode, bool bOnlyValid = false, const char* userTag = "") = 0;
 	virtual void stra_set_position(const char* stdCode, double qty, const char* userTag = "", double limitprice = 0.0, double stopprice = 0.0) = 0;
+
+	/*
+	 *	获取当前价格
+	 */
 	virtual double stra_get_price(const char* stdCode) = 0;
+
+	/*
+	 *	读取当日价格
+	 *	@stdCode	合约代码
+	 *	@flag		价格标记：0-开盘价，1-最高价，2-最低价，3-收盘价/最新价
+	 */
+	virtual double stra_get_day_price(const char* stdCode, int flag = 0) = 0;
 
 	virtual uint32_t stra_get_tdate() = 0;
 	virtual uint32_t stra_get_date() = 0;

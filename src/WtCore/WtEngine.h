@@ -109,6 +109,8 @@ public:
 
 	double get_cur_price(const char* stdCode);
 
+	double get_day_price(const char* stdCode, int flag = 0);
+
 	/*
 	 *	获取复权因子
 	 *	@stdCode	合约代码

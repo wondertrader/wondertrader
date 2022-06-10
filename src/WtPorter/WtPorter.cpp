@@ -411,6 +411,11 @@ double cta_get_price(const char* stdCode)
 	return getRunner().getEngine()->get_cur_price(stdCode);
 }
 
+double cta_get_day_price(const char* stdCode, int flag)
+{
+	return getRunner().getEngine()->get_day_price(stdCode, flag);
+}
+
 WtUInt32 cta_get_tdate()
 {
 	return getRunner().getEngine()->get_trading_date();

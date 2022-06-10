@@ -1134,6 +1134,14 @@ double CtaMocker::stra_get_price(const char* stdCode)
 	return 0.0;
 }
 
+double CtaMocker::stra_get_day_price(const char* stdCode, int flag /* = 0 */)
+{
+	if (_replayer)
+		return _replayer->get_day_price(stdCode, flag);
+
+	return 0.0;
+}
+
 void CtaMocker::stra_set_position(const char* stdCode, double qty, const char* userTag /* = "" */, double limitprice /* = 0.0 */, double stopprice /* = 0.0 */)
 {
 	WTSCommodityInfo* commInfo = _replayer->get_commodity_info(stdCode);

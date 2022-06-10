@@ -92,6 +92,8 @@ extern "C"
 
 	EXPORT_FLAG	double 		cta_get_price(const char* stdCode);
 
+	EXPORT_FLAG	double 		cta_get_day_price(const char* stdCode, int flag);
+
 	EXPORT_FLAG	double		cta_get_fund_data(CtxHandler cHandle, int flag);
 
 	EXPORT_FLAG	WtUInt32 	cta_get_tdate();
