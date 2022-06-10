@@ -126,7 +126,7 @@ void release_backtest()
 	getRunner().release();
 }
 
-WtString get_raw_stdcode(const char* stdCode, char* buffer)
+WtString get_raw_stdcode(const char* stdCode)
 {
 	return getRunner().get_raw_stdcode(stdCode);
 }
