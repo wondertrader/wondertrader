@@ -22,6 +22,7 @@
 #include "../Share/IniHelper.hpp"
 #include "../Share/StdUtils.hpp"
 #include "../Share/DLLHelper.hpp"
+#include "../Share/WtKVCache.hpp"
 
 USING_NS_WTP;
 
@@ -159,6 +160,10 @@ protected:
 	typedef YDApi* (*YDCreator)(const char *);
 	YDCreator		m_funcCreator;
 
-	IniHelper		m_iniHelper;
+	//IniHelper		m_iniHelper;
+	//委托单标记缓存器
+	WtKVCache		m_eidCache;
+	//订单标记缓存器
+	WtKVCache		m_oidCache;
 };
 

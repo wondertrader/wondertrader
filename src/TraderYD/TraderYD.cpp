@@ -195,6 +195,32 @@ void TraderYD::notifyLogin(int errorNo, int maxOrderRef, bool isMonitor)
 
 		write_log(m_sink, LL_INFO, "[TraderYD] {} Login succeed, Trading Day: {}",
 			m_strUser.c_str(), m_lDate);
+
+		{
+			//初始化委托单缓存器
+			std::stringstream ss;
+			ss <<  "ydlocal/" ;
+			std::string path = StrUtil::standardisePath(ss.str());
+			if (!StdFile::exists(path.c_str()))
+				boost::filesystem::create_directories(path.c_str());
+			ss << m_strUser << "_eid.sc";
+			m_eidCache.init(ss.str().c_str(), m_lDate, [this](const char* message) {
+				write_log(m_sink, LL_WARN, message);
+			});
+		}
+
+		{
+			//初始化订单标记缓存器
+			std::stringstream ss;
+			ss << "ydlocal/";
+			std::string path = StrUtil::standardisePath(ss.str());
+			if (!StdFile::exists(path.c_str()))
+				boost::filesystem::create_directories(path.c_str());
+			ss << m_strUser << "_oid.sc";
+			m_oidCache.init(ss.str().c_str(), m_lDate, [this](const char* message) {
+				write_log(m_sink, LL_WARN, message);
+			});
+		}
 	}
 	else
 	{
@@ -681,8 +707,9 @@ int TraderYD::orderInsert(WTSEntrust* entrust)
 
 	if (strlen(entrust->getUserTag()) > 0)
 	{
-		m_iniHelper.writeString(ENTRUST_SECTION, entrust->getEntrustID(), entrust->getUserTag());
-		m_iniHelper.save();
+		m_eidCache.put(entrust->getEntrustID(), entrust->getUserTag(), 0, [this](const char* message) {
+			write_log(m_sink, LL_WARN, message);
+		});
 	}
 
 	req.Price = entrust->getPrice();
@@ -879,19 +906,20 @@ WTSOrderInfo* TraderYD::makeOrderInfo(const YDOrder* orderField, const YDInstrum
 
 	pRet->setStateMsg("");
 
-	std::string usertag = m_iniHelper.readString(ENTRUST_SECTION, pRet->getEntrustID(), "");
-	if(usertag.empty())
+	const char* usertag = m_eidCache.get(pRet->getEntrustID());
+	if (strlen(usertag) == 0)
 	{
 		pRet->setUserTag(pRet->getEntrustID());
 	}
 	else
 	{
-		pRet->setUserTag(usertag.c_str());
+		pRet->setUserTag(usertag);
 
 		if (strlen(pRet->getOrderID()) > 0)
 		{
-			m_iniHelper.writeString(ORDER_SECTION, StrUtil::trim(pRet->getOrderID()).c_str(), usertag.c_str());
-			m_iniHelper.save();
+			m_oidCache.put(StrUtil::trim(pRet->getOrderID()).c_str(), usertag, 0, [this](const char* message) {
+				write_log(m_sink, LL_ERROR, message);
+			});
 		}
 	}
 
@@ -924,9 +952,9 @@ WTSEntrust* TraderYD::makeEntrust(const YDInputOrder *entrustField, const YDInst
 
 	pRet->setEntrustID(generateEntrustID(entrustField->OrderRef).c_str());
 
-	std::string usertag = m_iniHelper.readString(ENTRUST_SECTION, pRet->getEntrustID());
-	if (!usertag.empty())
-		pRet->setUserTag(usertag.c_str());
+	const char* usertag = m_eidCache.get(pRet->getEntrustID());
+	if (strlen(usertag) > 0)
+		pRet->setUserTag(usertag);
 
 	return pRet;
 }
@@ -968,9 +996,9 @@ WTSTradeInfo* TraderYD::makeTradeRecord(const YDTrade *tradeField, const YDInstr
 	double amount = commInfo->getVolScale()*tradeField->Volume*pRet->getPrice();
 	pRet->setAmount(amount);
 
-	std::string usertag = m_iniHelper.readString(ORDER_SECTION, StrUtil::trim(pRet->getRefOrder()).c_str());
-	if (!usertag.empty())
-		pRet->setUserTag(usertag.c_str());
+	const char* usertag = m_oidCache.get(StrUtil::trim(pRet->getRefOrder()).c_str());
+	if (strlen(usertag))
+		pRet->setUserTag(usertag);
 
 	return pRet;
 }
