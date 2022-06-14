@@ -209,7 +209,9 @@ bool ParserAdapter::init(const char* id, WTSVariant* cfg)
 				ExchgFilter::iterator it = _exchg_filter.begin();
 				for (; it != _exchg_filter.end(); it++)
 				{
-					WTSArray* ayContract = _bd_mgr->getContracts((*it).c_str());
+					const char* exchg = (*it).c_str();
+					WTSArray* ayContract = _bd_mgr->getContracts(exchg);
+					auto cnt = ayContract->size();
 					WTSArray::Iterator it = ayContract->begin();
 					for (; it != ayContract->end(); it++)
 					{
@@ -218,6 +220,8 @@ bool ParserAdapter::init(const char* id, WTSVariant* cfg)
 					}
 
 					ayContract->release();
+
+					WTSLogger::log_dyn("parser", _id.c_str(), LL_INFO, "[{}] {} contracts of {} added to sublist...", _id.c_str(), cnt, exchg);
 				}
 			}
 			else

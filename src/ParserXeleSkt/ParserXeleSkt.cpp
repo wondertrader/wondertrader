@@ -188,7 +188,6 @@ bool ParserXeleSkt::prepare()
 
 		CXeleShfeSnapShot *p = (CXeleShfeSnapShot *)(content.data() + sizeof(CXeleShfeMarketHead));
 		int instrumentNo = p->InstrumentNo;
-		write_log(_sink, LL_DEBUG, "[ParserXeleSkt] {}-{}", p->InstrumentID, instrumentNo);
 		WTSContractInfo* ct = _bd_mgr->getContract(p->InstrumentID);
 		if (ct != NULL)
 		{
