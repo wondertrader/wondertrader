@@ -164,7 +164,7 @@ extern "C"
 
 	EXPORT_FLAG	double		hft_get_position_profit(CtxHandler cHandle, const char* stdCode);
 
-	EXPORT_FLAG	double		hta_get_position_avgpx(CtxHandler cHandle, const char* stdCode);
+	EXPORT_FLAG	double		hft_get_position_avgpx(CtxHandler cHandle, const char* stdCode);
 
 	EXPORT_FLAG	double		hft_get_undone(CtxHandler cHandle, const char* stdCode);
 
