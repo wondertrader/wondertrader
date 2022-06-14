@@ -789,6 +789,14 @@ void HisDataReplayer::run_by_bars(bool bNeedDump /* = false */)
 				nextTDate = _bd_mgr.calcTradingDate(commId.c_str(), nextDate, nextTime, false);
 				if (_opened_tdate != nextTDate)
 				{
+					if(_closed_tdate != _opened_tdate)
+					{
+						WTSLogger::debug("Tradingday {} ends", _cur_tdate);
+						_listener->handle_session_end(_cur_tdate);
+						_closed_tdate = _cur_tdate;
+						_day_cache.clear();
+					}
+
 					WTSLogger::debug("Tradingday {} begins", nextTDate);
 					_listener->handle_session_begin(nextTDate);
 					_opened_tdate = nextTDate;
@@ -1725,7 +1733,7 @@ void HisDataReplayer::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTD
 	for (auto it = _bars_cache.begin(); it != _bars_cache.end(); it++)
 	{
 		BarsListPtr& barsList = (BarsListPtr&)it->second;
-		double factor = barsList->_factor;
+		double factor = 1.0;// barsList->_factor;
 		if (barsList->_period != KP_DAY)
 		{
 			//如果历史数据指标不在尾部, 说明是回测模式, 要继续回放历史数据
