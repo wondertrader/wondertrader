@@ -192,51 +192,52 @@ bool ParserXeleSkt::prepare()
 		if (ct != NULL)
 		{
 			auto it = _set_subs.find(ct->getFullCode());
-			if(it == _set_subs.end())
-				continue;
+			if (it != _set_subs.end())
+			{
 
-			_price_scales[instrumentNo] = p->PriceTick;
+				_price_scales[instrumentNo] = p->PriceTick;
 
-			WTSTickData* tick = WTSTickData::create(p->InstrumentID);
-			tick->setContractInfo(ct);
+				WTSTickData* tick = WTSTickData::create(p->InstrumentID);
+				tick->setContractInfo(ct);
 
-			WTSTickStruct& quote = tick->getTickStruct();
-			wt_strcpy(quote.exchg, ct->getExchg());
+				WTSTickStruct& quote = tick->getTickStruct();
+				wt_strcpy(quote.exchg, ct->getExchg());
 
-			quote.action_date = strToTime(p->ActionDay);
-			quote.action_time = strToTime(p->UpdateTime) * 1000 + p->UpdateMilliSec;
+				quote.action_date = strToTime(p->ActionDay);
+				quote.action_time = strToTime(p->UpdateTime) * 1000 + p->UpdateMilliSec;
 
-			quote.price = p->LastPrice;
-			quote.open = p->OpenPrice;
-			quote.high = p->HighestPrice;
-			quote.low = p->LowestPrice;
-			quote.total_volume = p->Volume;
-			quote.trading_date = quote.action_date;
-			quote.settle_price = p->SettlementPrice;
-			quote.total_turnover = p->Turnover;
+				quote.price = p->LastPrice;
+				quote.open = p->OpenPrice;
+				quote.high = p->HighestPrice;
+				quote.low = p->LowestPrice;
+				quote.total_volume = p->Volume;
+				quote.trading_date = quote.action_date;
+				quote.settle_price = p->SettlementPrice;
+				quote.total_turnover = p->Turnover;
 
-			quote.open_interest = p->OpenInterest;
+				quote.open_interest = p->OpenInterest;
 
-			quote.upper_limit = p->UpperLimitPrice;
-			quote.lower_limit = p->LowerLimitPrice;
+				quote.upper_limit = p->UpperLimitPrice;
+				quote.lower_limit = p->LowerLimitPrice;
 
-			quote.pre_close = p->PreClosePrice;
-			quote.pre_settle = p->PreSettlementPrice;
-			quote.pre_interest = p->PreOpenInterest;
+				quote.pre_close = p->PreClosePrice;
+				quote.pre_settle = p->PreSettlementPrice;
+				quote.pre_interest = p->PreOpenInterest;
 
-			//委卖价格
-			quote.ask_prices[0] = p->AskPrice;
-			//委买价格
-			quote.bid_prices[0] = p->BidPrice;
-			//委卖量
-			quote.ask_qty[0] = p->AskVolume;
-			//委买量
-			quote.bid_qty[0] = p->BidVolume;
+				//委卖价格
+				quote.ask_prices[0] = p->AskPrice;
+				//委买价格
+				quote.bid_prices[0] = p->BidPrice;
+				//委卖量
+				quote.ask_qty[0] = p->AskVolume;
+				//委买量
+				quote.bid_qty[0] = p->BidVolume;
 
-			_tick_cache->add(instrumentNo, tick, false);
+				_tick_cache->add(instrumentNo, tick, false);
 
-			if (_sink)
-				_sink->handleQuote(tick, 1);
+				if (_sink)
+					_sink->handleQuote(tick, 1);
+			}
 		}
 
 		content.erase(0, snap_size);
@@ -254,7 +255,7 @@ bool ParserXeleSkt::connect()
 {
 	if(reconnect())
 	{
-		_io_service.run();
+		_thrd_parser.reset(new StdThread(boost::bind(&io_service::run, &_io_service)));
 	}
 	else
 	{
