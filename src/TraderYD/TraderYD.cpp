@@ -34,7 +34,7 @@ inline void write_log(ITraderSpi* sink, WTSLogLevel ll, const char* format, cons
 		return;
 
 	static thread_local char buffer[512] = { 0 };
-	fmt::format_to(buffer, format, args...);
+	fmtutil::format_to(buffer, format, args...);
 
 	sink->handleTraderLog(ll, buffer);
 }
