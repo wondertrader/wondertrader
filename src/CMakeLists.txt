@@ -59,6 +59,7 @@ ADD_SUBDIRECTORY(WTSTools)
 ADD_SUBDIRECTORY(CTPLoader)
 ADD_SUBDIRECTORY(CTPOptLoader)
 ADD_SUBDIRECTORY(MiniLoader)
+ADD_SUBDIRECTORY(LoaderRunner)
 
 #parser for quote date from ctp channel
 ADD_SUBDIRECTORY(ParserCTP)
