@@ -201,6 +201,8 @@ void WtUftEngine::run(bool bAsync /*= false*/)
 
 	_tm_ticker->run();
 
+	WTSLogger::info("WtUftEngine will run in {} mode", bAsync ? "async" : "sync");
+
 	if (!bAsync)
 	{
 		boost::asio::io_service::work work(g_asyncIO);

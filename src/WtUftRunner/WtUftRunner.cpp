@@ -220,7 +220,14 @@ bool WtUftRunner::initUftStrategies()
 		const char* name = cfgItem->getCString("name");
 		UftStrategyPtr stra = _uft_stra_mgr.createStrategy(name, id);
 		if (stra == NULL)
+		{
+			WTSLogger::error("UFT Strategy {} create failed", name);
 			continue;
+		}
+		else
+		{
+			WTSLogger::info("UFT Strategy {}({}) created", name, id);
+		}
 
 		stra->self()->init(cfgItem->get("params"));
 		UftStraContext* ctx = new UftStraContext(&_uft_engine, id);
