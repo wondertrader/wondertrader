@@ -191,6 +191,10 @@ bool ParserXeleSkt::prepare()
 		WTSContractInfo* ct = _bd_mgr->getContract(p->InstrumentID);
 		if (ct != NULL)
 		{
+			auto it = _set_subs.find(ct->getFullCode());
+			if(it == _set_subs.end())
+				continue;
+
 			_price_scales[instrumentNo] = p->PriceTick;
 
 			WTSTickData* tick = WTSTickData::create(p->InstrumentID);

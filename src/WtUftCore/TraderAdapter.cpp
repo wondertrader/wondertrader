@@ -135,7 +135,7 @@ bool TraderAdapter::init(const char* id, WTSVariant* params, IBaseDataMgr* bdMgr
 	}
 	else
 	{
-		WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO, "[{}] Trader module %s loaded", _id.c_str(), dllpath.c_str());
+		WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO, "[{}] Trader module {} loaded", _id.c_str(), dllpath.c_str());
 	}
 
 	FuncCreateTrader pFunCreateTrader = (FuncCreateTrader)DLLHelper::get_symbol(hInst, "createTrader");

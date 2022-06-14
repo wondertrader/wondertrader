@@ -235,7 +235,7 @@ bool WtUftRunner::initUftStrategies()
 		}
 		else
 		{
-			WTSLogger::error("Trader {} not exists, binding trader to HFT strategy failed", traderid);
+			WTSLogger::error("Trader {} not exists, binding trader to UFT strategy failed", traderid);
 		}
 
 		_uft_engine.addContext(UftContextPtr(ctx));
@@ -326,7 +326,7 @@ bool WtUftRunner::initTraders(WTSVariant* cfgTrader)
 		count++;
 	}
 
-	WTSLogger::info("%{} traders loaded", count);
+	WTSLogger::info("{} traders loaded", count);
 
 	return true;
 }
