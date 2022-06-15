@@ -297,16 +297,16 @@ void TraderYD::notifyFinishInit()
 			if (contract)
 			{
 				WTSCommodityInfo* commInfo = contract->getCommInfo();
-				std::string key = StrUtil::printf("{}-{}", contract->getCode(), wrapPosDirection(pInfo->PositionDirection));
+				std::string key = fmt::format("{}-{}", contract->getCode(), wrapPosDirection(pInfo->PositionDirection));
 				WTSPositionItem* pos = (WTSPositionItem*)m_mapPosition->get(key);
 				if (pos == NULL)
 				{
 					pos = WTSPositionItem::create(contract->getCode(), commInfo->getCurrency(), commInfo->getExchg());
+					pos->setDirection(wrapPosDirection(pInfo->PositionDirection));
 					pos->setContractInfo(contract);
 					m_mapPosition->add(key, pos, false);
 				}
 
-				pos->setDirection(wrapPosDirection(pInfo->PositionDirection));
 				pos->setPrePosition(pInfo->PrePosition);
 				pos->setNewPosition(0);
 
@@ -325,6 +325,8 @@ void TraderYD::notifyFinishInit()
 
 				pos->setAvailPrePos(pos->getPrePosition());
 				pos->setAvailNewPos(0);
+
+				write_log(m_sink, LL_INFO, "{} PrePosition of {} updated:{}[{}]", pos->getDirection() == WDT_LONG ? "Long" : "Short", contract->getFullCode(), pos->getTotalPosition(), pos->getAvailPosition());
 			}
 		}
 	}
@@ -349,7 +351,7 @@ void TraderYD::notifyOrder(const YDOrder *pOrder, const YDInstrument *pInstrumen
 			//如果是平仓委托，需要调整冻结手数
 			if (orderInfo->getOffsetType() != WOT_OPEN)
 			{
-				std::string key = StrUtil::printf("{}-{}", orderInfo->getCode(), orderInfo->getDirection());
+				std::string key = fmt::format("{}-{}", orderInfo->getCode(), orderInfo->getDirection());
 				WTSPositionItem* pos = (WTSPositionItem*)m_mapPosition->get(key);
 				double preQty = pos->getPrePosition();
 				double newQty = pos->getNewPosition();
@@ -386,7 +388,7 @@ void TraderYD::notifyOrder(const YDOrder *pOrder, const YDInstrument *pInstrumen
 			//如果是撤单，并且之间订单状态还是有效的，则对平仓委托要释放冻结的手数
 			if(preOrd->isAlive() && orderInfo->getOrderState() == WOS_Canceled && orderInfo->getOffsetType() != WOT_OPEN)
 			{
-				std::string key = StrUtil::printf("{}-{}", orderInfo->getCode(), orderInfo->getDirection());
+				std::string key = fmt::format("{}-{}", orderInfo->getCode(), orderInfo->getDirection());
 				WTSPositionItem* pos = (WTSPositionItem*)m_mapPosition->get(key);
 				double preQty = pos->getPrePosition();
 				double newQty = pos->getNewPosition();
@@ -447,12 +449,13 @@ void TraderYD::notifyTrade(const YDTrade *pTrade, const YDInstrument *pInstrumen
 			m_mapTrades->add(tid, trdInfo, false);
 
 			//成交回报，主要更新持仓
-			std::string key = StrUtil::printf("{}-{}", trdInfo->getCode(), trdInfo->getDirection());
+			std::string key = fmt::format("{}-{}", trdInfo->getCode(), trdInfo->getDirection());
 			WTSPositionItem* pos = (WTSPositionItem*)m_mapPosition->get(key);
 			if(pos == NULL)
 			{
 				pos = WTSPositionItem::create(contract->getCode(), commInfo->getCurrency(), commInfo->getExchg());
 				pos->setContractInfo(contract);
+				pos->setDirection(trdInfo->getDirection());
 				m_mapPosition->add(key, pos, false);
 			}
 
@@ -632,11 +635,6 @@ void TraderYD::registerSpi(ITraderSpi *listener)
 	}
 }
 
-uint32_t TraderYD::genRequestID()
-{
-	return m_iRequestID.fetch_add(1) + 1;
-}
-
 int TraderYD::login(const char* user, const char* pass, const char* productInfo)
 {
 	m_strUser = user;
@@ -732,7 +730,7 @@ int TraderYD::orderInsert(WTSEntrust* entrust)
 	// inputOrder中的RealConnectionID和ErrorNo是在返回时由服务器填写的
 	if(!m_pUserAPI->insertOrder(&req, pInst))
 	{
-		write_log(m_sink, LL_ERROR, "[TraderCTP] Order inserting failed");
+		write_log(m_sink, LL_ERROR, "[TraderYD] Order inserting failed");
 	}
 	return 0;
 }
@@ -901,9 +899,8 @@ WTSOrderInfo* TraderYD::makeOrderInfo(const YDOrder* orderField, const YDInstrum
 	if (orderField->OrderStatus == YD_OS_Rejected)
 		pRet->setError(true);
 
-	pRet->setEntrustID(generateEntrustID(orderField->OrderRef).c_str());
-	pRet->setOrderID(fmt::format("{}",orderField->OrderSysID).c_str());
-
+	generateEntrustID(orderField->OrderRef, pRet->getEntrustID());
+	fmtutil::format_to(pRet->getOrderID(), "{}", orderField->OrderSysID);
 	pRet->setStateMsg("");
 
 	const char* usertag = m_eidCache.get(pRet->getEntrustID());
@@ -950,7 +947,7 @@ WTSEntrust* TraderYD::makeEntrust(const YDInputOrder *entrustField, const YDInst
 	else
 		pRet->setOrderFlag(WOF_NOR);
 
-	pRet->setEntrustID(generateEntrustID(entrustField->OrderRef).c_str());
+	generateEntrustID(entrustField->OrderRef, pRet->getEntrustID());
 
 	const char* usertag = m_eidCache.get(pRet->getEntrustID());
 	if (strlen(usertag) > 0)
@@ -978,7 +975,7 @@ WTSTradeInfo* TraderYD::makeTradeRecord(const YDTrade *tradeField, const YDInstr
 	pRet->setContractInfo(contract);
 	pRet->setVolume(tradeField->Volume);
 	pRet->setPrice(tradeField->Price);
-	pRet->setTradeID(fmt::format("{}",tradeField->TradeID).c_str());
+	fmtutil::format_to(pRet->getTradeID(), "{}", tradeField->TradeID);
 
 	uint32_t uDate = m_lDate;
 	uint32_t uTime = tradeField->TradeTime;
@@ -990,7 +987,7 @@ WTSTradeInfo* TraderYD::makeTradeRecord(const YDTrade *tradeField, const YDInstr
 
 	pRet->setDirection(dType);
 	pRet->setOffsetType(wrapOffsetType(tradeField->OffsetFlag));
-	pRet->setRefOrder(fmt::format("{}", tradeField->OrderSysID).c_str());
+	fmtutil::format_to(pRet->getRefOrder(), "{}", tradeField->OrderSysID);
 	pRet->setTradeType(WTT_Common);
 
 	double amount = commInfo->getVolScale()*tradeField->Volume*pRet->getPrice();
@@ -1003,19 +1000,21 @@ WTSTradeInfo* TraderYD::makeTradeRecord(const YDTrade *tradeField, const YDInstr
 	return pRet;
 }
 
-std::string TraderYD::generateEntrustID(uint32_t orderRef)
+bool TraderYD::generateEntrustID(uint32_t orderRef, char* buffer)
 {
-	return StrUtil::printf("%s#%010u", m_strUser.c_str(), orderRef);
+	fmtutil::format_to(buffer, "{}#{:010d}", m_strUser.c_str(), orderRef);
+	return true;
 }
 
 bool TraderYD::extractEntrustID(const char* entrustid, uint32_t &orderRef)
 {
 	//Market.FrontID.SessionID.OrderRef
-	const StringVector &vecString = StrUtil::split(entrustid, "#");
-	if (vecString.size() != 2)
+	auto idx = StrUtil::findFirst(entrustid, '#');
+	auto idx2 = StrUtil::findLast(entrustid, '#');
+	if (idx != idx2)
 		return false;
 
-	orderRef = strtoul(vecString[1].c_str(), NULL, 10);
+	orderRef = strtoul(entrustid + idx + 1, NULL, 10);
 
 	return true;
 }

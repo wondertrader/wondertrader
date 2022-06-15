@@ -347,6 +347,7 @@ public:
 	inline WTSOrderState		getOrderState() const { return m_orderState; }
 	inline WTSOrderType			getOrderType() const { return m_orderType; }
 	inline const char*			getOrderID() const { return m_strOrderID; }
+	inline char*			getOrderID() { return m_strOrderID; }
 
 	inline void	setStateMsg(const char* msg){m_strStateMsg = msg;}
 	inline const char* getStateMsg() const{return m_strStateMsg.c_str();}
@@ -453,6 +454,9 @@ public:
 	inline const char*	getExchg() const { return m_strExchg; }
 	inline const char*	getTradeID() const { return m_strTradeID; }
 	inline const char*	getRefOrder() const { return m_strRefOrder; }
+
+	inline char*	getTradeID() { return m_strTradeID; }
+	inline char*	getRefOrder() { return m_strRefOrder; }
 
 	inline uint32_t getTradeDate() const{return m_uTradeDate;}
 	inline uint64_t getTradeTime() const{return m_uTradeTime;}

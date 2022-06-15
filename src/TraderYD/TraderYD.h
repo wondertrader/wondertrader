@@ -114,10 +114,13 @@ protected:
 	WTSTradeInfo*	makeTradeRecord(const YDTrade *tradeField, const YDInstrument* instInfo);
 	WTSError*		makeError(int errorno, WTSErroCode ec);
 
-	std::string		generateEntrustID(uint32_t orderRef);
+	bool			generateEntrustID(uint32_t orderRef, char* buffer);
 	bool			extractEntrustID(const char* entrustid, uint32_t &orderRef);
 
-	uint32_t		genRequestID();
+	inline uint32_t		genRequestID()
+	{
+		return m_iRequestID.fetch_add(1) + 1;
+	}
 
 protected:
 	std::string		m_strCfgFile;
