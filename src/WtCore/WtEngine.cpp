@@ -90,8 +90,7 @@ WTSContractInfo* WtEngine::get_contract_info(const char* stdCode)
 
 std::string WtEngine::get_rawcode(const char* stdCode)
 {
-	CodeHelper::CodeInfo cInfo;
-	CodeHelper::extractStdCode(stdCode, _hot_mgr);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
 	if (cInfo.hasRule())
 	{
 		std::string code = _hot_mgr->getCustomRawCode(cInfo._ruletag, cInfo.stdCommID());

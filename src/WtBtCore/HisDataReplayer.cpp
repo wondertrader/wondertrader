@@ -2625,8 +2625,7 @@ WTSCommodityInfo* HisDataReplayer::get_commodity_info(const char* stdCode)
 
 std::string HisDataReplayer::get_rawcode(const char* stdCode)
 {
-	CodeHelper::CodeInfo cInfo;
-	CodeHelper::extractStdCode(stdCode, &_hot_mgr);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, &_hot_mgr);
 	if(cInfo.hasRule())
 	{
 		std::string code = _hot_mgr.getRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
