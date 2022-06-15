@@ -76,6 +76,7 @@ TraderAdapter::TraderAdapter()
 	, _trader_api(NULL)
 	, _orders(NULL)
 	, _undone_qty(0)
+	, _risk_mon_enabled(false)
 	, _stat_map(NULL)
 {
 }
@@ -116,6 +117,48 @@ bool TraderAdapter::init(const char* id, WTSVariant* params, IBaseDataMgr* bdMgr
 
 	_cfg = params;
 	_cfg->retain();
+
+	//这里解析流量风控参数
+	WTSVariant* cfgRisk = params->get("riskmon");
+	if (cfgRisk)
+	{
+		if (cfgRisk->getBoolean("active"))
+		{
+			_risk_mon_enabled = true;
+
+			WTSVariant* cfgPolicy = cfgRisk->get("policy");
+			auto keys = cfgPolicy->memberNames();
+			for (auto it = keys.begin(); it != keys.end(); it++)
+			{
+				const char* product = (*it).c_str();
+				WTSVariant*	vProdItem = cfgPolicy->get(product);
+				RiskParams& rParam = _risk_params_map[product];
+				rParam._cancel_total_limits = vProdItem->getUInt32("cancel_total_limits");
+				rParam._cancel_times_boundary = vProdItem->getUInt32("cancel_times_boundary");
+				rParam._cancel_stat_timespan = vProdItem->getUInt32("cancel_stat_timespan");
+
+				rParam._order_total_limits = vProdItem->getUInt32("order_total_limits");
+				rParam._order_times_boundary = vProdItem->getUInt32("order_times_boundary");
+				rParam._order_stat_timespan = vProdItem->getUInt32("order_stat_timespan");
+
+				WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO, "[{}] Risk control rule {} of trading channel loaded", _id.c_str(), product);
+			}
+
+			auto it = _risk_params_map.find("default");
+			if (it == _risk_params_map.end())
+			{
+				WTSLogger::log_dyn("trader", _id.c_str(), LL_WARN, "[{}] Some instruments may not be monitored due to no default risk control rule of trading channel", _id.c_str());
+			}
+		}
+		else
+		{
+			WTSLogger::log_dyn("trader", _id.c_str(), LL_WARN, "[{}] Risk control rule of trading channel not activated", _id.c_str());
+		}
+	}
+	else
+	{
+		WTSLogger::log_dyn("trader", _id.c_str(), LL_WARN, "[{}] No risk control rule setup of trading channel", _id.c_str());
+	}
 
 	if (params->getString("module").empty())
 		return false;
@@ -295,10 +338,11 @@ uint32_t TraderAdapter::doEntrust(WTSEntrust* entrust)
 		WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR, "[{}] Order placing failed: {}", _id, ret);
 		return UINT_MAX;
 	}
-	//else
-	//{
-	//	_order_time_cache[entrust->getCode()].emplace_back(TimeUtils::getLocalTimeNow());
-	//}
+	else if(_risk_mon_enabled)
+	{
+		int64_t now = TimeUtils::getLocalTimeNow();
+		_order_time_cache[entrust->getCode()].emplace_back(now);
+	}
 	return localid;
 }
 
@@ -319,8 +363,8 @@ bool TraderAdapter::doCancel(WTSOrderInfo* ordInfo)
 	WTSContractInfo* cInfo = _bd_mgr->getContract(ordInfo->getCode(), ordInfo->getExchg());
 
 	//撤单频率检查
-	//if (!checkCancelLimits(stdCode.c_str()))
-	//	return false;
+	if (_risk_mon_enabled && !checkCancelLimits(ordInfo->getCode()))
+		return false;
 
 	WTSEntrustAction* action = WTSEntrustAction::create(ordInfo->getCode(), cInfo->getExchg());
 	action->setEntrustID(ordInfo->getEntrustID());
@@ -345,6 +389,9 @@ bool TraderAdapter::cancel(uint32_t localid)
 	}
 	
 	bool bRet = doCancel(ordInfo);
+
+	if(_risk_mon_enabled)
+		_cancel_time_cache[ordInfo->getCode()].emplace_back(TimeUtils::getLocalTimeNow());
 
 	ordInfo->release();
 
@@ -371,7 +418,8 @@ OrderIDs TraderAdapter::cancelAll(const char* stdCode)
 				if(doCancel(orderInfo))
 				{
 					ret.emplace_back(it->first);
-					//_cancel_time_cache[orderInfo->getCode()].emplace_back(TimeUtils::getLocalTimeNow());
+					if (_risk_mon_enabled)
+						_cancel_time_cache[cInfo->getCode()].emplace_back(TimeUtils::getLocalTimeNow());
 				}
 			}
 		}
@@ -385,6 +433,12 @@ OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty, int f
 	OrderIDs ret;
 	if (qty == 0)
 		return ret;
+
+	if(_risk_mon_enabled && !checkOrderLimits(stdCode))
+	{
+		WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO, "{} is forbidden to trade", stdCode);
+		return ret;
+	}
 
 	if (cInfo == NULL) cInfo = getContract(stdCode);
 	WTSCommodityInfo* commInfo = cInfo->getCommInfo();
@@ -661,6 +715,12 @@ OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty, int 
 	if (qty == 0)
 		return ret;
 
+	if (_risk_mon_enabled && !checkOrderLimits(stdCode))
+	{
+		WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO, "{} is forbidden to trade", stdCode);
+		return ret;
+	}
+
 	if (cInfo == NULL) cInfo = getContract(stdCode);
 	WTSCommodityInfo* commInfo = cInfo->getCommInfo();
 	WTSSessionInfo* sInfo = commInfo->getSessionInfo();
@@ -928,6 +988,12 @@ OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty, int 
 
 uint32_t TraderAdapter::openLong(const char* stdCode, double price, double qty, int flag /* = 0 */)
 {
+	if (_risk_mon_enabled && !checkOrderLimits(stdCode))
+	{
+		WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO, "{} is forbidden to trade", stdCode);
+		return 0;
+	}
+
 	WTSEntrust* entrust = WTSEntrust::create(stdCode, qty, price);
 	if(price == 0.0)
 	{
@@ -951,6 +1017,12 @@ uint32_t TraderAdapter::openLong(const char* stdCode, double price, double qty, 
 
 uint32_t TraderAdapter::openShort(const char* stdCode, double price, double qty, int flag/* = 0*/)
 {
+	if (_risk_mon_enabled && !checkOrderLimits(stdCode))
+	{
+		WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO, "{} is forbidden to trade", stdCode);
+		return 0;
+	}
+
 	WTSEntrust* entrust = WTSEntrust::create(stdCode, qty, price);
 	if (price == 0.0)
 	{
@@ -974,6 +1046,12 @@ uint32_t TraderAdapter::openShort(const char* stdCode, double price, double qty,
 
 uint32_t TraderAdapter::closeLong(const char* stdCode, double price, double qty, bool isToday /* = false */, int flag/* = 0*/)
 {
+	if (_risk_mon_enabled && !checkOrderLimits(stdCode))
+	{
+		WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO, "{} is forbidden to trade", stdCode);
+		return 0;
+	}
+
 	WTSEntrust* entrust = WTSEntrust::create(stdCode, qty, price);
 	if (price == 0.0)
 	{
@@ -997,6 +1075,12 @@ uint32_t TraderAdapter::closeLong(const char* stdCode, double price, double qty,
 
 uint32_t TraderAdapter::closeShort(const char* stdCode, double price, double qty, bool isToday /* = false */, int flag/* = 0*/)
 {
+	if (_risk_mon_enabled && !checkOrderLimits(stdCode))
+	{
+		WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO, "{} is forbidden to trade", stdCode);
+		return 0;
+	}
+
 	WTSEntrust* entrust = WTSEntrust::create(stdCode, qty, price);
 	if (price == 0.0)
 	{
@@ -1758,6 +1842,135 @@ IBaseDataMgr* TraderAdapter::getBaseDataMgr()
 void TraderAdapter::handleTraderLog(WTSLogLevel ll, const char* message)
 {
 	WTSLogger::log_dyn_raw("trader", _id.c_str(), ll, message);
+}
+
+bool TraderAdapter::checkCancelLimits(const char* stdCode)
+{
+	if (_exclude_codes.find(stdCode) != _exclude_codes.end())
+		return false;
+
+	const RiskParams* riskPara = getRiskParams(stdCode);
+	if (riskPara == NULL)
+		return true;
+
+	WTSTradeStateInfo* statInfo = (WTSTradeStateInfo*)_stat_map->get(stdCode);
+	if (statInfo && riskPara->_cancel_total_limits != 0 && statInfo->total_cancels() >= riskPara->_cancel_total_limits)
+	{
+		WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR, "[{}] {} cancel {} times totaly, beyond boundary {} times, adding to excluding list",
+			_id.c_str(), stdCode, statInfo->total_cancels(), riskPara->_cancel_total_limits);
+		_exclude_codes.insert(stdCode);
+		return false;
+	}
+
+	//撤单频率检查
+	auto it = _cancel_time_cache.find(stdCode);
+	if (it != _cancel_time_cache.end())
+	{
+		TimeCacheList& cache = (TimeCacheList&)it->second;
+		uint32_t cnt = cache.size();
+		if (cnt >= riskPara->_cancel_times_boundary)
+		{
+			uint64_t eTime = cache[cnt - 1];
+			uint64_t sTime = eTime - riskPara->_cancel_stat_timespan * 1000;
+			auto tit = std::lower_bound(cache.begin(), cache.end(), sTime);
+			auto sIdx = tit - cache.begin();
+			auto times = cnt - sIdx - 1;
+			if (times > riskPara->_cancel_times_boundary)
+			{
+				WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR, "[{}] {} cancel {} times within {} seconds, beyond boundary {} times, adding to excluding list",
+					_id.c_str(), stdCode, times, riskPara->_cancel_stat_timespan, riskPara->_cancel_times_boundary);
+				_exclude_codes.insert(stdCode);
+				return false;
+			}
+
+			//这里必须要清理一下, 没有特别好的办法
+			//不然随着时间推移, vector长度会越来越长
+			if (tit != cache.begin())
+			{
+				cache.erase(cache.begin(), tit);
+			}
+		}
+	}
+
+	return true;
+}
+
+bool TraderAdapter::isTradeEnabled(const char* stdCode) const
+{
+	if (!_risk_mon_enabled)
+		return true;
+
+	if (_exclude_codes.find(stdCode) != _exclude_codes.end())
+		return false;
+
+	return true;
+}
+
+bool TraderAdapter::checkOrderLimits(const char* stdCode)
+{
+	if (_exclude_codes.find(stdCode) != _exclude_codes.end())
+		return false;
+
+	const RiskParams* riskPara = getRiskParams(stdCode);
+	if (riskPara == NULL)
+		return true;
+
+	WTSTradeStateInfo* statInfo = (WTSTradeStateInfo*)_stat_map->get(stdCode);
+	if (statInfo && riskPara->_order_total_limits != 0 && statInfo->total_orders() >= riskPara->_order_total_limits)
+	{
+		WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR, "[{}] {} entrust {} times totally, beyond boundary {} times, adding to excluding list",
+			_id.c_str(), stdCode, statInfo->total_orders(), riskPara->_order_total_limits);
+		_exclude_codes.insert(stdCode);
+		return false;
+	}
+
+	//撤单频率检查
+	auto it = _order_time_cache.find(stdCode);
+	if (it != _order_time_cache.end())
+	{
+		TimeCacheList& cache = (TimeCacheList&)it->second;
+		uint32_t cnt = cache.size();
+		if (cnt >= riskPara->_order_times_boundary)
+		{
+			uint64_t eTime = cache[cnt - 1];
+			uint64_t sTime = eTime - riskPara->_order_stat_timespan * 1000;
+			auto tit = std::lower_bound(cache.begin(), cache.end(), sTime);
+			auto sIdx = tit - cache.begin();
+			auto times = cnt - sIdx - 1;
+			if (times > riskPara->_order_times_boundary)
+			{
+				WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR, "[{}] {} entrust {} times within {} seconds, beyond boundary {} times, adding to excluding list",
+					_id.c_str(), stdCode, times, riskPara->_order_stat_timespan, riskPara->_order_times_boundary);
+				_exclude_codes.insert(stdCode);
+				return false;
+			}
+
+			//这里必须要清理一下, 没有特别好的办法
+			//不然随着时间推移, vector长度会越来越长
+			if (tit != cache.begin())
+			{
+				cache.erase(cache.begin(), tit);
+			}
+		}
+	}
+
+	return true;
+}
+
+const TraderAdapter::RiskParams* TraderAdapter::getRiskParams(const char* stdCode)
+{
+	auto idx = StrUtil::findFirst(stdCode, '.');
+	auto eIdx = idx + 1;
+	while (isalpha(stdCode[eIdx]))
+		eIdx++;
+
+
+	auto it = _risk_params_map.find(LongKey(stdCode + idx + 1, eIdx - idx + 1));
+	if (it != _risk_params_map.end())
+		return &it->second;
+
+	it = _risk_params_map.find("default");
+	return &it->second;
 }
 
 #pragma endregion "ITraderSpi接口"

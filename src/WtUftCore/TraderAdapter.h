@@ -80,6 +80,21 @@ public:
 
 	} PosItem;
 
+	typedef struct _RiskParams
+	{
+		uint32_t	_order_times_boundary;
+		uint32_t	_order_stat_timespan;
+		uint32_t	_order_total_limits;
+
+		uint32_t	_cancel_times_boundary;
+		uint32_t	_cancel_stat_timespan;
+		uint32_t	_cancel_total_limits;
+
+		_RiskParams()
+		{
+			memset(this, 0, sizeof(_RiskParams));
+		}
+	} RiskParams;
 
 public:
 	bool init(const char* id, WTSVariant* params, IBaseDataMgr* bdMgr, ActionPolicyMgr* policyMgr);
@@ -108,6 +123,8 @@ private:
 	inline WTSContractInfo* getContract(const char* stdCode);
 
 	inline void updateUndone(const char* stdCode, double qty, bool bOuput = true);
+
+	const RiskParams* getRiskParams(const char* stdCode);
 
 public:
 	double	getPosition(const char* stdCode, bool bValidOnly, int32_t flag = 3);
@@ -172,8 +189,8 @@ public:
 
 	inline bool	isTradeEnabled(const char* stdCode) const;
 
-	//bool	checkCancelLimits(const char* stdCode);
-	//bool	checkOrderLimits(const char* stdCode);
+	bool	checkCancelLimits(const char* stdCode);
+	bool	checkOrderLimits(const char* stdCode);
 
 public:
 	//////////////////////////////////////////////////////////////////////////
@@ -230,6 +247,19 @@ private:
 
 	typedef WTSHashMap<LongKey>	TradeStatMap;
 	TradeStatMap*	_stat_map;	//统计数据
+
+	//这两个缓存时间内的容器,主要是为了控制瞬间流量而设置的
+	typedef std::vector<uint64_t> TimeCacheList;
+	typedef faster_hashmap<LongKey, TimeCacheList> CodeTimeCacheMap;
+	CodeTimeCacheMap	_order_time_cache;	//下单时间缓存
+	CodeTimeCacheMap	_cancel_time_cache;	//撤单时间缓存
+
+	//如果被风控了,就会进入到排除队列
+	faster_hashset<LongKey>	_exclude_codes;
+
+	typedef faster_hashmap<LongKey, RiskParams>	RiskParamsMap;
+	RiskParamsMap	_risk_params_map;
+	bool			_risk_mon_enabled;
 };
 
 typedef std::shared_ptr<TraderAdapter>				TraderAdapterPtr;
