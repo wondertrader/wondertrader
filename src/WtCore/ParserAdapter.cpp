@@ -181,15 +181,10 @@ bool ParserAdapter::init(const char* id, WTSVariant* cfg, IParserStub* stub, IBa
 					auto ay = StrUtil::split((*it).c_str(), ".");
 					if (ay.size() == 1)
 						code = ay[0];
-					else if (ay.size() == 2)
+					else
 					{
 						exchg = ay[0];
 						code = ay[1];
-					}
-					else if (ay.size() == 3)
-					{
-						exchg = ay[0];
-						code = ay[2];
 					}
 					WTSContractInfo* contract = _bd_mgr->getContract(code.c_str(), exchg.c_str());
 					if(contract)
