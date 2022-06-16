@@ -165,6 +165,7 @@
     <ClCompile Include="WtExeFact.cpp" />
     <ClCompile Include="WtMinImpactExeUnit.cpp" />
     <ClCompile Include="WtOrdMon.cpp" />
+    <ClCompile Include="WtStockMinImpactExeUnit.cpp" />
     <ClCompile Include="WtTWapExeUnit.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -172,6 +173,7 @@
     <ClInclude Include="WtExeFact.h" />
     <ClInclude Include="WtMinImpactExeUnit.h" />
     <ClInclude Include="WtOrdMon.h" />
+    <ClInclude Include="WtStockMinImpactExeUnit.h" />
     <ClInclude Include="WtTWapExeUnit.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
