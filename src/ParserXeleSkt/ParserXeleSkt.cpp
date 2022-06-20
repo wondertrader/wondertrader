@@ -13,6 +13,7 @@
 #include "../Includes/WTSDataDef.hpp"
 #include "../Includes/IBaseDataMgr.h"
 #include "../Includes/WTSContractInfo.hpp"
+#include "../Share/decimal.h"
 
 #include <boost/bind.hpp>
 
@@ -48,6 +49,14 @@ inline uint32_t strToTime(const char* strTime)
 	str[idx] = '\0';
 
 	return strtoul(str, NULL, 10);
+}
+
+inline double checkValid(double val)
+{
+	if (val == DBL_MAX || val == FLT_MAX)
+		return 0;
+
+	return val;
 }
 
 extern "C"
@@ -206,13 +215,13 @@ bool ParserXeleSkt::prepare()
 				quote.action_date = strToTime(p->ActionDay);
 				quote.action_time = strToTime(p->UpdateTime) * 1000 + p->UpdateMilliSec;
 
-				quote.price = p->LastPrice;
-				quote.open = p->OpenPrice;
-				quote.high = p->HighestPrice;
-				quote.low = p->LowestPrice;
+				quote.price = checkValid(p->LastPrice);
+				quote.open = checkValid(p->OpenPrice);
+				quote.high = checkValid(p->HighestPrice);
+				quote.low = checkValid(p->LowestPrice);
 				quote.total_volume = p->Volume;
-				quote.trading_date = quote.action_date;
-				quote.settle_price = p->SettlementPrice;
+				quote.trading_date = 0;
+				quote.settle_price = checkValid(p->SettlementPrice);
 				quote.total_turnover = p->Turnover;
 
 				quote.open_interest = p->OpenInterest;
@@ -235,8 +244,8 @@ bool ParserXeleSkt::prepare()
 
 				_tick_cache->add(instrumentNo, tick, false);
 
-				if (_sink)
-					_sink->handleQuote(tick, 1);
+				//if (_sink)
+				//	_sink->handleQuote(tick, 1);
 			}
 		}
 
@@ -388,9 +397,16 @@ void ParserXeleSkt::extract_buffer(uint32_t length)
 				WTSTickStruct& quote = tick->getTickStruct();
 				quote.action_date = actDate;
 				quote.action_time = actTime;
+				if(quote.trading_date == 0)
+				{
+					quote.trading_date = _bd_mgr->calcTradingDate(tick->getContractInfo()->getFullPid(), actDate, actTime / 100000);
+				}
+
 				quote.price = p->LastPrice*scale;
 				quote.high = std::max(quote.high, p->LastPrice*scale);
 				quote.low = std::min(quote.low, p->LastPrice*scale);
+				if (decimal::eq(quote.open, 0))
+					quote.open = quote.price;
 
 				quote.total_volume = p->Volume;
 				quote.total_turnover = (double)p->Turnover;
@@ -441,9 +457,15 @@ void ParserXeleSkt::extract_buffer(uint32_t length)
 				WTSTickStruct& quote = tick->getTickStruct();
 				quote.action_date = actDate;
 				quote.action_time = actTime;
+				if (quote.trading_date == 0)
+				{
+					quote.trading_date = _bd_mgr->calcTradingDate(tick->getContractInfo()->getFullPid(), actDate, actTime / 100000);
+				}
 				quote.price = p->LastPrice*scale;
 				quote.high = std::max(quote.high, p->LastPrice*scale);
 				quote.low = std::min(quote.low, p->LastPrice*scale);
+				if (decimal::eq(quote.open, 0))
+					quote.open = quote.price;
 
 				quote.total_volume = p->Volume;
 				quote.total_turnover = (double)p->Turnover;
