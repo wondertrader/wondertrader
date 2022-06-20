@@ -812,6 +812,11 @@ void HisDataReplayer::run_by_bars(bool bNeedDump /* = false */)
 				_tick_simulated = !replayHftDatas(curBarTime, nextBarTime);
 			}
 
+			if (!_tick_enabled)
+			{
+				checkUnbars();
+			}
+
 			_cur_date = nextDate;
 			_cur_time = nextTime;
 			_cur_secs = 0;
@@ -820,7 +825,6 @@ void HisDataReplayer::run_by_bars(bool bNeedDump /* = false */)
 
 			if (!_tick_enabled)
 			{
-				checkUnbars();
 				replayUnbars(curBarTime, nextBarTime, (isDay || isEndTDate) ? nextTDate : 0);
 			}
 
