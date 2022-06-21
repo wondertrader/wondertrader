@@ -146,10 +146,9 @@ inline WTSOrderState wrapOrderState(XTP_ORDER_STATUS_TYPE orderState)
 		return WOS_AllTraded;
 	case XTP_ORDER_STATUS_PARTTRADEDQUEUEING:
 		return WOS_PartTraded_Queuing;
-	case XTP_ORDER_STATUS_PARTTRADEDNOTQUEUEING:
-		return WOS_PartTraded_NotQueuing;
 	case XTP_ORDER_STATUS_NOTRADEQUEUEING:
 		return WOS_NotTraded_Queuing;
+	case XTP_ORDER_STATUS_PARTTRADEDNOTQUEUEING:
 	case XTP_ORDER_STATUS_CANCELED:
 		return WOS_Canceled;
 	default:
@@ -679,6 +678,17 @@ std::string TraderXTP::genEntrustID(uint32_t orderRef)
 	return buffer;
 }
 
+bool TraderXTP::extractEntrustID(const char* entrustid, uint32_t &orderRef)
+{
+	auto idx = StrUtil::findLast(entrustid, '#');
+	if (idx == std::string::npos)
+		return false;
+
+	orderRef = strtoul(entrustid + idx + 1, NULL, 10);
+
+	return true;
+}
+
 bool TraderXTP::makeEntrustID(char* buffer, int length)
 {
 	if (buffer == NULL || length == 0)
@@ -775,7 +785,9 @@ int TraderXTP::orderInsert(WTSEntrust* entrust)
 	XTPOrderInsertInfo req;
 	memset(&req, 0, sizeof(req));
 	
-	req.order_client_id = _client;
+	uint32_t orderref;
+	extractEntrustID(entrust->getEntrustID(), orderref);
+	req.order_client_id = orderref;
 	strcpy(req.ticker, entrust->getCode());
 	req.market = wt_stricmp(entrust->getExchg(), "SSE") == 0 ? XTP_MKT_SH_A : XTP_MKT_SZ_A;
 	req.price = entrust->getPrice();
@@ -810,7 +822,7 @@ int TraderXTP::orderAction(WTSEntrustAction* action)
 	}
 
 	uint64_t iResult = _api->CancelOrder(strtoull(action->getOrderID(), NULL, 10), _sessionid);
-	if (iResult != 0)
+	if (iResult == 0)
 	{
 		auto error_info = _api->GetApiLastError();
 		write_log(_sink,LL_ERROR, "[TraderXTP] Order cancelling failed: {}", error_info->error_msg);

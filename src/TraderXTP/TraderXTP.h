@@ -100,6 +100,7 @@ private:
 	inline WTSEntrust*		makeEntrust(XTPOrderInfo *entrustField);
 	inline WTSTradeInfo*	makeTradeInfo(XTPQueryTradeRsp *tradeField);
 
+	bool					extractEntrustID(const char* entrustid, uint32_t &orderRef);
 	inline std::string		genEntrustID(uint32_t orderRef);
 
 private:
