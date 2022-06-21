@@ -30,6 +30,9 @@
     <ClCompile Include="WtDiffMinImpactExeUnit.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="WtStockMinImpactExeUnit.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WtExeFact.h">
@@ -45,6 +48,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="WtDiffMinImpactExeUnit.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="WtStockMinImpactExeUnit.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
