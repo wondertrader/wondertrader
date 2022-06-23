@@ -266,7 +266,9 @@ private:
 
 	uint64_t	replayHftDatasByDay(uint32_t curTDate);
 
-	void		replayUnbars(uint64_t stime, uint64_t etime, uint32_t endTDate = 0);
+	void		simTickWithUnsubBars(uint64_t stime, uint64_t etime, uint32_t endTDate = 0, int pxType = 0);
+
+	void		simTicks(uint32_t uDate, uint32_t uTime, uint32_t endTDate = 0, int pxType = 0);
 
 	inline bool		checkTicks(const char* stdCode, uint32_t uDate);
 

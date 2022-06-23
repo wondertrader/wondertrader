@@ -797,6 +797,17 @@ void HisDataReplayer::run_by_bars(bool bNeedDump /* = false */)
 						_day_cache.clear();
 					}
 
+					/*
+					 *	By Wesley @ 2022.06.23
+					 *	因为可能会有人在on_session_begin下单，所以这里把时间戳改成开盘时间
+					 *	这样signals里看起来比较容易理解一些
+					 */
+					uint64_t beginTimeofDay = _bd_mgr.getBoundaryTime(sInfo->id(), nextTDate, true, true);
+
+					_cur_date = beginTimeofDay / 10000;
+					_cur_time = beginTimeofDay % 10000;
+					_cur_secs = 0;
+
 					WTSLogger::debug("Tradingday {} begins", nextTDate);
 					_listener->handle_session_begin(nextTDate);
 					_opened_tdate = nextTDate;
@@ -823,9 +834,22 @@ void HisDataReplayer::run_by_bars(bool bNeedDump /* = false */)
 
 			bool isEndTDate = (sInfo->offsetTime(_cur_time, false) >= sInfo->getCloseTime(true));
 
-			if (!_tick_enabled)
+			/*
+			 *	By Wesley @ 2022.06.23
+			 *	tick数据模拟的机制完善
+			 *	主要将所有当前应该闭合的bar，按照开高低收的顺序同步模拟tick
+			 *	但是这样也是有漏洞的，那就是如果K线周期不统一，如m1和m5同时订阅
+			 *	会出现m5在最后一分钟才模拟tick的问题
+			 *	不过，真的要精确回测，请使用逐tick回测
+			 *	目前这个方案已经算是比较好的了
+			 */
+			for(int i = 0; i < 4; i++)
 			{
-				replayUnbars(curBarTime, nextBarTime, (isDay || isEndTDate) ? nextTDate : 0);
+				if (_tick_simulated)
+					simTicks(nextDate, nextTime, (isDay || isEndTDate) ? nextTDate : 0, i);
+
+				if (!_tick_enabled)
+					simTickWithUnsubBars(curBarTime, nextBarTime, (isDay || isEndTDate) ? nextTDate : 0, i);
 			}
 
 			onMinuteEnd(nextDate, nextTime, (isDay || isEndTDate) ? nextTDate : 0, _tick_simulated);
@@ -1126,7 +1150,147 @@ void HisDataReplayer::run_by_tasks(bool bNeedDump /* = false */)
 		}
 	}
 }
-void HisDataReplayer::replayUnbars(uint64_t stime, uint64_t nowTime, uint32_t endTDate /* = 0 */)
+
+void HisDataReplayer::simTicks(uint32_t uDate, uint32_t uTime, uint32_t endTDate /* = 0 */, int pxType /* = 0 */)
+{
+	//这里应该触发检查
+	uint64_t nowTime = (uint64_t)uDate * 10000 + uTime;
+
+	for (auto it = _bars_cache.begin(); it != _bars_cache.end(); it++)
+	{
+		BarsListPtr& barsList = (BarsListPtr&)it->second;
+		if (barsList->_period != KP_DAY)
+		{
+			if (barsList->_bars.size() > barsList->_cursor)
+			{
+				for(;;)
+				{
+					WTSBarStruct& nextBar = barsList->_bars[barsList->_cursor];
+
+					uint64_t barTime = 199000000000 + nextBar.time;
+					if (barTime == nowTime)
+					{
+						const std::string& ticker = _ticker_keys[barsList->_code];
+						if (ticker == it->first)
+						{
+							//开高低收
+							WTSTickStruct& curTS = _day_cache[barsList->_code];
+							strcpy(curTS.code, barsList->_code.c_str());
+							curTS.action_date = _cur_date;
+							curTS.action_time = _cur_time * 100000;
+
+							double newPx = 0.0;
+							if (pxType == 0)
+								newPx = nextBar.open;
+							else if (pxType == 1)
+								newPx = nextBar.high;
+							else if (pxType == 2)
+								newPx = nextBar.low;
+							else if (pxType == 3)
+								newPx = nextBar.close;
+
+							curTS.price = newPx;
+							curTS.volume = nextBar.vol;
+
+							//更新开高低三个字段
+							if (decimal::eq(curTS.open, 0))
+								curTS.open = curTS.price;
+							curTS.high = max(curTS.price, curTS.high);
+							if (decimal::eq(curTS.low, 0))
+								curTS.low = curTS.price;
+							else
+								curTS.low = min(curTS.price, curTS.low);
+
+							update_price(barsList->_code.c_str(), curTS.price);
+							WTSTickData* curTick = WTSTickData::create(curTS);
+							_listener->handle_tick(barsList->_code.c_str(), curTick, pxType == 3);
+							curTick->release();
+						}
+
+						break;
+					}
+					else if (barTime < nowTime)
+					{
+						barsList->_cursor++;
+
+						if (barsList->_cursor == barsList->_bars.size())
+							break;
+
+						continue;
+					}
+					else
+					{
+						break;
+					}
+				} 
+			}
+		}
+		else
+		{
+			if (barsList->_bars.size() > barsList->_cursor)
+			{
+				for (;;)
+				{
+					WTSBarStruct& nextBar = barsList->_bars[barsList->_cursor];
+
+					if (nextBar.date == endTDate)
+					{
+						const std::string& ticker = _ticker_keys[barsList->_code];
+						if (ticker == it->first)
+						{
+							CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(barsList->_code.c_str(), &_hot_mgr);
+							WTSCommodityInfo* commInfo = _bd_mgr.getCommodity(cInfo._exchg, cInfo._product);
+
+							std::string realCode = barsList->_code;
+							if (cInfo.isExright())
+								realCode = realCode.substr(0, realCode.size() - 1);
+
+							WTSSessionInfo* sInfo = get_session_info(realCode.c_str(), true);
+							uint32_t curTime = sInfo->getCloseTime();
+							//开高低收
+							WTSTickStruct curTS;
+							strcpy(curTS.code, realCode.c_str());
+							curTS.action_date = _cur_date;
+							curTS.action_time = curTime * 100000;
+
+							double newPx = 0.0;
+							if (pxType == 0)
+								newPx = nextBar.open;
+							else if (pxType == 1)
+								newPx = nextBar.high;
+							else if (pxType == 2)
+								newPx = nextBar.low;
+							else if (pxType == 3)
+								newPx = nextBar.close;
+
+							curTS.price = newPx;
+							curTS.volume = nextBar.vol;
+							update_price(barsList->_code.c_str(), curTS.price);
+							WTSTickData* curTick = WTSTickData::create(curTS);
+							_listener->handle_tick(realCode.c_str(), curTick, false);
+							curTick->release();
+						}
+
+						break;
+					}
+					else if (nextBar.date == endTDate)
+					{
+						barsList->_cursor++;
+
+						if (barsList->_cursor == barsList->_bars.size())
+							break;
+					}
+					else
+					{
+						break;
+					}
+				}
+			}
+		}
+	}
+}
+
+void HisDataReplayer::simTickWithUnsubBars(uint64_t stime, uint64_t nowTime, uint32_t endTDate /* = 0 */, int pxType /* = 0 */)
 {
 	//uint64_t nowTime = (uint64_t)uDate * 10000 + uTime;
 	uint32_t uDate = (uint32_t)(stime / 10000);
@@ -1144,20 +1308,26 @@ void HisDataReplayer::replayUnbars(uint64_t stime, uint64_t nowTime, uint32_t en
 					WTSBarStruct& nextBar = barsList->_bars[barsList->_cursor];
 
 					uint64_t barTime = 199000000000 + nextBar.time;
-					if (barTime <= nowTime)
+					if (barTime == nowTime)
 					{
-						if(barTime <= stime)
-							continue;
-
 						//开高低收
 						WTSTickStruct& curTS = _day_cache[barsList->_code];
 						strcpy(curTS.code, barsList->_code.c_str());
 						curTS.action_date = _cur_date;
 						curTS.action_time = _cur_time * 100000;
 
-						curTS.price = nextBar.open;
 						curTS.volume = nextBar.vol;
+						double newPx = 0.0;
+						if (pxType == 0)
+							newPx = nextBar.open;
+						else if (pxType == 1)
+							newPx = nextBar.high;
+						else if (pxType == 2)
+							newPx = nextBar.low;
+						else if (pxType == 3)
+							newPx = nextBar.close;
 
+						curTS.price = newPx;
 						//更新开高低三个字段
 						if (decimal::eq(curTS.open, 0))
 							curTS.open = curTS.price;
@@ -1169,40 +1339,23 @@ void HisDataReplayer::replayUnbars(uint64_t stime, uint64_t nowTime, uint32_t en
 
 
 						WTSTickData* curTick = WTSTickData::create(curTS);
-						_listener->handle_tick(barsList->_code.c_str(), curTick);
+						_listener->handle_tick(barsList->_code.c_str(), curTick, false);
 						curTick->release();
+						break;
+					}
+					else if (barTime < nowTime)
+					{
+						barsList->_cursor++;
 
-						curTS.price = nextBar.high;
-						curTS.volume = nextBar.vol;
-						curTS.high = max(curTS.price, curTS.high);
-						curTS.low = min(curTS.price, curTS.low);
-						curTick = WTSTickData::create(curTS);
-						_listener->handle_tick(barsList->_code.c_str(), curTick);
-						curTick->release();
+						if (barsList->_cursor == barsList->_bars.size())
+							break;
 
-						curTS.price = nextBar.low;
-						curTS.high = max(curTS.price, curTS.high);
-						curTS.low = min(curTS.price, curTS.low);
-						curTick = WTSTickData::create(curTS);
-						_listener->handle_tick(barsList->_code.c_str(), curTick);
-						curTick->release();
-
-						curTS.price = nextBar.close;
-						curTS.high = max(curTS.price, curTS.high);
-						curTS.low = min(curTS.price, curTS.low);
-						curTick = WTSTickData::create(curTS);
-						_listener->handle_tick(barsList->_code.c_str(), curTick);
-						curTick->release();
+						continue;
 					}
 					else
 					{
 						break;
 					}
-
-					barsList->_cursor++;
-
-					if (barsList->_cursor == barsList->_bars.size())
-						break;
 				}
 			}
 		}
@@ -1214,11 +1367,8 @@ void HisDataReplayer::replayUnbars(uint64_t stime, uint64_t nowTime, uint32_t en
 				{
 					WTSBarStruct& nextBar = barsList->_bars[barsList->_cursor];
 
-					if (nextBar.date <= endTDate)
+					if (nextBar.date == endTDate)
 					{
-						if (nextBar.date <= uDate)
-							continue;
-
 						CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(barsList->_code.c_str(), &_hot_mgr);
 						WTSCommodityInfo* commInfo = _bd_mgr.getCommodity(cInfo._exchg, cInfo._product);
 
@@ -1234,37 +1384,47 @@ void HisDataReplayer::replayUnbars(uint64_t stime, uint64_t nowTime, uint32_t en
 						curTS.action_date = _cur_date;
 						curTS.action_time = curTime * 100000;
 
-						curTS.price = nextBar.open;
 						curTS.volume = nextBar.vol;
+						double newPx = 0.0;
+						if (pxType == 0)
+							newPx = nextBar.open;
+						else if (pxType == 1)
+							newPx = nextBar.high;
+						else if (pxType == 2)
+							newPx = nextBar.low;
+						else if (pxType == 3)
+							newPx = nextBar.close;
+
+						curTS.price = newPx;
+						//更新开高低三个字段
+						if (decimal::eq(curTS.open, 0))
+							curTS.open = curTS.price;
+						curTS.high = max(curTS.price, curTS.high);
+						if (decimal::eq(curTS.low, 0))
+							curTS.low = curTS.price;
+						else
+							curTS.low = min(curTS.price, curTS.low);
+
 						WTSTickData* curTick = WTSTickData::create(curTS);
 						_listener->handle_tick(realCode.c_str(), curTick);
 						curTick->release();
 
-						curTS.price = nextBar.high;
-						curTS.volume = nextBar.vol;
-						curTick = WTSTickData::create(curTS);
-						_listener->handle_tick(realCode.c_str(), curTick);
-						curTick->release();
+						break;
+					}
+					else if (nextBar.date < endTDate)
+					{
+						barsList->_cursor++;
 
-						curTS.price = nextBar.low;
-						curTick = WTSTickData::create(curTS);
-						_listener->handle_tick(realCode.c_str(), curTick);
-						curTick->release();
+						if (barsList->_cursor == barsList->_bars.size())
+							break;
 
-						curTS.price = nextBar.close;
-						curTick = WTSTickData::create(curTS);
-						_listener->handle_tick(realCode.c_str(), curTick);
-						curTick->release();
+						continue;
 					}
 					else
 					{
 						break;
 					}
 
-					barsList->_cursor++;
-
-					if (barsList->_cursor >= barsList->_bars.size())
-						break;
 				}
 			}
 		}
@@ -1740,7 +1900,6 @@ void HisDataReplayer::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTD
 		double factor = 1.0;// barsList->_factor;
 		if (barsList->_period != KP_DAY)
 		{
-			//如果历史数据指标不在尾部, 说明是回测模式, 要继续回放历史数据
 			if (barsList->_bars.size() > barsList->_cursor)
 			{
 				for (;;)
@@ -1750,67 +1909,10 @@ void HisDataReplayer::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTD
 					uint64_t barTime = 199000000000 + nextBar.time;
 					if (barTime <= nowTime)
 					{
-						//if (_task == NULL)
-						{
-							if (tickSimulated)
-							{
-								const std::string& ticker = _ticker_keys[barsList->_code];
-								if (ticker == it->first)
-								{
-									//开高低收
-									WTSTickStruct& curTS = _day_cache[barsList->_code];
-									strcpy(curTS.code, barsList->_code.c_str());
-									curTS.action_date = _cur_date;
-									curTS.action_time = _cur_time * 100000;
-
-									curTS.price = nextBar.open / factor;
-									curTS.volume = nextBar.vol;
-
-									//更新开高低三个字段
-									if (decimal::eq(curTS.open, 0))
-										curTS.open = curTS.price;
-									curTS.high = max(curTS.price, curTS.high);
-									if (decimal::eq(curTS.low, 0))
-										curTS.low = curTS.price;
-									else
-										curTS.low = min(curTS.price, curTS.low);
-
-									update_price(barsList->_code.c_str(), curTS.price);
-									WTSTickData* curTick = WTSTickData::create(curTS);
-									_listener->handle_tick(barsList->_code.c_str(), curTick, false);
-									curTick->release();
-
-									curTS.price = nextBar.high / factor;
-									curTS.volume = nextBar.vol;
-									curTS.high = max(curTS.price, curTS.high);
-									curTS.low = min(curTS.price, curTS.low);
-									update_price(barsList->_code.c_str(), curTS.price);
-									curTick = WTSTickData::create(curTS);
-									_listener->handle_tick(barsList->_code.c_str(), curTick, false);
-									curTick->release();
-
-									curTS.price = nextBar.low / factor;
-									curTS.high = max(curTS.price, curTS.high);
-									curTS.low = min(curTS.price, curTS.low);
-									update_price(barsList->_code.c_str(), curTS.price);
-									curTick = WTSTickData::create(curTS);
-									_listener->handle_tick(barsList->_code.c_str(), curTick, false);
-									curTick->release();
-
-									curTS.price = nextBar.close / factor;
-									curTS.high = max(curTS.price, curTS.high);
-									curTS.low = min(curTS.price, curTS.low);
-									update_price(barsList->_code.c_str(), curTS.price);
-									curTick = WTSTickData::create(curTS);
-									_listener->handle_tick(barsList->_code.c_str(), curTick, true);
-								}
-							}
-
-							uint32_t times = barsList->_times;
-							if (barsList->_period == KP_Minute5)
-								times *= 5;
-							_listener->handle_bar_close(barsList->_code.c_str(), "m", times, &nextBar);
-						}
+						uint32_t times = barsList->_times;
+						if (barsList->_period == KP_Minute5)
+							times *= 5;
+						_listener->handle_bar_close(barsList->_code.c_str(), "m", times, &nextBar);
 					}
 					else
 					{
@@ -1834,62 +1936,55 @@ void HisDataReplayer::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTD
 
 					if (nextBar.date <= endTDate)
 					{
-						//if (_task == NULL)
-						{
-							if (tickSimulated)
-							{
-								const std::string& ticker = _ticker_keys[barsList->_code];
-								if (ticker == it->first)
-								{
-									CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(barsList->_code.c_str(), &_hot_mgr);
-									WTSCommodityInfo* commInfo = _bd_mgr.getCommodity(cInfo._exchg, cInfo._product);
-
-									std::string realCode = barsList->_code;
-									if (cInfo.isExright())
-										realCode = realCode.substr(0, realCode.size() - 1);
-
-									WTSSessionInfo* sInfo = get_session_info(realCode.c_str(), true);
-									uint32_t curTime = sInfo->getCloseTime();
-									//开高低收
-									WTSTickStruct curTS;
-									strcpy(curTS.code, realCode.c_str());
-									curTS.action_date = _cur_date;
-									curTS.action_time = curTime * 100000;
-
-									curTS.price = nextBar.open / factor;
-									curTS.volume = nextBar.vol;
-									update_price(barsList->_code.c_str(), curTS.price);
-									WTSTickData* curTick = WTSTickData::create(curTS);
-									_listener->handle_tick(realCode.c_str(), curTick, false);
-									curTick->release();
-
-									curTS.price = nextBar.high / factor;
-									curTS.volume = nextBar.vol;
-									update_price(barsList->_code.c_str(), curTS.price);
-									curTick = WTSTickData::create(curTS);
-									_listener->handle_tick(realCode.c_str(), curTick, false);
-									curTick->release();
-
-									curTS.price = nextBar.low / factor;
-									update_price(barsList->_code.c_str(), curTS.price);
-									curTick = WTSTickData::create(curTS);
-									_listener->handle_tick(realCode.c_str(), curTick, false);
-									curTick->release();
-
-									curTS.price = nextBar.close / factor;
-									update_price(barsList->_code.c_str(), curTS.price);
-									curTick = WTSTickData::create(curTS);
-									_listener->handle_tick(realCode.c_str(), curTick, true);
-								}
-							}
-
-							_listener->handle_bar_close(barsList->_code.c_str(), "d", barsList->_times, &nextBar);
-						}
+						_listener->handle_bar_close(barsList->_code.c_str(), "d", barsList->_times, &nextBar);
 					}
 					else
 					{
 						break;
 					}
+
+					barsList->_cursor++;
+
+					if (barsList->_cursor >= barsList->_bars.size())
+						break;
+				}
+			}
+		}
+	}
+
+	for (auto it = _unbars_cache.begin(); it != _unbars_cache.end(); it++)
+	{
+		BarsListPtr& barsList = (BarsListPtr&)it->second;
+		double factor = 1.0;// barsList->_factor;
+		if (barsList->_period != KP_DAY)
+		{
+			if (barsList->_bars.size() > barsList->_cursor)
+			{
+				for (;;)
+				{
+					WTSBarStruct& nextBar = barsList->_bars[barsList->_cursor];
+
+					uint64_t barTime = 199000000000 + nextBar.time;
+					if (barTime > nowTime)
+						break;
+
+					barsList->_cursor++;
+
+					if (barsList->_cursor == barsList->_bars.size())
+						break;
+				}
+			}
+		}
+		else
+		{
+			if (barsList->_bars.size() > barsList->_cursor)
+			{
+				for (;;)
+				{
+					WTSBarStruct& nextBar = barsList->_bars[barsList->_cursor];
+
+					if (nextBar.date > endTDate)
+						break;
 
 					barsList->_cursor++;
 
