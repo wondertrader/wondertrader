@@ -240,8 +240,9 @@ bool HftMocker::init_hft_factory(WTSVariant* cfg)
 	WTSVariant* cfgStra = cfg->get("strategy");
 	if(cfgStra)
 	{
-		_strategy = _factory._fact->createStrategy(cfgStra->getCString("name"), "hft");
+		_strategy = _factory._fact->createStrategy(cfgStra->getCString("name"), cfgStra->getCString("id"));
 		_strategy->init(cfgStra->get("params"));
+		_name = _strategy->id();
 	}
 	return true;
 }

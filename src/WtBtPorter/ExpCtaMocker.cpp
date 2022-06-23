@@ -54,6 +54,7 @@ void ExpCtaMocker::on_tick_updated(const char* stdCode, WTSTickData* newTick)
 	if (it == _tick_subs.end())
 		return;
 
+	ExpCtaMocker::on_tick_updated(stdCode, newTick);
 	getRunner().ctx_on_tick(_context_id, stdCode, newTick, ET_CTA);
 }
 
