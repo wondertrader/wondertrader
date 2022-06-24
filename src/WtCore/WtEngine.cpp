@@ -709,7 +709,7 @@ double WtEngine::get_day_price(const char* stdCode, int flag /* = 0 */)
 	if (lastTick == NULL)
 		return 0.0;
 
-	WTSContractInfo* cInfo = lastTick->getContractInfo();
+	WTSCommodityInfo* commInfo = get_commodity_info(fCode.c_str());
 
 	double ret = 0.0;
 	switch (flag)
@@ -730,7 +730,7 @@ double WtEngine::get_day_price(const char* stdCode, int flag /* = 0 */)
 	//如果是后复权，则进行复权处理
 	if (lastChar == SUFFIX_HFQ)
 	{
-		ret *= get_exright_factor(stdCode, cInfo->getCommInfo());
+		ret *= get_exright_factor(stdCode, commInfo);
 	}
 
 	return ret;
@@ -763,8 +763,20 @@ void WtEngine::sub_tick(uint32_t sid, const char* stdCode)
 	const char* ruleTag = _hot_mgr->getRuleTag(stdCode);
 	if(strlen(ruleTag) > 0)
 	{
-		SubList& sids = _tick_sub_map[stdCode];
-		sids[sid] = std::make_pair(sid, 0);
+		//SubList& sids = _tick_sub_map[stdCode];
+		//sids[sid] = std::make_pair(sid, 0);
+
+		std::size_t length = strlen(stdCode);
+		uint32_t flag = 0;
+		if (stdCode[length - 1] == SUFFIX_QFQ || stdCode[length - 1] == SUFFIX_HFQ)
+		{
+			length--;
+
+			flag = (stdCode[length - 1] == SUFFIX_QFQ) ? 1 : 2;
+		}
+
+		SubList& sids = _tick_sub_map[std::string(stdCode, length)];
+		sids[sid] = std::make_pair(sid, flag);
 
 		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
 		std::string rawCode = _hot_mgr->getCustomRawCode(ruleTag, cInfo.stdCommID(), _cur_tdate);
