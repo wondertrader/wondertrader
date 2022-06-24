@@ -921,10 +921,15 @@ void HftStraBaseCtx::do_set_position(const char* stdCode, double qty, double pri
 	double trdPx = curPx;
 
 	double diff = qty - pInfo._volume;
-
+	bool isBuy = decimal::gt(diff, 0.0);
 	if (decimal::gt(pInfo._volume*diff, 0))//当前持仓和仓位变化方向一致, 增加一条明细, 增加数量即可
 	{
 		pInfo._volume = qty;
+
+		if (_slippage != 0)
+		{
+			trdPx += _slippage * commInfo->getPriceTick()*(isBuy ? 1 : -1);
+		}
 
 		DetailInfo dInfo;
 		dInfo._long = decimal::gt(qty, 0);
@@ -943,6 +948,9 @@ void HftStraBaseCtx::do_set_position(const char* stdCode, double qty, double pri
 	else
 	{//持仓方向和仓位变化方向不一致,需要平仓
 		double left = abs(diff);
+
+		if (_slippage != 0)
+			trdPx += _slippage * commInfo->getPriceTick()*(isBuy ? 1 : -1);
 
 		pInfo._volume = qty;
 		if (decimal::eq(pInfo._volume, 0))
