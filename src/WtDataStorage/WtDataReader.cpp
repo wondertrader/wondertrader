@@ -1439,12 +1439,12 @@ bool WtDataReader::cacheHisBarsFromFile(void* codeInfo, const std::string& key, 
 	if (strlen(ruleTag) > 0)
 	{
 		//如果是读取期货主力连续数据
-		return cacheIntegratedBars(&cInfo, key, stdCode, period);
+		return cacheIntegratedBars(cInfo, key, stdCode, period);
 	}
 	else if(cInfo->isExright() && commInfo->isStock())
 	{
 		//如果是读取股票复权数据
-		return cacheAdjustedStkBars(&cInfo, key, stdCode, period);
+		return cacheAdjustedStkBars(cInfo, key, stdCode, period);
 	}
 
 	
@@ -1594,7 +1594,7 @@ WTSKlineSlice* WtDataReader::readKlineSlice(const char* stdCode, WTSKlinePeriod 
 	if (strlen(ruleTag) > 0)
 	{
 		_bars_cache[key]._raw_code = _hot_mgr->getCustomRawCode(ruleTag, cInfo.stdCommID(), curTDate);
-		pipe_reader_log(_sink, LL_INFO, "{} contract on {} confirmed with rule {}: {} -> {}", ruleTag, curTDate, stdCode, _bars_cache[key]._raw_code.c_str());
+		pipe_reader_log(_sink, LL_INFO, "{} contract on {} confirmed: {} -> {}", ruleTag, curTDate, stdCode, _bars_cache[key]._raw_code.c_str());
 	}
 	else
 	{
