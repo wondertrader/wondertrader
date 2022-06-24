@@ -74,5 +74,9 @@ void CtaStraContext::on_calculate(uint32_t curDate, uint32_t curTime)
 		_strategy->on_schedule(this, curDate, curTime);
 }
 
-
+void CtaStraContext::on_condition_triggered(const char* stdCode, double target, double price, const char* usertag)
+{
+	if (_strategy)
+		_strategy->on_condition_triggered(this, stdCode, target, price, usertag);
+}
 

@@ -54,6 +54,7 @@ WtRtRunner::WtRtRunner()
 	, _cb_cta_tick(NULL)
 	, _cb_cta_calc(NULL)
 	, _cb_cta_bar(NULL)
+	, _cb_cta_cond_trigger(NULL)
 	, _cb_cta_sessevt(NULL)
 
 	, _cb_sel_init(NULL)
@@ -152,13 +153,15 @@ void WtRtRunner::registerExecuterPorter(FuncExecInitCallback cbInit, FuncExecCmd
 	WTSLogger::info("Callbacks of Extented Executer registration done");
 }
 
-void WtRtRunner::registerCtaCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar, FuncSessionEvtCallback cbSessEvt)
+void WtRtRunner::registerCtaCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar, 
+		FuncSessionEvtCallback cbSessEvt, FuncStraCondTriggerCallback cbCondTrigger /* = NULL */)
 {
 	_cb_cta_init = cbInit;
 	_cb_cta_tick = cbTick;
 	_cb_cta_calc = cbCalc;
 	_cb_cta_bar = cbBar;
 	_cb_cta_sessevt = cbSessEvt;
+	_cb_cta_cond_trigger = cbCondTrigger;
 
 	WTSLogger::info("Callbacks of CTA engine registration done");
 }
@@ -398,6 +401,16 @@ void WtRtRunner::ctx_on_calc(uint32_t id, uint32_t curDate, uint32_t curTime, En
 	{
 	case ET_CTA: if (_cb_cta_calc) _cb_cta_calc(id, curDate, curTime); break;
 	case ET_SEL: if (_cb_sel_calc) _cb_sel_calc(id, curDate, curTime); break;
+	default:
+		break;
+	}
+}
+
+void WtRtRunner::ctx_on_cond_triggered(uint32_t id, const char* stdCode, double target, double price, const char* usertag, EngineType eType /* = ET_CTA */)
+{
+	switch (eType)
+	{
+	case ET_CTA: if (_cb_cta_cond_trigger) _cb_cta_cond_trigger(id, stdCode, target, price, usertag); break;
 	default:
 		break;
 	}

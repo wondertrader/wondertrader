@@ -41,7 +41,6 @@
     <ClInclude Include="ITrdNotifySink.h" />
     <ClInclude Include="SelStraBaseCtx.h" />
     <ClInclude Include="SelStraContext.h" />
-    <ClInclude Include="SelStrategyDefs.h" />
     <ClInclude Include="SelStrategyMgr.h" />
     <ClInclude Include="ParserAdapter.h" />
     <ClInclude Include="TraderAdapter.h" />

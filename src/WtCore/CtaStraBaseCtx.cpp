@@ -696,6 +696,11 @@ void CtaStraBaseCtx::on_tick(const char* stdCode, WTSTickData* newTick, bool bEm
 			{
 				const SigInfo& sInfo = it->second;
 				do_set_position(stdCode, sInfo._volume, sInfo._usertag.c_str(), sInfo._triggered);
+
+				//如果是条件单触发，则回调on_condition_triggered
+				if(sInfo._triggered)
+					on_condition_triggered(stdCode, sInfo._volume, newTick->price(), sInfo._usertag.c_str());
+
 				_sig_map.erase(it);
 			}
 			

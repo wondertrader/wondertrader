@@ -413,6 +413,10 @@ void CtaMocker::proc_tick(const char* stdCode, double last_px, double cur_px)
 				else
 					price = sInfo._desprice;
 				do_set_position(stdCode, sInfo._volume, price, sInfo._usertag.c_str(), sInfo._triggered);
+
+				//如果是条件单触发，则回调on_condition_triggered
+				if (sInfo._triggered)
+					on_condition_triggered(stdCode, sInfo._volume, cur_px, sInfo._usertag.c_str());
 				_sig_map.erase(it);
 			}
 		}

@@ -84,3 +84,8 @@ void ExpCtaMocker::on_bactest_end()
 {
 	getRunner().on_backtest_end();
 }
+
+void ExpCtaMocker::on_condition_triggered(const char* stdCode, double target, double price, const char* usertag)
+{
+	getRunner().ctx_on_cond_triggered(_context_id, stdCode, target, price, usertag, ET_CTA);
+}

@@ -53,6 +53,7 @@ WtBtRunner::WtBtRunner()
 	, _cb_cta_calc_done(NULL)
 	, _cb_cta_bar(NULL)
 	, _cb_cta_sessevt(NULL)
+	, _cb_cta_cond_trigger(NULL)
 
 	, _cb_sel_init(NULL)
 	, _cb_sel_tick(NULL)
@@ -218,8 +219,8 @@ void WtBtRunner::feedRawTicks(WTSTickStruct* ticks, uint32_t count)
 	_feeder_ticks(_feed_obj, ticks, count);
 }
 
-void WtBtRunner::registerCtaCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, 
-	FuncStraBarCallback cbBar, FuncSessionEvtCallback cbSessEvt, FuncStraCalcCallback cbCalcDone/* = NULL*/)
+void WtBtRunner::registerCtaCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar, 
+	FuncSessionEvtCallback cbSessEvt, FuncStraCalcCallback cbCalcDone /* = NULL */, FuncStraCondTriggerCallback cbCondTrigger /* = NULL */)
 {
 	_cb_cta_init = cbInit;
 	_cb_cta_tick = cbTick;
@@ -228,6 +229,7 @@ void WtBtRunner::registerCtaCallbacks(FuncStraInitCallback cbInit, FuncStraTickC
 	_cb_cta_sessevt = cbSessEvt;
 
 	_cb_cta_calc_done = cbCalcDone;
+	_cb_cta_cond_trigger = cbCondTrigger;
 
 	WTSLogger::info("Callbacks of CTA engine registration done");
 }
@@ -352,6 +354,16 @@ void WtBtRunner::ctx_on_init(uint32_t id, EngineType eType/*= ET_CTA*/)
 	case ET_CTA: if (_cb_cta_init) _cb_cta_init(id); break;
 	case ET_HFT: if (_cb_hft_init) _cb_hft_init(id); break;
 	case ET_SEL: if (_cb_sel_init) _cb_sel_init(id); break;
+	default:
+		break;
+	}
+}
+
+void WtBtRunner::ctx_on_cond_triggered(uint32_t id, const char* stdCode, double target, double price, const char* usertag, EngineType eType /* = ET_CTA */)
+{
+	switch (eType)
+	{
+	case ET_CTA: if (_cb_cta_cond_trigger) _cb_cta_cond_trigger(id, stdCode, target, price, usertag); break;
 	default:
 		break;
 	}

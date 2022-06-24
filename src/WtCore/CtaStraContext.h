@@ -37,6 +37,7 @@ public:
 	virtual void on_tick_updated(const char* stdCode, WTSTickData* newTick) override;
 	virtual void on_bar_close(const char* stdCode, const char* period, WTSBarStruct* newBar) override;
 	virtual void on_calculate(uint32_t curDate, uint32_t curTime) override;
+	virtual void on_condition_triggered(const char* stdCode, double target, double price, const char* usertag) override;
 
 private:
 	CtaStrategy*		_strategy;

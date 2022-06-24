@@ -90,9 +90,6 @@
     <ClInclude Include="SelStraContext.h">
       <Filter>SEL</Filter>
     </ClInclude>
-    <ClInclude Include="SelStrategyDefs.h">
-      <Filter>SEL</Filter>
-    </ClInclude>
     <ClInclude Include="SelStrategyMgr.h">
       <Filter>SEL</Filter>
     </ClInclude>

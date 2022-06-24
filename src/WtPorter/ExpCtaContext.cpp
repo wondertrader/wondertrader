@@ -67,3 +67,8 @@ void ExpCtaContext::on_calculate(uint32_t curDate, uint32_t curTime)
 {
 	getRunner().ctx_on_calc(_context_id, curDate, curTime, ET_CTA);
 }
+
+void ExpCtaContext::on_condition_triggered(const char* stdCode, double target, double price, const char* usertag)
+{
+	getRunner().ctx_on_cond_triggered(_context_id, stdCode, target, price, usertag, ET_CTA);
+}
