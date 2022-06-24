@@ -140,7 +140,7 @@ const char* get_version()
 	return _ver.c_str();
 }
 
-const char* get_raw_stdcode(const char* stdCode, char* buffer)
+const char* get_raw_stdcode(const char* stdCode)
 {
 	return getRunner().get_raw_stdcode(stdCode);
 }
