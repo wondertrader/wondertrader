@@ -33,7 +33,7 @@ inline uint32_t makeSelCtxId()
 }
 
 
-SelStraBaseCtx::SelStraBaseCtx(WtSelEngine* engine, const char* name)
+SelStraBaseCtx::SelStraBaseCtx(WtSelEngine* engine, const char* name, int32_t slippage)
 	: ISelStraCtx(name)
 	, _engine(engine)
 	, _total_calc_time(0)
@@ -42,6 +42,7 @@ SelStraBaseCtx::SelStraBaseCtx(WtSelEngine* engine, const char* name)
 	, _ud_modified(false)
 	, _schedule_date(0)
 	, _schedule_time(0)
+	, _slippage(slippage)
 {
 	_context_id = makeSelCtxId();
 }

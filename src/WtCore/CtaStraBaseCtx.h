@@ -55,7 +55,7 @@ typedef faster_hashmap<LongKey, CondList>	CondEntrustMap;
 class CtaStraBaseCtx : public ICtaStraCtx
 {
 public:
-	CtaStraBaseCtx(WtCtaEngine* engine, const char* name);
+	CtaStraBaseCtx(WtCtaEngine* engine, const char* name, int32_t slippage);
 	virtual ~CtaStraBaseCtx();
 
 private:
@@ -171,6 +171,8 @@ public:
 protected:
 	uint32_t		_context_id;
 	WtCtaEngine*	_engine;
+
+	int32_t			_slippage;
 
 	uint64_t		_total_calc_time;	//总计算时间
 	uint32_t		_emit_times;		//总计算次数

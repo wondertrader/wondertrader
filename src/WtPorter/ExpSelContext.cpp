@@ -4,8 +4,8 @@
 extern WtRtRunner& getRunner();
 
 
-ExpSelContext::ExpSelContext(WtSelEngine* env, const char* name)
-	: SelStraBaseCtx(env, name)
+ExpSelContext::ExpSelContext(WtSelEngine* env, const char* name, int32_t slippage)
+	: SelStraBaseCtx(env, name, slippage)
 {
 }
 

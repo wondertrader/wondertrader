@@ -26,7 +26,7 @@ class TraderAdapter;
 class HftStraBaseCtx : public IHftStraCtx, public ITrdNotifySink
 {
 public:
-	HftStraBaseCtx(WtHftEngine* engine, const char* name, bool bAgent);
+	HftStraBaseCtx(WtHftEngine* engine, const char* name, bool bAgent, int32_t slippage);
 	virtual ~HftStraBaseCtx();
 
 	void setTrader(TraderAdapter* trader);
@@ -249,6 +249,7 @@ protected:
 	uint32_t		_context_id;
 	WtHftEngine*	_engine;
 	TraderAdapter*	_trader;
+	int32_t			_slippage;
 
 	faster_hashmap<LongKey, std::string> _code_map;
 

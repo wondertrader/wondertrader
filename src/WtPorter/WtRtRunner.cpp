@@ -310,16 +310,16 @@ bool WtRtRunner::createExtExecuter(const char* id)
 	return true;
 }
 
-uint32_t WtRtRunner::createCtaContext(const char* name)
+uint32_t WtRtRunner::createCtaContext(const char* name, int32_t slippage /* = 0 */)
 {
-	ExpCtaContext* ctx = new ExpCtaContext(&_cta_engine, name);
+	ExpCtaContext* ctx = new ExpCtaContext(&_cta_engine, name, slippage);
 	_cta_engine.addContext(CtaContextPtr(ctx));
 	return ctx->id();
 }
 
-uint32_t WtRtRunner::createHftContext(const char* name, const char* trader, bool bAgent /* = true */)
+uint32_t WtRtRunner::createHftContext(const char* name, const char* trader, bool bAgent, int32_t slippage /* = 0 */)
 {
-	ExpHftContext* ctx = new ExpHftContext(&_hft_engine, name, bAgent);
+	ExpHftContext* ctx = new ExpHftContext(&_hft_engine, name, bAgent, slippage);
 	_hft_engine.addContext(HftContextPtr(ctx));
 	TraderAdapterPtr trdPtr = _traders.getAdapter(trader);
 	if(trdPtr)
@@ -334,7 +334,7 @@ uint32_t WtRtRunner::createHftContext(const char* name, const char* trader, bool
 	return ctx->id();
 }
 
-uint32_t WtRtRunner::createSelContext(const char* name, uint32_t date, uint32_t time, const char* period, const char* trdtpl /* = "CHINA" */, const char* session/* ="TRADING" */)
+uint32_t WtRtRunner::createSelContext(const char* name, uint32_t date, uint32_t time, const char* period, int32_t slippage, const char* trdtpl /* = "CHINA" */, const char* session/* ="TRADING" */)
 {
 	TaskPeriodType ptype;
 	if (wt_stricmp(period, "d") == 0)
@@ -350,7 +350,7 @@ uint32_t WtRtRunner::createSelContext(const char* name, uint32_t date, uint32_t 
 	else
 		ptype = TPT_None;
 
-	ExpSelContext* ctx = new ExpSelContext(&_sel_engine, name);
+	ExpSelContext* ctx = new ExpSelContext(&_sel_engine, name, slippage);
 
 	_sel_engine.addContext(SelContextPtr(ctx), date, time, ptype, true, trdtpl, session);
 
@@ -691,9 +691,10 @@ bool WtRtRunner::initCtaStrategies()
 
 		const char* id = cfgItem->getCString("id");
 		const char* name = cfgItem->getCString("name");
+		int32_t slippage = cfgItem->getInt32("slippage");
 		CtaStrategyPtr stra = _cta_mgr.createStrategy(name, id);
 		stra->self()->init(cfgItem->get("params"));
-		CtaStraContext* ctx = new CtaStraContext(&_cta_engine, id);
+		CtaStraContext* ctx = new CtaStraContext(&_cta_engine, id, slippage);
 		ctx->set_strategy(stra->self());
 		_cta_engine.addContext(CtaContextPtr(ctx));
 	}
@@ -719,6 +720,7 @@ bool WtRtRunner::initSelStrategies()
 
 		const char* id = cfgItem->getCString("id");
 		const char* name = cfgItem->getCString("name");
+		int32_t slippage = cfgItem->getInt32("slippage");
 
 		uint32_t date = cfgItem->getUInt32("date");
 		uint32_t time = cfgItem->getUInt32("time");
@@ -738,7 +740,7 @@ bool WtRtRunner::initSelStrategies()
 
 		SelStrategyPtr stra = _sel_mgr.createStrategy(name, id);
 		stra->self()->init(cfgItem->get("params"));
-		SelStraContext* ctx = new SelStraContext(&_sel_engine, id);
+		SelStraContext* ctx = new SelStraContext(&_sel_engine, id, slippage);
 		ctx->set_strategy(stra->self());
 		_sel_engine.addContext(SelContextPtr(ctx), date, time, ptype);
 	}
@@ -765,12 +767,14 @@ bool WtRtRunner::initHftStrategies()
 		const char* id = cfgItem->getCString("id");
 		const char* name = cfgItem->getCString("name");
 		bool bAgent = cfgItem->getBoolean("agent");
+		int32_t slippage = cfgItem->getInt32("slippage");
+
 		HftStrategyPtr stra = _hft_mgr.createStrategy(name, id);
 		if (stra == NULL)
 			continue;
 
 		stra->self()->init(cfgItem->get("params"));
-		HftStraContext* ctx = new HftStraContext(&_hft_engine, id, bAgent);
+		HftStraContext* ctx = new HftStraContext(&_hft_engine, id, bAgent, slippage);
 		ctx->set_strategy(stra->self());
 
 		const char* traderid = cfgItem->getCString("trader");

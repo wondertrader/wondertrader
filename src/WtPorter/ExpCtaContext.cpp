@@ -14,8 +14,8 @@
 
 extern WtRtRunner& getRunner();
 
-ExpCtaContext::ExpCtaContext(WtCtaEngine* env, const char* name)
-	: CtaStraBaseCtx(env, name)
+ExpCtaContext::ExpCtaContext(WtCtaEngine* env, const char* name, int32_t slippage)
+	: CtaStraBaseCtx(env, name, slippage)
 {
 }
 

@@ -18,7 +18,7 @@ class HftStrategy;
 class HftStraContext : public HftStraBaseCtx
 {
 public:
-	HftStraContext(WtHftEngine* engine, const char* name, bool bAgent);
+	HftStraContext(WtHftEngine* engine, const char* name, bool bAgent, int32_t slippage);
 	virtual ~HftStraContext();
 
 	void set_strategy(HftStrategy* stra){ _strategy = stra; }

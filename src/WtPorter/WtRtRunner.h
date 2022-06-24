@@ -102,9 +102,9 @@ public:
 	bool			createExtParser(const char* id);
 	bool			createExtExecuter(const char* id);
 
-	uint32_t		createCtaContext(const char* name);
-	uint32_t		createHftContext(const char* name, const char* trader, bool bAgent);
-	uint32_t		createSelContext(const char* name, uint32_t date, uint32_t time, const char* period, const char* trdtpl = "CHINA", const char* session="TRADING");
+	uint32_t		createCtaContext(const char* name, int32_t slippage);
+	uint32_t		createHftContext(const char* name, const char* trader, bool bAgent, int32_t slippage);
+	uint32_t		createSelContext(const char* name, uint32_t date, uint32_t time, const char* period, int32_t slippage, const char* trdtpl = "CHINA", const char* session="TRADING");
 
 	CtaContextPtr	getCtaContext(uint32_t id);
 	SelContextPtr	getSelContext(uint32_t id);

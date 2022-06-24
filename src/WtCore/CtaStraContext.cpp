@@ -16,8 +16,8 @@
 #include "../Includes/WTSContractInfo.hpp"
 
 
-CtaStraContext::CtaStraContext(WtCtaEngine* engine, const char* name)
-	: CtaStraBaseCtx(engine, name)
+CtaStraContext::CtaStraContext(WtCtaEngine* engine, const char* name, int32_t slippage)
+	: CtaStraBaseCtx(engine, name, slippage)
 {
 }
 

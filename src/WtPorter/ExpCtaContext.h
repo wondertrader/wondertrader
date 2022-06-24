@@ -15,7 +15,7 @@ USING_NS_WTP;
 class ExpCtaContext : public CtaStraBaseCtx
 {
 public:
-	ExpCtaContext(WtCtaEngine* env, const char* name);
+	ExpCtaContext(WtCtaEngine* env, const char* name, int32_t slippage);
 	virtual ~ExpCtaContext();
 
 public:

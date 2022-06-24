@@ -291,7 +291,7 @@ namespace hft
 
 	bool HftLatencyTool::initStrategies()
 	{
-		HftStraContext* ctx = new HftStraContext(&_engine, "stra", false);
+		HftStraContext* ctx = new HftStraContext(&_engine, "stra", false, 0);
 		ctx->set_strategy(new TestStrategy("stra"));
 
 		TraderAdapterPtr trader = _traders.getAdapter("trader");

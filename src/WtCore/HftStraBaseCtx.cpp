@@ -32,10 +32,11 @@ inline uint32_t makeHftCtxId()
 	return _auto_context_id.fetch_add(1);
 }
 
-HftStraBaseCtx::HftStraBaseCtx(WtHftEngine* engine, const char* name, bool bAgent /* = true */)
+HftStraBaseCtx::HftStraBaseCtx(WtHftEngine* engine, const char* name, bool bAgent, int32_t slippage)
 	: IHftStraCtx(name)
 	, _engine(engine)
 	, _data_agent(bAgent)
+	, _slippage(slippage)
 {
 	_context_id = makeHftCtxId();
 }

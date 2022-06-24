@@ -52,7 +52,7 @@ inline uint32_t makeCtaCtxId()
 }
 
 
-CtaStraBaseCtx::CtaStraBaseCtx(WtCtaEngine* engine, const char* name)
+CtaStraBaseCtx::CtaStraBaseCtx(WtCtaEngine* engine, const char* name, int32_t slippage)
 	: ICtaStraCtx(name)
 	, _engine(engine)
 	, _total_calc_time(0)
@@ -61,6 +61,7 @@ CtaStraBaseCtx::CtaStraBaseCtx(WtCtaEngine* engine, const char* name)
 	, _is_in_schedule(false)
 	, _ud_modified(false)
 	, _last_barno(0)
+	, _slippage(slippage)
 {
 	_context_id = makeCtaCtxId();
 }

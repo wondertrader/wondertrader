@@ -23,7 +23,7 @@ class CtaStrategy;
 class CtaStraContext : public CtaStraBaseCtx
 {
 public:
-	CtaStraContext(WtCtaEngine* engine, const char* name);
+	CtaStraContext(WtCtaEngine* engine, const char* name, int32_t slippage);
 	virtual ~CtaStraContext();
 
 	void set_strategy(CtaStrategy* stra){ _strategy = stra; }

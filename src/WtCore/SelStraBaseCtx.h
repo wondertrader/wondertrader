@@ -23,7 +23,7 @@ class WtSelEngine;
 class SelStraBaseCtx : public ISelStraCtx
 {
 public:
-	SelStraBaseCtx(WtSelEngine* engine, const char* name);
+	SelStraBaseCtx(WtSelEngine* engine, const char* name, int32_t slippage);
 	virtual ~SelStraBaseCtx();
 
 private:
@@ -114,6 +114,7 @@ public:
 protected:
 	uint32_t		_context_id;
 	WtSelEngine*	_engine;
+	int32_t			_slippage;
 
 	uint64_t		_total_calc_time;	//总计算时间
 	uint32_t		_emit_times;		//总计算次数

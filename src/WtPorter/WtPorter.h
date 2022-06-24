@@ -66,7 +66,7 @@ extern "C"
 	//////////////////////////////////////////////////////////////////////////
 	//CTA策略接口
 #pragma region "CTA接口"
-	EXPORT_FLAG	CtxHandler	create_cta_context(const char* name);
+	EXPORT_FLAG	CtxHandler	create_cta_context(const char* name, int slippage = 0);
 
 	EXPORT_FLAG	void		cta_enter_long(CtxHandler cHandle, const char* stdCode, double qty, const char* userTag, double limitprice, double stopprice);
 
@@ -128,7 +128,7 @@ extern "C"
 	//////////////////////////////////////////////////////////////////////////
 	//选股策略接口
 #pragma  region "SEL接口"
-	EXPORT_FLAG	CtxHandler	create_sel_context(const char* name, uint32_t date, uint32_t time, const char* period, const char* trdtpl = "CHINA", const char* session = "TRADING");
+	EXPORT_FLAG	CtxHandler	create_sel_context(const char* name, uint32_t date, uint32_t time, const char* period, const char* trdtpl = "CHINA", const char* session = "TRADING", int32_t slippage = 0);
 
 	EXPORT_FLAG	double		sel_get_position(CtxHandler cHandle, const char* stdCode, bool bOnlyValid, const char* openTag);
 
@@ -158,7 +158,7 @@ extern "C"
 	//////////////////////////////////////////////////////////////////////////
 	//HFT策略接口
 #pragma  region "HFT接口"
-	EXPORT_FLAG	CtxHandler	create_hft_context(const char* name, const char* trader, bool agent);
+	EXPORT_FLAG	CtxHandler	create_hft_context(const char* name, const char* trader, bool agent, int32_t slippage = 0);
 
 	EXPORT_FLAG	double		hft_get_position(CtxHandler cHandle, const char* stdCode, bool bOnlyValid);
 
