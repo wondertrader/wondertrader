@@ -862,7 +862,7 @@ bool CtaStraBaseCtx::on_schedule(uint32_t curDate, uint32_t curTime)
 			{
 				_condtions.clear();
 				on_calculate(curDate, curTime);
-				log_debug("Strategy {} scheduled @ {}", _context_id, curTime);
+				log_debug("Strategy {} scheduled @ {}", _name, curTime);
 				emmited = true;
 
 				_emit_times++;
@@ -1436,7 +1436,7 @@ WTSKlineSlice* CtaStraBaseCtx::stra_get_bars(const char* stdCode, const char* pe
 		if (_main_key.empty())
 		{
 			_main_key = key;
-			log_debug("Main KBars confirmed£º{}", key);
+			log_debug("Main KBars confirmed: {}", key);
 		}
 		else if (_main_key != key)
 			throw std::runtime_error("Main KBars already confirmed");
