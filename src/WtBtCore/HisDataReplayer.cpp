@@ -3685,7 +3685,7 @@ bool HisDataReplayer::cacheIntegratedFutBarsFromBin(void* codeInfo, const std::s
 
 		if(!bSucc)
 		{
-			WTSLogger::error("Loading {} bars of {} via HisDtMgr failed", PERIOD_NAME[period], stdCode);
+			WTSLogger::warn("Loading {} bars of {} via HisDtMgr failed", PERIOD_NAME[period], stdCode);
 			break;
 		}
 
@@ -3807,7 +3807,7 @@ bool HisDataReplayer::cacheIntegratedFutBarsFromBin(void* codeInfo, const std::s
 
 			if (!bLoaded)
 			{
-				WTSLogger::error("Loading {} bars of {} via HisDtMgr failed", PERIOD_NAME[period], curCode);
+				WTSLogger::warn("Loading {} bars of {} via HisDtMgr failed", PERIOD_NAME[period], curCode);
 				break;
 			}
 		}
@@ -3995,7 +3995,7 @@ bool HisDataReplayer::cacheAdjustedStkBarsFromBin(void* codeInfo, const std::str
 
 		if(!bSucc)
 		{
-			WTSLogger::error("Loading {} bars of {} via HisDtMgr failed", PERIOD_NAME[period], stdCode);
+			WTSLogger::warn("Loading {} bars of {} via HisDtMgr failed", PERIOD_NAME[period], stdCode);
 			break;
 		}
 
