@@ -261,7 +261,7 @@ void UftStraBaseCtx::on_position(const char* stdCode, bool isLong, double prevol
 
 double UftStraBaseCtx::stra_get_position(const char* stdCode, bool bOnlyValid /* = false */, int32_t iFlag /* = 0 */)
 {
-	return _trader->getPosition(stdCode, bOnlyValid);
+	return _trader->getPosition(stdCode, bOnlyValid, iFlag);
 }
 
 double UftStraBaseCtx::stra_enum_position(const char* stdCode)
