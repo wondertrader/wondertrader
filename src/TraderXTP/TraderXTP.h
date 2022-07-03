@@ -94,7 +94,8 @@ public:
 
 private:
 	void		reconnect();
-	inline uint32_t	genRequestID();
+	inline uint32_t			genRequestID();
+	void					doLogin();
 
 	inline WTSOrderInfo*	makeOrderInfo(XTPQueryOrderRsp* orderField);
 	inline WTSEntrust*		makeEntrust(XTPOrderInfo *entrustField);
@@ -125,7 +126,7 @@ private:
 	int				_client;
 
 	bool			_quick;
-	bool			_reconnect;
+	bool			_inited;
 
 	TraderState		_state;
 

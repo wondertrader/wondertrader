@@ -173,6 +173,7 @@ TraderXTP::TraderXTP()
 	, _positions(NULL)
 	, _bd_mgr(NULL)
 	, _tradingday(0)
+	, _inited(false)
 {
 }
 
@@ -321,10 +322,9 @@ void TraderXTP::OnDisconnected(uint64_t session_id, int reason)
 		_sink->handleEvent(WTE_Close, reason);
 
 	_asyncio.post([this](){
-		
-		write_log(_sink, LL_WARN, "[TraderrXTP] Connection lost, reconnect in 2 seconds...");
+		write_log(_sink, LL_WARN, "[TraderrXTP] Connection lost, relogin in 2 seconds...");
 		std::this_thread::sleep_for(std::chrono::seconds(2));
-		reconnect();
+		doLogin();
 	});
 }
 
@@ -723,33 +723,25 @@ bool TraderXTP::makeEntrustID(char* buffer, int length)
 	return false;
 }
 
-int TraderXTP::login(const char* user, const char* pass, const char* productInfo)
+void TraderXTP::doLogin()
 {
-	_user = user;
-	_pass = pass;
-
-	if (_api == NULL)
-	{
-		return -1;
-	}
-
 	_state = TS_LOGINING;
 
-	uint64_t iResult = _api->Login(_host.c_str(), _port, user, pass, XTP_PROTOCOL_TCP);
+	uint64_t iResult = _api->Login(_host.c_str(), _port, _user.c_str(), _pass.c_str(), XTP_PROTOCOL_TCP);
 	if (iResult == 0)
 	{
 		auto error_info = _api->GetApiLastError();
-		write_log(_sink,LL_ERROR, "[TraderXTP] Login failed: {}", error_info->error_msg);
+		write_log(_sink, LL_ERROR, "[TraderXTP] Login failed: {}", error_info->error_msg);
 		std::string msg = error_info->error_msg;
 		_state = TS_LOGINFAILED;
-		_asyncio.post([this, msg]{
+		_asyncio.post([this, msg] {
 			_sink->onLoginResult(false, msg.c_str(), 0);
 		});
 	}
 	else
 	{
 		_sessionid = iResult;
-		if (!_reconnect)
+		if (!_inited)
 		{
 			_tradingday = strtoul(_api->GetTradingDay(), NULL, 10);
 
@@ -775,6 +767,7 @@ int TraderXTP::login(const char* user, const char* pass, const char* productInfo
 			write_log(_sink, LL_INFO, "[TraderXTP] [{}] Login succeed, trading date: {}...", _user.c_str(), _tradingday);
 
 			_state = TS_LOGINED;
+			_inited = true;
 			_asyncio.post([this] {
 				_sink->onLoginResult(true, 0, _tradingday);
 				_state = TS_ALLREADY;
@@ -786,6 +779,19 @@ int TraderXTP::login(const char* user, const char* pass, const char* productInfo
 			_state = TS_ALLREADY;
 		}
 	}
+}
+
+int TraderXTP::login(const char* user, const char* pass, const char* productInfo)
+{
+	_user = user;
+	_pass = pass;
+
+	if (_api == NULL)
+	{
+		return -1;
+	}
+
+	doLogin();
 	return 0;
 }
 
