@@ -233,6 +233,11 @@ bool WtRunner::config()
 					{
 						if (!initExecuters(var->get("executers")))
 							WTSLogger::error("Loading executers failed");
+
+						WTSVariant* c = var->get("routers");
+						if (c != NULL)
+							_cta_engine.loadRouterRules(c);
+
 						var->release();
 					}
 					else
@@ -251,6 +256,9 @@ bool WtRunner::config()
 			}
 		}
 
+		WTSVariant* cfgRouter = _config->get("routers");
+		if (cfgRouter != NULL)
+			_cta_engine.loadRouterRules(cfgRouter);
 	}
 
 	if (!_is_hft)

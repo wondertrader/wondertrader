@@ -899,7 +899,7 @@ void SelStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 	//´æ´¢Êý¾Ý
 	save_data();
 
-	_engine->handle_pos_change(stdCode, diff);
+	_engine->handle_pos_change(_name.c_str(), stdCode, diff);
 }
 
 WTSKlineSlice* SelStraBaseCtx::stra_get_bars(const char* stdCode, const char* period, uint32_t count)

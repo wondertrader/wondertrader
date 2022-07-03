@@ -382,8 +382,16 @@ SelContextPtr WtSelEngine::getContext(uint32_t id)
 	return it->second;
 }
 
-void WtSelEngine::handle_pos_change(const char* stdCode, double diffQty)
+void WtSelEngine::handle_pos_change(const char* straName, const char* stdCode, double diffQty)
 {
+	//这里是持仓增量,所以不用处理未过滤的情况,因为增量情况下,不会改变目标diffQty
+	if (_filter_mgr.is_filtered_by_strategy(straName, diffQty, true))
+	{
+		//输出日志
+		WTSLogger::info("[Filters] Target position of {} of strategy {} ignored by strategy filter", stdCode, straName);
+		return;
+	}
+
 	std::string realCode = stdCode;
 	//const char* ruleTag = _hot_mgr->getRuleTag(stdCode);
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
@@ -423,6 +431,7 @@ void WtSelEngine::handle_pos_change(const char* stdCode, double diffQty)
 	append_signal(realCode.c_str(), targetPos, false);
 	save_datas();
 
+	const char* execid = _exec_mgr.get_route(straName);
 	_exec_mgr.handle_pos_change(realCode.c_str(), targetPos);
 }
 

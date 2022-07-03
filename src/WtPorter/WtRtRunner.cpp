@@ -658,6 +658,11 @@ bool WtRtRunner::config(const char* cfgFile, bool isFile /* = true */)
 					{
 						if (!initExecuters(var->get("executers")))
 							WTSLogger::error("Loading executers failed");
+
+						WTSVariant* c = var->get("routers");
+						if (c != NULL)
+							_cta_engine.loadRouterRules(c);
+
 						var->release();
 					}
 					else
@@ -675,6 +680,10 @@ bool WtRtRunner::config(const char* cfgFile, bool isFile /* = true */)
 				initExecuters(cfgExec);
 			}
 		}
+
+		WTSVariant* cfgRouter = _config->get("routers");
+		if (cfgRouter != NULL)
+			_cta_engine.loadRouterRules(cfgRouter);
 		
 	}
 
@@ -991,6 +1000,8 @@ bool WtRtRunner::initExecuters(WTSVariant* cfgExecuter)
 	}
 
 	WTSLogger::info("{} executers loaded", count);
+
+
 
 	return true;
 }

@@ -140,13 +140,16 @@ CtaContextPtr WtCtaEngine::getContext(uint32_t id)
 
 void WtCtaEngine::on_init()
 {
-	faster_hashmap<LongKey, double> target_pos;
+	//faster_hashmap<LongKey, double> target_pos;
+	_exec_mgr.clear_cached_targets();
 	for (auto it = _ctx_map.begin(); it != _ctx_map.end(); it++)
 	{
 		CtaContextPtr& ctx = (CtaContextPtr&)it->second;
 		ctx->on_init();
 
-		ctx->enum_position([this, &target_pos, ctx](const char* stdCode, double qty){
+		const char* execid = _exec_mgr.get_route(ctx->name());
+
+		ctx->enum_position([this, ctx, execid](const char* stdCode, double qty){
 
 			double oldQty = qty;
 			bool bFilterd = _filter_mgr.is_filtered_by_strategy(ctx->name(), qty);
@@ -160,28 +163,14 @@ void WtCtaEngine::on_init()
 				}
 
 				std::string realCode = stdCode;
-				//const char* ruleTag = _hot_mgr->getRuleTag(stdCode);
 				CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
 				if(strlen(cInfo._ruletag) > 0)
 				{
 					std::string code = _hot_mgr->getCustomRawCode(cInfo._ruletag, cInfo.stdCommID(), _cur_tdate);
 					realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
 				}
-				//else if (CodeHelper::isStdFutHotCode(stdCode))
-				//{
-				//	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
-				//	std::string code = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
-				//	realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
-				//}
-				//else if (CodeHelper::isStdFut2ndCode(stdCode))
-				//{
-				//	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
-				//	std::string code = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
-				//	realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
-				//}
 
-				double& vol = target_pos[realCode];
-				vol += qty;
+				_exec_mgr.add_target_to_cache(realCode.c_str(), qty, execid);
 			}
 			else
 			{
@@ -198,22 +187,22 @@ void WtCtaEngine::on_init()
 		bRiskEnabled = true;
 	}
 
-	//初始化仓位打印出来
-	for (auto it = target_pos.begin(); it != target_pos.end(); it++)
-	{
-		const auto& stdCode = it->first;
-		double& pos = (double&)it->second;
+	////初始化仓位打印出来
+	//for (auto it = target_pos.begin(); it != target_pos.end(); it++)
+	//{
+	//	const auto& stdCode = it->first;
+	//	double& pos = (double&)it->second;
 
-		if (bRiskEnabled && !decimal::eq(pos, 0))
-		{
-			double symbol = pos / abs(pos);
-			pos = decimal::rnd(abs(pos)*_risk_volscale)*symbol;
-		}
+	//	if (bRiskEnabled && !decimal::eq(pos, 0))
+	//	{
+	//		double symbol = pos / abs(pos);
+	//		pos = decimal::rnd(abs(pos)*_risk_volscale)*symbol;
+	//	}
 
-		WTSLogger::info("Portfolio initial position of {} is {}", stdCode.c_str(), pos);
-	}
+	//	WTSLogger::info("Portfolio initial position of {} is {}", stdCode.c_str(), pos);
+	//}
 
-	_exec_mgr.set_positions(target_pos);
+	_exec_mgr.commit_cached_targets(bRiskEnabled?_risk_volscale:1.0);
 
 	if (_evt_listener)
 		_evt_listener->on_initialize_event();
@@ -253,14 +242,14 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 {
 	//去检查一下过滤器
 	_filter_mgr.load_filters();
-
+	_exec_mgr.clear_cached_targets();
 	faster_hashmap<LongKey, double> target_pos;
-
 	for (auto it = _ctx_map.begin(); it != _ctx_map.end(); it++)
 	{
 		CtaContextPtr& ctx = (CtaContextPtr&)it->second;
 		ctx->on_schedule(curDate, curTime);
-		ctx->enum_position([this, &target_pos, ctx](const char* stdCode, double qty){
+		const char* execid = _exec_mgr.get_route(ctx->name());
+		ctx->enum_position([this, ctx, execid, &target_pos](const char* stdCode, double qty){
 
 			double oldQty = qty;
 			bool bFilterd = _filter_mgr.is_filtered_by_strategy(ctx->name(), qty);
@@ -280,21 +269,10 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 					std::string code = _hot_mgr->getCustomRawCode(cInfo._ruletag, cInfo.stdCommID(), _cur_tdate);
 					realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
 				}
-				//else if (CodeHelper::isStdFutHotCode(stdCode))
-				//{
-				//	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
-				//	std::string code = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
-				//	realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
-				//}
-				//else if (CodeHelper::isStdFut2ndCode(stdCode))
-				//{
-				//	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
-				//	std::string code = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
-				//	realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
-				//}
 
 				double& vol = target_pos[realCode];
 				vol += qty;
+				_exec_mgr.add_target_to_cache(realCode.c_str(), qty, execid);
 			}
 			else
 			{
@@ -341,8 +319,11 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 
 			//因为组合持仓里会有过期的合约代码存在，所以这里在丢给执行以前要做一个检查
 			auto cInfo = get_contract_info(stdCode.c_str());
-			if(cInfo != NULL)
-				target_pos[stdCode] = 0;
+			if (cInfo != NULL)
+			{
+				//target_pos[stdCode] = 0;
+				_exec_mgr.add_target_to_cache(stdCode.c_str(), 0);
+			}
 		}
 	}
 
@@ -350,7 +331,8 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 		update_fund_dynprofit();
 	});
 
-	_exec_mgr.set_positions(target_pos);
+	//_exec_mgr.set_positions(target_pos);
+	_exec_mgr.commit_cached_targets(bRiskEnabled ? _risk_volscale : 1);
 
 	save_datas();
 
@@ -383,18 +365,6 @@ void WtCtaEngine::handle_pos_change(const char* straName, const char* stdCode, d
 		std::string code = _hot_mgr->getCustomRawCode(cInfo._ruletag, cInfo.stdCommID(), _cur_tdate);
 		realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
 	}
-	//else if (CodeHelper::isStdFutHotCode(stdCode))
-	//{
-	//	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
-	//	std::string code = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
-	//	realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
-	//}
-	//else if (CodeHelper::isStdFut2ndCode(stdCode))
-	//{
-	//	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
-	//	std::string code = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
-	//	realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
-	//}
 
 	PosInfo& pItem = _pos_map[realCode];
 	double targetPos = pItem._volume + diffQty;
@@ -414,7 +384,8 @@ void WtCtaEngine::handle_pos_change(const char* straName, const char* stdCode, d
 	append_signal(realCode.c_str(), targetPos, false);
 	save_datas();
 
-	_exec_mgr.handle_pos_change(realCode.c_str(), targetPos);
+	const char* execid = _exec_mgr.get_route(straName);
+	_exec_mgr.handle_pos_change(realCode.c_str(), targetPos, execid);
 }
 
 void WtCtaEngine::on_tick(const char* stdCode, WTSTickData* curTick)
