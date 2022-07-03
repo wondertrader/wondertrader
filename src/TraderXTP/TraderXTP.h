@@ -125,6 +125,7 @@ private:
 	int				_client;
 
 	bool			_quick;
+	bool			_reconnect;
 
 	TraderState		_state;
 
