@@ -138,6 +138,9 @@ void WtExecuterMgr::commit_cached_targets(double scale /* = 1.0 */)
 			const auto& stdCode = item.first;
 			double& pos = (double&)item.second;
 
+			if(decimal::eq(pos, 0))
+				continue;
+
 			double symbol = pos / abs(pos);
 			pos = decimal::rnd(abs(pos)*scale)*symbol;
 		}
