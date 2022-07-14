@@ -241,7 +241,7 @@ bool WTSHotMgr::loadCustomRules(const char* tag, const char* filename)
 				//计算复权因子
 				double oldclose = jHotItem->getDouble("oldclose");
 				double newclose = jHotItem->getDouble("newclose");
-				factor *= (decimal::eq(oldclose, 0.0) ? 1.0 : (newclose / oldclose));
+				factor *= (decimal::eq(oldclose, 0.0) ? 1.0 : (oldclose/ newclose));
 				pItem->set_factor(factor);
 				dateMap->add(pItem->switch_date(), pItem, false);
 				lastCode = jHotItem->getCString("to");
