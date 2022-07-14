@@ -201,6 +201,8 @@ void WtUftEngine::run(bool bAsync /*= false*/)
 
 	_tm_ticker->run();
 
+	WTSLogger::info("WtUftEngine will run in {} mode", bAsync ? "async" : "sync");
+
 	if (!bAsync)
 	{
 		boost::asio::io_service::work work(g_asyncIO);
@@ -303,7 +305,7 @@ void WtUftEngine::sub_transaction(uint32_t sid, const char* stdCode)
 
 void WtUftEngine::on_session_begin()
 {
-	WTSLogger::info("Trading day %u begun", _cur_tdate);
+	WTSLogger::info("Trading day {} begun", _cur_tdate);
 
 	for (auto it = _ctx_map.begin(); it != _ctx_map.end(); it++)
 	{
@@ -320,7 +322,7 @@ void WtUftEngine::on_session_end()
 		ctx->on_session_end(_cur_tdate);
 	}
 
-	WTSLogger::info("Trading day %u ended", _cur_tdate);
+	WTSLogger::info("Trading day {} ended", _cur_tdate);
 }
 
 void WtUftEngine::on_tick(const char* stdCode, WTSTickData* curTick)

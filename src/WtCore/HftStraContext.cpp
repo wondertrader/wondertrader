@@ -11,8 +11,8 @@
 #include "../Includes/HftStrategyDefs.h"
 
 
-HftStraContext::HftStraContext(WtHftEngine* engine, const char* name, bool bAgent /* = true */)
-	: HftStraBaseCtx(engine, name, bAgent)
+HftStraContext::HftStraContext(WtHftEngine* engine, const char* name, bool bAgent, int32_t slippage)
+	: HftStraBaseCtx(engine, name, bAgent, slippage)
 	, _strategy(NULL)
 {
 }

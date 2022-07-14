@@ -19,9 +19,10 @@ typedef struct _Longkey //char[32]
 	{
 	}
 
-	_Longkey(const char* s)
+	_Longkey(const char* s, std::size_t len = 0)
 	{
-		auto len = strlen(s);
+		if (len == 0)
+			len = strlen(s);
 		memcpy(_buf , s, len);
 	}
 
@@ -68,9 +69,10 @@ typedef struct _ShortKey //char[32]
 	{
 	}
 
-	_ShortKey(const char* s)
+	_ShortKey(const char* s, std::size_t len = 0)
 	{
-		auto len = strlen(s);
+		if(len == 0)
+			len = strlen(s);
 		memcpy(_buf, s, len);
 	}
 

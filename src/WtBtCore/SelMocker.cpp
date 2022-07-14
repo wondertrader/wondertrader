@@ -15,12 +15,16 @@
 
 #include "../Share/StdUtils.hpp"
 #include "../Share/StrUtil.hpp"
+#include "../Share/decimal.h"
 #include "../Includes/WTSContractInfo.hpp"
 #include "../Includes/WTSSessionInfo.hpp"
-#include "../Share/decimal.h"
 #include "../Includes/WTSVariant.hpp"
 
 #include "../WTSTools/WTSLogger.h"
+
+#include <rapidjson/document.h>
+#include <rapidjson/prettywriter.h>
+namespace rj = rapidjson;
 
 inline uint32_t makeSelCtxId()
 {
@@ -46,6 +50,104 @@ SelMocker::SelMocker(HisDataReplayer* replayer, const char* name, int32_t slippa
 SelMocker::~SelMocker()
 {
 }
+
+void SelMocker::dump_stradata()
+{
+	rj::Document root(rj::kObjectType);
+
+	{//持仓数据保存
+		rj::Value jPos(rj::kArrayType);
+
+		rj::Document::AllocatorType &allocator = root.GetAllocator();
+
+		for (auto it = _pos_map.begin(); it != _pos_map.end(); it++)
+		{
+			const char* stdCode = it->first.c_str();
+			const PosInfo& pInfo = it->second;
+
+			rj::Value pItem(rj::kObjectType);
+			pItem.AddMember("code", rj::Value(stdCode, allocator), allocator);
+			pItem.AddMember("volume", pInfo._volume, allocator);
+			pItem.AddMember("closeprofit", pInfo._closeprofit, allocator);
+			pItem.AddMember("dynprofit", pInfo._dynprofit, allocator);
+
+			rj::Value details(rj::kArrayType);
+			for (auto dit = pInfo._details.begin(); dit != pInfo._details.end(); dit++)
+			{
+				const DetailInfo& dInfo = *dit;
+				rj::Value dItem(rj::kObjectType);
+				dItem.AddMember("long", dInfo._long, allocator);
+				dItem.AddMember("price", dInfo._price, allocator);
+				dItem.AddMember("volume", dInfo._volume, allocator);
+				dItem.AddMember("opentime", dInfo._opentime, allocator);
+				dItem.AddMember("opentdate", dInfo._opentdate, allocator);
+
+				dItem.AddMember("profit", dInfo._profit, allocator);
+				dItem.AddMember("maxprofit", dInfo._max_profit, allocator);
+				dItem.AddMember("maxloss", dInfo._max_loss, allocator);
+				dItem.AddMember("opentag", rj::Value(dInfo._opentag, allocator), allocator);
+
+				details.PushBack(dItem, allocator);
+			}
+
+			pItem.AddMember("details", details, allocator);
+
+			jPos.PushBack(pItem, allocator);
+		}
+
+		root.AddMember("positions", jPos, allocator);
+	}
+
+	{//资金保存
+		rj::Value jFund(rj::kObjectType);
+		rj::Document::AllocatorType &allocator = root.GetAllocator();
+
+		jFund.AddMember("total_profit", _fund_info._total_profit, allocator);
+		jFund.AddMember("total_dynprofit", _fund_info._total_dynprofit, allocator);
+		jFund.AddMember("total_fees", _fund_info._total_fees, allocator);
+		jFund.AddMember("tdate", _cur_tdate, allocator);
+
+		root.AddMember("fund", jFund, allocator);
+	}
+
+	{//信号保存
+		rj::Value jSigs(rj::kObjectType);
+		rj::Document::AllocatorType &allocator = root.GetAllocator();
+
+		for (auto& m : _sig_map)
+		{
+			const char* stdCode = m.first.c_str();
+			const SigInfo& sInfo = m.second;
+
+			rj::Value jItem(rj::kObjectType);
+			jItem.AddMember("usertag", rj::Value(sInfo._usertag.c_str(), allocator), allocator);
+
+			jItem.AddMember("volume", sInfo._volume, allocator);
+			jItem.AddMember("sigprice", sInfo._sigprice, allocator);
+			jItem.AddMember("gentime", sInfo._gentime, allocator);
+
+			jSigs.AddMember(rj::Value(stdCode, allocator), jItem, allocator);
+		}
+
+		root.AddMember("signals", jSigs, allocator);
+	}
+
+	{
+		std::string folder = WtHelper::getOutputDir();
+		folder += _name;
+		folder += "/";
+
+		std::string filename = folder;
+		filename += _name;
+		filename += ".json";
+
+		rj::StringBuffer sb;
+		rj::PrettyWriter<rj::StringBuffer> writer(sb);
+		root.Accept(writer);
+		StdFile::write_file_content(filename.c_str(), sb.GetString());
+	}
+}
+
 
 void SelMocker::dump_outputs()
 {
@@ -75,6 +177,30 @@ void SelMocker::dump_outputs()
 	content = "code,target,sigprice,gentime,usertag\n";
 	content += _sig_logs.str();
 	StdFile::write_file_content(filename.c_str(), (void*)content.c_str(), content.size());
+
+	filename = folder + "positions.csv";
+	content = "date,code,volume,closeprofit,dynprofit\n";
+	if (!_pos_logs.str().empty()) content += _pos_logs.str();
+	StdFile::write_file_content(filename.c_str(), (void*)content.c_str(), content.size());
+
+	{
+		rj::Document root(rj::kObjectType);
+		rj::Document::AllocatorType &allocator = root.GetAllocator();
+		for (auto it = _user_datas.begin(); it != _user_datas.end(); it++)
+		{
+			root.AddMember(rj::Value(it->first.c_str(), allocator), rj::Value(it->second.c_str(), allocator), allocator);
+		}
+
+		filename = folder;
+		filename += "ud_";
+		filename += _name;
+		filename += ".json";
+
+		rj::StringBuffer sb;
+		rj::PrettyWriter<rj::StringBuffer> writer(sb);
+		root.Accept(writer);
+		StdFile::write_file_content(filename.c_str(), sb.GetString());
+	}
 }
 
 void SelMocker::log_signal(const char* stdCode, double target, double price, uint64_t gentime, const char* usertag /* = "" */)
@@ -125,7 +251,7 @@ bool SelMocker::init_sel_factory(WTSVariant* cfg)
 		_strategy = _factory._fact->createStrategy(cfgStra->getCString("name"), cfgStra->getCString("id"));
 		if (_strategy)
 		{
-			WTSLogger::info("Strategy %s.%s created,strategy ID: %s", _factory._fact->getName(), _strategy->getName(), _strategy->id());
+			WTSLogger::info("Strategy {}.{} created,strategy ID: {}", _factory._fact->getName(), _strategy->getName(), _strategy->id());
 		}
 		_strategy->init(cfgStra->get("params"));
 		_name = _strategy->id();
@@ -166,18 +292,78 @@ void SelMocker::handle_session_end(uint32_t uCurDate)
 
 void SelMocker::handle_replay_done()
 {
-	WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_INFO, 
+	WTSLogger::log_dyn("strategy", _name.c_str(), LL_INFO, 
 		"Strategy has been scheduled for {} times,totally taking {} microsecs,average of {} microsecs",
 		_emit_times, _total_calc_time, _total_calc_time / _emit_times);
 
 	dump_outputs();
 
+	dump_stradata();
+
 	this->on_bactest_end();
 }
 
-void SelMocker::handle_tick(const char* stdCode, WTSTickData* curTick)
+void SelMocker::handle_tick(const char* stdCode, WTSTickData* newTick, bool isBarEnd /* = true */)
 {
-	this->on_tick(stdCode, curTick, true);
+	_price_map[stdCode].first = newTick->price();
+	_price_map[stdCode].second = (uint64_t)newTick->actiondate() * 1000000000 + newTick->actiontime();
+
+	//先检查是否要信号要触发
+	{
+		auto it = _sig_map.find(stdCode);
+		if (it != _sig_map.end())
+		{
+			//if (sInfo->isInTradingTime(_replayer->get_raw_time(), true))
+			{
+				const SigInfo& sInfo = it->second;
+				double price;
+				if (decimal::eq(sInfo._desprice, 0.0))
+					price = newTick->price();
+				else
+					price = sInfo._desprice;
+				do_set_position(stdCode, sInfo._volume, price, sInfo._usertag.c_str(), sInfo._triggered);
+				_sig_map.erase(it);
+			}
+
+		}
+	}
+
+	update_dyn_profit(stdCode, newTick->price());
+
+	on_tick_updated(stdCode, newTick);
+
+	/*
+	 *	By Wesley @ 2022.04.19
+	 *	isBarEnd，如果是逐tick回放，这个永远都是true，永远也不会触发下面这段逻辑
+	 *	如果是模拟的tick数据，用收盘价模拟tick的时候，isBarEnd才会为true
+	 *	如果不是收盘价模拟的tick，那么直接在当前tick触发撮合逻辑
+	 *	这样做的目的是为了让在模拟tick触发的ontick中下单的信号能够正常处理
+	 *	而不至于在回测的时候成交价偏离太远
+	 */
+	if (!isBarEnd)
+	{
+		//先检查是否要信号要触发
+		{
+			auto it = _sig_map.find(stdCode);
+			if (it != _sig_map.end())
+			{
+				//if (sInfo->isInTradingTime(_replayer->get_raw_time(), true))
+				{
+					const SigInfo& sInfo = it->second;
+					double price;
+					if (decimal::eq(sInfo._desprice, 0.0))
+						price = newTick->price();
+					else
+						price = sInfo._desprice;
+					do_set_position(stdCode, sInfo._volume, price, sInfo._usertag.c_str(), sInfo._triggered);
+					_sig_map.erase(it);
+				}
+
+			}
+		}
+
+		update_dyn_profit(stdCode, newTick->price());
+	}
 }
 
 
@@ -206,7 +392,7 @@ void SelMocker::on_init()
 	if (_strategy)
 		_strategy->on_init(this);
 
-	WTSLogger::info("SEL Strategy initialized, with slippage: %d", _slippage);
+	WTSLogger::info("SEL Strategy initialized, with slippage: {}", _slippage);
 }
 
 void SelMocker::update_dyn_profit(const char* stdCode, double price)
@@ -251,33 +437,8 @@ void SelMocker::update_dyn_profit(const char* stdCode, double price)
 
 void SelMocker::on_tick(const char* stdCode, WTSTickData* newTick, bool bEmitStrategy /* = true */)
 {
-	_price_map[stdCode].first = newTick->price();
-	_price_map[stdCode].second = (uint64_t)newTick->actiondate() * 1000000000 + newTick->actiontime();
-
-	//先检查是否要信号要触发
-	{
-		auto it = _sig_map.find(stdCode);
-		if (it != _sig_map.end())
-		{
-			//if (sInfo->isInTradingTime(_replayer->get_raw_time(), true))
-			{
-				const SigInfo& sInfo = it->second;
-				double price;
-				if (decimal::eq(sInfo._desprice, 0.0))
-					price = newTick->price();
-				else
-					price = sInfo._desprice;
-				do_set_position(stdCode, sInfo._volume, price, sInfo._usertag.c_str(), sInfo._triggered);
-				_sig_map.erase(it);
-			}
-
-		}
-	}
-
-	update_dyn_profit(stdCode, newTick->price());
-
-	if (bEmitStrategy)
-		on_tick_updated(stdCode, newTick);
+	//By Wesley @ 2022.04.19
+	//这个逻辑迁移到handle_tick去了
 }
 
 void SelMocker::on_bar_close(const char* code, const char* period, WTSBarStruct* newBar)
@@ -336,6 +497,7 @@ bool SelMocker::on_schedule(uint32_t curDate, uint32_t curTime, uint32_t fireTim
 
 void SelMocker::on_session_begin(uint32_t curTDate)
 {
+	_cur_tdate = curTDate;
 	//每个交易日开始，要把冻结持仓置零
 	for (auto& it : _pos_map)
 	{
@@ -343,7 +505,7 @@ void SelMocker::on_session_begin(uint32_t curTDate)
 		PosInfo& pInfo = (PosInfo&)it.second;
 		if (!decimal::eq(pInfo._frozen, 0))
 		{
-			log_debug("%.0f of %s frozen released on %u", pInfo._frozen, stdCode, curTDate);
+			log_debug("{} of {} frozen released on {}", pInfo._frozen, stdCode, curTDate);
 			pInfo._frozen = 0;
 		}
 	}
@@ -385,10 +547,15 @@ void SelMocker::on_session_end(uint32_t curTDate)
 		const PosInfo& pInfo = it->second;
 		total_profit += pInfo._closeprofit;
 		total_dynprofit += pInfo._dynprofit;
+
+		if (decimal::eq(pInfo._volume, 0.0))
+			continue;
+
+		_pos_logs << fmt::format("{},{},{},{:.2f},{:.2f}\n", curDate, stdCode,
+			pInfo._volume, pInfo._closeprofit, pInfo._dynprofit);
 	}
 
-
-	_fund_logs << StrUtil::printf("%d,%.2f,%.2f,%.2f,%.2f\n", curDate,
+	_fund_logs << fmt::format("{},{:.2f},{:.2f},{:.2f},{:.2f}\n", curDate,
 		_fund_info._total_profit, _fund_info._total_dynprofit,
 		_fund_info._total_profit + _fund_info._total_dynprofit - _fund_info._total_fees, _fund_info._total_fees);
 
@@ -410,14 +577,14 @@ void SelMocker::stra_set_position(const char* stdCode, double qty, const char* u
 	WTSCommodityInfo* commInfo = _replayer->get_commodity_info(stdCode);
 	if (commInfo == NULL)
 	{
-		log_error("Cannot find corresponding commodity info of %s", stdCode);
+		log_error("Cannot find corresponding commodity info of {}", stdCode);
 		return;
 	}
 
 	//如果不能做空，则目标仓位不能设置负数
 	if (!commInfo->canShort() && decimal::lt(qty, 0))
 	{
-		log_error("Cannot short on %s", stdCode);
+		log_error("Cannot short on {}", stdCode);
 		return;
 	}
 
@@ -433,7 +600,7 @@ void SelMocker::stra_set_position(const char* stdCode, double qty, const char* u
 		//如果是T+1规则，则目标仓位不能小于冻结仓位
 		if (decimal::lt(qty, frozen))
 		{
-			WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_ERROR, 
+			WTSLogger::log_dyn("strategy", _name.c_str(), LL_ERROR, 
 				"New position of {} cannot be set to {} due to {} being frozen", stdCode, qty, frozen);
 			return;
 		}
@@ -489,7 +656,7 @@ void SelMocker::do_set_position(const char* stdCode, double qty, double price /*
 		{
 			//ASSERT(diff>0);
 			pInfo._frozen += diff;
-			log_debug("%s frozen position up to %.0f", stdCode, pInfo._frozen);
+			log_debug("{} frozen position up to {}", stdCode, pInfo._frozen);
 		}
 
 		if (_slippage != 0)
@@ -575,7 +742,7 @@ void SelMocker::do_set_position(const char* stdCode, double qty, double price /*
 			if (commInfo->isT1())
 			{
 				pInfo._frozen += left;
-				log_debug("%s frozen position up to %.0f", stdCode, pInfo._frozen);
+				log_debug("{} frozen position up to {}", stdCode, pInfo._frozen);
 			}
 
 			DetailInfo dInfo;
@@ -597,22 +764,18 @@ void SelMocker::do_set_position(const char* stdCode, double qty, double price /*
 
 WTSKlineSlice* SelMocker::stra_get_bars(const char* stdCode, const char* period, uint32_t count)
 {
-	std::string key = StrUtil::printf("%s#%s", stdCode, period);
+	thread_local static char key[64] = { 0 };
+	fmtutil::format_to(key, "{}#{}", stdCode, period);
 
-	std::string basePeriod = "";
+	thread_local static char basePeriod[2] = { 0 };
+	basePeriod[0] = period[0];
 	uint32_t times = 1;
 	if (strlen(period) > 1)
-	{
-		basePeriod.append(period, 1);
 		times = strtoul(period + 1, NULL, 10);
-	}
 	else
-	{
-		basePeriod = period;
-		key.append("1");
-	}
+		strcat(key, "1");
 
-	WTSKlineSlice* kline = _replayer->get_kline_slice(stdCode, basePeriod.c_str(), count, times, false);
+	WTSKlineSlice* kline = _replayer->get_kline_slice(stdCode, basePeriod, count, times, false);
 
 	KlineTag& tag = _kline_tags[key];
 	tag._closed = false;
@@ -672,6 +835,11 @@ WTSCommodityInfo* SelMocker::stra_get_comminfo(const char* stdCode)
 	return _replayer->get_commodity_info(stdCode);
 }
 
+std::string SelMocker::stra_get_rawcode(const char* stdCode)
+{
+	return _replayer->get_rawcode(stdCode);
+}
+
 WTSSessionInfo* SelMocker::stra_get_sessinfo(const char* stdCode)
 {
 	return _replayer->get_session_info(stdCode, true);
@@ -696,6 +864,11 @@ void SelMocker::stra_log_info(const char* message)
 void SelMocker::stra_log_debug(const char* message)
 {
 	WTSLogger::log_dyn_raw("strategy", _name.c_str(), LL_DEBUG, message);
+}
+
+void SelMocker::stra_log_warn(const char* message)
+{
+	WTSLogger::log_dyn_raw("strategy", _name.c_str(), LL_WARN, message);
 }
 
 void SelMocker::stra_log_error(const char* message)

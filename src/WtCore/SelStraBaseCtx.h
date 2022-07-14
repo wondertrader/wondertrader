@@ -23,7 +23,7 @@ class WtSelEngine;
 class SelStraBaseCtx : public ISelStraCtx
 {
 public:
-	SelStraBaseCtx(WtSelEngine* engine, const char* name);
+	SelStraBaseCtx(WtSelEngine* engine, const char* name, int32_t slippage);
 	virtual ~SelStraBaseCtx();
 
 private:
@@ -44,26 +44,26 @@ private:
 	void	do_set_position(const char* stdCode, double qty, const char* userTag = "", bool bTriggered = false);
 	void	append_signal(const char* stdCode, double qty, const char* userTag = "");
 
-private:
+protected:
 	template<typename... Args>
 	void log_debug(const char* format, const Args& ...args)
 	{
-		std::string s = fmt::sprintf(format, args...);
-		stra_log_debug(s.c_str());
+		const char* buffer = fmtutil::format(format, args...);
+		stra_log_debug(buffer);
 	}
 
 	template<typename... Args>
 	void log_info(const char* format, const Args& ...args)
 	{
-		std::string s = fmt::sprintf(format, args...);
-		stra_log_info(s.c_str());
+		const char* buffer = fmtutil::format(format, args...);
+		stra_log_info(buffer);
 	}
 
 	template<typename... Args>
 	void log_error(const char* format, const Args& ...args)
 	{
-		std::string s = fmt::sprintf(format, args...);
-		stra_log_error(s.c_str());
+		const char* buffer = fmtutil::format(format, args...);
+		stra_log_error(buffer);
 	}
 
 public:
@@ -95,10 +95,16 @@ public:
 	virtual WTSTickSlice*	stra_get_ticks(const char* stdCode, uint32_t count) override;
 	virtual WTSTickData*	stra_get_last_tick(const char* stdCode) override;
 
+	/*
+	 *	获取分月合约代码
+	 */
+	virtual std::string		stra_get_rawcode(const char* stdCode) override;
+
 	virtual void stra_sub_ticks(const char* stdCode) override;
 
 	virtual void stra_log_info(const char* message) override;
 	virtual void stra_log_debug(const char* message) override;
+	virtual void stra_log_warn(const char* message) override;
 	virtual void stra_log_error(const char* message) override;
 
 	virtual void stra_save_user_data(const char* key, const char* val) override;
@@ -108,6 +114,7 @@ public:
 protected:
 	uint32_t		_context_id;
 	WtSelEngine*	_engine;
+	int32_t			_slippage;
 
 	uint64_t		_total_calc_time;	//总计算时间
 	uint32_t		_emit_times;		//总计算次数
@@ -191,6 +198,7 @@ protected:
 	BoostFilePtr	_close_logs;
 	BoostFilePtr	_fund_logs;
 	BoostFilePtr	_sig_logs;
+	BoostFilePtr	_pos_logs;
 
 	//是否处于调度中的标记
 	bool			_is_in_schedule;	//是否在自动调度中

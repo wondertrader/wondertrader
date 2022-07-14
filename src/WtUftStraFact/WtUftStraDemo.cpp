@@ -140,7 +140,7 @@ void WtUftStraDemo::on_tick(IUftStraCtx* ctx, const char* code, WTSTickData* new
 			//最新价+2跳下单
 			double targetPx = price + cInfo->getPriceTick() * _offset;
 
-			auto ids = ctx->stra_buy(code, targetPx, _lots, UFT_OrderFlag_FAK);
+			auto ids = ctx->stra_buy(code, targetPx, _lots, UFT_OrderFlag_Nor);
 
 			{
 				_mtx_ords.lock();
@@ -156,7 +156,7 @@ void WtUftStraDemo::on_tick(IUftStraCtx* ctx, const char* code, WTSTickData* new
 			//最新价-2跳下单
 			double targetPx = price - cInfo->getPriceTick()*_offset;
 
-			auto ids = ctx->stra_sell(code, targetPx, _lots, UFT_OrderFlag_FAK);
+			auto ids = ctx->stra_sell(code, targetPx, _lots, UFT_OrderFlag_Nor);
 
 			{
 				_mtx_ords.lock();

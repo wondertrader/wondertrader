@@ -17,7 +17,7 @@ extern "C"
 #endif
 	EXPORT_FLAG	void		register_evt_callback(FuncEventCallback cbEvt);
 
-	EXPORT_FLAG	void		register_cta_callbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar, FuncSessionEvtCallback cbSessEvt);
+	EXPORT_FLAG	void		register_cta_callbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar, FuncSessionEvtCallback cbSessEvt, FuncStraCondTriggerCallback cbCondTrigger = NULL);
 
 	EXPORT_FLAG	void		register_sel_callbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar, FuncSessionEvtCallback cbSessEvt);
 
@@ -61,10 +61,12 @@ extern "C"
 
 	EXPORT_FLAG	bool		create_ext_executer(const char* id);
 
+	EXPORT_FLAG	WtString	get_raw_stdcode(const char* stdCode);
+
 	//////////////////////////////////////////////////////////////////////////
 	//CTA策略接口
 #pragma region "CTA接口"
-	EXPORT_FLAG	CtxHandler	create_cta_context(const char* name);
+	EXPORT_FLAG	CtxHandler	create_cta_context(const char* name, int slippage = 0);
 
 	EXPORT_FLAG	void		cta_enter_long(CtxHandler cHandle, const char* stdCode, double qty, const char* userTag, double limitprice, double stopprice);
 
@@ -90,6 +92,8 @@ extern "C"
 
 	EXPORT_FLAG	double 		cta_get_price(const char* stdCode);
 
+	EXPORT_FLAG	double 		cta_get_day_price(const char* stdCode, int flag);
+
 	EXPORT_FLAG	double		cta_get_fund_data(CtxHandler cHandle, int flag);
 
 	EXPORT_FLAG	WtUInt32 	cta_get_tdate();
@@ -112,7 +116,7 @@ extern "C"
 
 	EXPORT_FLAG	double		cta_get_last_enterprice(CtxHandler cHandle, const char* stdCode);
 
-	EXPORT_FLAG	void		cta_log_text(CtxHandler cHandle, const char* message);
+	EXPORT_FLAG	void		cta_log_text(CtxHandler cHandle, WtUInt32 level, const char* message);
 
 	EXPORT_FLAG	void		cta_save_userdata(CtxHandler cHandle, const char* key, const char* val);
 
@@ -124,7 +128,7 @@ extern "C"
 	//////////////////////////////////////////////////////////////////////////
 	//选股策略接口
 #pragma  region "SEL接口"
-	EXPORT_FLAG	CtxHandler	create_sel_context(const char* name, uint32_t date, uint32_t time, const char* period, const char* trdtpl = "CHINA", const char* session = "TRADING");
+	EXPORT_FLAG	CtxHandler	create_sel_context(const char* name, uint32_t date, uint32_t time, const char* period, const char* trdtpl = "CHINA", const char* session = "TRADING", int32_t slippage = 0);
 
 	EXPORT_FLAG	double		sel_get_position(CtxHandler cHandle, const char* stdCode, bool bOnlyValid, const char* openTag);
 
@@ -142,7 +146,7 @@ extern "C"
 
 	EXPORT_FLAG	void		sel_get_all_position(CtxHandler cHandle, FuncGetPositionCallback cb);
 
-	EXPORT_FLAG	void		sel_log_text(CtxHandler cHandle, const char* message);
+	EXPORT_FLAG	void		sel_log_text(CtxHandler cHandle, WtUInt32 level, const char* message);
 
 	EXPORT_FLAG	void		sel_save_userdata(CtxHandler cHandle, const char* key, const char* val);
 
@@ -154,11 +158,13 @@ extern "C"
 	//////////////////////////////////////////////////////////////////////////
 	//HFT策略接口
 #pragma  region "HFT接口"
-	EXPORT_FLAG	CtxHandler	create_hft_context(const char* name, const char* trader, bool agent);
+	EXPORT_FLAG	CtxHandler	create_hft_context(const char* name, const char* trader, bool agent, int32_t slippage = 0);
 
 	EXPORT_FLAG	double		hft_get_position(CtxHandler cHandle, const char* stdCode, bool bOnlyValid);
 
 	EXPORT_FLAG	double		hft_get_position_profit(CtxHandler cHandle, const char* stdCode);
+
+	EXPORT_FLAG	double		hft_get_position_avgpx(CtxHandler cHandle, const char* stdCode);
 
 	EXPORT_FLAG	double		hft_get_undone(CtxHandler cHandle, const char* stdCode);
 
@@ -180,7 +186,7 @@ extern "C"
 
 	EXPORT_FLAG	WtUInt32	hft_get_trans(CtxHandler cHandle, const char* stdCode, WtUInt32 tickCnt, FuncGetTransCallback cb);
 
-	EXPORT_FLAG	void		hft_log_text(CtxHandler cHandle, const char* message);
+	EXPORT_FLAG	void		hft_log_text(CtxHandler cHandle, WtUInt32 level, const char* message);
 
 	EXPORT_FLAG	void		hft_sub_ticks(CtxHandler cHandle, const char* stdCode);
 

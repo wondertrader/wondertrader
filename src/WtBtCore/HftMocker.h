@@ -33,28 +33,28 @@ private:
 	template<typename... Args>
 	void log_debug(const char* format, const Args& ...args)
 	{
-		std::string s = fmt::sprintf(format, args...);
-		stra_log_debug(s.c_str());
+		const char* buffer = fmtutil::format(format, args...);
+		stra_log_debug(buffer);
 	}
 
 	template<typename... Args>
 	void log_info(const char* format, const Args& ...args)
 	{
-		std::string s = fmt::sprintf(format, args...);
-		stra_log_info(s.c_str());
+		const char* buffer = fmtutil::format(format, args...);
+		stra_log_info(buffer);
 	}
 
 	template<typename... Args>
 	void log_error(const char* format, const Args& ...args)
 	{
-		std::string s = fmt::sprintf(format, args...);
-		stra_log_error(s.c_str());
+		const char* buffer = fmtutil::format(format, args...);
+		stra_log_error(buffer);
 	}
 
 public:
 	//////////////////////////////////////////////////////////////////////////
 	//IDataSink
-	virtual void	handle_tick(const char* stdCode, WTSTickData* curTick) override;
+	virtual void	handle_tick(const char* stdCode, WTSTickData* curTick, bool isBarEnd = true) override;
 	virtual void	handle_order_queue(const char* stdCode, WTSOrdQueData* curOrdQue) override;
 	virtual void	handle_order_detail(const char* stdCode, WTSOrdDtlData* curOrdDtl) override;
 	virtual void	handle_transaction(const char* stdCode, WTSTransData* curTrans) override;
@@ -97,9 +97,9 @@ public:
 
 	virtual OrderIDs stra_cancel(const char* stdCode, bool isBuy, double qty = 0) override;
 
-	virtual OrderIDs stra_buy(const char* stdCode, double price, double qty, const char* userTag, int flag = 0) override;
+	virtual OrderIDs stra_buy(const char* stdCode, double price, double qty, const char* userTag, int flag = 0, bool bForceClose = false) override;
 
-	virtual OrderIDs stra_sell(const char* stdCode, double price, double qty, const char* userTag, int flag = 0) override;
+	virtual OrderIDs stra_sell(const char* stdCode, double price, double qty, const char* userTag, int flag = 0, bool bForceClose = false) override;
 
 	virtual WTSCommodityInfo* stra_get_comminfo(const char* stdCode) override;
 
@@ -115,7 +115,14 @@ public:
 
 	virtual WTSTickData* stra_get_last_tick(const char* stdCode) override;
 
+	/*
+	 *	获取分月合约代码
+	 */
+	virtual std::string		stra_get_rawcode(const char* stdCode) override;
+
 	virtual double stra_get_position(const char* stdCode, bool bOnlyValid = false) override;
+
+	virtual double stra_get_position_avgpx(const char* stdCode) override;
 
 	virtual double stra_get_position_profit(const char* stdCode) override;
 
@@ -139,6 +146,7 @@ public:
 
 	virtual void stra_log_info(const char* message) override;
 	virtual void stra_log_debug(const char* message) override;
+	virtual void stra_log_warn(const char* message) override;
 	virtual void stra_log_error(const char* message) override;
 
 	virtual void stra_save_user_data(const char* key, const char* val) override;
@@ -180,6 +188,7 @@ private:
 
 	bool			_use_newpx;
 	uint32_t		_error_rate;
+	bool			_match_this_tick;	//是否在当前tick撮合
 
 	typedef faster_hashmap<std::string, double> PriceMap;
 	PriceMap		_price_map;
@@ -232,8 +241,20 @@ private:
 			memset(this, 0, sizeof(_OrderInfo));
 		}
 
+		_OrderInfo(const struct _OrderInfo& rhs)
+		{
+			memcpy(this, &rhs, sizeof(_OrderInfo));
+		}
+
+		_OrderInfo& operator =(const struct _OrderInfo& rhs)
+		{
+			memcpy(this, &rhs, sizeof(_OrderInfo));
+			return *this;
+		}
+
 	} OrderInfo;
-	typedef faster_hashmap<uint32_t, OrderInfo> Orders;
+	typedef std::shared_ptr<OrderInfo> OrderInfoPtr;
+	typedef faster_hashmap<uint32_t, OrderInfoPtr> Orders;
 	StdRecurMutex	_mtx_ords;
 	Orders			_orders;
 
@@ -289,6 +310,7 @@ private:
 	std::stringstream	_close_logs;
 	std::stringstream	_fund_logs;
 	std::stringstream	_sig_logs;
+	std::stringstream	_pos_logs;
 
 	typedef struct _StraFundInfo
 	{

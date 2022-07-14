@@ -28,9 +28,9 @@ void WtCtaRtTicker::init(IDataReader* store, const char* sessionID)
 	_store = store;
 	_s_info = _engine->get_session_info(sessionID);
 	if(_s_info == NULL)
-		WTSLogger::fatal_f("Session {} is invalid, CtaTicker cannot run correctly", sessionID);
+		WTSLogger::fatal("Session {} is invalid, CtaTicker cannot run correctly", sessionID);
 	else
-		WTSLogger::info_f("CtaTicker will drive engine with session {}", sessionID);
+		WTSLogger::info("CtaTicker will drive engine with session {}", sessionID);
 
 	TimeUtils::getDateTime(_date, _time);
 }
@@ -66,7 +66,7 @@ void WtCtaRtTicker::on_tick(WTSTickData* curTick, uint32_t hotFlag /* = 0 */)
 
 	if (_date != 0 && (uDate < _date || (uDate == _date && uTime < _time)))
 	{
-		//WTSLogger::info("行情时间%u小于本地时间%u", uTime, _time);
+		//WTSLogger::info("行情时间{}小于本地时间{}", uTime, _time);
 		trigger_price(curTick, hotFlag);
 		return;
 	}
@@ -110,7 +110,7 @@ void WtCtaRtTicker::on_tick(WTSTickData* curTick, uint32_t hotFlag /* = 0 */)
 			if (offMin == _s_info->getCloseTime(true))
 				bEndingTDate = true;
 
-			WTSLogger::info("Minute Bar %u.%04u Closed by data", _date, thisMin);
+			WTSLogger::info("Minute Bar {}.{:04d} Closed by data", _date, thisMin);
 			if (_store)
 				_store->onMinuteEnd(_date, thisMin, bEndingTDate ? _engine->getTradingDate() : 0);
 
@@ -190,7 +190,7 @@ void WtCtaRtTicker::run()
 						uint32_t lastDate = _date;
 						_date = TimeUtils::getNextDate(_date);
 						_time = 0;
-						WTSLogger::info("Data automatically changed at time 00:00: %u -> %u", lastDate, _date);
+						WTSLogger::info("Data automatically changed at time 00:00: {} -> {}", lastDate, _date);
 					}
 
 					bool bEndingTDate = false;
@@ -198,7 +198,7 @@ void WtCtaRtTicker::run()
 					if (offMin == _s_info->getCloseTime(true))
 						bEndingTDate = true;
 
-					WTSLogger::info("Minute bar %u.%04u closed automatically", _date, thisMin);
+					WTSLogger::info("Minute bar {}.{:04d} closed automatically", _date, thisMin);
 					if (_store)
 						_store->onMinuteEnd(_date, thisMin, bEndingTDate ? _engine->getTradingDate() : 0);
 
@@ -219,7 +219,7 @@ void WtCtaRtTicker::run()
 				uint32_t total_mins = _s_info->getTradingMins();
 				if(_time != UINT_MAX && _last_emit_pos != 0 && _last_emit_pos < total_mins && offTime >= _s_info->getCloseTime(true))
 				{
-					WTSLogger::warn("Tradingday %u will be ended forcely, last_emit_pos: %u, time: %u", _engine->getTradingDate(), _last_emit_pos.fetch_add(0), _time);
+					WTSLogger::warn("Tradingday {} will be ended forcely, last_emit_pos: {}, time: {}", _engine->getTradingDate(), _last_emit_pos.fetch_add(0), _time);
 
 					//触发数据回放模块
 					StdUniqueLock lock(_mtx);
@@ -231,7 +231,7 @@ void WtCtaRtTicker::run()
 					uint32_t thisMin = _s_info->getCloseTime(false);
 					uint32_t offMin = _s_info->getCloseTime(true);
 
-					WTSLogger::info("Minute bar %u.%04u closed automatically", _date, thisMin);
+					WTSLogger::info("Minute bar {}.{:04d} closed automatically", _date, thisMin);
 					if (_store)
 						_store->onMinuteEnd(_date, thisMin, _engine->getTradingDate());
 

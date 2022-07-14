@@ -32,6 +32,13 @@ static const WtUInt32	EVENT_ENGINE_SCHDL	= 4;	//框架调度
 static const WtUInt32	CHNL_EVENT_READY	= 1000;	//通道就绪事件
 static const WtUInt32	CHNL_EVENT_LOST		= 1001;	//通道断开事件
 
+//日志级别
+static const WtUInt32	LOG_LEVEL_DEBUG		= 0;
+static const WtUInt32	LOG_LEVEL_INFO		= 1;
+static const WtUInt32	LOG_LEVEL_WARN		= 2;
+static const WtUInt32	LOG_LEVEL_ERROR		= 3;
+
+
 /*
 *	回调函数定义
 */
@@ -43,6 +50,7 @@ typedef void(PORTER_FLAG *FuncStraTickCallback)(CtxHandler cHandle, const char* 
 typedef void(PORTER_FLAG *FuncStraCalcCallback)(CtxHandler cHandle, WtUInt32 curDate, WtUInt32 curTime);
 typedef void(PORTER_FLAG *FuncStraBarCallback)(CtxHandler cHandle, const char* stdCode, const char* period, WTSBarStruct* newBar);
 typedef void(PORTER_FLAG *FuncGetPositionCallback)(CtxHandler cHandle, const char* stdCode, double position, bool isLast);
+typedef void(PORTER_FLAG *FuncStraCondTriggerCallback)(CtxHandler cHandle, const char* stdCode, double target, double price, const char* usertag);
 
 typedef void(PORTER_FLAG *FuncStraOrdQueCallback)(CtxHandler cHandle, const char* stdCode, WTSOrdQueStruct* ordQue);
 typedef void(PORTER_FLAG *FuncGetOrdQueCallback)(CtxHandler cHandle, const char* stdCode, WTSOrdQueStruct* ordQue, WtUInt32 count, bool isLast);

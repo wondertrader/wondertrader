@@ -30,7 +30,7 @@ bool SelStrategyMgr::loadFactories(const char* path)
 {
 	if (!StdFile::exists(path))
 	{
-		WTSLogger::error("Directory %s of SEL strategy factory not exists", path);
+		WTSLogger::error("Directory {} of SEL strategy factory not exists", path);
 		return false;
 	}
 
@@ -71,8 +71,7 @@ bool SelStrategyMgr::loadFactories(const char* path)
 			fInfo._remover = (FuncDeleteSelStraFact)DLLHelper::get_symbol(hInst, "deleteMfStrategyFact");
 			fInfo._fact = fact;
 
-			//WTSLogger::info("CTA策略工厂[%s]加载成功", fact->getName());
-			WTSLogger::info("SEL strategy factory[%s] loaded", fact->getName());
+			WTSLogger::info("SEL strategy factory[{}] loaded", fact->getName());
 
 			count++;
 		}
@@ -84,8 +83,7 @@ bool SelStrategyMgr::loadFactories(const char* path)
 
 	}
 
-	//WTSLogger::info("目录[%s]下共加载%u个CTA策略工厂", path, count);
-	WTSLogger::info("%u SEL strategy factories in directory[%s] loaded", count, path);
+	WTSLogger::info("{} SEL strategy factories in directory[{}] loaded", count, path);
 
 	return true;
 }

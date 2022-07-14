@@ -54,14 +54,14 @@ bool WtSimpDataMgr::initStore(WTSVariant* cfg)
 	DllHandle hInst = DLLHelper::load_library(module.c_str());
 	if (hInst == NULL)
 	{
-		WTSLogger::error("Data reader %s loading failed", module.c_str());
+		WTSLogger::error("Data reader {} loading failed", module.c_str());
 		return false;
 	}
 
 	FuncCreateDataReader funcCreator = (FuncCreateDataReader)DLLHelper::get_symbol(hInst, "createDataReader");
 	if (funcCreator == NULL)
 	{
-		WTSLogger::error("Data reader %s loading failed: entrance function createDataReader not found", module.c_str());
+		WTSLogger::error("Data reader {} loading failed: entrance function createDataReader not found", module.c_str());
 		DLLHelper::free_library(hInst);
 		return false;
 	}
@@ -69,7 +69,7 @@ bool WtSimpDataMgr::initStore(WTSVariant* cfg)
 	_reader = funcCreator();
 	if (_reader == NULL)
 	{
-		WTSLogger::error("Data reader %s creating api failed", module.c_str());
+		WTSLogger::error("Data reader {} creating api failed", module.c_str());
 		DLLHelper::free_library(hInst);
 		return false;
 	}

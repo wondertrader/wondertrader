@@ -10,6 +10,8 @@
 
 #include "WtTWapExeUnit.h"
 #include "WtMinImpactExeUnit.h"
+#include "WtDiffMinImpactExeUnit.h"
+#include "WtStockMinImpactExeUnit.h"
 
 const char* FACT_NAME = "WtExeFact";
 
@@ -55,9 +57,20 @@ ExecuteUnit* WtExeFact::createExeUnit(const char* name)
 		return new WtTWapExeUnit();
 	else if (strcmp(name, "WtMinImpactExeUnit") == 0)
 		return new WtMinImpactExeUnit();
+	else if (strcmp(name, "WtStockMinImpactExeUnit") == 0)
+		return new WtStockMinImpactExeUnit();
+
+	return NULL; 
+}
+
+ExecuteUnit* WtExeFact::createDiffExeUnit(const char* name)
+{
+	if (strcmp(name, "WtDiffMinImpactExeUnit") == 0)
+		return new WtDiffMinImpactExeUnit();
 
 	return NULL;
 }
+
 
 bool WtExeFact::deleteExeUnit(ExecuteUnit* unit)
 {

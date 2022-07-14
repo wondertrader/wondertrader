@@ -70,8 +70,9 @@ public:
 	 *	@price		下单价格，0则是市价单
 	 *	@qty		下单数量
 	 *	@flag		下单标志: 0-normal，1-fak，2-fok，默认0
+	 *	@bForceClose	强平标志，如果为true，则强制优先平仓
 	 */
-	virtual OrderIDs	stra_buy(const char* stdCode, double price, double qty, const char* userTag, int flag = 0) = 0;
+	virtual OrderIDs	stra_buy(const char* stdCode, double price, double qty, const char* userTag, int flag = 0, bool bForceClose = false) = 0;
 
 	/*
 	 *	下单接口: 卖出
@@ -80,8 +81,9 @@ public:
 	 *	@price		下单价格，0则是市价单
 	 *	@qty		下单数量
 	 *	@flag		下单标志: 0-normal，1-fak，2-fok，默认0
+	 *	@bForceClose	强平标志，如果为true，则强制优先平仓
 	 */
-	virtual OrderIDs	stra_sell(const char* stdCode, double price, double qty, const char* userTag, int flag = 0) = 0;
+	virtual OrderIDs	stra_sell(const char* stdCode, double price, double qty, const char* userTag, int flag = 0, bool bForceClose = false) = 0;
 
 	/*
 	 *	下单接口: 开多
@@ -133,7 +135,13 @@ public:
 	virtual WTSTransSlice*	stra_get_transaction(const char* stdCode, uint32_t count) = 0;
 	virtual WTSTickData*	stra_get_last_tick(const char* stdCode) = 0;
 
+	/*
+	 *	获取分月合约代码
+	 */
+	virtual std::string		stra_get_rawcode(const char* stdCode) = 0;
+
 	virtual double stra_get_position(const char* stdCode, bool bOnlyValid = false) = 0;
+	virtual double stra_get_position_avgpx(const char* stdCode) = 0;
 	virtual double stra_get_position_profit(const char* stdCode) = 0;
 	virtual double stra_get_price(const char* stdCode) = 0;
 	virtual double stra_get_undone(const char* stdCode) = 0;
@@ -150,6 +158,7 @@ public:
 	virtual void stra_log_info(const char* message) = 0;
 	virtual void stra_log_debug(const char* message) = 0;
 	virtual void stra_log_error(const char* message) = 0;
+	virtual void stra_log_warn(const char* message) {}
 
 	virtual void stra_save_user_data(const char* key, const char* val) {}
 

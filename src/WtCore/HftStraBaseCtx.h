@@ -26,7 +26,7 @@ class TraderAdapter;
 class HftStraBaseCtx : public IHftStraCtx, public ITrdNotifySink
 {
 public:
-	HftStraBaseCtx(WtHftEngine* engine, const char* name, bool bAgent);
+	HftStraBaseCtx(WtHftEngine* engine, const char* name, bool bAgent, int32_t slippage);
 	virtual ~HftStraBaseCtx();
 
 	void setTrader(TraderAdapter* trader);
@@ -64,7 +64,7 @@ public:
 	 *	@qty		下单数量
 	 *	@flag		下单标志: 0-normal，1-fak，2-fok，默认0
 	 */
-	virtual OrderIDs stra_buy(const char* stdCode, double price, double qty, const char* userTag, int flag = 0) override;
+	virtual OrderIDs stra_buy(const char* stdCode, double price, double qty, const char* userTag, int flag = 0, bool bForceClose = false) override;
 
 	/*
 	 *	下单接口: 卖出
@@ -74,7 +74,7 @@ public:
 	 *	@qty		下单数量
 	 *	@flag		下单标志: 0-normal，1-fak，2-fok，默认0
 	 */
-	virtual OrderIDs stra_sell(const char* stdCode, double price, double qty, const char* userTag, int flag = 0) override;
+	virtual OrderIDs stra_sell(const char* stdCode, double price, double qty, const char* userTag, int flag = 0, bool bForceClose = false) override;
 
 	/*
 	 *	下单接口: 开多
@@ -132,11 +132,18 @@ public:
 
 	virtual WTSTickData* stra_get_last_tick(const char* stdCode) override;
 
+	/*
+	 *	获取分月合约代码
+	 */
+	virtual std::string		stra_get_rawcode(const char* stdCode) override;
+
 	virtual void stra_log_info(const char* message) override;
 	virtual void stra_log_debug(const char* message) override;
+	virtual void stra_log_warn(const char* message) override;
 	virtual void stra_log_error(const char* message) override;
 
 	virtual double stra_get_position(const char* stdCode, bool bOnlyValid = false) override;
+	virtual double stra_get_position_avgpx(const char* stdCode) override;
 	virtual double stra_get_position_profit(const char* stdCode) override;
 	virtual double stra_get_price(const char* stdCode) override;
 	virtual double stra_get_undone(const char* stdCode) override;
@@ -167,26 +174,26 @@ public:
 
 	virtual void on_position(const char* stdCode, bool isLong, double prevol, double preavail, double newvol, double newavail, uint32_t tradingday) override;
 
-private:
+protected:
 	template<typename... Args>
 	void log_debug(const char* format, const Args& ...args)
 	{
-		std::string s = fmt::sprintf(format, args...);
-		stra_log_debug(s.c_str());
+		const char* buffer = fmtutil::format(format, args...);
+		stra_log_debug(buffer);
 	}
 
 	template<typename... Args>
 	void log_info(const char* format, const Args& ...args)
 	{
-		std::string s = fmt::sprintf(format, args...);
-		stra_log_info(s.c_str());
+		const char* buffer = fmtutil::format(format, args...);
+		stra_log_info(buffer);
 	}
 
 	template<typename... Args>
 	void log_error(const char* format, const Args& ...args)
 	{
-		std::string s = fmt::sprintf(format, args...);
-		stra_log_error(s.c_str());
+		const char* buffer = fmtutil::format(format, args...);
+		stra_log_error(buffer);
 	}
 
 protected:
@@ -242,6 +249,7 @@ protected:
 	uint32_t		_context_id;
 	WtHftEngine*	_engine;
 	TraderAdapter*	_trader;
+	int32_t			_slippage;
 
 	faster_hashmap<LongKey, std::string> _code_map;
 

@@ -18,6 +18,7 @@
 #include "../Share/StrUtil.hpp"
 #include "../Includes/WTSContractInfo.hpp"
 #include "../Includes/WTSSessionInfo.hpp"
+#include "../Includes/IHotMgr.h"
 #include "../Share/decimal.h"
 #include "../Share/CodeHelper.hpp"
 
@@ -32,7 +33,7 @@ inline uint32_t makeSelCtxId()
 }
 
 
-SelStraBaseCtx::SelStraBaseCtx(WtSelEngine* engine, const char* name)
+SelStraBaseCtx::SelStraBaseCtx(WtSelEngine* engine, const char* name, int32_t slippage)
 	: ISelStraCtx(name)
 	, _engine(engine)
 	, _total_calc_time(0)
@@ -41,6 +42,7 @@ SelStraBaseCtx::SelStraBaseCtx(WtSelEngine* engine, const char* name)
 	, _ud_modified(false)
 	, _schedule_date(0)
 	, _schedule_time(0)
+	, _slippage(slippage)
 {
 	_context_id = makeSelCtxId();
 }
@@ -114,6 +116,21 @@ void SelStraBaseCtx::init_outputs()
 		else
 		{
 			_sig_logs->seek_to_end();
+		}
+	}
+
+	filename = folder + "positions.csv";
+	_pos_logs.reset(new BoostFile());
+	{
+		bool isNewFile = !BoostFile::exists(filename.c_str());
+		_pos_logs->create_or_open_file(filename.c_str());
+		if (isNewFile)
+		{
+			_pos_logs->write_file("date,code,volume,closeprofit,dynprofit\n");
+		}
+		else
+		{
+			_pos_logs->seek_to_end();
 		}
 	}
 }
@@ -255,9 +272,10 @@ void SelStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 			for (const rj::Value& pItem : jPos.GetArray())
 			{
 				const char* stdCode = pItem["code"].GetString();
-				if (!CodeHelper::isStdFutHotCode(stdCode) && !CodeHelper::isStdFut2ndCode(stdCode) && _engine->get_contract_info(stdCode) == NULL)
+				const char* ruleTag = _engine->get_hot_mgr()->getRuleTag(stdCode);
+				if (strlen(ruleTag) == 0 && _engine->get_contract_info(stdCode) == NULL)
 				{
-					log_info("%s not exists or expired, position ignored", stdCode);
+					log_info("{} not exists or expired, position ignored", stdCode);
 					continue;
 				}
 				PosInfo& pInfo = _pos_map[stdCode];
@@ -304,7 +322,7 @@ void SelStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 					strcpy(dInfo._opentag, dItem["opentag"].GetString());
 				}
 
-				log_info("Strategy position confirmed, %s -> %d", stdCode, pInfo._volume);
+				log_info("Strategy position confirmed, {} -> {}", stdCode, pInfo._volume);
 			}
 		}
 
@@ -321,9 +339,10 @@ void SelStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 			for (auto& m : jSignals.GetObject())
 			{
 				const char* stdCode = m.name.GetString();
-				if (!CodeHelper::isStdFutHotCode(stdCode) && !CodeHelper::isStdFut2ndCode(stdCode) && _engine->get_contract_info(stdCode) == NULL)
+				const char* ruleTag = _engine->get_hot_mgr()->getRuleTag(stdCode);
+				if (strlen(ruleTag) == 0 && _engine->get_contract_info(stdCode) == NULL)
 				{
-					log_info("%s not exists or expired, signal ignored", stdCode);
+					log_info("{} not exists or expired, signal ignored", stdCode);
 					continue;
 				}
 
@@ -335,7 +354,7 @@ void SelStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 				sInfo._sigprice = jItem["sigprice"].GetDouble();
 				sInfo._gentime = jItem["gentime"].GetUint64();
 
-				WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_INFO, "{} untouched signal recovered, target pos: {}", stdCode, sInfo._volume);
+				log_info("{} untouched signal recovered, target pos: {}", stdCode, sInfo._volume);
 				stra_sub_ticks(stdCode);
 			}
 		}
@@ -449,17 +468,16 @@ void SelStraBaseCtx::on_bar(const char* stdCode, const char* period, uint32_t ti
 	if (newBar == NULL)
 		return;
 
-	std::string realPeriod;
-	if (period[0] == 'd')
-		realPeriod = StrUtil::printf("%s%u", period, times);
-	else
-		realPeriod = StrUtil::printf("m%u", times);
+	thread_local static char realPeriod[8] = { 0 };
+	fmtutil::format_to(realPeriod, "{}{}", period, times);
 
-	std::string key = StrUtil::printf("%s#%s", stdCode, realPeriod.c_str());
+	thread_local static char key[64] = { 0 };
+	fmtutil::format_to(key, "{}#{}", stdCode, realPeriod);
+
 	KlineTag& tag = _kline_tags[key];
 	tag._closed = true;
 
-	on_bar_close(stdCode, realPeriod.c_str(), newBar);
+	on_bar_close(stdCode, realPeriod, newBar);
 }
 
 void SelStraBaseCtx::on_init()
@@ -557,7 +575,7 @@ bool SelStraBaseCtx::on_schedule(uint32_t curDate, uint32_t curTime, uint32_t fi
 
 	TimeUtils::Ticker ticker;
 	on_strategy_schedule(curDate, fireTime);
-	log_info("Strategy scheduled @ %u", curTime);
+	log_debug("Strategy {} scheduled @ {}", _context_id, curTime);
 
 	faster_hashset<std::string> to_clear;
 	for (auto& v : _pos_map)
@@ -580,8 +598,8 @@ bool SelStraBaseCtx::on_schedule(uint32_t curDate, uint32_t curTime, uint32_t fi
 	_total_calc_time += ticker.micro_seconds();
 
 	if (_emit_times % 20 == 0)
-		WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_INFO, "Strategy scheduled {} times, {} microsecs elapsed, {} microsecs per time in average",
-			_emit_times, _total_calc_time, _total_calc_time / _emit_times);
+		log_info("Strategy has been scheduled {} times, totally taking {} us, {:.3f} us each time",
+			_emit_times, _total_calc_time, _total_calc_time*1.0 / _emit_times);
 
 	if (_ud_modified)
 	{
@@ -600,9 +618,9 @@ void SelStraBaseCtx::on_session_begin(uint32_t uTDate)
 	{
 		const char* stdCode = it.first.c_str();
 		PosInfo& pInfo = (PosInfo&)it.second;
-		if (pInfo._frozen_date < uTDate && !decimal::eq(pInfo._frozen, 0))
+		if (pInfo._frozen_date != 0 && pInfo._frozen_date < uTDate && !decimal::eq(pInfo._frozen, 0))
 		{
-			log_debug("%.0f of %s frozen on %u released on %u", pInfo._frozen, stdCode, pInfo._frozen_date, uTDate);
+			log_debug("{} of {} frozen on {} released on {}", pInfo._frozen, stdCode, pInfo._frozen_date, uTDate);
 
 			pInfo._frozen = 0;
 			pInfo._frozen_date = 0;
@@ -652,13 +670,17 @@ void SelStraBaseCtx::on_session_end(uint32_t uTDate)
 		const PosInfo& pInfo = it->second;
 		total_profit += pInfo._closeprofit;
 		total_dynprofit += pInfo._dynprofit;
+
+		if (decimal::eq(pInfo._volume, 0.0))
+			continue;
+
+		if (_pos_logs)
+			_pos_logs->write_file(fmt::format("{},{},{},{:.2f},{:.2f}\n", curDate, stdCode,
+				pInfo._volume, pInfo._closeprofit, pInfo._dynprofit));
 	}
 
-	//TODO:
-	//这里要把当日结算的数据写到日志文件里
-	//而且这里回测和实盘写法不同, 先留着, 后面来做
 	if (_fund_logs)
-		_fund_logs->write_file(StrUtil::printf("%d,%.2f,%.2f,%.2f,%.2f\n", curDate,
+		_fund_logs->write_file(fmt::format("{},{:.2f},{:.2f},{:.2f},{:.2f}\n", curDate,
 		_fund_info._total_profit, _fund_info._total_dynprofit,
 		_fund_info._total_profit + _fund_info._total_dynprofit - _fund_info._total_fees, _fund_info._total_fees));
 
@@ -677,6 +699,10 @@ void SelStraBaseCtx::on_session_end(uint32_t uTDate)
 #pragma region "策略接口"
 double SelStraBaseCtx::stra_get_price(const char* stdCode)
 {
+	auto it = _price_map.find(stdCode);
+	if (it != _price_map.end())
+		return it->second;
+
 	if (_engine)
 		return _engine->get_cur_price(stdCode);
 
@@ -688,14 +714,14 @@ void SelStraBaseCtx::stra_set_position(const char* stdCode, double qty, const ch
 	WTSCommodityInfo* commInfo = _engine->get_commodity_info(stdCode);
 	if (commInfo == NULL)
 	{
-		log_error("Cannot find corresponding commodity info of %s", stdCode);
+		log_error("Cannot find corresponding commodity info of {}", stdCode);
 		return;
 	}
 
 	//如果不能做空，则目标仓位不能设置负数
 	if (!commInfo->canShort() && decimal::lt(qty, 0))
 	{
-		log_error("Cannot short on %s", stdCode);
+		log_error("Cannot short on {}", stdCode);
 		return;
 	}
 
@@ -711,7 +737,7 @@ void SelStraBaseCtx::stra_set_position(const char* stdCode, double qty, const ch
 		//如果是T+1规则，则目标仓位不能小于冻结仓位
 		if (decimal::lt(qty, frozen))
 		{
-			WTSLogger::log_dyn_f("strategy", _name.c_str(), LL_ERROR, "New position of {} cannot be set to {} due to {} being frozen", stdCode, qty, frozen);
+			log_error("New position of {} cannot be set to {} due to {} being frozen", stdCode, qty, frozen);
 			return;
 		}
 	}
@@ -751,6 +777,10 @@ void SelStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 	if (commInfo == NULL)
 		return;
 
+	//成交价
+	double trdPx = curPx;
+
+	bool isBuy = decimal::gt(diff, 0.0);
 	if (decimal::gt(pInfo._volume*diff, 0))//当前持仓和目标仓位方向一致, 增加一条明细, 增加数量即可
 	{
 		pInfo._volume = qty;
@@ -759,26 +789,35 @@ void SelStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 		{
 			//ASSERT(diff>0);
 			pInfo._frozen += diff;
-			log_debug("%s frozen position up to %.0f", stdCode, pInfo._frozen);
+			pInfo._frozen_date = curTDate;
+			log_debug("{} frozen position updated to {}", stdCode, pInfo._frozen);
+		}
+
+		if (_slippage != 0)
+		{
+			trdPx += _slippage * commInfo->getPriceTick()*(isBuy ? 1 : -1);
 		}
 
 		DetailInfo dInfo;
 		dInfo._long = decimal::gt(qty, 0);
-		dInfo._price = curPx;
+		dInfo._price = trdPx;
 		dInfo._volume = abs(diff);
 		dInfo._opentime = curTm;
 		dInfo._opentdate = curTDate;
 		wt_strcpy(dInfo._opentag, userTag);
 		pInfo._details.push_back(dInfo);
 
-		double fee = _engine->calc_fee(stdCode, curPx, abs(qty), 0);
+		double fee = _engine->calc_fee(stdCode, trdPx, abs(qty), 0);
 		_fund_info._total_fees += fee;
 		//_engine->mutate_fund(fee, FFT_Fee);
-		log_trade(stdCode, dInfo._long, true, curTm, curPx, abs(qty), userTag, fee);
+		log_trade(stdCode, dInfo._long, true, curTm, trdPx, abs(qty), userTag, fee);
 	}
 	else
 	{//持仓方向和目标仓位方向不一致, 需要平仓
 		double left = abs(diff);
+
+		if (_slippage != 0)
+			trdPx += _slippage * commInfo->getPriceTick()*(isBuy ? 1 : -1);
 
 		pInfo._volume = qty;
 		if (decimal::eq(pInfo._volume, 0))
@@ -798,19 +837,19 @@ void SelStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 			if (decimal::eq(dInfo._volume, 0))
 				count++;
 
-			double profit = (curPx - dInfo._price) * maxQty * commInfo->getVolScale();
+			double profit = (trdPx - dInfo._price) * maxQty * commInfo->getVolScale();
 			if (!dInfo._long)
 				profit *= -1;
 			pInfo._closeprofit += profit;
 			pInfo._dynprofit = pInfo._dynprofit*dInfo._volume / (dInfo._volume + maxQty);//浮盈也要做等比缩放
 			_fund_info._total_profit += profit;
 
-			double fee = _engine->calc_fee(stdCode, curPx, maxQty, dInfo._opentdate == curTDate ? 2 : 1);
+			double fee = _engine->calc_fee(stdCode, trdPx, maxQty, dInfo._opentdate == curTDate ? 2 : 1);
 			_fund_info._total_fees += fee;
 			//这里写成交记录
-			log_trade(stdCode, dInfo._long, false, curTm, curPx, maxQty, userTag, fee);
+			log_trade(stdCode, dInfo._long, false, curTm, trdPx, maxQty, userTag, fee);
 			//这里写平仓记录
-			log_close(stdCode, dInfo._long, dInfo._opentime, dInfo._price, curTm, curPx, maxQty, profit, pInfo._closeprofit, dInfo._opentag, userTag);
+			log_close(stdCode, dInfo._long, dInfo._opentime, dInfo._price, curTm, trdPx, maxQty, profit, pInfo._closeprofit, dInfo._opentag, userTag);
 
 			//if (left == 0)
 			if (decimal::eq(left, 0))
@@ -836,58 +875,54 @@ void SelStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 			{
 				//ASSERT(diff>0);
 				pInfo._frozen += diff;
-				log_debug("%s frozen position up to %.0f", stdCode, pInfo._frozen);
+				pInfo._frozen_date = curTDate;
+				log_debug("{} frozen position updated to {}", stdCode, pInfo._frozen);
 			}
 
 			DetailInfo dInfo;
 			dInfo._long = decimal::gt(qty, 0);
-			dInfo._price = curPx;
+			dInfo._price = trdPx;
 			dInfo._volume = abs(left);
 			dInfo._opentime = curTm;
 			dInfo._opentdate = curTDate;
 			wt_strcpy(dInfo._opentag, userTag);
 			pInfo._details.push_back(dInfo);
 
-			//TODO: 
 			//这里还需要写一笔成交记录
-			double fee = _engine->calc_fee(stdCode, curPx, abs(qty), 0);
+			double fee = _engine->calc_fee(stdCode, trdPx, abs(qty), 0);
 			_fund_info._total_fees += fee;
 			//_engine->mutate_fund(fee, FFT_Fee);
-			log_trade(stdCode, dInfo._long, true, curTm, curPx, abs(left), userTag, fee);
+			log_trade(stdCode, dInfo._long, true, curTm, trdPx, abs(left), userTag, fee);
 		}
 	}
 
 	//存储数据
 	save_data();
 
-	_engine->handle_pos_change(stdCode, diff);
+	_engine->handle_pos_change(_name.c_str(), stdCode, diff);
 }
 
 WTSKlineSlice* SelStraBaseCtx::stra_get_bars(const char* stdCode, const char* period, uint32_t count)
 {
-	std::string key = StrUtil::printf("%s#%s", stdCode, period);
+	thread_local static char key[64] = { 0 };
+	fmtutil::format_to(key, "{}#{}", stdCode, period);
 
-	std::string basePeriod = "";
+	thread_local static char basePeriod[2] = { 0 };
+	basePeriod[0] = period[0];
 	uint32_t times = 1;
 	if (strlen(period) > 1)
-	{
-		basePeriod.append(period, 1);
 		times = strtoul(period + 1, NULL, 10);
-	}
-	else
-	{
-		basePeriod = period;
-	}
-
-	WTSSessionInfo* sInfo = _engine->get_session_info(stdCode, true);
 	
 	uint64_t etime = 0;
 	if (period[0] == 'd')
+	{
+		WTSSessionInfo* sInfo = _engine->get_session_info(stdCode, true);
 		etime = (uint64_t)_schedule_date * 10000 + sInfo->getCloseTime();
+	}
 	else
 		etime = (uint64_t)_schedule_date * 10000 + _schedule_time;
 
-	WTSKlineSlice* kline = _engine->get_kline_slice(_context_id, stdCode, basePeriod.c_str(), count, times, etime);
+	WTSKlineSlice* kline = _engine->get_kline_slice(_context_id, stdCode, basePeriod, count, times, etime);
 
 	KlineTag& tag = _kline_tags[key];
 	tag._closed = false;
@@ -921,12 +956,17 @@ void SelStraBaseCtx::stra_sub_ticks(const char* stdCode)
 	_tick_subs.insert(stdCode);
 
 	_engine->sub_tick(_context_id, stdCode);
-	log_info("Market data subscribed: %s", stdCode);
+	log_info("Market data subscribed: {}", stdCode);
 }
 
 WTSCommodityInfo* SelStraBaseCtx::stra_get_comminfo(const char* stdCode)
 {
 	return _engine->get_commodity_info(stdCode);
+}
+
+std::string SelStraBaseCtx::stra_get_rawcode(const char* stdCode)
+{
+	return _engine->get_rawcode(stdCode);
 }
 
 WTSSessionInfo* SelStraBaseCtx::stra_get_sessinfo(const char* stdCode)
@@ -952,6 +992,11 @@ void SelStraBaseCtx::stra_log_info(const char* message)
 void SelStraBaseCtx::stra_log_debug(const char* message)
 {
 	WTSLogger::log_dyn_raw("strategy", _name.c_str(), LL_DEBUG, message);
+}
+
+void SelStraBaseCtx::stra_log_warn(const char* message)
+{
+	WTSLogger::log_dyn_raw("strategy", _name.c_str(), LL_WARN, message);
 }
 
 void SelStraBaseCtx::stra_log_error(const char* message)

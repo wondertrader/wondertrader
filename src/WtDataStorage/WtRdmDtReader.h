@@ -9,6 +9,7 @@
 
 #include "../Share/BoostMappingFile.hpp"
 #include "../Share/StdUtils.hpp"
+#include "../Share/fmtlib.h"
 
 NS_WTP_BEGIN
 class WTSVariant;
@@ -218,7 +219,7 @@ private:
 	/*
 	 *	将历史数据放入缓存
 	 */
-	bool		cacheHisBarsFromFile(const std::string& key, const char* stdCode, WTSKlinePeriod period);
+	bool		cacheHisBarsFromFile(void* codeInfo, const std::string& key, const char* stdCode, WTSKlinePeriod period);
 
 	uint32_t		readBarsFromCacheByRange(const std::string& key, uint64_t stime, uint64_t etime, std::vector<WTSBarStruct>& ayBars, bool isDay = false);
 	WTSBarStruct*	indexBarFromCacheByRange(const std::string& key, uint64_t stime, uint64_t etime, uint32_t& count, bool isDay = false);
@@ -237,11 +238,13 @@ public:
 	virtual WTSOrdQueSlice*	readOrdQueSliceByRange(const char* stdCode, uint64_t stime, uint64_t etime = 0) override;
 	virtual WTSTransSlice*	readTransSliceByRange(const char* stdCode, uint64_t stime, uint64_t etime = 0) override;
 
-	virtual WTSTickSlice*	readTickSlicesByRange(const char* stdCode, uint64_t stime, uint64_t etime = 0) override;
+	virtual WTSTickSlice*	readTickSliceByRange(const char* stdCode, uint64_t stime, uint64_t etime = 0) override;
 	virtual WTSKlineSlice*	readKlineSliceByRange(const char* stdCode, WTSKlinePeriod period, uint64_t stime, uint64_t etime = 0) override;
 
-	virtual WTSTickSlice*	readTickSlicesByCount(const char* stdCode, uint32_t count, uint64_t etime = 0) override;
+	virtual WTSTickSlice*	readTickSliceByCount(const char* stdCode, uint32_t count, uint64_t etime = 0) override;
 	virtual WTSKlineSlice*	readKlineSliceByCount(const char* stdCode, WTSKlinePeriod period, uint32_t count, uint64_t etime = 0) override;
+
+	virtual WTSTickSlice*	readTickSliceByDate(const char* stdCode, uint32_t uDate = 0 ) override;
 
 private:
 	std::string		_base_dir;
@@ -256,8 +259,12 @@ private:
 		std::string		_code;
 		WTSKlinePeriod	_period;
 		std::string		_raw_code;
+		double			_factor;
+
+		_BarsList():_factor(1.0){}
 
 		std::vector<WTSBarStruct>	_bars;
+		std::vector<WTSBarStruct>	_rt_bars;	//如果是后复权，就需要把实时数据拷贝到这里来
 	} BarsList;
 
 	typedef faster_hashmap<std::string, BarsList> BarsCache;
@@ -275,8 +282,8 @@ private:
 
 	inline const AdjFactorList& getAdjFactors(const char* code, const char* exchg, const char* pid)
 	{
-		char key[20] = { 0 };
-		sprintf(key, "%s.%s.%s", exchg, pid, code);
+		thread_local static char key[20] = { 0 };
+		fmtutil::format_to(key, "{}.{}.{}", exchg, pid, code);
 		return _adj_factors[key];
 	}
 };

@@ -119,13 +119,13 @@ void WtStraDtSel::on_schedule(ISelStraCtx* ctx, uint32_t uDate, uint32_t uTime)
 			{
 				ctx->stra_set_position(curCode.c_str(), 1 * trdUnit, "DT_EnterLong");
 				//向上突破
-				ctx->stra_log_info(fmt::sprintf("%s 向上突破%.2f>=%.2f,多仓进场", curCode.c_str(), highPx, upper_bound).c_str());
+				ctx->stra_log_info(fmt::format("{} 向上突破{}>={},多仓进场", curCode.c_str(), highPx, upper_bound).c_str());
 			}
 			else if (lowPx <= lower_bound && !_isstk)
 			{
 				ctx->stra_set_position(curCode.c_str(), -1 * trdUnit, "DT_EnterShort");
 				//向下突破
-				ctx->stra_log_info(fmt::sprintf("%s 向下突破%.2f<=%.2f,空仓进场", curCode.c_str(), lowPx, lower_bound).c_str());
+				ctx->stra_log_info(fmt::format("{} 向下突破{}<={},空仓进场", curCode.c_str(), lowPx, lower_bound).c_str());
 			}
 		}
 		//else if(curPos > 0)
@@ -135,7 +135,7 @@ void WtStraDtSel::on_schedule(ISelStraCtx* ctx, uint32_t uDate, uint32_t uTime)
 			{
 				//多仓出场
 				ctx->stra_set_position(curCode.c_str(), 0, "DT_ExitLong");
-				ctx->stra_log_info(fmt::sprintf("%s 向下突破%.2f<=%.2f,多仓出场", curCode.c_str(), lowPx, lower_bound).c_str());
+				ctx->stra_log_info(fmt::format("{} 向下突破{}<={},多仓出场", curCode.c_str(), lowPx, lower_bound).c_str());
 			}
 		}
 		//else if(curPos < 0)
@@ -145,7 +145,7 @@ void WtStraDtSel::on_schedule(ISelStraCtx* ctx, uint32_t uDate, uint32_t uTime)
 			{
 				//空仓出场
 				ctx->stra_set_position(curCode.c_str(), 0, "DT_ExitShort");
-				ctx->stra_log_info(fmt::sprintf("%s 向上突破%.2f>=%.2f,空仓出场", curCode.c_str(), highPx, upper_bound).c_str());
+				ctx->stra_log_info(fmt::format("{} 向上突破{}>={},空仓出场", curCode.c_str(), highPx, upper_bound).c_str());
 			}
 		}
 

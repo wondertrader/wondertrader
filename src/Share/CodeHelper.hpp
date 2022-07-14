@@ -11,18 +11,18 @@
 #include "fmtlib.h"
 #include "StrUtil.hpp"
 #include "../Includes/WTSTypes.h"
+#include "../Includes/IHotMgr.h"
 
 #include <boost/xpressive/xpressive_dynamic.hpp>
+
 
 USING_NS_WTP;
 
 //主力合约后缀
 static const char* SUFFIX_HOT = ".HOT";
-static const char* FILE_SUF_HOT = "_HOT";
 
 //次主力合约后缀
 static const char* SUFFIX_2ND = ".2ND";
-static const char* FILE_SUF_2ND = "_2ND";
 
 //前复权合约代码后缀
 static const char SUFFIX_QFQ = '-';
@@ -38,6 +38,8 @@ public:
 		char _code[MAX_INSTRUMENT_LENGTH];		//合约代码
 		char _exchg[MAX_INSTRUMENT_LENGTH];		//交易所代码
 		char _product[MAX_INSTRUMENT_LENGTH];	//品种代码
+		char _ruletag[MAX_INSTRUMENT_LENGTH];	//
+		char _fullpid[MAX_INSTRUMENT_LENGTH];	//
 
 		//By Wesley @ 2021.12.25
 		//去掉合约类型，这里不再进行判断
@@ -55,7 +57,6 @@ public:
 		 *	要把主力标记和复权标记分开处理
 		 *	因为后面要对主力合约做复权处理了
 		 */
-		uint8_t	_hotflag;	//主力标记，0-非主力，1-主力，2-次主力
 		uint8_t	_exright;	//是否是复权代码,如SH600000Q: 0-不复权, 1-前复权, 2-后复权
 
 		//是否是复权代码
@@ -67,22 +68,13 @@ public:
 		//是否后复权代码
 		inline bool isBackwardAdj() const { return _exright == 2; }
 
-		//是否主力代码
-		inline bool isHot() const { return _hotflag ==1; }
-		//是否次主力代码
-		inline bool isSecond() const { return _hotflag == 2; }
-
-		//是否普通代码
-		inline bool isFlat() const { return _hotflag == 0; }
-
 		//标准品种ID
-		inline const char* stdCommID() const
+		inline const char* stdCommID()
 		{
-			static char buffer[64] = { 0 };
-			if (strlen(buffer) == 0)
-				sprintf(buffer, "%s.%s", _exchg, _product);
+			if (strlen(_fullpid) == 0)
+				fmtutil::format_to(_fullpid, "{}.{}", _exchg, _product);
 
-			return buffer;
+			return _fullpid;
 		}
 
 		_CodeInfo()
@@ -94,6 +86,11 @@ public:
 		inline void clear()
 		{
 			memset(this, 0, sizeof(_CodeInfo));
+		}
+
+		inline bool hasRule() const
+		{
+			return strlen(_ruletag) > 0;
 		}
 	} CodeInfo;
 
@@ -126,34 +123,6 @@ private:
 	}
 
 public:
-	/*
-	 *	是否是标准期货主力合约代码
-	 */
-	static inline bool	isStdFutHotCode(const char* stdCode)
-	{
-		//return StrUtil::endsWith(stdCode, SUFFIX_HOT, false);
-		static std::size_t SUF_LEN = strlen(SUFFIX_HOT);
-		auto len = strlen(stdCode);
-		if (len < SUF_LEN)
-			return false;
-
-		return memcmp(stdCode + len - SUF_LEN, SUFFIX_HOT, SUF_LEN) == 0;
-	}
-
-	/*
-	 *	是否是标准期货次主力合约代码
-	 */
-	static inline bool	isStdFut2ndCode(const char* stdCode)
-	{
-		//return StrUtil::endsWith(stdCode, SUFFIX_2ND, false);
-		static std::size_t SUF_LEN = strlen(SUFFIX_2ND);
-		auto len = strlen(stdCode);
-		if (len < SUF_LEN)
-			return false;
-
-		return memcmp(stdCode + len - SUF_LEN, SUFFIX_2ND, SUF_LEN) == 0;
-	}
-
 	/*
 	 *	是否是期货期权合约代码
 	 *	CFFEX.IO2007.C.4000
@@ -583,7 +552,7 @@ public:
 	/*
 	 *	提起标准代码的信息
 	 */
-	static CodeInfo extractStdCode(const char* stdCode)
+	static CodeInfo extractStdCode(const char* stdCode, IHotMgr *hotMgr)
 	{
 		//期权的代码规则和其他都不一样，所以单独判断
 		if(isStdChnFutOptCode(stdCode))
@@ -602,7 +571,7 @@ public:
 			thread_local static CodeInfo codeInfo;
 			codeInfo.clear();
 			auto idx = StrUtil::findFirst(stdCode, '.');
-			memcpy(codeInfo._exchg, stdCode, idx);
+			wt_strcpy(codeInfo._exchg, stdCode, idx);
 
 			auto idx2 = StrUtil::findFirst(stdCode + idx + 1, '.');
 			if (idx2 == std::string::npos)
@@ -616,16 +585,19 @@ public:
 			}
 			else
 			{
-				memcpy(codeInfo._product, stdCode + idx + 1, idx2);
+				wt_strcpy(codeInfo._product, stdCode + idx + 1, idx2);
 				const char* ext = stdCode + idx + idx2 + 2;
 				std::size_t extlen = strlen(ext);
 				char lastCh = ext[extlen - 1];
 				if (lastCh == SUFFIX_QFQ || lastCh == SUFFIX_HFQ)
 				{
-					memcpy(codeInfo._code, ext, extlen - 1);
 					codeInfo._exright = (lastCh == SUFFIX_QFQ) ? 1 : 2;
+
+					extlen--;
+					lastCh = ext[extlen - 1];
 				}
-				else if (extlen == 4 && '0' <= lastCh && lastCh <= '9')
+				
+				if (extlen == 4 && '0' <= lastCh && lastCh <= '9')
 				{
 					//如果最后一段是4位数字，说明是分月合约
 					//TODO: 这样的判断存在一个假设，最后一位是数字的一定是期货分月合约，以后可能会有问题，先注释一下
@@ -633,17 +605,20 @@ public:
 					//郑商所得单独处理一下，这个只能hardcode了
 					auto i = wt_strcpy(codeInfo._code, codeInfo._product);
 					if (memcmp(codeInfo._exchg, "CZCE", 4) == 0)
-						memcpy(codeInfo._code + i, ext + 1, extlen-1);
+						wt_strcpy(codeInfo._code + i, ext + 1, extlen-1);
 					else
-						memcpy(codeInfo._code + i, ext, extlen);
+						wt_strcpy(codeInfo._code + i, ext, extlen);
 				}
 				else
 				{
-					codeInfo._hotflag = CodeHelper::isStdFutHotCode(stdCode) ? 1 : (CodeHelper::isStdFut2ndCode(stdCode) ? 2 : 0);
-					if (codeInfo._hotflag == 0)
-						wt_strcpy(codeInfo._code, ext);
+					const char* ruleTag = (hotMgr != NULL) ? hotMgr->getRuleTag(ext) :"";
+					if (strlen(ruleTag) == 0)
+						wt_strcpy(codeInfo._code, ext, extlen);
 					else
+					{
 						wt_strcpy(codeInfo._code, codeInfo._product);
+						wt_strcpy(codeInfo._ruletag, ruleTag);
+					}
 				}
 			}			
 

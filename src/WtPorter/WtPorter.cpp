@@ -37,9 +37,9 @@ void register_evt_callback(FuncEventCallback cbEvt)
 	getRunner().registerEvtCallback(cbEvt);
 }
 
-void register_cta_callbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar, FuncSessionEvtCallback cbSessEvt)
+void register_cta_callbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar, FuncSessionEvtCallback cbSessEvt, FuncStraCondTriggerCallback cbCondTrigger/* = NULL*/)
 {
-	getRunner().registerCtaCallbacks(cbInit, cbTick, cbCalc, cbBar, cbSessEvt);
+	getRunner().registerCtaCallbacks(cbInit, cbTick, cbCalc, cbBar, cbSessEvt, cbCondTrigger);
 }
 
 void register_sel_callbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar, FuncSessionEvtCallback cbSessEvt)
@@ -140,6 +140,11 @@ const char* get_version()
 	return _ver.c_str();
 }
 
+const char* get_raw_stdcode(const char* stdCode)
+{
+	return getRunner().get_raw_stdcode(stdCode);
+}
+
 void write_log(WtUInt32 level, const char* message, const char* catName)
 {
 	if (strlen(catName) > 0)
@@ -175,9 +180,9 @@ bool reg_exe_factories(const char* factFolder)
 
 #pragma region "CTA策略接口"
 
-CtxHandler create_cta_context(const char* name)
+CtxHandler create_cta_context(const char* name, int slippage)
 {
-	return getRunner().createCtaContext(name);
+	return getRunner().createCtaContext(name, slippage);
 }
 
 void cta_enter_long(CtxHandler cHandle, const char* stdCode, double qty, const char* userTag, double limitprice, double stopprice)
@@ -406,6 +411,11 @@ double cta_get_price(const char* stdCode)
 	return getRunner().getEngine()->get_cur_price(stdCode);
 }
 
+double cta_get_day_price(const char* stdCode, int flag)
+{
+	return getRunner().getEngine()->get_day_price(stdCode, flag);
+}
+
 WtUInt32 cta_get_tdate()
 {
 	return getRunner().getEngine()->get_trading_date();
@@ -421,13 +431,29 @@ WtUInt32 cta_get_time()
 	return getRunner().getEngine()->get_min_time();
 }
 
-void cta_log_text(CtxHandler cHandle, const char* message)
+void cta_log_text(CtxHandler cHandle, WtUInt32 level, const char* message)
 {
 	CtaContextPtr ctx = getRunner().getCtaContext(cHandle);
 	if (ctx == NULL)
 		return;
 
-	ctx->stra_log_info(message);
+	switch (level)
+	{
+	case LOG_LEVEL_DEBUG:
+		ctx->stra_log_debug(message);
+		break;
+	case LOG_LEVEL_INFO:
+		ctx->stra_log_info(message);
+		break;
+	case LOG_LEVEL_WARN:
+		ctx->stra_log_warn(message);
+		break;
+	case LOG_LEVEL_ERROR:
+		ctx->stra_log_error(message);
+		break;
+	default:
+		break;
+		}
 }
 
 void cta_save_userdata(CtxHandler cHandle, const char* key, const char* val)
@@ -460,9 +486,9 @@ void cta_sub_ticks(CtxHandler cHandle, const char* stdCode)
 #pragma endregion
 
 #pragma region "多因子策略接口"
-CtxHandler create_sel_context(const char* name, uint32_t date, uint32_t time, const char* period, const char* trdtpl/* = "CHINA"*/, const char* session/* = "TRADING"*/)
+CtxHandler create_sel_context(const char* name, uint32_t date, uint32_t time, const char* period, const char* trdtpl/* = "CHINA"*/, const char* session/* = "TRADING"*/, int32_t slippage/* = 0*/)
 {
-	return getRunner().createSelContext(name, date, time, period, trdtpl, session);
+	return getRunner().createSelContext(name, date, time, period, slippage, trdtpl, session);
 }
 
 
@@ -484,13 +510,29 @@ WtString sel_load_userdata(CtxHandler cHandle, const char* key, const char* defV
 	return ctx->stra_load_user_data(key, defVal);
 }
 
-void sel_log_text(CtxHandler cHandle, const char* message)
+void sel_log_text(CtxHandler cHandle, WtUInt32 level, const char* message)
 {
 	SelContextPtr ctx = getRunner().getSelContext(cHandle);
 	if (ctx == NULL)
 		return;
 
-	ctx->stra_log_info(message);
+	switch (level)
+	{
+	case LOG_LEVEL_DEBUG:
+		ctx->stra_log_debug(message);
+		break;
+	case LOG_LEVEL_INFO:
+		ctx->stra_log_info(message);
+		break;
+	case LOG_LEVEL_WARN:
+		ctx->stra_log_warn(message);
+		break;
+	case LOG_LEVEL_ERROR:
+		ctx->stra_log_error(message);
+		break;
+	default:
+		break;
+	}
 }
 
 double sel_get_price(const char* stdCode)
@@ -609,9 +651,9 @@ void sel_sub_ticks(CtxHandler cHandle, const char* stdCode)
 #pragma endregion
 
 #pragma region "HFT策略接口"
-CtxHandler create_hft_context(const char* name, const char* trader, bool agent)
+CtxHandler create_hft_context(const char* name, const char* trader, bool agent, int32_t slippage/* = 0*/)
 {
-	return getRunner().createHftContext(name, trader, agent);
+	return getRunner().createHftContext(name, trader, agent, slippage);
 }
 
 double hft_get_position(CtxHandler cHandle, const char* stdCode, bool bOnlyValid)
@@ -632,6 +674,14 @@ double hft_get_position_profit(CtxHandler cHandle, const char* stdCode)
 	return ctx->stra_get_position_profit(stdCode);
 }
 
+double hft_get_position_avgpx(CtxHandler cHandle, const char* stdCode)
+{
+	HftContextPtr ctx = getRunner().getHftContext(cHandle);
+	if (ctx == NULL)
+		return 0;
+
+	return ctx->stra_get_position_avgpx(stdCode);
+}
 
 double hft_get_undone(CtxHandler cHandle, const char* stdCode)
 {
@@ -796,13 +846,29 @@ WtUInt32 hft_get_trans(CtxHandler cHandle, const char* stdCode, WtUInt32 itemCnt
 	}
 }
 
-void hft_log_text(CtxHandler cHandle, const char* message)
+void hft_log_text(CtxHandler cHandle, WtUInt32 level, const char* message)
 {
 	HftContextPtr ctx = getRunner().getHftContext(cHandle);
 	if (ctx == NULL)
 		return;
 
-	ctx->stra_log_info(message);
+	switch (level)
+	{
+	case LOG_LEVEL_DEBUG:
+		ctx->stra_log_debug(message);
+		break;
+	case LOG_LEVEL_INFO:
+		ctx->stra_log_info(message);
+		break;
+	case LOG_LEVEL_WARN:
+		ctx->stra_log_warn(message);
+		break;
+	case LOG_LEVEL_ERROR:
+		ctx->stra_log_error(message);
+		break;
+	default:
+		break;
+	}
 }
 
 void hft_sub_ticks(CtxHandler cHandle, const char* stdCode)

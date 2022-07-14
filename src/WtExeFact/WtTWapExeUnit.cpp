@@ -65,7 +65,7 @@ void WtTWapExeUnit::init(ExecuteContext* ctx, const char* stdCode, WTSVariant* c
 
 	_fire_span = (_total_secs - _tail_secs) / _total_times;		//单次发单时间间隔,要去掉尾部时间计算,这样的话,最后剩余的数量就有一个兜底发单的机制了
 
-	ctx->writeLog(fmt::format("执行单元WtTWapExeUnit[{}] 初始化完成,订单超时 {} 秒,执行时限 {} 秒,收尾时间 {} 秒", stdCode, _ord_sticky, _total_secs, _tail_secs).c_str());
+	ctx->writeLog(fmt::format("执行单元WtTWapExeUnit[{}] 初始化完成,订单超时 {} 秒,执行时限 {} 秒,收尾时间 {} 秒 间隔时间 {} 秒", stdCode, _ord_sticky, _total_secs, _tail_secs, _fire_span).c_str());
 }
 
 void WtTWapExeUnit::on_order(uint32_t localid, const char* stdCode, bool isBuy, double leftover, double price, bool isCanceled)
@@ -80,14 +80,14 @@ void WtTWapExeUnit::on_order(uint32_t localid, const char* stdCode, bool isBuy, 
 		if (_cancel_cnt > 0)
 			_cancel_cnt--;
 
-		_ctx->writeLog(fmt::format("Order {} updated cancelcnt -> {}", _cancel_cnt).c_str());
+		_ctx->writeLog(fmt::format("Order {} updated cancelcnt -> {}", localid, _cancel_cnt).c_str());
 	}
 
 	//如果全部订单已撤销,这个时候一般是遇到要超时撤单
 	if (isCanceled && _cancel_cnt == 0)
 	{
 		double realPos = _ctx->getPosition(stdCode);
-		if(!decimal::eq(realPos, _this_target))
+		if (!decimal::eq(realPos, _this_target))
 		{
 			//撤单以后重发,一般是加点重发
 			fire_at_once(_this_target - realPos);
@@ -156,7 +156,7 @@ void WtTWapExeUnit::on_tick(WTSTickData* newTick)
 	}
 	else
 	{
-		uint64_t now = _ctx->getCurTime();
+		uint64_t now = TimeUtils::getLocalTimeNow();
 		bool hasCancel = false;
 		if (_ord_sticky != 0 && _orders_mon.has_order())
 		{
@@ -170,8 +170,8 @@ void WtTWapExeUnit::on_tick(WTSTickData* newTick)
 			});
 
 		}
-		
-		if (!hasCancel && (now - _last_fire_time >= _fire_span))
+
+		if (!hasCancel && (now - _last_fire_time >= _fire_span * 1000))
 		{
 			do_calc();
 		}
@@ -272,7 +272,7 @@ void WtTWapExeUnit::do_calc()
 		return;
 
 	uint32_t leftTimes = _total_times - _fired_times;
-
+	_ctx->writeLog(fmt::format("第 {} 次发单", _fired_times).c_str());
 	bool bNeedShowHand = false;
 	//剩余次数为0,剩余数量不为0,说明要全部发出去了
 	//剩余次数为0,说明已经到了兜底时间了,如果这个时候还有未完成数量,则需要发单
@@ -302,7 +302,7 @@ void WtTWapExeUnit::do_calc()
 	{
 		targetPx = curTick->price();
 	}
-	else if(_price_mode == 1)
+	else if (_price_mode == 1)
 	{
 		targetPx = isBuy ? curTick->bidprice(0) : curTick->askprice(0);
 	}
@@ -312,15 +312,15 @@ void WtTWapExeUnit::do_calc()
 	}
 
 	//如果需要全部发单,则价格偏移5跳,以保障执行
-	if(bNeedShowHand) //  last showhand time
-	{		
+	if (bNeedShowHand) //  last showhand time
+	{
 		targetPx += _comm_info->getPriceTick() * 5 * (isBuy ? 1 : -1);
 	}
-	else if(_price_offset != 0)	//如果设置了价格偏移,也要处理一下
+	else if (_price_offset != 0)	//如果设置了价格偏移,也要处理一下
 	{
 		targetPx += _comm_info->getPriceTick() * _price_offset * (isBuy ? 1 : -1);
 	}
-	
+
 	//最后发出指令
 	OrderIDs ids;
 	if (curQty > 0)

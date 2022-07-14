@@ -94,12 +94,14 @@ public:
 
 private:
 	void		reconnect();
-	inline uint32_t	genRequestID();
+	inline uint32_t			genRequestID();
+	void					doLogin();
 
 	inline WTSOrderInfo*	makeOrderInfo(XTPQueryOrderRsp* orderField);
 	inline WTSEntrust*		makeEntrust(XTPOrderInfo *entrustField);
 	inline WTSTradeInfo*	makeTradeInfo(XTPQueryTradeRsp *tradeField);
 
+	bool					extractEntrustID(const char* entrustid, uint32_t &orderRef);
 	inline std::string		genEntrustID(uint32_t orderRef);
 
 private:
@@ -124,6 +126,7 @@ private:
 	int				_client;
 
 	bool			_quick;
+	bool			_inited;
 
 	TraderState		_state;
 

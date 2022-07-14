@@ -54,7 +54,7 @@ int main()
 	WTSVariant* cfg = WTSCfgLoader::load_from_file(filename.c_str(), true);
 	if (cfg == NULL)
 	{
-		WTSLogger::info_f("Loading configuration file {} failed", filename);
+		WTSLogger::info("Loading configuration file {} failed", filename);
 		return -1;
 	}
 

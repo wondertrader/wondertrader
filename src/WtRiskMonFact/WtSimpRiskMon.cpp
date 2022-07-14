@@ -41,10 +41,7 @@ void WtSimpleRiskMon::init(WtPortContext* ctx, WTSVariant* cfg)
 	_base_amount = cfg->getDouble("base_amount");
 	_risk_scale = cfg->getDouble("risk_scale");
 
-	//ctx->writeRiskLog(fmt::sprintf("参数初始化完成, 监控时间间隔: %u 秒, 日内回撤: %s(%.2f%%), 多日回撤: %s(%.2f%%), 资金基数: %.1f, 门槛盈利: %.2f%%, 回撤时限: %u mins, 风险控制系数: %.2f",
-	//	_calc_span, _inner_day_active ? "开启" : "关闭", _inner_day_fd, _multi_day_active ? "开启" : "关闭", _multi_day_fd, _base_amount, _basic_ratio, _risk_span, _risk_scale);
-
-	ctx->writeRiskLog(fmt::sprintf("Params inited, Checking frequency: %u s, MaxIDD: %s(%.2f%%), MaxMDD: %s(%.2f%%), Capital: %.1f, Profit Boudary: %.2f%%, Calc Span: %u mins, Risk Scale: %.2f",
+	ctx->writeRiskLog(fmt::format("Params inited, Checking frequency: {} s, MaxIDD: {}({:.2f}%), MaxMDD: {}({:.2f}%), Capital: {:.1f}, Profit Boudary: {:.2f}%, Calc Span: {} mins, Risk Scale: {:.2f}",
 		_calc_span, _inner_day_active ? "ON" : "OFF", _inner_day_fd, _multi_day_active ? "ON" : "OFF", _multi_day_fd, _base_amount, _basic_ratio, _risk_span, _risk_scale).c_str());
 }
 
@@ -96,20 +93,20 @@ void WtSimpleRiskMon::run()
 
 						if (rate >= _inner_day_fd && curTime - maxTime <= _risk_span && !_limited)
 						{
-							_ctx->writeRiskLog(fmt::sprintf("Current IDD %.2f%%, ≥MaxIDD %.2f%%, Position down to %.1f%%", rate, _inner_day_fd, _risk_scale).c_str());
+							_ctx->writeRiskLog(fmt::format("Current IDD {:.2f}%, ≥MaxIDD {:.2f}%, Position down to {:.1f}%", rate, _inner_day_fd, _risk_scale).c_str());
 							_ctx->setVolScale(_risk_scale);
 							_limited = true;
 						}
 						else
 						{
-							_ctx->writeRiskLog(fmt::sprintf("Current PR: %.2f%%, Current IDD: %.2f%%", curBal*100.0 / predynbal, rate).c_str());
+							_ctx->writeRiskLog(fmt::format("Current Balance Ratio: {:.2f}%, Current IDD: {:.2f}%", curBal*100.0 / predynbal, rate).c_str());
 							//_limited = false;
 						}
 					}
 					else
 					{
 						//如果当日最大权益没有超过盈利边界条件
-						_ctx->writeRiskLog(fmt::sprintf("Current PR: %.2f%%", curBal*100.0 / predynbal).c_str());
+						_ctx->writeRiskLog(fmt::format("Current Balance Ratio: {:.2f}%", curBal*100.0 / predynbal).c_str());
 						//_limited = false;
 					}
 				}
@@ -124,7 +121,7 @@ void WtSimpleRiskMon::run()
 						double rate = (maxBal - curBal) * 100 / maxBal;
 						if (rate >= _multi_day_fd)
 						{
-							_ctx->writeRiskLog(fmt::sprintf("Current MDD %.2f%%, ≥MaxMDD %.2f%%, Position down to 0.0%%", rate, _multi_day_fd).c_str());
+							_ctx->writeRiskLog(fmt::format("Current MDD {:.2f}%, >= MaxMDD {:.2f}%, Position down to 0.0%", rate, _multi_day_fd).c_str());
 							_ctx->setVolScale(0.0);
 						}
 					}

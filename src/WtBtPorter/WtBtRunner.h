@@ -64,7 +64,7 @@ public:
 
 public:
 	void	registerCtaCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, 
-		FuncStraBarCallback cbBar, FuncSessionEvtCallback cbSessEvt, FuncStraCalcCallback cbCalcDone = NULL);
+		FuncStraBarCallback cbBar, FuncSessionEvtCallback cbSessEvt, FuncStraCalcCallback cbCalcDone = NULL, FuncStraCondTriggerCallback cbCondTrigger = NULL);
 	void	registerSelCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, 
 		FuncStraBarCallback cbBar, FuncSessionEvtCallback cbSessEvt, FuncStraCalcCallback cbCalcDone = NULL);
 	void registerHftCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraBarCallback cbBar,
@@ -97,6 +97,7 @@ public:
 	void	ctx_on_calc(uint32_t id, uint32_t uDate, uint32_t uTime, EngineType eType);
 	void	ctx_on_calc_done(uint32_t id, uint32_t uDate, uint32_t uTime, EngineType eType);
 	void	ctx_on_bar(uint32_t id, const char* stdCode, const char* period, WTSBarStruct* newBar, EngineType eType);
+	void	ctx_on_cond_triggered(uint32_t id, const char* stdCode, double target, double price, const char* usertag, EngineType eType = ET_CTA);
 
 	void	hft_on_order_queue(uint32_t id, const char* stdCode, WTSOrdQueData* newOrdQue);
 	void	hft_on_order_detail(uint32_t id, const char* stdCode, WTSOrdDtlData* newOrdDtl);
@@ -118,6 +119,8 @@ public:
 	void	enable_tick(bool bEnabled = true);
 
 	void	clear_cache();
+
+	const char*	get_raw_stdcode(const char* stdCode);
 
 	inline CtaMocker*		cta_mocker() { return _cta_mocker; }
 	inline SelMocker*		sel_mocker() { return _sel_mocker; }
@@ -160,6 +163,7 @@ private:
 	FuncStraCalcCallback	_cb_cta_calc;
 	FuncStraCalcCallback	_cb_cta_calc_done;
 	FuncStraBarCallback		_cb_cta_bar;
+	FuncStraCondTriggerCallback _cb_cta_cond_trigger;
 
 	FuncStraInitCallback	_cb_sel_init;
 	FuncSessionEvtCallback	_cb_sel_sessevt;

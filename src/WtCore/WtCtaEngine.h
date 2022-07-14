@@ -68,6 +68,11 @@ public:
 		executer->setStub(this);
 	}
 
+	inline bool loadRouterRules(WTSVariant* cfg)
+	{
+		return _exec_mgr.load_router_rules(cfg);
+	}
+
 private:
 	typedef faster_hashmap<uint32_t, CtaContextPtr> ContextMap;
 	ContextMap		_ctx_map;

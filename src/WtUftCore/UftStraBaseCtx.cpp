@@ -133,19 +133,13 @@ WTSCommodityInfo* UftStraBaseCtx::stra_get_comminfo(const char* stdCode)
 
 WTSKlineSlice* UftStraBaseCtx::stra_get_bars(const char* stdCode, const char* period, uint32_t count)
 {
-	std::string basePeriod = "";
+	thread_local static char basePeriod[2] = { 0 };
+	basePeriod[0] = period[0];
 	uint32_t times = 1;
 	if (strlen(period) > 1)
-	{
-		basePeriod.append(period, 1);
 		times = strtoul(period + 1, NULL, 10);
-	}
-	else
-	{
-		basePeriod = period;
-	}
 
-	WTSKlineSlice* ret = _engine->get_kline_slice(_context_id, stdCode, basePeriod.c_str(), count, times);
+	WTSKlineSlice* ret = _engine->get_kline_slice(_context_id, stdCode, basePeriod, count, times);
 
 	if (ret)
 		_engine->sub_tick(id(), stdCode);
@@ -199,25 +193,25 @@ WTSTickData* UftStraBaseCtx::stra_get_last_tick(const char* stdCode)
 void UftStraBaseCtx::stra_sub_ticks(const char* stdCode)
 {
 	_engine->sub_tick(id(), stdCode);
-	log_info("Market Data subscribed: %s", stdCode);
+	log_info("Market Data subscribed: {}", stdCode);
 }
 
 void UftStraBaseCtx::stra_sub_order_details(const char* stdCode)
 {
 	_engine->sub_order_detail(id(), stdCode);
-	log_info("Order details subscribed: %s", stdCode);
+	log_info("Order details subscribed: {}", stdCode);
 }
 
 void UftStraBaseCtx::stra_sub_order_queues(const char* stdCode)
 {
 	_engine->sub_order_queue(id(), stdCode);
-	log_info("Order queues subscribed: %s", stdCode);
+	log_info("Order queues subscribed: {}", stdCode);
 }
 
 void UftStraBaseCtx::stra_sub_transactions(const char* stdCode)
 {
 	_engine->sub_transaction(id(), stdCode);
-	log_info("Transactions subscribed: %s", stdCode);
+	log_info("Transactions subscribed: {}", stdCode);
 }
 
 void UftStraBaseCtx::stra_log_info(const char* message)
@@ -267,7 +261,7 @@ void UftStraBaseCtx::on_position(const char* stdCode, bool isLong, double prevol
 
 double UftStraBaseCtx::stra_get_position(const char* stdCode, bool bOnlyValid /* = false */, int32_t iFlag /* = 0 */)
 {
-	return _trader->getPosition(stdCode, bOnlyValid);
+	return _trader->getPosition(stdCode, bOnlyValid, iFlag);
 }
 
 double UftStraBaseCtx::stra_enum_position(const char* stdCode)

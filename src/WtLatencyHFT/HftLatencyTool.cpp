@@ -139,7 +139,7 @@ namespace hft
 			}
 			auto total = ticker.nano_seconds();
 			double t2t = total * 1.0 / times;
-			WTSLogger::warn("%u ticks simulated in %.0f ns, HftEngine Innner Latency: %.3f ns", times, total*1.0, t2t);
+			WTSLogger::warn("{} ticks simulated in {:.0f} ns, HftEngine Innner Latency: {:.3f} ns", times, total*1.0, t2t);
 		}
 
 	public:
@@ -276,10 +276,10 @@ namespace hft
 		_act_mgr.init("actpolicy.yaml");
 
 		_times = _config->getUInt32("times");
-		WTSLogger::warn_f("{} ticks will be simulated", _times);
+		WTSLogger::warn("{} ticks will be simulated", _times);
 
 		_core = _config->getUInt32("core");
-		WTSLogger::warn_f("Testing thread will be bind to core {}", _core);
+		WTSLogger::warn("Testing thread will be bind to core {}", _core);
 
 		initEngine(_config->get("env"));
 		initModules();
@@ -291,7 +291,7 @@ namespace hft
 
 	bool HftLatencyTool::initStrategies()
 	{
-		HftStraContext* ctx = new HftStraContext(&_engine, "stra", false);
+		HftStraContext* ctx = new HftStraContext(&_engine, "stra", false, 0);
 		ctx->set_strategy(new TestStrategy("stra"));
 
 		TraderAdapterPtr trader = _traders.getAdapter("trader");
@@ -338,7 +338,7 @@ namespace hft
 		{
 			if (!CpuHelper::bind_core(_core - 1))
 			{
-				WTSLogger::error_f("Binding to core {} failed", _core);
+				WTSLogger::error("Binding to core {} failed", _core);
 			}
 		}
 

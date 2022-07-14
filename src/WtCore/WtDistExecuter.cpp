@@ -43,7 +43,7 @@ void WtDistExecuter::set_position(const faster_hashmap<LongKey, double>& targets
 		_target_pos[stdCode] = newVol;
 		if (!decimal::eq(oldVol, newVol))
 		{
-			WTSLogger::log_dyn_f("executer", _name.c_str(), LL_INFO, "[{}]{}目标仓位更新: {} -> {}", _name.c_str(), stdCode, oldVol, newVol);
+			WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "[{}]{}目标仓位更新: {} -> {}", _name.c_str(), stdCode, oldVol, newVol);
 		}
 
 		//这里广播目标仓位
@@ -59,7 +59,7 @@ void WtDistExecuter::on_position_changed(const char* stdCode, double targetPos)
 
 	if (!decimal::eq(oldVol, targetPos))
 	{
-		WTSLogger::log_dyn_f("executer", _name.c_str(), LL_INFO, "[{}]{}目标仓位更新: {} -> {}", _name.c_str(), stdCode, oldVol, targetPos);
+		WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "[{}]{}目标仓位更新: {} -> {}", _name.c_str(), stdCode, oldVol, targetPos);
 	}
 
 	//这里广播目标仓位

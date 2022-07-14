@@ -23,6 +23,7 @@
 #include "../WtCore/WtHftEngine.h"
 #include "../WtCore/WtSelEngine.h"
 #include "../WtCore/WtLocalExecuter.h"
+#include "../WtCore/WtDiffExecuter.h"
 #include "../WtCore/WtDistExecuter.h"
 #include "../WtCore/TraderAdapter.h"
 #include "../WtCore/ParserAdapter.h"
@@ -79,7 +80,7 @@ public:
 
 	void release();
 
-	void registerCtaCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar, FuncSessionEvtCallback cbSessEvt);
+	void registerCtaCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar, FuncSessionEvtCallback cbSessEvt, FuncStraCondTriggerCallback cbCondTrigger = NULL);
 	void registerSelCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar, FuncSessionEvtCallback cbSessEvt);
 	void registerHftCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraBarCallback cbBar,
 		FuncHftChannelCallback cbChnl, FuncHftOrdCallback cbOrd, FuncHftTrdCallback cbTrd, FuncHftEntrustCallback cbEntrust,
@@ -101,14 +102,16 @@ public:
 	bool			createExtParser(const char* id);
 	bool			createExtExecuter(const char* id);
 
-	uint32_t		createCtaContext(const char* name);
-	uint32_t		createHftContext(const char* name, const char* trader, bool bAgent);
-	uint32_t		createSelContext(const char* name, uint32_t date, uint32_t time, const char* period, const char* trdtpl = "CHINA", const char* session="TRADING");
+	uint32_t		createCtaContext(const char* name, int32_t slippage);
+	uint32_t		createHftContext(const char* name, const char* trader, bool bAgent, int32_t slippage);
+	uint32_t		createSelContext(const char* name, uint32_t date, uint32_t time, const char* period, int32_t slippage, const char* trdtpl = "CHINA", const char* session="TRADING");
 
 	CtaContextPtr	getCtaContext(uint32_t id);
 	SelContextPtr	getSelContext(uint32_t id);
 	HftContextPtr	getHftContext(uint32_t id);
 	WtEngine*		getEngine(){ return _engine; }
+
+	const char*	get_raw_stdcode(const char* stdCode);
 
 //////////////////////////////////////////////////////////////////////////
 //ILogHandler
@@ -161,6 +164,7 @@ public:
 	void ctx_on_tick(uint32_t id, const char* stdCode, WTSTickData* newTick, EngineType eType = ET_CTA);
 	void ctx_on_calc(uint32_t id, uint32_t curDate, uint32_t curTime, EngineType eType = ET_CTA);
 	void ctx_on_bar(uint32_t id, const char* stdCode, const char* period, WTSBarStruct* newBar, EngineType eType = ET_CTA);
+	void ctx_on_cond_triggered(uint32_t id, const char* stdCode, double target, double price, const char* usertag, EngineType eType = ET_CTA);
 
 	void hft_on_channel_ready(uint32_t cHandle, const char* trader);
 	void hft_on_channel_lost(uint32_t cHandle, const char* trader);
@@ -197,6 +201,7 @@ private:
 	FuncStraTickCallback	_cb_cta_tick;
 	FuncStraCalcCallback	_cb_cta_calc;
 	FuncStraBarCallback		_cb_cta_bar;
+	FuncStraCondTriggerCallback _cb_cta_cond_trigger;
 
 	FuncStraInitCallback	_cb_sel_init;
 	FuncSessionEvtCallback	_cb_sel_sessevt;

@@ -140,7 +140,7 @@ void MQServer::publish(const char* topic, const void* data, uint32_t dataLen)
 							m_sendBuf.resize(m_sendBuf.size() * 2);
 						MQPacket* pack = (MQPacket*)m_sendBuf.data();
 						strncpy(pack->_topic, pubData._topic.c_str(), 32);
-						pack->_length = pubData._data.size();
+						pack->_length = (uint32_t)pubData._data.size();
 						memcpy(&pack->_data, pubData._data.data(), pubData._data.size());
 						int bytes_snd = 0;
 						for(;;)

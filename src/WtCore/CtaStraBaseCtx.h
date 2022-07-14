@@ -55,7 +55,7 @@ typedef faster_hashmap<LongKey, CondList>	CondEntrustMap;
 class CtaStraBaseCtx : public ICtaStraCtx
 {
 public:
-	CtaStraBaseCtx(WtCtaEngine* engine, const char* name);
+	CtaStraBaseCtx(WtCtaEngine* engine, const char* name, int32_t slippage);
 	virtual ~CtaStraBaseCtx();
 
 private:
@@ -78,26 +78,26 @@ private:
 
 	inline CondList& get_cond_entrusts(const char* stdCode);
 	
-private:
+protected:
 	template<typename... Args>
 	void log_debug(const char* format, const Args& ...args)
 	{
-		std::string s = fmt::sprintf(format, args...);
-		stra_log_debug(s.c_str());
+		const char* buffer = fmtutil::format(format, args...);
+		stra_log_debug(buffer);
 	}
 
 	template<typename... Args>
 	void log_info(const char* format, const Args& ...args)
 	{
-		std::string s = fmt::sprintf(format, args...);
-		stra_log_info(s.c_str());
+		const char* buffer = fmtutil::format(format, args...);
+		stra_log_info(buffer);
 	}
 
 	template<typename... Args>
 	void log_error(const char* format, const Args& ...args)
 	{
-		std::string s = fmt::sprintf(format, args...);
-		stra_log_error(s.c_str());
+		const char* buffer = fmtutil::format(format, args...);
+		stra_log_error(buffer);
 	}
 
 public:
@@ -125,6 +125,11 @@ public:
 	virtual void stra_set_position(const char* stdCode, double qty, const char* userTag = "", double limitprice = 0.0, double stopprice = 0.0) override;
 	virtual double stra_get_price(const char* stdCode) override;
 
+	/*
+	 *	读取当日价格
+	 */
+	virtual double stra_get_day_price(const char* stdCode, int flag = 0) override;
+
 	virtual uint32_t stra_get_tdate() override;
 	virtual uint32_t stra_get_date() override;
 	virtual uint32_t stra_get_time() override;
@@ -147,10 +152,16 @@ public:
 	virtual WTSTickSlice*	stra_get_ticks(const char* stdCode, uint32_t count) override;
 	virtual WTSTickData*	stra_get_last_tick(const char* stdCode) override;
 
+	/*
+	 *	获取分月合约代码
+	 */
+	virtual std::string		stra_get_rawcode(const char* stdCode) override;
+
 	virtual void stra_sub_ticks(const char* stdCode) override;
 
 	virtual void stra_log_info(const char* message) override;
 	virtual void stra_log_debug(const char* message) override;
+	virtual void stra_log_warn(const char* message) override;
 	virtual void stra_log_error(const char* message) override;
 
 	virtual void stra_save_user_data(const char* key, const char* val) override;
@@ -160,6 +171,8 @@ public:
 protected:
 	uint32_t		_context_id;
 	WtCtaEngine*	_engine;
+
+	int32_t			_slippage;
 
 	uint64_t		_total_calc_time;	//总计算时间
 	uint32_t		_emit_times;		//总计算次数
@@ -188,6 +201,8 @@ protected:
 		uint32_t	_opentdate;
 		double		_max_profit;
 		double		_max_loss;
+		double		_max_price;
+		double		_min_price;
 		double		_profit;
 		char		_opentag[32];
 		uint32_t	_open_barno;
@@ -249,6 +264,7 @@ protected:
 	BoostFilePtr	_close_logs;
 	BoostFilePtr	_fund_logs;
 	BoostFilePtr	_sig_logs;
+	BoostFilePtr	_pos_logs;
 
 	CondEntrustMap	_condtions;
 	uint64_t		_last_cond_min;	//上次设置条件单的时间

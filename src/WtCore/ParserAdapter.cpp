@@ -13,6 +13,8 @@
 #include "WtHelper.h"
 
 #include "../Share/CodeHelper.hpp"
+#include "../Share/TimeUtils.hpp"
+
 #include "../Includes/WTSContractInfo.hpp"
 #include "../Includes/WTSDataDef.hpp"
 #include "../Includes/WTSVariant.hpp"
@@ -73,7 +75,7 @@ bool ParserAdapter::initExt(const char* id, IParserApi* api, IParserStub* stub, 
 		}
 		else
 		{
-			WTSLogger::log_dyn("parser", _id.c_str(), LL_ERROR, "[%s] Parser initializing failed: api initializing failed...", _id.c_str());
+			WTSLogger::log_dyn("parser", _id.c_str(), LL_ERROR, "[{}] Parser initializing failed: api initializing failed...", _id.c_str());
 		}
 	}
 
@@ -96,6 +98,8 @@ bool ParserAdapter::init(const char* id, WTSVariant* cfg, IParserStub* stub, IBa
 	_cfg = cfg;
 	_cfg->retain();
 
+	_check_time = cfg->getBoolean("check_time");
+
 	{
 		//加载模块
 		if (cfg->getString("module").empty())
@@ -112,25 +116,25 @@ bool ParserAdapter::init(const char* id, WTSVariant* cfg, IParserStub* stub, IBa
 		DllHandle hInst = DLLHelper::load_library(dllpath.c_str());
 		if (hInst == NULL)
 		{
-			WTSLogger::log_dyn("parser", _id.c_str(), LL_ERROR, "[%s] Parser module %s loading failed", _id.c_str(), dllpath.c_str());
+			WTSLogger::log_dyn("parser", _id.c_str(), LL_ERROR, "[{}] Parser module {} loading failed", _id.c_str(), dllpath.c_str());
 			return false;
 		}
 		else
 		{
-			WTSLogger::log_dyn("parser", _id.c_str(), LL_INFO, "[%s] Parser module %s loaded", _id.c_str(), dllpath.c_str());
+			WTSLogger::log_dyn("parser", _id.c_str(), LL_INFO, "[{}] Parser module {} loaded", _id.c_str(), dllpath.c_str());
 		}
 
 		FuncCreateParser pFuncCreateParser = (FuncCreateParser)DLLHelper::get_symbol(hInst, "createParser");
 		if (NULL == pFuncCreateParser)
 		{
-			WTSLogger::log_dyn("parser", _id.c_str(), LL_FATAL, "[%s] Entrance function createParser not found", _id.c_str());
+			WTSLogger::log_dyn("parser", _id.c_str(), LL_FATAL, "[{}] Entrance function createParser not found", _id.c_str());
 			return false;
 		}
 
 		_parser_api = pFuncCreateParser();
 		if (NULL == _parser_api)
 		{
-			WTSLogger::log_dyn("parser", _id.c_str(), LL_FATAL, "[%s] Creating parser api failed", _id.c_str());
+			WTSLogger::log_dyn("parser", _id.c_str(), LL_FATAL, "[{}] Creating parser api failed", _id.c_str());
 			return false;
 		}
 
@@ -177,13 +181,32 @@ bool ParserAdapter::init(const char* id, WTSVariant* cfg, IParserStub* stub, IBa
 					auto ay = StrUtil::split((*it).c_str(), ".");
 					if (ay.size() == 1)
 						code = ay[0];
-					else
+					else if (ay.size() == 2)
 					{
 						exchg = ay[0];
 						code = ay[1];
 					}
+					else if (ay.size() == 3)
+					{
+						exchg = ay[0];
+						code = ay[2];
+					}
 					WTSContractInfo* contract = _bd_mgr->getContract(code.c_str(), exchg.c_str());
-					contractSet.insert(contract->getFullCode());
+					if(contract)
+						contractSet.insert(contract->getFullCode());
+					else
+					{
+						//如果是品种ID，则将该品种下全部合约都加到订阅列表
+						WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(exchg.c_str(), code.c_str());
+						if(commInfo)
+						{
+							const auto& codes = commInfo->getCodes();
+							for(const auto& c : codes)
+							{
+								contractSet.insert(fmt::format("{}.{}", exchg, c.c_str()));
+							}							
+						}
+					}
 				}
 			}
 			else if (!_exchg_filter.empty())
@@ -220,13 +243,15 @@ bool ParserAdapter::init(const char* id, WTSVariant* cfg, IParserStub* stub, IBa
 		}
 		else
 		{
-			WTSLogger::log_dyn("parser", _id.c_str(), LL_ERROR, "[%s] Parser initializing failed: api initializing failed...", _id.c_str());
+			WTSLogger::log_dyn("parser", _id.c_str(), LL_ERROR, "[{}] Parser initializing failed: api initializing failed...", _id.c_str());
 		}
 	}
 	else
 	{
-		WTSLogger::log_dyn("parser", _id.c_str(), LL_ERROR, "[%s] Parser initializing failed: creating api failed...", _id.c_str());
+		WTSLogger::log_dyn("parser", _id.c_str(), LL_ERROR, "[{}] Parser initializing failed: creating api failed...", _id.c_str());
 	}
+
+	WTSLogger::info("parser", _id.c_str(), LL_INFO, "[{}] Parser initialzied, check_time: {}", _id.c_str(), _check_time);
 
 	return true;
 }
@@ -254,6 +279,8 @@ bool ParserAdapter::run()
 	return true;
 }
 
+//合理毫秒数时间差
+const int RESONABLE_MILLISECS = 60 * 60 * 1000;
 void ParserAdapter::handleQuote(WTSTickData *quote, uint32_t procFlag)
 {
 	if (quote == NULL || _stopped || quote->actiondate() == 0 || quote->tradingdate() == 0)
@@ -261,8 +288,6 @@ void ParserAdapter::handleQuote(WTSTickData *quote, uint32_t procFlag)
 
 	if (!_exchg_filter.empty() && (_exchg_filter.find(quote->exchg()) == _exchg_filter.end()))
 		return;
-
-	uint32_t hotflag = 0;
 
 	WTSContractInfo* cInfo = quote->getContractInfo();
 	if (cInfo == NULL)
@@ -275,6 +300,27 @@ void ParserAdapter::handleQuote(WTSTickData *quote, uint32_t procFlag)
 		return;
 
 	WTSCommodityInfo* commInfo = cInfo->getCommInfo();
+	WTSSessionInfo* sInfo = commInfo->getSessionInfo();
+
+	if (_check_time)
+	{
+		int64_t tick_time = TimeUtils::makeTime(quote->actiondate(), quote->actiontime());
+		int64_t local_time = TimeUtils::getLocalTimeNow();
+
+		/*
+		 *	By Wesley @ 2022.04.20
+		 *	如果最新的tick时间，和本地时间相差太大
+		 *	则认为tick的时间戳是错误的
+		 *	这里要求本地时间是要时常进行校准的
+		 */
+		if (tick_time - local_time > RESONABLE_MILLISECS)
+		{
+			WTSLogger::warn("Tick of {} with wrong timestamp {}.{} received, skipped", cInfo->getFullCode(), quote->actiondate(), quote->actiontime());
+			return;
+		}
+	}
+
+	uint32_t hotflag = 0;
 
 	std::string stdCode;
 	if (commInfo->getCategoty() == CC_FutOption)
@@ -397,7 +443,7 @@ bool ParserAdapterMgr::addAdapter(const char* id, ParserAdapterPtr& adapter)
 	auto it = _adapters.find(id);
 	if (it != _adapters.end())
 	{
-		WTSLogger::error(" Same name of parsers: %s", id);
+		WTSLogger::error(" Same name of parsers: {}", id);
 		return false;
 	}
 
@@ -425,5 +471,5 @@ void ParserAdapterMgr::run()
 		it->second->run();
 	}
 
-	WTSLogger::info("%u parsers started", _adapters.size());
+	WTSLogger::info("{} parsers started", _adapters.size());
 }

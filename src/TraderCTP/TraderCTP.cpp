@@ -33,9 +33,7 @@ inline void write_log(ITraderSpi* sink, WTSLogLevel ll, const char* format, cons
 	if (sink == NULL)
 		return;
 
-	static thread_local char buffer[512] = { 0 };
-	char* s = fmt::format_to(buffer, format, args...);
-	s[0] = '\0';
+	const char* buffer = fmtutil::format(format, args...);
 
 	sink->handleTraderLog(ll, buffer);
 }
@@ -140,7 +138,7 @@ void TraderCTP::release()
 
 	if (m_pUserAPI)
 	{
-		m_pUserAPI->RegisterSpi(NULL);
+		//m_pUserAPI->RegisterSpi(NULL);
 		m_pUserAPI->Release();
 		m_pUserAPI = NULL;
 	}
@@ -337,7 +335,6 @@ int TraderCTP::orderInsert(WTSEntrust* entrust)
 	{
 		///报单引用
 		fmt::format_to(req.OrderRef, "{}", m_orderRef.fetch_add(0));
-
 	}
 	else
 	{
@@ -762,8 +759,6 @@ void TraderCTP::OnRspQryTradingAccount(CThostFtdcTradingAccountField *pTradingAc
 	if (bIsLast && !IsErrorRspInfo(pRspInfo))
 	{
 		WTSAccountInfo* accountInfo = WTSAccountInfo::create();
-		accountInfo->setDescription(fmt::format("{}-{}", m_strBroker.c_str(), m_strUser.c_str()).c_str());
-		//accountInfo->setUsername(m_strUserName.c_str());
 		accountInfo->setPreBalance(pTradingAccount->PreBalance);
 		accountInfo->setCloseProfit(pTradingAccount->CloseProfit);
 		accountInfo->setDynProfit(pTradingAccount->PositionProfit);
@@ -1334,20 +1329,29 @@ WTSTradeInfo* TraderCTP::makeTradeRecord(CThostFtdcTradeField *tradeField)
 
 void TraderCTP::generateEntrustID(char* buffer, uint32_t frontid, uint32_t sessionid, uint32_t orderRef)
 {
-	buffer = fmt::format_to(buffer, "{:06d}#{:010d}#{:06d}", frontid, sessionid, orderRef);
-	buffer[0] = '\0';
+	fmtutil::format_to(buffer, "{:06d}#{:010d}#{:06d}", frontid, sessionid, orderRef);
 }
 
 bool TraderCTP::extractEntrustID(const char* entrustid, uint32_t &frontid, uint32_t &sessionid, uint32_t &orderRef)
 {
-	//Market.FrontID.SessionID.OrderRef
-	const StringVector &vecString = StrUtil::split(entrustid, "#");
-	if (vecString.size() != 3)
+	thread_local static char buffer[64];
+	wt_strcpy(buffer, entrustid);
+	char* s = buffer;
+	auto idx = StrUtil::findFirst(s, '#');
+	if (idx == std::string::npos)
 		return false;
+	s[idx] = '\0';
+	frontid = strtoul(s, NULL, 10);
+	s += idx + 1;
 
-	frontid = strtoul(vecString[0].c_str(), NULL, 10);
-	sessionid = strtoul(vecString[1].c_str(), NULL, 10);
-	orderRef = strtoul(vecString[2].c_str(), NULL, 10);
+	idx = StrUtil::findFirst(s, '#');
+	if (idx == std::string::npos)
+		return false;
+	s[idx] = '\0';
+	sessionid = strtoul(s, NULL, 10);
+	s += idx + 1;
+
+	orderRef = strtoul(s, NULL, 10);
 
 	return true;
 }
@@ -1372,6 +1376,12 @@ void TraderCTP::OnErrRtnOrderInsert(CThostFtdcInputOrderField *pInputOrder, CTho
 		entrust->release();
 		err->release();
 	}
+}
+
+void TraderCTP::OnRtnInstrumentStatus(CThostFtdcInstrumentStatusField *pInstrumentStatus)
+{
+	if (m_sink)
+		m_sink->onPushInstrumentStatus(pInstrumentStatus->ExchangeID, pInstrumentStatus->InstrumentID, (WTSTradeStatus)pInstrumentStatus->InstrumentStatus);
 }
 
 bool TraderCTP::isConnected()

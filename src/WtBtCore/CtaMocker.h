@@ -69,6 +69,7 @@ public:
 
 private:
 	void	dump_outputs();
+	void	dump_stradata();
 	inline void log_signal(const char* stdCode, double target, double price, uint64_t gentime, const char* usertag = "");
 	inline void	log_trade(const char* stdCode, bool isLong, bool isOpen, uint64_t curTime, double price, double qty, const char* userTag = "", double fee = 0.0, uint32_t barNo = 0);
 	inline void	log_close(const char* stdCode, bool isLong, uint64_t openTime, double openpx, uint64_t closeTime, double closepx, double qty,
@@ -81,6 +82,8 @@ private:
 
 	inline CondList& get_cond_entrusts(const char* stdCode);
 
+	void	proc_tick(const char* stdCode, double last_px, double cur_px);
+
 public:
 	bool	init_cta_factory(WTSVariant* cfg);
 	void	install_hook();
@@ -90,13 +93,15 @@ public:
 public:
 	//////////////////////////////////////////////////////////////////////////
 	//IDataSink
-	virtual void	handle_tick(const char* stdCode, WTSTickData* curTick) override;
+	virtual void	handle_tick(const char* stdCode, WTSTickData* curTick, bool isBarEnd = true) override;
 	virtual void	handle_bar_close(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar) override;
 	virtual void	handle_schedule(uint32_t uDate, uint32_t uTime) override;
 
 	virtual void	handle_init() override;
 	virtual void	handle_session_begin(uint32_t curTDate) override;
 	virtual void	handle_session_end(uint32_t curTDate) override;
+
+	virtual void	handle_section_end(uint32_t curTDate, uint32_t curTime) override;
 
 	virtual void	handle_replay_done() override;
 
@@ -129,6 +134,11 @@ public:
 	virtual void stra_set_position(const char* stdCode, double qty, const char* userTag = "", double limitprice = 0.0, double stopprice = 0.0) override;
 	virtual double stra_get_price(const char* stdCode) override;
 
+	/*
+	 *	读取当日价格
+	 */
+	virtual double stra_get_day_price(const char* stdCode, int flag = 0) override;
+
 	virtual uint32_t stra_get_tdate() override;
 	virtual uint32_t stra_get_date() override;
 	virtual uint32_t stra_get_time() override;
@@ -153,8 +163,14 @@ public:
 
 	virtual void stra_sub_ticks(const char* stdCode) override;
 
+	/*
+	 *	获取分月合约代码
+	 */
+	virtual std::string		stra_get_rawcode(const char* stdCode) override;
+
 	virtual void stra_log_info(const char* message) override;
 	virtual void stra_log_debug(const char* message) override;
+	virtual void stra_log_warn(const char* message) override;
 	virtual void stra_log_error(const char* message) override;
 
 	virtual void stra_save_user_data(const char* key, const char* val) override;
@@ -165,22 +181,22 @@ private:
 	template<typename... Args>
 	void log_debug(const char* format, const Args& ...args)
 	{
-		std::string s = fmt::sprintf(format, args...);
-		stra_log_debug(s.c_str());
+		const char* buffer = fmtutil::format(format, args...);
+		stra_log_debug(buffer);
 	}
 
 	template<typename... Args>
 	void log_info(const char* format, const Args& ...args)
 	{
-		std::string s = fmt::sprintf(format, args...);
-		stra_log_info(s.c_str());
+		const char* buffer = fmtutil::format(format, args...);
+		stra_log_info(buffer);
 	}
 
 	template<typename... Args>
 	void log_error(const char* format, const Args& ...args)
 	{
-		std::string s = fmt::sprintf(format, args...);
-		stra_log_error(s.c_str());
+		const char* buffer = fmtutil::format(format, args...);
+		stra_log_error(buffer);
 	}
 
 protected:
@@ -218,6 +234,8 @@ protected:
 		uint32_t	_opentdate;
 		double		_max_profit;
 		double		_max_loss;
+		double		_max_price;
+		double		_min_price;
 		double		_profit;
 		char		_opentag[32];
 		uint32_t	_open_barno;
@@ -278,8 +296,9 @@ protected:
 	std::stringstream	_close_logs;
 	std::stringstream	_fund_logs;
 	std::stringstream	_sig_logs;
+	std::stringstream	_pos_logs;
 
-	CondEntrustMap	_condtions;
+	CondEntrustMap		_condtions;
 
 	//是否处于调度中的标记
 	bool			_is_in_schedule;	//是否在自动调度中
@@ -339,6 +358,10 @@ protected:
 
 	//是否对回测结果持久化
 	bool			_persist_data;
+
+	uint32_t		_cur_tdate;
+	uint32_t		_cur_bartime;
+	uint64_t		_last_cond_min;
 
 	//tick订阅列表
 	faster_hashset<std::string> _tick_subs;

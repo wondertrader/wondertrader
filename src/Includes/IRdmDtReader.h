@@ -65,10 +65,12 @@ public:
 	virtual WTSOrdQueSlice*	readOrdQueSliceByRange(const char* stdCode, uint64_t stime, uint64_t etime = 0) = 0;
 	virtual WTSTransSlice*	readTransSliceByRange(const char* stdCode, uint64_t stime, uint64_t etime = 0) = 0;
 
-	virtual WTSTickSlice*	readTickSlicesByRange(const char* stdCode, uint64_t stime, uint64_t etime = 0) = 0;
+	virtual WTSTickSlice*	readTickSliceByDate(const char* stdCode, uint32_t uDate = 0) = 0;
+
+	virtual WTSTickSlice*	readTickSliceByRange(const char* stdCode, uint64_t stime, uint64_t etime = 0) = 0;
 	virtual WTSKlineSlice*	readKlineSliceByRange(const char* stdCode, WTSKlinePeriod period, uint64_t stime, uint64_t etime = 0) = 0;
 
-	virtual WTSTickSlice*	readTickSlicesByCount(const char* stdCode, uint32_t count, uint64_t etime = 0) = 0;
+	virtual WTSTickSlice*	readTickSliceByCount(const char* stdCode, uint32_t count, uint64_t etime = 0) = 0;
 	virtual WTSKlineSlice*	readKlineSliceByCount(const char* stdCode, WTSKlinePeriod period, uint32_t count, uint64_t etime = 0) = 0;
 
 protected:

@@ -1,20 +1,25 @@
 traders:
 -   active: true
-    appid: simnow_client_test
-    authcode: '0000000000000000'
-    broker: '9999'
+    id: simnow          # id
+    module: TraderCTP   # 模块文件名，win下会自动转成xxx.dll，linux会自动转成libxxx.so
+    savedata: true      # 是否保存数据，如果为true，会将接口拉取到的成交、订单、资金和持仓都写到本地文件中
+    riskmon:            # 通道风控配置
+        active: true    # 是否开启
+        policy:         # 风控策略
+            default:    # 默认策略，也可以针对不同的品种进行风控，格式如CFFEX.IF
+                cancel_stat_timespan: 10    # 撤单流控统计时间窗口，单位s
+                cancel_times_boundary: 20   # 时间窗口内最大撤单次数，如果超过该次数，撤单指令不会再发送
+                cancel_total_limits: 470    # 单日最大撤单笔数（只统计普通撤单，FAK和FOK会忽略掉）
+                order_stat_timespan: 10     # 下单流控统计时间窗口，单位s
+                order_times_boundary: 20    # 时间窗口内最大下单次数，如果超过该次数，下单指令不会发送
+    # 以上是TraderAdapter读取的配置
+    # 以下是TraderXXX读取的配置
     front: tcp://180.168.146.187:10201
-    id: simnow
-    module: TraderCTP
-    user: yoursimnowaccount
-    pass: yousimnowpassword
-    quick: true
-    riskmon:
-        active: true
-        policy:
-            default:
-                cancel_stat_timespan: 10
-                cancel_times_boundary: 20
-                cancel_total_limits: 470
-                order_stat_timespan: 10
-                order_times_boundary: 20
+    broker: '9999'                      
+    appid: simnow_client_test
+    authcode: '0000000000000000'    
+    user: "yoursimnowaccount"
+    pass: "yoursimnowpassword"
+    quick: true                       # 是否订阅快速私有流，如果为true，则不会接受上次之前的私有流，这个一定要为true！！！
+    # ctpmodule: thosttraderapi_se    # ctp模块名，如果需要使用其他仿制CTP模块，使用该配置项直接将仿制的CTP模块传给TraderCTP即可
+    # flowdir: CTPTDFlow              # 数据流存储目录，可不填，也可以自己定义

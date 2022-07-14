@@ -9,13 +9,10 @@ void ExpHftContext::on_bar(const char* code, const char* period, uint32_t times,
 	if (newBar == NULL)
 		return;
 
-	std::string realPeriod;
-	if (period[0] == 'd')
-		realPeriod = StrUtil::printf("%s%u", period, times);
-	else
-		realPeriod = StrUtil::printf("m%u", times);
+	thread_local static char realPeriod[8] = { 0 };
+	fmtutil::format_to(realPeriod, "{}{}", period, times);
 
-	getRunner().ctx_on_bar(_context_id, code, realPeriod.c_str(), newBar, ET_HFT);
+	getRunner().ctx_on_bar(_context_id, code, realPeriod, newBar, ET_HFT);
 
 	HftStraBaseCtx::on_bar(code, period, times, newBar);
 }

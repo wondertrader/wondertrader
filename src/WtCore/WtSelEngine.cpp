@@ -69,7 +69,9 @@ void WtSelEngine::handle_push_quote(WTSTickData* curTick, uint32_t hotFlag)
 
 void WtSelEngine::on_bar(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar)
 {
-	std::string key = StrUtil::printf("%s-%s-%u", stdCode, period, times);
+	thread_local static char key[64] = { 0 };
+	fmtutil::format_to(key, "{}-{}-{}", stdCode, period, times);
+
 	const SubList& sids = _bar_sub_map[key];
 	for (auto it = sids.begin(); it != sids.end(); it++)
 	{
@@ -82,7 +84,7 @@ void WtSelEngine::on_bar(const char* stdCode, const char* period, uint32_t times
 		}
 	}
 
-	WTSLogger::info("KBar [%s#%s%d] @ %u closed", stdCode, period, times, period[0] == 'd' ? newBar->date : newBar->time);
+	WTSLogger::info("KBar [{}] @ {} closed", key, period[0] == 'd' ? newBar->date : newBar->time);
 }
 
 void WtSelEngine::on_tick(const char* stdCode, WTSTickData* curTick)
@@ -154,9 +156,10 @@ void WtSelEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 						{
 							WTSTickData* newTick = WTSTickData::create(curTick->getTickStruct());
 							WTSTickStruct& newTS = newTick->getTickStruct();
+							newTick->setContractInfo(curTick->getContractInfo());
 
 							//这里做一个复权因子的处理
-							double factor = _data_mgr->get_adjusting_factor(stdCode, get_trading_date());
+							double factor = get_exright_factor(stdCode);
 							newTS.open *= factor;
 							newTS.high *= factor;
 							newTS.low *= factor;
@@ -350,7 +353,7 @@ void WtSelEngine::addContext(SelContextPtr ctx, uint32_t date, uint32_t time, Ta
 	auto it = _tasks.find(ctx->id());
 	if(it != _tasks.end())
 	{
-		WTSLogger::error("Task registration failed: task id %u already registered", ctx->id());
+		WTSLogger::error("Task registration failed: task id {} already registered", ctx->id());
 		return;
 	}
 
@@ -379,21 +382,36 @@ SelContextPtr WtSelEngine::getContext(uint32_t id)
 	return it->second;
 }
 
-void WtSelEngine::handle_pos_change(const char* stdCode, double diffQty)
+void WtSelEngine::handle_pos_change(const char* straName, const char* stdCode, double diffQty)
 {
+	//这里是持仓增量,所以不用处理未过滤的情况,因为增量情况下,不会改变目标diffQty
+	if (_filter_mgr.is_filtered_by_strategy(straName, diffQty, true))
+	{
+		//输出日志
+		WTSLogger::info("[Filters] Target position of {} of strategy {} ignored by strategy filter", stdCode, straName);
+		return;
+	}
+
 	std::string realCode = stdCode;
-	if (CodeHelper::isStdFutHotCode(stdCode))
+	//const char* ruleTag = _hot_mgr->getRuleTag(stdCode);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
+	if (strlen(cInfo._ruletag) > 0)
 	{
-		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
-		std::string code = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
+		std::string code = _hot_mgr->getCustomRawCode(cInfo._ruletag, cInfo.stdCommID(), _cur_tdate);
 		realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
 	}
-	else if (CodeHelper::isStdFut2ndCode(stdCode))
-	{
-		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
-		std::string code = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
-		realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
-	}
+	//else if (CodeHelper::isStdFutHotCode(stdCode))
+	//{
+	//	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+	//	std::string code = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
+	//	realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
+	//}
+	//else if (CodeHelper::isStdFut2ndCode(stdCode))
+	//{
+	//	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+	//	std::string code = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
+	//	realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
+	//}
 
 	PosInfo& pItem = _pos_map[realCode];
 	double targetPos = pItem._volume + diffQty;
@@ -401,7 +419,7 @@ void WtSelEngine::handle_pos_change(const char* stdCode, double diffQty)
 	bool bRiskEnabled = false;
 	if (!decimal::eq(_risk_volscale, 1.0) && _risk_date == _cur_tdate)
 	{
-		WTSLogger::log_by_cat("risk", LL_INFO, "Risk scale of Strategy Group is %.2f", _risk_volscale);
+		WTSLogger::log_by_cat("risk", LL_INFO, "Risk scale of portfolio is {:.2f}", _risk_volscale);
 		bRiskEnabled = true;
 	}
 	if (bRiskEnabled && targetPos != 0)
@@ -413,6 +431,7 @@ void WtSelEngine::handle_pos_change(const char* stdCode, double diffQty)
 	append_signal(realCode.c_str(), targetPos, false);
 	save_datas();
 
+	const char* execid = _exec_mgr.get_route(straName);
 	_exec_mgr.handle_pos_change(realCode.c_str(), targetPos);
 }
 

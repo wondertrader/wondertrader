@@ -6,7 +6,7 @@ USING_NS_WTP;
 class ExpSelContext : public SelStraBaseCtx
 {
 public:
-	ExpSelContext(WtSelEngine* env, const char* name);
+	ExpSelContext(WtSelEngine* env, const char* name, int32_t slippage);
 	virtual ~ExpSelContext();
 
 public:

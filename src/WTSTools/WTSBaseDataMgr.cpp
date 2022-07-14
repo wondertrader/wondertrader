@@ -218,14 +218,14 @@ bool WTSBaseDataMgr::loadSessions(const char* filename, bool isUTF8)
 {
 	if (!StdFile::exists(filename))
 	{
-		WTSLogger::error_f("Trading sessions configuration file {} not exists", filename);
+		WTSLogger::error("Trading sessions configuration file {} not exists", filename);
 		return false;
 	}
 
 	WTSVariant* root = WTSCfgLoader::load_from_file(filename, isUTF8);
 	if (root == NULL)
 	{
-		WTSLogger::error_f("Loading session config file {} failed", filename);
+		WTSLogger::error("Loading session config file {} failed", filename);
 		return false;
 	}
 
@@ -294,14 +294,14 @@ bool WTSBaseDataMgr::loadCommodities(const char* filename, bool isUTF8)
 {
 	if (!StdFile::exists(filename))
 	{
-		WTSLogger::error_f("Commodities configuration file {} not exists", filename);
+		WTSLogger::error("Commodities configuration file {} not exists", filename);
 		return false;
 	}
 
 	WTSVariant* root = WTSCfgLoader::load_from_file(filename, isUTF8);
 	if (root == NULL)
 	{
-		WTSLogger::error_f("Loading commodities config file {} failed", filename);
+		WTSLogger::error("Loading commodities config file {} failed", filename);
 		return false;
 	}
 
@@ -319,7 +319,7 @@ bool WTSBaseDataMgr::loadCommodities(const char* filename, bool isUTF8)
 
 			if (strlen(sid) == 0)
 			{
-				WTSLogger::error_f("No session configured for {}.{}", exchg.c_str(), pid.c_str());
+				WTSLogger::warn("No session configured for {}.{}", exchg.c_str(), pid.c_str());
 				continue;
 			}
 
@@ -329,7 +329,7 @@ bool WTSBaseDataMgr::loadCommodities(const char* filename, bool isUTF8)
 			WTSSessionInfo* sInfo = getSession(sid);
 			pCommInfo->setSessionInfo(sInfo);
 
-			std::string key = StrUtil::printf("%s.%s", exchg.c_str(), pid.c_str());
+			std::string key = fmt::format("{}.{}", exchg.c_str(), pid.c_str());
 			if (m_mapCommodities == NULL)
 				m_mapCommodities = WTSCommodityMap::create();
 
@@ -339,7 +339,7 @@ bool WTSBaseDataMgr::loadCommodities(const char* filename, bool isUTF8)
 		}
 	}
 
-	WTSLogger::info_f("Commodities configuration file {} loaded", filename);
+	WTSLogger::info("Commodities configuration file {} loaded", filename);
 	root->release();
 	return true;
 }
@@ -348,14 +348,14 @@ bool WTSBaseDataMgr::loadContracts(const char* filename, bool isUTF8)
 {
 	if (!StdFile::exists(filename))
 	{
-		WTSLogger::error_f("Contracts configuration file {} not exists", filename);
+		WTSLogger::error("Contracts configuration file {} not exists", filename);
 		return false;
 	}
 
 	WTSVariant* root = WTSCfgLoader::load_from_file(filename, isUTF8);
 	if (root == NULL)
 	{
-		WTSLogger::error_f("Loading contracts config file {} failed", filename);
+		WTSLogger::error("Loading contracts config file {} failed", filename);
 		return false;
 	}
 
@@ -398,7 +398,7 @@ bool WTSBaseDataMgr::loadContracts(const char* filename, bool isUTF8)
 				WTSSessionInfo* sInfo = getSession(sid.c_str());
 				commInfo->setSessionInfo(sInfo);
 
-				std::string key = StrUtil::printf("%s.%s", exchg.c_str(), pid.c_str());
+				std::string key = fmt::format("{}.{}", exchg.c_str(), pid.c_str());
 				if (m_mapCommodities == NULL)
 					m_mapCommodities = WTSCommodityMap::create();
 
@@ -406,12 +406,12 @@ bool WTSBaseDataMgr::loadContracts(const char* filename, bool isUTF8)
 
 				m_mapSessionCode[sid].insert(key);
 
-				WTSLogger::debug("Commodity %s has been automatically added", key.c_str());
+				WTSLogger::debug("Commodity {} has been automatically added", key.c_str());
 			}
 
 			if (commInfo == NULL)
 			{
-				WTSLogger::warn("Commodity %s.%s not found, contract %s skipped", jcInfo->getCString("exchg"), jcInfo->getCString("product"), code.c_str());
+				WTSLogger::warn("Commodity {}.{} not found, contract {} skipped", jcInfo->getCString("exchg"), jcInfo->getCString("product"), code.c_str());
 				continue;
 			}
 
@@ -452,7 +452,7 @@ bool WTSBaseDataMgr::loadContracts(const char* filename, bool isUTF8)
 		}
 	}
 
-	WTSLogger::info_f("Contracts configuration file {} loaded, {} exchanges", filename, m_mapExchgContract->size());
+	WTSLogger::info("Contracts configuration file {} loaded, {} exchanges", filename, m_mapExchgContract->size());
 	root->release();
 	return true;
 }
@@ -461,14 +461,14 @@ bool WTSBaseDataMgr::loadHolidays(const char* filename)
 {
 	if (!StdFile::exists(filename))
 	{
-		WTSLogger::error_f("Holidays configuration file {} not exists", filename);
+		WTSLogger::error("Holidays configuration file {} not exists", filename);
 		return false;
 	}
 
 	WTSVariant* root = WTSCfgLoader::load_from_file(filename, true);
 	if (root == NULL)
 	{
-		WTSLogger::error_f("Loading holidays config file {} failed", filename);
+		WTSLogger::error("Loading holidays config file {} failed", filename);
 		return false;
 	}
 

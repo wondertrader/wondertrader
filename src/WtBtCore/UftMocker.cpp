@@ -50,6 +50,7 @@ UftMocker::UftMocker(HisDataReplayer* replayer, const char* name)
 	, _stopped(false)
 	, _use_newpx(false)
 	, _error_rate(0)
+	, _match_this_tick(false)
 {
 	_context_id = makeUftCtxId();
 }
@@ -135,6 +136,9 @@ bool UftMocker::init_uft_factory(WTSVariant* cfg)
 	
 	_use_newpx = cfg->getBoolean("use_newpx");
 	_error_rate = cfg->getUInt32("error_rate");
+	_match_this_tick = cfg->getBoolean("match_this_tick");
+
+	log_info("UFT match params: use_newpx-{}, error_rate-{}, match_this_tick-{}", _use_newpx, _error_rate, _match_this_tick);
 
 	DllHandle hInst = DLLHelper::load_library(module);
 	if (hInst == NULL)
@@ -162,7 +166,7 @@ bool UftMocker::init_uft_factory(WTSVariant* cfg)
 	return true;
 }
 
-void UftMocker::handle_tick(const char* stdCode, WTSTickData* curTick)
+void UftMocker::handle_tick(const char* stdCode, WTSTickData* curTick, bool isBarEnd /* = true */)
 {
 	on_tick(stdCode, curTick);
 }
@@ -232,25 +236,53 @@ void UftMocker::on_tick(const char* stdCode, WTSTickData* newTick)
 
 	procTask();
 	
-	if (!_orders.empty())
+	//如果开启了同tick撮合，则先触发策略的ontick，再处理订单
+	//如果没开启同tick撮合，则先处理订单，再触发策略的ontick
+	if(_match_this_tick)
 	{
-		OrderIDs ids;
-		for (auto it = _orders.begin(); it != _orders.end(); it++)
-		{
-			uint32_t localid = it->first;
-			bool bNeedErase = procOrder(localid);
-			if (bNeedErase)
-				ids.emplace_back(localid);
-		}
+		on_tick_updated(stdCode, newTick);
 
-		for(uint32_t localid : ids)
+		if (!_orders.empty())
 		{
-			auto it = _orders.find(localid);
-			_orders.erase(it);
+			OrderIDs ids;
+			for (auto it = _orders.begin(); it != _orders.end(); it++)
+			{
+				uint32_t localid = it->first;
+				bool bNeedErase = procOrder(localid);
+				if (bNeedErase)
+					ids.emplace_back(localid);
+			}
+
+			for (uint32_t localid : ids)
+			{
+				auto it = _orders.find(localid);
+				_orders.erase(it);
+			}
 		}
 	}
+	else
+	{
+		if (!_orders.empty())
+		{
+			OrderIDs ids;
+			for (auto it = _orders.begin(); it != _orders.end(); it++)
+			{
+				uint32_t localid = it->first;
+				bool bNeedErase = procOrder(localid);
+				if (bNeedErase)
+					ids.emplace_back(localid);
+			}
 
-	on_tick_updated(stdCode, newTick);
+			for (uint32_t localid : ids)
+			{
+				auto it = _orders.find(localid);
+				_orders.erase(it);
+			}
+		}
+
+		on_tick_updated(stdCode, newTick);
+	}
+	
 }
 
 void UftMocker::on_tick_updated(const char* stdCode, WTSTickData* newTick)
@@ -343,9 +375,15 @@ void UftMocker::on_session_end(uint32_t curTDate)
 		const PosInfo& pInfo = it->second;
 		total_profit += pInfo.closeprofit();
 		total_dynprofit += pInfo.dynprofit();
+
+		if (!decimal::eq(pInfo._long.volume(), 0.0))
+			_pos_logs << fmt::format("{},{},LONG,{},{:.2f},{:.2f}\n", curTDate, stdCode, pInfo._long.volume(), pInfo._long._closeprofit, pInfo._long._dynprofit);
+
+		if (!decimal::eq(pInfo._short.volume(), 0.0))
+			_pos_logs << fmt::format("{},{},LONG,{},{:.2f},{:.2f}\n", curTDate, stdCode, pInfo._short.volume(), pInfo._short._closeprofit, pInfo._short._dynprofit);
 	}
 
-	_fund_logs << StrUtil::printf("%d,%.2f,%.2f,%.2f,%.2f\n", curDate,
+	_fund_logs << fmt::format("{},{:.2f},{:.2f},{:.2f},{:.2f}\n", curDate,
 		_fund_info._total_profit, _fund_info._total_dynprofit,
 		_fund_info._total_profit + _fund_info._total_dynprofit - _fund_info._total_fees, _fund_info._total_fees);
 }
@@ -925,19 +963,13 @@ WTSCommodityInfo* UftMocker::stra_get_comminfo(const char* stdCode)
 
 WTSKlineSlice* UftMocker::stra_get_bars(const char* stdCode, const char* period, uint32_t count)
 {
-	std::string basePeriod = "";
+	thread_local static char basePeriod[2] = { 0 };
+	basePeriod[0] = period[0];
 	uint32_t times = 1;
 	if (strlen(period) > 1)
-	{
-		basePeriod.append(period, 1);
 		times = strtoul(period + 1, NULL, 10);
-	}
-	else
-	{
-		basePeriod = period;
-	}
 
-	return _replayer->get_kline_slice(stdCode, basePeriod.c_str(), count, times);
+	return _replayer->get_kline_slice(stdCode, basePeriod, count, times);
 }
 
 WTSTickSlice* UftMocker::stra_get_ticks(const char* stdCode, uint32_t count)
@@ -1079,6 +1111,11 @@ void UftMocker::dump_outputs()
 	filename = folder + "funds.csv";
 	content = "date,closeprofit,positionprofit,dynbalance,fee\n";
 	content += _fund_logs.str();
+	StdFile::write_file_content(filename.c_str(), (void*)content.c_str(), content.size());
+
+	filename = folder + "positions.csv";
+	content = "date,code,direct,volume,closeprofit,dynprofit\n";
+	if (!_pos_logs.str().empty()) content += _pos_logs.str();
 	StdFile::write_file_content(filename.c_str(), (void*)content.c_str(), content.size());
 }
 

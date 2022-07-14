@@ -29,6 +29,8 @@
     <ClInclude Include="..\Includes\RiskMonDefs.h" />
     <ClInclude Include="ActionPolicyMgr.h" />
     <ClInclude Include="EventNotifier.h" />
+    <ClInclude Include="WtDiffExecuter.h" />
+    <ClInclude Include="WtExecuterFactory.h" />
     <ClInclude Include="WtFilterMgr.h" />
     <ClInclude Include="HftStraBaseCtx.h" />
     <ClInclude Include="HftStraContext.h" />
@@ -39,7 +41,6 @@
     <ClInclude Include="ITrdNotifySink.h" />
     <ClInclude Include="SelStraBaseCtx.h" />
     <ClInclude Include="SelStraContext.h" />
-    <ClInclude Include="SelStrategyDefs.h" />
     <ClInclude Include="SelStrategyMgr.h" />
     <ClInclude Include="ParserAdapter.h" />
     <ClInclude Include="TraderAdapter.h" />
@@ -63,6 +64,8 @@
     <ClCompile Include="CtaStrategyMgr.cpp" />
     <ClCompile Include="CtaStraBaseCtx.cpp" />
     <ClCompile Include="EventNotifier.cpp" />
+    <ClCompile Include="WtDiffExecuter.cpp" />
+    <ClCompile Include="WtExecuterFactory.cpp" />
     <ClCompile Include="WtFilterMgr.cpp" />
     <ClCompile Include="HftStraBaseCtx.cpp" />
     <ClCompile Include="HftStraContext.cpp" />

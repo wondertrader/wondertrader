@@ -59,6 +59,14 @@ const char* WtHelper::getStraDataDir()
 	return folder.c_str();
 }
 
+const char* WtHelper::getExecDataDir()
+{
+	static std::string folder = StrUtil::standardisePath(_gen_dir) + "execdata/";
+	if (!StdFile::exists(folder.c_str()))
+		boost::filesystem::create_directories(folder);
+	return folder.c_str();
+}
+
 const char* WtHelper::getStraUsrDatDir()
 {
 	static std::string folder = StrUtil::standardisePath(_gen_dir) + "userdata/";
