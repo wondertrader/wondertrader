@@ -158,7 +158,9 @@ inline WTSOrderState wrapOrderState(XTP_ORDER_STATUS_TYPE orderState)
 
 inline uint32_t makeRefID()
 {
-	static std::atomic<uint32_t> auto_refid = (uint32_t)((TimeUtils::getLocalTimeNow() - TimeUtils::makeTime(20220101, 0)) / 1000 * 100);
+	static std::atomic<uint32_t> auto_refid(0);
+	if(auto_refid == 0)
+		auto_refid = (uint32_t)((TimeUtils::getLocalTimeNow() - TimeUtils::makeTime(20220101, 0)) / 1000 * 100);
 	return auto_refid.fetch_add(1);
 }
 
