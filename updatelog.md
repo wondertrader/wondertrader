@@ -1,3 +1,28 @@
+### 0.9.3
+* （**重要**）WtLocalExecuter新增一个strict_portfolio配置项，默认为关闭，如果该配置项开启，会自动平掉交易账号上不在管理中的持仓
+* （**重要**）WtExeFact新增一个差量执行单元WtDiffMinImpactExeUnit
+* （**重要**）新增一个差量执行器WtDiffExecuter
+* （**重要**）回测框架和实盘框架增加了输出每日持仓、最终的策略数据和用户数据的机制
+* （**重要**）执行器新增了一个信号路由机制，可以将指定策略的信号，通过指定的执行器进行交易
+* （**重要**）完成了对自定义连续合约的支持，并将HOT和2ND的机制与自定义连续合约规则进行了统一
+* （**重要**）完成了对连续合约复权的支持
+* （**重要**）新增了自定义指数的支持，涉及到IndexFactory和IndexWorker两个类
+* （**重要**）策略接口新增一个stra_get_rawcode用于获取连续合约对应的分月合约
+* （**重要**）新增一个获取当日价格的接口get_day_price，可以指定获取开高低收4个价格
+* （**重要**）完善了回测框架模拟tick的机制，改成同步模拟，即所有已订阅和未订阅的K线同步如果当前一根K线要闭合，则按照开高低收的顺序，统一同步模拟tick
+* 实盘框架加入滑点参数
+* CTA策略新增一个条件单触发回调接口on_condition_triggered
+* 交易接口增加了一个合约交易状态推送回报onPushInstrumentStatus
+* 扩展了策略的日志输出接口stra_log_text，可以指定日志的输出级别
+* WtDtServo新增一个按天获取tick数据的接口get_ticks_by_date和按天获取秒线的接口get_sbars_by_date；同时对接口做了一些完善
+* WtDtServo新增了一个get_bars_by_date接口，用于按交易日获取分钟线数据
+* WtExeFact完善了WtTWapExeUnit
+* 新增一个TraderDumper模块，用于将交易接口的回报往外部模块推送
+* WtExeFact增加针对股票的最小冲击算法WtStockMinImpactExeUnit
+* 完善了TraderXTP的一些细节
+* 其他细节优化和bug修正
+
+
 ### 0.9.2
 * 持续的性能优化，HFT引擎系统内延迟可以做到700ns左右（具体测试工具可以参考WtLatencyHFT）
 * UFT引擎集成ActionPolicy机制，开放buy和sell两个下单接口，简化下单接口调用方式
