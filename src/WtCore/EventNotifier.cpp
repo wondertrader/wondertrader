@@ -33,6 +33,7 @@ void on_mq_log(unsigned long id, const char* message, bool bServer)
 EventNotifier::EventNotifier()
 	: _mq_sid(0)
 	, _publisher(NULL)
+	, _stopped(false)
 {
 	
 }
@@ -40,6 +41,12 @@ EventNotifier::EventNotifier()
 
 EventNotifier::~EventNotifier()
 {
+	_stopped = true;
+	if (_worker)
+		_worker->join();
+
+	_asyncio.stop();
+
 	if (_remover && _mq_sid != 0)
 		_remover(_mq_sid);
 }
@@ -49,7 +56,7 @@ bool EventNotifier::init(WTSVariant* cfg)
 	if (!cfg->getBoolean("active"))
 		return false;
 
-	m_strURL = cfg->getCString("url");
+	_url = cfg->getCString("url");
 	std::string module = DLLHelper::wrap_module("WtMsgQue", "lib");
 	//先看工作目录下是否有对应模块
 	std::string dllpath = WtHelper::getCWD() + module;
@@ -80,74 +87,107 @@ bool EventNotifier::init(WTSVariant* cfg)
 	_register(on_mq_log);
 	
 	//创建一个MQServer
-	_mq_sid = _creator(m_strURL.c_str());
+	_mq_sid = _creator(_url.c_str());
 
-	WTSLogger::info("EventNotifier initialized with channel {}", m_strURL.c_str());
+	WTSLogger::info("EventNotifier initialized with channel {}", _url.c_str());
+
+	if (_worker == NULL)
+	{
+		boost::asio::io_service::work work(_asyncio);
+		_worker.reset(new StdThread([this]() {
+			while (!_stopped)
+			{
+				std::this_thread::sleep_for(std::chrono::milliseconds(2));
+				_asyncio.run_one();
+				//m_asyncIO.run();
+			}
+		}));
+	}
 
 	return true;
 }
 
 void EventNotifier::notifyLog(const char* tag, const char* message)
 {
-	std::string data;
-	{
-		rj::Document root(rj::kObjectType);
-		rj::Document::AllocatorType &allocator = root.GetAllocator();
+	if (_mq_sid == 0)
+		return;
 
-		root.AddMember("tag", rj::Value(tag, allocator), allocator);
-		root.AddMember("time", TimeUtils::getLocalTimeNow(), allocator);
-		root.AddMember("message", rj::Value(message, allocator), allocator);
+	std::string strTag = tag;
+	std::string strMsg = message;
+	_asyncio.post([this, strTag, strMsg]() {
+		std::string data;
+		{
+			rj::Document root(rj::kObjectType);
+			rj::Document::AllocatorType &allocator = root.GetAllocator();
 
-		rj::StringBuffer sb;
-		rj::PrettyWriter<rj::StringBuffer> writer(sb);
-		root.Accept(writer);
+			root.AddMember("tag", rj::Value(strTag.c_str(), allocator), allocator);
+			root.AddMember("time", TimeUtils::getLocalTimeNow(), allocator);
+			root.AddMember("message", rj::Value(strMsg.c_str(), allocator), allocator);
 
-		data = sb.GetString();
-	}
+			rj::StringBuffer sb;
+			rj::PrettyWriter<rj::StringBuffer> writer(sb);
+			root.Accept(writer);
 
-	if (_publisher)
-		_publisher(_mq_sid, "LOG", data.c_str(), (unsigned long)data.size());
+			data = sb.GetString();
+		}
+
+		if (_publisher)
+			_publisher(_mq_sid, "LOG", data.c_str(), (unsigned long)data.size());
+	});
 }
 
 void EventNotifier::notifyEvent(const char* message)
 {
-	std::string data;
-	{
-		rj::Document root(rj::kObjectType);
-		rj::Document::AllocatorType &allocator = root.GetAllocator();
+	if (_mq_sid == 0)
+		return;
 
-		root.AddMember("time", TimeUtils::getLocalTimeNow(), allocator);
-		root.AddMember("message", rj::Value(message, allocator), allocator);
+	std::string strMsg = message;
+	_asyncio.post([this, strMsg]() {
+		std::string data;
+		{
+			rj::Document root(rj::kObjectType);
+			rj::Document::AllocatorType &allocator = root.GetAllocator();
 
-		rj::StringBuffer sb;
-		rj::PrettyWriter<rj::StringBuffer> writer(sb);
-		root.Accept(writer);
+			root.AddMember("time", TimeUtils::getLocalTimeNow(), allocator);
+			root.AddMember("message", rj::Value(strMsg.c_str(), allocator), allocator);
 
-		data = sb.GetString();
-	}
-	if (_publisher)
-		_publisher(_mq_sid, "GRP_EVENT", data.c_str(), (unsigned long)data.size());
+			rj::StringBuffer sb;
+			rj::PrettyWriter<rj::StringBuffer> writer(sb);
+			root.Accept(writer);
+
+			data = sb.GetString();
+		}
+		if (_publisher)
+			_publisher(_mq_sid, "GRP_EVENT", data.c_str(), (unsigned long)data.size());
+	});
 }
 
 void EventNotifier::notify(const char* trader, const char* message)
 {
-	std::string data;
-	{
-		rj::Document root(rj::kObjectType);
-		rj::Document::AllocatorType &allocator = root.GetAllocator();
+	if (_mq_sid == 0)
+		return;
 
-		root.AddMember("trader", rj::Value(trader, allocator), allocator);
-		root.AddMember("time", TimeUtils::getLocalTimeNow(), allocator);
-		root.AddMember("message", rj::Value(message, allocator), allocator);
+	std::string strTrader = trader;
+	std::string strMsg = message;
+	_asyncio.post([this, strTrader, strMsg]() {
+		std::string data;
+		{
+			rj::Document root(rj::kObjectType);
+			rj::Document::AllocatorType &allocator = root.GetAllocator();
 
-		rj::StringBuffer sb;
-		rj::PrettyWriter<rj::StringBuffer> writer(sb);
-		root.Accept(writer);
+			root.AddMember("trader", rj::Value(strTrader.c_str(), allocator), allocator);
+			root.AddMember("time", TimeUtils::getLocalTimeNow(), allocator);
+			root.AddMember("message", rj::Value(strMsg.c_str(), allocator), allocator);
 
-		data = sb.GetString();
-	}
-	if (_publisher)
-		_publisher(_mq_sid, "TRD_NOTIFY", data.c_str(), (unsigned long)data.size());
+			rj::StringBuffer sb;
+			rj::PrettyWriter<rj::StringBuffer> writer(sb);
+			root.Accept(writer);
+
+			data = sb.GetString();
+		}
+		if (_publisher)
+			_publisher(_mq_sid, "TRD_NOTIFY", data.c_str(), (unsigned long)data.size());
+	});
 }
 
 void EventNotifier::notify(const char* trader, uint32_t localid, const char* stdCode, WTSTradeInfo* trdInfo)
@@ -155,10 +195,16 @@ void EventNotifier::notify(const char* trader, uint32_t localid, const char* std
 	if (trdInfo == NULL || _mq_sid == 0)
 		return;
 
-	std::string data;
-	tradeToJson(trader, localid, stdCode, trdInfo, data);
-	if (_publisher)
-		_publisher(_mq_sid, "TRD_TRADE", data.c_str(), (unsigned long)data.size());
+	std::string strTrader = trader;
+	std::string strCode = stdCode;
+	trdInfo->retain();
+	_asyncio.post([this, strTrader, strCode, localid, trdInfo]() {
+		std::string data;
+		tradeToJson(strTrader.c_str(), localid, strCode.c_str(), trdInfo, data);
+		if (_publisher)
+			_publisher(_mq_sid, "TRD_TRADE", data.c_str(), (unsigned long)data.size());
+		trdInfo->release();
+	});
 }
 
 void EventNotifier::notify(const char* trader, uint32_t localid, const char* stdCode, WTSOrderInfo* ordInfo)
@@ -166,10 +212,17 @@ void EventNotifier::notify(const char* trader, uint32_t localid, const char* std
 	if (ordInfo == NULL || _mq_sid == 0)
 		return;
 
-	std::string data;
-	orderToJson(trader, localid, stdCode, ordInfo, data);
-	if (_publisher)
-		_publisher(_mq_sid, "TRD_ORDER", data.c_str(), (unsigned long)data.size());
+	std::string strTrader = trader;
+	std::string strCode = stdCode;
+	ordInfo->retain();
+	_asyncio.post([this, strTrader, strCode, localid, ordInfo]() {
+		std::string data;
+		orderToJson(strTrader.c_str(), localid, strCode.c_str(), ordInfo, data);
+		if (_publisher)
+			_publisher(_mq_sid, "TRD_ORDER", data.c_str(), (unsigned long)data.size());
+	});
+
+	
 }
 
 void EventNotifier::tradeToJson(const char* trader, uint32_t localid, const char* stdCode, WTSTradeInfo* trdInfo, std::string& output)
