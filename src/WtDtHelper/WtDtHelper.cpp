@@ -427,11 +427,11 @@ void trans_csv_bars(WtString csvFolder, WtString binFolder, WtString period, Fun
 			bs.settle = reader.get_double("settle");
 			bars.emplace_back(bs);
 
-			if (bars.size() % 1000 == 0)
-			{
-				if (cbLogger)
-					cbLogger(StrUtil::printf("已读取数据%u条", bars.size()).c_str());
-			}
+			// if (bars.size() % 1000 == 0)
+			// {
+			// 	if (cbLogger)
+			// 		cbLogger(StrUtil::printf("已读取数据%u条", bars.size()).c_str());
+			// }
 		}
 		if (cbLogger)
 			cbLogger(StrUtil::printf("数据文件%s全部读取完成,共%u条", path.c_str(), bars.size()).c_str());
