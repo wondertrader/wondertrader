@@ -7,7 +7,6 @@
  *
  * \brief
  */
-
 #include "TraderMAOpt.h"
 
 #include "../Includes/WTSError.hpp"
