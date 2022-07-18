@@ -2,7 +2,7 @@
  * \file TraderMAOpt.cpp
  * \project	WonderTrader
  *
- * \author Suuuunseeker
+ * \author 
  * \date 2022/07/13
  *
  * \brief
