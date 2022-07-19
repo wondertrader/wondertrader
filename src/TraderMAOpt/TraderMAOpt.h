@@ -3,10 +3,11 @@
  * \project	WonderTrader
  *
  * \author Wesley
- * \date 2020/03/30
+ * \date 2022/07/13
  *
  * \brief
  */
+ 
 #pragma once
 
 #include <string>
@@ -27,14 +28,58 @@
 #include "../Share/WtKVCache.hpp"
 
 
- // 证券业务
+ // 用户角色
+typedef enum
+{
+	MA_CLIENT = '1',
+	MA_TELLER = '2'
+} MA_USER_ROLE;
+
+// 交易市场
+typedef enum
+{
+	MA_SZSE = '0',
+	MA_SSE
+} MA_STK_EX;
+
+// 交易板块
+typedef enum
+{
+	MA_SZSE_A = '00',
+	MA_SZSE_B = '01',
+	MA_THREE_BOARD = '02',
+	MA_SZSE_OPT = '05',
+	MA_SSE_A = '10',
+	MA_SSE_B = '11',
+	MA_SSE_OPT = '15'
+} MA_STK_BD;
+
+// 证券类别
+typedef enum
+{
+	MA_STOCK = 'A',
+	MA_ETF = 'D',
+	MA_STK_OPT = 'U'
+} MA_STK_CLS;
+
+// 货币代码
+typedef enum
+{
+	MA_RMB = '0',
+	MA_HK = '1',
+	MA_US = '2'
+} MA_CURRENCY;
+
+// 证券业务
 typedef enum
 {
 	MA_BuyOpen = 400,  // 买开
 	MA_SellClose,	   // 卖平
 	MA_SellOpen,	  // 卖开
-	MA_BuyClose       // 买平
-} StkBiz;
+	MA_BuyClose,       // 买平
+	MA_OPT_CALL = 406,  // 认购行权
+	MA_OPT_PUT        // 认沽行权
+} MA_STK_BIZ;
 
 // 证券业务活动
 typedef enum
@@ -42,16 +87,16 @@ typedef enum
 	MA_OPT_LIMITPRICE_GFD = 130,  // 股票期权申报-限价GFD
 	MA_OPT_LIMITPRICE_FOK = 131,  // 股票期权申报-限价FOK
 	MA_OPT_ANYPRICE_FOK = 133,  // 股票期权申报-市价FOK
-	MA_OPT_ANYPRICE_ICO = 134,  // 股票期权申报-市价IOC
+	MA_OPT_ANYPRICE_IOC = 134,  // 股票期权申报-市价IOC
 	MA_OPT_ANYPRICE_LEFT_LIMIT = 132,  // 股票期权申报-市价剩转限价GFD
 	MA_ORDER = 100,  // 委托申报
-	MA_DRAWORDER = 101,  // 撤单申报
+	MA_CANCEL_ORDER = 101,  // 撤单申报
 	MA_BESTFIVELEVELPRICE = 121,  // 市价最优五档即时成交剩余撤销
 	MA_MARKEPRICE_ALLORDRAW = 122,  // 市价全额成交或撤销
-	MA_BESTPRICE_THISSIDE = 123,  // 市价本方最优价格
-	MA_BESTPRICE_OTHERSIDE = 124,  // 市价对手方最优价格
-	MA_MARKETPRICE_LEFTDRAW = 125  // 市价即时成交剩余撤销
-} STtkBizAction;
+	MA_BESTPRICE_THIS_SIDE = 123,  // 市价本方最优价格
+	MA_BESTPRICE_OTHER_SIDE = 124,  // 市价对手方最优价格
+	MA_MARKETPRICE_LEFT_CANCEL = 125  // 市价即时成交剩余撤销
+} MA_STK_BIZ_ACTION;
 
 typedef enum
 {
@@ -65,15 +110,16 @@ typedef enum
 {
 	MA_ORDER_CANCEL = 'T',  // 撤单
 	MA_ORDER_NORMAL = 'F'  // 正常
-} MAIsWithdraw;
+} MA_IS_WITHDRAW;
 
 // 委托有效标志
 typedef enum
 {
-	MA_ORDER_VALID = 0,  // 无效
-	MA_ORDER_INVALID = 1  // 有效
-} MAOrderValidFlag;
+	MA_ORDER_VALID = '0',  // 无效
+	MA_ORDER_INVALID = '1'  // 有效
+} MA_ORDER_VALID_FLAG;
 
+// 委托状态
 typedef enum tagOrderState
 {
 	MA_Nottouched = '0',  // 未报, 写入委托的最初阶段，该笔业务还没有到申报时间
@@ -87,8 +133,40 @@ typedef enum tagOrderState
 	MA_AllFilled, // 已成，已经成交
 	MA_Canceled, // 废单，被交易所自动撤单
 	MA_ToSubmit = 'A', // 待报，写入报盘队列未成功
-
+	MA_OFFER_CONFIRM = 'B'  // 报盘机确认
 }  MAOrderState;
+
+// 持仓方向
+typedef enum
+{
+	MA_LONG = 'L',   // 权力仓
+	MA_SHORT = 'S',  // 义务仓
+	MA_COVERED_CALL = 'C'  // 备兑策略持仓
+} MA_OPT_SIDE;
+
+// 合约类型
+typedef enum
+{
+	MA_OPT_TYPE_CALL = 'C',  // 认购
+	MA_OPT_TYPE_PUT = 'P'  // 认沽
+} MA_OPT_TYPE;
+
+// 结算单类型
+typedef enum
+{
+	MA_DAY_SETTLEMENT = 'D',  // 日结算单
+	MA_MONTH_SETTLEMENT = 'M',  // 月结算单
+	MA_TEMP_SETTLEMENT = 'T'  // 临时结算单
+} MA_SETT_LIST_TYPE;
+
+// 冲销状态
+typedef enum
+{
+	MA_CANCEL_NORMAL = '0',  // 正常
+	MA_CANCEL_LOCKED,  // 被冲锁定
+	MA_CANCELED,  // 已被冲销
+	MA_FZN_CANCEL  // 已冻结取消
+} MA_CANCEL_STATUS;
 
 
 USE_NAMESPACE_MACLI
@@ -185,7 +263,6 @@ public:
 	// 个股期权合约账户查询响应
 	virtual int OnRspQryAcct(CFirstSetField* p_pFirstSetField, CRspOptAcctField* p_pRspField, LONGLONG p_llRequestId, int p_iFieldNum, int p_iFieldIndex) override;
 
-
 	// 个股期权委托撤单响应
 	virtual int OnRspCancelOrder(CFirstSetField* p_pFirstSetField, CRspOptCancelOrderField* p_pRspField, LONGLONG p_llRequestId, int p_iFieldNum, int p_iFieldIndex) override;
 
@@ -212,10 +289,10 @@ public:
 
 	/////////////////// 自定义接口
 	// 资金账户查询
-	int OnRspQryTradingAccount(void);
+	int RspQryTradingAccount(void);
 
 	// 持仓查询
-	int OnRspQryPosition(void);
+	int RspQryPosition();
 
 protected:
 	/*
@@ -228,31 +305,29 @@ protected:
 	WTSOrderInfo*	makeOrderInfo(CRtnOptOrderField* orderField);
 	WTSOrderInfo*   makeOrderInfo(CRspOptCurrDayOrderField* daiOrderField);
 	//WTSOrderInfo*   makeOrderInfo(CRspOptCancelOrderField* cancelOrderField);
-	//WTSEntrust*		makeEntrust(CThostFtdcInputOrderField *entrustField);
+	WTSEntrust*		makeEntrust(CReqOptOrderField  *entrustField);
 	//WTSError*		makeError(CThostFtdcRspInfoField* rspInfo);
 	WTSTradeInfo*	makeTradeRecord(CRtnOptOrderFillField *tradeField);
 	WTSTradeInfo*   makeTradeRecord(CRspOptCurrDayFillField *dayTradeField);
-	//WTSEntrust*		makeEntrust(CThostFtdcInputExecOrderField *entrustField);
+	WTSEntrust*		makeEntrust(CRtnOptOrderFillField  *entrustField);
 
-	//void			generateEntrustID(char* buffer, uint32_t frontid, uint32_t sessionid, uint32_t orderRef);
-	//bool			extractEntrustID(const char* entrustid, uint32_t &frontid, uint32_t &sessionid, uint32_t &orderRef);
+	void			generateEntrustID(char* buffer, long long ll_cust_code, long long ll_cuacct_code, int order_bsn);
+	bool			extractEntrustID(const char* entrustid, long long &ll_cust_code, long long &ll_cuacct_code, int &order_bsn);
 
 	uint32_t		genRequestID();
 
 protected:
-	//std::string		m_strBroker;
-	//std::string		m_strFront;
-
 	int64_t			m_llCustCode;  // 客户代码
-	int64_t			m_llCuacctCode;
+	int64_t			m_llCuacctCode;  // 资金户代码
 	int				m_iInitOrg;  // 机构代码
-	std::string		m_strchChannel;  // 操作渠道
+	std::string		m_strChannel;  // 操作渠道
 
 	std::string		m_strHost;  // IP地址
 	int				m_iPort;  // 端口
 
 	std::string		m_strUser;
 	std::string		m_strPass;
+	std::string		m_strTrdAcct;  // 交易账户
 
 	std::string		m_strAuthData;
 	std::string		m_strEncryptKey;
@@ -261,7 +336,9 @@ protected:
 	std::string		m_strAuthType;
 	std::string		m_strEncryptType;
 	std::string		m_strAcctType;
-	std::string		m_strChannel;
+
+	std::string		m_strStkBD;  // 交易板块
+	std::string		m_strStkPBU;  // 交易单元
 
 	ITraderSpi*		m_bscSink;
 	IOptTraderSpi*	m_optSink;
