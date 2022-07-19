@@ -58,7 +58,7 @@ void MatchEngine::match_orders(WTSTickData* curTick, OrderIDs& to_erase)
 
 			to_erase.emplace_back(localid);
 
-			WTSLogger::info_f("订单{}已撤销, 剩余数量: {}", localid, ordInfo._left*(ordInfo._buy ? 1 : -1));
+			WTSLogger::info("订单{}已撤销, 剩余数量: {}", localid, ordInfo._left*(ordInfo._buy ? 1 : -1));
 			ordInfo._left = 0;
 			continue;
 		}

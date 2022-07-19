@@ -37,7 +37,7 @@ WtDtRunner::~WtDtRunner()
 {
 }
 
-void WtDtRunner::initialize(const char* cfgFile, bool isFile /* = true */, const char* modDir /* = "" */)
+void WtDtRunner::initialize(const char* cfgFile, bool isFile /* = true */, const char* modDir /* = "" */, const char* logCfg /* = "logcfg.yaml" */)
 {
 	if(_is_inited)
 	{
@@ -45,7 +45,7 @@ void WtDtRunner::initialize(const char* cfgFile, bool isFile /* = true */, const
 		return;
 	}
 
-	WTSLogger::init();
+	WTSLogger::init(logCfg);
 	WtHelper::set_module_dir(modDir);
 
 	WTSVariant* config = isFile ? WTSCfgLoader::load_from_file(cfgFile, true) : WTSCfgLoader::load_from_content(cfgFile, false, true);
@@ -139,21 +139,15 @@ WTSKlineSlice* WtDtRunner::get_bars_by_range(const char* stdCode, const char* pe
 		return NULL;
 	}
 
-	std::string basePeriod = "";
+	thread_local static char basePeriod[2] = { 0 };
+	basePeriod[0] = period[0];
 	uint32_t times = 1;
 	if (strlen(period) > 1)
-	{
-		basePeriod.append(period, 1);
 		times = strtoul(period + 1, NULL, 10);
-	}
-	else
-	{
-		basePeriod = period;
-	}
 
 	WTSKlinePeriod kp;
 	uint32_t realTimes = times;
-	if (strcmp(basePeriod.c_str(), "m") == 0)
+	if (basePeriod[0] == 'm')
 	{
 		if (times % 5 == 0)
 		{
@@ -178,6 +172,48 @@ WTSKlineSlice* WtDtRunner::get_bars_by_range(const char* stdCode, const char* pe
 	return _data_mgr.get_kline_slice_by_range(stdCode, kp, realTimes, beginTime, endTime);
 }
 
+WTSKlineSlice* WtDtRunner::get_bars_by_date(const char* stdCode, const char* period, uint32_t uDate /* = 0 */)
+{
+	if (!_is_inited)
+	{
+		WTSLogger::error("WtDtServo not initialized");
+		return NULL;
+	}
+
+	thread_local static char basePeriod[2] = { 0 };
+	basePeriod[0] = period[0];
+	uint32_t times = 1;
+	if (strlen(period) > 1)
+		times = strtoul(period + 1, NULL, 10);
+
+	WTSKlinePeriod kp;
+	uint32_t realTimes = times;
+	if (basePeriod[0] == 'm')
+	{
+		if (times % 5 == 0)
+		{
+			kp = KP_Minute5;
+			realTimes /= 5;
+		}
+		else
+		{
+			kp = KP_Minute1;
+		}
+	}
+	else
+	{
+		WTSLogger::log_raw(LL_ERROR, "get_bars_by_date only supports minute period");
+		return NULL;
+	}
+
+	if (uDate == 0)
+	{
+		uDate = TimeUtils::getCurDate();
+	}
+
+	return _data_mgr.get_kline_slice_by_date(stdCode, kp, realTimes, uDate);
+}
+
 WTSTickSlice* WtDtRunner::get_ticks_by_range(const char* stdCode, uint64_t beginTime, uint64_t endTime /* = 0 */)
 {
 	if (!_is_inited)
@@ -195,6 +231,17 @@ WTSTickSlice* WtDtRunner::get_ticks_by_range(const char* stdCode, uint64_t begin
 	return _data_mgr.get_tick_slices_by_range(stdCode, beginTime, endTime);
 }
 
+WTSTickSlice* WtDtRunner::get_ticks_by_date(const char* stdCode, uint32_t uDate /* = 0 */)
+{
+	if (!_is_inited)
+	{
+		WTSLogger::error("WtDtServo not initialized");
+		return NULL;
+	}
+
+	return _data_mgr.get_tick_slice_by_date(stdCode, uDate);
+}
+
 WTSKlineSlice* WtDtRunner::get_bars_by_count(const char* stdCode, const char* period, uint32_t count, uint64_t endTime /* = 0 */)
 {
 	if (!_is_inited)
@@ -203,21 +250,15 @@ WTSKlineSlice* WtDtRunner::get_bars_by_count(const char* stdCode, const char* pe
 		return NULL;
 	}
 
-	std::string basePeriod = "";
+	thread_local static char basePeriod[2] = { 0 };
+	basePeriod[0] = period[0];
 	uint32_t times = 1;
 	if (strlen(period) > 1)
-	{
-		basePeriod.append(period, 1);
 		times = strtoul(period + 1, NULL, 10);
-	}
-	else
-	{
-		basePeriod = period;
-	}
 
 	WTSKlinePeriod kp;
 	uint32_t realTimes = times;
-	if (strcmp(basePeriod.c_str(), "m") == 0)
+	if (basePeriod[0] == 'm')
 	{
 		if (times % 5 == 0)
 		{
@@ -256,5 +297,16 @@ WTSTickSlice* WtDtRunner::get_ticks_by_count(const char* stdCode, uint32_t count
 		TimeUtils::getDateTime(curDate, curTime);
 		endTime = (uint64_t)curDate * 10000 + curTime;
 	}
-	return _data_mgr.get_tick_slices_by_count(stdCode, count, endTime);
+	return _data_mgr.get_tick_slice_by_count(stdCode, count, endTime);
+}
+
+WTSKlineSlice* WtDtRunner::get_sbars_by_date(const char* stdCode, uint32_t secs, uint32_t uDate /* = 0 */)
+{
+	if (!_is_inited)
+	{
+		WTSLogger::error("WtDtServo not initialized");
+		return NULL;
+	}
+
+	return _data_mgr.get_skline_slice_by_date(stdCode, secs, uDate);
 }

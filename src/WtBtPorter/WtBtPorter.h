@@ -18,7 +18,7 @@ extern "C"
 	EXPORT_FLAG	void		register_evt_callback(FuncEventCallback cbEvt);
 
 	EXPORT_FLAG	void		register_cta_callbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, 
-		FuncStraBarCallback cbBar, FuncSessionEvtCallback cbSessEvt, FuncStraCalcCallback cbCalcDone);
+		FuncStraBarCallback cbBar, FuncSessionEvtCallback cbSessEvt, FuncStraCalcCallback cbCalcDone, FuncStraCondTriggerCallback cbCondTrigger = NULL);
 
 	EXPORT_FLAG	void		register_sel_callbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, 
 		FuncStraBarCallback cbBar, FuncSessionEvtCallback cbSessEvt, FuncStraCalcCallback cbCalcDone);
@@ -61,6 +61,8 @@ extern "C"
 
 	EXPORT_FLAG	void		stop_backtest();
 
+	EXPORT_FLAG	WtString	get_raw_stdcode(const char* stdCode);
+
 
 	//////////////////////////////////////////////////////////////////////////
 	//CTA²ßÂÔ½Ó¿Ú
@@ -89,6 +91,8 @@ extern "C"
 
 	EXPORT_FLAG	double 		cta_get_price(const char* stdCode);
 
+	EXPORT_FLAG	double 		cta_get_day_price(const char* stdCode, int flag);
+
 	EXPORT_FLAG	double		cta_get_fund_data(CtxHandler cHandle, int flag);
 
 	EXPORT_FLAG	WtUInt32 	cta_get_tdate();
@@ -111,7 +115,7 @@ extern "C"
 
 	EXPORT_FLAG	double		cta_get_last_enterprice(CtxHandler cHandle, const char* stdCode);
 
-	EXPORT_FLAG	void		cta_log_text(CtxHandler cHandle, const char* message);
+	EXPORT_FLAG	void		cta_log_text(CtxHandler cHandle, WtUInt32 level, const char* message);
 
 	EXPORT_FLAG	void		cta_save_userdata(CtxHandler cHandle, const char* key, const char* val);
 
@@ -141,7 +145,7 @@ extern "C"
 
 	EXPORT_FLAG void		sel_get_all_position(CtxHandler cHandle, FuncGetPositionCallback cb);
 
-	EXPORT_FLAG	void		sel_log_text(CtxHandler cHandle, const char* message);
+	EXPORT_FLAG	void		sel_log_text(CtxHandler cHandle, WtUInt32 level, const char* message);
 
 	EXPORT_FLAG	void		sel_save_userdata(CtxHandler cHandle, const char* key, const char* val);
 
@@ -157,6 +161,8 @@ extern "C"
 	EXPORT_FLAG	double		hft_get_position(CtxHandler cHandle, const char* stdCode, bool bOnlyValid);
 
 	EXPORT_FLAG	double		hft_get_position_profit(CtxHandler cHandle, const char* stdCode);
+
+	EXPORT_FLAG	double		hft_get_position_avgpx(CtxHandler cHandle, const char* stdCode);
 
 	EXPORT_FLAG	double		hft_get_undone(CtxHandler cHandle, const char* stdCode);
 
@@ -178,7 +184,7 @@ extern "C"
 
 	EXPORT_FLAG	WtUInt32	hft_get_trans(CtxHandler cHandle, const char* stdCode, WtUInt32 tickCnt, FuncGetTransCallback cb);
 
-	EXPORT_FLAG	void		hft_log_text(CtxHandler cHandle, const char* message);
+	EXPORT_FLAG	void		hft_log_text(CtxHandler cHandle, WtUInt32 level, const char* message);
 
 	EXPORT_FLAG	void		hft_sub_ticks(CtxHandler cHandle, const char* stdCode);
 

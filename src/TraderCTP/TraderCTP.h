@@ -132,6 +132,8 @@ public:
 
 	virtual void OnErrRtnOrderInsert(CThostFtdcInputOrderField *pInputOrder, CThostFtdcRspInfoField *pRspInfo) override;
 
+	virtual void OnRtnInstrumentStatus(CThostFtdcInstrumentStatusField *pInstrumentStatus) override;
+
 private:
 	/*
 	*	检查错误信息
@@ -186,8 +188,8 @@ protected:
 	uint64_t		m_uLastQryTime;
 
 	uint32_t					m_lDate;
-	TThostFtdcFrontIDType		m_frontID;		//前置编号
-	TThostFtdcSessionIDType		m_sessionID;	//会话编号
+	uint32_t					m_frontID;		//前置编号
+	uint32_t					m_sessionID;	//会话编号
 	std::atomic<uint32_t>		m_orderRef;		//报单引用
 
 	WrapperState				m_wrapperState;

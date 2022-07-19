@@ -1182,7 +1182,7 @@ private:
 	uint32_t		_count;
 
 protected:
-	WTSTickSlice(){}
+	WTSTickSlice() { _blocks.clear(); }
 	inline int32_t		translateIdx(int32_t idx) const
 	{
 		if (idx < 0)

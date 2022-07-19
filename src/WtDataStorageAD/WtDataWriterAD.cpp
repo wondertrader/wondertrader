@@ -7,7 +7,6 @@
 #include "../Includes/WTSVariant.hpp"
 #include "../Share/BoostFile.hpp"
 #include "../Share/StrUtil.hpp"
-#include "../Share/IniHelper.hpp"
 #include "../Share/decimal.h"
 
 #include "../Includes/IBaseDataMgr.h"

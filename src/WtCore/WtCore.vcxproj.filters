@@ -90,9 +90,6 @@
     <ClInclude Include="SelStraContext.h">
       <Filter>SEL</Filter>
     </ClInclude>
-    <ClInclude Include="SelStrategyDefs.h">
-      <Filter>SEL</Filter>
-    </ClInclude>
     <ClInclude Include="SelStrategyMgr.h">
       <Filter>SEL</Filter>
     </ClInclude>
@@ -149,6 +146,12 @@
     </ClInclude>
     <ClInclude Include="WtDtMgr.h">
       <Filter>Datas</Filter>
+    </ClInclude>
+    <ClInclude Include="WtDiffExecuter.h">
+      <Filter>Exec</Filter>
+    </ClInclude>
+    <ClInclude Include="WtExecuterFactory.h">
+      <Filter>Exec</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -229,6 +232,12 @@
     </ClCompile>
     <ClCompile Include="WtDtMgr.cpp">
       <Filter>Datas</Filter>
+    </ClCompile>
+    <ClCompile Include="WtDiffExecuter.cpp">
+      <Filter>Exec</Filter>
+    </ClCompile>
+    <ClCompile Include="WtExecuterFactory.cpp">
+      <Filter>Exec</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

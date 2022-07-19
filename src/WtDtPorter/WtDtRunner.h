@@ -15,6 +15,7 @@
 #include "../WtDtCore/ParserAdapter.h"
 #include "../WtDtCore/StateMonitor.h"
 #include "../WtDtCore/UDPCaster.h"
+#include "../WtDtCore/IndexFactory.h"
 
 #include "../WTSTools/WTSHotMgr.h"
 #include "../WTSTools/WTSBaseDataMgr.h"
@@ -78,11 +79,12 @@ private:
 private:
 
 	WTSBaseDataMgr	_bd_mgr;
-//	WTSHotMgr		_hot_mgr;
+	WTSHotMgr		_hot_mgr;
 	boost::asio::io_service _async_io;
 	StateMonitor	_state_mon;
 	UDPCaster		_udp_caster;
 	DataManager		_data_mgr;
+	IndexFactory	_idx_factory;
 	ParserAdapterMgr	_parsers;
 
 	FuncParserEvtCallback	_cb_parser_evt;

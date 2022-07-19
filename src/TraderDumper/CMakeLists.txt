@@ -1,0 +1,48 @@
+#1. 确定CMake的最低版本需求
+CMAKE_MINIMUM_REQUIRED(VERSION 3.0.0)
+
+#2. 确定工程名
+PROJECT(TraderDumper LANGUAGES CXX)
+SET(CMAKE_CXX_STANDARD 11)
+
+SET(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/build_${PLATFORM}/${CMAKE_BUILD_TYPE}/bin/WtPorter)
+
+#7. 添加源码
+file(GLOB SRCS *.cpp)
+file(GLOB HDRS *.h)
+
+IF(MSVC)
+	list (APPEND SRCS ../Common/mdump.cpp)
+ENDIF()
+
+INCLUDE_DIRECTORIES(${INCS})
+LINK_DIRECTORIES(${LNKS})
+ADD_LIBRARY(TraderDumper SHARED ${SRCS} ${HDRS})
+
+SET(LIBS
+	WTSTools
+	WTSUtils
+	)
+IF(MSVC)
+ELSE(GNUCC)
+	LIST(APPEND LIBS
+		dl
+		pthread
+		boost_filesystem
+		boost_thread
+		)
+	IF(WIN32)
+		LIST(APPEND LIBS
+			ws2_32 iconv
+		)
+	ENDIF()
+ENDIF()
+
+TARGET_LINK_LIBRARIES(TraderDumper ${LIBS})
+IF (MSVC)
+ELSE (GNUCC)
+	SET_TARGET_PROPERTIES(TraderDumper PROPERTIES
+		CXX_VISIBILITY_PRESET hidden
+		VISIBILITY_INLINES_HIDDEN 1
+        LINK_FLAGS_RELEASE -s)
+ENDIF ()

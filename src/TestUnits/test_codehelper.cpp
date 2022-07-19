@@ -21,73 +21,60 @@ TEST(test_codehelper, test_raw_to_std)
 
 TEST(test_codehelper, test_extract)
 {
-	auto c = CodeHelper::extractStdCode("SSE.STK.600000-");
+	auto c = CodeHelper::extractStdCode("SSE.STK.600000-", NULL);
 	EXPECT_STREQ(c._exchg, "SSE");
 	EXPECT_STREQ(c._code, "600000");
 	EXPECT_STREQ(c._product, "STK");
 	EXPECT_TRUE(c.isExright());
 	EXPECT_EQ(c._exright, 1);
 
-	c = CodeHelper::extractStdCode("SSE.STK.600000+");
+	c = CodeHelper::extractStdCode("SSE.STK.600000+", NULL);
 	EXPECT_STREQ(c._exchg, "SSE");
 	EXPECT_STREQ(c._code, "600000");
 	EXPECT_STREQ(c._product, "STK");
 	EXPECT_TRUE(c.isExright());
 	EXPECT_EQ(c._exright, 2);
 
-	c = CodeHelper::extractStdCode("SSE.STK.600000");
+	c = CodeHelper::extractStdCode("SSE.STK.600000", NULL);
 	EXPECT_STREQ(c._exchg, "SSE");
 	EXPECT_STREQ(c._code, "600000");
 	EXPECT_STREQ(c._product, "STK");
 	EXPECT_FALSE(c.isExright());
 	EXPECT_EQ(c._exright, 0);
 
-	c = CodeHelper::extractStdCode("SSE.ETF.1108600-");
+	c = CodeHelper::extractStdCode("SSE.ETF.1108600-", NULL);
 	EXPECT_STREQ(c._exchg, "SSE");
 	EXPECT_STREQ(c._code, "1108600");
 	EXPECT_STREQ(c._product, "ETF");
 	EXPECT_TRUE(c.isExright());
 	EXPECT_EQ(c._exright, 1);
 
-	c = CodeHelper::extractStdCode("SSE.ETF.1108600+");
+	c = CodeHelper::extractStdCode("SSE.ETF.1108600+", NULL);
 	EXPECT_STREQ(c._exchg, "SSE");
 	EXPECT_STREQ(c._code, "1108600");
 	EXPECT_STREQ(c._product, "ETF");
 	EXPECT_TRUE(c.isExright());
 	EXPECT_EQ(c._exright, 2);
 
-	c = CodeHelper::extractStdCode("SSE.ETF.1108600");
+	c = CodeHelper::extractStdCode("SSE.ETF.1108600", NULL);
 	EXPECT_STREQ(c._exchg, "SSE");
 	EXPECT_STREQ(c._code, "1108600");
 	EXPECT_STREQ(c._product, "ETF");
 	EXPECT_FALSE(c.isExright());
 	EXPECT_EQ(c._exright, 0);
 
-	c = CodeHelper::extractStdCode("CFFEX.IF.2101");
+	c = CodeHelper::extractStdCode("CFFEX.IF.2101", NULL);
 	EXPECT_STREQ(c._exchg, "CFFEX");
 	EXPECT_STREQ(c._code, "IF2101");
 	EXPECT_STREQ(c._product, "IF");
-	EXPECT_FALSE(c.isHot());
-	EXPECT_FALSE(c.isSecond());
+	//EXPECT_FALSE(c.isHot());
+	//EXPECT_FALSE(c.isSecond());
 
-	c = CodeHelper::extractStdCode("CFFEX.IF.HOT");
-	EXPECT_STREQ(c._exchg, "CFFEX");
-	EXPECT_STREQ(c._code, "IF");
-	EXPECT_STREQ(c._product, "IF");
-	EXPECT_TRUE(c.isHot());
-	EXPECT_FALSE(c.isSecond());
 
-	c = CodeHelper::extractStdCode("CFFEX.IF.2ND");
-	EXPECT_STREQ(c._exchg, "CFFEX");
-	EXPECT_STREQ(c._code, "IF");
-	EXPECT_STREQ(c._product, "IF");
-	EXPECT_FALSE(c.isHot());
-	EXPECT_TRUE(c.isSecond());
-
-	c = CodeHelper::extractStdCode("BINANCE.DC.BTCUSDT");
+	c = CodeHelper::extractStdCode("BINANCE.DC.BTCUSDT", NULL);
 	EXPECT_STREQ(c._exchg, "BINANCE");
 	EXPECT_STREQ(c._code, "BTCUSDT");
 	EXPECT_STREQ(c._product, "DC");
-	EXPECT_FALSE(c.isHot());
-	EXPECT_FALSE(c.isSecond());
+	//EXPECT_FALSE(c.isHot());
+	//EXPECT_FALSE(c.isSecond());
 }

@@ -74,7 +74,7 @@ void WtDtRunner::initialize(const char* cfgFile, const char* logCfg, const char*
 	WTSVariant* config = WTSCfgLoader::load_from_file(cfgFile, true);
 	if(config == NULL)
 	{
-		WTSLogger::error_f("Loading config file {} failed", cfgFile);
+		WTSLogger::error("Loading config file {} failed", cfgFile);
 		return;
 	}
 
@@ -125,20 +125,29 @@ void WtDtRunner::initialize(const char* cfgFile, const char* logCfg, const char*
 		WTSLogger::info("Holidays loaded");
 	}
 
-    /*
-     *  By Wesley @ 2021.12.27
-     *  数据组件实际上不需要单独处理主力合约
-     */
-//	if (cfgBF->get("hot"))//	{
-//		_hot_mgr.loadHots(cfgBF->getCString("hot"));
-//		WTSLogger::info("Hot rules loaded");
-//	}
-//
-//	if (cfgBF->get("second"))
-//	{
-//		_hot_mgr.loadSeconds(cfgBF->getCString("second"));
-//		WTSLogger::info("Second rules loaded");
-//	}
+
+	if (cfgBF->get("hot"))
+	{
+		_hot_mgr.loadHots(cfgBF->getCString("hot"));
+		WTSLogger::log_raw(LL_INFO, "Hot rules loaded");
+	}
+
+	if (cfgBF->get("second"))
+	{
+		_hot_mgr.loadSeconds(cfgBF->getCString("second"));
+		WTSLogger::log_raw(LL_INFO, "Second rules loaded");
+	}
+
+	if (cfgBF->has("rules"))
+	{
+		auto cfgRules = cfgBF->get("rules");
+		auto tags = cfgRules->memberNames();
+		for (const std::string& ruleTag : tags)
+		{
+			_hot_mgr.loadCustomRules(ruleTag.c_str(), cfgRules->getCString(ruleTag.c_str()));
+			WTSLogger::info("{} rules loaded from {}", ruleTag, cfgRules->getCString(ruleTag.c_str()));
+		}
+	}
 
 	_udp_caster.init(config->get("broadcaster"), &_bd_mgr, &_data_mgr);
 
@@ -155,6 +164,23 @@ void WtDtRunner::initialize(const char* cfgFile, const char* logCfg, const char*
 	}
 
 	initDataMgr(config->get("writer"), bAlldayMode);
+
+	if (config->has("index"))
+	{
+		//如果存在指数模块要，配置指数
+		const char* filename = config->getCString("index");
+		WTSLogger::info("Reading index config from {}...", filename);
+		WTSVariant* var = WTSCfgLoader::load_from_file(filename, isUTF8);
+		if (var)
+		{
+			_idx_factory.init(var, &_hot_mgr, &_bd_mgr, &_data_mgr);
+			var->release();
+		}
+		else
+		{
+			WTSLogger::error("Loading index config {} failed", filename);
+		}
+	}
 
 	if (config->has("parsers"))
 		initParsers(config->getCString("parsers"));
@@ -174,7 +200,7 @@ void WtDtRunner::initParsers(const char* filename)
 	WTSVariant* config = WTSCfgLoader::load_from_file(filename, true);
 	if(config == NULL)
 	{
-		WTSLogger::error_f("Loading parser file {} failed", filename);
+		WTSLogger::error("Loading parser file {} failed", filename);
 		return;
 	}
 
@@ -197,12 +223,12 @@ void WtDtRunner::initParsers(const char* filename)
 			realid = StrUtil::printf("auto_parser_%u", auto_parserid++);
 		}
 		
-		ParserAdapterPtr adapter(new ParserAdapter(&_bd_mgr, &_data_mgr));
+		ParserAdapterPtr adapter(new ParserAdapter(&_bd_mgr, &_data_mgr, &_idx_factory));
 		adapter->init(realid.c_str(), cfgItem);
 		_parsers.addAdapter(realid.c_str(), adapter);
 	}
 
-	WTSLogger::info("%u market data parsers loaded in total", _parsers.size());
+	WTSLogger::info("{} market data parsers loaded in total", _parsers.size());
 	config->release();
 }
 
@@ -262,17 +288,17 @@ void WtDtRunner::on_ext_parser_quote(const char* id, WTSTickStruct* curTick, uin
 	}
 	else
 	{
-		WTSLogger::warn_f("Parser {} not exists", id);
+		WTSLogger::warn("Parser {} not exists", id);
 	}
 }
 
 bool WtDtRunner::createExtParser(const char* id)
 {
-	ParserAdapterPtr adapter(new ParserAdapter(&_bd_mgr, &_data_mgr));
+	ParserAdapterPtr adapter(new ParserAdapter(&_bd_mgr, &_data_mgr, &_idx_factory));
 	ExpParser* parser = new ExpParser(id);
 	adapter->initExt(id, parser);
 	_parsers.addAdapter(id, adapter);
-	WTSLogger::info("Extended parser %s created", id);
+	WTSLogger::info("Extended parser {} created", id);
 	return true;
 }
 
@@ -285,7 +311,7 @@ bool WtDtRunner::createExtDumper(const char* id)
 
 	_data_mgr.add_ext_dumper(id, dumper.get());
 
-	WTSLogger::info("Extended dumper %s created", id);
+	WTSLogger::info("Extended dumper {} created", id);
 	return true;
 }
 

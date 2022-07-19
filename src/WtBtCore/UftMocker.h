@@ -54,7 +54,7 @@ private:
 public:
 	//////////////////////////////////////////////////////////////////////////
 	//IDataSink
-	virtual void	handle_tick(const char* stdCode, WTSTickData* curTick) override;
+	virtual void	handle_tick(const char* stdCode, WTSTickData* curTick, bool isBarEnd = true) override;
 	virtual void	handle_order_queue(const char* stdCode, WTSOrdQueData* curOrdQue) override;
 	virtual void	handle_order_detail(const char* stdCode, WTSOrdDtlData* curOrdDtl) override;
 	virtual void	handle_transaction(const char* stdCode, WTSTransData* curTrans) override;
@@ -218,6 +218,7 @@ private:
 
 	bool			_use_newpx;
 	uint32_t		_error_rate;
+	bool			_match_this_tick;	//是否在当前tick撮合
 
 	typedef faster_hashmap<std::string, double> PriceMap;
 	PriceMap		_price_map;
@@ -339,6 +340,7 @@ private:
 	std::stringstream	_trade_logs;
 	std::stringstream	_close_logs;
 	std::stringstream	_fund_logs;
+	std::stringstream	_pos_logs;
 
 	typedef struct _StraFundInfo
 	{

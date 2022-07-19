@@ -43,9 +43,9 @@ void register_evt_callback(FuncEventCallback cbEvt)
 }
 
 void register_cta_callbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, 
-	FuncStraBarCallback cbBar, FuncSessionEvtCallback cbSessEvt, FuncStraCalcCallback cbCalcDone/* = NULL*/)
+	FuncStraBarCallback cbBar, FuncSessionEvtCallback cbSessEvt, FuncStraCalcCallback cbCalcDone/* = NULL*/, FuncStraCondTriggerCallback cbCondTrigger)
 {
-	getRunner().registerCtaCallbacks(cbInit, cbTick, cbCalc, cbBar, cbSessEvt, cbCalcDone);
+	getRunner().registerCtaCallbacks(cbInit, cbTick, cbCalc, cbBar, cbSessEvt, cbCalcDone, cbCondTrigger);
 }
 
 void register_sel_callbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, 
@@ -124,6 +124,11 @@ void stop_backtest()
 void release_backtest()
 {
 	getRunner().release();
+}
+
+WtString get_raw_stdcode(const char* stdCode)
+{
+	return getRunner().get_raw_stdcode(stdCode);
 }
 
 const char* get_version()
@@ -395,6 +400,11 @@ double cta_get_price(const char* stdCode)
 	return getRunner().replayer().get_cur_price(stdCode);
 }
 
+double cta_get_day_price(const char* stdCode, int flag)
+{
+	return getRunner().replayer().get_day_price(stdCode, flag);
+}
+
 WtUInt32 cta_get_tdate()
 {
 	return getRunner().replayer().get_trading_date();
@@ -410,13 +420,29 @@ WtUInt32 cta_get_time()
 	return getRunner().replayer().get_min_time();
 }
 
-void cta_log_text(CtxHandler cHandle, const char* message)
+void cta_log_text(CtxHandler cHandle, WtUInt32 level, const char* message)
 {
 	CtaMocker* ctx = getRunner().cta_mocker();
 	if (ctx == NULL)
 		return;
 
-	ctx->stra_log_info(message);
+	switch(level)
+	{
+	case LOG_LEVEL_DEBUG:
+		ctx->stra_log_debug(message);
+		break;
+	case LOG_LEVEL_INFO:
+		ctx->stra_log_info(message);
+		break;
+	case LOG_LEVEL_WARN:
+		ctx->stra_log_warn(message);
+		break;
+	case LOG_LEVEL_ERROR:
+		ctx->stra_log_error(message);
+		break;
+	default:
+		break;
+	}
 }
 
 void cta_save_userdata(CtxHandler cHandle, const char* key, const char* val)
@@ -480,13 +506,29 @@ WtString sel_load_userdata(CtxHandler cHandle, const char* key, const char* defV
 	return ctx->stra_load_user_data(key, defVal);
 }
 
-void sel_log_text(CtxHandler cHandle, const char* message)
+void sel_log_text(CtxHandler cHandle, WtUInt32 level, const char* message)
 {
 	SelMocker* ctx = getRunner().sel_mocker();
 	if (ctx == NULL)
 		return;
 
-	ctx->stra_log_info(message);
+	switch (level)
+	{
+	case LOG_LEVEL_DEBUG:
+		ctx->stra_log_debug(message);
+		break;
+	case LOG_LEVEL_INFO:
+		ctx->stra_log_info(message);
+		break;
+	case LOG_LEVEL_WARN:
+		ctx->stra_log_warn(message);
+		break;
+	case LOG_LEVEL_ERROR:
+		ctx->stra_log_error(message);
+		break;
+	default:
+		break;
+	}
 }
 
 double sel_get_price(const char* stdCode)
@@ -623,6 +665,16 @@ double hft_get_position_profit(CtxHandler cHandle, const char* stdCode)
 
 	return mocker->stra_get_position_profit(stdCode);
 }
+
+double hft_get_position_avgpx(CtxHandler cHandle, const char* stdCode)
+{
+	HftMocker* mocker = getRunner().hft_mocker();
+	if (mocker == NULL)
+		return 0;
+
+	return mocker->stra_get_position_avgpx(stdCode);
+}
+
 
 double hft_get_undone(CtxHandler cHandle, const char* stdCode)
 {
@@ -787,13 +839,29 @@ WtUInt32 hft_get_trans(CtxHandler cHandle, const char* stdCode, WtUInt32 itemCnt
 	}
 }
 
-void hft_log_text(CtxHandler cHandle, const char* message)
+void hft_log_text(CtxHandler cHandle, WtUInt32 level, const char* message)
 {
-	HftMocker* mocker = getRunner().hft_mocker();
-	if (mocker == NULL)
+	HftMocker* ctx = getRunner().hft_mocker();
+	if (ctx == NULL)
 		return;
 
-	mocker->stra_log_info(message);
+	switch (level)
+	{
+	case LOG_LEVEL_DEBUG:
+		ctx->stra_log_debug(message);
+		break;
+	case LOG_LEVEL_INFO:
+		ctx->stra_log_info(message);
+		break;
+	case LOG_LEVEL_WARN:
+		ctx->stra_log_warn(message);
+		break;
+	case LOG_LEVEL_ERROR:
+		ctx->stra_log_error(message);
+		break;
+	default:
+		break;
+	}
 }
 
 void hft_sub_ticks(CtxHandler cHandle, const char* stdCode)

@@ -9,7 +9,6 @@
  */
 
 #include "../WTSTools/WTSLogger.h"
-#include "../Share/IniHelper.hpp"
 
 extern void test_hft();
 

@@ -60,8 +60,7 @@ bool ActionPolicyMgr::init(const char* filename)
 					aRule._atype = AT_CloseYestoday;
 				else 
 				{
-					//WTSLogger::error("开平策略加载失败: 未识别的开平类型%s", action);
-					WTSLogger::error("Loading action policy failed: unrecognized type %s", action);
+					WTSLogger::error("Loading action policy failed: unrecognized type {}", action);
 					continue;
 				}
 
@@ -103,8 +102,7 @@ const ActionRuleGroup& ActionPolicyMgr::getActionRules(const char* pid)
 		if (it == _rules.end())
 		{
 			it = _rules.find("default");
-			//WTSLogger::error("开平规则组%s不存在, 自动切换到默认规则组", gpName.c_str());
-			WTSLogger::error("Action policy group %s not exists, changed to default group", gpName.c_str());
+			WTSLogger::error("Action policy group {} not exists, changed to default group", gpName.c_str());
 		}
 
 		assert(it != _rules.end());

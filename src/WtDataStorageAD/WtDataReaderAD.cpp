@@ -76,7 +76,7 @@ void WtDataReaderAD::init(WTSVariant* cfg, IDataReaderSink* sink, IHisDataLoader
 
 WTSTickSlice* WtDataReaderAD::readTickSlice(const char* stdCode, uint32_t count, uint64_t etime /* = 0 */)
 {
-	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
 	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
 
@@ -100,10 +100,16 @@ WTSTickSlice* WtDataReaderAD::readTickSlice(const char* stdCode, uint32_t count,
 	uint32_t endTDate = _base_data_mgr->calcTradingDate(stdPID.c_str(), curDate, curTime, false);
 
 	std::string curCode = cInfo._code;
-	if (cInfo.isHot() && commInfo->isFuture())
-		curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, endTDate);
-	else if (cInfo.isSecond() && commInfo->isFuture())
-		curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, endTDate);
+	if (commInfo->isFuture())
+	{
+		const char* ruleTag = cInfo._ruletag;
+		if (strlen(ruleTag) > 0)
+			curCode = _hot_mgr->getCustomRawCode(ruleTag, cInfo.stdCommID(), endTDate);
+		//else if (cInfo.isHot())
+		//	curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, endTDate);
+		//else if (cInfo.isSecond())
+		//	curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, endTDate);
+	}
 
 	uint32_t reload_flag = 0; //重载标记，0-不需要重载，1-加载最新，2-全部重载
 	std::string key = StrUtil::printf("%s.%s", cInfo._exchg, curCode.c_str());
@@ -220,7 +226,7 @@ std::string WtDataReaderAD::read_bars_to_buffer(const char* exchg, const char* c
 
 bool WtDataReaderAD::cacheBarsFromStorage(const std::string& key, const char* stdCode, WTSKlinePeriod period, uint32_t count)
 {
-	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
 	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
 
@@ -359,7 +365,7 @@ WTSBarStruct* WtDataReaderAD::get_rt_cache_bar(const char* exchg, const char* co
 
 WTSKlineSlice* WtDataReaderAD::readKlineSlice(const char* stdCode, WTSKlinePeriod period, uint32_t count, uint64_t etime /* = 0 */)
 {
-	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
 	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
 
@@ -383,10 +389,16 @@ WTSKlineSlice* WtDataReaderAD::readKlineSlice(const char* stdCode, WTSKlinePerio
 	uint32_t endTDate = _base_data_mgr->calcTradingDate(stdPID.c_str(), curDate, curTime, false);
 
 	std::string curCode = cInfo._code;
-	if (cInfo.isHot() && commInfo->isFuture())
-		curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, endTDate);
-	else if (cInfo.isSecond() && commInfo->isFuture())
-		curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, endTDate);
+	if (commInfo->isFuture())
+	{
+		const char* ruleTag = cInfo._ruletag;
+		if (strlen(ruleTag) > 0)
+			curCode = _hot_mgr->getCustomRawCode(ruleTag, cInfo.stdCommID(), endTDate);
+		//else if (cInfo.isHot())
+		//	curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, endTDate);
+		//else if (cInfo.isSecond())
+		//	curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, endTDate);
+	}
 
 	std::string key = StrUtil::printf("%s#%u", stdCode, period);
 	BarsList& barsList = _bars_cache[key];
@@ -491,7 +503,7 @@ void WtDataReaderAD::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTDa
 	for (auto it = _bars_cache.begin(); it != _bars_cache.end(); it++)
 	{
 		BarsList& barsList = (BarsList&)it->second;
-		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(barsList._code.c_str());
+		CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(barsList._code.c_str(), _hot_mgr);
 		if (barsList._period != KP_DAY)
 		{
 			uint32_t lastBarTime = (uint32_t)barsList._bars.back().time;

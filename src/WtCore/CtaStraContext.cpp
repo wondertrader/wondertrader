@@ -13,12 +13,11 @@
 
 #include <exception>
 
-#include "../Share/StrUtil.hpp"
 #include "../Includes/WTSContractInfo.hpp"
 
 
-CtaStraContext::CtaStraContext(WtCtaEngine* engine, const char* name)
-	: CtaStraBaseCtx(engine, name)
+CtaStraContext::CtaStraContext(WtCtaEngine* engine, const char* name, int32_t slippage)
+	: CtaStraBaseCtx(engine, name, slippage)
 {
 }
 
@@ -75,5 +74,9 @@ void CtaStraContext::on_calculate(uint32_t curDate, uint32_t curTime)
 		_strategy->on_schedule(this, curDate, curTime);
 }
 
-
+void CtaStraContext::on_condition_triggered(const char* stdCode, double target, double price, const char* usertag)
+{
+	if (_strategy)
+		_strategy->on_condition_triggered(this, stdCode, target, price, usertag);
+}
 

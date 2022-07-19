@@ -150,6 +150,8 @@ public:
 	///报单操作错误回报
 	virtual void OnErrRtnOrderAction(CUstpFtdcOrderActionField *pOrderAction, CUstpFtdcRspInfoField *pRspInfo) override;
 
+	virtual void OnRtnInstrumentStatus(CUstpFtdcInstrumentStatusField *pInstrumentStatus) override;
+
 protected:
 	bool IsErrorRspInfo(CUstpFtdcRspInfoField *pRspInfo);
 

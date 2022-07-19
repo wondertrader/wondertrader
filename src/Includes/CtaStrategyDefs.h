@@ -82,6 +82,11 @@ public:
 	 */
 	virtual void on_bar(ICtaStraCtx* ctx, const char* stdCode, const char* period, WTSBarStruct* newBar){}
 
+	/*
+	 *	条件单触发
+	 */
+	virtual void on_condition_triggered(ICtaStraCtx* ctx, const char* stdCode, double target, double price, const char* usertag) {}
+
 protected:
 	std::string _id;
 };

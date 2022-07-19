@@ -6,6 +6,7 @@
 #include <exception>
 
 #include "../Share/StrUtil.hpp"
+#include "../Share/fmtlib.h"
 #include "../Includes/WTSTypes.h"
 
 #include <rapidjson/document.h>
@@ -103,7 +104,7 @@ std::string extractProductID(const char* instrument)
 std::string extractProductName(const char* cname)
 {
 	std::string strRet;
-	int idx = strlen(cname) - 1;
+	auto idx = strlen(cname) - 1;
 	while (isdigit(cname[idx]) && idx > 0)
 	{
 		idx--;
@@ -177,7 +178,7 @@ void CTraderSpi::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin,
 		SESSION_ID = pRspUserLogin->SessionID;
 		int iNextOrderRef = atoi(pRspUserLogin->MaxOrderRef);
 		iNextOrderRef++;
-		sprintf(ORDER_REF, "%d", iNextOrderRef);
+		fmtutil::format_to(ORDER_REF, "{}", iNextOrderRef);
 		///获取当前交易日
 		m_lTradingDate = atoi(pUserApi->GetTradingDay());
 

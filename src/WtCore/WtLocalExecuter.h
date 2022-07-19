@@ -8,13 +8,10 @@
  * \brief 
  */
 #pragma once
-#include <boost/core/noncopyable.hpp>
-
 #include "ITrdNotifySink.h"
 #include "IExecCommand.h"
+#include "WtExecuterFactory.h"
 #include "../Includes/ExecuteDefs.h"
-
-#include "../Share/DLLHelper.hpp"
 #include "../Share/threadpool.hpp"
 
 NS_WTP_BEGIN
@@ -23,66 +20,10 @@ class IDataManager;
 class TraderAdapter;
 class IHotMgr;
 
-//////////////////////////////////////////////////////////////////////////
-//执行单元封装
-//因为执行单元是dll里创建的, 如果不封装的话, 直接delete可能会有问题
-//所以要把工厂指针一起封装到这里, 直接调用工厂实例的deleteUnit方法释放执行单元
-class ExeUnitWrapper
-{
-public:
-	ExeUnitWrapper(ExecuteUnit* unitPtr, IExecuterFact* fact):_unit(unitPtr),_fact(fact){}
-	~ExeUnitWrapper()
-	{
-		if(_unit)
-		{
-			_fact->deleteExeUnit(_unit);
-		}
-	}
-
-	ExecuteUnit* self(){ return _unit; }
-
-
-private:
-	ExecuteUnit*	_unit;
-	IExecuterFact*	_fact;
-};
-
-typedef std::shared_ptr<ExeUnitWrapper>	ExecuteUnitPtr;
-
-//////////////////////////////////////////////////////////////////////////
-//执行器工厂类
-class WtExecuterFactory : private boost::noncopyable
-{
-public:
-	~WtExecuterFactory() {}
-
-public:
-	bool loadFactories(const char* path);
-
-	ExecuteUnitPtr createExeUnit(const char* name);
-	ExecuteUnitPtr createExeUnit(const char* factname, const char* unitname);
-
-private:
-	typedef struct _ExeFactInfo
-	{
-		std::string		_module_path;
-		DllHandle		_module_inst;
-		IExecuterFact*	_fact;
-		FuncCreateExeFact	_creator;
-		FuncDeleteExeFact	_remover;
-	} ExeFactInfo;
-	typedef faster_hashmap<LongKey, ExeFactInfo> ExeFactMap;
-
-	ExeFactMap	_factories;
-};
-
 //本地执行器
 class WtLocalExecuter : public ExecuteContext,
 		public ITrdNotifySink, public IExecCommand
 {
-public:
-	typedef faster_hashmap<LongKey, ExecuteUnitPtr> ExecuteUnitMap;
-
 public:
 	WtLocalExecuter(WtExecuterFactory* factory, const char* name, IDataManager* dataMgr);
 	virtual ~WtLocalExecuter();
@@ -180,12 +121,25 @@ private:
 	IDataManager*		_data_mgr;
 	WTSVariant*			_config;
 
-	double				_scale;		//放大倍数
-	bool				_auto_clear;//是否自动清理上一期的主力合约头寸	
+	double				_scale;				//放大倍数
+	bool				_auto_clear;		//是否自动清理上一期的主力合约头寸
+	bool				_strict_sync;		//是否严格同步目标仓位
 	bool				_channel_ready;
+
+	typedef struct _CodeGroup
+	{
+		char	_name[32] = { 0 };
+		faster_hashmap<LongKey, double>	_items;
+	} CodeGroup;
+	typedef std::shared_ptr<CodeGroup> CodeGroupPtr;
+	typedef faster_hashmap<LongKey, CodeGroupPtr>	CodeGroups;
+	CodeGroups				_groups;			//合约组合（组合名称到组合的映射）
+	CodeGroups				_code_to_groups;	//合约代码到组合的映射
 
 	faster_hashset<LongKey>	_clear_includes;	//自动清理包含品种
 	faster_hashset<LongKey>	_clear_excludes;	//自动清理排除品种
+
+	faster_hashset<LongKey> _channel_holds;		//通道持仓
 
 	faster_hashmap<LongKey, double> _target_pos;
 
@@ -194,6 +148,5 @@ private:
 };
 
 typedef std::shared_ptr<IExecCommand> ExecCmdPtr;
-typedef std::shared_ptr<WtLocalExecuter> WtExecuterPtr;
 
 NS_WTP_END

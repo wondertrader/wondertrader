@@ -139,7 +139,7 @@ namespace uft
 			}
 			auto total = ticker.nano_seconds();
 			double t2t = total * 1.0 / times;
-			WTSLogger::warn("%u ticks simulated in %.0f ns, UftEngine Innner Latency: %.3f ns", times, total*1.0, t2t);
+			WTSLogger::warn("{} ticks simulated in {:.0f} ns, UftEngine Innner Latency: {:.3f} ns", times, total*1.0, t2t);
 		}
 
 	public:
@@ -173,7 +173,7 @@ namespace uft
 
 		virtual int orderInsert(WTSEntrust* eutrust) override
 		{
-			//WTSLogger::debug_f("{}", __FUNCTION__);
+			//WTSLogger::debug("{}", __FUNCTION__);
 			return 0;
 		}
 
@@ -204,7 +204,7 @@ namespace uft
 
 		virtual void on_tick(IUftStraCtx* ctx, const char* code, WTSTickData* newTick)
 		{
-			//WTSLogger::debug_f("{}", __FUNCTION__);
+			//WTSLogger::debug("{}", __FUNCTION__);
 			ctx->stra_enter_long("SHFE.rb2205", 2300, 1, 0);
 			//ctx->stra_enter_short("SHFE.rb2205", 2300, 1, 0);
 		}
@@ -229,7 +229,7 @@ namespace uft
 		WTSVariant* _config = WTSCfgLoader::load_from_file(cfgFile, true);
 		if (_config == NULL)
 		{
-			WTSLogger::error_f("Loading config file {} failed", cfgFile);
+			WTSLogger::error("Loading config file {} failed", cfgFile);
 			return false;
 		}
 
@@ -272,10 +272,10 @@ namespace uft
 		}
 
 		_times = _config->getUInt32("times");
-		WTSLogger::warn_f("{} ticks will be simulated", _times);
+		WTSLogger::warn("{} ticks will be simulated", _times);
 
 		_core = _config->getUInt32("core");
-		WTSLogger::warn_f("Testing thread will be bind to core {}", _core);
+		WTSLogger::warn("Testing thread will be bind to core {}", _core);
 
 		initEngine(_config->get("env"));
 		initModules();
@@ -301,7 +301,7 @@ namespace uft
 
 	bool UftLatencyTool::initEngine(WTSVariant* cfg)
 	{
-		WTSLogger::warn_f("Trading enviroment initialzied with engine: UFT");
+		WTSLogger::warn("Trading enviroment initialzied with engine: UFT");
 		_engine.init(cfg, &_bd_mgr, NULL);
 		_engine.set_adapter_mgr(&_traders);
 
@@ -334,7 +334,7 @@ namespace uft
 		{
 			if(!CpuHelper::bind_core(_core-1))
 			{
-				WTSLogger::error_f("Binding to core {} failed", _core);
+				WTSLogger::error("Binding to core {} failed", _core);
 			}
 		}
 

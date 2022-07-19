@@ -114,22 +114,22 @@ inline void checkDirs(const char* filename)
 		boost::filesystem::create_directories(s.substr(0, pos).c_str());
 }
 
-static inline void print_timetag(bool bWithSpace = true)
+inline void print_timetag(bool bWithSpace = true)
 {
-	timeb now;
-	ftime(&now);
+	uint64_t now = TimeUtils::getLocalTimeNow();
+	time_t t = now / 1000;
 
-	tm * tNow = localtime(&(now.time));
-	printf("[%d.%02d.%02d %02d:%02d:%02d]", tNow->tm_year + 1900, tNow->tm_mon + 1, tNow->tm_mday, tNow->tm_hour, tNow->tm_min, tNow->tm_sec);
+	tm * tNow = localtime(&t);
+	fmt::print("[{}.{:02d}.{:02d} {:02d}:{:02d}:{:02d}]", tNow->tm_year + 1900, tNow->tm_mon + 1, tNow->tm_mday, tNow->tm_hour, tNow->tm_min, tNow->tm_sec);
 	if (bWithSpace)
-		printf(" ");
+		fmt::print(" ");
 }
 
 void WTSLogger::print_message(const char* buffer)
 {
 	print_timetag(true);
-	printf(buffer);
-	printf("\r\n");
+	fmt::print(buffer);
+	fmt::print("\r\n");
 }
 
 void WTSLogger::initLogger(const char* catName, WTSVariant* cfgLogger)

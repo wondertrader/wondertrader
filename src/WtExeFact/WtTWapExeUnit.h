@@ -88,7 +88,7 @@ private:
 	bool		_channel_ready;
 
 
-	WTSCommodityInfo*	_comm_info;
+	WTSCommodityInfo* _comm_info;
 
 	//////////////////////////////////////////////////////////////////////////
 	//Ö´ÐÐ²ÎÊý

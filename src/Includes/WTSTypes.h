@@ -32,7 +32,9 @@ typedef enum tagContractCategory
 	CC_DC_Swap,			//数币永续
 	CC_DC_Future,		//数币期货
 	CC_DC_Margin,		//数币杠杆
-	CC_DC_Option		//数币期权
+	CC_DC_Option,		//数币期权
+
+	CC_UserIndex = 90	//自定义指数
 } ContractCategory;
 
 /*
@@ -63,7 +65,8 @@ typedef enum tagTradingMode
 {
 	TM_Both,	//多空都支持
 	TM_Long,	//只能做多
-	TM_LongT1	//做多T+1
+	TM_LongT1,	//做多T+1
+	TM_None = 9	//不能交易
 } TradingMode;
 
 /*
@@ -73,7 +76,8 @@ typedef enum tagPriceMode
 {
 	PM_Both,		//市价限价都支持
 	PM_Limit,		//只支持限价
-	PM_Market		//只支持市价
+	PM_Market,		//只支持市价
+	PM_None	= 9		//不支持交易
 } PriceMode;
 
 /*
@@ -324,6 +328,20 @@ typedef enum tagTraderEvent
 	WTE_Login,						//登录
 	WTE_Logout						//注销
 }WTSTraderEvent;
+
+/*
+ *	交易状态
+ */
+typedef enum tagTradeStatus
+{
+	TS_BeforeTrading	= '0',	//开盘前
+	TS_NotTrading		= '1',	//非交易
+	TS_Continous		= '2',	//连续竞价
+	TS_AuctionOrdering	= '3',	//集合竞价下单
+	TS_AuctionBalance	= '4',	//集合竞价平衡
+	TS_AuctionMatch		= '5',	//集合竞价撮合
+	TS_Closed			= '6'	//收盘
+}WTSTradeStatus;
 
 /*
  *	买卖方向类型

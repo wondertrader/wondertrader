@@ -3,6 +3,7 @@
 #include "../WtDtCore/StateMonitor.h"
 #include "../WtDtCore/UDPCaster.h"
 #include "../WtDtCore/WtHelper.h"
+#include "../WtDtCore/IndexFactory.h"
 
 #include "../Includes/WTSSessionInfo.hpp"
 #include "../Includes/WTSVariant.hpp"
@@ -22,6 +23,7 @@ StateMonitor	g_stateMon;
 UDPCaster		g_udpCaster;
 DataManager		g_dataMgr;
 ParserAdapterMgr g_parsers;
+IndexFactory	g_idxFactory;
 
 #ifdef _MSC_VER
 #include "../Common/mdump.h"
@@ -81,12 +83,12 @@ void initParsers(WTSVariant* cfg)
 			realid = StrUtil::printf("auto_parser_%u", auto_parserid++);
 		}
 
-		ParserAdapterPtr adapter(new ParserAdapter(&g_baseDataMgr, &g_dataMgr));
+		ParserAdapterPtr adapter(new ParserAdapter(&g_baseDataMgr, &g_dataMgr, &g_idxFactory));
 		adapter->init(realid.c_str(), cfgItem);
 		g_parsers.addAdapter(realid.c_str(), adapter);
 	}
 
-	WTSLogger::info("%u market data parsers loaded in total", g_parsers.size());
+	WTSLogger::info("{} market data parsers loaded in total", g_parsers.size());
 }
 
 void initialize()
@@ -104,7 +106,7 @@ void initialize()
 	WTSVariant* config = WTSCfgLoader::load_from_file(filename.c_str(), true);
 	if(config == NULL)
 	{
-		WTSLogger::error_f("Loading config file {} failed", filename);
+		WTSLogger::error("Loading config file {} failed", filename);
 		return;
 	}
 
@@ -154,20 +156,28 @@ void initialize()
 		g_baseDataMgr.loadHolidays(cfgBF->getCString("holiday"));
 		WTSLogger::info("Holidays loaded");
 	}
+	if (cfgBF->get("hot"))
+	{
+		g_hotMgr.loadHots(cfgBF->getCString("hot"));
+		WTSLogger::log_raw(LL_INFO, "Hot rules loaded");
+	}
 
-	//By Wesley @ 2021.12.27
-	//datakit不需要主力映射规则
-	//if (cfgBF->get("hot"))
-	//{
-	//	g_hotMgr.loadHots(cfgBF->getCString("hot"));
-	//	WTSLogger::info("Hot rules loaded");
-	//}
+	if (cfgBF->get("second"))
+	{
+		g_hotMgr.loadSeconds(cfgBF->getCString("second"));
+		WTSLogger::log_raw(LL_INFO, "Second rules loaded");
+	}
 
-	//if (cfgBF->get("second"))
-	//{
-	//	g_hotMgr.loadSeconds(cfgBF->getCString("second"));
-	//	WTSLogger::info("Second rules loaded");
-	//}
+	if (cfgBF->has("rules"))
+	{
+		auto cfgRules = cfgBF->get("rules");
+		auto tags = cfgRules->memberNames();
+		for (const std::string& ruleTag : tags)
+		{
+			g_hotMgr.loadCustomRules(ruleTag.c_str(), cfgRules->getCString(ruleTag.c_str()));
+			WTSLogger::info("{} rules loaded from {}", ruleTag, cfgRules->getCString(ruleTag.c_str()));
+		}
+	}
 
 	g_udpCaster.init(config->get("broadcaster"), &g_baseDataMgr, &g_dataMgr);
 
@@ -184,6 +194,23 @@ void initialize()
 	}
 	initDataMgr(config->get("writer"), bAlldayMode);
 
+	if(config->has("index"))
+	{
+		//如果存在指数模块要，配置指数
+		const char* filename = config->getCString("index");
+		WTSLogger::info("Reading index config from {}...", filename);
+		WTSVariant* var = WTSCfgLoader::load_from_file(filename, isUTF8);
+		if (var)
+		{
+			g_idxFactory.init(var, &g_hotMgr, &g_baseDataMgr, &g_dataMgr);
+			var->release();
+		}
+		else
+		{
+			WTSLogger::error("Loading index config {} failed", filename);
+		}		
+	}
+
 	WTSVariant* cfgParser = config->get("parsers");
 	if (cfgParser)
 	{
@@ -192,7 +219,7 @@ void initialize()
 			const char* filename = cfgParser->asCString();
 			if (StdFile::exists(filename))
 			{
-				WTSLogger::info_f("Reading parser config from {}...", filename);
+				WTSLogger::info("Reading parser config from {}...", filename);
 				WTSVariant* var = WTSCfgLoader::load_from_file(filename, isUTF8);
 				if (var)
 				{
@@ -201,12 +228,12 @@ void initialize()
 				}
 				else
 				{
-					WTSLogger::error_f("Loading parser config {} failed", filename);
+					WTSLogger::error("Loading parser config {} failed", filename);
 				}
 			}
 			else
 			{
-				WTSLogger::error_f("Parser configuration {} not exists", filename);
+				WTSLogger::error("Parser configuration {} not exists", filename);
 			}
 		}
 		else if (cfgParser->type() == WTSVariant::VT_Array)

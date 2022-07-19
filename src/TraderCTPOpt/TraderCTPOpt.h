@@ -141,6 +141,8 @@ public:
 
 	virtual void OnErrRtnOrderInsert(CThostFtdcInputOrderField *pInputOrder, CThostFtdcRspInfoField *pRspInfo) override;
 
+	virtual void OnRtnInstrumentStatus(CThostFtdcInstrumentStatusField *pInstrumentStatus) override;
+
 	//////////////////////////////////////////////////////////////////////////
 	///执行宣告录入请求响应
 	virtual void OnRspExecOrderInsert(CThostFtdcInputExecOrderField *pInputExecOrder, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) override;
@@ -170,7 +172,7 @@ protected:
 	WTSTradeInfo*	makeTradeRecord(CThostFtdcTradeField *tradeField);
 	WTSEntrust*		makeEntrust(CThostFtdcInputExecOrderField *entrustField);
 
-	std::string		generateEntrustID(uint32_t frontid, uint32_t sessionid, uint32_t orderRef);
+	void			generateEntrustID(char* buffer, uint32_t frontid, uint32_t sessionid, uint32_t orderRef);
 	bool			extractEntrustID(const char* entrustid, uint32_t &frontid, uint32_t &sessionid, uint32_t &orderRef);
 
 	//uint64_t		calcCommission(uint32_t qty, uint32_t price, WTSOffsetType flag, WTSContractInfo* ct);

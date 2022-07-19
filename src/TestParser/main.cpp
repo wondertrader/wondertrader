@@ -73,21 +73,21 @@ public:
         DllHandle hInst = DLLHelper::load_library(moduleName);
 		if (hInst == NULL)
 		{
-			WTSLogger::error_f("Loading module {} failed", moduleName);
+			WTSLogger::error("Loading module {} failed", moduleName);
 			return false;
 		}
 
 		FuncCreateParser pCreator = (FuncCreateParser)DLLHelper::get_symbol(hInst, "createParser");
 		if (NULL == pCreator)
 		{
-			WTSLogger::error_f("Entry function createParser not found");
+			WTSLogger::error("Entry function createParser not found");
 			return false;
 		}
 
 		_api = pCreator();
 		if (NULL == _api)
 		{
-			WTSLogger::error_f("Creating parser api failed");
+			WTSLogger::error("Creating parser api failed");
 			return false;
 		}
 
@@ -103,7 +103,7 @@ public:
 
 	virtual void handleQuote(WTSTickData *quote, uint32_t procFlag) override
 	{
-		WTSLogger::info_f("{}@{}.{}, price:{}, voume:{}", quote->code(), quote->actiondate(), quote->actiontime(), quote->price(), quote->totalvolume());
+		WTSLogger::info("{}@{}.{}, price:{}, voume:{}", quote->code(), quote->actiondate(), quote->actiontime(), quote->price(), quote->totalvolume());
 	}
 
 	virtual void handleSymbolList(const WTSArray* aySymbols) override
@@ -165,7 +165,7 @@ int main()
 	WTSVariant* params = root->get(profile.c_str());
 	if (params == NULL)
 	{
-		WTSLogger::error_f("Configure {} not exist", profile);
+		WTSLogger::error("Configure {} not exist", profile);
 		return 0;
 	}
 

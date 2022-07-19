@@ -53,6 +53,7 @@ WtBtRunner::WtBtRunner()
 	, _cb_cta_calc_done(NULL)
 	, _cb_cta_bar(NULL)
 	, _cb_cta_sessevt(NULL)
+	, _cb_cta_cond_trigger(NULL)
 
 	, _cb_sel_init(NULL)
 	, _cb_sel_tick(NULL)
@@ -218,8 +219,8 @@ void WtBtRunner::feedRawTicks(WTSTickStruct* ticks, uint32_t count)
 	_feeder_ticks(_feed_obj, ticks, count);
 }
 
-void WtBtRunner::registerCtaCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, 
-	FuncStraBarCallback cbBar, FuncSessionEvtCallback cbSessEvt, FuncStraCalcCallback cbCalcDone/* = NULL*/)
+void WtBtRunner::registerCtaCallbacks(FuncStraInitCallback cbInit, FuncStraTickCallback cbTick, FuncStraCalcCallback cbCalc, FuncStraBarCallback cbBar, 
+	FuncSessionEvtCallback cbSessEvt, FuncStraCalcCallback cbCalcDone /* = NULL */, FuncStraCondTriggerCallback cbCondTrigger /* = NULL */)
 {
 	_cb_cta_init = cbInit;
 	_cb_cta_tick = cbTick;
@@ -228,6 +229,7 @@ void WtBtRunner::registerCtaCallbacks(FuncStraInitCallback cbInit, FuncStraTickC
 	_cb_cta_sessevt = cbSessEvt;
 
 	_cb_cta_calc_done = cbCalcDone;
+	_cb_cta_cond_trigger = cbCondTrigger;
 
 	WTSLogger::info("Callbacks of CTA engine registration done");
 }
@@ -352,6 +354,16 @@ void WtBtRunner::ctx_on_init(uint32_t id, EngineType eType/*= ET_CTA*/)
 	case ET_CTA: if (_cb_cta_init) _cb_cta_init(id); break;
 	case ET_HFT: if (_cb_hft_init) _cb_hft_init(id); break;
 	case ET_SEL: if (_cb_sel_init) _cb_sel_init(id); break;
+	default:
+		break;
+	}
+}
+
+void WtBtRunner::ctx_on_cond_triggered(uint32_t id, const char* stdCode, double target, double price, const char* usertag, EngineType eType /* = ET_CTA */)
+{
+	switch (eType)
+	{
+	case ET_CTA: if (_cb_cta_cond_trigger) _cb_cta_cond_trigger(id, stdCode, target, price, usertag); break;
 	default:
 		break;
 	}
@@ -502,7 +514,7 @@ void WtBtRunner::run(bool bNeedDump /* = false */, bool bAsync /* = false */)
 
 	_async = bAsync;
 
-	WTSLogger::info("Backtesting will run in %s mode", _async ? "async" : "sync");
+	WTSLogger::info("Backtesting will run in {} mode", _async ? "async" : "sync");
 
 	if (_cta_mocker)
 		_cta_mocker->enable_hook(_async);
@@ -577,19 +589,26 @@ void WtBtRunner::set_time_range(WtUInt64 stime, WtUInt64 etime)
 {
 	_replayer.set_time_range(stime, etime);
 
-	WTSLogger::info_f("Backtest time range is set to be [{},{}] mannually", stime, etime);
+	WTSLogger::info("Backtest time range is set to be [{},{}] mannually", stime, etime);
 }
 
 void WtBtRunner::enable_tick(bool bEnabled /* = true */)
 {
 	_replayer.enable_tick(bEnabled);
 
-	WTSLogger::info("Tick data replaying is %s", bEnabled ? "enabled" : "disabled");
+	WTSLogger::info("Tick data replaying is {}", bEnabled ? "enabled" : "disabled");
 }
 
 void WtBtRunner::clear_cache()
 {
 	_replayer.clear_cache();
+}
+
+const char* WtBtRunner::get_raw_stdcode(const char* stdCode)
+{
+	static thread_local std::string s;
+	s = _replayer.get_rawcode(stdCode);
+	return s.c_str();
 }
 
 const char* LOG_TAGS[] = {

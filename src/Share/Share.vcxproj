@@ -139,7 +139,7 @@
     <ClInclude Include="..\Includes\WTSContractInfo.hpp" />
     <ClInclude Include="..\Includes\WTSDataDef.hpp" />
     <ClInclude Include="..\Includes\WTSError.hpp" />
-    <ClInclude Include="..\Includes\WTSHotItem.hpp" />
+    <ClInclude Include="..\Includes\WTSSwitchItem.hpp" />
     <ClInclude Include="..\Includes\WTSMarcos.h" />
     <ClInclude Include="..\Includes\WTSObject.hpp" />
     <ClInclude Include="..\Includes\WTSRiskDef.hpp" />

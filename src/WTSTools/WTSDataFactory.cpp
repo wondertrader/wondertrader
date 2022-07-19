@@ -766,17 +766,22 @@ WTSKlineData* WTSDataFactory::extractKlineData(WTSTickSlice* ayTicks, uint32_t s
 		uint32_t uDate = curTick->trading_date;
 		uint32_t curSeconds = sInfo->timeToSeconds(curTick->action_time/1000);
 		uint32_t barSeconds = (curSeconds/seconds)*seconds + seconds;
-		uint32_t barTime = sInfo->secondsToTime(barSeconds);
+		uint64_t barTime = sInfo->secondsToTime(barSeconds);
 
 		//如果计算出来的K线时间戳小于tick数据的时间戳
+		uint32_t actDt = curTick->action_date;
+		if (barTime < curTick->action_time / 1000)
+		{
+			actDt = TimeUtils::getNextDate(actDt);
+		}
+
 		if(bUnixTime)
 		{
-			uint32_t actDt = curTick->action_date;
-			if (barTime < curTick->action_time / 1000)
-			{
-				actDt = TimeUtils::getNextDate(actDt);
-			}
-			barTime = (uint32_t)(TimeUtils::makeTime(actDt, barTime * 1000) / 1000);
+			barTime = (uint64_t)TimeUtils::makeTime(actDt, barTime * 1000) / 1000;
+		}
+		else
+		{
+			barTime = (uint64_t)actDt * 1000000 + barTime;
 		}
 
 		bool bNewBar = false;

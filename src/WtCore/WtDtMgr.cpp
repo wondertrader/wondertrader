@@ -60,14 +60,14 @@ bool WtDtMgr::initStore(WTSVariant* cfg)
 	DllHandle hInst = DLLHelper::load_library(module.c_str());
 	if(hInst == NULL)
 	{
-		WTSLogger::error("Loading data reader module %s failed", module.c_str());
+		WTSLogger::error("Loading data reader module {} failed", module.c_str());
 		return false;
 	}
 
 	FuncCreateDataReader funcCreator = (FuncCreateDataReader)DLLHelper::get_symbol(hInst, "createDataReader");
 	if(funcCreator == NULL)
 	{
-		WTSLogger::error("Loading data reader module %s failed, entrance function createDataReader not found", module.c_str());
+		WTSLogger::error("Loading data reader module {} failed, entrance function createDataReader not found", module.c_str());
 		DLLHelper::free_library(hInst);
 		return false;
 	}
@@ -75,7 +75,7 @@ bool WtDtMgr::initStore(WTSVariant* cfg)
 	_reader = funcCreator();
 	if(_reader == NULL)
 	{
-		WTSLogger::error("Creating instance of data reader module %s failed", module.c_str());
+		WTSLogger::error("Creating instance of data reader module {} failed", module.c_str());
 		DLLHelper::free_library(hInst);
 		return false;
 	}
@@ -101,7 +101,7 @@ void WtDtMgr::on_all_bar_updated(uint32_t updateTime)
 
 	for (const NotifyItem& item : _bar_notifies)
 	{
-		_engine->on_bar(item._code.c_str(), item._period.c_str(), item._times, item._newBar);
+		_engine->on_bar(item._code, item._period, item._times, item._newBar);
 	}
 
 	_bar_notifies.clear();
@@ -141,20 +141,20 @@ void WtDtMgr::on_bar(const char* code, WTSKlinePeriod period, WTSBarStruct* newB
 {
 	std::string key_pattern = fmt::format("{}-{}", code, period);
 
-	std::string speriod;
+	char speriod;
 	uint32_t times = 1;
 	switch (period)
 	{
 	case KP_Minute1:
-		speriod = "m";
+		speriod = 'm';
 		times = 1;
 		break;
 	case KP_Minute5:
-		speriod = "m";
+		speriod = 'm';
 		times = 5;
 		break;
 	default:
-		speriod = "d";
+		speriod = 'd';
 		times = 1;
 		break;
 	}
@@ -164,7 +164,7 @@ void WtDtMgr::on_bar(const char* code, WTSKlinePeriod period, WTSBarStruct* newB
 		//如果是基础周期, 直接触发on_bar事件
 		//_engine->on_bar(code, speriod.c_str(), times, newBar);
 		//更新完K线以后, 统一通知交易引擎
-		_bar_notifies.emplace_back(NotifyItem({ code, speriod, times, newBar }));
+		_bar_notifies.emplace_back(NotifyItem(code, speriod, times, newBar));
 	}
 
 	//然后再处理非基础周期
@@ -189,7 +189,7 @@ void WtDtMgr::on_bar(const char* code, WTSKlinePeriod period, WTSBarStruct* newB
 				WTSBarStruct* lastBar = kData->at(-1);
 				//_engine->on_bar(code, speriod.c_str(), times, lastBar);
 				//更新完K线以后, 统一通知交易引擎
-				_bar_notifies.emplace_back(NotifyItem({ code, speriod, times*kData->times(), lastBar }));
+				_bar_notifies.emplace_back(NotifyItem(code, speriod, times*kData->times(), lastBar));
 			}
 		}
 	}
@@ -267,7 +267,7 @@ WTSTickSlice* WtDtMgr::get_tick_slice(const char* stdCode, uint32_t count, uint6
 	if (it == _ticks_adjusted->end())
 	{
 		//先读取全部tick数据
-		double factor = get_adjusting_factor(pureStdCode.c_str(), get_date());
+		double factor = _engine->get_exright_factor(stdCode, NULL);
 		WTSTickSlice* slice = _reader->readTickSlice(pureStdCode.c_str(), 999999, etime);
 		std::vector<WTSTickStruct> ayTicks;
 		ayTicks.resize(slice->size());
@@ -369,7 +369,10 @@ WTSKlineSlice* WtDtMgr::get_kline_slice(const char* stdCode, WTSKlinePeriod peri
 	if (_reader == NULL)
 		return NULL;
 
-	std::string key = StrUtil::printf("%s-%u", stdCode, period);
+	//std::string key = StrUtil::printf("%s-%u", stdCode, period);
+
+	thread_local static char key[64] = { 0 };
+	fmtutil::format_to(key, "{}-{}", stdCode, (uint32_t)period);
 
 	if (times == 1)
 	{
@@ -384,7 +387,8 @@ WTSKlineSlice* WtDtMgr::get_kline_slice(const char* stdCode, WTSKlinePeriod peri
 	if (_bars_cache == NULL)
 		_bars_cache = DataCacheMap::create();
 
-	key = StrUtil::printf("%s-%u-%u", stdCode, period, times);
+	//key = StrUtil::printf("%s-%u-%u", stdCode, period, times);
+	fmtutil::format_to(key, "{}-{}-{}", stdCode, (uint32_t)period, times);
 
 	WTSKlineData* kData = (WTSKlineData*)_bars_cache->get(key);
 	//如果缓存里的K线条数大于请求的条数, 则直接返回
@@ -405,7 +409,7 @@ WTSKlineSlice* WtDtMgr::get_kline_slice(const char* stdCode, WTSKlinePeriod peri
 		if (kData)
 		{
 			_bars_cache->add(key, kData, false);
-			WTSLogger::debug_f("{} bars of {} resampled every {} bars: {} -> {}", 
+			WTSLogger::debug("{} bars of {} resampled every {} bars: {} -> {}", 
 				PERIOD_NAME[period], stdCode, times, realCount, kData->size());
 		}
 	}

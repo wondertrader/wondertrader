@@ -13,7 +13,7 @@
 #include <map>
 #include <functional>
 #include <algorithm>
-#include "../FasterLibs/tsl/robin_map.h"
+#include "FasterDefs.h"
 
 #include <deque>
 
@@ -302,6 +302,8 @@ public:
 	typedef typename std::map<T, WTSObject*>	_MyType;
 	typedef typename _MyType::iterator			Iterator;
 	typedef typename _MyType::const_iterator	ConstIterator;
+	typedef typename _MyType::reverse_iterator			ReverseIterator;
+	typedef typename _MyType::const_reverse_iterator	ConstReverseIterator;
 
 	/*
 	 *	创建map容器
@@ -424,6 +426,32 @@ public:
 	ConstIterator end() const
 	{
 		return _map.end();
+	}
+
+	/*
+	 *	获取容器起始位置的迭代器
+	 */
+	ReverseIterator rbegin()
+	{
+		return _map.rbegin();
+	}
+
+	ConstReverseIterator rbegin() const
+	{
+		return _map.rbegin();
+	}
+
+	/*
+	 *	获取容易末尾位置的迭代器
+	 */
+	ReverseIterator rend()
+	{
+		return _map.rend();
+	}
+
+	ConstReverseIterator rend() const
+	{
+		return _map.rend();
 	}
 
 	Iterator find(const T& key)

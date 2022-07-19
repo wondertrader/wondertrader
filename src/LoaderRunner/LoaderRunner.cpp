@@ -8,7 +8,9 @@ typedef int (*LoaderRunner)(const char*, bool);
 
 int main()
 {
-	DllHandle handle = DLLHelper::load_library("CTPLoader");
+	std::string module = "./";
+	module += DLLHelper::wrap_module("CTPLoader").c_str();
+	DllHandle handle = DLLHelper::load_library(module.c_str());
 	if (handle == NULL)
 	{
 		printf("module not found\r\n");

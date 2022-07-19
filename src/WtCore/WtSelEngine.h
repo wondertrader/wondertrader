@@ -87,7 +87,7 @@ public:
 
 	void	on_minute_end(uint32_t uDate, uint32_t uTime);
 
-	void	handle_pos_change(const char* stdCode, double diffQty);
+	void	handle_pos_change(const char* straName, const char* stdCode, double diffQty);
 
 private:
 	faster_hashmap<uint32_t, TaskInfoPtr>	_tasks;
