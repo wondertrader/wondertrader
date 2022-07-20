@@ -3,11 +3,10 @@
  * \project	WonderTrader
  *
  * \author Wesley
- * \date 2022/07/13
+ * \date 2020/03/30
  *
  * \brief
  */
- 
 #pragma once
 
 #include <string>
@@ -263,11 +262,17 @@ public:
 	// 个股期权合约账户查询响应
 	virtual int OnRspQryAcct(CFirstSetField* p_pFirstSetField, CRspOptAcctField* p_pRspField, LONGLONG p_llRequestId, int p_iFieldNum, int p_iFieldIndex) override;
 
+	// 个股期权委托申报响应
+	virtual int OnRspOrder(CFirstSetField *p_pFirstSet, CRspOptOrderField *p_pRspField, LONGLONG p_llRequestId, int p_iFieldNum, int p_iFieldIndex) override;
+
 	// 个股期权委托撤单响应
 	virtual int OnRspCancelOrder(CFirstSetField* p_pFirstSetField, CRspOptCancelOrderField* p_pRspField, LONGLONG p_llRequestId, int p_iFieldNum, int p_iFieldIndex) override;
 
 	// 确认回报
 	virtual int OnRtnOrderConfirm(CRtnOptOrderConfirmField* p_pRspField) override;
+
+	// 期权基础信息查询响应
+	virtual int OnRspQryBaseInfo(CFirstSetField *p_pFirstSet, CRspOptBaseInfoField *p_pRspField, LONGLONG p_llRequestId, int p_iFieldNum, int p_iFieldIndex);
 
 	// 成交回报--委托信息
 	virtual int OnRtnOrder(CRtnOptOrderField* p_pRspField) override;
@@ -278,6 +283,9 @@ public:
 	// 成交回报--合约信息
 	virtual int OnRtnContract(CRtnOptContractField* p_pRspField) override;
 
+	//客户结算单查询 2015/8/6
+	virtual int OnRspQrySettList(CFirstSetField* p_pFirstSet, CRspOptSettListField* p_pRspField, LONGLONG p_llRequestId, int p_iFieldNum, int p_iFieldIndex) override;
+
 	// 个股期权当日委托查询响应
 	virtual int OnRspQryCurrDayOrder(CFirstSetField* p_pFirstSetField, CRspOptCurrDayOrderField* p_pRspField, LONGLONG p_llRequestId, int p_iFieldNum, int p_iFieldIndex) override;
 
@@ -287,32 +295,33 @@ public:
 	//可用组合持仓明细查询响应 2015/8/5
 	virtual int OnRspQryCombStraPosDetail(CFirstSetField* p_pFirstSetField, CRspOptCombStraPosDetailField* p_pRspField, LONGLONG p_llRequestId, int p_iFieldNum, int p_iFieldIndex) override;
 
+	// 计算个股期权最大可交易数量响应
+	virtual int OnRspMaxTradeQty(CFirstSetField *p_pFirstSet, CRspOptMaxTradeQtyField *p_pRspField, LONGLONG p_llRequestId, int p_iFieldNum, int p_iFieldIndex) override;
+
 	/////////////////// 自定义接口
+public:
 	// 资金账户查询
 	int RspQryTradingAccount(void);
-
-	// 持仓查询
-	int RspQryPosition();
 
 protected:
 	/*
 	*	检查错误信息
 	*/
-	//bool IsErrorRspInfo(CThostFtdcRspInfoField *pRspInfo);
+	bool IsErrorRspInfo(CFirstSetField *pRspInfo);
 
 
 	WTSOrderInfo*	makeOrderInfo(CRspOptOrderField* orderField);
 	WTSOrderInfo*	makeOrderInfo(CRtnOptOrderField* orderField);
 	WTSOrderInfo*   makeOrderInfo(CRspOptCurrDayOrderField* daiOrderField);
 	//WTSOrderInfo*   makeOrderInfo(CRspOptCancelOrderField* cancelOrderField);
-	WTSEntrust*		makeEntrust(CReqOptOrderField  *entrustField);
-	//WTSError*		makeError(CThostFtdcRspInfoField* rspInfo);
+	WTSEntrust*		makeEntrust(CRspOptOrderField  *entrustField);
+	WTSError*		makeError(CFirstSetField* rspInfo);
 	WTSTradeInfo*	makeTradeRecord(CRtnOptOrderFillField *tradeField);
 	WTSTradeInfo*   makeTradeRecord(CRspOptCurrDayFillField *dayTradeField);
 	WTSEntrust*		makeEntrust(CRtnOptOrderFillField  *entrustField);
 
-	void			generateEntrustID(char* buffer, long long ll_cust_code, long long ll_cuacct_code, int order_bsn);
-	bool			extractEntrustID(const char* entrustid, long long &ll_cust_code, long long &ll_cuacct_code, int &order_bsn);
+	void			generateEntrustID(char* buffer, long long ll_cust_code, long long ll_cuacct_code, long order_bsn);
+	bool			extractEntrustID(const char* entrustid, long long &ll_cust_code, long long &ll_cuacct_code, long &order_bsn);
 
 	uint32_t		genRequestID();
 
@@ -339,6 +348,9 @@ protected:
 
 	std::string		m_strStkBD;  // 交易板块
 	std::string		m_strStkPBU;  // 交易单元
+
+	std::string		m_strOptNum;  // 合约编码
+	std::string		m_strOrderId;  // 合同编号
 
 	ITraderSpi*		m_bscSink;
 	IOptTraderSpi*	m_optSink;
@@ -370,4 +382,7 @@ protected:
 	WtKVCache		m_eidCache;
 	//订单标记缓存器
 	WtKVCache		m_oidCache;
+
+	// 限定查询范围
+	bool b_inQryAcct;
 };
