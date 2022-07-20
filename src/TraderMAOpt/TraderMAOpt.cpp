@@ -2,7 +2,7 @@
  * \file TraderMAOpt.cpp
  * \project	WonderTrader
  *
- * \author 
+ * \author Suuuunseeker
  * \date 2022/07/13
  *
  * \brief
@@ -32,7 +32,7 @@
 #endif
 
 
-//By Wesley @ 2022.01.05
+ //By Wesley @ 2022.01.05
 #include "../Share/fmtlib.h"
 
 
@@ -446,6 +446,7 @@ TraderMAOpt::TraderMAOpt()
 	, m_optSink(NULL)
 	, m_bscSink(NULL)
 	, m_accountInfo(WTSAccountInfo::create())
+	, b_inQryAcct(false)
 {
 
 }
@@ -810,20 +811,17 @@ int TraderMAOpt::queryOrdersOpt(WTSBusinessType bType)
 
 int TraderMAOpt::orderInsert(WTSEntrust* entrust)
 {
-	cout << "开始申报委托" << endl;
-
 	if (m_pUserAPI == NULL || m_wrapperState != WS_ALLREADY)
 	{
 		return -1;
 	}
 
-	cout << "获取合约信息" << endl;
-
 	WTSContractInfo* ct = entrust->getContractInfo();
-	if (ct == NULL)
-		return -1;
+	if (ct == NULL) {
+		cout << "合约信息为空" << endl;
+		//return -1;
+	}
 
-	
 	CReqOptOrderField req;
 	memset(&req, 0, sizeof(req));
 	/// 客户代码
@@ -860,42 +858,43 @@ int TraderMAOpt::orderInsert(WTSEntrust* entrust)
 	//	m_iniHelper.save();
 	//}
 
-	WTSCommodityInfo* commInfo = ct->getCommInfo();
+	//WTSCommodityInfo* commInfo = ct->getCommInfo();
 
 	///用户代码
 	//	TThostFtdcUserIDType	UserID;
 	///报单价格条件: 限价
-	req.iStkBizAction = wrapPriceType(entrust->getPriceType(), strcmp(commInfo->getExchg(), "CFFEX") == 0);
+	//req.iStkBizAction = wrapPriceType(entrust->getPriceType(), strcmp(commInfo->getExchg(), "CFFEX") == 0);
+	req.iStkBizAction = 130;
 	///买卖方向:
-	req.iStkBiz = wrapDirectionType(entrust->getDirection(), entrust->getOffsetType());
-	///组合开平标志: 开仓
-	//req.CombOffsetFlag[0] = wrapOffsetType(entrust->getOffsetType());
-	///组合投机套保标志
-	//req.CombHedgeFlag[0] = THOST_FTDC_HF_Speculation;
+	//req.iStkBiz = wrapDirectionType(entrust->getDirection(), entrust->getOffsetType());
+	req.iStkBiz = 401;
 	///价格
-	strncpy(req.szOrderPrice, std::to_string(entrust->getPrice()).c_str(), sizeof(req.szOrderPrice));
+	//strncpy(req.szOrderPrice, std::to_string(entrust->getPrice()).c_str(), sizeof(req.szOrderPrice));
+	strncpy(req.szOrderPrice, "0.4264", sizeof(req.szOrderPrice));
+	strncpy(req.szOptNum, "10003975", sizeof(req.szOptNum));
 	///数量: 1
-	req.llOrderQty = (long long)entrust->getVolume();
+	//req.llOrderQty = (long long)entrust->getVolume();
+	req.llOrderQty = 1;
 	/// 加密方式
 	req.chEncryptType = '0';
 	/// 加密数据
 	strncpy(req.szEncryptKey, m_strEncryptKey.c_str(), sizeof(req.szEncryptKey));
 
-	if (entrust->getOrderFlag() == WOF_NOR)
-	{
-		//req.TimeCondition = THOST_FTDC_TC_GFD;
-		//req.VolumeCondition = THOST_FTDC_VC_AV;
-	}
-	else if (entrust->getOrderFlag() == WOF_FAK)
-	{
-		//req.TimeCondition = THOST_FTDC_TC_IOC;
-		//req.VolumeCondition = THOST_FTDC_VC_AV;
-	}
-	else if (entrust->getOrderFlag() == WOF_FOK)
-	{
-		//req.TimeCondition = THOST_FTDC_TC_IOC;
-		//req.VolumeCondition = THOST_FTDC_VC_CV;
-	}
+	//if (entrust->getOrderFlag() == WOF_NOR)
+	//{
+	//	//req.TimeCondition = THOST_FTDC_TC_GFD;
+	//	//req.VolumeCondition = THOST_FTDC_VC_AV;
+	//}
+	//else if (entrust->getOrderFlag() == WOF_FAK)
+	//{
+	//	//req.TimeCondition = THOST_FTDC_TC_IOC;
+	//	//req.VolumeCondition = THOST_FTDC_VC_AV;
+	//}
+	//else if (entrust->getOrderFlag() == WOF_FOK)
+	//{
+	//	//req.TimeCondition = THOST_FTDC_TC_IOC;
+	//	//req.VolumeCondition = THOST_FTDC_VC_CV;
+	//}
 
 	///业务单元
 	//	TThostFtdcBusinessUnitType	BusinessUnit;
@@ -904,12 +903,13 @@ int TraderMAOpt::orderInsert(WTSEntrust* entrust)
 	///用户强评标志: 否
 	//req.UserForceClose = 0;
 
+	cout << "提交订单" << endl;
 	int iResult = m_pUserAPI->ReqOrder(&req, genRequestID());
 	if (iResult)
 	{
 		write_log(m_bscSink, LL_ERROR, "[TraderMAOpt] Order inserting failed: {}, error: {}", iResult, m_pUserAPI->GetLastErrorText());
 	}
-	
+
 	return 0;
 }
 
@@ -918,11 +918,13 @@ int TraderMAOpt::orderAction(WTSEntrustAction* action)
 	// 撤单请求
 	if (m_wrapperState != WS_ALLREADY)
 		return -1;
-	
+
 	LONGLONG ll_cust_code, ll_cuacct_code;
 	int order_bsn;
-	if (!extractEntrustID(action->getEntrustID(), ll_cust_code, ll_cuacct_code, order_bsn))
-		return -1;
+	//if (!extractEntrustID(action->getEntrustID(), ll_cust_code, ll_cuacct_code, order_bsn)) {
+	//	cout << "extract entrust id failed..." << endl;
+	//	return -1;
+	//}
 
 	CReqOptCancelOrderField req = { 0 };
 	memset(&req, 0, sizeof(req));
@@ -933,19 +935,22 @@ int TraderMAOpt::orderAction(WTSEntrustAction* action)
 	/// 交易板块
 	strncpy(req.szStkbd, m_strStkBD.c_str(), sizeof(req.szStkbd));
 	///操作标志
-	req.chForceWth = wrapActionFlag(action->getActionFlag());
+	//req.chForceWth = wrapActionFlag(action->getActionFlag());
 	///合约代码
 	//strcpy(req.InstrumentID, action->getCode());
 	//req.iOrderBsn = action->getOrderID();
-	//strcpy(req.OrderSysID, action->getOrderID());
-	strcpy(req.szStkbd, action->getExchg());
+	//strcpy(req.szOrderId, action->getOrderID());
+	//strcpy(req.szStkbd, action->getExchg());
+	strcpy(req.szOrderId, "J010000602");
+
+	cout << "委托撤单信息: " << " stk board: " << req.szStkbd << "  order id: " << req.szOrderId << endl;
 
 	int iResult = m_pUserAPI->ReqCancelOrder(&req, genRequestID());
 	if (iResult)
 	{
 		write_log(m_bscSink, LL_ERROR, "[TraderMAOpt] Sending cancel request failed: {}, error: {}", iResult, m_pUserAPI->GetLastErrorText());
 	}
-	
+
 	return 0;
 }
 
@@ -1024,13 +1029,19 @@ int TraderMAOpt::queryOrders()
 		return -1;
 	}
 
-	CReqOptCurrDayOrderField req;
+	CReqOptCurrDayOrderField req = { 0 };
 	memset(&req, 0, sizeof(req));
 	req.llCustCode = m_llCustCode;
 	req.llCuacctCode = m_llCuacctCode;
+	strncpy(req.szStkbd, m_strStkBD.c_str(), sizeof(req.szStkbd));
+	strncpy(req.szTrdacct, m_strTrdAcct.c_str(), sizeof(req.szTrdacct));
+	req.chQueryFlag = '1';
+	req.iQryNum = 10;
 	//strcpy(req.szTrdacct, m_strUser.c_str());
 
-	m_pUserAPI->ReqQryCurrDayOrder(&req, genRequestID());
+	int iRet = m_pUserAPI->ReqQryCurrDayOrder(&req, genRequestID());
+	if (iRet)
+		cout << "ReqQryCurrDayOrder Error::" << m_pUserAPI->GetLastErrorText() << std::endl;
 
 	return 0;
 }
@@ -1047,9 +1058,14 @@ int TraderMAOpt::queryTrades()
 	req.llCustCode = m_llCustCode;
 	req.llCuacctCode = m_llCuacctCode;
 	strncpy(req.szStkbd, m_strStkBD.c_str(), sizeof(req.szStkbd));
-	strncpy(req.szTrdacct, m_strUser.c_str(), sizeof(req.szTrdacct));
+	strncpy(req.szTrdacct, m_strTrdAcct.c_str(), sizeof(req.szTrdacct));
 
-	m_pUserAPI->ReqQryCurrDayFill(&req, genRequestID());
+	req.chQueryFlag = '1';  // 查询方向 0:向后取数据 1:向前取数据 其他全部返回
+	req.iQryNum = 10;  // 查询行数
+
+	int iRet = m_pUserAPI->ReqQryCurrDayFill(&req, genRequestID());
+	if (iRet)
+		cout << "ReqQryCurrDayFill Error::" << m_pUserAPI->GetLastErrorText() << std::endl;
 
 	return 0;
 }
@@ -1061,6 +1077,8 @@ int TraderMAOpt::querySettlement(uint32_t uDate)
 		return -1;
 	}
 
+	cout << "查询结算单日期: " << uDate << endl;
+
 	CReqOptSettListField req;
 	memset(&req, 0, sizeof(req));
 	req.llCustCode = m_llCustCode;
@@ -1068,7 +1086,10 @@ int TraderMAOpt::querySettlement(uint32_t uDate)
 	req.iTrdDate = uDate;
 	req.chCurrency = '0';
 
-	m_pUserAPI->ReqQrySettList(&req, genRequestID());
+	int iRet = m_pUserAPI->ReqQrySettList(&req, genRequestID());
+	if (iRet) {
+		cout << __FUNCDNAME__ << "::" << __LINE__ << "::RRROR" << m_pUserAPI->GetLastErrorText();
+	}
 
 	return 0;
 }
@@ -1196,7 +1217,7 @@ WTSOrderInfo* TraderMAOpt::makeOrderInfo(CRtnOptOrderField* orderField)
 	pRet->setExchange(contract->getExchg());
 
 	//pRet->setEntrustID(generateEntrustID(orderField->FrontID, orderField->SessionID, atoi(orderField->ExecOrderRef)).c_str());
-	//generateEntrustID(pRet->getEntrustID(), orderField->FrontID, orderField->SessionID, atoi(orderField->ExecOrderRef));
+	generateEntrustID(pRet->getEntrustID(), orderField->llCustCode, orderField->llCuacctCode, orderField->iOrderBsn);
 	pRet->setOrderID(orderField->szOrderId);
 
 
@@ -1498,7 +1519,7 @@ WTSTradeInfo* TraderMAOpt::makeTradeRecord(CRspOptCurrDayFillField *tradeField)
 	return pRet;
 }
 
-WTSEntrust* TraderMAOpt::makeEntrust(CReqOptOrderField *entrustField)
+WTSEntrust* TraderMAOpt::makeEntrust(CRspOptOrderField *entrustField)
 {
 	WTSContractInfo* ct = m_bdMgr->getContract(entrustField->szOptNum, entrustField->szStkbd);
 	if (ct == NULL)
@@ -1566,20 +1587,20 @@ WTSEntrust* TraderMAOpt::makeEntrust(CRtnOptOrderFillField *entrustField)
 	return pRet;
 }
 
-/*
-WTSError* TraderMAOpt::makeError(CThostFtdcRspInfoField* rspInfo)
+
+WTSError* TraderMAOpt::makeError(CFirstSetField* rspInfo)
 {
-	WTSError* pRet = WTSError::create((WTSErroCode)rspInfo->ErrorID, rspInfo->ErrorMsg);
+	WTSError* pRet = WTSError::create((WTSErroCode)rspInfo->iMsgCode, rspInfo->szMsgText);
 	return pRet;
 }
-*/
 
-void TraderMAOpt::generateEntrustID(char* buffer, long long ll_cust_code, long long ll_cuacct_code, int order_bsn)
+
+void TraderMAOpt::generateEntrustID(char* buffer, long long ll_cust_code, long long ll_cuacct_code, long order_bsn)
 {
 	fmtutil::format_to(buffer, "{:010d}#{:010d}#{:06d}", ll_cust_code, ll_cuacct_code, order_bsn);
 }
 
-bool TraderMAOpt::extractEntrustID(const char* entrustid, long long &ll_cust_code, long long &ll_cuacct_code, int &order_bsn)
+bool TraderMAOpt::extractEntrustID(const char* entrustid, long long &ll_cust_code, long long &ll_cuacct_code, long &order_bsn)
 {
 	//Market.FrontID.SessionID.OrderRef
 	thread_local static char buffer[64];
@@ -1599,18 +1620,20 @@ bool TraderMAOpt::extractEntrustID(const char* entrustid, long long &ll_cust_cod
 	ll_cuacct_code = strtoul(s, NULL, 10);
 	s += idx + 1;
 
+	order_bsn = strtol(s, NULL, 10);
+
 	return true;
 }
 
-/*
-bool TraderMAOpt::IsErrorRspInfo(CThostFtdcRspInfoField *pRspInfo)
+bool TraderMAOpt::IsErrorRspInfo(CFirstSetField *pRspInfo)
 {
-	if (pRspInfo && pRspInfo->ErrorID != 0)
+	if (pRspInfo && pRspInfo->iMsgCode != 0)
 		return true;
 
 	return false;
 }
 
+/*
 void TraderMAOpt::OnErrRtnOrderInsert(CThostFtdcInputOrderField *pInputOrder, CThostFtdcRspInfoField *pRspInfo)
 {
 	WTSEntrust* entrust = makeEntrust(pInputOrder);
@@ -1734,9 +1757,8 @@ int TraderMAOpt::OnRspUserLogin(CFirstSetField *p_pFirstSet, CRspOptUserLoginFie
 
 		m_wrapperState = WS_LOGINED;
 
-		/*write_log(m_bscSink, LL_INFO, "[TraderCTPOpt][{}-{}] Login succeed, 客户代码: {}, 资产账户: {}, 交易市场: {}， 交易板块: {}, 证券账户: {}, 证券账户子编码: {}, 期权合约账户: {}, 内部机构: {}, 账户状态: {}, 交易单元: {}, 账户类型: {}, 账户标识: {}, 账户名称: {}",
-			p_pRspField->llCustCode, p_pRspField->llCuacctCode, p_pRspField->chStkex, std::string(p_pRspField->szStkbd), std::string(p_pRspField->szTrdacct), std::string(p_pRspField->szSubacctCode), std::string(p_pRspField->szOptTrdacct), p_pRspField->iIntOrg, p_pRspField->chTrdacctStatus, std::string(p_pRspField->szStkpbu), std::string(p_pRspField->szAcctType), std::string(p_pRspField->szAcctId), std::string(p_pRspField->szTrdacctName));
-		*/
+		//write_log(m_bscSink, LL_INFO, "[TraderCTPOpt][{}-{}] Login succeed, 客户代码: {}, 资产账户: {}, 交易市场: {}， 交易板块: {}, 证券账户: {}, 证券账户子编码: {}, 期权合约账户: {}, 内部机构: {}, 账户状态: {}, 交易单元: {}, 账户类型: {}, 账户标识: {}, 账户名称: {}",
+		//	p_pRspField->llCustCode, p_pRspField->llCuacctCode, p_pRspField->chStkex, std::string(p_pRspField->szStkbd), std::string(p_pRspField->szTrdacct), std::string(p_pRspField->szSubacctCode), std::string(p_pRspField->szOptTrdacct), p_pRspField->iIntOrg, p_pRspField->chTrdacctStatus, std::string(p_pRspField->szStkpbu), std::string(p_pRspField->szAcctType), std::string(p_pRspField->szAcctId), std::string(p_pRspField->szTrdacctName));
 
 		{
 			//初始化委托单缓存器
@@ -1828,16 +1850,20 @@ int TraderMAOpt::OnRspQryExpendableFund(CFirstSetField* p_pFirstSetField, CRspOp
 		std::cout << " 当日出金:" << p_pRspField->szDailyOutAmt;
 		std::cout << " 资金实际可用:" << p_pRspField->szFundRealAvl << std::endl;
 
-		m_accountInfo->setPreBalance(atof(p_pRspField->szFundPrebln)); // 资金昨日余额
-		m_accountInfo->setCommission(atof(p_pRspField->szExpPenInt));  // 预计负债利息
-		m_accountInfo->setFrozenMargin(atof(p_pRspField->szMarginInclRlt));  // 已占用保证金(含未成交)
-		m_accountInfo->setFrozenCommission(atof(p_pRspField->szFundFeeFrz));  // 资金费用冻结金额
-		m_accountInfo->setDeposit(atof(p_pRspField->szDailyInAmt));  // 当日入金
-		m_accountInfo->setAvailable(atof(p_pRspField->szFundAvl));  // 资金可用金额
-		m_accountInfo->setWithdraw(atof(p_pRspField->szDailyOutAmt));  // 当日出金
-		m_accountInfo->setBalance(atof(p_pRspField->szFundBln));  // 资金余额
+		if (b_inQryAcct) {
+			m_accountInfo->setPreBalance(atof(p_pRspField->szFundPrebln)); // 资金昨日余额
+			//m_accountInfo->setCommission(atof(p_pRspField->szExpPenInt));  // 预计负债利息
+			m_accountInfo->setFrozenMargin(atof(p_pRspField->szMarginInclRlt));  // 已占用保证金(含未成交)
+			m_accountInfo->setFrozenCommission(atof(p_pRspField->szFundFeeFrz));  // 资金费用冻结金额
+			m_accountInfo->setDeposit(atof(p_pRspField->szDailyInAmt));  // 当日入金
+			m_accountInfo->setAvailable(atof(p_pRspField->szFundAvl));  // 资金可用金额
+			m_accountInfo->setWithdraw(atof(p_pRspField->szDailyOutAmt));  // 当日出金
+			m_accountInfo->setBalance(atof(p_pRspField->szFundBln));  // 资金余额
 
-		cout << "资金余额: " << p_pRspField->szFundBln << "  资金可用余额: " << p_pRspField->szFundAvl << endl;
+			return 0;
+		}
+
+		//cout << "资金余额: " << p_pRspField->szFundBln << "  资金可用余额: " << p_pRspField->szFundAvl << endl;
 	}
 
 	return 0;
@@ -1845,50 +1871,6 @@ int TraderMAOpt::OnRspQryExpendableFund(CFirstSetField* p_pFirstSetField, CRspOp
 
 int TraderMAOpt::OnRspQryExpendableCu(CFirstSetField* p_pFirstSetField, CRspOptExpendableCuField* p_pRspField, LONGLONG p_llRequestId, int p_iFieldNum, int p_iFieldIndex)
 {
-	std::cout << " 客户代码:" << p_pRspField->llCustCode;
-	std::cout << " 资产账户:" << p_pRspField->llCuacctCode;
-	std::cout << " 内部机构:" << p_pRspField->iIntOrg;
-	std::cout << " 交易市场:" << p_pRspField->chStkex;
-	std::cout << " 交易板块:" << p_pRspField->szStkbd;
-	std::cout << " 交易单元:" << p_pRspField->szStkpbu;
-	std::cout << " 证券账户:" << p_pRspField->szTrdacct;
-	std::cout << " 期权合约账户:" << p_pRspField->szOptTrdacct;
-	std::cout << " 货币代码:" << p_pRspField->chCurrency;
-	std::cout << " 合约编码:" << p_pRspField->szOptNum;
-	std::cout << " 合约代码:" << p_pRspField->szOptCode;
-	std::cout << " 合约简称:" << p_pRspField->szOptName;
-	std::cout << " 合约类型:" << p_pRspField->chOptType;
-	std::cout << " 持仓方向:" << p_pRspField->chOptSide;
-	std::cout << " 备兑标志:" << p_pRspField->chOptCvdFlag;
-	std::cout << " 合约昨日余额:" << p_pRspField->llOptPrebln;
-	std::cout << " 合约余额:" << p_pRspField->llOptBln;
-	std::cout << " 合约可用数量:" << p_pRspField->llOptAvl;
-	std::cout << " 合约冻结数量:" << p_pRspField->llOptFrz;
-	std::cout << " 合约解冻数量:" << p_pRspField->llOptUfz;
-	std::cout << " 合约交易冻结数量:" << p_pRspField->llOptTrdFrz;
-	std::cout << " 合约交易解冻数量:" << p_pRspField->llOptTrdUfz;
-	std::cout << " 合约交易在途数量:" << p_pRspField->llOptTrdOtd;
-	std::cout << " 合约交易轧差数量:" << p_pRspField->llOptTrdBln;
-	std::cout << " 合约清算冻结数量:" << p_pRspField->llOptClrFrz;
-	std::cout << " 合约清算解冻数量:" << p_pRspField->llOptClrUfz;
-	std::cout << " 合约清算在途数量:" << p_pRspField->llOptClrOtd;
-	std::cout << " 合约买入成本:" << p_pRspField->szOptBcost;
-	std::cout << " 合约买入成本（实时）:" << p_pRspField->szOptBcostRlt;
-	std::cout << " 合约盈亏金额:" << p_pRspField->szOptPlamt;
-	std::cout << " 合约盈亏金额（实时）:" << p_pRspField->szOptPlamtRlt;
-	std::cout << " 合约市值:" << p_pRspField->szOptMktVal;
-	std::cout << " 权利金:" << p_pRspField->szOptPremium;
-	std::cout << " 保证金" << p_pRspField->szOptMargin;
-	std::cout << " 备兑股份数量:" << p_pRspField->llOptCvdAsset;
-	std::cout << " 当日平仓盈亏:" << p_pRspField->szOptClsProfit;
-	std::cout << " 累计平仓盈亏:" << p_pRspField->szSumClsProfit;
-	std::cout << " 浮动盈亏:" << p_pRspField->szOptFloatProfit;
-	std::cout << " 总盈亏:" << p_pRspField->szTotalProfit;
-	std::cout << " 合约实际持仓:" << p_pRspField->llOptRealPosi;
-	std::cout << " 合约平仓挂单数量:" << p_pRspField->llOptClsUnmatched;
-	std::cout << " 当日累计开仓数量:" << p_pRspField->llOptDailyOpenRlt;
-	std::cout << " 标的证券代码:" << p_pRspField->szOptUndlCode << std::endl;
-
 	if (p_pFirstSetField == NULL)
 	{
 		write_log(m_bscSink, LL_ERROR, "[TradeMAOpt][p_pFirstSetField is NULL!]");
@@ -1907,16 +1889,62 @@ int TraderMAOpt::OnRspQryExpendableCu(CFirstSetField* p_pFirstSetField, CRspOptE
 
 	if (p_iFieldNum > 0)
 	{
-		m_accountInfo->setCloseProfit(atof(p_pRspField->szOptClsProfit));   // 当日平仓盈亏
-		m_accountInfo->setDynProfit(atof(p_pRspField->szOptFloatProfit));  // 浮动盈亏
-		m_accountInfo->setMargin(atof(p_pRspField->szOptMargin));  // 保证金
+		std::cout << " 客户代码:" << p_pRspField->llCustCode;
+		std::cout << " 资产账户:" << p_pRspField->llCuacctCode;
+		std::cout << " 内部机构:" << p_pRspField->iIntOrg;
+		std::cout << " 交易市场:" << p_pRspField->chStkex;
+		std::cout << " 交易板块:" << p_pRspField->szStkbd;
+		std::cout << " 交易单元:" << p_pRspField->szStkpbu;
+		std::cout << " 证券账户:" << p_pRspField->szTrdacct;
+		std::cout << " 期权合约账户:" << p_pRspField->szOptTrdacct;
+		std::cout << " 货币代码:" << p_pRspField->chCurrency;
+		std::cout << " 合约编码:" << p_pRspField->szOptNum;
+		std::cout << " 合约代码:" << p_pRspField->szOptCode;
+		std::cout << " 合约简称:" << p_pRspField->szOptName;
+		std::cout << " 合约类型:" << p_pRspField->chOptType;
+		std::cout << " 持仓方向:" << p_pRspField->chOptSide;
+		std::cout << " 备兑标志:" << p_pRspField->chOptCvdFlag;
+		std::cout << " 合约昨日余额:" << p_pRspField->llOptPrebln;
+		std::cout << " 合约余额:" << p_pRspField->llOptBln;
+		std::cout << " 合约可用数量:" << p_pRspField->llOptAvl;
+		std::cout << " 合约冻结数量:" << p_pRspField->llOptFrz;
+		std::cout << " 合约解冻数量:" << p_pRspField->llOptUfz;
+		std::cout << " 合约交易冻结数量:" << p_pRspField->llOptTrdFrz;
+		std::cout << " 合约交易解冻数量:" << p_pRspField->llOptTrdUfz;
+		std::cout << " 合约交易在途数量:" << p_pRspField->llOptTrdOtd;
+		std::cout << " 合约交易轧差数量:" << p_pRspField->llOptTrdBln;
+		std::cout << " 合约清算冻结数量:" << p_pRspField->llOptClrFrz;
+		std::cout << " 合约清算解冻数量:" << p_pRspField->llOptClrUfz;
+		std::cout << " 合约清算在途数量:" << p_pRspField->llOptClrOtd;
+		std::cout << " 合约买入成本:" << p_pRspField->szOptBcost;
+		std::cout << " 合约买入成本（实时）:" << p_pRspField->szOptBcostRlt;
+		std::cout << " 合约盈亏金额:" << p_pRspField->szOptPlamt;
+		std::cout << " 合约盈亏金额（实时）:" << p_pRspField->szOptPlamtRlt;
+		std::cout << " 合约市值:" << p_pRspField->szOptMktVal;
+		std::cout << " 权利金:" << p_pRspField->szOptPremium;
+		std::cout << " 保证金" << p_pRspField->szOptMargin;
+		std::cout << " 备兑股份数量:" << p_pRspField->llOptCvdAsset;
+		std::cout << " 当日平仓盈亏:" << p_pRspField->szOptClsProfit;
+		std::cout << " 累计平仓盈亏:" << p_pRspField->szSumClsProfit;
+		std::cout << " 浮动盈亏:" << p_pRspField->szOptFloatProfit;
+		std::cout << " 总盈亏:" << p_pRspField->szTotalProfit;
+		std::cout << " 合约实际持仓:" << p_pRspField->llOptRealPosi;
+		std::cout << " 合约平仓挂单数量:" << p_pRspField->llOptClsUnmatched;
+		std::cout << " 当日累计开仓数量:" << p_pRspField->llOptDailyOpenRlt;
+		std::cout << " 标的证券代码:" << p_pRspField->szOptUndlCode << std::endl;
 
-		cout << "当日平仓盈亏: " << m_accountInfo->getCloseProfit() << "  浮动盈亏: " << m_accountInfo->getDynProfit() << "  保证金: " << m_accountInfo->getMargin() << endl;
+		if (b_inQryAcct) {
+			m_accountInfo->setCloseProfit(atof(p_pRspField->szOptClsProfit));   // 当日平仓盈亏
+			m_accountInfo->setDynProfit(atof(p_pRspField->szOptFloatProfit));  // 浮动盈亏
+			m_accountInfo->setMargin(atof(p_pRspField->szOptMargin));  // 保证金
+
+			return 0;
+		}
 
 		if (NULL == m_mapPosition)
 			m_mapPosition = PositionMap::create();
 
-		WTSContractInfo* contract = m_bdMgr->getContract(p_pRspField->szOptCode, p_pRspField->szStkbd);
+		WTSContractInfo* contract = m_bdMgr->getContract(p_pRspField->szOptNum, p_pRspField->szStkbd);
 		if (contract == NULL)
 			return 0;
 
@@ -2084,9 +2112,62 @@ int TraderMAOpt::OnRspQryAcct(CFirstSetField* p_pFirstSetField, CRspOptAcctField
 		std::cout << " 当日询价次数:" << p_pRspField->llDailyEnqryCount << std::endl;
 	}
 
-	//TODO: 没回回调
-
 	return 0;
+}
+
+int TraderMAOpt::OnRspOrder(CFirstSetField *p_pFirstSetField, CRspOptOrderField *p_pRspField, LONGLONG p_llRequestId, int p_iFieldNum, int p_iFieldIndex)
+{
+	if (p_pFirstSetField == NULL) {
+		write_log(m_bscSink, LL_ERROR, "[TradeMAOpt][p_pFirstSetField is NULL!]");
+
+		return -1;
+	}
+
+	if (p_iFieldNum == 0 || p_iFieldIndex == 1)
+	{
+		write_log(m_bscSink, LL_INFO, "[TradeMAOpt][个股期权委托申报返回结果: {},{},{},{}, ]", p_pFirstSetField->chMsgLevel, p_pFirstSetField->iMsgCode, p_pFirstSetField->szMsgDebug, p_pFirstSetField->szMsgText);
+
+		if (p_iFieldNum > 0)
+		{
+			write_log(m_bscSink, LL_INFO, "[TradeMAOpt][返回内容: {}", p_iFieldNum);
+		}
+	}
+
+	if (p_iFieldNum > 0)
+	{
+		cout << " 委托批号:" << p_pRspField->iOrderBsn;
+		cout << " 合同序号:" << p_pRspField->szOrderId;
+		cout << " 资金账户:" << p_pRspField->llCuacctCode;
+		cout << " 委托价格:" << p_pRspField->szOrderPrice;
+		cout << " 委托数量:" << p_pRspField->llOrderQty;
+		cout << " 委托金额:" << p_pRspField->szOrderAmt;
+		cout << " 委托冻结金额:" << p_pRspField->szOrderFrzAmt;
+		cout << " 交易单元:" << p_pRspField->szStkpbu;
+		cout << " 交易板块:" << p_pRspField->szStkbd;
+		cout << " 证券账户:" << p_pRspField->szTrdacct;
+		cout << " 证券账户子编码:" << p_pRspField->szSubacctCode;
+		cout << " 期权合约账户:" << p_pRspField->szOptTrdacct;
+		cout << " 合约编码:" << p_pRspField->szOptNum;
+		cout << " 合约代码:" << p_pRspField->szOptCode;
+		cout << " 标的证券代码:" << p_pRspField->szOptUndlCode;
+		cout << " 标的证券名称:" << p_pRspField->szOptUndlName;
+		cout << " 证券业务:" << p_pRspField->iStkBiz;
+		cout << " 证券业务行为:" << p_pRspField->iStkBizAction;
+		cout << " 外部合同序号:" << p_pRspField->szOrderIdEx << std::endl;
+
+		WTSEntrust* entrust = makeEntrust(p_pRspField);
+		if (entrust)
+		{
+			WTSError *err = makeError(p_pFirstSetField);
+			//g_orderMgr.onRspEntrust(entrust, err);
+			if (m_bscSink)
+				m_bscSink->onRspEntrust(entrust, err);
+			entrust->release();
+			err->release();
+		}
+
+		m_strOptNum = p_pRspField->szOptNum;
+	}
 }
 
 int TraderMAOpt::OnRspCancelOrder(CFirstSetField* p_pFirstSetField, CRspOptCancelOrderField* p_pRspField, LONGLONG p_llRequestId, int p_iFieldNum, int p_iFieldIndex)
@@ -2094,6 +2175,14 @@ int TraderMAOpt::OnRspCancelOrder(CFirstSetField* p_pFirstSetField, CRspOptCance
 	if (p_pFirstSetField == NULL)
 	{
 		write_log(m_bscSink, LL_ERROR, "[TradeMAOpt][p_pFirstSetField is NULL!]");
+
+		return -1;
+	}
+
+	if (!IsErrorRspInfo(p_pFirstSetField)) {
+		WTSError* error = WTSError::create(WEC_ORDERCANCEL, p_pFirstSetField->szMsgText);
+		if (m_bscSink)
+			m_bscSink->onTraderError(error);
 
 		return -1;
 	}
@@ -2129,9 +2218,6 @@ int TraderMAOpt::OnRspCancelOrder(CFirstSetField* p_pFirstSetField, CRspOptCance
 		std::cout << " 撤销状态:" << p_pRspField->chCancelStatus;
 		std::cout << " 外部合同序号:" << p_pRspField->szOrderIdEx << std::endl;
 
-		/*WTSError* error = WTSError::create(WEC_ORDERCANCEL, p_pRspField->chCancelStatus);
-		if (m_bscSink)
-			m_bscSink->onTraderError(error);*/
 	}
 
 	return 0;
@@ -2272,6 +2358,48 @@ int TraderMAOpt::OnRspQryCurrDayOrder(CFirstSetField *p_pFirstSetField, CRspOptC
 
 	if (p_iFieldNum > 0)
 	{
+		cout << "  定位串:" << p_pRspField->szQryPos;
+		cout << "  交易日期:" << p_pRspField->iTrdDate;
+		cout << "  委托日期:" << p_pRspField->iOrderDate;
+		cout << " 委托时间:" << p_pRspField->szOrderTime;
+		cout << "  委托批号:" << p_pRspField->iOrderBsn;
+		cout << "  合同序号:" << p_pRspField->szOrderId;
+		cout << " 委托状态:" << p_pRspField->chOrderStatus;
+		cout << " 委托有效标志:" << p_pRspField->chOrderValidFlag;
+		cout << "  内部机构:" << p_pRspField->iIntOrg;
+		cout << "  客户代码:" << p_pRspField->llCustCode;
+		cout << "  资产账户:" << p_pRspField->llCuacctCode;
+		cout << "  交易市场:" << p_pRspField->chStkex;
+		cout << "  交易板块:" << p_pRspField->szStkbd;
+		cout << "  交易单元:" << p_pRspField->szStkpbu;
+		cout << "  证券账户:" << p_pRspField->szTrdacct;
+		cout << "  证券账户子编码:" << p_pRspField->szSubacctCode;
+		cout << "  期权合约账户:" << p_pRspField->szOptTrdacct;
+		cout << "  证券业务:" << p_pRspField->iStkBiz;
+		cout << "  证券业务行为:" << p_pRspField->iStkBizAction;
+		cout << "  订单所有类型:" << p_pRspField->szOwnerType;
+		cout << "  合约编码:" << p_pRspField->szOptNum;
+		cout << "  合约代码:" << p_pRspField->szOptCode;
+		cout << "  合约简称:" << p_pRspField->szOptName;
+		cout << "  组合编码:" << p_pRspField->szCombNum;
+		cout << "  组合策略代码:" << p_pRspField->szCombStraCode;
+		cout << "  成分一:" << p_pRspField->szLeg1Num;
+		cout << "  货币代码:" << p_pRspField->chCurrency;
+		cout << "  委托价格:" << p_pRspField->szOrderPrice;
+		cout << "  委托数量:" << p_pRspField->llOrderQty;
+		cout << "  委托金额:" << p_pRspField->szOrderAmt;
+		cout << "  委托冻结金额:" << p_pRspField->szOrderFrzAmt;
+		cout << " 委托解冻金额:" << p_pRspField->szOrderUfzAmt;
+		cout << " 申报数量:" << p_pRspField->llOfferQty;
+		cout << " 申报时间:" << p_pRspField->iOfferStime;
+		cout << " 已撤单数量:" << p_pRspField->llWithdrawnQty;
+		cout << "  已成交数量:" << p_pRspField->llMatchedQty;
+		cout << "  已成交金额:" << p_pRspField->szMatchedAmt;
+		cout << " 撤单标志:" << p_pRspField->chIsWithdraw;
+		cout << " 已撤单标志:" << p_pRspField->chIsWithdrawn;
+		cout << " 标的证券类别:" << p_pRspField->chOptUndlCls;
+		cout << " 标的证券代码:" << p_pRspField->szOptUndlCode << endl;
+
 		if (NULL == m_ayOrders)
 			m_ayOrders = WTSArray::create();
 
@@ -2314,6 +2442,59 @@ int TraderMAOpt::OnRspQryCurrDayFill(CFirstSetField *p_pFirstSetField, CRspOptCu
 
 	if (p_iFieldNum > 0)
 	{
+		cout << " 定位串:" << p_pRspField->szQryPos;
+		cout << " 交易日期:" << p_pRspField->iTrdDate;
+		cout << " 成交时间:" << p_pRspField->szMatchedTime;
+		cout << " 委托日期:" << p_pRspField->iOrderDate;
+		cout << " 委托序号:" << p_pRspField->iOrderSn;
+		cout << " 委托批号:" << p_pRspField->iOrderBsn;
+		cout << " 合同序号:" << p_pRspField->szOrderId;
+		cout << " 内部机构:" << p_pRspField->iIntOrg;
+		cout << " 客户代码:" << p_pRspField->llCustCode;
+		cout << " 资产账户:" << p_pRspField->llCuacctCode;
+		cout << " 交易市场:" << p_pRspField->chStkex;
+		cout << " 交易板块:" << p_pRspField->szStkbd;
+		cout << " 交易单元:" << p_pRspField->szStkpbu;
+		cout << " 证券账户:" << p_pRspField->szTrdacct;
+		cout << " 证券账户子编码:" << p_pRspField->szSubacctCode;
+		cout << "  期权合约账户:" << p_pRspField->szOptTrdacct;
+		cout << " 证券业务:" << p_pRspField->iStkBiz;
+		cout << " 证券业务行为:" << p_pRspField->iStkBizAction;
+		cout << " 订单所有类型:" << p_pRspField->szOwnerType;
+		cout << " 合约编码:" << p_pRspField->szOptNum;
+		cout << " 合约代码:" << p_pRspField->szOptCode;
+		cout << " 合约简称:" << p_pRspField->szOptName;
+		cout << "  组合编码:" << p_pRspField->szCombNum;
+		cout << "  组合策略代码:" << p_pRspField->szCombStraCode;
+		cout << "  成分一:" << p_pRspField->szLeg1Num;
+		cout << "  成分二:" << p_pRspField->szLeg2Num;
+		cout << " 货币代码:" << p_pRspField->chCurrency;
+		cout << " 标的证券类别:" << p_pRspField->chOptUndlCls;
+		cout << " 标的证券代码:" << p_pRspField->szOptUndlCode;
+		cout << " 标的证券名称:" << p_pRspField->szOptUndlName;
+		cout << " 委托价格:" << p_pRspField->szOrderPrice;
+		cout << " 委托数量:" << p_pRspField->llOrderQty;
+		cout << " 委托金额:" << p_pRspField->szOrderAmt;
+		cout << " 委托冻结金额:" << p_pRspField->szOrderFrzAmt;
+		cout << " 撤单标志:" << p_pRspField->chIsWithdraw;
+		cout << " 成交类型:" << p_pRspField->chMatchedType;
+		cout << " 成交编号:" << p_pRspField->szMatchedSn;
+		cout << " 已成交数量:" << p_pRspField->llMatchedQty;
+		cout << " 已成交金额:" << p_pRspField->szMatchedAmt;
+		cout << " 外部合同序号:" << p_pRspField->szOrderIdEx;
+		cout << " 预占用保证金:" << p_pRspField->szMarginPreFrz;
+		cout << " 占用保证金:" << p_pRspField->szMarginFrz;
+		cout << " 预解冻保证金:" << p_pRspField->szMarginPreUfz;
+		cout << " 解冻保证金:" << p_pRspField->szMarginUfz;
+		cout << " 成交费用:" << p_pRspField->szMatchedFee << std::endl;
+
+		if (b_inQryAcct) {
+			double fee = m_accountInfo->getCommission();
+			m_accountInfo->setCommission(fee + atof(p_pRspField->szMatchedFee));
+
+			return 0;
+		}
+
 		if (NULL == m_ayTrades)
 			m_ayTrades = WTSArray::create();
 
@@ -2399,17 +2580,14 @@ int TraderMAOpt::OnRspQryCombStraPosDetail(CFirstSetField* p_pFirstSet, CRspOptC
 	return 0;
 }
 
-int TraderMAOpt::RspQryPosition()
-{
-	cout << "查询持仓信息" << endl;
-
-	return 0;
-}
-
 int TraderMAOpt::RspQryTradingAccount(void)
 {
 	cout << "查询资金账户信息" << endl;
 
+	// 设置查询为true
+	b_inQryAcct = true;
+
+	// 可用合约
 	CReqOptExpendableCuField stField = { 0 };
 	stField.llCustCode = m_llCustCode;
 	stField.llCuacctCode = m_llCuacctCode;
@@ -2422,6 +2600,7 @@ int TraderMAOpt::RspQryTradingAccount(void)
 	if (iRet)
 		cout << "ReqQryExpendableCu Error::" << m_pUserAPI->GetLastErrorText() << std::endl;
 
+	// 可用资金
 	CReqOptExpendableFundField stFieldFund = { 0 };
 	stFieldFund.llCustCode = m_llCustCode;
 	stFieldFund.llCuacctCode = m_llCuacctCode;
@@ -2429,6 +2608,11 @@ int TraderMAOpt::RspQryTradingAccount(void)
 	iRet = m_pUserAPI->ReqQryExpendableFund(&stFieldFund, genRequestID());
 	if (iRet)
 		cout << "ReqQryExpendableFund Error::" << m_pUserAPI->GetLastErrorText() << std::endl;
+
+	// 当日成交
+	this->queryTrades();
+
+	Sleep(5000);
 
 	/* 打印账户信息 */
 	cout << "昨日余额: " << m_accountInfo->getPreBalance();
@@ -2449,5 +2633,179 @@ int TraderMAOpt::RspQryTradingAccount(void)
 		ay->release();
 	});
 
+	b_inQryAcct = false;
+
 	return 0;
+}
+
+int TraderMAOpt::OnRspQryBaseInfo(CFirstSetField *p_pFirstSet, CRspOptBaseInfoField *p_pRspField, LONGLONG p_llRequestId, int p_iFieldNum, int p_iFieldIndex)
+{
+	if (p_pFirstSet == NULL)
+	{
+		std::cout << "p_pFirstSet is NULL" << std::endl;
+		return -1;
+	}
+
+	if (p_iFieldNum == 0 || p_iFieldIndex == 1)
+	{
+		std::cout << "  期权基础信息查询返回结果:[" << p_pFirstSet->chMsgLevel << "," << p_pFirstSet->iMsgCode << "," << p_pFirstSet->szMsgDebug << "," << p_pFirstSet->szMsgText << "]\n";
+		if (p_iFieldNum > 0)
+			std::cout << "返回内容[" << p_iFieldNum << "]:" << std::endl;
+	}
+
+	if (p_iFieldNum > 0)
+	{
+		cout << " 交易市场:" << p_pRspField->chStkex;
+		cout << " 交易板块:" << p_pRspField->szStkbd;
+		cout << " 合约编码:" << p_pRspField->szOptNum;
+		cout << " 合约代码:" << p_pRspField->szOptCode;
+		cout << " 合约简称:" << p_pRspField->szOptName;
+		cout << " 合约类型:" << p_pRspField->chOptType;
+		cout << " 标的证券代码:" << p_pRspField->szOptUndlCode;
+		cout << " 标的证券名称:" << p_pRspField->szOptUndlName;
+		cout << " 标的证券类别:" << p_pRspField->chOptUndlCls;
+		cout << " 履行方式:" << p_pRspField->chOptExeType;
+		cout << " 合约单位:" << p_pRspField->llOptUnit;
+		cout << " 行权价:" << p_pRspField->szExepcisePrice;
+		cout << " 首个交易日:" << p_pRspField->iStartDate;
+		cout << " 最后交易日:" << p_pRspField->iEndDate;
+		cout << " 期权行权日:" << p_pRspField->iExeRciseDate;
+		cout << " 期权到期日:" << p_pRspField->iExpireDate;
+		cout << " 合约版本号:" << p_pRspField->chUpdVersion;
+		cout << " 未平仓合约数:" << p_pRspField->llLeavesQty;
+		cout << " 昨日收盘价:" << p_pRspField->szPreClosePx;
+		cout << " 昨日结算价:" << p_pRspField->szPreSettPrice;
+		cout << " 标的券前收盘:" << p_pRspField->szUndlClsPrice;
+		cout << " 涨跌幅限制类型:" << p_pRspField->chPriceLmtType;
+		cout << " 涨停价格:" << p_pRspField->szOptUplmtPrice;
+		cout << " 跌停价格:" << p_pRspField->szOptLwlmtPrice;
+		cout << " 单位保证金:" << p_pRspField->szMarginUnit;
+		cout << " 保证金计算比例参数一:" << p_pRspField->szMarginRatio1;
+		cout << " 保证金计算比例参数二:" << p_pRspField->szMarginRatio2;
+		cout << " 整手数:" << p_pRspField->llOptLotSize;
+		cout << " 限价买单笔申报上限:" << p_pRspField->llOptLbuplmtQty;
+		cout << " 限价卖单笔申报上限:" << p_pRspField->llOptLsuplmtQty;
+		cout << " 限价单笔申报下限:" << p_pRspField->llOptLlwlmtQty;
+		cout << " 市价买单笔申报上限:" << p_pRspField->llOptMbuplmtQty;
+		cout << " 市价卖单笔申报上限:" << p_pRspField->llOptMsuplmtQty;
+		cout << " 市价单笔申报下限:" << p_pRspField->llOptMlwlmtQty;
+		cout << " 开仓标志:" << p_pRspField->chOpenFlag;
+		cout << " 停牌标志:" << p_pRspField->chSuspendedFlag;
+		cout << " 到期日标志:" << p_pRspField->chExpireFlag;
+		cout << " 调整标志:" << p_pRspField->chAdjustFlag;
+		cout << " 合约状态:" << p_pRspField->chOptStatus;
+		cout << " 合约组合标志位:" << p_pRspField->chCombFlag;
+		cout << " 组合策略到期解除日:" << p_pRspField->iAutoSplitDate;
+		cout << " 更新日期:" << p_pRspField->iUpdDate;
+		cout << " 行权交割日:" << p_pRspField->iDeliveryDate << std::endl;
+
+		m_strOptNum = p_pRspField->szOptName;
+		cout << "opt num: " << m_strOptNum << endl;
+	}
+
+	return 0;
+}
+
+int TraderMAOpt::OnRspQrySettList(CFirstSetField* p_pFirstSet, CRspOptSettListField* p_pRspField, LONGLONG p_llRequestId, int p_iFieldNum, int p_iFieldIndex)
+{
+	//g_vc6_vs10_IO<<"  Debug info:"<<m_pApi->GetLastErrorText()<<std::endl;
+	if (p_pFirstSet == NULL)
+	{
+		cout << "p_pFirstSet is NULL" << std::endl;
+		return -1;
+	}
+	if (p_iFieldNum == 0 || p_iFieldIndex == 1)
+	{
+		cout << "  客户结算单查询返回结果:[" << p_pFirstSet->chMsgLevel << "," << p_pFirstSet->iMsgCode << "," << p_pFirstSet->szMsgDebug << "," << p_pFirstSet->szMsgText << "]\n";
+
+		if (p_iFieldNum > 0)
+			cout << "返回内容[" << p_iFieldNum << "]:" << std::endl;
+	}
+	if (0 == p_pFirstSet->iMsgCode && NULL != p_pRspField)
+	{
+		cout << " 交易日期:" << p_pRspField->iTrdDate;
+		cout << " 内部机构:" << p_pRspField->iIntOrg;
+		cout << " 客户代码:" << p_pRspField->llCustCode;
+		cout << " 客户名称:" << p_pRspField->szCustName;
+		cout << " 资产账户:" << p_pRspField->llCuacctCode;
+		cout << " 货币代码:" << p_pRspField->chCurrency;
+		cout << " 期初结存:" << p_pRspField->szFundPrebln;
+		cout << " 期末结存:" << p_pRspField->szFundBln;
+		cout << " 可用资金:" << p_pRspField->szFundAvl;
+		cout << " 行权资金冻结金额:" << p_pRspField->szFundExeFrz;
+		cout << " 行权冻结维持保证金:" << p_pRspField->szFundExeMargin;
+		cout << " 占用保证金:" << p_pRspField->szFundUsedMargin;
+		cout << " 垫付资金:" << p_pRspField->szPaylater;
+		cout << " 预计垫资罚息:" << p_pRspField->szExpectPnint;
+		cout << " 归还垫资:" << p_pRspField->szRepayPaylater;
+		cout << " 归还罚息:" << p_pRspField->szRepayPnint;
+		cout << " 减免罚息:" << p_pRspField->szRemitPnint;
+		cout << " 利息归本:" << p_pRspField->szInterstIncome;
+		cout << " 利息税:" << p_pRspField->szInterstIncomeTax;
+		cout << " 银衍入金:" << p_pRspField->szInAmt;
+		cout << " 银衍出金:" << p_pRspField->szOutAmt;
+		cout << " 权利金收付:" << p_pRspField->szPremiumPay;
+		cout << " 行权收付:" << p_pRspField->szExecPay;
+		cout << " 手续费:" << p_pRspField->szSXFFee;
+		cout << " 结算费:" << p_pRspField->szQsfFee;
+		cout << " 经手费:" << p_pRspField->szJsfFee;
+		cout << " 交易所经手费:" << p_pRspField->szJysJsfFee;
+		cout << " 行权过户费:" << p_pRspField->szXqghFee;
+		cout << " 行权结算费:" << p_pRspField->szXqjsfFee;
+		cout << " 行权手续费:" << p_pRspField->szXqsxfFee;
+		cout << " 浮动盈亏:" << p_pRspField->llOptFloatProfit;
+		cout << " 占用买入额度:" << p_pRspField->llQuotaValUsed;
+		cout << " 买入额度:" << p_pRspField->llQuotaVal;
+		cout << " 权利仓市值:" << p_pRspField->szRightMktVal;
+		cout << " 义务仓市值:" << p_pRspField->szDuteMktVal;
+		cout << " 保证金风险率:" << p_pRspField->szMarginRiskRate;
+		cout << " 应追加保证金:" << p_pRspField->szAddMarginAmt;
+		cout << " 追保通知内容:" << p_pRspField->szAddMarginNotice;
+		cout << " 客户确认标志:" << p_pRspField->chConfirmFlag;
+		cout << " 客户确认标志:" << p_pRspField->chConfirmFlag;
+		cout << " 客户确认时间:" << p_pRspField->szConfirmTime << std::endl;
+	}
+	else
+	{
+		cout << " 客户结算单查询失败" << std::endl;
+	}
+	return 0;
+}
+
+int TraderMAOpt::OnRspMaxTradeQty(CFirstSetField *p_pFirstSet, CRspOptMaxTradeQtyField *p_pRspField, LONGLONG p_llRequestId, int p_iFieldNum, int p_iFieldIndex)
+{
+	if (IsErrorRspInfo(p_pFirstSet)) {
+		if (p_iFieldNum == 0 || p_iFieldIndex == 1)
+		{
+			cout << "  计算个股期权最大可交易数量请求返回结果:[" << p_pFirstSet->chMsgLevel << "," << p_pFirstSet->iMsgCode << "," << p_pFirstSet->szMsgDebug << "," << p_pFirstSet->szMsgText << "]\n";
+			if (p_iFieldNum > 0)
+			{
+				cout << "返回内容[" << p_iFieldNum << "]:" << std::endl;
+			}
+		}
+
+		if (p_iFieldNum > 0)
+		{
+			cout << " 交易市场:" << p_pRspField->chStkex;
+			cout << " 交易板块:" << p_pRspField->szStkbd;
+			cout << " 证券账户:" << p_pRspField->szTrdacct;
+			cout << " 证券账户子编码:" << p_pRspField->szSubAcctcode;
+			cout << " 期权合约账户:" << p_pRspField->szOptTrdacct;
+			cout << " 合约编码:" << p_pRspField->szOptNum;
+			cout << " 证券代码:" << p_pRspField->szStkCode;
+
+			cout << " 组合编码:" << p_pRspField->szCombNum;
+			cout << " 组合策略代码:" << p_pRspField->szCombStraCode;
+			cout << " 成分一:" << p_pRspField->szLeg1Num;
+			cout << " 成分二:" << p_pRspField->szLeg2Num;
+			cout << " 成分三:" << p_pRspField->szLeg3Num;
+			cout << " 成分四:" << p_pRspField->szLeg4Num;
+
+			cout << " 委托数量:" << p_pRspField->llOrderQty << std::endl;
+		}
+
+		return 0;
+	}
+	
+	return -1;
 }
