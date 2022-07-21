@@ -385,4 +385,5 @@ protected:
 
 	// œﬁ∂®≤È—Ø∑∂Œß
 	bool			b_inQryAcct;
+	double			m_dFee;
 };

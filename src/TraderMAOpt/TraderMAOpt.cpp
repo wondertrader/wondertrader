@@ -2424,8 +2424,6 @@ int TraderMAOpt::OnRspQryCombStraPosDetail(CFirstSetField* p_pFirstSet, CRspOptC
 
 int TraderMAOpt::RspQryTradingAccount(void)
 {
-	cout << "查询资金账户信息" << endl;
-
 	// 设置查询为true
 	b_inQryAcct = true;
 
