@@ -7,7 +7,6 @@
  *
  * \brief
  */
- 
 #pragma once
 
 #include <string>
@@ -368,9 +367,6 @@ protected:
 	PositionMap*				m_mapPosition;
 	WTSArray*					m_ayTrades;
 	WTSArray*					m_ayOrders;
-
-	//typedef std::queue<CommonExecuter>	QueryQue;
-	//QueryQue				m_queQuery;
 
 	IBaseDataMgr*				m_bdMgr;
 

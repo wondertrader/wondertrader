@@ -7,7 +7,6 @@
  *
  * \brief
  */
- 
 #include "TraderMAOpt.h"
 
 #include "../Includes/WTSError.hpp"
@@ -2456,11 +2455,8 @@ int TraderMAOpt::RspQryTradingAccount(void)
 	// 当日成交
 	this->queryTrades();
 
-	//Sleep(5000);
-
 	for (;;) {
 		if (g_iCounter == 3) {
-			//g_iCounter = 0;
 			break;
 		}
 	}
