@@ -485,6 +485,67 @@ bool cta_step(CtxHandler cHandle)
 	return ctx->step_calc();
 }
 
+void cta_set_chart_kline(CtxHandler cHandle, const char* stdCode, const char* period)
+{
+	CtaMocker* ctx = getRunner().cta_mocker();
+	if (ctx == NULL)
+		return;
+
+	ctx->set_chart_kline(stdCode, period);
+}
+
+void cta_add_chart_mark(CtxHandler cHandle, double price, const char* icon, const char* tag)
+{
+	CtaMocker* ctx = getRunner().cta_mocker();
+	if (ctx == NULL)
+		return;
+
+	ctx->add_chart_mark(price, icon, tag);
+}
+
+void cta_register_index(CtxHandler cHandle, const char* idxName, WtUInt32 indexType)
+{
+	CtaMocker* ctx = getRunner().cta_mocker();
+	if (ctx == NULL)
+		return;
+
+	ctx->register_index(idxName, indexType);
+}
+
+bool cta_register_index_line(CtxHandler cHandle, const char* idxName, const char* lineName, WtUInt32 lineType)
+{
+	CtaMocker* ctx = getRunner().cta_mocker();
+	if (ctx == NULL)
+		return false;
+
+	return ctx->register_index_line(idxName, lineName, lineType);
+}
+bool cta_add_index_baseline(CtxHandler cHandle, const char* idxName, const char* lineName, double val)
+{
+	CtaMocker* ctx = getRunner().cta_mocker();
+	if (ctx == NULL)
+		return false;
+
+	return ctx->add_index_baseline(idxName, lineName, val);
+}
+
+bool cta_set_index_value(CtxHandler cHandle, const char* idxName, const char* lineName, double val)
+{
+	CtaMocker* ctx = getRunner().cta_mocker();
+	if (ctx == NULL)
+		return false;
+
+	return ctx->set_index_value(idxName, lineName, val);
+}
+
+/*
+ *	设置指标值
+ *	@idxName	指标名称
+ *	@lineName	线条名称
+ *	@val		指标值
+ */
+EXPORT_FLAG bool		cta_set_index_value(CtxHandler cHandle, const char* idxName, const char* lineName, double val);
+
 #pragma endregion "CTA策略接口"
 
 #pragma region "SEL策略接口"

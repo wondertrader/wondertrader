@@ -133,6 +133,48 @@ public:
 
 	virtual const char* stra_load_user_data(const char* key, const char* defVal = "") { return defVal; }
 
+	/*
+	 *	设置图表K线
+	 */
+	virtual void set_chart_kline(const char* stdCode, const char* period) {}
+
+	/*
+	 *	添加信号
+	 */
+	virtual void add_chart_mark(double price, const char* icon, const char* tag) {}
+
+	/*
+	 *	添加指标
+	 *	@idxName	指标名称
+	 *	@indexType	指标类型：0-主图指标，1-副图指标
+	 */
+	virtual void register_index(const char* idxName, uint32_t indexType) {}
+
+
+	/*
+	 *	添加指标线
+	 *	@idxName	指标名称
+	 *	@lineName	线条名称
+	 *	@lineType	线性，0-曲线
+	 */
+	virtual bool register_index_line(const char* idxName, const char* lineName, uint32_t lineType) { return false; }
+
+	/*
+	 *	添加基准线
+	 *	@idxName	指标名称
+	 *	@lineName	线条名称
+	 *	@val		数值
+	 */
+	virtual bool add_index_baseline(const char* idxName, const char* lineName, double val) { return false; }
+
+	/*
+	 *	设置指标值
+	 *	@idxName	指标名称
+	 *	@lineName	线条名称
+	 *	@val		指标值
+	 */
+	virtual bool set_index_value(const char* idxName, const char* lineName, double val) { return false; }
+
 protected:
 	std::string _name;
 };
