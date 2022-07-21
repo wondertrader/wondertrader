@@ -368,6 +368,9 @@ protected:
 	WTSArray*					m_ayTrades;
 	WTSArray*					m_ayOrders;
 
+	//typedef std::queue<CommonExecuter>	QueryQue;
+	//QueryQue				m_queQuery;
+
 	IBaseDataMgr*				m_bdMgr;
 
 	boost::asio::io_service		_asyncio;
@@ -384,5 +387,5 @@ protected:
 	WtKVCache		m_oidCache;
 
 	// œﬁ∂®≤È—Ø∑∂Œß
-	bool b_inQryAcct;
+	bool			b_inQryAcct;
 };

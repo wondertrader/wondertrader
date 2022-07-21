@@ -23,6 +23,8 @@
 #include <boost/filesystem.hpp>
 #include <iostream>
 
+int g_iCounter = 0;
+
 #ifdef _WIN32
 #ifdef _WIN64
 #pragma comment(lib, "../API/mCliApi3.7/x64/maTradeApi.lib")
@@ -45,207 +47,6 @@ inline void write_log(ITraderSpi* sink, WTSLogLevel ll, const char* format, cons
 	const char* buffer = fmtutil::format(format, args...);
 
 	sink->handleTraderLog(ll, buffer);
-}
-
-void ShowErrorInfo(int iRetCode)
-{
-	printf("错误码:%d;  错误信息:", iRetCode);
-	switch (iRetCode)
-	{
-	case -3:
-		printf("invalid parameter\n");
-		break;
-	case -2:
-		printf("invalid handle\n");
-		break;
-	case 100:
-		printf("no data\n");
-		break;
-	case 101:
-		printf("timeout\n");
-		break;
-	case 102:
-		printf("exists\n");
-		break;
-	case 103:
-		printf("more data\n");
-		break;
-	case 500:
-		printf("call object function failed\n");
-		break;
-	case 501:
-		printf("create object failed\n");
-		break;
-	case 502:
-		printf("initialize object failed \n");
-		break;
-	case 503:
-		printf("object uninitiated\n");
-		break;
-	case 504:
-		printf("create resource failed\n");
-		break;
-	case 505:
-		printf("dispatch event failed\n");
-		break;
-	case 506:
-		printf("event  undefined \n");
-		break;
-	case 507:
-		printf("register event {@1} from {@2} failed\n");
-		break;
-	case 508:
-		printf("startup service {@1} failed\n");
-		break;
-	case 509:
-		printf("init service env {@1} failed\n");
-		break;
-	case 510:
-		printf("kernel/service env {@1} invalid\n");
-		break;
-	case 511:
-		printf("service {@1} status not expect\n");
-		break;
-	case 512:
-		printf("open internal queue {@1} failed\n");
-		break;
-	case 513:
-		printf("open internal queue {@1} failed\n");
-		break;
-	case 514:
-		printf("invalid message queue\n");
-		break;
-	case 515:
-		printf("xml file {@1} format invalid\n");
-		break;
-	case 516:
-		printf("open runtimedb {@1} failed\n");
-		break;
-	case 517:
-		printf("create or initialize service function {@1}:{@2} fail \n");
-		break;
-	case 518:
-		printf("option {@2} read only\n");
-		break;
-	case 519:
-		printf("option {@2} unsupported \n");
-		break;
-	case 520:
-		printf("purpose access {@2},but not granted\n");
-		break;
-	case 521:
-		printf("queue {@1} fulled, max depth\n");
-		break;
-	case 522:
-		printf("xa {@1} undefined\n");
-		break;
-	case 523:
-		printf("call biz function {@1} exception\n");
-		break;
-	case 524:
-		printf("timer {@1} callback failed, return\n");
-		break;
-	case 525:
-		printf("filter expression {@1} invalid\n");
-		break;
-	case 526:
-		printf("oem {@1} illegal\n");
-		break;
-	case 1000:
-		printf("API基本错误\n");
-		break;
-	case 1001:
-		printf("DLL缺失\n");
-		break;
-	case 1002:
-		printf("DLL初始化失败(版本不对)\n");
-		break;
-	case 1003:
-		printf("API实例已存在\n");
-		break;
-	case 1101:
-		printf("insufficient space expect\n");
-		break;
-	case 1102:
-		printf("receive packet from {@1} failed\n");
-		break;
-	case 1103:
-		printf("send packet to {@1} failed\n");
-		break;
-	case 1104:
-		printf("connect to {@1} failed\n");
-		break;
-	case 1105:
-		printf("reconnect failed in function\n");
-		break;
-	case 1106:
-		printf("reconnect {@1} success\n");
-		break;
-	case 1107:
-		printf("disconnect\n");
-		break;
-	case 1100:
-		printf("call zmq api {@2} failed\n");
-		break;
-	case 1200:
-		printf("MA_ERROR_DB_EXCEPTION\n");
-		break;
-	case 1201:
-		printf("data {@1} unload\n");
-		break;
-	case 1202:
-		printf("table {@1} cursor {@2} has already opened\n");
-		break;
-	case 1203:
-		printf("table {@1} cursor {@2} not opened\n");
-		break;
-	case 1204:
-		printf("database {@1} not opened\n");
-		break;
-	case 1205:
-		printf("invalid database connect string\n");
-		break;
-	case 1250:
-		printf("MA_ERROR_DAO_EXCEPTION\n");
-		break;
-	case 1500:
-		printf("call fix api {@2} failed\n");
-		break;
-	case 1501:
-		printf("fix parse from {@1} failed\n");
-		break;
-	case 1502:
-		printf("call kcbp api {@2} failed\n");
-		break;
-	case 1503:
-		printf("invalid packet {@2} failed\n");
-		break;
-	case 1504:
-		printf("call json api {@2} failed\n");
-		break;
-	case 1600:
-		printf("call kcxp api {@2} failed\n");
-		break;
-	case 2000:
-		printf("API套接字错误\n");
-		break;
-	case 2001:
-		printf("客户端连接失败(请检查连接参数与服务器是否开启)\n");
-		break;
-	case 2002:
-		printf("服务器创建失败\n");
-		break;
-	case 3000:
-		printf("API配置错误\n");
-		break;
-	case 3001:
-		printf("GTU节点配置文件错误\n");
-		break;
-	default:
-		printf("尚无详细信息\n");
-		break;
-
-	}
 }
 
 extern "C"
@@ -534,7 +335,6 @@ void TraderMAOpt::connect()
 
 	if (iRetCode != 0) {
 		printf("init failed\n");
-		ShowErrorInfo(iRetCode);
 	}
 
 	if (_thrd_worker == NULL)
@@ -633,7 +433,6 @@ int TraderMAOpt::doLogin()
 	iRetCode = m_pUserAPI->ReqUserLogin(&req, genRequestID());
 	if (iRetCode) {
 		std::cout << "ReqUserLogin Error::" << m_pUserAPI->GetLastErrorText() << std::endl;
-		ShowErrorInfo(iRetCode);
 	}
 
 	if (iRetCode != 0)
@@ -819,7 +618,7 @@ int TraderMAOpt::orderInsert(WTSEntrust* entrust)
 	WTSContractInfo* ct = entrust->getContractInfo();
 	if (ct == NULL) {
 		cout << "合约信息为空" << endl;
-		//return -1;
+		return -1;
 	}
 
 	CReqOptOrderField req;
@@ -962,6 +761,8 @@ int TraderMAOpt::queryAccount()
 		return -1;
 	}
 
+	m_accountInfo->setCommission(0);  // 重置费用
+
 	CReqOptAcctField req = { 0 };
 	memset(&req, 0, sizeof(req));
 
@@ -971,15 +772,33 @@ int TraderMAOpt::queryAccount()
 	req.iQryNum = 13;
 	strncpy(req.szStkbd, m_strStkBD.c_str(), sizeof(req.szStkbd));
 
-	//std::cout << " llcustcode: " << req.llCustCode << "  llcuacctcode: " << req.llCuacctCode << "  queryFlag: " << req.chQueryFlag << " szStkbd: " << req.szStkbd << "\n";
-
-	int iRet = m_pUserAPI->ReqQryAcct(&req, genRequestID());
-	if (iRet) {
-		ShowErrorInfo(iRet);
-		std::cout << "ReqQryAcct Error: " << m_pUserAPI->GetLastErrorText() << std::endl;
-	}
+	//int iRet = m_pUserAPI->ReqQryAcct(&req, genRequestID());
+	//if (iRet) {
+	//	ShowErrorInfo(iRet);
+	//	std::cout << "ReqQryAcct Error: " << m_pUserAPI->GetLastErrorText() << std::endl;
+	//}
 
 	this->RspQryTradingAccount();
+
+	/* 打印账户信息 */
+	cout << "****************************" << endl;
+	cout << "昨日余额: " << m_accountInfo->getPreBalance();
+	cout << "  今日余额: " << m_accountInfo->getBalance();
+	cout << "  可取资金: " << m_accountInfo->getAvailable();
+	cout << "  平仓收益: " << m_accountInfo->getCloseProfit();
+	cout << "  浮动盈亏: " << m_accountInfo->getDynProfit();
+	cout << "  占用保证金: " << m_accountInfo->getMargin();
+	cout << "  交易手续费: " << m_accountInfo->getCommission() << endl;
+
+	WTSArray * ay = WTSArray::create();
+	ay->append(m_accountInfo, false);
+
+	_asyncio.post([this, ay] {
+		if (m_bscSink)
+			m_bscSink->onRspAccount(ay);
+
+		ay->release();
+	});
 
 	//m_queQuery.push([this]() {
 	//	CThostFtdcQryTradingAccountField req;
@@ -1042,6 +861,19 @@ int TraderMAOpt::queryOrders()
 	int iRet = m_pUserAPI->ReqQryCurrDayOrder(&req, genRequestID());
 	if (iRet)
 		cout << "ReqQryCurrDayOrder Error::" << m_pUserAPI->GetLastErrorText() << std::endl;
+
+	//m_queQuery.push([this]() {
+	//	CReqOptCurrDayOrderField req1 = { 0 };
+	//	memset(&req1, 0, sizeof(req));
+	//	req1.llCustCode = m_llCustCode;
+	//	req1.llCuacctCode = m_llCuacctCode;
+	//	strncpy(req1.szStkbd, m_strStkBD.c_str(), sizeof(req1.szStkbd));
+	//	strncpy(req1.szTrdacct, m_strTrdAcct.c_str(), sizeof(req1.szTrdacct));
+	//	req1.chQueryFlag = '1';
+	//	req1.iQryNum = 10;
+
+	//	m_pUserAPI->ReqQryCurrDayOrder(&req1, genRequestID());
+	//});
 
 	return 0;
 }
@@ -1558,6 +1390,7 @@ WTSEntrust* TraderMAOpt::makeEntrust(CRspOptOrderField *entrustField)
 	//{
 	//	pRet->setUserTag(it->second.c_str());
 	//}
+
 	//std::string usertag = m_iniHelper.readString(ENTRUST_SECTION, pRet->getEntrustID());
 	//if (!usertag.empty())
 	//	pRet->setUserTag(usertag.c_str());
@@ -1803,6 +1636,7 @@ int TraderMAOpt::OnRspQryExpendableFund(CFirstSetField* p_pFirstSetField, CRspOp
 	if (p_pFirstSetField == NULL)
 	{
 		write_log(m_bscSink, LL_ERROR, "[TradeMAOpt][p_pFirstSetField is NULL!]");
+		++g_iCounter;
 		return -1;
 	}
 
@@ -1860,12 +1694,14 @@ int TraderMAOpt::OnRspQryExpendableFund(CFirstSetField* p_pFirstSetField, CRspOp
 			m_accountInfo->setWithdraw(atof(p_pRspField->szDailyOutAmt));  // 当日出金
 			m_accountInfo->setBalance(atof(p_pRspField->szFundBln));  // 资金余额
 
+			++g_iCounter;
 			return 0;
 		}
 
 		//cout << "资金余额: " << p_pRspField->szFundBln << "  资金可用余额: " << p_pRspField->szFundAvl << endl;
 	}
 
+	++g_iCounter;
 	return 0;
 }
 
@@ -1874,6 +1710,7 @@ int TraderMAOpt::OnRspQryExpendableCu(CFirstSetField* p_pFirstSetField, CRspOptE
 	if (p_pFirstSetField == NULL)
 	{
 		write_log(m_bscSink, LL_ERROR, "[TradeMAOpt][p_pFirstSetField is NULL!]");
+		++g_iCounter;
 		return -1;
 	}
 
@@ -1938,6 +1775,7 @@ int TraderMAOpt::OnRspQryExpendableCu(CFirstSetField* p_pFirstSetField, CRspOptE
 			m_accountInfo->setDynProfit(atof(p_pRspField->szOptFloatProfit));  // 浮动盈亏
 			m_accountInfo->setMargin(atof(p_pRspField->szOptMargin));  // 保证金
 
+			++g_iCounter;
 			return 0;
 		}
 
@@ -2063,6 +1901,7 @@ int TraderMAOpt::OnRspQryExpendableCu(CFirstSetField* p_pFirstSetField, CRspOptE
 		}
 	}
 
+	++g_iCounter;
 	return 0;
 }
 
@@ -2426,6 +2265,7 @@ int TraderMAOpt::OnRspQryCurrDayFill(CFirstSetField *p_pFirstSetField, CRspOptCu
 	if (p_pFirstSetField == NULL)
 	{
 		write_log(m_bscSink, LL_ERROR, "[TradeMAOpt][p_pFirstSetField is NULL!]");
+		++g_iCounter;
 		//triggerQuery();
 		return -1;
 	}
@@ -2492,6 +2332,7 @@ int TraderMAOpt::OnRspQryCurrDayFill(CFirstSetField *p_pFirstSetField, CRspOptCu
 			double fee = m_accountInfo->getCommission();
 			m_accountInfo->setCommission(fee + atof(p_pRspField->szMatchedFee));
 
+			++g_iCounter;
 			return 0;
 		}
 
@@ -2513,6 +2354,7 @@ int TraderMAOpt::OnRspQryCurrDayFill(CFirstSetField *p_pFirstSetField, CRspOptCu
 		});
 	}
 
+	++g_iCounter;
 	return 0;
 }
 
@@ -2587,6 +2429,7 @@ int TraderMAOpt::RspQryTradingAccount(void)
 	// 设置查询为true
 	b_inQryAcct = true;
 
+
 	// 可用合约
 	CReqOptExpendableCuField stField = { 0 };
 	stField.llCustCode = m_llCustCode;
@@ -2612,27 +2455,16 @@ int TraderMAOpt::RspQryTradingAccount(void)
 	// 当日成交
 	this->queryTrades();
 
-	Sleep(5000);
+	//Sleep(5000);
 
-	/* 打印账户信息 */
-	cout << "昨日余额: " << m_accountInfo->getPreBalance();
-	cout << "  今日余额: " << m_accountInfo->getBalance();
-	cout << "  可取资金: " << m_accountInfo->getAvailable();
-	cout << "  平仓收益: " << m_accountInfo->getCloseProfit();
-	cout << "  浮动盈亏: " << m_accountInfo->getDynProfit();
-	cout << "  占用保证金: " << m_accountInfo->getMargin();
-	cout << "  交易手续费: " << m_accountInfo->getCommission() << endl;
+	for (;;) {
+		if (g_iCounter == 3) {
+			//g_iCounter = 0;
+			break;
+		}
+	}
 
-	WTSArray * ay = WTSArray::create();
-	ay->append(m_accountInfo, false);
-
-	_asyncio.post([this, ay] {
-		if (m_bscSink)
-			m_bscSink->onRspAccount(ay);
-
-		ay->release();
-	});
-
+	g_iCounter = 0;
 	b_inQryAcct = false;
 
 	return 0;
@@ -2700,7 +2532,6 @@ int TraderMAOpt::OnRspQryBaseInfo(CFirstSetField *p_pFirstSet, CRspOptBaseInfoFi
 		cout << " 行权交割日:" << p_pRspField->iDeliveryDate << std::endl;
 
 		m_strOptNum = p_pRspField->szOptName;
-		cout << "opt num: " << m_strOptNum << endl;
 	}
 
 	return 0;
