@@ -4,8 +4,8 @@
  *
  * \author Wesley
  * \date 2020/03/30
- * 
- * \brief 
+ *
+ * \brief
  */
 #include "WtLocalExecuter.h"
 #include "TraderAdapter.h"
@@ -29,6 +29,8 @@ WtLocalExecuter::WtLocalExecuter(WtExecuterFactory* factory, const char* name, I
 	, _channel_ready(false)
 	, _scale(1.0)
 	, _auto_clear(true)
+	, _skip_empty_position{ false }
+	, _recall_mtx{ false }
 {
 }
 
@@ -48,10 +50,11 @@ bool WtLocalExecuter::init(WTSVariant* params)
 	_config->retain();
 
 	_scale = params->getDouble("scale");
-	_strict_sync  = params->getBoolean("strict_sync");
+	_strict_sync = params->getBoolean("strict_sync");
+	_recall_mtx = params->getBoolean("recall_mtx");
 
 	uint32_t poolsize = params->getUInt32("poolsize");
-	if(poolsize > 0)
+	if (poolsize > 0)
 	{
 		_pool.reset(new boost::threadpool::pool(poolsize));
 	}
@@ -64,17 +67,17 @@ bool WtLocalExecuter::init(WTSVariant* params)
 	 *	excludes: 排除列表，格式如CFFEX.IF
 	 */
 	WTSVariant* cfgClear = params->get("clear");
-	if(cfgClear)
+	if (cfgClear)
 	{
 		_auto_clear = cfgClear->getBoolean("active");
 		WTSVariant* cfgItem = cfgClear->get("includes");
-		if(cfgItem)
+		if (cfgItem)
 		{
 			if (cfgItem->type() == WTSVariant::VT_String)
 				_clear_includes.insert(cfgItem->asCString());
 			else if (cfgItem->type() == WTSVariant::VT_Array)
 			{
-				for(uint32_t i = 0; i < cfgItem->size(); i++)
+				for (uint32_t i = 0; i < cfgItem->size(); i++)
 					_clear_includes.insert(cfgItem->get(i)->asCString());
 			}
 		}
@@ -96,7 +99,7 @@ bool WtLocalExecuter::init(WTSVariant* params)
 	if (cfgGroups)
 	{
 		auto names = cfgGroups->memberNames();
-		for(const std::string& gpname : names)
+		for (const std::string& gpname : names)
 		{
 			CodeGroupPtr& gpInfo = _groups[gpname];
 			if (gpInfo == NULL)
@@ -107,7 +110,7 @@ bool WtLocalExecuter::init(WTSVariant* params)
 
 			WTSVariant* cfgGrp = cfgGroups->get(gpname.c_str());
 			auto codes = cfgGrp->memberNames();
-			for(const std::string& code : codes)
+			for (const std::string& code : codes)
 			{
 				gpInfo->_items[code] = cfgGrp->getDouble(code.c_str());
 				_code_to_groups[code] = gpInfo;
@@ -115,7 +118,7 @@ bool WtLocalExecuter::init(WTSVariant* params)
 		}
 	}
 
-	WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "Local executer inited, scale: {}, auto_clear: {}, strict_sync: {}, thread poolsize: {}, code_groups: {}", 
+	WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "Local executer inited, scale: {}, auto_clear: {}, strict_sync: {}, thread poolsize: {}, code_groups: {}",
 		_scale, _auto_clear, _strict_sync, poolsize, _groups.size());
 
 	return true;
@@ -131,13 +134,15 @@ ExecuteUnitPtr WtLocalExecuter::getUnit(const char* stdCode, bool bAutoCreate /*
 		des = "default";
 
 	auto it = _unit_map.find(stdCode);
-	if(it != _unit_map.end())
+	if (it != _unit_map.end())
 	{
 		return it->second;
 	}
 
 	if (bAutoCreate)
 	{
+		if (_recall_mtx)
+			StdUniqueLock lock(_mtx_iter);
 		WTSVariant* cfg = policy->get(des.c_str());
 
 		const char* name = cfg->getCString("name");
@@ -256,13 +261,13 @@ void WtLocalExecuter::on_position_changed(const char* stdCode, double targetPos)
 	if (unit == NULL)
 		return;
 
-	targetPos = round(targetPos*_scale);
+	targetPos = round(targetPos * _scale);
 
 	double oldVol = _target_pos[stdCode];
 	//int32_t targetPos = oldVol + diffQty;
 	_target_pos[stdCode] = targetPos;
 
-	if(!decimal::eq(oldVol, targetPos))
+	if (!decimal::eq(oldVol, targetPos))
 	{
 		WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "Target position of {} changed: {} -> {}", stdCode, oldVol, targetPos);
 	}
@@ -282,12 +287,12 @@ void WtLocalExecuter::set_position(const faster_hashmap<LongKey, double>& target
 	 *	先要把目标头寸进行组合匹配
 	 */
 	auto real_targets = targets;
-	for(auto& v : _groups)
+	for (auto& v : _groups)
 	{
 		const CodeGroupPtr& gpInfo = v.second;
 		bool bHit = false;
 		double gpQty = DBL_MAX;
-		for(auto& vi : gpInfo->_items)
+		for (auto& vi : gpInfo->_items)
 		{
 			double unit = vi.second;
 			auto it = real_targets.find(vi.first);
@@ -304,7 +309,7 @@ void WtLocalExecuter::set_position(const faster_hashmap<LongKey, double>& target
 			}
 		}
 
-		if(bHit && decimal::gt(gpQty, 0))
+		if (bHit && decimal::gt(gpQty, 0))
 		{
 			real_targets[gpInfo->_name] = gpQty;
 			for (auto& vi : gpInfo->_items)
@@ -318,16 +323,16 @@ void WtLocalExecuter::set_position(const faster_hashmap<LongKey, double>& target
 
 	for (auto it = targets.begin(); it != targets.end(); it++)
 	{
-		const char* stdCode = it->first.c_str();		
+		const char* stdCode = it->first.c_str();
 		double newVol = it->second;
 		ExecuteUnitPtr unit = getUnit(stdCode);
 		if (unit == NULL)
 			continue;
 
-		newVol = round(newVol*_scale);
+		newVol = round(newVol * _scale);
 		double oldVol = _target_pos[stdCode];
 		_target_pos[stdCode] = newVol;
-		if(!decimal::eq(oldVol, newVol))
+		if (!decimal::eq(oldVol, newVol))
 		{
 			WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "Target position of {} changed: {} -> {}", stdCode, oldVol, newVol);
 		}
@@ -341,7 +346,7 @@ void WtLocalExecuter::set_position(const faster_hashmap<LongKey, double>& target
 		if (_pool)
 		{
 			std::string code = stdCode;
-			_pool->schedule([unit, code, newVol](){
+			_pool->schedule([unit, code, newVol]() {
 				unit->self()->set_position(code.c_str(), newVol);
 			});
 		}
@@ -357,7 +362,7 @@ void WtLocalExecuter::set_position(const faster_hashmap<LongKey, double>& target
 		const char* code = it->first.c_str();
 		double& pos = (double&)it->second;
 		auto tit = targets.find(code);
-		if(tit != targets.end())
+		if (tit != targets.end())
 			continue;
 
 		WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "{} is not in target, set to 0 automatically", code);
@@ -369,7 +374,7 @@ void WtLocalExecuter::set_position(const faster_hashmap<LongKey, double>& target
 		//unit->self()->set_position(code, 0);
 		if (_pool)
 		{
-			_pool->schedule([unit, code](){
+			_pool->schedule([unit, code]() {
 				unit->self()->set_position(code, 0);
 			});
 		}
@@ -383,12 +388,12 @@ void WtLocalExecuter::set_position(const faster_hashmap<LongKey, double>& target
 
 	//如果开启了严格同步，则需要检查通道持仓
 	//如果通道持仓不在管理中，则直接平掉
-	if(_strict_sync)
+	if (_strict_sync)
 	{
-		for(const LongKey& stdCode : _channel_holds)
+		for (const LongKey& stdCode : _channel_holds)
 		{
 			auto it = _target_pos.find(stdCode.c_str());
-			if(it != _target_pos.end())
+			if (it != _target_pos.end())
 				continue;
 
 			WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "{} is not in management, set to 0 due to strict sync mode", stdCode.c_str());
@@ -422,7 +427,7 @@ void WtLocalExecuter::on_tick(const char* stdCode, WTSTickData* newTick)
 	if (_pool)
 	{
 		newTick->retain();
-		_pool->schedule([unit, newTick](){
+		_pool->schedule([unit, newTick]() {
 			unit->self()->on_tick(newTick);
 			newTick->release();
 		});
@@ -443,7 +448,7 @@ void WtLocalExecuter::on_trade(uint32_t localid, const char* stdCode, bool isBuy
 	if (_pool)
 	{
 		std::string code = stdCode;
-		_pool->schedule([localid, unit, code, isBuy, vol, price](){
+		_pool->schedule([localid, unit, code, isBuy, vol, price]() {
 			unit->self()->on_trade(localid, code.c_str(), isBuy, vol, price);
 		});
 	}
@@ -463,7 +468,7 @@ void WtLocalExecuter::on_order(uint32_t localid, const char* stdCode, bool isBuy
 	if (_pool)
 	{
 		std::string code = stdCode;
-		_pool->schedule([localid, unit, code, isBuy, leftQty, price, isCanceled](){
+		_pool->schedule([localid, unit, code, isBuy, leftQty, price, isCanceled]() {
 			unit->self()->on_order(localid, code.c_str(), isBuy, leftQty, price, isCanceled);
 		});
 	}
@@ -484,7 +489,7 @@ void WtLocalExecuter::on_entrust(uint32_t localid, const char* stdCode, bool bSu
 	{
 		std::string code = stdCode;
 		std::string msg = message;
-		_pool->schedule([unit, localid, code, bSuccess, msg](){
+		_pool->schedule([unit, localid, code, bSuccess, msg]() {
 			unit->self()->on_entrust(localid, code.c_str(), bSuccess, msg.c_str());
 		});
 	}
@@ -496,6 +501,8 @@ void WtLocalExecuter::on_entrust(uint32_t localid, const char* stdCode, bool bSu
 
 void WtLocalExecuter::on_channel_ready()
 {
+	if (_recall_mtx)
+		StdUniqueLock lock(_mtx_iter);
 	_channel_ready = true;
 	for (auto it = _unit_map.begin(); it != _unit_map.end(); it++)
 	{
@@ -505,7 +512,7 @@ void WtLocalExecuter::on_channel_ready()
 			//unitPtr->self()->on_channel_ready();
 			if (_pool)
 			{
-				_pool->schedule([unitPtr](){
+				_pool->schedule([unitPtr]() {
 					unitPtr->self()->on_channel_ready();
 				});
 			}
@@ -519,6 +526,8 @@ void WtLocalExecuter::on_channel_ready()
 
 void WtLocalExecuter::on_channel_lost()
 {
+	if (_recall_mtx)
+		StdUniqueLock lock(_mtx_iter);
 	_channel_ready = false;
 	for (auto it = _unit_map.begin(); it != _unit_map.end(); it++)
 	{
@@ -528,7 +537,7 @@ void WtLocalExecuter::on_channel_lost()
 			//unitPtr->self()->on_channel_lost();
 			if (_pool)
 			{
-				_pool->schedule([unitPtr](){
+				_pool->schedule([unitPtr]() {
 					unitPtr->self()->on_channel_lost();
 				});
 			}
@@ -542,6 +551,8 @@ void WtLocalExecuter::on_channel_lost()
 
 void WtLocalExecuter::on_position(const char* stdCode, bool isLong, double prevol, double preavail, double newvol, double newavail, uint32_t tradingday)
 {
+	if (_recall_mtx)
+		StdUniqueLock lock(_mtx_iter);
 	_channel_holds.insert(stdCode);
 
 	/*
@@ -573,7 +584,7 @@ void WtLocalExecuter::on_position(const char* stdCode, bool isLong, double prevo
 	//先检查排除列表
 	//如果在排除列表中，则直接退出
 	auto it = _clear_excludes.find(fullPid);
-	if(it != _clear_excludes.end())
+	if (it != _clear_excludes.end())
 	{
 		WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "Position of {}, as prev hot contract, won't be cleared for it's in exclude list", stdCode);
 		return;
@@ -581,7 +592,7 @@ void WtLocalExecuter::on_position(const char* stdCode, bool isLong, double prevo
 
 	//如果包含列表不为空，再检查是否在包含列表中
 	//如果为空，则全部清理，不再进入该逻辑
-	if(!_clear_includes.empty())
+	if (!_clear_includes.empty())
 	{
 		it = _clear_includes.find(fullPid);
 		if (it == _clear_includes.end())
@@ -599,7 +610,7 @@ void WtLocalExecuter::on_position(const char* stdCode, bool isLong, double prevo
 		if (_pool)
 		{
 			std::string code = stdCode;
-			_pool->schedule([unit, code](){
+			_pool->schedule([unit, code]() {
 				unit->self()->clear_all_position(code.c_str());
 			});
 		}
