@@ -216,6 +216,7 @@ public:
 		char entrustid[64] = { 0 };
 		m_pTraderApi->makeEntrustID(entrustid, 64);
 		entrust->setEntrustID(entrustid);
+		entrust->setUserTag("test");
 
 		if(!isNet)
 			WTSLogger::info("[{}]Entrusting,Contract: {}.{},Price: {},Volume: {},Action: {}{}", m_pParams->getCString("user"), exchg, code, price, qty, offset == 0 ? "Open" : "Close", bs == 0 ? "Long" : "Short");
@@ -318,7 +319,7 @@ public:
 
 
 		WTSLogger::info("[{}]Canceling [{}]...", m_pParams->getCString("user"), orderid);
-		WTSEntrustAction* action = WTSEntrustAction::create(ordInfo->getCode());
+		WTSEntrustAction* action = WTSEntrustAction::create(ordInfo->getCode(), ordInfo->getExchg());
 		action->setEntrustID(ordInfo->getEntrustID());
 		action->setOrderID(orderid);
 		action->setActionFlag(WAF_CANCEL);
@@ -435,7 +436,10 @@ public:
 		{
 			WTSOrderInfo* ordInfo = (WTSOrderInfo*)((WTSArray*)ayOrders)->at(i);
 			if (ordInfo->isAlive())
+			{
 				m_mapOrds->add(ordInfo->getOrderID(), ordInfo, true);
+				WTSLogger::info("[{}] Live order, code: {}, OrderId: {}", m_pParams->getCString("user"), ordInfo->getCode(), ordInfo->getOrderID());
+			}
 		}
 
 		WTSLogger::info("[{}] Orders updated, {} orders totally, {} orders live", m_pParams->getCString("user"), cnt, m_mapOrds->size());

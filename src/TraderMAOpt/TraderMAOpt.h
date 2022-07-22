@@ -259,8 +259,6 @@ public:
 	// 可用合约资产查询响应
 	virtual int OnRspQryExpendableCu(CFirstSetField* p_pFirstSetField, CRspOptExpendableCuField* p_pRspField, LONGLONG p_llRequestId, int p_iFieldNum, int p_iFieldIndex) override;
 
-	// 个股期权合约账户查询响应
-	virtual int OnRspQryAcct(CFirstSetField* p_pFirstSetField, CRspOptAcctField* p_pRspField, LONGLONG p_llRequestId, int p_iFieldNum, int p_iFieldIndex) override;
 
 	// 个股期权委托申报响应
 	virtual int OnRspOrder(CFirstSetField *p_pFirstSet, CRspOptOrderField *p_pRspField, LONGLONG p_llRequestId, int p_iFieldNum, int p_iFieldIndex) override;
@@ -271,14 +269,14 @@ public:
 	// 确认回报
 	virtual int OnRtnOrderConfirm(CRtnOptOrderConfirmField* p_pRspField) override;
 
-	// 期权基础信息查询响应
-	virtual int OnRspQryBaseInfo(CFirstSetField *p_pFirstSet, CRspOptBaseInfoField *p_pRspField, LONGLONG p_llRequestId, int p_iFieldNum, int p_iFieldIndex);
-
 	// 成交回报--委托信息
 	virtual int OnRtnOrder(CRtnOptOrderField* p_pRspField) override;
 
 	// 成交回报--成交信息
 	virtual int OnRtnOrderFill(CRtnOptOrderFillField* p_pRtnField) override;
+
+
+	virtual int OnRtnSubTopic(CRspSubTopicField* p_pRspField) override;
 
 	// 成交回报--合约信息
 	virtual int OnRtnContract(CRtnOptContractField* p_pRspField) override;
@@ -292,43 +290,28 @@ public:
 	// 个股期权当日成交查询响应
 	virtual int OnRspQryCurrDayFill(CFirstSetField* p_pFirstSetField, CRspOptCurrDayFillField* p_pRspField, LONGLONG p_llRequestId, int p_iFieldNum, int p_iFieldIndex) override;
 
-	//可用组合持仓明细查询响应 2015/8/5
-	virtual int OnRspQryCombStraPosDetail(CFirstSetField* p_pFirstSetField, CRspOptCombStraPosDetailField* p_pRspField, LONGLONG p_llRequestId, int p_iFieldNum, int p_iFieldIndex) override;
-
-	// 计算个股期权最大可交易数量响应
-	virtual int OnRspMaxTradeQty(CFirstSetField *p_pFirstSet, CRspOptMaxTradeQtyField *p_pRspField, LONGLONG p_llRequestId, int p_iFieldNum, int p_iFieldIndex) override;
-
-	/////////////////// 自定义接口
-public:
-	// 资金账户查询
-	int RspQryTradingAccount(void);
-
 protected:
 	/*
 	*	检查错误信息
 	*/
 	bool IsErrorRspInfo(CFirstSetField *pRspInfo);
 
-
+	WTSOrderInfo*	makeOrderInfo(CRspOptCancelOrderField* orderField);
 	WTSOrderInfo*	makeOrderInfo(CRspOptOrderField* orderField);
 	WTSOrderInfo*	makeOrderInfo(CRtnOptOrderField* orderField);
 	WTSOrderInfo*   makeOrderInfo(CRspOptCurrDayOrderField* daiOrderField);
-	//WTSOrderInfo*   makeOrderInfo(CRspOptCancelOrderField* cancelOrderField);
 	WTSEntrust*		makeEntrust(CRspOptOrderField  *entrustField);
 	WTSError*		makeError(CFirstSetField* rspInfo);
 	WTSTradeInfo*	makeTradeRecord(CRtnOptOrderFillField *tradeField);
 	WTSTradeInfo*   makeTradeRecord(CRspOptCurrDayFillField *dayTradeField);
 	WTSEntrust*		makeEntrust(CRtnOptOrderFillField  *entrustField);
 
-	void			generateEntrustID(char* buffer, long long ll_cust_code, long long ll_cuacct_code, long order_bsn);
-	bool			extractEntrustID(const char* entrustid, long long &ll_cust_code, long long &ll_cuacct_code, long &order_bsn);
+	void			generateEntrustID(char* buffer, int order_bsn);
+	bool			extractEntrustID(const char* entrustid, int &order_bsn);
 
 	uint32_t		genRequestID();
 
 protected:
-	int64_t			m_llCustCode;  // 客户代码
-	int64_t			m_llCuacctCode;  // 资金户代码
-	int				m_iInitOrg;  // 机构代码
 	std::string		m_strChannel;  // 操作渠道
 
 	std::string		m_strHost;  // IP地址
@@ -336,7 +319,11 @@ protected:
 
 	std::string		m_strUser;
 	std::string		m_strPass;
-	std::string		m_strTrdAcct;  // 交易账户
+
+	std::string		m_strTrdAcct;		// 交易账户
+	int64_t			m_llCustCode;		// 客户代码
+	int64_t			m_llCuacctCode;		// 资金户代码
+	int32_t			m_iInitOrg;			
 
 	std::string		m_strAuthData;
 	std::string		m_strEncryptKey;
@@ -346,14 +333,11 @@ protected:
 	std::string		m_strEncryptType;
 	std::string		m_strAcctType;
 
-	std::string		m_strStkBD;  // 交易板块
-	std::string		m_strStkPBU;  // 交易单元
+	std::string		m_strShPBU;  // 交易单元
+	std::string		m_strSzPBU;  // 交易单元
 
-	std::string		m_strOptNum;  // 合约编码
-	std::string		m_strOrderId;  // 合同编号
-
-	ITraderSpi*		m_bscSink;
-	IOptTraderSpi*	m_optSink;
+	ITraderSpi*					m_bscSink;
+	IOptTraderSpi*				m_optSink;
 
 	uint32_t					m_lDate;
 	std::atomic<uint32_t>		m_orderRef;		//报单引用
@@ -373,17 +357,9 @@ protected:
 	boost::asio::io_service		_asyncio;
 	StdThreadPtr				_thrd_worker;
 
-	std::string		m_strModule;
-	DllHandle		m_hInstMA;
-
-	WTSAccountInfo*         m_accountInfo;
+	std::string					m_strModule;
+	DllHandle					m_hInstMA;
 
 	//委托单标记缓存器
-	WtKVCache		m_eidCache;
-	//订单标记缓存器
-	WtKVCache		m_oidCache;
-
-	// 限定查询范围
-	bool			b_inQryAcct;
-	double			m_dFee;
+	WtKVCache					m_eidCache;
 };
