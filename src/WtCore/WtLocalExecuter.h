@@ -4,8 +4,8 @@
  *
  * \author Wesley
  * \date 2020/03/30
- * 
- * \brief 
+ *
+ * \brief
  */
 #pragma once
 #include "ITrdNotifySink.h"
@@ -13,6 +13,7 @@
 #include "WtExecuterFactory.h"
 #include "../Includes/ExecuteDefs.h"
 #include "../Share/threadpool.hpp"
+#include "../Share/StdUtils.hpp"
 
 NS_WTP_BEGIN
 class WTSVariant;
@@ -22,7 +23,7 @@ class IHotMgr;
 
 //本地执行器
 class WtLocalExecuter : public ExecuteContext,
-		public ITrdNotifySink, public IExecCommand
+	public ITrdNotifySink, public IExecCommand
 {
 public:
 	WtLocalExecuter(WtExecuterFactory* factory, const char* name, IDataManager* dataMgr);
@@ -94,12 +95,12 @@ public:
 	virtual void on_order(uint32_t localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled = false) override;
 
 	/*
-	 *	
+	 *
 	 */
 	virtual void on_position(const char* stdCode, bool isLong, double prevol, double preavail, double newvol, double newavail, uint32_t tradingday) override;
 
 	/*
-	 *	
+	 *
 	 */
 	virtual void on_entrust(uint32_t localid, const char* stdCode, bool bSuccess, const char* message) override;
 
@@ -120,11 +121,13 @@ private:
 	WtExecuterFactory*	_factory;
 	IDataManager*		_data_mgr;
 	WTSVariant*			_config;
+	StdUniqueMutex		_mtx_iter;
 
 	double				_scale;				//放大倍数
 	bool				_auto_clear;		//是否自动清理上一期的主力合约头寸
 	bool				_strict_sync;		//是否严格同步目标仓位
 	bool				_channel_ready;
+	bool				_recall_mtx;			// 是否为回调添加锁，当执行单元数量过多时，需要添加锁以避免线程不安全带来的影响
 
 	typedef struct _CodeGroup
 	{

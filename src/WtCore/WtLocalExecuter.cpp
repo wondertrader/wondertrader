@@ -4,8 +4,8 @@
  *
  * \author Wesley
  * \date 2020/03/30
- * 
- * \brief 
+ *
+ * \brief
  */
 #include "WtLocalExecuter.h"
 #include "TraderAdapter.h"
@@ -29,6 +29,7 @@ WtLocalExecuter::WtLocalExecuter(WtExecuterFactory* factory, const char* name, I
 	, _channel_ready(false)
 	, _scale(1.0)
 	, _auto_clear(true)
+	, _recall_mtx{ false }
 {
 }
 
@@ -48,7 +49,8 @@ bool WtLocalExecuter::init(WTSVariant* params)
 	_config->retain();
 
 	_scale = params->getDouble("scale");
-	_strict_sync  = params->getBoolean("strict_sync");
+	_strict_sync = params->getBoolean("strict_sync");
+	_recall_mtx = params->getBoolean("recall_mtx");
 
 	uint32_t poolsize = params->getUInt32("poolsize");
 	if(poolsize > 0)
@@ -115,7 +117,7 @@ bool WtLocalExecuter::init(WTSVariant* params)
 		}
 	}
 
-	WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "Local executer inited, scale: {}, auto_clear: {}, strict_sync: {}, thread poolsize: {}, code_groups: {}", 
+	WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "Local executer inited, scale: {}, auto_clear: {}, strict_sync: {}, thread poolsize: {}, code_groups: {}",
 		_scale, _auto_clear, _strict_sync, poolsize, _groups.size());
 
 	return true;
@@ -138,6 +140,8 @@ ExecuteUnitPtr WtLocalExecuter::getUnit(const char* stdCode, bool bAutoCreate /*
 
 	if (bAutoCreate)
 	{
+		if (_recall_mtx)
+			StdUniqueLock lock(_mtx_iter);
 		WTSVariant* cfg = policy->get(des.c_str());
 
 		const char* name = cfg->getCString("name");
@@ -318,7 +322,7 @@ void WtLocalExecuter::set_position(const faster_hashmap<LongKey, double>& target
 
 	for (auto it = targets.begin(); it != targets.end(); it++)
 	{
-		const char* stdCode = it->first.c_str();		
+		const char* stdCode = it->first.c_str();
 		double newVol = it->second;
 		ExecuteUnitPtr unit = getUnit(stdCode);
 		if (unit == NULL)
@@ -496,6 +500,8 @@ void WtLocalExecuter::on_entrust(uint32_t localid, const char* stdCode, bool bSu
 
 void WtLocalExecuter::on_channel_ready()
 {
+	if (_recall_mtx)
+		StdUniqueLock lock(_mtx_iter);
 	_channel_ready = true;
 	for (auto it = _unit_map.begin(); it != _unit_map.end(); it++)
 	{
@@ -519,6 +525,8 @@ void WtLocalExecuter::on_channel_ready()
 
 void WtLocalExecuter::on_channel_lost()
 {
+	if (_recall_mtx)
+		StdUniqueLock lock(_mtx_iter);
 	_channel_ready = false;
 	for (auto it = _unit_map.begin(); it != _unit_map.end(); it++)
 	{
@@ -542,6 +550,8 @@ void WtLocalExecuter::on_channel_lost()
 
 void WtLocalExecuter::on_position(const char* stdCode, bool isLong, double prevol, double preavail, double newvol, double newavail, uint32_t tradingday)
 {
+	if (_recall_mtx)
+		StdUniqueLock lock(_mtx_iter);
 	_channel_holds.insert(stdCode);
 
 	/*
