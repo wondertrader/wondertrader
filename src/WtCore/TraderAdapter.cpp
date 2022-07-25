@@ -445,6 +445,19 @@ double TraderAdapter::getPosition(const char* stdCode, bool bValidOnly, int32_t 
 	return ret;
 }
 
+void TraderAdapter::enumPosition(FuncEnumChnlPosCallBack cb)
+{
+	for(auto& v : _positions)
+	{
+		const char* stdCode = v.first.c_str();
+		const PosItem& pItem = v.second;
+		if(decimal::gt(pItem.l_prevol + pItem.l_newvol, 0))
+			cb(stdCode, true, pItem.l_prevol, pItem.l_preavail, pItem.l_newvol, pItem.l_newavail);
+		if (decimal::gt(pItem.s_prevol + pItem.s_newvol, 0))
+			cb(stdCode, false, pItem.s_prevol, pItem.s_preavail, pItem.s_newvol, pItem.s_newavail);
+	}
+}
+
 OrderMap* TraderAdapter::getOrders(const char* stdCode)
 {
 	if (_orders == NULL)
@@ -1495,6 +1508,20 @@ void TraderAdapter::onRspAccount(WTSArray* ayAccounts)
 	if (_save_data)
 	{
 		saveData(ayAccounts);
+	}
+
+	if(ayAccounts)
+	{
+		//通知所有监听接口
+		for (auto sink : _sinks)
+		{
+			for (uint32_t idx = 0; idx < ayAccounts->size(); idx++)
+			{
+				WTSAccountInfo* fundInfo = (WTSAccountInfo*)ayAccounts->at(idx);
+				sink->on_account(fundInfo->getCurrency(), fundInfo->getPreBalance(), fundInfo->getBalance(), fundInfo->getBalance() + fundInfo->getDynProfit(), fundInfo->getAvailable(),
+					fundInfo->getCloseProfit(), fundInfo->getDynProfit(), fundInfo->getMargin(), fundInfo->getCommission(), fundInfo->getDeposit(), fundInfo->getWithdraw());
+			}
+		}
 	}
 
 	if(_state == AS_TRADES_QRYED)
