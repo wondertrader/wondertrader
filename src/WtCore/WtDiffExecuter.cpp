@@ -188,8 +188,12 @@ ExecuteUnitPtr WtDiffExecuter::getUnit(const char* stdCode, bool bAutoCreate /* 
 		ExecuteUnitPtr unit = _factory->createDiffExeUnit(name);
 		if (unit != NULL)
 		{
-			_unit_map[stdCode] = unit;
 			unit->self()->init(this, stdCode, cfg);
+			_unit_map[stdCode] = unit;
+		}
+		else
+		{
+			WTSLogger::error("Creating ExecUnit {} failed", name);
 		}
 		return unit;
 	}
@@ -350,7 +354,7 @@ void WtDiffExecuter::set_position(const faster_hashmap<LongKey, double>& targets
 		double oldVol = _target_pos[stdCode];
 		_target_pos[stdCode] = newVol;
 		if (decimal::eq(oldVol, newVol))
-			return;
+			continue;
 
 		//²îÁ¿¸üÐÂ
 		double& thisDiff = _diff_pos[stdCode];

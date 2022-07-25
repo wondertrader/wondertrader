@@ -73,7 +73,7 @@ private:
 
 	void	update_dyn_profit(const char* stdCode, double price);
 
-	void	do_set_position(const char* stdCode, double qty, const char* userTag = "", bool bTriggered = false);
+	void	do_set_position(const char* stdCode, double qty, const char* userTag = "", bool bInBar = false);
 	void	append_signal(const char* stdCode, double qty, const char* userTag = "");
 
 	inline CondList& get_cond_entrusts(const char* stdCode);
@@ -246,14 +246,14 @@ protected:
 		double		_volume;
 		std::string	_usertag;
 		double		_sigprice;
-		bool		_triggered;
+		bool		_inbar;
 		uint64_t	_gentime;
 
 		_SigInfo()
 		{
 			_volume = 0;
 			_sigprice = 0;
-			_triggered = false;
+			_inbar = false;
 			_gentime = 0;
 		}
 	}SigInfo;

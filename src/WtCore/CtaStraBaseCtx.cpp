@@ -695,10 +695,10 @@ void CtaStraBaseCtx::on_tick(const char* stdCode, WTSTickData* newTick, bool bEm
 			if (sInfo->isInTradingTime(_engine->get_raw_time(), true))
 			{
 				const SigInfo& sInfo = it->second;
-				do_set_position(stdCode, sInfo._volume, sInfo._usertag.c_str(), sInfo._triggered);
+				do_set_position(stdCode, sInfo._volume, sInfo._usertag.c_str(), sInfo._inbar);
 
 				//如果是条件单触发，则回调on_condition_triggered
-				if(sInfo._triggered)
+				if(sInfo._inbar)
 					on_condition_triggered(stdCode, sInfo._volume, newTick->price(), sInfo._usertag.c_str());
 
 				_sig_map.erase(it);
@@ -1278,14 +1278,14 @@ void CtaStraBaseCtx::append_signal(const char* stdCode, double qty, const char* 
 	sInfo._sigprice = curPx;
 	sInfo._usertag = userTag;
 	sInfo._gentime = (uint64_t)_engine->get_date() * 1000000000 + (uint64_t)_engine->get_raw_time() * 100000 + _engine->get_secs();
-	sInfo._triggered = !_is_in_schedule;
+	sInfo._inbar = !_is_in_schedule;
 
 	log_signal(stdCode, qty, curPx, sInfo._gentime, userTag);
 
 	save_data();
 }
 
-void CtaStraBaseCtx::do_set_position(const char* stdCode, double qty, const char* userTag /* = "" */, bool bTriggered /* = false */)
+void CtaStraBaseCtx::do_set_position(const char* stdCode, double qty, const char* userTag /* = "" */, bool bInBar /* = false */)
 {
 	PosInfo& pInfo = _pos_map[stdCode];
 	double curPx = _price_map[stdCode];
@@ -1438,9 +1438,9 @@ void CtaStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 	//存储数据
 	save_data();
 
-	if (bTriggered)	//如果是条件单触发, 则向引擎提交变化量
+	if (bInBar)	//如果是条件单触发, 则向引擎提交变化量
 	{
-		_engine->handle_pos_change(_name.c_str(), stdCode, diff);
+		_engine->handle_pos_change(_name.c_str(), stdCode, qty);
 	}
 }
 

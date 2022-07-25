@@ -4,8 +4,8 @@
  *
  * \author Wesley
  * \date 2020/03/30
- * 
- * \brief 
+ *
+ * \brief
  */
 #include "WtLocalExecuter.h"
 #include "TraderAdapter.h"
@@ -115,7 +115,7 @@ bool WtLocalExecuter::init(WTSVariant* params)
 		}
 	}
 
-	WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "Local executer inited, scale: {}, auto_clear: {}, strict_sync: {}, thread poolsize: {}, code_groups: {}", 
+	WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "Local executer inited, scale: {}, auto_clear: {}, strict_sync: {}, thread poolsize: {}, code_groups: {}",
 		_scale, _auto_clear, _strict_sync, poolsize, _groups.size());
 
 	return true;
@@ -318,7 +318,7 @@ void WtLocalExecuter::set_position(const faster_hashmap<LongKey, double>& target
 
 	for (auto it = targets.begin(); it != targets.end(); it++)
 	{
-		const char* stdCode = it->first.c_str();		
+		const char* stdCode = it->first.c_str();
 		double newVol = it->second;
 		ExecuteUnitPtr unit = getUnit(stdCode);
 		if (unit == NULL)
