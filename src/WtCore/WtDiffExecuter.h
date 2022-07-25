@@ -14,6 +14,7 @@
 #include "WtExecuterFactory.h"
 #include "../Includes/ExecuteDefs.h"
 #include "../Share/threadpool.hpp"
+#include "../Share/SpinMutex.hpp"
 
 NS_WTP_BEGIN
 class WTSVariant;
@@ -116,6 +117,12 @@ public:
 	 */
 	virtual void on_channel_lost() override;
 
+	/*
+	 *	资金回报
+	 */
+	virtual void on_account(const char* currency, double prebalance, double balance, double dynbalance,
+		double avaliable, double closeprofit, double dynprofit, double margin, double fee, double deposit, double withdraw) override;
+
 
 private:
 	ExecuteUnitMap		_unit_map;
@@ -126,6 +133,8 @@ private:
 
 	double				_scale;				//放大倍数
 	bool				_channel_ready;
+
+	SpinMutex			_mtx_units;
 
 	faster_hashmap<LongKey, double> _target_pos;
 	faster_hashmap<LongKey, double> _diff_pos;

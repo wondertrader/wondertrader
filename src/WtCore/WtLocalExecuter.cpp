@@ -130,6 +130,8 @@ ExecuteUnitPtr WtLocalExecuter::getUnit(const char* stdCode, bool bAutoCreate /*
 	if (!policy->has(commID.c_str()))
 		des = "default";
 
+	SpinLock lock(_mtx_units);
+
 	auto it = _unit_map.find(stdCode);
 	if(it != _unit_map.end())
 	{
@@ -497,6 +499,7 @@ void WtLocalExecuter::on_entrust(uint32_t localid, const char* stdCode, bool bSu
 void WtLocalExecuter::on_channel_ready()
 {
 	_channel_ready = true;
+	SpinLock lock(_mtx_units);
 	for (auto it = _unit_map.begin(); it != _unit_map.end(); it++)
 	{
 		ExecuteUnitPtr& unitPtr = (ExecuteUnitPtr&)it->second;
@@ -520,12 +523,12 @@ void WtLocalExecuter::on_channel_ready()
 void WtLocalExecuter::on_channel_lost()
 {
 	_channel_ready = false;
+	SpinLock lock(_mtx_units);
 	for (auto it = _unit_map.begin(); it != _unit_map.end(); it++)
 	{
 		ExecuteUnitPtr& unitPtr = (ExecuteUnitPtr&)it->second;
 		if (unitPtr)
 		{
-			//unitPtr->self()->on_channel_lost();
 			if (_pool)
 			{
 				_pool->schedule([unitPtr](){
@@ -535,6 +538,30 @@ void WtLocalExecuter::on_channel_lost()
 			else
 			{
 				unitPtr->self()->on_channel_lost();
+			}
+		}
+	}
+}
+
+void WtLocalExecuter::on_account(const char* currency, double prebalance, double balance, double dynbalance, 
+	double avaliable, double closeprofit, double dynprofit, double margin, double fee, double deposit, double withdraw)
+{
+	SpinLock lock(_mtx_units);
+	for (auto it = _unit_map.begin(); it != _unit_map.end(); it++)
+	{
+		ExecuteUnitPtr& unitPtr = (ExecuteUnitPtr&)it->second;
+		if (unitPtr)
+		{
+			if (_pool)
+			{
+				std::string strCur = currency;
+				_pool->schedule([unitPtr, strCur, prebalance, balance, dynbalance, avaliable, closeprofit, dynprofit, margin, fee, deposit, withdraw]() {
+					unitPtr->self()->on_account(strCur.c_str(), prebalance, balance, dynbalance, avaliable, closeprofit, dynprofit, margin, fee, deposit, withdraw);
+				});
+			}
+			else
+			{
+				unitPtr->self()->on_account(currency, prebalance, balance, dynbalance, avaliable, closeprofit, dynprofit, margin, fee, deposit, withdraw);
 			}
 		}
 	}

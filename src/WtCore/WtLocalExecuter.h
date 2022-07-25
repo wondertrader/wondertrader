@@ -13,6 +13,7 @@
 #include "WtExecuterFactory.h"
 #include "../Includes/ExecuteDefs.h"
 #include "../Share/threadpool.hpp"
+#include "../Share/SpinMutex.hpp"
 
 NS_WTP_BEGIN
 class WTSVariant;
@@ -113,6 +114,11 @@ public:
 	 */
 	virtual void on_channel_lost() override;
 
+	/*
+	 *	资金回报
+	 */
+	virtual void on_account(const char* currency, double prebalance, double balance, double dynbalance, 
+		double avaliable, double closeprofit, double dynprofit, double margin, double fee, double deposit, double withdraw) override;
 
 private:
 	ExecuteUnitMap		_unit_map;
@@ -125,6 +131,8 @@ private:
 	bool				_auto_clear;		//是否自动清理上一期的主力合约头寸
 	bool				_strict_sync;		//是否严格同步目标仓位
 	bool				_channel_ready;
+
+	SpinMutex			_mtx_units;
 
 	typedef struct _CodeGroup
 	{
