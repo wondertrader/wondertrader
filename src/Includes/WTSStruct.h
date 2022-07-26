@@ -243,9 +243,9 @@ struct WTSOrdDtlStruct
 	uint32_t		action_date;		//自然日期,如20140327
 	uint32_t		action_time;		//发生时间,精确到毫秒,如105932000
 
-	uint64_t		index;			//委托编号(从1开始,递增1)
-	double			price;			//委托价格
-	uint64_t		volume;			//委托数量
+	uint64_t			index;			//委托编号(从1开始,递增1)
+	double				price;			//委托价格
+	uint32_t			volume;			//委托数量
 	WTSBSDirectType		side;		//委托方向
 	WTSOrdDetailType	otype;		//委托类型
 
@@ -263,15 +263,15 @@ struct WTSTransStruct
 	uint32_t	trading_date;		//交易日,如20140327
 	uint32_t	action_date;		//自然日期,如20140327
 	uint32_t	action_time;		//发生时间,精确到毫秒,如105932000
-	uint32_t	index;			//成交编号(从1开始,递增1)
+	int64_t		index;			//成交编号(从1开始,递增1)
 
 	WTSTransType	ttype;			//成交类型: 'C', 0
 	WTSBSDirectType	side;			//BS标志
 
 	double			price;			//成交价格
 	uint32_t		volume;			//成交数量
-	int32_t			askorder;		//叫卖序号
-	int32_t			bidorder;		//叫买序号
+	int64_t			askorder;		//叫卖序号
+	int64_t			bidorder;		//叫买序号
 
 	WTSTransStruct()
 	{
