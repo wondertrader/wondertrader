@@ -22,9 +22,6 @@
 
 #include <boost/filesystem.hpp>
 
-const char* ENTRUST_SECTION = "entrusts";
-const char* ORDER_SECTION = "orders";
-
 //By Wesley @ 2022.01.05
 #include "../Share/fmtlib.h"
 template<typename... Args>
