@@ -209,11 +209,11 @@ WTSEntrust* TraderXTP::makeEntrust(XTPOrderInfo* order_info)
 	pRet->setOffsetType(wrapOffsetType(order_info->position_effect));
 	pRet->setOrderFlag(WOF_NOR);
 
-	pRet->setEntrustID(genEntrustID(order_info->order_client_id).c_str());
+	genEntrustID(pRet->getEntrustID(), order_info->order_client_id);
 
-	std::string usertag = _ini.readString(ENTRUST_SECTION, pRet->getEntrustID());
-	if (!usertag.empty())
-		pRet->setUserTag(usertag.c_str());
+	const char* usertag = m_eidCache.get(pRet->getEntrustID());
+	if (strlen(usertag) > 0)
+		pRet->setUserTag(usertag);
 
 	return pRet;
 }
@@ -258,19 +258,20 @@ WTSOrderInfo* TraderXTP::makeOrderInfo(XTPQueryOrderRsp* order_info)
 
 	pRet->setStateMsg("");
 
-	std::string usertag = _ini.readString(ENTRUST_SECTION, pRet->getEntrustID(), "");
-	if (usertag.empty())
+	const char* usertag = m_eidCache.get(pRet->getEntrustID());
+	if (strlen(usertag) == 0)
 	{
 		pRet->setUserTag(pRet->getEntrustID());
 	}
 	else
 	{
-		pRet->setUserTag(usertag.c_str());
+		pRet->setUserTag(usertag);
 
 		if (strlen(pRet->getOrderID()) > 0)
 		{
-			_ini.writeString(ORDER_SECTION, StrUtil::trim(pRet->getOrderID()).c_str(), usertag.c_str());
-			_ini.save();
+			m_oidCache.put(StrUtil::trim(pRet->getOrderID()).c_str(), usertag, 0, [this](const char* message) {
+				write_log(_sink, LL_ERROR, message);
+			});
 		}
 	}
 
@@ -311,9 +312,9 @@ WTSTradeInfo* TraderXTP::makeTradeInfo(XTPQueryTradeRsp* trade_info)
 	double amount = trade_info->quantity*pRet->getPrice();
 	pRet->setAmount(amount);
 
-	std::string usertag = _ini.readString(ORDER_SECTION, StrUtil::trim(pRet->getRefOrder()).c_str());
-	if (!usertag.empty())
-		pRet->setUserTag(usertag.c_str());
+	const char* usertag = m_oidCache.get(StrUtil::trim(pRet->getRefOrder()).c_str());
+	if (strlen(usertag))
+		pRet->setUserTag(usertag);
 
 	return pRet;
 }
@@ -669,7 +670,7 @@ void TraderXTP::connect()
 		_thrd_worker.reset(new StdThread([this](){
 			while (true)
 			{
-				std::this_thread::sleep_for(std::chrono::seconds(2));
+				std::this_thread::sleep_for(std::chrono::milliseconds(2));
 				_asyncio.run_one();
 				//m_asyncIO.run();
 			}
@@ -687,12 +688,10 @@ bool TraderXTP::isConnected()
 	return (_state == TS_ALLREADY);
 }
 
-std::string TraderXTP::genEntrustID(uint32_t orderRef)
+void TraderXTP::genEntrustID(char* buffer, uint32_t orderRef)
 {
-	static char buffer[64] = { 0 };
 	//这里不再使用sessionid，因为每次登陆会不同，如果使用的话，可能会造成不唯一的情况
 	fmtutil::format_to(buffer, "{}#{}#{}", _user, _tradingday, orderRef);
-	return buffer;
 }
 
 bool TraderXTP::extractEntrustID(const char* entrustid, uint32_t &orderRef)
@@ -747,23 +746,30 @@ void TraderXTP::doLogin()
 		{
 			_tradingday = strtoul(_api->GetTradingDay(), NULL, 10);
 
-			std::stringstream ss;
-			ss << "./xtpdata/local/";
-			std::string path = StrUtil::standardisePath(ss.str());
-			if (!StdFile::exists(path.c_str()))
-				boost::filesystem::create_directories(path.c_str());
-			ss << _user << ".dat";
-
-			_ini.load(ss.str().c_str());
-			uint32_t lastDate = _ini.readUInt("marker", "date", 0);
-			if (lastDate != _tradingday)
 			{
-				//交易日不同,清理掉原来的数据
-				_ini.removeSection(ORDER_SECTION);
-				_ini.writeUInt("marker", "date", _tradingday);
-				_ini.save();
+				//初始化委托单缓存器
+				std::stringstream ss;
+				ss << "./xtpdata/local/";
+				std::string path = StrUtil::standardisePath(ss.str());
+				if (!StdFile::exists(path.c_str()))
+					boost::filesystem::create_directories(path.c_str());
+				ss << _user << "_eid.sc";
+				m_eidCache.init(ss.str().c_str(), _tradingday, [this](const char* message) {
+					write_log(_sink, LL_WARN, message);
+				});
+			}
 
-				write_log(_sink, LL_INFO, "[TraderXTP] [{}] Trading date changed [{} -> {}], local cache cleared...", _user.c_str(), lastDate, _tradingday);
+			{
+				//初始化订单标记缓存器
+				std::stringstream ss;
+				ss << "./xtpdata/local/";
+				std::string path = StrUtil::standardisePath(ss.str());
+				if (!StdFile::exists(path.c_str()))
+					boost::filesystem::create_directories(path.c_str());
+				ss << _user << "_oid.sc";
+				m_oidCache.init(ss.str().c_str(), _tradingday, [this](const char* message) {
+					write_log(_sink, LL_WARN, message);
+				});
 			}
 
 			write_log(_sink, LL_INFO, "[TraderXTP] [{}] Login succeed, trading date: {}...", _user.c_str(), _tradingday);
@@ -830,9 +836,9 @@ int TraderXTP::orderInsert(WTSEntrust* entrust)
 
 	if (strlen(entrust->getUserTag()) > 0)
 	{
-		//m_mapEntrustTag[entrust->getEntrustID()] = entrust->getUserTag();
-		_ini.writeString(ENTRUST_SECTION, entrust->getEntrustID(), entrust->getUserTag());
-		_ini.save();
+		m_eidCache.put(entrust->getEntrustID(), entrust->getUserTag(), 0, [this](const char* message) {
+			write_log(_sink, LL_WARN, message);
+		});
 	}
 
 	uint64_t iResult = _api->InsertOrder(&req, _sessionid);

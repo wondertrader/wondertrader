@@ -358,12 +358,12 @@ public:
 	{
 		if(bSucc)
 		{
-			WTSLogger::info("[{}]Login Succ" , m_pParams->getCString("user"));
+			WTSLogger::info("[{}] Login Succ" , m_pParams->getCString("user"));
 			m_bLogined = true;
 		}
 		else
 		{
-			WTSLogger::info("[{}]Login Fail: {}", m_pParams->getCString("user"), msg);
+			WTSLogger::info("[{}] Login Fail: {}", m_pParams->getCString("user"), msg);
 			g_exitNow = true;
 		}
 
@@ -375,7 +375,7 @@ public:
 	{
 		if(err)
 		{
-			WTSLogger::info("[{}]Entrust fail: {}", m_pParams->getCString("user"), err->getMessage());
+			WTSLogger::info("[{}] Entrust fail: {}", m_pParams->getCString("user"), err->getMessage());
 			StdUniqueLock lock(g_mtxOpt);
 			g_condOpt.notify_all();
 		}
@@ -403,7 +403,7 @@ public:
 		if (ayPositions != NULL)
 			cnt = ayPositions->size();
 
-		WTSLogger::info("[{}]Positions updated, {} item totally", m_pParams->getCString("user"), cnt);
+		WTSLogger::info("[{}] Positions updated, {} item totally", m_pParams->getCString("user"), cnt);
 		for(uint32_t i = 0; i < cnt; i++)
 		{
 			WTSPositionItem* posItem = (WTSPositionItem*)((WTSArray*)ayPositions)->at(i);
@@ -508,7 +508,7 @@ public:
 
 	virtual void onPushTrade(WTSTradeInfo* tradeRecord)
 	{
-		WTSLogger::info("[{}]Trade pushed,contract: {},price: {},Volume: {}", m_pParams->getCString("user"), tradeRecord->getCode(), tradeRecord->getPrice(), tradeRecord->getVolume());
+		WTSLogger::info("[{}] Trade pushed,contract: {},price: {},Volume: {}", m_pParams->getCString("user"), tradeRecord->getCode(), tradeRecord->getPrice(), tradeRecord->getVolume());
 
 		if(g_riskAct)
 		{
@@ -522,13 +522,13 @@ public:
 	{
 		if(err && err->getErrorCode() == WEC_ORDERCANCEL)
 		{
-			WTSLogger::info("[{}]Canceling failed: {}", m_pParams->getCString("user"), err->getMessage());
+			WTSLogger::info("[{}] Canceling failed: {}", m_pParams->getCString("user"), err->getMessage());
 			StdUniqueLock lock(g_mtxOpt);
 			g_condOpt.notify_all();
 		}
 		else if (err && err->getErrorCode() == WEC_ORDERINSERT)
 		{
-			WTSLogger::info("[{}]Entrust failed: {}", m_pParams->getCString("user"), err->getMessage());
+			WTSLogger::info("[{}] Entrust failed: {}", m_pParams->getCString("user"), err->getMessage());
 			StdUniqueLock lock(g_mtxOpt);
 			g_condOpt.notify_all();
 		}

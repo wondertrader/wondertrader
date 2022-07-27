@@ -149,7 +149,8 @@ void ParserOES::release()
 
 	MdsAsyncApi_Stop(_context);
 
-	while (!MdsAsyncApi_IsAllTerminated(_context)) {
+	while (!MdsAsyncApi_IsAllTerminated(_context)) 
+	{
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	}
 
