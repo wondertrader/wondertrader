@@ -80,6 +80,16 @@ public:
 	virtual void on_position_changed(const char* stdCode, double targetPos) override;
 
 	/*
+	 *	合约金额变动
+	 */
+	virtual void on_amount_changed(const char* stdCode, double targetAmount) override;
+
+	/*
+	 *	合约比例变动
+	 */
+	virtual void on_ratio_changed(const char* stdCode, double targetRatio) override;
+
+	/*
 	 *	实时行情回调
 	 */
 	virtual void on_tick(const char* stdCode, WTSTickData* newTick) override;
@@ -150,6 +160,8 @@ private:
 	faster_hashset<LongKey> _channel_holds;		//通道持仓
 
 	faster_hashmap<LongKey, double> _target_pos;
+	faster_hashmap<LongKey, double> _target_amount;
+	faster_hashmap<LongKey, double> _target_ratio;
 
 	typedef std::shared_ptr<boost::threadpool::pool> ThreadPoolPtr;
 	ThreadPoolPtr		_pool;

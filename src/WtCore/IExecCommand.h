@@ -33,6 +33,16 @@ public:
 	virtual void on_position_changed(const char* stdCode, double targetPos) {}
 
 	/*
+ *	合约金额变动
+ */
+	virtual void on_amount_changed(const char* stdCode, double targetAmount) {}
+
+	/*
+	 *	合约比例变动
+	 */
+	virtual void on_ratio_changed(const char* stdCode, double targetRatio) {}
+
+	/*
 	 *	实时行情回调
 	 */
 	virtual void on_tick(const char* stdCode, WTSTickData* newTick) {}

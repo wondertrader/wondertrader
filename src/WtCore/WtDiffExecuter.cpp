@@ -342,6 +342,86 @@ void WtDiffExecuter::on_position_changed(const char* stdCode, double targetPos)
 	}
 }
 
+void WtDiffExecuter::on_amount_changed(const char* stdCode, double targetAmount)
+{
+	ExecuteUnitPtr unit = getUnit(stdCode, true);
+	if (unit == NULL)
+		return;
+
+	double oldAmount = _target_amount[stdCode];
+	_target_amount[stdCode] = targetAmount;
+
+	if (decimal::eq(oldAmount, targetAmount))
+		return;
+
+	//更新差量
+	double& thisDiff = _diff_pos[stdCode];
+	double prevDiff = thisDiff;
+	thisDiff += (targetAmount - oldAmount);
+
+	//WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "Target amount of {} changed: {} -> {}", stdCode, oldAmount, targetAmount);
+	WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "Target amount of {} changed: {} -> {}, diff amount changed: {} -> {}", stdCode, oldAmount, targetAmount, prevDiff, thisDiff);
+
+	if (_trader && !_trader->checkOrderLimits(stdCode))
+	{
+		WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "{} is disabled", stdCode);
+		return;
+	}
+
+	//TODO 差量执行还要再看一下
+	if (_pool)
+	{
+		std::string code = stdCode;
+		_pool->schedule([unit, code, thisDiff]() {
+			unit->self()->set_amount(code.c_str(), thisDiff);
+		});
+	}
+	else
+	{
+		unit->self()->set_amount(stdCode, thisDiff);
+	}
+}
+
+void WtDiffExecuter::on_ratio_changed(const char* stdCode, double targetRatio)
+{
+	ExecuteUnitPtr unit = getUnit(stdCode, true);
+	if (unit == NULL)
+		return;
+
+	double oldRatio = _target_pos[stdCode];
+	_target_pos[stdCode] = targetRatio;
+
+	if (decimal::eq(oldRatio, targetRatio))
+		return;
+
+	//更新差量
+	double& thisDiff = _diff_pos[stdCode];
+	double prevDiff = thisDiff;
+	thisDiff += (targetRatio - oldRatio);
+
+	//WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "Target ratio of {} changed: {} -> {}", stdCode, oldRatio, targetRatio);
+	WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "Target ratio of {} changed: {} -> {}, diff ratio changed: {} -> {}", stdCode, oldRatio, targetRatio, prevDiff, thisDiff);
+
+	if (_trader && !_trader->checkOrderLimits(stdCode))
+	{
+		WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "{} is disabled", stdCode);
+		return;
+	}
+
+	//TODO 差量执行还要再看一下
+	if (_pool)
+	{
+		std::string code = stdCode;
+		_pool->schedule([unit, code, thisDiff]() {
+			unit->self()->set_ratio(code.c_str(), thisDiff);
+		});
+	}
+	else
+	{
+		unit->self()->set_ratio(stdCode, thisDiff);
+	}
+}
+
 void WtDiffExecuter::set_position(const faster_hashmap<LongKey, double>& targets)
 {
 	for (auto it = targets.begin(); it != targets.end(); it++)

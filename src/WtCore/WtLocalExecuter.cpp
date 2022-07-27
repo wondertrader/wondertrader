@@ -278,6 +278,52 @@ void WtLocalExecuter::on_position_changed(const char* stdCode, double targetPos)
 	unit->self()->set_position(stdCode, targetPos);
 }
 
+void WtLocalExecuter::on_amount_changed(const char* stdCode, double targetAmount)
+{
+	ExecuteUnitPtr unit = getUnit(stdCode);
+	if (unit == NULL)
+		return;
+
+	double oldAmount = _target_amount[stdCode];
+	_target_amount[stdCode] = targetAmount;
+
+	if (!decimal::eq(oldAmount, targetAmount))
+	{
+		WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "Target amount of {} changed: {} -> {}", stdCode, oldAmount, targetAmount);
+	}
+
+	if (_trader && !_trader->checkOrderLimits(stdCode))
+	{
+		WTSLogger::log_dyn("executer order on", _name.c_str(), LL_INFO, "{} is disabled", stdCode);
+		return;
+	}
+
+	unit->self()->set_amount(stdCode, targetAmount);
+}
+
+void WtLocalExecuter::on_ratio_changed(const char* stdCode, double targetRatio)
+{
+	ExecuteUnitPtr unit = getUnit(stdCode);
+	if (unit == NULL)
+		return;
+
+	double oldRatio = _target_ratio[stdCode];
+	_target_ratio[stdCode] = targetRatio;
+
+	if (!decimal::eq(oldRatio, targetRatio))
+	{
+		WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "Target ratio of {} changed: {} -> {}", stdCode, oldRatio, targetRatio);
+	}
+
+	if (_trader && !_trader->checkOrderLimits(stdCode))
+	{
+		WTSLogger::log_dyn("executer order on", _name.c_str(), LL_INFO, "{} is disabled", stdCode);
+		return;
+	}
+
+	unit->self()->set_ratio(stdCode, targetRatio);
+}
+
 void WtLocalExecuter::set_position(const faster_hashmap<LongKey, double>& targets)
 {
 	/*

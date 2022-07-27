@@ -83,3 +83,13 @@ void set_position(WtString stdCode, double targetPos)
 {
 	getRunner().setPosition(stdCode, targetPos);
 }
+
+void set_amount(WtString stdCode, double targetAmount)
+{
+	getRunner().setAmount(stdCode, targetAmount);
+}
+
+void set_ratio(WtString stdCode, double targetRatio)
+{
+	getRunner().setRatio(stdCode, targetRatio);
+}
