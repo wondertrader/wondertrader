@@ -218,10 +218,8 @@ private:
 
 	HftStrategy*	_strategy;
 
-	StdThreadPtr		_thrd;
 	StdUniqueMutex		_mtx;
 	std::queue<Task>	_tasks;
-	bool				_stopped;
 
 	StdRecurMutex		_mtx_control;
 

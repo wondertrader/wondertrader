@@ -248,10 +248,10 @@ private:
 
 	UftStrategy*	_strategy;
 
-	StdThreadPtr		_thrd;
+	//StdThreadPtr		_thrd;
 	StdUniqueMutex		_mtx;
 	std::queue<Task>	_tasks;
-	bool				_stopped;
+	//bool				_stopped;
 
 	StdRecurMutex		_mtx_control;
 

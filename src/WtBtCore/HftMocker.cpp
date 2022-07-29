@@ -119,8 +119,6 @@ HftMocker::HftMocker(HisDataReplayer* replayer, const char* name)
 	: IHftStraCtx(name)
 	, _replayer(replayer)
 	, _strategy(NULL)
-	, _thrd(NULL)
-	, _stopped(false)
 	, _use_newpx(false)
 	, _error_rate(0)
 	, _match_this_tick(false)
@@ -176,35 +174,35 @@ void HftMocker::postTask(Task task)
 		return;
 	}
 
-	if(_thrd == NULL)
-	{
-		_thrd.reset(new std::thread([this](){
-			while (!_stopped)
-			{
-				if(_tasks.empty())
-				{
-					std::this_thread::sleep_for(std::chrono::milliseconds(1));
-					continue;
-				}
+	//if(_thrd == NULL)
+	//{
+	//	_thrd.reset(new std::thread([this](){
+	//		while (!_stopped)
+	//		{
+	//			if(_tasks.empty())
+	//			{
+	//				std::this_thread::sleep_for(std::chrono::milliseconds(1));
+	//				continue;
+	//			}
 
-				_mtx_control.lock();
+	//			_mtx_control.lock();
 
-				while(!_tasks.empty())
-				{
-					Task& task = _tasks.front();
+	//			while(!_tasks.empty())
+	//			{
+	//				Task& task = _tasks.front();
 
-					task();
+	//				task();
 
-					{
-						std::unique_lock<std::mutex> lck(_mtx);
-						_tasks.pop();
-					}
-				}
+	//				{
+	//					std::unique_lock<std::mutex> lck(_mtx);
+	//					_tasks.pop();
+	//				}
+	//			}
 
-				_mtx_control.unlock();
-			}
-		}));
-	}
+	//			_mtx_control.unlock();
+	//		}
+	//	}));
+	//}
 }
 
 bool HftMocker::init_hft_factory(WTSVariant* cfg)
@@ -346,7 +344,6 @@ void HftMocker::on_tick(const char* stdCode, WTSTickData* newTick)
 
 	update_dyn_profit(stdCode, newTick);
 
-	procTask();
 	
 	//如果开启了同tick撮合，则先触发策略的ontick，再处理订单
 	//如果没开启同tick撮合，则先处理订单，再触发策略的ontick
@@ -362,6 +359,8 @@ void HftMocker::on_tick(const char* stdCode, WTSTickData* newTick)
 		}
 
 		on_tick_updated(stdCode, newTick);
+
+		procTask();
 
 		if (!_orders.empty())
 		{
@@ -412,6 +411,8 @@ void HftMocker::on_tick(const char* stdCode, WTSTickData* newTick)
 		}
 
 		on_tick_updated(stdCode, newTick);
+
+		procTask();
 	}
 
 	if (_has_hook && _hook_valid)
