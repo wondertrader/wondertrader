@@ -1,0 +1,34 @@
+import modules ;
+import path ;
+import os ;
+
+path-constant CWD : . ;
+path-constant ATP_RES_ROOT : [ os.environ ATP_RES_ROOT ] ;
+path-constant ATP_TRADE_API_ROOT : $(ATP_RES_ROOT)/atptradeapi ;
+
+alias dependencies :
+  $(ATP_TRADE_API_ROOT)/lib/libatptradeapi.so
+  $(ATP_TRADE_API_ROOT)/lib/libagwapi.so
+  $(ATP_TRADE_API_ROOT)/lib/libagw_external_msg.so
+  $(ATP_TRADE_API_ROOT)/lib/libcommon_api.so
+  $(ATP_TRADE_API_ROOT)/lib/libmsg_proto.so
+	;
+
+project
+    : requirements
+      <include>$(ATP_TRADE_API_ROOT)/include
+      <include>$(CWD)/
+      <cxxflags>-std=c++11
+      <debug-symbols>on
+      <threading>multi
+    : default-build debug
+      <link>shared
+    : build-dir bin
+    ;
+
+
+exe demo
+	: [ glob *.cpp ]
+	   dependencies
+	: <linkflags>-ldl
+	;
