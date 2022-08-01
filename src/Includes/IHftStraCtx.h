@@ -140,7 +140,7 @@ public:
 	 */
 	virtual std::string		stra_get_rawcode(const char* stdCode) = 0;
 
-	virtual double stra_get_position(const char* stdCode, bool bOnlyValid = false) = 0;
+	virtual double stra_get_position(const char* stdCode, bool bOnlyValid = false, int flage = 3) = 0;
 	virtual double stra_get_position_avgpx(const char* stdCode) = 0;
 	virtual double stra_get_position_profit(const char* stdCode) = 0;
 	virtual double stra_get_price(const char* stdCode) = 0;
