@@ -142,7 +142,7 @@ public:
 	virtual void stra_log_warn(const char* message) override;
 	virtual void stra_log_error(const char* message) override;
 
-	virtual double stra_get_position(const char* stdCode, bool bOnlyValid = false, int flage = 3) override;
+	virtual double stra_get_position(const char* stdCode, bool bOnlyValid = false, int flag = 3) override;
 	virtual double stra_get_position_avgpx(const char* stdCode) override;
 	virtual double stra_get_position_profit(const char* stdCode) override;
 	virtual double stra_get_price(const char* stdCode) override;
