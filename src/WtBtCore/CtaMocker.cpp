@@ -270,7 +270,7 @@ void CtaMocker::dump_chartdata()
 			rj::Value jBaseLines(rj::kObjectType);
 			for (const auto& v3 : cIndex._base_lines)
 			{
-				jBaseLines.AddMember(rj::Value(v3.first.c_str(), allocator), v3.second, allocator);
+				jBaseLines.AddMember(rj::Value(v3.first.c_str(), allocator), rj::Value(v3.second), allocator);
 			}
 
 			jIndex.AddMember("baselines", jBaseLines, allocator);
