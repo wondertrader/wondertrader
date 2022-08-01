@@ -4,8 +4,8 @@
  *
  * \author Wesley
  * \date 2020/03/30
- * 
- * \brief 
+ *
+ * \brief
  */
 #include "HftStraBaseCtx.h"
 #include "WtHftEngine.h"
@@ -215,7 +215,7 @@ OrderIDs HftStraBaseCtx::stra_buy(const char* stdCode, double price, double qty,
 	 *	By Wesley @ 2022.05.26
 	 *	如果找到匹配自定义规则，则进行映射处理
 	 */
-	//const char* ruleTag = _engine->get_hot_mgr()->getRuleTag(stdCode);
+	 //const char* ruleTag = _engine->get_hot_mgr()->getRuleTag(stdCode);
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _engine->get_hot_mgr());
 	if (strlen(cInfo._ruletag) > 0)
 	{
@@ -726,7 +726,7 @@ double HftStraBaseCtx::stra_get_position_avgpx(const char* stdCode)
 	return amount / pInfo._volume;
 }
 
-double HftStraBaseCtx::stra_get_position(const char* stdCode, bool bOnlyValid /* = false */)
+double HftStraBaseCtx::stra_get_position(const char* stdCode, bool bOnlyValid /* = false */, int flage /* = 3*/)
 {
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _engine->get_hot_mgr());
 	if (strlen(cInfo._ruletag) > 0)
@@ -736,7 +736,7 @@ double HftStraBaseCtx::stra_get_position(const char* stdCode, bool bOnlyValid /*
 
 		_code_map[realCode] = stdCode;
 
-		return _trader->getPosition(realCode.c_str(), bOnlyValid);
+		return _trader->getPosition(realCode.c_str(), bOnlyValid, flage);
 	}
 	//else if (CodeHelper::isStdFutHotCode(stdCode))
 	//{

@@ -120,7 +120,7 @@ public:
 	 */
 	virtual std::string		stra_get_rawcode(const char* stdCode) override;
 
-	virtual double stra_get_position(const char* stdCode, bool bOnlyValid = false) override;
+	virtual double stra_get_position(const char* stdCode, bool bOnlyValid = false, int flage = 3) override;
 
 	virtual double stra_get_position_avgpx(const char* stdCode) override;
 

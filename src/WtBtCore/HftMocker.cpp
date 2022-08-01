@@ -865,7 +865,7 @@ WTSTickData* HftMocker::stra_get_last_tick(const char* stdCode)
 	return _replayer->get_last_tick(stdCode);
 }
 
-double HftMocker::stra_get_position(const char* stdCode, bool bOnlyValid/* = false*/)
+double HftMocker::stra_get_position(const char* stdCode, bool bOnlyValid/* = false*/, int flage/* = 3*/)
 {
 	const PosInfo& pInfo = _pos_map[stdCode];
 	if (bOnlyValid)
