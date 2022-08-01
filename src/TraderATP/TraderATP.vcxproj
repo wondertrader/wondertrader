@@ -79,13 +79,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
-    <IncludePath>$(MyDepends141)\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(MyDepends141)\include;../API/AtpTradeApi/include;$(IncludePath)</IncludePath>
     <LibraryPath>$(MyDepends141)\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
-    <IncludePath>$(MyDepends141)\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(MyDepends141)\include;../API/AtpTradeApi/include;$(IncludePath)</IncludePath>
     <LibraryPath>$(MyDepends141)\lib\x86;$(LibraryPath)</LibraryPath>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <TargetName>$(ProjectName)</TargetName>
@@ -93,7 +93,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
-    <IncludePath>$(MyDepends141)\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(MyDepends141)\include;../API/AtpTradeApi/include;$(IncludePath)</IncludePath>
     <LibraryPath>$(MyDepends141)\lib\x64;$(LibraryPath)</LibraryPath>
     <TargetName>$(ProjectName)</TargetName>
   </PropertyGroup>

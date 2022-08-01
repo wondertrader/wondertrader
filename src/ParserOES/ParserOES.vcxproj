@@ -78,12 +78,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
-    <IncludePath>$(MyDepends141)\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(MyDepends141)\include;..\API\oesApi0.17.5.8\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(MyDepends141)\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(MyDepends141)\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(MyDepends141)\include;..\API\oesApi0.17.5.8\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(MyDepends141)\lib\x86;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
@@ -91,7 +91,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(MyDepends141)\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(MyDepends141)\include;..\API\oesApi0.17.5.8\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(MyDepends141)\lib\x64;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
     <TargetName>$(ProjectName)</TargetName>
