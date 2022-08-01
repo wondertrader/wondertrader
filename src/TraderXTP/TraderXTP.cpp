@@ -253,8 +253,8 @@ WTSOrderInfo* TraderXTP::makeOrderInfo(XTPQueryOrderRsp* order_info)
 	if (order_info->order_status >= XTP_ORDER_STATUS_REJECTED)
 		pRet->setError(true);
 
-	pRet->setEntrustID(genEntrustID(order_info->order_client_id).c_str());
-	pRet->setOrderID(fmt::format("{}", order_info->order_xtp_id).c_str());
+	genEntrustID(pRet->getEntrustID(), order_info->order_client_id);
+	fmtutil::format_to(pRet->getOrderID(), "{}", order_info->order_xtp_id);
 
 	pRet->setStateMsg("");
 
@@ -306,7 +306,7 @@ WTSTradeInfo* TraderXTP::makeTradeInfo(XTPQueryTradeRsp* trade_info)
 
 	pRet->setDirection(dType);
 	pRet->setOffsetType(wrapOffsetType(trade_info->position_effect));
-	pRet->setRefOrder(fmt::format("{}", trade_info->order_xtp_id).c_str());
+	fmtutil::format_to(pRet->getRefOrder(), "{}", trade_info->order_xtp_id);
 	pRet->setTradeType(WTT_Common);
 
 	double amount = trade_info->quantity*pRet->getPrice();
