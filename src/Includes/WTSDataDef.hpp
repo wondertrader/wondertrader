@@ -1209,8 +1209,8 @@ protected:
 public:
 	static inline WTSTickSlice* create(const char* code, WTSTickStruct* ticks = NULL, uint32_t count = 0)
 	{
-		if (ticks == NULL || count == 0)
-			return NULL;
+		//if (ticks == NULL || count == 0)
+		//	return NULL;
 
 		WTSTickSlice* slice = new WTSTickSlice();
 		wt_strcpy(slice->_code, code);
