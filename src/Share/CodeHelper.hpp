@@ -383,22 +383,45 @@ public:
 
 				state += 1;
 			}
-			else if (3 <= state && state < 6)
+			else if (3 == state || 4 == state)
 			{
 				if ('0' <= ch && ch <= '9')
 					state += 1;
+
+				else if ('A' <= ch && ch <= 'z')
+				{
+					state = 7;
+					break;
+				}
+			}
+			else if (4 == state)
+			{
+				if ('0' <= ch && ch <= '9')
+					state += 1;
+
 				else if (('A' <= ch && ch <= 'z') || ch == '-')
 				{
 					state = 7;
 					break;
 				}
 			}
-			else if (state == 6)
+			else if (state < 6)
+			{
+				if ('0' <= ch && ch <= '9')
+					state += 1;
+				else
+					return false;
+			}
+			else if (state >= 6)
 			{
 				if (('A' <= ch && ch <= 'z') || ch == '-')
 				{
 					state = 7;
 					break;
+				}
+				else
+				{
+					return false;
 				}
 			}
 		}
