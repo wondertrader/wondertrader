@@ -115,6 +115,8 @@ public:
 		_sinks.insert(sink);
 	}
 
+	inline bool isReady() const { return _state == AS_ALLREADY; }
+
 private:
 	uint32_t doEntrust(WTSEntrust* entrust);
 	bool	doCancel(WTSOrderInfo* ordInfo);

@@ -39,6 +39,13 @@ WtLocalExecuter::~WtLocalExecuter()
 		_pool->wait();
 }
 
+void WtLocalExecuter::setTrader(TraderAdapter* adapter)
+{
+	_trader = adapter;
+	//设置的时候读取一下trader的状态
+	_channel_ready = _trader->isReady();
+}
+
 bool WtLocalExecuter::init(WTSVariant* params)
 {
 	if (params == NULL)
@@ -148,6 +155,10 @@ ExecuteUnitPtr WtLocalExecuter::getUnit(const char* stdCode, bool bAutoCreate /*
 		{
 			_unit_map[stdCode] = unit;
 			unit->self()->init(this, stdCode, cfg);
+
+			//如果通道已经就绪，则直接通知执行单元
+			if (_channel_ready)
+				unit->self()->on_channel_ready();
 		}
 		return unit;
 	}

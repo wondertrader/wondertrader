@@ -43,6 +43,13 @@ WtDiffExecuter::~WtDiffExecuter()
 		_pool->wait();
 }
 
+void WtDiffExecuter::setTrader(TraderAdapter* adapter)
+{
+	_trader = adapter;
+	//设置的时候读取一下trader的状态
+	_channel_ready = _trader->isReady();
+}
+
 bool WtDiffExecuter::init(WTSVariant* params)
 {
 	if (params == NULL)
@@ -190,8 +197,12 @@ ExecuteUnitPtr WtDiffExecuter::getUnit(const char* stdCode, bool bAutoCreate /* 
 		ExecuteUnitPtr unit = _factory->createDiffExeUnit(name);
 		if (unit != NULL)
 		{
-			unit->self()->init(this, stdCode, cfg);
 			_unit_map[stdCode] = unit;
+			unit->self()->init(this, stdCode, cfg);
+
+			//如果通道已经就绪，则直接通知执行单元
+			if (_channel_ready)
+				unit->self()->on_channel_ready();
 		}
 		else
 		{

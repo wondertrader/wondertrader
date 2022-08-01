@@ -37,10 +37,7 @@ public:
 	 */
 	bool init(WTSVariant* params);
 
-	inline void setTrader(TraderAdapter* adapter)
-	{
-		_trader = adapter;
-	}
+	void setTrader(TraderAdapter* adapter);
 
 private:
 	ExecuteUnitPtr	getUnit(const char* code, bool bAutoCreate = true);
