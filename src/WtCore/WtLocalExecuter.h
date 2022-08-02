@@ -68,6 +68,14 @@ public:
 	virtual uint64_t	getCurTime() override;
 
 public:
+	virtual bool			getMarketValue(double& market_value) override;
+
+private:
+	bool amountToPos(const char* stdCode, double amount, double& pos);
+	bool ratioToPos(const char* stdCode, double ratio, double& pos);
+	inline void checkTarget();
+
+public:
 	/*
 	 *	设置目标仓位
 	 */
@@ -127,7 +135,7 @@ public:
 	/*
 	 *	资金回报
 	 */
-	virtual void on_account(const char* currency, double prebalance, double balance, double dynbalance, 
+	virtual void on_account(const char* currency, double prebalance, double balance, double dynbalance,
 		double avaliable, double closeprofit, double dynprofit, double margin, double fee, double deposit, double withdraw) override;
 
 private:
@@ -162,7 +170,7 @@ private:
 	faster_hashmap<LongKey, double> _target_pos;
 	faster_hashmap<LongKey, double> _target_amount;
 	faster_hashmap<LongKey, double> _target_ratio;
-
+	double							_avaliable;
 	typedef std::shared_ptr<boost::threadpool::pool> ThreadPoolPtr;
 	ThreadPoolPtr		_pool;
 };
