@@ -129,6 +129,8 @@ HftMocker::HftMocker(HisDataReplayer* replayer, const char* name)
 	_commodities = CommodityMap::create();
 
 	_context_id = makeHftCtxId();
+
+	_ticks = TickCache::create();
 }
 
 
@@ -140,6 +142,9 @@ HftMocker::~HftMocker()
 	}
 
 	_commodities->release();
+
+	_ticks->release();
+	_ticks = NULL;
 }
 
 void HftMocker::procTask()
@@ -862,6 +867,18 @@ WTSTransSlice* HftMocker::stra_get_transaction(const char* stdCode, uint32_t cou
 
 WTSTickData* HftMocker::stra_get_last_tick(const char* stdCode)
 {
+	if (_ticks != NULL)
+	{
+		auto it = _ticks->find(stdCode);
+		if (it != _ticks->end())
+		{
+			WTSTickData* lastTick = (WTSTickData*)it->second;
+			if (lastTick)
+				lastTick->retain();
+			return lastTick;
+		}
+	}
+
 	return _replayer->get_last_tick(stdCode);
 }
 

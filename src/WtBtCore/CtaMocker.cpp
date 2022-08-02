@@ -73,11 +73,14 @@ CtaMocker::CtaMocker(HisDataReplayer* replayer, const char* name, int32_t slippa
 	, _persist_data(persistData)
 {
 	_context_id = makeCtxId();
+	_ticks = TickCache::create();
 }
 
 
 CtaMocker::~CtaMocker()
 {
+	_ticks->release();
+	_ticks = NULL;
 }
 
 void CtaMocker::dump_stradata()
@@ -677,6 +680,7 @@ void CtaMocker::handle_tick(const char* stdCode, WTSTickData* newTick, bool isBa
 		last_px = cur_px;
 	
 	_price_map[stdCode] = cur_px;
+	_ticks->add(stdCode, newTick, true);
 
 	//先检查是否要信号要触发
 	//By Wesley @ 2022.04.19
@@ -720,6 +724,7 @@ void CtaMocker::on_bar(const char* stdCode, const char* period, uint32_t times, 
 
 void CtaMocker::on_init()
 {
+	_ticks->clear();
 	_in_backtest = true;
 	if (_strategy)
 		_strategy->on_init(this);
@@ -1555,6 +1560,18 @@ WTSTickSlice* CtaMocker::stra_get_ticks(const char* stdCode, uint32_t count)
 
 WTSTickData* CtaMocker::stra_get_last_tick(const char* stdCode)
 {
+	if(_ticks != NULL)
+	{
+		auto it = _ticks->find(stdCode);
+		if(it != _ticks->end())
+		{
+			WTSTickData* lastTick = (WTSTickData*)it->second;
+			if(lastTick)
+				lastTick->retain();
+			return lastTick;
+		}
+	}
+
 	return _replayer->get_last_tick(stdCode);
 }
 

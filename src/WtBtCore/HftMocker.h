@@ -335,5 +335,8 @@ protected:
 
 	//tick¶©ÔÄÁĞ±í
 	faster_hashset<std::string> _tick_subs;
+
+	typedef WTSHashMap<std::string>	TickCache;
+	TickCache*	_ticks;
 };
 

@@ -17,6 +17,7 @@
 #include "../Includes/ICtaStraCtx.h"
 #include "../Includes/CtaStrategyDefs.h"
 #include "../Includes/WTSDataDef.hpp"
+#include "../Includes/WTSCollection.hpp"
 
 #include "../Share/DLLHelper.hpp"
 #include "../Share/StdUtils.hpp"
@@ -432,4 +433,7 @@ protected:
 	} ChartIndex;
 
 	std::unordered_map<std::string, ChartIndex>	_chart_indice;
+
+	typedef WTSHashMap<std::string>	TickCache;
+	TickCache*	_ticks;
 };
