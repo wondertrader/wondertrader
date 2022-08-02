@@ -33,6 +33,7 @@ WtDiffExecuter::WtDiffExecuter(WtExecuterFactory* factory, const char* name, IDa
 	, _data_mgr(dataMgr)
 	, _channel_ready(false)
 	, _scale(1.0)
+	, _avaliable{ -1 }
 {
 }
 
@@ -294,6 +295,107 @@ uint64_t WtDiffExecuter::getCurTime()
 	//return TimeUtils::makeTime(_stub->get_date(), _stub->get_raw_time() * 100000 + _stub->get_secs());
 }
 
+bool WtDiffExecuter::getMarketValue(double& market_value)
+{
+	if (!_channel_ready)
+		return false;
+	std::map<std::string, double> real_pos_map{};
+	// TODO 增加保证金比例的转换
+	_trader->enumPosition([&real_pos_map](const char* stdCode, bool isLong, double prevol, double preavail, double newvol, double newavail) {
+		if (real_pos_map.find(stdCode) == real_pos_map.end())
+			real_pos_map[stdCode] = 0;
+		double real_pos = (prevol + newvol);
+		real_pos_map[stdCode] += real_pos;
+	});
+
+	market_value = 0;
+	for (auto& it : real_pos_map)
+	{
+		std::string stdCode = it.first;
+		double real_pos = it.second;
+		WTSTickData* tick = grabLastTick(stdCode.c_str());
+		if (tick)
+		{
+			market_value += real_pos * tick->price();
+			tick->release();
+		}
+		else
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+bool WtDiffExecuter::amountToPos(const char* stdCode, double amount, double& pos)
+{
+	WTSTickData* tick = grabLastTick(stdCode);
+	if (tick)
+	{
+		pos = amount / tick->price();
+		return true;
+	}
+	else
+		return false;
+	return false;
+}
+
+bool WtDiffExecuter::ratioToPos(const char* stdCode, double ratio, double& pos)
+{
+	if (decimal::le(_avaliable))
+		return false;
+	double market_value = 0;
+	if (!getMarketValue(market_value));
+	return false;
+
+	double total_captaial = _avaliable + market_value;
+	WTSTickData* tick = grabLastTick(stdCode);
+	if (tick)
+	{
+		pos = total_captaial * ratio / tick->price();
+		return true;
+	}
+	else
+		return false;
+}
+
+inline void WtDiffExecuter::checkTarget()
+{
+	faster_hashset<LongKey> finish_target_amount{};
+	for (auto& it : _target_amount)
+	{
+		double pos;
+		std::string stdCode = it.first.c_str();
+		double amount = it.second;
+		if (amountToPos(stdCode.c_str(), amount, pos))
+		{
+			on_position_changed(stdCode.c_str(), pos);
+			finish_target_amount.insert(stdCode.c_str());
+		}
+	}
+	for (auto& finish_stdCode : finish_target_amount)
+	{
+		_target_amount.erase(finish_stdCode);
+	}
+
+	faster_hashset<LongKey> finish_target_ratio{};
+	for (auto& it : _target_ratio)
+	{
+		double pos;
+		std::string stdCode = it.first.c_str();
+		double ratio = it.second;
+		if (ratioToPos(stdCode.c_str(), ratio, pos))
+		{
+			on_position_changed(stdCode.c_str(), pos);
+			finish_target_ratio.insert(stdCode.c_str());
+		}
+	}
+	for (auto& finish_stdCode : finish_target_ratio)
+	{
+		_target_ratio.erase(finish_stdCode);
+	}
+}
+
 #pragma endregion Context回调接口
 //ExecuteContext
 //////////////////////////////////////////////////////////////////////////
@@ -362,24 +464,9 @@ void WtDiffExecuter::on_amount_changed(const char* stdCode, double targetAmount)
 	//WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "Target amount of {} changed: {} -> {}", stdCode, oldAmount, targetAmount);
 	WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "Target amount of {} changed: {} -> {}, diff amount changed: {} -> {}", stdCode, oldAmount, targetAmount, prevDiff, thisDiff);
 
-	if (_trader && !_trader->checkOrderLimits(stdCode))
-	{
-		WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "{} is disabled", stdCode);
-		return;
-	}
-
-	//TODO 差量执行还要再看一下
-	if (_pool)
-	{
-		std::string code = stdCode;
-		_pool->schedule([unit, code, thisDiff]() {
-			unit->self()->set_amount(code.c_str(), thisDiff);
-		});
-	}
-	else
-	{
-		unit->self()->set_amount(stdCode, thisDiff);
-	}
+	double pos{ 0 };
+	if (amountToPos(stdCode, targetAmount, pos))
+		unit->self()->set_position(stdCode, pos);
 }
 
 void WtDiffExecuter::on_ratio_changed(const char* stdCode, double targetRatio)
@@ -402,24 +489,9 @@ void WtDiffExecuter::on_ratio_changed(const char* stdCode, double targetRatio)
 	//WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "Target ratio of {} changed: {} -> {}", stdCode, oldRatio, targetRatio);
 	WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "Target ratio of {} changed: {} -> {}, diff ratio changed: {} -> {}", stdCode, oldRatio, targetRatio, prevDiff, thisDiff);
 
-	if (_trader && !_trader->checkOrderLimits(stdCode))
-	{
-		WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "{} is disabled", stdCode);
-		return;
-	}
-
-	//TODO 差量执行还要再看一下
-	if (_pool)
-	{
-		std::string code = stdCode;
-		_pool->schedule([unit, code, thisDiff]() {
-			unit->self()->set_ratio(code.c_str(), thisDiff);
-		});
-	}
-	else
-	{
-		unit->self()->set_ratio(stdCode, thisDiff);
-	}
+	double pos{ 0 };
+	if (ratioToPos(stdCode, targetRatio, pos))
+		unit->self()->set_position(stdCode, pos);
 }
 
 void WtDiffExecuter::set_position(const faster_hashmap<LongKey, double>& targets)
@@ -508,6 +580,7 @@ void WtDiffExecuter::set_position(const faster_hashmap<LongKey, double>& targets
 
 void WtDiffExecuter::on_tick(const char* stdCode, WTSTickData* newTick)
 {
+	checkTarget();
 	ExecuteUnitPtr unit = getUnit(stdCode, false);
 	if (unit == NULL)
 		return;
@@ -668,6 +741,8 @@ void WtDiffExecuter::on_channel_lost()
 void WtDiffExecuter::on_account(const char* currency, double prebalance, double balance, double dynbalance,
 	double avaliable, double closeprofit, double dynprofit, double margin, double fee, double deposit, double withdraw)
 {
+	if (std::strcmp(currency, "CNY") == 0)
+		_avaliable = avaliable;
 	SpinLock lock(_mtx_units);
 	for (auto it = _unit_map.begin(); it != _unit_map.end(); it++)
 	{
