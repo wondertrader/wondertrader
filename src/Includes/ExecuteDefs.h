@@ -134,6 +134,11 @@ public:
 	virtual uint64_t	getCurTime() = 0;
 
 	/*
+	 *  计算市值
+	 */
+	virtual bool		getMarketValue(double& market_value) { return false; };
+
+	/*
 	 *	注册定时器
 	 *	@stdCode	合约代码
 	 *	@elapse		时间间隔,单位毫秒
@@ -176,20 +181,6 @@ public:
 	 *	newVol	新的目标仓位
 	 */
 	virtual void set_position(const char* stdCode, double newVol) = 0;
-
-	/*
-	 *	设置新的目标金额
-	 *	stdCode	合约代码
-	 *	newVol	新的目标金额
-	 */
-	virtual void set_amount(const char* stdCode, double newAmount) {};
-
-	/*
-	 *	设置新的目标持仓比例
-	 *	stdCode	合约代码
-	 *	newVol	新的目标比例
-	 */
-	virtual void set_ratio(const char* stdCode, double newRatio) {};
 
 	/*
 	 *	清理全部持仓，锁仓的情况下也要清理
