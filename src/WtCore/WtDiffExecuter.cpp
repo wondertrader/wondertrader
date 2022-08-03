@@ -466,7 +466,11 @@ void WtDiffExecuter::on_amount_changed(const char* stdCode, double targetAmount)
 
 	double pos{ 0 };
 	if (amountToPos(stdCode, targetAmount, pos))
+	{
 		unit->self()->set_position(stdCode, pos);
+		_target_amount.erase(stdCode);
+	}
+
 }
 
 void WtDiffExecuter::on_ratio_changed(const char* stdCode, double targetRatio)
@@ -475,8 +479,8 @@ void WtDiffExecuter::on_ratio_changed(const char* stdCode, double targetRatio)
 	if (unit == NULL)
 		return;
 
-	double oldRatio = _target_pos[stdCode];
-	_target_pos[stdCode] = targetRatio;
+	double oldRatio = _target_ratio[stdCode];
+	_target_ratio[stdCode] = targetRatio;
 
 	if (decimal::eq(oldRatio, targetRatio))
 		return;
@@ -491,7 +495,10 @@ void WtDiffExecuter::on_ratio_changed(const char* stdCode, double targetRatio)
 
 	double pos{ 0 };
 	if (ratioToPos(stdCode, targetRatio, pos))
+	{
 		unit->self()->set_position(stdCode, pos);
+		_target_ratio.erase(stdCode);
+	}
 }
 
 void WtDiffExecuter::set_position(const faster_hashmap<LongKey, double>& targets)
