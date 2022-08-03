@@ -300,6 +300,8 @@ void ParserXTP::DoLogin()
 		return;
 	}
 
+	m_pUserAPI->SetHeartBeatInterval(m_uHBInterval);
+	m_pUserAPI->SetUDPBufferSize(m_uBuffSize);
 	int iResult = m_pUserAPI->Login(m_strHost.c_str(), m_iPort, m_strUser.c_str(), m_strPass.c_str(), m_iProtocol);
 	if(iResult != 0)
 	{
