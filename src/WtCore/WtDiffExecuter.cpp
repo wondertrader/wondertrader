@@ -470,7 +470,6 @@ void WtDiffExecuter::on_amount_changed(const char* stdCode, double targetAmount)
 		unit->self()->set_position(stdCode, pos);
 		_target_amount.erase(stdCode);
 	}
-
 }
 
 void WtDiffExecuter::on_ratio_changed(const char* stdCode, double targetRatio)
@@ -497,7 +496,7 @@ void WtDiffExecuter::on_ratio_changed(const char* stdCode, double targetRatio)
 	if (ratioToPos(stdCode, targetRatio, pos))
 	{
 		unit->self()->set_position(stdCode, pos);
-		_target_ratio.erase(stdCode);
+		_target_ratio.erase(stdCode); 
 	}
 }
 
