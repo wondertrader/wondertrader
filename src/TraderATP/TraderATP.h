@@ -4,8 +4,8 @@
  *
  * \author Wesley
  * \date 2020/03/30
- * 
- * \brief 
+ *
+ * \brief
  */
 #pragma once
 
@@ -165,14 +165,15 @@ private:
 
 	IBaseDataMgr*			_bd_mgr;
 
-	std::string		_user;
-	std::string		_pass;
+	std::string		_user;  // AGW登录账号
+	std::string		_pass;  // AGW登录密码
 	std::string		_product;
 
-	std::string		_accountid;
-	std::string		_accpasswd;
+	std::string		_accountid;  // 证券账户
+	std::string		_fund_accountid;  // 资金账户
+	std::string		_accpasswd;  // 交易密码
 
-	std::string		_front;
+	std::string		_front;  // 交易网关
 	std::string		_front2;
 
 	TraderState		_state;
@@ -182,7 +183,7 @@ private:
 	std::atomic<uint32_t>		_reqid;
 	std::atomic<uint32_t>		_ordref;		//报单引用
 
-	std::string		_cust_id;
+	std::string		_cust_id;  // 客户号
 
 	boost::asio::io_service		_asyncio;
 	StdThreadPtr				_thrd_worker;
