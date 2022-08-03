@@ -273,14 +273,6 @@ bool WtLocalExecuter::getMarketValue(double& market_value)
 	return true;
 }
 
-inline double WtLocalExecuter::getRealPos(const char* stdCode)
-{
-	double long_pos = getPosition(stdCode, false, 1);
-	double short_pos = getPosition(stdCode, false, 2);
-	double pos = abs(long_pos) + abs(short_pos);
-	return pos;
-}
-
 bool WtLocalExecuter::amountToPos(const char* stdCode, double amount, double& pos)
 {
 	WTSTickData* tick = grabLastTick(stdCode);
