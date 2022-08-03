@@ -128,6 +128,8 @@ private:
 	bool			_quick;
 	bool			_inited;
 
+	uint32_t			_hbInterval;
+
 	TraderState		_state;
 
 	uint64_t		_sessionid;

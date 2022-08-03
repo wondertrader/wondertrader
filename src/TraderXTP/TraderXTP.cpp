@@ -571,6 +571,8 @@ bool TraderXTP::init(WTSVariant *params)
 
 	_flowdir = params->getCString("flowdir");
 
+	_hbInterval = params->getUInt32("hbinterval");
+
 	if (_flowdir.empty())
 		_flowdir = "XTPTDFlow";
 
@@ -728,6 +730,7 @@ void TraderXTP::doLogin()
 {
 	_state = TS_LOGINING;
 
+	_api->SetHeartBeatInterval(_hbInterval);
 	uint64_t iResult = _api->Login(_host.c_str(), _port, _user.c_str(), _pass.c_str(), XTP_PROTOCOL_TCP);
 	if (iResult == 0)
 	{
