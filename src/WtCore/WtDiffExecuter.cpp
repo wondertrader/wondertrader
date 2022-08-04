@@ -332,7 +332,10 @@ bool WtDiffExecuter::amountToPos(const char* stdCode, double amount, double& pos
 	WTSTickData* tick = grabLastTick(stdCode);
 	if (tick)
 	{
-		pos = amount / tick->price();
+		double last_price = tick->price();
+		pos = amount / last_price;
+		writeLog(fmtutil::format("amount:{} -> pos:{} with price:{}", amount, pos, last_price));
+		tick->release();
 		return true;
 	}
 	else
@@ -349,14 +352,9 @@ bool WtDiffExecuter::ratioToPos(const char* stdCode, double ratio, double& pos)
 	return false;
 
 	double total_captaial = _avaliable + market_value;
-	WTSTickData* tick = grabLastTick(stdCode);
-	if (tick)
-	{
-		pos = total_captaial * ratio / tick->price();
-		return true;
-	}
-	else
-		return false;
+	double amount = total_captaial * ratio;
+	writeLog(fmtutil::format("ratio:{} -> amount:{} with total_captaial:{}", ratio, amount, total_captaial));
+	return amountToPos(stdCode, amount, pos);
 }
 
 inline void WtDiffExecuter::checkTarget()
