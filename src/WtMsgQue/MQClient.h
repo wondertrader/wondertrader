@@ -60,6 +60,8 @@ private:
 
 	StdThreadPtr	m_thrdRecv;
 	bool			m_bTerminated;
+	int64_t			m_iCheckTime;
+	bool			m_bNeedCheck;
 
 	std::string		_buffer;
 	FuncMQCallback	_cb_message;
