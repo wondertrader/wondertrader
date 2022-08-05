@@ -147,8 +147,10 @@ private:
 	void		doLogin(const char* productid);
 
 	inline WTSOrderInfo*	makeOrderInfo(const APIOrderUnit* orderField);
-	//inline WTSEntrust*		makeEntrust(XTPOrderInfo *entrustField);
+	inline WTSEntrust*		makeEntrust(const ATPRspOrderStatusAckMsg *entrustField);
 	inline WTSTradeInfo*	makeTradeInfo(const APITradeOrderUnit *tradeField);
+	inline WTSOrderInfo*	makeOrderInfo(const ATPRspOrderStatusAckMsg *order_status_ack);
+	inline WTSTradeInfo*	makeTradeRecord(const ATPRspCashAuctionTradeERMsg *cash_auction_trade_er);
 
 	inline bool	extractEntrustID(const char* entrustid, uint32_t &orderRef);
 	inline void	genEntrustID(char* buffer, uint32_t orderRef);
@@ -172,6 +174,7 @@ private:
 	std::string		_accountid;  // 证券账户
 	std::string		_fund_accountid;  // 资金账户
 	std::string		_accpasswd;  // 交易密码
+	std::string		_branchid;   //营业部ID （当登录模式为2-资金账户登录模式时，该字段是否必填请咨询券商）  
 
 	std::string		_front;  // 交易网关
 	std::string		_front2;

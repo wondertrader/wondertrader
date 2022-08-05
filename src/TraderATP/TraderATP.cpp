@@ -101,12 +101,59 @@ inline WTSDirectionType wrapATPSide(const ATPSideType side)
 		return WDT_NET;
 }
 
-inline WTSOffsetType wrapOffsetType(ATPSideType dirType)
+inline WTSDirectionType wrapDirectionType(ATPSideType side, ATPPositionEffectType pe)
 {
-	if (dirType == ATPSideConst::kBuy || dirType == ATPSideConst::kFinancingBuy)
+	if (ATPSideConst::kBuy == side) {
+		if (pe == ATPPositionEffectConst::kOpen)
+			return WDT_LONG;
+		else
+			return WDT_SHORT;
+	}
+	else {
+		if (pe == ATPPositionEffectConst::kOpen)
+			return WDT_SHORT;
+		else
+			return WDT_LONG;
+	}
+}
+
+inline WTSOffsetType wrapOffsetType(const ATPPositionEffectType dirType)
+{
+	if (dirType == ATPPositionEffectConst::kOpen)
 		return WOT_OPEN;
 	else
 		return WOT_CLOSE;
+}
+
+inline ATPOrdTypeType wrapOrdType(WTSPriceType priceType, WTSOrderFlag flag)
+{
+
+	if (WPT_LIMITPRICE == priceType && flag == WOF_NOR)
+		return ATPOrdTypeConst::kFixedNew;  // 限价委托、增强限价
+
+	if (WPT_LIMITPRICE == priceType && flag == WOF_FOK)
+		return ATPOrdTypeConst::kFixedFullDealOrCancel;  // 限价全额成交或撤销
+
+	if (WPT_ANYPRICE == priceType && flag == WOF_NOR)
+		return ATPOrdTypeConst::kMarketTransferFixed;  // 市价剩余转限价
+
+	if (WPT_ANYPRICE == priceType && flag == WOF_FAK)
+		return ATPOrdTypeConst::kImmediateDealTransferCancel;  // 立即成交剩余撤销
+
+	if (WPT_ANYPRICE == priceType && flag == WOF_FOK)
+		return ATPOrdTypeConst::kFullDealOrCancel;  // 全额成交或撤销
+}
+
+inline WTSPriceType wrapOrdType(ATPOrdTypeType ordType)
+{
+	if (ordType == ATPOrdTypeConst::kFixedNew || ordType == ATPOrdTypeConst::kSzBiddingFixed || ordType == ATPOrdTypeConst::kShBiddingFixed || ordType == ATPOrdTypeConst::kFixedFullDealOrCancel || ordType == ATPOrdTypeConst::kFixed)
+		return WPT_LIMITPRICE;
+	if (ordType == ATPOrdTypeConst::kImmediateDealTransferCancel || ordType == ATPOrdTypeConst::kFullDealOrCancel || ordType == ATPOrdTypeConst::kMarket || ordType == ATPOrdTypeConst::kMarketTransferFixed)
+		return WPT_ANYPRICE;
+	else if (ordType == ATPOrdTypeConst::kLocalOptimalNew || ordType == ATPOrdTypeConst::kOptimalFiveLevelFullDealTransferCancel || ordType == ATPOrdTypeConst::kOptimalFiveLevelImmediateDealTransferFixed || ordType == ATPOrdTypeConst::kCountPartyOptimalTransferFixed)
+		return WPT_BESTPRICE;
+	else
+		return WPT_LASTPRICE;
 }
 
 inline WTSOrderState wrapOrdStatus(ATPOrdStatusType orderState)
@@ -133,31 +180,30 @@ inline WTSOrderState wrapOrdStatus(ATPOrdStatusType orderState)
 	}
 }
 
-/*
-WTSEntrust* TraderATP::makeEntrust(XTPOrderInfo* order_info)
+WTSEntrust* TraderATP::makeEntrust(const ATPRspOrderStatusAckMsg* order_info)
 {
 	std::string code, exchg;
-	if (order_info->market == XTP_MKT_SH_A)
+	if (order_info->market_id == ATPMarketIDConst::kShangHai)
 		exchg = "SSE";
 	else
 		exchg = "SZSE";
-	code = order_info->ticker;
+	code = order_info->security_id;
 	WTSContractInfo* ct = _bd_mgr->getContract(code.c_str(), exchg.c_str());
 	if (ct == NULL)
 		return NULL;
 
 	WTSEntrust* pRet = WTSEntrust::create(
 		code.c_str(),
-		(uint32_t)order_info->quantity,
+		(uint32_t)order_info->order_qty,
 		order_info->price,
 		ct->getExchg());
 	pRet->setContractInfo(ct);
 	pRet->setDirection(wrapDirectionType(order_info->side, order_info->position_effect));
-	pRet->setPriceType(wrapPriceType(order_info->price_type));
+	pRet->setPriceType(wrapOrdType(order_info->order_type));
 	pRet->setOffsetType(wrapOffsetType(order_info->position_effect));
 	pRet->setOrderFlag(WOF_NOR);
 
-	genEntrustID(pRet->getEntrustID(), order_info->order_client_id);
+	genEntrustID(pRet->getEntrustID(), order_info->client_seq_id);
 
 	const char* usertag = m_eidCache.get(pRet->getEntrustID());
 	if (strlen(usertag) > 0)
@@ -165,7 +211,6 @@ WTSEntrust* TraderATP::makeEntrust(XTPOrderInfo* order_info)
 
 	return pRet;
 }
-*/
 
 WTSOrderInfo* TraderATP::makeOrderInfo(const APIOrderUnit* order_info)
 {
@@ -184,10 +229,10 @@ WTSOrderInfo* TraderATP::makeOrderInfo(const APIOrderUnit* order_info)
 	pRet->setContractInfo(contract);
 	pRet->setPrice(order_info->order_price / 10000);
 	pRet->setVolume((uint32_t)order_info->order_qty / 100);
-	//pRet->setDirection(wrapATPSide(order_info->side));
-	//pRet->setPriceType(wrapPriceType(order_info->price_type));
+	pRet->setDirection(wrapATPSide(order_info->side));
+	pRet->setPriceType(wrapOrdType(order_info->ord_type));
 	pRet->setOrderFlag(WOF_NOR);
-	pRet->setOffsetType(wrapOffsetType(order_info->side));
+	//pRet->setOffsetType(wrapOffsetType(order_info->posi));
 
 	pRet->setVolTraded((uint32_t)order_info->cum_qty / 100);
 	pRet->setVolLeft((uint32_t)order_info->leaves_qty / 100);
@@ -205,9 +250,72 @@ WTSOrderInfo* TraderATP::makeOrderInfo(const APIOrderUnit* order_info)
 
 	genEntrustID(pRet->getEntrustID(), order_info->client_seq_id);
 	//pRet->setEntrustID(genEntrustID(pRet->getEntrustID(), order_info->client_seq_id).c_str());
-	pRet->setOrderID(fmt::format("{}", order_info->order_id).c_str());
+	pRet->setOrderID(fmt::format("{}", order_info->cl_ord_no).c_str());
 
 	pRet->setStateMsg("");
+
+	const char* usertag = m_eidCache.get(pRet->getEntrustID());
+	if (strlen(usertag) == 0)
+	{
+		pRet->setUserTag(pRet->getEntrustID());
+	}
+	else
+	{
+		pRet->setUserTag(usertag);
+
+		if (strlen(pRet->getOrderID()) > 0)
+		{
+			m_oidCache.put(StrUtil::trim(pRet->getOrderID()).c_str(), usertag, 0, [this](const char* message) {
+				write_log(_sink, LL_ERROR, message);
+			});
+		}
+	}
+
+	return pRet;
+}
+
+WTSOrderInfo* TraderATP::makeOrderInfo(const ATPRspOrderStatusAckMsg *order_status_ack)
+{
+	std::string code, exchg;
+	if (order_status_ack->market_id == ATPMarketIDConst::kShangHai)
+		exchg = "SSE";
+	else
+		exchg = "SZSE";
+	code = order_status_ack->security_id;
+	WTSContractInfo* contract = _bd_mgr->getContract(code.c_str(), exchg.c_str());
+	if (contract == NULL)
+		return NULL;
+
+	WTSOrderInfo* pRet = WTSOrderInfo::create();
+	pRet->setContractInfo(contract);
+	pRet->setPrice(order_status_ack->price);
+	pRet->setVolume((uint32_t)order_status_ack->order_qty / 100);
+	pRet->setDirection(wrapATPSide(order_status_ack->side));
+	pRet->setPriceType(wrapOrdType(order_status_ack->order_type));
+	pRet->setOrderFlag(WOF_NOR);
+	pRet->setOffsetType(wrapOffsetType(order_status_ack->position_effect));
+
+	pRet->setVolTraded((uint32_t)(order_status_ack->order_qty / 100 - order_status_ack->leaves_qty / 100));
+	pRet->setVolLeft((uint32_t)order_status_ack->leaves_qty / 100);
+
+	pRet->setCode(code.c_str());
+	pRet->setExchange(contract->getExchg());
+
+	pRet->setOrderDate((uint32_t)(order_status_ack->transact_time / 1000000000));
+	uint32_t uTime = order_status_ack->transact_time % 1000000000;
+	pRet->setOrderTime(TimeUtils::makeTime(pRet->getOrderDate(), uTime));
+
+	pRet->setOrderState(wrapOrdStatus(order_status_ack->ord_status));
+	if (order_status_ack->ord_status == ATPOrdStatusConst::kReject || order_status_ack->ord_status == ATPOrdStatusConst::kUnSend) {
+		pRet->setError(true);
+		pRet->setOrderState(WOS_Canceled);
+	}
+
+	genEntrustID(pRet->getEntrustID(), order_status_ack->client_seq_id);
+	fmtutil::format_to(pRet->getOrderID(), "{}", order_status_ack->cl_ord_no);
+
+	pRet->setStateMsg("");
+	std::cout << "cl ord no: " << pRet->getOrderID() << std::endl;
 
 	const char* usertag = m_eidCache.get(pRet->getEntrustID());
 	if (strlen(usertag) == 0)
@@ -232,9 +340,9 @@ WTSOrderInfo* TraderATP::makeOrderInfo(const APIOrderUnit* order_info)
 WTSTradeInfo* TraderATP::makeTradeInfo(const APITradeOrderUnit* trade_info)
 {
 	std::string code, exchg;
-	if (trade_info->market_id == 101)
+	if (trade_info->market_id == ATPMarketIDConst::kShangHai)
 		exchg = "SSE";
-	else if (trade_info->market_id == 102)
+	else if (trade_info->market_id == ATPMarketIDConst::kShenZhen)
 		exchg = "SZSE";
 
 	code = trade_info->security_id;
@@ -243,7 +351,7 @@ WTSTradeInfo* TraderATP::makeTradeInfo(const APITradeOrderUnit* trade_info)
 		return NULL;
 
 	WTSTradeInfo *pRet = WTSTradeInfo::create(code.c_str(), exchg.c_str());
-	pRet->setVolume(trade_info->last_qty / 100.0);
+	pRet->setVolume((uint32_t)trade_info->last_qty / 100.0);
 	pRet->setPrice(trade_info->last_px / 10000.0);
 	pRet->setTradeID(trade_info->exec_id);
 	pRet->setAmount(trade_info->total_value_traded / 100.0);
@@ -258,9 +366,50 @@ WTSTradeInfo* TraderATP::makeTradeInfo(const APITradeOrderUnit* trade_info)
 	WTSDirectionType dType = wrapATPSide(trade_info->side);
 	pRet->setDirection(dType);
 
-	pRet->setOffsetType(wrapOffsetType(trade_info->side));
+	//pRet->setOffsetType(wrapOffsetType(trade_info->side));
 	pRet->setRefOrder(fmt::format("{}", trade_info->order_id).c_str());
 	pRet->setTradeType(WTT_Common);
+
+	const char* usertag = m_oidCache.get(StrUtil::trim(pRet->getRefOrder()).c_str());
+	if (strlen(usertag))
+		pRet->setUserTag(usertag);
+
+	return pRet;
+}
+
+WTSTradeInfo* TraderATP::makeTradeRecord(const ATPRspCashAuctionTradeERMsg *cash_auction_trade_er)
+{
+	std::string code, exchg;
+	if (cash_auction_trade_er->market_id == ATPMarketIDConst::kShangHai)
+		exchg = "SSE";
+	else if (cash_auction_trade_er->market_id == ATPMarketIDConst::kShenZhen)
+		exchg = "SZSE";
+
+	code = cash_auction_trade_er->security_id;
+	WTSContractInfo* contract = _bd_mgr->getContract(code.c_str(), exchg.c_str());
+	if (contract == NULL)
+		return NULL;
+
+	WTSTradeInfo *pRet = WTSTradeInfo::create(code.c_str(), exchg.c_str());
+	pRet->setVolume((uint32_t)cash_auction_trade_er->last_qty / 100);  // 成交数量
+	pRet->setPrice(cash_auction_trade_er->last_px / 10000.0);  // 成交价格
+	pRet->setTradeID(cash_auction_trade_er->exec_id);
+	pRet->setContractInfo(contract);
+
+	uint32_t uTime = (uint32_t)(cash_auction_trade_er->transact_time % 1000000000);
+	uint32_t uDate = (uint32_t)(cash_auction_trade_er->transact_time / 1000000000);
+
+	pRet->setTradeDate(uDate);
+	pRet->setTradeTime(TimeUtils::makeTime(uDate, uTime));
+
+	WTSDirectionType dType = wrapATPSide(cash_auction_trade_er->side);
+	pRet->setDirection(dType);
+	//pRet->setOffsetType(wrapOffsetType(cash_auction_trade_er->side));
+	fmtutil::format_to(pRet->getRefOrder(), "{}", cash_auction_trade_er->cl_ord_id);
+	pRet->setTradeType(WTT_Common);
+
+	double amount = cash_auction_trade_er->total_value_traded / 10000.0;   //成交金额
+	pRet->setAmount(amount);
 
 	const char* usertag = m_oidCache.get(StrUtil::trim(pRet->getRefOrder()).c_str());
 	if (strlen(usertag))
@@ -458,6 +607,51 @@ void TraderATP::OnRspOrderStatusInternalAck(const ATPRspOrderStatusAckMsg& order
 		" covered_or_uncovered : " << (int32_t)order_status_ack.covered_or_uncovered <<
 		" account_sub_code : " << order_status_ack.account_sub_code << std::endl;
 
+	if (order_status_ack.reject_reason_code != ATPRejectReasonCodeConst::kNormal)
+	{
+		WTSEntrust* entrust = makeEntrust(&order_status_ack);
+
+		if (order_status_ack.ord_status == ATPOrdStatusConst::kWaitCancelled)
+		{
+			// 对应撤单回调
+			std::cout << "cancelling order error: " << order_status_ack.cl_ord_no << "ord rej reason: " << order_status_ack.ord_rej_reason << std::endl;
+			WTSError* error = WTSError::create(WEC_ORDERCANCEL, order_status_ack.ord_rej_reason);
+			_sink->onRspEntrust(entrust, error);
+			error->release();
+
+			entrust->release();
+		}
+		else
+		{
+			std::cout << "insert order error: " << order_status_ack.cl_ord_no << "ord rej reason: " << order_status_ack.ord_rej_reason << std::endl;
+			WTSError* error = WTSError::create(WEC_ORDERINSERT, order_status_ack.ord_rej_reason);
+			_sink->onRspEntrust(entrust, error);
+			error->release();
+
+			entrust->release();
+		}
+	}
+	else
+	{
+		WTSOrderInfo *orderInfo = makeOrderInfo(&order_status_ack);
+		if (orderInfo)
+		{
+			//if (_sink)
+			//	_sink->onPushOrder(orderInfo);
+
+			//orderInfo->release();
+
+			_asyncio.post([this, orderInfo] {
+				if (_sink)
+					_sink->onPushOrder(orderInfo);
+
+				orderInfo->release();
+			});
+
+			std::cout << "push order into sink: " << order_status_ack.cl_ord_no << std::endl;
+		}
+	}
+
 	// 保存回报分区号、序号，用于断线重连时指定已收到最新回报序号
 	report_sync[order_status_ack.partition] = order_status_ack.index;
 }
@@ -499,6 +693,49 @@ void TraderATP::OnRspOrderStatusAck(const ATPRspOrderStatusAckMsg& order_status_
 		" account_sub_code : " << order_status_ack.account_sub_code <<
 		" quote_flag:" << (int32_t)order_status_ack.quote_flag << std::endl;
 
+	if (order_status_ack.reject_reason_code != ATPRejectReasonCodeConst::kNormal)
+	{
+		WTSEntrust* entrust = makeEntrust(&order_status_ack);
+
+		if (order_status_ack.ord_status == ATPOrdStatusConst::kWaitCancelled)
+		{
+			// 对应撤单回调
+			std::cout << "cancelling order error: " << order_status_ack.cl_ord_id << "ord rej reason: " << order_status_ack.ord_rej_reason << std::endl;
+			WTSError* error = WTSError::create(WEC_ORDERCANCEL, order_status_ack.ord_rej_reason);
+			_sink->onRspEntrust(entrust, error);
+			error->release();
+
+			entrust->release();
+		}
+		else
+		{
+			std::cout << "inserting order error: " << order_status_ack.cl_ord_id << "ord rej reason: " << order_status_ack.ord_rej_reason << std::endl;
+			WTSError* error = WTSError::create(WEC_ORDERINSERT, order_status_ack.ord_rej_reason);
+			_sink->onRspEntrust(entrust, error);
+			error->release();
+
+			entrust->release();
+		}
+	}
+	else
+	{
+		WTSOrderInfo *orderInfo = makeOrderInfo(&order_status_ack);
+		if (orderInfo)
+		{
+			//if (_sink)
+			//	_sink->onPushOrder(orderInfo);
+
+			//orderInfo->release();
+
+			_asyncio.post([this, orderInfo] {
+				if (_sink)
+					_sink->onPushOrder(orderInfo);
+
+				orderInfo->release();
+			});
+		}
+	}
+
 	// 保存回报分区号、序号，用于断线重连时指定已收到最新回报序号
 	report_sync[order_status_ack.partition] = order_status_ack.index;
 }
@@ -534,6 +771,22 @@ void TraderATP::OnRspCashAuctionTradeER(const ATPRspCashAuctionTradeERMsg& cash_
 		" fee : " << cash_auction_trade_er.fee <<
 		" cash_margin : " << cash_auction_trade_er.cash_margin << std::endl;
 
+	WTSTradeInfo *tRecord = makeTradeRecord(&cash_auction_trade_er);
+	if (tRecord)
+	{
+		_asyncio.post([this, tRecord] {
+			if (_sink)
+				_sink->onPushTrade(tRecord);
+
+			tRecord->release();
+
+			//if (_sink)
+			//	_sink->onPushTrade(tRecord);
+
+			//tRecord->release();
+		});
+	}
+
 	// 保存回报分区号、序号，用于断线重连时指定已收到最新回报序号
 	report_sync[cash_auction_trade_er.partition] = cash_auction_trade_er.index;
 }
@@ -549,9 +802,8 @@ void TraderATP::OnRspBizRejection(const ATPRspBizRejectionOtherMsg& biz_rejectio
 		" business_reject_text : " << biz_rejection.business_reject_text <<
 		" user_info : " << biz_rejection.user_info << std::endl;
 
-	WTSError* error = WTSError::create(WEC_ORDERCANCEL, biz_rejection.business_reject_text);
 	if (_sink)
-		_sink->onTraderError(error);
+		write_log(_sink, LL_ERROR, biz_rejection.business_reject_text);
 }
 
 void TraderATP::OnRspFundQueryResult(const ATPRspFundQueryResultMsg &msg)
@@ -768,6 +1020,7 @@ bool TraderATP::init(WTSVariant *params)
 	_accpasswd = params->getCString("account_key");
 	_fund_accountid = params->getCString("fund_account_id");
 	_cust_id = params->getCString("cust_id");
+	_branchid = params->getCString("branch_id");
 
 	_front = params->getCString("front");
 	_front2 = params->getCString("front_backup");
@@ -964,7 +1217,7 @@ void TraderATP::doLogin(const char* productInfo)
 	login_msg.client_seq_id = genRequestID();							// 客户系统消息号
 	login_msg.order_way = '0';											// 委托方式，自助委托
 	login_msg.client_feature_code = productInfo;						// 终端识别码
-	strncpy(login_msg.branch_id, "00000", 11);
+	strncpy(login_msg.branch_id, _branchid.c_str(), 11);
 
 	ATPRetCodeType ec = _api->ReqCustLoginOther(&login_msg);
 	if (ec != ErrorCode::kSuccess)
@@ -1056,8 +1309,10 @@ int TraderATP::orderInsert(WTSEntrust* entrust)
 	wt_strcpy(p.cust_id, _cust_id.c_str());                 // 客户号ID
 	wt_strcpy(p.fund_account_id, _fund_accountid.c_str());       // 资金账户ID
 	wt_strcpy(p.account_id, _accountid.c_str());                 // 账户ID
-	p.side = (entrust->getOffsetType() == WOT_OPEN) ? ATPSideConst::kBuy : ATPSideConst::kSell;     // 买卖方向，买
-	p.order_type = ATPOrdTypeConst::kFixedNew;				// 订单类型，限价
+	//p.side = (entrust->getOffsetType() == WOT_OPEN) ? ATPSideConst::kBuy : ATPSideConst::kSell;     // 买卖方向，买
+	p.side = (entrust->getDirection() == WOT_OPEN) ? ATPSideConst::kBuy : ATPSideConst::kSell;      // 买卖方向，买
+	//p.order_type = ATPOrdTypeConst::kFixedNew;				// 订单类型，限价
+	p.order_type = wrapOrdType(entrust->getPriceType(), entrust->getOrderFlag());
 	p.price = (int32_t)(entrust->getPrice() * 10000);         // 委托价格 N13(4)，21.0000元
 	p.order_qty = (int32_t)(entrust->getVolume() * 100);            // 申报数量N15(2)；股票为股、基金为份、上海债券默认为张（使用时请务必与券商确认），其他为张；1000.00股
 	p.client_seq_id = genRequestID();						// 用户系统消息序号
@@ -1111,6 +1366,7 @@ int TraderATP::orderAction(WTSEntrustAction* action)
 	p.orig_cl_ord_no = strtoull(action->getOrderID(), NULL, 10);
 
 	std::cout << "send seq_id of order : " << p.client_seq_id << std::endl;
+	std::cout << "cancel cl_ord_no: " << p.orig_cl_ord_no << std::endl;
 
 	ATPRetCodeType ec = _api->ReqCancelOrder(&p);
 	if (ec != ErrorCode::kSuccess)
