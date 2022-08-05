@@ -733,7 +733,7 @@ int TraderMAOpt::queryOrders()
 	req.llCuacctCode = m_llCuacctCode;
 	//strncpy(req.szStkbd, m_strStkBD.c_str(), sizeof(req.szStkbd));
 	strncpy(req.szTrdacct, m_strTrdAcct.c_str(), sizeof(req.szTrdacct));
-	req.chQueryFlag = '0';
+	req.chQueryFlag = '1';
 	req.iQryNum = 1000;
 	//strcpy(req.szTrdacct, m_strUser.c_str());
 
@@ -759,7 +759,7 @@ int TraderMAOpt::queryTrades()
 	//strncpy(req.szStkbd, m_strStkBD.c_str(), sizeof(req.szStkbd));
 	strncpy(req.szTrdacct, m_strTrdAcct.c_str(), sizeof(req.szTrdacct));
 
-	req.chQueryFlag = '0';  // 查询方向 0:向后取数据 1:向前取数据 其他全部返回
+	req.chQueryFlag = '1';  // 查询方向 0:向后取数据 1:向前取数据 其他全部返回
 	req.iQryNum = 1000;  // 查询行数
 
 	int iRet = m_pUserAPI->ReqQryCurrDayFill(&req, genRequestID());
@@ -893,6 +893,7 @@ WTSOrderInfo* TraderMAOpt::makeOrderInfo(CRtnOptOrderField* orderField)
 		pRet->setUserTag(usertag);
 
 	pRet->setOrderDate(m_lDate);
+	pRet->setOrderTime(TimeUtils::getLocalTimeNow());
 
 	pRet->setOrderState(wrapOrderState((MAOrderState)orderField->chOrderStatus));
 	if ((MAOrderState)orderField->chOrderStatus == MA_Canceled) {
@@ -1031,7 +1032,7 @@ WTSTradeInfo* TraderMAOpt::makeTradeRecord(CRtnOptOrderFillField *tradeField)
 	WTSDirectionType dType = wrapDirectionType((MA_STK_BIZ)tradeField->iStkBiz);
 
 	pRet->setDirection(dType);
-	pRet->setOffsetType(WTSOffsetType((MA_STK_BIZ)tradeField->iStkBiz));
+	pRet->setOffsetType(wrapOffsetType((MA_STK_BIZ)tradeField->iStkBiz));
 	pRet->setRefOrder(tradeField->szOrderId);
 	pRet->setTradeType((WTSTradeType)tradeField->chMatchedType);
 
@@ -1285,10 +1286,8 @@ int TraderMAOpt::OnRspUserLogin(CFirstSetField *p_pFirstSet, CRspOptUserLoginFie
 			//}
 
 			write_log(m_bscSink, LL_INFO, "[TraderMAOpt][{}] Login succeed, trading date: {}...", m_strUser.c_str(), m_lDate);
-
-			m_bscSink->onLoginResult(true, "", 0);
-
 			m_wrapperState = WS_ALLREADY;
+			m_bscSink->onLoginResult(true, "", m_lDate);
 		}
 	}
 
