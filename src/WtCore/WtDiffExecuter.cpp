@@ -340,7 +340,7 @@ bool WtDiffExecuter::amountToPos(const char* stdCode, double amount, double& pos
 	{
 		double last_price = tick->price();
 		pos = amount / last_price;
-		writeLog(fmtutil::format("amount:{} -> pos:{} with price:{}", amount, pos, last_price));
+		writeLog(fmtutil::format("[{}] amount:{} -> pos:{} with price:{}", stdCode, amount, pos, last_price));
 		tick->release();
 		return true;
 	}
@@ -360,7 +360,7 @@ bool WtDiffExecuter::ratioToPos(const char* stdCode, double ratio, double& pos)
 	if (!_use_fix_capital)
 		total_captaial = _avaliable + market_value;
 	double amount = total_captaial * ratio;
-	writeLog(fmtutil::format("ratio:{} -> amount:{} with total_captaial:{}", ratio, amount, total_captaial));
+	writeLog(fmtutil::format("[{}] ratio:{} -> amount:{} with total_captaial:{}", stdCode, ratio, amount, total_captaial));
 	return amountToPos(stdCode, amount, pos);
 }
 
@@ -472,7 +472,7 @@ void WtDiffExecuter::on_amount_changed(const char* stdCode, double targetAmount)
 	double pos{ 0 };
 	if (amountToPos(stdCode, targetAmount, pos))
 	{
-		unit->self()->set_position(stdCode, pos);
+		on_position_changed(stdCode, pos);
 		_target_amount.erase(stdCode);
 	}
 }
@@ -500,7 +500,7 @@ void WtDiffExecuter::on_ratio_changed(const char* stdCode, double targetRatio)
 	double pos{ 0 };
 	if (ratioToPos(stdCode, targetRatio, pos))
 	{
-		unit->self()->set_position(stdCode, pos);
+		on_position_changed(stdCode, pos);
 		_target_ratio.erase(stdCode); 
 	}
 }
