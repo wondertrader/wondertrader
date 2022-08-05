@@ -149,7 +149,8 @@ private:
 	bool				_auto_clear;		//是否自动清理上一期的主力合约头寸
 	bool				_strict_sync;		//是否严格同步目标仓位
 	bool				_channel_ready;
-
+	double				_fix_capital;		// 使用给定的固定资本计算比例持仓
+	bool				_use_fix_capital;
 	SpinMutex			_mtx_units;
 
 	typedef struct _CodeGroup

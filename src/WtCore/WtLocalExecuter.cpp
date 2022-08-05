@@ -29,7 +29,9 @@ WtLocalExecuter::WtLocalExecuter(WtExecuterFactory* factory, const char* name, I
 	, _channel_ready(false)
 	, _scale(1.0)
 	, _auto_clear(true)
-	, _avaliable{ -1 }
+	, _avaliable(-1)
+	, _fix_capital(0)
+	, _use_fix_capital(false)
 {
 }
 
@@ -50,6 +52,11 @@ bool WtLocalExecuter::init(WTSVariant* params)
 
 	_scale = params->getDouble("scale");
 	_strict_sync = params->getBoolean("strict_sync");
+	if (params->has("fix_capital"))
+	{
+		_use_fix_capital = true;
+		_fix_capital = params->getDouble("fix_capital");
+	}
 
 	uint32_t poolsize = params->getUInt32("poolsize");
 	if(poolsize > 0)
@@ -294,10 +301,11 @@ bool WtLocalExecuter::ratioToPos(const char* stdCode, double ratio, double& pos)
 	if (decimal::le(_avaliable))
 		return false;
 	double market_value = 0;
-	if (!getMarketValue(market_value));
-	return false;
-
-	double total_captaial = _avaliable + market_value;
+	if (!getMarketValue(market_value))
+		return false;
+	double total_captaial = _fix_capital;
+	if (!_use_fix_capital)
+		total_captaial = _avaliable + market_value;
 	double amount = total_captaial * ratio;
 	writeLog(fmtutil::format("ratio:{} -> amount:{} with total_captaial:{}", ratio, amount, total_captaial));
 	return amountToPos(stdCode, amount, pos);

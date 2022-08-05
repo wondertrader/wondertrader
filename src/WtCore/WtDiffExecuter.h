@@ -148,7 +148,8 @@ private:
 	WtExecuterFactory*	_factory;
 	IDataManager*		_data_mgr;
 	WTSVariant*			_config;
-
+	double				_fix_capital;		// 使用给定的固定资本计算比例持仓
+	bool				_use_fix_capital;
 	double				_scale;				//放大倍数
 	bool				_channel_ready;
 
