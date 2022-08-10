@@ -102,13 +102,6 @@ public:
 	///@remark 订单有成交发生的时候，会被调用，需要快速返回，否则会堵塞后续消息，当堵塞严重时，会触发断线。所有登录了此用户的客户端都将收到此用户的成交回报。相关订单为部成状态，需要用户通过成交回报的成交数量来确定，OnOrderEvent()不会推送部成状态。
 	virtual void OnTradeEvent(XTPTradeReport *trade_info, uint64_t session_id) override;
 
-	///撤单出错响应
-	///@param cancel_info 撤单具体信息，包括撤单的order_cancel_xtp_id和待撤单的order_xtp_id
-	///@param error_info 撤单被拒绝或者发生错误时错误代码和错误信息，需要快速返回，否则会堵塞后续消息，当堵塞严重时，会触发断线，当error_info为空，或者error_info.error_id为0时，表明没有错误
-	///@param session_id 资金账户对应的session_id，登录时得到
-	///@remark 此响应只会在撤单发生错误时被回调
-	virtual void OnCancelOrderError(XTPOrderCancelInfo *cancel_info, XTPRI *error_info, uint64_t session_id) override;
-
 	///请求查询报单响应-旧版本接口
 	///@param order_info 查询到的一个报单
 	///@param error_info 查询报单时发生错误时，返回的错误信息，当error_info为空，或者error_info.error_id为0时，表明没有错误
@@ -116,7 +109,7 @@ public:
 	///@param is_last 此消息响应函数是否为request_id这条请求所对应的最后一个响应，当为最后一个的时候为true，如果为false，表示还有其他后续消息响应
 	///@param session_id 资金账户对应的session_id，登录时得到
 	///@remark 由于支持分时段查询，一个查询请求可能对应多个响应，需要快速返回，否则会堵塞后续消息，当堵塞严重时，会触发断线。此对应的请求函数不建议轮询使用，当报单量过多时，容易造成用户线路拥堵，导致api断线
-	virtual void OnQueryOrder(XTPQueryOrderRsp *order_info, XTPRI *error_info, int request_id, bool is_last, uint64_t session_id) override;
+	//virtual void OnQueryOrder(XTPQueryOrderRsp *order_info, XTPRI *error_info, int request_id, bool is_last, uint64_t session_id) override;
 
 	///请求查询成交响应
 	///@param trade_info 查询到的一个成交回报
@@ -185,9 +178,9 @@ private:
 
 	inline WTSOrderInfo*	makeOrderInfo(XTPQueryOrderRsp* orderField);
 	inline WTSEntrust*		makeEntrust(XTPOrderInfo *entrustField);
+	inline WTSEntrust*		makeEntrust(XTPStrategyInfoStruct *stra_info);
 	inline WTSTradeInfo*	makeTradeInfo(XTPQueryTradeRsp *tradeField);
-	//inline WTSOrderInfo*    makeStrategyStateInfo(XTPStrategyStateReportStruct *strategyState);  /// 母单状态
-	inline WTSOrderInfo*		makeOrderInfo(XTPStrategyInfoStruct *strategyState);  // 算法单提交
+	inline WTSOrderInfo*	makeOrderInfo(XTPStrategyInfoStruct *strategyState);  // 算法单信息
 
 	inline bool	extractEntrustID(const char* entrustid, uint32_t &orderRef);
 	inline void	genEntrustID(char* buffer, uint32_t orderRef);
@@ -227,7 +220,6 @@ private:
 
 	std::string		_log_dir;  // 日志路径
 
-	bool			_quick;
 	bool			_inited;
 
 	TraderState		_state;

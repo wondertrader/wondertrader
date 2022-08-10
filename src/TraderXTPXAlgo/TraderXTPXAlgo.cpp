@@ -181,7 +181,6 @@ TraderXTPXAlgo::TraderXTPXAlgo()
 	, _bd_mgr(NULL)
 	, _tradingday(0)
 	, _inited(false)
-	, _quick(true)
 {
 
 }
@@ -218,6 +217,31 @@ WTSEntrust* TraderXTPXAlgo::makeEntrust(XTPOrderInfo* order_info)
 	pRet->setOrderFlag(WOF_NOR);
 
 	genEntrustID(pRet->getEntrustID(), order_info->order_client_id);
+
+	const char* usertag = m_eidCache.get(pRet->getEntrustID());
+	if (strlen(usertag) > 0)
+		pRet->setUserTag(usertag);
+
+	return pRet;
+}
+
+WTSEntrust* TraderXTPXAlgo::makeEntrust(XTPStrategyInfoStruct *stra_info)
+{
+	uint16_t				m_strategy_type;		///< 策略类型
+	XTPStrategyStateType	m_strategy_state;		///< 策略状态
+	uint64_t				m_client_strategy_id;	///< 客户策略id
+	uint64_t				m_xtp_strategy_id;		///< xtp策略id
+
+	std::string stra_type = std::to_string(stra_info->m_strategy_type);
+	std::string stra_id = std::to_string(stra_info->m_xtp_strategy_id);
+	WTSContractInfo* ct = _bd_mgr->getContract(stra_type.c_str(), stra_id.c_str());
+	if (ct == NULL)
+		return NULL;
+
+	WTSEntrust* pRet = WTSEntrust::create(stra_id.c_str(), 0, 0);
+	pRet->setContractInfo(ct);
+
+	genEntrustID(pRet->getEntrustID(), stra_info->m_client_strategy_id);
 
 	const char* usertag = m_eidCache.get(pRet->getEntrustID());
 	if (strlen(usertag) > 0)
@@ -405,25 +429,25 @@ void TraderXTPXAlgo::OnOrderEvent(XTPOrderInfo *order_info, XTPRI *error_info, u
 		}
 	}
 
-	std::cout << "------------------------ OnOrderEvent ------------------------" << "\n";
+	//std::cout << "------------------------ OnOrderEvent ------------------------" << "\n";
 
-	std::cout << "order_xtp_id: " << order_info->order_xtp_id;
-	std::cout << " order_client_id: " << order_info->order_client_id;
-	std::cout << " ticker: " << order_info->ticker;
-	std::cout << " market: " << order_info->market;
-	std::cout << " price: " << order_info->price;
-	std::cout << " quantity: " << order_info->quantity;
-	std::cout << " price_type: " << order_info->price_type;
-	std::cout << " business_type: " << order_info->business_type;
-	std::cout << " qty_traded: " << order_info->qty_traded;
-	std::cout << " qty_left: " << order_info->qty_left;
-	std::cout << " trade_amount: " << order_info->trade_amount;
-	std::cout << " order_status: " << order_info->order_status;
-	std::cout << " order_type: " << order_info->order_type;
-	std::cout << " order_submit_status: " << order_info->order_submit_status;
-	std::cout << std::endl;
+	//std::cout << "order_xtp_id: " << order_info->order_xtp_id;
+	//std::cout << " order_client_id: " << order_info->order_client_id;
+	//std::cout << " ticker: " << order_info->ticker;
+	//std::cout << " market: " << order_info->market;
+	//std::cout << " price: " << order_info->price;
+	//std::cout << " quantity: " << order_info->quantity;
+	//std::cout << " price_type: " << order_info->price_type;
+	//std::cout << " business_type: " << order_info->business_type;
+	//std::cout << " qty_traded: " << order_info->qty_traded;
+	//std::cout << " qty_left: " << order_info->qty_left;
+	//std::cout << " trade_amount: " << order_info->trade_amount;
+	//std::cout << " order_status: " << order_info->order_status;
+	//std::cout << " order_type: " << order_info->order_type;
+	//std::cout << " order_submit_status: " << order_info->order_submit_status;
+	//std::cout << std::endl;
 
-	_api->GetAlgorithmIDByOrder(order_info->order_xtp_id, order_info->order_client_id);
+	//_api->GetAlgorithmIDByOrder(order_info->order_xtp_id, order_info->order_client_id);
 }
 
 void TraderXTPXAlgo::OnTradeEvent(XTPTradeReport *trade_info, uint64_t session_id)
@@ -437,63 +461,21 @@ void TraderXTPXAlgo::OnTradeEvent(XTPTradeReport *trade_info, uint64_t session_i
 		trdInfo->release();
 	}
 
-	std::cout << "------------------------ OnTradeEvent ------------------------" << "\n";
+	//std::cout << "------------------------ OnTradeEvent ------------------------" << "\n";
 
+	//std::cout << "order_xtp_id: " << trade_info->order_xtp_id;
+	//std::cout << " order_client_id: " << trade_info->order_client_id;
+	//std::cout << " ticker: " << trade_info->ticker;
+	//std::cout << " market: " << trade_info->market;
+	//std::cout << " price: " << trade_info->price;
+	//std::cout << " quantity: " << trade_info->quantity;
+	//std::cout << " business_type: " << trade_info->business_type;
+	//std::cout << " trade_amount: " << trade_info->trade_amount;
+	//std::cout << " branch_pbu: " << trade_info->branch_pbu;
+	//std::cout << " trade_type: " << trade_info->trade_type;
+	//std::cout << std::endl;
 
-	std::cout << "order_xtp_id: " << trade_info->order_xtp_id;
-	std::cout << " order_client_id: " << trade_info->order_client_id;
-	std::cout << " ticker: " << trade_info->ticker;
-	std::cout << " market: " << trade_info->market;
-	std::cout << " price: " << trade_info->price;
-	std::cout << " quantity: " << trade_info->quantity;
-	std::cout << " business_type: " << trade_info->business_type;
-	std::cout << " trade_amount: " << trade_info->trade_amount;
-	std::cout << " branch_pbu: " << trade_info->branch_pbu;
-	std::cout << " trade_type: " << trade_info->trade_type;
-	std::cout << std::endl;
-
-	_api->GetAlgorithmIDByOrder(trade_info->order_xtp_id, trade_info->order_client_id);
-}
-
-void TraderXTPXAlgo::OnCancelOrderError(XTPOrderCancelInfo *cancel_info, XTPRI *error_info, uint64_t session_id)
-{
-	if (IsErrorInfo(error_info))
-	{
-		WTSError* error = WTSError::create(WEC_ORDERCANCEL, error_info->error_msg);
-		_sink->onTraderError(error);
-		error->release();
-	}
-
-}
-
-void TraderXTPXAlgo::OnQueryOrder(XTPQueryOrderRsp *order_info, XTPRI *error_info, int request_id, bool is_last, uint64_t session_id)
-{
-	//if (is_last)
-	//{
-	//	m_bInQuery = false;
-	//	triggerQuery();
-	//}
-
-	if (!IsErrorInfo(error_info) && order_info)
-	{
-		if (NULL == _orders)
-			_orders = WTSArray::create();
-
-		WTSOrderInfo* orderInfo = makeOrderInfo(order_info);
-		if (orderInfo)
-		{
-			_orders->append(orderInfo, false);
-		}
-	}
-
-	if (is_last)
-	{
-		if (_sink)
-			_sink->onRspOrders(_orders);
-
-		if (_orders)
-			_orders->clear();
-	}
+	//_api->GetAlgorithmIDByOrder(trade_info->order_xtp_id, trade_info->order_client_id);
 }
 
 void TraderXTPXAlgo::OnQueryTrade(XTPQueryTradeRsp *trade_info, XTPRI *error_info, int request_id, bool is_last, uint64_t session_id)
@@ -653,13 +635,13 @@ void TraderXTPXAlgo::OnQueryStrategy(XTPStrategyInfoStruct* strategy_info, char*
 	/// 算法单查询结果通知
 	if (error_info->error_id != 0)
 	{
-		std::cout << "query strategy failed: " << error_info->error_id << error_info->error_msg << std::endl;
+		write_log(_sink, LL_ERROR, "[TraderXTPXAlgo] Query strategy failed: {}", error_info->error_msg);
 		return;
 	}
 
-	std::cout << "request_id: " << request_id << ", is_last:" << is_last;
-	std::cout << ",strategy: " << strategy_info->m_xtp_strategy_id << ", client id:" << strategy_info->m_client_strategy_id << ", type:" << strategy_info->m_strategy_type << ", status:" << strategy_info->m_strategy_state;//<< std::endl;
-	std::cout << ",strategy_param: " << strategy_param << std::endl;
+	//std::cout << "request_id: " << request_id << ", is_last:" << is_last;
+	//std::cout << ",strategy: " << strategy_info->m_xtp_strategy_id << ", client id:" << strategy_info->m_client_strategy_id << ", type:" << strategy_info->m_strategy_type << ", status:" << strategy_info->m_strategy_state;//<< std::endl;
+	//std::cout << ",strategy_param: " << strategy_param << std::endl;
 
 	if (!IsErrorInfo(error_info) && strategy_info)
 	{
@@ -708,37 +690,64 @@ void TraderXTPXAlgo::OnStrategyStateReport(XTPStrategyStateReportStruct* strateg
 		std::cout << "m_strategy_price_diff: " << strategy_state->m_strategy_price_diff << std::endl;
 		std::cout << "m_strategy_asset_diff: " << strategy_state->m_strategy_asset_diff << std::endl;
 	}
+	else 
+	{
+		std::cout << "------------------ Algo Execution Running -----------------" << std::endl;
+
+		std::cout << "m_client_strategy_id: " << strategy_state->m_strategy_info.m_client_strategy_id << std::endl;
+		std::cout << "m_strategy_type: " << strategy_state->m_strategy_info.m_strategy_type << std::endl;
+		std::cout << "m_strategy_qty: " << strategy_state->m_strategy_qty << std::endl;
+		std::cout << "m_strategy_ordered_qty: " << strategy_state->m_strategy_ordered_qty << std::endl;
+		std::cout << "m_strategy_execution_qty: " << strategy_state->m_strategy_execution_qty << std::endl;
+		std::cout << "m_strategy_cancelled_qty: " << strategy_state->m_strategy_cancelled_qty << std::endl;
+		std::cout << "m_strategy_unclosed_qty: " << strategy_state->m_strategy_unclosed_qty << std::endl;
+		std::cout << "m_strategy_asset: " << strategy_state->m_strategy_asset << std::endl;
+		std::cout << "m_strategy_ordered_asset: " << strategy_state->m_strategy_ordered_asset << std::endl;
+		std::cout << "m_strategy_execution_asset: " << strategy_state->m_strategy_execution_asset << std::endl;
+		std::cout << "m_strategy_execution_price: " << strategy_state->m_strategy_execution_price << std::endl;
+		std::cout << "m_strategy_price_diff: " << strategy_state->m_strategy_price_diff << std::endl;
+		std::cout << "m_strategy_asset_diff: " << strategy_state->m_strategy_asset_diff << std::endl;
+	}
 }
 
 void TraderXTPXAlgo::OnALGOUserEstablishChannel(char* user, XTPRI* error_info, uint64_t session_id)
 {
-	std::cout << "------------------- OnALGOUserEstablishChannel -----------" << std::endl;
+	std::cout << "--------------- OnALGOUserEstablishChannel -----------" << std::endl;
 	/// 建立算法通道的异步通知
 	if (error_info->error_id == 0)
 	{
 		/// 建立算法通道成功后，可以下算法母单
-		std::cout << user << " establish channel success." << std::endl;
+		//std::cout << user << " establish channel success." << std::endl;
 	}
 	else
 	{
-		std::cout << user << " verification failed." << std::endl;
+		write_log(_sink, LL_ERROR, "[TraderXTPXAlgo] Establish channel failed: {}", error_info->error_msg);
 	}
 }
 
 void TraderXTPXAlgo::OnInsertAlgoOrder(XTPStrategyInfoStruct* strategy_info, XTPRI *error_info, uint64_t session_id)
 {
-	std::cout << "------------------- OnInsertAlgoOrder -----------" << std::endl;
+	std::cout << "----------------- OnInsertAlgoOrder --------------" << std::endl;
 
 	/// 发送算法单后的异步通知
 	if (error_info->error_id != 0)
 	{
-		std::cout << "Insert algo order failed: " << error_info->error_id << ", " << error_info->error_msg << std::endl;
+		write_log(_sink, LL_ERROR, "[TraderXTPXAlgo] Insert algo order failed: {}", error_info->error_msg);
+
+		WTSEntrust* entrust = makeEntrust(strategy_info);
+
+		WTSError* error = WTSError::create(WEC_ORDERINSERT, error_info->error_msg);
+		_sink->onRspEntrust(entrust, error);
+		error->release();
+
+		entrust->release();
+
 		return;
 	}
 
 	/// 算法单建立成功
 	std::cout << "Insert algo order success." << std::endl;
-	std::cout << "strategy:" << strategy_info->m_xtp_strategy_id << ", client id:" << strategy_info->m_client_strategy_id << ", type:" << strategy_info->m_strategy_type << ", status:" << (strategy_info->m_strategy_state - 0) << std::endl;
+	//std::cout << "strategy:" << strategy_info->m_xtp_strategy_id << ", client id:" << strategy_info->m_client_strategy_id << ", type:" << strategy_info->m_strategy_type << ", status:" << (strategy_info->m_strategy_state - 0) << std::endl;
 	
 	/// 需要把策略ID缓存起来以便撤单时用
 	WTSOrderInfo *orderInfo = makeOrderInfo(strategy_info);
@@ -758,7 +767,7 @@ void TraderXTPXAlgo::OnCancelAlgoOrder(XTPStrategyInfoStruct* strategy_info, XTP
 	/// 算法单撤销结果通知
 	if (error_info->error_id != 0)
 	{
-		std::cout << "Cancel algo order failed: " << error_info->error_id << ", " << error_info->error_msg << std::endl;
+		write_log(_sink, LL_ERROR, "[TraderXTPXAlgo] Cancel algo order failed: {}", error_info->error_msg);
 
 		WTSError* error = WTSError::create(WEC_ORDERCANCEL, error_info->error_msg);
 		_sink->onTraderError(error);
@@ -767,7 +776,7 @@ void TraderXTPXAlgo::OnCancelAlgoOrder(XTPStrategyInfoStruct* strategy_info, XTP
 	}
 
 	std::cout << "Cancel algo order success." << std::endl;
-	std::cout << "strategy:" << strategy_info->m_xtp_strategy_id << ", client id:" << strategy_info->m_client_strategy_id << ", type:" << strategy_info->m_strategy_type << ", status:" << (strategy_info->m_strategy_state - 0) << std::endl;
+	//std::cout << "strategy:" << strategy_info->m_xtp_strategy_id << ", client id:" << strategy_info->m_client_strategy_id << ", type:" << strategy_info->m_strategy_type << ", status:" << (strategy_info->m_strategy_state - 0) << std::endl;
 }
 
 #pragma endregion "XTP::API:TraderSpi"
@@ -800,12 +809,10 @@ bool TraderXTPXAlgo::init(WTSVariant *params)
 
 	_log_dir = params->getCString("path");
 
-	_quick = params->getBoolean("quick");
-
 	_flowdir = params->getCString("flowdir");
 
 	if (_flowdir.empty())
-		_flowdir = "XTPTDFlow";
+		_flowdir = "XAlgoTDFlow";
 
 	_flowdir = StrUtil::standardisePath(_flowdir);
 
@@ -883,7 +890,7 @@ void TraderXTPXAlgo::reconnect()
 		return;
 	}
 
-	_api->SubscribePublicTopic(_quick ? XTP_TERT_QUICK : XTP_TERT_RESUME);
+	//_api->SubscribePublicTopic(_quick ? XTP_TERT_QUICK : XTP_TERT_RESUME);
 	_api->SubscribePublicTopic((XTP_TE_RESUME_TYPE)_resume_type);
 	_api->SetSoftwareVersion("1.0.0"); //设定此软件的开发版本号,用户自定义
 	_api->SetSoftwareKey(_acct_key.c_str());//设定用户的开发代码,在XTP申请开户时,由xtp人员提供
@@ -971,7 +978,7 @@ void TraderXTPXAlgo::doLogin()
 	if (iResult == 0)
 	{
 		auto error_info = _api->GetApiLastError();
-		write_log(_sink, LL_ERROR, "[TraderXTPXAlgo] Login failed: {}", error_info->error_msg);
+		write_log(_sink, LL_ERROR, "[TraderXTPXAlgo] Login to OMS failed: {}", error_info->error_msg);
 		std::string msg = error_info->error_msg;
 		_state = TS_LOGINFAILED;
 		_asyncio.post([this, msg] {
@@ -1142,21 +1149,6 @@ int TraderXTPXAlgo::orderInsert(WTSEntrust* entrust)
 		return -1;
 	}
 
-	//XTPOrderInsertInfo req;
-	//memset(&req, 0, sizeof(req));
-
-	//uint32_t orderref;
-	//extractEntrustID(entrust->getEntrustID(), orderref);
-	//req.order_client_id = orderref;
-	//strcpy(req.ticker, entrust->getCode());
-	//req.market = wt_stricmp(entrust->getExchg(), "SSE") == 0 ? XTP_MKT_SH_A : XTP_MKT_SZ_A;
-	//req.price = entrust->getPrice();
-	//req.quantity = (int64_t)entrust->getVolume();
-	//req.price_type = XTP_PRICE_LIMIT;
-	//req.side = wrapDirectionType(entrust->getDirection(), entrust->getOffsetType());
-	//req.business_type = XTP_BUSINESS_TYPE_CASH;
-	//req.position_effect = wrapOffsetType(entrust->getOffsetType());
-
 	if (strlen(entrust->getUserTag()) > 0)
 	{
 		m_eidCache.put(entrust->getEntrustID(), entrust->getUserTag(), 0, [this](const char* message) {
@@ -1164,17 +1156,12 @@ int TraderXTPXAlgo::orderInsert(WTSEntrust* entrust)
 		});
 	}
 
-	//uint64_t iResult = _api->InsertOrder(&req, _sessionid);
 	std::cout << "Begin to insert algo order." << std::endl;
 	uint64_t iResult = _api->InsertAlgoOrder(_algo_type, _client, (char*)_algo_params.c_str(), _sessionid);
 	if (iResult != 0)
 	{
 		auto error_info = _api->GetApiLastError();
 		write_log(_sink, LL_ERROR, "[TraderXTPXAlgo] Order inserting failed: {}", error_info->error_msg);
-	}
-	else
-	{
-		std::cout << "Insert algo order send success." << std::endl;
 	}
 
 	return 0;
@@ -1187,7 +1174,6 @@ int TraderXTPXAlgo::orderAction(WTSEntrustAction* action)
 		return -1;
 	}
 
-	//uint64_t iResult = _api->CancelOrder(strtoull(action->getOrderID(), NULL, 10), _sessionid);
 	uint64_t iResult = _api->CancelAlgoOrder(true, strtoull(action->getOrderID(), NULL, 10), _sessionid);
 	if (iResult != 0)
 	{
@@ -1229,16 +1215,12 @@ int TraderXTPXAlgo::queryPositions()
 
 int TraderXTPXAlgo::queryOrders()
 {
-	XTPQueryOrderReq req;
-	memset(&req, 0, sizeof(XTPQueryOrderReq));
-	int iResult = _api->QueryOrders(&req, _sessionid, genRequestID());
+	int iResult = _api->QueryStrategy(0, 0, 0, _sessionid, genRequestID());  // 查询所有
 	if (iResult != 0)
 	{
-		auto error_info = _api->GetApiLastError();
-		write_log(_sink, LL_ERROR, "[TraderXTPXAlgo] Orders querying failed: {}", error_info->error_msg);
+		auto err_info = _api->GetApiLastError();
+		write_log(_sink, LL_ERROR, "[TraderXTPAlgo] Query orders failed: {}", err_info->error_msg);
 	}
-
-	//int iResult = _api->QueryStrategy(_algo_type, _client, , _sessionid, genRequestID());
 
 	return 0;
 }
