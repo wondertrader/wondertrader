@@ -1078,9 +1078,9 @@ void CtaMocker::stra_enter_long(const char* stdCode, double qty, const char* use
 	{
 		double curQty = stra_get_position(stdCode);
 		if(decimal::lt(curQty, 0))
-			append_signal(stdCode, qty, userTag);
+			append_signal(stdCode, qty, userTag, false);
 		else
-			append_signal(stdCode, curQty + qty, userTag);
+			append_signal(stdCode, curQty + qty, userTag, false);
 	}
 	else
 	{
@@ -1129,9 +1129,9 @@ void CtaMocker::stra_enter_short(const char* stdCode, double qty, const char* us
 	{
 		double curQty = stra_get_position(stdCode);
 		if(decimal::gt(curQty, 0))
-			append_signal(stdCode, -qty, userTag);
+			append_signal(stdCode, -qty, userTag, false);
 		else
-			append_signal(stdCode, curQty - qty, userTag);
+			append_signal(stdCode, curQty - qty, userTag, false);
 
 	}
 	else
@@ -1178,7 +1178,7 @@ void CtaMocker::stra_exit_long(const char* stdCode, double qty, const char* user
 	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式,则直接触发
 	{
 		double maxQty = min(curQty, qty);
-		append_signal(stdCode, curQty - qty, userTag);
+		append_signal(stdCode, curQty - qty, userTag, false);
 	}
 	else
 	{
@@ -1229,7 +1229,7 @@ void CtaMocker::stra_exit_short(const char* stdCode, double qty, const char* use
 	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式,则直接触发
 	{
 		double maxQty = min(abs(curQty), qty);
-		append_signal(stdCode, curQty + maxQty, userTag);
+		append_signal(stdCode, curQty + maxQty, userTag, false);
 	}
 	else
 	{
@@ -1310,7 +1310,7 @@ void CtaMocker::stra_set_position(const char* stdCode, double qty, const char* u
 	_replayer->sub_tick(_context_id, stdCode);
 	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//没有设置触发条件，则直接添加信号
 	{
-		append_signal(stdCode, qty, userTag);
+		append_signal(stdCode, qty, userTag, false);
 	}
 	else
 	{
@@ -1340,7 +1340,7 @@ void CtaMocker::stra_set_position(const char* stdCode, double qty, const char* u
 	}
 }
 
-void CtaMocker::append_signal(const char* stdCode, double qty, const char* userTag /* = "" */, double price/* = 0.0*/)
+void CtaMocker::append_signal(const char* stdCode, double qty, const char* userTag /* = "" */, double price/* = 0.0*/, bool is_cond/* = true*/)
 {
 	double curPx = _price_map[stdCode];
 
@@ -1351,6 +1351,7 @@ void CtaMocker::append_signal(const char* stdCode, double qty, const char* userT
 	sInfo._usertag = userTag;
 	sInfo._gentime = (uint64_t)_replayer->get_date() * 1000000000 + (uint64_t)_replayer->get_raw_time() * 100000 + _replayer->get_secs();
 	sInfo._triggered = !_is_in_schedule;
+	sInfo._is_cond = is_cond;
 
 	log_signal(stdCode, qty, curPx, sInfo._gentime, userTag);
 

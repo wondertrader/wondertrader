@@ -81,7 +81,7 @@ private:
 	void	update_dyn_profit(const char* stdCode, double price);
 
 	void	do_set_position(const char* stdCode, double qty, double price = 0.0, const char* userTag = "", bool bTriggered = false);
-	void	append_signal(const char* stdCode, double qty, const char* userTag = "", double price = 0.0);
+	void	append_signal(const char* stdCode, double qty, const char* userTag = "", double price = 0.0, bool is_cond = true);
 
 	inline CondList& get_cond_entrusts(const char* stdCode);
 
@@ -318,6 +318,7 @@ protected:
 		double		_desprice;
 		bool		_triggered;
 		uint64_t	_gentime;
+		bool		_is_cond; // 该信号是否是由条件单触发
 
 		_SigInfo()
 		{
@@ -326,6 +327,7 @@ protected:
 			_desprice = 0;
 			_triggered = false;
 			_gentime = 0;
+			_is_cond = true;
 		}
 	}SigInfo;
 	typedef faster_hashmap<std::string, SigInfo>	SignalMap;

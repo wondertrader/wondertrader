@@ -698,7 +698,7 @@ void CtaStraBaseCtx::on_tick(const char* stdCode, WTSTickData* newTick, bool bEm
 				do_set_position(stdCode, sInfo._volume, sInfo._usertag.c_str(), sInfo._inbar);
 
 				//如果是条件单触发，则回调on_condition_triggered
-				if(sInfo._inbar)
+				if(sInfo._is_cond)
 					on_condition_triggered(stdCode, sInfo._volume, newTick->price(), sInfo._usertag.c_str());
 
 				_sig_map.erase(it);
@@ -1015,12 +1015,12 @@ void CtaStraBaseCtx::stra_enter_long(const char* stdCode, double qty, const char
 		if (decimal::lt(curQty, 0))
 		{
 			//当前持仓小于0,逻辑是反手到qty,所以设置信号目标仓位为qty
-			append_signal(stdCode, qty, userTag);
+			append_signal(stdCode, qty, userTag, false);
 		}
 		else
 		{
 			//当前持仓大于等于0,则要增加多仓qty
-			append_signal(stdCode, curQty + qty, userTag);
+			append_signal(stdCode, curQty + qty, userTag, false);
 		}
 	}
 	else
@@ -1073,12 +1073,12 @@ void CtaStraBaseCtx::stra_enter_short(const char* stdCode, double qty, const cha
 		if (decimal::gt(curQty, 0))
 		{
 			//当前仓位大于0,逻辑是反手到qty手,所以设置信号目标仓位为-qty手
-			append_signal(stdCode, -qty, userTag);
+			append_signal(stdCode, -qty, userTag, false);
 		}
 		else
 		{
 			//当前仓位小于等于0,则是追加空方手数
-			append_signal(stdCode, curQty - qty, userTag);
+			append_signal(stdCode, curQty - qty, userTag, false);
 		}
 	}
 	else
@@ -1125,7 +1125,7 @@ void CtaStraBaseCtx::stra_exit_long(const char* stdCode, double qty, const char*
 	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式, 则直接触发
 	{
 		double maxQty = min(curQty, qty);
-		append_signal(stdCode, curQty - maxQty, userTag);
+		append_signal(stdCode, curQty - maxQty, userTag, false);
 	}
 	else
 	{
@@ -1177,7 +1177,7 @@ void CtaStraBaseCtx::stra_exit_short(const char* stdCode, double qty, const char
 	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式, 则直接触发
 	{
 		double maxQty = min(abs(curQty), qty);
-		append_signal(stdCode, curQty + maxQty, userTag);
+		append_signal(stdCode, curQty + maxQty, userTag, false);
 	}
 	else
 	{
@@ -1232,7 +1232,7 @@ void CtaStraBaseCtx::stra_set_position(const char* stdCode, double qty, const ch
 
 	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式, 则直接触发
 	{
-		append_signal(stdCode, qty, userTag);
+		append_signal(stdCode, qty, userTag, false);
 	}
 	else
 	{
@@ -1269,7 +1269,7 @@ void CtaStraBaseCtx::stra_set_position(const char* stdCode, double qty, const ch
 	}
 }
 
-void CtaStraBaseCtx::append_signal(const char* stdCode, double qty, const char* userTag /* = "" */)
+void CtaStraBaseCtx::append_signal(const char* stdCode, double qty, const char* userTag /* = "" */, bool is_cond /* = true */)
 {
 	double curPx = _price_map[stdCode];
 
@@ -1279,7 +1279,7 @@ void CtaStraBaseCtx::append_signal(const char* stdCode, double qty, const char* 
 	sInfo._usertag = userTag;
 	sInfo._gentime = (uint64_t)_engine->get_date() * 1000000000 + (uint64_t)_engine->get_raw_time() * 100000 + _engine->get_secs();
 	sInfo._inbar = !_is_in_schedule;
-
+	sInfo._is_cond = is_cond;
 	log_signal(stdCode, qty, curPx, sInfo._gentime, userTag);
 
 	save_data();

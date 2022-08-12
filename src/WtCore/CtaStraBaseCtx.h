@@ -74,7 +74,7 @@ private:
 	void	update_dyn_profit(const char* stdCode, double price);
 
 	void	do_set_position(const char* stdCode, double qty, const char* userTag = "", bool bInBar = false);
-	void	append_signal(const char* stdCode, double qty, const char* userTag = "");
+	void	append_signal(const char* stdCode, double qty, const char* userTag = "", bool is_cond = true);
 
 	inline CondList& get_cond_entrusts(const char* stdCode);
 	
@@ -248,13 +248,14 @@ protected:
 		double		_sigprice;
 		bool		_inbar;
 		uint64_t	_gentime;
-
+		bool		_is_cond; // 该信号是否是由条件单触发
 		_SigInfo()
 		{
 			_volume = 0;
 			_sigprice = 0;
 			_inbar = false;
 			_gentime = 0;
+			_is_cond = true;
 		}
 	}SigInfo;
 	typedef faster_hashmap<LongKey, SigInfo>	SignalMap;
