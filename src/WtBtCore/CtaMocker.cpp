@@ -802,6 +802,12 @@ void CtaMocker::on_calculate(uint32_t curDate, uint32_t curTime)
 		_strategy->on_schedule(this, curDate, curTime);
 }
 
+void CtaMocker::on_condition_triggered(const char* stdCode, double target, double price, const char* usertag)
+{
+	if (_strategy)
+		_strategy->on_condition_triggered(this, stdCode, target, price, usertag);
+}
+
 void CtaMocker::enable_hook(bool bEnabled /* = true */)
 {
 	_hook_valid = bEnabled;
