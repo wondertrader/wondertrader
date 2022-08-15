@@ -114,7 +114,7 @@ bool ParserHuaX::init(WTSVariant* config)
 #	endif
 #else
 	// TODO linuxÏÂÎ´ÐÞ¸Ä
-	const char* creatorName = "_ZN3XTP3API8QuoteApi14CreateQuoteApiEhPKc13XTP_LOG_LEVEL";
+	const char* creatorName = "_ZN11TORALEV1API15CTORATstpXMdApi16CreateTstpXMdApiERKcS2_";
 #endif
 	_funcCreator = (HuaXCreater)DLLHelper::get_symbol(_hInst, creatorName);
 	_api = _funcCreator((TTORATstpMDSubModeType)_sub_mode.c_str(), (TTORATstpMDSubModeType)_derive_sub_mode.c_str());
