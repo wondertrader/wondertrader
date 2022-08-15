@@ -209,7 +209,7 @@ void WtMinImpactExeUnit::on_tick(WTSTickData* newTick)
 			if (_ctx->cancel(localid))
 			{
 				_cancel_cnt++;
-				_ctx->writeLog(fmtutil::format("[{}@{}] Expired order of {} canceled, cancelcnt -> {}", __FILE__, __LINE__, _code.c_str(), _cancel_cnt).c_str());
+				_ctx->writeLog(fmtutil::format("[{}@{}] Expired order of {} canceled, cancelcnt -> {}", __FILE__, __LINE__, _code.c_str(), _cancel_cnt));
 			}
 		});
 	}
@@ -265,7 +265,7 @@ void WtMinImpactExeUnit::do_calc()
 		{
 			_orders_mon.push_order(ids.data(), ids.size(), _ctx->getCurTime());
 			_cancel_cnt += ids.size();
-			_ctx->writeLog(fmtutil::format("[{}@{}] live opposite order of {} canceled, cancelcnt -> {}", __FILE__, __LINE__, _code.c_str(), _cancel_cnt).c_str());
+			_ctx->writeLog(fmtutil::format("[{}@{}] live opposite order of {} canceled, cancelcnt -> {}", __FILE__, __LINE__, _code.c_str(), _cancel_cnt));
 		}
 		return;
 	}
@@ -279,7 +279,7 @@ void WtMinImpactExeUnit::do_calc()
 
 	if (_last_tick == NULL)
 	{
-		_ctx->writeLog(fmtutil::format("No lastest tick data of {}, execute later", _code.c_str()).c_str());
+		_ctx->writeLog(fmtutil::format("No lastest tick data of {}, execute later", _code.c_str()));
 		return;
 	}
 
@@ -302,7 +302,7 @@ void WtMinImpactExeUnit::do_calc()
 
 		//如果还有都头仓位，则将目标仓位设置为非0，强制触发
 		newVol = -min(lPos, _order_lots);
-		_ctx->writeLog(fmtutil::format("Clearing process triggered, target position of {} has been set to {}", _code.c_str(), newVol).c_str());
+		_ctx->writeLog(fmtutil::format("Clearing process triggered, target position of {} has been set to {}", _code.c_str(), newVol));
 	}
 
 	bool bForceClose = is_clear(_target_pos);
@@ -313,8 +313,7 @@ void WtMinImpactExeUnit::do_calc()
 	uint64_t curTickTime = (uint64_t)_last_tick->actiondate() * 1000000000 + _last_tick->actiontime();
 	if (curTickTime <= _last_tick_time)
 	{
-		_ctx->writeLog(fmtutil::format("No tick of {} updated, {} <= {}, execute later",
-			_code, curTickTime, _last_tick_time).c_str());
+		_ctx->writeLog(fmtutil::format("No tick of {} updated, {} <= {}, execute later", _code, curTickTime, _last_tick_time));
 		return;
 	}
 
@@ -397,14 +396,14 @@ void WtMinImpactExeUnit::do_calc()
 	bool isCanCancel = true;
 	if (!decimal::eq(_last_tick->upperlimit(), 0) && decimal::gt(buyPx, _last_tick->upperlimit()))
 	{
-		_ctx->writeLog(fmtutil::format("Buy price {} of {} modified to upper limit price", buyPx, _code.c_str(), _last_tick->upperlimit()).c_str());
+		_ctx->writeLog(fmtutil::format("Buy price {} of {} modified to upper limit price", buyPx, _code.c_str(), _last_tick->upperlimit()));
 		buyPx = _last_tick->upperlimit();
 		isCanCancel = false;	//如果价格被修正为涨跌停价，订单不可撤销
 	}
 	
 	if (!decimal::eq(_last_tick->lowerlimit(), 0) && decimal::lt(sellPx, _last_tick->lowerlimit()))
 	{
-		_ctx->writeLog(fmtutil::format("Sell price {} of {} modified to lower limit price", sellPx, _code.c_str(), _last_tick->lowerlimit()).c_str());
+		_ctx->writeLog(fmtutil::format("Sell price {} of {} modified to lower limit price", sellPx, _code.c_str(), _last_tick->lowerlimit()));
 		sellPx = _last_tick->lowerlimit();
 		isCanCancel = false;	//如果价格被修正为涨跌停价，订单不可撤销
 	}
@@ -432,7 +431,7 @@ void WtMinImpactExeUnit::set_position(const char* stdCode, double newVol)
 	//如果这个时候又设置为0，则直接跳过了
 	if (is_clear(_target_pos) && decimal::eq(newVol, 0))
 	{
-		_ctx->writeLog(fmtutil::format("{} is in clearing processing, position can not be set to 0", stdCode).c_str());
+		_ctx->writeLog(fmtutil::format("{} is in clearing processing, position can not be set to 0", stdCode));
 		return;
 	}
 
@@ -442,9 +441,9 @@ void WtMinImpactExeUnit::set_position(const char* stdCode, double newVol)
 	_target_pos = newVol;
 
 	if (is_clear(_target_pos))
-		_ctx->writeLog(fmtutil::format("{} is set to be in clearing processing", stdCode).c_str());
+		_ctx->writeLog(fmtutil::format("{} is set to be in clearing processing", stdCode));
 	else
-		_ctx->writeLog(fmtutil::format("Target position of {} is set tb be {}", stdCode, _target_pos).c_str());
+		_ctx->writeLog(fmtutil::format("Target position of {} is set tb be {}", stdCode, _target_pos));
 
 	do_calc();
 }
