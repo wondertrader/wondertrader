@@ -1457,7 +1457,10 @@ WTSKlineSlice* CtaStraBaseCtx::stra_get_bars(const char* stdCode, const char* pe
 			log_debug("Main KBars confirmed: {}", key);
 		}
 		else if (_main_key != key)
-			throw std::runtime_error("Main KBars already confirmed");
+		{
+			log_error("Main KBars already confirmed");
+			return NULL;
+		}
 	}
 
 	thread_local static char basePeriod[2] = { 0 };
