@@ -227,6 +227,12 @@ public:
 	 */
 	virtual double		getAdjFactorByDate(const char* stdCode, uint32_t date = 0) { return 1.0; }
 
+	/*
+	 *	获取复权标记
+	 *	采用位运算1|2|4的形式，1表示成交量复权，2表示成交额复权，4表示总持复权，其他待定
+	 */
+	virtual uint32_t	getAdjustingFlag() { return 0; }
+
 protected:
 	IDataReaderSink*	_sink;
 	IHisDataLoader*		_loader;
