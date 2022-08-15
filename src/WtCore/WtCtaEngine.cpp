@@ -418,6 +418,8 @@ void WtCtaEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 		if (sit == _tick_sub_map.end())
 			return;
 
+		uint32_t flag = get_adjusting_flag();
+
 		//By Wesley
 		//这里做一个拷贝，虽然有点开销，但是可以规避掉一些问题，比如ontick的时候订阅tick
 		SubList sids = sit->second;
@@ -456,6 +458,34 @@ void WtCtaEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 						newTS.high *= factor;
 						newTS.low *= factor;
 						newTS.price *= factor;
+
+						newTS.settle_price *= factor;
+
+						newTS.pre_close *= factor;
+						newTS.pre_settle *= factor;
+
+						/*
+						 *	By Wesley @ 2022.08.15
+						 *	这里对tick的复权做一个完善
+						 */
+						if (flag & 1)
+						{
+							newTS.total_volume /= factor;
+							newTS.volume /= factor;
+						}
+
+						if (flag & 2)
+						{
+							newTS.total_turnover *= factor;
+							newTS.turn_over *= factor;
+						}
+
+						if (flag & 4)
+						{
+							newTS.open_interest /= factor;
+							newTS.diff_interest /= factor;
+							newTS.pre_interest /= factor;
+						}
 
 						_price_map[wCode] = newTS.price;
 

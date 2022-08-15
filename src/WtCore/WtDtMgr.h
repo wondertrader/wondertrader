@@ -50,6 +50,8 @@ public:
 	virtual WTSTickData* grab_last_tick(const char* stdCode) override;
 	virtual double get_adjusting_factor(const char* stdCode, uint32_t uDate) override;
 
+	virtual uint32_t get_adjusting_flag() override;
+
 	//////////////////////////////////////////////////////////////////////////
 	//IDataReaderSink
 	virtual void	on_bar(const char* code, WTSKlinePeriod period, WTSBarStruct* newBar) override;

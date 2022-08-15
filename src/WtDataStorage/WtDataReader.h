@@ -212,11 +212,17 @@ public:
 
 	virtual double getAdjFactorByDate(const char* stdCode, uint32_t date = 0) override;
 
+	virtual uint32_t getAdjustingFlag() override { return _adjust_flag; }
+
 private:
 	std::string		_rt_dir;
 	std::string		_his_dir;
 	IBaseDataMgr*	_base_data_mgr;
 	IHotMgr*		_hot_mgr;
+
+	//By Wesley @ 2022.08.15
+	//复权标记，采用位运算表示，1|2|4,1表示成交量复权，2表示成交额复权，4表示总持复权，其他待定
+	uint32_t		_adjust_flag;
 
 	typedef struct _BarsList
 	{

@@ -239,6 +239,20 @@ double WtDtMgr::get_adjusting_factor(const char* stdCode, uint32_t uDate)
 	return 1.0;
 }
 
+uint32_t WtDtMgr::get_adjusting_flag()
+{
+	static uint32_t flag = UINT_MAX;
+	if(flag == UINT_MAX)
+	{
+		if (_reader)
+			flag = _reader->getAdjustingFlag();
+		else
+			flag = 0;
+	}
+
+	return flag;
+}
+
 WTSTickSlice* WtDtMgr::get_tick_slice(const char* stdCode, uint32_t count, uint64_t etime /* = 0 */)
 {
 	if (_reader == NULL)

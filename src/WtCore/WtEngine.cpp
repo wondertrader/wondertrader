@@ -93,7 +93,7 @@ std::string WtEngine::get_rawcode(const char* stdCode)
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
 	if (cInfo.hasRule())
 	{
-		std::string code = _hot_mgr->getCustomRawCode(cInfo._ruletag, cInfo.stdCommID());
+		std::string code = _hot_mgr->getCustomRawCode(cInfo._ruletag, cInfo.stdCommID(), _cur_tdate);
 		return CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
 	}
 
@@ -754,6 +754,14 @@ double WtEngine::get_exright_factor(const char* stdCode, WTSCommodityInfo* commI
 	}
 
 	return 1.0;
+}
+
+uint32_t WtEngine::get_adjusting_flag()
+{
+	if (_data_mgr)
+		_data_mgr->get_adjusting_flag();
+
+	return 0;
 }
 
 void WtEngine::sub_tick(uint32_t sid, const char* stdCode)

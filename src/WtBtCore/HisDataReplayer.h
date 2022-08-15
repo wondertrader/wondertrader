@@ -423,6 +423,10 @@ private:
 	//By Wesley @ 2022.06.01
 	std::set<std::string>		_unsubbed_in_need;	//未订阅但需要的K线
 
+	//By Wesley @ 2022.08.15
+	//复权标记，采用位运算表示，1|2|4,1表示成交量复权，2表示成交额复权，4表示总持复权，其他待定
+	uint32_t		_adjust_flag; 
+
 	uint32_t		_cur_date;
 	uint32_t		_cur_time;
 	uint32_t		_cur_secs;

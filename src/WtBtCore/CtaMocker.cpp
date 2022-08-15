@@ -1523,7 +1523,7 @@ WTSKlineSlice* CtaMocker::stra_get_bars(const char* stdCode, const char* period,
 		else if (_main_key != key)
 		{
 			WTSLogger::error("Main k bars can only be setup once");
-			throw std::runtime_error("Main k bars can only be setup once");
+			return NULL;
 		}
 
 		/*
