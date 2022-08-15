@@ -211,6 +211,9 @@ bool HisDataReplayer::init(WTSVariant* cfg, EventNotifier* notifier /* = NULL */
 	_tick_enabled = cfg->getBoolean("tick");
 	WTSLogger::info("Tick data replaying is {}", _tick_enabled ? "enabled" : "disabled");
 
+	_adjust_flag = cfg->getUInt32("adjust_flag");
+	WTSLogger::info("adjust_flag is {}", _adjust_flag);
+
 	//基础数据文件
 	WTSVariant* cfgBF = cfg->get("basefiles");
 	//基础配置文件的编码，这样可以兼容原来的配置
@@ -3868,6 +3871,19 @@ bool HisDataReplayer::cacheIntegratedFutBarsFromBin(void* codeInfo, const std::s
 				firstBar[idx].high *= factor;
 				firstBar[idx].low *= factor;
 				firstBar[idx].close *= factor;
+				firstBar[idx].settle *= factor;
+
+				if (_adjust_flag & 1)
+					firstBar[idx].vol /= factor;
+
+				if (_adjust_flag & 2)
+					firstBar[idx].money *= factor;
+
+				if (_adjust_flag & 4)
+				{
+					firstBar[idx].hold /= factor;
+					firstBar[idx].add /= factor;
+				}
 			}
 		}
 
@@ -4141,6 +4157,18 @@ bool HisDataReplayer::cacheAdjustedStkBarsFromBin(void* codeInfo, const std::str
 							pBar->high *= factor;
 							pBar->low *= factor;
 							pBar->close *= factor;
+
+							if (_adjust_flag & 1)
+								pBar->vol /= factor;
+
+							if (_adjust_flag & 2)
+								pBar->money *= factor;
+
+							if (_adjust_flag & 4)
+							{
+								pBar->hold /= factor;
+								pBar->add /= factor;
+							}
 
 							pBar++;
 							curIdx++;
