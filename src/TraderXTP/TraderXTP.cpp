@@ -86,7 +86,7 @@ inline XTP_SIDE_TYPE wrapDirectionType(WTSDirectionType dirType, WTSOffsetType o
 			return XTP_SIDE_BUY;
 }
 
-inline WTSDirectionType wrapDirectionType(XTP_SIDE_TYPE side, XTP_POSITION_EFFECT_TYPE pe)
+inline WTSDirectionType wrapDirectionType(XTP_SIDE_TYPE side, XTP_POSITION_EFFECT_TYPE pe = 0)
 {
 	if (XTP_SIDE_BUY == side)
 		if (pe == XTP_POSITION_EFFECT_OPEN)
@@ -114,7 +114,7 @@ inline XTP_POSITION_EFFECT_TYPE wrapOffsetType(WTSOffsetType offType)
 		return XTP_POSITION_EFFECT_FORCECLOSE;
 }
 
-inline WTSOffsetType wrapOffsetType(XTP_POSITION_EFFECT_TYPE offType)
+inline WTSOffsetType wrapOffsetType(XTP_SIDE_TYPE side, XTP_POSITION_EFFECT_TYPE offType = 0)
 {
 	if (XTP_POSITION_EFFECT_OPEN == offType)
 		return WOT_OPEN;
@@ -198,15 +198,23 @@ WTSEntrust* TraderXTP::makeEntrust(XTPOrderInfo* order_info)
 	if (ct == NULL)
 		return NULL;
 
+	WTSCommodityInfo* commInfo = ct->getCommInfo();
+
 	WTSEntrust* pRet = WTSEntrust::create(
 		code.c_str(),
 		(uint32_t)order_info->quantity,
 		order_info->price,
 		ct->getExchg());
 	pRet->setContractInfo(ct);
-	pRet->setDirection(wrapDirectionType(order_info->side, order_info->position_effect));
+	if (commInfo->isStock())
+		pRet->setDirection(WDT_LONG);
+	else
+		pRet->setDirection(wrapDirectionType(order_info->side, order_info->position_effect));
 	pRet->setPriceType(wrapPriceType(order_info->price_type));
-	pRet->setOffsetType(wrapOffsetType(order_info->position_effect));
+	if (!commInfo->isOption())
+		pRet->setOffsetType((order_info->side == XTP_SIDE_BUY)? WOT_OPEN : WOT_CLOSE);
+	else
+		pRet->setOffsetType(wrapOffsetType(order_info->side, order_info->position_effect));
 	pRet->setOrderFlag(WOF_NOR);
 
 	genEntrustID(pRet->getEntrustID(), order_info->order_client_id);
@@ -226,24 +234,33 @@ WTSOrderInfo* TraderXTP::makeOrderInfo(XTPQueryOrderRsp* order_info)
 	else
 		exchg = "SZSE";
 	code = order_info->ticker;
-	WTSContractInfo* contract = _bd_mgr->getContract(code.c_str(), exchg.c_str());
-	if (contract == NULL)
+	WTSContractInfo* ct = _bd_mgr->getContract(code.c_str(), exchg.c_str());
+	if (ct == NULL)
 		return NULL;
 
+	WTSCommodityInfo* commInfo = ct->getCommInfo();
+
 	WTSOrderInfo* pRet = WTSOrderInfo::create();
-	pRet->setContractInfo(contract);
+	pRet->setContractInfo(ct);
 	pRet->setPrice(order_info->price);
 	pRet->setVolume((uint32_t)order_info->quantity);
-	pRet->setDirection(wrapDirectionType(order_info->side, order_info->position_effect));
 	pRet->setPriceType(wrapPriceType(order_info->price_type));
 	pRet->setOrderFlag(WOF_NOR);
-	pRet->setOffsetType(wrapOffsetType(order_info->position_effect));
+
+	if (commInfo->isStock())
+		pRet->setDirection(WDT_LONG);
+	else
+		pRet->setDirection(wrapDirectionType(order_info->side, order_info->position_effect));
+	if (!commInfo->isOption())
+		pRet->setOffsetType((order_info->side == XTP_SIDE_BUY) ? WOT_OPEN : WOT_CLOSE);
+	else
+		pRet->setOffsetType(wrapOffsetType(order_info->side, order_info->position_effect));
 
 	pRet->setVolTraded((uint32_t)order_info->qty_traded);
 	pRet->setVolLeft((uint32_t)order_info->qty_left);
 
 	pRet->setCode(code.c_str());
-	pRet->setExchange(contract->getExchg());
+	pRet->setExchange(ct->getExchg());
 
 	pRet->setOrderDate((uint32_t)(order_info->insert_time / 1000000000));
 	uint32_t uTime = order_info->insert_time % 1000000000;
@@ -286,15 +303,17 @@ WTSTradeInfo* TraderXTP::makeTradeInfo(XTPQueryTradeRsp* trade_info)
 	else
 		exchg = "SZSE";
 	code = trade_info->ticker;
-	WTSContractInfo* contract = _bd_mgr->getContract(code.c_str(), exchg.c_str());
-	if (contract == NULL)
+	WTSContractInfo* ct = _bd_mgr->getContract(code.c_str(), exchg.c_str());
+	if (ct == NULL)
 		return NULL;
+
+	WTSCommodityInfo* commInfo = ct->getCommInfo();
 
 	WTSTradeInfo *pRet = WTSTradeInfo::create(code.c_str(), exchg.c_str());
 	pRet->setVolume((uint32_t)trade_info->quantity);
 	pRet->setPrice(trade_info->price);
 	pRet->setTradeID(trade_info->exec_id);
-	pRet->setContractInfo(contract);
+	pRet->setContractInfo(ct);
 
 	uint32_t uTime = (uint32_t)(trade_info->trade_time % 1000000000);
 	uint32_t uDate = (uint32_t)(trade_info->trade_time / 1000000000);
@@ -302,10 +321,15 @@ WTSTradeInfo* TraderXTP::makeTradeInfo(XTPQueryTradeRsp* trade_info)
 	pRet->setTradeDate(uDate);
 	pRet->setTradeTime(TimeUtils::makeTime(uDate, uTime));
 
-	WTSDirectionType dType = wrapDirectionType(trade_info->side, trade_info->position_effect);
+	if (commInfo->isStock())
+		pRet->setDirection(WDT_LONG);
+	else
+		pRet->setDirection(wrapDirectionType(trade_info->side, trade_info->position_effect));
+	if (!commInfo->isOption())
+		pRet->setOffsetType((trade_info->side == XTP_SIDE_BUY) ? WOT_OPEN : WOT_CLOSE);
+	else
+		pRet->setOffsetType(wrapOffsetType(trade_info->side, trade_info->position_effect));
 
-	pRet->setDirection(dType);
-	pRet->setOffsetType(wrapOffsetType(trade_info->position_effect));
 	fmtutil::format_to(pRet->getRefOrder(), "{}", trade_info->order_xtp_id);
 	pRet->setTradeType(WTT_Common);
 
