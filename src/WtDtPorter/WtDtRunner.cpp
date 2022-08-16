@@ -51,9 +51,12 @@ void WtDtRunner::start(bool bAsync /* = false */, bool bAlldayMode /* = false */
 
     if(!bAsync)
     {
-		_async_io.post([this]() {
-			std::this_thread::sleep_for(std::chrono::milliseconds(5));
-			_state_mon.run();
+		_async_io.post([this, bAlldayMode]() {
+			if(!bAlldayMode)
+			{
+				std::this_thread::sleep_for(std::chrono::milliseconds(5));
+				_state_mon.run();
+			}
 		});
 
         boost::asio::io_service::work work(_async_io);
@@ -61,8 +64,11 @@ void WtDtRunner::start(bool bAsync /* = false */, bool bAlldayMode /* = false */
     }
 	else
 	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(5));
-		_state_mon.run();
+		if (!bAlldayMode)
+		{
+			std::this_thread::sleep_for(std::chrono::milliseconds(5));
+			_state_mon.run();
+		}
 	}
 }
 
@@ -160,7 +166,7 @@ void WtDtRunner::initialize(const char* cfgFile, const char* logCfg, const char*
 	}
 	else
 	{
-		WTSLogger::info("QuoteFactory will run in allday mode");
+		WTSLogger::info("datakit will run in allday mode");
 	}
 
 	initDataMgr(config->get("writer"), bAlldayMode);
