@@ -46,12 +46,7 @@ public:
 	} WrapperState;
 
 private:
-
-	int confirm();
-
 	int queryConfirm();
-
-	int authenticate();
 
 	int doLogin();
 
@@ -199,6 +194,8 @@ protected:
 	StdThreadPtr			m_thrdWorker;
 
 	boost::asio::io_service		_asyncio;
+
+	tagXTReqUserLoginField	m_loginField;
 
 	std::string		m_strModule;
 	DllHandle		m_hInstAres;
