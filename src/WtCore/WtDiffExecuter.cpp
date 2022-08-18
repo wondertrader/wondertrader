@@ -33,6 +33,7 @@ WtDiffExecuter::WtDiffExecuter(WtExecuterFactory* factory, const char* name, IDa
 	, _data_mgr(dataMgr)
 	, _channel_ready(false)
 	, _scale(1.0)
+	, _trader(NULL)
 {
 }
 
@@ -47,7 +48,8 @@ void WtDiffExecuter::setTrader(TraderAdapter* adapter)
 {
 	_trader = adapter;
 	//设置的时候读取一下trader的状态
-	_channel_ready = _trader->isReady();
+	if(_trader)
+		_channel_ready = _trader->isReady();
 }
 
 bool WtDiffExecuter::init(WTSVariant* params)
@@ -238,16 +240,25 @@ WTSTickData* WtDiffExecuter::grabLastTick(const char* stdCode)
 
 double WtDiffExecuter::getPosition(const char* stdCode, bool validOnly /* = true */, int32_t flag /* = 3 */)
 {
+	if (_trader)
+		return 0.0;
+
 	return _trader->getPosition(stdCode, validOnly, flag);
 }
 
 double WtDiffExecuter::getUndoneQty(const char* stdCode)
 {
+	if (_trader)
+		return 0.0;
+
 	return _trader->getUndoneQty(stdCode);
 }
 
 OrderMap* WtDiffExecuter::getOrders(const char* stdCode)
 {
+	if (_trader)
+		return NULL;
+
 	return _trader->getOrders(stdCode);
 }
 

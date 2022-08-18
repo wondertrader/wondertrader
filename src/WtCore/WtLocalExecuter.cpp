@@ -29,6 +29,7 @@ WtLocalExecuter::WtLocalExecuter(WtExecuterFactory* factory, const char* name, I
 	, _channel_ready(false)
 	, _scale(1.0)
 	, _auto_clear(true)
+	, _trader(NULL)
 {
 }
 
@@ -43,7 +44,8 @@ void WtLocalExecuter::setTrader(TraderAdapter* adapter)
 {
 	_trader = adapter;
 	//设置的时候读取一下trader的状态
-	_channel_ready = _trader->isReady();
+	if(_trader)
+		_channel_ready = _trader->isReady();
 }
 
 bool WtLocalExecuter::init(WTSVariant* params)
@@ -190,16 +192,25 @@ WTSTickData* WtLocalExecuter::grabLastTick(const char* stdCode)
 
 double WtLocalExecuter::getPosition(const char* stdCode, bool validOnly /* = true */, int32_t flag /* = 3 */)
 {
+	if (NULL == _trader)
+		return 0.0;
+
 	return _trader->getPosition(stdCode, validOnly, flag);
 }
 
 double WtLocalExecuter::getUndoneQty(const char* stdCode)
 {
+	if (NULL == _trader)
+		return 0.0;
+
 	return _trader->getUndoneQty(stdCode);
 }
 
 OrderMap* WtLocalExecuter::getOrders(const char* stdCode)
 {
+	if (NULL == _trader)
+		return NULL;
+
 	return _trader->getOrders(stdCode);
 }
 
@@ -207,6 +218,7 @@ OrderIDs WtLocalExecuter::buy(const char* stdCode, double price, double qty, boo
 {
 	if (!_channel_ready)
 		return OrderIDs();
+
 	return _trader->buy(stdCode, price, qty, 0, bForceClose);
 }
 
