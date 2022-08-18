@@ -104,6 +104,86 @@ void WtExecuterMgr::handle_pos_change(const char* stdCode, double targetPos, con
 	}
 }
 
+void WtExecuterMgr::handle_amount_change(const char* stdCode, double targetAmount, const char* execid /* = "ALL" */)
+{
+	if (_filter_mgr != NULL)
+	{
+		double oldVol = targetAmount;
+		bool isFltd = _filter_mgr->is_filtered_by_code(stdCode, targetAmount);
+		if (!isFltd)
+		{
+			if (!decimal::eq(targetAmount, oldVol))
+			{
+				//输出日志
+				WTSLogger::info("[Filters] {} target amount reset by filter: {} -> {}", stdCode, oldVol, targetAmount);
+			}
+		}
+		else
+		{
+			//输出日志
+			WTSLogger::info("[Filters] {} target position ignored by filter", stdCode);
+			return;
+		}
+	}
+
+	for (auto& v : _executers)
+	{
+		ExecCmdPtr& executer = (ExecCmdPtr&)v.second;
+
+		if (_filter_mgr && _filter_mgr->is_filtered_by_executer(executer->name()))
+		{
+			WTSLogger::info("[Filters] All signals to executer {} are ignored by executer filter", executer->name());
+			continue;
+		}
+
+		auto it = _routed_executers.find(executer->name());
+		if (it == _routed_executers.end() && strcmp(execid, "ALL") == 0)
+			executer->on_amount_changed(stdCode, targetAmount);
+		else if (strcmp(executer->name(), execid) == 0)
+			executer->on_amount_changed(stdCode, targetAmount);
+	}
+}
+
+void WtExecuterMgr::handle_ratio_change(const char* stdCode, double targetRatio, const char* execid /* = "ALL" */)
+{
+	if (_filter_mgr != NULL)
+	{
+		double oldVol = targetRatio;
+		bool isFltd = _filter_mgr->is_filtered_by_code(stdCode, targetRatio);
+		if (!isFltd)
+		{
+			if (!decimal::eq(targetRatio, oldVol))
+			{
+				//输出日志
+				WTSLogger::info("[Filters] {} target amount reset by filter: {} -> {}", stdCode, oldVol, targetRatio);
+			}
+		}
+		else
+		{
+			//输出日志
+			WTSLogger::info("[Filters] {} target position ignored by filter", stdCode);
+			return;
+		}
+	}
+
+	for (auto& v : _executers)
+	{
+		ExecCmdPtr& executer = (ExecCmdPtr&)v.second;
+
+		if (_filter_mgr && _filter_mgr->is_filtered_by_executer(executer->name()))
+		{
+			WTSLogger::info("[Filters] All signals to executer {} are ignored by executer filter", executer->name());
+			continue;
+		}
+
+		auto it = _routed_executers.find(executer->name());
+		if (it == _routed_executers.end() && strcmp(execid, "ALL") == 0)
+			executer->on_ratio_changed(stdCode, targetRatio);
+		else if (strcmp(executer->name(), execid) == 0)
+			executer->on_ratio_changed(stdCode, targetRatio);
+	}
+}
+
 void WtExecuterMgr::handle_tick(const char* stdCode, WTSTickData* curTick)
 {
 	//for (auto it = _executers.begin(); it != _executers.end(); it++)

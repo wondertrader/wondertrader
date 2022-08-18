@@ -34,6 +34,10 @@ public:
 
 	void setPosition(const char* stdCode, double targetPos);
 
+	void setAmount(const char* stdCode, double targetAmount);
+
+	void setRatio(const char* stdCode, double ratio);
+
 	bool addExeFactories(const char* folder);
 
 	IBaseDataMgr*	get_bd_mgr() { return &_bd_mgr; }

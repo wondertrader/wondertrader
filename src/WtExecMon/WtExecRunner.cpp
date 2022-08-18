@@ -416,6 +416,16 @@ void WtExecRunner::setPosition(const char* stdCode, double targetPos)
 	_exe_mgr.handle_pos_change(stdCode, targetPos);
 }
 
+void WtExecRunner::setAmount(const char* stdCode, double tragetAmount)
+{
+	_exe_mgr.handle_amount_change(stdCode, tragetAmount);
+}
+
+void WtExecRunner::setRatio(const char* stdCode, double targetRatio)
+{
+	_exe_mgr.handle_ratio_change(stdCode, targetRatio);
+}
+
 bool WtExecRunner::initActionPolicy()
 {
 	const char* action_file = _config->getCString("bspolicy");

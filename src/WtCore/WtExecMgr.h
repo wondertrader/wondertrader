@@ -23,6 +23,8 @@ public:
 
 	void	set_positions(faster_hashmap<LongKey, double> target_pos);
 	void	handle_pos_change(const char* stdCode, double targetPos, const char* execid = "ALL");
+	void	handle_amount_change(const char* stdCode, double targetAmount, const char* execid = "ALL");
+	void	handle_ratio_change(const char* stdCode, double targetRatio, const char* execid = "ALL");
 	void	handle_tick(const char* stdCode, WTSTickData* curTick);
 
 	/*

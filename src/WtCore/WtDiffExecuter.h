@@ -68,6 +68,14 @@ public:
 	virtual uint64_t	getCurTime() override;
 
 public:
+	virtual bool			getMarketValue(double& market_value) override;
+
+private:
+	bool amountToPos(const char* stdCode, double amount, double& pos);
+	bool ratioToPos(const char* stdCode, double ratio, double& pos);
+	inline void checkTarget();
+
+public:
 	/*
 	 *	设置目标仓位
 	 */
@@ -78,6 +86,16 @@ public:
 	 *	合约仓位变动
 	 */
 	virtual void on_position_changed(const char* stdCode, double targetPos) override;
+
+	/*
+	 *	合约金额变动
+	 */
+	virtual void on_amount_changed(const char* stdCode, double targetAmount) override;
+
+	/*
+	 *	合约比例变动
+	 */
+	virtual void on_ratio_changed(const char* stdCode, double targetRatio) override;
 
 	/*
 	 *	实时行情回调
@@ -127,7 +145,8 @@ private:
 	WtExecuterFactory*	_factory;
 	IDataManager*		_data_mgr;
 	WTSVariant*			_config;
-
+	double				_fix_capital;		// 使用给定的固定资本计算比例持仓
+	bool				_use_fix_capital;
 	double				_scale;				//放大倍数
 	bool				_channel_ready;
 
@@ -135,6 +154,11 @@ private:
 
 	faster_hashmap<LongKey, double> _target_pos;
 	faster_hashmap<LongKey, double> _diff_pos;
+	faster_hashmap<LongKey, double> _target_amount;
+	faster_hashmap<LongKey, double> _diff_amount;
+	faster_hashmap<LongKey, double> _target_ratio;
+	faster_hashmap<LongKey, double> _diff_ratio;
+	double							_avaliable;
 
 	typedef std::shared_ptr<boost::threadpool::pool> ThreadPoolPtr;
 	ThreadPoolPtr		_pool;

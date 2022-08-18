@@ -64,6 +64,14 @@ public:
 	virtual uint64_t	getCurTime() override;
 
 public:
+	virtual bool			getMarketValue(double& market_value) override;
+
+private:
+	bool amountToPos(const char* stdCode, double amount, double& pos);
+	bool ratioToPos(const char* stdCode, double ratio, double& pos);
+	inline void checkTarget();
+
+public:
 	/*
 	 *	设置目标仓位
 	 */
@@ -74,6 +82,16 @@ public:
 	 *	合约仓位变动
 	 */
 	virtual void on_position_changed(const char* stdCode, double targetPos) override;
+
+	/*
+	 *	合约金额变动
+	 */
+	virtual void on_amount_changed(const char* stdCode, double targetAmount) override;
+
+	/*
+	 *	合约比例变动
+	 */
+	virtual void on_ratio_changed(const char* stdCode, double targetRatio) override;
 
 	/*
 	 *	实时行情回调
@@ -113,7 +131,7 @@ public:
 	/*
 	 *	资金回报
 	 */
-	virtual void on_account(const char* currency, double prebalance, double balance, double dynbalance, 
+	virtual void on_account(const char* currency, double prebalance, double balance, double dynbalance,
 		double avaliable, double closeprofit, double dynprofit, double margin, double fee, double deposit, double withdraw) override;
 
 private:
@@ -127,7 +145,8 @@ private:
 	bool				_auto_clear;		//是否自动清理上一期的主力合约头寸
 	bool				_strict_sync;		//是否严格同步目标仓位
 	bool				_channel_ready;
-
+	double				_fix_capital;		// 使用给定的固定资本计算比例持仓
+	bool				_use_fix_capital;
 	SpinMutex			_mtx_units;
 
 	typedef struct _CodeGroup
@@ -146,7 +165,9 @@ private:
 	faster_hashset<LongKey> _channel_holds;		//通道持仓
 
 	faster_hashmap<LongKey, double> _target_pos;
-
+	faster_hashmap<LongKey, double> _target_amount;
+	faster_hashmap<LongKey, double> _target_ratio;
+	double							_avaliable;
 	typedef std::shared_ptr<boost::threadpool::pool> ThreadPoolPtr;
 	ThreadPoolPtr		_pool;
 };

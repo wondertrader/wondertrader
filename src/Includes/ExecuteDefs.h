@@ -134,6 +134,11 @@ public:
 	virtual uint64_t	getCurTime() = 0;
 
 	/*
+	 *  计算市值
+	 */
+	virtual bool		getMarketValue(double& market_value) { return false; };
+
+	/*
 	 *	注册定时器
 	 *	@stdCode	合约代码
 	 *	@elapse		时间间隔,单位毫秒

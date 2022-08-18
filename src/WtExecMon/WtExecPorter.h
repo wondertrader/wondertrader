@@ -23,6 +23,10 @@ extern "C"
 
 	EXPORT_FLAG	void		set_position(WtString stdCode, double targetPos);
 
+	EXPORT_FLAG	void		set_amount(WtString stdCode, double targetAmount);
+
+	EXPORT_FLAG	void		set_ratio(WtString stdCode, double targetRatio);
+
 #ifdef __cplusplus
 }
 #endif

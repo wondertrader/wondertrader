@@ -29,6 +29,9 @@ WtLocalExecuter::WtLocalExecuter(WtExecuterFactory* factory, const char* name, I
 	, _channel_ready(false)
 	, _scale(1.0)
 	, _auto_clear(true)
+	, _avaliable(-1)
+	, _fix_capital(0)
+	, _use_fix_capital(false)
 {
 }
 
@@ -55,7 +58,12 @@ bool WtLocalExecuter::init(WTSVariant* params)
 	_config->retain();
 
 	_scale = params->getDouble("scale");
-	_strict_sync  = params->getBoolean("strict_sync");
+	_strict_sync = params->getBoolean("strict_sync");
+	if (params->has("fix_capital"))
+	{
+		_use_fix_capital = true;
+		_fix_capital = params->getDouble("fix_capital");
+	}
 
 	uint32_t poolsize = params->getUInt32("poolsize");
 	if(poolsize > 0)
@@ -251,6 +259,106 @@ WTSSessionInfo* WtLocalExecuter::getSessionInfo(const char* stdCode)
 	return _stub->get_sess_info(stdCode);
 }
 
+bool WtLocalExecuter::getMarketValue(double& market_value)
+{
+	if (!_channel_ready)
+		return false;
+	std::map<std::string, double> real_pos_map{};
+	// TODO 增加保证金比例的转换
+	_trader->enumPosition([&real_pos_map](const char* stdCode, bool isLong, double prevol, double preavail, double newvol, double newavail) {
+		if (real_pos_map.find(stdCode) == real_pos_map.end())
+			real_pos_map[stdCode] = 0;
+		double real_pos = (prevol + newvol);
+		real_pos_map[stdCode] += real_pos;
+	});
+
+	market_value = 0;
+	for (auto& it : real_pos_map)
+	{
+		std::string stdCode = it.first;
+		double real_pos = it.second;
+		WTSTickData* tick = grabLastTick(stdCode.c_str());
+		if (tick)
+		{
+			market_value += real_pos * tick->price();
+			tick->release();
+		}
+		else
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+bool WtLocalExecuter::amountToPos(const char* stdCode, double amount, double& pos)
+{
+	WTSTickData* tick = grabLastTick(stdCode);
+	if (tick)
+	{
+		double last_price = tick->price();
+		pos = amount / last_price;
+		writeLog(fmtutil::format("[{}] amount:{} -> pos:{} with price:{}", stdCode, amount, pos, last_price));
+		tick->release();
+		return true;
+	}
+	else
+		return false;
+	return false;
+}
+
+bool WtLocalExecuter::ratioToPos(const char* stdCode, double ratio, double& pos)
+{
+	if (decimal::le(_avaliable))
+		return false;
+	double market_value = 0;
+	if (!getMarketValue(market_value))
+		return false;
+	double total_captaial = _fix_capital;
+	if (!_use_fix_capital)
+		total_captaial = _avaliable + market_value;
+	double amount = total_captaial * ratio;
+	writeLog(fmtutil::format("[{}] ratio:{} -> amount:{} with total_captaial:{}", stdCode, ratio, amount, total_captaial));
+	return amountToPos(stdCode, amount, pos);
+}
+
+inline void WtLocalExecuter::checkTarget()
+{
+	faster_hashset<LongKey> finish_target_amount{};
+	for (auto& it : _target_amount)
+	{
+		double pos;
+		std::string stdCode = it.first.c_str();
+		double amount = it.second;
+		if (amountToPos(stdCode.c_str(), amount, pos))
+		{
+			on_position_changed(stdCode.c_str(), pos);
+			finish_target_amount.insert(stdCode.c_str());
+		}
+	}
+	for (auto& finish_stdCode : finish_target_amount)
+	{
+		_target_amount.erase(finish_stdCode);
+	}
+
+	faster_hashset<LongKey> finish_target_ratio{};
+	for (auto& it : _target_ratio)
+	{
+		double pos;
+		std::string stdCode = it.first.c_str();
+		double ratio = it.second;
+		if (ratioToPos(stdCode.c_str(), ratio, pos))
+		{
+			on_position_changed(stdCode.c_str(), pos);
+			finish_target_ratio.insert(stdCode.c_str());
+		}
+	}
+	for (auto& finish_stdCode : finish_target_ratio)
+	{
+		_target_ratio.erase(finish_stdCode);
+	}
+}
+
 uint64_t WtLocalExecuter::getCurTime()
 {
 	return _stub->get_real_time();
@@ -287,6 +395,50 @@ void WtLocalExecuter::on_position_changed(const char* stdCode, double targetPos)
 	}
 
 	unit->self()->set_position(stdCode, targetPos);
+}
+
+void WtLocalExecuter::on_amount_changed(const char* stdCode, double targetAmount)
+{
+	ExecuteUnitPtr unit = getUnit(stdCode);
+	if (unit == NULL)
+		return;
+
+	double oldAmount = _target_amount[stdCode];
+	_target_amount[stdCode] = targetAmount;
+
+	if (!decimal::eq(oldAmount, targetAmount))
+	{
+		WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "Target amount of {} changed: {} -> {}", stdCode, oldAmount, targetAmount);
+	}
+
+	double pos{ 0 };
+	if (amountToPos(stdCode, targetAmount, pos))
+	{
+		on_position_changed(stdCode, pos);
+		_target_amount.erase(stdCode);
+	}
+}
+
+void WtLocalExecuter::on_ratio_changed(const char* stdCode, double targetRatio)
+{
+	ExecuteUnitPtr unit = getUnit(stdCode);
+	if (unit == NULL)
+		return;
+
+	double oldRatio = _target_ratio[stdCode];
+	_target_ratio[stdCode] = targetRatio;
+
+	if (!decimal::eq(oldRatio, targetRatio))
+	{
+		WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "Target ratio of {} changed: {} -> {}", stdCode, oldRatio, targetRatio);
+	}
+
+	double pos{ 0 };
+	if (ratioToPos(stdCode, targetRatio, pos))
+	{
+		on_position_changed(stdCode, pos);
+		_target_ratio.erase(stdCode);
+	}
 }
 
 void WtLocalExecuter::set_position(const faster_hashmap<LongKey, double>& targets)
@@ -427,6 +579,7 @@ void WtLocalExecuter::set_position(const faster_hashmap<LongKey, double>& target
 
 void WtLocalExecuter::on_tick(const char* stdCode, WTSTickData* newTick)
 {
+	checkTarget();
 	ExecuteUnitPtr unit = getUnit(stdCode, false);
 	if (unit == NULL)
 		return;
@@ -476,7 +629,7 @@ void WtLocalExecuter::on_order(uint32_t localid, const char* stdCode, bool isBuy
 	if (_pool)
 	{
 		std::string code = stdCode;
-		_pool->schedule([localid, unit, code, isBuy, leftQty, price, isCanceled](){
+		_pool->schedule([localid, unit, code, isBuy, leftQty, price, isCanceled]() {
 			unit->self()->on_order(localid, code.c_str(), isBuy, leftQty, price, isCanceled);
 		});
 	}
@@ -554,9 +707,11 @@ void WtLocalExecuter::on_channel_lost()
 	}
 }
 
-void WtLocalExecuter::on_account(const char* currency, double prebalance, double balance, double dynbalance, 
+void WtLocalExecuter::on_account(const char* currency, double prebalance, double balance, double dynbalance,
 	double avaliable, double closeprofit, double dynprofit, double margin, double fee, double deposit, double withdraw)
 {
+	if (std::strcmp(currency, "CNY") == 0)
+		_avaliable = avaliable;
 	SpinLock lock(_mtx_units);
 	for (auto it = _unit_map.begin(); it != _unit_map.end(); it++)
 	{
