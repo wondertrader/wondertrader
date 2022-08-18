@@ -266,6 +266,7 @@ OrderIDs WtDiffExecuter::buy(const char* stdCode, double price, double qty, bool
 {
 	if (!_channel_ready)
 		return OrderIDs();
+
 	return _trader->buy(stdCode, price, qty, 0, bForceClose);
 }
 
