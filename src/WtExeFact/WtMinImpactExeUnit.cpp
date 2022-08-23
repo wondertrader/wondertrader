@@ -330,6 +330,13 @@ void WtMinImpactExeUnit::do_calc()
 		this_qty = min(this_qty, abs(newVol - curPos));
 	}
 
+	//如果买入且有空头持仓，或者卖出且有多头持仓
+	//对单次下单做一个修正，保证平仓和开仓不会同时下单
+	if ((isBuy && decimal::lt(curPos, 0)) || (!isBuy && decimal::gt(curPos, 0)))
+	{
+		this_qty = min(this_qty, abs(curPos));
+	}
+
 	double buyPx, sellPx;
 	if (_price_mode == 2)
 	{
