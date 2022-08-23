@@ -296,7 +296,7 @@ void WtMinImpactExeUnit::do_calc()
 
 		//如果是清仓的需求，还要再进行对比
 		//如果多头为0，说明已经全部清理掉了，则直接退出
-		double lPos = _ctx->getPosition(stdCode, 1);
+		double lPos = _ctx->getPosition(stdCode, true , 1);
 		if (decimal::eq(lPos, 0))
 			return;
 
