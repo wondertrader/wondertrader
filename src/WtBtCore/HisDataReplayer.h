@@ -43,7 +43,7 @@ USING_NS_WTP;
 class IDataSink
 {
 public:
-	virtual void	handle_tick(const char* stdCode, WTSTickData* curTick, bool isBarEnd = true) = 0;
+	virtual void	handle_tick(const char* stdCode, WTSTickData* curTick, uint32_t pxType) = 0;
 	virtual void	handle_order_queue(const char* stdCode, WTSOrdQueData* curOrdQue) {};
 	virtual void	handle_order_detail(const char* stdCode, WTSOrdDtlData* curOrdDtl) {};
 	virtual void	handle_transaction(const char* stdCode, WTSTransData* curTrans) {};

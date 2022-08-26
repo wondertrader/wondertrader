@@ -96,7 +96,7 @@ public:
 public:
 	//////////////////////////////////////////////////////////////////////////
 	//IDataSink
-	virtual void	handle_tick(const char* stdCode, WTSTickData* curTick, bool isBarEnd = true) override;
+	virtual void	handle_tick(const char* stdCode, WTSTickData* curTick, uint32_t pxType = 0) override;
 	virtual void	handle_bar_close(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar) override;
 	virtual void	handle_schedule(uint32_t uDate, uint32_t uTime) override;
 
@@ -179,6 +179,8 @@ public:
 	virtual void stra_save_user_data(const char* key, const char* val) override;
 
 	virtual const char* stra_load_user_data(const char* key, const char* defVal = "") override;
+
+	virtual const char* stra_get_last_entertag(const char* stdCode) override;
 
 	/*
 	 *	…Ë÷√Õº±ÌKœﬂ

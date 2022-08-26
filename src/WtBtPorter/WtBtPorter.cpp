@@ -395,6 +395,15 @@ double cta_get_last_enterprice(CtxHandler cHandle, const char* stdCode)
 	return ctx->stra_get_last_enterprice(stdCode);
 }
 
+WtString cta_get_last_entertag(CtxHandler cHandle, const char* stdCode)
+{
+	CtaMocker* ctx = getRunner().cta_mocker();
+	if (ctx == NULL)
+		return 0;
+
+	return ctx->stra_get_last_entertag(stdCode);
+}
+
 double cta_get_price(const char* stdCode)
 {
 	return getRunner().replayer().get_cur_price(stdCode);
@@ -976,7 +985,7 @@ WtString hft_cancel_all(CtxHandler cHandle, const char* stdCode, bool isBuy)
 	if (mocker == NULL)
 		return "";
 
-	static std::string ret;
+	static thread_local std::string ret;
 
 	std::stringstream ss;
 	OrderIDs ids = mocker->stra_cancel(stdCode, isBuy, DBL_MAX);
@@ -986,7 +995,8 @@ WtString hft_cancel_all(CtxHandler cHandle, const char* stdCode, bool isBuy)
 	}
 
 	ret = ss.str();
-	ret = ret.substr(0, ret.size() - 1);
+	if (ret.size() > 0)
+		ret = ret.substr(0, ret.size() - 1);
 	return ret.c_str();
 }
 

@@ -662,7 +662,7 @@ void CtaMocker::proc_tick(const char* stdCode, double last_px, double cur_px)
 	}
 }
 
-void CtaMocker::handle_tick(const char* stdCode, WTSTickData* newTick, bool isBarEnd /* = true */)
+void CtaMocker::handle_tick(const char* stdCode, WTSTickData* newTick, uint32_t pxType /* = 0 */)
 {
 	double cur_px = newTick->price();
 
@@ -672,12 +672,16 @@ void CtaMocker::handle_tick(const char* stdCode, WTSTickData* newTick, bool isBa
 	 *	如果缓存的价格不存在，则上一笔价格就用最新价
 	 *	这里主要是为了应对跨日价格跳空的情况
 	 */
-	double last_px = 0;
-	auto it = _price_map.find(stdCode);
-	if (it != _price_map.end())
-		last_px = it->second;
-	else
-		last_px = cur_px;
+	double last_px = cur_px;
+	if(pxType != 0)
+	{
+		auto it = _price_map.find(stdCode);
+		if (it != _price_map.end())
+			last_px = it->second;
+		else
+			last_px = cur_px;
+	}
+	
 	
 	_price_map[stdCode] = cur_px;
 	_ticks->add(stdCode, newTick, true);
@@ -698,7 +702,7 @@ void CtaMocker::handle_tick(const char* stdCode, WTSTickData* newTick, bool isBa
 	 *	这样做的目的是为了让在模拟tick触发的ontick中下单的信号能够正常处理
 	 *	而不至于在回测的时候成交价偏离太远
 	 */
-	if(!isBarEnd)
+	if(pxType != 3)
 		proc_tick(stdCode, last_px, cur_px);
 }
 
@@ -1688,6 +1692,19 @@ uint64_t CtaMocker::stra_get_last_entertime(const char* stdCode)
 		return INVALID_UINT64;
 
 	return pInfo._details[pInfo._details.size() - 1]._opentime;
+}
+
+const char* CtaMocker::stra_get_last_entertag(const char* stdCode)
+{
+	auto it = _pos_map.find(stdCode);
+	if (it == _pos_map.end())
+		return "";
+
+	const PosInfo& pInfo = it->second;
+	if (pInfo._details.empty())
+		return "";
+
+	return pInfo._details[pInfo._details.size() - 1]._opentag;
 }
 
 uint64_t CtaMocker::stra_get_last_exittime(const char* stdCode)

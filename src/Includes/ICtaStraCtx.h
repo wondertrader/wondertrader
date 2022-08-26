@@ -175,6 +175,12 @@ public:
 	 */
 	virtual bool set_index_value(const char* idxName, const char* lineName, double val) { return false; }
 
+	/*
+	 *	获取最后的进场标记
+	 *	@stdCode	合约代码
+	 */
+	virtual const char* stra_get_last_entertag(const char* stdCode) = 0;
+
 protected:
 	std::string _name;
 };

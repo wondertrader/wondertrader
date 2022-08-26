@@ -1626,6 +1626,20 @@ uint64_t CtaStraBaseCtx::stra_get_first_entertime(const char* stdCode)
 	return pInfo._details[0]._opentime;
 }
 
+const char* CtaStraBaseCtx::stra_get_last_entertag(const char* stdCode)
+{
+	auto it = _pos_map.find(stdCode);
+	if (it == _pos_map.end())
+		return "";
+
+	const PosInfo& pInfo = it->second;
+	if (pInfo._details.empty())
+		return "";
+
+	return pInfo._details[0]._opentag;
+}
+
+
 uint64_t CtaStraBaseCtx::stra_get_last_exittime(const char* stdCode)
 {
 	auto it = _pos_map.find(stdCode);

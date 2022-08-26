@@ -263,6 +263,7 @@ int TraderCTP::login(const char* user, const char* pass, const char* productInfo
 {
 	m_strUser = user;
 	m_strPass = pass;
+	m_strProdInfo = productInfo;
 
 	if (m_pUserAPI == NULL)
 	{

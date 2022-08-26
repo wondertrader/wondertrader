@@ -1206,7 +1206,7 @@ void HisDataReplayer::simTicks(uint32_t uDate, uint32_t uTime, uint32_t endTDate
 
 							update_price(barsList->_code.c_str(), curTS.price);
 							WTSTickData* curTick = WTSTickData::create(curTS);
-							_listener->handle_tick(barsList->_code.c_str(), curTick, pxType == 3);
+							_listener->handle_tick(barsList->_code.c_str(), curTick, pxType);
 							curTick->release();
 						}
 
@@ -1270,7 +1270,7 @@ void HisDataReplayer::simTicks(uint32_t uDate, uint32_t uTime, uint32_t endTDate
 							curTS.volume = nextBar.vol;
 							update_price(barsList->_code.c_str(), curTS.price);
 							WTSTickData* curTick = WTSTickData::create(curTS);
-							_listener->handle_tick(realCode.c_str(), curTick, false);
+							_listener->handle_tick(realCode.c_str(), curTick, pxType);
 							curTick->release();
 						}
 
@@ -1342,7 +1342,7 @@ void HisDataReplayer::simTickWithUnsubBars(uint64_t stime, uint64_t nowTime, uin
 
 
 						WTSTickData* curTick = WTSTickData::create(curTS);
-						_listener->handle_tick(barsList->_code.c_str(), curTick, false);
+						_listener->handle_tick(barsList->_code.c_str(), curTick, pxType);
 						curTick->release();
 						break;
 					}
@@ -1409,7 +1409,7 @@ void HisDataReplayer::simTickWithUnsubBars(uint64_t stime, uint64_t nowTime, uin
 							curTS.low = min(curTS.price, curTS.low);
 
 						WTSTickData* curTick = WTSTickData::create(curTS);
-						_listener->handle_tick(realCode.c_str(), curTick);
+						_listener->handle_tick(realCode.c_str(), curTick, pxType);
 						curTick->release();
 
 						break;
@@ -1747,7 +1747,7 @@ uint64_t HisDataReplayer::replayHftDatasByDay(uint32_t curTDate)
 				update_price(stdCode, nextTick.price);
 				WTSTickData* newTick = WTSTickData::create(nextTick);
 				newTick->setCode(stdCode);
-				_listener->handle_tick(stdCode, newTick);
+				_listener->handle_tick(stdCode, newTick, 0);
 				newTick->release();
 				
 				total_ticks++;
@@ -1860,7 +1860,7 @@ bool HisDataReplayer::replayHftDatas(uint64_t stime, uint64_t etime)
 				update_price(stdCode, nextItem.price);
 				WTSTickData* newData = WTSTickData::create(nextItem);
 				newData->setCode(stdCode);
-				_listener->handle_tick(stdCode, newData);
+				_listener->handle_tick(stdCode, newData, 0);
 				newData->release();
 
 				itemList._cursor++;

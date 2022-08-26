@@ -168,6 +168,8 @@ public:
 
 	virtual const char* stra_load_user_data(const char* key, const char* defVal = "") override;
 
+	virtual const char* stra_get_last_entertag(const char* stdCode) override;
+
 protected:
 	uint32_t		_context_id;
 	WtCtaEngine*	_engine;

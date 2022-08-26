@@ -406,6 +406,15 @@ double cta_get_last_enterprice(CtxHandler cHandle, const char* stdCode)
 	return ctx->stra_get_last_enterprice(stdCode);
 }
 
+WtString cta_get_last_entertag(CtxHandler cHandle, const char* stdCode)
+{
+	CtaContextPtr ctx = getRunner().getCtaContext(cHandle);
+	if (ctx == NULL)
+		return 0;
+
+	return ctx->stra_get_last_entertag(stdCode);
+}
+
 double cta_get_price(const char* stdCode)
 {
 	return getRunner().getEngine()->get_cur_price(stdCode);
@@ -922,7 +931,7 @@ WtString hft_cancel_all(CtxHandler cHandle, const char* stdCode, bool isBuy)
 	if (ctx == NULL)
 		return "";
 
-	static std::string ret;
+	static thread_local std::string ret;
 
 	std::stringstream ss;
 	OrderIDs ids = ctx->stra_cancel(stdCode, isBuy, DBL_MAX);
