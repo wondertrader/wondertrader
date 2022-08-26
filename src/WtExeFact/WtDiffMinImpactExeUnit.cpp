@@ -73,8 +73,8 @@ void WtDiffMinImpactExeUnit::init(ExecuteContext* ctx, const char* stdCode, WTSV
 	_order_lots = cfg->getDouble("lots");		//单次发单手数
 	_qty_rate = cfg->getDouble("rate");			//下单手数比例
 
-	ctx->writeLog(fmt::format("DiffMiniImpactExecUnit {} inited, order price: {} ± {} ticks, order expired: {} secs, order timespan:{} millisec, order qty: {} @ {:.2f}",
-		stdCode, PriceModeNames[_price_mode + 1], _price_offset, _expire_secs, _entrust_span, _by_rate ? "byrate" : "byvol", _by_rate ? _qty_rate : _order_lots).c_str());
+	ctx->writeLog(fmtutil::format("DiffMiniImpactExecUnit {} inited, order price: {} ± {} ticks, order expired: {} secs, order timespan:{} millisec, order qty: {} @ {:.2f}",
+		stdCode, PriceModeNames[_price_mode + 1], _price_offset, _expire_secs, _entrust_span, _by_rate ? "byrate" : "byvol", _by_rate ? _qty_rate : _order_lots));
 }
 
 void WtDiffMinImpactExeUnit::on_order(uint32_t localid, const char* stdCode, bool isBuy, double leftover, double price, bool isCanceled)
@@ -92,7 +92,7 @@ void WtDiffMinImpactExeUnit::on_order(uint32_t localid, const char* stdCode, boo
 			if (_cancel_cnt > 0)
 			{
 				_cancel_cnt--;
-				_ctx->writeLog(fmt::format("[{}@{}] Order of {} cancelling done, cancelcnt -> {}", __FILE__, __LINE__, _code.c_str(), _cancel_cnt).c_str());
+				_ctx->writeLog(fmtutil::format("[{}@{}] Order of {} cancelling done, cancelcnt -> {}", __FILE__, __LINE__, _code.c_str(), _cancel_cnt));
 			}
 		}
 
@@ -103,7 +103,7 @@ void WtDiffMinImpactExeUnit::on_order(uint32_t localid, const char* stdCode, boo
 	//如果有撤单,也触发重新计算
 	if (isCanceled)
 	{
-		_ctx->writeLog(fmt::format("Order {} of {} canceled, recalc will be done", localid, stdCode).c_str());
+		_ctx->writeLog(fmtutil::format("Order {} of {} canceled, recalc will be done", localid, stdCode));
 		_cancel_times++;
 		do_calc();
 	}
@@ -121,14 +121,14 @@ void WtDiffMinImpactExeUnit::on_channel_ready()
 		 *	因为这些订单没有本地订单号，无法直接进行管理
 		 *	这种情况，就是刚启动的时候，上次的未完成单或者外部的挂单
 		 */
-		_ctx->writeLog(fmt::format("Unmanaged live orders with qty {} of {} found, cancel all", undone, _code.c_str()).c_str());
+		_ctx->writeLog(fmtutil::format("Unmanaged live orders with qty {} of {} found, cancel all", undone, _code.c_str()));
 
 		bool isBuy = (undone > 0);
 		OrderIDs ids = _ctx->cancel(_code.c_str(), isBuy);
 		_orders_mon.push_order(ids.data(), ids.size(), _ctx->getCurTime());
 		_cancel_cnt += ids.size();
 
-		_ctx->writeLog(fmt::format("[{}@{}]cancelcnt -> {}", __FILE__, __LINE__, _cancel_cnt).c_str());
+		_ctx->writeLog(fmtutil::format("[{}@{}]cancelcnt -> {}", __FILE__, __LINE__, _cancel_cnt));
 	}
 	else if (decimal::eq(undone, 0) && _orders_mon.has_order())
 	{
@@ -139,13 +139,13 @@ void WtDiffMinImpactExeUnit::on_channel_ready()
 		 *	这种情况，一般是断线重连以后，之前下出去的订单，并没有真正发送到柜台
 		 *	所以这里需要清理掉本地订单
 		 */
-		_ctx->writeLog(fmt::format("Local orders of {} not confirmed in trading channel, clear all", _code.c_str()).c_str());
+		_ctx->writeLog(fmtutil::format("Local orders of {} not confirmed in trading channel, clear all", _code.c_str()));
 		_orders_mon.clear_orders();
 	}
 	else
 	{
-		_ctx->writeLog(fmt::format("Unrecognized condition while channle ready, {:.2f} live orders of {} exists, local orders {}exist",
-			undone, _code.c_str(), _orders_mon.has_order() ? "" : "not ").c_str());
+		_ctx->writeLog(fmtutil::format("Unrecognized condition while channle ready, {:.2f} live orders of {} exists, local orders {}exist",
+			undone, _code.c_str(), _orders_mon.has_order() ? "" : "not "));
 	}
 
 
@@ -192,7 +192,7 @@ void WtDiffMinImpactExeUnit::on_tick(WTSTickData* newTick)
 			if (_ctx->cancel(localid))
 			{
 				_cancel_cnt++;
-				_ctx->writeLog(fmt::format("[{}@{}] Expired order of {} canceled, cancelcnt -> {}", __FILE__, __LINE__, _code.c_str(), _cancel_cnt).c_str());
+				_ctx->writeLog(fmtutil::format("[{}@{}] Expired order of {} canceled, cancelcnt -> {}", __FILE__, __LINE__, _code.c_str(), _cancel_cnt));
 			}
 		});
 	}
@@ -207,6 +207,8 @@ void WtDiffMinImpactExeUnit::on_trade(uint32_t localid, const char* stdCode, boo
 		return;
 
 	_left_diff -= vol * (isBuy ? 1 : -1);
+
+	_ctx->writeLog(fmtutil::format("Left diff of {} updated to {}", _code.c_str(), _left_diff));
 }
 
 void WtDiffMinImpactExeUnit::on_entrust(uint32_t localid, const char* stdCode, bool bSuccess, const char* message)
@@ -246,7 +248,7 @@ void WtDiffMinImpactExeUnit::do_calc()
 
 	if (_last_tick == NULL)
 	{
-		_ctx->writeLog(fmt::format("No lastest tick data of {}, execute later", _code.c_str()).c_str());
+		_ctx->writeLog(fmtutil::format("No lastest tick data of {}, execute later", _code.c_str()));
 		return;
 	}
 
@@ -264,8 +266,8 @@ void WtDiffMinImpactExeUnit::do_calc()
 	uint64_t curTickTime = (uint64_t)_last_tick->actiondate() * 1000000000 + _last_tick->actiontime();
 	if (curTickTime <= _last_tick_time)
 	{
-		_ctx->writeLog(fmt::format("No tick of {} updated, {} <= {}, execute later",
-			_code, curTickTime, _last_tick_time).c_str());
+		_ctx->writeLog(fmtutil::format("No tick of {} updated, {} <= {}, execute later",
+			_code, curTickTime, _last_tick_time));
 		return;
 	}
 
@@ -356,14 +358,14 @@ void WtDiffMinImpactExeUnit::do_calc()
 	bool isCanCancel = true;
 	if (!decimal::eq(_last_tick->upperlimit(), 0) && decimal::gt(buyPx, _last_tick->upperlimit()))
 	{
-		_ctx->writeLog(fmt::format("Buy price {} of {} modified to upper limit price", buyPx, _code.c_str(), _last_tick->upperlimit()).c_str());
+		_ctx->writeLog(fmtutil::format("Buy price {} of {} modified to upper limit price", buyPx, _code.c_str(), _last_tick->upperlimit()));
 		buyPx = _last_tick->upperlimit();
 		isCanCancel = false;	//如果价格被修正为涨跌停价，订单不可撤销
 	}
 	
 	if (!decimal::eq(_last_tick->lowerlimit(), 0) && decimal::lt(sellPx, _last_tick->lowerlimit()))
 	{
-		_ctx->writeLog(fmt::format("Sell price {} of {} modified to lower limit price", sellPx, _code.c_str(), _last_tick->lowerlimit()).c_str());
+		_ctx->writeLog(fmtutil::format("Sell price {} of {} modified to lower limit price", sellPx, _code.c_str(), _last_tick->lowerlimit()));
 		sellPx = _last_tick->lowerlimit();
 		isCanCancel = false;	//如果价格被修正为涨跌停价，订单不可撤销
 	}
@@ -396,7 +398,7 @@ void WtDiffMinImpactExeUnit::set_position(const char* stdCode, double newVol)
 	//这里就是最新的差量
 	_left_diff = newVol;
 
-	_ctx->writeLog(fmt::format("Diff of {} updated to {}", stdCode, _left_diff).c_str());
+	_ctx->writeLog(fmtutil::format("Diff of {} updated to {}", stdCode, _left_diff));
 
 	do_calc();
 }
