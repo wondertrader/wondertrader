@@ -1,3 +1,12 @@
+### 0.9.4
+* 新增了中泰XTP的XAlgo算法交易总线模块TraderXTPXAlgo
+* 新增了宽睿极速股票极速柜台接口模块ParserOES和TraderOES
+* 新增了华锐极速柜台接口模块TraderATP
+* 新增了金证期权maOpt接口模块ParserMA和TraderMAOpt
+* 新增了华鑫奇点柜台接口模块ParserHuaX和TraderHuaX
+* 新增QWIN期权接口模块ParserAresClt和TraderAresClt
+* 其他细节优化和bug修正
+
 ### 0.9.3
 * （**重要**）WtLocalExecuter新增一个strict_portfolio配置项，默认为关闭，如果该配置项开启，会自动平掉交易账号上不在管理中的持仓
 * （**重要**）WtExeFact新增一个差量执行单元WtDiffMinImpactExeUnit
