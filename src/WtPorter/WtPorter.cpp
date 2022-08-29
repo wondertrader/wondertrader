@@ -634,7 +634,10 @@ WtUInt32	sel_get_ticks(CtxHandler cHandle, const char* stdCode, WtUInt32 tickCnt
 		if (tData)
 		{
 			uint32_t thisCnt = min(tickCnt, (WtUInt32)tData->size());
-			cb(cHandle, stdCode, (WTSTickStruct*)tData->at(0), thisCnt, true);
+			if (thisCnt != 0)
+				cb(cHandle, stdCode, (WTSTickStruct*)tData->at(0), thisCnt, true);
+			else
+				cb(cHandle, stdCode, NULL, 0, true);
 			tData->release();
 			return thisCnt;
 		}
@@ -762,7 +765,10 @@ WtUInt32 hft_get_ticks(CtxHandler cHandle, const char* stdCode, WtUInt32 tickCnt
 		if (tData)
 		{
 			uint32_t thisCnt = min(tickCnt, (WtUInt32)tData->size());
-			cb(cHandle, stdCode, (WTSTickStruct*)tData->at(0), thisCnt, true);
+			if (thisCnt != 0)
+				cb(cHandle, stdCode, (WTSTickStruct*)tData->at(0), thisCnt, true);
+			else
+				cb(cHandle, stdCode, NULL, 0, true);
 			tData->release();
 			return thisCnt;
 		}
