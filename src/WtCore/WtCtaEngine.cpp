@@ -347,10 +347,10 @@ void WtCtaEngine::handle_push_quote(WTSTickData* newTick, uint32_t hotFlag)
 		_tm_ticker->on_tick(newTick, hotFlag);
 }
 
-void WtCtaEngine::handle_pos_change(const char* straName, const char* stdCode, double diffQty)
+void WtCtaEngine::handle_pos_change(const char* straName, const char* stdCode, double newTarget)
 {
 	//这里是持仓增量,所以不用处理未过滤的情况,因为增量情况下,不会改变目标diffQty
-	if(_filter_mgr.is_filtered_by_strategy(straName, diffQty, true))
+	if(_filter_mgr.is_filtered_by_strategy(straName, newTarget, true))
 	{
 		//输出日志
 		WTSLogger::info("[Filters] Target position of {} of strategy {} ignored by strategy filter", stdCode, straName);
@@ -366,8 +366,8 @@ void WtCtaEngine::handle_pos_change(const char* straName, const char* stdCode, d
 		realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
 	}
 
-	PosInfo& pItem = _pos_map[realCode];
-	double targetPos = pItem._volume + diffQty;
+	//PosInfo& pItem = _pos_map[realCode];
+	double targetPos = newTarget;
 
 	bool bRiskEnabled = false;
 	if (!decimal::eq(_risk_volscale, 1.0) && _risk_date == _cur_tdate)
@@ -415,83 +415,88 @@ void WtCtaEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 	if(_ready)
 	{
 		auto sit = _tick_sub_map.find(stdCode);
-		if (sit != _tick_sub_map.end())
+		if (sit == _tick_sub_map.end())
+			return;
+
+		uint32_t flag = get_adjusting_flag();
+
+		//By Wesley
+		//这里做一个拷贝，虽然有点开销，但是可以规避掉一些问题，比如ontick的时候订阅tick
+		SubList sids = sit->second;
+		for (auto it = sids.begin(); it != sids.end(); it++)
 		{
-			const SubList& sids = sit->second;
-			for (auto it = sids.begin(); it != sids.end(); it++)
+			uint32_t sid = it->first;
+				
+
+			auto cit = _ctx_map.find(sid);
+			if (cit != _ctx_map.end())
 			{
-				uint32_t sid = it->first;
-				
-
-				auto cit = _ctx_map.find(sid);
-				if (cit != _ctx_map.end())
+				CtaContextPtr& ctx = (CtaContextPtr&)cit->second;
+				uint32_t opt = it->second.second;
+					
+				if (opt == 0)
 				{
-					CtaContextPtr& ctx = (CtaContextPtr&)cit->second;
-					uint32_t opt = it->second.second;
-					
-					if (opt == 0)
-					{
-						ctx->on_tick(stdCode, curTick);
-					}
-					else
-					{
-						std::string wCode = stdCode;
-						wCode = fmt::format("{}{}", stdCode, opt == 1 ? SUFFIX_QFQ : SUFFIX_HFQ);
-						if (opt == 1)
-						{
-							ctx->on_tick(wCode.c_str(), curTick);
-						}
-						else //(opt == 2)
-						{
-							WTSTickData* newTick = WTSTickData::create(curTick->getTickStruct());
-							WTSTickStruct& newTS = newTick->getTickStruct();
-							newTick->setContractInfo(curTick->getContractInfo());
-
-							//这里做一个复权因子的处理
-							double factor = get_exright_factor(stdCode);
-							newTS.open *= factor;
-							newTS.high *= factor;
-							newTS.low *= factor;
-							newTS.price *= factor;
-
-							_price_map[wCode] = newTS.price;
-
-							ctx->on_tick(wCode.c_str(), newTick);
-							newTick->release();
-						}
-					}
-					
+					ctx->on_tick(stdCode, curTick);
 				}
+				else
+				{
+					std::string wCode = stdCode;
+					wCode = fmt::format("{}{}", stdCode, opt == 1 ? SUFFIX_QFQ : SUFFIX_HFQ);
+					if (opt == 1)
+					{
+						ctx->on_tick(wCode.c_str(), curTick);
+					}
+					else //(opt == 2)
+					{
+						WTSTickData* newTick = WTSTickData::create(curTick->getTickStruct());
+						WTSTickStruct& newTS = newTick->getTickStruct();
+						newTick->setContractInfo(curTick->getContractInfo());
 
-				
-			}
+						//这里做一个复权因子的处理
+						double factor = get_exright_factor(stdCode);
+						newTS.open *= factor;
+						newTS.high *= factor;
+						newTS.low *= factor;
+						newTS.price *= factor;
 
+						newTS.settle_price *= factor;
+
+						newTS.pre_close *= factor;
+						newTS.pre_settle *= factor;
+
+						/*
+						 *	By Wesley @ 2022.08.15
+						 *	这里对tick的复权做一个完善
+						 */
+						if (flag & 1)
+						{
+							newTS.total_volume /= factor;
+							newTS.volume /= factor;
+						}
+
+						if (flag & 2)
+						{
+							newTS.total_turnover *= factor;
+							newTS.turn_over *= factor;
+						}
+
+						if (flag & 4)
+						{
+							newTS.open_interest /= factor;
+							newTS.diff_interest /= factor;
+							newTS.pre_interest /= factor;
+						}
+
+						_price_map[wCode] = newTS.price;
+
+						ctx->on_tick(wCode.c_str(), newTick);
+						newTick->release();
+					}
+				}
+			}				
 		}
 	}
 	
-
-	//暂时先不考虑成本, 先计算出来
-	/*
-	double dynprofit = 0.0;
-	for(auto v : _ctx_map)
-	{
-		const CtaContextPtr& ctx = v.second;
-		dynprofit += ctx->get_dyn_profit();
-	}
-
-	WTSFundStruct& fundInfo = _port_fund->fundInfo();
-	fundInfo._dynprofit = dynprofit;
-	double dynbal = fundInfo._balance + dynprofit;
-	if (fundInfo._max_dyn_bal != DBL_MAX)
-		fundInfo._max_dyn_bal = std::max(fundInfo._max_dyn_bal, dynbal);
-	else
-		fundInfo._max_dyn_bal = dynbal;
-
-	if (fundInfo._min_dyn_bal != DBL_MAX)
-		fundInfo._min_dyn_bal = std::min(fundInfo._min_dyn_bal, dynbal);
-	else
-		fundInfo._min_dyn_bal = dynbal;
-	*/
 }
 
 void WtCtaEngine::on_bar(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar)

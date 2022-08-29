@@ -86,7 +86,7 @@ inline XTP_SIDE_TYPE wrapDirectionType(WTSDirectionType dirType, WTSOffsetType o
 			return XTP_SIDE_BUY;
 }
 
-inline WTSDirectionType wrapDirectionType(XTP_SIDE_TYPE side, XTP_POSITION_EFFECT_TYPE pe)
+inline WTSDirectionType wrapDirectionType(XTP_SIDE_TYPE side, XTP_POSITION_EFFECT_TYPE pe = 0)
 {
 	if (XTP_SIDE_BUY == side)
 		if (pe == XTP_POSITION_EFFECT_OPEN)
@@ -114,7 +114,7 @@ inline XTP_POSITION_EFFECT_TYPE wrapOffsetType(WTSOffsetType offType)
 		return XTP_POSITION_EFFECT_FORCECLOSE;
 }
 
-inline WTSOffsetType wrapOffsetType(XTP_POSITION_EFFECT_TYPE offType)
+inline WTSOffsetType wrapOffsetType(XTP_SIDE_TYPE side, XTP_POSITION_EFFECT_TYPE offType = 0)
 {
 	if (XTP_POSITION_EFFECT_OPEN == offType)
 		return WOT_OPEN;
@@ -198,22 +198,30 @@ WTSEntrust* TraderXTP::makeEntrust(XTPOrderInfo* order_info)
 	if (ct == NULL)
 		return NULL;
 
+	WTSCommodityInfo* commInfo = ct->getCommInfo();
+
 	WTSEntrust* pRet = WTSEntrust::create(
 		code.c_str(),
 		(uint32_t)order_info->quantity,
 		order_info->price,
 		ct->getExchg());
 	pRet->setContractInfo(ct);
-	pRet->setDirection(wrapDirectionType(order_info->side, order_info->position_effect));
+	if (commInfo->isStock())
+		pRet->setDirection(WDT_LONG);
+	else
+		pRet->setDirection(wrapDirectionType(order_info->side, order_info->position_effect));
 	pRet->setPriceType(wrapPriceType(order_info->price_type));
-	pRet->setOffsetType(wrapOffsetType(order_info->position_effect));
+	if (!commInfo->isOption())
+		pRet->setOffsetType((order_info->side == XTP_SIDE_BUY)? WOT_OPEN : WOT_CLOSE);
+	else
+		pRet->setOffsetType(wrapOffsetType(order_info->side, order_info->position_effect));
 	pRet->setOrderFlag(WOF_NOR);
 
-	pRet->setEntrustID(genEntrustID(order_info->order_client_id).c_str());
+	genEntrustID(pRet->getEntrustID(), order_info->order_client_id);
 
-	std::string usertag = _ini.readString(ENTRUST_SECTION, pRet->getEntrustID());
-	if (!usertag.empty())
-		pRet->setUserTag(usertag.c_str());
+	const char* usertag = m_eidCache.get(pRet->getEntrustID());
+	if (strlen(usertag) > 0)
+		pRet->setUserTag(usertag);
 
 	return pRet;
 }
@@ -226,24 +234,33 @@ WTSOrderInfo* TraderXTP::makeOrderInfo(XTPQueryOrderRsp* order_info)
 	else
 		exchg = "SZSE";
 	code = order_info->ticker;
-	WTSContractInfo* contract = _bd_mgr->getContract(code.c_str(), exchg.c_str());
-	if (contract == NULL)
+	WTSContractInfo* ct = _bd_mgr->getContract(code.c_str(), exchg.c_str());
+	if (ct == NULL)
 		return NULL;
 
+	WTSCommodityInfo* commInfo = ct->getCommInfo();
+
 	WTSOrderInfo* pRet = WTSOrderInfo::create();
-	pRet->setContractInfo(contract);
+	pRet->setContractInfo(ct);
 	pRet->setPrice(order_info->price);
 	pRet->setVolume((uint32_t)order_info->quantity);
-	pRet->setDirection(wrapDirectionType(order_info->side, order_info->position_effect));
 	pRet->setPriceType(wrapPriceType(order_info->price_type));
 	pRet->setOrderFlag(WOF_NOR);
-	pRet->setOffsetType(wrapOffsetType(order_info->position_effect));
+
+	if (commInfo->isStock())
+		pRet->setDirection(WDT_LONG);
+	else
+		pRet->setDirection(wrapDirectionType(order_info->side, order_info->position_effect));
+	if (!commInfo->isOption())
+		pRet->setOffsetType((order_info->side == XTP_SIDE_BUY) ? WOT_OPEN : WOT_CLOSE);
+	else
+		pRet->setOffsetType(wrapOffsetType(order_info->side, order_info->position_effect));
 
 	pRet->setVolTraded((uint32_t)order_info->qty_traded);
 	pRet->setVolLeft((uint32_t)order_info->qty_left);
 
 	pRet->setCode(code.c_str());
-	pRet->setExchange(contract->getExchg());
+	pRet->setExchange(ct->getExchg());
 
 	pRet->setOrderDate((uint32_t)(order_info->insert_time / 1000000000));
 	uint32_t uTime = order_info->insert_time % 1000000000;
@@ -253,24 +270,25 @@ WTSOrderInfo* TraderXTP::makeOrderInfo(XTPQueryOrderRsp* order_info)
 	if (order_info->order_status >= XTP_ORDER_STATUS_REJECTED)
 		pRet->setError(true);
 
-	pRet->setEntrustID(genEntrustID(order_info->order_client_id).c_str());
-	pRet->setOrderID(fmt::format("{}", order_info->order_xtp_id).c_str());
+	genEntrustID(pRet->getEntrustID(), order_info->order_client_id);
+	fmtutil::format_to(pRet->getOrderID(), "{}", order_info->order_xtp_id);
 
 	pRet->setStateMsg("");
 
-	std::string usertag = _ini.readString(ENTRUST_SECTION, pRet->getEntrustID(), "");
-	if (usertag.empty())
+	const char* usertag = m_eidCache.get(pRet->getEntrustID());
+	if (strlen(usertag) == 0)
 	{
 		pRet->setUserTag(pRet->getEntrustID());
 	}
 	else
 	{
-		pRet->setUserTag(usertag.c_str());
+		pRet->setUserTag(usertag);
 
 		if (strlen(pRet->getOrderID()) > 0)
 		{
-			_ini.writeString(ORDER_SECTION, StrUtil::trim(pRet->getOrderID()).c_str(), usertag.c_str());
-			_ini.save();
+			m_oidCache.put(StrUtil::trim(pRet->getOrderID()).c_str(), usertag, 0, [this](const char* message) {
+				write_log(_sink, LL_ERROR, message);
+			});
 		}
 	}
 
@@ -285,15 +303,17 @@ WTSTradeInfo* TraderXTP::makeTradeInfo(XTPQueryTradeRsp* trade_info)
 	else
 		exchg = "SZSE";
 	code = trade_info->ticker;
-	WTSContractInfo* contract = _bd_mgr->getContract(code.c_str(), exchg.c_str());
-	if (contract == NULL)
+	WTSContractInfo* ct = _bd_mgr->getContract(code.c_str(), exchg.c_str());
+	if (ct == NULL)
 		return NULL;
+
+	WTSCommodityInfo* commInfo = ct->getCommInfo();
 
 	WTSTradeInfo *pRet = WTSTradeInfo::create(code.c_str(), exchg.c_str());
 	pRet->setVolume((uint32_t)trade_info->quantity);
 	pRet->setPrice(trade_info->price);
 	pRet->setTradeID(trade_info->exec_id);
-	pRet->setContractInfo(contract);
+	pRet->setContractInfo(ct);
 
 	uint32_t uTime = (uint32_t)(trade_info->trade_time % 1000000000);
 	uint32_t uDate = (uint32_t)(trade_info->trade_time / 1000000000);
@@ -301,19 +321,24 @@ WTSTradeInfo* TraderXTP::makeTradeInfo(XTPQueryTradeRsp* trade_info)
 	pRet->setTradeDate(uDate);
 	pRet->setTradeTime(TimeUtils::makeTime(uDate, uTime));
 
-	WTSDirectionType dType = wrapDirectionType(trade_info->side, trade_info->position_effect);
+	if (commInfo->isStock())
+		pRet->setDirection(WDT_LONG);
+	else
+		pRet->setDirection(wrapDirectionType(trade_info->side, trade_info->position_effect));
+	if (!commInfo->isOption())
+		pRet->setOffsetType((trade_info->side == XTP_SIDE_BUY) ? WOT_OPEN : WOT_CLOSE);
+	else
+		pRet->setOffsetType(wrapOffsetType(trade_info->side, trade_info->position_effect));
 
-	pRet->setDirection(dType);
-	pRet->setOffsetType(wrapOffsetType(trade_info->position_effect));
-	pRet->setRefOrder(fmt::format("{}", trade_info->order_xtp_id).c_str());
+	fmtutil::format_to(pRet->getRefOrder(), "{}", trade_info->order_xtp_id);
 	pRet->setTradeType(WTT_Common);
 
 	double amount = trade_info->quantity*pRet->getPrice();
 	pRet->setAmount(amount);
 
-	std::string usertag = _ini.readString(ORDER_SECTION, StrUtil::trim(pRet->getRefOrder()).c_str());
-	if (!usertag.empty())
-		pRet->setUserTag(usertag.c_str());
+	const char* usertag = m_oidCache.get(StrUtil::trim(pRet->getRefOrder()).c_str());
+	if (strlen(usertag))
+		pRet->setUserTag(usertag);
 
 	return pRet;
 }
@@ -570,6 +595,8 @@ bool TraderXTP::init(WTSVariant *params)
 
 	_flowdir = params->getCString("flowdir");
 
+	_hbInterval = params->getUInt32("hbinterval");
+
 	if (_flowdir.empty())
 		_flowdir = "XTPTDFlow";
 
@@ -669,7 +696,7 @@ void TraderXTP::connect()
 		_thrd_worker.reset(new StdThread([this](){
 			while (true)
 			{
-				std::this_thread::sleep_for(std::chrono::seconds(2));
+				std::this_thread::sleep_for(std::chrono::milliseconds(2));
 				_asyncio.run_one();
 				//m_asyncIO.run();
 			}
@@ -687,12 +714,10 @@ bool TraderXTP::isConnected()
 	return (_state == TS_ALLREADY);
 }
 
-std::string TraderXTP::genEntrustID(uint32_t orderRef)
+void TraderXTP::genEntrustID(char* buffer, uint32_t orderRef)
 {
-	static char buffer[64] = { 0 };
 	//这里不再使用sessionid，因为每次登陆会不同，如果使用的话，可能会造成不唯一的情况
 	fmtutil::format_to(buffer, "{}#{}#{}", _user, _tradingday, orderRef);
-	return buffer;
 }
 
 bool TraderXTP::extractEntrustID(const char* entrustid, uint32_t &orderRef)
@@ -729,6 +754,7 @@ void TraderXTP::doLogin()
 {
 	_state = TS_LOGINING;
 
+	_api->SetHeartBeatInterval(_hbInterval);
 	uint64_t iResult = _api->Login(_host.c_str(), _port, _user.c_str(), _pass.c_str(), XTP_PROTOCOL_TCP);
 	if (iResult == 0)
 	{
@@ -747,23 +773,30 @@ void TraderXTP::doLogin()
 		{
 			_tradingday = strtoul(_api->GetTradingDay(), NULL, 10);
 
-			std::stringstream ss;
-			ss << "./xtpdata/local/";
-			std::string path = StrUtil::standardisePath(ss.str());
-			if (!StdFile::exists(path.c_str()))
-				boost::filesystem::create_directories(path.c_str());
-			ss << _user << ".dat";
-
-			_ini.load(ss.str().c_str());
-			uint32_t lastDate = _ini.readUInt("marker", "date", 0);
-			if (lastDate != _tradingday)
 			{
-				//交易日不同,清理掉原来的数据
-				_ini.removeSection(ORDER_SECTION);
-				_ini.writeUInt("marker", "date", _tradingday);
-				_ini.save();
+				//初始化委托单缓存器
+				std::stringstream ss;
+				ss << "./xtpdata/local/";
+				std::string path = StrUtil::standardisePath(ss.str());
+				if (!StdFile::exists(path.c_str()))
+					boost::filesystem::create_directories(path.c_str());
+				ss << _user << "_eid.sc";
+				m_eidCache.init(ss.str().c_str(), _tradingday, [this](const char* message) {
+					write_log(_sink, LL_WARN, message);
+				});
+			}
 
-				write_log(_sink, LL_INFO, "[TraderXTP] [{}] Trading date changed [{} -> {}], local cache cleared...", _user.c_str(), lastDate, _tradingday);
+			{
+				//初始化订单标记缓存器
+				std::stringstream ss;
+				ss << "./xtpdata/local/";
+				std::string path = StrUtil::standardisePath(ss.str());
+				if (!StdFile::exists(path.c_str()))
+					boost::filesystem::create_directories(path.c_str());
+				ss << _user << "_oid.sc";
+				m_oidCache.init(ss.str().c_str(), _tradingday, [this](const char* message) {
+					write_log(_sink, LL_WARN, message);
+				});
 			}
 
 			write_log(_sink, LL_INFO, "[TraderXTP] [{}] Login succeed, trading date: {}...", _user.c_str(), _tradingday);
@@ -830,9 +863,9 @@ int TraderXTP::orderInsert(WTSEntrust* entrust)
 
 	if (strlen(entrust->getUserTag()) > 0)
 	{
-		//m_mapEntrustTag[entrust->getEntrustID()] = entrust->getUserTag();
-		_ini.writeString(ENTRUST_SECTION, entrust->getEntrustID(), entrust->getUserTag());
-		_ini.save();
+		m_eidCache.put(entrust->getEntrustID(), entrust->getUserTag(), 0, [this](const char* message) {
+			write_log(_sink, LL_WARN, message);
+		});
 	}
 
 	uint64_t iResult = _api->InsertOrder(&req, _sessionid);

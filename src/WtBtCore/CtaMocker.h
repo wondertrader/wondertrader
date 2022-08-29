@@ -10,12 +10,14 @@
 #pragma once
 #include <sstream>
 #include <atomic>
+#include <unordered_map>
 #include "HisDataReplayer.h"
 
 #include "../Includes/FasterDefs.h"
 #include "../Includes/ICtaStraCtx.h"
 #include "../Includes/CtaStrategyDefs.h"
 #include "../Includes/WTSDataDef.hpp"
+#include "../Includes/WTSCollection.hpp"
 
 #include "../Share/DLLHelper.hpp"
 #include "../Share/StdUtils.hpp"
@@ -70,6 +72,7 @@ public:
 private:
 	void	dump_outputs();
 	void	dump_stradata();
+	void	dump_chartdata();
 	inline void log_signal(const char* stdCode, double target, double price, uint64_t gentime, const char* usertag = "");
 	inline void	log_trade(const char* stdCode, bool isLong, bool isOpen, uint64_t curTime, double price, double qty, const char* userTag = "", double fee = 0.0, uint32_t barNo = 0);
 	inline void	log_close(const char* stdCode, bool isLong, uint64_t openTime, double openpx, uint64_t closeTime, double closepx, double qty,
@@ -78,7 +81,7 @@ private:
 	void	update_dyn_profit(const char* stdCode, double price);
 
 	void	do_set_position(const char* stdCode, double qty, double price = 0.0, const char* userTag = "", bool bTriggered = false);
-	void	append_signal(const char* stdCode, double qty, const char* userTag = "", double price = 0.0);
+	void	append_signal(const char* stdCode, double qty, const char* userTag = "", double price = 0.0, bool bCondition = false);
 
 	inline CondList& get_cond_entrusts(const char* stdCode);
 
@@ -93,7 +96,7 @@ public:
 public:
 	//////////////////////////////////////////////////////////////////////////
 	//IDataSink
-	virtual void	handle_tick(const char* stdCode, WTSTickData* curTick, bool isBarEnd = true) override;
+	virtual void	handle_tick(const char* stdCode, WTSTickData* curTick, uint32_t pxType = 0) override;
 	virtual void	handle_bar_close(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar) override;
 	virtual void	handle_schedule(uint32_t uDate, uint32_t uTime) override;
 
@@ -177,6 +180,41 @@ public:
 
 	virtual const char* stra_load_user_data(const char* key, const char* defVal = "") override;
 
+	virtual const char* stra_get_last_entertag(const char* stdCode) override;
+
+	/*
+	 *	设置图表K线
+	 */
+	virtual void set_chart_kline(const char* stdCode, const char* period) override;
+
+	/*
+	 *	添加信号
+	 */
+	virtual void add_chart_mark(double price, const char* icon, const char* tag) override;
+
+	/*
+	 *	添加指标
+	 */
+	virtual void register_index(const char* idxName, uint32_t indexType) override;
+
+	/*
+	 *	添加指标线
+	 */
+	virtual bool register_index_line(const char* idxName, const char* lineName, uint32_t lineType) override;
+
+	/*
+	 *	添加基准线
+	 *	@idxName	指标名称
+	 *	@lineName	线条名称
+	 *	@val		数值
+	 */
+	virtual bool add_index_baseline(const char* idxName, const char* lineName, double val) override;
+
+	/*
+	 *	设置指标值
+	 */
+	virtual bool set_index_value(const char* idxName, const char* lineName, double val) override;
+
 private:
 	template<typename... Args>
 	void log_debug(const char* format, const Args& ...args)
@@ -211,6 +249,9 @@ protected:
 	uint32_t		_schedule_times;	//调度次数
 
 	std::string		_main_key;
+
+	std::string		_main_code;
+	std::string		_main_period;
 
 	typedef struct _KlineTag
 	{
@@ -277,7 +318,7 @@ protected:
 		std::string	_usertag;
 		double		_sigprice;
 		double		_desprice;
-		bool		_triggered;
+		bool		_condition;
 		uint64_t	_gentime;
 
 		_SigInfo()
@@ -285,7 +326,7 @@ protected:
 			_volume = 0;
 			_sigprice = 0;
 			_desprice = 0;
-			_triggered = false;
+			_condition = false;
 			_gentime = 0;
 		}
 	}SigInfo;
@@ -365,4 +406,36 @@ protected:
 
 	//tick订阅列表
 	faster_hashset<std::string> _tick_subs;
+
+	std::string		_chart_code;
+	std::string		_chart_period;
+
+	typedef struct _ChartMark
+	{
+		uint64_t	_bartime;
+		double		_price;
+		std::string	_icon;
+		std::string	_tag;
+	} ChartMark;
+	std::vector<ChartMark> _chart_marks;
+
+	typedef struct _ChartLine
+	{
+		std::string	_name;
+		uint32_t	_lineType;
+		std::vector<double> _values;
+	} ChartLine;
+
+	typedef struct _ChartIndex
+	{
+		std::string	_name;
+		uint32_t	_indexType;
+		std::unordered_map<std::string, ChartLine> _lines;
+		std::unordered_map<std::string, double> _base_lines;
+	} ChartIndex;
+
+	std::unordered_map<std::string, ChartIndex>	_chart_indice;
+
+	typedef WTSHashMap<std::string>	TickCache;
+	TickCache*	_ticks;
 };

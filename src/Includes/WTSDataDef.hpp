@@ -1013,8 +1013,12 @@ public:
 
 	inline void		setCode(const char* code) { wt_strcpy(m_oqStruct.code, code); }
 
+	inline void setContractInfo(WTSContractInfo* cInfo) { m_pContract = cInfo; }
+	inline WTSContractInfo* getContractInfo() const { return m_pContract; }
+
 private:
-	WTSOrdQueStruct	m_oqStruct;
+	WTSOrdQueStruct		m_oqStruct;
+	WTSContractInfo*	m_pContract;
 };
 
 class WTSOrdDtlData : public WTSObject
@@ -1045,8 +1049,13 @@ public:
 
 	inline void		setCode(const char* code) { wt_strcpy(m_odStruct.code, code); }
 
+	inline void setContractInfo(WTSContractInfo* cInfo) { m_pContract = cInfo; }
+	inline WTSContractInfo* getContractInfo() const { return m_pContract; }
+
+
 private:
-	WTSOrdDtlStruct	m_odStruct;
+	WTSOrdDtlStruct		m_odStruct;
+	WTSContractInfo*	m_pContract;
 };
 
 class WTSTransData : public WTSObject
@@ -1077,8 +1086,12 @@ public:
 
 	inline void		setCode(const char* code) { wt_strcpy(m_tsStruct.code, code); }
 
+	inline void setContractInfo(WTSContractInfo* cInfo) { m_pContract = cInfo; }
+	inline WTSContractInfo* getContractInfo() const { return m_pContract; }
+
 private:
-	WTSTransStruct	m_tsStruct;
+	WTSTransStruct		m_tsStruct;
+	WTSContractInfo*	m_pContract;
 };
 
 /*
@@ -1196,8 +1209,8 @@ protected:
 public:
 	static inline WTSTickSlice* create(const char* code, WTSTickStruct* ticks = NULL, uint32_t count = 0)
 	{
-		if (ticks == NULL || count == 0)
-			return NULL;
+		//if (ticks == NULL || count == 0)
+		//	return NULL;
 
 		WTSTickSlice* slice = new WTSTickSlice();
 		wt_strcpy(slice->_code, code);

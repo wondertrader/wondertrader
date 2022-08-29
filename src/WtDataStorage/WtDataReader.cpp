@@ -169,8 +169,10 @@ void WtDataReader::init(WTSVariant* cfg, IDataReaderSink* sink, IHisDataLoader* 
 	else
 		_his_dir = root_dir + "his/";
 
-	pipe_reader_log(sink, LL_INFO, "WtDataReader initialized, rt dir is {}, hist dir is {}", _rt_dir, _his_dir);
-	
+	_adjust_flag = cfg->getUInt32("adjust_flag");
+
+	pipe_reader_log(sink, LL_INFO, "WtDataReader initialized, rt dir is {}, hist dir is {}, adjust_flag is {}", _rt_dir, _his_dir, _adjust_flag);
+
 	/*
 	 *	By Wesley @ 2021.12.20
 	 *	先从extloader加载除权因子
@@ -1131,6 +1133,18 @@ bool WtDataReader::cacheIntegratedBars(void* codeInfo, const std::string& key, c
 				firstBar[idx].high *= factor;
 				firstBar[idx].low *= factor;
 				firstBar[idx].close *= factor;
+
+				if (_adjust_flag & 1)
+					firstBar[idx].vol /= factor;
+
+				if (_adjust_flag & 2)
+					firstBar[idx].money *= factor;
+
+				if (_adjust_flag & 4)
+				{
+					firstBar[idx].hold /= factor;
+					firstBar[idx].add /= factor;
+				}
 			}
 		}		
 
@@ -1366,6 +1380,18 @@ bool WtDataReader::cacheAdjustedStkBars(void* codeInfo, const std::string& key, 
 							pBar->high *= factor;
 							pBar->low *= factor;
 							pBar->close *= factor;
+
+							if (_adjust_flag & 1)
+								pBar->vol /= factor;
+
+							if (_adjust_flag & 2)
+								pBar->money *= factor;
+
+							if (_adjust_flag & 4)
+							{
+								pBar->hold /= factor;
+								pBar->add /= factor;
+							}
 
 							pBar++;
 							curIdx++;

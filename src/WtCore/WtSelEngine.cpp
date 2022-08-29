@@ -128,6 +128,8 @@ void WtSelEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 		auto sit = _tick_sub_map.find(stdCode);
 		if (sit != _tick_sub_map.end())
 		{
+			uint32_t flag = get_adjusting_flag();
+
 			const SubList& sids = sit->second;
 			for (auto it = sids.begin(); it != sids.end(); it++)
 			{
@@ -164,6 +166,29 @@ void WtSelEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 							newTS.high *= factor;
 							newTS.low *= factor;
 							newTS.price *= factor;
+
+							/*
+							 *	By Wesley @ 2022.08.15
+							 *	这里对tick的复权做一个完善
+							 */
+							if (flag & 1)
+							{
+								newTS.total_volume /= factor;
+								newTS.volume /= factor;
+							}
+
+							if (flag & 2)
+							{
+								newTS.total_turnover *= factor;
+								newTS.turn_over *= factor;
+							}
+
+							if (flag & 4)
+							{
+								newTS.open_interest /= factor;
+								newTS.diff_interest /= factor;
+								newTS.pre_interest /= factor;
+							}
 
 							_price_map[wCode] = newTS.price;
 

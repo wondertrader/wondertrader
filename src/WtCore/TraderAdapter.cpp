@@ -445,6 +445,19 @@ double TraderAdapter::getPosition(const char* stdCode, bool bValidOnly, int32_t 
 	return ret;
 }
 
+void TraderAdapter::enumPosition(FuncEnumChnlPosCallBack cb)
+{
+	for(auto& v : _positions)
+	{
+		const char* stdCode = v.first.c_str();
+		const PosItem& pItem = v.second;
+		if(decimal::gt(pItem.l_prevol + pItem.l_newvol, 0))
+			cb(stdCode, true, pItem.l_prevol, pItem.l_preavail, pItem.l_newvol, pItem.l_newavail);
+		if (decimal::gt(pItem.s_prevol + pItem.s_newvol, 0))
+			cb(stdCode, false, pItem.s_prevol, pItem.s_preavail, pItem.s_newvol, pItem.s_newavail);
+	}
+}
+
 OrderMap* TraderAdapter::getOrders(const char* stdCode)
 {
 	if (_orders == NULL)
@@ -1467,11 +1480,6 @@ void TraderAdapter::onRspEntrust(WTSEntrust* entrust, WTSError *err)
 			return;
 
 		bool isBuy = (isLong&&isOpen) || (!isLong && !isOpen);
-		//double newQty = oldQty - qty*(isBuy ? 1 : -1);
-		//_undone_qty[stdCode] = newQty;
-
-		//WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO, 
-		//	"[{}] {} undone order updated, {} -> {}", _id.c_str(), stdCode.c_str(), oldQty, newQty);
 		updateUndone(stdCode.c_str(), qty * (isBuy ? -1 : 1), true);
 
 		if (strlen(entrust->getUserTag()) > 0)
@@ -1495,6 +1503,20 @@ void TraderAdapter::onRspAccount(WTSArray* ayAccounts)
 	if (_save_data)
 	{
 		saveData(ayAccounts);
+	}
+
+	if(ayAccounts)
+	{
+		//通知所有监听接口
+		for (auto sink : _sinks)
+		{
+			for (uint32_t idx = 0; idx < ayAccounts->size(); idx++)
+			{
+				WTSAccountInfo* fundInfo = (WTSAccountInfo*)ayAccounts->at(idx);
+				sink->on_account(fundInfo->getCurrency(), fundInfo->getPreBalance(), fundInfo->getBalance(), fundInfo->getBalance() + fundInfo->getDynProfit(), fundInfo->getAvailable(),
+					fundInfo->getCloseProfit(), fundInfo->getDynProfit(), fundInfo->getMargin(), fundInfo->getCommission(), fundInfo->getDeposit(), fundInfo->getWithdraw());
+			}
+		}
 	}
 
 	if(_state == AS_TRADES_QRYED)
@@ -1908,29 +1930,7 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 		}
 	}
 
-	WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO,"[{}] Order notified, instrument: {}, usertag: {}, state: {}", _id.c_str(), stdCode.c_str(), orderInfo->getUserTag(), stateToName(orderInfo->getOrderState()));
-
-	//如果订单撤销, 并且是wt的订单, 则要先更新未完成数量
-	if (orderInfo->getOrderState() == WOS_Canceled && StrUtil::startsWith(orderInfo->getUserTag(), _order_pattern.c_str(), true))
-	{
-		//撤单的时候, 要更新未完成
-		bool isLong = (orderInfo->getDirection() == WDT_LONG);
-		bool isOpen = (orderInfo->getOffsetType() == WOT_OPEN);
-		bool isToday = (orderInfo->getOffsetType() == WOT_CLOSETODAY);
-		double qty = orderInfo->getVolume() - orderInfo->getVolTraded();
-
-		bool isBuy = (isLong&&isOpen) || (!isLong&&!isOpen);
-		//double oldQty = _undone_qty[stdCode];
-		//double newQty = oldQty - qty*(isBuy ? 1 : -1);
-		//_undone_qty[stdCode] = newQty;
-		//WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO, "[{}] {} qty of undone order updated, {} -> {}", _id.c_str(), stdCode.c_str(), oldQty, newQty);
-
-		updateUndone(stdCode.c_str(), qty*(isBuy ? -1 : 1), true);
-
-		WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO, "[{}] Order {} of {} canceled:{}, action: {}, leftqty: {}",
-			_id.c_str(), orderInfo->getUserTag(), stdCode.c_str(), orderInfo->getStateMsg(),
-			formatAction(orderInfo->getDirection(), orderInfo->getOffsetType()), qty);
-	}
+	WTSLogger::log_dyn("trader", _id.c_str(), LL_DEBUG, "[{}] Order notified, instrument: {}, usertag: {}, state: {}", _id.c_str(), stdCode.c_str(), orderInfo->getUserTag(), stateToName(orderInfo->getOrderState()));
 
 	//先检查该订单是不是第一次推送过来
 	//如果是第一次推送过来, 则要根据开平更新可平
@@ -2055,6 +2055,8 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 		}
 	}
 
+	
+
 	uint32_t localid = 0;
 
 	//先看看是不是wt发出去的单子
@@ -2063,6 +2065,24 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 		char* userTag = (char*)orderInfo->getUserTag();
 		userTag += _order_pattern.size() + 1;
 		localid = strtoul(userTag, NULL, 10);
+
+		//如果订单撤销, 并且是wt的订单, 则要先更新未完成数量
+		if (orderInfo->getOrderState() == WOS_Canceled )
+		{
+			//撤单的时候, 要更新未完成
+			bool isLong = (orderInfo->getDirection() == WDT_LONG);
+			bool isOpen = (orderInfo->getOffsetType() == WOT_OPEN);
+			bool isToday = (orderInfo->getOffsetType() == WOT_CLOSETODAY);
+			double qty = orderInfo->getVolume() - orderInfo->getVolTraded();
+
+			bool isBuy = (isLong&&isOpen) || (!isLong && !isOpen);
+
+			updateUndone(stdCode.c_str(), qty*(isBuy ? -1 : 1), true);
+
+			WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO, "[{}] Order {} of {} canceled:{}, action: {}, leftqty: {}",
+				_id.c_str(), orderInfo->getUserTag(), stdCode.c_str(), orderInfo->getStateMsg(),
+				formatAction(orderInfo->getDirection(), orderInfo->getOffsetType()), qty);
+		}
 	}
 
 	//如果是wt发出去的单子则需要更新内部数据
@@ -2120,21 +2140,6 @@ void TraderAdapter::onPushTrade(WTSTradeInfo* tradeRecord)
 	WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO, 
 		"[{}] Trade notified, instrument: {}, usertag: {}, trdqty: {}, trdprice: {}", 
 			_id.c_str(), stdCode.c_str(), tradeRecord->getUserTag(), tradeRecord->getVolume(), tradeRecord->getPrice());
-
-	//如果是自己的订单，则更新未完成单
-	uint32_t localid = 0;
-	if (StrUtil::startsWith(tradeRecord->getUserTag(), _order_pattern.c_str(), true))
-	{
-		char* userTag = (char*)tradeRecord->getUserTag();
-		userTag += _order_pattern.size() + 1;
-		localid = strtoul(userTag, NULL, 10);
-
-		double oldQty = _undone_qty[stdCode];
-		double newQty = oldQty - tradeRecord->getVolume()*(isBuy ? 1 : -1);
-		_undone_qty[stdCode] = newQty;
-		WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO, 
-			"[{}] {} qty of undone orders updated, {} -> {}", _id.c_str(), stdCode.c_str(), oldQty, newQty);
-	}
 
 	PosItem& pItem = _positions[stdCode];
 	WTSTradeStateInfo* statInfo = (WTSTradeStateInfo*)_stat_map->get(stdCode.c_str());
@@ -2203,6 +2208,17 @@ void TraderAdapter::onPushTrade(WTSTradeInfo* tradeRecord)
 	}
 
 	printPosition(stdCode.c_str(), pItem);
+
+	//如果是自己的订单，则更新未完成单
+	uint32_t localid = 0;
+	if (StrUtil::startsWith(tradeRecord->getUserTag(), _order_pattern.c_str(), true))
+	{
+		char* userTag = (char*)tradeRecord->getUserTag();
+		userTag += _order_pattern.size() + 1;
+		localid = strtoul(userTag, NULL, 10);
+
+		updateUndone(stdCode.c_str(), vol*(isBuy ? -1 : 1), true);
+	}
 
 	for (auto sink : _sinks)
 		sink->on_trade(localid, stdCode.c_str(), isBuy, vol, tradeRecord->getPrice());

@@ -4,8 +4,8 @@
  *
  * \author Wesley
  * \date 2020/03/30
- * 
- * \brief 
+ *
+ * \brief
  */
 #include "HftStraBaseCtx.h"
 #include "WtHftEngine.h"
@@ -215,7 +215,7 @@ OrderIDs HftStraBaseCtx::stra_buy(const char* stdCode, double price, double qty,
 	 *	By Wesley @ 2022.05.26
 	 *	如果找到匹配自定义规则，则进行映射处理
 	 */
-	//const char* ruleTag = _engine->get_hot_mgr()->getRuleTag(stdCode);
+	 //const char* ruleTag = _engine->get_hot_mgr()->getRuleTag(stdCode);
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _engine->get_hot_mgr());
 	if (strlen(cInfo._ruletag) > 0)
 	{
@@ -230,7 +230,7 @@ OrderIDs HftStraBaseCtx::stra_buy(const char* stdCode, double price, double qty,
 			return OrderIDs();
 		}
 
-		auto ids = _trader->buy(realCode.c_str(), price, qty, flag, false, ct);
+		auto ids = _trader->buy(realCode.c_str(), price, qty, flag, bForceClose, ct);
 		for (auto localid : ids)
 			setUserTag(localid, userTag);
 
@@ -330,7 +330,7 @@ OrderIDs HftStraBaseCtx::stra_sell(const char* stdCode, double price, double qty
 			return OrderIDs();
 		}
 
-		auto ids = _trader->sell(realCode.c_str(), price, qty, flag, false, ct);
+		auto ids = _trader->sell(realCode.c_str(), price, qty, flag, bForceClose, ct);
 		for (auto localid : ids)
 			setUserTag(localid, userTag);
 		return ids;
@@ -726,7 +726,7 @@ double HftStraBaseCtx::stra_get_position_avgpx(const char* stdCode)
 	return amount / pInfo._volume;
 }
 
-double HftStraBaseCtx::stra_get_position(const char* stdCode, bool bOnlyValid /* = false */)
+double HftStraBaseCtx::stra_get_position(const char* stdCode, bool bOnlyValid /* = false */, int flag /* = 3*/)
 {
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _engine->get_hot_mgr());
 	if (strlen(cInfo._ruletag) > 0)
@@ -736,31 +736,11 @@ double HftStraBaseCtx::stra_get_position(const char* stdCode, bool bOnlyValid /*
 
 		_code_map[realCode] = stdCode;
 
-		return _trader->getPosition(realCode.c_str(), bOnlyValid);
+		return _trader->getPosition(realCode.c_str(), bOnlyValid, flag);
 	}
-	//else if (CodeHelper::isStdFutHotCode(stdCode))
-	//{
-	//	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
-	//	std::string code = _engine->get_hot_mgr()->getRawCode(cInfo._exchg, cInfo._product, _engine->get_trading_date());
-	//	std::string realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
-
-	//	_code_map[realCode] = stdCode;
-
-	//	return _trader->getPosition(realCode.c_str(), bOnlyValid);
-	//}
-	//else if (CodeHelper::isStdFut2ndCode(stdCode))
-	//{
-	//	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
-	//	std::string code = _engine->get_hot_mgr()->getSecondRawCode(cInfo._exchg, cInfo._product, _engine->get_trading_date());
-	//	std::string realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
-
-	//	_code_map[realCode] = stdCode;
-
-	//	return _trader->getPosition(realCode.c_str(), bOnlyValid);
-	//}
 	else
 	{
-		return _trader->getPosition(stdCode, bOnlyValid);
+		return _trader->getPosition(stdCode, bOnlyValid, flag);
 	}
 }
 

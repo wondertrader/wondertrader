@@ -695,10 +695,10 @@ void CtaStraBaseCtx::on_tick(const char* stdCode, WTSTickData* newTick, bool bEm
 			if (sInfo->isInTradingTime(_engine->get_raw_time(), true))
 			{
 				const SigInfo& sInfo = it->second;
-				do_set_position(stdCode, sInfo._volume, sInfo._usertag.c_str(), sInfo._triggered);
+				do_set_position(stdCode, sInfo._volume, sInfo._usertag.c_str(), sInfo._condition);
 
 				//如果是条件单触发，则回调on_condition_triggered
-				if(sInfo._triggered)
+				if(sInfo._condition)
 					on_condition_triggered(stdCode, sInfo._volume, newTick->price(), sInfo._usertag.c_str());
 
 				_sig_map.erase(it);
@@ -761,7 +761,7 @@ void CtaStraBaseCtx::on_tick(const char* stdCode, WTSTickData* newTick, bool bEm
 					else
 						desQty = curQty + entrust._qty;
 
-					append_signal(stdCode, desQty, entrust._usertag);
+					append_signal(stdCode, desQty, entrust._usertag, true);
 				}
 				break;
 				case COND_ACTION_CL:
@@ -771,7 +771,7 @@ void CtaStraBaseCtx::on_tick(const char* stdCode, WTSTickData* newTick, bool bEm
 					{
 						double maxQty = min(curQty, entrust._qty);
 						double desQty = curQty - maxQty;
-						append_signal(stdCode, desQty, entrust._usertag);
+						append_signal(stdCode, desQty, entrust._usertag, true);
 					}
 				}
 				break;
@@ -784,7 +784,7 @@ void CtaStraBaseCtx::on_tick(const char* stdCode, WTSTickData* newTick, bool bEm
 					else
 						desQty = curQty - entrust._qty;
 
-					append_signal(stdCode, desQty, entrust._usertag);
+					append_signal(stdCode, desQty, entrust._usertag, true);
 				}
 				break;
 				case COND_ACTION_CS:
@@ -794,13 +794,13 @@ void CtaStraBaseCtx::on_tick(const char* stdCode, WTSTickData* newTick, bool bEm
 					{
 						double maxQty = min(abs(curQty), entrust._qty);
 						double desQty = curQty + maxQty;
-						append_signal(stdCode, desQty, entrust._usertag);
+						append_signal(stdCode, desQty, entrust._usertag, true);
 					}
 				}
 				break;
 				case COND_ACTION_SP: 
 				{
-					append_signal(stdCode, entrust._qty, entrust._usertag);
+					append_signal(stdCode, entrust._qty, entrust._usertag, true);
 				}
 				break;
 				default: break;
@@ -1269,7 +1269,7 @@ void CtaStraBaseCtx::stra_set_position(const char* stdCode, double qty, const ch
 	}
 }
 
-void CtaStraBaseCtx::append_signal(const char* stdCode, double qty, const char* userTag /* = "" */)
+void CtaStraBaseCtx::append_signal(const char* stdCode, double qty, const char* userTag /* = "" */, bool bCondition /* = false */)
 {
 	double curPx = _price_map[stdCode];
 
@@ -1278,14 +1278,14 @@ void CtaStraBaseCtx::append_signal(const char* stdCode, double qty, const char* 
 	sInfo._sigprice = curPx;
 	sInfo._usertag = userTag;
 	sInfo._gentime = (uint64_t)_engine->get_date() * 1000000000 + (uint64_t)_engine->get_raw_time() * 100000 + _engine->get_secs();
-	sInfo._triggered = !_is_in_schedule;
+	sInfo._condition = bCondition;
 
 	log_signal(stdCode, qty, curPx, sInfo._gentime, userTag);
 
 	save_data();
 }
 
-void CtaStraBaseCtx::do_set_position(const char* stdCode, double qty, const char* userTag /* = "" */, bool bTriggered /* = false */)
+void CtaStraBaseCtx::do_set_position(const char* stdCode, double qty, const char* userTag /* = "" */, bool bCondition /* = false */)
 {
 	PosInfo& pInfo = _pos_map[stdCode];
 	double curPx = _price_map[stdCode];
@@ -1438,9 +1438,9 @@ void CtaStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 	//存储数据
 	save_data();
 
-	if (bTriggered)	//如果是条件单触发, 则向引擎提交变化量
+	if (bCondition)	//如果是条件单触发, 则向引擎提交变化量
 	{
-		_engine->handle_pos_change(_name.c_str(), stdCode, diff);
+		_engine->handle_pos_change(_name.c_str(), stdCode, qty);
 	}
 }
 
@@ -1457,7 +1457,10 @@ WTSKlineSlice* CtaStraBaseCtx::stra_get_bars(const char* stdCode, const char* pe
 			log_debug("Main KBars confirmed: {}", key);
 		}
 		else if (_main_key != key)
-			throw std::runtime_error("Main KBars already confirmed");
+		{
+			log_error("Main KBars already confirmed");
+			return NULL;
+		}
 	}
 
 	thread_local static char basePeriod[2] = { 0 };
@@ -1622,6 +1625,20 @@ uint64_t CtaStraBaseCtx::stra_get_first_entertime(const char* stdCode)
 
 	return pInfo._details[0]._opentime;
 }
+
+const char* CtaStraBaseCtx::stra_get_last_entertag(const char* stdCode)
+{
+	auto it = _pos_map.find(stdCode);
+	if (it == _pos_map.end())
+		return "";
+
+	const PosInfo& pInfo = it->second;
+	if (pInfo._details.empty())
+		return "";
+
+	return pInfo._details[0]._opentag;
+}
+
 
 uint64_t CtaStraBaseCtx::stra_get_last_exittime(const char* stdCode)
 {

@@ -4,8 +4,8 @@
  *
  * \author Wesley
  * \date 2020/03/30
- * 
- * \brief 
+ *
+ * \brief
  */
 #include "WtLocalExecuter.h"
 #include "TraderAdapter.h"
@@ -29,6 +29,7 @@ WtLocalExecuter::WtLocalExecuter(WtExecuterFactory* factory, const char* name, I
 	, _channel_ready(false)
 	, _scale(1.0)
 	, _auto_clear(true)
+	, _trader(NULL)
 {
 }
 
@@ -37,6 +38,14 @@ WtLocalExecuter::~WtLocalExecuter()
 {
 	if (_pool)
 		_pool->wait();
+}
+
+void WtLocalExecuter::setTrader(TraderAdapter* adapter)
+{
+	_trader = adapter;
+	//设置的时候读取一下trader的状态
+	if(_trader)
+		_channel_ready = _trader->isReady();
 }
 
 bool WtLocalExecuter::init(WTSVariant* params)
@@ -115,7 +124,7 @@ bool WtLocalExecuter::init(WTSVariant* params)
 		}
 	}
 
-	WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "Local executer inited, scale: {}, auto_clear: {}, strict_sync: {}, thread poolsize: {}, code_groups: {}", 
+	WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "Local executer inited, scale: {}, auto_clear: {}, strict_sync: {}, thread poolsize: {}, code_groups: {}",
 		_scale, _auto_clear, _strict_sync, poolsize, _groups.size());
 
 	return true;
@@ -129,6 +138,8 @@ ExecuteUnitPtr WtLocalExecuter::getUnit(const char* stdCode, bool bAutoCreate /*
 	std::string des = commID;
 	if (!policy->has(commID.c_str()))
 		des = "default";
+
+	SpinLock lock(_mtx_units);
 
 	auto it = _unit_map.find(stdCode);
 	if(it != _unit_map.end())
@@ -146,6 +157,10 @@ ExecuteUnitPtr WtLocalExecuter::getUnit(const char* stdCode, bool bAutoCreate /*
 		{
 			_unit_map[stdCode] = unit;
 			unit->self()->init(this, stdCode, cfg);
+
+			//如果通道已经就绪，则直接通知执行单元
+			if (_channel_ready)
+				unit->self()->on_channel_ready();
 		}
 		return unit;
 	}
@@ -177,16 +192,25 @@ WTSTickData* WtLocalExecuter::grabLastTick(const char* stdCode)
 
 double WtLocalExecuter::getPosition(const char* stdCode, bool validOnly /* = true */, int32_t flag /* = 3 */)
 {
+	if (NULL == _trader)
+		return 0.0;
+
 	return _trader->getPosition(stdCode, validOnly, flag);
 }
 
 double WtLocalExecuter::getUndoneQty(const char* stdCode)
 {
+	if (NULL == _trader)
+		return 0.0;
+
 	return _trader->getUndoneQty(stdCode);
 }
 
 OrderMap* WtLocalExecuter::getOrders(const char* stdCode)
 {
+	if (NULL == _trader)
+		return NULL;
+
 	return _trader->getOrders(stdCode);
 }
 
@@ -194,6 +218,7 @@ OrderIDs WtLocalExecuter::buy(const char* stdCode, double price, double qty, boo
 {
 	if (!_channel_ready)
 		return OrderIDs();
+
 	return _trader->buy(stdCode, price, qty, 0, bForceClose);
 }
 
@@ -318,7 +343,7 @@ void WtLocalExecuter::set_position(const faster_hashmap<LongKey, double>& target
 
 	for (auto it = targets.begin(); it != targets.end(); it++)
 	{
-		const char* stdCode = it->first.c_str();		
+		const char* stdCode = it->first.c_str();
 		double newVol = it->second;
 		ExecuteUnitPtr unit = getUnit(stdCode);
 		if (unit == NULL)
@@ -497,6 +522,7 @@ void WtLocalExecuter::on_entrust(uint32_t localid, const char* stdCode, bool bSu
 void WtLocalExecuter::on_channel_ready()
 {
 	_channel_ready = true;
+	SpinLock lock(_mtx_units);
 	for (auto it = _unit_map.begin(); it != _unit_map.end(); it++)
 	{
 		ExecuteUnitPtr& unitPtr = (ExecuteUnitPtr&)it->second;
@@ -520,12 +546,12 @@ void WtLocalExecuter::on_channel_ready()
 void WtLocalExecuter::on_channel_lost()
 {
 	_channel_ready = false;
+	SpinLock lock(_mtx_units);
 	for (auto it = _unit_map.begin(); it != _unit_map.end(); it++)
 	{
 		ExecuteUnitPtr& unitPtr = (ExecuteUnitPtr&)it->second;
 		if (unitPtr)
 		{
-			//unitPtr->self()->on_channel_lost();
 			if (_pool)
 			{
 				_pool->schedule([unitPtr](){
@@ -535,6 +561,30 @@ void WtLocalExecuter::on_channel_lost()
 			else
 			{
 				unitPtr->self()->on_channel_lost();
+			}
+		}
+	}
+}
+
+void WtLocalExecuter::on_account(const char* currency, double prebalance, double balance, double dynbalance, 
+	double avaliable, double closeprofit, double dynprofit, double margin, double fee, double deposit, double withdraw)
+{
+	SpinLock lock(_mtx_units);
+	for (auto it = _unit_map.begin(); it != _unit_map.end(); it++)
+	{
+		ExecuteUnitPtr& unitPtr = (ExecuteUnitPtr&)it->second;
+		if (unitPtr)
+		{
+			if (_pool)
+			{
+				std::string strCur = currency;
+				_pool->schedule([unitPtr, strCur, prebalance, balance, dynbalance, avaliable, closeprofit, dynprofit, margin, fee, deposit, withdraw]() {
+					unitPtr->self()->on_account(strCur.c_str(), prebalance, balance, dynbalance, avaliable, closeprofit, dynprofit, margin, fee, deposit, withdraw);
+				});
+			}
+			else
+			{
+				unitPtr->self()->on_account(currency, prebalance, balance, dynbalance, avaliable, closeprofit, dynprofit, margin, fee, deposit, withdraw);
 			}
 		}
 	}

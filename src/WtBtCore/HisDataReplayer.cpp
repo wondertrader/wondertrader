@@ -211,6 +211,9 @@ bool HisDataReplayer::init(WTSVariant* cfg, EventNotifier* notifier /* = NULL */
 	_tick_enabled = cfg->getBoolean("tick");
 	WTSLogger::info("Tick data replaying is {}", _tick_enabled ? "enabled" : "disabled");
 
+	_adjust_flag = cfg->getUInt32("adjust_flag");
+	WTSLogger::info("adjust_flag is {}", _adjust_flag);
+
 	//基础数据文件
 	WTSVariant* cfgBF = cfg->get("basefiles");
 	//基础配置文件的编码，这样可以兼容原来的配置
@@ -1203,7 +1206,7 @@ void HisDataReplayer::simTicks(uint32_t uDate, uint32_t uTime, uint32_t endTDate
 
 							update_price(barsList->_code.c_str(), curTS.price);
 							WTSTickData* curTick = WTSTickData::create(curTS);
-							_listener->handle_tick(barsList->_code.c_str(), curTick, pxType == 3);
+							_listener->handle_tick(barsList->_code.c_str(), curTick, pxType);
 							curTick->release();
 						}
 
@@ -1267,7 +1270,7 @@ void HisDataReplayer::simTicks(uint32_t uDate, uint32_t uTime, uint32_t endTDate
 							curTS.volume = nextBar.vol;
 							update_price(barsList->_code.c_str(), curTS.price);
 							WTSTickData* curTick = WTSTickData::create(curTS);
-							_listener->handle_tick(realCode.c_str(), curTick, false);
+							_listener->handle_tick(realCode.c_str(), curTick, pxType);
 							curTick->release();
 						}
 
@@ -1339,7 +1342,7 @@ void HisDataReplayer::simTickWithUnsubBars(uint64_t stime, uint64_t nowTime, uin
 
 
 						WTSTickData* curTick = WTSTickData::create(curTS);
-						_listener->handle_tick(barsList->_code.c_str(), curTick, false);
+						_listener->handle_tick(barsList->_code.c_str(), curTick, pxType);
 						curTick->release();
 						break;
 					}
@@ -1406,7 +1409,7 @@ void HisDataReplayer::simTickWithUnsubBars(uint64_t stime, uint64_t nowTime, uin
 							curTS.low = min(curTS.price, curTS.low);
 
 						WTSTickData* curTick = WTSTickData::create(curTS);
-						_listener->handle_tick(realCode.c_str(), curTick);
+						_listener->handle_tick(realCode.c_str(), curTick, pxType);
 						curTick->release();
 
 						break;
@@ -1744,7 +1747,7 @@ uint64_t HisDataReplayer::replayHftDatasByDay(uint32_t curTDate)
 				update_price(stdCode, nextTick.price);
 				WTSTickData* newTick = WTSTickData::create(nextTick);
 				newTick->setCode(stdCode);
-				_listener->handle_tick(stdCode, newTick);
+				_listener->handle_tick(stdCode, newTick, 0);
 				newTick->release();
 				
 				total_ticks++;
@@ -1857,7 +1860,7 @@ bool HisDataReplayer::replayHftDatas(uint64_t stime, uint64_t etime)
 				update_price(stdCode, nextItem.price);
 				WTSTickData* newData = WTSTickData::create(nextItem);
 				newData->setCode(stdCode);
-				_listener->handle_tick(stdCode, newData);
+				_listener->handle_tick(stdCode, newData, 0);
 				newData->release();
 
 				itemList._cursor++;
@@ -3868,6 +3871,19 @@ bool HisDataReplayer::cacheIntegratedFutBarsFromBin(void* codeInfo, const std::s
 				firstBar[idx].high *= factor;
 				firstBar[idx].low *= factor;
 				firstBar[idx].close *= factor;
+				firstBar[idx].settle *= factor;
+
+				if (_adjust_flag & 1)
+					firstBar[idx].vol /= factor;
+
+				if (_adjust_flag & 2)
+					firstBar[idx].money *= factor;
+
+				if (_adjust_flag & 4)
+				{
+					firstBar[idx].hold /= factor;
+					firstBar[idx].add /= factor;
+				}
 			}
 		}
 
@@ -4141,6 +4157,18 @@ bool HisDataReplayer::cacheAdjustedStkBarsFromBin(void* codeInfo, const std::str
 							pBar->high *= factor;
 							pBar->low *= factor;
 							pBar->close *= factor;
+
+							if (_adjust_flag & 1)
+								pBar->vol /= factor;
+
+							if (_adjust_flag & 2)
+								pBar->money *= factor;
+
+							if (_adjust_flag & 4)
+							{
+								pBar->hold /= factor;
+								pBar->add /= factor;
+							}
 
 							pBar++;
 							curIdx++;

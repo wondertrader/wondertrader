@@ -303,7 +303,7 @@ void SelMocker::handle_replay_done()
 	this->on_bactest_end();
 }
 
-void SelMocker::handle_tick(const char* stdCode, WTSTickData* newTick, bool isBarEnd /* = true */)
+void SelMocker::handle_tick(const char* stdCode, WTSTickData* newTick, uint32_t pxType)
 {
 	_price_map[stdCode].first = newTick->price();
 	_price_map[stdCode].second = (uint64_t)newTick->actiondate() * 1000000000 + newTick->actiontime();
@@ -340,7 +340,7 @@ void SelMocker::handle_tick(const char* stdCode, WTSTickData* newTick, bool isBa
 	 *	这样做的目的是为了让在模拟tick触发的ontick中下单的信号能够正常处理
 	 *	而不至于在回测的时候成交价偏离太远
 	 */
-	if (!isBarEnd)
+	if (pxType!=3)
 	{
 		//先检查是否要信号要触发
 		{

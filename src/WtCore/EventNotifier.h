@@ -9,7 +9,7 @@
  */
 #pragma once
 
-#include <queue>
+#include <boost/asio/io_service.hpp>
 
 #include "../Includes/WTSMarcos.h"
 #include "../Includes/WTSObject.hpp"
@@ -51,12 +51,16 @@ public:
 	void	notifyEvent(const char* message);
 
 private:
-	std::string		m_strURL;
+	std::string		_url;
 	uint32_t		_mq_sid;
 	FuncCreateMQServer	_creator;
 	FuncDestroyMQServer	_remover;
 	FundPublishMessage	_publisher;
 	FuncRegCallbacks	_register;
+
+	bool			_stopped;
+	boost::asio::io_service		_asyncio;
+	StdThreadPtr				_worker;
 };
 
 NS_WTP_END

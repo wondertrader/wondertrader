@@ -33,6 +33,7 @@ WtDiffExecuter::WtDiffExecuter(WtExecuterFactory* factory, const char* name, IDa
 	, _data_mgr(dataMgr)
 	, _channel_ready(false)
 	, _scale(1.0)
+	, _trader(NULL)
 {
 }
 
@@ -41,6 +42,14 @@ WtDiffExecuter::~WtDiffExecuter()
 {
 	if (_pool)
 		_pool->wait();
+}
+
+void WtDiffExecuter::setTrader(TraderAdapter* adapter)
+{
+	_trader = adapter;
+	//设置的时候读取一下trader的状态
+	if(_trader)
+		_channel_ready = _trader->isReady();
 }
 
 bool WtDiffExecuter::init(WTSVariant* params)
@@ -61,7 +70,7 @@ bool WtDiffExecuter::init(WTSVariant* params)
 
 	load_data();
 
-	WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "Diff executer inited, scale: {}, thread poolsize: {}", _scale, poolsize);
+	WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "[{}]Diff executer inited, scale: {}, thread poolsize: {}", _name, _scale, poolsize);
 
 	return true;
 }
@@ -174,6 +183,8 @@ ExecuteUnitPtr WtDiffExecuter::getUnit(const char* stdCode, bool bAutoCreate /* 
 	if (!policy->has(commID.c_str()))
 		des = "default";
 
+	//SpinLock lock(_mtx_units);
+
 	auto it = _unit_map.find(stdCode);
 	if(it != _unit_map.end())
 	{
@@ -190,6 +201,14 @@ ExecuteUnitPtr WtDiffExecuter::getUnit(const char* stdCode, bool bAutoCreate /* 
 		{
 			_unit_map[stdCode] = unit;
 			unit->self()->init(this, stdCode, cfg);
+
+			//如果通道已经就绪，则直接通知执行单元
+			if (_channel_ready)
+				unit->self()->on_channel_ready();
+		}
+		else
+		{
+			WTSLogger::error("Creating ExecUnit {} failed", name);
 		}
 		return unit;
 	}
@@ -221,16 +240,25 @@ WTSTickData* WtDiffExecuter::grabLastTick(const char* stdCode)
 
 double WtDiffExecuter::getPosition(const char* stdCode, bool validOnly /* = true */, int32_t flag /* = 3 */)
 {
+	if (NULL == _trader)
+		return 0.0;
+
 	return _trader->getPosition(stdCode, validOnly, flag);
 }
 
 double WtDiffExecuter::getUndoneQty(const char* stdCode)
 {
+	if (NULL == _trader)
+		return 0.0;
+
 	return _trader->getUndoneQty(stdCode);
 }
 
 OrderMap* WtDiffExecuter::getOrders(const char* stdCode)
 {
+	if (NULL == _trader)
+		return NULL;
+
 	return _trader->getOrders(stdCode);
 }
 
@@ -238,6 +266,7 @@ OrderIDs WtDiffExecuter::buy(const char* stdCode, double price, double qty, bool
 {
 	if (!_channel_ready)
 		return OrderIDs();
+
 	return _trader->buy(stdCode, price, qty, 0, bForceClose);
 }
 
@@ -314,11 +343,11 @@ void WtDiffExecuter::on_position_changed(const char* stdCode, double targetPos)
 	thisDiff += (targetPos - oldVol);
 
 	//WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "Target position of {} changed: {} -> {}", stdCode, oldVol, targetPos);
-	WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "Target position of {} changed: {} -> {}, diff postion changed: {} -> {}", stdCode, oldVol, targetPos, prevDiff, thisDiff);
+	WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "[{}]Target position of {} changed: {} -> {}, diff postion changed: {} -> {}", _name, stdCode, oldVol, targetPos, prevDiff, thisDiff);
 
 	if (_trader && !_trader->checkOrderLimits(stdCode))
 	{
-		WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "{} is disabled", stdCode);
+		WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "[{}]{} is disabled", _name, stdCode);
 		return;
 	}
 
@@ -350,18 +379,18 @@ void WtDiffExecuter::set_position(const faster_hashmap<LongKey, double>& targets
 		double oldVol = _target_pos[stdCode];
 		_target_pos[stdCode] = newVol;
 		if (decimal::eq(oldVol, newVol))
-			return;
+			continue;
 
 		//差量更新
 		double& thisDiff = _diff_pos[stdCode];
 		double prevDiff = thisDiff;
 		thisDiff += (newVol - oldVol);
 
-		WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "Target position of {} changed: {} -> {}, diff postion changed: {} -> {}", stdCode, oldVol, newVol, prevDiff, thisDiff);
+		WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "[{}]Target position of {} changed: {} -> {}, diff postion changed: {} -> {}", _name, stdCode, oldVol, newVol, prevDiff, thisDiff);
 
 		if (_trader && !_trader->checkOrderLimits(stdCode))
 		{
-			WTSLogger::log_dyn("executer", _name.c_str(), LL_WARN, "{} is disabled due to entrust limit control ", stdCode);
+			WTSLogger::log_dyn("executer", _name.c_str(), LL_WARN, "[{}]{} is disabled due to entrust limit control ", _name, stdCode);
 			continue;
 		}
 
@@ -388,7 +417,7 @@ void WtDiffExecuter::set_position(const faster_hashmap<LongKey, double>& targets
 		if(tit != targets.end())
 			continue;
 
-		WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "{} is not in target, set to 0 automatically", stdCode);
+		WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "[{}]{} is not in target, set to 0 automatically", _name, stdCode);
 
 		ExecuteUnitPtr unit = getUnit(stdCode);
 		if (unit == NULL)
@@ -455,7 +484,7 @@ void WtDiffExecuter::on_trade(uint32_t localid, const char* stdCode, bool isBuy,
 	double prevDiff = curDiff;
 	curDiff -= vol * (isBuy ? 1 : -1);
 
-	WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "Diff of {} updated by trade: {} -> {}", stdCode, prevDiff, curDiff);
+	WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "[{}]Diff of {} updated by trade: {} -> {}", _name, stdCode, prevDiff, curDiff);
 	save_data();
 
 	if (_pool)
@@ -513,6 +542,7 @@ void WtDiffExecuter::on_entrust(uint32_t localid, const char* stdCode, bool bSuc
 void WtDiffExecuter::on_channel_ready()
 {
 	_channel_ready = true;
+	//SpinLock lock(_mtx_units);
 	for (auto it = _unit_map.begin(); it != _unit_map.end(); it++)
 	{
 		ExecuteUnitPtr& unitPtr = (ExecuteUnitPtr&)it->second;
@@ -551,13 +581,14 @@ void WtDiffExecuter::on_channel_ready()
 			unit->self()->set_position(stdCode, thisDiff);
 		}
 
-		WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "Diff of {} recovered to {}", stdCode, thisDiff);
+		WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "[{}]Diff of {} recovered to {}", _name, stdCode, thisDiff);
 	}
 }
 
 void WtDiffExecuter::on_channel_lost()
 {
 	_channel_ready = false;
+	//SpinLock lock(_mtx_units);
 	for (auto it = _unit_map.begin(); it != _unit_map.end(); it++)
 	{
 		ExecuteUnitPtr& unitPtr = (ExecuteUnitPtr&)it->second;
@@ -572,6 +603,30 @@ void WtDiffExecuter::on_channel_lost()
 			else
 			{
 				unitPtr->self()->on_channel_lost();
+			}
+		}
+	}
+}
+
+void WtDiffExecuter::on_account(const char* currency, double prebalance, double balance, double dynbalance,
+	double avaliable, double closeprofit, double dynprofit, double margin, double fee, double deposit, double withdraw)
+{
+	//SpinLock lock(_mtx_units);
+	for (auto it = _unit_map.begin(); it != _unit_map.end(); it++)
+	{
+		ExecuteUnitPtr& unitPtr = (ExecuteUnitPtr&)it->second;
+		if (unitPtr)
+		{
+			if (_pool)
+			{
+				std::string strCur = currency;
+				_pool->schedule([unitPtr, strCur, prebalance, balance, dynbalance, avaliable, closeprofit, dynprofit, margin, fee, deposit, withdraw]() {
+					unitPtr->self()->on_account(strCur.c_str(), prebalance, balance, dynbalance, avaliable, closeprofit, dynprofit, margin, fee, deposit, withdraw);
+				});
+			}
+			else
+			{
+				unitPtr->self()->on_account(currency, prebalance, balance, dynbalance, avaliable, closeprofit, dynprofit, margin, fee, deposit, withdraw);
 			}
 		}
 	}

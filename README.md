@@ -1,6 +1,6 @@
 ![WonderTrader2.png](http://wt.f-sailors.cn/wt/logo_qcode_noad.jpg)
 <p align="center">
-    <img src ="https://img.shields.io/badge/version-0.9.3-blueviolet.svg"/>
+    <img src ="https://img.shields.io/badge/version-0.9.4-blueviolet.svg"/>
     <img src ="https://img.shields.io/badge/platform-windows|linux-yellow.svg"/>
     <img src ="https://img.shields.io/badge/build-passing-brightgreen"/>
     <img src ="https://img.shields.io/badge/license-MIT-orange"/>
@@ -63,10 +63,10 @@
     > - **自动调度服务**：全自动调度定时任务（启动、停止、重启），支持按周设置任务重复，支持进程守护。
     ![schedule.jpg](http://wt.f-sailors.cn/snapshots/schedule.jpg)
     > - **实时事件通知**：监控服务接收组合盘推送的事件，然后转发给监控端，提示给用户。
-    > - **在线回测分析**：全自动远程部署以后，提供在线回测服务，并进行结果分析和图形化展示。
-    ![stra_editor.jpg](http://wt.f-sailors.cn/snapshots/stra_editor.jpg)
-    ![bt_perform.jpg](http://wt.f-sailors.cn/snapshots/bt_perform.jpg)
-    ![bt_signals.jpg](http://wt.f-sailors.cn/snapshots/bt_signals.jpg)
+    > - **回测查看器**：使用WtBtSnooper模块，可以进行回测数据的查看分析。
+    ![bt_summary.jpg](./images/bt_summary.png)
+    ![bt_details.jpg](./images/bt_details.png)
+    ![bt_signals.jpg](./images/bt_signals.png)
     > - **全自动远程部署(在建)**：全自动在线远程部署，提供回测环境、实盘环境等多种应用场景的自动化部署服务。
 
 #### 常见应用场景
@@ -102,22 +102,21 @@
 
 #### 支持的交易接口
 * 期货
-    > * CTP
-    > * CTPMini
-    > * CTPOpt
-    > * 飞马
-    > * 艾克朗科
-    > * 易达
-
+    * CTP
+    * CTPMini
+    * 飞马Femas
+    * 艾克朗科（仅组播行情）
+    * 易达
+* 期权
+    * CTPOpt
+    * 金证期权maOpt
+    * QWIN二开
 * 股票
-    > * 中泰XTP
-
-* 计划对接
-    > * 华鑫
-    > * 华锐
-    > * 顶点
-    > * 恒生UFX
-
+    * 中泰XTP
+    * 中泰XTPXAlgo
+    * 华鑫奇点
+    * 华锐ATP
+    * 宽睿OES
 
 #### `wtpy`简介
 * [wtpy](https://github.com/wondertrader/wtpy)是构建在`WonderTrader`核心模块之上的，使用`Python3`开发的`WonderTrader`的`Python3`子框架
@@ -129,15 +128,13 @@
 
 #### `WonderTrader`怎么获取
 * `WonderTrader`
-	> - `github`地址：<https://github.com/wondertrader/wondertrader>
-	> - `gitee`地址：<https://gitee.com/wondertrader/wondertrader>
+	- `github`地址：<https://github.com/wondertrader/wondertrader>
+	- `gitee`地址：<https://gitee.com/wondertrader/wondertrader>
 * `wtpy`
-	> - `github`地址：<https://github.com/wondertrader/wtpy>
-	> - `gitee`地址：<https://gitee.com/wondertrader/wtpy>
-
+	- `github`地址：<https://github.com/wondertrader/wtpy>
+	- `gitee`地址：<https://gitee.com/wondertrader/wtpy>
 * `wtpy`获取地址：<https://pypi.org/project/wtpy/>
     `wtpy`可以直接在`python3.8`以上的版本安装
-
     ``` shell
     pip install wtpy --upgrade
     ```
@@ -149,8 +146,8 @@
 
 #### 写在最后
 * * *
-* 特别感谢@ZerounNet、@ZzzzHeJ、@jack52518、@jed057等用户，他们也对WonderTrader和wtpy贡献了很多代码和文档。
 * 关注公众号`wondertrader`，可以收到`WonderTrader`的实时资讯
 * 用户交流QQ群上线：`610730738`(加入前请先`star`一下, 然后提供`github`用户名)
 * 更多`WonderTrader`的文档请看<https://wondertrader.github.io/>
 * `WonderTrader`半官方文档 <https://dumengru.github.io/docs_wondertrader/>
+* @ZzzzHeJ的`WonderTrader`学习笔记<https://zzzzhej.github.io/WonderTrader-Learning-Notes/>

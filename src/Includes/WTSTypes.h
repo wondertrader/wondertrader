@@ -243,6 +243,7 @@ typedef enum tagOrderState
 	WOS_NotTraded_NotQueuing,			//未成交,未在队列
 	WOS_Canceled,						//已撤销
 	WOS_Submitting				= 'a',	//正在提交
+	WOS_Cancelling,						//在撤
 	WOS_Nottouched,						//未触发
 } WTSOrderState;
 

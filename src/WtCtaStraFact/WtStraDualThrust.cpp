@@ -73,7 +73,6 @@ void WtStraDualThrust::on_session_begin(ICtaStraCtx* ctx, uint32_t uTDate)
 void WtStraDualThrust::on_schedule(ICtaStraCtx* ctx, uint32_t curDate, uint32_t curTime)
 {
 	std::string code = _code;
-	code += "+";
 
 	WTSKlineSlice *kline = ctx->stra_get_bars(code.c_str(), _period.c_str(), _count, true);
 	if(kline == NULL)
@@ -109,6 +108,10 @@ void WtStraDualThrust::on_schedule(ICtaStraCtx* ctx, uint32_t curDate, uint32_t 
 	double upper_bound = openPx + _k1 * (std::max(hh - lc, hc - ll));
 	double lower_bound = openPx - _k2 * std::max(hh - lc, hc - ll);
 
+	//设置指标值
+	ctx->set_index_value("DualThrust", "upper_bound", upper_bound);
+	ctx->set_index_value("DualThrust", "lower_bound", lower_bound);
+
 	WTSCommodityInfo* commInfo = ctx->stra_get_comminfo(_code.c_str());
 
 	double curPos = ctx->stra_get_position(_moncode.c_str()) / trdUnit;
@@ -119,12 +122,18 @@ void WtStraDualThrust::on_schedule(ICtaStraCtx* ctx, uint32_t curDate, uint32_t 
 			ctx->stra_enter_long(_moncode.c_str(), 2 * trdUnit, "DT_EnterLong");
 			//向上突破
 			ctx->stra_log_info(fmt::format("向上突破{}>={},多仓进场", curPx, upper_bound).c_str());
+
+			//添加图表标记
+			ctx->add_chart_mark(curPx, "wt-mark-buy", "DT_EnterLong");
 		}
 		else if (curPx <= lower_bound && !_isstk)
 		{
 			ctx->stra_enter_short(_moncode.c_str(), 2 * trdUnit, "DT_EnterShort");
 			//向下突破
 			ctx->stra_log_info(fmt::format("向下突破{}<={},空仓进场", curPx, lower_bound).c_str());
+
+			//添加图表标记
+			ctx->add_chart_mark(curPx, "wt-mark-sell", "DT_EnterShort");
 		}
 	}
 	//else if(curPos > 0)
@@ -135,6 +144,9 @@ void WtStraDualThrust::on_schedule(ICtaStraCtx* ctx, uint32_t curDate, uint32_t 
 			//多仓出场
 			ctx->stra_exit_long(_moncode.c_str(), 2 * trdUnit, "DT_ExitLong");
 			ctx->stra_log_info(fmt::format("向下突破{}<={},多仓出场", curPx, lower_bound).c_str());
+
+			//添加图表标记
+			ctx->add_chart_mark(curPx, "wt-mark-sell", "DT_ExitLong");
 		}
 	}
 	//else if(curPos < 0)
@@ -145,10 +157,11 @@ void WtStraDualThrust::on_schedule(ICtaStraCtx* ctx, uint32_t curDate, uint32_t 
 			//空仓出场
 			ctx->stra_exit_short(_moncode.c_str(), 2 * trdUnit, "DT_ExitShort");
 			ctx->stra_log_info(fmt::format("向上突破{}>={},空仓出场", curPx, upper_bound).c_str());
+
+			//添加图表标记
+			ctx->add_chart_mark(curPx, "wt-mark-buy", "DT_ExitShort");
 		}
 	}
-
-	ctx->stra_save_user_data("test", "waht");
 
 	//这个释放一定要做
 	kline->release();
@@ -157,7 +170,6 @@ void WtStraDualThrust::on_schedule(ICtaStraCtx* ctx, uint32_t curDate, uint32_t 
 void WtStraDualThrust::on_init(ICtaStraCtx* ctx)
 {
 	std::string code = _code;
-	code += "+";
 	ctx->stra_sub_ticks(_code.c_str());
 	WTSKlineSlice *kline = ctx->stra_get_bars(code.c_str(), _period.c_str(), _count, true);
 	if (kline == NULL)
@@ -167,6 +179,16 @@ void WtStraDualThrust::on_init(ICtaStraCtx* ctx)
 	}
 
 	kline->release();
+
+	//注册指标和图表K线
+	ctx->set_chart_kline(_code.c_str(), _period.c_str());
+
+	//注册指标
+	ctx->register_index("DualThrust", 0);
+
+	//注册指标线
+	ctx->register_index_line("DualThrust", "upper_bound", 0);
+	ctx->register_index_line("DualThrust", "lower_bound", 0);
 }
 
 void WtStraDualThrust::on_tick(ICtaStraCtx* ctx, const char* stdCode, WTSTickData* newTick)

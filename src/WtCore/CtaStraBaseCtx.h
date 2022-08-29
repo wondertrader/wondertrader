@@ -73,8 +73,8 @@ private:
 
 	void	update_dyn_profit(const char* stdCode, double price);
 
-	void	do_set_position(const char* stdCode, double qty, const char* userTag = "", bool bTriggered = false);
-	void	append_signal(const char* stdCode, double qty, const char* userTag = "");
+	void	do_set_position(const char* stdCode, double qty, const char* userTag = "", bool bCondition = false);
+	void	append_signal(const char* stdCode, double qty, const char* userTag = "", bool bCondition = false);
 
 	inline CondList& get_cond_entrusts(const char* stdCode);
 	
@@ -168,6 +168,8 @@ public:
 
 	virtual const char* stra_load_user_data(const char* key, const char* defVal = "") override;
 
+	virtual const char* stra_get_last_entertag(const char* stdCode) override;
+
 protected:
 	uint32_t		_context_id;
 	WtCtaEngine*	_engine;
@@ -246,14 +248,14 @@ protected:
 		double		_volume;
 		std::string	_usertag;
 		double		_sigprice;
-		bool		_triggered;
+		bool		_condition;
 		uint64_t	_gentime;
 
 		_SigInfo()
 		{
 			_volume = 0;
 			_sigprice = 0;
-			_triggered = false;
+			_condition = false;
 			_gentime = 0;
 		}
 	}SigInfo;

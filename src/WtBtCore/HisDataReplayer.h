@@ -43,7 +43,7 @@ USING_NS_WTP;
 class IDataSink
 {
 public:
-	virtual void	handle_tick(const char* stdCode, WTSTickData* curTick, bool isBarEnd = true) = 0;
+	virtual void	handle_tick(const char* stdCode, WTSTickData* curTick, uint32_t pxType) = 0;
 	virtual void	handle_order_queue(const char* stdCode, WTSOrdQueData* curOrdQue) {};
 	virtual void	handle_order_detail(const char* stdCode, WTSOrdDtlData* curOrdDtl) {};
 	virtual void	handle_transaction(const char* stdCode, WTSTransData* curTrans) {};
@@ -422,6 +422,10 @@ private:
 
 	//By Wesley @ 2022.06.01
 	std::set<std::string>		_unsubbed_in_need;	//未订阅但需要的K线
+
+	//By Wesley @ 2022.08.15
+	//复权标记，采用位运算表示，1|2|4,1表示成交量复权，2表示成交额复权，4表示总持复权，其他待定
+	uint32_t		_adjust_flag; 
 
 	uint32_t		_cur_date;
 	uint32_t		_cur_time;

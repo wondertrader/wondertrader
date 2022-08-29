@@ -54,7 +54,7 @@ private:
 public:
 	//////////////////////////////////////////////////////////////////////////
 	//IDataSink
-	virtual void	handle_tick(const char* stdCode, WTSTickData* curTick, bool isBarEnd = true) override;
+	virtual void	handle_tick(const char* stdCode, WTSTickData* curTick, uint32_t pxType) override;
 	virtual void	handle_order_queue(const char* stdCode, WTSOrdQueData* curOrdQue) override;
 	virtual void	handle_order_detail(const char* stdCode, WTSOrdDtlData* curOrdDtl) override;
 	virtual void	handle_transaction(const char* stdCode, WTSTransData* curTrans) override;
@@ -120,7 +120,7 @@ public:
 	 */
 	virtual std::string		stra_get_rawcode(const char* stdCode) override;
 
-	virtual double stra_get_position(const char* stdCode, bool bOnlyValid = false) override;
+	virtual double stra_get_position(const char* stdCode, bool bOnlyValid = false, int flag = 3) override;
 
 	virtual double stra_get_position_avgpx(const char* stdCode) override;
 
@@ -218,10 +218,8 @@ private:
 
 	HftStrategy*	_strategy;
 
-	StdThreadPtr		_thrd;
 	StdUniqueMutex		_mtx;
 	std::queue<Task>	_tasks;
-	bool				_stopped;
 
 	StdRecurMutex		_mtx_control;
 
@@ -337,5 +335,8 @@ protected:
 
 	//tick¶©ÔÄÁÐ±í
 	faster_hashset<std::string> _tick_subs;
+
+	typedef WTSHashMap<std::string>	TickCache;
+	TickCache*	_ticks;
 };
 

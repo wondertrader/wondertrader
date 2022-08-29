@@ -256,7 +256,11 @@ WtUInt32	cta_get_ticks(CtxHandler cHandle, const char* stdCode, WtUInt32 tickCnt
 		if (tData)
 		{
 			uint32_t thisCnt = min(tickCnt, (WtUInt32)tData->size());
-			cb(cHandle, stdCode, (WTSTickStruct*)tData->at(0), thisCnt, true);
+			if (thisCnt != 0)
+				cb(cHandle, stdCode, (WTSTickStruct*)tData->at(0), thisCnt, true);
+			else
+				cb(cHandle, stdCode, NULL, 0, true);
+
 			tData->release();
 			return thisCnt;
 		}
@@ -395,6 +399,15 @@ double cta_get_last_enterprice(CtxHandler cHandle, const char* stdCode)
 	return ctx->stra_get_last_enterprice(stdCode);
 }
 
+WtString cta_get_last_entertag(CtxHandler cHandle, const char* stdCode)
+{
+	CtaMocker* ctx = getRunner().cta_mocker();
+	if (ctx == NULL)
+		return 0;
+
+	return ctx->stra_get_last_entertag(stdCode);
+}
+
 double cta_get_price(const char* stdCode)
 {
 	return getRunner().replayer().get_cur_price(stdCode);
@@ -484,6 +497,67 @@ bool cta_step(CtxHandler cHandle)
 
 	return ctx->step_calc();
 }
+
+void cta_set_chart_kline(CtxHandler cHandle, const char* stdCode, const char* period)
+{
+	CtaMocker* ctx = getRunner().cta_mocker();
+	if (ctx == NULL)
+		return;
+
+	ctx->set_chart_kline(stdCode, period);
+}
+
+void cta_add_chart_mark(CtxHandler cHandle, double price, const char* icon, const char* tag)
+{
+	CtaMocker* ctx = getRunner().cta_mocker();
+	if (ctx == NULL)
+		return;
+
+	ctx->add_chart_mark(price, icon, tag);
+}
+
+void cta_register_index(CtxHandler cHandle, const char* idxName, WtUInt32 indexType)
+{
+	CtaMocker* ctx = getRunner().cta_mocker();
+	if (ctx == NULL)
+		return;
+
+	ctx->register_index(idxName, indexType);
+}
+
+bool cta_register_index_line(CtxHandler cHandle, const char* idxName, const char* lineName, WtUInt32 lineType)
+{
+	CtaMocker* ctx = getRunner().cta_mocker();
+	if (ctx == NULL)
+		return false;
+
+	return ctx->register_index_line(idxName, lineName, lineType);
+}
+bool cta_add_index_baseline(CtxHandler cHandle, const char* idxName, const char* lineName, double val)
+{
+	CtaMocker* ctx = getRunner().cta_mocker();
+	if (ctx == NULL)
+		return false;
+
+	return ctx->add_index_baseline(idxName, lineName, val);
+}
+
+bool cta_set_index_value(CtxHandler cHandle, const char* idxName, const char* lineName, double val)
+{
+	CtaMocker* ctx = getRunner().cta_mocker();
+	if (ctx == NULL)
+		return false;
+
+	return ctx->set_index_value(idxName, lineName, val);
+}
+
+/*
+ *	设置指标值
+ *	@idxName	指标名称
+ *	@lineName	线条名称
+ *	@val		指标值
+ */
+EXPORT_FLAG bool		cta_set_index_value(CtxHandler cHandle, const char* idxName, const char* lineName, double val);
 
 #pragma endregion "CTA策略接口"
 
@@ -621,7 +695,10 @@ WtUInt32	sel_get_ticks(CtxHandler cHandle, const char* stdCode, WtUInt32 tickCnt
 		if (tData)
 		{
 			uint32_t thisCnt = min(tickCnt, (WtUInt32)tData->size());
-			cb(cHandle, stdCode, (WTSTickStruct*)tData->at(0), thisCnt, true);
+			if (thisCnt != 0)
+				cb(cHandle, stdCode, (WTSTickStruct*)tData->at(0), thisCnt, true);
+			else
+				cb(cHandle, stdCode, NULL, 0, true);
 			tData->release();
 			return thisCnt;
 		}
@@ -746,7 +823,10 @@ WtUInt32 hft_get_ticks(CtxHandler cHandle, const char* stdCode, WtUInt32 tickCnt
 		if (tData)
 		{
 			uint32_t thisCnt = min(tickCnt, (WtUInt32)tData->size());
-			cb(cHandle, stdCode, (WTSTickStruct*)tData->at(0), thisCnt, true);
+			if(thisCnt != 0)
+				cb(cHandle, stdCode, (WTSTickStruct*)tData->at(0), thisCnt, true);
+			else
+				cb(cHandle, stdCode, NULL, 0, true);
 			tData->release();
 			return thisCnt;
 		}
@@ -915,7 +995,7 @@ WtString hft_cancel_all(CtxHandler cHandle, const char* stdCode, bool isBuy)
 	if (mocker == NULL)
 		return "";
 
-	static std::string ret;
+	static thread_local std::string ret;
 
 	std::stringstream ss;
 	OrderIDs ids = mocker->stra_cancel(stdCode, isBuy, DBL_MAX);
@@ -925,7 +1005,8 @@ WtString hft_cancel_all(CtxHandler cHandle, const char* stdCode, bool isBuy)
 	}
 
 	ret = ss.str();
-	ret = ret.substr(0, ret.size() - 1);
+	if (ret.size() > 0)
+		ret = ret.substr(0, ret.size() - 1);
 	return ret.c_str();
 }
 

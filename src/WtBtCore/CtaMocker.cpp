@@ -73,11 +73,14 @@ CtaMocker::CtaMocker(HisDataReplayer* replayer, const char* name, int32_t slippa
 	, _persist_data(persistData)
 {
 	_context_id = makeCtxId();
+	_ticks = TickCache::create();
 }
 
 
 CtaMocker::~CtaMocker()
 {
+	_ticks->release();
+	_ticks = NULL;
 }
 
 void CtaMocker::dump_stradata()
@@ -208,6 +211,103 @@ void CtaMocker::dump_stradata()
 		std::string filename = folder;
 		filename += _name;
 		filename += ".json";
+
+		rj::StringBuffer sb;
+		rj::PrettyWriter<rj::StringBuffer> writer(sb);
+		root.Accept(writer);
+		StdFile::write_file_content(filename.c_str(), sb.GetString());
+	}
+}
+
+void CtaMocker::dump_chartdata()
+{
+	rj::Document root(rj::kObjectType);
+	rj::Document::AllocatorType &allocator = root.GetAllocator();
+
+	rj::Value klineItem(rj::kObjectType);
+	if(_chart_code.empty())
+	{
+		//如果没有设置主K线，就用主K线落地
+		klineItem.AddMember("code", rj::Value(_main_code.c_str(), allocator), allocator);
+		klineItem.AddMember("period", rj::Value(_main_period.c_str(), allocator), allocator);
+	}
+	else
+	{
+		klineItem.AddMember("code", rj::Value(_chart_code.c_str(), allocator), allocator);
+		klineItem.AddMember("period", rj::Value(_chart_period.c_str(), allocator), allocator);
+	}
+
+	root.AddMember("kline", klineItem, allocator);
+
+	if (!_chart_indice.empty())
+	{
+		rj::Value jIndice(rj::kArrayType);
+		for (const auto& v : _chart_indice)
+		{
+			const ChartIndex& cIndex = v.second;
+			rj::Value jIndex(rj::kObjectType);
+			jIndex.AddMember("name", rj::Value(cIndex._name.c_str(), allocator), allocator);
+			jIndex.AddMember("index_type", cIndex._indexType, allocator);
+
+			rj::Value jLines(rj::kArrayType);
+			for(const auto& v2 : cIndex._lines)
+			{
+				const ChartLine& cLine = v2.second;
+				rj::Value jLine(rj::kObjectType);
+				jLine.AddMember("name", rj::Value(cLine._name.c_str(), allocator), allocator);
+				jLine.AddMember("line_type", cLine._lineType, allocator);
+
+				rj::Value jVals(rj::kArrayType);
+				for(const double& val : cLine._values)
+				{
+					jVals.PushBack(val, allocator);
+				}
+
+				jLine.AddMember("values", jVals, allocator);
+
+				jLines.PushBack(jLine, allocator);
+			}
+
+			jIndex.AddMember("lines", jLines, allocator);
+
+			rj::Value jBaseLines(rj::kObjectType);
+			for (const auto& v3 : cIndex._base_lines)
+			{
+				jBaseLines.AddMember(rj::Value(v3.first.c_str(), allocator), rj::Value(v3.second), allocator);
+			}
+
+			jIndex.AddMember("baselines", jBaseLines, allocator);
+
+			jIndice.PushBack(jIndex, allocator);
+		}
+
+		root.AddMember("index", jIndice, allocator);
+	}
+
+	if(!_chart_marks.empty())
+	{
+		rj::Value jMarks(rj::kArrayType);
+		for(const ChartMark& mark : _chart_marks)
+		{
+			rj::Value jMark(rj::kObjectType);
+			jMark.AddMember("bartime", mark._bartime, allocator);
+			jMark.AddMember("price", mark._price, allocator);
+			jMark.AddMember("icon", rj::Value(mark._icon.c_str(), allocator), allocator);
+			jMark.AddMember("tag", rj::Value(mark._tag.c_str(), allocator), allocator);
+
+			jMarks.PushBack(jMark, allocator);
+		}
+
+		root.AddMember("marks", jMarks, allocator);
+	}
+
+	{
+		std::string folder = WtHelper::getOutputDir();
+		folder += _name;
+		folder += "/";
+
+		std::string filename = folder;
+		filename += "btchart.json";
 
 		rj::StringBuffer sb;
 		rj::PrettyWriter<rj::StringBuffer> writer(sb);
@@ -386,6 +486,8 @@ void CtaMocker::handle_replay_done()
 
 	dump_stradata();
 
+	dump_chartdata();
+
 	if (_has_hook && _hook_valid)
 	{
 		WTSLogger::log_dyn_raw("strategy", _name.c_str(), LL_DEBUG, "Replay done, notify control thread");
@@ -412,10 +514,10 @@ void CtaMocker::proc_tick(const char* stdCode, double last_px, double cur_px)
 					price = cur_px;
 				else
 					price = sInfo._desprice;
-				do_set_position(stdCode, sInfo._volume, price, sInfo._usertag.c_str(), sInfo._triggered);
+				do_set_position(stdCode, sInfo._volume, price, sInfo._usertag.c_str(), sInfo._condition);
 
 				//如果是条件单触发，则回调on_condition_triggered
-				if (sInfo._triggered)
+				if (sInfo._condition)
 					on_condition_triggered(stdCode, sInfo._volume, cur_px, sInfo._usertag.c_str());
 				_sig_map.erase(it);
 			}
@@ -519,34 +621,34 @@ void CtaMocker::proc_tick(const char* stdCode, double last_px, double cur_px)
 				case COND_ACTION_OL:
 				{
 					if (decimal::lt(curQty, 0))
-						append_signal(stdCode, entrust._qty, entrust._usertag, price);
+						append_signal(stdCode, entrust._qty, entrust._usertag, price, true);
 					else
-						append_signal(stdCode, curQty + entrust._qty, entrust._usertag, price);
+						append_signal(stdCode, curQty + entrust._qty, entrust._usertag, price, true);
 				}
 				break;
 				case COND_ACTION_CL:
 				{
 					double maxQty = min(curQty, entrust._qty);
-					append_signal(stdCode, curQty - maxQty, entrust._usertag, price);
+					append_signal(stdCode, curQty - maxQty, entrust._usertag, price, true);
 				}
 				break;
 				case COND_ACTION_OS:
 				{
 					if (decimal::gt(curQty, 0))
-						append_signal(stdCode, -entrust._qty, entrust._usertag, price);
+						append_signal(stdCode, -entrust._qty, entrust._usertag, price, true);
 					else
-						append_signal(stdCode, curQty - entrust._qty, entrust._usertag, price);
+						append_signal(stdCode, curQty - entrust._qty, entrust._usertag, price, true);
 				}
 				break;
 				case COND_ACTION_CS:
 				{
 					double maxQty = min(abs(curQty), entrust._qty);
-					append_signal(stdCode, curQty + maxQty, entrust._usertag, price);
+					append_signal(stdCode, curQty + maxQty, entrust._usertag, price, true);
 				}
 				break;
 				case COND_ACTION_SP:
 				{
-					append_signal(stdCode, entrust._qty, entrust._usertag, price);
+					append_signal(stdCode, entrust._qty, entrust._usertag, price, true);
 				}
 				default: break;
 				}
@@ -560,7 +662,7 @@ void CtaMocker::proc_tick(const char* stdCode, double last_px, double cur_px)
 	}
 }
 
-void CtaMocker::handle_tick(const char* stdCode, WTSTickData* newTick, bool isBarEnd /* = true */)
+void CtaMocker::handle_tick(const char* stdCode, WTSTickData* newTick, uint32_t pxType /* = 0 */)
 {
 	double cur_px = newTick->price();
 
@@ -570,14 +672,19 @@ void CtaMocker::handle_tick(const char* stdCode, WTSTickData* newTick, bool isBa
 	 *	如果缓存的价格不存在，则上一笔价格就用最新价
 	 *	这里主要是为了应对跨日价格跳空的情况
 	 */
-	double last_px = 0;
-	auto it = _price_map.find(stdCode);
-	if (it != _price_map.end())
-		last_px = it->second;
-	else
-		last_px = cur_px;
+	double last_px = cur_px;
+	if(pxType != 0)
+	{
+		auto it = _price_map.find(stdCode);
+		if (it != _price_map.end())
+			last_px = it->second;
+		else
+			last_px = cur_px;
+	}
+	
 	
 	_price_map[stdCode] = cur_px;
+	_ticks->add(stdCode, newTick, true);
 
 	//先检查是否要信号要触发
 	//By Wesley @ 2022.04.19
@@ -595,7 +702,7 @@ void CtaMocker::handle_tick(const char* stdCode, WTSTickData* newTick, bool isBa
 	 *	这样做的目的是为了让在模拟tick触发的ontick中下单的信号能够正常处理
 	 *	而不至于在回测的时候成交价偏离太远
 	 */
-	if(!isBarEnd)
+	if(pxType != 3)
 		proc_tick(stdCode, last_px, cur_px);
 }
 
@@ -621,6 +728,7 @@ void CtaMocker::on_bar(const char* stdCode, const char* period, uint32_t times, 
 
 void CtaMocker::on_init()
 {
+	_ticks->clear();
 	_in_backtest = true;
 	if (_strategy)
 		_strategy->on_init(this);
@@ -825,6 +933,30 @@ bool CtaMocker::on_schedule(uint32_t curDate, uint32_t curTime)
 
 				_emit_times++;
 				_total_calc_time += ticker.micro_seconds();
+
+
+				/*
+				 *	By Wesley @ 2022.07.16
+				 *	策略计算完成，需要把指标数据做一个检查
+				 *	如果策略在本轮没有设置指标值，则用上一个数据补齐
+				 *	如果是开始，则用默认值补齐
+				 */
+				for(auto& v : _chart_indice)
+				{
+					ChartIndex& cIndex = v.second;
+					for(auto& line : cIndex._lines)
+					{
+						ChartLine& cLine = line.second;
+						if(cLine._values.size() < _emit_times)
+						{
+							double lastVal = DBL_MAX;
+							if (!cLine._values.empty())
+								lastVal = cLine._values.back();
+
+							cLine._values.emplace_back(lastVal);
+						}
+					}
+				}
 
 				if (_has_hook && _hook_valid)
 				{
@@ -1212,7 +1344,7 @@ void CtaMocker::stra_set_position(const char* stdCode, double qty, const char* u
 	}
 }
 
-void CtaMocker::append_signal(const char* stdCode, double qty, const char* userTag /* = "" */, double price/* = 0.0*/)
+void CtaMocker::append_signal(const char* stdCode, double qty, const char* userTag /* = "" */, double price /* = 0.0 */, bool bCondition /* = false */)
 {
 	double curPx = _price_map[stdCode];
 
@@ -1222,7 +1354,7 @@ void CtaMocker::append_signal(const char* stdCode, double qty, const char* userT
 	sInfo._desprice = price;
 	sInfo._usertag = userTag;
 	sInfo._gentime = (uint64_t)_replayer->get_date() * 1000000000 + (uint64_t)_replayer->get_raw_time() * 100000 + _replayer->get_secs();
-	sInfo._triggered = !_is_in_schedule;
+	sInfo._condition = bCondition;
 
 	log_signal(stdCode, qty, curPx, sInfo._gentime, userTag);
 
@@ -1393,7 +1525,16 @@ WTSKlineSlice* CtaMocker::stra_get_bars(const char* stdCode, const char* period,
 		if (_main_key.empty())
 			_main_key = key;
 		else if (_main_key != key)
-			throw std::runtime_error("Main k bars can only be setup once");
+		{
+			WTSLogger::error("Main k bars can only be setup once");
+			return NULL;
+		}
+
+		/*
+		 *	By Wesley @ 2022.07.16
+		 */
+		_main_code = stdCode;
+		_main_period = period;
 	}
 
 	WTSKlineSlice* kline = _replayer->get_kline_slice(stdCode, basePeriod, count, times, isMain);
@@ -1423,6 +1564,18 @@ WTSTickSlice* CtaMocker::stra_get_ticks(const char* stdCode, uint32_t count)
 
 WTSTickData* CtaMocker::stra_get_last_tick(const char* stdCode)
 {
+	if(_ticks != NULL)
+	{
+		auto it = _ticks->find(stdCode);
+		if(it != _ticks->end())
+		{
+			WTSTickData* lastTick = (WTSTickData*)it->second;
+			if(lastTick)
+				lastTick->retain();
+			return lastTick;
+		}
+	}
+
 	return _replayer->get_last_tick(stdCode);
 }
 
@@ -1539,6 +1692,19 @@ uint64_t CtaMocker::stra_get_last_entertime(const char* stdCode)
 		return INVALID_UINT64;
 
 	return pInfo._details[pInfo._details.size() - 1]._opentime;
+}
+
+const char* CtaMocker::stra_get_last_entertag(const char* stdCode)
+{
+	auto it = _pos_map.find(stdCode);
+	if (it == _pos_map.end())
+		return "";
+
+	const PosInfo& pInfo = it->second;
+	if (pInfo._details.empty())
+		return "";
+
+	return pInfo._details[pInfo._details.size() - 1]._opentag;
 }
 
 uint64_t CtaMocker::stra_get_last_exittime(const char* stdCode)
@@ -1705,4 +1871,94 @@ double CtaMocker::stra_get_detail_profit(const char* stdCode, const char* userTa
 	return 0.0;
 }
 
+void CtaMocker::set_chart_kline(const char* stdCode, const char* period)
+{
+	_chart_code = stdCode;
+	_chart_period = period;
+}
+
+void CtaMocker::add_chart_mark(double price, const char* icon, const char* tag)
+{
+	if (!_is_in_schedule)
+	{
+		WTSLogger::error("Marks can be added only during schedule");
+		return;
+	}
+
+	uint64_t curTime = _replayer->get_date();
+	curTime = curTime*10000 + _replayer->get_min_time();
+
+	_chart_marks.emplace_back(ChartMark({ curTime, price, icon, tag }));
+}
+
+void CtaMocker::register_index(const char* idxName, uint32_t indexType)
+{
+	ChartIndex& cIndex = _chart_indice[idxName];
+	cIndex._name = idxName;
+	cIndex._indexType = indexType;
+}
+
+bool CtaMocker::register_index_line(const char* idxName, const char* lineName, uint32_t lineType)
+{
+	auto it = _chart_indice.find(idxName);
+	if (it == _chart_indice.end())
+	{
+		WTSLogger::error("Index {} not registered", idxName);
+		return false;
+	}
+
+	ChartIndex& cIndex = it->second;
+	ChartLine& cLine = cIndex._lines[lineName];
+	cLine._name = lineName;
+	cLine._lineType = lineType;
+	return true;
+}
+
+bool CtaMocker::add_index_baseline(const char* idxName, const char* lineName, double val)
+{
+	auto it = _chart_indice.find(idxName);
+	if (it == _chart_indice.end())
+	{
+		WTSLogger::error("Index {} not registered", idxName);
+		return false;
+	}
+
+	ChartIndex& cIndex = it->second;
+	cIndex._base_lines[lineName] = val;
+	return true;
+}
+
+bool CtaMocker::set_index_value(const char* idxName, const char* lineName, double val)
+{
+	if (!_is_in_schedule)
+	{
+		WTSLogger::error("Marks can be added only during schedule");
+		return false;
+	}
+
+	auto ait = _chart_indice.find(idxName);
+	if (ait == _chart_indice.end())
+	{
+		WTSLogger::error("Index {} not registered", idxName);
+		return false;
+	}
+
+	ChartIndex& cIndex = ait->second;
+	auto bit = cIndex._lines.find(lineName);
+	if (bit == cIndex._lines.end())
+	{
+		WTSLogger::error("Line {} of index {} not registered", lineName, idxName);
+		return false;
+	}
+
+	ChartLine& cLine = bit->second;
+
+	//如果策略多次在同一条K线设置同一个指标值
+	//就只修改最后一个数据
+	if (cLine._values.size() > _emit_times)
+		cLine._values.back() = val;
+	else
+		cLine._values.emplace_back(val);
+	return true;
+}
 

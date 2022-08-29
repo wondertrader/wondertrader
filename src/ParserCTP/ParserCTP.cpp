@@ -195,6 +195,8 @@ void ParserCTP::OnRspUserLogin( CThostFtdcRspUserLoginField *pRspUserLogin, CTho
         if(m_uTradingDate == 0)
             m_uTradingDate = TimeUtils::getCurDate();
 		
+		write_log(m_sink, LL_INFO, "[ParserCTP] Market data server logined, {}", m_uTradingDate);
+
 		if(m_sink)
 		{
 			m_sink->handleEvent(WPE_Login, 0);

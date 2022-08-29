@@ -406,6 +406,15 @@ double cta_get_last_enterprice(CtxHandler cHandle, const char* stdCode)
 	return ctx->stra_get_last_enterprice(stdCode);
 }
 
+WtString cta_get_last_entertag(CtxHandler cHandle, const char* stdCode)
+{
+	CtaContextPtr ctx = getRunner().getCtaContext(cHandle);
+	if (ctx == NULL)
+		return 0;
+
+	return ctx->stra_get_last_entertag(stdCode);
+}
+
 double cta_get_price(const char* stdCode)
 {
 	return getRunner().getEngine()->get_cur_price(stdCode);
@@ -625,7 +634,10 @@ WtUInt32	sel_get_ticks(CtxHandler cHandle, const char* stdCode, WtUInt32 tickCnt
 		if (tData)
 		{
 			uint32_t thisCnt = min(tickCnt, (WtUInt32)tData->size());
-			cb(cHandle, stdCode, (WTSTickStruct*)tData->at(0), thisCnt, true);
+			if (thisCnt != 0)
+				cb(cHandle, stdCode, (WTSTickStruct*)tData->at(0), thisCnt, true);
+			else
+				cb(cHandle, stdCode, NULL, 0, true);
 			tData->release();
 			return thisCnt;
 		}
@@ -753,7 +765,10 @@ WtUInt32 hft_get_ticks(CtxHandler cHandle, const char* stdCode, WtUInt32 tickCnt
 		if (tData)
 		{
 			uint32_t thisCnt = min(tickCnt, (WtUInt32)tData->size());
-			cb(cHandle, stdCode, (WTSTickStruct*)tData->at(0), thisCnt, true);
+			if (thisCnt != 0)
+				cb(cHandle, stdCode, (WTSTickStruct*)tData->at(0), thisCnt, true);
+			else
+				cb(cHandle, stdCode, NULL, 0, true);
 			tData->release();
 			return thisCnt;
 		}
@@ -922,7 +937,7 @@ WtString hft_cancel_all(CtxHandler cHandle, const char* stdCode, bool isBuy)
 	if (ctx == NULL)
 		return "";
 
-	static std::string ret;
+	static thread_local std::string ret;
 
 	std::stringstream ss;
 	OrderIDs ids = ctx->stra_cancel(stdCode, isBuy, DBL_MAX);

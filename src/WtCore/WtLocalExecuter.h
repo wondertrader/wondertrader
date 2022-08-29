@@ -4,8 +4,8 @@
  *
  * \author Wesley
  * \date 2020/03/30
- * 
- * \brief 
+ *
+ * \brief
  */
 #pragma once
 #include "ITrdNotifySink.h"
@@ -13,6 +13,7 @@
 #include "WtExecuterFactory.h"
 #include "../Includes/ExecuteDefs.h"
 #include "../Share/threadpool.hpp"
+#include "../Share/SpinMutex.hpp"
 
 NS_WTP_BEGIN
 class WTSVariant;
@@ -22,7 +23,7 @@ class IHotMgr;
 
 //本地执行器
 class WtLocalExecuter : public ExecuteContext,
-		public ITrdNotifySink, public IExecCommand
+	public ITrdNotifySink, public IExecCommand
 {
 public:
 	WtLocalExecuter(WtExecuterFactory* factory, const char* name, IDataManager* dataMgr);
@@ -35,11 +36,7 @@ public:
 	 */
 	bool init(WTSVariant* params);
 
-
-	inline void setTrader(TraderAdapter* adapter)
-	{
-		_trader = adapter;
-	}
+	void setTrader(TraderAdapter* adapter);
 
 private:
 	ExecuteUnitPtr	getUnit(const char* code, bool bAutoCreate = true);
@@ -94,12 +91,12 @@ public:
 	virtual void on_order(uint32_t localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled = false) override;
 
 	/*
-	 *	
+	 *
 	 */
 	virtual void on_position(const char* stdCode, bool isLong, double prevol, double preavail, double newvol, double newavail, uint32_t tradingday) override;
 
 	/*
-	 *	
+	 *
 	 */
 	virtual void on_entrust(uint32_t localid, const char* stdCode, bool bSuccess, const char* message) override;
 
@@ -113,6 +110,11 @@ public:
 	 */
 	virtual void on_channel_lost() override;
 
+	/*
+	 *	资金回报
+	 */
+	virtual void on_account(const char* currency, double prebalance, double balance, double dynbalance, 
+		double avaliable, double closeprofit, double dynprofit, double margin, double fee, double deposit, double withdraw) override;
 
 private:
 	ExecuteUnitMap		_unit_map;
@@ -125,6 +127,8 @@ private:
 	bool				_auto_clear;		//是否自动清理上一期的主力合约头寸
 	bool				_strict_sync;		//是否严格同步目标仓位
 	bool				_channel_ready;
+
+	SpinMutex			_mtx_units;
 
 	typedef struct _CodeGroup
 	{

@@ -17,9 +17,9 @@
 #include "../Includes/ITraderApi.h"
 #include "../Includes/WTSCollection.hpp"
 
-#include "../Share/IniHelper.hpp"
 #include "../Share/StdUtils.hpp"
 #include "../Share/DLLHelper.hpp"
+#include "../Share/WtKVCache.hpp"
 
 USING_NS_WTP;
 
@@ -101,8 +101,8 @@ private:
 	inline WTSEntrust*		makeEntrust(XTPOrderInfo *entrustField);
 	inline WTSTradeInfo*	makeTradeInfo(XTPQueryTradeRsp *tradeField);
 
-	bool					extractEntrustID(const char* entrustid, uint32_t &orderRef);
-	inline std::string		genEntrustID(uint32_t orderRef);
+	inline bool	extractEntrustID(const char* entrustid, uint32_t &orderRef);
+	inline void	genEntrustID(char* buffer, uint32_t orderRef);
 
 private:
 	XTP::API::TraderApi*	_api;
@@ -128,6 +128,8 @@ private:
 	bool			_quick;
 	bool			_inited;
 
+	uint32_t			_hbInterval;
+
 	TraderState		_state;
 
 	uint64_t		_sessionid;
@@ -142,6 +144,9 @@ private:
 	typedef XTP::API::TraderApi* (*XTPCreator)(uint8_t, const char*, XTP_LOG_LEVEL);
 	XTPCreator		m_funcCreator;
 
-	IniHelper		_ini;
+	//委托单标记缓存器
+	WtKVCache		m_eidCache;
+	//订单标记缓存器
+	WtKVCache		m_oidCache;
 };
 

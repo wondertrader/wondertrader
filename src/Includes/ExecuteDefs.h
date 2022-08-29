@@ -224,6 +224,11 @@ public:
 	 */
 	virtual void on_channel_lost() = 0;
 
+	/*
+	 *	资金回报，只在交易通道初始化完成以后调用一次
+	 */
+	virtual void on_account(const char* currency, double prebalance, double balance, double dynbalance, double avaliable, double closeprofit, double dynprofit, double margin, double fee, double deposit, double withdraw) {}
+
 protected:
 	ExecuteContext*	_ctx;
 	std::string		_code;

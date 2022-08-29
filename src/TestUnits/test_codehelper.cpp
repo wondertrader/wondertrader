@@ -17,6 +17,7 @@ TEST(test_codehelper, test_raw_to_std)
 
 	EXPECT_FALSE(CodeHelper::isMonthlyCode("600000"));
 	EXPECT_TRUE(CodeHelper::isMonthlyCode("BTC-USDT-220627"));
+	EXPECT_FALSE(CodeHelper::isMonthlyCode("ag8889-100"));
 }
 
 TEST(test_codehelper, test_extract)

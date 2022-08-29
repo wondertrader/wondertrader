@@ -195,7 +195,7 @@ void WtExecuterMgr::commit_cached_targets(double scale /* = 1.0 */)
 			it = _all_cached_targets.find("ALL");
 
 		if (it == _all_cached_targets.end())
-			return;
+			continue;
 
 		executer->set_position(it->second);
 	}

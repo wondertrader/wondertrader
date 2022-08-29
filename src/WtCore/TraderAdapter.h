@@ -25,6 +25,8 @@ class EventNotifier;
 
 class ITrdNotifySink;
 
+typedef std::function<void(const char*, bool, double, double, double, double)> FuncEnumChnlPosCallBack;
+
 class TraderAdapter : public ITraderSpi
 {
 public:
@@ -113,6 +115,8 @@ public:
 		_sinks.insert(sink);
 	}
 
+	inline bool isReady() const { return _state == AS_ALLREADY; }
+
 private:
 	uint32_t doEntrust(WTSEntrust* entrust);
 	bool	doCancel(WTSOrderInfo* ordInfo);
@@ -144,6 +148,8 @@ public:
 
 		return 0;
 	}
+
+	void enumPosition(FuncEnumChnlPosCallBack cb);
 
 	uint32_t openLong(const char* stdCode, double price, double qty, int flag, WTSContractInfo* cInfo = NULL);
 	uint32_t openShort(const char* stdCode, double price, double qty, int flag, WTSContractInfo* cInfo = NULL);

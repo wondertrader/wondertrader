@@ -45,6 +45,11 @@ public:
 	 *	下单回报
 	 */
 	virtual void on_entrust(uint32_t localid, const char* stdCode, bool bSuccess, const char* message){}
+
+	/*
+	 *	资金回调
+	 */
+	virtual void on_account(const char* currency, double prebalance, double balance, double dynbalance, double avaliable, double closeprofit, double dynprofit, double margin, double fee, double deposit, double withdraw){}
 };
 
 NS_WTP_END

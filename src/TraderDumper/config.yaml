@@ -1,0 +1,15 @@
+basefiles:
+    session: ..\\Common\\sessions.json
+    commodity: ..\\Common\\commodities.json,..\\Common\\sopt_comms.json
+    contract: ..\\Common\\contracts.json,..\\Common\\stk_options.json
+
+traders:
+-   channelid: simnow
+    module: TraderCTP
+    front: tcp://180.168.146.187:10201
+    broker: '9999'                      
+    appid: simnow_client_test
+    authcode: '0000000000000000'    
+    user: "yoursimnowaccount"
+    pass: "yoursimnowpassword"
+    quick: true
