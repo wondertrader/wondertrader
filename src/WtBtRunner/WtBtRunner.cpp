@@ -68,19 +68,22 @@ int main()
 	{
 		CtaMocker* mocker = new CtaMocker(&replayer, "cta", slippage);
 		mocker->init_cta_factory(cfg->get("cta"));
-		replayer.register_sink(mocker, "cta");
+		const char* stra_id = cfg->get("cta")->get("strategy")->getCString("id");
+		replayer.register_sink(mocker, stra_id);
 	}
 	else if (strcmp(mode, "hft") == 0)
 	{
 		HftMocker* mocker = new HftMocker(&replayer, "hft");
 		mocker->init_hft_factory(cfg->get("hft"));
-		replayer.register_sink(mocker, "hft");
+		const char* stra_id = cfg->get("hft")->get("strategy")->getCString("id");
+		replayer.register_sink(mocker, stra_id);
 	}
 	else if (strcmp(mode, "sel") == 0)
 	{
 		SelMocker* mocker = new SelMocker(&replayer, "sel", slippage);
-		mocker->init_sel_factory(cfg->get("cta"));
-		replayer.register_sink(mocker, "sel");
+		mocker->init_sel_factory(cfg->get("sel"));
+		const char* stra_id = cfg->get("sel")->get("strategy")->getCString("id");
+		replayer.register_sink(mocker, stra_id);
 	}
 	else if (strcmp(mode, "exec") == 0)
 	{
@@ -92,12 +95,13 @@ int main()
 	{
 		UftMocker* mocker = new UftMocker(&replayer, "uft");
 		mocker->init_uft_factory(cfg->get("uft"));
-		replayer.register_sink(mocker, "uft");
+		const char* stra_id = cfg->get("uft")->get("strategy")->getCString("id");
+		replayer.register_sink(mocker, stra_id);
 	}
 
 	replayer.prepare();
 
-	replayer.run();
+	replayer.run(true);
 
 	printf("press enter key to exit\r\n");
 	getchar();
