@@ -436,6 +436,6 @@ protected:
 
 	std::unordered_map<std::string, ChartIndex>	_chart_indice;
 
-	typedef WTSHashMap<std::string>	TickCache;
-	TickCache*	_ticks;
+	typedef faster_hashmap<std::string, WTSTickStruct>	TickCache;
+	TickCache	_ticks;
 };
