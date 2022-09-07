@@ -50,6 +50,7 @@ WtMinImpactExeUnit::WtMinImpactExeUnit()
 	, _cancel_times(0)
 	, _last_place_time(0)
 	, _last_tick_time(0)
+	, _in_calc(false)
 {
 }
 
@@ -238,6 +239,10 @@ void WtMinImpactExeUnit::on_entrust(uint32_t localid, const char* stdCode, bool 
 
 void WtMinImpactExeUnit::do_calc()
 {
+	CalcFlag flag(&_in_calc);
+	if (flag)
+		return;
+
 	if (_cancel_cnt != 0)
 		return;
 

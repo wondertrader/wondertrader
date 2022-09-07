@@ -30,6 +30,7 @@ WtDiffMinImpactExeUnit::WtDiffMinImpactExeUnit()
 	, _cancel_times(0)
 	, _last_place_time(0)
 	, _last_tick_time(0)
+	, _in_calc(false)
 {
 }
 
@@ -227,6 +228,10 @@ void WtDiffMinImpactExeUnit::on_entrust(uint32_t localid, const char* stdCode, b
 
 void WtDiffMinImpactExeUnit::do_calc()
 {
+	CalcFlag flag(&_in_calc);
+	if (flag)
+		return;
+
 	if (_cancel_cnt != 0)
 		return;
 
