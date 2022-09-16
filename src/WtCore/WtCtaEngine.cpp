@@ -347,10 +347,10 @@ void WtCtaEngine::handle_push_quote(WTSTickData* newTick, uint32_t hotFlag)
 		_tm_ticker->on_tick(newTick, hotFlag);
 }
 
-void WtCtaEngine::handle_pos_change(const char* straName, const char* stdCode, double newTarget)
+void WtCtaEngine::handle_pos_change(const char* straName, const char* stdCode, double diffPos)
 {
 	//这里是持仓增量,所以不用处理未过滤的情况,因为增量情况下,不会改变目标diffQty
-	if(_filter_mgr.is_filtered_by_strategy(straName, newTarget, true))
+	if(_filter_mgr.is_filtered_by_strategy(straName, diffPos, true))
 	{
 		//输出日志
 		WTSLogger::info("[Filters] Target position of {} of strategy {} ignored by strategy filter", stdCode, straName);
@@ -366,8 +366,8 @@ void WtCtaEngine::handle_pos_change(const char* straName, const char* stdCode, d
 		realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
 	}
 
-	//PosInfo& pItem = _pos_map[realCode];
-	double targetPos = newTarget;
+	PosInfo& pItem = _pos_map[realCode];
+	double targetPos = pItem._volume + diffPos;
 
 	bool bRiskEnabled = false;
 	if (!decimal::eq(_risk_volscale, 1.0) && _risk_date == _cur_tdate)
