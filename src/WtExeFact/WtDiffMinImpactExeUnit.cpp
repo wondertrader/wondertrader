@@ -285,9 +285,11 @@ void WtDiffMinImpactExeUnit::do_calc()
 		this_qty = round(this_qty*_qty_rate);
 		if (decimal::lt(this_qty, 1))
 			this_qty = 1;
-
-		this_qty = min(this_qty, abs(diffPos));
 	}
+
+	//By Wesley @ 2022.09.13
+	//这里要对下单数量做一个修正
+	this_qty = min(this_qty, abs(diffPos));
 
 	//如果买入且有空头持仓，或者卖出且有多头持仓
 	//对单次下单做一个修正，保证平仓和开仓不会同时下单
