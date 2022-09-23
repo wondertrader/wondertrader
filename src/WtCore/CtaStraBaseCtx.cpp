@@ -1440,7 +1440,7 @@ void CtaStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 
 	if (bFireAtOnce)	//如果是条件单触发, 则向引擎提交变化量
 	{
-		_engine->handle_pos_change(_name.c_str(), stdCode, qty);
+		_engine->handle_pos_change(_name.c_str(), stdCode, diff);
 	}
 }
 
