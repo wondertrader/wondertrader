@@ -117,7 +117,7 @@ bool ParserHuaX::init(WTSVariant* config)
 	const char* creatorName = "_ZN11TORALEV1API15CTORATstpXMdApi16CreateTstpXMdApiERKcS2_";
 #endif
 	_funcCreator = (HuaXCreater)DLLHelper::get_symbol(_hInst, creatorName);
-	_api = _funcCreator((TTORATstpMDSubModeType)_sub_mode.c_str(), (TTORATstpMDSubModeType)_derive_sub_mode.c_str());
+	_api = _funcCreator((TTORATstpMDSubModeType)_sub_mode.c_str()[0], (TTORATstpMDSubModeType)_derive_sub_mode.c_str()[0]);
 	_api->RegisterSpi(this);
 
 	return true;
