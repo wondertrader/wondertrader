@@ -1,0 +1,18 @@
+config:
+    session: ./common/sessions.json
+    commodity: ./common/commodities.json
+    contract: ./common/contracts.json
+    profile: atpTest
+    trader: TraderATP.dll
+
+atpTest:
+    user: 'hrtest00095'  # AGW登录账号
+    pass: 'archforce1'  # AGW登录密码
+    branch_id: '00000'    # 营业部ID （当登录模式为2-资金账户登录模式时，该字段是否必填请咨询券商）
+    cust_id: '70000095'  #客户号
+    account_id: 'A000000095'  # 证券账户
+    account_key: '8888888'  # 密码
+    front: '119.29.118.143:32001'  # 交易网关
+    front_backup: '119.29.118.143:32001'  # 备用交易网关
+    fund_account_id: '70000095'  # 资金账户
+

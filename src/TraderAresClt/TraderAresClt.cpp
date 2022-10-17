@@ -23,6 +23,8 @@
 #include <boost/filesystem.hpp>
 #include <iostream>
 
+#include <boost/thread/thread.hpp>
+
 const char* ENTRUST_SECTION = "entrusts";
 const char* ORDER_SECTION = "orders";
 
@@ -197,7 +199,7 @@ TraderAresClt::TraderAresClt()
 	, m_wrapperState(WS_NOTLOGIN)
 	, m_uLastQryTime(0)
 	, m_iRequestID(0)
-	, m_optSink(NULL)
+	//, m_optSink(NULL)
 	, m_bscSink(NULL)
 	, m_bInQuery(false)
 	, m_bStopped(NULL)
@@ -396,9 +398,11 @@ void TraderAresClt::connect()
 		}
 	}
 
-	if (m_bscSink)
-		m_bscSink->handleEvent(WTE_Connect, 0);
+	//if (m_bscSink)
+	//	m_bscSink->handleEvent(WTE_Connect, 0);
 
+	doLogin();
+	
 	if (m_thrdWorker == NULL)
 	{
 		boost::asio::io_service::work work(_asyncio);
@@ -412,7 +416,9 @@ void TraderAresClt::connect()
 		}));
 	}
 
-	//Sleep(5000);  /// 等待登录之后连接再回调
+	_asyncio.post([this]() {
+		write_log(m_bscSink, LL_INFO, "Begin to connect ...");
+	});
 }
 
 void TraderAresClt::disconnect()
@@ -437,7 +443,6 @@ bool TraderAresClt::makeEntrustID(char* buffer, int length)
 	{
 		memset(buffer, 0, length);
 		uint32_t orderref = m_orderRef.fetch_add(1) + 1;
-		//fmt::format_to(buffer, "{:010d}#{:06d}", (uint32_t)m_nLine, orderref);
 		fmt::format_to(buffer, "{}#{}#{}", m_strUserID, m_nLine, orderref);
 		return true;
 	}
@@ -455,8 +460,6 @@ void TraderAresClt::registerSpi(ITraderSpi *listener)
 	if (m_bscSink)
 	{
 		m_bdMgr = listener->getBaseDataMgr();
-
-		m_optSink = listener->getOptSpi();
 	}
 }
 
@@ -475,7 +478,7 @@ int TraderAresClt::login(const char* user, const char* pass, const char* product
 		return -1;
 	}
 
-	doLogin();
+	//doLogin();
 
 	return 0;
 }
@@ -503,37 +506,21 @@ int TraderAresClt::doLogin()
 
 		write_log(m_bscSink, LL_ERROR, "[TraderAresClt] Sending login request failed: {}", msg);
 		m_wrapperState = WS_LOGINFAILED;
-		
-		_asyncio.post([this, msg] {
-			m_bscSink->onLoginResult(false, msg.c_str(), 0);
-		});
+
+		//_asyncio.post([this, msg] {
+		//	m_bscSink->onLoginResult(false, msg.c_str(), 0);
+		//});
 	}
 	else
 	{
-		//write_log(m_bscSink, LL_INFO, "[TraderAresClt] Sending login request successed: {}", iResult);
+		write_log(m_bscSink, LL_INFO, "[TraderAresClt] Sending login request successed: {}", iResult);
 
 		m_wrapperState = WS_LOGINED;
 
-		_asyncio.post([this] {
-			m_bscSink->onLoginResult(true, 0, m_lDate);
-			m_wrapperState = WS_ALLREADY;
-		});
-		
-		//if (!m_bInited)
-		//{
-		//	m_wrapperState = WS_LOGINED;
-		//	m_bInited = true;
-
-		//	_asyncio.post([this] {
-		//		m_bscSink->onLoginResult(true, 0, m_lDate);
-		//		m_wrapperState = WS_ALLREADY;
-		//	});
-		//}
-		//else
-		//{
-		//	write_log(m_bscSink, LL_INFO, "[TraderAresClt] [{}] Connection recovered", m_strUserID.c_str());
+		//_asyncio.post([this] {
 		//	m_wrapperState = WS_ALLREADY;
-		//}
+		//	m_bscSink->onLoginResult(true, 0, m_lDate);
+		//});
 	}
 
 	return 0;
@@ -541,7 +528,6 @@ int TraderAresClt::doLogin()
 
 int TraderAresClt::logout()
 {
-	std::cout << "logout ..." << std::endl;
 	if (m_pUserAPI == NULL)
 	{
 		return -1;
@@ -554,93 +540,82 @@ int TraderAresClt::logout()
 
 int TraderAresClt::orderInsert(WTSEntrust* entrust)
 {
-	printf("Insert Order ...\n");
-
 	if (m_pUserAPI == NULL || m_wrapperState != WS_ALLREADY)
 	{
-		printf("orderInsert failed ...");
 		return -1;
 	}
 
 	WTSContractInfo* ct = entrust->getContractInfo();
-	if (ct == NULL)
+	if (ct != NULL)
 	{
-		printf("entrust is NULL\n");
-		return -1;
-	}
-		
+		tagXTReqOrderInsertField req;
+		memset(&req, 0, sizeof(req));
 
-	tagXTReqOrderInsertField req;
-	memset(&req, 0, sizeof(req));
+		///用户代码
+		req.Line = m_nLine;
+		req.UserType[0] = m_strUserType.at(0);
+		strcpy(req.UserID, m_strUserID.c_str());
+		///投资者代码
+		strcpy(req.InvestorID, m_strInvestorID.c_str());
+		///合约代码
+		strcpy(req.Code, entrust->getCode());
+		/// 交易所代码
+		strcpy(req.Exchange, entrust->getExchg());
 
-	///用户代码
-	req.Line = m_nLine;
-	req.UserType[0] = m_strUserType.at(0);
-	strcpy(req.UserID, m_strUserID.c_str());
-	///投资者代码
-	strcpy(req.InvestorID, m_strInvestorID.c_str());
-	///合约代码
-	strcpy(req.Code, entrust->getCode());
-	//strcpy(req.Code, "510050");
-	/// 交易所代码
-	strcpy(req.Exchange, entrust->getExchg());
-	//strcpy(req.Exchange, "SSE");
+		if (strlen(entrust->getUserTag()) == 0)
+		{
+			///报单引用
+			fmt::format_to(req.OrderRef, "{}", m_orderRef.fetch_add(0));
 
-	if (strlen(entrust->getUserTag()) == 0)
-	{
-		///报单引用
-		fmt::format_to(req.OrderRef, "{}", m_orderRef.fetch_add(0));
+		}
+		else
+		{
+			uint32_t orderref;
+			extractEntrustID(entrust->getEntrustID(), orderref);
+			///报单引用
+			fmt::format_to(req.OrderRef, "{}", orderref);
+		}
 
-	}
-	else
-	{
-		uint32_t orderref;
-		extractEntrustID(entrust->getEntrustID(), orderref);
-		///报单引用
-		fmt::format_to(req.OrderRef, "{}", orderref);
-	}
+		if (strlen(entrust->getUserTag()) > 0)
+		{
+			//m_mapEntrustTag[entrust->getEntrustID()] = entrust->getUserTag();
+			m_iniHelper.writeString(ENTRUST_SECTION, entrust->getEntrustID(), entrust->getUserTag());
+			m_iniHelper.save();
+		}
 
-	if (strlen(entrust->getUserTag()) > 0)
-	{
-		//m_mapEntrustTag[entrust->getEntrustID()] = entrust->getUserTag();
-		m_iniHelper.writeString(ENTRUST_SECTION, entrust->getEntrustID(), entrust->getUserTag());
-		m_iniHelper.save();
-	}
+		WTSCommodityInfo* commInfo = ct->getCommInfo();
 
-	WTSCommodityInfo* commInfo = ct->getCommInfo();
+		///用户代码
+		///报单价格条件: 限价
+		req.PriceType[0] = wrapPriceType(entrust->getPriceType(), strcmp(commInfo->getExchg(), "CFFEX") == 0);
+		///买卖方向: 
+		req.Direction[0] = wrapDirectionType(entrust->getDirection(), entrust->getOffsetType());
+		///组合开平标志: 开仓
+		req.Offset[0] = wrapOffsetType(entrust->getOffsetType());
+		///组合投机套保标志
+		req.Hedge[0] = '1';  // 投机
+		///价格
+		req.LimitPrice = entrust->getPrice();
+		///数量: 1
+		req.VolumeOrigin = (int)entrust->getVolume();
 
-	///用户代码
-	///报单价格条件: 限价
-	req.PriceType[0] = wrapPriceType(entrust->getPriceType(), strcmp(commInfo->getExchg(), "CFFEX") == 0);
-	//req.PriceType[0] = '2';
-	///买卖方向: 
-	req.Direction[0] = wrapDirectionType(entrust->getDirection(), entrust->getOffsetType());
-	//req.Direction[0] = '0';
-	///组合开平标志: 开仓
-	req.Offset[0] = wrapOffsetType(entrust->getOffsetType());
-	//req.Offset[0] = '0';
-	///组合投机套保标志
-	req.Hedge[0] = '1';  // 投机
-	///价格
-	req.LimitPrice = entrust->getPrice();
-	//req.LimitPrice = 2.826;
-	///数量: 1
-	req.VolumeOrigin = (int)entrust->getVolume();
-	//req.VolumeOrigin = 1000;
+		uint32_t order_ref = m_orderRef.fetch_add(1) + 1;
+		_snprintf(req.OrderRef, 15, "%d", order_ref);
 
-	uint32_t order_ref = m_orderRef.fetch_add(1) + 1;
-	_snprintf(req.OrderRef, 15, "%d", order_ref);
+		/*std::cout << "Code: " << req.Code << "  Exchange: " << req.Exchange << "  PriceType: " << req.PriceType << "  Offset: " << req.Offset
+			<< "  LimitPrice: " << req.LimitPrice << "  Volume: " << req.VolumeOrigin << "  Direction: " << req.Direction << "  OrderRef: " << req.OrderRef << std::endl;*/
 
-	std::cout << "Code: " << req.Code << "  Exchange: " << req.Exchange << "  PriceType: " << req.PriceType << "  Offset: " << req.Offset
-		<< "  LimitPrice: " << req.LimitPrice << "  Volume: " << req.VolumeOrigin << "  Direction: " << req.Direction << "  OrderRef: " << req.OrderRef << std::endl;
+		int iResult = m_pUserAPI->ReqOrderInsert(&req);
+		if (iResult <= 0)
+		{
+			write_log(m_bscSink, LL_ERROR, "[TraderAresClt] Order inserting failed: {}", iResult);
+		}
 
-	int iResult = m_pUserAPI->ReqOrderInsert(&req);
-	if (iResult <= 0)
-	{
-		write_log(m_bscSink, LL_ERROR, "[TraderAresClt] Order inserting failed: {}", iResult);
+		return 0;
 	}
 
-	return 0;
+	write_log(m_bscSink, LL_ERROR, "[TraderAresClt] Order inserting failed: Invalid contract!");
+	return -1;
 }
 
 int TraderAresClt::orderAction(WTSEntrustAction* action)
@@ -648,39 +623,47 @@ int TraderAresClt::orderAction(WTSEntrustAction* action)
 	if (m_wrapperState != WS_ALLREADY)
 		return -1;
 
+
 	uint32_t orderref;
-	if (!extractEntrustID(action->getEntrustID(), orderref))
-		return -1;
 
-	tagXTReqOrderCancelField req;
-	memset(&req, 0, sizeof(req));
-	///经纪公司代码
-	wt_strcpy(req.UserID, m_strUserID.c_str(), m_strUserID.size());
-	wt_strcpy(req.InvestorID, m_strInvestorID.c_str(), m_strInvestorID.size());
-	///报单引用
-	fmt::format_to(req.ActionRef, "{}", orderref);
-	///请求编号
-	strcpy(req.OrderSysID, action->getOrderID());
-	///合约代码
-	strcpy(req.Code, action->getCode());
-	strcpy(req.Exchange, action->getExchg());
-
-	int iResult = m_pUserAPI->ReqOrderCancel(&req);
-	if (iResult <= 0)
+	if (extractEntrustID(action->getEntrustID(), orderref))
 	{
-		write_log(m_bscSink, LL_ERROR, "[TraderAresClt] Sending cancel request failed: {}", iResult);
+		tagXTReqOrderCancelField req;
+		memset(&req, 0, sizeof(req));
+		///经纪公司代码
+		wt_strcpy(req.UserID, m_strUserID.c_str(), m_strUserID.size());
+		wt_strcpy(req.InvestorID, m_strInvestorID.c_str(), m_strInvestorID.size());
+		///报单引用
+		fmt::format_to(req.ActionRef, "{}", orderref);
+		///请求编号
+		strcpy(req.OrderSysID, action->getOrderID());
+		///合约代码
+		strcpy(req.Code, action->getCode());
+		strcpy(req.Exchange, action->getExchg());
+
+		//std::cout << "ReqAction:  code:" << req.Code << " exchg:" << req.Exchange << " actionRef:" << req.ActionRef << " ordersysid:" << req.OrderSysID << std::endl;
+
+		int iResult = m_pUserAPI->ReqOrderCancel(&req);
+		if (iResult <= 0)
+		{
+			write_log(m_bscSink, LL_ERROR, "[TraderAresClt] Sending cancel request failed: {}", iResult);
+		}
+
+		return 0;
 	}
 
-	return 0;
+	return -1;
 }
 
 int TraderAresClt::queryAccount()
 {
 	if (m_pUserAPI == NULL || m_wrapperState != WS_ALLREADY)
 	{
-		printf("Query account failed ...");
+		write_log(m_bscSink, LL_ERROR, "[TraderAresClt] query error");
 		return -1;
 	}
+
+	write_log(m_bscSink, LL_INFO, "[TraderAresClt] Begin to query account info ...");
 
 	tagXTReqQryAccountField req;
 	memset(&req, 0, sizeof(req));
@@ -693,7 +676,7 @@ int TraderAresClt::queryAccount()
 
 	if (iRet <= 0)
 	{
-		std::cout << "ReqQryAccount Error: " << m_strErrInfo << std::endl;
+		write_log(m_bscSink, LL_ERROR, "[TraderAresClt] Account querying failed: {}", m_strErrInfo);
 	}
 
 	//StdUniqueLock lock(m_mtxQuery);
@@ -719,8 +702,11 @@ int TraderAresClt::queryPositions()
 {
 	if (m_pUserAPI == NULL || m_wrapperState != WS_ALLREADY)
 	{
+		write_log(m_bscSink, LL_ERROR, "Failed to query positions ...");
 		return -1;
 	}
+
+	write_log(m_bscSink, LL_INFO, "[TraderAresClt] Begin to query position info ...");
 
 	tagXTReqQryPositionField req;
 	memset(&req, 0, sizeof(req));
@@ -731,8 +717,10 @@ int TraderAresClt::queryPositions()
 
 	if (iRet <= 0)
 	{
-		std::cout << "ReqQryPosition Error: " << m_strErrInfo << std::endl;
+		write_log(m_bscSink, LL_ERROR, "[TraderAresClt] Failed to query position info, Error: {}", m_strErrInfo);
 	}
+	else
+		write_log(m_bscSink, LL_INFO, "[TraderAresClt] Succeeded to query position info, Code: {}", iRet);
 
 	//StdUniqueLock lock(m_mtxQuery);
 	//m_queQuery.push([this]() {
@@ -757,6 +745,8 @@ int TraderAresClt::queryOrders()
 	{
 		return -1;
 	}
+
+	write_log(m_bscSink, LL_INFO, "[TraderAresClt] Begin to query order info ...");
 
 	tagXTReqQryOrderField req;
 	memset(&req, 0, sizeof(req));
@@ -794,6 +784,8 @@ int TraderAresClt::queryTrades()
 		return -1;
 	}
 
+	write_log(m_bscSink, LL_INFO, "[TraderAresClt] Begin to query trade info ...");
+
 	tagXTReqQryTradeField req;
 	memset(&req, 0, sizeof(req));
 	strcpy(req.UserID, m_strUserID.c_str());
@@ -830,6 +822,8 @@ int TraderAresClt::querySettlement(uint32_t uDate)
 		return -1;
 	}
 
+	write_log(m_bscSink, LL_ERROR, "[TraderAresClt] Begin to query settlement info ...");
+
 	////m_strSettleInfo.clear();
 	//StdUniqueLock lock(m_mtxQuery);
 	//m_queQuery.push([this, uDate]() {
@@ -859,13 +853,14 @@ bool TraderAresClt::IsErrorRspInfo(tagXTRspInfoField *pRspInfo)
 void TraderAresClt::OnFrontConnected()
 {
 	/// 先调用ReLoginOn，才会进行网络连接，连接成功后回调此函数
-	//std::cout << "onFrontConnected" << std::endl;
+	write_log(m_bscSink, LL_INFO, "onFrontConnected");
+
+	if (m_bscSink)
+		m_bscSink->handleEvent(WTE_Connect, 0);
 }
 
 void TraderAresClt::OnFrontDisconnected()
 {
-	std::cout << "onFrontDisconnected" << std::endl;
-
 	m_wrapperState = WS_NOTLOGIN;
 	if (m_bscSink)
 		m_bscSink->handleEvent(WTE_Close, -1);
@@ -880,7 +875,8 @@ void TraderAresClt::OnFrontDisconnected()
 
 void TraderAresClt::OnRspUserLogin(tagXTRspUserLoginField* pRspUserLogin, tagXTRspInfoField* error, int id, bool last)
 {
-	//printf("onRspUserLogin [%d]\n", last ? (1) : (0));
+	//if (m_bscSink)
+	//	m_bscSink->handleEvent(WTE_Connect, 0);
 
 	if (error)
 		m_strErrInfo = error->ErrorMsg;
@@ -891,7 +887,6 @@ void TraderAresClt::OnRspUserLogin(tagXTRspUserLoginField* pRspUserLogin, tagXTR
 
 		{
 			///获取当前交易日
-			//m_lDate = atoi(m_pUserAPI->GetTradingDay());
 			m_lDate = TimeUtils::getCurDate();
 
 			write_log(m_bscSink, LL_INFO, "[TraderAresClt][{}-{}] Login succeed, Sessionid: {}...",
@@ -918,15 +913,13 @@ void TraderAresClt::OnRspUserLogin(tagXTRspUserLoginField* pRspUserLogin, tagXTR
 			}
 		}
 
-		if (m_bscSink)
-			m_bscSink->onLoginResult(true, "", 0);
-
 		m_wrapperState = WS_ALLREADY;
+
+		if (m_bscSink)
+			m_bscSink->onLoginResult(true, 0, m_lDate);
 	}
 	else
 	{
-		printf("login error=====[%d][%s]\n", error->ErrorID, error->ErrorMsg);
-
 		write_log(m_bscSink, LL_ERROR, "[TraderAresClt][{}-{}] Login failed: {}", m_strUserID.c_str(), m_strInvestorID.c_str(), error->ErrorMsg);
 		m_wrapperState = WS_LOGINFAILED;
 
@@ -943,35 +936,55 @@ void TraderAresClt::OnRspOrderInsert(tagXTReqOrderInsertField* data, tagXTRspInf
 	WTSEntrust* entrust = makeEntrust(data);
 	if (entrust)
 	{
-		if (IsErrorRspInfo(error))
-		{
-			WTSError *err = makeError(error);
-			//g_orderMgr.onRspEntrust(entrust, err);
-			if (m_bscSink)
-				m_bscSink->onRspEntrust(entrust, err);
-			err->release();
-		}
-		else
-		{
-			if (m_bscSink)
-				m_bscSink->onRspEntrust(entrust, NULL);
+		WTSError *err = makeError(error, WEC_ORDERINSERT);
+		if (m_bscSink)
+			m_bscSink->onRspEntrust(entrust, err);
 
-			//WTSOrderInfo* ordInfo = makeOrderInfo(data);
-			//if (m_bscSink)
-			//	m_bscSink->onPushOrder(ordInfo);
+		//if (m_optSink)
+		//	m_optSink->onRspEntrustOpt(entrust, err);
 
-			//if (ordInfo)
-			//	ordInfo->release();
-		}
+		entrust->release();
+		err->release();
+	}
+	else if (IsErrorRspInfo(error))
+	{
+		WTSError *err = makeError(error, WEC_ORDERINSERT);
+		if (m_bscSink)
+			m_bscSink->onTraderError(err);
+		err->release();
 	}
 
-	if (entrust)
-		entrust->release();
+	//if (entrust)
+	//{
+	//	if (IsErrorRspInfo(error))
+	//	{
+	//		WTSError *err = makeError(error);
+	//		//g_orderMgr.onRspEntrust(entrust, err);
+	//		if (m_bscSink)
+	//			m_bscSink->onRspEntrust(entrust, err);
+	//		err->release();
+	//	}
+	//	else
+	//	{
+	//		if (m_bscSink)
+	//			m_bscSink->onRspEntrust(entrust, NULL);
+
+	//		//WTSOrderInfo* ordInfo = makeOrderInfo(data);
+	//		//if (m_bscSink)
+	//		//	m_bscSink->onPushOrder(ordInfo);
+
+	//		//if (ordInfo)
+	//		//	ordInfo->release();
+	//	}
+	//}
+
+	//if (entrust)
+	//	entrust->release();
 }
 
 void TraderAresClt::OnRspOrderAction(tagXTReqOrderCancelField* data, tagXTRspInfoField* pRspInfo, int id, bool last)
 {
-	if (pRspInfo)	
+	if (pRspInfo)
 		m_strErrInfo = pRspInfo->ErrorMsg;
 
 	if (IsErrorRspInfo(pRspInfo))
@@ -982,7 +995,7 @@ void TraderAresClt::OnRspOrderAction(tagXTReqOrderCancelField* data, tagXTRspInf
 	}
 	else
 	{
-
+		std::cout << "Cancelling order sucessfully" << "  errmsg: " << pRspInfo->ErrorMsg << std::endl;
 	}
 }
 
@@ -994,9 +1007,12 @@ void TraderAresClt::OnErrRtnOrderAction(tagXTReqOrderCancelField* orderCancelFie
 	WTSEntrust* entrust = makeEntrust(orderCancelField);
 	if (entrust)
 	{
-		WTSError *err = makeError(pRspInfo);
+		WTSError *err = makeError(pRspInfo, WEC_ORDERCANCEL);
 		if (m_bscSink)
 			m_bscSink->onRspEntrust(entrust, err);
+
+		//if (m_optSink)
+		//	m_optSink->onRspEntrustOpt(entrust, err);
 		entrust->release();
 		err->release();
 	}
@@ -1004,6 +1020,8 @@ void TraderAresClt::OnErrRtnOrderAction(tagXTReqOrderCancelField* orderCancelFie
 
 void TraderAresClt::OnRspQryTradingAccount(tagXTRspAccountField* pTradingAccount, tagXTRspInfoField* pRspInfo, int id, bool bIsLast)
 {
+	write_log(m_bscSink, LL_INFO, "OnRspQryTradingAccount: {}", pRspInfo->ErrorMsg);
+
 	if (pRspInfo)
 		m_strErrInfo = pRspInfo->ErrorMsg;
 
@@ -1012,26 +1030,25 @@ void TraderAresClt::OnRspQryTradingAccount(tagXTRspAccountField* pTradingAccount
 		m_bInQuery = false;
 	}
 
-	if (bIsLast && !IsErrorRspInfo(pRspInfo))
+	if (bIsLast && !IsErrorRspInfo(pRspInfo) && pTradingAccount)
 	{
-		std::cout << "OnRspQryTradingAccount ..." << std::endl;
-		std::cout << "Line: " << pTradingAccount->Line << "  UserType: " << pTradingAccount->UserType[0]
-			<< "  UserID: " << pTradingAccount->UserID << "  InvestorID: " << pTradingAccount->InvestorID
-			<< "  FrozenCash: " << pTradingAccount->FrozenMargin << "  Available: " << pTradingAccount->Available
-			<< "  FrozenMargin: " << pTradingAccount->FrozenMargin << std::endl;
+		//std::cout << "Line: " << pTradingAccount->Line << "  UserType: " << pTradingAccount->UserType[0]
+		//	<< "  UserID: " << pTradingAccount->UserID << "  InvestorID: " << pTradingAccount->InvestorID
+		//	<< "  FrozenCash: " << pTradingAccount->FrozenMargin << "  Available: " << pTradingAccount->Available
+		//	<< "  FrozenMargin: " << pTradingAccount->FrozenMargin << std::endl;
 
 		WTSAccountInfo* accountInfo = WTSAccountInfo::create();
-		//accountInfo->setPreBalance(pTradingAccount->PreBalance);
-		//accountInfo->setCloseProfit(pTradingAccount->CloseProfit + pTradingAccount->CashIn);
-		//accountInfo->setDynProfit(pTradingAccount->PositionProfit);
-		//accountInfo->setMargin(pTradingAccount->CurrMargin);
+		accountInfo->setPreBalance(0);
+		accountInfo->setCloseProfit(0);
+		accountInfo->setDynProfit(0);
+		accountInfo->setMargin(0);
 		accountInfo->setAvailable(pTradingAccount->Available);
-		//accountInfo->setCommission(pTradingAccount->Commission);
+		accountInfo->setCommission(0);
 		accountInfo->setFrozenMargin(pTradingAccount->FrozenMargin);
 		//accountInfo->setFrozenCommission(pTradingAccount->FrozenCommission);
-		//accountInfo->setDeposit(pTradingAccount->Deposit);
-		//accountInfo->setWithdraw(pTradingAccount->Withdraw);
-		//accountInfo->setBalance(accountInfo->getPreBalance() + accountInfo->getCloseProfit() - accountInfo->getCommission() + accountInfo->getDeposit() - accountInfo->getWithdraw());
+		accountInfo->setDeposit(0);
+		accountInfo->setWithdraw(0);
+		accountInfo->setBalance(accountInfo->getPreBalance() + accountInfo->getCloseProfit() - accountInfo->getCommission() + accountInfo->getDeposit() - accountInfo->getWithdraw());
 		accountInfo->setCurrency("CNY");
 
 		WTSArray * ay = WTSArray::create();
@@ -1045,6 +1062,8 @@ void TraderAresClt::OnRspQryTradingAccount(tagXTRspAccountField* pTradingAccount
 
 void TraderAresClt::OnRspQryInvestorPosition(tagXTRspPositionField* pInvestorPosition, tagXTRspInfoField* pRspInfo, int id, bool bIsLast)
 {
+	write_log(m_bscSink, LL_INFO, "Begin to callback result of positions, msg: {}", pRspInfo->ErrorMsg);
+
 	if (pRspInfo)
 		m_strErrInfo = pRspInfo->ErrorMsg;
 
@@ -1056,23 +1075,20 @@ void TraderAresClt::OnRspQryInvestorPosition(tagXTRspPositionField* pInvestorPos
 
 	if (!IsErrorRspInfo(pRspInfo) && pInvestorPosition)
 	{
-		std::cout << "OnRspQryInvestorPosition ..." << std::endl;
-		std::cout << "Line: " << pInvestorPosition->Line << "  UserType: " << pInvestorPosition->UserType[0]
-			<< "  UserID: " << pInvestorPosition->UserID << "  InvestorID: " << pInvestorPosition->InvestorID
-			<< "  Exchange: " << pInvestorPosition->Exchange << "  Code: " << pInvestorPosition->Code
-			<< "  Position: " << pInvestorPosition->Position << "  PositionCost: " << pInvestorPosition->PositionCost 
-			<< "  PosiDirection: " << pInvestorPosition->PosiDirection[0] << std::endl;
+		//std::cout << "Line: " << pInvestorPosition->Line << "  UserType: " << pInvestorPosition->UserType[0]
+		//	<< "  UserID: " << pInvestorPosition->UserID << "  InvestorID: " << pInvestorPosition->InvestorID
+		//	<< "  Exchange: " << pInvestorPosition->Exchange << "  Code: " << pInvestorPosition->Code
+		//	<< "  Position: " << pInvestorPosition->Position << "  PositionCost: " << pInvestorPosition->PositionCost 
+		//	<< "  PosiDirection: " << pInvestorPosition->PosiDirection[0] << std::endl;
 
 		if (NULL == m_mapPosition)
 			m_mapPosition = PositionMap::create();
 
 		WTSContractInfo* contract = m_bdMgr->getContract(pInvestorPosition->Code, pInvestorPosition->Exchange);
-		if (contract == NULL)
-			return;
 
-		WTSCommodityInfo* commInfo = contract->getCommInfo();
 		if (contract)
 		{
+			WTSCommodityInfo* commInfo = contract->getCommInfo();
 			std::string key = fmt::format("{}-{}", pInvestorPosition->Code, pInvestorPosition->PosiDirection);
 			WTSPositionItem* pos = (WTSPositionItem*)m_mapPosition->get(key);
 			if (pos == NULL)
@@ -1160,7 +1176,6 @@ void TraderAresClt::OnRspQryInvestorPosition(tagXTRspPositionField* pInvestorPos
 
 	if (bIsLast)
 	{
-
 		WTSArray* ayPos = WTSArray::create();
 
 		if (m_mapPosition && m_mapPosition->size() > 0)
@@ -1174,6 +1189,7 @@ void TraderAresClt::OnRspQryInvestorPosition(tagXTRspPositionField* pInvestorPos
 		if (m_bscSink)
 			m_bscSink->onRspPosition(ayPos);
 
+
 		if (m_mapPosition)
 		{
 			m_mapPosition->release();
@@ -1181,6 +1197,8 @@ void TraderAresClt::OnRspQryInvestorPosition(tagXTRspPositionField* pInvestorPos
 		}
 
 		ayPos->release();
+
+		write_log(m_bscSink, LL_INFO, "Succeeded to callback QryTradingAccount info");
 	}
 }
 
@@ -1197,12 +1215,11 @@ void TraderAresClt::OnRspQryTrade(tagXTTradeField *pTrade, tagXTRspInfoField *pR
 
 	if (!IsErrorRspInfo(pRspInfo) && pTrade)
 	{
-		std::cout << "OnRspQryTrade ..." << std::endl;
-		std::cout << "Line: " << pTrade->Line << "  UserType: " << pTrade->UserType[0]
-			<< "  UserID: " << pTrade->UserID << "  InvestorID: " << pTrade->InvestorID
-			<< "  Exchange: " << pTrade->Exchange << "  Code: " << pTrade->Code
-			<< "  Direction: " << pTrade->Direction[0] << "  Offset: " << pTrade->Offset[0]
-			<< "  Price: " << pTrade->Price << "  Volume: " << pTrade->Volume << "  TradeDate: " << pTrade->TradeDate << std::endl;
+		//std::cout << "Line: " << pTrade->Line << "  UserType: " << pTrade->UserType[0]
+		//	<< "  UserID: " << pTrade->UserID << "  InvestorID: " << pTrade->InvestorID
+		//	<< "  Exchange: " << pTrade->Exchange << "  Code: " << pTrade->Code
+		//	<< "  Direction: " << pTrade->Direction[0] << "  Offset: " << pTrade->Offset[0]
+		//	<< "  Price: " << pTrade->Price << "  Volume: " << pTrade->Volume << "  TradeDate: " << pTrade->TradeDate << std::endl;
 
 		if (NULL == m_ayTrades)
 			m_ayTrades = WTSArray::create();
@@ -1236,15 +1253,14 @@ void TraderAresClt::OnRspQryOrder(tagXTOrderField *pOrder, tagXTRspInfoField *pR
 
 	if (!IsErrorRspInfo(pRspInfo) && pOrder)
 	{
-		std::cout << "OnRspQryOrder ..." << std::endl;
-		std::cout << "Line: " << pOrder->Line << "  UserType: " << pOrder->UserType[0]
-			<< "  UserID: " << pOrder->UserID << "  InvestorID: " << pOrder->InvestorID
-			<< "  Exchange: " << pOrder->Exchange << "  Code: " << pOrder->Code
-			<< "  Direction: " << pOrder->Direction[0] << "  Offset: " << pOrder->Offset[0]
-			<< "  LimitPrice: " << pOrder->LimitPrice << "  OriginVolume: " << pOrder->VolumeOrigin 
-			<< "  VolumeTraded: " << pOrder->VolumeTraded << "  VolumeRemain: " << pOrder->VolumeRemain
-			<< "  OrderStatus: " << pOrder->OrderStatus << "  StatusMsg: " << pOrder->StatusMsg
-			<< "  InsertDate: " << pOrder->InsertDate << "  InsertTime: " << pOrder->InsertTime << std::endl;
+		//std::cout << "Line: " << pOrder->Line << "  UserType: " << pOrder->UserType[0]
+		//	<< "  UserID: " << pOrder->UserID << "  InvestorID: " << pOrder->InvestorID
+		//	<< "  Exchange: " << pOrder->Exchange << "  Code: " << pOrder->Code
+		//	<< "  Direction: " << pOrder->Direction[0] << "  Offset: " << pOrder->Offset[0]
+		//	<< "  LimitPrice: " << pOrder->LimitPrice << "  OriginVolume: " << pOrder->VolumeOrigin 
+		//	<< "  VolumeTraded: " << pOrder->VolumeTraded << "  VolumeRemain: " << pOrder->VolumeRemain
+		//	<< "  OrderStatus: " << pOrder->OrderStatus << "  StatusMsg: " << pOrder->StatusMsg
+		//	<< "  InsertDate: " << pOrder->InsertDate << "  InsertTime: " << pOrder->InsertTime << std::endl;
 
 		if (NULL == m_ayOrders)
 			m_ayOrders = WTSArray::create();
@@ -1261,6 +1277,9 @@ void TraderAresClt::OnRspQryOrder(tagXTOrderField *pOrder, tagXTRspInfoField *pR
 		if (m_bscSink)
 			m_bscSink->onRspOrders(m_ayOrders);
 
+		//if (m_optSink)
+		//	m_optSink->onRspOrdersOpt(m_ayOrders);
+
 		if (m_ayOrders)
 			m_ayOrders->clear();
 	}
@@ -1268,15 +1287,14 @@ void TraderAresClt::OnRspQryOrder(tagXTOrderField *pOrder, tagXTRspInfoField *pR
 
 void TraderAresClt::OnRtnOrder(tagXTOrderField *pOrder)
 {
-	std::cout << "OnRtnOrder ..." << std::endl;
-	std::cout << "Line: " << pOrder->Line << "  UserType: " << pOrder->UserType[0]
-		<< "  UserID: " << pOrder->UserID << "  InvestorID: " << pOrder->InvestorID
-		<< "  Exchange: " << pOrder->Exchange << "  Code: " << pOrder->Code
-		<< "  Direction: " << pOrder->Direction[0] << "  Offset: " << pOrder->Offset[0]
-		<< "  LimitPrice: " << pOrder->LimitPrice << "  OriginVolume: " << pOrder->VolumeOrigin
-		<< "  VolumeTraded: " << pOrder->VolumeTraded << "  VolumeRemain: " << pOrder->VolumeRemain
-		<< "  OrderStatus: " << pOrder->OrderStatus << "  StatusMsg: " << pOrder->StatusMsg
-		<< "  InsertDate: " << pOrder->InsertDate << "  InsertTime: " << pOrder->InsertTime << std::endl;
+	//std::cout << "Line: " << pOrder->Line << "  UserType: " << pOrder->UserType[0]
+	//	<< "  UserID: " << pOrder->UserID << "  InvestorID: " << pOrder->InvestorID
+	//	<< "  Exchange: " << pOrder->Exchange << "  Code: " << pOrder->Code
+	//	<< "  Direction: " << pOrder->Direction[0] << "  Offset: " << pOrder->Offset[0]
+	//	<< "  LimitPrice: " << pOrder->LimitPrice << "  OriginVolume: " << pOrder->VolumeOrigin
+	//	<< "  VolumeTraded: " << pOrder->VolumeTraded << "  VolumeRemain: " << pOrder->VolumeRemain
+	//	<< "  OrderStatus: " << pOrder->OrderStatus << "  StatusMsg: " << pOrder->StatusMsg
+	//	<< "  InsertDate: " << pOrder->InsertDate << "  InsertTime: " << pOrder->InsertTime << std::endl;
 
 	WTSOrderInfo *orderInfo = makeOrderInfo(pOrder);
 	if (orderInfo)
@@ -1285,6 +1303,9 @@ void TraderAresClt::OnRtnOrder(tagXTOrderField *pOrder)
 			if (m_bscSink)
 				m_bscSink->onPushOrder(orderInfo);
 
+			//if (m_optSink)
+			//	m_optSink->onPushOrderOpt(orderInfo);
+
 			orderInfo->release();
 		});
 	}
@@ -1292,13 +1313,12 @@ void TraderAresClt::OnRtnOrder(tagXTOrderField *pOrder)
 
 void TraderAresClt::OnRtnTrade(tagXTTradeField *pTrade)
 {
-	std::cout << "OnRtnTrade ..." << std::endl;
-	std::cout << "Line: " << pTrade->Line << "  UserType: " << pTrade->UserType[0]
-		<< "  UserID: " << pTrade->UserID << "  InvestorID: " << pTrade->InvestorID
-		<< "  Exchange: " << pTrade->Exchange << "  Code: " << pTrade->Code
-		<< "  Direction: " << pTrade->Direction[0] << "  Offset: " << pTrade->Offset[0]
-		<< "  Price: " << pTrade->Price << "  Volume: " << pTrade->Volume
-		<< "  TradeDate: " << pTrade->TradeDate << "  TradeTime: " << pTrade->TradeTime << std::endl;
+	//std::cout << "Line: " << pTrade->Line << "  UserType: " << pTrade->UserType[0]
+	//	<< "  UserID: " << pTrade->UserID << "  InvestorID: " << pTrade->InvestorID
+	//	<< "  Exchange: " << pTrade->Exchange << "  Code: " << pTrade->Code
+	//	<< "  Direction: " << pTrade->Direction[0] << "  Offset: " << pTrade->Offset[0]
+	//	<< "  Price: " << pTrade->Price << "  Volume: " << pTrade->Volume
+	//	<< "  TradeDate: " << pTrade->TradeDate << "  TradeTime: " << pTrade->TradeTime << std::endl;
 
 	WTSTradeInfo *tRecord = makeTradeRecord(pTrade);
 	if (tRecord)
@@ -1437,6 +1457,12 @@ WTSError* TraderAresClt::makeError(tagXTRspInfoField* rspInfo)
 	return pRet;
 }
 
+WTSError* TraderAresClt::makeError(tagXTRspInfoField* rspInfo, WTSErroCode ec)
+{
+	WTSError* pRet = WTSError::create(ec, rspInfo->ErrorMsg);
+	return pRet;
+}
+
 WTSTradeInfo* TraderAresClt::makeTradeRecord(tagXTTradeField *tradeField)
 {
 	WTSContractInfo* contract = m_bdMgr->getContract(tradeField->Code, tradeField->Exchange);
@@ -1520,9 +1546,13 @@ void TraderAresClt::OnErrRtnOrderInsert(tagXTReqOrderInsertField *pInputOrder, t
 	WTSEntrust* entrust = makeEntrust(pInputOrder);
 	if (entrust)
 	{
-		WTSError *err = makeError(pRspInfo);
+		WTSError *err = makeError(pRspInfo, WEC_ORDERINSERT);
 		if (m_bscSink)
 			m_bscSink->onRspEntrust(entrust, err);
+
+		//if (m_optSink)
+		//	m_optSink->onRspEntrustOpt(entrust, err);
+
 		entrust->release();
 		err->release();
 	}
@@ -1530,6 +1560,7 @@ void TraderAresClt::OnErrRtnOrderInsert(tagXTReqOrderInsertField *pInputOrder, t
 
 bool TraderAresClt::isConnected()
 {
+	write_log(m_bscSink, LL_INFO, "successed to connect.");
 	return (m_wrapperState == WS_ALLREADY);
 }
 
