@@ -1,0 +1,23 @@
+config:
+    session: ./common/sessions.json
+    commodity: ./common/commodities.json
+    contract: ./common/contracts.json
+    profile: xalgoTest
+    trader: TraderXTPXAlgo.dll
+
+xalgoTest:
+    user: '315013278'  # 交易服务器OMS登录账号
+    pass: 'b8Usanmi'  # OMS登录密码
+    account_algo: '315013278'  # 算法服务器账户
+    password_algo: '123456'  # 算法服务器密码
+    client_id: '1'  # 交易服务器OMS登录账号
+    path: './'  # OMS登录密码
+    account_key: 'b8aa7173bba3470e390d787219b2112e'  
+    front_oms: '122.112.139.0'  
+    port_oms: '6202'  # 交易服务器OMS登录账号
+    front_algo: '119.3.40.4'  # 
+    port_algo: '8601'  # 
+    resume_type: '2'  #
+    algo_type: '3101'  # 算法类型
+    algo_params: '{"start_time": "10:05:00", "end_time": "10:10:00", "ticker": "600000", "market": "SH", "side": "BUY", "quantity": 100000, "limit_action": false, "expire_action": false,"price":7.15}'  # 算法参数 
+    quick: 'false'

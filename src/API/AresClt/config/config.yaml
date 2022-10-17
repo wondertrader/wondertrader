@@ -1,0 +1,18 @@
+config:
+    session: ./common/sessions.json
+    commodity: ./common/sopt_comms.json
+    contract: ./common/stk_options.json
+    risk: false
+    profile: aresTest
+    trader: TraderAresClt.dll
+
+aresTest:
+    line: '9901'
+    user_type: '3'  # 1-普通账户 2-信用账户 3-期权账户 4-期货与期权账户
+    user: 'xxxxxx'  # 用户账户，即交易账户
+    pass: 'xxxxxx'  # 资金密码
+    investor_id: 'xxxxx'  # 资金账户
+    IP: '127.0.0.1'
+    Port: '8888'
+    flowdir: '.'
+
