@@ -290,82 +290,8 @@ void TraderAresClt::release()
 		m_ayTrades->clear();
 }
 
-//void TraderAresClt::reconnect()
-//{
-//	if (m_pUserAPI)
-//	{
-//		FreeApi(m_pUserAPI);
-//		m_pUserAPI = NULL;
-//	}
-//
-//	if (m_pApp)
-//	{
-//		FreeApp(m_pApp);
-//		m_pApp = NULL;
-//	}
-//
-//	std::stringstream ss;
-//	ss << m_strFlowDir << "flows/" << m_strUserID << "/";
-//	boost::filesystem::create_directories(ss.str().c_str());
-//
-//	if (m_pfnCreateObj)
-//	{
-//		// 创建环境
-//		void* p = m_pfnCreateObj("ErebusTdAPP", 0);
-//		if (p)
-//		{
-//			m_pApp = (ITDErebusApp*)p;
-//		}
-//
-//		// 创建API
-//		char szParam[255] = { 0 };
-//		_snprintf(szParam, 254, "{IP:%s;Port:%d}", m_strIP.c_str(), m_nPort);
-//		p = m_pfnCreateObj("ErebusTdApi", szParam);
-//		if (p)
-//		{
-//			m_pUserAPI = (ITDErebusApi*)p;
-//		}
-//	}
-//
-//	if (m_pUserAPI == NULL)
-//	{
-//		if (m_bscSink)
-//			m_bscSink->handleEvent(WTE_Connect, -1);
-//		write_log(m_bscSink, LL_ERROR, "[TraderAresClt] Module initializing failed");
-//
-//		StdThreadPtr thrd(new StdThread([this]() {
-//			std::this_thread::sleep_for(std::chrono::seconds(2));
-//			write_log(m_bscSink, LL_WARN, "[TraderXTPXAlgo] {} reconnecting...", m_strUserID.c_str());
-//			reconnect();
-//		}));
-//		return;
-//	}
-//
-//	m_pUserAPI->RegisterSpi(this);
-//
-//	if (m_pApp)
-//	{
-//		int iRet = m_pApp->BeginWork(0);
-//
-//		if (iRet < 0)
-//		{
-//			// 启动失败
-//			write_log(m_bscSink, LL_ERROR, "[TraderAresClt] Creating environment failed.");
-//		}
-//	}
-//
-//	if (m_bscSink)
-//		m_bscSink->handleEvent(WTE_Connect, 0);
-//}
-
 void TraderAresClt::connect()
 {
-	//reconnect();
-
-	std::stringstream ss;
-	ss << m_strFlowDir << "flows/" << m_strUserID << "/";
-	boost::filesystem::create_directories(ss.str().c_str());
-
 	if (m_pfnCreateObj)
 	{
 		// 创建环境
@@ -397,11 +323,6 @@ void TraderAresClt::connect()
 			write_log(m_bscSink, LL_ERROR, "[TraderAresClt] Creating environment failed.");
 		}
 	}
-
-	//if (m_bscSink)
-	//	m_bscSink->handleEvent(WTE_Connect, 0);
-
-	doLogin();
 	
 	if (m_thrdWorker == NULL)
 	{
@@ -417,7 +338,8 @@ void TraderAresClt::connect()
 	}
 
 	_asyncio.post([this]() {
-		write_log(m_bscSink, LL_INFO, "Begin to connect ...");
+		if (m_bscSink)
+			m_bscSink->handleEvent(WTE_Connect, 0);
 	});
 }
 
@@ -478,7 +400,7 @@ int TraderAresClt::login(const char* user, const char* pass, const char* product
 		return -1;
 	}
 
-	//doLogin();
+	doLogin();
 
 	return 0;
 }
@@ -507,15 +429,15 @@ int TraderAresClt::doLogin()
 		write_log(m_bscSink, LL_ERROR, "[TraderAresClt] Sending login request failed: {}", msg);
 		m_wrapperState = WS_LOGINFAILED;
 
-		//_asyncio.post([this, msg] {
-		//	m_bscSink->onLoginResult(false, msg.c_str(), 0);
-		//});
+		_asyncio.post([this, msg] {
+			m_bscSink->onLoginResult(false, msg.c_str(), 0);
+		});
 	}
 	else
 	{
 		write_log(m_bscSink, LL_INFO, "[TraderAresClt] Sending login request successed: {}", iResult);
 
-		m_wrapperState = WS_LOGINED;
+		//m_wrapperState = WS_LOGINED;
 
 		//_asyncio.post([this] {
 		//	m_wrapperState = WS_ALLREADY;
@@ -853,10 +775,7 @@ bool TraderAresClt::IsErrorRspInfo(tagXTRspInfoField *pRspInfo)
 void TraderAresClt::OnFrontConnected()
 {
 	/// 先调用ReLoginOn，才会进行网络连接，连接成功后回调此函数
-	write_log(m_bscSink, LL_INFO, "onFrontConnected");
-
-	if (m_bscSink)
-		m_bscSink->handleEvent(WTE_Connect, 0);
+	write_log(m_bscSink, LL_INFO, "[TraderAresClt] Server connected");
 }
 
 void TraderAresClt::OnFrontDisconnected()
@@ -875,9 +794,6 @@ void TraderAresClt::OnFrontDisconnected()
 
 void TraderAresClt::OnRspUserLogin(tagXTRspUserLoginField* pRspUserLogin, tagXTRspInfoField* error, int id, bool last)
 {
-	//if (m_bscSink)
-	//	m_bscSink->handleEvent(WTE_Connect, 0);
-
 	if (error)
 		m_strErrInfo = error->ErrorMsg;
 
