@@ -16,6 +16,7 @@
 #include "../Includes/IDataManager.h"
 #include "../Includes/WTSVariant.hpp"
 #include "../Includes/IHotMgr.h"
+#include "../Includes/IBaseDataMgr.h"
 #include "../Share/decimal.h"
 
 #include "../WTSTools/WTSLogger.h"
@@ -27,7 +28,7 @@ namespace rj = rapidjson;
 USING_NS_WTP;
 
 
-WtDiffExecuter::WtDiffExecuter(WtExecuterFactory* factory, const char* name, IDataManager* dataMgr)
+WtDiffExecuter::WtDiffExecuter(WtExecuterFactory* factory, const char* name, IDataManager* dataMgr, IBaseDataMgr* bdMgr)
 	: IExecCommand(name)
 	, _factory(factory)
 	, _data_mgr(dataMgr)
@@ -323,26 +324,27 @@ uint64_t WtDiffExecuter::getCurTime()
 
 
 #pragma region 外部接口
-void WtDiffExecuter::on_position_changed(const char* stdCode, double targetPos)
+void WtDiffExecuter::on_position_changed(const char* stdCode, double diffPos)
 {
 	ExecuteUnitPtr unit = getUnit(stdCode, true);
 	if (unit == NULL)
 		return;
 
-	targetPos = round(targetPos*_scale);
-
-	double oldVol = _target_pos[stdCode];
-	_target_pos[stdCode] = targetPos;
-
-	if(decimal::eq(oldVol, targetPos))
+	//如果差量为0，则直接返回
+	if (decimal::eq(diffPos, 0))
 		return;
 
-	//更新差量
-	double& thisDiff = _diff_pos[stdCode];
-	double prevDiff = thisDiff;
-	thisDiff += (targetPos - oldVol);
+	diffPos = round(diffPos*_scale);
 
-	//WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "Target position of {} changed: {} -> {}", stdCode, oldVol, targetPos);
+	double oldVol = _target_pos[stdCode];
+	double& targetPos = _target_pos[stdCode];
+	targetPos += diffPos;
+
+	//更新差量
+	double prevDiff = _diff_pos[stdCode];
+	double thisDiff = prevDiff;
+	thisDiff += diffPos;
+
 	WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "[{}]Target position of {} changed: {} -> {}, diff postion changed: {} -> {}", _name, stdCode, oldVol, targetPos, prevDiff, thisDiff);
 
 	if (_trader && !_trader->checkOrderLimits(stdCode))
@@ -369,7 +371,7 @@ void WtDiffExecuter::set_position(const faster_hashmap<LongKey, double>& targets
 {
 	for (auto it = targets.begin(); it != targets.end(); it++)
 	{
-		const char* stdCode = it->first.c_str();		
+		const char* stdCode = it->first.c_str();
 		double newVol = it->second;
 		ExecuteUnitPtr unit = getUnit(stdCode);
 		if (unit == NULL)
@@ -417,33 +419,36 @@ void WtDiffExecuter::set_position(const faster_hashmap<LongKey, double>& targets
 		if(tit != targets.end())
 			continue;
 
-		WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "[{}]{} is not in target, set to 0 automatically", _name, stdCode);
+		WTSContractInfo* cInfo = _bd_mgr->getContract(stdCode);
+		if(cInfo == NULL)
+			continue;			
 
-		ExecuteUnitPtr unit = getUnit(stdCode);
-		if (unit == NULL)
-			continue;
-
-		//差量更新
-		//更新差量
-		double& thisDiff = _diff_pos[stdCode];
-		double prevDiff = thisDiff;
-		thisDiff -= -pos;
-		pos = 0;
-
-		//TODO 差量执行还要再看一下
-		if (_pool)
+		if(pos != 0)
 		{
-			std::string code = stdCode;
-			_pool->schedule([unit, code, thisDiff](){
-				unit->self()->set_position(code.c_str(), thisDiff);
-			});
-		}
-		else
-		{
-			unit->self()->set_position(stdCode, thisDiff);
-		}
+			WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "[{}]{} is not in target, set to 0 automatically", _name, stdCode);
 
-		pos = 0;
+			ExecuteUnitPtr unit = getUnit(stdCode);
+			if (unit == NULL)
+				continue;
+
+			//更新差量
+			double& thisDiff = _diff_pos[stdCode];
+			double prevDiff = thisDiff;
+			thisDiff -= -pos;
+			pos = 0;
+
+			if (_pool)
+			{
+				std::string code = stdCode;
+				_pool->schedule([unit, code, thisDiff]() {
+					unit->self()->set_position(code.c_str(), thisDiff);
+				});
+			}
+			else
+			{
+				unit->self()->set_position(stdCode, thisDiff);
+			}
+		}
 	}
 
 	save_data();

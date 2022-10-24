@@ -19,6 +19,7 @@
 NS_WTP_BEGIN
 class WTSVariant;
 class IDataManager;
+class IBaseDataMgr;
 class TraderAdapter;
 class IHotMgr;
 
@@ -27,7 +28,7 @@ class WtDiffExecuter : public ExecuteContext,
 		public ITrdNotifySink, public IExecCommand
 {
 public:
-	WtDiffExecuter(WtExecuterFactory* factory, const char* name, IDataManager* dataMgr);
+	WtDiffExecuter(WtExecuterFactory* factory, const char* name, IDataManager* dataMgr, IBaseDataMgr* bdMgr);
 	virtual ~WtDiffExecuter();
 
 public:
@@ -77,7 +78,7 @@ public:
 	/*
 	 *	合约仓位变动
 	 */
-	virtual void on_position_changed(const char* stdCode, double targetPos) override;
+	virtual void on_position_changed(const char* stdCode, double diffPos) override;
 
 	/*
 	 *	实时行情回调
@@ -126,6 +127,7 @@ private:
 	TraderAdapter*		_trader;
 	WtExecuterFactory*	_factory;
 	IDataManager*		_data_mgr;
+	IBaseDataMgr*		_bd_mgr;
 	WTSVariant*			_config;
 
 	double				_scale;				//放大倍数

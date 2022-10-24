@@ -230,10 +230,16 @@ void WtDiffMinImpactExeUnit::do_calc()
 {
 	CalcFlag flag(&_in_calc);
 	if (flag)
+	{
+		_ctx->writeLog(fmtutil::format("Duplicated calculating, DiffMinImpactExeUnit of {}", _code));
 		return;
+	}
 
 	if (_cancel_cnt != 0)
+	{
+		_ctx->writeLog(fmtutil::format("In Cancelling, DiffMinImpactExeUnit of {}", _code));
 		return;
+	}
 
 	//这里加一个锁，主要原因是实盘过程中发现
 	//在修改目标仓位的时候，会触发一次do_calc
@@ -249,6 +255,12 @@ void WtDiffMinImpactExeUnit::do_calc()
 
 	//因为是逐笔发单，所以如果有不需要撤销的未完成单，则暂不发单
 	if (!decimal::eq(undone, 0))
+	{
+		_ctx->writeLog(fmtutil::format("Live orders exist, DiffMinImpactExeUnit of {}", _code));
+		return;
+	}
+
+	if (decimal::eq(diffPos, 0))
 		return;
 
 	if (_last_tick == NULL)
@@ -260,9 +272,6 @@ void WtDiffMinImpactExeUnit::do_calc()
 	//检查下单时间间隔
 	uint64_t now = TimeUtils::makeTime(_last_tick->actiondate(), _last_tick->actiontime());
 	if (now - _last_place_time < _entrust_span)
-		return;
-
-	if (decimal::eq(diffPos, 0))
 		return;
 
 	bool isBuy = decimal::gt(diffPos, 0);
@@ -391,23 +400,27 @@ void WtDiffMinImpactExeUnit::do_calc()
 	_last_place_time = now;
 }
 
-void WtDiffMinImpactExeUnit::set_position(const char* stdCode, double newVol)
+void WtDiffMinImpactExeUnit::set_position(const char* stdCode, double newDiff)
 {
 	if (_code.compare(stdCode) != 0)
 		return;
 
-	if (newVol == DBL_MAX)
+	if (newDiff == DBL_MAX)
 	{
 		_ctx->writeLog("Diff execute unit do not support clear command");
 		return;
 	}
 
 	//这里就是最新的差量
-	_left_diff = newVol;
 
-	_ctx->writeLog(fmtutil::format("Diff of {} updated to {}", stdCode, _left_diff));
+	if(_left_diff != newDiff)
+	{
+		_left_diff = newDiff;
 
-	do_calc();
+		_ctx->writeLog(fmtutil::format("Diff of {} updated to {}", stdCode, _left_diff));
+
+		do_calc();
+	}
 }
 
 void WtDiffMinImpactExeUnit::clear_all_position(const char* stdCode)

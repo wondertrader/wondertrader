@@ -275,19 +275,19 @@ uint64_t WtLocalExecuter::getCurTime()
 
 
 #pragma region 外部接口
-void WtLocalExecuter::on_position_changed(const char* stdCode, double targetPos)
+void WtLocalExecuter::on_position_changed(const char* stdCode, double diffPos)
 {
 	ExecuteUnitPtr unit = getUnit(stdCode);
 	if (unit == NULL)
 		return;
 
-	targetPos = round(targetPos*_scale);
+	diffPos = round(diffPos*_scale);
 
 	double oldVol = _target_pos[stdCode];
-	//int32_t targetPos = oldVol + diffQty;
-	_target_pos[stdCode] = targetPos;
+	double& targetPos = _target_pos[stdCode];
+	targetPos += diffPos;
 
-	if(!decimal::eq(oldVol, targetPos))
+	if(!decimal::eq(diffPos, 0))
 	{
 		WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "Target position of {} changed: {} -> {}", stdCode, oldVol, targetPos);
 	}
