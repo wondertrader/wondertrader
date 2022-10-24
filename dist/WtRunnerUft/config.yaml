@@ -18,7 +18,7 @@ strategies:
             lots: 1
             level2: true
             maxloss: -10
-        trader: ydprod
+        trader: simnow
 
 #环境配置
 env:
