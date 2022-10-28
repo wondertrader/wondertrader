@@ -200,10 +200,14 @@ void CtaMocker::dump_stradata()
 		root.AddMember("conditions", jCond, allocator);
 	}
 
+	if(_persist_data)
 	{
 		std::string folder = WtHelper::getOutputDir();
 		folder += _name;
 		folder += "/";
+
+		if (!StdFile::exists(folder.c_str()))
+			boost::filesystem::create_directories(folder.c_str());
 
 		std::string filename = folder;
 		filename += _name;
@@ -298,10 +302,14 @@ void CtaMocker::dump_chartdata()
 		root.AddMember("marks", jMarks, allocator);
 	}
 
+	if(_persist_data)
 	{
 		std::string folder = WtHelper::getOutputDir();
 		folder += _name;
 		folder += "/";
+
+		if(!StdFile::exists(folder.c_str()))
+			boost::filesystem::create_directories(folder.c_str());
 
 		std::string filename = folder;
 		filename += "btchart.json";
