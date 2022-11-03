@@ -289,7 +289,7 @@ bool WtExecRunner::initExecuters(WTSVariant* cfgExecuter)
 		}
 		else if (name == "diff")
 		{
-			WtDiffExecuter* executer = new WtDiffExecuter(&_exe_factory, id, &_data_mgr);
+			WtDiffExecuter* executer = new WtDiffExecuter(&_exe_factory, id, &_data_mgr, &_bd_mgr);
 			if (!executer->init(cfgItem))
 				return false;
 
@@ -413,7 +413,13 @@ void WtExecRunner::release()
 
 void WtExecRunner::setPosition(const char* stdCode, double targetPos)
 {
-	_exe_mgr.handle_pos_change(stdCode, targetPos);
+	_positions[stdCode] = targetPos;
+}
+
+void WtExecRunner::commitPositions()
+{
+	_exe_mgr.set_positions(_positions);
+	_positions.clear();
 }
 
 bool WtExecRunner::initActionPolicy()
