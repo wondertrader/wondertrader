@@ -157,10 +157,10 @@ void WtHftRtTicker::run()
 	if (_thrd)
 		return;
 
-	_engine->on_init();
-
 	uint32_t curTDate = _engine->get_basedata_mgr()->calcTradingDate(_s_info->id(), _engine->get_date(), _engine->get_min_time(), true);
 	_engine->set_trading_date(curTDate);
+
+	_engine->on_init();
 
 	_engine->on_session_begin();
 
