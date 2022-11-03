@@ -1672,11 +1672,11 @@ uint64_t CtaMocker::stra_get_first_entertime(const char* stdCode)
 {
 	auto it = _pos_map.find(stdCode);
 	if (it == _pos_map.end())
-		return INVALID_UINT64;
+		return 0;
 
 	const PosInfo& pInfo = it->second;
 	if (pInfo._details.empty())
-		return INVALID_UINT64;
+		return 0;
 
 	return pInfo._details[0]._opentime;
 }
@@ -1685,11 +1685,11 @@ uint64_t CtaMocker::stra_get_last_entertime(const char* stdCode)
 {
 	auto it = _pos_map.find(stdCode);
 	if (it == _pos_map.end())
-		return INVALID_UINT64;
+		return 0;
 
 	const PosInfo& pInfo = it->second;
 	if (pInfo._details.empty())
-		return INVALID_UINT64;
+		return 0;
 
 	return pInfo._details[pInfo._details.size() - 1]._opentime;
 }
@@ -1711,7 +1711,7 @@ uint64_t CtaMocker::stra_get_last_exittime(const char* stdCode)
 {
 	auto it = _pos_map.find(stdCode);
 	if (it == _pos_map.end())
-		return INVALID_UINT64;
+		return 0;
 
 	const PosInfo& pInfo = it->second;
 	return pInfo._last_exittime;
@@ -1721,11 +1721,11 @@ double CtaMocker::stra_get_last_enterprice(const char* stdCode)
 {
 	auto it = _pos_map.find(stdCode);
 	if (it == _pos_map.end())
-		return INVALID_DOUBLE;
+		return 0;
 
 	const PosInfo& pInfo = it->second;
 	if (pInfo._details.empty())
-		return INVALID_DOUBLE;
+		return 0;
 
 	return pInfo._details[pInfo._details.size() - 1]._price;
 }
