@@ -679,6 +679,12 @@ void HisDataReplayer::run(bool bNeedDump/* = false*/)
 						_main_key = m.first;
 						minTimes = barsList->_times;
 					}
+					//By Wesley @ 2022.11.03
+					//这里主要修复了只用日线的时候不能正确判断主K线的bug
+					else if(_main_key.empty())
+					{
+						_main_key = m.first;
+					}
 				}
 			}
 
