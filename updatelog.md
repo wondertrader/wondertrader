@@ -1,3 +1,7 @@
+### 0.9.5
+* 修正了一些已知的bug
+
+
 ### 0.9.4
 * 新增了中泰XTP的XAlgo算法交易总线模块TraderXTPXAlgo
 * 新增了宽睿极速股票极速柜台接口模块ParserOES和TraderOES
