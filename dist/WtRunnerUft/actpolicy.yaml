@@ -1,0 +1,16 @@
+default:                #默认开平策略：先平仓，再开仓
+    order:              #顺序
+    -   action: close   #开平动作：open-开仓，close-平仓，closetoday-平今，closeyestoday-平昨
+        limit: 0        #限手，0为不限制
+    -   action: open    
+        limit: 0
+intradaylock:
+    filters:
+    - SHFE.ni
+    order:
+    -   action: closeyestoday
+        limit: 0
+    -   action: open
+        limit: 0
+    -   action: closetoday
+        limit: 0

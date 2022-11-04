@@ -117,5 +117,25 @@ private:
 
 	uint64_t	_last_place_time;
 	uint64_t	_last_tick_time;
+
+	std::atomic<bool>	_in_calc;
+
+	typedef struct _CalcFlag
+	{
+		bool				_result;
+		std::atomic<bool>*	_flag;
+		_CalcFlag(std::atomic<bool>* flag):_flag(flag)
+		{
+			_result = _flag->exchange(true, std::memory_order_acq_rel);
+		}
+
+		~_CalcFlag()
+		{
+			if(_flag)
+				_flag->exchange(false, std::memory_order_acq_rel);
+		}
+
+		operator bool() const { return _result; }
+	} CalcFlag;
 };
 

@@ -804,8 +804,8 @@ void TraderXTP::doLogin()
 			_state = TS_LOGINED;
 			_inited = true;
 			_asyncio.post([this] {
-				_sink->onLoginResult(true, 0, _tradingday);
 				_state = TS_ALLREADY;
+				_sink->onLoginResult(true, 0, _tradingday);				
 			});
 		}
 		else

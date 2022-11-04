@@ -30,7 +30,7 @@ public:
 	/*
 	 *	合约仓位变动
 	 */
-	virtual void on_position_changed(const char* stdCode, double targetPos) {}
+	virtual void on_position_changed(const char* stdCode, double diffPos) {}
 
 	/*
 	 *	实时行情回调

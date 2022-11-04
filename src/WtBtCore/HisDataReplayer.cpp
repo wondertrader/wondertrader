@@ -679,6 +679,12 @@ void HisDataReplayer::run(bool bNeedDump/* = false*/)
 						_main_key = m.first;
 						minTimes = barsList->_times;
 					}
+					//By Wesley @ 2022.11.03
+					//这里主要修复了只用日线的时候不能正确判断主K线的bug
+					else if(_main_key.empty())
+					{
+						_main_key = m.first;
+					}
 				}
 			}
 
@@ -2219,7 +2225,16 @@ WTSKlineSlice* HisDataReplayer::get_kline_slice(const char* stdCode, const char*
 						it--;
 						eIdx--;
 					}
+				}
 
+				/*
+				 *	By Wesley @ 2022.11.04
+				 *	根据Issue#122，加了一个兜底的判断
+				 *	主要防止日线回测漏掉第一根bar
+				 */
+				if(eIdx == 0 && curBar.date > _cur_tdate)
+				{
+					kBlkPair->_cursor = 0;
 				}
 			}
 			else
@@ -2232,9 +2247,9 @@ WTSKlineSlice* HisDataReplayer::get_kline_slice(const char* stdCode, const char*
 						eIdx--;
 					}
 				}
-			}
 
-			kBlkPair->_cursor = eIdx + 1;
+				kBlkPair->_cursor = eIdx + 1;
+			}
 		}
 		else
 		{

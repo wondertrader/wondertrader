@@ -135,6 +135,7 @@ protected:
 	WTSEntrust*		makeEntrust(tagXTReqOrderInsertField *entrustField);
 	WTSEntrust*		makeEntrust(tagXTReqOrderCancelField *entrustField);
 	WTSError*		makeError(tagXTRspInfoField* rspInfo);
+	WTSError*		makeError(tagXTRspInfoField* rspInfo, WTSErroCode ec);
 	WTSTradeInfo*	makeTradeRecord(tagXTTradeField *tradeField);
 
 	void			generateEntrustID(char* buffer, uint32_t orderRef);
@@ -163,7 +164,7 @@ protected:
 	std::string		m_strErrInfo;  // ∑µªÿ¥ÌŒÛ–≈œ¢
 
 	ITraderSpi*		m_bscSink;
-	IOptTraderSpi*	m_optSink;
+	//IOptTraderSpi*	m_optSink;
 	uint64_t		m_uLastQryTime;
 
 	uint32_t					m_lDate;

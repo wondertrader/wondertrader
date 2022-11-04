@@ -1,0 +1,11 @@
+parsers:
+-   active: true
+    id: parser
+    module: ParserXeleSkt
+    tcp_host: 10.72.164.212
+    tcp_port: 30000
+    mcast_host: 239.10.1.1
+    mcast_port: 28930
+    local_host: 10.72.164.94
+    gpsize: 1000
+    code: SHFE.rb

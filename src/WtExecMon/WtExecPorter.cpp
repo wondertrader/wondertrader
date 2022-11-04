@@ -83,3 +83,8 @@ void set_position(WtString stdCode, double targetPos)
 {
 	getRunner().setPosition(stdCode, targetPos);
 }
+
+void commit_positions()
+{
+	getRunner().commitPositions();
+}

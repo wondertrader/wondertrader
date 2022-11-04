@@ -64,7 +64,7 @@ void WtExecuterMgr::set_positions(faster_hashmap<LongKey, double> target_pos)
 	}
 }
 
-void WtExecuterMgr::handle_pos_change(const char* stdCode, double targetPos, const char* execid /* = "ALL" */)
+void WtExecuterMgr::handle_pos_change(const char* stdCode, double targetPos, double diffPos, const char* execid /* = "ALL" */)
 {
 	if(_filter_mgr != NULL)
 	{
@@ -76,6 +76,8 @@ void WtExecuterMgr::handle_pos_change(const char* stdCode, double targetPos, con
 			{
 				//输出日志
 				WTSLogger::info("[Filters] {} target position reset by filter: {} -> {}", stdCode, oldVol, targetPos);
+				//差量也要重算
+				diffPos += (targetPos - oldVol);
 			}
 		}
 		else
@@ -98,9 +100,9 @@ void WtExecuterMgr::handle_pos_change(const char* stdCode, double targetPos, con
 
 		auto it = _routed_executers.find(executer->name());
 		if (it == _routed_executers.end() && strcmp(execid, "ALL") == 0)
-			executer->on_position_changed(stdCode, targetPos);
+			executer->on_position_changed(stdCode, diffPos);
 		else if(strcmp(executer->name(), execid) == 0)
-			executer->on_position_changed(stdCode, targetPos);
+			executer->on_position_changed(stdCode, diffPos);
 	}
 }
 

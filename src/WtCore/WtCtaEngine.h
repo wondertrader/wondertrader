@@ -56,7 +56,7 @@ public:
 public:
 	void on_schedule(uint32_t curDate, uint32_t curTime);	
 
-	void handle_pos_change(const char* straName, const char* stdCode, double newTarget);
+	void handle_pos_change(const char* straName, const char* stdCode, double diffPos);
 
 	void addContext(CtaContextPtr ctx);
 	

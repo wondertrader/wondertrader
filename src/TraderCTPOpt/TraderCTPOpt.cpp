@@ -379,9 +379,8 @@ bool TraderCTPOpt::makeEntrustID(char* buffer, int length)
 
 	try
 	{
-		memset(buffer, 0, length);
 		uint32_t orderref = m_orderRef.fetch_add(1) + 1;
-		fmt::format_to(buffer, "{:06d}#{:010d}#{:06d}", m_frontID, (uint32_t)m_sessionID, orderref);
+		fmtutil::format_to(buffer, "{:06d}#{:010d}#{:06d}", m_frontID, (uint32_t)m_sessionID, orderref);
 		return true;
 	}
 	catch (...)

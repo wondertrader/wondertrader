@@ -1737,6 +1737,8 @@ WTSKlineSlice* WtDataReader::readKlineSlice(const char* stdCode, WTSKlinePeriod 
 		//历史数据，直接从缓存的历史数据尾部截取
 		BarsList& barList = _bars_cache[key];
 		hisCnt = min(hisCnt, (uint32_t)barList._bars.size());
+		if (hisCnt == 0)
+			return NULL;
 		hisHead = &barList._bars[barList._bars.size() - hisCnt];//indexBarFromCache(key, etime, hisCnt, period == KP_DAY);
 	}
 

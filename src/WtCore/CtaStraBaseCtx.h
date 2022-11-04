@@ -73,8 +73,8 @@ private:
 
 	void	update_dyn_profit(const char* stdCode, double price);
 
-	void	do_set_position(const char* stdCode, double qty, const char* userTag = "", bool bCondition = false);
-	void	append_signal(const char* stdCode, double qty, const char* userTag = "", bool bCondition = false);
+	void	do_set_position(const char* stdCode, double qty, const char* userTag = "", bool bFireAtOnce = false);
+	void	append_signal(const char* stdCode, double qty, const char* userTag = "", uint32_t sigType = 0);
 
 	inline CondList& get_cond_entrusts(const char* stdCode);
 	
@@ -248,14 +248,14 @@ protected:
 		double		_volume;
 		std::string	_usertag;
 		double		_sigprice;
-		bool		_condition;
+		uint32_t	_sigtype;	// 0-onschedule信号，1-ontick信号，2-条件单信号
 		uint64_t	_gentime;
 
 		_SigInfo()
 		{
 			_volume = 0;
 			_sigprice = 0;
-			_condition = false;
+			_sigtype = 0;
 			_gentime = 0;
 		}
 	}SigInfo;

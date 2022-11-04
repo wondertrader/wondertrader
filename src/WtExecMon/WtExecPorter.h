@@ -23,6 +23,8 @@ extern "C"
 
 	EXPORT_FLAG	void		set_position(WtString stdCode, double targetPos);
 
+	EXPORT_FLAG	void		commit_positions();
+
 #ifdef __cplusplus
 }
 #endif

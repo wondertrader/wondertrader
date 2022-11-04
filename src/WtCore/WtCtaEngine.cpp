@@ -347,10 +347,10 @@ void WtCtaEngine::handle_push_quote(WTSTickData* newTick, uint32_t hotFlag)
 		_tm_ticker->on_tick(newTick, hotFlag);
 }
 
-void WtCtaEngine::handle_pos_change(const char* straName, const char* stdCode, double newTarget)
+void WtCtaEngine::handle_pos_change(const char* straName, const char* stdCode, double diffPos)
 {
 	//这里是持仓增量,所以不用处理未过滤的情况,因为增量情况下,不会改变目标diffQty
-	if(_filter_mgr.is_filtered_by_strategy(straName, newTarget, true))
+	if(_filter_mgr.is_filtered_by_strategy(straName, diffPos, true))
 	{
 		//输出日志
 		WTSLogger::info("[Filters] Target position of {} of strategy {} ignored by strategy filter", stdCode, straName);
@@ -366,8 +366,10 @@ void WtCtaEngine::handle_pos_change(const char* straName, const char* stdCode, d
 		realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
 	}
 
-	//PosInfo& pItem = _pos_map[realCode];
-	double targetPos = newTarget;
+	/*
+	 *	这里必须要算一个总的目标仓位
+	 */
+	PosInfo& pItem = _pos_map[realCode];	
 
 	bool bRiskEnabled = false;
 	if (!decimal::eq(_risk_volscale, 1.0) && _risk_date == _cur_tdate)
@@ -375,17 +377,25 @@ void WtCtaEngine::handle_pos_change(const char* straName, const char* stdCode, d
 		WTSLogger::log_by_cat("risk", LL_INFO, "Risk scale of portfolio is {:.2f}", _risk_volscale);
 		bRiskEnabled = true;
 	}
-	if (bRiskEnabled && !decimal::eq(targetPos, 0))
+
+	if (bRiskEnabled && !decimal::eq(diffPos, 0))
 	{
-		double symbol = targetPos / abs(targetPos);
-		targetPos = decimal::rnd(abs(targetPos)*_risk_volscale)*symbol;
+		double symbol = diffPos / abs(diffPos);
+		diffPos = decimal::rnd(abs(diffPos)*_risk_volscale)*symbol;
 	}
+
+	double targetPos = pItem._volume + diffPos;
 
 	append_signal(realCode.c_str(), targetPos, false);
 	save_datas();
 
+	/*
+	 *	如果策略绑定了执行通道
+	 *	那么就只提交增量
+	 *	如果策略没有绑定执行通道，就提交全量
+	 */
 	const char* execid = _exec_mgr.get_route(straName);
-	_exec_mgr.handle_pos_change(realCode.c_str(), targetPos, execid);
+	_exec_mgr.handle_pos_change(realCode.c_str(), targetPos, diffPos, execid);
 }
 
 void WtCtaEngine::on_tick(const char* stdCode, WTSTickData* curTick)

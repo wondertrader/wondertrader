@@ -962,7 +962,7 @@ bool WtRtRunner::initExecuters(WTSVariant* cfgExecuter)
 		}
 		else if (name == "diff")
 		{
-			WtDiffExecuter* executer = new WtDiffExecuter(&_exe_factory, id, &_data_mgr);
+			WtDiffExecuter* executer = new WtDiffExecuter(&_exe_factory, id, &_data_mgr, &_bd_mgr);
 			if (!executer->init(cfgItem))
 				return false;
 

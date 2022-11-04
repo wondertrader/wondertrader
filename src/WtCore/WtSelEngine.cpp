@@ -439,7 +439,6 @@ void WtSelEngine::handle_pos_change(const char* straName, const char* stdCode, d
 	//}
 
 	PosInfo& pItem = _pos_map[realCode];
-	double targetPos = pItem._volume + diffQty;
 
 	bool bRiskEnabled = false;
 	if (!decimal::eq(_risk_volscale, 1.0) && _risk_date == _cur_tdate)
@@ -447,17 +446,18 @@ void WtSelEngine::handle_pos_change(const char* straName, const char* stdCode, d
 		WTSLogger::log_by_cat("risk", LL_INFO, "Risk scale of portfolio is {:.2f}", _risk_volscale);
 		bRiskEnabled = true;
 	}
-	if (bRiskEnabled && targetPos != 0)
+	if (bRiskEnabled && diffQty != 0)
 	{
-		double symbol = targetPos / abs(targetPos);
-		targetPos = decimal::rnd(abs(targetPos)*_risk_volscale)*symbol;
+		double symbol = diffQty / abs(diffQty);
+		diffQty = decimal::rnd(abs(diffQty)*_risk_volscale)*symbol;
 	}
+	double targetPos = pItem._volume + diffQty;
 
 	append_signal(realCode.c_str(), targetPos, false);
 	save_datas();
 
 	const char* execid = _exec_mgr.get_route(straName);
-	_exec_mgr.handle_pos_change(realCode.c_str(), targetPos);
+	_exec_mgr.handle_pos_change(realCode.c_str(), targetPos, diffQty, execid);
 }
 
 WTSCommodityInfo* WtSelEngine::get_comm_info(const char* stdCode)

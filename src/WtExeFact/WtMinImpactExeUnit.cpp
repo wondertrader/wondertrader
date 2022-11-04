@@ -50,6 +50,7 @@ WtMinImpactExeUnit::WtMinImpactExeUnit()
 	, _cancel_times(0)
 	, _last_place_time(0)
 	, _last_tick_time(0)
+	, _in_calc(false)
 {
 }
 
@@ -238,6 +239,10 @@ void WtMinImpactExeUnit::on_entrust(uint32_t localid, const char* stdCode, bool 
 
 void WtMinImpactExeUnit::do_calc()
 {
+	CalcFlag flag(&_in_calc);
+	if (flag)
+		return;
+
 	if (_cancel_cnt != 0)
 		return;
 
@@ -275,7 +280,6 @@ void WtMinImpactExeUnit::do_calc()
 		return;
 
 	double curPos = realPos;
-
 
 	if (_last_tick == NULL)
 	{
@@ -326,8 +330,17 @@ void WtMinImpactExeUnit::do_calc()
 		this_qty = round(this_qty*_qty_rate);
 		if (decimal::lt(this_qty, 1))
 			this_qty = 1;
+	}
 
-		this_qty = min(this_qty, abs(newVol - curPos));
+	//By Wesley @ 2022.09.13
+	//这里要对下单数量做一个修正
+	this_qty = min(this_qty, abs(newVol - curPos));
+
+	//如果买入且有空头持仓，或者卖出且有多头持仓
+	//对单次下单做一个修正，保证平仓和开仓不会同时下单
+	if ((isBuy && decimal::lt(curPos, 0)) || (!isBuy && decimal::gt(curPos, 0)))
+	{
+		this_qty = min(this_qty, abs(curPos));
 	}
 
 	double buyPx, sellPx;

@@ -34,6 +34,8 @@ public:
 
 	void setPosition(const char* stdCode, double targetPos);
 
+	void commitPositions();
+
 	bool addExeFactories(const char* folder);
 
 	IBaseDataMgr*	get_bd_mgr() { return &_bd_mgr; }
@@ -78,5 +80,7 @@ private:
 	WTSBaseDataMgr		_bd_mgr;
 	WTSHotMgr			_hot_mgr;
 	ActionPolicyMgr		_act_policy;
+
+	faster_hashmap<LongKey, double> _positions;
 };
 
