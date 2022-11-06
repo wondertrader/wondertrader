@@ -2236,6 +2236,10 @@ WTSKlineSlice* HisDataReplayer::get_kline_slice(const char* stdCode, const char*
 				{
 					kBlkPair->_cursor = 0;
 				}
+				else
+				{
+					kBlkPair->_cursor = eIdx + 1;
+				}
 			}
 			else
 			{
