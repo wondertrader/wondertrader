@@ -16,7 +16,7 @@ extern "C"
 {
 #endif
 
-	EXPORT_FLAG void		initialize(WtString cfgFile, WtString logCfg);
+	EXPORT_FLAG void		initialize(WtString cfgFile, WtString logCfg, bool bCfgFile, bool bLogCfgFile);
 	EXPORT_FLAG void		start(bool bAsync = false);
 
 	EXPORT_FLAG	WtString	get_version();

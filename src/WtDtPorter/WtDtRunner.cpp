@@ -72,12 +72,17 @@ void WtDtRunner::start(bool bAsync /* = false */, bool bAlldayMode /* = false */
 	}
 }
 
-void WtDtRunner::initialize(const char* cfgFile, const char* logCfg, const char* modDir /* = "" */)
+void WtDtRunner::initialize(const char* cfgFile, const char* logCfg, const char* modDir /* = "" */, bool bCfgFile /* = true */, bool bLogCfgFile /* = true */)
 {
-	WTSLogger::init(logCfg);
+	WTSLogger::init(logCfg, bLogCfgFile);
 	WtHelper::set_module_dir(modDir);
 
-	WTSVariant* config = WTSCfgLoader::load_from_file(cfgFile, true);
+	WTSVariant* config = NULL;
+	if (bCfgFile)
+		config = WTSCfgLoader::load_from_file(cfgFile, true);
+	else
+		config = WTSCfgLoader::load_from_content(cfgFile, false);
+
 	if(config == NULL)
 	{
 		WTSLogger::error("Loading config file {} failed", cfgFile);
