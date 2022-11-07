@@ -4,7 +4,7 @@
 
 #include "../Share/DLLHelper.hpp"
 
-typedef int (*LoaderRunner)(const char*, bool);
+typedef int (*LoaderRunner)(const char*, bool, bool);
 
 int main()
 {
@@ -24,7 +24,7 @@ int main()
 		}
 		else
 		{
-			return runner("config.ini", false);
+			return runner("config.ini", false, true);
 		}
 	}
 

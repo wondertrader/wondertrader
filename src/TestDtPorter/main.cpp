@@ -42,7 +42,7 @@ void testDtHelper()
 
 void test_porter()
 {
-	initialize("dtcfg.json", "logcfgdt.json");
+	initialize("dtcfg.json", "logcfgdt.json", true, true);
 	start();
 }
 

@@ -10,6 +10,10 @@
 #include "../Share/DLLHelper.hpp"
 #include <boost/filesystem.hpp>
 
+#include "../WTSUtils/WTSCfgLoader.h"
+#include "../Includes/WTSVariant.hpp"
+USING_NS_WTP;
+
 #ifdef _WIN32
 #include "../Share/charconv.hpp"
 #endif
@@ -52,35 +56,122 @@ int iRequestID = 0;
 extern "C"
 {
 #endif
-	EXPORT_FLAG int run(const char* cfgfile, bool bAsync);
+	EXPORT_FLAG int run(const char* cfgfile, bool bAsync, bool isFile);
 #ifdef __cplusplus
 }
 #endif
 
-int run(const char* cfgfile, bool bAsync)
+int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 {
-	std::string cfg = cfgfile;
-	IniHelper ini;
-	ini.load(cfg.c_str());
+	std::string map_files;
 
-	FRONT_ADDR = ini.readString("ctp", "front", "");
-	BROKER_ID	= ini.readString("ctp", "broker", "");
-	INVESTOR_ID = ini.readString("ctp", "user", "");
-	PASSWORD	= ini.readString("ctp", "pass", "");
-	APPID = ini.readString("ctp", "appid", "");
-	AUTHCODE = ini.readString("ctp", "authcode", "");
+	if (!isFile)
+	{
+		WTSVariant* root = WTSCfgLoader::load_from_content(cfgfile, true);
+		if (root == NULL)
+			return 0;
 
-	SAVEPATH	= ini.readString("config", "path", "");
-	CLASSMASK = ini.readUInt("config", "mask", 1 | 2 | 4); //1-期货,2-期权,4-股票
+		WTSVariant* ctp = root->get("ctp");
+		FRONT_ADDR = ctp->getCString("front");
+		BROKER_ID = ctp->getCString("broker");
+		INVESTOR_ID = ctp->getCString("user");
+		PASSWORD = ctp->getCString("pass");
+		APPID = ctp->getCString("appid");
+		AUTHCODE = ctp->getCString("authcode");
 
-	COMM_FILE = ini.readString("config", "commfile", "commodities.json");
-	CONT_FILE = ini.readString("config", "contfile", "contracts.json");
+		WTSVariant* cfg = root->get("config");
+		SAVEPATH = cfg->getCString("path");
+		CLASSMASK = cfg->getUInt32("mask"); //1-期货,2-期权,4-股票
+
+		COMM_FILE = cfg->getCString("commfile");
+		if (COMM_FILE.empty())
+			COMM_FILE = "commodities.json";
+
+		CONT_FILE = cfg->getCString("contfile");
+		if (CONT_FILE.empty())
+			CONT_FILE = "contracts.json";
+
+		map_files = cfg->getCString("mapfiles");
+
+		MODULE_NAME = cfg->getCString("module");
+		if (MODULE_NAME.empty())
+		{
+#ifdef _WIN32
+			MODULE_NAME = "soptthosttraderapi_se.dll";
+#else
+			MODULE_NAME = "soptthosttraderapi_se.so";
+#endif
+		}
+
+		root->release();
+	}
+	else if (StrUtil::endsWith(cfgfile, ".ini"))
+	{
+		IniHelper ini;
+
+		ini.load(cfgfile);
+
+		FRONT_ADDR = ini.readString("ctp", "front", "");
+		BROKER_ID = ini.readString("ctp", "broker", "");
+		INVESTOR_ID = ini.readString("ctp", "user", "");
+		PASSWORD = ini.readString("ctp", "pass", "");
+		APPID = ini.readString("ctp", "appid", "");
+		AUTHCODE = ini.readString("ctp", "authcode", "");
+
+		SAVEPATH = ini.readString("config", "path", "");
+		CLASSMASK = ini.readUInt("config", "mask", 1 | 2 | 4); //1-期货,2-期权,4-股票
+
+		COMM_FILE = ini.readString("config", "commfile", "commodities.json");
+		CONT_FILE = ini.readString("config", "contfile", "contracts.json");
+
+		map_files = ini.readString("config", "mapfiles", "");
 
 #ifdef _WIN32
-	MODULE_NAME = ini.readString("config", "module", "soptthosttraderapi_se.dll");
+		MODULE_NAME = ini.readString("config", "module", "soptthosttraderapi_se.dll");
 #else
-	MODULE_NAME = ini.readString("config", "module", "soptthosttraderapi_se.so");
+		MODULE_NAME = ini.readString("config", "module", "soptthosttraderapi_se.so");
 #endif
+	}
+	else
+	{
+		WTSVariant* root = WTSCfgLoader::load_from_file(cfgfile, true);
+		if (root == NULL)
+			return 0;
+
+		WTSVariant* ctp = root->get("ctp");
+		FRONT_ADDR = ctp->getCString("front");
+		BROKER_ID = ctp->getCString("broker");
+		INVESTOR_ID = ctp->getCString("user");
+		PASSWORD = ctp->getCString("pass");
+		APPID = ctp->getCString("appid");
+		AUTHCODE = ctp->getCString("authcode");
+
+		WTSVariant* cfg = root->get("config");
+		SAVEPATH = cfg->getCString("path");
+		CLASSMASK = cfg->getUInt32("mask"); //1-期货,2-期权,4-股票
+
+		COMM_FILE = cfg->getCString("commfile");
+		if (COMM_FILE.empty())
+			COMM_FILE = "commodities.json";
+
+		CONT_FILE = cfg->getCString("contfile");
+		if (CONT_FILE.empty())
+			CONT_FILE = "contracts.json";
+
+		map_files = cfg->getCString("mapfiles");
+
+		MODULE_NAME = cfg->getCString("module");
+		if (MODULE_NAME.empty())
+		{
+#ifdef _WIN32
+			MODULE_NAME = "soptthosttraderapi_se.dll";
+#else
+			MODULE_NAME = "soptthosttraderapi_se.so";
+#endif
+		}
+		root->release();
+	}
+
 	if(!boost::filesystem::exists(MODULE_NAME.c_str()))
 	{
 		MODULE_NAME = getBinDir();
@@ -98,7 +189,6 @@ int run(const char* cfgfile, bool bAsync)
 
 	SAVEPATH = StrUtil::standardisePath(SAVEPATH);
 
-	std::string map_files = ini.readString("config", "mapfiles", "");
 	if (!map_files.empty())
 	{
 		StringVector ayFiles = StrUtil::split(map_files, ",");

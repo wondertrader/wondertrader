@@ -177,6 +177,11 @@
     <ClInclude Include="..\API\CTPMini1.5.8\ThostFtdcUserApiStruct.h" />
     <ClInclude Include="TraderSpi.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\WTSUtils\WTSUtils.vcxproj">
+      <Project>{9f0b15cc-34c6-46da-9575-d4ae11453b84}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
