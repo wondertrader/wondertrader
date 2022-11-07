@@ -119,7 +119,7 @@ public:
 	virtual void on_tick(const char* stdCode, WTSTickData* newTick, bool bEmitStrategy = true) override;
 	virtual void on_bar(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar) override;
 	virtual bool on_schedule(uint32_t curDate, uint32_t curTime) override;
-	virtual void enum_position(FuncEnumCtaPosCallBack cb) override;
+	virtual void enum_position(FuncEnumCtaPosCallBack cb, bool bForExecute) override;
 
 	virtual void on_tick_updated(const char* stdCode, WTSTickData* newTick) override;
 	virtual void on_bar_close(const char* stdCode, const char* period, WTSBarStruct* newBar) override;

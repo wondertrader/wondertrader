@@ -1009,7 +1009,7 @@ void CtaMocker::on_session_begin(uint32_t curTDate)
 		_strategy->on_session_begin(this, curTDate);
 }
 
-void CtaMocker::enum_position(FuncEnumCtaPosCallBack cb)
+void CtaMocker::enum_position(FuncEnumCtaPosCallBack cb, bool bForExecute)
 {
 	faster_hashmap<std::string, double> desPos;
 	for (auto& it : _pos_map)

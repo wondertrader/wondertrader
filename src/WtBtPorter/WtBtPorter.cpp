@@ -331,7 +331,7 @@ void cta_get_all_position(CtxHandler cHandle, FuncGetPositionCallback cb)
 
 	ctx->enum_position([cb, cHandle](const char* stdCode, double qty) {
 		cb(cHandle, stdCode, qty, false);
-	});
+	}, false);
 
 	cb(cHandle, "", 0, true);
 }
