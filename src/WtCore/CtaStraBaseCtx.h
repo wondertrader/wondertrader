@@ -111,7 +111,7 @@ public:
 	virtual void on_bar(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar) override;
 	virtual bool on_schedule(uint32_t curDate, uint32_t curTime) override;
 
-	virtual void enum_position(FuncEnumCtaPosCallBack cb) override;
+	virtual void enum_position(FuncEnumCtaPosCallBack cb, bool bForExecute = false) override;
 
 
 	//////////////////////////////////////////////////////////////////////////
@@ -250,6 +250,7 @@ protected:
 		double		_sigprice;
 		uint32_t	_sigtype;	// 0-onschedule信号，1-ontick信号，2-条件单信号
 		uint64_t	_gentime;
+		bool		_triggered;
 
 		_SigInfo()
 		{
@@ -257,6 +258,7 @@ protected:
 			_sigprice = 0;
 			_sigtype = 0;
 			_gentime = 0;
+			_triggered = false;
 		}
 	}SigInfo;
 	typedef faster_hashmap<LongKey, SigInfo>	SignalMap;

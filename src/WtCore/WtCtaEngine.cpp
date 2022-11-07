@@ -177,7 +177,7 @@ void WtCtaEngine::on_init()
 				//输出日志
 				WTSLogger::info("[Filters] Target position of {} of strategy {} ignored by strategy filter", stdCode, ctx->name());
 			}
-		});
+		}, true);
 	}
 
 	bool bRiskEnabled = false;
@@ -279,7 +279,7 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 				//输出日志
 				WTSLogger::info("[Filters] Target position of {} of strategy {} ignored by strategy filter", stdCode, ctx->name());
 			}
-		});
+		}, true);
 	}
 
 	bool bRiskEnabled = false;

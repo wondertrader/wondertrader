@@ -691,11 +691,11 @@ void CtaStraBaseCtx::on_tick(const char* stdCode, WTSTickData* newTick, bool bEm
 		if(it != _sig_map.end())
 		{
 			WTSSessionInfo* sInfo = _engine->get_session_info(stdCode, true);
-
 			if (sInfo->isInTradingTime(_engine->get_raw_time(), true))
 			{
 				const SigInfo& sInfo = it->second;
-				do_set_position(stdCode, sInfo._volume, sInfo._usertag.c_str(), sInfo._sigtype!=0);
+				//只有当信号类型不为0，即bar内信号或者条件单触发信号时，且信号没有触发过
+				do_set_position(stdCode, sInfo._volume, sInfo._usertag.c_str(), (sInfo._sigtype!=0 && !sInfo._triggered));
 
 				//如果是条件单触发，则回调on_condition_triggered
 				if(sInfo._sigtype == 2)
@@ -928,7 +928,7 @@ void CtaStraBaseCtx::on_session_begin(uint32_t uTDate)
 	}
 }
 
-void CtaStraBaseCtx::enum_position(FuncEnumCtaPosCallBack cb)
+void CtaStraBaseCtx::enum_position(FuncEnumCtaPosCallBack cb, bool bForExecute /* = false */)
 {
 	std::unordered_map<std::string, double> desPos;
 	for (auto& it:_pos_map)
@@ -939,11 +939,13 @@ void CtaStraBaseCtx::enum_position(FuncEnumCtaPosCallBack cb)
 		desPos[stdCode] = pInfo._volume;
 	}
 
-	for (auto sit:_sig_map)
+	for (auto& sit:_sig_map)
 	{
 		const char* stdCode = sit.first.c_str();
-		const SigInfo& sInfo = sit.second;
+		SigInfo& sInfo = (SigInfo&)sit.second;
 		desPos[stdCode] = sInfo._volume;
+		if(bForExecute)
+			sInfo._triggered = true;
 	}
 
 	for(auto v:desPos)
@@ -1678,6 +1680,13 @@ double CtaStraBaseCtx::stra_get_last_enterprice(const char* stdCode)
 
 double CtaStraBaseCtx::stra_get_position(const char* stdCode, bool bOnlyValid /* = false */, const char* userTag /* = "" */)
 {
+	auto sit = _sig_map.find(stdCode);
+	if(sit != _sig_map.end())
+	{
+		WTSLogger::warn("{} has untouched signal, [bOnlyValid] and [userTag] will be ignored", stdCode);
+		return sit->second._volume;
+	}
+
 	auto it = _pos_map.find(stdCode);
 	if (it == _pos_map.end())
 		return 0;
