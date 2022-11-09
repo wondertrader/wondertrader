@@ -65,12 +65,10 @@ public:
 	///´íÎóÓ¦´ð
 	virtual void OnError(XTPRI *error_info) override;
 
-	virtual void OnSubTickByTick(XTPST *ticker, XTPRI *error_info, bool is_last) override;
+
 	virtual void OnSubMarketData(XTPST *ticker, XTPRI *error_info, bool is_last) override;
 	virtual void OnUnSubMarketData(XTPST *ticker, XTPRI *error_info, bool is_last) override;
-
 	virtual void OnDepthMarketData(XTPMD *market_data, int64_t bid1_qty[], int32_t bid1_count, int32_t max_bid1_count, int64_t ask1_qty[], int32_t ask1_count, int32_t max_ask1_count) override;
-	virtual void OnTickByTick(XTPTBT *tbt_data) override;
 
 private:
 	/*
@@ -98,6 +96,7 @@ private:
 	std::string			m_strUser;
 	std::string			m_strPass;
 	std::string			m_strFlowDir;
+	std::string			m_strLocalIP;
 
 	XTP_PROTOCOL_TYPE	m_iProtocol;
 	uint32_t			m_uHBInterval;

@@ -100,6 +100,7 @@ bool ParserXTP::init(WTSVariant* config)
 	m_uHBInterval = config->getUInt32("hbinterval");
 	m_uBuffSize = config->getUInt32("buffsize");
 	m_strFlowDir = config->getCString("flowdir");
+	m_strLocalIP = config->getCString("local_ip");
 
 	if (m_strFlowDir.empty())
 		m_strFlowDir = "XTPMDFlow";
@@ -203,84 +204,6 @@ void ParserXTP::OnUnSubMarketData(XTPST *ticker, XTPRI *error_info, bool is_last
 
 }
 
-void ParserXTP::OnTickByTick(XTPTBT *tbt_data)
-{
-	if (m_pBaseDataMgr == NULL)
-	{
-		return;
-	}
-
-	std::string exchg;
-	if (tbt_data->exchange_id == XTP_EXCHANGE_SH)
-	{
-		exchg = "SSE";
-	}
-	else
-	{
-		exchg = "SZSE";
-	}
-
-	WTSContractInfo* ct = m_pBaseDataMgr->getContract(tbt_data->ticker, exchg.c_str());
-	if (ct == NULL)
-	{
-		if (m_sink)
-			write_log(m_sink, LL_ERROR, "[ParserXTP] Instrument {}.{} not exists...", exchg.c_str(), tbt_data->ticker);
-		return;
-	}
-	WTSCommodityInfo* commInfo = ct->getCommInfo();
-
-	uint32_t actDate = (uint32_t)(tbt_data->data_time / 1000000000);
-	uint32_t actTime = tbt_data->data_time % 1000000000;
-	uint32_t actHour = actTime / 10000000;
-
-	if(tbt_data->type == XTP_TBT_ENTRUST)
-	{
-		WTSOrdDtlData *ordDtl = WTSOrdDtlData::create(tbt_data->ticker);
-		WTSOrdDtlStruct& ts = ordDtl->getOrdDtlStruct();
-		strcpy(ts.exchg, commInfo->getExchg());
-
-		const XTPTickByTickEntrust& eInfo = tbt_data->entrust;
-
-		ts.trading_date = actDate;
-		ts.action_date = actDate;
-		ts.action_time = actTime;
-
-		ts.index = eInfo.seq;
-		ts.side = eInfo.side;
-		ts.otype = eInfo.ord_type;
-
-		ts.price = eInfo.price;
-		ts.volume = (uint32_t)eInfo.qty;
-
-		if (m_sink)
-			m_sink->handleOrderDetail(ordDtl);
-	}
-	else if (tbt_data->type == XTP_TBT_TRADE)
-	{
-		WTSTransData *trans = WTSTransData::create(tbt_data->ticker);
-		WTSTransStruct& ts = trans->getTransStruct();
-		strcpy(ts.exchg, commInfo->getExchg());
-
-		const XTPTickByTickTrade& tInfo = tbt_data->trade;
-
-		ts.trading_date = actDate;
-		ts.action_date = actDate;
-		ts.action_time = actTime;
-
-		ts.index = tInfo.seq;
-		ts.side = tInfo.trade_flag;
-		ts.ttype = tInfo.trade_flag == '4' ? TT_Cancel : TT_Match;
-
-		ts.price = tInfo.price;
-		ts.volume = (uint32_t)tInfo.qty;
-		ts.bidorder = tInfo.bid_no;
-		ts.askorder = tInfo.ask_no;
-
-		if (m_sink)
-			m_sink->handleTransaction(trans);
-	}
-}
-
 void ParserXTP::OnDepthMarketData(XTPMD *market_data, int64_t bid1_qty[], int32_t bid1_count, int32_t max_bid1_count, int64_t ask1_qty[], int32_t ask1_count, int32_t max_ask1_count)
 {	
 	if(m_pBaseDataMgr == NULL)
@@ -355,63 +278,6 @@ void ParserXTP::OnDepthMarketData(XTPMD *market_data, int64_t bid1_qty[], int32_
 	if(m_sink)
 		m_sink->handleQuote(tick, 1);
 
-	//´¦ÀíÖð±Ê
-	if(bid1_count > 0)
-	{
-		WTSOrdQueData* buyQue = WTSOrdQueData::create(code.c_str());
-		buyQue->setContractInfo(ct);
-
-		WTSOrdQueStruct& buyOS = buyQue->getOrdQueStruct();
-		strcpy(buyOS.exchg, commInfo->getExchg());
-
-		buyOS.trading_date = m_uTradingDate;
-		buyOS.action_date = actDate;
-		buyOS.action_time = actTime;
-
-		buyOS.side = BDT_Buy;
-		buyOS.price = quote.bid_prices[0];
-		buyOS.order_items = max_bid1_count;
-		buyOS.qsize = std::min(bid1_count,50);
-
-		for (uint32_t i = 0; i < buyOS.qsize; i++)
-		{
-			buyOS.volumes[i] = (uint32_t)bid1_qty[i];
-		}
-
-		if (m_sink)
-			m_sink->handleOrderQueue(buyQue);
-
-		buyQue->release();
-	}
-	
-	if(ask1_count > 0)
-	{
-		WTSOrdQueData* sellQue = WTSOrdQueData::create(code.c_str());
-		sellQue->setContractInfo(ct);
-
-		WTSOrdQueStruct& sellOS = sellQue->getOrdQueStruct();
-		strcpy(sellOS.exchg, commInfo->getExchg());
-
-		sellOS.trading_date = m_uTradingDate;
-		sellOS.action_date = actDate;
-		sellOS.action_time = actTime;
-
-		sellOS.side = BDT_Sell;
-		sellOS.price = quote.ask_prices[0];
-		sellOS.order_items = max_ask1_count;
-		sellOS.qsize = std::min(ask1_count, 50);
-
-		for (uint32_t i = 0; i < sellOS.qsize; i++)
-		{
-			sellOS.volumes[i] = (uint32_t)ask1_qty[i];
-		}
-
-		if (m_sink)	
-			m_sink->handleOrderQueue(sellQue);
-
-		sellQue->release();
-	}
-
 	tick->release();
 }
 
@@ -424,20 +290,7 @@ void ParserXTP::OnSubMarketData(XTPST *ticker, XTPRI *error_info, bool is_last)
 	else
 	{
 		if(m_sink)
-			write_log(m_sink, LL_ERROR, "[ParserXTP] Market data subscribe faile, code: {}.{}", ticker->exchange_id == XTP_EXCHANGE_SH ? "SSE" : "SZSE", ticker->ticker);
-	}
-}
-
-void ParserXTP::OnSubTickByTick(XTPST *ticker, XTPRI *error_info, bool is_last)
-{
-	if (!IsErrorRspInfo(error_info))
-	{
-
-	}
-	else
-	{
-		if (m_sink)
-			write_log(m_sink, LL_ERROR, "[ParserXTP] Tick-by-tick data subscribe faile, code: {}.{}", ticker->exchange_id == XTP_EXCHANGE_SH ? "SSE" : "SZSE", ticker->ticker);
+			write_log(m_sink, LL_ERROR, "[ParserXTP] Market data subscribe failed, code: {}.{}, msg: {}, err code: {}, err msg: {}", ticker->exchange_id == XTP_EXCHANGE_SH ? "SSE" : "SZSE", ticker->ticker, error_info->error_id, error_info->error_msg);
 	}
 }
 
@@ -448,9 +301,14 @@ void ParserXTP::DoLogin()
 		return;
 	}
 
-	m_pUserAPI->SetHeartBeatInterval(m_uHBInterval);
-	m_pUserAPI->SetUDPBufferSize(m_uBuffSize);
-	int iResult = m_pUserAPI->Login(m_strHost.c_str(), m_iPort, m_strUser.c_str(), m_strPass.c_str(), m_iProtocol);
+	//write_log(m_sink, LL_INFO, "host: {}, port: {}, protocal type: {}, user: {}, pass: {}, client: {}, local_ip: {}", m_strHost, m_iPort, m_iProtocol, m_strUser, m_strPass, m_uClientID, m_strLocalIP);
+
+	int iResult = 0;
+	if (!m_strLocalIP.empty())
+		iResult = m_pUserAPI->Login(m_strHost.c_str(), m_iPort, m_strUser.c_str(), m_strPass.c_str(), m_iProtocol, m_strLocalIP.c_str());
+	else
+		iResult = m_pUserAPI->Login(m_strHost.c_str(), m_iPort, m_strUser.c_str(), m_strPass.c_str(), m_iProtocol);
+
 	if(iResult != 0)
 	{
 		if (m_sink)
@@ -458,6 +316,7 @@ void ParserXTP::DoLogin()
 			if(iResult == -1)
 			{
 				m_sink->handleEvent(WPE_Connect, iResult);
+				write_log(m_sink, LL_ERROR, "[ParserXTP] Connecting server failed: {}", iResult);
 			}
 			else
 			{
@@ -507,18 +366,6 @@ void ParserXTP::DoSubscribeMD()
 				if (m_sink)
 					write_log(m_sink, LL_INFO, "[ParserXTP] Market data of {} instruments of SSE subscribed", nCount);
 			}
-
-			iResult = m_pUserAPI->SubscribeTickByTick(subscribe, nCount, XTP_EXCHANGE_SH);
-			if (iResult != 0)
-			{
-				if (m_sink)
-					write_log(m_sink, LL_ERROR, "[ParserXTP] Sending tick_by_tick subscribe request of SSE failed: {}", iResult);
-			}
-			else
-			{
-				if (m_sink)
-					write_log(m_sink, LL_INFO, "[ParserXTP] Tick_by_tick data of {} instruments of SSE subscribed", nCount);
-			}
 		}
 		codeFilter.clear();
 		delete[] subscribe;
@@ -548,18 +395,6 @@ void ParserXTP::DoSubscribeMD()
 			{
 				if (m_sink)
 					write_log(m_sink, LL_INFO, "[ParserXTP] Market data of {} instruments of SZSE subscribed", nCount);
-			}
-
-			iResult = m_pUserAPI->SubscribeTickByTick(subscribe, nCount, XTP_EXCHANGE_SZ);
-			if (iResult != 0)
-			{
-				if (m_sink)
-					write_log(m_sink, LL_ERROR, "[ParserXTP] Sending tick_by_tick subscribe request of SZSE failed: {}", iResult);
-			}
-			else
-			{
-				if (m_sink)
-					write_log(m_sink, LL_INFO, "[ParserXTP] Tick_by_tick data of {} instruments of SZSE subscribed", nCount);
 			}
 		}
 		codeFilter.clear();
