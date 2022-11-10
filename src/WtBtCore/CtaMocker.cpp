@@ -1087,9 +1087,9 @@ void CtaMocker::stra_enter_long(const char* stdCode, double qty, const char* use
 	{
 		double curQty = stra_get_position(stdCode);
 		if(decimal::lt(curQty, 0))
-			append_signal(stdCode, qty, userTag, _is_in_schedule ? 0 : 1);
+			append_signal(stdCode, qty, userTag, 0.0, _is_in_schedule ? 0 : 1);
 		else
-			append_signal(stdCode, curQty + qty, userTag, _is_in_schedule ? 0 : 1);
+			append_signal(stdCode, curQty + qty, userTag, 0.0, _is_in_schedule ? 0 : 1);
 	}
 	else
 	{
@@ -1138,9 +1138,9 @@ void CtaMocker::stra_enter_short(const char* stdCode, double qty, const char* us
 	{
 		double curQty = stra_get_position(stdCode);
 		if(decimal::gt(curQty, 0))
-			append_signal(stdCode, -qty, userTag, _is_in_schedule ? 0 : 1);
+			append_signal(stdCode, -qty, userTag, 0.0, _is_in_schedule ? 0 : 1);
 		else
-			append_signal(stdCode, curQty - qty, userTag, _is_in_schedule ? 0 : 1);
+			append_signal(stdCode, curQty - qty, userTag, 0.0, _is_in_schedule ? 0 : 1);
 
 	}
 	else
@@ -1187,7 +1187,7 @@ void CtaMocker::stra_exit_long(const char* stdCode, double qty, const char* user
 	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式,则直接触发
 	{
 		double maxQty = min(curQty, qty);
-		append_signal(stdCode, curQty - qty, userTag, _is_in_schedule ? 0 : 1);
+		append_signal(stdCode, curQty - qty, userTag, 0.0, _is_in_schedule ? 0 : 1);
 	}
 	else
 	{
@@ -1238,7 +1238,7 @@ void CtaMocker::stra_exit_short(const char* stdCode, double qty, const char* use
 	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式,则直接触发
 	{
 		double maxQty = min(abs(curQty), qty);
-		append_signal(stdCode, curQty + maxQty, userTag, _is_in_schedule ? 0 : 1);
+		append_signal(stdCode, curQty + maxQty, userTag, 0.0, _is_in_schedule ? 0 : 1);
 	}
 	else
 	{
@@ -1319,7 +1319,7 @@ void CtaMocker::stra_set_position(const char* stdCode, double qty, const char* u
 	_replayer->sub_tick(_context_id, stdCode);
 	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//没有设置触发条件，则直接添加信号
 	{
-		append_signal(stdCode, qty, userTag, _is_in_schedule ? 0 : 1);
+		append_signal(stdCode, qty, userTag, 0.0, _is_in_schedule ? 0 : 1);
 	}
 	else
 	{

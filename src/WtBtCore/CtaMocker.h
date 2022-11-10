@@ -81,7 +81,7 @@ private:
 	void	update_dyn_profit(const char* stdCode, double price);
 
 	void	do_set_position(const char* stdCode, double qty, double price = 0.0, const char* userTag = "");
-	void	append_signal(const char* stdCode, double qty, const char* userTag = "", double price = 0.0, uint32_t sigType = 0);
+	void	append_signal(const char* stdCode, double qty, const char* userTag, double price, uint32_t sigType);
 
 	inline CondList& get_cond_entrusts(const char* stdCode);
 
