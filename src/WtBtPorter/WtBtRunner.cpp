@@ -522,27 +522,30 @@ void WtBtRunner::run(bool bNeedDump /* = false */, bool bAsync /* = false */)
 		_hft_mocker->enable_hook(_async);
 
 	_replayer.prepare();
-
-	_worker.reset(new StdThread([this, bNeedDump]() {
-		_running = true;
-		try
-		{
-			_replayer.run(bNeedDump);
-		}
-		catch (...)
-		{
-			WTSLogger::error("Exception raised while worker running");
-			//print_stack_trace([](const char* message) {
-			//	WTSLogger::error(message);
-			//});
-		}
-		WTSLogger::debug("Worker thread of backtest finished");
-		_running = false;
-
-	}));
-
 	if (!bAsync)
-		_worker->join();
+	{
+		_replayer.run(bNeedDump);
+	}
+	else
+	{
+		_worker.reset(new StdThread([this, bNeedDump]() {
+			_running = true;
+			try
+			{
+				_replayer.run(bNeedDump);
+			}
+			catch (...)
+			{
+				WTSLogger::error("Exception raised while worker running");
+				//print_stack_trace([](const char* message) {
+				//	WTSLogger::error(message);
+				//});
+			}
+			WTSLogger::debug("Worker thread of backtest finished");
+			_running = false;
+
+		}));
+	}
 }
 
 void WtBtRunner::stop()
