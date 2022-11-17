@@ -74,7 +74,7 @@ public:
 
 private:
 	void initDataMgr(WTSVariant* config, bool bAlldayMode = false);
-	void initParsers(const char* filename);
+	void initParsers(WTSVariant* cfg);
 
 private:
 
