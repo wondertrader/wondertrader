@@ -164,7 +164,6 @@ protected:
 	std::string		m_strErrInfo;  // ·µ»Ø´íÎóÐÅÏ¢
 
 	ITraderSpi*		m_bscSink;
-	//IOptTraderSpi*	m_optSink;
 	uint64_t		m_uLastQryTime;
 
 	uint32_t					m_lDate;

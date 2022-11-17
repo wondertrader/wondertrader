@@ -19,7 +19,7 @@
 #include "../Includes/ITraderApi.h"
 #include "../Includes/WTSCollection.hpp"
 
-#include "../API/mCliApi3.7/maCliOptTradeApi.h"
+#include "../API/maCliApi_Patch3.8(R)/include/maCliOptTradeApi.h"
 
 #include "../Share/IniHelper.hpp"
 #include "../Share/StdUtils.hpp"
@@ -52,22 +52,6 @@ typedef enum
 	MA_SSE_B = '11',
 	MA_SSE_OPT = '15'
 } MA_STK_BD;
-
-// 证券类别
-typedef enum
-{
-	MA_STOCK = 'A',
-	MA_ETF = 'D',
-	MA_STK_OPT = 'U'
-} MA_STK_CLS;
-
-// 货币代码
-typedef enum
-{
-	MA_RMB = '0',
-	MA_HK = '1',
-	MA_US = '2'
-} MA_CURRENCY;
 
 // 证券业务
 typedef enum
@@ -111,12 +95,12 @@ typedef enum
 	MA_ORDER_NORMAL = 'F'  // 正常
 } MA_IS_WITHDRAW;
 
-// 委托有效标志
-typedef enum
-{
-	MA_ORDER_VALID = '0',  // 无效
-	MA_ORDER_INVALID = '1'  // 有效
-} MA_ORDER_VALID_FLAG;
+//// 委托有效标志
+//typedef enum
+//{
+//	MA_ORDER_VALID = '0',  // 无效
+//	MA_ORDER_INVALID = '1'  // 有效
+//} MA_ORDER_VALID_FLAG;
 
 // 委托状态
 typedef enum tagOrderState
@@ -268,13 +252,16 @@ public:
 
 	// 确认回报
 	virtual int OnRtnOrderConfirm(CRtnOptOrderConfirmField* p_pRspField) override;
+	//确认回报推送（极速）响应
+	virtual int OnRtnOrderConfirmFlash(CRtnOptOrderConfirmFlashField *p_pRtnField);
 
 	// 成交回报--委托信息
 	virtual int OnRtnOrder(CRtnOptOrderField* p_pRspField) override;
-
+	
 	// 成交回报--成交信息
 	virtual int OnRtnOrderFill(CRtnOptOrderFillField* p_pRtnField) override;
-
+	//成交回报推送(极速）响应
+	virtual int OnRtnOrderFillFlash(CRtnOptOrderFillFlashField *p_pRtnField);
 
 	virtual int OnRtnSubTopic(CRspSubTopicField* p_pRspField) override;
 
@@ -332,6 +319,7 @@ protected:
 	std::string		m_strAuthType;
 	std::string		m_strEncryptType;
 	std::string		m_strAcctType;
+	std::string		m_strOptSite;  // 包头
 
 	std::string		m_strShPBU;  // 交易单元
 	std::string		m_strSzPBU;  // 交易单元

@@ -199,7 +199,6 @@ TraderAresClt::TraderAresClt()
 	, m_wrapperState(WS_NOTLOGIN)
 	, m_uLastQryTime(0)
 	, m_iRequestID(0)
-	//, m_optSink(NULL)
 	, m_bscSink(NULL)
 	, m_bInQuery(false)
 	, m_bStopped(NULL)
@@ -320,10 +319,10 @@ void TraderAresClt::connect()
 		if (iRet < 0)
 		{
 			// Æô¶¯Ê§°Ü
-			write_log(m_bscSink, LL_ERROR, "[TraderAresClt] Creating environment failed.");
+			write_log(m_bscSink, LL_ERROR, "[TraderAresClt] Creating environment failed, code: {}", iRet);
 		}
 	}
-	
+
 	if (m_thrdWorker == NULL)
 	{
 		boost::asio::io_service::work work(_asyncio);
@@ -345,7 +344,7 @@ void TraderAresClt::connect()
 
 void TraderAresClt::disconnect()
 {
-	std::cout << "disconnect ..." << std::endl;
+	//std::cout << "disconnect ..." << std::endl;
 
 	//if (m_thrdWorker)
 	//{
@@ -581,11 +580,9 @@ int TraderAresClt::queryAccount()
 {
 	if (m_pUserAPI == NULL || m_wrapperState != WS_ALLREADY)
 	{
-		write_log(m_bscSink, LL_ERROR, "[TraderAresClt] query error");
+		write_log(m_bscSink, LL_ERROR, "[TraderAresClt] Trading api is null or system is not all ready");
 		return -1;
 	}
-
-	write_log(m_bscSink, LL_INFO, "[TraderAresClt] Begin to query account info ...");
 
 	tagXTReqQryAccountField req;
 	memset(&req, 0, sizeof(req));
@@ -624,11 +621,9 @@ int TraderAresClt::queryPositions()
 {
 	if (m_pUserAPI == NULL || m_wrapperState != WS_ALLREADY)
 	{
-		write_log(m_bscSink, LL_ERROR, "Failed to query positions ...");
+		write_log(m_bscSink, LL_ERROR, "[TraderAresClt] Trading api is null or system is not all ready");
 		return -1;
 	}
-
-	write_log(m_bscSink, LL_INFO, "[TraderAresClt] Begin to query position info ...");
 
 	tagXTReqQryPositionField req;
 	memset(&req, 0, sizeof(req));
@@ -668,8 +663,6 @@ int TraderAresClt::queryOrders()
 		return -1;
 	}
 
-	write_log(m_bscSink, LL_INFO, "[TraderAresClt] Begin to query order info ...");
-
 	tagXTReqQryOrderField req;
 	memset(&req, 0, sizeof(req));
 	strcpy(req.UserID, m_strUserID.c_str());
@@ -705,8 +698,6 @@ int TraderAresClt::queryTrades()
 	{
 		return -1;
 	}
-
-	write_log(m_bscSink, LL_INFO, "[TraderAresClt] Begin to query trade info ...");
 
 	tagXTReqQryTradeField req;
 	memset(&req, 0, sizeof(req));
@@ -856,9 +847,6 @@ void TraderAresClt::OnRspOrderInsert(tagXTReqOrderInsertField* data, tagXTRspInf
 		if (m_bscSink)
 			m_bscSink->onRspEntrust(entrust, err);
 
-		//if (m_optSink)
-		//	m_optSink->onRspEntrustOpt(entrust, err);
-
 		entrust->release();
 		err->release();
 	}
@@ -911,7 +899,7 @@ void TraderAresClt::OnRspOrderAction(tagXTReqOrderCancelField* data, tagXTRspInf
 	}
 	else
 	{
-		std::cout << "Cancelling order sucessfully" << "  errmsg: " << pRspInfo->ErrorMsg << std::endl;
+		write_log(m_bscSink, LL_INFO, "[TraderAresClt] Cancell order successed, msg: {}", pRspInfo->ErrorMsg);
 	}
 }
 
@@ -927,8 +915,6 @@ void TraderAresClt::OnErrRtnOrderAction(tagXTReqOrderCancelField* orderCancelFie
 		if (m_bscSink)
 			m_bscSink->onRspEntrust(entrust, err);
 
-		//if (m_optSink)
-		//	m_optSink->onRspEntrustOpt(entrust, err);
 		entrust->release();
 		err->release();
 	}
@@ -936,7 +922,7 @@ void TraderAresClt::OnErrRtnOrderAction(tagXTReqOrderCancelField* orderCancelFie
 
 void TraderAresClt::OnRspQryTradingAccount(tagXTRspAccountField* pTradingAccount, tagXTRspInfoField* pRspInfo, int id, bool bIsLast)
 {
-	write_log(m_bscSink, LL_INFO, "OnRspQryTradingAccount: {}", pRspInfo->ErrorMsg);
+	//write_log(m_bscSink, LL_INFO, "OnRspQryTradingAccount: {}", pRspInfo->ErrorMsg);
 
 	if (pRspInfo)
 		m_strErrInfo = pRspInfo->ErrorMsg;
@@ -978,7 +964,7 @@ void TraderAresClt::OnRspQryTradingAccount(tagXTRspAccountField* pTradingAccount
 
 void TraderAresClt::OnRspQryInvestorPosition(tagXTRspPositionField* pInvestorPosition, tagXTRspInfoField* pRspInfo, int id, bool bIsLast)
 {
-	write_log(m_bscSink, LL_INFO, "Begin to callback result of positions, msg: {}", pRspInfo->ErrorMsg);
+	//write_log(m_bscSink, LL_INFO, "Begin to callback result of positions, msg: {}", pRspInfo->ErrorMsg);
 
 	if (pRspInfo)
 		m_strErrInfo = pRspInfo->ErrorMsg;
@@ -1113,8 +1099,6 @@ void TraderAresClt::OnRspQryInvestorPosition(tagXTRspPositionField* pInvestorPos
 		}
 
 		ayPos->release();
-
-		write_log(m_bscSink, LL_INFO, "Succeeded to callback QryTradingAccount info");
 	}
 }
 
@@ -1193,9 +1177,6 @@ void TraderAresClt::OnRspQryOrder(tagXTOrderField *pOrder, tagXTRspInfoField *pR
 		if (m_bscSink)
 			m_bscSink->onRspOrders(m_ayOrders);
 
-		//if (m_optSink)
-		//	m_optSink->onRspOrdersOpt(m_ayOrders);
-
 		if (m_ayOrders)
 			m_ayOrders->clear();
 	}
@@ -1203,24 +1184,12 @@ void TraderAresClt::OnRspQryOrder(tagXTOrderField *pOrder, tagXTRspInfoField *pR
 
 void TraderAresClt::OnRtnOrder(tagXTOrderField *pOrder)
 {
-	//std::cout << "Line: " << pOrder->Line << "  UserType: " << pOrder->UserType[0]
-	//	<< "  UserID: " << pOrder->UserID << "  InvestorID: " << pOrder->InvestorID
-	//	<< "  Exchange: " << pOrder->Exchange << "  Code: " << pOrder->Code
-	//	<< "  Direction: " << pOrder->Direction[0] << "  Offset: " << pOrder->Offset[0]
-	//	<< "  LimitPrice: " << pOrder->LimitPrice << "  OriginVolume: " << pOrder->VolumeOrigin
-	//	<< "  VolumeTraded: " << pOrder->VolumeTraded << "  VolumeRemain: " << pOrder->VolumeRemain
-	//	<< "  OrderStatus: " << pOrder->OrderStatus << "  StatusMsg: " << pOrder->StatusMsg
-	//	<< "  InsertDate: " << pOrder->InsertDate << "  InsertTime: " << pOrder->InsertTime << std::endl;
-
 	WTSOrderInfo *orderInfo = makeOrderInfo(pOrder);
 	if (orderInfo)
 	{
 		_asyncio.post([this, orderInfo] {
 			if (m_bscSink)
 				m_bscSink->onPushOrder(orderInfo);
-
-			//if (m_optSink)
-			//	m_optSink->onPushOrderOpt(orderInfo);
 
 			orderInfo->release();
 		});
@@ -1229,13 +1198,6 @@ void TraderAresClt::OnRtnOrder(tagXTOrderField *pOrder)
 
 void TraderAresClt::OnRtnTrade(tagXTTradeField *pTrade)
 {
-	//std::cout << "Line: " << pTrade->Line << "  UserType: " << pTrade->UserType[0]
-	//	<< "  UserID: " << pTrade->UserID << "  InvestorID: " << pTrade->InvestorID
-	//	<< "  Exchange: " << pTrade->Exchange << "  Code: " << pTrade->Code
-	//	<< "  Direction: " << pTrade->Direction[0] << "  Offset: " << pTrade->Offset[0]
-	//	<< "  Price: " << pTrade->Price << "  Volume: " << pTrade->Volume
-	//	<< "  TradeDate: " << pTrade->TradeDate << "  TradeTime: " << pTrade->TradeTime << std::endl;
-
 	WTSTradeInfo *tRecord = makeTradeRecord(pTrade);
 	if (tRecord)
 	{
@@ -1476,7 +1438,6 @@ void TraderAresClt::OnErrRtnOrderInsert(tagXTReqOrderInsertField *pInputOrder, t
 
 bool TraderAresClt::isConnected()
 {
-	write_log(m_bscSink, LL_INFO, "successed to connect.");
 	return (m_wrapperState == WS_ALLREADY);
 }
 
