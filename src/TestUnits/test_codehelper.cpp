@@ -85,7 +85,7 @@ TEST(test_codehelper, test_extract)
 	EXPECT_STREQ(c._code, "IO2007-C-4000");
 	EXPECT_STREQ(c._product, "IO");
 
-	c = CodeHelper::extractStdCode("DCE.IO2007.P.4000", NULL);
+	c = CodeHelper::extractStdCode("CFFEX.IO2007.P.4000", NULL);
 	EXPECT_STREQ(c._exchg, "CFFEX");
 	EXPECT_STREQ(c._code, "IO2007-P-4000");
 	EXPECT_STREQ(c._product, "IO");
