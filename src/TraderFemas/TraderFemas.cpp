@@ -273,7 +273,7 @@ int TraderFemas::doLogin()
 	strcpy(req.BrokerID, m_strBroker.c_str());
 	strcpy(req.UserID, m_strUser.c_str());
 	strcpy(req.Password, m_strPass.c_str());
-	strcpy(req.UserProductInfo, productInfo);
+	strcpy(req.UserProductInfo, m_strProduct.c_str());
 	int iResult = m_pUserAPI->ReqUserLogin(&req, genRequestID());
 	if (iResult != 0)
 	{
@@ -287,6 +287,7 @@ int TraderFemas::login( const char* user, const char* pass, const char* productI
 {
 	m_strUser = user;
 	m_strPass = pass;
+	m_strProduct = productInfo;
 
 	if(m_pUserAPI == NULL)
 	{

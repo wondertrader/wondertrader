@@ -193,6 +193,8 @@ protected:
 	std::string		m_strAuthCode;
 	std::string		m_strFlowDir;
 
+	std::string		m_strProduct;
+
 	bool			m_bQuickStart;
 
 	std::string		m_strTag;
