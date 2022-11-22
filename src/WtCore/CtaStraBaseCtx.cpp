@@ -290,36 +290,35 @@ void CtaStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 			{
 				const char* stdCode = pItem["code"].GetString();
 				const char* ruleTag = _engine->get_hot_mgr()->getRuleTag(stdCode);
-				if (strlen(ruleTag) == 0 && _engine->get_contract_info(stdCode) == NULL)
-				{
+				bool isExpired = (strlen(ruleTag) == 0 && _engine->get_contract_info(stdCode) == NULL);
+
+				if(isExpired)
 					log_info("{} not exists or expired, position ignored", stdCode);
-					continue;
-				}
+
 				PosInfo& pInfo = _pos_map[stdCode];
 				pInfo._closeprofit = pItem["closeprofit"].GetDouble();
-				pInfo._volume = pItem["volume"].GetDouble();
 				pInfo._last_entertime = pItem["lastentertime"].GetUint64();
 				pInfo._last_exittime = pItem["lastexittime"].GetUint64();
-				if (pItem.HasMember("frozen"))
+				pInfo._volume = isExpired ? 0 : pItem["volume"].GetDouble();
+				if (pItem.HasMember("frozen") && !isExpired)
 				{
 					pInfo._frozen = pItem["frozen"].GetDouble();
 					pInfo._frozen_date = pItem["frozendate"].GetUint();
 				}
 
-				if (pInfo._volume == 0)
+				if (pInfo._volume == 0 || isExpired)
 				{
 					pInfo._dynprofit = 0;
 					pInfo._frozen = 0;
 				}
 				else
 					pInfo._dynprofit = pItem["dynprofit"].GetDouble();
-				
 
 				total_profit += pInfo._closeprofit;
 				total_dynprofit += pInfo._dynprofit;
 
 				const rj::Value& details = pItem["details"];
-				if (details.IsNull() || !details.IsArray() || details.Size() == 0)
+				if (details.IsNull() || !details.IsArray() || details.Size() == 0 || isExpired)
 					continue;
 
 				for (uint32_t i = 0; i < details.Size(); i++)
@@ -360,8 +359,11 @@ void CtaStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 					pInfo._details.emplace_back(dInfo);
 				}
 
-				log_info("Position confirmed,{} -> {}", stdCode, pInfo._volume);
-				stra_sub_ticks(stdCode);
+				if(!isExpired)
+				{
+					log_info("Position confirmed,{} -> {}", stdCode, pInfo._volume);
+					stra_sub_ticks(stdCode);
+				}
 			}
 		}
 
