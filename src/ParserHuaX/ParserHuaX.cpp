@@ -157,6 +157,8 @@ void ParserHuaX::DoLogin()
 	CTORATstpReqUserLoginField req_user_login_field;
 	memset(&req_user_login_field, 0, sizeof(req_user_login_field));
 
+	strcpy(req_user_login_field.UserProductInfo, "WonderTrader");
+
 	int iResult = _api->ReqUserLogin(&req_user_login_field, 1);
 
 	if (iResult != 0)

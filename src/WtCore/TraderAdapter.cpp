@@ -1399,7 +1399,7 @@ void TraderAdapter::handleEvent(WTSTraderEvent e, int32_t ec)
 	{
 		if(ec == 0)
 		{
-			_trader_api->login(_cfg->getCString("user"), _cfg->getCString("pass"), _cfg->getCString("product"));
+			_trader_api->login(_cfg->getCString("user"), _cfg->getCString("pass"), "WonderTrader");
 		}
 		else
 		{

@@ -804,7 +804,7 @@ void TraderHuaX::doLogin()
 	field.LogInAccountType = TORA_TSTP_LACT_UserID;
 	strcpy_s(field.Password, _pass.c_str());
 	// 终端采集  信息
-	strcpy_s(field.UserProductInfo, _appid.c_str());
+	strcpy_s(field.UserProductInfo, _productInfo.c_str());
 	// 按照监管要求填写终端信息
 	const char* terminalInfo = fmtutil::format("{};IIP={};IPORT={};LIP={};MAC={};HD=TF655AY91GHRVL", _terminal, _pub_ip, _pub_port, _trade_ip, _mac, _hard_disk);
 	strcpy_s(field.TerminalInfo, terminalInfo);
@@ -826,6 +826,7 @@ int TraderHuaX::login(const char* user, const char* pass, const char* productInf
 {
 	_user = user;
 	_pass = pass;
+	_productInfo = productInfo;
 
 	if (_api == NULL)
 	{
