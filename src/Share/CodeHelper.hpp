@@ -166,7 +166,7 @@ public:
 			}
 			else if (state == 3)
 			{
-				if ('A' <= ch && ch <= 'Z')
+				if ('A' <= ch && ch <= 'z')
 					continue;
 
 				if ('0' <= ch && ch <= '9')
@@ -543,9 +543,14 @@ public:
 
 		StringVector ay = StrUtil::split(stdCode, ".");
 		wt_strcpy(codeInfo._exchg, ay[0].c_str());
-		if(strcmp(codeInfo._exchg, "SHFE") == 0 || strcmp(codeInfo._exchg, "CZCE") == 0)
+		if(strcmp(codeInfo._exchg, "SHFE") == 0 || strcmp(codeInfo._exchg, "INE") == 0)
 		{
 			fmt::format_to(codeInfo._code, "{}{}{}", ay[1], ay[2], ay[3]);
+		}
+		else if (strcmp(codeInfo._exchg, "CZCE") == 0)
+		{
+			std::string& s = ay[1];
+			fmt::format_to(codeInfo._code, "{}{}{}{}", s.substr(0, s.size()-4), s.substr(s.size()-3), ay[2], ay[3]);
 		}
 		else
 		{

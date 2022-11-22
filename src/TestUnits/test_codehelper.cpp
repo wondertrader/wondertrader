@@ -78,4 +78,45 @@ TEST(test_codehelper, test_extract)
 	EXPECT_STREQ(c._product, "DC");
 	//EXPECT_FALSE(c.isHot());
 	//EXPECT_FALSE(c.isSecond());
+
+	//CFFEX.IO2007.C.4000
+	c = CodeHelper::extractStdCode("CFFEX.IO2007.C.4000", NULL);
+	EXPECT_STREQ(c._exchg, "CFFEX");
+	EXPECT_STREQ(c._code, "IO2007-C-4000");
+	EXPECT_STREQ(c._product, "IO");
+
+	c = CodeHelper::extractStdCode("DCE.IO2007.P.4000", NULL);
+	EXPECT_STREQ(c._exchg, "CFFEX");
+	EXPECT_STREQ(c._code, "IO2007-P-4000");
+	EXPECT_STREQ(c._product, "IO");
+
+	c = CodeHelper::extractStdCode("CZCE.CF2007.C.4000", NULL);
+	EXPECT_STREQ(c._exchg, "CZCE");
+	EXPECT_STREQ(c._code, "CF007C4000");
+	EXPECT_STREQ(c._product, "CFC");
+
+	c = CodeHelper::extractStdCode("CZCE.CF2007.P.4000", NULL);
+	EXPECT_STREQ(c._exchg, "CZCE");
+	EXPECT_STREQ(c._code, "CF007P4000");
+	EXPECT_STREQ(c._product, "CFP");
+
+	c = CodeHelper::extractStdCode("DCE.m2007.C.4000", NULL);
+	EXPECT_STREQ(c._exchg, "DCE");
+	EXPECT_STREQ(c._code, "m2007-C-4000");
+	EXPECT_STREQ(c._product, "m_o");
+
+	c = CodeHelper::extractStdCode("DCE.m2007.P.4000", NULL);
+	EXPECT_STREQ(c._exchg, "DCE");
+	EXPECT_STREQ(c._code, "m2007-P-4000");
+	EXPECT_STREQ(c._product, "m_o");
+
+	c = CodeHelper::extractStdCode("SHFE.rb2007.C.4000", NULL);
+	EXPECT_STREQ(c._exchg, "SHFE");
+	EXPECT_STREQ(c._code, "rb2007C4000");
+	EXPECT_STREQ(c._product, "rb_o");
+
+	c = CodeHelper::extractStdCode("SHFE.rb2007.P.4000", NULL);
+	EXPECT_STREQ(c._exchg, "SHFE");
+	EXPECT_STREQ(c._code, "rb2007P4000");
+	EXPECT_STREQ(c._product, "rb_o");
 }
