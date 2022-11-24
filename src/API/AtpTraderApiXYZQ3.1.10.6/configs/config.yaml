@@ -1,0 +1,19 @@
+config:
+    session: ./common/sessions.json
+    commodity: ./common/commodities.json
+    contract: ./common/stocks.json
+    profile: atpTest
+    trader: TraderATP.dll
+
+atpTest:
+    user: ''  # AGW登录账号
+    pass: ''  # AGW登录密码
+    branch_id: ''    # 营业部ID （当登录模式为2-资金账户登录模式时，该字段是否必填请咨询券商）
+    cust_id: ''  #客户号
+    account_id: ''  # 证券账户
+    account_key: ''  # 密码
+    front: 'xxxxxx:xxxx'  # 交易网关
+    front_backup: 'xxxx:xxxx'  # 备用交易网关
+    fund_account_id: ''  # 资金账户
+    node_id: 'PC;IIP=NA;IPORT=NA;LIP=;MAC=;HD=;V1.0' 
+
