@@ -279,6 +279,11 @@ uint32_t WtBtRunner::initCtaMocker(const char* name, int32_t slippage /* = 0 */,
 	}
 
 	_cta_mocker = new ExpCtaMocker(&_replayer, name, slippage, persistData, &_notifier);
+	const char* incremental_backtest_base = _cfg->get("env")->getCString("incremental_backtest_base");
+	if (strlen(incremental_backtest_base) > 0)
+	{
+		_cta_mocker->load_incremental_data(incremental_backtest_base);
+	}
 	if(hook) _cta_mocker->install_hook();
 	_replayer.register_sink(_cta_mocker, name);
 	return _cta_mocker->id();
@@ -455,21 +460,21 @@ void WtBtRunner::config(const char* cfgFile, bool isFile /* = true */)
 		return;
 	}
 
-	WTSVariant* cfg = isFile ? WTSCfgLoader::load_from_file(cfgFile, true) : WTSCfgLoader::load_from_content(cfgFile, false, true);
-	if(cfg == NULL)
+	_cfg = isFile ? WTSCfgLoader::load_from_file(cfgFile, true) : WTSCfgLoader::load_from_content(cfgFile, false, true);
+	if(_cfg == NULL)
 	{
 		WTSLogger::error("Loading config failed");
 		return;
 	}
 
 	//初始化事件推送器
-	initEvtNotifier(cfg->get("notifier"));
+	initEvtNotifier(_cfg->get("notifier"));
 
-	_replayer.init(cfg->get("replayer"), &_notifier, _ext_fnl_bar_loader != NULL ? this : NULL);
+	_replayer.init(_cfg->get("replayer"), &_notifier, _ext_fnl_bar_loader != NULL ? this : NULL);
 
-	WTSVariant* cfgEnv = cfg->get("env");
+	WTSVariant* cfgEnv = _cfg->get("env");
 	const char* mode = cfgEnv->getCString("mocker");
-	WTSVariant* cfgMode = cfg->get(mode);
+	WTSVariant* cfgMode = _cfg->get(mode);
 	if (strcmp(mode, "cta") == 0 && cfgMode)
 	{
 		const char* name = cfgMode->getCString("name");
@@ -495,7 +500,7 @@ void WtBtRunner::config(const char* cfgFile, bool isFile /* = true */)
 
 		WTSVariant* cfgTask = cfgMode->get("task");
 		if(cfgTask)
-			_replayer.register_task(_sel_mocker->id(), cfgTask->getUInt32("date"), cfgTask->getUInt32("time"), 
+			_replayer.register_task(_sel_mocker->id(), cfgTask->getUInt32("date"), cfgTask->getUInt32("time"),
 				cfgTask->getCString("period"), cfgTask->getCString("trdtpl"), cfgTask->getCString("session"));
 	}
 	else if (strcmp(mode, "exec") == 0 && cfgMode)

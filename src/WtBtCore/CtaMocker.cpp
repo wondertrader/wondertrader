@@ -25,6 +25,7 @@
 
 #include <rapidjson/document.h>
 #include <rapidjson/prettywriter.h>
+#include "rapidjson/filereadstream.h"
 namespace rj = rapidjson;
 
 const char* CMP_ALG_NAMES[] =
@@ -432,6 +433,170 @@ bool CtaMocker::init_cta_factory(WTSVariant* cfg)
 	}
 
 	return true;
+}
+
+void CtaMocker::load_incremental_data(const char* incremental_backtest_base)
+{
+	WTSLogger::info("loading incremental data from: {}", incremental_backtest_base);
+	std::string folder = incremental_backtest_base;
+	folder += "/";
+
+	std::string tradesFilename = folder + "trades.csv";
+	if (boost::filesystem::exists(tradesFilename))
+	{
+		std::ifstream tradesFile(tradesFilename);
+		std::string str;
+		// 跳过标题行
+		std::getline(tradesFile, str);
+		while (std::getline(tradesFile, str))
+		{
+			_trade_logs << str << "\n";
+		}
+	}
+
+	std::string closesFilename = folder + "closes.csv";
+	if (boost::filesystem::exists(closesFilename))
+	{
+		std::ifstream closesFile(closesFilename);
+		std::string str;
+		// 跳过标题行
+		std::getline(closesFile, str);
+		while (std::getline(closesFile, str))
+		{
+			_close_logs << str << "\n";
+		}
+	}
+
+	std::string fundsFilename = folder + "funds.csv";
+	if (boost::filesystem::exists(fundsFilename))
+	{
+		std::ifstream fundsFile(fundsFilename);
+		std::string str;
+		// 跳过标题行
+		std::getline(fundsFile, str);
+		while (std::getline(fundsFile, str))
+		{
+			_fund_logs << str << "\n";
+		}
+	}
+
+	std::string positionsFilename = folder + "positions.csv";
+	if (boost::filesystem::exists(positionsFilename))
+	{
+		std::ifstream positionsFile(positionsFilename);
+		std::string str;
+		// 跳过标题行
+		std::getline(positionsFile, str);
+		while (std::getline(positionsFile, str))
+		{
+			_pos_logs << str << "\n";
+		}
+	}
+
+	std::string signalsFilename = folder + "signals.csv";
+	if (boost::filesystem::exists(signalsFilename))
+	{
+		std::ifstream signalsFile(signalsFilename);
+		std::string str;
+		// 跳过标题行
+		std::getline(signalsFile, str);
+		while (std::getline(signalsFile, str))
+		{
+			_sig_logs << str << "\n";
+		}
+	}
+
+	std::string strategyDumpFilename = folder + fmtutil::format("{}.json", incremental_backtest_base);
+	if (boost::filesystem::exists(strategyDumpFilename))
+	{
+		FILE* fp = fopen(strategyDumpFilename.c_str(), "rb");
+		char readBuffer[65536];
+		rj::FileReadStream strategyDumpFile(fp, readBuffer, sizeof(readBuffer));
+		rj::Document d;
+		d.ParseStream(strategyDumpFile);
+		fclose(fp);
+		if (d.HasMember("positions"))
+		{
+			const rj::Value& positions = d["positions"];
+			for (rj::SizeType i = 0; i < positions.Size(); i++)
+			{
+				const rj::Value& positionEntry = positions[i];
+				const char* positionEntry_code = positionEntry["code"].GetString();
+				PosInfo& pInfo = _pos_map[positionEntry_code];
+				pInfo._volume = positionEntry["volume"].GetDouble();
+				pInfo._closeprofit = positionEntry["closeprofit"].GetDouble();
+				pInfo._dynprofit = positionEntry["dynprofit"].GetDouble();
+				pInfo._last_entertime = positionEntry["lastentertime"].GetUint64();
+				pInfo._last_exittime = positionEntry["lastexittime"].GetUint64();
+
+				if (positionEntry.HasMember("details"))
+				{
+					const rj::Value& details = positionEntry["details"];
+					for (rj::SizeType j = 0; j < details.Size(); j++)
+					{
+						const rj::Value& positionDetailEntry = details[j];
+						DetailInfo curPosDetail;
+						curPosDetail._long = positionDetailEntry["long"].GetBool();
+						curPosDetail._price = positionDetailEntry["price"].GetDouble();
+						curPosDetail._max_price = positionDetailEntry["maxprice"].GetDouble();
+						curPosDetail._min_price = positionDetailEntry["minprice"].GetDouble();
+						curPosDetail._volume = positionDetailEntry["volume"].GetDouble();
+						curPosDetail._opentime = positionDetailEntry["opentime"].GetUint64();
+						curPosDetail._opentdate = positionDetailEntry["opentdate"].GetInt();
+						curPosDetail._profit = positionDetailEntry["profit"].GetDouble();
+						curPosDetail._max_profit = positionDetailEntry["maxprofit"].GetDouble();
+						curPosDetail._max_loss = positionDetailEntry["maxloss"].GetDouble();
+						strcpy(curPosDetail._opentag, positionDetailEntry["opentag"].GetString());
+						pInfo._details.push_back(curPosDetail);
+					}
+				}
+			}
+		}
+
+		if (d.HasMember("fund"))
+		{
+			_fund_info._total_profit = d["fund"]["total_profit"].GetDouble();
+			_fund_info._total_dynprofit = d["fund"]["total_dynprofit"].GetDouble();
+			_fund_info._total_fees = d["fund"]["total_fees"].GetDouble();
+		}
+
+		if (d.HasMember("signals"))
+		{
+			for (rj::Value::ConstMemberIterator itr = d["signals"].MemberBegin(); itr != d["signals"].MemberEnd(); ++itr)
+			{
+				std::string stkCode = itr->name.GetString();
+				SigInfo& sInfo = _sig_map[stkCode];
+				sInfo._usertag = itr->value["usertag"].GetString();
+				sInfo._volume = itr->value["volume"].GetDouble();
+				sInfo._sigprice = itr->value["sigprice"].GetDouble();
+				sInfo._gentime = itr->value["gentime"].GetUint64();
+			}
+		}
+
+		if (d.HasMember("conditions") && d["conditions"].HasMember("items"))
+		{
+			// conditions -> items 下面的内容是两层嵌套   items[CODE] is a list
+			rj::Value& conditionItemsEntry = d["conditions"]["items"];
+
+			for (rj::Value::ConstMemberIterator itr = conditionItemsEntry.MemberBegin(); itr != conditionItemsEntry.MemberEnd(); ++itr)
+			{
+				std::string stkCode = itr->name.GetString();
+				for (rj::SizeType i = 0; i < itr->value.Size(); i++)
+				{
+					const rj::Value& conditionItemStkCondEntry = itr->value[i];
+					CondEntrust condEntrust;
+					strcpy(condEntrust._usertag, conditionItemStkCondEntry["usertag"].GetString());
+					condEntrust._field = (WTSCompareField)conditionItemStkCondEntry["field"].GetInt();
+					condEntrust._alg = (WTSCompareType)conditionItemStkCondEntry["alg"].GetInt();
+					condEntrust._target = conditionItemStkCondEntry["target"].GetDouble();
+					condEntrust._qty = conditionItemStkCondEntry["qty"].GetDouble();
+					condEntrust._action = conditionItemStkCondEntry["action"].GetString()[0];
+
+					_condtions[stkCode].push_back(condEntrust);
+				}
+			}
+		}
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////
