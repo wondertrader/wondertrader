@@ -211,5 +211,6 @@ private:
 	FuncReadTicks	_feeder_ticks;
 	FuncReadFactors	_feeder_fcts;
 	StdUniqueMutex	_feed_mtx;
+	WTSVariant* _cfg;
 };
 

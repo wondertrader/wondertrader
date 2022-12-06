@@ -89,6 +89,7 @@ private:
 
 public:
 	bool	init_cta_factory(WTSVariant* cfg);
+	void	load_incremental_data(const char* lastBacktestName);
 	void	install_hook();
 	void	enable_hook(bool bEnabled = true);
 	bool	step_calc();
