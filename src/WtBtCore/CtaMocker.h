@@ -338,6 +338,8 @@ protected:
 	std::stringstream	_fund_logs;
 	std::stringstream	_sig_logs;
 	std::stringstream	_pos_logs;
+	std::stringstream	_index_logs;
+	std::stringstream	_mark_logs;
 
 	CondEntrustMap		_condtions;
 
@@ -410,20 +412,10 @@ protected:
 	std::string		_chart_code;
 	std::string		_chart_period;
 
-	typedef struct _ChartMark
-	{
-		uint64_t	_bartime;
-		double		_price;
-		std::string	_icon;
-		std::string	_tag;
-	} ChartMark;
-	std::vector<ChartMark> _chart_marks;
-
 	typedef struct _ChartLine
 	{
 		std::string	_name;
 		uint32_t	_lineType;
-		std::vector<double> _values;
 	} ChartLine;
 
 	typedef struct _ChartIndex

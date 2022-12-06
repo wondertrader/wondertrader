@@ -258,13 +258,13 @@ void CtaMocker::dump_chartdata()
 				jLine.AddMember("name", rj::Value(cLine._name.c_str(), allocator), allocator);
 				jLine.AddMember("line_type", cLine._lineType, allocator);
 
-				rj::Value jVals(rj::kArrayType);
-				for(const double& val : cLine._values)
-				{
-					jVals.PushBack(val, allocator);
-				}
+				//rj::Value jVals(rj::kArrayType);
+				//for(const double& val : cLine._values)
+				//{
+				//	jVals.PushBack(val, allocator);
+				//}
 
-				jLine.AddMember("values", jVals, allocator);
+				//jLine.AddMember("values", jVals, allocator);
 
 				jLines.PushBack(jLine, allocator);
 			}
@@ -285,22 +285,22 @@ void CtaMocker::dump_chartdata()
 		root.AddMember("index", jIndice, allocator);
 	}
 
-	if(!_chart_marks.empty())
-	{
-		rj::Value jMarks(rj::kArrayType);
-		for(const ChartMark& mark : _chart_marks)
-		{
-			rj::Value jMark(rj::kObjectType);
-			jMark.AddMember("bartime", mark._bartime, allocator);
-			jMark.AddMember("price", mark._price, allocator);
-			jMark.AddMember("icon", rj::Value(mark._icon.c_str(), allocator), allocator);
-			jMark.AddMember("tag", rj::Value(mark._tag.c_str(), allocator), allocator);
+	//if(!_chart_marks.empty())
+	//{
+	//	rj::Value jMarks(rj::kArrayType);
+	//	for(const ChartMark& mark : _chart_marks)
+	//	{
+	//		rj::Value jMark(rj::kObjectType);
+	//		jMark.AddMember("bartime", mark._bartime, allocator);
+	//		jMark.AddMember("price", mark._price, allocator);
+	//		jMark.AddMember("icon", rj::Value(mark._icon.c_str(), allocator), allocator);
+	//		jMark.AddMember("tag", rj::Value(mark._tag.c_str(), allocator), allocator);
 
-			jMarks.PushBack(jMark, allocator);
-		}
+	//		jMarks.PushBack(jMark, allocator);
+	//	}
 
-		root.AddMember("marks", jMarks, allocator);
-	}
+	//	root.AddMember("marks", jMarks, allocator);
+	//}
 
 	if(_persist_data)
 	{
@@ -318,6 +318,18 @@ void CtaMocker::dump_chartdata()
 		rj::PrettyWriter<rj::StringBuffer> writer(sb);
 		root.Accept(writer);
 		StdFile::write_file_content(filename.c_str(), sb.GetString());
+
+		filename = folder;
+		filename += "indice.csv";
+		std::string content = "bartime,index_name,line_name,value\n";
+		if (!_index_logs.str().empty()) content += _index_logs.str();
+		StdFile::write_file_content(filename.c_str(), (void*)content.c_str(), content.size());
+
+		filename = folder;
+		filename += "marks.csv";
+		content = "bartime,price,icon,tag\n";
+		if (!_mark_logs.str().empty()) content += _mark_logs.str();
+		StdFile::write_file_content(filename.c_str(), (void*)content.c_str(), content.size());
 	}
 }
 
@@ -946,22 +958,22 @@ bool CtaMocker::on_schedule(uint32_t curDate, uint32_t curTime)
 				 *	如果策略在本轮没有设置指标值，则用上一个数据补齐
 				 *	如果是开始，则用默认值补齐
 				 */
-				for(auto& v : _chart_indice)
-				{
-					ChartIndex& cIndex = v.second;
-					for(auto& line : cIndex._lines)
-					{
-						ChartLine& cLine = line.second;
-						if(cLine._values.size() < _emit_times)
-						{
-							double lastVal = DBL_MAX;
-							if (!cLine._values.empty())
-								lastVal = cLine._values.back();
+				//for(auto& v : _chart_indice)
+				//{
+				//	ChartIndex& cIndex = v.second;
+				//	for(auto& line : cIndex._lines)
+				//	{
+				//		ChartLine& cLine = line.second;
+				//		if(cLine._values.size() < _emit_times)
+				//		{
+				//			double lastVal = DBL_MAX;
+				//			if (!cLine._values.empty())
+				//				lastVal = cLine._values.back();
 
-							cLine._values.emplace_back(lastVal);
-						}
-					}
-				}
+				//			cLine._values.emplace_back(lastVal);
+				//		}
+				//	}
+				//}
 
 				if (_has_hook && _hook_valid)
 				{
@@ -1888,7 +1900,7 @@ void CtaMocker::add_chart_mark(double price, const char* icon, const char* tag)
 	uint64_t curTime = _replayer->get_date();
 	curTime = curTime*10000 + _replayer->get_min_time();
 
-	_chart_marks.emplace_back(ChartMark({ curTime, price, icon, tag }));
+	_mark_logs << curTime << "," << price << "," << icon << "," << tag << std::endl;
 }
 
 void CtaMocker::register_index(const char* idxName, uint32_t indexType)
@@ -1951,14 +1963,9 @@ bool CtaMocker::set_index_value(const char* idxName, const char* lineName, doubl
 		return false;
 	}
 
-	ChartLine& cLine = bit->second;
-
-	//如果策略多次在同一条K线设置同一个指标值
-	//就只修改最后一个数据
-	if (cLine._values.size() > _emit_times)
-		cLine._values.back() = val;
-	else
-		cLine._values.emplace_back(val);
+	uint64_t curTime = _replayer->get_date();
+	curTime = curTime * 10000 + _replayer->get_min_time();
+	_index_logs << curTime << "," << idxName << "," << lineName << "," << val << std::endl;
 	return true;
 }
 
