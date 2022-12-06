@@ -282,7 +282,7 @@ void WtEngine::init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtDtMgr* dataMgr, IHot
 	_hot_mgr = hotMgr;
 	_notifier = notifier;
 
-	WTSLogger::info("Platform running mode: Production");
+	WTSLogger::info("Running mode: Production");
 
 	_filter_mgr.set_notifier(notifier);
 

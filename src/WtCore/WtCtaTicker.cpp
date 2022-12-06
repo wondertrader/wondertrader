@@ -152,8 +152,14 @@ void WtCtaRtTicker::run()
 	if (_thrd)
 		return;
 
+	/*
+	 *	By Wesley @ 2022.12.06
+	 *	这里一定要在初始化之前把交易日确定下来
+	 *	不然如果策略在on_init的时候调用一些依赖交易日的接口就会出错
+	 */
 	uint32_t curTDate = _engine->get_basedata_mgr()->calcTradingDate(_s_info->id(), _engine->get_date(), _engine->get_min_time(), true);
 	_engine->set_trading_date(curTDate);
+	WTSLogger::info("Trading date confirmed: {}", curTDate);
 	_engine->on_init();
 	_engine->on_session_begin();
 
