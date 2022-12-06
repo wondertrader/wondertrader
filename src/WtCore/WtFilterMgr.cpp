@@ -32,7 +32,7 @@ void WtFilterMgr::load_filters(const char* fileName)
 	{
 		WTSLogger::info("Filters configuration file {} modified, will be reloaded", _filter_file);
 		if (_notifier)
-			_notifier->notifyEvent("Filter file has been reloaded");
+			_notifier->notify_event("Filter file has been reloaded");
 	}
 
 	WTSVariant* cfg = WTSCfgLoader::load_from_file(_filter_file.c_str(), true);

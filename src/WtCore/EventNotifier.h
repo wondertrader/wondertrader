@@ -46,9 +46,12 @@ public:
 	void	notify(const char* trader, uint32_t localid, const char* stdCode, WTSOrderInfo* ordInfo);
 	void	notify(const char* trader, const char* message);
 
-	void	notifyLog(const char* tag, const char* message);
+	void	notify_log(const char* tag, const char* message);
 
-	void	notifyEvent(const char* message);
+	void	notify_event(const char* message);
+
+	void	notify_chart_marker(const char* strId, double price, const char* icon, const char* tag);
+	void	notify_chart_index(const char* straId, const char* idxName, const char* lineName, double val);
 
 private:
 	std::string		_url;

@@ -1870,6 +1870,8 @@ void CtaStraBaseCtx::add_chart_mark(double price, const char* icon, const char* 
 		ss << curTime << "," << price << "," << icon << "," << tag << std::endl;;
 		_mark_logs->write_file(ss.str());
 	}
+
+	_engine->notify_chart_marker(_name.c_str(), price, icon, tag);
 }
 
 void CtaStraBaseCtx::register_index(const char* idxName, uint32_t indexType)
@@ -1941,6 +1943,8 @@ bool CtaStraBaseCtx::set_index_value(const char* idxName, const char* lineName, 
 		ss << curTime << "," << idxName << "," << lineName << "," << val << std::endl;;
 		_idx_logs->write_file(ss.str());
 	}
+
+	_engine->notify_chart_index(_name.c_str(), idxName, lineName, val);
 
 	return true;
 }

@@ -107,7 +107,7 @@ bool EventNotifier::init(WTSVariant* cfg)
 	return true;
 }
 
-void EventNotifier::notifyLog(const char* tag, const char* message)
+void EventNotifier::notify_log(const char* tag, const char* message)
 {
 	if (_mq_sid == 0)
 		return;
@@ -136,7 +136,7 @@ void EventNotifier::notifyLog(const char* tag, const char* message)
 	});
 }
 
-void EventNotifier::notifyEvent(const char* message)
+void EventNotifier::notify_event(const char* message)
 {
 	if (_mq_sid == 0)
 		return;
@@ -298,4 +298,64 @@ void EventNotifier::orderToJson(const char* trader, uint32_t localid, const char
 
 		output = sb.GetString();
 	}
+}
+
+void EventNotifier::notify_chart_index(const char* straId, const char* idxName, const char* lineName, double val)
+{
+	if (_mq_sid == 0)
+		return;
+
+	std::string sid = straId;
+	std::string iname = idxName;
+	std::string lname = lineName;
+	_asyncio.post([this, sid, iname, lname, val]() {
+		std::string data;
+		{
+			rj::Document root(rj::kObjectType);
+			rj::Document::AllocatorType &allocator = root.GetAllocator();
+
+			root.AddMember("strategy", rj::Value(sid.c_str(), allocator), allocator);
+			root.AddMember("index_name", rj::Value(iname.c_str(), allocator), allocator);
+			root.AddMember("line_name", rj::Value(lname.c_str(), allocator), allocator);
+			root.AddMember("value", val, allocator);
+
+			rj::StringBuffer sb;
+			rj::PrettyWriter<rj::StringBuffer> writer(sb);
+			root.Accept(writer);
+
+			data = sb.GetString();
+		}
+		if (_publisher)
+			_publisher(_mq_sid, "CHART_INDEX", data.c_str(), (unsigned long)data.size());
+	});
+}
+
+void EventNotifier::notify_chart_marker(const char* straId, double price, const char* icon, const char* tag)
+{
+	if (_mq_sid == 0)
+		return;
+
+	std::string sid = straId;
+	std::string sIcon = icon;
+	std::string sTag = tag;
+	_asyncio.post([this, sid, sIcon, sTag, price]() {
+		std::string data;
+		{
+			rj::Document root(rj::kObjectType);
+			rj::Document::AllocatorType &allocator = root.GetAllocator();
+
+			root.AddMember("strategy", rj::Value(sid.c_str(), allocator), allocator);
+			root.AddMember("icon", rj::Value(sIcon.c_str(), allocator), allocator);
+			root.AddMember("tag", rj::Value(sTag.c_str(), allocator), allocator);
+			root.AddMember("price", price, allocator);
+
+			rj::StringBuffer sb;
+			rj::PrettyWriter<rj::StringBuffer> writer(sb);
+			root.Accept(writer);
+
+			data = sb.GetString();
+		}
+		if (_publisher)
+			_publisher(_mq_sid, "CHART_MARKTER", data.c_str(), (unsigned long)data.size());
+	});
 }

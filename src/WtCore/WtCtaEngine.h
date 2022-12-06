@@ -73,6 +73,10 @@ public:
 		return _exec_mgr.load_router_rules(cfg);
 	}
 
+public:
+	void notify_chart_marker(const char* strId, double price, const char* icon, const char* tag);
+	void notify_chart_index(const char* straId, const char* idxName, const char* lineName, double val);
+
 private:
 	typedef faster_hashmap<uint32_t, CtaContextPtr> ContextMap;
 	ContextMap		_ctx_map;
