@@ -15,6 +15,8 @@
 #include "../Share/BoostFile.hpp"
 #include "../Share/fmtlib.h"
 
+#include <unordered_map>
+
 class CtaStrategy;
 
 NS_WTP_BEGIN
@@ -170,6 +172,40 @@ public:
 
 	virtual const char* stra_get_last_entertag(const char* stdCode) override;
 
+public:
+	/*
+	 *	设置图表K线
+	 */
+	virtual void set_chart_kline(const char* stdCode, const char* period) override;
+
+	/*
+	 *	添加信号
+	 */
+	virtual void add_chart_mark(double price, const char* icon, const char* tag) override;
+
+	/*
+	 *	添加指标
+	 */
+	virtual void register_index(const char* idxName, uint32_t indexType) override;
+
+	/*
+	 *	添加指标线
+	 */
+	virtual bool register_index_line(const char* idxName, const char* lineName, uint32_t lineType) override;
+
+	/*
+	 *	添加基准线
+	 *	@idxName	指标名称
+	 *	@lineName	线条名称
+	 *	@val		数值
+	 */
+	virtual bool add_index_baseline(const char* idxName, const char* lineName, double val) override;
+
+	/*
+	 *	设置指标值
+	 */
+	virtual bool set_index_value(const char* idxName, const char* lineName, double val) override;
+
 protected:
 	uint32_t		_context_id;
 	WtCtaEngine*	_engine;
@@ -269,6 +305,8 @@ protected:
 	BoostFilePtr	_fund_logs;
 	BoostFilePtr	_sig_logs;
 	BoostFilePtr	_pos_logs;
+	BoostFilePtr	_idx_logs;
+	BoostFilePtr	_mark_logs;
 
 	CondEntrustMap	_condtions;
 	uint64_t		_last_cond_min;	//上次设置条件单的时间
@@ -298,6 +336,27 @@ protected:
 
 	//tick订阅列表
 	faster_hashset<LongKey> _tick_subs;
+
+	//////////////////////////////////////////////////////////////////////////
+	//图表相关
+	std::string		_chart_code;
+	std::string		_chart_period;
+
+	typedef struct _ChartLine
+	{
+		std::string	_name;
+		uint32_t	_lineType;
+	} ChartLine;
+
+	typedef struct _ChartIndex
+	{
+		std::string	_name;
+		uint32_t	_indexType;
+		faster_hashmap<std::string, ChartLine> _lines;
+		faster_hashmap<std::string, double> _base_lines;
+	} ChartIndex;
+
+	faster_hashmap<LongKey, ChartIndex>	_chart_indice;
 };
 
 

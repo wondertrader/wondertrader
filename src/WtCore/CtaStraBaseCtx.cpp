@@ -152,6 +152,36 @@ void CtaStraBaseCtx::init_outputs()
 			_pos_logs->seek_to_end();
 		}
 	}
+
+	filename = folder + "indice.csv";
+	_idx_logs.reset(new BoostFile());
+	{
+		bool isNewFile = !BoostFile::exists(filename.c_str());
+		_idx_logs->create_or_open_file(filename.c_str());
+		if (isNewFile)
+		{
+			_idx_logs->write_file("bartime,index_name,line_name,value\n");
+		}
+		else
+		{
+			_idx_logs->seek_to_end();
+		}
+	}
+
+	filename = folder + "marks.csv";
+	_mark_logs.reset(new BoostFile());
+	{
+		bool isNewFile = !BoostFile::exists(filename.c_str());
+		_mark_logs->create_or_open_file(filename.c_str());
+		if (isNewFile)
+		{
+			_mark_logs->write_file("bartime,price,icon,tag\n");
+		}
+		else
+		{
+			_mark_logs->seek_to_end();
+		}
+	}
 }
 
 void CtaStraBaseCtx::log_signal(const char* stdCode, double target, double price, uint64_t gentime, const char* usertag /* = "" */)
@@ -186,7 +216,6 @@ void CtaStraBaseCtx::log_close(const char* stdCode, bool isLong, uint64_t openTi
 		_close_logs->write_file(ss.str());
 	}
 }
-
 void CtaStraBaseCtx::save_userdata()
 {
 	rj::Document root(rj::kObjectType);
@@ -1818,4 +1847,101 @@ double CtaStraBaseCtx::stra_get_detail_profit(const char* stdCode, const char* u
 	return 0.0;
 }
 
+void CtaStraBaseCtx::set_chart_kline(const char* stdCode, const char* period)
+{
+	_chart_code = stdCode;
+	_chart_period = period;
+}
+
+void CtaStraBaseCtx::add_chart_mark(double price, const char* icon, const char* tag)
+{
+	if (!_is_in_schedule)
+	{
+		WTSLogger::error("Marks can be added only during schedule");
+		return;
+	}
+
+	uint64_t curTime = stra_get_date();
+	curTime = curTime * 10000 + stra_get_time();
+
+	if (_mark_logs)
+	{
+		std::stringstream ss;
+		ss << curTime << "," << price << "," << icon << "," << tag << std::endl;;
+		_mark_logs->write_file(ss.str());
+	}
+}
+
+void CtaStraBaseCtx::register_index(const char* idxName, uint32_t indexType)
+{
+	ChartIndex& cIndex = _chart_indice[idxName];
+	cIndex._name = idxName;
+	cIndex._indexType = indexType;
+}
+
+bool CtaStraBaseCtx::register_index_line(const char* idxName, const char* lineName, uint32_t lineType)
+{
+	auto it = _chart_indice.find(idxName);
+	if (it == _chart_indice.end())
+	{
+		WTSLogger::error("Index {} not registered", idxName);
+		return false;
+	}
+
+	ChartIndex& cIndex = (ChartIndex&)it->second;
+	ChartLine& cLine = cIndex._lines[lineName];
+	cLine._name = lineName;
+	cLine._lineType = lineType;
+	return true;
+}
+
+bool CtaStraBaseCtx::add_index_baseline(const char* idxName, const char* lineName, double val)
+{
+	auto it = _chart_indice.find(idxName);
+	if (it == _chart_indice.end())
+	{
+		WTSLogger::error("Index {} not registered", idxName);
+		return false;
+	}
+
+	ChartIndex& cIndex = (ChartIndex&)it->second;
+	cIndex._base_lines[lineName] = val;
+	return true;
+}
+
+bool CtaStraBaseCtx::set_index_value(const char* idxName, const char* lineName, double val)
+{
+	if (!_is_in_schedule)
+	{
+		WTSLogger::error("Marks can be added only during schedule");
+		return false;
+	}
+
+	auto ait = _chart_indice.find(idxName);
+	if (ait == _chart_indice.end())
+	{
+		WTSLogger::error("Index {} not registered", idxName);
+		return false;
+	}
+
+	ChartIndex& cIndex = (ChartIndex&)ait->second;
+	auto bit = cIndex._lines.find(lineName);
+	if (bit == cIndex._lines.end())
+	{
+		WTSLogger::error("Line {} of index {} not registered", lineName, idxName);
+		return false;
+	}
+
+	if (_idx_logs)
+	{
+		uint64_t curTime = stra_get_date();
+		curTime = curTime * 10000 + stra_get_time();
+
+		std::stringstream ss;
+		ss << curTime << "," << idxName << "," << lineName << "," << val << std::endl;;
+		_idx_logs->write_file(ss.str());
+	}
+
+	return true;
+}
 
