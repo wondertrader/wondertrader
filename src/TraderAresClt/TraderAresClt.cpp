@@ -109,8 +109,10 @@ inline WTSDirectionType wrapPosDirection(char dirType)
 {
 	if ('2' == dirType)
 		return WDT_LONG;
-	else
+	else if ('3' == dirType)
 		return WDT_SHORT;
+	else
+		return WDT_NET;
 }
 
 inline char wrapOffsetType(WTSOffsetType offType)
@@ -520,12 +522,6 @@ int TraderAresClt::orderInsert(WTSEntrust* entrust)
 		///ÊýÁ¿: 1
 		req.VolumeOrigin = (int)entrust->getVolume();
 
-		uint32_t order_ref = m_orderRef.fetch_add(1) + 1;
-		_snprintf(req.OrderRef, 15, "%d", order_ref);
-
-		/*std::cout << "Code: " << req.Code << "  Exchange: " << req.Exchange << "  PriceType: " << req.PriceType << "  Offset: " << req.Offset
-			<< "  LimitPrice: " << req.LimitPrice << "  Volume: " << req.VolumeOrigin << "  Direction: " << req.Direction << "  OrderRef: " << req.OrderRef << std::endl;*/
-
 		int iResult = m_pUserAPI->ReqOrderInsert(&req);
 		if (iResult <= 0)
 		{
@@ -843,12 +839,18 @@ void TraderAresClt::OnRspOrderInsert(tagXTReqOrderInsertField* data, tagXTRspInf
 	WTSEntrust* entrust = makeEntrust(data);
 	if (entrust)
 	{
-		WTSError *err = makeError(error, WEC_ORDERINSERT);
-		if (m_bscSink)
-			m_bscSink->onRspEntrust(entrust, err);
-
-		entrust->release();
-		err->release();
+		if (IsErrorRspInfo(error))
+		{
+			WTSError *err = makeError(error, WEC_ORDERINSERT);
+			if (m_bscSink)
+				m_bscSink->onRspEntrust(entrust, err);
+			err->release();
+		}
+		else
+		{
+			if (m_bscSink)
+				m_bscSink->onRspEntrust(entrust, NULL);
+		}
 	}
 	else if (IsErrorRspInfo(error))
 	{
@@ -858,32 +860,8 @@ void TraderAresClt::OnRspOrderInsert(tagXTReqOrderInsertField* data, tagXTRspInf
 		err->release();
 	}
 
-	//if (entrust)
-	//{
-	//	if (IsErrorRspInfo(error))
-	//	{
-	//		WTSError *err = makeError(error);
-	//		//g_orderMgr.onRspEntrust(entrust, err);
-	//		if (m_bscSink)
-	//			m_bscSink->onRspEntrust(entrust, err);
-	//		err->release();
-	//	}
-	//	else
-	//	{
-	//		if (m_bscSink)
-	//			m_bscSink->onRspEntrust(entrust, NULL);
-
-	//		//WTSOrderInfo* ordInfo = makeOrderInfo(data);
-	//		//if (m_bscSink)
-	//		//	m_bscSink->onPushOrder(ordInfo);
-
-	//		//if (ordInfo)
-	//		//	ordInfo->release();
-	//	}
-	//}
-
-	//if (entrust)
-	//	entrust->release();
+	if (entrust)
+		entrust->release();
 }
 
 void TraderAresClt::OnRspOrderAction(tagXTReqOrderCancelField* data, tagXTRspInfoField* pRspInfo, int id, bool last)
@@ -977,12 +955,6 @@ void TraderAresClt::OnRspQryInvestorPosition(tagXTRspPositionField* pInvestorPos
 
 	if (!IsErrorRspInfo(pRspInfo) && pInvestorPosition)
 	{
-		//std::cout << "Line: " << pInvestorPosition->Line << "  UserType: " << pInvestorPosition->UserType[0]
-		//	<< "  UserID: " << pInvestorPosition->UserID << "  InvestorID: " << pInvestorPosition->InvestorID
-		//	<< "  Exchange: " << pInvestorPosition->Exchange << "  Code: " << pInvestorPosition->Code
-		//	<< "  Position: " << pInvestorPosition->Position << "  PositionCost: " << pInvestorPosition->PositionCost 
-		//	<< "  PosiDirection: " << pInvestorPosition->PosiDirection[0] << std::endl;
-
 		if (NULL == m_mapPosition)
 			m_mapPosition = PositionMap::create();
 
@@ -1051,12 +1023,12 @@ void TraderAresClt::OnRspQryInvestorPosition(tagXTRspPositionField* pInvestorPos
 				else
 				{
 					int availNew = pInvestorPosition->Position;
+
 					availNew -= pInvestorPosition->FrozenPosition;
 
 					if (availNew < 0)
 						availNew = 0;
 					pos->setAvailNewPos(availNew);
-
 					double availPre = pos->getNewPosition() + pos->getPrePosition()
 						- pInvestorPosition->FrozenPosition - pos->getAvailNewPos();
 					pos->setAvailPrePos(availPre);
@@ -1213,6 +1185,9 @@ void TraderAresClt::OnRtnTrade(tagXTTradeField *pTrade)
 
 WTSOrderInfo* TraderAresClt::makeOrderInfo(tagXTOrderField* orderField)
 {
+	if (orderField == NULL)
+		return NULL;
+
 	WTSContractInfo* contract = m_bdMgr->getContract(orderField->Code, orderField->Exchange);
 	if (contract == NULL)
 		return NULL;
@@ -1268,6 +1243,9 @@ WTSOrderInfo* TraderAresClt::makeOrderInfo(tagXTOrderField* orderField)
 
 WTSEntrust* TraderAresClt::makeEntrust(tagXTReqOrderInsertField *entrustField)
 {
+	if (entrustField == NULL)
+		return NULL;
+
 	WTSContractInfo* ct = m_bdMgr->getContract(entrustField->Code, entrustField->Exchange);
 	if (ct == NULL)
 		return NULL;
@@ -1343,6 +1321,9 @@ WTSError* TraderAresClt::makeError(tagXTRspInfoField* rspInfo, WTSErroCode ec)
 
 WTSTradeInfo* TraderAresClt::makeTradeRecord(tagXTTradeField *tradeField)
 {
+	if (tradeField == NULL)
+		return NULL;
+
 	WTSContractInfo* contract = m_bdMgr->getContract(tradeField->Code, tradeField->Exchange);
 	if (contract == NULL)
 		return NULL;
