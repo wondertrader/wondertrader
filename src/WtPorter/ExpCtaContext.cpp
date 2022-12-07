@@ -30,6 +30,8 @@ void ExpCtaContext::on_init()
 
 	//向外部回调
 	getRunner().ctx_on_init(_context_id, ET_CTA);
+
+	dump_chart_info();
 }
 
 void ExpCtaContext::on_session_begin(uint32_t uDate)

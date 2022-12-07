@@ -40,6 +40,8 @@ void CtaStraContext::on_init()
 
 	if (_strategy)
 		_strategy->on_init(this);
+
+	dump_chart_info();
 }
 
 void CtaStraContext::on_session_begin(uint32_t uTDate)

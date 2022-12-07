@@ -79,7 +79,7 @@ private:
 	void	append_signal(const char* stdCode, double qty, const char* userTag = "", uint32_t sigType = 0);
 
 	inline CondList& get_cond_entrusts(const char* stdCode);
-	
+
 protected:
 	template<typename... Args>
 	void log_debug(const char* format, const Args& ...args)
@@ -101,6 +101,8 @@ protected:
 		const char* buffer = fmtutil::format(format, args...);
 		stra_log_error(buffer);
 	}
+
+	void	dump_chart_info();
 
 public:
 	virtual uint32_t id() { return _context_id; }
@@ -216,6 +218,8 @@ protected:
 	uint32_t		_emit_times;		//总计算次数
 
 	std::string		_main_key;
+	std::string		_main_code;
+	std::string		_main_period;
 
 	typedef struct _KlineTag
 	{

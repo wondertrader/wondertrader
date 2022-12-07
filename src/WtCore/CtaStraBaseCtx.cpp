@@ -669,6 +669,79 @@ void CtaStraBaseCtx::on_init()
 	load_userdata();
 }
 
+void CtaStraBaseCtx::dump_chart_info()
+{
+	rj::Document root(rj::kObjectType);
+	rj::Document::AllocatorType &allocator = root.GetAllocator();
+
+	rj::Value klineItem(rj::kObjectType);
+	if (_chart_code.empty())
+	{
+		//如果没有设置主K线，就用主K线落地
+		klineItem.AddMember("code", rj::Value(_main_code.c_str(), allocator), allocator);
+		klineItem.AddMember("period", rj::Value(_main_period.c_str(), allocator), allocator);
+	}
+	else
+	{
+		klineItem.AddMember("code", rj::Value(_chart_code.c_str(), allocator), allocator);
+		klineItem.AddMember("period", rj::Value(_chart_period.c_str(), allocator), allocator);
+	}
+
+	root.AddMember("kline", klineItem, allocator);
+
+	if (!_chart_indice.empty())
+	{
+		rj::Value jIndice(rj::kArrayType);
+		for (const auto& v : _chart_indice)
+		{
+			const ChartIndex& cIndex = v.second;
+			rj::Value jIndex(rj::kObjectType);
+			jIndex.AddMember("name", rj::Value(cIndex._name.c_str(), allocator), allocator);
+			jIndex.AddMember("index_type", cIndex._indexType, allocator);
+
+			rj::Value jLines(rj::kArrayType);
+			for (const auto& v2 : cIndex._lines)
+			{
+				const ChartLine& cLine = v2.second;
+				rj::Value jLine(rj::kObjectType);
+				jLine.AddMember("name", rj::Value(cLine._name.c_str(), allocator), allocator);
+				jLine.AddMember("line_type", cLine._lineType, allocator);
+
+				jLines.PushBack(jLine, allocator);
+			}
+
+			jIndex.AddMember("lines", jLines, allocator);
+
+			rj::Value jBaseLines(rj::kObjectType);
+			for (const auto& v3 : cIndex._base_lines)
+			{
+				jBaseLines.AddMember(rj::Value(v3.first.c_str(), allocator), rj::Value(v3.second), allocator);
+			}
+
+			jIndex.AddMember("baselines", jBaseLines, allocator);
+
+			jIndice.PushBack(jIndex, allocator);
+		}
+
+		root.AddMember("index", jIndice, allocator);
+	}
+
+	std::string folder = WtHelper::getOutputDir();
+	folder += _name;
+	folder += "/";
+
+	if (!StdFile::exists(folder.c_str()))
+		boost::filesystem::create_directories(folder.c_str());
+
+	std::string filename = folder;
+	filename += "rtchart.json";
+
+	rj::StringBuffer sb;
+	rj::PrettyWriter<rj::StringBuffer> writer(sb);
+	root.Accept(writer);
+	StdFile::write_file_content(filename.c_str(), sb.GetString());
+}
+
 void CtaStraBaseCtx::update_dyn_profit(const char* stdCode, double price)
 {
 	auto it = _pos_map.find(stdCode);
@@ -1494,6 +1567,12 @@ WTSKlineSlice* CtaStraBaseCtx::stra_get_bars(const char* stdCode, const char* pe
 			log_error("Main KBars already confirmed");
 			return NULL;
 		}
+
+		/*
+		 *	By Wesley @ 2022.12.07
+		 */
+		_main_code = stdCode;
+		_main_period = period;
 	}
 
 	thread_local static char basePeriod[2] = { 0 };
