@@ -492,6 +492,60 @@ void cta_sub_ticks(CtxHandler cHandle, const char* stdCode)
 	ctx->stra_sub_ticks(stdCode);
 }
 
+void cta_set_chart_kline(CtxHandler cHandle, const char* stdCode, const char* period)
+{
+	CtaContextPtr ctx = getRunner().getCtaContext(cHandle);
+	if (ctx == NULL)
+		return;
+
+	ctx->set_chart_kline(stdCode, period);
+}
+
+void cta_add_chart_mark(CtxHandler cHandle, double price, const char* icon, const char* tag)
+{
+	CtaContextPtr ctx = getRunner().getCtaContext(cHandle);
+	if (ctx == NULL)
+		return;
+
+	ctx->add_chart_mark(price, icon, tag);
+}
+
+void cta_register_index(CtxHandler cHandle, const char* idxName, WtUInt32 indexType)
+{
+	CtaContextPtr ctx = getRunner().getCtaContext(cHandle);
+	if (ctx == NULL)
+		return;
+
+	ctx->register_index(idxName, indexType);
+}
+
+bool cta_register_index_line(CtxHandler cHandle, const char* idxName, const char* lineName, WtUInt32 lineType)
+{
+	CtaContextPtr ctx = getRunner().getCtaContext(cHandle);
+	if (ctx == NULL)
+		return false;
+
+	return ctx->register_index_line(idxName, lineName, lineType);
+}
+bool cta_add_index_baseline(CtxHandler cHandle, const char* idxName, const char* lineName, double val)
+{
+	CtaContextPtr ctx = getRunner().getCtaContext(cHandle);
+	if (ctx == NULL)
+		return false;
+
+	return ctx->add_index_baseline(idxName, lineName, val);
+}
+
+bool cta_set_index_value(CtxHandler cHandle, const char* idxName, const char* lineName, double val)
+{
+	CtaContextPtr ctx = getRunner().getCtaContext(cHandle);
+	if (ctx == NULL)
+		return false;
+
+	return ctx->set_index_value(idxName, lineName, val);
+}
+
+
 #pragma endregion
 
 #pragma region "多因子策略接口"

@@ -125,6 +125,47 @@ extern "C"
 	EXPORT_FLAG	WtString	cta_load_userdata(CtxHandler cHandle, const char* key, const char* defVal);
 
 	EXPORT_FLAG	void		cta_sub_ticks(CtxHandler cHandle, const char* stdCode);
+
+	/*
+	 *	设置图表K线
+	 */
+	EXPORT_FLAG void		cta_set_chart_kline(CtxHandler cHandle, const char* stdCode, const char* period);
+
+	/*
+	 *	添加信号
+	 */
+	EXPORT_FLAG void		cta_add_chart_mark(CtxHandler cHandle, double price, const char* icon, const char* tag);
+
+	/*
+	 *	添加指标
+	 *	@idxName	指标名称
+	 *	@indexType	指标类型：0-主图指标，1-副图指标
+	 */
+	EXPORT_FLAG void		cta_register_index(CtxHandler cHandle, const char* idxName, WtUInt32 indexType);
+
+	/*
+	 *	添加指标线
+	 *	@idxName	指标名称
+	 *	@lineName	线条名称
+	 *	@lineType	线性，0-曲线
+	 */
+	EXPORT_FLAG bool		cta_register_index_line(CtxHandler cHandle, const char* idxName, const char* lineName, WtUInt32 lineType);
+
+	/*
+	 *	添加基准线
+	 *	@idxName	指标名称
+	 *	@lineName	线条名称
+	 *	@val		数值
+	 */
+	EXPORT_FLAG bool		cta_add_index_baseline(CtxHandler cHandle, const char* idxName, const char* lineName, double val);
+
+	/*
+	 *	设置指标值
+	 *	@idxName	指标名称
+	 *	@lineName	线条名称
+	 *	@val		指标值
+	 */
+	EXPORT_FLAG bool		cta_set_index_value(CtxHandler cHandle, const char* idxName, const char* lineName, double val);
 #pragma endregion "CTA接口"
 
 	//////////////////////////////////////////////////////////////////////////

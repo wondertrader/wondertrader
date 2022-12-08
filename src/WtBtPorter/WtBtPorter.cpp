@@ -551,14 +551,6 @@ bool cta_set_index_value(CtxHandler cHandle, const char* idxName, const char* li
 	return ctx->set_index_value(idxName, lineName, val);
 }
 
-/*
- *	设置指标值
- *	@idxName	指标名称
- *	@lineName	线条名称
- *	@val		指标值
- */
-EXPORT_FLAG bool		cta_set_index_value(CtxHandler cHandle, const char* idxName, const char* lineName, double val);
-
 #pragma endregion "CTA策略接口"
 
 #pragma region "SEL策略接口"
