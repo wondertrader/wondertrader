@@ -449,9 +449,10 @@ bool CtaMocker::init_cta_factory(WTSVariant* cfg)
 
 void CtaMocker::load_incremental_data(const char* incremental_backtest_base)
 {
-	WTSLogger::info("loading incremental data from: {}", incremental_backtest_base);
-	std::string folder = incremental_backtest_base;
+	std::string folder = WtHelper::getOutputDir();
+	folder += incremental_backtest_base;
 	folder += "/";
+	WTSLogger::info("loading incremental data from: {}", folder);
 
 	std::string tradesFilename = folder + "trades.csv";
 	if (boost::filesystem::exists(tradesFilename))
@@ -521,6 +522,7 @@ void CtaMocker::load_incremental_data(const char* incremental_backtest_base)
 	std::string strategyDumpFilename = folder + fmtutil::format("{}.json", incremental_backtest_base);
 	if (boost::filesystem::exists(strategyDumpFilename))
 	{
+		WTSLogger::info("load incremental data json: {}", strategyDumpFilename);
 		FILE* fp = fopen(strategyDumpFilename.c_str(), "rb");
 		char readBuffer[65536];
 		rj::FileReadStream strategyDumpFile(fp, readBuffer, sizeof(readBuffer));
@@ -608,6 +610,10 @@ void CtaMocker::load_incremental_data(const char* incremental_backtest_base)
 				}
 			}
 		}
+	}
+	else
+	{
+		WTSLogger::warn("fail load incremental data json: {}", strategyDumpFilename);
 	}
 }
 
