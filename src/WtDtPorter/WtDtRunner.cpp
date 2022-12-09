@@ -223,7 +223,8 @@ void WtDtRunner::initialize(const char* cfgFile, const char* logCfg, const char*
 			initParsers(cfgParser);
 		}
 	}
-	WTSLogger::log_raw(LL_WARN, "No parsers config, skipped loading parsers");
+	else
+		WTSLogger::log_raw(LL_WARN, "No parsers config, skipped loading parsers");
 
 	config->release();
 }

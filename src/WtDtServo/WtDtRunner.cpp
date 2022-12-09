@@ -8,15 +8,18 @@
  * \brief 
  */
 #include "WtDtRunner.h"
-#include "../WtDtCore/WtHelper.h"
 
+#include "../WtDtCore/WtHelper.h"
 #include "../Includes/WTSSessionInfo.hpp"
 #include "../Includes/WTSVariant.hpp"
-#include "../WTSUtils/SignalHook.hpp"
 
+#include "../WTSUtils/SignalHook.hpp"
 #include "../WTSUtils/WTSCfgLoader.h"
 #include "../WTSTools/WTSLogger.h"
 
+#include "../Share/StrUtil.hpp"
+#include "../Share/StdUtils.hpp"
+#include "../Share/CodeHelper.hpp"
 
 WtDtRunner::WtDtRunner()
 	: _data_store(NULL)
@@ -37,13 +40,15 @@ WtDtRunner::~WtDtRunner()
 {
 }
 
-void WtDtRunner::initialize(const char* cfgFile, bool isFile /* = true */, const char* modDir /* = "" */, const char* logCfg /* = "logcfg.yaml" */)
+void WtDtRunner::initialize(const char* cfgFile, bool isFile /* = true */, const char* modDir /* = "" */, const char* logCfg /* = "logcfg.yaml" */, FuncOnTickCallback cbTick /* = NULL */)
 {
 	if(_is_inited)
 	{
 		WTSLogger::error("WtDtServo has already been initialized");
 		return;
 	}
+
+	_cb_tick = cbTick;
 
 	WTSLogger::init(logCfg);
 	WtHelper::set_module_dir(modDir);
@@ -116,7 +121,42 @@ void WtDtRunner::initialize(const char* cfgFile, bool isFile /* = true */, const
 
 	initDataMgr(config->get("data"));
 
+	WTSVariant* cfgParser = config->get("parsers");
+	if (cfgParser)
+	{
+		if (cfgParser->type() == WTSVariant::VT_String)
+		{
+			const char* filename = cfgParser->asCString();
+			if (StdFile::exists(filename))
+			{
+				WTSLogger::info("Reading parser config from {}...", filename);
+				WTSVariant* var = WTSCfgLoader::load_from_file(filename, isUTF8);
+				if (var)
+				{
+					initParsers(var->get("parsers"));
+					var->release();
+				}
+				else
+				{
+					WTSLogger::error("Loading parser config {} failed", filename);
+				}
+			}
+			else
+			{
+				WTSLogger::error("Parser configuration {} not exists", filename);
+			}
+		}
+		else if (cfgParser->type() == WTSVariant::VT_Array)
+		{
+			initParsers(cfgParser);
+		}
+	}
+	else
+		WTSLogger::log_raw(LL_WARN, "No parsers config, skipped loading parsers");
+
 	config->release();
+
+	start();
 
 	_is_inited = true;
 }
@@ -309,4 +349,76 @@ WTSKlineSlice* WtDtRunner::get_sbars_by_date(const char* stdCode, uint32_t secs,
 	}
 
 	return _data_mgr.get_skline_slice_by_date(stdCode, secs, uDate);
+}
+
+void WtDtRunner::initParsers(WTSVariant* cfg)
+{
+	for (uint32_t idx = 0; idx < cfg->size(); idx++)
+	{
+		WTSVariant* cfgItem = cfg->get(idx);
+		if (!cfgItem->getBoolean("active"))
+			continue;
+
+		const char* id = cfgItem->getCString("id");
+
+		// By Wesley @ 2021.12.14
+		// 如果id为空，则生成自动id
+		std::string realid = id;
+		if (realid.empty())
+		{
+			static uint32_t auto_parserid = 1000;
+			realid = StrUtil::printf("auto_parser_%u", auto_parserid++);
+		}
+
+		ParserAdapterPtr adapter(new ParserAdapter(&_bd_mgr, this));
+		adapter->init(realid.c_str(), cfgItem);
+		_parsers.addAdapter(realid.c_str(), adapter);
+	}
+
+	WTSLogger::info("{} market data parsers loaded in total", _parsers.size());
+}
+
+void WtDtRunner::start()
+{
+	_parsers.run();
+}
+
+void WtDtRunner::proc_tick(WTSTickData* curTick)
+{
+
+}
+
+void WtDtRunner::sub_tick(const char* stdCode)
+{
+	//如果是主力合约代码, 如SHFE.ag.HOT, 那么要转换成原合约代码, SHFE.ag.1912
+	//因为执行器只识别原合约代码
+	const char* ruleTag = _hot_mgr.getRuleTag(stdCode);
+	if (strlen(ruleTag) > 0)
+	{
+		std::size_t length = strlen(stdCode);
+		uint32_t flag = 0;
+		if (stdCode[length - 1] == SUFFIX_QFQ || stdCode[length - 1] == SUFFIX_HFQ)
+		{
+			length--;
+
+			flag = (stdCode[length - 1] == SUFFIX_QFQ) ? 1 : 2;
+		}
+
+		SubFlags& sids = _tick_sub_map[std::string(stdCode, length)];
+		sids.insert(flag);
+	}
+	else
+	{
+		std::size_t length = strlen(stdCode);
+		uint32_t flag = 0;
+		if (stdCode[length - 1] == SUFFIX_QFQ || stdCode[length - 1] == SUFFIX_HFQ)
+		{
+			length--;
+
+			flag = (stdCode[length - 1] == SUFFIX_QFQ) ? 1 : 2;
+		}
+
+		SubFlags& sids = _tick_sub_map[std::string(stdCode, length)];
+		sids.insert(flag);
+	}
 }
