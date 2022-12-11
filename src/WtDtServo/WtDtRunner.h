@@ -10,6 +10,7 @@
 #pragma once
 #include "../WTSTools/WTSHotMgr.h"
 #include "../WTSTools/WTSBaseDataMgr.h"
+#include "../Share/StdUtils.hpp"
 
 #include "PorterDefs.h"
 #include "ParserAdapter.h"
@@ -37,7 +38,9 @@ public:
 
 public:
 	void	proc_tick(WTSTickData* curTick);
+	void	trigger_tick(const char* stdCode, WTSTickData* curTick);
 	void	sub_tick(const char* stdCode);
+	void	unsub_tick(const char* stdCode);
 
 public:
 	WTSKlineSlice*	get_bars_by_range(const char* stdCode, const char* period, uint64_t beginTime, uint64_t endTime = 0);
@@ -58,6 +61,7 @@ private:
 	void	initDataMgr(WTSVariant* config);
 	void	initParsers(WTSVariant* cfg);
 
+
 private:
 	FuncOnTickCallback	_cb_tick;
 	WTSBaseDataMgr	_bd_mgr;
@@ -72,5 +76,6 @@ private:
 	typedef std::set<uint32_t> SubFlags;
 	typedef faster_hashmap<LongKey, SubFlags>	StraSubMap;
 	StraSubMap		_tick_sub_map;	//tickÊý¾Ý¶©ÔÄ±í
+	StdUniqueMutex	_mtx_subs;
 };
 

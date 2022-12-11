@@ -482,3 +482,20 @@ WTSTickSlice* WtDataManager::get_tick_slice_by_count(const char* stdCode, uint32
 	etime = etime * 100000;
 	return _reader->readTickSliceByCount(stdCode, count, etime);
 }
+
+double WtDataManager::get_exright_factor(const char* stdCode, WTSCommodityInfo* commInfo /* = NULL */)
+{
+	if (commInfo == NULL)
+		return 1.0;
+
+	if (commInfo->isStock())
+		return _reader->getAdjFactorByDate(stdCode, 0);
+	else
+	{
+		const char* ruleTag = _hot_mgr->getRuleTag(stdCode);
+		if (strlen(ruleTag) > 0)
+			return _hot_mgr->getRuleFactor(ruleTag, commInfo->getFullPid(), 0);
+	}
+
+	return 1.0;
+}

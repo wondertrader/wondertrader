@@ -246,6 +246,8 @@ public:
 
 	virtual WTSTickSlice*	readTickSliceByDate(const char* stdCode, uint32_t uDate = 0 ) override;
 
+	virtual double		getAdjFactorByDate(const char* stdCode, uint32_t date = 0) override;
+
 private:
 	std::string		_base_dir;
 	IBaseDataMgr*	_base_data_mgr;

@@ -9,10 +9,12 @@
  */
 #include "ParserAdapter.h"
 #include "WtHelper.h"
+#include "WtDtRunner.h"
 
 #include "../Share/StrUtil.hpp"
 #include "../Share/DLLHelper.hpp"
 #include "../Share/StdUtils.hpp"
+#include "../Share/CodeHelper.hpp"
 
 #include "../Includes/WTSVariant.hpp"
 #include "../Includes/WTSContractInfo.hpp"
@@ -322,24 +324,11 @@ void ParserAdapter::handleOrderQueue(WTSOrdQueData* ordQueData)
 
 void ParserAdapter::handleQuote( WTSTickData *quote, uint32_t procFlag )
 {
-	if (_stopped)
+	if (quote == NULL || _stopped || quote->actiondate() == 0 || quote->tradingdate() == 0)
 		return;
 
-	if (quote->actiondate() == 0 || quote->tradingdate() == 0)
-		return;
-
-	WTSContractInfo* contract = quote->getContractInfo();
-	if (contract == NULL)
-	{
-		contract = _bd_mgr->getContract(quote->code(), quote->exchg());
-		quote->setContractInfo(contract);
-	}
-
-	if (contract == NULL)
-		return;
-
-	if(_dt_runner)
-		_dt_runner->proc_tick(quote)
+	if (_dt_runner)
+		_dt_runner->proc_tick(quote);
 }
 
 void ParserAdapter::handleParserLog( WTSLogLevel ll, const char* message)

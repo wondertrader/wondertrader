@@ -29,6 +29,7 @@ class IBaseDataMgr;
 class IHotMgr;
 class WTSSessionInfo;
 struct WTSBarStruct;
+class WTSCommodityInfo;
 
 class WtDataManager : public IRdmDtReaderSink
 {
@@ -75,6 +76,13 @@ public:
 
 	WTSTickSlice* get_tick_slice_by_count(const char* stdCode, uint32_t count, uint64_t etime = 0);
 	WTSKlineSlice* get_kline_slice_by_count(const char* stdCode, WTSKlinePeriod period, uint32_t times, uint32_t count, uint64_t etime = 0);
+
+	/*
+	 *	获取复权因子
+	 *	@stdCode	合约代码
+	 *	@commInfo	品种信息
+	 */
+	double get_exright_factor(const char* stdCode, WTSCommodityInfo* commInfo = NULL);
 
 private:
 	IRdmDtReader*			_reader;

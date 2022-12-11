@@ -2653,3 +2653,39 @@ WTSTickSlice* WtRdmDtReader::readTickSliceByCount(const char* stdCode, uint32_t 
 
 	return slice;
 }
+
+double WtRdmDtReader::getAdjFactorByDate(const char* stdCode, uint32_t date /* = 0 */)
+{
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
+	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
+	if (!commInfo->isStock())
+		return 1.0;
+
+	AdjFactor factor = { date, 1.0 };
+
+	std::string key = stdCode;
+	if (cInfo.isExright())
+		key = key.substr(0, key.size() - 1);
+	const AdjFactorList& factList = _adj_factors[key];
+	if (factList.empty())
+		return 1.0;
+
+	auto it = std::lower_bound(factList.begin(), factList.end(), factor, [](const AdjFactor& a, const AdjFactor&b) {
+		return a._date < b._date;
+	});
+
+	if (it == factList.end())
+	{
+		//找不到，则说明目标日期大于最后一条的日期，直接返回最后一条除权因子
+		return factList.back()._factor;
+	}
+	else
+	{
+		//如果找到了，但是命中的日期大于目标日期，则用上一条
+		//如果等于目标日期，则用命中这一条
+		if ((*it)._date > date)
+			it--;
+
+		return (*it)._factor;
+	}
+}

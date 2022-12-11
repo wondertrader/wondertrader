@@ -36,6 +36,8 @@ extern "C"
 
 	EXPORT_FLAG void		subscribe_tick(const char* stdCode);
 
+	EXPORT_FLAG void		unsubscribe_tick(const char* stdCode);
+
 #ifdef __cplusplus
 }
 #endif
