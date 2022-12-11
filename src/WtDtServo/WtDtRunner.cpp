@@ -430,6 +430,7 @@ void WtDtRunner::proc_tick(WTSTickData* curTick)
 		std::string hotCode = CodeHelper::stdCodeToStdHotCode(stdCode.c_str());
 		WTSTickData* hotTick = WTSTickData::create(curTick->getTickStruct());
 		hotTick->setCode(hotCode.c_str());
+		hotTick->setContractInfo(curTick->getContractInfo());
 
 		trigger_tick(hotCode.c_str(), hotTick);
 
@@ -440,6 +441,7 @@ void WtDtRunner::proc_tick(WTSTickData* curTick)
 		std::string scndCode = CodeHelper::stdCodeToStd2ndCode(stdCode.c_str());
 		WTSTickData* scndTick = WTSTickData::create(curTick->getTickStruct());
 		scndTick->setCode(scndCode.c_str());
+		scndTick->setContractInfo(curTick->getContractInfo());
 
 		trigger_tick(scndCode.c_str(), scndTick);
 
