@@ -227,12 +227,7 @@ WtUInt32 get_sbars_by_date(const char* stdCode, WtUInt32 secs, WtUInt32 uDate, F
 	}
 }
 
-void subscribe_tick(const char* stdCode)
+void subscribe_tick(const char* stdCode, bool bReplace)
 {
-	getRunner().sub_tick(stdCode);
-}
-
-void unsubscribe_tick(const char* stdCode)
-{
-	getRunner().unsub_tick(stdCode);
+	getRunner().sub_tick(stdCode, bReplace);
 }

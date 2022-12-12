@@ -206,7 +206,10 @@ WTSBarStruct* WTSDataFactory::updateMin1Data(WTSSessionInfo* sInfo, WTSKlineData
 		day->hold = tick->openinterest();
 		day->add = tick->additional();
 
-		return day;
+		klineData->appendBar(*day);
+		delete day;
+
+		return klineData->at(-1);
 	}
 	else if (lastTime != INVALID_UINT32 && uBarTime < lastTime)
 	{
@@ -344,7 +347,10 @@ WTSBarStruct* WTSDataFactory::updateMin5Data(WTSSessionInfo* sInfo, WTSKlineData
 		day->hold = tick->openinterest();
 		day->add = tick->additional();
 
-		return day;
+		klineData->appendBar(*day);
+		delete day;
+
+		return klineData->at(-1);
 	}
 	else
 	{

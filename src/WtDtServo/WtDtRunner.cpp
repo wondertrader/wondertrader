@@ -498,38 +498,29 @@ void WtDtRunner::trigger_tick(const char* stdCode, WTSTickData* curTick)
 	}
 }
 
-void WtDtRunner::sub_tick(const char* stdCode)
+void WtDtRunner::sub_tick(const char* codes, bool bReplace)
 {
 	StdUniqueLock lock(_mtx_subs);
-	//如果是主力合约代码, 如SHFE.ag.HOT, 那么要转换成原合约代码, SHFE.ag.1912
-	//因为执行器只识别原合约代码
-	std::size_t length = strlen(stdCode);
-	uint32_t flag = 0;
-	if (stdCode[length - 1] == SUFFIX_QFQ || stdCode[length - 1] == SUFFIX_HFQ)
+	if (bReplace)
+		_tick_sub_map.clear();
+
+	StringVector ayCodes = StrUtil::split(codes, ",");
+	for (const std::string& code : ayCodes)
 	{
-		length--;
+		//如果是主力合约代码, 如SHFE.ag.HOT, 那么要转换成原合约代码, SHFE.ag.1912
+		//因为执行器只识别原合约代码
+		const char* stdCode = code.c_str();
+		std::size_t length = strlen(stdCode);
+		uint32_t flag = 0;
+		if (stdCode[length - 1] == SUFFIX_QFQ || stdCode[length - 1] == SUFFIX_HFQ)
+		{
+			length--;
 
-		flag = (stdCode[length - 1] == SUFFIX_QFQ) ? 1 : 2;
+			flag = (stdCode[length - 1] == SUFFIX_QFQ) ? 1 : 2;
+		}
+
+		SubFlags& flags = _tick_sub_map[std::string(stdCode, length)];
+		flags.insert(flag);
+		WTSLogger::info("Tick dada of {} subscribed", stdCode);
 	}
-
-	SubFlags& flags = _tick_sub_map[std::string(stdCode, length)];
-	flags.insert(flag);
-	WTSLogger::info("Tick dada of {} subscribed", stdCode);
-}
-
-void WtDtRunner::unsub_tick(const char* stdCode)
-{
-	StdUniqueLock lock(_mtx_subs);
-	std::size_t length = strlen(stdCode);
-	uint32_t flag = 0;
-	if (stdCode[length - 1] == SUFFIX_QFQ || stdCode[length - 1] == SUFFIX_HFQ)
-	{
-		length--;
-
-		flag = (stdCode[length - 1] == SUFFIX_QFQ) ? 1 : 2;
-	}
-
-	SubFlags& sids = _tick_sub_map[std::string(stdCode, length)];
-	sids.erase(flag);
-	WTSLogger::info("Tick dada of {} unsubscribed", stdCode);
 }

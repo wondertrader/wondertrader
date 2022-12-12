@@ -34,9 +34,7 @@ extern "C"
 
 	EXPORT_FLAG	WtUInt32	get_bars_by_date(const char* stdCode, const char* period, WtUInt32 uDate, FuncGetBarsCallback cb, FuncCountDataCallback cbCnt);
 
-	EXPORT_FLAG void		subscribe_tick(const char* stdCode);
-
-	EXPORT_FLAG void		unsubscribe_tick(const char* stdCode);
+	EXPORT_FLAG void		subscribe_tick(const char* stdCode, bool bReplace);
 
 #ifdef __cplusplus
 }

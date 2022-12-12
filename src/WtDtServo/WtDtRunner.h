@@ -39,8 +39,7 @@ public:
 public:
 	void	proc_tick(WTSTickData* curTick);
 	void	trigger_tick(const char* stdCode, WTSTickData* curTick);
-	void	sub_tick(const char* stdCode);
-	void	unsub_tick(const char* stdCode);
+	void	sub_tick(const char* stdCode, bool bReplace);
 
 public:
 	WTSKlineSlice*	get_bars_by_range(const char* stdCode, const char* period, uint64_t beginTime, uint64_t endTime = 0);
