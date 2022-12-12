@@ -454,6 +454,7 @@ void WtDtRunner::trigger_tick(const char* stdCode, WTSTickData* curTick)
 	if (_cb_tick == NULL)
 		return;
 
+	StdUniqueLock lock(_mtx_subs);
 	auto sit = _tick_sub_map.find(stdCode);
 	if (sit == _tick_sub_map.end())
 		return;
@@ -467,8 +468,7 @@ void WtDtRunner::trigger_tick(const char* stdCode, WTSTickData* curTick)
 		}
 		else
 		{
-			std::string wCode = stdCode;
-			wCode = fmt::format("{}{}", stdCode, flag == 1 ? SUFFIX_QFQ : SUFFIX_HFQ);
+			std::string wCode = fmtutil::format("{}{}", stdCode, (flag == 1) ? SUFFIX_QFQ : SUFFIX_HFQ);
 			if (flag == 1)
 			{
 				_cb_tick(wCode.c_str(), &curTick->getTickStruct());
@@ -516,11 +516,11 @@ void WtDtRunner::sub_tick(const char* codes, bool bReplace)
 		{
 			length--;
 
-			flag = (stdCode[length - 1] == SUFFIX_QFQ) ? 1 : 2;
+			flag = (stdCode[length] == SUFFIX_QFQ) ? 1 : 2;
 		}
 
-		SubFlags& flags = _tick_sub_map[std::string(stdCode, length)];
+		SubFlags& flags = _tick_sub_map[LongKey(stdCode, length)];
 		flags.insert(flag);
-		WTSLogger::info("Tick dada of {} subscribed", stdCode);
+		WTSLogger::info("Tick dada of {} subscribed with flag {}", stdCode, flag);
 	}
 }

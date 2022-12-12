@@ -782,7 +782,7 @@ void WtEngine::sub_tick(uint32_t sid, const char* stdCode)
 		{
 			length--;
 
-			flag = (stdCode[length - 1] == SUFFIX_QFQ) ? 1 : 2;
+			flag = (stdCode[length] == SUFFIX_QFQ) ? 1 : 2;
 		}
 
 		SubList& sids = _tick_sub_map[std::string(stdCode, length)];
