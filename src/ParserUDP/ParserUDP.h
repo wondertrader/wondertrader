@@ -48,7 +48,7 @@ private:
 	void	handle_read(const boost::system::error_code& e, std::size_t bytes_transferred, bool isBroad);
 	void	handle_write(const boost::system::error_code& e);
 
-	bool	reconnect();
+	bool	reconnect(uint32_t flag = 3);
 
 	void	subscribe();
 

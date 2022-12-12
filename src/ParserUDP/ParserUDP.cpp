@@ -115,8 +115,9 @@ void ParserUDP::release()
 	
 }
 
-bool ParserUDP::reconnect()
+bool ParserUDP::reconnect(uint32_t flag /* = 3 */)
 {
+	if(flag & 1)
 	{//建立广播通道
 		if (_b_socket != NULL)
 		{
@@ -140,6 +141,7 @@ bool ParserUDP::reconnect()
 			boost::asio::placeholders::bytes_transferred, true));
 	}
 
+	if (flag & 2)
 	{
 		//建立订阅通道
 		if (_s_socket != NULL)
@@ -215,7 +217,7 @@ void ParserUDP::handle_write(const boost::system::error_code& e)
 {
 	if (e)
 	{
-		write_log(_sink, LL_ERROR, "[ParserUDP] Error occured while receiving: {}({})", e.message().c_str(), e.value());
+		write_log(_sink, LL_ERROR, "[ParserUDP] Error occured while sending: {}({})", e.message().c_str(), e.value());
 	}
 	else
 	{
@@ -227,7 +229,7 @@ void ParserUDP::handle_write(const boost::system::error_code& e)
 
 bool ParserUDP::connect()
 {
-	if(reconnect())
+	if(reconnect(3))
 	{
 		_thrd_parser.reset(new StdThread(boost::bind(&io_service::run, &_io_service)));
 	}
@@ -301,7 +303,7 @@ void ParserUDP::handle_read(const boost::system::error_code& e, std::size_t byte
 		if (!_stopped && !_connecting)
 		{
 			std::this_thread::sleep_for(std::chrono::seconds(2));
-			reconnect();
+			reconnect(isBroad?1:2);
 			return;
 		}
 	}
