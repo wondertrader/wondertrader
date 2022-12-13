@@ -158,6 +158,12 @@ bool ParserUDP::reconnect(uint32_t flag /* = 3 */)
 			boost::asio::placeholders::error,
 			boost::asio::placeholders::bytes_transferred, false));
 
+		std::queue<std::string> emptyQue;
+		{
+			StdUniqueLock lock(_mtx_queue);
+			_send_queue.swap(emptyQue);
+		}
+
 		subscribe();
 	}
 	return true;
@@ -188,6 +194,7 @@ void ParserUDP::subscribe()
 
 		if (length > 1000)
 		{
+			StdUniqueLock lock(_mtx_queue);
 			_send_queue.push(data);
 			
 			data.resize(sizeof(UDPReqPacket), 0);
@@ -207,6 +214,7 @@ void ParserUDP::do_send()
 	if (_send_queue.empty())
 		return;
 
+	StdUniqueLock lock(_mtx_queue);
 	std::string& data = _send_queue.front();
 
 	_s_socket->async_send_to(boost::asio::buffer(data, data.size()), _server_ep,
@@ -221,6 +229,7 @@ void ParserUDP::handle_write(const boost::system::error_code& e)
 	}
 	else
 	{
+		StdUniqueLock lock(_mtx_queue);
 		_send_queue.pop();
 	}
 	

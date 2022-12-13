@@ -86,6 +86,7 @@ private:
 
 	StdThreadPtr			_thrd_parser;
 
+	StdUniqueMutex			_mtx_queue;
 	std::queue<std::string>	_send_queue;
 };
 
