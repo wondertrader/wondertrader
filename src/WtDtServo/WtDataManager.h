@@ -82,7 +82,11 @@ public:
 	 *	@stdCode	合约代码
 	 *	@commInfo	品种信息
 	 */
-	double get_exright_factor(const char* stdCode, WTSCommodityInfo* commInfo = NULL);
+	double	get_exright_factor(const char* stdCode, WTSCommodityInfo* commInfo = NULL);
+
+	void	subscribe_bar(const char* stdCode, WTSKlinePeriod period, uint32_t times);
+	void	clear_subbed_bars();
+	void	update_bars(const char* stdCode, WTSTickData* newTick);
 
 private:
 	IRdmDtReader*			_reader;
@@ -104,6 +108,9 @@ private:
 	} BarCache;
 	typedef faster_hashmap<std::string, BarCache>	BarCacheMap;
 	BarCacheMap	_bars_cache;
+
+	typedef WTSHashMap<LongKey>	RtBarMap;
+	RtBarMap*	_rt_bars;
 };
 
 NS_WTP_END
