@@ -140,10 +140,13 @@ public:
 	}
 
 
-	inline void	setVolumeLimits(uint32_t maxMarketVol, uint32_t maxLimitVol)
+	inline void	setVolumeLimits(uint32_t maxMarketVol, uint32_t maxLimitVol, uint32_t minMarketVol = 1, uint32_t minLimitVol = 1)
 	{
 		m_maxMktQty = maxMarketVol;
 		m_maxLmtQty = maxLimitVol;
+
+		m_minLmtQty = minLimitVol;
+		m_minMktQty = minMarketVol;
 	}
 
 	inline const char* getCode()	const{return m_strCode.c_str();}
@@ -156,6 +159,8 @@ public:
 
 	inline uint32_t	getMaxMktVol() const{ return m_maxMktQty; }
 	inline uint32_t	getMaxLmtVol() const{ return m_maxLmtQty; }
+	inline uint32_t	getMinMktVol() const { return m_minMktQty; }
+	inline uint32_t	getMinLmtVol() const { return m_minLmtQty; }
 
 	inline void setCommInfo(WTSCommodityInfo* commInfo) { m_commInfo = commInfo; }
 	inline WTSCommodityInfo* getCommInfo() const { return m_commInfo; }
@@ -175,6 +180,8 @@ private:
 
 	uint32_t	m_maxMktQty;
 	uint32_t	m_maxLmtQty;
+	uint32_t	m_minMktQty;
+	uint32_t	m_minLmtQty;
 
 	WTSCommodityInfo*	m_commInfo;
 };
