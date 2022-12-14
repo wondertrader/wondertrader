@@ -202,6 +202,8 @@ void CtaStraBaseCtx::log_trade(const char* stdCode, bool isLong, bool isOpen, ui
 		ss << stdCode << "," << curTime << "," << (isLong ? "LONG" : "SHORT") << "," << (isOpen ? "OPEN" : "CLOSE") << "," << price << "," << qty << "," << userTag << "," << fee << "," << barNo << "\n";
 		_trade_logs->write_file(ss.str());
 	}
+
+	_engine->notify_trade(this->name(),stdCode, isLong, isOpen, curTime, price, userTag);
 }
 
 void CtaStraBaseCtx::log_close(const char* stdCode, bool isLong, uint64_t openTime, double openpx, uint64_t closeTime, double closepx, double qty, double profit, double totalprofit /* = 0 */, 
@@ -1490,10 +1492,12 @@ void CtaStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 			//计算手续费
 			double fee = _engine->calc_fee(stdCode, trdPx, maxQty, dInfo._opentdate == curTDate ? 2 : 1);
 			_fund_info._total_fees += fee;
-			//这里写成交记录
-			log_trade(stdCode, dInfo._long, false, curTm, trdPx, maxQty, userTag, fee, _last_barno);
+
 			//这里写平仓记录
 			log_close(stdCode, dInfo._long, dInfo._opentime, dInfo._price, curTm, trdPx, maxQty, profit, pInfo._closeprofit, dInfo._opentag, userTag, dInfo._open_barno, _last_barno);
+
+			//这里写成交记录
+			log_trade(stdCode, dInfo._long, false, curTm, trdPx, maxQty, userTag, fee, _last_barno);
 
 			if (decimal::eq(left,0))
 				break;
@@ -1950,7 +1954,7 @@ void CtaStraBaseCtx::add_chart_mark(double price, const char* icon, const char* 
 		_mark_logs->write_file(ss.str());
 	}
 
-	_engine->notify_chart_marker(_name.c_str(), price, icon, tag);
+	_engine->notify_chart_marker(curTime, _name.c_str(), price, icon, tag);
 }
 
 void CtaStraBaseCtx::register_index(const char* idxName, uint32_t indexType)
@@ -2013,17 +2017,17 @@ bool CtaStraBaseCtx::set_index_value(const char* idxName, const char* lineName, 
 		return false;
 	}
 
+	uint64_t curTime = stra_get_date();
+	curTime = curTime * 10000 + stra_get_time();
+
 	if (_idx_logs)
 	{
-		uint64_t curTime = stra_get_date();
-		curTime = curTime * 10000 + stra_get_time();
-
 		std::stringstream ss;
 		ss << curTime << "," << idxName << "," << lineName << "," << val << std::endl;;
 		_idx_logs->write_file(ss.str());
 	}
 
-	_engine->notify_chart_index(_name.c_str(), idxName, lineName, val);
+	_engine->notify_chart_index(curTime, _name.c_str(), idxName, lineName, val);
 
 	return true;
 }

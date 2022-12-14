@@ -2195,31 +2195,27 @@ WtRdmDtReader::RTKlineBlockPair* WtRdmDtReader::getRTKilneBlock(const char* exch
 	if (period != KP_Minute1 && period != KP_Minute5)
 		return NULL;
 
-	std::string key = fmt::format("{}.{}", exchg, code);
+	char key[64] = { 0 }; 
+	fmtutil::format_to(key, "{}.{}", exchg, code);
 
-	RTKBlockFilesMap* cache_map = NULL;
 	std::string subdir = "";
-	BlockType bType;
 	switch (period)
 	{
 	case KP_Minute1:
-		cache_map = &_rt_min1_map;
 		subdir = "min1";
-		bType = BT_RT_Minute1;
 		break;
 	case KP_Minute5:
-		cache_map = &_rt_min5_map;
 		subdir = "min5";
-		bType = BT_RT_Minute5;
 		break;
-	default: break;
+	default: 
+		return NULL;
 	}
 
-	std::string path = fmt::format("{}rt/{}/{}/{}.dmb", _base_dir.c_str(), subdir.c_str(), exchg, code);
+	std::string path = fmtutil::format("{}rt/{}/{}/{}.dmb", _base_dir.c_str(), subdir.c_str(), exchg, code);
 	if (!StdFile::exists(path.c_str()))
 		return NULL;
 
-	RTKlineBlockPair& block = (*cache_map)[key];
+	RTKlineBlockPair& block = (period == KP_Minute1 ? _rt_min1_map[key] : _rt_min5_map[key]);
 	if (block._file == NULL || block._block == NULL)
 	{
 		if (block._file == NULL)
@@ -2325,7 +2321,7 @@ WTSKlineSlice* WtRdmDtReader::readKlineSliceByCount(const char* stdCode, WTSKlin
 			RTKlineBlockPair* kPair = getRTKilneBlock(cInfo._exchg, curCode, period);
 			if (kPair != NULL)
 			{
-				StdUniqueLock lock(*kPair->_mtx);
+				StdUniqueLock lock(*(kPair->_mtx));
 				//读取当日的数据
 				WTSBarStruct* pBar = std::lower_bound(kPair->_block->_bars, kPair->_block->_bars + (kPair->_block->_size - 1), eBar, [isDay](const WTSBarStruct& a, const WTSBarStruct& b) {
 					if (isDay)

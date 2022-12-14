@@ -523,10 +523,13 @@ void WtDataManager::subscribe_bar(const char* stdCode, WTSKlinePeriod period, ui
 			offset += slice->get_block_size(blkIdx);
 		}
 		
-		if (_rt_bars == NULL)
-			_rt_bars = RtBarMap::create();
+		{
+			StdUniqueLock lock(_mtx_rtbars);
+			if (_rt_bars == NULL)
+				_rt_bars = RtBarMap::create();
 
-		_rt_bars->add(key, kline, false);
+			_rt_bars->add(key, kline, false);
+		}
 	}
 	else
 	{
@@ -536,11 +539,12 @@ void WtDataManager::subscribe_bar(const char* stdCode, WTSKlinePeriod period, ui
 		if (rawData != NULL)
 		{
 			WTSKlineData* kData = g_dataFact.extractKlineData(rawData, period, times, sInfo, true);
-			if (_rt_bars == NULL)
-				_rt_bars = RtBarMap::create();
-
-			WTSLogger::info("resampled");
-			_rt_bars->add(key, kData, false);
+			{
+				StdUniqueLock lock(_mtx_rtbars);
+				if (_rt_bars == NULL)
+					_rt_bars = RtBarMap::create();
+				_rt_bars->add(key, kData, false);
+			}
 			rawData->release();
 		}
 	}
@@ -550,6 +554,7 @@ void WtDataManager::subscribe_bar(const char* stdCode, WTSKlinePeriod period, ui
 
 void WtDataManager::clear_subbed_bars()
 {
+	StdUniqueLock lock(_mtx_rtbars);
 	if (_rt_bars)
 		_rt_bars->clear();
 }
@@ -559,6 +564,7 @@ void WtDataManager::update_bars(const char* stdCode, WTSTickData* newTick)
 	if (_rt_bars == NULL)
 		return;
 
+	StdUniqueLock lock(_mtx_rtbars);
 	auto it = _rt_bars->begin();
 	for(; it != _rt_bars->end(); it++)
 	{

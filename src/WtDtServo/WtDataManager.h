@@ -15,6 +15,7 @@
 #include "../Includes/IRdmDtReader.h"
 #include "../Includes/FasterDefs.h"
 #include "../Includes/WTSCollection.hpp"
+#include "../Share/StdUtils.hpp"
 
 
 class WtDtRunner;
@@ -110,7 +111,8 @@ private:
 	BarCacheMap	_bars_cache;
 
 	typedef WTSHashMap<LongKey>	RtBarMap;
-	RtBarMap*	_rt_bars;
+	RtBarMap*		_rt_bars;
+	StdUniqueMutex	_mtx_rtbars;
 };
 
 NS_WTP_END

@@ -559,14 +559,20 @@ uint64_t WtCtaEngine::get_real_time()
 	return TimeUtils::makeTime(_cur_date, _cur_raw_time * 100000 + _cur_secs);
 }
 
-void WtCtaEngine::notify_chart_marker(const char* straId, double price, const char* icon, const char* tag)
+void WtCtaEngine::notify_chart_marker(uint64_t time, const char* straId, double price, const char* icon, const char* tag)
 {
 	if (_notifier)
-		_notifier->notify_chart_marker(straId, price, icon, tag);
+		_notifier->notify_chart_marker(time, straId, price, icon, tag);
 }
 
-void WtCtaEngine::notify_chart_index(const char* straId, const char* idxName, const char* lineName, double val)
+void WtCtaEngine::notify_chart_index(uint64_t time, const char* straId, const char* idxName, const char* lineName, double val)
 {
 	if (_notifier)
-		_notifier->notify_chart_index(straId, idxName, lineName, val);
+		_notifier->notify_chart_index(time, straId, idxName, lineName, val);
+}
+
+void WtCtaEngine::notify_trade(const char* straId, const char* stdCode, bool isLong, bool isOpen, uint64_t curTime, double price, const char* userTag)
+{
+	if (_notifier)
+		_notifier->notify_trade(straId, stdCode, isLong, isOpen, curTime, price, userTag);
 }
