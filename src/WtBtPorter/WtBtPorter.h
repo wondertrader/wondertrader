@@ -43,7 +43,7 @@ extern "C"
 
 	EXPORT_FLAG	void		enable_tick(bool bEnabled = true);
 
-	EXPORT_FLAG	CtxHandler	init_cta_mocker(const char* name, int slippage = 0, bool hook = false, bool persistData = true);
+	EXPORT_FLAG	CtxHandler	init_cta_mocker(const char* name, int slippage = 0, bool hook = false, bool persistData = true, bool bIncremental = false);
 
 	EXPORT_FLAG	CtxHandler	init_hft_mocker(const char* name, bool hook = false);
 
