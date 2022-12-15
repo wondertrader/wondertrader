@@ -51,6 +51,7 @@ WtMinImpactExeUnit::WtMinImpactExeUnit()
 	, _last_place_time(0)
 	, _last_tick_time(0)
 	, _in_calc(false)
+	, _min_open_lots(1)
 {
 }
 
@@ -94,8 +95,11 @@ void WtMinImpactExeUnit::init(ExecuteContext* ctx, const char* stdCode, WTSVaria
 	_order_lots = cfg->getDouble("lots");		//单次发单手数
 	_qty_rate = cfg->getDouble("rate");			//下单手数比例
 
-	ctx->writeLog(fmtutil::format("MiniImpactExecUnit {} inited, order price: {} ± {} ticks, order expired: {} secs, order timespan:{} millisec, order qty: {} @ {:.2f}",
-		stdCode, PriceModeNames[_price_mode + 1], _price_offset, _expire_secs, _entrust_span, _by_rate ? "byrate" : "byvol", _by_rate ? _qty_rate : _order_lots));
+	if (cfg->has("minopenlots"))
+		_min_open_lots = cfg->getDouble("minopenlots");	//最小开仓数量
+
+	ctx->writeLog(fmtutil::format("MiniImpactExecUnit of {} inited, order price @ {}±{} ticks, expired after {} secs, reorder after {} millisec, lots policy: {} @ {:.2f}, min open lots: {}",
+		stdCode, PriceModeNames[_price_mode + 1], _price_offset, _expire_secs, _entrust_span, _by_rate ? "byrate" : "byvol", _by_rate ? _qty_rate : _order_lots, _min_open_lots));
 }
 
 void WtMinImpactExeUnit::on_order(uint32_t localid, const char* stdCode, bool isBuy, double leftover, double price, bool isCanceled)
@@ -336,11 +340,24 @@ void WtMinImpactExeUnit::do_calc()
 	//这里要对下单数量做一个修正
 	this_qty = min(this_qty, abs(newVol - curPos));
 
-	//如果买入且有空头持仓，或者卖出且有多头持仓
+	//是否开仓，如果持仓大于等于0且买入，或者持仓小于等于0且卖出，就是开仓
+	bool isOpen = (isBuy && decimal::ge(curPos, 0)) || (!isBuy && decimal::le(curPos, 0));
+
+	//如果平仓的话
 	//对单次下单做一个修正，保证平仓和开仓不会同时下单
-	if ((isBuy && decimal::lt(curPos, 0)) || (!isBuy && decimal::gt(curPos, 0)))
+	if (!isOpen)
 	{
 		this_qty = min(this_qty, abs(curPos));
+	}
+
+	/*
+	 *	By Wesley @ 2022.12.15
+	 *	增加一个对最小下单数量的修正逻辑
+	 */
+	if (isOpen && decimal::lt(this_qty, _min_open_lots))
+	{
+		this_qty = _min_open_lots;
+		_ctx->writeLog(fmtutil::format("Lots of {} changed from {} to {} due to minimum open lots", _code, this_qty, _min_open_lots));
 	}
 
 	double buyPx, sellPx;

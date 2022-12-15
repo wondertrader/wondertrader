@@ -111,6 +111,13 @@ private:
 	double		_order_lots;
 	double		_qty_rate;
 
+	/*
+	 *	By Wesley @ 2022.12.15
+	 *	增加一个最小开仓数量
+	 *	为什么没有最小平仓数量呢，因为平仓要根据持仓来，所以无法限制
+	 */
+	double		_min_open_lots;
+
 	WtOrdMon	_orders_mon;
 	uint32_t	_cancel_cnt;
 	uint32_t	_cancel_times;
