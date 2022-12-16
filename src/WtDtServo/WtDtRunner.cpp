@@ -43,6 +43,10 @@ WtDtRunner::WtDtRunner()
 WtDtRunner::~WtDtRunner()
 {
 }
+#ifdef _MSC_VER
+#include "../Common/mdump.h"
+extern const char* getModuleName();
+#endif
 
 void WtDtRunner::initialize(const char* cfgFile, bool isFile /* = true */, const char* modDir /* = "" */, const char* logCfg /* = "logcfg.yaml" */, 
 			FuncOnTickCallback cbTick /* = NULL */, FuncOnBarCallback cbBar /* = NULL */)
@@ -63,9 +67,16 @@ void WtDtRunner::initialize(const char* cfgFile, bool isFile /* = true */, const
 	if(config == NULL)
 	{
 		WTSLogger::error("Loading config failed");
+		WTSLogger::log_raw(LL_INFO, cfgFile);
 		return;
 	}
 
+	if(!config->getBoolean("disable_dump"))
+	{
+#ifdef _MSC_VER
+		CMiniDumper::Enable(getModuleName(), true, WtHelper::get_cwd());
+#endif
+	}
 	//基础数据文件
 	WTSVariant* cfgBF = config->get("basefiles");
 	bool isUTF8 = cfgBF->getBoolean("utf-8");
