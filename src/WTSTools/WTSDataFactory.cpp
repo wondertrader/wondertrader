@@ -93,11 +93,8 @@ WTSBarStruct* WTSDataFactory::updateMin1Data(WTSSessionInfo* sInfo, WTSKlineData
 
 	uint32_t uBarMin = (uMinute / steplen)*steplen + steplen;
 	uint64_t uBarTime = sInfo->minuteToTime(uBarMin);
-	//if(uBarTime > uTime && !sInfo->isInAuctionTime(uTime))
-	//{
-	//	//这种情况只可能是日期倒退
-	//	uDate = TimeUtils::getNextDate(uDate, -1);
-	//}
+	if (uBarTime < uTime)
+		uDate = TimeUtils::getNextDate(uDate, 1);
 	uBarTime = TimeUtils::timeToMinBar(uDate, (uint32_t)uBarTime);
 
 	WTSBarStruct* lastBar = NULL;
@@ -254,9 +251,10 @@ WTSBarStruct* WTSDataFactory::updateMin5Data(WTSSessionInfo* sInfo, WTSKlineData
 	uint32_t uTime = TimeUtils::minBarToTime(curBar.time);
 	uint32_t uMinute = sInfo->timeToMinutes(uTime) - 5;
 
-
 	uint32_t uBarMin = (uMinute / steplen)*steplen + steplen;
 	uint64_t uBarTime = sInfo->minuteToTime(uBarMin);
+	if (uBarTime < uTime)
+		uDate = TimeUtils::getNextDate(uDate, 1);
 	uBarTime = TimeUtils::timeToMinBar(uDate, (uint32_t)uBarTime);
 
 	WTSBarStruct* lastBar = NULL;
