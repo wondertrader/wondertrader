@@ -604,7 +604,7 @@ void CtaMocker::load_incremental_data(const char* incremental_backtest_base)
 					condEntrust._alg = (WTSCompareType)conditionItemStkCondEntry["alg"].GetInt();
 					condEntrust._target = conditionItemStkCondEntry["target"].GetDouble();
 					condEntrust._qty = conditionItemStkCondEntry["qty"].GetDouble();
-					condEntrust._action = conditionItemStkCondEntry["action"].GetString()[0];
+					condEntrust._action = (char)conditionItemStkCondEntry["action"].GetUint();
 
 					_condtions[stkCode].push_back(condEntrust);
 				}

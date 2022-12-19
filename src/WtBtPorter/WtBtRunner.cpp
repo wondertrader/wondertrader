@@ -270,7 +270,7 @@ void WtBtRunner::registerHftCallbacks(FuncStraInitCallback cbInit, FuncStraTickC
 	WTSLogger::info("Callbacks of HFT engine registration done");
 }
 
-uint32_t WtBtRunner::initCtaMocker(const char* name, int32_t slippage /* = 0 */, bool hook /* = false */, bool persistData /* = true */)
+uint32_t WtBtRunner::initCtaMocker(const char* name, int32_t slippage /* = 0 */, bool hook /* = false */, bool persistData /* = true */, bool bIncremental /* = false */)
 {
 	if(_cta_mocker)
 	{
@@ -279,10 +279,9 @@ uint32_t WtBtRunner::initCtaMocker(const char* name, int32_t slippage /* = 0 */,
 	}
 
 	_cta_mocker = new ExpCtaMocker(&_replayer, name, slippage, persistData, &_notifier);
-	const char* incremental_backtest_base = _cfg->get("env")->getCString("incremental_backtest_base");
-	if (strlen(incremental_backtest_base) > 0)
+	if (bIncremental)
 	{
-		_cta_mocker->load_incremental_data(incremental_backtest_base);
+		_cta_mocker->load_incremental_data(name);
 	}
 	if(hook) _cta_mocker->install_hook();
 	_replayer.register_sink(_cta_mocker, name);

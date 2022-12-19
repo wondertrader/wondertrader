@@ -53,9 +53,6 @@ WtDtRunner& getRunner()
 
 void initialize(WtString cfgFile, bool isFile, WtString logCfg, FuncOnTickCallback cbTick, FuncOnBarCallback cbBar)
 {
-#ifdef _MSC_VER
-	CMiniDumper::Enable(getModuleName(), true, WtHelper::get_cwd());
-#endif
 	getRunner().initialize(cfgFile, isFile, getBinDir(), logCfg, cbTick, cbBar);
 }
 

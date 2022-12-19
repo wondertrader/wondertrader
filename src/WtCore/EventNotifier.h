@@ -50,8 +50,9 @@ public:
 
 	void	notify_event(const char* message);
 
-	void	notify_chart_marker(const char* strId, double price, const char* icon, const char* tag);
-	void	notify_chart_index(const char* straId, const char* idxName, const char* lineName, double val);
+	void	notify_chart_marker(uint64_t time, const char* straId, double price, const char* icon, const char* tag);
+	void	notify_chart_index(uint64_t time, const char* straId, const char* idxName, const char* lineName, double val);
+	void	notify_trade(const char* straId, const char* stdCode, bool isLong, bool isOpen, uint64_t curTime, double price, const char* userTag);
 
 private:
 	std::string		_url;
