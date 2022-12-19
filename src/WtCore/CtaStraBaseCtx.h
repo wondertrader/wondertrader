@@ -15,6 +15,8 @@
 #include "../Share/BoostFile.hpp"
 #include "../Share/fmtlib.h"
 
+#include <unordered_map>
+
 class CtaStrategy;
 
 NS_WTP_BEGIN
@@ -77,7 +79,7 @@ private:
 	void	append_signal(const char* stdCode, double qty, const char* userTag = "", uint32_t sigType = 0);
 
 	inline CondList& get_cond_entrusts(const char* stdCode);
-	
+
 protected:
 	template<typename... Args>
 	void log_debug(const char* format, const Args& ...args)
@@ -100,6 +102,8 @@ protected:
 		stra_log_error(buffer);
 	}
 
+	void	dump_chart_info();
+
 public:
 	virtual uint32_t id() { return _context_id; }
 
@@ -111,7 +115,7 @@ public:
 	virtual void on_bar(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar) override;
 	virtual bool on_schedule(uint32_t curDate, uint32_t curTime) override;
 
-	virtual void enum_position(FuncEnumCtaPosCallBack cb) override;
+	virtual void enum_position(FuncEnumCtaPosCallBack cb, bool bForExecute = false) override;
 
 
 	//////////////////////////////////////////////////////////////////////////
@@ -170,6 +174,40 @@ public:
 
 	virtual const char* stra_get_last_entertag(const char* stdCode) override;
 
+public:
+	/*
+	 *	设置图表K线
+	 */
+	virtual void set_chart_kline(const char* stdCode, const char* period) override;
+
+	/*
+	 *	添加信号
+	 */
+	virtual void add_chart_mark(double price, const char* icon, const char* tag) override;
+
+	/*
+	 *	添加指标
+	 */
+	virtual void register_index(const char* idxName, uint32_t indexType) override;
+
+	/*
+	 *	添加指标线
+	 */
+	virtual bool register_index_line(const char* idxName, const char* lineName, uint32_t lineType) override;
+
+	/*
+	 *	添加基准线
+	 *	@idxName	指标名称
+	 *	@lineName	线条名称
+	 *	@val		数值
+	 */
+	virtual bool add_index_baseline(const char* idxName, const char* lineName, double val) override;
+
+	/*
+	 *	设置指标值
+	 */
+	virtual bool set_index_value(const char* idxName, const char* lineName, double val) override;
+
 protected:
 	uint32_t		_context_id;
 	WtCtaEngine*	_engine;
@@ -180,6 +218,8 @@ protected:
 	uint32_t		_emit_times;		//总计算次数
 
 	std::string		_main_key;
+	std::string		_main_code;
+	std::string		_main_period;
 
 	typedef struct _KlineTag
 	{
@@ -250,6 +290,7 @@ protected:
 		double		_sigprice;
 		uint32_t	_sigtype;	// 0-onschedule信号，1-ontick信号，2-条件单信号
 		uint64_t	_gentime;
+		bool		_triggered;
 
 		_SigInfo()
 		{
@@ -257,6 +298,7 @@ protected:
 			_sigprice = 0;
 			_sigtype = 0;
 			_gentime = 0;
+			_triggered = false;
 		}
 	}SigInfo;
 	typedef faster_hashmap<LongKey, SigInfo>	SignalMap;
@@ -267,6 +309,8 @@ protected:
 	BoostFilePtr	_fund_logs;
 	BoostFilePtr	_sig_logs;
 	BoostFilePtr	_pos_logs;
+	BoostFilePtr	_idx_logs;
+	BoostFilePtr	_mark_logs;
 
 	CondEntrustMap	_condtions;
 	uint64_t		_last_cond_min;	//上次设置条件单的时间
@@ -296,6 +340,27 @@ protected:
 
 	//tick订阅列表
 	faster_hashset<LongKey> _tick_subs;
+
+	//////////////////////////////////////////////////////////////////////////
+	//图表相关
+	std::string		_chart_code;
+	std::string		_chart_period;
+
+	typedef struct _ChartLine
+	{
+		std::string	_name;
+		uint32_t	_lineType;
+	} ChartLine;
+
+	typedef struct _ChartIndex
+	{
+		std::string	_name;
+		uint32_t	_indexType;
+		faster_hashmap<std::string, ChartLine> _lines;
+		faster_hashmap<std::string, double> _base_lines;
+	} ChartIndex;
+
+	faster_hashmap<LongKey, ChartIndex>	_chart_indice;
 };
 
 

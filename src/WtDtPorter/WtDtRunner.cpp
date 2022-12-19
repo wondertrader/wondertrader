@@ -72,12 +72,17 @@ void WtDtRunner::start(bool bAsync /* = false */, bool bAlldayMode /* = false */
 	}
 }
 
-void WtDtRunner::initialize(const char* cfgFile, const char* logCfg, const char* modDir /* = "" */)
+void WtDtRunner::initialize(const char* cfgFile, const char* logCfg, const char* modDir /* = "" */, bool bCfgFile /* = true */, bool bLogCfgFile /* = true */)
 {
-	WTSLogger::init(logCfg);
+	WTSLogger::init(logCfg, bLogCfgFile);
 	WtHelper::set_module_dir(modDir);
 
-	WTSVariant* config = WTSCfgLoader::load_from_file(cfgFile, true);
+	WTSVariant* config = NULL;
+	if (bCfgFile)
+		config = WTSCfgLoader::load_from_file(cfgFile, true);
+	else
+		config = WTSCfgLoader::load_from_content(cfgFile, false);
+
 	if(config == NULL)
 	{
 		WTSLogger::error("Loading config file {} failed", cfgFile);
@@ -188,8 +193,36 @@ void WtDtRunner::initialize(const char* cfgFile, const char* logCfg, const char*
 		}
 	}
 
-	if (config->has("parsers"))
-		initParsers(config->getCString("parsers"));
+	WTSVariant* cfgParser = config->get("parsers");
+	if (cfgParser)
+	{
+		if (cfgParser->type() == WTSVariant::VT_String)
+		{
+			const char* filename = cfgParser->asCString();
+			if (StdFile::exists(filename))
+			{
+				WTSLogger::info("Reading parser config from {}...", filename);
+				WTSVariant* var = WTSCfgLoader::load_from_file(filename, isUTF8);
+				if (var)
+				{
+					initParsers(var->get("parsers"));
+					var->release();
+				}
+				else
+				{
+					WTSLogger::error("Loading parser config {} failed", filename);
+				}
+			}
+			else
+			{
+				WTSLogger::error("Parser configuration {} not exists", filename);
+			}
+		}
+		else if (cfgParser->type() == WTSVariant::VT_Array)
+		{
+			initParsers(cfgParser);
+		}
+	}
 	else
 		WTSLogger::log_raw(LL_WARN, "No parsers config, skipped loading parsers");
 
@@ -201,17 +234,8 @@ void WtDtRunner::initDataMgr(WTSVariant* config, bool bAlldayMode /* = false */)
 	_data_mgr.init(config, &_bd_mgr, bAlldayMode ? NULL : &_state_mon, &_udp_caster);
 }
 
-void WtDtRunner::initParsers(const char* filename)
+void WtDtRunner::initParsers(WTSVariant* cfg)
 {
-	WTSVariant* config = WTSCfgLoader::load_from_file(filename, true);
-	if(config == NULL)
-	{
-		WTSLogger::error("Loading parser file {} failed", filename);
-		return;
-	}
-
-	WTSVariant* cfg = config->get("parsers");
-
 	for (uint32_t idx = 0; idx < cfg->size(); idx++)
 	{
 		WTSVariant* cfgItem = cfg->get(idx);
@@ -235,7 +259,6 @@ void WtDtRunner::initParsers(const char* filename)
 	}
 
 	WTSLogger::info("{} market data parsers loaded in total", _parsers.size());
-	config->release();
 }
 
 #pragma region "Extended Parser"

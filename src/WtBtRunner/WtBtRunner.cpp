@@ -69,6 +69,12 @@ int main()
 		CtaMocker* mocker = new CtaMocker(&replayer, "cta", slippage);
 		mocker->init_cta_factory(cfg->get("cta"));
 		const char* stra_id = cfg->get("cta")->get("strategy")->getCString("id");
+		// 加载增量回测的基础历史回测数据
+		const char* incremental_backtest_base = cfg->get("env")->getCString("incremental_backtest_base");
+		if (strlen(incremental_backtest_base) > 0)
+		{
+			mocker->load_incremental_data(incremental_backtest_base);
+		}
 		replayer.register_sink(mocker, stra_id);
 	}
 	else if (strcmp(mode, "hft") == 0)

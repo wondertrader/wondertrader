@@ -14,6 +14,7 @@
 #include "WtCtaTicker.h"
 #include "WtHelper.h"
 #include "TraderAdapter.h"
+#include "EventNotifier.h"
 
 #include "../Share/CodeHelper.hpp"
 #include "../Includes/WTSVariant.hpp"
@@ -177,7 +178,7 @@ void WtCtaEngine::on_init()
 				//输出日志
 				WTSLogger::info("[Filters] Target position of {} of strategy {} ignored by strategy filter", stdCode, ctx->name());
 			}
-		});
+		}, true);
 	}
 
 	bool bRiskEnabled = false;
@@ -279,7 +280,7 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 				//输出日志
 				WTSLogger::info("[Filters] Target position of {} of strategy {} ignored by strategy filter", stdCode, ctx->name());
 			}
-		});
+		}, true);
 	}
 
 	bool bRiskEnabled = false;
@@ -556,4 +557,22 @@ WTSSessionInfo* WtCtaEngine::get_sess_info(const char* stdCode)
 uint64_t WtCtaEngine::get_real_time()
 {
 	return TimeUtils::makeTime(_cur_date, _cur_raw_time * 100000 + _cur_secs);
+}
+
+void WtCtaEngine::notify_chart_marker(uint64_t time, const char* straId, double price, const char* icon, const char* tag)
+{
+	if (_notifier)
+		_notifier->notify_chart_marker(time, straId, price, icon, tag);
+}
+
+void WtCtaEngine::notify_chart_index(uint64_t time, const char* straId, const char* idxName, const char* lineName, double val)
+{
+	if (_notifier)
+		_notifier->notify_chart_index(time, straId, idxName, lineName, val);
+}
+
+void WtCtaEngine::notify_trade(const char* straId, const char* stdCode, bool isLong, bool isOpen, uint64_t curTime, double price, const char* userTag)
+{
+	if (_notifier)
+		_notifier->notify_trade(straId, stdCode, isLong, isOpen, curTime, price, userTag);
 }

@@ -282,7 +282,7 @@ void WtEngine::init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtDtMgr* dataMgr, IHot
 	_hot_mgr = hotMgr;
 	_notifier = notifier;
 
-	WTSLogger::info("Platform running mode: Production");
+	WTSLogger::info("Running mode: Production");
 
 	_filter_mgr.set_notifier(notifier);
 
@@ -638,6 +638,7 @@ void WtEngine::handle_push_quote(WTSTickData* curTick, uint32_t hotFlag)
 		std::string hotCode = CodeHelper::stdCodeToStdHotCode(stdCode.c_str());
 		WTSTickData* hotTick = WTSTickData::create(curTick->getTickStruct());
 		hotTick->setCode(hotCode.c_str());
+		hotTick->setContractInfo(curTick->getContractInfo());
 		
 		_data_mgr->handle_push_quote(hotCode.c_str(), hotTick);
 		on_tick(hotCode.c_str(), hotTick);
@@ -649,6 +650,7 @@ void WtEngine::handle_push_quote(WTSTickData* curTick, uint32_t hotFlag)
 		std::string scndCode = CodeHelper::stdCodeToStd2ndCode(stdCode.c_str());
 		WTSTickData* scndTick = WTSTickData::create(curTick->getTickStruct());
 		scndTick->setCode(scndCode.c_str());
+		scndTick->setContractInfo(curTick->getContractInfo());
 
 		_data_mgr->handle_push_quote(scndCode.c_str(), scndTick);
 		on_tick(scndCode.c_str(), scndTick);
@@ -780,7 +782,7 @@ void WtEngine::sub_tick(uint32_t sid, const char* stdCode)
 		{
 			length--;
 
-			flag = (stdCode[length - 1] == SUFFIX_QFQ) ? 1 : 2;
+			flag = (stdCode[length] == SUFFIX_QFQ) ? 1 : 2;
 		}
 
 		SubList& sids = _tick_sub_map[std::string(stdCode, length)];

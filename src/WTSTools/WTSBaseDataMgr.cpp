@@ -422,13 +422,19 @@ bool WTSBaseDataMgr::loadContracts(const char* filename, bool isUTF8)
 
 			cInfo->setCommInfo(commInfo);
 
-			uint32_t maxMktQty = 0;
-			uint32_t maxLmtQty = 0;
+			uint32_t maxMktQty = 1;
+			uint32_t maxLmtQty = 1;
+			uint32_t minMktQty = 1;
+			uint32_t minLmtQty = 1;
 			if (jcInfo->has("maxmarketqty"))
 				maxMktQty = jcInfo->getUInt32("maxmarketqty");
 			if (jcInfo->has("maxlimitqty"))
 				maxLmtQty = jcInfo->getUInt32("maxlimitqty");
-			cInfo->setVolumeLimits(maxMktQty, maxLmtQty);
+			if (jcInfo->has("minmarketqty"))
+				minMktQty = jcInfo->getUInt32("minmarketqty");
+			if (jcInfo->has("minlimitqty"))
+				minLmtQty = jcInfo->getUInt32("minlimitqty");
+			cInfo->setVolumeLimits(maxMktQty, maxLmtQty, minMktQty, minLmtQty);
 
 			WTSContractList* contractList = (WTSContractList*)m_mapExchgContract->get(ShortKey(cInfo->getExchg()));
 			if (contractList == NULL)

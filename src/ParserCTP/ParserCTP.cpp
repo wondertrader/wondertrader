@@ -379,6 +379,7 @@ void ParserCTP::ReqUserLogin()
 	strcpy(req.BrokerID, m_strBroker.c_str());
 	strcpy(req.UserID, m_strUserID.c_str());
 	strcpy(req.Password, m_strPassword.c_str());
+	strcpy(req.UserProductInfo, "WonderTrader");
 	int iResult = m_pUserAPI->ReqUserLogin(&req, ++m_iRequestID);
 	if(iResult != 0)
 	{

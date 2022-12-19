@@ -51,12 +51,9 @@ WtDtRunner& getRunner()
 	return runner;
 }
 
-void initialize(WtString cfgFile, bool isFile, WtString logCfg)
+void initialize(WtString cfgFile, bool isFile, WtString logCfg, FuncOnTickCallback cbTick, FuncOnBarCallback cbBar)
 {
-#ifdef _MSC_VER
-	CMiniDumper::Enable(getModuleName(), true, WtHelper::get_cwd());
-#endif
-	getRunner().initialize(cfgFile, isFile, getBinDir(), logCfg);
+	getRunner().initialize(cfgFile, isFile, getBinDir(), logCfg, cbTick, cbBar);
 }
 
 const char* get_version()
@@ -225,4 +222,14 @@ WtUInt32 get_sbars_by_date(const char* stdCode, WtUInt32 secs, WtUInt32 uDate, F
 	{
 		return 0;
 	}
+}
+
+void subscribe_tick(const char* stdCode, bool bReplace)
+{
+	getRunner().sub_tick(stdCode, bReplace);
+}
+
+void subscribe_bar(const char* stdCode, const char* period)
+{
+	getRunner().sub_bar(stdCode, period);
 }

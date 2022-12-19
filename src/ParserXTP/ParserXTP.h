@@ -98,6 +98,7 @@ private:
 	std::string			m_strUser;
 	std::string			m_strPass;
 	std::string			m_strFlowDir;
+	std::string			m_strLocalIP;
 
 	XTP_PROTOCOL_TYPE	m_iProtocol;
 	uint32_t			m_uHBInterval;

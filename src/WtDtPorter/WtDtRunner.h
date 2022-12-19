@@ -33,7 +33,7 @@ public:
 	~WtDtRunner();
 
 public:
-	void	initialize(const char* cfgFile, const char* logCfg, const char* modDir = "");
+	void	initialize(const char* cfgFile, const char* logCfg, const char* modDir = "", bool bCfgFile = true, bool bLogCfgFile = true);
 	void	start(bool bAsync = false, bool bAlldayMode = false);
 
 	bool	createExtParser(const char* id);
@@ -74,7 +74,7 @@ public:
 
 private:
 	void initDataMgr(WTSVariant* config, bool bAlldayMode = false);
-	void initParsers(const char* filename);
+	void initParsers(WTSVariant* cfg);
 
 private:
 

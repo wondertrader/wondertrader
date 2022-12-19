@@ -2195,31 +2195,27 @@ WtRdmDtReader::RTKlineBlockPair* WtRdmDtReader::getRTKilneBlock(const char* exch
 	if (period != KP_Minute1 && period != KP_Minute5)
 		return NULL;
 
-	std::string key = fmt::format("{}.{}", exchg, code);
+	char key[64] = { 0 }; 
+	fmtutil::format_to(key, "{}.{}", exchg, code);
 
-	RTKBlockFilesMap* cache_map = NULL;
 	std::string subdir = "";
-	BlockType bType;
 	switch (period)
 	{
 	case KP_Minute1:
-		cache_map = &_rt_min1_map;
 		subdir = "min1";
-		bType = BT_RT_Minute1;
 		break;
 	case KP_Minute5:
-		cache_map = &_rt_min5_map;
 		subdir = "min5";
-		bType = BT_RT_Minute5;
 		break;
-	default: break;
+	default: 
+		return NULL;
 	}
 
-	std::string path = fmt::format("{}rt/{}/{}/{}.dmb", _base_dir.c_str(), subdir.c_str(), exchg, code);
+	std::string path = fmtutil::format("{}rt/{}/{}/{}.dmb", _base_dir.c_str(), subdir.c_str(), exchg, code);
 	if (!StdFile::exists(path.c_str()))
 		return NULL;
 
-	RTKlineBlockPair& block = (*cache_map)[key];
+	RTKlineBlockPair& block = (period == KP_Minute1 ? _rt_min1_map[key] : _rt_min5_map[key]);
 	if (block._file == NULL || block._block == NULL)
 	{
 		if (block._file == NULL)
@@ -2325,7 +2321,7 @@ WTSKlineSlice* WtRdmDtReader::readKlineSliceByCount(const char* stdCode, WTSKlin
 			RTKlineBlockPair* kPair = getRTKilneBlock(cInfo._exchg, curCode, period);
 			if (kPair != NULL)
 			{
-				StdUniqueLock lock(*kPair->_mtx);
+				StdUniqueLock lock(*(kPair->_mtx));
 				//读取当日的数据
 				WTSBarStruct* pBar = std::lower_bound(kPair->_block->_bars, kPair->_block->_bars + (kPair->_block->_size - 1), eBar, [isDay](const WTSBarStruct& a, const WTSBarStruct& b) {
 					if (isDay)
@@ -2652,4 +2648,40 @@ WTSTickSlice* WtRdmDtReader::readTickSliceByCount(const char* stdCode, uint32_t 
 	}
 
 	return slice;
+}
+
+double WtRdmDtReader::getAdjFactorByDate(const char* stdCode, uint32_t date /* = 0 */)
+{
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
+	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
+	if (!commInfo->isStock())
+		return 1.0;
+
+	AdjFactor factor = { date, 1.0 };
+
+	std::string key = stdCode;
+	if (cInfo.isExright())
+		key = key.substr(0, key.size() - 1);
+	const AdjFactorList& factList = _adj_factors[key];
+	if (factList.empty())
+		return 1.0;
+
+	auto it = std::lower_bound(factList.begin(), factList.end(), factor, [](const AdjFactor& a, const AdjFactor&b) {
+		return a._date < b._date;
+	});
+
+	if (it == factList.end())
+	{
+		//找不到，则说明目标日期大于最后一条的日期，直接返回最后一条除权因子
+		return factList.back()._factor;
+	}
+	else
+	{
+		//如果找到了，但是命中的日期大于目标日期，则用上一条
+		//如果等于目标日期，则用命中这一条
+		if ((*it)._date > date)
+			it--;
+
+		return (*it)._factor;
+	}
 }

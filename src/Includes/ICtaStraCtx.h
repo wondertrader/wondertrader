@@ -59,7 +59,7 @@ public:
 	virtual void on_tick_updated(const char* stdCode, WTSTickData* newTick){}
 	virtual void on_condition_triggered(const char* stdCode, double target, double price, const char* usertag){}
 
-	virtual void enum_position(FuncEnumCtaPosCallBack cb) = 0;
+	virtual void enum_position(FuncEnumCtaPosCallBack cb, bool bForExecute = false) = 0;
 
 	//²ßÂÔ½Ó¿Ú
 	virtual void stra_enter_long(const char* stdCode, double qty, const char* userTag = "", double limitprice = 0.0, double stopprice = 0.0) = 0;

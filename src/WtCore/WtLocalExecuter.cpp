@@ -249,7 +249,8 @@ OrderIDs WtLocalExecuter::cancel(const char* stdCode, bool isBuy, double qty)
 void WtLocalExecuter::writeLog(const char* message)
 {
 	static thread_local char szBuf[2048] = { 0 };
-	fmt::format_to(szBuf, "[{}]{}", _name.c_str(), message);
+	fmtutil::format_to(szBuf, "[{}]", _name.c_str());
+	strcat(szBuf, message);
 	WTSLogger::log_dyn_raw("executer", _name.c_str(), LL_INFO, szBuf);
 }
 

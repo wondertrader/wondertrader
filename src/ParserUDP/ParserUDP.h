@@ -48,7 +48,7 @@ private:
 	void	handle_read(const boost::system::error_code& e, std::size_t bytes_transferred, bool isBroad);
 	void	handle_write(const boost::system::error_code& e);
 
-	bool	reconnect();
+	bool	reconnect(uint32_t flag = 3);
 
 	void	subscribe();
 
@@ -86,6 +86,7 @@ private:
 
 	StdThreadPtr			_thrd_parser;
 
+	StdUniqueMutex			_mtx_queue;
 	std::queue<std::string>	_send_queue;
 };
 

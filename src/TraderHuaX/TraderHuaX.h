@@ -187,6 +187,8 @@ private:
 	bool			_quick; // 流重传方式
 	bool			_inited;
 
+	std::string		_productInfo;
+
 	TraderState		_state;
 
 	uint32_t		_tradingday;

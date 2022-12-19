@@ -68,14 +68,17 @@ public:
 
 	static std::string wrap_module(const char* name, const char* unixPrefix = "lib")
 	{
-
 #ifdef _WIN32
 		std::string ret = name;
 		ret += ".dll";
 		return std::move(ret);
 #else
-		std::string ret(unixPrefix);
-		ret += name;
+		std::size_t idx = 0;
+		while (!isalpha(name[idx]))
+			idx++;
+		std::string ret(name, idx);
+		ret.append(unixPrefix);
+		ret.append(name + idx);
 		ret += ".so";
 		return std::move(ret);
 #endif

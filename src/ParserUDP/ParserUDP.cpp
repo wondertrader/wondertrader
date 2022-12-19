@@ -115,8 +115,9 @@ void ParserUDP::release()
 	
 }
 
-bool ParserUDP::reconnect()
+bool ParserUDP::reconnect(uint32_t flag /* = 3 */)
 {
+	if(flag & 1)
 	{//建立广播通道
 		if (_b_socket != NULL)
 		{
@@ -140,6 +141,7 @@ bool ParserUDP::reconnect()
 			boost::asio::placeholders::bytes_transferred, true));
 	}
 
+	if (flag & 2)
 	{
 		//建立订阅通道
 		if (_s_socket != NULL)
@@ -155,6 +157,12 @@ bool ParserUDP::reconnect()
 			boost::bind(&ParserUDP::handle_read, this,
 			boost::asio::placeholders::error,
 			boost::asio::placeholders::bytes_transferred, false));
+
+		std::queue<std::string> emptyQue;
+		{
+			StdUniqueLock lock(_mtx_queue);
+			_send_queue.swap(emptyQue);
+		}
 
 		subscribe();
 	}
@@ -186,6 +194,7 @@ void ParserUDP::subscribe()
 
 		if (length > 1000)
 		{
+			StdUniqueLock lock(_mtx_queue);
 			_send_queue.push(data);
 			
 			data.resize(sizeof(UDPReqPacket), 0);
@@ -205,6 +214,7 @@ void ParserUDP::do_send()
 	if (_send_queue.empty())
 		return;
 
+	StdUniqueLock lock(_mtx_queue);
 	std::string& data = _send_queue.front();
 
 	_s_socket->async_send_to(boost::asio::buffer(data, data.size()), _server_ep,
@@ -215,10 +225,11 @@ void ParserUDP::handle_write(const boost::system::error_code& e)
 {
 	if (e)
 	{
-		write_log(_sink, LL_ERROR, "[ParserUDP] Error occured while receiving: {}({})", e.message().c_str(), e.value());
+		write_log(_sink, LL_ERROR, "[ParserUDP] Error occured while sending: {}({})", e.message().c_str(), e.value());
 	}
 	else
 	{
+		StdUniqueLock lock(_mtx_queue);
 		_send_queue.pop();
 	}
 	
@@ -227,7 +238,7 @@ void ParserUDP::handle_write(const boost::system::error_code& e)
 
 bool ParserUDP::connect()
 {
-	if(reconnect())
+	if(reconnect(3))
 	{
 		_thrd_parser.reset(new StdThread(boost::bind(&io_service::run, &_io_service)));
 	}
@@ -301,7 +312,7 @@ void ParserUDP::handle_read(const boost::system::error_code& e, std::size_t byte
 		if (!_stopped && !_connecting)
 		{
 			std::this_thread::sleep_for(std::chrono::seconds(2));
-			reconnect();
+			reconnect(isBroad?1:2);
 			return;
 		}
 	}

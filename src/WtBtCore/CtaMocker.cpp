@@ -25,6 +25,7 @@
 
 #include <rapidjson/document.h>
 #include <rapidjson/prettywriter.h>
+#include "rapidjson/filereadstream.h"
 namespace rj = rapidjson;
 
 const char* CMP_ALG_NAMES[] =
@@ -258,13 +259,13 @@ void CtaMocker::dump_chartdata()
 				jLine.AddMember("name", rj::Value(cLine._name.c_str(), allocator), allocator);
 				jLine.AddMember("line_type", cLine._lineType, allocator);
 
-				rj::Value jVals(rj::kArrayType);
-				for(const double& val : cLine._values)
-				{
-					jVals.PushBack(val, allocator);
-				}
+				//rj::Value jVals(rj::kArrayType);
+				//for(const double& val : cLine._values)
+				//{
+				//	jVals.PushBack(val, allocator);
+				//}
 
-				jLine.AddMember("values", jVals, allocator);
+				//jLine.AddMember("values", jVals, allocator);
 
 				jLines.PushBack(jLine, allocator);
 			}
@@ -285,22 +286,22 @@ void CtaMocker::dump_chartdata()
 		root.AddMember("index", jIndice, allocator);
 	}
 
-	if(!_chart_marks.empty())
-	{
-		rj::Value jMarks(rj::kArrayType);
-		for(const ChartMark& mark : _chart_marks)
-		{
-			rj::Value jMark(rj::kObjectType);
-			jMark.AddMember("bartime", mark._bartime, allocator);
-			jMark.AddMember("price", mark._price, allocator);
-			jMark.AddMember("icon", rj::Value(mark._icon.c_str(), allocator), allocator);
-			jMark.AddMember("tag", rj::Value(mark._tag.c_str(), allocator), allocator);
+	//if(!_chart_marks.empty())
+	//{
+	//	rj::Value jMarks(rj::kArrayType);
+	//	for(const ChartMark& mark : _chart_marks)
+	//	{
+	//		rj::Value jMark(rj::kObjectType);
+	//		jMark.AddMember("bartime", mark._bartime, allocator);
+	//		jMark.AddMember("price", mark._price, allocator);
+	//		jMark.AddMember("icon", rj::Value(mark._icon.c_str(), allocator), allocator);
+	//		jMark.AddMember("tag", rj::Value(mark._tag.c_str(), allocator), allocator);
 
-			jMarks.PushBack(jMark, allocator);
-		}
+	//		jMarks.PushBack(jMark, allocator);
+	//	}
 
-		root.AddMember("marks", jMarks, allocator);
-	}
+	//	root.AddMember("marks", jMarks, allocator);
+	//}
 
 	if(_persist_data)
 	{
@@ -318,6 +319,18 @@ void CtaMocker::dump_chartdata()
 		rj::PrettyWriter<rj::StringBuffer> writer(sb);
 		root.Accept(writer);
 		StdFile::write_file_content(filename.c_str(), sb.GetString());
+
+		filename = folder;
+		filename += "indice.csv";
+		std::string content = "bartime,index_name,line_name,value\n";
+		if (!_index_logs.str().empty()) content += _index_logs.str();
+		StdFile::write_file_content(filename.c_str(), (void*)content.c_str(), content.size());
+
+		filename = folder;
+		filename += "marks.csv";
+		content = "bartime,price,icon,tag\n";
+		if (!_mark_logs.str().empty()) content += _mark_logs.str();
+		StdFile::write_file_content(filename.c_str(), (void*)content.c_str(), content.size());
 	}
 }
 
@@ -432,6 +445,176 @@ bool CtaMocker::init_cta_factory(WTSVariant* cfg)
 	}
 
 	return true;
+}
+
+void CtaMocker::load_incremental_data(const char* incremental_backtest_base)
+{
+	std::string folder = WtHelper::getOutputDir();
+	folder += incremental_backtest_base;
+	folder += "/";
+	WTSLogger::info("loading incremental data from: {}", folder);
+
+	std::string tradesFilename = folder + "trades.csv";
+	if (boost::filesystem::exists(tradesFilename))
+	{
+		std::ifstream tradesFile(tradesFilename);
+		std::string str;
+		// 跳过标题行
+		std::getline(tradesFile, str);
+		while (std::getline(tradesFile, str))
+		{
+			_trade_logs << str << "\n";
+		}
+	}
+
+	std::string closesFilename = folder + "closes.csv";
+	if (boost::filesystem::exists(closesFilename))
+	{
+		std::ifstream closesFile(closesFilename);
+		std::string str;
+		// 跳过标题行
+		std::getline(closesFile, str);
+		while (std::getline(closesFile, str))
+		{
+			_close_logs << str << "\n";
+		}
+	}
+
+	std::string fundsFilename = folder + "funds.csv";
+	if (boost::filesystem::exists(fundsFilename))
+	{
+		std::ifstream fundsFile(fundsFilename);
+		std::string str;
+		// 跳过标题行
+		std::getline(fundsFile, str);
+		while (std::getline(fundsFile, str))
+		{
+			_fund_logs << str << "\n";
+		}
+	}
+
+	std::string positionsFilename = folder + "positions.csv";
+	if (boost::filesystem::exists(positionsFilename))
+	{
+		std::ifstream positionsFile(positionsFilename);
+		std::string str;
+		// 跳过标题行
+		std::getline(positionsFile, str);
+		while (std::getline(positionsFile, str))
+		{
+			_pos_logs << str << "\n";
+		}
+	}
+
+	std::string signalsFilename = folder + "signals.csv";
+	if (boost::filesystem::exists(signalsFilename))
+	{
+		std::ifstream signalsFile(signalsFilename);
+		std::string str;
+		// 跳过标题行
+		std::getline(signalsFile, str);
+		while (std::getline(signalsFile, str))
+		{
+			_sig_logs << str << "\n";
+		}
+	}
+
+	std::string strategyDumpFilename = folder + fmtutil::format("{}.json", incremental_backtest_base);
+	if (boost::filesystem::exists(strategyDumpFilename))
+	{
+		WTSLogger::info("load incremental data json: {}", strategyDumpFilename);
+		FILE* fp = fopen(strategyDumpFilename.c_str(), "rb");
+		char readBuffer[65536];
+		rj::FileReadStream strategyDumpFile(fp, readBuffer, sizeof(readBuffer));
+		rj::Document d;
+		d.ParseStream(strategyDumpFile);
+		fclose(fp);
+		if (d.HasMember("positions"))
+		{
+			const rj::Value& positions = d["positions"];
+			for (rj::SizeType i = 0; i < positions.Size(); i++)
+			{
+				const rj::Value& positionEntry = positions[i];
+				const char* positionEntry_code = positionEntry["code"].GetString();
+				PosInfo& pInfo = _pos_map[positionEntry_code];
+				pInfo._volume = positionEntry["volume"].GetDouble();
+				pInfo._closeprofit = positionEntry["closeprofit"].GetDouble();
+				pInfo._dynprofit = positionEntry["dynprofit"].GetDouble();
+				pInfo._last_entertime = positionEntry["lastentertime"].GetUint64();
+				pInfo._last_exittime = positionEntry["lastexittime"].GetUint64();
+
+				if (positionEntry.HasMember("details"))
+				{
+					const rj::Value& details = positionEntry["details"];
+					for (rj::SizeType j = 0; j < details.Size(); j++)
+					{
+						const rj::Value& positionDetailEntry = details[j];
+						DetailInfo curPosDetail;
+						curPosDetail._long = positionDetailEntry["long"].GetBool();
+						curPosDetail._price = positionDetailEntry["price"].GetDouble();
+						curPosDetail._max_price = positionDetailEntry["maxprice"].GetDouble();
+						curPosDetail._min_price = positionDetailEntry["minprice"].GetDouble();
+						curPosDetail._volume = positionDetailEntry["volume"].GetDouble();
+						curPosDetail._opentime = positionDetailEntry["opentime"].GetUint64();
+						curPosDetail._opentdate = positionDetailEntry["opentdate"].GetInt();
+						curPosDetail._profit = positionDetailEntry["profit"].GetDouble();
+						curPosDetail._max_profit = positionDetailEntry["maxprofit"].GetDouble();
+						curPosDetail._max_loss = positionDetailEntry["maxloss"].GetDouble();
+						strcpy(curPosDetail._opentag, positionDetailEntry["opentag"].GetString());
+						pInfo._details.push_back(curPosDetail);
+					}
+				}
+			}
+		}
+
+		if (d.HasMember("fund"))
+		{
+			_fund_info._total_profit = d["fund"]["total_profit"].GetDouble();
+			_fund_info._total_dynprofit = d["fund"]["total_dynprofit"].GetDouble();
+			_fund_info._total_fees = d["fund"]["total_fees"].GetDouble();
+		}
+
+		if (d.HasMember("signals"))
+		{
+			for (rj::Value::ConstMemberIterator itr = d["signals"].MemberBegin(); itr != d["signals"].MemberEnd(); ++itr)
+			{
+				std::string stkCode = itr->name.GetString();
+				SigInfo& sInfo = _sig_map[stkCode];
+				sInfo._usertag = itr->value["usertag"].GetString();
+				sInfo._volume = itr->value["volume"].GetDouble();
+				sInfo._sigprice = itr->value["sigprice"].GetDouble();
+				sInfo._gentime = itr->value["gentime"].GetUint64();
+			}
+		}
+
+		if (d.HasMember("conditions") && d["conditions"].HasMember("items"))
+		{
+			// conditions -> items 下面的内容是两层嵌套   items[CODE] is a list
+			rj::Value& conditionItemsEntry = d["conditions"]["items"];
+
+			for (rj::Value::ConstMemberIterator itr = conditionItemsEntry.MemberBegin(); itr != conditionItemsEntry.MemberEnd(); ++itr)
+			{
+				std::string stkCode = itr->name.GetString();
+				for (rj::SizeType i = 0; i < itr->value.Size(); i++)
+				{
+					const rj::Value& conditionItemStkCondEntry = itr->value[i];
+					CondEntrust condEntrust;
+					strcpy(condEntrust._usertag, conditionItemStkCondEntry["usertag"].GetString());
+					condEntrust._field = (WTSCompareField)conditionItemStkCondEntry["field"].GetInt();
+					condEntrust._alg = (WTSCompareType)conditionItemStkCondEntry["alg"].GetInt();
+					condEntrust._target = conditionItemStkCondEntry["target"].GetDouble();
+					condEntrust._qty = conditionItemStkCondEntry["qty"].GetDouble();
+					condEntrust._action = (char)conditionItemStkCondEntry["action"].GetUint();
+
+					_condtions[stkCode].push_back(condEntrust);
+				}
+			}
+		}
+	}
+	else
+	{
+		WTSLogger::warn("fail load incremental data json: {}", strategyDumpFilename);
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -946,22 +1129,22 @@ bool CtaMocker::on_schedule(uint32_t curDate, uint32_t curTime)
 				 *	如果策略在本轮没有设置指标值，则用上一个数据补齐
 				 *	如果是开始，则用默认值补齐
 				 */
-				for(auto& v : _chart_indice)
-				{
-					ChartIndex& cIndex = v.second;
-					for(auto& line : cIndex._lines)
-					{
-						ChartLine& cLine = line.second;
-						if(cLine._values.size() < _emit_times)
-						{
-							double lastVal = DBL_MAX;
-							if (!cLine._values.empty())
-								lastVal = cLine._values.back();
+				//for(auto& v : _chart_indice)
+				//{
+				//	ChartIndex& cIndex = v.second;
+				//	for(auto& line : cIndex._lines)
+				//	{
+				//		ChartLine& cLine = line.second;
+				//		if(cLine._values.size() < _emit_times)
+				//		{
+				//			double lastVal = DBL_MAX;
+				//			if (!cLine._values.empty())
+				//				lastVal = cLine._values.back();
 
-							cLine._values.emplace_back(lastVal);
-						}
-					}
-				}
+				//			cLine._values.emplace_back(lastVal);
+				//		}
+				//	}
+				//}
 
 				if (_has_hook && _hook_valid)
 				{
@@ -1009,7 +1192,7 @@ void CtaMocker::on_session_begin(uint32_t curTDate)
 		_strategy->on_session_begin(this, curTDate);
 }
 
-void CtaMocker::enum_position(FuncEnumCtaPosCallBack cb)
+void CtaMocker::enum_position(FuncEnumCtaPosCallBack cb, bool bForExecute)
 {
 	faster_hashmap<std::string, double> desPos;
 	for (auto& it : _pos_map)
@@ -1087,9 +1270,9 @@ void CtaMocker::stra_enter_long(const char* stdCode, double qty, const char* use
 	{
 		double curQty = stra_get_position(stdCode);
 		if(decimal::lt(curQty, 0))
-			append_signal(stdCode, qty, userTag, _is_in_schedule ? 0 : 1);
+			append_signal(stdCode, qty, userTag, 0.0, _is_in_schedule ? 0 : 1);
 		else
-			append_signal(stdCode, curQty + qty, userTag, _is_in_schedule ? 0 : 1);
+			append_signal(stdCode, curQty + qty, userTag, 0.0, _is_in_schedule ? 0 : 1);
 	}
 	else
 	{
@@ -1138,9 +1321,9 @@ void CtaMocker::stra_enter_short(const char* stdCode, double qty, const char* us
 	{
 		double curQty = stra_get_position(stdCode);
 		if(decimal::gt(curQty, 0))
-			append_signal(stdCode, -qty, userTag, _is_in_schedule ? 0 : 1);
+			append_signal(stdCode, -qty, userTag, 0.0, _is_in_schedule ? 0 : 1);
 		else
-			append_signal(stdCode, curQty - qty, userTag, _is_in_schedule ? 0 : 1);
+			append_signal(stdCode, curQty - qty, userTag, 0.0, _is_in_schedule ? 0 : 1);
 
 	}
 	else
@@ -1187,7 +1370,7 @@ void CtaMocker::stra_exit_long(const char* stdCode, double qty, const char* user
 	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式,则直接触发
 	{
 		double maxQty = min(curQty, qty);
-		append_signal(stdCode, curQty - qty, userTag, _is_in_schedule ? 0 : 1);
+		append_signal(stdCode, curQty - qty, userTag, 0.0, _is_in_schedule ? 0 : 1);
 	}
 	else
 	{
@@ -1238,7 +1421,7 @@ void CtaMocker::stra_exit_short(const char* stdCode, double qty, const char* use
 	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式,则直接触发
 	{
 		double maxQty = min(abs(curQty), qty);
-		append_signal(stdCode, curQty + maxQty, userTag, _is_in_schedule ? 0 : 1);
+		append_signal(stdCode, curQty + maxQty, userTag, 0.0, _is_in_schedule ? 0 : 1);
 	}
 	else
 	{
@@ -1319,7 +1502,7 @@ void CtaMocker::stra_set_position(const char* stdCode, double qty, const char* u
 	_replayer->sub_tick(_context_id, stdCode);
 	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//没有设置触发条件，则直接添加信号
 	{
-		append_signal(stdCode, qty, userTag, _is_in_schedule ? 0 : 1);
+		append_signal(stdCode, qty, userTag, 0.0, _is_in_schedule ? 0 : 1);
 	}
 	else
 	{
@@ -1888,7 +2071,7 @@ void CtaMocker::add_chart_mark(double price, const char* icon, const char* tag)
 	uint64_t curTime = _replayer->get_date();
 	curTime = curTime*10000 + _replayer->get_min_time();
 
-	_chart_marks.emplace_back(ChartMark({ curTime, price, icon, tag }));
+	_mark_logs << curTime << "," << price << "," << icon << "," << tag << std::endl;
 }
 
 void CtaMocker::register_index(const char* idxName, uint32_t indexType)
@@ -1951,14 +2134,9 @@ bool CtaMocker::set_index_value(const char* idxName, const char* lineName, doubl
 		return false;
 	}
 
-	ChartLine& cLine = bit->second;
-
-	//如果策略多次在同一条K线设置同一个指标值
-	//就只修改最后一个数据
-	if (cLine._values.size() > _emit_times)
-		cLine._values.back() = val;
-	else
-		cLine._values.emplace_back(val);
+	uint64_t curTime = _replayer->get_date();
+	curTime = curTime * 10000 + _replayer->get_min_time();
+	_index_logs << curTime << "," << idxName << "," << lineName << "," << val << std::endl;
 	return true;
 }
 

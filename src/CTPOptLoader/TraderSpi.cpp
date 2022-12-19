@@ -73,9 +73,10 @@ typedef struct _Contract
 	std::string	m_strName;
 	std::string	m_strProduct;
 
-
 	uint32_t	m_maxMktQty;
 	uint32_t	m_maxLmtQty;
+	uint32_t	m_minMktQty;
+	uint32_t	m_minLmtQty;
 
 	OptionType	m_optType;
 	std::string m_strUnderlying;
@@ -296,8 +297,11 @@ void CTraderSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CTho
 				contract.m_strExchg = pInstrument->ExchangeID;
 				contract.m_strName = StrUtil::trim(cname.c_str());
 				contract.m_strProduct = pid;
+
 				contract.m_maxMktQty = pInstrument->MaxMarketOrderVolume;
 				contract.m_maxLmtQty = pInstrument->MaxLimitOrderVolume;
+				contract.m_minMktQty = pInstrument->MinMarketOrderVolume;
+				contract.m_minLmtQty = pInstrument->MinLimitOrderVolume;
 
 				contract.m_optType = bOption ? (OptionType)pInstrument->OptionsType : OT_None;
 				contract.m_strUnderlying = pInstrument->UnderlyingInstrID;
@@ -426,6 +430,8 @@ void CTraderSpi::DumpToJson()
 
 			jcInfo.AddMember("maxlimitqty", cInfo.m_maxLmtQty, allocator);
 			jcInfo.AddMember("maxmarketqty", cInfo.m_maxMktQty, allocator);
+			jcInfo.AddMember("minlimitqty", cInfo.m_minLmtQty, allocator);
+			jcInfo.AddMember("minmarketqty", cInfo.m_minMktQty, allocator);
 
 			if(cInfo.m_optType != OT_None)
 			{

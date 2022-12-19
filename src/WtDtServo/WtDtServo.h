@@ -16,7 +16,7 @@ extern "C"
 {
 #endif
 
-	EXPORT_FLAG void		initialize(WtString cfgFile, bool isFile, WtString logCfg);
+	EXPORT_FLAG void		initialize(WtString cfgFile, bool isFile, WtString logCfg, FuncOnTickCallback cbTick, FuncOnBarCallback cbBar);
 
 	EXPORT_FLAG	WtString	get_version();
 
@@ -33,6 +33,10 @@ extern "C"
 	EXPORT_FLAG	WtUInt32	get_sbars_by_date(const char* stdCode, WtUInt32 secs, WtUInt32 uDate, FuncGetBarsCallback cb, FuncCountDataCallback cbCnt);
 
 	EXPORT_FLAG	WtUInt32	get_bars_by_date(const char* stdCode, const char* period, WtUInt32 uDate, FuncGetBarsCallback cb, FuncCountDataCallback cbCnt);
+
+	EXPORT_FLAG void		subscribe_tick(const char* stdCode, bool bReplace);
+
+	EXPORT_FLAG void		subscribe_bar(const char* stdCode, const char* period);
 
 #ifdef __cplusplus
 }

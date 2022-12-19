@@ -1399,7 +1399,7 @@ void TraderAdapter::handleEvent(WTSTraderEvent e, int32_t ec)
 	{
 		if(ec == 0)
 		{
-			_trader_api->login(_cfg->getCString("user"), _cfg->getCString("pass"), _cfg->getCString("product"));
+			_trader_api->login(_cfg->getCString("user"), _cfg->getCString("pass"), "WonderTrader");
 		}
 		else
 		{
@@ -1494,7 +1494,11 @@ void TraderAdapter::onRspEntrust(WTSEntrust* entrust, WTSError *err)
 			if (_notifier)
 				_notifier->notify(id(), fmt::format(" Order placing failed: {}", err->getMessage()).c_str());
 		}
-		
+		else
+		{
+			WTSLogger::log_dyn("trader", _id.c_str(), LL_WARN,
+				"[{}] Outter Order placing failed: {}, instrument: {}, action: {}, qty: {}", _id.c_str(), err->getMessage(), entrust->getCode(), action.c_str(), qty);
+		}
 	}
 }
 
@@ -1524,7 +1528,7 @@ void TraderAdapter::onRspAccount(WTSArray* ayAccounts)
 		_state = AS_ALLREADY;
 
 		WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO, "[{}] Trading channel ready", _id.c_str());
-		for (auto sink : _sinks)
+		for (auto& sink : _sinks)
 			sink->on_channel_ready();
 	}
 }

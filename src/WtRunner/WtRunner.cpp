@@ -593,7 +593,7 @@ const char* LOG_TAGS[] = {
 
 void WtRunner::handleLogAppend(WTSLogLevel ll, const char* msg)
 {
-	_notifier.notifyLog(LOG_TAGS[ll - 100], msg);
+	_notifier.notify_log(LOG_TAGS[ll - 100], msg);
 }
 
 bool WtRunner::initEvtNotifier()

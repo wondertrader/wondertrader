@@ -100,6 +100,7 @@ bool ParserXTP::init(WTSVariant* config)
 	m_uHBInterval = config->getUInt32("hbinterval");
 	m_uBuffSize = config->getUInt32("buffsize");
 	m_strFlowDir = config->getCString("flowdir");
+	m_strLocalIP = config->getCString("local_ip");
 
 	if (m_strFlowDir.empty())
 		m_strFlowDir = "XTPMDFlow";
@@ -424,7 +425,7 @@ void ParserXTP::OnSubMarketData(XTPST *ticker, XTPRI *error_info, bool is_last)
 	else
 	{
 		if(m_sink)
-			write_log(m_sink, LL_ERROR, "[ParserXTP] Market data subscribe faile, code: {}.{}", ticker->exchange_id == XTP_EXCHANGE_SH ? "SSE" : "SZSE", ticker->ticker);
+			write_log(m_sink, LL_ERROR, "[ParserXTP] Market data subscribe failed, code: {}.{}, err code: {}, err msg: {}", ticker->exchange_id == XTP_EXCHANGE_SH ? "SSE" : "SZSE", ticker->ticker, error_info->error_id, error_info->error_msg);
 	}
 }
 
@@ -437,7 +438,7 @@ void ParserXTP::OnSubTickByTick(XTPST *ticker, XTPRI *error_info, bool is_last)
 	else
 	{
 		if (m_sink)
-			write_log(m_sink, LL_ERROR, "[ParserXTP] Tick-by-tick data subscribe faile, code: {}.{}", ticker->exchange_id == XTP_EXCHANGE_SH ? "SSE" : "SZSE", ticker->ticker);
+			write_log(m_sink, LL_ERROR, "[ParserXTP] Tick-by-tick data subscribe failed, code: {}.{}, err code: {}, err msg: {}", ticker->exchange_id == XTP_EXCHANGE_SH ? "SSE" : "SZSE", ticker->ticker, error_info->error_id, error_info->error_msg);
 	}
 }
 
@@ -450,7 +451,7 @@ void ParserXTP::DoLogin()
 
 	m_pUserAPI->SetHeartBeatInterval(m_uHBInterval);
 	m_pUserAPI->SetUDPBufferSize(m_uBuffSize);
-	int iResult = m_pUserAPI->Login(m_strHost.c_str(), m_iPort, m_strUser.c_str(), m_strPass.c_str(), m_iProtocol);
+	int iResult = m_pUserAPI->Login(m_strHost.c_str(), m_iPort, m_strUser.c_str(), m_strPass.c_str(), m_iProtocol, m_strLocalIP.c_str());
 	if(iResult != 0)
 	{
 		if (m_sink)
@@ -458,6 +459,8 @@ void ParserXTP::DoLogin()
 			if(iResult == -1)
 			{
 				m_sink->handleEvent(WPE_Connect, iResult);
+
+				write_log(m_sink, LL_ERROR, "[ParserXTP] Connecting server failed: {}", iResult);
 			}
 			else
 			{
@@ -476,6 +479,8 @@ void ParserXTP::DoLogin()
 			m_sink->handleEvent(WPE_Connect, 0);
 			m_sink->handleEvent(WPE_Login, 0);
 		}
+
+		write_log(m_sink, LL_INFO, "[ParserXTP] Connecting server successed: {}, begin to subscibe data ...", iResult);
 
 		DoSubscribeMD();
 	}

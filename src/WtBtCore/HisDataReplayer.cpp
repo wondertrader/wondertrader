@@ -430,6 +430,16 @@ void HisDataReplayer::clear_cache()
 	_trans_cache.clear();
 
 	_bars_cache.clear();
+	_unbars_cache.clear();
+
+	_main_key = "";
+	_main_period = "";
+	_tick_sub_map.clear();
+	_min_period = "";
+	_day_cache.clear();
+	_ticker_keys.clear();
+
+	_price_map.clear();
 
 	WTSLogger::log_raw(LL_WARN, "All cached data cleared");
 }
@@ -2235,6 +2245,10 @@ WTSKlineSlice* HisDataReplayer::get_kline_slice(const char* stdCode, const char*
 				if(eIdx == 0 && curBar.date > _cur_tdate)
 				{
 					kBlkPair->_cursor = 0;
+				}
+				else
+				{
+					kBlkPair->_cursor = eIdx + 1;
 				}
 			}
 			else

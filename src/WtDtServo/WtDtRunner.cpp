@@ -8,15 +8,22 @@
  * \brief 
  */
 #include "WtDtRunner.h"
-#include "../WtDtCore/WtHelper.h"
 
+#include "../WtDtCore/WtHelper.h"
 #include "../Includes/WTSSessionInfo.hpp"
 #include "../Includes/WTSVariant.hpp"
-#include "../WTSUtils/SignalHook.hpp"
+#include "../Includes/WTSDataDef.hpp"
+#include "../Includes/WTSContractInfo.hpp"
 
+#include "../WTSUtils/SignalHook.hpp"
 #include "../WTSUtils/WTSCfgLoader.h"
 #include "../WTSTools/WTSLogger.h"
 
+#include "../Share/StrUtil.hpp"
+#include "../Share/StdUtils.hpp"
+#include "../Share/CodeHelper.hpp"
+
+USING_NS_WTP;
 
 WtDtRunner::WtDtRunner()
 	: _data_store(NULL)
@@ -36,14 +43,22 @@ WtDtRunner::WtDtRunner()
 WtDtRunner::~WtDtRunner()
 {
 }
+#ifdef _MSC_VER
+#include "../Common/mdump.h"
+extern const char* getModuleName();
+#endif
 
-void WtDtRunner::initialize(const char* cfgFile, bool isFile /* = true */, const char* modDir /* = "" */, const char* logCfg /* = "logcfg.yaml" */)
+void WtDtRunner::initialize(const char* cfgFile, bool isFile /* = true */, const char* modDir /* = "" */, const char* logCfg /* = "logcfg.yaml" */, 
+			FuncOnTickCallback cbTick /* = NULL */, FuncOnBarCallback cbBar /* = NULL */)
 {
 	if(_is_inited)
 	{
 		WTSLogger::error("WtDtServo has already been initialized");
 		return;
 	}
+
+	_cb_tick = cbTick;
+	_cb_bar = cbBar;
 
 	WTSLogger::init(logCfg);
 	WtHelper::set_module_dir(modDir);
@@ -52,9 +67,16 @@ void WtDtRunner::initialize(const char* cfgFile, bool isFile /* = true */, const
 	if(config == NULL)
 	{
 		WTSLogger::error("Loading config failed");
+		WTSLogger::log_raw(LL_INFO, cfgFile);
 		return;
 	}
 
+	if(!config->getBoolean("disable_dump"))
+	{
+#ifdef _MSC_VER
+		CMiniDumper::Enable(getModuleName(), true, WtHelper::get_cwd());
+#endif
+	}
 	//基础数据文件
 	WTSVariant* cfgBF = config->get("basefiles");
 	bool isUTF8 = cfgBF->getBoolean("utf-8");
@@ -116,7 +138,42 @@ void WtDtRunner::initialize(const char* cfgFile, bool isFile /* = true */, const
 
 	initDataMgr(config->get("data"));
 
+	WTSVariant* cfgParser = config->get("parsers");
+	if (cfgParser)
+	{
+		if (cfgParser->type() == WTSVariant::VT_String)
+		{
+			const char* filename = cfgParser->asCString();
+			if (StdFile::exists(filename))
+			{
+				WTSLogger::info("Reading parser config from {}...", filename);
+				WTSVariant* var = WTSCfgLoader::load_from_file(filename, isUTF8);
+				if (var)
+				{
+					initParsers(var->get("parsers"));
+					var->release();
+				}
+				else
+				{
+					WTSLogger::error("Loading parser config {} failed", filename);
+				}
+			}
+			else
+			{
+				WTSLogger::error("Parser configuration {} not exists", filename);
+			}
+		}
+		else if (cfgParser->type() == WTSVariant::VT_Array)
+		{
+			initParsers(cfgParser);
+		}
+	}
+	else
+		WTSLogger::log_raw(LL_WARN, "No parsers config, skipped loading parsers");
+
 	config->release();
+
+	start();
 
 	_is_inited = true;
 }
@@ -164,9 +221,8 @@ WTSKlineSlice* WtDtRunner::get_bars_by_range(const char* stdCode, const char* pe
 
 	if (endTime == 0)
 	{
-		uint32_t curDate, curTime;
-		TimeUtils::getDateTime(curDate, curTime);
-		endTime = (uint64_t)curDate * 10000 + curTime/100000;
+		uint32_t curDate = TimeUtils::getCurDate();
+		endTime = (uint64_t)curDate * 10000 + 2359;
 	}
 
 	return _data_mgr.get_kline_slice_by_range(stdCode, kp, realTimes, beginTime, endTime);
@@ -224,9 +280,8 @@ WTSTickSlice* WtDtRunner::get_ticks_by_range(const char* stdCode, uint64_t begin
 
 	if(endTime == 0)
 	{
-		uint32_t curDate, curTime;
-		TimeUtils::getDateTime(curDate, curTime);
-		endTime = (uint64_t)curDate * 10000 + curTime;
+		uint32_t curDate = TimeUtils::getCurDate();
+		endTime = (uint64_t)curDate * 10000 + 2359;
 	}
 	return _data_mgr.get_tick_slices_by_range(stdCode, beginTime, endTime);
 }
@@ -275,9 +330,8 @@ WTSKlineSlice* WtDtRunner::get_bars_by_count(const char* stdCode, const char* pe
 
 	if (endTime == 0)
 	{
-		uint32_t curDate, curTime;
-		TimeUtils::getDateTime(curDate, curTime);
-		endTime = (uint64_t)curDate * 10000 + curTime / 100000;
+		uint32_t curDate = TimeUtils::getCurDate();
+		endTime = (uint64_t)curDate * 10000 + 2359;
 	}
 
 	return _data_mgr.get_kline_slice_by_count(stdCode, kp, realTimes, count, endTime);
@@ -293,9 +347,8 @@ WTSTickSlice* WtDtRunner::get_ticks_by_count(const char* stdCode, uint32_t count
 
 	if (endTime == 0)
 	{
-		uint32_t curDate, curTime;
-		TimeUtils::getDateTime(curDate, curTime);
-		endTime = (uint64_t)curDate * 10000 + curTime;
+		uint32_t curDate = TimeUtils::getCurDate();
+		endTime = (uint64_t)curDate * 10000 + 2359;
 	}
 	return _data_mgr.get_tick_slice_by_count(stdCode, count, endTime);
 }
@@ -309,4 +362,282 @@ WTSKlineSlice* WtDtRunner::get_sbars_by_date(const char* stdCode, uint32_t secs,
 	}
 
 	return _data_mgr.get_skline_slice_by_date(stdCode, secs, uDate);
+}
+
+void WtDtRunner::initParsers(WTSVariant* cfg)
+{
+	for (uint32_t idx = 0; idx < cfg->size(); idx++)
+	{
+		WTSVariant* cfgItem = cfg->get(idx);
+		if (!cfgItem->getBoolean("active"))
+			continue;
+
+		const char* id = cfgItem->getCString("id");
+
+		// By Wesley @ 2021.12.14
+		// 如果id为空，则生成自动id
+		std::string realid = id;
+		if (realid.empty())
+		{
+			static uint32_t auto_parserid = 1000;
+			realid = StrUtil::printf("auto_parser_%u", auto_parserid++);
+		}
+
+		ParserAdapterPtr adapter(new ParserAdapter(&_bd_mgr, this));
+		adapter->init(realid.c_str(), cfgItem);
+		_parsers.addAdapter(realid.c_str(), adapter);
+	}
+
+	WTSLogger::info("{} market data parsers loaded in total", _parsers.size());
+}
+
+void WtDtRunner::start()
+{
+	_parsers.run();
+}
+
+void WtDtRunner::proc_tick(WTSTickData* curTick)
+{
+	WTSContractInfo* cInfo = curTick->getContractInfo();
+	if (cInfo == NULL)
+	{
+		cInfo = _bd_mgr.getContract(curTick->code(), curTick->exchg());
+		curTick->setContractInfo(cInfo);
+	}
+
+	if (cInfo == NULL)
+		return;
+
+	WTSCommodityInfo* commInfo = cInfo->getCommInfo();
+	WTSSessionInfo* sInfo = commInfo->getSessionInfo();
+
+	uint32_t hotflag = 0;
+
+	std::string stdCode;
+	if (commInfo->getCategoty() == CC_FutOption)
+	{
+		stdCode = CodeHelper::rawFutOptCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
+	}
+	else if (CodeHelper::isMonthlyCode(curTick->code()))
+	{
+		//如果是分月合约，则进行主力和次主力的判断
+		stdCode = CodeHelper::rawMonthCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
+		bool bHot = _hot_mgr.isHot(curTick->exchg(), curTick->code(), 0);
+		bool b2nd = _hot_mgr.isSecond(curTick->exchg(), curTick->code(), 0);
+		hotflag = bHot ? 1 : (b2nd ? 2 : 0);
+	}
+	else
+	{
+		stdCode = CodeHelper::rawFlatCodeToStdCode(cInfo->getCode(), cInfo->getExchg(), cInfo->getProduct());
+	}
+	curTick->setCode(stdCode.c_str());
+
+	trigger_tick(stdCode.c_str(), curTick);
+
+	if (hotflag == 1)
+	{
+		std::string hotCode = CodeHelper::stdCodeToStdHotCode(stdCode.c_str());
+		WTSTickData* hotTick = WTSTickData::create(curTick->getTickStruct());
+		hotTick->setCode(hotCode.c_str());
+		hotTick->setContractInfo(curTick->getContractInfo());
+
+		trigger_tick(hotCode.c_str(), hotTick);
+
+		hotTick->release();
+	}
+	else if (hotflag == 2)
+	{
+		std::string scndCode = CodeHelper::stdCodeToStd2ndCode(stdCode.c_str());
+		WTSTickData* scndTick = WTSTickData::create(curTick->getTickStruct());
+		scndTick->setCode(scndCode.c_str());
+		scndTick->setContractInfo(curTick->getContractInfo());
+
+		trigger_tick(scndCode.c_str(), scndTick);
+
+		scndTick->release();
+	}
+}
+
+void WtDtRunner::trigger_tick(const char* stdCode, WTSTickData* curTick)
+{
+	if (_cb_tick != NULL)
+	{
+		StdUniqueLock lock(_mtx_subs);
+		auto sit = _tick_sub_map.find(stdCode);
+		if (sit != _tick_sub_map.end())
+		{
+			SubFlags flags = sit->second;
+			for (uint32_t flag : flags)
+			{
+				if (flag == 0)
+				{
+					_cb_tick(stdCode, &curTick->getTickStruct());
+				}
+				else
+				{
+					std::string wCode = fmtutil::format("{}{}", stdCode, (flag == 1) ? SUFFIX_QFQ : SUFFIX_HFQ);
+					if (flag == 1)
+					{
+						_cb_tick(wCode.c_str(), &curTick->getTickStruct());
+					}
+					else //(flag == 2)
+					{
+						WTSTickData* newTick = WTSTickData::create(curTick->getTickStruct());
+						WTSTickStruct& newTS = newTick->getTickStruct();
+						newTick->setContractInfo(curTick->getContractInfo());
+
+						//这里做一个复权因子的处理
+						double factor = _data_mgr.get_exright_factor(stdCode, curTick->getContractInfo()->getCommInfo());
+						newTS.open *= factor;
+						newTS.high *= factor;
+						newTS.low *= factor;
+						newTS.price *= factor;
+
+						newTS.settle_price *= factor;
+
+						newTS.pre_close *= factor;
+						newTS.pre_settle *= factor;
+
+						_cb_tick(wCode.c_str(), &newTS);
+						newTick->release();
+					}
+				}
+			}
+
+		}
+	}
+
+	{
+		StdUniqueLock lock(_mtx_innersubs);
+		auto sit = _tick_innersub_map.find(stdCode);
+		if (sit == _tick_innersub_map.end())
+			return;
+
+		SubFlags flags = sit->second;
+		for (uint32_t flag : flags)
+		{
+			if (flag == 0)
+			{
+				_data_mgr.update_bars(stdCode, curTick);
+			}
+			else
+			{
+				std::string wCode = fmtutil::format("{}{}", stdCode, (flag == 1) ? SUFFIX_QFQ : SUFFIX_HFQ);
+				curTick->setCode(wCode.c_str());
+				if (flag == 1)
+				{
+					_data_mgr.update_bars(wCode.c_str(), curTick);
+				}
+				else //(flag == 2)
+				{
+					WTSTickData* newTick = WTSTickData::create(curTick->getTickStruct());
+					WTSTickStruct& newTS = newTick->getTickStruct();
+					newTick->setContractInfo(curTick->getContractInfo());
+
+					//这里做一个复权因子的处理
+					double factor = _data_mgr.get_exright_factor(stdCode, curTick->getContractInfo()->getCommInfo());
+					newTS.open *= factor;
+					newTS.high *= factor;
+					newTS.low *= factor;
+					newTS.price *= factor;
+
+					newTS.settle_price *= factor;
+
+					newTS.pre_close *= factor;
+					newTS.pre_settle *= factor;
+
+					_data_mgr.update_bars(wCode.c_str(), newTick);
+					newTick->release();
+				}
+			}
+		}
+	}
+}
+
+void WtDtRunner::sub_tick(const char* codes, bool bReplace, bool bInner /* = false */)
+{
+	if(bInner)
+	{
+		StdUniqueLock lock(_mtx_innersubs);
+		if (bReplace)
+			_tick_innersub_map.clear();
+
+		const char* stdCode = codes;
+		std::size_t length = strlen(stdCode);
+		uint32_t flag = 0;
+		if (stdCode[length - 1] == SUFFIX_QFQ || stdCode[length - 1] == SUFFIX_HFQ)
+		{
+			length--;
+
+			flag = (stdCode[length] == SUFFIX_QFQ) ? 1 : 2;
+		}
+
+		SubFlags& flags = _tick_innersub_map[LongKey(stdCode, length)];
+		flags.insert(flag);
+		WTSLogger::info("Tick dada of {} subscribed with flag {} for inner use", stdCode, flag);
+	}
+	else
+	{
+		StdUniqueLock lock(_mtx_subs);
+		if (bReplace)
+			_tick_sub_map.clear();
+
+		StringVector ayCodes = StrUtil::split(codes, ",");
+		for (const std::string& code : ayCodes)
+		{
+			//如果是主力合约代码, 如SHFE.ag.HOT, 那么要转换成原合约代码, SHFE.ag.1912
+			//因为执行器只识别原合约代码
+			const char* stdCode = code.c_str();
+			std::size_t length = strlen(stdCode);
+			uint32_t flag = 0;
+			if (stdCode[length - 1] == SUFFIX_QFQ || stdCode[length - 1] == SUFFIX_HFQ)
+			{
+				length--;
+
+				flag = (stdCode[length] == SUFFIX_QFQ) ? 1 : 2;
+			}
+
+			SubFlags& flags = _tick_sub_map[LongKey(stdCode, length)];
+			flags.insert(flag);
+			WTSLogger::info("Tick dada of {} subscribed with flag {}", stdCode, flag);
+		}
+	}
+}
+
+void WtDtRunner::sub_bar(const char* stdCode, const char* period)
+{
+	thread_local static char basePeriod[2] = { 0 };
+	basePeriod[0] = period[0];
+	uint32_t times = 1;
+	if (strlen(period) > 1)
+		times = strtoul(period + 1, NULL, 10);
+
+	WTSKlinePeriod kp;
+	uint32_t realTimes = times;
+	if (basePeriod[0] == 'm')
+	{
+		if (times % 5 == 0)
+		{
+			kp = KP_Minute5;
+			realTimes /= 5;
+		}
+		else
+		{
+			kp = KP_Minute1;
+		}
+	}
+	else
+		kp = KP_DAY;
+
+	_data_mgr.clear_subbed_bars();
+	_data_mgr.subscribe_bar(stdCode, kp, realTimes);
+	sub_tick(stdCode, true, true);
+}
+
+void WtDtRunner::trigger_bar(const char* stdCode, const char* period, WTSBarStruct* lastBar)
+{
+	if (_cb_bar == NULL)
+		return;
+
+	_cb_bar(stdCode, period, lastBar);
 }

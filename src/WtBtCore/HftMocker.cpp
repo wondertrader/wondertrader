@@ -221,7 +221,7 @@ bool HftMocker::init_hft_factory(WTSVariant* cfg)
 	_error_rate = cfg->getUInt32("error_rate");
 	_match_this_tick = cfg->getBoolean("match_this_tick");
 
-	log_info("UFT match params: use_newpx-{}, error_rate-{}, match_this_tick-{}", _use_newpx, _error_rate, _match_this_tick);
+	log_info("HFT match params: use_newpx-{}, error_rate-{}, match_this_tick-{}", _use_newpx, _error_rate, _match_this_tick);
 
 	DllHandle hInst = DLLHelper::load_library(module);
 	if (hInst == NULL)
@@ -703,9 +703,11 @@ bool HftMocker::procOrder(uint32_t localid)
 		log_info("Random error order: {}", localid);
 		return true;
 	}
-	else
+	else if(!ordInfo->_proced_after_placed)
 	{
+		//如果下单以后，还没处理过，则触发on_order
 		on_order(localid, ordInfo->_code, ordInfo->_isBuy, ordInfo->_total, ordInfo->_left, ordInfo->_price, false, ordInfo->_usertag);
+		ordInfo->_proced_after_placed = true;
 	}
 
 	WTSTickData* curTick = stra_get_last_tick(ordInfo->_code);
@@ -1088,7 +1090,7 @@ void HftMocker::do_set_position(const char* stdCode, double qty, double price /*
 	if (decimal::eq(pInfo._volume, qty))
 		return;
 
-	log_info("[{:04d}.{:05d}] {} position updated: {} -> {}", _replayer->get_min_time(), _replayer->get_secs(), stdCode, pInfo._volume, qty);
+	log_debug("[{:04d}.{:05d}] {} position updated: {} -> {}", _replayer->get_min_time(), _replayer->get_secs(), stdCode, pInfo._volume, qty);
 
 	WTSCommodityInfo* commInfo = _replayer->get_commodity_info(stdCode);
 	if (commInfo == NULL)

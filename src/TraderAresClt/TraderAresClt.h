@@ -24,6 +24,8 @@
 #include "../Share/IniHelper.hpp"
 #include "../Share/StdUtils.hpp"
 #include "../Share/DLLHelper.hpp"
+#include "../Share/WtKVCache.hpp"
+
 
 USING_NS_WTP;
 
@@ -164,7 +166,6 @@ protected:
 	std::string		m_strErrInfo;  // 返回错误信息
 
 	ITraderSpi*		m_bscSink;
-	//IOptTraderSpi*	m_optSink;
 	uint64_t		m_uLastQryTime;
 
 	uint32_t					m_lDate;
@@ -180,7 +181,6 @@ protected:
 	PositionMap*				m_mapPosition;
 	WTSArray*					m_ayTrades;
 	WTSArray*					m_ayOrders;
-	WTSArray*					m_ayExecOrds;
 	WTSArray*					m_ayPosDetail;
 
 	IBaseDataMgr*				m_bdMgr;
@@ -196,8 +196,6 @@ protected:
 
 	boost::asio::io_service		_asyncio;
 
-	tagXTReqUserLoginField	m_loginField;
-
 	std::string		m_strModule;
 	DllHandle		m_hInstAres;
 	typedef void*	(*pfnCreateObj)(const char*, const char*);
@@ -206,5 +204,10 @@ protected:
 	pfnDestroyObj	m_pfnDestroyObj;
 
 	IniHelper		m_iniHelper;
+
+	//委托单标记缓存器
+	//WtKVCache		m_eidCache;
+	//订单标记缓存器
+	//WtKVCache		m_oidCache;
 };
 

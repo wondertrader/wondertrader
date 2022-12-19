@@ -152,6 +152,36 @@ void CtaStraBaseCtx::init_outputs()
 			_pos_logs->seek_to_end();
 		}
 	}
+
+	filename = folder + "indice.csv";
+	_idx_logs.reset(new BoostFile());
+	{
+		bool isNewFile = !BoostFile::exists(filename.c_str());
+		_idx_logs->create_or_open_file(filename.c_str());
+		if (isNewFile)
+		{
+			_idx_logs->write_file("bartime,index_name,line_name,value\n");
+		}
+		else
+		{
+			_idx_logs->seek_to_end();
+		}
+	}
+
+	filename = folder + "marks.csv";
+	_mark_logs.reset(new BoostFile());
+	{
+		bool isNewFile = !BoostFile::exists(filename.c_str());
+		_mark_logs->create_or_open_file(filename.c_str());
+		if (isNewFile)
+		{
+			_mark_logs->write_file("bartime,price,icon,tag\n");
+		}
+		else
+		{
+			_mark_logs->seek_to_end();
+		}
+	}
 }
 
 void CtaStraBaseCtx::log_signal(const char* stdCode, double target, double price, uint64_t gentime, const char* usertag /* = "" */)
@@ -172,6 +202,8 @@ void CtaStraBaseCtx::log_trade(const char* stdCode, bool isLong, bool isOpen, ui
 		ss << stdCode << "," << curTime << "," << (isLong ? "LONG" : "SHORT") << "," << (isOpen ? "OPEN" : "CLOSE") << "," << price << "," << qty << "," << userTag << "," << fee << "," << barNo << "\n";
 		_trade_logs->write_file(ss.str());
 	}
+
+	_engine->notify_trade(this->name(),stdCode, isLong, isOpen, curTime, price, userTag);
 }
 
 void CtaStraBaseCtx::log_close(const char* stdCode, bool isLong, uint64_t openTime, double openpx, uint64_t closeTime, double closepx, double qty, double profit, double totalprofit /* = 0 */, 
@@ -186,7 +218,6 @@ void CtaStraBaseCtx::log_close(const char* stdCode, bool isLong, uint64_t openTi
 		_close_logs->write_file(ss.str());
 	}
 }
-
 void CtaStraBaseCtx::save_userdata()
 {
 	rj::Document root(rj::kObjectType);
@@ -290,36 +321,35 @@ void CtaStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 			{
 				const char* stdCode = pItem["code"].GetString();
 				const char* ruleTag = _engine->get_hot_mgr()->getRuleTag(stdCode);
-				if (strlen(ruleTag) == 0 && _engine->get_contract_info(stdCode) == NULL)
-				{
+				bool isExpired = (strlen(ruleTag) == 0 && _engine->get_contract_info(stdCode) == NULL);
+
+				if(isExpired)
 					log_info("{} not exists or expired, position ignored", stdCode);
-					continue;
-				}
+
 				PosInfo& pInfo = _pos_map[stdCode];
 				pInfo._closeprofit = pItem["closeprofit"].GetDouble();
-				pInfo._volume = pItem["volume"].GetDouble();
 				pInfo._last_entertime = pItem["lastentertime"].GetUint64();
 				pInfo._last_exittime = pItem["lastexittime"].GetUint64();
-				if (pItem.HasMember("frozen"))
+				pInfo._volume = isExpired ? 0 : pItem["volume"].GetDouble();
+				if (pItem.HasMember("frozen") && !isExpired)
 				{
 					pInfo._frozen = pItem["frozen"].GetDouble();
 					pInfo._frozen_date = pItem["frozendate"].GetUint();
 				}
 
-				if (pInfo._volume == 0)
+				if (pInfo._volume == 0 || isExpired)
 				{
 					pInfo._dynprofit = 0;
 					pInfo._frozen = 0;
 				}
 				else
 					pInfo._dynprofit = pItem["dynprofit"].GetDouble();
-				
 
 				total_profit += pInfo._closeprofit;
 				total_dynprofit += pInfo._dynprofit;
 
 				const rj::Value& details = pItem["details"];
-				if (details.IsNull() || !details.IsArray() || details.Size() == 0)
+				if (details.IsNull() || !details.IsArray() || details.Size() == 0 || isExpired)
 					continue;
 
 				for (uint32_t i = 0; i < details.Size(); i++)
@@ -360,8 +390,11 @@ void CtaStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 					pInfo._details.emplace_back(dInfo);
 				}
 
-				log_info("Position confirmed,{} -> {}", stdCode, pInfo._volume);
-				stra_sub_ticks(stdCode);
+				if(!isExpired)
+				{
+					log_info("Position confirmed,{} -> {}", stdCode, pInfo._volume);
+					stra_sub_ticks(stdCode);
+				}
 			}
 		}
 
@@ -638,6 +671,79 @@ void CtaStraBaseCtx::on_init()
 	load_userdata();
 }
 
+void CtaStraBaseCtx::dump_chart_info()
+{
+	rj::Document root(rj::kObjectType);
+	rj::Document::AllocatorType &allocator = root.GetAllocator();
+
+	rj::Value klineItem(rj::kObjectType);
+	if (_chart_code.empty())
+	{
+		//如果没有设置主K线，就用主K线落地
+		klineItem.AddMember("code", rj::Value(_main_code.c_str(), allocator), allocator);
+		klineItem.AddMember("period", rj::Value(_main_period.c_str(), allocator), allocator);
+	}
+	else
+	{
+		klineItem.AddMember("code", rj::Value(_chart_code.c_str(), allocator), allocator);
+		klineItem.AddMember("period", rj::Value(_chart_period.c_str(), allocator), allocator);
+	}
+
+	root.AddMember("kline", klineItem, allocator);
+
+	if (!_chart_indice.empty())
+	{
+		rj::Value jIndice(rj::kArrayType);
+		for (const auto& v : _chart_indice)
+		{
+			const ChartIndex& cIndex = v.second;
+			rj::Value jIndex(rj::kObjectType);
+			jIndex.AddMember("name", rj::Value(cIndex._name.c_str(), allocator), allocator);
+			jIndex.AddMember("index_type", cIndex._indexType, allocator);
+
+			rj::Value jLines(rj::kArrayType);
+			for (const auto& v2 : cIndex._lines)
+			{
+				const ChartLine& cLine = v2.second;
+				rj::Value jLine(rj::kObjectType);
+				jLine.AddMember("name", rj::Value(cLine._name.c_str(), allocator), allocator);
+				jLine.AddMember("line_type", cLine._lineType, allocator);
+
+				jLines.PushBack(jLine, allocator);
+			}
+
+			jIndex.AddMember("lines", jLines, allocator);
+
+			rj::Value jBaseLines(rj::kObjectType);
+			for (const auto& v3 : cIndex._base_lines)
+			{
+				jBaseLines.AddMember(rj::Value(v3.first.c_str(), allocator), rj::Value(v3.second), allocator);
+			}
+
+			jIndex.AddMember("baselines", jBaseLines, allocator);
+
+			jIndice.PushBack(jIndex, allocator);
+		}
+
+		root.AddMember("index", jIndice, allocator);
+	}
+
+	std::string folder = WtHelper::getOutputDir();
+	folder += _name;
+	folder += "/";
+
+	if (!StdFile::exists(folder.c_str()))
+		boost::filesystem::create_directories(folder.c_str());
+
+	std::string filename = folder;
+	filename += "rtchart.json";
+
+	rj::StringBuffer sb;
+	rj::PrettyWriter<rj::StringBuffer> writer(sb);
+	root.Accept(writer);
+	StdFile::write_file_content(filename.c_str(), sb.GetString());
+}
+
 void CtaStraBaseCtx::update_dyn_profit(const char* stdCode, double price)
 {
 	auto it = _pos_map.find(stdCode);
@@ -691,11 +797,11 @@ void CtaStraBaseCtx::on_tick(const char* stdCode, WTSTickData* newTick, bool bEm
 		if(it != _sig_map.end())
 		{
 			WTSSessionInfo* sInfo = _engine->get_session_info(stdCode, true);
-
 			if (sInfo->isInTradingTime(_engine->get_raw_time(), true))
 			{
 				const SigInfo& sInfo = it->second;
-				do_set_position(stdCode, sInfo._volume, sInfo._usertag.c_str(), sInfo._sigtype!=0);
+				//只有当信号类型不为0，即bar内信号或者条件单触发信号时，且信号没有触发过
+				do_set_position(stdCode, sInfo._volume, sInfo._usertag.c_str(), (sInfo._sigtype!=0 && !sInfo._triggered));
 
 				//如果是条件单触发，则回调on_condition_triggered
 				if(sInfo._sigtype == 2)
@@ -928,7 +1034,7 @@ void CtaStraBaseCtx::on_session_begin(uint32_t uTDate)
 	}
 }
 
-void CtaStraBaseCtx::enum_position(FuncEnumCtaPosCallBack cb)
+void CtaStraBaseCtx::enum_position(FuncEnumCtaPosCallBack cb, bool bForExecute /* = false */)
 {
 	std::unordered_map<std::string, double> desPos;
 	for (auto& it:_pos_map)
@@ -939,11 +1045,13 @@ void CtaStraBaseCtx::enum_position(FuncEnumCtaPosCallBack cb)
 		desPos[stdCode] = pInfo._volume;
 	}
 
-	for (auto sit:_sig_map)
+	for (auto& sit:_sig_map)
 	{
 		const char* stdCode = sit.first.c_str();
-		const SigInfo& sInfo = sit.second;
+		SigInfo& sInfo = (SigInfo&)sit.second;
 		desPos[stdCode] = sInfo._volume;
+		if(bForExecute)
+			sInfo._triggered = true;
 	}
 
 	for(auto v:desPos)
@@ -1384,10 +1492,12 @@ void CtaStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 			//计算手续费
 			double fee = _engine->calc_fee(stdCode, trdPx, maxQty, dInfo._opentdate == curTDate ? 2 : 1);
 			_fund_info._total_fees += fee;
-			//这里写成交记录
-			log_trade(stdCode, dInfo._long, false, curTm, trdPx, maxQty, userTag, fee, _last_barno);
+
 			//这里写平仓记录
 			log_close(stdCode, dInfo._long, dInfo._opentime, dInfo._price, curTm, trdPx, maxQty, profit, pInfo._closeprofit, dInfo._opentag, userTag, dInfo._open_barno, _last_barno);
+
+			//这里写成交记录
+			log_trade(stdCode, dInfo._long, false, curTm, trdPx, maxQty, userTag, fee, _last_barno);
 
 			if (decimal::eq(left,0))
 				break;
@@ -1461,6 +1571,12 @@ WTSKlineSlice* CtaStraBaseCtx::stra_get_bars(const char* stdCode, const char* pe
 			log_error("Main KBars already confirmed");
 			return NULL;
 		}
+
+		/*
+		 *	By Wesley @ 2022.12.07
+		 */
+		_main_code = stdCode;
+		_main_period = period;
 	}
 
 	thread_local static char basePeriod[2] = { 0 };
@@ -1678,6 +1794,13 @@ double CtaStraBaseCtx::stra_get_last_enterprice(const char* stdCode)
 
 double CtaStraBaseCtx::stra_get_position(const char* stdCode, bool bOnlyValid /* = false */, const char* userTag /* = "" */)
 {
+	auto sit = _sig_map.find(stdCode);
+	if(sit != _sig_map.end())
+	{
+		WTSLogger::warn("{} has untouched signal, [bOnlyValid] and [userTag] will be ignored", stdCode);
+		return sit->second._volume;
+	}
+
 	auto it = _pos_map.find(stdCode);
 	if (it == _pos_map.end())
 		return 0;
@@ -1807,4 +1930,105 @@ double CtaStraBaseCtx::stra_get_detail_profit(const char* stdCode, const char* u
 	return 0.0;
 }
 
+void CtaStraBaseCtx::set_chart_kline(const char* stdCode, const char* period)
+{
+	_chart_code = stdCode;
+	_chart_period = period;
+}
+
+void CtaStraBaseCtx::add_chart_mark(double price, const char* icon, const char* tag)
+{
+	if (!_is_in_schedule)
+	{
+		WTSLogger::error("Marks can be added only during schedule");
+		return;
+	}
+
+	uint64_t curTime = stra_get_date();
+	curTime = curTime * 10000 + stra_get_time();
+
+	if (_mark_logs)
+	{
+		std::stringstream ss;
+		ss << curTime << "," << price << "," << icon << "," << tag << std::endl;;
+		_mark_logs->write_file(ss.str());
+	}
+
+	_engine->notify_chart_marker(curTime, _name.c_str(), price, icon, tag);
+}
+
+void CtaStraBaseCtx::register_index(const char* idxName, uint32_t indexType)
+{
+	ChartIndex& cIndex = _chart_indice[idxName];
+	cIndex._name = idxName;
+	cIndex._indexType = indexType;
+}
+
+bool CtaStraBaseCtx::register_index_line(const char* idxName, const char* lineName, uint32_t lineType)
+{
+	auto it = _chart_indice.find(idxName);
+	if (it == _chart_indice.end())
+	{
+		WTSLogger::error("Index {} not registered", idxName);
+		return false;
+	}
+
+	ChartIndex& cIndex = (ChartIndex&)it->second;
+	ChartLine& cLine = cIndex._lines[lineName];
+	cLine._name = lineName;
+	cLine._lineType = lineType;
+	return true;
+}
+
+bool CtaStraBaseCtx::add_index_baseline(const char* idxName, const char* lineName, double val)
+{
+	auto it = _chart_indice.find(idxName);
+	if (it == _chart_indice.end())
+	{
+		WTSLogger::error("Index {} not registered", idxName);
+		return false;
+	}
+
+	ChartIndex& cIndex = (ChartIndex&)it->second;
+	cIndex._base_lines[lineName] = val;
+	return true;
+}
+
+bool CtaStraBaseCtx::set_index_value(const char* idxName, const char* lineName, double val)
+{
+	if (!_is_in_schedule)
+	{
+		WTSLogger::error("Marks can be added only during schedule");
+		return false;
+	}
+
+	auto ait = _chart_indice.find(idxName);
+	if (ait == _chart_indice.end())
+	{
+		WTSLogger::error("Index {} not registered", idxName);
+		return false;
+	}
+
+	ChartIndex& cIndex = (ChartIndex&)ait->second;
+	auto bit = cIndex._lines.find(lineName);
+	if (bit == cIndex._lines.end())
+	{
+		WTSLogger::error("Line {} of index {} not registered", lineName, idxName);
+		return false;
+	}
+
+	uint64_t curTime = stra_get_date();
+	curTime = curTime * 10000 + stra_get_time();
+
+	if (_idx_logs)
+	{
+		std::stringstream ss;
+		ss << curTime << "," << idxName << "," << lineName << "," << val << std::endl;;
+		_idx_logs->write_file(ss.str());
+	}
+
+	_engine->notify_chart_index(curTime, _name.c_str(), idxName, lineName, val);
+
+	return true;
+}
 

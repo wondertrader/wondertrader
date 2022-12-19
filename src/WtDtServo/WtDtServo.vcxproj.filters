@@ -33,6 +33,9 @@
     <ClInclude Include="..\Common\mdump.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="ParserAdapter.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WtDtServo.cpp">
@@ -48,6 +51,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\Common\mdump.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ParserAdapter.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

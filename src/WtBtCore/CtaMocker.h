@@ -81,7 +81,7 @@ private:
 	void	update_dyn_profit(const char* stdCode, double price);
 
 	void	do_set_position(const char* stdCode, double qty, double price = 0.0, const char* userTag = "");
-	void	append_signal(const char* stdCode, double qty, const char* userTag = "", double price = 0.0, uint32_t sigType = 0);
+	void	append_signal(const char* stdCode, double qty, const char* userTag, double price, uint32_t sigType);
 
 	inline CondList& get_cond_entrusts(const char* stdCode);
 
@@ -89,6 +89,7 @@ private:
 
 public:
 	bool	init_cta_factory(WTSVariant* cfg);
+	void	load_incremental_data(const char* lastBacktestName);
 	void	install_hook();
 	void	enable_hook(bool bEnabled = true);
 	bool	step_calc();
@@ -119,7 +120,7 @@ public:
 	virtual void on_tick(const char* stdCode, WTSTickData* newTick, bool bEmitStrategy = true) override;
 	virtual void on_bar(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar) override;
 	virtual bool on_schedule(uint32_t curDate, uint32_t curTime) override;
-	virtual void enum_position(FuncEnumCtaPosCallBack cb) override;
+	virtual void enum_position(FuncEnumCtaPosCallBack cb, bool bForExecute) override;
 
 	virtual void on_tick_updated(const char* stdCode, WTSTickData* newTick) override;
 	virtual void on_bar_close(const char* stdCode, const char* period, WTSBarStruct* newBar) override;
@@ -338,6 +339,8 @@ protected:
 	std::stringstream	_fund_logs;
 	std::stringstream	_sig_logs;
 	std::stringstream	_pos_logs;
+	std::stringstream	_index_logs;
+	std::stringstream	_mark_logs;
 
 	CondEntrustMap		_condtions;
 
@@ -410,20 +413,10 @@ protected:
 	std::string		_chart_code;
 	std::string		_chart_period;
 
-	typedef struct _ChartMark
-	{
-		uint64_t	_bartime;
-		double		_price;
-		std::string	_icon;
-		std::string	_tag;
-	} ChartMark;
-	std::vector<ChartMark> _chart_marks;
-
 	typedef struct _ChartLine
 	{
 		std::string	_name;
 		uint32_t	_lineType;
-		std::vector<double> _values;
 	} ChartLine;
 
 	typedef struct _ChartIndex

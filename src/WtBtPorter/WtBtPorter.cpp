@@ -164,9 +164,9 @@ void write_log(WtUInt32 level, const char* message, const char* catName)
 	}
 }
 
-CtxHandler init_cta_mocker(const char* name, int slippage/* = 0*/, bool hook/* = false*/, bool persistData/* = true*/)
+CtxHandler init_cta_mocker(const char* name, int slippage/* = 0*/, bool hook/* = false*/, bool persistData/* = true*/, bool bIncremental/* = false*/)
 {
-	return getRunner().initCtaMocker(name, slippage, hook, persistData);
+	return getRunner().initCtaMocker(name, slippage, hook, persistData, bIncremental);
 }
 
 CtxHandler init_hft_mocker(const char* name, bool hook/* = false*/)
@@ -331,7 +331,7 @@ void cta_get_all_position(CtxHandler cHandle, FuncGetPositionCallback cb)
 
 	ctx->enum_position([cb, cHandle](const char* stdCode, double qty) {
 		cb(cHandle, stdCode, qty, false);
-	});
+	}, false);
 
 	cb(cHandle, "", 0, true);
 }
@@ -550,14 +550,6 @@ bool cta_set_index_value(CtxHandler cHandle, const char* idxName, const char* li
 
 	return ctx->set_index_value(idxName, lineName, val);
 }
-
-/*
- *	设置指标值
- *	@idxName	指标名称
- *	@lineName	线条名称
- *	@val		指标值
- */
-EXPORT_FLAG bool		cta_set_index_value(CtxHandler cHandle, const char* idxName, const char* lineName, double val);
 
 #pragma endregion "CTA策略接口"
 

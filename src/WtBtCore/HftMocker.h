@@ -234,6 +234,8 @@ private:
 		
 		uint32_t	_localid;
 
+		bool	_proced_after_placed;	//下单后是否处理过			
+
 		_OrderInfo()
 		{
 			memset(this, 0, sizeof(_OrderInfo));
