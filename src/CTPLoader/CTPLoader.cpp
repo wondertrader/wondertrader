@@ -94,7 +94,7 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 
 		map_files = cfg->getCString("mapfiles");
 
-		MODULE_NAME = cfg->getCString("module");
+		MODULE_NAME = ctp->getCString("module");
 		if (MODULE_NAME.empty())
 		{
 #ifdef _WIN32
@@ -128,9 +128,9 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 		map_files = ini.readString("config", "mapfiles", "");
 
 #ifdef _WIN32
-		MODULE_NAME = ini.readString("config", "module", "thosttraderapi_se.dll");
+		MODULE_NAME = ini.readString("ctp", "module", "thosttraderapi_se.dll");
 #else
-		MODULE_NAME = ini.readString("config", "module", "thosttraderapi_se.so");
+		MODULE_NAME = ini.readString("ctp", "module", "thosttraderapi_se.so");
 #endif
 	}
 	else
@@ -161,7 +161,7 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 
 		map_files = cfg->getCString("mapfiles");
 
-		MODULE_NAME = cfg->getCString("module");
+		MODULE_NAME = ctp->getCString("module");
 		if(MODULE_NAME.empty())
 		{
 #ifdef _WIN32
@@ -175,12 +175,7 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 	
 	if(!boost::filesystem::exists(MODULE_NAME.c_str()))
 	{
-		MODULE_NAME = getBinDir();
-#ifdef _WIN32
-		MODULE_NAME += "traders/thosttraderapi_se.dll";
-#else
-		MODULE_NAME += "traders/thosttraderapi_se.so";
-#endif
+		MODULE_NAME = StrUtil::printf("%straders/%s", getBinDir(), MODULE_NAME.c_str());
 	}
 
 	if(FRONT_ADDR.empty() || BROKER_ID.empty() || INVESTOR_ID.empty() || PASSWORD.empty() || SAVEPATH.empty())
