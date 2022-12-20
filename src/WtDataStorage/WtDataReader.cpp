@@ -1721,6 +1721,14 @@ WTSKlineSlice* WtDataReader::readKlineSlice(const char* stdCode, WTSKlinePeriod 
 					pBar->low *= factor;
 					pBar->close *= factor;
 				}
+
+				/*
+				 *	By Wesley @ 2022.12.20
+				 *	因为后复权数据都是单独存了备份的
+				 *	所以这里的left一定要重置为总的数据条数，
+				 *	不然后面读取就有问题了
+				 */
+				left = count;
 			}
 			else
 			{
