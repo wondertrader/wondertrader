@@ -73,33 +73,33 @@ inline char wrapDirectionType(WTSDirectionType dirType, WTSOffsetType offsetType
 			return '0';
 }
 
-inline char wrapPosDirType(WTSDirectionType dirType)
-{
-	if (WDT_LONG == dirType)
-		return '2';
-	else if (WDT_SHORT == dirType)
-		return '3';
-}
-
-inline WTSDirectionType wrapPosDirType(char dirType)
-{
-	if ('2' == dirType)
-		return WDT_LONG;
-	else if ('3' == dirType)
-		return WDT_SHORT;
-	else
-		return WDT_NET;
-}
+//inline char wrapPosDirType(WTSDirectionType dirType)
+//{
+//	if (WDT_LONG == dirType)
+//		return '2';
+//	else if (WDT_SHORT == dirType)
+//		return '3';
+//}
+//
+//inline WTSDirectionType wrapPosDirType(char dirType)
+//{
+//	if ('2' == dirType)
+//		return WDT_LONG;
+//	else if ('3' == dirType)
+//		return WDT_SHORT;
+//	else
+//		return WDT_NET;
+//}
 
 inline WTSDirectionType wrapDirectionType(char dirType, char offsetType)
 {
-	if ('0' == dirType)
-		if (offsetType == '0')
+	if ('0' == dirType)  // 买
+		if (offsetType == '0')  // 开仓
 			return WDT_LONG;
 		else
 			return WDT_SHORT;
-	else
-		if (offsetType == '0')
+	else  // 卖
+		if (offsetType == '0')  // 开仓
 			return WDT_SHORT;
 		else
 			return WDT_LONG;
@@ -107,12 +107,10 @@ inline WTSDirectionType wrapDirectionType(char dirType, char offsetType)
 
 inline WTSDirectionType wrapPosDirection(char dirType)
 {
-	if ('2' == dirType)
+	if ('2' == dirType)  // 多头
 		return WDT_LONG;
-	else if ('3' == dirType)
+	else  // 空头
 		return WDT_SHORT;
-	else
-		return WDT_NET;
 }
 
 inline char wrapOffsetType(WTSOffsetType offType)
@@ -943,14 +941,14 @@ void TraderAresClt::OnRspOrderAction(tagXTReqOrderCancelField* data, tagXTRspInf
 
 	if (IsErrorRspInfo(pRspInfo))
 	{
-		write_log(m_bscSink, LL_INFO, "[TraderAresClt] Cancell order failed, msg: {}", pRspInfo->ErrorMsg);
+		write_log(m_bscSink, LL_INFO, "[TraderAresClt][OnRspOrderAction] Cancell order failed, msg: {}", pRspInfo->ErrorMsg);
 		WTSError* error = WTSError::create(WEC_ORDERCANCEL, pRspInfo->ErrorMsg);
 		if (m_bscSink)
 			m_bscSink->onTraderError(error);
 	}
 	else
 	{
-		write_log(m_bscSink, LL_INFO, "[TraderAresClt] Cancell order successed, msg: {}", pRspInfo->ErrorMsg);
+		write_log(m_bscSink, LL_INFO, "[TraderAresClt][OnRspOrderAction] Cancell order successed, msg: {}", pRspInfo->ErrorMsg);
 	}
 }
 
@@ -1036,6 +1034,98 @@ void TraderAresClt::OnRspQryInvestorPosition(tagXTRspPositionField* pInvestorPos
 
 		WTSContractInfo* contract = m_bdMgr->getContract(pInvestorPosition->Code, pInvestorPosition->Exchange);
 
+		//if (contract)
+		//{
+		//	WTSCommodityInfo* commInfo = contract->getCommInfo();
+		//	std::string key = fmt::format("{}-{}", pInvestorPosition->Code, pInvestorPosition->PosiDirection);
+		//	WTSPositionItem* pos = (WTSPositionItem*)m_mapPosition->get(key);
+		//	if (pos == NULL)
+		//	{
+		//		pos = WTSPositionItem::create(pInvestorPosition->Code, commInfo->getCurrency(), commInfo->getExchg());
+		//		pos->setContractInfo(contract);
+		//		m_mapPosition->add(key, pos, false);
+		//	}
+		//	pos->setDirection(wrapPosDirection(pInvestorPosition->PosiDirection[0]));
+		//	if (commInfo->getCoverMode() == CM_CoverToday)
+		//	{
+		//		//if (pInvestorPosition->PositionDate == THOST_FTDC_PSD_Today)
+		//		//	pos->setNewPosition(pInvestorPosition->Position);
+		//		//else
+		//		//	pos->setPrePosition(pInvestorPosition->Position);
+
+		//		pos->setNewPosition(pInvestorPosition->Position);
+		//		pos->setPrePosition(pInvestorPosition->YdPosition);
+		//	}
+		//	else
+		//	{
+		//		pos->setNewPosition(pInvestorPosition->Position);
+		//		pos->setPrePosition(pInvestorPosition->YdPosition);
+		//	}
+
+		//	pos->setMargin(pos->getMargin() + pInvestorPosition->UseMargin);
+		//	//pos->setDynProfit(pos->getDynProfit() + pInvestorPosition->PositionProfit);
+		//	pos->setPositionCost(pos->getPositionCost() + pInvestorPosition->PositionCost);
+
+		//	if (pos->getTotalPosition() != 0)
+		//	{
+		//		pos->setAvgPrice(pos->getPositionCost() / pos->getTotalPosition() / commInfo->getVolScale());
+		//	}
+		//	else
+		//	{
+		//		pos->setAvgPrice(0);
+		//	}
+
+		//	if (commInfo->getCategoty() != CC_Combination)
+		//	{
+		//		if (commInfo->getCoverMode() == CM_CoverToday)
+		//		{
+		//			int availNew = pInvestorPosition->Position;
+
+		//			availNew -= pInvestorPosition->FrozenPosition;
+
+		//			if (availNew < 0)
+		//				availNew = 0;
+		//			pos->setAvailNewPos(availNew);
+
+		//			int availPre = pInvestorPosition->YdPosition;
+		//			availPre -= pInvestorPosition->FrozenPosition;
+
+		//			if (availPre < 0)
+		//				availPre = 0;
+		//			pos->setAvailPrePos(availPre);
+		//		}
+		//		else
+		//		{
+		//			int availNew = pInvestorPosition->Position;
+
+		//			availNew -= pInvestorPosition->FrozenPosition;
+
+		//			if (availNew < 0)
+		//				availNew = 0;
+
+		//			pos->setAvailNewPos(availNew);
+
+		//			double availPre = pos->getNewPosition() + pos->getPrePosition()
+		//				- pInvestorPosition->FrozenPosition - pos->getAvailNewPos();
+		//			pos->setAvailPrePos(availPre);
+		//		}
+		//	}
+		//	else
+		//	{
+
+		//	}
+
+		//	if (decimal::lt(pos->getTotalPosition(), 0.0) && decimal::eq(pos->getMargin(), 0.0))
+		//	{
+		//		//有仓位,但是保证金为0,则说明是套利合约,单个合约的可用持仓全部置为0
+		//		pos->setAvailNewPos(0);
+		//		pos->setAvailPrePos(0);
+		//	}
+
+		//	write_log(m_bscSink, LL_INFO, "[OnRspTradePosition][{}]code: {}, position: {}, ydposition: {}, availNewPos: {}, preavailPos: {}, NewPos: {}", pInvestorPosition->UserID, pInvestorPosition->Code, pInvestorPosition->Position, pInvestorPosition->YdPosition, pos->getAvailNewPos(), pos->getAvailPrePos(), pos->getNewPosition());
+		//}
+
+
 		if (contract)
 		{
 			WTSCommodityInfo* commInfo = contract->getCommInfo();
@@ -1048,24 +1138,10 @@ void TraderAresClt::OnRspQryInvestorPosition(tagXTRspPositionField* pInvestorPos
 				m_mapPosition->add(key, pos, false);
 			}
 			pos->setDirection(wrapPosDirection(pInvestorPosition->PosiDirection[0]));
-			if (commInfo->getCoverMode() == CM_CoverToday)
-			{
-				//if (pInvestorPosition->PositionDate == THOST_FTDC_PSD_Today)
-				//	pos->setNewPosition(pInvestorPosition->Position);
-				//else
-				//	pos->setPrePosition(pInvestorPosition->Position);
-
-				pos->setNewPosition(pInvestorPosition->Position);
-				pos->setPrePosition(pInvestorPosition->YdPosition);
-			}
-			else
-			{
-				pos->setNewPosition(pInvestorPosition->Position);
-				pos->setPrePosition(pInvestorPosition->YdPosition);
-			}
+			pos->setNewPosition(pInvestorPosition->Position);
+			pos->setPrePosition(pInvestorPosition->YdPosition);
 
 			pos->setMargin(pos->getMargin() + pInvestorPosition->UseMargin);
-			//pos->setDynProfit(pos->getDynProfit() + pInvestorPosition->PositionProfit);
 			pos->setPositionCost(pos->getPositionCost() + pInvestorPosition->PositionCost);
 
 			if (pos->getTotalPosition() != 0)
@@ -1079,40 +1155,20 @@ void TraderAresClt::OnRspQryInvestorPosition(tagXTRspPositionField* pInvestorPos
 
 			if (commInfo->getCategoty() != CC_Combination)
 			{
-				if (commInfo->getCoverMode() == CM_CoverToday)
-				{
-					int availNew = pInvestorPosition->Position;
+				int availNew = pInvestorPosition->Position;
 
-					availNew -= pInvestorPosition->FrozenPosition;
+				availNew -= pInvestorPosition->FrozenPosition;
 
-					if (availNew < 0)
-						availNew = 0;
-					pos->setAvailNewPos(availNew);
+				if (availNew < 0)
+					availNew = 0;
+				pos->setAvailNewPos(availNew);
 
-					int availPre = pInvestorPosition->YdPosition;
-					availPre -= pInvestorPosition->FrozenPosition;
+				int availPre = pInvestorPosition->YdPosition;
+				availPre -= pInvestorPosition->FrozenPosition;
 
-					if (availPre < 0)
-						availPre = 0;
-					pos->setAvailPrePos(availPre);
-				}
-				else
-				{
-					int availNew = pInvestorPosition->Position;
-					//cout << "  step1: availNew " << availNew;
-
-					availNew -= pInvestorPosition->FrozenPosition;
-					//cout << "  step2: availNew " << availNew;
-
-					if (availNew < 0)
-						availNew = 0;
-					pos->setAvailNewPos(availNew);
-					//cout << "  step3: availNew " << pos->getAvailNewPos() << endl;
-
-					double availPre = pos->getNewPosition() + pos->getPrePosition()
-						- pInvestorPosition->FrozenPosition - pos->getAvailNewPos();
-					pos->setAvailPrePos(availPre);
-				}
+				if (availPre < 0)
+					availPre = 0;
+				pos->setAvailPrePos(availPre);
 			}
 			else
 			{
@@ -1252,12 +1308,12 @@ void TraderAresClt::OnRtnTrade(tagXTTradeField *pTrade)
 	if (tRecord)
 	{
 		_asyncio.post([this, tRecord] {
-			std::this_thread::sleep_for(std::chrono::microseconds(15));
+			//std::this_thread::sleep_for(std::chrono::microseconds(15));
 
-			std::string usertag = m_iniHelper.readString(ORDER_SECTION, StrUtil::trim(tRecord->getRefOrder()).c_str());
-			//std::string usertag = m_oidCache.get(StrUtil::trim(pRet->getRefOrder()).c_str());
-			if (!usertag.empty())
-				tRecord->setUserTag(usertag.c_str());
+			//std::string usertag = m_iniHelper.readString(ORDER_SECTION, StrUtil::trim(tRecord->getRefOrder()).c_str());
+			////std::string usertag = m_oidCache.get(StrUtil::trim(pRet->getRefOrder()).c_str());
+			//if (!usertag.empty())
+			//	tRecord->setUserTag(usertag.c_str());
 
 			if (m_bscSink)
 				m_bscSink->onPushTrade(tRecord);
@@ -1310,7 +1366,16 @@ WTSOrderInfo* TraderAresClt::makeOrderInfo(tagXTOrderField* orderField)
 	pRet->setStateMsg(orderField->StatusMsg);
 
 	if (orderField->OrderStatus[0] == 'a')  // 废单
+	{
 		pRet->setError(true);
+		pRet->setStateMsg("Abandoned");
+	}
+	else if (orderField->OrderStatus[0] == '2')  // 待报
+	{
+		pRet->setError(true);
+		//pRet->setOrderState(WOS_Canceled);
+		pRet->setStateMsg("Submit_Waited");
+	}
 	else if (orderField->OrderStatus[0] == '4')  // 待撤
 	{
 		pRet->setOrderState(WOS_Cancelling);
@@ -1529,10 +1594,22 @@ WTSTradeInfo* TraderAresClt::makeTradeRecord(tagXTTradeField *tradeField)
 	//	pRet->setUserTag(it->second.c_str());
 	//}
 
-	std::string usertag = m_iniHelper.readString(ORDER_SECTION, StrUtil::trim(pRet->getRefOrder()).c_str());
-	//std::string usertag = m_oidCache.get(StrUtil::trim(pRet->getRefOrder()).c_str());
-	if (!usertag.empty())
-		pRet->setUserTag(usertag.c_str());
+	if(strlen(tradeField->OrderRef) > 0)
+	{
+		thread_local char entrustid[64] = { 0 };
+		generateEntrustID(entrustid, atoi(tradeField->OrderRef));
+		std::string usertag = m_iniHelper.readString(ENTRUST_SECTION, entrustid);
+		if (!usertag.empty())
+			pRet->setUserTag(usertag.c_str());
+	}
+	else
+	{
+		std::string usertag = m_iniHelper.readString(ORDER_SECTION, StrUtil::trim(pRet->getRefOrder()).c_str());
+		//std::string usertag = m_oidCache.get(StrUtil::trim(pRet->getRefOrder()).c_str());
+		if (!usertag.empty())
+			pRet->setUserTag(usertag.c_str());
+	}
+	
 
 	write_log(m_bscSink, LL_INFO, "[Trade Record] code {} | price {} | volume {} | trade ordersysid {} | set reforder {} | usertag {}", pRet->getCode(), pRet->getPrice(), pRet->getVolume(), tradeField->OrderSysID, pRet->getRefOrder(), pRet->getUserTag());
 
