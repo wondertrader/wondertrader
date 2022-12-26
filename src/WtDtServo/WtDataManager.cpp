@@ -331,8 +331,6 @@ WTSKlineSlice* WtDataManager::get_kline_slice_by_range(const char* stdCode, WTSK
 
 WTSKlineSlice* WtDataManager::get_kline_slice_by_count(const char* stdCode, WTSKlinePeriod period, uint32_t times, uint32_t count, uint64_t etime /* = 0 */)
 {
-	std::string key = StrUtil::printf("%s-%u", stdCode, period);
-
 	if (times == 1)
 	{
 		return _reader->readKlineSliceByCount(stdCode, period, count, etime);
@@ -340,7 +338,7 @@ WTSKlineSlice* WtDataManager::get_kline_slice_by_count(const char* stdCode, WTSK
 
 	//只有非基础周期的会进到下面的步骤
 	WTSSessionInfo* sInfo = get_session_info(stdCode, true);
-	key = StrUtil::printf("%s-%u-%u", stdCode, period, times);
+	std::string key = StrUtil::printf("%s-%u-%u", stdCode, period, times);
 	BarCache& barCache = _bars_cache[key];
 	barCache._period = period;
 	barCache._times = times;
@@ -503,7 +501,7 @@ double WtDataManager::get_exright_factor(const char* stdCode, WTSCommodityInfo* 
 
 void WtDataManager::subscribe_bar(const char* stdCode, WTSKlinePeriod period, uint32_t times)
 {
-	std::string key = StrUtil::printf("%s-%u-%u", stdCode, period, times);
+	std::string key = fmtutil::format("{}-{}-{}", stdCode, (uint32_t)period, times);
 
 	uint32_t curDate = TimeUtils::getCurDate();
 	uint64_t etime = (uint64_t)curDate * 10000 + 2359;
@@ -530,6 +528,8 @@ void WtDataManager::subscribe_bar(const char* stdCode, WTSKlinePeriod period, ui
 
 			_rt_bars->add(key, kline, false);
 		}
+
+		slice->release();
 	}
 	else
 	{

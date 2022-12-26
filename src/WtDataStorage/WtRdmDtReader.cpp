@@ -2250,10 +2250,11 @@ WtRdmDtReader::RTKlineBlockPair* WtRdmDtReader::getRTKilneBlock(const char* exch
 WTSKlineSlice* WtRdmDtReader::readKlineSliceByCount(const char* stdCode, WTSKlinePeriod period, uint32_t count, uint64_t etime /* = 0 */)
 {
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
+	pipe_rdmreader_log(_sink, LL_INFO, "CodeInfo of {}: {},{},{}", stdCode, cInfo._exchg, cInfo._product, cInfo._code);
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
-	std::string stdPID = fmt::format("{}.{}", cInfo._exchg, cInfo._product);
+	std::string stdPID = fmtutil::format("{}.{}", cInfo._exchg, cInfo._product);
 
-	std::string key = fmt::format("{}#{}", stdCode, period);
+	std::string key = fmtutil::format("{}#{}", stdCode, period);
 	auto it = _bars_cache.find(key);
 	bool bHasHisData = false;
 	if (it == _bars_cache.end())
@@ -2364,7 +2365,7 @@ WTSKlineSlice* WtRdmDtReader::readKlineSliceByCount(const char* stdCode, WTSKlin
 						idx--;
 
 					//因为每次拷贝，最后一条K线都有可能是未闭合的，所以需要把最后一条K线覆盖
-					memcpy(&barsList._rt_bars[idx], &kPair->_block->_bars[idx], sizeof(WTSBarStruct)*(newSize - oldSize + 1));
+					memcpy(&barsList._rt_bars[idx], &kPair->_block->_bars[idx], sizeof(WTSBarStruct)*(newSize - idx));
 
 					//最后做复权处理
 					double factor = barsList._factor;
@@ -2408,6 +2409,8 @@ WTSKlineSlice* WtRdmDtReader::readKlineSliceByCount(const char* stdCode, WTSKlin
 		hisCnt = count - rtCnt;
 		hisHead = indexBarFromCacheByCount(key, etime, hisCnt, period == KP_DAY);
 	}
+
+	pipe_rdmreader_log(_sink, LL_DEBUG, "His {} bars of {} loaded, {} from history, {} from realtime", PERIOD_NAME[period], stdCode, hisCnt, rtCnt);
 
 	if (hisCnt + rtCnt > 0)
 	{
