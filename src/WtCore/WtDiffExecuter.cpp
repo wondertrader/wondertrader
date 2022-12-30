@@ -71,7 +71,7 @@ bool WtDiffExecuter::init(WTSVariant* params)
 
 	load_data();
 
-	WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "[{}]Diff executer inited, scale: {}, thread poolsize: {}", _name, _scale, poolsize);
+	WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "[{}] Diff executer inited, scale: {}, thread poolsize: {}", _name, _scale, poolsize);
 
 	return true;
 }
@@ -298,7 +298,7 @@ OrderIDs WtDiffExecuter::cancel(const char* stdCode, bool isBuy, double qty)
 void WtDiffExecuter::writeLog(const char* message)
 {
 	static thread_local char szBuf[2048] = { 0 };
-	fmtutil::format_to(szBuf, "[{}]{}", _name.c_str(), message);
+	fmtutil::format_to(szBuf, "[{}] {}", _name.c_str(), message);
 	WTSLogger::log_dyn_raw("executer", _name.c_str(), LL_INFO, szBuf);
 }
 
@@ -345,11 +345,11 @@ void WtDiffExecuter::on_position_changed(const char* stdCode, double diffPos)
 	double thisDiff = prevDiff;
 	thisDiff += diffPos;
 
-	WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "[{}]Target position of {} changed: {} -> {}, diff postion changed: {} -> {}", _name, stdCode, oldVol, targetPos, prevDiff, thisDiff);
+	WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "[{}] Target position of {} changed additonally: {} -> {}, diff postion changed: {} -> {}", _name, stdCode, oldVol, targetPos, prevDiff, thisDiff);
 
 	if (_trader && !_trader->checkOrderLimits(stdCode))
 	{
-		WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "[{}]{} is disabled", _name, stdCode);
+		WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "[{}] {} is disabled", _name, stdCode);
 		return;
 	}
 
@@ -388,11 +388,11 @@ void WtDiffExecuter::set_position(const faster_hashmap<LongKey, double>& targets
 		double prevDiff = thisDiff;
 		thisDiff += (newVol - oldVol);
 
-		WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "[{}]Target position of {} changed: {} -> {}, diff postion changed: {} -> {}", _name, stdCode, oldVol, newVol, prevDiff, thisDiff);
+		WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "[{}] Target position of {} changed: {} -> {}, diff postion changed: {} -> {}", _name, stdCode, oldVol, newVol, prevDiff, thisDiff);
 
 		if (_trader && !_trader->checkOrderLimits(stdCode))
 		{
-			WTSLogger::log_dyn("executer", _name.c_str(), LL_WARN, "[{}]{} is disabled due to entrust limit control ", _name, stdCode);
+			WTSLogger::log_dyn("executer", _name.c_str(), LL_WARN, "[{}] {} is disabled due to entrust limit control ", _name, stdCode);
 			continue;
 		}
 
@@ -425,7 +425,7 @@ void WtDiffExecuter::set_position(const faster_hashmap<LongKey, double>& targets
 
 		if(pos != 0)
 		{
-			WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "[{}]{} is not in target, set to 0 automatically", _name, stdCode);
+			WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "[{}] {} is not in target, set to 0 automatically", _name, stdCode);
 
 			ExecuteUnitPtr unit = getUnit(stdCode);
 			if (unit == NULL)
@@ -489,7 +489,7 @@ void WtDiffExecuter::on_trade(uint32_t localid, const char* stdCode, bool isBuy,
 	double prevDiff = curDiff;
 	curDiff -= vol * (isBuy ? 1 : -1);
 
-	WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "[{}]Diff of {} updated by trade: {} -> {}", _name, stdCode, prevDiff, curDiff);
+	WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "[{}] Diff of {} updated by trade: {} -> {}", _name, stdCode, prevDiff, curDiff);
 	save_data();
 
 	if (_pool)
@@ -586,7 +586,7 @@ void WtDiffExecuter::on_channel_ready()
 			unit->self()->set_position(stdCode, thisDiff);
 		}
 
-		WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "[{}]Diff of {} recovered to {}", _name, stdCode, thisDiff);
+		WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "[{}] Diff of {} recovered to {}", _name, stdCode, thisDiff);
 	}
 }
 
