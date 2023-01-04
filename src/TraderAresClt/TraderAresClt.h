@@ -12,6 +12,7 @@
 #include <string>
 #include <queue>
 #include <stdint.h>
+#include <unordered_map>
 #include <boost/asio/io_service.hpp>
 
 #include "../Includes/WTSTypes.h"
@@ -182,6 +183,9 @@ protected:
 	WTSArray*					m_ayTrades;
 	WTSArray*					m_ayOrders;
 	WTSArray*					m_ayPosDetail;
+
+	std::unordered_map<std::string, std::string> m_OrderIdMap;  // 跟踪记录已经完成的订单信息
+	std::unordered_map<std::string, std::vector<int>> umapOrderPos;  // 遍历持仓，统计每个合约同一个OrderID的委托情况
 
 	IBaseDataMgr*				m_bdMgr;
 
