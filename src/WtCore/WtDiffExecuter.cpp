@@ -340,9 +340,12 @@ void WtDiffExecuter::on_position_changed(const char* stdCode, double diffPos)
 	double& targetPos = _target_pos[stdCode];
 	targetPos += diffPos;
 
-	//更新差量
-	double prevDiff = _diff_pos[stdCode];
-	double thisDiff = prevDiff;
+	/*
+	 *	By Sunseeeeeker @ 2023.01.10
+	 *	更新差量
+	*/
+	double& thisDiff = _diff_pos[stdCode];
+	double prevDiff = thisDiff;
 	thisDiff += diffPos;
 
 	WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "[{}] Target position of {} changed additonally: {} -> {}, diff postion changed: {} -> {}", _name, stdCode, oldVol, targetPos, prevDiff, thisDiff);
@@ -421,7 +424,7 @@ void WtDiffExecuter::set_position(const faster_hashmap<LongKey, double>& targets
 
 		WTSContractInfo* cInfo = _bd_mgr->getContract(stdCode);
 		if(cInfo == NULL)
-			continue;			
+			continue;
 
 		if(pos != 0)
 		{
@@ -434,6 +437,9 @@ void WtDiffExecuter::set_position(const faster_hashmap<LongKey, double>& targets
 			//更新差量
 			double& thisDiff = _diff_pos[stdCode];
 			double prevDiff = thisDiff;
+
+			//WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "[DiffExecuter][set_position][{}] {} is not in target, thisDiff: {}, prevDiff: {}, pos: {}, new thisDiff: {}", _name, stdCode, thisDiff, prevDiff, pos, thisDiff + pos);
+
 			thisDiff -= -pos;
 			pos = 0;
 
