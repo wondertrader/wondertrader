@@ -35,6 +35,7 @@ extern std::string	SAVEPATH;	//保存位置
 extern std::string	APPID;
 extern std::string	AUTHCODE;
 extern uint32_t		CLASSMASK;
+extern bool			ONLYINCFG;
 
 extern std::string COMM_FILE;		//输出的品种文件名
 extern std::string CONT_FILE;		//输出的合约文件名
@@ -239,114 +240,122 @@ void CTraderSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CTho
 			else if (bFuture && (CLASSMASK & 1) != 0)
 				isGranted = true;
 
-			if (isGranted)
+			do 
 			{
-
-				std::cerr << "--->>> OnRspQryInstrument: " << pInstrument->ExchangeID << "." << pInstrument->InstrumentID << std::endl;
-				std::string pname = MAP_NAME[pInstrument->ProductID];
-				if (pname.empty())
+				if (isGranted)
 				{
-					std::stringstream ss;
-					ss << pInstrument->ExchangeID << "." << pInstrument->ProductID;
-					pname = MAP_NAME[ss.str()];
-				}
-
-				std::string cname = "";
-				if (pname.empty())
-				{
-					cname = pInstrument->InstrumentName;
-					pname = bFuture ? extractProductName(pInstrument->InstrumentName) : pInstrument->InstrumentName;
-				}
-				else
-				{
-					if(bFuture)
+					std::string pname = MAP_NAME[pInstrument->ProductID];
+					if (pname.empty())
 					{
-						std::string month = pInstrument->InstrumentID;
-						month = month.substr(strlen(pInstrument->ProductID));
-						cname = pname + month;
+						std::stringstream ss;
+						ss << pInstrument->ExchangeID << "." << pInstrument->ProductID;
+						pname = MAP_NAME[ss.str()];
 					}
-					else if (bOption)
+
+					std::string cname = "";
+					if (pname.empty())
 					{
-						std::string underlyPID = extractProductID(pInstrument->UnderlyingInstrID);
-						std::string month = pInstrument->InstrumentID;
-						month = month.substr(underlyPID.size());
-						cname = pname + month;
-					}
-					else
-					{
+						if (ONLYINCFG)
+						{
+							std::cerr << "--->>> OnRspQryInstrument: " << pInstrument->ExchangeID << "." << pInstrument->InstrumentID << std::endl;
+							break;
+						}
+
 						cname = pInstrument->InstrumentName;
+						pname = bFuture ? extractProductName(pInstrument->InstrumentName) : pInstrument->InstrumentName;
 					}
-					
-				}
-
-				Contract contract;
-				contract.m_strCode = pInstrument->InstrumentID;
-				contract.m_strExchg = pInstrument->ExchangeID;
-				contract.m_strName = StrUtil::trim(cname.c_str());
-				contract.m_strProduct = pInstrument->ProductID;
-
-				contract.m_maxMktQty = pInstrument->MaxMarketOrderVolume;
-				contract.m_maxLmtQty = pInstrument->MaxLimitOrderVolume;
-				contract.m_minMktQty = pInstrument->MinMarketOrderVolume;
-				contract.m_minLmtQty = pInstrument->MinLimitOrderVolume;
-
-				contract.m_optType = bOption ? (OptionType)pInstrument->OptionsType : OT_None;
-				contract.m_strUnderlying = pInstrument->UnderlyingInstrID;
-				contract.m_strikePrice = pInstrument->StrikePrice;
-				contract.m_dUnderlyingScale = pInstrument->UnderlyingMultiple;
-
-				std::string key = StrUtil::printf("%s.%s", pInstrument->ExchangeID, pInstrument->ProductID);
-				auto it = _commodities.find(key);
-				if (it == _commodities.end())
-				{
-					Commodity commInfo;
-					commInfo.m_strProduct = pInstrument->ProductID;
-					commInfo.m_strName = StrUtil::trim(pname.c_str());
-					commInfo.m_strExchg = pInstrument->ExchangeID;
-					commInfo.m_strCurrency = "CNY";
-
-					commInfo.m_strSession = MAP_SESSION[key];
-					commInfo.m_ccCategory = wrapCategory(pInstrument->ProductClass);
-
-					commInfo.m_uVolScale = (pInstrument->VolumeMultiple == 0 ? 1 : pInstrument->VolumeMultiple);
-					commInfo.m_fPriceTick = pInstrument->PriceTick;
-
-					CoverMode cm = CM_OpenCover;
-					if (bFuture)
-					{
-						if (strcmp(pInstrument->ExchangeID, "SHFE") == 0 || strcmp(pInstrument->ExchangeID, "INE") == 0)
-							cm = CM_CoverToday;
-						//上期所的就是平今,非上期所的就是开平
-					}
-
-					commInfo.m_coverMode = cm;
-
-					PriceMode pm = PM_Both;
-					if (bFuture)
-					{
-						if (strcmp(pInstrument->ExchangeID, "SHFE") == 0 || strcmp(pInstrument->ExchangeID, "INE") == 0)
-							pm = PM_Limit;
-					}
-					commInfo.m_priceMode = pm;
-					commInfo.m_tradeMode = TM_Both;
-
-					if (pInstrument->PriceTick < 0.001)
-						commInfo.m_uPrecision = 4;
-					else if (pInstrument->PriceTick < 0.01)
-						commInfo.m_uPrecision = 3;
-					else if (pInstrument->PriceTick < 0.1)
-						commInfo.m_uPrecision = 2;
-					else if (pInstrument->PriceTick < 1)
-						commInfo.m_uPrecision = 1;
 					else
-						commInfo.m_uPrecision = 0;
+					{
+						if (bFuture)
+						{
+							std::string month = pInstrument->InstrumentID;
+							month = month.substr(strlen(pInstrument->ProductID));
+							cname = pname + month;
+						}
+						else if (bOption)
+						{
+							std::string underlyPID = extractProductID(pInstrument->UnderlyingInstrID);
+							std::string month = pInstrument->InstrumentID;
+							month = month.substr(underlyPID.size());
+							cname = pname + month;
+						}
+						else
+						{
+							cname = pInstrument->InstrumentName;
+						}
 
-					_commodities[key] = commInfo;
+					}
+
+					Contract contract;
+					contract.m_strCode = pInstrument->InstrumentID;
+					contract.m_strExchg = pInstrument->ExchangeID;
+					contract.m_strName = StrUtil::trim(cname.c_str());
+					contract.m_strProduct = pInstrument->ProductID;
+
+					contract.m_maxMktQty = pInstrument->MaxMarketOrderVolume;
+					contract.m_maxLmtQty = pInstrument->MaxLimitOrderVolume;
+					contract.m_minMktQty = pInstrument->MinMarketOrderVolume;
+					contract.m_minLmtQty = pInstrument->MinLimitOrderVolume;
+
+					contract.m_optType = bOption ? (OptionType)pInstrument->OptionsType : OT_None;
+					contract.m_strUnderlying = pInstrument->UnderlyingInstrID;
+					contract.m_strikePrice = pInstrument->StrikePrice;
+					contract.m_dUnderlyingScale = pInstrument->UnderlyingMultiple;
+
+					std::string key = StrUtil::printf("%s.%s", pInstrument->ExchangeID, pInstrument->ProductID);
+					auto it = _commodities.find(key);
+					if (it == _commodities.end())
+					{
+						Commodity commInfo;
+						commInfo.m_strProduct = pInstrument->ProductID;
+						commInfo.m_strName = StrUtil::trim(pname.c_str());
+						commInfo.m_strExchg = pInstrument->ExchangeID;
+						commInfo.m_strCurrency = "CNY";
+
+						commInfo.m_strSession = MAP_SESSION[key];
+						commInfo.m_ccCategory = wrapCategory(pInstrument->ProductClass);
+
+						commInfo.m_uVolScale = (pInstrument->VolumeMultiple == 0 ? 1 : pInstrument->VolumeMultiple);
+						commInfo.m_fPriceTick = pInstrument->PriceTick;
+
+						CoverMode cm = CM_OpenCover;
+						if (bFuture)
+						{
+							if (strcmp(pInstrument->ExchangeID, "SHFE") == 0 || strcmp(pInstrument->ExchangeID, "INE") == 0)
+								cm = CM_CoverToday;
+							//上期所的就是平今,非上期所的就是开平
+						}
+
+						commInfo.m_coverMode = cm;
+
+						PriceMode pm = PM_Both;
+						if (bFuture)
+						{
+							if (strcmp(pInstrument->ExchangeID, "SHFE") == 0 || strcmp(pInstrument->ExchangeID, "INE") == 0)
+								pm = PM_Limit;
+						}
+						commInfo.m_priceMode = pm;
+						commInfo.m_tradeMode = TM_Both;
+
+						if (pInstrument->PriceTick < 0.001)
+							commInfo.m_uPrecision = 4;
+						else if (pInstrument->PriceTick < 0.01)
+							commInfo.m_uPrecision = 3;
+						else if (pInstrument->PriceTick < 0.1)
+							commInfo.m_uPrecision = 2;
+						else if (pInstrument->PriceTick < 1)
+							commInfo.m_uPrecision = 1;
+						else
+							commInfo.m_uPrecision = 0;
+
+						_commodities[key] = commInfo;
+					}
+
+					key = StrUtil::printf("%s.%s", pInstrument->ExchangeID, pInstrument->InstrumentID);
+					_contracts[key] = contract;
 				}
-
-				key = StrUtil::printf("%s.%s", pInstrument->ExchangeID, pInstrument->InstrumentID);
-				_contracts[key] = contract;
-			}
+			} while (false);
+			
 		}
 	}
 

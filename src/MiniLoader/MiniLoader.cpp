@@ -29,6 +29,7 @@ std::string SAVEPATH;	//保存位置
 std::string APPID;
 std::string AUTHCODE;
 uint32_t	CLASSMASK;	//期权
+bool		ONLYINCFG;	//只落地配置文件有的
 
 std::string COMM_FILE;		//输出的品种文件名
 std::string CONT_FILE;		//输出的合约文件名
@@ -91,6 +92,7 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 			CONT_FILE = "contracts.json";
 
 		map_files = cfg->getCString("mapfiles");
+		ONLYINCFG = ctp->getBoolean("onlyincfg");
 
 		MODULE_NAME = cfg->getCString("module");
 		if (MODULE_NAME.empty())
@@ -119,6 +121,7 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 
 		SAVEPATH = ini.readString("config", "path", "");
 		CLASSMASK = ini.readUInt("config", "mask", 1 | 2 | 4); //1-期货,2-期权,4-股票
+		ONLYINCFG = wt_stricmp(ini.readString("config", "onlyincfg", "false").c_str(), "true") == 0;
 
 		COMM_FILE = ini.readString("config", "commfile", "commodities.json");
 		CONT_FILE = ini.readString("config", "contfile", "contracts.json");
@@ -158,6 +161,7 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 			CONT_FILE = "contracts.json";
 
 		map_files = cfg->getCString("mapfiles");
+		ONLYINCFG = ctp->getBoolean("onlyincfg");
 
 		MODULE_NAME = cfg->getCString("module");
 		if (MODULE_NAME.empty())
