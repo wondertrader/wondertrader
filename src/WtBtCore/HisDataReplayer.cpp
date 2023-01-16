@@ -761,7 +761,8 @@ void HisDataReplayer::run_by_bars(bool bNeedDump /* = false */)
 
 	BarsListPtr barsList = _bars_cache[_main_key];
 	WTSSessionInfo* sInfo = get_session_info(barsList->_code.c_str(), true);
-	std::string commId = CodeHelper::stdCodeToStdCommID(barsList->_code.c_str());
+	CodeHelper::CodeInfo codeInfo = CodeHelper::extractStdCode(barsList->_code.c_str(), NULL);
+	std::string commId = codeInfo.stdCommID();
 
 	uint32_t sIdx = locate_barindex(_main_key, _begin_time, false);
 	uint32_t eIdx = locate_barindex(_main_key, _end_time, true);
@@ -2751,7 +2752,8 @@ WTSTickData* HisDataReplayer::get_last_tick(const char* stdCode)
 
 WTSCommodityInfo* HisDataReplayer::get_commodity_info(const char* stdCode)
 {
-	return _bd_mgr.getCommodity(CodeHelper::stdCodeToStdCommID(stdCode).c_str());
+	CodeHelper::CodeInfo codeInfo = CodeHelper::extractStdCode(stdCode, &_hot_mgr);
+	return _bd_mgr.getCommodity(codeInfo._exchg, codeInfo._product);
 }
 
 std::string HisDataReplayer::get_rawcode(const char* stdCode)
@@ -2771,11 +2773,12 @@ WTSSessionInfo* HisDataReplayer::get_session_info(const char* sid, bool isCode /
 	if (!isCode)
 		return _bd_mgr.getSession(sid);
 
-	WTSCommodityInfo* cInfo = _bd_mgr.getCommodity(CodeHelper::stdCodeToStdCommID(sid).c_str());
+	CodeHelper::CodeInfo codeInfo = CodeHelper::extractStdCode(sid, &_hot_mgr);
+	WTSCommodityInfo* cInfo = _bd_mgr.getCommodity(codeInfo._exchg, codeInfo._product);
 	if (cInfo == NULL)
 		return NULL;
 
-	return _bd_mgr.getSession(cInfo->getSession());
+	return cInfo->getSessionInfo();
 }
 
 void HisDataReplayer::loadFees(const char* filename)
@@ -2815,7 +2818,8 @@ void HisDataReplayer::loadFees(const char* filename)
 
 double HisDataReplayer::calc_fee(const char* stdCode, double price, double qty, uint32_t offset)
 {
-	std::string stdPID = CodeHelper::stdCodeToStdCommID(stdCode);
+	CodeHelper::CodeInfo codeInfo = CodeHelper::extractStdCode(stdCode, &_hot_mgr);
+	std::string stdPID = codeInfo.stdCommID();
 	auto it = _fee_map.find(stdPID);
 	if (it == _fee_map.end())
 		return 0.0;

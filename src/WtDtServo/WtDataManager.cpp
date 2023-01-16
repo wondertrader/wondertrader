@@ -143,11 +143,12 @@ WTSSessionInfo* WtDataManager::get_session_info(const char* sid, bool isCode /* 
 	if (!isCode)
 		return _bd_mgr->getSession(sid);
 
-	WTSCommodityInfo* cInfo = _bd_mgr->getCommodity(CodeHelper::stdCodeToStdCommID(sid).c_str());
+	CodeHelper::CodeInfo codeInfo = CodeHelper::extractStdCode(sid, _hot_mgr);
+	WTSCommodityInfo* cInfo = _bd_mgr->getCommodity(codeInfo._exchg, codeInfo._product);
 	if (cInfo == NULL)
 		return NULL;
 
-	return _bd_mgr->getSession(cInfo->getSession());
+	return cInfo->getSessionInfo();
 }
 
 WTSKlineSlice* WtDataManager::get_skline_slice_by_date(const char* stdCode, uint32_t secs, uint32_t uDate /* = 0 */)
@@ -185,9 +186,9 @@ WTSKlineSlice* WtDataManager::get_skline_slice_by_date(const char* stdCode, uint
 
 WTSKlineSlice* WtDataManager::get_kline_slice_by_date(const char* stdCode, WTSKlinePeriod period, uint32_t times, uint32_t uDate /* = 0 */)
 {
-	std::string stdPID = CodeHelper::stdCodeToStdCommID(stdCode);
-	uint64_t stime = _bd_mgr->getBoundaryTime(stdPID.c_str(), uDate, false, true);
-	uint64_t etime = _bd_mgr->getBoundaryTime(stdPID.c_str(), uDate, false, false);
+	CodeHelper::CodeInfo codeInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
+	uint64_t stime = _bd_mgr->getBoundaryTime(codeInfo.stdCommID(), uDate, false, true);
+	uint64_t etime = _bd_mgr->getBoundaryTime(codeInfo.stdCommID(), uDate, false, false);
 	return get_kline_slice_by_range(stdCode, period, times, stime, etime);
 }
 

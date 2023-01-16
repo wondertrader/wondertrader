@@ -386,7 +386,8 @@ void TraderAdapter::saveData(WTSArray* ayFunds /* = NULL */)
 
 const TraderAdapter::RiskParams* TraderAdapter::getRiskParams(const char* stdCode)
 {
-	std::string pid = CodeHelper::stdCodeToStdCommID(stdCode);
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, NULL);
+	std::string pid = cInfo.stdCommID();
 	auto it = _risk_params_map.find(pid);
 	if (it != _risk_params_map.end())
 		return &it->second;
@@ -526,8 +527,8 @@ WTSContractInfo* TraderAdapter::getContract(const char* stdCode)
 
 WTSCommodityInfo* TraderAdapter::getCommodify(const char* stdCode)
 {
-	std::string commID = CodeHelper::stdCodeToStdCommID(stdCode);
-	return _bd_mgr->getCommodity(commID.c_str());
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, NULL);
+	return _bd_mgr->getCommodity(cInfo._exchg, cInfo._product);
 }
 
 bool TraderAdapter::checkCancelLimits(const char* stdCode)
@@ -687,8 +688,7 @@ OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty, int f
 	}
 	TradeStatInfo& statItem = statInfo->statInfo();
 
-	std::string stdCommID = CodeHelper::stdCodeToStdCommID(stdCode);
-	const ActionRuleGroup& ruleGP = _policy_mgr->getActionRules(stdCommID.c_str());
+	const ActionRuleGroup& ruleGP = _policy_mgr->getActionRules(commInfo->getFullPid());
 
 	double left = qty;
 
@@ -980,8 +980,7 @@ OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty, int 
 	}
 	TradeStatInfo& statItem = statInfo->statInfo();
 
-	std::string stdCommID = CodeHelper::stdCodeToStdCommID(stdCode);
-	const ActionRuleGroup& ruleGP = _policy_mgr->getActionRules(stdCommID.c_str());
+	const ActionRuleGroup& ruleGP = _policy_mgr->getActionRules(commInfo->getFullPid());
 
 	double left = qty;
 

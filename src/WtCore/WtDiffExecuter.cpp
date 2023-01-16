@@ -177,7 +177,8 @@ void WtDiffExecuter::save_data()
 
 ExecuteUnitPtr WtDiffExecuter::getUnit(const char* stdCode, bool bAutoCreate /* = true */)
 {
-	std::string commID = CodeHelper::stdCodeToStdCommID(stdCode);
+	CodeHelper::CodeInfo codeInfo = CodeHelper::extractStdCode(stdCode, NULL);
+	std::string commID = codeInfo.stdCommID();
 
 	WTSVariant* policy = _config->get("policy");
 	std::string des = commID;
