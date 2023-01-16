@@ -323,7 +323,7 @@ void ParserAdapter::handleQuote(WTSTickData *quote, uint32_t procFlag)
 	uint32_t hotflag = 0;
 
 	std::string stdCode;
-	if (commInfo->getCategoty() == CC_FutOption)
+	if (commInfo->getCategoty() == CC_FutOption || commInfo->getCategoty() == CC_SpotOption)
 	{
 		stdCode = CodeHelper::rawFutOptCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
 	}
