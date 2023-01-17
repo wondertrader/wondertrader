@@ -1239,7 +1239,7 @@ bool TraderAdapter::doCancel(WTSOrderInfo* ordInfo)
 	WTSContractInfo* cInfo = ordInfo->getContractInfo();
 	WTSCommodityInfo* commInfo = cInfo->getCommInfo();
 	std::string stdCode;
-	if (commInfo->getCategoty() == CC_FutOption)
+	if (commInfo->getCategoty() == CC_FutOption || commInfo->getCategoty() == CC_SpotOption)
 		stdCode = CodeHelper::rawFutOptCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
 	else if (CodeHelper::isMonthlyCode(cInfo->getCode()))//如果是分月合约
 		stdCode = CodeHelper::rawMonthCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
@@ -1445,7 +1445,7 @@ void TraderAdapter::onRspEntrust(WTSEntrust* entrust, WTSError *err)
 		WTSContractInfo* cInfo = entrust->getContractInfo();
 		WTSCommodityInfo* commInfo = cInfo->getCommInfo();
 		std::string stdCode;
-		if (commInfo->getCategoty() == CC_FutOption)
+		if (commInfo->getCategoty() == CC_FutOption || commInfo->getCategoty() == CC_SpotOption)
 			stdCode = CodeHelper::rawFutOptCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
 		else if (CodeHelper::isMonthlyCode(cInfo->getCode()))//如果是分月合约
 			stdCode = CodeHelper::rawMonthCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
@@ -1545,7 +1545,7 @@ void TraderAdapter::onRspPosition(const WTSArray* ayPositions)
 
 			WTSCommodityInfo* commInfo = cInfo->getCommInfo();
 			std::string stdCode;
-			if (commInfo->getCategoty() == CC_FutOption)
+			if (commInfo->getCategoty() == CC_FutOption || commInfo->getCategoty() == CC_SpotOption)
 				stdCode = CodeHelper::rawFutOptCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
 			else if (CodeHelper::isMonthlyCode(cInfo->getCode()))//如果是分月合约
 				stdCode = CodeHelper::rawMonthCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
@@ -1614,7 +1614,7 @@ void TraderAdapter::onRspOrders(const WTSArray* ayOrders)
 
 			WTSCommodityInfo* commInfo = cInfo->getCommInfo();
 			std::string stdCode;
-			if (commInfo->getCategoty() == CC_FutOption)
+			if (commInfo->getCategoty() == CC_FutOption || commInfo->getCategoty() == CC_SpotOption)
 				stdCode = CodeHelper::rawFutOptCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
 			else if (CodeHelper::isMonthlyCode(cInfo->getCode()))//如果是分月合约
 				stdCode = CodeHelper::rawMonthCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
@@ -1740,7 +1740,7 @@ void TraderAdapter::onRspTrades(const WTSArray* ayTrades)
 			std::string stdCode;
 			if (commInfo->getCategoty() == CC_Future)
 				stdCode = CodeHelper::rawMonthCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
-			else if (commInfo->getCategoty() == CC_FutOption)
+			else if (commInfo->getCategoty() == CC_FutOption || commInfo->getCategoty() == CC_SpotOption)
 				stdCode = CodeHelper::rawFutOptCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
 			else if (commInfo->getCategoty() == CC_Stock)
 				stdCode = CodeHelper::rawFlatCodeToStdCode(cInfo->getCode(), cInfo->getExchg(), cInfo->getProduct());
@@ -1868,7 +1868,7 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 
 	WTSCommodityInfo* commInfo = cInfo->getCommInfo();
 	std::string stdCode;
-	if (commInfo->getCategoty() == CC_FutOption)
+	if (commInfo->getCategoty() == CC_FutOption || commInfo->getCategoty() == CC_SpotOption)
 		stdCode = CodeHelper::rawFutOptCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
 	else if (CodeHelper::isMonthlyCode(cInfo->getCode()))//如果是分月合约
 		stdCode = CodeHelper::rawMonthCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
@@ -2133,7 +2133,7 @@ void TraderAdapter::onPushTrade(WTSTradeInfo* tradeRecord)
 	std::string stdCode;
 	if (commInfo->getCategoty() == CC_Future)
 		stdCode = CodeHelper::rawMonthCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
-	else if (commInfo->getCategoty() == CC_FutOption)
+	else if (commInfo->getCategoty() == CC_FutOption || commInfo->getCategoty() == CC_SpotOption)
 		stdCode = CodeHelper::rawFutOptCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
 	else if (commInfo->getCategoty() == CC_Stock)
 		stdCode = CodeHelper::rawFlatCodeToStdCode(cInfo->getCode(), cInfo->getExchg(), cInfo->getProduct());
