@@ -117,6 +117,8 @@ public:
 
 	inline bool isReady() const { return _state == AS_ALLREADY; }
 
+	void queryFund();
+
 private:
 	uint32_t doEntrust(WTSEntrust* entrust);
 	bool	doCancel(WTSOrderInfo* ordInfo);
@@ -272,6 +274,8 @@ public:
 	TraderAdapterPtr getAdapter(const char* tname);
 
 	bool	addAdapter(const char* tname, TraderAdapterPtr& adapter);
+
+	void	refresh_funds();
 
 private:
 	TraderAdapterMap	_adapters;

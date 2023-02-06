@@ -2258,6 +2258,14 @@ void TraderAdapter::handleTraderLog(WTSLogLevel ll, const char* message)
 	WTSLogger::log_dyn_raw("trader", _id.c_str(), ll, message);
 }
 
+void TraderAdapter::queryFund()
+{
+	if (_state != AS_ALLREADY)
+		return;
+
+	_trader_api->queryAccount();
+}
+
 #pragma endregion "ITraderSpi½Ó¿Ú"
 
 
@@ -2309,4 +2317,12 @@ void TraderAdapterMgr::release()
 	}
 
 	_adapters.clear();
+}
+
+void TraderAdapterMgr::refresh_funds()
+{
+	for (auto it = _adapters.begin(); it != _adapters.end(); it++)
+	{
+		it->second->queryFund();
+	}
 }
