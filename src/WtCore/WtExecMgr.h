@@ -33,16 +33,20 @@ public:
 	/*
 	 *	
 	 */
-	inline const char* get_route(const char* strategyid)
+	inline const faster_hashset<ShortKey>& get_route(const char* strategyid)
 	{
+		static faster_hashset<ShortKey> ALL_EXECUTERS;
+		if (ALL_EXECUTERS.empty())
+			ALL_EXECUTERS.insert("ALL");
+
 		if (_router_rules.empty())
-			return "ALL";
+			return ALL_EXECUTERS;
 
 		auto it = _router_rules.find(strategyid);
 		if (it == _router_rules.end())
-			return "ALL";
+			return ALL_EXECUTERS;
 
-		return it->second.c_str();
+		return it->second;
 	}
 
 	/*
@@ -75,7 +79,8 @@ private:
 	typedef faster_hashmap<LongKey, double> TargetsMap;
 	faster_hashmap<ShortKey, TargetsMap>	_all_cached_targets;
 
-	faster_hashmap<ShortKey, std::string>	_router_rules;
+	typedef faster_hashset<ShortKey>	ExecuterSet;
+	faster_hashmap<ShortKey, ExecuterSet>	_router_rules;
 
 	faster_hashset<ShortKey>	_routed_executers;
 };
