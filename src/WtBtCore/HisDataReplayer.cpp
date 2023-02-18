@@ -2389,6 +2389,8 @@ WTSTickSlice* HisDataReplayer::get_tick_slice(const char* stdCode, uint32_t coun
 	
 	//cursor是下一笔tick的index+1，大于当前截止时间的
 	//所以要获取当前截止时间之前的最后一笔tick，需要-2
+	if (tickList._cursor < 2)
+		return NULL;
 	uint32_t eIdx = tickList._cursor - 2;
 	uint32_t sIdx = 0;
 	if (eIdx >= count - 1)
