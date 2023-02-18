@@ -431,6 +431,7 @@ void HisDataReplayer::clear_cache()
 
 	_bars_cache.clear();
 	_unbars_cache.clear();
+	_unsubbed_in_need.clear();
 
 	_main_key = "";
 	_main_period = "";
