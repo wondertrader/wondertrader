@@ -1698,7 +1698,7 @@ WTSKlineSlice* WtDataReader::readKlineSlice(const char* stdCode, WTSKlinePeriod 
 
 			uint32_t curCnt = (idx - sIdx + 1);
 			left -= (idx - sIdx + 1);
-			hisCnt = left;
+			hisCnt = bHasHisData? left : 0;
 			rtCnt = curCnt;
 
 			//后复权数据要把最新的数据进行复权处理，所以要作为历史数据追加到尾部
@@ -1712,10 +1712,10 @@ WTSKlineSlice* WtDataReader::readKlineSlice(const char* stdCode, WTSKlinePeriod 
 			//连续合约也要支持复权
 			if(cInfo._exright == 2/* && commInfo->isStock()*/)
 			{
-				double factor = barsList._factor;
+				double factor = barList._factor;
 				for(uint32_t thisIdx = oldSize; thisIdx < newSize; thisIdx++)
 				{
-					WTSBarStruct* pBar = &barsList._bars[thisIdx];
+					WTSBarStruct* pBar = &barList._bars[thisIdx];
 					pBar->open *= factor;
 					pBar->high *= factor;
 					pBar->low *= factor;
