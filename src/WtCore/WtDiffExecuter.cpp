@@ -35,6 +35,7 @@ WtDiffExecuter::WtDiffExecuter(WtExecuterFactory* factory, const char* name, IDa
 	, _channel_ready(false)
 	, _scale(1.0)
 	, _trader(NULL)
+	, _bd_mgr(bdMgr)
 {
 }
 
@@ -104,6 +105,14 @@ void WtDiffExecuter::load_data()
 		for (const rj::Value& jItem : jTargets.GetArray())
 		{
 			const char* stdCode = jItem["code"].GetString();
+			CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, NULL);
+			WTSContractInfo* ct = _bd_mgr->getContract(cInfo._code, cInfo._exchg);
+			if (ct == NULL)
+			{
+				WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "[{}] Ticker {} is not valid", _name, stdCode);
+				continue;
+			}
+
 			double pos = jItem["target"].GetDouble();
 			_target_pos[stdCode] = pos;
 		}
@@ -115,6 +124,14 @@ void WtDiffExecuter::load_data()
 		for (const rj::Value& jItem : jDiffs.GetArray())
 		{
 			const char* stdCode = jItem["code"].GetString();
+			CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, NULL);
+			WTSContractInfo* ct = _bd_mgr->getContract(cInfo._code, cInfo._exchg);
+			if (ct == NULL)
+			{
+				WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "[{}] Ticker {} is not valid", _name, stdCode);
+				continue;
+			}
+
 			double pos = jItem["diff"].GetDouble();
 			_diff_pos[stdCode] = pos;
 		}
