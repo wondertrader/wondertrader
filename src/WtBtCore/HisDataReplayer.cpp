@@ -2822,13 +2822,13 @@ void HisDataReplayer::loadFees(const char* filename)
 double HisDataReplayer::calc_fee(const char* stdCode, double price, double qty, uint32_t offset)
 {
 	CodeHelper::CodeInfo codeInfo = CodeHelper::extractStdCode(stdCode, &_hot_mgr);
-	std::string stdPID = codeInfo.stdCommID();
+	const char* stdPID = codeInfo.stdCommID();
 	auto it = _fee_map.find(stdPID);
 	if (it == _fee_map.end())
 		return 0.0;
 
 	double ret = 0.0;
-	WTSCommodityInfo* commInfo = _bd_mgr.getCommodity(stdPID.c_str());
+	WTSCommodityInfo* commInfo = _bd_mgr.getCommodity(stdPID);
 	const FeeItem& fItem = it->second;
 	if (fItem._by_volume)
 	{
