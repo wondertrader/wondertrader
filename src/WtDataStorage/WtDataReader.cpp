@@ -1595,12 +1595,13 @@ WTSKlineSlice* WtDataReader::readKlineSlice(const char* stdCode, WTSKlinePeriod 
 
 	uint32_t endTDate = _base_data_mgr->calcTradingDate(stdPID, curDate, curTime, false);
 	uint32_t curTDate = _base_data_mgr->calcTradingDate(stdPID, 0, 0, false);
-	
-	WTSBarStruct* hisHead = NULL;
-	WTSBarStruct* rtHead = NULL;
+
+	BarsList& barsList = _bars_cache[key];
+	WTSKlineSlice* slice = NULL;
+	WTSBarStruct* head = NULL;
 	uint32_t hisCnt = 0;
 	uint32_t rtCnt = 0;
-
+	uint32_t totalCnt = 0;
 	std::string pname;
 	switch (period)
 	{
@@ -1619,12 +1620,12 @@ WTSKlineSlice* WtDataReader::readKlineSlice(const char* stdCode, WTSKlinePeriod 
 	const char* ruleTag = cInfo._ruletag;
 	if (strlen(ruleTag) > 0)
 	{
-		_bars_cache[key]._raw_code = _hot_mgr->getCustomRawCode(ruleTag, cInfo.stdCommID(), curTDate);
-		pipe_reader_log(_sink, LL_INFO, "{} contract on {} confirmed: {} -> {}", ruleTag, curTDate, stdCode, _bars_cache[key]._raw_code.c_str());
+		barsList._raw_code = _hot_mgr->getCustomRawCode(ruleTag, cInfo.stdCommID(), curTDate);
+		pipe_reader_log(_sink, LL_INFO, "{} contract on {} confirmed: {} -> {}", ruleTag, curTDate, stdCode, barsList._raw_code.c_str());
 	}
 	else
 	{
-		_bars_cache[key]._raw_code = cInfo._code;
+		barsList._raw_code = cInfo._code;
 	}
 
 	/*
@@ -1633,27 +1634,27 @@ WTSKlineSlice* WtDataReader::readKlineSlice(const char* stdCode, WTSKlinePeriod 
 		const char* ruleTag = cInfo._ruletag;
 		if (strlen(ruleTag) > 0)
 		{
-			_bars_cache[key]._raw_code = _hot_mgr->getCustomRawCode(ruleTag, cInfo.stdCommID(), curTDate);
-			pipe_reader_log(_sink, LL_INFO, "{} contract on {} confirmed with rule {}: {} -> {}", ruleTag, curTDate, stdCode, _bars_cache[key]._raw_code.c_str());
+			barsList._raw_code = _hot_mgr->getCustomRawCode(ruleTag, cInfo.stdCommID(), curTDate);
+			pipe_reader_log(_sink, LL_INFO, "{} contract on {} confirmed with rule {}: {} -> {}", ruleTag, curTDate, stdCode, barsList._raw_code.c_str());
 		}
 		//else if (cInfo.isHot())
 		//{
-		//	_bars_cache[key]._raw_code = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, curTDate);
-		//	pipe_reader_log(_sink, LL_INFO, "Hot contract on {}  confirmed: {} -> {}", curTDate, stdCode, _bars_cache[key]._raw_code.c_str());
+		//	barsList._raw_code = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, curTDate);
+		//	pipe_reader_log(_sink, LL_INFO, "Hot contract on {}  confirmed: {} -> {}", curTDate, stdCode, barsList._raw_code.c_str());
 		//}
 		//else if (cInfo.isSecond())
 		//{
-		//	_bars_cache[key]._raw_code = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, curTDate);
-		//	pipe_reader_log(_sink, LL_INFO, "Second contract on {} confirmed: {} -> {}", curTDate, stdCode, _bars_cache[key]._raw_code.c_str());
+		//	barsList._raw_code = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, curTDate);
+		//	pipe_reader_log(_sink, LL_INFO, "Second contract on {} confirmed: {} -> {}", curTDate, stdCode, barsList._raw_code.c_str());
 		//}
 		else
 		{
-			_bars_cache[key]._raw_code = cInfo._code;
+			barsList._raw_code = cInfo._code;
 		}
 	}
 	else
 	{
-		_bars_cache[key]._raw_code = cInfo._code;
+		barsList._raw_code = cInfo._code;
 	}
 	*/
 
@@ -1663,7 +1664,7 @@ WTSKlineSlice* WtDataReader::readKlineSlice(const char* stdCode, WTSKlinePeriod 
 		bar.date = curDate;
 		bar.time = (curDate - 19900000) * 10000 + curTime;
 
-		const char* curCode = _bars_cache[key]._raw_code.c_str();
+		const char* curCode = barsList._raw_code.c_str();
 
 		//读取实时的
 		RTKlineBlockPair* kPair = getRTKilneBlock(cInfo._exchg, curCode, period);
@@ -1671,7 +1672,7 @@ WTSKlineSlice* WtDataReader::readKlineSlice(const char* stdCode, WTSKlinePeriod 
 		{
 			//读取当日的数据
 			WTSBarStruct* pBar = NULL;
-			pBar = std::lower_bound(kPair->_block->_bars, kPair->_block->_bars + (kPair->_block->_size - 1), bar, [period](const WTSBarStruct& a, const WTSBarStruct& b){
+			pBar = std::lower_bound(kPair->_block->_bars, kPair->_block->_bars + (kPair->_block->_size - 1), bar, [period](const WTSBarStruct& a, const WTSBarStruct& b) {
 				if (period == KP_DAY)
 					return a.date < b.date;
 				else
@@ -1698,70 +1699,73 @@ WTSKlineSlice* WtDataReader::readKlineSlice(const char* stdCode, WTSKlinePeriod 
 
 			uint32_t curCnt = (idx - sIdx + 1);
 			left -= (idx - sIdx + 1);
-
+			hisCnt = bHasHisData ? left : 0;
+			rtCnt = curCnt;
 			//By Wesley @ 2022.05.28
 			//连续合约也要支持复权
 			if(cInfo._exright == 2/* && commInfo->isStock()*/)
 			{
 				//后复权数据要把最新的数据进行复权处理，所以要作为历史数据追加到尾部
 				//虽然后复权数据要进行复权处理，但是实时数据的位置标记也要更新到最新，不然OnMinuteEnd会从开盘开始回放的
-				_bars_cache[key]._rt_cursor = idx;
-
-				BarsList& barsList = _bars_cache[key];
-				double factor = barsList._factor;
-				uint32_t oldSize = barsList._bars.size();
-				uint32_t newSize = oldSize + curCnt;
-				barsList._bars.resize(newSize);
-				memcpy(&barsList._bars[oldSize], &kPair->_block->_bars[sIdx], sizeof(WTSBarStruct)*curCnt);
-				for(uint32_t thisIdx = oldSize; thisIdx < newSize; thisIdx++)
+				//复权数据是创建副本后修改
+				if (barsList._rt_cursor == UINT_MAX || idx > barsList._rt_cursor)
 				{
-					WTSBarStruct* pBar = &barsList._bars[thisIdx];
-					pBar->open *= factor;
-					pBar->high *= factor;
-					pBar->low *= factor;
-					pBar->close *= factor;
+					barsList._rt_cursor = idx;
+					double factor = barsList._factor;
+					uint32_t oldSize = barsList._bars.size();
+					uint32_t newSize = oldSize + curCnt;
+					barsList._bars.resize(newSize);
+					memcpy(&barsList._bars[oldSize], &kPair->_block->_bars[sIdx], sizeof(WTSBarStruct)* curCnt);
+					for(uint32_t thisIdx = oldSize; thisIdx < newSize; thisIdx++)
+					{
+						WTSBarStruct* pBar = &barsList._bars[thisIdx];
+						pBar->open *= factor;
+						pBar->high *= factor;
+						pBar->low *= factor;
+						pBar->close *= factor;
+					}
 				}
-
-				/*
-				 *	By Wesley @ 2022.12.20
-				 *	因为后复权数据都是单独存了备份的
-				 *	所以这里的left一定要重置为总的数据条数，
-				 *	不然后面读取就有问题了
-				 */
-				left = count;
+				totalCnt = hisCnt + rtCnt;
+				totalCnt = min(totalCnt, (uint32_t)barsList._bars.size());
+				// 复权后的数据直接从barlist中截取
+				if (totalCnt > 0)
+				{
+					head = &barsList._bars[barsList._bars.size() - totalCnt];
+					slice = WTSKlineSlice::create(stdCode, period, 1, head, totalCnt);
+				}
 			}
 			else
 			{
-				_bars_cache[key]._rt_cursor = idx;				
-				rtHead = &kPair->_block->_bars[sIdx];
-				rtCnt = curCnt;
+				// 普通数据由历史和rt拼接，其中rt直接引用
+				barsList._rt_cursor = idx;
+				hisCnt = min(hisCnt, (uint32_t)barsList._bars.size());
+				if (hisCnt > 0)
+				{
+					head = &barsList._bars[barsList._bars.size() - hisCnt];
+					slice = WTSKlineSlice::create(stdCode, period, 1, head, hisCnt);
+				}
+				// 添加rt
+				if (rtCnt > 0)
+				{
+					head = &kPair->_block->_bars[sIdx];
+					slice->appendBlock(head, rtCnt);
+				}
 			}
 		}
 	}
-
-	if (left > 0 && bHasHisData)
+	else
 	{
-		hisCnt = left;
-		//历史数据，直接从缓存的历史数据尾部截取
-		BarsList& barList = _bars_cache[key];
-		hisCnt = min(hisCnt, (uint32_t)barList._bars.size());
-		if (hisCnt == 0)
-			return NULL;
-		hisHead = &barList._bars[barList._bars.size() - hisCnt];//indexBarFromCache(key, etime, hisCnt, period == KP_DAY);
+		rtCnt = 0;
+		hisCnt = count;
+		hisCnt = min(hisCnt, (uint32_t)barsList._bars.size());
+		head = &barsList._bars[barsList._bars.size() - hisCnt];
+		slice = WTSKlineSlice::create(stdCode, period, 1, head, hisCnt);
 	}
 
 	pipe_reader_log(_sink, LL_DEBUG, "His {} bars of {} loaded, {} from history, {} from realtime", PERIOD_NAME[period], stdCode, hisCnt, rtCnt);
-
-	if (hisCnt + rtCnt > 0)
-	{
-		WTSKlineSlice* slice = WTSKlineSlice::create(stdCode, period, 1, hisHead, hisCnt);
-		if (rtCnt > 0)
-			slice->appendBlock(rtHead, rtCnt);
-		return slice;
-	}
-
-	return NULL;
+	return slice;
 }
+
 
 
 WtDataReader::TickBlockPair* WtDataReader::getRTTickBlock(const char* exchg, const char* code)
