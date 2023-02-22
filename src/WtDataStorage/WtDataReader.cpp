@@ -1753,6 +1753,14 @@ WTSKlineSlice* WtDataReader::readKlineSlice(const char* stdCode, WTSKlinePeriod 
 			}
 		}
 	}
+	else
+	{
+		rtCnt = 0;
+		hisCnt = count;
+		hisCnt = min(hisCnt, (uint32_t)barsList._bars.size());
+		head = &barsList._bars[barsList._bars.size() - hisCnt];
+		slice = WTSKlineSlice::create(stdCode, period, 1, head, hisCnt);
+	}
 
 	pipe_reader_log(_sink, LL_DEBUG, "His {} bars of {} loaded, {} from history, {} from realtime", PERIOD_NAME[period], stdCode, hisCnt, rtCnt);
 	return slice;
