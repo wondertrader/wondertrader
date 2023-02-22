@@ -82,7 +82,7 @@ typedef enum tagPriceMode
 
 /*
  *	K线数据类型
- *	开、高、低、收、量、额、日期
+ *	开、高、低、收、量、额、日期、时间
  */
 typedef enum tagKlineFieldType
 {
@@ -91,6 +91,7 @@ typedef enum tagKlineFieldType
 	KFT_LOW,
 	KFT_CLOSE,
 	KFT_DATE,
+	KFT_TIME,
 	KFT_VOLUME,
 	KFT_SVOLUME
 } WTSKlineFieldType;
