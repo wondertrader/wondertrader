@@ -339,6 +339,12 @@ void CtaStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 
 				if (pInfo._volume == 0 || isExpired)
 				{
+					//By Wesley @ 2023.02.21
+					//加这一行的原因是，有些期权合约经常会持有到交割日
+					//所以如果合约过期了，那么需要把浮动盈亏当做平仓盈亏累加一下
+					//处理完以后，下一次加载，浮动盈亏就是0了
+					pInfo._closeprofit += pInfo._dynprofit;
+
 					pInfo._dynprofit = 0;
 					pInfo._frozen = 0;
 				}
