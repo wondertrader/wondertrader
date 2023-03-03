@@ -428,9 +428,21 @@ WTSKlineSlice* WtDtMgr::get_kline_slice(const char* stdCode, WTSKlinePeriod peri
 		}
 	}
 
+	/*
+	 *	By Wesley @ 2023.03.03
+	 *	当多周期K线跨越小节时，如果重启了组合
+	 *	这个时候就会在启动的时候拉到一条未闭合的K线
+	 *	但是未闭合的K线等一下还会重新推一遍
+	 *	所以这里必须要做一个修正
+	 *	只处理已经闭合的K线
+	 */
+	uint32_t closedSz = kData->size();
+	if (closedSz > 0 && !kData->isClosed())
+		closedSz--;
+
 	int32_t sIdx = 0;
-	uint32_t rtCnt = min(kData->size(), count);
-	sIdx = kData->size() - rtCnt;
+	uint32_t rtCnt = min(closedSz, count);
+	sIdx = closedSz - rtCnt;
 	WTSBarStruct* rtHead = kData->at(sIdx);
 	WTSKlineSlice* slice = WTSKlineSlice::create(stdCode, period, times, rtHead, rtCnt);
 	return slice;
