@@ -305,6 +305,8 @@ protected:
 			_closeprofit = 0;
 			_dynprofit = 0;
 			_frozen = 0;
+			_last_entertime = 0;
+			_last_exittime = 0;
 		}
 
 		inline double valid() const { return _volume - _frozen; }
