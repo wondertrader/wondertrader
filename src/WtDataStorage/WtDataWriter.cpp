@@ -70,6 +70,8 @@ WtDataWriter::WtDataWriter()
 	, _disable_trans(false)
 	, _disable_tick(false)
 	, _disable_his(false)
+	, _skip_notrade_tick(false)
+	, _skip_notrade_bar(false)
 {
 }
 
@@ -104,6 +106,12 @@ bool WtDataWriter::init(WTSVariant* params, IDataWriterSink* sink)
 
 	_async_proc = params->getBoolean("async");
 	_log_group_size = params->getUInt32("groupsize");
+
+	// 没有成交的tick在有些数据源中不会用于更新bar,这里做一下细分
+	// 即便没有成交的tick，但仍然会产生一个bar，价格延续前一个bar，参考快期，万德
+	_skip_notrade_tick = params->getBoolean("skip_notrade_tick");
+	// 如果一个bar内没有一个有成交的tick，则不会有这个bar，参考掘金,MC
+	_skip_notrade_bar = params->getBoolean("skip_notrade_bar");
 
 	//禁用历史数据
 	_disable_his = params->getBoolean("disablehis");
@@ -1015,13 +1023,22 @@ WtDataWriter::TickBlockPair* WtDataWriter::getTickBlock(WTSContractInfo* ct, uin
 
 void WtDataWriter::pipeToKlines(WTSContractInfo* ct, WTSTickData* curTick)
 {
+	bool tickNoTrade = curTick->turnover() <= 0.1;
+	// 如果未成交的bar也要跳过，那么就不需要处理所有未成交的tick了，否则即便没有成交也要放进来闭合bar
+	if (_skip_notrade_bar and tickNoTrade)
+	{
+		return;
+	}
 	uint32_t uDate = curTick->actiondate();
 	WTSSessionInfo* sInfo = ct->getCommInfo()->getSessionInfo();
 	uint32_t curTime = curTick->actiontime() / 100000;
 
 	uint32_t minutes = sInfo->timeToMinutes(curTime, false);
 	if (minutes == INVALID_UINT32)
+	{
+		pipe_writer_log(_sink, LL_WARN, "{}.{} {} {} erro minues trans:{} stop this pipeToKlines", curTick->exchg(), curTick->code(), curTick->actiondate(), curTick->actiontime(), curTime);
 		return;
+	}
 
 	//当秒数为0,要专门处理,比如091500000,这笔tick要算作0915的
 	//如果是小节结束,要算作小节结束那一分钟,因为经常会有超过结束时间的价格进来,如113000500
@@ -1086,7 +1103,7 @@ void WtDataWriter::pipeToKlines(WTSContractInfo* ct, WTSTickData* curTick)
 				newBar->hold = curTick->openinterest();
 				newBar->add = curTick->additional();
 			}
-			else
+			else if (not (_skip_notrade_tick && tickNoTrade))
 			{
 				newBar = &blk->_bars[blk->_size - 1];
 
@@ -1156,7 +1173,7 @@ void WtDataWriter::pipeToKlines(WTSContractInfo* ct, WTSTickData* curTick)
 				newBar->hold = curTick->openinterest();
 				newBar->add = curTick->additional();
 			}
-			else
+			else if (not (_skip_notrade_tick && tickNoTrade))
 			{
 				newBar = &blk->_bars[blk->_size - 1];
 
