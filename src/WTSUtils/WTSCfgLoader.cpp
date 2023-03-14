@@ -2,9 +2,7 @@
 #include "../Share/StrUtil.hpp"
 #include "../Share/StdUtils.hpp"
 
-#ifdef _WIN32
 #include "../Share/charconv.hpp"
-#endif
 
 #include "../Includes/WTSVariant.hpp"
 #include <rapidjson/document.h>

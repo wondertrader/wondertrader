@@ -9,9 +9,7 @@
 #include "../Share/DLLHelper.hpp"
 #include "../Share/StdUtils.hpp"
 
-#ifdef _WIN32
 #include "../Share/charconv.hpp"
-#endif
 
 #include "../WTSUtils/WTSCfgLoader.h"
 #include "../Includes/WTSVariant.hpp"

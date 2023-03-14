@@ -14,9 +14,7 @@
 #include "../Includes/WTSVariant.hpp"
 USING_NS_WTP;
 
-#ifdef _WIN32
 #include "../Share/charconv.hpp"
-#endif
 
 // UserApi∂‘œÛ
 CThostFtdcTraderApi* pUserApi;
