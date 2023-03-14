@@ -63,9 +63,6 @@
     <ClInclude Include="WtHftEngine.h">
       <Filter>HFT</Filter>
     </ClInclude>
-    <ClInclude Include="CtaStrategyDefs.h">
-      <Filter>CTA</Filter>
-    </ClInclude>
     <ClInclude Include="HftStraBaseCtx.h">
       <Filter>HFT</Filter>
     </ClInclude>

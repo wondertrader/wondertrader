@@ -233,20 +233,20 @@ namespace hft
 		WTSVariant* cfgBF = _config->get("basefiles");
 		bool isUTF8 = cfgBF->getBoolean("utf-8");
 		if (cfgBF->get("session"))
-			_bd_mgr.loadSessions(cfgBF->getCString("session"), isUTF8);
+			_bd_mgr.loadSessions(cfgBF->getCString("session"));
 
 		WTSVariant* cfgItem = cfgBF->get("commodity");
 		if (cfgItem)
 		{
 			if (cfgItem->type() == WTSVariant::VT_String)
 			{
-				_bd_mgr.loadCommodities(cfgItem->asCString(), isUTF8);
+				_bd_mgr.loadCommodities(cfgItem->asCString());
 			}
 			else if (cfgItem->type() == WTSVariant::VT_Array)
 			{
 				for (uint32_t i = 0; i < cfgItem->size(); i++)
 				{
-					_bd_mgr.loadCommodities(cfgItem->get(i)->asCString(), isUTF8);
+					_bd_mgr.loadCommodities(cfgItem->get(i)->asCString());
 				}
 			}
 		}
@@ -256,13 +256,13 @@ namespace hft
 		{
 			if (cfgItem->type() == WTSVariant::VT_String)
 			{
-				_bd_mgr.loadContracts(cfgItem->asCString(), isUTF8);
+				_bd_mgr.loadContracts(cfgItem->asCString());
 			}
 			else if (cfgItem->type() == WTSVariant::VT_Array)
 			{
 				for (uint32_t i = 0; i < cfgItem->size(); i++)
 				{
-					_bd_mgr.loadContracts(cfgItem->get(i)->asCString(), isUTF8);
+					_bd_mgr.loadContracts(cfgItem->get(i)->asCString());
 				}
 			}
 		}

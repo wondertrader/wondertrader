@@ -40,10 +40,9 @@ bool Dumper::config(const char* cfgfile, bool isFile, const char* modDir)
 
 	//基础数据文件
 	WTSVariant* cfgBF = root->get("basefiles");
-	bool isUTF8 = cfgBF->getBoolean("utf-8");
 	if (cfgBF->get("session"))
 	{
-		g_bdMgr.loadSessions(cfgBF->getCString("session"), isUTF8);
+		g_bdMgr.loadSessions(cfgBF->getCString("session"));
 		WTSLogger::info("Trading sessions loaded");
 	}
 
@@ -52,13 +51,13 @@ bool Dumper::config(const char* cfgfile, bool isFile, const char* modDir)
 	{
 		if (cfgItem->type() == WTSVariant::VT_String)
 		{
-			g_bdMgr.loadCommodities(cfgItem->asCString(), isUTF8);
+			g_bdMgr.loadCommodities(cfgItem->asCString());
 		}
 		else if (cfgItem->type() == WTSVariant::VT_Array)
 		{
 			for (uint32_t i = 0; i < cfgItem->size(); i++)
 			{
-				g_bdMgr.loadCommodities(cfgItem->get(i)->asCString(), isUTF8);
+				g_bdMgr.loadCommodities(cfgItem->get(i)->asCString());
 			}
 		}
 	}
@@ -68,13 +67,13 @@ bool Dumper::config(const char* cfgfile, bool isFile, const char* modDir)
 	{
 		if (cfgItem->type() == WTSVariant::VT_String)
 		{
-			g_bdMgr.loadContracts(cfgItem->asCString(), isUTF8);
+			g_bdMgr.loadContracts(cfgItem->asCString());
 		}
 		else if (cfgItem->type() == WTSVariant::VT_Array)
 		{
 			for (uint32_t i = 0; i < cfgItem->size(); i++)
 			{
-				g_bdMgr.loadContracts(cfgItem->get(i)->asCString(), isUTF8);
+				g_bdMgr.loadContracts(cfgItem->get(i)->asCString());
 			}
 		}
 	}

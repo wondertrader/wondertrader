@@ -214,7 +214,7 @@ void WTSBaseDataMgr::release()
 	}
 }
 
-bool WTSBaseDataMgr::loadSessions(const char* filename, bool isUTF8)
+bool WTSBaseDataMgr::loadSessions(const char* filename)
 {
 	if (!StdFile::exists(filename))
 	{
@@ -222,7 +222,7 @@ bool WTSBaseDataMgr::loadSessions(const char* filename, bool isUTF8)
 		return false;
 	}
 
-	WTSVariant* root = WTSCfgLoader::load_from_file(filename, isUTF8);
+	WTSVariant* root = WTSCfgLoader::load_from_file(filename);
 	if (root == NULL)
 	{
 		WTSLogger::error("Loading session config file {} failed", filename);
@@ -290,7 +290,7 @@ void parseCommodity(WTSCommodityInfo* pCommInfo, WTSVariant* jPInfo)
 	pCommInfo->setMinLots(minLots);
 }
 
-bool WTSBaseDataMgr::loadCommodities(const char* filename, bool isUTF8)
+bool WTSBaseDataMgr::loadCommodities(const char* filename)
 {
 	if (!StdFile::exists(filename))
 	{
@@ -298,7 +298,7 @@ bool WTSBaseDataMgr::loadCommodities(const char* filename, bool isUTF8)
 		return false;
 	}
 
-	WTSVariant* root = WTSCfgLoader::load_from_file(filename, isUTF8);
+	WTSVariant* root = WTSCfgLoader::load_from_file(filename);
 	if (root == NULL)
 	{
 		WTSLogger::error("Loading commodities config file {} failed", filename);
@@ -344,7 +344,7 @@ bool WTSBaseDataMgr::loadCommodities(const char* filename, bool isUTF8)
 	return true;
 }
 
-bool WTSBaseDataMgr::loadContracts(const char* filename, bool isUTF8)
+bool WTSBaseDataMgr::loadContracts(const char* filename)
 {
 	if (!StdFile::exists(filename))
 	{
@@ -352,7 +352,7 @@ bool WTSBaseDataMgr::loadContracts(const char* filename, bool isUTF8)
 		return false;
 	}
 
-	WTSVariant* root = WTSCfgLoader::load_from_file(filename, isUTF8);
+	WTSVariant* root = WTSCfgLoader::load_from_file(filename);
 	if (root == NULL)
 	{
 		WTSLogger::error("Loading contracts config file {} failed", filename);

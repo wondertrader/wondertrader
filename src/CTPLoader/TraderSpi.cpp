@@ -7,6 +7,7 @@
 
 #include "../Share/StrUtil.hpp"
 #include "../Share/fmtlib.h"
+#include "../Share/charconv.hpp"
 #include "../Includes/WTSTypes.h"
 
 #include <rapidjson/document.h>
@@ -263,6 +264,8 @@ void CTraderSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CTho
 
 						cname = pInstrument->InstrumentName;
 						pname = bFuture ? extractProductName(pInstrument->InstrumentName) : pInstrument->InstrumentName;
+
+						std::cerr << "--->>> Name confirmed automatically: " << pInstrument->ExchangeID << "." << pInstrument->InstrumentID << std::endl;
 					}
 					else
 					{
@@ -286,10 +289,15 @@ void CTraderSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CTho
 
 					}
 
+					//合约名称转成UTF8
+					cname = StrUtil::trim(cname.c_str());
+					if (!EncodingHelper::isUtf8((unsigned char*)cname.c_str(), cname.size()))
+						cname = ChartoUTF8(cname);
+
 					Contract contract;
 					contract.m_strCode = pInstrument->InstrumentID;
 					contract.m_strExchg = pInstrument->ExchangeID;
-					contract.m_strName = StrUtil::trim(cname.c_str());
+					contract.m_strName = cname;
 					contract.m_strProduct = pInstrument->ProductID;
 
 					contract.m_maxMktQty = pInstrument->MaxMarketOrderVolume;
@@ -306,9 +314,14 @@ void CTraderSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CTho
 					auto it = _commodities.find(key);
 					if (it == _commodities.end())
 					{
+						//品种名称也转成UTF8
+						pname = StrUtil::trim(pname.c_str());
+						if (!EncodingHelper::isUtf8((unsigned char*)pname.c_str(), pname.size()))
+							pname = ChartoUTF8(pname);
+
 						Commodity commInfo;
 						commInfo.m_strProduct = pInstrument->ProductID;
-						commInfo.m_strName = StrUtil::trim(pname.c_str());
+						commInfo.m_strName = pname;
 						commInfo.m_strExchg = pInstrument->ExchangeID;
 						commInfo.m_strCurrency = "CNY";
 

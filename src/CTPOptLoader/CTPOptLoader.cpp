@@ -30,6 +30,7 @@ std::string SAVEPATH;	//保存位置
 std::string APPID;
 std::string AUTHCODE;
 uint32_t	CLASSMASK;	//期权
+bool		ONLYINCFG;	//只落地配置文件有的
 
 std::string COMM_FILE;		//输出的品种文件名
 std::string CONT_FILE;		//输出的合约文件名
@@ -159,6 +160,7 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 			CONT_FILE = "contracts.json";
 
 		map_files = cfg->getCString("mapfiles");
+		ONLYINCFG = ctp->getBoolean("onlyincfg");
 
 		MODULE_NAME = cfg->getCString("module");
 		if (MODULE_NAME.empty())
@@ -204,11 +206,16 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 			int cout = iniMap.readSecKeyValArray("Name", ayKeys, ayVals);
 			for (int i = 0; i < cout; i++)
 			{
-				MAP_NAME[ayKeys[i]] = ayVals[i];
+				std::string pName = ayVals[i];
+				bool isUTF8 = EncodingHelper::isUtf8((unsigned char*)pName.c_str(), pName.size());
+				if (!isUTF8)
+					pName = ChartoUTF8(ayVals[i]);
+				//保存的时候全部转成UTF8
+				MAP_NAME[ayKeys[i]] = pName;
 #ifdef _WIN32
-				printf("Commodity name mapping: %s - %s\r\n", ayKeys[i].c_str(), UTF8toChar(ayVals[i]).c_str());
+				printf("Commodity name mapping: %s - %s\r\n", ayKeys[i].c_str(), isUTF8 ? UTF8toChar(ayVals[i]).c_str() : ayVals[i].c_str());
 #else
-				printf("Commodity name mapping: %s - %s\r\n", ayKeys[i].c_str(), ayVals[i].c_str());
+				printf("Commodity name mapping: %s - %s\r\n", ayKeys[i].c_str(), isUTF8 ? ayVals[i].c_str() : ChartoUTF8(ayVals[i]).c_str());
 #endif
 			}
 

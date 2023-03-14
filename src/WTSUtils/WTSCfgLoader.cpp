@@ -196,12 +196,20 @@ WTSVariant* WTSCfgLoader::load_from_yaml(const char* content)
 	return ret;
 }
 
-WTSVariant* WTSCfgLoader::load_from_content(const std::string& content, bool isYaml /* = false */, bool isUTF8 /* = true */)
+WTSVariant* WTSCfgLoader::load_from_content(const std::string& content, bool isYaml /* = false */)
 {
+	//加一个自动检测编码的逻辑
+	bool isUTF8 = EncodingHelper::isUtf8((unsigned char*)content.data(), content.size());
+
 	std::string buffer;
+	//Linux下得是UTF8
+	//Win下得是GBK
 #ifdef _WIN32
 	if (isUTF8)
 		buffer = UTF8toChar(content);
+#else
+	if (!isUTF8)
+		buffer = ChartoUTF8(content);
 #endif
 
 	if (buffer.empty())
@@ -213,7 +221,7 @@ WTSVariant* WTSCfgLoader::load_from_content(const std::string& content, bool isY
 		return load_from_json(buffer.c_str());
 }
 
-WTSVariant* WTSCfgLoader::load_from_file(const char* filename, bool isUTF8 /* = true */)
+WTSVariant* WTSCfgLoader::load_from_file(const char* filename)
 {
 	if (!StdFile::exists(filename))
 		return NULL;
@@ -223,12 +231,18 @@ WTSVariant* WTSCfgLoader::load_from_file(const char* filename, bool isUTF8 /* = 
 	if (content.empty())
 		return NULL;
 
+	//加一个自动检测编码的逻辑
+	bool isUTF8 = EncodingHelper::isUtf8((unsigned char*)content.data(), content.size());
+
 	//By Wesley @ 2022.01.07
 	//Linux下得是UTF8
 	//Win下得是GBK
 #ifdef _WIN32
 	if(isUTF8)
 		content = UTF8toChar(content);
+#else
+	if (!isUTF8)
+		content = ChartoUTF8(content);
 #endif
 
 	if (StrUtil::endsWith(filename, ".json"))
