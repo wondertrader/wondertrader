@@ -165,7 +165,7 @@ private:
 
 protected:
 	std::string		m_strBroker;
-	std::string		m_strFront;
+	std::vector<std::string> m_strFront;
 
 	std::string		m_strUser;
 	std::string		m_strPass;
