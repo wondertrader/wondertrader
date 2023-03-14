@@ -13,6 +13,7 @@
 #include "WtHelper.h"
 
 #include "../Includes/WTSContractInfo.hpp"
+#include "../Includes/IBaseDataMgr.h"
 
 #include "../Share/CodeHelper.hpp"
 #include "../Share/decimal.h"
@@ -204,13 +205,6 @@ const char* HftStraBaseCtx::get_inner_code(const char* stdCode)
 
 OrderIDs HftStraBaseCtx::stra_buy(const char* stdCode, double price, double qty, const char* userTag, int flag /* = 0 */, bool bForceClose /* = false */)
 {
-	WTSContractInfo* ct = _engine->get_contract_info(stdCode);
-	if (ct == NULL)
-	{
-		log_error("Cannot find corresponding contract info of {}", stdCode);
-		return OrderIDs();
-	}
-
 	/*
 	 *	By Wesley @ 2022.05.26
 	 *	如果找到匹配自定义规则，则进行映射处理
@@ -221,6 +215,8 @@ OrderIDs HftStraBaseCtx::stra_buy(const char* stdCode, double price, double qty,
 	{
 		std::string code = _engine->get_hot_mgr()->getCustomRawCode(cInfo._ruletag, cInfo.stdCommID(), _engine->get_trading_date());
 		std::string realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
+
+		WTSContractInfo* ct = _engine->get_basedata_mgr()->getContract(code.c_str(), cInfo._exchg);
 
 		_code_map[realCode] = stdCode;
 
@@ -236,47 +232,15 @@ OrderIDs HftStraBaseCtx::stra_buy(const char* stdCode, double price, double qty,
 
 		return ids;
 	}
-	//else if(CodeHelper::isStdFutHotCode(stdCode))
-	//{
-	//	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
-	//	std::string code = _engine->get_hot_mgr()->getRawCode(cInfo._exchg, cInfo._product, _engine->get_trading_date());
-	//	std::string realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
-
-	//	_code_map[realCode] = stdCode;
-
-	//	if (_trader && !_trader->checkOrderLimits(realCode.c_str()))
-	//	{
-	//		log_info("{} is forbidden to trade", realCode.c_str());
-	//		return OrderIDs();
-	//	}
-
-	//	auto ids = _trader->buy(realCode.c_str(), price, qty, flag, false, ct);
-	//	for (auto localid : ids)
-	//		setUserTag(localid, userTag);
-
-	//	return ids;
-	//}
-	//else if (CodeHelper::isStdFut2ndCode(stdCode))
-	//{
-	//	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
-	//	std::string code = _engine->get_hot_mgr()->getSecondRawCode(cInfo._exchg, cInfo._product, _engine->get_trading_date());
-	//	std::string realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
-
-	//	_code_map[realCode] = stdCode;
-
-	//	if (_trader && !_trader->checkOrderLimits(realCode.c_str()))
-	//	{
-	//		log_info("{} is forbidden to trade", realCode.c_str());
-	//		return OrderIDs();
-	//	}
-
-	//	auto ids = _trader->buy(realCode.c_str(), price, qty, flag, false, ct);
-	//	for (auto localid : ids)
-	//		setUserTag(localid, userTag);
-	//	return ids;
-	//}
 	else
 	{
+		WTSContractInfo* ct = _engine->get_basedata_mgr()->getContract(cInfo._code, cInfo._exchg);
+		if (ct == NULL)
+		{
+			log_error("Cannot find corresponding contract info of {}", stdCode);
+			return OrderIDs();
+		}
+
 		if (!_trader->checkOrderLimits(stdCode))
 		{
 			log_info("{} is forbidden to trade", stdCode);
@@ -292,14 +256,8 @@ OrderIDs HftStraBaseCtx::stra_buy(const char* stdCode, double price, double qty,
 
 OrderIDs HftStraBaseCtx::stra_sell(const char* stdCode, double price, double qty, const char* userTag, int flag /* = 0 */, bool bForceClose /* = false */)
 {
-	WTSContractInfo* ct = _engine->get_contract_info(stdCode);
-	if (ct == NULL)
-	{
-		log_error("Cannot find corresponding contract info of {}", stdCode);
-		return OrderIDs();
-	}
-
-	WTSCommodityInfo* commInfo = ct->getCommInfo();
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _engine->get_hot_mgr());
+	WTSCommodityInfo* commInfo = _engine->get_basedata_mgr()->getCommodity(cInfo._exchg, cInfo._product);
 
 	//如果不能做空，则要看可用持仓
 	if (!commInfo->canShort())
@@ -316,11 +274,13 @@ OrderIDs HftStraBaseCtx::stra_sell(const char* stdCode, double price, double qty
 	 *	By Wesley @ 2022.05.26
 	 *	如果找到匹配自定义规则，则进行映射处理
 	 */
-	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _engine->get_hot_mgr());
+	
 	if (strlen(cInfo._ruletag) > 0)
 	{
 		std::string code = _engine->get_hot_mgr()->getCustomRawCode(cInfo._ruletag, cInfo.stdCommID(), _engine->get_trading_date());
 		std::string realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
+
+		WTSContractInfo* ct = _engine->get_basedata_mgr()->getContract(code.c_str(), cInfo._exchg);
 
 		_code_map[realCode] = stdCode;
 
@@ -335,46 +295,15 @@ OrderIDs HftStraBaseCtx::stra_sell(const char* stdCode, double price, double qty
 			setUserTag(localid, userTag);
 		return ids;
 	}
-	//else if (CodeHelper::isStdFutHotCode(stdCode))
-	//{
-	//	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
-	//	std::string code = _engine->get_hot_mgr()->getRawCode(cInfo._exchg, cInfo._product, _engine->get_trading_date());
-	//	std::string realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
-
-	//	_code_map[realCode] = stdCode;
-
-	//	if (_trader && !_trader->checkOrderLimits(realCode.c_str()))
-	//	{
-	//		log_info("{} is forbidden to trade", realCode.c_str());
-	//		return OrderIDs();
-	//	}
-
-	//	auto ids = _trader->sell(realCode.c_str(), price, qty, flag, false, ct);
-	//	for (auto localid : ids)
-	//		setUserTag(localid, userTag);
-	//	return ids;
-	//}
-	//else if (CodeHelper::isStdFut2ndCode(stdCode))
-	//{
-	//	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
-	//	std::string code = _engine->get_hot_mgr()->getSecondRawCode(cInfo._exchg, cInfo._product, _engine->get_trading_date());
-	//	std::string realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
-
-	//	_code_map[realCode] = stdCode;
-
-	//	if (_trader && !_trader->checkOrderLimits(realCode.c_str()))
-	//	{
-	//		log_info("{} is forbidden to trade", realCode.c_str());
-	//		return OrderIDs();
-	//	}
-
-	//	auto ids = _trader->sell(realCode.c_str(), price, qty, flag, false, ct);
-	//	for (auto localid : ids)
-	//		setUserTag(localid, userTag);
-	//	return ids;
-	//}
 	else
 	{
+		WTSContractInfo* ct = _engine->get_basedata_mgr()->getContract(cInfo._code, cInfo._exchg);
+		if (ct == NULL)
+		{
+			log_error("Cannot find corresponding contract info of {}", stdCode);
+			return OrderIDs();
+		}
+
 		if (_trader && !_trader->checkOrderLimits(stdCode))
 		{
 			log_info("{} is forbidden to trade", stdCode);
@@ -398,22 +327,6 @@ uint32_t HftStraBaseCtx::stra_enter_long(const char* stdCode, double price, doub
 		realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
 		_code_map[realCode] = stdCode;
 	}
-	//else if (CodeHelper::isStdFutHotCode(stdCode))
-	//{
-	//	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
-	//	std::string code = _engine->get_hot_mgr()->getRawCode(cInfo._exchg, cInfo._product, _engine->get_trading_date());
-	//	realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
-
-	//	_code_map[realCode] = stdCode;
-	//}
-	//else if (CodeHelper::isStdFut2ndCode(stdCode))
-	//{
-	//	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
-	//	std::string code = _engine->get_hot_mgr()->getSecondRawCode(cInfo._exchg, cInfo._product, _engine->get_trading_date());
-	//	realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
-
-	//	_code_map[realCode] = stdCode;
-	//}
 
 	return _trader->openLong(realCode.c_str(), price, qty, flag);
 }
@@ -429,22 +342,6 @@ uint32_t HftStraBaseCtx::stra_exit_long(const char* stdCode, double price, doubl
 
 		_code_map[realCode] = stdCode;
 	}
-	//else if (CodeHelper::isStdFutHotCode(stdCode))
-	//{
-	//	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
-	//	std::string code = _engine->get_hot_mgr()->getRawCode(cInfo._exchg, cInfo._product, _engine->get_trading_date());
-	//	realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
-
-	//	_code_map[realCode] = stdCode;
-	//}
-	//else if (CodeHelper::isStdFut2ndCode(stdCode))
-	//{
-	//	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode);
-	//	std::string code = _engine->get_hot_mgr()->getSecondRawCode(cInfo._exchg, cInfo._product, _engine->get_trading_date());
-	//	realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
-
-	//	_code_map[realCode] = stdCode;
-	//}
 
 	return _trader->closeLong(realCode.c_str(), price, qty, isToday, flag);
 }
