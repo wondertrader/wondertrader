@@ -79,7 +79,7 @@ void WtDtRunner::initialize(const char* cfgFile, const char* logCfg, const char*
 
 	WTSVariant* config = NULL;
 	if (bCfgFile)
-		config = WTSCfgLoader::load_from_file(cfgFile, true);
+		config = WTSCfgLoader::load_from_file(cfgFile);
 	else
 		config = WTSCfgLoader::load_from_content(cfgFile, false);
 

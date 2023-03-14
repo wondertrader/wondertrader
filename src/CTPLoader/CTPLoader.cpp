@@ -138,7 +138,7 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 	}
 	else
 	{
-		WTSVariant* root = WTSCfgLoader::load_from_file(cfgfile, true);
+		WTSVariant* root = WTSCfgLoader::load_from_file(cfgfile);
 		if (root == NULL)
 			return 0;
 

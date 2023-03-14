@@ -471,7 +471,7 @@ bool WTSBaseDataMgr::loadHolidays(const char* filename)
 		return false;
 	}
 
-	WTSVariant* root = WTSCfgLoader::load_from_file(filename, true);
+	WTSVariant* root = WTSCfgLoader::load_from_file(filename);
 	if (root == NULL)
 	{
 		WTSLogger::error("Loading holidays config file {} failed", filename);

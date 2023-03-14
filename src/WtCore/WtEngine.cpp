@@ -844,7 +844,7 @@ void WtEngine::load_fees(const char* filename)
 		return;
 	}
 
-	WTSVariant* cfg = WTSCfgLoader::load_from_file(filename, true);
+	WTSVariant* cfg = WTSCfgLoader::load_from_file(filename);
 	if (cfg == NULL)
 	{
 		WTSLogger::error("Fee templates file {} loading failed", filename);

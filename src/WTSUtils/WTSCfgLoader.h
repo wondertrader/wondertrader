@@ -18,9 +18,9 @@ public:
 	static WTSVariant*	load_from_file(const char* filename);
 	static WTSVariant*	load_from_content(const std::string& content, bool isYaml = false);
 
-	static WTSVariant*	load_from_file(const std::string& filename, bool isUTF8)
+	static WTSVariant*	load_from_file(const std::string& filename)
 	{
-		return load_from_file(filename.c_str(), isUTF8);
+		return load_from_file(filename.c_str());
 	}
 };
 

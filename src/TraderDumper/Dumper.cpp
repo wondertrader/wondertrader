@@ -24,7 +24,7 @@ bool Dumper::config(const char* cfgfile, bool isFile, const char* modDir)
 
 	WTSVariant* root = NULL;
 	if (isFile)
-		root = WTSCfgLoader::load_from_file(cfgfile, true);
+		root = WTSCfgLoader::load_from_file(cfgfile);
 	else
 		root = WTSCfgLoader::load_from_content(cfgfile, false);
 

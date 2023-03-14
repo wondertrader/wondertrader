@@ -142,7 +142,7 @@ int main()
 {
 	WTSLogger::init("logcfg.yaml");
 
-	WTSVariant* root = WTSCfgLoader::load_from_file("config.yaml", true);
+	WTSVariant* root = WTSCfgLoader::load_from_file("config.yaml");
 	if (root == NULL)
 	{
 		WTSLogger::log_raw(LL_ERROR, "Loading config.yaml failed");

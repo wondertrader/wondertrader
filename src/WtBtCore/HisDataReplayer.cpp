@@ -330,7 +330,7 @@ bool HisDataReplayer::loadStkAdjFactorsFromFile(const char* adjfile)
 	std::string content;
 	StdFile::read_file_content(adjfile, content);
 
-	WTSVariant* doc = WTSCfgLoader::load_from_file(adjfile, true);
+	WTSVariant* doc = WTSCfgLoader::load_from_file(adjfile);
 	if (doc == NULL)
 	{
 		WTSLogger::error("Parsing adjust factor file {} faield", adjfile);
@@ -2794,7 +2794,7 @@ void HisDataReplayer::loadFees(const char* filename)
 		return;
 	}
 
-	WTSVariant* cfg = WTSCfgLoader::load_from_file(filename, true);
+	WTSVariant* cfg = WTSCfgLoader::load_from_file(filename);
 	if (cfg == NULL)
 	{
 		WTSLogger::error("Converting fees template file {} failed", filename);

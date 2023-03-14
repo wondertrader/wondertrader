@@ -133,7 +133,7 @@ bool WtExecRunner::config(const char* cfgFile, bool isFile /* = true */)
 	if (StdFile::exists(cfgParser))
 	{
 		WTSLogger::info("Reading parser config from {}...", cfgParser);
-		WTSVariant* var = WTSCfgLoader::load_from_file(cfgParser, true);
+		WTSVariant* var = WTSCfgLoader::load_from_file(cfgParser);
 		if (var)
 		{
 			if (!initParsers(var))
@@ -151,7 +151,7 @@ bool WtExecRunner::config(const char* cfgFile, bool isFile /* = true */)
 	if (StdFile::exists(cfgTraders))
 	{
 		WTSLogger::info("Reading trader config from {}...", cfgTraders);
-		WTSVariant* var = WTSCfgLoader::load_from_file(cfgTraders, true);
+		WTSVariant* var = WTSCfgLoader::load_from_file(cfgTraders);
 		if (var)
 		{
 			if (!initTraders(var))
@@ -168,7 +168,7 @@ bool WtExecRunner::config(const char* cfgFile, bool isFile /* = true */)
 	if (StdFile::exists(cfgExecuters))
 	{
 		WTSLogger::info("Reading executer config from {}...", cfgExecuters);
-		WTSVariant* var = WTSCfgLoader::load_from_file(cfgExecuters, true);
+		WTSVariant* var = WTSCfgLoader::load_from_file(cfgExecuters);
 		if (var)
 		{
 			if (!initExecuters(var))

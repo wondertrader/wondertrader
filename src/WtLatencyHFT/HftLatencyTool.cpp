@@ -222,7 +222,7 @@ namespace hft
 	{
 		WTSLogger::init("logcfg.yaml");
 
-		WTSVariant* _config = WTSCfgLoader::load_from_file("config.yaml", true);
+		WTSVariant* _config = WTSCfgLoader::load_from_file("config.yaml");
 		if (_config == NULL)
 		{
 			WTSLogger::log_raw(LL_ERROR, "Loading config file config.yaml failed");

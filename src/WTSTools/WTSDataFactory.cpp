@@ -779,7 +779,7 @@ WTSKlineData* WTSDataFactory::extractKlineData(WTSTickSlice* ayTicks, uint32_t s
 
 		if(bUnixTime)
 		{
-			barTime = (uint64_t)TimeUtils::makeTime(actDt, barTime * 1000) / 1000;
+			barTime = (uint64_t)TimeUtils::makeTime(actDt, (long)(barTime * 1000)) / 1000;
 		}
 		else
 		{

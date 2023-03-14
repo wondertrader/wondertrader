@@ -202,7 +202,7 @@ bool WTSHotMgr::loadCustomRules(const char* tag, const char* filename)
 		return false;
 	}
 
-	WTSVariant* root = WTSCfgLoader::load_from_file(filename, true);
+	WTSVariant* root = WTSCfgLoader::load_from_file(filename);
 	if (root == NULL)
 		return false;
 

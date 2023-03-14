@@ -69,7 +69,7 @@ bool WtUftRunner::config()
 	if (!StdFile::exists(cfgFile.c_str()))
 		cfgFile = "config.yaml";
 
-	_config = WTSCfgLoader::load_from_file(cfgFile, true);
+	_config = WTSCfgLoader::load_from_file(cfgFile);
 	if(_config == NULL)
 	{
 		WTSLogger::error("Loading config file {} failed", cfgFile);

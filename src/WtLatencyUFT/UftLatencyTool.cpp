@@ -226,7 +226,7 @@ namespace uft
 
 		std::string cfgFile = "config.yaml";
 
-		WTSVariant* _config = WTSCfgLoader::load_from_file(cfgFile, true);
+		WTSVariant* _config = WTSCfgLoader::load_from_file(cfgFile);
 		if (_config == NULL)
 		{
 			WTSLogger::error("Loading config file {} failed", cfgFile);

@@ -103,7 +103,7 @@ void initialize()
 	if (!StdFile::exists(filename.c_str()))
 		filename = "dtcfg.yaml";
 
-	WTSVariant* config = WTSCfgLoader::load_from_file(filename.c_str(), true);
+	WTSVariant* config = WTSCfgLoader::load_from_file(filename.c_str());
 	if(config == NULL)
 	{
 		WTSLogger::error("Loading config file {} failed", filename);

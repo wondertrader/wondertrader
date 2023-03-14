@@ -581,7 +581,7 @@ bool WtRtRunner::config(const char* cfgFile, bool isFile /* = true */)
 			if (StdFile::exists(filename))
 			{
 				WTSLogger::info("Reading parser config from {}...", filename);
-				WTSVariant* var = WTSCfgLoader::load_from_file(filename, true);
+				WTSVariant* var = WTSCfgLoader::load_from_file(filename);
 				if (var)
 				{
 					if (!initParsers(var->get("parsers")))
@@ -614,7 +614,7 @@ bool WtRtRunner::config(const char* cfgFile, bool isFile /* = true */)
 			if (StdFile::exists(filename))
 			{
 				WTSLogger::info("Reading trader config from {}...", filename);
-				WTSVariant* var = WTSCfgLoader::load_from_file(filename, true);
+				WTSVariant* var = WTSCfgLoader::load_from_file(filename);
 				if (var)
 				{
 					if (!initTraders(var->get("traders")))
@@ -652,7 +652,7 @@ bool WtRtRunner::config(const char* cfgFile, bool isFile /* = true */)
 				if (StdFile::exists(filename))
 				{
 					WTSLogger::info("Reading executer config from {}...", filename);
-					WTSVariant* var = WTSCfgLoader::load_from_file(filename, true);
+					WTSVariant* var = WTSCfgLoader::load_from_file(filename);
 					if (var)
 					{
 						if (!initExecuters(var->get("executers")))

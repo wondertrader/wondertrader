@@ -424,7 +424,7 @@ public:
 				vArray->append(day.date);
 				break;
 			case KFT_TIME:
-				vArray->append(day.time);
+				vArray->append((double)day.time);
 			}
 		}
 
@@ -758,7 +758,7 @@ public:
 				vArray->append(day.date);
 				break;
 			case KFT_TIME:
-				vArray->append(day.time);
+				vArray->append((double)day.time);
 			}
 		}
 
