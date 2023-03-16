@@ -82,6 +82,7 @@ TraderAdapter::TraderAdapter(EventNotifier* caster /* = NULL */)
 	, _risk_mon_enabled(false)
 	, _save_data(false)
 	, _notifier(caster)
+	, _ignore_sefmatch(false)
 {
 }
 
@@ -109,6 +110,7 @@ bool TraderAdapter::init(const char* id, WTSVariant* params, IBaseDataMgr* bdMgr
 	_cfg = params;
 	_cfg->retain();
 
+	_ignore_sefmatch = _cfg->getBoolean("ignore_selfmatch");
 	_save_data = _cfg->getBoolean("savedata");
 	if (_save_data)
 		initSaveData();
