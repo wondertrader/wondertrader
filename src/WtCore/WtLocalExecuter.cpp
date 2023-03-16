@@ -283,15 +283,15 @@ void WtLocalExecuter::on_position_changed(const char* stdCode, double diffPos)
 	if (unit == NULL)
 		return;
 
-	diffPos = round(diffPos*_scale);
-
 	double oldVol = _target_pos[stdCode];
-	double& targetPos = _target_pos[stdCode];
-	targetPos += diffPos;
+	double newVol = oldVol + diffPos;
+	_target_pos[stdCode] = newVol;
+
+	double traderTarget = round(newVol * _scale);
 
 	if(!decimal::eq(diffPos, 0))
 	{
-		WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "Target position of {} changed: {} -> {}", stdCode, oldVol, targetPos);
+		WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "Target position of {} changed: {} -> {} : {} with scale:{}", stdCode, oldVol, newVol, traderTarget, _scale);
 	}
 
 	if (_trader && !_trader->checkOrderLimits(stdCode))
@@ -300,7 +300,7 @@ void WtLocalExecuter::on_position_changed(const char* stdCode, double diffPos)
 		return;
 	}
 
-	unit->self()->set_position(stdCode, targetPos);
+	unit->self()->set_position(stdCode, traderTarget);
 }
 
 void WtLocalExecuter::set_position(const faster_hashmap<LongKey, double>& targets)
@@ -351,12 +351,14 @@ void WtLocalExecuter::set_position(const faster_hashmap<LongKey, double>& target
 		if (unit == NULL)
 			continue;
 
-		newVol = round(newVol*_scale);
 		double oldVol = _target_pos[stdCode];
 		_target_pos[stdCode] = newVol;
+		// 账户的理论持仓要经过修正
+		double traderTarget = round(newVol * _scale);
+
 		if(!decimal::eq(oldVol, newVol))
 		{
-			WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "Target position of {} changed: {} -> {}", stdCode, oldVol, newVol);
+			WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "Target position of {} changed: {} -> {} : {} with scale{}", stdCode, oldVol, newVol, traderTarget, _scale);
 		}
 
 		if (_trader && !_trader->checkOrderLimits(stdCode))
@@ -368,13 +370,13 @@ void WtLocalExecuter::set_position(const faster_hashmap<LongKey, double>& target
 		if (_pool)
 		{
 			std::string code = stdCode;
-			_pool->schedule([unit, code, newVol](){
-				unit->self()->set_position(code.c_str(), newVol);
+			_pool->schedule([unit, code, traderTarget](){
+				unit->self()->set_position(code.c_str(), traderTarget);
 			});
 		}
 		else
 		{
-			unit->self()->set_position(stdCode, newVol);
+			unit->self()->set_position(stdCode, traderTarget);
 		}
 	}
 
