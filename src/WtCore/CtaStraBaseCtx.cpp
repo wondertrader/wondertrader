@@ -1044,24 +1044,26 @@ void CtaStraBaseCtx::enum_position(FuncEnumCtaPosCallBack cb, bool bForExecute /
 	/* By HeJ @ 2023.03.14
 	 * 读取理论持仓时，要加个锁，避免出现组合轧差同步与信号同时触发，导致的反复发单和信号覆盖
 	 */
-	SpinLock lock(_mutex);
 	std::unordered_map<std::string, double> desPos;
-	for (auto& it:_pos_map)
 	{
-		const char* stdCode = it.first.c_str();
-		const PosInfo& pInfo = it.second;
-		//cb(stdCode, pInfo._volume);
-		desPos[stdCode] = pInfo._volume;
-	}
+		SpinLock lock(_mutex);		
+		for (auto& it : _pos_map)
+		{
+			const char* stdCode = it.first.c_str();
+			const PosInfo& pInfo = it.second;
+			//cb(stdCode, pInfo._volume);
+			desPos[stdCode] = pInfo._volume;
+		}
 
-	for (auto& sit:_sig_map)
-	{
-		const char* stdCode = sit.first.c_str();
-		SigInfo& sInfo = (SigInfo&)sit.second;
-		desPos[stdCode] = sInfo._volume;
-		if(bForExecute)
-			sInfo._triggered = true;
-	}
+		for (auto& sit : _sig_map)
+		{
+			const char* stdCode = sit.first.c_str();
+			SigInfo& sInfo = (SigInfo&)sit.second;
+			desPos[stdCode] = sInfo._volume;
+			if (bForExecute)
+				sInfo._triggered = true;
+		}
+	}	
 
 	for(auto v:desPos)
 	{
