@@ -1045,7 +1045,8 @@ void CtaStraBaseCtx::enum_position(FuncEnumCtaPosCallBack cb, bool bForExecute /
 	/* By HeJ @ 2023.03.14
 	 * 读取理论持仓时，要加个锁，避免出现组合轧差同步与信号同时触发，导致的反复发单和信号覆盖
 	 */
-	SpinLock lock(_mutex);
+	//SpinLock lock(_mutex);
+	_mutex.lock();
 	std::unordered_map<std::string, double> desPos;
 	for (auto& it:_pos_map)
 	{
@@ -1054,6 +1055,7 @@ void CtaStraBaseCtx::enum_position(FuncEnumCtaPosCallBack cb, bool bForExecute /
 		//cb(stdCode, pInfo._volume);
 		desPos[stdCode] = pInfo._volume;
 	}
+	_mutex.unlock();
 
 	for (auto& sit:_sig_map)
 	{
@@ -1424,7 +1426,8 @@ void CtaStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 	/* By HeJ @ 2023.03.14
 	 * 设置理论持仓时，要加个锁，避免出现组合轧差同步与信号同时触发，导致的反复发单和信号覆盖
 	 */
-	SpinLock lock(_mutex);
+	//SpinLock lock(_mutex);
+	_mutex.lock();
 	bool isBuy = decimal::gt(diff, 0.0);
 	if (decimal::gt(pInfo._volume*diff, 0))
 	{//当前持仓和仓位变化方向一致, 增加一条明细, 增加数量即可
@@ -1556,7 +1559,7 @@ void CtaStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 			log_trade(stdCode, dInfo._long, true, curTm, trdPx, abs(left), userTag, fee, _last_barno);
 		}
 	}
-
+	_mutex.unlock();
 
 	//存储数据
 	save_data();
