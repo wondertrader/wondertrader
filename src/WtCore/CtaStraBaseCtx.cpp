@@ -805,15 +805,14 @@ void CtaStraBaseCtx::on_tick(const char* stdCode, WTSTickData* newTick, bool bEm
 			WTSSessionInfo* sInfo = _engine->get_session_info(stdCode, true);
 			if (sInfo->isInTradingTime(_engine->get_raw_time(), true))
 			{
-				const SigInfo& sInfo = it->second;
+				const SigInfo sInfo = it->second;
 				//只有当信号类型不为0，即bar内信号或者条件单触发信号时，且信号没有触发过
-				do_set_position(stdCode, sInfo._volume, sInfo._usertag.c_str(), (sInfo._sigtype!=0 && !sInfo._triggered));
+				do_set_position(stdCode, sInfo._volume, sInfo._usertag.c_str(), (sInfo._sigtype != 0 && !sInfo._triggered));
+				_sig_map.erase(it);
 
 				//如果是条件单触发，则回调on_condition_triggered
 				if(sInfo._sigtype == 2)
 					on_condition_triggered(stdCode, sInfo._volume, newTick->price(), sInfo._usertag.c_str());
-
-				_sig_map.erase(it);
 			}
 			
 		}
