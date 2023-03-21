@@ -79,7 +79,8 @@ void WtEngine::set_trading_date(uint32_t curTDate)
 
 WTSCommodityInfo* WtEngine::get_commodity_info(const char* stdCode)
 {
-	return _base_data_mgr->getCommodity(CodeHelper::stdCodeToStdCommID(stdCode).c_str());
+	CodeHelper::CodeInfo codeInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
+	return _base_data_mgr->getCommodity(codeInfo._exchg, codeInfo._product);
 }
 
 WTSContractInfo* WtEngine::get_contract_info(const char* stdCode)
@@ -105,7 +106,8 @@ WTSSessionInfo* WtEngine::get_session_info(const char* sid, bool isCode /* = fal
 	if (!isCode)
 		return _base_data_mgr->getSession(sid);
 
-	WTSCommodityInfo* cInfo = _base_data_mgr->getCommodity(CodeHelper::stdCodeToStdCommID(sid).c_str());
+	CodeHelper::CodeInfo codeInfo = CodeHelper::extractStdCode(sid, _hot_mgr);
+	WTSCommodityInfo* cInfo = _base_data_mgr->getCommodity(codeInfo._exchg, codeInfo._product);
 	if (cInfo == NULL)
 		return NULL;
 
@@ -592,7 +594,8 @@ WTSTickData* WtEngine::get_last_tick(uint32_t sid, const char* stdCode)
 
 WTSKlineSlice* WtEngine::get_kline_slice(uint32_t sid, const char* stdCode, const char* period, uint32_t count, uint32_t times /* = 1 */, uint64_t etime /* = 0 */)
 {
-	WTSCommodityInfo* cInfo = _base_data_mgr->getCommodity(CodeHelper::stdCodeToStdCommID(stdCode).c_str());
+	CodeHelper::CodeInfo codeInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
+	WTSCommodityInfo* cInfo = _base_data_mgr->getCommodity(codeInfo._exchg, codeInfo._product);
 	if (cInfo == NULL)
 		return NULL;
 
@@ -841,7 +844,7 @@ void WtEngine::load_fees(const char* filename)
 		return;
 	}
 
-	WTSVariant* cfg = WTSCfgLoader::load_from_file(filename, true);
+	WTSVariant* cfg = WTSCfgLoader::load_from_file(filename);
 	if (cfg == NULL)
 	{
 		WTSLogger::error("Fee templates file {} loading failed", filename);
@@ -866,16 +869,17 @@ void WtEngine::load_fees(const char* filename)
 
 double WtEngine::calc_fee(const char* stdCode, double price, double qty, uint32_t offset)
 {
-	std::string stdPID = CodeHelper::stdCodeToStdCommID(stdCode);
+	CodeHelper::CodeInfo codeInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
+	const char* stdPID = codeInfo.stdCommID();
 	auto it = _fee_map.find(stdPID);
 	if (it == _fee_map.end())
 	{
-		WTSLogger::warn("Fee template of {} not found, return 0.0 as default", stdCode);
+		WTSLogger::warn("Fee template of {} not found, return 0.0 as default", stdPID);
 		return 0.0;
 	}
 
 	double ret = 0.0;
-	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(stdPID.c_str());
+	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(stdPID);
 	const FeeItem& fItem = it->second;
 	if(fItem._by_volume)
 	{
@@ -955,7 +959,8 @@ void WtEngine::do_set_position(const char* stdCode, double qty, double curPx /* 
 
 	double diff = qty - pInfo._volume;
 
-	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(CodeHelper::stdCodeToStdCommID(stdCode).c_str());
+	CodeHelper::CodeInfo codeInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
+	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(codeInfo._exchg, codeInfo._product);
 
 	WTSFundStruct& fundInfo = _port_fund->fundInfo();
 

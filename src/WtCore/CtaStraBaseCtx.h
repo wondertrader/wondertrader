@@ -14,6 +14,7 @@
 
 #include "../Share/BoostFile.hpp"
 #include "../Share/fmtlib.h"
+#include "../Share/SpinMutex.hpp"
 
 #include <unordered_map>
 
@@ -361,6 +362,9 @@ protected:
 	} ChartIndex;
 
 	faster_hashmap<LongKey, ChartIndex>	_chart_indice;
+
+private:
+	SpinMutex		_mutex;
 };
 
 

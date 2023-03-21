@@ -53,7 +53,6 @@
     <ClInclude Include="WtDtMgr.h" />
     <ClInclude Include="WtCtaEngine.h" />
     <ClInclude Include="WtLocalExecuter.h" />
-    <ClInclude Include="CtaStrategyDefs.h" />
     <ClInclude Include="WtHftEngine.h" />
     <ClInclude Include="WtHftTicker.h" />
     <ClInclude Include="WtSelEngine.h" />

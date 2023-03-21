@@ -117,6 +117,8 @@ public:
 
 	inline bool isReady() const { return _state == AS_ALLREADY; }
 
+	void queryFund();
+
 private:
 	uint32_t doEntrust(WTSEntrust* entrust);
 	bool	doCancel(WTSOrderInfo* ordInfo);
@@ -170,6 +172,10 @@ public:
 
 	inline	bool isSelfMatched(const char* stdCode)
 	{
+		//如果忽略自成交，则直接返回false
+		if (_ignore_sefmatch)
+			return false;
+
 		auto it = _self_matches.find(stdCode);
 		return it != _self_matches.end();
 	}
@@ -230,6 +236,12 @@ private:
 	faster_hashmap<LongKey, std::string>		_trade_refs;	//用于记录成交单和订单的匹配
 	faster_hashset<LongKey>						_self_matches;	//自成交的合约
 
+	/*
+	 *	By Wesley @ 2023.03.16
+	 *	加一个控制，这样自成交发生以后，还可以恢复交易
+	 */
+	bool			_ignore_sefmatch;		//忽略自成交限制
+
 	faster_hashmap<LongKey, double> _undone_qty;	//未完成数量
 
 	typedef WTSHashMap<LongKey>	TradeStatMap;
@@ -272,6 +284,8 @@ public:
 	TraderAdapterPtr getAdapter(const char* tname);
 
 	bool	addAdapter(const char* tname, TraderAdapterPtr& adapter);
+
+	void	refresh_funds();
 
 private:
 	TraderAdapterMap	_adapters;

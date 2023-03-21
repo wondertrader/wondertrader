@@ -51,7 +51,7 @@ int main()
 	if(!StdFile::exists(filename.c_str()))
 		filename = "configbt.yaml";
 
-	WTSVariant* cfg = WTSCfgLoader::load_from_file(filename.c_str(), true);
+	WTSVariant* cfg = WTSCfgLoader::load_from_file(filename.c_str());
 	if (cfg == NULL)
 	{
 		WTSLogger::info("Loading configuration file {} failed", filename);

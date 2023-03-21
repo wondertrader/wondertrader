@@ -43,7 +43,7 @@ bool StateMonitor::initialize(const char* filename, WTSBaseDataMgr* bdMgr, DataM
 		return false;
 	}
 
-	WTSVariant* config = WTSCfgLoader::load_from_file(filename, true);
+	WTSVariant* config = WTSCfgLoader::load_from_file(filename);
 	if (config == NULL)
 	{
 		WTSLogger::error("Loading state config failed");

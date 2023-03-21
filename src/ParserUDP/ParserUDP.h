@@ -74,11 +74,12 @@ private:
 
 	ip::udp::socket*	_b_socket;
 	ip::udp::socket*	_s_socket;
+	bool				_s_inited;
 
 	boost::array<char, 1024> _b_buffer;
 	boost::array<char, 1024> _s_buffer;
 
-	IParserSpi*		_sink;
+	IParserSpi*				_sink;
 	bool					_stopped;
 	bool					_connecting;
 

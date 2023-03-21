@@ -456,22 +456,25 @@ void WtSelEngine::handle_pos_change(const char* straName, const char* stdCode, d
 	append_signal(realCode.c_str(), targetPos, false);
 	save_datas();
 
-	const char* execid = _exec_mgr.get_route(straName);
-	_exec_mgr.handle_pos_change(realCode.c_str(), targetPos, diffQty, execid);
+	const auto& exec_ids = _exec_mgr.get_route(straName);
+	for (auto& execid : exec_ids)
+		_exec_mgr.handle_pos_change(realCode.c_str(), targetPos, diffQty, execid.c_str());
 }
 
 WTSCommodityInfo* WtSelEngine::get_comm_info(const char* stdCode)
 {
-	return _base_data_mgr->getCommodity(CodeHelper::stdCodeToStdCommID(stdCode).c_str());
+	CodeHelper::CodeInfo codeInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
+	return _base_data_mgr->getCommodity(codeInfo._exchg, codeInfo._product);
 }
 
 WTSSessionInfo* WtSelEngine::get_sess_info(const char* stdCode)
 {
-	WTSCommodityInfo* cInfo = _base_data_mgr->getCommodity(CodeHelper::stdCodeToStdCommID(stdCode).c_str());
+	CodeHelper::CodeInfo codeInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
+	WTSCommodityInfo* cInfo = _base_data_mgr->getCommodity(codeInfo._exchg, codeInfo._product);
 	if (cInfo == NULL)
 		return NULL;
 
-	return _base_data_mgr->getSession(cInfo->getSession());
+	return cInfo->getSessionInfo();
 }
 
 uint64_t WtSelEngine::get_real_time()

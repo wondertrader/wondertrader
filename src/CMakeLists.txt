@@ -119,8 +119,3 @@ ADD_SUBDIRECTORY(TestTrader)
 ADD_SUBDIRECTORY(TestParser)
 ADD_SUBDIRECTORY(TestUnits)
 
-# Only used on win
-IF(MSVC)
-ADD_SUBDIRECTORY(TestTrader)
-ENDIF()
-

@@ -103,7 +103,7 @@ void initialize()
 	if (!StdFile::exists(filename.c_str()))
 		filename = "dtcfg.yaml";
 
-	WTSVariant* config = WTSCfgLoader::load_from_file(filename.c_str(), true);
+	WTSVariant* config = WTSCfgLoader::load_from_file(filename.c_str());
 	if(config == NULL)
 	{
 		WTSLogger::error("Loading config file {} failed", filename);
@@ -112,10 +112,9 @@ void initialize()
 
 	//加载市场信息
 	WTSVariant* cfgBF = config->get("basefiles");
-	bool isUTF8 = cfgBF->getBoolean("utf-8");
 	if (cfgBF->get("session"))
 	{
-		g_baseDataMgr.loadSessions(cfgBF->getCString("session"), isUTF8);
+		g_baseDataMgr.loadSessions(cfgBF->getCString("session"));
 		WTSLogger::info("Trading sessions loaded");
 	}
 
@@ -124,13 +123,13 @@ void initialize()
 	{
 		if (cfgItem->type() == WTSVariant::VT_String)
 		{
-			g_baseDataMgr.loadCommodities(cfgItem->asCString(), isUTF8);
+			g_baseDataMgr.loadCommodities(cfgItem->asCString());
 		}
 		else if (cfgItem->type() == WTSVariant::VT_Array)
 		{
 			for (uint32_t i = 0; i < cfgItem->size(); i++)
 			{
-				g_baseDataMgr.loadCommodities(cfgItem->get(i)->asCString(), isUTF8);
+				g_baseDataMgr.loadCommodities(cfgItem->get(i)->asCString());
 			}
 		}
 	}
@@ -140,13 +139,13 @@ void initialize()
 	{
 		if (cfgItem->type() == WTSVariant::VT_String)
 		{
-			g_baseDataMgr.loadContracts(cfgItem->asCString(), isUTF8);
+			g_baseDataMgr.loadContracts(cfgItem->asCString());
 		}
 		else if (cfgItem->type() == WTSVariant::VT_Array)
 		{
 			for (uint32_t i = 0; i < cfgItem->size(); i++)
 			{
-				g_baseDataMgr.loadContracts(cfgItem->get(i)->asCString(), isUTF8);
+				g_baseDataMgr.loadContracts(cfgItem->get(i)->asCString());
 			}
 		}
 	}
@@ -199,7 +198,7 @@ void initialize()
 		//如果存在指数模块要，配置指数
 		const char* filename = config->getCString("index");
 		WTSLogger::info("Reading index config from {}...", filename);
-		WTSVariant* var = WTSCfgLoader::load_from_file(filename, isUTF8);
+		WTSVariant* var = WTSCfgLoader::load_from_file(filename);
 		if (var)
 		{
 			g_idxFactory.init(var, &g_hotMgr, &g_baseDataMgr, &g_dataMgr);
@@ -220,7 +219,7 @@ void initialize()
 			if (StdFile::exists(filename))
 			{
 				WTSLogger::info("Reading parser config from {}...", filename);
-				WTSVariant* var = WTSCfgLoader::load_from_file(filename, isUTF8);
+				WTSVariant* var = WTSCfgLoader::load_from_file(filename);
 				if (var)
 				{
 					initParsers(var->get("parsers"));

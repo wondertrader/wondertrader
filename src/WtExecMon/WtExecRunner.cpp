@@ -67,7 +67,7 @@ bool WtExecRunner::init(const char* logCfg /* = "logcfgexec.json" */, bool isFil
 
 bool WtExecRunner::config(const char* cfgFile, bool isFile /* = true */)
 {
-	_config = isFile ? WTSCfgLoader::load_from_file(cfgFile, true) : WTSCfgLoader::load_from_content(cfgFile, false, true);
+	_config = isFile ? WTSCfgLoader::load_from_file(cfgFile) : WTSCfgLoader::load_from_content(cfgFile, false);
 	if(_config == NULL)
 	{
 		WTSLogger::log_raw(LL_ERROR, "Loading config file failed");
@@ -76,10 +76,9 @@ bool WtExecRunner::config(const char* cfgFile, bool isFile /* = true */)
 
 	//基础数据文件
 	WTSVariant* cfgBF = _config->get("basefiles");
-	bool isUTF8 = cfgBF->getBoolean("utf-8");
 	if (cfgBF->get("session"))
 	{
-		_bd_mgr.loadSessions(cfgBF->getCString("session"), isUTF8);
+		_bd_mgr.loadSessions(cfgBF->getCString("session"));
 		WTSLogger::info("Trading sessions loaded");
 	}
 
@@ -88,13 +87,13 @@ bool WtExecRunner::config(const char* cfgFile, bool isFile /* = true */)
 	{
 		if (cfgItem->type() == WTSVariant::VT_String)
 		{
-			_bd_mgr.loadCommodities(cfgItem->asCString(), isUTF8);
+			_bd_mgr.loadCommodities(cfgItem->asCString());
 		}
 		else if (cfgItem->type() == WTSVariant::VT_Array)
 		{
 			for (uint32_t i = 0; i < cfgItem->size(); i++)
 			{
-				_bd_mgr.loadCommodities(cfgItem->get(i)->asCString(), isUTF8);
+				_bd_mgr.loadCommodities(cfgItem->get(i)->asCString());
 			}
 		}
 	}
@@ -104,13 +103,13 @@ bool WtExecRunner::config(const char* cfgFile, bool isFile /* = true */)
 	{
 		if (cfgItem->type() == WTSVariant::VT_String)
 		{
-			_bd_mgr.loadContracts(cfgItem->asCString(), isUTF8);
+			_bd_mgr.loadContracts(cfgItem->asCString());
 		}
 		else if (cfgItem->type() == WTSVariant::VT_Array)
 		{
 			for (uint32_t i = 0; i < cfgItem->size(); i++)
 			{
-				_bd_mgr.loadContracts(cfgItem->get(i)->asCString(), isUTF8);
+				_bd_mgr.loadContracts(cfgItem->get(i)->asCString());
 			}
 		}
 	}
@@ -134,7 +133,7 @@ bool WtExecRunner::config(const char* cfgFile, bool isFile /* = true */)
 	if (StdFile::exists(cfgParser))
 	{
 		WTSLogger::info("Reading parser config from {}...", cfgParser);
-		WTSVariant* var = WTSCfgLoader::load_from_file(cfgParser, true);
+		WTSVariant* var = WTSCfgLoader::load_from_file(cfgParser);
 		if (var)
 		{
 			if (!initParsers(var))
@@ -152,7 +151,7 @@ bool WtExecRunner::config(const char* cfgFile, bool isFile /* = true */)
 	if (StdFile::exists(cfgTraders))
 	{
 		WTSLogger::info("Reading trader config from {}...", cfgTraders);
-		WTSVariant* var = WTSCfgLoader::load_from_file(cfgTraders, true);
+		WTSVariant* var = WTSCfgLoader::load_from_file(cfgTraders);
 		if (var)
 		{
 			if (!initTraders(var))
@@ -169,7 +168,7 @@ bool WtExecRunner::config(const char* cfgFile, bool isFile /* = true */)
 	if (StdFile::exists(cfgExecuters))
 	{
 		WTSLogger::info("Reading executer config from {}...", cfgExecuters);
-		WTSVariant* var = WTSCfgLoader::load_from_file(cfgExecuters, true);
+		WTSVariant* var = WTSCfgLoader::load_from_file(cfgExecuters);
 		if (var)
 		{
 			if (!initExecuters(var))
@@ -381,11 +380,12 @@ WTSSessionInfo* WtExecRunner::get_session_info(const char* sid, bool isCode /* =
 	if (!isCode)
 		return _bd_mgr.getSession(sid);
 
-	WTSCommodityInfo* cInfo = _bd_mgr.getCommodity(CodeHelper::stdCodeToStdCommID(sid).c_str());
+	CodeHelper::CodeInfo codeInfo = CodeHelper::extractStdCode(sid, NULL);
+	WTSCommodityInfo* cInfo = _bd_mgr.getCommodity(codeInfo._exchg, codeInfo._product);
 	if (cInfo == NULL)
 		return NULL;
 
-	return _bd_mgr.getSession(cInfo->getSession());
+	return cInfo->getSessionInfo();
 }
 
 void WtExecRunner::handle_push_quote(WTSTickData* quote, uint32_t hotFlag /* = 0 */)
@@ -440,16 +440,18 @@ uint64_t WtExecRunner::get_real_time()
 
 WTSCommodityInfo* WtExecRunner::get_comm_info(const char* stdCode)
 {
-	return _bd_mgr.getCommodity(CodeHelper::stdCodeToStdCommID(stdCode).c_str());
+	CodeHelper::CodeInfo codeInfo = CodeHelper::extractStdCode(stdCode, NULL);
+	return _bd_mgr.getCommodity(codeInfo._exchg, codeInfo._product);
 }
 
 WTSSessionInfo* WtExecRunner::get_sess_info(const char* stdCode)
 {
-	WTSCommodityInfo* cInfo = _bd_mgr.getCommodity(CodeHelper::stdCodeToStdCommID(stdCode).c_str());
+	CodeHelper::CodeInfo codeInfo = CodeHelper::extractStdCode(stdCode, NULL);
+	WTSCommodityInfo* cInfo = _bd_mgr.getCommodity(codeInfo._exchg, codeInfo._product);
 	if (cInfo == NULL)
 		return NULL;
 
-	return _bd_mgr.getSession(cInfo->getSession());
+	return cInfo->getSessionInfo();
 }
 
 uint32_t WtExecRunner::get_trading_day()

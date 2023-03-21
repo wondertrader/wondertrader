@@ -9,9 +9,7 @@
 #include "../Share/DLLHelper.hpp"
 #include "../Share/StdUtils.hpp"
 
-#ifdef _WIN32
 #include "../Share/charconv.hpp"
-#endif
 
 #include "../WTSUtils/WTSCfgLoader.h"
 #include "../Includes/WTSVariant.hpp"
@@ -31,6 +29,7 @@ std::string SAVEPATH;	//保存位置
 std::string APPID;
 std::string AUTHCODE;
 uint32_t	CLASSMASK;	//期权
+bool		ONLYINCFG;	//只落地配置文件有的
 
 std::string COMM_FILE;		//输出的品种文件名
 std::string CONT_FILE;		//输出的合约文件名
@@ -93,8 +92,9 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 			CONT_FILE = "contracts.json";
 
 		map_files = cfg->getCString("mapfiles");
+		ONLYINCFG = ctp->getBoolean("onlyincfg");
 
-		MODULE_NAME = cfg->getCString("module");
+		MODULE_NAME = ctp->getCString("module");
 		if (MODULE_NAME.empty())
 		{
 #ifdef _WIN32
@@ -121,6 +121,7 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 
 		SAVEPATH = ini.readString("config", "path", "");
 		CLASSMASK = ini.readUInt("config", "mask", 1 | 2 | 4); //1-期货,2-期权,4-股票
+		ONLYINCFG = wt_stricmp(ini.readString("config", "onlyincfg", "false").c_str(), "true") == 0;
 
 		COMM_FILE = ini.readString("config", "commfile", "commodities.json");
 		CONT_FILE = ini.readString("config", "contfile", "contracts.json");
@@ -128,14 +129,14 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 		map_files = ini.readString("config", "mapfiles", "");
 
 #ifdef _WIN32
-		MODULE_NAME = ini.readString("config", "module", "thosttraderapi_se.dll");
+		MODULE_NAME = ini.readString("ctp", "module", "thosttraderapi_se.dll");
 #else
-		MODULE_NAME = ini.readString("config", "module", "thosttraderapi_se.so");
+		MODULE_NAME = ini.readString("ctp", "module", "thosttraderapi_se.so");
 #endif
 	}
 	else
 	{
-		WTSVariant* root = WTSCfgLoader::load_from_file(cfgfile, true);
+		WTSVariant* root = WTSCfgLoader::load_from_file(cfgfile);
 		if (root == NULL)
 			return 0;
 
@@ -160,8 +161,9 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 			CONT_FILE = "contracts.json";
 
 		map_files = cfg->getCString("mapfiles");
+		ONLYINCFG = ctp->getBoolean("onlyincfg");
 
-		MODULE_NAME = cfg->getCString("module");
+		MODULE_NAME = ctp->getCString("module");
 		if(MODULE_NAME.empty())
 		{
 #ifdef _WIN32
@@ -175,12 +177,7 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 	
 	if(!boost::filesystem::exists(MODULE_NAME.c_str()))
 	{
-		MODULE_NAME = getBinDir();
-#ifdef _WIN32
-		MODULE_NAME += "traders/thosttraderapi_se.dll";
-#else
-		MODULE_NAME += "traders/thosttraderapi_se.so";
-#endif
+		MODULE_NAME = StrUtil::printf("%straders/%s", getBinDir(), MODULE_NAME.c_str());
 	}
 
 	if(FRONT_ADDR.empty() || BROKER_ID.empty() || INVESTOR_ID.empty() || PASSWORD.empty() || SAVEPATH.empty())
@@ -206,11 +203,16 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 			int cout = iniMap.readSecKeyValArray("Name", ayKeys, ayVals);
 			for (int i = 0; i < cout; i++)
 			{
-				MAP_NAME[ayKeys[i]] = ayVals[i];
+				std::string pName = ayVals[i];
+				bool isUTF8 = EncodingHelper::isUtf8((unsigned char*)pName.c_str(), pName.size());
+				if (!isUTF8)
+					pName = ChartoUTF8(ayVals[i]);
+				//保存的时候全部转成UTF8
+				MAP_NAME[ayKeys[i]] = pName;
 #ifdef _WIN32
-				printf("Commodity name mapping: %s - %s\r\n", ayKeys[i].c_str(), UTF8toChar(ayVals[i]).c_str());
+				printf("Commodity name mapping: %s - %s\r\n", ayKeys[i].c_str(), isUTF8 ? UTF8toChar(ayVals[i]).c_str() : ayVals[i].c_str());
 #else
-				printf("Commodity name mapping: %s - %s\r\n", ayKeys[i].c_str(), ayVals[i].c_str());
+				printf("Commodity name mapping: %s - %s\r\n", ayKeys[i].c_str(), isUTF8 ? ayVals[i].c_str() : ChartoUTF8(ayVals[i]).c_str());
 #endif
 			}
 

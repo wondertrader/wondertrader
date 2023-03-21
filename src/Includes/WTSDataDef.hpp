@@ -423,6 +423,8 @@ public:
 			case KFT_DATE:
 				vArray->append(day.date);
 				break;
+			case KFT_TIME:
+				vArray->append((double)day.time);
 			}
 		}
 
@@ -755,6 +757,8 @@ public:
 			case KFT_DATE:
 				vArray->append(day.date);
 				break;
+			case KFT_TIME:
+				vArray->append((double)day.time);
 			}
 		}
 

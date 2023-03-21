@@ -350,4 +350,7 @@ protected:
 
 	//委托单标记缓存器
 	WtKVCache					m_eidCache;
+
+	//订单标记缓存器
+	//WtKVCache		m_oidCache;
 };

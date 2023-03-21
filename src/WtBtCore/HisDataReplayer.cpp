@@ -216,23 +216,21 @@ bool HisDataReplayer::init(WTSVariant* cfg, EventNotifier* notifier /* = NULL */
 
 	//基础数据文件
 	WTSVariant* cfgBF = cfg->get("basefiles");
-	//基础配置文件的编码，这样可以兼容原来的配置
-	bool isUTF8 = cfgBF->getBoolean("utf-8");
 	if (cfgBF->get("session"))
-		_bd_mgr.loadSessions(cfgBF->getCString("session"), isUTF8);
+		_bd_mgr.loadSessions(cfgBF->getCString("session"));
 
 	WTSVariant* cfgItem = cfgBF->get("commodity");
 	if (cfgItem)
 	{
 		if (cfgItem->type() == WTSVariant::VT_String)
 		{
-			_bd_mgr.loadCommodities(cfgItem->asCString(), isUTF8);
+			_bd_mgr.loadCommodities(cfgItem->asCString());
 		}
 		else if (cfgItem->type() == WTSVariant::VT_Array)
 		{
 			for(uint32_t i = 0; i < cfgItem->size(); i ++)
 			{
-				_bd_mgr.loadCommodities(cfgItem->get(i)->asCString(), isUTF8);
+				_bd_mgr.loadCommodities(cfgItem->get(i)->asCString());
 			}
 		}
 	}
@@ -242,13 +240,13 @@ bool HisDataReplayer::init(WTSVariant* cfg, EventNotifier* notifier /* = NULL */
 	{
 		if (cfgItem->type() == WTSVariant::VT_String)
 		{
-			_bd_mgr.loadContracts(cfgItem->asCString(), isUTF8);
+			_bd_mgr.loadContracts(cfgItem->asCString());
 		}
 		else if (cfgItem->type() == WTSVariant::VT_Array)
 		{
 			for (uint32_t i = 0; i < cfgItem->size(); i++)
 			{
-				_bd_mgr.loadContracts(cfgItem->get(i)->asCString(), isUTF8);
+				_bd_mgr.loadContracts(cfgItem->get(i)->asCString());
 			}
 		}
 	}
@@ -332,7 +330,7 @@ bool HisDataReplayer::loadStkAdjFactorsFromFile(const char* adjfile)
 	std::string content;
 	StdFile::read_file_content(adjfile, content);
 
-	WTSVariant* doc = WTSCfgLoader::load_from_file(adjfile, true);
+	WTSVariant* doc = WTSCfgLoader::load_from_file(adjfile);
 	if (doc == NULL)
 	{
 		WTSLogger::error("Parsing adjust factor file {} faield", adjfile);
@@ -431,6 +429,7 @@ void HisDataReplayer::clear_cache()
 
 	_bars_cache.clear();
 	_unbars_cache.clear();
+	_unsubbed_in_need.clear();
 
 	_main_key = "";
 	_main_period = "";
@@ -761,7 +760,8 @@ void HisDataReplayer::run_by_bars(bool bNeedDump /* = false */)
 
 	BarsListPtr barsList = _bars_cache[_main_key];
 	WTSSessionInfo* sInfo = get_session_info(barsList->_code.c_str(), true);
-	std::string commId = CodeHelper::stdCodeToStdCommID(barsList->_code.c_str());
+	CodeHelper::CodeInfo codeInfo = CodeHelper::extractStdCode(barsList->_code.c_str(), NULL);
+	std::string commId = codeInfo.stdCommID();
 
 	uint32_t sIdx = locate_barindex(_main_key, _begin_time, false);
 	uint32_t eIdx = locate_barindex(_main_key, _end_time, true);
@@ -1210,6 +1210,7 @@ void HisDataReplayer::simTicks(uint32_t uDate, uint32_t uTime, uint32_t endTDate
 
 							curTS.price = newPx;
 							curTS.volume = nextBar.vol;
+							curTS.total_volume += nextBar.vol;
 
 							//更新开高低三个字段
 							if (decimal::eq(curTS.open, 0))
@@ -2387,6 +2388,8 @@ WTSTickSlice* HisDataReplayer::get_tick_slice(const char* stdCode, uint32_t coun
 	
 	//cursor是下一笔tick的index+1，大于当前截止时间的
 	//所以要获取当前截止时间之前的最后一笔tick，需要-2
+	if (tickList._cursor < 2)
+		return NULL;
 	uint32_t eIdx = tickList._cursor - 2;
 	uint32_t sIdx = 0;
 	if (eIdx >= count - 1)
@@ -2751,7 +2754,8 @@ WTSTickData* HisDataReplayer::get_last_tick(const char* stdCode)
 
 WTSCommodityInfo* HisDataReplayer::get_commodity_info(const char* stdCode)
 {
-	return _bd_mgr.getCommodity(CodeHelper::stdCodeToStdCommID(stdCode).c_str());
+	CodeHelper::CodeInfo codeInfo = CodeHelper::extractStdCode(stdCode, &_hot_mgr);
+	return _bd_mgr.getCommodity(codeInfo._exchg, codeInfo._product);
 }
 
 std::string HisDataReplayer::get_rawcode(const char* stdCode)
@@ -2771,11 +2775,12 @@ WTSSessionInfo* HisDataReplayer::get_session_info(const char* sid, bool isCode /
 	if (!isCode)
 		return _bd_mgr.getSession(sid);
 
-	WTSCommodityInfo* cInfo = _bd_mgr.getCommodity(CodeHelper::stdCodeToStdCommID(sid).c_str());
+	CodeHelper::CodeInfo codeInfo = CodeHelper::extractStdCode(sid, &_hot_mgr);
+	WTSCommodityInfo* cInfo = _bd_mgr.getCommodity(codeInfo._exchg, codeInfo._product);
 	if (cInfo == NULL)
 		return NULL;
 
-	return _bd_mgr.getSession(cInfo->getSession());
+	return cInfo->getSessionInfo();
 }
 
 void HisDataReplayer::loadFees(const char* filename)
@@ -2789,7 +2794,7 @@ void HisDataReplayer::loadFees(const char* filename)
 		return;
 	}
 
-	WTSVariant* cfg = WTSCfgLoader::load_from_file(filename, true);
+	WTSVariant* cfg = WTSCfgLoader::load_from_file(filename);
 	if (cfg == NULL)
 	{
 		WTSLogger::error("Converting fees template file {} failed", filename);
@@ -2815,13 +2820,14 @@ void HisDataReplayer::loadFees(const char* filename)
 
 double HisDataReplayer::calc_fee(const char* stdCode, double price, double qty, uint32_t offset)
 {
-	std::string stdPID = CodeHelper::stdCodeToStdCommID(stdCode);
+	CodeHelper::CodeInfo codeInfo = CodeHelper::extractStdCode(stdCode, &_hot_mgr);
+	const char* stdPID = codeInfo.stdCommID();
 	auto it = _fee_map.find(stdPID);
 	if (it == _fee_map.end())
 		return 0.0;
 
 	double ret = 0.0;
-	WTSCommodityInfo* commInfo = _bd_mgr.getCommodity(stdPID.c_str());
+	WTSCommodityInfo* commInfo = _bd_mgr.getCommodity(stdPID);
 	const FeeItem& fItem = it->second;
 	if (fItem._by_volume)
 	{

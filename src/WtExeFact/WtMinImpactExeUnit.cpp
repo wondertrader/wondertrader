@@ -403,7 +403,7 @@ void WtMinImpactExeUnit::do_calc()
 		}
 		else if (_price_mode == 1)
 		{
-			buyPx = _last_tick->askprice(0);
+			buyPx = _last_tick->askprice(0) + _comm_info->getPriceTick() * _price_offset;
 			sellPx = _last_tick->bidprice(0) - _comm_info->getPriceTick() * _price_offset;
 		}
 

@@ -20,6 +20,7 @@ LINK_DIRECTORIES(${LNKS})
 
 SET(LIBS
 	boost_filesystem
+    WTSUtils
 	dl
 )
 

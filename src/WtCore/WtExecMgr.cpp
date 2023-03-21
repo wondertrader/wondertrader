@@ -214,10 +214,26 @@ bool WtExecuterMgr::load_router_rules(WTSVariant* config)
 	for(uint32_t i = 0; i < config->size(); i++)
 	{
 		WTSVariant* item = config->get(i);
-		_router_rules[item->getCString("strategy")] = item->getCString("executer");
-
-		WTSLogger::info("Signal of strategy {} will be routed to executer {}", item->getCString("strategy"), item->getCString("executer"));
-		_routed_executers.insert(item->getCString("executer"));
+		const char* straName = item->getCString("strategy");
+		WTSVariant* itemExec = item->get("executer");
+		if(itemExec->isArray())
+		{
+			uint32_t cnt = itemExec->size();
+			for(uint32_t k = 0; k < cnt; k++)
+			{
+				const char* execId = itemExec->get(k)->asCString();
+				_router_rules[straName].insert(execId);
+				WTSLogger::info("Signal of strategy {} will be routed to executer {}", straName, execId);
+				_routed_executers.insert(execId);
+			}
+		}
+		else
+		{
+			const char* execId = itemExec->asCString();
+			_router_rules[straName].insert(execId);
+			WTSLogger::info("Signal of strategy {} will be routed to executer {}", straName, execId);
+			_routed_executers.insert(execId);
+		}
 	}
 
 	WTSLogger::info("{} router rules loaded", _router_rules.size());

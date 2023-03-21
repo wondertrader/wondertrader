@@ -724,6 +724,7 @@ void CtaMocker::proc_tick(const char* stdCode, double last_px, double cur_px)
 
 		const CondList& condList = it->second;
 		double curPrice = cur_px;
+		const CondEntrust* matchedEntrust = NULL;
 		for (const CondEntrust& entrust : condList)
 		{
 			/*
@@ -764,6 +765,12 @@ void CtaMocker::proc_tick(const char* stdCode, double last_px, double cur_px)
 				default:
 					break;
 				}
+
+				if (isMatched)
+				{
+					matchedEntrust = &entrust;
+					break;
+				}
 			}
 			else
 			{
@@ -772,83 +779,117 @@ void CtaMocker::proc_tick(const char* stdCode, double last_px, double cur_px)
 				{
 				case WCT_Equal:
 					isMatched = decimal::le(left_px, entrust._target) && decimal::ge(right_px, entrust._target);
-					curPrice = entrust._target;
 					break;
 				case WCT_Larger:
 					isMatched = decimal::gt(right_px, entrust._target);
-					curPrice = max(left_px, entrust._target);
 					break;
 				case WCT_LargerOrEqual:
 					isMatched = decimal::ge(right_px, entrust._target);
-					curPrice = max(left_px, entrust._target);
 					break;
 				case WCT_Smaller:
 					isMatched = decimal::lt(left_px, entrust._target);
-					curPrice = min(right_px, entrust._target);
 					break;
 				case WCT_SmallerOrEqual:
 					isMatched = decimal::le(left_px, entrust._target);
-					curPrice = min(right_px, entrust._target);
 					break;
 				default:
 					break;
 				}
+
+				if (isMatched)
+				{
+					/*
+					* By HeJ @ 2023.02.27
+					* 在bar回测中，经常会出现同一个价格触发了多个条件单时，要选出一个作为最终的触发价，遵循以下规则：
+					* 1 alg不同的条件单，或者alg为WCT_Equal，以最先设置的那个为准
+					* 2 alg一样的调价单，如果是WCT_Larger与WCT_LargerOrEqual，取触发价较小的，WCT_Smaller与WCT_SmallerOrEqual，取触发价较大的
+					*/
+					if (matchedEntrust == NULL)
+					{
+						matchedEntrust = &entrust;
+						if (entrust._alg == WCT_Larger || entrust._alg == WCT_LargerOrEqual)
+							curPrice = max(left_px, entrust._target);
+						else if (entrust._alg == WCT_Smaller || entrust._alg == WCT_SmallerOrEqual)
+							curPrice = min(right_px, entrust._target);
+						else
+							curPrice = entrust._target;
+					}
+					else if (matchedEntrust->_alg == entrust._alg)
+					{
+						if (entrust._alg == WCT_Larger || entrust._alg == WCT_LargerOrEqual)
+						{
+							if (entrust._target < matchedEntrust->_target)
+							{
+								matchedEntrust = &entrust;
+								curPrice = max(left_px, entrust._target);
+							}
+						}
+						else if (entrust._alg == WCT_Smaller || entrust._alg == WCT_SmallerOrEqual)
+						{
+							if (entrust._target > matchedEntrust->_target)
+							{
+								matchedEntrust = &entrust;
+								curPrice = min(right_px, entrust._target);
+							}
+						}
+					}
+				}
 			}
+		}
 
-
-			if (isMatched)
+		if (matchedEntrust != NULL)
+		{
+			const CondEntrust& entrust = *matchedEntrust;
+			double price = curPrice;
+			double curQty = stra_get_position(stdCode);
+			//_replayer->is_tick_enabled() ? newTick->price() : entrust._target;	//如果开启了tick回测,则用tick数据的价格,如果没有开启,则只能用条件单价格
+			WTSLogger::log_dyn("strategy", _name.c_str(), LL_INFO,
+				"Condition order triggered[newprice: {}{}{}], instrument: {}, {} {}",
+				curPrice, CMP_ALG_NAMES[entrust._alg], entrust._target, stdCode, ACTION_NAMES[entrust._action], entrust._qty);
+			switch (entrust._action)
 			{
-				double price = curPrice;
-				double curQty = stra_get_position(stdCode);
-				//_replayer->is_tick_enabled() ? newTick->price() : entrust._target;	//如果开启了tick回测,则用tick数据的价格,如果没有开启,则只能用条件单价格
-				WTSLogger::log_dyn("strategy", _name.c_str(), LL_INFO,
-					"Condition order triggered[newprice: {}{}{}], instrument: {}, {} {}",
-					curPrice, CMP_ALG_NAMES[entrust._alg], entrust._target, stdCode, ACTION_NAMES[entrust._action], entrust._qty);
-				switch (entrust._action)
-				{
-				case COND_ACTION_OL:
-				{
-					if (decimal::lt(curQty, 0))
-						append_signal(stdCode, entrust._qty, entrust._usertag, price, 2);
-					else
-						append_signal(stdCode, curQty + entrust._qty, entrust._usertag, price, 2);
-				}
-				break;
-				case COND_ACTION_CL:
-				{
-					double maxQty = min(curQty, entrust._qty);
-					append_signal(stdCode, curQty - maxQty, entrust._usertag, price, 2);
-				}
-				break;
-				case COND_ACTION_OS:
-				{
-					if (decimal::gt(curQty, 0))
-						append_signal(stdCode, -entrust._qty, entrust._usertag, price, 2);
-					else
-						append_signal(stdCode, curQty - entrust._qty, entrust._usertag, price, 2);
-				}
-				break;
-				case COND_ACTION_CS:
-				{
-					double maxQty = min(abs(curQty), entrust._qty);
-					append_signal(stdCode, curQty + maxQty, entrust._usertag, price, 2);
-				}
-				break;
-				case COND_ACTION_SP:
-				{
+			case COND_ACTION_OL:
+			{
+				if (decimal::lt(curQty, 0))
 					append_signal(stdCode, entrust._qty, entrust._usertag, price, 2);
-				}
-				default: break;
-				}
-
-				//同一个bar设置针对同一个合约的条件单,只可能触发一条
-				//所以这里直接清理掉即可
-				_condtions.erase(it);
-				break;
+				else
+					append_signal(stdCode, curQty + entrust._qty, entrust._usertag, price, 2);
 			}
+			break;
+			case COND_ACTION_CL:
+			{
+				double maxQty = min(curQty, entrust._qty);
+				append_signal(stdCode, curQty - maxQty, entrust._usertag, price, 2);
+			}
+			break;
+			case COND_ACTION_OS:
+			{
+				if (decimal::gt(curQty, 0))
+					append_signal(stdCode, -entrust._qty, entrust._usertag, price, 2);
+				else
+					append_signal(stdCode, curQty - entrust._qty, entrust._usertag, price, 2);
+			}
+			break;
+			case COND_ACTION_CS:
+			{
+				double maxQty = min(abs(curQty), entrust._qty);
+				append_signal(stdCode, curQty + maxQty, entrust._usertag, price, 2);
+			}
+			break;
+			case COND_ACTION_SP:
+			{
+				append_signal(stdCode, entrust._qty, entrust._usertag, price, 2);
+			}
+			default: break;
+			}
+
+			//同一个bar设置针对同一个合约的条件单,只可能触发一条
+			//所以这里直接清理掉即可
+			_condtions.erase(it);
 		}
 	}
 }
+
 
 void CtaMocker::handle_tick(const char* stdCode, WTSTickData* newTick, uint32_t pxType /* = 0 */)
 {

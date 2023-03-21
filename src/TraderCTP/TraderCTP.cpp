@@ -92,7 +92,21 @@ TraderCTP::~TraderCTP()
 
 bool TraderCTP::init(WTSVariant* params)
 {
-	m_strFront = params->get("front")->asCString();
+	auto fontItem = params->get("front");
+	if (fontItem)
+	{
+		if (fontItem->type() == WTSVariant::VT_String)
+		{
+			m_strFront.push_back(fontItem->asCString());
+		}
+		else if (fontItem->type() == WTSVariant::VT_Array)
+		{
+			for (uint32_t i = 0; i < fontItem->size(); i++)
+			{
+				m_strFront.push_back(fontItem->get(i)->asCString());
+			}
+		}
+	}
 	m_strBroker = params->get("broker")->asCString();
 	m_strUser = params->get("user")->asCString();
 	m_strPass = params->get("pass")->asCString();
@@ -171,7 +185,11 @@ void TraderCTP::connect()
 		m_pUserAPI->SubscribePrivateTopic(THOST_TERT_RESUME);		// ×¢²áË½ÓÐÁ÷
 	}
 
-	m_pUserAPI->RegisterFront((char*)m_strFront.c_str());
+	for (std::string front : m_strFront)
+	{
+		m_pUserAPI->RegisterFront((char*)front.c_str());
+		m_sink->handleTraderLog(LL_INFO, fmtutil::format("registerFront: {}", front));
+	}
 
 	if (m_pUserAPI)
 	{
@@ -1008,7 +1026,7 @@ void TraderCTP::OnRspQryOrder(CThostFtdcOrderField *pOrder, CThostFtdcRspInfoFie
 
 void TraderCTP::OnRspError(CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
-	int x = 0;
+	m_sink->handleTraderLog(LL_ERROR, fmtutil::format("{} rsp error: {} : {}", nRequestID, pRspInfo->ErrorID, pRspInfo->ErrorMsg));
 }
 
 void TraderCTP::OnRtnOrder(CThostFtdcOrderField *pOrder)

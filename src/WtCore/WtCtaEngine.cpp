@@ -148,9 +148,9 @@ void WtCtaEngine::on_init()
 		CtaContextPtr& ctx = (CtaContextPtr&)it->second;
 		ctx->on_init();
 
-		const char* execid = _exec_mgr.get_route(ctx->name());
+		const auto& exec_ids = _exec_mgr.get_route(ctx->name());
 
-		ctx->enum_position([this, ctx, execid](const char* stdCode, double qty){
+		ctx->enum_position([this, ctx, exec_ids](const char* stdCode, double qty){
 
 			double oldQty = qty;
 			bool bFilterd = _filter_mgr.is_filtered_by_strategy(ctx->name(), qty);
@@ -171,7 +171,8 @@ void WtCtaEngine::on_init()
 					realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
 				}
 
-				_exec_mgr.add_target_to_cache(realCode.c_str(), qty, execid);
+				for(auto& execid : exec_ids)
+					_exec_mgr.add_target_to_cache(realCode.c_str(), qty, execid.c_str());
 			}
 			else
 			{
@@ -249,8 +250,8 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 	{
 		CtaContextPtr& ctx = (CtaContextPtr&)it->second;
 		ctx->on_schedule(curDate, curTime);
-		const char* execid = _exec_mgr.get_route(ctx->name());
-		ctx->enum_position([this, ctx, execid, &target_pos](const char* stdCode, double qty){
+		const auto& exec_ids = _exec_mgr.get_route(ctx->name());
+		ctx->enum_position([this, ctx, exec_ids, &target_pos](const char* stdCode, double qty){
 
 			double oldQty = qty;
 			bool bFilterd = _filter_mgr.is_filtered_by_strategy(ctx->name(), qty);
@@ -273,7 +274,8 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 
 				double& vol = target_pos[realCode];
 				vol += qty;
-				_exec_mgr.add_target_to_cache(realCode.c_str(), qty, execid);
+				for(auto& execid : exec_ids)
+					_exec_mgr.add_target_to_cache(realCode.c_str(), qty, execid.c_str());
 			}
 			else
 			{
@@ -330,6 +332,11 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 
 	push_task([this](){
 		update_fund_dynprofit();
+		/*
+		 *	By Wesley @ 2023.01.30
+		 *	增加一个定时刷新交易账号资金的入口
+		 */
+		_adapter_mgr->refresh_funds();
 	});
 
 	//_exec_mgr.set_positions(target_pos);
@@ -395,8 +402,9 @@ void WtCtaEngine::handle_pos_change(const char* straName, const char* stdCode, d
 	 *	那么就只提交增量
 	 *	如果策略没有绑定执行通道，就提交全量
 	 */
-	const char* execid = _exec_mgr.get_route(straName);
-	_exec_mgr.handle_pos_change(realCode.c_str(), targetPos, diffPos, execid);
+	const auto& exec_ids = _exec_mgr.get_route(straName);
+	for(auto& execid : exec_ids)
+		_exec_mgr.handle_pos_change(realCode.c_str(), targetPos, diffPos, execid.c_str());
 }
 
 void WtCtaEngine::on_tick(const char* stdCode, WTSTickData* curTick)
@@ -542,16 +550,18 @@ uint32_t WtCtaEngine::transTimeToMin(uint32_t uTime)
 
 WTSCommodityInfo* WtCtaEngine::get_comm_info(const char* stdCode)
 {
-	return _base_data_mgr->getCommodity(CodeHelper::stdCodeToStdCommID(stdCode).c_str());
+	CodeHelper::CodeInfo codeInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
+	return _base_data_mgr->getCommodity(codeInfo._exchg, codeInfo._product);
 }
 
 WTSSessionInfo* WtCtaEngine::get_sess_info(const char* stdCode)
 {
-	WTSCommodityInfo* cInfo = _base_data_mgr->getCommodity(CodeHelper::stdCodeToStdCommID(stdCode).c_str());
+	CodeHelper::CodeInfo codeInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
+	WTSCommodityInfo* cInfo = _base_data_mgr->getCommodity(codeInfo._exchg, codeInfo._product);
 	if (cInfo == NULL)
 		return NULL;
 
-	return _base_data_mgr->getSession(cInfo->getSession());
+	return cInfo->getSessionInfo();
 }
 
 uint64_t WtCtaEngine::get_real_time()

@@ -339,6 +339,12 @@ void CtaStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 
 				if (pInfo._volume == 0 || isExpired)
 				{
+					//By Wesley @ 2023.02.21
+					//加这一行的原因是，有些期权合约经常会持有到交割日
+					//所以如果合约过期了，那么需要把浮动盈亏当做平仓盈亏累加一下
+					//处理完以后，下一次加载，浮动盈亏就是0了
+					pInfo._closeprofit += pInfo._dynprofit;
+
 					pInfo._dynprofit = 0;
 					pInfo._frozen = 0;
 				}
@@ -799,15 +805,14 @@ void CtaStraBaseCtx::on_tick(const char* stdCode, WTSTickData* newTick, bool bEm
 			WTSSessionInfo* sInfo = _engine->get_session_info(stdCode, true);
 			if (sInfo->isInTradingTime(_engine->get_raw_time(), true))
 			{
-				const SigInfo& sInfo = it->second;
+				const SigInfo sInfo = it->second;
 				//只有当信号类型不为0，即bar内信号或者条件单触发信号时，且信号没有触发过
-				do_set_position(stdCode, sInfo._volume, sInfo._usertag.c_str(), (sInfo._sigtype!=0 && !sInfo._triggered));
+				do_set_position(stdCode, sInfo._volume, sInfo._usertag.c_str(), (sInfo._sigtype != 0 && !sInfo._triggered));
+				_sig_map.erase(it);
 
 				//如果是条件单触发，则回调on_condition_triggered
 				if(sInfo._sigtype == 2)
 					on_condition_triggered(stdCode, sInfo._volume, newTick->price(), sInfo._usertag.c_str());
-
-				_sig_map.erase(it);
 			}
 			
 		}
@@ -1036,23 +1041,29 @@ void CtaStraBaseCtx::on_session_begin(uint32_t uTDate)
 
 void CtaStraBaseCtx::enum_position(FuncEnumCtaPosCallBack cb, bool bForExecute /* = false */)
 {
+	/* By HeJ @ 2023.03.14
+	 * 读取理论持仓时，要加个锁，避免出现组合轧差同步与信号同时触发，导致的反复发单和信号覆盖
+	 */
 	std::unordered_map<std::string, double> desPos;
-	for (auto& it:_pos_map)
 	{
-		const char* stdCode = it.first.c_str();
-		const PosInfo& pInfo = it.second;
-		//cb(stdCode, pInfo._volume);
-		desPos[stdCode] = pInfo._volume;
-	}
+		SpinLock lock(_mutex);		
+		for (auto& it : _pos_map)
+		{
+			const char* stdCode = it.first.c_str();
+			const PosInfo& pInfo = it.second;
+			//cb(stdCode, pInfo._volume);
+			desPos[stdCode] = pInfo._volume;
+		}
 
-	for (auto& sit:_sig_map)
-	{
-		const char* stdCode = sit.first.c_str();
-		SigInfo& sInfo = (SigInfo&)sit.second;
-		desPos[stdCode] = sInfo._volume;
-		if(bForExecute)
-			sInfo._triggered = true;
-	}
+		for (auto& sit : _sig_map)
+		{
+			const char* stdCode = sit.first.c_str();
+			SigInfo& sInfo = (SigInfo&)sit.second;
+			desPos[stdCode] = sInfo._volume;
+			if (bForExecute)
+				sInfo._triggered = true;
+		}
+	}	
 
 	for(auto v:desPos)
 	{
@@ -1411,7 +1422,10 @@ void CtaStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 
 	//成交价
 	double trdPx = curPx;
-
+	/* By HeJ @ 2023.03.14
+	 * 设置理论持仓时，要加个锁，避免出现组合轧差同步与信号同时触发，导致的反复发单和信号覆盖
+	 */
+	SpinLock lock(_mutex);
 	bool isBuy = decimal::gt(diff, 0.0);
 	if (decimal::gt(pInfo._volume*diff, 0))
 	{//当前持仓和仓位变化方向一致, 增加一条明细, 增加数量即可

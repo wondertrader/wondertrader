@@ -28,7 +28,7 @@ ActionPolicyMgr::~ActionPolicyMgr()
 
 bool ActionPolicyMgr::init(const char* filename)
 {
-	WTSVariant* cfg = WTSCfgLoader::load_from_file(filename, true);
+	WTSVariant* cfg = WTSCfgLoader::load_from_file(filename);
 	if (cfg == NULL)
 		return false;
 

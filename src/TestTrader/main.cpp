@@ -570,7 +570,7 @@ int main()
 {
 	WTSLogger::init("logcfg.yaml");
 
-	WTSVariant* root = WTSCfgLoader::load_from_file("config.yaml", true);
+	WTSVariant* root = WTSCfgLoader::load_from_file("config.yaml");
 	if(root == NULL)
 	{
 		WTSLogger::log_raw(LL_ERROR, "ÅäÖÃÎÄ¼þconfig.yaml¼ÓÔØÊ§°Ü");
@@ -580,13 +580,13 @@ int main()
 	WTSVariant* cfg = root->get("config");
 	bool isUTF8 = cfg->getBoolean("utf8");
 	if(cfg->has("session"))
-		g_bdMgr.loadSessions(cfg->getCString("session"), isUTF8);
+		g_bdMgr.loadSessions(cfg->getCString("session"));
 
 	if (cfg->has("commodity"))
-		g_bdMgr.loadCommodities(cfg->getCString("commodity"), isUTF8);
+		g_bdMgr.loadCommodities(cfg->getCString("commodity"));
 
 	if (cfg->has("contract"))
-		g_bdMgr.loadContracts(cfg->getCString("contract"), isUTF8);
+		g_bdMgr.loadContracts(cfg->getCString("contract"));
 
 	if (cfg->has("holiday"))
 		g_bdMgr.loadHolidays(cfg->getCString("holiday"));

@@ -35,7 +35,7 @@ void WtFilterMgr::load_filters(const char* fileName)
 			_notifier->notify_event("Filter file has been reloaded");
 	}
 
-	WTSVariant* cfg = WTSCfgLoader::load_from_file(_filter_file.c_str(), true);
+	WTSVariant* cfg = WTSCfgLoader::load_from_file(_filter_file.c_str());
 
 	_filter_timestamp = lastModTime;
 
@@ -167,6 +167,7 @@ bool WtFilterMgr::is_filtered_by_strategy(const char* straName, double& targetPo
 
 bool WtFilterMgr::is_filtered_by_code(const char* stdCode, double& targetPos)
 {
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, NULL);
 	auto cit = _code_filters.find(stdCode);
 	if (cit != _code_filters.end())
 	{
@@ -184,12 +185,11 @@ bool WtFilterMgr::is_filtered_by_code(const char* stdCode, double& targetPos)
 		return false;
 	}
 
-	std::string stdPID = CodeHelper::stdCodeToStdCommID(stdCode);
-	cit = _code_filters.find(stdPID);
+	cit = _code_filters.find(cInfo.stdCommID());
 	if (cit != _code_filters.end())
 	{
 		const FilterItem& fItem = cit->second;
-		WTSLogger::info("[Filters] CommID filter {} triggered, action: {}", stdPID.c_str(), fItem._action <= FA_Redirect ? FLTACT_NAMEs[fItem._action] : "Unknown");
+		WTSLogger::info("[Filters] CommID filter {} triggered, action: {}", cInfo.stdCommID(), fItem._action <= FA_Redirect ? FLTACT_NAMEs[fItem._action] : "Unknown");
 		if (fItem._action == FA_Ignore)
 		{
 			return true;
