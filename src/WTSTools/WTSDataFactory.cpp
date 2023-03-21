@@ -610,7 +610,7 @@ WTSKlineData* WTSDataFactory::extractMin5Data(WTSKlineSlice* baseKline, uint32_t
 		if(uDate == 19900000)
 			uDate = uTradingDate;
 		uint32_t uTime = TimeUtils::minBarToTime(curBar.time);
-		uint32_t uMinute = sInfo->timeToMinutes(uTime)-5;
+		uint32_t uMinute = sInfo->timeToMinutes(uTime);
 
 		uint32_t uBarMin = (uMinute/steplen)*steplen+steplen;
 		uint64_t uBarTime = sInfo->minuteToTime(uBarMin);
