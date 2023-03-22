@@ -1597,7 +1597,7 @@ WTSKlineSlice* WtDataReader::readKlineSlice(const char* stdCode, WTSKlinePeriod 
 	uint32_t curTDate = _base_data_mgr->calcTradingDate(stdPID, 0, 0, false);
 
 	BarsList& barsList = _bars_cache[key];
-	WTSKlineSlice* slice = NULL;
+	WTSKlineSlice* slice = WTSKlineSlice::create(stdCode, period, 1, NULL, 0);;
 	WTSBarStruct* head = NULL;
 	uint32_t hisCnt = 0;
 	uint32_t rtCnt = 0;
@@ -1731,7 +1731,7 @@ WTSKlineSlice* WtDataReader::readKlineSlice(const char* stdCode, WTSKlinePeriod 
 				if (totalCnt > 0)
 				{
 					head = &barsList._bars[barsList._bars.size() - totalCnt];
-					slice = WTSKlineSlice::create(stdCode, period, 1, head, totalCnt);
+					slice->appendBlock(head, totalCnt);
 				}
 			}
 			else
@@ -1742,7 +1742,7 @@ WTSKlineSlice* WtDataReader::readKlineSlice(const char* stdCode, WTSKlinePeriod 
 				if (hisCnt > 0)
 				{
 					head = &barsList._bars[barsList._bars.size() - hisCnt];
-					slice = WTSKlineSlice::create(stdCode, period, 1, head, hisCnt);
+					slice->appendBlock(head, hisCnt);
 				}
 				// Ìí¼Órt
 				if (rtCnt > 0)
@@ -1758,7 +1758,7 @@ WTSKlineSlice* WtDataReader::readKlineSlice(const char* stdCode, WTSKlinePeriod 
 			hisCnt = count;
 			hisCnt = min(hisCnt, (uint32_t)barsList._bars.size());
 			head = &barsList._bars[barsList._bars.size() - hisCnt];
-			slice = WTSKlineSlice::create(stdCode, period, 1, head, hisCnt);
+			slice->appendBlock(head, hisCnt);
 		}
 	}
 	else
@@ -1767,14 +1767,12 @@ WTSKlineSlice* WtDataReader::readKlineSlice(const char* stdCode, WTSKlinePeriod 
 		hisCnt = count;
 		hisCnt = min(hisCnt, (uint32_t)barsList._bars.size());
 		head = &barsList._bars[barsList._bars.size() - hisCnt];
-		slice = WTSKlineSlice::create(stdCode, period, 1, head, hisCnt);
+		slice->appendBlock(head, hisCnt);
 	}
 
 	pipe_reader_log(_sink, LL_DEBUG, "His {} bars of {} loaded, {} from history, {} from realtime", PERIOD_NAME[period], stdCode, hisCnt, rtCnt);
 	return slice;
 }
-
-
 
 WtDataReader::TickBlockPair* WtDataReader::getRTTickBlock(const char* exchg, const char* code)
 {
