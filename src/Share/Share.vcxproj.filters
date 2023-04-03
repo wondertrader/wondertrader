@@ -234,5 +234,8 @@
     <ClInclude Include="..\Includes\WTSSwitchItem.hpp">
       <Filter>Objects</Filter>
     </ClInclude>
+    <ClInclude Include="..\Includes\LoaderDef.hpp">
+      <Filter>Objects</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

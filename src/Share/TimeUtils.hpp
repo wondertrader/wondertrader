@@ -365,7 +365,7 @@ public:
 		void from_local_time(uint64_t _time)
 		{
 			time_t _t = _time/1000;
-			_msec = (uint32_t)_time%1000;
+			_msec = (uint32_t)(_time%1000);
 #ifdef _WIN32
 			localtime_s(&t, &_t);
 #else

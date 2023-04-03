@@ -149,6 +149,18 @@ public:
 		m_minMktQty = minMarketVol;
 	}
 
+	inline void setDates(uint32_t openDate, uint32_t expireDate)
+	{
+		m_openDate = openDate;
+		m_expireDate = expireDate;
+	}
+
+	inline void setMarginRatios(double longRatio, double shortRatio)
+	{
+		m_lMarginRatio = longRatio;
+		m_sMarginRatio = shortRatio;
+	}
+
 	inline const char* getCode()	const{return m_strCode.c_str();}
 	inline const char* getExchg()	const{return m_strExchg.c_str();}
 	inline const char* getName()	const{return m_strName.c_str();}
@@ -162,11 +174,18 @@ public:
 	inline uint32_t	getMinMktVol() const { return m_minMktQty; }
 	inline uint32_t	getMinLmtVol() const { return m_minLmtQty; }
 
+	inline uint32_t	getOpenDate() const { return m_openDate; }
+	inline uint32_t	getExpireDate() const { return m_expireDate; }
+
+	inline double	getLongMarginRatio() const { return m_lMarginRatio; }
+	inline double	getShortMarginRatio() const { return m_sMarginRatio; }
+
+
 	inline void setCommInfo(WTSCommodityInfo* commInfo) { m_commInfo = commInfo; }
 	inline WTSCommodityInfo* getCommInfo() const { return m_commInfo; }
 
 protected:
-	WTSContractInfo():m_commInfo(NULL){}
+	WTSContractInfo():m_commInfo(NULL), m_openDate(0), m_expireDate(0), m_lMarginRatio(0), m_sMarginRatio(0) {}
 	virtual ~WTSContractInfo(){}
 
 private:
@@ -182,6 +201,11 @@ private:
 	uint32_t	m_maxLmtQty;
 	uint32_t	m_minMktQty;
 	uint32_t	m_minLmtQty;
+
+	uint32_t	m_openDate;		//上市日期
+	uint32_t	m_expireDate;	//交割日
+	double		m_lMarginRatio;	//交易所多头保证金率
+	double		m_sMarginRatio;	//交易所空头保证金率
 
 	WTSCommodityInfo*	m_commInfo;
 };

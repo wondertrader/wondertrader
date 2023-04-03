@@ -135,6 +135,7 @@
     <ClInclude Include="..\Includes\ISelStraCtx.h" />
     <ClInclude Include="..\Includes\ISessionMgr.h" />
     <ClInclude Include="..\Includes\ITraderApi.h" />
+    <ClInclude Include="..\Includes\LoaderDef.hpp" />
     <ClInclude Include="..\Includes\WTSCollection.hpp" />
     <ClInclude Include="..\Includes\WTSContractInfo.hpp" />
     <ClInclude Include="..\Includes\WTSDataDef.hpp" />

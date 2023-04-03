@@ -1,5 +1,4 @@
 #include <iostream>
-#include <map>
 #include <set>
 #include <stdint.h>
 #include <fstream>
@@ -8,7 +7,7 @@
 #include "../Share/StrUtil.hpp"
 #include "../Share/fmtlib.h"
 #include "../Share/charconv.hpp"
-#include "../Includes/WTSTypes.h"
+#include "../Includes/LoaderDef.hpp"
 
 #include <rapidjson/document.h>
 #include <rapidjson/prettywriter.h>
@@ -49,47 +48,8 @@ TThostFtdcFrontIDType	FRONT_ID;	//前置编号
 TThostFtdcSessionIDType	SESSION_ID;	//会话编号
 TThostFtdcOrderRefType	ORDER_REF;	//报单引用
 
-typedef struct _Commodity
-{
-	std::string	m_strName;
-	std::string	m_strExchg;
-	std::string	m_strProduct;
-	std::string	m_strCurrency;
-	std::string m_strSession;
-
-	uint32_t	m_uVolScale;
-	double		m_fPriceTick;
-	uint32_t	m_uPrecision;
-
-	ContractCategory	m_ccCategory;
-	CoverMode			m_coverMode;
-	PriceMode			m_priceMode;
-	TradingMode			m_tradeMode;
-
-} Commodity;
-typedef std::map<std::string, Commodity> CommodityMap;
 CommodityMap _commodities;
-
-typedef struct _Contract
-{
-	std::string	m_strCode;
-	std::string	m_strExchg;
-	std::string	m_strName;
-	std::string	m_strProduct;
-
-	uint32_t	m_maxMktQty;
-	uint32_t	m_maxLmtQty;
-	uint32_t	m_minMktQty;
-	uint32_t	m_minLmtQty;
-
-	OptionType	m_optType;
-	std::string m_strUnderlying;
-	double		m_strikePrice;
-	double		m_dUnderlyingScale;
-} Contract;
-typedef std::map<std::string, Contract> ContractMap;
 ContractMap _contracts;
-
 
 std::string extractProductID(const char* instrument)
 {
@@ -310,6 +270,12 @@ void CTraderSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CTho
 					contract.m_strikePrice = pInstrument->StrikePrice;
 					contract.m_dUnderlyingScale = pInstrument->UnderlyingMultiple;
 
+					contract.m_uOpenDate = strtoul(pInstrument->OpenDate, NULL, 10);
+					contract.m_uExpireDate = strtoul(pInstrument->ExpireDate, NULL, 10);
+
+					contract.m_dLongMarginRatio = pInstrument->LongMarginRatio;
+					contract.m_dShortMarginRatio = pInstrument->ShortMarginRatio;
+
 					std::string key = StrUtil::printf("%s.%s", pInstrument->ExchangeID, pInstrument->ProductID);
 					auto it = _commodities.find(key);
 					if (it == _commodities.end())
@@ -437,6 +403,12 @@ void CTraderSpi::DumpToJson()
 			jcInfo.AddMember("maxmarketqty", cInfo.m_maxMktQty, allocator);
 			jcInfo.AddMember("minlimitqty", cInfo.m_minLmtQty, allocator);
 			jcInfo.AddMember("minmarketqty", cInfo.m_minMktQty, allocator);
+
+			jcInfo.AddMember("opendate", cInfo.m_uOpenDate, allocator);
+			jcInfo.AddMember("expiredate", cInfo.m_uExpireDate, allocator);
+
+			jcInfo.AddMember("longmarginratio", cInfo.m_dLongMarginRatio, allocator);
+			jcInfo.AddMember("shortmarginratio", cInfo.m_dShortMarginRatio, allocator);
 
 			if (cInfo.m_optType != OT_None)
 			{
