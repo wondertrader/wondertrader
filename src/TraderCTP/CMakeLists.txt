@@ -24,6 +24,14 @@ ELSE(GNUCC)
 		boost_filesystem
 		dl
 	)
+	IF(APPLE)
+		LIST(APPEND LIBS
+				thosttraderapi_se
+				ssl
+				crypto
+				comunicationkeylib
+				)
+	ENDIF()
 	TARGET_LINK_LIBRARIES(TraderCTP ${LIBS})
 ENDIF()
 

@@ -10,7 +10,11 @@
 #pragma once
 #include "../Includes/IParserApi.h"
 #include "../Share/DLLHelper.hpp"
+#ifdef __APPLE__
+#include "../API/CTP6.6.9/ThostFtdcMdApi.h"
+#else
 #include "../API/CTP6.3.15/ThostFtdcMdApi.h"
+#endif
 #include <map>
 
 NS_WTP_BEGIN

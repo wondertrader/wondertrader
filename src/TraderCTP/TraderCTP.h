@@ -17,7 +17,11 @@
 #include "../Includes/ITraderApi.h"
 #include "../Includes/WTSCollection.hpp"
 
+#ifdef __APPLE__
+#include "../API/CTP6.6.9/ThostFtdcTraderApi.h"
+#else
 #include "../API/CTP6.3.15/ThostFtdcTraderApi.h"
+#endif
 
 #include "../Share/StdUtils.hpp"
 #include "../Share/DLLHelper.hpp"
