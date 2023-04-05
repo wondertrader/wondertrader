@@ -1,7 +1,11 @@
 #include <string>
 #include <map>
+#ifdef __APPLE__
+#include "../API/CTP6.6.9/ThostFtdcTraderApi.h"
+#else
 //v6.3.15
 #include "../API/CTP6.3.15/ThostFtdcTraderApi.h"
+#endif
 #include "TraderSpi.h"
 
 #include "../Share/IniHelper.hpp"
@@ -99,6 +103,8 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 		{
 #ifdef _WIN32
 			MODULE_NAME = "thosttraderapi_se.dll";
+#elif defined __APPLE__
+            MODULE_NAME = "";
 #else
 			MODULE_NAME = "thosttraderapi_se.so";
 #endif
@@ -130,6 +136,8 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 
 #ifdef _WIN32
 		MODULE_NAME = ini.readString("ctp", "module", "thosttraderapi_se.dll");
+#elif defined __APPLE__
+        MODULE_NAME = "";
 #else
 		MODULE_NAME = ini.readString("ctp", "module", "thosttraderapi_se.so");
 #endif
@@ -168,6 +176,8 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 		{
 #ifdef _WIN32
 			MODULE_NAME = "thosttraderapi_se.dll";
+#elif defined __APPLE__
+            MODULE_NAME = "";
 #else
 			MODULE_NAME = "thosttraderapi_se.so";
 #endif
@@ -227,7 +237,9 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 		}
 		
 	}
-
+#ifdef __APPLE__
+    g_ctpCreator = CThostFtdcTraderApi::CreateFtdcTraderApi;
+#else
 	// ≥ı ºªØUserApi
 	DllHandle dllInst = DLLHelper::load_library(MODULE_NAME.c_str());
 	if (dllInst == NULL)
@@ -240,6 +252,7 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 #	endif
 #else
 	g_ctpCreator = (CTPCreator)DLLHelper::get_symbol(dllInst, "_ZN19CThostFtdcTraderApi19CreateFtdcTraderApiEPKc");
+#endif
 #endif
 	if (g_ctpCreator == NULL)
 		printf("Loading CreateFtdcTraderApi failed\r\n");

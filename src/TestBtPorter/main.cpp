@@ -76,6 +76,8 @@ void run_bt()
 {
 #ifdef _WIN32
 	DLLHelper::load_library("WtBtPorter.dll");
+#elif defined __APPLE__
+	DLLHelper::load_library("libWtBtPorter.dylib");
 #else
 	DLLHelper::load_library("libWtBtPorter.so");
 #endif

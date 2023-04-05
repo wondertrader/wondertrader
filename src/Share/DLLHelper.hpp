@@ -79,8 +79,12 @@ public:
 		std::string ret(name, idx);
 		ret.append(unixPrefix);
 		ret.append(name + idx);
+#ifdef __APPLE__
+        ret += ".dylib";
+#else
 		ret += ".so";
-		return std::move(ret);
 #endif
+#endif
+        return std::move(ret);
 	}
 };

@@ -30,3 +30,9 @@ INCLUDE_DIRECTORIES(${INCS})
 
 #8. 编译成动态库，并生成库文件
 add_library(WTSUtils STATIC ${SRCS} ${HDRS})
+
+IF(APPLE)
+    LIST(APPEND LIBS iconv)
+ENDIF()
+
+TARGET_LINK_LIBRARIES(WTSUtils ${LIBS})
