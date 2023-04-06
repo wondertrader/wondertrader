@@ -599,3 +599,15 @@ void WtDataManager::update_bars(const char* stdCode, WTSTickData* newTick)
 		_runner->trigger_bar(stdCode, speriod.c_str(), lastBar);
 	}
 }
+
+void WtDataManager::clear_cache()
+{
+	if (_reader == NULL)
+	{
+		WTSLogger::warn("DataReader not initialized, clearing canceled");
+		return;
+	}
+
+	_reader->clearCache();
+	WTSLogger::warn("All cache cleared");
+}

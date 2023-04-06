@@ -640,3 +640,8 @@ void WtDtRunner::trigger_bar(const char* stdCode, const char* period, WTSBarStru
 
 	_cb_bar(stdCode, period, lastBar);
 }
+
+void WtDtRunner::clear_cache()
+{
+	_data_mgr.clear_cache();
+}

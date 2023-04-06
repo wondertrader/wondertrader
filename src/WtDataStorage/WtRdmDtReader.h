@@ -249,6 +249,8 @@ public:
 
 	virtual double		getAdjFactorByDate(const char* stdCode, uint32_t date = 0) override;
 
+	virtual void		clearCache() override;
+
 private:
 	std::string		_base_dir;
 	IBaseDataMgr*	_base_data_mgr;

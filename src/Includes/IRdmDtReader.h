@@ -81,6 +81,8 @@ public:
 	 */
 	virtual double		getAdjFactorByDate(const char* stdCode, uint32_t date = 0) { return 1.0; }
 
+	virtual void		clearCache(){}
+
 protected:
 	IRdmDtReaderSink*	_sink;
 };

@@ -89,6 +89,8 @@ public:
 	void	clear_subbed_bars();
 	void	update_bars(const char* stdCode, WTSTickData* newTick);
 
+	void	clear_cache();
+
 private:
 	IRdmDtReader*			_reader;
 	FuncDeleteRdmDtReader	_remover;

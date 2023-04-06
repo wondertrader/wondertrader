@@ -2688,3 +2688,16 @@ double WtRdmDtReader::getAdjFactorByDate(const char* stdCode, uint32_t date /* =
 		return (*it)._factor;
 	}
 }
+
+void WtRdmDtReader::clearCache()
+{
+	_bars_cache.clear();
+
+	_rt_min1_map.clear();
+	_rt_min5_map.clear();
+
+	_rt_tick_map.clear();
+	_rt_trans_map.clear();
+	_rt_orddtl_map.clear();
+	_rt_ordque_map.clear();
+}
