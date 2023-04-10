@@ -45,6 +45,9 @@ bool CtaStrategyMgr::loadFactories(const char* path)
 #ifdef _WIN32
 		if (iter->path().extension() != ".dll")
 			continue;
+#elif defined __APPLE__
+        if (iter->path().extension() != ".dylib")
+			continue;
 #else //_UNIX
 		if (iter->path().extension() != ".so")
 			continue;

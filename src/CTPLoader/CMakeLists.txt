@@ -25,7 +25,15 @@ SET(LIBS
 )
 
 IF(WIN32)
-LIST(APPEND LIBS iconv)
+	LIST(APPEND LIBS iconv)
+ELSEIF( APPLE)
+	LIST(APPEND LIBS
+			iconv
+			thosttraderapi_se
+			ssl
+			crypto
+			comunicationkeylib
+			)
 ENDIF()
 
 #9. 生成可执行文件

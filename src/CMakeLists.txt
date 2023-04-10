@@ -36,6 +36,11 @@ ELSE (GNUCC)
 		SET(SUFFIX .dll)
 
 		MESSAGE(STATUS "MyDepends is at $ENV{MyDependsGcc}")
+	ELSEIF(APPLE)
+		SET (MyDeps "~/mydeps")
+		SET(SUFFIX .dylib)
+
+		MESSAGE(STATUS "MyDepends is at ~/mydeps")
 	ELSE(UNIX)
 		SET (MyDeps "/home/mydeps")
 		SET(SUFFIX .so)
