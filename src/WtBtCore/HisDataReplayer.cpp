@@ -155,6 +155,7 @@ HisDataReplayer::HisDataReplayer()
 	, _end_time(0)
 	, _bt_loader(NULL)
 	, _min_period("d")
+	, _cache_clear_days(0)
 {
 }
 
@@ -205,8 +206,11 @@ bool HisDataReplayer::init(WTSVariant* cfg, EventNotifier* notifier /* = NULL */
 
 	if(_end_time == 0)
 		_end_time = cfg->getUInt64("etime");
-
 	WTSLogger::info("Backtest time range is set to be [{},{}] via config", _begin_time, _end_time);
+
+	_cache_clear_days = cfg->getUInt32("cache_clear_days");
+	WTSLogger::info("Unused cache data will be cleard in {} days", _cache_clear_days);
+	
 
 	_tick_enabled = cfg->getBoolean("tick");
 	WTSLogger::info("Tick data replaying is {}", _tick_enabled ? "enabled" : "disabled");
@@ -738,6 +742,7 @@ void HisDataReplayer::run_by_ticks(bool bNeedDump /* = false */)
 		{
 			WTSLogger::info("Start to replay tick data of {}...", _cur_tdate);
 			_listener->handle_session_begin(_cur_tdate);
+			check_cache_days();
 			replayHftDatasByDay(_cur_tdate);
 			_listener->handle_session_end(_cur_tdate);
 		}
@@ -829,6 +834,7 @@ void HisDataReplayer::run_by_bars(bool bNeedDump /* = false */)
 
 					WTSLogger::debug("Tradingday {} begins", nextTDate);
 					_listener->handle_session_begin(nextTDate);
+					check_cache_days();
 					_opened_tdate = nextTDate;
 					_cur_tdate = nextTDate;
 				}
@@ -1035,6 +1041,7 @@ void HisDataReplayer::run_by_tasks(bool bNeedDump /* = false */)
 					_cur_tdate = newTDate;
 					if (_listener)
 						_listener->handle_session_begin(newTDate);
+					check_cache_days();
 					if (_listener)
 						_listener->handle_session_end(newTDate);
 				}
@@ -1047,6 +1054,7 @@ void HisDataReplayer::run_by_tasks(bool bNeedDump /* = false */)
 				bool bEndSession = sInfo->offsetTime(curTime, true) >= sInfo->getCloseTime(true);
 				if (_listener)
 					_listener->handle_session_begin(_cur_tdate);
+				check_cache_days();
 				onMinuteEnd(curDate, curTime, bEndSession ? _cur_tdate : preTDate);
 				if (_listener)
 					_listener->handle_session_end(_cur_tdate);
@@ -1076,6 +1084,8 @@ void HisDataReplayer::run_by_tasks(bool bNeedDump /* = false */)
 	{
 		if (_listener)
 			_listener->handle_session_begin(_cur_tdate);
+
+		check_cache_days();
 
 		for (; !_terminated;)
 		{
@@ -1159,6 +1169,8 @@ void HisDataReplayer::run_by_tasks(bool bNeedDump /* = false */)
 
 				if (_listener)
 					_listener->handle_session_begin(nextTDate);
+
+				check_cache_days();
 			}
 			else
 			{
@@ -1944,6 +1956,7 @@ void HisDataReplayer::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTD
 	for (auto it = _bars_cache.begin(); it != _bars_cache.end(); it++)
 	{
 		BarsListPtr& barsList = (BarsListPtr&)it->second;
+		barsList->mark();
 		double factor = 1.0;// barsList->_factor;
 		if (barsList->_period != KP_DAY)
 		{
@@ -4399,4 +4412,39 @@ bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* st
 
 	WTSLogger::info("{} items of back {} data of {} cached", realCnt, PERIOD_NAME[period], stdCode);
 	return true;
+}
+
+void HisDataReplayer::check_cache_days()
+{
+	if (_cache_clear_days == 0)
+		return;
+
+	std::set<std::string> to_clear;
+	for(auto& v : _bars_cache)
+	{
+		if(v.first == _main_key)
+			continue;
+
+		BarsListPtr& barsList = (BarsListPtr&)v.second;
+		barsList->_untouch_days++;
+
+		if (barsList->_untouch_days >= _cache_clear_days)
+			to_clear.insert(v.first);
+	}
+
+	for (const std::string& key : to_clear)
+		_bars_cache.erase(key);
+
+	to_clear.clear();
+	for (auto& v : _unbars_cache)
+	{
+		BarsListPtr& barsList = (BarsListPtr&)v.second;
+		barsList->_untouch_days++;
+
+		if (barsList->_untouch_days >= _cache_clear_days)
+			to_clear.insert(v.first);
+	}
+
+	for (const std::string& key : to_clear)
+		_unbars_cache.erase(key);
 }

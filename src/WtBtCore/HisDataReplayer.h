@@ -168,7 +168,19 @@ private:
 		std::vector<WTSBarStruct>	_bars;
 		double			_factor;	//最后一条复权因子
 
-		_BarsList() :_cursor(UINT_MAX), _count(0), _times(1), _factor(1){}
+		uint32_t		_untouch_days;	//未用到的天数
+
+		inline void mark()
+		{
+			_untouch_days = 0;
+		}
+
+		inline std::size_t size()
+		{
+			return sizeof(WTSBarStruct)*_bars.size();
+		}
+
+		_BarsList() :_cursor(UINT_MAX), _count(0), _times(1), _factor(1), _untouch_days(0){}
 	} BarsList;
 
 	/*
@@ -320,6 +332,8 @@ private:
 	 */
 	void	run_by_ticks(bool bNeedDump = false);
 
+	void	check_cache_days();
+
 public:
 	bool init(WTSVariant* cfg, EventNotifier* notifier = NULL, IBtDataLoader* dataLoader = NULL);
 
@@ -441,6 +455,9 @@ private:
 	std::string		_mode;
 	uint64_t		_begin_time;
 	uint64_t		_end_time;
+
+	//缓存自动清理天数
+	uint32_t		_cache_clear_days;
 
 	bool			_running;
 	bool			_terminated;
