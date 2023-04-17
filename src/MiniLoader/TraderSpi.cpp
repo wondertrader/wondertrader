@@ -79,13 +79,10 @@ std::string extractProductName(const char* cname)
 
 std::set<std::string>	prod_set;
 
-double convertInvalidDouble(double val)
+inline double checkValid(double val)
 {
-	if (val == 5.5e-007)
-		return -1;
-
-	if (val == 0)
-		return -1;
+	if (val == DBL_MAX || val == FLT_MAX)
+		return 0;
 
 	return val;
 }
@@ -273,8 +270,8 @@ void CTraderSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CTho
 					contract.m_uOpenDate = strtoul(pInstrument->OpenDate, NULL, 10);
 					contract.m_uExpireDate = strtoul(pInstrument->ExpireDate, NULL, 10);
 
-					contract.m_dLongMarginRatio = pInstrument->LongMarginRatio;
-					contract.m_dShortMarginRatio = pInstrument->ShortMarginRatio;
+					contract.m_dLongMarginRatio = checkValid(pInstrument->LongMarginRatio);
+					contract.m_dShortMarginRatio = checkValid(pInstrument->ShortMarginRatio);
 
 					std::string key = StrUtil::printf("%s.%s", pInstrument->ExchangeID, pInstrument->ProductID);
 					auto it = _commodities.find(key);
