@@ -899,6 +899,15 @@ void SelMocker::stra_save_user_data(const char* key, const char* val)
 
 double SelMocker::stra_get_position(const char* stdCode, bool bOnlyValid/* = false*/, const char* userTag /* = "" */)
 {
+	//By Wesley @ 2023.04.17
+	//如果有信号，说明刚下了指令，还没等到下一个tick进来，用户就在读取仓位
+	//但是如果用户读取，还是要返回
+	auto sit = _sig_map.find(stdCode);
+	if (sit != _sig_map.end())
+	{
+		return sit->second._volume;
+	}
+
 	auto it = _pos_map.find(stdCode);
 	if (it == _pos_map.end())
 		return 0;
