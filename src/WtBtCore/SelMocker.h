@@ -58,12 +58,14 @@ private:
 	inline void log_signal(const char* stdCode, double target, double price, uint64_t gentime, const char* usertag = "");
 	inline void	log_trade(const char* stdCode, bool isLong, bool isOpen, uint64_t curTime, double price, double qty, const char* userTag = "", double fee = 0.0);
 	inline void	log_close(const char* stdCode, bool isLong, uint64_t openTime, double openpx, uint64_t closeTime, double closepx, double qty,
-		double profit, double totalprofit = 0, const char* enterTag = "", const char* exitTag = "");
+		double profit, double maxprofit, double maxloss, double totalprofit = 0, const char* enterTag = "", const char* exitTag = "", uint32_t openBarNo = 0, uint32_t closeBarNo = 0);
 
 	void	update_dyn_profit(const char* stdCode, double price);
 
 	void	do_set_position(const char* stdCode, double qty, double price = 0.0, const char* userTag = "", bool bTriggered = false);
 	void	append_signal(const char* stdCode, double qty, const char* userTag = "", double price = 0.0);
+
+	void	proc_tick(const char* stdCode, double last_px, double cur_px);
 
 public:
 	bool	init_sel_factory(WTSVariant* cfg);
@@ -136,14 +138,16 @@ protected:
 	uint64_t		_total_calc_time;	//总计算时间
 	uint32_t		_emit_times;		//总计算次数
 	int32_t			_slippage;	//成交滑点
+	uint32_t		_schedule_times;	//调度次数
 
 	std::string		_main_key;
 
 	typedef struct _KlineTag
 	{
-		bool			_closed;
+		bool		_closed;
+		uint32_t	_count;
 
-		_KlineTag() :_closed(false){}
+		_KlineTag() :_closed(false), _count(0){}
 
 	} KlineTag;
 	typedef faster_hashmap<std::string, KlineTag> KlineTags;
@@ -164,6 +168,7 @@ protected:
 		double		_max_loss;
 		double		_profit;
 		char		_opentag[32];
+		uint32_t	_open_barno;
 
 		_DetailInfo()
 		{

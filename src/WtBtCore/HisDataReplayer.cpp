@@ -1091,6 +1091,20 @@ void HisDataReplayer::run_by_tasks(bool bNeedDump /* = false */)
 			bool bNewTDate = false;
 			if (mins < sInfo->getTradingMins())
 			{
+				/*
+				 *	By Wesley @ 2022.06.23
+				 *	tick数据模拟的机制完善
+				 *	主要将所有当前应该闭合的bar，按照开高低收的顺序同步模拟tick
+				 *	但是这样也是有漏洞的，那就是如果K线周期不统一，如m1和m5同时订阅
+				 *	会出现m5在最后一分钟才模拟tick的问题
+				 *	不过，真的要精确回测，请使用逐tick回测
+				 *	目前这个方案已经算是比较好的了
+				 */
+				for (int i = 0; i < 4; i++)
+				{
+					simTicks(_cur_date, _cur_time, _cur_tdate, i);
+				}
+
 				onMinuteEnd(_cur_date, _cur_time, 0);
 			}
 			else
@@ -1099,6 +1113,19 @@ void HisDataReplayer::run_by_tasks(bool bNeedDump /* = false */)
 				mins = sInfo->getTradingMins();
 				_cur_time = sInfo->getCloseTime();
 
+				/*
+				 *	By Wesley @ 2022.06.23
+				 *	tick数据模拟的机制完善
+				 *	主要将所有当前应该闭合的bar，按照开高低收的顺序同步模拟tick
+				 *	但是这样也是有漏洞的，那就是如果K线周期不统一，如m1和m5同时订阅
+				 *	会出现m5在最后一分钟才模拟tick的问题
+				 *	不过，真的要精确回测，请使用逐tick回测
+				 *	目前这个方案已经算是比较好的了
+				 */
+				for (int i = 0; i < 4; i++)
+				{
+					simTicks(_cur_date, _cur_time, _cur_tdate, i);
+				}
 				onMinuteEnd(_cur_date, _cur_time, _cur_tdate);
 
 				if (_listener)

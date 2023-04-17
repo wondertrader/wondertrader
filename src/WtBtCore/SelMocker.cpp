@@ -42,6 +42,7 @@ SelMocker::SelMocker(HisDataReplayer* replayer, const char* name, int32_t slippa
 	, _ud_modified(false)
 	, _strategy(NULL)
 	, _slippage(slippage)
+	, _schedule_times(0)
 {
 	_context_id = makeSelCtxId();
 }
@@ -162,7 +163,7 @@ void SelMocker::dump_outputs()
 	StdFile::write_file_content(filename.c_str(), (void*)content.c_str(), content.size());
 
 	filename = folder + "closes.csv";
-	content = "code,direct,opentime,openprice,closetime,closeprice,qty,profit,totalprofit,entertag,exittag\n";
+	content = "code,direct,opentime,openprice,closetime,closeprice,qty,profit,maxprofit,maxloss,totalprofit,entertag,exittag,openbarno,closebarno\n";
 	content += _close_logs.str();
 	StdFile::write_file_content(filename.c_str(), (void*)content.c_str(), content.size());
 
@@ -213,12 +214,12 @@ void SelMocker::log_trade(const char* stdCode, bool isLong, bool isOpen, uint64_
 	_trade_logs << stdCode << "," << curTime << "," << (isLong ? "LONG" : "SHORT") << "," << (isOpen ? "OPEN" : "CLOSE") << "," << price << "," << qty << "," << userTag << "," << fee << "\n";
 }
 
-void SelMocker::log_close(const char* stdCode, bool isLong, uint64_t openTime, double openpx, uint64_t closeTime, double closepx, double qty,
-	double profit, double totalprofit /* = 0 */, const char* enterTag /* = "" */, const char* exitTag /* = "" */)
+void SelMocker::log_close(const char* stdCode, bool isLong, uint64_t openTime, double openpx, uint64_t closeTime, double closepx, double qty, double profit, double maxprofit, double maxloss,
+	double totalprofit /* = 0 */, const char* enterTag /* = "" */, const char* exitTag /* = "" */, uint32_t openBarNo/* = 0*/, uint32_t closeBarNo/* = 0*/)
 {
 	_close_logs << stdCode << "," << (isLong ? "LONG" : "SHORT") << "," << openTime << "," << openpx
-		<< "," << closeTime << "," << closepx << "," << qty << "," << profit << ","
-		<< totalprofit << "," << enterTag << "," << exitTag << "\n";
+		<< "," << closeTime << "," << closepx << "," << qty << "," << profit << "," << maxprofit << "," << maxloss << ","
+		<< totalprofit << "," << enterTag << "," << exitTag << "," << openBarNo << "," << closeBarNo << "\n";
 }
 
 bool SelMocker::init_sel_factory(WTSVariant* cfg)
@@ -305,30 +306,29 @@ void SelMocker::handle_replay_done()
 
 void SelMocker::handle_tick(const char* stdCode, WTSTickData* newTick, uint32_t pxType)
 {
-	_price_map[stdCode].first = newTick->price();
+	double cur_px = newTick->price();
+
+	/*
+	 *	By Wesley @ 2022.04.19
+	 *	这里的逻辑改了一下
+	 *	如果缓存的价格不存在，则上一笔价格就用最新价
+	 *	这里主要是为了应对跨日价格跳空的情况
+	 */
+	double last_px = cur_px;
+	if (pxType != 0)
+	{
+		auto it = _price_map.find(stdCode);
+		if (it != _price_map.end())
+			last_px = it->second.first;
+		else
+			last_px = cur_px;
+	}
+
+	_price_map[stdCode].first = cur_px;
 	_price_map[stdCode].second = (uint64_t)newTick->actiondate() * 1000000000 + newTick->actiontime();
 
 	//先检查是否要信号要触发
-	{
-		auto it = _sig_map.find(stdCode);
-		if (it != _sig_map.end())
-		{
-			//if (sInfo->isInTradingTime(_replayer->get_raw_time(), true))
-			{
-				const SigInfo& sInfo = it->second;
-				double price;
-				if (decimal::eq(sInfo._desprice, 0.0))
-					price = newTick->price();
-				else
-					price = sInfo._desprice;
-				do_set_position(stdCode, sInfo._volume, price, sInfo._usertag.c_str(), sInfo._triggered);
-				_sig_map.erase(it);
-			}
-
-		}
-	}
-
-	update_dyn_profit(stdCode, newTick->price());
+	proc_tick(stdCode, last_px, cur_px);
 
 	on_tick_updated(stdCode, newTick);
 
@@ -340,30 +340,31 @@ void SelMocker::handle_tick(const char* stdCode, WTSTickData* newTick, uint32_t 
 	 *	这样做的目的是为了让在模拟tick触发的ontick中下单的信号能够正常处理
 	 *	而不至于在回测的时候成交价偏离太远
 	 */
-	if (pxType!=3)
-	{
-		//先检查是否要信号要触发
-		{
-			auto it = _sig_map.find(stdCode);
-			if (it != _sig_map.end())
-			{
-				//if (sInfo->isInTradingTime(_replayer->get_raw_time(), true))
-				{
-					const SigInfo& sInfo = it->second;
-					double price;
-					if (decimal::eq(sInfo._desprice, 0.0))
-						price = newTick->price();
-					else
-						price = sInfo._desprice;
-					do_set_position(stdCode, sInfo._volume, price, sInfo._usertag.c_str(), sInfo._triggered);
-					_sig_map.erase(it);
-				}
+	if (pxType != 3)
+		proc_tick(stdCode, last_px, cur_px);
+}
 
+void SelMocker::proc_tick(const char* stdCode, double last_px, double cur_px)
+{
+	{
+		auto it = _sig_map.find(stdCode);
+		if (it != _sig_map.end())
+		{
+			//if (sInfo->isInTradingTime(_replayer->get_raw_time(), true))
+			{
+				const SigInfo& sInfo = it->second;
+				double price;
+				if (decimal::eq(sInfo._desprice, 0.0))
+					price = cur_px;
+				else
+					price = sInfo._desprice;
+				do_set_position(stdCode, sInfo._volume, price, sInfo._usertag.c_str());
+				_sig_map.erase(it);
 			}
 		}
-
-		update_dyn_profit(stdCode, newTick->price());
 	}
+
+	update_dyn_profit(stdCode, cur_px);
 }
 
 
@@ -383,6 +384,7 @@ void SelMocker::on_bar(const char* stdCode, const char* period, uint32_t times, 
 	std::string key = StrUtil::printf("%s#%s", stdCode, realPeriod.c_str());
 	KlineTag& tag = _kline_tags[key];
 	tag._closed = true;
+	tag._count++;
 
 	on_bar_close(stdCode, realPeriod.c_str(), newBar);
 }
@@ -467,6 +469,8 @@ void SelMocker::on_strategy_schedule(uint32_t curDate, uint32_t curTime)
 bool SelMocker::on_schedule(uint32_t curDate, uint32_t curTime, uint32_t fireTime)
 {
 	_is_in_schedule = true;//开始调度,修改标记
+
+	_schedule_times++;
 
 	TimeUtils::Ticker ticker;
 	on_strategy_schedule(curDate, curTime);
@@ -671,6 +675,7 @@ void SelMocker::do_set_position(const char* stdCode, double qty, double price /*
 		dInfo._opentime = curTm;
 		dInfo._opentdate = curTDate;
 		strcpy(dInfo._opentag, userTag);
+		dInfo._open_barno = _schedule_times;
 		pInfo._details.emplace_back(dInfo);
 
 		double fee = _replayer->calc_fee(stdCode, trdPx, abs(diff), 0);
@@ -719,7 +724,7 @@ void SelMocker::do_set_position(const char* stdCode, double qty, double price /*
 			log_trade(stdCode, dInfo._long, false, curTm, trdPx, maxQty, userTag, fee);
 			//这里写平仓记录
 			log_close(stdCode, dInfo._long, dInfo._opentime, dInfo._price, curTm, 
-				trdPx, maxQty, profit, pInfo._closeprofit, dInfo._opentag, userTag);
+				trdPx, maxQty, profit, dInfo._max_profit, dInfo._max_loss, pInfo._closeprofit, dInfo._opentag, userTag, dInfo._open_barno, _schedule_times);
 
 			if (left == 0)
 				break;
@@ -752,6 +757,7 @@ void SelMocker::do_set_position(const char* stdCode, double qty, double price /*
 			dInfo._opentime = curTm;
 			dInfo._opentdate = curTDate;
 			strcpy(dInfo._opentag, userTag);
+			dInfo._open_barno = _schedule_times;
 			pInfo._details.emplace_back(dInfo);
 
 			//这里还需要写一笔成交记录
