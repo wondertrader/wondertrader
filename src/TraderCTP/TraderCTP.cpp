@@ -122,7 +122,7 @@ bool TraderCTP::init(WTSVariant* params)
 
 	WTSVariant* param = params->get("ctpmodule");
 	if (param != NULL)
-		m_strModule = getBinDir() + DLLHelper::wrap_module(param->asCString());
+		m_strModule = getBinDir() + DLLHelper::wrap_module(param->asCString(), "");
 	else
 		m_strModule = getBinDir() + DLLHelper::wrap_module("thosttraderapi_se", "");
 
