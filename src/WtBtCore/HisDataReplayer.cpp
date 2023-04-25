@@ -4420,6 +4420,7 @@ void HisDataReplayer::check_cache_days()
 		return;
 
 	std::set<std::string> to_clear;
+	std::string codes;
 	for(auto& v : _bars_cache)
 	{
 		if(v.first == _main_key)
@@ -4429,22 +4430,16 @@ void HisDataReplayer::check_cache_days()
 		barsList->_untouch_days++;
 
 		if (barsList->_untouch_days >= _cache_clear_days)
+		{
 			to_clear.insert(v.first);
+			if (codes.size() > 0)
+				codes += ",";
+			codes += v.first;
+		}
 	}
 
 	for (const std::string& key : to_clear)
 		_bars_cache.erase(key);
 
-	to_clear.clear();
-	for (auto& v : _unbars_cache)
-	{
-		BarsListPtr& barsList = (BarsListPtr&)v.second;
-		barsList->_untouch_days++;
-
-		if (barsList->_untouch_days >= _cache_clear_days)
-			to_clear.insert(v.first);
-	}
-
-	for (const std::string& key : to_clear)
-		_unbars_cache.erase(key);
+	WTSLogger::info("Cached bars of {} cleared due to outdated", codes);
 }
