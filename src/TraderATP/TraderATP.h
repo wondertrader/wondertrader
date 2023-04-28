@@ -11,6 +11,7 @@
 
 #include <stdint.h>
 #include <boost/asio/io_service.hpp>
+#include <atomic>
 
 #define TRADE_API_USE_STATIC
 #include "../API/AtpTradeApi/include/atp_trade_api.h"
@@ -21,6 +22,7 @@
 #include "../Share/StdUtils.hpp"
 #include "../Share/DLLHelper.hpp"
 #include "../Share/WtKVCache.hpp"
+
 
 USING_NS_WTP;
 
@@ -169,9 +171,14 @@ private:
 
 	std::string		_user;  // AGW登录账号
 	std::string		_pass;  // AGW登录密码
-	std::string		_product;
+	std::string		_node_id;  // 节点信息
+	int				_loginmode;  // 账户的登录模式
+	int				_order_way;  // 委托方式
 
-	std::string		_accountid;  // 证券账户
+	std::string 	_product;
+
+	std::string		_sh_acctid;  // 上海证券账户
+	std::string		_sz_acctid;  // 深圳证券账户
 	std::string		_fund_accountid;  // 资金账户
 	std::string		_accpasswd;  // 交易密码
 	std::string		_branchid;   //营业部ID （当登录模式为2-资金账户登录模式时，该字段是否必填请咨询券商）  
@@ -182,6 +189,10 @@ private:
 	TraderState		_state;
 
 	uint64_t		_sessionid;
+
+	std::string		_acctid;  // 登录账户
+	bool			_is_sh;  // 账户支持的交易所
+
 	uint32_t		_tradingday;
 	std::atomic<uint32_t>		_reqid;
 	std::atomic<uint32_t>		_ordref;		//报单引用
@@ -199,5 +210,9 @@ private:
 	WtKVCache		m_oidCache;
 
 	std::map<int32_t, int32_t> report_sync;
-};
 
+	WTSArray* ayOrders;  // 订单查询结果
+	WTSArray* ayTrades;  // 成交查询结果
+
+	std::atomic<int64_t> _return_nums;  // 查询返回条数
+};
