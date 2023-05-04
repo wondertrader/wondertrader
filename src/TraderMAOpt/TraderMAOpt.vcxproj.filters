@@ -21,13 +21,13 @@
     <ClInclude Include="TraderMAOpt.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\API\mCliApi3.7\maCliOptTradeApi.h">
+    <ClInclude Include="..\API\maCliApi3.9\include\maCliOptTradeApi.h">
       <Filter>maCliOpt</Filter>
     </ClInclude>
-    <ClInclude Include="..\API\mCliApi3.7\maCliOptTradeApiStruct.h">
+    <ClInclude Include="..\API\maCliApi3.9\include\maCliOptTradeApiStruct.h">
       <Filter>maCliOpt</Filter>
     </ClInclude>
-    <ClInclude Include="..\API\mCliApi3.7\maCliTradeApi.h">
+    <ClInclude Include="..\API\maCliApi3.9\include\maCliTradeApi.h">
       <Filter>maCliOpt</Filter>
     </ClInclude>
   </ItemGroup>

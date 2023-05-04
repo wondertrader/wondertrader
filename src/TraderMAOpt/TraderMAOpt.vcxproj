@@ -178,9 +178,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\API\mCliApi3.7\maCliOptTradeApi.h" />
-    <ClInclude Include="..\API\mCliApi3.7\maCliOptTradeApiStruct.h" />
-    <ClInclude Include="..\API\mCliApi3.7\maCliTradeApi.h" />
+    <ClInclude Include="..\API\maCliApi3.9\include\maCliOptTradeApi.h" />
+    <ClInclude Include="..\API\maCliApi3.9\include\maCliOptTradeApiStruct.h" />
+    <ClInclude Include="..\API\maCliApi3.9\include\maCliTradeApi.h" />
     <ClInclude Include="TraderMAOpt.h" />
   </ItemGroup>
   <ItemGroup>
