@@ -367,6 +367,12 @@ public:
 		_stra_name = sinkName;
 	}
 
+	/*
+	 *	注册任务
+	 *	@date 日期,根据周期变化,每日为0,每周为0~6,对应周日到周六,每月为1~31,每年为0101~1231
+	 *	@time 时间,精确到分钟
+	 *	@period	时间周期，可以是分钟、天、周、月、年
+	 */
 	void register_task(uint32_t taskid, uint32_t date, uint32_t time, const char* period, const char* trdtpl = "CHINA", const char* session = "TRADING");
 
 	WTSKlineSlice* get_kline_slice(const char* stdCode, const char* period, uint32_t count, uint32_t times = 1, bool isMain = false);
