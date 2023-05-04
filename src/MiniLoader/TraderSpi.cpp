@@ -295,7 +295,12 @@ void CTraderSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CTho
 						commInfo.m_fPriceTick = pInstrument->PriceTick;
 
 						CoverMode cm = CM_OpenCover;
-						if (bFuture)
+						/*
+						 *	By Wesley @ 2023.05.04
+						 *	有用户反馈上期所和上能所的期权合约也区分平昨平今
+						 *	把这个bFuture的判断去掉
+						 */
+						//if (bFuture)
 						{
 							if (strcmp(pInstrument->ExchangeID, "SHFE") == 0 || strcmp(pInstrument->ExchangeID, "INE") == 0)
 								cm = CM_CoverToday;
@@ -305,7 +310,12 @@ void CTraderSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CTho
 						commInfo.m_coverMode = cm;
 
 						PriceMode pm = PM_Both;
-						if (bFuture)
+						/*
+						 *	By Wesley @ 2023.05.04
+						 *	有用户反馈上期所和上能所的期权合约也区分平昨平今
+						 *	把这个bFuture的判断去掉
+						 */
+						//if (bFuture)
 						{
 							if (strcmp(pInstrument->ExchangeID, "SHFE") == 0 || strcmp(pInstrument->ExchangeID, "INE") == 0)
 								pm = PM_Limit;
