@@ -4434,17 +4434,4 @@ void HisDataReplayer::check_cache_days()
 
 	for (const std::string& key : to_clear)
 		_bars_cache.erase(key);
-
-	to_clear.clear();
-	for (auto& v : _unbars_cache)
-	{
-		BarsListPtr& barsList = (BarsListPtr&)v.second;
-		barsList->_untouch_days++;
-
-		if (barsList->_untouch_days >= _cache_clear_days)
-			to_clear.insert(v.first);
-	}
-
-	for (const std::string& key : to_clear)
-		_unbars_cache.erase(key);
 }
