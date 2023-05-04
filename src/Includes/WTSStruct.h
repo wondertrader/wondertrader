@@ -105,11 +105,21 @@ public:
 	double		low;		//低
 	double		close;		//收
 	double		settle;		//结算
+	
 	double		money;		//成交金额
+	double		vol;		//成交量
 
-	double		vol;	//成交量
-	double		hold;	//总持
-	double		add;	//增仓
+	union
+	{
+		double		hold;	//总持
+		double		bid;	//买价，期权专用，主要期权spread比较大，By Wseley @ 2023.05.04
+	};
+
+	union
+	{
+		double		add;	//增仓
+		double		ask;	//卖价，期权专用，主要期权spread比较大，By Wseley @ 2023.05.04
+	};	
 
 	//By Wesley @ 2021.12.30
 	//直接复制老结构体

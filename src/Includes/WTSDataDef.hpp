@@ -666,6 +666,34 @@ public:
 	}	
 
 	/*
+	 *	读取指定位置的总持
+	 *	如果超出范围则返回INVALID_VALUE
+	 */
+	inline double	bidprice(int32_t idx) const
+	{
+		idx = translateIdx(idx);
+
+		if (idx < 0 || idx >= (int32_t)m_vecBarData.size())
+			return INVALID_UINT32;
+
+		return m_vecBarData[idx].bid;
+	}
+
+	/*
+	 *	读取指定位置的增仓
+	 *	如果超出范围则返回INVALID_VALUE
+	 */
+	inline double	askprice(int32_t idx) const
+	{
+		idx = translateIdx(idx);
+
+		if (idx < 0 || idx >= (int32_t)m_vecBarData.size())
+			return INVALID_DOUBLE;
+
+		return m_vecBarData[idx].ask;
+	}
+
+	/*
 	 *	读取指定位置的成交额
 	 *	如果超出范围则返回INVALID_VALUE
 	 */
