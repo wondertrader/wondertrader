@@ -1,0 +1,16 @@
+config:
+    session: ./common/sessions.json
+    commodity: ./common/stk_comms.json
+    contract: ./common/stocks.json
+    risk: false
+    profile: ddTest
+    trader: TraderDD.dll
+
+ddTest:
+    front: '58.210.86.54@38000'  # IP地址
+    commuser: 'MA28J1AM8'  # 通讯账户
+    commpass: '000000'  # 通讯密码
+    user: '010000000041'  # 用户账户
+    pass: '123123'  # 密码 
+    node: 'PC;IIP=NA;IPORT=NA;LIP=192.168.110.103;MAC=2CF05D3E58F6;HD=40BD9941;TYPE=TDRJYR'
+    

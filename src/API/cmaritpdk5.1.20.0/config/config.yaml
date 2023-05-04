@@ -1,0 +1,19 @@
+config:
+    session: ./common/sessions.json
+    commodity: ./common/stk_comms.json
+    contract: ./common/stocks.json
+    profile: htsTest
+    trader: TraderHTS.dll
+
+htsTest:
+    user: '010000085278'  # 用户账户
+    pass: '123123'  # 密码 
+    key: 'A5_RS'  # 配置文件字段
+    order_way: '8' # 委托方式
+    shGdh: 'A202777919'   # 上海股东号
+    szGdh: '0133060927'   # 深圳股东号
+    shFundAcct: '01000008527801'  # 上海资金账号
+    szFundAcct: '01000008527801'  # 深圳资金账号
+    node: 'PC;IIP=NA;IPORT=NA;LIP=192.168.110.103;MAC=2CF05D3E58F6;HD=40BD9941;TYPE=TDRJYR'
+    use_ex: false  # 是否使用ex后缀接口
+    use_async: false  # 是否使用异步方式

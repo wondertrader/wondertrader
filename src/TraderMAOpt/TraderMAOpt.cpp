@@ -25,9 +25,9 @@
 
 #ifdef _WIN32
 #ifdef _WIN64
-#pragma comment(lib, "../API/maCliApi_Patch3.8(R)/x64/maTradeApi.lib")
+#pragma comment(lib, "../API/maCliApi3.9/x64/maTradeApi.lib")
 #else
-#pragma comment(lib, "../API/mCliApi3.7/x86/maTradeApi.lib")
+#pragma comment(lib, "../API/maCliApi3.9/x86/maTradeApi.lib")
 #endif
 #endif
 
@@ -51,7 +51,18 @@ extern "C"
 {
 	EXPORT_FLAG ITraderApi* createTrader()
 	{
-		TraderMAOpt *instance = new TraderMAOpt();
+		std::cout << "begin to call createTrader()" << std::endl;
+		TraderMAOpt* instance = NULL;
+		try
+		{
+			instance = new TraderMAOpt();
+		}
+		catch (std::bad_alloc e)
+		{
+			std::cout << "create trader failed: " << e.what() << std::endl;
+		}
+		//TraderMAOpt *instance = new(std::nothrow) TraderMAOpt();
+		std::cout << "create trader success" << std::endl;
 		return instance;
 	}
 
@@ -69,65 +80,66 @@ inline int wrapDirectionType(WTSDirectionType dirType, WTSOffsetType offsetType)
 {
 	if (WDT_LONG == dirType)
 		if (offsetType == WOT_OPEN)
-			return MA_BuyOpen;
+			return 400;  // 买入开仓
 		else
-			return MA_SellClose;
+			return 403;  // 买入平仓
 	else
 		if (offsetType == WOT_OPEN)
-			return MA_SellOpen;
+			return 402;  // 卖出开仓
 		else
-			return MA_BuyClose;
+			return 401;  // 卖出平仓
 }
 
-inline int wrapPosDirType(WTSDirectionType dirType)
+inline WTSDirectionType wrapDirectionType(int dirType)
+{
+	if (dirType == 400 || dirType == 403)  // 买开 买平
+		return WDT_LONG;
+	else if (dirType == 401 || dirType == 402)  // 卖开 卖平
+		return WDT_SHORT;
+	else
+		return WDT_NET;
+}
+
+inline char wrapPosDirType(WTSDirectionType dirType)
 {
 	if (WDT_LONG == dirType)
-		return MA_LONG;
+		return 'L';  // 权力仓
 	else if (WDT_SHORT == dirType)
-		return MA_SHORT;
-	else
-		return MA_COVERED_CALL;
+		return 'S';  // 义务仓
+	return 'C';  // 备兑策略持仓
 }
 
-inline WTSDirectionType wrapPosDirType(MA_OPT_SIDE dirType)
+inline WTSDirectionType wrapPosDirType(char dirType)
 {
-	if (MA_LONG == dirType)
+	if ('L' == dirType)
 		return WDT_LONG;
-	else if (MA_SHORT == dirType)
+	else if ('S' == dirType)
 		return WDT_SHORT;
 	else
 		return WDT_NET;
 }
 
-inline WTSDirectionType wrapPosDirType(MA_STK_BIZ dirType)
+inline WTSDirectionType wrapPosDirType(int dirType)
 {
-	if (dirType == MA_BuyOpen || dirType == MA_BuyClose)
+	if (dirType == 400 || dirType == 403)  // 买开 买平
 		return WDT_LONG;
-	else if (dirType == MA_SellClose || dirType == MA_SellOpen)
+	else if (dirType == 401 || dirType == 402)  // 卖开 卖平
 		return WDT_SHORT;
 	else
 		return WDT_NET;
 }
 
-inline WTSDirectionType wrapDirectionType(MA_STK_BIZ dirType)
+inline WTSOffsetType wrapOffsetType(int dirType)
 {
-	if (dirType == MA_BuyOpen || dirType == MA_SellClose || dirType == MA_OPT_CALL)
-		return WDT_LONG;
-	else
-		return WDT_SHORT;
-}
-
-inline WTSOffsetType wrapOffsetType(MA_STK_BIZ dirType)
-{
-	if (dirType == MA_BuyOpen || dirType == MA_SellOpen)
+	if (dirType == 400 || dirType == 402)  // 买开 卖开
 		return WOT_OPEN;
-	else 
+	else
 		return WOT_CLOSE;
 }
 
-inline const char* exchgO2I(const char* exchg)
+inline const char* exchgO2I(const char* stkbd)
 {
-	if (strncmp(exchg, "0", 1) == 0)
+	if (stkbd[0] == '0')  // 交易板块以0开始则为深交所，否则为上交所
 		return "SZSE";
 	else
 		return "SSE";
@@ -136,42 +148,47 @@ inline const char* exchgO2I(const char* exchg)
 inline const char* exchgI2O(const char* exchg)
 {
 	if (strcmp(exchg, "SSE") == 0)
-		return "15";
+		return "15";  // 上海期权
 	else
-		return "05";
+		return "05";  // 深圳期权
 }
 
 
 inline int wrapStkBzAction(WTSPriceType priceType, WTSOrderFlag flag, bool isSH)
 {
-	
+	/* GFD=当日有效，FAK=剩余即撤销，FOK=全成或者全撤，IOC=即时成交剩余自动撤销 */
 	if (WPT_LIMITPRICE == priceType && flag == WOF_NOR)
-		return 130;
+		return 130;  // 限价GFD, 订单当日有效
 
 	if (WPT_LIMITPRICE == priceType && flag == WOF_FOK)
-		return 131;
+		return 131;  // 限价FOK，订单即时全部成交否则撤销
 
 	if (isSH)
 	{
 		if (WPT_ANYPRICE == priceType && flag == WOF_NOR)
-			return 134;
+			return 132;  // 市价剩余转限价GFD
 
 		if (WPT_ANYPRICE == priceType && flag == WOF_FOK)
-			return 132;
+			return 133;  // 市价FOK
 
-		return 134;
+		return 134;  // 市价IOC
 	}
 	else
 	{
+		if (WPT_ANYPRICE == priceType && flag == WOF_NOR)
+			return 121;  // 市价最优五档即时成交剩余撤销
+
 		if (WPT_ANYPRICE == priceType && flag == WOF_FOK)
-			return 122;
+			return 122;  // 市价全额成交或撤销
 
 		if (WPT_ANYPRICE == priceType && flag == WOF_FAK)
-			return 121;
+			return 125;  // 市价即时成交剩余撤销
 
-		return 124;
+		if (WPT_BESTPRICE == priceType)
+			return 123;  // 市价本方最优价格
+
+		return 123;  // 市价对手最优价格
 	}
-
 }
 
 inline WTSPriceType wrapStkBzAction(int priceType)
@@ -186,38 +203,34 @@ inline WTSPriceType wrapStkBzAction(int priceType)
 		return WPT_LASTPRICE;
 }
 
-inline WTSPriceType wrapStkBzAction(MA_STK_BIZ_ACTION priceType)
-{
-	if (MA_OPT_ANYPRICE_LEFT_LIMIT == priceType || MA_OPT_ANYPRICE_IOC == priceType || MA_OPT_ANYPRICE_FOK == priceType || MA_BESTFIVELEVELPRICE == priceType || MA_MARKEPRICE_ALLORDRAW == priceType || MA_MARKETPRICE_LEFT_CANCEL == priceType)
-		return WPT_ANYPRICE;
-	else if (MA_OPT_LIMITPRICE_GFD == priceType || MA_OPT_LIMITPRICE_FOK == priceType)
-		return WPT_LIMITPRICE;
-	else if (MA_BESTPRICE_THIS_SIDE == priceType || MA_BESTPRICE_OTHER_SIDE == priceType)
-		return WPT_BESTPRICE;
-	else
-		return WPT_LASTPRICE;
-}
-
 inline int wrapStkBz(WTSDirectionType dType, WTSOffsetType oType)
 {
 	if (dType == WDT_LONG)
-		return oType == WOT_OPEN ? 400 : 401;
+		return oType == WOT_OPEN ? 400 : 403;
 	else
-		return oType == WOT_OPEN ? 402 : 403;
+		return oType == WOT_OPEN ? 402 : 401;
 }
 
-inline WTSOrderState wrapOrderState(MAOrderState orderState)
+inline WTSOrderState wrapOrderState(char orderState)
 {
-	if (orderState == MA_Canceled || orderState == MA_Withdawn || orderState == MA_PartFilled_Withdrawn)
+	if (orderState == '6')  // 6=已撤，
 		return WOS_Canceled;
-	else if (orderState == MA_Nottouched || orderState == MA_ToSubmit)
-		return WOS_Nottouched;
-	else if (orderState == MA_Submitted)
-		return WOS_Submitting;
-	else if (orderState == MA_Withdraw_NotFilled || orderState == MA_PartFilled_ToWithdraw)
+	else if (orderState == '3')  // 3=已报待撤
 		return WOS_Cancelling;
-	else if (orderState == MA_AllFilled)
+	else if (orderState == '8')  // 8=已成
 		return WOS_AllTraded;
+	else if (orderState == '4')  // 4=部成待撤
+		return WOS_PartTraded_Queuing;
+	else if (orderState == '7')  // 7=部成已撤
+		return WOS_Canceled;
+	else if (orderState == '2')  // 2=已报，已经成功写入接口库
+		return WOS_NotTraded_Queuing;
+	else if (orderState == 'A')  // A=待报，写入队列未成功
+		return WOS_NotTraded_NotQueuing;
+	else if (orderState == '1')  // 1=正报
+		return WOS_Submitting;
+	else if (orderState == '5')  // 5=部撤
+		return WOS_PartTraded_NotQueuing;
 
 	return WOS_Nottouched;
 }
@@ -225,16 +238,28 @@ inline WTSOrderState wrapOrderState(MAOrderState orderState)
 inline char wrapActionFlag(WTSActionFlag actionFlag)
 {
 	if (WAF_CANCEL == actionFlag)
-		return MA_ORDER_CANCEL;
+		return 'T';
 	else
-		return MA_ORDER_NORMAL;
+		return 'F';
 }
+
+//inline uint32_t makeRefID()
+//{
+//	static std::atomic<uint32_t> auto_refid(0);
+//	if (auto_refid == 0)
+//		auto_refid = (uint32_t)((TimeUtils::getLocalTimeNow() - TimeUtils::makeTime(20220101, 0)) / 1000 * 100);
+//	return auto_refid.fetch_add(1);
+//}
 
 inline uint32_t makeRefID()
 {
 	static std::atomic<uint32_t> auto_refid(0);
 	if (auto_refid == 0)
-		auto_refid = (uint32_t)((TimeUtils::getLocalTimeNow() - TimeUtils::makeTime(20220101, 0)) / 1000 * 100);
+	{
+		uint32_t curDate = TimeUtils::getCurDate();
+		curDate = curDate / 100 * 100 + 1;
+		auto_refid = (uint32_t)((TimeUtils::getLocalTimeNow() - TimeUtils::makeTime(curDate, 0)) / 1000 * 50);
+	}
 	return auto_refid.fetch_add(1);
 }
 
@@ -245,7 +270,7 @@ TraderMAOpt::TraderMAOpt()
 	, m_ayTrades(NULL)
 	, m_wrapperState(WS_NOTLOGIN)
 	, m_iRequestID(0)
-	, m_optSink(NULL)
+	//, m_optSink(NULL)
 	, m_bscSink(NULL)
 	, m_orderRef(makeRefID())
 {
@@ -279,8 +304,9 @@ bool TraderMAOpt::init(WTSVariant* params)
 	if (param != NULL)
 		m_strModule = getBinDir() + DLLHelper::wrap_module(param->asCString(), "");
 	else
-		m_strModule = getBinDir() + DLLHelper::wrap_module("maTradeApi", "lib");
+		m_strModule = getBinDir() + DLLHelper::wrap_module("maTradeApi", "");
 
+	write_log(m_bscSink, LL_DEBUG, "[TraderMAOpt] Loading module: {}", m_strModule);
 	m_hInstMA = DLLHelper::load_library(m_strModule.c_str());
 
 	return true;
@@ -291,6 +317,8 @@ void TraderMAOpt::release()
 	if (m_pUserAPI)
 	{
 		//m_pUserAPI->RegisterSpi(NULL);
+		m_pUserAPI->Exit();
+
 		delete m_pUserAPI;
 		m_pUserAPI = NULL;
 	}
@@ -307,27 +335,45 @@ void TraderMAOpt::release()
 
 void TraderMAOpt::connect()
 {
+
 	// 创建Api实例
 	m_pUserAPI = new CCliOptTradeApi();
 
 	// 注册响应实例
 	m_pUserAPI->RegisterSpi(this);
 
-	// 注册账号信息，应该在ReqUserLogin调用之前
 	CReqSysField stSysField = { 0 };
 	strncpy(stSysField.szSvrAddress, m_strHost.c_str(), sizeof(stSysField.szSvrAddress) - 1);
 	stSysField.nSvrPort = m_iPort;
 	stSysField.uiTimeout = 30;
 	stSysField.chDataSet = '1';  /// 推送自动订阅 '0' = 按连接，‘1’= 按账户，0 = 不订阅
 	m_pUserAPI->RegisterServer(&stSysField);
+	write_log(m_bscSink, LL_INFO, "[TraderMAOpt] Register server connecting address [{}] - [{}]", m_strHost, m_iPort);
 
-	write_log(m_bscSink, LL_INFO, "[TraderMAOpt] Register server connecting address");
+	// 注册账户
+	CReqFixField stFixField = { 0 };
+	strncpy(stFixField.szOpSite, m_strOptSite.c_str(), sizeof(stFixField.szOpSite) - 1);
+	char chChannel = m_strChannel.at(0);
+	stFixField.chChannel = m_strChannel.at(0);
+	m_pUserAPI->RegisterAcct(&stFixField);
+	write_log(m_bscSink, LL_INFO, "[TraderMAOpt] Register account info");
 
 	int iRetCode;
 
 	if (m_pUserAPI)
 	{
+		// 比较奇怪，需要在connect()里初始化，否则登录会失败，可能和异步有关
 		iRetCode = m_pUserAPI->Init();
+	}
+
+	if (iRetCode != 0)
+	{
+		m_pUserAPI->Exit();
+		write_log(m_bscSink, LL_ERROR, "[TraderMAOpt] Api init failed, code: {}, msg: {}", iRetCode, m_pUserAPI->GetLastErrorText());
+	}
+	else
+	{
+		write_log(m_bscSink, LL_INFO, "[TraderMAOpt] Api init successed, code: {}, msg: {}", iRetCode, m_pUserAPI->GetLastErrorText());
 	}
 
 	if (_thrd_worker == NULL)
@@ -375,8 +421,6 @@ void TraderMAOpt::registerSpi(ITraderSpi *listener)
 	if (m_bscSink)
 	{
 		m_bdMgr = listener->getBaseDataMgr();
-
-		m_optSink = listener->getOptSpi();
 	}
 }
 
@@ -404,11 +448,6 @@ int TraderMAOpt::doLogin()
 {
 	m_wrapperState = WS_LOGINING;
 
-	CReqFixField stFixField = { 0 };
-	strncpy(stFixField.szOpSite, m_strOptSite.c_str(), sizeof(stFixField.szOpSite) - 1);
-	char chChannel = m_strChannel.at(0);
-	stFixField.chChannel = m_strChannel.at(0);
-
 	CReqOptUserLoginField req = { 0 };
 	memset(&req, 0, sizeof(req));
 	//strcpy(std::to_string(req.iIntOrg), m_strBroker);
@@ -421,19 +460,12 @@ int TraderMAOpt::doLogin()
 	req.chAuthType = m_strAuthType[0];
 	strncpy(req.szEncryptKey, m_strEncryptKey.c_str(), sizeof(req.szEncryptKey));
 
-	m_pUserAPI->RegisterAcct(&stFixField);
-	write_log(m_bscSink, LL_INFO, "[TraderMAOpt] Register account info");
-
-	int iRetCode;
-	iRetCode = m_pUserAPI->Init();  /// 在ReqUserLogin调用之前
-	if (iRetCode != 0)
-		write_log(m_bscSink, LL_ERROR, "[TraderMAOpt]Init failed, account error {}", m_pUserAPI->GetLastErrorText());
-
-	iRetCode = m_pUserAPI->ReqUserLogin(&req, genRequestID());
+	int iRetCode = m_pUserAPI->ReqUserLogin(&req, genRequestID());
 
 	if (iRetCode != 0)
 	{
 		write_log(m_bscSink, LL_ERROR, "[TraderMAOpt] Sending login request failed: {}, error msg: {}", iRetCode, m_pUserAPI->GetLastErrorText());
+		return -1;
 	}
 	else
 	{
@@ -453,129 +485,6 @@ int TraderMAOpt::logout()
 	return 0;
 }
 
-int TraderMAOpt::orderInsertOpt(WTSEntrust* entrust)
-{
-	if (m_pUserAPI == NULL || m_wrapperState != WS_ALLREADY)
-	{
-		return -1;
-	}
-
-	if (entrust == NULL)
-		return -1;
-
-	if (entrust->getBusinessType() != BT_EXECUTE)
-	{
-		if (m_bscSink) write_log(m_bscSink, LL_ERROR, "[TraderMAOpt] Bz type not supported except option execution");
-		return -1;
-	}
-
-	CReqOptOrderField req;
-	memset(&req, 0, sizeof(req));
-
-	req.llCuacctCode = m_llCuacctCode;
-	req.llCustCode = m_llCustCode;
-	strncpy(req.szStkbd, entrust->getExchg(), sizeof(req.szStkbd));
-	//strncpy(req.szStkpbu, m_strStkPBU.c_str(), sizeof(req.szStkpbu));
-
-	//if (strlen(entrust->getUserTag()) == 0)
-	//{
-	//	///报单引用
-	//	fmt::format_to(req.ExecOrderRef, "{}", m_orderRef.fetch_add(0));
-
-	//}
-	//else
-	//{
-	//	uint32_t fid, sid, orderref;
-	//	extractEntrustID(entrust->getEntrustID(), fid, sid, orderref);
-	//	///报单引用
-	//	fmt::format_to(req.ExecOrderRef, "{}", orderref);
-	//}
-
-	//if (strlen(entrust->getUserTag()) > 0)
-	//{
-	//	m_iniHelper.writeString(ENTRUST_SECTION, entrust->getEntrustID(), entrust->getUserTag());
-	//	m_iniHelper.save();
-	//}
-
-	req.iStkBiz = wrapDirectionType(entrust->getDirection(), entrust->getOffsetType());
-	req.llOrderQty = (long long)entrust->getVolume();
-	strncpy(req.szOptNum, entrust->getCode(), sizeof(req.szOptNum));
-
-	int iResult = m_pUserAPI->ReqOrder(&req, genRequestID());
-	if (iResult)
-	{
-		write_log(m_bscSink, LL_ERROR, "[TraderMAOpt] Option execution order inserting failed: {}, order error: {}", iResult, m_pUserAPI->GetLastErrorText());
-	}
-
-	return 0;
-}
-
-int TraderMAOpt::orderActionOpt(WTSEntrustAction* action)
-{   // 撤单请求
-	if (m_wrapperState != WS_ALLREADY)
-		return -1;
-
-	if (action->getBusinessType() != BT_EXECUTE)
-	{
-		if (m_bscSink) write_log(m_bscSink, LL_ERROR, "[TraderMAOpt] Bz type not supported except option execution");
-		return -1;
-	}
-
-	//uint32_t frontid, sessionid, orderref;
-	//if (!extractEntrustID(action->getEntrustID(), frontid, sessionid, orderref))
-	//	return -1;
-
-	CReqOptCancelOrderField req = { 0 };
-
-	memset(&req, 0, sizeof(req));
-	///内部机构
-	req.iIntOrg = m_iInitOrg;
-	///客户代码
-	req.llCuacctCode = m_llCuacctCode;
-	/// 交易板块
-	//strncpy(req.szStkbd, m_strStkBD.c_str(), sizeof(req.szStkbd));
-	//req.iOrderBsn = 0
-	strcpy(req.szOrderId, action->getOrderID());
-
-	int iResult = m_pUserAPI->ReqCancelOrder(&req, genRequestID());
-	if (iResult)
-	{
-		write_log(m_bscSink, LL_ERROR, "[TraderMAOpt] Sending cancel request of option execution order failed: {}, cancel error: {}", iResult, m_pUserAPI->GetLastErrorText());
-	}
-
-	return 0;
-}
-
-int TraderMAOpt::queryOrdersOpt(WTSBusinessType bType)
-{
-	if (m_pUserAPI == NULL || m_wrapperState != WS_ALLREADY)
-	{
-		return -1;
-	}
-
-	if (bType != BT_EXECUTE)
-	{
-		if (m_bscSink) write_log(m_bscSink, LL_ERROR, "[TraderMAOpt] Bz type not supported except option execution");
-		return -1;
-	}
-
-	CReqOptCurrDayOrderField req = { 0 };
-	memset(&req, 0, sizeof(req));
-	req.llCustCode = m_llCustCode;
-	req.llCuacctCode = m_llCuacctCode;
-	//strncpy(req.szStkbd, m_strStkBD.c_str(), sizeof(req.szStkbd));
-	strncpy(req.szTrdacct, m_strTrdAcct.c_str(), sizeof(req.szTrdacct));
-	req.chQueryFlag = '9';
-	req.iQryNum = 10000;
-	// req.szCombStraCode, "", sizeof(req.szCombStraCode));
-
-	int iRet = m_pUserAPI->ReqQryCurrDayOrder(&req, genRequestID());
-	if (iRet)
-		write_log(m_bscSink, LL_ERROR, "[TraderMAOpt] ReqQryCurrDayOrder Error:: {}", m_pUserAPI->GetLastErrorText());
-
-	return 0;
-}
-
 int TraderMAOpt::orderInsert(WTSEntrust* entrust)
 {
 	if (m_pUserAPI == NULL || m_wrapperState != WS_ALLREADY)
@@ -587,9 +496,6 @@ int TraderMAOpt::orderInsert(WTSEntrust* entrust)
 
 	if (ct != NULL)
 	{
-		int n = 10;
-		for (int i = 0; i < 10; i++)
-		{
 		CReqOptOrderField req;
 		memset(&req, 0, sizeof(req));
 		/// 客户代码
@@ -626,18 +532,17 @@ int TraderMAOpt::orderInsert(WTSEntrust* entrust)
 
 		extractEntrustID(entrust->getEntrustID(), req.iOrderBsn);
 
-		//write_log(m_bscSink, LL_INFO, "Order info: code: {}, qty: {}, price: {}, biz action: {}, side: {}", req.szOptNum, req.llOrderQty, req.szOrderPrice, req.iStkBizAction, req.iStkBiz);
+		write_log(m_bscSink, LL_INFO, "Order info: code: {}, qty: {}, price: {}, biz action: {}, side: {}", req.szOptNum, req.llOrderQty, req.szOrderPrice, req.iStkBizAction, req.iStkBiz);
 
 		int iResult = m_pUserAPI->ReqOrder(&req, genRequestID());
 		if (iResult)
 		{
 			write_log(m_bscSink, LL_ERROR, "[TraderMAOpt] Order inserting failed: {}, error: {}", iResult, m_pUserAPI->GetLastErrorText());
-			return -1;
+			return 0;
 		}
 
 		if (strlen(entrust->getUserTag()) > 0)
 			m_eidCache.put(entrust->getEntrustID(), entrust->getUserTag());
-		}
 	}
 	else
 	{
@@ -688,9 +593,9 @@ int TraderMAOpt::queryAccount()
 	stFieldFund.llCustCode = m_llCustCode;
 	stFieldFund.llCuacctCode = m_llCuacctCode;
 	stFieldFund.iValueFlag = 15;
-	auto iRet = m_pUserAPI->ReqQryExpendableFund(&stFieldFund, genRequestID());
+	int iRet = m_pUserAPI->ReqQryExpendableFund(&stFieldFund, genRequestID());
 	if (iRet)
-		write_log(m_bscSink, LL_ERROR, "[TraderMAOpt] Query account fail, code: {}, err msg: {}", iRet, m_pUserAPI->GetLastErrorText());
+		write_log(m_bscSink, LL_ERROR, "[TraderMAOpt] Query account fail, code: {}, msg: {}", iRet, m_pUserAPI->GetLastErrorText());
 
 	return 0;
 }
@@ -712,7 +617,7 @@ int TraderMAOpt::queryPositions()
 
 	int iRet = m_pUserAPI->ReqQryExpendableCu(&stField, genRequestID());
 	if (iRet)
-		write_log(m_bscSink, LL_ERROR, "[TraderMAOpt] Query positions fail, code: {}, err msg: {}", iRet, m_pUserAPI->GetLastErrorText());
+		write_log(m_bscSink, LL_ERROR, "[TraderMAOpt] Query positions fail, code: {}, msg: {}", iRet, m_pUserAPI->GetLastErrorText());
 
 	return 0;
 }
@@ -723,6 +628,8 @@ int TraderMAOpt::queryOrders()
 	{
 		return -1;
 	}
+
+	//write_log(m_bscSink, LL_DEBUG, "[{}] begin to query orders ...", m_strTrdAcct);
 
 	CReqOptCurrDayOrderField req = { 0 };
 	memset(&req, 0, sizeof(req));
@@ -736,7 +643,9 @@ int TraderMAOpt::queryOrders()
 
 	int iRet = m_pUserAPI->ReqQryCurrDayOrder(&req, genRequestID());
 	if (iRet)
-		write_log(m_bscSink, LL_ERROR, "[TraderMAOpt] Query orders fail, code: {}, err msg: {}", iRet, m_pUserAPI->GetLastErrorText());
+		write_log(m_bscSink, LL_ERROR, "[TraderMAOpt] Query orders fail, code: {}, msg: {}", iRet, m_pUserAPI->GetLastErrorText());
+	else
+		write_log(m_bscSink, LL_INFO, "[TraderMAOpt] Query orders success, code: {}", iRet);
 
 	return 0;
 }
@@ -760,7 +669,7 @@ int TraderMAOpt::queryTrades()
 
 	int iRet = m_pUserAPI->ReqQryCurrDayFill(&req, genRequestID());
 	if (iRet)
-		write_log(m_bscSink, LL_ERROR, "[TraderMAOpt] Query trades fail, code: {}, err msg: {}", iRet, m_pUserAPI->GetLastErrorText());
+		write_log(m_bscSink, LL_ERROR, "[TraderMAOpt] Query trades fail, code: {}, msg: {}", iRet, m_pUserAPI->GetLastErrorText());
 
 	return 0;
 }
@@ -801,23 +710,22 @@ WTSOrderInfo* TraderMAOpt::makeOrderInfo(CRspOptOrderField* orderField)
 	WTSOrderInfo* pRet = WTSOrderInfo::create();
 	pRet->setPrice(atof(orderField->szOrderPrice));
 	pRet->setVolume((double)orderField->llOrderQty);
-	pRet->setDirection(wrapDirectionType((MA_STK_BIZ)orderField->iStkBiz));
+	pRet->setDirection(wrapDirectionType(orderField->iStkBiz));
 	pRet->setPriceType(wrapStkBzAction(orderField->iStkBiz));
-	pRet->setOffsetType(wrapOffsetType((MA_STK_BIZ)orderField->iStkBiz));
+	pRet->setOffsetType(wrapOffsetType(orderField->iStkBiz));
 	pRet->setContractInfo(contract);
 
-	if (orderField->iStkBiz == (int)MA_OPT_LIMITPRICE_GFD || orderField->iStkBiz == (int)MA_OPT_ANYPRICE_LEFT_LIMIT)
+	/* GFD=当日有效，FAK=剩余即撤销，FOK=全成或者全撤，IOC=即时成交剩余自动撤销 */
+	if (orderField->iStkBiz == 130 || orderField->iStkBiz == 132 || orderField->iStkBiz == 123 || orderField->iStkBiz == 124)
 	{
 		pRet->setOrderFlag(WOF_NOR);
 	}
-	else if (orderField->iStkBiz == (int)MA_OPT_ANYPRICE_IOC)
+	else
 	{
-		//if (orderField->VolumeCondition == THOST_FTDC_VC_AV || orderField->VolumeCondition == THOST_FTDC_VC_MV)
-		//	pRet->setOrderFlag(WOF_FAK);
-		//else
-		//	pRet->setOrderFlag(WOF_FOK);
-
-		pRet->setOrderFlag(WOF_NOR);
+		if (orderField->iStkBiz == 131 || orderField->iStkBiz == 133 || orderField->iStkBiz == 122)
+			pRet->setOrderFlag(WOF_FOK);
+		else
+			pRet->setOrderFlag(WOF_FAK);
 	}
 
 	pRet->setCode(orderField->szOptNum);
@@ -826,8 +734,27 @@ WTSOrderInfo* TraderMAOpt::makeOrderInfo(CRspOptOrderField* orderField)
 	pRet->setOrderDate(m_lDate);
 	pRet->setOrderTime(TimeUtils::getLocalTimeNow());
 
+	generateEntrustID(pRet->getEntrustID(), orderField->iOrderBsn);
 	pRet->setOrderID(orderField->szOrderId);
+
 	pRet->setUserTag(orderField->szOrderIdEx);
+
+	const char* usertag = m_eidCache.get(pRet->getEntrustID());
+	if (strlen(usertag) == 0)
+	{
+		pRet->setUserTag(pRet->getEntrustID());
+	}
+	else
+	{
+		pRet->setUserTag(usertag);
+
+		if (strlen(pRet->getOrderID()) > 0)
+		{
+			m_oidCache.put(StrUtil::trim(pRet->getOrderID()).c_str(), usertag, 0, [this](const char* message) {
+				write_log(m_bscSink, LL_ERROR, message);
+			});
+		}
+	}
 
 	return pRet;
 }
@@ -841,12 +768,23 @@ WTSOrderInfo* TraderMAOpt::makeOrderInfo(CRspOptCancelOrderField* orderField)
 	WTSOrderInfo* pRet = WTSOrderInfo::create();
 	pRet->setPrice(atof(orderField->szOrderPrice));
 	pRet->setVolume((double)orderField->llOrderQty);
-	pRet->setDirection(wrapDirectionType((MA_STK_BIZ)orderField->iStkBiz));
+	pRet->setDirection(wrapDirectionType(orderField->iStkBiz));
 	pRet->setPriceType(wrapStkBzAction(orderField->iStkBiz));
-	pRet->setOffsetType(wrapOffsetType((MA_STK_BIZ)orderField->iStkBiz));
+	pRet->setOffsetType(wrapOffsetType(orderField->iStkBiz));
 	pRet->setContractInfo(contract);
 
-	pRet->setOrderFlag(WOF_NOR);
+	/* GFD=当日有效，FAK=剩余即撤销，FOK=全成或者全撤，IOC=即时成交剩余自动撤销 */
+	if (orderField->iStkBiz == 130 || orderField->iStkBiz == 132 || orderField->iStkBiz == 123 || orderField->iStkBiz == 124)
+	{
+		pRet->setOrderFlag(WOF_NOR);
+	}
+	else
+	{
+		if (orderField->iStkBiz == 131 || orderField->iStkBiz == 133 || orderField->iStkBiz == 122)
+			pRet->setOrderFlag(WOF_FOK);
+		else
+			pRet->setOrderFlag(WOF_FAK);
+	}
 
 	pRet->setCode(orderField->szStkCode);
 	pRet->setExchange(contract->getExchg());
@@ -854,10 +792,29 @@ WTSOrderInfo* TraderMAOpt::makeOrderInfo(CRspOptCancelOrderField* orderField)
 	pRet->setOrderDate(m_lDate);
 	pRet->setOrderTime(TimeUtils::getLocalTimeNow());
 
+	generateEntrustID(pRet->getEntrustID(), orderField->iOrderBsn);
 	pRet->setOrderID(orderField->szOrderId);
+
 	pRet->setUserTag(orderField->szOrderIdEx);
 	pRet->setOrderState(WOS_Canceled);
 	pRet->setStateMsg("Canceled");
+
+	const char* usertag = m_eidCache.get(pRet->getEntrustID());
+	if (strlen(usertag) == 0)
+	{
+		pRet->setUserTag(pRet->getEntrustID());
+	}
+	else
+	{
+		pRet->setUserTag(usertag);
+
+		if (strlen(pRet->getOrderID()) > 0)
+		{
+			m_oidCache.put(StrUtil::trim(pRet->getOrderID()).c_str(), usertag, 0, [this](const char* message) {
+				write_log(m_bscSink, LL_ERROR, message);
+			});
+		}
+	}
 
 	return pRet;
 }
@@ -869,13 +826,14 @@ WTSOrderInfo* TraderMAOpt::makeOrderInfo(CRtnOptOrderField* orderField)
 	if (contract == NULL)
 		return NULL;
 
+	write_log(m_bscSink, LL_INFO, "[makeOrderInfo] [CRtnOptOrderField] code: {}, order state: {}, price: {}, vol: {}, order id: {}", orderField->szStkCode, orderField->chOrderStatus, orderField->szOrderPrice, orderField->szOrderAmt, orderField->szOrderId);
+
 	WTSOrderInfo* pRet = WTSOrderInfo::create();
 	pRet->setContractInfo(contract);
 	pRet->setPrice(atof(orderField->szOrderPrice));
-	pRet->setBusinessType(BT_EXECUTE);
 	pRet->setVolume((double)orderField->llOrderQty);
-	pRet->setDirection(wrapPosDirType((MA_STK_BIZ)orderField->iStkBiz));
-	pRet->setOffsetType(wrapOffsetType((MA_STK_BIZ)orderField->iStkBiz));
+	pRet->setDirection(wrapPosDirType(orderField->iStkBiz));
+	pRet->setOffsetType(wrapOffsetType(orderField->iStkBiz));
 
 	pRet->setVolTraded((double)orderField->llTotalMatchedQty);
 	pRet->setVolLeft((double)(orderField->llOrderQty - orderField->llTotalMatchedQty));
@@ -893,28 +851,27 @@ WTSOrderInfo* TraderMAOpt::makeOrderInfo(CRtnOptOrderField* orderField)
 	pRet->setOrderDate(m_lDate);
 	pRet->setOrderTime(TimeUtils::getLocalTimeNow());
 
-	pRet->setOrderState(wrapOrderState((MAOrderState)orderField->chOrderStatus));
-	if ((MAOrderState)orderField->chOrderStatus == MA_Canceled) {
+	pRet->setOrderState(wrapOrderState(orderField->chOrderStatus));
+	if (orderField->chOrderStatus == '9') {  // 废单
 		pRet->setError(true);
 		pRet->setOrderState(WOS_Canceled);
 	}
 
-	//const char* usertag = m_eidCache.get(pRet->getEntrustID());
-	//if (strlen(usertag) == 0)
-	//{
-	//	pRet->setUserTag(pRet->getEntrustID());
-	//}
-	//else
-	//{
-	//	pRet->setUserTag(usertag);
+	if (strlen(usertag) == 0)
+	{
+		pRet->setUserTag(pRet->getEntrustID());
+	}
+	else
+	{
+		pRet->setUserTag(usertag);
 
-	//	if (strlen(pRet->getOrderID()) > 0)
-	//	{
-	//		m_oidCache.put(StrUtil::trim(pRet->getOrderID()).c_str(), usertag, 0, [this](const char* message) {
-	//			write_log(m_bscSink, LL_ERROR, message);
-	//		});
-	//	}
-	//}
+		if (strlen(pRet->getOrderID()) > 0)
+		{
+			m_oidCache.put(StrUtil::trim(pRet->getOrderID()).c_str(), usertag, 0, [this](const char* message) {
+				write_log(m_bscSink, LL_ERROR, message);
+			});
+		}
+	}
 
 	return pRet;
 }
@@ -931,10 +888,9 @@ WTSOrderInfo* TraderMAOpt::makeOrderInfo(CRspOptCurrDayOrderField* daiOrderField
 	WTSOrderInfo* pRet = WTSOrderInfo::create();
 	pRet->setContractInfo(contract);
 	pRet->setPrice(atof(daiOrderField->szOrderPrice));
-	pRet->setBusinessType(BT_CASH);
 	pRet->setVolume((double)daiOrderField->llOrderQty);
-	pRet->setDirection(wrapPosDirType((MA_STK_BIZ)daiOrderField->iStkBiz));
-	pRet->setOffsetType(wrapOffsetType((MA_STK_BIZ)daiOrderField->iStkBiz));
+	pRet->setDirection(wrapPosDirType(daiOrderField->iStkBiz));
+	pRet->setOffsetType(wrapOffsetType(daiOrderField->iStkBiz));
 
 	pRet->setVolTraded((double)daiOrderField->llMatchedQty);
 	pRet->setVolLeft((double)(daiOrderField->llOrderQty - daiOrderField->llMatchedQty));
@@ -943,14 +899,14 @@ WTSOrderInfo* TraderMAOpt::makeOrderInfo(CRspOptCurrDayOrderField* daiOrderField
 	pRet->setExchange(contract->getExchg());
 
 	pRet->setOrderDate(m_lDate);
-	std::string strTime(daiOrderField->szOrderTime+11);
+	std::string strTime(daiOrderField->szOrderTime + 11);
 	StrUtil::replace(strTime, ":", "");
 	StrUtil::replace(strTime, ".", "");
 	uint32_t uTime = strtoul(strTime.c_str(), NULL, 10);
 	pRet->setOrderTime(TimeUtils::makeTime(pRet->getOrderDate(), uTime));
 
-	pRet->setOrderState(wrapOrderState((MAOrderState)daiOrderField->chOrderStatus));
-	if (daiOrderField->chOrderStatus == MA_Canceled)
+	pRet->setOrderState(wrapOrderState(daiOrderField->chOrderStatus));
+	if (daiOrderField->chOrderStatus == '9')
 	{
 		pRet->setError(true);
 		pRet->setOrderState(WOS_Canceled);
@@ -960,23 +916,6 @@ WTSOrderInfo* TraderMAOpt::makeOrderInfo(CRspOptCurrDayOrderField* daiOrderField
 	pRet->setOrderID(daiOrderField->szOrderId);
 	pRet->setUserTag(daiOrderField->szOrderIdEx);
 	pRet->setStateMsg(daiOrderField->szOfferRetMsg);
-
-	//const char* usertag = m_eidCache.get(pRet->getEntrustID());
-	//if (strlen(usertag) == 0)
-	//{
-	//	pRet->setUserTag(pRet->getEntrustID());
-	//}
-	//else
-	//{
-	//	pRet->setUserTag(usertag);
-
-	//	if (strlen(pRet->getOrderID()) > 0)
-	//	{
-	//		m_oidCache.put(StrUtil::trim(pRet->getOrderID()).c_str(), usertag, 0, [this](const char* message) {
-	//			write_log(m_bscSink, LL_ERROR, message);
-	//		});
-	//	}
-	//}
 
 	return pRet;
 }
@@ -1003,19 +942,22 @@ WTSTradeInfo* TraderMAOpt::makeTradeRecord(CRtnOptOrderFillField *tradeField)
 	pRet->setTradeDate(uDate);
 	pRet->setTradeTime(TimeUtils::makeTime(uDate, uTime * 1000));
 
-	WTSDirectionType dType = wrapDirectionType((MA_STK_BIZ)tradeField->iStkBiz);
-
+	WTSDirectionType dType = wrapDirectionType(tradeField->iStkBiz);
 	pRet->setDirection(dType);
-	pRet->setOffsetType(wrapOffsetType((MA_STK_BIZ)tradeField->iStkBiz));
+	pRet->setOffsetType(wrapOffsetType(tradeField->iStkBiz));
 	pRet->setRefOrder(tradeField->szOrderId);
 	pRet->setTradeType((WTSTradeType)tradeField->chMatchedType);
 
 	double amount = atof(tradeField->szMatchedAmt);
 	pRet->setAmount(amount);
 
-	thread_local static char entrustid[64] = { 0 };
-	generateEntrustID(entrustid, tradeField->iOrderBsn);
-	const char* usertag = m_eidCache.get(entrustid);
+	//thread_local static char entrustid[64] = { 0 };
+	//generateEntrustID(entrustid, tradeField->iOrderBsn);
+	//const char* usertag = m_eidCache.get(entrustid);
+	//if (strlen(usertag) > 0)
+	//	pRet->setUserTag(usertag);
+
+	const char* usertag = m_oidCache.get(StrUtil::trim(pRet->getRefOrder()).c_str());
 	if (strlen(usertag) > 0)
 		pRet->setUserTag(usertag);
 
@@ -1045,8 +987,8 @@ WTSTradeInfo* TraderMAOpt::makeTradeRecord(CRspOptCurrDayFillField *tradeField)
 	pRet->setTradeDate(uDate);
 	pRet->setTradeTime(TimeUtils::makeTime(uDate, uTime * 1000));
 
-	WTSDirectionType dType = wrapDirectionType((MA_STK_BIZ)tradeField->iStkBiz);
-	WTSOffsetType oType = wrapOffsetType((MA_STK_BIZ)tradeField->iStkBiz);
+	WTSDirectionType dType = wrapDirectionType(tradeField->iStkBiz);
+	WTSOffsetType oType = wrapOffsetType(tradeField->iStkBiz);
 
 	pRet->setDirection(dType);
 	pRet->setOffsetType(oType);
@@ -1057,9 +999,7 @@ WTSTradeInfo* TraderMAOpt::makeTradeRecord(CRspOptCurrDayFillField *tradeField)
 	double amount = atof(tradeField->szMatchedAmt);
 	pRet->setAmount(amount);
 
-	thread_local static char entrustid[64] = { 0 };
-	generateEntrustID(entrustid, tradeField->iOrderBsn);
-	const char* usertag = m_eidCache.get(entrustid);
+	const char* usertag = m_oidCache.get(StrUtil::trim(pRet->getRefOrder()).c_str());
 	if (strlen(usertag) > 0)
 		pRet->setUserTag(usertag);
 
@@ -1082,22 +1022,21 @@ WTSEntrust* TraderMAOpt::makeEntrust(CRspOptOrderField *entrustField)
 		ct->getExchg());
 
 	pRet->setContractInfo(ct);
-	pRet->setDirection(wrapDirectionType((MA_STK_BIZ)entrustField->iStkBiz));
-	pRet->setPriceType(wrapStkBzAction((MA_STK_BIZ_ACTION)entrustField->iStkBizAction));
-	pRet->setOffsetType(wrapOffsetType((MA_STK_BIZ)entrustField->iStkBiz));
+	pRet->setDirection(wrapDirectionType(entrustField->iStkBiz));
+	pRet->setPriceType(wrapStkBzAction(entrustField->iStkBizAction));
+	pRet->setOffsetType(wrapOffsetType(entrustField->iStkBiz));
 
-	MA_STK_BIZ_ACTION timeCondition = (MA_STK_BIZ_ACTION)entrustField->iStkBizAction;
-	if (timeCondition == MA_OPT_LIMITPRICE_GFD || timeCondition == MA_OPT_ANYPRICE_LEFT_LIMIT)
+	/* GFD=当日有效，FAK=剩余即撤销，FOK=全成或者全撤，IOC=即时成交剩余自动撤销 */
+	if (entrustField->iStkBiz == 130 || entrustField->iStkBiz == 132 || entrustField->iStkBiz == 123 || entrustField->iStkBiz == 124)
 	{
 		pRet->setOrderFlag(WOF_NOR);
 	}
-	else if (timeCondition == MA_OPT_ANYPRICE_IOC)
+	else
 	{
-		/*if (entrustField->VolumeCondition == THOST_FTDC_VC_AV || entrustField->VolumeCondition == THOST_FTDC_VC_MV)
-			pRet->setOrderFlag(WOF_FAK);
+		if (entrustField->iStkBiz == 131 || entrustField->iStkBiz == 133 || entrustField->iStkBiz == 122)
+			pRet->setOrderFlag(WOF_FOK);
 		else
-			pRet->setOrderFlag(WOF_FOK);*/
-		pRet->setOrderFlag(WOF_FOK);
+			pRet->setOrderFlag(WOF_FAK);
 	}
 
 	//pRet->setEntrustID(generateEntrustID(m_frontID, m_sessionID, atoi(entrustField->OrderRef)).c_str());
@@ -1109,9 +1048,9 @@ WTSEntrust* TraderMAOpt::makeEntrust(CRspOptOrderField *entrustField)
 	//	pRet->setUserTag(it->second.c_str());
 	//}
 
-	//std::string usertag = m_iniHelper.readString(ENTRUST_SECTION, pRet->getEntrustID());
-	//if (!usertag.empty())
-	//	pRet->setUserTag(usertag.c_str());
+	const char* usertag = m_eidCache.get(pRet->getEntrustID());
+	if (strlen(usertag) > 0)
+		pRet->setUserTag(usertag);
 
 	return pRet;
 }
@@ -1125,14 +1064,14 @@ WTSEntrust* TraderMAOpt::makeEntrust(CRtnOptOrderFillField *entrustField)
 	WTSEntrust* pRet = WTSEntrust::create(entrustField->szStkCode, (double)entrustField->llMatchedQty, 0, ct->getExchg(), BT_CASH);
 	pRet->setContractInfo(ct);
 
-	pRet->setDirection(wrapDirectionType((MA_STK_BIZ)entrustField->iStkBiz));
-	pRet->setPriceType(wrapStkBzAction((MA_STK_BIZ_ACTION)entrustField->iStkBizAction));
+	pRet->setDirection(wrapDirectionType(entrustField->iStkBiz));
+	pRet->setPriceType(wrapStkBzAction(entrustField->iStkBizAction));
 
 	generateEntrustID(pRet->getEntrustID(), entrustField->iOrderBsn);
 
-	//std::string usertag = m_iniHelper.readString(ENTRUST_SECTION, pRet->getEntrustID());
-	//if (!usertag.empty())
-	//	pRet->setUserTag(usertag.c_str());
+	const char* usertag = m_eidCache.get(pRet->getEntrustID());
+	if (strlen(usertag) > 0)
+		pRet->setUserTag(usertag);
 
 	return pRet;
 }
@@ -1225,7 +1164,7 @@ int TraderMAOpt::OnRspUserLogin(CFirstSetField *p_pFirstSet, CRspOptUserLoginFie
 		m_wrapperState = WS_LOGINED;
 		m_strTrdAcct = p_pRspField->szTrdacct;
 
-		if(p_pRspField->szStkbd[0] == '1')
+		if (p_pRspField->szStkbd[0] == '1')
 			m_strShPBU = p_pRspField->szStkpbu;
 		else
 			m_strSzPBU = p_pRspField->szStkpbu;
@@ -1251,18 +1190,18 @@ int TraderMAOpt::OnRspUserLogin(CFirstSetField *p_pFirstSet, CRspOptUserLoginFie
 				});
 			}
 
-			//{
-			//	// 初始化订单标记缓存器
-			//	std::stringstream ss;
-			//	ss << "maOptData/";
-			//	std::string path = StrUtil::standardisePath(ss.str());
-			//	if (!StdFile::exists(path.c_str()))
-			//		boost::filesystem::create_directories(path.c_str());
-			//	ss << m_strUser << "_oid.sc";
-			//	m_oidCache.init(ss.str().c_str(), m_lDate, [this](const char* message) {
-			//		write_log(m_bscSink, LL_WARN, message);
-			//	});
-			//}
+			{
+				// 初始化订单标记缓存器
+				std::stringstream ss;
+				ss << "maOptData/";
+				std::string path = StrUtil::standardisePath(ss.str());
+				if (!StdFile::exists(path.c_str()))
+					boost::filesystem::create_directories(path.c_str());
+				ss << m_strUser << "_oid.sc";
+				m_oidCache.init(ss.str().c_str(), m_lDate, [this](const char* message) {
+					write_log(m_bscSink, LL_WARN, message);
+				});
+			}
 
 			write_log(m_bscSink, LL_INFO, "[TraderMAOpt][{}] Login succeed, trading date: {}...", m_strUser.c_str(), m_lDate);
 			m_wrapperState = WS_ALLREADY;
@@ -1290,8 +1229,12 @@ int TraderMAOpt::OnRspQryExpendableFund(CFirstSetField* p_pFirstSetField, CRspOp
 	//	}
 	//}
 
+	WTSArray* ayFunds = WTSArray::create();
+
 	if (p_iFieldNum > 0)
 	{
+		write_log(m_bscSink, LL_INFO, "[{}] Fund data updated, available: {}, frozen margin: {}", m_strUser, p_pRspField->szFundAvl, p_pRspField->szMarginInclRlt);
+
 		WTSAccountInfo* accInfo = WTSAccountInfo::create();
 		accInfo->setPreBalance(atof(p_pRspField->szFundPrebln));
 		accInfo->setFrozenMargin(atof(p_pRspField->szMarginInclRlt));  // 已占用保证金(含未成交)
@@ -1303,8 +1246,14 @@ int TraderMAOpt::OnRspQryExpendableFund(CFirstSetField* p_pFirstSetField, CRspOp
 
 		if (m_bscSink)
 		{
-			WTSArray* ayFunds = WTSArray::create();
 			ayFunds->append(accInfo, false);
+		}
+	}
+
+	if (p_iFieldNum == p_iFieldIndex)
+	{
+		if (m_bscSink)
+		{
 			m_bscSink->onRspAccount(ayFunds);
 			ayFunds->release();
 		}
@@ -1317,45 +1266,53 @@ int TraderMAOpt::OnRspQryExpendableCu(CFirstSetField* p_pFirstSetField, CRspOptE
 {
 	if (p_pFirstSetField == NULL)
 	{
-		write_log(m_bscSink, LL_ERROR, "[TradeMAOpt][p_pFirstSetField is NULL!]");
-		return -1;
+		write_log(m_bscSink, LL_ERROR, "[TradeMAOpt] p_pFirstSetField is NULL!");
+		return 0;
 	}
 
 	//if (p_iFieldNum == 0 || p_iFieldIndex == 1)
 	//{
 	//	write_log(m_bscSink, LL_INFO, "[TradeMAOpt][可用合约查询请求返回结果: {},{},{},{}, ]", p_pFirstSetField->chMsgLevel, p_pFirstSetField->iMsgCode, p_pFirstSetField->szMsgDebug, p_pFirstSetField->szMsgText);
-
-	//	if (p_iFieldNum > 0)
-	//	{
-	//		write_log(m_bscSink, LL_INFO, "[TradeMAOpt][返回内容: {}", p_iFieldNum);
-	//	}
 	//}
 
 	if (p_iFieldNum > 0 && p_pRspField != NULL)
 	{
+		std::string side = fmt::format("{}", p_pRspField->chOptSide);
+
+		write_log(m_bscSink, LL_INFO, "[TraderMAOpt][OnRspQryExpendableCu] code: {}, avail qty: {}, frozen qty: {}, side: {}, dyn profit: {}",
+			p_pRspField->szOptNum, p_pRspField->llOptAvl, p_pRspField->llOptFrz, side, p_pRspField->szOptFloatProfit);
+
 		if (NULL == m_mapPosition)
 			m_mapPosition = PositionMap::create();
 
-		WTSContractInfo* contract = m_bdMgr->getContract(p_pRspField->szOptNum, exchgO2I(p_pRspField->szStkbd));
+		const char* exchg = exchgO2I(p_pRspField->szStkbd);
+		WTSContractInfo* contract = m_bdMgr->getContract(p_pRspField->szOptNum, exchg);
 
 		if (contract != NULL)
 		{
-			WTSCommodityInfo* commInfo = contract->getCommInfo();
+			// linux下commInfo可能会导致segmentation violation的报错，这个时候可以绕开不用这个结构体
+			WTSCommodityInfo* commInfo = (WTSCommodityInfo*)contract->getCommInfo();
 			if (contract)
 			{
-				WTSDirectionType dType = wrapPosDirType((MA_OPT_SIDE)p_pRspField->chOptSide);
-				std::string key = fmt::format("{}-{}", p_pRspField->szOptNum, dType);
+				WTSDirectionType dType = wrapPosDirType(side.at(0));
+				std::string key = fmt::format("{}-{}", p_pRspField->szOptNum, p_pRspField->chOptSide);
+				//write_log(m_bscSink, LL_DEBUG, "key: {}, code: {}, side: {}, exchg: {}", key, p_pRspField->szOptNum, side, exchg);
+
 				WTSPositionItem* pos = (WTSPositionItem*)m_mapPosition->get(key);
 				if (pos == NULL)
 				{
-					pos = WTSPositionItem::create(contract->getCode(), commInfo->getCurrency(), commInfo->getExchg());
+					pos = WTSPositionItem::create(p_pRspField->szOptNum, commInfo->getCurrency(), commInfo->getExchg());
 					pos->setContractInfo(contract);
 					m_mapPosition->add(key, pos, false);
 				}
 
 				pos->setDirection(dType);
-				pos->setNewPosition((double)(p_pRspField->llOptBln + p_pRspField->llOptTrdBln));
-				pos->setAvailNewPos((double)p_pRspField->llOptAvl);
+
+				pos->setPrePosition((double)p_pRspField->llOptPrebln);  // 合约昨日余额
+
+				pos->setNewPosition((double)(p_pRspField->llOptRealPosi));  // 合约实际持仓
+				pos->setAvailNewPos((double)p_pRspField->llOptAvl);  // 合约可用数量
+				pos->setAvailPrePos(0);  // 这里不区分昨可用和今可用，都当成今可用
 
 				pos->setMargin(pos->getMargin() + atof(p_pRspField->szOptMargin));
 				//pos->setDynProfit(pos->getDynProfit() + atof(p_pRspField->szOptClsProfit));
@@ -1381,7 +1338,7 @@ int TraderMAOpt::OnRspQryExpendableCu(CFirstSetField* p_pFirstSetField, CRspOptE
 		}
 	}
 
-	if(p_iFieldNum == p_iFieldIndex)
+	if (p_iFieldNum == p_iFieldIndex)
 	{
 		WTSArray* ayPos = WTSArray::create();
 
@@ -1414,6 +1371,9 @@ int TraderMAOpt::OnRspOrder(CFirstSetField *p_pFirstSetField, CRspOptOrderField 
 		return -1;
 	}
 
+	write_log(m_bscSink, LL_INFO, "[TraderMAOpt][OnRspOrder] Inserting order: {}, code: {}, qty: {}, side: {}, price: {}, frozen: {}, orderid: {}", p_pRspField->szOrderId, 
+		p_pRspField->szOptCode, p_pRspField->llOrderQty, p_pRspField->iStkBiz, p_pRspField->szOrderPrice, p_pRspField->szOrderFrzAmt, p_pRspField->szOrderId);
+
 	WTSEntrust* entrust = makeEntrust(p_pRspField);
 	if (p_pFirstSetField->iMsgCode == 0)
 	{
@@ -1435,9 +1395,9 @@ int TraderMAOpt::OnRspOrder(CFirstSetField *p_pFirstSetField, CRspOptOrderField 
 		err->release();
 	}
 
-	if(entrust)
+	if (entrust)
 		entrust->release();
-	
+
 	return 0;
 }
 
@@ -1447,6 +1407,9 @@ int TraderMAOpt::OnRspCancelOrder(CFirstSetField* p_pFirstSetField, CRspOptCance
 	{
 		return -1;
 	}
+
+	write_log(m_bscSink, LL_INFO, "[TraderMAOpt][OnRspCancelOrder] Cancel order: {}, code: {}, qty: {}, side: {}, price: {}, frozen: {}, orderid: {}", p_pRspField->szOrderId,
+		p_pRspField->szStkCode, p_pRspField->llOrderQty, p_pRspField->iStkBiz, p_pRspField->szOrderPrice, p_pRspField->szOrderFrzAmt, p_pRspField->szOrderId);
 
 	if (p_pFirstSetField->iMsgCode != 0)
 	{
@@ -1478,6 +1441,37 @@ int TraderMAOpt::OnRtnOrderConfirm(CRtnOptOrderConfirmField* p_pRtnField)
 		return -1;
 	}
 
+	write_log(m_bscSink, LL_INFO, "[TraderMAOpt][OnOrderConfirm] code: {}, order id: {}, type: {}, qty: {}, price: {}",
+		p_pRtnField->szStkCode, p_pRtnField->szOrderId, p_pRtnField->chIsWithdraw == 'T' ? "Cancel" : "Normal", p_pRtnField->llOrderQty, p_pRtnField->szOrderPrice);
+
+	/*std::cout << "交易市场:" << p_pRtnField->chStkex;
+	std::cout << "证券代码:" << p_pRtnField->szStkCode;
+	std::cout << "合同序号:" << p_pRtnField->szOrderId;
+	std::cout << "交易账户:" << p_pRtnField->szTrdacct;
+	std::cout << "撤单标志:" << p_pRtnField->chIsWithdraw;
+	std::cout << "客户代码:" << p_pRtnField->llCustCode;
+	std::cout << "资产账户:" << p_pRtnField->llCuacctCode;
+	std::cout << "委托批号:" << p_pRtnField->iOrderBsn;
+	std::cout << "账户序号:" << p_pRtnField->iCuacctSn;
+	std::cout << "交易板块:" << p_pRtnField->szStkbd;
+	std::cout << "委托状态:" << p_pRtnField->chOrderStatus;
+	std::cout << "证券业务:" << p_pRtnField->iStkBiz;
+	std::cout << "业务行为:" << p_pRtnField->iStkBizAction;
+	std::cout << "委托日期" << p_pRtnField->iOrderDate;
+	std::cout << "委托序号" << p_pRtnField->iOrderSn;
+	std::cout << "内部机构" << p_pRtnField->iIntOrg;
+	std::cout << "交易单元" << p_pRtnField->szStkpbu;
+	std::cout << "委托价格" << p_pRtnField->szOrderPrice;
+	std::cout << "委托数量" << p_pRtnField->llOrderQty;
+	std::cout << "证券账户子编码" << p_pRtnField->szSubacctCode;
+	std::cout << "期权合约账户" << p_pRtnField->szOptTrdacct;
+	std::cout << "合约代码" << p_pRtnField->szOptCode;
+	std::cout << "合约简称" << p_pRtnField->szOptName;
+	std::cout << "货币代码" << p_pRtnField->chCurrency;
+	std::cout << "标的证券类别" << p_pRtnField->chOptUndlCls;
+	std::cout << "标的证券代码" << p_pRtnField->szOptUndlCode;
+	std::cout << "标的证券名称" << p_pRtnField->szOptUndlName << std::endl;*/
+
 	//TODO: 没回回调
 	return 0;
 }
@@ -1490,6 +1484,14 @@ int TraderMAOpt::OnRtnOrderConfirmFlash(CRtnOptOrderConfirmFlashField *p_pRtnFie
 		return -1;
 	}
 
+	std::cout << "合同序号:" << p_pRtnField->szOrderId;
+	std::cout << "撤单标志:" << p_pRtnField->chIsWithdraw;
+	std::cout << "资产账户:" << p_pRtnField->llCuacctCode;
+	std::cout << "交易板块:" << p_pRtnField->szStkbd;
+	std::cout << "委托状态:" << p_pRtnField->chOrderStatus;
+	std::cout << "委托日期" << p_pRtnField->iOrderDate;
+	std::cout << "合约代码" << p_pRtnField->szOptCode << std::endl;
+
 	//TODO: 没回回调
 	return 0;
 }
@@ -1500,6 +1502,9 @@ int TraderMAOpt::OnRtnOrder(CRtnOptOrderField* p_pRtnField)
 	{
 		return -1;
 	}
+
+	//write_log(m_bscSink, LL_INFO, "[TraderMAOpt][OnRtnOrder] Insert Order: order: {}, code: {}, qty: {}, side: {}, price: {}, mached qty: {}, order status: {}", p_pRtnField->szOrderId,
+	//	p_pRtnField->szStkCode, p_pRtnField->llOrderQty, p_pRtnField->iStkBiz, p_pRtnField->szOrderPrice, p_pRtnField->llTotalMatchedQty, p_pRtnField->chOrderStatus);
 
 	WTSOrderInfo *orderInfo = makeOrderInfo(p_pRtnField);
 	if (orderInfo)
@@ -1529,8 +1534,12 @@ int TraderMAOpt::OnRtnOrderFill(CRtnOptOrderFillField* p_pRtnField)
 {
 	if (p_pRtnField == NULL)
 	{
+		//std::cout << "Invalid filled order" << std::endl;
 		return -1;
 	}
+
+	write_log(m_bscSink, LL_INFO, "[TraderMAOpt][OnRtnOrderFill] order id: {}, code: {}, trade qty: {}, side: {}, price: {}, avail qty: {}", p_pRtnField->szOrderId,
+		p_pRtnField->szStkCode, p_pRtnField->llMatchedQty, p_pRtnField->iStkBiz, p_pRtnField->szMatchedPrice, p_pRtnField->llStkAvl);
 
 	WTSTradeInfo *tRecord = makeTradeRecord(p_pRtnField);
 	if (tRecord)
@@ -1553,8 +1562,8 @@ int TraderMAOpt::OnRtnOrderFillFlash(CRtnOptOrderFillFlashField *p_pRtnField)
 		return -1;
 	}
 
-	//write_log(m_bscSink, LL_INFO, "[TraderMAOpt][OnRtnOrderFillFlash] Filled order: {}, code: {}, qty: {}, price: {}, avail asset: {}", p_pRtnField->szOrderId,
-	//	p_pRtnField->szOptCode, p_pRtnField->llMatchedQty,  p_pRtnField->szMatchedPrice, p_pRtnField->szFundAvl);
+	write_log(m_bscSink, LL_INFO, "[TraderMAOpt][OnRtnOrderFillFlash] Filled order: {}, code: {}, qty: {}, price: {}, avail asset: {}", p_pRtnField->szOrderId,
+		p_pRtnField->szOptCode, p_pRtnField->llMatchedQty, p_pRtnField->szMatchedPrice, p_pRtnField->szFundAvl);
 
 	return 0;
 }
@@ -1566,8 +1575,8 @@ int TraderMAOpt::OnRtnContract(CRtnOptContractField* p_pRtnField)
 		return -1;
 	}
 
-	//write_log(m_bscSink, LL_INFO, "[TraderMAOpt][OnRtnContract] code: {}, stk biz: {}, stk biz action: {}, margin pre frozen: {}, margin fronzen: {}, release pre margin: {}, release margin: {}",
-	//	p_pRtnField->szOptCode, p_pRtnField->iStkBiz, p_pRtnField->iStkBizAction, p_pRtnField->szMarginPreFrz, p_pRtnField->szMarginFrz, p_pRtnField->szMarginPreUfz, p_pRtnField->szMarginUfz);
+	write_log(m_bscSink, LL_INFO, "[TraderMAOpt][OnRtnContract] code: {}, stk biz: {}, stk biz action: {}, margin pre frozen: {}, margin fronzen: {}, release pre margin: {}, release margin: {}",
+		p_pRtnField->szOptCode, p_pRtnField->iStkBiz, p_pRtnField->iStkBizAction, p_pRtnField->szMarginPreFrz, p_pRtnField->szMarginFrz, p_pRtnField->szMarginPreUfz, p_pRtnField->szMarginUfz);
 
 	return 0;
 }
@@ -1578,13 +1587,14 @@ int TraderMAOpt::OnRspQryCurrDayOrder(CFirstSetField *p_pFirstSetField, CRspOptC
 	if (p_pFirstSetField == NULL)
 	{
 		//triggerQuery();
-		return -1;
+		write_log(m_bscSink, LL_WARN, "[OnRspQryCurrDayOrder] p_pFirstSetField is null");
+		return 0;
 	}
 
 	if (p_iFieldNum > 0)
 	{
-		//write_log(m_bscSink, LL_INFO, "[TraderMAOpt][OnRspQryCurrDayOrder] order id: {}, code: {}, qty: {}, matched qty: {}, stk biz: {}, stk biz action: {}, price: {}, frozen amt: {}, unfrozen amt: {}",
-		//	p_pRspField->szOrderId, p_pRspField->szOptCode, p_pRspField->llOrderQty, p_pRspField->llMatchedQty, p_pRspField->iStkBiz, p_pRspField->iStkBizAction, p_pRspField->szOrderPrice, p_pRspField->szOrderFrzAmt, p_pRspField->szOrderUfzAmt);
+		write_log(m_bscSink, LL_INFO, "[TraderMAOpt][OnRspQryCurrDayOrder] order id: {}, code: {}, qty: {}, matched qty: {}, stk biz: {}, stk biz action: {}, price: {}, frozen amt: {}, unfrozen amt: {}",
+			p_pRspField->szOrderId, p_pRspField->szOptCode, p_pRspField->llOrderQty, p_pRspField->llMatchedQty, p_pRspField->iStkBiz, p_pRspField->iStkBizAction, p_pRspField->szOrderPrice, p_pRspField->szOrderFrzAmt, p_pRspField->szOrderUfzAmt);
 
 		if (NULL == m_ayOrders)
 			m_ayOrders = WTSArray::create();
@@ -1596,7 +1606,7 @@ int TraderMAOpt::OnRspQryCurrDayOrder(CFirstSetField *p_pFirstSetField, CRspOptC
 		}
 	}
 
-	if(p_iFieldNum == p_iFieldIndex)
+	if (p_iFieldNum == p_iFieldIndex)
 	{
 		if (m_bscSink)
 			m_bscSink->onRspOrders(m_ayOrders);
@@ -1617,7 +1627,7 @@ int TraderMAOpt::OnRspQryCurrDayFill(CFirstSetField *p_pFirstSetField, CRspOptCu
 	}
 
 
-	if (p_iFieldNum > 0)
+	if (p_iFieldNum > 0 && p_pRspField)
 	{
 		if (NULL == m_ayTrades)
 			m_ayTrades = WTSArray::create();
@@ -1628,12 +1638,12 @@ int TraderMAOpt::OnRspQryCurrDayFill(CFirstSetField *p_pFirstSetField, CRspOptCu
 			m_ayTrades->append(trade, false);
 		}
 
-		//write_log(m_bscSink, LL_INFO, "[TraderMAOpt][OnRspQryCurrDayFill] order id: {}, code: {}, qty: {}, matched qty: {}, stk biz: {}, stk biz action: {}, price: {}, matched price: {}, frozen amt: {}, frozen margin: {}, unfrozen margin; {}, pre unfrozen margin: {}, fee: {}",
-		//	p_pRspField->szOrderId, p_pRspField->szOptCode, p_pRspField->llOrderQty, p_pRspField->llMatchedQty, p_pRspField->iStkBiz, p_pRspField->iStkBizAction, p_pRspField->szOrderPrice, p_pRspField->szMatchedAmt, 
-		//	p_pRspField->szOrderFrzAmt, p_pRspField->szMarginFrz, p_pRspField->szMarginUfz, p_pRspField->szMarginPreUfz, p_pRspField->szMatchedFee);
+		write_log(m_bscSink, LL_INFO, "[TraderMAOpt][OnRspQryCurrDayFill] order id: {}, code: {}, qty: {}, matched qty: {}, stk biz: {}, stk biz action: {}, price: {}, matched price: {}, frozen amt: {}, frozen margin: {}, unfrozen margin; {}, pre unfrozen margin: {}, fee: {}",
+			p_pRspField->szOrderId, p_pRspField->szOptCode, p_pRspField->llOrderQty, p_pRspField->llMatchedQty, p_pRspField->iStkBiz, p_pRspField->iStkBizAction, p_pRspField->szOrderPrice, p_pRspField->szMatchedAmt, 
+			p_pRspField->szOrderFrzAmt, p_pRspField->szMarginFrz, p_pRspField->szMarginUfz, p_pRspField->szMarginPreUfz, p_pRspField->szMatchedFee);
 	}
 
-	if(p_iFieldNum == p_iFieldIndex)
+	if (p_iFieldNum == p_iFieldIndex)
 	{
 		if (m_bscSink)
 			m_bscSink->onRspTrades(m_ayTrades);
