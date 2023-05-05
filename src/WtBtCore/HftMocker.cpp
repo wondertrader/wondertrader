@@ -547,16 +547,24 @@ double HftMocker::stra_get_undone(const char* stdCode)
 bool HftMocker::stra_cancel(uint32_t localid)
 {
 	postTask([this, localid](){
-		StdLocker<StdRecurMutex> lock(_mtx_ords);
-		auto it = _orders.find(localid);
-		if (it == _orders.end())
-			return;		
+		OrderInfoPtr ordInfo = NULL;
+		{
+			StdLocker<StdRecurMutex> lock(_mtx_ords);
+			auto it = _orders.find(localid);
+			if (it == _orders.end())
+				return;
 
-		OrderInfoPtr& ordInfo = (OrderInfoPtr&)it->second;
+			ordInfo = it->second;
+		}
+		
 		ordInfo->_left = 0;
 
 		on_order(localid, ordInfo->_code, ordInfo->_isBuy, ordInfo->_total, ordInfo->_left, ordInfo->_price, true, ordInfo->_usertag);
-		_orders.erase(it);
+
+		{
+			StdLocker<StdRecurMutex> lock(_mtx_ords);
+			_orders.erase(localid);
+		}
 	});
 
 	return true;
