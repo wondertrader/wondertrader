@@ -218,6 +218,9 @@ bool HisDataReplayer::init(WTSVariant* cfg, EventNotifier* notifier /* = NULL */
 	_adjust_flag = cfg->getUInt32("adjust_flag");
 	WTSLogger::info("adjust_flag is {}", _adjust_flag);
 
+	_nosim_if_notrade = cfg->getBoolean("dont_simtick_if_notrade");
+	WTSLogger::info("nosim_if_notrade is {}", _nosim_if_notrade);
+
 	//基础数据文件
 	WTSVariant* cfgBF = cfg->get("basefiles");
 	if (cfgBF->get("session"))
@@ -828,7 +831,7 @@ void HisDataReplayer::run_by_bars(bool bNeedDump /* = false */)
 					 */
 					uint64_t beginTimeofDay = _bd_mgr.getBoundaryTime(sInfo->id(), nextTDate, true, true);
 
-					_cur_date = beginTimeofDay / 10000;
+					_cur_date = (uint32_t)(beginTimeofDay / 10000);
 					_cur_time = beginTimeofDay % 10000;
 					_cur_secs = 0;
 
@@ -1225,8 +1228,14 @@ void HisDataReplayer::simTicks(uint32_t uDate, uint32_t uTime, uint32_t endTDate
 				{
 					WTSBarStruct& nextBar = barsList->_bars[barsList->_cursor];
 
+					/*
+					 *	By Wesley @ 2023.05.05
+					 *	如果没有禁止0成交模拟tick，或者K线成交量不为0，就可以模拟tick
+					 */
+					bool bCanSim = !_nosim_if_notrade || !decimal::eq(nextBar.vol, 0.0);
+
 					uint64_t barTime = 199000000000 + nextBar.time;
-					if (barTime == nowTime)
+					if (barTime == nowTime && bCanSim)
 					{
 						const std::string& ticker = _ticker_keys[barsList->_code];
 						if (ticker == it->first)
@@ -1366,8 +1375,14 @@ void HisDataReplayer::simTickWithUnsubBars(uint64_t stime, uint64_t nowTime, uin
 				{
 					WTSBarStruct& nextBar = barsList->_bars[barsList->_cursor];
 
+					/*
+					 *	By Wesley @ 2023.05.05
+					 *	如果没有禁止0成交模拟tick，或者K线成交量不为0，就可以模拟tick
+					 */
+					bool bCanSim = !_nosim_if_notrade || !decimal::eq(nextBar.vol, 0.0);
+
 					uint64_t barTime = 199000000000 + nextBar.time;
-					if (barTime == nowTime)
+					if (barTime == nowTime && bCanSim)
 					{
 						//开高低收
 						WTSTickStruct& curTS = _day_cache[barsList->_code];

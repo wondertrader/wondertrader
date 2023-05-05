@@ -437,10 +437,18 @@ private:
 	std::string		_main_period;	//主周期
 	bool			_tick_enabled;	//是否开启了tick回测
 	bool			_tick_simulated;	//是否需要模拟tick
+	
+	/*
+	 *	By Wesley @ 2023.05.05
+	 *	如果K线没有成交量，则不模拟tick
+	 *	默认为false，主要是针对涨跌停的行情，也适用于不活跃的合约
+	 */
+	bool			_nosim_if_notrade;
 	std::map<std::string, WTSTickStruct>	_day_cache;	//每日Tick缓存,当tick回放未开放时,会用到该缓存
 	std::map<std::string, std::string>		_ticker_keys;
 
 	//By Wesley @ 2022.06.01
+	//这个主要是针对不订阅而直接指定合约下单的场景
 	std::set<std::string>		_unsubbed_in_need;	//未订阅但需要的K线
 
 	//By Wesley @ 2022.08.15
