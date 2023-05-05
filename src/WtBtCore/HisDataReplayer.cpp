@@ -1095,7 +1095,7 @@ void HisDataReplayer::run_by_tasks(bool bNeedDump /* = false */)
 			//要考虑到跨日的情况
 			uint32_t mins = sInfo->timeToMinutes(_cur_time);
 			//如果一开始不能整除,则直接修正一下
-			if (mins % _task->_time != 0)
+			if (mins % _task->_time != 0 && mins < sInfo->getTradingMins())
 			{
 				mins = mins / _task->_time + _task->_time;
 				_cur_time = sInfo->minuteToTime(mins);
@@ -1178,6 +1178,9 @@ void HisDataReplayer::run_by_tasks(bool bNeedDump /* = false */)
 			else
 			{
 				mins += _task->_time;
+				if (mins > sInfo->getTradingMins())
+					mins = sInfo->getTradingMins();
+
 				uint32_t newTime = sInfo->minuteToTime(mins);
 				bool bNewDay = newTime < _cur_time;
 				if (bNewDay)
