@@ -270,7 +270,8 @@ void WtBtRunner::registerHftCallbacks(FuncStraInitCallback cbInit, FuncStraTickC
 	WTSLogger::info("Callbacks of HFT engine registration done");
 }
 
-uint32_t WtBtRunner::initCtaMocker(const char* name, int32_t slippage /* = 0 */, bool hook /* = false */, bool persistData /* = true */, bool bIncremental /* = false */)
+uint32_t WtBtRunner::initCtaMocker(const char* name, int32_t slippage /* = 0 */, bool hook /* = false */, 
+	bool persistData /* = true */, bool bIncremental /* = false */, bool isRatioSlp /* = false */)
 {
 	if(_cta_mocker)
 	{
