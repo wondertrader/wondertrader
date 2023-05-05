@@ -1566,11 +1566,29 @@ uint64_t HisDataReplayer::getNextTickTime(uint32_t curTDate, uint64_t stime /* =
 		if (tickList._cursor >= tickList._count)
 			continue;
 
-		const WTSTickStruct& nextTick = tickList._items[tickList._cursor - 1];
+		uint32_t nextActionTime = tickList._items[tickList._cursor - 1].action_time;
 		//By Wesley @ 2022.03.06
 		//检查一下时间戳，如果不是交易时间的，就不回放了
-		if(!sInfo->isInTradingTime(nextTick.action_time/100000))
+		uint32_t nextMinTime = nextActionTime / 100000;
+		/*
+		 *	By Wesley @ 2023.05.05
+		 *	这里做了一个调整，主要是针对小节中间出现的tick数据
+		 *	部分数据源可能会落地小节中间的数据，导致时间戳不在交易时间
+		 *	因此先判断时间戳是否超出收盘时间，如果超出也不回放tick了
+		 *	然后如果tick数据处于小节之间，但是不在交易时间，则指针一直步进
+		 *	这次修改主要针对Issue#104
+		 */
+		//超过收盘时间就跳过了
+		if(sInfo->offsetTime(nextMinTime, false) > sInfo->getCloseTime(true))
 			continue;
+
+		while (!sInfo->isInTradingTime(nextMinTime) && tickList._cursor>tickList._items.size())
+		{
+			tickList._cursor++;
+			nextActionTime = tickList._items[tickList._cursor - 1].action_time;
+		}
+
+		const WTSTickStruct& nextTick = tickList._items[tickList._cursor - 1];
 		uint64_t lastTime = (uint64_t)nextTick.action_date * 1000000000 + nextTick.action_time;
 
 		nextTime = min(lastTime, nextTime);
