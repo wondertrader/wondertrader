@@ -2592,7 +2592,7 @@ bool HisDataReplayer::checkAllTicks(uint32_t uDate)
 	bool bHasTick = false;
 	for (auto& v : _tick_sub_map)
 	{
-		bHasTick = bHasTick || checkTicks(v.first.c_str(), uDate);
+		bHasTick = checkTicks(v.first.c_str(), uDate) || bHasTick;
 	}
 
 	return bHasTick;
