@@ -71,6 +71,10 @@ ExecuteUnit* WtExeFact::createDiffExeUnit(const char* name)
 	return NULL;
 }
 
+ExecuteUnit* WtExeFact::createArbiExeUnit(const char* name)
+{
+	return NULL;
+}
 
 bool WtExeFact::deleteExeUnit(ExecuteUnit* unit)
 {

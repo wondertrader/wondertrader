@@ -90,7 +90,23 @@ ExecuteUnitPtr WtExecuterFactory::createDiffExeUnit(const char* factname, const 
 	ExecuteUnit* unit = fInfo._fact->createDiffExeUnit(unitname);
 	if (unit == NULL)
 	{
-		WTSLogger::error("Createing execution unit failed: {}.{}", factname, unitname);
+		WTSLogger::error("Createing diff execution unit failed: {}.{}", factname, unitname);
+		return ExecuteUnitPtr();
+	}
+	return ExecuteUnitPtr(new ExeUnitWrapper(unit, fInfo._fact));
+}
+
+ExecuteUnitPtr WtExecuterFactory::createArbiExeUnit(const char* factname, const char* unitname)
+{
+	auto it = _factories.find(factname);
+	if (it == _factories.end())
+		return ExecuteUnitPtr();
+
+	ExeFactInfo& fInfo = (ExeFactInfo&)it->second;
+	ExecuteUnit* unit = fInfo._fact->createArbiExeUnit(unitname);
+	if (unit == NULL)
+	{
+		WTSLogger::error("Createing arbi execution unit failed: {}.{}", factname, unitname);
 		return ExecuteUnitPtr();
 	}
 	return ExecuteUnitPtr(new ExeUnitWrapper(unit, fInfo._fact));
@@ -134,6 +150,29 @@ ExecuteUnitPtr WtExecuterFactory::createDiffExeUnit(const char* name)
 
 	ExeFactInfo& fInfo = (ExeFactInfo&)it->second;
 	ExecuteUnit* unit = fInfo._fact->createDiffExeUnit(unitname);
+	if (unit == NULL)
+	{
+		WTSLogger::error("Createing execution unit failed: {}", name);
+		return ExecuteUnitPtr();
+	}
+	return ExecuteUnitPtr(new ExeUnitWrapper(unit, fInfo._fact));
+}
+
+ExecuteUnitPtr WtExecuterFactory::createArbiExeUnit(const char* name)
+{
+	StringVector ay = StrUtil::split(name, ".");
+	if (ay.size() < 2)
+		return ExecuteUnitPtr();
+
+	const char* factname = ay[0].c_str();
+	const char* unitname = ay[1].c_str();
+
+	auto it = _factories.find(factname);
+	if (it == _factories.end())
+		return ExecuteUnitPtr();
+
+	ExeFactInfo& fInfo = (ExeFactInfo&)it->second;
+	ExecuteUnit* unit = fInfo._fact->createArbiExeUnit(unitname);
 	if (unit == NULL)
 	{
 		WTSLogger::error("Createing execution unit failed: {}", name);

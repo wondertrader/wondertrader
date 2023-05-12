@@ -986,6 +986,33 @@ bool WtRtRunner::initExecuters(WTSVariant* cfgExecuter)
 
 			_cta_engine.addExecuter(ExecCmdPtr(executer));
 		}
+		else if (name == "arbi")
+		{
+			WtArbiExecuter* executer = new WtArbiExecuter(&_exe_factory, id, &_data_mgr);
+			if (!executer->init(cfgItem))
+				return false;
+
+			const char* tid = cfgItem->getCString("trader");
+			if (strlen(tid) == 0)
+			{
+				WTSLogger::error("No Trader configured for Executer {}", id);
+			}
+			else
+			{
+				TraderAdapterPtr trader = _traders.getAdapter(tid);
+				if (trader)
+				{
+					executer->setTrader(trader.get());
+					trader->addSink(executer);
+				}
+				else
+				{
+					WTSLogger::error("Trader {} not exists, cannot configured for executer %s", tid, id);
+				}
+			}
+
+			_cta_engine.addExecuter(ExecCmdPtr(executer));
+		}
 		else
 		{
 			WtDistExecuter* executer = new WtDistExecuter(id);
