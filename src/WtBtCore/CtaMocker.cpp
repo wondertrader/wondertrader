@@ -963,7 +963,7 @@ void CtaMocker::on_init()
 	if (_strategy)
 		_strategy->on_init(this);
 
-	WTSLogger::info("CTA Strategy initialized, with {} slippage: {}", _ratio_slippage?"ratio":"absolute", _slippage);
+	WTSLogger::info("CTA Strategy initialized with {} slippage: {}", _ratio_slippage?"ratio":"absolute", _slippage);
 }
 
 void CtaMocker::update_dyn_profit(const char* stdCode, double price)

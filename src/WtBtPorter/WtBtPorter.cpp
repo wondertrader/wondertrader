@@ -174,9 +174,9 @@ CtxHandler init_hft_mocker(const char* name, bool hook/* = false*/)
 	return getRunner().initHftMocker(name, hook);
 }
 
-CtxHandler init_sel_mocker(const char* name, WtUInt32 date, WtUInt32 time, const char* period, const char* trdtpl/* = "CHINA"*/, const char* session/* = "TRADING"*/, int slippage/* = 0*/)
+CtxHandler init_sel_mocker(const char* name, WtUInt32 date, WtUInt32 time, const char* period, const char* trdtpl/* = "CHINA"*/, const char* session/* = "TRADING"*/, int slippage/* = 0*/, bool bRatioSlp/* = false*/)
 {
-	return getRunner().initSelMocker(name, date, time, period, trdtpl, session, slippage);
+	return getRunner().initSelMocker(name, date, time, period, trdtpl, session, slippage, bRatioSlp);
 }
 
 #pragma region "CTA²ßÂÔ½Ó¿Ú"

@@ -33,7 +33,7 @@ inline uint32_t makeSelCtxId()
 }
 
 
-SelMocker::SelMocker(HisDataReplayer* replayer, const char* name, int32_t slippage /* = 0 */)
+SelMocker::SelMocker(HisDataReplayer* replayer, const char* name, int32_t slippage /* = 0 */, bool isRatioSlp /* = false */)
 	: ISelStraCtx(name)
 	, _replayer(replayer)
 	, _total_calc_time(0)
@@ -42,6 +42,7 @@ SelMocker::SelMocker(HisDataReplayer* replayer, const char* name, int32_t slippa
 	, _ud_modified(false)
 	, _strategy(NULL)
 	, _slippage(slippage)
+	, _ratio_slippage(isRatioSlp)
 	, _schedule_times(0)
 {
 	_context_id = makeSelCtxId();
@@ -394,7 +395,7 @@ void SelMocker::on_init()
 	if (_strategy)
 		_strategy->on_init(this);
 
-	WTSLogger::info("SEL Strategy initialized, with slippage: {}", _slippage);
+	WTSLogger::info("SEL Strategy initialized with {} slippage: {}", _ratio_slippage ? "ratio" : "absolute", _slippage);
 }
 
 void SelMocker::update_dyn_profit(const char* stdCode, double price)
@@ -665,7 +666,18 @@ void SelMocker::do_set_position(const char* stdCode, double qty, double price /*
 
 		if (_slippage != 0)
 		{
-			trdPx += _slippage * commInfo->getPriceTick()*(isBuy ? 1 : -1);
+			if (_ratio_slippage)
+			{
+				//By Wesley @ 2023.05.05
+				//如果是比率滑点，则要根据目标成交价计算
+				//得到滑点以后，再根据pricetick做一个修正
+				double slp = (_slippage * trdPx / 10000.0);
+				slp = round(slp / commInfo->getPriceTick())*commInfo->getPriceTick();
+
+				trdPx += slp * (isBuy ? 1 : -1);
+			}
+			else
+				trdPx += _slippage * commInfo->getPriceTick()*(isBuy ? 1 : -1);
 		}
 
 		DetailInfo dInfo;
@@ -687,8 +699,22 @@ void SelMocker::do_set_position(const char* stdCode, double qty, double price /*
 	{//持仓方向和目标仓位方向不一致,需要平仓
 		double left = abs(diff);
 		bool isBuy = decimal::gt(diff, 0.0);
+
 		if (_slippage != 0)
-			trdPx += _slippage * commInfo->getPriceTick()*(isBuy ? 1 : -1);
+		{
+			if (_ratio_slippage)
+			{
+				//By Wesley @ 2023.05.05
+				//如果是比率滑点，则要根据目标成交价计算
+				//得到滑点以后，再根据pricetick做一个修正
+				double slp = (_slippage * trdPx / 10000.0);
+				slp = round(slp / commInfo->getPriceTick())*commInfo->getPriceTick();
+
+				trdPx += slp * (isBuy ? 1 : -1);
+			}
+			else
+				trdPx += _slippage * commInfo->getPriceTick()*(isBuy ? 1 : -1);
+		}
 
 		pInfo._volume = qty;
 		if (decimal::eq(pInfo._volume, 0))
