@@ -72,6 +72,8 @@ void SelMocker::dump_stradata()
 			pItem.AddMember("volume", pInfo._volume, allocator);
 			pItem.AddMember("closeprofit", pInfo._closeprofit, allocator);
 			pItem.AddMember("dynprofit", pInfo._dynprofit, allocator);
+			pItem.AddMember("lastentertime", pInfo._last_entertime, allocator);
+			pItem.AddMember("lastexittime", pInfo._last_exittime, allocator);
 
 			rj::Value details(rj::kArrayType);
 			for (auto dit = pInfo._details.begin(); dit != pInfo._details.end(); dit++)
@@ -80,6 +82,8 @@ void SelMocker::dump_stradata()
 				rj::Value dItem(rj::kObjectType);
 				dItem.AddMember("long", dInfo._long, allocator);
 				dItem.AddMember("price", dInfo._price, allocator);
+				dItem.AddMember("maxprice", dInfo._max_price, allocator);
+				dItem.AddMember("minprice", dInfo._min_price, allocator);
 				dItem.AddMember("volume", dInfo._volume, allocator);
 				dItem.AddMember("opentime", dInfo._opentime, allocator);
 				dItem.AddMember("opentdate", dInfo._opentdate, allocator);
@@ -421,6 +425,9 @@ void SelMocker::update_dyn_profit(const char* stdCode, double price)
 				else if (dInfo._profit < 0)
 					dInfo._max_loss = min(dInfo._profit, dInfo._max_loss);
 
+				dInfo._max_price = std::max(dInfo._max_price, price);
+				dInfo._min_price = std::min(dInfo._min_price, price);
+
 				dynprofit += dInfo._profit;
 			}
 
@@ -683,12 +690,15 @@ void SelMocker::do_set_position(const char* stdCode, double qty, double price /*
 		DetailInfo dInfo;
 		dInfo._long = decimal::gt(qty, 0);
 		dInfo._price = trdPx;
+		dInfo._max_price = trdPx;
+		dInfo._min_price = trdPx;
 		dInfo._volume = abs(diff);
 		dInfo._opentime = curTm;
 		dInfo._opentdate = curTDate;
 		strcpy(dInfo._opentag, userTag);
 		dInfo._open_barno = _schedule_times;
 		pInfo._details.emplace_back(dInfo);
+		pInfo._last_entertime = curTm;
 
 		double fee = _replayer->calc_fee(stdCode, trdPx, abs(diff), 0);
 		_fund_info._total_fees += fee;
@@ -742,6 +752,7 @@ void SelMocker::do_set_position(const char* stdCode, double qty, double price /*
 
 			pInfo._closeprofit += profit;
 			pInfo._dynprofit = pInfo._dynprofit*dInfo._volume / (dInfo._volume + maxQty);//浮盈也要做等比缩放
+			pInfo._last_exittime = curTm;
 			_fund_info._total_profit += profit;
 
 			double fee = _replayer->calc_fee(stdCode, trdPx, maxQty, dInfo._opentdate == curTDate ? 2 : 1);
@@ -779,12 +790,15 @@ void SelMocker::do_set_position(const char* stdCode, double qty, double price /*
 			DetailInfo dInfo;
 			dInfo._long = decimal::gt(qty, 0);
 			dInfo._price = trdPx;
+			dInfo._max_price = trdPx;
+			dInfo._min_price = trdPx;
 			dInfo._volume = abs(left);
 			dInfo._opentime = curTm;
 			dInfo._opentdate = curTDate;
 			strcpy(dInfo._opentag, userTag);
 			dInfo._open_barno = _schedule_times;
 			pInfo._details.emplace_back(dInfo);
+			pInfo._last_entertime = curTm;
 
 			//这里还需要写一笔成交记录
 			double fee = _replayer->calc_fee(stdCode, trdPx, abs(left), 0);
@@ -877,6 +891,10 @@ WTSSessionInfo* SelMocker::stra_get_sessinfo(const char* stdCode)
 	return _replayer->get_session_info(stdCode, true);
 }
 
+uint32_t SelMocker::stra_get_tdate()
+{
+	return _replayer->get_trading_date();
+}
 
 uint32_t SelMocker::stra_get_date()
 {
@@ -887,6 +905,24 @@ uint32_t SelMocker::stra_get_time()
 {
 	return _replayer->get_min_time();
 }
+
+double SelMocker::stra_get_fund_data(int flag)
+{
+	switch (flag)
+	{
+	case 0:
+		return _fund_info._total_profit - _fund_info._total_fees + _fund_info._total_dynprofit;
+	case 1:
+		return _fund_info._total_profit;
+	case 2:
+		return _fund_info._total_dynprofit;
+	case 3:
+		return _fund_info._total_fees;
+	default:
+		return 0.0;
+	}
+}
+
 
 void SelMocker::stra_log_info(const char* message)
 {
@@ -962,4 +998,173 @@ double SelMocker::stra_get_position(const char* stdCode, bool bOnlyValid/* = fal
 	}
 
 	return 0;
+}
+
+double SelMocker::stra_get_day_price(const char* stdCode, int flag /* = 0 */)
+{
+	if (_replayer)
+		return _replayer->get_day_price(stdCode, flag);
+
+	return 0.0;
+}
+
+uint64_t SelMocker::stra_get_first_entertime(const char* stdCode)
+{
+	auto it = _pos_map.find(stdCode);
+	if (it == _pos_map.end())
+		return 0;
+
+	const PosInfo& pInfo = it->second;
+	if (pInfo._details.empty())
+		return 0;
+
+	return pInfo._details[0]._opentime;
+}
+
+uint64_t SelMocker::stra_get_last_entertime(const char* stdCode)
+{
+	auto it = _pos_map.find(stdCode);
+	if (it == _pos_map.end())
+		return 0;
+
+	const PosInfo& pInfo = it->second;
+	if (pInfo._details.empty())
+		return 0;
+
+	return pInfo._details[pInfo._details.size() - 1]._opentime;
+}
+
+const char* SelMocker::stra_get_last_entertag(const char* stdCode)
+{
+	auto it = _pos_map.find(stdCode);
+	if (it == _pos_map.end())
+		return "";
+
+	const PosInfo& pInfo = it->second;
+	if (pInfo._details.empty())
+		return "";
+
+	return pInfo._details[pInfo._details.size() - 1]._opentag;
+}
+
+uint64_t SelMocker::stra_get_last_exittime(const char* stdCode)
+{
+	auto it = _pos_map.find(stdCode);
+	if (it == _pos_map.end())
+		return 0;
+
+	const PosInfo& pInfo = it->second;
+	return pInfo._last_exittime;
+}
+
+double SelMocker::stra_get_last_enterprice(const char* stdCode)
+{
+	auto it = _pos_map.find(stdCode);
+	if (it == _pos_map.end())
+		return 0;
+
+	const PosInfo& pInfo = it->second;
+	if (pInfo._details.empty())
+		return 0;
+
+	return pInfo._details[pInfo._details.size() - 1]._price;
+}
+
+double SelMocker::stra_get_position_avgpx(const char* stdCode)
+{
+	auto it = _pos_map.find(stdCode);
+	if (it == _pos_map.end())
+		return 0;
+
+	const PosInfo& pInfo = it->second;
+	if (pInfo._volume == 0)
+		return 0.0;
+
+	double amount = 0.0;
+	for (auto dit = pInfo._details.begin(); dit != pInfo._details.end(); dit++)
+	{
+		const DetailInfo& dInfo = *dit;
+		amount += dInfo._price*dInfo._volume;
+	}
+
+	return amount / pInfo._volume;
+}
+
+double SelMocker::stra_get_position_profit(const char* stdCode)
+{
+	auto it = _pos_map.find(stdCode);
+	if (it == _pos_map.end())
+		return 0;
+
+	const PosInfo& pInfo = it->second;
+	return pInfo._dynprofit;
+}
+
+uint64_t SelMocker::stra_get_detail_entertime(const char* stdCode, const char* userTag)
+{
+	auto it = _pos_map.find(stdCode);
+	if (it == _pos_map.end())
+		return 0;
+
+	const PosInfo& pInfo = it->second;
+	for (auto it = pInfo._details.begin(); it != pInfo._details.end(); it++)
+	{
+		const DetailInfo& dInfo = (*it);
+		if (strcmp(dInfo._opentag, userTag) != 0)
+			continue;
+
+		return dInfo._opentime;
+	}
+
+	return 0;
+}
+
+double SelMocker::stra_get_detail_cost(const char* stdCode, const char* userTag)
+{
+	auto it = _pos_map.find(stdCode);
+	if (it == _pos_map.end())
+		return 0;
+
+	const PosInfo& pInfo = it->second;
+	for (auto it = pInfo._details.begin(); it != pInfo._details.end(); it++)
+	{
+		const DetailInfo& dInfo = (*it);
+		if (strcmp(dInfo._opentag, userTag) != 0)
+			continue;
+
+		return dInfo._price;
+	}
+
+	return 0.0;
+}
+
+double SelMocker::stra_get_detail_profit(const char* stdCode, const char* userTag, int flag /* = 0 */)
+{
+	auto it = _pos_map.find(stdCode);
+	if (it == _pos_map.end())
+		return 0;
+
+	const PosInfo& pInfo = it->second;
+	for (auto it = pInfo._details.begin(); it != pInfo._details.end(); it++)
+	{
+		const DetailInfo& dInfo = (*it);
+		if (strcmp(dInfo._opentag, userTag) != 0)
+			continue;
+
+		switch (flag)
+		{
+		case 0:
+			return dInfo._profit;
+		case 1:
+			return dInfo._max_profit;
+		case -1:
+			return dInfo._max_loss;
+		case 2:
+			return dInfo._max_price;
+		case -2:
+			return dInfo._min_price;
+		}
+	}
+
+	return 0.0;
 }

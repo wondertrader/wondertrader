@@ -153,6 +153,7 @@ public:
 	virtual uint64_t stra_get_last_entertime(const char* stdCode) override;
 	virtual uint64_t stra_get_last_exittime(const char* stdCode) override;
 	virtual double stra_get_last_enterprice(const char* stdCode) override;
+	virtual const char* stra_get_last_entertag(const char* stdCode) override;
 	virtual double stra_get_position_avgpx(const char* stdCode) override;
 	virtual double stra_get_position_profit(const char* stdCode) override;
 
@@ -178,10 +179,7 @@ public:
 	virtual void stra_log_error(const char* message) override;
 
 	virtual void stra_save_user_data(const char* key, const char* val) override;
-
 	virtual const char* stra_load_user_data(const char* key, const char* defVal = "") override;
-
-	virtual const char* stra_get_last_entertag(const char* stdCode) override;
 
 	/*
 	 *	…Ë÷√Õº±ÌKœﬂ

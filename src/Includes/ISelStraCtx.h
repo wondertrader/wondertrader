@@ -59,8 +59,37 @@ public:
 
 	virtual double stra_get_price(const char* stdCode) = 0;
 
+	/*
+	 *	读取当日价格
+	 *	@stdCode	合约代码
+	 *	@flag		价格标记：0-开盘价，1-最高价，2-最低价，3-收盘价/最新价
+	 */
+	virtual double stra_get_day_price(const char* stdCode, int flag = 0) = 0;
+
+	virtual uint32_t stra_get_tdate() = 0;
 	virtual uint32_t stra_get_date() = 0;
 	virtual uint32_t stra_get_time() = 0;
+
+	virtual double stra_get_fund_data(int flag = 0) = 0;
+
+	virtual uint64_t stra_get_first_entertime(const char* stdCode) = 0;
+	virtual uint64_t stra_get_last_entertime(const char* stdCode) = 0;
+	virtual uint64_t stra_get_last_exittime(const char* stdCode) = 0;
+	virtual double stra_get_last_enterprice(const char* stdCode) = 0;
+	virtual const char* stra_get_last_entertag(const char* stdCode)  = 0;
+	virtual double stra_get_position_avgpx(const char* stdCode) = 0;
+	virtual double stra_get_position_profit(const char* stdCode) = 0;
+
+	virtual uint64_t stra_get_detail_entertime(const char* stdCode, const char* userTag) = 0;
+	virtual double stra_get_detail_cost(const char* stdCode, const char* userTag) = 0;
+
+	/*
+	 *	读取持仓明细的浮盈
+	 *	@stdCode	合约代码
+	 *	@userTag	下单标记
+	 *	@flag		浮盈标志：0-浮动盈亏，1-最大浮盈，2-最高浮动价格，-1-最大浮亏，-2-最小浮动价格
+	 */
+	virtual double stra_get_detail_profit(const char* stdCode, const char* userTag, int flag = 0) = 0;
 
 	virtual WTSCommodityInfo* stra_get_comminfo(const char* stdCode) = 0;
 	virtual WTSSessionInfo* stra_get_sessinfo(const char* stdCode) = 0;
