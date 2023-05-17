@@ -243,6 +243,11 @@ bool WTSBaseDataMgr::loadSessions(const char* filename)
 			WTSVariant* jAuc = jVal->get("auction");
 			sInfo->setAuctionTime(jAuc->getUInt32("from"), jAuc->getUInt32("to"));
 		}
+		else if (jVal->has("auctions"))
+		{
+			WTSVariant* jAuc = jVal->get("auction");
+			sInfo->setAuctionTime(jAuc->getUInt32("from"), jAuc->getUInt32("to"));
+		}
 
 		WTSVariant* jSecs = jVal->get("sections");
 		if (jSecs == NULL || !jSecs->isArray())

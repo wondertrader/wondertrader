@@ -26,7 +26,13 @@ public:
 
 protected:
 	TradingTimes	m_tradingTimes;
-	TradingSection	m_auctionTime;
+	/*
+	 *	By Wesley @ 2023.05.17
+	 *	集合竞价时间改成多段
+	 *	但是很多用到的地方还是只涉及第一个集合竞价时间，主要是一些状态判断
+	 *	白盘的集合竞价会在开盘前一分钟撮合，状态机会往前延伸一分钟，所以原有逻辑不需要拓展
+	 */
+	TradingTimes	m_auctionTimes;
 	int32_t			m_uOffsetMins;
 
 	std::string		m_strID;
@@ -63,14 +69,32 @@ public:
 
 	void setAuctionTime(uint32_t sTime, uint32_t eTime)
 	{
-		m_auctionTime.first = offsetTime(sTime, true);
-		m_auctionTime.second = offsetTime(eTime, false);
+		sTime = offsetTime(sTime, true);
+		eTime = offsetTime(eTime, false);
+
+		if (m_auctionTimes.empty())
+		{
+			m_auctionTimes.emplace_back(TradingSection(sTime, eTime));
+		}
+		else
+		{
+			m_auctionTimes[0].first = sTime;
+			m_auctionTimes[0].second = eTime;
+		}
+	}
+
+	void addAuctionTime(uint32_t sTime, uint32_t eTime)
+	{
+		sTime = offsetTime(sTime, true);
+		eTime = offsetTime(eTime, false);
+
+		m_auctionTimes.emplace_back(TradingSection(sTime, eTime));
 	}
 
 	void setOffsetMins(int32_t offset){m_uOffsetMins = offset;}
 
-	const TradingTimes& getTradingSections() const{ return m_tradingTimes; }
-	const TradingSection&	getAuctionSection() const{ return m_auctionTime; }
+	const TradingTimes&		getTradingSections() const{ return m_tradingTimes; }
+	const TradingTimes&		getAuctionSections() const{ return m_auctionTimes; }
 
 	//需要导出到脚本的函数
 public:
@@ -310,13 +334,13 @@ public:
 
 	inline uint32_t getAuctionStartTime(bool bOffseted = false) const
 	{
-		if(m_auctionTime.first == 0 && m_auctionTime.second == 0)
+		if (m_auctionTimes.empty())
 			return -1;
 
 		if(bOffseted)
-			return m_auctionTime.first;
+			return m_auctionTimes[0].first;
 		else
-			return originalTime(m_auctionTime.first);
+			return originalTime(m_auctionTimes[0].first);
 	}
 
 	inline uint32_t getCloseTime(bool bOffseted = false) const
@@ -428,12 +452,16 @@ public:
 	inline bool	isInAuctionTime(uint32_t uTime)
 	{
 		uint32_t offTime = offsetTime(uTime, true);
+		
+		for(const TradingSection& aucSec : m_auctionTimes)
+		{
+			if (aucSec.first == 0 && aucSec.second == 0)
+				continue;
 
-		if(m_auctionTime.first == 0 && m_auctionTime.second == 0)
-			return false;
-
-		if (m_auctionTime.first <= offTime && offTime < m_auctionTime.second)
-			return true;
+			if (aucSec.first <= offTime && offTime < aucSec.second)
+				return true;
+		}
+		
 
 		return false;
 	}
