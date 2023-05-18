@@ -61,10 +61,8 @@ public:
 /*
  *	历史数据加载器的回调函数
  *	@obj	回传用的，原样返回即可
- *	@key	数据缓存的key
  *	@bars	K线数据
  *	@count	K线条数
- *	@factor	复权因子，最新的复权因子，如果是后复权，则factor不为1.0，如果是前复权，则factor必须为1.0
  */
 typedef void(*FuncReadBars)(void* obj, WTSBarStruct* firstBar, uint32_t count);
 
@@ -76,7 +74,33 @@ typedef void(*FuncReadBars)(void* obj, WTSBarStruct* firstBar, uint32_t count);
  */
 typedef void(*FuncReadFactors)(void* obj, const char* stdCode, uint32_t* dates, double* factors, uint32_t count);
 
-typedef void(*FuncReadTicks)(void* obj, WTSTickStruct* firstTick, uint32_t count);
+/*
+ *	加载tick数据回调
+ *	@firstItem	数据
+ *	@count		条数
+ */
+typedef void(*FuncReadTicks)(void* obj, WTSTickStruct* firstItem, uint32_t count);
+
+/*
+ *	加载委托明细数据回调
+ *	@firstItem	数据
+ *	@count		条数
+ */
+typedef void(*FuncReadOrdDtl)(void* obj, WTSOrdDtlStruct* firstItem, uint32_t count);
+
+/*
+ *	加载委托队列数据回调
+ *	@firstItem	数据
+ *	@count		条数
+ */
+typedef void(*FuncReadOrdQue)(void* obj, WTSOrdQueStruct* firstItem, uint32_t count);
+
+/*
+ *	加载逐笔成交数据回调
+ *	@firstItem	数据
+ *	@count		条数
+ */
+typedef void(*FuncReadTrans)(void* obj, WTSTransStruct* firstItem, uint32_t count);
 
 class IBtDataLoader
 {
@@ -120,6 +144,9 @@ public:
 	 */
 	virtual bool loadRawHisTicks(void* obj, const char* stdCode, uint32_t uDate, FuncReadTicks cb) = 0;
 
+	/*
+	 *	是否自动转储为dsb
+	 */
 	virtual bool isAutoTrans() { return true; }
 };
 
@@ -244,6 +271,21 @@ private:
 	 *	从自定义数据文件缓存历史tick数据
 	 */
 	bool		cacheRawTicksFromBin(const std::string& key, const char* stdCode, uint32_t uDate);
+
+	/*
+	 *	从自定义数据文件缓存历史委托明细数据
+	 */
+	bool		cacheRawOrdDtlFromBin(const std::string& key, const char* stdCode, uint32_t uDate);
+
+	/*
+	 *	从自定义数据文件缓存历史委托队列
+	 */
+	bool		cacheRawOrdQueFromBin(const std::string& key, const char* stdCode, uint32_t uDate);
+
+	/*
+	 *	从自定义数据文件缓存历史成交明细数据
+	 */
+	bool		cacheRawTransFromBin(const std::string& key, const char* stdCode, uint32_t uDate);
 
 	/*
 	 *	从csv文件缓存历史tick数据
