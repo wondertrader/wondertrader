@@ -86,9 +86,15 @@ private:
 	WTSTickData* _last_tick;	//上一笔行情
 	double		_target_pos;	//目标仓位
 	bool		_channel_ready;
-
+	StdUniqueMutex	_mtx_calc;
 
 	WTSCommodityInfo* _comm_info;
+	/***---begin---23.5.18---zhaoyk***/
+	WTSSessionInfo*	_sess_info;
+	uint32_t	_cancel_times;//撤单次数
+
+	/***---end---23.5.18---zhaoyk***/
+
 
 	//////////////////////////////////////////////////////////////////////////
 	//执行参数
@@ -103,12 +109,13 @@ private:
 	uint32_t		_ord_sticky;	//挂单时限,单位s
 	uint32_t		_price_mode;	//价格模式: 0-最新价,1-最优价,2-对手价
 	uint32_t		_price_offset;		//挂单价格偏移,相对于几乎价格偏移,买+卖-
+	double		_min_open_lots;//最小开仓数量
 
 	//////////////////////////////////////////////////////////////////////////
 	//临时变量
 	double			_this_target;	//本轮目标仓位
-	uint32_t		_fire_span;		//发单间隔
+	uint32_t		_fire_span;		//发单间隔//ms
 	uint32_t		_fired_times;	//已执行次数
-	uint64_t		_last_fire_time;
+	uint64_t		_last_fire_time; //上次已执行的时间
 };
 
