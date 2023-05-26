@@ -3340,7 +3340,7 @@ bool HisDataReplayer::cacheRawOrdQueFromBin(const std::string& key, const char* 
 
 	if (!bHit)
 	{
-		WTSLogger::warn("No order detail data of {} on {} found", stdCode, uDate);
+		WTSLogger::warn("No order queue data of {} on {} found", stdCode, uDate);
 		return false;
 	}
 
@@ -3369,11 +3369,11 @@ bool HisDataReplayer::cacheRawTransFromBin(const std::string& key, const char* s
 
 	if (!bHit)
 	{
-		WTSLogger::warn("No order detail data of {} on {} found", stdCode, uDate);
+		WTSLogger::warn("No transaction data of {} on {} found", stdCode, uDate);
 		return false;
 	}
 
-	auto& dataList = _orddtl_cache[key];
+	auto& dataList = _trans_cache[key];
 	uint32_t dataCnt = 0;
 	dataCnt = content.size() / sizeof(WTSTransStruct);
 	dataList._items.resize(dataCnt);
