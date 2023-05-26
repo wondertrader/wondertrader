@@ -431,8 +431,8 @@ bool WTSBaseDataMgr::loadContracts(const char* filename)
 
 			cInfo->setCommInfo(commInfo);
 
-			uint32_t maxMktQty = 1;
-			uint32_t maxLmtQty = 1;
+			uint32_t maxMktQty = 1000000;
+			uint32_t maxLmtQty = 1000000;
 			uint32_t minMktQty = 1;
 			uint32_t minLmtQty = 1;
 			if (jcInfo->has("maxmarketqty"))
