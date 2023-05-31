@@ -156,6 +156,7 @@ HisDataReplayer::HisDataReplayer()
 	, _bt_loader(NULL)
 	, _min_period("d")
 	, _cache_clear_days(0)
+	, _align_by_section(false)
 {
 }
 
@@ -217,6 +218,9 @@ bool HisDataReplayer::init(WTSVariant* cfg, EventNotifier* notifier /* = NULL */
 
 	_adjust_flag = cfg->getUInt32("adjust_flag");
 	WTSLogger::info("adjust_flag is {}", _adjust_flag);
+
+	_align_by_section = cfg->getBoolean("align_by_section");
+	WTSLogger::info("Resampled bars will be aligned by section: {}", _align_by_section ? "yes" : " no");
 
 	_nosim_if_notrade = cfg->getBoolean("dont_simtick_if_notrade");
 	WTSLogger::info("nosim_if_notrade is {}", _nosim_if_notrade);

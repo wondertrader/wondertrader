@@ -161,7 +161,6 @@ public:
 				int32_t hour = section.second/100 - section.first/100;
 				int32_t minute = section.second%100 - section.first%100;
 				offset += hour*60 + minute;
-				//offset += section.second - section.first;
 			} 
 			else //小于下边界
 			{
@@ -383,6 +382,9 @@ public:
 		return count*60;
 	}
 
+	/*
+	 *	获取交易的分钟数
+	 */
 	inline uint32_t getTradingMins()
 	{
 		uint32_t count = 0;
@@ -401,6 +403,36 @@ public:
 		//这种只能是全天候交易时段
 		if (count == 0) count = 1440;
 		return count;
+	}
+
+	/*
+	 *	获取小节分钟数列表
+	 */
+	inline const std::vector<uint32_t>& getSecMinList()
+	{
+		static std::vector<uint32_t> minutes;
+		if(minutes.empty())
+		{
+			uint32_t total = 0;
+			TradingTimes::iterator it = m_tradingTimes.begin();
+			for (; it != m_tradingTimes.end(); it++)
+			{
+				TradingSection &section = *it;
+				uint32_t s = section.first;
+				uint32_t e = section.second;
+
+				uint32_t hour = (e / 100 - s / 100);
+				uint32_t minute = (e % 100 - s % 100);
+
+				total += hour * 60 + minute;
+				minutes.emplace_back(total);
+			}
+			
+			if (minutes.empty())
+				minutes.emplace_back(1440);
+		}
+		
+		return minutes;
 	}
 
 	/*

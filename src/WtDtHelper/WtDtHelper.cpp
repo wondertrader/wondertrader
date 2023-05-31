@@ -721,7 +721,7 @@ WtUInt32 read_dmb_ticks(WtString tickFile, FuncGetTicksCallback cb, FuncCountDat
 
 
 WtUInt32 resample_bars(WtString barFile, FuncGetBarsCallback cb, FuncCountDataCallback cbCnt, WtUInt64 fromTime, WtUInt64 endTime,
-	WtString period, WtUInt32 times, WtString sessInfo, FuncLogCallback cbLogger /* = NULL */)
+	WtString period, WtUInt32 times, WtString sessInfo, FuncLogCallback cbLogger /* = NULL */, bool bAlignSec/* = false*/)
 {
 	WTSKlinePeriod kp;
 	if(wt_stricmp(period, "m1") == 0)
@@ -890,7 +890,7 @@ WtUInt32 resample_bars(WtString barFile, FuncGetBarsCallback cb, FuncCountDataCa
 	uint32_t hitCnt = eIdx - sIdx + 1;
 	WTSKlineSlice* slice = WTSKlineSlice::create("", kp, 1, &bars[sIdx], hitCnt);
 	WTSDataFactory fact;
-	WTSKlineData* kline = fact.extractKlineData(slice, kp, times, sInfo);
+	WTSKlineData* kline = fact.extractKlineData(slice, kp, times, sInfo, true, bAlignSec);
 	if(kline == NULL)
 	{
 		if (cbLogger)

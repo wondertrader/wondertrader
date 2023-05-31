@@ -98,6 +98,7 @@ private:
 	IBaseDataMgr*	_bd_mgr;
 	IHotMgr*		_hot_mgr;
 	WtDtRunner*		_runner;
+	bool			_align_by_section;
 
 	//KÏß»º´æ
 	typedef struct _BarCache

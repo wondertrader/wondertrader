@@ -479,6 +479,7 @@ private:
 	std::string		_main_period;	//主周期
 	bool			_tick_enabled;	//是否开启了tick回测
 	bool			_tick_simulated;	//是否需要模拟tick
+	bool			_align_by_section;	//重采样分钟线是否按小节对齐
 	
 	/*
 	 *	By Wesley @ 2023.05.05
