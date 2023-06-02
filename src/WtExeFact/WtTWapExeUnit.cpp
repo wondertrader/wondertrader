@@ -108,7 +108,6 @@ void WtTWapExeUnit::on_order(uint32_t localid, const char* stdCode, bool isBuy, 
 		return;
 	//对于回报订单处理撤单情况：  判断回报 已经撤单或者没有剩余单    
 
-	//undone=sum(leftover)
 	if (isCanceled || leftover == 0)  
 	{
 		_orders_mon.erase_order(localid);
@@ -116,7 +115,7 @@ void WtTWapExeUnit::on_order(uint32_t localid, const char* stdCode, bool isBuy, 
 		if (_cancel_cnt > 0)
 			_cancel_cnt--;
 		
-		_ctx->writeLog(fmtutil::format("Order {} updated cancelcnt -> {}", localid, _cancel_cnt));
+		_ctx->writeLog(fmt::format("Order {} updated cancelcnt -> {}", localid, _cancel_cnt).c_str());
 	}
 	/***---begin---23.5.19---zhaoyk***/
 	if (leftover == 0 && !isCanceled)
@@ -235,8 +234,8 @@ void WtTWapExeUnit::on_tick(WTSTickData* newTick)
 		const char* stdCode = _code.c_str();
 		double undone = _ctx->getUndoneQty(stdCode);
 		double realPos = _ctx->getPosition(stdCode);
-		if (!decimal::eq(newVol, undone + realPos)) //仓位变化要交易 //目标行情！= 未完成数量+仓位数量   
-		{//如果是第一笔TICK，且目标量==未完成+仓位，退出 
+		if (!decimal::eq(newVol, undone + realPos)) //仓位变化要交易 
+		{
 			do_calc();
 		}
 	}
@@ -246,18 +245,18 @@ void WtTWapExeUnit::on_tick(WTSTickData* newTick)
 		bool hasCancel = false;
 		if (_ord_sticky != 0 && _orders_mon.has_order()) 
 		{			
-			_orders_mon.check_orders(_ord_sticky, now, [this, &hasCancel](uint32_t localid) {//////lambda
-				if (_ctx->cancel(localid)) //撤单成功
+			_orders_mon.check_orders(_ord_sticky, now, [this, &hasCancel](uint32_t localid) {
+				if (_ctx->cancel(localid))
 				{
 					_cancel_cnt++;
-					_ctx->writeLog(fmt::format("Order expired, cancelcnt updated to {}", _cancel_cnt).c_str());//订单过期，撤单量更新
+					_ctx->writeLog(fmt::format("Order expired, cancelcnt updated to {}", _cancel_cnt).c_str());
 					hasCancel = true;
 				}
 			});
 
 		}
 
-		if (!hasCancel && (now - _last_fire_time >= _fire_span * 1000)) //now-上次发单时间>= 发单间隔  
+		if (!hasCancel && (now - _last_fire_time >= _fire_span * 1000)) 
 		{
 			do_calc();
 		}
@@ -284,7 +283,7 @@ void WtTWapExeUnit::on_entrust(uint32_t localid, const char* stdCode, bool bSucc
 }
 
 void WtTWapExeUnit::fire_at_once(double qty)
-{//超时单的处理
+{
 	if (decimal::eq(qty, 0))
 		return;
 
@@ -294,25 +293,22 @@ void WtTWapExeUnit::fire_at_once(double qty)
 	uint64_t now = TimeUtils::getLocalTimeNow();
 	bool isBuy = decimal::gt(qty, 0);
 	double targetPx = 0;
-	//根据价格模式设置,确定委托基准价格: 0-最新价,1-最优价,2-对手价 //都算限价单
+	//根据价格模式设置,确定委托基准价格: 0-最新价,1-最优价,2-对手价
 	if (_price_mode == 0)
 	{
 		targetPx = curTick->price();
 	}
 	else if (_price_mode == 1)
 	{
-		targetPx = isBuy ? curTick->bidprice(0) : curTick->askprice(0);//买入方向：买价，卖出方向：卖价
+		targetPx = isBuy ? curTick->bidprice(0) : curTick->askprice(0);
 	}
 	else // if(_price_mode == 2)
 	{
-		targetPx = isBuy ? curTick->askprice(0) : curTick->bidprice(0);//买入方向：卖价，卖出方向：买价
+		targetPx = isBuy ? curTick->askprice(0) : curTick->bidprice(0);
 	}
 
-	//增加价格偏移，为了在挂单超时情况下保证单次补单操作全部成交 ，所以对价格增加偏移量 （价格偏移量*5原因是保证补单量全部成交，能够足够覆盖足够单量）
-	//如果需要全部发单,则价格偏移5跳,以保障执行       
-	//targetPx += _comm_info->getPriceTick() * 5 * (isBuy ? 1 : -1); ////最小价格变动单位*5*isbuy
 	/***---begin---23.5.22---zhaoyk***/
-	targetPx += _comm_info->getPriceTick() * _cancel_times* (isBuy ? 1 : -1);   // // * 撤单次数    递增扩大追单步幅
+	targetPx += _comm_info->getPriceTick() * _cancel_times* (isBuy ? 1 : -1);  
 	/***---end---23.5.22---zhaoyk***/
 
 	//最后发出指令
@@ -345,7 +341,6 @@ void WtTWapExeUnit::do_calc()
 	StdUniqueLock lock(_mtx_calc);
 	/***---end---23.5.22---zhaoyk***/
 	const char* code = _code.c_str();
-
 	double undone = _ctx->getUndoneQty(code);
 	
 	/***---begin---23.5.22---zhaoyk***/
@@ -365,9 +360,9 @@ void WtTWapExeUnit::do_calc()
 	//每一次发单要保障成交,所以如果有未完成单,说明上一轮没完成
 	//有未完成订单，与实际仓位变动方向相反
 	//则需要撤销现有订单
-	if (decimal::lt(diffQty * undone, 0)) //diff*undone 剩余需要完成*未完成订单 <0   true   -> cancel
+	if (decimal::lt(diffQty * undone, 0))
 	{
-		bool isBuy = decimal::gt(undone, 0);   //未完成单>0   isbuy = 1 买方
+		bool isBuy = decimal::gt(undone, 0);   
 		OrderIDs ids = _ctx->cancel(code, isBuy);
 		if (!ids.empty())
 		{
@@ -397,12 +392,12 @@ void WtTWapExeUnit::do_calc()
 
 		//如果是清仓的需求，还要再进行对比
 		//如果多头为0，说明已经全部清理掉了，则直接退出
-		double lPos = _ctx->getPosition(code, true, 1); //获取（多头）持仓  可用持仓   多头 //返回值	轧平后的仓位: 多仓>0, 空仓<0
+		double lPos = _ctx->getPosition(code, true, 1); 
 		if (decimal::eq(lPos, 0))
 			return;
 
 		//如果还有多头仓位，则将目标仓位设置为非0，强制触发                      
-		newVol = -min(lPos, _order_lots);//  -min(获取（多头）持仓     单次发单手数) 
+		newVol = -min(lPos, _order_lots);
 		_ctx->writeLog(fmtutil::format("Clearing process triggered, target position of {} has been set to {}", _code.c_str(), newVol));
 	}
 
@@ -494,7 +489,7 @@ void WtTWapExeUnit::do_calc()
 
 	_orders_mon.push_order(ids.data(), ids.size(), now);
 	_last_fire_time = now;
-	_fired_times += 1;//已执行次数
+	_fired_times += 1;
 
 	curTick->release();
 }

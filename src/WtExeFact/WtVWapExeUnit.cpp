@@ -365,7 +365,7 @@ void WtVWapExeUnit::do_calc()
 		return;
 	}
 	_last_tick_time = curTickTime;
-	int InminsTm = calTmStamp(_last_tick->actiontime);//当前tick属于vwap240分钟内的第几(-1)分钟
+	double InminsTm = calTmStamp(_last_tick->actiontime());//当前tick属于vwap240分钟内的第几(-1)分钟
 	double aimQty = VwapAim[InminsTm];//取到对应时刻的目标vwapaim （递增）
 
 	uint32_t leftTimes = _total_times - _fired_times;
@@ -436,7 +436,7 @@ void WtVWapExeUnit::fire_at_once(double qty)
 	double targetPx = 0;
 	//根据价格模式设置,确定委托基准价格: 0-最新价,1-最优价,2-对手价
 	if (_price_mode == 0) {
-		targetPx = curTick->price;
+		targetPx = curTick->price();
 	}
 	else if (_price_mode == 1) {
 		targetPx = isBuy ? curTick->askprice(0) : curTick->bidprice(0);

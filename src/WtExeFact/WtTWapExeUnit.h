@@ -91,8 +91,7 @@ private:
 	WTSCommodityInfo* _comm_info;
 	/***---begin---23.5.18---zhaoyk***/
 	WTSSessionInfo*	_sess_info;
-	uint32_t	_cancel_times;//撤单次数
-
+	uint32_t		_cancel_times;//撤单次数
 	/***---end---23.5.18---zhaoyk***/
 
 
@@ -111,7 +110,6 @@ private:
 	uint32_t		_price_offset;	//挂单价格偏移,相对于几乎价格偏移,买+卖-
 	uint32_t        _begin_time;	//开始时间 （1000-》10:00）
 	uint32_t		_end_time;		//结束时间 （1030-》10:30）
-	uint32_t		_entrust_span;		 //发单时间间隔
 	double			_min_open_lots;		//最小开仓数量
 	double			_order_lots;		//单次发单手数
 
@@ -121,8 +119,8 @@ private:
 	uint32_t		_fire_span;		//发单间隔//ms
 	uint32_t		_fired_times;	//已执行次数
 	uint64_t		_last_fire_time; //上次已执行的时间
-	uint64_t	_last_place_time;//上个下单时间
-	uint64_t	_last_tick_time;//上个tick时间
+	uint64_t		_last_place_time;//上个下单时间
+	uint64_t		_last_tick_time;//上个tick时间
 	std::atomic<bool> _in_calc;
 
 	typedef struct _CalcFlag
