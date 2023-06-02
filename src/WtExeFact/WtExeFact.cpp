@@ -12,7 +12,7 @@
 #include "WtMinImpactExeUnit.h"
 #include "WtDiffMinImpactExeUnit.h"
 #include "WtStockMinImpactExeUnit.h"
-
+#include "WtVWapExeUnit.h"
 const char* FACT_NAME = "WtExeFact";
 
 extern "C"
