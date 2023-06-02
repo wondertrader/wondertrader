@@ -158,7 +158,7 @@ void CTraderSpi::ReqQryInstrument()
 
 inline bool isOption(TThostFtdcProductClassType pClass)
 {
-	if (pClass == THOST_FTDC_PC_Options || pClass == THOST_FTDC_PC_SpotOption || pClass == THOST_FTDC_PC_SpotOption)
+	if (pClass == THOST_FTDC_PC_Options || pClass == THOST_FTDC_PC_SpotOption)
 		return true;
 
 	return false;
