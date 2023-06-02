@@ -59,8 +59,11 @@ ExecuteUnit* WtExeFact::createExeUnit(const char* name)
 		return new WtMinImpactExeUnit();
 	else if (strcmp(name, "WtStockMinImpactExeUnit") == 0)
 		return new WtStockMinImpactExeUnit();
-
-	return NULL; 
+	/***---begin---23.5.25---zhaoyk***/
+	else if (strcmp(name, "WtVWapExeUnit") == 0)
+		return  new WtVWapExeUnit();
+	/***---end---23.5.25---zhaoyk***/
+	return NULL;
 }
 
 ExecuteUnit* WtExeFact::createDiffExeUnit(const char* name)
