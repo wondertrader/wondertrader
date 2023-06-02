@@ -17,117 +17,110 @@ private:
 
 public:
 	/*
-	*	æ‰€å±æ‰§è¡Œå™¨å·¥å‚åç§°
+	*	ËùÊôÖ´ĞĞÆ÷¹¤³§Ãû³Æ
 	*/
 	virtual const char* getFactName() override;
 
 	/*
-	*	æ‰§è¡Œå•å…ƒåç§°
+	*	Ö´ĞĞµ¥ÔªÃû³Æ
 	*/
 	virtual const char* getName() override;
 
 	/*
-	*	åˆå§‹åŒ–æ‰§è¡Œå•å…ƒ
-	*	ctx		æ‰§è¡Œå•å…ƒè¿è¡Œç¯å¢ƒ
-	*	code	ç®¡ç†çš„åˆçº¦ä»£ç 
+	*	³õÊ¼»¯Ö´ĞĞµ¥Ôª
+	*	ctx		Ö´ĞĞµ¥ÔªÔËĞĞ»·¾³
+	*	code	¹ÜÀíµÄºÏÔ¼´úÂë
 	*/
 	virtual void init(ExecuteContext* ctx, const char* stdCode, WTSVariant* cfg) override;
 
 	/*
-	*	è®¢å•å›æŠ¥
-	*	localid	æœ¬åœ°å•å·
-	*	code	åˆçº¦ä»£ç 
-	*	isBuy	ä¹°orå–
-	*	leftover	å‰©ä½™æ•°é‡
-	*	price	å§”æ‰˜ä»·æ ¼
-	*	isCanceled	æ˜¯å¦å·²æ’¤é”€
+	*	¶©µ¥»Ø±¨
+	*	localid	±¾µØµ¥ºÅ
+	*	code	ºÏÔ¼´úÂë
+	*	isBuy	ÂòorÂô
+	*	leftover	Ê£ÓàÊıÁ¿
+	*	price	Î¯ÍĞ¼Û¸ñ
+	*	isCanceled	ÊÇ·ñÒÑ³·Ïú
 	*/
 	virtual void on_order(uint32_t localid, const char* stdCode, bool isBuy, double leftover, double price, bool isCanceled) override;
 
 	/*
-	*	tickæ•°æ®å›è°ƒ
-	*	newTick	æœ€æ–°çš„tickæ•°æ®
+	*	tickÊı¾İ»Øµ÷
+	*	newTick	×îĞÂµÄtickÊı¾İ
 	*/
 	virtual void on_tick(WTSTickData* newTick) override;
 
 	/*
-	*	æˆäº¤å›æŠ¥
-	*	code	åˆçº¦ä»£ç 
-	*	isBuy	ä¹°orå–
-	*	vol		æˆäº¤æ•°é‡,è¿™é‡Œæ²¡æœ‰æ­£è´Ÿ,é€šè¿‡isBuyç¡®å®šä¹°å…¥è¿˜æ˜¯å–å‡º
-	*	price	æˆäº¤ä»·æ ¼
+	*	³É½»»Ø±¨
+	*	code	ºÏÔ¼´úÂë
+	*	isBuy	ÂòorÂô
+	*	vol		³É½»ÊıÁ¿,ÕâÀïÃ»ÓĞÕı¸º,Í¨¹ıisBuyÈ·¶¨ÂòÈë»¹ÊÇÂô³ö
+	*	price	³É½»¼Û¸ñ
 	*/
 	virtual void on_trade(uint32_t localid, const char* stdCode, bool isBuy, double vol, double price) override;
 
 	/*
-	*	ä¸‹å•ç»“æœå›æŠ¥
+	*	ÏÂµ¥½á¹û»Ø±¨
 	*/
 	virtual void on_entrust(uint32_t localid, const char* stdCode, bool bSuccess, const char* message) override;
 
 	/*
-	*	è®¾ç½®æ–°çš„ç›®æ ‡ä»“ä½
-	*	code	åˆçº¦ä»£ç 
-	*	newVol	æ–°çš„ç›®æ ‡ä»“ä½
+	*	ÉèÖÃĞÂµÄÄ¿±ê²ÖÎ»
+	*	code	ºÏÔ¼´úÂë
+	*	newVol	ĞÂµÄÄ¿±ê²ÖÎ»
 	*/
 	virtual void set_position(const char* stdCode, double newVol) override;
 
 	/*
-	*	äº¤æ˜“é€šé“å°±ç»ªå›è°ƒ
+	*	½»Ò×Í¨µÀ¾ÍĞ÷»Øµ÷
 	*/
 	virtual void on_channel_ready() override;
 
 	/*
-	*	äº¤æ˜“é€šé“ä¸¢å¤±å›è°ƒ
+	*	½»Ò×Í¨µÀ¶ªÊ§»Øµ÷
 	*/
 	virtual void on_channel_lost() override;
 
 
 private:
-	WTSTickData* _last_tick;	//ä¸Šä¸€ç¬”è¡Œæƒ…
-	double		_target_pos;	//ç›®æ ‡ä»“ä½
-	bool		_channel_ready;
+	WTSTickData*	 _last_tick;	//ÉÏÒ»±ÊĞĞÇé
+	double			_target_pos;	//Ä¿±ê²ÖÎ»
+	bool			_channel_ready;
 	StdUniqueMutex	_mtx_calc;
 
 	WTSCommodityInfo* _comm_info;
 	/***---begin---23.5.18---zhaoyk***/
 	WTSSessionInfo*	_sess_info;
-	uint32_t	_cancel_times;//æ’¤å•æ¬¡æ•°
-
+	uint32_t		_cancel_times;//³·µ¥´ÎÊı
 	/***---end---23.5.18---zhaoyk***/
 
 
 	//////////////////////////////////////////////////////////////////////////
-	//æ‰§è¡Œå‚æ•°
+	//Ö´ĞĞ²ÎÊı
 	WtOrdMon		_orders_mon;
 	uint32_t		_cancel_cnt;
 
 	//////////////////////////////////////////////////////////////////////////
-	//å‚æ•°
-	uint32_t		_total_secs;	//æ‰§è¡Œæ€»æ—¶é—´,å•ä½s
-	uint32_t		_total_times;	//æ€»æ‰§è¡Œæ¬¡æ•°
-	uint32_t		_tail_secs;		//æ‰§è¡Œå°¾éƒ¨æ—¶é—´
-	uint32_t		_ord_sticky;	//æŒ‚å•æ—¶é™,å•ä½s
-	uint32_t		_price_mode;	//ä»·æ ¼æ¨¡å¼: 0-æœ€æ–°ä»·,1-æœ€ä¼˜ä»·,2-å¯¹æ‰‹ä»·
-
-	uint32_t		_price_offset;	//æŒ‚å•ä»·æ ¼åç§»,ç›¸å¯¹äºå‡ ä¹ä»·æ ¼åç§»,ä¹°+å–-
-	uint32_t        _begin_time;	//å¼€å§‹æ—¶é—´ ï¼ˆ1000-ã€‹10:00ï¼‰
-	uint32_t		_end_time;		//ç»“æŸæ—¶é—´ ï¼ˆ1030-ã€‹10:30ï¼‰
-	uint32_t		_entrust_span;		 //å‘å•æ—¶é—´é—´éš”
-	double			_min_open_lots;		//æœ€å°å¼€ä»“æ•°é‡
-	double			_order_lots;		//å•æ¬¡å‘å•æ‰‹æ•°
-	uint32_t		_price_offset;		//æŒ‚å•ä»·æ ¼åç§»,ç›¸å¯¹äºå‡ ä¹ä»·æ ¼åç§»,ä¹°+å–-
-	double		_min_open_lots;//æœ€å°å¼€ä»“æ•°é‡
-
+	//²ÎÊı
+	uint32_t		_total_secs;	//Ö´ĞĞ×ÜÊ±¼ä,µ¥Î»s
+	uint32_t		_total_times;	//×ÜÖ´ĞĞ´ÎÊı
+	uint32_t		_tail_secs;		//Ö´ĞĞÎ²²¿Ê±¼ä
+	uint32_t		_ord_sticky;	//¹Òµ¥Ê±ÏŞ,µ¥Î»s
+	uint32_t		_price_mode;	//¼Û¸ñÄ£Ê½: 0-×îĞÂ¼Û,1-×îÓÅ¼Û,2-¶ÔÊÖ¼Û
+	uint32_t		_price_offset;	//¹Òµ¥¼Û¸ñÆ«ÒÆ,Ïà¶ÔÓÚ¼¸ºõ¼Û¸ñÆ«ÒÆ,Âò+Âô-
+	uint32_t        _begin_time;	//¿ªÊ¼Ê±¼ä £¨1000-¡·10:00£©
+	uint32_t		_end_time;		//½áÊøÊ±¼ä £¨1030-¡·10:30£©
+	double			_min_open_lots;		//×îĞ¡¿ª²ÖÊıÁ¿
+	double			_order_lots;		//µ¥´Î·¢µ¥ÊÖÊı
 
 	//////////////////////////////////////////////////////////////////////////
-	//ä¸´æ—¶å˜é‡
-	double			_this_target;	//æœ¬è½®ç›®æ ‡ä»“ä½
-	uint32_t		_fire_span;		//å‘å•é—´éš”//ms
-	uint32_t		_fired_times;	//å·²æ‰§è¡Œæ¬¡æ•°
-	uint64_t		_last_fire_time; //ä¸Šæ¬¡å·²æ‰§è¡Œçš„æ—¶é—´
-
-	uint64_t	_last_place_time;//ä¸Šä¸ªä¸‹å•æ—¶é—´
-	uint64_t	_last_tick_time;//ä¸Šä¸ªtickæ—¶é—´
+	//ÁÙÊ±±äÁ¿
+	double			_this_target;	//±¾ÂÖÄ¿±ê²ÖÎ»
+	uint32_t		_fire_span;		//·¢µ¥¼ä¸ô//ms
+	uint32_t		_fired_times;	//ÒÑÖ´ĞĞ´ÎÊı
+	uint64_t		_last_fire_time; //ÉÏ´ÎÒÑÖ´ĞĞµÄÊ±¼ä
+	uint64_t		_last_place_time;//ÉÏ¸öÏÂµ¥Ê±¼ä
+	uint64_t		_last_tick_time;//ÉÏ¸ötickÊ±¼ä
 	std::atomic<bool> _in_calc;
 
 	typedef struct _CalcFlag

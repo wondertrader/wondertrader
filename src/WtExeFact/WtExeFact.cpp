@@ -12,9 +12,6 @@
 #include "WtMinImpactExeUnit.h"
 #include "WtDiffMinImpactExeUnit.h"
 #include "WtStockMinImpactExeUnit.h"
- /***---begin---23.5.25---zhaoyk***/
-#include "WtVWapExeUnit.h"
-/***---end---23.5.25---zhaoyk***/
 
 const char* FACT_NAME = "WtExeFact";
 
@@ -34,7 +31,6 @@ extern "C"
 };
 
 
-
 WtExeFact::WtExeFact()
 {
 }
@@ -49,9 +45,8 @@ const char* WtExeFact::getName()
 	return FACT_NAME;
 }
 
-void WtExeFact::enumExeUnit(FuncEnumUnitCallback cb)////执行单元工厂接口
+void WtExeFact::enumExeUnit(FuncEnumUnitCallback cb)
 {
-	//cb(FACT_NAME, "WtVWapExeUnit", false);
 	cb(FACT_NAME, "WtTWapExeUnit", false);
 	cb(FACT_NAME, "WtMinImpactExeUnit", true);
 }
@@ -64,10 +59,7 @@ ExecuteUnit* WtExeFact::createExeUnit(const char* name)
 		return new WtMinImpactExeUnit();
 	else if (strcmp(name, "WtStockMinImpactExeUnit") == 0)
 		return new WtStockMinImpactExeUnit();
-	/***---begin---23.5.25---zhaoyk***/
-	else if (strcmp(name, "WtVWapExeUnit") == 0)
-		return  new WtVWapExeUnit();
-	/***---end---23.5.25---zhaoyk***/
+
 	return NULL; 
 }
 
