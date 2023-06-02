@@ -27,6 +27,7 @@ void WtOrdMon::check_orders(uint32_t expiresecs, uint64_t curTime, EnumOrderCall
 	if (_orders.empty())
 		return;
 
+
 	StdLocker<StdRecurMutex> lock(_mtx_ords);
 	for (auto& m : _orders)
 	{
