@@ -19,7 +19,7 @@
 #include "../Includes/ITraderApi.h"
 #include "../Includes/WTSCollection.hpp"
 
-#include "../API/maCliApi_Patch3.8(R)/include/maCliOptTradeApi.h"
+#include "../API/maCliApi3.9/include/maCliOptTradeApi.h"
 
 #include "../Share/IniHelper.hpp"
 #include "../Share/StdUtils.hpp"
@@ -27,134 +27,10 @@
 #include "../Share/WtKVCache.hpp"
 
 
- // 用户角色
-typedef enum
-{
-	MA_CLIENT = '1',
-	MA_TELLER = '2'
-} MA_USER_ROLE;
-
-// 交易市场
-typedef enum
-{
-	MA_SZSE = '0',
-	MA_SSE
-} MA_STK_EX;
-
-// 交易板块
-typedef enum
-{
-	MA_SZSE_A = '00',
-	MA_SZSE_B = '01',
-	MA_THREE_BOARD = '02',
-	MA_SZSE_OPT = '05',
-	MA_SSE_A = '10',
-	MA_SSE_B = '11',
-	MA_SSE_OPT = '15'
-} MA_STK_BD;
-
-// 证券业务
-typedef enum
-{
-	MA_BuyOpen = 400,  // 买开
-	MA_SellClose,	   // 卖平
-	MA_SellOpen,	  // 卖开
-	MA_BuyClose,       // 买平
-	MA_OPT_CALL = 406,  // 认购行权
-	MA_OPT_PUT        // 认沽行权
-} MA_STK_BIZ;
-
-// 证券业务活动
-typedef enum
-{
-	MA_OPT_LIMITPRICE_GFD = 130,  // 股票期权申报-限价GFD
-	MA_OPT_LIMITPRICE_FOK = 131,  // 股票期权申报-限价FOK
-	MA_OPT_ANYPRICE_FOK = 133,  // 股票期权申报-市价FOK
-	MA_OPT_ANYPRICE_IOC = 134,  // 股票期权申报-市价IOC
-	MA_OPT_ANYPRICE_LEFT_LIMIT = 132,  // 股票期权申报-市价剩转限价GFD
-	MA_ORDER = 100,  // 委托申报
-	MA_CANCEL_ORDER = 101,  // 撤单申报
-	MA_BESTFIVELEVELPRICE = 121,  // 市价最优五档即时成交剩余撤销
-	MA_MARKEPRICE_ALLORDRAW = 122,  // 市价全额成交或撤销
-	MA_BESTPRICE_THIS_SIDE = 123,  // 市价本方最优价格
-	MA_BESTPRICE_OTHER_SIDE = 124,  // 市价对手方最优价格
-	MA_MARKETPRICE_LEFT_CANCEL = 125  // 市价即时成交剩余撤销
-} MA_STK_BIZ_ACTION;
-
-typedef enum
-{
-	MA_GFD = 600,  // 当日有效
-	MA_FOK,  // 全成或者全撤
-	MA_IOC  // 立即成交，否则取消
-} MATimeConditionType;
-
-// 撤单标志
-typedef enum
-{
-	MA_ORDER_CANCEL = 'T',  // 撤单
-	MA_ORDER_NORMAL = 'F'  // 正常
-} MA_IS_WITHDRAW;
-
-//// 委托有效标志
-//typedef enum
-//{
-//	MA_ORDER_VALID = '0',  // 无效
-//	MA_ORDER_INVALID = '1'  // 有效
-//} MA_ORDER_VALID_FLAG;
-
-// 委托状态
-typedef enum tagOrderState
-{
-	MA_Nottouched = '0',  // 未报, 写入委托的最初阶段，该笔业务还没有到申报时间
-	MA_Submitting, // 正报，该标志是漏单扫描的中间状态，表示正在判断中
-	MA_Submitted, // 已报，已经成功写入接口库
-	MA_Withdraw_NotFilled, // 已报待撤，该笔业务被撤单，但撤单未成交
-	MA_PartFilled_ToWithdraw, // 部成待撤，该笔业务部分成交，剩余部分等待撤单
-	MA_PartWithdraw, // 部撤，部分撤单
-	MA_Withdawn, // 已撤，撤单已经成交
-	MA_PartFilled_Withdrawn, // 部成已撤，部分成交
-	MA_AllFilled, // 已成，已经成交
-	MA_Canceled, // 废单，被交易所自动撤单
-	MA_ToSubmit = 'A', // 待报，写入报盘队列未成功
-	MA_OFFER_CONFIRM = 'B'  // 报盘机确认
-}  MAOrderState;
-
-// 持仓方向
-typedef enum
-{
-	MA_LONG = 'L',   // 权力仓
-	MA_SHORT = 'S',  // 义务仓
-	MA_COVERED_CALL = 'C'  // 备兑策略持仓
-} MA_OPT_SIDE;
-
-// 合约类型
-typedef enum
-{
-	MA_OPT_TYPE_CALL = 'C',  // 认购
-	MA_OPT_TYPE_PUT = 'P'  // 认沽
-} MA_OPT_TYPE;
-
-// 结算单类型
-typedef enum
-{
-	MA_DAY_SETTLEMENT = 'D',  // 日结算单
-	MA_MONTH_SETTLEMENT = 'M',  // 月结算单
-	MA_TEMP_SETTLEMENT = 'T'  // 临时结算单
-} MA_SETT_LIST_TYPE;
-
-// 冲销状态
-typedef enum
-{
-	MA_CANCEL_NORMAL = '0',  // 正常
-	MA_CANCEL_LOCKED,  // 被冲锁定
-	MA_CANCELED,  // 已被冲销
-	MA_FZN_CANCEL  // 已冻结取消
-} MA_CANCEL_STATUS;
-
-
-USE_NAMESPACE_MACLI
-
 USING_NS_WTP;
+
+USE_NAMESPACE_MACLI;
+
 
 class TraderMAOpt : public ITraderApi, public IOptTraderApi, public CCliOptTradeSpi
 {
@@ -215,11 +91,11 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	//IOptTraderApi
-	virtual int orderInsertOpt(WTSEntrust* entrust) override;
+	//virtual int orderInsertOpt(WTSEntrust* entrust) override;
 
-	virtual int orderActionOpt(WTSEntrustAction* action) override;
+	//virtual int orderActionOpt(WTSEntrustAction* action) override;
 
-	virtual int	queryOrdersOpt(WTSBusinessType bType) override;
+	//virtual int	queryOrdersOpt(WTSBusinessType bType) override;
 
 
 	//////////////////////////////////////////////////////////////////////////
@@ -257,7 +133,7 @@ public:
 
 	// 成交回报--委托信息
 	virtual int OnRtnOrder(CRtnOptOrderField* p_pRspField) override;
-	
+
 	// 成交回报--成交信息
 	virtual int OnRtnOrderFill(CRtnOptOrderFillField* p_pRtnField) override;
 	//成交回报推送(极速）响应
@@ -310,7 +186,7 @@ protected:
 	std::string		m_strTrdAcct;		// 交易账户
 	int64_t			m_llCustCode;		// 客户代码
 	int64_t			m_llCuacctCode;		// 资金户代码
-	int32_t			m_iInitOrg;			
+	int32_t			m_iInitOrg;
 
 	std::string		m_strAuthData;
 	std::string		m_strEncryptKey;
@@ -351,6 +227,6 @@ protected:
 	//委托单标记缓存器
 	WtKVCache					m_eidCache;
 
-	//订单标记缓存器
-	//WtKVCache		m_oidCache;
+	//成交单标记缓存器
+	WtKVCache					m_oidCache;
 };

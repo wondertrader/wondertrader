@@ -97,6 +97,10 @@ bool WtDataManager::init(WTSVariant* cfg, WtDtRunner* runner)
 		_hot_mgr = &_runner->getHotMgr();
 	}
 
+	_align_by_section = cfg->getBoolean("align_by_section");
+
+	WTSLogger::info("Resampled bars will be aligned by section: {}", _align_by_section ? "yes" : " no");
+
 	return initStore(cfg->get("store"));
 }
 
@@ -255,7 +259,7 @@ WTSKlineSlice* WtDataManager::get_kline_slice_by_range(const char* stdCode, WTSK
 				if(barTime <= barCache._last_bartime)
 					continue;
 
-				g_dataFact.updateKlineData(barCache._bars, rawData->at(idx), sInfo);
+				g_dataFact.updateKlineData(barCache._bars, rawData->at(idx), sInfo, _align_by_section);
 			}
 
 			//不管如何，都删除最后一条K线
@@ -407,7 +411,7 @@ WTSKlineSlice* WtDataManager::get_kline_slice_by_count(const char* stdCode, WTSK
 				if (barTime <= barCache._last_bartime)
 					continue;
 
-				g_dataFact.updateKlineData(barCache._bars, rawData->at(idx), sInfo);
+				g_dataFact.updateKlineData(barCache._bars, rawData->at(idx), sInfo, _align_by_section);
 			}
 
 			//如果不是日线，要考虑最后一条K线是否闭合的情况
@@ -578,7 +582,7 @@ void WtDataManager::update_bars(const char* stdCode, WTSTickData* newTick)
 			sInfo = newTick->getContractInfo()->getCommInfo()->getSessionInfo();
 		else
 			sInfo = get_session_info(kData->code(), true);
-		g_dataFact.updateKlineData(kData, newTick, sInfo);
+		g_dataFact.updateKlineData(kData, newTick, sInfo, _align_by_section);
 		WTSBarStruct* lastBar = kData->at(-1);
 
 		std::string speriod;
@@ -598,4 +602,16 @@ void WtDataManager::update_bars(const char* stdCode, WTSTickData* newTick)
 
 		_runner->trigger_bar(stdCode, speriod.c_str(), lastBar);
 	}
+}
+
+void WtDataManager::clear_cache()
+{
+	if (_reader == NULL)
+	{
+		WTSLogger::warn("DataReader not initialized, clearing canceled");
+		return;
+	}
+
+	_reader->clearCache();
+	WTSLogger::warn("All cache cleared");
 }

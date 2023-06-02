@@ -33,7 +33,7 @@ void WtOrdMon::check_orders(uint32_t expiresecs, uint64_t curTime, EnumOrderCall
 	{
 		uint32_t localid = m.first;
 		OrderPair& ordInfo = m.second;
-		if(!ordInfo.second)	//如果不能撤单，则直接跳过（一般涨跌停价的挂单是不能撤单的）
+		if (!ordInfo.second)	//如果不能撤单，则直接跳过（一般涨跌停价的挂单是不能撤单的）
 			continue;
 
 		auto entertm = ordInfo.first;
@@ -41,6 +41,22 @@ void WtOrdMon::check_orders(uint32_t expiresecs, uint64_t curTime, EnumOrderCall
 			continue;
 
 		callback(m.first);
+	}
+}
+
+void WtOrdMon::enumOrder(EnumAllOrderCallback cb)
+{
+	if (_orders.empty())
+		return;
+
+	StdLocker<StdRecurMutex> lock(_mtx_ords);
+	for (auto& m : _orders)
+	{
+		uint32_t localid = m.first;
+		OrderPair& ordInfo = m.second;
+		uint64_t entertm = ordInfo.first;
+		bool cancancel = ordInfo.second;
+		cb(localid, entertm, cancancel);
 	}
 }
 

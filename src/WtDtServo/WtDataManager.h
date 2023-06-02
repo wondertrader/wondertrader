@@ -89,6 +89,8 @@ public:
 	void	clear_subbed_bars();
 	void	update_bars(const char* stdCode, WTSTickData* newTick);
 
+	void	clear_cache();
+
 private:
 	IRdmDtReader*			_reader;
 	FuncDeleteRdmDtReader	_remover;
@@ -96,6 +98,7 @@ private:
 	IBaseDataMgr*	_bd_mgr;
 	IHotMgr*		_hot_mgr;
 	WtDtRunner*		_runner;
+	bool			_align_by_section;
 
 	//KÏß»º´æ
 	typedef struct _BarCache

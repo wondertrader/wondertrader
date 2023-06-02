@@ -55,12 +55,12 @@ public :
 #else
 			iconv_t cd;
 			t_string = new char[dst_len];
-
-			cd = iconv_open("gbk", "utf8");
+			char* p = t_string;
+			cd = iconv_open("gb2312", "utf-8");
 			if (cd != 0)
 			{
 				memset(t_string, 0, dst_len);
-				iconv(cd, (char**)&utf8_string, &string_len, &t_string, &dst_len);
+				iconv(cd, (char**)&utf8_string, &string_len, &p, &dst_len);
 				iconv_close(cd);
 				t_string[dst_len] = '\0';
 			}
@@ -135,7 +135,7 @@ public :
 			needFree = true;
 
 			std::size_t string_len = strlen(t_string);
-			std::size_t dst_len = string_len * 3 + 1;
+			std::size_t dst_len = string_len * 5;
 #ifdef _MSC_VER		
 
 			// Convert to Unicode if not already in unicode.
@@ -153,14 +153,13 @@ public :
 #else
 			iconv_t cd;
 			utf8_string = new char[dst_len];
-
-			cd = iconv_open("utf8", "gbk");
+			char* p = utf8_string;
+			cd = iconv_open("utf-8", "gb2312");
 			if (cd != 0)
 			{
 				memset(utf8_string, 0, dst_len);
-				iconv(cd, (char**)&t_string, &string_len, &utf8_string, &dst_len);
+				iconv(cd, (char**)&t_string, &string_len, &p, &dst_len);
 				iconv_close(cd);
-				utf8_string[dst_len] = '\0';
 			}
 #endif
 		}

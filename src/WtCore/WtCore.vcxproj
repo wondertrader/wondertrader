@@ -29,6 +29,7 @@
     <ClInclude Include="..\Includes\RiskMonDefs.h" />
     <ClInclude Include="ActionPolicyMgr.h" />
     <ClInclude Include="EventNotifier.h" />
+    <ClInclude Include="WtArbiExecuter.h" />
     <ClInclude Include="WtDiffExecuter.h" />
     <ClInclude Include="WtExecuterFactory.h" />
     <ClInclude Include="WtFilterMgr.h" />
@@ -63,6 +64,7 @@
     <ClCompile Include="CtaStrategyMgr.cpp" />
     <ClCompile Include="CtaStraBaseCtx.cpp" />
     <ClCompile Include="EventNotifier.cpp" />
+    <ClCompile Include="WtArbiExecuter.cpp" />
     <ClCompile Include="WtDiffExecuter.cpp" />
     <ClCompile Include="WtExecuterFactory.cpp" />
     <ClCompile Include="WtFilterMgr.cpp" />

@@ -243,6 +243,15 @@ bool WTSBaseDataMgr::loadSessions(const char* filename)
 			WTSVariant* jAuc = jVal->get("auction");
 			sInfo->setAuctionTime(jAuc->getUInt32("from"), jAuc->getUInt32("to"));
 		}
+		else if (jVal->has("auctions"))
+		{
+			WTSVariant* jAucs = jVal->get("auctions");
+			for (uint32_t i = 0; i < jAucs->size(); i++)
+			{
+				WTSVariant* jSec = jAucs->get(i);
+				sInfo->addAuctionTime(jSec->getUInt32("from"), jSec->getUInt32("to"));
+			}
+		}
 
 		WTSVariant* jSecs = jVal->get("sections");
 		if (jSecs == NULL || !jSecs->isArray())
@@ -422,8 +431,8 @@ bool WTSBaseDataMgr::loadContracts(const char* filename)
 
 			cInfo->setCommInfo(commInfo);
 
-			uint32_t maxMktQty = 1;
-			uint32_t maxLmtQty = 1;
+			uint32_t maxMktQty = 1000000;
+			uint32_t maxLmtQty = 1000000;
 			uint32_t minMktQty = 1;
 			uint32_t minLmtQty = 1;
 			if (jcInfo->has("maxmarketqty"))
@@ -435,6 +444,22 @@ bool WTSBaseDataMgr::loadContracts(const char* filename)
 			if (jcInfo->has("minlimitqty"))
 				minLmtQty = jcInfo->getUInt32("minlimitqty");
 			cInfo->setVolumeLimits(maxMktQty, maxLmtQty, minMktQty, minLmtQty);
+
+			uint32_t opendate = 0;
+			uint32_t expiredate = 0;
+			if (jcInfo->has("opendate"))
+				opendate = jcInfo->getUInt32("opendate");
+			if (jcInfo->has("expiredate"))
+				expiredate = jcInfo->getUInt32("expiredate");
+			cInfo->setDates(opendate, expiredate);
+
+			double lMargin = 0;
+			double sMargin = 0;
+			if (jcInfo->has("longmarginratio"))
+				lMargin = jcInfo->getDouble("longmarginratio");
+			if (jcInfo->has("shortmarginratio"))
+				sMargin = jcInfo->getDouble("shortmarginratio");
+			cInfo->setMarginRatios(lMargin, sMargin);
 
 			WTSContractList* contractList = (WTSContractList*)m_mapExchgContract->get(ShortKey(cInfo->getExchg()));
 			if (contractList == NULL)

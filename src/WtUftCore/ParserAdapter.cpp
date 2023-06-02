@@ -146,7 +146,7 @@ bool ParserAdapter::init(const char* id, WTSVariant* cfg, IParserStub* stub, IBa
 				if (!_exchg_filter.empty())
 				{
 					auto eit = _exchg_filter.find(cInfo->getExchg());
-					if (eit != _code_filter.end())
+					if (eit != _exchg_filter.end())
 					{
 						contractSet.insert(cInfo->getFullCode());
 						continue;

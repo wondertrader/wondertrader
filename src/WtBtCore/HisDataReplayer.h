@@ -61,10 +61,8 @@ public:
 /*
  *	历史数据加载器的回调函数
  *	@obj	回传用的，原样返回即可
- *	@key	数据缓存的key
  *	@bars	K线数据
  *	@count	K线条数
- *	@factor	复权因子，最新的复权因子，如果是后复权，则factor不为1.0，如果是前复权，则factor必须为1.0
  */
 typedef void(*FuncReadBars)(void* obj, WTSBarStruct* firstBar, uint32_t count);
 
@@ -76,7 +74,33 @@ typedef void(*FuncReadBars)(void* obj, WTSBarStruct* firstBar, uint32_t count);
  */
 typedef void(*FuncReadFactors)(void* obj, const char* stdCode, uint32_t* dates, double* factors, uint32_t count);
 
-typedef void(*FuncReadTicks)(void* obj, WTSTickStruct* firstTick, uint32_t count);
+/*
+ *	加载tick数据回调
+ *	@firstItem	数据
+ *	@count		条数
+ */
+typedef void(*FuncReadTicks)(void* obj, WTSTickStruct* firstItem, uint32_t count);
+
+/*
+ *	加载委托明细数据回调
+ *	@firstItem	数据
+ *	@count		条数
+ */
+typedef void(*FuncReadOrdDtl)(void* obj, WTSOrdDtlStruct* firstItem, uint32_t count);
+
+/*
+ *	加载委托队列数据回调
+ *	@firstItem	数据
+ *	@count		条数
+ */
+typedef void(*FuncReadOrdQue)(void* obj, WTSOrdQueStruct* firstItem, uint32_t count);
+
+/*
+ *	加载逐笔成交数据回调
+ *	@firstItem	数据
+ *	@count		条数
+ */
+typedef void(*FuncReadTrans)(void* obj, WTSTransStruct* firstItem, uint32_t count);
 
 class IBtDataLoader
 {
@@ -120,6 +144,9 @@ public:
 	 */
 	virtual bool loadRawHisTicks(void* obj, const char* stdCode, uint32_t uDate, FuncReadTicks cb) = 0;
 
+	/*
+	 *	是否自动转储为dsb
+	 */
 	virtual bool isAutoTrans() { return true; }
 };
 
@@ -168,7 +195,19 @@ private:
 		std::vector<WTSBarStruct>	_bars;
 		double			_factor;	//最后一条复权因子
 
-		_BarsList() :_cursor(UINT_MAX), _count(0), _times(1), _factor(1){}
+		uint32_t		_untouch_days;	//未用到的天数
+
+		inline void mark()
+		{
+			_untouch_days = 0;
+		}
+
+		inline std::size_t size()
+		{
+			return sizeof(WTSBarStruct)*_bars.size();
+		}
+
+		_BarsList() :_cursor(UINT_MAX), _count(0), _times(1), _factor(1), _untouch_days(0){}
 	} BarsList;
 
 	/*
@@ -232,6 +271,21 @@ private:
 	 *	从自定义数据文件缓存历史tick数据
 	 */
 	bool		cacheRawTicksFromBin(const std::string& key, const char* stdCode, uint32_t uDate);
+
+	/*
+	 *	从自定义数据文件缓存历史委托明细数据
+	 */
+	bool		cacheRawOrdDtlFromBin(const std::string& key, const char* stdCode, uint32_t uDate);
+
+	/*
+	 *	从自定义数据文件缓存历史委托队列
+	 */
+	bool		cacheRawOrdQueFromBin(const std::string& key, const char* stdCode, uint32_t uDate);
+
+	/*
+	 *	从自定义数据文件缓存历史成交明细数据
+	 */
+	bool		cacheRawTransFromBin(const std::string& key, const char* stdCode, uint32_t uDate);
 
 	/*
 	 *	从csv文件缓存历史tick数据
@@ -320,6 +374,8 @@ private:
 	 */
 	void	run_by_ticks(bool bNeedDump = false);
 
+	void	check_cache_days();
+
 public:
 	bool init(WTSVariant* cfg, EventNotifier* notifier = NULL, IBtDataLoader* dataLoader = NULL);
 
@@ -353,6 +409,12 @@ public:
 		_stra_name = sinkName;
 	}
 
+	/*
+	 *	注册任务
+	 *	@date 日期,根据周期变化,每日为0,每周为0~6,对应周日到周六,每月为1~31,每年为0101~1231
+	 *	@time 时间,精确到分钟
+	 *	@period	时间周期，可以是分钟、天、周、月、年
+	 */
 	void register_task(uint32_t taskid, uint32_t date, uint32_t time, const char* period, const char* trdtpl = "CHINA", const char* session = "TRADING");
 
 	WTSKlineSlice* get_kline_slice(const char* stdCode, const char* period, uint32_t count, uint32_t times = 1, bool isMain = false);
@@ -417,10 +479,19 @@ private:
 	std::string		_main_period;	//主周期
 	bool			_tick_enabled;	//是否开启了tick回测
 	bool			_tick_simulated;	//是否需要模拟tick
+	bool			_align_by_section;	//重采样分钟线是否按小节对齐
+	
+	/*
+	 *	By Wesley @ 2023.05.05
+	 *	如果K线没有成交量，则不模拟tick
+	 *	默认为false，主要是针对涨跌停的行情，也适用于不活跃的合约
+	 */
+	bool			_nosim_if_notrade;
 	std::map<std::string, WTSTickStruct>	_day_cache;	//每日Tick缓存,当tick回放未开放时,会用到该缓存
 	std::map<std::string, std::string>		_ticker_keys;
 
 	//By Wesley @ 2022.06.01
+	//这个主要是针对不订阅而直接指定合约下单的场景
 	std::set<std::string>		_unsubbed_in_need;	//未订阅但需要的K线
 
 	//By Wesley @ 2022.08.15
@@ -441,6 +512,9 @@ private:
 	std::string		_mode;
 	uint64_t		_begin_time;
 	uint64_t		_end_time;
+
+	//缓存自动清理天数
+	uint32_t		_cache_clear_days;
 
 	bool			_running;
 	bool			_terminated;

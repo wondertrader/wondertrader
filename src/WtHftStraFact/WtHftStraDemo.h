@@ -15,6 +15,8 @@ public:
 private:
 	void	check_orders();
 
+	void	do_calc(IHftStraCtx* ctx);
+
 public:
 	virtual const char* getName() override;
 

@@ -38,7 +38,7 @@ public:
 	 *	@tick		tick数据
 	 *	@sInfo		交易时间模板
 	 */
-	virtual WTSBarStruct*	updateKlineData(WTSKlineData* klineData, WTSTickData* tick, WTSSessionInfo* sInfo)						= 0;
+	virtual WTSBarStruct*	updateKlineData(WTSKlineData* klineData, WTSTickData* tick, WTSSessionInfo* sInfo, bool bAlignSec = false)						= 0;
 
 	/*
 	 *	利用基础周期K线数据更新K线
@@ -46,7 +46,7 @@ public:
 	 *	@newBasicBar	基础周期K线数据
 	 *	@sInfo			交易时间模板
 	 */
-	virtual WTSBarStruct*	updateKlineData(WTSKlineData* klineData, WTSBarStruct* newBasicBar, WTSSessionInfo* sInfo)				= 0;
+	virtual WTSBarStruct*	updateKlineData(WTSKlineData* klineData, WTSBarStruct* newBasicBar, WTSSessionInfo* sInfo, bool bAlignSec = false)				= 0;
 
 	/*
 	 *	从基础周期K线数据提取非基础周期的K线数据
@@ -56,7 +56,7 @@ public:
 	 *	@sInfo		交易时间模板
 	 *	@bIncludeOpen	是否包含未闭合的K线
 	 */
-	virtual WTSKlineData*	extractKlineData(WTSKlineSlice* baseKline, WTSKlinePeriod period, uint32_t times, WTSSessionInfo* sInfo, bool bIncludeOpen = true) = 0;
+	virtual WTSKlineData*	extractKlineData(WTSKlineSlice* baseKline, WTSKlinePeriod period, uint32_t times, WTSSessionInfo* sInfo, bool bIncludeOpen = true, bool bSectionSplit = false) = 0;
 
 	/*
 	 *	从tick数据提取秒周期的K线数据
@@ -65,7 +65,7 @@ public:
 	 *	@sInfo		交易时间模板
 	 *	@bUnixTime	tick时间戳是否是unixtime
 	 */
-	virtual WTSKlineData*	extractKlineData(WTSTickSlice* ayTicks, uint32_t seconds, WTSSessionInfo* sInfo, bool bUnixTime = false) = 0;
+	virtual WTSKlineData*	extractKlineData(WTSTickSlice* ayTicks, uint32_t seconds, WTSSessionInfo* sInfo, bool bUnixTime = false, bool bSectionSplit = false) = 0;
 
 	/*
 	 *	合并K线

@@ -231,6 +231,8 @@ private:
 
 	boost::asio::io_service		_asyncio;
 	StdThreadPtr				_thrd_worker;
+	typedef std::shared_ptr<boost::asio::io_service::work> BoostWorkerPtr;
+	BoostWorkerPtr				_worker;
 
 	DllHandle		m_hInstXTP;
 	typedef XTP::API::TraderApi* (*XTPCreator)(uint8_t, const char*, XTP_LOG_LEVEL);

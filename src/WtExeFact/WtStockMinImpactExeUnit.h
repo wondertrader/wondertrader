@@ -23,8 +23,21 @@ USING_NS_WTP;
 #define MARKET 1  // 对手价
 #define AUTOPX 2  // 自动
 
+typedef std::function<void(const char*, bool, double, double, double, double)> FuncEnumChnlPosCallBack;
+
 class WtStockMinImpactExeUnit : public ExecuteUnit
 {
+private:
+	const char* cbondStr = "CBOND";
+	const char* stockStr = "STK";
+
+	enum class TargetMode
+	{
+		stocks = 0,
+		amount,
+		ratio,
+	};
+
 private:
 	std::vector<std::string> PriceModeNames = {
 		"BESTPX",		//最优价
@@ -97,13 +110,6 @@ public:
 	virtual void set_position(const char* stdCode, double newVol) override;
 
 	/*
-	 *	设置新的目标仓位
-	 *	code	合约代码
-	 *	newAmount	新的目标金额
-	 */
-	virtual void set_amount(const char* stdCode, double newAmount);
-
-	/*
 	 *	清理全部持仓
 	 *	stdCode	合约代码
 	 */
@@ -119,10 +125,22 @@ public:
 	 */
 	virtual void on_channel_lost() override;
 
+	/*
+	 *	账户信息回调
+	 */
+	virtual void on_account(const char* currency, double prebalance, double balance, double dynbalance, double avaliable, double closeprofit, double dynprofit, double margin, double fee, double deposit, double withdraw) override;
+
+private:
+	void check_unmanager_order();
+
 private:
 	WTSTickData* _last_tick;	//上一笔行情
 	double		_target_pos;	//目标仓位
 	double		_target_amount;  // 目标金额
+	double		_target_ratio;  // 目标持仓比例
+
+	double		_avaliable{ 0 }; // 账户可用
+
 	StdUniqueMutex	_mtx_calc;
 	WTSCommodityInfo* _comm_info;
 	WTSSessionInfo* _sess_info;
@@ -137,20 +155,56 @@ private:
 	double		_order_lots;
 	double		_qty_rate;
 	double		_min_order;
+	bool		_is_finish;
+	uint64_t	_start_time;
+	double		_start_price{ 0 };
+	bool		_is_first_tick{ true };
+	double		_max_cancel_time{ 3 }; //最大撤单次数，如果超过这个次数仍然未撤单，则说明是错单
+	double		_total_money{ -1 }; // 总资本
+	double		_is_t0{ false }; // 对于转债等来说，这个需要是true，股票为false
+	faster_hashmap< uint32_t, uint32_t > _cancel_map{};
 
 	WtOrdMon	_orders_mon;
-	uint32_t	_cancel_cnt;
+	//uint32_t	_cancel_cnt;
 	uint32_t	_cancel_times;
-
+	bool		_is_cancel_unmanaged_order{ true };
 	uint64_t	_last_place_time;
 	uint64_t	_last_tick_time;
 	bool		_is_clear;
-	bool		_is_target_pos;
-	bool		_is_KC {false};			// 是否是科创板股票
+	TargetMode  _target_mode{ TargetMode::stocks };
+	bool		_is_KC{ false };			// 是否是科创板股票
+	double		_min_hands{ 0 };
+	bool		_is_ready{ false };
+	bool		_is_total_money_ready{ false };
+	std::map<std::string, double> _market_value{};
+	uint64_t _now;
+
 public:
-	inline int round_hands(double hands)
+	inline int round_hands(double hands, double min_hands)
 	{
-		return (int)((hands + 50) / 100) * 100;
+		return (int)((hands + min_hands / 2) / min_hands) * min_hands;
+	}
+
+	inline double get_minOrderQty(std::string stdCode)
+	{
+		int code = std::stoi(StrUtil::split(stdCode, ".")[2]);
+		bool is_KC = false;
+		if (code >= 688000)
+		{
+			is_KC = true;
+		}
+		WTSCommodityInfo* comm_info = _ctx->getCommodityInfo(stdCode.c_str());
+		double min_order = 1.0;
+		if (strcmp(comm_info->getProduct(), cbondStr) == 0)
+			min_order = 10.0;
+		else if (strcmp(comm_info->getProduct(), stockStr) == 0)
+			if (is_KC)
+				min_order = 200.0;
+			else
+				min_order = 100.0;
+		if (comm_info)
+			comm_info->release();
+		return min_order;
 	}
 };
 

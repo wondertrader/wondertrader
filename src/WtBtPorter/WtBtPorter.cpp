@@ -164,9 +164,9 @@ void write_log(WtUInt32 level, const char* message, const char* catName)
 	}
 }
 
-CtxHandler init_cta_mocker(const char* name, int slippage/* = 0*/, bool hook/* = false*/, bool persistData/* = true*/, bool bIncremental/* = false*/)
+CtxHandler init_cta_mocker(const char* name, int slippage/* = 0*/, bool hook/* = false*/, bool persistData/* = true*/, bool bIncremental/* = false*/, bool bRatioSlp/* = false*/)
 {
-	return getRunner().initCtaMocker(name, slippage, hook, persistData, bIncremental);
+	return getRunner().initCtaMocker(name, slippage, hook, persistData, bIncremental, bRatioSlp);
 }
 
 CtxHandler init_hft_mocker(const char* name, bool hook/* = false*/)
@@ -174,9 +174,9 @@ CtxHandler init_hft_mocker(const char* name, bool hook/* = false*/)
 	return getRunner().initHftMocker(name, hook);
 }
 
-CtxHandler init_sel_mocker(const char* name, WtUInt32 date, WtUInt32 time, const char* period, const char* trdtpl/* = "CHINA"*/, const char* session/* = "TRADING"*/, int slippage/* = 0*/)
+CtxHandler init_sel_mocker(const char* name, WtUInt32 date, WtUInt32 time, const char* period, const char* trdtpl/* = "CHINA"*/, const char* session/* = "TRADING"*/, int slippage/* = 0*/, bool bRatioSlp/* = false*/)
 {
-	return getRunner().initSelMocker(name, date, time, period, trdtpl, session, slippage);
+	return getRunner().initSelMocker(name, date, time, period, trdtpl, session, slippage, bRatioSlp);
 }
 
 #pragma region "CTA策略接口"
@@ -712,6 +712,115 @@ void sel_sub_ticks(CtxHandler cHandle, const char* stdCode)
 		return;
 
 	ctx->stra_sub_ticks(stdCode);
+}
+
+double sel_get_day_price(const char* stdCode, int flag)
+{
+	return getRunner().replayer().get_day_price(stdCode, flag);
+}
+
+WtUInt32 sel_get_tdate()
+{
+	return getRunner().replayer().get_trading_date();
+}
+
+double sel_get_fund_data(CtxHandler cHandle, int flag)
+{
+	SelMocker* ctx = getRunner().sel_mocker();
+	if (ctx == NULL)
+		return 0;
+
+	return ctx->stra_get_fund_data(flag);
+}
+
+double sel_get_position_profit(CtxHandler cHandle, const char* stdCode)
+{
+	SelMocker* ctx = getRunner().sel_mocker();
+	if (ctx == NULL)
+		return 0;
+
+	return ctx->stra_get_position_profit(stdCode);
+}
+
+WtUInt64 sel_get_detail_entertime(CtxHandler cHandle, const char* stdCode, const char* openTag)
+{
+	SelMocker* ctx = getRunner().sel_mocker();
+	if (ctx == NULL)
+		return 0;
+
+	return ctx->stra_get_detail_entertime(stdCode, openTag);
+}
+
+double sel_get_detail_cost(CtxHandler cHandle, const char* stdCode, const char* openTag)
+{
+	SelMocker* ctx = getRunner().sel_mocker();
+	if (ctx == NULL)
+		return 0;
+
+	return ctx->stra_get_detail_cost(stdCode, openTag);
+}
+
+double sel_get_detail_profit(CtxHandler cHandle, const char* stdCode, const char* openTag, int flag)
+{
+	SelMocker* ctx = getRunner().sel_mocker();
+	if (ctx == NULL)
+		return 0;
+
+	return ctx->stra_get_detail_profit(stdCode, openTag, flag);
+}
+
+double sel_get_position_avgpx(CtxHandler cHandle, const char* stdCode)
+{
+	SelMocker* ctx = getRunner().sel_mocker();
+	if (ctx == NULL)
+		return 0;
+
+	return ctx->stra_get_position_avgpx(stdCode);
+}
+
+WtUInt64 sel_get_first_entertime(CtxHandler cHandle, const char* stdCode)
+{
+	SelMocker* ctx = getRunner().sel_mocker();
+	if (ctx == NULL)
+		return 0;
+
+	return ctx->stra_get_first_entertime(stdCode);
+}
+
+WtUInt64 sel_get_last_entertime(CtxHandler cHandle, const char* stdCode)
+{
+	SelMocker* ctx = getRunner().sel_mocker();
+	if (ctx == NULL)
+		return 0;
+
+	return ctx->stra_get_last_entertime(stdCode);
+}
+
+WtUInt64 sel_get_last_exittime(CtxHandler cHandle, const char* stdCode)
+{
+	SelMocker* ctx = getRunner().sel_mocker();
+	if (ctx == NULL)
+		return 0;
+
+	return ctx->stra_get_last_exittime(stdCode);
+}
+
+double sel_get_last_enterprice(CtxHandler cHandle, const char* stdCode)
+{
+	SelMocker* ctx = getRunner().sel_mocker();
+	if (ctx == NULL)
+		return 0;
+
+	return ctx->stra_get_last_enterprice(stdCode);
+}
+
+WtString sel_get_last_entertag(CtxHandler cHandle, const char* stdCode)
+{
+	SelMocker* ctx = getRunner().sel_mocker();
+	if (ctx == NULL)
+		return 0;
+
+	return ctx->stra_get_last_entertag(stdCode);
 }
 
 #pragma endregion "SEL策略接口"

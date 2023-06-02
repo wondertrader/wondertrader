@@ -25,6 +25,8 @@ public:
 
 	virtual ExecuteUnit* createDiffExeUnit(const char* name) override;
 
+	virtual ExecuteUnit* createArbiExeUnit(const char* name) override;
+
 	virtual bool deleteExeUnit(ExecuteUnit* unit) override;
 
 };

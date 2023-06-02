@@ -719,8 +719,9 @@ WtUInt32 read_dmb_ticks(WtString tickFile, FuncGetTicksCallback cb, FuncCountDat
 	return (WtUInt32)tcnt;
 }
 
+
 WtUInt32 resample_bars(WtString barFile, FuncGetBarsCallback cb, FuncCountDataCallback cbCnt, WtUInt64 fromTime, WtUInt64 endTime,
-	WtString period, WtUInt32 times, WtString sessInfo, FuncLogCallback cbLogger /* = NULL */)
+	WtString period, WtUInt32 times, WtString sessInfo, FuncLogCallback cbLogger /* = NULL */, bool bAlignSec/* = false*/)
 {
 	WTSKlinePeriod kp;
 	if(wt_stricmp(period, "m1") == 0)
@@ -815,40 +816,17 @@ WtUInt32 resample_bars(WtString barFile, FuncGetBarsCallback cb, FuncCountDataCa
 		return 0;
 	}
 
-	HisKlineBlock* tBlock = (HisKlineBlock*)buffer.c_str();
-	if (tBlock->_version == BLOCK_VERSION_CMP)
-	{
-		//压缩版本,要重新检查文件大小
-		HisKlineBlockV2* kBlockV2 = (HisKlineBlockV2*)buffer.c_str();
+	proc_block_data(buffer, true, false);
 
-		if (buffer.size() != (sizeof(HisKlineBlockV2) + kBlockV2->_size))
-		{
-			if (cbLogger)
-				cbLogger(StrUtil::printf("文件%s头部校验失败", barFile).c_str());
-			return 0;
-		}
-
-		//需要解压
-		if (cbLogger)
-			cbLogger(StrUtil::printf("正在解压数据...").c_str());
-		std::string buf = WTSCmpHelper::uncompress_data(kBlockV2->_data, (uint32_t)kBlockV2->_size);
-
-		//将原来的buffer只保留一个头部,并将所有tick数据追加到尾部
-		buffer.resize(sizeof(HisTickBlock));
-		buffer.append(buf);
-		kBlockV2 = (HisKlineBlockV2*)buffer.c_str();
-		kBlockV2->_version = BLOCK_VERSION_RAW;
-	}
-
-	HisKlineBlock* klineBlk = (HisKlineBlock*)buffer.c_str();
-
-	auto kcnt = (buffer.size() - sizeof(HisKlineBlock)) / sizeof(WTSBarStruct);
+	auto kcnt = buffer.size() / sizeof(WTSBarStruct);
 	if (kcnt <= 0)
 	{
 		if (cbLogger)
 			cbLogger(StrUtil::printf("%s数据为空", barFile).c_str());
 		return 0;
 	}
+
+	WTSBarStruct* bars = (WTSBarStruct*)buffer.c_str();
 
 	//确定第一条K线的位置
 	WTSBarStruct bar;
@@ -860,7 +838,7 @@ WtUInt32 resample_bars(WtString barFile, FuncGetBarsCallback cb, FuncCountDataCa
 		bar.time = fromTime % 100000000 + ((fromTime / 100000000) - 1990) * 100000000;
 	}
 
-	WTSBarStruct* pBar = std::lower_bound(klineBlk->_bars, klineBlk->_bars + (kcnt - 1), bar, [isDay](const WTSBarStruct& a, const WTSBarStruct& b) {
+	WTSBarStruct* pBar = std::lower_bound(bars, bars + (kcnt - 1), bar, [isDay](const WTSBarStruct& a, const WTSBarStruct& b) {
 		if (isDay)
 			return a.date < b.date;
 		else
@@ -868,7 +846,7 @@ WtUInt32 resample_bars(WtString barFile, FuncGetBarsCallback cb, FuncCountDataCa
 	});
 
 
-	uint32_t sIdx = pBar - klineBlk->_bars;
+	uint32_t sIdx = pBar - bars;
 	if((isDay && pBar->date < bar.date) || (!isDay && pBar->time < bar.time))
 	{
 		//如果返回的K线的时间小于要查找的时间，说明没有符合条件的数据
@@ -890,7 +868,7 @@ WtUInt32 resample_bars(WtString barFile, FuncGetBarsCallback cb, FuncCountDataCa
 
 		bar.time = endTime % 100000000 + ((endTime / 100000000) - 1990) * 100000000;
 	}
-	pBar = std::lower_bound(klineBlk->_bars, klineBlk->_bars + (kcnt - 1), bar, [isDay](const WTSBarStruct& a, const WTSBarStruct& b) {
+	pBar = std::lower_bound(bars, bars + (kcnt - 1), bar, [isDay](const WTSBarStruct& a, const WTSBarStruct& b) {
 		if (isDay)
 			return a.date < b.date;
 		else
@@ -901,7 +879,7 @@ WtUInt32 resample_bars(WtString barFile, FuncGetBarsCallback cb, FuncCountDataCa
 	if (pBar == NULL)
 		eIdx = kcnt - 1;
 	else
-		eIdx = pBar - klineBlk->_bars;
+		eIdx = pBar - bars;
 
 	if (eIdx != 0 && ((isDay && pBar->date > bar.date) || (!isDay && pBar->time > bar.time)))
 	{
@@ -910,9 +888,9 @@ WtUInt32 resample_bars(WtString barFile, FuncGetBarsCallback cb, FuncCountDataCa
 	}
 
 	uint32_t hitCnt = eIdx - sIdx + 1;
-	WTSKlineSlice* slice = WTSKlineSlice::create("", kp, 1, &klineBlk->_bars[sIdx], hitCnt);
+	WTSKlineSlice* slice = WTSKlineSlice::create("", kp, 1, &bars[sIdx], hitCnt);
 	WTSDataFactory fact;
-	WTSKlineData* kline = fact.extractKlineData(slice, kp, times, sInfo);
+	WTSKlineData* kline = fact.extractKlineData(slice, kp, times, sInfo, true, bAlignSec);
 	if(kline == NULL)
 	{
 		if (cbLogger)

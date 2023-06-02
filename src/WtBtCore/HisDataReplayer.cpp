@@ -155,6 +155,8 @@ HisDataReplayer::HisDataReplayer()
 	, _end_time(0)
 	, _bt_loader(NULL)
 	, _min_period("d")
+	, _cache_clear_days(0)
+	, _align_by_section(false)
 {
 }
 
@@ -205,14 +207,23 @@ bool HisDataReplayer::init(WTSVariant* cfg, EventNotifier* notifier /* = NULL */
 
 	if(_end_time == 0)
 		_end_time = cfg->getUInt64("etime");
-
 	WTSLogger::info("Backtest time range is set to be [{},{}] via config", _begin_time, _end_time);
+
+	_cache_clear_days = cfg->getUInt32("cache_clear_days");
+	WTSLogger::info("Unused cache data will be cleard in {} days", _cache_clear_days);
+	
 
 	_tick_enabled = cfg->getBoolean("tick");
 	WTSLogger::info("Tick data replaying is {}", _tick_enabled ? "enabled" : "disabled");
 
 	_adjust_flag = cfg->getUInt32("adjust_flag");
 	WTSLogger::info("adjust_flag is {}", _adjust_flag);
+
+	_align_by_section = cfg->getBoolean("align_by_section");
+	WTSLogger::info("Resampled bars will be aligned by section: {}", _align_by_section ? "yes" : " no");
+
+	_nosim_if_notrade = cfg->getBoolean("dont_simtick_if_notrade");
+	WTSLogger::info("nosim_if_notrade is {}", _nosim_if_notrade);
 
 	//基础数据文件
 	WTSVariant* cfgBF = cfg->get("basefiles");
@@ -738,6 +749,7 @@ void HisDataReplayer::run_by_ticks(bool bNeedDump /* = false */)
 		{
 			WTSLogger::info("Start to replay tick data of {}...", _cur_tdate);
 			_listener->handle_session_begin(_cur_tdate);
+			check_cache_days();
 			replayHftDatasByDay(_cur_tdate);
 			_listener->handle_session_end(_cur_tdate);
 		}
@@ -823,12 +835,13 @@ void HisDataReplayer::run_by_bars(bool bNeedDump /* = false */)
 					 */
 					uint64_t beginTimeofDay = _bd_mgr.getBoundaryTime(sInfo->id(), nextTDate, true, true);
 
-					_cur_date = beginTimeofDay / 10000;
+					_cur_date = (uint32_t)(beginTimeofDay / 10000);
 					_cur_time = beginTimeofDay % 10000;
 					_cur_secs = 0;
 
 					WTSLogger::debug("Tradingday {} begins", nextTDate);
 					_listener->handle_session_begin(nextTDate);
+					check_cache_days();
 					_opened_tdate = nextTDate;
 					_cur_tdate = nextTDate;
 				}
@@ -1035,6 +1048,7 @@ void HisDataReplayer::run_by_tasks(bool bNeedDump /* = false */)
 					_cur_tdate = newTDate;
 					if (_listener)
 						_listener->handle_session_begin(newTDate);
+					check_cache_days();
 					if (_listener)
 						_listener->handle_session_end(newTDate);
 				}
@@ -1047,6 +1061,7 @@ void HisDataReplayer::run_by_tasks(bool bNeedDump /* = false */)
 				bool bEndSession = sInfo->offsetTime(curTime, true) >= sInfo->getCloseTime(true);
 				if (_listener)
 					_listener->handle_session_begin(_cur_tdate);
+				check_cache_days();
 				onMinuteEnd(curDate, curTime, bEndSession ? _cur_tdate : preTDate);
 				if (_listener)
 					_listener->handle_session_end(_cur_tdate);
@@ -1077,12 +1092,14 @@ void HisDataReplayer::run_by_tasks(bool bNeedDump /* = false */)
 		if (_listener)
 			_listener->handle_session_begin(_cur_tdate);
 
+		check_cache_days();
+
 		for (; !_terminated;)
 		{
 			//要考虑到跨日的情况
 			uint32_t mins = sInfo->timeToMinutes(_cur_time);
 			//如果一开始不能整除,则直接修正一下
-			if (mins % _task->_time != 0)
+			if (mins % _task->_time != 0 && mins < sInfo->getTradingMins())
 			{
 				mins = mins / _task->_time + _task->_time;
 				_cur_time = sInfo->minuteToTime(mins);
@@ -1091,6 +1108,20 @@ void HisDataReplayer::run_by_tasks(bool bNeedDump /* = false */)
 			bool bNewTDate = false;
 			if (mins < sInfo->getTradingMins())
 			{
+				/*
+				 *	By Wesley @ 2022.06.23
+				 *	tick数据模拟的机制完善
+				 *	主要将所有当前应该闭合的bar，按照开高低收的顺序同步模拟tick
+				 *	但是这样也是有漏洞的，那就是如果K线周期不统一，如m1和m5同时订阅
+				 *	会出现m5在最后一分钟才模拟tick的问题
+				 *	不过，真的要精确回测，请使用逐tick回测
+				 *	目前这个方案已经算是比较好的了
+				 */
+				for (int i = 0; i < 4; i++)
+				{
+					simTicks(_cur_date, _cur_time, _cur_tdate, i);
+				}
+
 				onMinuteEnd(_cur_date, _cur_time, 0);
 			}
 			else
@@ -1099,6 +1130,19 @@ void HisDataReplayer::run_by_tasks(bool bNeedDump /* = false */)
 				mins = sInfo->getTradingMins();
 				_cur_time = sInfo->getCloseTime();
 
+				/*
+				 *	By Wesley @ 2022.06.23
+				 *	tick数据模拟的机制完善
+				 *	主要将所有当前应该闭合的bar，按照开高低收的顺序同步模拟tick
+				 *	但是这样也是有漏洞的，那就是如果K线周期不统一，如m1和m5同时订阅
+				 *	会出现m5在最后一分钟才模拟tick的问题
+				 *	不过，真的要精确回测，请使用逐tick回测
+				 *	目前这个方案已经算是比较好的了
+				 */
+				for (int i = 0; i < 4; i++)
+				{
+					simTicks(_cur_date, _cur_time, _cur_tdate, i);
+				}
 				onMinuteEnd(_cur_date, _cur_time, _cur_tdate);
 
 				if (_listener)
@@ -1132,10 +1176,15 @@ void HisDataReplayer::run_by_tasks(bool bNeedDump /* = false */)
 
 				if (_listener)
 					_listener->handle_session_begin(nextTDate);
+
+				check_cache_days();
 			}
 			else
 			{
 				mins += _task->_time;
+				if (mins > sInfo->getTradingMins())
+					mins = sInfo->getTradingMins();
+
 				uint32_t newTime = sInfo->minuteToTime(mins);
 				bool bNewDay = newTime < _cur_time;
 				if (bNewDay)
@@ -1186,8 +1235,14 @@ void HisDataReplayer::simTicks(uint32_t uDate, uint32_t uTime, uint32_t endTDate
 				{
 					WTSBarStruct& nextBar = barsList->_bars[barsList->_cursor];
 
+					/*
+					 *	By Wesley @ 2023.05.05
+					 *	如果没有禁止0成交模拟tick，或者K线成交量不为0，就可以模拟tick
+					 */
+					bool bCanSim = !_nosim_if_notrade || !decimal::eq(nextBar.vol, 0.0);
+
 					uint64_t barTime = 199000000000 + nextBar.time;
-					if (barTime == nowTime)
+					if (barTime == nowTime && bCanSim)
 					{
 						const std::string& ticker = _ticker_keys[barsList->_code];
 						if (ticker == it->first)
@@ -1327,8 +1382,14 @@ void HisDataReplayer::simTickWithUnsubBars(uint64_t stime, uint64_t nowTime, uin
 				{
 					WTSBarStruct& nextBar = barsList->_bars[barsList->_cursor];
 
+					/*
+					 *	By Wesley @ 2023.05.05
+					 *	如果没有禁止0成交模拟tick，或者K线成交量不为0，就可以模拟tick
+					 */
+					bool bCanSim = !_nosim_if_notrade || !decimal::eq(nextBar.vol, 0.0);
+
 					uint64_t barTime = 199000000000 + nextBar.time;
-					if (barTime == nowTime)
+					if (barTime == nowTime && bCanSim)
 					{
 						//开高低收
 						WTSTickStruct& curTS = _day_cache[barsList->_code];
@@ -1509,11 +1570,29 @@ uint64_t HisDataReplayer::getNextTickTime(uint32_t curTDate, uint64_t stime /* =
 		if (tickList._cursor >= tickList._count)
 			continue;
 
-		const WTSTickStruct& nextTick = tickList._items[tickList._cursor - 1];
+		uint32_t nextActionTime = tickList._items[tickList._cursor - 1].action_time;
 		//By Wesley @ 2022.03.06
 		//检查一下时间戳，如果不是交易时间的，就不回放了
-		if(!sInfo->isInTradingTime(nextTick.action_time/100000))
+		uint32_t nextMinTime = nextActionTime / 100000;
+		/*
+		 *	By Wesley @ 2023.05.05
+		 *	这里做了一个调整，主要是针对小节中间出现的tick数据
+		 *	部分数据源可能会落地小节中间的数据，导致时间戳不在交易时间
+		 *	因此先判断时间戳是否超出收盘时间，如果超出也不回放tick了
+		 *	然后如果tick数据处于小节之间，但是不在交易时间，则指针一直步进
+		 *	这次修改主要针对Issue#104
+		 */
+		//超过收盘时间就跳过了
+		if(sInfo->offsetTime(nextMinTime, false) > sInfo->getCloseTime(true))
 			continue;
+
+		while (!sInfo->isInTradingTime(nextMinTime) && tickList._cursor>tickList._items.size())
+		{
+			tickList._cursor++;
+			nextActionTime = tickList._items[tickList._cursor - 1].action_time;
+		}
+
+		const WTSTickStruct& nextTick = tickList._items[tickList._cursor - 1];
 		uint64_t lastTime = (uint64_t)nextTick.action_date * 1000000000 + nextTick.action_time;
 
 		nextTime = min(lastTime, nextTime);
@@ -1917,6 +1996,7 @@ void HisDataReplayer::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTD
 	for (auto it = _bars_cache.begin(); it != _bars_cache.end(); it++)
 	{
 		BarsListPtr& barsList = (BarsListPtr&)it->second;
+		barsList->mark();
 		double factor = 1.0;// barsList->_factor;
 		if (barsList->_period != KP_DAY)
 		{
@@ -2552,7 +2632,7 @@ bool HisDataReplayer::checkAllTicks(uint32_t uDate)
 	bool bHasTick = false;
 	for (auto& v : _tick_sub_map)
 	{
-		bHasTick = bHasTick || checkTicks(v.first.c_str(), uDate);
+		bHasTick = checkTicks(v.first.c_str(), uDate) || bHasTick;
 	}
 
 	return bHasTick;
@@ -2561,35 +2641,40 @@ bool HisDataReplayer::checkAllTicks(uint32_t uDate)
 bool HisDataReplayer::checkOrderDetails(const char* stdCode, uint32_t uDate)
 {
 	bool bNeedCache = false;
-	auto it = _ticks_cache.find(stdCode);
-	if (it == _ticks_cache.end())
+	auto it = _orddtl_cache.find(stdCode);
+	if (it == _orddtl_cache.end())
 		bNeedCache = true;
 	else
 	{
-		auto& tickList = it->second;
-		if (tickList._date != uDate)
+		auto& dataList = it->second;
+		if (dataList._date != uDate)
 			bNeedCache = true;
 	}
 
 
 	if (bNeedCache)
 	{
-		bool hasTicks = false;
-		if(NULL != _bt_loader)
+		bool hasData = false;
+		if (_mode == "csv")
 		{
-			hasTicks = cacheRawTicksFromLoader(stdCode, stdCode, uDate);
-		}
-		else if (_mode == "csv")
-		{
-			hasTicks = cacheRawTicksFromCSV(stdCode, stdCode, uDate);
+			WTSLogger::error("Cannot use stock level2 data in csv mode!");
+			return false;
 		}
 		else
 		{
-			hasTicks = cacheRawTicksFromBin(stdCode, stdCode, uDate);
+			hasData = cacheRawOrdDtlFromBin(stdCode, stdCode, uDate);
 		}
 
-		if (!hasTicks)
+		if (!hasData)
+		{
+			auto& dataList = _trans_cache[stdCode];
+			dataList._items.resize(0);
+			dataList._cursor = UINT_MAX;
+			dataList._code = stdCode;
+			dataList._date = uDate;
+			dataList._count = 0;
 			return false;
+		}
 	}
 
 	return true;
@@ -2598,35 +2683,40 @@ bool HisDataReplayer::checkOrderDetails(const char* stdCode, uint32_t uDate)
 bool HisDataReplayer::checkOrderQueues(const char* stdCode, uint32_t uDate)
 {
 	bool bNeedCache = false;
-	auto it = _ticks_cache.find(stdCode);
-	if (it == _ticks_cache.end())
+	auto it = _ordque_cache.find(stdCode);
+	if (it == _ordque_cache.end())
 		bNeedCache = true;
 	else
 	{
-		auto& tickList = it->second;
-		if (tickList._date != uDate)
+		auto& dataList = it->second;
+		if (dataList._date != uDate)
 			bNeedCache = true;
 	}
 
 
 	if (bNeedCache)
 	{
-		bool hasTicks = false;
-		if (NULL != _bt_loader)
+		bool hasData = false;
+		if (_mode == "csv")
 		{
-			hasTicks = cacheRawTicksFromLoader(stdCode, stdCode, uDate);
-		}
-		else if (_mode == "csv")
-		{
-			hasTicks = cacheRawTicksFromCSV(stdCode, stdCode, uDate);
+			WTSLogger::error("Cannot use stock level2 data in csv mode!");
+			return false;
 		}
 		else
 		{
-			hasTicks = cacheRawTicksFromBin(stdCode, stdCode, uDate);
+			hasData = cacheRawOrdQueFromBin(stdCode, stdCode, uDate);
 		}
 
-		if (!hasTicks)
+		if (!hasData)
+		{
+			auto& dataList = _trans_cache[stdCode];
+			dataList._items.resize(0);
+			dataList._cursor = UINT_MAX;
+			dataList._code = stdCode;
+			dataList._date = uDate;
+			dataList._count = 0;
 			return false;
+		}
 	}
 
 	return true;
@@ -2635,31 +2725,40 @@ bool HisDataReplayer::checkOrderQueues(const char* stdCode, uint32_t uDate)
 bool HisDataReplayer::checkTransactions(const char* stdCode, uint32_t uDate)
 {
 	bool bNeedCache = false;
-	auto it = _ticks_cache.find(stdCode);
-	if (it == _ticks_cache.end())
+	auto it = _trans_cache.find(stdCode);
+	if (it == _trans_cache.end())
 		bNeedCache = true;
 	else
 	{
-		auto& tickList = it->second;
-		if (tickList._date != uDate)
+		auto& dataList = it->second;
+		if (dataList._date != uDate)
 			bNeedCache = true;
 	}
 
 
 	if (bNeedCache)
 	{
-		bool hasTicks = false;
+		bool hasData = false;
 		if (_mode == "csv")
 		{
-			hasTicks = cacheRawTicksFromCSV(stdCode, stdCode, uDate);
+			WTSLogger::error("Cannot use stock level2 data in csv mode!");
+			return false;
 		}
 		else
 		{
-			hasTicks = cacheRawTicksFromBin(stdCode, stdCode, uDate);
+			hasData = cacheRawTransFromBin(stdCode, stdCode, uDate);
 		}
 
-		if (!hasTicks)
+		if (!hasData)
+		{
+			auto& dataList = _trans_cache[stdCode];
+			dataList._items.resize(0);
+			dataList._cursor = UINT_MAX;
+			dataList._code = stdCode;
+			dataList._date = uDate;
+			dataList._count = 0;
 			return false;
+		}
 	}
 
 	return true;
@@ -2763,7 +2862,7 @@ std::string HisDataReplayer::get_rawcode(const char* stdCode)
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, &_hot_mgr);
 	if(cInfo.hasRule())
 	{
-		std::string code = _hot_mgr.getRawCode(cInfo._exchg, cInfo._product, _cur_tdate);
+		std::string code = _hot_mgr.getCustomRawCode(cInfo._ruletag, cInfo.stdCommID(), _cur_tdate);
 		return CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
 	}
 
@@ -3158,14 +3257,7 @@ bool HisDataReplayer::cacheRawTicksFromBin(const std::string& key, const char* s
 	{
 		rawCode = _hot_mgr.getCustomRawCode(cInfo._ruletag, cInfo.stdCommID(), uDate);
 	}
-	//else if (cInfo.isHot())
-	//{
-	//	rawCode = _hot_mgr.getRawCode(cInfo._exchg, cInfo._product, uDate);
-	//}
-	//else if(cInfo.isSecond())
-	//{
-	//	rawCode = _hot_mgr.getSecondRawCode(cInfo._exchg, cInfo._product, uDate);
-	//}
+
 
 	std::string content;
 	bool bHit = false;
@@ -3174,15 +3266,6 @@ bool HisDataReplayer::cacheRawTicksFromBin(const std::string& key, const char* s
 	if(strlen(ruleTag) > 0)
 	{
 		const char* hot_flag = ruleTag;
-		//std::stringstream ss;
-		//ss << _base_dir << "his/ticks/" << cInfo._exchg << "/" << uDate << "/" << cInfo._product << hot_flag << ".dsb";
-		//filename = ss.str();
-		//if (StdFile::exists(filename.c_str()))
-		//	bHit = true;
-		/*
-		 *	By Wesley @ 2022.01.11
-		 *	这里将直接从文件读取，改成从HisDtMgr封装的接口加载
-		 */
 		std::string wrappCode = StrUtil::printf("%s_%s", cInfo._product, hot_flag);
 		bHit = _his_dt_mgr.load_raw_ticks(cInfo._exchg, wrappCode.c_str(), uDate, [&content](std::string& data) {
 			content.swap(data);
@@ -3192,9 +3275,6 @@ bool HisDataReplayer::cacheRawTicksFromBin(const std::string& key, const char* s
 	//如果没有找到，则读取分月合约
 	if (!bHit)
 	{
-		//std::stringstream ss;
-		//ss << _base_dir << "his/ticks/" << cInfo._exchg << "/" << uDate << "/" << rawCode << ".dsb";
-		//filename = ss.str();
 		/*
 		 *	By Wesley @ 2022.01.11
 		 *	这里将直接从文件读取，改成从HisDtMgr封装的接口加载
@@ -3224,28 +3304,116 @@ bool HisDataReplayer::cacheRawTicksFromBin(const std::string& key, const char* s
 	return true;
 }
 
+bool HisDataReplayer::cacheRawOrdDtlFromBin(const std::string& key, const char* stdCode, uint32_t uDate)
+{
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, &_hot_mgr);
+
+	std::string content;
+	bool bHit = _his_dt_mgr.load_raw_orddtl(cInfo._exchg, cInfo._code, uDate, [&content](std::string& data) {
+		content.swap(data);
+	});
+
+	if (!bHit)
+	{
+		WTSLogger::warn("No order detail data of {} on {} found", stdCode, uDate);
+		return false;
+	}
+
+	auto& dataList = _orddtl_cache[key];
+	uint32_t dataCnt = 0;
+	dataCnt = content.size() / sizeof(WTSOrdDtlStruct);
+	dataList._items.resize(dataCnt);
+	memcpy(dataList._items.data(), content.data(), content.size());
+
+	dataList._cursor = UINT_MAX;
+	dataList._code = stdCode;
+	dataList._date = uDate;
+	dataList._count = dataCnt;
+
+	return true;
+}
+
+bool HisDataReplayer::cacheRawOrdQueFromBin(const std::string& key, const char* stdCode, uint32_t uDate)
+{
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, &_hot_mgr);
+
+	std::string content;
+	bool bHit = _his_dt_mgr.load_raw_ordque(cInfo._exchg, cInfo._code, uDate, [&content](std::string& data) {
+		content.swap(data);
+	});
+
+	if (!bHit)
+	{
+		WTSLogger::warn("No order queue data of {} on {} found", stdCode, uDate);
+		return false;
+	}
+
+	auto& dataList = _ordque_cache[key];
+	uint32_t dataCnt = 0;
+	dataCnt = content.size() / sizeof(WTSOrdQueStruct);
+	dataList._items.resize(dataCnt);
+	memcpy(dataList._items.data(), content.data(), content.size());
+
+	dataList._cursor = UINT_MAX;
+	dataList._code = stdCode;
+	dataList._date = uDate;
+	dataList._count = dataCnt;
+
+	return true;
+}
+
+bool HisDataReplayer::cacheRawTransFromBin(const std::string& key, const char* stdCode, uint32_t uDate)
+{
+	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, &_hot_mgr);
+
+	std::string content;
+	bool bHit = _his_dt_mgr.load_raw_trans(cInfo._exchg, cInfo._code, uDate, [&content](std::string& data) {
+		content.swap(data);
+	});
+
+	if (!bHit)
+	{
+		WTSLogger::warn("No transaction data of {} on {} found", stdCode, uDate);
+		return false;
+	}
+
+	auto& dataList = _trans_cache[key];
+	uint32_t dataCnt = 0;
+	dataCnt = content.size() / sizeof(WTSTransStruct);
+	dataList._items.resize(dataCnt);
+	memcpy(dataList._items.data(), content.data(), content.size());
+
+	dataList._cursor = UINT_MAX;
+	dataList._code = stdCode;
+	dataList._date = uDate;
+	dataList._count = dataCnt;
+
+	return true;
+}
+
 bool HisDataReplayer::cacheRawTicksFromLoader(const std::string& key, const char* stdCode, uint32_t uDate)
 {
 	if (NULL == _bt_loader)
 		return false;
 
-	auto& ticksList = _ticks_cache[key];
-	ticksList._cursor = UINT_MAX;
-	ticksList._code = stdCode;
-	ticksList._date = uDate;
-	ticksList._count = 0;
+	auto& dataList = _ticks_cache[key];
+	dataList._cursor = UINT_MAX;
+	dataList._code = stdCode;
+	dataList._date = uDate;
+	dataList._count = 0;
 
-	bool bSucc = _bt_loader->loadRawHisTicks(&ticksList, stdCode, uDate, [](void* obj, WTSTickStruct* firstTick, uint32_t count) {
+	bool bSucc = _bt_loader->loadRawHisTicks(&dataList, stdCode, uDate, [](void* obj, WTSTickStruct* firstItem, uint32_t count) {
 		HftDataList<WTSTickStruct>* ticks = (HftDataList<WTSTickStruct>*)obj;
 		ticks->_items.resize(count);
 		ticks->_count = count;
-		memcpy(ticks->_items.data(), firstTick, sizeof(WTSTickStruct)*count);
+		memcpy(ticks->_items.data(), firstItem, sizeof(WTSTickStruct)*count);
 	});
 
 	if (!bSucc)
 		return false;
 
-	WTSLogger::info("{} items of back tick data of {} on {} loaded via extended loader", ticksList._count, stdCode, uDate);
+	if (dataList._count > 0)
+		WTSLogger::info("{} items of back tick data of {} on {} loaded via extended loader", dataList._count, stdCode, uDate);
 
 	return true;
 }
@@ -3287,75 +3455,83 @@ bool HisDataReplayer::cacheRawTicksFromCSV(const std::string& key, const char* s
 	}
 	else
 	{
+		WTSLogger::error("Back tick data file {} not exists", filename.c_str());
+		WTSLogger::warn("If you want to use tick data in csv mode, you can use wtpy.WtDataHelper.store_ticks to generate dsb file", filename.c_str());
+		return false;
+
+		/*
+		 *	By Wesley @ 2023.05.18
+		 *	回测的tick数据不再支持从csv读取，因为tick数据维度更多，有处理csv的时间，直接生成dsb了
+		 */
 		//如果没有格式化的历史数据文件, 则从csv加载
-		std::stringstream ss;
-		ss << _base_dir << "csv/ticks/" << stdCode << "_tick_" << uDate << ".csv";
-		std::string csvfile = ss.str();
+		//std::stringstream ss;
+		//ss << _base_dir << "csv/ticks/" << stdCode << "_tick_" << uDate << ".csv";
+		//std::string csvfile = ss.str();
 
-		if (!StdFile::exists(csvfile.c_str()))
-		{
-			WTSLogger::error("Back tick data file {} not exists", csvfile.c_str());
-			return false;
-		}
+		//if (!StdFile::exists(csvfile.c_str()))
+		//{
+		//	WTSLogger::error("Back tick data file {} not exists", csvfile.c_str());
+		//	return false;
+		//}
 
-		std::ifstream ifs;
-		ifs.open(csvfile.c_str());
+		//std::ifstream ifs;
+		//ifs.open(csvfile.c_str());
 
-		WTSLogger::info("Reading data from {}...", csvfile.c_str());
+		//WTSLogger::info("Reading data from {}...", csvfile.c_str());
 
-		char buffer[1024];
-		bool headerskipped = false;
-		auto& tickList = _ticks_cache[key];
-		tickList._code = stdCode;
-		tickList._date = uDate;
-		while (!ifs.eof())
-		{
-			ifs.getline(buffer, 1024);
-			if (strlen(buffer) == 0)
-				continue;
+		//char buffer[1024];
+		//bool headerskipped = false;
+		//auto& tickList = _ticks_cache[key];
+		//tickList._code = stdCode;
+		//tickList._date = uDate;
+		//while (!ifs.eof())
+		//{
+		//	ifs.getline(buffer, 1024);
+		//	if (strlen(buffer) == 0)
+		//		continue;
 
-			//跳过头部
-			if (!headerskipped)
-			{
-				headerskipped = true;
-				continue;
-			}
+		//	//跳过头部
+		//	if (!headerskipped)
+		//	{
+		//		headerskipped = true;
+		//		continue;
+		//	}
 
-			//逐行读取
-			StringVector ay = StrUtil::split(buffer, ",");
-			WTSTickStruct ticks;
-			ticks.action_date = strToDate(ay[0].c_str());
-			ticks.action_time = strToTime(ay[1].c_str(), true) * 1000;
-			ticks.price = strtod(ay[2].c_str(), NULL);
-			ticks.volume = strtod(ay[3].c_str(), NULL);
-			tickList._items.emplace_back(ticks);
+		//	//逐行读取
+		//	StringVector ay = StrUtil::split(buffer, ",");
+		//	WTSTickStruct ticks;
+		//	ticks.action_date = strToDate(ay[0].c_str());
+		//	ticks.action_time = strToTime(ay[1].c_str(), true) * 1000;
+		//	ticks.price = strtod(ay[2].c_str(), NULL);
+		//	ticks.volume = strtod(ay[3].c_str(), NULL);
+		//	tickList._items.emplace_back(ticks);
 
-			if (tickList._items.size() % 1000 == 0)
-			{
-				WTSLogger::info("{} items of data loaded", tickList._items.size());
-			}
-		}
-		tickList._count = tickList._items.size();
-		ifs.close();
-		WTSLogger::info("Data file {} all loaded, totally {} items", csvfile.c_str(), tickList._items.size());
+		//	if (tickList._items.size() % 1000 == 0)
+		//	{
+		//		WTSLogger::info("{} items of data loaded", tickList._items.size());
+		//	}
+		//}
+		//tickList._count = tickList._items.size();
+		//ifs.close();
+		//WTSLogger::info("Data file {} all loaded, totally {} items", csvfile.c_str(), tickList._items.size());
 
 		/*
 		 *	By Wesley @ 2021.12.14
 		 *	这一段之前有bug，之前没有把文件头写到文件里，所以转储的dsb解析的时候会抛出异常
 		 */
-		std::string content;
-		content.resize(sizeof(HisTickBlockV2));
-		HisTickBlockV2 *pBlk = (HisTickBlockV2*)content.data();
-		strcpy(pBlk->_blk_flag, BLK_FLAG);
-		pBlk->_type = BT_HIS_Ticks;
-		pBlk->_version = BLOCK_VERSION_CMP_V2;
+		//std::string content;
+		//content.resize(sizeof(HisTickBlockV2));
+		//HisTickBlockV2 *pBlk = (HisTickBlockV2*)content.data();
+		//strcpy(pBlk->_blk_flag, BLK_FLAG);
+		//pBlk->_type = BT_HIS_Ticks;
+		//pBlk->_version = BLOCK_VERSION_CMP_V2;
 
-		std::string cmpData = WTSCmpHelper::compress_data(tickList._items.data(), sizeof(WTSTickStruct)*tickList._count);
-		pBlk->_size = cmpData.size();
-		content.append(cmpData);
+		//std::string cmpData = WTSCmpHelper::compress_data(tickList._items.data(), sizeof(WTSTickStruct)*tickList._count);
+		//pBlk->_size = cmpData.size();
+		//content.append(cmpData);
 
-		StdFile::write_file_content(filename.c_str(), content.c_str(), content.size());
-		WTSLogger::info("Ticks transfered to file {}", filename.c_str());
+		//StdFile::write_file_content(filename.c_str(), content.c_str(), content.size());
+		//WTSLogger::info("Ticks transfered to file {}", filename.c_str());
 	}
 
 	return true;
@@ -3618,10 +3794,10 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 			bs.high = reader.get_double("high");
 			bs.low = reader.get_double("low");
 			bs.close = reader.get_double("close");
-			bs.vol = reader.get_uint32("volume");
+			bs.vol = reader.get_double("volume");
 			bs.money = reader.get_double("turnover");
-			bs.hold = reader.get_uint32("open_interest");
-			bs.add = reader.get_int32("diff_interest");
+			bs.hold = reader.get_double("open_interest");
+			bs.add = reader.get_double("diff_interest");
 			bs.settle = reader.get_double("settle");
 			barsList->_bars.emplace_back(bs);
 
@@ -4372,4 +4548,34 @@ bool HisDataReplayer::cacheRawBarsFromBin(const std::string& key, const char* st
 
 	WTSLogger::info("{} items of back {} data of {} cached", realCnt, PERIOD_NAME[period], stdCode);
 	return true;
+}
+
+void HisDataReplayer::check_cache_days()
+{
+	if (_cache_clear_days == 0)
+		return;
+
+	std::set<std::string> to_clear;
+	std::string codes;
+	for(auto& v : _bars_cache)
+	{
+		if(v.first == _main_key)
+			continue;
+
+		BarsListPtr& barsList = (BarsListPtr&)v.second;
+		barsList->_untouch_days++;
+
+		if (barsList->_untouch_days >= _cache_clear_days)
+		{
+			to_clear.insert(v.first);
+			if (codes.size() > 0)
+				codes += ",";
+			codes += v.first;
+		}
+	}
+
+	for (const std::string& key : to_clear)
+		_bars_cache.erase(key);
+
+	WTSLogger::info("Cached bars of {} cleared due to outdated", codes);
 }

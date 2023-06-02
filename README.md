@@ -1,6 +1,6 @@
-![WonderTrader2.png](http://wt.f-sailors.cn/wt/logo_qcode_noad.jpg)
+![WonderTrader2.png](./images/logo_qcode_noad.jpg)
 <p align="center">
-    <img src ="https://img.shields.io/badge/version-0.9.7-blueviolet.svg"/>
+    <img src ="https://img.shields.io/badge/version-0.9.8-blueviolet.svg"/>
     <img src ="https://img.shields.io/badge/platform-windows|linux-yellow.svg"/>
     <img src ="https://img.shields.io/badge/build-passing-brightgreen"/>
     <img src ="https://img.shields.io/badge/license-MIT-orange"/>
@@ -61,7 +61,7 @@
     > - **组合盘运行监控**：可以查看实时运行日志、策略理论数据、交易通道数据等，并提供手动启停的入口。
     ![monitor.jpg](./images/monitor.png)
     > - **自动调度服务**：全自动调度定时任务（启动、停止、重启），支持按周设置任务重复，支持进程守护。
-    ![schedule.jpg](http://wt.f-sailors.cn/snapshots/schedule.jpg)
+    ![schedule.jpg](./images/schedule.jpg)
     > - **实时事件通知**：监控服务接收组合盘推送的事件，然后转发给监控端，提示给用户。
     > - **回测查看器**：使用WtBtSnooper模块，可以进行回测数据的查看分析。
     ![bt_summary.jpg](./images/bt_summary.png)

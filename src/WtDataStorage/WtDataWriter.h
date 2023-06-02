@@ -190,6 +190,12 @@ private:
 	bool			_disable_trans;
 	bool			_disable_ordque;
 	bool			_disable_orddtl;
+
+	/*
+	 *	by Wesley @ 2023.05.04
+	 *	分钟线价格模式，0-常规模式，1-将买卖价也记录下来，这个设计时只针对期权这种不活跃的品种
+	 */
+	uint32_t		_min_price_mode;
 	
 	std::map<std::string, uint32_t> _proc_date;
 

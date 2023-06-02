@@ -12,8 +12,8 @@
 
 extern WtBtRunner& getRunner();
 
-ExpCtaMocker::ExpCtaMocker(HisDataReplayer* replayer, const char* name, int32_t slippage /* = 0 */, bool persistData/* = true*/, EventNotifier* notifier /* = NULL */)
-	: CtaMocker(replayer, name, slippage, persistData, notifier)
+ExpCtaMocker::ExpCtaMocker(HisDataReplayer* replayer, const char* name, int32_t slippage /* = 0 */, bool persistData /* = true */, EventNotifier* notifier /* = NULL */, bool isRatioSlp /* = false */)
+	: CtaMocker(replayer, name, slippage, persistData, notifier, isRatioSlp)
 {
 }
 
@@ -54,7 +54,7 @@ void ExpCtaMocker::on_tick_updated(const char* stdCode, WTSTickData* newTick)
 	if (it == _tick_subs.end())
 		return;
 
-	ExpCtaMocker::on_tick_updated(stdCode, newTick);
+	CtaMocker::on_tick_updated(stdCode, newTick);
 	getRunner().ctx_on_tick(_context_id, stdCode, newTick, ET_CTA);
 }
 

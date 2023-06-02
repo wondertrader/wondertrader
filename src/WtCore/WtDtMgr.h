@@ -73,6 +73,8 @@ private:
 	IHisDataLoader*	_loader;
 	WtEngine*		_engine;
 
+	bool			_align_by_section;
+
 	faster_hashset<LongKey> _subed_basic_bars;
 	typedef WTSHashMap<LongKey> DataCacheMap;
 	DataCacheMap*	_bars_cache;	//KÏß»º´æ

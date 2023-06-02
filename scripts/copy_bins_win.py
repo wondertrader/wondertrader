@@ -10,7 +10,7 @@ from datetime import datetime
 所以如果要使用这个脚本，大概率要自己改一下
 '''
 
-subdirs = ['WtPorter','WtDtPorter','WtBtPorter']
+subdirs = ['WtPorter','WtDtPorter','WtBtPorter','Loader']
 
 def copyBin(srcDir:str, desDir:str, pdbBakDir:str):
 

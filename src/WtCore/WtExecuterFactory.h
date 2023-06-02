@@ -46,9 +46,11 @@ public:
 
 	ExecuteUnitPtr createExeUnit(const char* name);
 	ExecuteUnitPtr createDiffExeUnit(const char* name);
+	ExecuteUnitPtr createArbiExeUnit(const char* name);
 
 	ExecuteUnitPtr createExeUnit(const char* factname, const char* unitname);
 	ExecuteUnitPtr createDiffExeUnit(const char* factname, const char* unitname);
+	ExecuteUnitPtr createArbiExeUnit(const char* factname, const char* unitname);
 
 private:
 	typedef struct _ExeFactInfo

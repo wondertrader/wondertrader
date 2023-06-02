@@ -806,7 +806,7 @@ void TraderHuaX::doLogin()
 	// 终端采集  信息
 	strcpy_s(field.UserProductInfo, _productInfo.c_str());
 	// 按照监管要求填写终端信息
-	const char* terminalInfo = fmtutil::format("{};IIP={};IPORT={};LIP={};MAC={};HD=TF655AY91GHRVL", _terminal, _pub_ip, _pub_port, _trade_ip, _mac, _hard_disk);
+	const char* terminalInfo = fmtutil::format("{};IIP={};IPORT={};LIP={};MAC={};HD={}", _terminal, _pub_ip, _pub_port, _trade_ip, _mac, _hard_disk);
 	strcpy_s(field.TerminalInfo, terminalInfo);
 
 	int ret = _api->ReqUserLogin(&field, genRequestID());

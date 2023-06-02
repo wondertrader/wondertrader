@@ -75,25 +75,22 @@ void WtHftStraDemo::on_init(IHftStraCtx* ctx)
 	_ctx = ctx;
 }
 
-void WtHftStraDemo::on_tick(IHftStraCtx* ctx, const char* code, WTSTickData* newTick)
-{	
-	if (_code.compare(code) != 0)
-		return;
+void WtHftStraDemo::do_calc(IHftStraCtx* ctx)
+{
+	const char* code = _code.c_str();
 
-	if (!_orders.empty())
+	//30秒内不重复计算
+	uint64_t now = TimeUtils::makeTime(ctx->stra_get_date(), ctx->stra_get_time() * 100000 + ctx->stra_get_secs());//(uint64_t)ctx->stra_get_date()*1000000000 + (uint64_t)ctx->stra_get_time()*100000 + ctx->stra_get_secs();
+	if (now - _last_entry_time <= _freq * 1000)
 	{
-		check_orders();
 		return;
 	}
 
-	if (!_channel_ready)
+	WTSTickData* curTick = ctx->stra_get_last_tick(code);
+	if (curTick == NULL)
 		return;
 
-	WTSTickData* curTick = ctx->stra_get_last_tick(code);
-	if (curTick)
-		curTick->release();
-
-	uint32_t curMin = newTick->actiontime() / 100000;	//actiontime是带毫秒的,要取得分钟,则需要除以10w
+	uint32_t curMin = curTick->actiontime() / 100000;	//actiontime是带毫秒的,要取得分钟,则需要除以10w
 	if (curMin > _last_calc_time)
 	{//如果spread上次计算的时候小于当前分钟,则重算spread
 		//WTSKlineSlice* kline = ctx->stra_get_bars(code, "m5", 30);
@@ -104,17 +101,10 @@ void WtHftStraDemo::on_tick(IHftStraCtx* ctx, const char* code, WTSTickData* new
 		_last_calc_time = curMin;
 	}
 
-	//30秒内不重复计算
-	uint64_t now = TimeUtils::makeTime(ctx->stra_get_date(), ctx->stra_get_time() * 100000 + ctx->stra_get_secs());//(uint64_t)ctx->stra_get_date()*1000000000 + (uint64_t)ctx->stra_get_time()*100000 + ctx->stra_get_secs();
-	if(now - _last_entry_time <= _freq * 1000)
-	{
-		return;
-	}
-
 	int32_t signal = 0;
-	double price = newTick->price();
+	double price = curTick->price();
 	//计算部分
-	double pxInThry = (newTick->bidprice(0)*newTick->askqty(0) + newTick->askprice(0)*newTick->bidqty(0)) / (newTick->bidqty(0) + newTick->askqty(0));
+	double pxInThry = (curTick->bidprice(0)*curTick->askqty(0) + curTick->askprice(0)*curTick->bidqty(0)) / (curTick->bidqty(0) + curTick->askqty(0));
 
 	//理论价格大于最新价
 	if (pxInThry > price)
@@ -135,21 +125,21 @@ void WtHftStraDemo::on_tick(IHftStraCtx* ctx, const char* code, WTSTickData* new
 
 		WTSCommodityInfo* cInfo = ctx->stra_get_comminfo(code);
 
-		if(signal > 0  && curPos <= 0)
+		if (signal > 0 && curPos <= 0)
 		{//正向信号,且当前仓位小于等于0
 			//最新价+2跳下单
 			double targetPx = price + cInfo->getPriceTick() * _offset;
 			auto ids = ctx->stra_buy(code, targetPx, _unit, "enterlong");
 
 			_mtx_ords.lock();
-			for( auto localid : ids)
+			for (auto localid : ids)
 			{
 				_orders.insert(localid);
 			}
 			_mtx_ords.unlock();
 			_last_entry_time = now;
 		}
-		else if (signal < 0 && (curPos > 0 || ((!_stock || !decimal::eq(_reserved,0)) && curPos == 0)))
+		else if (signal < 0 && (curPos > 0 || ((!_stock || !decimal::eq(_reserved, 0)) && curPos == 0)))
 		{//反向信号,且当前仓位大于0,或者仓位为0但不是股票,或者仓位为0但是基础仓位有修正
 			//最新价-2跳下单
 			double targetPx = price - cInfo->getPriceTick()*_offset;
@@ -164,6 +154,25 @@ void WtHftStraDemo::on_tick(IHftStraCtx* ctx, const char* code, WTSTickData* new
 			_last_entry_time = now;
 		}
 	}
+
+	curTick->release();
+}
+
+void WtHftStraDemo::on_tick(IHftStraCtx* ctx, const char* code, WTSTickData* newTick)
+{	
+	if (_code.compare(code) != 0)
+		return;
+
+	if (!_orders.empty())
+	{
+		check_orders();
+		return;
+	}
+
+	if (!_channel_ready)
+		return;
+
+	do_calc(ctx);
 }
 
 void WtHftStraDemo::check_orders()
@@ -192,7 +201,7 @@ void WtHftStraDemo::on_bar(IHftStraCtx* ctx, const char* code, const char* perio
 
 void WtHftStraDemo::on_trade(IHftStraCtx* ctx, uint32_t localid, const char* stdCode, bool isBuy, double qty, double price, const char* userTag)
 {
-	
+	do_calc(ctx);
 }
 
 void WtHftStraDemo::on_position(IHftStraCtx* ctx, const char* stdCode, bool isLong, double prevol, double preavail, double newvol, double newavail)
@@ -218,6 +227,8 @@ void WtHftStraDemo::on_order(IHftStraCtx* ctx, uint32_t localid, const char* std
 			_ctx->stra_log_info(fmt::format("cancelcnt -> {}", _cancel_cnt).c_str());
 		}
 		_mtx_ords.unlock();
+
+		do_calc(ctx);
 	}
 }
 

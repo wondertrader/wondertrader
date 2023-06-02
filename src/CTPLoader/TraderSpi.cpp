@@ -1,5 +1,4 @@
 #include <iostream>
-#include <map>
 #include <set>
 #include <stdint.h>
 #include <fstream>
@@ -8,7 +7,7 @@
 #include "../Share/StrUtil.hpp"
 #include "../Share/fmtlib.h"
 #include "../Share/charconv.hpp"
-#include "../Includes/WTSTypes.h"
+#include "../Includes/LoaderDef.hpp"
 
 #include <rapidjson/document.h>
 #include <rapidjson/prettywriter.h>
@@ -49,45 +48,7 @@ TThostFtdcFrontIDType	FRONT_ID;	//前置编号
 TThostFtdcSessionIDType	SESSION_ID;	//会话编号
 TThostFtdcOrderRefType	ORDER_REF;	//报单引用
 
-typedef struct _Commodity
-{
-	std::string	m_strName;
-	std::string	m_strExchg;
-	std::string	m_strProduct;
-	std::string	m_strCurrency;
-	std::string m_strSession;
-
-	uint32_t	m_uVolScale;
-	double		m_fPriceTick;
-	uint32_t	m_uPrecision;
-
-	ContractCategory	m_ccCategory;
-	CoverMode			m_coverMode;
-	PriceMode			m_priceMode;
-	tagTradingMode		m_tradeMode;
-
-} Commodity;
-typedef std::map<std::string, Commodity> CommodityMap;
 CommodityMap _commodities;
-
-typedef struct _Contract
-{
-	std::string	m_strCode;
-	std::string	m_strExchg;
-	std::string	m_strName;
-	std::string	m_strProduct;
-
-	uint32_t	m_maxMktQty;
-	uint32_t	m_maxLmtQty;
-	uint32_t	m_minMktQty;
-	uint32_t	m_minLmtQty;
-
-	OptionType	m_optType;
-	std::string m_strUnderlying;
-	double		m_strikePrice;
-	double		m_dUnderlyingScale;
-} Contract;
-typedef std::map<std::string, Contract> ContractMap;
 ContractMap _contracts;
 
 
@@ -119,16 +80,14 @@ std::string extractProductName(const char* cname)
 
 std::set<std::string>	prod_set;
 
-double convertInvalidDouble(double val)
+inline double checkValid(double val)
 {
-	if (val == 5.5e-007)
-		return -1;
-
-	if (val == 0)
-		return -1;
+	if (val == DBL_MAX || val == FLT_MAX)
+		return 0;
 
 	return val;
 }
+
 
 void CTraderSpi::OnFrontConnected()
 {
@@ -310,6 +269,12 @@ void CTraderSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CTho
 					contract.m_strikePrice = pInstrument->StrikePrice;
 					contract.m_dUnderlyingScale = pInstrument->UnderlyingMultiple;
 
+					contract.m_uOpenDate = strtoul(pInstrument->OpenDate, NULL, 10);
+					contract.m_uExpireDate = strtoul(pInstrument->ExpireDate, NULL, 10);
+
+					contract.m_dLongMarginRatio = checkValid(pInstrument->LongMarginRatio);
+					contract.m_dShortMarginRatio = checkValid(pInstrument->ShortMarginRatio);
+
 					std::string key = StrUtil::printf("%s.%s", pInstrument->ExchangeID, pInstrument->ProductID);
 					auto it = _commodities.find(key);
 					if (it == _commodities.end())
@@ -332,7 +297,12 @@ void CTraderSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CTho
 						commInfo.m_fPriceTick = pInstrument->PriceTick;
 
 						CoverMode cm = CM_OpenCover;
-						if (bFuture)
+						/*
+						 *	By Wesley @ 2023.05.04
+						 *	有用户反馈上期所和上能所的期权合约也区分平昨平今
+						 *	把这个bFuture的判断去掉
+						 */
+						//if (bFuture)
 						{
 							if (strcmp(pInstrument->ExchangeID, "SHFE") == 0 || strcmp(pInstrument->ExchangeID, "INE") == 0)
 								cm = CM_CoverToday;
@@ -342,7 +312,12 @@ void CTraderSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CTho
 						commInfo.m_coverMode = cm;
 
 						PriceMode pm = PM_Both;
-						if (bFuture)
+						/*
+						 *	By Wesley @ 2023.05.04
+						 *	有用户反馈上期所和上能所的期权合约也区分平昨平今
+						 *	把这个bFuture的判断去掉
+						 */
+						//if (bFuture)
 						{
 							if (strcmp(pInstrument->ExchangeID, "SHFE") == 0 || strcmp(pInstrument->ExchangeID, "INE") == 0)
 								pm = PM_Limit;
@@ -438,6 +413,12 @@ void CTraderSpi::DumpToJson()
 			jcInfo.AddMember("maxmarketqty", cInfo.m_maxMktQty, allocator);
 			jcInfo.AddMember("minlimitqty", cInfo.m_minLmtQty, allocator);
 			jcInfo.AddMember("minmarketqty", cInfo.m_minMktQty, allocator);
+
+			jcInfo.AddMember("opendate", cInfo.m_uOpenDate, allocator);
+			jcInfo.AddMember("expiredate", cInfo.m_uExpireDate, allocator);
+
+			jcInfo.AddMember("longmarginratio", cInfo.m_dLongMarginRatio, allocator);
+			jcInfo.AddMember("shortmarginratio", cInfo.m_dShortMarginRatio, allocator);
 
 			if (cInfo.m_optType != OT_None)
 			{

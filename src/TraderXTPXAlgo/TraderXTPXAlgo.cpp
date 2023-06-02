@@ -910,7 +910,7 @@ void TraderXTPXAlgo::connect()
 
 	if (_thrd_worker == NULL)
 	{
-		boost::asio::io_service::work work(_asyncio);
+		_worker.reset(new boost::asio::io_service::work(_asyncio));
 		_thrd_worker.reset(new StdThread([this]() {
 			while (true)
 			{

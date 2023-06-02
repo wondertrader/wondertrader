@@ -44,6 +44,8 @@ public:
 	void	sub_tick(const char* stdCode, bool bReplace, bool bInner = false);
 	void	sub_bar(const char* stdCode, const char* period);
 
+	void	clear_cache();
+
 public:
 	WTSKlineSlice*	get_bars_by_range(const char* stdCode, const char* period, uint64_t beginTime, uint64_t endTime = 0);
 
@@ -62,7 +64,6 @@ public:
 private:
 	void	initDataMgr(WTSVariant* config);
 	void	initParsers(WTSVariant* cfg);
-
 
 private:
 	FuncOnTickCallback	_cb_tick;
