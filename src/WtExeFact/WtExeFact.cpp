@@ -13,6 +13,7 @@
 #include "WtDiffMinImpactExeUnit.h"
 #include "WtStockMinImpactExeUnit.h"
 #include "WtVWapExeUnit.h"
+#include "WtStockVWapExeUnit.h"
 const char* FACT_NAME = "WtExeFact";
 
 extern "C"
@@ -59,10 +60,10 @@ ExecuteUnit* WtExeFact::createExeUnit(const char* name)
 		return new WtMinImpactExeUnit();
 	else if (strcmp(name, "WtStockMinImpactExeUnit") == 0)
 		return new WtStockMinImpactExeUnit();
-	/***---begin---23.5.25---zhaoyk***/
 	else if (strcmp(name, "WtVWapExeUnit") == 0)
 		return  new WtVWapExeUnit();
-	/***---end---23.5.25---zhaoyk***/
+	else if (strcmp(name, "WtStockVWapExeUnit") == 0)
+		return new WtStockVWapExeUnit();
 	return NULL;
 }
 

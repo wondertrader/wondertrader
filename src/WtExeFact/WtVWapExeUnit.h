@@ -114,7 +114,7 @@ private:
 	uint32_t		_end_time;		//结束时间 （1030->10:30）
 	double			_min_open_lots; //最小开仓数量
 	double			_order_lots;	//单次发单手数
-
+	bool			isCanCancel;
 	//////////////////////////////////////////////////////////////////////////
 	//临时变量
 	double			_this_target;	//本轮目标仓位

@@ -29,6 +29,7 @@ WtVWapExeUnit::WtVWapExeUnit()
 	, _cancel_times(0)
 	, _begin_time(0)
 	, _end_time(0)
+	,isCanCancel(true)
 {
 }
 
@@ -409,15 +410,33 @@ void WtVWapExeUnit::do_calc()
 		targetPx += _comm_info->getPriceTick() * _price_offset * (isBuy ? 1 : -1);
 	}
 
+	// 如果最后价格为0，再做一个修正
+	if (decimal::eq(targetPx, 0.0))
+		targetPx = decimal::eq(_last_tick->price(), 0.0) ? _last_tick->preclose() : _last_tick->price();
+
+	//检查涨跌停价
+	isCanCancel = true;
+	if (isBuy && !decimal::eq(_last_tick->upperlimit(), 0) && decimal::gt(targetPx, _last_tick->upperlimit()))
+	{
+		_ctx->writeLog(fmt::format("Buy price {} of {} modified to upper limit price", targetPx, _code.c_str(), _last_tick->upperlimit()).c_str());
+		targetPx = _last_tick->upperlimit();
+		isCanCancel = false;//如果价格被修正为涨跌停价，订单不可撤销
+	}
+	if (isBuy != 1 && !decimal::eq(_last_tick->lowerlimit(), 0) && decimal::lt(targetPx, _last_tick->lowerlimit()))
+	{
+		_ctx->writeLog(fmt::format("Sell price {} of {} modified to lower limit price", targetPx, _code.c_str(), _last_tick->lowerlimit()).c_str());
+		targetPx = _last_tick->lowerlimit();
+		isCanCancel = false;	//如果价格被修正为涨跌停价，订单不可撤销
+	}
 	OrderIDs ids;
 	if (curQty > 0)
 	{
 		ids = _ctx->buy(code, targetPx, abs(curQty));
 	}
-	else{
+	else {
 		ids = _ctx->sell(code, targetPx, abs(curQty));
 	}
-	_orders_mon.push_order(ids.data(), ids.size(), now);
+	_orders_mon.push_order(ids.data(), ids.size(), now, isCanCancel);
 	_last_fire_time = now;
 	_fired_times += 1;
 
@@ -447,14 +466,27 @@ void WtVWapExeUnit::fire_at_once(double qty)
 	}
 
 	targetPx += _comm_info->getPriceTick()*_cancel_times *(isBuy ? 1 : -1);//增加价格偏移
-	//最后发出指令
+	isCanCancel = true;
+	if (isBuy && !decimal::eq(_last_tick->upperlimit(), 0) && decimal::gt(targetPx, _last_tick->upperlimit()))
+	{
+		_ctx->writeLog(fmt::format("Buy price {} of {} modified to upper limit price", targetPx, _code.c_str(), _last_tick->upperlimit()).c_str());
+		targetPx = _last_tick->upperlimit();
+		isCanCancel = false;//如果价格被修正为涨跌停价，订单不可撤销
+	}
+	if (isBuy != 1 && !decimal::eq(_last_tick->lowerlimit(), 0) && decimal::lt(targetPx, _last_tick->lowerlimit()))
+	{
+		_ctx->writeLog(fmt::format("Sell price {} of {} modified to lower limit price", targetPx, _code.c_str(), _last_tick->lowerlimit()).c_str());
+		targetPx = _last_tick->lowerlimit();
+		isCanCancel = false;	//如果价格被修正为涨跌停价，订单不可撤销
+	}
+
 	OrderIDs ids;
 	if (qty > 0)
 		ids = _ctx->buy(code, targetPx, abs(qty));
 	else
 		ids = _ctx->sell(code, targetPx, abs(qty));
 
-	_orders_mon.push_order(ids.data(), ids.size(), now);
+	_orders_mon.push_order(ids.data(), ids.size(), now, isCanCancel);
 
 	curTick->release();
 }

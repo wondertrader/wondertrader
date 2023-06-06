@@ -32,6 +32,7 @@ WtTWapExeUnit::WtTWapExeUnit()
 	, _end_time(0)
 	, _last_place_time(0)
 	, _last_tick_time(0)
+	, isCanCancel{ true }
 {
 }
 
@@ -77,12 +78,9 @@ void WtTWapExeUnit::init(ExecuteContext* ctx, const char* stdCode, WTSVariant* c
 	_comm_info = ctx->getCommodityInfo(stdCode);//获取品种参数
 	if (_comm_info)
 		_comm_info->retain();
-	/***---begin---23.5.18---zhaoyk***/
 	_sess_info = ctx->getSessionInfo(stdCode);//获取交易时间模板信息
 	if (_sess_info)
 		_sess_info->retain();
-	/***---end---23.5.18---zhaoyk***/
-
 	_ord_sticky = cfg->getUInt32("ord_sticky");
 	_begin_time= cfg->getUInt32("begin_time");
 	_end_time = cfg->getUInt32("end_time");
@@ -92,11 +90,9 @@ void WtTWapExeUnit::init(ExecuteContext* ctx, const char* stdCode, WTSVariant* c
 	_price_mode = cfg->getUInt32("price_mode");
 	_price_offset = cfg->getUInt32("price_offset");
 	_order_lots = cfg->getDouble("lots");		//单次发单手数
-	/***---begin---23.5.22---zhaoyk***/
 	if (cfg->has("minopenlots"))
 	_min_open_lots = cfg->getDouble("minopenlots");	//最小开仓数量
 	_total_secs = calTmSecs(_begin_time, _end_time);//执行总时间：秒
-	/***---end---23.5.22---zhaoyk***/
 	_fire_span = (_total_secs - _tail_secs) / _total_times;		//单次发单时间间隔,要去掉尾部时间计算,这样的话,最后剩余的数量就有一个兜底发单的机制了
 
 	ctx->writeLog(fmt::format("执行单元WtTWapExeUnit[{}] 初始化完成,订单超时 {} 秒,执行时限 {} 秒,收尾时间 {} 秒,间隔时间 {} 秒", stdCode, _ord_sticky, _total_secs, _tail_secs, _fire_span).c_str());
@@ -106,7 +102,6 @@ void WtTWapExeUnit::on_order(uint32_t localid, const char* stdCode, bool isBuy, 
 {
 	if (!_orders_mon.has_order(localid))
 		return;
-	//对于回报订单处理撤单情况：  判断回报 已经撤单或者没有剩余单    
 
 	if (isCanceled || leftover == 0)  
 	{
@@ -310,15 +305,28 @@ void WtTWapExeUnit::fire_at_once(double qty)
 	/***---begin---23.5.22---zhaoyk***/
 	targetPx += _comm_info->getPriceTick() * _cancel_times* (isBuy ? 1 : -1);  
 	/***---end---23.5.22---zhaoyk***/
+	//检查涨跌停价
+	isCanCancel = true;
+	if (isBuy && !decimal::eq(_last_tick->upperlimit(), 0) && decimal::gt(targetPx, _last_tick->upperlimit()))
+	{
+		_ctx->writeLog(fmt::format("Buy price {} of {} modified to upper limit price", targetPx, _code.c_str(), _last_tick->upperlimit()).c_str());
+		targetPx = _last_tick->upperlimit();
+		isCanCancel = false;//如果价格被修正为涨跌停价，订单不可撤销
+	}
+	if (isBuy != 1 && !decimal::eq(_last_tick->lowerlimit(), 0) && decimal::lt(targetPx, _last_tick->lowerlimit()))
+	{
+		_ctx->writeLog(fmt::format("Sell price {} of {} modified to lower limit price", targetPx, _code.c_str(), _last_tick->lowerlimit()).c_str());
+		targetPx = _last_tick->lowerlimit();
+		isCanCancel = false;	//如果价格被修正为涨跌停价，订单不可撤销
+	}
 
-	//最后发出指令
 	OrderIDs ids;
 	if (qty > 0)
 		ids = _ctx->buy(code, targetPx, abs(qty));
 	else
 		ids = _ctx->sell(code, targetPx, abs(qty));
 
-	_orders_mon.push_order(ids.data(), ids.size(), now);
+	_orders_mon.push_order(ids.data(), ids.size(), now, isCanCancel);
 
 	curTick->release();
 }
@@ -331,19 +339,15 @@ void WtTWapExeUnit::do_calc()
 
 	if (!_channel_ready)
 		return;
-
-	/***---bigin---23.5.22---zhaoyk***/
 //这里加一个锁，主要原因是实盘过程中发现
 //在修改目标仓位的时候，会触发一次do_calc
 //而ontick也会触发一次do_calc，两次调用是从两个线程分别触发的，所以会出现同时触发的情况
 //如果不加锁，就会引起问题
 //这种情况在原来的SimpleExecUnit没有出现，因为SimpleExecUnit只在set_position的时候触发
 	StdUniqueLock lock(_mtx_calc);
-	/***---end---23.5.22---zhaoyk***/
+
 	const char* code = _code.c_str();
 	double undone = _ctx->getUndoneQty(code);
-	
-	/***---begin---23.5.22---zhaoyk***/
 	double newVol = get_real_target(_target_pos);//真实目标价格
 	double realPos = _ctx->getPosition(code);
 	double diffQty = newVol - realPos;
@@ -422,19 +426,6 @@ void WtTWapExeUnit::do_calc()
 	//剩余次数为0,剩余数量不为0,说明要全部发出去了
 	//剩余次数为0,说明已经到了兜底时间了,如果这个时候还有未完成数量,则需要发单
 	/***---begin---23.5.22---zhaoyk***/
-	/*
-	if (leftTimes == 0 && !decimal::eq(diffQty, 0))
-		bNeedShowHand = true;
-
-	double curQty = 0;
-
-	//如果剩余此处为0 ,则需要全部下单
-	//否则,取整(剩余数量/剩余次数)与1的最大值,即最小为一手,但是要注意符号处理
-	if (leftTimes == 0)
-		curQty = diffQty;
-	else
-		curQty = std::max(1.0, round(abs(diffQty) / leftTimes)) * abs(diffQty) / diffQty;//最小一手下单，加方向 ？期货/股票   //最小下单手数
-	*/
 	//如果剩余此处为0 ,则需要全部下单
 	//否则,取整(剩余数量/剩余次数)与1的最大值,即最小为_min_open_lots,但是要注意符号处理
 	double curQty = 0;
@@ -479,7 +470,24 @@ void WtTWapExeUnit::do_calc()
 	{
 		targetPx += _comm_info->getPriceTick() * _price_offset * (isBuy ? 1 : -1);
 	}
+	// 如果最后价格为0，再做一个修正
+	if (decimal::eq(targetPx, 0.0))
+		targetPx = decimal::eq(_last_tick->price(), 0.0) ? _last_tick->preclose() : _last_tick->price();
 
+	//检查涨跌停价
+	isCanCancel = true;
+	if (isBuy && !decimal::eq(_last_tick->upperlimit(), 0) && decimal::gt(targetPx, _last_tick->upperlimit()))
+	{
+		_ctx->writeLog(fmt::format("Buy price {} of {} modified to upper limit price", targetPx, _code.c_str(), _last_tick->upperlimit()).c_str());
+		targetPx = _last_tick->upperlimit();
+		isCanCancel = false;//如果价格被修正为涨跌停价，订单不可撤销
+	}
+	if (isBuy != 1 && !decimal::eq(_last_tick->lowerlimit(), 0) && decimal::lt(targetPx, _last_tick->lowerlimit()))
+	{
+		_ctx->writeLog(fmt::format("Sell price {} of {} modified to lower limit price", targetPx, _code.c_str(), _last_tick->lowerlimit()).c_str());
+		targetPx = _last_tick->lowerlimit();
+		isCanCancel = false;	//如果价格被修正为涨跌停价，订单不可撤销
+	}
 	//最后发出指令
 	OrderIDs ids;
 	if (curQty > 0)
@@ -487,7 +495,7 @@ void WtTWapExeUnit::do_calc()
 	else
 		ids = _ctx->sell(code, targetPx, abs(curQty));
 
-	_orders_mon.push_order(ids.data(), ids.size(), now);
+	_orders_mon.push_order(ids.data(), ids.size(), now, isCanCancel);
 	_last_fire_time = now;
 	_fired_times += 1;
 
