@@ -448,7 +448,7 @@ void WtMinImpactExeUnit::do_calc()
 	
 
 	//检查涨跌停价
-	bool isCanCancel = true;  //订单可撤销的意思
+	bool isCanCancel = true;  
 	if (!decimal::eq(_last_tick->upperlimit(), 0) && decimal::gt(buyPx, _last_tick->upperlimit())) //upperlimit涨停价
 	{
 		_ctx->writeLog(fmtutil::format("Buy price {} of {} modified to upper limit price", buyPx, _code.c_str(), _last_tick->upperlimit()));//买入价，，，改为上限价
