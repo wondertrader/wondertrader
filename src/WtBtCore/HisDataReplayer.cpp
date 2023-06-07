@@ -2247,7 +2247,7 @@ WTSKlineSlice* HisDataReplayer::get_kline_slice(const char* stdCode, const char*
 		rawKline->setCode(stdCode);
 
 		static WTSDataFactory dataFact;
-		WTSKlineData* kData = dataFact.extractKlineData(rawKline, kp, realTimes, sInfo, true);
+		WTSKlineData* kData = dataFact.extractKlineData(rawKline, kp, realTimes, sInfo, true, _align_by_section);
 		rawKline->release();
 
 		if(kData)
