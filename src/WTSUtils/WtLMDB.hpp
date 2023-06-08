@@ -144,6 +144,11 @@ public:
 		return put((void*)key.data(), key.size(), (void*)val.data(), val.size());
 	}
 
+	bool put_and_commit(const std::string& key, const std::string& val)
+	{
+		return put_and_commit((void*)key.data(), key.size(), (void*)val.data(), val.size());
+	}
+
 	bool put(void* key, std::size_t klen, void* val, std::size_t vlen)
 	{
 		MDB_val mKey, mData;
@@ -154,6 +159,25 @@ public:
 		mData.mv_size = vlen;
 		int _errno = mdb_put(_txn, _dbi, &mKey, &mData, 0);
 		_db.update_errno(_errno);
+		return (_errno == MDB_SUCCESS);
+	}
+
+	bool put_and_commit(void* key, std::size_t klen, void* val, std::size_t vlen)
+	{
+		MDB_val mKey, mData;
+		mKey.mv_data = key;
+		mKey.mv_size = klen;
+
+		mData.mv_data = val;
+		mData.mv_size = vlen;
+		int _errno = mdb_put(_txn, _dbi, &mKey, &mData, 0);
+		_db.update_errno(_errno);
+		if (_errno != MDB_SUCCESS)
+			return false;
+
+		_errno = mdb_txn_commit(_txn);
+		_db.update_errno(_errno);
+		_commited = true;
 		return (_errno == MDB_SUCCESS);
 	}
 
