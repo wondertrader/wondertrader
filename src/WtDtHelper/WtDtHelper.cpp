@@ -622,6 +622,111 @@ WtUInt32 read_dsb_ticks(WtString tickFile, FuncGetTicksCallback cb, FuncCountDat
 	return (WtUInt32)tcnt;
 }
 
+WtUInt32 read_dsb_order_details(WtString dataFile, FuncGetOrdDtlCallback cb, FuncCountDataCallback cbCnt, FuncLogCallback cbLogger/* = NULL*/)
+{
+	std::string path = dataFile;
+
+	if (cbLogger)
+		cbLogger(StrUtil::printf("正在读取数据文件%s...", path.c_str()).c_str());
+
+	std::string content;
+	BoostFile::read_file_contents(path.c_str(), content);
+	if (content.size() < sizeof(HisOrdDtlBlock))
+	{
+		if (cbLogger)
+			cbLogger(StrUtil::printf("文件%s头部校验失败", dataFile).c_str());
+		return 0;
+	}
+
+	proc_block_data(content, false, false);
+
+	if (content.empty())
+	{
+		cbCnt(0);
+		return 0;
+	}
+
+	auto tcnt = content.size() / sizeof(WTSOrdDtlStruct);
+
+	cbCnt(tcnt);
+	cb((WTSOrdDtlStruct*)content.data(), tcnt, true);
+
+	if (cbLogger)
+		cbLogger(StrUtil::printf("%s读取完成,共%u条order detail数据", dataFile, tcnt).c_str());
+
+	return (WtUInt32)tcnt;
+}
+
+WtUInt32 read_dsb_order_queues(WtString dataFile, FuncGetOrdQueCallback cb, FuncCountDataCallback cbCnt, FuncLogCallback cbLogger/* = NULL*/)
+{
+	std::string path = dataFile;
+
+	if (cbLogger)
+		cbLogger(StrUtil::printf("正在读取数据文件%s...", path.c_str()).c_str());
+
+	std::string content;
+	BoostFile::read_file_contents(path.c_str(), content);
+	if (content.size() < sizeof(HisOrdQueBlock))
+	{
+		if (cbLogger)
+			cbLogger(StrUtil::printf("文件%s头部校验失败", dataFile).c_str());
+		return 0;
+	}
+
+	proc_block_data(content, false, false);
+
+	if (content.empty())
+	{
+		cbCnt(0);
+		return 0;
+	}
+
+	auto tcnt = content.size() / sizeof(WTSOrdQueStruct);
+
+	cbCnt(tcnt);
+	cb((WTSOrdQueStruct*)content.data(), tcnt, true);
+
+	if (cbLogger)
+		cbLogger(StrUtil::printf("%s读取完成,共%u条order queue数据", dataFile, tcnt).c_str());
+
+	return (WtUInt32)tcnt;
+}
+
+WtUInt32 read_dsb_transactions(WtString dataFile, FuncGetTransCallback cb, FuncCountDataCallback cbCnt, FuncLogCallback cbLogger/* = NULL*/)
+{
+	std::string path = dataFile;
+
+	if (cbLogger)
+		cbLogger(StrUtil::printf("正在读取数据文件%s...", path.c_str()).c_str());
+
+	std::string content;
+	BoostFile::read_file_contents(path.c_str(), content);
+	if (content.size() < sizeof(HisTransBlock))
+	{
+		if (cbLogger)
+			cbLogger(StrUtil::printf("文件%s头部校验失败", dataFile).c_str());
+		return 0;
+	}
+
+	proc_block_data(content, false, false);
+
+	if (content.empty())
+	{
+		cbCnt(0);
+		return 0;
+	}
+
+	auto tcnt = content.size() / sizeof(WTSTransStruct);
+
+	cbCnt(tcnt);
+	cb((WTSTransStruct*)content.data(), tcnt, true);
+
+	if (cbLogger)
+		cbLogger(StrUtil::printf("%s读取完成,共%u条transaction数据", dataFile, tcnt).c_str());
+
+	return (WtUInt32)tcnt;
+}
+
 WtUInt32 read_dsb_bars(WtString barFile, FuncGetBarsCallback cb, FuncCountDataCallback cbCnt, FuncLogCallback cbLogger )
 {
 	std::string path = barFile;
@@ -846,7 +951,7 @@ WtUInt32 resample_bars(WtString barFile, FuncGetBarsCallback cb, FuncCountDataCa
 	});
 
 
-	uint32_t sIdx = pBar - bars;
+	uint32_t sIdx = (uint32_t)(pBar - bars);
 	if((isDay && pBar->date < bar.date) || (!isDay && pBar->time < bar.time))
 	{
 		//如果返回的K线的时间小于要查找的时间，说明没有符合条件的数据
@@ -879,7 +984,7 @@ WtUInt32 resample_bars(WtString barFile, FuncGetBarsCallback cb, FuncCountDataCa
 	if (pBar == NULL)
 		eIdx = kcnt - 1;
 	else
-		eIdx = pBar - bars;
+		eIdx = (uint32_t)(pBar - bars);
 
 	if (eIdx != 0 && ((isDay && pBar->date > bar.date) || (!isDay && pBar->time > bar.time)))
 	{
@@ -984,8 +1089,8 @@ bool store_ticks(WtString tickFile, WTSTickStruct* firstTick, int count, FuncLog
 		cbLogger("Tick数据已经读取完成，准备写入文件");
 
 	std::string content;
-	content.resize(sizeof(HisKlineBlockV2));
-	HisKlineBlockV2* block = (HisKlineBlockV2*)content.data();
+	content.resize(sizeof(HisTickBlockV2));
+	HisTickBlockV2* block = (HisTickBlockV2*)content.data();
 	strcpy(block->_blk_flag, BLK_FLAG);
 	block->_version = BLOCK_VERSION_CMP_V2;
 	block->_type = BT_HIS_Ticks;
@@ -1002,6 +1107,126 @@ bool store_ticks(WtString tickFile, WTSTickStruct* firstTick, int count, FuncLog
 
 	if (cbLogger)
 		cbLogger("Tick数据写入文件成功");
+
+	return true;
+}
+
+bool store_order_details(WtString tickFile, WTSOrdDtlStruct* firstItem, int count, FuncLogCallback cbLogger/* = NULL*/)
+{
+	if (count == 0)
+	{
+		if (cbLogger)
+			cbLogger("Size of OrderDetail is 0");
+		return false;
+	}
+
+	std::string buffer;
+	buffer.resize(sizeof(WTSOrdDtlStruct)*count);
+	WTSOrdDtlStruct* items = (WTSOrdDtlStruct*)buffer.c_str();
+	memcpy(items, firstItem, sizeof(WTSOrdDtlStruct)*count);
+
+	if (cbLogger)
+		cbLogger("Reading order details done, prepare to write...");
+
+	std::string content;
+	content.resize(sizeof(HisOrdDtlBlockV2));
+	HisOrdDtlBlockV2* block = (HisOrdDtlBlockV2*)content.data();
+	strcpy(block->_blk_flag, BLK_FLAG);
+	block->_version = BLOCK_VERSION_CMP_V2;
+	block->_type = BT_HIS_OrdDetail;
+	std::string cmp_data = WTSCmpHelper::compress_data(items, buffer.size());
+	block->_size = cmp_data.size();
+	content.append(cmp_data);
+
+	BoostFile bf;
+	if (bf.create_new_file(tickFile))
+	{
+		bf.write_file(content);
+	}
+	bf.close_file();
+
+	if (cbLogger)
+		cbLogger("Writing order details succeed");
+
+	return true;
+}
+
+bool store_order_queues(WtString tickFile, WTSOrdQueStruct* firstItem, int count, FuncLogCallback cbLogger/* = NULL*/)
+{
+	if (count == 0)
+	{
+		if (cbLogger)
+			cbLogger("Size of order queues is 0");
+		return false;
+	}
+
+	std::string buffer;
+	buffer.resize(sizeof(WTSOrdQueStruct)*count);
+	WTSOrdQueStruct* items = (WTSOrdQueStruct*)buffer.c_str();
+	memcpy(items, firstItem, sizeof(WTSOrdQueStruct)*count);
+
+	if (cbLogger)
+		cbLogger("Reading order queues done, prepare to write...");
+
+	std::string content;
+	content.resize(sizeof(HisOrdQueBlockV2));
+	HisOrdQueBlockV2* block = (HisOrdQueBlockV2*)content.data();
+	strcpy(block->_blk_flag, BLK_FLAG);
+	block->_version = BLOCK_VERSION_CMP_V2;
+	block->_type = BT_HIS_OrdQueue;
+	std::string cmp_data = WTSCmpHelper::compress_data(items, buffer.size());
+	block->_size = cmp_data.size();
+	content.append(cmp_data);
+
+	BoostFile bf;
+	if (bf.create_new_file(tickFile))
+	{
+		bf.write_file(content);
+	}
+	bf.close_file();
+
+	if (cbLogger)
+		cbLogger("Writing order queues to file succeedd");
+
+	return true;
+}
+
+bool store_transactions(WtString tickFile, WTSTransStruct* firstItem, int count, FuncLogCallback cbLogger/* = NULL*/)
+{
+	if (count == 0)
+	{
+		if (cbLogger)
+			cbLogger("Size of transations is 0");
+		return false;
+	}
+
+	std::string buffer;
+	buffer.resize(sizeof(WTSTransStruct)*count);
+	WTSTransStruct* items = (WTSTransStruct*)buffer.c_str();
+	memcpy(items, firstItem, sizeof(WTSTransStruct)*count);
+
+	if (cbLogger)
+		cbLogger("Reading transactions done, prepare to write...");
+
+	std::string content;
+	content.resize(sizeof(HisTransBlockV2));
+	HisTransBlockV2* block = (HisTransBlockV2*)content.data();
+	strcpy(block->_blk_flag, BLK_FLAG);
+	block->_version = BLOCK_VERSION_CMP_V2;
+	block->_type = BT_HIS_Trnsctn;
+	std::string cmp_data = WTSCmpHelper::compress_data(items, buffer.size());
+	block->_size = cmp_data.size();
+	content.append(cmp_data);
+
+	BoostFile bf;
+	if (bf.create_new_file(tickFile))
+	{
+		bf.write_file(content);
+	}
+	bf.close_file();
+
+	if (cbLogger)
+		cbLogger("Write transactions to file succeedd");
 
 	return true;
 }
