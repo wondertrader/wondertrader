@@ -3916,8 +3916,8 @@ bool HisDataReplayer::cacheIntegratedFutBarsFromBin(void* codeInfo, const std::s
 		else
 			lastHotTime = hotAy->at(barcnt - 1).date;
 
-		uint64_t stime = isDay ? barsList->_bars[0].date : barsList->_bars[0].time;
-		uint64_t etime = isDay ? barsList->_bars[barcnt - 1].date : barsList->_bars[barcnt - 1].time;
+		uint64_t stime = isDay ? hotAy->at(0).date : hotAy->at(0).time;
+		uint64_t etime = isDay ? hotAy->at(barcnt - 1).date : hotAy->at(barcnt - 1).time;
 
 		WTSLogger::info("{} items of back {} data of hot contract {} directly loaded, from {} to {}", barcnt, pname.c_str(), stdCode, stime, etime);
 
