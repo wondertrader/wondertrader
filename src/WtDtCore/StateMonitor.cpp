@@ -84,7 +84,7 @@ bool StateMonitor::initialize(const char* filename, WTSBaseDataMgr* bdMgr, DataM
 		}
 
 		const auto& sections = ssInfo->getTradingSections();//这里面是偏移过的时间,要注意了!!!
-		for (const auto& secInfo : auctions)
+		for (const auto& secInfo : sections)
 		{
 			uint32_t stime = secInfo.first;
 			uint32_t etime = secInfo.second;
