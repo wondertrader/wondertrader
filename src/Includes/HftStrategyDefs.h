@@ -50,21 +50,76 @@ public:
 	virtual const char* id() const { return _id.c_str(); }
 
 	//回调函数
+
+	/*
+	 *	策略初始化
+	 */
 	virtual void on_init(IHftStraCtx* ctx) = 0;
+
+	/*
+	 *	交易日开始
+	 */
 	virtual void on_session_begin(IHftStraCtx* ctx, uint32_t uTDate) {}
+
+	/*
+	 *	交易日结束
+	 */
 	virtual void on_session_end(IHftStraCtx* ctx, uint32_t uTDate) {}
 
+	/*
+	 *	tick回调
+	 */
 	virtual void on_tick(IHftStraCtx* ctx, const char* code, WTSTickData* newTick) {}
+
+	/*
+	 *	委托队列回调
+	 */
 	virtual void on_order_queue(IHftStraCtx* ctx, const char* code, WTSOrdQueData* newOrdQue) {}
+
+	/*
+	 *	委托明细回调
+	 */
 	virtual void on_order_detail (IHftStraCtx* ctx, const char* code, WTSOrdDtlData* newOrdDtl) {}
+
+	/*
+	 *	逐笔成交回调
+	 */
 	virtual void on_transaction(IHftStraCtx* ctx, const char* code, WTSTransData* newTrans) {}
+
+	/*
+	 *	K线闭合回调
+	 */
 	virtual void on_bar(IHftStraCtx* ctx, const char* code, const char* period, uint32_t times, WTSBarStruct* newBar) {}
 
+	/*
+	 *	成交回报
+	 */
 	virtual void on_trade(IHftStraCtx* ctx, uint32_t localid, const char* stdCode, bool isBuy, double vol, double price, const char* userTag) {}
+
+	/*
+	 *	持仓回报
+	 *	只有在刚启动的时候，交易接口就绪之前会触发该回调
+	 */
 	virtual void on_position(IHftStraCtx* ctx, const char* stdCode, bool isLong, double prevol, double preavail, double newvol, double newavail) {}
+
+	/*
+	 *	订单回报
+	 */
 	virtual void on_order(IHftStraCtx* ctx, uint32_t localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled, const char* userTag) {}
+
+	/*
+	 *	交易通道就绪回调
+	 */
 	virtual void on_channel_ready(IHftStraCtx* ctx) {}
+
+	/*
+	 *	交易通道断开回调
+	 */
 	virtual void on_channel_lost(IHftStraCtx* ctx) {}
+
+	/*
+	 *	委托回报
+	 */
 	virtual void on_entrust(uint32_t localid, bool bSuccess, const char* message, const char* userTag) {}
 
 protected:
