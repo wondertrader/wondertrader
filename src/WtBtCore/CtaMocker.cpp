@@ -26,6 +26,7 @@
 #include <rapidjson/document.h>
 #include <rapidjson/prettywriter.h>
 #include "rapidjson/filereadstream.h"
+#include <fstream>
 namespace rj = rapidjson;
 
 const char* CMP_ALG_NAMES[] =

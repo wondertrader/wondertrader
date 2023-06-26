@@ -8,6 +8,7 @@
 #include "../Share/SpinMutex.hpp"
 
 #include <queue>
+#include <map>
 
 typedef std::shared_ptr<BoostMappingFile> BoostMFPtr;
 
