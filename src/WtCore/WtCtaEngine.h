@@ -9,6 +9,7 @@
  */
 #pragma once
 #include "../Includes/ICtaStraCtx.h"
+#include "../Share/threadpool.hpp"
 #include "WtExecMgr.h"
 #include "WtEngine.h"
 
@@ -87,6 +88,9 @@ private:
 	WtExecuterMgr	_exec_mgr;
 
 	WTSVariant*		_cfg;
+
+	typedef std::shared_ptr<boost::threadpool::pool> ThreadPoolPtr;
+	ThreadPoolPtr		_pool;
 };
 
 NS_WTP_END

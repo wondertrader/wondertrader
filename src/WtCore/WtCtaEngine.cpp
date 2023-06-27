@@ -122,6 +122,13 @@ void WtCtaEngine::init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtDtMgr* dataMgr, I
 	_cfg->retain();
 
 	_exec_mgr.set_filter_mgr(&_filter_mgr);
+
+	uint32_t poolsize = cfg->getUInt32("poolsize");
+	if (poolsize > 0)
+	{
+		_pool.reset(new boost::threadpool::pool(poolsize));
+	}
+	WTSLogger::info("Engine task poolsize is {}", poolsize);
 }
 
 void WtCtaEngine::addContext(CtaContextPtr ctx)
@@ -246,44 +253,110 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 	_filter_mgr.load_filters();
 	_exec_mgr.clear_cached_targets();
 	faster_hashmap<LongKey, double> target_pos;
-	for (auto it = _ctx_map.begin(); it != _ctx_map.end(); it++)
+	if(_pool)
 	{
-		CtaContextPtr& ctx = (CtaContextPtr&)it->second;
-		ctx->on_schedule(curDate, curTime);
-		const auto& exec_ids = _exec_mgr.get_route(ctx->name());
-		ctx->enum_position([this, ctx, exec_ids, &target_pos](const char* stdCode, double qty){
+		/*
+		 *	By Wesley @ 2023.06.27
+		 *	如果通过线程池并发
+		 *	先并发所有的on_schedule
+		 *	然后再wait所有任务结束
+		 *	最后再统一读取全部持仓
+		 */
+		for (auto it = _ctx_map.begin(); it != _ctx_map.end(); it++)
+		{
+			CtaContextPtr& ctx = (CtaContextPtr&)it->second;
+			_pool->schedule([ctx, curDate, curTime] (){
+				ctx->on_schedule(curDate, curTime);
+			});
+		}
 
-			double oldQty = qty;
-			bool bFilterd = _filter_mgr.is_filtered_by_strategy(ctx->name(), qty);
-			if(!bFilterd)
-			{
-				if(!decimal::eq(qty, oldQty))
+		/*
+		 *	By Wesley @ 2023.06.27
+		 *	等待全部on_schedule执行完成
+		 */
+		_pool->wait();
+		
+		for (auto it = _ctx_map.begin(); it != _ctx_map.end(); it++)
+		{
+			CtaContextPtr& ctx = (CtaContextPtr&)it->second;
+			const auto& exec_ids = _exec_mgr.get_route(ctx->name());
+			ctx->enum_position([this, ctx, exec_ids, &target_pos](const char* stdCode, double qty) {
+
+				double oldQty = qty;
+				bool bFilterd = _filter_mgr.is_filtered_by_strategy(ctx->name(), qty);
+				if (!bFilterd)
+				{
+					if (!decimal::eq(qty, oldQty))
+					{
+						//输出日志
+						WTSLogger::info("[Filters] Target position of {} of strategy {} reset by strategy filter: {} -> {}",
+							stdCode, ctx->name(), oldQty, qty);
+					}
+
+					std::string realCode = stdCode;
+					CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
+					if (strlen(cInfo._ruletag) > 0)
+					{
+						std::string code = _hot_mgr->getCustomRawCode(cInfo._ruletag, cInfo.stdCommID(), _cur_tdate);
+						realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
+					}
+
+					double& vol = target_pos[realCode];
+					vol += qty;
+					for (auto& execid : exec_ids)
+						_exec_mgr.add_target_to_cache(realCode.c_str(), qty, execid.c_str());
+				}
+				else
 				{
 					//输出日志
-					WTSLogger::info("[Filters] Target position of {} of strategy {} reset by strategy filter: {} -> {}", 
-						stdCode, ctx->name(), oldQty, qty);
+					WTSLogger::info("[Filters] Target position of {} of strategy {} ignored by strategy filter", stdCode, ctx->name());
 				}
-
-				std::string realCode = stdCode;
-				CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
-				if (strlen(cInfo._ruletag) > 0)
-				{
-					std::string code = _hot_mgr->getCustomRawCode(cInfo._ruletag, cInfo.stdCommID(), _cur_tdate);
-					realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
-				}
-
-				double& vol = target_pos[realCode];
-				vol += qty;
-				for(auto& execid : exec_ids)
-					_exec_mgr.add_target_to_cache(realCode.c_str(), qty, execid.c_str());
-			}
-			else
-			{
-				//输出日志
-				WTSLogger::info("[Filters] Target position of {} of strategy {} ignored by strategy filter", stdCode, ctx->name());
-			}
-		}, true);
+			}, true);
+		}
 	}
+	else
+	{
+		faster_hashmap<LongKey, double> target_pos;
+		for (auto it = _ctx_map.begin(); it != _ctx_map.end(); it++)
+		{
+			CtaContextPtr& ctx = (CtaContextPtr&)it->second;
+			ctx->on_schedule(curDate, curTime);
+			const auto& exec_ids = _exec_mgr.get_route(ctx->name());
+			ctx->enum_position([this, ctx, exec_ids, &target_pos](const char* stdCode, double qty) {
+
+				double oldQty = qty;
+				bool bFilterd = _filter_mgr.is_filtered_by_strategy(ctx->name(), qty);
+				if (!bFilterd)
+				{
+					if (!decimal::eq(qty, oldQty))
+					{
+						//输出日志
+						WTSLogger::info("[Filters] Target position of {} of strategy {} reset by strategy filter: {} -> {}",
+							stdCode, ctx->name(), oldQty, qty);
+					}
+
+					std::string realCode = stdCode;
+					CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
+					if (strlen(cInfo._ruletag) > 0)
+					{
+						std::string code = _hot_mgr->getCustomRawCode(cInfo._ruletag, cInfo.stdCommID(), _cur_tdate);
+						realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
+					}
+
+					double& vol = target_pos[realCode];
+					vol += qty;
+					for (auto& execid : exec_ids)
+						_exec_mgr.add_target_to_cache(realCode.c_str(), qty, execid.c_str());
+				}
+				else
+				{
+					//输出日志
+					WTSLogger::info("[Filters] Target position of {} of strategy {} ignored by strategy filter", stdCode, ctx->name());
+				}
+			}, true);
+		}
+	}
+	
 
 	bool bRiskEnabled = false;
 	if(!decimal::eq(_risk_volscale, 1.0) && _risk_date == _cur_tdate)
@@ -438,6 +511,7 @@ void WtCtaEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 			return;
 
 		uint32_t flag = get_adjusting_flag();
+		WTSTickData* adjTick = nullptr;
 
 		//By Wesley
 		//这里做一个拷贝，虽然有点开销，但是可以规避掉一些问题，比如ontick的时候订阅tick
@@ -455,7 +529,18 @@ void WtCtaEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 					
 				if (opt == 0)
 				{
-					ctx->on_tick(stdCode, curTick);
+					/*
+					 *	By Wesley @ 2023.06.27
+					 *	如果使用线程池，则到线程池里去调度
+					 */
+					if(_pool)
+					{
+						_pool->schedule([ctx, stdCode, curTick]() {
+							ctx->on_tick(stdCode, curTick);
+						});
+					}
+					else
+						ctx->on_tick(stdCode, curTick);
 				}
 				else
 				{
@@ -463,57 +548,83 @@ void WtCtaEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 					wCode = fmt::format("{}{}", stdCode, opt == 1 ? SUFFIX_QFQ : SUFFIX_HFQ);
 					if (opt == 1)
 					{
-						ctx->on_tick(wCode.c_str(), curTick);
+						if (_pool)
+						{
+							_pool->schedule([ctx, wCode, curTick]() {
+								ctx->on_tick(wCode.c_str(), curTick);
+							});
+						}
+						else
+							ctx->on_tick(wCode.c_str(), curTick);
 					}
 					else //(opt == 2)
 					{
-						WTSTickData* newTick = WTSTickData::create(curTick->getTickStruct());
-						WTSTickStruct& newTS = newTick->getTickStruct();
-						newTick->setContractInfo(curTick->getContractInfo());
-
-						//这里做一个复权因子的处理
-						double factor = get_exright_factor(stdCode);
-						newTS.open *= factor;
-						newTS.high *= factor;
-						newTS.low *= factor;
-						newTS.price *= factor;
-
-						newTS.settle_price *= factor;
-
-						newTS.pre_close *= factor;
-						newTS.pre_settle *= factor;
-
-						/*
-						 *	By Wesley @ 2022.08.15
-						 *	这里对tick的复权做一个完善
-						 */
-						if (flag & 1)
+						if (adjTick == nullptr)
 						{
-							newTS.total_volume /= factor;
-							newTS.volume /= factor;
+							WTSTickData* adjTick = WTSTickData::create(curTick->getTickStruct());
+							WTSTickStruct& adjTS = adjTick->getTickStruct();
+							adjTick->setContractInfo(curTick->getContractInfo());
+
+							//这里做一个复权因子的处理
+							double factor = get_exright_factor(stdCode);
+							adjTS.open *= factor;
+							adjTS.high *= factor;
+							adjTS.low *= factor;
+							adjTS.price *= factor;
+
+							adjTS.settle_price *= factor;
+
+							adjTS.pre_close *= factor;
+							adjTS.pre_settle *= factor;
+
+							/*
+							 *	By Wesley @ 2022.08.15
+							 *	这里对tick的复权做一个完善
+							 */
+							if (flag & 1)
+							{
+								adjTS.total_volume /= factor;
+								adjTS.volume /= factor;
+							}
+
+							if (flag & 2)
+							{
+								adjTS.total_turnover *= factor;
+								adjTS.turn_over *= factor;
+							}
+
+							if (flag & 4)
+							{
+								adjTS.open_interest /= factor;
+								adjTS.diff_interest /= factor;
+								adjTS.pre_interest /= factor;
+							}
+
+							_price_map[wCode] = adjTS.price;
 						}
 
-						if (flag & 2)
+						if (_pool)
 						{
-							newTS.total_turnover *= factor;
-							newTS.turn_over *= factor;
+							_pool->schedule([ctx, wCode, adjTick]() {
+								ctx->on_tick(wCode.c_str(), adjTick);
+							});
 						}
+						else
+							ctx->on_tick(wCode.c_str(), adjTick);
 
-						if (flag & 4)
-						{
-							newTS.open_interest /= factor;
-							newTS.diff_interest /= factor;
-							newTS.pre_interest /= factor;
-						}
-
-						_price_map[wCode] = newTS.price;
-
-						ctx->on_tick(wCode.c_str(), newTick);
-						newTick->release();
 					}
 				}
 			}				
 		}
+
+		if(nullptr != adjTick)
+			adjTick->release();
+		/*
+		 *	By Wesley @ 223.06.27
+		 *	这里一定要等待线程池全部调度完成
+		 */
+		if (_pool)
+			_pool->wait();
 	}
 	
 }
@@ -531,9 +642,23 @@ void WtCtaEngine::on_bar(const char* stdCode, const char* period, uint32_t times
 		if(cit != _ctx_map.end())
 		{
 			CtaContextPtr& ctx = (CtaContextPtr&)cit->second;
-			ctx->on_bar(stdCode, period, times, newBar);
+			if (_pool)
+			{
+				_pool->schedule([ctx, stdCode, period, times, newBar]() {
+					ctx->on_bar(stdCode, period, times, newBar);
+				});
+			}
+			else
+				ctx->on_bar(stdCode, period, times, newBar);
 		}
 	}
+
+	/*
+	 *	By Wesley @ 223.06.27
+	 *	这里一定要等待线程池全部调度完成
+	 */
+	if (_pool)
+		_pool->wait();
 
 	WTSLogger::info("KBar [{}] @ {} closed", key, period[0] == 'd' ? newBar->date : newBar->time);
 }
