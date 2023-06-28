@@ -5,6 +5,8 @@ TEST(test_codehelper, test_raw_to_std)
 {
 	EXPECT_EQ(CodeHelper::rawFutOptCodeToStdCode("IO2301-P-4000", "CFFEX"), "CFFEX.IO2301.P.4000");
 
+	EXPECT_EQ(CodeHelper::rawFutOptCodeToStdCode("TA308P4000", "CZCE"), "CZCE.TA2308.P.4000");
+
 	EXPECT_EQ(CodeHelper::rawFlatCodeToStdCode("600000", "SSE", "STK"), "SSE.STK.600000");
 	EXPECT_EQ(CodeHelper::rawFlatCodeToStdCode("000001", "SSE", "IDX"), "SSE.IDX.000001");
 	EXPECT_EQ(CodeHelper::rawFlatCodeToStdCode("510300", "SSE", "ETF"), "SSE.ETF.510300");

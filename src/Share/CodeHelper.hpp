@@ -448,7 +448,7 @@ public:
 		}
 		else
 		{
-			//郑商所上期所期权代码格式ZC2010P11600
+			//郑商所上期所期权代码格式ZC010P11600
 
 			//先从后往前定位到P或C的位置
 			std::size_t idx = strlen(code) - 1;
@@ -460,7 +460,9 @@ public:
 			
 			std::string s = exchg;
 			s.append(".");
-			s.append(code, idx);
+			s.append(code, idx-3);
+			s.append("2");
+			s.append(&code[idx - 3], 3);
 			s.append(".");
 			s.append(&code[idx], 1);
 			s.append(".");
