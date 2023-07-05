@@ -228,22 +228,6 @@ void WtHftEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 
 	_data_mgr->handle_push_quote(stdCode, curTick);
 
-	//auto sit = _tick_sub_map.find(stdCode);
-	//if (sit != _tick_sub_map.end())
-	//{
-	//	const SubList& sids = sit->second;
-	//	for (auto it = sids.begin(); it != sids.end(); it++)
-	//	{
-	//		uint32_t sid = it->first;
-	//		auto cit = _ctx_map.find(sid);
-	//		if (cit != _ctx_map.end())
-	//		{
-	//			HftContextPtr& ctx = (HftContextPtr&)cit->second;
-	//			ctx->on_tick(stdCode, curTick);
-	//		}
-	//	}
-	//}
-
 	/*
 	 *	By Wesley @ 2022.02.07
 	 *	这里做了一个彻底的调整
@@ -260,7 +244,6 @@ void WtHftEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 			for (auto it = sids.begin(); it != sids.end(); it++)
 			{
 				uint32_t sid = it->first;
-
 
 				auto cit = _ctx_map.find(sid);
 				if (cit != _ctx_map.end())
@@ -299,12 +282,8 @@ void WtHftEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 							newTick->release();
 						}
 					}
-
 				}
-
-
 			}
-
 		}
 	}
 }
