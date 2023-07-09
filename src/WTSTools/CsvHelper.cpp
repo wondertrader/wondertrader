@@ -19,7 +19,7 @@ bool CsvReader::load_from_file(const char* filename)
 	_ifs.open(filename);
 
 	_ifs.getline(_buffer, 1024);
-	//ÅÐ¶ÏÊÇ²»ÊÇUTF-8BOM ±àÂë
+	//ï¿½Ð¶ï¿½ï¿½Ç²ï¿½ï¿½ï¿½UTF-8BOM ï¿½ï¿½ï¿½ï¿½
 	static char flag[] = { (char)0xEF, (char)0xBB, (char)0xBF };
 	char* buf = _buffer;
 	if (memcmp(_buffer, flag, sizeof(char) * 3) == 0)
@@ -27,19 +27,23 @@ bool CsvReader::load_from_file(const char* filename)
 
 	std::string row = buf;
 
-	//Ìæ»»µôÒ»Ð©×Ö¶ÎµÄÌØÊâ·ûºÅ
+	//ï¿½æ»»ï¿½ï¿½Ò»Ð©ï¿½Ö¶Îµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	StrUtil::replace(row, "<", "");
 	StrUtil::replace(row, ">", "");
 	StrUtil::replace(row, "\"", "");
 	StrUtil::replace(row, "'", "");
 
-	//½«×Ö¶ÎÃû×ª³ÉÐ¡Ð´
+	//ï¿½ï¿½ï¿½Ö¶ï¿½ï¿½ï¿½×ªï¿½ï¿½Ð¡Ð´
 	StrUtil::toLowerCase(row);
 
 	StringVector fields = StrUtil::split(row, _item_splitter.c_str());
 	for (uint32_t i = 0; i < fields.size(); i++)
 	{
 		std::string field = StrUtil::trim(fields[i].c_str(), " ");
+		field = StrUtil::trim(fields[i].c_str(), "\n");
+		field = StrUtil::trim(fields[i].c_str());
+		field = StrUtil::trim(fields[i].c_str(), "\t");
+		field = StrUtil::trim(fields[i].c_str(), "\r");
 		if (field.empty())
 			break;
 
