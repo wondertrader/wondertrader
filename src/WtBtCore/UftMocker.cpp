@@ -246,12 +246,18 @@ void UftMocker::on_tick(const char* stdCode, WTSTickData* newTick)
 			for (auto it = _orders.begin(); it != _orders.end(); it++)
 			{
 				uint32_t localid = it->first;
-				bool bNeedErase = procOrder(localid);
-				if (bNeedErase)
-					ids.emplace_back(localid);
+				ids.emplace_back(localid);
 			}
 
+			OrderIDs to_erase;
 			for (uint32_t localid : ids)
+			{
+				bool bNeedErase = procOrder(localid);
+				if (bNeedErase)
+					to_erase.emplace_back(localid);
+			}
+
+			for (uint32_t localid : to_erase)
 			{
 				auto it = _orders.find(localid);
 				_orders.erase(it);
@@ -881,8 +887,7 @@ bool UftMocker::procOrder(uint32_t localid)
 	if (it == _orders.end())
 		return false;
 
-	StdLocker<StdRecurMutex> lock(_mtx_ords);
-	OrderInfo& ordInfo = (OrderInfo&)it->second;
+	OrderInfo ordInfo = (OrderInfo&)it->second;
 
 	//第一步,如果在撤单概率中,则执行撤单
 	if(_error_rate>0 && genRand(10000)<=_error_rate)
