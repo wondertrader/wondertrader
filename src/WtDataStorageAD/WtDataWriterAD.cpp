@@ -619,9 +619,21 @@ void WtDataWriterAD::updateBarCache(WTSContractInfo* ct, WTSTickData* curTick)
 		}
 		else
 		{
+			/*
+			*	By Wesley @ 2023.07.05
+			*	发现某些品种，开盘时可能会推送price为0的tick进来
+			*	会导致open和low都是0，所以要再做一个判断
+			*/
+			if (decimal::eq(newBar->open, 0))
+				newBar->open = curTick->price();
+
+			if (decimal::eq(newBar->low, 0))
+				newBar->low = curTick->price();
+			else
+				newBar->low = std::min(curTick->price(), newBar->low);
+
 			newBar->close = curTick->price();
 			newBar->high = max(curTick->price(), newBar->high);
-			newBar->low = min(curTick->price(), newBar->low);
 
 			newBar->vol += curTick->volume();
 			newBar->money += curTick->turnover();
@@ -712,9 +724,21 @@ void WtDataWriterAD::updateBarCache(WTSContractInfo* ct, WTSTickData* curTick)
 		}
 		else
 		{
+			/*
+			*	By Wesley @ 2023.07.05
+			*	发现某些品种，开盘时可能会推送price为0的tick进来
+			*	会导致open和low都是0，所以要再做一个判断
+			*/
+			if (decimal::eq(newBar->open, 0))
+				newBar->open = curTick->price();
+
+			if (decimal::eq(newBar->low, 0))
+				newBar->low = curTick->price();
+			else
+				newBar->low = std::min(curTick->price(), newBar->low);
+
 			newBar->close = curTick->price();
 			newBar->high = max(curTick->price(), newBar->high);
-			newBar->low = min(curTick->price(), newBar->low);
 
 			newBar->vol += curTick->volume();
 			newBar->money += curTick->turnover();
