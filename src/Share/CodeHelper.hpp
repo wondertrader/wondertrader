@@ -461,7 +461,8 @@ public:
 			std::string s = exchg;
 			s.append(".");
 			s.append(code, idx-3);
-			s.append("2");
+			if(strcmp(exchg, "CZCE") == 0)
+				s.append("2");
 			s.append(&code[idx - 3], 3);
 			s.append(".");
 			s.append(&code[idx], 1);

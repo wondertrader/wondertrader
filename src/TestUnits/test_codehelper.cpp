@@ -7,6 +7,10 @@ TEST(test_codehelper, test_raw_to_std)
 
 	EXPECT_EQ(CodeHelper::rawFutOptCodeToStdCode("TA308P4000", "CZCE"), "CZCE.TA2308.P.4000");
 
+	EXPECT_EQ(CodeHelper::rawFutOptCodeToStdCode("sc2308C400", "INE"), "INE.sc2308.C.400");
+
+	EXPECT_EQ(CodeHelper::rawFutOptCodeToStdCode("si2309-C-11000", "GFEX"), "GFEX.si2309.C.11000");
+
 	EXPECT_EQ(CodeHelper::rawFlatCodeToStdCode("600000", "SSE", "STK"), "SSE.STK.600000");
 	EXPECT_EQ(CodeHelper::rawFlatCodeToStdCode("000001", "SSE", "IDX"), "SSE.IDX.000001");
 	EXPECT_EQ(CodeHelper::rawFlatCodeToStdCode("510300", "SSE", "ETF"), "SSE.ETF.510300");
@@ -123,4 +127,24 @@ TEST(test_codehelper, test_extract)
 	EXPECT_STREQ(c._exchg, "SHFE");
 	EXPECT_STREQ(c._code, "rb2007P4000");
 	EXPECT_STREQ(c._product, "rb_o");
+
+	c = CodeHelper::extractStdCode("INE.sc2308.C.400", NULL);
+	EXPECT_STREQ(c._exchg, "INE");
+	EXPECT_STREQ(c._code, "sc2308C400");
+	EXPECT_STREQ(c._product, "sc_o");
+
+	c = CodeHelper::extractStdCode("INE.sc2308.P.400", NULL);
+	EXPECT_STREQ(c._exchg, "INE");
+	EXPECT_STREQ(c._code, "sc2308P400");
+	EXPECT_STREQ(c._product, "sc_o");
+
+	c = CodeHelper::extractStdCode("GFEX.si2309.C.11000", NULL);
+	EXPECT_STREQ(c._exchg, "GFEX");
+	EXPECT_STREQ(c._code, "si2309-C-11000");
+	EXPECT_STREQ(c._product, "si_o");
+
+	c = CodeHelper::extractStdCode("GFEX.si2309.P.11000", NULL);
+	EXPECT_STREQ(c._exchg, "GFEX");
+	EXPECT_STREQ(c._code, "si2309-P-11000");
+	EXPECT_STREQ(c._product, "si_o");
 }
