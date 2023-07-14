@@ -81,6 +81,9 @@ private:
 	bool			_disable_min5;
 	bool			_disable_day;
 
+	uint32_t		_tick_mapsize;
+	uint32_t		_kline_mapsize;
+
 private:
 	//////////////////////////////////////////////////////////////////////////
 	/*

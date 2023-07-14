@@ -54,7 +54,7 @@ public:
 		return _dbi;
 	}
 
-	bool open(const char* path, std::size_t mapsize = 8*1024*1024)
+	bool open(const char* path, std::size_t mapsize = 16*1024*1024)
 	{
 #if _MSC_VER
         int ret = _access(path, 0);
@@ -77,6 +77,8 @@ public:
 		_errno = mdb_env_open(_env, path, 0, 0664);
 		if (_errno != MDB_SUCCESS)
 			return false;
+
+		_errno = mdb_env_set_mapsize(_env, mapsize);
 
 		return true;
 	}
