@@ -36,6 +36,16 @@ uint32_t get_keys(const char* domain, const char* section, FuncGetKeys cb)
 	return (uint32_t)ay.size();
 }
 
+uint64_t get_section_updatetime(const char* domain, const char* section)
+{
+	return ShareBlocks::one().get_section_updatetime(domain, section);
+}
+
+bool commit_section(const char* domain, const char* section)
+{
+	return ShareBlocks::one().commit_section(domain, section);
+}
+
 bool set_string(const char* domain, const char* section, const char* key, const char* val)
 {
 	return ShareBlocks::one().set_string(domain, section, key, val);

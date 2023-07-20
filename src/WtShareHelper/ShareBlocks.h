@@ -93,6 +93,9 @@ namespace shareblock
 		std::vector<std::string>	get_sections(const char* domain);
 		std::vector<KeyInfo*>		get_keys(const char* domain, const char* section);
 
+		uint64_t get_section_updatetime(const char* domain, const char* section);
+		bool	commit_section(const char* domain, const char* section);
+
 		bool	set_string(const char* domain, const char* section, const char* key, const char* val);
 		bool	set_int32(const char* domain, const char* section, const char* key, int32_t val);
 		bool	set_int64(const char* domain, const char* section, const char* key, int64_t val);

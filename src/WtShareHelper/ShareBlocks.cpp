@@ -63,6 +63,39 @@ bool ShareBlocks::init_slave(const char* name)
 	return true;
 }
 
+uint64_t ShareBlocks::get_section_updatetime(const char* domain, const char* section)
+{
+	auto it = _shm_blocks.find(domain);
+	if (it == _shm_blocks.end())
+		return 0;
+
+	const ShmPair& shm = (ShmPair&)it->second;
+	auto sit = shm._sections.find(section);
+	if (sit == shm._sections.end())
+		return 0;
+
+	const ShmPair::KVPair& kvPair = sit->second;
+	const SecInfo& secInfo = shm._block->_sections[kvPair._index];
+	return secInfo._updatetime;
+}
+
+bool ShareBlocks::commit_section(const char* domain, const char* section)
+{
+	auto it = _shm_blocks.find(domain);
+	if (it == _shm_blocks.end())
+		return false;
+
+	ShmPair& shm = (ShmPair&)it->second;
+	auto sit = shm._sections.find(section);
+	if (sit == shm._sections.end())
+		return false;
+
+	ShmPair::KVPair& kvPair = (ShmPair::KVPair&)sit->second;
+	SecInfo& secInfo = shm._block->_sections[kvPair._index];
+	secInfo._updatetime = TimeUtils::getLocalTimeNow();
+	return true;
+}
+
 void* ShareBlocks::make_valid(const char* domain, const char* section, const char* key, std::size_t len, SecInfo* &secInfo)
 {
 	auto it = _shm_blocks.find(domain);

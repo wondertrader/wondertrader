@@ -153,9 +153,6 @@
     <ClInclude Include="WtArbiExecuter.h">
       <Filter>Exec</Filter>
     </ClInclude>
-    <ClInclude Include="ShareManager.h">
-      <Filter>Common</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TraderAdapter.cpp">
@@ -244,9 +241,6 @@
     </ClCompile>
     <ClCompile Include="WtArbiExecuter.cpp">
       <Filter>Exec</Filter>
-    </ClCompile>
-    <ClCompile Include="ShareManager.cpp">
-      <Filter>Common</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -86,6 +86,8 @@ public:
 
 	double get_cur_price(const char* stdCode);
 
+	void notify_params_update(const char* name);
+
 public:
 	void init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtUftDtMgr* dataMgr);
 

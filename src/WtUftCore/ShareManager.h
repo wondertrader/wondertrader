@@ -2,40 +2,73 @@
 #include <stdint.h>
 #include <string>
 
+#include "../Share/StdUtils.hpp"
+#include "../Includes/FasterDefs.h"
+
+NS_WTP_BEGIN
+class WtUftEngine;
+NS_WTP_END
+USING_NS_WTP;
+
 class ShareManager
 {
-public:
-	static bool	initialize();
+private:
+	ShareManager():_inited(false), _stopped(false), _engine(nullptr){}
+	~ShareManager()
+	{
+		_stopped = true;
+		if (_worker)
+			_worker->join();
+	}
 
 public:
-	static bool	init_domain(const char* id);
+	static ShareManager& self()
+	{
+		static ShareManager inst;
+		return inst;
+	}
 
-	static bool	set_value(const char* section, const char* key, const char* val);
+	void	set_engine(WtUftEngine* engine) { _engine = engine; }
 
-	static bool	set_value(const char* section, const char* key, int32_t val);
+	bool	initialize(const char* module);
 
-	static bool	set_value(const char* section, const char* key, int64_t val);
+	bool	start_watching(uint32_t microsecs);
 
-	static bool	set_value(const char* section, const char* key, uint32_t val);
+	bool	init_domain(const char* id);
 
-	static bool	set_value(const char* section, const char* key, uint64_t val);
+	bool	commit_section(const char* section);
 
-	static bool	set_value(const char* section, const char* key, double val);
+	bool	set_value(const char* section, const char* key, const char* val);
 
-	static const char*	get_value(const char* section, const char* key, const char* defVal = "");
+	bool	set_value(const char* section, const char* key, int32_t val);
 
-	static int32_t	get_value(const char* section, const char* key, int32_t defVal = 0);
+	bool	set_value(const char* section, const char* key, int64_t val);
 
-	static int64_t	get_value(const char* section, const char* key, int64_t defVal = 0);
+	bool	set_value(const char* section, const char* key, uint32_t val);
 
-	static uint32_t	get_value(const char* section, const char* key, uint32_t defVal = 0);
+	bool	set_value(const char* section, const char* key, uint64_t val);
 
-	static uint64_t	get_value(const char* section, const char* key, uint64_t defVal = 0);
+	bool	set_value(const char* section, const char* key, double val);
 
-	static double	get_value(const char* section, const char* key, double defVal = 0);
+	const char*	get_value(const char* section, const char* key, const char* defVal = "");
+
+	int32_t	get_value(const char* section, const char* key, int32_t defVal = 0);
+
+	int64_t	get_value(const char* section, const char* key, int64_t defVal = 0);
+
+	uint32_t	get_value(const char* section, const char* key, uint32_t defVal = 0);
+
+	uint64_t	get_value(const char* section, const char* key, uint64_t defVal = 0);
+
+	double	get_value(const char* section, const char* key, double defVal = 0);
 
 private:
-	static bool			_inited;
-	static std::string	_domain;
+	bool			_inited;
+	std::string		_domain;
+	faster_hashmap<ShortKey, uint64_t>	_secnames;
+
+	bool			_stopped;
+	StdThreadPtr	_worker;
+	WtUftEngine*	_engine;
 };
 

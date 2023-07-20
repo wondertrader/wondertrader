@@ -20,6 +20,10 @@ extern "C"
 
 	EXPORT_FLAG	uint32_t	get_keys(const char* domain, const char* section, FuncGetKeys cb);
 
+	EXPORT_FLAG uint64_t	get_section_updatetime(const char* domain, const char* section);
+
+	EXPORT_FLAG bool	commit_section(const char* domain, const char* section);
+
 	EXPORT_FLAG bool	set_string(const char* domain, const char* section, const char* key, const char* val);
 
 	EXPORT_FLAG bool	set_int32(const char* domain, const char* section, const char* key, int32_t val);

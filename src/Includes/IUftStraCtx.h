@@ -48,6 +48,7 @@ public:
 	virtual void on_bar(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar) {}
 	virtual void on_session_begin(uint32_t uTDate) {}
 	virtual void on_session_end(uint32_t uTDate) {}
+	virtual void on_params_updated(){}
 
 	/*
 	 *	回测结束事件

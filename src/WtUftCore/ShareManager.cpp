@@ -4,25 +4,56 @@
 
 #include "../Share/StdUtils.hpp"
 #include "../Share/DLLHelper.hpp"
+#include "../Share/TimeUtils.hpp"
 
-bool ShareManager::_inited = false;
-std::string ShareManager::_domain;
 
-bool ShareManager::initialize()
+bool ShareManager::initialize(const char* module)
 {
 	if (_inited)
 		return true;
 
-	std::string path = DLLHelper::wrap_module("./WtShareHelper");
-	if(!StdFile::exists(path.c_str()))
+	if(!StdFile::exists(module))
 	{
 		WTSLogger::warn("WtShareHelper not exist");
 		return false;
 	}
 
-	auto hInst = DLLHelper::load_library(path.c_str());
+	auto hInst = DLLHelper::load_library(module);
 	_inited = (hInst != NULL);
+
 	return _inited;
+}
+
+bool ShareManager::start_watching(uint32_t microsecs)
+{
+	if (!_inited)
+		return false;
+
+	if (_inited && !_stopped && _worker == nullptr)
+	{
+		_worker.reset(new StdThread([this, microsecs]() {
+			while (!_stopped)
+			{
+				for(auto& v : _secnames)
+				{
+					if(_stopped)
+						break;
+
+					uint64_t lastUdtTime = get_section_updatetime(_domain.c_str(), v.first.c_str());
+					if(lastUdtTime > v.second)
+					{
+						//触发通知
+					}
+				}
+
+				//如果等待时间为0，则进入无限循环的检查中
+				if(microsecs > 0 && !_stopped)
+					std::this_thread::sleep_for(std::chrono::microseconds(microsecs));
+			}
+		}));
+	}
+
+	return true;
 }
 
 bool ShareManager::init_domain(const char* id)
@@ -35,6 +66,16 @@ bool ShareManager::init_domain(const char* id)
 	WTSLogger::info("Share domain {} initialing {}", id, ret ? "succeed" : "fail");
 
 	return ret;
+}
+
+bool ShareManager::commit_section(const char* section)
+{
+	if (!_inited)
+		return false;
+
+	_secnames[section] = TimeUtils::getLocalTimeNow();
+
+	return commit_section(section);
 }
 
 bool ShareManager::set_value(const char* section, const char* key, double val)

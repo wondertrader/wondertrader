@@ -169,6 +169,19 @@ double WtUftEngine::get_cur_price(const char* stdCode)
 	return ret;
 }
 
+void WtUftEngine::notify_params_update(const char* name)
+{
+	for(auto& v : _ctx_map)
+	{
+		const UftContextPtr& context = v.second;
+		if(strcmp(context->name(), name) == 0)
+		{
+			context->on_params_updated();
+			break;
+		}
+	}
+}
+
 void WtUftEngine::init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtUftDtMgr* dataMgr)
 {
 	_base_data_mgr = bdMgr;
