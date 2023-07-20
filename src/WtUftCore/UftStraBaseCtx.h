@@ -30,6 +30,13 @@ public:
 	void setTrader(TraderAdapter* trader);
 
 public:
+	virtual void setParam(const char* name, double val) override;
+	virtual void setParam(const char* name, uint32_t val) override;
+	virtual void setParam(const char* name, uint64_t val) override;
+	virtual void setParam(const char* name, int32_t val) override;
+	virtual void setParam(const char* name, int64_t val) override;
+
+public:
 	//////////////////////////////////////////////////////////////////////////
 	//IHftStraCtx ½Ó¿Ú
 	virtual uint32_t id() override;

@@ -11,6 +11,7 @@
 #include "WtUftEngine.h"
 #include "TraderAdapter.h"
 #include "WtHelper.h"
+#include "ShareManager.h"
 
 #include "../Includes/WTSContractInfo.hpp"
 
@@ -55,6 +56,31 @@ void UftStraBaseCtx::setTrader(TraderAdapter* trader)
 void UftStraBaseCtx::on_init()
 {
 
+}
+
+void UftStraBaseCtx::setParam(const char* name, int64_t val)
+{
+	ShareManager::set_value(_name.c_str(), name, val);
+}
+
+void UftStraBaseCtx::setParam(const char* name, int32_t val)
+{
+	ShareManager::set_value(_name.c_str(), name, val);
+}
+
+void UftStraBaseCtx::setParam(const char* name, uint64_t val)
+{
+	ShareManager::set_value(_name.c_str(), name, val);
+}
+
+void UftStraBaseCtx::setParam(const char* name, uint32_t val)
+{
+	ShareManager::set_value(_name.c_str(), name, val);
+}
+
+void UftStraBaseCtx::setParam(const char* name, double val)
+{
+	ShareManager::set_value(_name.c_str(), name, val);
 }
 
 void UftStraBaseCtx::on_tick(const char* stdCode, WTSTickData* newTick)

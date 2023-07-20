@@ -66,6 +66,9 @@
     <ClInclude Include="ActionPolicyMgr.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="ShareManager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TraderAdapter.cpp">
@@ -96,6 +99,9 @@
       <Filter>Datas</Filter>
     </ClCompile>
     <ClCompile Include="ActionPolicyMgr.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ShareManager.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

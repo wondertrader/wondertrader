@@ -60,6 +60,12 @@ public:
 	virtual void	on_orddtl_updated(const char* stdCode, WTSOrdDtlData* newOrdDtl) {}
 	virtual void	on_trans_updated(const char* stdCode, WTSTransData* newTrans) {}
 
+	virtual void setParam(const char* name, double val){}
+	virtual void setParam(const char* name, uint32_t val){}
+	virtual void setParam(const char* name, uint64_t val){}
+	virtual void setParam(const char* name, int32_t val){}
+	virtual void setParam(const char* name, int64_t val){}
+
 	//²ßÂÔ½Ó¿Ú
 
 	virtual uint32_t	stra_get_date() = 0;

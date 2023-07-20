@@ -8,6 +8,7 @@
  * /brief 
  */
 #include "WtUftRunner.h"
+#include "../WtUftCore/ShareManager.h"
 
 #include "../WtUftCore/WtHelper.h"
 #include "../WtUftCore/UftStraContext.h"
@@ -116,6 +117,8 @@ bool WtUftRunner::config()
 	if (cfgBF->get("holiday"))
 		_bd_mgr.loadHolidays(cfgBF->getCString("holiday"));
 
+	if (_config->has("share_domain"))
+		ShareManager::init_domain(_config->getCString("share_domain"));
 
 	//初始化运行环境
 	initEngine();
