@@ -63,9 +63,11 @@ void WtUftStraDemo::on_entrust(uint32_t localid, bool bSuccess, const char* mess
 
 void WtUftStraDemo::on_init(IUftStraCtx* ctx)
 {
-	//WTSTickSlice* ticks = ctx->stra_get_ticks(_code.c_str(), _count);
-	//if (ticks)
-	//	ticks->release();
+	ctx->watch_param("second", _secs);
+	ctx->watch_param("freq", _freq);
+	ctx->watch_param("offset", _offset);
+	ctx->watch_param("lots", _lots);
+	ctx->commit_param_watcher();
 
 	WTSKlineSlice* kline = ctx->stra_get_bars(_code.c_str(), "m1", 30);
 	if (kline)

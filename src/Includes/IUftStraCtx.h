@@ -61,11 +61,12 @@ public:
 	virtual void	on_orddtl_updated(const char* stdCode, WTSOrdDtlData* newOrdDtl) {}
 	virtual void	on_trans_updated(const char* stdCode, WTSTransData* newTrans) {}
 
-	virtual void setParam(const char* name, double val){}
-	virtual void setParam(const char* name, uint32_t val){}
-	virtual void setParam(const char* name, uint64_t val){}
-	virtual void setParam(const char* name, int32_t val){}
-	virtual void setParam(const char* name, int64_t val){}
+	virtual void	watch_param(const char* name, double val){}
+	virtual void	watch_param(const char* name, uint32_t val){}
+	virtual void	watch_param(const char* name, uint64_t val){}
+	virtual void	watch_param(const char* name, int32_t val){}
+	virtual void	watch_param(const char* name, int64_t val){}
+	virtual void	commit_param_watcher() {}
 
 	//²ßÂÔ½Ó¿Ú
 

@@ -63,19 +63,19 @@ bool ShareManager::init_domain(const char* id)
 
 	bool ret = init_master(id);
 	_domain = id;
-	WTSLogger::info("Share domain {} initialing {}", id, ret ? "succeed" : "fail");
+	WTSLogger::info("Share domain [{}] initialing {}", id, ret ? "succeed" : "fail");
 
 	return ret;
 }
 
-bool ShareManager::commit_section(const char* section)
+bool ShareManager::commit_param_watcher(const char* section)
 {
 	if (!_inited)
 		return false;
 
 	_secnames[section] = TimeUtils::getLocalTimeNow();
 
-	return commit_section(section);
+	return commit_section(_domain.c_str(), section);
 }
 
 bool ShareManager::set_value(const char* section, const char* key, double val)

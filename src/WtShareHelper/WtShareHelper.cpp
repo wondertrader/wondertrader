@@ -8,14 +8,14 @@ void on_update(const char* domain, const char* section, KeyInfo* key)
 
 }
 
-bool init_master(const char* id)
+bool init_master(const char* id, const char* path/* = ""*/)
 {
-	return ShareBlocks::one().init_master(id);
+	return ShareBlocks::one().init_master(id, path);
 }
 
-bool init_slave(const char* id)
+bool init_slave(const char* id, const char* path/* = ""*/)
 {
-	return ShareBlocks::one().init_slave(id);
+	return ShareBlocks::one().init_slave(id, path);
 }
 
 uint32_t get_sections(const char* domain, FuncGetSections cb)

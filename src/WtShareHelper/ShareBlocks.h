@@ -86,9 +86,9 @@ namespace shareblock
 			return inst;
 		}
 
-		bool	init_master(const char* name);
+		bool	init_master(const char* name, const char* path = "");
 
-		bool	init_slave(const char* name);
+		bool	init_slave(const char* name, const char* path = "");
 
 		std::vector<std::string>	get_sections(const char* domain);
 		std::vector<KeyInfo*>		get_keys(const char* domain, const char* section);

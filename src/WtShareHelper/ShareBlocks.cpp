@@ -4,15 +4,19 @@
 
 using namespace shareblock;
 
-bool ShareBlocks::init_master(const char* name)
+bool ShareBlocks::init_master(const char* name, const char* path/* = ""*/)
 {
 	ShmPair& shm = (ShmPair&)_shm_blocks[name];
 	if (shm._block != NULL)
 		return true;
 
+	std::string filename = path;
+	if (filename.empty())
+		filename = name;
+
 	{
 		BoostFile bf;
-		bf.create_new_file(name);
+		bf.create_new_file(filename.c_str());
 		bf.truncate_file(sizeof(ShmBlock));
 		bf.close_file();
 	}
@@ -26,13 +30,17 @@ bool ShareBlocks::init_master(const char* name)
 	return true;
 }
 
-bool ShareBlocks::init_slave(const char* name)
+bool ShareBlocks::init_slave(const char* name, const char* path/* = ""*/)
 {
 	ShmPair& shm = (ShmPair&)_shm_blocks[name];
 	if (shm._block != NULL)
 		return true;
 
-	if (!BoostFile::exists(name))
+	std::string filename = path;
+	if (filename.empty())
+		filename = name;
+
+	if (!BoostFile::exists(filename.c_str()))
 		return false;
 
 	shm._domain.reset(new BoostMappingFile);

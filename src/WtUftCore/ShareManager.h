@@ -36,7 +36,7 @@ public:
 
 	bool	init_domain(const char* id);
 
-	bool	commit_section(const char* section);
+	bool	commit_param_watcher(const char* section);
 
 	bool	set_value(const char* section, const char* key, const char* val);
 

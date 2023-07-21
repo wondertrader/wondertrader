@@ -12,9 +12,9 @@ extern "C"
 {
 #endif
 
-	EXPORT_FLAG	bool	init_master(const char* id);
+	EXPORT_FLAG	bool	init_master(const char* id, const char* path = "");
 
-	EXPORT_FLAG	bool	init_slave(const char* id);
+	EXPORT_FLAG	bool	init_slave(const char* id, const char* path = "");
 
 	EXPORT_FLAG	uint32_t	get_sections(const char* domain, FuncGetSections cb);
 
