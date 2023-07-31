@@ -132,3 +132,9 @@ void UftStraContext::on_session_end(uint32_t uTDate)
 	if (_strategy)
 		_strategy->on_session_end(this, uTDate);
 }
+
+void UftStraContext::on_params_updated()
+{
+	if (_strategy)
+		_strategy->on_params_updated();
+}

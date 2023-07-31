@@ -88,6 +88,31 @@ void UftStraBaseCtx::commit_param_watcher()
 	ShareManager::self().commit_param_watcher(_name.c_str());
 }
 
+int32_t UftStraBaseCtx::read_param(const char* name, int32_t defVal /* = 0 */)
+{
+	return ShareManager::self().get_value(_name.c_str(), name, defVal);
+}
+
+uint32_t UftStraBaseCtx::read_param(const char* name, uint32_t defVal /* = 0 */)
+{
+	return ShareManager::self().get_value(_name.c_str(), name, defVal);
+}
+
+int64_t UftStraBaseCtx::read_param(const char* name, int64_t defVal /* = 0 */)
+{
+	return ShareManager::self().get_value(_name.c_str(), name, defVal);
+}
+
+uint64_t UftStraBaseCtx::read_param(const char* name, uint64_t defVal /* = 0 */)
+{
+	return ShareManager::self().get_value(_name.c_str(), name, defVal);
+}
+
+double UftStraBaseCtx::read_param(const char* name, double defVal /* = 0 */)
+{
+	return ShareManager::self().get_value(_name.c_str(), name, defVal);
+}
+
 void UftStraBaseCtx::on_tick(const char* stdCode, WTSTickData* newTick)
 {
 

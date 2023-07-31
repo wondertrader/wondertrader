@@ -52,6 +52,8 @@ public:
 	virtual void on_session_begin(uint32_t uTDate) override;
 	virtual void on_session_end(uint32_t uTDate) override;
 
+	virtual void on_params_updated() override;
+
 
 private:
 	UftStrategy*		_strategy;

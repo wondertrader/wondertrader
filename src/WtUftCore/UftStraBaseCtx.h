@@ -38,6 +38,12 @@ public:
 
 	virtual void commit_param_watcher() override;
 
+	virtual double		read_param(const char* name, double defVal = 0) override;
+	virtual uint32_t	read_param(const char* name, uint32_t defVal = 0) override;
+	virtual uint64_t	read_param(const char* name, uint64_t defVal = 0) override;
+	virtual int32_t		read_param(const char* name, int32_t defVal = 0) override;
+	virtual int64_t		read_param(const char* name, int64_t defVal = 0) override;
+
 public:
 	//////////////////////////////////////////////////////////////////////////
 	//IHftStraCtx ½Ó¿Ú

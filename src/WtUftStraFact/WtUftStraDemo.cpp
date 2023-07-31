@@ -256,3 +256,18 @@ void WtUftStraDemo::on_channel_lost(IUftStraCtx* ctx)
 {
 	_channel_ready = false;
 }
+
+void WtUftStraDemo::on_params_updated()
+{
+	//ctx->watch_param("second", _secs);
+	//ctx->watch_param("freq", _freq);
+	//ctx->watch_param("offset", _offset);
+	//ctx->watch_param("lots", _lots);
+
+	_secs = _ctx->read_param("second", _secs);
+	_freq = _ctx->read_param("freq", _freq);
+	_offset = _ctx->read_param("offset", _offset);
+	_lots = _ctx->read_param("lots", _lots);
+
+	_ctx->stra_log_info("Params updated");
+}

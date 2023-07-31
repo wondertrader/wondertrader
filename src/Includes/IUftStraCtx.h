@@ -68,6 +68,12 @@ public:
 	virtual void	watch_param(const char* name, int64_t val){}
 	virtual void	commit_param_watcher() {}
 
+	virtual double		read_param(const char* name, double defVal = 0) { return defVal; }
+	virtual uint32_t	read_param(const char* name, uint32_t defVal = 0) { return defVal; }
+	virtual uint64_t	read_param(const char* name, uint64_t defVal = 0) { return defVal; }
+	virtual int32_t		read_param(const char* name, int32_t defVal = 0) { return defVal; }
+	virtual int64_t		read_param(const char* name, int64_t defVal = 0) { return defVal; }
+
 	//²ßÂÔ½Ó¿Ú
 
 	virtual uint32_t	stra_get_date() = 0;

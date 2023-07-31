@@ -22,7 +22,7 @@ bool ShareBlocks::init_master(const char* name, const char* path/* = ""*/)
 	}
 
 	shm._domain.reset(new BoostMappingFile);
-	shm._domain->map(name);
+	shm._domain->map(filename.c_str());
 	shm._master = true;
 	shm._block = (ShmBlock*)shm._domain->addr();
 	wt_strcpy(shm._block->_flag, BLK_FLAG, 8);
@@ -44,7 +44,7 @@ bool ShareBlocks::init_slave(const char* name, const char* path/* = ""*/)
 		return false;
 
 	shm._domain.reset(new BoostMappingFile);
-	shm._domain->map(name);
+	shm._domain->map(filename.c_str());
 	shm._master = false;
 	shm._block = (ShmBlock*)shm._domain->addr();
 
@@ -219,7 +219,7 @@ std::vector<std::string> ShareBlocks::get_sections(const char* domain)
 	const ShmPair& shm = it->second;
 	for(uint32_t i = 0; i < shm._block->_count; i++)
 	{
-		ret.emplace_back(shm._block->_sections->_name);
+		ret.emplace_back(shm._block->_sections[i]._name);
 	}
 
 	return std::move(ret);

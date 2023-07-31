@@ -1,4 +1,5 @@
 #include "ShareManager.h"
+#include "WtUftEngine.h"
 #include "../WTSTools/WTSLogger.h"
 #include "../WtShareHelper/WtShareHelper.h"
 
@@ -39,10 +40,13 @@ bool ShareManager::start_watching(uint32_t microsecs)
 					if(_stopped)
 						break;
 
-					uint64_t lastUdtTime = get_section_updatetime(_domain.c_str(), v.first.c_str());
+					const char* section = v.first.c_str();
+
+					uint64_t lastUdtTime = get_section_updatetime(_domain.c_str(), section);
 					if(lastUdtTime > v.second)
 					{
 						//´¥·¢Í¨Öª
+						_engine->notify_params_update(section);
 					}
 				}
 
@@ -61,7 +65,7 @@ bool ShareManager::init_domain(const char* id)
 	if (!_inited)
 		return false;
 
-	bool ret = init_master(id);
+	bool ret = init_master(id, ".share");
 	_domain = id;
 	WTSLogger::info("Share domain [{}] initialing {}", id, ret ? "succeed" : "fail");
 

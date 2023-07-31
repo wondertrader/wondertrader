@@ -3713,7 +3713,12 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 	const char* ruleTag = cInfo._ruletag;
 	if (strlen(ruleTag) > 0 && commInfo->isFuture())
 	{
-		ss << cInfo._exchg << "." << cInfo._product << "_" << ruleTag << ".dsb";
+		if(cInfo.isExright())
+		{
+			ss << cInfo._exchg << "." << cInfo._product << "_" << ruleTag << (cInfo._exright == 1 ? SUFFIX_QFQ : SUFFIX_HFQ) << ".dsb";
+		}
+		else
+			ss << cInfo._exchg << "." << cInfo._product << "_" << ruleTag << ".dsb";
 	}
 	else if (cInfo.isExright() && commInfo->isStock())
 	{
