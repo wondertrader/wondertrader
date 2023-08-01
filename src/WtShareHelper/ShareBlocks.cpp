@@ -25,6 +25,7 @@ bool ShareBlocks::init_master(const char* name, const char* path/* = ""*/)
 	shm._domain->map(filename.c_str());
 	shm._master = true;
 	shm._block = (ShmBlock*)shm._domain->addr();
+	memset(shm._domain->addr(), 0, sizeof(ShmBlock));
 	wt_strcpy(shm._block->_flag, BLK_FLAG, 8);
 	shm._block->_updatetime = TimeUtils::getLocalTimeNow();
 	return true;
@@ -47,6 +48,7 @@ bool ShareBlocks::init_slave(const char* name, const char* path/* = ""*/)
 	shm._domain->map(filename.c_str());
 	shm._master = false;
 	shm._block = (ShmBlock*)shm._domain->addr();
+	shm._blocktime = shm._block->_updatetime;
 
 	//slave模式下，应该需要加载一下
 	//if (strcmp(shm._block->_flag, BLK_FLAG) == 0)
@@ -68,6 +70,40 @@ bool ShareBlocks::init_slave(const char* name, const char* path/* = ""*/)
 		}
 	}
 	
+	return true;
+}
+
+bool ShareBlocks::update_slave(const char* name)
+{
+	ShmPair& shm = (ShmPair&)_shm_blocks[name];
+	if (shm._block == NULL)
+		return false;
+
+	if (shm._blocktime == shm._block->_updatetime)
+		return false;
+
+	{
+		shm._sections.clear();
+
+		//这里要做初始化，要把已经有的key加载进去
+		for (uint32_t i = 0; i < shm._block->_count; i++)
+		{
+			SecInfo& secInfo = shm._block->_sections[i];
+			if (secInfo._count == 0)
+				continue;
+
+			ShmPair::KVPair& kvPair = shm._sections[secInfo._name];
+			kvPair._index = i;
+			for (uint32_t j = 0; j < secInfo._count; j++)
+			{
+				KeyInfo& key = secInfo._keys[j];
+				kvPair._keys[key._key] = &key;
+			}
+		}
+	}
+
+	shm._blocktime = shm._block->_updatetime;
+
 	return true;
 }
 

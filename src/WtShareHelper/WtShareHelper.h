@@ -16,6 +16,8 @@ extern "C"
 
 	EXPORT_FLAG	bool	init_slave(const char* id, const char* path = "");
 
+	EXPORT_FLAG	bool	update_slave(const char* id);
+
 	EXPORT_FLAG	uint32_t	get_sections(const char* domain, FuncGetSections cb);
 
 	EXPORT_FLAG	uint32_t	get_keys(const char* domain, const char* section, FuncGetKeys cb);

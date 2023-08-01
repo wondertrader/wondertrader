@@ -269,5 +269,5 @@ void WtUftStraDemo::on_params_updated()
 	_offset = _ctx->read_param("offset", _offset);
 	_lots = _ctx->read_param("lots", _lots);
 
-	_ctx->stra_log_info("Params updated");
+	_ctx->stra_log_info(fmtutil::format("[{}] Params updated, second: {}, freq: {}, offset: {}, lots: {}", _id.c_str(), _secs, _freq, _offset, _lots));
 }

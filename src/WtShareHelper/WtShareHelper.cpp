@@ -18,6 +18,11 @@ bool init_slave(const char* id, const char* path/* = ""*/)
 	return ShareBlocks::one().init_slave(id, path);
 }
 
+bool update_slave(const char* id)
+{
+	return ShareBlocks::one().update_slave(id);
+}
+
 uint32_t get_sections(const char* domain, FuncGetSections cb)
 {
 	auto ay = ShareBlocks::one().get_sections(domain);

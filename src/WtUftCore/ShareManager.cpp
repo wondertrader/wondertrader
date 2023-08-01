@@ -41,12 +41,14 @@ bool ShareManager::start_watching(uint32_t microsecs)
 						break;
 
 					const char* section = v.first.c_str();
+					uint64_t& udtTime = (uint64_t&)v.second;
 
 					uint64_t lastUdtTime = get_section_updatetime(_domain.c_str(), section);
 					if(lastUdtTime > v.second)
 					{
 						//´¥·¢Í¨Öª
 						_engine->notify_params_update(section);
+						udtTime = lastUdtTime;
 					}
 				}
 

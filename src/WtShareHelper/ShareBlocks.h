@@ -90,6 +90,8 @@ namespace shareblock
 
 		bool	init_slave(const char* name, const char* path = "");
 
+		bool	update_slave(const char* name);
+
 		std::vector<std::string>	get_sections(const char* domain);
 		std::vector<KeyInfo*>		get_keys(const char* domain, const char* section);
 
@@ -121,6 +123,7 @@ namespace shareblock
 			MappedFilePtr	_domain;
 			ShmBlock*		_block;
 			bool			_master;
+			uint64_t		_blocktime;
 
 			typedef faster_hashmap<ShortKey, KeyInfo*>	KVMap;
 			typedef struct _KVPair
