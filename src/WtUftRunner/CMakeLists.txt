@@ -22,6 +22,7 @@ SET(LIBS
 	WtUftCore
 	WTSTools
     WTSUtils
+    WtShareHelper
 	)
 
 IF (MSVC)
