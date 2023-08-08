@@ -1183,13 +1183,6 @@ void TraderAdapter::onRspEntrust(WTSEntrust* entrust, WTSError *err)
 		if (decimal::eq(oldQty, 0))
 			return;
 
-		//bool isBuy = (isLong&&isOpen) || (!isLong && !isOpen);
-		//double newQty = oldQty - qty*(isBuy ? 1 : -1);
-		//_undone_qty[stdCode] = newQty;
-
-		//WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO, 
-		//	"[{}] {} undone order updated, {} -> {}", _id.c_str(), stdCode.c_str(), oldQty, newQty);
-
 		updateUndone(stdCode.c_str(), -qty);
 
 
@@ -1202,7 +1195,6 @@ void TraderAdapter::onRspEntrust(WTSEntrust* entrust, WTSError *err)
 			for(auto sink : _sinks)
 				sink->on_entrust(localid, stdCode.c_str(), false, err->getMessage());
 		}
-		
 	}
 }
 
@@ -1304,6 +1296,7 @@ void TraderAdapter::onRspOrders(const WTSArray* ayOrders)
 				_stat_map->add(stdCode, statInfo, false);
 			}
 			TradeStatInfo& statItem = statInfo->statInfo();
+			statItem._infos++;	//无论什么状态，挂单信息量+1
 			if (isBuy)
 			{
 				statItem.b_orders++;
@@ -1326,6 +1319,9 @@ void TraderAdapter::onRspOrders(const WTSArray* ayOrders)
 						statItem.b_auto_cancels++;
 						statItem.b_auto_canclqty += orderInfo->getVolume() - orderInfo->getVolTraded();
 					}
+
+					//撤单信息量+1
+					statItem._infos++;
 				}
 
 			}
@@ -1351,6 +1347,9 @@ void TraderAdapter::onRspOrders(const WTSArray* ayOrders)
 						statItem.s_auto_cancels++;
 						statItem.s_auto_canclqty += orderInfo->getVolume() - orderInfo->getVolTraded();
 					}
+
+					//撤单信息量+1
+					statItem._infos++;
 				}
 			}
 
@@ -1496,16 +1495,18 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 
 	bool isBuy = (orderInfo->getDirection() == WDT_LONG && orderInfo->getOffsetType() == WOT_OPEN) || (orderInfo->getDirection() == WDT_SHORT && orderInfo->getOffsetType() != WOT_OPEN);
 
+	WTSTradeStateInfo* statInfo = (WTSTradeStateInfo*)_stat_map->get(stdCode.c_str());
+	if (statInfo == NULL)
+	{
+		statInfo = WTSTradeStateInfo::create(stdCode.c_str());
+		_stat_map->add(stdCode, statInfo, false);
+	}
+	TradeStatInfo& statItem = statInfo->statInfo();
+
 	//撤销的话, 要更新统计数据
 	if (orderInfo->getOrderState() == WOS_Canceled)
 	{
-		WTSTradeStateInfo* statInfo = (WTSTradeStateInfo*)_stat_map->get(stdCode.c_str());
-		if (statInfo == NULL)
-		{
-			statInfo = WTSTradeStateInfo::create(stdCode.c_str());
-			_stat_map->add(stdCode, statInfo, false);
-		}
-		TradeStatInfo& statItem = statInfo->statInfo();
+		statItem._infos++;	//撤单成功信息量+1
 		if (isBuy)
 		{
 			if (orderInfo->isError())//错单要和撤单区分开
@@ -1584,6 +1585,7 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 		{
 			//先把订单号缓存起来, 防止重复处理
 			_orderids.insert(orderInfo->getOrderID());
+			statItem._infos++;	//下单成功信息量+1
 
 			//只有平仓需要更新可平
 			if (orderInfo->getOffsetType() != WOT_OPEN)

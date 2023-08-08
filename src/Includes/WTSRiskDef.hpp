@@ -46,6 +46,8 @@ typedef struct _TradeStatInfo
 	uint32_t	s_wrongs;	//错单笔数
 	double		s_wrongqty;	//错单数量
 
+	uint32_t	_infos;		//信息量
+
 	_TradeStatInfo()
 	{
 		memset(this, 0, sizeof(_TradeStatInfo));
