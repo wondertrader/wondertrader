@@ -57,7 +57,7 @@ bool ShareBlocks::init_slave(const char* name, const char* path/* = ""*/)
 		for (uint32_t i = 0; i < shm._block->_count; i++)
 		{
 			SecInfo& secInfo = shm._block->_sections[i];
-			if(secInfo._count == 0)
+			if (secInfo._count == 0)
 				continue;
 
 			ShmPair::KVPair& kvPair = shm._sections[secInfo._name];
@@ -69,7 +69,7 @@ bool ShareBlocks::init_slave(const char* name, const char* path/* = ""*/)
 			}
 		}
 	}
-	
+
 	return true;
 }
 
@@ -253,7 +253,7 @@ std::vector<std::string> ShareBlocks::get_sections(const char* domain)
 
 	std::vector<std::string> ret;
 	const ShmPair& shm = it->second;
-	for(uint32_t i = 0; i < shm._block->_count; i++)
+	for (uint32_t i = 0; i < shm._block->_count; i++)
 	{
 		ret.emplace_back(shm._block->_sections[i]._name);
 	}
@@ -271,18 +271,96 @@ std::vector<KeyInfo*> ShareBlocks::get_keys(const char* domain, const char* sect
 
 	const ShmPair& shm = it->second;
 	auto sit = shm._sections.find(section);
-	if(sit == shm._sections.end())
+	if (sit == shm._sections.end())
 		return emptyRet;
 
 	std::vector<KeyInfo*> ret;
 	const ShmPair::KVPair& kvPair = sit->second;
-	for(auto& v : kvPair._keys)
+	for (auto& v : kvPair._keys)
 	{
 		ret.emplace_back(v.second);
 	}
 
 	return std::move(ret);
 }
+
+void* ShareBlocks::allocate_key(const char* domain, const char* section, const char* key, ValueType vType)
+{
+	bool is_str = vType == SMVT_STRING;
+
+	SecInfo* secInfo = nullptr;
+	std::size_t len;
+	switch (vType)
+	{
+	case SMVT_INT32: len = VTL_INT32; break;
+	case SMVT_INT64: len = VTL_INT64; break;
+	case SMVT_UINT32: len = VTL_UINT32; break;
+	case SMVT_UINT64: len = VTL_UINT64; break;
+	case SMVT_DOUBLE: len = VTL_DOUBLE; break;
+	case SMVT_STRING: len = VTL_STRING; break;
+	default:
+		throw std::runtime_error("unsupport type");
+		break;
+	}
+
+	KeyInfo* keyInfo = (KeyInfo*)make_valid(domain, section, key, len, secInfo);
+	if (keyInfo == nullptr)
+		return false;
+
+	keyInfo->_type = vType;
+	return (void*)(secInfo->_data + keyInfo->_offset);
+}
+
+/*
+template<typename SVT>
+bool ShareBlocks::set_value(const char* domain, const char* section, const char* key, SVT val)
+{
+	auto tt = typeid(SVT);
+
+	bool is_str = (tt == typeid(const char*));
+
+	SecInfo* secInfo = nullptr;
+	std::size_t len;
+	if (is_str)
+		len = VTL_STRING;
+	else
+		len = sizeof(SVT);
+
+	KeyInfo* keyInfo = (KeyInfo*)make_valid(domain, section, key, len, secInfo);
+	if (keyInfo == nullptr)
+		return false;
+
+	switch (tt)
+	{
+		case typeid(int32_t) :
+			keyInfo->_type = SMVT_INT32;
+			break;
+		case typeid(int64_t) :
+			keyInfo->_type = SMVT_INT64;
+			break;
+		case typeid(uint32_t) :
+			keyInfo->_type = SMVT_UINT32;
+			break;
+		case typeid(uint64_t) :
+			keyInfo->_type = SMVT_UINT64;
+			break;
+		case typeid(double) :
+			keyInfo->_type = SMVT_DOUBLE;
+			break;
+		case typeid(const char*) :
+			keyInfo->_type = SMVT_STRING;
+			break;
+		default:
+			throw std::runtime_error("unsupport type");
+			break;
+	}
+
+	if(is_str)
+		wt_strcpy(secInfo->_data + keyInfo->_offset, val, VTL_STRING);
+	else
+		*((T*)(secInfo->_data + keyInfo->_offset)) = val;
+}
+*/
 
 bool ShareBlocks::set_string(const char* domain, const char* section, const char* key, const char* val)
 {
@@ -361,6 +439,52 @@ bool ShareBlocks::set_double(const char* domain, const char* section, const char
 
 	return true;
 }
+
+/*
+template<typename T>
+T ShareBlocks::get_value(const char* domain, const char* section, const char* key, T defVal)
+{
+	auto tt = typeid(T);
+
+	bool is_str = tt == typeid(const char*);
+
+	SecInfo* secInfo = nullptr;
+	ValueType vt;
+	switch (tt)
+	{
+		case typeid(int32_t) :
+			vt = SMVT_INT32;
+			break;
+		case typeid(int64_t) :
+			vt = SMVT_INT64;
+			break;
+		case typeid(uint32_t) :
+			vt = SMVT_UINT32;
+			break;
+		case typeid(uint64_t) :
+			vt = SMVT_UINT64;
+			break;
+		case typeid(double) :
+			vt = SMVT_DOUBLE;
+			break;
+		case typeid(const char*) :
+			vt = SMVT_STRING;
+			break;
+		default:
+			throw std::runtime_error("unsupport type");
+			break;
+	}
+
+	KeyInfo* keyInfo = (KeyInfo*)check_valid(domain, section, key, vt, secInfo);
+	if (keyInfo == nullptr)
+		return defVal;
+
+	if (is_str)
+		return (secInfo->_data + keyInfo->_offset);
+	else
+		return *(T*)(secInfo->_data + keyInfo->_offset);
+}
+*/
 
 const char* ShareBlocks::get_string(const char* domain, const char* section, const char* key, const char* defVal /* = "" */)
 {

@@ -3,11 +3,6 @@
 
 using namespace shareblock;
 
-void on_update(const char* domain, const char* section, KeyInfo* key)
-{
-
-}
-
 bool init_master(const char* id, const char* path/* = ""*/)
 {
 	return ShareBlocks::one().init_master(id, path);
@@ -49,6 +44,36 @@ uint64_t get_section_updatetime(const char* domain, const char* section)
 bool commit_section(const char* domain, const char* section)
 {
 	return ShareBlocks::one().commit_section(domain, section);
+}
+
+const char* allocate_string(const char* domain, const char* section, const char* key)
+{
+	return (const char*)ShareBlocks::one().allocate_key(domain, section, key, SMVT_STRING);
+}
+
+int32_t* allocate_int32(const char* domain, const char* section, const char* key)
+{
+	return (int32_t*)ShareBlocks::one().allocate_key(domain, section, key, SMVT_INT32);
+}
+
+int64_t* allocate_int64(const char* domain, const char* section, const char* key)
+{
+	return (int64_t*)ShareBlocks::one().allocate_key(domain, section, key, SMVT_INT64);
+}
+
+uint32_t* allocate_uint32(const char* domain, const char* section, const char* key)
+{
+	return (uint32_t*)ShareBlocks::one().allocate_key(domain, section, key, SMVT_UINT32);
+}
+
+uint64_t* allocate_uint64(const char* domain, const char* section, const char* key)
+{
+	return (uint64_t*)ShareBlocks::one().allocate_key(domain, section, key, SMVT_UINT64);
+}
+
+double* allocate_double(const char* domain, const char* section, const char* key)
+{
+	return (double*)ShareBlocks::one().allocate_key(domain, section, key, SMVT_DOUBLE);
 }
 
 bool set_string(const char* domain, const char* section, const char* key, const char* val)

@@ -2,7 +2,7 @@
 #include "SpinMutex.hpp"
 #include "BoostFile.hpp"
 #include "BoostMappingFile.hpp"
-
+#include "../Includes/FasterDefs.h"
 #include <unordered_map>
 
 #define SIZE_STEP 200

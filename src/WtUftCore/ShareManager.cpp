@@ -179,3 +179,51 @@ double ShareManager::get_value(const char* section, const char* key, double defV
 
 	return get_double(_domain.c_str(), section, key, defVal);
 }
+
+const char* ShareManager::allocate_string(const char* section, const char* key)
+{
+	if (!_inited)
+		return nullptr;
+
+	return ::allocate_string(_domain.c_str(), section, key);
+}
+
+int32_t* ShareManager::allocate_int32(const char* section, const char* key)
+{
+	if (!_inited)
+		return nullptr;
+
+	return ::allocate_int32(_domain.c_str(), section, key);
+}
+
+int64_t* ShareManager::allocate_int64(const char* section, const char* key)
+{
+	if (!_inited)
+		return nullptr;
+
+	return ::allocate_int64(_domain.c_str(), section, key);
+}
+
+uint32_t* ShareManager::allocate_uint32(const char* section, const char* key)
+{
+	if (!_inited)
+		return nullptr;
+
+	return ::allocate_uint32(_domain.c_str(), section, key);
+}
+
+uint64_t* ShareManager::allocate_uint64(const char* section, const char* key)
+{
+	if (!_inited)
+		return nullptr;
+
+	return ::allocate_uint64(_domain.c_str(), section, key);
+}
+
+double* ShareManager::allocate_double(const char* section, const char* key)
+{
+	if (!_inited)
+		return nullptr;
+
+	return ::allocate_double(_domain.c_str(), section, key);
+}

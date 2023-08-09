@@ -52,15 +52,22 @@ public:
 
 	const char*	get_value(const char* section, const char* key, const char* defVal = "");
 
-	int32_t	get_value(const char* section, const char* key, int32_t defVal = 0);
+	int32_t		get_value(const char* section, const char* key, int32_t defVal = 0);
 
-	int64_t	get_value(const char* section, const char* key, int64_t defVal = 0);
+	int64_t		get_value(const char* section, const char* key, int64_t defVal = 0);
 
 	uint32_t	get_value(const char* section, const char* key, uint32_t defVal = 0);
 
 	uint64_t	get_value(const char* section, const char* key, uint64_t defVal = 0);
 
-	double	get_value(const char* section, const char* key, double defVal = 0);
+	double		get_value(const char* section, const char* key, double defVal = 0);
+
+	const char*	allocate_string(const char* section, const char* key);
+	int32_t*	allocate_int32(const char* section, const char* key);
+	int64_t*	allocate_int64(const char* section, const char* key);
+	uint32_t*	allocate_uint32(const char* section, const char* key);
+	uint64_t*	allocate_uint64(const char* section, const char* key);
+	double*		allocate_double(const char* section, const char* key);
 
 private:
 	bool			_inited;
