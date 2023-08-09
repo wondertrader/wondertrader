@@ -62,16 +62,20 @@ public:
 
 	double		get_value(const char* section, const char* key, double defVal = 0);
 
-	const char*	allocate_string(const char* section, const char* key);
-	int32_t*	allocate_int32(const char* section, const char* key);
-	int64_t*	allocate_int64(const char* section, const char* key);
-	uint32_t*	allocate_uint32(const char* section, const char* key);
-	uint64_t*	allocate_uint64(const char* section, const char* key);
-	double*		allocate_double(const char* section, const char* key);
+	/*
+	 *	在单向同步区分配字段
+	 */
+	const char*	allocate_value(const char* section, const char* key, const char* initVal = "");
+	int32_t*	allocate_value(const char* section, const char* key, int32_t initVal = 0);
+	int64_t*	allocate_value(const char* section, const char* key, int64_t initVal = 0);
+	uint32_t*	allocate_value(const char* section, const char* key, uint32_t initVal = 0);
+	uint64_t*	allocate_value(const char* section, const char* key, uint64_t initVal = 0);
+	double*		allocate_value(const char* section, const char* key, double initVal = 0);
 
 private:
 	bool			_inited;
-	std::string		_domain;
+	std::string		_exchg;	//交换区
+	std::string		_sync;
 	faster_hashmap<ShortKey, uint64_t>	_secnames;
 
 	bool			_stopped;

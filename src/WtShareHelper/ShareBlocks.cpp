@@ -311,56 +311,77 @@ void* ShareBlocks::allocate_key(const char* domain, const char* section, const c
 	return (void*)(secInfo->_data + keyInfo->_offset);
 }
 
-/*
-template<typename SVT>
-bool ShareBlocks::set_value(const char* domain, const char* section, const char* key, SVT val)
+const char* ShareBlocks::allocate_string(const char* domain, const char* section, const char* key, const char* initVal /* = "" */)
 {
-	auto tt = typeid(SVT);
-
-	bool is_str = (tt == typeid(const char*));
-
 	SecInfo* secInfo = nullptr;
-	std::size_t len;
-	if (is_str)
-		len = VTL_STRING;
-	else
-		len = sizeof(SVT);
-
-	KeyInfo* keyInfo = (KeyInfo*)make_valid(domain, section, key, len, secInfo);
+	KeyInfo* keyInfo = (KeyInfo*)make_valid(domain, section, key, VTL_STRING, secInfo);
 	if (keyInfo == nullptr)
 		return false;
 
-	switch (tt)
-	{
-		case typeid(int32_t) :
-			keyInfo->_type = SMVT_INT32;
-			break;
-		case typeid(int64_t) :
-			keyInfo->_type = SMVT_INT64;
-			break;
-		case typeid(uint32_t) :
-			keyInfo->_type = SMVT_UINT32;
-			break;
-		case typeid(uint64_t) :
-			keyInfo->_type = SMVT_UINT64;
-			break;
-		case typeid(double) :
-			keyInfo->_type = SMVT_DOUBLE;
-			break;
-		case typeid(const char*) :
-			keyInfo->_type = SMVT_STRING;
-			break;
-		default:
-			throw std::runtime_error("unsupport type");
-			break;
-	}
-
-	if(is_str)
-		wt_strcpy(secInfo->_data + keyInfo->_offset, val, VTL_STRING);
-	else
-		*((T*)(secInfo->_data + keyInfo->_offset)) = val;
+	keyInfo->_type = SMVT_STRING;
+	wt_strcpy(secInfo->_data + keyInfo->_offset, initVal, VTL_STRING);
+	return (secInfo->_data + keyInfo->_offset);
 }
-*/
+
+int32_t* ShareBlocks::allocate_int32(const char* domain, const char* section, const char* key, int32_t initVal /* = 0 */)
+{
+	SecInfo* secInfo = nullptr;
+	KeyInfo* keyInfo = (KeyInfo*)make_valid(domain, section, key, VTL_INT32, secInfo);
+	if (keyInfo == nullptr)
+		return false;
+
+	keyInfo->_type = SMVT_INT32;
+	*((int32_t*)(secInfo->_data + keyInfo->_offset)) = initVal;
+	return (int32_t*)(secInfo->_data + keyInfo->_offset);
+}
+
+int64_t* ShareBlocks::allocate_int64(const char* domain, const char* section, const char* key, int64_t initVal /* = 0 */)
+{
+	SecInfo* secInfo = nullptr;
+	KeyInfo* keyInfo = (KeyInfo*)make_valid(domain, section, key, VTL_INT64, secInfo);
+	if (keyInfo == nullptr)
+		return false;
+
+	keyInfo->_type = SMVT_INT64;
+	*((int64_t*)(secInfo->_data + keyInfo->_offset)) = initVal;
+	return (int64_t*)(secInfo->_data + keyInfo->_offset);
+}
+
+uint32_t* ShareBlocks::allocate_uint32(const char* domain, const char* section, const char* key, uint32_t initVal /* = 0 */)
+{
+	SecInfo* secInfo = nullptr;
+	KeyInfo* keyInfo = (KeyInfo*)make_valid(domain, section, key, VTL_UINT32, secInfo);
+	if (keyInfo == nullptr)
+		return false;
+
+	keyInfo->_type = SMVT_UINT32;
+	*((uint32_t*)(secInfo->_data + keyInfo->_offset)) = initVal;
+	return (uint32_t*)(secInfo->_data + keyInfo->_offset);
+}
+
+uint64_t* ShareBlocks::allocate_uint64(const char* domain, const char* section, const char* key, uint64_t initVal /* = 0 */)
+{
+	SecInfo* secInfo = nullptr;
+	KeyInfo* keyInfo = (KeyInfo*)make_valid(domain, section, key, VTL_UINT64, secInfo);
+	if (keyInfo == nullptr)
+		return false;
+
+	keyInfo->_type = SMVT_UINT64;
+	*((uint64_t*)(secInfo->_data + keyInfo->_offset)) = initVal;
+	return (uint64_t*)(secInfo->_data + keyInfo->_offset);
+}
+
+double* ShareBlocks::allocate_double(const char* domain, const char* section, const char* key, double initVal /* = 0 */)
+{
+	SecInfo* secInfo = nullptr;
+	KeyInfo* keyInfo = (KeyInfo*)make_valid(domain, section, key, VTL_DOUBLE, secInfo);
+	if (keyInfo == nullptr)
+		return false;
+
+	keyInfo->_type = SMVT_DOUBLE;
+	*((double*)(secInfo->_data + keyInfo->_offset)) = initVal;
+	return (double*)(secInfo->_data + keyInfo->_offset);
+}
 
 bool ShareBlocks::set_string(const char* domain, const char* section, const char* key, const char* val)
 {

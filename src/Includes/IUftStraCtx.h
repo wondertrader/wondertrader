@@ -74,6 +74,12 @@ public:
 	virtual int32_t		read_param(const char* name, int32_t defVal = 0) { return defVal; }
 	virtual int64_t		read_param(const char* name, int64_t defVal = 0) { return defVal; }
 
+	virtual double*		sync_param(const char* name, double initVal = 0) { return nullptr; }
+	virtual uint32_t*	sync_param(const char* name, uint32_t initVal = 0) { return nullptr; }
+	virtual uint64_t*	sync_param(const char* name, uint64_t initVal = 0) { return nullptr; }
+	virtual int32_t*	sync_param(const char* name, int32_t initVal = 0) { return nullptr; }
+	virtual int64_t*	sync_param(const char* name, int64_t initVal = 0) { return nullptr; }
+
 	//²ßÂÔ½Ó¿Ú
 
 	virtual uint32_t	stra_get_date() = 0;

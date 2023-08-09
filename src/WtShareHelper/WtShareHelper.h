@@ -26,17 +26,17 @@ extern "C"
 
 	EXPORT_FLAG bool	commit_section(const char* domain, const char* section);
 
-	EXPORT_FLAG const char*	allocate_string(const char* domain, const char* section, const char* key);
+	EXPORT_FLAG const char*	allocate_string(const char* domain, const char* section, const char* key, const char* initVal);
 
-	EXPORT_FLAG int32_t*	allocate_int32(const char* domain, const char* section, const char* key);
+	EXPORT_FLAG int32_t*	allocate_int32(const char* domain, const char* section, const char* key, int32_t initVal);
 
-	EXPORT_FLAG int64_t*	allocate_int64(const char* domain, const char* section, const char* key);
+	EXPORT_FLAG int64_t*	allocate_int64(const char* domain, const char* section, const char* key, int64_t initVal);
 
-	EXPORT_FLAG uint32_t*	allocate_uint32(const char* domain, const char* section, const char* key);
+	EXPORT_FLAG uint32_t*	allocate_uint32(const char* domain, const char* section, const char* key, uint32_t initVal);
 
-	EXPORT_FLAG uint64_t*	allocate_uint64(const char* domain, const char* section, const char* key);
+	EXPORT_FLAG uint64_t*	allocate_uint64(const char* domain, const char* section, const char* key, uint64_t initVal);
 
-	EXPORT_FLAG double*		allocate_double(const char* domain, const char* section, const char* key);
+	EXPORT_FLAG double*		allocate_double(const char* domain, const char* section, const char* key, double initVal);
 
 	EXPORT_FLAG bool	set_string(const char* domain, const char* section, const char* key, const char* val);
 

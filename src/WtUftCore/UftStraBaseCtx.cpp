@@ -113,6 +113,31 @@ double UftStraBaseCtx::read_param(const char* name, double defVal /* = 0 */)
 	return ShareManager::self().get_value(_name.c_str(), name, defVal);
 }
 
+int32_t* UftStraBaseCtx::sync_param(const char* name, int32_t initVal /* = 0 */)
+{
+	return ShareManager::self().allocate_value(_name.c_str(), name, initVal);
+}
+
+uint32_t* UftStraBaseCtx::sync_param(const char* name, uint32_t initVal /* = 0 */)
+{
+	return ShareManager::self().allocate_value(_name.c_str(), name, initVal);
+}
+
+int64_t* UftStraBaseCtx::sync_param(const char* name, int64_t initVal /* = 0 */)
+{
+	return ShareManager::self().allocate_value(_name.c_str(), name, initVal);
+}
+
+uint64_t* UftStraBaseCtx::sync_param(const char* name, uint64_t initVal /* = 0 */)
+{
+	return ShareManager::self().allocate_value(_name.c_str(), name, initVal);
+}
+
+double* UftStraBaseCtx::sync_param(const char* name, double initVal /* = 0 */)
+{
+	return ShareManager::self().allocate_value(_name.c_str(), name, initVal);
+}
+
 void UftStraBaseCtx::on_tick(const char* stdCode, WTSTickData* newTick)
 {
 

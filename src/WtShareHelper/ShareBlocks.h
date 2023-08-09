@@ -100,6 +100,13 @@ namespace shareblock
 
 		void*	allocate_key(const char* domain, const char* section, const char* key, ValueType vType);
 
+		const char* allocate_string(const char* domain, const char* section, const char* key, const char* initVal = "");
+		int32_t*	allocate_int32(const char* domain, const char* section, const char* key, int32_t initVal = 0);
+		int64_t*	allocate_int64(const char* domain, const char* section, const char* key, int64_t initVal = 0);
+		uint32_t*	allocate_uint32(const char* domain, const char* section, const char* key, uint32_t initVal = 0);
+		uint64_t*	allocate_uint64(const char* domain, const char* section, const char* key, uint64_t initVal = 0);
+		double*		allocate_double(const char* domain, const char* section, const char* key, double initVal = 0);
+
 
 		//template<typename SVT>
 		//bool	set_value(const char* domain, const char* section, const char* key, SVT val);

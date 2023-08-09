@@ -44,6 +44,12 @@ public:
 	virtual int32_t		read_param(const char* name, int32_t defVal = 0) override;
 	virtual int64_t		read_param(const char* name, int64_t defVal = 0) override;
 
+	virtual double*		sync_param(const char* name, double initVal = 0) override;
+	virtual uint32_t*	sync_param(const char* name, uint32_t initVal = 0) override;
+	virtual uint64_t*	sync_param(const char* name, uint64_t initVal = 0) override;
+	virtual int32_t*	sync_param(const char* name, int32_t initVal = 0) override;
+	virtual int64_t*	sync_param(const char* name, int64_t initVal = 0) override;
+
 public:
 	//////////////////////////////////////////////////////////////////////////
 	//IHftStraCtx ½Ó¿Ú

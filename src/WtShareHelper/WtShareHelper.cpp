@@ -46,34 +46,34 @@ bool commit_section(const char* domain, const char* section)
 	return ShareBlocks::one().commit_section(domain, section);
 }
 
-const char* allocate_string(const char* domain, const char* section, const char* key)
+const char* allocate_string(const char* domain, const char* section, const char* key, const char* initVal)
 {
-	return (const char*)ShareBlocks::one().allocate_key(domain, section, key, SMVT_STRING);
+	return ShareBlocks::one().allocate_string(domain, section, key, initVal);
 }
 
-int32_t* allocate_int32(const char* domain, const char* section, const char* key)
+int32_t* allocate_int32(const char* domain, const char* section, const char* key, int32_t initVal)
 {
-	return (int32_t*)ShareBlocks::one().allocate_key(domain, section, key, SMVT_INT32);
+	return ShareBlocks::one().allocate_int32(domain, section, key, initVal);
 }
 
-int64_t* allocate_int64(const char* domain, const char* section, const char* key)
+int64_t* allocate_int64(const char* domain, const char* section, const char* key, int64_t initVal)
 {
-	return (int64_t*)ShareBlocks::one().allocate_key(domain, section, key, SMVT_INT64);
+	return ShareBlocks::one().allocate_int64(domain, section, key, initVal);
 }
 
-uint32_t* allocate_uint32(const char* domain, const char* section, const char* key)
+uint32_t* allocate_uint32(const char* domain, const char* section, const char* key, uint32_t initVal)
 {
-	return (uint32_t*)ShareBlocks::one().allocate_key(domain, section, key, SMVT_UINT32);
+	return ShareBlocks::one().allocate_uint32(domain, section, key,  initVal);
 }
 
-uint64_t* allocate_uint64(const char* domain, const char* section, const char* key)
+uint64_t* allocate_uint64(const char* domain, const char* section, const char* key, uint64_t initVal)
 {
-	return (uint64_t*)ShareBlocks::one().allocate_key(domain, section, key, SMVT_UINT64);
+	return ShareBlocks::one().allocate_uint64(domain, section, key, initVal);
 }
 
-double* allocate_double(const char* domain, const char* section, const char* key)
+double* allocate_double(const char* domain, const char* section, const char* key, double initVal)
 {
-	return (double*)ShareBlocks::one().allocate_key(domain, section, key, SMVT_DOUBLE);
+	return ShareBlocks::one().allocate_double(domain, section, key, initVal);
 }
 
 bool set_string(const char* domain, const char* section, const char* key, const char* val)

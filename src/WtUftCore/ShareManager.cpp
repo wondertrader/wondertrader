@@ -43,7 +43,7 @@ bool ShareManager::start_watching(uint32_t microsecs)
 					const char* section = v.first.c_str();
 					uint64_t& udtTime = (uint64_t&)v.second;
 
-					uint64_t lastUdtTime = get_section_updatetime(_domain.c_str(), section);
+					uint64_t lastUdtTime = get_section_updatetime(_exchg.c_str(), section);
 					if(lastUdtTime > v.second)
 					{
 						//触发通知
@@ -68,8 +68,11 @@ bool ShareManager::init_domain(const char* id)
 		return false;
 
 	bool ret = init_master(id, ".share");
-	_domain = id;
+	_exchg = id;
 	WTSLogger::info("Share domain [{}] initialing {}", id, ret ? "succeed" : "fail");
+
+	//初始化同步区
+	ret = init_master("sync", ".sync");
 
 	return ret;
 }
@@ -81,7 +84,7 @@ bool ShareManager::commit_param_watcher(const char* section)
 
 	_secnames[section] = TimeUtils::getLocalTimeNow();
 
-	return commit_section(_domain.c_str(), section);
+	return commit_section(_exchg.c_str(), section);
 }
 
 bool ShareManager::set_value(const char* section, const char* key, double val)
@@ -89,7 +92,7 @@ bool ShareManager::set_value(const char* section, const char* key, double val)
 	if (!_inited)
 		return false;
 
-	return set_double(_domain.c_str(), section, key, val);
+	return set_double(_exchg.c_str(), section, key, val);
 }
 
 bool ShareManager::set_value(const char* section, const char* key, uint64_t val)
@@ -97,7 +100,7 @@ bool ShareManager::set_value(const char* section, const char* key, uint64_t val)
 	if (!_inited)
 		return false;
 
-	return set_uint64(_domain.c_str(), section, key, val);
+	return set_uint64(_exchg.c_str(), section, key, val);
 }
 
 bool ShareManager::set_value(const char* section, const char* key, uint32_t val)
@@ -105,7 +108,7 @@ bool ShareManager::set_value(const char* section, const char* key, uint32_t val)
 	if (!_inited)
 		return false;
 
-	return set_uint32(_domain.c_str(), section, key, val);
+	return set_uint32(_exchg.c_str(), section, key, val);
 }
 
 bool ShareManager::set_value(const char* section, const char* key, int64_t val)
@@ -113,7 +116,7 @@ bool ShareManager::set_value(const char* section, const char* key, int64_t val)
 	if (!_inited)
 		return false;
 
-	return set_int64(_domain.c_str(), section, key, val);
+	return set_int64(_exchg.c_str(), section, key, val);
 }
 
 bool ShareManager::set_value(const char* section, const char* key, int32_t val)
@@ -121,7 +124,7 @@ bool ShareManager::set_value(const char* section, const char* key, int32_t val)
 	if (!_inited)
 		return false;
 
-	return set_int32(_domain.c_str(), section, key, val);
+	return set_int32(_exchg.c_str(), section, key, val);
 }
 
 bool ShareManager::set_value(const char* section, const char* key, const char* val)
@@ -129,7 +132,7 @@ bool ShareManager::set_value(const char* section, const char* key, const char* v
 	if (!_inited)
 		return false;
 
-	return set_string(_domain.c_str(), section, key, val);
+	return set_string(_exchg.c_str(), section, key, val);
 }
 
 const char* ShareManager::get_value(const char* section, const char* key, const char* defVal /* = "" */)
@@ -137,7 +140,7 @@ const char* ShareManager::get_value(const char* section, const char* key, const 
 	if (!_inited)
 		return defVal;
 
-	return get_string(_domain.c_str(), section, key, defVal);
+	return get_string(_exchg.c_str(), section, key, defVal);
 }
 
 int32_t ShareManager::get_value(const char* section, const char* key, int32_t defVal /* = 0 */)
@@ -145,7 +148,7 @@ int32_t ShareManager::get_value(const char* section, const char* key, int32_t de
 	if (!_inited)
 		return defVal;
 
-	return get_int32(_domain.c_str(), section, key, defVal);
+	return get_int32(_exchg.c_str(), section, key, defVal);
 }
 
 int64_t ShareManager::get_value(const char* section, const char* key, int64_t defVal /* = 0 */)
@@ -153,7 +156,7 @@ int64_t ShareManager::get_value(const char* section, const char* key, int64_t de
 	if (!_inited)
 		return defVal;
 
-	return get_int64(_domain.c_str(), section, key, defVal);
+	return get_int64(_exchg.c_str(), section, key, defVal);
 }
 
 uint32_t ShareManager::get_value(const char* section, const char* key, uint32_t defVal /* = 0 */)
@@ -161,7 +164,7 @@ uint32_t ShareManager::get_value(const char* section, const char* key, uint32_t 
 	if (!_inited)
 		return defVal;
 
-	return get_uint32(_domain.c_str(), section, key, defVal);
+	return get_uint32(_exchg.c_str(), section, key, defVal);
 }
 
 uint64_t ShareManager::get_value(const char* section, const char* key, uint64_t defVal /* = 0 */)
@@ -169,7 +172,7 @@ uint64_t ShareManager::get_value(const char* section, const char* key, uint64_t 
 	if (!_inited)
 		return defVal;
 
-	return get_uint64(_domain.c_str(), section, key, defVal);
+	return get_uint64(_exchg.c_str(), section, key, defVal);
 }
 
 double ShareManager::get_value(const char* section, const char* key, double defVal /* = 0 */)
@@ -177,53 +180,53 @@ double ShareManager::get_value(const char* section, const char* key, double defV
 	if (!_inited)
 		return defVal;
 
-	return get_double(_domain.c_str(), section, key, defVal);
+	return get_double(_exchg.c_str(), section, key, defVal);
 }
 
-const char* ShareManager::allocate_string(const char* section, const char* key)
+const char* ShareManager::allocate_value(const char* section, const char* key, const char* initVal/* = ""*/)
 {
 	if (!_inited)
 		return nullptr;
 
-	return ::allocate_string(_domain.c_str(), section, key);
+	return ::allocate_string(_sync.c_str(), section, key, initVal);
 }
 
-int32_t* ShareManager::allocate_int32(const char* section, const char* key)
+int32_t* ShareManager::allocate_value(const char* section, const char* key, int32_t initVal/* = 0*/)
 {
 	if (!_inited)
 		return nullptr;
 
-	return ::allocate_int32(_domain.c_str(), section, key);
+	return ::allocate_int32(_sync.c_str(), section, key, initVal);
 }
 
-int64_t* ShareManager::allocate_int64(const char* section, const char* key)
+int64_t* ShareManager::allocate_value(const char* section, const char* key, int64_t initVal/* = 0*/)
 {
 	if (!_inited)
 		return nullptr;
 
-	return ::allocate_int64(_domain.c_str(), section, key);
+	return ::allocate_int64(_sync.c_str(), section, key, initVal);
 }
 
-uint32_t* ShareManager::allocate_uint32(const char* section, const char* key)
+uint32_t* ShareManager::allocate_value(const char* section, const char* key, uint32_t initVal/* = 0*/)
 {
 	if (!_inited)
 		return nullptr;
 
-	return ::allocate_uint32(_domain.c_str(), section, key);
+	return ::allocate_uint32(_sync.c_str(), section, key, initVal);
 }
 
-uint64_t* ShareManager::allocate_uint64(const char* section, const char* key)
+uint64_t* ShareManager::allocate_value(const char* section, const char* key, uint64_t initVal/* = 0*/)
 {
 	if (!_inited)
 		return nullptr;
 
-	return ::allocate_uint64(_domain.c_str(), section, key);
+	return ::allocate_uint64(_sync.c_str(), section, key, initVal);
 }
 
-double* ShareManager::allocate_double(const char* section, const char* key)
+double* ShareManager::allocate_value(const char* section, const char* key, double initVal/* = 0*/)
 {
 	if (!_inited)
 		return nullptr;
 
-	return ::allocate_double(_domain.c_str(), section, key);
+	return ::allocate_double(_sync.c_str(), section, key, initVal);
 }
