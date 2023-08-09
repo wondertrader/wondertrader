@@ -428,6 +428,15 @@ OrderIDs TraderAdapter::cancelAll(const char* stdCode)
 	return ret;
 }
 
+uint32_t TraderAdapter::getInfos(const char* stdCode)
+{
+	WTSTradeStateInfo* statInfo = (WTSTradeStateInfo*)_stat_map->get(stdCode);
+	if (statInfo == NULL)
+		return 0;
+
+	return statInfo->infos();
+}
+
 OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty, int flag, bool bForceClose, WTSContractInfo* cInfo /* = NULL */)
 {
 	OrderIDs ret;

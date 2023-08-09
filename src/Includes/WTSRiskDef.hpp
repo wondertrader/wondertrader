@@ -93,6 +93,8 @@ public:
 	inline uint32_t total_cancels() const{ return _trd_stat_info.b_cancels + _trd_stat_info.s_cancels; }
 	inline uint32_t total_orders() const { return _trd_stat_info.b_orders + _trd_stat_info.s_orders; }
 
+	inline uint32_t infos() const { return _trd_stat_info._infos; }
+
 private:
 	TradeStatInfo	_trd_stat_info;
 };

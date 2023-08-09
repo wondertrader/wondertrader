@@ -13,7 +13,7 @@ USING_NS_WTP;
 class ShareManager
 {
 private:
-	ShareManager():_inited(false), _stopped(false), _engine(nullptr){}
+	ShareManager():_inited(false), _stopped(false), _engine(nullptr), _sync("sync"){}
 	~ShareManager()
 	{
 		_stopped = true;

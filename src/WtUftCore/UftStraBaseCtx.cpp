@@ -355,6 +355,11 @@ double UftStraBaseCtx::stra_get_undone(const char* stdCode)
 	return _trader->getUndoneQty(stdCode);
 }
 
+uint32_t UftStraBaseCtx::stra_get_infos(const char* stdCode)
+{
+	return _trader->getInfos(stdCode);
+}
+
 double UftStraBaseCtx::stra_get_price(const char* stdCode)
 {
 	return _engine->get_cur_price(stdCode);

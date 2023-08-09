@@ -130,7 +130,7 @@ public:
 	double	getPosition(const char* stdCode, bool bValidOnly, int32_t flag = 3);
 	double	enumPosition(const char* stdCode = "");
 	OrderMap* getOrders(const char* stdCode);
-	double getUndoneQty(const char* stdCode)
+	inline double getUndoneQty(const char* stdCode)
 	{
 		auto it = _undone_qty.find(stdCode);
 		if (it != _undone_qty.end())
@@ -138,6 +138,8 @@ public:
 
 		return 0;
 	}
+
+	uint32_t getInfos(const char* stdCode);
 
 	OrderIDs buy(const char* stdCode, double price, double qty, int flag, bool bForceClose, WTSContractInfo* cInfo = NULL);
 	OrderIDs sell(const char* stdCode, double price, double qty, int flag, bool bForceClose, WTSContractInfo* cInfo = NULL);

@@ -159,6 +159,7 @@ public:
 	virtual double stra_enum_position(const char* stdCode) override;
 	virtual double stra_get_price(const char* stdCode) override;
 	virtual double stra_get_undone(const char* stdCode) override;
+	virtual uint32_t stra_get_infos(const char* stdCode) override;
 
 	virtual void stra_sub_ticks(const char* stdCode) override;
 	virtual void stra_sub_order_details(const char* stdCode) override;

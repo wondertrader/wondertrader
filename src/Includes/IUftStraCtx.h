@@ -231,6 +231,8 @@ public:
 	 */
 	virtual double stra_get_undone(const char* stdCode) = 0;
 
+	virtual uint32_t stra_get_infos(const char* stdCode) { return 0; }
+
 	/*
 	 *	¶©ÔÄ½Ó¿Ú
 	 */
