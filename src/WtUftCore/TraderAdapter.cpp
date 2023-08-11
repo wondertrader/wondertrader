@@ -302,14 +302,11 @@ OrderMap* TraderAdapter::getOrders(const char* stdCode)
 	return ret;
 }
 
-void TraderAdapter::updateUndone(const char* stdCode, double qty, bool bOuput /* = false */)
+void TraderAdapter::updateUndone(const char* stdCode, double qty)
 {
 	double& undone = _undone_qty[stdCode];
 	double oldQty = undone;
 	undone += qty;
-
-	//if(bOuput)
-	//	WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO, "[{}] {} qty of undone order updated, {} -> {}", _id.c_str(), stdCode, oldQty, undone);
 }
 
 uint32_t TraderAdapter::doEntrust(WTSEntrust* entrust)
@@ -338,11 +335,11 @@ uint32_t TraderAdapter::doEntrust(WTSEntrust* entrust)
 		WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR, "[{}] Order placing failed: {}", _id, ret);
 		return UINT_MAX;
 	}
-	else if(_risk_mon_enabled)
-	{
-		int64_t now = TimeUtils::getLocalTimeNow();
-		_order_time_cache[entrust->getCode()].emplace_back(now);
-	}
+	//else if(_risk_mon_enabled)
+	//{
+	//	int64_t now = TimeUtils::getLocalTimeNow();
+	//	_order_time_cache[entrust->getCode()].emplace_back(now);
+	//}
 	return localid;
 }
 
@@ -363,8 +360,8 @@ bool TraderAdapter::doCancel(WTSOrderInfo* ordInfo)
 	WTSContractInfo* cInfo = _bd_mgr->getContract(ordInfo->getCode(), ordInfo->getExchg());
 
 	//撤单频率检查
-	if (_risk_mon_enabled && !checkCancelLimits(ordInfo->getCode()))
-		return false;
+	//if (_risk_mon_enabled && !checkCancelLimits(ordInfo->getCode()))
+	//	return false;
 
 	WTSEntrustAction* action = WTSEntrustAction::create(ordInfo->getCode(), cInfo->getExchg());
 	action->setEntrustID(ordInfo->getEntrustID());
@@ -390,8 +387,8 @@ bool TraderAdapter::cancel(uint32_t localid)
 	
 	bool bRet = doCancel(ordInfo);
 
-	if(_risk_mon_enabled)
-		_cancel_time_cache[ordInfo->getCode()].emplace_back(TimeUtils::getLocalTimeNow());
+	//if(_risk_mon_enabled)
+	//	_cancel_time_cache[ordInfo->getCode()].emplace_back(TimeUtils::getLocalTimeNow());
 
 	ordInfo->release();
 
@@ -418,8 +415,8 @@ OrderIDs TraderAdapter::cancelAll(const char* stdCode)
 				if(doCancel(orderInfo))
 				{
 					ret.emplace_back(it->first);
-					if (_risk_mon_enabled)
-						_cancel_time_cache[cInfo->getCode()].emplace_back(TimeUtils::getLocalTimeNow());
+					//if (_risk_mon_enabled)
+					//	_cancel_time_cache[cInfo->getCode()].emplace_back(TimeUtils::getLocalTimeNow());
 				}
 			}
 		}
@@ -443,17 +440,17 @@ OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty, int f
 	if (qty == 0)
 		return ret;
 
-	if(_risk_mon_enabled && !checkOrderLimits(stdCode))
-	{
-		WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO, "{} is forbidden to trade", stdCode);
-		return ret;
-	}
+	//if(_risk_mon_enabled && !checkOrderLimits(stdCode))
+	//{
+	//	WTSLogger::log_dyn("trader", _id.c_str(), LL_WARN, "{} is forbidden to trade", stdCode);
+	//	return ret;
+	//}
 
 	if (cInfo == NULL) cInfo = getContract(stdCode);
 	WTSCommodityInfo* commInfo = cInfo->getCommInfo();
 	WTSSessionInfo* sInfo = commInfo->getSessionInfo();
 
-	WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO, "[{}] Buying {} of quantity {}", _id.c_str(), stdCode, qty);
+	WTSLogger::log_dyn("trader", _id.c_str(), LL_DEBUG, "[{}] Buying {} of quantity {}", _id.c_str(), stdCode, qty);
 
 	const PosItem& pItem = _positions[stdCode];
 	WTSTradeStateInfo* statInfo = (WTSTradeStateInfo*)_stat_map->get(stdCode);
@@ -522,7 +519,7 @@ OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty, int f
 
 			left -= maxQty;
 
-			WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO,
+			WTSLogger::log_dyn("trader", _id.c_str(), LL_DEBUG,
 				"[{}] Signal of buying {} of quantity {} triggered: Opening long of quantity {}", _id.c_str(), stdCode, qty, maxQty);
 		}
 		else if (curRule._atype == AT_CloseToday)
@@ -565,12 +562,12 @@ OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty, int f
 
 				if (commInfo->getCoverMode() == CM_CoverToday)
 				{
-					WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO,
+					WTSLogger::log_dyn("trader", _id.c_str(), LL_DEBUG,
 						"[{}] Signal of buying {} of quantity {} triggered: Closing new short of quantity {}", _id.c_str(), stdCode, qty, maxQty);
 				}
 				else
 				{
-					WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO,
+					WTSLogger::log_dyn("trader", _id.c_str(), LL_DEBUG,
 						"[{}] Signal of buying {} of quantity {} triggered: Closing short of quantity {}", _id.c_str(), stdCode, qty, maxQty);
 				}
 			}
@@ -611,12 +608,12 @@ OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty, int f
 
 				if (commInfo->getCoverMode() == CM_CoverToday)
 				{
-					WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO,
+					WTSLogger::log_dyn("trader", _id.c_str(), LL_DEBUG,
 						"[{}] Signal of buying {} of quantity {} triggered: Closing old short of quantity {}", _id.c_str(), stdCode, qty, maxQty);
 				}
 				else
 				{
-					WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO,
+					WTSLogger::log_dyn("trader", _id.c_str(), LL_DEBUG,
 						"[{}] Signal of buying {} of quantity {} triggered: Closing short of quantity {}", _id.c_str(), stdCode, qty, maxQty);
 				}
 			}
@@ -648,7 +645,7 @@ OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty, int f
 					}
 					left -= maxQty;
 
-					WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO,
+					WTSLogger::log_dyn("trader", _id.c_str(), LL_DEBUG,
 						"[{}] Signal of buying {} of quantity {} triggered: Closing short of quantity {}", _id.c_str(), stdCode, qty, maxQty);
 				}
 			}
@@ -674,7 +671,7 @@ OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty, int f
 					}
 					left -= maxQty;
 
-					WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO,
+					WTSLogger::log_dyn("trader", _id.c_str(), LL_DEBUG,
 						"[{}] Signal of buying {} of quantity {} triggered: Closing old short of quantity {}", _id.c_str(), stdCode, qty, maxQty);
 				}
 
@@ -699,7 +696,7 @@ OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty, int f
 					}
 					left -= maxQty;
 
-					WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO,
+					WTSLogger::log_dyn("trader", _id.c_str(), LL_DEBUG,
 						"[{}] Signal of buying {} of quantity {} triggered: Closing new short of quantity {}", _id.c_str(), stdCode, qty, maxQty);
 				}
 			}
@@ -724,11 +721,11 @@ OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty, int 
 	if (qty == 0)
 		return ret;
 
-	if (_risk_mon_enabled && !checkOrderLimits(stdCode))
-	{
-		WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO, "{} is forbidden to trade", stdCode);
-		return ret;
-	}
+	//if (_risk_mon_enabled && !checkOrderLimits(stdCode))
+	//{
+	//	WTSLogger::log_dyn("trader", _id.c_str(), LL_WARN, "{} is forbidden to trade", stdCode);
+	//	return ret;
+	//}
 
 	if (cInfo == NULL) cInfo = getContract(stdCode);
 	WTSCommodityInfo* commInfo = cInfo->getCommInfo();
@@ -802,7 +799,7 @@ OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty, int 
 
 			left -= maxQty;
 
-			WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO,
+			WTSLogger::log_dyn("trader", _id.c_str(), LL_DEBUG,
 				"[{}] Signal of selling {} of quantity {} triggered: Opening short of quantity {}", _id.c_str(), stdCode, qty, maxQty);
 		}
 		else if (curRule._atype == AT_CloseToday)
@@ -842,12 +839,12 @@ OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty, int 
 
 				if (commInfo->getCoverMode() == CM_CoverToday)
 				{
-					WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO,
+					WTSLogger::log_dyn("trader", _id.c_str(), LL_DEBUG,
 						"[{}] Signal of selling {} of quantity {} triggered: Closing new long of quantity {}", _id.c_str(), stdCode, qty, maxQty);
 				}
 				else
 				{
-					WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO,
+					WTSLogger::log_dyn("trader", _id.c_str(), LL_DEBUG,
 						"[{}] Signal of selling {} of quantity {} triggered: Closing long of quantity {}", _id.c_str(), stdCode, qty, maxQty);
 				}
 			}
@@ -885,12 +882,12 @@ OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty, int 
 
 				if (commInfo->getCoverMode() == CM_CoverToday)
 				{
-					WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO,
+					WTSLogger::log_dyn("trader", _id.c_str(), LL_DEBUG,
 						"[{}] Signal of selling {} of quantity {} triggered: Closing old long of quantity {}", _id.c_str(), stdCode, qty, maxQty);
 				}
 				else
 				{
-					WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO,
+					WTSLogger::log_dyn("trader", _id.c_str(), LL_DEBUG,
 						"[{}] Signal of selling {} of quantity {} triggered: Closing long of quantity {}", _id.c_str(), stdCode, qty, maxQty);
 				}
 			}
@@ -919,7 +916,7 @@ OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty, int 
 					}
 					left -= maxQty;
 
-					WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO,
+					WTSLogger::log_dyn("trader", _id.c_str(), LL_DEBUG,
 						"[{}] Signal of selling {} of quantity {} triggered: Closing long of quantity {}", _id.c_str(), stdCode, qty, maxQty);
 				}
 
@@ -946,7 +943,7 @@ OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty, int 
 						}
 						left -= maxQty;
 
-						WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO,
+						WTSLogger::log_dyn("trader", _id.c_str(), LL_DEBUG,
 							"[{}] Signal of selling {} of quantity {} triggered: Closing old long of quantity {}", _id.c_str(), stdCode, qty, maxQty);
 					}
 
@@ -973,7 +970,7 @@ OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty, int 
 						}
 						left -= maxQty;
 
-						WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO,
+						WTSLogger::log_dyn("trader", _id.c_str(), LL_DEBUG,
 							"[{}] Signal of selling {} of quantity {} triggered: Closing new long of quantity {}", _id.c_str(), stdCode, qty, maxQty);
 					}
 
@@ -997,11 +994,11 @@ OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty, int 
 
 uint32_t TraderAdapter::openLong(const char* stdCode, double price, double qty, int flag /* = 0 */)
 {
-	if (_risk_mon_enabled && !checkOrderLimits(stdCode))
-	{
-		WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO, "{} is forbidden to trade", stdCode);
-		return 0;
-	}
+	//if (_risk_mon_enabled && !checkOrderLimits(stdCode))
+	//{
+	//	WTSLogger::log_dyn("trader", _id.c_str(), LL_WARN, "{} is forbidden to trade", stdCode);
+	//	return 0;
+	//}
 
 	WTSEntrust* entrust = WTSEntrust::create(stdCode, qty, price);
 	if(price == 0.0)
@@ -1026,11 +1023,11 @@ uint32_t TraderAdapter::openLong(const char* stdCode, double price, double qty, 
 
 uint32_t TraderAdapter::openShort(const char* stdCode, double price, double qty, int flag/* = 0*/)
 {
-	if (_risk_mon_enabled && !checkOrderLimits(stdCode))
-	{
-		WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO, "{} is forbidden to trade", stdCode);
-		return 0;
-	}
+	//if (_risk_mon_enabled && !checkOrderLimits(stdCode))
+	//{
+	//	WTSLogger::log_dyn("trader", _id.c_str(), LL_WARN, "{} is forbidden to trade", stdCode);
+	//	return 0;
+	//}
 
 	WTSEntrust* entrust = WTSEntrust::create(stdCode, qty, price);
 	if (price == 0.0)
@@ -1055,11 +1052,11 @@ uint32_t TraderAdapter::openShort(const char* stdCode, double price, double qty,
 
 uint32_t TraderAdapter::closeLong(const char* stdCode, double price, double qty, bool isToday /* = false */, int flag/* = 0*/)
 {
-	if (_risk_mon_enabled && !checkOrderLimits(stdCode))
-	{
-		WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO, "{} is forbidden to trade", stdCode);
-		return 0;
-	}
+	//if (_risk_mon_enabled && !checkOrderLimits(stdCode))
+	//{
+	//	WTSLogger::log_dyn("trader", _id.c_str(), LL_WARN, "{} is forbidden to trade", stdCode);
+	//	return 0;
+	//}
 
 	WTSEntrust* entrust = WTSEntrust::create(stdCode, qty, price);
 	if (price == 0.0)
@@ -1084,11 +1081,11 @@ uint32_t TraderAdapter::closeLong(const char* stdCode, double price, double qty,
 
 uint32_t TraderAdapter::closeShort(const char* stdCode, double price, double qty, bool isToday /* = false */, int flag/* = 0*/)
 {
-	if (_risk_mon_enabled && !checkOrderLimits(stdCode))
-	{
-		WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO, "{} is forbidden to trade", stdCode);
-		return 0;
-	}
+	//if (_risk_mon_enabled && !checkOrderLimits(stdCode))
+	//{
+	//	WTSLogger::log_dyn("trader", _id.c_str(), LL_WARN, "{} is forbidden to trade", stdCode);
+	//	return 0;
+	//}
 
 	WTSEntrust* entrust = WTSEntrust::create(stdCode, qty, price);
 	if (price == 0.0)
@@ -1401,7 +1398,7 @@ void TraderAdapter::onRspOrders(const WTSArray* ayOrders)
 
 void TraderAdapter::printPosition(const char* code, const PosItem& pItem)
 {
-	WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO, "[{}] {} position updated, long:{}[{}]|{}[{}], short:{}[{}]|{}[{}]",
+	WTSLogger::log_dyn("trader", _id.c_str(), LL_DEBUG, "[{}] {} position updated, long:{}[{}]|{}[{}], short:{}[{}]|{}[{}]",
 		_id.c_str(), code, pItem.l_prevol, pItem.l_preavail, pItem.l_newvol, pItem.l_newavail, 
 		pItem.s_prevol, pItem.s_preavail, pItem.s_newvol, pItem.s_newavail);
 }
@@ -1562,7 +1559,7 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 	}
 
 
-	WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO,"[{}] Order notified, instrument: {}, usertag: {}, state: {}", _id.c_str(), stdCode.c_str(), orderInfo->getUserTag(), stateToName(orderInfo->getOrderState()));
+	WTSLogger::log_dyn("trader", _id.c_str(), LL_DEBUG,"[{}] Order notified, instrument: {}, usertag: {}, state: {}", _id.c_str(), stdCode.c_str(), orderInfo->getUserTag(), stateToName(orderInfo->getOrderState()));
 
 	//如果订单撤销, 并且是wt的订单, 则要先更新未完成数量
 	if (orderInfo->getOrderState() == WOS_Canceled && StrUtil::startsWith(orderInfo->getUserTag(), _order_pattern.c_str(), true))
@@ -1580,7 +1577,7 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 		//WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO, "[{}] {} qty of undone order updated, {} -> {}", _id.c_str(), stdCode.c_str(), oldQty, newQty);
 		updateUndone(stdCode.c_str(), -qty);
 
-		WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO, "[{}] Order {} of {} canceled:{}, action: {}, leftqty: {}",
+		WTSLogger::log_dyn("trader", _id.c_str(), LL_DEBUG, "[{}] Order {} of {} canceled:{}, action: {}, leftqty: {}",
 			_id.c_str(), orderInfo->getUserTag(), stdCode.c_str(), orderInfo->getStateMsg(),
 			formatAction(orderInfo->getDirection(), orderInfo->getOffsetType()), qty);
 	}
@@ -1750,7 +1747,7 @@ void TraderAdapter::onPushTrade(WTSTradeInfo* tradeRecord)
 
 	std::string stdCode = cInfo->getFullCode();
 
-	WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO, 
+	WTSLogger::log_dyn("trader", _id.c_str(), LL_DEBUG,
 		"[{}] Trade notified, instrument: {}, usertag: {}, trdqty: {}, trdprice: {}", 
 			_id.c_str(), stdCode.c_str(), tradeRecord->getUserTag(), tradeRecord->getVolume(), tradeRecord->getPrice());
 

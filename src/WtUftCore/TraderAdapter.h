@@ -122,7 +122,7 @@ private:
 
 	inline WTSContractInfo* getContract(const char* stdCode);
 
-	inline void updateUndone(const char* stdCode, double qty, bool bOuput = true);
+	inline void updateUndone(const char* stdCode, double qty);
 
 	const RiskParams* getRiskParams(const char* stdCode);
 
@@ -239,11 +239,11 @@ private:
 	IBaseDataMgr*		_bd_mgr;
 	ActionPolicyMgr*	_policy_mgr;
 
-	faster_hashmap<std::string, PosItem> _positions;
+	faster_hashmap<LongKey, PosItem> _positions;
 
 	StdUniqueMutex _mtx_orders;
 	OrderMap*		_orders;
-	faster_hashset<std::string> _orderids;	//主要用于标记有没有处理过该订单
+	faster_hashset<LongKey> _orderids;	//主要用于标记有没有处理过该订单
 
 	faster_hashmap<LongKey, double> _undone_qty;	//未完成数量
 
