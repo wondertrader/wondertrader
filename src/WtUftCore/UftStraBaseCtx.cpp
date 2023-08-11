@@ -58,6 +58,11 @@ void UftStraBaseCtx::on_init()
 
 }
 
+void UftStraBaseCtx::watch_param(const char* name, const char* val)
+{
+	ShareManager::self().set_value(_name.c_str(), name, val);
+}
+
 void UftStraBaseCtx::watch_param(const char* name, int64_t val)
 {
 	ShareManager::self().set_value(_name.c_str(), name, val);
@@ -86,6 +91,11 @@ void UftStraBaseCtx::watch_param(const char* name, double val)
 void UftStraBaseCtx::commit_param_watcher()
 {
 	ShareManager::self().commit_param_watcher(_name.c_str());
+}
+
+const char* UftStraBaseCtx::read_param(const char* name, const char* defVal /* = "" */)
+{
+	return ShareManager::self().get_value(_name.c_str(), name, defVal);
 }
 
 int32_t UftStraBaseCtx::read_param(const char* name, int32_t defVal /* = 0 */)
