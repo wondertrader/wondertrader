@@ -264,7 +264,7 @@ private:
 	bool			_risk_mon_enabled;
 };
 
-typedef std::shared_ptr<TraderAdapter>				TraderAdapterPtr;
+typedef std::shared_ptr<TraderAdapter>					TraderAdapterPtr;
 typedef faster_hashmap<std::string, TraderAdapterPtr>	TraderAdapterMap;
 
 

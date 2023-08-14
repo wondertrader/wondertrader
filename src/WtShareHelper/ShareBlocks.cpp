@@ -305,7 +305,7 @@ void* ShareBlocks::allocate_key(const char* domain, const char* section, const c
 
 	KeyInfo* keyInfo = (KeyInfo*)make_valid(domain, section, key, len, secInfo);
 	if (keyInfo == nullptr)
-		return false;
+		return NULL;
 
 	keyInfo->_type = vType;
 	return (void*)(secInfo->_data + keyInfo->_offset);
@@ -316,7 +316,7 @@ const char* ShareBlocks::allocate_string(const char* domain, const char* section
 	SecInfo* secInfo = nullptr;
 	KeyInfo* keyInfo = (KeyInfo*)make_valid(domain, section, key, VTL_STRING, secInfo);
 	if (keyInfo == nullptr)
-		return false;
+		return NULL;
 
 	keyInfo->_type = SMVT_STRING;
 	wt_strcpy(secInfo->_data + keyInfo->_offset, initVal, VTL_STRING);
@@ -328,7 +328,7 @@ int32_t* ShareBlocks::allocate_int32(const char* domain, const char* section, co
 	SecInfo* secInfo = nullptr;
 	KeyInfo* keyInfo = (KeyInfo*)make_valid(domain, section, key, VTL_INT32, secInfo);
 	if (keyInfo == nullptr)
-		return false;
+		return NULL;
 
 	keyInfo->_type = SMVT_INT32;
 	*((int32_t*)(secInfo->_data + keyInfo->_offset)) = initVal;
@@ -340,7 +340,7 @@ int64_t* ShareBlocks::allocate_int64(const char* domain, const char* section, co
 	SecInfo* secInfo = nullptr;
 	KeyInfo* keyInfo = (KeyInfo*)make_valid(domain, section, key, VTL_INT64, secInfo);
 	if (keyInfo == nullptr)
-		return false;
+		return NULL;
 
 	keyInfo->_type = SMVT_INT64;
 	*((int64_t*)(secInfo->_data + keyInfo->_offset)) = initVal;
@@ -352,7 +352,7 @@ uint32_t* ShareBlocks::allocate_uint32(const char* domain, const char* section, 
 	SecInfo* secInfo = nullptr;
 	KeyInfo* keyInfo = (KeyInfo*)make_valid(domain, section, key, VTL_UINT32, secInfo);
 	if (keyInfo == nullptr)
-		return false;
+		return NULL;
 
 	keyInfo->_type = SMVT_UINT32;
 	*((uint32_t*)(secInfo->_data + keyInfo->_offset)) = initVal;
@@ -364,7 +364,7 @@ uint64_t* ShareBlocks::allocate_uint64(const char* domain, const char* section, 
 	SecInfo* secInfo = nullptr;
 	KeyInfo* keyInfo = (KeyInfo*)make_valid(domain, section, key, VTL_UINT64, secInfo);
 	if (keyInfo == nullptr)
-		return false;
+		return NULL;
 
 	keyInfo->_type = SMVT_UINT64;
 	*((uint64_t*)(secInfo->_data + keyInfo->_offset)) = initVal;
@@ -376,7 +376,7 @@ double* ShareBlocks::allocate_double(const char* domain, const char* section, co
 	SecInfo* secInfo = nullptr;
 	KeyInfo* keyInfo = (KeyInfo*)make_valid(domain, section, key, VTL_DOUBLE, secInfo);
 	if (keyInfo == nullptr)
-		return false;
+		return NULL;
 
 	keyInfo->_type = SMVT_DOUBLE;
 	*((double*)(secInfo->_data + keyInfo->_offset)) = initVal;

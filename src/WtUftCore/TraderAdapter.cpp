@@ -325,7 +325,7 @@ uint32_t TraderAdapter::doEntrust(WTSEntrust* entrust)
 
 	uint32_t localid = makeLocalOrderID();
 	char* usertag = entrust->getUserTag();
-	memcpy(usertag, _order_pattern.c_str(), _order_pattern.size());
+	wt_strcpy(usertag, _order_pattern.c_str(), _order_pattern.size());
 	usertag[_order_pattern.size()] = '.';
 	fmtutil::format_to(usertag + _order_pattern.size() + 1, "{}", localid);
 	
@@ -357,7 +357,9 @@ bool TraderAdapter::doCancel(WTSOrderInfo* ordInfo)
 	if (ordInfo == NULL || !ordInfo->isAlive())
 		return false;
 
-	WTSContractInfo* cInfo = _bd_mgr->getContract(ordInfo->getCode(), ordInfo->getExchg());
+	WTSContractInfo* cInfo = ordInfo->getContractInfo();
+	if(cInfo == NULL)
+		cInfo = _bd_mgr->getContract(ordInfo->getCode(), ordInfo->getExchg());
 
 	//³·µ¥ÆµÂÊ¼ì²é
 	//if (_risk_mon_enabled && !checkCancelLimits(ordInfo->getCode()))
@@ -448,7 +450,6 @@ OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty, int f
 
 	if (cInfo == NULL) cInfo = getContract(stdCode);
 	WTSCommodityInfo* commInfo = cInfo->getCommInfo();
-	WTSSessionInfo* sInfo = commInfo->getSessionInfo();
 
 	WTSLogger::log_dyn("trader", _id.c_str(), LL_DEBUG, "[{}] Buying {} of quantity {}", _id.c_str(), stdCode, qty);
 
@@ -729,7 +730,6 @@ OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty, int 
 
 	if (cInfo == NULL) cInfo = getContract(stdCode);
 	WTSCommodityInfo* commInfo = cInfo->getCommInfo();
-	WTSSessionInfo* sInfo = commInfo->getSessionInfo();
 
 	const PosItem& pItem = _positions[stdCode];
 	WTSTradeStateInfo* statInfo = (WTSTradeStateInfo*)_stat_map->get(stdCode);
@@ -1985,7 +1985,7 @@ const TraderAdapter::RiskParams* TraderAdapter::getRiskParams(const char* stdCod
 
 
 //////////////////////////////////////////////////////////////////////////
-//CTPWrapperMgr
+//TraderAdapterMgr
 bool TraderAdapterMgr::addAdapter(const char* tname, TraderAdapterPtr& adapter)
 {
 	if (adapter == NULL || strlen(tname) == 0)
