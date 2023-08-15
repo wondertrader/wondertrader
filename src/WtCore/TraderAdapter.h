@@ -234,7 +234,7 @@ private:
 	fastest_hashset<std::string> _orderids;	//主要用于标记有没有处理过该订单
 
 	fastest_hashmap<std::string, std::string>		_trade_refs;	//用于记录成交单和订单的匹配
-	fastest_hashset<std::string>						_self_matches;	//自成交的合约
+	fastest_hashset<std::string>					_self_matches;	//自成交的合约
 
 	/*
 	 *	By Wesley @ 2023.03.16

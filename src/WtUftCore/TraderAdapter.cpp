@@ -75,7 +75,6 @@ TraderAdapter::TraderAdapter()
 	, _state(AS_NOTLOGIN)
 	, _trader_api(NULL)
 	, _orders(NULL)
-	, _undone_qty(0)
 	, _risk_mon_enabled(false)
 	, _stat_map(NULL)
 {

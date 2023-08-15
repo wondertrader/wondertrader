@@ -4,7 +4,6 @@
 #include "../FasterLibs/tsl/robin_map.h"
 #include "../FasterLibs/tsl/robin_set.h"
 
-
 /*
  *	By Wesley @ 2023.08.15
  *	很遗憾，robin_map搭配std::string在数据量大的时候（经测试在13106条数据，不同测试机可能具体数值不同）
@@ -19,7 +18,7 @@ NS_WTP_BEGIN
 struct string_hash
 {
 	//BKDRHash算法
-	size_t operator()(const std::string& key) const
+	std::size_t operator()(const std::string& key) const
 	{
 		size_t seed = 131; // 31 131 1313 13131 131313 etc..
 		size_t hash = 0;
@@ -74,4 +73,4 @@ public:
 
 typedef fastest_hashset<std::string> CodeSet;
 
-NS_WTP_END;
+NS_WTP_END
