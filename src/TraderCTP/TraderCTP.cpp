@@ -754,10 +754,6 @@ void TraderCTP::OnRspOrderAction(CThostFtdcInputOrderActionField *pInputOrderAct
 {
 	if (IsErrorRspInfo(pRspInfo))
 	{
-
-	}
-	else
-	{
 		WTSError* error = WTSError::create(WEC_ORDERCANCEL, pRspInfo->ErrorMsg);
 		if (m_sink)
 			m_sink->onTraderError(error);
