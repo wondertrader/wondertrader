@@ -73,11 +73,11 @@ private:
 				_remover(_fact);
 		}
 	} StraFactInfo;
-	typedef faster_hashmap<std::string, StraFactInfo> StraFactMap;
+	typedef fastest_hashmap<std::string, StraFactInfo> StraFactMap;
 
 	StraFactMap	_factories;
 
-	typedef faster_hashmap<std::string, UftStrategyPtr> StrategyMap;
+	typedef fastest_hashmap<std::string, UftStrategyPtr> StrategyMap;
 	StrategyMap	_strategies;
 };
 

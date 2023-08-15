@@ -234,38 +234,38 @@ private:
 	FuncDeleteTrader	_remover;
 	AdapterState		_state;
 
-	faster_hashset<ITrdNotifySink*>	_sinks;
+	fastest_hashset<ITrdNotifySink*>	_sinks;
 
 	IBaseDataMgr*		_bd_mgr;
 	ActionPolicyMgr*	_policy_mgr;
 
-	faster_hashmap<LongKey, PosItem> _positions;
+	fastest_hashmap<std::string, PosItem> _positions;
 
 	StdUniqueMutex _mtx_orders;
 	OrderMap*		_orders;
-	faster_hashset<LongKey> _orderids;	//主要用于标记有没有处理过该订单
+	fastest_hashset<std::string> _orderids;	//主要用于标记有没有处理过该订单
 
-	faster_hashmap<LongKey, double> _undone_qty;	//未完成数量
+	fastest_hashmap<std::string, double> _undone_qty;	//未完成数量
 
-	typedef WTSHashMap<LongKey>	TradeStatMap;
+	typedef WTSHashMap<std::string>	TradeStatMap;
 	TradeStatMap*	_stat_map;	//统计数据
 
 	//这两个缓存时间内的容器,主要是为了控制瞬间流量而设置的
 	typedef std::vector<uint64_t> TimeCacheList;
-	typedef faster_hashmap<LongKey, TimeCacheList> CodeTimeCacheMap;
+	typedef fastest_hashmap<std::string, TimeCacheList> CodeTimeCacheMap;
 	CodeTimeCacheMap	_order_time_cache;	//下单时间缓存
 	CodeTimeCacheMap	_cancel_time_cache;	//撤单时间缓存
 
 	//如果被风控了,就会进入到排除队列
-	faster_hashset<LongKey>	_exclude_codes;
+	fastest_hashset<std::string>	_exclude_codes;
 
-	typedef faster_hashmap<LongKey, RiskParams>	RiskParamsMap;
+	typedef fastest_hashmap<std::string, RiskParams>	RiskParamsMap;
 	RiskParamsMap	_risk_params_map;
 	bool			_risk_mon_enabled;
 };
 
 typedef std::shared_ptr<TraderAdapter>					TraderAdapterPtr;
-typedef faster_hashmap<std::string, TraderAdapterPtr>	TraderAdapterMap;
+typedef fastest_hashmap<std::string, TraderAdapterPtr>	TraderAdapterMap;
 
 
 //////////////////////////////////////////////////////////////////////////

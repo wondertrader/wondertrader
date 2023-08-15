@@ -1973,7 +1973,7 @@ const TraderAdapter::RiskParams* TraderAdapter::getRiskParams(const char* stdCod
 		eIdx++;
 
 
-	auto it = _risk_params_map.find(LongKey(stdCode + idx + 1, eIdx - idx + 1));
+	auto it = _risk_params_map.find(std::string(stdCode + idx + 1, eIdx - idx + 1));
 	if (it != _risk_params_map.end())
 		return &it->second;
 

@@ -76,7 +76,7 @@ private:
 	bool			_inited;
 	std::string		_exchg;	//½»»»Çø
 	std::string		_sync;
-	faster_hashmap<ShortKey, uint64_t>	_secnames;
+	fastest_hashmap<std::string, uint64_t>	_secnames;
 
 	bool			_stopped;
 	StdThreadPtr	_worker;

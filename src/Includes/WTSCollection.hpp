@@ -550,14 +550,14 @@ protected:
  *	数据使用WTSObject指针对象
  *	所有WTSObject的派生类都适用
  */
-template <typename T>
+template <typename T, class Hash = std::hash<T>>
 class WTSHashMap : public WTSObject
 {
 public:
 	/*
 	 *	容器迭代器的定义
 	 */
-	typedef tsl::robin_map<T, WTSObject*>		_MyType;
+	typedef tsl::robin_map<T, WTSObject*, Hash>		_MyType;
 	typedef typename _MyType::const_iterator	ConstIterator;
 
 	/*

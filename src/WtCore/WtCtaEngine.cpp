@@ -148,7 +148,7 @@ CtaContextPtr WtCtaEngine::getContext(uint32_t id)
 
 void WtCtaEngine::on_init()
 {
-	//faster_hashmap<LongKey, double> target_pos;
+	//fastest_hashmap<std::string, double> target_pos;
 	_exec_mgr.clear_cached_targets();
 	for (auto it = _ctx_map.begin(); it != _ctx_map.end(); it++)
 	{
@@ -252,7 +252,7 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 	//去检查一下过滤器
 	_filter_mgr.load_filters();
 	_exec_mgr.clear_cached_targets();
-	faster_hashmap<LongKey, double> target_pos;
+	fastest_hashmap<std::string, double> target_pos;
 	if(_pool)
 	{
 		/*
@@ -316,7 +316,7 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 	}
 	else
 	{
-		faster_hashmap<LongKey, double> target_pos;
+		fastest_hashmap<std::string, double> target_pos;
 		for (auto it = _ctx_map.begin(); it != _ctx_map.end(); it++)
 		{
 			CtaContextPtr& ctx = (CtaContextPtr&)it->second;

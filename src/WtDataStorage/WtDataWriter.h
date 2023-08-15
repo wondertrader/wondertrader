@@ -77,7 +77,7 @@ private:
 		}
 
 	} KBlockPair;
-	typedef faster_hashmap<LongKey, KBlockPair*>	KBlockFilesMap;
+	typedef fastest_hashmap<std::string, KBlockPair*>	KBlockFilesMap;
 
 	typedef struct _TickBlockPair
 	{
@@ -96,7 +96,7 @@ private:
 			_lasttime = 0;
 		}
 	} TickBlockPair;
-	typedef faster_hashmap<LongKey, TickBlockPair*>	TickBlockFilesMap;
+	typedef fastest_hashmap<std::string, TickBlockPair*>	TickBlockFilesMap;
 
 	typedef struct _TransBlockPair
 	{
@@ -112,7 +112,7 @@ private:
 			_lasttime = 0;
 		}
 	} TransBlockPair;
-	typedef faster_hashmap<LongKey, TransBlockPair*>	TransBlockFilesMap;
+	typedef fastest_hashmap<std::string, TransBlockPair*>	TransBlockFilesMap;
 
 	typedef struct _OdeDtlBlockPair
 	{
@@ -128,7 +128,7 @@ private:
 			_lasttime = 0;
 		}
 	} OrdDtlBlockPair;
-	typedef faster_hashmap<LongKey, OrdDtlBlockPair*>	OrdDtlBlockFilesMap;
+	typedef fastest_hashmap<std::string, OrdDtlBlockPair*>	OrdDtlBlockFilesMap;
 
 	typedef struct _OdeQueBlockPair
 	{
@@ -144,7 +144,7 @@ private:
 			_lasttime = 0;
 		}
 	} OrdQueBlockPair;
-	typedef faster_hashmap<LongKey, OrdQueBlockPair*>	OrdQueBlockFilesMap;
+	typedef fastest_hashmap<std::string, OrdQueBlockPair*>	OrdQueBlockFilesMap;
 	
 
 	KBlockFilesMap	_rt_min1_blocks;
@@ -156,7 +156,7 @@ private:
 	OrdQueBlockFilesMap _rt_ordque_blocks;
 
 	SpinMutex		_lck_tick_cache;
-	faster_hashmap<LongKey, uint32_t> _tick_cache_idx;
+	fastest_hashmap<std::string, uint32_t> _tick_cache_idx;
 	BoostMFPtr		_tick_cache_file;
 	RTTickCache*	_tick_cache_block;
 

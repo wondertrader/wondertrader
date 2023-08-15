@@ -171,11 +171,11 @@ protected:
 		_KlineTag() :_closed(false), _count(0){}
 
 	} KlineTag;
-	typedef faster_hashmap<std::string, KlineTag> KlineTags;
+	typedef fastest_hashmap<std::string, KlineTag> KlineTags;
 	KlineTags	_kline_tags;
 
 	typedef std::pair<double, uint64_t>	PriceInfo;
-	typedef faster_hashmap<std::string, PriceInfo> PriceMap;
+	typedef fastest_hashmap<std::string, PriceInfo> PriceMap;
 	PriceMap		_price_map;
 
 	typedef struct _DetailInfo
@@ -222,7 +222,7 @@ protected:
 
 		inline double valid() const { return _volume - _frozen; }
 	} PosInfo;
-	typedef faster_hashmap<std::string, PosInfo> PositionMap;
+	typedef fastest_hashmap<std::string, PosInfo> PositionMap;
 	PositionMap		_pos_map;
 
 	typedef struct _SigInfo
@@ -243,7 +243,7 @@ protected:
 			_gentime = 0;
 		}
 	}SigInfo;
-	typedef faster_hashmap<std::string, SigInfo>	SignalMap;
+	typedef fastest_hashmap<std::string, SigInfo>	SignalMap;
 	SignalMap		_sig_map;
 
 	std::stringstream	_trade_logs;
@@ -256,7 +256,7 @@ protected:
 	bool			_is_in_schedule;	//是否在自动调度中
 
 	//用户数据
-	typedef faster_hashmap<std::string, std::string> StringHashMap;
+	typedef fastest_hashmap<std::string, std::string> StringHashMap;
 	StringHashMap	_user_datas;
 	bool			_ud_modified;
 
@@ -301,5 +301,5 @@ protected:
 	uint32_t		_cur_tdate;
 
 	//tick订阅列表
-	faster_hashset<std::string> _tick_subs;
+	fastest_hashset<std::string> _tick_subs;
 };

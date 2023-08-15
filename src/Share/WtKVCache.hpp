@@ -3,7 +3,6 @@
 #include "BoostFile.hpp"
 #include "BoostMappingFile.hpp"
 #include "../Includes/FasterDefs.h"
-#include <unordered_map>
 
 #define SIZE_STEP 200
 #define CACHE_FLAG "&^%$#@!\0"
@@ -56,9 +55,7 @@ private:
 
 	CacheBlockPair	_cache;
 	SpinMutex		_lock;
-	//数据量大了以后，fast_hashmap有点问题，后面研究好了再用
-	//faster_hashmap<LongKey, uint32_t> _indice;
-	std::unordered_map<LongKey, uint32_t> _indice;
+	fastest_hashmap<std::string, uint32_t> _indice;
 
 private:
 	bool	resize(uint32_t newCap, CacheLogger logger = nullptr)
@@ -218,7 +215,7 @@ public:
 		{
 			_lock.lock();
 			if(_cache._block->_size == _cache._block->_capacity)
-				resize(_cache._block->_capacity + SIZE_STEP, logger);
+				resize(_cache._block->_capacity*2, logger);
 
 			_indice[key] = _cache._block->_size;
 			wt_strcpy(_cache._block->_items[_cache._block->_size]._key, key);

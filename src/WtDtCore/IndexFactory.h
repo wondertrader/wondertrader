@@ -32,6 +32,6 @@ private:
 	typedef std::shared_ptr<boost::threadpool::pool> ThreadPoolPtr;
 	ThreadPoolPtr	_pool;
 
-	faster_hashset<LongKey>	_subbed;
+	fastest_hashset<std::string>	_subbed;
 };
 

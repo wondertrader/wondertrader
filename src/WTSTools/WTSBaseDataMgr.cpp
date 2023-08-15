@@ -82,7 +82,7 @@ WTSContractInfo* WTSBaseDataMgr::getContract(const char* code, const char* exchg
 {
 	//如果直接找到对应的市场代码,则直接
 	
-	auto lKey = LongKey(code);
+	auto lKey = std::string(code);
 
 	if (strlen(exchg) == 0)
 	{
@@ -98,7 +98,7 @@ WTSContractInfo* WTSBaseDataMgr::getContract(const char* code, const char* exchg
 	}
 	else
 	{
-		auto sKey = ShortKey(exchg);
+		auto sKey = std::string(exchg);
 		auto it = m_mapExchgContract->find(sKey);
 		if (it != m_mapExchgContract->end())
 		{
@@ -120,7 +120,7 @@ WTSArray* WTSBaseDataMgr::getContracts(const char* exchg /* = "" */)
 	WTSArray* ay = WTSArray::create();
 	if(strlen(exchg) > 0)
 	{
-		auto it = m_mapExchgContract->find(ShortKey(exchg));
+		auto it = m_mapExchgContract->find(std::string(exchg));
 		if (it != m_mapExchgContract->end())
 		{
 			WTSContractList* contractList = (WTSContractList*)it->second;
@@ -461,17 +461,17 @@ bool WTSBaseDataMgr::loadContracts(const char* filename)
 				sMargin = jcInfo->getDouble("shortmarginratio");
 			cInfo->setMarginRatios(lMargin, sMargin);
 
-			WTSContractList* contractList = (WTSContractList*)m_mapExchgContract->get(ShortKey(cInfo->getExchg()));
+			WTSContractList* contractList = (WTSContractList*)m_mapExchgContract->get(std::string(cInfo->getExchg()));
 			if (contractList == NULL)
 			{
 				contractList = WTSContractList::create();
-				m_mapExchgContract->add(ShortKey(cInfo->getExchg()), contractList, false);
+				m_mapExchgContract->add(std::string(cInfo->getExchg()), contractList, false);
 			}
-			contractList->add(LongKey(cInfo->getCode()), cInfo, false);
+			contractList->add(std::string(cInfo->getCode()), cInfo, false);
 
 			commInfo->addCode(code.c_str());
 
-			LongKey key = LongKey(cInfo->getCode());
+			std::string key = std::string(cInfo->getCode());
 			WTSArray* ayInst = (WTSArray*)m_mapContracts->get(key);
 			if(ayInst == NULL)
 			{

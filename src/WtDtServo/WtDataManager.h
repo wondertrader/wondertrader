@@ -110,10 +110,10 @@ private:
 
 		_BarCache():_last_bartime(0),_period(KP_DAY),_times(1),_bars(NULL){}
 	} BarCache;
-	typedef faster_hashmap<std::string, BarCache>	BarCacheMap;
+	typedef fastest_hashmap<std::string, BarCache>	BarCacheMap;
 	BarCacheMap	_bars_cache;
 
-	typedef WTSHashMap<LongKey>	RtBarMap;
+	typedef WTSHashMap<std::string>	RtBarMap;
 	RtBarMap*		_rt_bars;
 	StdUniqueMutex	_mtx_rtbars;
 };

@@ -483,7 +483,7 @@ bool SelMocker::on_schedule(uint32_t curDate, uint32_t curTime, uint32_t fireTim
 	TimeUtils::Ticker ticker;
 	on_strategy_schedule(curDate, curTime);
 
-	faster_hashset<std::string> to_clear;
+	fastest_hashset<std::string> to_clear;
 	for(auto& v : _pos_map)
 	{
 		const PosInfo& pInfo = v.second;
@@ -525,7 +525,7 @@ void SelMocker::on_session_begin(uint32_t curTDate)
 
 void SelMocker::enum_position(FuncEnumSelPositionCallBack cb)
 {
-	faster_hashmap<std::string, double> desPos;
+	fastest_hashmap<std::string, double> desPos;
 	for (auto& it : _pos_map)
 	{
 		const char* stdCode = it.first.c_str();

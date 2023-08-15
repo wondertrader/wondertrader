@@ -32,7 +32,7 @@ private:
 };
 
 typedef std::shared_ptr<ExeUnitWrapper>	ExecuteUnitPtr;
-typedef faster_hashmap<LongKey, ExecuteUnitPtr> ExecuteUnitMap;
+typedef fastest_hashmap<std::string, ExecuteUnitPtr> ExecuteUnitMap;
 
 //////////////////////////////////////////////////////////////////////////
 //执行器工厂类
@@ -61,7 +61,7 @@ private:
 		FuncCreateExeFact	_creator;
 		FuncDeleteExeFact	_remover;
 	} ExeFactInfo;
-	typedef faster_hashmap<LongKey, ExeFactInfo> ExeFactMap;
+	typedef fastest_hashmap<std::string, ExeFactInfo> ExeFactMap;
 
 	ExeFactMap	_factories;
 };

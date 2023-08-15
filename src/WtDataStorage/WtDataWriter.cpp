@@ -372,7 +372,7 @@ bool WtDataWriter::writeTick(WTSTickData* curTick, uint32_t procFlag)
 
 			_sink->broadcastTick(curTick);
 
-			static faster_hashmap<ShortKey, uint64_t> _tcnt_map;
+			static fastest_hashmap<std::string, uint64_t> _tcnt_map;
 			_tcnt_map[curTick->exchg()]++;
 			if (_tcnt_map[curTick->exchg()] % _log_group_size == 0)
 			{
@@ -426,7 +426,7 @@ bool WtDataWriter::writeOrderQueue(WTSOrdQueData* curOrdQue)
 			//TODO: 要广播的
 			//g_udpCaster.broadcast(curTrans);
 
-			static faster_hashmap<std::string, uint64_t> _tcnt_map;
+			static fastest_hashmap<std::string, uint64_t> _tcnt_map;
 			_tcnt_map[curOrdQue->exchg()]++;
 			if (_tcnt_map[curOrdQue->exchg()] % _log_group_size == 0)
 			{
@@ -523,7 +523,7 @@ bool WtDataWriter::writeOrderDetail(WTSOrdDtlData* curOrdDtl)
 			//TODO: 要广播的
 			//g_udpCaster.broadcast(curTrans);
 
-			static faster_hashmap<std::string, uint64_t> _tcnt_map;
+			static fastest_hashmap<std::string, uint64_t> _tcnt_map;
 			_tcnt_map[curOrdDtl->exchg()]++;
 			if (_tcnt_map[curOrdDtl->exchg()] % _log_group_size == 0)
 			{
@@ -579,7 +579,7 @@ bool WtDataWriter::writeTransaction(WTSTransData* curTrans)
 			//TODO: 要广播的
 			//g_udpCaster.broadcast(curTrans);
 
-			static faster_hashmap<std::string, uint64_t> _tcnt_map;
+			static fastest_hashmap<std::string, uint64_t> _tcnt_map;
 			_tcnt_map[curTrans->exchg()]++;
 			if (_tcnt_map[curTrans->exchg()] % _log_group_size == 0)
 			{
@@ -2201,7 +2201,7 @@ void WtDataWriter::proc_loop()
 				newCache->_version = BLOCK_VERSION_RAW_V2;
 				strcpy(newCache->_blk_flag, BLK_FLAG);
 
-				faster_hashmap<LongKey, uint32_t> newIdxMap;
+				fastest_hashmap<std::string, uint32_t> newIdxMap;
 
 				uint32_t newIdx = 0;
 				for (const std::string& key : setCodes)
