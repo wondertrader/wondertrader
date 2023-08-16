@@ -14,7 +14,7 @@
 
 USING_NS_WTP;
 
-typedef fastest_hashmap<std::string, TradingDayTpl>	TradingDayTplMap;
+typedef wt_hashmap<std::string, TradingDayTpl>	TradingDayTplMap;
 
 typedef WTSHashMap<std::string>		WTSContractList;
 typedef WTSHashMap<std::string>		WTSExchgContract;
@@ -23,7 +23,7 @@ typedef WTSHashMap<std::string>		WTSContractMap;
 typedef WTSHashMap<std::string>		WTSSessionMap;
 typedef WTSHashMap<std::string>		WTSCommodityMap;
 
-typedef fastest_hashmap<std::string, CodeSet> SessionCodeMap;
+typedef wt_hashmap<std::string, CodeSet> SessionCodeMap;
 
 class WTSBaseDataMgr : public IBaseDataMgr
 {

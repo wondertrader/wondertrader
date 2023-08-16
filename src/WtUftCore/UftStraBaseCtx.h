@@ -221,7 +221,7 @@ protected:
 
 private:
 
-	typedef fastest_hashmap<uint32_t, std::string> OrderMap;
+	typedef wt_hashmap<uint32_t, std::string> OrderMap;
 	OrderMap		_orders;
 };
 

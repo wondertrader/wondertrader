@@ -64,7 +64,7 @@ public:
 	virtual bool dumpHisTrans(const char* stdCode, uint32_t uDate, WTSTransStruct* items, uint32_t count) { return false; }
 };
 
-typedef fastest_hashmap<std::string, IHisDataDumper*> ExtDumpers;
+typedef wt_hashmap<std::string, IHisDataDumper*> ExtDumpers;
 
 /*
  *	数据落地接口

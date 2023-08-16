@@ -55,10 +55,10 @@ public:
 	const ActionRuleGroup& getActionRules(const char* pid);
 
 private:
-	typedef fastest_hashmap<std::string, ActionRuleGroup> RulesMap;
+	typedef wt_hashmap<std::string, ActionRuleGroup> RulesMap;
 	RulesMap	_rules;	//规则表
 
-	fastest_hashmap<std::string, std::string> _comm_rule_map;	//品种规则映射
+	wt_hashmap<std::string, std::string> _comm_rule_map;	//品种规则映射
 };
 
 NS_WTP_END

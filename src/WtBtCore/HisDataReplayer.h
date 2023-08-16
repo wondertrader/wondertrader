@@ -173,10 +173,10 @@ private:
 		HftDataList() :_cursor(UINT_MAX), _count(0), _date(0){}
 	};
 
-	typedef fastest_hashmap<std::string, HftDataList<WTSTickStruct>>		TickCache;
-	typedef fastest_hashmap<std::string, HftDataList<WTSOrdDtlStruct>>	OrdDtlCache;
-	typedef fastest_hashmap<std::string, HftDataList<WTSOrdQueStruct>>	OrdQueCache;
-	typedef fastest_hashmap<std::string, HftDataList<WTSTransStruct>>	TransCache;
+	typedef wt_hashmap<std::string, HftDataList<WTSTickStruct>>		TickCache;
+	typedef wt_hashmap<std::string, HftDataList<WTSOrdDtlStruct>>	OrdDtlCache;
+	typedef wt_hashmap<std::string, HftDataList<WTSOrdQueStruct>>	OrdQueCache;
+	typedef wt_hashmap<std::string, HftDataList<WTSTransStruct>>	TransCache;
 
 
 	typedef struct _BarsList
@@ -221,7 +221,7 @@ private:
 	 *	智能指针指向的地址都是不会变的
 	 */
 	typedef std::shared_ptr<BarsList> BarsListPtr;
-	typedef fastest_hashmap<std::string, BarsListPtr>	BarsCache;
+	typedef wt_hashmap<std::string, BarsListPtr>	BarsCache;
 
 	typedef enum tagTaskPeriodType
 	{
@@ -532,12 +532,12 @@ private:
 			memset(this, 0, sizeof(_FeeItem));
 		}
 	} FeeItem;
-	typedef fastest_hashmap<std::string, FeeItem>	FeeMap;
+	typedef wt_hashmap<std::string, FeeItem>	FeeMap;
 	FeeMap		_fee_map;
 
 	//////////////////////////////////////////////////////////////////////////
 	//
-	typedef fastest_hashmap<std::string, double> PriceMap;
+	typedef wt_hashmap<std::string, double> PriceMap;
 	PriceMap		_price_map;
 
 	//////////////////////////////////////////////////////////////////////////
@@ -545,8 +545,8 @@ private:
 	//By Wesley @ 2022.02.07
 	//tick数据订阅项，first是contextid，second是订阅选项，0-原始订阅，1-前复权，2-后复权
 	typedef std::pair<uint32_t, uint32_t> SubOpt;
-	typedef fastest_hashmap<uint32_t, SubOpt> SubList;
-	typedef fastest_hashmap<std::string, SubList>	StraSubMap;
+	typedef wt_hashmap<uint32_t, SubOpt> SubList;
+	typedef wt_hashmap<std::string, SubList>	StraSubMap;
 	StraSubMap		_tick_sub_map;		//tick数据订阅表
 	StraSubMap		_ordque_sub_map;	//orderqueue数据订阅表
 	StraSubMap		_orddtl_sub_map;	//orderdetail数据订阅表
@@ -559,7 +559,7 @@ private:
 		double		_factor;
 	} AdjFactor;
 	typedef std::vector<AdjFactor> AdjFactorList;
-	typedef fastest_hashmap<std::string, AdjFactorList>	AdjFactorMap;
+	typedef wt_hashmap<std::string, AdjFactorList>	AdjFactorMap;
 	AdjFactorMap	_adj_factors;
 
 	const AdjFactorList& getAdjFactors(const char* code, const char* exchg, const char* pid);

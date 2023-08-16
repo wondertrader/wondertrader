@@ -553,19 +553,26 @@ protected:
 template <typename T, class Hash = std::hash<T>>
 class WTSHashMap : public WTSObject
 {
+protected:
+	WTSHashMap() {}
+	virtual ~WTSHashMap() {}
+
+	//std::unordered_map<T, WTSObject*>	_map;
+	wt_hashmap<T, WTSObject*, Hash>	_map;
+
 public:
 	/*
 	 *	容器迭代器的定义
 	 */
-	typedef tsl::robin_map<T, WTSObject*, Hash>		_MyType;
+	typedef wt_hashmap<T, WTSObject*, Hash>		_MyType;
 	typedef typename _MyType::const_iterator	ConstIterator;
 
 	/*
 	 *	创建map容器
 	 */
-	static WTSHashMap<T>*	create()
+	static WTSHashMap<T, Hash>*	create()
 	{
-		WTSHashMap<T>* pRet = new WTSHashMap<T>();
+		WTSHashMap<T, Hash>* pRet = new WTSHashMap<T, Hash>();
 		return pRet;
 	}
 
@@ -698,13 +705,6 @@ public:
 
 		}
 	}
-
-protected:
-	WTSHashMap(){}
-	virtual ~WTSHashMap(){}
-
-	//std::unordered_map<T, WTSObject*>	_map;
-	tsl::robin_map<T, WTSObject*>	_map;
 };
 
 //////////////////////////////////////////////////////////////////////////

@@ -78,7 +78,7 @@ private:
 	bool			_is_inited;
 
 	typedef std::set<uint32_t> SubFlags;
-	typedef fastest_hashmap<std::string, SubFlags>	StraSubMap;
+	typedef wt_hashmap<std::string, SubFlags>	StraSubMap;
 	StraSubMap		_tick_sub_map;	//tickÊı¾İ¶©ÔÄ±í
 	StdUniqueMutex	_mtx_subs;
 

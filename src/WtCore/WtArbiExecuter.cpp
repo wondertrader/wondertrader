@@ -303,7 +303,7 @@ void WtArbiExecuter::on_position_changed(const char* stdCode, double diffPos)
 	unit->self()->set_position(stdCode, traderTarget);
 }
 
-void WtArbiExecuter::set_position(const fastest_hashmap<std::string, double>& targets)
+void WtArbiExecuter::set_position(const wt_hashmap<std::string, double>& targets)
 {
 	/*
 	 *	先要把目标头寸进行组合匹配

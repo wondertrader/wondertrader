@@ -21,7 +21,7 @@ public:
 
 	void	enum_executer(EnumExecuterCb cb);
 
-	void	set_positions(fastest_hashmap<std::string, double> target_pos);
+	void	set_positions(wt_hashmap<std::string, double> target_pos);
 	void	handle_pos_change(const char* stdCode, double targetPos, double diffPos, const char* execid = "ALL");
 	void	handle_tick(const char* stdCode, WTSTickData* curTick);
 
@@ -33,9 +33,9 @@ public:
 	/*
 	 *	
 	 */
-	inline const fastest_hashset<std::string>& get_route(const char* strategyid)
+	inline const wt_hashset<std::string>& get_route(const char* strategyid)
 	{
-		static fastest_hashset<std::string> ALL_EXECUTERS;
+		static wt_hashset<std::string> ALL_EXECUTERS;
 		if (ALL_EXECUTERS.empty())
 			ALL_EXECUTERS.insert("ALL");
 
@@ -72,16 +72,16 @@ public:
 	void	commit_cached_targets(double scale = 1.0);
 
 private:
-	typedef fastest_hashmap<std::string, ExecCmdPtr> ExecuterMap;
+	typedef wt_hashmap<std::string, ExecCmdPtr> ExecuterMap;
 	ExecuterMap		_executers;
 	WtFilterMgr*	_filter_mgr;
 
-	typedef fastest_hashmap<std::string, double> TargetsMap;
-	fastest_hashmap<std::string, TargetsMap>	_all_cached_targets;
+	typedef wt_hashmap<std::string, double> TargetsMap;
+	wt_hashmap<std::string, TargetsMap>	_all_cached_targets;
 
-	typedef fastest_hashset<std::string>	ExecuterSet;
-	fastest_hashmap<std::string, ExecuterSet>	_router_rules;
+	typedef wt_hashset<std::string>	ExecuterSet;
+	wt_hashmap<std::string, ExecuterSet>	_router_rules;
 
-	fastest_hashset<std::string>	_routed_executers;
+	wt_hashset<std::string>	_routed_executers;
 };
 NS_WTP_END

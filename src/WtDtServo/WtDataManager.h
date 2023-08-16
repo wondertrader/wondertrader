@@ -110,7 +110,7 @@ private:
 
 		_BarCache():_last_bartime(0),_period(KP_DAY),_times(1),_bars(NULL){}
 	} BarCache;
-	typedef fastest_hashmap<std::string, BarCache>	BarCacheMap;
+	typedef wt_hashmap<std::string, BarCache>	BarCacheMap;
 	BarCacheMap	_bars_cache;
 
 	typedef WTSHashMap<std::string>	RtBarMap;

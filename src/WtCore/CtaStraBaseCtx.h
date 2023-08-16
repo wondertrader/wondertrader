@@ -52,7 +52,7 @@ typedef struct _CondEntrust
 } CondEntrust;
 
 typedef std::vector<CondEntrust>	CondList;
-typedef fastest_hashmap<std::string, CondList>	CondEntrustMap;
+typedef wt_hashmap<std::string, CondList>	CondEntrustMap;
 
 
 class CtaStraBaseCtx : public ICtaStraCtx
@@ -229,10 +229,10 @@ protected:
 		_KlineTag() :_closed(false){}
 
 	} KlineTag;
-	typedef fastest_hashmap<std::string, KlineTag> KlineTags;
+	typedef wt_hashmap<std::string, KlineTag> KlineTags;
 	KlineTags	_kline_tags;
 
-	typedef fastest_hashmap<std::string, double> PriceMap;
+	typedef wt_hashmap<std::string, double> PriceMap;
 	PriceMap		_price_map;
 
 	typedef struct _DetailInfo
@@ -281,7 +281,7 @@ protected:
 			_frozen_date = 0;
 		}
 	} PosInfo;
-	typedef fastest_hashmap<std::string, PosInfo> PositionMap;
+	typedef wt_hashmap<std::string, PosInfo> PositionMap;
 	PositionMap		_pos_map;
 
 	typedef struct _SigInfo
@@ -302,7 +302,7 @@ protected:
 			_triggered = false;
 		}
 	}SigInfo;
-	typedef fastest_hashmap<std::string, SigInfo>	SignalMap;
+	typedef wt_hashmap<std::string, SigInfo>	SignalMap;
 	SignalMap		_sig_map;
 
 	BoostFilePtr	_trade_logs;
@@ -321,7 +321,7 @@ protected:
 	bool			_is_in_schedule;	//是否在自动调度中
 
 	//用户数据
-	typedef fastest_hashmap<std::string, std::string> StringHashMap;
+	typedef wt_hashmap<std::string, std::string> StringHashMap;
 	StringHashMap	_user_datas;
 	bool			_ud_modified;
 
@@ -340,7 +340,7 @@ protected:
 	StraFundInfo		_fund_info;
 
 	//tick订阅列表
-	fastest_hashset<std::string> _tick_subs;
+	wt_hashset<std::string> _tick_subs;
 
 	//////////////////////////////////////////////////////////////////////////
 	//图表相关
@@ -357,11 +357,11 @@ protected:
 	{
 		std::string	_name;
 		uint32_t	_indexType;
-		fastest_hashmap<std::string, ChartLine> _lines;
-		fastest_hashmap<std::string, double> _base_lines;
+		wt_hashmap<std::string, ChartLine> _lines;
+		wt_hashmap<std::string, double> _base_lines;
 	} ChartIndex;
 
-	fastest_hashmap<std::string, ChartIndex>	_chart_indice;
+	wt_hashmap<std::string, ChartIndex>	_chart_indice;
 
 private:
 	SpinMutex		_mutex;

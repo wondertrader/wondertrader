@@ -600,7 +600,7 @@ bool SelStraBaseCtx::on_schedule(uint32_t curDate, uint32_t curTime, uint32_t fi
 	on_strategy_schedule(curDate, fireTime);
 	log_debug("Strategy {} scheduled @ {}", _context_id, curTime);
 
-	fastest_hashset<std::string> to_clear;
+	wt_hashset<std::string> to_clear;
 	for (auto& v : _pos_map)
 	{
 		const PosInfo& pInfo = v.second;
@@ -659,7 +659,7 @@ void SelStraBaseCtx::on_session_begin(uint32_t uTDate)
 
 void SelStraBaseCtx::enum_position(FuncEnumSelPositionCallBack cb)
 {
-	fastest_hashmap<std::string, double> desPos;
+	wt_hashmap<std::string, double> desPos;
 	for (auto& it : _pos_map)
 	{
 		const char* stdCode = it.first.c_str();

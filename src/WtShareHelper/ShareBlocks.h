@@ -141,20 +141,20 @@ namespace shareblock
 			bool			_master;
 			uint64_t		_blocktime;
 
-			typedef fastest_hashmap<std::string, KeyInfo*>	KVMap;
+			typedef wt_hashmap<std::string, KeyInfo*>	KVMap;
 			typedef struct _KVPair
 			{
 				uint32_t	_index;
 				KVMap		_keys;
 			} KVPair;
-			typedef fastest_hashmap<std::string, KVPair>	SectionMap;
+			typedef wt_hashmap<std::string, KVPair>	SectionMap;
 			SectionMap	_sections;
 
 			_ShmPair() :_block(nullptr),_master(false)
 			{
 			}
 		}ShmPair;
-		typedef fastest_hashmap<std::string, ShmPair>	ShmBlockMap;
+		typedef wt_hashmap<std::string, ShmPair>	ShmBlockMap;
 		ShmBlockMap		_shm_blocks;
 	};
 }

@@ -22,7 +22,7 @@ class WTSArray;
 class WTSSessionInfo;
 class WTSCommodityInfo;
 
-typedef fastest_hashset<uint32_t> HolidaySet;
+typedef wt_hashset<uint32_t> HolidaySet;
 typedef struct _TradingDayTpl
 {
 	uint32_t	_cur_tdate;

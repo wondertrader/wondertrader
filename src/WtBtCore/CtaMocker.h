@@ -60,7 +60,7 @@ typedef struct _CondEntrust
 } CondEntrust;
 
 typedef std::vector<CondEntrust>	CondList;
-typedef fastest_hashmap<std::string, CondList>	CondEntrustMap;
+typedef wt_hashmap<std::string, CondList>	CondEntrustMap;
 
 
 class CtaMocker : public ICtaStraCtx, public IDataSink
@@ -260,10 +260,10 @@ protected:
 		_KlineTag() :_closed(false){}
 
 	} KlineTag;
-	typedef fastest_hashmap<std::string, KlineTag> KlineTags;
+	typedef wt_hashmap<std::string, KlineTag> KlineTags;
 	KlineTags	_kline_tags;
 
-	typedef fastest_hashmap<std::string, double> PriceMap;
+	typedef wt_hashmap<std::string, double> PriceMap;
 	PriceMap		_price_map;
 
 	typedef struct _DetailInfo
@@ -310,7 +310,7 @@ protected:
 
 		inline double valid() const { return _volume - _frozen; }
 	} PosInfo;
-	typedef fastest_hashmap<std::string, PosInfo> PositionMap;
+	typedef wt_hashmap<std::string, PosInfo> PositionMap;
 	PositionMap		_pos_map;
 	double	_total_closeprofit;
 
@@ -332,7 +332,7 @@ protected:
 			_gentime = 0;
 		}
 	}SigInfo;
-	typedef fastest_hashmap<std::string, SigInfo>	SignalMap;
+	typedef wt_hashmap<std::string, SigInfo>	SignalMap;
 	SignalMap		_sig_map;
 
 	std::stringstream	_trade_logs;
@@ -349,7 +349,7 @@ protected:
 	bool			_is_in_schedule;	//是否在自动调度中
 
 	//用户数据
-	typedef fastest_hashmap<std::string, std::string> StringHashMap;
+	typedef wt_hashmap<std::string, std::string> StringHashMap;
 	StringHashMap	_user_datas;
 	bool			_ud_modified;
 
@@ -409,7 +409,7 @@ protected:
 	uint64_t		_last_cond_min;
 
 	//tick订阅列表
-	fastest_hashset<std::string> _tick_subs;
+	wt_hashset<std::string> _tick_subs;
 
 	std::string		_chart_code;
 	std::string		_chart_period;
@@ -430,6 +430,6 @@ protected:
 
 	std::unordered_map<std::string, ChartIndex>	_chart_indice;
 
-	typedef fastest_hashmap<std::string, WTSTickStruct>	TickCache;
+	typedef wt_hashmap<std::string, WTSTickStruct>	TickCache;
 	TickCache	_ticks;
 };

@@ -75,7 +75,7 @@ private:
 
 	bool			_align_by_section;
 
-	fastest_hashset<std::string> _subed_basic_bars;
+	wt_hashset<std::string> _subed_basic_bars;
 	typedef WTSHashMap<std::string> DataCacheMap;
 	DataCacheMap*	_bars_cache;	//KÏß»º´æ
 	DataCacheMap*	_rt_tick_map;	//ÊµÊ±tick»º´æ

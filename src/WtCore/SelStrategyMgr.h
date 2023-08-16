@@ -60,10 +60,10 @@ private:
 		FuncCreateSelStraFact	_creator;
 		FuncDeleteSelStraFact	_remover;
 	} StraFactInfo;
-	typedef fastest_hashmap<std::string, StraFactInfo> StraFactMap;
+	typedef wt_hashmap<std::string, StraFactInfo> StraFactMap;
 	StraFactMap	_factories;
 
-	typedef fastest_hashmap<std::string, SelStrategyPtr> StrategyMap;
+	typedef wt_hashmap<std::string, SelStrategyPtr> StrategyMap;
 	StrategyMap	_strategies;
 };
 

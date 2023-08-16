@@ -83,12 +83,12 @@ public:
 private:
 	//WTSExchgHotMap*	m_pExchgHotMap;
 	//WTSExchgHotMap*	m_pExchgScndMap;
-	//fastest_hashset<std::string>	m_curHotCodes;
-	//fastest_hashset<std::string>	m_curSecCodes;
+	//wt_hashset<std::string>	m_curHotCodes;
+	//wt_hashset<std::string>	m_curSecCodes;
 	bool			m_bInitialized;
 
 	WTSCustomSwitchMap*	m_mapCustRules;
-	typedef fastest_hashmap<std::string, fastest_hashset<std::string>>	CustomSwitchCodes;
+	typedef wt_hashmap<std::string, wt_hashset<std::string>>	CustomSwitchCodes;
 	CustomSwitchCodes	m_mapCustCodes;
 };
 

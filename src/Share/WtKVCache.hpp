@@ -55,7 +55,7 @@ private:
 
 	CacheBlockPair	_cache;
 	SpinMutex		_lock;
-	fastest_hashmap<std::string, uint32_t> _indice;
+	wt_hashmap<std::string, uint32_t> _indice;
 
 private:
 	bool	resize(uint32_t newCap, CacheLogger logger = nullptr)

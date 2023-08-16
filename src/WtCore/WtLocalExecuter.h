@@ -67,7 +67,7 @@ public:
 	/*
 	 *	设置目标仓位
 	 */
-	virtual void set_position(const fastest_hashmap<std::string, double>& targets) override;
+	virtual void set_position(const wt_hashmap<std::string, double>& targets) override;
 
 
 	/*
@@ -133,19 +133,19 @@ private:
 	typedef struct _CodeGroup
 	{
 		char	_name[32] = { 0 };
-		fastest_hashmap<std::string, double>	_items;
+		wt_hashmap<std::string, double>	_items;
 	} CodeGroup;
 	typedef std::shared_ptr<CodeGroup> CodeGroupPtr;
-	typedef fastest_hashmap<std::string, CodeGroupPtr>	CodeGroups;
+	typedef wt_hashmap<std::string, CodeGroupPtr>	CodeGroups;
 	CodeGroups				_groups;			//合约组合（组合名称到组合的映射）
 	CodeGroups				_code_to_groups;	//合约代码到组合的映射
 
-	fastest_hashset<std::string>	_clear_includes;	//自动清理包含品种
-	fastest_hashset<std::string>	_clear_excludes;	//自动清理排除品种
+	wt_hashset<std::string>	_clear_includes;	//自动清理包含品种
+	wt_hashset<std::string>	_clear_excludes;	//自动清理排除品种
 
-	fastest_hashset<std::string> _channel_holds;		//通道持仓
+	wt_hashset<std::string> _channel_holds;		//通道持仓
 
-	fastest_hashmap<std::string, double> _target_pos;
+	wt_hashmap<std::string, double> _target_pos;
 
 	typedef std::shared_ptr<boost::threadpool::pool> ThreadPoolPtr;
 	ThreadPoolPtr		_pool;

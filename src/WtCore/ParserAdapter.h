@@ -95,7 +95,7 @@ private:
 	 */
 	bool				_check_time;
 
-	typedef fastest_hashset<std::string>	ExchgFilter;
+	typedef wt_hashset<std::string>	ExchgFilter;
 	ExchgFilter			_exchg_filter;
 	ExchgFilter			_code_filter;
 	IBaseDataMgr*		_bd_mgr;
@@ -106,7 +106,7 @@ private:
 };
 
 typedef std::shared_ptr<ParserAdapter>	ParserAdapterPtr;
-typedef fastest_hashmap<std::string, ParserAdapterPtr>	ParserAdapterMap;
+typedef wt_hashmap<std::string, ParserAdapterPtr>	ParserAdapterMap;
 
 class ParserAdapterMgr : private boost::noncopyable
 {

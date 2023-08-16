@@ -207,14 +207,14 @@ protected:
 	//By Wesley @ 2022.02.07
 	//tick数据订阅项，first是contextid，second是订阅选项，0-原始订阅，1-前复权，2-后复权
 	typedef std::pair<uint32_t, uint32_t> SubOpt;
-	typedef fastest_hashmap<uint32_t, SubOpt> SubList;
-	typedef fastest_hashmap<std::string, SubList>	StraSubMap;
+	typedef wt_hashmap<uint32_t, SubOpt> SubList;
+	typedef wt_hashmap<std::string, SubList>	StraSubMap;
 	StraSubMap		_tick_sub_map;	//tick数据订阅表
 	StraSubMap		_bar_sub_map;	//K线数据订阅表
 
 	//By Wesley @ 2022.02.07 
 	//这个好像没有用到，不需要了
-	//fastest_hashset<std::string>		_ticksubed_raw_codes;	//tick订阅表（真实代码模式）
+	//wt_hashset<std::string>		_ticksubed_raw_codes;	//tick订阅表（真实代码模式）
 	
 
 	//////////////////////////////////////////////////////////////////////////
@@ -230,7 +230,7 @@ protected:
 			_gentime = 0;
 		}
 	}SigInfo;
-	typedef fastest_hashmap<std::string, SigInfo>	SignalMap;
+	typedef wt_hashmap<std::string, SigInfo>	SignalMap;
 	SignalMap		_sig_map;
 
 	//////////////////////////////////////////////////////////////////////////
@@ -252,7 +252,7 @@ protected:
 			memset(this, 0, sizeof(_FeeItem));
 		}
 	} FeeItem;
-	typedef fastest_hashmap<std::string, FeeItem>	FeeMap;
+	typedef wt_hashmap<std::string, FeeItem>	FeeMap;
 	FeeMap		_fee_map;
 	
 
@@ -290,12 +290,12 @@ protected:
 			_dynprofit = 0;
 		}
 	} PosInfo;
-	typedef fastest_hashmap<std::string, PosInfo> PositionMap;
+	typedef wt_hashmap<std::string, PosInfo> PositionMap;
 	PositionMap		_pos_map;
 
 	//////////////////////////////////////////////////////////////////////////
 	//
-	typedef fastest_hashmap<std::string, double> PriceMap;
+	typedef wt_hashmap<std::string, double> PriceMap;
 	PriceMap		_price_map;
 
 	//后台任务线程, 把风控和资金, 持仓更新都放到这个线程里去
@@ -324,7 +324,7 @@ protected:
 	BoostFilePtr	_trade_logs;
 	BoostFilePtr	_close_logs;
 
-	fastest_hashmap<std::string, double>	_factors_cache;
+	wt_hashmap<std::string, double>	_factors_cache;
 
 	//用于标记是否可以推送tickle
 	bool			_ready;
