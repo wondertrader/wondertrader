@@ -4,6 +4,8 @@
 #include "../FasterLibs/tsl/robin_map.h"
 #include "../FasterLibs/tsl/robin_set.h"
 
+#include "../FasterLibs/ankerl/unordered_dense.h"
+
 /*
  *	By Wesley @ 2023.08.15
  *	很遗憾，robin_map搭配std::string在数据量大的时候（经测试在13106条数据，不同测试机可能具体数值不同）
@@ -12,6 +14,13 @@
  *	所以数据量大的时候，就会占用非常大的内存，当运行环境内存较小时，就会出现异常
  *	所以这次把LongKey和LongKey都注释掉，改成std::string
  */
+
+ /*
+  *	By Wesley @ 2023.08.16
+  *	ankerl写入速度比robin好很多，大概快1/3，尤其数据量在40w以内的时候
+  *	但是robin的读取速度比robin好，不过到了30w条数据以内，差别就不大
+  *	按照wondertrader的场景，还是ankerl要好很多
+  */
 
 NS_WTP_BEGIN
 
@@ -65,12 +74,41 @@ public:
 	fastest_hashset() :Container() {}
 };
 
-class StringKey : public std::string
+typedef fastest_hashset<std::string> CodeSet;
+
+//////////////////////////////////////////////////////////////////////////
+//下面使用unordered_dense
+
+template<class Key, class T, class Hash = std::hash<Key>>
+class wt_hashmap : public ankerl::unordered_dense::map<Key, T, Hash>
 {
 public:
-	StringKey(const char* s):std::string(s){}
+	typedef ankerl::unordered_dense::map<Key, T, Hash>	Container;
+	wt_hashmap() :Container() {}
 };
 
-typedef fastest_hashset<std::string> CodeSet;
+template<class T>
+class wt_hashmap<std::string, T, string_hash> : public ankerl::unordered_dense::map<std::string, T, string_hash>
+{
+public:
+	typedef ankerl::unordered_dense::map<std::string, T, string_hash>	Container;
+	wt_hashmap() :Container() {}
+};
+
+template<class Key, class Hash = std::hash<Key>>
+class wt_hashset : public ankerl::unordered_dense::set<Key, Hash>
+{
+public:
+	typedef ankerl::unordered_dense::set<Key, Hash>	Container;
+	wt_hashset() :Container() {}
+};
+
+template<>
+class wt_hashset<std::string, string_hash> : public ankerl::unordered_dense::set<std::string, string_hash>
+{
+public:
+	typedef ankerl::unordered_dense::set<std::string, string_hash>	Container;
+	wt_hashset() :Container() {}
+};
 
 NS_WTP_END

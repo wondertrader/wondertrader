@@ -190,6 +190,7 @@
     </ClCompile>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="test_codehelper.cpp" />
+    <ClCompile Include="test_fastestmap.cpp" />
     <ClCompile Include="test_fmt.cpp" />
     <ClCompile Include="test_lmdb.cpp" />
     <ClCompile Include="test_object_pool.cpp" />
