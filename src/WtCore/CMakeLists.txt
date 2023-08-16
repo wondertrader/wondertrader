@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.0.0)
 
 #2. 确定工程名
 project(WtCore LANGUAGES CXX)
-SET(CMAKE_CXX_STANDARD 11)
+SET(CMAKE_CXX_STANDARD 17)
 
 IF(MSVC)
 ELSE(GNUCC)
