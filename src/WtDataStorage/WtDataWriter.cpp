@@ -1029,7 +1029,7 @@ void WtDataWriter::pipeToKlines(WTSContractInfo* ct, WTSTickData* curTick)
 	bool tickNoTrade = decimal::eq(curTick->turnover(),0);
 
 	// 如果未成交的bar也要跳过，那么就不需要处理所有未成交的tick了，否则即便没有成交也要放进来闭合bar
-	if (_skip_notrade_bar and tickNoTrade)
+	if (_skip_notrade_bar && tickNoTrade)
 	{
 		return;
 	}
@@ -1120,7 +1120,7 @@ void WtDataWriter::pipeToKlines(WTSContractInfo* ct, WTSTickData* curTick)
 					newBar->add = curTick->additional();
 				}
 			}
-			else if (not (_skip_notrade_tick && tickNoTrade))
+			else if (! (_skip_notrade_tick && tickNoTrade))
 			{
 				newBar = &blk->_bars[blk->_size - 1];
 
@@ -1226,7 +1226,7 @@ void WtDataWriter::pipeToKlines(WTSContractInfo* ct, WTSTickData* curTick)
 					newBar->add = curTick->additional();
 				}
 			}
-			else if (not (_skip_notrade_tick && tickNoTrade))
+			else if (! (_skip_notrade_tick && tickNoTrade))
 			{
 				newBar = &blk->_bars[blk->_size - 1];
 
