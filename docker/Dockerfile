@@ -8,7 +8,8 @@ from wondertrader/wondertrader:latest
 MAINTAINER wondertrader@126.com
 
 # 解压缩依赖文件
-RUN cd /home && tar xzvf mydeps.tar.gz
+ADD mydeps_gcc4.8.5.7z /home
+RUN cd /home && 7za x mydeps_gcc4.8.5.7z
 
 # 拉取wondertrader代码
 RUN cd /home && git clone https://gitee.com/wondertrader/wondertrader.git
