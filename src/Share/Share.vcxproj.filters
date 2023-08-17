@@ -34,6 +34,9 @@
     <Filter Include="fasterlibs\tsl">
       <UniqueIdentifier>{fa80e461-6b62-459e-b183-f6c6ed55e5d2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="fasterlibs\ankerl">
+      <UniqueIdentifier>{bed05909-476e-4846-b512-1aed61eefd58}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StrUtil.hpp">
@@ -236,6 +239,9 @@
     </ClInclude>
     <ClInclude Include="..\Includes\LoaderDef.hpp">
       <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\FasterLibs\ankerl\unordered_dense.h">
+      <Filter>fasterlibs\ankerl</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
