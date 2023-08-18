@@ -542,7 +542,7 @@ uint64_t WTSBaseDataMgr::getBoundaryTime(const char* stdPID, uint32_t tDate, boo
 		if (cInfo == NULL)
 			return 0;
 
-		sInfo = getSession(cInfo->getSession());
+		sInfo = cInfo->getSessionInfo();
 	}
 
 	if (sInfo == NULL)
@@ -613,7 +613,7 @@ uint32_t WTSBaseDataMgr::calcTradingDate(const char* stdPID, uint32_t uDate, uin
 		if (cInfo == NULL)
 			return uDate;
 		
-		sInfo = getSession(cInfo->getSession());
+		sInfo = cInfo->getSessionInfo();
 	}
 
 	if (sInfo == NULL)
