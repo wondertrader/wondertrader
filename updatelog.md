@@ -1,3 +1,16 @@
+### 0.9.8
+* （**重要**）hash容器升级，从以前的robin_map，升级为ankerl::unordered_dense，综合读写速度提升1/3
+* （**重要**）去掉以前的Longkey和ShortKey，改成std::string，并且将std::string对应的hash算法改成bkdrhash（还没做特别详细的性能对比，后面可能还会修改）
+* （**重要**）全面升级到C++17标准，linux下编译器升级到gcc8.4.0
+* （**重要**）新增一个WtShareHelper模块，可以将UFT里的一些数据通过mmap的方式共享访问，提升数据交换的效率（UFT策略也有相应的修改）
+* （**重要**）WtDataFactory在进行分钟线重采样时，支持根据小节做强制对齐（WtDtMgr的配置，增加了一个align_by_section设置项进行控制）
+* （**重要**）CtaEngine里数据分发回调，改成支持线程池，可以并发回调（通过poolsize配置项控制，为0则不适用线程池）
+* （**重要**）dockerfile升级，dockerhub上的wondertrader编译环境镜像也进行了更新，可以通过dockerfile直接构建本地镜像
+* （**重要**）UFTEngine中新增了对信息量的统计和处理
+* WtDtHelper模块新增了对股票level2数据的处理接口，如read_dsb_order_details和store_order_details等
+* 新增了一个copy_bins_linux.sh，可以自动复制linux编译的二进制文件到对应的wtpy目录
+* 其他细节完善和bug修正
+
 ### 0.9.7
 * （**重要**）WtDataReader完善了对后复权数据处理的逻辑（原来有可能导致读取不到足够数量的数据）
 * （**重要**）执行器的目标仓位计算机制优化，主要是为了防止放大倍数为小数时，由四舍五入带来的误差（By Hej）
