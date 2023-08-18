@@ -150,7 +150,9 @@ private:
 	ContextMap		_ctx_map;
 
 	WtUftRtTicker*	_tm_ticker;
-	WTSVariant*		_cfg;	
+	WTSVariant*		_cfg;
+
+	bool			_dependent;	//子策略独立记账
 };
 
 NS_WTP_END

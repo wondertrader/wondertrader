@@ -24,7 +24,6 @@
     <ClInclude Include="..\Includes\UftStrategyDefs.h" />
     <ClInclude Include="ActionPolicyMgr.h" />
     <ClInclude Include="ShareManager.h" />
-    <ClInclude Include="UftStraBaseCtx.h" />
     <ClInclude Include="UftStraContext.h" />
     <ClInclude Include="UftStrategyMgr.h" />
     <ClInclude Include="ITrdNotifySink.h" />
@@ -38,7 +37,6 @@
   <ItemGroup>
     <ClCompile Include="ActionPolicyMgr.cpp" />
     <ClCompile Include="ShareManager.cpp" />
-    <ClCompile Include="UftStraBaseCtx.cpp" />
     <ClCompile Include="UftStraContext.cpp" />
     <ClCompile Include="UftStrategyMgr.cpp" />
     <ClCompile Include="ParserAdapter.cpp" />

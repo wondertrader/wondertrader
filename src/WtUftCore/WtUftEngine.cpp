@@ -34,6 +34,7 @@ USING_NS_WTP;
 WtUftEngine::WtUftEngine()
 	: _cfg(NULL)
 	, _tm_ticker(NULL)
+	, _dependent(false)
 {
 	TimeUtils::getDateTime(_cur_date, _cur_time);
 	_cur_secs = _cur_time % 100000;
@@ -187,7 +188,9 @@ void WtUftEngine::init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtUftDtMgr* dataMgr
 	_base_data_mgr = bdMgr;
 	_data_mgr = dataMgr;
 
-	WTSLogger::info("Platform running mode: Production");
+	_dependent = wt_stricmp(cfg->getCString("mode"), "dependent") == 0;
+
+	WTSLogger::info("Strategy trading data mode: {}", _dependent ? "dependent" : "independent");
 
 	_cfg = cfg;
 	if(_cfg) _cfg->retain();

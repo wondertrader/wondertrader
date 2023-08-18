@@ -39,9 +39,6 @@
     <ClInclude Include="ITrdNotifySink.h">
       <Filter>Incs</Filter>
     </ClInclude>
-    <ClInclude Include="UftStraBaseCtx.h">
-      <Filter>UFT</Filter>
-    </ClInclude>
     <ClInclude Include="UftStraContext.h">
       <Filter>UFT</Filter>
     </ClInclude>
@@ -79,9 +76,6 @@
     </ClCompile>
     <ClCompile Include="WtHelper.cpp">
       <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="UftStraBaseCtx.cpp">
-      <Filter>UFT</Filter>
     </ClCompile>
     <ClCompile Include="UftStraContext.cpp">
       <Filter>UFT</Filter>
