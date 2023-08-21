@@ -86,6 +86,8 @@ public:
 
 	double get_cur_price(const char* stdCode);
 
+	void notify_params_update(const char* name);
+
 public:
 	void init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtUftDtMgr* dataMgr);
 
@@ -134,8 +136,8 @@ private:
 
 	//By Wesley @ 2022.02.07
 	//tick数据订阅项，first是contextid，second是订阅选项，0-原始订阅，1-前复权，2-后复权
-	typedef faster_hashset<uint32_t> SubList;
-	typedef faster_hashmap<LongKey, SubList>	StraSubMap;
+	typedef wt_hashset<uint32_t> SubList;
+	typedef wt_hashmap<std::string, SubList>	StraSubMap;
 	StraSubMap		_tick_sub_map;	//tick数据订阅表
 	StraSubMap		_ordque_sub_map;	//委托队列订阅表
 	StraSubMap		_orddtl_sub_map;	//委托明细订阅表
@@ -144,11 +146,13 @@ private:
 
 	TraderAdapterMgr*	_adapter_mgr;
 
-	typedef faster_hashmap<uint32_t, UftContextPtr> ContextMap;
+	typedef wt_hashmap<uint32_t, UftContextPtr> ContextMap;
 	ContextMap		_ctx_map;
 
 	WtUftRtTicker*	_tm_ticker;
-	WTSVariant*		_cfg;	
+	WTSVariant*		_cfg;
+
+	bool			_dependent;	//子策略独立记账
 };
 
 NS_WTP_END

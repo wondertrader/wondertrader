@@ -21,7 +21,7 @@ public:
 public:
 	//////////////////////////////////////////////////////////////////////////
 	//IExecCommand
-	virtual void set_position(const faster_hashmap<LongKey, double>& targets) override;
+	virtual void set_position(const wt_hashmap<std::string, double>& targets) override;
 
 
 	virtual void on_position_changed(const char* stdCode, double targetPos) override;
@@ -34,7 +34,7 @@ private:
 
 	uint32_t			_scale;
 
-	faster_hashmap<std::string, double> _target_pos;
+	wt_hashmap<std::string, double> _target_pos;
 };
 NS_WTP_END
 

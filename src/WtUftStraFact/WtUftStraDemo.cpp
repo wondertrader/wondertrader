@@ -63,9 +63,11 @@ void WtUftStraDemo::on_entrust(uint32_t localid, bool bSuccess, const char* mess
 
 void WtUftStraDemo::on_init(IUftStraCtx* ctx)
 {
-	//WTSTickSlice* ticks = ctx->stra_get_ticks(_code.c_str(), _count);
-	//if (ticks)
-	//	ticks->release();
+	ctx->watch_param("second", _secs);
+	ctx->watch_param("freq", _freq);
+	ctx->watch_param("offset", _offset);
+	ctx->watch_param("lots", _lots);
+	ctx->commit_param_watcher();
 
 	WTSKlineSlice* kline = ctx->stra_get_bars(_code.c_str(), "m1", 30);
 	if (kline)
@@ -253,4 +255,19 @@ void WtUftStraDemo::on_channel_ready(IUftStraCtx* ctx)
 void WtUftStraDemo::on_channel_lost(IUftStraCtx* ctx)
 {
 	_channel_ready = false;
+}
+
+void WtUftStraDemo::on_params_updated()
+{
+	//ctx->watch_param("second", _secs);
+	//ctx->watch_param("freq", _freq);
+	//ctx->watch_param("offset", _offset);
+	//ctx->watch_param("lots", _lots);
+
+	_secs = _ctx->read_param("second", _secs);
+	_freq = _ctx->read_param("freq", _freq);
+	_offset = _ctx->read_param("offset", _offset);
+	_lots = _ctx->read_param("lots", _lots);
+
+	_ctx->stra_log_info(fmtutil::format("[{}] Params updated, second: {}, freq: {}, offset: {}, lots: {}", _id.c_str(), _secs, _freq, _offset, _lots));
 }

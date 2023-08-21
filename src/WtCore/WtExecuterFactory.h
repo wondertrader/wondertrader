@@ -32,7 +32,7 @@ private:
 };
 
 typedef std::shared_ptr<ExeUnitWrapper>	ExecuteUnitPtr;
-typedef faster_hashmap<LongKey, ExecuteUnitPtr> ExecuteUnitMap;
+typedef wt_hashmap<std::string, ExecuteUnitPtr> ExecuteUnitMap;
 
 //////////////////////////////////////////////////////////////////////////
 //执行器工厂类
@@ -46,9 +46,11 @@ public:
 
 	ExecuteUnitPtr createExeUnit(const char* name);
 	ExecuteUnitPtr createDiffExeUnit(const char* name);
+	ExecuteUnitPtr createArbiExeUnit(const char* name);
 
 	ExecuteUnitPtr createExeUnit(const char* factname, const char* unitname);
 	ExecuteUnitPtr createDiffExeUnit(const char* factname, const char* unitname);
+	ExecuteUnitPtr createArbiExeUnit(const char* factname, const char* unitname);
 
 private:
 	typedef struct _ExeFactInfo
@@ -59,7 +61,7 @@ private:
 		FuncCreateExeFact	_creator;
 		FuncDeleteExeFact	_remover;
 	} ExeFactInfo;
-	typedef faster_hashmap<LongKey, ExeFactInfo> ExeFactMap;
+	typedef wt_hashmap<std::string, ExeFactInfo> ExeFactMap;
 
 	ExeFactMap	_factories;
 };

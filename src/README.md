@@ -5,7 +5,7 @@
 + Windows	
 	> `Visual Studio 2017` + `Windows 10`
 + Linux	
-	> `Gcc v4.8.5` + `CentOS 7.9.2009` + `cmake 3.17.5`
+	> `Gcc v8.4.0` + `cmake 3.17.5`
 
 ## 依赖库
 + [boost 1.72](https://www.boost.org/)

@@ -150,6 +150,9 @@
     <ClInclude Include="WtExecuterFactory.h">
       <Filter>Exec</Filter>
     </ClInclude>
+    <ClInclude Include="WtArbiExecuter.h">
+      <Filter>Exec</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TraderAdapter.cpp">
@@ -234,6 +237,9 @@
       <Filter>Exec</Filter>
     </ClCompile>
     <ClCompile Include="WtExecuterFactory.cpp">
+      <Filter>Exec</Filter>
+    </ClCompile>
+    <ClCompile Include="WtArbiExecuter.cpp">
       <Filter>Exec</Filter>
     </ClCompile>
   </ItemGroup>

@@ -1,6 +1,6 @@
 ![WonderTrader2.png](./images/logo_qcode_noad.jpg)
 <p align="center">
-    <img src ="https://img.shields.io/badge/version-0.9.7-blueviolet.svg"/>
+    <img src ="https://img.shields.io/badge/version-0.9.8-blueviolet.svg"/>
     <img src ="https://img.shields.io/badge/platform-windows|linux-yellow.svg"/>
     <img src ="https://img.shields.io/badge/build-passing-brightgreen"/>
     <img src ="https://img.shields.io/badge/license-MIT-orange"/>
@@ -148,6 +148,6 @@
 * * *
 * 关注公众号`wondertrader`，可以收到`WonderTrader`的实时资讯
 * 用户交流QQ群上线：`610730738`(加入前请先`star`一下, 然后提供`github`用户名)
-* 更多`WonderTrader`的文档请看<https://wondertrader.github.io/>
+* 更多`WonderTrader`的文档请看<https://docs.wondertrader.com/>
 * `WonderTrader`半官方文档 <https://dumengru.github.io/docs_wondertrader/>
 * @ZzzzHeJ的`WonderTrader`学习笔记<https://zzzzhej.github.io/WonderTrader-Learning-Notes/>

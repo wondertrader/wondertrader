@@ -83,12 +83,17 @@ public:
 
 
 private:
-	WTSTickData* _last_tick;	//上一笔行情
-	double		_target_pos;	//目标仓位
-	bool		_channel_ready;
-
+	WTSTickData*	 _last_tick;	//上一笔行情
+	double			_target_pos;	//目标仓位
+	bool			_channel_ready;
+	StdUniqueMutex	_mtx_calc;
 
 	WTSCommodityInfo* _comm_info;
+	/***---begin---23.5.18---zhaoyk***/
+	WTSSessionInfo*	_sess_info;
+	uint32_t		_cancel_times;//撤单次数
+	/***---end---23.5.18---zhaoyk***/
+
 
 	//////////////////////////////////////////////////////////////////////////
 	//执行参数
@@ -102,13 +107,35 @@ private:
 	uint32_t		_tail_secs;		//执行尾部时间
 	uint32_t		_ord_sticky;	//挂单时限,单位s
 	uint32_t		_price_mode;	//价格模式: 0-最新价,1-最优价,2-对手价
-	uint32_t		_price_offset;		//挂单价格偏移,相对于几乎价格偏移,买+卖-
-
+	uint32_t		_price_offset;	//挂单价格偏移,相对于几乎价格偏移,买+卖-
+	uint32_t        _begin_time;	//开始时间 （1000-》10:00）
+	uint32_t		_end_time;		//结束时间 （1030-》10:30）
+	double			_min_open_lots;		//最小开仓数量
+	double			_order_lots;		//单次发单手数
+	bool			isCanCancel;
 	//////////////////////////////////////////////////////////////////////////
 	//临时变量
 	double			_this_target;	//本轮目标仓位
-	uint32_t		_fire_span;		//发单间隔
+	uint32_t		_fire_span;		//发单间隔//ms
 	uint32_t		_fired_times;	//已执行次数
-	uint64_t		_last_fire_time;
+	uint64_t		_last_fire_time; //上次已执行的时间
+	uint64_t		_last_place_time;//上个下单时间
+	uint64_t		_last_tick_time;//上个tick时间
+	std::atomic<bool> _in_calc;
+
+	typedef struct _CalcFlag
+	{
+		bool _result;
+		std::atomic<bool>* _flag;
+		_CalcFlag(std::atomic<bool>*flag) :_flag(flag) {
+			_result = _flag->exchange(true, std::memory_order_acq_rel);
+		}
+
+		~_CalcFlag() {
+			if (_flag)
+				_flag->exchange(false, std::memory_order_acq_rel);
+		}
+		operator bool() const { return _result; }
+	}CalcFlag;
 };
 

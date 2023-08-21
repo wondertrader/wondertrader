@@ -57,6 +57,8 @@ WtDataWriterAD::WtDataWriterAD()
 	, _disable_min5(false)
 	, _disable_tick(false)
 	, _tick_cache_block(nullptr)
+	, _tick_mapsize(16*1024*1024)
+	, _kline_mapsize(8*1024*1024)
 {
 }
 
@@ -86,6 +88,12 @@ bool WtDataWriterAD::init(WTSVariant* params, IDataWriterSink* sink)
 	_disable_min1 = params->getBoolean("disablemin1");
 	_disable_min5 = params->getBoolean("disablemin5");
 	_disable_day = params->getBoolean("disableday");
+
+	if (params->has("tickmapsize"))
+		_tick_mapsize = params->getUInt32("tickmapsize");
+
+	if (params->has("klinemapsize"))
+		_kline_mapsize = params->getUInt32("klinemapsize");
 
 	loadCache();
 
@@ -346,7 +354,7 @@ bool WtDataWriterAD::writeTick(WTSTickData* curTick, uint32_t procFlag)
 
 			_sink->broadcastTick(curTick);
 
-			static faster_hashmap<std::string, uint64_t> _tcnt_map;
+			static wt_hashmap<std::string, uint64_t> _tcnt_map;
 			_tcnt_map[curTick->exchg()]++;
 			if (_tcnt_map[curTick->exchg()] % _log_group_size == 0)
 			{
@@ -415,7 +423,7 @@ void WtDataWriterAD::pipeToTicks(WTSContractInfo* ct, WTSTickData* curTick)
 
 		LMDBHftKey key(ct->getExchg(), ct->getCode(), curTick->tradingdate(), offTime);
 		WtLMDBQuery query(*db);
-		if (!query.put((void*)&key, sizeof(key), &curTick->getTickStruct(), sizeof(WTSTickStruct)))
+		if (!query.put_and_commit((void*)&key, sizeof(key), &curTick->getTickStruct(), sizeof(WTSTickStruct)))
 		{
 			pipe_writer_log(_sink, LL_ERROR, "pipe tick of {} to db failed: {}", ct->getFullCode(), db->errmsg());
 		}
@@ -444,7 +452,7 @@ void WtDataWriterAD::pipeToDayBars(WTSContractInfo* ct, const WTSBarStruct& bar)
 	{
 		LMDBBarKey key(ct->getExchg(), ct->getCode(), bar.date);
 		WtLMDBQuery query(*db);
-		if (!query.put((void*)&key, sizeof(key), (void*)&bar, sizeof(WTSBarStruct)))
+		if (!query.put_and_commit((void*)&key, sizeof(key), (void*)&bar, sizeof(WTSBarStruct)))
 		{
 			pipe_writer_log(_sink, LL_ERROR, "pipe day bar @ {} of {} to db failed", bar.date, ct->getFullCode());
 		}
@@ -477,7 +485,7 @@ void WtDataWriterAD::pipeToM1Bars(WTSContractInfo* ct, const WTSBarStruct& bar)
 	{
 		LMDBBarKey key(ct->getExchg(), ct->getCode(), (uint32_t)bar.time);
 		WtLMDBQuery query(*db);
-		if(!query.put((void*)&key, sizeof(key), (void*)&bar, sizeof(WTSBarStruct)))
+		if(!query.put_and_commit((void*)&key, sizeof(key), (void*)&bar, sizeof(WTSBarStruct)))
 		{
 			pipe_writer_log(_sink, LL_ERROR, "pipe m1 bar @ {} of {} to db failed", bar.time, ct->getFullCode());
 		}
@@ -510,7 +518,7 @@ void WtDataWriterAD::pipeToM5Bars(WTSContractInfo* ct, const WTSBarStruct& bar)
 	{
 		LMDBBarKey key(ct->getExchg(), ct->getCode(), (uint32_t)bar.time);
 		WtLMDBQuery query(*db);
-		if (!query.put((void*)&key, sizeof(key), (void*)&bar, sizeof(bar)))
+		if (!query.put_and_commit((void*)&key, sizeof(key), (void*)&bar, sizeof(bar)))
 		{
 			pipe_writer_log(_sink, LL_ERROR, "pipe m5 bar @ {} of {} to db failed", bar.time, ct->getFullCode());
 		}
@@ -619,9 +627,21 @@ void WtDataWriterAD::updateBarCache(WTSContractInfo* ct, WTSTickData* curTick)
 		}
 		else
 		{
+			/*
+			*	By Wesley @ 2023.07.05
+			*	发现某些品种，开盘时可能会推送price为0的tick进来
+			*	会导致open和low都是0，所以要再做一个判断
+			*/
+			if (decimal::eq(newBar->open, 0))
+				newBar->open = curTick->price();
+
+			if (decimal::eq(newBar->low, 0))
+				newBar->low = curTick->price();
+			else
+				newBar->low = std::min(curTick->price(), newBar->low);
+
 			newBar->close = curTick->price();
 			newBar->high = max(curTick->price(), newBar->high);
-			newBar->low = min(curTick->price(), newBar->low);
 
 			newBar->vol += curTick->volume();
 			newBar->money += curTick->turnover();
@@ -712,9 +732,21 @@ void WtDataWriterAD::updateBarCache(WTSContractInfo* ct, WTSTickData* curTick)
 		}
 		else
 		{
+			/*
+			*	By Wesley @ 2023.07.05
+			*	发现某些品种，开盘时可能会推送price为0的tick进来
+			*	会导致open和low都是0，所以要再做一个判断
+			*/
+			if (decimal::eq(newBar->open, 0))
+				newBar->open = curTick->price();
+
+			if (decimal::eq(newBar->low, 0))
+				newBar->low = curTick->price();
+			else
+				newBar->low = std::min(curTick->price(), newBar->low);
+
 			newBar->close = curTick->price();
 			newBar->high = max(curTick->price(), newBar->high);
-			newBar->low = min(curTick->price(), newBar->low);
 
 			newBar->vol += curTick->volume();
 			newBar->money += curTick->turnover();
@@ -1007,7 +1039,7 @@ WtDataWriterAD::WtLMDBPtr WtDataWriterAD::get_k_db(const char* exchg, WTSKlinePe
 	WtLMDBPtr dbPtr(new WtLMDB(false));
 	std::string path = StrUtil::printf("%s%s/%s/", _base_dir.c_str(), subdir.c_str(), exchg);
 	boost::filesystem::create_directories(path);
-	if(!dbPtr->open(path.c_str()))
+	if(!dbPtr->open(path.c_str(), _kline_mapsize))
 	{
 		if (_sink) pipe_writer_log(_sink, LL_ERROR, "Opening {} db at {} failed: {}", subdir, path, dbPtr->errmsg());
 		return std::move(WtLMDBPtr());
@@ -1027,12 +1059,12 @@ WtDataWriterAD::WtLMDBPtr WtDataWriterAD::get_t_db(const char* exchg, const char
 	WtLMDBPtr dbPtr(new WtLMDB(false));
 	std::string path = StrUtil::printf("%sticks/%s/%s", _base_dir.c_str(), exchg, code);
 	boost::filesystem::create_directories(path);
-	if (!dbPtr->open(path.c_str()))
+	if (!dbPtr->open(path.c_str(), _tick_mapsize))
 	{
 		if (_sink) pipe_writer_log(_sink, LL_ERROR, "Opening tick db at {} failed: %s", path, dbPtr->errmsg());
 		return std::move(WtLMDBPtr());
 	}
 
-	_tick_dbs[exchg] = dbPtr;
+	_tick_dbs[key] = dbPtr;
 	return std::move(dbPtr);
 }

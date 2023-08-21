@@ -571,7 +571,7 @@ void WtDtRunner::sub_tick(const char* codes, bool bReplace, bool bInner /* = fal
 			flag = (stdCode[length] == SUFFIX_QFQ) ? 1 : 2;
 		}
 
-		SubFlags& flags = _tick_innersub_map[LongKey(stdCode, length)];
+		SubFlags& flags = _tick_innersub_map[std::string(stdCode, length)];
 		flags.insert(flag);
 		WTSLogger::info("Tick dada of {} subscribed with flag {} for inner use", stdCode, flag);
 	}
@@ -596,7 +596,7 @@ void WtDtRunner::sub_tick(const char* codes, bool bReplace, bool bInner /* = fal
 				flag = (stdCode[length] == SUFFIX_QFQ) ? 1 : 2;
 			}
 
-			SubFlags& flags = _tick_sub_map[LongKey(stdCode, length)];
+			SubFlags& flags = _tick_sub_map[std::string(stdCode, length)];
 			flags.insert(flag);
 			WTSLogger::info("Tick dada of {} subscribed with flag {}", stdCode, flag);
 		}

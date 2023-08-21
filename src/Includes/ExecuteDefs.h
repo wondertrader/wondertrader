@@ -266,6 +266,11 @@ public:
 	virtual ExecuteUnit* createDiffExeUnit(const char* name) = 0;
 
 	/*
+	 *	根据名称创建差量执行单元
+	 */
+	virtual ExecuteUnit* createArbiExeUnit(const char* name) = 0;
+
+	/*
 	 *	删除执行单元
 	 */
 	virtual bool deleteExeUnit(ExecuteUnit* unit) = 0;

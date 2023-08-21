@@ -120,14 +120,11 @@ bool TraderCTP::init(WTSVariant* params)
 
 	m_strFlowDir = StrUtil::standardisePath(m_strFlowDir);
 
-#ifdef __APPLE__
-    m_funcCreator = CThostFtdcTraderApi::CreateFtdcTraderApi;
-#else
-	WTSVariant* param = params->get("ctpmodule");
-	if (param != NULL)
-		m_strModule = getBinDir() + DLLHelper::wrap_module(param->asCString());
-	else
-		m_strModule = getBinDir() + DLLHelper::wrap_module("thosttraderapi_se", "");
+	std::string module = params->getCString("ctpmodule");
+	if (module.empty())
+		module = "thosttraderapi_se";
+
+	m_strModule = getBinDir() + DLLHelper::wrap_module(module.c_str(), "");
 
 	m_hInstCTP = DLLHelper::load_library(m_strModule.c_str());
 #ifdef _WIN32
@@ -140,7 +137,7 @@ bool TraderCTP::init(WTSVariant* params)
 	const char* creatorName = "_ZN19CThostFtdcTraderApi19CreateFtdcTraderApiEPKc";
 #endif
 	m_funcCreator = (CTPCreator)DLLHelper::get_symbol(m_hInstCTP, creatorName);
-#endif
+
 	m_bQuickStart = params->getBoolean("quick");
 
 	return true;
@@ -305,11 +302,7 @@ int TraderCTP::doLogin()
 	wt_strcpy(req.UserID, m_strUser.c_str(), m_strUser.size());
 	wt_strcpy(req.Password, m_strPass.c_str(), m_strPass.size());
 	wt_strcpy(req.UserProductInfo, m_strProdInfo.c_str(), m_strProdInfo.size());
-#ifdef __APPLE__
-	int iResult = m_pUserAPI->ReqUserLogin(&req, genRequestID(), strlen("WonderTrader"), "WonderTrader");
-#else
 	int iResult = m_pUserAPI->ReqUserLogin(&req, genRequestID());
-#endif
 	if (iResult != 0)
 	{
 		write_log(m_sink, LL_ERROR, "[TraderCTP] Sending login request failed: {}", iResult);
@@ -760,10 +753,6 @@ void TraderCTP::OnRspOrderInsert(CThostFtdcInputOrderField *pInputOrder, CThostF
 void TraderCTP::OnRspOrderAction(CThostFtdcInputOrderActionField *pInputOrderAction, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
 	if (IsErrorRspInfo(pRspInfo))
-	{
-
-	}
-	else
 	{
 		WTSError* error = WTSError::create(WEC_ORDERCANCEL, pRspInfo->ErrorMsg);
 		if (m_sink)

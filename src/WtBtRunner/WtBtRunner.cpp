@@ -90,6 +90,9 @@ int main()
 		mocker->init_sel_factory(cfg->get("sel"));
 		const char* stra_id = cfg->get("sel")->get("strategy")->getCString("id");
 		replayer.register_sink(mocker, stra_id);
+
+		replayer.register_task(mocker->id(), cfg->get("sel")->get("task")->getUInt32("date"),
+			cfg->get("sel")->get("task")->getUInt32("time"), cfg->get("sel")->get("task")->getCString("period"));
 	}
 	else if (strcmp(mode, "exec") == 0)
 	{

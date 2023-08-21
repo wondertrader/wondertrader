@@ -25,6 +25,7 @@
 #include "../WtCore/WtLocalExecuter.h"
 #include "../WtCore/WtDiffExecuter.h"
 #include "../WtCore/WtDistExecuter.h"
+#include "../WtCore/WtArbiExecuter.h"
 #include "../WtCore/TraderAdapter.h"
 #include "../WtCore/ParserAdapter.h"
 #include "../WtCore/WtDtMgr.h"

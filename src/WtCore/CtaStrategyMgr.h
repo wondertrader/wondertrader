@@ -60,11 +60,11 @@ private:
 		FuncCreateStraFact	_creator;
 		FuncDeleteStraFact	_remover;
 	} StraFactInfo;
-	typedef faster_hashmap<LongKey, StraFactInfo> StraFactMap;
+	typedef wt_hashmap<std::string, StraFactInfo> StraFactMap;
 
 	StraFactMap	_factories;
 
-	typedef faster_hashmap<LongKey, CtaStrategyPtr> StrategyMap;
+	typedef wt_hashmap<std::string, CtaStrategyPtr> StrategyMap;
 	StrategyMap	_strategies;
 };
 

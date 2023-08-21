@@ -104,11 +104,11 @@ private:
 	//////////////////////////////////////////////////////////////////////////
 	//执行参数
 	int32_t		_price_offset;
-	uint32_t	_expire_secs;
+	uint32_t	_expire_secs;//订单超时秒数
 	int32_t		_price_mode;
-	uint32_t	_entrust_span;
+	uint32_t	_entrust_span; //发单时间间隔
 	bool		_by_rate;
-	double		_order_lots;
+	double		_order_lots;//单次发单手数
 	double		_qty_rate;
 
 	/*
@@ -116,14 +116,15 @@ private:
 	 *	增加一个最小开仓数量
 	 *	为什么没有最小平仓数量呢，因为平仓要根据持仓来，所以无法限制
 	 */
-	double		_min_open_lots;
+	double		_min_open_lots;//最小开仓数量
 
 	WtOrdMon	_orders_mon;
-	uint32_t	_cancel_cnt;
-	uint32_t	_cancel_times;
+	uint32_t	_cancel_cnt;//在途撤单量
+	uint32_t	_cancel_times;//撤单次数
 
-	uint64_t	_last_place_time;
-	uint64_t	_last_tick_time;
+
+	uint64_t	_last_place_time;//上个下单时间
+	uint64_t	_last_tick_time;//上个tick时间
 
 	std::atomic<bool>	_in_calc;
 

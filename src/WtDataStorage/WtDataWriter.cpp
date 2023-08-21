@@ -7,6 +7,7 @@
 #include "../Share/BoostFile.hpp"
 #include "../Share/StrUtil.hpp"
 #include "../Share/IniHelper.hpp"
+#include "../Share/decimal.h"
 
 #include "../Includes/IBaseDataMgr.h"
 #include "../WTSUtils/WTSCmpHelper.hpp"
@@ -125,6 +126,8 @@ bool WtDataWriter::init(WTSVariant* params, IDataWriterSink* sink)
 	_disable_ordque = params->getBoolean("disableordque");
 	_disable_orddtl = params->getBoolean("disableorddtl");
 
+	_min_price_mode = params->getUInt32("minbar_price_mode");
+
 	{
 		std::string filename = _base_dir + MARKER_FILE;
 		IniHelper iniHelper;
@@ -142,9 +145,9 @@ bool WtDataWriter::init(WTSVariant* params, IDataWriterSink* sink)
 	_proc_chk.reset(new StdThread(boost::bind(&WtDataWriter::check_loop, this)));
 
 	pipe_writer_log(sink, LL_INFO, "WtDataWriter initialized, root dir: {}, save_csv_tick: {}, async_mode: {}, log_group_size: {}, disable_history: {}, "
-		"disable_tick: {}, disable_min1: {}, disable_min5: {}, disable_day: {}, disable_trans: {}, disable_ordque: {}, disable_orders: {}", 
+		"disable_tick: {}, disable_min1: {}, disable_min5: {}, disable_day: {}, disable_trans: {}, disable_ordque: {}, disable_orders: {}, min_price_mode: {}", 
 		_base_dir, _save_tick_log, _async_proc, _log_group_size, _disable_his, _disable_tick, 
-		_disable_min1, _disable_min5, _disable_day, _disable_trans, _disable_ordque, _disable_orddtl);
+		_disable_min1, _disable_min5, _disable_day, _disable_trans, _disable_ordque, _disable_orddtl, _min_price_mode);
 	return true;
 }
 
@@ -369,7 +372,7 @@ bool WtDataWriter::writeTick(WTSTickData* curTick, uint32_t procFlag)
 
 			_sink->broadcastTick(curTick);
 
-			static faster_hashmap<ShortKey, uint64_t> _tcnt_map;
+			static wt_hashmap<std::string, uint64_t> _tcnt_map;
 			_tcnt_map[curTick->exchg()]++;
 			if (_tcnt_map[curTick->exchg()] % _log_group_size == 0)
 			{
@@ -423,7 +426,7 @@ bool WtDataWriter::writeOrderQueue(WTSOrdQueData* curOrdQue)
 			//TODO: 要广播的
 			//g_udpCaster.broadcast(curTrans);
 
-			static faster_hashmap<std::string, uint64_t> _tcnt_map;
+			static wt_hashmap<std::string, uint64_t> _tcnt_map;
 			_tcnt_map[curOrdQue->exchg()]++;
 			if (_tcnt_map[curOrdQue->exchg()] % _log_group_size == 0)
 			{
@@ -520,7 +523,7 @@ bool WtDataWriter::writeOrderDetail(WTSOrdDtlData* curOrdDtl)
 			//TODO: 要广播的
 			//g_udpCaster.broadcast(curTrans);
 
-			static faster_hashmap<std::string, uint64_t> _tcnt_map;
+			static wt_hashmap<std::string, uint64_t> _tcnt_map;
 			_tcnt_map[curOrdDtl->exchg()]++;
 			if (_tcnt_map[curOrdDtl->exchg()] % _log_group_size == 0)
 			{
@@ -576,7 +579,7 @@ bool WtDataWriter::writeTransaction(WTSTransData* curTrans)
 			//TODO: 要广播的
 			//g_udpCaster.broadcast(curTrans);
 
-			static faster_hashmap<std::string, uint64_t> _tcnt_map;
+			static wt_hashmap<std::string, uint64_t> _tcnt_map;
 			_tcnt_map[curTrans->exchg()]++;
 			if (_tcnt_map[curTrans->exchg()] % _log_group_size == 0)
 			{
@@ -1023,12 +1026,14 @@ WtDataWriter::TickBlockPair* WtDataWriter::getTickBlock(WTSContractInfo* ct, uin
 
 void WtDataWriter::pipeToKlines(WTSContractInfo* ct, WTSTickData* curTick)
 {
-	bool tickNoTrade = curTick->turnover() <= 0.1;
+	bool tickNoTrade = decimal::eq(curTick->turnover(),0);
+
 	// 如果未成交的bar也要跳过，那么就不需要处理所有未成交的tick了，否则即便没有成交也要放进来闭合bar
-	if (_skip_notrade_bar and tickNoTrade)
+	if (_skip_notrade_bar && tickNoTrade)
 	{
 		return;
 	}
+
 	uint32_t uDate = curTick->actiondate();
 	WTSSessionInfo* sInfo = ct->getCommInfo()->getSessionInfo();
 	uint32_t curTime = curTick->actiontime() / 100000;
@@ -1100,21 +1105,57 @@ void WtDataWriter::pipeToKlines(WTSContractInfo* ct, WTSTickData* curTick)
 
 				newBar->vol = curTick->volume();
 				newBar->money = curTick->turnover();
-				newBar->hold = curTick->openinterest();
-				newBar->add = curTick->additional();
+				
+				/*
+				 *	如果分钟线价格走势为1，则将tick的挂单价格记录下来
+				 */
+				if(_min_price_mode == 1)
+				{
+					newBar->bid = curTick->bidprice(0);
+					newBar->ask = curTick->askprice(0);
+				}
+				else
+				{
+					newBar->hold = curTick->openinterest();
+					newBar->add = curTick->additional();
+				}
 			}
-			else if (not (_skip_notrade_tick && tickNoTrade))
+			else if (! (_skip_notrade_tick && tickNoTrade))
 			{
 				newBar = &blk->_bars[blk->_size - 1];
 
+				/*
+				 *	By Wesley @ 2023.07.05
+				 *	发现某些品种，开盘时可能会推送price为0的tick进来
+				 *	会导致open和low都是0，所以要再做一个判断
+				 */
+				if (decimal::eq(newBar->open, 0))
+					newBar->open = curTick->price();
+
+				if (decimal::eq(newBar->low, 0))
+					newBar->low = curTick->price();
+				else
+					newBar->low = std::min(curTick->price(), newBar->low);
+
 				newBar->close = curTick->price();
 				newBar->high = std::max(curTick->price(), newBar->high);
-				newBar->low = std::min(curTick->price(), newBar->low);
 
 				newBar->vol += curTick->volume();
 				newBar->money += curTick->turnover();
-				newBar->hold = curTick->openinterest();
-				newBar->add += curTick->additional();
+
+				/*
+				 *	如果分钟线价格走势为1，则将tick的挂单价格记录下来
+				 */
+				if (_min_price_mode == 1)
+				{
+					newBar->bid = curTick->bidprice(0);
+					newBar->ask = curTick->askprice(0);
+				}
+				else
+				{
+					newBar->hold = curTick->openinterest();
+					newBar->add += curTick->additional();
+				}
 			}
 		}
 	}
@@ -1170,21 +1211,57 @@ void WtDataWriter::pipeToKlines(WTSContractInfo* ct, WTSTickData* curTick)
 
 				newBar->vol = curTick->volume();
 				newBar->money = curTick->turnover();
-				newBar->hold = curTick->openinterest();
-				newBar->add = curTick->additional();
+
+				/*
+				 *	如果分钟线价格走势为1，则将tick的挂单价格记录下来
+				 */
+				if (_min_price_mode == 1)
+				{
+					newBar->bid = curTick->bidprice(0);
+					newBar->ask = curTick->askprice(0);
+				}
+				else
+				{
+					newBar->hold = curTick->openinterest();
+					newBar->add = curTick->additional();
+				}
 			}
-			else if (not (_skip_notrade_tick && tickNoTrade))
+			else if (! (_skip_notrade_tick && tickNoTrade))
 			{
 				newBar = &blk->_bars[blk->_size - 1];
 
+				/*
+				 *	By Wesley @ 2023.07.05
+				 *	发现某些品种，开盘时可能会推送price为0的tick进来
+				 *	会导致open和low都是0，所以要再做一个判断
+				 */
+				if (decimal::eq(newBar->open, 0))
+					newBar->open = curTick->price();
+
+				if (decimal::eq(newBar->low, 0))
+					newBar->low = curTick->price();
+				else
+					newBar->low = std::min(curTick->price(), newBar->low);
+
 				newBar->close = curTick->price();
 				newBar->high = max(curTick->price(), newBar->high);
-				newBar->low = min(curTick->price(), newBar->low);
 
 				newBar->vol += curTick->volume();
 				newBar->money += curTick->turnover();
-				newBar->hold = curTick->openinterest();
-				newBar->add += curTick->additional();
+
+				/*
+				 *	如果分钟线价格走势为1，则将tick的挂单价格记录下来
+				 */
+				if (_min_price_mode == 1)
+				{
+					newBar->bid = curTick->bidprice(0);
+					newBar->ask = curTick->askprice(0);
+				}
+				else
+				{
+					newBar->hold = curTick->openinterest();
+					newBar->add += curTick->additional();
+				}
 			}
 		}
 	}
@@ -2124,7 +2201,7 @@ void WtDataWriter::proc_loop()
 				newCache->_version = BLOCK_VERSION_RAW_V2;
 				strcpy(newCache->_blk_flag, BLK_FLAG);
 
-				faster_hashmap<LongKey, uint32_t> newIdxMap;
+				wt_hashmap<std::string, uint32_t> newIdxMap;
 
 				uint32_t newIdx = 0;
 				for (const std::string& key : setCodes)

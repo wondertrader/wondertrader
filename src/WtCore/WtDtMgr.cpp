@@ -89,6 +89,10 @@ bool WtDtMgr::init(WTSVariant* cfg, WtEngine* engine)
 {
 	_engine = engine;
 
+	_align_by_section = cfg->getBoolean("align_by_section");
+
+	WTSLogger::info("Resampled bars will be aligned by section: {}", _align_by_section?"yes":" not");
+
 	return initStore(cfg->get("store"));
 }
 
@@ -181,7 +185,7 @@ void WtDtMgr::on_bar(const char* code, WTSKlinePeriod period, WTSBarStruct* newB
 
 		WTSKlineData* kData = (WTSKlineData*)it->second;
 		{
-			g_dataFact.updateKlineData(kData, newBar, sInfo);
+			g_dataFact.updateKlineData(kData, newBar, sInfo, _align_by_section);
 			if (kData->isClosed())
 			{
 				//如果基础周期K线的时间和自定义周期K线的时间一致, 说明K线关闭了
@@ -412,7 +416,7 @@ WTSKlineSlice* WtDtMgr::get_kline_slice(const char* stdCode, WTSKlinePeriod peri
 		WTSKlineSlice* rawData = _reader->readKlineSlice(stdCode, period, realCount, etime);
 		if (rawData != NULL)
 		{
-			kData = g_dataFact.extractKlineData(rawData, period, times, sInfo, true);
+			kData = g_dataFact.extractKlineData(rawData, period, times, sInfo, true, _align_by_section);
 			rawData->release();
 		}
 		else

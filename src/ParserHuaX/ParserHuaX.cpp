@@ -132,7 +132,7 @@ bool ParserHuaX::connect()
 {
 	_api->RegisterFront((char*)_front.c_str());
 	_api->Init();
-	_api->Join();
+	//_api->Join();
 	return true;
 }
 

@@ -1,0 +1,38 @@
+# 这个dockerfile直接基于ubuntu18.04镜像构建，镜像大小约66M，拉取速度较快
+# 拉取完以后，再安装gcc8等编译工具
+# 并且自动从gitee上拉取依赖库
+# 基于该文件构建镜像可以使用命令： docker build -t yourimagename -f Dockerfile_ubt .
+# 构建完成以后，要启动容器，可以使用命令： docker run -it yourimagename /bin/bash
+FROM ubuntu:18.04
+MAINTAINER wondertrader@126.com
+
+RUN apt-get update 
+
+# setup sudo
+RUN set -e && apt-get install sudo
+
+# 安装编译工具
+RUN apt-get install -y git 
+RUN apt-get install -y gcc-8 
+RUN apt-get install -y g++-8 
+RUN apt-get install -y cmake
+
+# 安装其他工具
+RUN apt-get install -y p7zip-full
+
+# 将gcc符号链接到gcc8
+RUN rm /usr/bin/gcc
+RUN ln -s /usr/bin/gcc-8 /usr/bin/gcc
+RUN ln -s /usr/bin/g++-8 /usr/bin/g++
+
+# 添加预编译依赖库，并解压
+ADD mydeps_gcc8.4.0.7z /home
+RUN cd /home && 7za x mydeps_gcc8.4.0.7z
+
+# 拉取wondertrader代码
+# 如果在宿主机上已经拉取了wondertrader代码，可以注释掉下一行指令，并在启动容器的时候使用-v参数将宿主机上的代码目录挂载到容器中
+# docker run -it yourimagename -v /home/wondertrader:/home/wondertrader /bin/bash
+RUN cd /home && git clone https://gitee.com/wondertrader/wondertrader.git
+
+WORKDIR /home/wondertrader/
+

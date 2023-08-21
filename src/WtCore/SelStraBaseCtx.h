@@ -79,15 +79,36 @@ public:
 
 	virtual void enum_position(FuncEnumSelPositionCallBack cb) override;
 
-
 	//////////////////////////////////////////////////////////////////////////
 	//策略接口
 	virtual double stra_get_position(const char* stdCode, bool bOnlyValid = false, const char* userTag = "") override;
 	virtual void stra_set_position(const char* stdCode, double qty, const char* userTag = "") override;
 	virtual double stra_get_price(const char* stdCode) override;
 
+	/*
+	 *	读取当日价格
+	 */
+	virtual double stra_get_day_price(const char* stdCode, int flag = 0) override;
+
+	virtual uint32_t stra_get_tdate() override;
 	virtual uint32_t stra_get_date() override;
 	virtual uint32_t stra_get_time() override;
+
+	virtual double stra_get_fund_data(int flag /* = 0 */) override;
+
+	virtual uint64_t stra_get_first_entertime(const char* stdCode) override;
+	virtual uint64_t stra_get_last_entertime(const char* stdCode) override;
+	virtual double stra_get_last_enterprice(const char* stdCode) override;
+	virtual const char* stra_get_last_entertag(const char* stdCode) override;
+
+	virtual uint64_t stra_get_last_exittime(const char* stdCode) override;
+
+	virtual double stra_get_position_avgpx(const char* stdCode) override;
+	virtual double stra_get_position_profit(const char* stdCode) override;
+
+	virtual uint64_t stra_get_detail_entertime(const char* stdCode, const char* userTag) override;
+	virtual double stra_get_detail_cost(const char* stdCode, const char* userTag) override;
+	virtual double stra_get_detail_profit(const char* stdCode, const char* userTag, int flag = 0) override;
 
 	virtual WTSCommodityInfo* stra_get_comminfo(const char* stdCode) override;
 	virtual WTSSessionInfo* stra_get_sessinfo(const char* stdCode) override;
@@ -129,10 +150,10 @@ protected:
 		_KlineTag() :_closed(false){}
 
 	} KlineTag;
-	typedef faster_hashmap<LongKey, KlineTag> KlineTags;
+	typedef wt_hashmap<std::string, KlineTag> KlineTags;
 	KlineTags	_kline_tags;
 
-	typedef faster_hashmap<LongKey, double> PriceMap;
+	typedef wt_hashmap<std::string, double> PriceMap;
 	PriceMap		_price_map;
 
 	typedef struct _DetailInfo
@@ -144,6 +165,8 @@ protected:
 		uint32_t	_opentdate;
 		double		_max_profit;
 		double		_max_loss;
+		double		_max_price;
+		double		_min_price;
 		double		_profit;
 		char		_opentag[32];
 
@@ -158,6 +181,10 @@ protected:
 		double		_volume;
 		double		_closeprofit;
 		double		_dynprofit;
+
+		uint64_t	_last_entertime;
+		uint64_t	_last_exittime;
+
 		double		_frozen;
 		uint32_t	_frozen_date;
 
@@ -168,11 +195,13 @@ protected:
 			_volume = 0;
 			_closeprofit = 0;
 			_dynprofit = 0;
+			_last_entertime = 0;
+			_last_exittime = 0;
 			_frozen = 0;
 			_frozen_date = 0;
 		}
 	} PosInfo;
-	typedef faster_hashmap<LongKey, PosInfo> PositionMap;
+	typedef wt_hashmap<std::string, PosInfo> PositionMap;
 	PositionMap		_pos_map;
 
 	typedef struct _SigInfo
@@ -191,7 +220,7 @@ protected:
 			_gentime = 0;
 		}
 	}SigInfo;
-	typedef faster_hashmap<LongKey, SigInfo>	SignalMap;
+	typedef wt_hashmap<std::string, SigInfo>	SignalMap;
 	SignalMap		_sig_map;
 
 	BoostFilePtr	_trade_logs;
@@ -204,7 +233,7 @@ protected:
 	bool			_is_in_schedule;	//是否在自动调度中
 
 	//用户数据
-	typedef faster_hashmap<LongKey, std::string> StringHashMap;
+	typedef wt_hashmap<std::string, std::string> StringHashMap;
 	StringHashMap	_user_datas;
 	bool			_ud_modified;
 
@@ -223,7 +252,7 @@ protected:
 	StraFundInfo		_fund_info;
 
 	//tick订阅列表
-	faster_hashset<LongKey> _tick_subs;
+	wt_hashset<std::string> _tick_subs;
 };
 
 

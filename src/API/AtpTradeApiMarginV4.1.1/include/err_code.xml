@@ -1,0 +1,514 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+    <!-- 拒绝原因代码 -->
+    <errors>
+        <!--API 错误码,API函数返回值 --> 
+        <Value name="kSuccess" description="正常" >10000</Value> 
+        <Value name="kNoSetClientHandler" description="未设置处理句柄常" >10001</Value> 
+        <Value name="kLocationsError" description="未设置ip和端口" >10002</Value> 
+        <Value name="kUserPwdError" description="用户名或密码错误" >10003</Value> 
+        <Value name="kNoConnection" description="没有建立连接" >10004</Value> 
+        <Value name="kNoSyncFinished" description="没有完成回报同步请求" >10005</Value> 
+        <Value name="kAlreadyConnected" description="已连接" >10006</Value> 
+        <Value name="kFailure" description="失败" >10007</Value> 
+        <Value name="kCheckError" description="资金账户与股东账户校验失败等" >10008</Value> 
+        <Value name="kNotAuth" description="该用户未认证" >10009</Value> 
+        <Value name="kInitLogError" description="初始化日志错误" >10010</Value> 
+        <Value name="kLoadCfgError" description="加载配置文件失败" >10011</Value> 
+        <Value name="kNotInit" description="没有Init初始化" >10012</Value> 
+        <Value name="kSpeedLimit" description="流速超限" >10013</Value> 
+        <Value name="kLinkNumLimit" description="连接数超限" >10014</Value> 
+        <Value name="kLicenseError" description="license 错误" >10015</Value> 
+        <Value name="kBlackWhiteListAndFuncCodeError" description="黑白名单和功能号检测错误" >10016</Value> 
+        <Value name="kCustIdInBlackList" description="客户号在黑名单" >10017</Value> 
+        <Value name="kCustIdNotInWhiteList" description="客户号不在白名单" >10018</Value> 
+        <Value name="kFuncCodeNotFound" description="功能号列表中找不到客户号对应的功能号" >10019</Value> 
+        <Value name="kCannotFindProcessor" description="不支持该功能" >10201</Value> 
+        <Value name="kApiMsgIsNull" description="消息结构为空" >10202</Value> 
+        <Value name="kTimeInForceError" description="订单有效时间类型取值错误" >10203</Value> 
+        <Value name="kSideError" description="买卖方向取值错误" >10204</Value> 
+        <Value name="kVotingPerferenceError" description="投票意向取值错误" >10205</Value> 
+        <Value name="kPositionEffectError" description="开平仓取值错误" >10206</Value> 
+        <Value name="kCoveredOrUncoveredError" description="备兑标签取值错误" >10207</Value>
+        <Value name="kOrderWayError" description="委托方式取值错误">10208</Value>
+        <Value name="kMarketIDError" description="所属市场取值错误">10209</Value>
+        <Value name="kEnforceFlagError" description="风险强制标识取值错误">10210</Value>
+        <Value name="kTransferWayError" description="划拨方式取值错误">10211</Value>
+        <Value name="kOrderTypeError" description="订单类型取值错误">10212</Value>
+        <Value name="kOrderQueryConditionError" description="订单查询条件取值错误">10213</Value>
+        <Value name="kDesignationTransTypeError" description="转托管注册类型取值错误">10214</Value>
+        <Value name="kReturnSeqError" description="查询条件返回顺序取值错误">10215</Value>
+        <Value name="kDesignatedTransactionSecurityIDError" description="指定交易业务委托消息证券代码错误">10216</Value>
+        <Value name="kPricePropertyError" description="价格类型错误">10217</Value>
+        <Value name="kTrdSubTypeError" description="是否受限错误">10218</Value>
+        <Value name="kPricingError" description="大宗交易定价申报类型错误">10219</Value>
+        <Value name="kLotTypeError" description="订单数量类型错误">10220</Value>
+        <Value name="kCurrencyError" description="币种类型取值错误">10221</Value>
+        <Value name="kRepayWayError" description="融资融券直接还款方式取值错误">10222</Value>
+        <Value name="kCloseOutFlagError" description="融资融券了结标识取值错误">10223</Value>
+        <Value name="kQueryContentsError" description="融资融券查询内容取值错误">10224</Value>
+        <Value name="kAccountIDNULLError" description="客户号为空错误">10225</Value>
+        <Value name="kCRDUnderlyingTypeError" description="融资融券标的类型错误">10226</Value>
+        <Value name="kAccountIDArrayNULLError" description="证券账户组为空错误">10227</Value>
+        <Value name="kNoMsgVersion" description="没有此版本消息">11000</Value>
+        <Value name="kNotNegotiateVersion" description="没有协商版本">11001</Value>
+        <Value name="kLoginModeError" description="客户登陆模式错误">11002</Value>
+        <Value name="kBusinessAbstractTypeError" description="抽象业务类型错误">11003</Value>
+        <Value name="kBusinessATypeError" description="业务类型错误">11004</Value>
+        <Value name="kTradeReportTypeError" description="成交申报类型错误">11005</Value>
+        <Value name="kInvestorTypeError" description="对手方交易主体类型错误">11006</Value>
+        <Value name="kATPTransAffairTypeError" description="成交申报事物类型错误">11007</Value>
+        <Value name="kAlgoOperationError" description="算法操作类型错误">11008</Value>
+        <Value name="kEncryptSchemaError" description="加密值ENCRYPT_SCHEMA错误">11009</Value>
+        <Value name="kRsaFileError" description="rsa公钥错误">11010</Value>
+        <Value name="kMultiChannelFlagError" description="消息订阅参数错误">11011</Value>
+        <Value name="kEtfPurchaseRedemptionFlagError" description="是否返回ETF申赎成交标识错误">11012</Value>
+        <Value name="kAnonyLoginReportSynUnfinished" description="匿名登录客户回报同步处理未完成">11013</Value>
+
+        <!--AGW 业务拒绝原因代码 由业务拒绝消息返回 101-1000 -->
+        <Value name="RejSwitchOff" description="网关开关关闭" >101</Value>
+        <Value name="RejAccountid" description="无法从路由表中找到股东账户对应的TE分区号" >102</Value>
+        <Value name="RejBusinessType" description="业务类型错误" >103</Value>
+        <Value name="RejMarketID" description="市场字段错误" >104</Value>
+        <Value name="RejSide" description="买卖方向错误" >105</Value>
+        <Value name="RejOrdType" description="订单类型错误" >106</Value>
+        <Value name="RejTimeInForce" description="订单有效期错误" >107</Value>
+        <Value name="RejCashMargin" description="信用标识错误" >108</Value>
+        <Value name="RejPositionEffect" description="开平仓标识错误" >109</Value>
+        <Value name="RejCoveredOrUncovered" description="备兑标识错误" >110</Value>
+        <Value name="RejDesignationTransType" description="转托管注册类型错误" >111</Value>
+        <Value name="RejSecurityid" description="证券代码错误">112</Value>
+        <Value name="RejOrderQty" description="订单申报数量错误" >113</Value>
+        <Value name="RejPrice" description="价格错误" >114</Value>
+        <Value name="RejWhitList" description="登录用户的IP地址未在白名单内" >115</Value>
+        <Value name="RejCurrency" description="币种错误" >116</Value>
+        <Value name="RejTransferWay" description="划转方式错误" >117</Value>
+        <Value name="QtyTypeError" description="订单数量类型错误" >118</Value>
+        <Value name="TpaRejGlobalRateLimit" description="全局流速限制" >119</Value>
+        <Value name="TpaRejIpMacRateLimit" description="终端流速限制" >120</Value>
+        <Value name="TpaRejCustIdNotInWhiteList" description="客户号不在白名单" >121</Value>
+        <Value name="TpaRejCustIdInBlackList" description="客户号在黑名单" >122</Value>
+        <Value name="TpaRejFuncCodeNotFound" description="功能号权限限制" >123</Value>
+        <Value name="TpaRejMsgType" description="Rgw不处理委托" >124</Value>
+        <Value name="TpaRejNeedFollowTheSessionProcess" description="未按照三方接入会话流程进行接入">125</Value>
+        <Value name="RejAlreadyLogin" description="该账户已经登录">126</Value>
+        <Value name="RejNotLoggedin" description="该账户未登录">127</Value>
+        <Value name="RejIPAddress"  description="IP被禁止">128</Value>--
+        <Value name="RejT2SDK" description="恒生API错误">200</Value>--
+        <Value name="RejFundAccountId" description="恒生T2SDK FundAccountId错误">201</Value>
+        <Value name="RejCheckCloseOutFlag" description="了结标识错误">202</Value>
+        <Value name="RejLegSideErr" description="持仓类型错误">203</Value>
+        <Value name="RejSecondaryOrderIdIsErr" description="组合解除时，组合编码不能为空">204</Value>
+        <Value name="RejNotExistThePartition" description="无法在委托路由表中找到账户对应的分区号">205</Value>
+        <Value name="RejNotExistTxEndpointPartitions" description="账户无法在该分区的网关报送消息，总线管理服务中未配置网关到引擎的主题分区">206</Value>
+        <Value name="TransferFunctionHasClosed" description="转账功能已关闭">207</Value>
+        <Value name="RejCheckSZCirculationType" description="深圳流通类型错误">208</Value>
+        <Value name="CannotFindAccountID" description="不具备股东账户权限">209</Value>
+        <Value name="NoMsgTypeNoRight" description="不具备功能号权限">210</Value>
+        <Value name="RejStrategyIdIsErr" description="构建组合时，组合策略编码不能为空">211</Value>
+        <Value name="TpaRejCustIDLimit" description="客户号超过了流速上限">212</Value>
+        <Value name="TpaRejFuncCodeNotAllow" description="功能号被禁止">213</Value>
+        <Value name="RejRepayWay" description="还款方式错误">214</Value>
+        <Value name="CustLoginMode" description="客户号登录模式错误">215</Value>
+        <Value name="CustLoggingin" description="客户号正在登录">216</Value>
+        <Value name="CustLoggedin" description="客户号已经登录">217</Value>
+        <Value name="CustLoginTimeout" description="客户号登录超时">218</Value>
+        <Value name="RejPartitionNo" description="分区号没找到">219</Value>
+        <Value name="ClientVersionStringError" description="客户端版本串校验不通过">220</Value>
+        <Value name="CustIDIsNotExist" description="客户号未设置客户端版本串">221</Value>
+        <Value name="ClientVersionStringIsEmpty" description="客户端版本串不能为空">222</Value>
+        <Value name="RiskControlTimout" description="风控超时">223</Value>
+		<Value name="RiskControlReject" description="风控拒绝">224</Value>
+        <Value name="FlowAccessCustIDAndProductIDSpeedReject" description="客户号和产品号流速超过">225</Value>
+        <Value name="FlowAccessCustIDAndProductIDSumReject" description="客户号和产品号流量超过">226</Value>
+        <Value name="FlowAccessUserIDSpeedReject" description="用户流速超过">227</Value>
+        <Value name="FlowAccessUserIDSumReject" description="用户流量超过">228</Value>
+        <Value name="FlowAccessAgwSpeedReject" description="agw流速超过">229</Value>
+        <Value name="FlowAccessAgwSumReject" description="agw流量超过">230</Value>
+        <Value name="FlowAccessAgwSwitchReject" description="agw接入开关关闭">231</Value>
+        <Value name="FlowAccessUserIDSwitchReject" description="用户接入开关关闭">232</Value>
+        <Value name="FlowAccessCustIDAndProductIDSwitchReject" description="客户号和产品号接入开关关闭">233</Value>
+        <Value name="RiskControlNoConnectionReject" description="风控无连接拒绝">234</Value>
+        <Value name="FuncNoBlock" description="功能号被阻断">235</Value>
+        <Value name="SystemBusy" description="当前系统繁忙，请稍后重试">236</Value>
+        <Value name="GwCustPasswordVerifyFailed" description="客户密码逐笔验证失败">237</Value>
+        <Value name="MalfunctionTePartitionReject" description="系统异常拒单">238</Value>
+        <Value name="RepeateUserOnlineLimit" description="网关用户同时在线数超限,登录失败">239</Value>
+        <Value name="ConnectionRetentionFailed" description="会话恢复失败">240</Value>
+        <Value name="AccountConsistencyVerifyFailed" description="账户一致性校验失败">242</Value>
+        <Value name="GwUserFunctionNoCheckFailed" description="网关用户级功能号禁止">243</Value>
+        <Value name="AccessTerminalCheckFaild" description="接入终端管控不通过">244</Value>
+        <Value name="CustIdForbidInGwUser" description="当前网关用户不允许使用此交易账号">245</Value>
+        <Value name="CustomerPasswordVerificationFailed" description="客户密码验证失败">246</Value>
+        <Value name="GwUserOriginalPasswordError" description="网关用户原密码错误">247</Value>
+        <Value name="GwUserNewPasswordStrengthNotRequirements" description="网关用户新密码不符合强度要求">248</Value>
+        <Value name="GwUserNotBindCustID" description="非绑定客户,禁止修改网关用户密码">249</Value>
+        <Value name="GwUserPasswordModifyFailed" description="网关用户密码修改失败">250</Value>
+        <Value name="DateFormatCheckFailed" description="日期格式检查不通过">251</Value>
+        <Value name="OrderWayCheckFailed" description="委托方式管控不通过">252</Value>
+        <Value name="NotSupportSuchInterfaceCalls" description="当前子产品不支持此类接口调用">254</Value>
+        <Value name="ServerConnectionFailure" description="服务器连接失败">255</Value>
+        <Value name="RequestTimeout" description="请求超时">256</Value>
+        <Value name="QueryRepaymentDetailRequestError" description="请求头参数不正确或签名信息错误">257</Value>
+        <Value name="QueryRepaymentDetailFundIDOrBranchIDNotExist" description="资金账户或营业部不存在">258</Value>
+        <Value name="QueryRepaymentDetailReturnNumberError" description="查询返回数量不能小于0">259</Value>
+        <Value name="QueryRepaymentDetailQueryIndexError" description="起始索引号不能小于0">260</Value>
+        <Value name="QueryRepaymentDetailCannotFoundCustinfo" description="资金账户和营业部查不到客户信息">261</Value>
+        <Value name="QueryRepaymentDetailInvalidArgument" description="请求参数非法">263</Value>
+        <Value name="RejOther" description="其他错误">999</Value>
+        
+        <!--"TE ORS拒绝原因,委托状态响应消息中返回 reject_reason_code 字段" 0-100, 1001-9999 -->
+        <Value name="Normal" description="正常" summary="正常">0</Value>
+        <Value name="SecurityIDNonExist" description="证券编码与市场编码在交易信息表中不存在" summary="证券编码与市场编码在交易信息表中不存在">1</Value>
+        <Value name="SecurityBusinessSwitchClose" description="业务开关被关闭" summary="业务开关被关闭">2</Value>
+        <Value name="PbuBusinessPermissionNonExist" description="交易单元权限不存在" summary="交易单元权限不存在">3</Value>
+        <Value name="EffectiveContractAccountNonExist" description="账户信息表中不存在账户" summary="账户信息表中不存在账户">4</Value>
+        <Value name="IssueDuplicate" description="在发行业务不允许重复认购的情况下，做重复认购" summary="在发行业务不允许重复认购的情况下，做重复认购">5</Value>
+        <Value name="InvestorLimitTradeLimit" description="证券账户对应业务产品交易被限制" summary="证券账户对应业务产品交易被限制">6</Value>
+        <Value name="OrderPriceRangeOut" description="委托价格在价格涨跌幅范围之外" summary="委托价格在价格涨跌幅范围之外">7</Value>
+        <Value name="OrderPriceStallError" description="委托价格不为价格档位的整数倍" summary="委托价格不为价格档位的整数倍">8</Value>
+        <Value name="OrderQtyRangeOut" description="委托数量超过数量上下限" summary="委托数量超过数量上下限">9</Value>
+        <Value name="OrderQtyStallError" description="委托数量不为交易数量单位的整数倍" summary="委托数量不为交易数量单位的整数倍">10</Value>
+        <Value name="SellOpenFundInsufficient" description="卖开仓保证金不足" summary="卖开仓保证金不足">11</Value>
+        <Value name="BuyOpenFundInsufficient" description="买开仓权利金不足" summary="买开仓权利金不足">12</Value>
+        <Value name="TransactionCostInsufficient" description="交易费用资金不足" summary="交易费用资金不足">13</Value>
+        <Value name="InvestorContractPositionLimitOut" description="客户标的合约持仓超过限额" summary="客户标的合约持仓超过限额">14</Value>
+        <Value name="MemberContractPositionLimitOut" description="券商标的合约持仓超过限额" summary="券商标的合约持仓超过限额">15</Value>
+        <Value name="InvestorContractAmountLimitOut" description="客户标的合约交易量超过限额" summary="客户标的合约交易量超过限额">16</Value>
+        <Value name="MemberContractAmountLimitOut" description="券商标的合约交易量超过限额" summary="券商标的合约交易量超过限额">17</Value>
+        <Value name="ClosePositionInsufficient" description="平仓可平量不足" summary="平仓可平量不足">18</Value>
+        <Value name="CoverOpenPositionShareInsufficient" description="备兑开仓标的券股份不足" summary="备兑开仓标的券股份不足">19</Value>
+        <Value name="MarketNotOpen" description="当前市场状态不允许申报委托" summary="当前市场状态不允许申报委托">20</Value>
+        <Value name="BranchBusinessPermissionNonExist" description="营业部无对应业务权限" summary="营业部无对应业务权限">21</Value>
+        <Value name="UnableToCancelled" description="订单无法被撤销" summary="订单无法被撤销">22</Value>
+        <Value name="InvestorGradedNotEnough" description="证券账户无对应业务产品权限" summary="证券账户无对应业务产品权限">23</Value>
+        <Value name="BuyOpenFundOver" description="期权买入开仓超过客户买入额度限制" summary="期权买入开仓超过客户买入额度限制">24</Value>
+        <Value name="AccountBusinessPermissionNonPrivileged" description="证券账户业务和产品无权限" summary="证券账户业务和产品无权限">25</Value>
+        <Value name="AccountIDNonExist" description="证券账户在证券账户信息表中不存在" summary="证券账户在证券账户信息表中不存在">26</Value>
+        <Value name="FundInsufficient" description="账户可用资金不足" summary="账户可用资金不足">27</Value>
+        <Value name="ShareInsufficient" description="账户持有股份不足" summary="账户持有股份不足">28</Value>
+        <Value name="SecurityMarketInconsistency" description="发行申购证券与账户所属市场不一致" summary="发行申购证券与账户所属市场不一致">29</Value>
+        <Value name="BusinessForbid" description="投资者的业务被黑名单限制" summary="投资者的业务被黑名单限制">30</Value>
+        <Value name="BusinessWhiteListNonExist" description="投资者的业务不在白名单中" summary="投资者的业务不在白名单中">31</Value>
+        <Value name="AccountQualificationClassNotFound" description="合格投资者身份信息不存在" summary="交易所要求控制合格投资者，但客户合格投资者身份信息不存在">32</Value>
+        <Value name="QualificationClassOut" description="合格投资者身份不匹配" summary="账户合格投资者身份不匹配">33</Value>
+        <Value name="InvestorSubscriptionQuotaTradeLimit" description="超过投资者认购额度限制" summary="超过投资者认购额度限制">34</Value>
+        <Value name="InvestorSubscriptionQuotaNonExist" description="投资者认购额度表中不存在" summary="投资者认购额度表中不存在">35</Value>
+        <Value name="PbuBusinessNonPrivileged" description="交易单元业务权限不足" summary="交易单元业务权限不足">36</Value>
+        <Value name="TransfereePBUIDSameAsPBUID" description="转托管交易单元的转入和转出不能一致" summary="转托管交易单元的转入和转出不能一致">37</Value>
+        <Value name="SecurityBusinessSwitchNonExist" description="证券业务开关表中不存在" summary="证券业务开关表中不存在">38</Value>
+        <Value name="AccountBusinessPermissionNonExist" description="证券账户无该类证券交易权限" summary="证券账户无该类证券交易权限">39</Value>
+        <Value name="DesignatedTransactionDenied" description="账户当前的状态不允许做指定交易" summary="账户当前的状态不允许做指定交易">40</Value>
+        <Value name="CancelDesignatedTransactionDenied" description="账户当前的状态不允许做撤销指定交易" summary="账户当前的状态不允许做撤销指定交易">41</Value>
+        <Value name="DesignatedTransactionSecurityIDError" description="指定交易证券ID错误" summary="指定交易证券ID错误">42</Value>
+        <Value name="UnassignedPBU" description="账户未指定交易单元" summary="账户未指定交易单元">43</Value>
+        <Value name="PbuSecurityNonPrivileged" description="交易单元证券权限不足" summary="交易单元证券权限不足">44</Value>
+        <Value name="BusinessUnsupportedInstruction" description="业务不支持当前的交易指令" summary="业务不支持当前的交易指令">45</Value>
+        <Value name="OriginOrderNotExist" description="该指令消息找不到对应的原始订单" summary="该指令消息找不到对应的原始订单">46</Value>
+        <Value name="AccountIDNotMatchedFundAccountID" description="证券账户与资金账户不匹配" summary="证券账户与资金账户不匹配">47</Value>
+        <Value name="MarketPriceNotAllowed" description="不允许市价指令" summary="不允许市价指令">48</Value>
+        <Value name="BusinessMarketTradingPeriodNotExist" description="市场不允许该业务" summary="市场不允许该业务">49</Value>
+        <Value name="OptionExerciseOverDateRange" description="期权行权操作不在规定的行权日期范围内" summary="期权行权操作不在规定的行权日期范围内">50</Value>
+        <Value name="DesignatedTransactionPBUInvalid" description="指定的交易单元不在交易单元信息表中" summary="指定的交易单元不在交易单元信息表中">51</Value>
+        <Value name="AccountStatusInvalid" description="当前证券账户状态不允许交易" summary="当前证券账户状态不允许交易">52</Value>
+        <Value name="OptionExerciseBuyOpenQtyInsufficient" description="权利仓的净持仓量不足以行权" summary="权利仓的净持仓量不足以行权">53</Value>
+        <Value name="SecurityStatusSuspend" description="停牌证券不允许交易" summary="停牌证券不允许交易">54</Value>
+        <Value name="AccountSecurityStatusNonPrivileged" description="客户未开通买入风险警示板证券的权限" summary="客户未开通买入风险警示板证券的权限">55</Value>
+        <Value name="ExchageHasBeenClose" description="交易所已闭市" summary="交易所已闭市">56</Value>
+        <Value name="BuyRiskWarningOverRange" description="当日买入的风险警示板证券数量超过上限" summary="当日买入的风险警示板证券数量超过上限">57</Value>
+        <Value name="UnableToAllocClOrdID" description="无法分配申报合同号" summary="无法分配申报合同号">58</Value>
+        <Value name="NotInTEAcceptOrderPeriod" description="不在引擎接受订单的时间范围内" summary="不在引擎接受订单的时间范围内">59</Value>
+        <Value name="InRejectCancelOrderPeriod" description="当前时间禁止撤单" summary="当前时间禁止撤单">60</Value>
+        <Value name="DesignationSecurityInsufficient" description="可转托管的证券余量不足" summary="可转托管的证券余量不足">61</Value>
+        <Value name="FundTradeTemplateNotExist" description="找不到订单对应的资金交易规则模板" summary="找不到订单对应的资金交易规则模板">62</Value>
+        <Value name="PurchaseNotAllowed" description="当前证券代码不允许申购指令" summary="当前证券代码不允许申购指令">63</Value>
+        <Value name="RedemptionNotAllowed" description="当前证券代码不允许赎回指令" summary="当前证券代码不允许赎回指令">64</Value>
+        <Value name="PurchaseRedemptionLimitOut" description="单个账户ETF委托数量超过账户累计申赎总额限制" summary="单个账户ETF委托数量超过账户累计申赎总额限制">65</Value>
+        <Value name="NetPurchaseRedemptionLimitOut" description="单个账户ETF委托数量超过账户净申赎总额限制" summary="单个账户ETF委托数量超过账户净申赎总额限制">66</Value>
+        <Value name="SecurityIsNotRightsIssueWarrant" description="配股配债时订单输入证券代码需为配售代码" summary="配股配债时订单输入证券代码需为配售代码">67</Value>
+        <Value name="BusinessDateNotAllowed" description="当前日期非配售日期" summary="当前日期非配售日期">68</Value>
+        <Value name="ETFPurRedCancelNotAllowed" description="ETF申赎不允许撤单" summary="申赎不允许撤单">69</Value>
+        <Value name="ETFCashComponentOverRange" description="ETF申购超过最大现金替代比例" summary="ETF申购超过最大现金替代比例">70</Value>
+        <Value name="CannotFindOfferWay" description="找不到对应的报盘通道" summary="找不到对应的报盘通道">71</Value>
+        <Value name="BusinessDateNotAllowedIssue" description="该证券不在认购期内" summary="该证券不在认购期内">72</Value>
+        <Value name="VotingProposalNotExist" description="投票议案不存在" summary="投票议案不存在">73</Value>
+        <Value name="CustQualificationInfoNotFound" description="投资者适当性信息不存在" summary="业务或标的要求控制适当性，但投资者适当性信息不存在">74</Value>
+        <Value name="ProfessionalKindNotMatchBiz" description="专业投资者身份不符合业务要求" summary="专业投资者身份不符合业务要求">75</Value>
+        <Value name="RiskLevelNotMatchBiz_1" description="客户风险等级不满足业务要求" summary="客户风险等级不满足业务要求">76</Value>
+        <Value name="RiskLevelNotMatchBiz_2" description="客户风险等级不满足业务最低要求" summary="客户风险等级不满足业务最低要求">77</Value>
+        <Value name="RiskLevelNotMatchBiz_3" description="客户风险等级与业务的不匹配" summary="客户风险等级与业务的不匹配">78</Value>
+        <Value name="InvestVarietyNotMatchBiz" description="客户投资品种集合与业务的不匹配" summary="客户投资品种集合与业务的不匹配">79</Value>
+        <Value name="DeficitLevelNotMatchBiz" description="客户可承受亏损等级与业务的不匹配" summary="客户可承受亏损等级与业务的不匹配">80</Value>
+        <Value name="ProfessionalKindNotMatchSec" description="专业投资者身份不符合标的要求" summary="专业投资者身份不符合标的要求">81</Value>
+        <Value name="InvestPeridNotMatchSec" description="客户投资期限不满足标的要求" summary="客户投资期限不满足标的要求">82</Value>
+        <Value name="RiskLevelNotMatchSec_2" description="客户风险等级不满足标的最低要求" summary="客户风险等级不满足标的最低要求">83</Value>
+        <Value name="RiskLevelNotMatchSec_3" description="客户风险等级与标的的不匹配" summary="客户风险等级与标的的不匹配">84</Value>
+        <Value name="InvestVarietyNotMatchSec" description="客户投资品种集合与标的的不匹配" summary="客户投资品种集合与标的的不匹配">85</Value>
+        <Value name="DeficitLevelNotMatchSec" description="客户可承受亏损等级与标的的不匹配" summary="客户可承受亏损等级与标的的不匹配">86</Value>
+        <Value name="JudicialFreezeRecordNotExist" description="该股东账户不存在对应司法冻结记录" summary="该股东账户不存在对应司法冻结记录">87</Value>
+        <Value name="JudicialFreezeRecordNotMatch" description="不存在对应司法冻结记录" summary="不存在对应司法冻结记录">88</Value>
+        <Value name="OutOffTheMaxFreezeQty" description="超过最大可冻结数量" summary="超过最大可冻结数量">89</Value>
+        <Value name="UnknowDeclarationType" description="未知申报类型" summary="未知申报类型">90</Value>
+        <Value name="TriggerRulesOfContraTrade" description="触发对敲风控指标规则" summary="触发对敲风控指标规则">91</Value>
+        <Value name="InvestorUnderlyingSecurityNotInWhiteList" description="投资者账户标的白名单不存在，无法进行开仓交易" summary="投资者账户标的白名单不存在，无法进行开仓交易">92</Value>
+        <Value name="AvailableAmtLowerThanLimit" description="可用保证金低于设置的下限值" summary="可用保证金低于设置的下限值">93</Value>
+        <Value name="InvestorAllPositionLimitOut" description="客户累计持仓超过限额" summary="客户累计持仓超过限额">94</Value>
+        <Value name="InvestorAllLongPositionLimitOut" description="客户多头持仓数量超过限额" summary="客户多头持仓数量超过限额">95</Value>
+        <Value name="InvestorAllShortPositionLimitOut" description="客户空头持仓数量超过限额" summary="客户空头持仓数量超过限额">96</Value>
+        <Value name="InvestorAllBothPositionLimitOut" description="客户双边持仓数量超过限额" summary="客户双边持仓数量超过限额">97</Value>
+        <Value name="InvestorContractAllPositionLimitOut" description="客户标的总持仓数量超过限额" summary="客户标的总持仓数量超过限额">98</Value>
+        <Value name="BasicFieldsError" description="订单基础字段的格式检查不通过" summary="订单基础字段的格式检查不通过">99</Value>
+        <Value name="ExchangeReject" description="订单被交易所拒绝，详细的交易所撤单代码见OrdRejReason字段" summary="订单被交易所拒绝，详细的交易所撤单代码见OrdRejReason字段">100</Value>
+
+        <Value name="InvestorContractRightPositionLimitOut" description="客户标的权利仓持仓数量超过限额" summary="客户标的权利仓持仓数量超过限额">1001</Value>
+        <Value name="InvestorContractBuyOpenLimitOut" description="客户标的当日累计买入开仓数量超过限额" summary="客户标的当日累计买入开仓数量超过限额">1002</Value>
+        <Value name="InvestorContractSellOpenLimitOut" description="客户标的当日累计卖出开仓数量超过限额" summary="客户标的当日累计卖出开仓数量超过限额">1003</Value>
+        <Value name="InvestorContractOpenLimitOut" description="客户标的当日累计开仓数量超过限额" summary="客户标的当日累计开仓数量超过限额">1004</Value>
+        <Value name="FundAccountRightDenied" description="资金账户限制该业务" summary="资金账户不允许做该业务">1005</Value>
+        <Value name="FundAccountNoOrderWay" description="资金账户无对应委托方式" summary="资金账户无对应委托方式">1006</Value>
+        <Value name="CannotFindCancelableOrder" description="找不到可撤销的订单" summary="找不到可撤销的订单">1007</Value>
+        <Value name="OrderAmtRangeOut" description="委托需要的资金超过金额上下限" summary="委托需要的资金超过金额上下限">1008</Value>
+        <Value name="BrokerUnsupportedSecurityID" description="券商无代理该ETF申赎业务资格" summary="权限不足">1009</Value>
+        <Value name="CustIDNonExist" description="客户号在客户信息表中不存在" summary="客户号在客户信息表中不存在">1010</Value>
+        <Value name="CustPWDError" description="客户密码错误" summary="客户密码错误">1011</Value>
+        <Value name="CustIDNotEnable" description="客户号未启用" summary="客户号未启用">1012</Value>
+        <Value name="QuoteOrderQtyFailureToMeetTheRequirement" description="报价单未达到最小数量要求" summary="报价单未达到最小数量要求">1013</Value>
+        <Value name="QuoteOrderPriceFailureToMeetTheRequirement" description="报价单未达到最大买卖价差要求" summary="报价单未达到最大买卖价差要求">1014</Value>
+        <Value name="InvestPeridNotMatchBiz" description="客户投资期限不满足业务要求" summary="客户投资期限不满足业务要求">1015</Value>
+        <Value name="AccountSecurityStatus8NonPrivileged" description="客户未开通买入退市整理期证券的权限" summary="客户未开通买入退市整理期证券的权限">1016</Value>
+        <Value name="AccountSecurityStatus9NonPrivileged" description="客户未开通买入退市后协议转让证券的权限" summary="客户未开通买入退市后协议转让证券的权限">1017</Value>
+        <Value name="StandardSecurityUsageRateNoPassed" description="出库标准券使用率高于给定值" summary="出库标准券使用率高于风控参数">1018</Value>
+        <Value name="FinancingDebtRatioNoPassed" description="债券质押负债率过高" summary="债券质押负债率过高">1019</Value>
+        <Value name="RepoAmplMulNoPassed" description="债券质押回购放大倍数过高" summary="债券质押回购放大倍数过高">1020</Value>
+        <Value name="PledgeInNotAllowed" description="该证券不允许入库" summary="该证券不允许入库">1021</Value>
+        <Value name="PledgeOutNotAllowed" description="该证券不允许出库" summary="该证券不允许出库">1022</Value>
+        <Value name="ContractMultiplieIsZero" description="该证券的折算率为零" summary="该证券的折算率为零">1023</Value>
+        <Value name="PledgeCentrationNoPassed" description="入库集中度高于给定值" summary="入库集中度高于给定值">1024</Value>
+        <Value name="StandardSecurityShareInsufficient" description="标准券股份不足" summary="标准券股份不足">1025</Value>
+        <Value name="PledgeSecurityShareInsufficient" description="质押券股份不足" summary="质押券股份不足">1026</Value>
+        <Value name="PledgeInOrOutCancelNotAllowed" description="质押出入库不允许撤单" summary="质押出入库不允许撤单">1027</Value>
+        <Value name="QuoteOrderBidPxOverPriceDeviateRate" description="报价单买价超过价格偏离度" summary="报价单买价超过价格偏离度">1028</Value>
+        <Value name="QuoteOrderOfferPxOverPriceDeviateRate" description="报价单卖价超过价格偏离度" summary="报价单卖价超过价格偏离度">1029</Value>
+        <Value name="MarginOccupyOverUpperLimit" description="实时保证金占用超过限额" summary="实时保证金占用超过限额">1030</Value>
+        <Value name="QuoteOrderSellPriceLowerThanBuyPrice" description="报价单买卖价格倒挂" summary="报价单买卖价格倒挂">1031</Value>
+        <Value name="BeyondFinancingAmountLimit" description="债券质押回购融资额度高于阈值" summary="债券质押回购融资额度高于阈值">1032</Value>
+        <Value name="UnlimitMarketOrderNoPremiumRate" description="无涨跌幅限制的证券未配置溢价率" summary="溢价率配置错误">1033</Value>
+        <Value name="NotPermitUnlimitMarketOrder" description="不允许无涨跌幅限制的证券交易" summary="无法交易">1034</Value>
+        <Value name="NotFoundETFComponentSecurity" description="未找到etf的成分股基础证券信息">1035</Value>
+        <Value name="BondDebtRatioOverRange" description="融资负债率过高">1036</Value>
+        <Value name="FundTransferAgwSeqIdRepeat" description="重复的请求" summary="重复的请求">1037</Value>
+        <Value name="FundTransferFundIsMultiple" description="资金账号存在多个分区" summary="资金账号存在多个分区">1038</Value>
+        <Value name="FundTransferFundIsUnKnow" description="资金信息不存在" summary="资金信息不存在">1039</Value>
+        <Value name="FundTransferCurrencyNotSupport" description="不支持的货币类型" summary="不支持的货币类型">1040</Value>
+        <Value name="FundTransferAmountMustMoreThanZero" description="金额必须大于0" summary="金额必须大于0">1041</Value>
+        <Value name="FundTransferAmountFormatErr" description="金额格式不正确" summary="金额格式不正确">1042</Value>
+        <Value name="FundTransferAmountNotInValidRange" description="调整金额或调整后的金额不在有效金额范围" summary="调整金额或调整后的金额不在有效金额范围">1043</Value>
+        <Value name="FundTransferAmountInsufficient" description="转出资金不足" summary="转出资金不足">1044</Value>
+        <Value name="ThirdPartyReject" description="外部系统拒绝" summary="外部系统拒绝">1045</Value>
+        <Value name="SendThirdPartyFail" description="发送外部系统失败" summary="发送外部系统失败">1046</Value>
+        <Value name="FundTransferThirdPartyRollbackFail" description="发生冲正且冲正失败" summary="发生冲正且冲正失败">1047</Value>
+        <Value name="FundTransferThirdPartyImplRollback" description="发生冲正且冲正成功" summary="发生冲正且冲正成功">1048</Value>
+        <Value name="NotHKThroughSecuritySellNotAllowed" description="非港股通证券代码不允许买入" summary="非港股通证券代码不允许买入">1049</Value>
+        <Value name="ZeroSellTradeQtyMoreThanOneHand" description="零股买卖委托数量大于一手" summary="零股买卖委托数量大于一手">1050</Value>
+        <Value name="ZeroSellQtyNotEqualAva" description="零股卖出失败,委托数量不等于持仓量" summary="零股卖出失败,委托数量不等于持仓量">1051</Value>
+        <Value name="TibOrderPriceRangOut" description="科创板股票市价委托的保护价在价格范围之外" summary="科创板股票市价委托的保护价在价格范围之外">1052</Value>
+        <Value name="PriceLowMustOddType" description="申报价格小于0.01,必须以零股类型订单申报" summary="申报价格小于0.01,必须以零股类型订单申报">1053</Value>
+        <Value name="ZeroShareBuyNotAllowed" description="不允许零股买入" summary="不允许零股买入">1054</Value>
+        <Value name="ZeroShareSellNotAllowed" description="不允许零股卖出" summary="不允许零股卖出">1055</Value>
+        <Value name="WholeShareBuyNotAllowed" description="不允许整手买入" summary="不允许整手买入">1056</Value>
+        <Value name="WholeShareSellNotAllowed" description="不允许整手卖出" summary="不允许整手卖出">1057</Value>
+        <Value name="HKStocksThroughBizInfoNotFound" description="港股通业务信息未找到" summary="港股通业务信息未找到">1058</Value>
+        <Value name="HKStocksThroughExchangeRateNotFound" description="港股通汇率配置信息未找到" summary="港股通汇率配置信息未找到">1059</Value>
+        <Value name="HKStocksThroughNotTradeDay" description="非港股通交易日,不允许交易" summary="非港股通交易日,不允许交易">1060</Value>
+        <Value name="WholeSellOrderQtyStallError" description="整手卖出失败,委托数量不是数量单位整数倍" summary="整手卖出失败,委托数量不是数量单位整数倍">1061</Value>
+        <Value name="ZeroBuyTradeQtyMoreThanOneHand" description="零股买入失败,委托数量大于等于一手" summary="零股买入失败,委托数量大于等于一手">1062</Value>
+        <Value name="HKVotingNoNonExist" description="港股通投票证券代码与其对应的公告编号、投票议案，在港股通信息表中未找到" summary="港股通投票证券代码与其对应的公告编号、投票议案，在港股通信息表中未找到">1063</Value>
+        <Value name="HKVotingDateNotAllowed" description="投票单不在港股通投票期内" summary="投票单不在港股通投票期内">1064</Value>
+        <Value name="HKVotingAllowNotAllowed" description="当前议案不容许投赞成票" summary="当前议案不容许投赞成票">1065</Value>
+        <Value name="HKVotingOpposeNotAllowed" description="当前议案不容许投反对票" summary="当前议案不容许投反对票">1066</Value>
+        <Value name="HKVotingWaiverNotAllowed" description="当前议案不容许投弃权票" summary="当前议案不容许投弃权票">1067</Value>
+        <Value name="NotCrdCollateral" description="非担保品标的" summary="非融资融券担保品标的">1068</Value>
+        <Value name="HKCorporateActionIDNotExist" description="公司行为代码不存在" summary="公司行为代码不存在">1069</Value>
+        <Value name="NotDividendStockOption" description="不属于股票选择权红利" summary="不属于股票选择权红利">1070</Value>
+        <Value name="HKCorporateActionNotInAviliableRange" description="公司行为不在申报范围内" summary="公司行为不在申报范围内">1071</Value>
+        <Value name="HKStocksThroughPriceTickNotFound" description="未找到对应的价格档位" summary="未找到对应的价格档位">1072</Value>
+        <Value name="HKVotingQueryFieldError" description="港股投票查询的3种投票数量必须为空" summary="港股投票查询的3种投票数量必须为空">1073</Value>
+        <Value name="HKVotingQueryMustBeMember" description="港股投票查询必须由券商发起" summary="港股投票查询必须由券商发起">1074</Value>
+        <Value name="HKEntitlementDTInsufficient" description="港股权益转托管数量不足" summary="港股权益转托管数量不足">1075</Value>
+        <Value name="HKDTIDBothInsufficient" description="港股转托管委托不能同时选择证券编码和权益编码" summary="港股转托管委托不能同时选择证券编码和权益编码">1076</Value>
+        <Value name="HKEntitlementNumberNotFound" description="港股通转托管权益编码未找到" summary="港股通转托管权益编码未找到">1077</Value>
+        <Value name="HKCorporateActionQueryMustBeMember" description="港股公司行为必须由会员发起" summary="港股公司行为必须由会员发起">1078</Value>
+        <Value name="HKCorporateActionHistoryCOrderCantNotCancel" description="港股公司行为历史撤单委托不能撤单" summary="港股公司行为历史撤单委托不能撤单">1079</Value>
+        <Value name="CrdUnderlyingNonExist" description="标的清单中证券代码不存在" summary="融资融券标的清单中证券代码不存在">1080</Value>
+        <Value name="CreditInfoNonExist" description="客户信息在信用资料表中不存在" summary="客户信息在信用资料表中不存在">1081</Value>
+        <Value name="SpecialAccountNonExist" description="融资融券专户不存在" summary="融资融券专户不存在">1082</Value>
+        <Value name="NotCrdBuyUnderlying" description="非融资标的" summary="非融资买入标的">1083</Value>
+        <Value name="CreditLimitNotExist" description="信用额度信息不存在" summary="融资融券信用额度信息不存在">1084</Value>
+        <Value name="CreditLimitNotEnough" description="信用额度不足" summary="融资融券信用额度不足">1085</Value>
+        <Value name="CreditInfoUnNomal" description="信用账户合同状态不正常" summary="信用账户合同状态不正常">1086</Value>
+        <Value name="OutOfAvalibalQty" description="偿还数量超过最大可委托数量" summary="偿还数量超过最大可委托数量">1087</Value>
+        <Value name="NotCreditAccount" description="非信用账户" summary="非信用账户">1088</Value>
+        <Value name="NotSpecialAccount" description="非融资融券专户" summary="非融资融券专户">1089</Value>
+        <Value name="CreditAccountForbid" description="信用账户业务被黑名单限制" summary="信用账户业务被黑名单限制">1090</Value>
+        <Value name="MarginBalanceNotEnough" description="客户融资融券保证金可用余额不足" summary="客户融资融券保证金可用余额不足">1091</Value>
+        <Value name="ProtectiveStrategyCheckFailed" description="认沽期权一级投资者买入开仓标的持仓不足" summary="认沽期权一级投资者买入开仓标的持仓不足">1092</Value>
+        <Value name="RiskForbidTradeRights" description="风控限制交易权限" summary="风控限制交易权限">1093</Value>
+        <Value name="NotCrdSellUnderlying" description="非融券标的" summary="非融券卖出标的">1094</Value>
+        <Value name="MarginRatioNotExist" description="担保率不存在" summary="融资融券担保率不存在">1095</Value>
+        <Value name="AgwSeqIdDuplicate" description="重复的请求" summary="重复的请求">1096</Value>
+        <Value name="OutOfAvalibalAmt" description="偿还金额超过最大可偿还金额" summary="偿还金额超过最大可偿还金额">1097</Value>
+        <Value name="OrderWayNonPrivileged" description="该委托方式禁止此业务" summary="该委托方式禁止此业务">1098</Value>
+        <Value name="OptionStrategyKeyNonExist" description="策略编码不存在" summary="策略编码不存在">1100</Value>
+        <Value name="CombinationDateOut" description="构建的日期不在允许范围" summary="构建的日期不在允许范围">1101</Value>
+        <Value name="RemoveCombinationPositionInsufficient" description="期权解除策略保证金组合持仓不足" summary="期权解除策略保证金组合持仓不足">1102</Value>
+        <Value name="CombinationContractPositionInsufficient" description="期权组合策略保证金合约持仓不足" summary="期权组合策略保证金合约持仓不足">1103</Value>
+        <Value name="CombinationContractRuleError" description="期权组合策略保证金订单中的合约腿跟交易所策略不匹配" summary="期权组合策略保证金订单中的合约腿跟交易所策略不匹配">1104</Value>
+        <Value name="OptionMarginFundIDNonExist" description="保证金账号不存在" summary="保证金账号不存在">1105</Value>
+        <Value name="CombinationContractUnitDiff" description="成分合约单位不相等" summary="成分合约单位不相等">1106</Value>
+        <Value name="OrderLegsDiffSecurityRule" description="委托带的腿数与规则表中的腿数不相同" summary="委托带的腿数与规则表中的腿数不相同">1107</Value>
+        <Value name="ContractUnderlyingStrategyError" description="合约标的不在此策略可使用范围内" summary="合约标的不在此策略可使用范围内">1108</Value>
+        <Value name="ContractStrategyError" description="合约不在此策略可使用范围内" summary="合约不在此策略可使用范围内">1109</Value>
+        <Value name="ContractDiffUnderlyingID" description="腿组合合约标的不一致" summary="腿组合合约标的不一致">1110</Value>
+        <Value name="ContractSameUnderlyingID" description="腿组合合约标的一致" summary="腿组合合约标的一致">1111</Value>
+        <Value name="ContractLastTradeDateDiff" description="腿组合合约到期日不完全相同" summary="腿组合合约到期日不完全相同">1112</Value>
+        <Value name="ContractLastTradeDateSame" description="腿组合合约到期日完全相同" summary="腿组合合约到期日完全相同">1113</Value>
+        <Value name="CoverContractNotAllow" description="备兑合约不能做组合" summary="备兑合约不能做组合">1114</Value>
+        <Value name="CoveredOpenForbid" description="备兑开仓存在缺口不允许开仓" summary="备兑开仓存在缺口不允许开仓">1115</Value>
+        <Value name="CoveredPositionLimitOut" description="备兑持仓数不足" summary="备兑持仓数不足">1116</Value>
+        <Value name="CoveredLockLimitOut" description="锁定数不足" summary="锁定数不足">1117</Value>
+        <Value name="CoveredPutForbid" description="备兑不支持认沽合约" summary="备兑不支持认沽合约">1118</Value>
+        <Value name="CombinationLegNotEnough" description="期权合并行权腿数量错误" summary="期权合并行权腿数量错误">1119</Value>
+        <Value name="CombinationLegCallOrPutConsistent" description="期权合并行权腿认沽认购类型不能相同" summary="期权合并行权腿认沽认购类型不能相同">1120</Value>
+        <Value name="ComninationPutExPriceMustUpCallExPrice" description="期权合并行权认沽行权价格必须高于认购行权价格" summary="期权合并行权认沽行权价格必须高于认购行权价格">1121</Value>
+        <Value name="CombinationModCardinalityNotZero" description="期权合并行权委托数量必须为申报数量基数的整数倍" summary="期权合并行权委托数量必须为申报数量基数的整数倍">1122</Value>
+        <Value name="CumExerciseQtyThanNetPosition" description="权利仓的净持仓量不足以进行合并行权" summary="权利仓的净持仓量不足以进行合并行权">1123</Value>
+        <Value name="CanNotFindMntGuaranteeRatio" description="未查询到维持担保比例设置" summary="未查询到维持担保比例设置">1124</Value>
+        <Value name="LowerOfExtractLine" description="维持担保比例低于提取线" summary="维持担保比例低于提取线">1125</Value>
+        <Value name="FundTransferCustCentralSysCfgError" description="无法获取客户在集中交易的配置信息" summary="无法获取客户在集中交易的配置信息">1126</Value>
+        <Value name="TurnToDisposalSecurityIDInvalid" description="转处置标的证券不是被处置账户应收证券" summary="转处置标的证券不是被处置账户应收证券">1127</Value>
+        <Value name="TurnToDisposalOrderQtyOutRange" description="转处置申报数量大于被处置账户应收证券数量" summary="转处置申报数量大于被处置账户应收证券数量">1128</Value>
+        <Value name="GageConcentrationRatioExceedLimit" description="担保品证券集中度超限" summary="担保品证券集中度超限">1130</Value>
+        <Value name="OutOfExtraSecurityOut" description="余券划转累计数量超过应归还投资者余券数量" summary="余券划转累计数量超过应归还投资者余券数量">1131</Value>
+        <Value name="NoGageInWithZeroGageRatio" description="不得转入或买入担保品折算率为零的证券" summary="不得转入或买入担保品折算率为零的证券">1132</Value>
+        <Value name="PasswordDecryptFail" description="密码解密失败" summary="交易密码解密失败">1133</Value>
+        <Value name="NoExtraSecurityNeedOut" description="当前账户指定标的无余券，不需要划转" summary="当前账户指定标的无余券，不需要划转">1134</Value>
+        <Value name="NoCRDTradeParam" description="两融通用交易参数不存在" summary="两融通用交易参数不存在">1135</Value>
+        <Value name="AccountIDNotMatchedCustID" description="客户号与证券帐户不匹配" summary="客户号与证券帐户不匹配">1136</Value>
+        <Value name="TurnToDisposalUnderlyingSecurityIDInvalid" description="转处置代码非期权标的代码" summary="转处置代码非期权标的代码">1137</Value>
+        <Value name="QtyAndFundLowLimited" description="委托数量或总额度小于最低限制" summary="委托数量或总额度小于最低限制">1138</Value>
+        <Value name="NotExistThePartition" description="报盘交易单元无法在该分区的引擎报单，总线管理服务中未配置引擎到报盘的主题分区" summary="报盘交易单元无法在该分区的引擎报单，总线管理服务中未配置引擎到报盘的主题分区">1139</Value>
+        <Value name="TransactionCancelOrderNotAllowed" description="大宗交易定价成交申报无法撤单" summary="大宗交易定价成交申报无法撤单">1140</Value>
+        <Value name="CashUnderlyingPosLimitOut" description="现货标的当日累计持仓数量超过限额" summary="现货标的当日累计持仓数量超过限额">1141</Value>
+        <Value name="CashOrderPxOverPriceDeviateRate" description="现货标的价格超过价格偏离度" summary="现货标的价格超过价格偏离度">1142</Value>
+        <Value name="TurnToDisposalReturnOrderQtyOutRange" description="转处置返还数量大于剩余转处置数量" summary="转处置返还数量大于剩余转处置数量">1143</Value>
+        <Value name="InvestorContractDutyPositionLimitOut" description="客户标的义务仓持仓数量超过限额" summary="客户标的义务仓持仓数量超过限额">1144</Value>
+        <Value name="ReduceShareOverRange" description="超过可减持的额度" summary="">1145</Value>
+        <Value name="ContractStatusNonPrivileged" description="合同状态异常禁止此业务" summary="合同状态异常禁止此业务">1146</Value>
+        <Value name="LegSideError" description="组合策略构成头寸方向不符合要求" summary="组合策略构成头寸方向不符合要求">1148</Value>
+        <Value name="ExercisrPriceError" description="组合策略构成合约行权价格不符合要求" summary="组合策略构成合约行权价格不符合要求">1149</Value>
+        <Value name="ExercisrDateError" description="组合策略构成合约到期日不符合要求" summary="组合策略构成合约到期日不符合要求">1150</Value>
+        <Value name="LegCallOrPutError" description="组合策略构成合约认沽认购类型不符合要求" summary="组合策略构成合约认沽认购类型不符合要求">1151</Value>
+        <Value name="LegCoveredOrUncoveredError" description="组合策略构成合约备兑标签不符合要求" summary="组合策略构成合约备兑标签不符合要求">1152</Value>
+        <Value name="CombinationStrategyIsNotStandard" description="组合策略合约为非标合约" summary="组合策略合约为非标合约">1153</Value>
+        <Value name="CumReduceShareOverRange" description="累计减持额度超过限制" summary="">1154</Value>
+        <Value name="CreNormalAccMapNotFound" description="信用与普通账户对应关系不存在" summary="信用与普通账户对应关系不存在">1155</Value>
+        <Value name="LegSideOrderError" description="组合策略成分合约顺序不符合规则" summary="组合策略成分合约顺序不符合规则">1156</Value>
+        <Value name="NotShareLiability" description="不存在股份负债" summary="不存在股份负债">1157</Value>
+        <Value name="SpecialAccountNotAllowTheBusiness" description="两融专户禁止该交易业务" summary="两融专户禁止该交易业务">1158</Value>
+        <Value name="FinanSpecialAccountNotAllowTheBusiness" description="融资专户禁止该交易业务" summary="融资专户禁止该交易业务">1159</Value>
+        <Value name="RemoveCombinationPositionNotExitOrNotRight" description="组合持仓不存在或组合持仓与合约账户不匹配" summary="组合持仓不存在或组合持仓与合约账户不匹配">1160</Value>
+        <Value name="RemoveCombinationPositionNotExit" description="该组合持仓不存在" summary="该组合持仓不存在">1161</Value>
+        <Value name="DutyPositionLimitOut" description="普通义务仓数量不足" summary="普通义务仓数量不足">1162</Value>
+        <Value name="CombinationIDError" description="组合策略编码不存在" summary="组合策略编码不存在">1163</Value>
+        <Value name="NotFoundBuyPrivateAmount" description="融资保底额度信息不存在" summary="融资保底额度信息不存在">1164</Value>
+        <Value name="NotFoundSellPrivateAmount" description="融券保底额度信息不存在" summary="融券保底额度信息不存在">1165</Value>
+        <Value name="MarginSpecialFundNotEnough" description="融资专户资金余额不足" summary="融资专户资金余额不足">1166</Value>
+        <Value name="MarginSpecialShareNotEnough" description="融券专户股份余额不足" summary="融券专户股份余额不足">1167</Value>
+        <Value name="LegPutNotAllowCoverOpen" description="认沽合约不能做备兑开仓" summary="认沽合约不能做备兑开仓">1168</Value>
+        <Value name="NotHaveRestrictShare" description="卖出股份不含受限股" summary="">1169</Value>
+        <Value name="ReduceHoldingQuoteSwithchOff" description="大宗减持业务开关被关闭" summary="">1170</Value>
+        <Value name="NotExtraFoundSellPrivateAmount" description="融券保底额度额外信息不存在" summary="融券保底额度额外信息不存在">1171</Value>
+        <Value name="CustFeeConfigError" description="未获取到汇率信息" summary="未获取到汇率信息">1173</Value>
+        <Value name="FundNotSupportTheCurrency" description="资金账号不支持该币种" summary="资金账号不支持该币种">1174</Value>
+        <Value name="CouponSwapOrderQtyOutRange" description="垫券还券业务垫券申报数量超过投资人行权净应付数量" summary="垫券还券业务垫券申报数量超过投资人行权净应付数量">1175</Value>
+        <Value name="CouponSwapOrderQtyOutRangeCashAvailable" description="垫券还券业务还券申报数量超过投资人现货证券账户可用数量" summary="垫券还券业务还券申报数量超过投资人现货证券账户可用数量">1176</Value>
+        <Value name="CouponSwapSecurityIDInvalid" description="投资人没有该证券行权净应付证券" summary="投资人没有该证券行权净应付证券">1177</Value>
+        <Value name="DeductionOrderQtyOutRange" description="待清偿申报数量大于行权标的证券净应收数量" summary="待清偿申报数量大于行权标的证券净应收数量">1178</Value>
+        <Value name="DeductionAccountTypeError" description="待清偿申报账户类型错误" summary="待清偿申报账户类型错误">1179</Value>
+        <Value name="DeductionAccountNoPaidPos" description="该投资人没有该证券行权净应收证券" summary="该投资人没有该证券行权净应收证券">1180</Value>
+        <Value name="CloseStatusNonPrivilegedCreditTrade" description="平仓状态禁止此业务" summary="平仓状态禁止此业务">1181</Value>
+        <Value name="LessThanMinSellQtyMustSellAll" description="可用数量小于最低卖出数量必须全部卖出" summary="可用数量小于最低卖出数量必须全部卖出">1182</Value>
+        <Value name="SellZeroNotEqualAvailableZero" description="卖出零股数量与可用数量的零股数量不相同" summary="卖出零股数量与可用数量的零股数量不相同">1183</Value>
+        <Value name="CancelTimeOverlimit" description="撤单次数超限" summary="撤单次数超限">1184</Value>
+        <Value name="FundFeeInfoFail" description="客户费用信息不存在" summary="客户费用信息不存在">1185</Value>
+        <Value name="GetSecurityVarietyFail" description="证券类型对应的证券品种不存在" summary="证券类型对应的证券品种不存在">1186</Value>
+        <Value name="SellFundLessThanFeeProhibitd" description="卖出所得资金小于费用，不允许交易" summary="卖出所得资金小于需要扣减费用，不允许交易">1187</Value>
+        <Value name="SellFundLessThanFeeAlarm" description="卖出资金小于费用，请谨慎操作（仅提示作用，委托正常处理）" summary="卖出资金小于费用，请谨慎操作（仅提示作用，委托正常处理）">1188</Value>
+        <Value name="TurnToDisposalAccountInvalid" description="转处置账户或交易单元校验失败" summary="转处置账户或交易单元校验失败">1189</Value>
+        <Value name="CreditAccountNotAllowTheBusiness" description="信用账户禁止该交易业务" summary="信用账户禁止该交易业务">1190</Value>
+        <Value name="ShanghaiTransUncoveredUnsupported" description="上海不支持备兑转普通" summary="上海不支持备兑转普通">1195</Value>
+        <Value name="CoverOpenOnlySupportSell" description="备兑开仓只支持卖方向" summary="备兑开仓只支持卖方向">1196</Value>
+        <Value name="CoverCloseOnlySupportBuy" description="备兑平仓只支持买方向" summary="备兑平仓只支持买方向">1197</Value>
+        <Value name="ThanSplitUpLimit" description="超过系统最大可拆单数" summary="超过系统最大可拆单数">1198</Value>
+        <Value name="SplitOrderQtyError" description="拆单数量参数错误" summary="拆单数量参数错误">1199</Value>
+        <Value name="BatchTypeError" description="批量类型错误" summary="批量类型错误">1200</Value>
+        <Value name="UnknownThirdSystemType" description="融资融券未知三方系统类型" summary="融资融券未知三方系统类型">1201</Value>
+        <Value name="RepoUnexpiredInfoNotUpdate" description="客户未到期融资负债尚未更新" summary="客户未到期融资负债尚未更新">1202</Value>
+        <Value name="UnableToCancellMemberOrder" description="券商发起委托, 投资人不能撤单" summary="券商发起委托, 投资人不能撤单">1203</Value>
+        <Value name="EncryptFail" description="客户交易密码加密失败" summary="客户交易密码加密失败">1204</Value>
+        <Value name="DecryptFail" description="客户交易密码解密失败" summary="客户交易密码解密失败">1205</Value>
+        <Value name="StrengthCheckFail" description="客户交易密码强度校验失败" summary="客户交易密码强度校验失败">1206</Value>
+        <Value name="NoClosePriceAndNoPriceLimit" description="未收到收盘价且证券价格无涨跌幅，无法冻结资金" summary="未收到收盘价且证券价格无涨跌幅，无法冻结资金">1208</Value>
+        <Value name="LessDirectionalConvertibleBondsMin" description="小于定向可转债协议转让数量门槛（张）" summary="小于定向可转债协议转让数量门槛（张）">1209</Value>
+        <Value name="RedeliverTypeDeny" description="当前不支持的直接还券类型" summary="当前不支持的直接还券类型">1210</Value>
+        <Value name="AccountSecurityStatus12NonPrivileged" description="客户未开通买入退市整理期首日证券的权限" summary="客户未开通买入退市整理期首日证券的权限">1211</Value>
+        <Value name="PeakOverRiskExposure" description="融券卖出规模超过限额" summary="融券卖出规模超过限额">1212</Value>
+        <Value name="CombinationBuyCloseContractInvaild" description="组合单边平仓合约不是组合持仓中的义务仓" summary="组合单边平仓合约不是组合持仓中的义务仓">1230</Value>
+        <Value name="CombinationPositionInsufficient" description="组合持仓数量不足" summary="组合持仓数量不足">1231</Value>
+        <Value name="MsgBusinessForbid" description="消息业务被禁用">1232</Value>
+        <Value name="LowerThanSpecExtractLine" description="不满足特殊维保比例检查项">1233</Value>
+        <Value name="BranchIDIsNull" description="营业部为空">1234</Value>
+        <Value name="TradeReportTypeError" description="成交申报类型错误">1235</Value>
+        <Value name="OrderCanceled" description="订单已撤销">1236</Value>
+        <Value name="NoFindForwardInfo" description="没有对应的转发信息">1237</Value>
+        <Value name="OrderProcessed" description="该笔订单已经处理">1238</Value>
+        <Value name="BondConsultTradeCounterpartyNoCanceled" description="债券协商成交对手方不支持撤单">1239</Value>
+        <Value name="NoFindOurPartyTradeInfo" description="没有找到对应本方交易信息表信息">1240</Value>
+        <Value name="BusinessTypeToCodeNotExist" description="适当性业务检查参数配置不存在">1241</Value>
+        <Value name="InvestorTypeError" description="交易主体类型错误">1242</Value>
+        <Value name="AccountNoReductionQuoteInfo" description="账户无减持额度信息">1243</Value>
+        <Value name="MultiRedeliverType" description="已配置多种还券类型，请选择还券类型后再次提交委托">1244</Value>
+        <Value name="ExtShareTransferFail" description="外部系统股份划拨失败">1245</Value>
+        <Value name="DesignateContractInvalid" description="无效指定偿还合约">1246</Value>
+        <Value name="DesignateContractRedeliverTypeDeny" description="当前还券类型不支持偿还指定合约">1247</Value>
+        <Value name="TransferResultQtyOverRange" description="划拨后的数量超过上下限">1248</Value>
+        <Value name="NewBondNoAllowOrder" description="此业务新指定账户不允许交易">1249</Value>
+        <Value name="NotAllowedInNightOrderWhiteList" description="该业务类别或证券类别不在夜市委托业务白名单中" >1250</Value>
+        <Value name="NightStatusNotAllowMarketOrder" description="夜市委托不允许市价委托" >1251</Value>
+        <Value name="NightStatusNotAllowReduceLimitedShare" description="夜市委托不允许减持受限股" >1252</Value>
+        <Value name="ShanghaiCombinationOneLegClosedUnsupported" description="上海市场不支持组合单边平仓">1253</Value>
+        <Value name="DesignateContractRepayControlNotSet" description="指定合约偿还未配置指定合约偿还参数" >1254</Value>
+        <Value name="BankSecuritiesTransferStreamQueryFailed" description="银证转账流水查询失败">1255</Value>
+        <Value name="BankSecuritiesTransferSuccessAndFundTransferInFailed" description="银证转账成功,资金划入失败">1256</Value> 	
+        <Value name="FundTransferOutSuccessAndBankSecuritiesTransferFailed" description="资金划出成功,银证转账失败">1257</Value>
+        <Value name="BankSecuritiesTransferOutFailed" description="银证转入失败">1258</Value>
+        <Value name="NetShortGageConcentrationRatioExceedLimit" description="空头证券集中度超限" summary="空头证券集中度超限">1259</Value>
+        <Value name="NetLongGageConcentrationRatioExceedLimit" description="多头证券集中度超限" summary="多头证券集中度超限">1260</Value>
+        <Value name="RzAvailableQuotaNotEnough" description="融资可用额度不足" summary="融资可用额度不足">1261</Value>
+        <Value name="CorpRiskGageConcentrationRateLimit" description="公司级风控担保品集中度触警">1262</Value>
+        <Value name="MarketPriceRangeOut" description="市价委托的保护价在价格范围之外">1263</Value>
+        <Value name="FundAccountIDNotExist" description="资金帐户信息不存在" summary="资金帐户信息不存在">1264</Value>
+        <Value name="CorpRiskGageConcentrationRateOverLimit" description="公司风控担保品规模预警超限">1265</Value>
+
+        <!--ORS 返回拒绝原因代码 90001-91000 -->
+        <Value name="kBizError" description="业务错误" summary="业务错误" >90001</Value>
+        <Value name="kMarketClosed" description="市场休市" summary="交易所已闭市" >90002</Value>
+        <Value name="kFieldError" description="非法消息" summary="消息字段不满足接口要求" >90003</Value>
+        <Value name="kConnectionError" description="无法申报" summary="无法申报,没有可申报的交易网关或者报盘库" >90004</Value>
+        <Value name="kOfferwayError" description="报盘通道不存在" summary="报盘通道未配置或者未支持" >90005</Value>
+        <Value name="kSwitchReject" description="报盘开关已关闭" summary="报盘开关关闭后订单拒单处理" >90006</Value>
+        
+        <!--COS 拒绝原因代码 91001-92000 -->
+        <Value name="kCosBizError" description="业务错误" summary="业务错误" >91001</Value>
+        <Value name="kCosOfferwayError" description="报盘通道不存在" summary="报盘通道未配置或者未支持" >91002</Value>
+        <Value name="kSwitchReject" description="报盘开关已关闭" summary="报盘开关关闭后订单拒单处理" >91003</Value>
+    </errors>

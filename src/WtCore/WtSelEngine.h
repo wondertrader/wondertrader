@@ -90,9 +90,9 @@ public:
 	void	handle_pos_change(const char* straName, const char* stdCode, double diffQty);
 
 private:
-	faster_hashmap<uint32_t, TaskInfoPtr>	_tasks;
+	wt_hashmap<uint32_t, TaskInfoPtr>	_tasks;
 
-	typedef faster_hashmap<uint32_t, SelContextPtr> ContextMap;
+	typedef wt_hashmap<uint32_t, SelContextPtr> ContextMap;
 	ContextMap		_ctx_map;
 
 	WtExecuterMgr	_exec_mgr;

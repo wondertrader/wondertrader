@@ -26,6 +26,7 @@
 #include <rapidjson/document.h>
 #include <rapidjson/prettywriter.h>
 #include "rapidjson/filereadstream.h"
+#include <fstream>
 namespace rj = rapidjson;
 
 const char* CMP_ALG_NAMES[] =
@@ -54,7 +55,7 @@ inline uint32_t makeCtxId()
 }
 
 
-CtaMocker::CtaMocker(HisDataReplayer* replayer, const char* name, int32_t slippage /* = 0 */, bool persistData /* = true */, EventNotifier* notifier /* = NULL */)
+CtaMocker::CtaMocker(HisDataReplayer* replayer, const char* name, int32_t slippage /* = 0 */, bool persistData /* = true */, EventNotifier* notifier /* = NULL */, bool isRatioSlp /* = false */)
 	: ICtaStraCtx(name)
 	, _replayer(replayer)
 	, _total_calc_time(0)
@@ -63,6 +64,7 @@ CtaMocker::CtaMocker(HisDataReplayer* replayer, const char* name, int32_t slippa
 	, _ud_modified(false)
 	, _strategy(NULL)
 	, _slippage(slippage)
+	, _ratio_slippage(isRatioSlp)
 	, _schedule_times(0)
 	, _total_closeprofit(0)
 	, _notifier(notifier)
@@ -962,7 +964,7 @@ void CtaMocker::on_init()
 	if (_strategy)
 		_strategy->on_init(this);
 
-	WTSLogger::info("CTA Strategy initialized, with slippage: {}", _slippage);
+	WTSLogger::info("CTA Strategy initialized with {} slippage: {}", _ratio_slippage?"ratio":"absolute", _slippage);
 }
 
 void CtaMocker::update_dyn_profit(const char* stdCode, double price)
@@ -1235,7 +1237,7 @@ void CtaMocker::on_session_begin(uint32_t curTDate)
 
 void CtaMocker::enum_position(FuncEnumCtaPosCallBack cb, bool bForExecute)
 {
-	faster_hashmap<std::string, double> desPos;
+	wt_hashmap<std::string, double> desPos;
 	for (auto& it : _pos_map)
 	{
 		const char* stdCode = it.first.c_str();
@@ -1626,7 +1628,18 @@ void CtaMocker::do_set_position(const char* stdCode, double qty, double price /*
 		
 		if (_slippage != 0)
 		{
-			trdPx += _slippage * commInfo->getPriceTick()*(isBuy ? 1 : -1);
+			if (_ratio_slippage)
+			{
+				//By Wesley @ 2023.05.05
+				//如果是比率滑点，则要根据目标成交价计算
+				//得到滑点以后，再根据pricetick做一个修正
+				double slp = (_slippage * trdPx / 10000.0);
+				slp = round(slp / commInfo->getPriceTick())*commInfo->getPriceTick();
+
+				trdPx += slp * (isBuy ? 1 : -1);
+			}
+			else
+				trdPx += _slippage * commInfo->getPriceTick()*(isBuy ? 1 : -1);
 		}
 
 		DetailInfo dInfo;
@@ -1651,7 +1664,20 @@ void CtaMocker::do_set_position(const char* stdCode, double qty, double price /*
 	{//持仓方向和仓位变化方向不一致,需要平仓
 		double left = abs(diff);
 		if (_slippage != 0)
-			trdPx += _slippage * commInfo->getPriceTick()*(isBuy ? 1 : -1);
+		{
+			if (_ratio_slippage)
+			{
+				//By Wesley @ 2023.05.05
+				//如果是比率滑点，则要根据目标成交价计算
+				//得到滑点以后，再根据pricetick做一个修正
+				double slp = (_slippage * trdPx / 10000.0);
+				slp = round(slp / commInfo->getPriceTick())*commInfo->getPriceTick();
+
+				trdPx += slp * (isBuy ? 1 : -1);
+			}
+			else
+				trdPx += _slippage * commInfo->getPriceTick()*(isBuy ? 1 : -1);
+		}
 
 		pInfo._volume = qty;
 		if (decimal::eq(pInfo._volume, 0))

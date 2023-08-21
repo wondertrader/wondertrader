@@ -714,6 +714,115 @@ void sel_sub_ticks(CtxHandler cHandle, const char* stdCode)
 
 	ctx->stra_sub_ticks(stdCode);
 }
+
+double sel_get_day_price(const char* stdCode, int flag)
+{
+	return getRunner().getEngine()->get_day_price(stdCode, flag);
+}
+
+WtUInt32 sel_get_tdate()
+{
+	return getRunner().getEngine()->get_trading_date();
+}
+
+double sel_get_fund_data(CtxHandler cHandle, int flag)
+{
+	SelContextPtr ctx = getRunner().getSelContext(cHandle);
+	if (ctx == NULL)
+		return 0;
+
+	return ctx->stra_get_fund_data(flag);
+}
+
+double sel_get_position_profit(CtxHandler cHandle, const char* stdCode)
+{
+	SelContextPtr ctx = getRunner().getSelContext(cHandle);
+	if (ctx == NULL)
+		return 0;
+
+	return ctx->stra_get_position_profit(stdCode);
+}
+
+WtUInt64 sel_get_detail_entertime(CtxHandler cHandle, const char* stdCode, const char* openTag)
+{
+	SelContextPtr ctx = getRunner().getSelContext(cHandle);
+	if (ctx == NULL)
+		return 0;
+
+	return ctx->stra_get_detail_entertime(stdCode, openTag);
+}
+
+double sel_get_detail_cost(CtxHandler cHandle, const char* stdCode, const char* openTag)
+{
+	SelContextPtr ctx = getRunner().getSelContext(cHandle);
+	if (ctx == NULL)
+		return 0;
+
+	return ctx->stra_get_detail_cost(stdCode, openTag);
+}
+
+double sel_get_detail_profit(CtxHandler cHandle, const char* stdCode, const char* openTag, int flag)
+{
+	SelContextPtr ctx = getRunner().getSelContext(cHandle);
+	if (ctx == NULL)
+		return 0;
+
+	return ctx->stra_get_detail_profit(stdCode, openTag, flag);
+}
+
+double sel_get_position_avgpx(CtxHandler cHandle, const char* stdCode)
+{
+	SelContextPtr ctx = getRunner().getSelContext(cHandle);
+	if (ctx == NULL)
+		return 0;
+
+	return ctx->stra_get_position_avgpx(stdCode);
+}
+
+WtUInt64 sel_get_first_entertime(CtxHandler cHandle, const char* stdCode)
+{
+	SelContextPtr ctx = getRunner().getSelContext(cHandle);
+	if (ctx == NULL)
+		return 0;
+
+	return ctx->stra_get_first_entertime(stdCode);
+}
+
+WtUInt64 sel_get_last_entertime(CtxHandler cHandle, const char* stdCode)
+{
+	SelContextPtr ctx = getRunner().getSelContext(cHandle);
+	if (ctx == NULL)
+		return 0;
+
+	return ctx->stra_get_last_entertime(stdCode);
+}
+
+WtUInt64 sel_get_last_exittime(CtxHandler cHandle, const char* stdCode)
+{
+	SelContextPtr ctx = getRunner().getSelContext(cHandle);
+	if (ctx == NULL)
+		return 0;
+
+	return ctx->stra_get_last_exittime(stdCode);
+}
+
+double sel_get_last_enterprice(CtxHandler cHandle, const char* stdCode)
+{
+	SelContextPtr ctx = getRunner().getSelContext(cHandle);
+	if (ctx == NULL)
+		return 0;
+
+	return ctx->stra_get_last_enterprice(stdCode);
+}
+
+WtString sel_get_last_entertag(CtxHandler cHandle, const char* stdCode)
+{
+	SelContextPtr ctx = getRunner().getSelContext(cHandle);
+	if (ctx == NULL)
+		return 0;
+
+	return ctx->stra_get_last_entertag(stdCode);
+}
 #pragma endregion
 
 #pragma region "HFT²ßÂÔ½Ó¿Ú"

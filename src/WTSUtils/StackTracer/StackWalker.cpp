@@ -1319,7 +1319,7 @@ BOOL StackWalker::ShowObject(LPVOID pObject)
 		return FALSE;
 	}
 	// Object name output
-	this->OnOutput(pSym->Name);
+	this->m_logger(pSym->Name);
 
 	free(pSym);
 	return TRUE;
@@ -1375,7 +1375,7 @@ void StackWalker::OnLoadModule(LPCSTR    img,
 			img, mod, (LPVOID)baseAddr, size, result, symType, pdbName, v1, v2, v3, v4);
 	}
 	buffer[STACKWALK_MAX_NAMELEN - 1] = 0; // be sure it is NULL terminated
-	OnOutput(buffer);
+	m_logger(buffer);
 }
 
 void StackWalker::OnCallstackEntry(CallstackEntryType eType, CallstackEntry& entry)
@@ -1405,7 +1405,7 @@ void StackWalker::OnCallstackEntry(CallstackEntryType eType, CallstackEntry& ent
 			_snprintf_s(buffer, maxLen, "%-16s %s:%d: %s",
 				entry.moduleName, entry.lineFileName, entry.lineNumber, entry.name);
 		buffer[STACKWALK_MAX_NAMELEN - 1] = 0;
-		OnOutput(buffer);
+		m_logger(buffer);
 	}
 }
 
@@ -1419,7 +1419,7 @@ void StackWalker::OnDbgHelpErr(LPCSTR szFuncName, DWORD gle, DWORD64 addr)
 	_snprintf_s(buffer, maxLen, "ERROR: %s, GetLastError: %d (Address: %p)\n", szFuncName, gle,
 		(LPVOID)addr);
 	buffer[STACKWALK_MAX_NAMELEN - 1] = 0;
-	OnOutput(buffer);
+	m_logger(buffer);
 }
 
 void StackWalker::OnSymInit(LPCSTR szSearchPath, DWORD symOptions, LPCSTR szUserName)
@@ -1432,7 +1432,7 @@ void StackWalker::OnSymInit(LPCSTR szSearchPath, DWORD symOptions, LPCSTR szUser
 	_snprintf_s(buffer, maxLen, "SymInit: Symbol-SearchPath: '%s', symOptions: %d, UserName: '%s'\n",
 		szSearchPath, symOptions, szUserName);
 	buffer[STACKWALK_MAX_NAMELEN - 1] = 0;
-	OnOutput(buffer);
+	m_logger(buffer);
 	// Also display the OS-version
 #if _MSC_VER <= 1200
 	OSVERSIONINFOA ver;
@@ -1443,7 +1443,7 @@ void StackWalker::OnSymInit(LPCSTR szSearchPath, DWORD symOptions, LPCSTR szUser
 		_snprintf_s(buffer, maxLen, "OS-Version: %d.%d.%d (%s)\n", ver.dwMajorVersion,
 			ver.dwMinorVersion, ver.dwBuildNumber, ver.szCSDVersion);
 		buffer[STACKWALK_MAX_NAMELEN - 1] = 0;
-		OnOutput(buffer);
+		m_logger(buffer);
 	}
 #else
 	OSVERSIONINFOEXA ver;
@@ -1459,17 +1459,12 @@ void StackWalker::OnSymInit(LPCSTR szSearchPath, DWORD symOptions, LPCSTR szUser
 			ver.dwMinorVersion, ver.dwBuildNumber, ver.szCSDVersion, ver.wSuiteMask,
 			ver.wProductType);
 		buffer[STACKWALK_MAX_NAMELEN - 1] = 0;
-		OnOutput(buffer);
+		m_logger(buffer);
 	}
 #if _MSC_VER >= 1900
 #pragma warning(pop)
 #endif
 #endif
-}
-
-void StackWalker::OnOutput(LPCSTR buffer)
-{
-	m_logger(buffer);
 }
 
 #endif

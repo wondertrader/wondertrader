@@ -111,11 +111,11 @@ bool TraderCTPMini::init(WTSVariant* params)
 
 	m_strFlowDir = StrUtil::standardisePath(m_strFlowDir);
 
-	WTSVariant* param = params->get("ctpmodule");
-	if (param != NULL)
-		m_strModule = getBinDir() + DLLHelper::wrap_module(param->asCString(), "lib");
-	else
-		m_strModule = getBinDir() + DLLHelper::wrap_module("thosttraderapi", "lib");
+	std::string module = params->getCString("ctpmodule");
+	if (module.empty())
+		module = "thosttraderapi";
+
+	m_strModule = getBinDir() + DLLHelper::wrap_module(module.c_str(), "");
 
 	m_hInstCTP = DLLHelper::load_library(m_strModule.c_str());
 #ifdef _WIN32

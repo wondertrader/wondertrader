@@ -303,7 +303,7 @@ void WtLocalExecuter::on_position_changed(const char* stdCode, double diffPos)
 	unit->self()->set_position(stdCode, traderTarget);
 }
 
-void WtLocalExecuter::set_position(const faster_hashmap<LongKey, double>& targets)
+void WtLocalExecuter::set_position(const wt_hashmap<std::string, double>& targets)
 {
 	/*
 	 *	先要把目标头寸进行组合匹配
@@ -414,7 +414,7 @@ void WtLocalExecuter::set_position(const faster_hashmap<LongKey, double>& target
 	//如果通道持仓不在管理中，则直接平掉
 	if(_strict_sync)
 	{
-		for(const LongKey& stdCode : _channel_holds)
+		for(const std::string& stdCode : _channel_holds)
 		{
 			auto it = _target_pos.find(stdCode.c_str());
 			if(it != _target_pos.end())

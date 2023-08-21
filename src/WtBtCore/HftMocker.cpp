@@ -349,7 +349,9 @@ void HftMocker::on_tick(const char* stdCode, WTSTickData* newTick)
 
 	update_dyn_profit(stdCode, newTick);
 
-	
+	OrderIDs all_ids;
+	for (auto it = _orders.begin(); it != _orders.end(); it++)
+		all_ids.push_back(it->first);
 	//如果开启了同tick撮合，则先触发策略的ontick，再处理订单
 	//如果没开启同tick撮合，则先处理订单，再触发策略的ontick
 	if (_match_this_tick)
@@ -371,9 +373,8 @@ void HftMocker::on_tick(const char* stdCode, WTSTickData* newTick)
 		{
 			StdLocker<StdRecurMutex> lock(_mtx_ords);
 			OrderIDs ids;
-			for (auto it = _orders.begin(); it != _orders.end(); it++)
+			for (uint32_t localid : all_ids)
 			{
-				uint32_t localid = it->first;
 				bool bNeedErase = procOrder(localid);
 				if (bNeedErase)
 					ids.emplace_back(localid);
@@ -391,9 +392,8 @@ void HftMocker::on_tick(const char* stdCode, WTSTickData* newTick)
 		{
 			StdLocker<StdRecurMutex> lock(_mtx_ords);
 			OrderIDs ids;
-			for (auto it = _orders.begin(); it != _orders.end(); it++)
+			for (uint32_t localid : all_ids)
 			{
-				uint32_t localid = it->first;
 				bool bNeedErase = procOrder(localid);
 				if (bNeedErase)
 					ids.emplace_back(localid);
@@ -547,16 +547,24 @@ double HftMocker::stra_get_undone(const char* stdCode)
 bool HftMocker::stra_cancel(uint32_t localid)
 {
 	postTask([this, localid](){
-		StdLocker<StdRecurMutex> lock(_mtx_ords);
-		auto it = _orders.find(localid);
-		if (it == _orders.end())
-			return;		
+		OrderInfoPtr ordInfo = NULL;
+		{
+			StdLocker<StdRecurMutex> lock(_mtx_ords);
+			auto it = _orders.find(localid);
+			if (it == _orders.end())
+				return;
 
-		OrderInfoPtr& ordInfo = (OrderInfoPtr&)it->second;
+			ordInfo = it->second;
+		}
+		
 		ordInfo->_left = 0;
 
 		on_order(localid, ordInfo->_code, ordInfo->_isBuy, ordInfo->_total, ordInfo->_left, ordInfo->_price, true, ordInfo->_usertag);
-		_orders.erase(it);
+
+		{
+			StdLocker<StdRecurMutex> lock(_mtx_ords);
+			_orders.erase(localid);
+		}
 	});
 
 	return true;

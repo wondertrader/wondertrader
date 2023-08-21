@@ -63,7 +63,7 @@ public:
 	void sub_transaction(uint32_t sid, const char* stdCode);
 
 private:
-	typedef faster_hashmap<uint32_t, HftContextPtr> ContextMap;
+	typedef wt_hashmap<uint32_t, HftContextPtr> ContextMap;
 	ContextMap		_ctx_map;
 
 	WtHftRtTicker*	_tm_ticker;

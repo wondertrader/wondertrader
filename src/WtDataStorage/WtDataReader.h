@@ -34,7 +34,7 @@ private:
 		}
 
 	} RTKlineBlockPair;
-	typedef faster_hashmap<std::string, RTKlineBlockPair>	RTKBlockFilesMap;
+	typedef wt_hashmap<std::string, RTKlineBlockPair>	RTKBlockFilesMap;
 
 	typedef struct _TBlockPair
 	{
@@ -49,7 +49,7 @@ private:
 			_last_cap = 0;
 		}
 	} TickBlockPair;
-	typedef faster_hashmap<std::string, TickBlockPair>	TBlockFilesMap;
+	typedef wt_hashmap<std::string, TickBlockPair>	TBlockFilesMap;
 
 	typedef struct _TransBlockPair
 	{
@@ -66,7 +66,7 @@ private:
 			_last_cap = 0;
 		}
 	} TransBlockPair;
-	typedef faster_hashmap<std::string, TransBlockPair>	TransBlockFilesMap;
+	typedef wt_hashmap<std::string, TransBlockPair>	TransBlockFilesMap;
 
 	typedef struct _OdrDtlBlockPair
 	{
@@ -83,7 +83,7 @@ private:
 			_last_cap = 0;
 		}
 	} OrdDtlBlockPair;
-	typedef faster_hashmap<std::string, OrdDtlBlockPair>	OrdDtlBlockFilesMap;
+	typedef wt_hashmap<std::string, OrdDtlBlockPair>	OrdDtlBlockFilesMap;
 
 	typedef struct _OdrQueBlockPair
 	{
@@ -100,7 +100,7 @@ private:
 			_last_cap = 0;
 		}
 	} OrdQueBlockPair;
-	typedef faster_hashmap<std::string, OrdQueBlockPair>	OrdQueBlockFilesMap;
+	typedef wt_hashmap<std::string, OrdQueBlockPair>	OrdQueBlockFilesMap;
 
 	RTKBlockFilesMap	_rt_min1_map;
 	RTKBlockFilesMap	_rt_min5_map;
@@ -124,7 +124,7 @@ private:
 		}
 	} HisTBlockPair;
 
-	typedef faster_hashmap<std::string, HisTBlockPair>	HisTickBlockMap;
+	typedef wt_hashmap<std::string, HisTBlockPair>	HisTickBlockMap;
 
 	typedef struct _HisTransBlockPair
 	{
@@ -140,7 +140,7 @@ private:
 		}
 	} HisTransBlockPair;
 
-	typedef faster_hashmap<std::string, HisTransBlockPair>	HisTransBlockMap;
+	typedef wt_hashmap<std::string, HisTransBlockPair>	HisTransBlockMap;
 
 	typedef struct _HisOrdDtlBlockPair
 	{
@@ -156,7 +156,7 @@ private:
 		}
 	} HisOrdDtlBlockPair;
 
-	typedef faster_hashmap<std::string, HisOrdDtlBlockPair>	HisOrdDtlBlockMap;
+	typedef wt_hashmap<std::string, HisOrdDtlBlockPair>	HisOrdDtlBlockMap;
 
 	typedef struct _HisOrdQueBlockPair
 	{
@@ -172,7 +172,7 @@ private:
 		}
 	} HisOrdQueBlockPair;
 
-	typedef faster_hashmap<std::string, HisOrdQueBlockPair>	HisOrdQueBlockMap;
+	typedef wt_hashmap<std::string, HisOrdQueBlockPair>	HisOrdQueBlockMap;
 
 	HisTickBlockMap		_his_tick_map;
 	HisOrdDtlBlockMap	_his_orddtl_map;
@@ -238,7 +238,7 @@ private:
 		_BarsList() :_rt_cursor(UINT_MAX), _factor(DBL_MAX){}
 	} BarsList;
 
-	typedef faster_hashmap<std::string, BarsList> BarsCache;
+	typedef wt_hashmap<std::string, BarsList> BarsCache;
 	BarsCache	_bars_cache;
 
 	uint64_t	_last_time;
@@ -250,7 +250,7 @@ private:
 		double		_factor;
 	} AdjFactor;
 	typedef std::vector<AdjFactor> AdjFactorList;
-	typedef faster_hashmap<LongKey, AdjFactorList>	AdjFactorMap;
+	typedef wt_hashmap<std::string, AdjFactorList>	AdjFactorMap;
 	AdjFactorMap	_adj_factors;
 
 	const AdjFactorList& getAdjFactors(const char* code, const char* exchg, const char* pid);

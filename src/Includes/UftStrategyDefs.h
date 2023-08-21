@@ -159,6 +159,12 @@ public:
 	 */
 	virtual void on_entrust(uint32_t localid, bool bSuccess, const char* message) {}
 
+
+	/*
+	 *	参数更新回调
+	 */
+	virtual void on_params_updated() {}
+
 protected:
 	std::string _id;
 };

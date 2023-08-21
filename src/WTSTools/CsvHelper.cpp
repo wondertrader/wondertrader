@@ -19,7 +19,7 @@ bool CsvReader::load_from_file(const char* filename)
 	_ifs.open(filename);
 
 	_ifs.getline(_buffer, 1024);
-	//判断是不是UTF-8BOM 编码
+	//鍒ゆ柇鏄笉鏄疷TF-8BOM 缂栫爜
 	static char flag[] = { (char)0xEF, (char)0xBB, (char)0xBF };
 	char* buf = _buffer;
 	if (memcmp(_buffer, flag, sizeof(char) * 3) == 0)
@@ -27,19 +27,23 @@ bool CsvReader::load_from_file(const char* filename)
 
 	std::string row = buf;
 
-	//替换掉一些字段的特殊符号
+	//鏇挎崲鎺変竴浜涘瓧娈电殑鐗规畩绗﹀彿
 	StrUtil::replace(row, "<", "");
 	StrUtil::replace(row, ">", "");
 	StrUtil::replace(row, "\"", "");
 	StrUtil::replace(row, "'", "");
 
-	//将字段名转成小写
+	//灏嗗瓧娈靛悕杞垚灏忓啓
 	StrUtil::toLowerCase(row);
 
 	StringVector fields = StrUtil::split(row, _item_splitter.c_str());
 	for (uint32_t i = 0; i < fields.size(); i++)
 	{
 		std::string field = StrUtil::trim(fields[i].c_str(), " ");
+		field = StrUtil::trim(fields[i].c_str(), "\n");
+		field = StrUtil::trim(fields[i].c_str());
+		field = StrUtil::trim(fields[i].c_str(), "\t");
+		field = StrUtil::trim(fields[i].c_str(), "\r");
 		if (field.empty())
 			break;
 

@@ -9,6 +9,7 @@
  */
 #pragma once
 #include "../Includes/ICtaStraCtx.h"
+#include "../Share/threadpool.hpp"
 #include "WtExecMgr.h"
 #include "WtEngine.h"
 
@@ -79,7 +80,7 @@ public:
 	void notify_trade(const char* straId, const char* stdCode, bool isLong, bool isOpen, uint64_t curTime, double price, const char* userTag);
 
 private:
-	typedef faster_hashmap<uint32_t, CtaContextPtr> ContextMap;
+	typedef wt_hashmap<uint32_t, CtaContextPtr> ContextMap;
 	ContextMap		_ctx_map;
 
 	WtCtaRtTicker*	_tm_ticker;
@@ -87,6 +88,9 @@ private:
 	WtExecuterMgr	_exec_mgr;
 
 	WTSVariant*		_cfg;
+
+	typedef std::shared_ptr<boost::threadpool::pool> ThreadPoolPtr;
+	ThreadPoolPtr		_pool;
 };
 
 NS_WTP_END

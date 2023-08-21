@@ -43,7 +43,7 @@ const char* WTSHotMgr::getRuleTag(const char* stdCode)
 	auto idx = StrUtil::findLast(stdCode, '.');
 	if (idx == std::string::npos)
 	{
-		auto it = m_mapCustRules->find(ShortKey(stdCode, len));
+		auto it = m_mapCustRules->find(std::string(stdCode, len));
 		if (it == m_mapCustRules->end())
 			return "";
 
@@ -51,7 +51,7 @@ const char* WTSHotMgr::getRuleTag(const char* stdCode)
 	}
 
 	const char* tail = stdCode + idx + 1;
-	auto it = m_mapCustRules->find(ShortKey(tail, len - idx - 1));
+	auto it = m_mapCustRules->find(std::string(tail, len - idx - 1));
 	if (it == m_mapCustRules->end())
 		return "";
 

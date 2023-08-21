@@ -388,7 +388,7 @@ void WtDiffExecuter::on_position_changed(const char* stdCode, double diffPos)
 	}
 }
 
-void WtDiffExecuter::set_position(const faster_hashmap<LongKey, double>& targets)
+void WtDiffExecuter::set_position(const wt_hashmap<std::string, double>& targets)
 {
 	for (auto it = targets.begin(); it != targets.end(); it++)
 	{

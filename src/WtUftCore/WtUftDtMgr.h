@@ -47,7 +47,7 @@ public:
 private:
 	WtUftEngine*		_engine;
 
-	faster_hashset<std::string> _subed_basic_bars;
+	wt_hashset<std::string> _subed_basic_bars;
 	typedef WTSHashMap<std::string> DataCacheMap;
 	DataCacheMap*	_bars_cache;	//KÏß»º´æ
 	DataCacheMap*	_ticks_cache;	//ÀúÊ·Tick»º´æ

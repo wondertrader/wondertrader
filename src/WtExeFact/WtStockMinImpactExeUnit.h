@@ -162,7 +162,7 @@ private:
 	double		_max_cancel_time{ 3 }; //最大撤单次数，如果超过这个次数仍然未撤单，则说明是错单
 	double		_total_money{ -1 }; // 总资本
 	double		_is_t0{ false }; // 对于转债等来说，这个需要是true，股票为false
-	faster_hashmap< uint32_t, uint32_t > _cancel_map{};
+	wt_hashmap< uint32_t, uint32_t > _cancel_map{};
 
 	WtOrdMon	_orders_mon;
 	//uint32_t	_cancel_cnt;

@@ -1668,7 +1668,7 @@ WTSKlineSlice* WtDataReader::readKlineSlice(const char* stdCode, WTSKlinePeriod 
 
 		//读取实时的
 		RTKlineBlockPair* kPair = getRTKilneBlock(cInfo._exchg, curCode, period);
-		if (kPair != NULL)
+		if (kPair != NULL && kPair->_block && kPair->_block->_size>0)
 		{
 			//读取当日的数据
 			WTSBarStruct* pBar = NULL;

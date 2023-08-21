@@ -115,6 +115,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\FasterLibs\ankerl\unordered_dense.h" />
     <ClInclude Include="..\FasterLibs\tsl\robin_growth_policy.h" />
     <ClInclude Include="..\FasterLibs\tsl\robin_hash.h" />
     <ClInclude Include="..\FasterLibs\tsl\robin_map.h" />

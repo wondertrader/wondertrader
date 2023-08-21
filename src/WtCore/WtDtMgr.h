@@ -73,8 +73,10 @@ private:
 	IHisDataLoader*	_loader;
 	WtEngine*		_engine;
 
-	faster_hashset<LongKey> _subed_basic_bars;
-	typedef WTSHashMap<LongKey> DataCacheMap;
+	bool			_align_by_section;
+
+	wt_hashset<std::string> _subed_basic_bars;
+	typedef WTSHashMap<std::string> DataCacheMap;
 	DataCacheMap*	_bars_cache;	//KÏß»º´æ
 	DataCacheMap*	_rt_tick_map;	//ÊµÊ±tick»º´æ
 	//By Wesley @ 2022.02.11

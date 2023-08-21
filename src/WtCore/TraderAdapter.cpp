@@ -77,7 +77,6 @@ TraderAdapter::TraderAdapter(EventNotifier* caster /* = NULL */)
 	, _state(AS_NOTLOGIN)
 	, _trader_api(NULL)
 	, _orders(NULL)
-	, _undone_qty(0)
 	, _stat_map(NULL)
 	, _risk_mon_enabled(false)
 	, _save_data(false)
@@ -1988,10 +1987,14 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 						//如果品种区分平昨平今, 也按照这个流程, 因为平昨的总数量不可能超出昨仓
 						double maxQty = min(pItem.l_preavail, qty);
 						pItem.l_preavail -= maxQty;
+						pItem.l_preavail = max(pItem.l_preavail, 0.0);
 						left -= maxQty;
 
 						if (left > 0)
+						{
 							pItem.l_newavail -= min(pItem.l_newavail, left);
+							pItem.l_newavail = max(pItem.l_newavail, 0.0);
+						}
 					}
 				}
 				else //平空
@@ -2006,10 +2009,14 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 
 						double maxQty = min(pItem.s_preavail, qty);
 						pItem.s_preavail -= maxQty;
+						pItem.s_preavail = max(pItem.s_preavail, 0.0);
 						left -= maxQty;
 
 						if (left > 0)
+						{
 							pItem.s_newavail -= min(pItem.s_newavail, left);
+							pItem.s_newavail = max(pItem.s_newavail, 0.0);
+						}
 					}
 				}
 				printPosition(stdCode.c_str(), pItem);

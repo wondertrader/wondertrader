@@ -380,7 +380,9 @@ WTSTickSlice* WtRdmDtReader::readTickSliceByRange(const char* stdCode, uint64_t 
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
 	std::string stdPID = fmt::format("{}.{}", cInfo._exchg, cInfo._product);
 
-	WTSSessionInfo* sInfo = _base_data_mgr->getSession(_base_data_mgr->getCommodity(cInfo._exchg, cInfo._code)->getSession());
+	pipe_rdmreader_log(_sink, LL_DEBUG, "Reading ticks of {} between {} and {}", stdCode, stime, etime);
+
+	WTSSessionInfo* sInfo = commInfo->getSessionInfo();
 
 	uint32_t rDate, rTime, rSecs;
 	//20190807124533900
@@ -423,23 +425,8 @@ WTSTickSlice* WtRdmDtReader::readTickSliceByRange(const char* stdCode, uint64_t 
 				hotCode += "_";
 				hotCode += ruleTag;
 			}
-			//else if (cInfo.isHot() && commInfo->isFuture())
-			//{
-			//	curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, nowTDate);
-			//	pipe_rdmreader_log(_sink, LL_INFO, "Hot contract on {} confirmed: {} -> {}", curTDate, stdCode, curCode.c_str());
-			//	hotCode = cInfo._product;
-			//	hotCode += "_HOT";
-			//}
-			//else if (cInfo.isSecond() && commInfo->isFuture())
-			//{
-			//	curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, nowTDate);
-			//	pipe_rdmreader_log(_sink, LL_INFO, "Second contract on {} confirmed: {} -> {}", curTDate, stdCode, curCode.c_str());
-			//	hotCode = cInfo._product;
-			//	hotCode += "_2ND";
-			//}
 		}
 		
-
 		std::string key = fmt::format("{}-{}", stdCode, nowTDate);
 
 		auto it = _his_tick_map.find(key);
@@ -466,6 +453,7 @@ WTSTickSlice* WtRdmDtReader::readTickSliceByRange(const char* stdCode, uint64_t 
 					std::stringstream ss;
 					ss << _base_dir << "his/ticks/" << cInfo._exchg << "/" << nowTDate << "/" << curCode << ".dsb";
 					filename = ss.str();
+					pipe_rdmreader_log(_sink, LL_DEBUG, "Reading ticks from {}...", filename);
 					if (!StdFile::exists(filename.c_str()))
 					{
 						break;
@@ -1603,6 +1591,7 @@ bool WtRdmDtReader::cacheHisBarsFromFile(void* codeInfo, const std::string& key,
 		std::stringstream ss;
 		ss << _base_dir << "his/" << pname << "/" << cInfo->_exchg << "/" << cInfo->_code << ".dsb";
 		std::string filename = ss.str();
+		pipe_rdmreader_log(_sink, LL_DEBUG, "Target file is {}", filename);
 		if (StdFile::exists(filename.c_str()))
 		{
 			//如果有格式化的历史数据文件, 则直接读取

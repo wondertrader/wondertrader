@@ -63,6 +63,12 @@
     <ClCompile Include="test_kvcache.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="test_shm.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="test_fastestmap.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gtest\gtest-internal-inl.h">

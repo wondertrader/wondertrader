@@ -25,7 +25,7 @@ public:
 	/*
 	 *	设置目标仓位
 	 */
-	virtual void set_position(const faster_hashmap<LongKey, double>& targets) {}
+	virtual void set_position(const wt_hashmap<std::string, double>& targets) {}
 
 	/*
 	 *	合约仓位变动

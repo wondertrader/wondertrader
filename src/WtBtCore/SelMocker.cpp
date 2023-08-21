@@ -33,7 +33,7 @@ inline uint32_t makeSelCtxId()
 }
 
 
-SelMocker::SelMocker(HisDataReplayer* replayer, const char* name, int32_t slippage /* = 0 */)
+SelMocker::SelMocker(HisDataReplayer* replayer, const char* name, int32_t slippage /* = 0 */, bool isRatioSlp /* = false */)
 	: ISelStraCtx(name)
 	, _replayer(replayer)
 	, _total_calc_time(0)
@@ -42,6 +42,8 @@ SelMocker::SelMocker(HisDataReplayer* replayer, const char* name, int32_t slippa
 	, _ud_modified(false)
 	, _strategy(NULL)
 	, _slippage(slippage)
+	, _ratio_slippage(isRatioSlp)
+	, _schedule_times(0)
 {
 	_context_id = makeSelCtxId();
 }
@@ -70,6 +72,8 @@ void SelMocker::dump_stradata()
 			pItem.AddMember("volume", pInfo._volume, allocator);
 			pItem.AddMember("closeprofit", pInfo._closeprofit, allocator);
 			pItem.AddMember("dynprofit", pInfo._dynprofit, allocator);
+			pItem.AddMember("lastentertime", pInfo._last_entertime, allocator);
+			pItem.AddMember("lastexittime", pInfo._last_exittime, allocator);
 
 			rj::Value details(rj::kArrayType);
 			for (auto dit = pInfo._details.begin(); dit != pInfo._details.end(); dit++)
@@ -78,6 +82,8 @@ void SelMocker::dump_stradata()
 				rj::Value dItem(rj::kObjectType);
 				dItem.AddMember("long", dInfo._long, allocator);
 				dItem.AddMember("price", dInfo._price, allocator);
+				dItem.AddMember("maxprice", dInfo._max_price, allocator);
+				dItem.AddMember("minprice", dInfo._min_price, allocator);
 				dItem.AddMember("volume", dInfo._volume, allocator);
 				dItem.AddMember("opentime", dInfo._opentime, allocator);
 				dItem.AddMember("opentdate", dInfo._opentdate, allocator);
@@ -162,7 +168,7 @@ void SelMocker::dump_outputs()
 	StdFile::write_file_content(filename.c_str(), (void*)content.c_str(), content.size());
 
 	filename = folder + "closes.csv";
-	content = "code,direct,opentime,openprice,closetime,closeprice,qty,profit,totalprofit,entertag,exittag\n";
+	content = "code,direct,opentime,openprice,closetime,closeprice,qty,profit,maxprofit,maxloss,totalprofit,entertag,exittag,openbarno,closebarno\n";
 	content += _close_logs.str();
 	StdFile::write_file_content(filename.c_str(), (void*)content.c_str(), content.size());
 
@@ -213,12 +219,12 @@ void SelMocker::log_trade(const char* stdCode, bool isLong, bool isOpen, uint64_
 	_trade_logs << stdCode << "," << curTime << "," << (isLong ? "LONG" : "SHORT") << "," << (isOpen ? "OPEN" : "CLOSE") << "," << price << "," << qty << "," << userTag << "," << fee << "\n";
 }
 
-void SelMocker::log_close(const char* stdCode, bool isLong, uint64_t openTime, double openpx, uint64_t closeTime, double closepx, double qty,
-	double profit, double totalprofit /* = 0 */, const char* enterTag /* = "" */, const char* exitTag /* = "" */)
+void SelMocker::log_close(const char* stdCode, bool isLong, uint64_t openTime, double openpx, uint64_t closeTime, double closepx, double qty, double profit, double maxprofit, double maxloss,
+	double totalprofit /* = 0 */, const char* enterTag /* = "" */, const char* exitTag /* = "" */, uint32_t openBarNo/* = 0*/, uint32_t closeBarNo/* = 0*/)
 {
 	_close_logs << stdCode << "," << (isLong ? "LONG" : "SHORT") << "," << openTime << "," << openpx
-		<< "," << closeTime << "," << closepx << "," << qty << "," << profit << ","
-		<< totalprofit << "," << enterTag << "," << exitTag << "\n";
+		<< "," << closeTime << "," << closepx << "," << qty << "," << profit << "," << maxprofit << "," << maxloss << ","
+		<< totalprofit << "," << enterTag << "," << exitTag << "," << openBarNo << "," << closeBarNo << "\n";
 }
 
 bool SelMocker::init_sel_factory(WTSVariant* cfg)
@@ -305,30 +311,29 @@ void SelMocker::handle_replay_done()
 
 void SelMocker::handle_tick(const char* stdCode, WTSTickData* newTick, uint32_t pxType)
 {
-	_price_map[stdCode].first = newTick->price();
+	double cur_px = newTick->price();
+
+	/*
+	 *	By Wesley @ 2022.04.19
+	 *	这里的逻辑改了一下
+	 *	如果缓存的价格不存在，则上一笔价格就用最新价
+	 *	这里主要是为了应对跨日价格跳空的情况
+	 */
+	double last_px = cur_px;
+	if (pxType != 0)
+	{
+		auto it = _price_map.find(stdCode);
+		if (it != _price_map.end())
+			last_px = it->second.first;
+		else
+			last_px = cur_px;
+	}
+
+	_price_map[stdCode].first = cur_px;
 	_price_map[stdCode].second = (uint64_t)newTick->actiondate() * 1000000000 + newTick->actiontime();
 
 	//先检查是否要信号要触发
-	{
-		auto it = _sig_map.find(stdCode);
-		if (it != _sig_map.end())
-		{
-			//if (sInfo->isInTradingTime(_replayer->get_raw_time(), true))
-			{
-				const SigInfo& sInfo = it->second;
-				double price;
-				if (decimal::eq(sInfo._desprice, 0.0))
-					price = newTick->price();
-				else
-					price = sInfo._desprice;
-				do_set_position(stdCode, sInfo._volume, price, sInfo._usertag.c_str(), sInfo._triggered);
-				_sig_map.erase(it);
-			}
-
-		}
-	}
-
-	update_dyn_profit(stdCode, newTick->price());
+	proc_tick(stdCode, last_px, cur_px);
 
 	on_tick_updated(stdCode, newTick);
 
@@ -340,30 +345,31 @@ void SelMocker::handle_tick(const char* stdCode, WTSTickData* newTick, uint32_t 
 	 *	这样做的目的是为了让在模拟tick触发的ontick中下单的信号能够正常处理
 	 *	而不至于在回测的时候成交价偏离太远
 	 */
-	if (pxType!=3)
-	{
-		//先检查是否要信号要触发
-		{
-			auto it = _sig_map.find(stdCode);
-			if (it != _sig_map.end())
-			{
-				//if (sInfo->isInTradingTime(_replayer->get_raw_time(), true))
-				{
-					const SigInfo& sInfo = it->second;
-					double price;
-					if (decimal::eq(sInfo._desprice, 0.0))
-						price = newTick->price();
-					else
-						price = sInfo._desprice;
-					do_set_position(stdCode, sInfo._volume, price, sInfo._usertag.c_str(), sInfo._triggered);
-					_sig_map.erase(it);
-				}
+	if (pxType != 3)
+		proc_tick(stdCode, last_px, cur_px);
+}
 
+void SelMocker::proc_tick(const char* stdCode, double last_px, double cur_px)
+{
+	{
+		auto it = _sig_map.find(stdCode);
+		if (it != _sig_map.end())
+		{
+			//if (sInfo->isInTradingTime(_replayer->get_raw_time(), true))
+			{
+				const SigInfo& sInfo = it->second;
+				double price;
+				if (decimal::eq(sInfo._desprice, 0.0))
+					price = cur_px;
+				else
+					price = sInfo._desprice;
+				do_set_position(stdCode, sInfo._volume, price, sInfo._usertag.c_str());
+				_sig_map.erase(it);
 			}
 		}
-
-		update_dyn_profit(stdCode, newTick->price());
 	}
+
+	update_dyn_profit(stdCode, cur_px);
 }
 
 
@@ -383,6 +389,7 @@ void SelMocker::on_bar(const char* stdCode, const char* period, uint32_t times, 
 	std::string key = StrUtil::printf("%s#%s", stdCode, realPeriod.c_str());
 	KlineTag& tag = _kline_tags[key];
 	tag._closed = true;
+	tag._count++;
 
 	on_bar_close(stdCode, realPeriod.c_str(), newBar);
 }
@@ -392,7 +399,7 @@ void SelMocker::on_init()
 	if (_strategy)
 		_strategy->on_init(this);
 
-	WTSLogger::info("SEL Strategy initialized, with slippage: {}", _slippage);
+	WTSLogger::info("SEL Strategy initialized with {} slippage: {}", _ratio_slippage ? "ratio" : "absolute", _slippage);
 }
 
 void SelMocker::update_dyn_profit(const char* stdCode, double price)
@@ -417,6 +424,9 @@ void SelMocker::update_dyn_profit(const char* stdCode, double price)
 					dInfo._max_profit = max(dInfo._profit, dInfo._max_profit);
 				else if (dInfo._profit < 0)
 					dInfo._max_loss = min(dInfo._profit, dInfo._max_loss);
+
+				dInfo._max_price = std::max(dInfo._max_price, price);
+				dInfo._min_price = std::min(dInfo._min_price, price);
 
 				dynprofit += dInfo._profit;
 			}
@@ -468,10 +478,12 @@ bool SelMocker::on_schedule(uint32_t curDate, uint32_t curTime, uint32_t fireTim
 {
 	_is_in_schedule = true;//开始调度,修改标记
 
+	_schedule_times++;
+
 	TimeUtils::Ticker ticker;
 	on_strategy_schedule(curDate, curTime);
 
-	faster_hashset<std::string> to_clear;
+	wt_hashset<std::string> to_clear;
 	for(auto& v : _pos_map)
 	{
 		const PosInfo& pInfo = v.second;
@@ -513,7 +525,7 @@ void SelMocker::on_session_begin(uint32_t curTDate)
 
 void SelMocker::enum_position(FuncEnumSelPositionCallBack cb)
 {
-	faster_hashmap<std::string, double> desPos;
+	wt_hashmap<std::string, double> desPos;
 	for (auto& it : _pos_map)
 	{
 		const char* stdCode = it.first.c_str();
@@ -661,17 +673,32 @@ void SelMocker::do_set_position(const char* stdCode, double qty, double price /*
 
 		if (_slippage != 0)
 		{
-			trdPx += _slippage * commInfo->getPriceTick()*(isBuy ? 1 : -1);
+			if (_ratio_slippage)
+			{
+				//By Wesley @ 2023.05.05
+				//如果是比率滑点，则要根据目标成交价计算
+				//得到滑点以后，再根据pricetick做一个修正
+				double slp = (_slippage * trdPx / 10000.0);
+				slp = round(slp / commInfo->getPriceTick())*commInfo->getPriceTick();
+
+				trdPx += slp * (isBuy ? 1 : -1);
+			}
+			else
+				trdPx += _slippage * commInfo->getPriceTick()*(isBuy ? 1 : -1);
 		}
 
 		DetailInfo dInfo;
 		dInfo._long = decimal::gt(qty, 0);
 		dInfo._price = trdPx;
+		dInfo._max_price = trdPx;
+		dInfo._min_price = trdPx;
 		dInfo._volume = abs(diff);
 		dInfo._opentime = curTm;
 		dInfo._opentdate = curTDate;
 		strcpy(dInfo._opentag, userTag);
+		dInfo._open_barno = _schedule_times;
 		pInfo._details.emplace_back(dInfo);
+		pInfo._last_entertime = curTm;
 
 		double fee = _replayer->calc_fee(stdCode, trdPx, abs(diff), 0);
 		_fund_info._total_fees += fee;
@@ -682,8 +709,22 @@ void SelMocker::do_set_position(const char* stdCode, double qty, double price /*
 	{//持仓方向和目标仓位方向不一致,需要平仓
 		double left = abs(diff);
 		bool isBuy = decimal::gt(diff, 0.0);
+
 		if (_slippage != 0)
-			trdPx += _slippage * commInfo->getPriceTick()*(isBuy ? 1 : -1);
+		{
+			if (_ratio_slippage)
+			{
+				//By Wesley @ 2023.05.05
+				//如果是比率滑点，则要根据目标成交价计算
+				//得到滑点以后，再根据pricetick做一个修正
+				double slp = (_slippage * trdPx / 10000.0);
+				slp = round(slp / commInfo->getPriceTick())*commInfo->getPriceTick();
+
+				trdPx += slp * (isBuy ? 1 : -1);
+			}
+			else
+				trdPx += _slippage * commInfo->getPriceTick()*(isBuy ? 1 : -1);
+		}
 
 		pInfo._volume = qty;
 		if (decimal::eq(pInfo._volume, 0))
@@ -711,6 +752,7 @@ void SelMocker::do_set_position(const char* stdCode, double qty, double price /*
 
 			pInfo._closeprofit += profit;
 			pInfo._dynprofit = pInfo._dynprofit*dInfo._volume / (dInfo._volume + maxQty);//浮盈也要做等比缩放
+			pInfo._last_exittime = curTm;
 			_fund_info._total_profit += profit;
 
 			double fee = _replayer->calc_fee(stdCode, trdPx, maxQty, dInfo._opentdate == curTDate ? 2 : 1);
@@ -719,7 +761,7 @@ void SelMocker::do_set_position(const char* stdCode, double qty, double price /*
 			log_trade(stdCode, dInfo._long, false, curTm, trdPx, maxQty, userTag, fee);
 			//这里写平仓记录
 			log_close(stdCode, dInfo._long, dInfo._opentime, dInfo._price, curTm, 
-				trdPx, maxQty, profit, pInfo._closeprofit, dInfo._opentag, userTag);
+				trdPx, maxQty, profit, dInfo._max_profit, dInfo._max_loss, pInfo._closeprofit, dInfo._opentag, userTag, dInfo._open_barno, _schedule_times);
 
 			if (left == 0)
 				break;
@@ -748,11 +790,15 @@ void SelMocker::do_set_position(const char* stdCode, double qty, double price /*
 			DetailInfo dInfo;
 			dInfo._long = decimal::gt(qty, 0);
 			dInfo._price = trdPx;
+			dInfo._max_price = trdPx;
+			dInfo._min_price = trdPx;
 			dInfo._volume = abs(left);
 			dInfo._opentime = curTm;
 			dInfo._opentdate = curTDate;
 			strcpy(dInfo._opentag, userTag);
+			dInfo._open_barno = _schedule_times;
 			pInfo._details.emplace_back(dInfo);
+			pInfo._last_entertime = curTm;
 
 			//这里还需要写一笔成交记录
 			double fee = _replayer->calc_fee(stdCode, trdPx, abs(left), 0);
@@ -845,6 +891,10 @@ WTSSessionInfo* SelMocker::stra_get_sessinfo(const char* stdCode)
 	return _replayer->get_session_info(stdCode, true);
 }
 
+uint32_t SelMocker::stra_get_tdate()
+{
+	return _replayer->get_trading_date();
+}
 
 uint32_t SelMocker::stra_get_date()
 {
@@ -855,6 +905,24 @@ uint32_t SelMocker::stra_get_time()
 {
 	return _replayer->get_min_time();
 }
+
+double SelMocker::stra_get_fund_data(int flag)
+{
+	switch (flag)
+	{
+	case 0:
+		return _fund_info._total_profit - _fund_info._total_fees + _fund_info._total_dynprofit;
+	case 1:
+		return _fund_info._total_profit;
+	case 2:
+		return _fund_info._total_dynprofit;
+	case 3:
+		return _fund_info._total_fees;
+	default:
+		return 0.0;
+	}
+}
+
 
 void SelMocker::stra_log_info(const char* message)
 {
@@ -893,6 +961,15 @@ void SelMocker::stra_save_user_data(const char* key, const char* val)
 
 double SelMocker::stra_get_position(const char* stdCode, bool bOnlyValid/* = false*/, const char* userTag /* = "" */)
 {
+	//By Wesley @ 2023.04.17
+	//如果有信号，说明刚下了指令，还没等到下一个tick进来，用户就在读取仓位
+	//但是如果用户读取，还是要返回
+	auto sit = _sig_map.find(stdCode);
+	if (sit != _sig_map.end())
+	{
+		return sit->second._volume;
+	}
+
 	auto it = _pos_map.find(stdCode);
 	if (it == _pos_map.end())
 		return 0;
@@ -921,4 +998,173 @@ double SelMocker::stra_get_position(const char* stdCode, bool bOnlyValid/* = fal
 	}
 
 	return 0;
+}
+
+double SelMocker::stra_get_day_price(const char* stdCode, int flag /* = 0 */)
+{
+	if (_replayer)
+		return _replayer->get_day_price(stdCode, flag);
+
+	return 0.0;
+}
+
+uint64_t SelMocker::stra_get_first_entertime(const char* stdCode)
+{
+	auto it = _pos_map.find(stdCode);
+	if (it == _pos_map.end())
+		return 0;
+
+	const PosInfo& pInfo = it->second;
+	if (pInfo._details.empty())
+		return 0;
+
+	return pInfo._details[0]._opentime;
+}
+
+uint64_t SelMocker::stra_get_last_entertime(const char* stdCode)
+{
+	auto it = _pos_map.find(stdCode);
+	if (it == _pos_map.end())
+		return 0;
+
+	const PosInfo& pInfo = it->second;
+	if (pInfo._details.empty())
+		return 0;
+
+	return pInfo._details[pInfo._details.size() - 1]._opentime;
+}
+
+const char* SelMocker::stra_get_last_entertag(const char* stdCode)
+{
+	auto it = _pos_map.find(stdCode);
+	if (it == _pos_map.end())
+		return "";
+
+	const PosInfo& pInfo = it->second;
+	if (pInfo._details.empty())
+		return "";
+
+	return pInfo._details[pInfo._details.size() - 1]._opentag;
+}
+
+uint64_t SelMocker::stra_get_last_exittime(const char* stdCode)
+{
+	auto it = _pos_map.find(stdCode);
+	if (it == _pos_map.end())
+		return 0;
+
+	const PosInfo& pInfo = it->second;
+	return pInfo._last_exittime;
+}
+
+double SelMocker::stra_get_last_enterprice(const char* stdCode)
+{
+	auto it = _pos_map.find(stdCode);
+	if (it == _pos_map.end())
+		return 0;
+
+	const PosInfo& pInfo = it->second;
+	if (pInfo._details.empty())
+		return 0;
+
+	return pInfo._details[pInfo._details.size() - 1]._price;
+}
+
+double SelMocker::stra_get_position_avgpx(const char* stdCode)
+{
+	auto it = _pos_map.find(stdCode);
+	if (it == _pos_map.end())
+		return 0;
+
+	const PosInfo& pInfo = it->second;
+	if (pInfo._volume == 0)
+		return 0.0;
+
+	double amount = 0.0;
+	for (auto dit = pInfo._details.begin(); dit != pInfo._details.end(); dit++)
+	{
+		const DetailInfo& dInfo = *dit;
+		amount += dInfo._price*dInfo._volume;
+	}
+
+	return amount / pInfo._volume;
+}
+
+double SelMocker::stra_get_position_profit(const char* stdCode)
+{
+	auto it = _pos_map.find(stdCode);
+	if (it == _pos_map.end())
+		return 0;
+
+	const PosInfo& pInfo = it->second;
+	return pInfo._dynprofit;
+}
+
+uint64_t SelMocker::stra_get_detail_entertime(const char* stdCode, const char* userTag)
+{
+	auto it = _pos_map.find(stdCode);
+	if (it == _pos_map.end())
+		return 0;
+
+	const PosInfo& pInfo = it->second;
+	for (auto it = pInfo._details.begin(); it != pInfo._details.end(); it++)
+	{
+		const DetailInfo& dInfo = (*it);
+		if (strcmp(dInfo._opentag, userTag) != 0)
+			continue;
+
+		return dInfo._opentime;
+	}
+
+	return 0;
+}
+
+double SelMocker::stra_get_detail_cost(const char* stdCode, const char* userTag)
+{
+	auto it = _pos_map.find(stdCode);
+	if (it == _pos_map.end())
+		return 0;
+
+	const PosInfo& pInfo = it->second;
+	for (auto it = pInfo._details.begin(); it != pInfo._details.end(); it++)
+	{
+		const DetailInfo& dInfo = (*it);
+		if (strcmp(dInfo._opentag, userTag) != 0)
+			continue;
+
+		return dInfo._price;
+	}
+
+	return 0.0;
+}
+
+double SelMocker::stra_get_detail_profit(const char* stdCode, const char* userTag, int flag /* = 0 */)
+{
+	auto it = _pos_map.find(stdCode);
+	if (it == _pos_map.end())
+		return 0;
+
+	const PosInfo& pInfo = it->second;
+	for (auto it = pInfo._details.begin(); it != pInfo._details.end(); it++)
+	{
+		const DetailInfo& dInfo = (*it);
+		if (strcmp(dInfo._opentag, userTag) != 0)
+			continue;
+
+		switch (flag)
+		{
+		case 0:
+			return dInfo._profit;
+		case 1:
+			return dInfo._max_profit;
+		case -1:
+			return dInfo._max_loss;
+		case 2:
+			return dInfo._max_price;
+		case -2:
+			return dInfo._min_price;
+		}
+	}
+
+	return 0.0;
 }

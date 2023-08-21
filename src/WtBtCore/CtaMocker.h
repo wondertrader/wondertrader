@@ -60,13 +60,13 @@ typedef struct _CondEntrust
 } CondEntrust;
 
 typedef std::vector<CondEntrust>	CondList;
-typedef faster_hashmap<std::string, CondList>	CondEntrustMap;
+typedef wt_hashmap<std::string, CondList>	CondEntrustMap;
 
 
 class CtaMocker : public ICtaStraCtx, public IDataSink
 {
 public:
-	CtaMocker(HisDataReplayer* replayer, const char* name, int32_t slippage = 0, bool persistData = true, EventNotifier* notifier = NULL);
+	CtaMocker(HisDataReplayer* replayer, const char* name, int32_t slippage = 0, bool persistData = true, EventNotifier* notifier = NULL, bool isRatioSlp = false);
 	virtual ~CtaMocker();
 
 private:
@@ -153,6 +153,7 @@ public:
 	virtual uint64_t stra_get_last_entertime(const char* stdCode) override;
 	virtual uint64_t stra_get_last_exittime(const char* stdCode) override;
 	virtual double stra_get_last_enterprice(const char* stdCode) override;
+	virtual const char* stra_get_last_entertag(const char* stdCode) override;
 	virtual double stra_get_position_avgpx(const char* stdCode) override;
 	virtual double stra_get_position_profit(const char* stdCode) override;
 
@@ -178,10 +179,7 @@ public:
 	virtual void stra_log_error(const char* message) override;
 
 	virtual void stra_save_user_data(const char* key, const char* val) override;
-
 	virtual const char* stra_load_user_data(const char* key, const char* defVal = "") override;
-
-	virtual const char* stra_get_last_entertag(const char* stdCode) override;
 
 	/*
 	 *	设置图表K线
@@ -245,7 +243,8 @@ protected:
 	uint64_t		_total_calc_time;	//总计算时间
 	uint32_t		_emit_times;		//总计算次数
 
-	int32_t			_slippage;			//成交滑点
+	int32_t			_slippage;			//成交滑点， 如果是比例滑点，则为万分比
+	bool			_ratio_slippage;	//是否比例滑点
 
 	uint32_t		_schedule_times;	//调度次数
 
@@ -261,10 +260,10 @@ protected:
 		_KlineTag() :_closed(false){}
 
 	} KlineTag;
-	typedef faster_hashmap<std::string, KlineTag> KlineTags;
+	typedef wt_hashmap<std::string, KlineTag> KlineTags;
 	KlineTags	_kline_tags;
 
-	typedef faster_hashmap<std::string, double> PriceMap;
+	typedef wt_hashmap<std::string, double> PriceMap;
 	PriceMap		_price_map;
 
 	typedef struct _DetailInfo
@@ -311,7 +310,7 @@ protected:
 
 		inline double valid() const { return _volume - _frozen; }
 	} PosInfo;
-	typedef faster_hashmap<std::string, PosInfo> PositionMap;
+	typedef wt_hashmap<std::string, PosInfo> PositionMap;
 	PositionMap		_pos_map;
 	double	_total_closeprofit;
 
@@ -333,7 +332,7 @@ protected:
 			_gentime = 0;
 		}
 	}SigInfo;
-	typedef faster_hashmap<std::string, SigInfo>	SignalMap;
+	typedef wt_hashmap<std::string, SigInfo>	SignalMap;
 	SignalMap		_sig_map;
 
 	std::stringstream	_trade_logs;
@@ -350,7 +349,7 @@ protected:
 	bool			_is_in_schedule;	//是否在自动调度中
 
 	//用户数据
-	typedef faster_hashmap<std::string, std::string> StringHashMap;
+	typedef wt_hashmap<std::string, std::string> StringHashMap;
 	StringHashMap	_user_datas;
 	bool			_ud_modified;
 
@@ -410,7 +409,7 @@ protected:
 	uint64_t		_last_cond_min;
 
 	//tick订阅列表
-	faster_hashset<std::string> _tick_subs;
+	wt_hashset<std::string> _tick_subs;
 
 	std::string		_chart_code;
 	std::string		_chart_period;
@@ -431,6 +430,6 @@ protected:
 
 	std::unordered_map<std::string, ChartIndex>	_chart_indice;
 
-	typedef faster_hashmap<std::string, WTSTickStruct>	TickCache;
+	typedef wt_hashmap<std::string, WTSTickStruct>	TickCache;
 	TickCache	_ticks;
 };

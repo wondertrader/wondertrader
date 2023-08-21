@@ -214,11 +214,35 @@ void WtHftRtTicker::run()
 						_engine->set_date_time(_date, thisMin, 0);
 				}
 			}
-			else //if (offTime >= _s_info->getOpenTime(true) && offTime <= _s_info->getCloseTime(true))
+			else //if(offTime >= _s_info->getOpenTime(true) && offTime <= _s_info->getCloseTime(true))
 			{
-				//不在交易时间，则休息10s再进行检查
-				//因为这个逻辑是处理分钟线的，所以休盘时间休息10s，不会引起数据踏空的问题
-				std::this_thread::sleep_for(std::chrono::seconds(10));
+				//收盘以后，如果发现上次触发的位置不等于总的分钟数，说明少了最后一分钟的闭合逻辑
+				uint32_t total_mins = _s_info->getTradingMins();
+				if (_time != UINT_MAX && _last_emit_pos != 0 && _last_emit_pos < total_mins && offTime >= _s_info->getCloseTime(true))
+				{
+					WTSLogger::warn("Tradingday {} will be ended forcely, last_emit_pos: {}, time: {}", _engine->getTradingDate(), _last_emit_pos.fetch_add(0), _time);
+
+					//触发数据回放模块
+					StdUniqueLock lock(_mtx);
+
+					//优先修改时间标记
+					_last_emit_pos = total_mins;
+
+					bool bEndingTDate = true;
+					uint32_t thisMin = _s_info->getCloseTime(false);
+					uint32_t offMin = _s_info->getCloseTime(true);
+
+					WTSLogger::info("Minute bar {}.{:04d} closed automatically", _date, thisMin);
+					if (_store)
+						_store->onMinuteEnd(_date, thisMin, _engine->getTradingDate());
+
+					_engine->on_session_end();
+
+				}
+				else
+				{
+					std::this_thread::sleep_for(std::chrono::seconds(10));
+				}
 			}
 			
 		}

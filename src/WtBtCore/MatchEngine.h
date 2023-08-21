@@ -100,7 +100,7 @@ private:
 		}
 	} OrderInfo;
 
-	typedef faster_hashmap<uint32_t, OrderInfo> Orders;
+	typedef wt_hashmap<uint32_t, OrderInfo> Orders;
 	Orders	_orders;
 
 	typedef std::map<uint32_t, double>	LOBItems;
@@ -127,7 +127,7 @@ private:
 			_bid_px = 0;
 		}
 	} LmtOrdBook;
-	typedef faster_hashmap<std::string, LmtOrdBook> LmtOrdBooks;
+	typedef wt_hashmap<std::string, LmtOrdBook> LmtOrdBooks;
 	LmtOrdBooks	_lmt_ord_books;
 
 	IMatchSink*	_sink;

@@ -4,7 +4,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.0.0)
 
 #2. 确定工程名
 PROJECT(TestUnits LANGUAGES CXX)
-SET(CMAKE_CXX_STANDARD 11)
+SET(CMAKE_CXX_STANDARD 17)
 
 SET(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/build_${PLATFORM}/${CMAKE_BUILD_TYPE}/bin/TestUnits)
 
@@ -13,7 +13,8 @@ file(GLOB SRCS *.cpp ./gtest/*.cc)
 
 SET(LIBS
     WTSTools
-	WTSUtils)
+	WTSUtils
+    WtShareHelper)
 IF (MSVC)
 ELSE(GNUCC)
     LIST(APPEND LIBS pthread boost_filesystem)

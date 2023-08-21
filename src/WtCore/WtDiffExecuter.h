@@ -72,7 +72,7 @@ public:
 	/*
 	 *	设置目标仓位
 	 */
-	virtual void set_position(const faster_hashmap<LongKey, double>& targets) override;
+	virtual void set_position(const wt_hashmap<std::string, double>& targets) override;
 
 
 	/*
@@ -135,8 +135,8 @@ private:
 
 	SpinMutex			_mtx_units;
 
-	faster_hashmap<LongKey, double> _target_pos;
-	faster_hashmap<LongKey, double> _diff_pos;
+	wt_hashmap<std::string, double> _target_pos;
+	wt_hashmap<std::string, double> _diff_pos;
 
 	typedef std::shared_ptr<boost::threadpool::pool> ThreadPoolPtr;
 	ThreadPoolPtr		_pool;

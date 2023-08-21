@@ -79,13 +79,10 @@ std::string extractProductName(const char* cname)
 
 std::set<std::string>	prod_set;
 
-double convertInvalidDouble(double val)
+inline double checkValid(double val)
 {
-	if (val == 5.5e-007)
-		return -1;
-
-	if (val == 0)
-		return -1;
+	if (val == DBL_MAX || val == FLT_MAX)
+		return 0;
 
 	return val;
 }
@@ -159,7 +156,7 @@ void CTraderSpi::ReqQryInstrument()
 
 inline bool isOption(TThostFtdcProductClassType pClass)
 {
-	if (pClass == THOST_FTDC_PC_Options || pClass == THOST_FTDC_PC_SpotOption || pClass == THOST_FTDC_PC_SpotOption)
+	if (pClass == THOST_FTDC_PC_Options || pClass == THOST_FTDC_PC_SpotOption)
 		return true;
 
 	return false;
@@ -273,8 +270,8 @@ void CTraderSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CTho
 					contract.m_uOpenDate = strtoul(pInstrument->OpenDate, NULL, 10);
 					contract.m_uExpireDate = strtoul(pInstrument->ExpireDate, NULL, 10);
 
-					contract.m_dLongMarginRatio = pInstrument->LongMarginRatio;
-					contract.m_dShortMarginRatio = pInstrument->ShortMarginRatio;
+					contract.m_dLongMarginRatio = checkValid(pInstrument->LongMarginRatio);
+					contract.m_dShortMarginRatio = checkValid(pInstrument->ShortMarginRatio);
 
 					std::string key = StrUtil::printf("%s.%s", pInstrument->ExchangeID, pInstrument->ProductID);
 					auto it = _commodities.find(key);
@@ -298,7 +295,12 @@ void CTraderSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CTho
 						commInfo.m_fPriceTick = pInstrument->PriceTick;
 
 						CoverMode cm = CM_OpenCover;
-						if (bFuture)
+						/*
+						 *	By Wesley @ 2023.05.04
+						 *	有用户反馈上期所和上能所的期权合约也区分平昨平今
+						 *	把这个bFuture的判断去掉
+						 */
+						//if (bFuture)
 						{
 							if (strcmp(pInstrument->ExchangeID, "SHFE") == 0 || strcmp(pInstrument->ExchangeID, "INE") == 0)
 								cm = CM_CoverToday;
@@ -308,7 +310,12 @@ void CTraderSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CTho
 						commInfo.m_coverMode = cm;
 
 						PriceMode pm = PM_Both;
-						if (bFuture)
+						/*
+						 *	By Wesley @ 2023.05.04
+						 *	有用户反馈上期所和上能所的期权合约也区分平昨平今
+						 *	把这个bFuture的判断去掉
+						 */
+						//if (bFuture)
 						{
 							if (strcmp(pInstrument->ExchangeID, "SHFE") == 0 || strcmp(pInstrument->ExchangeID, "INE") == 0)
 								pm = PM_Limit;

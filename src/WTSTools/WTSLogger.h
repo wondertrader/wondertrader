@@ -204,7 +204,7 @@ private:
 
 	static SpdLoggerPtr			m_rootLogger;
 
-	typedef WTSHashMap<ShortKey>	LogPatterns;
+	typedef WTSHashMap<std::string>	LogPatterns;
 	static LogPatterns*				m_mapPatterns;
 	static std::set<std::string>	m_setDynLoggers;
 

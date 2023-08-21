@@ -37,6 +37,10 @@ public:
 	virtual bool read_raw_bars(const char* exchg, const char* code, WTSKlinePeriod period, std::string& buffer) override;
 	virtual bool read_raw_ticks(const char* exchg, const char* code, uint32_t uDate, std::string& buffer) override;
 
+	virtual bool read_raw_order_details(const char* exchg, const char* code, uint32_t uDate, std::string& buffer) override;
+	virtual bool read_raw_order_queues(const char* exchg, const char* code, uint32_t uDate, std::string& buffer) override;
+	virtual bool read_raw_transactions(const char* exchg, const char* code, uint32_t uDate, std::string& buffer) override;
+
 private:
 	std::string		_base_dir;
 };

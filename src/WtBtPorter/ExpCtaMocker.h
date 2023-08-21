@@ -15,7 +15,7 @@ USING_NS_WTP;
 class ExpCtaMocker : public CtaMocker
 {
 public:
-	ExpCtaMocker(HisDataReplayer* replayer, const char* name, int32_t slippage = 0, bool persistData = true, EventNotifier* notifier = NULL);
+	ExpCtaMocker(HisDataReplayer* replayer, const char* name, int32_t slippage = 0, bool persistData = true, EventNotifier* notifier = NULL, bool isRatioSlp = false);
 	virtual ~ExpCtaMocker();
 
 public:

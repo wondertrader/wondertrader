@@ -69,8 +69,8 @@ bool StateMonitor::initialize(const char* filename, WTSBaseDataMgr* bdMgr, DataM
 
 		strcpy(sInfo->_session, sid.c_str());
 
-		auto secInfo = ssInfo->getAuctionSection();//这里面是偏移过的时间,要注意了!!!
-		if (secInfo.first != 0 || secInfo.second != 0)
+		const auto& auctions = ssInfo->getAuctionSections();//这里面是偏移过的时间,要注意了!!!
+		for(const auto& secInfo : auctions)
 		{
 			uint32_t stime = secInfo.first;
 			uint32_t etime = secInfo.second;
@@ -83,10 +83,9 @@ bool StateMonitor::initialize(const char* filename, WTSBaseDataMgr* bdMgr, DataM
 			sInfo->_sections.emplace_back(StateInfo::Section({ stime, etime }));
 		}
 
-		auto sections = ssInfo->getTradingSections();//这里面是偏移过的时间,要注意了!!!
-		for (auto it = sections.begin(); it != sections.end(); it++)
+		const auto& sections = ssInfo->getTradingSections();//这里面是偏移过的时间,要注意了!!!
+		for (const auto& secInfo : sections)
 		{
-			auto secInfo = *it;
 			uint32_t stime = secInfo.first;
 			uint32_t etime = secInfo.second;
 

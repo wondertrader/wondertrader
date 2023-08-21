@@ -8,6 +8,7 @@
 #include "../Share/SpinMutex.hpp"
 
 #include <queue>
+#include <map>
 
 typedef std::shared_ptr<BoostMappingFile> BoostMFPtr;
 
@@ -76,7 +77,7 @@ private:
 		}
 
 	} KBlockPair;
-	typedef faster_hashmap<LongKey, KBlockPair*>	KBlockFilesMap;
+	typedef wt_hashmap<std::string, KBlockPair*>	KBlockFilesMap;
 
 	typedef struct _TickBlockPair
 	{
@@ -95,7 +96,7 @@ private:
 			_lasttime = 0;
 		}
 	} TickBlockPair;
-	typedef faster_hashmap<LongKey, TickBlockPair*>	TickBlockFilesMap;
+	typedef wt_hashmap<std::string, TickBlockPair*>	TickBlockFilesMap;
 
 	typedef struct _TransBlockPair
 	{
@@ -111,7 +112,7 @@ private:
 			_lasttime = 0;
 		}
 	} TransBlockPair;
-	typedef faster_hashmap<LongKey, TransBlockPair*>	TransBlockFilesMap;
+	typedef wt_hashmap<std::string, TransBlockPair*>	TransBlockFilesMap;
 
 	typedef struct _OdeDtlBlockPair
 	{
@@ -127,7 +128,7 @@ private:
 			_lasttime = 0;
 		}
 	} OrdDtlBlockPair;
-	typedef faster_hashmap<LongKey, OrdDtlBlockPair*>	OrdDtlBlockFilesMap;
+	typedef wt_hashmap<std::string, OrdDtlBlockPair*>	OrdDtlBlockFilesMap;
 
 	typedef struct _OdeQueBlockPair
 	{
@@ -143,7 +144,7 @@ private:
 			_lasttime = 0;
 		}
 	} OrdQueBlockPair;
-	typedef faster_hashmap<LongKey, OrdQueBlockPair*>	OrdQueBlockFilesMap;
+	typedef wt_hashmap<std::string, OrdQueBlockPair*>	OrdQueBlockFilesMap;
 	
 
 	KBlockFilesMap	_rt_min1_blocks;
@@ -155,7 +156,7 @@ private:
 	OrdQueBlockFilesMap _rt_ordque_blocks;
 
 	SpinMutex		_lck_tick_cache;
-	faster_hashmap<LongKey, uint32_t> _tick_cache_idx;
+	wt_hashmap<std::string, uint32_t> _tick_cache_idx;
 	BoostMFPtr		_tick_cache_file;
 	RTTickCache*	_tick_cache_block;
 
@@ -190,6 +191,12 @@ private:
 	bool			_disable_trans;
 	bool			_disable_ordque;
 	bool			_disable_orddtl;
+
+	/*
+	 *	by Wesley @ 2023.05.04
+	 *	分钟线价格模式，0-常规模式，1-将买卖价也记录下来，这个设计时只针对期权这种不活跃的品种
+	 */
+	uint32_t		_min_price_mode;
 	
 	std::map<std::string, uint32_t> _proc_date;
 

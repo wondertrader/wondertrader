@@ -51,7 +51,7 @@
 #endif
 
 #define NS_WTP_BEGIN	namespace wtp{
-#define NS_WTP_END	}//namespace wpt
+#define NS_WTP_END	}//namespace wtp
 #define	USING_NS_WTP	using namespace wtp
 
 #ifndef EXPORT_FLAG

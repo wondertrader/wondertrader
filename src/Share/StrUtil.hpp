@@ -62,11 +62,11 @@ public:
 	}
 
 	//去除所有特定字符
-	static inline void trimAll(std::string &str,char ch)
-	{
-		std::string::iterator destEnd=std::remove_if(str.begin(),str.end(),std::bind1st(std::equal_to<char>(),ch));
-		str.resize(destEnd-str.begin());
-	}
+	//static inline void trimAll(std::string &str,char ch)
+	//{
+	//	std::string::iterator destEnd=std::remove_if(str.begin(),str.end(),std::bind1st(std::equal_to<char>(),ch));
+	//	str.resize(destEnd-str.begin());
+	//}
 
 	static inline std::size_t findFirst(const char* str, char ch)
 	{

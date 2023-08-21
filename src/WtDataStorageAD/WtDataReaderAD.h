@@ -42,7 +42,7 @@ private:
 	{
 		StdUniqueMutex	_mtx;
 		std::string		_filename;
-		faster_hashmap<std::string, uint32_t> _idx;
+		wt_hashmap<std::string, uint32_t> _idx;
 		BoostMFPtr		_file_ptr;
 		RTBarCache*		_cache_block;
 		uint32_t		_last_size;
@@ -81,10 +81,10 @@ private:
 		_TicksList():_last_req_time(0){}
 	} TicksList;
 
-	typedef faster_hashmap<std::string, BarsList> BarsCache;
+	typedef wt_hashmap<std::string, BarsList> BarsCache;
 	BarsCache	_bars_cache;
 
-	typedef faster_hashmap<std::string, TicksList> TicksCache;
+	typedef wt_hashmap<std::string, TicksList> TicksCache;
 	TicksCache	_ticks_cache;
 
 	uint64_t	_last_time;	
@@ -112,7 +112,7 @@ private:
 	 *	Tick数据，每个合约一个数据库，路径如./ticks/CFFEX/IF2101
 	 */
 	typedef std::shared_ptr<WtLMDB> WtLMDBPtr;
-	typedef faster_hashmap<std::string, WtLMDBPtr> WtLMDBMap;
+	typedef wt_hashmap<std::string, WtLMDBPtr> WtLMDBMap;
 
 	WtLMDBMap	_exchg_m1_dbs;
 	WtLMDBMap	_exchg_m5_dbs;

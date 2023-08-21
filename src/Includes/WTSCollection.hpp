@@ -550,36 +550,43 @@ protected:
  *	数据使用WTSObject指针对象
  *	所有WTSObject的派生类都适用
  */
-template <typename T>
+template <typename T, class Hash = std::hash<T>>
 class WTSHashMap : public WTSObject
 {
+protected:
+	WTSHashMap() {}
+	virtual ~WTSHashMap() {}
+
+	//std::unordered_map<T, WTSObject*>	_map;
+	wt_hashmap<T, WTSObject*, Hash>	_map;
+
 public:
 	/*
 	 *	容器迭代器的定义
 	 */
-	typedef tsl::robin_map<T, WTSObject*>		_MyType;
+	typedef wt_hashmap<T, WTSObject*, Hash>		_MyType;
 	typedef typename _MyType::const_iterator	ConstIterator;
 
 	/*
 	 *	创建map容器
 	 */
-	static WTSHashMap<T>*	create()
+	static WTSHashMap<T, Hash>*	create()
 	{
-		WTSHashMap<T>* pRet = new WTSHashMap<T>();
+		WTSHashMap<T, Hash>* pRet = new WTSHashMap<T, Hash>();
 		return pRet;
 	}
 
 	/*
 	 *	返回map容器的大小
 	 */
-	uint32_t size() const{return (uint32_t)_map.size();}
+	inline uint32_t size() const{return (uint32_t)_map.size();}
 
 	/*
 	 *	读取指定key对应的数据
 	 *	不增加数据的引用计数
 	 *	没有则返回NULL
 	 */
-	WTSObject* get(const T &_key)
+	inline WTSObject* get(const T &_key)
 	{
 		auto it = _map.find(_key);
 		if(it == _map.end())
@@ -594,7 +601,7 @@ public:
 	 *	增加数据的引用计数
 	 *	没有则返回NULL
 	 */
-	WTSObject* grab(const T &_key)
+	inline WTSObject* grab(const T &_key)
 	{
 		auto it = _map.find(_key);
 		if(it == _map.end())
@@ -609,7 +616,7 @@ public:
 	 *	新增一个数据,并增加数据引用计数
 	 *	如果key存在,则将原有数据释放
 	 */
-	void add(const T &_key, WTSObject* obj, bool bAutoRetain = true)
+	inline void add(const T &_key, WTSObject* obj, bool bAutoRetain = true)
 	{
 		if (bAutoRetain && obj)
 			obj->retain();
@@ -630,7 +637,7 @@ public:
 	 *	根据key删除一个数据
 	 *	如果key存在,则对应数据引用计数-1
 	 */
-	void remove(const T &_key)
+	inline void remove(const T &_key)
 	{
 		auto it = _map.find(_key);
 		if(it != _map.end())
@@ -643,7 +650,7 @@ public:
 	/*
 	 *	获取容器起始位置的迭代器
 	 */
-	ConstIterator begin() const
+	inline ConstIterator begin() const
 	{
 		return _map.begin();
 	}
@@ -651,12 +658,12 @@ public:
 	/*
 	 *	获取容易末尾位置的迭代器
 	 */
-	ConstIterator end() const
+	inline ConstIterator end() const
 	{
 		return _map.end();
 	}
 
-	ConstIterator find(const T& key) const
+	inline ConstIterator find(const T& key) const
 	{
 		return _map.find(key);
 	}
@@ -665,7 +672,7 @@ public:
 	 *	清空容器
 	 *	容器内所有数据引用计数-1
 	 */
-	void clear()
+	inline void clear()
 	{
 		ConstIterator it = _map.begin();
 		for(; it != _map.end(); it++)
@@ -698,13 +705,6 @@ public:
 
 		}
 	}
-
-protected:
-	WTSHashMap(){}
-	virtual ~WTSHashMap(){}
-
-	//std::unordered_map<T, WTSObject*>	_map;
-	tsl::robin_map<T, WTSObject*>	_map;
 };
 
 //////////////////////////////////////////////////////////////////////////

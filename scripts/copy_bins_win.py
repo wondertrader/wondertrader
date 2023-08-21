@@ -1,6 +1,7 @@
 import os
 import shutil
 from datetime import datetime
+import sys
 
 '''
 !!!!重要提示!!!!
@@ -10,7 +11,7 @@ from datetime import datetime
 所以如果要使用这个脚本，大概率要自己改一下
 '''
 
-subdirs = ['WtPorter','WtDtPorter','WtBtPorter']
+subdirs = ['WtPorter','WtDtPorter','WtBtPorter','Loader']
 
 def copyBin(srcDir:str, desDir:str, pdbBakDir:str):
 
@@ -57,17 +58,17 @@ def copyBin(srcDir:str, desDir:str, pdbBakDir:str):
                 print("pdb copied: %s -> %s" % (pdb_path, os.path.join(pdbBakDir, pdbname)))
 
 
-
+despath = sys.argv[1]
 
 now = datetime.now().strftime("%m%d_%H%M")
-pdbBakDir = os.path.join("../wtpy", "pdb_"+now)
+pdbBakDir = os.path.join(despath, "pdb_"+now)
 if not os.path.exists(pdbBakDir):
     os.mkdir(pdbBakDir)
 
 #复制x86
-copyBin("./src/Win32/Release", "../wtpy/wtpy/wrapper/x86", os.path.join(pdbBakDir,"x86"))
+copyBin("./src/Win32/Release", os.path.join(despath, "wtpy/wrapper/x86"), os.path.join(pdbBakDir,"x86"))
 #复制x64
-copyBin("./src/x64/Release", "../wtpy/wtpy/wrapper/x64", os.path.join(pdbBakDir,"x64"))
+copyBin("./src/x64/Release", os.path.join(despath, "wtpy/wrapper/x64"), os.path.join(pdbBakDir,"x64"))
 
 #压缩pdb备份目录
 paths = os.path.split(__file__)

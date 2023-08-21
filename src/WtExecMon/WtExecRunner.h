@@ -81,6 +81,6 @@ private:
 	WTSHotMgr			_hot_mgr;
 	ActionPolicyMgr		_act_policy;
 
-	faster_hashmap<LongKey, double> _positions;
+	wt_hashmap<std::string, double> _positions;
 };
 

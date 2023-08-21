@@ -4,8 +4,8 @@
 extern WtBtRunner& getRunner();
 
 
-ExpSelMocker::ExpSelMocker(HisDataReplayer* replayer, const char* name, int32_t slippage /* = 0 */)
-	: SelMocker(replayer, name, slippage)
+ExpSelMocker::ExpSelMocker(HisDataReplayer* replayer, const char* name, int32_t slippage /* = 0 */, bool isRatioSlp/* = false*/)
+	: SelMocker(replayer, name, slippage, isRatioSlp)
 {
 }
 

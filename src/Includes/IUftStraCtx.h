@@ -48,6 +48,7 @@ public:
 	virtual void on_bar(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar) {}
 	virtual void on_session_begin(uint32_t uTDate) {}
 	virtual void on_session_end(uint32_t uTDate) {}
+	virtual void on_params_updated(){}
 
 	/*
 	 *	回测结束事件
@@ -59,6 +60,28 @@ public:
 	virtual void	on_ordque_updated(const char* stdCode, WTSOrdQueData* newOrdQue) {}
 	virtual void	on_orddtl_updated(const char* stdCode, WTSOrdDtlData* newOrdDtl) {}
 	virtual void	on_trans_updated(const char* stdCode, WTSTransData* newTrans) {}
+
+	virtual void	watch_param(const char* name, const char* val) {}
+	virtual void	watch_param(const char* name, double val){}
+	virtual void	watch_param(const char* name, uint32_t val){}
+	virtual void	watch_param(const char* name, uint64_t val){}
+	virtual void	watch_param(const char* name, int32_t val){}
+	virtual void	watch_param(const char* name, int64_t val){}
+	virtual void	commit_param_watcher() {}
+
+	virtual const char*		read_param(const char* name, const char* defVal = "") { return defVal; }
+	virtual double		read_param(const char* name, double defVal = 0) { return defVal; }
+	virtual uint32_t	read_param(const char* name, uint32_t defVal = 0) { return defVal; }
+	virtual uint64_t	read_param(const char* name, uint64_t defVal = 0) { return defVal; }
+	virtual int32_t		read_param(const char* name, int32_t defVal = 0) { return defVal; }
+	virtual int64_t		read_param(const char* name, int64_t defVal = 0) { return defVal; }
+
+	virtual char*		sync_param(const char* name, const char* initVal = "") { return nullptr; }
+	virtual double*		sync_param(const char* name, double initVal = 0) { return nullptr; }
+	virtual uint32_t*	sync_param(const char* name, uint32_t initVal = 0) { return nullptr; }
+	virtual uint64_t*	sync_param(const char* name, uint64_t initVal = 0) { return nullptr; }
+	virtual int32_t*	sync_param(const char* name, int32_t initVal = 0) { return nullptr; }
+	virtual int64_t*	sync_param(const char* name, int64_t initVal = 0) { return nullptr; }
 
 	//策略接口
 
@@ -210,6 +233,8 @@ public:
 	 *	@stdCode	代码，格式如SSE.600000
 	 */
 	virtual double stra_get_undone(const char* stdCode) = 0;
+
+	virtual uint32_t stra_get_infos(const char* stdCode) { return 0; }
 
 	/*
 	 *	订阅接口

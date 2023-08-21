@@ -44,7 +44,7 @@ private:
 public:
 	//////////////////////////////////////////////////////////////////////////
 	//ExecuteContext
-	virtual WTSTickSlice* getTicks(const char* code, uint32_t count, uint64_t etime = 0) override;
+	virtual WTSTickSlice*	getTicks(const char* code, uint32_t count, uint64_t etime = 0) override;
 
 	virtual WTSTickData*	grabLastTick(const char* code) override;
 
@@ -67,7 +67,7 @@ public:
 	/*
 	 *	设置目标仓位
 	 */
-	virtual void set_position(const faster_hashmap<LongKey, double>& targets) override;
+	virtual void set_position(const wt_hashmap<std::string, double>& targets) override;
 
 
 	/*
@@ -133,19 +133,19 @@ private:
 	typedef struct _CodeGroup
 	{
 		char	_name[32] = { 0 };
-		faster_hashmap<LongKey, double>	_items;
+		wt_hashmap<std::string, double>	_items;
 	} CodeGroup;
 	typedef std::shared_ptr<CodeGroup> CodeGroupPtr;
-	typedef faster_hashmap<LongKey, CodeGroupPtr>	CodeGroups;
+	typedef wt_hashmap<std::string, CodeGroupPtr>	CodeGroups;
 	CodeGroups				_groups;			//合约组合（组合名称到组合的映射）
 	CodeGroups				_code_to_groups;	//合约代码到组合的映射
 
-	faster_hashset<LongKey>	_clear_includes;	//自动清理包含品种
-	faster_hashset<LongKey>	_clear_excludes;	//自动清理排除品种
+	wt_hashset<std::string>	_clear_includes;	//自动清理包含品种
+	wt_hashset<std::string>	_clear_excludes;	//自动清理排除品种
 
-	faster_hashset<LongKey> _channel_holds;		//通道持仓
+	wt_hashset<std::string> _channel_holds;		//通道持仓
 
-	faster_hashmap<LongKey, double> _target_pos;
+	wt_hashmap<std::string, double> _target_pos;
 
 	typedef std::shared_ptr<boost::threadpool::pool> ThreadPoolPtr;
 	ThreadPoolPtr		_pool;

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<quant_api>
+    <!-- 0:kNone 1:kFatal 2:kError 3:kWarning 4:kInfo 5:kDebug 6:kVerbose -->
+    <log_level>4</log_level>
+    <!-- 业务日志路径 空表示当前可执行文件所在目录 -->
+    <common_log_path></common_log_path>
+    <!-- 指标日志路径 空表示当前可执行文件所在目录 -->
+    <indicator_log_path></indicator_log_path>
+    <!-- IO日志路径 空表示当前可执行文件所在目录 -->
+    <io_log_path></io_log_path>
+    <!-- 加密模式  0:kTransMode 1:kEncryptMode -->
+    <encrypt_schema>1</encrypt_schema>
+    <!-- 是否启用时延统计功能 -->
+    <is_enable_latency>0</is_enable_latency>
+    <!-- 回调线程资源模式 0:kLowResourceMode 1:kLowLatencyMode 2:kCustomMode -->
+    <callback_resource_mode>1</callback_resource_mode>
+    <!-- 回调线程模型 1:kExclusived 2:kShared -->
+    <callback_thread_mode>2</callback_thread_mode>
+    <!-- 回调线程分组ID -->
+    <group_id>0</group_id>
+    <!-- 回调线程休眠时间，单位μs -->
+    <min_resident_micro>1</min_resident_micro>
+    <!-- 回调线程绑定CPU 255表示不绑定-->
+    <recevie_thread_cpu>255</recevie_thread_cpu>
+    <!-- 是否启用TCPDirect -->
+    <is_tcp_direct>0</is_tcp_direct>
+    <!-- 绑定本地网卡地址 空表示不绑定 -->
+    <bind_ip_address></bind_ip_address>
+    <!-- 网关用户名 空表示匿名登录模式 -->
+    <agw_user></agw_user>
+    <!-- 网关用户密码 -->
+    <agw_password></agw_password>
+    <!-- 重传模式 0:kQuickMode 1:kRestartMode -->
+    <retransmit_mode>0</retransmit_mode>
+    <!-- 多通道推送自主订阅标志 255:kDefault 0:kActiveNoSubscribe 1:kActiveSubscribe -->
+    <multi_channel_flag>255</multi_channel_flag>
+    <!-- 协议类型 0:kTCPProtocol 1:kRUDPProtocol -->
+    <connection_protocol>0</connection_protocol>
+    <!-- 以下为必填参数，需手工配置或程序中写入  -->
+    <!-- 网关地址，格式为"ip:port;ip:port" -->
+    <!--<locations></locations> -->
+    <!-- 委托方式 -->
+    <!--<order_way></order_way> -->
+    <!-- 终端识别码 -->
+    <!--<client_feature_code></client_feature_code> -->
+</quant_api>

@@ -99,6 +99,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -113,6 +114,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -127,6 +129,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -143,6 +146,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -186,17 +190,22 @@
     </ClCompile>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="test_codehelper.cpp" />
+    <ClCompile Include="test_fastestmap.cpp" />
     <ClCompile Include="test_fmt.cpp" />
     <ClCompile Include="test_lmdb.cpp" />
     <ClCompile Include="test_object_pool.cpp" />
     <ClCompile Include="test_session.cpp" />
     <ClCompile Include="test_kvcache.cpp" />
+    <ClCompile Include="test_shm.cpp" />
     <ClCompile Include="test_utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gtest\gtest-internal-inl.h" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\WtShareHelper\WtShareHelper.vcxproj">
+      <Project>{3b8eba76-b27b-4def-bf80-c2de6a03748f}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\WTSTools\WTSTools.vcxproj">
       <Project>{8b249955-de56-41a3-a904-21dbbe40ab34}</Project>
     </ProjectReference>

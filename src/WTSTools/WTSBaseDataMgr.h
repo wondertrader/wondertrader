@@ -14,17 +14,16 @@
 
 USING_NS_WTP;
 
-typedef faster_hashmap<ShortKey, TradingDayTpl>	TradingDayTplMap;
+typedef wt_hashmap<std::string, TradingDayTpl>	TradingDayTplMap;
 
-typedef WTSHashMap<LongKey>		WTSContractList;
-typedef WTSHashMap<ShortKey>	WTSExchgContract;
-typedef WTSHashMap<LongKey>		WTSContractMap;
+typedef WTSHashMap<std::string>		WTSContractList;
+typedef WTSHashMap<std::string>		WTSExchgContract;
+typedef WTSHashMap<std::string>		WTSContractMap;
 
-typedef WTSHashMap<ShortKey>		WTSSessionMap;
-typedef WTSHashMap<ShortKey>		WTSCommodityMap;
+typedef WTSHashMap<std::string>		WTSSessionMap;
+typedef WTSHashMap<std::string>		WTSCommodityMap;
 
-typedef faster_hashmap<ShortKey, CodeSet> SessionCodeMap;
-
+typedef wt_hashmap<std::string, CodeSet> SessionCodeMap;
 
 class WTSBaseDataMgr : public IBaseDataMgr
 {

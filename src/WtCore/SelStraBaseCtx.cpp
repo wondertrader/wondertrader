@@ -280,6 +280,8 @@ void SelStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 
 				PosInfo& pInfo = _pos_map[stdCode];
 				pInfo._closeprofit = pItem["closeprofit"].GetDouble();
+				pInfo._last_entertime = pItem["lastentertime"].GetUint64();
+				pInfo._last_exittime = pItem["lastexittime"].GetUint64();
 				pInfo._volume = isExpired ? 0 : pItem["volume"].GetDouble();
 				if (pItem.HasMember("frozen") && !isExpired)
 				{
@@ -314,6 +316,16 @@ void SelStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 					dInfo._opentime = dItem["opentime"].GetUint64();
 					if (dItem.HasMember("opentdate"))
 						dInfo._opentdate = dItem["opentdate"].GetUint();
+
+					if (dItem.HasMember("maxprice"))
+						dInfo._max_price = dItem["maxprice"].GetDouble();
+					else
+						dInfo._max_price = dInfo._price;
+
+					if (dItem.HasMember("minprice"))
+						dInfo._min_price = dItem["minprice"].GetDouble();
+					else
+						dInfo._min_price = dInfo._price;
 
 					dInfo._profit = dItem["profit"].GetDouble();
 					dInfo._max_profit = dItem["maxprofit"].GetDouble();
@@ -384,6 +396,8 @@ void SelStraBaseCtx::save_data(uint32_t flag /* = 0xFFFFFFFF */)
 			pItem.AddMember("volume", pInfo._volume, allocator);
 			pItem.AddMember("closeprofit", pInfo._closeprofit, allocator);
 			pItem.AddMember("dynprofit", pInfo._dynprofit, allocator);
+			pItem.AddMember("lastentertime", pInfo._last_entertime, allocator);
+			pItem.AddMember("lastexittime", pInfo._last_exittime, allocator);
 			pItem.AddMember("frozen", pInfo._frozen, allocator);
 			pItem.AddMember("frozendate", pInfo._frozen_date, allocator);
 
@@ -394,6 +408,8 @@ void SelStraBaseCtx::save_data(uint32_t flag /* = 0xFFFFFFFF */)
 				rj::Value dItem(rj::kObjectType);
 				dItem.AddMember("long", dInfo._long, allocator);
 				dItem.AddMember("price", dInfo._price, allocator);
+				dItem.AddMember("maxprice", dInfo._max_price, allocator);
+				dItem.AddMember("minprice", dInfo._min_price, allocator);
 				dItem.AddMember("volume", dInfo._volume, allocator);
 				dItem.AddMember("opentime", dInfo._opentime, allocator);
 				dItem.AddMember("opentdate", dInfo._opentdate, allocator);
@@ -517,6 +533,9 @@ void SelStraBaseCtx::update_dyn_profit(const char* stdCode, double price)
 				else if (dInfo._profit < 0)
 					dInfo._max_loss = std::min(dInfo._profit, dInfo._max_loss);
 
+				dInfo._max_price = std::max(dInfo._max_price, price);
+				dInfo._min_price = std::min(dInfo._min_price, price);
+
 				dynprofit += dInfo._profit;
 			}
 
@@ -581,7 +600,7 @@ bool SelStraBaseCtx::on_schedule(uint32_t curDate, uint32_t curTime, uint32_t fi
 	on_strategy_schedule(curDate, fireTime);
 	log_debug("Strategy {} scheduled @ {}", _context_id, curTime);
 
-	faster_hashset<std::string> to_clear;
+	wt_hashset<std::string> to_clear;
 	for (auto& v : _pos_map)
 	{
 		const PosInfo& pInfo = v.second;
@@ -640,7 +659,7 @@ void SelStraBaseCtx::on_session_begin(uint32_t uTDate)
 
 void SelStraBaseCtx::enum_position(FuncEnumSelPositionCallBack cb)
 {
-	faster_hashmap<std::string, double> desPos;
+	wt_hashmap<std::string, double> desPos;
 	for (auto& it : _pos_map)
 	{
 		const char* stdCode = it.first.c_str();
@@ -805,11 +824,14 @@ void SelStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 		DetailInfo dInfo;
 		dInfo._long = decimal::gt(qty, 0);
 		dInfo._price = trdPx;
+		dInfo._max_price = trdPx;
+		dInfo._min_price = trdPx;
 		dInfo._volume = abs(diff);
 		dInfo._opentime = curTm;
 		dInfo._opentdate = curTDate;
 		wt_strcpy(dInfo._opentag, userTag);
 		pInfo._details.push_back(dInfo);
+		pInfo._last_entertime = curTm;
 
 		double fee = _engine->calc_fee(stdCode, trdPx, abs(qty), 0);
 		_fund_info._total_fees += fee;
@@ -846,6 +868,7 @@ void SelStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 				profit *= -1;
 			pInfo._closeprofit += profit;
 			pInfo._dynprofit = pInfo._dynprofit*dInfo._volume / (dInfo._volume + maxQty);//浮盈也要做等比缩放
+			pInfo._last_exittime = curTm;
 			_fund_info._total_profit += profit;
 
 			double fee = _engine->calc_fee(stdCode, trdPx, maxQty, dInfo._opentdate == curTDate ? 2 : 1);
@@ -886,11 +909,14 @@ void SelStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 			DetailInfo dInfo;
 			dInfo._long = decimal::gt(qty, 0);
 			dInfo._price = trdPx;
+			dInfo._max_price = trdPx;
+			dInfo._min_price = trdPx;
 			dInfo._volume = abs(left);
 			dInfo._opentime = curTm;
 			dInfo._opentdate = curTDate;
 			wt_strcpy(dInfo._opentag, userTag);
 			pInfo._details.push_back(dInfo);
+			pInfo._last_entertime = curTm;
 
 			//这里还需要写一笔成交记录
 			double fee = _engine->calc_fee(stdCode, trdPx, abs(qty), 0);
@@ -978,6 +1004,19 @@ WTSSessionInfo* SelStraBaseCtx::stra_get_sessinfo(const char* stdCode)
 	return _engine->get_session_info(stdCode, true);
 }
 
+double SelStraBaseCtx::stra_get_day_price(const char* stdCode, int flag /* = 0 */)
+{
+	if (_engine)
+		return _engine->get_day_price(stdCode, flag);
+
+	return 0.0;
+}
+
+uint32_t SelStraBaseCtx::stra_get_tdate()
+{
+	return _engine->get_trading_date();
+}
+
 uint32_t SelStraBaseCtx::stra_get_date()
 {
 	return _is_in_schedule ? _schedule_date : _engine->get_date();
@@ -986,6 +1025,23 @@ uint32_t SelStraBaseCtx::stra_get_date()
 uint32_t SelStraBaseCtx::stra_get_time()
 {
 	return _is_in_schedule ? _schedule_time : _engine->get_min_time();
+}
+
+double SelStraBaseCtx::stra_get_fund_data(int flag)
+{
+	switch (flag)
+	{
+	case 0:
+		return _fund_info._total_profit - _fund_info._total_fees + _fund_info._total_dynprofit;
+	case 1:
+		return _fund_info._total_profit;
+	case 2:
+		return _fund_info._total_dynprofit;
+	case 3:
+		return _fund_info._total_fees;
+	default:
+		return 0.0;
+	}
 }
 
 void SelStraBaseCtx::stra_log_info(const char* message)
@@ -1023,6 +1079,69 @@ void SelStraBaseCtx::stra_save_user_data(const char* key, const char* val)
 	_ud_modified = true;
 }
 
+uint64_t SelStraBaseCtx::stra_get_first_entertime(const char* stdCode)
+{
+	auto it = _pos_map.find(stdCode);
+	if (it == _pos_map.end())
+		return 0;
+
+	const PosInfo& pInfo = it->second;
+	if (pInfo._details.empty())
+		return 0;
+
+	return pInfo._details[0]._opentime;
+}
+
+const char* SelStraBaseCtx::stra_get_last_entertag(const char* stdCode)
+{
+	auto it = _pos_map.find(stdCode);
+	if (it == _pos_map.end())
+		return "";
+
+	const PosInfo& pInfo = it->second;
+	if (pInfo._details.empty())
+		return "";
+
+	return pInfo._details[0]._opentag;
+}
+
+
+uint64_t SelStraBaseCtx::stra_get_last_exittime(const char* stdCode)
+{
+	auto it = _pos_map.find(stdCode);
+	if (it == _pos_map.end())
+		return 0;
+
+	const PosInfo& pInfo = it->second;
+	return pInfo._last_exittime;
+}
+
+uint64_t SelStraBaseCtx::stra_get_last_entertime(const char* stdCode)
+{
+	auto it = _pos_map.find(stdCode);
+	if (it == _pos_map.end())
+		return 0;
+
+	const PosInfo& pInfo = it->second;
+	if (pInfo._details.empty())
+		return 0;
+
+	return pInfo._details[pInfo._details.size() - 1]._opentime;
+}
+
+double SelStraBaseCtx::stra_get_last_enterprice(const char* stdCode)
+{
+	auto it = _pos_map.find(stdCode);
+	if (it == _pos_map.end())
+		return 0;
+
+	const PosInfo& pInfo = it->second;
+	if (pInfo._details.empty())
+		return 0;
+
+	return pInfo._details[pInfo._details.size() - 1]._price;
+}
+
 double SelStraBaseCtx::stra_get_position(const char* stdCode, bool bOnlyValid /* = false */, const char* userTag /* = "" */)
 {
 	auto it = _pos_map.find(stdCode);
@@ -1053,6 +1172,105 @@ double SelStraBaseCtx::stra_get_position(const char* stdCode, bool bOnlyValid /*
 	}
 
 	return 0;
+}
+
+double SelStraBaseCtx::stra_get_position_avgpx(const char* stdCode)
+{
+	auto it = _pos_map.find(stdCode);
+	if (it == _pos_map.end())
+		return 0;
+
+	const PosInfo& pInfo = it->second;
+	if (pInfo._volume == 0)
+		return 0.0;
+
+	double amount = 0.0;
+	for (auto dit = pInfo._details.begin(); dit != pInfo._details.end(); dit++)
+	{
+		const DetailInfo& dInfo = *dit;
+		amount += dInfo._price*dInfo._volume;
+	}
+
+	return amount / pInfo._volume;
+}
+
+double SelStraBaseCtx::stra_get_position_profit(const char* stdCode)
+{
+	auto it = _pos_map.find(stdCode);
+	if (it == _pos_map.end())
+		return 0;
+
+	const PosInfo& pInfo = it->second;
+	return pInfo._dynprofit;
+}
+
+uint64_t SelStraBaseCtx::stra_get_detail_entertime(const char* stdCode, const char* userTag)
+{
+	auto it = _pos_map.find(stdCode);
+	if (it == _pos_map.end())
+		return 0;
+
+	const PosInfo& pInfo = it->second;
+	for (auto it = pInfo._details.begin(); it != pInfo._details.end(); it++)
+	{
+		const DetailInfo& dInfo = (*it);
+		if (strcmp(dInfo._opentag, userTag) != 0)
+			continue;
+
+		return dInfo._opentime;
+	}
+
+	return 0;
+}
+
+double SelStraBaseCtx::stra_get_detail_cost(const char* stdCode, const char* userTag)
+{
+	auto it = _pos_map.find(stdCode);
+	if (it == _pos_map.end())
+		return 0;
+
+	const PosInfo& pInfo = it->second;
+	for (auto it = pInfo._details.begin(); it != pInfo._details.end(); it++)
+	{
+		const DetailInfo& dInfo = (*it);
+		if (strcmp(dInfo._opentag, userTag) != 0)
+			continue;
+
+		return dInfo._price;
+	}
+
+	return 0.0;
+}
+
+double SelStraBaseCtx::stra_get_detail_profit(const char* stdCode, const char* userTag, int flag /* = 0 */)
+{
+	auto it = _pos_map.find(stdCode);
+	if (it == _pos_map.end())
+		return 0;
+
+	const PosInfo& pInfo = it->second;
+	for (auto it = pInfo._details.begin(); it != pInfo._details.end(); it++)
+	{
+		const DetailInfo& dInfo = (*it);
+		if (strcmp(dInfo._opentag, userTag) != 0)
+			continue;
+
+		switch (flag)
+		{
+		case 0:
+			return dInfo._profit;
+		case 1:
+			return dInfo._max_profit;
+		case -1:
+			return dInfo._max_loss;
+		case 2:
+			return dInfo._max_price;
+		case -2:
+			return dInfo._min_price;
+		}
+	}
+
+	return 0.0;
 }
 
 #pragma endregion 

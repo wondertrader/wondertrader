@@ -2,7 +2,6 @@
 #include "SpinMutex.hpp"
 #include "BoostFile.hpp"
 #include "BoostMappingFile.hpp"
-
 #include "../Includes/FasterDefs.h"
 
 #define SIZE_STEP 200
@@ -56,7 +55,7 @@ private:
 
 	CacheBlockPair	_cache;
 	SpinMutex		_lock;
-	faster_hashmap<LongKey, uint32_t> _indice;
+	wt_hashmap<std::string, uint32_t> _indice;
 
 private:
 	bool	resize(uint32_t newCap, CacheLogger logger = nullptr)
@@ -216,7 +215,7 @@ public:
 		{
 			_lock.lock();
 			if(_cache._block->_size == _cache._block->_capacity)
-				resize(_cache._block->_capacity + SIZE_STEP, logger);
+				resize(_cache._block->_capacity*2, logger);
 
 			_indice[key] = _cache._block->_size;
 			wt_strcpy(_cache._block->_items[_cache._block->_size]._key, key);

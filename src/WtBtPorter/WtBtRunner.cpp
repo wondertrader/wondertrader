@@ -270,7 +270,8 @@ void WtBtRunner::registerHftCallbacks(FuncStraInitCallback cbInit, FuncStraTickC
 	WTSLogger::info("Callbacks of HFT engine registration done");
 }
 
-uint32_t WtBtRunner::initCtaMocker(const char* name, int32_t slippage /* = 0 */, bool hook /* = false */, bool persistData /* = true */, bool bIncremental /* = false */)
+uint32_t WtBtRunner::initCtaMocker(const char* name, int32_t slippage /* = 0 */, bool hook /* = false */, 
+	bool persistData /* = true */, bool bIncremental /* = false */, bool isRatioSlp /* = false */)
 {
 	if(_cta_mocker)
 	{
@@ -302,7 +303,8 @@ uint32_t WtBtRunner::initHftMocker(const char* name, bool hook/* = false*/)
 	return _hft_mocker->id();
 }
 
-uint32_t WtBtRunner::initSelMocker(const char* name, uint32_t date, uint32_t time, const char* period, const char* trdtpl /* = "CHINA" */, const char* session /* = "TRADING" */, int32_t slippage/* = 0*/)
+uint32_t WtBtRunner::initSelMocker(const char* name, uint32_t date, uint32_t time, const char* period, 
+	const char* trdtpl /* = "CHINA" */, const char* session /* = "TRADING" */, int32_t slippage /* = 0 */, bool isRatioSlp /* = false */)
 {
 	if (_sel_mocker)
 	{
@@ -310,7 +312,7 @@ uint32_t WtBtRunner::initSelMocker(const char* name, uint32_t date, uint32_t tim
 		_sel_mocker = NULL;
 	}
 
-	_sel_mocker = new ExpSelMocker(&_replayer, name, slippage);
+	_sel_mocker = new ExpSelMocker(&_replayer, name, slippage, isRatioSlp);
 	_replayer.register_sink(_sel_mocker, name);
 
 	_replayer.register_task(_sel_mocker->id(), date, time, period, trdtpl, session);

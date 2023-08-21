@@ -61,7 +61,7 @@ typedef struct _StateInfo
 } StateInfo;
 
 typedef std::shared_ptr<StateInfo> StatePtr;
-typedef faster_hashmap<std::string, StatePtr>	StateMap;
+typedef wtp::wt_hashmap<std::string, StatePtr>	StateMap;
 
 class WTSBaseDataMgr;
 class DataManager;

@@ -11,6 +11,7 @@
 #include "../Share/StdUtils.hpp"
 #include "../Share/DLLHelper.hpp"
 #include "../Share/StrUtil.hpp"
+#include "../Share/charconv.hpp"
 
 #include "../WTSTools/WTSBaseDataMgr.h"
 #include "../WTSTools/WTSLogger.h"
@@ -23,6 +24,17 @@ StdCondVariable	g_condOpt;
 bool		g_exitNow = false;
 bool		g_riskAct = false;
 std::set<std::string>	g_blkList;
+
+template<typename... Args>
+inline void encoding_print(const char* format, const Args& ...args)
+{
+	std::string s = fmtutil::format(format, args...);
+#ifndef _MSC_VER
+	printf(ChartoUTF8(s).c_str());
+#else
+	printf(s.c_str());
+#endif
+}
 
 USING_NS_WTP;
 
@@ -145,40 +157,40 @@ public:
 
 		for (;;)
 		{
-			printf("Instrument Code: ");
+			encoding_print("合约代码: ");
 			std::cin >> code;
 
-			printf("Exchange Code: ");
+			encoding_print("交易所代码: ");
 			std::cin >> exchg;
 
-			printf("Entrust Price: ");
+			encoding_print("委托价格: ");
 			std::cin >> price;
 
-			printf("Entrust Qty: ");
+			encoding_print("委托数量: ");
 			std::cin >> qty;
 
 			if(isNet)
 			{
-				printf("Direction: 0-buy, 1-sell: ");
+				encoding_print("方向: 0-买, 1-卖: ");
 				std::cin >> bs;
 				if (bs != 0 && bs != 1)
 					continue;
 
-				printf("Contract: %s.%s,Price: %f,Volume: %f,Direction: %s,confirm(y/n)? ", exchg, code, price, qty, bs == 0 ? "buy" : "sell");
+				encoding_print("合约: {}.{},价格: {},数量: {},方向: {},确认(y/n)? ", exchg, code, price, qty, bs == 0 ? "买" : "卖");
 			}
 			else
 			{
-				printf("Direction: 0-long, 1-short: ");
+				encoding_print("方向: 0-多, 1-空: ");
 				std::cin >> bs;
 				if (bs != 0 && bs != 1)
 					continue;
 
-				printf("OffsetFlag, 0-open,1-close,2-closetoday: ");
+				encoding_print("开平: 0-开, 1-平,2-平今: ");
 				std::cin >> offset;
 				if (offset != 0 && offset != 1 && offset != 2)
 					continue;
 
-				printf("Contract: %s.%s,Price: %f,Volume: %f,Direction: %s,Offset: %s,confirm(y/n)? ", exchg, code, price, qty, bs == 0 ? "long" : "short", offset == 0 ? "open" : "close");
+				encoding_print("合约: {}.{},价格: {},数量: {},方向: {},开盘: {},确认(y/n)? ", exchg, code, price, qty, bs == 0 ? "多" : "空", offset == 0 ? "开" : "平");
 			}
 			
 			char c;
@@ -240,22 +252,22 @@ public:
 
 		for (;;)
 		{
-			printf("Instrument Code: ");
+			encoding_print("合约代码: ");
 			std::cin >> code;
 
-			printf("Exchange Code: ");
+			encoding_print("交易所代码: ");
 			std::cin >> exchg;
 
-			printf("Entrust Qty: ");
+			encoding_print("委托数量: ");
 			std::cin >> qty;
 
-			printf("Direction: 0-long, 1-short: ");
+			encoding_print("方向: 0-多, 1-空: ");
 			std::cin >> bs;
 
-			printf("OffsetFlag, 0-open,1-close: ");
+			encoding_print("开平: 0-开, 1-平: ");
 			std::cin >> offset;
 
-			printf("Contract: %s.%s,Volume: %u,Direction: %s,Offset: %s,confirm(y/n)? ", exchg, code, qty, bs == 0 ? "long" : "short", offset == 0 ? "open" : "close");
+			encoding_print("合约: {}.{},数量: {},方向: {},开盘: {},确认(y/n)? ", exchg, code, qty, bs == 0 ? "多" : "空", offset == 0 ? "开" : "平");
 			char c;
 			std::cin >> c;
 			if (c == 'y')
@@ -297,10 +309,10 @@ public:
 
 		for (;;)
 		{
-			printf("OrderID: ");
+			encoding_print("订单号: ");
 			std::cin >> orderid;
 
-			printf("OrderID: %s,confirm(y/n)? ", orderid);
+			encoding_print("订单号: {},确认撤单(y/n)? ", orderid);
 			char c;
 			std::cin >> c;
 			if (c == 'y')
@@ -616,17 +628,17 @@ int main()
 	
 	while(true)
 	{
-		printf("Please pick an action\r\n");
-		printf("1. Query Account\r\n");
-		printf("2. Query Orders\r\n");
-		printf("3. Query Trades\r\n");
-		printf("4. Query Positions\r\n");
-		printf("5. Query Settlement\r\n");
-		printf("6. Entrust Limit\r\n");
-		printf("7. Entrust Market\r\n");
-		printf("8. Cancel\r\n");
-		printf("9. NetTrading\r\n");
-		printf("0. Exit\r\n");
+		encoding_print("Please pick an action\r\n");
+		encoding_print("1. 查询资金\r\n");
+		encoding_print("2. 查询订单\r\n");
+		encoding_print("3. 查询成交\r\n");
+		encoding_print("4. 查询持仓\r\n");
+		encoding_print("5. 查询结算单\r\n");
+		encoding_print("6. 限价委托\r\n");
+		encoding_print("7. 市价委托\r\n");
+		encoding_print("8. 撤单\r\n");
+		encoding_print("9. 净头寸交易\r\n");
+		encoding_print("0. 退出\r\n");
 
 		char cmd;
 		for (;;)

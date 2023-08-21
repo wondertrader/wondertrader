@@ -88,6 +88,6 @@ private:
 	typedef WTSHashMap<int>	TickCache;
 	TickCache*		_tick_cache;
 
-	faster_hashmap<int, double> _price_scales;
+	wt_hashmap<int, double> _price_scales;
 };
 

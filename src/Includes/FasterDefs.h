@@ -1,140 +1,116 @@
 #pragma once
 #include <string.h>
-#include <boost/container_hash/hash.hpp>
 #include "WTSMarcos.h"
-
 #include "../FasterLibs/tsl/robin_map.h"
 #include "../FasterLibs/tsl/robin_set.h"
 
+#include "../FasterLibs/ankerl/unordered_dense.h"
+
+/*
+ *	By Wesley @ 2023.08.15
+ *	很遗憾，robin_map搭配std::string在数据量大的时候（经测试在13106条数据，不同测试机可能具体数值不同）
+ *	会出现bad allocate的异常
+ *	我猜测是std::string无法像string那样自动优化
+ *	所以数据量大的时候，就会占用非常大的内存，当运行环境内存较小时，就会出现异常
+ *	所以这次把LongKey和LongKey都注释掉，改成std::string
+ */
+
+ /*
+  *	By Wesley @ 2023.08.16
+  *	ankerl写入速度比robin好很多，大概快1/3，尤其数据量在40w以内的时候
+  *	但是robin的读取速度比robin好，不过到了30w条数据以内，差别就不大
+  *	按照wondertrader的场景，还是ankerl要好很多
+  * 具体可以参考以下页面的性能对比
+  * https://martin.ankerl.com/2022/08/27/hashmap-bench-01/#benchmark-results-table
+  */
+
 NS_WTP_BEGIN
 
-#define faster_hashmap tsl::robin_map
-#define faster_hashset tsl::robin_set
-
-typedef struct _Longkey //char[32]
+struct string_hash
 {
-	uint64_t	_buf[4] = { 0 };
-
-	_Longkey()
+	//BKDRHash算法
+	std::size_t operator()(const std::string& key) const
 	{
-	}
+		size_t seed = 131; // 31 131 1313 13131 131313 etc..
+		size_t hash = 0;
 
-	_Longkey(const char* s, std::size_t len = 0)
-	{
-		if (len == 0)
-			len = strlen(s);
-		memcpy(_buf , s, len);
-	}
-
-	_Longkey(const std::string& s)
-	{
-		memcpy(_buf, s.c_str(), s.size());
-	}
-
-	_Longkey(const _Longkey& rhs)
-	{
-		memcpy(_buf, rhs._buf, 32);
-	}
-
-	bool operator ==(const _Longkey& b) const
-	{
-		return (_buf[0] == b._buf[0] && _buf[1] == b._buf[1] && _buf[2] == b._buf[2] && _buf[3] == b._buf[3]);
-	}
-
-	const char* c_str() const { return (const char*)_buf; }
-
-	inline std::size_t find(char ch) const
-	{
-		const char* s = (const char*)_buf;
-		for (std::size_t i = 0; i < 32; i++)
+		char* str = (char*)key.c_str();
+		while (*str)
 		{
-			if (s[i] == ch)
-				return i;
+			hash = hash * seed + (*str++);
 		}
 
-		return std::string::npos;
+		return (hash & 0x7FFFFFFF);
 	}
-
-	inline std::size_t size() const { return strlen((char*)_buf); }
-
-} LongKey;
-
-typedef faster_hashset<LongKey> CodeSet;
-
-typedef struct _ShortKey //char[32]
-{
-	uint64_t	_buf[2] = { 0 };
-
-	_ShortKey()
-	{
-	}
-
-	_ShortKey(const char* s, std::size_t len = 0)
-	{
-		if(len == 0)
-			len = strlen(s);
-		memcpy(_buf, s, len);
-	}
-
-	_ShortKey(const std::string& s)
-	{
-		memcpy(_buf, s.c_str(), s.size());
-	}
-
-	bool operator ==(const _ShortKey& b) const
-	{
-		return (_buf[0] == b._buf[0] && _buf[1] == b._buf[1]);
-	}
-
-	bool operator <(const _ShortKey& b) const
-	{
-		return memcmp((void*)_buf, (void*)b._buf, 16);
-	}
-
-	const char* c_str() const { return (const char*)_buf; }
-
-	inline std::size_t find(char ch) const
-	{
-		const char* s = (const char*)_buf;
-		for (std::size_t i = 0; i < 16; i++)
-		{
-			if (s[i] == ch)
-				return i;
-		}
-
-		return std::string::npos;
-	}
-
-	inline std::size_t size() const { return strlen((char*)_buf); }
-} ShortKey;
-
-NS_WTP_END;
-
-namespace std
-{
-	template<>
-	struct hash<wtp::LongKey>
-	{
-		size_t operator()(const wtp::LongKey& key) const
-		{
-			size_t ret = 17;
-			ret = ret * 31 + boost::hash<uint64_t>()(key._buf[0]);
-			ret = ret * 31 + boost::hash<uint64_t>()(key._buf[1]);
-			ret = ret * 31 + boost::hash<uint64_t>()(key._buf[2]);
-			ret = ret * 31 + boost::hash<uint64_t>()(key._buf[3]);
-			return ret;
-		}
-	};
-
-	template<>
-	struct hash<wtp::ShortKey>
-	{
-		size_t operator()(const wtp::ShortKey& key) const
-		{
-			size_t ret = 17;
-			ret = ret * 31 + boost::hash<uint64_t>()(key._buf[0]);
-			ret = ret * 31 + boost::hash<uint64_t>()(key._buf[1]);
-			return ret;
-		}
-	};
 };
+
+template<class Key, class T>
+class fastest_hashmap : public tsl::robin_map<Key, T>
+{
+public:
+	typedef tsl::robin_map<Key, T>	Container;
+	fastest_hashmap():Container(){}
+};
+
+template<class T>
+class fastest_hashmap<std::string, T> : public tsl::robin_map<std::string, T, string_hash>
+{
+public:
+	typedef tsl::robin_map<std::string, T, string_hash>	Container;
+	fastest_hashmap() :Container() {}
+};
+
+template<class Key>
+class fastest_hashset : public tsl::robin_set<Key>
+{
+public:
+	typedef tsl::robin_set<Key>	Container;
+	fastest_hashset() :Container() {}
+};
+
+template<>
+class fastest_hashset<std::string> : public tsl::robin_set<std::string, string_hash>
+{
+public:
+	typedef tsl::robin_set<std::string, string_hash>	Container;
+	fastest_hashset() :Container() {}
+};
+
+typedef fastest_hashset<std::string> CodeSet;
+
+//////////////////////////////////////////////////////////////////////////
+//下面使用unordered_dense
+
+template<class Key, class T, class Hash = std::hash<Key>>
+class wt_hashmap : public ankerl::unordered_dense::map<Key, T, Hash>
+{
+public:
+	typedef ankerl::unordered_dense::map<Key, T, Hash>	Container;
+	wt_hashmap() :Container() {}
+};
+
+template<class T>
+class wt_hashmap<std::string, T, string_hash> : public ankerl::unordered_dense::map<std::string, T, string_hash>
+{
+public:
+	typedef ankerl::unordered_dense::map<std::string, T, string_hash>	Container;
+	wt_hashmap() :Container() {}
+};
+
+template<class Key, class Hash = std::hash<Key>>
+class wt_hashset : public ankerl::unordered_dense::set<Key, Hash>
+{
+public:
+	typedef ankerl::unordered_dense::set<Key, Hash>	Container;
+	wt_hashset() :Container() {}
+};
+
+template<>
+class wt_hashset<std::string, string_hash> : public ankerl::unordered_dense::set<std::string, string_hash>
+{
+public:
+	typedef ankerl::unordered_dense::set<std::string, string_hash>	Container;
+	wt_hashset() :Container() {}
+};
+
+NS_WTP_END

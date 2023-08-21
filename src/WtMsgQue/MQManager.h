@@ -44,10 +44,10 @@ public:
 	void		log_client(WtUInt32 id, const char* message);
 
 private:
-	typedef faster_hashmap<uint32_t, MQServerPtr> ServerMap;
+	typedef wt_hashmap<uint32_t, MQServerPtr> ServerMap;
 	ServerMap	_servers;
 
-	typedef faster_hashmap<uint32_t, MQClientPtr> ClientMap;
+	typedef wt_hashmap<uint32_t, MQClientPtr> ClientMap;
 	ClientMap	_clients;
 
 	FuncLogCallback	_cb_log;

@@ -190,7 +190,7 @@ private:
 	uint32_t		_error_rate;
 	bool			_match_this_tick;	//是否在当前tick撮合
 
-	typedef faster_hashmap<std::string, double> PriceMap;
+	typedef wt_hashmap<std::string, double> PriceMap;
 	PriceMap		_price_map;
 
 
@@ -254,7 +254,7 @@ private:
 
 	} OrderInfo;
 	typedef std::shared_ptr<OrderInfo> OrderInfoPtr;
-	typedef faster_hashmap<uint32_t, OrderInfoPtr> Orders;
+	typedef wt_hashmap<uint32_t, OrderInfoPtr> Orders;
 	StdRecurMutex	_mtx_ords;
 	Orders			_orders;
 
@@ -262,7 +262,7 @@ private:
 	CommodityMap*	_commodities;
 
 	//用户数据
-	typedef faster_hashmap<std::string, std::string> StringHashMap;
+	typedef wt_hashmap<std::string, std::string> StringHashMap;
 	StringHashMap	_user_datas;
 	bool			_ud_modified;
 
@@ -303,7 +303,7 @@ private:
 
 		inline double valid() const { return _volume - _frozen; }
 	} PosInfo;
-	typedef faster_hashmap<std::string, PosInfo> PositionMap;
+	typedef wt_hashmap<std::string, PosInfo> PositionMap;
 	PositionMap		_pos_map;
 
 	std::stringstream	_trade_logs;
@@ -336,7 +336,7 @@ protected:
 	std::atomic<bool>	_resumed;	//临时变量，用于控制状态
 
 	//tick订阅列表
-	faster_hashset<std::string> _tick_subs;
+	wt_hashset<std::string> _tick_subs;
 
 	typedef WTSHashMap<std::string>	TickCache;
 	TickCache*	_ticks;

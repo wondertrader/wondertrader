@@ -19,11 +19,11 @@ void WtExecuterMgr::enum_executer(EnumExecuterCb cb)
 	}
 }
 
-void WtExecuterMgr::set_positions(faster_hashmap<LongKey, double> target_pos)
+void WtExecuterMgr::set_positions(wt_hashmap<std::string, double> target_pos)
 {
 	if(_filter_mgr != NULL)
 	{
-		faster_hashmap<LongKey, double> des_port;
+		wt_hashmap<std::string, double> des_port;
 		for(auto& m : target_pos)
 		{
 			const auto& stdCode = m.first;

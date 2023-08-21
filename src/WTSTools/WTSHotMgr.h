@@ -22,12 +22,12 @@ USING_NS_WTP;
 //换月主力映射
 typedef WTSMap<uint32_t>			WTSDateHotMap;
 //品种主力映射
-typedef WTSHashMap<ShortKey>		WTSProductHotMap;
+typedef WTSHashMap<std::string>		WTSProductHotMap;
 //分市场主力映射
-typedef WTSHashMap<ShortKey>		WTSExchgHotMap;
+typedef WTSHashMap<std::string>		WTSExchgHotMap;
 
 //自定义切换规则映射
-typedef WTSHashMap<ShortKey>		WTSCustomSwitchMap;
+typedef WTSHashMap<std::string>		WTSCustomSwitchMap;
 
 class WTSHotMgr : public IHotMgr
 {
@@ -83,12 +83,12 @@ public:
 private:
 	//WTSExchgHotMap*	m_pExchgHotMap;
 	//WTSExchgHotMap*	m_pExchgScndMap;
-	//faster_hashset<ShortKey>	m_curHotCodes;
-	//faster_hashset<ShortKey>	m_curSecCodes;
+	//wt_hashset<std::string>	m_curHotCodes;
+	//wt_hashset<std::string>	m_curSecCodes;
 	bool			m_bInitialized;
 
 	WTSCustomSwitchMap*	m_mapCustRules;
-	typedef faster_hashmap<ShortKey, faster_hashset<ShortKey>>	CustomSwitchCodes;
+	typedef wt_hashmap<std::string, wt_hashset<std::string>>	CustomSwitchCodes;
 	CustomSwitchCodes	m_mapCustCodes;
 };
 
