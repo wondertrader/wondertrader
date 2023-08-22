@@ -438,8 +438,9 @@ void WtSelEngine::handle_pos_change(const char* straName, const char* stdCode, d
 	//	realCode = CodeHelper::rawMonthCodeToStdCode(code.c_str(), cInfo._exchg);
 	//}
 
-	PosInfo& pItem = _pos_map[realCode];
-
+	PosInfoPtr& pInfo = _pos_map[realCode];
+	if (pInfo == NULL)
+		pInfo.reset(new PosInfo);
 	bool bRiskEnabled = false;
 	if (!decimal::eq(_risk_volscale, 1.0) && _risk_date == _cur_tdate)
 	{
@@ -451,7 +452,7 @@ void WtSelEngine::handle_pos_change(const char* straName, const char* stdCode, d
 		double symbol = diffQty / abs(diffQty);
 		diffQty = decimal::rnd(abs(diffQty)*_risk_volscale)*symbol;
 	}
-	double targetPos = pItem._volume + diffQty;
+	double targetPos = pInfo->_volume + diffQty;
 
 	append_signal(realCode.c_str(), targetPos, false);
 	save_datas();

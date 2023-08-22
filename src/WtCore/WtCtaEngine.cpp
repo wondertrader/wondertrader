@@ -385,7 +385,7 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 		const auto& stdCode = m.first;
 		if (target_pos.find(stdCode) == target_pos.end())
 		{
-			if(!decimal::eq(m.second._volume, 0))
+			if(!decimal::eq(m.second->_volume, 0))
 			{
 				//这里是通知WtEngine去更新组合持仓数据
 				append_signal(stdCode.c_str(), 0, true);
@@ -450,7 +450,9 @@ void WtCtaEngine::handle_pos_change(const char* straName, const char* stdCode, d
 	/*
 	 *	这里必须要算一个总的目标仓位
 	 */
-	PosInfo& pItem = _pos_map[realCode];	
+	PosInfoPtr& pInfo = _pos_map[realCode];	
+	if (pInfo == NULL)
+		pInfo.reset(new PosInfo);
 
 	bool bRiskEnabled = false;
 	if (!decimal::eq(_risk_volscale, 1.0) && _risk_date == _cur_tdate)
@@ -465,7 +467,7 @@ void WtCtaEngine::handle_pos_change(const char* straName, const char* stdCode, d
 		diffPos = decimal::rnd(abs(diffPos)*_risk_volscale)*symbol;
 	}
 
-	double targetPos = pItem._volume + diffPos;
+	double targetPos = pInfo->_volume + diffPos;
 
 	append_signal(realCode.c_str(), targetPos, false);
 	save_datas();

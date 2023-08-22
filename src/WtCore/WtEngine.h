@@ -23,6 +23,7 @@
 #include "../Share/DLLHelper.hpp"
 
 #include "../Share/BoostFile.hpp"
+#include "../Share/SpinMutex.hpp"
 
 
 NS_WTP_BEGIN
@@ -280,6 +281,7 @@ protected:
 		double		_volume;
 		double		_closeprofit;
 		double		_dynprofit;
+		SpinMutex	_mtx;
 
 		std::vector<DetailInfo> _details;
 
@@ -290,7 +292,8 @@ protected:
 			_dynprofit = 0;
 		}
 	} PosInfo;
-	typedef wt_hashmap<std::string, PosInfo> PositionMap;
+	typedef std::shared_ptr<PosInfo> PosInfoPtr;
+	typedef wt_hashmap<std::string, PosInfoPtr> PositionMap;
 	PositionMap		_pos_map;
 
 	//////////////////////////////////////////////////////////////////////////
