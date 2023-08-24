@@ -30,6 +30,7 @@ WtDtMgr::WtDtMgr()
 	, _bars_cache(NULL)
 	, _ticks_adjusted(NULL)
 	, _rt_tick_map(NULL)
+	, _force_cache(false)
 {
 }
 
@@ -85,13 +86,17 @@ bool WtDtMgr::initStore(WTSVariant* cfg)
 	return true;
 }
 
-bool WtDtMgr::init(WTSVariant* cfg, WtEngine* engine)
+bool WtDtMgr::init(WTSVariant* cfg, WtEngine* engine, bool bForceCache /* = false */)
 {
 	_engine = engine;
 
 	_align_by_section = cfg->getBoolean("align_by_section");
 
+	_force_cache = bForceCache;
+
 	WTSLogger::info("Resampled bars will be aligned by section: {}", _align_by_section?"yes":" not");
+
+	WTSLogger::info("Force to cache bars: {}", _force_cache ? "yes" : " not");
 
 	return initStore(cfg->get("store"));
 }
@@ -184,6 +189,7 @@ void WtDtMgr::on_bar(const char* code, WTSKlinePeriod period, WTSBarStruct* newB
 			continue;
 
 		WTSKlineData* kData = (WTSKlineData*)it->second;
+		if(kData->times() != 1)
 		{
 			g_dataFact.updateKlineData(kData, newBar, sInfo, _align_by_section);
 			if (kData->isClosed())
@@ -195,6 +201,12 @@ void WtDtMgr::on_bar(const char* code, WTSKlinePeriod period, WTSBarStruct* newB
 				//更新完K线以后, 统一通知交易引擎
 				_bar_notifies.emplace_back(NotifyItem(code, speriod, times*kData->times(), lastBar));
 			}
+		}
+		else
+		{
+			//如果是强制缓存的一倍周期，直接压到缓存队列里
+			kData->getDataRef().emplace_back(*newBar);
+			_bar_notifies.emplace_back(NotifyItem(code, speriod, times, newBar));
 		}
 	}
 }
@@ -387,12 +399,11 @@ WTSKlineSlice* WtDtMgr::get_kline_slice(const char* stdCode, WTSKlinePeriod peri
 	if (_reader == NULL)
 		return NULL;
 
-	//std::string key = StrUtil::printf("%s-%u", stdCode, period);
-
 	thread_local static char key[64] = { 0 };
 	fmtutil::format_to(key, "{}-{}", stdCode, (uint32_t)period);
 
-	if (times == 1)
+	// 如果不强制缓存，并且重采样倍数为1，则直接读取slice返回
+	if (times == 1 && !_force_cache)
 	{
 		_subed_basic_bars.insert(key);
 
@@ -412,11 +423,27 @@ WTSKlineSlice* WtDtMgr::get_kline_slice(const char* stdCode, WTSKlinePeriod peri
 	//如果缓存里的K线条数大于请求的条数, 则直接返回
 	if (kData == NULL || kData->size() < count)
 	{
-		uint32_t realCount = count*times + times;
+		uint32_t realCount = times==1 ? count: (count*times + times);
 		WTSKlineSlice* rawData = _reader->readKlineSlice(stdCode, period, realCount, etime);
-		if (rawData != NULL)
+		if (rawData != NULL && rawData->size() > 0)
 		{
-			kData = g_dataFact.extractKlineData(rawData, period, times, sInfo, true, _align_by_section);
+			if(times != 1)
+			{
+				kData = g_dataFact.extractKlineData(rawData, period, times, sInfo, true, _align_by_section);
+			}
+			else
+			{
+				kData = WTSKlineData::create(stdCode, rawData->size());
+				kData->setPeriod(period, 1);
+				kData->setClosed(true);
+				WTSBarStruct* pBar = kData->getDataRef().data();
+				for(uint32_t bIdx = 0; bIdx < rawData->get_block_counts(); bIdx++ )
+				{
+					memcpy(pBar, rawData->get_block_addr(bIdx), sizeof(WTSBarStruct)*rawData->get_block_size(bIdx));
+					pBar += rawData->get_block_size(bIdx);
+				}
+			}
+			
 			rawData->release();
 		}
 		else
@@ -427,8 +454,9 @@ WTSKlineSlice* WtDtMgr::get_kline_slice(const char* stdCode, WTSKlinePeriod peri
 		if (kData)
 		{
 			_bars_cache->add(key, kData, false);
-			WTSLogger::debug("{} bars of {} resampled every {} bars: {} -> {}", 
-				PERIOD_NAME[period], stdCode, times, realCount, kData->size());
+			if(times != 1)
+				WTSLogger::debug("{} bars of {} resampled every {} bars: {} -> {}", 
+					PERIOD_NAME[period], stdCode, times, realCount, kData->size());
 		}
 	}
 

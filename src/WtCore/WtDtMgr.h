@@ -34,7 +34,7 @@ private:
 	bool	initStore(WTSVariant* cfg);
 
 public:
-	bool	init(WTSVariant* cfg, WtEngine* engine);
+	bool	init(WTSVariant* cfg, WtEngine* engine, bool bForceCache = false);
 
 	void	regsiter_loader(IHisDataLoader* loader) { _loader = loader; }
 
@@ -73,7 +73,8 @@ private:
 	IHisDataLoader*	_loader;
 	WtEngine*		_engine;
 
-	bool			_align_by_section;
+	bool			_align_by_section;	//强制小节对齐
+	bool			_force_cache;		//强制缓存K线
 
 	wt_hashset<std::string> _subed_basic_bars;
 	typedef WTSHashMap<std::string> DataCacheMap;

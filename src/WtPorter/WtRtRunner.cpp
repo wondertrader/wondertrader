@@ -870,7 +870,7 @@ bool WtRtRunner::initDataMgr()
 
 	_data_mgr.regsiter_loader(this);
 
-	_data_mgr.init(cfg, _engine);
+	_data_mgr.init(cfg, _engine, true);
 
 	WTSLogger::log_raw(LL_INFO, "Data manager initialized");
 	return true;
