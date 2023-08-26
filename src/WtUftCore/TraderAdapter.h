@@ -14,6 +14,7 @@
 #include "../Share/BoostFile.hpp"
 #include "../Share/StdUtils.hpp"
 #include "../Includes/WTSCollection.hpp"
+#include "../Share/SpinMutex.hpp"
 
 NS_WTP_BEGIN
 class WTSVariant;
@@ -241,8 +242,8 @@ private:
 
 	wt_hashmap<std::string, PosItem> _positions;
 
-	StdUniqueMutex _mtx_orders;
-	OrderMap*		_orders;
+	SpinMutex	_mtx_orders;
+	OrderMap*	_orders;
 	wt_hashset<std::string> _orderids;	//主要用于标记有没有处理过该订单
 
 	wt_hashmap<std::string, double> _undone_qty;	//未完成数量

@@ -467,7 +467,7 @@ OrderMap* TraderAdapter::getOrders(const char* stdCode)
 
 	bool isAll = strlen(stdCode) == 0;
 
-	StdUniqueLock lock(_mtx_orders);
+	SpinLock lock(_mtx_orders);
 	OrderMap* ret = OrderMap::create();
 	for (auto it = _orders->begin(); it != _orders->end(); it++)
 	{
@@ -1266,7 +1266,7 @@ bool TraderAdapter::cancel(uint32_t localid)
 
 	WTSOrderInfo* ordInfo = NULL;
 	{
-		StdUniqueLock lock(_mtx_orders);
+		SpinLock lock(_mtx_orders);
 		ordInfo = (WTSOrderInfo*)_orders->grab(localid);
 		if (ordInfo == NULL)
 			return false;
@@ -1692,7 +1692,7 @@ void TraderAdapter::onRspOrders(const WTSArray* ayOrders)
 			uint32_t localid = strtoul(userTag, NULL, 10);
 
 			{
-				StdUniqueLock lock(_mtx_orders);
+				SpinLock lock(_mtx_orders);
 				_orders->add(localid, orderInfo);
 			}
 
@@ -2100,17 +2100,19 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 	//如果是wt发出去的单子则需要更新内部数据
 	if(localid != 0)
 	{
-		StdUniqueLock lock(_mtx_orders);
-		if (!orderInfo->isAlive() && _orders)
 		{
-			_orders->remove(localid);
-		}
-		else
-		{
-			if (_orders == NULL)
-				_orders = OrderMap::create();
+			SpinLock lock(_mtx_orders);
+			if (!orderInfo->isAlive() && _orders)
+			{
+				_orders->remove(localid);
+			}
+			else
+			{
+				if (_orders == NULL)
+					_orders = OrderMap::create();
 
-			_orders->add(localid, orderInfo);
+				_orders->add(localid, orderInfo);
+			}
 		}
 
 		//通知所有监听接口

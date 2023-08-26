@@ -288,7 +288,7 @@ OrderMap* TraderAdapter::getOrders(const char* stdCode)
 
 	bool isAll = strlen(stdCode) == 0;
 
-	StdUniqueLock lock(_mtx_orders);
+	SpinLock lock(_mtx_orders);
 	OrderMap* ret = OrderMap::create();
 	for (auto it = _orders->begin(); it != _orders->end(); it++)
 	{
@@ -380,7 +380,7 @@ bool TraderAdapter::cancel(uint32_t localid)
 
 	WTSOrderInfo* ordInfo = NULL;
 	{
-		StdUniqueLock lock(_mtx_orders);
+		SpinLock lock(_mtx_orders);
 		ordInfo = (WTSOrderInfo*)_orders->grab(localid);
 		if (ordInfo == NULL)
 			return false;
@@ -1369,7 +1369,7 @@ void TraderAdapter::onRspOrders(const WTSArray* ayOrders)
 			uint32_t localid = strtoul(userTag, NULL, 10);
 
 			{
-				StdUniqueLock lock(_mtx_orders);
+				SpinLock lock(_mtx_orders);
 				_orders->add(localid, orderInfo);
 			}
 
@@ -1701,7 +1701,7 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 	if(localid != 0)
 	{
 		{
-			StdUniqueLock lock(_mtx_orders);
+			SpinLock lock(_mtx_orders);
 			if (!orderInfo->isAlive() && _orders)
 			{
 				_orders->remove(localid);
