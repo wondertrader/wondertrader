@@ -271,7 +271,7 @@ bool ParserAdapter::run()
 
 void ParserAdapter::handleQuote(WTSTickData *quote, uint32_t procFlag)
 {
-	if (quote == NULL || _stopped || quote->actiondate() == 0 || quote->tradingdate() == 0)
+	if (quote == NULL || _stopped || quote->actiondate() == 0)
 		return;
 
 	WTSContractInfo* cInfo = quote->getContractInfo();
