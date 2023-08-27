@@ -94,9 +94,9 @@ bool WtDtMgr::init(WTSVariant* cfg, WtEngine* engine, bool bForceCache /* = fals
 
 	_force_cache = bForceCache;
 
-	WTSLogger::info("Resampled bars will be aligned by section: {}", _align_by_section?"yes":" not");
+	WTSLogger::info("Resampled bars will be aligned by section: {}", _align_by_section?"yes":" no");
 
-	WTSLogger::info("Force to cache bars: {}", _force_cache ? "yes" : " not");
+	WTSLogger::info("Force to cache bars: {}", _force_cache ? "yes" : " no");
 
 	return initStore(cfg->get("store"));
 }
