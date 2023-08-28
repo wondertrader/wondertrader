@@ -9,6 +9,7 @@
  */
 #pragma once
 #include "ITrdNotifySink.h"
+#include "UftDataDefs.h"
 #include "../Includes/IUftStraCtx.h"
 #include "../Includes/FasterDefs.h"
 #include "../Share/fmtlib.h"
@@ -218,7 +219,6 @@ private:
 
 		return it->second.c_str();
 	}
-
 
 private:
 	uint32_t		_context_id;

@@ -66,6 +66,9 @@
     <ClInclude Include="ShareManager.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="UftDataDefs.h">
+      <Filter>UFT</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TraderAdapter.cpp">
