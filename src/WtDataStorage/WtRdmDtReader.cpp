@@ -240,9 +240,9 @@ WTSTickSlice* WtRdmDtReader::readTickSliceByDate(const char* stdCode, uint32_t u
 {
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
-	std::string stdPID = fmt::format("{}.{}", cInfo._exchg, cInfo._product);
+	const char* stdPID = commInfo->getFullPid();
 
-	uint32_t curTDate = _base_data_mgr->calcTradingDate(stdPID.c_str(), 0, 0, false);
+	uint32_t curTDate = _base_data_mgr->calcTradingDate(stdPID, 0, 0, false);
 	bool isToday = (uDate == curTDate);
 
 	//这里改成小于等于，主要针对盘后读取的情况
@@ -256,26 +256,12 @@ WTSTickSlice* WtRdmDtReader::readTickSliceByDate(const char* stdCode, uint32_t u
 			const char* ruleTag = cInfo._ruletag;
 			if(strlen(ruleTag) > 0)
 			{
-				curCode = _hot_mgr->getCustomRawCode(ruleTag, cInfo.stdCommID(), uDate);
+				curCode = _hot_mgr->getCustomRawCode(ruleTag, stdPID, uDate);
 				pipe_rdmreader_log(_sink, LL_INFO, "{} contract on {} confirmed with rule {}: {} -> {}", ruleTag, uDate, stdCode, curCode.c_str());
 				hotCode = cInfo._product;
 				hotCode += "_";
 				hotCode += ruleTag;
 			}
-			//else if (cInfo.isHot())
-			//{
-			//	curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, uDate);
-			//	pipe_rdmreader_log(_sink, LL_INFO, "Hot contract on {} confirmed: {} -> {}", uDate, stdCode, curCode.c_str());
-			//	hotCode = cInfo._product;
-			//	hotCode += "_HOT";
-			//}
-			//else if (cInfo.isSecond())
-			//{
-			//	curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, uDate);
-			//	pipe_rdmreader_log(_sink, LL_INFO, "Second contract on {} confirmed: {} -> {}", uDate, stdCode, curCode.c_str());
-			//	hotCode = cInfo._product;
-			//	hotCode += "_2ND";
-			//}
 		}
 
 		std::string key = fmt::format("{}-{}", stdCode, uDate);
@@ -378,7 +364,7 @@ WTSTickSlice* WtRdmDtReader::readTickSliceByRange(const char* stdCode, uint64_t 
 {
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
-	std::string stdPID = fmt::format("{}.{}", cInfo._exchg, cInfo._product);
+	const char* stdPID = commInfo->getFullPid();
 
 	pipe_rdmreader_log(_sink, LL_DEBUG, "Reading ticks of {} between {} and {}", stdCode, stime, etime);
 
@@ -396,9 +382,9 @@ WTSTickSlice* WtRdmDtReader::readTickSliceByRange(const char* stdCode, uint64_t 
 	lTime = (uint32_t)(stime % 1000000000) / 100000;
 	lSecs = (uint32_t)(stime % 100000);
 
-	uint32_t endTDate = _base_data_mgr->calcTradingDate(stdPID.c_str(), rDate, rTime, false);
-	uint32_t beginTDate = _base_data_mgr->calcTradingDate(stdPID.c_str(), lDate, lTime, false);
-	uint32_t curTDate = _base_data_mgr->calcTradingDate(stdPID.c_str(), 0, 0, false);
+	uint32_t endTDate = _base_data_mgr->calcTradingDate(stdPID, rDate, rTime, false);
+	uint32_t beginTDate = _base_data_mgr->calcTradingDate(stdPID, lDate, lTime, false);
+	uint32_t curTDate = _base_data_mgr->calcTradingDate(stdPID, 0, 0, false);
 
 	bool hasToday = (endTDate >= curTDate);
 
@@ -418,7 +404,7 @@ WTSTickSlice* WtRdmDtReader::readTickSliceByRange(const char* stdCode, uint64_t 
 			const char* ruleTag = cInfo._ruletag;
 			if (strlen(ruleTag) > 0)
 			{
-				curCode = _hot_mgr->getCustomRawCode(ruleTag, cInfo.stdCommID(), nowTDate);
+				curCode = _hot_mgr->getCustomRawCode(ruleTag, stdPID, nowTDate);
 
 				pipe_rdmreader_log(_sink, LL_INFO, "{} contract on {} confirmed: {} -> {}", ruleTag, curTDate, stdCode, curCode.c_str());
 				hotCode = cInfo._product;
@@ -551,11 +537,7 @@ WTSTickSlice* WtRdmDtReader::readTickSliceByRange(const char* stdCode, uint64_t 
 		{
 			const char* ruleTag = cInfo._ruletag;
 			if (strlen(ruleTag) > 0)
-				curCode = _hot_mgr->getCustomRawCode(ruleTag, cInfo.stdCommID(), curTDate);
-			//else if (cInfo.isHot())
-			//	curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, curTDate);
-			//else if (cInfo.isSecond())
-			//	curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, curTDate);
+				curCode = _hot_mgr->getCustomRawCode(ruleTag, stdPID, curTDate);
 		}
 
 		TickBlockPair* tPair = getRTTickBlock(cInfo._exchg, curCode.c_str());
@@ -624,7 +606,7 @@ WTSOrdQueSlice* WtRdmDtReader::readOrdQueSliceByRange(const char* stdCode, uint6
 {
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
-	std::string stdPID = fmt::format("{}.{}", cInfo._exchg, cInfo._product);
+	const char* stdPID = commInfo->getFullPid();
 
 	uint32_t rDate, rTime, rSecs;
 	//20190807124533900
@@ -638,9 +620,9 @@ WTSOrdQueSlice* WtRdmDtReader::readOrdQueSliceByRange(const char* stdCode, uint6
 	lTime = (uint32_t)(stime % 1000000000) / 100000;
 	lSecs = (uint32_t)(stime % 100000);
 
-	uint32_t endTDate = _base_data_mgr->calcTradingDate(stdPID.c_str(), rDate, rTime, false);
-	uint32_t beginTDate = _base_data_mgr->calcTradingDate(stdPID.c_str(), lDate, lTime, false);
-	uint32_t curTDate = _base_data_mgr->calcTradingDate(stdPID.c_str(), 0, 0, false);
+	uint32_t endTDate = _base_data_mgr->calcTradingDate(stdPID, rDate, rTime, false);
+	uint32_t beginTDate = _base_data_mgr->calcTradingDate(stdPID, lDate, lTime, false);
+	uint32_t curTDate = _base_data_mgr->calcTradingDate(stdPID, 0, 0, false);
 
 	bool isToday = (endTDate == curTDate);
 
@@ -649,11 +631,7 @@ WTSOrdQueSlice* WtRdmDtReader::readOrdQueSliceByRange(const char* stdCode, uint6
 	{
 		const char* ruleTag = cInfo._ruletag;
 		if (strlen(ruleTag) > 0)
-			curCode = _hot_mgr->getCustomRawCode(ruleTag, cInfo.stdCommID(), endTDate);
-		//else if (cInfo.isHot())
-		//	curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, endTDate);
-		//else if (cInfo.isSecond())
-		//	curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, endTDate);
+			curCode = _hot_mgr->getCustomRawCode(ruleTag, stdPID, endTDate);
 	}
 
 	//比较时间的对象
@@ -803,7 +781,7 @@ WTSOrdDtlSlice* WtRdmDtReader::readOrdDtlSliceByRange(const char* stdCode, uint6
 {
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
-	std::string stdPID = fmt::format("{}.{}", cInfo._exchg, cInfo._product);
+	const char* stdPID = commInfo->getFullPid();
 
 	uint32_t rDate, rTime, rSecs;
 	//20190807124533900
@@ -817,9 +795,9 @@ WTSOrdDtlSlice* WtRdmDtReader::readOrdDtlSliceByRange(const char* stdCode, uint6
 	lTime = (uint32_t)(stime % 1000000000) / 100000;
 	lSecs = (uint32_t)(stime % 100000);
 
-	uint32_t endTDate = _base_data_mgr->calcTradingDate(stdPID.c_str(), rDate, rTime, false);
-	uint32_t beginTDate = _base_data_mgr->calcTradingDate(stdPID.c_str(), lDate, lTime, false);
-	uint32_t curTDate = _base_data_mgr->calcTradingDate(stdPID.c_str(), 0, 0, false);
+	uint32_t endTDate = _base_data_mgr->calcTradingDate(stdPID, rDate, rTime, false);
+	uint32_t beginTDate = _base_data_mgr->calcTradingDate(stdPID, lDate, lTime, false);
+	uint32_t curTDate = _base_data_mgr->calcTradingDate(stdPID, 0, 0, false);
 
 	bool isToday = (endTDate == curTDate);
 
@@ -828,11 +806,7 @@ WTSOrdDtlSlice* WtRdmDtReader::readOrdDtlSliceByRange(const char* stdCode, uint6
 	{
 		const char* ruleTag = cInfo._ruletag;
 		if (strlen(ruleTag) > 0)
-			curCode = _hot_mgr->getCustomRawCode(ruleTag, cInfo.stdCommID(), endTDate);
-		//else if (cInfo.isHot())
-		//	curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, endTDate);
-		//else if (cInfo.isSecond())
-		//	curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, endTDate);
+			curCode = _hot_mgr->getCustomRawCode(ruleTag, stdPID, endTDate);
 	}
 
 	//比较时间的对象
@@ -981,7 +955,7 @@ WTSTransSlice* WtRdmDtReader::readTransSliceByRange(const char* stdCode, uint64_
 {
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
-	std::string stdPID = fmt::format("{}.{}", cInfo._exchg, cInfo._product);
+	const char* stdPID = commInfo->getFullPid();
 
 	uint32_t rDate, rTime, rSecs;
 	//20190807124533900
@@ -995,9 +969,9 @@ WTSTransSlice* WtRdmDtReader::readTransSliceByRange(const char* stdCode, uint64_
 	lTime = (uint32_t)(stime % 1000000000) / 100000;
 	lSecs = (uint32_t)(stime % 100000);
 
-	uint32_t endTDate = _base_data_mgr->calcTradingDate(stdPID.c_str(), rDate, rTime, false);
-	uint32_t beginTDate = _base_data_mgr->calcTradingDate(stdPID.c_str(), lDate, lTime, false);
-	uint32_t curTDate = _base_data_mgr->calcTradingDate(stdPID.c_str(), 0, 0, false);
+	uint32_t endTDate = _base_data_mgr->calcTradingDate(stdPID, rDate, rTime, false);
+	uint32_t beginTDate = _base_data_mgr->calcTradingDate(stdPID, lDate, lTime, false);
+	uint32_t curTDate = _base_data_mgr->calcTradingDate(stdPID, 0, 0, false);
 
 	bool isToday = (endTDate == curTDate);
 
@@ -1006,7 +980,7 @@ WTSTransSlice* WtRdmDtReader::readTransSliceByRange(const char* stdCode, uint64_
 	{
 		const char* ruleTag = cInfo._ruletag;
 		if (strlen(ruleTag) > 0)
-			curCode = _hot_mgr->getCustomRawCode(ruleTag, cInfo.stdCommID(), endTDate);
+			curCode = _hot_mgr->getCustomRawCode(ruleTag, stdPID, endTDate);
 		//else if (cInfo.isHot())
 		//	curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, endTDate);
 		//else if (cInfo.isSecond())
@@ -1226,7 +1200,7 @@ bool WtRdmDtReader::cacheHisBarsFromFile(void* codeInfo, const std::string& key,
 		HotSections secs;
 		if (strlen(ruleTag))
 		{
-			if (!_hot_mgr->splitCustomSections(ruleTag, cInfo->stdCommID(), 19900102, endTDate, secs))
+			if (!_hot_mgr->splitCustomSections(ruleTag, stdPID, 19900102, endTDate, secs))
 				return false;
 		}
 
@@ -1810,7 +1784,7 @@ WTSKlineSlice* WtRdmDtReader::readKlineSliceByRange(const char* stdCode, WTSKlin
 {
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
-	std::string stdPID = fmt::format("{}.{}", cInfo._exchg, cInfo._product);
+	const char* stdPID = commInfo->getFullPid();
 
 	std::string key = fmt::format("{}#{}", stdCode, period);
 	auto it = _bars_cache.find(key);
@@ -1833,8 +1807,8 @@ WTSKlineSlice* WtRdmDtReader::readKlineSliceByRange(const char* stdCode, WTSKlin
 	lDate = (uint32_t)(stime / 10000);
 	lTime = (uint32_t)(stime % 10000);
 
-	uint32_t endTDate = _base_data_mgr->calcTradingDate(stdPID.c_str(), rDate, rTime, false);
-	uint32_t curTDate = _base_data_mgr->calcTradingDate(stdPID.c_str(), 0, 0, false);
+	uint32_t endTDate = _base_data_mgr->calcTradingDate(stdPID, rDate, rTime, false);
+	uint32_t curTDate = _base_data_mgr->calcTradingDate(stdPID, 0, 0, false);
 	
 	WTSBarStruct* hisHead = NULL;
 	WTSBarStruct* rtHead = NULL;
@@ -2241,7 +2215,7 @@ WTSKlineSlice* WtRdmDtReader::readKlineSliceByCount(const char* stdCode, WTSKlin
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
 	pipe_rdmreader_log(_sink, LL_INFO, "CodeInfo of {}: {},{},{}", stdCode, cInfo._exchg, cInfo._product, cInfo._code);
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
-	std::string stdPID = fmtutil::format("{}.{}", cInfo._exchg, cInfo._product);
+	const char* stdPID = commInfo->getFullPid();
 
 	std::string key = fmtutil::format("{}#{}", stdCode, period);
 	auto it = _bars_cache.find(key);
@@ -2262,8 +2236,8 @@ WTSKlineSlice* WtRdmDtReader::readKlineSliceByCount(const char* stdCode, WTSKlin
 	rDate = (uint32_t)(etime / 10000);
 	rTime = (uint32_t)(etime % 10000);
 
-	uint32_t endTDate = _base_data_mgr->calcTradingDate(stdPID.c_str(), rDate, rTime, false);
-	uint32_t curTDate = _base_data_mgr->calcTradingDate(stdPID.c_str(), 0, 0, false);
+	uint32_t endTDate = _base_data_mgr->calcTradingDate(stdPID, rDate, rTime, false);
+	uint32_t curTDate = _base_data_mgr->calcTradingDate(stdPID, 0, 0, false);
 
 	WTSBarStruct* hisHead = NULL;
 	WTSBarStruct* rtHead = NULL;
@@ -2287,7 +2261,7 @@ WTSKlineSlice* WtRdmDtReader::readKlineSliceByCount(const char* stdCode, WTSKlin
 	const char* ruleTag = cInfo._ruletag;
 	if (strlen(ruleTag) > 0)
 	{
-		raw_code = _hot_mgr->getCustomRawCode(ruleTag, cInfo.stdCommID(), curTDate);
+		raw_code = _hot_mgr->getCustomRawCode(ruleTag, stdPID, curTDate);
 		pipe_rdmreader_log(_sink, LL_INFO, "{} contract on {} confirmed: {} -> {}", ruleTag, curTDate, stdCode, raw_code.c_str());
 	}
 	else
@@ -2416,7 +2390,7 @@ WTSTickSlice* WtRdmDtReader::readTickSliceByCount(const char* stdCode, uint32_t 
 {
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
-	std::string stdPID = fmt::format("{}.{}", cInfo._exchg, cInfo._product);
+	const char* stdPID = commInfo->getFullPid();
 
 	WTSSessionInfo* sInfo = _base_data_mgr->getSession(_base_data_mgr->getCommodity(cInfo._exchg, cInfo._code)->getSession());
 
@@ -2426,8 +2400,8 @@ WTSTickSlice* WtRdmDtReader::readTickSliceByCount(const char* stdCode, uint32_t 
 	rTime = (uint32_t)(etime % 1000000000) / 100000;
 	rSecs = (uint32_t)(etime % 100000);
 
-	uint32_t endTDate = _base_data_mgr->calcTradingDate(stdPID.c_str(), rDate, rTime, false);
-	uint32_t curTDate = _base_data_mgr->calcTradingDate(stdPID.c_str(), 0, 0, false);
+	uint32_t endTDate = _base_data_mgr->calcTradingDate(stdPID, rDate, rTime, false);
+	uint32_t curTDate = _base_data_mgr->calcTradingDate(stdPID, 0, 0, false);
 
 	bool hasToday = (endTDate >= curTDate);
 
@@ -2442,7 +2416,7 @@ WTSTickSlice* WtRdmDtReader::readTickSliceByCount(const char* stdCode, uint32_t 
 			const char* ruleTag = cInfo._ruletag;
 			if (strlen(ruleTag) > 0)
 			{
-				curCode = _hot_mgr->getCustomRawCode(ruleTag, cInfo.stdCommID(), curTDate);
+				curCode = _hot_mgr->getCustomRawCode(ruleTag, stdPID, curTDate);
 
 				pipe_rdmreader_log(_sink, LL_INFO, "{} contract on {} confirmed: {} -> {}", ruleTag, curTDate, stdCode, curCode.c_str());
 			}
