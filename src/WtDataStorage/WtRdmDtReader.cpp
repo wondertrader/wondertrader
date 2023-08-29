@@ -240,7 +240,7 @@ WTSTickSlice* WtRdmDtReader::readTickSliceByDate(const char* stdCode, uint32_t u
 {
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
-	const char* stdPID = cInfo.stdCommID();
+	const char* stdPID = commInfo->getFullPid();
 
 	uint32_t curTDate = _base_data_mgr->calcTradingDate(stdPID, 0, 0, false);
 	bool isToday = (uDate == curTDate);
@@ -364,7 +364,7 @@ WTSTickSlice* WtRdmDtReader::readTickSliceByRange(const char* stdCode, uint64_t 
 {
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
-	const char* stdPID = cInfo.stdCommID();
+	const char* stdPID = commInfo->getFullPid();
 
 	pipe_rdmreader_log(_sink, LL_DEBUG, "Reading ticks of {} between {} and {}", stdCode, stime, etime);
 
@@ -404,7 +404,7 @@ WTSTickSlice* WtRdmDtReader::readTickSliceByRange(const char* stdCode, uint64_t 
 			const char* ruleTag = cInfo._ruletag;
 			if (strlen(ruleTag) > 0)
 			{
-				curCode = _hot_mgr->getCustomRawCode(ruleTag, cInfo.stdCommID(), nowTDate);
+				curCode = _hot_mgr->getCustomRawCode(ruleTag, stdPID, nowTDate);
 
 				pipe_rdmreader_log(_sink, LL_INFO, "{} contract on {} confirmed: {} -> {}", ruleTag, curTDate, stdCode, curCode.c_str());
 				hotCode = cInfo._product;
@@ -537,11 +537,7 @@ WTSTickSlice* WtRdmDtReader::readTickSliceByRange(const char* stdCode, uint64_t 
 		{
 			const char* ruleTag = cInfo._ruletag;
 			if (strlen(ruleTag) > 0)
-				curCode = _hot_mgr->getCustomRawCode(ruleTag, cInfo.stdCommID(), curTDate);
-			//else if (cInfo.isHot())
-			//	curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, curTDate);
-			//else if (cInfo.isSecond())
-			//	curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, curTDate);
+				curCode = _hot_mgr->getCustomRawCode(ruleTag, stdPID, curTDate);
 		}
 
 		TickBlockPair* tPair = getRTTickBlock(cInfo._exchg, curCode.c_str());
@@ -610,7 +606,7 @@ WTSOrdQueSlice* WtRdmDtReader::readOrdQueSliceByRange(const char* stdCode, uint6
 {
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
-	const char* stdPID = cInfo.stdCommID();
+	const char* stdPID = commInfo->getFullPid();
 
 	uint32_t rDate, rTime, rSecs;
 	//20190807124533900
@@ -785,7 +781,7 @@ WTSOrdDtlSlice* WtRdmDtReader::readOrdDtlSliceByRange(const char* stdCode, uint6
 {
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
-	const char* stdPID = cInfo.stdCommID();
+	const char* stdPID = commInfo->getFullPid();
 
 	uint32_t rDate, rTime, rSecs;
 	//20190807124533900
@@ -959,7 +955,7 @@ WTSTransSlice* WtRdmDtReader::readTransSliceByRange(const char* stdCode, uint64_
 {
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
-	const char* stdPID = cInfo.stdCommID();
+	const char* stdPID = commInfo->getFullPid();
 
 	uint32_t rDate, rTime, rSecs;
 	//20190807124533900
@@ -1784,9 +1780,9 @@ WTSKlineSlice* WtRdmDtReader::readKlineSliceByRange(const char* stdCode, WTSKlin
 {
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
-	const char* stdPID = cInfo.stdCommID();
+	const char* stdPID = commInfo->getFullPid();
 
-	std::string key = fmtutil::format("{}#{}", stdCode, period);
+	std::string key = fmt::format("{}#{}", stdCode, period);
 	auto it = _bars_cache.find(key);
 	bool bHasHisData = false;
 	if (it == _bars_cache.end())
@@ -2390,7 +2386,7 @@ WTSTickSlice* WtRdmDtReader::readTickSliceByCount(const char* stdCode, uint32_t 
 {
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
-	const char* stdPID = cInfo.stdCommID();
+	const char* stdPID = commInfo->getFullPid();
 
 	WTSSessionInfo* sInfo = _base_data_mgr->getSession(_base_data_mgr->getCommodity(cInfo._exchg, cInfo._code)->getSession());
 
