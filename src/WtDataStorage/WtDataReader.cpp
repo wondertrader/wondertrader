@@ -322,11 +322,7 @@ WTSTickSlice* WtDataReader::readTickSlice(const char* stdCode, uint32_t count, u
 	{
 		const char* ruleTag = cInfo._ruletag;
 		if (strlen(ruleTag) > 0)
-			curCode = _hot_mgr->getCustomRawCode(ruleTag, cInfo.stdCommID(), endTDate);
-		//else if (cInfo.isHot())
-		//	curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, endTDate);
-		//else if (cInfo.isSecond())
-		//	curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, endTDate);
+			curCode = _hot_mgr->getCustomRawCode(ruleTag, stdPID, endTDate);
 	}
 
 	//比较时间的对象
@@ -454,11 +450,7 @@ WTSOrdQueSlice* WtDataReader::readOrdQueSlice(const char* stdCode, uint32_t coun
 	{
 		const char* ruleTag = cInfo._ruletag;
 		if (strlen(ruleTag) > 0)
-			curCode = _hot_mgr->getCustomRawCode(ruleTag, cInfo.stdCommID(), endTDate);
-		//else if (cInfo.isHot())
-		//	curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, endTDate);
-		//else if (cInfo.isSecond())
-		//	curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, endTDate);
+			curCode = _hot_mgr->getCustomRawCode(ruleTag, stdPID, endTDate);
 	}
 
 	//比较时间的对象
@@ -601,11 +593,7 @@ WTSOrdDtlSlice* WtDataReader::readOrdDtlSlice(const char* stdCode, uint32_t coun
 	{
 		const char* ruleTag = cInfo._ruletag;
 		if (strlen(ruleTag) > 0)
-			curCode = _hot_mgr->getCustomRawCode(ruleTag, cInfo.stdCommID(), endTDate);
-		//else if (cInfo.isHot())
-		//	curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, endTDate);
-		//else if (cInfo.isSecond())
-		//	curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, endTDate);
+			curCode = _hot_mgr->getCustomRawCode(ruleTag, stdPID, endTDate);
 	}
 
 	//比较时间的对象
@@ -748,11 +736,7 @@ WTSTransSlice* WtDataReader::readTransSlice(const char* stdCode, uint32_t count,
 	{
 		const char* ruleTag = cInfo._ruletag;
 		if (strlen(ruleTag) > 0)
-			curCode = _hot_mgr->getCustomRawCode(ruleTag, cInfo.stdCommID(), endTDate);
-		//else if (cInfo.isHot())
-		//	curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, endTDate);
-		//else if (cInfo.isSecond())
-		//	curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, endTDate);
+			curCode = _hot_mgr->getCustomRawCode(ruleTag, stdPID, endTDate);
 	}
 
 	//比较时间的对象
@@ -1443,7 +1427,7 @@ bool WtDataReader::cacheHisBarsFromFile(void* codeInfo, const std::string& key, 
 	uint32_t curDate = TimeUtils::getCurDate();
 	uint32_t curTime = TimeUtils::getCurMin() / 100;
 
-	uint32_t endTDate = _base_data_mgr->calcTradingDate(cInfo->stdCommID(), curDate, curTime, false);
+	uint32_t endTDate = _base_data_mgr->calcTradingDate(stdPID, curDate, curTime, false);
 
 	std::string pname;
 	switch (period)
@@ -1620,7 +1604,7 @@ WTSKlineSlice* WtDataReader::readKlineSlice(const char* stdCode, WTSKlinePeriod 
 	const char* ruleTag = cInfo._ruletag;
 	if (strlen(ruleTag) > 0)
 	{
-		barsList._raw_code = _hot_mgr->getCustomRawCode(ruleTag, cInfo.stdCommID(), curTDate);
+		barsList._raw_code = _hot_mgr->getCustomRawCode(ruleTag, stdPID, curTDate);
 		pipe_reader_log(_sink, LL_INFO, "{} contract on {} confirmed: {} -> {}", ruleTag, curTDate, stdCode, barsList._raw_code.c_str());
 	}
 	else
