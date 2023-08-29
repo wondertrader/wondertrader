@@ -39,15 +39,15 @@ bool CsvReader::load_from_file(const char* filename)
 	StringVector fields = StrUtil::split(row, _item_splitter.c_str());
 	for (uint32_t i = 0; i < fields.size(); i++)
 	{
-		std::string field = StrUtil::trim(fields[i].c_str(), " ");
-		field = StrUtil::trim(fields[i].c_str(), "\n");
-		field = StrUtil::trim(fields[i].c_str());
-		field = StrUtil::trim(fields[i].c_str(), "\t");
-		field = StrUtil::trim(fields[i].c_str(), "\r");
-		if (field.empty())
+		StrUtil::trim(fields[i], " ");
+		StrUtil::trim(fields[i], "\n");
+		StrUtil::trim(fields[i], "\t");
+		StrUtil::trim(fields[i], "\r");
+
+		if (fields[i].empty())
 			break;
 
-		_fields_map[field] = i;
+		_fields_map[fields[i]] = i;
 	}
 
 	return true;
