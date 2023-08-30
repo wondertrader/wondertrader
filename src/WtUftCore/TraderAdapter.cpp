@@ -1211,7 +1211,7 @@ void TraderAdapter::onRspAccount(WTSArray* ayAccounts)
 
 		WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO, "[{}] Trading channel ready", _id.c_str());
 		for (auto sink : _sinks)
-			sink->on_channel_ready();
+			sink->on_channel_ready(_trading_day);
 	}
 }
 

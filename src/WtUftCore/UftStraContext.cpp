@@ -15,8 +15,15 @@
 
 #include "../Includes/UftStrategyDefs.h"
 #include "../Includes/WTSContractInfo.hpp"
+#include "../Includes/IBaseDataMgr.h"
+
+#include "../Share/decimal.h"
+#include "../Share/TimeUtils.hpp"
 
 #include "../WTSTools/WTSLogger.h"
+
+
+static const uint32_t DATA_SIZE_STEP = 1024;
 
 USING_NS_WTP;
 
@@ -31,6 +38,7 @@ UftStraContext::UftStraContext(WtUftEngine* engine, const char* name, bool bDepe
 	, _engine(engine)
 	, _dependent(bDependent)
 	, _strategy(NULL)
+	, _tradingday(0)
 {
 }
 
@@ -84,18 +92,338 @@ void UftStraContext::on_bar(const char* code, const char* period, uint32_t times
 
 void UftStraContext::on_trade(uint32_t localid, const char* stdCode, bool isLong, uint32_t offset, double vol, double price)
 {
+	if (!is_my_order(localid))
+		return;
+
+	WTSContractInfo* cInfo = _engine->get_contract_info(stdCode);
+
+	PosInfo& pItem = _positions[stdCode];
+
+	uint64_t now = TimeUtils::getLocalTimeNow();
+
+	bool isOpen = isLong;
+
+	if (isLong)
+	{
+		if (isOpen)
+		{
+			pItem.l_newvol += vol;
+
+
+			{
+				uint32_t idx = _pos_blk._block->_size;
+				_pos_blk._block->_size++;
+				uft::DetailStruct& ds = _pos_blk._block->_details[idx];
+				wt_strcpy(ds._code, cInfo->getCode());
+				wt_strcpy(ds._exchg, cInfo->getExchg());
+				ds._direct = 0;
+				ds._open_price = price;
+				ds._open_time = now;
+				ds._position_profit = 0;
+				ds._open_tdate = _tradingday;
+
+				ds._position_profit = 0;
+				ds._closed_volume = 0;
+				ds._closed_profit = 0;
+
+				pItem._details.emplace_back(&ds);
+			}
+
+			{
+				uint32_t tidx = _trd_blk._block->_size;
+				_trd_blk._block->_size++;
+				uft::TradeStruct& ts = _trd_blk._block->_trades[tidx];
+				wt_strcpy(ts._code, cInfo->getCode());
+				wt_strcpy(ts._exchg, cInfo->getExchg());
+				ts._direct = 0;
+				ts._offset = offset;
+				ts._price = price;
+				ts._volume = vol;
+				ts._trading_date = _tradingday;
+				ts._trading_time = now;
+			}
+		}
+		else if (offset == 2)
+		{
+			//处理平今
+			pItem.l_newvol -= vol;
+			
+			double left = vol;
+			for(uint32_t idx = pItem._valid_idx; idx < pItem._details.size(); idx++)
+			{
+				uft::DetailStruct* pDS = pItem._details[idx];
+				if(decimal::eq(pDS->_volume, 0.0))
+				{
+					pItem._valid_idx = idx;
+					continue;
+				}
+
+				if (pDS->_direct != 0 || pDS->_open_tdate != _tradingday)
+				{
+					continue;
+				}
+
+				double maxQty = std::min(left, pDS->_volume);
+				{
+					uint32_t ridx = _rnd_blk._block->_size;
+					_rnd_blk._block->_size++;
+					uft::RoundStruct& rs = _rnd_blk._block->_rounds[ridx];
+					wt_strcpy(rs._code, cInfo->getCode());
+					wt_strcpy(rs._exchg, cInfo->getExchg());
+
+					rs._open_price = pDS->_open_price;
+					rs._open_time = pDS->_open_time;
+					rs._close_price = price;
+					rs._close_time = now;
+					rs._direct = 0;
+					rs._volume = maxQty;
+					rs._profit = (rs._close_price - rs._open_price)*maxQty*cInfo->getCommInfo()->getVolScale();
+				}	
+
+				left -= maxQty;
+			}
+
+			{
+				uint32_t tidx = _trd_blk._block->_size;
+				_trd_blk._block->_size++;
+				uft::TradeStruct& ts = _trd_blk._block->_trades[tidx];
+				wt_strcpy(ts._code, cInfo->getCode());
+				wt_strcpy(ts._exchg, cInfo->getExchg());
+				ts._direct = 0;
+				ts._offset = offset;
+				ts._price = price;
+				ts._volume = vol;
+				ts._trading_date = _tradingday;
+				ts._trading_time = now;
+			}
+		}
+		else
+		{
+			//处理平昨
+			double left = vol;
+			double maxVol = min(left, pItem.l_prevol);
+			pItem.l_prevol -= maxVol;
+			left -= maxVol;
+			pItem.l_newvol -= left;
+
+			//处理平仓明细
+			left = vol;
+			for (uint32_t idx = pItem._valid_idx; idx < pItem._details.size(); idx++)
+			{
+				uft::DetailStruct* pDS = pItem._details[idx];
+				if (decimal::eq(pDS->_volume, 0.0))
+				{
+					pItem._valid_idx = idx;
+					continue;
+				}
+
+				if (pDS->_direct != 0)
+					continue;
+
+				double maxQty = std::min(left, pDS->_volume);
+				{
+					uint32_t ridx = _rnd_blk._block->_size;
+					_rnd_blk._block->_size++;
+					uft::RoundStruct& rs = _rnd_blk._block->_rounds[ridx];
+					wt_strcpy(rs._code, cInfo->getCode());
+					wt_strcpy(rs._exchg, cInfo->getExchg());
+
+					rs._open_price = pDS->_open_price;
+					rs._open_time = pDS->_open_time;
+					rs._close_price = price;
+					rs._close_time = now;
+					rs._direct = 0;
+					rs._volume = maxQty;
+					rs._profit = (rs._close_price - rs._open_price)*maxQty*cInfo->getCommInfo()->getVolScale();
+				}
+
+				left -= maxQty;
+			}
+
+			{
+				uint32_t tidx = _trd_blk._block->_size;
+				_trd_blk._block->_size++;
+				uft::TradeStruct& ts = _trd_blk._block->_trades[tidx];
+				wt_strcpy(ts._code, cInfo->getCode());
+				wt_strcpy(ts._exchg, cInfo->getExchg());
+				ts._direct = 0;
+				ts._offset = offset;
+				ts._price = price;
+				ts._volume = vol;
+				ts._trading_date = _tradingday;
+				ts._trading_time = now;
+			}
+		}
+	}
+	else
+	{
+		if (isOpen)
+		{
+			pItem.s_newvol += vol;
+
+			{
+				uint32_t idx = _pos_blk._block->_size;
+				_pos_blk._block->_size++;
+				uft::DetailStruct& ds = _pos_blk._block->_details[idx];
+				wt_strcpy(ds._code, cInfo->getCode());
+				wt_strcpy(ds._exchg, cInfo->getExchg());
+				ds._direct = 1;
+				ds._open_price = price;
+				ds._open_time = TimeUtils::getLocalTimeNow();
+				ds._position_profit = 0;
+				ds._open_tdate = _tradingday;
+
+				ds._position_profit = 0;
+				ds._closed_volume = 0;
+				ds._closed_profit = 0;
+
+				pItem._details.emplace_back(&ds);
+			}
+
+			{
+				uint32_t tidx = _trd_blk._block->_size;
+				_trd_blk._block->_size++;
+				uft::TradeStruct& ts = _trd_blk._block->_trades[tidx];
+				wt_strcpy(ts._code, cInfo->getCode());
+				wt_strcpy(ts._exchg, cInfo->getExchg());
+				ts._direct = 1;
+				ts._offset = offset;
+				ts._price = price;
+				ts._volume = vol;
+				ts._trading_date = _tradingday;
+				ts._trading_time = now;
+			}
+		}
+		else if (offset == 2)
+		{
+			pItem.s_newvol -= vol;
+
+			double left = vol;
+			for (uint32_t idx = pItem._valid_idx; idx < pItem._details.size(); idx++)
+			{
+				uft::DetailStruct* pDS = pItem._details[idx];
+				if (decimal::eq(pDS->_volume, 0.0))
+				{
+					pItem._valid_idx = idx;
+					continue;
+				}
+
+				if (pDS->_direct != 1 || pDS->_open_tdate != _tradingday)
+					continue;
+
+				double maxQty = std::min(left, pDS->_volume);
+				{
+					uint32_t ridx = _rnd_blk._block->_size;
+					_rnd_blk._block->_size++;
+					uft::RoundStruct& rs = _rnd_blk._block->_rounds[ridx];
+					wt_strcpy(rs._code, cInfo->getCode());
+					wt_strcpy(rs._exchg, cInfo->getExchg());
+
+					rs._open_price = pDS->_open_price;
+					rs._open_time = pDS->_open_time;
+					rs._close_price = price;
+					rs._close_time = now;
+					rs._direct = 1;
+					rs._volume = maxQty;
+					rs._profit = -1*(rs._close_price - rs._open_price)*maxQty*cInfo->getCommInfo()->getVolScale();
+				}
+
+				left -= maxQty;
+			}
+
+			{
+				uint32_t tidx = _trd_blk._block->_size;
+				_trd_blk._block->_size++;
+				uft::TradeStruct& ts = _trd_blk._block->_trades[tidx];
+				wt_strcpy(ts._code, cInfo->getCode());
+				wt_strcpy(ts._exchg, cInfo->getExchg());
+				ts._direct = 1;
+				ts._offset = offset;
+				ts._price = price;
+				ts._volume = vol;
+				ts._trading_date = _tradingday;
+				ts._trading_time = now;
+			}
+		}
+		else
+		{
+			double left = vol;
+			double maxVol = min(left, pItem.s_prevol);
+			pItem.s_prevol -= maxVol;
+			left -= maxVol;
+			pItem.s_newvol -= left;
+
+			//处理平仓明细
+			left = vol;
+			for (uint32_t idx = 0; idx < pItem._details.size(); idx++)
+			{
+				uft::DetailStruct* pDS = pItem._details[idx];
+				if (decimal::eq(pDS->_volume, 0.0))
+				{
+					pItem._valid_idx = idx;
+					continue;
+				}
+
+				if (pDS->_direct != 1)
+					continue;
+
+				double maxQty = std::min(left, pDS->_volume);
+				{
+					uint32_t ridx = _rnd_blk._block->_size;
+					_rnd_blk._block->_size++;
+					uft::RoundStruct& rs = _rnd_blk._block->_rounds[ridx];
+					wt_strcpy(rs._code, cInfo->getCode());
+					wt_strcpy(rs._exchg, cInfo->getExchg());
+
+					rs._open_price = pDS->_open_price;
+					rs._open_time = pDS->_open_time;
+					rs._close_price = price;
+					rs._close_time = now;
+					rs._direct = 1;
+					rs._volume = maxQty;
+					rs._profit = -1*(rs._close_price - rs._open_price)*maxQty*cInfo->getCommInfo()->getVolScale();
+				}
+
+				left -= maxQty;
+			}
+
+			{
+				uint32_t tidx = _trd_blk._block->_size;
+				_trd_blk._block->_size++;
+				uft::TradeStruct& ts = _trd_blk._block->_trades[tidx];
+				wt_strcpy(ts._code, cInfo->getCode());
+				wt_strcpy(ts._exchg, cInfo->getExchg());
+				ts._direct = 1;
+				ts._offset = offset;
+				ts._price = price;
+				ts._volume = vol;
+				ts._trading_date = _tradingday;
+				ts._trading_time = now;
+			}
+		}
+	}
+
 	if (_strategy)
 		_strategy->on_trade(this, localid, stdCode, isLong, offset, vol, price);
 }
 
 void UftStraContext::on_order(uint32_t localid, const char* stdCode, bool isLong, uint32_t offset, double totalQty, double leftQty, double price, bool isCanceled /* = false */)
 {
+	if (!is_my_order(localid))
+		return;
+
 	if (_strategy)
 		_strategy->on_order(this, localid, stdCode, isLong, offset, totalQty, leftQty, price, isCanceled);
 }
 
-void UftStraContext::on_channel_ready()
+void UftStraContext::on_channel_ready(uint32_t tradingday)
 {
+	if (_tradingday != tradingday)
+	{
+		_tradingday = tradingday;
+		loadBlocks();
+	}
+
 	if (_strategy)
 		_strategy->on_channel_ready(this);
 }
@@ -108,6 +436,9 @@ void UftStraContext::on_channel_lost()
 
 void UftStraContext::on_entrust(uint32_t localid, const char* stdCode, bool bSuccess, const char* message)
 {
+	if (!is_my_order(localid))
+		return;
+
 	if (_strategy)
 		_strategy->on_entrust(localid, bSuccess, message);
 }
@@ -282,32 +613,51 @@ OrderIDs UftStraContext::stra_cancel_all(const char* stdCode)
 
 OrderIDs UftStraContext::stra_buy(const char* stdCode, double price, double qty, int flag /* = 0 */)
 {
-	return _trader->buy(stdCode, price, qty, flag, false);
+	auto ids = _trader->buy(stdCode, price, qty, flag, false);
+
+	for(uint32_t localid : ids)
+	{
+		_order_ids.emplace(localid);
+	}
+	return std::move(ids);
 }
 
 OrderIDs UftStraContext::stra_sell(const char* stdCode, double price, double qty, int flag /* = 0 */)
 {
-	return _trader->sell(stdCode, price, qty, flag, false);
+	auto ids = _trader->sell(stdCode, price, qty, flag, false);
+	for (uint32_t localid : ids)
+	{
+		_order_ids.emplace(localid);
+	}
+	return std::move(ids);
 }
 
 uint32_t UftStraContext::stra_enter_long(const char* stdCode, double price, double qty, int flag /* = 0 */)
 {
-	return _trader->openLong(stdCode, price, qty, flag);
+	uint32_t localid = _trader->openLong(stdCode, price, qty, flag);
+	_order_ids.emplace(localid);
+	return localid;
 }
 
 uint32_t UftStraContext::stra_exit_long(const char* stdCode, double price, double qty, bool isToday /* = false */, int flag /* = 0 */)
 {
-	return _trader->closeLong(stdCode, price, qty, isToday, flag);
+	uint32_t localid = _trader->closeLong(stdCode, price, qty, isToday, flag);
+	_order_ids.emplace(localid);
+	return localid;
 }
 
 uint32_t UftStraContext::stra_enter_short(const char* stdCode, double price, double qty, int flag /* = 0 */)
 {
-	return _trader->openShort(stdCode, price, qty, flag);
+	uint32_t localid = _trader->openShort(stdCode, price, qty, flag);
+	_order_ids.emplace(localid);
+	return localid;
 }
 
 uint32_t UftStraContext::stra_exit_short(const char* stdCode, double price, double qty, bool isToday /* = false */, int flag /* = 0 */)
 {
-	return _trader->closeShort(stdCode, price, qty, isToday, flag);
+	uint32_t localid = _trader->closeShort(stdCode, price, qty, isToday, flag);
+	_order_ids.emplace(localid);
+	return localid;
 }
 
 WTSCommodityInfo* UftStraContext::stra_get_comminfo(const char* stdCode)
@@ -411,4 +761,209 @@ void UftStraContext::stra_log_debug(const char* message)
 void UftStraContext::stra_log_error(const char* message)
 {
 	WTSLogger::log_dyn_raw("strategy", _name.c_str(), LL_ERROR, message);
+}
+
+void UftStraContext::loadBlocks()
+{
+	if (_tradingday == 0)
+		return;
+
+	if(_pos_blk._block == NULL || _pos_blk._block->_date != _tradingday)
+	{
+		std::string folder = fmtutil::format("{}{}/", WtHelper::getOutputDir(), _name);
+		if (!StdFile::exists(folder.c_str()))
+			BoostFile::create_directories(folder.c_str());
+
+		std::string filename = folder + "position.membin";
+		bool isNew = false;
+		if(!StdFile::exists(filename.c_str()))
+		{
+			std::size_t uSize = sizeof(uft::PositionBlock) + sizeof(uft::DetailStruct) * 1024;
+			BoostFile bf;
+			bf.create_new_file(filename.c_str());
+			bf.truncate_file(uSize);
+			bf.close_file();
+
+			isNew = true;
+		}
+
+		_pos_blk._file.reset(new BoostMappingFile);
+		if (_pos_blk._file->map(filename.c_str()))
+		{
+			_pos_blk._block = (uft::PositionBlock*)_pos_blk._file->addr();
+			//复用原文件的好处就是，mmap文件大小会满足历史出现过的单日最高数据量，以后再扩的概率就很低了
+			if(_pos_blk._block->_date != _tradingday)
+			{	
+				//如果日期不同，先读进来未完成的持仓，再清理掉原始数据
+				std::vector<uft::DetailStruct> details;
+				for(uint32_t i = 0; i < _pos_blk._block->_size; i++)
+				{
+					const uft::DetailStruct& ds = _pos_blk._block->_details[i];
+					if(decimal::eq(ds._volume, 0))
+						continue;
+
+					WTSContractInfo* cInfo = _engine->get_basedata_mgr()->getContract(ds._code, ds._exchg);
+					if(cInfo == NULL)
+						continue;
+
+					details.emplace_back(ds);
+				}
+
+				memset(_pos_blk._block->_details, 0, sizeof(uft::DetailStruct)*_pos_blk._block->_size);
+
+				if (!details.empty())
+					memcpy(_pos_blk._block->_details, details.data(), sizeof(uft::DetailStruct)*details.size());
+				_pos_blk._block->_size = details.size();
+				
+			}
+
+			{
+				//把剩余数量不为0的持仓读进来
+				for (uint32_t i = 0; i < _pos_blk._block->_size; i++)
+				{
+					uft::DetailStruct& ds = _pos_blk._block->_details[i];
+					if (decimal::eq(ds._volume, 0))
+						continue;
+
+					WTSContractInfo* cInfo = _engine->get_basedata_mgr()->getContract(ds._code, ds._exchg);
+					if(cInfo == NULL)
+						continue;
+
+					PosInfo& posInfo = _positions[cInfo->getFullCode()];
+					posInfo._details.emplace_back(&ds);
+				}
+			}
+		}
+		else
+		{
+			_pos_blk._file.reset();
+			_pos_blk._block = NULL;
+		}
+	}
+
+	if (_ord_blk._block == NULL || _ord_blk._block->_date != _tradingday)
+	{
+		std::string folder = fmtutil::format("{}{}/", WtHelper::getOutputDir(), _name);
+		if (!StdFile::exists(folder.c_str()))
+			BoostFile::create_directories(folder.c_str());
+
+		std::string filename = folder + "order.membin";
+		bool isNew = false;
+		if (!StdFile::exists(filename.c_str()))
+		{
+			std::size_t uSize = sizeof(uft::OrderBlock) + sizeof(uft::OrderStruct) * 1024;
+			BoostFile bf;
+			bf.create_new_file(filename.c_str());
+			bf.truncate_file(uSize);
+			bf.close_file();
+
+			isNew = true;
+		}
+
+		_ord_blk._file.reset(new BoostMappingFile);
+		if (_ord_blk._file->map(filename.c_str()))
+		{
+			_ord_blk._block = (uft::OrderBlock*)_ord_blk._file->addr();
+			//交易日不一致就把数据清掉
+			//复用原文件的好处就是，mmap文件大小会满足历史出现过的单日最高数据量，以后再扩的概率就很低了
+			if (_ord_blk._block->_date != _tradingday)
+			{
+				memset(_ord_blk._block->_orders, 0, sizeof(uft::OrderStruct)*_ord_blk._block->_size);
+				_ord_blk._block->_size = 0;
+			}
+			else
+			{
+				//把未完成单读到内存里来
+			}
+		}
+		else
+		{
+			_ord_blk._file.reset();
+			_ord_blk._block = NULL;
+		}
+	}
+
+	if (_trd_blk._block == NULL || _trd_blk._block->_date != _tradingday)
+	{
+		std::string folder = fmtutil::format("{}{}/", WtHelper::getOutputDir(), _name);
+		if (!StdFile::exists(folder.c_str()))
+			BoostFile::create_directories(folder.c_str());
+
+		std::string filename = folder + "trade.membin";
+		bool isNew = false;
+		if (!StdFile::exists(filename.c_str()))
+		{
+			std::size_t uSize = sizeof(uft::TradeBlock) + sizeof(uft::TradeStruct) * 1024;
+			BoostFile bf;
+			bf.create_new_file(filename.c_str());
+			bf.truncate_file(uSize);
+			bf.close_file();
+
+			isNew = true;
+		}
+
+		_trd_blk._file.reset(new BoostMappingFile);
+		if (_trd_blk._file->map(filename.c_str()))
+		{
+			_trd_blk._block = (uft::TradeBlock*)_trd_blk._file->addr();
+			//交易日不一致就把数据清掉
+			//复用原文件的好处就是，mmap文件大小会满足历史出现过的单日最高数据量，以后再扩的概率就很低了
+			if (_trd_blk._block->_date != _tradingday)
+			{
+				memset(_trd_blk._block->_trades, 0, sizeof(uft::TradeStruct)*_trd_blk._block->_size);
+				_trd_blk._block->_size = 0;
+			}
+			else
+			{
+				//成交数据不用读进来了
+			}
+		}
+		else
+		{
+			_trd_blk._file.reset();
+			_trd_blk._block = NULL;
+		}
+	}
+
+	if (_rnd_blk._block == NULL || _rnd_blk._block->_date != _tradingday)
+	{
+		std::string folder = fmtutil::format("{}{}/", WtHelper::getOutputDir(), _name);
+		if (!StdFile::exists(folder.c_str()))
+			BoostFile::create_directories(folder.c_str());
+
+		std::string filename = folder + "round.membin";
+		bool isNew = false;
+		if (!StdFile::exists(filename.c_str()))
+		{
+			std::size_t uSize = sizeof(uft::RoundBlock) + sizeof(uft::RoundStruct) * 1024;
+			BoostFile bf;
+			bf.create_new_file(filename.c_str());
+			bf.truncate_file(uSize);
+			bf.close_file();
+
+			isNew = true;
+		}
+
+		_rnd_blk._file.reset(new BoostMappingFile);
+		if (_rnd_blk._file->map(filename.c_str()))
+		{
+			_rnd_blk._block = (uft::RoundBlock*)_rnd_blk._file->addr();
+			//交易日不一致就把数据清掉
+			//复用原文件的好处就是，mmap文件大小会满足历史出现过的单日最高数据量，以后再扩的概率就很低了
+			if (_rnd_blk._block->_date != _tradingday)
+			{
+				memset(_rnd_blk._block->_rounds, 0, sizeof(uft::RoundStruct)*_rnd_blk._block->_size);
+				_rnd_blk._block->_size = 0;
+			}
+			else
+			{
+				//回合数据不用读到进来了
+			}
+		}
+		else
+		{
+			_rnd_blk._file.reset();
+			_rnd_blk._block = NULL;
+		}
+	}
 }

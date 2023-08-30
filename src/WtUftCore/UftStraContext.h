@@ -14,6 +14,9 @@
 #include "../Includes/FasterDefs.h"
 #include "../Share/fmtlib.h"
 
+#include "../Share/BoostMappingFile.hpp"
+typedef std::shared_ptr<BoostMappingFile> BoostMFPtr;
+
 class UftStrategy;
 
 NS_WTP_BEGIN
@@ -50,7 +53,7 @@ public:
 
 	virtual void on_order(uint32_t localid, const char* stdCode, bool isLong, uint32_t offset, double totalQty, double leftQty, double price, bool isCanceled = false) override;
 
-	virtual void on_channel_ready() override;
+	virtual void on_channel_ready(uint32_t tradingday) override;
 
 	virtual void on_channel_lost() override;
 
@@ -221,10 +224,107 @@ private:
 	}
 
 private:
+	typedef struct _PosBlkPair
+	{
+		uft::PositionBlock*	_block;
+		BoostMFPtr			_file;
+		SpinMutex			_mutex;
+
+		_PosBlkPair()
+		{
+			_block = NULL;
+			_file = NULL;
+		}
+
+	} PosBlkPair;
+
+	typedef struct _OrdBlkPair
+	{
+		uft::OrderBlock*	_block;
+		BoostMFPtr			_file;
+		SpinMutex			_mutex;
+
+		_OrdBlkPair()
+		{
+			_block = NULL;
+			_file = NULL;
+		}
+
+	} OrdBlkPair;
+
+	typedef struct _TrdBlkPair
+	{
+		uft::TradeBlock*	_block;
+		BoostMFPtr			_file;
+		SpinMutex			_mutex;
+
+		_TrdBlkPair()
+		{
+			_block = NULL;
+			_file = NULL;
+		}
+
+	} TrdBlkPair;
+
+	typedef struct _RndBlkPair
+	{
+		uft::RoundBlock*	_block;
+		BoostMFPtr			_file;
+		SpinMutex			_mutex;
+
+		_RndBlkPair()
+		{
+			_block = NULL;
+			_file = NULL;
+		}
+
+	} RndBlkPair;
+
+	template<typename T>
+	void*	resizeBlock(BoostMFPtr& mfPtr, uint32_t nCount);
+
+	void	loadBlocks();
+
+	PosBlkPair		_pos_blk;
+	OrdBlkPair		_ord_blk;
+	TrdBlkPair		_trd_blk;
+	RndBlkPair		_rnd_blk;
+
+	typedef struct _Position
+	{
+		//多仓数据
+		double	l_newvol;
+		double	l_prevol;
+
+		//空仓数据
+		double	s_newvol;
+		double	s_prevol;
+
+		uint32_t _valid_idx;
+
+		std::vector<uft::DetailStruct*> _details;
+
+		_Position():l_newvol(0),l_prevol(0), s_newvol(0), s_prevol(0), _valid_idx(0)
+		{
+		}
+	} PosInfo;
+
+	wt_hashmap<std::string, PosInfo> _positions;
+
+	wt_hashset<uint32_t> _order_ids;
+
+	inline bool is_my_order(uint32_t localid) const
+	{
+		auto it = _order_ids.find(localid);
+		return it != _order_ids.end();
+	}
+
+private:
 	uint32_t		_context_id;
 	WtUftEngine*	_engine;
 	TraderAdapter*	_trader;
 	bool			_dependent;
+	uint32_t		_tradingday;
 
 	typedef wt_hashmap<uint32_t, std::string> OrderMap;
 	OrderMap		_orders;

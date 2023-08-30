@@ -34,7 +34,7 @@ public:
 	/*
 	 *	交易通道就绪
 	 */
-	virtual void on_channel_ready() = 0;
+	virtual void on_channel_ready(uint32_t tradingday) = 0;
 
 	/*
 	 *	交易通道丢失
