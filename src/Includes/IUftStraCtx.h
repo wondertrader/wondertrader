@@ -69,7 +69,7 @@ public:
 	virtual void	watch_param(const char* name, int64_t val){}
 	virtual void	commit_param_watcher() {}
 
-	virtual const char*		read_param(const char* name, const char* defVal = "") { return defVal; }
+	virtual const char*	read_param(const char* name, const char* defVal = "") { return defVal; }
 	virtual double		read_param(const char* name, double defVal = 0) { return defVal; }
 	virtual uint32_t	read_param(const char* name, uint32_t defVal = 0) { return defVal; }
 	virtual uint64_t	read_param(const char* name, uint64_t defVal = 0) { return defVal; }
@@ -221,6 +221,13 @@ public:
 	 *	
 	 */
 	virtual double stra_enum_position(const char* stdCode) = 0;
+
+	/*
+	 *	获取本地持仓
+	 *	@stdCode	代码，格式如SSE.600000
+	 *	@isLong		多头or空头
+	 */
+	virtual double stra_get_local_position(const char* stdCode, int32_t dirFlag = 3) = 0;
 
 	/*
 	 *	获取最新价格

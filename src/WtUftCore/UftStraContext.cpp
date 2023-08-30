@@ -23,7 +23,7 @@
 #include "../WTSTools/WTSLogger.h"
 
 
-static const uint32_t DATA_SIZE_STEP = 1024;
+static const uint32_t DATA_SIZE_STEP = 8000;	//信息量每天最多4000
 
 USING_NS_WTP;
 
@@ -33,10 +33,9 @@ inline uint32_t makeUftCtxId()
 	return _auto_context_id.fetch_add(1);
 }
 
-UftStraContext::UftStraContext(WtUftEngine* engine, const char* name, bool bDependent /* = false */)
+UftStraContext::UftStraContext(WtUftEngine* engine, const char* name)
 	: IUftStraCtx(name)
 	, _engine(engine)
-	, _dependent(bDependent)
 	, _strategy(NULL)
 	, _tradingday(0)
 {
@@ -107,10 +106,10 @@ void UftStraContext::on_trade(uint32_t localid, const char* stdCode, bool isLong
 	{
 		if (isOpen)
 		{
-			pItem.l_newvol += vol;
-
+			pItem.l_volume += vol;
 
 			{
+				SpinLock lock(_pos_blk._mutex);
 				uint32_t idx = _pos_blk._block->_size;
 				_pos_blk._block->_size++;
 				uft::DetailStruct& ds = _pos_blk._block->_details[idx];
@@ -130,6 +129,7 @@ void UftStraContext::on_trade(uint32_t localid, const char* stdCode, bool isLong
 			}
 
 			{
+				SpinLock lock(_trd_blk._mutex);
 				uint32_t tidx = _trd_blk._block->_size;
 				_trd_blk._block->_size++;
 				uft::TradeStruct& ts = _trd_blk._block->_trades[tidx];
@@ -143,10 +143,10 @@ void UftStraContext::on_trade(uint32_t localid, const char* stdCode, bool isLong
 				ts._trading_time = now;
 			}
 		}
-		else if (offset == 2)
+		else
 		{
 			//处理平今
-			pItem.l_newvol -= vol;
+			pItem.l_volume -= vol;
 			
 			double left = vol;
 			for(uint32_t idx = pItem._valid_idx; idx < pItem._details.size(); idx++)
@@ -158,13 +158,14 @@ void UftStraContext::on_trade(uint32_t localid, const char* stdCode, bool isLong
 					continue;
 				}
 
-				if (pDS->_direct != 0 || pDS->_open_tdate != _tradingday)
+				if (pDS->_direct != 0)
 				{
 					continue;
 				}
 
 				double maxQty = std::min(left, pDS->_volume);
 				{
+					SpinLock lock(_rnd_blk._mutex);
 					uint32_t ridx = _rnd_blk._block->_size;
 					_rnd_blk._block->_size++;
 					uft::RoundStruct& rs = _rnd_blk._block->_rounds[ridx];
@@ -184,63 +185,7 @@ void UftStraContext::on_trade(uint32_t localid, const char* stdCode, bool isLong
 			}
 
 			{
-				uint32_t tidx = _trd_blk._block->_size;
-				_trd_blk._block->_size++;
-				uft::TradeStruct& ts = _trd_blk._block->_trades[tidx];
-				wt_strcpy(ts._code, cInfo->getCode());
-				wt_strcpy(ts._exchg, cInfo->getExchg());
-				ts._direct = 0;
-				ts._offset = offset;
-				ts._price = price;
-				ts._volume = vol;
-				ts._trading_date = _tradingday;
-				ts._trading_time = now;
-			}
-		}
-		else
-		{
-			//处理平昨
-			double left = vol;
-			double maxVol = min(left, pItem.l_prevol);
-			pItem.l_prevol -= maxVol;
-			left -= maxVol;
-			pItem.l_newvol -= left;
-
-			//处理平仓明细
-			left = vol;
-			for (uint32_t idx = pItem._valid_idx; idx < pItem._details.size(); idx++)
-			{
-				uft::DetailStruct* pDS = pItem._details[idx];
-				if (decimal::eq(pDS->_volume, 0.0))
-				{
-					pItem._valid_idx = idx;
-					continue;
-				}
-
-				if (pDS->_direct != 0)
-					continue;
-
-				double maxQty = std::min(left, pDS->_volume);
-				{
-					uint32_t ridx = _rnd_blk._block->_size;
-					_rnd_blk._block->_size++;
-					uft::RoundStruct& rs = _rnd_blk._block->_rounds[ridx];
-					wt_strcpy(rs._code, cInfo->getCode());
-					wt_strcpy(rs._exchg, cInfo->getExchg());
-
-					rs._open_price = pDS->_open_price;
-					rs._open_time = pDS->_open_time;
-					rs._close_price = price;
-					rs._close_time = now;
-					rs._direct = 0;
-					rs._volume = maxQty;
-					rs._profit = (rs._close_price - rs._open_price)*maxQty*cInfo->getCommInfo()->getVolScale();
-				}
-
-				left -= maxQty;
-			}
-
-			{
+				SpinLock lock(_trd_blk._mutex);
 				uint32_t tidx = _trd_blk._block->_size;
 				_trd_blk._block->_size++;
 				uft::TradeStruct& ts = _trd_blk._block->_trades[tidx];
@@ -259,9 +204,10 @@ void UftStraContext::on_trade(uint32_t localid, const char* stdCode, bool isLong
 	{
 		if (isOpen)
 		{
-			pItem.s_newvol += vol;
+			pItem.s_volume += vol;
 
 			{
+				SpinLock lock(_pos_blk._mutex);
 				uint32_t idx = _pos_blk._block->_size;
 				_pos_blk._block->_size++;
 				uft::DetailStruct& ds = _pos_blk._block->_details[idx];
@@ -281,57 +227,7 @@ void UftStraContext::on_trade(uint32_t localid, const char* stdCode, bool isLong
 			}
 
 			{
-				uint32_t tidx = _trd_blk._block->_size;
-				_trd_blk._block->_size++;
-				uft::TradeStruct& ts = _trd_blk._block->_trades[tidx];
-				wt_strcpy(ts._code, cInfo->getCode());
-				wt_strcpy(ts._exchg, cInfo->getExchg());
-				ts._direct = 1;
-				ts._offset = offset;
-				ts._price = price;
-				ts._volume = vol;
-				ts._trading_date = _tradingday;
-				ts._trading_time = now;
-			}
-		}
-		else if (offset == 2)
-		{
-			pItem.s_newvol -= vol;
-
-			double left = vol;
-			for (uint32_t idx = pItem._valid_idx; idx < pItem._details.size(); idx++)
-			{
-				uft::DetailStruct* pDS = pItem._details[idx];
-				if (decimal::eq(pDS->_volume, 0.0))
-				{
-					pItem._valid_idx = idx;
-					continue;
-				}
-
-				if (pDS->_direct != 1 || pDS->_open_tdate != _tradingday)
-					continue;
-
-				double maxQty = std::min(left, pDS->_volume);
-				{
-					uint32_t ridx = _rnd_blk._block->_size;
-					_rnd_blk._block->_size++;
-					uft::RoundStruct& rs = _rnd_blk._block->_rounds[ridx];
-					wt_strcpy(rs._code, cInfo->getCode());
-					wt_strcpy(rs._exchg, cInfo->getExchg());
-
-					rs._open_price = pDS->_open_price;
-					rs._open_time = pDS->_open_time;
-					rs._close_price = price;
-					rs._close_time = now;
-					rs._direct = 1;
-					rs._volume = maxQty;
-					rs._profit = -1*(rs._close_price - rs._open_price)*maxQty*cInfo->getCommInfo()->getVolScale();
-				}
-
-				left -= maxQty;
-			}
-
-			{
+				SpinLock lock(_trd_blk._mutex);
 				uint32_t tidx = _trd_blk._block->_size;
 				_trd_blk._block->_size++;
 				uft::TradeStruct& ts = _trd_blk._block->_trades[tidx];
@@ -347,15 +243,10 @@ void UftStraContext::on_trade(uint32_t localid, const char* stdCode, bool isLong
 		}
 		else
 		{
-			double left = vol;
-			double maxVol = min(left, pItem.s_prevol);
-			pItem.s_prevol -= maxVol;
-			left -= maxVol;
-			pItem.s_newvol -= left;
+			pItem.s_volume -= vol;
 
-			//处理平仓明细
-			left = vol;
-			for (uint32_t idx = 0; idx < pItem._details.size(); idx++)
+			double left = vol;
+			for (uint32_t idx = pItem._valid_idx; idx < pItem._details.size(); idx++)
 			{
 				uft::DetailStruct* pDS = pItem._details[idx];
 				if (decimal::eq(pDS->_volume, 0.0))
@@ -369,6 +260,7 @@ void UftStraContext::on_trade(uint32_t localid, const char* stdCode, bool isLong
 
 				double maxQty = std::min(left, pDS->_volume);
 				{
+					SpinLock lock(_rnd_blk._mutex);
 					uint32_t ridx = _rnd_blk._block->_size;
 					_rnd_blk._block->_size++;
 					uft::RoundStruct& rs = _rnd_blk._block->_rounds[ridx];
@@ -388,6 +280,7 @@ void UftStraContext::on_trade(uint32_t localid, const char* stdCode, bool isLong
 			}
 
 			{
+				SpinLock lock(_trd_blk._mutex);
 				uint32_t tidx = _trd_blk._block->_size;
 				_trd_blk._block->_size++;
 				uft::TradeStruct& ts = _trd_blk._block->_trades[tidx];
@@ -409,8 +302,34 @@ void UftStraContext::on_trade(uint32_t localid, const char* stdCode, bool isLong
 
 void UftStraContext::on_order(uint32_t localid, const char* stdCode, bool isLong, uint32_t offset, double totalQty, double leftQty, double price, bool isCanceled /* = false */)
 {
-	if (!is_my_order(localid))
+	auto it = _order_ids.find(localid);
+	if (it == _order_ids.end())
 		return;
+
+	WTSContractInfo* cInfo = _engine->get_contract_info(stdCode);
+	uft::OrderStruct*& curOrd = it->second;
+	if(curOrd == NULL)
+	{
+		SpinLock lock(_ord_blk._mutex);
+		uint32_t idx = _ord_blk._block->_size;
+		_ord_blk._block->_size++;
+		uft::OrderStruct& os = _ord_blk._block->_orders[idx];
+		wt_strcpy(os._code, cInfo->getCode());
+		wt_strcpy(os._exchg, cInfo->getExchg());
+		os._direct = 0;
+		os._offset = offset;
+		os._volume = totalQty;
+		os._price = price;
+		os._left = leftQty;
+		os._oder_time = TimeUtils::getLocalTimeNow();
+
+		if (isCanceled)
+			os._state = 2;
+		else
+			os._state = leftQty == 0 ? 1 : 0;
+
+		curOrd = &os;
+	}
 
 	if (_strategy)
 		_strategy->on_order(this, localid, stdCode, isLong, offset, totalQty, leftQty, price, isCanceled);
@@ -422,6 +341,24 @@ void UftStraContext::on_channel_ready(uint32_t tradingday)
 	{
 		_tradingday = tradingday;
 		loadBlocks();
+	}
+
+	if (_strategy)
+	{
+		for (const auto& v : _positions)
+		{
+			const char* stdCode = v.first.c_str();
+			const PosInfo& pInfo = v.second;
+			if (decimal::gt(pInfo.long_position(), 0))
+			{
+				_strategy->on_position(this, stdCode, true, pInfo.l_volume, pInfo.l_volume, 0, 0);
+			}
+
+			if (decimal::gt(pInfo.short_position(), 0))
+			{
+				_strategy->on_position(this, stdCode, false, pInfo.s_volume, pInfo.s_volume, 0, 0);
+			}
+		}
 	}
 
 	if (_strategy)
@@ -445,8 +382,9 @@ void UftStraContext::on_entrust(uint32_t localid, const char* stdCode, bool bSuc
 
 void UftStraContext::on_position(const char* stdCode, bool isLong, double prevol, double preavail, double newvol, double newavail, uint32_t tradingday)
 {
-	if (_strategy)
-		_strategy->on_position(this, stdCode, isLong, prevol, preavail, newvol, newavail);
+	//账户的持仓通知不给策略了
+	//if (_strategy)
+	//	_strategy->on_position(this, stdCode, isLong, prevol, preavail, newvol, newavail);
 }
 
 void UftStraContext::on_session_begin(uint32_t uTDate)
@@ -562,6 +500,23 @@ double UftStraContext::stra_get_position(const char* stdCode, bool bOnlyValid /*
 	return _trader->getPosition(stdCode, bOnlyValid, iFlag);
 }
 
+double UftStraContext::stra_get_local_position(const char* stdCode, int32_t dirFlag /* = 3 */)
+{
+	auto it = _positions.find(stdCode);
+	if (it == _positions.end())
+		return 0.0;
+
+	const PosInfo& pInfo = it->second;
+	double ret = 0;
+	if (dirFlag & 1)
+		ret += pInfo.l_volume;
+
+	if (dirFlag & 2)
+		ret -= pInfo.s_volume;
+
+	return ret;
+}
+
 double UftStraContext::stra_enum_position(const char* stdCode)
 {
 	return _trader->enumPosition(stdCode);
@@ -617,7 +572,7 @@ OrderIDs UftStraContext::stra_buy(const char* stdCode, double price, double qty,
 
 	for(uint32_t localid : ids)
 	{
-		_order_ids.emplace(localid);
+		_order_ids[localid] = NULL;
 	}
 	return std::move(ids);
 }
@@ -627,7 +582,7 @@ OrderIDs UftStraContext::stra_sell(const char* stdCode, double price, double qty
 	auto ids = _trader->sell(stdCode, price, qty, flag, false);
 	for (uint32_t localid : ids)
 	{
-		_order_ids.emplace(localid);
+		_order_ids[localid] = NULL;
 	}
 	return std::move(ids);
 }
@@ -635,28 +590,28 @@ OrderIDs UftStraContext::stra_sell(const char* stdCode, double price, double qty
 uint32_t UftStraContext::stra_enter_long(const char* stdCode, double price, double qty, int flag /* = 0 */)
 {
 	uint32_t localid = _trader->openLong(stdCode, price, qty, flag);
-	_order_ids.emplace(localid);
+	_order_ids[localid] = NULL;
 	return localid;
 }
 
 uint32_t UftStraContext::stra_exit_long(const char* stdCode, double price, double qty, bool isToday /* = false */, int flag /* = 0 */)
 {
 	uint32_t localid = _trader->closeLong(stdCode, price, qty, isToday, flag);
-	_order_ids.emplace(localid);
+	_order_ids[localid] = NULL;
 	return localid;
 }
 
 uint32_t UftStraContext::stra_enter_short(const char* stdCode, double price, double qty, int flag /* = 0 */)
 {
 	uint32_t localid = _trader->openShort(stdCode, price, qty, flag);
-	_order_ids.emplace(localid);
+	_order_ids[localid] = NULL;
 	return localid;
 }
 
 uint32_t UftStraContext::stra_exit_short(const char* stdCode, double price, double qty, bool isToday /* = false */, int flag /* = 0 */)
 {
 	uint32_t localid = _trader->closeShort(stdCode, price, qty, isToday, flag);
-	_order_ids.emplace(localid);
+	_order_ids[localid] = NULL;
 	return localid;
 }
 
@@ -768,17 +723,17 @@ void UftStraContext::loadBlocks()
 	if (_tradingday == 0)
 		return;
 
+	std::string folder = fmtutil::format("{}{}/", WtHelper::getOutputDir(), _name);
+	if (!StdFile::exists(folder.c_str()))
+		BoostFile::create_directories(folder.c_str());
+
 	if(_pos_blk._block == NULL || _pos_blk._block->_date != _tradingday)
 	{
-		std::string folder = fmtutil::format("{}{}/", WtHelper::getOutputDir(), _name);
-		if (!StdFile::exists(folder.c_str()))
-			BoostFile::create_directories(folder.c_str());
-
 		std::string filename = folder + "position.membin";
 		bool isNew = false;
 		if(!StdFile::exists(filename.c_str()))
 		{
-			std::size_t uSize = sizeof(uft::PositionBlock) + sizeof(uft::DetailStruct) * 1024;
+			std::size_t uSize = sizeof(uft::PositionBlock) + sizeof(uft::DetailStruct) * DATA_SIZE_STEP;
 			BoostFile bf;
 			bf.create_new_file(filename.c_str());
 			bf.truncate_file(uSize);
@@ -814,6 +769,7 @@ void UftStraContext::loadBlocks()
 				if (!details.empty())
 					memcpy(_pos_blk._block->_details, details.data(), sizeof(uft::DetailStruct)*details.size());
 				_pos_blk._block->_size = details.size();
+				_pos_blk._block->_date = _tradingday;
 				
 			}
 
@@ -831,6 +787,17 @@ void UftStraContext::loadBlocks()
 
 					PosInfo& posInfo = _positions[cInfo->getFullCode()];
 					posInfo._details.emplace_back(&ds);
+
+					if(ds._direct == 0)
+					{
+						posInfo.l_opencost += ds._volume*ds._open_price*cInfo->getCommInfo()->getVolScale();
+						posInfo.l_volume += ds._volume;
+					}
+					else
+					{
+						posInfo.s_opencost += ds._volume*ds._open_price*cInfo->getCommInfo()->getVolScale();
+						posInfo.s_volume += ds._volume;
+					}
 				}
 			}
 		}
@@ -843,15 +810,11 @@ void UftStraContext::loadBlocks()
 
 	if (_ord_blk._block == NULL || _ord_blk._block->_date != _tradingday)
 	{
-		std::string folder = fmtutil::format("{}{}/", WtHelper::getOutputDir(), _name);
-		if (!StdFile::exists(folder.c_str()))
-			BoostFile::create_directories(folder.c_str());
-
 		std::string filename = folder + "order.membin";
 		bool isNew = false;
 		if (!StdFile::exists(filename.c_str()))
 		{
-			std::size_t uSize = sizeof(uft::OrderBlock) + sizeof(uft::OrderStruct) * 1024;
+			std::size_t uSize = sizeof(uft::OrderBlock) + sizeof(uft::OrderStruct) * DATA_SIZE_STEP;
 			BoostFile bf;
 			bf.create_new_file(filename.c_str());
 			bf.truncate_file(uSize);
@@ -875,6 +838,8 @@ void UftStraContext::loadBlocks()
 			{
 				//把未完成单读到内存里来
 			}
+
+			_ord_blk._block->_date = _tradingday;
 		}
 		else
 		{
@@ -885,15 +850,11 @@ void UftStraContext::loadBlocks()
 
 	if (_trd_blk._block == NULL || _trd_blk._block->_date != _tradingday)
 	{
-		std::string folder = fmtutil::format("{}{}/", WtHelper::getOutputDir(), _name);
-		if (!StdFile::exists(folder.c_str()))
-			BoostFile::create_directories(folder.c_str());
-
 		std::string filename = folder + "trade.membin";
 		bool isNew = false;
 		if (!StdFile::exists(filename.c_str()))
 		{
-			std::size_t uSize = sizeof(uft::TradeBlock) + sizeof(uft::TradeStruct) * 1024;
+			std::size_t uSize = sizeof(uft::TradeBlock) + sizeof(uft::TradeStruct) * DATA_SIZE_STEP;
 			BoostFile bf;
 			bf.create_new_file(filename.c_str());
 			bf.truncate_file(uSize);
@@ -917,6 +878,8 @@ void UftStraContext::loadBlocks()
 			{
 				//成交数据不用读进来了
 			}
+
+			_trd_blk._block->_date = _tradingday;
 		}
 		else
 		{
@@ -927,15 +890,11 @@ void UftStraContext::loadBlocks()
 
 	if (_rnd_blk._block == NULL || _rnd_blk._block->_date != _tradingday)
 	{
-		std::string folder = fmtutil::format("{}{}/", WtHelper::getOutputDir(), _name);
-		if (!StdFile::exists(folder.c_str()))
-			BoostFile::create_directories(folder.c_str());
-
 		std::string filename = folder + "round.membin";
 		bool isNew = false;
 		if (!StdFile::exists(filename.c_str()))
 		{
-			std::size_t uSize = sizeof(uft::RoundBlock) + sizeof(uft::RoundStruct) * 1024;
+			std::size_t uSize = sizeof(uft::RoundBlock) + sizeof(uft::RoundStruct) * DATA_SIZE_STEP;
 			BoostFile bf;
 			bf.create_new_file(filename.c_str());
 			bf.truncate_file(uSize);
@@ -959,6 +918,8 @@ void UftStraContext::loadBlocks()
 			{
 				//回合数据不用读到进来了
 			}
+
+			_rnd_blk._block->_date = _tradingday;
 		}
 		else
 		{

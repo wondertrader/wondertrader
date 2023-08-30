@@ -26,7 +26,7 @@ class TraderAdapter;
 class UftStraContext : public IUftStraCtx, public ITrdNotifySink
 {
 public:
-	UftStraContext(WtUftEngine* engine, const char* name, bool bDependent = false);
+	UftStraContext(WtUftEngine* engine, const char* name);
 	virtual ~UftStraContext();
 
 	void set_strategy(UftStrategy* stra){ _strategy = stra; }
@@ -77,7 +77,7 @@ public:
 
 	virtual void commit_param_watcher() override;
 
-	virtual const char*		read_param(const char* name, const char* defVal = "") override;
+	virtual const char*	read_param(const char* name, const char* defVal = "") override;
 	virtual double		read_param(const char* name, double defVal = 0) override;
 	virtual uint32_t	read_param(const char* name, uint32_t defVal = 0) override;
 	virtual uint64_t	read_param(const char* name, uint64_t defVal = 0) override;
@@ -182,6 +182,7 @@ public:
 	virtual void stra_log_error(const char* message) override;
 
 	virtual double stra_get_position(const char* stdCode, bool bOnlyValid = false, int32_t iFlag = 3) override;
+	virtual double stra_get_local_position(const char* stdCode, int32_t dirFlag = 3) override;
 	virtual double stra_enum_position(const char* stdCode) override;
 	virtual double stra_get_price(const char* stdCode) override;
 	virtual double stra_get_undone(const char* stdCode) override;
@@ -212,15 +213,6 @@ private:
 	{
 		const char* buffer = fmtutil::format(format, args...);
 		stra_log_error(buffer);
-	}
-
-	inline const char* getOrderTag(uint32_t localid)
-	{
-		auto it = _orders.find(localid);
-		if (it == _orders.end())
-			return "";
-
-		return it->second.c_str();
 	}
 
 private:
@@ -293,25 +285,38 @@ private:
 	typedef struct _Position
 	{
 		//多仓数据
-		double	l_newvol;
-		double	l_prevol;
+		double	l_volume;
+		double	l_opencost;
+		double	l_dynprofit;
 
 		//空仓数据
-		double	s_newvol;
-		double	s_prevol;
+		double	s_volume;
+		double	s_opencost;
+		double	s_dynprofit;
 
 		uint32_t _valid_idx;
 
 		std::vector<uft::DetailStruct*> _details;
 
-		_Position():l_newvol(0),l_prevol(0), s_newvol(0), s_prevol(0), _valid_idx(0)
+		_Position():l_volume(0),s_volume(0), _valid_idx(0),
+			l_opencost(0),s_opencost(0),l_dynprofit(0),s_dynprofit(0)
 		{
+		}
+
+		inline double long_position() const
+		{
+			return l_volume;
+		}
+
+		inline double short_position() const
+		{
+			return s_volume;
 		}
 	} PosInfo;
 
 	wt_hashmap<std::string, PosInfo> _positions;
 
-	wt_hashset<uint32_t> _order_ids;
+	wt_hashmap<uint32_t, uft::OrderStruct*> _order_ids;
 
 	inline bool is_my_order(uint32_t localid) const
 	{
@@ -323,12 +328,9 @@ private:
 	uint32_t		_context_id;
 	WtUftEngine*	_engine;
 	TraderAdapter*	_trader;
-	bool			_dependent;
 	uint32_t		_tradingday;
 
-	typedef wt_hashmap<uint32_t, std::string> OrderMap;
-	OrderMap		_orders;
-	UftStrategy*		_strategy;
+	UftStrategy*	_strategy;
 };
 
 NS_WTP_END
