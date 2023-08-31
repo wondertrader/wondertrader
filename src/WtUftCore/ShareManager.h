@@ -110,6 +110,7 @@ private:
 	std::string		_module;
 
 	func_init_master _init_master;
+	func_init_master _init_storage;
 	func_get_section_updatetime _get_section_updatetime;
 	func_commit_section _commit_section;
 

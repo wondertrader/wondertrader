@@ -23,6 +23,7 @@ bool ShareManager::initialize(const char* module)
 	_inited = (_inst != NULL);
 
 	_init_master = (func_init_master)DLLHelper::get_symbol(_inst, "init_master");
+	_init_storage = (func_init_master)DLLHelper::get_symbol(_inst, "init_storage");
 	_get_section_updatetime = (func_get_section_updatetime)DLLHelper::get_symbol(_inst, "get_section_updatetime");
 	_commit_section = (func_commit_section)DLLHelper::get_symbol(_inst, "commit_section");
 
@@ -97,7 +98,7 @@ bool ShareManager::init_domain(const char* id)
 	WTSLogger::info("Share domain [{}] initialing {}", id, ret ? "succeed" : "fail");
 
 	//初始化同步区
-	ret = _init_master("sync", ".sync");
+	ret = _init_storage("sync", ".sync");
 
 	return ret;
 }
