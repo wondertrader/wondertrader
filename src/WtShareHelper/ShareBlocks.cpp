@@ -31,6 +31,52 @@ bool ShareBlocks::init_master(const char* name, const char* path/* = ""*/)
 	return true;
 }
 
+bool ShareBlocks::init_storage(const char* name, const char* path/* = ""*/)
+{
+	ShmPair& shm = (ShmPair&)_shm_blocks[name];
+	if (shm._block != NULL)
+		return true;
+
+	std::string filename = path;
+	if (filename.empty())
+		filename = name;
+
+	{
+		BoostFile bf;
+		bf.create_new_file(filename.c_str());
+		bf.truncate_file(sizeof(ShmBlock));
+		bf.close_file();
+	}
+
+	shm._domain.reset(new BoostMappingFile);
+	shm._domain->map(filename.c_str());
+	shm._master = true;
+	shm._block = (ShmBlock*)shm._domain->addr();
+	shm._blocktime = shm._block->_updatetime;
+
+	//storage模式下，应该需要加载一下
+	//if (strcmp(shm._block->_flag, BLK_FLAG) == 0)
+	{
+		//这里要做初始化，要把已经有的key加载进去
+		for (uint32_t i = 0; i < shm._block->_count; i++)
+		{
+			SecInfo& secInfo = shm._block->_sections[i];
+			if (secInfo._count == 0)
+				continue;
+
+			ShmPair::KVPair& kvPair = shm._sections[secInfo._name];
+			kvPair._index = i;
+			for (uint32_t j = 0; j < secInfo._count; j++)
+			{
+				KeyInfo& key = secInfo._keys[j];
+				kvPair._keys[key._key] = &key;
+			}
+		}
+	}
+
+	return true;
+}
+
 bool ShareBlocks::init_slave(const char* name, const char* path/* = ""*/)
 {
 	ShmPair& shm = (ShmPair&)_shm_blocks[name];
@@ -284,33 +330,6 @@ std::vector<KeyInfo*> ShareBlocks::get_keys(const char* domain, const char* sect
 	return std::move(ret);
 }
 
-void* ShareBlocks::allocate_key(const char* domain, const char* section, const char* key, ValueType vType)
-{
-	bool is_str = vType == SMVT_STRING;
-
-	SecInfo* secInfo = nullptr;
-	std::size_t len;
-	switch (vType)
-	{
-	case SMVT_INT32: len = VTL_INT32; break;
-	case SMVT_INT64: len = VTL_INT64; break;
-	case SMVT_UINT32: len = VTL_UINT32; break;
-	case SMVT_UINT64: len = VTL_UINT64; break;
-	case SMVT_DOUBLE: len = VTL_DOUBLE; break;
-	case SMVT_STRING: len = VTL_STRING; break;
-	default:
-		throw std::runtime_error("unsupport type");
-		break;
-	}
-
-	KeyInfo* keyInfo = (KeyInfo*)make_valid(domain, section, key, len, secInfo);
-	if (keyInfo == nullptr)
-		return NULL;
-
-	keyInfo->_type = vType;
-	return (void*)(secInfo->_data + keyInfo->_offset);
-}
-
 const char* ShareBlocks::allocate_string(const char* domain, const char* section, const char* key, const char* initVal /* = "" */)
 {
 	SecInfo* secInfo = nullptr;
@@ -318,8 +337,13 @@ const char* ShareBlocks::allocate_string(const char* domain, const char* section
 	if (keyInfo == nullptr)
 		return NULL;
 
-	keyInfo->_type = SMVT_STRING;
-	wt_strcpy(secInfo->_data + keyInfo->_offset, initVal, VTL_STRING);
+	if (keyInfo->_type == 0)
+	{
+		//如果type为0，说明是新分配的，则用初始值填充
+		keyInfo->_type = SMVT_STRING;
+		wt_strcpy(secInfo->_data + keyInfo->_offset, initVal, VTL_STRING);
+	}
+
 	return (secInfo->_data + keyInfo->_offset);
 }
 
@@ -330,8 +354,13 @@ int32_t* ShareBlocks::allocate_int32(const char* domain, const char* section, co
 	if (keyInfo == nullptr)
 		return NULL;
 
-	keyInfo->_type = SMVT_INT32;
-	*((int32_t*)(secInfo->_data + keyInfo->_offset)) = initVal;
+	if (keyInfo->_type == 0)
+	{
+		//如果type为0，说明是新分配的，则用初始值填充
+		keyInfo->_type = SMVT_INT32;
+		*((int32_t*)(secInfo->_data + keyInfo->_offset)) = initVal;
+	}
+
 	return (int32_t*)(secInfo->_data + keyInfo->_offset);
 }
 
@@ -342,8 +371,13 @@ int64_t* ShareBlocks::allocate_int64(const char* domain, const char* section, co
 	if (keyInfo == nullptr)
 		return NULL;
 
-	keyInfo->_type = SMVT_INT64;
-	*((int64_t*)(secInfo->_data + keyInfo->_offset)) = initVal;
+	if (keyInfo->_type == 0)
+	{
+		//如果type为0，说明是新分配的，则用初始值填充
+		keyInfo->_type = SMVT_INT64;
+		*((int64_t*)(secInfo->_data + keyInfo->_offset)) = initVal;
+	}
+
 	return (int64_t*)(secInfo->_data + keyInfo->_offset);
 }
 
@@ -354,8 +388,13 @@ uint32_t* ShareBlocks::allocate_uint32(const char* domain, const char* section, 
 	if (keyInfo == nullptr)
 		return NULL;
 
-	keyInfo->_type = SMVT_UINT32;
-	*((uint32_t*)(secInfo->_data + keyInfo->_offset)) = initVal;
+	if (keyInfo->_type == 0)
+	{
+		//如果type为0，说明是新分配的，则用初始值填充
+		keyInfo->_type = SMVT_UINT32;
+		*((uint32_t*)(secInfo->_data + keyInfo->_offset)) = initVal;
+	}
+
 	return (uint32_t*)(secInfo->_data + keyInfo->_offset);
 }
 
@@ -366,8 +405,13 @@ uint64_t* ShareBlocks::allocate_uint64(const char* domain, const char* section, 
 	if (keyInfo == nullptr)
 		return NULL;
 
-	keyInfo->_type = SMVT_UINT64;
-	*((uint64_t*)(secInfo->_data + keyInfo->_offset)) = initVal;
+	if (keyInfo->_type == 0)
+	{
+		//如果type为0，说明是新分配的，则用初始值填充
+		keyInfo->_type = SMVT_UINT64;
+		*((uint64_t*)(secInfo->_data + keyInfo->_offset)) = initVal;
+	}
+
 	return (uint64_t*)(secInfo->_data + keyInfo->_offset);
 }
 
@@ -378,8 +422,13 @@ double* ShareBlocks::allocate_double(const char* domain, const char* section, co
 	if (keyInfo == nullptr)
 		return NULL;
 
-	keyInfo->_type = SMVT_DOUBLE;
-	*((double*)(secInfo->_data + keyInfo->_offset)) = initVal;
+	if(keyInfo->_type == 0)
+	{
+		//如果type为0，说明是新分配的，则用初始值填充
+		keyInfo->_type = SMVT_DOUBLE;
+		*((double*)(secInfo->_data + keyInfo->_offset)) = initVal;
+	}
+
 	return (double*)(secInfo->_data + keyInfo->_offset);
 }
 
@@ -460,52 +509,6 @@ bool ShareBlocks::set_double(const char* domain, const char* section, const char
 
 	return true;
 }
-
-/*
-template<typename T>
-T ShareBlocks::get_value(const char* domain, const char* section, const char* key, T defVal)
-{
-	auto tt = typeid(T);
-
-	bool is_str = tt == typeid(const char*);
-
-	SecInfo* secInfo = nullptr;
-	ValueType vt;
-	switch (tt)
-	{
-		case typeid(int32_t) :
-			vt = SMVT_INT32;
-			break;
-		case typeid(int64_t) :
-			vt = SMVT_INT64;
-			break;
-		case typeid(uint32_t) :
-			vt = SMVT_UINT32;
-			break;
-		case typeid(uint64_t) :
-			vt = SMVT_UINT64;
-			break;
-		case typeid(double) :
-			vt = SMVT_DOUBLE;
-			break;
-		case typeid(const char*) :
-			vt = SMVT_STRING;
-			break;
-		default:
-			throw std::runtime_error("unsupport type");
-			break;
-	}
-
-	KeyInfo* keyInfo = (KeyInfo*)check_valid(domain, section, key, vt, secInfo);
-	if (keyInfo == nullptr)
-		return defVal;
-
-	if (is_str)
-		return (secInfo->_data + keyInfo->_offset);
-	else
-		return *(T*)(secInfo->_data + keyInfo->_offset);
-}
-*/
 
 const char* ShareBlocks::get_string(const char* domain, const char* section, const char* key, const char* defVal /* = "" */)
 {

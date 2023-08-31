@@ -88,6 +88,8 @@ namespace shareblock
 
 		bool	init_master(const char* name, const char* path = "");
 
+		bool	init_storage(const char* name, const char* path = "");
+
 		bool	init_slave(const char* name, const char* path = "");
 
 		bool	update_slave(const char* name);
@@ -98,21 +100,12 @@ namespace shareblock
 		uint64_t get_section_updatetime(const char* domain, const char* section);
 		bool	commit_section(const char* domain, const char* section);
 
-		void*	allocate_key(const char* domain, const char* section, const char* key, ValueType vType);
-
 		const char* allocate_string(const char* domain, const char* section, const char* key, const char* initVal = "");
 		int32_t*	allocate_int32(const char* domain, const char* section, const char* key, int32_t initVal = 0);
 		int64_t*	allocate_int64(const char* domain, const char* section, const char* key, int64_t initVal = 0);
 		uint32_t*	allocate_uint32(const char* domain, const char* section, const char* key, uint32_t initVal = 0);
 		uint64_t*	allocate_uint64(const char* domain, const char* section, const char* key, uint64_t initVal = 0);
 		double*		allocate_double(const char* domain, const char* section, const char* key, double initVal = 0);
-
-
-		//template<typename SVT>
-		//bool	set_value(const char* domain, const char* section, const char* key, SVT val);
-
-		//template<typename T>
-		//T		get_value(const char* domain, const char* section, const char* key, T defVal);
 
 		bool	set_string(const char* domain, const char* section, const char* key, const char* val);
 		bool	set_int32(const char* domain, const char* section, const char* key, int32_t val);

@@ -14,6 +14,8 @@ extern "C"
 
 	EXPORT_FLAG	bool	init_master(const char* id, const char* path = "");
 
+	EXPORT_FLAG	bool	init_storage(const char* id, const char* path = "");
+
 	EXPORT_FLAG	bool	init_slave(const char* id, const char* path = "");
 
 	EXPORT_FLAG	bool	update_slave(const char* id);
