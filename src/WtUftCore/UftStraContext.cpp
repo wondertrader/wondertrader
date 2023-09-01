@@ -100,7 +100,7 @@ void UftStraContext::on_trade(uint32_t localid, const char* stdCode, bool isLong
 
 	uint64_t now = TimeUtils::getLocalTimeNow();
 
-	bool isOpen = isLong;
+	bool isOpen = offset==0;
 
 	if (isLong)
 	{
