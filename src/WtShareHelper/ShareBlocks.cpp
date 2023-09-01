@@ -1,6 +1,7 @@
 #include "ShareBlocks.h"
 #include "../Share/BoostFile.hpp"
 #include "../Share/TimeUtils.hpp"
+#include "../Share/StdUtils.hpp"
 
 using namespace shareblock;
 
@@ -41,6 +42,7 @@ bool ShareBlocks::init_storage(const char* name, const char* path/* = ""*/)
 	if (filename.empty())
 		filename = name;
 
+	if(!StdFile::exists(filename.c_str()))
 	{
 		BoostFile bf;
 		bf.create_new_file(filename.c_str());
@@ -54,8 +56,7 @@ bool ShareBlocks::init_storage(const char* name, const char* path/* = ""*/)
 	shm._block = (ShmBlock*)shm._domain->addr();
 	shm._blocktime = shm._block->_updatetime;
 
-	//storage模式下，应该需要加载一下
-	//if (strcmp(shm._block->_flag, BLK_FLAG) == 0)
+	//storage模式下，不做重新初始化，还要加一下
 	{
 		//这里要做初始化，要把已经有的key加载进去
 		for (uint32_t i = 0; i < shm._block->_count; i++)

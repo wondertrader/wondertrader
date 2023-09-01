@@ -120,6 +120,7 @@ void UftStraContext::on_trade(uint32_t localid, const char* stdCode, bool isLong
 				ds._open_time = now;
 				ds._position_profit = 0;
 				ds._open_tdate = _tradingday;
+				ds._volume = vol;
 
 				ds._position_profit = 0;
 				ds._closed_volume = 0;
@@ -218,6 +219,7 @@ void UftStraContext::on_trade(uint32_t localid, const char* stdCode, bool isLong
 				ds._open_time = TimeUtils::getLocalTimeNow();
 				ds._position_profit = 0;
 				ds._open_tdate = _tradingday;
+				ds._volume = vol;
 
 				ds._position_profit = 0;
 				ds._closed_volume = 0;
