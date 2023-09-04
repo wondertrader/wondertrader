@@ -84,6 +84,7 @@ public:
 	virtual int32_t		read_param(const char* name, int32_t defVal = 0) override;
 	virtual int64_t		read_param(const char* name, int64_t defVal = 0) override;
 
+	virtual const char*	sync_param(const char* name, const char* initVal = "") override;
 	virtual double*		sync_param(const char* name, double initVal = 0) override;
 	virtual uint32_t*	sync_param(const char* name, uint32_t initVal = 0) override;
 	virtual uint64_t*	sync_param(const char* name, uint64_t initVal = 0) override;
@@ -183,6 +184,7 @@ public:
 
 	virtual double stra_get_position(const char* stdCode, bool bOnlyValid = false, int32_t iFlag = 3) override;
 	virtual double stra_get_local_position(const char* stdCode, int32_t dirFlag = 3) override;
+	virtual double stra_get_local_posprofit(const char* stdCode, int32_t dirFlag = 3) override;
 	virtual double stra_enum_position(const char* stdCode) override;
 	virtual double stra_get_price(const char* stdCode) override;
 	virtual double stra_get_undone(const char* stdCode) override;

@@ -16,6 +16,7 @@
 #include "../Includes/UftStrategyDefs.h"
 #include "../Includes/WTSContractInfo.hpp"
 #include "../Includes/IBaseDataMgr.h"
+#include "../Includes/WTSContractInfo.hpp"
 
 #include "../Share/decimal.h"
 #include "../Share/TimeUtils.hpp"
@@ -60,9 +61,18 @@ void UftStraContext::on_init()
 
 void UftStraContext::on_tick(const char* stdCode, WTSTickData* newTick)
 {
+	auto it = _positions.find(stdCode);
+	if(it != _positions.end())
+	{
+		WTSCommodityInfo* commInfo = newTick->getContractInfo()->getCommInfo();
+		PosInfo& pInfo = it->second;
+		pInfo.l_dynprofit = newTick->price()*pInfo.l_volume*commInfo->getVolScale() - pInfo.l_opencost;
+		pInfo.s_dynprofit = pInfo.s_opencost - newTick->price()*pInfo.s_volume*commInfo->getVolScale();
+
+	}
+
 	if (_strategy)
 		_strategy->on_tick(this, stdCode, newTick);
-
 }
 
 void UftStraContext::on_order_queue(const char* stdCode, WTSOrdQueData* newOrdQue)
@@ -96,6 +106,8 @@ void UftStraContext::on_trade(uint32_t localid, const char* stdCode, bool isLong
 
 	WTSContractInfo* cInfo = _engine->get_contract_info(stdCode);
 
+	uint32_t volscale = cInfo->getCommInfo()->getVolScale();
+
 	PosInfo& pItem = _positions[stdCode];
 
 	uint64_t now = TimeUtils::getLocalTimeNow();
@@ -127,6 +139,7 @@ void UftStraContext::on_trade(uint32_t localid, const char* stdCode, bool isLong
 				ds._closed_profit = 0;
 
 				pItem._details.emplace_back(&ds);
+				pItem.l_opencost += vol * volscale*price;
 			}
 
 			{
@@ -182,6 +195,9 @@ void UftStraContext::on_trade(uint32_t localid, const char* stdCode, bool isLong
 					rs._profit = (rs._close_price - rs._open_price)*maxQty*cInfo->getCommInfo()->getVolScale();
 				}	
 
+				pDS->_volume -= maxQty;
+
+				pItem.l_opencost -= maxQty * volscale*price;
 				left -= maxQty;
 			}
 
@@ -226,6 +242,7 @@ void UftStraContext::on_trade(uint32_t localid, const char* stdCode, bool isLong
 				ds._closed_profit = 0;
 
 				pItem._details.emplace_back(&ds);
+				pItem.s_opencost += vol * volscale*price;
 			}
 
 			{
@@ -278,7 +295,9 @@ void UftStraContext::on_trade(uint32_t localid, const char* stdCode, bool isLong
 					rs._profit = -1*(rs._close_price - rs._open_price)*maxQty*cInfo->getCommInfo()->getVolScale();
 				}
 
+				pDS->_volume -= maxQty;
 				left -= maxQty;
+				pItem.s_opencost -= maxQty * volscale*price;
 			}
 
 			{
@@ -497,6 +516,11 @@ double* UftStraContext::sync_param(const char* name, double initVal /* = 0 */)
 	return ShareManager::self().allocate_value(_name.c_str(), name, initVal);
 }
 
+const char* UftStraContext::sync_param(const char* name, const char* initVal /* = "" */)
+{
+	return ShareManager::self().allocate_value(_name.c_str(), name, initVal);
+}
+
 double UftStraContext::stra_get_position(const char* stdCode, bool bOnlyValid /* = false */, int32_t iFlag /* = 0 */)
 {
 	return _trader->getPosition(stdCode, bOnlyValid, iFlag);
@@ -515,6 +539,23 @@ double UftStraContext::stra_get_local_position(const char* stdCode, int32_t dirF
 
 	if (dirFlag & 2)
 		ret -= pInfo.s_volume;
+
+	return ret;
+}
+
+double UftStraContext::stra_get_local_posprofit(const char* stdCode, int32_t dirFlag /* = 3 */)
+{
+	auto it = _positions.find(stdCode);
+	if (it == _positions.end())
+		return 0.0;
+
+	const PosInfo& pInfo = it->second;
+	double ret = 0;
+	if (dirFlag & 1)
+		ret += pInfo.l_dynprofit;
+
+	if (dirFlag & 2)
+		ret += pInfo.s_dynprofit;
 
 	return ret;
 }

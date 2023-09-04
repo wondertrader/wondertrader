@@ -76,7 +76,7 @@ public:
 	virtual int32_t		read_param(const char* name, int32_t defVal = 0) { return defVal; }
 	virtual int64_t		read_param(const char* name, int64_t defVal = 0) { return defVal; }
 
-	virtual char*		sync_param(const char* name, const char* initVal = "") { return nullptr; }
+	virtual const char*	sync_param(const char* name, const char* initVal = "") { return nullptr; }
 	virtual double*		sync_param(const char* name, double initVal = 0) { return nullptr; }
 	virtual uint32_t*	sync_param(const char* name, uint32_t initVal = 0) { return nullptr; }
 	virtual uint64_t*	sync_param(const char* name, uint64_t initVal = 0) { return nullptr; }
@@ -228,6 +228,8 @@ public:
 	 *	@isLong		多头or空头
 	 */
 	virtual double stra_get_local_position(const char* stdCode, int32_t dirFlag = 3) = 0;
+
+	virtual double stra_get_local_posprofit(const char* stdCode, int32_t dirFlag = 3) { return 0; }
 
 	/*
 	 *	获取最新价格
