@@ -159,16 +159,17 @@ void UftStraContext::on_trade(uint32_t localid, const char* stdCode, bool isLong
 		}
 		else
 		{
-			//处理平今
+			//处理平仓
 			pItem.l_volume -= vol;
 			
 			double left = vol;
 			for(uint32_t idx = pItem._valid_idx; idx < pItem._details.size(); idx++)
 			{
 				uft::DetailStruct* pDS = pItem._details[idx];
-				if(decimal::eq(pDS->_volume, 0.0))
+				//只有索引递增，才递进，不递增就不递进
+				if(decimal::eq(pDS->_volume, 0.0) && (idx == pItem._valid_idx+1))
 				{
-					pItem._valid_idx = idx;
+					pItem._valid_idx++;
 					continue;
 				}
 
@@ -193,10 +194,10 @@ void UftStraContext::on_trade(uint32_t localid, const char* stdCode, bool isLong
 					rs._direct = 0;
 					rs._volume = maxQty;
 					rs._profit = (rs._close_price - rs._open_price)*maxQty*cInfo->getCommInfo()->getVolScale();
+					pItem.total_profit += rs._profit;
 				}	
 
 				pDS->_volume -= maxQty;
-
 				pItem.l_opencost -= maxQty * volscale*price;
 				left -= maxQty;
 			}
@@ -268,9 +269,10 @@ void UftStraContext::on_trade(uint32_t localid, const char* stdCode, bool isLong
 			for (uint32_t idx = pItem._valid_idx; idx < pItem._details.size(); idx++)
 			{
 				uft::DetailStruct* pDS = pItem._details[idx];
-				if (decimal::eq(pDS->_volume, 0.0))
+				//只有索引递增，才递进，不递增就不递进
+				if (decimal::eq(pDS->_volume, 0.0) && (idx == pItem._valid_idx + 1))
 				{
-					pItem._valid_idx = idx;
+					pItem._valid_idx++;
 					continue;
 				}
 
@@ -293,6 +295,7 @@ void UftStraContext::on_trade(uint32_t localid, const char* stdCode, bool isLong
 					rs._direct = 1;
 					rs._volume = maxQty;
 					rs._profit = -1*(rs._close_price - rs._open_price)*maxQty*cInfo->getCommInfo()->getVolScale();
+					pItem.total_profit += rs._profit;
 				}
 
 				pDS->_volume -= maxQty;
@@ -491,34 +494,34 @@ double UftStraContext::read_param(const char* name, double defVal /* = 0 */)
 	return ShareManager::self().get_value(_name.c_str(), name, defVal);
 }
 
-int32_t* UftStraContext::sync_param(const char* name, int32_t initVal /* = 0 */)
+int32_t* UftStraContext::sync_param(const char* name, int32_t initVal /* = 0 */, bool bForceWrite/* = false*/)
 {
-	return ShareManager::self().allocate_value(_name.c_str(), name, initVal);
+	return ShareManager::self().allocate_value(_name.c_str(), name, initVal, bForceWrite);
 }
 
-uint32_t* UftStraContext::sync_param(const char* name, uint32_t initVal /* = 0 */)
+uint32_t* UftStraContext::sync_param(const char* name, uint32_t initVal /* = 0 */, bool bForceWrite/* = false*/)
 {
-	return ShareManager::self().allocate_value(_name.c_str(), name, initVal);
+	return ShareManager::self().allocate_value(_name.c_str(), name, initVal, bForceWrite);
 }
 
-int64_t* UftStraContext::sync_param(const char* name, int64_t initVal /* = 0 */)
+int64_t* UftStraContext::sync_param(const char* name, int64_t initVal /* = 0 */, bool bForceWrite/* = false*/)
 {
-	return ShareManager::self().allocate_value(_name.c_str(), name, initVal);
+	return ShareManager::self().allocate_value(_name.c_str(), name, initVal, bForceWrite);
 }
 
-uint64_t* UftStraContext::sync_param(const char* name, uint64_t initVal /* = 0 */)
+uint64_t* UftStraContext::sync_param(const char* name, uint64_t initVal /* = 0 */, bool bForceWrite/* = false*/)
 {
-	return ShareManager::self().allocate_value(_name.c_str(), name, initVal);
+	return ShareManager::self().allocate_value(_name.c_str(), name, initVal, bForceWrite);
 }
 
-double* UftStraContext::sync_param(const char* name, double initVal /* = 0 */)
+double* UftStraContext::sync_param(const char* name, double initVal /* = 0 */, bool bForceWrite/* = false*/)
 {
-	return ShareManager::self().allocate_value(_name.c_str(), name, initVal);
+	return ShareManager::self().allocate_value(_name.c_str(), name, initVal, bForceWrite);
 }
 
-const char* UftStraContext::sync_param(const char* name, const char* initVal /* = "" */)
+const char* UftStraContext::sync_param(const char* name, const char* initVal /* = "" */, bool bForceWrite/* = false*/)
 {
-	return ShareManager::self().allocate_value(_name.c_str(), name, initVal);
+	return ShareManager::self().allocate_value(_name.c_str(), name, initVal, bForceWrite);
 }
 
 double UftStraContext::stra_get_position(const char* stdCode, bool bOnlyValid /* = false */, int32_t iFlag /* = 0 */)

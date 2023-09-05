@@ -100,12 +100,12 @@ namespace shareblock
 		uint64_t get_section_updatetime(const char* domain, const char* section);
 		bool	commit_section(const char* domain, const char* section);
 
-		const char* allocate_string(const char* domain, const char* section, const char* key, const char* initVal = "");
-		int32_t*	allocate_int32(const char* domain, const char* section, const char* key, int32_t initVal = 0);
-		int64_t*	allocate_int64(const char* domain, const char* section, const char* key, int64_t initVal = 0);
-		uint32_t*	allocate_uint32(const char* domain, const char* section, const char* key, uint32_t initVal = 0);
-		uint64_t*	allocate_uint64(const char* domain, const char* section, const char* key, uint64_t initVal = 0);
-		double*		allocate_double(const char* domain, const char* section, const char* key, double initVal = 0);
+		const char* allocate_string(const char* domain, const char* section, const char* key, const char* initVal = "", bool bForceWrite = false);
+		int32_t*	allocate_int32(const char* domain, const char* section, const char* key, int32_t initVal = 0, bool bForceWrite = false);
+		int64_t*	allocate_int64(const char* domain, const char* section, const char* key, int64_t initVal = 0, bool bForceWrite = false);
+		uint32_t*	allocate_uint32(const char* domain, const char* section, const char* key, uint32_t initVal = 0, bool bForceWrite = false);
+		uint64_t*	allocate_uint64(const char* domain, const char* section, const char* key, uint64_t initVal = 0, bool bForceWrite = false);
+		double*		allocate_double(const char* domain, const char* section, const char* key, double initVal = 0, bool bForceWrite = false);
 
 		bool	set_string(const char* domain, const char* section, const char* key, const char* val);
 		bool	set_int32(const char* domain, const char* section, const char* key, int32_t val);

@@ -51,34 +51,34 @@ bool commit_section(const char* domain, const char* section)
 	return ShareBlocks::one().commit_section(domain, section);
 }
 
-const char* allocate_string(const char* domain, const char* section, const char* key, const char* initVal)
+const char* allocate_string(const char* domain, const char* section, const char* key, const char* initVal, bool bForceWrite /*= false*/)
 {
-	return ShareBlocks::one().allocate_string(domain, section, key, initVal);
+	return ShareBlocks::one().allocate_string(domain, section, key, initVal, bForceWrite);
 }
 
-int32_t* allocate_int32(const char* domain, const char* section, const char* key, int32_t initVal)
+int32_t* allocate_int32(const char* domain, const char* section, const char* key, int32_t initVal, bool bForceWrite /*= false*/)
 {
-	return ShareBlocks::one().allocate_int32(domain, section, key, initVal);
+	return ShareBlocks::one().allocate_int32(domain, section, key, initVal, bForceWrite);
 }
 
-int64_t* allocate_int64(const char* domain, const char* section, const char* key, int64_t initVal)
+int64_t* allocate_int64(const char* domain, const char* section, const char* key, int64_t initVal, bool bForceWrite /*= false*/)
 {
-	return ShareBlocks::one().allocate_int64(domain, section, key, initVal);
+	return ShareBlocks::one().allocate_int64(domain, section, key, initVal, bForceWrite);
 }
 
-uint32_t* allocate_uint32(const char* domain, const char* section, const char* key, uint32_t initVal)
+uint32_t* allocate_uint32(const char* domain, const char* section, const char* key, uint32_t initVal, bool bForceWrite /*= false*/)
 {
-	return ShareBlocks::one().allocate_uint32(domain, section, key,  initVal);
+	return ShareBlocks::one().allocate_uint32(domain, section, key,  initVal, bForceWrite);
 }
 
-uint64_t* allocate_uint64(const char* domain, const char* section, const char* key, uint64_t initVal)
+uint64_t* allocate_uint64(const char* domain, const char* section, const char* key, uint64_t initVal, bool bForceWrite /*= false*/)
 {
-	return ShareBlocks::one().allocate_uint64(domain, section, key, initVal);
+	return ShareBlocks::one().allocate_uint64(domain, section, key, initVal, bForceWrite);
 }
 
-double* allocate_double(const char* domain, const char* section, const char* key, double initVal)
+double* allocate_double(const char* domain, const char* section, const char* key, double initVal, bool bForceWrite /*= false*/)
 {
-	return ShareBlocks::one().allocate_double(domain, section, key, initVal);
+	return ShareBlocks::one().allocate_double(domain, section, key, initVal, bForceWrite);
 }
 
 bool set_string(const char* domain, const char* section, const char* key, const char* val)

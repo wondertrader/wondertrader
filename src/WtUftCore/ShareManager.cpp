@@ -209,50 +209,50 @@ double ShareManager::get_value(const char* section, const char* key, double defV
 	return _get_double(_exchg.c_str(), section, key, defVal);
 }
 
-const char* ShareManager::allocate_value(const char* section, const char* key, const char* initVal/* = ""*/)
+const char* ShareManager::allocate_value(const char* section, const char* key, const char* initVal/* = ""*/, bool bForceWrite/* = false*/)
 {
 	if (!_inited)
 		return nullptr;
 
-	return _allocate_string(_sync.c_str(), section, key, initVal);
+	return _allocate_string(_sync.c_str(), section, key, initVal, bForceWrite);
 }
 
-int32_t* ShareManager::allocate_value(const char* section, const char* key, int32_t initVal/* = 0*/)
+int32_t* ShareManager::allocate_value(const char* section, const char* key, int32_t initVal/* = 0*/, bool bForceWrite/* = false*/)
 {
 	if (!_inited)
 		return nullptr;
 
-	return _allocate_int32(_sync.c_str(), section, key, initVal);
+	return _allocate_int32(_sync.c_str(), section, key, initVal, bForceWrite);
 }
 
-int64_t* ShareManager::allocate_value(const char* section, const char* key, int64_t initVal/* = 0*/)
+int64_t* ShareManager::allocate_value(const char* section, const char* key, int64_t initVal/* = 0*/, bool bForceWrite/* = false*/)
 {
 	if (!_inited)
 		return nullptr;
 
-	return _allocate_int64(_sync.c_str(), section, key, initVal);
+	return _allocate_int64(_sync.c_str(), section, key, initVal, bForceWrite);
 }
 
-uint32_t* ShareManager::allocate_value(const char* section, const char* key, uint32_t initVal/* = 0*/)
+uint32_t* ShareManager::allocate_value(const char* section, const char* key, uint32_t initVal/* = 0*/, bool bForceWrite/* = false*/)
 {
 	if (!_inited)
 		return nullptr;
 
-	return _allocate_uint32(_sync.c_str(), section, key, initVal);
+	return _allocate_uint32(_sync.c_str(), section, key, initVal, bForceWrite);
 }
 
-uint64_t* ShareManager::allocate_value(const char* section, const char* key, uint64_t initVal/* = 0*/)
+uint64_t* ShareManager::allocate_value(const char* section, const char* key, uint64_t initVal/* = 0*/, bool bForceWrite/* = false*/)
 {
 	if (!_inited)
 		return nullptr;
 
-	return _allocate_uint64(_sync.c_str(), section, key, initVal);
+	return _allocate_uint64(_sync.c_str(), section, key, initVal, bForceWrite);
 }
 
-double* ShareManager::allocate_value(const char* section, const char* key, double initVal/* = 0*/)
+double* ShareManager::allocate_value(const char* section, const char* key, double initVal/* = 0*/, bool bForceWrite/* = false*/)
 {
 	if (!_inited)
 		return nullptr;
 
-	return _allocate_double(_sync.c_str(), section, key, initVal);
+	return _allocate_double(_sync.c_str(), section, key, initVal, bForceWrite);
 }

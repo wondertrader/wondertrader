@@ -12,26 +12,26 @@ NS_WTP_END
 USING_NS_WTP;
 
 typedef bool (*func_init_master)(const char*, const char*);
-typedef uint64_t(*func_get_section_updatetime)(const char* domain, const char* section);
-typedef bool(*func_commit_section)(const char* domain, const char* section);
-typedef const char*(*func_allocate_string)(const char* domain, const char* section, const char* key, const char* initVal);
-typedef int32_t* (*func_allocate_int32)(const char* domain, const char* section, const char* key, int32_t initVal);
-typedef int64_t* (*func_allocate_int64)(const char* domain, const char* section, const char* key, int64_t initVal);
-typedef uint32_t* (*func_allocate_uint32)(const char* domain, const char* section, const char* key, uint32_t initVal);
-typedef uint64_t* (*func_allocate_uint64)(const char* domain, const char* section, const char* key, uint64_t initVal);
-typedef double*	(*func_allocate_double)(const char* domain, const char* section, const char* key, double initVal);
-typedef bool (*func_set_string)(const char* domain, const char* section, const char* key, const char* val);
-typedef bool (*func_set_int32)(const char* domain, const char* section, const char* key, int32_t val);
-typedef bool (*func_set_int64)(const char* domain, const char* section, const char* key, int64_t val);
-typedef bool (*func_set_uint32)(const char* domain, const char* section, const char* key, uint32_t val);
-typedef bool(*func_set_uint64)(const char* domain, const char* section, const char* key, uint64_t val);
-typedef bool(*func_set_double)(const char* domain, const char* section, const char* key, double val);
-typedef const char* (*func_get_string)(const char* domain, const char* section, const char* key, const char* defVal);
-typedef int32_t (*func_get_int32)(const char* domain, const char* section, const char* key, int32_t defVal);
-typedef int64_t (*func_get_int64)(const char* domain, const char* section, const char* key, int64_t defVal);
-typedef uint32_t (*func_get_uint32)(const char* domain, const char* section, const char* key, uint32_t defVal);
-typedef uint64_t (*func_get_uint64)(const char* domain, const char* section, const char* key, uint64_t defVal);
-typedef double (*func_get_double)(const char* domain, const char* section, const char* key, double defVal);
+typedef uint64_t(*func_get_section_updatetime)(const char*, const char*);
+typedef bool(*func_commit_section)(const char*, const char*);
+typedef const char*(*func_allocate_string)(const char*, const char*, const char*, const char*, bool);
+typedef int32_t* (*func_allocate_int32)(const char*, const char*, const char*, int32_t, bool);
+typedef int64_t* (*func_allocate_int64)(const char*, const char*, const char*, int64_t, bool);
+typedef uint32_t* (*func_allocate_uint32)(const char*, const char*, const char*, uint32_t, bool);
+typedef uint64_t* (*func_allocate_uint64)(const char*, const char*, const char*, uint64_t, bool);
+typedef double*	(*func_allocate_double)(const char*, const char*, const char*, double, bool);
+typedef bool (*func_set_string)(const char*, const char*, const char*, const char*);
+typedef bool (*func_set_int32)(const char*, const char*, const char*, int32_t);
+typedef bool (*func_set_int64)(const char*, const char*, const char*, int64_t);
+typedef bool (*func_set_uint32)(const char*, const char*, const char*, uint32_t);
+typedef bool(*func_set_uint64)(const char*, const char*, const char*, uint64_t);
+typedef bool(*func_set_double)(const char*, const char*, const char*, double);
+typedef const char* (*func_get_string)(const char*, const char*, const char*, const char*);
+typedef int32_t (*func_get_int32)(const char*, const char*, const char*, int32_t);
+typedef int64_t (*func_get_int64)(const char*, const char*, const char*, int64_t);
+typedef uint32_t (*func_get_uint32)(const char*, const char*, const char*, uint32_t);
+typedef uint64_t (*func_get_uint64)(const char*, const char*, const char*, uint64_t);
+typedef double (*func_get_double)(const char*, const char*, const char*, double);
 
 class ShareManager
 {
@@ -88,12 +88,12 @@ public:
 	/*
 	 *	在单向同步区分配字段
 	 */
-	const char*	allocate_value(const char* section, const char* key, const char* initVal = "");
-	int32_t*	allocate_value(const char* section, const char* key, int32_t initVal = 0);
-	int64_t*	allocate_value(const char* section, const char* key, int64_t initVal = 0);
-	uint32_t*	allocate_value(const char* section, const char* key, uint32_t initVal = 0);
-	uint64_t*	allocate_value(const char* section, const char* key, uint64_t initVal = 0);
-	double*		allocate_value(const char* section, const char* key, double initVal = 0);
+	const char*	allocate_value(const char* section, const char* key, const char* initVal = "", bool bForceWrite = false);
+	int32_t*	allocate_value(const char* section, const char* key, int32_t initVal = 0, bool bForceWrite = false);
+	int64_t*	allocate_value(const char* section, const char* key, int64_t initVal = 0, bool bForceWrite = false);
+	uint32_t*	allocate_value(const char* section, const char* key, uint32_t initVal = 0, bool bForceWrite = false);
+	uint64_t*	allocate_value(const char* section, const char* key, uint64_t initVal = 0, bool bForceWrite = false);
+	double*		allocate_value(const char* section, const char* key, double initVal = 0, bool bForceWrite = false);
 
 private:
 	bool			_inited;

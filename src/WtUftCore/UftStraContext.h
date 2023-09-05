@@ -84,12 +84,12 @@ public:
 	virtual int32_t		read_param(const char* name, int32_t defVal = 0) override;
 	virtual int64_t		read_param(const char* name, int64_t defVal = 0) override;
 
-	virtual const char*	sync_param(const char* name, const char* initVal = "") override;
-	virtual double*		sync_param(const char* name, double initVal = 0) override;
-	virtual uint32_t*	sync_param(const char* name, uint32_t initVal = 0) override;
-	virtual uint64_t*	sync_param(const char* name, uint64_t initVal = 0) override;
-	virtual int32_t*	sync_param(const char* name, int32_t initVal = 0) override;
-	virtual int64_t*	sync_param(const char* name, int64_t initVal = 0) override;
+	virtual const char*	sync_param(const char* name, const char* initVal = "", bool bForceWrite = false) override;
+	virtual double*		sync_param(const char* name, double initVal = 0, bool bForceWrite = false) override;
+	virtual uint32_t*	sync_param(const char* name, uint32_t initVal = 0, bool bForceWrite = false) override;
+	virtual uint64_t*	sync_param(const char* name, uint64_t initVal = 0, bool bForceWrite = false) override;
+	virtual int32_t*	sync_param(const char* name, int32_t initVal = 0, bool bForceWrite = false) override;
+	virtual int64_t*	sync_param(const char* name, int64_t initVal = 0, bool bForceWrite = false) override;
 
 public:
 	//////////////////////////////////////////////////////////////////////////
@@ -296,11 +296,13 @@ private:
 		double	s_opencost;
 		double	s_dynprofit;
 
+		double	total_profit;
+
 		uint32_t _valid_idx;
 
 		std::vector<uft::DetailStruct*> _details;
 
-		_Position():l_volume(0),s_volume(0), _valid_idx(0),
+		_Position():l_volume(0),s_volume(0), _valid_idx(0), total_profit(0),
 			l_opencost(0),s_opencost(0),l_dynprofit(0),s_dynprofit(0)
 		{
 		}

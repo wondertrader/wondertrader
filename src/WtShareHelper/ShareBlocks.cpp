@@ -331,14 +331,14 @@ std::vector<KeyInfo*> ShareBlocks::get_keys(const char* domain, const char* sect
 	return std::move(ret);
 }
 
-const char* ShareBlocks::allocate_string(const char* domain, const char* section, const char* key, const char* initVal /* = "" */)
+const char* ShareBlocks::allocate_string(const char* domain, const char* section, const char* key, const char* initVal /* = "" */, bool bForceWrite/* = false*/)
 {
 	SecInfo* secInfo = nullptr;
 	KeyInfo* keyInfo = (KeyInfo*)make_valid(domain, section, key, VTL_STRING, secInfo);
 	if (keyInfo == nullptr)
 		return NULL;
 
-	if (keyInfo->_type == 0)
+	if (keyInfo->_type == 0 || bForceWrite)
 	{
 		//如果type为0，说明是新分配的，则用初始值填充
 		keyInfo->_type = SMVT_STRING;
@@ -348,14 +348,14 @@ const char* ShareBlocks::allocate_string(const char* domain, const char* section
 	return (secInfo->_data + keyInfo->_offset);
 }
 
-int32_t* ShareBlocks::allocate_int32(const char* domain, const char* section, const char* key, int32_t initVal /* = 0 */)
+int32_t* ShareBlocks::allocate_int32(const char* domain, const char* section, const char* key, int32_t initVal /* = 0 */, bool bForceWrite/* = false*/)
 {
 	SecInfo* secInfo = nullptr;
 	KeyInfo* keyInfo = (KeyInfo*)make_valid(domain, section, key, VTL_INT32, secInfo);
 	if (keyInfo == nullptr)
 		return NULL;
 
-	if (keyInfo->_type == 0)
+	if (keyInfo->_type == 0 || bForceWrite)
 	{
 		//如果type为0，说明是新分配的，则用初始值填充
 		keyInfo->_type = SMVT_INT32;
@@ -365,14 +365,14 @@ int32_t* ShareBlocks::allocate_int32(const char* domain, const char* section, co
 	return (int32_t*)(secInfo->_data + keyInfo->_offset);
 }
 
-int64_t* ShareBlocks::allocate_int64(const char* domain, const char* section, const char* key, int64_t initVal /* = 0 */)
+int64_t* ShareBlocks::allocate_int64(const char* domain, const char* section, const char* key, int64_t initVal /* = 0 */, bool bForceWrite/* = false*/)
 {
 	SecInfo* secInfo = nullptr;
 	KeyInfo* keyInfo = (KeyInfo*)make_valid(domain, section, key, VTL_INT64, secInfo);
 	if (keyInfo == nullptr)
 		return NULL;
 
-	if (keyInfo->_type == 0)
+	if (keyInfo->_type == 0 || bForceWrite)
 	{
 		//如果type为0，说明是新分配的，则用初始值填充
 		keyInfo->_type = SMVT_INT64;
@@ -382,14 +382,14 @@ int64_t* ShareBlocks::allocate_int64(const char* domain, const char* section, co
 	return (int64_t*)(secInfo->_data + keyInfo->_offset);
 }
 
-uint32_t* ShareBlocks::allocate_uint32(const char* domain, const char* section, const char* key, uint32_t initVal /* = 0 */)
+uint32_t* ShareBlocks::allocate_uint32(const char* domain, const char* section, const char* key, uint32_t initVal /* = 0 */, bool bForceWrite/* = false*/)
 {
 	SecInfo* secInfo = nullptr;
 	KeyInfo* keyInfo = (KeyInfo*)make_valid(domain, section, key, VTL_UINT32, secInfo);
 	if (keyInfo == nullptr)
 		return NULL;
 
-	if (keyInfo->_type == 0)
+	if (keyInfo->_type == 0 || bForceWrite)
 	{
 		//如果type为0，说明是新分配的，则用初始值填充
 		keyInfo->_type = SMVT_UINT32;
@@ -399,14 +399,14 @@ uint32_t* ShareBlocks::allocate_uint32(const char* domain, const char* section, 
 	return (uint32_t*)(secInfo->_data + keyInfo->_offset);
 }
 
-uint64_t* ShareBlocks::allocate_uint64(const char* domain, const char* section, const char* key, uint64_t initVal /* = 0 */)
+uint64_t* ShareBlocks::allocate_uint64(const char* domain, const char* section, const char* key, uint64_t initVal /* = 0 */, bool bForceWrite/* = false*/)
 {
 	SecInfo* secInfo = nullptr;
 	KeyInfo* keyInfo = (KeyInfo*)make_valid(domain, section, key, VTL_UINT64, secInfo);
 	if (keyInfo == nullptr)
 		return NULL;
 
-	if (keyInfo->_type == 0)
+	if (keyInfo->_type == 0 || bForceWrite)
 	{
 		//如果type为0，说明是新分配的，则用初始值填充
 		keyInfo->_type = SMVT_UINT64;
@@ -416,14 +416,14 @@ uint64_t* ShareBlocks::allocate_uint64(const char* domain, const char* section, 
 	return (uint64_t*)(secInfo->_data + keyInfo->_offset);
 }
 
-double* ShareBlocks::allocate_double(const char* domain, const char* section, const char* key, double initVal /* = 0 */)
+double* ShareBlocks::allocate_double(const char* domain, const char* section, const char* key, double initVal /* = 0 */, bool bForceWrite/* = false*/)
 {
 	SecInfo* secInfo = nullptr;
 	KeyInfo* keyInfo = (KeyInfo*)make_valid(domain, section, key, VTL_DOUBLE, secInfo);
 	if (keyInfo == nullptr)
 		return NULL;
 
-	if(keyInfo->_type == 0)
+	if(keyInfo->_type == 0 || bForceWrite)
 	{
 		//如果type为0，说明是新分配的，则用初始值填充
 		keyInfo->_type = SMVT_DOUBLE;
