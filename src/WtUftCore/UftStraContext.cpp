@@ -151,6 +151,9 @@ void UftStraContext::on_trade(uint32_t localid, const char* stdCode, bool isLong
 					continue;
 				}
 
+				if(decimal::eq(left, 0))
+					break;
+
 				//计算明细最大平仓量
 				double maxQty = std::min(left, pDS->_volume);
 
@@ -267,6 +270,9 @@ void UftStraContext::on_trade(uint32_t localid, const char* stdCode, bool isLong
 				{
 					continue;
 				}
+
+				if (decimal::eq(left, 0))
+					break;
 
 				double maxQty = std::min(left, pDS->_volume);
 
