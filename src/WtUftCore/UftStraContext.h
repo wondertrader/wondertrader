@@ -287,14 +287,9 @@ private:
 	typedef struct _Position
 	{
 		//多仓数据
-		double	l_volume;
-		double	l_opencost;
-		double	l_dynprofit;
-
-		//空仓数据
-		double	s_volume;
-		double	s_opencost;
-		double	s_dynprofit;
+		double	_volume;
+		double	_opencost;
+		double	_dynprofit;
 
 		double	total_profit;
 
@@ -302,19 +297,9 @@ private:
 
 		std::vector<uft::DetailStruct*> _details;
 
-		_Position():l_volume(0),s_volume(0), _valid_idx(0), total_profit(0),
-			l_opencost(0),s_opencost(0),l_dynprofit(0),s_dynprofit(0)
+		_Position():_volume(0),_valid_idx(0), total_profit(0),
+			_opencost(0),_dynprofit(0)
 		{
-		}
-
-		inline double long_position() const
-		{
-			return l_volume;
-		}
-
-		inline double short_position() const
-		{
-			return s_volume;
 		}
 	} PosInfo;
 

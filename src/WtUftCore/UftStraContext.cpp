@@ -66,9 +66,13 @@ void UftStraContext::on_tick(const char* stdCode, WTSTickData* newTick)
 	{
 		WTSCommodityInfo* commInfo = newTick->getContractInfo()->getCommInfo();
 		PosInfo& pInfo = it->second;
-		pInfo.l_dynprofit = newTick->price()*pInfo.l_volume*commInfo->getVolScale() - pInfo.l_opencost;
-		pInfo.s_dynprofit = pInfo.s_opencost - newTick->price()*pInfo.s_volume*commInfo->getVolScale();
 
+		if (decimal::gt(pInfo._volume, 0.0))
+			pInfo._dynprofit = newTick->price()*pInfo._volume*commInfo->getVolScale() - pInfo._opencost;
+		else if (decimal::lt(pInfo._volume, 0.0))
+			pInfo._dynprofit = newTick->price()*pInfo._volume*commInfo->getVolScale() + pInfo._opencost;
+		else
+			pInfo._dynprofit = 0;
 	}
 
 	if (_strategy)
@@ -112,8 +116,247 @@ void UftStraContext::on_trade(uint32_t localid, const char* stdCode, bool isLong
 
 	uint64_t now = TimeUtils::getLocalTimeNow();
 
-	bool isOpen = offset==0;
+	/*
+	 *	By Wesley
+	 *	这里要考虑多个策略在相同合约上开相反头寸的情况，开仓可能变成平仓，所以本地持仓只能是净头寸持仓
+	 */
+	bool isBuy = (isLong && offset==0) || (!isLong && offset!=0);
 
+	if(isBuy)
+	{
+		double unhandle = vol;
+
+		//买入的时候，如果有空头，就先平空
+		if(decimal::lt(pItem._volume, 0))
+		{
+			double thisQty = min(abs(pItem._volume), vol);
+
+			pItem._volume += thisQty;
+			unhandle -= thisQty;
+
+			double left = thisQty;
+			for (uint32_t idx = pItem._valid_idx; idx < pItem._details.size(); idx++)
+			{
+				uft::DetailStruct* pDS = pItem._details[idx];
+				//只有索引递增，才递进，不递增就不递进
+				if (decimal::eq(pDS->_volume, 0.0) && (idx == pItem._valid_idx + 1))
+				{
+					pItem._valid_idx++;
+					continue;
+				}
+
+				//只平空头
+				if (pDS->_direct != 1)
+				{
+					continue;
+				}
+
+				//计算明细最大平仓量
+				double maxQty = std::min(left, pDS->_volume);
+
+				//生成回合明细
+				{
+					SpinLock lock(_rnd_blk._mutex);
+					uint32_t ridx = _rnd_blk._block->_size;
+					_rnd_blk._block->_size++;
+					uft::RoundStruct& rs = _rnd_blk._block->_rounds[ridx];
+					wt_strcpy(rs._code, cInfo->getCode());
+					wt_strcpy(rs._exchg, cInfo->getExchg());
+
+					rs._open_price = pDS->_open_price;
+					rs._open_time = pDS->_open_time;
+					rs._close_price = price;
+					rs._close_time = now;
+					rs._direct = 1;
+					rs._volume = maxQty;
+					rs._profit = (rs._open_price - rs._close_price)*maxQty*volscale;
+
+					pItem.total_profit += rs._profit;
+					pDS->_closed_profit += rs._profit;
+				}
+
+				//落地成交明细
+				{
+					SpinLock lock(_trd_blk._mutex);
+					uint32_t tidx = _trd_blk._block->_size;
+					_trd_blk._block->_size++;
+					uft::TradeStruct& ts = _trd_blk._block->_trades[tidx];
+					wt_strcpy(ts._code, cInfo->getCode());
+					wt_strcpy(ts._exchg, cInfo->getExchg());
+					ts._direct = 1;
+					ts._offset = 1;
+					ts._price = price;
+					ts._volume = maxQty;
+					ts._trading_date = _tradingday;
+					ts._trading_time = now;
+				}
+
+				pDS->_volume -= maxQty;
+				pDS->_closed_volume += maxQty;
+				pItem._opencost -= maxQty * volscale*pDS->_open_price;
+				left -= maxQty;
+			}
+		}
+
+		//如果还有剩余的没处理，则开多仓
+		if (decimal::gt(unhandle, 0))
+		{
+			SpinLock lock(_pos_blk._mutex);
+			uint32_t idx = _pos_blk._block->_size;
+			_pos_blk._block->_size++;
+			uft::DetailStruct& ds = _pos_blk._block->_details[idx];
+			wt_strcpy(ds._code, cInfo->getCode());
+			wt_strcpy(ds._exchg, cInfo->getExchg());
+			ds._direct = 0;
+			ds._open_price = price;
+			ds._open_time = now;
+			ds._position_profit = 0;
+			ds._open_tdate = _tradingday;
+			ds._volume = unhandle;
+
+			ds._position_profit = 0;
+			ds._closed_volume = 0;
+			ds._closed_profit = 0;
+
+			pItem._details.emplace_back(&ds);
+			pItem._opencost += unhandle * volscale*price;
+			pItem._volume += unhandle;
+		}
+
+		//落地开多成交明细
+		{
+			SpinLock lock(_trd_blk._mutex);
+			uint32_t tidx = _trd_blk._block->_size;
+			_trd_blk._block->_size++;
+			uft::TradeStruct& ts = _trd_blk._block->_trades[tidx];
+			wt_strcpy(ts._code, cInfo->getCode());
+			wt_strcpy(ts._exchg, cInfo->getExchg());
+			ts._direct = 0;
+			ts._offset = 0;
+			ts._price = price;
+			ts._volume = unhandle;
+			ts._trading_date = _tradingday;
+			ts._trading_time = now;
+		}
+	}
+	else
+	{
+		double unhandle = vol;
+
+		//卖出的时候，有多头就先平多
+		if (decimal::gt(pItem._volume, 0))
+		{
+			double thisQty = min(pItem._volume, vol);
+
+			pItem._volume -= thisQty;
+			unhandle -= thisQty;
+
+			double left = thisQty;
+			for (uint32_t idx = pItem._valid_idx; idx < pItem._details.size(); idx++)
+			{
+				uft::DetailStruct* pDS = pItem._details[idx];
+				//只有索引递增，才递进，不递增就不递进
+				if (decimal::eq(pDS->_volume, 0.0) && (idx == pItem._valid_idx + 1))
+				{
+					pItem._valid_idx++;
+					continue;
+				}
+
+				//只平多头
+				if (pDS->_direct != 0)
+				{
+					continue;
+				}
+
+				double maxQty = std::min(left, pDS->_volume);
+
+				//生成回合明细
+				{
+					SpinLock lock(_rnd_blk._mutex);
+					uint32_t ridx = _rnd_blk._block->_size;
+					_rnd_blk._block->_size++;
+					uft::RoundStruct& rs = _rnd_blk._block->_rounds[ridx];
+					wt_strcpy(rs._code, cInfo->getCode());
+					wt_strcpy(rs._exchg, cInfo->getExchg());
+
+					rs._open_price = pDS->_open_price;
+					rs._open_time = pDS->_open_time;
+					rs._close_price = price;
+					rs._close_time = now;
+					rs._direct = 0;
+					rs._volume = maxQty;
+					rs._profit = (rs._close_price - rs._open_price)*maxQty*volscale;
+
+					pItem.total_profit += rs._profit;
+					pDS->_closed_profit += rs._profit;
+				}
+
+				//落地平多的成交明细
+				{
+					SpinLock lock(_trd_blk._mutex);
+					uint32_t tidx = _trd_blk._block->_size;
+					_trd_blk._block->_size++;
+					uft::TradeStruct& ts = _trd_blk._block->_trades[tidx];
+					wt_strcpy(ts._code, cInfo->getCode());
+					wt_strcpy(ts._exchg, cInfo->getExchg());
+					ts._direct = 0;
+					ts._offset = 1;
+					ts._price = price;
+					ts._volume = maxQty;
+					ts._trading_date = _tradingday;
+					ts._trading_time = now;
+				}
+
+				pDS->_volume -= maxQty;
+				pDS->_closed_volume += maxQty;
+				pItem._opencost -= maxQty * volscale*pDS->_open_price;
+				left -= maxQty;
+			}
+		}
+
+		//如果还有剩余的没处理，则开空仓
+		if (decimal::gt(unhandle, 0))
+		{
+			SpinLock lock(_pos_blk._mutex);
+			uint32_t idx = _pos_blk._block->_size;
+			_pos_blk._block->_size++;
+			uft::DetailStruct& ds = _pos_blk._block->_details[idx];
+			wt_strcpy(ds._code, cInfo->getCode());
+			wt_strcpy(ds._exchg, cInfo->getExchg());
+			ds._direct = 1;
+			ds._open_price = price;
+			ds._open_time = now;
+			ds._position_profit = 0;
+			ds._open_tdate = _tradingday;
+			ds._volume = unhandle;
+
+			ds._position_profit = 0;
+			ds._closed_volume = 0;
+			ds._closed_profit = 0;
+
+			pItem._details.emplace_back(&ds);
+			pItem._opencost += unhandle * volscale*price;
+			pItem._volume -= unhandle;
+		}
+
+		//生成开空成交明细
+		{
+			SpinLock lock(_trd_blk._mutex);
+			uint32_t tidx = _trd_blk._block->_size;
+			_trd_blk._block->_size++;
+			uft::TradeStruct& ts = _trd_blk._block->_trades[tidx];
+			wt_strcpy(ts._code, cInfo->getCode());
+			wt_strcpy(ts._exchg, cInfo->getExchg());
+			ts._direct = 1;
+			ts._offset = 0;
+			ts._price = price;
+			ts._volume = vol;
+			ts._trading_date = _tradingday;
+			ts._trading_time = now;
+		}
+	}
+
+	/*
 	if (isLong)
 	{
 		if (isOpen)
@@ -319,6 +562,7 @@ void UftStraContext::on_trade(uint32_t localid, const char* stdCode, bool isLong
 			}
 		}
 	}
+	*/
 
 	if (_strategy)
 		_strategy->on_trade(this, localid, stdCode, isLong, offset, vol, price);
@@ -373,14 +617,13 @@ void UftStraContext::on_channel_ready(uint32_t tradingday)
 		{
 			const char* stdCode = v.first.c_str();
 			const PosInfo& pInfo = v.second;
-			if (decimal::gt(pInfo.long_position(), 0))
+			if (decimal::gt(pInfo._volume, 0))
 			{
-				_strategy->on_position(this, stdCode, true, pInfo.l_volume, pInfo.l_volume, 0, 0);
+				_strategy->on_position(this, stdCode, true, pInfo._volume, pInfo._volume, 0, 0);
 			}
-
-			if (decimal::gt(pInfo.short_position(), 0))
+			else if (decimal::lt(pInfo._volume, 0))
 			{
-				_strategy->on_position(this, stdCode, false, pInfo.s_volume, pInfo.s_volume, 0, 0);
+				_strategy->on_position(this, stdCode, false, pInfo._volume, pInfo._volume, 0, 0);
 			}
 		}
 	}
@@ -536,14 +779,7 @@ double UftStraContext::stra_get_local_position(const char* stdCode, int32_t dirF
 		return 0.0;
 
 	const PosInfo& pInfo = it->second;
-	double ret = 0;
-	if (dirFlag & 1)
-		ret += pInfo.l_volume;
-
-	if (dirFlag & 2)
-		ret -= pInfo.s_volume;
-
-	return ret;
+	return pInfo._volume;
 }
 
 double UftStraContext::stra_get_local_posprofit(const char* stdCode, int32_t dirFlag /* = 3 */)
@@ -553,14 +789,7 @@ double UftStraContext::stra_get_local_posprofit(const char* stdCode, int32_t dir
 		return 0.0;
 
 	const PosInfo& pInfo = it->second;
-	double ret = 0;
-	if (dirFlag & 1)
-		ret += pInfo.l_dynprofit;
-
-	if (dirFlag & 2)
-		ret += pInfo.s_dynprofit;
-
-	return ret;
+	return pInfo._dynprofit;
 }
 
 double UftStraContext::stra_enum_position(const char* stdCode)
@@ -836,13 +1065,13 @@ void UftStraContext::loadBlocks()
 
 					if(ds._direct == 0)
 					{
-						posInfo.l_opencost += ds._volume*ds._open_price*cInfo->getCommInfo()->getVolScale();
-						posInfo.l_volume += ds._volume;
+						posInfo._opencost += ds._volume*ds._open_price*cInfo->getCommInfo()->getVolScale();
+						posInfo._volume += ds._volume;
 					}
 					else
 					{
-						posInfo.s_opencost += ds._volume*ds._open_price*cInfo->getCommInfo()->getVolScale();
-						posInfo.s_volume += ds._volume;
+						posInfo._opencost += ds._volume*ds._open_price*cInfo->getCommInfo()->getVolScale();
+						posInfo._volume -= ds._volume;
 					}
 				}
 			}
