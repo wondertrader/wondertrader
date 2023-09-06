@@ -1012,15 +1012,10 @@ double UftMocker::stra_get_position(const char* stdCode, bool bOnlyValid /* = fa
 		return bOnlyValid ? (posInfo._long.valid() - posInfo._short.valid()) : (posInfo._long.volume() - posInfo._short.volume());
 }
 
-double UftMocker::stra_get_local_position(const char* stdCode, int32_t dirFlag /* = 3 */)
+double UftMocker::stra_get_local_position(const char* stdCode)
 {
 	const PosInfo& posInfo = _pos_map[stdCode];
-	if (dirFlag == 1)
-		return posInfo._long.volume();
-	else if (dirFlag == 2)
-		return posInfo._short.volume();
-	else
-		return posInfo._long.volume() - posInfo._short.volume();
+	return posInfo._long.volume() - posInfo._short.volume();
 }
 
 double UftMocker::stra_enum_position(const char* stdCode)

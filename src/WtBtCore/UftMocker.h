@@ -161,7 +161,7 @@ public:
 	 */
 	virtual double stra_get_position(const char* stdCode, bool bOnlyValid = false, int32_t iFlag = 3) override;
 
-	virtual double stra_get_local_position(const char* stdCode, int32_t dirFlag = 3) override;
+	virtual double stra_get_local_position(const char* stdCode) override;
 
 	virtual double stra_enum_position(const char* stdCode) override;
 
