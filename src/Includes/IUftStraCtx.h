@@ -227,9 +227,11 @@ public:
 	 *	@stdCode	代码，格式如SSE.600000
 	 *	@isLong		多头or空头
 	 */
-	virtual double stra_get_local_position(const char* stdCode, int32_t dirFlag = 3) = 0;
+	virtual double stra_get_local_position(const char* stdCode) = 0;
 
-	virtual double stra_get_local_posprofit(const char* stdCode, int32_t dirFlag = 3) { return 0; }
+	virtual double stra_get_local_posprofit(const char* stdCode) { return 0; }
+
+	virtual double stra_get_local_closeprofit(const char* stdCode) { return 0; }
 
 	/*
 	 *	获取最新价格

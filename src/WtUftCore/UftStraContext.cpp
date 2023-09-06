@@ -174,7 +174,7 @@ void UftStraContext::on_trade(uint32_t localid, const char* stdCode, bool isLong
 					rs._volume = maxQty;
 					rs._profit = (rs._open_price - rs._close_price)*maxQty*volscale;
 
-					pItem.total_profit += rs._profit;
+					pItem._total_profit += rs._profit;
 					pDS->_closed_profit += rs._profit;
 				}
 
@@ -293,7 +293,7 @@ void UftStraContext::on_trade(uint32_t localid, const char* stdCode, bool isLong
 					rs._volume = maxQty;
 					rs._profit = (rs._close_price - rs._open_price)*maxQty*volscale;
 
-					pItem.total_profit += rs._profit;
+					pItem._total_profit += rs._profit;
 					pDS->_closed_profit += rs._profit;
 				}
 
@@ -778,7 +778,7 @@ double UftStraContext::stra_get_position(const char* stdCode, bool bOnlyValid /*
 	return _trader->getPosition(stdCode, bOnlyValid, iFlag);
 }
 
-double UftStraContext::stra_get_local_position(const char* stdCode, int32_t dirFlag /* = 3 */)
+double UftStraContext::stra_get_local_position(const char* stdCode)
 {
 	auto it = _positions.find(stdCode);
 	if (it == _positions.end())
@@ -788,7 +788,7 @@ double UftStraContext::stra_get_local_position(const char* stdCode, int32_t dirF
 	return pInfo._volume;
 }
 
-double UftStraContext::stra_get_local_posprofit(const char* stdCode, int32_t dirFlag /* = 3 */)
+double UftStraContext::stra_get_local_posprofit(const char* stdCode)
 {
 	auto it = _positions.find(stdCode);
 	if (it == _positions.end())
@@ -797,6 +797,17 @@ double UftStraContext::stra_get_local_posprofit(const char* stdCode, int32_t dir
 	const PosInfo& pInfo = it->second;
 	return pInfo._dynprofit;
 }
+
+double UftStraContext::stra_get_local_closeprofit(const char* stdCode)
+{
+	auto it = _positions.find(stdCode);
+	if (it == _positions.end())
+		return 0.0;
+
+	const PosInfo& pInfo = it->second;
+	return pInfo._total_profit;
+}
+
 
 double UftStraContext::stra_enum_position(const char* stdCode)
 {
