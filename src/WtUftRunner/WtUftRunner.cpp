@@ -267,7 +267,7 @@ bool WtUftRunner::initEngine()
 		return false;
 
 	WTSLogger::info("Trading enviroment initialzied with engine: UFT");
-	_uft_engine.init(cfg, &_bd_mgr, &_data_mgr);
+	_uft_engine.init(cfg, &_bd_mgr, &_data_mgr, &_notifier);
 
 	_uft_engine.set_adapter_mgr(&_traders);
 
@@ -343,6 +343,17 @@ bool WtUftRunner::initTraders(WTSVariant* cfgTrader)
 	}
 
 	WTSLogger::info("{} traders loaded", count);
+
+	return true;
+}
+
+bool WtUftRunner::initEvtNotifier()
+{
+	WTSVariant* cfg = _config->get("notifier");
+	if (cfg == NULL || cfg->type() != WTSVariant::VT_Object)
+		return false;
+
+	_notifier.init(cfg);
 
 	return true;
 }

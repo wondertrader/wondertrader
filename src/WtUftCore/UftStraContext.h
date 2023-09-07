@@ -275,10 +275,7 @@ private:
 
 	} RndBlkPair;
 
-	template<typename T>
-	void*	resizeBlock(BoostMFPtr& mfPtr, uint32_t nCount);
-
-	void	loadBlocks();
+	void	load_local_data();
 
 	PosBlkPair		_pos_blk;
 	OrdBlkPair		_ord_blk;

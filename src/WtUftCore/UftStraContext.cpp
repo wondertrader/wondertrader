@@ -65,12 +65,22 @@ void UftStraContext::on_tick(const char* stdCode, WTSTickData* newTick)
 	if(it != _positions.end())
 	{
 		WTSCommodityInfo* commInfo = newTick->getContractInfo()->getCommInfo();
+		uint32_t volscale = commInfo->getVolScale();
 		PosInfo& pInfo = it->second;
 
+		for(auto i = pInfo._valid_idx; i < pInfo._details.size(); i++)
+		{
+			auto& ds = pInfo._details[i];
+			if (ds->_volume == 0)
+				ds->_position_profit = 0;
+			else
+				ds->_position_profit = (newTick->price() - ds->_open_price)*ds->_volume*volscale*(ds->_direct == 0 ? 1 : -1);
+		}
+
 		if (decimal::gt(pInfo._volume, 0.0))
-			pInfo._dynprofit = newTick->price()*pInfo._volume*commInfo->getVolScale() - pInfo._opencost;
+			pInfo._dynprofit = newTick->price()*pInfo._volume*volscale - pInfo._opencost;
 		else if (decimal::lt(pInfo._volume, 0.0))
-			pInfo._dynprofit = newTick->price()*pInfo._volume*commInfo->getVolScale() + pInfo._opencost;
+			pInfo._dynprofit = newTick->price()*pInfo._volume*volscale + pInfo._opencost;
 		else
 			pInfo._dynprofit = 0;
 	}
@@ -194,6 +204,7 @@ void UftStraContext::on_trade(uint32_t localid, const char* stdCode, bool isLong
 					ts._trading_time = now;
 				}
 
+				pDS->_position_profit *= (1 - maxQty / pDS->_volume);
 				pDS->_volume -= maxQty;
 				pDS->_closed_volume += maxQty;
 				pItem._opencost -= maxQty * volscale*pDS->_open_price;
@@ -313,6 +324,7 @@ void UftStraContext::on_trade(uint32_t localid, const char* stdCode, bool isLong
 					ts._trading_time = now;
 				}
 
+				pDS->_position_profit *= (1 - maxQty / pDS->_volume);
 				pDS->_volume -= maxQty;
 				pDS->_closed_volume += maxQty;
 				pItem._opencost -= maxQty * volscale*pDS->_open_price;
@@ -614,7 +626,7 @@ void UftStraContext::on_channel_ready(uint32_t tradingday)
 	if (_tradingday != tradingday)
 	{
 		_tradingday = tradingday;
-		loadBlocks();
+		load_local_data();
 	}
 
 	if (_strategy)
@@ -632,10 +644,9 @@ void UftStraContext::on_channel_ready(uint32_t tradingday)
 				_strategy->on_position(this, stdCode, false, pInfo._volume, pInfo._volume, 0, 0);
 			}
 		}
-	}
 
-	if (_strategy)
 		_strategy->on_channel_ready(this);
+	}
 }
 
 void UftStraContext::on_channel_lost()
@@ -1010,7 +1021,7 @@ void UftStraContext::stra_log_error(const char* message)
 	WTSLogger::log_dyn_raw("strategy", _name.c_str(), LL_ERROR, message);
 }
 
-void UftStraContext::loadBlocks()
+void UftStraContext::load_local_data()
 {
 	if (_tradingday == 0)
 		return;
@@ -1021,7 +1032,9 @@ void UftStraContext::loadBlocks()
 
 	if(_pos_blk._block == NULL || _pos_blk._block->_date != _tradingday)
 	{
+		SpinLock lock(_pos_blk._mutex);
 		std::string filename = folder + "position.membin";
+		WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "loading local positions from {}", filename);
 		bool isNew = false;
 		if(!StdFile::exists(filename.c_str()))
 		{
@@ -1046,11 +1059,14 @@ void UftStraContext::loadBlocks()
 				for(uint32_t i = 0; i < _pos_blk._block->_size; i++)
 				{
 					const uft::DetailStruct& ds = _pos_blk._block->_details[i];
+					PosInfo& posInfo = _positions[fmtutil::format("{}.{}", ds._exchg, ds._code)];
+					posInfo._total_profit += ds._closed_profit;
+
 					if(decimal::eq(ds._volume, 0))
 						continue;
 
 					WTSContractInfo* cInfo = _engine->get_basedata_mgr()->getContract(ds._code, ds._exchg);
-					if(cInfo == NULL)
+					if (cInfo == NULL)
 						continue;
 
 					details.emplace_back(ds);
@@ -1074,21 +1090,24 @@ void UftStraContext::loadBlocks()
 						continue;
 
 					WTSContractInfo* cInfo = _engine->get_basedata_mgr()->getContract(ds._code, ds._exchg);
-					if(cInfo == NULL)
+					if (cInfo == NULL)
 						continue;
 
 					PosInfo& posInfo = _positions[cInfo->getFullCode()];
+
 					posInfo._details.emplace_back(&ds);
 
 					if(ds._direct == 0)
 					{
 						posInfo._opencost += ds._volume*ds._open_price*cInfo->getCommInfo()->getVolScale();
 						posInfo._volume += ds._volume;
+						posInfo._total_profit += ds._closed_profit;
 					}
 					else
 					{
 						posInfo._opencost += ds._volume*ds._open_price*cInfo->getCommInfo()->getVolScale();
 						posInfo._volume -= ds._volume;
+						posInfo._total_profit += ds._closed_profit;
 					}
 				}
 			}
@@ -1102,7 +1121,9 @@ void UftStraContext::loadBlocks()
 
 	if (_ord_blk._block == NULL || _ord_blk._block->_date != _tradingday)
 	{
+		SpinLock lock(_ord_blk._mutex);
 		std::string filename = folder + "order.membin";
+		WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "loading local orders from {}", filename);
 		bool isNew = false;
 		if (!StdFile::exists(filename.c_str()))
 		{
@@ -1142,7 +1163,9 @@ void UftStraContext::loadBlocks()
 
 	if (_trd_blk._block == NULL || _trd_blk._block->_date != _tradingday)
 	{
+		SpinLock lock(_trd_blk._mutex);
 		std::string filename = folder + "trade.membin";
+		WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "loading local trades from {}", filename);
 		bool isNew = false;
 		if (!StdFile::exists(filename.c_str()))
 		{
@@ -1182,7 +1205,9 @@ void UftStraContext::loadBlocks()
 
 	if (_rnd_blk._block == NULL || _rnd_blk._block->_date != _tradingday)
 	{
+		SpinLock lock(_rnd_blk._mutex);
 		std::string filename = folder + "round.membin";
+		WTSLogger::log_dyn("strategy", _name.c_str(), LL_DEBUG, "loading local rouds from {}", filename);
 		bool isNew = false;
 		if (!StdFile::exists(filename.c_str()))
 		{

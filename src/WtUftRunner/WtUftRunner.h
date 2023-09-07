@@ -13,6 +13,7 @@
 
 #include "../Includes/ILogHandler.h"
 
+#include "../WtUftCore/EventNotifier.h"
 #include "../WtUftCore/UftStrategyMgr.h"
 
 #include "../WtUftCore/WtUftEngine.h"
@@ -51,7 +52,7 @@ private:
 	bool initParsers(WTSVariant* cfgParser);
 	bool initDataMgr();
 	bool initUftStrategies();
-
+	bool initEvtNotifier();
 	bool initEngine();
 
 //////////////////////////////////////////////////////////////////////////
@@ -69,7 +70,7 @@ private:
 	WtUftDtMgr			_data_mgr;
 
 	WTSBaseDataMgr		_bd_mgr;
-	WTSHotMgr			_hot_mgr;
+	EventNotifier		_notifier;
 
 	UftStrategyMgr		_uft_stra_mgr;
 

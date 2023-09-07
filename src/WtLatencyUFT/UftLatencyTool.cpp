@@ -301,7 +301,7 @@ namespace uft
 	bool UftLatencyTool::initEngine(WTSVariant* cfg)
 	{
 		WTSLogger::warn("Trading enviroment initialzied with engine: UFT");
-		_engine.init(cfg, &_bd_mgr, NULL);
+		_engine.init(cfg, &_bd_mgr, NULL, NULL);
 		_engine.set_adapter_mgr(&_traders);
 
 		return true;

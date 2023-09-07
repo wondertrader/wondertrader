@@ -51,6 +51,7 @@ typedef std::function<void()>	TaskItem;
 
 class WTSVariant;
 class WtUftRtTicker;
+class EventNotifier;
 
 typedef std::shared_ptr<IUftStraCtx> UftContextPtr;
 
@@ -89,7 +90,7 @@ public:
 	void notify_params_update(const char* name);
 
 public:
-	void init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtUftDtMgr* dataMgr);
+	void init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtUftDtMgr* dataMgr, EventNotifier* notifier);
 
 	void run(bool bAsync = false);
 
@@ -153,6 +154,8 @@ private:
 	WTSVariant*		_cfg;
 
 	bool			_dependent;	//子策略独立记账
+
+	EventNotifier*	_notifier;
 };
 
 NS_WTP_END
