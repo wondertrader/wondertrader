@@ -1054,14 +1054,13 @@ void UftStraContext::load_local_data()
 			//复用原文件的好处就是，mmap文件大小会满足历史出现过的单日最高数据量，以后再扩的概率就很低了
 			if(_pos_blk._block->_date != _tradingday)
 			{	
+				WTSLogger::log_dyn("strategy", _name.c_str(), LL_INFO, "Clearing local position of {}", _pos_blk._block->_date);
 				//如果日期不同，先读进来未完成的持仓，再清理掉原始数据
 				std::vector<uft::DetailStruct> details;
 				for(uint32_t i = 0; i < _pos_blk._block->_size; i++)
 				{
-					const uft::DetailStruct& ds = _pos_blk._block->_details[i];
-					PosInfo& posInfo = _positions[fmtutil::format("{}.{}", ds._exchg, ds._code)];
-					posInfo._total_profit += ds._closed_profit;
-
+					uft::DetailStruct& ds = _pos_blk._block->_details[i];
+					ds._closed_profit = 0;
 					if(decimal::eq(ds._volume, 0))
 						continue;
 
@@ -1086,29 +1085,22 @@ void UftStraContext::load_local_data()
 				for (uint32_t i = 0; i < _pos_blk._block->_size; i++)
 				{
 					uft::DetailStruct& ds = _pos_blk._block->_details[i];
-					if (decimal::eq(ds._volume, 0))
-						continue;
 
 					WTSContractInfo* cInfo = _engine->get_basedata_mgr()->getContract(ds._code, ds._exchg);
 					if (cInfo == NULL)
 						continue;
 
 					PosInfo& posInfo = _positions[cInfo->getFullCode()];
+					posInfo._total_profit += ds._closed_profit;
+
+					if (decimal::eq(ds._volume, 0))
+						continue;
+
+					posInfo._dynprofit += ds._position_profit;
+					posInfo._opencost += ds._volume*ds._open_price*cInfo->getCommInfo()->getVolScale();
+					posInfo._volume += ds._volume*(ds._direct == 0 ? 1 : -1);
 
 					posInfo._details.emplace_back(&ds);
-
-					if(ds._direct == 0)
-					{
-						posInfo._opencost += ds._volume*ds._open_price*cInfo->getCommInfo()->getVolScale();
-						posInfo._volume += ds._volume;
-						posInfo._total_profit += ds._closed_profit;
-					}
-					else
-					{
-						posInfo._opencost += ds._volume*ds._open_price*cInfo->getCommInfo()->getVolScale();
-						posInfo._volume -= ds._volume;
-						posInfo._total_profit += ds._closed_profit;
-					}
 				}
 			}
 		}
