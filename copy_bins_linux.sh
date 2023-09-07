@@ -1,5 +1,5 @@
 despath=$1
-if test "$despath"==""; then 
+if test "$despath" = ""; then 
 	despath="../wtpy"
 fi
 
