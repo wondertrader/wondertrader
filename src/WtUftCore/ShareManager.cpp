@@ -83,6 +83,8 @@ bool ShareManager::start_watching(uint32_t microsecs)
 					std::this_thread::sleep_for(std::chrono::microseconds(microsecs));
 			}
 		}));
+
+		WTSLogger::info("Share domain is on watch");
 	}
 
 	return true;
@@ -95,10 +97,11 @@ bool ShareManager::init_domain(const char* id)
 
 	bool ret = _init_master(id, ".share");
 	_exchg = id;
-	WTSLogger::info("Share domain [{}] initialing {}", id, ret ? "succeed" : "fail");
+	WTSLogger::info("Share domain [{}] initialing {}", id, ret ? "succeed" : "failed");
 
 	//初始化同步区
 	ret = _init_storage("sync", ".sync");
+	WTSLogger::info("Sync domain [sync] initialing {}", ret ? "succeed" : "failed");
 
 	return ret;
 }

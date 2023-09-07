@@ -19,6 +19,9 @@
 #include "../WTSUtils/SignalHook.hpp"
 #include "../Share/StrUtil.hpp"
 
+#include <boost/asio.hpp>
+
+boost::asio::io_service g_asyncIO;
 
 const char* getBinDir()
 {
@@ -130,7 +133,6 @@ bool WtUftRunner::config()
 
 		ShareManager::self().initialize(cfg->getCString("module"));
 		ShareManager::self().init_domain(cfg->getCString("name"));
-		ShareManager::self().start_watching(cfg->getUInt32("check_span"));
 	}
 
 	if(!_act_policy.init(_config->getCString("bspolicy")))
@@ -225,6 +227,8 @@ bool WtUftRunner::initUftStrategies()
 	for (uint32_t idx = 0; idx < cfg->size(); idx++)
 	{
 		WTSVariant* cfgItem = cfg->get(idx);
+		if(!cfgItem->getBoolean("active"))
+			continue;
 		const char* id = cfgItem->getCString("id");
 		const char* name = cfgItem->getCString("name");
 		UftStrategyPtr stra = _uft_stra_mgr.createStrategy(name, id);
@@ -362,10 +366,15 @@ void WtUftRunner::run(bool bAsync /* = false */)
 {
 	try
 	{
+		_uft_engine.run();
+
 		_parsers.run();
 		_traders.run();
 
-		_uft_engine.run(bAsync);
+		ShareManager::self().start_watching(2);
+
+		boost::asio::io_service::work work(g_asyncIO);
+		g_asyncIO.run();
 	}
 	catch (...)
 	{

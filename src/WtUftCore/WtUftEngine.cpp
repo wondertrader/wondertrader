@@ -25,10 +25,6 @@
 
 #include "../WTSTools/WTSLogger.h"
 
-#include <boost/asio.hpp>
-
-boost::asio::io_service g_asyncIO;
-
 USING_NS_WTP;
 
 WtUftEngine::WtUftEngine()
@@ -193,7 +189,7 @@ void WtUftEngine::init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtUftDtMgr* dataMgr
 	if(_cfg) _cfg->retain();
 }
 
-void WtUftEngine::run(bool bAsync /*= false*/)
+void WtUftEngine::run()
 {
 	for (auto it = _ctx_map.begin(); it != _ctx_map.end(); it++)
 	{
@@ -213,14 +209,6 @@ void WtUftEngine::run(bool bAsync /*= false*/)
 	}
 
 	_tm_ticker->run();
-
-	WTSLogger::info("WtUftEngine will run in {} mode", bAsync ? "async" : "sync");
-
-	if (!bAsync)
-	{
-		boost::asio::io_service::work work(g_asyncIO);
-		g_asyncIO.run();
-	}
 }
 
 void WtUftEngine::handle_push_quote(WTSTickData* newTick)

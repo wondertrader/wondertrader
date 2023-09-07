@@ -92,7 +92,7 @@ public:
 public:
 	void init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtUftDtMgr* dataMgr, EventNotifier* notifier);
 
-	void run(bool bAsync = false);
+	void run();
 
 	void on_tick(const char* stdCode, WTSTickData* curTick);
 
