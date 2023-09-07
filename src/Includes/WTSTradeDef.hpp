@@ -5,7 +5,7 @@
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief Wt½»Ò×Êı¾İ¶ÔÏó¶¨Òå,°üÀ¨Î¯ÍĞ¡¢¶©µ¥¡¢³É½»¡¢³Ö²Ö¡¢×Ê½ğ¡¢³Ö²ÖÃ÷Ï¸µÈÊı¾İ
+ * \brief Wtäº¤æ˜“æ•°æ®å¯¹è±¡å®šä¹‰,åŒ…æ‹¬å§”æ‰˜ã€è®¢å•ã€æˆäº¤ã€æŒä»“ã€èµ„é‡‘ã€æŒä»“æ˜ç»†ç­‰æ•°æ®
  */
 #pragma once
 #include "WTSObject.hpp"
@@ -21,7 +21,7 @@ NS_WTP_BEGIN
 class WTSContractInfo;
 
 //////////////////////////////////////////////////////////////////////////
-//Î¯ÍĞÊı¾İ½á¹¹,ÓÃ»§¿Í»§¶ËÏò·şÎñ¶Ë·¢Æğ
+//å§”æ‰˜æ•°æ®ç»“æ„,ç”¨æˆ·å®¢æˆ·ç«¯å‘æœåŠ¡ç«¯å‘èµ·
 class WTSEntrust : public WTSPoolObject<WTSEntrust>
 {
 public:
@@ -138,7 +138,7 @@ protected:
 
 
 //////////////////////////////////////////////////////////////////////////
-//Î¯ÍĞ²Ù×÷: ³·µ¥¡¢¸Äµ¥
+//å§”æ‰˜æ“ä½œ: æ’¤å•ã€æ”¹å•
 class WTSEntrustAction : public WTSPoolObject<WTSEntrustAction>
 {
 public:
@@ -233,7 +233,7 @@ protected:
 };
 
 //////////////////////////////////////////////////////////////////////////
-//¶©µ¥ĞÅÏ¢,²é¿´¶©µ¥×´Ì¬±ä»¯µÈ
+//è®¢å•ä¿¡æ¯,æŸ¥çœ‹è®¢å•çŠ¶æ€å˜åŒ–ç­‰
 class WTSOrderInfo : public WTSPoolObject<WTSOrderInfo>
 {
 public:
@@ -278,7 +278,7 @@ public:
 	}
 
 public:
-	//Õâ²¿·ÖÊÇºÍWTSEntrustÍ¬²½µÄ
+	//è¿™éƒ¨åˆ†æ˜¯å’ŒWTSEntruståŒæ­¥çš„
 	inline void setExchange(const char* exchg, std::size_t len = 0) {
 		if (len == 0)
 			wt_strcpy(m_strExchg, exchg);
@@ -358,6 +358,7 @@ public:
 		{
 		case WOS_AllTraded:
 		case WOS_Canceled:
+		case Nottouched:
 			return false;
 		default:
 			return true;
@@ -368,7 +369,7 @@ public:
 	inline bool	isError() const{ return m_bIsError; }
 
 private:
-	//Õâ²¿·Ö³ÉÔ±ºÍWTSEntrustÒ»ÖÂ
+	//è¿™éƒ¨åˆ†æˆå‘˜å’ŒWTSEntrustä¸€è‡´
 	char			m_strExchg[MAX_EXCHANGE_LENGTH];
 	char			m_strCode[MAX_INSTRUMENT_LENGTH];
 	double			m_dVolume;
@@ -388,7 +389,7 @@ private:
 	WTSBusinessType		m_businessType;
 	WTSContractInfo*	m_pContract;
 
-	//Õâ²¿·ÖÊÇOrder×¨ÓĞµÄ³ÉÔ±
+	//è¿™éƒ¨åˆ†æ˜¯Orderä¸“æœ‰çš„æˆå‘˜
 	uint32_t	m_uInsertDate;
 	uint64_t	m_uInsertTime;
 	double		m_dVolTraded;
@@ -477,11 +478,11 @@ public:
 	inline WTSContractInfo* getContractInfo() const { return m_pContract; }
 
 protected:
-	char	m_strExchg[MAX_EXCHANGE_LENGTH];	//ÊĞ³¡
-	char	m_strCode[MAX_INSTRUMENT_LENGTH];	//´úÂë
-	char	m_strTradeID[64] = { 0 };			//³É½»µ¥ºÅ
-	char	m_strRefOrder[64] = { 0 };			//±¾µØÎ¯ÍĞĞòÁĞºÅ
-	char	m_strUserTag[64] = { 0 };			//ÓÃ»§±êÇ©
+	char	m_strExchg[MAX_EXCHANGE_LENGTH];	//å¸‚åœº
+	char	m_strCode[MAX_INSTRUMENT_LENGTH];	//ä»£ç 
+	char	m_strTradeID[64] = { 0 };			//æˆäº¤å•å·
+	char	m_strRefOrder[64] = { 0 };			//æœ¬åœ°å§”æ‰˜åºåˆ—å·
+	char	m_strUserTag[64] = { 0 };			//ç”¨æˆ·æ ‡ç­¾
 
 	uint32_t	m_uTradeDate;
 	uint64_t	m_uTradeTime;
@@ -503,7 +504,7 @@ protected:
 };
 
 //////////////////////////////////////////////////////////////////////////
-//³Ö²ÖĞÅÏ¢
+//æŒä»“ä¿¡æ¯
 class WTSPositionItem : public WTSPoolObject<WTSPositionItem>
 {
 public:
@@ -577,22 +578,22 @@ protected:
 	char			m_strCode[MAX_INSTRUMENT_LENGTH];
 	char			m_strCurrency[8] = { 0 };
 
-	WTSDirectionType	m_direction;//¶à¿Õ·½Ïò
-	double		m_dPrePosition;		//×ò²Ö
-	double		m_dNewPosition;		//½ñ²Ö
-	double		m_dAvailPrePos;		//¿ÉÆ½×ò²Ö
-	double		m_dAvailNewPos;		//¿ÉÆ½½ñ²Ö
-	double		m_dTotalPosCost;	//³Ö²Ö×Ü³É±¾
-	double		m_dMargin;			//Õ¼ÓÃ±£Ö¤½ğ
-	double		m_dAvgPrice;		//³Ö²Ö¾ù¼Û
-	double		m_dDynProfit;		//¸¡¶¯Ó¯¿÷
+	WTSDirectionType	m_direction;//å¤šç©ºæ–¹å‘
+	double		m_dPrePosition;		//æ˜¨ä»“
+	double		m_dNewPosition;		//ä»Šä»“
+	double		m_dAvailPrePos;		//å¯å¹³æ˜¨ä»“
+	double		m_dAvailNewPos;		//å¯å¹³ä»Šä»“
+	double		m_dTotalPosCost;	//æŒä»“æ€»æˆæœ¬
+	double		m_dMargin;			//å ç”¨ä¿è¯é‡‘
+	double		m_dAvgPrice;		//æŒä»“å‡ä»·
+	double		m_dDynProfit;		//æµ®åŠ¨ç›ˆäº
 
 	WTSBusinessType		m_businessType;
 	WTSContractInfo*	m_pContract;
 };
 
 //////////////////////////////////////////////////////////////////////////
-//ÕË»§ĞÅÏ¢
+//è´¦æˆ·ä¿¡æ¯
 class WTSAccountInfo : public WTSPoolObject<WTSAccountInfo>
 {
 public:
