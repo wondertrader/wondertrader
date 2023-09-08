@@ -14,8 +14,6 @@ extern "C"
 
 	EXPORT_FLAG	bool	init_master(const char* id, const char* path = "");
 
-	EXPORT_FLAG	bool	init_storage(const char* id, const char* path = "");
-
 	EXPORT_FLAG	bool	init_slave(const char* id, const char* path = "");
 
 	EXPORT_FLAG	bool	update_slave(const char* id);
@@ -26,7 +24,7 @@ extern "C"
 
 	EXPORT_FLAG uint64_t	get_section_updatetime(const char* domain, const char* section);
 
-	EXPORT_FLAG bool	commit_section(const char* domain, const char* section);
+	EXPORT_FLAG bool		commit_section(const char* domain, const char* section);
 
 	EXPORT_FLAG const char*	allocate_string(const char* domain, const char* section, const char* key, const char* initVal, bool bForceWrite = false);
 

@@ -15,33 +15,6 @@ bool ShareBlocks::init_master(const char* name, const char* path/* = ""*/)
 	if (filename.empty())
 		filename = name;
 
-	{
-		BoostFile bf;
-		bf.create_new_file(filename.c_str());
-		bf.truncate_file(sizeof(ShmBlock));
-		bf.close_file();
-	}
-
-	shm._domain.reset(new BoostMappingFile);
-	shm._domain->map(filename.c_str());
-	shm._master = true;
-	shm._block = (ShmBlock*)shm._domain->addr();
-	memset(shm._domain->addr(), 0, sizeof(ShmBlock));
-	wt_strcpy(shm._block->_flag, BLK_FLAG, 8);
-	shm._block->_updatetime = TimeUtils::getLocalTimeNow();
-	return true;
-}
-
-bool ShareBlocks::init_storage(const char* name, const char* path/* = ""*/)
-{
-	ShmPair& shm = (ShmPair&)_shm_blocks[name];
-	if (shm._block != NULL)
-		return true;
-
-	std::string filename = path;
-	if (filename.empty())
-		filename = name;
-
 	if(!StdFile::exists(filename.c_str()))
 	{
 		BoostFile bf;
@@ -56,7 +29,6 @@ bool ShareBlocks::init_storage(const char* name, const char* path/* = ""*/)
 	shm._block = (ShmBlock*)shm._domain->addr();
 	shm._blocktime = shm._block->_updatetime;
 
-	//storage模式下，不做重新初始化，还要加一下
 	{
 		//这里要做初始化，要把已经有的key加载进去
 		for (uint32_t i = 0; i < shm._block->_count; i++)

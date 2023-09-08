@@ -88,8 +88,6 @@ namespace shareblock
 
 		bool	init_master(const char* name, const char* path = "");
 
-		bool	init_storage(const char* name, const char* path = "");
-
 		bool	init_slave(const char* name, const char* path = "");
 
 		bool	update_slave(const char* name);
