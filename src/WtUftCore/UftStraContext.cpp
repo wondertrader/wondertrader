@@ -17,12 +17,13 @@
 #include "../Includes/WTSContractInfo.hpp"
 #include "../Includes/IBaseDataMgr.h"
 #include "../Includes/WTSContractInfo.hpp"
+#include "../Includes/WTSVariant.hpp"
 
 #include "../Share/decimal.h"
 #include "../Share/TimeUtils.hpp"
 
 #include "../WTSTools/WTSLogger.h"
-
+#include "../WTSUtils/WTSCfgLoader.h"
 
 static const uint32_t DATA_SIZE_STEP = 8000;	//信息量每天最多4000
 
@@ -40,6 +41,7 @@ UftStraContext::UftStraContext(WtUftEngine* engine, const char* name)
 	, _strategy(NULL)
 	, _tradingday(0)
 {
+	_context_id = makeUftCtxId();
 }
 
 
@@ -689,34 +691,34 @@ void UftStraContext::on_params_updated()
 		_strategy->on_params_updated();
 }
 
-void UftStraContext::watch_param(const char* name, const char* val)
+const char* UftStraContext::watch_param(const char* name, const char* val)
 {
-	ShareManager::self().set_value(_name.c_str(), name, val);
+	return ShareManager::self().allocate_value(_name.c_str(), name, val, false, true);
 }
 
-void UftStraContext::watch_param(const char* name, int64_t val)
+int64_t UftStraContext::watch_param(const char* name, int64_t val)
 {
-	ShareManager::self().set_value(_name.c_str(), name, val);
+	return *ShareManager::self().allocate_value(_name.c_str(), name, val, false, true);
 }
 
-void UftStraContext::watch_param(const char* name, int32_t val)
+int32_t UftStraContext::watch_param(const char* name, int32_t val)
 {
-	ShareManager::self().set_value(_name.c_str(), name, val);
+	return *ShareManager::self().allocate_value(_name.c_str(), name, val, false, true);
 }
 
-void UftStraContext::watch_param(const char* name, uint64_t val)
+uint64_t UftStraContext::watch_param(const char* name, uint64_t val)
 {
-	ShareManager::self().set_value(_name.c_str(), name, val);
+	return *ShareManager::self().allocate_value(_name.c_str(), name, val, false, true);
 }
 
-void UftStraContext::watch_param(const char* name, uint32_t val)
+uint32_t UftStraContext::watch_param(const char* name, uint32_t val)
 {
-	ShareManager::self().set_value(_name.c_str(), name, val);
+	return *ShareManager::self().allocate_value(_name.c_str(), name, val, false, true);
 }
 
-void UftStraContext::watch_param(const char* name, double val)
+double UftStraContext::watch_param(const char* name, double val)
 {
-	ShareManager::self().set_value(_name.c_str(), name, val);
+	return *ShareManager::self().allocate_value(_name.c_str(), name, val, false, true);
 }
 
 void UftStraContext::commit_param_watcher()
@@ -756,27 +758,27 @@ double UftStraContext::read_param(const char* name, double defVal /* = 0 */)
 
 int32_t* UftStraContext::sync_param(const char* name, int32_t initVal /* = 0 */, bool bForceWrite/* = false*/)
 {
-	return ShareManager::self().allocate_value(_name.c_str(), name, initVal, bForceWrite);
+	return ShareManager::self().allocate_value(_name.c_str(), name, initVal, bForceWrite, false);
 }
 
 uint32_t* UftStraContext::sync_param(const char* name, uint32_t initVal /* = 0 */, bool bForceWrite/* = false*/)
 {
-	return ShareManager::self().allocate_value(_name.c_str(), name, initVal, bForceWrite);
+	return ShareManager::self().allocate_value(_name.c_str(), name, initVal, bForceWrite, false);
 }
 
 int64_t* UftStraContext::sync_param(const char* name, int64_t initVal /* = 0 */, bool bForceWrite/* = false*/)
 {
-	return ShareManager::self().allocate_value(_name.c_str(), name, initVal, bForceWrite);
+	return ShareManager::self().allocate_value(_name.c_str(), name, initVal, bForceWrite, false);
 }
 
 uint64_t* UftStraContext::sync_param(const char* name, uint64_t initVal /* = 0 */, bool bForceWrite/* = false*/)
 {
-	return ShareManager::self().allocate_value(_name.c_str(), name, initVal, bForceWrite);
+	return ShareManager::self().allocate_value(_name.c_str(), name, initVal, bForceWrite, false);
 }
 
 double* UftStraContext::sync_param(const char* name, double initVal /* = 0 */, bool bForceWrite/* = false*/)
 {
-	return ShareManager::self().allocate_value(_name.c_str(), name, initVal, bForceWrite);
+	return ShareManager::self().allocate_value(_name.c_str(), name, initVal, bForceWrite, false);
 }
 
 const char* UftStraContext::sync_param(const char* name, const char* initVal /* = "" */, bool bForceWrite/* = false*/)
@@ -1030,6 +1032,94 @@ void UftStraContext::load_local_data()
 	if (!StdFile::exists(folder.c_str()))
 		BoostFile::create_directories(folder.c_str());
 
+	/*
+	 *	By Wesley @ 2023.09.08
+	 *	这里增加一个逻辑，从yaml文件读取手动生成的持仓
+	 */
+	std::string mannualfile = folder + "mannual.yaml";
+	do
+	{
+		if (!StdFile::exists(mannualfile.c_str()))
+			break;
+
+		WTSLogger::log_dyn("strategy", _name.c_str(), LL_WARN, "{} detected, positions will be overwrited", mannualfile);
+
+		WTSVariant* manual = WTSCfgLoader::load_from_file(mannualfile);
+		if (manual == NULL)
+		{
+			WTSLogger::log_dyn("strategy", _name.c_str(), LL_ERROR, "parsing mannual file {} failed", mannualfile);
+			break;
+		}
+
+		WTSVariant* ayDetails = manual->get("details");
+		if(ayDetails == NULL)
+			break;
+
+		//解析成功，开始处理持仓
+		//char		_exchg[MAX_EXCHANGE_LENGTH];
+		//char		_code[MAX_INSTRUMENT_LENGTH];
+		//uint32_t	_direct;	//方向0-多，1-空
+		//double		_volume;
+		//double		_open_price;
+
+		SpinLock lock(_pos_blk._mutex);
+		std::string filename = folder + "position.membin";
+
+		//强制新建
+		{
+			std::size_t uSize = sizeof(uft::PositionBlock) + sizeof(uft::DetailStruct) * DATA_SIZE_STEP;
+			BoostFile bf;
+			bf.create_new_file(filename.c_str());
+			bf.truncate_file(uSize);
+			bf.close_file();
+		}
+
+		_pos_blk._file.reset(new BoostMappingFile);
+		if (_pos_blk._file->map(filename.c_str()))
+		{
+			_pos_blk._block = (uft::PositionBlock*)_pos_blk._file->addr();
+			strcpy(_pos_blk._block->_blk_flag, uft::BLK_FLAG);
+			_pos_blk._block->_date = _tradingday;
+			_pos_blk._block->_capacity = DATA_SIZE_STEP;
+
+			for (uint32_t i = 0; i < ayDetails->size(); i++)
+			{
+				WTSVariant* objDetail = ayDetails->get(i);
+				const char* exchg = objDetail->getCString("exchg");
+				const char* code = objDetail->getCString("code");
+				WTSContractInfo* cInfo = _engine->get_basedata_mgr()->getContract(code, exchg);
+				if(cInfo == NULL)
+				{
+					WTSLogger::log_dyn("strategy", _name.c_str(), LL_ERROR, "{}.{} not exist, skip this details", exchg, code);
+					continue;
+				}
+
+				uft::DetailStruct& ds = _pos_blk._block->_details[i];
+				wt_strcpy(ds._exchg, exchg);
+				wt_strcpy(ds._code, code);
+				ds._direct = objDetail->getUInt32("direct");
+				ds._volume = objDetail->getDouble("volume");
+				ds._open_price = objDetail->getDouble("openprice");
+				ds._open_time = TimeUtils::getLocalTimeNow();
+				ds._open_tdate = _tradingday;
+
+				_pos_blk._block->_size++;
+			}
+		}
+
+		WTSLogger::log_dyn("strategy", _name.c_str(), LL_WARN, "loading mannual file {} done, {} details imported", mannualfile, _pos_blk._block->_size);
+
+		//把mmap释放掉，不影响后面的逻辑
+		{
+			_pos_blk._file.reset();
+			_pos_blk._block = NULL;
+		}
+	} while (false);
+
+	//不管前面解析的情况如何，文件都重命名
+	if (StdFile::exists(mannualfile.c_str()))
+		boost::filesystem::rename(boost::filesystem::path(mannualfile), boost::filesystem::path(fmtutil::format("{}.{}", mannualfile, TimeUtils::getYYYYMMDDhhmmss())));
+
 	if(_pos_blk._block == NULL || _pos_blk._block->_date != _tradingday)
 	{
 		SpinLock lock(_pos_blk._mutex);
@@ -1051,8 +1141,15 @@ void UftStraContext::load_local_data()
 		if (_pos_blk._file->map(filename.c_str()))
 		{
 			_pos_blk._block = (uft::PositionBlock*)_pos_blk._file->addr();
+			if(isNew)
+			{
+				strcpy(_pos_blk._block->_blk_flag, uft::BLK_FLAG);
+				_pos_blk._block->_date = _tradingday;
+				_pos_blk._block->_capacity = DATA_SIZE_STEP;
+			}
+
 			//复用原文件的好处就是，mmap文件大小会满足历史出现过的单日最高数据量，以后再扩的概率就很低了
-			if(_pos_blk._block->_date != _tradingday)
+			if(_pos_blk._block->_date != 0 && _pos_blk._block->_date != _tradingday)
 			{	
 				WTSLogger::log_dyn("strategy", _name.c_str(), LL_INFO, "Clearing local position of {}", _pos_blk._block->_date);
 				//如果日期不同，先读进来未完成的持仓，再清理掉原始数据
@@ -1060,7 +1157,7 @@ void UftStraContext::load_local_data()
 				for(uint32_t i = 0; i < _pos_blk._block->_size; i++)
 				{
 					uft::DetailStruct& ds = _pos_blk._block->_details[i];
-					ds._closed_profit = 0;
+					ds._closed_profit = 0;	//交易日切换以后，平仓盈亏置为0
 					if(decimal::eq(ds._volume, 0))
 						continue;
 
@@ -1132,19 +1229,25 @@ void UftStraContext::load_local_data()
 		if (_ord_blk._file->map(filename.c_str()))
 		{
 			_ord_blk._block = (uft::OrderBlock*)_ord_blk._file->addr();
+			if (isNew)
+			{
+				strcpy(_ord_blk._block->_blk_flag, uft::BLK_FLAG);
+				_ord_blk._block->_date = _tradingday;
+				_ord_blk._block->_capacity = DATA_SIZE_STEP;
+			}
+
 			//交易日不一致就把数据清掉
 			//复用原文件的好处就是，mmap文件大小会满足历史出现过的单日最高数据量，以后再扩的概率就很低了
-			if (_ord_blk._block->_date != _tradingday)
+			if (_ord_blk._block->_date != 0 && _ord_blk._block->_date != _tradingday)
 			{
 				memset(_ord_blk._block->_orders, 0, sizeof(uft::OrderStruct)*_ord_blk._block->_size);
 				_ord_blk._block->_size = 0;
+				_ord_blk._block->_date = _tradingday;
 			}
 			else
 			{
 				//把未完成单读到内存里来
 			}
-
-			_ord_blk._block->_date = _tradingday;
 		}
 		else
 		{
@@ -1174,19 +1277,25 @@ void UftStraContext::load_local_data()
 		if (_trd_blk._file->map(filename.c_str()))
 		{
 			_trd_blk._block = (uft::TradeBlock*)_trd_blk._file->addr();
+			if (isNew)
+			{
+				strcpy(_trd_blk._block->_blk_flag, uft::BLK_FLAG);
+				_trd_blk._block->_date = _tradingday;
+				_trd_blk._block->_capacity = DATA_SIZE_STEP;
+			}
+
 			//交易日不一致就把数据清掉
 			//复用原文件的好处就是，mmap文件大小会满足历史出现过的单日最高数据量，以后再扩的概率就很低了
-			if (_trd_blk._block->_date != _tradingday)
+			if (_trd_blk._block->_date != 0 && _trd_blk._block->_date != _tradingday)
 			{
 				memset(_trd_blk._block->_trades, 0, sizeof(uft::TradeStruct)*_trd_blk._block->_size);
 				_trd_blk._block->_size = 0;
+				_trd_blk._block->_date = _tradingday;
 			}
 			else
 			{
 				//成交数据不用读进来了
-			}
-
-			_trd_blk._block->_date = _tradingday;
+			}			
 		}
 		else
 		{
@@ -1216,19 +1325,25 @@ void UftStraContext::load_local_data()
 		if (_rnd_blk._file->map(filename.c_str()))
 		{
 			_rnd_blk._block = (uft::RoundBlock*)_rnd_blk._file->addr();
+			if (isNew)
+			{
+				strcpy(_rnd_blk._block->_blk_flag, uft::BLK_FLAG);
+				_rnd_blk._block->_date = _tradingday;
+				_rnd_blk._block->_capacity = DATA_SIZE_STEP;
+			}
+
 			//交易日不一致就把数据清掉
 			//复用原文件的好处就是，mmap文件大小会满足历史出现过的单日最高数据量，以后再扩的概率就很低了
-			if (_rnd_blk._block->_date != _tradingday)
+			if (_rnd_blk._block->_date != 0 && _rnd_blk._block->_date != _tradingday)
 			{
 				memset(_rnd_blk._block->_rounds, 0, sizeof(uft::RoundStruct)*_rnd_blk._block->_size);
 				_rnd_blk._block->_size = 0;
+				_rnd_blk._block->_date = _tradingday;
 			}
 			else
 			{
 				//回合数据不用读到进来了
 			}
-
-			_rnd_blk._block->_date = _tradingday;
 		}
 		else
 		{

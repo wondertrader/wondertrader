@@ -68,12 +68,19 @@ public:
 
 
 public:
-	virtual void watch_param(const char* name, const char* val) override;
-	virtual void watch_param(const char* name, double val) override;
-	virtual void watch_param(const char* name, uint32_t val) override;
-	virtual void watch_param(const char* name, uint64_t val) override;
-	virtual void watch_param(const char* name, int32_t val) override;
-	virtual void watch_param(const char* name, int64_t val) override;
+	//virtual void watch_param(const char* name, const char* val) override;
+	//virtual void watch_param(const char* name, double val) override;
+	//virtual void watch_param(const char* name, uint32_t val) override;
+	//virtual void watch_param(const char* name, uint64_t val) override;
+	//virtual void watch_param(const char* name, int32_t val) override;
+	//virtual void watch_param(const char* name, int64_t val) override;
+
+	virtual const char*	watch_param(const char* name, const char* initVal = "") override;
+	virtual double		watch_param(const char* name, double initVal = 0) override;
+	virtual uint32_t	watch_param(const char* name, uint32_t initVal = 0) override;
+	virtual uint64_t	watch_param(const char* name, uint64_t initVal = 0) override;
+	virtual int32_t		watch_param(const char* name, int32_t initVal = 0) override;
+	virtual int64_t		watch_param(const char* name, int64_t initVal = 0) override;
 
 	virtual void commit_param_watcher() override;
 
