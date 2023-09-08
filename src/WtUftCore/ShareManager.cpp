@@ -23,7 +23,6 @@ bool ShareManager::initialize(const char* module)
 	_inited = (_inst != NULL);
 
 	_init_master = (func_init_master)DLLHelper::get_symbol(_inst, "init_master");
-	_init_storage = (func_init_master)DLLHelper::get_symbol(_inst, "init_storage");
 	_get_section_updatetime = (func_get_section_updatetime)DLLHelper::get_symbol(_inst, "get_section_updatetime");
 	_commit_section = (func_commit_section)DLLHelper::get_symbol(_inst, "commit_section");
 
@@ -100,7 +99,7 @@ bool ShareManager::init_domain(const char* id)
 	WTSLogger::info("Share domain [{}] initialing {}", id, ret ? "succeed" : "failed");
 
 	//初始化同步区
-	ret = _init_storage("sync", ".sync");
+	ret = _init_master("sync", ".sync");
 	WTSLogger::info("Sync domain [sync] initialing {}", ret ? "succeed" : "failed");
 
 	return ret;
@@ -111,9 +110,9 @@ bool ShareManager::commit_param_watcher(const char* section)
 	if (!_inited)
 		return false;
 
+	bool ret = _commit_section(_exchg.c_str(), section);
 	_secnames[section] = TimeUtils::getLocalTimeNow();
-
-	return _commit_section(_exchg.c_str(), section);
+	return ret;
 }
 
 bool ShareManager::set_value(const char* section, const char* key, double val)
@@ -212,50 +211,50 @@ double ShareManager::get_value(const char* section, const char* key, double defV
 	return _get_double(_exchg.c_str(), section, key, defVal);
 }
 
-const char* ShareManager::allocate_value(const char* section, const char* key, const char* initVal/* = ""*/, bool bForceWrite/* = false*/)
+const char* ShareManager::allocate_value(const char* section, const char* key, const char* initVal/* = ""*/, bool bForceWrite/* = false*/, bool isExchg/* = false*/)
 {
 	if (!_inited)
 		return nullptr;
 
-	return _allocate_string(_sync.c_str(), section, key, initVal, bForceWrite);
+	return _allocate_string(isExchg ? _exchg.c_str() : _sync.c_str(), section, key, initVal, bForceWrite);
 }
 
-int32_t* ShareManager::allocate_value(const char* section, const char* key, int32_t initVal/* = 0*/, bool bForceWrite/* = false*/)
+int32_t* ShareManager::allocate_value(const char* section, const char* key, int32_t initVal/* = 0*/, bool bForceWrite/* = false*/, bool isExchg/* = false*/)
 {
 	if (!_inited)
 		return nullptr;
 
-	return _allocate_int32(_sync.c_str(), section, key, initVal, bForceWrite);
+	return _allocate_int32(isExchg ? _exchg.c_str() : _sync.c_str(), section, key, initVal, bForceWrite);
 }
 
-int64_t* ShareManager::allocate_value(const char* section, const char* key, int64_t initVal/* = 0*/, bool bForceWrite/* = false*/)
+int64_t* ShareManager::allocate_value(const char* section, const char* key, int64_t initVal/* = 0*/, bool bForceWrite/* = false*/, bool isExchg/* = false*/)
 {
 	if (!_inited)
 		return nullptr;
 
-	return _allocate_int64(_sync.c_str(), section, key, initVal, bForceWrite);
+	return _allocate_int64(isExchg ? _exchg.c_str() : _sync.c_str(), section, key, initVal, bForceWrite);
 }
 
-uint32_t* ShareManager::allocate_value(const char* section, const char* key, uint32_t initVal/* = 0*/, bool bForceWrite/* = false*/)
+uint32_t* ShareManager::allocate_value(const char* section, const char* key, uint32_t initVal/* = 0*/, bool bForceWrite/* = false*/, bool isExchg/* = false*/)
 {
 	if (!_inited)
 		return nullptr;
 
-	return _allocate_uint32(_sync.c_str(), section, key, initVal, bForceWrite);
+	return _allocate_uint32(isExchg ? _exchg.c_str() : _sync.c_str(), section, key, initVal, bForceWrite);
 }
 
-uint64_t* ShareManager::allocate_value(const char* section, const char* key, uint64_t initVal/* = 0*/, bool bForceWrite/* = false*/)
+uint64_t* ShareManager::allocate_value(const char* section, const char* key, uint64_t initVal/* = 0*/, bool bForceWrite/* = false*/, bool isExchg/* = false*/)
 {
 	if (!_inited)
 		return nullptr;
 
-	return _allocate_uint64(_sync.c_str(), section, key, initVal, bForceWrite);
+	return _allocate_uint64(isExchg ? _exchg.c_str() : _sync.c_str(), section, key, initVal, bForceWrite);
 }
 
-double* ShareManager::allocate_value(const char* section, const char* key, double initVal/* = 0*/, bool bForceWrite/* = false*/)
+double* ShareManager::allocate_value(const char* section, const char* key, double initVal/* = 0*/, bool bForceWrite/* = false*/, bool isExchg/* = false*/)
 {
 	if (!_inited)
 		return nullptr;
 
-	return _allocate_double(_sync.c_str(), section, key, initVal, bForceWrite);
+	return _allocate_double(isExchg ? _exchg.c_str() : _sync.c_str(), section, key, initVal, bForceWrite);
 }

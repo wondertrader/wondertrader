@@ -61,13 +61,14 @@ public:
 	virtual void	on_orddtl_updated(const char* stdCode, WTSOrdDtlData* newOrdDtl) {}
 	virtual void	on_trans_updated(const char* stdCode, WTSTransData* newTrans) {}
 
-	virtual void	watch_param(const char* name, const char* val) {}
-	virtual void	watch_param(const char* name, double val){}
-	virtual void	watch_param(const char* name, uint32_t val){}
-	virtual void	watch_param(const char* name, uint64_t val){}
-	virtual void	watch_param(const char* name, int32_t val){}
-	virtual void	watch_param(const char* name, int64_t val){}
-	virtual void	commit_param_watcher() {}
+	virtual const char*	watch_param(const char* name, const char* initVal = "") { return initVal; }
+	virtual double		watch_param(const char* name, double initVal = 0) { return initVal; }
+	virtual uint32_t	watch_param(const char* name, uint32_t initVal = 0) { return initVal; }
+	virtual uint64_t	watch_param(const char* name, uint64_t initVal = 0) { return initVal; }
+	virtual int32_t		watch_param(const char* name, int32_t initVal = 0) { return initVal; }
+	virtual int64_t		watch_param(const char* name, int64_t initVal = 0) { return initVal; }
+
+	virtual void		commit_param_watcher() {}
 
 	virtual const char*	read_param(const char* name, const char* defVal = "") { return defVal; }
 	virtual double		read_param(const char* name, double defVal = 0) { return defVal; }

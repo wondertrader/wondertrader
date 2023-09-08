@@ -88,12 +88,12 @@ public:
 	/*
 	 *	在单向同步区分配字段
 	 */
-	const char*	allocate_value(const char* section, const char* key, const char* initVal = "", bool bForceWrite = false);
-	int32_t*	allocate_value(const char* section, const char* key, int32_t initVal = 0, bool bForceWrite = false);
-	int64_t*	allocate_value(const char* section, const char* key, int64_t initVal = 0, bool bForceWrite = false);
-	uint32_t*	allocate_value(const char* section, const char* key, uint32_t initVal = 0, bool bForceWrite = false);
-	uint64_t*	allocate_value(const char* section, const char* key, uint64_t initVal = 0, bool bForceWrite = false);
-	double*		allocate_value(const char* section, const char* key, double initVal = 0, bool bForceWrite = false);
+	const char*	allocate_value(const char* section, const char* key, const char* initVal = "", bool bForceWrite = false, bool isExchg = false);
+	int32_t*	allocate_value(const char* section, const char* key, int32_t initVal = 0, bool bForceWrite = false, bool isExchg = false);
+	int64_t*	allocate_value(const char* section, const char* key, int64_t initVal = 0, bool bForceWrite = false, bool isExchg = false);
+	uint32_t*	allocate_value(const char* section, const char* key, uint32_t initVal = 0, bool bForceWrite = false, bool isExchg = false);
+	uint64_t*	allocate_value(const char* section, const char* key, uint64_t initVal = 0, bool bForceWrite = false, bool isExchg = false);
+	double*		allocate_value(const char* section, const char* key, double initVal = 0, bool bForceWrite = false, bool isExchg = false);
 
 private:
 	bool			_inited;
@@ -110,7 +110,6 @@ private:
 	std::string		_module;
 
 	func_init_master _init_master;
-	func_init_master _init_storage;
 	func_get_section_updatetime _get_section_updatetime;
 	func_commit_section _commit_section;
 
