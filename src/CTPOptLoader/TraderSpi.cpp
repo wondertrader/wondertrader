@@ -104,7 +104,7 @@ void CTraderSpi::ReqAuth()
 	strcpy(req.AuthCode, AUTHCODE.c_str());
 	strcpy(req.AppID, APPID.c_str());
 	int iResult = pUserApi->ReqAuthenticate(&req, ++iRequestID);
-	std::cerr << "--->>> 发送终端认证录请求: " << ((iResult == 0) ? "成功" : "失败") << std::endl;
+	std::cerr << "--->>> Requesting authentication: " << ((iResult == 0) ? "succeed" : "failed") << std::endl;
 }
 
 void CTraderSpi::OnRspAuthenticate(CThostFtdcRspAuthenticateField *pRspAuthenticateField, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
@@ -124,7 +124,7 @@ void CTraderSpi::ReqUserLogin()
 	strcpy(req.UserID, INVESTOR_ID.c_str());
 	strcpy(req.Password, PASSWORD.c_str());
 	int iResult = pUserApi->ReqUserLogin(&req, ++iRequestID);
-	std::cerr << "--->>> 发送用户登录请求: " << ((iResult == 0) ? "成功" : "失败") << std::endl;
+	std::cerr << "--->>> Requesting user login: " << ((iResult == 0) ? "succeed" : "failed") << std::endl;
 }
 
 void CTraderSpi::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin,
@@ -151,7 +151,7 @@ void CTraderSpi::ReqQryInstrument()
 	CThostFtdcQryInstrumentField req;
 	memset(&req, 0, sizeof(req));
 	int iResult = pUserApi->ReqQryInstrument(&req, ++iRequestID);
-	std::cerr << "--->>> 请求查询合约: " << ((iResult == 0) ? "成功" : "失败") << std::endl;
+	std::cerr << "--->>> Quering instruments: " << ((iResult == 0) ? "succeed" : "failed") << std::endl;
 }
 
 inline bool isOption(TThostFtdcProductClassType pClass)
@@ -457,6 +457,7 @@ void CTraderSpi::DumpToJson()
 		ofs << sb.GetString();
 	}
 	ofs.close();
+	std::cerr << "--->>> " << _commodities.size() << " commodities dumped into : " << path << std::endl;
 
 	path = SAVEPATH;
 	path += CONT_FILE;
@@ -468,6 +469,7 @@ void CTraderSpi::DumpToJson()
 		ofs << sb.GetString();
 	}
 	ofs.close();
+	std::cerr << "--->>> " << _contracts.size() << " contracts dumped into : " << path << std::endl;
 }
 
 
