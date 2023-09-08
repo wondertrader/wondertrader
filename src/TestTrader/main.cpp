@@ -305,12 +305,14 @@ public:
 
 	bool cancel()
 	{
-		char orderid[128] = { 0 };
+		std::string orderid;
 
 		for (;;)
 		{
 			encoding_print("订单号: ");
 			std::cin >> orderid;
+
+			StrUtil::replace(orderid, "\"", "");
 
 			encoding_print("订单号: {},确认撤单(y/n)? ", orderid);
 			char c;
@@ -333,7 +335,7 @@ public:
 		WTSLogger::info("[{}]Canceling [{}]...", m_pParams->getCString("user"), orderid);
 		WTSEntrustAction* action = WTSEntrustAction::create(ordInfo->getCode(), ordInfo->getExchg());
 		action->setEntrustID(ordInfo->getEntrustID());
-		action->setOrderID(orderid);
+		action->setOrderID(orderid.c_str());
 		action->setActionFlag(WAF_CANCEL);
 
 		m_pTraderApi->orderAction(action);
