@@ -1773,7 +1773,7 @@ bool WtDataWriter::proc_block_data(const char* tag, std::string& content, bool i
 		}
 
 		//将文件头后面的数据进行解压
-		buffer = WTSCmpHelper::uncompress_data(content.data() + BLOCK_HEADERV2_SIZE, (uint32_t)blkV2->_size);
+		buffer = WTSCmpHelper::uncompress_data(content.data() + BLOCK_HEADERV2_SIZE, blkV2->_size);
 	}
 	else
 	{

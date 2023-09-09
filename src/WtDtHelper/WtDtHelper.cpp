@@ -55,7 +55,7 @@ bool proc_block_data(std::string& content, bool isBar, bool bKeepHead /* = true 
 		}
 
 		//将文件头后面的数据进行解压
-		buffer = WTSCmpHelper::uncompress_data(content.data() + BLOCK_HEADERV2_SIZE, (uint32_t)blkV2->_size);
+		buffer = WTSCmpHelper::uncompress_data(content.data() + BLOCK_HEADERV2_SIZE, blkV2->_size);
 	}
 	else
 	{
@@ -449,7 +449,7 @@ void trans_csv_bars(WtString csvFolder, WtString binFolder, WtString period, Fun
 		kBlock._type = btype;
 		kBlock._version = BLOCK_VERSION_CMP_V2;
 
-		std::string cmprsData = WTSCmpHelper::compress_data(bars.data(), (uint32_t)(sizeof(WTSBarStruct)*bars.size()));
+		std::string cmprsData = WTSCmpHelper::compress_data(bars.data(), sizeof(WTSBarStruct)*bars.size());
 		kBlock._size = cmprsData.size();
 
 		std::string filename = StrUtil::standardisePath(binFolder);
