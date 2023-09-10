@@ -646,17 +646,17 @@ public:
 protected:
 	std::string m_strCurrency;
 
-	double		m_dBalance;
-	double		m_dPreBalance;
-	double		m_uMargin;
-	double		m_dCommission;
-	double		m_dFrozenMargin;
-	double		m_dFrozenCommission;
-	double		m_dCloseProfit;
-	double		m_dDynProfit;
-	double		m_dDeposit;
-	double		m_dWithdraw;
-	double		m_dAvailable;
+	double		m_dBalance;                 //余额
+	double		m_dPreBalance;              //上次结算准备金
+	double		m_uMargin;                  //当前保证金总额
+	double		m_dCommission;              //手续费
+	double		m_dFrozenMargin;            //冻结的保证金
+	double		m_dFrozenCommission;        //冻结的手续费
+    double		m_dCloseProfit;             //平仓盈亏
+	double		m_dDynProfit;               //持仓盈亏
+    double		m_dDeposit;                 //入金金额
+	double		m_dWithdraw;                //出金金额
+	double		m_dAvailable;               //可用资金
 };
 
 
