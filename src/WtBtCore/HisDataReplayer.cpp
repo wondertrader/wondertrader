@@ -70,7 +70,7 @@ bool proc_block_data(const char* tag, std::string& content, bool isBar, bool bKe
 		}
 
 		//将文件头后面的数据进行解压
-		buffer = WTSCmpHelper::uncompress_data(content.data() + BLOCK_HEADERV2_SIZE, (uint32_t)blkV2->_size);
+		buffer = WTSCmpHelper::uncompress_data(content.data() + BLOCK_HEADERV2_SIZE, blkV2->_size);
 	}
 	else
 	{
@@ -3594,7 +3594,7 @@ bool HisDataReplayer::cacheFinalBarsFromLoader(const std::string& key, const cha
 		else
 		{
 			HisKlineBlockV2* kBlock = (HisKlineBlockV2*)content.c_str();
-			std::string rawData = WTSCmpHelper::uncompress_data(kBlock->_data, (uint32_t)kBlock->_size);
+			std::string rawData = WTSCmpHelper::uncompress_data(kBlock->_data, kBlock->_size);
 			uint32_t barcnt = rawData.size() / sizeof(WTSBarStruct);
 
 			if (bSubbed)
