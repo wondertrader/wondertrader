@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file WtHelper.h
  * \project	WonderTrader
  *
@@ -45,11 +45,11 @@ public:
 	static void setGenerateDir(const char* gen_dir) { _gen_dir = gen_dir; }
 
 private:
-	static uint32_t		_cur_date;	//µ±Ç°ÈÕÆÚ
-	static uint32_t		_cur_time;	//µ±Ç°Ê±¼ä, ÒÔ·ÖÖÓÎª×¼
-	static uint32_t		_cur_secs;	//µ±Ç°ÃëÊı, °üº¬ºÁÃë
-	static uint32_t		_cur_tdate;	//µ±Ç°½»Ò×ÈÕprivate:
-	static std::string	_inst_dir;	//ÊµÀıËùÔÚÄ¿Â¼
-	static std::string	_gen_dir;	//Éú³ÉÎÄ¼şÊä³öÄ¿Â¼
+	static uint32_t		_cur_date;	//å½“å‰æ—¥æœŸ
+	static uint32_t		_cur_time;	//å½“å‰æ—¶é—´, ä»¥åˆ†é’Ÿä¸ºå‡†
+	static uint32_t		_cur_secs;	//å½“å‰ç§’æ•°, åŒ…å«æ¯«ç§’
+	static uint32_t		_cur_tdate;	//å½“å‰äº¤æ˜“æ—¥private:
+	static std::string	_inst_dir;	//å®ä¾‹æ‰€åœ¨ç›®å½•
+	static std::string	_gen_dir;	//ç”Ÿæˆæ–‡ä»¶è¾“å‡ºç›®å½•
 };
 

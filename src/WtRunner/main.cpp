@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * /file main.cpp
  * /project	WonderTrader
  *

@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "IExecCommand.h"
 
 NS_WTP_BEGIN
@@ -12,8 +12,8 @@ public:
 
 public:
 	/*
-	 *	³õÊ¼»¯Ö´ĞĞÆ÷
-	 *	´«Èë³õÊ¼»¯²ÎÊı
+	 *	åˆå§‹åŒ–æ‰§è¡Œå™¨
+	 *	ä¼ å…¥åˆå§‹åŒ–å‚æ•°
 	 */
 	bool init(WTSVariant* params);
 

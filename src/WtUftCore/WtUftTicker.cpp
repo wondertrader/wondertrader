@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file WtHftTicker.cpp
  * \project	WonderTrader
  *
@@ -57,7 +57,7 @@ void WtUftRtTicker::on_tick(WTSTickData* curTick)
 
 	if (_date != 0 && (uDate < _date || (uDate == _date && uTime < _time)))
 	{
-		//WTSLogger::info("ĞĞÇéÊ±¼ä{}Ğ¡ÓÚ±¾µØÊ±¼ä{}", uTime, _time);
+		//WTSLogger::info("è¡Œæƒ…æ—¶é—´{}å°äºæœ¬åœ°æ—¶é—´{}", uTime, _time);
 		if (_engine)
 			_engine->on_tick(curTick->code(), curTick);
 		return;
@@ -80,19 +80,19 @@ void WtUftRtTicker::on_tick(WTSTickData* curTick)
 
 	if (_cur_pos == 0)
 	{
-		//Èç¹ûµ±Ç°Ê±¼äÊÇ0, ÔòÖ±½Ó¸³Öµ¼´¿É
+		//å¦‚æœå½“å‰æ—¶é—´æ˜¯0, åˆ™ç›´æ¥èµ‹å€¼å³å¯
 		_cur_pos = minutes;
 	}
 	else if (_cur_pos < minutes)
 	{
-		//Èç¹ûÒÑ¼ÇÂ¼µÄ·ÖÖÓĞ¡ÓÚĞÂµÄ·ÖÖÓ, ÔòĞèÒª´¥·¢±ÕºÏÊÂ¼ş
-		//Õâ¸öÊ±ºòÒªÏÈ´¥·¢±ÕºÏ, ÔÙĞŞ¸ÄÆ½Ì¨Ê±¼äºÍ¼Û¸ñ
+		//å¦‚æœå·²è®°å½•çš„åˆ†é’Ÿå°äºæ–°çš„åˆ†é’Ÿ, åˆ™éœ€è¦è§¦å‘é—­åˆäº‹ä»¶
+		//è¿™ä¸ªæ—¶å€™è¦å…ˆè§¦å‘é—­åˆ, å†ä¿®æ”¹å¹³å°æ—¶é—´å’Œä»·æ ¼
 		if (_last_emit_pos < _cur_pos)
 		{
-			//´¥·¢Êı¾İ»Ø·ÅÄ£¿é
+			//è§¦å‘æ•°æ®å›æ”¾æ¨¡å—
 			StdUniqueLock lock(_mtx);
 
-			//ÓÅÏÈĞŞ¸ÄÊ±¼ä±ê¼Ç
+			//ä¼˜å…ˆä¿®æ”¹æ—¶é—´æ ‡è®°
 			_last_emit_pos = _cur_pos;
 
 			uint32_t thisMin = _s_info->minuteToTime(_cur_pos);
@@ -112,7 +112,7 @@ void WtUftRtTicker::on_tick(WTSTickData* curTick)
 	}
 	else
 	{
-		//Èç¹û·ÖÖÓÊı»¹ÊÇÒ»ÖÂµÄ, ÔòÖ±½Ó´¥·¢ĞĞÇéºÍÊ±¼ä¼´¿É
+		//å¦‚æœåˆ†é’Ÿæ•°è¿˜æ˜¯ä¸€è‡´çš„, åˆ™ç›´æ¥è§¦å‘è¡Œæƒ…å’Œæ—¶é—´å³å¯
 		if (_engine)
 		{
 			_engine->on_tick(curTick->code(), curTick);
@@ -138,7 +138,7 @@ void WtUftRtTicker::run()
 
 	_engine->on_session_begin();
 
-	//ÏÈ¼ì²éµ±Ç°Ê±¼ä, Èç¹û´óÓÚ
+	//å…ˆæ£€æŸ¥å½“å‰æ—¶é—´, å¦‚æœå¤§äº
 	uint32_t offTime = _s_info->offsetTime(_engine->get_min_time(), true);
 
 	_thrd.reset(new StdThread([this, offTime](){
@@ -151,18 +151,18 @@ void WtUftRtTicker::run()
 
 				if (now >= _next_check_time && _last_emit_pos < _cur_pos)
 				{
-					//´¥·¢Êı¾İ»Ø·ÅÄ£¿é
+					//è§¦å‘æ•°æ®å›æ”¾æ¨¡å—
 					StdUniqueLock lock(_mtx);
 
-					//ÓÅÏÈĞŞ¸ÄÊ±¼ä±ê¼Ç
+					//ä¼˜å…ˆä¿®æ”¹æ—¶é—´æ ‡è®°
 					_last_emit_pos = _cur_pos;
 
 					uint32_t thisMin = _s_info->minuteToTime(_cur_pos);
 					_time = thisMin;
 
-					//Èç¹ûthisMinÊÇ0, ËµÃ÷»»ÈÕÁË
-					//ÕâÀïÊÇ±¾µØ¼ÆÊ±µ¼ÖÂµÄ»»ÈÕ, ËµÃ÷ÈÕÆÚÆäÊµ»¹ÊÇÀÏÈÕÆÚ, Òª×Ô¶¯+1
-					//Í¬Ê±ÒòÎªÊ±¼äÊÇ235959xxx, ËùÒÔÒ²ÒªÊÖ¶¯ÖÃÎª0
+					//å¦‚æœthisMinæ˜¯0, è¯´æ˜æ¢æ—¥äº†
+					//è¿™é‡Œæ˜¯æœ¬åœ°è®¡æ—¶å¯¼è‡´çš„æ¢æ—¥, è¯´æ˜æ—¥æœŸå…¶å®è¿˜æ˜¯è€æ—¥æœŸ, è¦è‡ªåŠ¨+1
+					//åŒæ—¶å› ä¸ºæ—¶é—´æ˜¯235959xxx, æ‰€ä»¥ä¹Ÿè¦æ‰‹åŠ¨ç½®ä¸º0
 					if (thisMin == 0)
 					{
 						uint32_t lastDate = _date;
@@ -190,8 +190,8 @@ void WtUftRtTicker::run()
 			}
 			else //if (offTime >= _s_info->getOpenTime(true) && offTime <= _s_info->getCloseTime(true))
 			{
-				//²»ÔÚ½»Ò×Ê±¼ä£¬ÔòĞİÏ¢10sÔÙ½øĞĞ¼ì²é
-				//ÒòÎªÕâ¸öÂß¼­ÊÇ´¦Àí·ÖÖÓÏßµÄ£¬ËùÒÔĞİÅÌÊ±¼äĞİÏ¢10s£¬²»»áÒıÆğÊı¾İÌ¤¿ÕµÄÎÊÌâ
+				//ä¸åœ¨äº¤æ˜“æ—¶é—´ï¼Œåˆ™ä¼‘æ¯10så†è¿›è¡Œæ£€æŸ¥
+				//å› ä¸ºè¿™ä¸ªé€»è¾‘æ˜¯å¤„ç†åˆ†é’Ÿçº¿çš„ï¼Œæ‰€ä»¥ä¼‘ç›˜æ—¶é—´ä¼‘æ¯10sï¼Œä¸ä¼šå¼•èµ·æ•°æ®è¸ç©ºçš„é—®é¢˜
 				std::this_thread::sleep_for(std::chrono::seconds(10));
 			}
 			

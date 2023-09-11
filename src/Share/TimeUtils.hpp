@@ -1,11 +1,11 @@
-/*!
+ï»¿/*!
  * \file TimeUtils.hpp
  * \project	WonderTrader
  *
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief Ê±¼ä´¦ÀíµÄ·â×°
+ * \brief æ—¶é—´å¤„ç†çš„å°è£…
  */
 #pragma once
 #include <stdint.h>
@@ -61,7 +61,7 @@ public:
 	}
 
 	/*
-	 *	»ñÈ¡±¾µØÊ±¼ä£¬¾«È·µ½ºÁÃë
+	 *	è·å–æœ¬åœ°æ—¶é—´ï¼Œç²¾ç¡®åˆ°æ¯«ç§’
 	 */
 	static inline int64_t getLocalTimeNow(void)
 	{
@@ -81,7 +81,7 @@ public:
 		//ftime(&now);
 		//return now.time * 1000 + now.millitm;
 		/*
-		 *	clock_gettime±Èftime»áÌáÉıÔ¼10%µÄĞÔÄÜ
+		 *	clock_gettimeæ¯”ftimeä¼šæå‡çº¦10%çš„æ€§èƒ½
 		 */
 		thread_local static struct timespec now;
 		clock_gettime(CLOCK_REALTIME, &now);
@@ -118,9 +118,9 @@ public:
 	}
 
     /*
-     * ¶ÁÈ¡µ±Ç°Ê±¼ä
-     * @date    µ±Ç°ÈÕÆÚ£¬¸ñÊ½Èç20220309
-     * @time    µ±Ç°Ê±¼ä£¬¾«È·µ½ºÁÃë£¬¸ñÊ½Èç103029500
+     * è¯»å–å½“å‰æ—¶é—´
+     * @date    å½“å‰æ—¥æœŸï¼Œæ ¼å¼å¦‚20220309
+     * @time    å½“å‰æ—¶é—´ï¼Œç²¾ç¡®åˆ°æ¯«ç§’ï¼Œæ ¼å¼å¦‚103029500
      */
 	static inline void getDateTime(uint32_t &date, uint32_t &time)
 	{
@@ -205,10 +205,10 @@ public:
 	}
 
 	/*
-	 *	Éú³É´øºÁÃëµÄtimestamp
-	 *	@lDate			ÈÕÆÚ£¬yyyymmdd
-	 *	@lTimeWithMs	´øºÁÃëµÄÊ±¼ä£¬HHMMSSsss
-	 *	@isToUTC		ÊÇ·ñ×ª³ÉUTCÊ±¼ä
+	 *	ç”Ÿæˆå¸¦æ¯«ç§’çš„timestamp
+	 *	@lDate			æ—¥æœŸï¼Œyyyymmdd
+	 *	@lTimeWithMs	å¸¦æ¯«ç§’çš„æ—¶é—´ï¼ŒHHMMSSsss
+	 *	@isToUTC		æ˜¯å¦è½¬æˆUTCæ—¶é—´
 	 */
 	static inline int64_t makeTime(long lDate, long lTimeWithMs, bool isToUTC = false)
 	{
@@ -223,7 +223,7 @@ public:
 		int millisec = lTimeWithMs%1000;
 		//t.tm_isdst 	
 		time_t ts = mktime(&t);
-		//Èç¹ûÒª×ª³ÉUTCÊ±¼ä£¬ÔòĞèÒª¸ù¾İÊ±Çø½øĞĞ×ª»»
+		//å¦‚æœè¦è½¬æˆUTCæ—¶é—´ï¼Œåˆ™éœ€è¦æ ¹æ®æ—¶åŒºè¿›è¡Œè½¬æ¢
 		if (isToUTC)
 			ts -= getTZOffset() * 3600;
 		if (ts == -1) return 0;
@@ -244,7 +244,7 @@ public:
 		localtime_r(&tt, &t);
 #endif
 		char tm_buf[64] = {'\0'};
-		if (msec > 0) //ÊÇ·ñÓĞºÁÃë
+		if (msec > 0) //æ˜¯å¦æœ‰æ¯«ç§’
 		   sprintf(tm_buf,"%4d%02d%02d%02d%02d%02d.%03d",t.tm_year+1900, t.tm_mon+1, t.tm_mday,
 			t.tm_hour, t.tm_min, t.tm_sec, msec);
 		else 

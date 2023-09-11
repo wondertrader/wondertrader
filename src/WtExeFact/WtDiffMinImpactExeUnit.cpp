@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file WtDiffMinImpactExeUnit.cpp
  *
  * \author Wesley
@@ -66,15 +66,15 @@ void WtDiffMinImpactExeUnit::init(ExecuteContext* ctx, const char* stdCode, WTSV
 	if (_sess_info)
 		_sess_info->retain();
 
-	_price_offset = cfg->getInt32("offset");	//¼Û¸ñÆ«ÒÆÌøÊı£¬Ò»°ãºÍ¶©µ¥Í¬·½Ïò
-	_expire_secs = cfg->getUInt32("expire");	//¶©µ¥³¬Ê±ÃëÊı
-	_price_mode = cfg->getInt32("pricemode");	//¼Û¸ñÀàĞÍ,0-×îĞÂ¼Û,-1-×îÓÅ¼Û,1-¶ÔÊÖ¼Û,2-×Ô¶¯,Ä¬ÈÏÎª0
-	_entrust_span = cfg->getUInt32("span");		//·¢µ¥Ê±¼ä¼ä¸ô£¬µ¥Î»ºÁÃë
-	_by_rate = cfg->getBoolean("byrate");		//ÊÇ·ñ°´ÕÕ¶ÔÊÖµÄ¹Òµ¥ÊıµÄ±ÈÀıÏÂµ¥£¬Èç¹ûÊÇtrue£¬Ôòrate×Ö¶ÎÉúĞ§£¬Èç¹ûÊÇfalseÔòlots×Ö¶ÎÉúĞ§
-	_order_lots = cfg->getDouble("lots");		//µ¥´Î·¢µ¥ÊÖÊı
-	_qty_rate = cfg->getDouble("rate");			//ÏÂµ¥ÊÖÊı±ÈÀı
+	_price_offset = cfg->getInt32("offset");	//ä»·æ ¼åç§»è·³æ•°ï¼Œä¸€èˆ¬å’Œè®¢å•åŒæ–¹å‘
+	_expire_secs = cfg->getUInt32("expire");	//è®¢å•è¶…æ—¶ç§’æ•°
+	_price_mode = cfg->getInt32("pricemode");	//ä»·æ ¼ç±»å‹,0-æœ€æ–°ä»·,-1-æœ€ä¼˜ä»·,1-å¯¹æ‰‹ä»·,2-è‡ªåŠ¨,é»˜è®¤ä¸º0
+	_entrust_span = cfg->getUInt32("span");		//å‘å•æ—¶é—´é—´éš”ï¼Œå•ä½æ¯«ç§’
+	_by_rate = cfg->getBoolean("byrate");		//æ˜¯å¦æŒ‰ç…§å¯¹æ‰‹çš„æŒ‚å•æ•°çš„æ¯”ä¾‹ä¸‹å•ï¼Œå¦‚æœæ˜¯trueï¼Œåˆ™rateå­—æ®µç”Ÿæ•ˆï¼Œå¦‚æœæ˜¯falseåˆ™lotså­—æ®µç”Ÿæ•ˆ
+	_order_lots = cfg->getDouble("lots");		//å•æ¬¡å‘å•æ‰‹æ•°
+	_qty_rate = cfg->getDouble("rate");			//ä¸‹å•æ‰‹æ•°æ¯”ä¾‹
 
-	ctx->writeLog(fmtutil::format("DiffMiniImpactExecUnit {} inited, order price: {} ¡À {} ticks, order expired: {} secs, order timespan:{} millisec, order qty: {} @ {:.2f}",
+	ctx->writeLog(fmtutil::format("DiffMiniImpactExecUnit {} inited, order price: {} Â± {} ticks, order expired: {} secs, order timespan:{} millisec, order qty: {} @ {:.2f}",
 		stdCode, PriceModeNames[_price_mode + 1], _price_offset, _expire_secs, _entrust_span, _by_rate ? "byrate" : "byvol", _by_rate ? _qty_rate : _order_lots));
 }
 
@@ -87,8 +87,8 @@ void WtDiffMinImpactExeUnit::on_order(uint32_t localid, const char* stdCode, boo
 		if (isCanceled || leftover == 0)
 		{	
 			//By Wesley @ 2022.05.24
-			//Õâ¾äÒª×¢ÊÍµô£¬ÒòÎªĞèÒªÔçon_tradeÀï´¦ÀíÒ»Ğ©Êı¾İ
-			//ÕâÀïÈç¹û´ÓOMSÖĞÉ¾³ıÁË¶©µ¥ºÅ£¬ontrade¾Í»áÅĞ¶ÏÊ§°Ü
+			//è¿™å¥è¦æ³¨é‡Šæ‰ï¼Œå› ä¸ºéœ€è¦æ—©on_tradeé‡Œå¤„ç†ä¸€äº›æ•°æ®
+			//è¿™é‡Œå¦‚æœä»OMSä¸­åˆ é™¤äº†è®¢å•å·ï¼Œontradeå°±ä¼šåˆ¤æ–­å¤±è´¥
 			//_orders_mon.erase_order(localid);
 			if (_cancel_cnt > 0)
 			{
@@ -101,7 +101,7 @@ void WtDiffMinImpactExeUnit::on_order(uint32_t localid, const char* stdCode, boo
 			_cancel_times = 0;
 	}
 
-	//Èç¹ûÓĞ³·µ¥,Ò²´¥·¢ÖØĞÂ¼ÆËã
+	//å¦‚æœæœ‰æ’¤å•,ä¹Ÿè§¦å‘é‡æ–°è®¡ç®—
 	if (isCanceled)
 	{
 		_ctx->writeLog(fmtutil::format("Order {} of {} canceled, recalc will be done", localid, stdCode));
@@ -117,10 +117,10 @@ void WtDiffMinImpactExeUnit::on_channel_ready()
 	if(!decimal::eq(undone, 0) && !_orders_mon.has_order())
 	{
 		/*
-		 *	Èç¹ûÎ´Íê³Éµ¥²»Îª0£¬¶øOMSÃ»ÓĞ¶©µ¥
-		 *	ÕâËµÃ÷ÓĞÎ´Íê³Éµ¥²»ÔÚ¼à¿ØÖ®ÖĞ,È«²¿³·Ïúµô
-		 *	ÒòÎªÕâĞ©¶©µ¥Ã»ÓĞ±¾µØ¶©µ¥ºÅ£¬ÎŞ·¨Ö±½Ó½øĞĞ¹ÜÀí
-		 *	ÕâÖÖÇé¿ö£¬¾ÍÊÇ¸ÕÆô¶¯µÄÊ±ºò£¬ÉÏ´ÎµÄÎ´Íê³Éµ¥»òÕßÍâ²¿µÄ¹Òµ¥
+		 *	å¦‚æœæœªå®Œæˆå•ä¸ä¸º0ï¼Œè€ŒOMSæ²¡æœ‰è®¢å•
+		 *	è¿™è¯´æ˜æœ‰æœªå®Œæˆå•ä¸åœ¨ç›‘æ§ä¹‹ä¸­,å…¨éƒ¨æ’¤é”€æ‰
+		 *	å› ä¸ºè¿™äº›è®¢å•æ²¡æœ‰æœ¬åœ°è®¢å•å·ï¼Œæ— æ³•ç›´æ¥è¿›è¡Œç®¡ç†
+		 *	è¿™ç§æƒ…å†µï¼Œå°±æ˜¯åˆšå¯åŠ¨çš„æ—¶å€™ï¼Œä¸Šæ¬¡çš„æœªå®Œæˆå•æˆ–è€…å¤–éƒ¨çš„æŒ‚å•
 		 */
 		_ctx->writeLog(fmtutil::format("Unmanaged live orders with qty {} of {} found, cancel all", undone, _code.c_str()));
 
@@ -135,10 +135,10 @@ void WtDiffMinImpactExeUnit::on_channel_ready()
 	{
 		/*
 		 *	By Wesey @ 2021.12.13
-		 *	Èç¹ûÎ´Íê³Éµ¥Îª0£¬µ«ÊÇOMSÖĞÊÇÓĞ¶©µ¥µÄ
-		 *	ËµÃ÷OMSÖĞÊÇ´íµ¥£¬ĞèÒªÇåÀíµô£¬²»È»³¬Ê±³·µ¥¾Í»á³ö´í
-		 *	ÕâÖÖÇé¿ö£¬Ò»°ãÊÇ¶ÏÏßÖØÁ¬ÒÔºó£¬Ö®Ç°ÏÂ³öÈ¥µÄ¶©µ¥£¬²¢Ã»ÓĞÕæÕı·¢ËÍµ½¹ñÌ¨
-		 *	ËùÒÔÕâÀïĞèÒªÇåÀíµô±¾µØ¶©µ¥
+		 *	å¦‚æœæœªå®Œæˆå•ä¸º0ï¼Œä½†æ˜¯OMSä¸­æ˜¯æœ‰è®¢å•çš„
+		 *	è¯´æ˜OMSä¸­æ˜¯é”™å•ï¼Œéœ€è¦æ¸…ç†æ‰ï¼Œä¸ç„¶è¶…æ—¶æ’¤å•å°±ä¼šå‡ºé”™
+		 *	è¿™ç§æƒ…å†µï¼Œä¸€èˆ¬æ˜¯æ–­çº¿é‡è¿ä»¥åï¼Œä¹‹å‰ä¸‹å‡ºå»çš„è®¢å•ï¼Œå¹¶æ²¡æœ‰çœŸæ­£å‘é€åˆ°æŸœå°
+		 *	æ‰€ä»¥è¿™é‡Œéœ€è¦æ¸…ç†æ‰æœ¬åœ°è®¢å•
 		 */
 		_ctx->writeLog(fmtutil::format("Local orders of {} not confirmed in trading channel, clear all", _code.c_str()));
 		_orders_mon.clear_orders();
@@ -163,26 +163,26 @@ void WtDiffMinImpactExeUnit::on_tick(WTSTickData* newTick)
 	if (newTick == NULL || _code.compare(newTick->code()) != 0)
 		return;
 
-	//Èç¹ûÔ­À´µÄtick²»Îª¿Õ,ÔòÒªÊÍ·Åµô
+	//å¦‚æœåŸæ¥çš„tickä¸ä¸ºç©º,åˆ™è¦é‡Šæ”¾æ‰
 	if (_last_tick)
 	{
 		_last_tick->release();
 	}
 	else
 	{
-		//Èç¹ûĞĞÇéÊ±¼ä²»ÔÚ½»Ò×Ê±¼ä,ÕâÖÖÇé¿öÒ»°ãÊÇ¼¯ºÏ¾º¼ÛµÄĞĞÇé½øÀ´,ÏÂµ¥»áÊ§°Ü,ËùÒÔÖ±½Ó¹ıÂËµôÕâ±ÊĞĞÇé
+		//å¦‚æœè¡Œæƒ…æ—¶é—´ä¸åœ¨äº¤æ˜“æ—¶é—´,è¿™ç§æƒ…å†µä¸€èˆ¬æ˜¯é›†åˆç«ä»·çš„è¡Œæƒ…è¿›æ¥,ä¸‹å•ä¼šå¤±è´¥,æ‰€ä»¥ç›´æ¥è¿‡æ»¤æ‰è¿™ç¬”è¡Œæƒ…
 		if (_sess_info != NULL && !_sess_info->isInTradingTime(newTick->actiontime() / 100000))
 			return;
 	}
 
-	//ĞÂµÄtickÊı¾İ,Òª±£Áô
+	//æ–°çš„tickæ•°æ®,è¦ä¿ç•™
 	_last_tick = newTick;
 	_last_tick->retain();
 
 	/*
-	 *	ÕâÀï¿ÉÒÔ¿¼ÂÇÒ»ÏÂ
-	 *	Èç¹ûĞ´µÄÉÏÒ»´Î¶ª³öÈ¥µÄµ¥×Ó²»¹»´ïµ½Ä¿±ê²ÖÎ»
-	 *	ÄÇÃ´ÔÚĞÂµÄĞĞÇéÊı¾İ½øÀ´µÄÊ±ºò¿ÉÒÔÔÙ´Î´¥·¢ºËĞÄÂß¼­
+	 *	è¿™é‡Œå¯ä»¥è€ƒè™‘ä¸€ä¸‹
+	 *	å¦‚æœå†™çš„ä¸Šä¸€æ¬¡ä¸¢å‡ºå»çš„å•å­ä¸å¤Ÿè¾¾åˆ°ç›®æ ‡ä»“ä½
+	 *	é‚£ä¹ˆåœ¨æ–°çš„è¡Œæƒ…æ•°æ®è¿›æ¥çš„æ—¶å€™å¯ä»¥å†æ¬¡è§¦å‘æ ¸å¿ƒé€»è¾‘
 	 */
 
 	if(_expire_secs != 0 && _orders_mon.has_order() && _cancel_cnt==0)
@@ -203,7 +203,7 @@ void WtDiffMinImpactExeUnit::on_tick(WTSTickData* newTick)
 
 void WtDiffMinImpactExeUnit::on_trade(uint32_t localid, const char* stdCode, bool isBuy, double vol, double price)
 {
-	//Èç¹ûÊÇ±¾µØ¶©µ¥£¬Ôò¸üĞÂ²îÁ¿
+	//å¦‚æœæ˜¯æœ¬åœ°è®¢å•ï¼Œåˆ™æ›´æ–°å·®é‡
 	if (!_orders_mon.has_order(localid))
 		return;
 
@@ -216,7 +216,7 @@ void WtDiffMinImpactExeUnit::on_entrust(uint32_t localid, const char* stdCode, b
 {
 	if (!bSuccess)
 	{
-		//Èç¹û²»ÊÇÎÒ·¢³öÈ¥µÄ¶©µ¥,ÎÒ¾Í²»¹ÜÁË
+		//å¦‚æœä¸æ˜¯æˆ‘å‘å‡ºå»çš„è®¢å•,æˆ‘å°±ä¸ç®¡äº†
 		if (!_orders_mon.has_order(localid))
 			return;
 
@@ -241,11 +241,11 @@ void WtDiffMinImpactExeUnit::do_calc()
 		return;
 	}
 
-	//ÕâÀï¼ÓÒ»¸öËø£¬Ö÷ÒªÔ­ÒòÊÇÊµÅÌ¹ı³ÌÖĞ·¢ÏÖ
-	//ÔÚĞŞ¸ÄÄ¿±ê²ÖÎ»µÄÊ±ºò£¬»á´¥·¢Ò»´Îdo_calc
-	//¶øontickÒ²»á´¥·¢Ò»´Îdo_calc£¬Á½´Îµ÷ÓÃÊÇ´ÓÁ½¸öÏß³Ì·Ö±ğ´¥·¢µÄ£¬ËùÒÔ»á³öÏÖÍ¬Ê±´¥·¢µÄÇé¿ö
-	//Èç¹û²»¼ÓËø£¬¾Í»áÒıÆğÎÊÌâ
-	//ÕâÖÖÇé¿öÔÚÔ­À´µÄSimpleExecUnitÃ»ÓĞ³öÏÖ£¬ÒòÎªSimpleExecUnitÖ»ÔÚset_positionµÄÊ±ºò´¥·¢
+	//è¿™é‡ŒåŠ ä¸€ä¸ªé”ï¼Œä¸»è¦åŸå› æ˜¯å®ç›˜è¿‡ç¨‹ä¸­å‘ç°
+	//åœ¨ä¿®æ”¹ç›®æ ‡ä»“ä½çš„æ—¶å€™ï¼Œä¼šè§¦å‘ä¸€æ¬¡do_calc
+	//è€Œontickä¹Ÿä¼šè§¦å‘ä¸€æ¬¡do_calcï¼Œä¸¤æ¬¡è°ƒç”¨æ˜¯ä»ä¸¤ä¸ªçº¿ç¨‹åˆ†åˆ«è§¦å‘çš„ï¼Œæ‰€ä»¥ä¼šå‡ºç°åŒæ—¶è§¦å‘çš„æƒ…å†µ
+	//å¦‚æœä¸åŠ é”ï¼Œå°±ä¼šå¼•èµ·é—®é¢˜
+	//è¿™ç§æƒ…å†µåœ¨åŸæ¥çš„SimpleExecUnitæ²¡æœ‰å‡ºç°ï¼Œå› ä¸ºSimpleExecUnitåªåœ¨set_positionçš„æ—¶å€™è§¦å‘
 	StdUniqueLock lock(_mtx_calc);
 
 	const char* stdCode = _code.c_str();
@@ -253,7 +253,7 @@ void WtDiffMinImpactExeUnit::do_calc()
 	double undone = _ctx->getUndoneQty(stdCode);
 	double diffPos = _left_diff;
 
-	//ÒòÎªÊÇÖğ±Ê·¢µ¥£¬ËùÒÔÈç¹ûÓĞ²»ĞèÒª³·ÏúµÄÎ´Íê³Éµ¥£¬ÔòÔİ²»·¢µ¥
+	//å› ä¸ºæ˜¯é€ç¬”å‘å•ï¼Œæ‰€ä»¥å¦‚æœæœ‰ä¸éœ€è¦æ’¤é”€çš„æœªå®Œæˆå•ï¼Œåˆ™æš‚ä¸å‘å•
 	if (!decimal::eq(undone, 0))
 	{
 		_ctx->writeLog(fmtutil::format("Live orders exist, DiffMinImpactExeUnit of {}", _code));
@@ -269,14 +269,14 @@ void WtDiffMinImpactExeUnit::do_calc()
 		return;
 	}
 
-	//¼ì²éÏÂµ¥Ê±¼ä¼ä¸ô
+	//æ£€æŸ¥ä¸‹å•æ—¶é—´é—´éš”
 	uint64_t now = TimeUtils::makeTime(_last_tick->actiondate(), _last_tick->actiontime());
 	if (now - _last_place_time < _entrust_span)
 		return;
 
 	bool isBuy = decimal::gt(diffPos, 0);
 
-	//Èç¹ûÏà±ÈÉÏ´ÎÃ»ÓĞ¸üĞÂµÄtick½øÀ´£¬ÔòÏÈ²»ÏÂµ¥£¬·ÀÖ¹¿ªÅÌÇ°¼¯ÖĞÏÂµ¥µ¼ÖÂÍ¨µÀ±»·â
+	//å¦‚æœç›¸æ¯”ä¸Šæ¬¡æ²¡æœ‰æ›´æ–°çš„tickè¿›æ¥ï¼Œåˆ™å…ˆä¸ä¸‹å•ï¼Œé˜²æ­¢å¼€ç›˜å‰é›†ä¸­ä¸‹å•å¯¼è‡´é€šé“è¢«å°
 	uint64_t curTickTime = (uint64_t)_last_tick->actiondate() * 1000000000 + _last_tick->actiontime();
 	if (curTickTime <= _last_tick_time)
 	{
@@ -297,11 +297,11 @@ void WtDiffMinImpactExeUnit::do_calc()
 	}
 
 	//By Wesley @ 2022.09.13
-	//ÕâÀïÒª¶ÔÏÂµ¥ÊıÁ¿×öÒ»¸öĞŞÕı
+	//è¿™é‡Œè¦å¯¹ä¸‹å•æ•°é‡åšä¸€ä¸ªä¿®æ­£
 	this_qty = min(this_qty, abs(diffPos));
 
-	//Èç¹ûÂòÈëÇÒÓĞ¿ÕÍ·³Ö²Ö£¬»òÕßÂô³öÇÒÓĞ¶àÍ·³Ö²Ö
-	//¶Ôµ¥´ÎÏÂµ¥×öÒ»¸öĞŞÕı£¬±£Ö¤Æ½²ÖºÍ¿ª²Ö²»»áÍ¬Ê±ÏÂµ¥
+	//å¦‚æœä¹°å…¥ä¸”æœ‰ç©ºå¤´æŒä»“ï¼Œæˆ–è€…å–å‡ºä¸”æœ‰å¤šå¤´æŒä»“
+	//å¯¹å•æ¬¡ä¸‹å•åšä¸€ä¸ªä¿®æ­£ï¼Œä¿è¯å¹³ä»“å’Œå¼€ä»“ä¸ä¼šåŒæ—¶ä¸‹å•
 	double curPos = _ctx->getPosition(stdCode);
 	if((isBuy && decimal::lt(curPos, 0)) || (!isBuy && decimal::gt(curPos, 0)))
 	{
@@ -326,7 +326,7 @@ void WtDiffMinImpactExeUnit::do_calc()
 
 		/*
 		 *	By Wesley @ 2022.03.07
-		 *	Èç¹û×îºó¼Û¸ñÎª0£¬ÔÙ×öÒ»¸öĞŞÕı
+		 *	å¦‚æœæœ€åä»·æ ¼ä¸º0ï¼Œå†åšä¸€ä¸ªä¿®æ­£
 		 */
 		if (decimal::eq(buyPx, 0.0))
 			buyPx = decimal::eq(_last_tick->price(), 0.0) ? _last_tick->preclose() : _last_tick->price();
@@ -357,7 +357,7 @@ void WtDiffMinImpactExeUnit::do_calc()
 
 		/*
 		 *	By Wesley @ 2022.03.07
-		 *	Èç¹û×îºó¼Û¸ñÎª0£¬ÔÙ×öÒ»¸öĞŞÕı
+		 *	å¦‚æœæœ€åä»·æ ¼ä¸º0ï¼Œå†åšä¸€ä¸ªä¿®æ­£
 		 */
 		if (decimal::eq(buyPx, 0.0))
 			buyPx = decimal::eq(_last_tick->price(), 0.0)? _last_tick->preclose(): _last_tick->price();
@@ -370,20 +370,20 @@ void WtDiffMinImpactExeUnit::do_calc()
 	}
 	
 
-	//¼ì²éÕÇµøÍ£¼Û
+	//æ£€æŸ¥æ¶¨è·Œåœä»·
 	bool isCanCancel = true;
 	if (!decimal::eq(_last_tick->upperlimit(), 0) && decimal::gt(buyPx, _last_tick->upperlimit()))
 	{
 		_ctx->writeLog(fmtutil::format("Buy price {} of {} modified to upper limit price", buyPx, _code.c_str(), _last_tick->upperlimit()));
 		buyPx = _last_tick->upperlimit();
-		isCanCancel = false;	//Èç¹û¼Û¸ñ±»ĞŞÕıÎªÕÇµøÍ£¼Û£¬¶©µ¥²»¿É³·Ïú
+		isCanCancel = false;	//å¦‚æœä»·æ ¼è¢«ä¿®æ­£ä¸ºæ¶¨è·Œåœä»·ï¼Œè®¢å•ä¸å¯æ’¤é”€
 	}
 	
 	if (!decimal::eq(_last_tick->lowerlimit(), 0) && decimal::lt(sellPx, _last_tick->lowerlimit()))
 	{
 		_ctx->writeLog(fmtutil::format("Sell price {} of {} modified to lower limit price", sellPx, _code.c_str(), _last_tick->lowerlimit()));
 		sellPx = _last_tick->lowerlimit();
-		isCanCancel = false;	//Èç¹û¼Û¸ñ±»ĞŞÕıÎªÕÇµøÍ£¼Û£¬¶©µ¥²»¿É³·Ïú
+		isCanCancel = false;	//å¦‚æœä»·æ ¼è¢«ä¿®æ­£ä¸ºæ¶¨è·Œåœä»·ï¼Œè®¢å•ä¸å¯æ’¤é”€
 	}
 
 	if (isBuy)
@@ -411,7 +411,7 @@ void WtDiffMinImpactExeUnit::set_position(const char* stdCode, double newDiff)
 		return;
 	}
 
-	//ÕâÀï¾ÍÊÇ×îĞÂµÄ²îÁ¿
+	//è¿™é‡Œå°±æ˜¯æœ€æ–°çš„å·®é‡
 
 	if(_left_diff != newDiff)
 	{

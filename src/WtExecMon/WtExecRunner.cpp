@@ -1,4 +1,4 @@
-#include "WtExecRunner.h"
+ï»¿#include "WtExecRunner.h"
 
 #include "../WtCore/WtHelper.h"
 #include "../WtCore/WtDiffExecuter.h"
@@ -74,7 +74,7 @@ bool WtExecRunner::config(const char* cfgFile, bool isFile /* = true */)
 		return false;
 	}
 
-	//»ù´¡Êı¾İÎÄ¼ş
+	//åŸºç¡€æ•°æ®æ–‡ä»¶
 	WTSVariant* cfgBF = _config->get("basefiles");
 	if (cfgBF->get("session"))
 	{
@@ -121,14 +121,14 @@ bool WtExecRunner::config(const char* cfgFile, bool isFile /* = true */)
 	}
 
 
-	//³õÊ¼»¯Êı¾İ¹ÜÀí
+	//åˆå§‹åŒ–æ•°æ®ç®¡ç†
 	initDataMgr();
 
-	//³õÊ¼»¯¿ªÆ½²ßÂÔ
+	//åˆå§‹åŒ–å¼€å¹³ç­–ç•¥
 	if (!initActionPolicy())
 		return false;
 
-	//³õÊ¼»¯ĞĞÇéÍ¨µÀ
+	//åˆå§‹åŒ–è¡Œæƒ…é€šé“
 	const char* cfgParser = _config->getCString("parsers");
 	if (StdFile::exists(cfgParser))
 	{
@@ -146,7 +146,7 @@ bool WtExecRunner::config(const char* cfgFile, bool isFile /* = true */)
 		}
 	}
 
-	//³õÊ¼»¯½»Ò×Í¨µÀ
+	//åˆå§‹åŒ–äº¤æ˜“é€šé“
 	const char* cfgTraders = _config->getCString("traders");
 	if (StdFile::exists(cfgTraders))
 	{
@@ -216,7 +216,7 @@ bool WtExecRunner::initParsers(WTSVariant* cfgParser)
 		const char* id = cfgItem->getCString("id");
 
 		// By Wesley @ 2021.12.14
-		// Èç¹ûidÎª¿Õ£¬ÔòÉú³É×Ô¶¯id
+		// å¦‚æœidä¸ºç©ºï¼Œåˆ™ç”Ÿæˆè‡ªåŠ¨id
 		std::string realid = id;
 		if (realid.empty())
 		{
@@ -242,7 +242,7 @@ bool WtExecRunner::initExecuters(WTSVariant* cfgExecuter)
 	if (cfg == NULL || cfg->type() != WTSVariant::VT_Array)
 		return false;
 
-	//ÏÈ¼ÓÔØ×Ô´øµÄÖ´ĞĞÆ÷¹¤³§
+	//å…ˆåŠ è½½è‡ªå¸¦çš„æ‰§è¡Œå™¨å·¥å‚
 	std::string path = WtHelper::getInstDir() + "executer//";
 	_exe_factory.loadFactories(path.c_str());
 

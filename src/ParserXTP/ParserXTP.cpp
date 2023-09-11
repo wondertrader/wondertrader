@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file ParserXTP.cpp
  * \project	WonderTrader
  *
@@ -166,7 +166,7 @@ void ParserXTP::OnFrontConnected()
 {
 	if (m_sink)
 	{
-		write_log(m_sink, LL_INFO, "[ParserXTP]CTPĞĞÇé·şÎñÒÑÁ¬½Ó");
+		write_log(m_sink, LL_INFO, "[ParserXTP]CTPè¡Œæƒ…æœåŠ¡å·²è¿æ¥");
 		m_sink->handleEvent(WPE_Connect, 0);
 	}
 
@@ -184,7 +184,7 @@ void ParserXTP::OnRspUserLogin( CThostFtdcRspUserLoginField *pRspUserLogin, CTho
 			m_sink->handleEvent(WPE_Login, 0);
 		}
 
-		//¶©ÔÄĞĞÇéÊı¾İ
+		//è®¢é˜…è¡Œæƒ…æ•°æ®
 		SubscribeMarketData();
 	}
 }
@@ -343,7 +343,7 @@ void ParserXTP::OnDepthMarketData(XTPMD *market_data, int64_t bid1_qty[], int32_
 
 	quote.pre_close = checkValid(market_data->pre_close_price);	
 
-	//Î¯Âô¼Û¸ñ
+	//å§”å–ä»·æ ¼
 	for (int i = 0; i < 10; i++)
 	{
 		quote.ask_prices[i] = checkValid(market_data->ask[i]);
@@ -356,7 +356,7 @@ void ParserXTP::OnDepthMarketData(XTPMD *market_data, int64_t bid1_qty[], int32_
 	if(m_sink)
 		m_sink->handleQuote(tick, 1);
 
-	//´¦ÀíÖğ±Ê
+	//å¤„ç†é€ç¬”
 	if(bid1_count > 0)
 	{
 		WTSOrdQueData* buyQue = WTSOrdQueData::create(code.c_str());

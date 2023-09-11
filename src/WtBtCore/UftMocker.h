@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file UftMocker.h
  * \project	WonderTrader
  *
@@ -102,40 +102,40 @@ public:
 	virtual OrderIDs stra_sell(const char* stdCode, double price, double qty, int flag = 0) override;
 
 	/*
-	 *	¿ª¶à
-	 *	@stdCode	´úÂë£¬¸ñÊ½ÈçSSE.600000
-	 *	@price		Î¯ÍĞ¼Û¸ñ
-	 *	@qty		ÏÂµ¥ÊıÁ¿
-	 *	@flag		ÏÂµ¥±êÖ¾: 0-normal£¬1-fak£¬2-fok£¬Ä¬ÈÏ0
+	 *	å¼€å¤š
+	 *	@stdCode	ä»£ç ï¼Œæ ¼å¼å¦‚SSE.600000
+	 *	@price		å§”æ‰˜ä»·æ ¼
+	 *	@qty		ä¸‹å•æ•°é‡
+	 *	@flag		ä¸‹å•æ ‡å¿—: 0-normalï¼Œ1-fakï¼Œ2-fokï¼Œé»˜è®¤0
 	 */
 	virtual uint32_t	stra_enter_long(const char* stdCode, double price, double qty, int flag = 0) override;
 
 	/*
-	 *	¿ª¿Õ
-	 *	@stdCode	´úÂë£¬¸ñÊ½ÈçSSE.600000
-	 *	@price		Î¯ÍĞ¼Û¸ñ
-	 *	@qty		ÏÂµ¥ÊıÁ¿
-	 *	@flag		ÏÂµ¥±êÖ¾: 0-normal£¬1-fak£¬2-fok£¬Ä¬ÈÏ0
+	 *	å¼€ç©º
+	 *	@stdCode	ä»£ç ï¼Œæ ¼å¼å¦‚SSE.600000
+	 *	@price		å§”æ‰˜ä»·æ ¼
+	 *	@qty		ä¸‹å•æ•°é‡
+	 *	@flag		ä¸‹å•æ ‡å¿—: 0-normalï¼Œ1-fakï¼Œ2-fokï¼Œé»˜è®¤0
 	 */
 	virtual uint32_t	stra_enter_short(const char* stdCode, double price, double qty, int flag = 0) override;
 
 	/*
-	 *	Æ½¶à
-	 *	@stdCode	´úÂë£¬¸ñÊ½ÈçSSE.600000
-	 *	@price		Î¯ÍĞ¼Û¸ñ
-	 *	@qty		ÏÂµ¥ÊıÁ¿
-	 *	@isToday	ÊÇ·ñ½ñ²Ö£¬SHFE¡¢INE×¨ÓÃ
-	 *	@flag		ÏÂµ¥±êÖ¾: 0-normal£¬1-fak£¬2-fok£¬Ä¬ÈÏ0
+	 *	å¹³å¤š
+	 *	@stdCode	ä»£ç ï¼Œæ ¼å¼å¦‚SSE.600000
+	 *	@price		å§”æ‰˜ä»·æ ¼
+	 *	@qty		ä¸‹å•æ•°é‡
+	 *	@isToday	æ˜¯å¦ä»Šä»“ï¼ŒSHFEã€INEä¸“ç”¨
+	 *	@flag		ä¸‹å•æ ‡å¿—: 0-normalï¼Œ1-fakï¼Œ2-fokï¼Œé»˜è®¤0
 	 */
 	virtual uint32_t	stra_exit_long(const char* stdCode, double price, double qty, bool isToday = false, int flag = 0) override;
 
 	/*
-	 *	Æ½¿Õ
-	 *	@stdCode	´úÂë£¬¸ñÊ½ÈçSSE.600000
-	 *	@price		Î¯ÍĞ¼Û¸ñ
-	 *	@qty		ÏÂµ¥ÊıÁ¿
-	 *	@isToday	ÊÇ·ñ½ñ²Ö£¬SHFE¡¢INE×¨ÓÃ
-	 *	@flag		ÏÂµ¥±êÖ¾: 0-normal£¬1-fak£¬2-fok£¬Ä¬ÈÏ0
+	 *	å¹³ç©º
+	 *	@stdCode	ä»£ç ï¼Œæ ¼å¼å¦‚SSE.600000
+	 *	@price		å§”æ‰˜ä»·æ ¼
+	 *	@qty		ä¸‹å•æ•°é‡
+	 *	@isToday	æ˜¯å¦ä»Šä»“ï¼ŒSHFEã€INEä¸“ç”¨
+	 *	@flag		ä¸‹å•æ ‡å¿—: 0-normalï¼Œ1-fakï¼Œ2-fokï¼Œé»˜è®¤0
 	 */
 	virtual uint32_t	stra_exit_short(const char* stdCode, double price, double qty, bool isToday = false, int flag = 0) override;
 
@@ -154,10 +154,10 @@ public:
 	virtual WTSTickData* stra_get_last_tick(const char* stdCode) override;
 
 	/*
-	 *	»ñÈ¡³Ö²Ö
-	 *	@stdCode	´úÂë£¬¸ñÊ½ÈçSSE.600000
-	 *	@bOnlyValid	»ñÈ¡¿ÉÓÃ³Ö²Ö
-	 *	@iFlag		¶ÁÈ¡±ê¼Ç£¬1-¶àÍ·£¬2-¿ÕÍ·£¬3-¾»Í·´ç
+	 *	è·å–æŒä»“
+	 *	@stdCode	ä»£ç ï¼Œæ ¼å¼å¦‚SSE.600000
+	 *	@bOnlyValid	è·å–å¯ç”¨æŒä»“
+	 *	@iFlag		è¯»å–æ ‡è®°ï¼Œ1-å¤šå¤´ï¼Œ2-ç©ºå¤´ï¼Œ3-å‡€å¤´å¯¸
 	 */
 	virtual double stra_get_position(const char* stdCode, bool bOnlyValid = false, int32_t iFlag = 3) override;
 
@@ -220,7 +220,7 @@ private:
 
 	bool			_use_newpx;
 	uint32_t		_error_rate;
-	bool			_match_this_tick;	//ÊÇ·ñÔÚµ±Ç°tick´éºÏ
+	bool			_match_this_tick;	//æ˜¯å¦åœ¨å½“å‰tickæ’®åˆ
 
 	typedef wt_hashmap<std::string, double> PriceMap;
 	PriceMap		_price_map;
@@ -278,7 +278,7 @@ private:
 	StdRecurMutex	_mtx_ords;
 	Orders			_orders;
 
-	//ÓÃ»§Êı¾İ
+	//ç”¨æˆ·æ•°æ®
 	typedef wt_hashmap<std::string, std::string> StringHashMap;
 	StringHashMap	_user_datas;
 	bool			_ud_modified;
@@ -361,7 +361,7 @@ private:
 protected:
 	uint32_t		_context_id;
 
-	//tick¶©ÔÄÁĞ±í
+	//tickè®¢é˜…åˆ—è¡¨
 	wt_hashset<std::string> _tick_subs;
 };
 

@@ -1,5 +1,5 @@
-/*
- * ÊÊÓÃÓÚ¹ÉÆ±µÄ×îĞ¡³å»÷Ëã·¨
+ï»¿/*
+ * é€‚ç”¨äºè‚¡ç¥¨çš„æœ€å°å†²å‡»ç®—æ³•
  *
  * \author Huerjie
  * \date 2022/06/01
@@ -63,17 +63,17 @@ void WtStockMinImpactExeUnit::init(ExecuteContext* ctx, const char* stdCode, WTS
 	if (_sess_info)
 		_sess_info->retain();
 
-	_price_offset = cfg->getInt32("offset");	//¼Û¸ñÆ«ÒÆÌøÊı£¬Ò»°ãºÍ¶©µ¥Í¬·½Ïò
-	_expire_secs = cfg->getUInt32("expire");	//¶©µ¥³¬Ê±ÃëÊı
-	_price_mode = cfg->getInt32("pricemode");	//¼Û¸ñÀàĞÍ,0-×îĞÂ¼Û,-1-×îÓÅ¼Û,1-¶ÔÊÖ¼Û,2-×Ô¶¯,Ä¬ÈÏÎª0
-	_entrust_span = cfg->getUInt32("span");		//·¢µ¥Ê±¼ä¼ä¸ô£¬µ¥Î»ºÁÃë
-	_by_rate = cfg->getBoolean("byrate");		//ÊÇ·ñ°´ÕÕ¶ÔÊÖµÄ¹Òµ¥ÊıµÄ±ÈÀıÏÂµ¥£¬Èç¹ûÊÇtrue£¬Ôòrate×Ö¶ÎÉúĞ§£¬Èç¹ûÊÇfalseÔòlots×Ö¶ÎÉúĞ§
-	_order_lots = cfg->getDouble("lots");		//µ¥´Î·¢µ¥ÊÖÊı
-	_qty_rate = cfg->getDouble("rate");			//ÏÂµ¥ÊÖÊı±ÈÀı
+	_price_offset = cfg->getInt32("offset");	//ä»·æ ¼åç§»è·³æ•°ï¼Œä¸€èˆ¬å’Œè®¢å•åŒæ–¹å‘
+	_expire_secs = cfg->getUInt32("expire");	//è®¢å•è¶…æ—¶ç§’æ•°
+	_price_mode = cfg->getInt32("pricemode");	//ä»·æ ¼ç±»å‹,0-æœ€æ–°ä»·,-1-æœ€ä¼˜ä»·,1-å¯¹æ‰‹ä»·,2-è‡ªåŠ¨,é»˜è®¤ä¸º0
+	_entrust_span = cfg->getUInt32("span");		//å‘å•æ—¶é—´é—´éš”ï¼Œå•ä½æ¯«ç§’
+	_by_rate = cfg->getBoolean("byrate");		//æ˜¯å¦æŒ‰ç…§å¯¹æ‰‹çš„æŒ‚å•æ•°çš„æ¯”ä¾‹ä¸‹å•ï¼Œå¦‚æœæ˜¯trueï¼Œåˆ™rateå­—æ®µç”Ÿæ•ˆï¼Œå¦‚æœæ˜¯falseåˆ™lotså­—æ®µç”Ÿæ•ˆ
+	_order_lots = cfg->getDouble("lots");		//å•æ¬¡å‘å•æ‰‹æ•°
+	_qty_rate = cfg->getDouble("rate");			//ä¸‹å•æ‰‹æ•°æ¯”ä¾‹
 	if (cfg->has("total_money"))
 	{
 		_is_total_money_ready = true;
-		_total_money = cfg->getDouble("total_money"); //Ö´ĞĞÆ÷Ê¹ÓÃµÄ½ğ¶î£¬ÅäºÏÄ¿±ê±ÈÀıÊ¹ÓÃ£¬¸Ã×Ö¶ÎÁô¿Õ»òÖµĞ¡ÓÚ0£¬ÔòÒÔÕË»§µ±Ç°Óà¶îÎª×¼
+		_total_money = cfg->getDouble("total_money"); //æ‰§è¡Œå™¨ä½¿ç”¨çš„é‡‘é¢ï¼Œé…åˆç›®æ ‡æ¯”ä¾‹ä½¿ç”¨ï¼Œè¯¥å­—æ®µç•™ç©ºæˆ–å€¼å°äº0ï¼Œåˆ™ä»¥è´¦æˆ·å½“å‰ä½™é¢ä¸ºå‡†
 	}
 	if (cfg->has("is_cancel_unmanaged_order"))
 		_is_cancel_unmanaged_order = cfg->getBoolean("is_cancel_unmanaged_order");
@@ -86,7 +86,7 @@ void WtStockMinImpactExeUnit::init(ExecuteContext* ctx, const char* stdCode, WTS
 		_is_KC = true;
 	}
 	_min_hands = get_minOrderQty(stdCode);
-	if (cfg->has("min_order"))					//×îĞ¡ÏÂµ¥Êı
+	if (cfg->has("min_order"))					//æœ€å°ä¸‹å•æ•°
 		_min_order = cfg->getDouble("min_order");
 
 	if (_min_order != 0)
@@ -102,13 +102,13 @@ void WtStockMinImpactExeUnit::init(ExecuteContext* ctx, const char* stdCode, WTS
 		}
 	}
 
-	// È·¶¨T0½»Ò×Ä£Ê½
+	// ç¡®å®šT0äº¤æ˜“æ¨¡å¼
 	if (_comm_info->getTradingMode() == TradingMode::TM_Long)
 		_is_t0 = true;
 
 	//auto ticks = _ctx->getTicks(_code.c_str(),1);
 	//ticks->release();
-	ctx->writeLog(fmt::format("MiniImpactExecUnit {} inited, order price: {} ¡À {} ticks, order expired: {} secs, order timespan:{} millisec, order qty: {} @ {:.2f} min_order: {:.2f} is_cancel_unmanaged_order: {}",
+	ctx->writeLog(fmt::format("MiniImpactExecUnit {} inited, order price: {} Â± {} ticks, order expired: {} secs, order timespan:{} millisec, order qty: {} @ {:.2f} min_order: {:.2f} is_cancel_unmanaged_order: {}",
 		stdCode, PriceModeNames[_price_mode + 1], _price_offset, _expire_secs, _entrust_span, _by_rate ? "byrate" : "byvol", _by_rate ? _qty_rate : _order_lots, _min_order, _is_cancel_unmanaged_order ? "true" : "false").c_str());
 }
 
@@ -119,7 +119,7 @@ void WtStockMinImpactExeUnit::on_order(uint32_t localid, const char* stdCode, bo
 		_ctx->writeLog(fmtutil::format("on_order localid:{} stdCode:{} isBuy:{} leftover:{} price:{} isCanceled:{}", localid, stdCode, isBuy, leftover, price, isCanceled));
 		if (!_orders_mon.has_order(localid))
 		{
-			// ·Ç¹ÜÀíµÄºÏÔ¼¶©µ¥
+			// éç®¡ç†çš„åˆçº¦è®¢å•
 			_ctx->writeLog(fmtutil::format("{} {} didnt in mon", stdCode, localid));
 			return;
 		}
@@ -137,7 +137,7 @@ void WtStockMinImpactExeUnit::on_order(uint32_t localid, const char* stdCode, bo
 			_cancel_times = 0;
 	}
 
-	//Èç¹ûÓĞ³·µ¥,Ò²´¥·¢ÖØĞÂ¼ÆËã
+	//å¦‚æœæœ‰æ’¤å•,ä¹Ÿè§¦å‘é‡æ–°è®¡ç®—
 	if (isCanceled)
 	{
 		_ctx->writeLog(fmt::format("Order {} of {} canceled, recalc will be done", localid, stdCode).c_str());
@@ -189,23 +189,23 @@ void WtStockMinImpactExeUnit::on_tick(WTSTickData* newTick)
 	if (newTick == NULL || _code.compare(newTick->code()) != 0)
 		return;
 
-	//Èç¹ûÔ­À´µÄtick²»Îª¿Õ,ÔòÒªÊÍ·Åµô
+	//å¦‚æœåŸæ¥çš„tickä¸ä¸ºç©º,åˆ™è¦é‡Šæ”¾æ‰
 	if (_last_tick)
 	{
 		_last_tick->release();
 	}
 	else
 	{
-		//Èç¹ûĞĞÇéÊ±¼ä²»ÔÚ½»Ò×Ê±¼ä,ÕâÖÖÇé¿öÒ»°ãÊÇ¼¯ºÏ¾º¼ÛµÄĞĞÇé½øÀ´,ÏÂµ¥»áÊ§°Ü,ËùÒÔÖ±½Ó¹ıÂËµôÕâ±ÊĞĞÇé
+		//å¦‚æœè¡Œæƒ…æ—¶é—´ä¸åœ¨äº¤æ˜“æ—¶é—´,è¿™ç§æƒ…å†µä¸€èˆ¬æ˜¯é›†åˆç«ä»·çš„è¡Œæƒ…è¿›æ¥,ä¸‹å•ä¼šå¤±è´¥,æ‰€ä»¥ç›´æ¥è¿‡æ»¤æ‰è¿™ç¬”è¡Œæƒ…
 		if (_sess_info != NULL && !_sess_info->isInTradingTime(newTick->actiontime() / 100000))
 			return;
 	}
 
-	//ĞÂµÄtickÊı¾İ,Òª±£Áô
+	//æ–°çš„tickæ•°æ®,è¦ä¿ç•™
 	_last_tick = newTick;
 	_last_tick->retain();
 
-	//Èç¹ûÏà±ÈÉÏ´ÎÃ»ÓĞ¸üĞÂµÄtick½øÀ´£¬ÔòÏÈ²»ÏÂµ¥£¬·ÀÖ¹¿ªÅÌÇ°¼¯ÖĞÏÂµ¥µ¼ÖÂÍ¨µÀ±»·â
+	//å¦‚æœç›¸æ¯”ä¸Šæ¬¡æ²¡æœ‰æ›´æ–°çš„tickè¿›æ¥ï¼Œåˆ™å…ˆä¸ä¸‹å•ï¼Œé˜²æ­¢å¼€ç›˜å‰é›†ä¸­ä¸‹å•å¯¼è‡´é€šé“è¢«å°
 	uint64_t curTickTime = TimeUtils::makeTime(_last_tick->actiondate(), _last_tick->actiontime());
 	if (curTickTime <= _last_tick_time)
 	{
@@ -216,9 +216,9 @@ void WtStockMinImpactExeUnit::on_tick(WTSTickData* newTick)
 	_last_tick_time = curTickTime;
 
 	/*
-	 *	ÕâÀï¿ÉÒÔ¿¼ÂÇÒ»ÏÂ
-	 *	Èç¹ûĞ´µÄÉÏÒ»´Î¶ª³öÈ¥µÄµ¥×Ó²»¹»´ïµ½Ä¿±ê²ÖÎ»
-	 *	ÄÇÃ´ÔÚĞÂµÄĞĞÇéÊı¾İ½øÀ´µÄÊ±ºò¿ÉÒÔÔÙ´Î´¥·¢ºËĞÄÂß¼­
+	 *	è¿™é‡Œå¯ä»¥è€ƒè™‘ä¸€ä¸‹
+	 *	å¦‚æœå†™çš„ä¸Šä¸€æ¬¡ä¸¢å‡ºå»çš„å•å­ä¸å¤Ÿè¾¾åˆ°ç›®æ ‡ä»“ä½
+	 *	é‚£ä¹ˆåœ¨æ–°çš„è¡Œæƒ…æ•°æ®è¿›æ¥çš„æ—¶å€™å¯ä»¥å†æ¬¡è§¦å‘æ ¸å¿ƒé€»è¾‘
 	 */
 
 	_orders_mon.enumOrder([this](uint32_t localid, uint64_t entertime, bool cancancel) {
@@ -269,14 +269,14 @@ void WtStockMinImpactExeUnit::on_entrust(uint32_t localid, const char* stdCode, 
 	if (!bSuccess)
 	{
 		StdUniqueLock lock(_mtx_calc);
-		//Èç¹û²»ÊÇÎÒ·¢³öÈ¥µÄ¶©µ¥,ÎÒ¾Í²»¹ÜÁË
+		//å¦‚æœä¸æ˜¯æˆ‘å‘å‡ºå»çš„è®¢å•,æˆ‘å°±ä¸ç®¡äº†
 		if (!_orders_mon.has_order(localid))
 			return;
 
 		_orders_mon.erase_order(localid);
 		_ctx->writeLog(fmtutil::format("{} {} entrust failed erase from mon", _code.c_str(), localid));
 	}
-	// Î¯ÍĞ²»³É¹¦£¬ÖØĞÂ´¦Àí
+	// å§”æ‰˜ä¸æˆåŠŸï¼Œé‡æ–°å¤„ç†
 	do_calc();
 }
 
@@ -285,8 +285,8 @@ void WtStockMinImpactExeUnit::set_position(const char* stdCode, double newVol)
 	if (_code.compare(stdCode) != 0)
 		return;
 
-	//Èç¹ûÔ­À´µÄÄ¿±ê²ÖÎ»ÊÇDBL_MAX£¬ËµÃ÷ÒÑ¾­½øÈëÇåÀíÂß¼­
-	//Èç¹ûÕâ¸öÊ±ºòÓÖÉèÖÃÎª0£¬ÔòÖ±½ÓÌø¹ıÁË
+	//å¦‚æœåŸæ¥çš„ç›®æ ‡ä»“ä½æ˜¯DBL_MAXï¼Œè¯´æ˜å·²ç»è¿›å…¥æ¸…ç†é€»è¾‘
+	//å¦‚æœè¿™ä¸ªæ—¶å€™åˆè®¾ç½®ä¸º0ï¼Œåˆ™ç›´æ¥è·³è¿‡äº†
 	if (is_clear() && decimal::eq(newVol, 0))
 	{
 		_ctx->writeLog(fmt::format("{} is in clearing processing, position can not be set to 0", stdCode).c_str());
@@ -350,19 +350,19 @@ void WtStockMinImpactExeUnit::do_calc()
 		return;
 	}
 
-	//ÕâÀï¼ÓÒ»¸öËø£¬Ö÷ÒªÔ­ÒòÊÇÊµÅÌ¹ı³ÌÖĞ·¢ÏÖ
-	//ÔÚĞŞ¸ÄÄ¿±ê²ÖÎ»µÄÊ±ºò£¬»á´¥·¢Ò»´Îdo_calc
-	//¶øontickÒ²»á´¥·¢Ò»´Îdo_calc£¬Á½´Îµ÷ÓÃÊÇ´ÓÁ½¸öÏß³Ì·Ö±ğ´¥·¢µÄ£¬ËùÒÔ»á³öÏÖÍ¬Ê±´¥·¢µÄÇé¿ö
-	//Èç¹û²»¼ÓËø£¬¾Í»áÒıÆğÎÊÌâ
-	//ÕâÖÖÇé¿öÔÚÔ­À´µÄSimpleExecUnitÃ»ÓĞ³öÏÖ£¬ÒòÎªSimpleExecUnitÖ»ÔÚset_positionµÄÊ±ºò´¥·¢
+	//è¿™é‡ŒåŠ ä¸€ä¸ªé”ï¼Œä¸»è¦åŸå› æ˜¯å®ç›˜è¿‡ç¨‹ä¸­å‘ç°
+	//åœ¨ä¿®æ”¹ç›®æ ‡ä»“ä½çš„æ—¶å€™ï¼Œä¼šè§¦å‘ä¸€æ¬¡do_calc
+	//è€Œontickä¹Ÿä¼šè§¦å‘ä¸€æ¬¡do_calcï¼Œä¸¤æ¬¡è°ƒç”¨æ˜¯ä»ä¸¤ä¸ªçº¿ç¨‹åˆ†åˆ«è§¦å‘çš„ï¼Œæ‰€ä»¥ä¼šå‡ºç°åŒæ—¶è§¦å‘çš„æƒ…å†µ
+	//å¦‚æœä¸åŠ é”ï¼Œå°±ä¼šå¼•èµ·é—®é¢˜
+	//è¿™ç§æƒ…å†µåœ¨åŸæ¥çš„SimpleExecUnitæ²¡æœ‰å‡ºç°ï¼Œå› ä¸ºSimpleExecUnitåªåœ¨set_positionçš„æ—¶å€™è§¦å‘
 	StdUniqueLock lock(_mtx_calc);
 
 	const char* stdCode = _code.c_str();
 
 	double undone = _ctx->getUndoneQty(stdCode);
-	// ×Ü²ÖÎ»£¬µÈÓÚ×ò²Ö + ½ñ²ÖÂòÈëµÄ
+	// æ€»ä»“ä½ï¼Œç­‰äºæ˜¨ä»“ + ä»Šä»“ä¹°å…¥çš„
 	double curPos = _ctx->getPosition(stdCode, false);
-	// ¿ÉÓÃ²ÖÎ»£¬¼´×ò²ÖµÄ
+	// å¯ç”¨ä»“ä½ï¼Œå³æ˜¨ä»“çš„
 	double vailyPos = _ctx->getPosition(stdCode, true);
 	if (_is_t0)
 		vailyPos = curPos;
@@ -374,7 +374,7 @@ void WtStockMinImpactExeUnit::do_calc()
 		_target_pos = target_pos;
 	}
 
-	// ²¹Ò»´Î
+	// è¡¥ä¸€æ¬¡
 	if (decimal::ge(_start_price, 0))
 	{
 		_start_price = _last_tick->price();
@@ -382,7 +382,7 @@ void WtStockMinImpactExeUnit::do_calc()
 
 	double diffPos = target_pos - curPos;
 	_ctx->writeLog(fmtutil::format("{}: target: {} hold:{} left {} wait to execute", _code.c_str(), target_pos, curPos, diffPos));
-	// ÔÚÅĞ¶ÏµÄÊ±ºò£¬ÒªÁ½±ßËÄÉáÎåÈë£¬·ÀÖ¹Ò»Ğ©Ëé¹Éµ¼ÖÂÒ»Ö±ÎŞ·¨Íê³ÉÖ´ĞĞ
+	// åœ¨åˆ¤æ–­çš„æ—¶å€™ï¼Œè¦ä¸¤è¾¹å››èˆäº”å…¥ï¼Œé˜²æ­¢ä¸€äº›ç¢è‚¡å¯¼è‡´ä¸€ç›´æ— æ³•å®Œæˆæ‰§è¡Œ
 	if (decimal::eq(round_hands(target_pos, _min_hands), round_hands(curPos, _min_hands)) && !(target_pos == 0 && curPos < _min_hands && curPos > target_pos))
 	{
 		_ctx->writeLog(fmtutil::format("{}: target position {} set finish", _code.c_str(), _target_pos));
@@ -391,8 +391,8 @@ void WtStockMinImpactExeUnit::do_calc()
 	}
 
 	bool isBuy = decimal::gt(diffPos, 0);
-	//ÓĞÎ´Íê³É¶©µ¥£¬ÓëÊµ¼Ê²ÖÎ»±ä¶¯·½ÏòÏà·´
-	//ÔòĞèÒª³·ÏúÏÖÓĞ¶©µ¥
+	//æœ‰æœªå®Œæˆè®¢å•ï¼Œä¸å®é™…ä»“ä½å˜åŠ¨æ–¹å‘ç›¸å
+	//åˆ™éœ€è¦æ’¤é”€ç°æœ‰è®¢å•
 	if (decimal::lt(diffPos * undone, 0))
 	{
 		_ctx->writeLog(fmt::format("{} undone:{} diff:{} cancel", stdCode, undone, diffPos).c_str());
@@ -410,7 +410,7 @@ void WtStockMinImpactExeUnit::do_calc()
 		return;
 	}
 
-	//ÒòÎªÊÇÖğ±Ê·¢µ¥£¬ËùÒÔÈç¹ûÓĞ²»ĞèÒª³·ÏúµÄÎ´Íê³Éµ¥£¬ÔòÔİ²»·¢µ¥
+	//å› ä¸ºæ˜¯é€ç¬”å‘å•ï¼Œæ‰€ä»¥å¦‚æœæœ‰ä¸éœ€è¦æ’¤é”€çš„æœªå®Œæˆå•ï¼Œåˆ™æš‚ä¸å‘å•
 	if (!decimal::eq(undone, 0))
 	{
 		_ctx->writeLog(fmtutil::format("{} undone {} wait...", _code, undone));
@@ -423,7 +423,7 @@ void WtStockMinImpactExeUnit::do_calc()
 		return;
 	}
 
-	//¼ì²éÏÂµ¥Ê±¼ä¼ä¸ô;
+	//æ£€æŸ¥ä¸‹å•æ—¶é—´é—´éš”;
 	if (_now - _last_place_time < _entrust_span)
 	{
 		_ctx->writeLog(fmtutil::format("entrust span {} last_place_time {} _now {}", _entrust_span, _last_place_time, _now));
@@ -442,10 +442,10 @@ void WtStockMinImpactExeUnit::do_calc()
 	}
 	diffPos = abs(diffPos);
 	this_qty = min(this_qty, diffPos);
-	// Âò
+	// ä¹°
 	if (isBuy)
 	{
-		//Èç¹ûÊÇÂòµÄ»°£¬Òª¿¼ÂÇÈ¡ÕûºÍ×Ê½ğÓà¶î
+		//å¦‚æœæ˜¯ä¹°çš„è¯ï¼Œè¦è€ƒè™‘å–æ•´å’Œèµ„é‡‘ä½™é¢
 		//this_qty = round_hands(this_qty, _min_hands);
 		this_qty = round_hands(this_qty, _min_order);//2023.6.5-zhaoyk
 		if (_avaliable)
@@ -456,7 +456,7 @@ void WtStockMinImpactExeUnit::do_calc()
 			this_qty = min(max_can_buy, this_qty);
 		}
 	}
-	// ÂôÒª¶ÔËé¹É×ö¼ì²é
+	// å–è¦å¯¹ç¢è‚¡åšæ£€æŸ¥
 	else
 	{
 		//double chip_stk = vailyPos - int(vailyPos / _min_hands) * _min_hands;
@@ -512,7 +512,7 @@ void WtStockMinImpactExeUnit::do_calc()
 		}
 	}
 
-	// Èç¹û×îºó¼Û¸ñÎª0£¬ÔÙ×öÒ»¸öĞŞÕı
+	// å¦‚æœæœ€åä»·æ ¼ä¸º0ï¼Œå†åšä¸€ä¸ªä¿®æ­£
 	if (decimal::eq(buyPx, 0.0))
 		buyPx = decimal::eq(_last_tick->price(), 0.0) ? _last_tick->preclose() : _last_tick->price();
 
@@ -522,20 +522,20 @@ void WtStockMinImpactExeUnit::do_calc()
 	buyPx += _comm_info->getPriceTick() * _cancel_times;
 	sellPx -= _comm_info->getPriceTick() * _cancel_times;
 
-	//¼ì²éÕÇµøÍ£¼Û
+	//æ£€æŸ¥æ¶¨è·Œåœä»·
 	bool isCanCancel = true;
 	if (!decimal::eq(_last_tick->upperlimit(), 0) && decimal::gt(buyPx, _last_tick->upperlimit()))
 	{
 		_ctx->writeLog(fmt::format("Buy price {} of {} modified to upper limit price", buyPx, _code.c_str(), _last_tick->upperlimit()).c_str());
 		buyPx = _last_tick->upperlimit();
-		isCanCancel = false;	//Èç¹û¼Û¸ñ±»ĞŞÕıÎªÕÇµøÍ£¼Û£¬¶©µ¥²»¿É³·Ïú
+		isCanCancel = false;	//å¦‚æœä»·æ ¼è¢«ä¿®æ­£ä¸ºæ¶¨è·Œåœä»·ï¼Œè®¢å•ä¸å¯æ’¤é”€
 	}
 
 	if (!decimal::eq(_last_tick->lowerlimit(), 0) && decimal::lt(sellPx, _last_tick->lowerlimit()))
 	{
 		_ctx->writeLog(fmt::format("Sell price {} of {} modified to lower limit price", sellPx, _code.c_str(), _last_tick->lowerlimit()).c_str());
 		sellPx = _last_tick->lowerlimit();
-		isCanCancel = false;	//Èç¹û¼Û¸ñ±»ĞŞÕıÎªÕÇµøÍ£¼Û£¬¶©µ¥²»¿É³·Ïú
+		isCanCancel = false;	//å¦‚æœä»·æ ¼è¢«ä¿®æ­£ä¸ºæ¶¨è·Œåœä»·ï¼Œè®¢å•ä¸å¯æ’¤é”€
 	}
 
 	if (isBuy)

@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \file ParserOES.h
  * \project	WonderTrader
  *
@@ -23,7 +23,7 @@ public:
 	ParserOES();
 	~ParserOES();
 
-	//IQuoteParser �ӿ�
+	//IQuoteParser ½Ó¿Ú
 public:
 	virtual bool init(WTSVariant* config) override;
 

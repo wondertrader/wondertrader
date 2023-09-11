@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file IDataReader.h
  * \project	WonderTrader
  *
@@ -26,124 +26,124 @@ class IBaseDataMgr;
 class IHotMgr;
 
 /*
- *	@brief Êı¾İ¶ÁÈ¡Ä£¿é»Øµ÷½Ó¿Ú
- *	@details Ö÷ÒªÓÃÓÚÊı¾İ¶ÁÈ¡Ä£¿éÏòµ÷ÓÃÄ£¿é»Øµ÷
+ *	@brief æ•°æ®è¯»å–æ¨¡å—å›è°ƒæ¥å£
+ *	@details ä¸»è¦ç”¨äºæ•°æ®è¯»å–æ¨¡å—å‘è°ƒç”¨æ¨¡å—å›è°ƒ
  */
 class IDataReaderSink
 {
 public:
 	/*
-	 *	@brief	KÏß±ÕºÏÊÂ¼ş»Øµ÷
+	 *	@brief	Kçº¿é—­åˆäº‹ä»¶å›è°ƒ
 	 *	
-	 *	@param stdCode	±ê×¼Æ·ÖÖ´úÂë,ÈçSSE.600000,SHFE.au.2005
-	 *	@param period	KÏßÖÜÆÚ
-	 *	@param newBar	±ÕºÏµÄKÏß½á¹¹Ö¸Õë
+	 *	@param stdCode	æ ‡å‡†å“ç§ä»£ç ,å¦‚SSE.600000,SHFE.au.2005
+	 *	@param period	Kçº¿å‘¨æœŸ
+	 *	@param newBar	é—­åˆçš„Kçº¿ç»“æ„æŒ‡é’ˆ
 	 */
 	virtual void on_bar(const char* stdCode, WTSKlinePeriod period, WTSBarStruct* newBar) = 0;
 
 	/*
-	 *	@brief	ËùÓĞ»º´æµÄKÏßÈ«²¿¸üĞÂµÄÊÂ¼ş»Øµ÷
+	 *	@brief	æ‰€æœ‰ç¼“å­˜çš„Kçº¿å…¨éƒ¨æ›´æ–°çš„äº‹ä»¶å›è°ƒ
 	 *
-	 *	@param updateTime	KÏß¸üĞÂÊ±¼ä,¾«È·µ½·ÖÖÓ,Èç202004101500
+	 *	@param updateTime	Kçº¿æ›´æ–°æ—¶é—´,ç²¾ç¡®åˆ°åˆ†é’Ÿ,å¦‚202004101500
 	 */
 	virtual void on_all_bar_updated(uint32_t updateTime) = 0;
 
 	/*
-	 *	@brief	»ñÈ¡»ù´¡Êı¾İ¹ÜÀí½Ó¿ÚÖ¸Õë
+	 *	@brief	è·å–åŸºç¡€æ•°æ®ç®¡ç†æ¥å£æŒ‡é’ˆ
 	 */
 	virtual IBaseDataMgr*	get_basedata_mgr() = 0;
 
 	 /*
-	  *	@brief	»ñÈ¡Ö÷Á¦ÇĞ»»¹æÔò¹ÜÀí½Ó¿ÚÖ¸Õë
+	  *	@brief	è·å–ä¸»åŠ›åˆ‡æ¢è§„åˆ™ç®¡ç†æ¥å£æŒ‡é’ˆ
 	  */
 	virtual IHotMgr*		get_hot_mgr() = 0;
 
 	/*
-	 *	@brief	»ñÈ¡µ±Ç°ÈÕÆÚ,¸ñÊ½Í¼20100410
+	 *	@brief	è·å–å½“å‰æ—¥æœŸ,æ ¼å¼å›¾20100410
 	 */
 	virtual uint32_t	get_date() = 0;
 
 	/*
-	 *	@brief	»ñÈ¡µ±Ç°1·ÖÖÓÏßµÄÊ±¼ä
-	 *	@details ÕâÀïµÄ·ÖÖÓÏßÊ±¼äÊÇ´¦Àí¹ıµÄ1·ÖÖÓÏßÊ±¼ä,ÈçÏÖÔÚÊÇ9:00:32Ãë,ÕæÊµÊÂ¼şÎª0900,µ«ÊÇ¶ÔÓ¦µÄ1·ÖÖÓÏßÊ±¼äÎª0901
+	 *	@brief	è·å–å½“å‰1åˆ†é’Ÿçº¿çš„æ—¶é—´
+	 *	@details è¿™é‡Œçš„åˆ†é’Ÿçº¿æ—¶é—´æ˜¯å¤„ç†è¿‡çš„1åˆ†é’Ÿçº¿æ—¶é—´,å¦‚ç°åœ¨æ˜¯9:00:32ç§’,çœŸå®äº‹ä»¶ä¸º0900,ä½†æ˜¯å¯¹åº”çš„1åˆ†é’Ÿçº¿æ—¶é—´ä¸º0901
 	 */
 	virtual uint32_t	get_min_time() = 0;
 
 	/*
-	 *	@brief	»ñÈ¡µ±Ç°µÄÃëÊı,¾«È·µ½ºÁÃë,Èç37,500
+	 *	@brief	è·å–å½“å‰çš„ç§’æ•°,ç²¾ç¡®åˆ°æ¯«ç§’,å¦‚37,500
 	 */
 	virtual uint32_t	get_secs() = 0;
 
 	/*
-	 *	@brief	Êä³öÊı¾İ¶ÁÈ¡Ä£¿éµÄÈÕÖ¾
+	 *	@brief	è¾“å‡ºæ•°æ®è¯»å–æ¨¡å—çš„æ—¥å¿—
 	 */
 	virtual void		reader_log(WTSLogLevel ll, const char* message) = 0;
 };
 
 
 /*
- *	ÀúÊ·Êı¾İ¼ÓÔØÆ÷µÄ»Øµ÷º¯Êı
- *	@obj	»Ø´«ÓÃµÄ£¬Ô­Ñù·µ»Ø¼´¿É
- *	@key	Êı¾İ»º´æµÄkey
- *	@bars	KÏßÊı¾İ
- *	@count	KÏßÌõÊı
- *	@factor	¸´È¨Òò×Ó£¬×îĞÂµÄ¸´È¨Òò×Ó£¬Èç¹ûÊÇºó¸´È¨£¬Ôòfactor²»Îª1.0£¬Èç¹ûÊÇÇ°¸´È¨£¬Ôòfactor±ØĞëÎª1.0
+ *	å†å²æ•°æ®åŠ è½½å™¨çš„å›è°ƒå‡½æ•°
+ *	@obj	å›ä¼ ç”¨çš„ï¼ŒåŸæ ·è¿”å›å³å¯
+ *	@key	æ•°æ®ç¼“å­˜çš„key
+ *	@bars	Kçº¿æ•°æ®
+ *	@count	Kçº¿æ¡æ•°
+ *	@factor	å¤æƒå› å­ï¼Œæœ€æ–°çš„å¤æƒå› å­ï¼Œå¦‚æœæ˜¯åå¤æƒï¼Œåˆ™factorä¸ä¸º1.0ï¼Œå¦‚æœæ˜¯å‰å¤æƒï¼Œåˆ™factorå¿…é¡»ä¸º1.0
  */
 typedef void(*FuncReadBars)(void* obj, WTSBarStruct* bars, uint32_t count);
 
 /*
- *	¼ÓÔØ¸´È¨Òò×Ó»Øµ÷
- *	@obj	»Ø´«ÓÃµÄ£¬Ô­Ñù·µ»Ø¼´¿É
- *	@stdCode	ºÏÔ¼´úÂë
+ *	åŠ è½½å¤æƒå› å­å›è°ƒ
+ *	@obj	å›ä¼ ç”¨çš„ï¼ŒåŸæ ·è¿”å›å³å¯
+ *	@stdCode	åˆçº¦ä»£ç 
  *	@dates	
  */
 typedef void(*FuncReadFactors)(void* obj, const char* stdCode, uint32_t* dates, double* factors, uint32_t count);
 
 /*
- *	ÀúÊ·Êı¾İ¼ÓÔØÆ÷
+ *	å†å²æ•°æ®åŠ è½½å™¨
  */
 class IHisDataLoader
 {
 public:
 	/*
-	 *	¼ÓÔØ×îÖÕÀúÊ·KÏßÊı¾İ
-	 *	ºÍloadRawHisBarsµÄÇø±ğÔÚÓÚ£¬loadFinalHisBars£¬ÏµÍ³ÈÏÎªÊÇ×îÖÕËùĞèÊı¾İ£¬²»ÔÚ½øĞĞ¼Ó¹¤£¬ÀıÈç¸´È¨Êı¾İ¡¢Ö÷Á¦ºÏÔ¼Êı¾İ
-	 *	loadRawHisBarsÊÇ¼ÓÔØÎ´¼Ó¹¤µÄÔ­Ê¼Êı¾İµÄ½Ó¿Ú
+	 *	åŠ è½½æœ€ç»ˆå†å²Kçº¿æ•°æ®
+	 *	å’ŒloadRawHisBarsçš„åŒºåˆ«åœ¨äºï¼ŒloadFinalHisBarsï¼Œç³»ç»Ÿè®¤ä¸ºæ˜¯æœ€ç»ˆæ‰€éœ€æ•°æ®ï¼Œä¸åœ¨è¿›è¡ŒåŠ å·¥ï¼Œä¾‹å¦‚å¤æƒæ•°æ®ã€ä¸»åŠ›åˆçº¦æ•°æ®
+	 *	loadRawHisBarsæ˜¯åŠ è½½æœªåŠ å·¥çš„åŸå§‹æ•°æ®çš„æ¥å£
 	 *
-	 *	@obj	»Ø´«ÓÃµÄ£¬Ô­Ñù·µ»Ø¼´¿É
-	 *	@key	Êı¾İ»º´æµÄkey
-	 *	@stdCode	ºÏÔ¼´úÂë
-	 *	@period	KÏßÖÜÆÚ
-	 *	@cb		»Øµ÷º¯Êı
+	 *	@obj	å›ä¼ ç”¨çš„ï¼ŒåŸæ ·è¿”å›å³å¯
+	 *	@key	æ•°æ®ç¼“å­˜çš„key
+	 *	@stdCode	åˆçº¦ä»£ç 
+	 *	@period	Kçº¿å‘¨æœŸ
+	 *	@cb		å›è°ƒå‡½æ•°
 	 */
 	virtual bool loadFinalHisBars(void* obj, const char* stdCode, WTSKlinePeriod period, FuncReadBars cb) = 0;
 
 	/*
-	 *	¼ÓÔØÔ­Ê¼ÀúÊ·KÏßÊı¾İ
+	 *	åŠ è½½åŸå§‹å†å²Kçº¿æ•°æ®
 	 *
-	 *	@obj	»Ø´«ÓÃµÄ£¬Ô­Ñù·µ»Ø¼´¿É
-	 *	@key	Êı¾İ»º´æµÄkey
-	 *	@stdCode	ºÏÔ¼´úÂë
-	 *	@period	KÏßÖÜÆÚ
-	 *	@cb		»Øµ÷º¯Êı
+	 *	@obj	å›ä¼ ç”¨çš„ï¼ŒåŸæ ·è¿”å›å³å¯
+	 *	@key	æ•°æ®ç¼“å­˜çš„key
+	 *	@stdCode	åˆçº¦ä»£ç 
+	 *	@period	Kçº¿å‘¨æœŸ
+	 *	@cb		å›è°ƒå‡½æ•°
 	 */
 	virtual bool loadRawHisBars(void* obj, const char* stdCode, WTSKlinePeriod period, FuncReadBars cb) = 0;
 
 	/*
-	 *	¼ÓÔØÈ«²¿³ıÈ¨Òò×Ó
+	 *	åŠ è½½å…¨éƒ¨é™¤æƒå› å­
 	 */
 	virtual bool loadAllAdjFactors(void* obj, FuncReadFactors cb) = 0;
 
 	/*
-	 *	¼ÓÖ¸¶¨ºÏÔ¼³ıÈ¨Òò×Ó
+	 *	åŠ æŒ‡å®šåˆçº¦é™¤æƒå› å­
 	 */
 	virtual bool loadAdjFactors(void* obj, const char* stdCode, FuncReadFactors cb) = 0;
 };
 
 /*
- *	@brief	Êı¾İ¶ÁÈ¡½Ó¿Ú
+ *	@brief	æ•°æ®è¯»å–æ¥å£
  *
- *	ÏòºËĞÄÄ£¿éÌá¹©ĞĞÇéÊı¾İ(tick¡¢KÏß)¶ÁÈ¡½Ó¿Ú
+ *	å‘æ ¸å¿ƒæ¨¡å—æä¾›è¡Œæƒ…æ•°æ®(tickã€Kçº¿)è¯»å–æ¥å£
  */
 class IDataReader
 {
@@ -153,83 +153,83 @@ public:
 
 public:
 	/*
-	 *	@brief ³õÊ¼»¯Êı¾İ¶ÁÈ¡Ä£¿é
+	 *	@brief åˆå§‹åŒ–æ•°æ®è¯»å–æ¨¡å—
 	 *
-	 *	@param cfg	Ä£¿éÅäÖÃÏî
-	 *	@param sink	Ä£¿é»Øµ÷½Ó¿Ú
+	 *	@param cfg	æ¨¡å—é…ç½®é¡¹
+	 *	@param sink	æ¨¡å—å›è°ƒæ¥å£
 	 */
 	virtual void init(WTSVariant* cfg, IDataReaderSink* sink, IHisDataLoader* loader = NULL) { _sink = sink; _loader = loader; }
 
 	/*
-	 *	@brief	·ÖÖÓÏß±ÕºÏÊÂ¼ş´¦Àí½Ó¿Ú
+	 *	@brief	åˆ†é’Ÿçº¿é—­åˆäº‹ä»¶å¤„ç†æ¥å£
 	 *	
-	 *	@param uDate	±ÕºÏµÄ·ÖÖÓÏßÈÕÆÚ,Èç20200410,ÕâÀï²»ÊÇ½»Ò×ÈÕ
-	 *	@param uTime	±ÕºÏµÄ·ÖÖÓÏßµÄ·ÖÖÓÊ±¼ä,Èç1115
-	 *	@param endTDate	Èç¹û±ÕºÏµÄ·ÖÖÓÏßÊÇ½»Ò×ÈÕ×îºóÒ»Ìõ·ÖÖÓÏß,ÔòendTDateÎªµ±Ç°½»Ò×ÈÕ,Èç20200410,ÆäËûÇé¿öÎª0
+	 *	@param uDate	é—­åˆçš„åˆ†é’Ÿçº¿æ—¥æœŸ,å¦‚20200410,è¿™é‡Œä¸æ˜¯äº¤æ˜“æ—¥
+	 *	@param uTime	é—­åˆçš„åˆ†é’Ÿçº¿çš„åˆ†é’Ÿæ—¶é—´,å¦‚1115
+	 *	@param endTDate	å¦‚æœé—­åˆçš„åˆ†é’Ÿçº¿æ˜¯äº¤æ˜“æ—¥æœ€åä¸€æ¡åˆ†é’Ÿçº¿,åˆ™endTDateä¸ºå½“å‰äº¤æ˜“æ—¥,å¦‚20200410,å…¶ä»–æƒ…å†µä¸º0
 	 */
 	virtual void onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTDate = 0) = 0;
 
 	/*
-	 *	@brief	¶ÁÈ¡tickÊı¾İÇĞÆ¬
-	 *	@details ÇĞÆ¬²»»á¸´ÖÆÊı¾İ,Ö»°Ñ»º´æÖĞµÄÊı¾İÖ¸Õë´«µİ³öÀ´,ËùÒÔ½Ğ×öÇĞÆ¬
+	 *	@brief	è¯»å–tickæ•°æ®åˆ‡ç‰‡
+	 *	@details åˆ‡ç‰‡ä¸ä¼šå¤åˆ¶æ•°æ®,åªæŠŠç¼“å­˜ä¸­çš„æ•°æ®æŒ‡é’ˆä¼ é€’å‡ºæ¥,æ‰€ä»¥å«åšåˆ‡ç‰‡
 	 *
-	 *	@param stdCode	±ê×¼Æ·ÖÖ´úÂë,ÈçSSE.600000,SHFE.au.2005
-	 *	@param count	Òª¶ÁÈ¡µÄtickÌõÊı
-	 *	@param etime	½áÊøÊ±¼ä,¾«È·µ½ºÁÃë,¸ñÊ½ÈçyyyyMMddhhmmssmmm,Èç¹ûÒª¶ÁÈ¡µ½×îºóÒ»Ìõ,etimeÎª0,Ä¬ÈÏÎª0
+	 *	@param stdCode	æ ‡å‡†å“ç§ä»£ç ,å¦‚SSE.600000,SHFE.au.2005
+	 *	@param count	è¦è¯»å–çš„tickæ¡æ•°
+	 *	@param etime	ç»“æŸæ—¶é—´,ç²¾ç¡®åˆ°æ¯«ç§’,æ ¼å¼å¦‚yyyyMMddhhmmssmmm,å¦‚æœè¦è¯»å–åˆ°æœ€åä¸€æ¡,etimeä¸º0,é»˜è®¤ä¸º0
 	 */
 	virtual WTSTickSlice*	readTickSlice(const char* stdCode, uint32_t count, uint64_t etime = 0) = 0;
 
 	/*
-	 *	@brief	¶ÁÈ¡Öğ±ÊÎ¯ÍĞÊı¾İÇĞÆ¬
-	 *	@details ÇĞÆ¬²»»á¸´ÖÆÊı¾İ,Ö»°Ñ»º´æÖĞµÄÊı¾İÖ¸Õë´«µİ³öÀ´,ËùÒÔ½Ğ×öÇĞÆ¬
+	 *	@brief	è¯»å–é€ç¬”å§”æ‰˜æ•°æ®åˆ‡ç‰‡
+	 *	@details åˆ‡ç‰‡ä¸ä¼šå¤åˆ¶æ•°æ®,åªæŠŠç¼“å­˜ä¸­çš„æ•°æ®æŒ‡é’ˆä¼ é€’å‡ºæ¥,æ‰€ä»¥å«åšåˆ‡ç‰‡
 	 *
-	 *	@param stdCode	±ê×¼Æ·ÖÖ´úÂë,ÈçSSE.600000,SHFE.au.2005
-	 *	@param count	Òª¶ÁÈ¡µÄtickÌõÊı
-	 *	@param etime	½áÊøÊ±¼ä,¾«È·µ½ºÁÃë,¸ñÊ½ÈçyyyyMMddhhmmssmmm,Èç¹ûÒª¶ÁÈ¡µ½×îºóÒ»Ìõ,etimeÎª0,Ä¬ÈÏÎª0
+	 *	@param stdCode	æ ‡å‡†å“ç§ä»£ç ,å¦‚SSE.600000,SHFE.au.2005
+	 *	@param count	è¦è¯»å–çš„tickæ¡æ•°
+	 *	@param etime	ç»“æŸæ—¶é—´,ç²¾ç¡®åˆ°æ¯«ç§’,æ ¼å¼å¦‚yyyyMMddhhmmssmmm,å¦‚æœè¦è¯»å–åˆ°æœ€åä¸€æ¡,etimeä¸º0,é»˜è®¤ä¸º0
 	 */
 	virtual WTSOrdDtlSlice*	readOrdDtlSlice(const char* stdCode, uint32_t count, uint64_t etime = 0) { return NULL; }
 	/*
-	 *	@brief	¶ÁÈ¡Î¯ÍĞ¶ÓÁĞÊı¾İÇĞÆ¬
-	 *	@details ÇĞÆ¬²»»á¸´ÖÆÊı¾İ,Ö»°Ñ»º´æÖĞµÄÊı¾İÖ¸Õë´«µİ³öÀ´,ËùÒÔ½Ğ×öÇĞÆ¬
+	 *	@brief	è¯»å–å§”æ‰˜é˜Ÿåˆ—æ•°æ®åˆ‡ç‰‡
+	 *	@details åˆ‡ç‰‡ä¸ä¼šå¤åˆ¶æ•°æ®,åªæŠŠç¼“å­˜ä¸­çš„æ•°æ®æŒ‡é’ˆä¼ é€’å‡ºæ¥,æ‰€ä»¥å«åšåˆ‡ç‰‡
 	 *
-	 *	@param stdCode	±ê×¼Æ·ÖÖ´úÂë,ÈçSSE.600000,SHFE.au.2005
-	 *	@param count	Òª¶ÁÈ¡µÄtickÌõÊı
-	 *	@param etime	½áÊøÊ±¼ä,¾«È·µ½ºÁÃë,¸ñÊ½ÈçyyyyMMddhhmmssmmm,Èç¹ûÒª¶ÁÈ¡µ½×îºóÒ»Ìõ,etimeÎª0,Ä¬ÈÏÎª0
+	 *	@param stdCode	æ ‡å‡†å“ç§ä»£ç ,å¦‚SSE.600000,SHFE.au.2005
+	 *	@param count	è¦è¯»å–çš„tickæ¡æ•°
+	 *	@param etime	ç»“æŸæ—¶é—´,ç²¾ç¡®åˆ°æ¯«ç§’,æ ¼å¼å¦‚yyyyMMddhhmmssmmm,å¦‚æœè¦è¯»å–åˆ°æœ€åä¸€æ¡,etimeä¸º0,é»˜è®¤ä¸º0
 	 */
 	virtual WTSOrdQueSlice*	readOrdQueSlice(const char* stdCode, uint32_t count, uint64_t etime = 0) { return NULL; }
 
 	/*
-	 *	@brief	¶ÁÈ¡Öğ±Ê³É½»Êı¾İÇĞÆ¬
-	 *	@details ÇĞÆ¬²»»á¸´ÖÆÊı¾İ,Ö»°Ñ»º´æÖĞµÄÊı¾İÖ¸Õë´«µİ³öÀ´,ËùÒÔ½Ğ×öÇĞÆ¬
+	 *	@brief	è¯»å–é€ç¬”æˆäº¤æ•°æ®åˆ‡ç‰‡
+	 *	@details åˆ‡ç‰‡ä¸ä¼šå¤åˆ¶æ•°æ®,åªæŠŠç¼“å­˜ä¸­çš„æ•°æ®æŒ‡é’ˆä¼ é€’å‡ºæ¥,æ‰€ä»¥å«åšåˆ‡ç‰‡
 	 *
-	 *	@param stdCode	±ê×¼Æ·ÖÖ´úÂë,ÈçSSE.600000,SHFE.au.2005
-	 *	@param count	Òª¶ÁÈ¡µÄtickÌõÊı
-	 *	@param etime	½áÊøÊ±¼ä,¾«È·µ½ºÁÃë,¸ñÊ½ÈçyyyyMMddhhmmssmmm,Èç¹ûÒª¶ÁÈ¡µ½×îºóÒ»Ìõ,etimeÎª0,Ä¬ÈÏÎª0
+	 *	@param stdCode	æ ‡å‡†å“ç§ä»£ç ,å¦‚SSE.600000,SHFE.au.2005
+	 *	@param count	è¦è¯»å–çš„tickæ¡æ•°
+	 *	@param etime	ç»“æŸæ—¶é—´,ç²¾ç¡®åˆ°æ¯«ç§’,æ ¼å¼å¦‚yyyyMMddhhmmssmmm,å¦‚æœè¦è¯»å–åˆ°æœ€åä¸€æ¡,etimeä¸º0,é»˜è®¤ä¸º0
 	 */
 	virtual WTSTransSlice*	readTransSlice(const char* stdCode, uint32_t count, uint64_t etime = 0) { return NULL; }
 
 	/*
-	 *	@brief ¶ÁÈ¡KÏßĞòÁĞ,²¢·µ»ØÒ»¸ö´æ´¢ÈİÆ÷Àà
-	 *	@details	ÇĞÆ¬²»»á¸´ÖÆÊı¾İ,Ö»°Ñ»º´æÖĞµÄÊı¾İÖ¸Õë´«µİ³öÀ´,ËùÒÔ½Ğ×öÇĞÆ¬
+	 *	@brief è¯»å–Kçº¿åºåˆ—,å¹¶è¿”å›ä¸€ä¸ªå­˜å‚¨å®¹å™¨ç±»
+	 *	@details	åˆ‡ç‰‡ä¸ä¼šå¤åˆ¶æ•°æ®,åªæŠŠç¼“å­˜ä¸­çš„æ•°æ®æŒ‡é’ˆä¼ é€’å‡ºæ¥,æ‰€ä»¥å«åšåˆ‡ç‰‡
 	 *
-	 *	@param	stdCode	±ê×¼Æ·ÖÖ´úÂë,ÈçSSE.600000,SHFE.au.2005
-	 *	@param	period	KÏßÖÜÆÚ
-	 *	@param	count	Òª¶ÁÈ¡µÄKÏßÌõÊı
-	 *	@param	etime	½áÊøÊ±¼ä,¸ñÊ½yyyyMMddhhmm
+	 *	@param	stdCode	æ ‡å‡†å“ç§ä»£ç ,å¦‚SSE.600000,SHFE.au.2005
+	 *	@param	period	Kçº¿å‘¨æœŸ
+	 *	@param	count	è¦è¯»å–çš„Kçº¿æ¡æ•°
+	 *	@param	etime	ç»“æŸæ—¶é—´,æ ¼å¼yyyyMMddhhmm
 	 */
 	virtual WTSKlineSlice*	readKlineSlice(const char* stdCode, WTSKlinePeriod period, uint32_t count, uint64_t etime = 0) = 0;
 
 	/*
-	 *	@brief »ñÈ¡¸ö¹ÉÖ¸¶¨ÈÕÆÚµÄ¸´È¨Òò×Ó
+	 *	@brief è·å–ä¸ªè‚¡æŒ‡å®šæ—¥æœŸçš„å¤æƒå› å­
 	 *
-	 *	@param	stdCode	±ê×¼Æ·ÖÖ´úÂë,ÈçSSE.600000
-	 *	@param	date	Ö¸¶¨ÈÕÆÚ,¸ñÊ½yyyyMMdd£¬Ä¬ÈÏÎª0£¬Îª0Ôò°´µ±Ç°ÈÕÆÚ´¦Àí
+	 *	@param	stdCode	æ ‡å‡†å“ç§ä»£ç ,å¦‚SSE.600000
+	 *	@param	date	æŒ‡å®šæ—¥æœŸ,æ ¼å¼yyyyMMddï¼Œé»˜è®¤ä¸º0ï¼Œä¸º0åˆ™æŒ‰å½“å‰æ—¥æœŸå¤„ç†
 	 */
 	virtual double		getAdjFactorByDate(const char* stdCode, uint32_t date = 0) { return 1.0; }
 
 	/*
-	 *	»ñÈ¡¸´È¨±ê¼Ç
-	 *	²ÉÓÃÎ»ÔËËã1|2|4µÄĞÎÊ½£¬1±íÊ¾³É½»Á¿¸´È¨£¬2±íÊ¾³É½»¶î¸´È¨£¬4±íÊ¾×Ü³Ö¸´È¨£¬ÆäËû´ı¶¨
+	 *	è·å–å¤æƒæ ‡è®°
+	 *	é‡‡ç”¨ä½è¿ç®—1|2|4çš„å½¢å¼ï¼Œ1è¡¨ç¤ºæˆäº¤é‡å¤æƒï¼Œ2è¡¨ç¤ºæˆäº¤é¢å¤æƒï¼Œ4è¡¨ç¤ºæ€»æŒå¤æƒï¼Œå…¶ä»–å¾…å®š
 	 */
 	virtual uint32_t	getAdjustingFlag() { return 0; }
 
@@ -238,9 +238,9 @@ protected:
 	IHisDataLoader*		_loader;
 };
 
-//´´½¨Êı¾İ´æ´¢¶ÔÏó
+//åˆ›å»ºæ•°æ®å­˜å‚¨å¯¹è±¡
 typedef IDataReader* (*FuncCreateDataReader)();
-//É¾³ıÊı¾İ´æ´¢¶ÔÏó
+//åˆ é™¤æ•°æ®å­˜å‚¨å¯¹è±¡
 typedef void(*FuncDeleteDataReader)(IDataReader* store);
 
 NS_WTP_END

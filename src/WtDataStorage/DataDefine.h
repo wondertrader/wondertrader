@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "../Includes/WTSStruct.h"
 
 USING_NS_WTP;
@@ -11,27 +11,27 @@ const int FLAG_SIZE = 8;
 
 typedef enum tagBlockType
 {
-	BT_RT_Minute1		= 1,	//ÊµÊ±1·ÖÖÓÏß
-	BT_RT_Minute5		= 2,	//ÊµÊ±5·ÖÖÓÏß
-	BT_RT_Ticks			= 3,	//ÊµÊ±tickÊı¾İ
-	BT_RT_Cache			= 4,	//ÊµÊ±»º´æ
-	BT_RT_Trnsctn		= 5,	//ÊµÊ±Öğ±Ê³É½»
-	BT_RT_OrdDetail		= 6,	//ÊµÊ±Öğ±ÊÎ¯ÍĞ
-	BT_RT_OrdQueue		= 7,	//ÊµÊ±Î¯ÍĞ¶ÓÁĞ
+	BT_RT_Minute1		= 1,	//å®æ—¶1åˆ†é’Ÿçº¿
+	BT_RT_Minute5		= 2,	//å®æ—¶5åˆ†é’Ÿçº¿
+	BT_RT_Ticks			= 3,	//å®æ—¶tickæ•°æ®
+	BT_RT_Cache			= 4,	//å®æ—¶ç¼“å­˜
+	BT_RT_Trnsctn		= 5,	//å®æ—¶é€ç¬”æˆäº¤
+	BT_RT_OrdDetail		= 6,	//å®æ—¶é€ç¬”å§”æ‰˜
+	BT_RT_OrdQueue		= 7,	//å®æ—¶å§”æ‰˜é˜Ÿåˆ—
 
-	BT_HIS_Minute1		= 21,	//ÀúÊ·1·ÖÖÓÏß
-	BT_HIS_Minute5		= 22,	//ÀúÊ·5·ÖÖÓÏß
-	BT_HIS_Day			= 23,	//ÀúÊ·ÈÕÏß
-	BT_HIS_Ticks		= 24,	//ÀúÊ·tick
-	BT_HIS_Trnsctn		= 25,	//ÀúÊ·Öğ±Ê³É½»
-	BT_HIS_OrdDetail	= 26,	//ÀúÊ·Öğ±ÊÎ¯ÍĞ
-	BT_HIS_OrdQueue		= 27	//ÀúÊ·Î¯ÍĞ¶ÓÁĞ
+	BT_HIS_Minute1		= 21,	//å†å²1åˆ†é’Ÿçº¿
+	BT_HIS_Minute5		= 22,	//å†å²5åˆ†é’Ÿçº¿
+	BT_HIS_Day			= 23,	//å†å²æ—¥çº¿
+	BT_HIS_Ticks		= 24,	//å†å²tick
+	BT_HIS_Trnsctn		= 25,	//å†å²é€ç¬”æˆäº¤
+	BT_HIS_OrdDetail	= 26,	//å†å²é€ç¬”å§”æ‰˜
+	BT_HIS_OrdQueue		= 27	//å†å²å§”æ‰˜é˜Ÿåˆ—
 } BlockType;
 
-#define BLOCK_VERSION_RAW		0x01	//ÀÏ½á¹¹ÌåÎ´Ñ¹Ëõ
-#define BLOCK_VERSION_CMP		0x02	//ÀÏ½á¹¹ÌåÑ¹Ëõ
-#define BLOCK_VERSION_RAW_V2	0x03	//ĞÂ½á¹¹ÌåÎ´Ñ¹Ëõ
-#define BLOCK_VERSION_CMP_V2	0x04	//ĞÂ½á¹¹ÌåÑ¹Ëõ
+#define BLOCK_VERSION_RAW		0x01	//è€ç»“æ„ä½“æœªå‹ç¼©
+#define BLOCK_VERSION_CMP		0x02	//è€ç»“æ„ä½“å‹ç¼©
+#define BLOCK_VERSION_RAW_V2	0x03	//æ–°ç»“æ„ä½“æœªå‹ç¼©
+#define BLOCK_VERSION_CMP_V2	0x04	//æ–°ç»“æ„ä½“å‹ç¼©
 
 typedef struct _BlockHeader
 {
@@ -54,7 +54,7 @@ typedef struct _BlockHeaderV2
 	uint16_t	_type;
 	uint16_t	_version;
 
-	uint64_t	_size;		//Ñ¹ËõºóµÄÊı¾İ´óĞ¡
+	uint64_t	_size;		//å‹ç¼©åçš„æ•°æ®å¤§å°
 
 	inline bool is_old_version() const {
 		return (_version == BLOCK_VERSION_CMP || _version == BLOCK_VERSION_RAW);
@@ -74,40 +74,40 @@ typedef struct _RTBlockHeader : BlockHeader
 	uint32_t _capacity;
 } RTBlockHeader;
 
-//Ã¿ÈÕÊµÊ±Êı¾İ¿éÍ·²¿
+//æ¯æ—¥å®æ—¶æ•°æ®å—å¤´éƒ¨
 typedef struct _RTDayBlockHeader : RTBlockHeader
 {
 	uint32_t		_date;
 } RTDayBlockHeader;
 
-//ÊµÊ±KÏßÊı¾İ¿é
+//å®æ—¶Kçº¿æ•°æ®å—
 typedef struct _RTKlineBlock : _RTDayBlockHeader
 {
 	WTSBarStruct	_bars[0];
 } RTKlineBlock;
 
-//tickÊı¾İÊı¾İ¿é
+//tickæ•°æ®æ•°æ®å—
 //By Wesley @ 2021.12.30
-//ÊµÊ±tick»º´æ£¬Ö±½ÓÓÃĞÂ°æ±¾µÄtick½á¹¹
-//ÇĞ»»³ÌĞòÒ»¶¨ÒªÔÚÅÌºó½øĞĞ£¡£¡£¡
+//å®æ—¶tickç¼“å­˜ï¼Œç›´æ¥ç”¨æ–°ç‰ˆæœ¬çš„tickç»“æ„
+//åˆ‡æ¢ç¨‹åºä¸€å®šè¦åœ¨ç›˜åè¿›è¡Œï¼ï¼ï¼
 typedef struct _RTTickBlock : RTDayBlockHeader
 {
 	WTSTickStruct	_ticks[0];
 } RTTickBlock;
 
-//Öğ±Ê³É½»Êı¾İ¿é
+//é€ç¬”æˆäº¤æ•°æ®å—
 typedef struct _RTTransBlock : RTDayBlockHeader
 {
 	WTSTransStruct	_trans[0];
 } RTTransBlock;
 
-//Öğ±ÊÎ¯ÍĞÊı¾İ¿é
+//é€ç¬”å§”æ‰˜æ•°æ®å—
 typedef struct _RTOrdDtlBlock : RTDayBlockHeader
 {
 	WTSOrdDtlStruct	_details[0];
 } RTOrdDtlBlock;
 
-//Î¯ÍĞ¶ÓÁĞÊı¾İ¿é
+//å§”æ‰˜é˜Ÿåˆ—æ•°æ®å—
 typedef struct _RTOrdQueBlock : RTDayBlockHeader
 {
 	WTSOrdQueStruct	_queues[0];
@@ -119,20 +119,20 @@ typedef struct _TickCacheItem
 	WTSTickStruct	_tick;
 } TickCacheItem;
 
-//ÊµÊ±tick»º´æ
+//å®æ—¶tickç¼“å­˜
 typedef struct _RTTickCache : RTBlockHeader
 {
 	TickCacheItem	_ticks[0];
 } RTTickCache;
 
 
-//ÀúÊ·TickÊı¾İ
+//å†å²Tickæ•°æ®
 typedef struct _HisTickBlock : BlockHeader
 {
 	WTSTickStruct	_ticks[0];
 } HisTickBlock;
 
-//ÀúÊ·TickÊı¾İV2
+//å†å²Tickæ•°æ®V2
 typedef struct _HisTickBlockV2 : BlockHeaderV2
 {
 	char			_data[0];
@@ -168,19 +168,19 @@ typedef struct _HisOrdQueBlockV2 : BlockHeaderV2
 	char			_data[0];
 } HisOrdQueBlockV2;
 
-//ÀúÊ·KÏßÊı¾İ
+//å†å²Kçº¿æ•°æ®
 typedef struct _HisKlineBlock : BlockHeader
 {
 	WTSBarStruct	_bars[0];
 } HisKlineBlock;
 
-//ÀúÊ·KÏßÊı¾İV2
+//å†å²Kçº¿æ•°æ®V2
 typedef struct _HisKlineBlockV2 : BlockHeaderV2
 {
 	char			_data[0];
 } HisKlineBlockV2;
 
-//ÀúÊ·KÏßÊı¾İ
+//å†å²Kçº¿æ•°æ®
 typedef struct _HisKlineBlockOld : BlockHeader
 {
 	WTSBarStructOld	_bars[0];

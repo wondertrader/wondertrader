@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file ParserCTPOpt.cpp
  * \project	WonderTrader
  *
@@ -187,7 +187,7 @@ void ParserCTPOpt::OnRspUserLogin( CThostFtdcRspUserLoginField *pRspUserLogin, C
 			m_sink->handleEvent(WPE_Login, 0);
 		}
 
-		//¶©ÔÄĞĞÇéÊı¾İ
+		//è®¢é˜…è¡Œæƒ…æ•°æ®
 		SubscribeMarketData();
 	}
 }
@@ -235,14 +235,14 @@ void ParserCTPOpt::OnRtnDepthMarketData( CThostFtdcDepthMarketDataField *pDepthM
 
 	if (actDate == m_uTradingDate && actHour >= 20)
 	{
-		//ÕâÑùµÄÊ±¼äÊÇÓĞÎÊÌâ,ÒòÎªÒ¹ÅÌÊ±·¢ÉúÈÕÆÚ²»¿ÉÄÜµÈÓÚ½»Ò×ÈÕ
-		//Õâ¾ÍĞèÒªÊÖ¶¯ÉèÖÃÒ»ÏÂ
+		//è¿™æ ·çš„æ—¶é—´æ˜¯æœ‰é—®é¢˜,å› ä¸ºå¤œç›˜æ—¶å‘ç”Ÿæ—¥æœŸä¸å¯èƒ½ç­‰äºäº¤æ˜“æ—¥
+		//è¿™å°±éœ€è¦æ‰‹åŠ¨è®¾ç½®ä¸€ä¸‹
 		uint32_t curDate, curTime;
 		TimeUtils::getDateTime(curDate, curTime);
 		uint32_t curHour = curTime / 10000000;
 
-		//ÔçÉÏÆô¶¯ÒÔºó,»áÊÕµ½×òÍí12µãÒÔÇ°ÊÕÅÌµÄĞĞÇé,Õâ¸öÊ±ºò¿ÉÄÜ»áÓĞ·¢ÉúÈÕÆÚ=½»Ò×ÈÕµÄÇé¿ö³öÏÖ
-		//Õâ±ÊÊı¾İÖ±½Ó¶ªµô
+		//æ—©ä¸Šå¯åŠ¨ä»¥å,ä¼šæ”¶åˆ°æ˜¨æ™š12ç‚¹ä»¥å‰æ”¶ç›˜çš„è¡Œæƒ…,è¿™ä¸ªæ—¶å€™å¯èƒ½ä¼šæœ‰å‘ç”Ÿæ—¥æœŸ=äº¤æ˜“æ—¥çš„æƒ…å†µå‡ºç°
+		//è¿™ç¬”æ•°æ®ç›´æ¥ä¸¢æ‰
 		if (curHour >= 3 && curHour < 9)
 			return;
 
@@ -250,12 +250,12 @@ void ParserCTPOpt::OnRtnDepthMarketData( CThostFtdcDepthMarketDataField *pDepthM
 
 		if (actHour == 23 && curHour == 0)
 		{
-			//ĞĞÇéÊ±¼äÂıÓÚÏµÍ³Ê±¼ä
+			//è¡Œæƒ…æ—¶é—´æ…¢äºç³»ç»Ÿæ—¶é—´
 			actDate = TimeUtils::getNextDate(curDate, -1);
 		}
 		else if (actHour == 0 && curHour == 23)
 		{
-			//ÏµÍ³Ê±¼äÂıÓÚĞĞÇéÊ±¼ä
+			//ç³»ç»Ÿæ—¶é—´æ…¢äºè¡Œæƒ…æ—¶é—´
 			actDate = TimeUtils::getNextDate(curDate, 1);
 		}
 	}
@@ -306,28 +306,28 @@ void ParserCTPOpt::OnRtnDepthMarketData( CThostFtdcDepthMarketDataField *pDepthM
 	quote.pre_settle = checkValid(pDepthMarketData->PreSettlementPrice);
 	quote.pre_interest = (uint32_t)pDepthMarketData->PreOpenInterest;
 
-	//Î¯Âô¼Û¸ñ
+	//å§”å–ä»·æ ¼
 	quote.ask_prices[0] = checkValid(pDepthMarketData->AskPrice1);
 	quote.ask_prices[1] = checkValid(pDepthMarketData->AskPrice2);
 	quote.ask_prices[2] = checkValid(pDepthMarketData->AskPrice3);
 	quote.ask_prices[3] = checkValid(pDepthMarketData->AskPrice4);
 	quote.ask_prices[4] = checkValid(pDepthMarketData->AskPrice5);
 
-	//Î¯Âò¼Û¸ñ
+	//å§”ä¹°ä»·æ ¼
 	quote.bid_prices[0] = checkValid(pDepthMarketData->BidPrice1);
 	quote.bid_prices[1] = checkValid(pDepthMarketData->BidPrice2);
 	quote.bid_prices[2] = checkValid(pDepthMarketData->BidPrice3);
 	quote.bid_prices[3] = checkValid(pDepthMarketData->BidPrice4);
 	quote.bid_prices[4] = checkValid(pDepthMarketData->BidPrice5);
 
-	//Î¯ÂôÁ¿
+	//å§”å–é‡
 	quote.ask_qty[0] = pDepthMarketData->AskVolume1;
 	quote.ask_qty[1] = pDepthMarketData->AskVolume2;
 	quote.ask_qty[2] = pDepthMarketData->AskVolume3;
 	quote.ask_qty[3] = pDepthMarketData->AskVolume4;
 	quote.ask_qty[4] = pDepthMarketData->AskVolume5;
 
-	//Î¯ÂòÁ¿
+	//å§”ä¹°é‡
 	quote.bid_qty[0] = pDepthMarketData->BidVolume1;
 	quote.bid_qty[1] = pDepthMarketData->BidVolume2;
 	quote.bid_qty[2] = pDepthMarketData->BidVolume3;
@@ -383,7 +383,7 @@ void ParserCTPOpt::SubscribeMarketData()
 {
 	CodeSet codeFilter = m_filterSubs;
 	if(codeFilter.empty())
-	{//Èç¹û¶©ÔÄÀñ°üÖ»¿ÕµÄ,ÔòÈ¡³öÈ«²¿ºÏÔ¼ÁĞ±í
+	{//å¦‚æœè®¢é˜…ç¤¼åŒ…åªç©ºçš„,åˆ™å–å‡ºå…¨éƒ¨åˆçº¦åˆ—è¡¨
 		return;
 	}
 

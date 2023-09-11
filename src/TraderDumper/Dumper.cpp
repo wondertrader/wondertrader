@@ -1,4 +1,4 @@
-#include "Dumper.h"
+ï»¿#include "Dumper.h"
 #include "WtHelper.h"
 #include "TraderAdapter.h"
 
@@ -38,7 +38,7 @@ bool Dumper::config(const char* cfgfile, bool isFile, const char* modDir)
 		
 	}
 
-	//»ù´¡Êı¾İÎÄ¼ş
+	//åŸºç¡€æ•°æ®æ–‡ä»¶
 	WTSVariant* cfgBF = root->get("basefiles");
 	if (cfgBF->get("session"))
 	{
@@ -94,7 +94,7 @@ bool Dumper::config(const char* cfgfile, bool isFile, const char* modDir)
 
 	root->release();
 
-	WTSLogger::info("½»Ò×Êı¾İÂäµØÄ£¿é³õÊ¼»¯Íê³É£¬Ö÷¶¯Ë¢ĞÂ¼ä¸ô:{}s", _refresh_span);
+	WTSLogger::info("äº¤æ˜“æ•°æ®è½åœ°æ¨¡å—åˆå§‹åŒ–å®Œæˆï¼Œä¸»åŠ¨åˆ·æ–°é—´éš”:{}s", _refresh_span);
 
 	return true;
 }

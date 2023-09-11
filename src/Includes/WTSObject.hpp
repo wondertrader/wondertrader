@@ -1,11 +1,11 @@
-/*!
+ï»¿/*!
  * \file WTSObject.hpp
  * \project	WonderTrader
  *
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief Wt»ù´¡Object¶¨Òå
+ * \brief WtåŸºç¡€Objectå®šä¹‰
  */
 #pragma once
 #include <stdint.h>
@@ -70,12 +70,12 @@ public:
 	{
 		/*
 		 *	By Wesley @ 2022.06.14
-		 *	ÓÐÓÃ»§·´À¡£¬ÕâÀïÊ¹ÓÃÁËthread_local£¬Ïß³ÌÏú»ÙµÄ»°£¬ÄÚ´æ³ØÒ²Ïú»ÙÁË
-		 *	¸ÃÓÃ»§ÔÚTraderÀï¸´ÏÖÁËÕâ¸öbug£¬Èç¹ûTraderµ×²ãÏú»ÙÁËÒ»¸öAPI¶ÔÏóÊµÀý
-		 *	ÄÇÃ´ÕâÀïÄÚ´æ³Ø¾ÍÒÑ¾­Îö¹¹ÁË£¬Èç¹ûÓÐÔÚÏµÍ³ÖÐ´æ´¢£¨retain£©Trader´´½¨µÄ¶ÔÏó£¨WTSOrderInfoµÈ£©£¬Ôò»á³öÏÖ·ÃÎÊÔ½½çµÄÎÊÌâ
-		 *	ÕâÀïÈç¹ûÈ¥µôthread_local£¬¸Ä³É´¿¾²Ì¬µÄ£¬¿ÉÄÜ¶àÏß³Ì²¢·¢µÄ³¡¾°ÏÂÒ²»áÓÐÒ»Ð©ÎÊÌâ
-		 *	×ÜÖ®Èç¹ûÒª³¹µ×°²È«£¬ÄÇÃ´¿ÉÄÜÐèÒª¼ÓÒ»°ÑËø²ÅÐÐ£¬µ«ÊÇÕâÑù»á´øÀ´ÐÔÄÜ¿ªÏú
-		 *	ËùÒÔ×¢ÊÍÒ»ÏÂ£¬Èç¹ûÓÐÎÊÌâµÄ¿ÉÒÔ²Î¿¼Ò»ÏÂ
+		 *	æœ‰ç”¨æˆ·åé¦ˆï¼Œè¿™é‡Œä½¿ç”¨äº†thread_localï¼Œçº¿ç¨‹é”€æ¯çš„è¯ï¼Œå†…å­˜æ± ä¹Ÿé”€æ¯äº†
+		 *	è¯¥ç”¨æˆ·åœ¨Traderé‡Œå¤çŽ°äº†è¿™ä¸ªbugï¼Œå¦‚æžœTraderåº•å±‚é”€æ¯äº†ä¸€ä¸ªAPIå¯¹è±¡å®žä¾‹
+		 *	é‚£ä¹ˆè¿™é‡Œå†…å­˜æ± å°±å·²ç»æžæž„äº†ï¼Œå¦‚æžœæœ‰åœ¨ç³»ç»Ÿä¸­å­˜å‚¨ï¼ˆretainï¼‰Traderåˆ›å»ºçš„å¯¹è±¡ï¼ˆWTSOrderInfoç­‰ï¼‰ï¼Œåˆ™ä¼šå‡ºçŽ°è®¿é—®è¶Šç•Œçš„é—®é¢˜
+		 *	è¿™é‡Œå¦‚æžœåŽ»æŽ‰thread_localï¼Œæ”¹æˆçº¯é™æ€çš„ï¼Œå¯èƒ½å¤šçº¿ç¨‹å¹¶å‘çš„åœºæ™¯ä¸‹ä¹Ÿä¼šæœ‰ä¸€äº›é—®é¢˜
+		 *	æ€»ä¹‹å¦‚æžœè¦å½»åº•å®‰å…¨ï¼Œé‚£ä¹ˆå¯èƒ½éœ€è¦åŠ ä¸€æŠŠé”æ‰è¡Œï¼Œä½†æ˜¯è¿™æ ·ä¼šå¸¦æ¥æ€§èƒ½å¼€é”€
+		 *	æ‰€ä»¥æ³¨é‡Šä¸€ä¸‹ï¼Œå¦‚æžœæœ‰é—®é¢˜çš„å¯ä»¥å‚è€ƒä¸€ä¸‹
 		 */
 		thread_local static MyPool		pool;
 		thread_local static SpinMutex	mtx;

@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file WtBtRunner.cpp
  * \project	WonderTrader
  *
@@ -69,7 +69,7 @@ int main()
 		CtaMocker* mocker = new CtaMocker(&replayer, "cta", slippage);
 		mocker->init_cta_factory(cfg->get("cta"));
 		const char* stra_id = cfg->get("cta")->get("strategy")->getCString("id");
-		// ¼ÓÔØÔöÁ¿»Ø²âµÄ»ù´¡ÀúÊ·»Ø²âÊý¾Ý
+		// åŠ è½½å¢žé‡å›žæµ‹çš„åŸºç¡€åŽ†å²å›žæµ‹æ•°æ®
 		const char* incremental_backtest_base = cfg->get("env")->getCString("incremental_backtest_base");
 		if (strlen(incremental_backtest_base) > 0)
 		{

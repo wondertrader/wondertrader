@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \file TraderAdapter.cpp
  * \project	WonderTrader
  *
@@ -115,7 +115,7 @@ bool TraderAdapter::init(const char* id, WTSVariant* params, IBaseDataMgr* bdMgr
 	if (_save_data)
 		initSaveData();
 
-	//�������������ز���
+	//这里解析流量风控参数
 	WTSVariant* cfgRisk = params->get("riskmon");
 	if (cfgRisk)
 	{
@@ -162,9 +162,9 @@ bool TraderAdapter::init(const char* id, WTSVariant* params, IBaseDataMgr* bdMgr
 
 	std::string module = DLLHelper::wrap_module(params->getCString("module"), "lib");;
 
-	//�ȿ�����Ŀ¼���Ƿ��н���ģ��
+	//先看工作目录下是否有交易模块
 	std::string dllpath = WtHelper::getModulePath(module.c_str(), "traders", true);
-	//���û��,���ٿ�ģ��Ŀ¼,��dllͬĿ¼��
+	//如果没有,则再看模块目录,即dll同目录下
 	if (!StdFile::exists(dllpath.c_str()))
 		dllpath = WtHelper::getModulePath(module.c_str(), "traders", false);
 	DllHandle hInst = DLLHelper::load_library(dllpath.c_str());
@@ -302,16 +302,16 @@ void TraderAdapter::saveData(WTSArray* ayFunds /* = NULL */)
 	rj::Document root(rj::kObjectType);
 	rj::Document::AllocatorType &allocator = root.GetAllocator();
 
-	{//�ֲ����ݱ���
+	{//持仓数据保存
 		rj::Value jPos(rj::kArrayType);
 		/*
-		//�������
+		//多仓数据
 		double	l_newvol;
 		double	l_newavail;
 		double	l_prevol;
 		double	l_preavail;
 
-		//�ղ�����
+		//空仓数据
 		double	s_newvol;
 		double	s_newavail;
 		double	s_prevol;
@@ -346,7 +346,7 @@ void TraderAdapter::saveData(WTSArray* ayFunds /* = NULL */)
 		root.AddMember("positions", jPos, allocator);
 	}
 
-	{//�ʽ𱣴�
+	{//资金保存
 		rj::Value jFunds(rj::kObjectType);
 
 		if(ayFunds && ayFunds->size() > 0)
@@ -554,7 +554,7 @@ bool TraderAdapter::checkCancelLimits(const char* stdCode)
 		return false;
 	}
 
-	//����Ƶ�ʼ��
+	//撤单频率检查
 	auto it = _cancel_time_cache.find(stdCode);
 	if (it != _cancel_time_cache.end())
 	{
@@ -575,8 +575,8 @@ bool TraderAdapter::checkCancelLimits(const char* stdCode)
 				return false;
 			}
 
-			//�������Ҫ����һ��, û���ر�õİ취
-			//��Ȼ����ʱ������, vector���Ȼ�Խ��Խ��
+			//这里必须要清理一下, 没有特别好的办法
+			//不然随着时间推移, vector长度会越来越长
 			if(tit != cache.begin())
 			{
 				cache.erase(cache.begin(), tit);
@@ -619,7 +619,7 @@ bool TraderAdapter::checkOrderLimits(const char* stdCode)
 		return false;
 	}
 
-	//����Ƶ�ʼ��
+	//撤单频率检查
 	auto it = _order_time_cache.find(stdCode);
 	if (it != _order_time_cache.end())
 	{
@@ -640,8 +640,8 @@ bool TraderAdapter::checkOrderLimits(const char* stdCode)
 				return false;
 			}
 
-			//�������Ҫ����һ��, û���ر�õİ취
-			//��Ȼ����ʱ������, vector���Ȼ�Խ��Խ��
+			//这里必须要清理一下, 没有特别好的办法
+			//不然随着时间推移, vector长度会越来越长
 			if (tit != cache.begin())
 			{
 				cache.erase(cache.begin(), tit);
@@ -703,8 +703,8 @@ OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty, int f
 		const ActionRule& curRule = (*it);
 		if(curRule._atype == AT_Open && !bForceClose)
 		{
-			//�ȼ���Ƿ��Ѿ������޶�
-			//���뿪��, �������
+			//先检查是否已经到了限额
+			//买入开仓, 即开多仓
 			double maxQty = left;
 
 			if (curRule._limit_l != 0)
@@ -733,7 +733,7 @@ OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty, int f
 				}
 			}
 
-			//���ﻹҪ���ǵ������ί������
+			//这里还要考虑单笔最大委托数量
 			double leftQty = maxQty;
 			for (;;)
 			{
@@ -755,15 +755,15 @@ OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty, int f
 		else if(curRule._atype == AT_CloseToday)
 		{
 			double maxQty = 0;
-			//���Ҫ����ƽ��ƽ���Ʒ��, ��ֻ��ȡ��ƽ��ּ���
-			//���������ƽ��ƽ���Ʒ��, ���ȡȫ����ƽ, ��Ϊ��ȡ��ƴ���Ҳû����
+			//如果要区分平昨平今的品种, 则只读取可平今仓即可
+			//如果不区分平昨平今的品种, 则读取全部可平, 因为读取可拼今仓也没意义
 			if (commInfo->getCoverMode() == CM_CoverToday)
-				maxQty = min(left, pItem.s_newavail);	//�ȿ�����ƽ���
+				maxQty = min(left, pItem.s_newavail);	//先看看可平今仓
 			else
 				maxQty = min(left, pItem.avail_pos(false));
 			
 			
-			//���Ҫ��龻��֣�������ֲ�Ϊ0����������������
+			//如果要检查净今仓，但是昨仓不为0，则跳过该条规则
 			if (!bForceClose && curRule._pure && !decimal::eq(pItem.s_prevol, 0.0))
 			{
 				WTSLogger::log_dyn("trader", _id.c_str(), LL_WARN,
@@ -771,7 +771,7 @@ OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty, int f
 				continue;
 			}
 
-			//���ﻹҪ���ǵ������ί������
+			//这里还要考虑单笔最大委托数量
 			//if (maxQty > 0)
 			if (decimal::gt(maxQty, 0))
 			{
@@ -779,7 +779,7 @@ OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty, int f
 				for (;;)
 				{
 					double curQty = min(leftQty, unitQty);
-					uint32_t localid = closeShort(stdCode, price, curQty, (commInfo->getCoverMode() == CM_CoverToday), flag, cInfo);//�����֧��ƽ��, ��ֱ����ƽ�ֱ�Ǽ���
+					uint32_t localid = closeShort(stdCode, price, curQty, (commInfo->getCoverMode() == CM_CoverToday), flag, cInfo);//如果不支持平今, 则直接下平仓标记即可
 					ret.emplace_back(localid);
 
 					leftQty -= curQty;
@@ -805,10 +805,10 @@ OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty, int f
 		}
 		else if (curRule._atype == AT_CloseYestoday)
 		{
-			//ƽ��Ƚϼ�, ��Ϊ����Ҫ���ֱ��
+			//平昨比较简单, 因为不需要区分标记
 			double maxQty = min(left, pItem.s_preavail);
 
-			//���Ҫ��龻��֣����ǽ�ֲ�Ϊ0����������������
+			//如果要检查净昨仓，但是今仓不为0，则跳过该条规则
 			if (!bForceClose && curRule._pure && !decimal::eq(pItem.s_newvol, 0.0))
 			{
 				WTSLogger::log_dyn("trader", _id.c_str(), LL_WARN,
@@ -816,7 +816,7 @@ OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty, int f
 				continue;
 			}
 
-			//���ﻹҪ���ǵ������ί������
+			//这里还要考虑单笔最大委托数量
 			//if (maxQty > 0)
 			if (decimal::gt(maxQty, 0))
 			{
@@ -824,7 +824,7 @@ OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty, int f
 				for (;;)
 				{
 					double curQty = min(leftQty, unitQty);
-					uint32_t localid = closeShort(stdCode, price, curQty, false, flag, cInfo);//�����֧��ƽ��, ��ֱ����ƽ�ֱ�Ǽ���
+					uint32_t localid = closeShort(stdCode, price, curQty, false, flag, cInfo);//如果不支持平今, 则直接下平仓标记即可
 					ret.emplace_back(localid);
 
 					leftQty -= curQty;
@@ -850,9 +850,9 @@ OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty, int f
 		}
 		else if (curRule._atype == AT_Close)
 		{
-			//���ֻ��ƽ��, ����������
-			//�������ƽ��ƽ��, ��Ҫ��ƽ����ƽ��
-			//���������ƽ��ƽ��, ��ͳһƽ��
+			//如果只是平仓, 则分情况处理
+			//如果区分平昨平今, 则要先平昨再平今
+			//如果不区分平昨平今, 则统一平仓
 			if (commInfo->getCoverMode() != CM_CoverToday)
 			{
 				double maxQty = min(pItem.avail_pos(false), left);
@@ -884,7 +884,7 @@ OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty, int f
 				//if (pItem.s_preavail > 0)
 				if (decimal::gt(pItem.s_preavail, 0))
 				{
-					//�Ƚ���ƽ���ƽ��
+					//先将可平昨仓平仓
 					double maxQty = min(pItem.s_preavail, qty);
 					double leftQty = maxQty;
 					for (;;)
@@ -908,8 +908,8 @@ OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty, int f
 				//if (left > 0 && pItem.s_newavail > 0)
 				if (decimal::gt(left, 0) && decimal::gt(pItem.s_newavail, 0))
 				{
-					//�ٽ���ƽ���ƽ��
-					//TODO: ���ﻹ��һ������, ����ǿ������ֵĻ�, ����߼�������ȥ��
+					//再将可平今仓平仓
+					//TODO: 这里还有一个控制, 就是强制锁今仓的话, 这段逻辑就跳过去了
 					double maxQty = min(pItem.s_newavail, left);
 					double leftQty = maxQty;
 					for (;;)
@@ -995,8 +995,8 @@ OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty, int 
 		const ActionRule& curRule = (*it);
 		if (curRule._atype == AT_Open && !bForceClose)
 		{
-			//�ȼ���Ƿ��Ѿ������޶�
-			//���뿪��, �������
+			//先检查是否已经到了限额
+			//买入开仓, 即开多仓
 			double maxQty = left;
 
 			if (curRule._limit_s != 0)
@@ -1025,7 +1025,7 @@ OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty, int 
 				}
 			}
 
-			//���ﻹҪ���ǵ������ί������
+			//这里还要考虑单笔最大委托数量
 			double leftQty = maxQty;
 			for (;;)
 			{
@@ -1047,14 +1047,14 @@ OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty, int 
 		else if (curRule._atype == AT_CloseToday)
 		{
 			double maxQty = 0;
-			//���Ҫ����ƽ��ƽ���Ʒ��, ��ֻ��ȡ��ƽ��ּ���
-			//���������ƽ��ƽ���Ʒ��, ���ȡȫ����ƽ, ��Ϊ��ȡ��ƽ���Ҳû����
+			//如果要区分平昨平今的品种, 则只读取可平今仓即可
+			//如果不区分平昨平今的品种, 则读取全部可平, 因为读取可平今仓也没意义
 			if (commInfo->getCoverMode() == CM_CoverToday)
-				maxQty = min(left, pItem.l_newavail);	//�ȿ�����ƽ���
+				maxQty = min(left, pItem.l_newavail);	//先看看可平今仓
 			else
 				maxQty = min(left, pItem.avail_pos(true));
 
-			//���Ҫ��龻��֣�������ֲ�Ϊ0����������������
+			//如果要检查净今仓，但是昨仓不为0，则跳过该条规则
 			if (!bForceClose && curRule._pure && !decimal::eq(pItem.l_prevol, 0.0))
 			{
 				WTSLogger::log_dyn("trader", _id.c_str(), LL_WARN,
@@ -1062,14 +1062,14 @@ OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty, int 
 				continue;
 			}
 
-			//���ﻹҪ���ǵ������ί������
+			//这里还要考虑单笔最大委托数量
 			if(decimal::gt(maxQty, 0))
 			{
 				double leftQty = maxQty;
 				for (;;)
 				{
 					double curQty = min(leftQty, unitQty);
-					uint32_t localid = closeLong(stdCode, price, curQty, (commInfo->getCoverMode() == CM_CoverToday), flag, cInfo);//�����֧��ƽ��, ��ֱ����ƽ�ֱ�Ǽ���
+					uint32_t localid = closeLong(stdCode, price, curQty, (commInfo->getCoverMode() == CM_CoverToday), flag, cInfo);//如果不支持平今, 则直接下平仓标记即可
 					ret.emplace_back(localid);
 
 					leftQty -= curQty;
@@ -1094,10 +1094,10 @@ OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty, int 
 		}
 		else if (curRule._atype == AT_CloseYestoday)
 		{
-			//ƽ��Ƚϼ�, ��Ϊ����Ҫ���ֱ��
+			//平昨比较简单, 因为不需要区分标记
 			double maxQty = min(left, pItem.l_preavail);
 			
-			//���Ҫ��龻��֣����ǽ�ֲ�Ϊ0����������������
+			//如果要检查净昨仓，但是今仓不为0，则跳过该条规则
 			if (!bForceClose && curRule._pure && !decimal::eq(pItem.l_newvol, 0.0))
 			{
 				WTSLogger::log_dyn("trader", _id.c_str(), LL_WARN,
@@ -1105,14 +1105,14 @@ OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty, int 
 				continue;
 			}
 
-			//���ﻹҪ���ǵ������ί������
+			//这里还要考虑单笔最大委托数量
 			if(decimal::gt(maxQty, 0))
 			{
 				double leftQty = maxQty;
 				for (;;)
 				{
 					double curQty = min(leftQty, unitQty);
-					uint32_t localid = closeLong(stdCode, price, curQty, false, flag, cInfo);//�����֧��ƽ��, ��ֱ����ƽ�ֱ�Ǽ���
+					uint32_t localid = closeLong(stdCode, price, curQty, false, flag, cInfo);//如果不支持平今, 则直接下平仓标记即可
 					ret.emplace_back(localid);
 
 					leftQty -= curQty;
@@ -1136,12 +1136,12 @@ OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty, int 
 		}
 		else if (curRule._atype == AT_Close)
 		{
-			//���ֻ��ƽ��, ����������
-			//�������ƽ��ƽ��, ��Ҫ��ƽ����ƽ��
-			//���������ƽ��ƽ��, ��ͳһƽ��
+			//如果只是平仓, 则分情况处理
+			//如果区分平昨平今, 则要先平昨再平今
+			//如果不区分平昨平今, 则统一平仓
 			if (commInfo->getCoverMode() != CM_CoverToday)
 			{
-				double maxQty = min(pItem.avail_pos(true), left);	//������ƽ��ƽ��, ���ȡȫ����ƽ��
+				double maxQty = min(pItem.avail_pos(true), left);	//不区分平昨平今, 则读取全部可平量
 				if(decimal::gt(maxQty, 0))
 				{
 					double leftQty = maxQty;
@@ -1167,7 +1167,7 @@ OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty, int 
 			{
 				if (decimal::gt(left, 0) && decimal::gt(pItem.l_preavail, 0))
 				{
-					//�Ƚ���ƽ���ƽ��
+					//先将可平昨仓平仓
 					double maxQty = min(pItem.l_preavail, qty);
 					if(decimal::gt(maxQty, 0))
 					{
@@ -1193,8 +1193,8 @@ OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty, int 
 
 				if (decimal::gt(left, 0) && decimal::gt(pItem.l_newavail, 0))
 				{
-					//�ٽ���ƽ���ƽ��
-					//TODO: ���ﻹ��һ������, ����ǿ������ֵĻ�, ����߼�������ȥ��
+					//再将可平今仓平仓
+					//TODO: 这里还有一个控制, 就是强制锁今仓的话, 这段逻辑就跳过去了
 					double maxQty = min(pItem.l_newavail, left);
 					if(decimal::gt(maxQty, 0))
 					{
@@ -1243,11 +1243,11 @@ bool TraderAdapter::doCancel(WTSOrderInfo* ordInfo)
 	std::string stdCode;
 	if (commInfo->getCategoty() == CC_FutOption || commInfo->getCategoty() == CC_SpotOption)
 		stdCode = CodeHelper::rawFutOptCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
-	else if (CodeHelper::isMonthlyCode(cInfo->getCode()))//����Ƿ��º�Լ
+	else if (CodeHelper::isMonthlyCode(cInfo->getCode()))//如果是分月合约
 		stdCode = CodeHelper::rawMonthCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
 	else
 		stdCode = CodeHelper::rawFlatCodeToStdCode(cInfo->getCode(), cInfo->getExchg(), cInfo->getProduct());
-	//����Ƶ�ʼ��
+	//撤单频率检查
 	if (!checkCancelLimits(stdCode.c_str()))
 		return false;
 
@@ -1393,7 +1393,7 @@ uint32_t TraderAdapter::closeShort(const char* stdCode, double price, double qty
 }
 
 
-#pragma region "ITraderSpi�ӿ�"
+#pragma region "ITraderSpi接口"
 void TraderAdapter::handleEvent(WTSTraderEvent e, int32_t ec)
 {
 	if(e == WTE_Connect)
@@ -1430,7 +1430,7 @@ void TraderAdapter::onLoginResult(bool bSucc, const char* msg, uint32_t tradingd
 		_state = AS_LOGINED;
 		WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO,"[{}] Trader login succeed, trading date: {}", _id.c_str(), tradingdate);
 		_trading_day = tradingdate;
-		_trader_api->queryPositions();	//��ֲ�
+		_trader_api->queryPositions();	//查持仓
 	}
 }
 
@@ -1449,7 +1449,7 @@ void TraderAdapter::onRspEntrust(WTSEntrust* entrust, WTSError *err)
 		std::string stdCode;
 		if (commInfo->getCategoty() == CC_FutOption || commInfo->getCategoty() == CC_SpotOption)
 			stdCode = CodeHelper::rawFutOptCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
-		else if (CodeHelper::isMonthlyCode(cInfo->getCode()))//����Ƿ��º�Լ
+		else if (CodeHelper::isMonthlyCode(cInfo->getCode()))//如果是分月合约
 			stdCode = CodeHelper::rawMonthCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
 		else
 			stdCode = CodeHelper::rawFlatCodeToStdCode(cInfo->getCode(), cInfo->getExchg(), cInfo->getProduct());
@@ -1471,11 +1471,11 @@ void TraderAdapter::onRspEntrust(WTSEntrust* entrust, WTSError *err)
 		WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR, 
 			"[{}] Order placing failed: {}, instrument: {}, action: {}, qty: {}", _id.c_str(), err->getMessage(), entrust->getCode(), action.c_str(), qty);
 
-		//����µ�ʧ��, Ҫ����δ�������
-		//ʵ���з��ִ�����ʱ�����������
-		//���������һ�����δ��ɵ����߼�
-		//����д��������������δ��ɵ�һ����Ϊ0
-		//���δ��ɶ���Ϊ0����˵����һ�����ظ�֪ͨ�����ٴ�����
+		//如果下单失败, 要更新未完成数量
+		//实盘中发现错误单有时候会推送两次
+		//所以这里加一个检查未完成单的逻辑
+		//如果有错单，正常情况下未完成单一定不为0
+		//如果未完成订单为0，则说明这一次是重复通知，则不再处理了
 		double oldQty = _undone_qty[stdCode];
 		if (decimal::eq(oldQty, 0))
 			return;
@@ -1512,7 +1512,7 @@ void TraderAdapter::onRspAccount(WTSArray* ayAccounts)
 
 	if(ayAccounts)
 	{
-		//֪ͨ���м����ӿ�
+		//通知所有监听接口
 		for (auto sink : _sinks)
 		{
 			for (uint32_t idx = 0; idx < ayAccounts->size(); idx++)
@@ -1549,7 +1549,7 @@ void TraderAdapter::onRspPosition(const WTSArray* ayPositions)
 			std::string stdCode;
 			if (commInfo->getCategoty() == CC_FutOption || commInfo->getCategoty() == CC_SpotOption)
 				stdCode = CodeHelper::rawFutOptCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
-			else if (CodeHelper::isMonthlyCode(cInfo->getCode()))//����Ƿ��º�Լ
+			else if (CodeHelper::isMonthlyCode(cInfo->getCode()))//如果是分月合约
 				stdCode = CodeHelper::rawMonthCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
 			else
 				stdCode = CodeHelper::rawFlatCodeToStdCode(cInfo->getCode(), cInfo->getExchg(), cInfo->getProduct());
@@ -1618,7 +1618,7 @@ void TraderAdapter::onRspOrders(const WTSArray* ayOrders)
 			std::string stdCode;
 			if (commInfo->getCategoty() == CC_FutOption || commInfo->getCategoty() == CC_SpotOption)
 				stdCode = CodeHelper::rawFutOptCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
-			else if (CodeHelper::isMonthlyCode(cInfo->getCode()))//����Ƿ��º�Լ
+			else if (CodeHelper::isMonthlyCode(cInfo->getCode()))//如果是分月合约
 				stdCode = CodeHelper::rawMonthCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
 			else
 				stdCode = CodeHelper::rawFlatCodeToStdCode(cInfo->getCode(), cInfo->getExchg(), cInfo->getProduct());
@@ -1816,12 +1816,12 @@ bool TraderAdapter::checkSelfMatch(const char* stdCode, WTSTradeInfo* tInfo)
 	{
 		/*
 		 *	By Wesley @ 2022.03.07
-		 *	����ɽ������Ѿ����ڣ���������������Ƿ���ͬ
+		 *	如果成交单号已经存在，则检查关联订单号是否相同
 		 */
 		const std::string& oid = it->second;
 		if (oid.compare(refid) != 0)
 		{
-			//ͬһ���ɽ����Ĺ�������ID��ͬ����һ�����Գɽ���
+			//同一个成交单的关联订单ID不同，这一定是自成交了
 			WTSLogger::log_dyn("trader", _id.c_str(), LL_FATAL, 
 				"[{0}] Self matching detected on {1}!!! Instructions on {1} will be forbidden!!!", _id.c_str(), stdCode);
 			_self_matches.insert(stdCode);
@@ -1829,7 +1829,7 @@ bool TraderAdapter::checkSelfMatch(const char* stdCode, WTSTradeInfo* tInfo)
 		}
 		else
 		{
-			//��������һ����˵�����ظ����ͣ����ù���
+			//关联订单一样，说明是重复推送，不用管了
 		}
 	}
 	else
@@ -1872,14 +1872,14 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 	std::string stdCode;
 	if (commInfo->getCategoty() == CC_FutOption || commInfo->getCategoty() == CC_SpotOption)
 		stdCode = CodeHelper::rawFutOptCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
-	else if (CodeHelper::isMonthlyCode(cInfo->getCode()))//����Ƿ��º�Լ
+	else if (CodeHelper::isMonthlyCode(cInfo->getCode()))//如果是分月合约
 		stdCode = CodeHelper::rawMonthCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
 	else
 		stdCode = CodeHelper::rawFlatCodeToStdCode(cInfo->getCode(), cInfo->getExchg(), cInfo->getProduct());
 
 	bool isBuy = (orderInfo->getDirection() == WDT_LONG && orderInfo->getOffsetType() == WOT_OPEN) || (orderInfo->getDirection() == WDT_SHORT && orderInfo->getOffsetType() != WOT_OPEN);
 	
-	//�����Ļ�, Ҫ����ͳ������
+	//撤销的话, 要更新统计数据
 	if (orderInfo->getOrderState() == WOS_Canceled)
 	{
 		WTSTradeStateInfo* statInfo = (WTSTradeStateInfo*)_stat_map->get(stdCode.c_str());
@@ -1891,14 +1891,14 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 		TradeStatInfo& statItem = statInfo->statInfo();
 		if(isBuy)
 		{
-			if (orderInfo->isError())//����Ҫ�ͳ������ֿ�
+			if (orderInfo->isError())//错单要和撤单区分开
 			{
 				statItem.b_wrongs++;
 				statItem.b_wrongqty += orderInfo->getVolume() - orderInfo->getVolTraded();
 			}
 			else
 			{
-				//ֻ����ͨ�����ĳ����ż���ͳ��
+				//只有普通订单的撤单才计入统计
 				if (orderInfo->getOrderFlag() == WOF_NOR)
 				{
 					statItem.b_cancels++;
@@ -1913,14 +1913,14 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 		}
 		else
 		{
-			if (orderInfo->isError())//����Ҫ�ͳ������ֿ�
+			if (orderInfo->isError())//错单要和撤单区分开
 			{
 				statItem.s_wrongs++;
 				statItem.s_wrongqty += orderInfo->getVolume() - orderInfo->getVolTraded();
 			}
 			else
 			{
-				//ֻ����ͨ�����ĳ����ż���ͳ��
+				//只有普通订单的撤单才计入统计
 				if (orderInfo->getOrderFlag() == WOF_NOR)
 				{
 					statItem.s_cancels++;
@@ -1937,14 +1937,14 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 
 	WTSLogger::log_dyn("trader", _id.c_str(), LL_DEBUG, "[{}] Order notified, instrument: {}, usertag: {}, state: {}", _id.c_str(), stdCode.c_str(), orderInfo->getUserTag(), stateToName(orderInfo->getOrderState()));
 
-	//�ȼ��ö����ǲ��ǵ�һ�����͹���
-	//����ǵ�һ�����͹���, ��Ҫ���ݿ�ƽ���¿�ƽ
+	//先检查该订单是不是第一次推送过来
+	//如果是第一次推送过来, 则要根据开平更新可平
 	if (strlen(orderInfo->getOrderID()) > 0)
 	{
 		auto it = _orderids.find(orderInfo->getOrderID());
 		if (it == _orderids.end())
 		{
-			//�ȰѶ����Ż�������, ��ֹ�ظ�����
+			//先把订单号缓存起来, 防止重复处理
 			_orderids.insert(orderInfo->getOrderID());
 
 			WTSTradeStateInfo* statInfo = (WTSTradeStateInfo*)_stat_map->get(stdCode.c_str());
@@ -1965,7 +1965,7 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 				statItem.s_ordqty += orderInfo->getVolume();
 			}
 
-			//ֻ��ƽ����Ҫ���¿�ƽ
+			//只有平仓需要更新可平
 			if (orderInfo->getOffsetType() != WOT_OPEN)
 			{
 				//const char* code = stdCode.c_str();
@@ -1974,18 +1974,18 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 				double qty = orderInfo->getVolume();
 
 				PosItem& pItem = _positions[stdCode];
-				if (isLong)	//ƽ��
+				if (isLong)	//平多
 				{
 					if (isToday)
 					{
-						pItem.l_newavail -= min(pItem.l_newavail, qty);	//�����ƽ��, ��ֻ��Ҫ���¿�ƽ���
+						pItem.l_newavail -= min(pItem.l_newavail, qty);	//如果是平今, 则只需要更新可平今仓
 					}
 					else
 					{
 						double left = qty;
 
-						//�����ƽ��, ���ȸ��¿�ƽ���, ����ʣ��, �ٸ��¿�ƽ���
-						//���Ʒ������ƽ��ƽ��, Ҳ�����������, ��Ϊƽ��������������ܳ������
+						//如果是平仓, 则先更新可平昨仓, 还有剩余, 再更新可平今仓
+						//如果品种区分平昨平今, 也按照这个流程, 因为平昨的总数量不可能超出昨仓
 						double maxQty = min(pItem.l_preavail, qty);
 						pItem.l_preavail -= maxQty;
 						pItem.l_preavail = max(pItem.l_preavail, 0.0);
@@ -1998,7 +1998,7 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 						}
 					}
 				}
-				else //ƽ��
+				else //平空
 				{
 					if (isToday)
 					{
@@ -2025,18 +2025,18 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 		}
 		else if (orderInfo->getOrderState() == WOS_Canceled && orderInfo->getOffsetType() != WOT_OPEN)
 		{
-			//����������ǵ�һ������, �ҳ�����, ��Ҫ���¿�ƽ��
+			//如果订单不是第一次推送, 且撤销了, 则要更新可平量
 			//const char* code = orderInfo->getCode();
 			bool isLong = (orderInfo->getDirection() == WDT_LONG);
 			bool isToday = (orderInfo->getOffsetType() == WOT_CLOSETODAY);
 			double qty = orderInfo->getVolume() - orderInfo->getVolTraded();
 
 			PosItem& pItem = _positions[stdCode];
-			if (isLong)	//ƽ��
+			if (isLong)	//平多
 			{
 				if (isToday)
 				{
-					pItem.l_newavail += qty;	//�����ƽ��, ��ֻ��Ҫ���¿�ƽ���
+					pItem.l_newavail += qty;	//如果是平今, 则只需要更新可平今仓
 				}
 				else
 				{
@@ -2048,7 +2048,7 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 					}
 				}
 			}
-			else //ƽ��
+			else //平空
 			{
 				if (isToday)
 				{
@@ -2072,17 +2072,17 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 
 	uint32_t localid = 0;
 
-	//�ȿ����ǲ���wt����ȥ�ĵ���
+	//先看看是不是wt发出去的单子
 	if (StrUtil::startsWith(orderInfo->getUserTag(), _order_pattern.c_str(), true))
 	{
 		char* userTag = (char*)orderInfo->getUserTag();
 		userTag += _order_pattern.size() + 1;
 		localid = strtoul(userTag, NULL, 10);
 
-		//�����������, ������wt�Ķ���, ��Ҫ�ȸ���δ�������
+		//如果订单撤销, 并且是wt的订单, 则要先更新未完成数量
 		if (orderInfo->getOrderState() == WOS_Canceled )
 		{
-			//������ʱ��, Ҫ����δ���
+			//撤单的时候, 要更新未完成
 			bool isLong = (orderInfo->getDirection() == WDT_LONG);
 			bool isOpen = (orderInfo->getOffsetType() == WOT_OPEN);
 			bool isToday = (orderInfo->getOffsetType() == WOT_CLOSETODAY);
@@ -2098,7 +2098,7 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 		}
 	}
 
-	//�����wt����ȥ�ĵ�������Ҫ�����ڲ�����
+	//如果是wt发出去的单子则需要更新内部数据
 	if(localid != 0)
 	{
 		{
@@ -2116,12 +2116,12 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 			}
 		}
 
-		//֪ͨ���м����ӿ�
+		//通知所有监听接口
 		for (auto sink : _sinks)
 			sink->on_order(localid, stdCode.c_str(), isBuy, orderInfo->getVolume(), orderInfo->getVolLeft(), orderInfo->getPrice(), orderInfo->getOrderState() == WOS_Canceled);
 	}
 
-	//�����ǲ����ڲ�����,����������,��Ҫд����־��
+	//不管是不是内部订单,订单结束了,都要写到日志里
 	if (_save_data && !orderInfo->isAlive())
 	{
 		logOrder(localid, stdCode.c_str(), orderInfo);
@@ -2172,7 +2172,7 @@ void TraderAdapter::onPushTrade(WTSTradeInfo* tradeRecord)
 		{
 			pItem.l_newvol += vol;
 
-			if(!commInfo->isT1())	//�������T1������¿��óֲ�
+			if(!commInfo->isT1())	//如果不是T1，则更新可用持仓
 				pItem.l_newavail += vol;
 
 			statItem.l_openvol += vol;
@@ -2199,7 +2199,7 @@ void TraderAdapter::onPushTrade(WTSTradeInfo* tradeRecord)
 		if (isOpen)
 		{
 			pItem.s_newvol += vol;
-			if (!commInfo->isT1())	//�������T1������¿��óֲ�
+			if (!commInfo->isT1())	//如果不是T1，则更新可用持仓
 				pItem.s_newavail += vol;
 
 			statItem.s_openvol += vol;
@@ -2224,7 +2224,7 @@ void TraderAdapter::onPushTrade(WTSTradeInfo* tradeRecord)
 
 	printPosition(stdCode.c_str(), pItem);
 
-	//������Լ��Ķ����������δ��ɵ�
+	//如果是自己的订单，则更新未完成单
 	uint32_t localid = 0;
 	if (StrUtil::startsWith(tradeRecord->getUserTag(), _order_pattern.c_str(), true))
 	{
@@ -2278,7 +2278,7 @@ void TraderAdapter::queryFund()
 	_trader_api->queryAccount();
 }
 
-#pragma endregion "ITraderSpi�ӿ�"
+#pragma endregion "ITraderSpi接口"
 
 
 //////////////////////////////////////////////////////////////////////////

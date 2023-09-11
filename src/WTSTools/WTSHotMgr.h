@@ -1,11 +1,11 @@
-/*!
+ï»¿/*!
  * \file WTSHotMgr.h
  * \project	WonderTrader
  *
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief Ö÷Á¦ºÏÔ¼¹ÜÀíÆ÷ÊµÏÖ
+ * \brief ä¸»åŠ›åˆçº¦ç®¡ç†å™¨å®ç°
  */
 #pragma once
 #include "../Includes/IHotMgr.h"
@@ -19,14 +19,14 @@ NS_WTP_END
 
 USING_NS_WTP;
 
-//»»ÔÂÖ÷Á¦Ó³Éä
+//æ¢æœˆä¸»åŠ›æ˜ å°„
 typedef WTSMap<uint32_t>			WTSDateHotMap;
-//Æ·ÖÖÖ÷Á¦Ó³Éä
+//å“ç§ä¸»åŠ›æ˜ å°„
 typedef WTSHashMap<std::string>		WTSProductHotMap;
-//·ÖÊĞ³¡Ö÷Á¦Ó³Éä
+//åˆ†å¸‚åœºä¸»åŠ›æ˜ å°„
 typedef WTSHashMap<std::string>		WTSExchgHotMap;
 
-//×Ô¶¨ÒåÇĞ»»¹æÔòÓ³Éä
+//è‡ªå®šä¹‰åˆ‡æ¢è§„åˆ™æ˜ å°„
 typedef WTSHashMap<std::string>		WTSCustomSwitchMap;
 
 class WTSHotMgr : public IHotMgr
@@ -50,7 +50,7 @@ public:
 	virtual double		getRuleFactor(const char* ruleTag, const char* fullPid, uint32_t uDate  = 0 ) override;
 
 	//////////////////////////////////////////////////////////////////////////
-	//Ö÷Á¦½Ó¿Ú
+	//ä¸»åŠ›æ¥å£
 	virtual const char* getRawCode(const char* exchg, const char* pid, uint32_t dt = 0) override;
 
 	virtual const char* getPrevRawCode(const char* exchg, const char* pid, uint32_t dt = 0) override;
@@ -60,7 +60,7 @@ public:
 	virtual bool	splitHotSecions(const char* exchg, const char* pid, uint32_t sDt, uint32_t eDt, HotSections& sections) override;
 
 	//////////////////////////////////////////////////////////////////////////
-	//´ÎÖ÷Á¦½Ó¿Ú
+	//æ¬¡ä¸»åŠ›æ¥å£
 	virtual const char* getSecondRawCode(const char* exchg, const char* pid, uint32_t dt = 0) override;
 
 	virtual const char* getPrevSecondRawCode(const char* exchg, const char* pid, uint32_t dt = 0) override;
@@ -70,7 +70,7 @@ public:
 	virtual bool		splitSecondSecions(const char* exchg, const char* hotCode, uint32_t sDt, uint32_t eDt, HotSections& sections) override;
 
 	//////////////////////////////////////////////////////////////////////////
-	//Í¨ÓÃ½Ó¿Ú
+	//é€šç”¨æ¥å£
 	virtual const char* getCustomRawCode(const char* tag, const char* fullPid, uint32_t dt) override;
 
 	virtual const char* getPrevCustomRawCode(const char* tag, const char* fullPid, uint32_t dt) override;

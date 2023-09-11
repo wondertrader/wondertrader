@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file StateMonitor.cpp
  * \project	WonderTrader
  *
@@ -63,40 +63,40 @@ bool StateMonitor::initialize(const char* filename, WTSBaseDataMgr* bdMgr, DataM
 		}
 
 		StatePtr sInfo(new StateInfo);
-		sInfo->_init_time = jItem->getUInt32("inittime");	//³õÊ¼»¯Ê±¼ä,³õÊ¼»¯ÒÔºóÊı¾İ²Å¿ªÊ¼½ÓÊÕ
-		sInfo->_close_time = jItem->getUInt32("closetime");	//ÊÕÅÌÊ±¼ä,ÊÕÅÌºóÊı¾İ²»ÔÙ½ÓÊÕÁË
-		sInfo->_proc_time = jItem->getUInt32("proctime");	//ÅÌºó´¦ÀíÊ±¼ä,Ö÷Òª°ÑÊµÊ±Êı¾İ×ªµ½ÀúÊ·È¥
+		sInfo->_init_time = jItem->getUInt32("inittime");	//åˆå§‹åŒ–æ—¶é—´,åˆå§‹åŒ–ä»¥åæ•°æ®æ‰å¼€å§‹æ¥æ”¶
+		sInfo->_close_time = jItem->getUInt32("closetime");	//æ”¶ç›˜æ—¶é—´,æ”¶ç›˜åæ•°æ®ä¸å†æ¥æ”¶äº†
+		sInfo->_proc_time = jItem->getUInt32("proctime");	//ç›˜åå¤„ç†æ—¶é—´,ä¸»è¦æŠŠå®æ—¶æ•°æ®è½¬åˆ°å†å²å»
 
 		strcpy(sInfo->_session, sid.c_str());
 
-		const auto& auctions = ssInfo->getAuctionSections();//ÕâÀïÃæÊÇÆ«ÒÆ¹ıµÄÊ±¼ä,Òª×¢ÒâÁË!!!
+		const auto& auctions = ssInfo->getAuctionSections();//è¿™é‡Œé¢æ˜¯åç§»è¿‡çš„æ—¶é—´,è¦æ³¨æ„äº†!!!
 		for(const auto& secInfo : auctions)
 		{
 			uint32_t stime = secInfo.first;
 			uint32_t etime = secInfo.second;
 
-			stime = stime / 100 * 60 + stime % 100;//ÏÈ½«Ê±¼ä×ª³É·ÖÖÓÊı
+			stime = stime / 100 * 60 + stime % 100;//å…ˆå°†æ—¶é—´è½¬æˆåˆ†é’Ÿæ•°
 			etime = etime / 100 * 60 + etime % 100;
 
-			stime = stime / 60 * 100 + stime % 60;//ÔÙ½«·ÖÖÓÊı×ª³ÉÊ±¼ä
-			etime = etime / 60 * 100 + etime % 60;//ÏÈ²»¿¼ÂÇ°ëÒ¹12µãµÄÇé¿ö,Ä¿Ç°¿´À´,¼¸ºõÃ»ÓĞ
+			stime = stime / 60 * 100 + stime % 60;//å†å°†åˆ†é’Ÿæ•°è½¬æˆæ—¶é—´
+			etime = etime / 60 * 100 + etime % 60;//å…ˆä¸è€ƒè™‘åŠå¤œ12ç‚¹çš„æƒ…å†µ,ç›®å‰çœ‹æ¥,å‡ ä¹æ²¡æœ‰
 			sInfo->_sections.emplace_back(StateInfo::Section({ stime, etime }));
 		}
 
-		const auto& sections = ssInfo->getTradingSections();//ÕâÀïÃæÊÇÆ«ÒÆ¹ıµÄÊ±¼ä,Òª×¢ÒâÁË!!!
+		const auto& sections = ssInfo->getTradingSections();//è¿™é‡Œé¢æ˜¯åç§»è¿‡çš„æ—¶é—´,è¦æ³¨æ„äº†!!!
 		for (const auto& secInfo : sections)
 		{
 			uint32_t stime = secInfo.first;
 			uint32_t etime = secInfo.second;
 
-			stime = stime / 100 * 60 + stime % 100;//ÏÈ½«Ê±¼ä×ª³É·ÖÖÓÊı
+			stime = stime / 100 * 60 + stime % 100;//å…ˆå°†æ—¶é—´è½¬æˆåˆ†é’Ÿæ•°
 			etime = etime / 100 * 60 + etime % 100;
 
-			stime--;//¿ªÊ¼·ÖÖÓÊı-1
-			etime++;//½áÊø·ÖÖÓÊı+1
+			stime--;//å¼€å§‹åˆ†é’Ÿæ•°-1
+			etime++;//ç»“æŸåˆ†é’Ÿæ•°+1
 
-			stime = stime / 60 * 100 + stime % 60;//ÔÙ½«·ÖÖÓÊı×ª³ÉÊ±¼ä
-			etime = etime / 60 * 100 + etime % 60;//ÏÈ²»¿¼ÂÇ°ëÒ¹12µãµÄÇé¿ö,Ä¿Ç°¿´À´,¼¸ºõÃ»ÓĞ
+			stime = stime / 60 * 100 + stime % 60;//å†å°†åˆ†é’Ÿæ•°è½¬æˆæ—¶é—´
+			etime = etime / 60 * 100 + etime % 60;//å…ˆä¸è€ƒè™‘åŠå¤œ12ç‚¹çš„æƒ…å†µ,ç›®å‰çœ‹æ¥,å‡ ä¹æ²¡æœ‰
 			sInfo->_sections.emplace_back(StateInfo::Section({ stime, etime }));
 		}
 
@@ -110,7 +110,7 @@ bool StateMonitor::initialize(const char* filename, WTSBaseDataMgr* bdMgr, DataM
 			uint32_t offDate = ssInfo->getOffsetDate(curDate, curMin);
 			uint32_t offMin = ssInfo->offsetTime(curMin, true);
 
-			//ÏÈ»ñÈ¡»ù×¼µÄ½»Ò×ÈÕ
+			//å…ˆè·å–åŸºå‡†çš„äº¤æ˜“æ—¥
 
 			for (auto it = pCommSet->begin(); it != pCommSet->end(); it++)
 			{
@@ -187,13 +187,13 @@ void StateMonitor::run()
 								{
 									const char* pid = (*it).c_str();
 									/*
-									 *	Èç¹ûÊ±¼äÍùºóÆ«ÒÆ
-									 *	Èç¹ûµ±Ç°ÈÕÆÚ²»ÊÇ½»Ò×ÈÕ,ÇÒ²»´¦ÓÚÒ¹ÅÌºó°ëÒ¹£¨½»Ò×Ê±¼äÇÒ×òÌìÊÇ½»Ò×ÈÕ£©
-									 *	»òÕßÊ±¼äÍùºóÆ«ÒÆµÄ»°,¾Í¿´Æ«ÒÆÈÕÆÚÊÇ·ñÊÇ½Ú¼ÙÈÕ
+									 *	å¦‚æœæ—¶é—´å¾€ååç§»
+									 *	å¦‚æœå½“å‰æ—¥æœŸä¸æ˜¯äº¤æ˜“æ—¥,ä¸”ä¸å¤„äºå¤œç›˜ååŠå¤œï¼ˆäº¤æ˜“æ—¶é—´ä¸”æ˜¨å¤©æ˜¯äº¤æ˜“æ—¥ï¼‰
+									 *	æˆ–è€…æ—¶é—´å¾€ååç§»çš„è¯,å°±çœ‹åç§»æ—¥æœŸæ˜¯å¦æ˜¯èŠ‚å‡æ—¥
 									 */
 									if ((mInfo->getOffsetMins() > 0 &&
-										(! _bd_mgr->isTradingDate(pid, curDate) &&	//µ±Ç°ÈÕÖ¾²»ÊÇ½»Ò×ÈÕ
-										!(mInfo->isInTradingTime(curMin) &&  _bd_mgr->isTradingDate(pid, prevDate)))) ||	//µ±Ç°²»ÔÚ½»Ò×Ê±¼ä,ÇÒ×òÌìÊÇ½»Ò×ÈÕ
+										(! _bd_mgr->isTradingDate(pid, curDate) &&	//å½“å‰æ—¥å¿—ä¸æ˜¯äº¤æ˜“æ—¥
+										!(mInfo->isInTradingTime(curMin) &&  _bd_mgr->isTradingDate(pid, prevDate)))) ||	//å½“å‰ä¸åœ¨äº¤æ˜“æ—¶é—´,ä¸”æ˜¨å¤©æ˜¯äº¤æ˜“æ—¥
 										(mInfo->getOffsetMins() <= 0 && ! _bd_mgr->isTradingDate(pid, offDate))
 										)
 									{
@@ -237,14 +237,14 @@ void StateMonitor::run()
 								}
 								else
 								{
-									//Ğ¡ÓÚÊĞ³¡ÊÕÅÌÊ±¼ä,ÇÒ²»ÔÚ½»Ò×Ê±¼ä,ÔòÎªÖĞÍ¾ĞİÅÌÊ±¼ä
+									//å°äºå¸‚åœºæ”¶ç›˜æ—¶é—´,ä¸”ä¸åœ¨äº¤æ˜“æ—¶é—´,åˆ™ä¸ºä¸­é€”ä¼‘ç›˜æ—¶é—´
 									if(offTime < mInfo->getCloseTime(true))
 									{
 										sInfo->_state = SS_PAUSED;
 										WTSLogger::info("Trading session {}[{}] paused receiving data", mInfo->name(), sInfo->_session);
 									}
 									else
-									{//´óÓÚÊĞ³¡ÊÕÅÌÊ±¼ä,µ«ÊÇÃ»ÓĞ´óÓÚ½ÓÊÕÊÕÅÌÊ±¼ä,Ôò»¹Òª¼ÌĞø½ÓÊÕ,Ö÷ÒªÊÇÒªÊÕ½áËã¼Û
+									{//å¤§äºå¸‚åœºæ”¶ç›˜æ—¶é—´,ä½†æ˜¯æ²¡æœ‰å¤§äºæ¥æ”¶æ”¶ç›˜æ—¶é—´,åˆ™è¿˜è¦ç»§ç»­æ¥æ”¶,ä¸»è¦æ˜¯è¦æ”¶ç»“ç®—ä»·
 										sInfo->_state = SS_RECEIVING;
 										WTSLogger::info("Trading session {}[{}] started receiving data", mInfo->name(), sInfo->_session);
 									}
@@ -316,16 +316,16 @@ void StateMonitor::run()
 								}
 								else
 								{
-									//Õâ¾ÍÊÇÏÂÎçÊÕÅÌÒÔºóµÄÊ±¼ä
-									//ÕâÀï²»ÄÜ¸Ä×´Ì¬,ÒòÎªÒªÊÕ½áËã¼Û
+									//è¿™å°±æ˜¯ä¸‹åˆæ”¶ç›˜ä»¥åçš„æ—¶é—´
+									//è¿™é‡Œä¸èƒ½æ”¹çŠ¶æ€,å› ä¸ºè¦æ”¶ç»“ç®—ä»·
 								}
 							}
 						}
 						break;
 					case SS_PAUSED:
 						{
-							//ĞİÏ¢×´Ì¬Ö»ÄÜ×ª»»Îª½»Ò××´Ì¬
-							//ÕâÀïÒªÓÃÆ«ÒÆ¹ıµÄÈÕÆÚ,²»È»Èç¹ûÖÜÁùÔçÉÏÓĞÖĞÍ¾ĞİÏ¢,¾Í»á³ö´í
+							//ä¼‘æ¯çŠ¶æ€åªèƒ½è½¬æ¢ä¸ºäº¤æ˜“çŠ¶æ€
+							//è¿™é‡Œè¦ç”¨åç§»è¿‡çš„æ—¥æœŸ,ä¸ç„¶å¦‚æœå‘¨å…­æ—©ä¸Šæœ‰ä¸­é€”ä¼‘æ¯,å°±ä¼šå‡ºé”™
 							uint32_t weekDay = TimeUtils::getWeekDay();
 
 							bool isAllHoliday = true;
@@ -443,7 +443,7 @@ void StateMonitor::run()
 
 				if (isAllInState(SS_PROCING) && !isAllInState(SS_Holiday))
 				{
-					//»º´æÇåÀí
+					//ç¼“å­˜æ¸…ç†
 					_dt_mgr->transHisData("CMD_CLEAR_CACHE");
 				}
 			}

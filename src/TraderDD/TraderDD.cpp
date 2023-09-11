@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \file TraderDD.cpp
  * \project	WonderTrader
  *
@@ -43,22 +43,22 @@ inline void write_log(ITraderSpi* sink, WTSLogLevel ll, const char* format, cons
 }
 
 /*
- *	����A5�ӿڵ�Ҫ�㣺
- *	1 Fix_GetItem��Ҫ����һ��buffer���ȵĲ������������ÿ�ε����Ժ�ᱻ��д����������Ϊbuffer���ȣ��´ε��ò��ܳɹ�
- *	2 �ر����ͻ��ң������ر���ʱ�򲻻����ͣ��ɽ��Ժ󡢳����Ժ󶼲�������ԭ����������״̬��������Ҫ�ֶ������´�����
- *		a �µ��ɹ��Ժ�ֱ��ģ��һ�������ر���״̬��δ�ɽ���
- *		b ���ػ���δ��ɶ������������ر�����ʱ�򣬶�ȡԭ���������ݣ�Ȼ���޸�ԭ������״̬����ģ��һ��ԭ�����Ļر�
- *		c �յ��ɽ��ر��Ժ�Ҳ��Ҫ��ȡԭ���������ݣ��޸�ԭ������״̬�ͳɽ�������ʣ����������ģ��һ��ԭ�����Ļر�
+ *	顶点A5接口的要点：
+ *	1 Fix_GetItem需要传入一个buffer长度的参数，这个参数每次调用以后会被改写，必须重置为buffer长度，下次调用才能成功
+ *	2 回报推送混乱，订单回报有时候不会推送，成交以后、撤单以后都不会推送原订单的最新状态，所以需要手动做以下处理：
+ *		a 下单成功以后直接模拟一个订单回报，状态“未成交”
+ *		b 本地缓存未完成订单，当撤单回报来的时候，读取原订单的数据，然后修改原订单的状态，再模拟一个原订单的回报
+ *		c 收到成交回报以后，也需要读取原订单的数据，修改原订单的状态和成交数量、剩余数量，再模拟一个原订单的回报
  */
 void inst_hlp() {}
 
 #ifdef _WIN32
 #ifdef _WIN64
 #pragma comment(lib, "../API/FixApi/x64/fixapitool.lib")
-#pragma comment(lib, "../API/FixApi/x64/FixApi50.lib")	//64λ�Ŀ�
+#pragma comment(lib, "../API/FixApi/x64/FixApi50.lib")	//64位的库
 #else
 #pragma message("x86 version")
-#pragma comment(lib, "../API/FixApi/x86/fixapi50_x86.lib")	//32λ�Ŀ�
+#pragma comment(lib, "../API/FixApi/x86/fixapi50_x86.lib")	//32位的库
 #endif
 #include <wtypes.h>
 HMODULE	g_dllModule = NULL;
@@ -201,7 +201,7 @@ extern "C"
 }
 
 static bool cb_global(HANDLE_CONN conn, HANDLE_SESSION sess, int nResv)
-{//�첽run�����ص�ԭ��
+{//异步run函数回调原型
 	int code = -1;
 	std::string errmsg;
 	char buf[256];
@@ -214,65 +214,65 @@ static bool cb_global(HANDLE_CONN conn, HANDLE_SESSION sess, int nResv)
 	return true;
 }
 
-//�����ص�
+//订单回调
 bool cb_rtn_order(HANDLE_CONN hconn, HANDLE_SESSION hsess, int64_t subid, void *pData) {
 	/**
-	����Fix_GetPublishType���ж��¼���
+	调用Fix_GetPublishType先判断事件。
 	*/
 	FIX_PUBLISH_TYPE type = Fix_GetPublishType(hsess);
 	if (type == FIX_PUB_TYPE_COMM)
-	{//�յ�����,һ���û��ڴ�Ӧ���ٴ�����������У���Ӧ��ѹ
+	{//收到发布,一般用户在此应快速处理，如进队列，不应积压
 		//printf("push order report begin ... \n");
 
 		TraderDD* trader = (TraderDD*)pData;
 		trader->OnRtnOrder(hconn, hsess);
 	}
 	else if (type == FIX_PUB_TYPE_RESUBS_BEFORE)
-	{//�ײ��ض��Ŀ�ʼ
+	{//底层重订阅开始
 	}
 	else if (type == FIX_PUB_TYPE_RESUBS_AFTER_SUCC)
-	{//�ײ��ض��ĳɹ�
+	{//底层重订阅成功
 	}
 	else if (type == FIX_PUB_TYPE_RESUBS_AFTER_FAIL)
-	{//�ײ��ض���ʧ��
+	{//底层重订阅失败
 	}
 	else if (type == FIX_PUB_TYPE_DOWN)
-	{//�����жϻ��쳣
+	{//网关中断或异常
 	}
 	else
-	{//δ֪
+	{//未知
 	}
 	return true;
 }
 
-//�ɽ��ص�
+//成交回调
 bool cb_rtn_trade(HANDLE_CONN hconn, HANDLE_SESSION hsess, int64_t subid, void *pData)
 {
 	/**
-	����Fix_GetPublishType���ж��¼���
+	调用Fix_GetPublishType先判断事件。
 	*/
 	FIX_PUBLISH_TYPE type = Fix_GetPublishType(hsess);
 	if (type == FIX_PUB_TYPE_COMM)
-	{//�յ�����,һ���û��ڴ�Ӧ���ٴ�����������У���Ӧ��ѹ
+	{//收到发布,一般用户在此应快速处理，如进队列，不应积压
 		//printf("trade report begin ... \n");
 
 		TraderDD* trader = (TraderDD*)pData;
 		trader->OnRtnTrade(hconn, hsess);
 	}
 	else if (type == FIX_PUB_TYPE_RESUBS_BEFORE)
-	{//�ײ��ض��Ŀ�ʼ
+	{//底层重订阅开始
 	}
 	else if (type == FIX_PUB_TYPE_RESUBS_AFTER_SUCC)
-	{//�ײ��ض��ĳɹ�
+	{//底层重订阅成功
 	}
 	else if (type == FIX_PUB_TYPE_RESUBS_AFTER_FAIL)
-	{//�ײ��ض���ʧ��
+	{//底层重订阅失败
 	}
 	else if (type == FIX_PUB_TYPE_DOWN)
-	{//�����жϻ��쳣
+	{//网关中断或异常
 	}
 	else
-	{//δ֪
+	{//未知
 	}
 
 	//printf("gointo sub resp\n");
@@ -288,7 +288,7 @@ bool cb_rtn_trade(HANDLE_CONN hconn, HANDLE_SESSION hsess, int64_t subid, void *
 	return true;
 }
 
-/*��ȡ�ֶε�ֵ*/
+/*获取字段的值*/
 string GetItem(HANDLE_SESSION sess, int fid)
 {
 	int out_len = 2048;
@@ -319,7 +319,7 @@ void InitializeFix(WTSVariant* params)
 		Fix_SetLogLevel(1);
 		//Fix_SetParamEx("apexsoft-losap-atongle", "000");
 
-		Fix_RegReplyCallFunc(0, (void*)cb_global);//����ȫ�ֻص�����
+		Fix_RegReplyCallFunc(0, (void*)cb_global);//设置全局回调函数
 	}
 }
 
@@ -410,12 +410,12 @@ void TraderDD::reconnect()
 		if (m_traderSink)
 		{
 			m_traderSink->handleEvent(WTE_Connect, -1);
-			m_traderSink->handleTraderLog(LL_ERROR, "[TraderDD]ͨѶ����ʧ��");
+			m_traderSink->handleTraderLog(LL_ERROR, "[TraderDD]通讯连接失败");
 		}
 
 		StdThreadPtr thrd(new StdThread([this]() {
 			std::this_thread::sleep_for(std::chrono::seconds(2));
-			if (m_traderSink) write_log(m_traderSink, LL_WARN, "[TraderDD]�˺�{}������������", m_strUser.c_str());
+			if (m_traderSink) write_log(m_traderSink, LL_WARN, "[TraderDD]账号{}正在重连……", m_strUser.c_str());
 			reconnect();
 		}));
 		return;
@@ -424,12 +424,12 @@ void TraderDD::reconnect()
 	//int64_t subid = 0;
 	//int code = -1;
 	//char buf[256];
-	////���ĳɽ��ر�
+	////订阅成交回报
 	//{
 	//	HANDLE_SESSION sess = Fix_AllocateSession(m_hConn);
 	//	Fix_SetNode(sess, m_strNode.c_str());
 	//	Fix_SetWTFS(sess, "8");
-	//	Fix_CreateHead(sess, "399001");//399001 ����ί�гɽ���Ϣ
+	//	Fix_CreateHead(sess, "399001");//399001 订阅委托成交消息
 	//	m_strToken = GetItem(sess, FID_TOKEN);
 	//	if (!Fix_SubscribeByToken(sess, subid, m_strUser.c_str(), m_strToken.c_str(), (void *)cb_rtn_trade, this))   //  Fix_SubscribeByCustomer
 	//	{
@@ -438,28 +438,28 @@ void TraderDD::reconnect()
 	//		len = 256;
 	//		Fix_GetErrMsg(sess, buf, len);
 	//		if (m_traderSink)
-	//			write_log(m_traderSink, LL_ERROR, "[TraderDD]���ĳɽ��ر�ʧ�ܣ�{}({})", buf, code);
+	//			write_log(m_traderSink, LL_ERROR, "[TraderDD]订阅成交回报失败：{}({})", buf, code);
 	//		Fix_ReleaseSession(sess);
 	//	}
 	//	Fix_ReleaseSession(sess);
 	//}
 
-	////���Ķ����ر�
+	////订阅订单回报
 	//{
 	//	HANDLE_SESSION sess = Fix_AllocateSession(m_hConn);
 	//	Fix_SetNode(sess, m_strNode.c_str());
 	//	Fix_SetWTFS(sess, "8");
-	//	Fix_CreateHead(sess, "399000");//399000 ����ί��ȷ����Ϣ
+	//	Fix_CreateHead(sess, "399000");//399000 订阅委托确认消息
 	//	int64_t subid = 0;
 	//	m_strToken = GetItem(sess, FID_TOKEN);
 	//	if (!Fix_SubscribeByToken(sess, subid, m_strUser.c_str(), m_strToken.c_str(), (void *)cb_rtn_order, this))  // Fix_SubscribeByCustomer
-	//	{//session ����id���ͻ��ţ��������룬�ص�������pData(�ص��д���)
+	//	{//session 订阅id，客户号，交易密码，回调函数，pData(回调中传回)
 	//		int len = 128;
 	//		code = Fix_GetCode(sess);
 	//		len = 256;
 	//		Fix_GetErrMsg(sess, buf, len);
 	//		if (m_traderSink) 
-	//			write_log(m_traderSink, LL_ERROR, "[TraderDD]����ί�лر�ʧ�ܣ�{}({})", buf, code);
+	//			write_log(m_traderSink, LL_ERROR, "[TraderDD]订阅委托回报失败：{}({})", buf, code);
 	//		Fix_ReleaseSession(sess);
 	//		return;
 	//	}
@@ -572,7 +572,7 @@ void TraderDD::qryGDNo()
 			int len = 256;
 			char buf[256] = { 0 };
 			Fix_GetErrMsg(sess, buf, len);
-			write_log(m_traderSink, LL_ERROR, "[TraderDD]�ɶ��Ų�ѯʧ��: {}({})", buf, code);
+			write_log(m_traderSink, LL_ERROR, "[TraderDD]股东号查询失败: {}({})", buf, code);
 		}
 		else
 		{
@@ -597,7 +597,7 @@ void TraderDD::qryGDNo()
 
 			qryZJZH();
 
-			//m_traderSink->handleTraderLog(LL_ERROR, "[TraderDD]�˻����ݳ�ʼ�����...");
+			//m_traderSink->handleTraderLog(LL_ERROR, "[TraderDD]账户数据初始化完成...");
 			//m_wrapperState = WS_ALLREADY;
 			//m_traderSink->onLoginResult(true, "", m_lDate);
 		}
@@ -626,7 +626,7 @@ void TraderDD::qryZJZH()
 			int len = 256;
 			char buf[256] = { 0 };
 			Fix_GetErrMsg(sess, buf, len);
-			write_log(m_traderSink, LL_ERROR, "[TraderDD]�ʽ��˻���ѯʧ��: {}({})", buf, code);
+			write_log(m_traderSink, LL_ERROR, "[TraderDD]资金账户查询失败: {}({})", buf, code);
 
 		}
 		else
@@ -638,7 +638,7 @@ void TraderDD::qryZJZH()
 
 			m_strFDNO = buf;
 
-			write_log(m_traderSink, LL_INFO, "[TraderDD]�˻����ݳ�ʼ�����...");
+			write_log(m_traderSink, LL_INFO, "[TraderDD]账户数据初始化完成...");
 			m_wrapperState = WS_ALLREADY;
 			m_traderSink->onLoginResult(true, "", m_lDate);
 		}
@@ -669,7 +669,7 @@ void TraderDD::doLogin()
 			int len = 256;
 			char buf[256] = { 0 };
 			Fix_GetErrMsg(sess, buf, len);
-			write_log(m_traderSink, LL_ERROR, "[TraderDD]����ͨ����¼ʧ��: {}({})", buf, code);
+			write_log(m_traderSink, LL_ERROR, "[TraderDD]交易通道登录失败: {}({})", buf, code);
 			m_traderSink->onLoginResult(false, buf, 0);
 		}
 		else
@@ -722,13 +722,13 @@ void TraderDD::doLogin()
 			uint32_t lastDate = m_iniHelper.readUInt("marker", "date", 0);
 			if (lastDate != m_lDate)
 			{
-				//�����ղ�ͬ��������ԭ��������
+				//交易日不同，清理掉原来的数据
 				m_iniHelper.removeSection(ENTRUST_SECTION);
 				m_iniHelper.removeSection(ORDER_SECTION);
 				m_iniHelper.writeUInt("marker", "date", m_lDate);
 				m_iniHelper.save();
 
-				write_log(m_traderSink, LL_INFO, "[TraderDD][%s]���������л�[{} -> {}]����ձ������ݻ��桭��", m_strUser.c_str(), lastDate, m_lDate);
+				write_log(m_traderSink, LL_INFO, "[TraderDD][%s]交易日已切换[{} -> {}]，清空本地数据缓存……", m_strUser.c_str(), lastDate, m_lDate);
 			}
 
 			m_wrapperState = WS_LOGINED;
@@ -736,7 +736,7 @@ void TraderDD::doLogin()
 			
 			qryGDNo();
 
-			//m_traderSink->handleTraderLog(LL_ERROR, "[TraderDD]�˻����ݳ�ʼ�����...");
+			//m_traderSink->handleTraderLog(LL_ERROR, "[TraderDD]账户数据初始化完成...");
 			//m_wrapperState = WS_ALLREADY;
 			//m_traderSink->onLoginResult(true, "", m_lDate);
 		}
@@ -745,36 +745,36 @@ void TraderDD::doLogin()
 		int64_t subid = 0;
 		char buf[256];
 
-		//���Ķ����ر�
+		//订阅订单回报
 		{
 			HANDLE_SESSION sess = Fix_AllocateSession(m_hConn);
 			Fix_SetNode(sess, m_strNode.c_str());
 			Fix_SetWTFS(sess, "8");
-			Fix_CreateHead(sess, "399000");//399000 ����ί��ȷ����Ϣ
+			Fix_CreateHead(sess, "399000");//399000 订阅委托确认消息
 			int64_t subid = 0;
 
 			if (!Fix_SubscribeByToken(sess, subid, m_strUser.c_str(), m_strToken.c_str(), (void *)cb_rtn_order, this))  // Fix_SubscribeByCustomer
-			{//session ����id���ͻ��ţ��������룬�ص�������pData(�ص��д���)
+			{//session 订阅id，客户号，交易密码，回调函数，pData(回调中传回)
 				int len = 128;
 				code = Fix_GetCode(sess);
 				len = 256;
 				Fix_GetErrMsg(sess, buf, len);
 				if (m_traderSink)
-					write_log(m_traderSink, LL_ERROR, "[TraderDD]����ί�лر�ʧ�ܣ�{}({})", buf, code);
+					write_log(m_traderSink, LL_ERROR, "[TraderDD]订阅委托回报失败：{}({})", buf, code);
 				Fix_ReleaseSession(sess);
 				return;
 			}
 			else
-				write_log(m_traderSink, LL_INFO, "[TraderDD]����ί�лر��ɹ�");
+				write_log(m_traderSink, LL_INFO, "[TraderDD]订阅委托回报成功");
 			Fix_ReleaseSession(sess);
 		}
 
-		//���ĳɽ��ر�
+		//订阅成交回报
 		{
 			HANDLE_SESSION sess = Fix_AllocateSession(m_hConn);
 			Fix_SetNode(sess, m_strNode.c_str());
 			Fix_SetWTFS(sess, "8");
-			Fix_CreateHead(sess, "399001");//399001 ����ί�гɽ���Ϣ
+			Fix_CreateHead(sess, "399001");//399001 订阅委托成交消息
 			//m_strToken = GetItem(sess, FID_TOKEN);
 			if (!Fix_SubscribeByToken(sess, subid, m_strUser.c_str(), m_strToken.c_str(), (void *)cb_rtn_trade, this))   //  Fix_SubscribeByCustomer  
 			{
@@ -783,12 +783,12 @@ void TraderDD::doLogin()
 				len = 256;
 				Fix_GetErrMsg(sess, buf, len);
 				if (m_traderSink)
-					write_log(m_traderSink, LL_ERROR, "[TraderDD]���ĳɽ��ر�ʧ�ܣ�{}({})", buf, code);
+					write_log(m_traderSink, LL_ERROR, "[TraderDD]订阅成交回报失败：{}({})", buf, code);
 				Fix_ReleaseSession(sess);
 				return;
 			}
 			else
-				write_log(m_traderSink, LL_INFO, "[TraderDD]���ĳɽ��ر��ɹ�");
+				write_log(m_traderSink, LL_INFO, "[TraderDD]订阅成交回报成功");
 			Fix_ReleaseSession(sess);
 		}
 	});
@@ -850,7 +850,7 @@ int TraderDD::orderInsert(WTSEntrust* entrust)
 			int len = 256;
 			char buf[256] = { 0 };
 			Fix_GetErrMsg(sess, buf, len);
-			write_log(m_traderSink, LL_ERROR, "[TraderDD]ί��ָ���ʧ��: {}({})", buf, code);
+			write_log(m_traderSink, LL_ERROR, "[TraderDD]委托指令发送失败: {}({})", buf, code);
 			
 			WTSError* err = WTSError::create(WEC_ORDERINSERT, buf);
 			m_traderSink->onRspEntrust(entrust, err);
@@ -859,7 +859,7 @@ int TraderDD::orderInsert(WTSEntrust* entrust)
 		{
 			m_traderSink->onRspEntrust(entrust, NULL);
 
-			//�����ֶ���һ�ʻر�����Ȼ���������
+			//这里手动发一笔回报，不然会有问题的
 			WTSOrderInfo* ordInfo = WTSOrderInfo::create(entrust);
 			ordInfo->setOrderState(WOS_NotTraded_NotQueuing);
 			ordInfo->setVolTraded(0);
@@ -899,12 +899,12 @@ int TraderDD::orderAction(WTSEntrustAction* action)
 
 	action->retain();
 	m_strandIO->post([this, action]() {
-		write_log(m_traderSink, LL_INFO, "[TraderDD] ���ó����ӿ� ..."��;
+		write_log(m_traderSink, LL_INFO, "[TraderDD] 调用撤单接口 ..."）;
 
 		HANDLE_SESSION sess = Fix_AllocateSession(m_hConn);
 		Fix_SetNode(sess, m_strNode.c_str());
 		Fix_SetWTFS(sess, "8");
-		Fix_SetSystemId(sess, 4);  // 4 - ��Ʊ 9 - ��Ȩ
+		Fix_SetSystemId(sess, 4);  // 4 - 股票 9 - 期权
 		Fix_CreateHead(sess, "310007");
 		Fix_SetItem(sess, FID_KHH, m_strUser.c_str());
 		Fix_SetItem(sess, FID_NODEID, m_strNodeID.c_str());
@@ -919,13 +919,13 @@ int TraderDD::orderAction(WTSEntrustAction* action)
 			int len = 256;
 			char buf[256] = { 0 };
 			Fix_GetErrMsg(sess, buf, len);
-			write_log(m_traderSink, LL_ERROR, "[TraderDD]����ָ���ʧ�ܣ�������Ϣ��{}({})", buf, code);
+			write_log(m_traderSink, LL_ERROR, "[TraderDD]撤单指令发送失败，错误信息：{}({})", buf, code);
 
 			WTSError* err = WTSError::create(WEC_ORDERCANCEL, buf);
 			m_traderSink->onTraderError(err);
 		}
 		else
-			write_log(m_traderSink, LL_INFO, "[TraderDD] ����ָ��ͳɹ�, ���ش���: {}", code);
+			write_log(m_traderSink, LL_INFO, "[TraderDD] 撤单指令发送成功, 返回代码: {}", code);
 
 		action->release();
 		Fix_ReleaseSession(sess);
@@ -961,7 +961,7 @@ int TraderDD::queryAccount()
 			int len = 256;
 			char buf[256] = { 0 };
 			Fix_GetErrMsg(sess, buf, len);
-			write_log(m_traderSink, LL_ERROR, "[TraderDD]�����ʽ��ѯʧ��: {}({})", buf, code);
+			write_log(m_traderSink, LL_ERROR, "[TraderDD]可用资金查询失败: {}({})", buf, code);
 		}
 		else
 		{
@@ -1017,7 +1017,7 @@ int TraderDD::queryPositions()
 			int len = 256;
 			char buf[256] = { 0 };
 			Fix_GetErrMsg(sess, buf, len);
-			write_log(m_traderSink, LL_ERROR, "[TraderDD]�û��ֲֲ�ѯʧ��: {}({})", buf, code);
+			write_log(m_traderSink, LL_ERROR, "[TraderDD]用户持仓查询失败: {}({})", buf, code);
 		}
 		else
 		{
@@ -1047,7 +1047,7 @@ int TraderDD::queryPositions()
 				std::string code = buf;
 
 				Fix_GetItem(sess, FID_LTLX, buf, nSize, i);
-				if (strncmp(buf, "0", 1) == 0)  // ��ͨ����,1 ��ͨ 0����ͨ������Ƿ���ͨ�����
+				if (strncmp(buf, "0", 1) == 0)  // 流通类型,1 流通 0非流通，如果是非流通则过掉
 					continue;
 
 				WTSContractInfo* contract = m_bdMgr->getContract(code.c_str(), exchg.c_str());
@@ -1057,10 +1057,10 @@ int TraderDD::queryPositions()
 					WTSPositionItem* pInfo = WTSPositionItem::create(code.c_str(), commInfo->getCurrency(), exchg.c_str());
 					pInfo->setDirection(WDT_LONG);
 
-					double prevol = Fix_GetInt64(sess, FID_ZQSL, i);	//����ĳֲ֣������ǲ�����
-					double newvol = Fix_GetInt64(sess, FID_JCCL, i);	//����ĳֲ֣��������ʵ�ֲ�
-					double openvol = Fix_GetInt64(sess, FID_DRMRCJSL, i);	//������������
-					double closevol = Fix_GetInt64(sess, FID_DRMCCJSL, i);	//������������
+					double prevol = Fix_GetInt64(sess, FID_ZQSL, i);	//昨天的持仓，今天是不会变的
+					double newvol = Fix_GetInt64(sess, FID_JCCL, i);	//今天的持仓，这个是真实持仓
+					double openvol = Fix_GetInt64(sess, FID_DRMRCJSL, i);	//今日买入数量
+					double closevol = Fix_GetInt64(sess, FID_DRMCCJSL, i);	//今日卖出数量
 
 					pInfo->setPrePosition(prevol - closevol);
 					pInfo->setNewPosition(openvol);
@@ -1214,7 +1214,7 @@ void TraderDD::OnRtnOrder(HANDLE_CONN hconn, HANDLE_SESSION hsess)
 		ordInfo = (WTSOrderInfo*)m_mapLives->grab(buf);
 		if (ordInfo == NULL)
 		{
-			write_log(m_traderSink, LL_ERROR, "[TraderDD] ί�г����Ķ���Ϊ�գ�");
+			write_log(m_traderSink, LL_ERROR, "[TraderDD] 委托撤单的订单为空！");
 			return;
 		}
 
@@ -1227,7 +1227,7 @@ void TraderDD::OnRtnOrder(HANDLE_CONN hconn, HANDLE_SESSION hsess)
 		Fix_GetItem(hsess, FID_JGSM, buf, len);
 		ordInfo->setStateMsg(buf);
 
-		write_log(m_traderSink, LL_INFO, "[TraderDD] �ɹ�����ί�ж���, ������Ϣ: {}", buf);
+		write_log(m_traderSink, LL_INFO, "[TraderDD] 成功撤销委托订单, 返回信息: {}", buf);
 	}
 
 	if (m_traderSink)
@@ -1269,7 +1269,7 @@ void TraderDD::OnRtnTrade(HANDLE_CONN hconn, HANDLE_SESSION hsess)
 
 	m_tradeids.insert(tradeid);
 
-	//���˵������ر�
+	//过滤掉撤单回报
 	if (!decimal::eq(Fix_GetDouble(hsess, FID_CDSL), 0.0))
 		return;
 
@@ -1354,7 +1354,7 @@ int TraderDD::queryOrders()
 			int len = 256;
 			char buf[256] = { 0 };
 			Fix_GetErrMsg(sess, buf, len);
-			write_log(m_traderSink, LL_ERROR, "[TraderDD]�û�������ѯʧ��: {}({})", buf, code);
+			write_log(m_traderSink, LL_ERROR, "[TraderDD]用户订单查询失败: {}({})", buf, code);
 		}
 		else
 		{
@@ -1382,7 +1382,7 @@ int TraderDD::queryOrders()
 				Fix_GetItem(sess, FID_ZQDM, buf, nSize, i);
 				std::string code = buf;
 
-				//����ί�к��Ե�
+				//撤销委托忽略掉
 				Fix_GetItem(sess, FID_CXBZ, buf, nSize, i);
 				if (strncmp(buf, "W", 1) == 0)
 					continue;
@@ -1498,7 +1498,7 @@ int TraderDD::queryTrades()
 			int len = 256;
 			char buf[256] = { 0 };
 			Fix_GetErrMsg(sess, buf, len);
-			write_log(m_traderSink, LL_ERROR, "[TraderDD]�û��ɽ���ѯʧ��: {}({})", buf, code);
+			write_log(m_traderSink, LL_ERROR, "[TraderDD]用户成交查询失败: {}({})", buf, code);
 		}
 		else
 		{
@@ -1518,7 +1518,7 @@ int TraderDD::queryTrades()
 					fields[nFid] = buf;
 				}
 
-				//����ί�к��Ե�
+				//撤销委托忽略掉
 				//if (fields[FID_CXBZ].compare("O") != 0)
 				//	continue;
 				Fix_GetItem(sess, FID_CXBZ, buf, nSize, i);
@@ -1542,7 +1542,7 @@ int TraderDD::queryTrades()
 					trdInfo->setVolume(Fix_GetInt64(sess, FID_CJSL, i));
 					
 					nSize = 256;
-					Fix_GetItem(sess, FID_CJBH, buf, nSize, i);  // �ɽ����
+					Fix_GetItem(sess, FID_CJBH, buf, nSize, i);  // 成交编号
 					trdInfo->setTradeID(buf);
 
 					trdInfo->setTradeDate(m_lDate);
@@ -1595,7 +1595,7 @@ void TraderDD::triggerQuery()
 		if (m_queQuery.empty() || m_bInQuery)
 			return;
 
-		//����ӿں���û���������ƣ���ȥ��
+		//顶点接口好像没有流量控制，先去掉
 		//uint64_t curTime = TimeUtils::getLocalTimeNow();
 		//if (curTime - m_lastQryTime < 1000)
 		//{

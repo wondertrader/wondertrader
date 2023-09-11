@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "../Includes/SelStrategyDefs.h"
 
 #include <unordered_set>
@@ -27,19 +27,19 @@ public:
 	virtual void on_bar(ISelStraCtx* ctx, const char* stdCode, const char* period, WTSBarStruct* newBar) override;
 
 private:
-	//Ö¸±ê²ÎÊı
+	//æŒ‡æ ‡å‚æ•°
 	double		_k1;
 	double		_k2;
 	uint32_t	_days;
 
-	//Êı¾İÖÜÆÚ
+	//æ•°æ®å‘¨æœŸ
 	std::string _period;
-	//KÏßÌõÊı
+	//Kçº¿æ¡æ•°
 	uint32_t	_count;
 
 	bool		_isstk;
 
-	//ºÏÔ¼´úÂë
+	//åˆçº¦ä»£ç 
 	std::unordered_set<std::string> _codes;
 
 };

@@ -1,11 +1,11 @@
-/*!
+ï»¿/*!
  * \file ITraderApi.h
  * \project	WonderTrader
  *
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief ½»Ò×Í¨µÀ¶Ô½Ó½Ó¿Ú¶¨ÒåÎÄ¼ş
+ * \brief äº¤æ˜“é€šé“å¯¹æ¥æ¥å£å®šä¹‰æ–‡ä»¶
  */
 #pragma once
 #include <set>
@@ -33,7 +33,7 @@ typedef std::function<void()>	CommonExecuter;
 
 #pragma region "Stock Trading API definations"
 /*
- *	¹ÉÆ±½»Ò×½Ó¿Ú»Øµ÷
+ *	è‚¡ç¥¨äº¤æ˜“æ¥å£å›è°ƒ
  *	Added By Wesley @ 2020/05/06
  */
 class IStkTraderSpi
@@ -42,10 +42,10 @@ class IStkTraderSpi
 };
 
 /*
- *	¹ÉÆ±½»Ò×½Ó¿Ú
+ *	è‚¡ç¥¨äº¤æ˜“æ¥å£
  *	Added By Wesley @ 2020/05/06
- *	Ô¤ÁôÆğÀ´ÒÔºóÊ¹ÓÃ,ÏÈ°Ñ½Ó¿ÚµÄÏà»¥¿ò¼Ü´î½¨ÆğÀ´
- *	Ö÷ÒªÌá¹©ÈÚ×ÊÈÚÈ¯µÈ¹ÉÆ±ÌØÓĞ½Ó¿Ú
+ *	é¢„ç•™èµ·æ¥ä»¥åä½¿ç”¨,å…ˆæŠŠæ¥å£çš„ç›¸äº’æ¡†æ¶æ­å»ºèµ·æ¥
+ *	ä¸»è¦æä¾›èèµ„èåˆ¸ç­‰è‚¡ç¥¨ç‰¹æœ‰æ¥å£
  */
 class IStkTraderApi
 {
@@ -54,7 +54,7 @@ class IStkTraderApi
 
 #pragma region "Option Trading API definations"
 /*
- *	ÆÚÈ¨½»Ò×½Ó¿Ú»Øµ÷
+ *	æœŸæƒäº¤æ˜“æ¥å£å›è°ƒ
  *	Added By Wesley @ 2020/05/06
  */
 class IOptTraderSpi
@@ -66,126 +66,126 @@ public:
 };
 
 /*
- *	ÆÚÈ¨½»Ò×½Ó¿Ú
+ *	æœŸæƒäº¤æ˜“æ¥å£
  *	Added By Wesley @ 2020/05/06
- *	Ô¤ÁôÆğÀ´ÒÔºóÊ¹ÓÃ,ÏÈ°Ñ½Ó¿ÚµÄÏà»¥¿ò¼Ü´î½¨ÆğÀ´
- *	Ö÷ÒªÌá¹©±¨¼Û¡¢ĞĞÈ¨µÈÆÚÈ¨ÌØÓĞ½Ó¿Ú
+ *	é¢„ç•™èµ·æ¥ä»¥åä½¿ç”¨,å…ˆæŠŠæ¥å£çš„ç›¸äº’æ¡†æ¶æ­å»ºèµ·æ¥
+ *	ä¸»è¦æä¾›æŠ¥ä»·ã€è¡Œæƒç­‰æœŸæƒç‰¹æœ‰æ¥å£
  */
 class IOptTraderApi
 {
 public:
 	/*
-	 *	ÏÂµ¥½Ó¿Ú
-	 *	entrust ÏÂµ¥µÄ¾ßÌåÊı¾İ½á¹¹
+	 *	ä¸‹å•æ¥å£
+	 *	entrust ä¸‹å•çš„å…·ä½“æ•°æ®ç»“æ„
 	 */
 	virtual int orderInsertOpt(WTSEntrust* eutrust) { return -1; }
 
 	/*
-	 *	¶©µ¥²Ù×÷½Ó¿Ú
-	 *	action	²Ù×÷µÄ¾ßÌåÊı¾İ½á¹¹
+	 *	è®¢å•æ“ä½œæ¥å£
+	 *	action	æ“ä½œçš„å…·ä½“æ•°æ®ç»“æ„
 	 */
 	virtual int orderActionOpt(WTSEntrustAction* action) { return -1; }
 
 	/*
-	 *	²éÑ¯ÆÚÈ¨¶©µ¥
+	 *	æŸ¥è¯¢æœŸæƒè®¢å•
 	 */
 	virtual int	queryOrdersOpt(WTSBusinessType bType) { return -1; }
 };
 #pragma endregion
 
 
-//Î¯ÍĞ»Øµ÷½Ó¿Ú
+//å§”æ‰˜å›è°ƒæ¥å£
 class ITraderSpi
 {
 public:
 	/*
-	 *	»ñÈ¡»ù´¡Êı¾İ¹ÜÀíÆ÷
+	 *	è·å–åŸºç¡€æ•°æ®ç®¡ç†å™¨
 	 */
 	virtual IBaseDataMgr*	getBaseDataMgr() = 0;
 
 	/*
-	 *	´¦Àí½»Ò×½Ó¿ÚµÄÈÕÖ¾
+	 *	å¤„ç†äº¤æ˜“æ¥å£çš„æ—¥å¿—
 	 */
 	virtual void handleTraderLog(WTSLogLevel ll, const char* message){}
 
 	/*
-	 *	»ñÈ¡¹ÉÆ±½»Ò×½Ó¿ÚSpi
+	 *	è·å–è‚¡ç¥¨äº¤æ˜“æ¥å£Spi
 	 */
 	virtual IStkTraderSpi* getStkSpi(){ return NULL; }
 
 	/*
-	 *	»ñÈ¡ÆÚÈ¨½»Ò×½Ó¿ÚSpi
+	 *	è·å–æœŸæƒäº¤æ˜“æ¥å£Spi
 	 */
 	virtual IOptTraderSpi* getOptSpi(){ return NULL; }
 
 public:
 	/*
-	 *	´¦Àí½»Ò×½Ó¿ÚÊÂ¼ş
+	 *	å¤„ç†äº¤æ˜“æ¥å£äº‹ä»¶
 	 */
 	virtual void handleEvent(WTSTraderEvent e, int32_t ec) = 0;
 
 	/*
-	 *	µÇÂ¼»Ø±¨
+	 *	ç™»å½•å›æŠ¥
 	 */
 	virtual void onLoginResult(bool bSucc, const char* msg, uint32_t tradingdate) = 0;
 
 	/*
-	 *	×¢Ïú»Ø±¨
+	 *	æ³¨é”€å›æŠ¥
 	 */
 	virtual void onLogout(){}
 
 	/*
-	 *	Î¯ÍĞ»Ø±¨
+	 *	å§”æ‰˜å›æŠ¥
 	 */
 	virtual void onRspEntrust(WTSEntrust* entrust, WTSError *err){}
 
 	/*
-	 * ×Ê½ğ²éÑ¯»Ø±¨
+	 * èµ„é‡‘æŸ¥è¯¢å›æŠ¥
 	 */
 	virtual void onRspAccount(WTSArray* ayAccounts) {}
 
 	/*
-	 *	³Ö²Ö²éÑ¯»Ø±¨
+	 *	æŒä»“æŸ¥è¯¢å›æŠ¥
 	 */
 	virtual void onRspPosition(const WTSArray* ayPositions){}
 
 	/*
-	 *	¶©µ¥²éÑ¯»Ø±¨
+	 *	è®¢å•æŸ¥è¯¢å›æŠ¥
 	 */
 	virtual void onRspOrders(const WTSArray* ayOrders){}
 
 	/*
-	 *	³É½»²éÑ¯»Ø±¨
+	 *	æˆäº¤æŸ¥è¯¢å›æŠ¥
 	 */
 	virtual void onRspTrades(const WTSArray* ayTrades){}
 
 	/*
-	 *	½áËãµ¥²éÑ¯»Ø±¨
+	 *	ç»“ç®—å•æŸ¥è¯¢å›æŠ¥
 	 */
 	virtual void onRspSettlementInfo(uint32_t uDate, const char* content){}
 
 	/*
-	 *	¶©µ¥»Ø±¨ÍÆËÍ
+	 *	è®¢å•å›æŠ¥æ¨é€
 	 */
 	virtual void onPushOrder(WTSOrderInfo* orderInfo){}
 
 	/*
-	 *	³É½»»Ø±¨ÍÆËÍ
+	 *	æˆäº¤å›æŠ¥æ¨é€
 	 */
 	virtual void onPushTrade(WTSTradeInfo* tradeRecord){}
 
 	/*
-	 *	½»Ò×½Ó¿Ú´íÎó»Ø±¨
+	 *	äº¤æ˜“æ¥å£é”™è¯¯å›æŠ¥
 	 */
 	virtual void onTraderError(WTSError* err){}
 
 	/*
-	 *	ºÏÔ¼×´Ì¬ÍÆËÍ
+	 *	åˆçº¦çŠ¶æ€æ¨é€
 	 */
 	virtual void onPushInstrumentStatus(const char* exchg, const char* code, WTSTradeStatus state) {}
 };
 
-//ÏÂµ¥½Ó¿Ú¹ÜÀí½Ó¿Ú
+//ä¸‹å•æ¥å£ç®¡ç†æ¥å£
 class ITraderApi
 {
 public:
@@ -196,85 +196,85 @@ public:
 
 public:
 	/*
-	 *	³õÊ¼»¯½âÎö¹ÜÀíÆ÷
+	 *	åˆå§‹åŒ–è§£æç®¡ç†å™¨
 	 */
 	virtual bool init(WTSVariant *params) { return false; }
 
 	/*
-	 *	ÊÍ·Å½âÎö¹ÜÀíÆ÷
+	 *	é‡Šæ”¾è§£æç®¡ç†å™¨
 	 */
 	virtual void release(){}
 
 	/*
-	 *	×¢²á»Øµ÷½Ó¿Ú
+	 *	æ³¨å†Œå›è°ƒæ¥å£
 	 */
 	virtual void registerSpi(ITraderSpi *listener) {}
 
 
 	//////////////////////////////////////////////////////////////////////////
-	//ÒµÎñÂß¼­½Ó¿Ú
+	//ä¸šåŠ¡é€»è¾‘æ¥å£
 
 	/*
-	 *	Á¬½Ó·şÎñÆ÷
+	 *	è¿æ¥æœåŠ¡å™¨
 	 */
 	virtual void connect() {}
 
 	/*
-	 *	¶Ï¿ªÁ¬½Ó
+	 *	æ–­å¼€è¿æ¥
 	 */
 	virtual void disconnect() {}
 
 	virtual bool isConnected() { return false; }
 
 	/*
-	 *	Éú³ÉÎ¯ÍĞµ¥ºÅ
+	 *	ç”Ÿæˆå§”æ‰˜å•å·
 	 */
 	virtual bool makeEntrustID(char* buffer, int length){ return false; }
 
 	/*
-	 *	µÇÂ¼½Ó¿Ú
+	 *	ç™»å½•æ¥å£
 	 */
 	virtual int login(const char* user, const char* pass, const char* productInfo) { return -1; }
 
 	/*
-	 *	×¢Ïú½Ó¿Ú
+	 *	æ³¨é”€æ¥å£
 	 */
 	virtual int logout() { return -1; }
 
 	/*
-	 *	ÏÂµ¥½Ó¿Ú
-	 *	entrust ÏÂµ¥µÄ¾ßÌåÊı¾İ½á¹¹
+	 *	ä¸‹å•æ¥å£
+	 *	entrust ä¸‹å•çš„å…·ä½“æ•°æ®ç»“æ„
 	 */
 	virtual int orderInsert(WTSEntrust* eutrust) { return -1; }
 
 	/*
-	 *	¶©µ¥²Ù×÷½Ó¿Ú
-	 *	action	²Ù×÷µÄ¾ßÌåÊı¾İ½á¹¹
+	 *	è®¢å•æ“ä½œæ¥å£
+	 *	action	æ“ä½œçš„å…·ä½“æ•°æ®ç»“æ„
 	 */
 	virtual int orderAction(WTSEntrustAction* action) { return -1; }
 
 	/*
-	 *	²éÑ¯ÕË»§ĞÅÏ¢
+	 *	æŸ¥è¯¢è´¦æˆ·ä¿¡æ¯
 	 */
 	virtual int queryAccount() { return -1; }
 
 	/*
-	 *	²éÑ¯³Ö²ÖĞÅÏ¢
+	 *	æŸ¥è¯¢æŒä»“ä¿¡æ¯
 	 */
 	virtual int queryPositions() { return -1; }
 
 	/*
-	 *	²éÑ¯ËùÓĞ¶©µ¥
+	 *	æŸ¥è¯¢æ‰€æœ‰è®¢å•
 	 */
 	virtual int queryOrders() { return -1; }
 
 	/*
-	 *	²éÑ¯³É½»Ã÷Ï¸
+	 *	æŸ¥è¯¢æˆäº¤æ˜ç»†
 	 */
 	virtual int	queryTrades() { return -1; }
 
 	/*
-	 *	²éÑ¯½áËãµ¥
+	 *	æŸ¥è¯¢ç»“ç®—å•
 	 */
 	virtual int querySettlement(uint32_t uDate){ return 0; }
 
@@ -282,6 +282,6 @@ public:
 
 NS_WTP_END
 
-//»ñÈ¡IDataMgrµÄº¯ÊıÖ¸ÕëÀàĞÍ
+//è·å–IDataMgrçš„å‡½æ•°æŒ‡é’ˆç±»å‹
 typedef wtp::ITraderApi* (*FuncCreateTrader)();
 typedef void(*FuncDeleteTrader)(wtp::ITraderApi* &trader);

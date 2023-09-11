@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file TraderCTP.h
  * \project	WonderTrader
  *
@@ -35,13 +35,13 @@ public:
 public:
 	typedef enum
 	{
-		WS_NOTLOGIN,		//Î´µÇÂ¼
-		WS_LOGINING,		//ÕıÔÚµÇÂ¼
-		WS_LOGINED,			//ÒÑµÇÂ¼
-		WS_LOGINFAILED,		//µÇÂ¼Ê§°Ü
+		WS_NOTLOGIN,		//æœªç™»å½•
+		WS_LOGINING,		//æ­£åœ¨ç™»å½•
+		WS_LOGINED,			//å·²ç™»å½•
+		WS_LOGINFAILED,		//ç™»å½•å¤±è´¥
 		WS_CONFIRM_QRYED,
-		WS_CONFIRMED,		//ÒÑÈ·ÈÏ
-		WS_ALLREADY			//È«²¿¾ÍĞ÷
+		WS_CONFIRMED,		//å·²ç¡®è®¤
+		WS_ALLREADY			//å…¨éƒ¨å°±ç»ª
 	} WrapperState;
 
 
@@ -51,7 +51,7 @@ private:
 	int doLogin();
 
 	//////////////////////////////////////////////////////////////////////////
-	//ITraderApi½Ó¿Ú
+	//ITraderApiæ¥å£
 public:
 	virtual bool init(WTSVariant* params) override;
 
@@ -85,7 +85,7 @@ public:
 
 
 	//////////////////////////////////////////////////////////////////////////
-	//CTP½»Ò×½Ó¿ÚÊµÏÖ
+	//CTPäº¤æ˜“æ¥å£å®ç°
 public:
 	virtual void OnFrontConnected() override;
 
@@ -107,7 +107,7 @@ public:
 
 	virtual void OnRspQryInvestorPosition(CThostFtdcInvestorPositionField *pInvestorPosition, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) override;
 
-	///ÇëÇó²éÑ¯³É½»ÏìÓ¦
+	///è¯·æ±‚æŸ¥è¯¢æˆäº¤å“åº”
 	virtual void OnRspQryTrade(CThostFtdcTradeField *pTrade, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) override;
 
 	virtual void OnRspQryOrder(CThostFtdcOrderField *pOrder, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) override;
@@ -124,7 +124,7 @@ public:
 
 protected:
 	/*
-	*	¼ì²é´íÎóĞÅÏ¢
+	*	æ£€æŸ¥é”™è¯¯ä¿¡æ¯
 	*/
 	bool IsErrorRspInfo(CThostFtdcRspInfoField *pRspInfo);
 
@@ -179,9 +179,9 @@ protected:
 	uint64_t		m_uLastQryTime;
 
 	uint32_t					m_lDate;
-	TThostFtdcFrontIDType		m_frontID;		//Ç°ÖÃ±àºÅ
-	TThostFtdcSessionIDType		m_sessionID;	//»á»°±àºÅ
-	std::atomic<uint32_t>		m_orderRef;		//±¨µ¥ÒıÓÃ
+	TThostFtdcFrontIDType		m_frontID;		//å‰ç½®ç¼–å·
+	TThostFtdcSessionIDType		m_sessionID;	//ä¼šè¯ç¼–å·
+	std::atomic<uint32_t>		m_orderRef;		//æŠ¥å•å¼•ç”¨
 
 	WrapperState				m_wrapperState;
 
@@ -211,8 +211,8 @@ protected:
 	typedef CThostFtdcTraderApi* (*CTPCreator)(const char *);
 	CTPCreator		m_funcCreator;
 
-	//Î¯ÍĞµ¥±ê¼Ç»º´æÆ÷
+	//å§”æ‰˜å•æ ‡è®°ç¼“å­˜å™¨
 	WtKVCache		m_eidCache;
-	//¶©µ¥±ê¼Ç»º´æÆ÷
+	//è®¢å•æ ‡è®°ç¼“å­˜å™¨
 	WtKVCache		m_oidCache;
 };

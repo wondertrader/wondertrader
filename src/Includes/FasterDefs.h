@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <string.h>
 #include "WTSMarcos.h"
 #include "../FasterLibs/tsl/robin_map.h"
@@ -8,19 +8,19 @@
 
 /*
  *	By Wesley @ 2023.08.15
- *	ºÜÒÅº¶£¬robin_map´îÅästd::stringÔÚÊı¾İÁ¿´óµÄÊ±ºò£¨¾­²âÊÔÔÚ13106ÌõÊı¾İ£¬²»Í¬²âÊÔ»ú¿ÉÄÜ¾ßÌåÊıÖµ²»Í¬£©
- *	»á³öÏÖbad allocateµÄÒì³£
- *	ÎÒ²Â²âÊÇstd::stringÎŞ·¨ÏñstringÄÇÑù×Ô¶¯ÓÅ»¯
- *	ËùÒÔÊı¾İÁ¿´óµÄÊ±ºò£¬¾Í»áÕ¼ÓÃ·Ç³£´óµÄÄÚ´æ£¬µ±ÔËĞĞ»·¾³ÄÚ´æ½ÏĞ¡Ê±£¬¾Í»á³öÏÖÒì³£
- *	ËùÒÔÕâ´Î°ÑLongKeyºÍLongKey¶¼×¢ÊÍµô£¬¸Ä³Éstd::string
+ *	å¾ˆé—æ†¾ï¼Œrobin_mapæ­é…std::stringåœ¨æ•°æ®é‡å¤§çš„æ—¶å€™ï¼ˆç»æµ‹è¯•åœ¨13106æ¡æ•°æ®ï¼Œä¸åŒæµ‹è¯•æœºå¯èƒ½å…·ä½“æ•°å€¼ä¸åŒï¼‰
+ *	ä¼šå‡ºç°bad allocateçš„å¼‚å¸¸
+ *	æˆ‘çŒœæµ‹æ˜¯std::stringæ— æ³•åƒstringé‚£æ ·è‡ªåŠ¨ä¼˜åŒ–
+ *	æ‰€ä»¥æ•°æ®é‡å¤§çš„æ—¶å€™ï¼Œå°±ä¼šå ç”¨éå¸¸å¤§çš„å†…å­˜ï¼Œå½“è¿è¡Œç¯å¢ƒå†…å­˜è¾ƒå°æ—¶ï¼Œå°±ä¼šå‡ºç°å¼‚å¸¸
+ *	æ‰€ä»¥è¿™æ¬¡æŠŠLongKeyå’ŒLongKeyéƒ½æ³¨é‡Šæ‰ï¼Œæ”¹æˆstd::string
  */
 
  /*
   *	By Wesley @ 2023.08.16
-  *	ankerlĞ´ÈëËÙ¶È±ÈrobinºÃºÜ¶à£¬´ó¸Å¿ì1/3£¬ÓÈÆäÊı¾İÁ¿ÔÚ40wÒÔÄÚµÄÊ±ºò
-  *	µ«ÊÇrobinµÄ¶ÁÈ¡ËÙ¶È±ÈrobinºÃ£¬²»¹ıµ½ÁË30wÌõÊı¾İÒÔÄÚ£¬²î±ğ¾Í²»´ó
-  *	°´ÕÕwondertraderµÄ³¡¾°£¬»¹ÊÇankerlÒªºÃºÜ¶à
-  * ¾ßÌå¿ÉÒÔ²Î¿¼ÒÔÏÂÒ³ÃæµÄĞÔÄÜ¶Ô±È
+  *	ankerlå†™å…¥é€Ÿåº¦æ¯”robinå¥½å¾ˆå¤šï¼Œå¤§æ¦‚å¿«1/3ï¼Œå°¤å…¶æ•°æ®é‡åœ¨40wä»¥å†…çš„æ—¶å€™
+  *	ä½†æ˜¯robinçš„è¯»å–é€Ÿåº¦æ¯”robinå¥½ï¼Œä¸è¿‡åˆ°äº†30wæ¡æ•°æ®ä»¥å†…ï¼Œå·®åˆ«å°±ä¸å¤§
+  *	æŒ‰ç…§wondertraderçš„åœºæ™¯ï¼Œè¿˜æ˜¯ankerlè¦å¥½å¾ˆå¤š
+  * å…·ä½“å¯ä»¥å‚è€ƒä»¥ä¸‹é¡µé¢çš„æ€§èƒ½å¯¹æ¯”
   * https://martin.ankerl.com/2022/08/27/hashmap-bench-01/#benchmark-results-table
   */
 
@@ -28,7 +28,7 @@ NS_WTP_BEGIN
 
 struct string_hash
 {
-	//BKDRHashËã·¨
+	//BKDRHashç®—æ³•
 	std::size_t operator()(const std::string& key) const
 	{
 		size_t seed = 131; // 31 131 1313 13131 131313 etc..
@@ -79,7 +79,7 @@ public:
 typedef fastest_hashset<std::string> CodeSet;
 
 //////////////////////////////////////////////////////////////////////////
-//ÏÂÃæÊ¹ÓÃunordered_dense
+//ä¸‹é¢ä½¿ç”¨unordered_dense
 
 template<class Key, class T, class Hash = std::hash<Key>>
 class wt_hashmap : public ankerl::unordered_dense::map<Key, T, Hash>

@@ -1,4 +1,4 @@
-#include "WtDataReaderAD.h"
+ï»¿#include "WtDataReaderAD.h"
 #include "LMDBKeys.h"
 
 #include "../Includes/WTSVariant.hpp"
@@ -111,24 +111,24 @@ WTSTickSlice* WtDataReaderAD::readTickSlice(const char* stdCode, uint32_t count,
 		//	curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, endTDate);
 	}
 
-	uint32_t reload_flag = 0; //ÖØÔØ±ê¼Ç£¬0-²»ĞèÒªÖØÔØ£¬1-¼ÓÔØ×îĞÂ£¬2-È«²¿ÖØÔØ
+	uint32_t reload_flag = 0; //é‡è½½æ ‡è®°ï¼Œ0-ä¸éœ€è¦é‡è½½ï¼Œ1-åŠ è½½æœ€æ–°ï¼Œ2-å…¨éƒ¨é‡è½½
 	std::string key = StrUtil::printf("%s.%s", cInfo._exchg, curCode.c_str());
-	//ÏÈ¼ì²é»º´æ
+	//å…ˆæ£€æŸ¥ç¼“å­˜
 	TicksList& tickList = _ticks_cache[key];
 	uint64_t last_access_time = 0;
 	do
 	{
 		if(tickList._ticks.capacity() < count)
 		{
-			//ÈİÁ¿²»¹»£¬È«²¿ÖØÔØ
+			//å®¹é‡ä¸å¤Ÿï¼Œå…¨éƒ¨é‡è½½
 			reload_flag = 2;
 			tickList._ticks.rset_capacity(count);
-			tickList._ticks.clear();	//Çå³ıÔ­ÓĞÊı¾İ
+			tickList._ticks.clear();	//æ¸…é™¤åŸæœ‰æ•°æ®
 		}
 
 		if(tickList._last_req_time < etime)
 		{
-			//ÇëÇóÊ±¼ä²»¹»£¬Ö»À­È¡×îĞÂµÄ
+			//è¯·æ±‚æ—¶é—´ä¸å¤Ÿï¼Œåªæ‹‰å–æœ€æ–°çš„
 			reload_flag = 1;
 			last_access_time = tickList._last_req_time;
 			break;
@@ -136,14 +136,14 @@ WTSTickSlice* WtDataReaderAD::readTickSlice(const char* stdCode, uint32_t count,
 
 	} while (false);
 
-	//ÕâÀïÒª¸Ä³É´Ólmdb¶ÁÈ¡
+	//è¿™é‡Œè¦æ”¹æˆä»lmdbè¯»å–
 	WtLMDBPtr db = get_t_db(cInfo._exchg, cInfo._code);
 	if (db == NULL)
 		return NULL;
 
 	if(reload_flag == 1)
 	{
-		//ÔöÁ¿¸üĞÂ£¬´ÓÉÏ´ÎµÄÊ±¼ä´Áµ½±¾´ÎµÄÊ±¼ä´Á£¬¶ÁÈ¡×îĞÂµÄ¼´¿É
+		//å¢é‡æ›´æ–°ï¼Œä»ä¸Šæ¬¡çš„æ—¶é—´æˆ³åˆ°æœ¬æ¬¡çš„æ—¶é—´æˆ³ï¼Œè¯»å–æœ€æ–°çš„å³å¯
 		last_access_time += 1;
 		WtLMDBQuery query(*db);
 		LMDBHftKey lKey(cInfo._exchg, cInfo._code, (uint32_t)(last_access_time / 1000000000), (uint32_t)(last_access_time % 1000000000));
@@ -161,7 +161,7 @@ WTSTickSlice* WtDataReaderAD::readTickSlice(const char* stdCode, uint32_t count,
 	}
 	else if(reload_flag == 2)
 	{
-		//È«²¿¸üĞÂ£¬´Ó½áÊøÊ±¼äÍùÇ°¶ÁÈ¡¼´¿É
+		//å…¨éƒ¨æ›´æ–°ï¼Œä»ç»“æŸæ—¶é—´å¾€å‰è¯»å–å³å¯
 		WtLMDBQuery query(*db);
 		LMDBHftKey rKey(cInfo._exchg, cInfo._code, (uint32_t)(etime / 1000000000), (uint32_t)(etime % 1000000000));
 		LMDBHftKey lKey(cInfo._exchg, cInfo._code, 0, 0);
@@ -180,19 +180,19 @@ WTSTickSlice* WtDataReaderAD::readTickSlice(const char* stdCode, uint32_t count,
 
 	tickList._last_req_time = etime;
 
-	//È«²¿¶ÁÈ¡Íê³ÉÒÔºó£¬ÔÙÉú³ÉÇĞÆ¬
-	//ÕâÀïÒª×¢ÒâÒ»ÏÂ£¬ÒòÎª¶ÁÈ¡tickÊÇË³ĞòµÄ£¬µ«ÊÇ·µ»ØÊÇĞèÒª´ÓºóÍùÇ°È¡Ö¸¶¨ÌõÊıµÄ£¬ËùÒÔÓ¦¸ÃÏÈ¶ÁÈ¡array_two
-	count = min((uint32_t)tickList._ticks.size(), count);	//ÏÈ¶Ôcount×öÒ»¸öĞŞÕı
+	//å…¨éƒ¨è¯»å–å®Œæˆä»¥åï¼Œå†ç”Ÿæˆåˆ‡ç‰‡
+	//è¿™é‡Œè¦æ³¨æ„ä¸€ä¸‹ï¼Œå› ä¸ºè¯»å–tickæ˜¯é¡ºåºçš„ï¼Œä½†æ˜¯è¿”å›æ˜¯éœ€è¦ä»åå¾€å‰å–æŒ‡å®šæ¡æ•°çš„ï¼Œæ‰€ä»¥åº”è¯¥å…ˆè¯»å–array_two
+	count = min((uint32_t)tickList._ticks.size(), count);	//å…ˆå¯¹countåšä¸€ä¸ªä¿®æ­£
 	auto ayTwo = tickList._ticks.array_two();
 	auto cnt_2 = ayTwo.second;
 	if(cnt_2 >= count)
 	{
-		//Èç¹ûarray_twoÌõÊı×ã¹»£¬ÔòÖ±½Ó·µ»ØÊı¾İ¿é
+		//å¦‚æœarray_twoæ¡æ•°è¶³å¤Ÿï¼Œåˆ™ç›´æ¥è¿”å›æ•°æ®å—
 		return WTSTickSlice::create(stdCode, &tickList._ticks[ayTwo.second - count], count);
 	}
 	else
 	{
-		//Èç¹ûarray_twoÌõÊı²»¹»£¬ĞèÒªÔÙ´Óarray_oneÌáÈ¡
+		//å¦‚æœarray_twoæ¡æ•°ä¸å¤Ÿï¼Œéœ€è¦å†ä»array_oneæå–
 		auto ayOne = tickList._ticks.array_one();
 		auto diff = count - cnt_2;
 		auto ret = WTSTickSlice::create(stdCode, &tickList._ticks[ayOne.second - diff], diff);
@@ -204,7 +204,7 @@ WTSTickSlice* WtDataReaderAD::readTickSlice(const char* stdCode, uint32_t count,
 
 std::string WtDataReaderAD::read_bars_to_buffer(const char* exchg, const char* code, WTSKlinePeriod period)
 {
-	//Ö±½Ó´ÓLMDB¶ÁÈ¡
+	//ç›´æ¥ä»LMDBè¯»å–
 	WtLMDBPtr db = get_k_db(exchg, period);
 	if (db == NULL)
 		return "";
@@ -235,7 +235,7 @@ bool WtDataReaderAD::cacheBarsFromStorage(const std::string& key, const char* st
 	barList._period = period;
 	barList._exchg = cInfo._exchg;
 
-	//Ö±½Ó´ÓLMDB¶ÁÈ¡
+	//ç›´æ¥ä»LMDBè¯»å–
 	WtLMDBPtr db = get_k_db(cInfo._exchg, period);
 	if (db == NULL)
 		return false;
@@ -251,7 +251,7 @@ bool WtDataReaderAD::cacheBarsFromStorage(const std::string& key, const char* st
 		std::size_t cnt = ayVals.size();
 		for (std::size_t i = 0; i < cnt; i++)
 		{
-			//Òª¼ì²é×ó±ß½ç
+			//è¦æ£€æŸ¥å·¦è¾¹ç•Œ
 			if(memcmp(ayKeys[i].data(), (void*)&lKey, sizeof(lKey)) < 0)
 				continue;
 
@@ -316,11 +316,11 @@ WTSBarStruct* WtDataReaderAD::get_rt_cache_bar(const char* exchg, const char* co
 	{
 		if (wrapper->empty())
 		{
-			//Èç¹û»º´æÎª¿Õ£¬Ôò¼ÓÔØ»º´æ
+			//å¦‚æœç¼“å­˜ä¸ºç©ºï¼Œåˆ™åŠ è½½ç¼“å­˜
 			do
 			{
 
-				//»º´æÎª¿Õ£¬ÏÈ×Ô¶¯¼ÓÔØ
+				//ç¼“å­˜ä¸ºç©ºï¼Œå…ˆè‡ªåŠ¨åŠ è½½
 				std::string filename = _base_dir + wrapper->_filename;
 				if (!StdFile::exists(filename.c_str()))
 					break;
@@ -341,7 +341,7 @@ WTSBarStruct* WtDataReaderAD::get_rt_cache_bar(const char* exchg, const char* co
 		}
 		else
 		{
-			//Èç¹û»º´æ²»Îª¿Õ£¬¼ì²éÒ»ÏÂÓĞÃ»ÓĞĞÂµÄºÏÔ¼½øÀ´£¬Èç¹ûÓĞµÄ»°£¬¾Í°ÑË÷Òı¸üĞÂÒ»ÏÂ
+			//å¦‚æœç¼“å­˜ä¸ä¸ºç©ºï¼Œæ£€æŸ¥ä¸€ä¸‹æœ‰æ²¡æœ‰æ–°çš„åˆçº¦è¿›æ¥ï¼Œå¦‚æœæœ‰çš„è¯ï¼Œå°±æŠŠç´¢å¼•æ›´æ–°ä¸€ä¸‹
 			if (wrapper->_last_size != wrapper->_cache_block->_size)
 			{
 				for (uint32_t i = wrapper->_last_size; i < wrapper->_cache_block->_size; i++)
@@ -352,7 +352,7 @@ WTSBarStruct* WtDataReaderAD::get_rt_cache_bar(const char* exchg, const char* co
 			}
 		}
 
-		//×îºó¿´»º´æÀïÓĞÃ»ÓĞ¸ÄºÏÔ¼¶ÔÓ¦µÄKÏß»º´æ
+		//æœ€åçœ‹ç¼“å­˜é‡Œæœ‰æ²¡æœ‰æ”¹åˆçº¦å¯¹åº”çš„Kçº¿ç¼“å­˜
 		auto it = wrapper->_idx.find(StrUtil::printf("%s.%s", exchg, code));
 		if (it != wrapper->_idx.end())
 		{
@@ -404,41 +404,41 @@ WTSKlineSlice* WtDataReaderAD::readKlineSlice(const char* stdCode, WTSKlinePerio
 	BarsList& barsList = _bars_cache[key];
 	if (barsList._bars.capacity() < count)
 	{
-		//ÈİÁ¿²»¹»£¬È«²¿ÖØÔØ
+		//å®¹é‡ä¸å¤Ÿï¼Œå…¨éƒ¨é‡è½½
 		barsList._bars.rset_capacity(count);
-		barsList._bars.clear();	//Çå³ıÔ­ÓĞÊı¾İ
+		barsList._bars.clear();	//æ¸…é™¤åŸæœ‰æ•°æ®
 		cacheBarsFromStorage(key, stdCode, period, count);
 	}
 
-	//ÕâÀïÖ»ĞèÒª¼ì²éÒ»ÏÂRTBarCacheµÄKÏßÊ±¼ä´ÁºÍetimeÊÇ·ñÒ»ÖÂ
-	//Èç¹ûÒ»ÖÂ£¬ËµÃ÷×îºóÒ»ÌõKÏß»¹Ã»Íê³É£¬µ«ÊÇÏµÍ³Òª¶ÁÈ¡£¬Õâ¸öÊ±ºò¾ÍÓÃ»º´æÖĞµÄ×îºóÒ»Ìõbar×·¼Óµ½×îºó
-	//Èç¹û²»Ò»ÖÂ£¬ËµÃ÷WriterÄÇ±ßÒÑ¾­´¦ÀíÍê³ÉÁË£¬Ö±½ÓÓÃ»º´æºÃµÄKÏß¼´¿É
-	//OnMinuteEndµÄÊ±ºòÒ²Òª×öÀàËÆµÄ¼ì²é
+	//è¿™é‡Œåªéœ€è¦æ£€æŸ¥ä¸€ä¸‹RTBarCacheçš„Kçº¿æ—¶é—´æˆ³å’Œetimeæ˜¯å¦ä¸€è‡´
+	//å¦‚æœä¸€è‡´ï¼Œè¯´æ˜æœ€åä¸€æ¡Kçº¿è¿˜æ²¡å®Œæˆï¼Œä½†æ˜¯ç³»ç»Ÿè¦è¯»å–ï¼Œè¿™ä¸ªæ—¶å€™å°±ç”¨ç¼“å­˜ä¸­çš„æœ€åä¸€æ¡barè¿½åŠ åˆ°æœ€å
+	//å¦‚æœä¸ä¸€è‡´ï¼Œè¯´æ˜Writeré‚£è¾¹å·²ç»å¤„ç†å®Œæˆäº†ï¼Œç›´æ¥ç”¨ç¼“å­˜å¥½çš„Kçº¿å³å¯
+	//OnMinuteEndçš„æ—¶å€™ä¹Ÿè¦åšç±»ä¼¼çš„æ£€æŸ¥
 	if (barsList._bars.empty())
 		return NULL;
 
-	//Êı¾İÌõÊı×öÒ»¸öĞŞÕı
+	//æ•°æ®æ¡æ•°åšä¸€ä¸ªä¿®æ­£
 	count = min((uint32_t)barsList._bars.size(), count);
 
 	bool isDay = (period == KP_DAY);
 	etime = isDay ? curDate : ((curDate - 19900000)*10000 + curTime);
 	if(barsList._last_req_time < etime)
 	{
-		//ÉÏ´ÎÇëÇóµÄÊ±¼ä£¬Ğ¡ÓÚµ±Ç°ÇëÇóµÄÊ±¼ä£¬ÔòÒª¼ì²é×îºóÒ»ÌõKÏß
+		//ä¸Šæ¬¡è¯·æ±‚çš„æ—¶é—´ï¼Œå°äºå½“å‰è¯·æ±‚çš„æ—¶é—´ï¼Œåˆ™è¦æ£€æŸ¥æœ€åä¸€æ¡Kçº¿
 		WTSBarStruct& lastBar = barsList._bars.back();
 		uint32_t lastBarTime = isDay ? lastBar.date : (uint32_t)lastBar.time;
 		if(lastBarTime < etime)
 		{
-			//Èç¹û×îºóÒ»ÌõKÏßµÄÊ±¼äĞ¡ÓÚµ±Ç°Ê±¼ä£¬ÏÈ´ÓÊıLMDB¸üĞÂ×îĞÂµÄKÏß
+			//å¦‚æœæœ€åä¸€æ¡Kçº¿çš„æ—¶é—´å°äºå½“å‰æ—¶é—´ï¼Œå…ˆä»æ•°LMDBæ›´æ–°æœ€æ–°çš„Kçº¿
 			update_cache_from_lmdb(barsList, cInfo._exchg, curCode.c_str(), period, lastBarTime);
 
 			lastBar = barsList._bars.back();
 			lastBarTime = isDay ? lastBar.date : (uint32_t)lastBar.time;
 		}
 
-		//´Ólmdb¶ÁÍêÁËÒÔºó£¬ÔÙ¼ì²é
-		//Èç¹ûÊ±¼ä´ÁÈÔÈ»Ğ¡ÓÚ½ØÖ¹Ê±¼ä
-		//Ôò´Ó»º´æÖĞ¶ÁÈ¡
+		//ä»lmdbè¯»å®Œäº†ä»¥åï¼Œå†æ£€æŸ¥
+		//å¦‚æœæ—¶é—´æˆ³ä»ç„¶å°äºæˆªæ­¢æ—¶é—´
+		//åˆ™ä»ç¼“å­˜ä¸­è¯»å–
 		if(lastBarTime < etime)
 		{
 			WTSBarStruct* rtBar = get_rt_cache_bar(cInfo._exchg, curCode.c_str(), period);
@@ -447,14 +447,14 @@ WTSKlineSlice* WtDataReaderAD::readKlineSlice(const char* stdCode, WTSKlinePerio
 				uint64_t cacheBarTime = isDay ? rtBar->date : rtBar->time;
 				if (cacheBarTime > etime)
 				{
-					//»º´æµÄKÏßÊ±¼ä´Á´óÓÚ½ØÖ¹Ê±¼ä£¬ËµÃ÷¼ì²éµÄ¹ı³ÌÖĞWriterÒÑ¾­½«Êı¾İ×ª´¢µ½lmdbÖĞÁË
-					//Õâ¸öÊ±ºò¾ÍÔÙ¶ÁÒ»´Îlmdb
+					//ç¼“å­˜çš„Kçº¿æ—¶é—´æˆ³å¤§äºæˆªæ­¢æ—¶é—´ï¼Œè¯´æ˜æ£€æŸ¥çš„è¿‡ç¨‹ä¸­Writerå·²ç»å°†æ•°æ®è½¬å‚¨åˆ°lmdbä¸­äº†
+					//è¿™ä¸ªæ—¶å€™å°±å†è¯»ä¸€æ¬¡lmdb
 					update_cache_from_lmdb(barsList, cInfo._exchg, curCode.c_str(), period, lastBarTime);
 					barsList._last_from_cache = false;
 				}
 				else
 				{
-					//Èç¹û»º´æµÄKÏßÊ±¼äÃ»ÓĞ³¬¹ıetime£¬Ôò½«»º´æÖĞµÄ×îºóÒ»ÌõKÏß×·¼Óµ½¶ÓÁĞÖĞ
+					//å¦‚æœç¼“å­˜çš„Kçº¿æ—¶é—´æ²¡æœ‰è¶…è¿‡etimeï¼Œåˆ™å°†ç¼“å­˜ä¸­çš„æœ€åä¸€æ¡Kçº¿è¿½åŠ åˆ°é˜Ÿåˆ—ä¸­
 					barsList._bars.push_back(*rtBar);
 					barsList._last_from_cache = true;
 					pipe_reader_log(_sink, LL_DEBUG,
@@ -464,21 +464,21 @@ WTSKlineSlice* WtDataReaderAD::readKlineSlice(const char* stdCode, WTSKlinePerio
 		}
 	}
 	
-	//È«²¿´¦ÀíÍêÁËÒÔºó£¬ÔÙ´ÓKÏß»º´æÀï¶ÁÈ¡
+	//å…¨éƒ¨å¤„ç†å®Œäº†ä»¥åï¼Œå†ä»Kçº¿ç¼“å­˜é‡Œè¯»å–
 	barsList._last_req_time = etime;
 
-	//ÕâÀïÒª×¢ÒâÒ»ÏÂ£¬ÒòÎª¶ÁÈ¡Êı¾İÊÇË³ĞòµÄ£¬µ«ÊÇ·µ»ØÊÇĞèÒª´ÓºóÍùÇ°È¡Ö¸¶¨ÌõÊıµÄ£¬ËùÒÔÓ¦¸ÃÏÈ¶ÁÈ¡array_two
-	count = min((uint32_t)barsList._bars.size(), count);	//ÏÈ¶Ôcount×öÒ»¸öĞŞÕı
+	//è¿™é‡Œè¦æ³¨æ„ä¸€ä¸‹ï¼Œå› ä¸ºè¯»å–æ•°æ®æ˜¯é¡ºåºçš„ï¼Œä½†æ˜¯è¿”å›æ˜¯éœ€è¦ä»åå¾€å‰å–æŒ‡å®šæ¡æ•°çš„ï¼Œæ‰€ä»¥åº”è¯¥å…ˆè¯»å–array_two
+	count = min((uint32_t)barsList._bars.size(), count);	//å…ˆå¯¹countåšä¸€ä¸ªä¿®æ­£
 	auto ayTwo = barsList._bars.array_two();
 	auto cnt_2 = ayTwo.second;
 	if (cnt_2 >= count)
 	{
-		//Èç¹ûarray_twoÌõÊı×ã¹»£¬ÔòÖ±½Ó·µ»ØÊı¾İ¿é
+		//å¦‚æœarray_twoæ¡æ•°è¶³å¤Ÿï¼Œåˆ™ç›´æ¥è¿”å›æ•°æ®å—
 		return WTSKlineSlice::create(stdCode, period, 1, &barsList._bars[ayTwo.second - count], count);
 	}
 	else
 	{
-		//Èç¹ûarray_twoÌõÊı²»¹»£¬ĞèÒªÔÙ´Óarray_oneÌáÈ¡
+		//å¦‚æœarray_twoæ¡æ•°ä¸å¤Ÿï¼Œéœ€è¦å†ä»array_oneæå–
 		auto ayOne = barsList._bars.array_one();
 		auto diff = count - cnt_2;
 		auto ret = WTSKlineSlice::create(stdCode, period, 1, &barsList._bars[ayOne.second - diff], diff);
@@ -493,7 +493,7 @@ WTSKlineSlice* WtDataReaderAD::readKlineSlice(const char* stdCode, WTSKlinePerio
 
 void WtDataReaderAD::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTDate /* = 0 */)
 {
-	//ÕâÀïÓ¦¸Ã´¥·¢¼ì²é
+	//è¿™é‡Œåº”è¯¥è§¦å‘æ£€æŸ¥
 	uint64_t nowTime = (uint64_t)uDate * 10000 + uTime;
 	if (nowTime <= _last_time)
 		return;

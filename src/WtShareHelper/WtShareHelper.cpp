@@ -1,4 +1,4 @@
-#include "WtShareHelper.h"
+﻿#include "WtShareHelper.h"
 #include "ShareBlocks.h"
 
 using namespace shareblock;

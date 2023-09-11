@@ -1,11 +1,11 @@
-/*!
+ï»¿/*!
  * \file IParserApi.h
  * \project	WonderTrader
  *
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief ĞĞÇé½âÎöÄ£¿é½Ó¿Ú¶¨ÒåÎÄ¼ş
+ * \brief è¡Œæƒ…è§£ææ¨¡å—æ¥å£å®šä¹‰æ–‡ä»¶
  */
 #pragma once
 #include <string>
@@ -23,53 +23,53 @@ class WTSArray;
 class IBaseDataMgr;
 
 /*
- *	ĞĞÇé½âÎöÄ£¿é»Øµ÷½Ó¿Ú
+ *	è¡Œæƒ…è§£ææ¨¡å—å›è°ƒæ¥å£
  */
 class IParserSpi
 {
 public:
 	/*
-	 *	´¦ÀíÄ£¿éÊÂ¼ş
-	 *	@e	ÊÂ¼şÀàĞÍ,ÈçÁ¬½Ó¡¢¶Ï¿ª¡¢µÇÂ¼¡¢µÇ³ö
-	 *	@ec	´íÎóÂë,0ÎªÃ»ÓĞ´íÎó
+	 *	å¤„ç†æ¨¡å—äº‹ä»¶
+	 *	@e	äº‹ä»¶ç±»å‹,å¦‚è¿æ¥ã€æ–­å¼€ã€ç™»å½•ã€ç™»å‡º
+	 *	@ec	é”™è¯¯ç ,0ä¸ºæ²¡æœ‰é”™è¯¯
 	 */
 	virtual void handleEvent(WTSParserEvent e, int32_t ec){}
 
 	/*
-	 *	´¦ÀíºÏÔ¼ÁĞ±í
-	 *	@aySymbols	ºÏÔ¼ÁĞ±í,»ù´¡ÔªËØÎªWTSContractInfo,WTSArrayµÄÓÃ·¨Çë²Î¿¼¶¨Òå
+	 *	å¤„ç†åˆçº¦åˆ—è¡¨
+	 *	@aySymbols	åˆçº¦åˆ—è¡¨,åŸºç¡€å…ƒç´ ä¸ºWTSContractInfo,WTSArrayçš„ç”¨æ³•è¯·å‚è€ƒå®šä¹‰
 	 */
 	virtual void handleSymbolList(const WTSArray* aySymbols)		= 0;
 
 	/*
-	 *	´¦ÀíÊµÊ±ĞĞÇé
-	 *	@quote		ÊµÊ±ĞĞÇé
-	 *	@procFlag	´¦Àí±ê¼Ç£¬0-ÇĞÆ¬ĞĞÇé£¬ÎŞĞè´¦Àí(ParserUDP)£»1-ÍêÕû¿ìÕÕ£¬ĞèÒªÇĞÆ¬(¹úÄÚ¸÷Â·Í¨µÀ)£»2-¼«¼ò¿ìÕÕ£¬ĞèÒª»º´æÀÛ¼Ó£¨Ö÷ÒªÕë¶ÔÈÕÏß¡¢tick£¬m1ºÍm5¶¼ÊÇ×Ô¶¯ÀÛ¼ÓµÄ£¬ĞéÄâ»õ±ÒĞĞÇé£©
+	 *	å¤„ç†å®æ—¶è¡Œæƒ…
+	 *	@quote		å®æ—¶è¡Œæƒ…
+	 *	@procFlag	å¤„ç†æ ‡è®°ï¼Œ0-åˆ‡ç‰‡è¡Œæƒ…ï¼Œæ— éœ€å¤„ç†(ParserUDP)ï¼›1-å®Œæ•´å¿«ç…§ï¼Œéœ€è¦åˆ‡ç‰‡(å›½å†…å„è·¯é€šé“)ï¼›2-æç®€å¿«ç…§ï¼Œéœ€è¦ç¼“å­˜ç´¯åŠ ï¼ˆä¸»è¦é’ˆå¯¹æ—¥çº¿ã€tickï¼Œm1å’Œm5éƒ½æ˜¯è‡ªåŠ¨ç´¯åŠ çš„ï¼Œè™šæ‹Ÿè´§å¸è¡Œæƒ…ï¼‰
 	 */
 	virtual void handleQuote(WTSTickData *quote, uint32_t procFlag)	= 0;
 
 	/*
-	 *	´¦ÀíÎ¯ÍĞ¶ÓÁĞÊı¾İ£¨¹ÉÆ±level2£©
-	 *	@ordQueData	Î¯ÍĞ¶ÔÀİÊı¾İ
+	 *	å¤„ç†å§”æ‰˜é˜Ÿåˆ—æ•°æ®ï¼ˆè‚¡ç¥¨level2ï¼‰
+	 *	@ordQueData	å§”æ‰˜å¯¹å’æ•°æ®
 	 */
 	virtual void handleOrderQueue(WTSOrdQueData* ordQueData){}
 
 	/*
-	 *	´¦ÀíÖğ±ÊÎ¯ÍĞÊı¾İ£¨¹ÉÆ±level2£©
-	 *	@ordDetailData	Öğ±ÊÎ¯ÍĞÊı¾İ
+	 *	å¤„ç†é€ç¬”å§”æ‰˜æ•°æ®ï¼ˆè‚¡ç¥¨level2ï¼‰
+	 *	@ordDetailData	é€ç¬”å§”æ‰˜æ•°æ®
 	 */
 	virtual void handleOrderDetail(WTSOrdDtlData* ordDetailData){}
 
 	/*
-	 *	´¦ÀíÖğ±Ê³É½»Êı¾İ
-	 *	@transData	Öğ±Ê³É½»Êı¾İ
+	 *	å¤„ç†é€ç¬”æˆäº¤æ•°æ®
+	 *	@transData	é€ç¬”æˆäº¤æ•°æ®
 	 */
 	virtual void handleTransaction(WTSTransData* transData){}
 
 	/*
-	 *	´¦Àí½âÎöÄ£¿éµÄÈÕÖ¾
-	 *	@ll			ÈÕÖ¾¼¶±ğ
-	 *	@message	ÈÕÖ¾ÄÚÈİ
+	 *	å¤„ç†è§£ææ¨¡å—çš„æ—¥å¿—
+	 *	@ll			æ—¥å¿—çº§åˆ«
+	 *	@message	æ—¥å¿—å†…å®¹
 	 */
 	virtual void handleParserLog(WTSLogLevel ll, const char* message)	= 0;
 
@@ -78,7 +78,7 @@ public:
 };
 
 /*
- *	ĞĞÇé½âÎöÄ£¿é½Ó¿Ú
+ *	è¡Œæƒ…è§£ææ¨¡å—æ¥å£
  */
 class IParserApi
 {
@@ -87,54 +87,54 @@ public:
 
 public:
 	/*
-	 *	³õÊ¼»¯½âÎöÄ£¿é
-	 *	@config	Ä£¿éÅäÖÃ
-	 *	·µ»ØÖµ	ÊÇ·ñ³õÊ¼»¯³É¹¦
+	 *	åˆå§‹åŒ–è§£ææ¨¡å—
+	 *	@config	æ¨¡å—é…ç½®
+	 *	è¿”å›å€¼	æ˜¯å¦åˆå§‹åŒ–æˆåŠŸ
 	 */
 	virtual bool init(WTSVariant* config) { return false; }
 
 	/*
-	 *	ÊÍ·Å½âÎöÄ£¿é
-	 *	ÓÃÓÚÍË³öÊ±
+	 *	é‡Šæ”¾è§£ææ¨¡å—
+	 *	ç”¨äºé€€å‡ºæ—¶
 	 */
 	virtual void release(){}
 
 	/*
-	 *	¿ªÊ¼Á¬½Ó·şÎñÆ÷
-	 *	@·µ»ØÖµ	Á¬½ÓÃüÁîÊÇ·ñ·¢ËÍ³É¹¦
+	 *	å¼€å§‹è¿æ¥æœåŠ¡å™¨
+	 *	@è¿”å›å€¼	è¿æ¥å‘½ä»¤æ˜¯å¦å‘é€æˆåŠŸ
 	 */
 	virtual bool connect() { return false; }
 
 	/*
-	 *	¶Ï¿ªÁ¬½Ó
-	 *	@·µ»ØÖµ	ÃüÁîÊÇ·ñ·¢ËÍ³É¹¦
+	 *	æ–­å¼€è¿æ¥
+	 *	@è¿”å›å€¼	å‘½ä»¤æ˜¯å¦å‘é€æˆåŠŸ
 	 */
 	virtual bool disconnect() { return false; }
 
 	/*
-	 *	ÊÇ·ñÒÑÁ¬½Ó
-	 *	@·µ»ØÖµ	ÊÇ·ñÒÑÁ¬½Ó
+	 *	æ˜¯å¦å·²è¿æ¥
+	 *	@è¿”å›å€¼	æ˜¯å¦å·²è¿æ¥
 	 */
 	virtual bool isConnected() { return false; }
 
 	/*
-	 *	¶©ÔÄºÏÔ¼ÁĞ±í
+	 *	è®¢é˜…åˆçº¦åˆ—è¡¨
 	 */
 	virtual void subscribe(const CodeSet& setCodes){}
 
 	/*
-	 *	ÍË¶©ºÏÔ¼ÁĞ±í
+	 *	é€€è®¢åˆçº¦åˆ—è¡¨
 	 */
 	virtual void unsubscribe(const CodeSet& setCodes){}
 
 	/*
-	 *	×¢²á»Øµ÷½Ó¿Ú
+	 *	æ³¨å†Œå›è°ƒæ¥å£
 	 */
 	virtual void registerSpi(IParserSpi* spi) {}
 };
 
 NS_WTP_END
 
-//»ñÈ¡IDataMgrµÄº¯ÊıÖ¸ÕëÀàĞÍ
+//è·å–IDataMgrçš„å‡½æ•°æŒ‡é’ˆç±»å‹
 typedef wtp::IParserApi* (*FuncCreateParser)();
 typedef void(*FuncDeleteParser)(wtp::IParserApi* &parser);

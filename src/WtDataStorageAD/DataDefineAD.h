@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "../Includes/WTSStruct.h"
 
 USING_NS_WTP;
@@ -11,10 +11,10 @@ const int FLAG_SIZE = 8;
 
 typedef enum tagBlockType
 {
-	BT_RT_Cache			= 4		//ÊµÊ±»º´æ
+	BT_RT_Cache			= 4		//å®žæ—¶ç¼“å­˜
 } BlockType;
 
-#define BLOCK_VERSION_RAW	1	//ÆÕÍ¨°æ±¾
+#define BLOCK_VERSION_RAW	1	//æ™®é€šç‰ˆæœ¬
 
 typedef struct _BlockHeader
 {
@@ -37,7 +37,7 @@ typedef struct _TickCacheItem
 	WTSTickStruct	_tick;
 } TickCacheItem;
 
-//ÊµÊ±tick»º´æ
+//å®žæ—¶tickç¼“å­˜
 typedef struct _RTTickCache : RTBlockHeader
 {
 	TickCacheItem	_items[0];
@@ -50,7 +50,7 @@ typedef struct _BarCacheItem
 	WTSBarStruct	_bar;
 } BarCacheItem;
 
-//ÊµÊ±KÏß»º´æ
+//å®žæ—¶Kçº¿ç¼“å­˜
 typedef struct _RTBarCache : RTBlockHeader
 {
 	BarCacheItem	_items[0];

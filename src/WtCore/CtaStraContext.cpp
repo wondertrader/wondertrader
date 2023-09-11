@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file CtaStraContext.cpp
  * \project	WonderTrader
  *
@@ -27,7 +27,7 @@ CtaStraContext::~CtaStraContext()
 }
 
 //////////////////////////////////////////////////////////////////////////
-//»Øµ÷º¯Êý
+//Â»Ã˜ÂµÃ·ÂºÂ¯ÃŠÃ½
 void CtaStraContext::on_bar_close(const char* code, const char* period, WTSBarStruct* newBar)
 {
 	if (_strategy)

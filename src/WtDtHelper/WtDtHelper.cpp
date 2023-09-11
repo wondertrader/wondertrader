@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file WtDtPorter.cpp
  * \project	WonderTrader
  *
@@ -27,7 +27,7 @@ namespace rj = rapidjson;
 USING_NS_WTP;
 
 /*
- *	´¦Àí¿éÊı¾İ
+ *	å¤„ç†å—æ•°æ®
  */
 bool proc_block_data(std::string& content, bool isBar, bool bKeepHead /* = true */)
 {
@@ -36,7 +36,7 @@ bool proc_block_data(std::string& content, bool isBar, bool bKeepHead /* = true 
 	bool bCmped = header->is_compressed();
 	bool bOldVer = header->is_old_version();
 
-	//Èç¹û¼ÈÃ»ÓĞÑ¹Ëõ£¬Ò²²»ÊÇÀÏ°æ±¾½á¹¹Ìå£¬ÔòÖ±½Ó·µ»Ø
+	//å¦‚æœæ—¢æ²¡æœ‰å‹ç¼©ï¼Œä¹Ÿä¸æ˜¯è€ç‰ˆæœ¬ç»“æ„ä½“ï¼Œåˆ™ç›´æ¥è¿”å›
 	if (!bCmped && !bOldVer)
 	{
 		if (!bKeepHead)
@@ -54,14 +54,14 @@ bool proc_block_data(std::string& content, bool isBar, bool bKeepHead /* = true 
 			return false;
 		}
 
-		//½«ÎÄ¼şÍ·ºóÃæµÄÊı¾İ½øĞĞ½âÑ¹
+		//å°†æ–‡ä»¶å¤´åé¢çš„æ•°æ®è¿›è¡Œè§£å‹
 		buffer = WTSCmpHelper::uncompress_data(content.data() + BLOCK_HEADERV2_SIZE, blkV2->_size);
 	}
 	else
 	{
 		if (!bOldVer)
 		{
-			//Èç¹û²»ÊÇÀÏ°æ±¾£¬Ö±½Ó·µ»Ø
+			//å¦‚æœä¸æ˜¯è€ç‰ˆæœ¬ï¼Œç›´æ¥è¿”å›
 			if (!bKeepHead)
 				content.erase(0, BLOCK_HEADER_SIZE);
 			return true;
@@ -163,7 +163,7 @@ void dump_bars(WtString binFolder, WtString csvFolder, WtString strFilter /* = "
 	if (!BoostFile::exists(srcFolder.c_str()))
 	{
 		if (cbLogger)
-			cbLogger(StrUtil::printf("Ä¿Â¼%s²»´æÔÚ", binFolder).c_str());
+			cbLogger(StrUtil::printf("ç›®å½•%sä¸å­˜åœ¨", binFolder).c_str());
 		return;
 	}
 
@@ -185,14 +185,14 @@ void dump_bars(WtString binFolder, WtString csvFolder, WtString strFilter /* = "
 		std::string fileCode = iter->path().stem().string();
 
 		if (cbLogger)
-			cbLogger(StrUtil::printf("ÕıÔÚ¶ÁÈ¡Êı¾İÎÄ¼ş%s...", path.c_str()).c_str());
+			cbLogger(StrUtil::printf("æ­£åœ¨è¯»å–æ•°æ®æ–‡ä»¶%s...", path.c_str()).c_str());
 
 		std::string buffer;
 		BoostFile::read_file_contents(path.c_str(), buffer);
 		if (buffer.size() < sizeof(HisKlineBlock))
 		{
 			if (cbLogger)
-				cbLogger(StrUtil::printf("ÎÄ¼ş%sÍ·²¿Ğ£ÑéÊ§°Ü", binFolder).c_str());
+				cbLogger(StrUtil::printf("æ–‡ä»¶%så¤´éƒ¨æ ¡éªŒå¤±è´¥", binFolder).c_str());
 			continue;
 		}
 
@@ -201,7 +201,7 @@ void dump_bars(WtString binFolder, WtString csvFolder, WtString strFilter /* = "
 		if(bHeader->_type < BT_HIS_Minute1 || bHeader->_type > BT_HIS_Day)
 		{
 			if (cbLogger)
-				cbLogger(StrUtil::printf("ÎÄ¼ş%s²»ÊÇKÏßÊı¾İ£¬Ìø¹ı×ª»»", binFolder).c_str());
+				cbLogger(StrUtil::printf("æ–‡ä»¶%sä¸æ˜¯Kçº¿æ•°æ®ï¼Œè·³è¿‡è½¬æ¢", binFolder).c_str());
 			continue;
 		}
 
@@ -218,7 +218,7 @@ void dump_bars(WtString binFolder, WtString csvFolder, WtString strFilter /* = "
 		filename += ".csv";
 
 		if (cbLogger)
-			cbLogger(StrUtil::printf("ÕıÔÚĞ´Èë%s...", filename.c_str()).c_str());
+			cbLogger(StrUtil::printf("æ­£åœ¨å†™å…¥%s...", filename.c_str()).c_str());
 
 		WTSBarStruct* bars = (WTSBarStruct*)buffer.data();
 
@@ -255,11 +255,11 @@ void dump_bars(WtString binFolder, WtString csvFolder, WtString strFilter /* = "
 		BoostFile::write_file_contents(filename.c_str(), ss.str().c_str(), (uint32_t)ss.str().size());
 
 		if (cbLogger)
-			cbLogger(StrUtil::printf("%sĞ´ÈëÍê³É,¹²%uÌõbar", filename.c_str(), kcnt).c_str());
+			cbLogger(StrUtil::printf("%så†™å…¥å®Œæˆ,å…±%uæ¡bar", filename.c_str(), kcnt).c_str());
 	}
 
 	if (cbLogger)
-		cbLogger(StrUtil::printf("Ä¿Â¼%sÈ«²¿µ¼³öÍê³É...", binFolder).c_str());
+		cbLogger(StrUtil::printf("ç›®å½•%så…¨éƒ¨å¯¼å‡ºå®Œæˆ...", binFolder).c_str());
 }
 
 void dump_ticks(WtString binFolder, WtString csvFolder, WtString strFilter /* = "" */, FuncLogCallback cbLogger /* = NULL */)
@@ -268,7 +268,7 @@ void dump_ticks(WtString binFolder, WtString csvFolder, WtString strFilter /* = 
 	if (!BoostFile::exists(srcFolder.c_str()))
 	{
 		if (cbLogger)
-			cbLogger(StrUtil::printf("Ä¿Â¼%s²»´æÔÚ", binFolder).c_str());
+			cbLogger(StrUtil::printf("ç›®å½•%sä¸å­˜åœ¨", binFolder).c_str());
 		return;
 	}
 
@@ -290,14 +290,14 @@ void dump_ticks(WtString binFolder, WtString csvFolder, WtString strFilter /* = 
 		std::string fileCode = iter->path().stem().string();
 
 		if (cbLogger)
-			cbLogger(StrUtil::printf("ÕıÔÚ¶ÁÈ¡Êı¾İÎÄ¼ş%s...", path.c_str()).c_str());
+			cbLogger(StrUtil::printf("æ­£åœ¨è¯»å–æ•°æ®æ–‡ä»¶%s...", path.c_str()).c_str());
 
 		std::string buffer;
 		BoostFile::read_file_contents(path.c_str(), buffer);
 		if (buffer.size() < sizeof(HisTickBlock))
 		{
 			if (cbLogger)
-				cbLogger(StrUtil::printf("ÎÄ¼ş%sÍ·²¿Ğ£ÑéÊ§°Ü", binFolder).c_str());
+				cbLogger(StrUtil::printf("æ–‡ä»¶%så¤´éƒ¨æ ¡éªŒå¤±è´¥", binFolder).c_str());
 			continue;
 		}
 
@@ -312,7 +312,7 @@ void dump_ticks(WtString binFolder, WtString csvFolder, WtString strFilter /* = 
 		filename += ".csv";
 
 		if (cbLogger)
-			cbLogger(StrUtil::printf("ÕıÔÚĞ´Èë%s...", filename.c_str()).c_str());
+			cbLogger(StrUtil::printf("æ­£åœ¨å†™å…¥%s...", filename.c_str()).c_str());
 
 		WTSTickStruct* ticks = (WTSTickStruct*)buffer.data();
 
@@ -361,11 +361,11 @@ void dump_ticks(WtString binFolder, WtString csvFolder, WtString strFilter /* = 
 		BoostFile::write_file_contents(filename.c_str(), ss.str().c_str(), (uint32_t)ss.str().size());
 
 		if (cbLogger)
-			cbLogger(StrUtil::printf("%sĞ´ÈëÍê³É,¹²%uÌõtickÊı¾İ", filename.c_str(), tcnt).c_str());
+			cbLogger(StrUtil::printf("%så†™å…¥å®Œæˆ,å…±%uæ¡tickæ•°æ®", filename.c_str(), tcnt).c_str());
 	}
 
 	if (cbLogger)
-		cbLogger(StrUtil::printf("Ä¿Â¼%sÈ«²¿µ¼³öÍê³É...", binFolder).c_str());
+		cbLogger(StrUtil::printf("ç›®å½•%så…¨éƒ¨å¯¼å‡ºå®Œæˆ...", binFolder).c_str());
 }
 
 void trans_csv_bars(WtString csvFolder, WtString binFolder, WtString period, FuncLogCallback cbLogger /* = NULL */)
@@ -397,13 +397,13 @@ void trans_csv_bars(WtString csvFolder, WtString binFolder, WtString period, Fun
 		const std::string& path = iter->path().string();
 
 		if(cbLogger)
-			cbLogger(StrUtil::printf("ÕıÔÚ¶ÁÈ¡Êı¾İÎÄ¼ş%s...", path.c_str()).c_str());
+			cbLogger(StrUtil::printf("æ­£åœ¨è¯»å–æ•°æ®æ–‡ä»¶%s...", path.c_str()).c_str());
 
 		CsvReader reader(",");
 		if(!reader.load_from_file(path.c_str()))
 		{
 			if (cbLogger)
-				cbLogger(StrUtil::printf("¶ÁÈ¡Êı¾İÎÄ¼ş%sÊ§°Ü...", path.c_str()).c_str());
+				cbLogger(StrUtil::printf("è¯»å–æ•°æ®æ–‡ä»¶%så¤±è´¥...", path.c_str()).c_str());
 			continue;
 		}
 
@@ -411,7 +411,7 @@ void trans_csv_bars(WtString csvFolder, WtString binFolder, WtString period, Fun
 
 		while(reader.next_row())
 		{
-			//ÖğĞĞ¶ÁÈ¡
+			//é€è¡Œè¯»å–
 			WTSBarStruct bs;
 			bs.date = strToDate(reader.get_string("date"));
 			if(kp != KP_DAY)
@@ -430,11 +430,11 @@ void trans_csv_bars(WtString csvFolder, WtString binFolder, WtString period, Fun
 			if (bars.size() % 1000 == 0)
 			{
 				if (cbLogger)
-					cbLogger(StrUtil::printf("ÒÑ¶ÁÈ¡Êı¾İ%uÌõ", bars.size()).c_str());
+					cbLogger(StrUtil::printf("å·²è¯»å–æ•°æ®%uæ¡", bars.size()).c_str());
 			}
 		}
 		if (cbLogger)
-			cbLogger(StrUtil::printf("Êı¾İÎÄ¼ş%sÈ«²¿¶ÁÈ¡Íê³É,¹²%uÌõ", path.c_str(), bars.size()).c_str());
+			cbLogger(StrUtil::printf("æ•°æ®æ–‡ä»¶%så…¨éƒ¨è¯»å–å®Œæˆ,å…±%uæ¡", path.c_str(), bars.size()).c_str());
 
 		BlockType btype;
 		switch (kp)
@@ -464,7 +464,7 @@ void trans_csv_bars(WtString csvFolder, WtString binFolder, WtString period, Fun
 		bf.write_file(cmprsData);
 		bf.close_file();
 		if (cbLogger)
-			cbLogger(StrUtil::printf("Êı¾İÒÑ×ª´¢ÖÁ%s", filename.c_str()).c_str());
+			cbLogger(StrUtil::printf("æ•°æ®å·²è½¬å‚¨è‡³%s", filename.c_str()).c_str());
 	}
 }
 
@@ -473,7 +473,7 @@ void trans_csv_bars(WtString csvFolder, WtString binFolder, WtString period, Fun
 //	if (count == 0)
 //	{
 //		if (cbLogger)
-//			cbLogger("KÏßÊı¾İÌõÊıÎª0");
+//			cbLogger("Kçº¿æ•°æ®æ¡æ•°ä¸º0");
 //		return false;
 //	}
 //
@@ -487,7 +487,7 @@ void trans_csv_bars(WtString csvFolder, WtString binFolder, WtString period, Fun
 //	else
 //	{
 //		if (cbLogger)
-//			cbLogger("ÖÜÆÚÖ»ÄÜÎªm1¡¢m5»òd");
+//			cbLogger("å‘¨æœŸåªèƒ½ä¸ºm1ã€m5æˆ–d");
 //		return false;
 //	}
 //
@@ -510,7 +510,7 @@ void trans_csv_bars(WtString csvFolder, WtString binFolder, WtString period, Fun
 //	}
 //
 //	if (cbLogger)
-//		cbLogger("KÏßÊı¾İÒÑ¾­¶ÁÈ¡Íê³É£¬×¼±¸Ğ´ÈëÎÄ¼ş");
+//		cbLogger("Kçº¿æ•°æ®å·²ç»è¯»å–å®Œæˆï¼Œå‡†å¤‡å†™å…¥æ–‡ä»¶");
 //
 //	std::string content;
 //	content.resize(sizeof(HisKlineBlockV2));
@@ -530,7 +530,7 @@ void trans_csv_bars(WtString csvFolder, WtString binFolder, WtString period, Fun
 //	bf.close_file();
 //
 //	if (cbLogger)
-//		cbLogger("KÏßÊı¾İĞ´ÈëÎÄ¼ş³É¹¦");
+//		cbLogger("Kçº¿æ•°æ®å†™å…¥æ–‡ä»¶æˆåŠŸ");
 //	return true;
 //}
 //
@@ -539,7 +539,7 @@ void trans_csv_bars(WtString csvFolder, WtString binFolder, WtString period, Fun
 //	if (count == 0)
 //	{
 //		if (cbLogger)
-//			cbLogger("TickÊı¾İÌõÊıÎª0");
+//			cbLogger("Tickæ•°æ®æ¡æ•°ä¸º0");
 //		return false;
 //	}
 //
@@ -562,7 +562,7 @@ void trans_csv_bars(WtString csvFolder, WtString binFolder, WtString period, Fun
 //	}
 //
 //	if (cbLogger)
-//		cbLogger("TickÊı¾İÒÑ¾­¶ÁÈ¡Íê³É£¬×¼±¸Ğ´ÈëÎÄ¼ş");
+//		cbLogger("Tickæ•°æ®å·²ç»è¯»å–å®Œæˆï¼Œå‡†å¤‡å†™å…¥æ–‡ä»¶");
 //
 //	std::string content;
 //	content.resize(sizeof(HisKlineBlockV2));
@@ -582,7 +582,7 @@ void trans_csv_bars(WtString csvFolder, WtString binFolder, WtString period, Fun
 //	bf.close_file();
 //
 //	if (cbLogger)
-//		cbLogger("TickÊı¾İĞ´ÈëÎÄ¼ş³É¹¦");
+//		cbLogger("Tickæ•°æ®å†™å…¥æ–‡ä»¶æˆåŠŸ");
 //
 //	return true;
 //}
@@ -592,14 +592,14 @@ WtUInt32 read_dsb_ticks(WtString tickFile, FuncGetTicksCallback cb, FuncCountDat
 	std::string path = tickFile;
 
 	if (cbLogger)
-		cbLogger(StrUtil::printf("ÕıÔÚ¶ÁÈ¡Êı¾İÎÄ¼ş%s...", path.c_str()).c_str());
+		cbLogger(StrUtil::printf("æ­£åœ¨è¯»å–æ•°æ®æ–‡ä»¶%s...", path.c_str()).c_str());
 
 	std::string content;
 	BoostFile::read_file_contents(path.c_str(), content);
 	if (content.size() < sizeof(HisTickBlock))
 	{
 		if (cbLogger)
-			cbLogger(StrUtil::printf("ÎÄ¼ş%sÍ·²¿Ğ£ÑéÊ§°Ü", tickFile).c_str());
+			cbLogger(StrUtil::printf("æ–‡ä»¶%så¤´éƒ¨æ ¡éªŒå¤±è´¥", tickFile).c_str());
 		return 0;
 	}
 
@@ -617,7 +617,7 @@ WtUInt32 read_dsb_ticks(WtString tickFile, FuncGetTicksCallback cb, FuncCountDat
 	cb((WTSTickStruct*)content.data(), tcnt, true);
 
 	if (cbLogger)
-		cbLogger(StrUtil::printf("%s¶ÁÈ¡Íê³É,¹²%uÌõtickÊı¾İ", tickFile, tcnt).c_str());
+		cbLogger(StrUtil::printf("%sè¯»å–å®Œæˆ,å…±%uæ¡tickæ•°æ®", tickFile, tcnt).c_str());
 
 	return (WtUInt32)tcnt;
 }
@@ -627,14 +627,14 @@ WtUInt32 read_dsb_order_details(WtString dataFile, FuncGetOrdDtlCallback cb, Fun
 	std::string path = dataFile;
 
 	if (cbLogger)
-		cbLogger(StrUtil::printf("ÕıÔÚ¶ÁÈ¡Êı¾İÎÄ¼ş%s...", path.c_str()).c_str());
+		cbLogger(StrUtil::printf("æ­£åœ¨è¯»å–æ•°æ®æ–‡ä»¶%s...", path.c_str()).c_str());
 
 	std::string content;
 	BoostFile::read_file_contents(path.c_str(), content);
 	if (content.size() < sizeof(HisOrdDtlBlock))
 	{
 		if (cbLogger)
-			cbLogger(StrUtil::printf("ÎÄ¼ş%sÍ·²¿Ğ£ÑéÊ§°Ü", dataFile).c_str());
+			cbLogger(StrUtil::printf("æ–‡ä»¶%så¤´éƒ¨æ ¡éªŒå¤±è´¥", dataFile).c_str());
 		return 0;
 	}
 
@@ -652,7 +652,7 @@ WtUInt32 read_dsb_order_details(WtString dataFile, FuncGetOrdDtlCallback cb, Fun
 	cb((WTSOrdDtlStruct*)content.data(), tcnt, true);
 
 	if (cbLogger)
-		cbLogger(StrUtil::printf("%s¶ÁÈ¡Íê³É,¹²%uÌõorder detailÊı¾İ", dataFile, tcnt).c_str());
+		cbLogger(StrUtil::printf("%sè¯»å–å®Œæˆ,å…±%uæ¡order detailæ•°æ®", dataFile, tcnt).c_str());
 
 	return (WtUInt32)tcnt;
 }
@@ -662,14 +662,14 @@ WtUInt32 read_dsb_order_queues(WtString dataFile, FuncGetOrdQueCallback cb, Func
 	std::string path = dataFile;
 
 	if (cbLogger)
-		cbLogger(StrUtil::printf("ÕıÔÚ¶ÁÈ¡Êı¾İÎÄ¼ş%s...", path.c_str()).c_str());
+		cbLogger(StrUtil::printf("æ­£åœ¨è¯»å–æ•°æ®æ–‡ä»¶%s...", path.c_str()).c_str());
 
 	std::string content;
 	BoostFile::read_file_contents(path.c_str(), content);
 	if (content.size() < sizeof(HisOrdQueBlock))
 	{
 		if (cbLogger)
-			cbLogger(StrUtil::printf("ÎÄ¼ş%sÍ·²¿Ğ£ÑéÊ§°Ü", dataFile).c_str());
+			cbLogger(StrUtil::printf("æ–‡ä»¶%så¤´éƒ¨æ ¡éªŒå¤±è´¥", dataFile).c_str());
 		return 0;
 	}
 
@@ -687,7 +687,7 @@ WtUInt32 read_dsb_order_queues(WtString dataFile, FuncGetOrdQueCallback cb, Func
 	cb((WTSOrdQueStruct*)content.data(), tcnt, true);
 
 	if (cbLogger)
-		cbLogger(StrUtil::printf("%s¶ÁÈ¡Íê³É,¹²%uÌõorder queueÊı¾İ", dataFile, tcnt).c_str());
+		cbLogger(StrUtil::printf("%sè¯»å–å®Œæˆ,å…±%uæ¡order queueæ•°æ®", dataFile, tcnt).c_str());
 
 	return (WtUInt32)tcnt;
 }
@@ -697,14 +697,14 @@ WtUInt32 read_dsb_transactions(WtString dataFile, FuncGetTransCallback cb, FuncC
 	std::string path = dataFile;
 
 	if (cbLogger)
-		cbLogger(StrUtil::printf("ÕıÔÚ¶ÁÈ¡Êı¾İÎÄ¼ş%s...", path.c_str()).c_str());
+		cbLogger(StrUtil::printf("æ­£åœ¨è¯»å–æ•°æ®æ–‡ä»¶%s...", path.c_str()).c_str());
 
 	std::string content;
 	BoostFile::read_file_contents(path.c_str(), content);
 	if (content.size() < sizeof(HisTransBlock))
 	{
 		if (cbLogger)
-			cbLogger(StrUtil::printf("ÎÄ¼ş%sÍ·²¿Ğ£ÑéÊ§°Ü", dataFile).c_str());
+			cbLogger(StrUtil::printf("æ–‡ä»¶%så¤´éƒ¨æ ¡éªŒå¤±è´¥", dataFile).c_str());
 		return 0;
 	}
 
@@ -722,7 +722,7 @@ WtUInt32 read_dsb_transactions(WtString dataFile, FuncGetTransCallback cb, FuncC
 	cb((WTSTransStruct*)content.data(), tcnt, true);
 
 	if (cbLogger)
-		cbLogger(StrUtil::printf("%s¶ÁÈ¡Íê³É,¹²%uÌõtransactionÊı¾İ", dataFile, tcnt).c_str());
+		cbLogger(StrUtil::printf("%sè¯»å–å®Œæˆ,å…±%uæ¡transactionæ•°æ®", dataFile, tcnt).c_str());
 
 	return (WtUInt32)tcnt;
 }
@@ -731,14 +731,14 @@ WtUInt32 read_dsb_bars(WtString barFile, FuncGetBarsCallback cb, FuncCountDataCa
 {
 	std::string path = barFile;
 	if (cbLogger)
-		cbLogger(StrUtil::printf("ÕıÔÚ¶ÁÈ¡Êı¾İÎÄ¼ş%s...", path.c_str()).c_str());
+		cbLogger(StrUtil::printf("æ­£åœ¨è¯»å–æ•°æ®æ–‡ä»¶%s...", path.c_str()).c_str());
 
 	std::string content;
 	BoostFile::read_file_contents(path.c_str(), content);
 	if (content.size() < sizeof(HisKlineBlock))
 	{
 		if (cbLogger)
-			cbLogger(StrUtil::printf("ÎÄ¼ş%sÍ·²¿Ğ£ÑéÊ§°Ü", barFile).c_str());
+			cbLogger(StrUtil::printf("æ–‡ä»¶%så¤´éƒ¨æ ¡éªŒå¤±è´¥", barFile).c_str());
 		return 0;
 	}
 
@@ -756,7 +756,7 @@ WtUInt32 read_dsb_bars(WtString barFile, FuncGetBarsCallback cb, FuncCountDataCa
 	cb((WTSBarStruct*)content.data(), kcnt, true);
 
 	if (cbLogger)
-		cbLogger(StrUtil::printf("%s¶ÁÈ¡Íê³É,¹²%uÌõbar", barFile, kcnt).c_str());
+		cbLogger(StrUtil::printf("%sè¯»å–å®Œæˆ,å…±%uæ¡bar", barFile, kcnt).c_str());
 
 	return (WtUInt32)kcnt;
 }
@@ -770,7 +770,7 @@ WtUInt32 read_dmb_bars(WtString barFile, FuncGetBarsCallback cb, FuncCountDataCa
 	if (buffer.size() < sizeof(RTKlineBlock))
 	{
 		if (cbLogger)
-			cbLogger(StrUtil::printf("ÎÄ¼ş%sÍ·²¿Ğ£ÑéÊ§°Ü", barFile).c_str());
+			cbLogger(StrUtil::printf("æ–‡ä»¶%så¤´éƒ¨æ ¡éªŒå¤±è´¥", barFile).c_str());
 		return 0;
 	}
 
@@ -786,7 +786,7 @@ WtUInt32 read_dmb_bars(WtString barFile, FuncGetBarsCallback cb, FuncCountDataCa
 	cb(tBlock->_bars, kcnt, true);
 
 	if (cbLogger)
-		cbLogger(StrUtil::printf("%s¶ÁÈ¡Íê³É,¹²%uÌõbar", barFile, kcnt).c_str());
+		cbLogger(StrUtil::printf("%sè¯»å–å®Œæˆ,å…±%uæ¡bar", barFile, kcnt).c_str());
 
 	return (WtUInt32)kcnt;
 }
@@ -796,14 +796,14 @@ WtUInt32 read_dmb_ticks(WtString tickFile, FuncGetTicksCallback cb, FuncCountDat
 	std::string path = tickFile;
 
 	if (cbLogger)
-		cbLogger(StrUtil::printf("ÕıÔÚ¶ÁÈ¡Êı¾İÎÄ¼ş%s...", path.c_str()).c_str());
+		cbLogger(StrUtil::printf("æ­£åœ¨è¯»å–æ•°æ®æ–‡ä»¶%s...", path.c_str()).c_str());
 
 	std::string buffer;
 	BoostFile::read_file_contents(path.c_str(), buffer);
 	if (buffer.size() < sizeof(RTTickBlock))
 	{
 		if (cbLogger)
-			cbLogger(StrUtil::printf("ÎÄ¼ş%sÍ·²¿Ğ£ÑéÊ§°Ü", tickFile).c_str());
+			cbLogger(StrUtil::printf("æ–‡ä»¶%så¤´éƒ¨æ ¡éªŒå¤±è´¥", tickFile).c_str());
 		return 0;
 	}
 
@@ -819,7 +819,7 @@ WtUInt32 read_dmb_ticks(WtString tickFile, FuncGetTicksCallback cb, FuncCountDat
 	cb(tBlock->_ticks, tcnt, true);
 
 	if (cbLogger)
-		cbLogger(StrUtil::printf("%s¶ÁÈ¡Íê³É,¹²%uÌõtickÊı¾İ", tickFile, tcnt).c_str());
+		cbLogger(StrUtil::printf("%sè¯»å–å®Œæˆ,å…±%uæ¡tickæ•°æ®", tickFile, tcnt).c_str());
 
 	return (WtUInt32)tcnt;
 }
@@ -844,7 +844,7 @@ WtUInt32 resample_bars(WtString barFile, FuncGetBarsCallback cb, FuncCountDataCa
 	else
 	{
 		if (cbLogger)
-			cbLogger(StrUtil::printf("ÖÜÆÚ%s²»ÊÇ»ù´¡ÖÜÆÚ...", period).c_str());
+			cbLogger(StrUtil::printf("å‘¨æœŸ%sä¸æ˜¯åŸºç¡€å‘¨æœŸ...", period).c_str());
 		return 0;
 	}
 
@@ -855,7 +855,7 @@ WtUInt32 resample_bars(WtString barFile, FuncGetBarsCallback cb, FuncCountDataCa
 		if(fromTime >= 100000000 || endTime > 100000000)
 		{
 			if (cbLogger)
-				cbLogger("ÈÕÏß»ù´¡Êı¾İµÄ¿ªÊ¼Ê±¼ä½áÊøÊ±¼äÓ¦ÎªÈÕÆÚ£¬¸ñÊ½Èçyyyymmdd");
+				cbLogger("æ—¥çº¿åŸºç¡€æ•°æ®çš„å¼€å§‹æ—¶é—´ç»“æŸæ—¶é—´åº”ä¸ºæ—¥æœŸï¼Œæ ¼å¼å¦‚yyyymmdd");
 			return 0;
 		}
 	}
@@ -864,7 +864,7 @@ WtUInt32 resample_bars(WtString barFile, FuncGetBarsCallback cb, FuncCountDataCa
 		if (fromTime < 100000000 || endTime < 100000000)
 		{
 			if (cbLogger)
-				cbLogger("·ÖÖÓÏß»ù´¡Êı¾İµÄ¿ªÊ¼Ê±¼ä½áÊøÊ±¼äÓ¦ÎªÊ±¼ä£¬¸ñÊ½ÈçyyyymmddHHMM");
+				cbLogger("åˆ†é’Ÿçº¿åŸºç¡€æ•°æ®çš„å¼€å§‹æ—¶é—´ç»“æŸæ—¶é—´åº”ä¸ºæ—¶é—´ï¼Œæ ¼å¼å¦‚yyyymmddHHMM");
 			return 0;
 		}
 	}
@@ -880,7 +880,7 @@ WtUInt32 resample_bars(WtString barFile, FuncGetBarsCallback cb, FuncCountDataCa
 		if (root.Parse(sessInfo).HasParseError())
 		{
 			if (cbLogger)
-				cbLogger("½»Ò×Ê±¼äÄ£°å½âÎöÊ§°Ü");
+				cbLogger("äº¤æ˜“æ—¶é—´æ¨¡æ¿è§£æå¤±è´¥");
 			return 0;
 		}
 
@@ -898,7 +898,7 @@ WtUInt32 resample_bars(WtString barFile, FuncGetBarsCallback cb, FuncCountDataCa
 		if (jSecs.IsNull() || !jSecs.IsArray())
 		{
 			if (cbLogger)
-				cbLogger("½»Ò×Ê±¼äÄ£°å¸ñÊ½´íÎó");
+				cbLogger("äº¤æ˜“æ—¶é—´æ¨¡æ¿æ ¼å¼é”™è¯¯");
 			return 0;
 		}
 
@@ -910,14 +910,14 @@ WtUInt32 resample_bars(WtString barFile, FuncGetBarsCallback cb, FuncCountDataCa
 
 	std::string path = barFile;
 	if (cbLogger)
-		cbLogger(StrUtil::printf("ÕıÔÚ¶ÁÈ¡Êı¾İÎÄ¼ş%s...", path.c_str()).c_str());
+		cbLogger(StrUtil::printf("æ­£åœ¨è¯»å–æ•°æ®æ–‡ä»¶%s...", path.c_str()).c_str());
 
 	std::string buffer;
 	BoostFile::read_file_contents(path.c_str(), buffer);
 	if (buffer.size() < sizeof(HisKlineBlock))
 	{
 		if (cbLogger)
-			cbLogger(StrUtil::printf("ÎÄ¼ş%sÍ·²¿Ğ£ÑéÊ§°Ü", barFile).c_str());
+			cbLogger(StrUtil::printf("æ–‡ä»¶%så¤´éƒ¨æ ¡éªŒå¤±è´¥", barFile).c_str());
 		return 0;
 	}
 
@@ -927,13 +927,13 @@ WtUInt32 resample_bars(WtString barFile, FuncGetBarsCallback cb, FuncCountDataCa
 	if (kcnt <= 0)
 	{
 		if (cbLogger)
-			cbLogger(StrUtil::printf("%sÊı¾İÎª¿Õ", barFile).c_str());
+			cbLogger(StrUtil::printf("%sæ•°æ®ä¸ºç©º", barFile).c_str());
 		return 0;
 	}
 
 	WTSBarStruct* bars = (WTSBarStruct*)buffer.c_str();
 
-	//È·¶¨µÚÒ»ÌõKÏßµÄÎ»ÖÃ
+	//ç¡®å®šç¬¬ä¸€æ¡Kçº¿çš„ä½ç½®
 	WTSBarStruct bar;
 	if (isDay)
 		bar.date = (uint32_t)fromTime;
@@ -954,9 +954,9 @@ WtUInt32 resample_bars(WtString barFile, FuncGetBarsCallback cb, FuncCountDataCa
 	uint32_t sIdx = (uint32_t)(pBar - bars);
 	if((isDay && pBar->date < bar.date) || (!isDay && pBar->time < bar.time))
 	{
-		//Èç¹û·µ»ØµÄKÏßµÄÊ±¼äĞ¡ÓÚÒª²éÕÒµÄÊ±¼ä£¬ËµÃ÷Ã»ÓĞ·ûºÏÌõ¼şµÄÊı¾İ
+		//å¦‚æœè¿”å›çš„Kçº¿çš„æ—¶é—´å°äºè¦æŸ¥æ‰¾çš„æ—¶é—´ï¼Œè¯´æ˜æ²¡æœ‰ç¬¦åˆæ¡ä»¶çš„æ•°æ®
 		if (cbLogger)
-			cbLogger("Ã»ÓĞÕÒµ½Ö¸¶¨Ê±¼ä·¶Î§µÄKÏß");
+			cbLogger("æ²¡æœ‰æ‰¾åˆ°æŒ‡å®šæ—¶é—´èŒƒå›´çš„Kçº¿");
 		return 0;
 	}
 	else if (sIdx != 0 && ((isDay && pBar->date > bar.date) || (!isDay && pBar->time > bar.time)))
@@ -965,7 +965,7 @@ WtUInt32 resample_bars(WtString barFile, FuncGetBarsCallback cb, FuncCountDataCa
 		sIdx--;
 	}
 
-	//È·¶¨×îºóÒ»ÌõKÏßµÄÎ»ÖÃ
+	//ç¡®å®šæœ€åä¸€æ¡Kçº¿çš„ä½ç½®
 	if (isDay)
 		bar.date = (uint32_t)endTime;
 	else
@@ -999,7 +999,7 @@ WtUInt32 resample_bars(WtString barFile, FuncGetBarsCallback cb, FuncCountDataCa
 	if(kline == NULL)
 	{
 		if (cbLogger)
-			cbLogger("KÏßÖØ²ÉÑùÊ§°Ü");
+			cbLogger("Kçº¿é‡é‡‡æ ·å¤±è´¥");
 		return 0;
 	}
 
@@ -1008,7 +1008,7 @@ WtUInt32 resample_bars(WtString barFile, FuncGetBarsCallback cb, FuncCountDataCa
 	cb(&kline->getDataRef().at(0),newCnt, true);
 
 	if (cbLogger)
-		cbLogger(StrUtil::printf("%sÖØ²ÉÑùÍê³É,¹²½«%uÌõbarÖØ²ÉÑùÎª%uÌõĞÂbar", barFile, hitCnt, newCnt).c_str());
+		cbLogger(StrUtil::printf("%sé‡é‡‡æ ·å®Œæˆ,å…±å°†%uæ¡baré‡é‡‡æ ·ä¸º%uæ¡æ–°bar", barFile, hitCnt, newCnt).c_str());
 
 	
 	kline->release();
@@ -1023,7 +1023,7 @@ bool store_bars(WtString barFile, WTSBarStruct* firstBar, int count, WtString pe
 	if (count == 0)
 	{
 		if (cbLogger)
-			cbLogger("KÏßÊı¾İÌõÊıÎª0");
+			cbLogger("Kçº¿æ•°æ®æ¡æ•°ä¸º0");
 		return false;
 	}
 
@@ -1037,7 +1037,7 @@ bool store_bars(WtString barFile, WTSBarStruct* firstBar, int count, WtString pe
 	else
 	{
 		if (cbLogger)
-			cbLogger("ÖÜÆÚÖ»ÄÜÎªm1¡¢m5»òd");
+			cbLogger("å‘¨æœŸåªèƒ½ä¸ºm1ã€m5æˆ–d");
 		return false;
 	}
 
@@ -1047,7 +1047,7 @@ bool store_bars(WtString barFile, WTSBarStruct* firstBar, int count, WtString pe
 	memcpy(bars, firstBar, sizeof(WTSBarStruct)*count);
 
 	if (cbLogger)
-		cbLogger("KÏßÊı¾İÒÑ¾­¶ÁÈ¡Íê³É£¬×¼±¸Ğ´ÈëÎÄ¼ş");
+		cbLogger("Kçº¿æ•°æ®å·²ç»è¯»å–å®Œæˆï¼Œå‡†å¤‡å†™å…¥æ–‡ä»¶");
 
 	std::string content;
 	content.resize(sizeof(HisKlineBlockV2));
@@ -1067,7 +1067,7 @@ bool store_bars(WtString barFile, WTSBarStruct* firstBar, int count, WtString pe
 	bf.close_file();
 
 	if (cbLogger)
-		cbLogger("KÏßÊı¾İĞ´ÈëÎÄ¼ş³É¹¦");
+		cbLogger("Kçº¿æ•°æ®å†™å…¥æ–‡ä»¶æˆåŠŸ");
 	return true;
 }
 
@@ -1076,7 +1076,7 @@ bool store_ticks(WtString tickFile, WTSTickStruct* firstTick, int count, FuncLog
 	if (count == 0)
 	{
 		if (cbLogger)
-			cbLogger("TickÊı¾İÌõÊıÎª0");
+			cbLogger("Tickæ•°æ®æ¡æ•°ä¸º0");
 		return false;
 	}
 
@@ -1086,7 +1086,7 @@ bool store_ticks(WtString tickFile, WTSTickStruct* firstTick, int count, FuncLog
 	memcpy(ticks, firstTick, sizeof(WTSTickStruct)*count);
 
 	if (cbLogger)
-		cbLogger("TickÊı¾İÒÑ¾­¶ÁÈ¡Íê³É£¬×¼±¸Ğ´ÈëÎÄ¼ş");
+		cbLogger("Tickæ•°æ®å·²ç»è¯»å–å®Œæˆï¼Œå‡†å¤‡å†™å…¥æ–‡ä»¶");
 
 	std::string content;
 	content.resize(sizeof(HisTickBlockV2));
@@ -1106,7 +1106,7 @@ bool store_ticks(WtString tickFile, WTSTickStruct* firstTick, int count, FuncLog
 	bf.close_file();
 
 	if (cbLogger)
-		cbLogger("TickÊı¾İĞ´ÈëÎÄ¼ş³É¹¦");
+		cbLogger("Tickæ•°æ®å†™å…¥æ–‡ä»¶æˆåŠŸ");
 
 	return true;
 }

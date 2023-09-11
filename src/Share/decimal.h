@@ -1,11 +1,11 @@
-/*!
+ï»¿/*!
  * \file decimal.h
  * \project	WonderTrader
  *
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief ¸¡µãÊı¸¨ÖúÀà,Ö÷ÒªÓÃÓÚ¸¡µãÊı¾İµÄ±È½Ï
+ * \brief æµ®ç‚¹æ•°è¾…åŠ©ç±»,ä¸»è¦ç”¨äºæµ®ç‚¹æ•°æ®çš„æ¯”è¾ƒ
  */
 #pragma once
 #include <math.h>

@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file PorterDefs.h
  * \project	WonderTrader
  *
@@ -13,7 +13,7 @@
 #include "../Includes/WTSTypes.h"
 
 /*
-*	»Øµ÷º¯Êý¶¨Òå
+*	å›žè°ƒå‡½æ•°å®šä¹‰
 */
 typedef void(PORTER_FLAG *FuncOnAccount)(const char* channelid, WtUInt32 curTDate, const char* currency, double prebalance, double balance, 
 	double dynbalance, double closeprofit, double dynprofit, double fee, double margin, double deposit, double withdraw, bool isLast);

@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \file WtExeFact.h
  *
  * \author Wesley

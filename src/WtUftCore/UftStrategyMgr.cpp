@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \file UftStrategyMgr.cpp
  * \project	WonderTrader
  *

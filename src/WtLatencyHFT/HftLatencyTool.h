@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * /file WtUftRunner.h
  * /project	WonderTrader
  *
@@ -33,7 +33,7 @@ namespace hft
 
 	public:
 		/*
-		 *	��ʼ��
+		 *	≥ı ºªØ
 		 */
 		bool init();
 

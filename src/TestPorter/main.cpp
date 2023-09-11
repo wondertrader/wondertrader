@@ -1,4 +1,4 @@
-#define _CRT_SECURE_NO_WARNINGS
+﻿#define _CRT_SECURE_NO_WARNINGS
 #include "../WtPorter/WtPorter.h"
 //#include "../WtExecMon/WtExecPorter.h"
 

@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file ParserHuaX.h
  * \project	WonderTrader
  *
@@ -53,7 +53,7 @@ public:
 		LS_LOGINED
 	};
 
-//IQuoteParser ½Ó¿Ú
+//IQuoteParser æ¥å£
 public:
 	virtual bool init(WTSVariant* config) override;
 
@@ -71,18 +71,18 @@ public:
 	virtual void registerSpi(IParserSpi* listener) override;
 
 
-//CThostFtdcMdSpi ½Ó¿Ú
+//CThostFtdcMdSpi æ¥å£
 public:
 	virtual void OnFrontConnected() override;
 
-	///µ±¿Í»§¶ËÓë½»Ò×ºóÌ¨Í¨ĞÅÁ¬½Ó¶Ï¿ªÊ±£¬¸Ã·½·¨±»µ÷ÓÃ¡£µ±·¢ÉúÕâ¸öÇé¿öºó£¬API»á×Ô¶¯ÖØĞÂÁ¬½Ó£¬¿Í»§¶Ë¿É²»×ö´¦Àí¡£
-	///        -3 Á¬½ÓÒÑ¶Ï¿ª
-	///        -4 ÍøÂç¶ÁÊ§°Ü
-	///        -5 ÍøÂçĞ´Ê§°Ü
-	///        -6 ¶©ÔÄÁ÷´íÎó
-	///        -7 Á÷ĞòºÅ´íÎó
-	///        -8 ´íÎóµÄĞÄÌø±¨ÎÄ
-	///        -9 ´íÎóµÄ±¨ÎÄ
+	///å½“å®¢æˆ·ç«¯ä¸äº¤æ˜“åå°é€šä¿¡è¿æ¥æ–­å¼€æ—¶ï¼Œè¯¥æ–¹æ³•è¢«è°ƒç”¨ã€‚å½“å‘ç”Ÿè¿™ä¸ªæƒ…å†µåï¼ŒAPIä¼šè‡ªåŠ¨é‡æ–°è¿æ¥ï¼Œå®¢æˆ·ç«¯å¯ä¸åšå¤„ç†ã€‚
+	///        -3 è¿æ¥å·²æ–­å¼€
+	///        -4 ç½‘ç»œè¯»å¤±è´¥
+	///        -5 ç½‘ç»œå†™å¤±è´¥
+	///        -6 è®¢é˜…æµé”™è¯¯
+	///        -7 æµåºå·é”™è¯¯
+	///        -8 é”™è¯¯çš„å¿ƒè·³æŠ¥æ–‡
+	///        -9 é”™è¯¯çš„æŠ¥æ–‡
 	virtual void OnFrontDisconnected(int nReason) override;
 
 	virtual void OnRspUserLogin(CTORATstpRspUserLoginField* pRspUserLoginField, CTORATstpRspInfoField* pRspInfoField, int nRequestID) override;
@@ -93,11 +93,11 @@ public:
 
 private:
 	/*
-	 *	·¢ËÍµÇÂ¼ÇëÇó
+	 *	å‘é€ç™»å½•è¯·æ±‚
 	 */
 	void DoLogin();
 	/*
-	 *	¶©ÔÄÆ·ÖÖĞĞÇé
+	 *	è®¢é˜…å“ç§è¡Œæƒ…
 	 */
 	void DoSubscribeMD();
 
@@ -105,8 +105,8 @@ private:
 	uint32_t			_uTradingDate;
 	LoginStatus			_loginState;
 	HuaXParserApi*		_api;
-	std::string			_sub_mode; // TCPÁ¬½ÓÄ£Ê½ 0  UDPµ¥²¥Ä£Ê½ 1 UDP×é²¥Ä£Ê½ 2
-	std::string			_derive_sub_mode; // ÑÓÉì¹¦ÄÜÁ¬½ÓÄ£Ê½
+	std::string			_sub_mode; // TCPè¿æ¥æ¨¡å¼ 0  UDPå•æ’­æ¨¡å¼ 1 UDPç»„æ’­æ¨¡å¼ 2
+	std::string			_derive_sub_mode; // å»¶ä¼¸åŠŸèƒ½è¿æ¥æ¨¡å¼
 	std::string			_front;  // tcp://210.14.72.16:9402
 	std::string			_strUser; 
 	std::string			_strPass;

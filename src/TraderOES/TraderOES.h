@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file TraderOES.h
  * \project	WonderTrader
  *
@@ -31,11 +31,11 @@ public:
 
 	typedef enum
 	{
-		TS_NOTLOGIN,		//Î´µÇÂ¼
-		TS_LOGINING,		//ÕıÔÚµÇÂ¼
-		TS_LOGINED,			//ÒÑµÇÂ¼
-		TS_LOGINFAILED,		//µÇÂ¼Ê§°Ü
-		TS_ALLREADY			//È«²¿¾ÍĞ÷
+		TS_NOTLOGIN,		//æœªç™»å½•
+		TS_LOGINING,		//æ­£åœ¨ç™»å½•
+		TS_LOGINED,			//å·²ç™»å½•
+		TS_LOGINFAILED,		//ç™»å½•å¤±è´¥
+		TS_ALLREADY			//å…¨éƒ¨å°±ç»ª
 	} TraderState;
 
 public:
@@ -53,7 +53,7 @@ public:
 
 public:
 	//////////////////////////////////////////////////////////////////////////
-	//ITraderApi ½Ó¿Ú
+	//ITraderApi æ¥å£
 	virtual bool init(WTSVariant *params) override;
 
 	virtual void release() override;
@@ -119,9 +119,9 @@ private:
 	boost::asio::io_service		_asyncio;
 	StdThreadPtr				_thrd_worker;
 
-	//Î¯ÍĞµ¥±ê¼Ç»º´æÆ÷
+	//å§”æ‰˜å•æ ‡è®°ç¼“å­˜å™¨
 	WtKVCache		m_eidCache;
-	//¶©µ¥±ê¼Ç»º´æÆ÷
+	//è®¢å•æ ‡è®°ç¼“å­˜å™¨
 	WtKVCache		m_oidCache;
 };
 

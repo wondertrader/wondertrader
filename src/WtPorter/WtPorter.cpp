@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file WtPorter.cpp
  * \project	WonderTrader
  *
@@ -178,7 +178,7 @@ bool reg_exe_factories(const char* factFolder)
 }
 
 
-#pragma region "CTA²ßÂÔ½Ó¿Ú"
+#pragma region "CTAç­–ç•¥æ¥å£"
 
 CtxHandler create_cta_context(const char* name, int slippage)
 {
@@ -548,7 +548,7 @@ bool cta_set_index_value(CtxHandler cHandle, const char* idxName, const char* li
 
 #pragma endregion
 
-#pragma region "¶àÒò×Ó²ßÂÔ½Ó¿Ú"
+#pragma region "å¤šå› å­ç­–ç•¥æ¥å£"
 CtxHandler create_sel_context(const char* name, uint32_t date, uint32_t time, const char* period, const char* trdtpl/* = "CHINA"*/, const char* session/* = "TRADING"*/, int32_t slippage/* = 0*/)
 {
 	return getRunner().createSelContext(name, date, time, period, slippage, trdtpl, session);
@@ -673,7 +673,7 @@ void sel_set_position(CtxHandler cHandle, const char* stdCode, double qty, const
 	if (ctx == NULL)
 		return;
 
-	//¶àÒò×ÓÒıÇæ,ÏŞ¼ÛºÍÖ¹¼Û¶¼ÎŞĞ§
+	//å¤šå› å­å¼•æ“,é™ä»·å’Œæ­¢ä»·éƒ½æ— æ•ˆ
 	ctx->stra_set_position(stdCode, qty, userTag);
 }
 
@@ -825,7 +825,7 @@ WtString sel_get_last_entertag(CtxHandler cHandle, const char* stdCode)
 }
 #pragma endregion
 
-#pragma region "HFT²ßÂÔ½Ó¿Ú"
+#pragma region "HFTç­–ç•¥æ¥å£"
 CtxHandler create_hft_context(const char* name, const char* trader, bool agent, int32_t slippage/* = 0*/)
 {
 	return getRunner().createHftContext(name, trader, agent, slippage);
@@ -1174,11 +1174,11 @@ WtString hft_load_userdata(CtxHandler cHandle, const char* key, const char* defV
 
 	return ctx->stra_load_user_data(key, defVal);
 }
-#pragma endregion "HFT²ßÂÔ½Ó¿Ú"
+#pragma endregion "HFTç­–ç•¥æ¥å£"
 
-#pragma region "À©Õ¹Parser½Ó¿Ú"
+#pragma region "æ‰©å±•Parseræ¥å£"
 void parser_push_quote(const char* id, WTSTickStruct* curTick, WtUInt32 uProcFlag)
 {
 	getRunner().on_ext_parser_quote(id, curTick, uProcFlag);
 }
-#pragma endregion "À©Õ¹Parser½Ó¿Ú"
+#pragma endregion "æ‰©å±•Parseræ¥å£"

@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file WtEngine.h
  * \project	WonderTrader
  *
@@ -113,9 +113,9 @@ public:
 	double get_day_price(const char* stdCode, int flag = 0);
 
 	/*
-	 *	»ñÈ¡¸´È¨Òò×Ó
-	 *	@stdCode	ºÏÔ¼´úÂë
-	 *	@commInfo	Æ·ÖÖĞÅÏ¢
+	 *	è·å–å¤æƒå› å­
+	 *	@stdCode	åˆçº¦ä»£ç 
+	 *	@commInfo	å“ç§ä¿¡æ¯
 	 */
 	double get_exright_factor(const char* stdCode, WTSCommodityInfo* commInfo = NULL);
 
@@ -134,7 +134,7 @@ public:
 	}
 
 	//////////////////////////////////////////////////////////////////////////
-	//WtPortContext½Ó¿Ú
+	//WtPortContextæ¥å£
 	virtual WTSPortFundInfo* getFundInfo() override;
 
 	virtual void setVolScale(double scale) override;
@@ -149,7 +149,7 @@ public:
 	virtual uint32_t	transTimeToMin(uint32_t uTime) override{ return 0; }
 
 	//////////////////////////////////////////////////////////////////////////
-	/// IParserStub½Ó¿Ú
+	/// IParserStubæ¥å£
 	virtual void handle_push_quote(WTSTickData* newTick, uint32_t hotFlag) override;
 
 public:
@@ -192,30 +192,30 @@ private:
 		double profit, double totalprofit = 0);
 
 protected:
-	uint32_t		_cur_date;		//µ±Ç°ÈÕÆÚ
-	uint32_t		_cur_time;		//µ±Ç°Ê±¼ä, ÊÇ1·ÖÖÓÏßÊ±¼ä, ±ÈÈç0900, Õâ¸öÊ±ºòµÄ1·ÖÖÓÏßÊÇ0901, _cur_timeÒ²¾ÍÊÇ0901, Õâ¸öÊÇÎªÁËCTAÀïÃæ·½±ã
-	uint32_t		_cur_raw_time;	//µ±Ç°ÕæÊµÊ±¼ä
-	uint32_t		_cur_secs;		//µ±Ç°ÃëÊı, °üº¬ºÁÃë
-	uint32_t		_cur_tdate;		//µ±Ç°½»Ò×ÈÕ
+	uint32_t		_cur_date;		//å½“å‰æ—¥æœŸ
+	uint32_t		_cur_time;		//å½“å‰æ—¶é—´, æ˜¯1åˆ†é’Ÿçº¿æ—¶é—´, æ¯”å¦‚0900, è¿™ä¸ªæ—¶å€™çš„1åˆ†é’Ÿçº¿æ˜¯0901, _cur_timeä¹Ÿå°±æ˜¯0901, è¿™ä¸ªæ˜¯ä¸ºäº†CTAé‡Œé¢æ–¹ä¾¿
+	uint32_t		_cur_raw_time;	//å½“å‰çœŸå®æ—¶é—´
+	uint32_t		_cur_secs;		//å½“å‰ç§’æ•°, åŒ…å«æ¯«ç§’
+	uint32_t		_cur_tdate;		//å½“å‰äº¤æ˜“æ—¥
 
-	uint32_t		_fund_udt_span;	//×éºÏ×Ê½ğ¸üĞÂÊ±¼ä¼ä¸ô
+	uint32_t		_fund_udt_span;	//ç»„åˆèµ„é‡‘æ›´æ–°æ—¶é—´é—´éš”
 
-	IBaseDataMgr*	_base_data_mgr;	//»ù´¡Êı¾İ¹ÜÀíÆ÷
-	IHotMgr*		_hot_mgr;		//Ö÷Á¦¹ÜÀíÆ÷
-	WtDtMgr*		_data_mgr;		//Êı¾İ¹ÜÀíÆ÷
+	IBaseDataMgr*	_base_data_mgr;	//åŸºç¡€æ•°æ®ç®¡ç†å™¨
+	IHotMgr*		_hot_mgr;		//ä¸»åŠ›ç®¡ç†å™¨
+	WtDtMgr*		_data_mgr;		//æ•°æ®ç®¡ç†å™¨
 	IEngineEvtListener*	_evt_listener;
 
 	//By Wesley @ 2022.02.07
-	//tickÊı¾İ¶©ÔÄÏî£¬firstÊÇcontextid£¬secondÊÇ¶©ÔÄÑ¡Ïî£¬0-Ô­Ê¼¶©ÔÄ£¬1-Ç°¸´È¨£¬2-ºó¸´È¨
+	//tickæ•°æ®è®¢é˜…é¡¹ï¼Œfirstæ˜¯contextidï¼Œsecondæ˜¯è®¢é˜…é€‰é¡¹ï¼Œ0-åŸå§‹è®¢é˜…ï¼Œ1-å‰å¤æƒï¼Œ2-åå¤æƒ
 	typedef std::pair<uint32_t, uint32_t> SubOpt;
 	typedef wt_hashmap<uint32_t, SubOpt> SubList;
 	typedef wt_hashmap<std::string, SubList>	StraSubMap;
-	StraSubMap		_tick_sub_map;	//tickÊı¾İ¶©ÔÄ±í
-	StraSubMap		_bar_sub_map;	//KÏßÊı¾İ¶©ÔÄ±í
+	StraSubMap		_tick_sub_map;	//tickæ•°æ®è®¢é˜…è¡¨
+	StraSubMap		_bar_sub_map;	//Kçº¿æ•°æ®è®¢é˜…è¡¨
 
 	//By Wesley @ 2022.02.07 
-	//Õâ¸öºÃÏñÃ»ÓĞÓÃµ½£¬²»ĞèÒªÁË
-	//wt_hashset<std::string>		_ticksubed_raw_codes;	//tick¶©ÔÄ±í£¨ÕæÊµ´úÂëÄ£Ê½£©
+	//è¿™ä¸ªå¥½åƒæ²¡æœ‰ç”¨åˆ°ï¼Œä¸éœ€è¦äº†
+	//wt_hashset<std::string>		_ticksubed_raw_codes;	//tickè®¢é˜…è¡¨ï¼ˆçœŸå®ä»£ç æ¨¡å¼ï¼‰
 	
 
 	//////////////////////////////////////////////////////////////////////////
@@ -235,12 +235,12 @@ protected:
 	SignalMap		_sig_map;
 
 	//////////////////////////////////////////////////////////////////////////
-	//ĞÅºÅ¹ıÂËÆ÷
+	//ä¿¡å·è¿‡æ»¤å™¨
 	WtFilterMgr		_filter_mgr;
 	EventNotifier*	_notifier;
 
 	//////////////////////////////////////////////////////////////////////////
-	//ÊÖĞø·ÑÄ£°å
+	//æ‰‹ç»­è´¹æ¨¡æ¿
 	typedef struct _FeeItem
 	{
 		double	_open;
@@ -260,7 +260,7 @@ protected:
 	WTSPortFundInfo*	_port_fund;
 
 	//////////////////////////////////////////////////////////////////////////
-	//³Ö²ÖÊı¾İ
+	//æŒä»“æ•°æ®
 	typedef struct _DetailInfo
 	{
 		bool		_long;
@@ -301,7 +301,7 @@ protected:
 	typedef wt_hashmap<std::string, double> PriceMap;
 	PriceMap		_price_map;
 
-	//ºóÌ¨ÈÎÎñÏß³Ì, °Ñ·ç¿ØºÍ×Ê½ğ, ³Ö²Ö¸üĞÂ¶¼·Åµ½Õâ¸öÏß³ÌÀïÈ¥
+	//åå°ä»»åŠ¡çº¿ç¨‹, æŠŠé£æ§å’Œèµ„é‡‘, æŒä»“æ›´æ–°éƒ½æ”¾åˆ°è¿™ä¸ªçº¿ç¨‹é‡Œå»
 	typedef std::queue<TaskItem>	TaskQueue;
 	StdThreadPtr	_thrd_task;
 	TaskQueue		_task_queue;
@@ -329,7 +329,7 @@ protected:
 
 	wt_hashmap<std::string, double>	_factors_cache;
 
-	//ÓÃÓÚ±ê¼ÇÊÇ·ñ¿ÉÒÔÍÆËÍtickle
+	//ç”¨äºæ ‡è®°æ˜¯å¦å¯ä»¥æ¨é€tickle
 	bool			_ready;
 };
 NS_WTP_END

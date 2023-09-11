@@ -1,11 +1,11 @@
-/*!
+ï»¿/*!
  * \file WTSMarcos.h
  * \project	WonderTrader
  *
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief WonderTrader»ù´¡ºê¶¨ÒåÎÄ¼ş
+ * \brief WonderTraderåŸºç¡€å®å®šä¹‰æ–‡ä»¶
  */
 #pragma once
 #include <limits.h>
@@ -82,8 +82,8 @@ typedef const char*			WtString;
 
 /*
  *	By Wesley @ 2022.03.17
- *	ÖØĞ´Ò»¸östrcpy
- *	ºËĞÄµÄÒªµã¾ÍÊÇ²»ÓÃstrcpy
+ *	é‡å†™ä¸€ä¸ªstrcpy
+ *	æ ¸å¿ƒçš„è¦ç‚¹å°±æ˜¯ä¸ç”¨strcpy
  */
 inline size_t wt_strcpy(char* des, const char* src, size_t len = 0)
 {

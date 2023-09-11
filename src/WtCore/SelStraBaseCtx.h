@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
 * \file MfStraBaseCtx.h
 * \project	WonderTrader
 *
@@ -69,7 +69,7 @@ protected:
 public:
 	virtual uint32_t id() { return _context_id; }
 
-	//»Øµ÷º¯Êı
+	//å›è°ƒå‡½æ•°
 	virtual void on_init() override;
 	virtual void on_session_begin(uint32_t uTDate) override;
 	virtual void on_session_end(uint32_t uTDate) override;
@@ -80,13 +80,13 @@ public:
 	virtual void enum_position(FuncEnumSelPositionCallBack cb) override;
 
 	//////////////////////////////////////////////////////////////////////////
-	//²ßÂÔ½Ó¿Ú
+	//ç­–ç•¥æ¥å£
 	virtual double stra_get_position(const char* stdCode, bool bOnlyValid = false, const char* userTag = "") override;
 	virtual void stra_set_position(const char* stdCode, double qty, const char* userTag = "") override;
 	virtual double stra_get_price(const char* stdCode) override;
 
 	/*
-	 *	¶ÁÈ¡µ±ÈÕ¼Û¸ñ
+	 *	è¯»å–å½“æ—¥ä»·æ ¼
 	 */
 	virtual double stra_get_day_price(const char* stdCode, int flag = 0) override;
 
@@ -117,7 +117,7 @@ public:
 	virtual WTSTickData*	stra_get_last_tick(const char* stdCode) override;
 
 	/*
-	 *	»ñÈ¡·ÖÔÂºÏÔ¼´úÂë
+	 *	è·å–åˆ†æœˆåˆçº¦ä»£ç 
 	 */
 	virtual std::string		stra_get_rawcode(const char* stdCode) override;
 
@@ -137,8 +137,8 @@ protected:
 	WtSelEngine*	_engine;
 	int32_t			_slippage;
 
-	uint64_t		_total_calc_time;	//×Ü¼ÆËãÊ±¼ä
-	uint32_t		_emit_times;		//×Ü¼ÆËã´ÎÊı
+	uint64_t		_total_calc_time;	//æ€»è®¡ç®—æ—¶é—´
+	uint32_t		_emit_times;		//æ€»è®¡ç®—æ¬¡æ•°
 
 	uint32_t		_schedule_date;
 	uint32_t		_schedule_time;
@@ -229,10 +229,10 @@ protected:
 	BoostFilePtr	_sig_logs;
 	BoostFilePtr	_pos_logs;
 
-	//ÊÇ·ñ´¦ÓÚµ÷¶ÈÖĞµÄ±ê¼Ç
-	bool			_is_in_schedule;	//ÊÇ·ñÔÚ×Ô¶¯µ÷¶ÈÖĞ
+	//æ˜¯å¦å¤„äºè°ƒåº¦ä¸­çš„æ ‡è®°
+	bool			_is_in_schedule;	//æ˜¯å¦åœ¨è‡ªåŠ¨è°ƒåº¦ä¸­
 
-	//ÓÃ»§Êı¾İ
+	//ç”¨æˆ·æ•°æ®
 	typedef wt_hashmap<std::string, std::string> StringHashMap;
 	StringHashMap	_user_datas;
 	bool			_ud_modified;
@@ -251,7 +251,7 @@ protected:
 
 	StraFundInfo		_fund_info;
 
-	//tick¶©ÔÄÁĞ±í
+	//tickè®¢é˜…åˆ—è¡¨
 	wt_hashset<std::string> _tick_subs;
 };
 

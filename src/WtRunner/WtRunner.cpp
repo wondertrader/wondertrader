@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * /file WtRunner.cpp
  * /project	WonderTrader
  *
@@ -81,7 +81,7 @@ bool WtRunner::config()
 		return false;
 	}
 
-	//»ù´¡Êı¾İÎÄ¼ş
+	//åŸºç¡€æ•°æ®æ–‡ä»¶
 	WTSVariant* cfgBF = _config->get("basefiles");
 	if (cfgBF->get("session"))
 		_bd_mgr.loadSessions(cfgBF->getCString("session"));
@@ -138,16 +138,16 @@ bool WtRunner::config()
 		}
 	}
 
-	//³õÊ¼»¯ÔËĞĞ»·¾³
+	//åˆå§‹åŒ–è¿è¡Œç¯å¢ƒ
 	initEngine();
 
-	//³õÊ¼»¯Êı¾İ¹ÜÀí
+	//åˆå§‹åŒ–æ•°æ®ç®¡ç†
 	initDataMgr();
 
 	if (!initActionPolicy())
 		return false;
 
-	//³õÊ¼»¯ĞĞÇéÍ¨µÀ
+	//åˆå§‹åŒ–è¡Œæƒ…é€šé“
 	WTSVariant* cfgParser = _config->get("parsers");
 	if (cfgParser)
 	{
@@ -180,7 +180,7 @@ bool WtRunner::config()
 		}
 	}
 
-	//³õÊ¼»¯½»Ò×Í¨µÀ
+	//åˆå§‹åŒ–äº¤æ˜“é€šé“
 	WTSVariant* cfgTraders = _config->get("traders");
 	if (cfgTraders)
 	{
@@ -215,7 +215,7 @@ bool WtRunner::config()
 
 	initEvtNotifier();
 
-	//Èç¹û²»ÊÇ¸ßÆµÒıÇæ,ÔòĞèÒªÅäÖÃÖ´ĞĞÄ£¿é
+	//å¦‚æœä¸æ˜¯é«˜é¢‘å¼•æ“,åˆ™éœ€è¦é…ç½®æ‰§è¡Œæ¨¡å—
 	if (!_is_hft)
 	{
 		WTSVariant* cfgExec = _config->get("executers");
@@ -427,7 +427,7 @@ bool WtRunner::initParsers(WTSVariant* cfgParser)
 
 		const char* id = cfgItem->getCString("id");
 		// By Wesley @ 2021.12.14
-		// Èç¹ûidÎª¿Õ£¬ÔòÉú³É×Ô¶¯id
+		// å¦‚æœidä¸ºç©ºï¼Œåˆ™ç”Ÿæˆè‡ªåŠ¨id
 		std::string realid = id;
 		if (realid.empty())
 		{

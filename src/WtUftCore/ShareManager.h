@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <stdint.h>
 #include <string>
 
@@ -86,7 +86,7 @@ public:
 	double		get_value(const char* section, const char* key, double defVal = 0);
 
 	/*
-	 *	ÔÚµ¥ÏòÍ¬²½Çø·ÖÅä×Ö¶Î
+	 *	åœ¨å•å‘åŒæ­¥åŒºåˆ†é…å­—æ®µ
 	 */
 	const char*	allocate_value(const char* section, const char* key, const char* initVal = "", bool bForceWrite = false, bool isExchg = false);
 	int32_t*	allocate_value(const char* section, const char* key, int32_t initVal = 0, bool bForceWrite = false, bool isExchg = false);
@@ -97,7 +97,7 @@ public:
 
 private:
 	bool			_inited;
-	std::string		_exchg;	//½»»»Çø
+	std::string		_exchg;	//äº¤æ¢åŒº
 	std::string		_sync;
 
 	wt_hashmap<std::string, uint64_t>	_secnames;

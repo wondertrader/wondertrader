@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file ParserUDP.cpp
  * \project	WonderTrader
  *
@@ -29,9 +29,9 @@ inline void write_log(IParserSpi* sink, WTSLogLevel ll, const char* format, cons
 
 #define UDP_MSG_SUBSCRIBE	0x100
 #define UDP_MSG_PUSHTICK	0x200
-#define UDP_MSG_PUSHORDQUE	0x201	//Î¯ÍĞ¶ÓÁĞ
-#define UDP_MSG_PUSHORDDTL	0x202	//Î¯ÍĞÃ÷Ï¸
-#define UDP_MSG_PUSHTRANS	0x203	//Öğ±Ê³É½»
+#define UDP_MSG_PUSHORDQUE	0x201	//å§”æ‰˜é˜Ÿåˆ—
+#define UDP_MSG_PUSHORDDTL	0x202	//å§”æ‰˜æ˜ç»†
+#define UDP_MSG_PUSHTRANS	0x203	//é€ç¬”æˆäº¤
 
 #pragma pack(push,1)
 
@@ -39,13 +39,13 @@ typedef struct UDPPacketHead
 {
 	uint32_t		_type;
 } UDPPacketHead;
-//UDPÇëÇó°ü
+//UDPè¯·æ±‚åŒ…
 typedef struct _UDPReqPacket : UDPPacketHead
 {
 	char			_data[1020];
 } UDPReqPacket;
 
-//UDPTickÊı¾İ°ü
+//UDPTickæ•°æ®åŒ…
 template <typename T>
 struct UDPDataPacket : UDPPacketHead
 {
@@ -119,7 +119,7 @@ void ParserUDP::release()
 bool ParserUDP::reconnect(uint32_t flag /* = 3 */)
 {
 	if(flag & 1)
-	{//½¨Á¢¹ã²¥Í¨µÀ
+	{//å»ºç«‹å¹¿æ’­é€šé“
 		if (_b_socket != NULL)
 		{
 			_b_socket->close();
@@ -148,7 +148,7 @@ bool ParserUDP::reconnect(uint32_t flag /* = 3 */)
 			StdUniqueLock lock(_mtx_queue);
 			_send_queue.swap(emptyQue);
 
-			//½¨Á¢¶©ÔÄÍ¨µÀ
+			//å»ºç«‹è®¢é˜…é€šé“
 			if (_s_socket != NULL)
 			{
 				_s_socket->close();

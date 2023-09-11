@@ -1,11 +1,11 @@
-/*!
+ï»¿/*!
  * \file ParserAdapter.h
  * \project	WonderTrader
  *
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief ĞĞÇé½âÎöÄ£¿éÊÊÅäÀà¶¨Òå
+ * \brief è¡Œæƒ…è§£ææ¨¡å—é€‚é…ç±»å®šä¹‰
  */
 #pragma once
 #include <set>

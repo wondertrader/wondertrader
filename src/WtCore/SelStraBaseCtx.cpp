@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
 * \file MfStraBaseCtx.cpp
 * \project	WonderTrader
 *
@@ -251,7 +251,7 @@ void SelStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 
 	if (root.HasMember("fund"))
 	{
-		//¶ÁÈ¡×Ê½ğ
+		//è¯»å–èµ„é‡‘
 		const rj::Value& jFund = root["fund"];
 		if (!jFund.IsNull() && jFund.IsObject())
 		{
@@ -263,7 +263,7 @@ void SelStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 		}
 	}
 
-	{//¶ÁÈ¡²ÖÎ»
+	{//è¯»å–ä»“ä½
 		double total_profit = 0;
 		double total_dynprofit = 0;
 		const rj::Value& jPos = root["positions"];
@@ -348,7 +348,7 @@ void SelStraBaseCtx::load_data(uint32_t flag /* = 0xFFFFFFFF */)
 
 	if (root.HasMember("signals"))
 	{
-		//¶ÁÈ¡ĞÅºÅ
+		//è¯»å–ä¿¡å·
 		const rj::Value& jSignals = root["signals"];
 		if (!jSignals.IsNull() && jSignals.IsObject())
 		{
@@ -381,7 +381,7 @@ void SelStraBaseCtx::save_data(uint32_t flag /* = 0xFFFFFFFF */)
 {
 	rj::Document root(rj::kObjectType);
 
-	{//³Ö²ÖÊı¾İ±£´æ
+	{//æŒä»“æ•°æ®ä¿å­˜
 		rj::Value jPos(rj::kArrayType);
 
 		rj::Document::AllocatorType &allocator = root.GetAllocator();
@@ -430,7 +430,7 @@ void SelStraBaseCtx::save_data(uint32_t flag /* = 0xFFFFFFFF */)
 		root.AddMember("positions", jPos, allocator);
 	}
 
-	{//×Ê½ğ±£´æ
+	{//èµ„é‡‘ä¿å­˜
 		rj::Value jFund(rj::kObjectType);
 		rj::Document::AllocatorType &allocator = root.GetAllocator();
 
@@ -442,7 +442,7 @@ void SelStraBaseCtx::save_data(uint32_t flag /* = 0xFFFFFFFF */)
 		root.AddMember("fund", jFund, allocator);
 	}
 
-	{//ĞÅºÅ±£´æ
+	{//ä¿¡å·ä¿å­˜
 		rj::Value jSigs(rj::kObjectType);
 		rj::Document::AllocatorType &allocator = root.GetAllocator();
 
@@ -482,7 +482,7 @@ void SelStraBaseCtx::save_data(uint32_t flag /* = 0xFFFFFFFF */)
 }
 
 //////////////////////////////////////////////////////////////////////////
-//»Øµ÷º¯Êı
+//å›è°ƒå‡½æ•°
 void SelStraBaseCtx::on_bar(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar)
 {
 	if (newBar == NULL)
@@ -504,7 +504,7 @@ void SelStraBaseCtx::on_init()
 {
 	init_outputs();
 
-	//¶ÁÈ¡Êı¾İ
+	//è¯»å–æ•°æ®
 	load_data();
 
 	load_userdata();
@@ -557,7 +557,7 @@ void SelStraBaseCtx::on_tick(const char* stdCode, WTSTickData* newTick, bool bEm
 {
 	_price_map[stdCode] = newTick->price();
 
-	//ÏÈ¼ì²éÊÇ·ñÒªĞÅºÅÒª´¥·¢
+	//å…ˆæ£€æŸ¥æ˜¯å¦è¦ä¿¡å·è¦è§¦å‘
 	{
 		auto it = _sig_map.find(stdCode);
 		if (it != _sig_map.end())
@@ -591,9 +591,9 @@ bool SelStraBaseCtx::on_schedule(uint32_t curDate, uint32_t curTime, uint32_t fi
 	_schedule_date = curDate;
 	_schedule_time = curTime;
 
-	_is_in_schedule = true;//¿ªÊ¼µ÷¶È, ĞŞ¸Ä±ê¼Ç	
+	_is_in_schedule = true;//å¼€å§‹è°ƒåº¦, ä¿®æ”¹æ ‡è®°	
 
-	//Ö÷ÒªÓÃÓÚ±£´æ¸¡¶¯Ó¯¿÷µÄ
+	//ä¸»è¦ç”¨äºä¿å­˜æµ®åŠ¨ç›ˆäºçš„
 	save_data();
 
 	TimeUtils::Ticker ticker;
@@ -607,7 +607,7 @@ bool SelStraBaseCtx::on_schedule(uint32_t curDate, uint32_t curTime, uint32_t fi
 		const char* code = v.first.c_str();
 		if (_sig_map.find(code) == _sig_map.end() && !decimal::eq(pInfo._volume, 0.0))
 		{
-			//ĞÂµÄĞÅºÅÖĞÃ»ÓĞ¸Ã³Ö²Ö,ÔòÒªÇå¿Õ
+			//æ–°çš„ä¿¡å·ä¸­æ²¡æœ‰è¯¥æŒä»“,åˆ™è¦æ¸…ç©º
 			to_clear.insert(code);
 		}
 	}
@@ -630,13 +630,13 @@ bool SelStraBaseCtx::on_schedule(uint32_t curDate, uint32_t curTime, uint32_t fi
 		_ud_modified = false;
 	}
 
-	_is_in_schedule = false;//µ÷¶È½áÊø, ĞŞ¸Ä±ê¼Ç
+	_is_in_schedule = false;//è°ƒåº¦ç»“æŸ, ä¿®æ”¹æ ‡è®°
 	return true;
 }
 
 void SelStraBaseCtx::on_session_begin(uint32_t uTDate)
 {
-	//Ã¿¸ö½»Ò×ÈÕ¿ªÊ¼£¬Òª°Ñ¶³½á³Ö²ÖÖÃÁã
+	//æ¯ä¸ªäº¤æ˜“æ—¥å¼€å§‹ï¼Œè¦æŠŠå†»ç»“æŒä»“ç½®é›¶
 	for (auto& it : _pos_map)
 	{
 		const char* stdCode = it.first.c_str();
@@ -718,8 +718,8 @@ void SelStraBaseCtx::on_session_end(uint32_t uTDate)
 
 
 //////////////////////////////////////////////////////////////////////////
-//²ßÂÔ½Ó¿Ú
-#pragma region "²ßÂÔ½Ó¿Ú"
+//ç­–ç•¥æ¥å£
+#pragma region "ç­–ç•¥æ¥å£"
 double SelStraBaseCtx::stra_get_price(const char* stdCode)
 {
 	auto it = _price_map.find(stdCode);
@@ -741,7 +741,7 @@ void SelStraBaseCtx::stra_set_position(const char* stdCode, double qty, const ch
 		return;
 	}
 
-	//Èç¹û²»ÄÜ×ö¿Õ£¬ÔòÄ¿±ê²ÖÎ»²»ÄÜÉèÖÃ¸ºÊı
+	//å¦‚æœä¸èƒ½åšç©ºï¼Œåˆ™ç›®æ ‡ä»“ä½ä¸èƒ½è®¾ç½®è´Ÿæ•°
 	if (!commInfo->canShort() && decimal::lt(qty, 0))
 	{
 		log_error("Cannot short on {}", stdCode);
@@ -749,7 +749,7 @@ void SelStraBaseCtx::stra_set_position(const char* stdCode, double qty, const ch
 	}
 
 	double total = stra_get_position(stdCode, false);
-	//Èç¹ûÄ¿±ê²ÖÎ»ºÍµ±Ç°²ÖÎ»ÊÇÒ»ÖÂµÄ£¬Ö±½ÓÍË³ö
+	//å¦‚æœç›®æ ‡ä»“ä½å’Œå½“å‰ä»“ä½æ˜¯ä¸€è‡´çš„ï¼Œç›´æ¥é€€å‡º
 	if (decimal::eq(total, qty))
 		return;
 
@@ -757,7 +757,7 @@ void SelStraBaseCtx::stra_set_position(const char* stdCode, double qty, const ch
 	{
 		double valid = stra_get_position(stdCode, true);
 		double frozen = total - valid;
-		//Èç¹ûÊÇT+1¹æÔò£¬ÔòÄ¿±ê²ÖÎ»²»ÄÜĞ¡ÓÚ¶³½á²ÖÎ»
+		//å¦‚æœæ˜¯T+1è§„åˆ™ï¼Œåˆ™ç›®æ ‡ä»“ä½ä¸èƒ½å°äºå†»ç»“ä»“ä½
 		if (decimal::lt(qty, frozen))
 		{
 			log_error("New position of {} cannot be set to {} due to {} being frozen", stdCode, qty, frozen);
@@ -800,14 +800,14 @@ void SelStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 	if (commInfo == NULL)
 		return;
 
-	//³É½»¼Û
+	//æˆäº¤ä»·
 	double trdPx = curPx;
 
 	bool isBuy = decimal::gt(diff, 0.0);
-	if (decimal::gt(pInfo._volume*diff, 0))//µ±Ç°³Ö²ÖºÍÄ¿±ê²ÖÎ»·½ÏòÒ»ÖÂ, Ôö¼ÓÒ»ÌõÃ÷Ï¸, Ôö¼ÓÊıÁ¿¼´¿É
+	if (decimal::gt(pInfo._volume*diff, 0))//å½“å‰æŒä»“å’Œç›®æ ‡ä»“ä½æ–¹å‘ä¸€è‡´, å¢åŠ ä¸€æ¡æ˜ç»†, å¢åŠ æ•°é‡å³å¯
 	{
 		pInfo._volume = qty;
-		//Èç¹ûT+1£¬Ôò¶³½á²ÖÎ»ÒªÔö¼Ó
+		//å¦‚æœT+1ï¼Œåˆ™å†»ç»“ä»“ä½è¦å¢åŠ 
 		if (commInfo->isT1())
 		{
 			//ASSERT(diff>0);
@@ -839,7 +839,7 @@ void SelStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 		log_trade(stdCode, dInfo._long, true, curTm, trdPx, abs(qty), userTag, fee);
 	}
 	else
-	{//³Ö²Ö·½ÏòºÍÄ¿±ê²ÖÎ»·½Ïò²»Ò»ÖÂ, ĞèÒªÆ½²Ö
+	{//æŒä»“æ–¹å‘å’Œç›®æ ‡ä»“ä½æ–¹å‘ä¸ä¸€è‡´, éœ€è¦å¹³ä»“
 		double left = abs(diff);
 
 		if (_slippage != 0)
@@ -867,15 +867,15 @@ void SelStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 			if (!dInfo._long)
 				profit *= -1;
 			pInfo._closeprofit += profit;
-			pInfo._dynprofit = pInfo._dynprofit*dInfo._volume / (dInfo._volume + maxQty);//¸¡Ó¯Ò²Òª×öµÈ±ÈËõ·Å
+			pInfo._dynprofit = pInfo._dynprofit*dInfo._volume / (dInfo._volume + maxQty);//æµ®ç›ˆä¹Ÿè¦åšç­‰æ¯”ç¼©æ”¾
 			pInfo._last_exittime = curTm;
 			_fund_info._total_profit += profit;
 
 			double fee = _engine->calc_fee(stdCode, trdPx, maxQty, dInfo._opentdate == curTDate ? 2 : 1);
 			_fund_info._total_fees += fee;
-			//ÕâÀïĞ´³É½»¼ÇÂ¼
+			//è¿™é‡Œå†™æˆäº¤è®°å½•
 			log_trade(stdCode, dInfo._long, false, curTm, trdPx, maxQty, userTag, fee);
-			//ÕâÀïĞ´Æ½²Ö¼ÇÂ¼
+			//è¿™é‡Œå†™å¹³ä»“è®°å½•
 			log_close(stdCode, dInfo._long, dInfo._opentime, dInfo._price, curTm, trdPx, maxQty, profit, pInfo._closeprofit, dInfo._opentag, userTag);
 
 			//if (left == 0)
@@ -883,7 +883,7 @@ void SelStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 				break;
 		}
 
-		//ĞèÒªÇåÀíµôÒÑ¾­Æ½²ÖÍêµÄÃ÷Ï¸
+		//éœ€è¦æ¸…ç†æ‰å·²ç»å¹³ä»“å®Œçš„æ˜ç»†
 		while (count > 0)
 		{
 			auto it = pInfo._details.begin();
@@ -891,13 +891,13 @@ void SelStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 			count--;
 		}
 
-		//×îºó, Èç¹û»¹ÓĞÊ£ÓàµÄ, ÔòĞèÒª·´ÊÖÁË
+		//æœ€å, å¦‚æœè¿˜æœ‰å‰©ä½™çš„, åˆ™éœ€è¦åæ‰‹äº†
 		//if (left > 0)
 		if (decimal::gt(left, 0))
 		{
 			left = left * qty / abs(qty);
 
-			//Èç¹ûT+1£¬Ôò¶³½á²ÖÎ»ÒªÔö¼Ó
+			//å¦‚æœT+1ï¼Œåˆ™å†»ç»“ä»“ä½è¦å¢åŠ 
 			if (commInfo->isT1())
 			{
 				//ASSERT(diff>0);
@@ -918,7 +918,7 @@ void SelStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 			pInfo._details.push_back(dInfo);
 			pInfo._last_entertime = curTm;
 
-			//ÕâÀï»¹ĞèÒªĞ´Ò»±Ê³É½»¼ÇÂ¼
+			//è¿™é‡Œè¿˜éœ€è¦å†™ä¸€ç¬”æˆäº¤è®°å½•
 			double fee = _engine->calc_fee(stdCode, trdPx, abs(qty), 0);
 			_fund_info._total_fees += fee;
 			//_engine->mutate_fund(fee, FFT_Fee);
@@ -926,7 +926,7 @@ void SelStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 		}
 	}
 
-	//´æ´¢Êı¾İ
+	//å­˜å‚¨æ•°æ®
 	save_data();
 
 	_engine->handle_pos_change(_name.c_str(), stdCode, diff);
@@ -980,8 +980,8 @@ void SelStraBaseCtx::stra_sub_ticks(const char* stdCode)
 {
 	/*
 	 *	By Wesley @ 2022.03.01
-	 *	Ö÷¶¯¶©ÔÄtick»áÔÚ±¾µØ¼ÇÒ»ÏÂ
-	 *	tickÊı¾İ»Øµ÷µÄÊ±ºòÏÈ¼ì²éÒ»ÏÂ
+	 *	ä¸»åŠ¨è®¢é˜…tickä¼šåœ¨æœ¬åœ°è®°ä¸€ä¸‹
+	 *	tickæ•°æ®å›è°ƒçš„æ—¶å€™å…ˆæ£€æŸ¥ä¸€ä¸‹
 	 */
 	_tick_subs.insert(stdCode);
 
@@ -1151,11 +1151,11 @@ double SelStraBaseCtx::stra_get_position(const char* stdCode, bool bOnlyValid /*
 	const PosInfo& pInfo = it->second;
 	if (strlen(userTag) == 0)
 	{
-		//Ö»ÓĞuserTagÎª¿ÕµÄÊ±ºòÊ±ºò£¬²Å»áÓÃbOnlyValid
+		//åªæœ‰userTagä¸ºç©ºçš„æ—¶å€™æ—¶å€™ï¼Œæ‰ä¼šç”¨bOnlyValid
 		if (bOnlyValid)
 		{
-			//ÕâÀïÀíÂÛÉÏ£¬Ö»ÓĞ¶àÍ·²Å»á½øµ½ÕâÀï
-			//ÆäËûµØ·½Òª±£Ö¤£¬¿ÕÍ·³Ö²ÖµÄ»°£¬_frozenÒªÎª0
+			//è¿™é‡Œç†è®ºä¸Šï¼Œåªæœ‰å¤šå¤´æ‰ä¼šè¿›åˆ°è¿™é‡Œ
+			//å…¶ä»–åœ°æ–¹è¦ä¿è¯ï¼Œç©ºå¤´æŒä»“çš„è¯ï¼Œ_frozenè¦ä¸º0
 			return pInfo._volume - pInfo._frozen;
 		}
 		else

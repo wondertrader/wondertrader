@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file WtEngine.cpp
  * \project	WonderTrader
  *
@@ -118,7 +118,7 @@ void WtEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 {
 	_price_map[stdCode] = curTick->price();
 
-	//ÏÈ¼ì²éÊÇ·ñÒªĞÅºÅÒª´¥·¢
+	//å…ˆæ£€æŸ¥æ˜¯å¦è¦ä¿¡å·è¦è§¦å‘
 	{
 		bool bTriggered = false;
 		auto it = _sig_map.find(stdCode);
@@ -142,7 +142,7 @@ void WtEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 			save_datas();
 	}
 
-	//Èç¹û³É½»Á¿Îª0£¬¼Û¸ñÒ²²»»áÓĞ±ä¶¯
+	//å¦‚æœæˆäº¤é‡ä¸º0ï¼Œä»·æ ¼ä¹Ÿä¸ä¼šæœ‰å˜åŠ¨
 	if (curTick->volume() == 0)
 		return;
 
@@ -184,7 +184,7 @@ void WtEngine::update_fund_dynprofit()
 	WTSFundStruct& fundInfo = _port_fund->fundInfo();
 	if (fundInfo._last_date == _cur_tdate)
 	{
-		//ÉÏ´Î½áËãÈÕÆÚµÈÓÚµ±Ç°½»Ò×ÈÕ,ËµÃ÷ÒÑ¾­½áËã,²»ÔÙ¸üĞÂÁË
+		//ä¸Šæ¬¡ç»“ç®—æ—¥æœŸç­‰äºå½“å‰äº¤æ˜“æ—¥,è¯´æ˜å·²ç»ç»“ç®—,ä¸å†æ›´æ–°äº†
 		return;
 	}
 
@@ -304,8 +304,8 @@ void WtEngine::init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtDtMgr* dataMgr, IHot
 	}
 	else
 	{
-		//Èç¹ûÃ»ÓĞÅäÖÃ·ç¿ØÏß³Ì£¬ÔòĞèÒª×Ô¼º¸üĞÂ¸¡¶¯Ó¯¿÷
-		//°Ñ¸üĞÂÊ±¼ä¼ä¸ôÉèÖÃÎª5s
+		//å¦‚æœæ²¡æœ‰é…ç½®é£æ§çº¿ç¨‹ï¼Œåˆ™éœ€è¦è‡ªå·±æ›´æ–°æµ®åŠ¨ç›ˆäº
+		//æŠŠæ›´æ–°æ—¶é—´é—´éš”è®¾ç½®ä¸º5s
 		_fund_udt_span = 5;
 		WTSLogger::log_raw(LL_WARN, "RiskMon is not configured, portfilio fund will be updated every 5s");
 	}
@@ -313,7 +313,7 @@ void WtEngine::init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtDtMgr* dataMgr, IHot
 
 void WtEngine::on_session_end()
 {
-	//×Ê½ğ½áËã
+	//èµ„é‡‘ç»“ç®—
 	WTSFundStruct& fundInfo = _port_fund->fundInfo();
 	if (fundInfo._last_date < _cur_tdate)
 	{
@@ -333,7 +333,7 @@ void WtEngine::on_session_end()
 			}
 		}
 
-		//¿ÉÄÜÕâÀï»¹ĞèÒªĞ´Ò»Ìõ×Ê½ğ¼ÇÂ¼
+		//å¯èƒ½è¿™é‡Œè¿˜éœ€è¦å†™ä¸€æ¡èµ„é‡‘è®°å½•
 		//date,predynbalance,prebalance,balance,closeprofit,dynprofit,fee,maxdynbalance,maxtime,mindynbalance,mintime,mdmaxbalance,mdmaxdate,mdminbalance,mdmindate
 		fund_log->write_file(fmt::format("{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}\n", 
 			_cur_tdate, fundInfo._predynbal, fundInfo._prebalance, fundInfo._balance, 
@@ -366,7 +366,7 @@ void WtEngine::save_datas()
 	rj::Document::AllocatorType &allocator = root.GetAllocator();
 
 	if (_port_fund != NULL)
-	{//±£´æ×Ê½ğÊı¾İ
+	{//ä¿å­˜èµ„é‡‘æ•°æ®
 		const WTSFundStruct& fundInfo = _port_fund->fundInfo();
 		rj::Value jFund(rj::kObjectType);
 		jFund.AddMember("predynbal", fundInfo._predynbal, allocator);
@@ -400,7 +400,7 @@ void WtEngine::save_datas()
 		root.AddMember("fund", jFund, allocator);
 	}
 
-	{//³Ö²ÖÊı¾İ±£´æ
+	{//æŒä»“æ•°æ®ä¿å­˜
 		rj::Value jPos(rj::kArrayType);
 
 		for (auto it = _pos_map.begin(); it != _pos_map.end(); it++)
@@ -440,7 +440,7 @@ void WtEngine::save_datas()
 		root.AddMember("positions", jPos, allocator);
 	}
 
-	//·ç¿Ø²ÎÊıÉèÖÃ
+	//é£æ§å‚æ•°è®¾ç½®
 	{
 		rj::Value jRisk(rj::kObjectType);
 
@@ -489,7 +489,7 @@ void WtEngine::load_datas()
 	if (root.HasParseError())
 		return;
 
-	//¶ÁÈ¡×Ê½ğ
+	//è¯»å–èµ„é‡‘
 	{
 		const rj::Value& jFund = root["fund"];
 		if (!jFund.IsNull() && jFund.IsObject())
@@ -522,7 +522,7 @@ void WtEngine::load_datas()
 		}
 	}
 
-	{//¶ÁÈ¡²ÖÎ»
+	{//è¯»å–ä»“ä½
 		double total_profit = 0;
 		double total_dynprofit = 0;
 		const rj::Value& jPos = root["positions"];
@@ -575,7 +575,7 @@ void WtEngine::load_datas()
 
 	if(root.HasMember("riskmon"))
 	{
-		//¶ÁÈ¡·ç¿Ø²ÎÊı
+		//è¯»å–é£æ§å‚æ•°
 		const rj::Value& jRisk = root["riskmon"];
 		if (!jRisk.IsNull() && jRisk.IsObject())
 		{
@@ -602,9 +602,6 @@ WTSKlineSlice* WtEngine::get_kline_slice(uint32_t sid, const char* stdCode, cons
 	if (cInfo == NULL)
 		return NULL;
 
-	//WTSSessionInfo* sInfo = cInfo->getSessionInfo();
-
-	//std::string key = StrUtil::printf("%s-%s-%u", stdCode, period, times);
 	thread_local static char key[64] = { 0 };
 	fmtutil::format_to(key, "{}-{}-{}", stdCode, period, times);
 
@@ -669,14 +666,14 @@ double WtEngine::get_cur_price(const char* stdCode)
 {
 	auto len = strlen(stdCode);
 	char lastChar = stdCode[len - 1];
-	//Ç°¸´È¨Ö±½Ó¶ÁÈ¡±ê×¼ºÏÔ¼´úÂë
+	//å‰å¤æƒç›´æ¥è¯»å–æ ‡å‡†åˆçº¦ä»£ç 
 	bool bAdjusted = (lastChar == SUFFIX_QFQ || lastChar == SUFFIX_HFQ);
-	//Ç°¸´È¨ĞèÒªÈ¥µô£­£¬ºó¸´È¨ºÍÎ´¸´È¨¶¼Ö±½Ó²éÕÒ
+	//å‰å¤æƒéœ€è¦å»æ‰ï¼ï¼Œåå¤æƒå’Œæœªå¤æƒéƒ½ç›´æ¥æŸ¥æ‰¾
 	std::string sCode = (lastChar == SUFFIX_QFQ) ? std::string(stdCode, len - 1) : stdCode;
 	auto it = _price_map.find(sCode);
 	if(it == _price_map.end())
 	{
-		//ÕÒ²»µ½µÄÊ±ºò£¬ÏÈ¶ÁÈ¡Î´¸´È¨µÄtickÊı¾İ
+		//æ‰¾ä¸åˆ°çš„æ—¶å€™ï¼Œå…ˆè¯»å–æœªå¤æƒçš„tickæ•°æ®
 		std::string fCode = bAdjusted ? std::string(stdCode, len - 1) : stdCode;
 		WTSTickData* lastTick = _data_mgr->grab_last_tick(fCode.c_str());
 		if (lastTick == NULL)
@@ -687,7 +684,7 @@ double WtEngine::get_cur_price(const char* stdCode)
 		double ret = lastTick->price();
 		lastTick->release();
 
-		//Èç¹ûÊÇºó¸´È¨£¬Ôò½øĞĞ¸´È¨´¦Àí
+		//å¦‚æœæ˜¯åå¤æƒï¼Œåˆ™è¿›è¡Œå¤æƒå¤„ç†
 		if (lastChar == SUFFIX_HFQ)
 		{
 			ret *= get_exright_factor(stdCode, cInfo->getCommInfo());
@@ -706,12 +703,12 @@ double WtEngine::get_day_price(const char* stdCode, int flag /* = 0 */)
 {
 	auto len = strlen(stdCode);
 	char lastChar = stdCode[len - 1];
-	//Ç°¸´È¨Ö±½Ó¶ÁÈ¡±ê×¼ºÏÔ¼´úÂë
+	//å‰å¤æƒç›´æ¥è¯»å–æ ‡å‡†åˆçº¦ä»£ç 
 	bool bAdjusted = (lastChar == SUFFIX_QFQ || lastChar == SUFFIX_HFQ);
-	//Ç°¸´È¨ĞèÒªÈ¥µô£­£¬ºó¸´È¨ºÍÎ´¸´È¨¶¼Ö±½Ó²éÕÒ
+	//å‰å¤æƒéœ€è¦å»æ‰ï¼ï¼Œåå¤æƒå’Œæœªå¤æƒéƒ½ç›´æ¥æŸ¥æ‰¾
 	std::string sCode = (lastChar == SUFFIX_QFQ) ? std::string(stdCode, len - 1) : stdCode;
 
-	//ÕÒ²»µ½µÄÊ±ºò£¬ÏÈ¶ÁÈ¡Î´¸´È¨µÄtickÊı¾İ
+	//æ‰¾ä¸åˆ°çš„æ—¶å€™ï¼Œå…ˆè¯»å–æœªå¤æƒçš„tickæ•°æ®
 	std::string fCode = bAdjusted ? std::string(stdCode, len - 1) : stdCode;
 	WTSTickData* lastTick = _data_mgr->grab_last_tick(fCode.c_str());
 	if (lastTick == NULL)
@@ -735,7 +732,7 @@ double WtEngine::get_day_price(const char* stdCode, int flag /* = 0 */)
 	}
 	lastTick->release();
 
-	//Èç¹ûÊÇºó¸´È¨£¬Ôò½øĞĞ¸´È¨´¦Àí
+	//å¦‚æœæ˜¯åå¤æƒï¼Œåˆ™è¿›è¡Œå¤æƒå¤„ç†
 	if (lastChar == SUFFIX_HFQ)
 	{
 		ret *= get_exright_factor(stdCode, commInfo);
@@ -774,8 +771,8 @@ uint32_t WtEngine::get_adjusting_flag()
 
 void WtEngine::sub_tick(uint32_t sid, const char* stdCode)
 {
-	//Èç¹ûÊÇÖ÷Á¦ºÏÔ¼´úÂë, ÈçSHFE.ag.HOT, ÄÇÃ´Òª×ª»»³ÉÔ­ºÏÔ¼´úÂë, SHFE.ag.1912
-	//ÒòÎªÖ´ĞĞÆ÷Ö»Ê¶±ğÔ­ºÏÔ¼´úÂë
+	//å¦‚æœæ˜¯ä¸»åŠ›åˆçº¦ä»£ç , å¦‚SHFE.ag.HOT, é‚£ä¹ˆè¦è½¬æ¢æˆåŸåˆçº¦ä»£ç , SHFE.ag.1912
+	//å› ä¸ºæ‰§è¡Œå™¨åªè¯†åˆ«åŸåˆçº¦ä»£ç 
 	const char* ruleTag = _hot_mgr->getRuleTag(stdCode);
 	if(strlen(ruleTag) > 0)
 	{
@@ -913,12 +910,12 @@ void WtEngine::append_signal(const char* stdCode, double qty, bool bStandBy /* =
 {
 	/*
 	 *	By Wesley @ 2021.12.16
-	 *	ÕâÀï·¢ÏÖÒ»¸öÎÊÌâ£¬¾ÍÊÇ×éºÏµÄÀíÂÛ³É½»¼ÛºÍ²ßÂÔµÄÀíÂÛ³É½»¼Û²»Ò»ÖÂ
-	 *	¼ì²éÒÔºó·¢ÏÖ£¬²ßÂÔµÄÀíÂÛ³É½»¼Û»áÔÚÏÂÒ»¸ötick¸üĞÂ
-	 *	µ«ÊÇ×éºÏµÄÀíÂÛ³É½»¼ÛÕâÒ»¸ötick¾ÍÖ±½Ó¸üĞÂÁË
-	 *	Õâ¾Íµ¼ÖÂ×éºÏ³É½»¼ÛÓÀÔ¶±È²ßÂÔÌáÇ°Ò»¸ötick
-	 *	ÕâÀï×öÒ»¸öĞŞÕı£¬µÈÏÂÒ»¸ötick½øÀ´£¬´¥·¢signal
-	 *	Èç¹ûÊÇbarÄÚ´¥·¢µÄ£¬bStandByÎªfalse£¬ÔòÖ±½ÓĞŞ¸Ä³Ö²Ö
+	 *	è¿™é‡Œå‘ç°ä¸€ä¸ªé—®é¢˜ï¼Œå°±æ˜¯ç»„åˆçš„ç†è®ºæˆäº¤ä»·å’Œç­–ç•¥çš„ç†è®ºæˆäº¤ä»·ä¸ä¸€è‡´
+	 *	æ£€æŸ¥ä»¥åå‘ç°ï¼Œç­–ç•¥çš„ç†è®ºæˆäº¤ä»·ä¼šåœ¨ä¸‹ä¸€ä¸ªtickæ›´æ–°
+	 *	ä½†æ˜¯ç»„åˆçš„ç†è®ºæˆäº¤ä»·è¿™ä¸€ä¸ªtickå°±ç›´æ¥æ›´æ–°äº†
+	 *	è¿™å°±å¯¼è‡´ç»„åˆæˆäº¤ä»·æ°¸è¿œæ¯”ç­–ç•¥æå‰ä¸€ä¸ªtick
+	 *	è¿™é‡Œåšä¸€ä¸ªä¿®æ­£ï¼Œç­‰ä¸‹ä¸€ä¸ªtickè¿›æ¥ï¼Œè§¦å‘signal
+	 *	å¦‚æœæ˜¯barå†…è§¦å‘çš„ï¼ŒbStandByä¸ºfalseï¼Œåˆ™ç›´æ¥ä¿®æ”¹æŒä»“
 	 */
 	double curPx = get_cur_price(stdCode);
 	if(bStandBy || decimal::eq(curPx, 0.0))
@@ -971,7 +968,7 @@ void WtEngine::do_set_position(const char* stdCode, double qty, double curPx /* 
 
 	WTSFundStruct& fundInfo = _port_fund->fundInfo();
 
-	if (decimal::gt(pInfo->_volume*diff, 0))//µ±Ç°³Ö²ÖºÍÄ¿±ê²ÖÎ»·½ÏòÒ»ÖÂ, Ôö¼ÓÒ»ÌõÃ÷Ï¸, Ôö¼ÓÊıÁ¿¼´¿É
+	if (decimal::gt(pInfo->_volume*diff, 0))//å½“å‰æŒä»“å’Œç›®æ ‡ä»“ä½æ–¹å‘ä¸€è‡´, å¢åŠ ä¸€æ¡æ˜ç»†, å¢åŠ æ•°é‡å³å¯
 	{
 		pInfo->_volume = qty;
 
@@ -990,7 +987,7 @@ void WtEngine::do_set_position(const char* stdCode, double qty, double curPx /* 
 		log_trade(stdCode, dInfo._long, true, curTm, curPx, abs(diff), fee);
 	}
 	else
-	{//³Ö²Ö·½ÏòºÍÄ¿±ê²ÖÎ»·½Ïò²»Ò»ÖÂ, ĞèÒªÆ½²Ö
+	{//æŒä»“æ–¹å‘å’Œç›®æ ‡ä»“ä½æ–¹å‘ä¸ä¸€è‡´, éœ€è¦å¹³ä»“
 		double left = abs(diff);
 
 		pInfo->_volume = qty;
@@ -1021,7 +1018,7 @@ void WtEngine::do_set_position(const char* stdCode, double qty, double curPx /* 
 			if (!dInfo._long)
 				profit *= -1;
 			pInfo->_closeprofit += profit;
-			pInfo->_dynprofit = pInfo->_dynprofit*dInfo._volume / (dInfo._volume + maxQty);//¸¡Ó¯Ò²Òª×öµÈ±ÈËõ·Å
+			pInfo->_dynprofit = pInfo->_dynprofit*dInfo._volume / (dInfo._volume + maxQty);//æµ®ç›ˆä¹Ÿè¦åšç­‰æ¯”ç¼©æ”¾
 			fundInfo._profit += profit;
 			fundInfo._balance += profit;
 
@@ -1029,16 +1026,16 @@ void WtEngine::do_set_position(const char* stdCode, double qty, double curPx /* 
 			fundInfo._fees += fee;
 			fundInfo._balance -= fee;
 
-			//ÕâÀïĞ´³É½»¼ÇÂ¼
+			//è¿™é‡Œå†™æˆäº¤è®°å½•
 			log_trade(stdCode, dInfo._long, false, curTm, curPx, maxQty, fee);
-			//ÕâÀïĞ´Æ½²Ö¼ÇÂ¼
+			//è¿™é‡Œå†™å¹³ä»“è®°å½•
 			log_close(stdCode, dInfo._long, dInfo._opentime, dInfo._price, curTm, curPx, maxQty, profit, pInfo->_closeprofit);
 
 			if (left == 0)
 				break;
 		}
 
-		//ĞèÒªÇåÀíµôÒÑ¾­Æ½²ÖÍêµÄÃ÷Ï¸
+		//éœ€è¦æ¸…ç†æ‰å·²ç»å¹³ä»“å®Œçš„æ˜ç»†
 		while (count > 0)
 		{
 			auto it = pInfo->_details.begin();
@@ -1046,7 +1043,7 @@ void WtEngine::do_set_position(const char* stdCode, double qty, double curPx /* 
 			count--;
 		}
 
-		//×îºó, Èç¹û»¹ÓĞÊ£ÓàµÄ, ÔòĞèÒª·´ÊÖÁË
+		//æœ€å, å¦‚æœè¿˜æœ‰å‰©ä½™çš„, åˆ™éœ€è¦åæ‰‹äº†
 		//if (left > 0)
 		if(decimal::gt(left, 0))
 		{
@@ -1060,7 +1057,7 @@ void WtEngine::do_set_position(const char* stdCode, double qty, double curPx /* 
 			dInfo._opentdate = curTDate;
 			pInfo->_details.emplace_back(dInfo);
 
-			//ÕâÀï»¹ĞèÒªĞ´Ò»±Ê³É½»¼ÇÂ¼
+			//è¿™é‡Œè¿˜éœ€è¦å†™ä¸€ç¬”æˆäº¤è®°å½•
 			double fee = calc_fee(stdCode, curPx, abs(qty), 0);
 			fundInfo._fees += fee;
 			fundInfo._balance -= fee;
@@ -1125,9 +1122,9 @@ bool WtEngine::init_riskmon(WTSVariant* cfg)
 		return false;
 
 	std::string module = DLLHelper::wrap_module(cfg->getCString("module"));
-	//ÏÈ¿´¹¤×÷Ä¿Â¼ÏÂÊÇ·ñÓĞ¶ÔÓ¦Ä£¿é
+	//å…ˆçœ‹å·¥ä½œç›®å½•ä¸‹æ˜¯å¦æœ‰å¯¹åº”æ¨¡å—
 	std::string dllpath = WtHelper::getCWD() + module;
-	//Èç¹ûÃ»ÓĞ,ÔòÔÙ¿´Ä£¿éÄ¿Â¼,¼´dllÍ¬Ä¿Â¼ÏÂ
+	//å¦‚æœæ²¡æœ‰,åˆ™å†çœ‹æ¨¡å—ç›®å½•,å³dllåŒç›®å½•ä¸‹
 	if (!StdFile::exists(dllpath.c_str()))
 		dllpath = WtHelper::getInstDir() + module;
 

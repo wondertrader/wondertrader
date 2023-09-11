@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file WtDataManager.cpp
  * \project	WonderTrader
  *
@@ -170,13 +170,13 @@ void WtDtMgr::on_bar(const char* code, WTSKlinePeriod period, WTSBarStruct* newB
 
 	if(_subed_basic_bars.find(key_pattern) != _subed_basic_bars.end())
 	{
-		//Èç¹ûÊÇ»ù´¡ÖÜÆÚ, Ö±½Ó´¥·¢on_barÊÂ¼þ
+		//å¦‚æžœæ˜¯åŸºç¡€å‘¨æœŸ, ç›´æŽ¥è§¦å‘on_baräº‹ä»¶
 		//_engine->on_bar(code, speriod.c_str(), times, newBar);
-		//¸üÐÂÍêKÏßÒÔºó, Í³Ò»Í¨Öª½»Ò×ÒýÇæ
+		//æ›´æ–°å®ŒKçº¿ä»¥åŽ, ç»Ÿä¸€é€šçŸ¥äº¤æ˜“å¼•æ“Ž
 		_bar_notifies.emplace_back(NotifyItem(code, speriod, times, newBar));
 	}
 
-	//È»ºóÔÙ´¦Àí·Ç»ù´¡ÖÜÆÚ
+	//ç„¶åŽå†å¤„ç†éžåŸºç¡€å‘¨æœŸ
 	if (_bars_cache == NULL || _bars_cache->size() == 0)
 		return;
 	
@@ -194,17 +194,17 @@ void WtDtMgr::on_bar(const char* code, WTSKlinePeriod period, WTSBarStruct* newB
 			g_dataFact.updateKlineData(kData, newBar, sInfo, _align_by_section);
 			if (kData->isClosed())
 			{
-				//Èç¹û»ù´¡ÖÜÆÚKÏßµÄÊ±¼äºÍ×Ô¶¨ÒåÖÜÆÚKÏßµÄÊ±¼äÒ»ÖÂ, ËµÃ÷KÏß¹Ø±ÕÁË
-				//ÕâÀïÒ²Òª´¥·¢on_barÊÂ¼þ
+				//å¦‚æžœåŸºç¡€å‘¨æœŸKçº¿çš„æ—¶é—´å’Œè‡ªå®šä¹‰å‘¨æœŸKçº¿çš„æ—¶é—´ä¸€è‡´, è¯´æ˜ŽKçº¿å…³é—­äº†
+				//è¿™é‡Œä¹Ÿè¦è§¦å‘on_baräº‹ä»¶
 				WTSBarStruct* lastBar = kData->at(-1);
 				//_engine->on_bar(code, speriod.c_str(), times, lastBar);
-				//¸üÐÂÍêKÏßÒÔºó, Í³Ò»Í¨Öª½»Ò×ÒýÇæ
+				//æ›´æ–°å®ŒKçº¿ä»¥åŽ, ç»Ÿä¸€é€šçŸ¥äº¤æ˜“å¼•æ“Ž
 				_bar_notifies.emplace_back(NotifyItem(code, speriod, times*kData->times(), lastBar));
 			}
 		}
 		else
 		{
-			//Èç¹ûÊÇÇ¿ÖÆ»º´æµÄÒ»±¶ÖÜÆÚ£¬Ö±½ÓÑ¹µ½»º´æ¶ÓÁÐÀï
+			//å¦‚æžœæ˜¯å¼ºåˆ¶ç¼“å­˜çš„ä¸€å€å‘¨æœŸï¼Œç›´æŽ¥åŽ‹åˆ°ç¼“å­˜é˜Ÿåˆ—é‡Œ
 			kData->getDataRef().emplace_back(*newBar);
 			_bar_notifies.emplace_back(NotifyItem(code, speriod, times, newBar));
 		}
@@ -276,27 +276,27 @@ WTSTickSlice* WtDtMgr::get_tick_slice(const char* stdCode, uint32_t count, uint6
 
 	/*
 	 *	By Wesley @ 2022.02.11
-	 *	ÕâÀïÒªÖØÐÂ´¦ÀíÒ»ÏÂ
-	 *	Èç¹ûÊÇ²»¸´È¨»òÕßÇ°¸´È¨£¬ÔòÖ±½Ó¶ÁÈ¡µ×²ãµÄÊµÊ±»º´æ¼´¿É
+	 *	è¿™é‡Œè¦é‡æ–°å¤„ç†ä¸€ä¸‹
+	 *	å¦‚æžœæ˜¯ä¸å¤æƒæˆ–è€…å‰å¤æƒï¼Œåˆ™ç›´æŽ¥è¯»å–åº•å±‚çš„å®žæ—¶ç¼“å­˜å³å¯
 	 */
 	auto len = strlen(stdCode);
 	bool isHFQ = (stdCode[len - 1] == SUFFIX_HFQ);
 
-	//²»ÊÇºó¸´È¨£¬»º´æÖ±½ÓÓÃµ×²ã»º´æ
+	//ä¸æ˜¯åŽå¤æƒï¼Œç¼“å­˜ç›´æŽ¥ç”¨åº•å±‚ç¼“å­˜
 	if(!isHFQ)
 		return _reader->readTickSlice(stdCode, count, etime);
 
-	//ÏÈ×ª³É²»´ø+µÄ±ê×¼´úÂë
+	//å…ˆè½¬æˆä¸å¸¦+çš„æ ‡å‡†ä»£ç 
 	std::string pureStdCode(stdCode, len - 1);
 
 	if (_ticks_adjusted == NULL)
 		_ticks_adjusted = DataCacheMap::create();
 
-	//Èç¹û»º´æÃ»ÓÐ£¬ÏÈÖØÐÂÉú³ÉÒ»ÏÂ»º´æ
+	//å¦‚æžœç¼“å­˜æ²¡æœ‰ï¼Œå…ˆé‡æ–°ç”Ÿæˆä¸€ä¸‹ç¼“å­˜
 	auto it = _ticks_adjusted->find(pureStdCode);
 	if (it == _ticks_adjusted->end())
 	{
-		//ÏÈ¶ÁÈ¡È«²¿tickÊý¾Ý
+		//å…ˆè¯»å–å…¨éƒ¨tickæ•°æ®
 		double factor = _engine->get_exright_factor(stdCode, NULL);
 		WTSTickSlice* slice = _reader->readTickSlice(pureStdCode.c_str(), 999999, etime);
 		std::vector<WTSTickStruct> ayTicks;
@@ -308,7 +308,7 @@ WTSTickSlice* WtDtMgr::get_tick_slice(const char* stdCode, uint32_t count, uint6
 			offset += slice->get_block_size(bIdx);
 		}
 
-		//»º´æµÄÊý¾Ý×öÒ»¸ö¸´È¨´¦Àí
+		//ç¼“å­˜çš„æ•°æ®åšä¸€ä¸ªå¤æƒå¤„ç†
 		for (WTSTickStruct& tick : ayTicks)
 		{
 			tick.price *= factor;
@@ -317,7 +317,7 @@ WTSTickSlice* WtDtMgr::get_tick_slice(const char* stdCode, uint32_t count, uint6
 			tick.low *= factor;
 		}
 
-		//Ìí¼Óµ½»º´æÖÐ
+		//æ·»åŠ åˆ°ç¼“å­˜ä¸­
 		WTSHisTickData* hisTick = WTSHisTickData::create(stdCode, false, factor);
 		hisTick->getDataRef().swap(ayTicks);
 		_ticks_adjusted->add(pureStdCode, hisTick, false);
@@ -341,7 +341,7 @@ WTSTickSlice* WtDtMgr::get_tick_slice(const char* stdCode, uint32_t count, uint6
 		curSecs = (uint32_t)(etime % 100000);
 	}
 
-	//±È½ÏÊ±¼äµÄ¶ÔÏó
+	//æ¯”è¾ƒæ—¶é—´çš„å¯¹è±¡
 	WTSTickStruct eTick;
 	eTick.action_date = curDate;
 	eTick.action_time = curTime * 100000 + curSecs;
@@ -357,7 +357,7 @@ WTSTickSlice* WtDtMgr::get_tick_slice(const char* stdCode, uint32_t count, uint6
 
 	uint32_t eIdx = pTick - &ticks.front();
 
-	//Èç¹û¹â±ê¶¨Î»µÄtickÊ±¼ä±ÈÄ¿±êÊ±¼ä´ò, ÔòÈ«²¿»ØÍËÒ»¸ö
+	//å¦‚æžœå…‰æ ‡å®šä½çš„tickæ—¶é—´æ¯”ç›®æ ‡æ—¶é—´æ‰“, åˆ™å…¨éƒ¨å›žé€€ä¸€ä¸ª
 	if (pTick->action_date > eTick.action_date || pTick->action_time > eTick.action_time)
 	{
 		pTick--;
@@ -402,7 +402,7 @@ WTSKlineSlice* WtDtMgr::get_kline_slice(const char* stdCode, WTSKlinePeriod peri
 	thread_local static char key[64] = { 0 };
 	fmtutil::format_to(key, "{}-{}", stdCode, (uint32_t)period);
 
-	// Èç¹û²»Ç¿ÖÆ»º´æ£¬²¢ÇÒÖØ²ÉÑù±¶ÊýÎª1£¬ÔòÖ±½Ó¶ÁÈ¡slice·µ»Ø
+	// å¦‚æžœä¸å¼ºåˆ¶ç¼“å­˜ï¼Œå¹¶ä¸”é‡é‡‡æ ·å€æ•°ä¸º1ï¼Œåˆ™ç›´æŽ¥è¯»å–sliceè¿”å›ž
 	if (times == 1 && !_force_cache)
 	{
 		_subed_basic_bars.insert(key);
@@ -410,17 +410,16 @@ WTSKlineSlice* WtDtMgr::get_kline_slice(const char* stdCode, WTSKlinePeriod peri
 		return _reader->readKlineSlice(stdCode, period, count, etime);
 	}
 
-	//Ö»ÓÐ·Ç»ù´¡ÖÜÆÚµÄ»á½øµ½ÏÂÃæµÄ²½Öè
+	//åªæœ‰éžåŸºç¡€å‘¨æœŸçš„ä¼šè¿›åˆ°ä¸‹é¢çš„æ­¥éª¤
 	WTSSessionInfo* sInfo = _engine->get_session_info(stdCode, true);
 
 	if (_bars_cache == NULL)
 		_bars_cache = DataCacheMap::create();
 
-	//key = StrUtil::printf("%s-%u-%u", stdCode, period, times);
 	fmtutil::format_to(key, "{}-{}-{}", stdCode, (uint32_t)period, times);
 
 	WTSKlineData* kData = (WTSKlineData*)_bars_cache->get(key);
-	//Èç¹û»º´æÀïµÄKÏßÌõÊý´óÓÚÇëÇóµÄÌõÊý, ÔòÖ±½Ó·µ»Ø
+	//å¦‚æžœç¼“å­˜é‡Œçš„Kçº¿æ¡æ•°å¤§äºŽè¯·æ±‚çš„æ¡æ•°, åˆ™ç›´æŽ¥è¿”å›ž
 	if (kData == NULL || kData->size() < count)
 	{
 		uint32_t realCount = times==1 ? count: (count*times + times);
@@ -462,11 +461,11 @@ WTSKlineSlice* WtDtMgr::get_kline_slice(const char* stdCode, WTSKlinePeriod peri
 
 	/*
 	 *	By Wesley @ 2023.03.03
-	 *	µ±¶àÖÜÆÚKÏß¿çÔ½Ð¡½ÚÊ±£¬Èç¹ûÖØÆôÁË×éºÏ
-	 *	Õâ¸öÊ±ºò¾Í»áÔÚÆô¶¯µÄÊ±ºòÀ­µ½Ò»ÌõÎ´±ÕºÏµÄKÏß
-	 *	µ«ÊÇÎ´±ÕºÏµÄKÏßµÈÒ»ÏÂ»¹»áÖØÐÂÍÆÒ»±é
-	 *	ËùÒÔÕâÀï±ØÐëÒª×öÒ»¸öÐÞÕý
-	 *	Ö»´¦ÀíÒÑ¾­±ÕºÏµÄKÏß
+	 *	å½“å¤šå‘¨æœŸKçº¿è·¨è¶Šå°èŠ‚æ—¶ï¼Œå¦‚æžœé‡å¯äº†ç»„åˆ
+	 *	è¿™ä¸ªæ—¶å€™å°±ä¼šåœ¨å¯åŠ¨çš„æ—¶å€™æ‹‰åˆ°ä¸€æ¡æœªé—­åˆçš„Kçº¿
+	 *	ä½†æ˜¯æœªé—­åˆçš„Kçº¿ç­‰ä¸€ä¸‹è¿˜ä¼šé‡æ–°æŽ¨ä¸€é
+	 *	æ‰€ä»¥è¿™é‡Œå¿…é¡»è¦åšä¸€ä¸ªä¿®æ­£
+	 *	åªå¤„ç†å·²ç»é—­åˆçš„Kçº¿
 	 */
 	uint32_t closedSz = kData->size();
 	if (closedSz > 0 && !kData->isClosed())

@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file WtExecuter.h
  * \project	WonderTrader
  *
@@ -21,7 +21,7 @@ class IDataManager;
 class TraderAdapter;
 class IHotMgr;
 
-//±¾µØÖ´ĞĞÆ÷
+//æœ¬åœ°æ‰§è¡Œå™¨
 class WtLocalExecuter : public ExecuteContext,
 	public ITrdNotifySink, public IExecCommand
 {
@@ -31,8 +31,8 @@ public:
 
 public:
 	/*
-	 *	³õÊ¼»¯Ö´ĞĞÆ÷
-	 *	´«Èë³õÊ¼»¯²ÎÊı
+	 *	åˆå§‹åŒ–æ‰§è¡Œå™¨
+	 *	ä¼ å…¥åˆå§‹åŒ–å‚æ•°
 	 */
 	bool init(WTSVariant* params);
 
@@ -65,28 +65,28 @@ public:
 
 public:
 	/*
-	 *	ÉèÖÃÄ¿±ê²ÖÎ»
+	 *	è®¾ç½®ç›®æ ‡ä»“ä½
 	 */
 	virtual void set_position(const wt_hashmap<std::string, double>& targets) override;
 
 
 	/*
-	 *	ºÏÔ¼²ÖÎ»±ä¶¯
+	 *	åˆçº¦ä»“ä½å˜åŠ¨
 	 */
 	virtual void on_position_changed(const char* stdCode, double diffPos) override;
 
 	/*
-	 *	ÊµÊ±ĞĞÇé»Øµ÷
+	 *	å®æ—¶è¡Œæƒ…å›è°ƒ
 	 */
 	virtual void on_tick(const char* stdCode, WTSTickData* newTick) override;
 
 	/*
-	 *	³É½»»Ø±¨
+	 *	æˆäº¤å›æŠ¥
 	 */
 	virtual void on_trade(uint32_t localid, const char* stdCode, bool isBuy, double vol, double price) override;
 
 	/*
-	 *	¶©µ¥»Ø±¨
+	 *	è®¢å•å›æŠ¥
 	 */
 	virtual void on_order(uint32_t localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled = false) override;
 
@@ -101,17 +101,17 @@ public:
 	virtual void on_entrust(uint32_t localid, const char* stdCode, bool bSuccess, const char* message) override;
 
 	/*
-	 *	½»Ò×Í¨µÀ¾ÍĞ÷
+	 *	äº¤æ˜“é€šé“å°±ç»ª
 	 */
 	virtual void on_channel_ready() override;
 
 	/*
-	 *	½»Ò×Í¨µÀ¶ªÊ§
+	 *	äº¤æ˜“é€šé“ä¸¢å¤±
 	 */
 	virtual void on_channel_lost() override;
 
 	/*
-	 *	×Ê½ğ»Ø±¨
+	 *	èµ„é‡‘å›æŠ¥
 	 */
 	virtual void on_account(const char* currency, double prebalance, double balance, double dynbalance, 
 		double avaliable, double closeprofit, double dynprofit, double margin, double fee, double deposit, double withdraw) override;
@@ -123,9 +123,9 @@ private:
 	IDataManager*		_data_mgr;
 	WTSVariant*			_config;
 
-	double				_scale;				//·Å´ó±¶Êı
-	bool				_auto_clear;		//ÊÇ·ñ×Ô¶¯ÇåÀíÉÏÒ»ÆÚµÄÖ÷Á¦ºÏÔ¼Í·´ç
-	bool				_strict_sync;		//ÊÇ·ñÑÏ¸ñÍ¬²½Ä¿±ê²ÖÎ»
+	double				_scale;				//æ”¾å¤§å€æ•°
+	bool				_auto_clear;		//æ˜¯å¦è‡ªåŠ¨æ¸…ç†ä¸Šä¸€æœŸçš„ä¸»åŠ›åˆçº¦å¤´å¯¸
+	bool				_strict_sync;		//æ˜¯å¦ä¸¥æ ¼åŒæ­¥ç›®æ ‡ä»“ä½
 	bool				_channel_ready;
 
 	SpinMutex			_mtx_units;
@@ -137,13 +137,13 @@ private:
 	} CodeGroup;
 	typedef std::shared_ptr<CodeGroup> CodeGroupPtr;
 	typedef wt_hashmap<std::string, CodeGroupPtr>	CodeGroups;
-	CodeGroups				_groups;			//ºÏÔ¼×éºÏ£¨×éºÏÃû³Æµ½×éºÏµÄÓ³Éä£©
-	CodeGroups				_code_to_groups;	//ºÏÔ¼´úÂëµ½×éºÏµÄÓ³Éä
+	CodeGroups				_groups;			//åˆçº¦ç»„åˆï¼ˆç»„åˆåç§°åˆ°ç»„åˆçš„æ˜ å°„ï¼‰
+	CodeGroups				_code_to_groups;	//åˆçº¦ä»£ç åˆ°ç»„åˆçš„æ˜ å°„
 
-	wt_hashset<std::string>	_clear_includes;	//×Ô¶¯ÇåÀí°üº¬Æ·ÖÖ
-	wt_hashset<std::string>	_clear_excludes;	//×Ô¶¯ÇåÀíÅÅ³ıÆ·ÖÖ
+	wt_hashset<std::string>	_clear_includes;	//è‡ªåŠ¨æ¸…ç†åŒ…å«å“ç§
+	wt_hashset<std::string>	_clear_excludes;	//è‡ªåŠ¨æ¸…ç†æ’é™¤å“ç§
 
-	wt_hashset<std::string> _channel_holds;		//Í¨µÀ³Ö²Ö
+	wt_hashset<std::string> _channel_holds;		//é€šé“æŒä»“
 
 	wt_hashmap<std::string, double> _target_pos;
 

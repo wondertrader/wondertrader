@@ -1,4 +1,4 @@
-/*!
+﻿/*!
 * \file WtHftTicker.h
 * \project	WonderTrader
 *

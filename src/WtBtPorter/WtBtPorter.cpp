@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file WtBtPorter.cpp
  * \project	WonderTrader
  *
@@ -179,7 +179,7 @@ CtxHandler init_sel_mocker(const char* name, WtUInt32 date, WtUInt32 time, const
 	return getRunner().initSelMocker(name, date, time, period, trdtpl, session, slippage, bRatioSlp);
 }
 
-#pragma region "CTA²ßÂÔ½Ó¿Ú"
+#pragma region "CTAç­–ç•¥æ¥å£"
 void cta_enter_long(CtxHandler cHandle, const char* stdCode, double qty, const char* userTag, double limitprice, double stopprice)
 {
 	CtaMocker* ctx = getRunner().cta_mocker();
@@ -487,7 +487,7 @@ void cta_sub_ticks(CtxHandler cHandle, const char* stdCode)
 
 bool cta_step(CtxHandler cHandle)
 {
-	//Ö»ÓĞÒì²½Ä£Ê½²ÅÓĞÒâÒå
+	//åªæœ‰å¼‚æ­¥æ¨¡å¼æ‰æœ‰æ„ä¹‰
 	if (!getRunner().isAsync())
 		return false;
 
@@ -551,9 +551,9 @@ bool cta_set_index_value(CtxHandler cHandle, const char* idxName, const char* li
 	return ctx->set_index_value(idxName, lineName, val);
 }
 
-#pragma endregion "CTA²ßÂÔ½Ó¿Ú"
+#pragma endregion "CTAç­–ç•¥æ¥å£"
 
-#pragma region "SEL²ßÂÔ½Ó¿Ú"
+#pragma region "SELç­–ç•¥æ¥å£"
 void sel_save_userdata(CtxHandler cHandle, const char* key, const char* val)
 {
 	SelMocker* ctx = getRunner().sel_mocker();
@@ -672,7 +672,7 @@ void sel_set_position(CtxHandler cHandle, const char* stdCode, double qty, const
 	if (ctx == NULL)
 		return;
 
-	//¶àÒò×ÓÒıÇæ,ÏŞ¼ÛºÍÖ¹¼Û¶¼ÎŞĞ§
+	//å¤šå› å­å¼•æ“,é™ä»·å’Œæ­¢ä»·éƒ½æ— æ•ˆ
 	ctx->stra_set_position(stdCode, qty, userTag);
 }
 
@@ -823,9 +823,9 @@ WtString sel_get_last_entertag(CtxHandler cHandle, const char* stdCode)
 	return ctx->stra_get_last_entertag(stdCode);
 }
 
-#pragma endregion "SEL²ßÂÔ½Ó¿Ú"
+#pragma endregion "SELç­–ç•¥æ¥å£"
 
-#pragma region "HFT²ßÂÔ½Ó¿Ú"
+#pragma region "HFTç­–ç•¥æ¥å£"
 double hft_get_position(CtxHandler cHandle, const char* stdCode, bool bOnlyValid)
 {
 	HftMocker* mocker = getRunner().hft_mocker();
@@ -1171,7 +1171,7 @@ WtString hft_load_userdata(CtxHandler cHandle, const char* key, const char* defV
 
 void hft_step(CtxHandler cHandle)
 {
-	//Ö»ÓĞÒì²½Ä£Ê½²ÅÓĞÒâÒå
+	//åªæœ‰å¼‚æ­¥æ¨¡å¼æ‰æœ‰æ„ä¹‰
 	if (!getRunner().isAsync())
 		return;
 
@@ -1181,4 +1181,4 @@ void hft_step(CtxHandler cHandle)
 
 	mocker->step_tick();
 }
-#pragma endregion "HFT²ßÂÔ½Ó¿Ú"
+#pragma endregion "HFTç­–ç•¥æ¥å£"

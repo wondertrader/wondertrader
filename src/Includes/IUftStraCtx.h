@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file IUftStraCtx.h
  * \project	WonderTrader
  *
@@ -22,7 +22,7 @@ class WTSTickData;
 struct WTSBarStruct;
 
 /*
- *	¶©µ¥±ê¼Ç
+ *	è®¢å•æ ‡è®°
  */
 static const int UFT_OrderFlag_Nor = 0;
 static const int UFT_OrderFlag_FAK = 1;
@@ -39,7 +39,7 @@ public:
 public:
 	virtual uint32_t id() = 0;
 
-	//»Øµ÷º¯Êı
+	//å›è°ƒå‡½æ•°
 	virtual void on_init() = 0;
 	virtual void on_tick(const char* stdCode, WTSTickData* newTick) = 0;
 	virtual void on_order_queue(const char* stdCode, WTSOrdQueData* newOrdQue) = 0;
@@ -51,8 +51,8 @@ public:
 	virtual void on_params_updated(){}
 
 	/*
-	 *	»Ø²â½áÊøÊÂ¼ş
-	 *	Ö»ÔÚ»Ø²âÏÂ²Å»á´¥·¢
+	 *	å›æµ‹ç»“æŸäº‹ä»¶
+	 *	åªåœ¨å›æµ‹ä¸‹æ‰ä¼šè§¦å‘
 	 */
 	virtual void	on_bactest_end() {};
 
@@ -84,149 +84,149 @@ public:
 	virtual int32_t*	sync_param(const char* name, int32_t initVal = 0, bool bForceWrite = false) { return nullptr; }
 	virtual int64_t*	sync_param(const char* name, int64_t initVal = 0, bool bForceWrite = false) { return nullptr; }
 
-	//²ßÂÔ½Ó¿Ú
+	//ç­–ç•¥æ¥å£
 
 	virtual uint32_t	stra_get_date() = 0;
 	virtual uint32_t	stra_get_time() = 0;
 	virtual uint32_t	stra_get_secs() = 0;
 
 	/*
-	 *	³·µ¥½Ó¿Ú
-	 *	@localid	±¾µØµ¥ºÅ
+	 *	æ’¤å•æ¥å£
+	 *	@localid	æœ¬åœ°å•å·
 	 */
 	virtual bool		stra_cancel(uint32_t localid) = 0;
 	
 	/*
-	 *	Ò»¼ü³·µ¥½Ó¿Ú
-	 *	@stdCode	ºÏÔ¼´úÂë
+	 *	ä¸€é”®æ’¤å•æ¥å£
+	 *	@stdCode	åˆçº¦ä»£ç 
 	 */
 	virtual OrderIDs	stra_cancel_all(const char* stdCode) = 0;
 
 	/*
-	 *	ÏÂµ¥½Ó¿Ú: ÂòÈë
+	 *	ä¸‹å•æ¥å£: ä¹°å…¥
 	 *
-	 *	@stdCode	ºÏÔ¼´úÂë
-	 *	@price		ÏÂµ¥¼Û¸ñ£¬0ÔòÊÇÊĞ¼Ûµ¥
-	 *	@qty		ÏÂµ¥ÊıÁ¿
-	 *	@flag		ÏÂµ¥±êÖ¾: 0-normal£¬1-fak£¬2-fok£¬Ä¬ÈÏ0
+	 *	@stdCode	åˆçº¦ä»£ç 
+	 *	@price		ä¸‹å•ä»·æ ¼ï¼Œ0åˆ™æ˜¯å¸‚ä»·å•
+	 *	@qty		ä¸‹å•æ•°é‡
+	 *	@flag		ä¸‹å•æ ‡å¿—: 0-normalï¼Œ1-fakï¼Œ2-fokï¼Œé»˜è®¤0
 	 */
 	virtual OrderIDs	stra_buy(const char* stdCode, double price, double qty, int flag = 0) { return OrderIDs(); }
 
 	/*
-	 *	ÏÂµ¥½Ó¿Ú: Âô³ö
+	 *	ä¸‹å•æ¥å£: å–å‡º
 	 *
-	 *	@stdCode	ºÏÔ¼´úÂë
-	 *	@price		ÏÂµ¥¼Û¸ñ£¬0ÔòÊÇÊĞ¼Ûµ¥
-	 *	@qty		ÏÂµ¥ÊıÁ¿
-	 *	@flag		ÏÂµ¥±êÖ¾: 0-normal£¬1-fak£¬2-fok£¬Ä¬ÈÏ0
+	 *	@stdCode	åˆçº¦ä»£ç 
+	 *	@price		ä¸‹å•ä»·æ ¼ï¼Œ0åˆ™æ˜¯å¸‚ä»·å•
+	 *	@qty		ä¸‹å•æ•°é‡
+	 *	@flag		ä¸‹å•æ ‡å¿—: 0-normalï¼Œ1-fakï¼Œ2-fokï¼Œé»˜è®¤0
 	 */
 	virtual OrderIDs	stra_sell(const char* stdCode, double price, double qty, int flag = 0) { return OrderIDs(); }
 
 	/*
-	 *	¿ª¶à
-	 *	@stdCode	´úÂë£¬¸ñÊ½ÈçSSE.600000
-	 *	@price		Î¯ÍĞ¼Û¸ñ
-	 *	@qty		ÏÂµ¥ÊıÁ¿
-	 *	@flag		ÏÂµ¥±êÖ¾: 0-normal£¬1-fak£¬2-fok£¬Ä¬ÈÏ0
+	 *	å¼€å¤š
+	 *	@stdCode	ä»£ç ï¼Œæ ¼å¼å¦‚SSE.600000
+	 *	@price		å§”æ‰˜ä»·æ ¼
+	 *	@qty		ä¸‹å•æ•°é‡
+	 *	@flag		ä¸‹å•æ ‡å¿—: 0-normalï¼Œ1-fakï¼Œ2-fokï¼Œé»˜è®¤0
 	 */
 	virtual uint32_t	stra_enter_long(const char* stdCode, double price, double qty, int flag = 0) { return 0; }
 
 	/*
-	 *	¿ª¿Õ
-	 *	@stdCode	´úÂë£¬¸ñÊ½ÈçSSE.600000
-	 *	@price		Î¯ÍĞ¼Û¸ñ
-	 *	@qty		ÏÂµ¥ÊıÁ¿
-	 *	@flag		ÏÂµ¥±êÖ¾: 0-normal£¬1-fak£¬2-fok£¬Ä¬ÈÏ0
+	 *	å¼€ç©º
+	 *	@stdCode	ä»£ç ï¼Œæ ¼å¼å¦‚SSE.600000
+	 *	@price		å§”æ‰˜ä»·æ ¼
+	 *	@qty		ä¸‹å•æ•°é‡
+	 *	@flag		ä¸‹å•æ ‡å¿—: 0-normalï¼Œ1-fakï¼Œ2-fokï¼Œé»˜è®¤0
 	 */
 	virtual uint32_t	stra_enter_short(const char* stdCode, double price, double qty, int flag = 0) { return 0; }
 
 	/*
-	 *	Æ½¶à
-	 *	@stdCode	´úÂë£¬¸ñÊ½ÈçSSE.600000
-	 *	@price		Î¯ÍĞ¼Û¸ñ
-	 *	@qty		ÏÂµ¥ÊıÁ¿
-	 *	@isToday	ÊÇ·ñ½ñ²Ö£¬SHFE¡¢INE×¨ÓÃ
-	 *	@flag		ÏÂµ¥±êÖ¾: 0-normal£¬1-fak£¬2-fok£¬Ä¬ÈÏ0
+	 *	å¹³å¤š
+	 *	@stdCode	ä»£ç ï¼Œæ ¼å¼å¦‚SSE.600000
+	 *	@price		å§”æ‰˜ä»·æ ¼
+	 *	@qty		ä¸‹å•æ•°é‡
+	 *	@isToday	æ˜¯å¦ä»Šä»“ï¼ŒSHFEã€INEä¸“ç”¨
+	 *	@flag		ä¸‹å•æ ‡å¿—: 0-normalï¼Œ1-fakï¼Œ2-fokï¼Œé»˜è®¤0
 	 */
 	virtual uint32_t	stra_exit_long(const char* stdCode, double price, double qty, bool isToday = false, int flag = 0) { return 0; }
 
 	/*
-	 *	Æ½¿Õ
-	 *	@stdCode	´úÂë£¬¸ñÊ½ÈçSSE.600000
-	 *	@price		Î¯ÍĞ¼Û¸ñ
-	 *	@qty		ÏÂµ¥ÊıÁ¿
-	 *	@isToday	ÊÇ·ñ½ñ²Ö£¬SHFE¡¢INE×¨ÓÃ
-	 *	@flag		ÏÂµ¥±êÖ¾: 0-normal£¬1-fak£¬2-fok£¬Ä¬ÈÏ0
+	 *	å¹³ç©º
+	 *	@stdCode	ä»£ç ï¼Œæ ¼å¼å¦‚SSE.600000
+	 *	@price		å§”æ‰˜ä»·æ ¼
+	 *	@qty		ä¸‹å•æ•°é‡
+	 *	@isToday	æ˜¯å¦ä»Šä»“ï¼ŒSHFEã€INEä¸“ç”¨
+	 *	@flag		ä¸‹å•æ ‡å¿—: 0-normalï¼Œ1-fakï¼Œ2-fokï¼Œé»˜è®¤0
 	 */
 	virtual uint32_t	stra_exit_short(const char* stdCode, double price, double qty, bool isToday = false, int flag = 0) { return 0; }
 
 	/*
-	 *	»ñÈ¡Æ·ÖÖĞÅÏ¢
-	 *	@stdCode	´úÂë£¬¸ñÊ½ÈçSSE.600000
+	 *	è·å–å“ç§ä¿¡æ¯
+	 *	@stdCode	ä»£ç ï¼Œæ ¼å¼å¦‚SSE.600000
 	 */
 	virtual WTSCommodityInfo* stra_get_comminfo(const char* stdCode) = 0;
 
 	/*
-	 *	»ñÈ¡KÏß£¬ÔİÎ´ÊµÏÖ
-	 *	@stdCode	´úÂë£¬¸ñÊ½ÈçSSE.600000
-	 *	@period		ÖÜÆÚ£¬Èçm1/m5/d1
-	 *	@count		ÌõÊı
+	 *	è·å–Kçº¿ï¼Œæš‚æœªå®ç°
+	 *	@stdCode	ä»£ç ï¼Œæ ¼å¼å¦‚SSE.600000
+	 *	@period		å‘¨æœŸï¼Œå¦‚m1/m5/d1
+	 *	@count		æ¡æ•°
 	 */
 	virtual WTSKlineSlice*	stra_get_bars(const char* stdCode, const char* period, uint32_t count) = 0;
 
 	/*
-	 *	»ñÈ¡tick£¬ÔİÎ´ÊµÏÖ
-	 *	@stdCode	´úÂë£¬¸ñÊ½ÈçSSE.600000
-	 *	@count		ÌõÊı
+	 *	è·å–tickï¼Œæš‚æœªå®ç°
+	 *	@stdCode	ä»£ç ï¼Œæ ¼å¼å¦‚SSE.600000
+	 *	@count		æ¡æ•°
 	 */
 	virtual WTSTickSlice*	stra_get_ticks(const char* stdCode, uint32_t count) = 0;
 
 	/*
-	 *	»ñÈ¡Î¯ÍĞÃ÷Ï¸£¬ÔİÎ´ÊµÏÖ
-	 *	@stdCode	´úÂë£¬¸ñÊ½ÈçSSE.600000
-	 *	@count		ÌõÊı
+	 *	è·å–å§”æ‰˜æ˜ç»†ï¼Œæš‚æœªå®ç°
+	 *	@stdCode	ä»£ç ï¼Œæ ¼å¼å¦‚SSE.600000
+	 *	@count		æ¡æ•°
 	 */
 	virtual WTSOrdDtlSlice*	stra_get_order_detail(const char* stdCode, uint32_t count) = 0;
 
 	/*
-	 *	»ñÈ¡Î¯ÍĞ¶ÓÁĞ£¬ÔİÎ´ÊµÏÖ
-	 *	@stdCode	´úÂë£¬¸ñÊ½ÈçSSE.600000
-	 *	@count		ÌõÊı
+	 *	è·å–å§”æ‰˜é˜Ÿåˆ—ï¼Œæš‚æœªå®ç°
+	 *	@stdCode	ä»£ç ï¼Œæ ¼å¼å¦‚SSE.600000
+	 *	@count		æ¡æ•°
 	 */
 	virtual WTSOrdQueSlice*	stra_get_order_queue(const char* stdCode, uint32_t count) = 0;
 
 	/*
-	 *	»ñÈ¡Öğ±Ê³É½»£¬ÔİÎ´ÊµÏÖ
-	 *	@stdCode	´úÂë£¬¸ñÊ½ÈçSSE.600000
-	 *	@count		ÌõÊı
+	 *	è·å–é€ç¬”æˆäº¤ï¼Œæš‚æœªå®ç°
+	 *	@stdCode	ä»£ç ï¼Œæ ¼å¼å¦‚SSE.600000
+	 *	@count		æ¡æ•°
 	 */
 	virtual WTSTransSlice*	stra_get_transaction(const char* stdCode, uint32_t count) = 0;
 
 	/*
-	 *	¶ÁÈ¡×îºóÒ»±Êtick
-	 *	@stdCode	´úÂë£¬¸ñÊ½ÈçSSE.600000
+	 *	è¯»å–æœ€åä¸€ç¬”tick
+	 *	@stdCode	ä»£ç ï¼Œæ ¼å¼å¦‚SSE.600000
 	 */
 	virtual WTSTickData*	stra_get_last_tick(const char* stdCode) = 0;
 
 	/*
-	 *	»ñÈ¡³Ö²Ö
-	 *	@stdCode	´úÂë£¬¸ñÊ½ÈçSSE.600000
-	 *	@bOnlyValid	»ñÈ¡¿ÉÓÃ³Ö²Ö
-	 *	@iFlag		¶ÁÈ¡±ê¼Ç£¬1-¶àÍ·£¬2-¿ÕÍ·£¬3-¾»Í·´ç
+	 *	è·å–æŒä»“
+	 *	@stdCode	ä»£ç ï¼Œæ ¼å¼å¦‚SSE.600000
+	 *	@bOnlyValid	è·å–å¯ç”¨æŒä»“
+	 *	@iFlag		è¯»å–æ ‡è®°ï¼Œ1-å¤šå¤´ï¼Œ2-ç©ºå¤´ï¼Œ3-å‡€å¤´å¯¸
 	 */
 	virtual double stra_get_position(const char* stdCode, bool bOnlyValid = false, int32_t iFlag = 3) = 0;
 
 	/*
-	 *	Ã¶¾Ù³Ö²Ö£¬»áÍ¨¹ıon_position»Øµ÷½øÀ´
-	 *	@stdCode	´úÂë£¬¸ñÊ½ÈçSSE.600000£¬Èç¹û´«¿Õ£¬ÔòÃ¶¾ÙÈ«²¿µÄ
+	 *	æšä¸¾æŒä»“ï¼Œä¼šé€šè¿‡on_positionå›è°ƒè¿›æ¥
+	 *	@stdCode	ä»£ç ï¼Œæ ¼å¼å¦‚SSE.600000ï¼Œå¦‚æœä¼ ç©ºï¼Œåˆ™æšä¸¾å…¨éƒ¨çš„
 	 *	
 	 */
 	virtual double stra_enum_position(const char* stdCode) = 0;
 
 	/*
-	 *	»ñÈ¡±¾µØ³Ö²Ö
-	 *	@stdCode	´úÂë£¬¸ñÊ½ÈçSSE.600000
-	 *	@isLong		¶àÍ·or¿ÕÍ·
+	 *	è·å–æœ¬åœ°æŒä»“
+	 *	@stdCode	ä»£ç ï¼Œæ ¼å¼å¦‚SSE.600000
+	 *	@isLong		å¤šå¤´orç©ºå¤´
 	 */
 	virtual double stra_get_local_position(const char* stdCode) = 0;
 
@@ -235,21 +235,21 @@ public:
 	virtual double stra_get_local_closeprofit(const char* stdCode) { return 0; }
 
 	/*
-	 *	»ñÈ¡×îĞÂ¼Û¸ñ
-	 *	@stdCode	´úÂë£¬¸ñÊ½ÈçSSE.600000
+	 *	è·å–æœ€æ–°ä»·æ ¼
+	 *	@stdCode	ä»£ç ï¼Œæ ¼å¼å¦‚SSE.600000
 	 */
 	virtual double stra_get_price(const char* stdCode) = 0;
 
 	/*
-	 *	»ñÈ¡Î´Íê³ÉÊÖÊı£¬ÂòÈëÎªÕı£¬Âô³öÎª¸º
-	 *	@stdCode	´úÂë£¬¸ñÊ½ÈçSSE.600000
+	 *	è·å–æœªå®Œæˆæ‰‹æ•°ï¼Œä¹°å…¥ä¸ºæ­£ï¼Œå–å‡ºä¸ºè´Ÿ
+	 *	@stdCode	ä»£ç ï¼Œæ ¼å¼å¦‚SSE.600000
 	 */
 	virtual double stra_get_undone(const char* stdCode) = 0;
 
 	virtual uint32_t stra_get_infos(const char* stdCode) { return 0; }
 
 	/*
-	 *	¶©ÔÄ½Ó¿Ú
+	 *	è®¢é˜…æ¥å£
 	 */
 	virtual void stra_sub_ticks(const char* stdCode) = 0;
 	virtual void stra_sub_order_queues(const char* stdCode) = 0;
@@ -257,7 +257,7 @@ public:
 	virtual void stra_sub_transactions(const char* stdCode) = 0;
 
 	/*
-	 *	Êä³öÈÕÖ¾
+	 *	è¾“å‡ºæ—¥å¿—
 	 */
 	virtual void stra_log_info(const char* message) = 0;
 	virtual void stra_log_debug(const char* message) = 0;

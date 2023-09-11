@@ -1,11 +1,11 @@
-/*!
+ï»¿/*!
  * \file WTSRiskDef.hpp
  * \project	WonderTrader
  *
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief WT·ç¿ØÏà¹ØÊı¾İ¶¨Òå
+ * \brief WTé£æ§ç›¸å…³æ•°æ®å®šä¹‰
  */
 #pragma once
 #include "WTSObject.hpp"
@@ -14,39 +14,39 @@ NS_WTP_BEGIN
 typedef struct _TradeStatInfo
 {
 	char		_code[MAX_INSTRUMENT_LENGTH];
-	//¿ªÆ½Í³¼Æ
-	double	l_openvol;	//µ±ÈÕ¿ª¶à²ÖÁ¿
-	double	l_closevol;	//µ±ÈÕÆ½¶à²ÖÁ¿
-	double	l_closetvol;//µ±ÈÕÆ½½ñ¶à²ÖÁ¿
-	double	s_openvol;	//µ±ÈÕ¿ª¿Õ²ÖÁ¿
-	double	s_closevol;	//µ±ÈÕÆ½¿Õ²ÖÁ¿
-	double	s_closetvol;//µ±ÈÕÆ½½ñ¿Õ²ÖÁ¿
+	//å¼€å¹³ç»Ÿè®¡
+	double	l_openvol;	//å½“æ—¥å¼€å¤šä»“é‡
+	double	l_closevol;	//å½“æ—¥å¹³å¤šä»“é‡
+	double	l_closetvol;//å½“æ—¥å¹³ä»Šå¤šä»“é‡
+	double	s_openvol;	//å½“æ—¥å¼€ç©ºä»“é‡
+	double	s_closevol;	//å½“æ—¥å¹³ç©ºä»“é‡
+	double	s_closetvol;//å½“æ—¥å¹³ä»Šç©ºä»“é‡
 
-	//¹Òµ¥Í³¼Æ
-	uint32_t	b_orders;	//Î¯Âò±ÊÊı
-	double		b_ordqty;	//Î¯ÂòÊıÁ¿
-	uint32_t	s_orders;	//Î¯Âô±ÊÊı
-	double		s_ordqty;	//Î¯ÂôÊıÁ¿
+	//æŒ‚å•ç»Ÿè®¡
+	uint32_t	b_orders;	//å§”ä¹°ç¬”æ•°
+	double		b_ordqty;	//å§”ä¹°æ•°é‡
+	uint32_t	s_orders;	//å§”å–ç¬”æ•°
+	double		s_ordqty;	//å§”å–æ•°é‡
 
-	//³·µ¥Í³¼Æ
-	uint32_t	b_cancels;	//³·Âò±ÊÊı
-	double		b_canclqty;	//³·ÂòÊıÁ¿
-	uint32_t	s_cancels;	//³·Âô±ÊÊı
-	double		s_canclqty;	//³·ÂôÊıÁ¿
+	//æ’¤å•ç»Ÿè®¡
+	uint32_t	b_cancels;	//æ’¤ä¹°ç¬”æ•°
+	double		b_canclqty;	//æ’¤ä¹°æ•°é‡
+	uint32_t	s_cancels;	//æ’¤å–ç¬”æ•°
+	double		s_canclqty;	//æ’¤å–æ•°é‡
 
-	//×Ô¶¯³·µ¥Í³¼Æ
-	uint32_t	b_auto_cancels;		//³·Âò±ÊÊı
-	double		b_auto_canclqty;	//³·ÂòÊıÁ¿
-	uint32_t	s_auto_cancels;		//³·Âô±ÊÊı
-	double		s_auto_canclqty;	//³·ÂôÊıÁ¿
+	//è‡ªåŠ¨æ’¤å•ç»Ÿè®¡
+	uint32_t	b_auto_cancels;		//æ’¤ä¹°ç¬”æ•°
+	double		b_auto_canclqty;	//æ’¤ä¹°æ•°é‡
+	uint32_t	s_auto_cancels;		//æ’¤å–ç¬”æ•°
+	double		s_auto_canclqty;	//æ’¤å–æ•°é‡
 
-	//´íµ¥Í³¼Æ
-	uint32_t	b_wrongs;	//´íµ¥±ÊÊı
-	double		b_wrongqty;	//´íµ¥ÊıÁ¿
-	uint32_t	s_wrongs;	//´íµ¥±ÊÊı
-	double		s_wrongqty;	//´íµ¥ÊıÁ¿
+	//é”™å•ç»Ÿè®¡
+	uint32_t	b_wrongs;	//é”™å•ç¬”æ•°
+	double		b_wrongqty;	//é”™å•æ•°é‡
+	uint32_t	s_wrongs;	//é”™å•ç¬”æ•°
+	double		s_wrongqty;	//é”™å•æ•°é‡
 
-	uint32_t	_infos;		//ĞÅÏ¢Á¿
+	uint32_t	_infos;		//ä¿¡æ¯é‡
 
 	_TradeStatInfo()
 	{
@@ -99,23 +99,23 @@ private:
 	TradeStatInfo	_trd_stat_info;
 };
 
-//×éºÏ×Ê½ğÊı¾İ
+//ç»„åˆèµ„é‡‘æ•°æ®
 typedef struct _WTSFundStruct
 {
-	double		_predynbal;		//ÆÚ³õ¶¯Ì¬È¨Òæ
-	double		_prebalance;	//ÆÚ³õ¾²Ì¬È¨Òæ
-	double		_balance;		//¾²Ì¬È¨Òæ
-	double		_profit;		//Æ½²ÖÓ¯¿÷
-	double		_dynprofit;		//¸¡¶¯Ó¯¿÷
-	double		_fees;			//Ó¶½ğ
-	uint32_t	_last_date;		//ÉÏ´Î½áËã½»Ò×ÈÕ
+	double		_predynbal;		//æœŸåˆåŠ¨æ€æƒç›Š
+	double		_prebalance;	//æœŸåˆé™æ€æƒç›Š
+	double		_balance;		//é™æ€æƒç›Š
+	double		_profit;		//å¹³ä»“ç›ˆäº
+	double		_dynprofit;		//æµ®åŠ¨ç›ˆäº
+	double		_fees;			//ä½£é‡‘
+	uint32_t	_last_date;		//ä¸Šæ¬¡ç»“ç®—äº¤æ˜“æ—¥
 
-	double		_max_dyn_bal;	//ÈÕÄÚ×î´ó¾»Öµ
-	uint32_t	_max_time;		//ÈÕÄÚ¸ßµã²úÉúÊ±¼ä
-	double		_min_dyn_bal;	//ÈÕÄÚ×îĞ¡¾»Öµ
-	uint32_t	_min_time;		//ÈÕÄÚµÍµã²úÉúÊ±¼ä
+	double		_max_dyn_bal;	//æ—¥å†…æœ€å¤§å‡€å€¼
+	uint32_t	_max_time;		//æ—¥å†…é«˜ç‚¹äº§ç”Ÿæ—¶é—´
+	double		_min_dyn_bal;	//æ—¥å†…æœ€å°å‡€å€¼
+	uint32_t	_min_time;		//æ—¥å†…ä½ç‚¹äº§ç”Ÿæ—¶é—´
 
-	int64_t		_update_time;	//Êı¾İ¸üĞÂÊ±¼ä
+	int64_t		_update_time;	//æ•°æ®æ›´æ–°æ—¶é—´
 
 	typedef struct _DynBalPair
 	{
@@ -128,8 +128,8 @@ typedef struct _WTSFundStruct
 		}
 	} DynBalPair;
 
-	DynBalPair	_max_md_dyn_bal;	//×î´ó¶¯Ì¬¾»Öµ
-	DynBalPair	_min_md_dyn_bal;	//×îĞ¡¶¯Ì¬¾»Öµ
+	DynBalPair	_max_md_dyn_bal;	//æœ€å¤§åŠ¨æ€å‡€å€¼
+	DynBalPair	_min_md_dyn_bal;	//æœ€å°åŠ¨æ€å‡€å€¼
 
 	_WTSFundStruct()
 	{

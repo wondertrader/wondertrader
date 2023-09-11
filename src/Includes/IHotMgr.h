@@ -1,11 +1,11 @@
-/*!
+ï»¿/*!
  * \file IHotMgr.h
  * \project	WonderTrader
  *
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief Ö÷Á¦ºÏÔ¼¹ÜÀíÆ÷½Ó¿Ú¶¨Òå
+ * \brief ä¸»åŠ›åˆçº¦ç®¡ç†å™¨æ¥å£å®šä¹‰
  */
 #pragma once
 #include "WTSMarcos.h"
@@ -38,79 +38,79 @@ class IHotMgr
 {
 public:
 	/*
-	 *	»ñÈ¡·ÖÔÂ´úÂë
-	 *	@pid	Æ·ÖÖ´úÂë
-	 *	@dt		ÈÕÆÚ(½»Ò×ÈÕ)
+	 *	è·å–åˆ†æœˆä»£ç 
+	 *	@pid	å“ç§ä»£ç 
+	 *	@dt		æ—¥æœŸ(äº¤æ˜“æ—¥)
 	 */
 	virtual const char* getRawCode(const char* exchg, const char* pid, uint32_t dt)	= 0;
 
 	/*
-	 *	»ñÈ¡Ö÷Á¦¶ÔÒ»¸öµÄÉÏÒ»¸ö·ÖÔÂ,¼´ÉÏÒ»¸öÖ÷Á¦ºÏÔ¼µÄ·ÖÔÂ´úÂë
-	 *	@pid	Æ·ÖÖ´úÂë
-	 *	@dt		ÈÕÆÚ(½»Ò×ÈÕ)
+	 *	è·å–ä¸»åŠ›å¯¹ä¸€ä¸ªçš„ä¸Šä¸€ä¸ªåˆ†æœˆ,å³ä¸Šä¸€ä¸ªä¸»åŠ›åˆçº¦çš„åˆ†æœˆä»£ç 
+	 *	@pid	å“ç§ä»£ç 
+	 *	@dt		æ—¥æœŸ(äº¤æ˜“æ—¥)
 	 */
 	virtual const char* getPrevRawCode(const char* exchg, const char* pid, uint32_t dt) = 0;
 
 	/*
-	 *	ÊÇ·ñÖ÷Á¦ºÏÔ¼
-	 *	@rawCode	·ÖÔÂ´úÂë
-	 *	@dt			ÈÕÆÚ(½»Ò×ÈÕ)
+	 *	æ˜¯å¦ä¸»åŠ›åˆçº¦
+	 *	@rawCode	åˆ†æœˆä»£ç 
+	 *	@dt			æ—¥æœŸ(äº¤æ˜“æ—¥)
 	 */
 	virtual bool		isHot(const char* exchg, const char* rawCode, uint32_t dt) = 0;
 
 	/*
-	 *	·Ö¸îÖ÷Á¦¶Î,½«Ö÷Á¦ºÏÔ¼ÔÚÄ³¸öÊ±¶ÎµÄ·ÖÔÂºÏÔ¼È«²¿Ìá³öÈ¡À´
+	 *	åˆ†å‰²ä¸»åŠ›æ®µ,å°†ä¸»åŠ›åˆçº¦åœ¨æŸä¸ªæ—¶æ®µçš„åˆ†æœˆåˆçº¦å…¨éƒ¨æå‡ºå–æ¥
 	 */
 	virtual bool		splitHotSecions(const char* exchg, const char* hotCode, uint32_t sDt, uint32_t eDt, HotSections& sections) = 0;
 
 	/*
-	 *	»ñÈ¡´ÎÖ÷Á¦·ÖÔÂ´úÂë
-	 *	@pid	Æ·ÖÖ´úÂë
-	 *	@dt		ÈÕÆÚ(½»Ò×ÈÕ)
+	 *	è·å–æ¬¡ä¸»åŠ›åˆ†æœˆä»£ç 
+	 *	@pid	å“ç§ä»£ç 
+	 *	@dt		æ—¥æœŸ(äº¤æ˜“æ—¥)
 	 */
 	virtual const char* getSecondRawCode(const char* exchg, const char* pid, uint32_t dt) = 0;
 
 	/*
-	 *	»ñÈ¡´ÎÖ÷Á¦¶ÔÒ»¸öµÄÉÏÒ»¸ö·ÖÔÂ,¼´ÉÏÒ»¸ö´ÎÖ÷Á¦ºÏÔ¼µÄ·ÖÔÂ´úÂë
-	 *	@pid	Æ·ÖÖ´úÂë
-	 *	@dt		ÈÕÆÚ(½»Ò×ÈÕ)
+	 *	è·å–æ¬¡ä¸»åŠ›å¯¹ä¸€ä¸ªçš„ä¸Šä¸€ä¸ªåˆ†æœˆ,å³ä¸Šä¸€ä¸ªæ¬¡ä¸»åŠ›åˆçº¦çš„åˆ†æœˆä»£ç 
+	 *	@pid	å“ç§ä»£ç 
+	 *	@dt		æ—¥æœŸ(äº¤æ˜“æ—¥)
 	 */
 	virtual const char* getPrevSecondRawCode(const char* exchg, const char* pid, uint32_t dt) = 0;
 
 	/*
-	 *	ÊÇ·ñ´ÎÖ÷Á¦ºÏÔ¼
-	 *	@rawCode	·ÖÔÂ´úÂë
-	 *	@dt			ÈÕÆÚ(½»Ò×ÈÕ)
+	 *	æ˜¯å¦æ¬¡ä¸»åŠ›åˆçº¦
+	 *	@rawCode	åˆ†æœˆä»£ç 
+	 *	@dt			æ—¥æœŸ(äº¤æ˜“æ—¥)
 	 */
 	virtual bool		isSecond(const char* exchg, const char* rawCode, uint32_t dt) = 0;
 
 	/*
-	 *	·Ö¸î´ÎÖ÷Á¦¶Î,½«´ÎÖ÷Á¦ºÏÔ¼ÔÚÄ³¸öÊ±¶ÎµÄ·ÖÔÂºÏÔ¼È«²¿Ìá³öÈ¡À´
+	 *	åˆ†å‰²æ¬¡ä¸»åŠ›æ®µ,å°†æ¬¡ä¸»åŠ›åˆçº¦åœ¨æŸä¸ªæ—¶æ®µçš„åˆ†æœˆåˆçº¦å…¨éƒ¨æå‡ºå–æ¥
 	 */
 	virtual bool		splitSecondSecions(const char* exchg, const char* hotCode, uint32_t sDt, uint32_t eDt, HotSections& sections) = 0;
 
 	/*
-	 *	»ñÈ¡×Ô¶¨ÒåÖ÷Á¦ºÏÔ¼µÄ·ÖÔÂ´úÂë
+	 *	è·å–è‡ªå®šä¹‰ä¸»åŠ›åˆçº¦çš„åˆ†æœˆä»£ç 
 	 */
 	virtual const char* getCustomRawCode(const char* tag, const char* fullPid, uint32_t dt = 0) = 0;
 
 	/*
-	 *	»ñÈ¡×Ô¶¨ÒåÁ¬ĞøºÏÔ¼µÄÉÏÒ»ÆÚÖ÷Á¦·ÖÔÂ´úÂë
+	 *	è·å–è‡ªå®šä¹‰è¿ç»­åˆçº¦çš„ä¸Šä¸€æœŸä¸»åŠ›åˆ†æœˆä»£ç 
 	 */
 	virtual const char* getPrevCustomRawCode(const char* tag, const char* fullPid, uint32_t dt = 0) = 0;
 
 	/*
-	 *	ÊÇ·ñÊÇ×Ô¶¨ÒåÖ÷Á¦ºÏÔ¼
+	 *	æ˜¯å¦æ˜¯è‡ªå®šä¹‰ä¸»åŠ›åˆçº¦
 	 */
 	virtual bool		isCustomHot(const char* tag, const char* fullCode, uint32_t d = 0) = 0;
 
 	/*
-	 *	·Ö¸ô×Ô¶¨ÒåÖ÷Á¦¶Î,½«´ÎÖ÷Á¦ºÏÔ¼ÔÚÄ³¸öÊ±¶ÎµÄ·ÖÔÂºÏÔ¼È«²¿Ìá³öÈ¡À´
+	 *	åˆ†éš”è‡ªå®šä¹‰ä¸»åŠ›æ®µ,å°†æ¬¡ä¸»åŠ›åˆçº¦åœ¨æŸä¸ªæ—¶æ®µçš„åˆ†æœˆåˆçº¦å…¨éƒ¨æå‡ºå–æ¥
 	 */
 	virtual bool		splitCustomSections(const char* tag, const char* hotCode, uint32_t sDt, uint32_t eDt, HotSections& sections) = 0;
 
 	/*
-	 *	¸ù¾İ±ê×¼ºÏÔ¼´úÂë£¬»ñÈ¡¹æÔò±êÇ©
+	 *	æ ¹æ®æ ‡å‡†åˆçº¦ä»£ç ï¼Œè·å–è§„åˆ™æ ‡ç­¾
 	 */
 	virtual const char* getRuleTag(const char* stdCode) = 0;
 

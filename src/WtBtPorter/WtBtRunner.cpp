@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file WtBtRunner.cpp
  * \project	WonderTrader
  *
@@ -28,7 +28,7 @@
 #ifdef _MSC_VER
 #include "../Common/mdump.h"
 #include <boost/filesystem.hpp>
- //Õâ¸öÖ÷ÒªÊÇ¸øMiniDumperÓÃµÄ
+ //è¿™ä¸ªä¸»è¦æ˜¯ç»™MiniDumperç”¨çš„
 const char* getModuleName()
 {
 	static char MODULE_NAME[250] = { 0 };
@@ -468,7 +468,7 @@ void WtBtRunner::config(const char* cfgFile, bool isFile /* = true */)
 		return;
 	}
 
-	//³õÊ¼»¯ÊÂ¼þÍÆËÍÆ÷
+	//åˆå§‹åŒ–äº‹ä»¶æŽ¨é€å™¨
 	initEvtNotifier(_cfg->get("notifier"));
 
 	_replayer.init(_cfg->get("replayer"), &_notifier, _ext_fnl_bar_loader != NULL ? this : NULL);

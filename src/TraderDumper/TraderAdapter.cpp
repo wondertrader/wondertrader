@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file TraderAdapter.cpp
  * \project	WonderTrader
  *
@@ -69,7 +69,7 @@ bool TraderAdapter::init(const char* id, WTSVariant* params, IBaseDataMgr* bdMgr
 		return false;
 
 
-	//ÏÈ¿´¹¤×÷Ä¿Â¼ÏÂÊÇ·ñÓĞ½»Ò×Ä£¿é
+	//å…ˆçœ‹å·¥ä½œç›®å½•ä¸‹æ˜¯å¦æœ‰äº¤æ˜“æ¨¡å—
 	std::string module = DLLHelper::wrap_module(params->getCString("module"), "lib");;
 
 	if (!StdFile::exists(module.c_str()))
@@ -82,35 +82,35 @@ bool TraderAdapter::init(const char* id, WTSVariant* params, IBaseDataMgr* bdMgr
 	DllHandle hInst = DLLHelper::load_library(module.c_str());
 	if (hInst == NULL)
 	{
-		WTSLogger::error("[{}]½»Ò×Ä£¿é{}¼ÓÔØÊ§°Ü", _id.c_str(), module.c_str());
+		WTSLogger::error("[{}]äº¤æ˜“æ¨¡å—{}åŠ è½½å¤±è´¥", _id.c_str(), module.c_str());
 		return false;
 	}
 
 	FuncCreateTrader pFunCreateTrader = (FuncCreateTrader)DLLHelper::get_symbol(hInst, "createTrader");
 	if (NULL == pFunCreateTrader)
 	{
-		WTSLogger::error("[{}]½»Ò×½Ó¿Ú´´½¨º¯Êı¶ÁÈ¡Ê§°Ü", _id.c_str());
+		WTSLogger::error("[{}]äº¤æ˜“æ¥å£åˆ›å»ºå‡½æ•°è¯»å–å¤±è´¥", _id.c_str());
 		return false;
 	}
 
 	_trader_api = pFunCreateTrader();
 	if (NULL == _trader_api)
 	{
-		WTSLogger::error("[{}]½»Ò×½Ó¿Ú´´½¨Ê§°Ü", _id.c_str());
+		WTSLogger::error("[{}]äº¤æ˜“æ¥å£åˆ›å»ºå¤±è´¥", _id.c_str());
 		return false;
 	}
 
 	_remover = (FuncDeleteTrader)DLLHelper::get_symbol(hInst, "deleteTrader");
 	
-	//ÕâÀïÒªÇ¿ÖÆ°Ñquick¸Ä³Étrue£¬²»²éÈ«²¿³É½»ºÍ¶©µ¥
+	//è¿™é‡Œè¦å¼ºåˆ¶æŠŠquickæ”¹æˆtrueï¼Œä¸æŸ¥å…¨éƒ¨æˆäº¤å’Œè®¢å•
 	params->append("quick", true);
 	if (!_trader_api->init(params))
 	{
-		WTSLogger::error("[{}]½»Ò×½Ó¿ÚÆô¶¯Ê§°Ü: ½»Ò×½Ó¿Ú³õÊ¼»¯Ê§°Ü", id);
+		WTSLogger::error("[{}]äº¤æ˜“æ¥å£å¯åŠ¨å¤±è´¥: äº¤æ˜“æ¥å£åˆå§‹åŒ–å¤±è´¥", id);
 		return false;
 	}
 
-	WTSLogger::info("[{}]½»Ò×½Ó¿Ú³õÊ¼»¯³É¹¦", id);
+	WTSLogger::info("[{}]äº¤æ˜“æ¥å£åˆå§‹åŒ–æˆåŠŸ", id);
 	return true;
 }
 
@@ -134,7 +134,7 @@ void TraderAdapter::release()
 	}
 }
 
-#pragma region "ITraderSpi½Ó¿Ú"
+#pragma region "ITraderSpiæ¥å£"
 void TraderAdapter::handleEvent(WTSTraderEvent e, int32_t ec)
 {
 	if(e == WTE_Connect)
@@ -145,14 +145,14 @@ void TraderAdapter::handleEvent(WTSTraderEvent e, int32_t ec)
 		}
 		else
 		{
-			WTSLogger::error("[{}]½»Ò×ÕËºÅÁ¬½ÓÊ§°Ü: {}", _id.c_str(), ec);
+			WTSLogger::error("[{}]äº¤æ˜“è´¦å·è¿æ¥å¤±è´¥: {}", _id.c_str(), ec);
 			_mgr->decAlive();
 			_done = true;
 		}
 	}
 	else if(e == WTE_Close)
 	{
-		WTSLogger::error("[{}]½»Ò×ÕËºÅÁ¬½ÓÒÑ¶Ï¿ª: {}", _id.c_str(), ec);
+		WTSLogger::error("[{}]äº¤æ˜“è´¦å·è¿æ¥å·²æ–­å¼€: {}", _id.c_str(), ec);
 	}
 }
 
@@ -160,16 +160,16 @@ void TraderAdapter::onLoginResult(bool bSucc, const char* msg, uint32_t tradingd
 {
 	if(!bSucc)
 	{
-		WTSLogger::error("[{}]½»Ò×ÕËºÅµÇÂ¼Ê§°Ü: {}", _id.c_str(), msg);
+		WTSLogger::error("[{}]äº¤æ˜“è´¦å·ç™»å½•å¤±è´¥: {}", _id.c_str(), msg);
 		_mgr->decAlive();
 		_done = true;
 	}
 	else
 	{
 		_date = tradingdate;
-		WTSLogger::info("[{}]½»Ò×ÕËºÅµÇÂ¼³É¹¦, µ±Ç°½»Ò×ÈÕ:{}", _id.c_str(), tradingdate);
+		WTSLogger::info("[{}]äº¤æ˜“è´¦å·ç™»å½•æˆåŠŸ, å½“å‰äº¤æ˜“æ—¥:{}", _id.c_str(), tradingdate);
 
-		_trader_api->queryPositions();	//²é³Ö²Ö
+		_trader_api->queryPositions();	//æŸ¥æŒä»“
 	}
 }
 
@@ -207,7 +207,7 @@ void TraderAdapter::onRspAccount(WTSArray* ayAccounts)
 		}
 	}
 
-	WTSLogger::info("[{}]×Ê½ğÊı¾İÒÑ¸üĞÂ", _id.c_str());
+	WTSLogger::info("[{}]èµ„é‡‘æ•°æ®å·²æ›´æ–°", _id.c_str());
 
 	if(!_done)
 		_trader_api->queryTrades();
@@ -241,7 +241,7 @@ void TraderAdapter::onRspTrades(const WTSArray* ayTrades)
 		}
 	}
 
-	WTSLogger::info("[{}]³É½»Ã÷Ï¸ÒÑ¸üĞÂ", _id.c_str());
+	WTSLogger::info("[{}]æˆäº¤æ˜ç»†å·²æ›´æ–°", _id.c_str());
 
 	_trader_api->queryOrders();
 }
@@ -263,7 +263,7 @@ void TraderAdapter::onRspOrders(const WTSArray* ayOrders)
 		}
 	}
 
-	WTSLogger::info("[{}]¶©µ¥Ã÷Ï¸ÒÑ¸üĞÂ", _id.c_str());
+	WTSLogger::info("[{}]è®¢å•æ˜ç»†å·²æ›´æ–°", _id.c_str());
 	_mgr->decAlive();
 	_done = true;
 }
@@ -274,7 +274,7 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* oInfo)
 	if (cInfo == NULL)
 		return;
 
-	//Èç¹û¶©µ¥»Ø±¨ÖĞ£¬¶©µ¥×´Ì¬ÊÇÒÑ½áÊø£¬ÔòË¢ĞÂ×Ê½ğºÍ³Ö²Ö
+	//å¦‚æœè®¢å•å›æŠ¥ä¸­ï¼Œè®¢å•çŠ¶æ€æ˜¯å·²ç»“æŸï¼Œåˆ™åˆ·æ–°èµ„é‡‘å’ŒæŒä»“
 	if (!oInfo->isAlive())
 	{
 		_trader_api->queryAccount();
@@ -304,7 +304,7 @@ void TraderAdapter::onRspPosition(const WTSArray* ayPositions)
 		}
 	}
 
-	WTSLogger::info("[{}]³Ö²ÖÊı¾İÒÑ¸üĞÂ", _id.c_str());
+	WTSLogger::info("[{}]æŒä»“æ•°æ®å·²æ›´æ–°", _id.c_str());
 
 	if (!_done)
 		_trader_api->queryAccount();
@@ -313,7 +313,7 @@ void TraderAdapter::onRspPosition(const WTSArray* ayPositions)
 void TraderAdapter::onTraderError(WTSError* err)
 {
 	if(err)
-		WTSLogger::error("[{}]½»Ò×Í¨µÀ³öÏÖ´íÎó: {}", _id.c_str(), err->getMessage());
+		WTSLogger::error("[{}]äº¤æ˜“é€šé“å‡ºç°é”™è¯¯: {}", _id.c_str(), err->getMessage());
 }
 
 IBaseDataMgr* TraderAdapter::getBaseDataMgr()
@@ -326,7 +326,7 @@ void TraderAdapter::handleTraderLog(WTSLogLevel ll, const char* message)
 	WTSLogger::log_raw(ll, message);
 }
 
-#pragma endregion "ITraderSpi½Ó¿Ú"
+#pragma endregion "ITraderSpiæ¥å£"
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -339,7 +339,7 @@ bool TraderAdapterMgr::addAdapter(const char* tname, TraderAdapterPtr& adapter)
 	auto it = _adapters.find(tname);
 	if(it != _adapters.end())
 	{
-		WTSLogger::error("½»Ò×Í¨µÀÃû³ÆÏàÍ¬: {}", tname);
+		WTSLogger::error("äº¤æ˜“é€šé“åç§°ç›¸åŒ: {}", tname);
 		return false;
 	}
 
@@ -367,7 +367,7 @@ void TraderAdapterMgr::run()
 		it->second->run();
 	}
 
-	WTSLogger::info("{}¸ö½»Ò×Í¨µÀÒÑÆô¶¯", _adapters.size());
+	WTSLogger::info("{}ä¸ªäº¤æ˜“é€šé“å·²å¯åŠ¨", _adapters.size());
 }
 
 void TraderAdapterMgr::release()

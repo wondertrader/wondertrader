@@ -1,4 +1,4 @@
-#include "ExpHftContext.h"
+ï»¿#include "ExpHftContext.h"
 #include "WtRtRunner.h"
 #include "../Share/StrUtil.hpp"
 
@@ -42,7 +42,7 @@ void ExpHftContext::on_init()
 {
 	HftStraBaseCtx::on_init();
 
-	//ÏòÍâ²¿»Øµ÷
+	//å‘å¤–éƒ¨å›è°ƒ
 	getRunner().ctx_on_init(_context_id, ET_HFT);
 }
 
@@ -50,13 +50,13 @@ void ExpHftContext::on_session_begin(uint32_t uTDate)
 {
 	HftStraBaseCtx::on_session_begin(uTDate);
 
-	//ÏòÍâ²¿»Øµ÷
+	//å‘å¤–éƒ¨å›è°ƒ
 	getRunner().ctx_on_session_event(_context_id, uTDate, true, ET_HFT);
 }
 
 void ExpHftContext::on_session_end(uint32_t uTDate)
 {
-	//ÏòÍâ²¿»Øµ÷
+	//å‘å¤–éƒ¨å›è°ƒ
 	getRunner().ctx_on_session_event(_context_id, uTDate, false, ET_HFT);
 
 	HftStraBaseCtx::on_session_end(uTDate);

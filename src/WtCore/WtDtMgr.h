@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file WtDataManager.h
  * \project	WonderTrader
  *
@@ -41,7 +41,7 @@ public:
 	void	handle_push_quote(const char* stdCode, WTSTickData* newTick);
 
 	//////////////////////////////////////////////////////////////////////////
-	//IDataManager ½Ó¿Ú
+	//IDataManager æ¥å£
 	virtual WTSTickSlice* get_tick_slice(const char* stdCode, uint32_t count, uint64_t etime = 0) override;
 	virtual WTSOrdQueSlice* get_order_queue_slice(const char* stdCode, uint32_t count, uint64_t etime = 0) override;
 	virtual WTSOrdDtlSlice* get_order_detail_slice(const char* stdCode, uint32_t count, uint64_t etime = 0) override;
@@ -73,17 +73,17 @@ private:
 	IHisDataLoader*	_loader;
 	WtEngine*		_engine;
 
-	bool			_align_by_section;	//Ç¿ÖÆĞ¡½Ú¶ÔÆë
-	bool			_force_cache;		//Ç¿ÖÆ»º´æKÏß
+	bool			_align_by_section;	//å¼ºåˆ¶å°èŠ‚å¯¹é½
+	bool			_force_cache;		//å¼ºåˆ¶ç¼“å­˜Kçº¿
 
 	wt_hashset<std::string> _subed_basic_bars;
 	typedef WTSHashMap<std::string> DataCacheMap;
-	DataCacheMap*	_bars_cache;	//KÏß»º´æ
-	DataCacheMap*	_rt_tick_map;	//ÊµÊ±tick»º´æ
+	DataCacheMap*	_bars_cache;	//Kçº¿ç¼“å­˜
+	DataCacheMap*	_rt_tick_map;	//å®æ—¶tickç¼“å­˜
 	//By Wesley @ 2022.02.11
-	//Õâ¸öÖ»ÓĞºó¸´È¨tickÊı¾İ
-	//ÒòÎªÇ°¸´È¨ºÍ²»¸´È¨£¬¶¼²»ĞèÒª»º´æ
-	DataCacheMap*	_ticks_adjusted;	//¸´È¨tick»º´æ
+	//è¿™ä¸ªåªæœ‰åå¤æƒtickæ•°æ®
+	//å› ä¸ºå‰å¤æƒå’Œä¸å¤æƒï¼Œéƒ½ä¸éœ€è¦ç¼“å­˜
+	DataCacheMap*	_ticks_adjusted;	//å¤æƒtickç¼“å­˜
 
 	typedef struct _NotifyItem
 	{

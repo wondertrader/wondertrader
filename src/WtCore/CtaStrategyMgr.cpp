@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \file CtaStrategyMgr.cpp
  * \project	WonderTrader
  *

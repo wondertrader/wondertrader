@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file DataManager.cpp
  * \project	WonderTrader
  *
@@ -156,7 +156,7 @@ IBaseDataMgr* DataManager::getBDMgr()
 bool DataManager::canSessionReceive(const char* sid)
 {
 	//By Wesley @ 2021.12.27
-	//Èç¹û×´Ì¬»úÎªNULL£¬ËµÃ÷ÊÇÈ«ÌìºòÄ£Ê½£¬Ö±½Ó·µ»Øtrue¼´¿É
+	//å¦‚æœçŠ¶æ€æœºä¸ºNULLï¼Œè¯´æ˜æ˜¯å…¨å¤©å€™æ¨¡å¼ï¼Œç›´æ¥è¿”å›trueå³å¯
 	if (_state_mon == NULL)
 		return true;
 

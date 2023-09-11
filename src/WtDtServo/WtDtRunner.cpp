@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file WtDtRunner.cpp
  * \project	WonderTrader
  *
@@ -77,7 +77,7 @@ void WtDtRunner::initialize(const char* cfgFile, bool isFile /* = true */, const
 		CMiniDumper::Enable(getModuleName(), true, WtHelper::get_cwd());
 #endif
 	}
-	//»ù´¡Êı¾İÎÄ¼ş
+	//åŸºç¡€æ•°æ®æ–‡ä»¶
 	WTSVariant* cfgBF = config->get("basefiles");
 	if (cfgBF->get("session"))
 	{
@@ -374,7 +374,7 @@ void WtDtRunner::initParsers(WTSVariant* cfg)
 		const char* id = cfgItem->getCString("id");
 
 		// By Wesley @ 2021.12.14
-		// Èç¹ûidÎª¿Õ£¬ÔòÉú³É×Ô¶¯id
+		// å¦‚æœidä¸ºç©ºï¼Œåˆ™ç”Ÿæˆè‡ªåŠ¨id
 		std::string realid = id;
 		if (realid.empty())
 		{
@@ -419,7 +419,7 @@ void WtDtRunner::proc_tick(WTSTickData* curTick)
 	}
 	else if (CodeHelper::isMonthlyCode(curTick->code()))
 	{
-		//Èç¹ûÊÇ·ÖÔÂºÏÔ¼£¬Ôò½øĞĞÖ÷Á¦ºÍ´ÎÖ÷Á¦µÄÅĞ¶Ï
+		//å¦‚æœæ˜¯åˆ†æœˆåˆçº¦ï¼Œåˆ™è¿›è¡Œä¸»åŠ›å’Œæ¬¡ä¸»åŠ›çš„åˆ¤æ–­
 		stdCode = CodeHelper::rawMonthCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
 		bool bHot = _hot_mgr.isHot(curTick->exchg(), curTick->code(), 0);
 		bool b2nd = _hot_mgr.isSecond(curTick->exchg(), curTick->code(), 0);
@@ -485,7 +485,7 @@ void WtDtRunner::trigger_tick(const char* stdCode, WTSTickData* curTick)
 						WTSTickStruct& newTS = newTick->getTickStruct();
 						newTick->setContractInfo(curTick->getContractInfo());
 
-						//ÕâÀï×öÒ»¸ö¸´È¨Òò×ÓµÄ´¦Àí
+						//è¿™é‡Œåšä¸€ä¸ªå¤æƒå› å­çš„å¤„ç†
 						double factor = _data_mgr.get_exright_factor(stdCode, curTick->getContractInfo()->getCommInfo());
 						newTS.open *= factor;
 						newTS.high *= factor;
@@ -533,7 +533,7 @@ void WtDtRunner::trigger_tick(const char* stdCode, WTSTickData* curTick)
 					WTSTickStruct& newTS = newTick->getTickStruct();
 					newTick->setContractInfo(curTick->getContractInfo());
 
-					//ÕâÀï×öÒ»¸ö¸´È¨Òò×ÓµÄ´¦Àí
+					//è¿™é‡Œåšä¸€ä¸ªå¤æƒå› å­çš„å¤„ç†
 					double factor = _data_mgr.get_exright_factor(stdCode, curTick->getContractInfo()->getCommInfo());
 					newTS.open *= factor;
 					newTS.high *= factor;
@@ -584,8 +584,8 @@ void WtDtRunner::sub_tick(const char* codes, bool bReplace, bool bInner /* = fal
 		StringVector ayCodes = StrUtil::split(codes, ",");
 		for (const std::string& code : ayCodes)
 		{
-			//Èç¹ûÊÇÖ÷Á¦ºÏÔ¼´úÂë, ÈçSHFE.ag.HOT, ÄÇÃ´Òª×ª»»³ÉÔ­ºÏÔ¼´úÂë, SHFE.ag.1912
-			//ÒòÎªÖ´ĞĞÆ÷Ö»Ê¶±ğÔ­ºÏÔ¼´úÂë
+			//å¦‚æœæ˜¯ä¸»åŠ›åˆçº¦ä»£ç , å¦‚SHFE.ag.HOT, é‚£ä¹ˆè¦è½¬æ¢æˆåŸåˆçº¦ä»£ç , SHFE.ag.1912
+			//å› ä¸ºæ‰§è¡Œå™¨åªè¯†åˆ«åŸåˆçº¦ä»£ç 
 			const char* stdCode = code.c_str();
 			std::size_t length = strlen(stdCode);
 			uint32_t flag = 0;

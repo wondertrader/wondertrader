@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <stdint.h>
 #include <memory>
 
@@ -41,14 +41,14 @@ namespace shareblock
 	} KeyInfo;
 
 	/*
-	 *	Ğ¡½ÚĞÅÏ¢
+	 *	å°èŠ‚ä¿¡æ¯
 	 */
 	typedef struct _SectionInfo
 	{
 		char		_name[32];
 		KeyInfo		_keys[32];
-		uint32_t	_count;			//Êı¾İÌõÊı£¬¼´keyµÄ¸öÊı
-		uint32_t	_offset;		//¼ÇÂ¼ÏÂÒ»¸ö¿É·ÖÅäµØÖ·µÄÆ«ÒÆÁ¿
+		uint32_t	_count;			//æ•°æ®æ¡æ•°ï¼Œå³keyçš„ä¸ªæ•°
+		uint32_t	_offset;		//è®°å½•ä¸‹ä¸€ä¸ªå¯åˆ†é…åœ°å€çš„åç§»é‡
 		uint64_t	_updatetime;
 		char		_data[1024];
 

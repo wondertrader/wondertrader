@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file WtDtRunner.cpp
  * \project	WonderTrader
  *
@@ -89,7 +89,7 @@ void WtDtRunner::initialize(const char* cfgFile, const char* logCfg, const char*
 		return;
 	}
 
-	//»ù´¡Êı¾İÎÄ¼ş
+	//åŸºç¡€æ•°æ®æ–‡ä»¶
 	WTSVariant* cfgBF = config->get("basefiles");
 	if (cfgBF->get("session"))
 	{
@@ -162,7 +162,7 @@ void WtDtRunner::initialize(const char* cfgFile, const char* logCfg, const char*
 	_udp_caster.init(config->get("broadcaster"), &_bd_mgr, &_data_mgr);
 
 	//By Wesley @ 2021.12.27
-	//È«ÌìºòÄ£Ê½£¬²»ĞèÒªÔÙÊ¹ÓÃ×´Ì¬»ú
+	//å…¨å¤©å€™æ¨¡å¼ï¼Œä¸éœ€è¦å†ä½¿ç”¨çŠ¶æ€æœº
 	bool bAlldayMode = config->getBoolean("allday");
 	if (!bAlldayMode)
 	{
@@ -177,7 +177,7 @@ void WtDtRunner::initialize(const char* cfgFile, const char* logCfg, const char*
 
 	if (config->has("index"))
 	{
-		//Èç¹û´æÔÚÖ¸ÊıÄ£¿éÒª£¬ÅäÖÃÖ¸Êı
+		//å¦‚æœå­˜åœ¨æŒ‡æ•°æ¨¡å—è¦ï¼Œé…ç½®æŒ‡æ•°
 		const char* filename = config->getCString("index");
 		WTSLogger::info("Reading index config from {}...", filename);
 		WTSVariant* var = WTSCfgLoader::load_from_file(filename);
@@ -244,7 +244,7 @@ void WtDtRunner::initParsers(WTSVariant* cfg)
 		const char* id = cfgItem->getCString("id");
 
 		// By Wesley @ 2021.12.14
-		// Èç¹ûidÎª¿Õ£¬ÔòÉú³É×Ô¶¯id
+		// å¦‚æœidä¸ºç©ºï¼Œåˆ™ç”Ÿæˆè‡ªåŠ¨id
 		std::string realid = id;
 		if (realid.empty())
 		{

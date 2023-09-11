@@ -1,4 +1,4 @@
-#include "WtDataWriterAD.h"
+ï»¿#include "WtDataWriterAD.h"
 #include "LMDBKeys.h"
 
 #include "../Includes/WTSSessionInfo.hpp"
@@ -283,7 +283,7 @@ void* WtDataWriterAD::resizeRTBlock(BoostMFPtr& mfPtr, uint32_t nCount)
 	if (mfPtr == NULL)
 		return NULL;
 
-	//µ÷ÓÃ¸Ãº¯ÊýÖ®Ç°,Ó¦¸ÃÒÑ¾­ÉêÇëÁËÐ´ËøÁË
+	//è°ƒç”¨è¯¥å‡½æ•°ä¹‹å‰,åº”è¯¥å·²ç»ç”³è¯·äº†å†™é”äº†
 	RTBlockHeader* tBlock = (RTBlockHeader*)mfPtr->addr();
 	if (tBlock->_capacity >= nCount)
 		return mfPtr->addr();
@@ -337,19 +337,19 @@ bool WtDataWriterAD::writeTick(WTSTickData* curTick, uint32_t procFlag)
 
 			WTSCommodityInfo* commInfo = ct->getCommInfo();
 
-			//ÔÙ¸ù¾Ý×´Ì¬¹ýÂË
+			//å†æ ¹æ®çŠ¶æ€è¿‡æ»¤
 			if (!_sink->canSessionReceive(commInfo->getSession()))
 				break;
 
-			//ÏÈ¸üÐÂ»º´æ
+			//å…ˆæ›´æ–°ç¼“å­˜
 			if (!updateTickCache(ct, curTick, procFlag))
 				break;
 
-			//Ð´µ½tick»º´æ
+			//å†™åˆ°tickç¼“å­˜
 			if(!_disable_tick)
 				pipeToTicks(ct, curTick);
 
-			//Ð´µ½KÏß»º´æ
+			//å†™åˆ°Kçº¿ç¼“å­˜
 			updateBarCache(ct, curTick);
 
 			_sink->broadcastTick(curTick);
@@ -412,12 +412,12 @@ void WtDataWriterAD::pushTask(TaskInfo task)
 
 void WtDataWriterAD::pipeToTicks(WTSContractInfo* ct, WTSTickData* curTick)
 {
-	//Ö±½ÓÂäµØ
+	//ç›´æŽ¥è½åœ°
 	WtLMDBPtr db = get_t_db(ct->getExchg(), ct->getCode());
 	if (db)
 	{
-		//ÕâÀïÒª°ÑÊ±¼ä×ª³É±ãÒËÊ±¼ä£¬²¢ÓÃ½»Ò×ÈÕ×÷Îªdate
-		//ÕâÑù¿ÉÒÔ¸ù¾Ý½»Ò×ÈÕÉ¸Ñ¡ÀúÊ·tickÊý¾Ý
+		//è¿™é‡Œè¦æŠŠæ—¶é—´è½¬æˆä¾¿å®œæ—¶é—´ï¼Œå¹¶ç”¨äº¤æ˜“æ—¥ä½œä¸ºdate
+		//è¿™æ ·å¯ä»¥æ ¹æ®äº¤æ˜“æ—¥ç­›é€‰åŽ†å²tickæ•°æ®
 		uint32_t actTime = curTick->actiontime();
 		uint32_t offTime = ct->getCommInfo()->getSessionInfo()->offsetTime(actTime / 100000, true) + actTime % 100000;
 
@@ -446,7 +446,7 @@ void WtDataWriterAD::pipeToTicks(WTSContractInfo* ct, WTSTickData* curTick)
 
 void WtDataWriterAD::pipeToDayBars(WTSContractInfo* ct, const WTSBarStruct& bar)
 {
-	//Ö±½ÓÂäµØ
+	//ç›´æŽ¥è½åœ°
 	WtLMDBPtr db = get_k_db(ct->getExchg(), KP_DAY);
 	if (db)
 	{
@@ -479,7 +479,7 @@ void WtDataWriterAD::pipeToDayBars(WTSContractInfo* ct, const WTSBarStruct& bar)
 
 void WtDataWriterAD::pipeToM1Bars(WTSContractInfo* ct, const WTSBarStruct& bar)
 {
-	//Ö±½ÓÂäµØ
+	//ç›´æŽ¥è½åœ°
 	WtLMDBPtr db = get_k_db(ct->getExchg(), KP_Minute1);
 	if(db)
 	{
@@ -512,7 +512,7 @@ void WtDataWriterAD::pipeToM1Bars(WTSContractInfo* ct, const WTSBarStruct& bar)
 
 void WtDataWriterAD::pipeToM5Bars(WTSContractInfo* ct, const WTSBarStruct& bar)
 {
-	//Ö±½ÓÂäµØ
+	//ç›´æŽ¥è½åœ°
 	WtLMDBPtr db = get_k_db(ct->getExchg(), KP_Minute5);
 	if (db)
 	{
@@ -553,9 +553,9 @@ void WtDataWriterAD::updateBarCache(WTSContractInfo* ct, WTSTickData* curTick)
 	if (minutes == INVALID_UINT32)
 		return;
 
-	//µ±ÃëÊýÎª0,Òª×¨ÃÅ´¦Àí,±ÈÈç091500000,Õâ±ÊtickÒªËã×÷0915µÄ
-	//Èç¹ûÊÇÐ¡½Ú½áÊø,ÒªËã×÷Ð¡½Ú½áÊøÄÇÒ»·ÖÖÓ,ÒòÎª¾­³£»áÓÐ³¬¹ý½áÊøÊ±¼äµÄ¼Û¸ñ½øÀ´,Èç113000500
-	//²»ÄÜÍ¬Ê±´¦Àí,ËùÒÔÓÃor	
+	//å½“ç§’æ•°ä¸º0,è¦ä¸“é—¨å¤„ç†,æ¯”å¦‚091500000,è¿™ç¬”tickè¦ç®—ä½œ0915çš„
+	//å¦‚æžœæ˜¯å°èŠ‚ç»“æŸ,è¦ç®—ä½œå°èŠ‚ç»“æŸé‚£ä¸€åˆ†é’Ÿ,å› ä¸ºç»å¸¸ä¼šæœ‰è¶…è¿‡ç»“æŸæ—¶é—´çš„ä»·æ ¼è¿›æ¥,å¦‚113000500
+	//ä¸èƒ½åŒæ—¶å¤„ç†,æ‰€ä»¥ç”¨or	
 	if (sInfo->isLastOfSection(curTime))
 	{
 		minutes--;
@@ -563,7 +563,7 @@ void WtDataWriterAD::updateBarCache(WTSContractInfo* ct, WTSTickData* curTick)
 
 	std::string key = StrUtil::printf("%s.%s", curTick->exchg(), curTick->code());
 
-	//¸üÐÂÈÕÏß
+	//æ›´æ–°æ—¥çº¿
 	if (!_disable_day && _d1_cache._cache_block)
 	{
 		StdUniqueLock lock(_d1_cache._mtx);
@@ -594,7 +594,7 @@ void WtDataWriterAD::updateBarCache(WTSContractInfo* ct, WTSTickData* curTick)
 		}
 		WTSBarStruct* lastBar = &item._bar;
 
-		//¼ì²éÈÕÆÚÊÇ·ñÒ»ÖÂ
+		//æ£€æŸ¥æ—¥æœŸæ˜¯å¦ä¸€è‡´
 		uint32_t barDate = curTick->tradingdate();
 
 		bool bNewBar = false;
@@ -606,8 +606,8 @@ void WtDataWriterAD::updateBarCache(WTSContractInfo* ct, WTSTickData* curTick)
 		WTSBarStruct* newBar = lastBar;
 		if (bNewBar)
 		{
-			//ÕâÀïÒª½«lastBarÍùÍâÐ´
-			//Èç¹ûÊÇÐÂµÄºÏÔ¼£¬ËµÃ÷»¹Ã»Êý¾Ý£¬²»ÍùÍâÐ´
+			//è¿™é‡Œè¦å°†lastBarå¾€å¤–å†™
+			//å¦‚æžœæ˜¯æ–°çš„åˆçº¦ï¼Œè¯´æ˜Žè¿˜æ²¡æ•°æ®ï¼Œä¸å¾€å¤–å†™
 			if (!bNewCode)
 			{
 				pipeToDayBars(ct, *lastBar);
@@ -629,8 +629,8 @@ void WtDataWriterAD::updateBarCache(WTSContractInfo* ct, WTSTickData* curTick)
 		{
 			/*
 			*	By Wesley @ 2023.07.05
-			*	·¢ÏÖÄ³Ð©Æ·ÖÖ£¬¿ªÅÌÊ±¿ÉÄÜ»áÍÆËÍpriceÎª0µÄtick½øÀ´
-			*	»áµ¼ÖÂopenºÍlow¶¼ÊÇ0£¬ËùÒÔÒªÔÙ×öÒ»¸öÅÐ¶Ï
+			*	å‘çŽ°æŸäº›å“ç§ï¼Œå¼€ç›˜æ—¶å¯èƒ½ä¼šæŽ¨é€priceä¸º0çš„tickè¿›æ¥
+			*	ä¼šå¯¼è‡´openå’Œlowéƒ½æ˜¯0ï¼Œæ‰€ä»¥è¦å†åšä¸€ä¸ªåˆ¤æ–­
 			*/
 			if (decimal::eq(newBar->open, 0))
 				newBar->open = curTick->price();
@@ -652,7 +652,7 @@ void WtDataWriterAD::updateBarCache(WTSContractInfo* ct, WTSTickData* curTick)
 		}
 	}
 
-	//¸üÐÂ1·ÖÖÓÏß
+	//æ›´æ–°1åˆ†é’Ÿçº¿
 	if (!_disable_min1 && _m1_cache._cache_block)
 	{
 		StdUniqueLock lock(_m1_cache._mtx);
@@ -684,7 +684,7 @@ void WtDataWriterAD::updateBarCache(WTSContractInfo* ct, WTSTickData* curTick)
 		WTSBarStruct* lastBar = &item._bar;
 
 
-		//Æ´½Ó1·ÖÖÓÏß
+		//æ‹¼æŽ¥1åˆ†é’Ÿçº¿
 		uint32_t barMins = minutes + 1;
 		uint64_t barTime = sInfo->minuteToTime(barMins);
 		uint32_t barDate = uDate;
@@ -703,8 +703,8 @@ void WtDataWriterAD::updateBarCache(WTSContractInfo* ct, WTSTickData* curTick)
 		WTSBarStruct* newBar = lastBar;
 		if (bNewBar)
 		{
-			//ÕâÀïÒª½«lastBarÍùÍâÐ´
-			//Èç¹ûÊÇÐÂµÄºÏÔ¼£¬ËµÃ÷»¹Ã»Êý¾Ý£¬²»ÍùÍâÐ´
+			//è¿™é‡Œè¦å°†lastBarå¾€å¤–å†™
+			//å¦‚æžœæ˜¯æ–°çš„åˆçº¦ï¼Œè¯´æ˜Žè¿˜æ²¡æ•°æ®ï¼Œä¸å¾€å¤–å†™
 			if (!bNewCode)
 			{
 				pipeToM1Bars(ct, *lastBar);
@@ -712,9 +712,9 @@ void WtDataWriterAD::updateBarCache(WTSContractInfo* ct, WTSTickData* curTick)
 				uint32_t lastMins = sInfo->timeToMinutes(lastBar->time % 10000, false);
 				if(lastMins > barMins)
 				{
-					//Èç¹ûÉÏÒ»ÌõKÏßµÄ·ÖÖÓÊý´óÓÚµ±Ç°KÏßµÄ·ÖÖÓÊý
-					//ËµÃ÷½»Ò×ÈÕ»»ÁË
-					//ÐèÒª±£´æÈÕÏßÁË
+					//å¦‚æžœä¸Šä¸€æ¡Kçº¿çš„åˆ†é’Ÿæ•°å¤§äºŽå½“å‰Kçº¿çš„åˆ†é’Ÿæ•°
+					//è¯´æ˜Žäº¤æ˜“æ—¥æ¢äº†
+					//éœ€è¦ä¿å­˜æ—¥çº¿äº†
 				}
 			}
 
@@ -734,8 +734,8 @@ void WtDataWriterAD::updateBarCache(WTSContractInfo* ct, WTSTickData* curTick)
 		{
 			/*
 			*	By Wesley @ 2023.07.05
-			*	·¢ÏÖÄ³Ð©Æ·ÖÖ£¬¿ªÅÌÊ±¿ÉÄÜ»áÍÆËÍpriceÎª0µÄtick½øÀ´
-			*	»áµ¼ÖÂopenºÍlow¶¼ÊÇ0£¬ËùÒÔÒªÔÙ×öÒ»¸öÅÐ¶Ï
+			*	å‘çŽ°æŸäº›å“ç§ï¼Œå¼€ç›˜æ—¶å¯èƒ½ä¼šæŽ¨é€priceä¸º0çš„tickè¿›æ¥
+			*	ä¼šå¯¼è‡´openå’Œlowéƒ½æ˜¯0ï¼Œæ‰€ä»¥è¦å†åšä¸€ä¸ªåˆ¤æ–­
 			*/
 			if (decimal::eq(newBar->open, 0))
 				newBar->open = curTick->price();
@@ -755,7 +755,7 @@ void WtDataWriterAD::updateBarCache(WTSContractInfo* ct, WTSTickData* curTick)
 		}
 	}
 
-	//¸üÐÂ5·ÖÖÓÏß
+	//æ›´æ–°5åˆ†é’Ÿçº¿
 	if (!_disable_min5 && _m5_cache._cache_block)
 	{
 		StdUniqueLock lock(_m5_cache._mtx);
@@ -786,7 +786,7 @@ void WtDataWriterAD::updateBarCache(WTSContractInfo* ct, WTSTickData* curTick)
 		}
 		WTSBarStruct* lastBar = &item._bar;
 
-		//Æ´½Ó5·ÖÖÓÏß
+		//æ‹¼æŽ¥5åˆ†é’Ÿçº¿
 		uint32_t barMins = (minutes / 5) * 5 + 5;
 		uint64_t barTime = sInfo->minuteToTime(barMins);
 		uint32_t barDate = uDate;
@@ -805,8 +805,8 @@ void WtDataWriterAD::updateBarCache(WTSContractInfo* ct, WTSTickData* curTick)
 		WTSBarStruct* newBar = lastBar;
 		if (bNewBar)
 		{
-			//ÕâÀïÒª½«lastBarÍùÍâÐ´
-			//Èç¹ûÊÇÐÂµÄºÏÔ¼£¬ËµÃ÷»¹Ã»Êý¾Ý£¬²»ÍùÍâÐ´
+			//è¿™é‡Œè¦å°†lastBarå¾€å¤–å†™
+			//å¦‚æžœæ˜¯æ–°çš„åˆçº¦ï¼Œè¯´æ˜Žè¿˜æ²¡æ•°æ®ï¼Œä¸å¾€å¤–å†™
 			if(!bNewCode)
 				pipeToM5Bars(ct, *lastBar);
 
@@ -946,8 +946,8 @@ bool WtDataWriterAD::updateTickCache(WTSContractInfo* ct, WTSTickData* curTick, 
 	}
 	else
 	{
-		//Èç¹û»º´æÀïµÄÊý¾ÝÈÕÆÚ´óÓÚ×îÐÂÐÐÇéµÄÈÕÆÚ
-		//»òÕß»º´æÀïµÄÊ±¼ä´óÓÚµÈÓÚ×îÐÂÐÐÇéµÄÊ±¼ä,Êý¾Ý¾Í²»ÐèÒª´¦Àí
+		//å¦‚æžœç¼“å­˜é‡Œçš„æ•°æ®æ—¥æœŸå¤§äºŽæœ€æ–°è¡Œæƒ…çš„æ—¥æœŸ
+		//æˆ–è€…ç¼“å­˜é‡Œçš„æ—¶é—´å¤§äºŽç­‰äºŽæœ€æ–°è¡Œæƒ…çš„æ—¶é—´,æ•°æ®å°±ä¸éœ€è¦å¤„ç†
 		WTSSessionInfo* sInfo = _bd_mgr->getSessionByCode(curTick->code(), curTick->exchg());
 		uint32_t tdate = sInfo->getOffsetDate(curTick->actiondate(), curTick->actiontime() / 100000);
 		if (tdate > curTick->tradingdate())
@@ -962,16 +962,16 @@ bool WtDataWriterAD::updateTickCache(WTSContractInfo* ct, WTSTickData* curTick, 
 			return false;
 		}
 
-		//Ê±¼ä´ÁÏàÍ¬,µ«ÊÇ³É½»Á¿´óÓÚµÈÓÚÔ­À´µÄ,ÕâÖÖÇé¿öÒ»°ãÊÇÖ£ÉÌËù,ÕâÀïµÄ´¦Àí·½Ê½¾ÍÊÇÊ±¼ä´Á+200ºÁÃë
+		//æ—¶é—´æˆ³ç›¸åŒ,ä½†æ˜¯æˆäº¤é‡å¤§äºŽç­‰äºŽåŽŸæ¥çš„,è¿™ç§æƒ…å†µä¸€èˆ¬æ˜¯éƒ‘å•†æ‰€,è¿™é‡Œçš„å¤„ç†æ–¹å¼å°±æ˜¯æ—¶é—´æˆ³+200æ¯«ç§’
 		//By Wesley @ 2021.12.21
-		//½ñÌì·¢ÏÖ¾ÓÈ»Ò»Ãë³öÏÖÁË4±Ê£¬ÊµÔÚÊÇÓÐµãÎÞÓï
-		//Ö»ÄÜ°Ñ500ºÁÃëµÄ±ä»¯Á¿¸Ä³É200£¬²¢ÇÒ¸Ä³É·¢ÉúÊ±¼äÐ¡ÓÚµÈÓÚÉÏÒ»±ÊµÄÅÐ¶Ï
+		//ä»Šå¤©å‘çŽ°å±…ç„¶ä¸€ç§’å‡ºçŽ°äº†4ç¬”ï¼Œå®žåœ¨æ˜¯æœ‰ç‚¹æ— è¯­
+		//åªèƒ½æŠŠ500æ¯«ç§’çš„å˜åŒ–é‡æ”¹æˆ200ï¼Œå¹¶ä¸”æ”¹æˆå‘ç”Ÿæ—¶é—´å°äºŽç­‰äºŽä¸Šä¸€ç¬”çš„åˆ¤æ–­
 		if(newTick.action_date == item._tick.action_date && newTick.action_time <= item._tick.action_time && newTick.total_volume >= item._tick.total_volume)
 		{
 			newTick.action_time += 200;
 		}
 
-		//ÕâÀï¾ÍÒª¿´Ðè²»ÐèÒªÔ¤´¦ÀíÁË
+		//è¿™é‡Œå°±è¦çœ‹éœ€ä¸éœ€è¦é¢„å¤„ç†äº†
 		if(procFlag == 0)
 		{
 			memcpy(&item._tick, &newTick, sizeof(WTSTickStruct));
@@ -986,8 +986,8 @@ bool WtDataWriterAD::updateTickCache(WTSContractInfo* ct, WTSTickData* curTick, 
 		}
 		else if (procFlag == 2)
 		{
-			//×Ô¶¯ÀÛ¼Ó
-			//Èç¹û×Ü³É½»Á¿Îª0£¬ÔòÐèÒªÀÛ¼ÓÉÏÒ»±ÊµÄ×Ü³É½»Á¿
+			//è‡ªåŠ¨ç´¯åŠ 
+			//å¦‚æžœæ€»æˆäº¤é‡ä¸º0ï¼Œåˆ™éœ€è¦ç´¯åŠ ä¸Šä¸€ç¬”çš„æ€»æˆäº¤é‡
 			if(decimal::eq(newTick.total_volume, 0))
 				newTick.total_volume = newTick.volume + item._tick.total_volume;
 

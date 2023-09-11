@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file WtDtPorter.h
  * \project	WonderTrader
  *
@@ -23,37 +23,37 @@ extern "C"
 	EXPORT_FLAG	void		write_log(unsigned int level, const char* message, const char* catName);
 
 
-#pragma region "À©Õ¹Parser½Ó¿Ú"
+#pragma region "æ‰©å±•Parseræ¥å£"
 	/*
-	 *	´´½¨ExtParser
+	 *	åˆ›å»ºExtParser
 	 *	@id		parserid
-	 *	@return	´´½¨ÊÇ·ñ³É¹¦
+	 *	@return	åˆ›å»ºæ˜¯å¦æˆåŠŸ
 	 */
 	EXPORT_FLAG	bool		create_ext_parser(const char* id);
 
 	/*
-	 *	×¢²áExtParserµÄ»Øµ÷º¯Êı
-	 *	@cbEvt	ĞĞÇé½âÎöÆ÷ÊÂ¼ş»Øµ÷º¯Êı£¬Ö÷ÒªÊÇÁ¬½Ó¡¢¹Ø±Õ¡¢µÇÂ¼µÈÊÂ¼ş
-	 *	@cbSub	ĞĞÇé¶©ÔÄ½á¹û»Øµ÷
+	 *	æ³¨å†ŒExtParserçš„å›è°ƒå‡½æ•°
+	 *	@cbEvt	è¡Œæƒ…è§£æå™¨äº‹ä»¶å›è°ƒå‡½æ•°ï¼Œä¸»è¦æ˜¯è¿æ¥ã€å…³é—­ã€ç™»å½•ç­‰äº‹ä»¶
+	 *	@cbSub	è¡Œæƒ…è®¢é˜…ç»“æœå›è°ƒ
 	 */
 	EXPORT_FLAG void		register_parser_callbacks(FuncParserEvtCallback cbEvt, FuncParserSubCallback cbSub);
 
 	/*
-	 *	Ïòµ×²ãÍÆËÍtickÊı¾İ
+	 *	å‘åº•å±‚æ¨é€tickæ•°æ®
 	 *	@id			parserid
-	 *	@curTick	×îĞÂtickÊı¾İ
-	 *	@procFlag	´¦Àí±ê¼Ç£¬0-ÇĞÆ¬ĞĞÇé£¬ÎŞĞè´¦Àí(ParserUDP)£»1-ÍêÕû¿ìÕÕ£¬ĞèÒªÇĞÆ¬(¹úÄÚ¸÷Â·Í¨µÀ)£»2-¼«¼ò¿ìÕÕ£¬ĞèÒª»º´æÀÛ¼Ó£¨Ö÷ÒªÕë¶ÔÈÕÏß¡¢tick£¬m1ºÍm5¶¼ÊÇ×Ô¶¯ÀÛ¼ÓµÄ£¬ĞéÄâ»õ±ÒĞĞÇé£©
+	 *	@curTick	æœ€æ–°tickæ•°æ®
+	 *	@procFlag	å¤„ç†æ ‡è®°ï¼Œ0-åˆ‡ç‰‡è¡Œæƒ…ï¼Œæ— éœ€å¤„ç†(ParserUDP)ï¼›1-å®Œæ•´å¿«ç…§ï¼Œéœ€è¦åˆ‡ç‰‡(å›½å†…å„è·¯é€šé“)ï¼›2-æç®€å¿«ç…§ï¼Œéœ€è¦ç¼“å­˜ç´¯åŠ ï¼ˆä¸»è¦é’ˆå¯¹æ—¥çº¿ã€tickï¼Œm1å’Œm5éƒ½æ˜¯è‡ªåŠ¨ç´¯åŠ çš„ï¼Œè™šæ‹Ÿè´§å¸è¡Œæƒ…ï¼‰
 	 */
 	EXPORT_FLAG	void		parser_push_quote(const char* id, WTSTickStruct* curTick, WtUInt32 uProcFlag);
-#pragma endregion "À©Õ¹Parser½Ó¿Ú"
+#pragma endregion "æ‰©å±•Parseræ¥å£"
 
-#pragma region "À©Õ¹Dumper½Ó¿Ú"
+#pragma region "æ‰©å±•Dumperæ¥å£"
 	EXPORT_FLAG	bool		create_ext_dumper(const char* id);
 
 	EXPORT_FLAG void		register_extended_dumper(FuncDumpBars barDumper, FuncDumpTicks tickDumper);
 
 	EXPORT_FLAG void		register_extended_hftdata_dumper(FuncDumpOrdQue ordQueDumper, FuncDumpOrdDtl ordDtlDumper, FuncDumpTrans transDumper);
-#pragma endregion "À©Õ¹Dumper½Ó¿Ú"
+#pragma endregion "æ‰©å±•Dumperæ¥å£"
 
 #ifdef __cplusplus
 }

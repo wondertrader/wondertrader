@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include "WtSimpDataMgr.h"
 
@@ -22,7 +22,7 @@ public:
 	WtExecRunner();
 
 	/*
-	 *	³õÊ¼»¯
+	 *	åˆå§‹åŒ–
 	 */
 	bool init(const char* logCfg = "logcfgexec.json", bool isFile = true);
 
@@ -46,14 +46,14 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	/// <summary>
-	/// ´¦ÀíÊµÊ±Ö÷ÍÆĞĞÇé
+	/// å¤„ç†å®æ—¶ä¸»æ¨è¡Œæƒ…
 	/// </summary>
-	/// <param name="curTick">×îĞÂµÄtickÊı¾İ</param>
-	/// <param name="isHot">ÊÇ·ñÊÇÖ÷Á¦ºÏÔ¼´úÂë</param>
+	/// <param name="curTick">æœ€æ–°çš„tickæ•°æ®</param>
+	/// <param name="isHot">æ˜¯å¦æ˜¯ä¸»åŠ›åˆçº¦ä»£ç </param>
 	virtual void handle_push_quote(WTSTickData* curTick, uint32_t hotFlag = 0) override;
 
 	///////////////////////////////////////////////////////////////////////////
-	//IExecuterStub ½Ó¿Ú
+	//IExecuterStub æ¥å£
 	virtual uint64_t get_real_time() override;
 	virtual WTSCommodityInfo* get_comm_info(const char* stdCode) override;
 	virtual WTSSessionInfo* get_sess_info(const char* stdCode) override;

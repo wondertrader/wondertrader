@@ -1,11 +1,11 @@
-/*!
+ï»¿/*!
  * \file StdUtils.hpp
  * \project	WonderTrader
  *
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief C++±ê×¼¿âÒ»Ğ©¶¨ÒåµÄ¼òµ¥·â×°,·½±ãµ÷ÓÃ
+ * \brief C++æ ‡å‡†åº“ä¸€äº›å®šä¹‰çš„ç®€å•å°è£…,æ–¹ä¾¿è°ƒç”¨
  */
 #pragma once
 
@@ -23,12 +23,12 @@
 #endif
 
 //////////////////////////////////////////////////////////////////////////
-//stdÏß³ÌÀà
+//stdçº¿ç¨‹ç±»
 typedef std::thread StdThread;
 typedef std::shared_ptr<StdThread> StdThreadPtr;
 
 //////////////////////////////////////////////////////////////////////////
-//std»¥³âÁ¿ºÍËø
+//stdäº’æ–¥é‡å’Œé”
 typedef std::recursive_mutex	StdRecurMutex;
 typedef std::mutex				StdUniqueMutex;
 typedef std::condition_variable_any	StdCondVariable;
@@ -54,7 +54,7 @@ private:
 };
 
 //////////////////////////////////////////////////////////////////////////
-//ÎÄ¼ş¸¨ÖúÀà
+//æ–‡ä»¶è¾…åŠ©ç±»
 class StdFile
 {
 public:

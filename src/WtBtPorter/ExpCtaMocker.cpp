@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file PyCtaMocker.cpp
  * \project	WonderTrader
  *
@@ -26,7 +26,7 @@ void ExpCtaMocker::on_init()
 {
 	CtaMocker::on_init();
 
-	//ÏòÍâ²¿»Øµ÷
+	//å‘å¤–éƒ¨å›è°ƒ
 	getRunner().ctx_on_init(_context_id, ET_CTA);
 
 	getRunner().on_initialize_event();
@@ -62,7 +62,7 @@ void ExpCtaMocker::on_bar_close(const char* code, const char* period, WTSBarStru
 {
 	CtaMocker::on_bar_close(code, period, newBar);
 
-	//ÒªÏòÍâ²¿»Øµ÷
+	//è¦å‘å¤–éƒ¨å›è°ƒ
 	getRunner().ctx_on_bar(_context_id, code, period, newBar, ET_CTA);
 }
 

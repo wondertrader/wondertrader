@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "PorterDefs.h"
 #include "../Share/StdUtils.hpp"
 

@@ -1,11 +1,11 @@
-/*!
+ï»¿/*!
  * \file IBaseDataMgr.h
  * \project	WonderTrader
  *
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief »ù´¡Êı¾İ¹ÜÀíÆ÷½Ó¿Ú¶¨Òå
+ * \brief åŸºç¡€æ•°æ®ç®¡ç†å™¨æ¥å£å®šä¹‰
  */
 #pragma once
 #include <string>

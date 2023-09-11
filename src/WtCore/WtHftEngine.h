@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file WtHftEngine.h
  * \project	WonderTrader
  *
@@ -28,7 +28,7 @@ public:
 
 public:
 	//////////////////////////////////////////////////////////////////////////
-	//WtEngine ½Ó¿Ú
+	//WtEngine æ¥å£
 	virtual void init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtDtMgr* dataMgr, IHotMgr* hotMgr, EventNotifier* notifier) override;
 
 	virtual void run(bool bAsync = false) override;
@@ -70,9 +70,9 @@ private:
 	WTSVariant*		_cfg;
 
 
-	StraSubMap		_ordque_sub_map;	//Î¯ÍĞ¶ÓÁĞ¶©ÔÄ±í
-	StraSubMap		_orddtl_sub_map;	//Î¯ÍĞÃ÷Ï¸¶©ÔÄ±í
-	StraSubMap		_trans_sub_map;		//³É½»Ã÷Ï¸¶©ÔÄ±í
+	StraSubMap		_ordque_sub_map;	//å§”æ‰˜é˜Ÿåˆ—è®¢é˜…è¡¨
+	StraSubMap		_orddtl_sub_map;	//å§”æ‰˜æ˜ç»†è®¢é˜…è¡¨
+	StraSubMap		_trans_sub_map;		//æˆäº¤æ˜ç»†è®¢é˜…è¡¨
 };
 
 NS_WTP_END

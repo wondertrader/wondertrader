@@ -1,11 +1,11 @@
-/*!
+ï»¿/*!
  * \file UDPCaster.h
  * \project	WonderTrader
  *
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief UDP¹ã²¥¶ÔÏó¶¨Òå
+ * \brief UDPå¹¿æ’­å¯¹è±¡å®šä¹‰
  */
 #pragma once
 
@@ -86,7 +86,7 @@ private:
 	boost::asio::ip::udp::endpoint	m_senderEP;
 	char			m_data[max_length];
 
-	//¹ã²¥
+	//å¹¿æ’­
 	ReceiverList	m_listFlatRecver;
 	ReceiverList	m_listJsonRecver;
 	ReceiverList	m_listRawRecver;

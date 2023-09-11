@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include <boost/filesystem.hpp>
 
 #include "../Includes/IParserApi.h"

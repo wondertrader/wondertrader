@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file ActionPolicyMgr.cpp
  * \project	WonderTrader
  *
@@ -91,7 +91,7 @@ const ActionRuleGroup& ActionPolicyMgr::getActionRules(const char* pid)
 {
 	std::string gpName = "default";
 
-	{//ÏÈÕÒµ½Æ·ÖÖ¶ÔÓ¦µÄ¹æÔò×éÃû³Æ
+	{//å…ˆæ‰¾åˆ°å“ç§å¯¹åº”çš„è§„åˆ™ç»„åç§°
 		auto it = _comm_rule_map.find(pid);
 		if (it != _comm_rule_map.end())
 			gpName = it->second;

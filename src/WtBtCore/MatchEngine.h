@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <stdint.h>
 #include <map>
 #include <vector>
@@ -24,22 +24,22 @@ class IMatchSink
 {
 public:
 	/*
-	 *	³É½»»Ø±¨
-	 *	code	ºÏÔ¼´úÂë
-	 *	isBuy	ÂòorÂô
-	 *	vol		³É½»ÊıÁ¿, ÕâÀïÃ»ÓĞÕı¸º, Í¨¹ıisBuyÈ·¶¨ÂòÈë»¹ÊÇÂô³ö
-	 *	price	³É½»¼Û¸ñ
+	 *	æˆäº¤å›æŠ¥
+	 *	code	åˆçº¦ä»£ç 
+	 *	isBuy	ä¹°orå–
+	 *	vol		æˆäº¤æ•°é‡, è¿™é‡Œæ²¡æœ‰æ­£è´Ÿ, é€šè¿‡isBuyç¡®å®šä¹°å…¥è¿˜æ˜¯å–å‡º
+	 *	price	æˆäº¤ä»·æ ¼
 	 */
 	virtual void handle_trade(uint32_t localid, const char* stdCode, bool isBuy, double vol, double fireprice, double price, uint64_t ordTime) = 0;
 
 	/*
-	 *	¶©µ¥»Ø±¨
-	 *	localid	±¾µØµ¥ºÅ
-	 *	code	ºÏÔ¼´úÂë
-	 *	isBuy	ÂòorÂô
-	 *	leftover	Ê£ÓàÊıÁ¿
-	 *	price	Î¯ÍĞ¼Û¸ñ
-	 *	isCanceled	ÊÇ·ñÒÑ³·Ïú
+	 *	è®¢å•å›æŠ¥
+	 *	localid	æœ¬åœ°å•å·
+	 *	code	åˆçº¦ä»£ç 
+	 *	isBuy	ä¹°orå–
+	 *	leftover	å‰©ä½™æ•°é‡
+	 *	price	å§”æ‰˜ä»·æ ¼
+	 *	isCanceled	æ˜¯å¦å·²æ’¤é”€
 	 */
 	virtual void handle_order(uint32_t localid, const char* stdCode, bool isBuy, double leftover, double price, bool isCanceled, uint64_t ordTime) = 0;
 

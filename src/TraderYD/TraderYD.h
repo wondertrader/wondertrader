@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file TraderYD.h
  * \project	WonderTrader
  *
@@ -61,13 +61,13 @@ public:
 public:
 	typedef enum
 	{
-		WS_NOTLOGIN,		//Î´µÇÂ¼
-		WS_LOGINING,		//ÕıÔÚµÇÂ¼
-		WS_LOGINED,			//ÒÑµÇÂ¼
-		WS_LOGINFAILED,		//µÇÂ¼Ê§°Ü
+		WS_NOTLOGIN,		//æœªç™»å½•
+		WS_LOGINING,		//æ­£åœ¨ç™»å½•
+		WS_LOGINED,			//å·²ç™»å½•
+		WS_LOGINFAILED,		//ç™»å½•å¤±è´¥
 		WS_CONFIRM_QRYED,
-		WS_CONFIRMED,		//ÒÑÈ·ÈÏ
-		WS_ALLREADY			//È«²¿¾ÍĞ÷
+		WS_CONFIRMED,		//å·²ç¡®è®¤
+		WS_ALLREADY			//å…¨éƒ¨å°±ç»ª
 	} WrapperState;
 
 
@@ -75,7 +75,7 @@ private:
 	int doLogin();
 
 	//////////////////////////////////////////////////////////////////////////
-	//ITraderApi½Ó¿Ú
+	//ITraderApiæ¥å£
 public:
 	virtual bool init(WTSVariant* params) override;
 
@@ -137,7 +137,7 @@ protected:
 	uint64_t		m_uLastQryTime;
 
 	uint32_t					m_lDate;
-	std::atomic<uint32_t>		m_orderRef;		//±¨µ¥ÒıÓÃ
+	std::atomic<uint32_t>		m_orderRef;		//æŠ¥å•å¼•ç”¨
 
 	WrapperState				m_wrapperState;
 
@@ -164,9 +164,9 @@ protected:
 	YDCreator		m_funcCreator;
 
 	//IniHelper		m_iniHelper;
-	//Î¯ÍĞµ¥±ê¼Ç»º´æÆ÷
+	//å§”æ‰˜å•æ ‡è®°ç¼“å­˜å™¨
 	WtKVCache		m_eidCache;
-	//¶©µ¥±ê¼Ç»º´æÆ÷
+	//è®¢å•æ ‡è®°ç¼“å­˜å™¨
 	WtKVCache		m_oidCache;
 };
 

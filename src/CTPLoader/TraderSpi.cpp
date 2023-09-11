@@ -1,4 +1,4 @@
-#include <iostream>
+ï»¿#include <iostream>
 #include <set>
 #include <stdint.h>
 #include <fstream>
@@ -23,30 +23,30 @@ extern std::map<std::string, std::string>	MAP_SESSION;
 
 #pragma warning(disable : 4996)
 
-// USER_API²ÎÊı
+// USER_APIå‚æ•°
 extern CThostFtdcTraderApi* pUserApi;
 
-// ÅäÖÃ²ÎÊı
-extern std::string	FRONT_ADDR;	// Ç°ÖÃµØÖ·
-extern std::string	BROKER_ID;	// ¾­¼Í¹«Ë¾´úÂë
-extern std::string	INVESTOR_ID;// Í¶×ÊÕß´úÂë
-extern std::string	PASSWORD;	// ÓÃ»§ÃÜÂë
-extern std::string	SAVEPATH;	//±£´æÎ»ÖÃ
+// é…ç½®å‚æ•°
+extern std::string	FRONT_ADDR;	// å‰ç½®åœ°å€
+extern std::string	BROKER_ID;	// ç»çºªå…¬å¸ä»£ç 
+extern std::string	INVESTOR_ID;// æŠ•èµ„è€…ä»£ç 
+extern std::string	PASSWORD;	// ç”¨æˆ·å¯†ç 
+extern std::string	SAVEPATH;	//ä¿å­˜ä½ç½®
 extern std::string	APPID;
 extern std::string	AUTHCODE;
 extern uint32_t		CLASSMASK;
 extern bool			ONLYINCFG;
 
-extern std::string COMM_FILE;		//Êä³öµÄÆ·ÖÖÎÄ¼şÃû
-extern std::string CONT_FILE;		//Êä³öµÄºÏÔ¼ÎÄ¼şÃû
+extern std::string COMM_FILE;		//è¾“å‡ºçš„å“ç§æ–‡ä»¶å
+extern std::string CONT_FILE;		//è¾“å‡ºçš„åˆçº¦æ–‡ä»¶å
 
-// ÇëÇó±àºÅ
+// è¯·æ±‚ç¼–å·
 extern int iRequestID;
 
-// »á»°²ÎÊı
-TThostFtdcFrontIDType	FRONT_ID;	//Ç°ÖÃ±àºÅ
-TThostFtdcSessionIDType	SESSION_ID;	//»á»°±àºÅ
-TThostFtdcOrderRefType	ORDER_REF;	//±¨µ¥ÒıÓÃ
+// ä¼šè¯å‚æ•°
+TThostFtdcFrontIDType	FRONT_ID;	//å‰ç½®ç¼–å·
+TThostFtdcSessionIDType	SESSION_ID;	//ä¼šè¯ç¼–å·
+TThostFtdcOrderRefType	ORDER_REF;	//æŠ¥å•å¼•ç”¨
 
 CommodityMap _commodities;
 ContractMap _contracts;
@@ -92,7 +92,7 @@ inline double checkValid(double val)
 void CTraderSpi::OnFrontConnected()
 {
 	std::cerr << "--->>> " << "OnFrontConnected" << std::endl;
-	///ÓÃ»§µÇÂ¼ÇëÇó
+	///ç”¨æˆ·ç™»å½•è¯·æ±‚
 	ReqAuth();
 }
 
@@ -135,13 +135,13 @@ void CTraderSpi::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin,
 	std::cerr << "--->>> " << "OnRspUserLogin" << std::endl;
 	if (bIsLast && !IsErrorRspInfo(pRspInfo))
 	{
-		// ±£´æ»á»°²ÎÊı
+		// ä¿å­˜ä¼šè¯å‚æ•°
 		FRONT_ID = pRspUserLogin->FrontID;
 		SESSION_ID = pRspUserLogin->SessionID;
 		int iNextOrderRef = atoi(pRspUserLogin->MaxOrderRef);
 		iNextOrderRef++;
 		fmtutil::format_to(ORDER_REF, "{}", iNextOrderRef);
-		///»ñÈ¡µ±Ç°½»Ò×ÈÕ
+		///è·å–å½“å‰äº¤æ˜“æ—¥
 		m_lTradingDate = atoi(pUserApi->GetTradingDay());
 
 		ReqQryInstrument();
@@ -248,7 +248,7 @@ void CTraderSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CTho
 
 					}
 
-					//ºÏÔ¼Ãû³Æ×ª³ÉUTF8
+					//åˆçº¦åç§°è½¬æˆUTF8
 					cname = StrUtil::trim(cname.c_str());
 					if (!EncodingHelper::isUtf8((unsigned char*)cname.c_str(), cname.size()))
 						cname = ChartoUTF8(cname);
@@ -279,7 +279,7 @@ void CTraderSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CTho
 					auto it = _commodities.find(key);
 					if (it == _commodities.end())
 					{
-						//Æ·ÖÖÃû³ÆÒ²×ª³ÉUTF8
+						//å“ç§åç§°ä¹Ÿè½¬æˆUTF8
 						pname = StrUtil::trim(pname.c_str());
 						if (!EncodingHelper::isUtf8((unsigned char*)pname.c_str(), pname.size()))
 							pname = ChartoUTF8(pname);
@@ -299,14 +299,14 @@ void CTraderSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CTho
 						CoverMode cm = CM_OpenCover;
 						/*
 						 *	By Wesley @ 2023.05.04
-						 *	ÓĞÓÃ»§·´À¡ÉÏÆÚËùºÍÉÏÄÜËùµÄÆÚÈ¨ºÏÔ¼Ò²Çø·ÖÆ½×òÆ½½ñ
-						 *	°ÑÕâ¸öbFutureµÄÅĞ¶ÏÈ¥µô
+						 *	æœ‰ç”¨æˆ·åé¦ˆä¸ŠæœŸæ‰€å’Œä¸Šèƒ½æ‰€çš„æœŸæƒåˆçº¦ä¹ŸåŒºåˆ†å¹³æ˜¨å¹³ä»Š
+						 *	æŠŠè¿™ä¸ªbFutureçš„åˆ¤æ–­å»æ‰
 						 */
 						//if (bFuture)
 						{
 							if (strcmp(pInstrument->ExchangeID, "SHFE") == 0 || strcmp(pInstrument->ExchangeID, "INE") == 0)
 								cm = CM_CoverToday;
-							//ÉÏÆÚËùµÄ¾ÍÊÇÆ½½ñ,·ÇÉÏÆÚËùµÄ¾ÍÊÇ¿ªÆ½
+							//ä¸ŠæœŸæ‰€çš„å°±æ˜¯å¹³ä»Š,éä¸ŠæœŸæ‰€çš„å°±æ˜¯å¼€å¹³
 						}
 
 						commInfo.m_coverMode = cm;
@@ -314,8 +314,8 @@ void CTraderSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CTho
 						PriceMode pm = PM_Both;
 						/*
 						 *	By Wesley @ 2023.05.04
-						 *	ÓĞÓÃ»§·´À¡ÉÏÆÚËùºÍÉÏÄÜËùµÄÆÚÈ¨ºÏÔ¼Ò²Çø·ÖÆ½×òÆ½½ñ
-						 *	°ÑÕâ¸öbFutureµÄÅĞ¶ÏÈ¥µô
+						 *	æœ‰ç”¨æˆ·åé¦ˆä¸ŠæœŸæ‰€å’Œä¸Šèƒ½æ‰€çš„æœŸæƒåˆçº¦ä¹ŸåŒºåˆ†å¹³æ˜¨å¹³ä»Š
+						 *	æŠŠè¿™ä¸ªbFutureçš„åˆ¤æ–­å»æ‰
 						 */
 						//if (bFuture)
 						{
@@ -356,7 +356,7 @@ void CTraderSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CTho
 
 void CTraderSpi::DumpToJson()
 {
-	//Á½¸öÎÄ¼ş,Ò»¸öcontracts.json,Ò»¸öcommodities.json
+	//ä¸¤ä¸ªæ–‡ä»¶,ä¸€ä¸ªcontracts.json,ä¸€ä¸ªcommodities.json
 	//Json::Value jComms(Json::objectValue);
 	rj::Document jComms(rj::kObjectType);
 	{
@@ -481,7 +481,7 @@ void CTraderSpi::OnRspError(CThostFtdcRspInfoField *pRspInfo, int nRequestID, bo
 
 bool CTraderSpi::IsErrorRspInfo(CThostFtdcRspInfoField *pRspInfo)
 {
-	// Èç¹ûErrorID != 0, ËµÃ÷ÊÕµ½ÁË´íÎóµÄÏìÓ¦
+	// å¦‚æœErrorID != 0, è¯´æ˜æ”¶åˆ°äº†é”™è¯¯çš„å“åº”
 	bool bResult = ((pRspInfo) && (pRspInfo->ErrorID != 0));
 	if (bResult)
 		std::cerr << "--->>> ErrorID=" << pRspInfo->ErrorID << ", ErrorMsg=" << pRspInfo->ErrorMsg << std::endl;

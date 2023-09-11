@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file TraderDD.h
  * \project	WonderTrader
  *
@@ -41,17 +41,17 @@ public:
 public:
 	typedef enum
 	{
-		WS_NOTLOGIN,		//Î´µÇÂ¼
-		WS_LOGINING,		//ÕıÔÚµÇÂ¼
-		WS_LOGINED,			//ÒÑµÇÂ¼
-		WS_LOGINFAILED,		//µÇÂ¼Ê§°Ü
-		WS_ALLREADY			//È«²¿¾ÍĞ÷
+		WS_NOTLOGIN,		//æœªç™»å½•
+		WS_LOGINING,		//æ­£åœ¨ç™»å½•
+		WS_LOGINED,			//å·²ç™»å½•
+		WS_LOGINFAILED,		//ç™»å½•å¤±è´¥
+		WS_ALLREADY			//å…¨éƒ¨å°±ç»ª
 	} WrapperState;
 
 private:
 	void doLogin();
-	void qryGDNo();	//²éÑ¯¹É¶«ºÅ
-	void qryZJZH();	//²éÑ¯×Ê½ğÕË»§
+	void qryGDNo();	//æŸ¥è¯¢è‚¡ä¸œå·
+	void qryZJZH();	//æŸ¥è¯¢èµ„é‡‘è´¦æˆ·
 
 	void reconnect();
 
@@ -62,7 +62,7 @@ public:
 	void OnRtnTrade(HANDLE_CONN hconn, HANDLE_SESSION hsess);
 
 	//////////////////////////////////////////////////////////////////////////
-	//ITraderApi½Ó¿Ú
+	//ITraderApiæ¥å£
 public:
 	virtual bool init(WTSVariant* params) override;
 
@@ -112,11 +112,11 @@ protected:
 
 	std::string		m_strTag;
 
-	std::string		m_strToken;  // µÇÂ¼Ö®ºóµÄ¿ÚÁî
-	std::string		m_strUserName;  // ÓÃ»§Ãû
-	std::string		m_strSystemID;  // ÏµÍ³ID
+	std::string		m_strToken;  // ç™»å½•ä¹‹åçš„å£ä»¤
+	std::string		m_strUserName;  // ç”¨æˆ·å
+	std::string		m_strSystemID;  // ç³»ç»ŸID
 	std::string		m_strNodeID;  // Node ID
-	std::string		m_strTrust;  // Î¯ÍĞ·½Ê½
+	std::string		m_strTrust;  // å§”æ‰˜æ–¹å¼
 
 	int				m_nNodeID;
 
@@ -128,7 +128,7 @@ protected:
 	std::unordered_set<std::string>	m_tradeids;
 
 	uint32_t					m_lDate;
-	std::atomic<uint32_t>		m_orderRef;		//±¨µ¥ÒıÓÃ
+	std::atomic<uint32_t>		m_orderRef;		//æŠ¥å•å¼•ç”¨
 
 	WrapperState				m_wrapperState;
 

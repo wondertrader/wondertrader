@@ -1,4 +1,4 @@
-/*
+﻿/*
 * $Id: mdump.h 5561 2009-12-25 07:23:59Z wangmeng $
 *
 * this file is part of easyMule

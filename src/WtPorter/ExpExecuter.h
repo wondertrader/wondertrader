@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "../WtCore/IExecCommand.h"
 
 USING_NS_WTP;

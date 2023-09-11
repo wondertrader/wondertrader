@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file ExecMocker.cpp
  * \project	WonderTrader
  *
@@ -50,7 +50,7 @@ bool ExecMocker::init(WTSVariant* cfg)
 	_code = cfg->getCString("code");
 	_period = cfg->getCString("period");
 	_volunit = cfg->getDouble("volunit");
-	_volmode = cfg->getInt32("volmode");	//ÊýÁ¿Ä£Ê½£º0-·´¸´Õý¸º£¬-1-Ò»Ö±Âô£¬+1-Ò»Ö±Âò
+	_volmode = cfg->getInt32("volmode");	//æ•°é‡æ¨¡å¼ï¼š0-åå¤æ­£è´Ÿï¼Œ-1-ä¸€ç›´å–ï¼Œ+1-ä¸€ç›´ä¹°
 
 	_matcher.regisSink(this);
 	_matcher.init(cfg->get("matcher"));

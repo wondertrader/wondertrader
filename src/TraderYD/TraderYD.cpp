@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file TraderYD.cpp
  * \project	WonderTrader
  *
@@ -188,16 +188,16 @@ void TraderYD::notifyLogin(int errorNo, int maxOrderRef, bool isMonitor)
 	{
 		m_wrapperState = WS_LOGINED;
 
-		// ±£´æ»á»°²ÎÊı
+		// ä¿å­˜ä¼šè¯å‚æ•°
 		m_orderRef = maxOrderRef;
-		///»ñÈ¡µ±Ç°½»Ò×ÈÕ
+		///è·å–å½“å‰äº¤æ˜“æ—¥
 		m_lDate = m_pUserAPI->getTradingDay();
 
 		write_log(m_sink, LL_INFO, "[TraderYD] {} Login succeed, Trading Day: {}",
 			m_strUser.c_str(), m_lDate);
 
 		{
-			//³õÊ¼»¯Î¯ÍĞµ¥»º´æÆ÷
+			//åˆå§‹åŒ–å§”æ‰˜å•ç¼“å­˜å™¨
 			std::stringstream ss;
 			ss <<  "ydlocal/" ;
 			std::string path = StrUtil::standardisePath(ss.str());
@@ -210,7 +210,7 @@ void TraderYD::notifyLogin(int errorNo, int maxOrderRef, bool isMonitor)
 		}
 
 		{
-			//³õÊ¼»¯¶©µ¥±ê¼Ç»º´æÆ÷
+			//åˆå§‹åŒ–è®¢å•æ ‡è®°ç¼“å­˜å™¨
 			std::stringstream ss;
 			ss << "ydlocal/";
 			std::string path = StrUtil::standardisePath(ss.str());
@@ -257,15 +257,15 @@ void TraderYD::notifyFailedCancelOrder(const YDFailedCancelOrder *pFailedCancelO
 void TraderYD::notifyFinishInit()
 {
 	/*
-	 *	ÕâÀïµÄ´¦ÀíÂß¼­±È½Ï¸´ÔÓ
-	 *	ÔÚµÚÒ»´ÎµÇÂ½³É¹¦ÒÔºó£¬µ×²ã»áÈ¥²éÑ¯¸÷ÖÖÊı¾İ
-	 *	µ×²ã²éÍêÁËÒÔºó£¬»á´¥·¢Õâ¸ö»Øµ÷
-	 *	ÕâÀïĞèÒª½øĞĞÀ­È¡ÉÏÈÕ½áËãÒÔºóµÄÊı¾İ
-	 *	È»ºóÔÙÀûÓÃ»Ø±¨½øĞĞÊı¾İÆ´½Ó
-	 *	×îºóÔÚnotifyCatchupµÄÊ±ºò£¬ÔÙÍ¨Öªlistener
+	 *	è¿™é‡Œçš„å¤„ç†é€»è¾‘æ¯”è¾ƒå¤æ‚
+	 *	åœ¨ç¬¬ä¸€æ¬¡ç™»é™†æˆåŠŸä»¥åï¼Œåº•å±‚ä¼šå»æŸ¥è¯¢å„ç§æ•°æ®
+	 *	åº•å±‚æŸ¥å®Œäº†ä»¥åï¼Œä¼šè§¦å‘è¿™ä¸ªå›è°ƒ
+	 *	è¿™é‡Œéœ€è¦è¿›è¡Œæ‹‰å–ä¸Šæ—¥ç»“ç®—ä»¥åçš„æ•°æ®
+	 *	ç„¶åå†åˆ©ç”¨å›æŠ¥è¿›è¡Œæ•°æ®æ‹¼æ¥
+	 *	æœ€ååœ¨notifyCatchupçš„æ—¶å€™ï¼Œå†é€šçŸ¥listener
 	 */
 
-	//ÏÈ²é×Ê½ğ
+	//å…ˆæŸ¥èµ„é‡‘
 	{
 		const YDAccount* accInfo = m_pUserAPI->getMyAccount();
 
@@ -282,7 +282,7 @@ void TraderYD::notifyFinishInit()
 		m_ayFunds->append(accountInfo, false);
 	}
 
-	//ÔÙ²é³Ö²Ö
+	//å†æŸ¥æŒä»“
 	{
 		if (NULL == m_mapPosition)
 			m_mapPosition = DataMap::create();
@@ -338,7 +338,7 @@ void TraderYD::notifyOrder(const YDOrder *pOrder, const YDInstrument *pInstrumen
 	WTSOrderInfo *orderInfo = makeOrderInfo(pOrder, pInstrument);
 	if (orderInfo)
 	{
-		//ÏÈÍù»º´æÀï¶ª
+		//å…ˆå¾€ç¼“å­˜é‡Œä¸¢
 		if (NULL == m_mapOrders)
 			m_mapOrders = DataMap::create();
 
@@ -346,9 +346,9 @@ void TraderYD::notifyOrder(const YDOrder *pOrder, const YDInstrument *pInstrumen
 		auto it = m_mapOrders->find(oid);
 		if(it == m_mapOrders->end())
 		{
-			//Èç¹û¸Ã¶©µ¥ÊÇµÚÒ»´Î±»ÍÆËÍ
-			//Ôò¼ì²éÊÇ·ñÊÇÆ½²ÖÎ¯ÍĞ
-			//Èç¹ûÊÇÆ½²ÖÎ¯ÍĞ£¬ĞèÒªµ÷Õû¶³½áÊÖÊı
+			//å¦‚æœè¯¥è®¢å•æ˜¯ç¬¬ä¸€æ¬¡è¢«æ¨é€
+			//åˆ™æ£€æŸ¥æ˜¯å¦æ˜¯å¹³ä»“å§”æ‰˜
+			//å¦‚æœæ˜¯å¹³ä»“å§”æ‰˜ï¼Œéœ€è¦è°ƒæ•´å†»ç»“æ‰‹æ•°
 			if (orderInfo->getOffsetType() != WOT_OPEN)
 			{
 				std::string key = fmt::format("{}-{}", orderInfo->getCode(), orderInfo->getDirection());
@@ -368,7 +368,7 @@ void TraderYD::notifyOrder(const YDOrder *pOrder, const YDInstrument *pInstrumen
 				}
 				else
 				{
-					//²»Çø·ÖÆ½×òÆ½½ñ£¬ÔòÏÈ¶³½á×ò²Ö£¬ÔÙ¶³½á½ñ²Ö
+					//ä¸åŒºåˆ†å¹³æ˜¨å¹³ä»Šï¼Œåˆ™å…ˆå†»ç»“æ˜¨ä»“ï¼Œå†å†»ç»“ä»Šä»“
 					double maxQty = min(availPre, orderInfo->getVolume());
 					availPre -= maxQty;
 					if(decimal::lt(orderInfo->getVolume(), maxQty))
@@ -384,8 +384,8 @@ void TraderYD::notifyOrder(const YDOrder *pOrder, const YDInstrument *pInstrumen
 		else
 		{
 			WTSOrderInfo* preOrd = (WTSOrderInfo*)it->second;
-			//Èç¹û¶©µ¥²»ÊÇµÚÒ»´Î±»ÍÆËÍ£¬Ôò¿´ÊÇ·ñÊÇ³·µ¥
-			//Èç¹ûÊÇ³·µ¥£¬²¢ÇÒÖ®¼ä¶©µ¥×´Ì¬»¹ÊÇÓĞĞ§µÄ£¬Ôò¶ÔÆ½²ÖÎ¯ÍĞÒªÊÍ·Å¶³½áµÄÊÖÊı
+			//å¦‚æœè®¢å•ä¸æ˜¯ç¬¬ä¸€æ¬¡è¢«æ¨é€ï¼Œåˆ™çœ‹æ˜¯å¦æ˜¯æ’¤å•
+			//å¦‚æœæ˜¯æ’¤å•ï¼Œå¹¶ä¸”ä¹‹é—´è®¢å•çŠ¶æ€è¿˜æ˜¯æœ‰æ•ˆçš„ï¼Œåˆ™å¯¹å¹³ä»“å§”æ‰˜è¦é‡Šæ”¾å†»ç»“çš„æ‰‹æ•°
 			if(preOrd->isAlive() && orderInfo->getOrderState() == WOS_Canceled && orderInfo->getOffsetType() != WOT_OPEN)
 			{
 				std::string key = fmt::format("{}-{}", orderInfo->getCode(), orderInfo->getDirection());
@@ -407,7 +407,7 @@ void TraderYD::notifyOrder(const YDOrder *pOrder, const YDInstrument *pInstrumen
 				}
 				else
 				{
-					//²»Çø·ÖÆ½×òÆ½½ñ£¬ÔòÏÈÊÍ·Å½ñ²Ö£¬ÔÙÊÍ·Å×ò²Ö
+					//ä¸åŒºåˆ†å¹³æ˜¨å¹³ä»Šï¼Œåˆ™å…ˆé‡Šæ”¾ä»Šä»“ï¼Œå†é‡Šæ”¾æ˜¨ä»“
 					double maxQty = min(newQty-availNew , untrade);
 					availNew += maxQty;
 					if (decimal::lt(untrade, maxQty))
@@ -422,7 +422,7 @@ void TraderYD::notifyOrder(const YDOrder *pOrder, const YDInstrument *pInstrumen
 		}
 		m_mapOrders->add(oid, orderInfo, false);
 
-		//Èç¹ûÒÑ¾­×·ÉÏÁË£¬ÔòÖ±½ÓÖ÷ÍÆ³öÈ¥
+		//å¦‚æœå·²ç»è¿½ä¸Šäº†ï¼Œåˆ™ç›´æ¥ä¸»æ¨å‡ºå»
 		if (m_sink && m_bCatchup)
 		{
 			m_sink->onPushOrder(orderInfo);
@@ -436,7 +436,7 @@ void TraderYD::notifyTrade(const YDTrade *pTrade, const YDInstrument *pInstrumen
 	WTSTradeInfo *trdInfo = makeTradeRecord(pTrade, pInstrument);
 	if (trdInfo)
 	{
-		//ÏÈÍù»º´æÀï¶ª
+		//å…ˆå¾€ç¼“å­˜é‡Œä¸¢
 		if (NULL == m_mapTrades)
 			m_mapTrades = DataMap::create();
 
@@ -448,7 +448,7 @@ void TraderYD::notifyTrade(const YDTrade *pTrade, const YDInstrument *pInstrumen
 		{
 			m_mapTrades->add(tid, trdInfo, false);
 
-			//³É½»»Ø±¨£¬Ö÷Òª¸üĞÂ³Ö²Ö
+			//æˆäº¤å›æŠ¥ï¼Œä¸»è¦æ›´æ–°æŒä»“
 			std::string key = fmt::format("{}-{}", trdInfo->getCode(), trdInfo->getDirection());
 			WTSPositionItem* pos = (WTSPositionItem*)m_mapPosition->get(key);
 			if(pos == NULL)
@@ -471,17 +471,17 @@ void TraderYD::notifyTrade(const YDTrade *pTrade, const YDInstrument *pInstrumen
 				newQty += qty;
 				availNew += qty;
 
-				//¿ª²ÖÒ»¶¨ÊÇ½ñ²Ö
+				//å¼€ä»“ä¸€å®šæ˜¯ä»Šä»“
 				pos->setNewPosition(newQty);
 				pos->setAvailNewPos(availNew);
 			}
 			else
 			{
-				//Æ½²ÖÒªÇø·Ö
+				//å¹³ä»“è¦åŒºåˆ†
 				if (commInfo->getCoverMode() == CM_CoverToday)
 				{
-					//Æ½²Ö²»ÓÃ¸üĞÂ¿ÉÓÃ³Ö²Ö
-					//ÒòÎª¿ÉÓÃ³Ö²ÖÔÚ¶©µ¥»Ø±¨µÄµØ·½ÒÑ¾­¸üĞÂ¹ıÁË
+					//å¹³ä»“ä¸ç”¨æ›´æ–°å¯ç”¨æŒä»“
+					//å› ä¸ºå¯ç”¨æŒä»“åœ¨è®¢å•å›æŠ¥çš„åœ°æ–¹å·²ç»æ›´æ–°è¿‡äº†
 					if (trdInfo->getOffsetType() == WOT_CLOSETODAY)
 						newQty -= qty;
 					else
@@ -489,7 +489,7 @@ void TraderYD::notifyTrade(const YDTrade *pTrade, const YDInstrument *pInstrumen
 				}
 				else
 				{
-					//²»Çø·ÖÆ½×òÆ½½ñ£¬ÔòÏÈ¼õµô×ò²Ö£¬ÔÚµ÷Õû½ñ²Ö
+					//ä¸åŒºåˆ†å¹³æ˜¨å¹³ä»Šï¼Œåˆ™å…ˆå‡æ‰æ˜¨ä»“ï¼Œåœ¨è°ƒæ•´ä»Šä»“
 					double maxQty = min(preQty, qty);
 					preQty -= maxQty;
 					if (decimal::lt(qty, maxQty))
@@ -514,7 +514,7 @@ void TraderYD::notifyCaughtUp()
 
 	if(!m_bApiInited)
 	{
-		//È«²¿³õÊ¼»¯ºÃÁËÒÔºó£¬ÔÙÍ¨ÖªµÇÂ¼³É¹¦
+		//å…¨éƒ¨åˆå§‹åŒ–å¥½äº†ä»¥åï¼Œå†é€šçŸ¥ç™»å½•æˆåŠŸ
 		m_wrapperState = WS_ALLREADY;
 
 		if (m_sink)
@@ -687,19 +687,19 @@ int TraderYD::orderInsert(WTSEntrust* entrust)
 	const YDInstrument* pInst = m_pUserAPI->getInstrumentByID(entrust->getCode());
 
 	YDInputOrder req;
-	// inputOrderÖĞµÄËùÓĞ²»ÓÃµÄ×Ö¶Î£¬Ó¦µ±Í³Ò»Çå0
+	// inputOrderä¸­çš„æ‰€æœ‰ä¸ç”¨çš„å­—æ®µï¼Œåº”å½“ç»Ÿä¸€æ¸…0
 	memset(&req, 0, sizeof(req));
 
 	if (strlen(entrust->getUserTag()) == 0)
 	{
-		///±¨µ¥ÒıÓÃ
+		///æŠ¥å•å¼•ç”¨
 		req.OrderRef = m_orderRef.fetch_add(0);
 	}
 	else
 	{
 		uint32_t orderref;
 		extractEntrustID(entrust->getEntrustID(), orderref);
-		///±¨µ¥ÒıÓÃ
+		///æŠ¥å•å¼•ç”¨
 		req.OrderRef = orderref;
 	}
 
@@ -715,19 +715,19 @@ int TraderYD::orderInsert(WTSEntrust* entrust)
 	req.OffsetFlag = wrapOffsetType(entrust->getOffsetType());
 	req.HedgeFlag = YD_HF_Speculation;
 	req.OrderVolume = (int)entrust->getVolume();
-	// Ê¹ÓÃÏÂÒ»¸öÏÂÒ»¸ö±¨µ¥ÒıÓÃ¡£YD·şÎñÆ÷²»¼ì²éOrderRef£¬Ö»ÊÇ½«ÆäÓÃÓÚÔÚ±¨µ¥ºÍ³É½»»Ø±¨ÖĞ·µ»Ø
-	// ÓÃ»§¿ÉÒÔ×ÔĞĞÑ¡ÔñOrderRefµÄ±àÂë·½Ê½
-	// ¶ÔÓÚ·Ç±¾ÏµÍ³±¾´ÎÔËĞĞ²úÉúµÄ±¨µ¥£¬ÏµÍ³·µ»ØµÄOrderRefÒ»ÂÉÊÇ-1
-	// YDClient²úÉúµÄ±¨µ¥£¬OrderRefÒ»ÂÉÊÇ0
-	// Õâ¸öÀı×ÓÊ¹ÓÃÏŞ¼Ûµ¥
+	// ä½¿ç”¨ä¸‹ä¸€ä¸ªä¸‹ä¸€ä¸ªæŠ¥å•å¼•ç”¨ã€‚YDæœåŠ¡å™¨ä¸æ£€æŸ¥OrderRefï¼Œåªæ˜¯å°†å…¶ç”¨äºåœ¨æŠ¥å•å’Œæˆäº¤å›æŠ¥ä¸­è¿”å›
+	// ç”¨æˆ·å¯ä»¥è‡ªè¡Œé€‰æ‹©OrderRefçš„ç¼–ç æ–¹å¼
+	// å¯¹äºéæœ¬ç³»ç»Ÿæœ¬æ¬¡è¿è¡Œäº§ç”Ÿçš„æŠ¥å•ï¼Œç³»ç»Ÿè¿”å›çš„OrderRefä¸€å¾‹æ˜¯-1
+	// YDClientäº§ç”Ÿçš„æŠ¥å•ï¼ŒOrderRefä¸€å¾‹æ˜¯0
+	// è¿™ä¸ªä¾‹å­ä½¿ç”¨é™ä»·å•
 	req.OrderType = wrapPriceType(entrust->getPriceType(), entrust->getOrderFlag());
-	// ËµÃ÷ÊÇÆÕÍ¨±¨µ¥
+	// è¯´æ˜æ˜¯æ™®é€šæŠ¥å•
 	req.YDOrderFlag = YD_YOF_Normal;
-	// ËµÃ÷ÈçºÎÑ¡ÔñÁ¬½Ó
+	// è¯´æ˜å¦‚ä½•é€‰æ‹©è¿æ¥
 	req.ConnectionSelectionType = YD_CS_Any;
-	// Èç¹ûConnectionSelectionType²»ÊÇYD_CS_Any£¬ĞèÒªÖ¸¶¨ConnectionID£¬·¶Î§ÊÇ0µ½¶ÔÓ¦µÄYDExchangeÖĞµÄConnectionCount-1
+	// å¦‚æœConnectionSelectionTypeä¸æ˜¯YD_CS_Anyï¼Œéœ€è¦æŒ‡å®šConnectionIDï¼ŒèŒƒå›´æ˜¯0åˆ°å¯¹åº”çš„YDExchangeä¸­çš„ConnectionCount-1
 	req.ConnectionID = 0;
-	// inputOrderÖĞµÄRealConnectionIDºÍErrorNoÊÇÔÚ·µ»ØÊ±ÓÉ·şÎñÆ÷ÌîĞ´µÄ
+	// inputOrderä¸­çš„RealConnectionIDå’ŒErrorNoæ˜¯åœ¨è¿”å›æ—¶ç”±æœåŠ¡å™¨å¡«å†™çš„
 	if(!m_pUserAPI->insertOrder(&req, pInst))
 	{
 		write_log(m_sink, LL_ERROR, "[TraderYD] Order inserting failed");

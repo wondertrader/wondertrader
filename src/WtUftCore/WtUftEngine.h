@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file WtHftEngine.h
  * \project	WonderTrader
  *
@@ -126,24 +126,24 @@ public:
 	void sub_transaction(uint32_t sid, const char* stdCode);
 
 private:
-	uint32_t		_cur_date;	//µ±Ç°ÈÕÆÚ
-	uint32_t		_cur_time;		//µ±Ç°Ê±¼ä, ÊÇ1·ÖÖÓÏßÊ±¼ä, ±ÈÈç0900, Õâ¸öÊ±ºòµÄ1·ÖÖÓÏßÊÇ0901, _cur_timeÒ²¾ÍÊÇ0901, Õâ¸öÊÇÎªÁËCTAÀïÃæ·½±ã
-	uint32_t		_cur_raw_time;	//µ±Ç°ÕæÊµÊ±¼ä
-	uint32_t		_cur_secs;	//µ±Ç°ÃëÊı, °üº¬ºÁÃë
-	uint32_t		_cur_tdate;	//µ±Ç°½»Ò×ÈÕ
+	uint32_t		_cur_date;	//å½“å‰æ—¥æœŸ
+	uint32_t		_cur_time;		//å½“å‰æ—¶é—´, æ˜¯1åˆ†é’Ÿçº¿æ—¶é—´, æ¯”å¦‚0900, è¿™ä¸ªæ—¶å€™çš„1åˆ†é’Ÿçº¿æ˜¯0901, _cur_timeä¹Ÿå°±æ˜¯0901, è¿™ä¸ªæ˜¯ä¸ºäº†CTAé‡Œé¢æ–¹ä¾¿
+	uint32_t		_cur_raw_time;	//å½“å‰çœŸå®æ—¶é—´
+	uint32_t		_cur_secs;	//å½“å‰ç§’æ•°, åŒ…å«æ¯«ç§’
+	uint32_t		_cur_tdate;	//å½“å‰äº¤æ˜“æ—¥
 
-	IBaseDataMgr*	_base_data_mgr;	//»ù´¡Êı¾İ¹ÜÀíÆ÷
-	WtUftDtMgr*		_data_mgr;		//Êı¾İ¹ÜÀíÆ÷
+	IBaseDataMgr*	_base_data_mgr;	//åŸºç¡€æ•°æ®ç®¡ç†å™¨
+	WtUftDtMgr*		_data_mgr;		//æ•°æ®ç®¡ç†å™¨
 
 	//By Wesley @ 2022.02.07
-	//tickÊı¾İ¶©ÔÄÏî£¬firstÊÇcontextid£¬secondÊÇ¶©ÔÄÑ¡Ïî£¬0-Ô­Ê¼¶©ÔÄ£¬1-Ç°¸´È¨£¬2-ºó¸´È¨
+	//tickæ•°æ®è®¢é˜…é¡¹ï¼Œfirstæ˜¯contextidï¼Œsecondæ˜¯è®¢é˜…é€‰é¡¹ï¼Œ0-åŸå§‹è®¢é˜…ï¼Œ1-å‰å¤æƒï¼Œ2-åå¤æƒ
 	typedef wt_hashset<uint32_t> SubList;
 	typedef wt_hashmap<std::string, SubList>	StraSubMap;
-	StraSubMap		_tick_sub_map;	//tickÊı¾İ¶©ÔÄ±í
-	StraSubMap		_ordque_sub_map;	//Î¯ÍĞ¶ÓÁĞ¶©ÔÄ±í
-	StraSubMap		_orddtl_sub_map;	//Î¯ÍĞÃ÷Ï¸¶©ÔÄ±í
-	StraSubMap		_trans_sub_map;		//³É½»Ã÷Ï¸¶©ÔÄ±í
-	StraSubMap		_bar_sub_map;	//KÏßÊı¾İ¶©ÔÄ±í	
+	StraSubMap		_tick_sub_map;	//tickæ•°æ®è®¢é˜…è¡¨
+	StraSubMap		_ordque_sub_map;	//å§”æ‰˜é˜Ÿåˆ—è®¢é˜…è¡¨
+	StraSubMap		_orddtl_sub_map;	//å§”æ‰˜æ˜ç»†è®¢é˜…è¡¨
+	StraSubMap		_trans_sub_map;		//æˆäº¤æ˜ç»†è®¢é˜…è¡¨
+	StraSubMap		_bar_sub_map;	//Kçº¿æ•°æ®è®¢é˜…è¡¨	
 
 	TraderAdapterMgr*	_adapter_mgr;
 
@@ -153,7 +153,7 @@ private:
 	WtUftRtTicker*	_tm_ticker;
 	WTSVariant*		_cfg;
 
-	bool			_dependent;	//×Ó²ßÂÔ¶ÀÁ¢¼ÇÕË
+	bool			_dependent;	//å­ç­–ç•¥ç‹¬ç«‹è®°è´¦
 
 	EventNotifier*	_notifier;
 };

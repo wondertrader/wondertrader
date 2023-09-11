@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file UftStrategyDefs.h
  * \project	WonderTrader
  *
@@ -33,135 +33,135 @@ public:
 
 public:
 	/*
-	*	Ö´ĞĞµ¥ÔªÃû³Æ
+	*	æ‰§è¡Œå•å…ƒåç§°
 	*/
 	virtual const char* getName() = 0;
 
 	/*
-	*	ËùÊôÖ´ĞĞÆ÷¹¤³§Ãû³Æ
+	*	æ‰€å±æ‰§è¡Œå™¨å·¥å‚åç§°
 	*/
 	virtual const char* getFactName() = 0;
 
 	/*
-	*	³õÊ¼»¯
+	*	åˆå§‹åŒ–
 	*/
 	virtual bool init(WTSVariant* cfg){ return true; }
 
 	virtual const char* id() const { return _id.c_str(); }
 
-	//»Øµ÷º¯Êı
+	//å›è°ƒå‡½æ•°
 
 	/*
-	 *	³õÊ¼»¯ÊÂ¼ş
-	 *	ÉúÃüÖÜÆÚÖĞÖ»»á»Øµ÷Ò»´Î
+	 *	åˆå§‹åŒ–äº‹ä»¶
+	 *	ç”Ÿå‘½å‘¨æœŸä¸­åªä¼šå›è°ƒä¸€æ¬¡
 	 */
 	virtual void on_init(IUftStraCtx* ctx) = 0;
 
 	/*
-	 *	½»Ò×ÈÕ¿ªÊ¼ÊÂ¼ş
-	 *	ÊµÅÌÊ±ÒòÎªÃ¿ÌìÖØÆô£¬ËùÒÔ»áÔÚon_initºóµ÷ÓÃÒ»´Î
-	 *	»Ø²âÊ±£¬ÉúÃüÖÜÆÚÖĞ»áµ÷ÓÃ¶à´Î
-	 *	Èç¹ûÓĞÊ²Ã´Êı¾İĞèÒªÃ¿Ìì³õÊ¼»¯£¬¿ÉÒÔ·Åµ½Õâ¸ö»Øµ÷ÖĞ´¦Àí£¬ÊµÅÌ¾ÍºÍ»Ø²â±£³ÖÒ»ÖÂÁË
+	 *	äº¤æ˜“æ—¥å¼€å§‹äº‹ä»¶
+	 *	å®ç›˜æ—¶å› ä¸ºæ¯å¤©é‡å¯ï¼Œæ‰€ä»¥ä¼šåœ¨on_initåè°ƒç”¨ä¸€æ¬¡
+	 *	å›æµ‹æ—¶ï¼Œç”Ÿå‘½å‘¨æœŸä¸­ä¼šè°ƒç”¨å¤šæ¬¡
+	 *	å¦‚æœæœ‰ä»€ä¹ˆæ•°æ®éœ€è¦æ¯å¤©åˆå§‹åŒ–ï¼Œå¯ä»¥æ”¾åˆ°è¿™ä¸ªå›è°ƒä¸­å¤„ç†ï¼Œå®ç›˜å°±å’Œå›æµ‹ä¿æŒä¸€è‡´äº†
 	 */
 	virtual void on_session_begin(IUftStraCtx* ctx, uint32_t uTDate) {}
 
 	/*
-	 *	½»Ò×ÈÕ½áÊøÊÂ¼ş
+	 *	äº¤æ˜“æ—¥ç»“æŸäº‹ä»¶
 	 */
 	virtual void on_session_end(IUftStraCtx* ctx, uint32_t uTDate) {}
 
 	/*
-	 *	tickÍÆËÍ
+	 *	tickæ¨é€
 	 */
 	virtual void on_tick(IUftStraCtx* ctx, const char* stdCode, WTSTickData* newTick) {}
 
 	/*
-	 *	Î¯ÍĞ¶ÓÁĞÍÆËÍ
+	 *	å§”æ‰˜é˜Ÿåˆ—æ¨é€
 	 */
 	virtual void on_order_queue(IUftStraCtx* ctx, const char* stdCode, WTSOrdQueData* newOrdQue) {}
 
 	/*
-	 *	Öğ±ÊÎ¯ÍĞÍÆËÍ
+	 *	é€ç¬”å§”æ‰˜æ¨é€
 	 */
 	virtual void on_order_detail (IUftStraCtx* ctx, const char* stdCode, WTSOrdDtlData* newOrdDtl) {}
 
 	/*
-	 *	Öğ±Ê³É½»ÍÆËÍ
+	 *	é€ç¬”æˆäº¤æ¨é€
 	 */
 	virtual void on_transaction(IUftStraCtx* ctx, const char* stdCode, WTSTransData* newTrans) {}
 
 	/*
-	 *	KÏß±ÕºÏÊÂ¼ş
+	 *	Kçº¿é—­åˆäº‹ä»¶
 	 *
-	 *	@stdCode	ºÏÔ¼´úÂë£¬¸ñÊ½ÈçSHFE.rb2205
-	 *	@period		ÖÜÆÚ
-	 *	@times		ÖØ²ÉÑù±¶Êı
+	 *	@stdCode	åˆçº¦ä»£ç ï¼Œæ ¼å¼å¦‚SHFE.rb2205
+	 *	@period		å‘¨æœŸ
+	 *	@times		é‡é‡‡æ ·å€æ•°
 	 */
 	virtual void on_bar(IUftStraCtx* ctx, const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar) {}
 
 	/*
-	 *	³É½»»Ø±¨
+	 *	æˆäº¤å›æŠ¥
 	 *
-	 *	@localid	±¾µØ¶©µ¥id
-	 *	@stdCode	ºÏÔ¼´úÂë£¬¸ñÊ½ÈçSHFE.rb2205
-	 *	@isLong		ÊÇ·ñ×ö¶à
-	 *	@offset		¿ªÆ½£¬0-¿ª²Ö£¬1-Æ½²Ö£¬2-Æ½½ñ
-	 *	@vol		³É½»Á¿
-	 *	@price		³É½»¼Û¸ñ
+	 *	@localid	æœ¬åœ°è®¢å•id
+	 *	@stdCode	åˆçº¦ä»£ç ï¼Œæ ¼å¼å¦‚SHFE.rb2205
+	 *	@isLong		æ˜¯å¦åšå¤š
+	 *	@offset		å¼€å¹³ï¼Œ0-å¼€ä»“ï¼Œ1-å¹³ä»“ï¼Œ2-å¹³ä»Š
+	 *	@vol		æˆäº¤é‡
+	 *	@price		æˆäº¤ä»·æ ¼
 	 */
 	virtual void on_trade(IUftStraCtx* ctx, uint32_t localid, const char* stdCode, bool isLong, uint32_t offset, double vol, double price) {}
 
 	/*
-	 *	³Ö²ÖÍ¬²½»Ø±¨
-	 *	½»Ò×Í¨µÀÁ¬½Ó³É¹¦Ê±£¬Èç¹û²éµ½³Ö²Ö£¬»áÍÆËÍÒ»´Î
-	 *	Èç¹ûÃ»ÓĞ²éµ½£¬Ôò²»»áÍÆËÍ£¬ËùÒÔÕâ¸öÊÂ¼ş½Ó¿Ú²»ÊÊºÏ·ÅÈÎºÎ×´Ì¬Ïà¹ØµÄ¶«Î÷
+	 *	æŒä»“åŒæ­¥å›æŠ¥
+	 *	äº¤æ˜“é€šé“è¿æ¥æˆåŠŸæ—¶ï¼Œå¦‚æœæŸ¥åˆ°æŒä»“ï¼Œä¼šæ¨é€ä¸€æ¬¡
+	 *	å¦‚æœæ²¡æœ‰æŸ¥åˆ°ï¼Œåˆ™ä¸ä¼šæ¨é€ï¼Œæ‰€ä»¥è¿™ä¸ªäº‹ä»¶æ¥å£ä¸é€‚åˆæ”¾ä»»ä½•çŠ¶æ€ç›¸å…³çš„ä¸œè¥¿
 	 * 
-	 *	@stdCode	ºÏÔ¼´úÂë£¬¸ñÊ½ÈçSHFE.rb2205
-	 *	@isLong		ÊÇ·ñ×ö¶à
-	 *	@prevol		×ò²Ö
-	 *	@preavail	¿ÉÓÃ×ò²Ö
-	 *	@newvol		½ñ²Ö	
-	 *	@newavail	¿ÉÓÃ½ñ²Ö
+	 *	@stdCode	åˆçº¦ä»£ç ï¼Œæ ¼å¼å¦‚SHFE.rb2205
+	 *	@isLong		æ˜¯å¦åšå¤š
+	 *	@prevol		æ˜¨ä»“
+	 *	@preavail	å¯ç”¨æ˜¨ä»“
+	 *	@newvol		ä»Šä»“	
+	 *	@newavail	å¯ç”¨ä»Šä»“
 	 */
 	virtual void on_position(IUftStraCtx* ctx, const char* stdCode, bool isLong, double prevol, double preavail, double newvol, double newavail) {}
 
 	/*
-	 *	¶©µ¥
+	 *	è®¢å•
 	 *
-	 *	@localid	±¾µØ¶©µ¥id
-	 *	@stdCode	ºÏÔ¼´úÂë£¬¸ñÊ½ÈçSHFE.rb2205
-	 *	@isLong		ÊÇ·ñ×ö¶à
-	 *	@offset		¿ªÆ½£¬0-¿ª²Ö£¬1-Æ½²Ö£¬2-Æ½½ñ
-	 *	@totalQty	ÏÂµ¥×ÜÊı
-	 *	@leftQty	Ê£ÓàÊıÁ¿
-	 *	@price		Î¯ÍĞ¼Û¸ñ
-	 *	@isCanceled	ÊÇ·ñÒÑ³·Ïú
+	 *	@localid	æœ¬åœ°è®¢å•id
+	 *	@stdCode	åˆçº¦ä»£ç ï¼Œæ ¼å¼å¦‚SHFE.rb2205
+	 *	@isLong		æ˜¯å¦åšå¤š
+	 *	@offset		å¼€å¹³ï¼Œ0-å¼€ä»“ï¼Œ1-å¹³ä»“ï¼Œ2-å¹³ä»Š
+	 *	@totalQty	ä¸‹å•æ€»æ•°
+	 *	@leftQty	å‰©ä½™æ•°é‡
+	 *	@price		å§”æ‰˜ä»·æ ¼
+	 *	@isCanceled	æ˜¯å¦å·²æ’¤é”€
 	 */
 	virtual void on_order(IUftStraCtx* ctx, uint32_t localid, const char* stdCode, bool isLong, uint32_t offset, double totalQty, double leftQty, double price, bool isCanceled) {}
 
 	/*
-	 *	½»Ò×Í¨µÀ¾ÍĞ÷ÊÂ¼ş
+	 *	äº¤æ˜“é€šé“å°±ç»ªäº‹ä»¶
 	 */
 	virtual void on_channel_ready(IUftStraCtx* ctx) {}
 
 	/*
-	 *	½»Ò×Í¨µÀ¶ÏÏßÊÂ¼ş
+	 *	äº¤æ˜“é€šé“æ–­çº¿äº‹ä»¶
 	 */
 	virtual void on_channel_lost(IUftStraCtx* ctx) {}
 
 	/*
-	 *	ÏÂµ¥»Ø±¨
-	 *	ÓĞĞ©½Ó¿ÚÖ»ÓĞ´íµ¥²Å»áÓĞ»Ø±¨£¬ËùÒÔ²»ÄÜÊ¹ÓÃ¸Ã½Ó¿Ú×÷ÎªÏÂµ¥ÊÇ·ñ³É¹¦µÄ»Ø±¨
+	 *	ä¸‹å•å›æŠ¥
+	 *	æœ‰äº›æ¥å£åªæœ‰é”™å•æ‰ä¼šæœ‰å›æŠ¥ï¼Œæ‰€ä»¥ä¸èƒ½ä½¿ç”¨è¯¥æ¥å£ä½œä¸ºä¸‹å•æ˜¯å¦æˆåŠŸçš„å›æŠ¥
 	 *
-	 *	@localid	±¾µØµ¥ºÅ
-	 *	@bSuccess	ÊÇ·ñ³É¹¦
-	 *	@message	·µ»ØÏûÏ¢
+	 *	@localid	æœ¬åœ°å•å·
+	 *	@bSuccess	æ˜¯å¦æˆåŠŸ
+	 *	@message	è¿”å›æ¶ˆæ¯
 	 */
 	virtual void on_entrust(uint32_t localid, bool bSuccess, const char* message) {}
 
 
 	/*
-	 *	²ÎÊı¸üĞÂ»Øµ÷
+	 *	å‚æ•°æ›´æ–°å›è°ƒ
 	 */
 	virtual void on_params_updated() {}
 
@@ -170,7 +170,7 @@ protected:
 };
 
 //////////////////////////////////////////////////////////////////////////
-//²ßÂÔ¹¤³§½Ó¿Ú
+//ç­–ç•¥å·¥å‚æ¥å£
 typedef void(*FuncEnumUftStrategyCallback)(const char* factName, const char* straName, bool isLast);
 
 class IUftStrategyFact
@@ -181,27 +181,27 @@ public:
 
 public:
 	/*
-	*	»ñÈ¡¹¤³§Ãû
+	*	è·å–å·¥å‚å
 	*/
 	virtual const char* getName() = 0;
 
 	/*
-	*	Ã¶¾Ù²ßÂÔ
+	*	æšä¸¾ç­–ç•¥
 	*/
 	virtual void enumStrategy(FuncEnumUftStrategyCallback cb) = 0;
 
 	/*
-	*	¸ù¾İÃû³Æ´´½¨Ö´ĞĞµ¥Ôª
+	*	æ ¹æ®åç§°åˆ›å»ºæ‰§è¡Œå•å…ƒ
 	*/
 	virtual UftStrategy* createStrategy(const char* name, const char* id) = 0;
 
 	/*
-	*	É¾³ıÖ´ĞĞµ¥Ôª
+	*	åˆ é™¤æ‰§è¡Œå•å…ƒ
 	*/
 	virtual bool deleteStrategy(UftStrategy* stra) = 0;
 };
 
-//´´½¨Ö´ĞĞ¹¤³§
+//åˆ›å»ºæ‰§è¡Œå·¥å‚
 typedef IUftStrategyFact* (*FuncCreateUftStraFact)();
-//É¾³ıÖ´ĞĞ¹¤³§
+//åˆ é™¤æ‰§è¡Œå·¥å‚
 typedef void(*FuncDeleteUftStraFact)(IUftStrategyFact* &fact);

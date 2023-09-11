@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file UDPCaster.cpp
  * \project	WonderTrader
  *
@@ -21,19 +21,19 @@
 
 #define UDP_MSG_SUBSCRIBE	0x100
 #define UDP_MSG_PUSHTICK	0x200
-#define UDP_MSG_PUSHORDQUE	0x201	//Î¯ÍĞ¶ÓÁĞ
-#define UDP_MSG_PUSHORDDTL	0x202	//Î¯ÍĞÃ÷Ï¸
-#define UDP_MSG_PUSHTRANS	0x203	//Öğ±Ê³É½»
+#define UDP_MSG_PUSHORDQUE	0x201	//å§”æ‰˜é˜Ÿåˆ—
+#define UDP_MSG_PUSHORDDTL	0x202	//å§”æ‰˜æ˜ç»†
+#define UDP_MSG_PUSHTRANS	0x203	//é€ç¬”æˆäº¤
 
 #pragma pack(push,1)
-//UDPÇëÇó°ü
+//UDPè¯·æ±‚åŒ…
 typedef struct _UDPReqPacket
 {
 	uint32_t		_type;
 	char			_data[1020];
 } UDPReqPacket;
 
-//UDPTickÊı¾İ°ü
+//UDPTickæ•°æ®åŒ…
 template <typename T>
 struct UDPDataPacket
 {
@@ -88,8 +88,8 @@ bool UDPCaster::init(WTSVariant* cfg, WTSBaseDataMgr* bdMgr, DataManager* dtMgr)
 	}
 
 	//By Wesley @ 2022.01.11
-	//ÕâÊÇ¶©ÔÄ¶Ë¿Ú£¬µ«ÊÇÒÔÇ°È«²¿ÓÃµÄbport£¬ÊôÓÚ±ÊÎó
-	//Ö»ÄÜĞ´Ò»¸ö¼æÈİÁË
+	//è¿™æ˜¯è®¢é˜…ç«¯å£ï¼Œä½†æ˜¯ä»¥å‰å…¨éƒ¨ç”¨çš„bportï¼Œå±äºç¬”è¯¯
+	//åªèƒ½å†™ä¸€ä¸ªå…¼å®¹äº†
 	int32_t sport = cfg->getInt32("sport");
 	if (sport == 0)
 		sport = cfg->getInt32("bport");
@@ -158,7 +158,7 @@ void UDPCaster::do_receive()
 			UDPReqPacket* req = (UDPReqPacket*)m_data;
 
 			std::string data;
-			//´¦ÀíÇëÇó
+			//å¤„ç†è¯·æ±‚
 			if (req->_type == UDP_MSG_SUBSCRIBE)
 			{
 				const StringVector& ay = StrUtil::split(req->_data, ",");
@@ -321,7 +321,7 @@ void UDPCaster::broadcast(WTSObject* data, uint32_t dataType)
 					if (castData._data == NULL)
 						break;
 
-					//Ö±½Ó¹ã²¥
+					//ç›´æ¥å¹¿æ’­
 					if (!m_listRawGroup.empty() || !m_listRawRecver.empty())
 					{
 						std::string buf_raw;
@@ -362,7 +362,7 @@ void UDPCaster::broadcast(WTSObject* data, uint32_t dataType)
 							break;
 						}
 
-						//¹ã²¥
+						//å¹¿æ’­
 						boost::system::error_code ec;
 						for (auto it = m_listRawRecver.begin(); it != m_listRawRecver.end(); it++)
 						{
@@ -375,7 +375,7 @@ void UDPCaster::broadcast(WTSObject* data, uint32_t dataType)
 							}
 						}
 
-						//×é²¥
+						//ç»„æ’­
 						for (auto it = m_listRawGroup.begin(); it != m_listRawGroup.end(); it++)
 						{
 							const MulticastPair& item = *it;

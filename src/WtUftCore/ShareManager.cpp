@@ -1,4 +1,4 @@
-#include "ShareManager.h"
+ï»¿#include "ShareManager.h"
 #include "WtUftEngine.h"
 #include "../WTSTools/WTSLogger.h"
 
@@ -71,13 +71,13 @@ bool ShareManager::start_watching(uint32_t microsecs)
 					uint64_t lastUdtTime = _get_section_updatetime(_exchg.c_str(), section);
 					if(lastUdtTime > v.second)
 					{
-						//´¥·¢Í¨Öª
+						//è§¦å‘é€šçŸ¥
 						_engine->notify_params_update(section);
 						udtTime = lastUdtTime;
 					}
 				}
 
-				//Èç¹ûµÈ´ıÊ±¼äÎª0£¬Ôò½øÈëÎŞÏŞÑ­»·µÄ¼ì²éÖĞ
+				//å¦‚æœç­‰å¾…æ—¶é—´ä¸º0ï¼Œåˆ™è¿›å…¥æ— é™å¾ªç¯çš„æ£€æŸ¥ä¸­
 				if(microsecs > 0 && !_stopped)
 					std::this_thread::sleep_for(std::chrono::microseconds(microsecs));
 			}
@@ -98,7 +98,7 @@ bool ShareManager::init_domain(const char* id)
 	_exchg = id;
 	WTSLogger::info("Share domain [{}] initialing {}", id, ret ? "succeed" : "failed");
 
-	//³õÊ¼»¯Í¬²½Çø
+	//åˆå§‹åŒ–åŒæ­¥åŒº
 	ret = _init_master("sync", ".sync");
 	WTSLogger::info("Sync domain [sync] initialing {}", ret ? "succeed" : "failed");
 

@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * /file WtUftRunner.cpp
  * /project	WonderTrader
  *
@@ -106,28 +106,28 @@ namespace uft
 				quote.pre_settle = x;
 				quote.pre_interest = 0;
 
-				//Î¯Âô¼Û¸ñ
+				//å§”å–ä»·æ ¼
 				quote.ask_prices[0] = x;
 				quote.ask_prices[1] = x;
 				quote.ask_prices[2] = x;
 				quote.ask_prices[3] = x;
 				quote.ask_prices[4] = x;
 
-				//Î¯Âò¼Û¸ñ
+				//å§”ä¹°ä»·æ ¼
 				quote.bid_prices[0] = x;
 				quote.bid_prices[1] = x;
 				quote.bid_prices[2] = x;
 				quote.bid_prices[3] = x;
 				quote.bid_prices[4] = x;
 
-				//Î¯ÂôÁ¿
+				//å§”å–é‡
 				quote.ask_qty[0] = 0;
 				quote.ask_qty[1] = 0;
 				quote.ask_qty[2] = 0;
 				quote.ask_qty[3] = 0;
 				quote.ask_qty[4] = 0;
 
-				//Î¯ÂòÁ¿
+				//å§”ä¹°é‡
 				quote.bid_qty[0] = 0;
 				quote.bid_qty[1] = 0;
 				quote.bid_qty[2] = 0;
@@ -187,12 +187,12 @@ namespace uft
 		TestStrategy(const char* id) : UftStrategy(id) {}
 
 		/*
-		*	Ö´ÐÐµ¥ÔªÃû³Æ
+		*	æ‰§è¡Œå•å…ƒåç§°
 		*/
 		virtual const char* getName() { return "TestStrategy"; }
 
 		/*
-		*	ËùÊôÖ´ÐÐÆ÷¹¤³§Ãû³Æ
+		*	æ‰€å±žæ‰§è¡Œå™¨å·¥åŽ‚åç§°
 		*/
 		virtual const char* getFactName() { return "TestStrategyFact"; }
 
@@ -233,7 +233,7 @@ namespace uft
 			return false;
 		}
 
-		//»ù´¡Êý¾ÝÎÄ¼þ
+		//åŸºç¡€æ•°æ®æ–‡ä»¶
 		WTSVariant* cfgBF = _config->get("basefiles");
 		if (cfgBF->get("session"))
 			_bd_mgr.loadSessions(cfgBF->getCString("session"));

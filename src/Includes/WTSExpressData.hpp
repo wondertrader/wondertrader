@@ -1,11 +1,11 @@
-/*!
+ï»¿/*!
  * \file WTSExpressData.hpp
  * \project	WonderTrader
  *
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief WtÖ¸±êÊı¾İ¶¨ÒåÎÄ¼ş
+ * \brief WtæŒ‡æ ‡æ•°æ®å®šä¹‰æ–‡ä»¶
  */
 #pragma once
 #include <stdint.h>
@@ -25,7 +25,7 @@ typedef unsigned long	DWORD;
 NS_WTP_BEGIN
 
 //////////////////////////////////////////////////////////////////////////
-//ÏßĞÍÀà,Ö¸±êÓÃµ½
+//çº¿å‹ç±»,æŒ‡æ ‡ç”¨åˆ°
 class WTSLineInfo : public WTSObject
 {
 public:
@@ -56,7 +56,7 @@ protected:
 
 
 //////////////////////////////////////////////////////////////////////////
-//Ö¸±ê²ÎÊıÀà
+//æŒ‡æ ‡å‚æ•°ç±»
 class WTSExpressParams : public WTSObject
 {
 public:
@@ -97,7 +97,7 @@ protected:
 };
 
 //////////////////////////////////////////////////////////////////////////
-//Ö¸±êÏßÀà
+//æŒ‡æ ‡çº¿ç±»
 class WTSExpressLine : public WTSValueArray
 {
 public:
@@ -130,7 +130,7 @@ public:
 	}
 
 	/*
-	 *	¶ÁÈ¡ÊıÖµÊı×éµÄ¸ñÊ½»¯×Ö·û´®
+	 *	è¯»å–æ•°å€¼æ•°ç»„çš„æ ¼å¼åŒ–å­—ç¬¦ä¸²
 	 */
 	const char* getFormat()
 	{
@@ -145,7 +145,7 @@ public:
 	}
 
 	/*
-	 *	¶ÁÈ¡Êı¾İµÄĞ¡ÊıµãÎ»Êı
+	 *	è¯»å–æ•°æ®çš„å°æ•°ç‚¹ä½æ•°
 	 */
 	uint32_t	getDecimal(){return m_uDecimal;}
 
@@ -193,7 +193,7 @@ typedef vector<WTSExpressLine*>	WTSVecExpLines;
 
 
 //////////////////////////////////////////////////////////////////////////
-//Ö¸±êÀà
+//æŒ‡æ ‡ç±»
 class WTSExpressData : public WTSObject
 {
 public:
@@ -341,7 +341,7 @@ public:
 		{
 			WTSExpressLine* line = STATIC_CONVERT(*it, WTSExpressLine*);
 			bool bAbs = (line->getLineType() == WELT_VolStick || line->getLineType() == WELT_AStickLine);
-			if(bAbs)//Ô­ÒòÊÇ³É½»Á¿Öù,ÊÇÒÔ0¿ªÊ¼»æÖÆµÄ
+			if(bAbs)//åŸå› æ˜¯æˆäº¤é‡æŸ±,æ˜¯ä»¥0å¼€å§‹ç»˜åˆ¶çš„
 				return 0;
 			double v = line->minvalue(head, tail, bAbs);
 			if (v == INVALID_DOUBLE)

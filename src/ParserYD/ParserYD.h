@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file ParserYD.h
  * \project	WonderTrader
  *
@@ -35,7 +35,7 @@ public:
 
 	virtual void notifyMarketData(const YDMarketData *pMarketData) override;
 
-//IQuoteParser ½Ó¿Ú
+//IQuoteParser æ¥å£
 public:
 	virtual bool init(WTSVariant* config) override;
 
@@ -56,11 +56,11 @@ public:
 
 private:
 	/*
-	 *	·¢ËÍµÇÂ¼ÇëÇó
+	 *	å‘é€ç™»å½•è¯·æ±‚
 	 */
 	void DoLogin();
 	/*
-	 *	¶©ÔÄÆ·ÖÖĞĞÇé
+	 *	è®¢é˜…å“ç§è¡Œæƒ…
 	 */
 	void DoSubscribe();
 

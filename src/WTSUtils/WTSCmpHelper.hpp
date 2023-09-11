@@ -1,11 +1,11 @@
-/*!
+ï»¿/*!
  * \file WTSCmpHelper.hpp
  * \project	WonderTrader
  *
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief Êı¾İÑ¹Ëõ¸¨ÖúÀà,ÀûÓÃzstdlibÑ¹Ëõ
+ * \brief æ•°æ®å‹ç¼©è¾…åŠ©ç±»,åˆ©ç”¨zstdlibå‹ç¼©
  */
 #pragma once
 #include <string>

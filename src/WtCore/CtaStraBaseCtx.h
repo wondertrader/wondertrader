@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file CtaStraBaseCtx.h
  * \project	WonderTrader
  *
@@ -24,11 +24,11 @@ NS_WTP_BEGIN
 
 class WtCtaEngine;
 
-const char COND_ACTION_OL = 0;	//¿ª¶à
-const char COND_ACTION_CL = 1;	//Æ½¶à
-const char COND_ACTION_OS = 2;	//¿ª¿Õ
-const char COND_ACTION_CS = 3;	//Æ½¿Õ
-const char COND_ACTION_SP = 4;	//Ö±½ÓÉèÖÃ²ÖÎ»
+const char COND_ACTION_OL = 0;	//å¼€å¤š
+const char COND_ACTION_CL = 1;	//å¹³å¤š
+const char COND_ACTION_OS = 2;	//å¼€ç©º
+const char COND_ACTION_CS = 3;	//å¹³ç©º
+const char COND_ACTION_SP = 4;	//ç›´æ¥è®¾ç½®ä»“ä½
 
 typedef struct _CondEntrust
 {
@@ -38,7 +38,7 @@ typedef struct _CondEntrust
 
 	double			_qty;
 
-	char			_action;	//0-¿ª¶à, 1-Æ½¶à, 2-¿ª¿Õ, 3-Æ½¿Õ
+	char			_action;	//0-å¼€å¤š, 1-å¹³å¤š, 2-å¼€ç©º, 3-å¹³ç©º
 
 	char			_code[MAX_INSTRUMENT_LENGTH];
 	char			_usertag[32];
@@ -108,7 +108,7 @@ protected:
 public:
 	virtual uint32_t id() { return _context_id; }
 
-	//»Øµ÷º¯Êı
+	//å›è°ƒå‡½æ•°
 	virtual void on_init() override;
 	virtual void on_session_begin(uint32_t uTDate) override;
 	virtual void on_session_end(uint32_t uTDate) override;
@@ -120,7 +120,7 @@ public:
 
 
 	//////////////////////////////////////////////////////////////////////////
-	//²ßÂÔ½Ó¿Ú
+	//ç­–ç•¥æ¥å£
 	virtual void stra_enter_long(const char* stdCode, double qty, const char* userTag = "", double limitprice = 0.0, double stopprice = 0.0) override;
 	virtual void stra_enter_short(const char* stdCode, double qty, const char* userTag = "", double limitprice = 0.0, double stopprice = 0.0) override;
 	virtual void stra_exit_long(const char* stdCode, double qty, const char* userTag = "", double limitprice = 0.0, double stopprice = 0.0) override;
@@ -131,7 +131,7 @@ public:
 	virtual double stra_get_price(const char* stdCode) override;
 
 	/*
-	 *	¶ÁÈ¡µ±ÈÕ¼Û¸ñ
+	 *	è¯»å–å½“æ—¥ä»·æ ¼
 	 */
 	virtual double stra_get_day_price(const char* stdCode, int flag = 0) override;
 
@@ -158,7 +158,7 @@ public:
 	virtual WTSTickData*	stra_get_last_tick(const char* stdCode) override;
 
 	/*
-	 *	»ñÈ¡·ÖÔÂºÏÔ¼´úÂë
+	 *	è·å–åˆ†æœˆåˆçº¦ä»£ç 
 	 */
 	virtual std::string		stra_get_rawcode(const char* stdCode) override;
 
@@ -177,35 +177,35 @@ public:
 
 public:
 	/*
-	 *	ÉèÖÃÍ¼±íKÏß
+	 *	è®¾ç½®å›¾è¡¨Kçº¿
 	 */
 	virtual void set_chart_kline(const char* stdCode, const char* period) override;
 
 	/*
-	 *	Ìí¼ÓĞÅºÅ
+	 *	æ·»åŠ ä¿¡å·
 	 */
 	virtual void add_chart_mark(double price, const char* icon, const char* tag) override;
 
 	/*
-	 *	Ìí¼ÓÖ¸±ê
+	 *	æ·»åŠ æŒ‡æ ‡
 	 */
 	virtual void register_index(const char* idxName, uint32_t indexType) override;
 
 	/*
-	 *	Ìí¼ÓÖ¸±êÏß
+	 *	æ·»åŠ æŒ‡æ ‡çº¿
 	 */
 	virtual bool register_index_line(const char* idxName, const char* lineName, uint32_t lineType) override;
 
 	/*
-	 *	Ìí¼Ó»ù×¼Ïß
-	 *	@idxName	Ö¸±êÃû³Æ
-	 *	@lineName	ÏßÌõÃû³Æ
-	 *	@val		ÊıÖµ
+	 *	æ·»åŠ åŸºå‡†çº¿
+	 *	@idxName	æŒ‡æ ‡åç§°
+	 *	@lineName	çº¿æ¡åç§°
+	 *	@val		æ•°å€¼
 	 */
 	virtual bool add_index_baseline(const char* idxName, const char* lineName, double val) override;
 
 	/*
-	 *	ÉèÖÃÖ¸±êÖµ
+	 *	è®¾ç½®æŒ‡æ ‡å€¼
 	 */
 	virtual bool set_index_value(const char* idxName, const char* lineName, double val) override;
 
@@ -215,8 +215,8 @@ protected:
 
 	int32_t			_slippage;
 
-	uint64_t		_total_calc_time;	//×Ü¼ÆËãÊ±¼ä
-	uint32_t		_emit_times;		//×Ü¼ÆËã´ÎÊı
+	uint64_t		_total_calc_time;	//æ€»è®¡ç®—æ—¶é—´
+	uint32_t		_emit_times;		//æ€»è®¡ç®—æ¬¡æ•°
 
 	std::string		_main_key;
 	std::string		_main_code;
@@ -289,7 +289,7 @@ protected:
 		double		_volume;
 		std::string	_usertag;
 		double		_sigprice;
-		uint32_t	_sigtype;	// 0-onscheduleĞÅºÅ£¬1-ontickĞÅºÅ£¬2-Ìõ¼şµ¥ĞÅºÅ
+		uint32_t	_sigtype;	// 0-onscheduleä¿¡å·ï¼Œ1-ontickä¿¡å·ï¼Œ2-æ¡ä»¶å•ä¿¡å·
 		uint64_t	_gentime;
 		bool		_triggered;
 
@@ -314,13 +314,13 @@ protected:
 	BoostFilePtr	_mark_logs;
 
 	CondEntrustMap	_condtions;
-	uint64_t		_last_cond_min;	//ÉÏ´ÎÉèÖÃÌõ¼şµ¥µÄÊ±¼ä
-	uint32_t		_last_barno;	//ÉÏ´ÎÉèÖÃµÄKÏß±àºÅ
+	uint64_t		_last_cond_min;	//ä¸Šæ¬¡è®¾ç½®æ¡ä»¶å•çš„æ—¶é—´
+	uint32_t		_last_barno;	//ä¸Šæ¬¡è®¾ç½®çš„Kçº¿ç¼–å·
 
-	//ÊÇ·ñ´¦ÓÚµ÷¶ÈÖĞµÄ±ê¼Ç
-	bool			_is_in_schedule;	//ÊÇ·ñÔÚ×Ô¶¯µ÷¶ÈÖĞ
+	//æ˜¯å¦å¤„äºè°ƒåº¦ä¸­çš„æ ‡è®°
+	bool			_is_in_schedule;	//æ˜¯å¦åœ¨è‡ªåŠ¨è°ƒåº¦ä¸­
 
-	//ÓÃ»§Êı¾İ
+	//ç”¨æˆ·æ•°æ®
 	typedef wt_hashmap<std::string, std::string> StringHashMap;
 	StringHashMap	_user_datas;
 	bool			_ud_modified;
@@ -339,11 +339,11 @@ protected:
 
 	StraFundInfo		_fund_info;
 
-	//tick¶©ÔÄÁĞ±í
+	//tickè®¢é˜…åˆ—è¡¨
 	wt_hashset<std::string> _tick_subs;
 
 	//////////////////////////////////////////////////////////////////////////
-	//Í¼±íÏà¹Ø
+	//å›¾è¡¨ç›¸å…³
 	std::string		_chart_code;
 	std::string		_chart_period;
 

@@ -1,4 +1,4 @@
-#include "WtSelStraFact.h"
+﻿#include "WtSelStraFact.h"
 #include "WtStraDtSel.h"
 
 #include <string.h>

@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <string>
 #include <stdint.h>
 #include <unordered_map>
@@ -218,7 +218,7 @@ private:
 	TransBlockPair* getRTTransBlock(const char* exchg, const char* code);
 
 	/*
-	 *	½«ÀúÊ·Êı¾İ·ÅÈë»º´æ
+	 *	å°†å†å²æ•°æ®æ”¾å…¥ç¼“å­˜
 	 */
 	bool		cacheHisBarsFromFile(void* codeInfo, const std::string& key, const char* stdCode, WTSKlinePeriod period);
 
@@ -269,13 +269,13 @@ private:
 		_BarsList():_factor(1.0){}
 
 		std::vector<WTSBarStruct>	_bars;
-		std::vector<WTSBarStruct>	_rt_bars;	//Èç¹ûÊÇºó¸´È¨£¬¾ÍĞèÒª°ÑÊµÊ±Êı¾İ¿½±´µ½ÕâÀïÀ´
+		std::vector<WTSBarStruct>	_rt_bars;	//å¦‚æœæ˜¯åå¤æƒï¼Œå°±éœ€è¦æŠŠå®æ—¶æ•°æ®æ‹·è´åˆ°è¿™é‡Œæ¥
 	} BarsList;
 
 	typedef std::unordered_map<std::string, BarsList> BarsCache;
 	BarsCache	_bars_cache;
 
-	//³ıÈ¨Òò×Ó
+	//é™¤æƒå› å­
 	typedef struct _AdjFactor
 	{
 		uint32_t	_date;

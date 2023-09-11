@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <string>
 #include <stdint.h>
 
@@ -190,7 +190,7 @@ private:
 	bool	cacheAdjustedStkBars(void* codeInfo, const std::string& key, const char* stdCode, WTSKlinePeriod period);
 
 	/*
-	 *	½«ÀúÊ·Êı¾İ·ÅÈë»º´æ
+	 *	å°†å†å²æ•°æ®æ”¾å…¥ç¼“å­˜
 	 */
 	bool	cacheHisBarsFromFile(void* codeInfo, const std::string& key, const char* stdCode, WTSKlinePeriod period);
 	bool	cacheFinalBarsFromLoader(void* codeInfo, const std::string& key, const char* stdCode, WTSKlinePeriod period);
@@ -221,7 +221,7 @@ private:
 	IHotMgr*		_hot_mgr;
 
 	//By Wesley @ 2022.08.15
-	//¸´È¨±ê¼Ç£¬²ÉÓÃÎ»ÔËËã±íÊ¾£¬1|2|4,1±íÊ¾³É½»Á¿¸´È¨£¬2±íÊ¾³É½»¶î¸´È¨£¬4±íÊ¾×Ü³Ö¸´È¨£¬ÆäËû´ı¶¨
+	//å¤æƒæ ‡è®°ï¼Œé‡‡ç”¨ä½è¿ç®—è¡¨ç¤ºï¼Œ1|2|4,1è¡¨ç¤ºæˆäº¤é‡å¤æƒï¼Œ2è¡¨ç¤ºæˆäº¤é¢å¤æƒï¼Œ4è¡¨ç¤ºæ€»æŒå¤æƒï¼Œå…¶ä»–å¾…å®š
 	uint32_t		_adjust_flag;
 
 	typedef struct _BarsList
@@ -243,7 +243,7 @@ private:
 
 	uint64_t	_last_time;
 
-	//³ıÈ¨Òò×Ó
+	//é™¤æƒå› å­
 	typedef struct _AdjFactor
 	{
 		uint32_t	_date;

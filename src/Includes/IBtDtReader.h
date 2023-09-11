@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file IBtDtReader.h
  * \project	WonderTrader
  *
@@ -16,22 +16,22 @@ NS_WTP_BEGIN
 class WTSVariant;
 
 /*
- *	@brief Êı¾İ¶ÁÈ¡Ä£¿é»Øµ÷½Ó¿Ú
- *	@details Ö÷ÒªÓÃÓÚÊı¾İ¶ÁÈ¡Ä£¿éÏòµ÷ÓÃÄ£¿é»Øµ÷
+ *	@brief æ•°æ®è¯»å–æ¨¡å—å›è°ƒæ¥å£
+ *	@details ä¸»è¦ç”¨äºæ•°æ®è¯»å–æ¨¡å—å‘è°ƒç”¨æ¨¡å—å›è°ƒ
  */
 class IBtDtReaderSink
 {
 public:
 	/*
-	 *	@brief	Êä³öÊı¾İ¶ÁÈ¡Ä£¿éµÄÈÕÖ¾
+	 *	@brief	è¾“å‡ºæ•°æ®è¯»å–æ¨¡å—çš„æ—¥å¿—
 	 */
 	virtual void		reader_log(WTSLogLevel ll, const char* message) = 0;
 };
 
 /*
- *	@brief	Ëæ»úÊı¾İ¶ÁÈ¡½Ó¿Ú
+ *	@brief	éšæœºæ•°æ®è¯»å–æ¥å£
  *
- *	ÏòºËĞÄÄ£¿éÌá¹©ĞĞÇéÊı¾İ(tick¡¢KÏß)¶ÁÈ¡½Ó¿Ú
+ *	å‘æ ¸å¿ƒæ¨¡å—æä¾›è¡Œæƒ…æ•°æ®(tickã€Kçº¿)è¯»å–æ¥å£
  */
 class IBtDtReader
 {
@@ -53,9 +53,9 @@ protected:
 	IBtDtReaderSink*	_sink;
 };
 
-//´´½¨Êı¾İ´æ´¢¶ÔÏó
+//åˆ›å»ºæ•°æ®å­˜å‚¨å¯¹è±¡
 typedef IBtDtReader* (*FuncCreateBtDtReader)();
-//É¾³ıÊı¾İ´æ´¢¶ÔÏó
+//åˆ é™¤æ•°æ®å­˜å‚¨å¯¹è±¡
 typedef void(*FuncDeleteBtDtReader)(IBtDtReader* store);
 
 NS_WTP_END

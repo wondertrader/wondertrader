@@ -1,11 +1,11 @@
-/*!
+ï»¿/*!
  * \file DataManager.h
  * \project	WonderTrader
  *
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief Êı¾İ¹ÜÀíÆ÷¶¨Òå
+ * \brief æ•°æ®ç®¡ç†å™¨å®šä¹‰
  */
 #pragma once
 
@@ -74,9 +74,9 @@ public:
 	virtual uint32_t getTradingDate(const char* pid) override;
 
 	/*
-	*	´¦Àí½âÎöÄ£¿éµÄÈÕÖ¾
-	*	@ll			ÈÕÖ¾¼¶±ğ
-	*	@message	ÈÕÖ¾ÄÚÈİ
+	*	å¤„ç†è§£ææ¨¡å—çš„æ—¥å¿—
+	*	@ll			æ—¥å¿—çº§åˆ«
+	*	@message	æ—¥å¿—å†…å®¹
 	*/
 	virtual void outputLog(WTSLogLevel ll, const char* message) override;
 

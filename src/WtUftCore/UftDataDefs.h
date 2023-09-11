@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <stdint.h>
 #include <string.h>
 #include "../Includes/WTSMarcos.h"
@@ -27,7 +27,7 @@ namespace uft {
 	{
 		char		_exchg[MAX_EXCHANGE_LENGTH];
 		char		_code[MAX_INSTRUMENT_LENGTH];
-		uint32_t	_direct;	//·½Ïò0-¶à£¬1-¿Õ
+		uint32_t	_direct;	//æ–¹å‘0-å¤šï¼Œ1-ç©º
 		double		_volume;
 		double		_open_price;
 		uint64_t	_open_time;
@@ -61,7 +61,7 @@ namespace uft {
 
 		double		_traded;
 		double		_left;
-		uint32_t	_state;	//0-ÓĞĞ§¡£1-È«²¿³É½»£¬2-ÒÑ³·µ¥
+		uint32_t	_state;	//0-æœ‰æ•ˆã€‚1-å…¨éƒ¨æˆäº¤ï¼Œ2-å·²æ’¤å•
 		uint64_t	_oder_time;
 	} OrderStruct;
 

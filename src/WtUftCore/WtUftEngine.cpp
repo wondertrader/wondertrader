@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file WtHftEngine.cpp
  * \project	WonderTrader
  *
@@ -227,8 +227,8 @@ void WtUftEngine::handle_push_order_detail(WTSOrdDtlData* curOrdDtl)
 		for (auto it = sids.begin(); it != sids.end(); it++)
 		{
 			//By Wesley @ 2022.02.07
-			//Level2Êı¾İÒ»°ãÓÃÓÚHFT³¡¾°£¬ËùÒÔ²»×ö¸´È¨´¦Àí
-			//ËùÒÔ²»¶ÁÈ¡¶©ÔÄ±ê¼Ç
+			//Level2æ•°æ®ä¸€èˆ¬ç”¨äºHFTåœºæ™¯ï¼Œæ‰€ä»¥ä¸åšå¤æƒå¤„ç†
+			//æ‰€ä»¥ä¸è¯»å–è®¢é˜…æ ‡è®°
 			uint32_t sid = *it;
 			auto cit = _ctx_map.find(sid);
 			if (cit != _ctx_map.end())
@@ -250,8 +250,8 @@ void WtUftEngine::handle_push_order_queue(WTSOrdQueData* curOrdQue)
 		for (auto it = sids.begin(); it != sids.end(); it++)
 		{
 			//By Wesley @ 2022.02.07
-			//Level2Êı¾İÒ»°ãÓÃÓÚHFT³¡¾°£¬ËùÒÔ²»×ö¸´È¨´¦Àí
-			//ËùÒÔ²»¶ÁÈ¡¶©ÔÄ±ê¼Ç
+			//Level2æ•°æ®ä¸€èˆ¬ç”¨äºHFTåœºæ™¯ï¼Œæ‰€ä»¥ä¸åšå¤æƒå¤„ç†
+			//æ‰€ä»¥ä¸è¯»å–è®¢é˜…æ ‡è®°
 			uint32_t sid = *it;
 			auto cit = _ctx_map.find(sid);
 			if (cit != _ctx_map.end())
@@ -273,8 +273,8 @@ void WtUftEngine::handle_push_transaction(WTSTransData* curTrans)
 		for (auto it = sids.begin(); it != sids.end(); it++)
 		{
 			//By Wesley @ 2022.02.07
-			//Level2Êı¾İÒ»°ãÓÃÓÚHFT³¡¾°£¬ËùÒÔ²»×ö¸´È¨´¦Àí
-			//ËùÒÔ²»¶ÁÈ¡¶©ÔÄ±ê¼Ç
+			//Level2æ•°æ®ä¸€èˆ¬ç”¨äºHFTåœºæ™¯ï¼Œæ‰€ä»¥ä¸åšå¤æƒå¤„ç†
+			//æ‰€ä»¥ä¸è¯»å–è®¢é˜…æ ‡è®°
 			uint32_t sid = *it;
 			auto cit = _ctx_map.find(sid);
 			if (cit != _ctx_map.end())

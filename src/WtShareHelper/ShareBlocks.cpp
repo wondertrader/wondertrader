@@ -1,4 +1,4 @@
-#include "ShareBlocks.h"
+ï»¿#include "ShareBlocks.h"
 #include "../Share/BoostFile.hpp"
 #include "../Share/TimeUtils.hpp"
 #include "../Share/StdUtils.hpp"
@@ -30,7 +30,7 @@ bool ShareBlocks::init_master(const char* name, const char* path/* = ""*/)
 	shm._blocktime = shm._block->_updatetime;
 
 	{
-		//ÕâÀïÒª×ö³õÊ¼»¯£¬Òª°ÑÒÑ¾­ÓĞµÄkey¼ÓÔØ½øÈ¥
+		//è¿™é‡Œè¦åšåˆå§‹åŒ–ï¼Œè¦æŠŠå·²ç»æœ‰çš„keyåŠ è½½è¿›å»
 		for (uint32_t i = 0; i < shm._block->_count; i++)
 		{
 			SecInfo& secInfo = shm._block->_sections[i];
@@ -69,10 +69,10 @@ bool ShareBlocks::init_slave(const char* name, const char* path/* = ""*/)
 	shm._block = (ShmBlock*)shm._domain->addr();
 	shm._blocktime = shm._block->_updatetime;
 
-	//slaveÄ£Ê½ÏÂ£¬Ó¦¸ÃĞèÒª¼ÓÔØÒ»ÏÂ
+	//slaveæ¨¡å¼ä¸‹ï¼Œåº”è¯¥éœ€è¦åŠ è½½ä¸€ä¸‹
 	//if (strcmp(shm._block->_flag, BLK_FLAG) == 0)
 	{
-		//ÕâÀïÒª×ö³õÊ¼»¯£¬Òª°ÑÒÑ¾­ÓĞµÄkey¼ÓÔØ½øÈ¥
+		//è¿™é‡Œè¦åšåˆå§‹åŒ–ï¼Œè¦æŠŠå·²ç»æœ‰çš„keyåŠ è½½è¿›å»
 		for (uint32_t i = 0; i < shm._block->_count; i++)
 		{
 			SecInfo& secInfo = shm._block->_sections[i];
@@ -104,7 +104,7 @@ bool ShareBlocks::update_slave(const char* name)
 	{
 		shm._sections.clear();
 
-		//ÕâÀïÒª×ö³õÊ¼»¯£¬Òª°ÑÒÑ¾­ÓĞµÄkey¼ÓÔØ½øÈ¥
+		//è¿™é‡Œè¦åšåˆå§‹åŒ–ï¼Œè¦æŠŠå·²ç»æœ‰çš„keyåŠ è½½è¿›å»
 		for (uint32_t i = 0; i < shm._block->_count; i++)
 		{
 			SecInfo& secInfo = shm._block->_sections[i];
@@ -171,13 +171,13 @@ void* ShareBlocks::make_valid(const char* domain, const char* section, const cha
 	auto sit = shm._sections.find(section);
 	if (sit == shm._sections.end())
 	{
-		//Èç¹û²»ÊÇmaster£¬¾Í²»ÄÜ´´½¨
+		//å¦‚æœä¸æ˜¯masterï¼Œå°±ä¸èƒ½åˆ›å»º
 		if (!shm._master)
 			return nullptr;
 
 		if (shm._block->_count == MAX_SEC_CNT)
 		{
-			//ÒÑ¾­Ã»ÓĞ¶îÍâµÄ¿Õ¼ä¿ÉÒÔ·ÖÅäÁË
+			//å·²ç»æ²¡æœ‰é¢å¤–çš„ç©ºé—´å¯ä»¥åˆ†é…äº†
 			return nullptr;
 		}
 
@@ -198,7 +198,7 @@ void* ShareBlocks::make_valid(const char* domain, const char* section, const cha
 	auto kit = kvPair->_keys.find(key);
 	if (kit == kvPair->_keys.end())
 	{
-		//Èç¹û²»ÊÇmaster£¬¾Í²»ÄÜ´´½¨
+		//å¦‚æœä¸æ˜¯masterï¼Œå°±ä¸èƒ½åˆ›å»º
 		if (!shm._master)
 			return nullptr;
 
@@ -214,7 +214,7 @@ void* ShareBlocks::make_valid(const char* domain, const char* section, const cha
 		keyInfo->_offset = secInfo->_offset;
 		kvPair->_keys[key] = keyInfo;
 
-		//×Ö·û´®¹Ì¶¨×î´ó³¤¶ÈÎª64
+		//å­—ç¬¦ä¸²å›ºå®šæœ€å¤§é•¿åº¦ä¸º64
 		secInfo->_count++;
 		secInfo->_offset += (uint32_t)len;
 	}
@@ -312,7 +312,7 @@ const char* ShareBlocks::allocate_string(const char* domain, const char* section
 
 	if (keyInfo->_type == 0 || bForceWrite)
 	{
-		//Èç¹ûtypeÎª0£¬ËµÃ÷ÊÇĞÂ·ÖÅäµÄ£¬ÔòÓÃ³õÊ¼ÖµÌî³ä
+		//å¦‚æœtypeä¸º0ï¼Œè¯´æ˜æ˜¯æ–°åˆ†é…çš„ï¼Œåˆ™ç”¨åˆå§‹å€¼å¡«å……
 		keyInfo->_type = SMVT_STRING;
 		wt_strcpy(secInfo->_data + keyInfo->_offset, initVal, VTL_STRING);
 	}
@@ -329,7 +329,7 @@ int32_t* ShareBlocks::allocate_int32(const char* domain, const char* section, co
 
 	if (keyInfo->_type == 0 || bForceWrite)
 	{
-		//Èç¹ûtypeÎª0£¬ËµÃ÷ÊÇĞÂ·ÖÅäµÄ£¬ÔòÓÃ³õÊ¼ÖµÌî³ä
+		//å¦‚æœtypeä¸º0ï¼Œè¯´æ˜æ˜¯æ–°åˆ†é…çš„ï¼Œåˆ™ç”¨åˆå§‹å€¼å¡«å……
 		keyInfo->_type = SMVT_INT32;
 		*((int32_t*)(secInfo->_data + keyInfo->_offset)) = initVal;
 	}
@@ -346,7 +346,7 @@ int64_t* ShareBlocks::allocate_int64(const char* domain, const char* section, co
 
 	if (keyInfo->_type == 0 || bForceWrite)
 	{
-		//Èç¹ûtypeÎª0£¬ËµÃ÷ÊÇĞÂ·ÖÅäµÄ£¬ÔòÓÃ³õÊ¼ÖµÌî³ä
+		//å¦‚æœtypeä¸º0ï¼Œè¯´æ˜æ˜¯æ–°åˆ†é…çš„ï¼Œåˆ™ç”¨åˆå§‹å€¼å¡«å……
 		keyInfo->_type = SMVT_INT64;
 		*((int64_t*)(secInfo->_data + keyInfo->_offset)) = initVal;
 	}
@@ -363,7 +363,7 @@ uint32_t* ShareBlocks::allocate_uint32(const char* domain, const char* section, 
 
 	if (keyInfo->_type == 0 || bForceWrite)
 	{
-		//Èç¹ûtypeÎª0£¬ËµÃ÷ÊÇĞÂ·ÖÅäµÄ£¬ÔòÓÃ³õÊ¼ÖµÌî³ä
+		//å¦‚æœtypeä¸º0ï¼Œè¯´æ˜æ˜¯æ–°åˆ†é…çš„ï¼Œåˆ™ç”¨åˆå§‹å€¼å¡«å……
 		keyInfo->_type = SMVT_UINT32;
 		*((uint32_t*)(secInfo->_data + keyInfo->_offset)) = initVal;
 	}
@@ -380,7 +380,7 @@ uint64_t* ShareBlocks::allocate_uint64(const char* domain, const char* section, 
 
 	if (keyInfo->_type == 0 || bForceWrite)
 	{
-		//Èç¹ûtypeÎª0£¬ËµÃ÷ÊÇĞÂ·ÖÅäµÄ£¬ÔòÓÃ³õÊ¼ÖµÌî³ä
+		//å¦‚æœtypeä¸º0ï¼Œè¯´æ˜æ˜¯æ–°åˆ†é…çš„ï¼Œåˆ™ç”¨åˆå§‹å€¼å¡«å……
 		keyInfo->_type = SMVT_UINT64;
 		*((uint64_t*)(secInfo->_data + keyInfo->_offset)) = initVal;
 	}
@@ -397,7 +397,7 @@ double* ShareBlocks::allocate_double(const char* domain, const char* section, co
 
 	if(keyInfo->_type == 0 || bForceWrite)
 	{
-		//Èç¹ûtypeÎª0£¬ËµÃ÷ÊÇĞÂ·ÖÅäµÄ£¬ÔòÓÃ³õÊ¼ÖµÌî³ä
+		//å¦‚æœtypeä¸º0ï¼Œè¯´æ˜æ˜¯æ–°åˆ†é…çš„ï¼Œåˆ™ç”¨åˆå§‹å€¼å¡«å……
 		keyInfo->_type = SMVT_DOUBLE;
 		*((double*)(secInfo->_data + keyInfo->_offset)) = initVal;
 	}

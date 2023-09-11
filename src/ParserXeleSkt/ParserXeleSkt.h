@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \file ParserXeleSkt.h
  * \project	WonderTrader
  *
@@ -27,7 +27,7 @@ public:
 	ParserXeleSkt();
 	~ParserXeleSkt();
 
-	//IQuoteParser �ӿ�
+	//IQuoteParser ½Ó¿Ú
 public:
 	virtual bool init(WTSVariant* config) override;
 

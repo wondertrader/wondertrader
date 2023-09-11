@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file HftStraContext.cpp
  * \project	WonderTrader
  *
@@ -25,7 +25,7 @@
 #include "../WTSTools/WTSLogger.h"
 #include "../WTSUtils/WTSCfgLoader.h"
 
-static const uint32_t DATA_SIZE_STEP = 8000;	//ĞÅÏ¢Á¿Ã¿Ìì×î¶à4000
+static const uint32_t DATA_SIZE_STEP = 8000;	//ä¿¡æ¯é‡æ¯å¤©æœ€å¤š4000
 
 USING_NS_WTP;
 
@@ -130,7 +130,7 @@ void UftStraContext::on_trade(uint32_t localid, const char* stdCode, bool isLong
 
 	/*
 	 *	By Wesley
-	 *	ÕâÀïÒª¿¼ÂÇ¶à¸ö²ßÂÔÔÚÏàÍ¬ºÏÔ¼ÉÏ¿ªÏà·´Í·´çµÄÇé¿ö£¬¿ª²Ö¿ÉÄÜ±ä³ÉÆ½²Ö£¬ËùÒÔ±¾µØ³Ö²ÖÖ»ÄÜÊÇ¾»Í·´ç³Ö²Ö
+	 *	è¿™é‡Œè¦è€ƒè™‘å¤šä¸ªç­–ç•¥åœ¨ç›¸åŒåˆçº¦ä¸Šå¼€ç›¸åå¤´å¯¸çš„æƒ…å†µï¼Œå¼€ä»“å¯èƒ½å˜æˆå¹³ä»“ï¼Œæ‰€ä»¥æœ¬åœ°æŒä»“åªèƒ½æ˜¯å‡€å¤´å¯¸æŒä»“
 	 */
 	bool isBuy = (isLong && offset==0) || (!isLong && offset!=0);
 
@@ -138,7 +138,7 @@ void UftStraContext::on_trade(uint32_t localid, const char* stdCode, bool isLong
 	{
 		double unhandle = vol;
 
-		//ÂòÈëµÄÊ±ºò£¬Èç¹ûÓĞ¿ÕÍ·£¬¾ÍÏÈÆ½¿Õ
+		//ä¹°å…¥çš„æ—¶å€™ï¼Œå¦‚æœæœ‰ç©ºå¤´ï¼Œå°±å…ˆå¹³ç©º
 		if(decimal::lt(pItem._volume, 0))
 		{
 			double thisQty = min(abs(pItem._volume), vol);
@@ -150,14 +150,14 @@ void UftStraContext::on_trade(uint32_t localid, const char* stdCode, bool isLong
 			for (uint32_t idx = pItem._valid_idx; idx < pItem._details.size(); idx++)
 			{
 				uft::DetailStruct* pDS = pItem._details[idx];
-				//Ö»ÓĞË÷ÒıµİÔö£¬²Åµİ½ø£¬²»µİÔö¾Í²»µİ½ø
+				//åªæœ‰ç´¢å¼•é€’å¢ï¼Œæ‰é€’è¿›ï¼Œä¸é€’å¢å°±ä¸é€’è¿›
 				if (decimal::eq(pDS->_volume, 0.0) && (idx == pItem._valid_idx + 1))
 				{
 					pItem._valid_idx++;
 					continue;
 				}
 
-				//Ö»Æ½¿ÕÍ·
+				//åªå¹³ç©ºå¤´
 				if (pDS->_direct != 1)
 				{
 					continue;
@@ -166,10 +166,10 @@ void UftStraContext::on_trade(uint32_t localid, const char* stdCode, bool isLong
 				if(decimal::eq(left, 0))
 					break;
 
-				//¼ÆËãÃ÷Ï¸×î´óÆ½²ÖÁ¿
+				//è®¡ç®—æ˜ç»†æœ€å¤§å¹³ä»“é‡
 				double maxQty = std::min(left, pDS->_volume);
 
-				//Éú³É»ØºÏÃ÷Ï¸
+				//ç”Ÿæˆå›åˆæ˜ç»†
 				{
 					SpinLock lock(_rnd_blk._mutex);
 					uint32_t ridx = _rnd_blk._block->_size;
@@ -190,7 +190,7 @@ void UftStraContext::on_trade(uint32_t localid, const char* stdCode, bool isLong
 					pDS->_closed_profit += rs._profit;
 				}
 
-				//ÂäµØ³É½»Ã÷Ï¸
+				//è½åœ°æˆäº¤æ˜ç»†
 				{
 					SpinLock lock(_trd_blk._mutex);
 					uint32_t tidx = _trd_blk._block->_size;
@@ -214,7 +214,7 @@ void UftStraContext::on_trade(uint32_t localid, const char* stdCode, bool isLong
 			}
 		}
 
-		//Èç¹û»¹ÓĞÊ£ÓàµÄÃ»´¦Àí£¬Ôò¿ª¶à²Ö
+		//å¦‚æœè¿˜æœ‰å‰©ä½™çš„æ²¡å¤„ç†ï¼Œåˆ™å¼€å¤šä»“
 		if (decimal::gt(unhandle, 0))
 		{
 			SpinLock lock(_pos_blk._mutex);
@@ -239,7 +239,7 @@ void UftStraContext::on_trade(uint32_t localid, const char* stdCode, bool isLong
 			pItem._volume += unhandle;
 		}
 
-		//ÂäµØ¿ª¶à³É½»Ã÷Ï¸
+		//è½åœ°å¼€å¤šæˆäº¤æ˜ç»†
 		{
 			SpinLock lock(_trd_blk._mutex);
 			uint32_t tidx = _trd_blk._block->_size;
@@ -259,7 +259,7 @@ void UftStraContext::on_trade(uint32_t localid, const char* stdCode, bool isLong
 	{
 		double unhandle = vol;
 
-		//Âô³öµÄÊ±ºò£¬ÓĞ¶àÍ·¾ÍÏÈÆ½¶à
+		//å–å‡ºçš„æ—¶å€™ï¼Œæœ‰å¤šå¤´å°±å…ˆå¹³å¤š
 		if (decimal::gt(pItem._volume, 0))
 		{
 			double thisQty = min(pItem._volume, vol);
@@ -271,14 +271,14 @@ void UftStraContext::on_trade(uint32_t localid, const char* stdCode, bool isLong
 			for (uint32_t idx = pItem._valid_idx; idx < pItem._details.size(); idx++)
 			{
 				uft::DetailStruct* pDS = pItem._details[idx];
-				//Ö»ÓĞË÷ÒıµİÔö£¬²Åµİ½ø£¬²»µİÔö¾Í²»µİ½ø
+				//åªæœ‰ç´¢å¼•é€’å¢ï¼Œæ‰é€’è¿›ï¼Œä¸é€’å¢å°±ä¸é€’è¿›
 				if (decimal::eq(pDS->_volume, 0.0) && (idx == pItem._valid_idx + 1))
 				{
 					pItem._valid_idx++;
 					continue;
 				}
 
-				//Ö»Æ½¶àÍ·
+				//åªå¹³å¤šå¤´
 				if (pDS->_direct != 0)
 				{
 					continue;
@@ -289,7 +289,7 @@ void UftStraContext::on_trade(uint32_t localid, const char* stdCode, bool isLong
 
 				double maxQty = std::min(left, pDS->_volume);
 
-				//Éú³É»ØºÏÃ÷Ï¸
+				//ç”Ÿæˆå›åˆæ˜ç»†
 				{
 					SpinLock lock(_rnd_blk._mutex);
 					uint32_t ridx = _rnd_blk._block->_size;
@@ -310,7 +310,7 @@ void UftStraContext::on_trade(uint32_t localid, const char* stdCode, bool isLong
 					pDS->_closed_profit += rs._profit;
 				}
 
-				//ÂäµØÆ½¶àµÄ³É½»Ã÷Ï¸
+				//è½åœ°å¹³å¤šçš„æˆäº¤æ˜ç»†
 				{
 					SpinLock lock(_trd_blk._mutex);
 					uint32_t tidx = _trd_blk._block->_size;
@@ -334,7 +334,7 @@ void UftStraContext::on_trade(uint32_t localid, const char* stdCode, bool isLong
 			}
 		}
 
-		//Èç¹û»¹ÓĞÊ£ÓàµÄÃ»´¦Àí£¬Ôò¿ª¿Õ²Ö
+		//å¦‚æœè¿˜æœ‰å‰©ä½™çš„æ²¡å¤„ç†ï¼Œåˆ™å¼€ç©ºä»“
 		if (decimal::gt(unhandle, 0))
 		{
 			SpinLock lock(_pos_blk._mutex);
@@ -359,7 +359,7 @@ void UftStraContext::on_trade(uint32_t localid, const char* stdCode, bool isLong
 			pItem._volume -= unhandle;
 		}
 
-		//Éú³É¿ª¿Õ³É½»Ã÷Ï¸
+		//ç”Ÿæˆå¼€ç©ºæˆäº¤æ˜ç»†
 		{
 			SpinLock lock(_trd_blk._mutex);
 			uint32_t tidx = _trd_blk._block->_size;
@@ -422,14 +422,14 @@ void UftStraContext::on_trade(uint32_t localid, const char* stdCode, bool isLong
 		}
 		else
 		{
-			//´¦ÀíÆ½²Ö
+			//å¤„ç†å¹³ä»“
 			pItem.l_volume -= vol;
 			
 			double left = vol;
 			for(uint32_t idx = pItem._valid_idx; idx < pItem._details.size(); idx++)
 			{
 				uft::DetailStruct* pDS = pItem._details[idx];
-				//Ö»ÓĞË÷ÒıµİÔö£¬²Åµİ½ø£¬²»µİÔö¾Í²»µİ½ø
+				//åªæœ‰ç´¢å¼•é€’å¢ï¼Œæ‰é€’è¿›ï¼Œä¸é€’å¢å°±ä¸é€’è¿›
 				if(decimal::eq(pDS->_volume, 0.0) && (idx == pItem._valid_idx+1))
 				{
 					pItem._valid_idx++;
@@ -532,7 +532,7 @@ void UftStraContext::on_trade(uint32_t localid, const char* stdCode, bool isLong
 			for (uint32_t idx = pItem._valid_idx; idx < pItem._details.size(); idx++)
 			{
 				uft::DetailStruct* pDS = pItem._details[idx];
-				//Ö»ÓĞË÷ÒıµİÔö£¬²Åµİ½ø£¬²»µİÔö¾Í²»µİ½ø
+				//åªæœ‰ç´¢å¼•é€’å¢ï¼Œæ‰é€’è¿›ï¼Œä¸é€’å¢å°±ä¸é€’è¿›
 				if (decimal::eq(pDS->_volume, 0.0) && (idx == pItem._valid_idx + 1))
 				{
 					pItem._valid_idx++;
@@ -668,7 +668,7 @@ void UftStraContext::on_entrust(uint32_t localid, const char* stdCode, bool bSuc
 
 void UftStraContext::on_position(const char* stdCode, bool isLong, double prevol, double preavail, double newvol, double newavail, uint32_t tradingday)
 {
-	//ÕË»§µÄ³Ö²ÖÍ¨Öª²»¸ø²ßÂÔÁË
+	//è´¦æˆ·çš„æŒä»“é€šçŸ¥ä¸ç»™ç­–ç•¥äº†
 	//if (_strategy)
 	//	_strategy->on_position(this, stdCode, isLong, prevol, preavail, newvol, newavail);
 }
@@ -864,7 +864,7 @@ bool UftStraContext::stra_cancel(uint32_t localid)
 
 OrderIDs UftStraContext::stra_cancel_all(const char* stdCode)
 {
-	//³·µ¥ÆµÂÊ¼ì²é
+	//æ’¤å•é¢‘ç‡æ£€æŸ¥
 	//if (!_trader->checkCancelLimits(stdCode))
 	//	return OrderIDs();
 
@@ -1034,7 +1034,7 @@ void UftStraContext::load_local_data()
 
 	/*
 	 *	By Wesley @ 2023.09.08
-	 *	ÕâÀïÔö¼ÓÒ»¸öÂß¼­£¬´ÓyamlÎÄ¼ş¶ÁÈ¡ÊÖ¶¯Éú³ÉµÄ³Ö²Ö
+	 *	è¿™é‡Œå¢åŠ ä¸€ä¸ªé€»è¾‘ï¼Œä»yamlæ–‡ä»¶è¯»å–æ‰‹åŠ¨ç”Ÿæˆçš„æŒä»“
 	 */
 	std::string mannualfile = folder + "mannual.yaml";
 	do
@@ -1055,17 +1055,17 @@ void UftStraContext::load_local_data()
 		if(ayDetails == NULL)
 			break;
 
-		//½âÎö³É¹¦£¬¿ªÊ¼´¦Àí³Ö²Ö
+		//è§£ææˆåŠŸï¼Œå¼€å§‹å¤„ç†æŒä»“
 		//char		_exchg[MAX_EXCHANGE_LENGTH];
 		//char		_code[MAX_INSTRUMENT_LENGTH];
-		//uint32_t	_direct;	//·½Ïò0-¶à£¬1-¿Õ
+		//uint32_t	_direct;	//æ–¹å‘0-å¤šï¼Œ1-ç©º
 		//double		_volume;
 		//double		_open_price;
 
 		SpinLock lock(_pos_blk._mutex);
 		std::string filename = folder + "position.membin";
 
-		//Ç¿ÖÆĞÂ½¨
+		//å¼ºåˆ¶æ–°å»º
 		{
 			std::size_t uSize = sizeof(uft::PositionBlock) + sizeof(uft::DetailStruct) * DATA_SIZE_STEP;
 			BoostFile bf;
@@ -1109,14 +1109,14 @@ void UftStraContext::load_local_data()
 
 		WTSLogger::log_dyn("strategy", _name.c_str(), LL_WARN, "loading mannual file {} done, {} details imported", mannualfile, _pos_blk._block->_size);
 
-		//°ÑmmapÊÍ·Åµô£¬²»Ó°ÏìºóÃæµÄÂß¼­
+		//æŠŠmmapé‡Šæ”¾æ‰ï¼Œä¸å½±å“åé¢çš„é€»è¾‘
 		{
 			_pos_blk._file.reset();
 			_pos_blk._block = NULL;
 		}
 	} while (false);
 
-	//²»¹ÜÇ°Ãæ½âÎöµÄÇé¿öÈçºÎ£¬ÎÄ¼ş¶¼ÖØÃüÃû
+	//ä¸ç®¡å‰é¢è§£æçš„æƒ…å†µå¦‚ä½•ï¼Œæ–‡ä»¶éƒ½é‡å‘½å
 	if (StdFile::exists(mannualfile.c_str()))
 		boost::filesystem::rename(boost::filesystem::path(mannualfile), boost::filesystem::path(fmtutil::format("{}.{}", mannualfile, TimeUtils::getYYYYMMDDhhmmss())));
 
@@ -1148,16 +1148,16 @@ void UftStraContext::load_local_data()
 				_pos_blk._block->_capacity = DATA_SIZE_STEP;
 			}
 
-			//¸´ÓÃÔ­ÎÄ¼şµÄºÃ´¦¾ÍÊÇ£¬mmapÎÄ¼ş´óĞ¡»áÂú×ãÀúÊ·³öÏÖ¹ıµÄµ¥ÈÕ×î¸ßÊı¾İÁ¿£¬ÒÔºóÔÙÀ©µÄ¸ÅÂÊ¾ÍºÜµÍÁË
+			//å¤ç”¨åŸæ–‡ä»¶çš„å¥½å¤„å°±æ˜¯ï¼Œmmapæ–‡ä»¶å¤§å°ä¼šæ»¡è¶³å†å²å‡ºç°è¿‡çš„å•æ—¥æœ€é«˜æ•°æ®é‡ï¼Œä»¥åå†æ‰©çš„æ¦‚ç‡å°±å¾ˆä½äº†
 			if(_pos_blk._block->_date != 0 && _pos_blk._block->_date != _tradingday)
 			{	
 				WTSLogger::log_dyn("strategy", _name.c_str(), LL_INFO, "Clearing local position of {}", _pos_blk._block->_date);
-				//Èç¹ûÈÕÆÚ²»Í¬£¬ÏÈ¶Á½øÀ´Î´Íê³ÉµÄ³Ö²Ö£¬ÔÙÇåÀíµôÔ­Ê¼Êı¾İ
+				//å¦‚æœæ—¥æœŸä¸åŒï¼Œå…ˆè¯»è¿›æ¥æœªå®Œæˆçš„æŒä»“ï¼Œå†æ¸…ç†æ‰åŸå§‹æ•°æ®
 				std::vector<uft::DetailStruct> details;
 				for(uint32_t i = 0; i < _pos_blk._block->_size; i++)
 				{
 					uft::DetailStruct& ds = _pos_blk._block->_details[i];
-					ds._closed_profit = 0;	//½»Ò×ÈÕÇĞ»»ÒÔºó£¬Æ½²ÖÓ¯¿÷ÖÃÎª0
+					ds._closed_profit = 0;	//äº¤æ˜“æ—¥åˆ‡æ¢ä»¥åï¼Œå¹³ä»“ç›ˆäºç½®ä¸º0
 					if(decimal::eq(ds._volume, 0))
 						continue;
 
@@ -1178,7 +1178,7 @@ void UftStraContext::load_local_data()
 			}
 
 			{
-				//°ÑÊ£ÓàÊıÁ¿²»Îª0µÄ³Ö²Ö¶Á½øÀ´
+				//æŠŠå‰©ä½™æ•°é‡ä¸ä¸º0çš„æŒä»“è¯»è¿›æ¥
 				for (uint32_t i = 0; i < _pos_blk._block->_size; i++)
 				{
 					uft::DetailStruct& ds = _pos_blk._block->_details[i];
@@ -1236,8 +1236,8 @@ void UftStraContext::load_local_data()
 				_ord_blk._block->_capacity = DATA_SIZE_STEP;
 			}
 
-			//½»Ò×ÈÕ²»Ò»ÖÂ¾Í°ÑÊı¾İÇåµô
-			//¸´ÓÃÔ­ÎÄ¼şµÄºÃ´¦¾ÍÊÇ£¬mmapÎÄ¼ş´óĞ¡»áÂú×ãÀúÊ·³öÏÖ¹ıµÄµ¥ÈÕ×î¸ßÊı¾İÁ¿£¬ÒÔºóÔÙÀ©µÄ¸ÅÂÊ¾ÍºÜµÍÁË
+			//äº¤æ˜“æ—¥ä¸ä¸€è‡´å°±æŠŠæ•°æ®æ¸…æ‰
+			//å¤ç”¨åŸæ–‡ä»¶çš„å¥½å¤„å°±æ˜¯ï¼Œmmapæ–‡ä»¶å¤§å°ä¼šæ»¡è¶³å†å²å‡ºç°è¿‡çš„å•æ—¥æœ€é«˜æ•°æ®é‡ï¼Œä»¥åå†æ‰©çš„æ¦‚ç‡å°±å¾ˆä½äº†
 			if (_ord_blk._block->_date != 0 && _ord_blk._block->_date != _tradingday)
 			{
 				memset(_ord_blk._block->_orders, 0, sizeof(uft::OrderStruct)*_ord_blk._block->_size);
@@ -1246,7 +1246,7 @@ void UftStraContext::load_local_data()
 			}
 			else
 			{
-				//°ÑÎ´Íê³Éµ¥¶Áµ½ÄÚ´æÀïÀ´
+				//æŠŠæœªå®Œæˆå•è¯»åˆ°å†…å­˜é‡Œæ¥
 			}
 		}
 		else
@@ -1284,8 +1284,8 @@ void UftStraContext::load_local_data()
 				_trd_blk._block->_capacity = DATA_SIZE_STEP;
 			}
 
-			//½»Ò×ÈÕ²»Ò»ÖÂ¾Í°ÑÊı¾İÇåµô
-			//¸´ÓÃÔ­ÎÄ¼şµÄºÃ´¦¾ÍÊÇ£¬mmapÎÄ¼ş´óĞ¡»áÂú×ãÀúÊ·³öÏÖ¹ıµÄµ¥ÈÕ×î¸ßÊı¾İÁ¿£¬ÒÔºóÔÙÀ©µÄ¸ÅÂÊ¾ÍºÜµÍÁË
+			//äº¤æ˜“æ—¥ä¸ä¸€è‡´å°±æŠŠæ•°æ®æ¸…æ‰
+			//å¤ç”¨åŸæ–‡ä»¶çš„å¥½å¤„å°±æ˜¯ï¼Œmmapæ–‡ä»¶å¤§å°ä¼šæ»¡è¶³å†å²å‡ºç°è¿‡çš„å•æ—¥æœ€é«˜æ•°æ®é‡ï¼Œä»¥åå†æ‰©çš„æ¦‚ç‡å°±å¾ˆä½äº†
 			if (_trd_blk._block->_date != 0 && _trd_blk._block->_date != _tradingday)
 			{
 				memset(_trd_blk._block->_trades, 0, sizeof(uft::TradeStruct)*_trd_blk._block->_size);
@@ -1294,7 +1294,7 @@ void UftStraContext::load_local_data()
 			}
 			else
 			{
-				//³É½»Êı¾İ²»ÓÃ¶Á½øÀ´ÁË
+				//æˆäº¤æ•°æ®ä¸ç”¨è¯»è¿›æ¥äº†
 			}			
 		}
 		else
@@ -1332,8 +1332,8 @@ void UftStraContext::load_local_data()
 				_rnd_blk._block->_capacity = DATA_SIZE_STEP;
 			}
 
-			//½»Ò×ÈÕ²»Ò»ÖÂ¾Í°ÑÊı¾İÇåµô
-			//¸´ÓÃÔ­ÎÄ¼şµÄºÃ´¦¾ÍÊÇ£¬mmapÎÄ¼ş´óĞ¡»áÂú×ãÀúÊ·³öÏÖ¹ıµÄµ¥ÈÕ×î¸ßÊı¾İÁ¿£¬ÒÔºóÔÙÀ©µÄ¸ÅÂÊ¾ÍºÜµÍÁË
+			//äº¤æ˜“æ—¥ä¸ä¸€è‡´å°±æŠŠæ•°æ®æ¸…æ‰
+			//å¤ç”¨åŸæ–‡ä»¶çš„å¥½å¤„å°±æ˜¯ï¼Œmmapæ–‡ä»¶å¤§å°ä¼šæ»¡è¶³å†å²å‡ºç°è¿‡çš„å•æ—¥æœ€é«˜æ•°æ®é‡ï¼Œä»¥åå†æ‰©çš„æ¦‚ç‡å°±å¾ˆä½äº†
 			if (_rnd_blk._block->_date != 0 && _rnd_blk._block->_date != _tradingday)
 			{
 				memset(_rnd_blk._block->_rounds, 0, sizeof(uft::RoundStruct)*_rnd_blk._block->_size);
@@ -1342,7 +1342,7 @@ void UftStraContext::load_local_data()
 			}
 			else
 			{
-				//»ØºÏÊı¾İ²»ÓÃ¶Áµ½½øÀ´ÁË
+				//å›åˆæ•°æ®ä¸ç”¨è¯»åˆ°è¿›æ¥äº†
 			}
 		}
 		else

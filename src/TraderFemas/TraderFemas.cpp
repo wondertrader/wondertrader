@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file TraderFemas.cpp
  * \project	WonderTrader
  *
@@ -174,13 +174,13 @@ void TraderFemas::connect()
 	m_pUserAPI->RegisterSpi(this);
 	if(m_bQuickStart)
 	{
-		m_pUserAPI->SubscribePublicTopic(USTP_TERT_QUICK);				// ×¢²á¹«ÓÐÁ÷
-		m_pUserAPI->SubscribePrivateTopic(USTP_TERT_QUICK);				// ×¢²áË½ÓÐÁ÷
+		m_pUserAPI->SubscribePublicTopic(USTP_TERT_QUICK);				// æ³¨å†Œå…¬æœ‰æµ
+		m_pUserAPI->SubscribePrivateTopic(USTP_TERT_QUICK);				// æ³¨å†Œç§æœ‰æµ
 	}
 	else
 	{
-		m_pUserAPI->SubscribePublicTopic(USTP_TERT_RESUME);				// ×¢²á¹«ÓÐÁ÷
-		m_pUserAPI->SubscribePrivateTopic(USTP_TERT_RESUME);			// ×¢²áË½ÓÐÁ÷
+		m_pUserAPI->SubscribePublicTopic(USTP_TERT_RESUME);				// æ³¨å†Œå…¬æœ‰æµ
+		m_pUserAPI->SubscribePrivateTopic(USTP_TERT_RESUME);			// æ³¨å†Œç§æœ‰æµ
 	}
 
 	m_pUserAPI->RegisterFront((char*)m_strFront.c_str());
@@ -329,12 +329,12 @@ int TraderFemas::orderInsert(WTSEntrust* entrust)
 
 	CUstpFtdcInputOrderField req;
 	memset(&req, 0, sizeof(req));
-	///¾­¼Í¹«Ë¾´úÂë
+	///ç»çºªå…¬å¸ä»£ç 
 	strcpy(req.BrokerID, m_strBroker.c_str());
-	///Í¶×ÊÕß´úÂë
+	///æŠ•èµ„è€…ä»£ç 
 	strcpy(req.UserID, m_strUser.c_str());
 	strcpy(req.InvestorID, m_strUser.c_str());
-	///ºÏÔ¼´úÂë
+	///åˆçº¦ä»£ç 
 	strcpy(req.InstrumentID, entrust->getCode());
 
 	WTSContractInfo* ct = entrust->getContractInfo();
@@ -345,14 +345,14 @@ int TraderFemas::orderInsert(WTSEntrust* entrust)
 
 	if(strlen(entrust->getUserTag()) == 0)
 	{
-		///±¨µ¥ÒýÓÃ
+		///æŠ¥å•å¼•ç”¨
 		fmtutil::format_to(req.UserOrderLocalID, "{}{:012d}", m_strSessionID.c_str(), genLocalOrdID());
 	}
 	else
 	{
 		strcpy(req.UserOrderLocalID, entrust->getUserTag());
 	}
-	//Éú³É±¾µØÎ¯ÍÐµ¥ºÅ
+	//ç”Ÿæˆæœ¬åœ°å§”æ‰˜å•å·
 	//entrust->setEntrustID(req.UserOrderLocalID);
 
 	req.OrderPriceType = wrapPriceType(entrust->getPriceType(), strcmp(ct->getExchg(), "CFFEX") == 0);
@@ -571,16 +571,16 @@ void TraderFemas::OnRspUserLogin( CUstpFtdcRspUserLoginField *pRspUserLogin, CUs
 	{
 		m_wrapperState = WS_LOGINED;
 
-		// ±£´æ»á»°²ÎÊý
+		// ä¿å­˜ä¼šè¯å‚æ•°
 		m_strSessionID = pRspUserLogin->MaxOrderLocalID;
 		StrUtil::trim(m_strSessionID, "0", false, true);
 		
-		///»ñÈ¡µ±Ç°½»Ò×ÈÕ
+		///èŽ·å–å½“å‰äº¤æ˜“æ—¥
 		m_lDate = atoi(m_pUserAPI->GetTradingDay());
 
 		write_log(m_sink,LL_INFO,"[TraderFemas][{}-{}] Login succeed...", m_strBroker.c_str(), m_strUser.c_str());
 
-		//¾ÝËµ·ÉÂí²»Ö§³Ö½áËã,ËùÒÔ²é²»µ½½áËãµ¥
+		//æ®è¯´é£žé©¬ä¸æ”¯æŒç»“ç®—,æ‰€ä»¥æŸ¥ä¸åˆ°ç»“ç®—å•
 		write_log(m_sink,LL_INFO, "[TraderFemas][{}-{}] Querying confirming state of settlement data...", m_strBroker.c_str(), m_strUser.c_str());
 		if (m_bQryOnline)
 			onInitialized();
@@ -722,7 +722,7 @@ void TraderFemas::OnRspQryInvestorPosition(CUstpFtdcRspInvestorPositionField *pR
 			//if (pos->getTotalPosition() > 0 && pos->getMargin() == 0)
 			if (decimal::lt(pos->getTotalPosition(), 0.0) && decimal::eq(pos->getMargin(), 0.0))
 			{
-				//ÓÐ²ÖÎ»,µ«ÊÇ±£Ö¤½ðÎª0,ÔòËµÃ÷ÊÇÌ×ÀûºÏÔ¼,µ¥¸öºÏÔ¼µÄ¿ÉÓÃ³Ö²ÖÈ«²¿ÖÃÎª0
+				//æœ‰ä»“ä½,ä½†æ˜¯ä¿è¯é‡‘ä¸º0,åˆ™è¯´æ˜Žæ˜¯å¥—åˆ©åˆçº¦,å•ä¸ªåˆçº¦çš„å¯ç”¨æŒä»“å…¨éƒ¨ç½®ä¸º0
 				pos->setAvailNewPos(0);
 				pos->setAvailPrePos(0);
 			}
@@ -1076,15 +1076,15 @@ WTSTradeInfo* TraderFemas::makeTradeRecord(CUstpFtdcTradeField *tradeField)
 	uint32_t uDate = strtoul(tradeField->TradingDay, NULL, 10);
 	//if(uDate == m_pContractMgr->getTradingDate())
 	//{
-	//	//Èç¹ûµ±Ç°ÈÕÆÚºÍ½»Ò×ÈÕÒ»ÖÂ,ÇÒÊ±¼ä´óÓÚ21µã,ËµÃ÷ÊÇÒ¹ÅÌ,Ò²¾ÍÊÇÊµ¼ÊÈÕÆÚÒªµ¥¶À¼ÆËã
+	//	//å¦‚æžœå½“å‰æ—¥æœŸå’Œäº¤æ˜“æ—¥ä¸€è‡´,ä¸”æ—¶é—´å¤§äºŽ21ç‚¹,è¯´æ˜Žæ˜¯å¤œç›˜,ä¹Ÿå°±æ˜¯å®žé™…æ—¥æœŸè¦å•ç‹¬è®¡ç®—
 	//	if (uTime / 10000 >= 21)
 	//	{
 	//		uDate = m_pMarketMgr->getPrevTDate(mInfo->getExchange(), uDate, 1);
 	//	}
 	//	else if(uTime <= 3)
 	//	{
-	//		//Èç¹ûÔÚ3µãÒÔÄÚ,¾ÍÒªÏÈ»ñÈ¡ÉÏÒ»¸ö½»Ò×ÈÕ,ÔÙ»ñÈ¡ÏÂÒ»¸ö×ÔÈ»ÈÕ
-	//		//ÕâÑù×öµÄÄ¿µÄÊÇ,Óöµ½ÖÜÎåÍíÉÏµÄÇé¿ö,¿ÉÒÔ´¦Àí¹ýÀ´
+	//		//å¦‚æžœåœ¨3ç‚¹ä»¥å†…,å°±è¦å…ˆèŽ·å–ä¸Šä¸€ä¸ªäº¤æ˜“æ—¥,å†èŽ·å–ä¸‹ä¸€ä¸ªè‡ªç„¶æ—¥
+	//		//è¿™æ ·åšçš„ç›®çš„æ˜¯,é‡åˆ°å‘¨äº”æ™šä¸Šçš„æƒ…å†µ,å¯ä»¥å¤„ç†è¿‡æ¥
 	//		uDate = m_pMarketMgr->getPrevTDate(mInfo->getExchange(), uDate, 1);
 	//		uDate = TimeUtils::getNextDate(uDate);
 	//	}

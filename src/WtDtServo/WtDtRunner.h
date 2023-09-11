@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file WtDtRunner.h
  * \project	WonderTrader
  *
@@ -79,10 +79,10 @@ private:
 
 	typedef std::set<uint32_t> SubFlags;
 	typedef wt_hashmap<std::string, SubFlags>	StraSubMap;
-	StraSubMap		_tick_sub_map;	//tickÊı¾İ¶©ÔÄ±í
+	StraSubMap		_tick_sub_map;	//tickæ•°æ®è®¢é˜…è¡¨
 	StdUniqueMutex	_mtx_subs;
 
-	StraSubMap		_tick_innersub_map;	//tickÊı¾İ¶©ÔÄ±í
+	StraSubMap		_tick_innersub_map;	//tickæ•°æ®è®¢é˜…è¡¨
 	StdUniqueMutex	_mtx_innersubs;
 };
 

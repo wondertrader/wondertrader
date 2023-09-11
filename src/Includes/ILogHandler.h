@@ -1,11 +1,11 @@
-/*!
+ï»¿/*!
  * \file ILogHandler.h
  * \project	WonderTrader
  *
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief ÈÕÖ¾×ª·¢Ä£¿é½Ó¿Ú¶¨Òå
+ * \brief æ—¥å¿—è½¬å‘æ¨¡å—æ¥å£å®šä¹‰
  */
 #pragma once
 #include "WTSMarcos.h"

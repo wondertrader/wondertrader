@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \file PorterDefs.h
  * \project	WonderTrader
  *

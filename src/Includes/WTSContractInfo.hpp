@@ -1,11 +1,11 @@
-/*!
+ï»¿/*!
  * \file WTSContractInfo.hpp
  * \project	WonderTrader
  *
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief WtÆ·ÖÖĞÅÏ¢¡¢ºÏÔ¼ĞÅÏ¢¶¨ÒåÎÄ¼ş
+ * \brief Wtå“ç§ä¿¡æ¯ã€åˆçº¦ä¿¡æ¯å®šä¹‰æ–‡ä»¶
  */
 #pragma once
 #include "WTSObject.hpp"
@@ -92,25 +92,25 @@ public:
 	inline WTSSessionInfo* getSessionInfo() const { return m_pSession; }
 
 private:
-	std::string	m_strName;		//Æ·ÖÖÃû³Æ
-	std::string	m_strExchg;		//½»Ò×Ëù´úÂë
-	std::string	m_strProduct;	//Æ·ÖÖID
-	std::string	m_strCurrency;	//±ÒÖÖ
-	std::string m_strSession;	//½»Ò×Ê±¼äÄ£°å
-	std::string m_strTrdTpl;	//½Ú¼ÙÈÕÄ£°å
-	std::string m_strFullPid;	//È«Æ·ÖÖID£¬ÈçCFFEX.IF
+	std::string	m_strName;		//å“ç§åç§°
+	std::string	m_strExchg;		//äº¤æ˜“æ‰€ä»£ç 
+	std::string	m_strProduct;	//å“ç§ID
+	std::string	m_strCurrency;	//å¸ç§
+	std::string m_strSession;	//äº¤æ˜“æ—¶é—´æ¨¡æ¿
+	std::string m_strTrdTpl;	//èŠ‚å‡æ—¥æ¨¡æ¿
+	std::string m_strFullPid;	//å…¨å“ç§IDï¼Œå¦‚CFFEX.IF
 
-	uint32_t	m_uVolScale;	//ºÏÔ¼·Å´ó±¶Êı
-	double		m_dPriceTick;	//×îĞ¡¼Û¸ñ±ä¶¯µ¥Î»
-	//uint32_t	m_uPrecision;	//¼Û¸ñ¾«¶È
+	uint32_t	m_uVolScale;	//åˆçº¦æ”¾å¤§å€æ•°
+	double		m_dPriceTick;	//æœ€å°ä»·æ ¼å˜åŠ¨å•ä½
+	//uint32_t	m_uPrecision;	//ä»·æ ¼ç²¾åº¦
 
-	double		m_dLotTick;		//ÊıÁ¿¾«¶È
-	double		m_dMinLots;		//×îĞ¡½»Ò×ÊıÁ¿
+	double		m_dLotTick;		//æ•°é‡ç²¾åº¦
+	double		m_dMinLots;		//æœ€å°äº¤æ˜“æ•°é‡
 
-	ContractCategory	m_ccCategory;	//Æ·ÖÖ·ÖÀà£¬ÆÚ»õ¡¢¹ÉÆ±¡¢ÆÚÈ¨µÈ
-	CoverMode			m_coverMode;	//Æ½²ÖÀàĞÍ
-	PriceMode			m_priceMode;	//¼Û¸ñÀàĞÍ
-	TradingMode			m_tradeMode;	//½»Ò×ÀàĞÍ
+	ContractCategory	m_ccCategory;	//å“ç§åˆ†ç±»ï¼ŒæœŸè´§ã€è‚¡ç¥¨ã€æœŸæƒç­‰
+	CoverMode			m_coverMode;	//å¹³ä»“ç±»å‹
+	PriceMode			m_priceMode;	//ä»·æ ¼ç±»å‹
+	TradingMode			m_tradeMode;	//äº¤æ˜“ç±»å‹
 
 	CodeSet				m_setCodes;
 
@@ -202,10 +202,10 @@ private:
 	uint32_t	m_minMktQty;
 	uint32_t	m_minLmtQty;
 
-	uint32_t	m_openDate;		//ÉÏÊĞÈÕÆÚ
-	uint32_t	m_expireDate;	//½»¸îÈÕ
-	double		m_lMarginRatio;	//½»Ò×Ëù¶àÍ·±£Ö¤½ğÂÊ
-	double		m_sMarginRatio;	//½»Ò×Ëù¿ÕÍ·±£Ö¤½ğÂÊ
+	uint32_t	m_openDate;		//ä¸Šå¸‚æ—¥æœŸ
+	uint32_t	m_expireDate;	//äº¤å‰²æ—¥
+	double		m_lMarginRatio;	//äº¤æ˜“æ‰€å¤šå¤´ä¿è¯é‡‘ç‡
+	double		m_sMarginRatio;	//äº¤æ˜“æ‰€ç©ºå¤´ä¿è¯é‡‘ç‡
 
 	WTSCommodityInfo*	m_commInfo;
 };

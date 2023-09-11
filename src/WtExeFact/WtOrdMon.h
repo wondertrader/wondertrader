@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <unordered_map>
 #include <stdint.h>
 #include <functional>
@@ -9,13 +9,13 @@ typedef std::function<void(uint32_t)> EnumOrderCallback;
 typedef std::function<void(uint32_t, uint64_t, bool)> EnumAllOrderCallback;
 
 /*
- *	¶©µ¥¹ÜÀíÆ÷
+ *	è®¢å•ç®¡ç†å™¨
  */
 class WtOrdMon
 {
 public:
 	/*
-	 *	Ìí¼Ó¶©µ¥
+	 *	æ·»åŠ è®¢å•
 	 *
 	 */
 	void push_order(const uint32_t* ids, uint32_t cnt, uint64_t curTime, bool bCanCancel = true);
@@ -23,8 +23,8 @@ public:
 	void erase_order(uint32_t localid);
 
 	/*
-	 *	¼ì²éÊÇ·ñÓĞ¶©µ¥
-	 *	@localid	¶©µ¥ºÅ,Îª0Ê±¼ì²éÊÇ·ñÓĞÈÎÒâ¶©µ¥,²»Îª0Ê±¼ì²éÊÇ·ñÓĞÖ¸¶¨¶©µ¥
+	 *	æ£€æŸ¥æ˜¯å¦æœ‰è®¢å•
+	 *	@localid	è®¢å•å·,ä¸º0æ—¶æ£€æŸ¥æ˜¯å¦æœ‰ä»»æ„è®¢å•,ä¸ä¸º0æ—¶æ£€æŸ¥æ˜¯å¦æœ‰æŒ‡å®šè®¢å•
 	 */
 	inline bool has_order(uint32_t localid = 0)
 	{

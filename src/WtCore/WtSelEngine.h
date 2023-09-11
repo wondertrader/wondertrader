@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "WtEngine.h"
 #include "WtExecMgr.h"
 
@@ -11,27 +11,27 @@ NS_WTP_BEGIN
 
 typedef enum tagTaskPeriodType
 {
-	TPT_None,		//²»ÖØ¸´
-	TPT_Minute = 4,	//·ÖÖÓÖÜÆÚ
-	TPT_Daily = 8,	//Ã¿¸ö½»Ò×ÈÕ
-	TPT_Weekly,		//Ã¿ÖÜ,Óöµ½½Ú¼ÙÈÕµÄ»°ÒªË³ÑÓ
-	TPT_Monthly,	//Ã¿ÔÂ,Óöµ½½Ú¼ÙÈÕË³ÑÓ
-	TPT_Yearly		//Ã¿Äê,Óöµ½½Ú¼ÙÈÕË³ÑÓ
+	TPT_None,		//ä¸é‡å¤
+	TPT_Minute = 4,	//åˆ†é’Ÿå‘¨æœŸ
+	TPT_Daily = 8,	//æ¯ä¸ªäº¤æ˜“æ—¥
+	TPT_Weekly,		//æ¯å‘¨,é‡åˆ°èŠ‚å‡æ—¥çš„è¯è¦é¡ºå»¶
+	TPT_Monthly,	//æ¯æœˆ,é‡åˆ°èŠ‚å‡æ—¥é¡ºå»¶
+	TPT_Yearly		//æ¯å¹´,é‡åˆ°èŠ‚å‡æ—¥é¡ºå»¶
 }TaskPeriodType;
 
 typedef struct _TaskInfo
 {
 	uint32_t	_id;
-	char		_name[16];		//ÈÎÎñÃû
-	char		_trdtpl[16];	//½»Ò×ÈÕÄ£°å
-	char		_session[16];	//½»Ò×Ê±¼äÄ£°å
-	uint32_t	_day;			//ÈÕÆÚ,¸ù¾İÖÜÆÚ±ä»¯,Ã¿ÈÕÎª0,Ã¿ÖÜÎª0~6,¶ÔÓ¦ÖÜÈÕµ½ÖÜÁù,Ã¿ÔÂÎª1~31,Ã¿ÄêÎª0101~1231
-	uint32_t	_time;			//Ê±¼ä,¾«È·µ½·ÖÖÓ
-	bool		_strict_time;	//ÊÇ·ñÊÇÑÏ¸ñÊ±¼ä,ÑÏ¸ñÊ±¼ä¼´Ö»ÓĞÊ±¼äÏàµÈ²Å»áÖ´ĞĞ,²»ÊÇÑÏ¸ñÊ±¼ä,Ôò´óÓÚµÈÓÚ´¥·¢Ê±¼ä¶¼»áÖ´ĞĞ
+	char		_name[16];		//ä»»åŠ¡å
+	char		_trdtpl[16];	//äº¤æ˜“æ—¥æ¨¡æ¿
+	char		_session[16];	//äº¤æ˜“æ—¶é—´æ¨¡æ¿
+	uint32_t	_day;			//æ—¥æœŸ,æ ¹æ®å‘¨æœŸå˜åŒ–,æ¯æ—¥ä¸º0,æ¯å‘¨ä¸º0~6,å¯¹åº”å‘¨æ—¥åˆ°å‘¨å…­,æ¯æœˆä¸º1~31,æ¯å¹´ä¸º0101~1231
+	uint32_t	_time;			//æ—¶é—´,ç²¾ç¡®åˆ°åˆ†é’Ÿ
+	bool		_strict_time;	//æ˜¯å¦æ˜¯ä¸¥æ ¼æ—¶é—´,ä¸¥æ ¼æ—¶é—´å³åªæœ‰æ—¶é—´ç›¸ç­‰æ‰ä¼šæ‰§è¡Œ,ä¸æ˜¯ä¸¥æ ¼æ—¶é—´,åˆ™å¤§äºç­‰äºè§¦å‘æ—¶é—´éƒ½ä¼šæ‰§è¡Œ
 
-	uint64_t	_last_exe_time;	//ÉÏ´ÎÖ´ĞĞÊ±¼ä,Ö÷ÒªÎªÁË·ÀÖ¹ÖØ¸´Ö´ĞĞ
+	uint64_t	_last_exe_time;	//ä¸Šæ¬¡æ‰§è¡Œæ—¶é—´,ä¸»è¦ä¸ºäº†é˜²æ­¢é‡å¤æ‰§è¡Œ
 
-	TaskPeriodType	_period;	//ÈÎÎñÖÜÆÚ
+	TaskPeriodType	_period;	//ä»»åŠ¡å‘¨æœŸ
 } TaskInfo;
 
 typedef std::shared_ptr<TaskInfo> TaskInfoPtr;
@@ -48,7 +48,7 @@ public:
 
 public:
 	//////////////////////////////////////////////////////////////////////////
-	//WtEngine½Ó¿Ú
+	//WtEngineæ¥å£
 	virtual void init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtDtMgr* dataMgr, IHotMgr* hotMgr, EventNotifier* notifier) override;
 
 	virtual void run(bool bAsync = false) override;
@@ -66,7 +66,7 @@ public:
 	virtual void on_session_end() override;
 
 	///////////////////////////////////////////////////////////////////////////
-	//IExecuterStub ½Ó¿Ú
+	//IExecuterStub æ¥å£
 	virtual uint64_t get_real_time() override;
 	virtual WTSCommodityInfo* get_comm_info(const char* stdCode) override;
 	virtual WTSSessionInfo* get_sess_info(const char* stdCode) override;

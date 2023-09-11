@@ -1,4 +1,4 @@
-#include "WtHftStraDemo.h"
+ï»¿#include "WtHftStraDemo.h"
 #include "../Includes/IHftStraCtx.h"
 
 #include "../Includes/WTSVariant.hpp"
@@ -42,7 +42,7 @@ const char* WtHftStraDemo::getFactName()
 
 bool WtHftStraDemo::init(WTSVariant* cfg)
 {
-	//ÕâÀïÑİÊ¾Ò»ÏÂÍâ²¿´«Èë²ÎÊıµÄ»ñÈ¡
+	//è¿™é‡Œæ¼”ç¤ºä¸€ä¸‹å¤–éƒ¨ä¼ å…¥å‚æ•°çš„è·å–
 	_code = cfg->getCString("code");
 	_secs = cfg->getUInt32("second");
 	_freq = cfg->getUInt32("freq");
@@ -79,7 +79,7 @@ void WtHftStraDemo::do_calc(IHftStraCtx* ctx)
 {
 	const char* code = _code.c_str();
 
-	//30ÃëÄÚ²»ÖØ¸´¼ÆËã
+	//30ç§’å†…ä¸é‡å¤è®¡ç®—
 	uint64_t now = TimeUtils::makeTime(ctx->stra_get_date(), ctx->stra_get_time() * 100000 + ctx->stra_get_secs());//(uint64_t)ctx->stra_get_date()*1000000000 + (uint64_t)ctx->stra_get_time()*100000 + ctx->stra_get_secs();
 	if (now - _last_entry_time <= _freq * 1000)
 	{
@@ -90,31 +90,31 @@ void WtHftStraDemo::do_calc(IHftStraCtx* ctx)
 	if (curTick == NULL)
 		return;
 
-	uint32_t curMin = curTick->actiontime() / 100000;	//actiontimeÊÇ´øºÁÃëµÄ,ÒªÈ¡µÃ·ÖÖÓ,ÔòĞèÒª³ıÒÔ10w
+	uint32_t curMin = curTick->actiontime() / 100000;	//actiontimeæ˜¯å¸¦æ¯«ç§’çš„,è¦å–å¾—åˆ†é’Ÿ,åˆ™éœ€è¦é™¤ä»¥10w
 	if (curMin > _last_calc_time)
-	{//Èç¹ûspreadÉÏ´Î¼ÆËãµÄÊ±ºòĞ¡ÓÚµ±Ç°·ÖÖÓ,ÔòÖØËãspread
+	{//å¦‚æœspreadä¸Šæ¬¡è®¡ç®—çš„æ—¶å€™å°äºå½“å‰åˆ†é’Ÿ,åˆ™é‡ç®—spread
 		//WTSKlineSlice* kline = ctx->stra_get_bars(code, "m5", 30);
 		//if (kline)
 		//	kline->release();
 
-		//ÖØËãÍíÁËÒÔºó,¸üĞÂ¼ÆËãÊ±¼ä
+		//é‡ç®—æ™šäº†ä»¥å,æ›´æ–°è®¡ç®—æ—¶é—´
 		_last_calc_time = curMin;
 	}
 
 	int32_t signal = 0;
 	double price = curTick->price();
-	//¼ÆËã²¿·Ö
+	//è®¡ç®—éƒ¨åˆ†
 	double pxInThry = (curTick->bidprice(0)*curTick->askqty(0) + curTick->askprice(0)*curTick->bidqty(0)) / (curTick->bidqty(0) + curTick->askqty(0));
 
-	//ÀíÂÛ¼Û¸ñ´óÓÚ×îĞÂ¼Û
+	//ç†è®ºä»·æ ¼å¤§äºæœ€æ–°ä»·
 	if (pxInThry > price)
 	{
-		//ÕıÏòĞÅºÅ
+		//æ­£å‘ä¿¡å·
 		signal = 1;
 	}
 	else if (pxInThry < price)
 	{
-		//·´ÏòĞÅºÅ
+		//åå‘ä¿¡å·
 		signal = -1;
 	}
 
@@ -126,8 +126,8 @@ void WtHftStraDemo::do_calc(IHftStraCtx* ctx)
 		WTSCommodityInfo* cInfo = ctx->stra_get_comminfo(code);
 
 		if (signal > 0 && curPos <= 0)
-		{//ÕıÏòĞÅºÅ,ÇÒµ±Ç°²ÖÎ»Ğ¡ÓÚµÈÓÚ0
-			//×îĞÂ¼Û+2ÌøÏÂµ¥
+		{//æ­£å‘ä¿¡å·,ä¸”å½“å‰ä»“ä½å°äºç­‰äº0
+			//æœ€æ–°ä»·+2è·³ä¸‹å•
 			double targetPx = price + cInfo->getPriceTick() * _offset;
 			auto ids = ctx->stra_buy(code, targetPx, _unit, "enterlong");
 
@@ -140,8 +140,8 @@ void WtHftStraDemo::do_calc(IHftStraCtx* ctx)
 			_last_entry_time = now;
 		}
 		else if (signal < 0 && (curPos > 0 || ((!_stock || !decimal::eq(_reserved, 0)) && curPos == 0)))
-		{//·´ÏòĞÅºÅ,ÇÒµ±Ç°²ÖÎ»´óÓÚ0,»òÕß²ÖÎ»Îª0µ«²»ÊÇ¹ÉÆ±,»òÕß²ÖÎ»Îª0µ«ÊÇ»ù´¡²ÖÎ»ÓĞĞŞÕı
-			//×îĞÂ¼Û-2ÌøÏÂµ¥
+		{//åå‘ä¿¡å·,ä¸”å½“å‰ä»“ä½å¤§äº0,æˆ–è€…ä»“ä½ä¸º0ä½†ä¸æ˜¯è‚¡ç¥¨,æˆ–è€…ä»“ä½ä¸º0ä½†æ˜¯åŸºç¡€ä»“ä½æœ‰ä¿®æ­£
+			//æœ€æ–°ä»·-2è·³ä¸‹å•
 			double targetPx = price - cInfo->getPriceTick()*_offset;
 			auto ids = ctx->stra_sell(code, targetPx, _unit, "entershort");
 
@@ -180,7 +180,7 @@ void WtHftStraDemo::check_orders()
 	if (!_orders.empty() && _last_entry_time != UINT64_MAX)
 	{
 		uint64_t now = TimeUtils::makeTime(_ctx->stra_get_date(), _ctx->stra_get_time() * 100000 + _ctx->stra_get_secs());
-		if (now - _last_entry_time >= _secs * 1000)	//Èç¹û³¬¹ıÒ»¶¨Ê±¼äÃ»ÓĞ³É½»Íê,Ôò³·Ïú
+		if (now - _last_entry_time >= _secs * 1000)	//å¦‚æœè¶…è¿‡ä¸€å®šæ—¶é—´æ²¡æœ‰æˆäº¤å®Œ,åˆ™æ’¤é”€
 		{
 			_mtx_ords.lock();
 			for (auto localid : _orders)
@@ -211,12 +211,12 @@ void WtHftStraDemo::on_position(IHftStraCtx* ctx, const char* stdCode, bool isLo
 
 void WtHftStraDemo::on_order(IHftStraCtx* ctx, uint32_t localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled, const char* userTag)
 {
-	//Èç¹û²»ÊÇÎÒ·¢³öÈ¥µÄ¶©µ¥,ÎÒ¾Í²»¹ÜÁË
+	//å¦‚æœä¸æ˜¯æˆ‘å‘å‡ºå»çš„è®¢å•,æˆ‘å°±ä¸ç®¡äº†
 	auto it = _orders.find(localid);
 	if (it == _orders.end())
 		return;
 
-	//Èç¹ûÒÑ³·Ïú»òÕßÊ£ÓàÊıÁ¿Îª0,ÔòÇå³ıµôÔ­ÓĞµÄid¼ÇÂ¼
+	//å¦‚æœå·²æ’¤é”€æˆ–è€…å‰©ä½™æ•°é‡ä¸º0,åˆ™æ¸…é™¤æ‰åŸæœ‰çš„idè®°å½•
 	if(isCanceled || leftQty == 0)
 	{
 		_mtx_ords.lock();
@@ -238,8 +238,8 @@ void WtHftStraDemo::on_channel_ready(IHftStraCtx* ctx)
 	double undone = _ctx->stra_get_undone(_code.c_str());
 	if (!decimal::eq(undone, 0) && _orders.empty())
 	{
-		//ÕâËµÃ÷ÓĞÎ´Íê³Éµ¥²»ÔÚ¼à¿ØÖ®ÖĞ,ÏÈ³·µô
-		_ctx->stra_log_info(fmt::format("{}ÓĞ²»ÔÚ¹ÜÀíÖĞµÄÎ´Íê³Éµ¥ {} ÊÖ,È«²¿³·Ïú", _code, undone).c_str());
+		//è¿™è¯´æ˜æœ‰æœªå®Œæˆå•ä¸åœ¨ç›‘æ§ä¹‹ä¸­,å…ˆæ’¤æ‰
+		_ctx->stra_log_info(fmt::format("{}æœ‰ä¸åœ¨ç®¡ç†ä¸­çš„æœªå®Œæˆå• {} æ‰‹,å…¨éƒ¨æ’¤é”€", _code, undone).c_str());
 
 		bool isBuy = (undone > 0);
 		OrderIDs ids = _ctx->stra_cancel(_code.c_str(), isBuy, undone);

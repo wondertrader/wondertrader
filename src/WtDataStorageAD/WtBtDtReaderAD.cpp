@@ -1,4 +1,4 @@
-#include "WtBtDtReaderAD.h"
+﻿#include "WtBtDtReaderAD.h"
 #include "LMDBKeys.h"
 
 #include "../Includes/WTSStruct.h"
@@ -63,7 +63,7 @@ void WtBtDtReaderAD::init(WTSVariant* cfg, IBtDtReaderSink* sink)
 
 bool WtBtDtReaderAD::read_raw_bars(const char* exchg, const char* code, WTSKlinePeriod period, std::string& buffer)
 {
-	//ֱ�Ӵ�LMDB��ȡ
+	//直接从LMDB读取
 	WtLMDBPtr db = get_k_db(exchg, period);
 	if (db == NULL)
 		return false;
@@ -93,7 +93,7 @@ bool WtBtDtReaderAD::read_raw_bars(const char* exchg, const char* code, WTSKline
 
 bool WtBtDtReaderAD::read_raw_ticks(const char* exchg, const char* code, uint32_t uDate, std::string& buffer)
 {
-	//ֱ�Ӵ�LMDB��ȡ
+	//直接从LMDB读取
 	WtLMDBPtr db = get_t_db(exchg, code);
 	if (db == NULL)
 		return false;

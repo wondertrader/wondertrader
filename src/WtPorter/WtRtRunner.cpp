@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file WtRtRunner.cpp
  * \project	WonderTrader
  *
@@ -33,7 +33,7 @@
 #ifdef _MSC_VER
 #include "../Common/mdump.h"
 #include <boost/filesystem.hpp>
- //Õâ¸öÖ÷ÒªÊÇ¸øMiniDumperÓÃµÄ
+ //è¿™ä¸ªä¸»è¦æ˜¯ç»™MiniDumperç”¨çš„
 const char* getModuleName()
 {
 	static char MODULE_NAME[250] = { 0 };
@@ -492,7 +492,7 @@ bool WtRtRunner::config(const char* cfgFile, bool isFile /* = true */)
 {
 	_config = isFile ? WTSCfgLoader::load_from_file(cfgFile) : WTSCfgLoader::load_from_content(cfgFile, false);
 
-	//»ù´¡Êý¾ÝÎÄ¼þ
+	//åŸºç¡€æ•°æ®æ–‡ä»¶
 	WTSVariant* cfgBF = _config->get("basefiles");
 	if (cfgBF->get("session"))
 	{
@@ -561,17 +561,17 @@ bool WtRtRunner::config(const char* cfgFile, bool isFile /* = true */)
 		}
 	}
 
-	//³õÊ¼»¯ÔËÐÐ»·¾³
+	//åˆå§‹åŒ–è¿è¡ŒçŽ¯å¢ƒ
 	initEngine();
 
-	//³õÊ¼»¯Êý¾Ý¹ÜÀí
+	//åˆå§‹åŒ–æ•°æ®ç®¡ç†
 	initDataMgr();
 
-	//³õÊ¼»¯¿ªÆ½²ßÂÔ
+	//åˆå§‹åŒ–å¼€å¹³ç­–ç•¥
 	if (!initActionPolicy())
 		return false;
 
-	//³õÊ¼»¯ÐÐÇéÍ¨µÀ
+	//åˆå§‹åŒ–è¡Œæƒ…é€šé“
 	WTSVariant* cfgParser = _config->get("parsers");
 	if (cfgParser)
 	{
@@ -604,7 +604,7 @@ bool WtRtRunner::config(const char* cfgFile, bool isFile /* = true */)
 		}
 	}
 
-	//³õÊ¼»¯½»Ò×Í¨µÀ
+	//åˆå§‹åŒ–äº¤æ˜“é€šé“
 	WTSVariant* cfgTraders = _config->get("traders");
 	if(cfgTraders)
 	{
@@ -637,10 +637,10 @@ bool WtRtRunner::config(const char* cfgFile, bool isFile /* = true */)
 		}
 	}
 
-	//³õÊ¼»¯ÊÂ¼þÍÆËÍÆ÷
+	//åˆå§‹åŒ–äº‹ä»¶æŽ¨é€å™¨
 	initEvtNotifier();
 
-	//Èç¹û²»ÊÇ¸ßÆµÒýÇæ,ÔòÐèÒªÅäÖÃÖ´ÐÐÄ£¿é
+	//å¦‚æžœä¸æ˜¯é«˜é¢‘å¼•æ“Ž,åˆ™éœ€è¦é…ç½®æ‰§è¡Œæ¨¡å—
 	if (!_is_hft)
 	{
 		WTSVariant* cfgExec = _config->get("executers");
@@ -891,7 +891,7 @@ bool WtRtRunner::initParsers(WTSVariant* cfgParsers)
 		const char* id = cfgItem->getCString("id");
 
 		// By Wesley @ 2021.12.14
-		// Èç¹ûidÎª¿Õ£¬ÔòÉú³É×Ô¶¯id
+		// å¦‚æžœidä¸ºç©ºï¼Œåˆ™ç”Ÿæˆè‡ªåŠ¨id
 		std::string realid = id;
 		if (realid.empty())
 		{
@@ -916,7 +916,7 @@ bool WtRtRunner::initExecuters(WTSVariant* cfgExecuter)
 	if (cfgExecuter == NULL || cfgExecuter->type() != WTSVariant::VT_Array)
 		return false;
 
-	//ÏÈ¼ÓÔØ×Ô´øµÄÖ´ÐÐÆ÷¹¤³§
+	//å…ˆåŠ è½½è‡ªå¸¦çš„æ‰§è¡Œå™¨å·¥åŽ‚
 	std::string path = WtHelper::getInstDir() + "executer//";
 	_exe_factory.loadFactories(path.c_str());
 

@@ -1,4 +1,4 @@
-#include "../WtDtCore/ParserAdapter.h"
+ï»¿#include "../WtDtCore/ParserAdapter.h"
 #include "../WtDtCore/DataManager.h"
 #include "../WtDtCore/StateMonitor.h"
 #include "../WtDtCore/UDPCaster.h"
@@ -61,7 +61,7 @@ const char* getBinDir()
 
 void initDataMgr(WTSVariant* config, bool bAlldayMode = false)
 {
-	//Èç¹ûÊÇÈ«ÌìÄ£Ê½£¬Ôò²»´«µİ×´Ì¬»ú¸øDataManager
+	//å¦‚æœæ˜¯å…¨å¤©æ¨¡å¼ï¼Œåˆ™ä¸ä¼ é€’çŠ¶æ€æœºç»™DataManager
 	g_dataMgr.init(config, &g_baseDataMgr, bAlldayMode ? NULL : &g_stateMon, &g_udpCaster);
 }
 
@@ -75,7 +75,7 @@ void initParsers(WTSVariant* cfg)
 
 		const char* id = cfgItem->getCString("id");
 		// By Wesley @ 2021.12.14
-		// Èç¹ûidÎª¿Õ£¬ÔòÉú³É×Ô¶¯id
+		// å¦‚æœidä¸ºç©ºï¼Œåˆ™ç”Ÿæˆè‡ªåŠ¨id
 		std::string realid = id;
 		if (realid.empty())
 		{
@@ -110,7 +110,7 @@ void initialize()
 		return;
 	}
 
-	//¼ÓÔØÊĞ³¡ĞÅÏ¢
+	//åŠ è½½å¸‚åœºä¿¡æ¯
 	WTSVariant* cfgBF = config->get("basefiles");
 	if (cfgBF->get("session"))
 	{
@@ -181,7 +181,7 @@ void initialize()
 	g_udpCaster.init(config->get("broadcaster"), &g_baseDataMgr, &g_dataMgr);
 
 	//By Wesley @ 2021.12.27
-	//È«ÌìºòÄ£Ê½£¬²»ĞèÒªÔÙÊ¹ÓÃ×´Ì¬»ú
+	//å…¨å¤©å€™æ¨¡å¼ï¼Œä¸éœ€è¦å†ä½¿ç”¨çŠ¶æ€æœº
 	bool bAlldayMode = config->getBoolean("allday");
 	if (!bAlldayMode)
 	{
@@ -195,7 +195,7 @@ void initialize()
 
 	if(config->has("index"))
 	{
-		//Èç¹û´æÔÚÖ¸ÊıÄ£¿éÒª£¬ÅäÖÃÖ¸Êı
+		//å¦‚æœå­˜åœ¨æŒ‡æ•°æ¨¡å—è¦ï¼Œé…ç½®æŒ‡æ•°
 		const char* filename = config->getCString("index");
 		WTSLogger::info("Reading index config from {}...", filename);
 		WTSVariant* var = WTSCfgLoader::load_from_file(filename);
@@ -246,7 +246,7 @@ void initialize()
 	g_asyncIO.post([bAlldayMode](){
 		g_parsers.run();
 
-		//È«ÌìºòÄ£Ê½£¬²»Æô¶¯×´Ì¬»ú
+		//å…¨å¤©å€™æ¨¡å¼ï¼Œä¸å¯åŠ¨çŠ¶æ€æœº
 		if(!bAlldayMode)
 		{
 			std::this_thread::sleep_for(std::chrono::milliseconds(5));

@@ -1,4 +1,4 @@
-#define _CRT_SECURE_NO_WARNINGS
+Ôªø#define _CRT_SECURE_NO_WARNINGS
 #include "../WtDtHelper/WtDtHelper.h"
 #include "../WtDtPorter/WtDtPorter.h"
 #include "../Includes/WTSDataDef.hpp"
@@ -10,7 +10,7 @@ void on_get_bar(WTSBarStruct* bar, WtUInt32 count, bool isLast)
 
 void on_bar_cnt(WtUInt32 dataCnt)
 {
-	printf("π≤%uÃıKœﬂ\r\n", dataCnt);
+	printf("ÂÖ±%uÊù°KÁ∫ø\r\n", dataCnt);
 }
 
 void on_log(const char* message)
@@ -22,7 +22,7 @@ void on_log(const char* message)
 void testDtHelper()
 {
 	const char* session_str = "{\
-		\"name\":\"π…∆±∞◊≈Ã0930\",\
+		\"name\":\"ËÇ°Á•®ÁôΩÁõò0930\",\
 		\"offset\" : 0,\
 		\"auction\" : {\
 			\"from\": 929,\

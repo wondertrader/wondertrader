@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * /file WtRunner.h
  * /project	WonderTrader
  *
@@ -46,7 +46,7 @@ public:
 
 public:
 	/*
-	 *	��ʼ��
+	 *	≥ı ºªØ
 	 */
 	bool init();
 

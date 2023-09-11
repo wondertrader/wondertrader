@@ -1,4 +1,4 @@
-#include <iostream>
+ï»¿#include <iostream>
 #include <boost/filesystem.hpp>
 
 #include "../Includes/ITraderApi.h"
@@ -29,8 +29,8 @@ template<typename... Args>
 inline void encoding_print(const char* format, const Args& ...args)
 {
 	std::string s = fmtutil::format(format, args...);
-#ifndef _MSC_VER
-	printf(ChartoUTF8(s).c_str());
+#ifdef _MSC_VER
+	printf(UTF8toChar(s).c_str());
 #else
 	printf(s.c_str());
 #endif
@@ -157,40 +157,40 @@ public:
 
 		for (;;)
 		{
-			encoding_print("ºÏÔ¼´úÂë: ");
+			encoding_print("åˆçº¦ä»£ç : ");
 			std::cin >> code;
 
-			encoding_print("½»Ò×Ëù´úÂë: ");
+			encoding_print("äº¤æ˜“æ‰€ä»£ç : ");
 			std::cin >> exchg;
 
-			encoding_print("Î¯ÍĞ¼Û¸ñ: ");
+			encoding_print("å§”æ‰˜ä»·æ ¼: ");
 			std::cin >> price;
 
-			encoding_print("Î¯ÍĞÊıÁ¿: ");
+			encoding_print("å§”æ‰˜æ•°é‡: ");
 			std::cin >> qty;
 
 			if(isNet)
 			{
-				encoding_print("·½Ïò: 0-Âò, 1-Âô: ");
+				encoding_print("æ–¹å‘: 0-ä¹°, 1-å–: ");
 				std::cin >> bs;
 				if (bs != 0 && bs != 1)
 					continue;
 
-				encoding_print("ºÏÔ¼: {}.{},¼Û¸ñ: {},ÊıÁ¿: {},·½Ïò: {},È·ÈÏ(y/n)? ", exchg, code, price, qty, bs == 0 ? "Âò" : "Âô");
+				encoding_print("åˆçº¦: {}.{},ä»·æ ¼: {},æ•°é‡: {},æ–¹å‘: {},ç¡®è®¤(y/n)? ", exchg, code, price, qty, bs == 0 ? "ä¹°" : "å–");
 			}
 			else
 			{
-				encoding_print("·½Ïò: 0-¶à, 1-¿Õ: ");
+				encoding_print("æ–¹å‘: 0-å¤š, 1-ç©º: ");
 				std::cin >> bs;
 				if (bs != 0 && bs != 1)
 					continue;
 
-				encoding_print("¿ªÆ½: 0-¿ª, 1-Æ½,2-Æ½½ñ: ");
+				encoding_print("å¼€å¹³: 0-å¼€, 1-å¹³,2-å¹³ä»Š: ");
 				std::cin >> offset;
 				if (offset != 0 && offset != 1 && offset != 2)
 					continue;
 
-				encoding_print("ºÏÔ¼: {}.{},¼Û¸ñ: {},ÊıÁ¿: {},·½Ïò: {},¿ªÅÌ: {},È·ÈÏ(y/n)? ", exchg, code, price, qty, bs == 0 ? "¶à" : "¿Õ", offset == 0 ? "¿ª" : "Æ½");
+				encoding_print("åˆçº¦: {}.{},ä»·æ ¼: {},æ•°é‡: {},æ–¹å‘: {},å¼€ç›˜: {},ç¡®è®¤(y/n)? ", exchg, code, price, qty, bs == 0 ? "å¤š" : "ç©º", offset == 0 ? "å¼€" : "å¹³");
 			}
 			
 			char c;
@@ -204,7 +204,7 @@ public:
 			auto it = g_blkList.find(code);
 			if (it != g_blkList.end())
 			{
-				WTSLogger::info("{}ÒÑ±»½ûÖ¹½»Ò×", code);
+				WTSLogger::info("{}å·²è¢«ç¦æ­¢äº¤æ˜“", code);
 				return false;
 			}
 		}
@@ -252,22 +252,22 @@ public:
 
 		for (;;)
 		{
-			encoding_print("ºÏÔ¼´úÂë: ");
+			encoding_print("åˆçº¦ä»£ç : ");
 			std::cin >> code;
 
-			encoding_print("½»Ò×Ëù´úÂë: ");
+			encoding_print("äº¤æ˜“æ‰€ä»£ç : ");
 			std::cin >> exchg;
 
-			encoding_print("Î¯ÍĞÊıÁ¿: ");
+			encoding_print("å§”æ‰˜æ•°é‡: ");
 			std::cin >> qty;
 
-			encoding_print("·½Ïò: 0-¶à, 1-¿Õ: ");
+			encoding_print("æ–¹å‘: 0-å¤š, 1-ç©º: ");
 			std::cin >> bs;
 
-			encoding_print("¿ªÆ½: 0-¿ª, 1-Æ½: ");
+			encoding_print("å¼€å¹³: 0-å¼€, 1-å¹³: ");
 			std::cin >> offset;
 
-			encoding_print("ºÏÔ¼: {}.{},ÊıÁ¿: {},·½Ïò: {},¿ªÅÌ: {},È·ÈÏ(y/n)? ", exchg, code, qty, bs == 0 ? "¶à" : "¿Õ", offset == 0 ? "¿ª" : "Æ½");
+			encoding_print("åˆçº¦: {}.{},æ•°é‡: {},æ–¹å‘: {},å¼€ç›˜: {},ç¡®è®¤(y/n)? ", exchg, code, qty, bs == 0 ? "å¤š" : "ç©º", offset == 0 ? "å¼€" : "å¹³");
 			char c;
 			std::cin >> c;
 			if (c == 'y')
@@ -279,7 +279,7 @@ public:
 			auto it = g_blkList.find(code);
 			if (it != g_blkList.end())
 			{
-				WTSLogger::info("{}ÒÑ±»½ûÖ¹½»Ò×", code);
+				WTSLogger::info("{}å·²è¢«ç¦æ­¢äº¤æ˜“", code);
 				return false;
 			}
 		}
@@ -309,12 +309,12 @@ public:
 
 		for (;;)
 		{
-			encoding_print("¶©µ¥ºÅ: ");
+			encoding_print("è®¢å•å·: ");
 			std::cin >> orderid;
 
 			StrUtil::replace(orderid, "\"", "");
 
-			encoding_print("¶©µ¥ºÅ: {},È·ÈÏ³·µ¥(y/n)? ", orderid);
+			encoding_print("è®¢å•å·: {},ç¡®è®¤æ’¤å•(y/n)? ", orderid);
 			char c;
 			std::cin >> c;
 			if (c == 'y')
@@ -426,7 +426,7 @@ public:
 				if(g_riskAct)
 				{
 					g_blkList.insert(posItem->getCode());
-					WTSLogger::info("{}³Ö²ÖÁ¿³¬ÏŞ,ÏŞÖÆopen", posItem->getCode());
+					WTSLogger::info("{}æŒä»“é‡è¶…é™,é™åˆ¶open", posItem->getCode());
 				}
 				
 				WTSLogger::info("Position of {}({}) updated, {}[{}]", posItem->getCode(), posItem->getDirection() == WDT_LONG ? "L" : "S", posItem->getTotalPosition(), posItem->getAvailPosition());
@@ -526,7 +526,7 @@ public:
 
 		if(g_riskAct)
 		{
-			WTSLogger::info("[{}]{}³¬¹ı×î´ó³Ö²ÖVolume,½ûÖ¹open", m_pParams->getCString("user"), tradeRecord->getCode());
+			WTSLogger::info("[{}]{}è¶…è¿‡æœ€å¤§æŒä»“Volume,ç¦æ­¢open", m_pParams->getCString("user"), tradeRecord->getCode());
 
 			g_blkList.insert(tradeRecord->getCode());
 		}
@@ -587,7 +587,7 @@ int main()
 	WTSVariant* root = WTSCfgLoader::load_from_file("config.yaml");
 	if(root == NULL)
 	{
-		WTSLogger::log_raw(LL_ERROR, "ÅäÖÃÎÄ¼şconfig.yaml¼ÓÔØÊ§°Ü");
+		WTSLogger::log_raw(LL_ERROR, "é…ç½®æ–‡ä»¶config.yamlåŠ è½½å¤±è´¥");
 		return 0;
 	}
 
@@ -613,7 +613,7 @@ int main()
 	WTSVariant* params = root->get(profile.c_str());
 	if(params == NULL)
 	{
-		WTSLogger::error("ÅäÖÃÏî{}²»´æÔÚ", profile);
+		WTSLogger::error("é…ç½®é¡¹{}ä¸å­˜åœ¨", profile);
 		return 0;
 	}
 
@@ -631,16 +631,16 @@ int main()
 	while(true)
 	{
 		encoding_print("Please pick an action\r\n");
-		encoding_print("1. ²éÑ¯×Ê½ğ\r\n");
-		encoding_print("2. ²éÑ¯¶©µ¥\r\n");
-		encoding_print("3. ²éÑ¯³É½»\r\n");
-		encoding_print("4. ²éÑ¯³Ö²Ö\r\n");
-		encoding_print("5. ²éÑ¯½áËãµ¥\r\n");
-		encoding_print("6. ÏŞ¼ÛÎ¯ÍĞ\r\n");
-		encoding_print("7. ÊĞ¼ÛÎ¯ÍĞ\r\n");
-		encoding_print("8. ³·µ¥\r\n");
-		encoding_print("9. ¾»Í·´ç½»Ò×\r\n");
-		encoding_print("0. ÍË³ö\r\n");
+		encoding_print("1. æŸ¥è¯¢èµ„é‡‘\r\n");
+		encoding_print("2. æŸ¥è¯¢è®¢å•\r\n");
+		encoding_print("3. æŸ¥è¯¢æˆäº¤\r\n");
+		encoding_print("4. æŸ¥è¯¢æŒä»“\r\n");
+		encoding_print("5. æŸ¥è¯¢ç»“ç®—å•\r\n");
+		encoding_print("6. é™ä»·å§”æ‰˜\r\n");
+		encoding_print("7. å¸‚ä»·å§”æ‰˜\r\n");
+		encoding_print("8. æ’¤å•\r\n");
+		encoding_print("9. å‡€å¤´å¯¸äº¤æ˜“\r\n");
+		encoding_print("0. é€€å‡º\r\n");
 
 		char cmd;
 		for (;;)

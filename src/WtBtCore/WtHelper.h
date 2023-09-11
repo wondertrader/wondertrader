@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file WtHelper.h
  * \project	WonderTrader
  *
@@ -23,7 +23,7 @@ public:
 	static void setOutputDir(const char* out_dir);
 
 private:
-	static std::string	_inst_dir;	//ÊµÀıËùÔÚÄ¿Â¼
+	static std::string	_inst_dir;	//å®ä¾‹æ‰€åœ¨ç›®å½•
 	static std::string	_out_dir;
 };
 

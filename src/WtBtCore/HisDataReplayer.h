@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file HisDataReplayer.h
  * \project	WonderTrader
  *
@@ -59,46 +59,46 @@ public:
 };
 
 /*
- *	ÀúÊ·Êı¾İ¼ÓÔØÆ÷µÄ»Øµ÷º¯Êı
- *	@obj	»Ø´«ÓÃµÄ£¬Ô­Ñù·µ»Ø¼´¿É
- *	@bars	KÏßÊı¾İ
- *	@count	KÏßÌõÊı
+ *	å†å²æ•°æ®åŠ è½½å™¨çš„å›è°ƒå‡½æ•°
+ *	@obj	å›ä¼ ç”¨çš„ï¼ŒåŸæ ·è¿”å›å³å¯
+ *	@bars	Kçº¿æ•°æ®
+ *	@count	Kçº¿æ¡æ•°
  */
 typedef void(*FuncReadBars)(void* obj, WTSBarStruct* firstBar, uint32_t count);
 
 /*
- *	¼ÓÔØ¸´È¨Òò×Ó»Øµ÷
- *	@obj	»Ø´«ÓÃµÄ£¬Ô­Ñù·µ»Ø¼´¿É
- *	@stdCode	ºÏÔ¼´úÂë
+ *	åŠ è½½å¤æƒå› å­å›è°ƒ
+ *	@obj	å›ä¼ ç”¨çš„ï¼ŒåŸæ ·è¿”å›å³å¯
+ *	@stdCode	åˆçº¦ä»£ç 
  *	@dates
  */
 typedef void(*FuncReadFactors)(void* obj, const char* stdCode, uint32_t* dates, double* factors, uint32_t count);
 
 /*
- *	¼ÓÔØtickÊı¾İ»Øµ÷
- *	@firstItem	Êı¾İ
- *	@count		ÌõÊı
+ *	åŠ è½½tickæ•°æ®å›è°ƒ
+ *	@firstItem	æ•°æ®
+ *	@count		æ¡æ•°
  */
 typedef void(*FuncReadTicks)(void* obj, WTSTickStruct* firstItem, uint32_t count);
 
 /*
- *	¼ÓÔØÎ¯ÍĞÃ÷Ï¸Êı¾İ»Øµ÷
- *	@firstItem	Êı¾İ
- *	@count		ÌõÊı
+ *	åŠ è½½å§”æ‰˜æ˜ç»†æ•°æ®å›è°ƒ
+ *	@firstItem	æ•°æ®
+ *	@count		æ¡æ•°
  */
 typedef void(*FuncReadOrdDtl)(void* obj, WTSOrdDtlStruct* firstItem, uint32_t count);
 
 /*
- *	¼ÓÔØÎ¯ÍĞ¶ÓÁĞÊı¾İ»Øµ÷
- *	@firstItem	Êı¾İ
- *	@count		ÌõÊı
+ *	åŠ è½½å§”æ‰˜é˜Ÿåˆ—æ•°æ®å›è°ƒ
+ *	@firstItem	æ•°æ®
+ *	@count		æ¡æ•°
  */
 typedef void(*FuncReadOrdQue)(void* obj, WTSOrdQueStruct* firstItem, uint32_t count);
 
 /*
- *	¼ÓÔØÖğ±Ê³É½»Êı¾İ»Øµ÷
- *	@firstItem	Êı¾İ
- *	@count		ÌõÊı
+ *	åŠ è½½é€ç¬”æˆäº¤æ•°æ®å›è°ƒ
+ *	@firstItem	æ•°æ®
+ *	@count		æ¡æ•°
  */
 typedef void(*FuncReadTrans)(void* obj, WTSTransStruct* firstItem, uint32_t count);
 
@@ -106,46 +106,46 @@ class IBtDataLoader
 {
 public:
 	/*
-	 *	¼ÓÔØ×îÖÕÀúÊ·KÏßÊı¾İ
-	 *	ºÍloadRawHisBarsµÄÇø±ğÔÚÓÚ£¬loadFinalHisBars£¬ÏµÍ³ÈÏÎªÊÇ×îÖÕËùĞèÊı¾İ£¬²»ÔÚ½øĞĞ¼Ó¹¤£¬ÀıÈç¸´È¨Êı¾İ¡¢Ö÷Á¦ºÏÔ¼Êı¾İ
-	 *	loadRawHisBarsÊÇ¼ÓÔØÎ´¼Ó¹¤µÄÔ­Ê¼Êı¾İµÄ½Ó¿Ú
+	 *	åŠ è½½æœ€ç»ˆå†å²Kçº¿æ•°æ®
+	 *	å’ŒloadRawHisBarsçš„åŒºåˆ«åœ¨äºï¼ŒloadFinalHisBarsï¼Œç³»ç»Ÿè®¤ä¸ºæ˜¯æœ€ç»ˆæ‰€éœ€æ•°æ®ï¼Œä¸åœ¨è¿›è¡ŒåŠ å·¥ï¼Œä¾‹å¦‚å¤æƒæ•°æ®ã€ä¸»åŠ›åˆçº¦æ•°æ®
+	 *	loadRawHisBarsæ˜¯åŠ è½½æœªåŠ å·¥çš„åŸå§‹æ•°æ®çš„æ¥å£
 	 *
-	 *	@obj	»Ø´«ÓÃµÄ£¬Ô­Ñù·µ»Ø¼´¿É
-	 *	@stdCode	ºÏÔ¼´úÂë
-	 *	@period	KÏßÖÜÆÚ
-	 *	@cb		»Øµ÷º¯Êı
+	 *	@obj	å›ä¼ ç”¨çš„ï¼ŒåŸæ ·è¿”å›å³å¯
+	 *	@stdCode	åˆçº¦ä»£ç 
+	 *	@period	Kçº¿å‘¨æœŸ
+	 *	@cb		å›è°ƒå‡½æ•°
 	 */
 	virtual bool loadFinalHisBars(void* obj, const char* stdCode, WTSKlinePeriod period, FuncReadBars cb) = 0;
 
 	/*
-	 *	¼ÓÔØÔ­Ê¼ÀúÊ·KÏßÊı¾İ
+	 *	åŠ è½½åŸå§‹å†å²Kçº¿æ•°æ®
 	 *
-	 *	@obj	»Ø´«ÓÃµÄ£¬Ô­Ñù·µ»Ø¼´¿É
-	 *	@stdCode	ºÏÔ¼´úÂë
-	 *	@period	KÏßÖÜÆÚ
-	 *	@cb		»Øµ÷º¯Êı
+	 *	@obj	å›ä¼ ç”¨çš„ï¼ŒåŸæ ·è¿”å›å³å¯
+	 *	@stdCode	åˆçº¦ä»£ç 
+	 *	@period	Kçº¿å‘¨æœŸ
+	 *	@cb		å›è°ƒå‡½æ•°
 	 */
 	virtual bool loadRawHisBars(void* obj, const char* stdCode, WTSKlinePeriod period, FuncReadBars cb) = 0;
 
 	/*
-	 *	¼ÓÔØÈ«²¿³ıÈ¨Òò×Ó
+	 *	åŠ è½½å…¨éƒ¨é™¤æƒå› å­
 	 */
 	virtual bool loadAllAdjFactors(void* obj, FuncReadFactors cb) = 0;
 
 	/*
-	 *	¸ù¾İºÏÔ¼¼ÓÔØ³ıÈ¨Òò×Ó
+	 *	æ ¹æ®åˆçº¦åŠ è½½é™¤æƒå› å­
 	 *
-	 *	@stdCode	ºÏÔ¼´úÂë
+	 *	@stdCode	åˆçº¦ä»£ç 
 	 */
 	virtual bool loadAdjFactors(void* obj, const char* stdCode, FuncReadFactors cb) = 0;
 
 	/*
-	 *	¼ÓÔØÀúÊ·TickÊı¾İ
+	 *	åŠ è½½å†å²Tickæ•°æ®
 	 */
 	virtual bool loadRawHisTicks(void* obj, const char* stdCode, uint32_t uDate, FuncReadTicks cb) = 0;
 
 	/*
-	 *	ÊÇ·ñ×Ô¶¯×ª´¢Îªdsb
+	 *	æ˜¯å¦è‡ªåŠ¨è½¬å‚¨ä¸ºdsb
 	 */
 	virtual bool isAutoTrans() { return true; }
 };
@@ -162,8 +162,8 @@ private:
 		uint32_t		_date;
 		/*
 		 * By Wesley @ 2022.03.21
-		 * ÓÎ±ê£¬ÓÃÓÚ±ê¼ÇÏÂÒ»ÌõÊı¾İµÄÎ»ÖÃ£¬»òÕßËµÒÑ¾­»Ø·Å¹ıµÄÌõÊı
-		 * Î´³õÊ¼»¯Ê±£¬ÓÎ±êÎªUINT_MAX£¬Ò»µ©³õÊ¼»¯£¬ÓÎ±ê±ØÈ»ÊÇ´óÓÚ0µÄ
+		 * æ¸¸æ ‡ï¼Œç”¨äºæ ‡è®°ä¸‹ä¸€æ¡æ•°æ®çš„ä½ç½®ï¼Œæˆ–è€…è¯´å·²ç»å›æ”¾è¿‡çš„æ¡æ•°
+		 * æœªåˆå§‹åŒ–æ—¶ï¼Œæ¸¸æ ‡ä¸ºUINT_MAXï¼Œä¸€æ—¦åˆå§‹åŒ–ï¼Œæ¸¸æ ‡å¿…ç„¶æ˜¯å¤§äº0çš„
 		 */
 		std::size_t		_cursor;
 		std::size_t		_count;
@@ -185,17 +185,17 @@ private:
 		WTSKlinePeriod	_period;
 		/*
 		 * By Wesley @ 2022.03.21
-		 * ÓÎ±ê£¬ÓÃÓÚ±ê¼ÇÏÂÒ»ÌõÊı¾İµÄÎ»ÖÃ£¬»òÕßËµÒÑ¾­»Ø·Å¹ıµÄÌõÊı
-		 * Î´³õÊ¼»¯Ê±£¬ÓÎ±êÎªUINT_MAX£¬Ò»µ©³õÊ¼»¯£¬ÓÎ±ê±ØÈ»ÊÇ´óÓÚ0µÄ
+		 * æ¸¸æ ‡ï¼Œç”¨äºæ ‡è®°ä¸‹ä¸€æ¡æ•°æ®çš„ä½ç½®ï¼Œæˆ–è€…è¯´å·²ç»å›æ”¾è¿‡çš„æ¡æ•°
+		 * æœªåˆå§‹åŒ–æ—¶ï¼Œæ¸¸æ ‡ä¸ºUINT_MAXï¼Œä¸€æ—¦åˆå§‹åŒ–ï¼Œæ¸¸æ ‡å¿…ç„¶æ˜¯å¤§äº0çš„
 		 */
 		uint32_t		_cursor;
 		uint32_t		_count;
 		uint32_t		_times;
 
 		std::vector<WTSBarStruct>	_bars;
-		double			_factor;	//×îºóÒ»Ìõ¸´È¨Òò×Ó
+		double			_factor;	//æœ€åä¸€æ¡å¤æƒå› å­
 
-		uint32_t		_untouch_days;	//Î´ÓÃµ½µÄÌìÊı
+		uint32_t		_untouch_days;	//æœªç”¨åˆ°çš„å¤©æ•°
 
 		inline void mark()
 		{
@@ -212,40 +212,40 @@ private:
 
 	/*
 	 *	By Wesley @ 2022.03.13
-	 *	ÕâÀï°Ñ»º´æ¸Ä³ÉÖÇÄÜÖ¸Õë
-	 *	ÒòÎªÓĞÓÃ»§·¢ÏÖÈç¹ûÔÚoncalcµÄÊ±ºò»ñÈ¡Î´ÔÚoninitÖĞ¶©ÔÄµÄKÏßµÄÊ±ºò
-	 *	ÒòÎªÊ¹ÓÃBarListµÄÒıÓÃ£¬µ±KÏß»º´æµÄmapÖØĞÂ²åÈëĞÂµÄKÏßÒÔºó
-	 *	ÒıÓÃµÄµØ·½Ê§Ğ§ÁË£¬»áÒıÓÃµ½´íÎóµØÖ·
-	 *	ÎÒ»³ÒÉÕâÀïÓĞ¿ÉÄÜÊÇÖØĞÂ¿½±´ÁËÒ»ÏÂÊı¾İ
-	 *	ÕâÀï¸Ä³ÉÖÇÄÜÖ¸Õë¾ÍÄÜ±ÜÃâÕâ¸öÎÊÌâ£¬ÒòÎª²»¹Ümap×Ô¼ºµÄÄÚ´æÈçºÎ×éÖ¯
-	 *	ÖÇÄÜÖ¸ÕëÖ¸ÏòµÄµØÖ·¶¼ÊÇ²»»á±äµÄ
+	 *	è¿™é‡ŒæŠŠç¼“å­˜æ”¹æˆæ™ºèƒ½æŒ‡é’ˆ
+	 *	å› ä¸ºæœ‰ç”¨æˆ·å‘ç°å¦‚æœåœ¨oncalcçš„æ—¶å€™è·å–æœªåœ¨oninitä¸­è®¢é˜…çš„Kçº¿çš„æ—¶å€™
+	 *	å› ä¸ºä½¿ç”¨BarListçš„å¼•ç”¨ï¼Œå½“Kçº¿ç¼“å­˜çš„mapé‡æ–°æ’å…¥æ–°çš„Kçº¿ä»¥å
+	 *	å¼•ç”¨çš„åœ°æ–¹å¤±æ•ˆäº†ï¼Œä¼šå¼•ç”¨åˆ°é”™è¯¯åœ°å€
+	 *	æˆ‘æ€€ç–‘è¿™é‡Œæœ‰å¯èƒ½æ˜¯é‡æ–°æ‹·è´äº†ä¸€ä¸‹æ•°æ®
+	 *	è¿™é‡Œæ”¹æˆæ™ºèƒ½æŒ‡é’ˆå°±èƒ½é¿å…è¿™ä¸ªé—®é¢˜ï¼Œå› ä¸ºä¸ç®¡mapè‡ªå·±çš„å†…å­˜å¦‚ä½•ç»„ç»‡
+	 *	æ™ºèƒ½æŒ‡é’ˆæŒ‡å‘çš„åœ°å€éƒ½æ˜¯ä¸ä¼šå˜çš„
 	 */
 	typedef std::shared_ptr<BarsList> BarsListPtr;
 	typedef wt_hashmap<std::string, BarsListPtr>	BarsCache;
 
 	typedef enum tagTaskPeriodType
 	{
-		TPT_None,		//²»ÖØ¸´
-		TPT_Minute = 4,	//·ÖÖÓÏßÖÜÆÚ
-		TPT_Daily = 8,	//Ã¿¸ö½»Ò×ÈÕ
-		TPT_Weekly,		//Ã¿ÖÜ,Óöµ½½Ú¼ÙÈÕµÄ»°ÒªË³ÑÓ
-		TPT_Monthly,	//Ã¿ÔÂ,Óöµ½½Ú¼ÙÈÕË³ÑÓ
-		TPT_Yearly		//Ã¿Äê,Óöµ½½Ú¼ÙÈÕË³ÑÓ
+		TPT_None,		//ä¸é‡å¤
+		TPT_Minute = 4,	//åˆ†é’Ÿçº¿å‘¨æœŸ
+		TPT_Daily = 8,	//æ¯ä¸ªäº¤æ˜“æ—¥
+		TPT_Weekly,		//æ¯å‘¨,é‡åˆ°èŠ‚å‡æ—¥çš„è¯è¦é¡ºå»¶
+		TPT_Monthly,	//æ¯æœˆ,é‡åˆ°èŠ‚å‡æ—¥é¡ºå»¶
+		TPT_Yearly		//æ¯å¹´,é‡åˆ°èŠ‚å‡æ—¥é¡ºå»¶
 	}TaskPeriodType;
 
 	typedef struct _TaskInfo
 	{
 		uint32_t	_id;
-		char		_name[16];		//ÈÎÎñÃû
-		char		_trdtpl[16];	//½»Ò×ÈÕÄ£°å
-		char		_session[16];	//½»Ò×Ê±¼äÄ£°å
-		uint32_t	_day;			//ÈÕÆÚ,¸ù¾İÖÜÆÚ±ä»¯,Ã¿ÈÕÎª0,Ã¿ÖÜÎª0~6,¶ÔÓ¦ÖÜÈÕµ½ÖÜÁù,Ã¿ÔÂÎª1~31,Ã¿ÄêÎª0101~1231
-		uint32_t	_time;			//Ê±¼ä,¾«È·µ½·ÖÖÓ
-		bool		_strict_time;	//ÊÇ·ñÊÇÑÏ¸ñÊ±¼ä,ÑÏ¸ñÊ±¼ä¼´Ö»ÓĞÊ±¼äÏàµÈ²Å»áÖ´ĞĞ,²»ÊÇÑÏ¸ñÊ±¼ä,Ôò´óÓÚµÈÓÚ´¥·¢Ê±¼ä¶¼»áÖ´ĞĞ
+		char		_name[16];		//ä»»åŠ¡å
+		char		_trdtpl[16];	//äº¤æ˜“æ—¥æ¨¡æ¿
+		char		_session[16];	//äº¤æ˜“æ—¶é—´æ¨¡æ¿
+		uint32_t	_day;			//æ—¥æœŸ,æ ¹æ®å‘¨æœŸå˜åŒ–,æ¯æ—¥ä¸º0,æ¯å‘¨ä¸º0~6,å¯¹åº”å‘¨æ—¥åˆ°å‘¨å…­,æ¯æœˆä¸º1~31,æ¯å¹´ä¸º0101~1231
+		uint32_t	_time;			//æ—¶é—´,ç²¾ç¡®åˆ°åˆ†é’Ÿ
+		bool		_strict_time;	//æ˜¯å¦æ˜¯ä¸¥æ ¼æ—¶é—´,ä¸¥æ ¼æ—¶é—´å³åªæœ‰æ—¶é—´ç›¸ç­‰æ‰ä¼šæ‰§è¡Œ,ä¸æ˜¯ä¸¥æ ¼æ—¶é—´,åˆ™å¤§äºç­‰äºè§¦å‘æ—¶é—´éƒ½ä¼šæ‰§è¡Œ
 
-		uint64_t	_last_exe_time;	//ÉÏ´ÎÖ´ĞĞÊ±¼ä,Ö÷ÒªÎªÁË·ÀÖ¹ÖØ¸´Ö´ĞĞ
+		uint64_t	_last_exe_time;	//ä¸Šæ¬¡æ‰§è¡Œæ—¶é—´,ä¸»è¦ä¸ºäº†é˜²æ­¢é‡å¤æ‰§è¡Œ
 
-		TaskPeriodType	_period;	//ÈÎÎñÖÜÆÚ
+		TaskPeriodType	_period;	//ä»»åŠ¡å‘¨æœŸ
 	} TaskInfo;
 
 	typedef std::shared_ptr<TaskInfo> TaskInfoPtr;
@@ -258,57 +258,57 @@ public:
 
 private:
 	/*
-	 *	´Ó×Ô¶¨ÒåÊı¾İÎÄ¼ş»º´æÀúÊ·Êı¾İ
+	 *	ä»è‡ªå®šä¹‰æ•°æ®æ–‡ä»¶ç¼“å­˜å†å²æ•°æ®
 	 */
 	bool		cacheRawBarsFromBin(const std::string& key, const char* stdCode, WTSKlinePeriod period, bool bForBars = true);
 
 	/*
-	 *	´ÓcsvÎÄ¼ş»º´æÀúÊ·Êı¾İ
+	 *	ä»csvæ–‡ä»¶ç¼“å­˜å†å²æ•°æ®
 	 */
 	bool		cacheRawBarsFromCSV(const std::string& key, const char* stdCode, WTSKlinePeriod period, bool bSubbed = true);
 
 	/*
-	 *	´Ó×Ô¶¨ÒåÊı¾İÎÄ¼ş»º´æÀúÊ·tickÊı¾İ
+	 *	ä»è‡ªå®šä¹‰æ•°æ®æ–‡ä»¶ç¼“å­˜å†å²tickæ•°æ®
 	 */
 	bool		cacheRawTicksFromBin(const std::string& key, const char* stdCode, uint32_t uDate);
 
 	/*
-	 *	´Ó×Ô¶¨ÒåÊı¾İÎÄ¼ş»º´æÀúÊ·Î¯ÍĞÃ÷Ï¸Êı¾İ
+	 *	ä»è‡ªå®šä¹‰æ•°æ®æ–‡ä»¶ç¼“å­˜å†å²å§”æ‰˜æ˜ç»†æ•°æ®
 	 */
 	bool		cacheRawOrdDtlFromBin(const std::string& key, const char* stdCode, uint32_t uDate);
 
 	/*
-	 *	´Ó×Ô¶¨ÒåÊı¾İÎÄ¼ş»º´æÀúÊ·Î¯ÍĞ¶ÓÁĞ
+	 *	ä»è‡ªå®šä¹‰æ•°æ®æ–‡ä»¶ç¼“å­˜å†å²å§”æ‰˜é˜Ÿåˆ—
 	 */
 	bool		cacheRawOrdQueFromBin(const std::string& key, const char* stdCode, uint32_t uDate);
 
 	/*
-	 *	´Ó×Ô¶¨ÒåÊı¾İÎÄ¼ş»º´æÀúÊ·³É½»Ã÷Ï¸Êı¾İ
+	 *	ä»è‡ªå®šä¹‰æ•°æ®æ–‡ä»¶ç¼“å­˜å†å²æˆäº¤æ˜ç»†æ•°æ®
 	 */
 	bool		cacheRawTransFromBin(const std::string& key, const char* stdCode, uint32_t uDate);
 
 	/*
-	 *	´ÓcsvÎÄ¼ş»º´æÀúÊ·tickÊı¾İ
+	 *	ä»csvæ–‡ä»¶ç¼“å­˜å†å²tickæ•°æ®
 	 */
 	bool		cacheRawTicksFromCSV(const std::string& key, const char* stdCode, uint32_t uDate);
 
 	/*
-	 *	´ÓÍâ²¿¼ÓÔØÆ÷»º´æÀúÊ·Êı¾İ
+	 *	ä»å¤–éƒ¨åŠ è½½å™¨ç¼“å­˜å†å²æ•°æ®
 	 */
 	bool		cacheFinalBarsFromLoader(const std::string& key, const char* stdCode, WTSKlinePeriod period, bool bSubbed = true);
 
 	/*
-	 *	´ÓÍâ²¿¼ÓÔØÆ÷»º´æÀúÊ·tickÊı¾İ
+	 *	ä»å¤–éƒ¨åŠ è½½å™¨ç¼“å­˜å†å²tickæ•°æ®
 	 */
 	bool		cacheRawTicksFromLoader(const std::string& key, const char* stdCode, uint32_t uDate);
 
 	/*
-	 *	»º´æÕûºÏµÄÆÚ»õºÏÔ¼ÀúÊ·KÏß£¨Õë¶Ô.HOT//2ND£©
+	 *	ç¼“å­˜æ•´åˆçš„æœŸè´§åˆçº¦å†å²Kçº¿ï¼ˆé’ˆå¯¹.HOT//2NDï¼‰
 	 */
 	bool		cacheIntegratedFutBarsFromBin(void* codeInfo, const std::string& key, const char* stdCode, WTSKlinePeriod period, bool bSubbed = true);
 
 	/*
-	 *	»º´æ¸´È¨¹ÉÆ±KÏßÊı¾İ
+	 *	ç¼“å­˜å¤æƒè‚¡ç¥¨Kçº¿æ•°æ®
 	 */
 	bool		cacheAdjustedStkBarsFromBin(void* codeInfo, const std::string& key, const char* stdCode, WTSKlinePeriod period, bool bSubbed = true);
 
@@ -354,23 +354,23 @@ private:
 	uint32_t	locate_barindex(const std::string& key, uint64_t curTime, bool bUpperBound = false);
 
 	/*
-	 *	°´ÕÕKÏß½øĞĞ»Ø²â
+	 *	æŒ‰ç…§Kçº¿è¿›è¡Œå›æµ‹
 	 *
-	 *	@bNeedDump	ÊÇ·ñ½«»Ø²â½ø¶ÈÂäµØµ½ÎÄ¼şÖĞ
+	 *	@bNeedDump	æ˜¯å¦å°†å›æµ‹è¿›åº¦è½åœ°åˆ°æ–‡ä»¶ä¸­
 	 */
 	void	run_by_bars(bool bNeedDump = false);
 
 	/*
-	 *	°´ÕÕ¶¨Ê±ÈÎÎñ½øĞĞ»Ø²â
+	 *	æŒ‰ç…§å®šæ—¶ä»»åŠ¡è¿›è¡Œå›æµ‹
 	 *
-	 *	@bNeedDump	ÊÇ·ñ½«»Ø²â½ø¶ÈÂäµØµ½ÎÄ¼şÖĞ
+	 *	@bNeedDump	æ˜¯å¦å°†å›æµ‹è¿›åº¦è½åœ°åˆ°æ–‡ä»¶ä¸­
 	 */
 	void	run_by_tasks(bool bNeedDump = false);
 
 	/*
-	 *	°´ÕÕtick½øĞĞ»Ø²â
+	 *	æŒ‰ç…§tickè¿›è¡Œå›æµ‹
 	 *
-	 *	@bNeedDump	ÊÇ·ñ½«»Ø²â½ø¶ÈÂäµØµ½ÎÄ¼şÖĞ
+	 *	@bNeedDump	æ˜¯å¦å°†å›æµ‹è¿›åº¦è½åœ°åˆ°æ–‡ä»¶ä¸­
 	 */
 	void	run_by_ticks(bool bNeedDump = false);
 
@@ -382,9 +382,9 @@ public:
 	bool prepare();
 
 	/*
-	 *	ÔËĞĞ»Ø²â
+	 *	è¿è¡Œå›æµ‹
 	 *
-	 *	@bNeedDump	ÊÇ·ñ½«»Ø²â½ø¶ÈÂäµØµ½ÎÄ¼şÖĞ
+	 *	@bNeedDump	æ˜¯å¦å°†å›æµ‹è¿›åº¦è½åœ°åˆ°æ–‡ä»¶ä¸­
 	 */
 	void run(bool bNeedDump = false);
 	
@@ -410,10 +410,10 @@ public:
 	}
 
 	/*
-	 *	×¢²áÈÎÎñ
-	 *	@date ÈÕÆÚ,¸ù¾İÖÜÆÚ±ä»¯,Ã¿ÈÕÎª0,Ã¿ÖÜÎª0~6,¶ÔÓ¦ÖÜÈÕµ½ÖÜÁù,Ã¿ÔÂÎª1~31,Ã¿ÄêÎª0101~1231
-	 *	@time Ê±¼ä,¾«È·µ½·ÖÖÓ
-	 *	@period	Ê±¼äÖÜÆÚ£¬¿ÉÒÔÊÇ·ÖÖÓ¡¢Ìì¡¢ÖÜ¡¢ÔÂ¡¢Äê
+	 *	æ³¨å†Œä»»åŠ¡
+	 *	@date æ—¥æœŸ,æ ¹æ®å‘¨æœŸå˜åŒ–,æ¯æ—¥ä¸º0,æ¯å‘¨ä¸º0~6,å¯¹åº”å‘¨æ—¥åˆ°å‘¨å…­,æ¯æœˆä¸º1~31,æ¯å¹´ä¸º0101~1231
+	 *	@time æ—¶é—´,ç²¾ç¡®åˆ°åˆ†é’Ÿ
+	 *	@period	æ—¶é—´å‘¨æœŸï¼Œå¯ä»¥æ˜¯åˆ†é’Ÿã€å¤©ã€å‘¨ã€æœˆã€å¹´
 	 */
 	void register_task(uint32_t taskid, uint32_t date, uint32_t time, const char* period, const char* trdtpl = "CHINA", const char* session = "TRADING");
 
@@ -464,38 +464,38 @@ private:
 	IBtDataLoader*	_bt_loader;
 	std::string		_stra_name;
 
-	TickCache		_ticks_cache;	//tick»º´æ
-	OrdDtlCache		_orddtl_cache;	//order detail»º´æ
-	OrdQueCache		_ordque_cache;	//order queue»º´æ
-	TransCache		_trans_cache;	//transaction»º´æ
+	TickCache		_ticks_cache;	//tickç¼“å­˜
+	OrdDtlCache		_orddtl_cache;	//order detailç¼“å­˜
+	OrdQueCache		_ordque_cache;	//order queueç¼“å­˜
+	TransCache		_trans_cache;	//transactionç¼“å­˜
 
-	BarsCache		_bars_cache;	//KÏß»º´æ
-	BarsCache		_unbars_cache;	//Î´¶©ÔÄµÄKÏß»º´æ
+	BarsCache		_bars_cache;	//Kçº¿ç¼“å­˜
+	BarsCache		_unbars_cache;	//æœªè®¢é˜…çš„Kçº¿ç¼“å­˜
 
 	TaskInfoPtr		_task;
 
 	std::string		_main_key;
-	std::string		_min_period;	//×îĞ¡KÏßÖÜÆÚ,Õâ¸öÖ÷ÒªÓÃÓÚÎ´¶©ÔÄÆ·ÖÖµÄĞÅºÅ´¦ÀíÉÏ
-	std::string		_main_period;	//Ö÷ÖÜÆÚ
-	bool			_tick_enabled;	//ÊÇ·ñ¿ªÆôÁËtick»Ø²â
-	bool			_tick_simulated;	//ÊÇ·ñĞèÒªÄ£Äâtick
-	bool			_align_by_section;	//ÖØ²ÉÑù·ÖÖÓÏßÊÇ·ñ°´Ğ¡½Ú¶ÔÆë
+	std::string		_min_period;	//æœ€å°Kçº¿å‘¨æœŸ,è¿™ä¸ªä¸»è¦ç”¨äºæœªè®¢é˜…å“ç§çš„ä¿¡å·å¤„ç†ä¸Š
+	std::string		_main_period;	//ä¸»å‘¨æœŸ
+	bool			_tick_enabled;	//æ˜¯å¦å¼€å¯äº†tickå›æµ‹
+	bool			_tick_simulated;	//æ˜¯å¦éœ€è¦æ¨¡æ‹Ÿtick
+	bool			_align_by_section;	//é‡é‡‡æ ·åˆ†é’Ÿçº¿æ˜¯å¦æŒ‰å°èŠ‚å¯¹é½
 	
 	/*
 	 *	By Wesley @ 2023.05.05
-	 *	Èç¹ûKÏßÃ»ÓĞ³É½»Á¿£¬Ôò²»Ä£Äâtick
-	 *	Ä¬ÈÏÎªfalse£¬Ö÷ÒªÊÇÕë¶ÔÕÇµøÍ£µÄĞĞÇé£¬Ò²ÊÊÓÃÓÚ²»»îÔ¾µÄºÏÔ¼
+	 *	å¦‚æœKçº¿æ²¡æœ‰æˆäº¤é‡ï¼Œåˆ™ä¸æ¨¡æ‹Ÿtick
+	 *	é»˜è®¤ä¸ºfalseï¼Œä¸»è¦æ˜¯é’ˆå¯¹æ¶¨è·Œåœçš„è¡Œæƒ…ï¼Œä¹Ÿé€‚ç”¨äºä¸æ´»è·ƒçš„åˆçº¦
 	 */
 	bool			_nosim_if_notrade;
-	std::map<std::string, WTSTickStruct>	_day_cache;	//Ã¿ÈÕTick»º´æ,µ±tick»Ø·ÅÎ´¿ª·ÅÊ±,»áÓÃµ½¸Ã»º´æ
+	std::map<std::string, WTSTickStruct>	_day_cache;	//æ¯æ—¥Tickç¼“å­˜,å½“tickå›æ”¾æœªå¼€æ”¾æ—¶,ä¼šç”¨åˆ°è¯¥ç¼“å­˜
 	std::map<std::string, std::string>		_ticker_keys;
 
 	//By Wesley @ 2022.06.01
-	//Õâ¸öÖ÷ÒªÊÇÕë¶Ô²»¶©ÔÄ¶øÖ±½ÓÖ¸¶¨ºÏÔ¼ÏÂµ¥µÄ³¡¾°
-	std::set<std::string>		_unsubbed_in_need;	//Î´¶©ÔÄµ«ĞèÒªµÄKÏß
+	//è¿™ä¸ªä¸»è¦æ˜¯é’ˆå¯¹ä¸è®¢é˜…è€Œç›´æ¥æŒ‡å®šåˆçº¦ä¸‹å•çš„åœºæ™¯
+	std::set<std::string>		_unsubbed_in_need;	//æœªè®¢é˜…ä½†éœ€è¦çš„Kçº¿
 
 	//By Wesley @ 2022.08.15
-	//¸´È¨±ê¼Ç£¬²ÉÓÃÎ»ÔËËã±íÊ¾£¬1|2|4,1±íÊ¾³É½»Á¿¸´È¨£¬2±íÊ¾³É½»¶î¸´È¨£¬4±íÊ¾×Ü³Ö¸´È¨£¬ÆäËû´ı¶¨
+	//å¤æƒæ ‡è®°ï¼Œé‡‡ç”¨ä½è¿ç®—è¡¨ç¤ºï¼Œ1|2|4,1è¡¨ç¤ºæˆäº¤é‡å¤æƒï¼Œ2è¡¨ç¤ºæˆäº¤é¢å¤æƒï¼Œ4è¡¨ç¤ºæ€»æŒå¤æƒï¼Œå…¶ä»–å¾…å®š
 	uint32_t		_adjust_flag; 
 
 	uint32_t		_cur_date;
@@ -513,13 +513,13 @@ private:
 	uint64_t		_begin_time;
 	uint64_t		_end_time;
 
-	//»º´æ×Ô¶¯ÇåÀíÌìÊı
+	//ç¼“å­˜è‡ªåŠ¨æ¸…ç†å¤©æ•°
 	uint32_t		_cache_clear_days;
 
 	bool			_running;
 	bool			_terminated;
 	//////////////////////////////////////////////////////////////////////////
-	//ÊÖĞø·ÑÄ£°å
+	//æ‰‹ç»­è´¹æ¨¡æ¿
 	typedef struct _FeeItem
 	{
 		double	_open;
@@ -543,16 +543,16 @@ private:
 	//////////////////////////////////////////////////////////////////////////
 	//
 	//By Wesley @ 2022.02.07
-	//tickÊı¾İ¶©ÔÄÏî£¬firstÊÇcontextid£¬secondÊÇ¶©ÔÄÑ¡Ïî£¬0-Ô­Ê¼¶©ÔÄ£¬1-Ç°¸´È¨£¬2-ºó¸´È¨
+	//tickæ•°æ®è®¢é˜…é¡¹ï¼Œfirstæ˜¯contextidï¼Œsecondæ˜¯è®¢é˜…é€‰é¡¹ï¼Œ0-åŸå§‹è®¢é˜…ï¼Œ1-å‰å¤æƒï¼Œ2-åå¤æƒ
 	typedef std::pair<uint32_t, uint32_t> SubOpt;
 	typedef wt_hashmap<uint32_t, SubOpt> SubList;
 	typedef wt_hashmap<std::string, SubList>	StraSubMap;
-	StraSubMap		_tick_sub_map;		//tickÊı¾İ¶©ÔÄ±í
-	StraSubMap		_ordque_sub_map;	//orderqueueÊı¾İ¶©ÔÄ±í
-	StraSubMap		_orddtl_sub_map;	//orderdetailÊı¾İ¶©ÔÄ±í
-	StraSubMap		_trans_sub_map;		//transactionÊı¾İ¶©ÔÄ±í
+	StraSubMap		_tick_sub_map;		//tickæ•°æ®è®¢é˜…è¡¨
+	StraSubMap		_ordque_sub_map;	//orderqueueæ•°æ®è®¢é˜…è¡¨
+	StraSubMap		_orddtl_sub_map;	//orderdetailæ•°æ®è®¢é˜…è¡¨
+	StraSubMap		_trans_sub_map;		//transactionæ•°æ®è®¢é˜…è¡¨
 
-	//³ıÈ¨Òò×Ó
+	//é™¤æƒå› å­
 	typedef struct _AdjFactor
 	{
 		uint32_t	_date;

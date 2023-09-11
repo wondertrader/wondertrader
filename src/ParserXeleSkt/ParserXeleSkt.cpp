@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file ParserXeleSkt.cpp
  * \project	WonderTrader
  *
@@ -127,7 +127,7 @@ bool ParserXeleSkt::reconnect()
 		_prepared = true;
 	}
 
-	{//½¨Á¢¹ã²¥Í¨µÀ
+	{//å»ºç«‹å¹¿æ’­é€šé“
 		if (_udp_socket != NULL)
 		{
 			_udp_socket->close();
@@ -176,7 +176,7 @@ bool ParserXeleSkt::prepare()
 		std::size_t reply_length = boost::asio::read(s, boost::asio::buffer(buffer), ec);
 		if (ec)
 		{
-			//½ÓÊÕ´íÎó
+			//æŽ¥æ”¶é”™è¯¯
 			break;
 		}
 
@@ -233,13 +233,13 @@ bool ParserXeleSkt::prepare()
 				quote.pre_settle = p->PreSettlementPrice;
 				quote.pre_interest = p->PreOpenInterest;
 
-				//Î¯Âô¼Û¸ñ
+				//å§”å–ä»·æ ¼
 				quote.ask_prices[0] = p->AskPrice;
-				//Î¯Âò¼Û¸ñ
+				//å§”ä¹°ä»·æ ¼
 				quote.bid_prices[0] = p->BidPrice;
-				//Î¯ÂôÁ¿
+				//å§”å–é‡
 				quote.ask_qty[0] = p->AskVolume;
-				//Î¯ÂòÁ¿
+				//å§”ä¹°é‡
 				quote.bid_qty[0] = p->BidVolume;
 
 				_tick_cache->add(instrumentNo, tick, false);
@@ -416,13 +416,13 @@ void ParserXeleSkt::extract_buffer(uint32_t length)
 				quote.turn_over = 0;
 				quote.diff_interest = 0;
 
-				//Î¯Âô¼Û¸ñ
+				//å§”å–ä»·æ ¼
 				quote.ask_prices[0] = p->AskPrice*scale;
-				//Î¯Âò¼Û¸ñ
+				//å§”ä¹°ä»·æ ¼
 				quote.bid_prices[0] = p->BidPrice*scale;
-				//Î¯ÂôÁ¿
+				//å§”å–é‡
 				quote.ask_qty[0] = p->AskVolume;
-				//Î¯ÂòÁ¿
+				//å§”ä¹°é‡
 				quote.bid_qty[0] = p->BidVolume;
 
 				if (_sink)
@@ -475,28 +475,28 @@ void ParserXeleSkt::extract_buffer(uint32_t length)
 				quote.turn_over = 0;
 				quote.diff_interest = 0;
 
-				//Î¯Âô¼Û¸ñ
+				//å§”å–ä»·æ ¼
 				quote.ask_prices[0] = p->AskPrice1*scale;
 				quote.ask_prices[1] = p->AskPrice2*scale;
 				quote.ask_prices[2] = p->AskPrice3*scale;
 				quote.ask_prices[3] = p->AskPrice4*scale;
 				quote.ask_prices[4] = p->AskPrice5*scale;
 
-				//Î¯Âò¼Û¸ñ
+				//å§”ä¹°ä»·æ ¼
 				quote.bid_prices[0] = p->BidPrice1*scale;
 				quote.bid_prices[1] = p->BidPrice2*scale;
 				quote.bid_prices[2] = p->BidPrice3*scale;
 				quote.bid_prices[3] = p->BidPrice4*scale;
 				quote.bid_prices[4] = p->BidPrice5*scale;
 
-				//Î¯ÂôÁ¿
+				//å§”å–é‡
 				quote.ask_qty[0] = p->AskVolume1;
 				quote.ask_qty[1] = p->AskVolume2;
 				quote.ask_qty[2] = p->AskVolume3;
 				quote.ask_qty[3] = p->AskVolume4;
 				quote.ask_qty[4] = p->AskVolume5;
 
-				//Î¯ÂòÁ¿
+				//å§”ä¹°é‡
 				quote.bid_qty[0] = p->BidVolume1;
 				quote.bid_qty[1] = p->BidVolume2;
 				quote.bid_qty[2] = p->BidVolume3;

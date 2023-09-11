@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file TraderATP.h
  * \project	WonderTrader
  *
@@ -34,77 +34,77 @@ public:
 
 	typedef enum
 	{
-		TS_NOTLOGIN,		//Î´µÇÂ¼
-		TS_LOGINING,		//ÕıÔÚµÇÂ¼
-		TS_LOGINED,			//ÒÑµÇÂ¼
-		TS_LOGINFAILED,		//µÇÂ¼Ê§°Ü
-		TS_ALLREADY			//È«²¿¾ÍĞ÷
+		TS_NOTLOGIN,		//æœªç™»å½•
+		TS_LOGINING,		//æ­£åœ¨ç™»å½•
+		TS_LOGINED,			//å·²ç™»å½•
+		TS_LOGINFAILED,		//ç™»å½•å¤±è´¥
+		TS_ALLREADY			//å…¨éƒ¨å°±ç»ª
 	} TraderState;
 
 public:
 	//////////////////////////////////////////////////////////////////////////
-	// µÇÈë»Øµ÷
+	// ç™»å…¥å›è°ƒ
 	virtual void OnLogin(const std::string& reason) override;
 
-	// µÇ³ö»Øµ÷
+	// ç™»å‡ºå›è°ƒ
 	virtual void OnLogout(const std::string& reason) override;
 
-	// Á¬½ÓÊ§°Ü
+	// è¿æ¥å¤±è´¥
 	virtual void OnConnectFailure(const std::string &reason) override;
 
-	// Á¬½Ó³¬Ê±
+	// è¿æ¥è¶…æ—¶
 	virtual void OnConnectTimeOut(const std::string &reason) override;
 
-	// ĞÄÌø³¬Ê±
+	// å¿ƒè·³è¶…æ—¶
 	virtual void OnHeartbeatTimeout(const std::string &reason) override;
 
-	// Á¬½Ó¹Ø±Õ
+	// è¿æ¥å…³é—­
 	virtual void OnClosed(const std::string &reason) override;
 
-	// Á¬½Ó½áÊø»Øµ÷
+	// è¿æ¥ç»“æŸå›è°ƒ
 	virtual void OnEndOfConnection(const std::string& reason) override;
 
-	// ¿Í»§ºÅµÇÈë»Øµ÷
+	// å®¢æˆ·å·ç™»å…¥å›è°ƒ
 	virtual void OnRspCustLoginResp(const ATPRspCustLoginRespOtherMsg &cust_login_resp) override;
 
-	// ¿Í»§ºÅµÇ³ö»Øµ÷
+	// å®¢æˆ·å·ç™»å‡ºå›è°ƒ
 	virtual void OnRspCustLogoutResp(const ATPRspCustLogoutRespOtherMsg &cust_logout_resp) override;
 
-	// ¶©µ¥ÏÂ´ïÄÚ²¿ÏìÓ¦
+	// è®¢å•ä¸‹è¾¾å†…éƒ¨å“åº”
 	virtual void OnRspOrderStatusInternalAck(const ATPRspOrderStatusAckMsg& order_status_ack) override;
 
-	// ¶©µ¥ÏÂ´ï½»Ò×ËùÈ·ÈÏ
+	// è®¢å•ä¸‹è¾¾äº¤æ˜“æ‰€ç¡®è®¤
 	virtual void OnRspOrderStatusAck(const ATPRspOrderStatusAckMsg& order_status_ack) override;
 
-	// ³É½»»Ø±¨
+	// æˆäº¤å›æŠ¥
 	virtual void OnRspCashAuctionTradeER(const ATPRspCashAuctionTradeERMsg& cash_auction_trade_er) override;
 
-	// ¶©µ¥ÏÂ´ïÄÚ²¿¾Ü¾ø
+	// è®¢å•ä¸‹è¾¾å†…éƒ¨æ‹’ç»
 	virtual void OnRspBizRejection(const ATPRspBizRejectionOtherMsg& biz_rejection) override;
 
 	/**
-	 * @brief ×Ê½ğ²éÑ¯½á¹û
+	 * @brief èµ„é‡‘æŸ¥è¯¢ç»“æœ
 	 * @param[in] ATPRspFundQueryResultMsg
 	 * @type query
 	 */
 	virtual void OnRspFundQueryResult(const ATPRspFundQueryResultMsg &msg) override;
 
 	/**
-	 * @brief ¹É·İ²éÑ¯½á¹û
+	 * @brief è‚¡ä»½æŸ¥è¯¢ç»“æœ
 	 * @param[in] ATPRspShareQueryResultMsg
 	 * @type query
 	 */
 	virtual void OnRspShareQueryResult(const ATPRspShareQueryResultMsg &msg) override;
 
 	/**
-	 * @brief ³É½»²éÑ¯½á¹û
+	 * @brief æˆäº¤æŸ¥è¯¢ç»“æœ
 	 * @param[in] ATPRspTradeOrderQueryResultMsg
 	 * @type query
 	 */
 	virtual void OnRspTradeOrderQueryResult(const ATPRspTradeOrderQueryResultMsg &msg) override;
 
 	/**
-	 * @brief ¶©µ¥²éÑ¯½á¹û
+	 * @brief è®¢å•æŸ¥è¯¢ç»“æœ
 	 * @param[in] ATPRspOrderQueryResultMsg
 	 * @type query
 	 */
@@ -112,7 +112,7 @@ public:
 
 public:
 	//////////////////////////////////////////////////////////////////////////
-	//ITraderApi ½Ó¿Ú
+	//ITraderApi æ¥å£
 	virtual bool init(WTSVariant *params) override;
 
 	virtual void release() override;
@@ -169,50 +169,50 @@ private:
 
 	IBaseDataMgr*			_bd_mgr;
 
-	std::string		_user;  // AGWµÇÂ¼ÕËºÅ
-	std::string		_pass;  // AGWµÇÂ¼ÃÜÂë
-	std::string		_node_id;  // ½ÚµãĞÅÏ¢
-	int				_loginmode;  // ÕË»§µÄµÇÂ¼Ä£Ê½
-	int				_order_way;  // Î¯ÍĞ·½Ê½
+	std::string		_user;  // AGWç™»å½•è´¦å·
+	std::string		_pass;  // AGWç™»å½•å¯†ç 
+	std::string		_node_id;  // èŠ‚ç‚¹ä¿¡æ¯
+	int				_loginmode;  // è´¦æˆ·çš„ç™»å½•æ¨¡å¼
+	int				_order_way;  // å§”æ‰˜æ–¹å¼
 
 	std::string 	_product;
 
-	std::string		_sh_acctid;  // ÉÏº£Ö¤È¯ÕË»§
-	std::string		_sz_acctid;  // ÉîÛÚÖ¤È¯ÕË»§
-	std::string		_fund_accountid;  // ×Ê½ğÕË»§
-	std::string		_accpasswd;  // ½»Ò×ÃÜÂë
-	std::string		_branchid;   //ÓªÒµ²¿ID £¨µ±µÇÂ¼Ä£Ê½Îª2-×Ê½ğÕË»§µÇÂ¼Ä£Ê½Ê±£¬¸Ã×Ö¶ÎÊÇ·ñ±ØÌîÇë×ÉÑ¯È¯ÉÌ£©  
+	std::string		_sh_acctid;  // ä¸Šæµ·è¯åˆ¸è´¦æˆ·
+	std::string		_sz_acctid;  // æ·±åœ³è¯åˆ¸è´¦æˆ·
+	std::string		_fund_accountid;  // èµ„é‡‘è´¦æˆ·
+	std::string		_accpasswd;  // äº¤æ˜“å¯†ç 
+	std::string		_branchid;   //è¥ä¸šéƒ¨ID ï¼ˆå½“ç™»å½•æ¨¡å¼ä¸º2-èµ„é‡‘è´¦æˆ·ç™»å½•æ¨¡å¼æ—¶ï¼Œè¯¥å­—æ®µæ˜¯å¦å¿…å¡«è¯·å’¨è¯¢åˆ¸å•†ï¼‰  
 
-	std::string		_front;  // ½»Ò×Íø¹Ø
+	std::string		_front;  // äº¤æ˜“ç½‘å…³
 	std::string		_front2;
 
 	TraderState		_state;
 
 	uint64_t		_sessionid;
 
-	std::string		_acctid;  // µÇÂ¼ÕË»§
-	bool			_is_sh;  // ÕË»§Ö§³ÖµÄ½»Ò×Ëù
+	std::string		_acctid;  // ç™»å½•è´¦æˆ·
+	bool			_is_sh;  // è´¦æˆ·æ”¯æŒçš„äº¤æ˜“æ‰€
 
 	uint32_t		_tradingday;
 	std::atomic<uint32_t>		_reqid;
-	std::atomic<uint32_t>		_ordref;		//±¨µ¥ÒıÓÃ
+	std::atomic<uint32_t>		_ordref;		//æŠ¥å•å¼•ç”¨
 
-	std::string		_cust_id;  // ¿Í»§ºÅ
+	std::string		_cust_id;  // å®¢æˆ·å·
 
 	boost::asio::io_service		_asyncio;
 	StdThreadPtr				_thrd_worker;
 
 	DllHandle		m_hInstATP;
 
-	//Î¯ÍĞµ¥±ê¼Ç»º´æÆ÷
+	//å§”æ‰˜å•æ ‡è®°ç¼“å­˜å™¨
 	WtKVCache		m_eidCache;
-	//¶©µ¥±ê¼Ç»º´æÆ÷
+	//è®¢å•æ ‡è®°ç¼“å­˜å™¨
 	WtKVCache		m_oidCache;
 
 	std::map<int32_t, int32_t> report_sync;
 
-	WTSArray* ayOrders;  // ¶©µ¥²éÑ¯½á¹û
-	WTSArray* ayTrades;  // ³É½»²éÑ¯½á¹û
+	WTSArray* ayOrders;  // è®¢å•æŸ¥è¯¢ç»“æœ
+	WTSArray* ayTrades;  // æˆäº¤æŸ¥è¯¢ç»“æœ
 
-	std::atomic<int64_t> _return_nums;  // ²éÑ¯·µ»ØÌõÊı
+	std::atomic<int64_t> _return_nums;  // æŸ¥è¯¢è¿”å›æ¡æ•°
 };

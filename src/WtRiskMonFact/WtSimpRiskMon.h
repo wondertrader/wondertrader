@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file WtSimpRiskMon.h
  *
  * \author Wesley
@@ -38,13 +38,13 @@ private:
 
 	uint64_t		_last_time;
 
-	uint32_t		_calc_span;			//¼ÆËãÊ±¼ä¼ä¸ô,µ¥Î»s
-	uint32_t		_risk_span;			//»Ø³·±È½ÏÊ±¼ä
-	double			_basic_ratio;		//»ù´¡Ó¯ÀûÂÊ
-	double			_risk_scale;		//·çÏÕ¿ØÖÆÏµÊı
-	double			_inner_day_fd;		//ÈÕÄÚ¸ßµã»Ø³·±ß½ç
-	bool			_inner_day_active;	//ÈÕÄÚ·ç¿ØÆôÓÃ
-	double			_multi_day_fd;		//¶àÈÕ¸ßµã»Ø³·±ß½ç
-	bool			_multi_day_active;	//¶àÈÕ·ç¿ØÆôÓÃ
-	double			_base_amount;		//»ù´¡×Ê½ğ¹æÄ£
+	uint32_t		_calc_span;			//è®¡ç®—æ—¶é—´é—´éš”,å•ä½s
+	uint32_t		_risk_span;			//å›æ’¤æ¯”è¾ƒæ—¶é—´
+	double			_basic_ratio;		//åŸºç¡€ç›ˆåˆ©ç‡
+	double			_risk_scale;		//é£é™©æ§åˆ¶ç³»æ•°
+	double			_inner_day_fd;		//æ—¥å†…é«˜ç‚¹å›æ’¤è¾¹ç•Œ
+	bool			_inner_day_active;	//æ—¥å†…é£æ§å¯ç”¨
+	double			_multi_day_fd;		//å¤šæ—¥é«˜ç‚¹å›æ’¤è¾¹ç•Œ
+	bool			_multi_day_active;	//å¤šæ—¥é£æ§å¯ç”¨
+	double			_base_amount;		//åŸºç¡€èµ„é‡‘è§„æ¨¡
 };

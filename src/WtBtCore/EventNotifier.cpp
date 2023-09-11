@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file EventCaster.cpp
  * \project	WonderTrader
  *
@@ -47,9 +47,9 @@ bool EventNotifier::init(WTSVariant* cfg)
 
 	m_strURL = cfg->getCString("url");
 	std::string module = DLLHelper::wrap_module("WtMsgQue", "lib");
-	//ÏÈ¿´¹¤×÷Ä¿Â¼ÏÂÊÇ·ñÓĞ¶ÔÓ¦Ä£¿é
+	//å…ˆçœ‹å·¥ä½œç›®å½•ä¸‹æ˜¯å¦æœ‰å¯¹åº”æ¨¡å—
 	std::string dllpath = WtHelper::getCWD() + module;
-	//Èç¹ûÃ»ÓĞ,ÔòÔÙ¿´Ä£¿éÄ¿Â¼,¼´dllÍ¬Ä¿Â¼ÏÂ
+	//å¦‚æœæ²¡æœ‰,åˆ™å†çœ‹æ¨¡å—ç›®å½•,å³dllåŒç›®å½•ä¸‹
 	if (!StdFile::exists(dllpath.c_str()))
 		dllpath = WtHelper::getInstDir() + module;
 
@@ -72,10 +72,10 @@ bool EventNotifier::init(WTSVariant* cfg)
 	_publisher = (FundPublishMessage)DLLHelper::get_symbol(dllInst, "publish_message");
 	_register = (FuncRegCallbacks)DLLHelper::get_symbol(dllInst, "regiter_callbacks");
 
-	//×¢²á»Øµ÷º¯Êı
+	//æ³¨å†Œå›è°ƒå‡½æ•°
 	_register(on_mq_log);
 	
-	//´´½¨Ò»¸öMQServer
+	//åˆ›å»ºä¸€ä¸ªMQServer
 	_mq_sid = _creator(m_strURL.c_str(), true);
 
 	WTSLogger::info("EventNotifier initialized with channel {}", m_strURL.c_str());

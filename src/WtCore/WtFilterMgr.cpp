@@ -1,4 +1,4 @@
-#include "WtFilterMgr.h"
+ï»¿#include "WtFilterMgr.h"
 #include "EventNotifier.h"
 
 #include "../Share/CodeHelper.hpp"
@@ -43,7 +43,7 @@ void WtFilterMgr::load_filters(const char* fileName)
 	_code_filters.clear();
 	_exec_filters.clear();
 
-	//¶Á²ßÂÔ¹ıÂËÆ÷
+	//è¯»ç­–ç•¥è¿‡æ»¤å™¨
 	WTSVariant* filterStra = cfg->get("strategy_filters");
 	if (filterStra)
 	{
@@ -73,7 +73,7 @@ void WtFilterMgr::load_filters(const char* fileName)
 		}
 	}
 
-	//¶Á´úÂë¹ıÂËÆ÷
+	//è¯»ä»£ç è¿‡æ»¤å™¨
 	WTSVariant* filterCodes = cfg->get("code_filters");
 	if (filterCodes)
 	{
@@ -104,7 +104,7 @@ void WtFilterMgr::load_filters(const char* fileName)
 		}
 	}
 
-	//¶ÁÍ¨µÀ¹ıÂËÆ÷
+	//è¯»é€šé“è¿‡æ»¤å™¨
 	WTSVariant* filterExecuters = cfg->get("executer_filters");
 	if (filterExecuters)
 	{
@@ -143,7 +143,7 @@ bool WtFilterMgr::is_filtered_by_strategy(const char* straName, double& targetPo
 		const FilterItem& fItem = it->second;
 		if(isDiff)
 		{
-			//Èç¹û¹ıÂËÆ÷´¥·¢£¬²¢ÇÒÊÇÔöÁ¿Í·´ç£¬ÔòÖ±½Ó¹ıÂËµô
+			//å¦‚æœè¿‡æ»¤å™¨è§¦å‘ï¼Œå¹¶ä¸”æ˜¯å¢é‡å¤´å¯¸ï¼Œåˆ™ç›´æ¥è¿‡æ»¤æ‰
 			WTSLogger::info("[Filters] Strategy filter {} triggered, the change of position ignored directly", straName);
 			return true;
 		}
@@ -155,7 +155,7 @@ bool WtFilterMgr::is_filtered_by_strategy(const char* straName, double& targetPo
 		}
 		else if (fItem._action == FA_Redirect)
 		{
-			//Ö»ÓĞ²»ÊÇÔöÁ¿µÄÊ±ºò,²ÅÓĞĞ§
+			//åªæœ‰ä¸æ˜¯å¢é‡çš„æ—¶å€™,æ‰æœ‰æ•ˆ
 			targetPos = fItem._target;
 		}
 

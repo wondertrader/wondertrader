@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file TraderCTPOpt.cpp
  * \project	WonderTrader
  *
@@ -309,13 +309,13 @@ void TraderCTPOpt::connect()
 	m_pUserAPI->RegisterSpi(this);
 	if (m_bQuickStart)
 	{
-		m_pUserAPI->SubscribePublicTopic(THOST_TERT_QUICK);			// ×¢²á¹«ÓÐÁ÷
-		m_pUserAPI->SubscribePrivateTopic(THOST_TERT_QUICK);		// ×¢²áË½ÓÐÁ÷
+		m_pUserAPI->SubscribePublicTopic(THOST_TERT_QUICK);			// æ³¨å†Œå…¬æœ‰æµ
+		m_pUserAPI->SubscribePrivateTopic(THOST_TERT_QUICK);		// æ³¨å†Œç§æœ‰æµ
 	}
 	else
 	{
-		m_pUserAPI->SubscribePublicTopic(THOST_TERT_RESUME);		// ×¢²á¹«ÓÐÁ÷
-		m_pUserAPI->SubscribePrivateTopic(THOST_TERT_RESUME);		// ×¢²áË½ÓÐÁ÷
+		m_pUserAPI->SubscribePublicTopic(THOST_TERT_RESUME);		// æ³¨å†Œå…¬æœ‰æµ
+		m_pUserAPI->SubscribePrivateTopic(THOST_TERT_RESUME);		// æ³¨å†Œç§æœ‰æµ
 	}
 
 	m_pUserAPI->RegisterFront((char*)m_strFront.c_str());
@@ -479,11 +479,11 @@ int TraderCTPOpt::orderInsertOpt(WTSEntrust* entrust)
 
 	CThostFtdcInputExecOrderField req;
 	memset(&req, 0, sizeof(req));
-	///¾­¼Í¹«Ë¾´úÂë
+	///ç»çºªå…¬å¸ä»£ç 
 	strcpy(req.BrokerID, m_strBroker.c_str());
-	///Í¶×ÊÕß´úÂë
+	///æŠ•èµ„è€…ä»£ç 
 	strcpy(req.InvestorID, m_strUser.c_str());
-	///ºÏÔ¼´úÂë
+	///åˆçº¦ä»£ç 
 	strcpy(req.InstrumentID, entrust->getCode());
 
 	strcpy(req.ExchangeID, entrust->getExchg());
@@ -492,7 +492,7 @@ int TraderCTPOpt::orderInsertOpt(WTSEntrust* entrust)
 
 	if (strlen(entrust->getUserTag()) == 0)
 	{
-		///±¨µ¥ÒýÓÃ
+		///æŠ¥å•å¼•ç”¨
 		fmt::format_to(req.ExecOrderRef, "{}", m_orderRef.fetch_add(0));
 
 	}
@@ -500,7 +500,7 @@ int TraderCTPOpt::orderInsertOpt(WTSEntrust* entrust)
 	{
 		uint32_t fid, sid, orderref;
 		extractEntrustID(entrust->getEntrustID(), fid, sid, orderref);
-		///±¨µ¥ÒýÓÃ
+		///æŠ¥å•å¼•ç”¨
 		fmt::format_to(req.ExecOrderRef, "{}", orderref);
 	}
 
@@ -542,20 +542,20 @@ int TraderCTPOpt::orderActionOpt(WTSEntrustAction* action)
 
 	CThostFtdcInputExecOrderActionField req;
 	memset(&req, 0, sizeof(req));
-	///¾­¼Í¹«Ë¾´úÂë
+	///ç»çºªå…¬å¸ä»£ç 
 	strcpy(req.BrokerID, m_strBroker.c_str());
-	///Í¶×ÊÕß´úÂë
+	///æŠ•èµ„è€…ä»£ç 
 	strcpy(req.InvestorID, m_strUser.c_str());
-	///±¨µ¥ÒýÓÃ
+	///æŠ¥å•å¼•ç”¨
 	fmt::format_to(req.ExecOrderRef, "{}", orderref);
-	///ÇëÇó±àºÅ
-	///Ç°ÖÃ±àºÅ
+	///è¯·æ±‚ç¼–å·
+	///å‰ç½®ç¼–å·
 	req.FrontID = frontid;
-	///»á»°±àºÅ
+	///ä¼šè¯ç¼–å·
 	req.SessionID = sessionid;
-	///²Ù×÷±êÖ¾
+	///æ“ä½œæ ‡å¿—
 	req.ActionFlag = wrapActionFlag(action->getActionFlag());
-	///ºÏÔ¼´úÂë
+	///åˆçº¦ä»£ç 
 	strcpy(req.InstrumentID, action->getCode());
 
 	strcpy(req.ExecOrderSysID, action->getOrderID());
@@ -611,18 +611,18 @@ int TraderCTPOpt::orderInsert(WTSEntrust* entrust)
 
 	CThostFtdcInputOrderField req;
 	memset(&req, 0, sizeof(req));
-	///¾­¼Í¹«Ë¾´úÂë
+	///ç»çºªå…¬å¸ä»£ç 
 	strcpy(req.BrokerID, m_strBroker.c_str());
-	///Í¶×ÊÕß´úÂë
+	///æŠ•èµ„è€…ä»£ç 
 	strcpy(req.InvestorID, m_strUser.c_str());
-	///ºÏÔ¼´úÂë
+	///åˆçº¦ä»£ç 
 	strcpy(req.InstrumentID, entrust->getCode());
 
 	strcpy(req.ExchangeID, entrust->getExchg());
 
 	if (strlen(entrust->getUserTag()) == 0)
 	{
-		///±¨µ¥ÒýÓÃ
+		///æŠ¥å•å¼•ç”¨
 		fmt::format_to(req.OrderRef, "{}", m_orderRef.fetch_add(0));
 
 	}
@@ -630,7 +630,7 @@ int TraderCTPOpt::orderInsert(WTSEntrust* entrust)
 	{
 		uint32_t fid, sid, orderref;
 		extractEntrustID(entrust->getEntrustID(), fid, sid, orderref);
-		///±¨µ¥ÒýÓÃ
+		///æŠ¥å•å¼•ç”¨
 		fmt::format_to(req.OrderRef, "{}", orderref);
 	}
 
@@ -643,19 +643,19 @@ int TraderCTPOpt::orderInsert(WTSEntrust* entrust)
 
 	WTSCommodityInfo* commInfo = ct->getCommInfo();
 
-	///ÓÃ»§´úÂë
+	///ç”¨æˆ·ä»£ç 
 	//	TThostFtdcUserIDType	UserID;
-	///±¨µ¥¼Û¸ñÌõ¼þ: ÏÞ¼Û
+	///æŠ¥å•ä»·æ ¼æ¡ä»¶: é™ä»·
 	req.OrderPriceType = wrapPriceType(entrust->getPriceType(), strcmp(commInfo->getExchg(), "CFFEX") == 0);
-	///ÂòÂô·½Ïò: 
+	///ä¹°å–æ–¹å‘: 
 	req.Direction = wrapDirectionType(entrust->getDirection(), entrust->getOffsetType());
-	///×éºÏ¿ªÆ½±êÖ¾: ¿ª²Ö
+	///ç»„åˆå¼€å¹³æ ‡å¿—: å¼€ä»“
 	req.CombOffsetFlag[0] = wrapOffsetType(entrust->getOffsetType());
-	///×éºÏÍ¶»úÌ×±£±êÖ¾
+	///ç»„åˆæŠ•æœºå¥—ä¿æ ‡å¿—
 	req.CombHedgeFlag[0] = THOST_FTDC_HF_Speculation;
-	///¼Û¸ñ
+	///ä»·æ ¼
 	req.LimitPrice = entrust->getPrice();
-	///ÊýÁ¿: 1
+	///æ•°é‡: 1
 	req.VolumeTotalOriginal = (int)entrust->getVolume();
 
 	if (entrust->getOrderFlag() == WOF_NOR)
@@ -674,19 +674,19 @@ int TraderCTPOpt::orderInsert(WTSEntrust* entrust)
 		req.VolumeCondition = THOST_FTDC_VC_CV;
 	}
 
-	///´¥·¢Ìõ¼þ: Á¢¼´
+	///è§¦å‘æ¡ä»¶: ç«‹å³
 	req.ContingentCondition = THOST_FTDC_CC_Immediately;
-	///Ö¹Ëð¼Û
+	///æ­¢æŸä»·
 	//	TThostFtdcPriceType	StopPrice;
-	///Ç¿Æ½Ô­Òò: ·ÇÇ¿Æ½
+	///å¼ºå¹³åŽŸå› : éžå¼ºå¹³
 	req.ForceCloseReason = THOST_FTDC_FCC_NotForceClose;
-	///×Ô¶¯¹ÒÆð±êÖ¾: ·ñ
+	///è‡ªåŠ¨æŒ‚èµ·æ ‡å¿—: å¦
 	req.IsAutoSuspend = 0;
-	///ÒµÎñµ¥Ôª
+	///ä¸šåŠ¡å•å…ƒ
 	//	TThostFtdcBusinessUnitType	BusinessUnit;
-	///ÇëÇó±àºÅ
+	///è¯·æ±‚ç¼–å·
 	//	TThostFtdcRequestIDType	RequestID;
-	///ÓÃ»§Ç¿ÆÀ±êÖ¾: ·ñ
+	///ç”¨æˆ·å¼ºè¯„æ ‡å¿—: å¦
 	req.UserForceClose = 0;
 
 	int iResult = m_pUserAPI->ReqOrderInsert(&req, genRequestID());
@@ -709,19 +709,19 @@ int TraderCTPOpt::orderAction(WTSEntrustAction* action)
 
 	CThostFtdcInputOrderActionField req;
 	memset(&req, 0, sizeof(req));
-	///¾­¼Í¹«Ë¾´úÂë
+	///ç»çºªå…¬å¸ä»£ç 
 	wt_strcpy(req.BrokerID, m_strBroker.c_str(), m_strBroker.size());
 	wt_strcpy(req.InvestorID, m_strUser.c_str(), m_strUser.size());
-	///±¨µ¥ÒýÓÃ
+	///æŠ¥å•å¼•ç”¨
 	fmt::format_to(req.OrderRef, "{}", orderref);
-	///ÇëÇó±àºÅ
-	///Ç°ÖÃ±àºÅ
+	///è¯·æ±‚ç¼–å·
+	///å‰ç½®ç¼–å·
 	req.FrontID = frontid;
-	///»á»°±àºÅ
+	///ä¼šè¯ç¼–å·
 	req.SessionID = sessionid;
-	///²Ù×÷±êÖ¾
+	///æ“ä½œæ ‡å¿—
 	req.ActionFlag = wrapActionFlag(action->getActionFlag());
-	///ºÏÔ¼´úÂë
+	///åˆçº¦ä»£ç 
 	strcpy(req.InstrumentID, action->getCode());
 
 	req.LimitPrice = action->getPrice();
@@ -891,11 +891,11 @@ void TraderCTPOpt::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, CT
 	{
 		m_wrapperState = WS_LOGINED;
 
-		// ±£´æ»á»°²ÎÊý
+		// ä¿å­˜ä¼šè¯å‚æ•°
 		m_frontID = pRspUserLogin->FrontID;
 		m_sessionID = pRspUserLogin->SessionID;
 		m_orderRef = atoi(pRspUserLogin->MaxOrderRef);
-		///»ñÈ¡µ±Ç°½»Ò×ÈÕ
+		///èŽ·å–å½“å‰äº¤æ˜“æ—¥
 		m_lDate = atoi(m_pUserAPI->GetTradingDay());
 
 		write_log(m_bscSink, LL_INFO, "[TraderCTPOpt][{}-{}] Login succeed, AppID: {}, Sessionid: {}, login time: {}...",
@@ -912,7 +912,7 @@ void TraderCTPOpt::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, CT
 		uint32_t lastDate = m_iniHelper.readUInt("marker", "date", 0);
 		if(lastDate != m_lDate)
 		{
-			//½»Ò×ÈÕ²»Í¬,ÇåÀíµôÔ­À´µÄÊý¾Ý
+			//äº¤æ˜“æ—¥ä¸åŒ,æ¸…ç†æŽ‰åŽŸæ¥çš„æ•°æ®
 			m_iniHelper.removeSection(ENTRUST_SECTION);
 			m_iniHelper.removeSection(ORDER_SECTION);
 			m_iniHelper.writeUInt("marker", "date", m_lDate);
@@ -1280,7 +1280,7 @@ void TraderCTPOpt::OnRspQryInvestorPosition(CThostFtdcInvestorPositionField *pIn
 
 			if (decimal::lt(pos->getTotalPosition(), 0.0) && decimal::eq(pos->getMargin(), 0.0))
 			{
-				//ÓÐ²ÖÎ»,µ«ÊÇ±£Ö¤½ðÎª0,ÔòËµÃ÷ÊÇÌ×ÀûºÏÔ¼,µ¥¸öºÏÔ¼µÄ¿ÉÓÃ³Ö²ÖÈ«²¿ÖÃÎª0
+				//æœ‰ä»“ä½,ä½†æ˜¯ä¿è¯é‡‘ä¸º0,åˆ™è¯´æ˜Žæ˜¯å¥—åˆ©åˆçº¦,å•ä¸ªåˆçº¦çš„å¯ç”¨æŒä»“å…¨éƒ¨ç½®ä¸º0
 				pos->setAvailNewPos(0);
 				pos->setAvailPrePos(0);
 			}
@@ -1623,15 +1623,15 @@ WTSTradeInfo* TraderCTPOpt::makeTradeRecord(CThostFtdcTradeField *tradeField)
 
 	//if(uDate == m_pContractMgr->getTradingDate())
 	//{
-	//	//Èç¹ûµ±Ç°ÈÕÆÚºÍ½»Ò×ÈÕÒ»ÖÂ,ÇÒÊ±¼ä´óÓÚ21µã,ËµÃ÷ÊÇÒ¹ÅÌ,Ò²¾ÍÊÇÊµ¼ÊÈÕÆÚÒªµ¥¶À¼ÆËã
+	//	//å¦‚æžœå½“å‰æ—¥æœŸå’Œäº¤æ˜“æ—¥ä¸€è‡´,ä¸”æ—¶é—´å¤§äºŽ21ç‚¹,è¯´æ˜Žæ˜¯å¤œç›˜,ä¹Ÿå°±æ˜¯å®žé™…æ—¥æœŸè¦å•ç‹¬è®¡ç®—
 	//	if (uTime / 10000 >= 21)
 	//	{
 	//		uDate = m_pMarketMgr->getPrevTDate(commInfo->getExchg(), uDate, 1);
 	//	}
 	//	else if(uTime <= 3)
 	//	{
-	//		//Èç¹ûÔÚ3µãÒÔÄÚ,¾ÍÒªÏÈ»ñÈ¡ÉÏÒ»¸ö½»Ò×ÈÕ,ÔÙ»ñÈ¡ÏÂÒ»¸ö×ÔÈ»ÈÕ
-	//		//ÕâÑù×öµÄÄ¿µÄÊÇ,Óöµ½ÖÜÎåÍíÉÏµÄÇé¿ö,¿ÉÒÔ´¦Àí¹ýÀ´
+	//		//å¦‚æžœåœ¨3ç‚¹ä»¥å†…,å°±è¦å…ˆèŽ·å–ä¸Šä¸€ä¸ªäº¤æ˜“æ—¥,å†èŽ·å–ä¸‹ä¸€ä¸ªè‡ªç„¶æ—¥
+	//		//è¿™æ ·åšçš„ç›®çš„æ˜¯,é‡åˆ°å‘¨äº”æ™šä¸Šçš„æƒ…å†µ,å¯ä»¥å¤„ç†è¿‡æ¥
 	//		uDate = m_pMarketMgr->getPrevTDate(commInfo->getExchg(), uDate, 1);
 	//		uDate = TimeUtils::getNextDate(uDate);
 	//	}

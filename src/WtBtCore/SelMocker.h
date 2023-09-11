@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
 * \file MfMocker.h
 * \project	WonderTrader
 *
@@ -86,7 +86,7 @@ public:
 	//ICtaStraCtx
 	virtual uint32_t id() { return _context_id; }
 
-	//»Øµ÷º¯Êı
+	//å›è°ƒå‡½æ•°
 	virtual void on_init() override;
 	virtual void on_session_begin(uint32_t curTDate) override;
 	virtual void on_session_end(uint32_t curTDate) override;
@@ -101,13 +101,13 @@ public:
 
 
 	//////////////////////////////////////////////////////////////////////////
-	//²ßÂÔ½Ó¿Ú
+	//ç­–ç•¥æ¥å£
 	virtual double stra_get_position(const char* stdCode, bool bOnlyValid = false, const char* userTag = "") override;
 	virtual void stra_set_position(const char* stdCode, double qty, const char* userTag = "") override;
 	virtual double stra_get_price(const char* stdCode) override;
 
 	/*
-	 *	¶ÁÈ¡µ±ÈÕ¼Û¸ñ
+	 *	è¯»å–å½“æ—¥ä»·æ ¼
 	 */
 	virtual double stra_get_day_price(const char* stdCode, int flag = 0) override;
 
@@ -136,7 +136,7 @@ public:
 	virtual WTSTickData*	stra_get_last_tick(const char* stdCode) override;
 
 	/*
-	 *	»ñÈ¡·ÖÔÂºÏÔ¼´úÂë
+	 *	è·å–åˆ†æœˆåˆçº¦ä»£ç 
 	 */
 	virtual std::string		stra_get_rawcode(const char* stdCode) override;
 
@@ -155,11 +155,11 @@ protected:
 	uint32_t			_context_id;
 	HisDataReplayer*	_replayer;
 
-	uint64_t		_total_calc_time;	//×Ü¼ÆËãÊ±¼ä
-	uint32_t		_emit_times;		//×Ü¼ÆËã´ÎÊı
-	int32_t			_slippage;			//³É½»»¬µã
-	bool			_ratio_slippage;	//ÊÇ·ñ±ÈÀı»¬µã
-	uint32_t		_schedule_times;	//µ÷¶È´ÎÊı
+	uint64_t		_total_calc_time;	//æ€»è®¡ç®—æ—¶é—´
+	uint32_t		_emit_times;		//æ€»è®¡ç®—æ¬¡æ•°
+	int32_t			_slippage;			//æˆäº¤æ»‘ç‚¹
+	bool			_ratio_slippage;	//æ˜¯å¦æ¯”ä¾‹æ»‘ç‚¹
+	uint32_t		_schedule_times;	//è°ƒåº¦æ¬¡æ•°
 
 	std::string		_main_key;
 
@@ -252,10 +252,10 @@ protected:
 	std::stringstream	_sig_logs;
 	std::stringstream	_pos_logs;
 
-	//ÊÇ·ñ´¦ÓÚµ÷¶ÈÖĞµÄ±ê¼Ç
-	bool			_is_in_schedule;	//ÊÇ·ñÔÚ×Ô¶¯µ÷¶ÈÖĞ
+	//æ˜¯å¦å¤„äºè°ƒåº¦ä¸­çš„æ ‡è®°
+	bool			_is_in_schedule;	//æ˜¯å¦åœ¨è‡ªåŠ¨è°ƒåº¦ä¸­
 
-	//ÓÃ»§Êı¾İ
+	//ç”¨æˆ·æ•°æ®
 	typedef wt_hashmap<std::string, std::string> StringHashMap;
 	StringHashMap	_user_datas;
 	bool			_ud_modified;
@@ -300,6 +300,6 @@ protected:
 
 	uint32_t		_cur_tdate;
 
-	//tick¶©ÔÄÁĞ±í
+	//tickè®¢é˜…åˆ—è¡¨
 	wt_hashset<std::string> _tick_subs;
 };

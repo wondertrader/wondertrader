@@ -1,11 +1,11 @@
-/*!
+ï»¿/*!
  * \file DLLHelper.hpp
  * \project	WonderTrader
  *
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief ¶¯Ì¬¿â¸¨ÖúÀà,Ö÷ÒªÊÇ°Ñ¿çÆ½Ì¨µÄ²îÒì·â×°ÆğÀ´,·½±ãµ÷ÓÃ
+ * \brief åŠ¨æ€åº“è¾…åŠ©ç±»,ä¸»è¦æ˜¯æŠŠè·¨å¹³å°çš„å·®å¼‚å°è£…èµ·æ¥,æ–¹ä¾¿è°ƒç”¨
  */
 #pragma once
 #include <string>

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "../WtBtCore/SelMocker.h"
 
 class ExpSelMocker : public SelMocker
