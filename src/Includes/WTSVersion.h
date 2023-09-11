@@ -5,3 +5,4 @@
 #define WT_VER_PATCH 8
 
 static const char WT_VERSION[] = "v0.9.8";
+static const char WT_PRODUCT[] = "WT_v0.9.8";

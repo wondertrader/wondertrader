@@ -8,6 +8,7 @@
  * \brief
  */
 #include "ParserHuaX.h"
+#include "../Includes/WTSVersion.h"
 
 template<typename... Args>
 inline void write_log(IParserSpi* sink, WTSLogLevel ll, const char* format, const Args&... args)
@@ -157,7 +158,7 @@ void ParserHuaX::DoLogin()
 	CTORATstpReqUserLoginField req_user_login_field;
 	memset(&req_user_login_field, 0, sizeof(req_user_login_field));
 
-	strcpy(req_user_login_field.UserProductInfo, "WonderTrader");
+	strcpy(req_user_login_field.UserProductInfo, WT_PRODUCT);
 
 	int iResult = _api->ReqUserLogin(&req_user_login_field, 1);
 

@@ -9,13 +9,16 @@
  */
 #include "ParserCTPMini.h"
 #include "../Share/StrUtil.hpp"
-#include "../Share/TimeUtils.hpp"
-#include "../Includes/WTSDataDef.hpp"
 #include "../Share/StdUtils.hpp"
+#include "../Share/TimeUtils.hpp"
+#include "../Share/ModuleHelper.hpp"
+
+#include "../Includes/WTSDataDef.hpp"
 #include "../Includes/WTSContractInfo.hpp"
 #include "../Includes/WTSVariant.hpp"
 #include "../Includes/IBaseDataMgr.h"
-#include "../Share/ModuleHelper.hpp"
+#include "../Includes/WTSVersion.h"
+
 #include <boost/filesystem.hpp>
 
  //By Wesley @ 2022.01.05
@@ -360,7 +363,7 @@ void ParserCTPMini::ReqUserLogin()
 	strcpy(req.BrokerID, m_strBroker.c_str());
 	strcpy(req.UserID, m_strUserID.c_str());
 	strcpy(req.Password, m_strPassword.c_str());
-	strcpy(req.UserProductInfo, "WonderTrader");
+	strcpy(req.UserProductInfo, WT_PRODUCT);
 	int iResult = m_pUserAPI->ReqUserLogin(&req, ++m_iRequestID);
 	if(iResult != 0)
 	{

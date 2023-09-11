@@ -9,6 +9,7 @@
  */
 #include "ParserCTP.h"
 
+#include "../Includes/WTSVersion.h"
 #include "../Includes/WTSDataDef.hpp"
 #include "../Includes/WTSContractInfo.hpp"
 #include "../Includes/WTSVariant.hpp"
@@ -379,7 +380,7 @@ void ParserCTP::ReqUserLogin()
 	strcpy(req.BrokerID, m_strBroker.c_str());
 	strcpy(req.UserID, m_strUserID.c_str());
 	strcpy(req.Password, m_strPassword.c_str());
-	strcpy(req.UserProductInfo, "WonderTrader");
+	strcpy(req.UserProductInfo, WT_PRODUCT);
 	int iResult = m_pUserAPI->ReqUserLogin(&req, ++m_iRequestID);
 	if(iResult != 0)
 	{

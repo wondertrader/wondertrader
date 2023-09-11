@@ -15,6 +15,7 @@
 #include "../Includes/WTSTradeDef.hpp"
 #include "../Includes/WTSError.hpp"
 #include "../Includes/WTSVariant.hpp"
+#include "../Includes/WTSVersion.h"
 
 #include "../Share/ModuleHelper.hpp"
 
@@ -1020,8 +1021,7 @@ void TraderATP::reconnect()
 	prop.heartbeat_interval_milli = 5000;                           // 发送心跳的时间间隔，单位：毫秒
 	prop.connect_timeout_milli = 5000;                              // 连接超时时间，单位：毫秒
 	prop.reconnect_time = 10;                                       // 重试连接次数
-	prop.client_name = "WonderTrader";                              // 客户端程序名字
-	prop.client_version = "V1.0.0";									// 客户端程序版本
+	prop.client_name = _product;									// 客户端程序名字
 	prop.report_sync = report_sync;									// 回报同步数据分区号+序号，首次是空，断线重连时填入的是接受到的最新分区号+序号
 	prop.mode = 0;													// 模式0-同步回报模式，模式1-快速登录模式，不同步回报
 

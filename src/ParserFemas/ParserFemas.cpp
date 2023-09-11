@@ -13,6 +13,7 @@
 #include "../Includes/WTSContractInfo.hpp"
 #include "../Includes/WTSVariant.hpp"
 #include "../Includes/IBaseDataMgr.h"
+#include "../Includes/WTSVersion.h"
 
 #include "../Share/StdUtils.hpp"
 #include "../Share/TimeUtils.hpp"
@@ -358,7 +359,7 @@ void ParserFemas::ReqUserLogin()
 	strcpy(req.BrokerID, m_strBroker.c_str());
 	strcpy(req.UserID, m_strUserID.c_str());
 	strcpy(req.Password, m_strPassword.c_str());
-	strcpy(req.UserProductInfo, "WonderTrader");
+	strcpy(req.UserProductInfo, WT_PRODUCT);
 	int iResult = m_pUserAPI->ReqUserLogin(&req, ++m_iRequestID);
 	if(iResult != 0)
 	{

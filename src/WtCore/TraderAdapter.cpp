@@ -19,17 +19,18 @@
 
 #include "../WTSTools/WTSLogger.h"
 
-#include "../Share/CodeHelper.hpp"
 #include "../Includes/WTSError.hpp"
 #include "../Includes/WTSVariant.hpp"
 #include "../Includes/WTSTradeDef.hpp"
 #include "../Includes/WTSRiskDef.hpp"
-#include "../Share/TimeUtils.hpp"
 #include "../Includes/WTSSessionInfo.hpp"
-
 #include "../Includes/WTSContractInfo.hpp"
 #include "../Includes/IBaseDataMgr.h"
+#include "../Includes/WTSVersion.h"
+
 #include "../Share/decimal.h"
+#include "../Share/TimeUtils.hpp"
+#include "../Share/CodeHelper.hpp"
 
 #include <exception>
 #include <rapidjson/document.h>
@@ -1399,7 +1400,7 @@ void TraderAdapter::handleEvent(WTSTraderEvent e, int32_t ec)
 	{
 		if(ec == 0)
 		{
-			_trader_api->login(_cfg->getCString("user"), _cfg->getCString("pass"), "WonderTrader");
+			_trader_api->login(_cfg->getCString("user"), _cfg->getCString("pass"), WT_PRODUCT);
 		}
 		else
 		{
@@ -1442,7 +1443,7 @@ void TraderAdapter::onRspEntrust(WTSEntrust* entrust, WTSError *err)
 {
 	if (err && err->getErrorCode() != WEC_NONE)
 	{
-		WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR,err->getMessage());
+		WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR, err->getMessage());
 		WTSContractInfo* cInfo = entrust->getContractInfo();
 		WTSCommodityInfo* commInfo = cInfo->getCommInfo();
 		std::string stdCode;
