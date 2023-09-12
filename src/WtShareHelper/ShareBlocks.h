@@ -15,6 +15,7 @@ namespace shareblock
 
 	const int FLAG_SIZE = 8;
 	const int MAX_SEC_CNT = 64;
+	const int MAX_KEY_CNT = 64;
 
 	typedef uint64_t ValueType;
 	const ValueType	SMVT_INT32 = 1;
@@ -46,7 +47,7 @@ namespace shareblock
 	typedef struct _SectionInfo
 	{
 		char		_name[32];
-		KeyInfo		_keys[32];
+		KeyInfo		_keys[MAX_KEY_CNT];
 		uint32_t	_count;			//数据条数，即key的个数
 		uint32_t	_offset;		//记录下一个可分配地址的偏移量
 		uint64_t	_updatetime;
