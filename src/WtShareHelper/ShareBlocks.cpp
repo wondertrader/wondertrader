@@ -202,7 +202,7 @@ void* ShareBlocks::make_valid(const char* domain, const char* section, const cha
 		if (!shm._master)
 			return nullptr;
 
-		if (secInfo->_count == 32)
+		if (secInfo->_count == MAX_KEY_CNT)
 			return nullptr;
 
 		if (secInfo->_offset + len > 1024)
