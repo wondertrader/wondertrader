@@ -1846,9 +1846,9 @@ inline const char* stateToName(WTSOrderState woState)
 		return "AllTrd";
 	else if (woState == WOS_PartTraded_NotQueuing || woState == WOS_PartTraded_Queuing)
 		return "PrtTrd";
-	else if (woState == WOS_NotTraded_NotQueuing || woState == WOS_NotTraded_Queuing)
+	else if (woState == WOS_NotTraded_Queuing)
 		return "UnTrd";
-	else if (woState == WOS_Canceled)
+	else if (woState == WOS_Canceled || woState == WOS_NotTraded_NotQueuing)
 		return "Cncld";
 	else if (woState == WOS_Submitting)
 		return "Smtting";

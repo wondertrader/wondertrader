@@ -1159,10 +1159,12 @@ WTSTimeCondition TraderCTP::wrapTimeCondition(TThostFtdcTimeConditionType timeCo
 
 WTSOrderState TraderCTP::wrapOrderState(TThostFtdcOrderStatusType orderState)
 {
-	if (orderState != THOST_FTDC_OST_Unknown)
-		return (WTSOrderState)orderState;
-	else
+	if (orderState == THOST_FTDC_OST_PartTradedNotQueueing)
+		return WOS_Canceled;
+	else if (orderState == THOST_FTDC_OST_Unknown)
 		return WOS_Submitting;
+	else
+		return (WTSOrderState)orderState;
 }
 
 int TraderCTP::wrapActionFlag(WTSActionFlag actionFlag)
