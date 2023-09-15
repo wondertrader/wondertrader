@@ -498,7 +498,6 @@ public:
 		return false;
 	}
 
-	const TradingTimes &getTradingTimes() const{return m_tradingTimes;}
 
 	inline uint32_t	offsetTime(uint32_t uTime, bool bAlignLeft) const
 	{

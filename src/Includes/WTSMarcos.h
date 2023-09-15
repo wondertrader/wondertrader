@@ -84,6 +84,7 @@ typedef const char*			WtString;
  *	By Wesley @ 2022.03.17
  *	重写一个strcpy
  *	核心的要点就是不用strcpy
+ *	字符串比较长的时候，会优于strcpy
  */
 inline size_t wt_strcpy(char* des, const char* src, size_t len = 0)
 {
