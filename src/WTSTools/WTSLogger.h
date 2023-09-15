@@ -176,6 +176,20 @@ public:
 	}
 
 	template<typename... Args>
+	static void log_by_cat_prefix(const char* catName, WTSLogLevel ll, const char* format, const Args& ...args)
+	{
+		if (m_logLevel > ll || m_bStopped)
+			return;
+
+		m_buffer[0] = '[';
+		strcpy(m_buffer + 1, catName);
+		auto offset = strlen(catName);
+		m_buffer[offset + 1] = ']';
+		char* s = m_buffer + offset + 2;
+		log_raw_by_cat(catName, ll, m_buffer);
+	}
+
+	template<typename... Args>
 	static void log_dyn(const char* patttern, const char* catName, WTSLogLevel ll, const char* format, const Args& ...args)
 	{
 		if (m_logLevel > ll || m_bStopped)
@@ -183,6 +197,21 @@ public:
 
 		fmtutil::format_to(m_buffer, format, args...);
 
+		log_dyn_raw(patttern, catName, ll, m_buffer);
+	}
+
+	template<typename... Args>
+	static void log_dyn_prefix(const char* patttern, const char* catName, WTSLogLevel ll, const char* format, const Args& ...args)
+	{
+		if (m_logLevel > ll || m_bStopped)
+			return;
+
+		m_buffer[0] = '[';
+		strcpy(m_buffer+1, catName);
+		auto offset = strlen(catName);
+		m_buffer[offset + 1] = ']';
+		char* s = m_buffer + offset + 2;
+		fmtutil::format_to(s, format, args...);
 		log_dyn_raw(patttern, catName, ll, m_buffer);
 	}
 
