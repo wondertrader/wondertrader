@@ -519,8 +519,6 @@ public:
 		}
 		
 		return (curMinute/60)*100 + curMinute%60;
-
-		return uTime;
 	}
 
 	inline uint32_t	originalTime(uint32_t uTime) const
