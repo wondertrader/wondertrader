@@ -16,6 +16,7 @@ namespace shareblock
 	const int FLAG_SIZE = 8;
 	const int MAX_SEC_CNT = 64;
 	const int MAX_KEY_CNT = 64;
+	const int MAX_CMD_SIZE = 64;
 
 	typedef uint64_t ValueType;
 	const ValueType	SMVT_INT32 = 1;
@@ -25,12 +26,7 @@ namespace shareblock
 	const ValueType	SMVT_DOUBLE = 5;
 	const ValueType	SMVT_STRING = 6;
 
-	const std::size_t VTL_INT32 = 4;
-	const std::size_t VTL_UINT32 = 4;
-	const std::size_t VTL_INT64 = 8;
-	const std::size_t VTL_UINT64 = 8;
-	const std::size_t VTL_DOUBLE = 8;
-	const std::size_t VTL_STRING = 64;
+	const std::size_t SMVT_SIZES[] = { 0,4,4,8,8,8,64 };
 
 	#pragma pack(push, 1)
 	typedef struct _KeyInfo
@@ -72,6 +68,29 @@ namespace shareblock
 			memset(this, 0, sizeof(_ShmBlock));
 		}
 	} ShmBlock;
+
+	typedef struct _CmdInfo
+	{
+		uint32_t	_state;
+		char		_command[MAX_CMD_SIZE];
+
+		_CmdInfo() { memset(this, 0, sizeof(_CmdInfo)); }
+	} CmdInfo;
+
+	template <int N = 128>
+	struct _CmdBlock
+	{
+		uint32_t	_capacity = N;
+	 	volatile uint32_t	_readable;
+		volatile uint32_t	_writable;
+		uint32_t	_cmdpid;
+		CmdInfo		_commands[N];
+
+		_CmdBlock():_readable(UINT32_MAX),_writable(0),_cmdpid(0){}
+	};
+
+	typedef _CmdBlock<128>	CmdBlock;
+
 	#pragma pack(pop)
 
 
@@ -88,10 +107,10 @@ namespace shareblock
 		}
 
 		bool	init_master(const char* name, const char* path = "");
-
 		bool	init_slave(const char* name, const char* path = "");
 
 		bool	update_slave(const char* name);
+		bool	release_slave(const char* name);
 
 		std::vector<std::string>	get_sections(const char* domain);
 		std::vector<KeyInfo*>		get_keys(const char* domain, const char* section);
@@ -120,9 +139,13 @@ namespace shareblock
 		uint64_t	get_uint64(const char* domain, const char* section, const char* key, uint64_t defVal = 0);
 		double		get_double(const char* domain, const char* section, const char* key, double defVal = 0);
 
-	private:
-		void*	make_valid(const char* domain, const char* section, const char* key, std::size_t len, SecInfo* &secInfo);
+	public:
+		bool	init_cmder(bool isCmder = false, const char* path = "");
+		bool	add_cmd(const char* cmd);
+		const char*	get_cmd(uint32_t& lastIdx);
 
+	private:
+		void*	make_valid(const char* domain, const char* section, const char* key, ValueType vType, SecInfo* &secInfo);
 		void*	check_valid(const char* domain, const char* section, const char* key, ValueType vType, SecInfo* &secInfo);
 
 	private:
@@ -148,5 +171,13 @@ namespace shareblock
 		}ShmPair;
 		typedef wt_hashmap<std::string, ShmPair>	ShmBlockMap;
 		ShmBlockMap		_shm_blocks;
+
+		typedef struct _CmdPair
+		{
+			MappedFilePtr	_domain;
+			CmdBlock*		_block;
+			bool			_cmder;
+		} CmdPair;
+		CmdPair			_cmd;
 	};
 }

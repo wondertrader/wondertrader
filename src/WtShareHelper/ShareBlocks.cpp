@@ -126,6 +126,27 @@ bool ShareBlocks::update_slave(const char* name)
 	return true;
 }
 
+bool ShareBlocks::release_slave(const char* name)
+{
+	auto it = _shm_blocks.find(name);
+	if (it == _shm_blocks.end())
+		return true;
+
+	ShmPair& shm = it->second;
+
+	//只有slave需要释放
+	if (shm._master)
+		return false;
+
+	shm._block = NULL;
+	shm._sections.clear();
+	shm._domain.reset();
+	shm._blocktime = 0;
+
+	_shm_blocks.erase(it);
+	return true;
+}
+
 uint64_t ShareBlocks::get_section_updatetime(const char* domain, const char* section)
 {
 	auto it = _shm_blocks.find(domain);
@@ -159,11 +180,13 @@ bool ShareBlocks::commit_section(const char* domain, const char* section)
 	return true;
 }
 
-void* ShareBlocks::make_valid(const char* domain, const char* section, const char* key, std::size_t len, SecInfo* &secInfo)
+void* ShareBlocks::make_valid(const char* domain, const char* section, const char* key, ValueType vType, SecInfo* &secInfo)
 {
 	auto it = _shm_blocks.find(domain);
 	if (it == _shm_blocks.end())
 		return nullptr;
+
+	std::size_t len = SMVT_SIZES[vType];
 
 	ShmPair& shm = (ShmPair&)it->second;
 	KeyInfo* keyInfo = nullptr;
@@ -306,7 +329,7 @@ std::vector<KeyInfo*> ShareBlocks::get_keys(const char* domain, const char* sect
 const char* ShareBlocks::allocate_string(const char* domain, const char* section, const char* key, const char* initVal /* = "" */, bool bForceWrite/* = false*/)
 {
 	SecInfo* secInfo = nullptr;
-	KeyInfo* keyInfo = (KeyInfo*)make_valid(domain, section, key, VTL_STRING, secInfo);
+	KeyInfo* keyInfo = (KeyInfo*)make_valid(domain, section, key, SMVT_STRING, secInfo);
 	if (keyInfo == nullptr)
 		return NULL;
 
@@ -314,7 +337,7 @@ const char* ShareBlocks::allocate_string(const char* domain, const char* section
 	{
 		//如果type为0，说明是新分配的，则用初始值填充
 		keyInfo->_type = SMVT_STRING;
-		wt_strcpy(secInfo->_data + keyInfo->_offset, initVal, VTL_STRING);
+		wt_strcpy(secInfo->_data + keyInfo->_offset, initVal, SMVT_SIZES[SMVT_STRING]);
 	}
 
 	return (secInfo->_data + keyInfo->_offset);
@@ -323,7 +346,7 @@ const char* ShareBlocks::allocate_string(const char* domain, const char* section
 int32_t* ShareBlocks::allocate_int32(const char* domain, const char* section, const char* key, int32_t initVal /* = 0 */, bool bForceWrite/* = false*/)
 {
 	SecInfo* secInfo = nullptr;
-	KeyInfo* keyInfo = (KeyInfo*)make_valid(domain, section, key, VTL_INT32, secInfo);
+	KeyInfo* keyInfo = (KeyInfo*)make_valid(domain, section, key, SMVT_INT32, secInfo);
 	if (keyInfo == nullptr)
 		return NULL;
 
@@ -340,7 +363,7 @@ int32_t* ShareBlocks::allocate_int32(const char* domain, const char* section, co
 int64_t* ShareBlocks::allocate_int64(const char* domain, const char* section, const char* key, int64_t initVal /* = 0 */, bool bForceWrite/* = false*/)
 {
 	SecInfo* secInfo = nullptr;
-	KeyInfo* keyInfo = (KeyInfo*)make_valid(domain, section, key, VTL_INT64, secInfo);
+	KeyInfo* keyInfo = (KeyInfo*)make_valid(domain, section, key, SMVT_INT64, secInfo);
 	if (keyInfo == nullptr)
 		return NULL;
 
@@ -357,7 +380,7 @@ int64_t* ShareBlocks::allocate_int64(const char* domain, const char* section, co
 uint32_t* ShareBlocks::allocate_uint32(const char* domain, const char* section, const char* key, uint32_t initVal /* = 0 */, bool bForceWrite/* = false*/)
 {
 	SecInfo* secInfo = nullptr;
-	KeyInfo* keyInfo = (KeyInfo*)make_valid(domain, section, key, VTL_UINT32, secInfo);
+	KeyInfo* keyInfo = (KeyInfo*)make_valid(domain, section, key, SMVT_UINT32, secInfo);
 	if (keyInfo == nullptr)
 		return NULL;
 
@@ -374,7 +397,7 @@ uint32_t* ShareBlocks::allocate_uint32(const char* domain, const char* section, 
 uint64_t* ShareBlocks::allocate_uint64(const char* domain, const char* section, const char* key, uint64_t initVal /* = 0 */, bool bForceWrite/* = false*/)
 {
 	SecInfo* secInfo = nullptr;
-	KeyInfo* keyInfo = (KeyInfo*)make_valid(domain, section, key, VTL_UINT64, secInfo);
+	KeyInfo* keyInfo = (KeyInfo*)make_valid(domain, section, key, SMVT_UINT64, secInfo);
 	if (keyInfo == nullptr)
 		return NULL;
 
@@ -391,7 +414,7 @@ uint64_t* ShareBlocks::allocate_uint64(const char* domain, const char* section, 
 double* ShareBlocks::allocate_double(const char* domain, const char* section, const char* key, double initVal /* = 0 */, bool bForceWrite/* = false*/)
 {
 	SecInfo* secInfo = nullptr;
-	KeyInfo* keyInfo = (KeyInfo*)make_valid(domain, section, key, VTL_DOUBLE, secInfo);
+	KeyInfo* keyInfo = (KeyInfo*)make_valid(domain, section, key, SMVT_DOUBLE, secInfo);
 	if (keyInfo == nullptr)
 		return NULL;
 
@@ -408,12 +431,12 @@ double* ShareBlocks::allocate_double(const char* domain, const char* section, co
 bool ShareBlocks::set_string(const char* domain, const char* section, const char* key, const char* val)
 {
 	SecInfo* secInfo = nullptr;
-	KeyInfo* keyInfo = (KeyInfo*)make_valid(domain, section, key, VTL_STRING, secInfo);
+	KeyInfo* keyInfo = (KeyInfo*)make_valid(domain, section, key, SMVT_STRING, secInfo);
 	if (keyInfo == nullptr)
 		return false;
 
 	keyInfo->_type = SMVT_STRING;
-	wt_strcpy(secInfo->_data + keyInfo->_offset, val, VTL_STRING);
+	wt_strcpy(secInfo->_data + keyInfo->_offset, val, SMVT_SIZES[SMVT_STRING]);
 
 	return true;
 }
@@ -421,7 +444,7 @@ bool ShareBlocks::set_string(const char* domain, const char* section, const char
 bool ShareBlocks::set_int32(const char* domain, const char* section, const char* key, int32_t val)
 {
 	SecInfo* secInfo = nullptr;
-	KeyInfo* keyInfo = (KeyInfo*)make_valid(domain, section, key, VTL_INT32, secInfo);
+	KeyInfo* keyInfo = (KeyInfo*)make_valid(domain, section, key, SMVT_INT32, secInfo);
 	if (keyInfo == nullptr)
 		return false;
 
@@ -434,7 +457,7 @@ bool ShareBlocks::set_int32(const char* domain, const char* section, const char*
 bool ShareBlocks::set_int64(const char* domain, const char* section, const char* key, int64_t val)
 {
 	SecInfo* secInfo = nullptr;
-	KeyInfo* keyInfo = (KeyInfo*)make_valid(domain, section, key, VTL_INT64, secInfo);
+	KeyInfo* keyInfo = (KeyInfo*)make_valid(domain, section, key, SMVT_INT64, secInfo);
 	if (keyInfo == nullptr)
 		return false;
 
@@ -447,7 +470,7 @@ bool ShareBlocks::set_int64(const char* domain, const char* section, const char*
 bool ShareBlocks::set_uint32(const char* domain, const char* section, const char* key, uint32_t val)
 {
 	SecInfo* secInfo = nullptr;
-	KeyInfo* keyInfo = (KeyInfo*)make_valid(domain, section, key, VTL_UINT32, secInfo);
+	KeyInfo* keyInfo = (KeyInfo*)make_valid(domain, section, key, SMVT_UINT32, secInfo);
 	if (keyInfo == nullptr)
 		return false;
 
@@ -460,7 +483,7 @@ bool ShareBlocks::set_uint32(const char* domain, const char* section, const char
 bool ShareBlocks::set_uint64(const char* domain, const char* section, const char* key, uint64_t val)
 {
 	SecInfo* secInfo = nullptr;
-	KeyInfo* keyInfo = (KeyInfo*)make_valid(domain, section, key, VTL_UINT64, secInfo);
+	KeyInfo* keyInfo = (KeyInfo*)make_valid(domain, section, key, SMVT_UINT64, secInfo);
 	if (keyInfo == nullptr)
 		return false;
 
@@ -473,7 +496,7 @@ bool ShareBlocks::set_uint64(const char* domain, const char* section, const char
 bool ShareBlocks::set_double(const char* domain, const char* section, const char* key, double val)
 {
 	SecInfo* secInfo = nullptr;
-	KeyInfo* keyInfo = (KeyInfo*)make_valid(domain, section, key, VTL_DOUBLE, secInfo);
+	KeyInfo* keyInfo = (KeyInfo*)make_valid(domain, section, key, SMVT_DOUBLE, secInfo);
 	if (keyInfo == nullptr)
 		return false;
 
@@ -541,4 +564,80 @@ double ShareBlocks::get_double(const char* domain, const char* section, const ch
 		return defVal;
 
 	return *(double*)(secInfo->_data + keyInfo->_offset);
+}
+
+bool ShareBlocks::init_cmder(bool isCmder /* = false */, const char* path /* = "" */)
+{
+	if (_cmd._block != NULL)
+		return true;
+
+	std::string filename = path;
+	if (filename.empty())
+		filename = ".cmd";
+
+	if (!StdFile::exists(filename.c_str()))
+	{
+		BoostFile bf;
+		bf.create_new_file(filename.c_str());
+		bf.truncate_file(sizeof(CmdBlock));
+		bf.close_file();
+	}
+
+	_cmd._domain.reset(new BoostMappingFile);
+	_cmd._domain->map(filename.c_str());
+	_cmd._cmder = isCmder;
+	if(_cmd._cmder)
+		_cmd._block->_cmdpid = _getpid();
+	_cmd._block = (CmdBlock*)_cmd._domain->addr();
+	
+	//启动的时候都做一下偏移
+	_cmd._block->_writable %= _cmd._block->_capacity;
+	if(_cmd._block->_readable != UINT32_MAX)
+	{
+		_cmd._block->_readable %= _cmd._block->_capacity;
+		if (_cmd._block->_readable > _cmd._block->_writable)
+			_cmd._block->_writable += _cmd._block->_capacity;
+	}
+
+	return true;
+}
+
+bool ShareBlocks::add_cmd(const char* cmd)
+{
+	if (_cmd._block != NULL)
+		return false;
+
+	if (_cmd._block->_cmdpid != _getpid())
+		return false;
+
+	/*
+	 *	先移动写的下标，然后写入数据
+	 *	写完了以后，再移动读的下标
+	 */
+	uint32_t wIdx = _cmd._block->_writable++;
+	uint32_t realIdx = wIdx % _cmd._block->_capacity;
+	_cmd._block->_commands[realIdx]._state = 0;
+	strcpy(_cmd._block->_commands[realIdx]._command, cmd);
+	_cmd._block->_readable = wIdx;
+	return true;
+}
+
+const char* ShareBlocks::get_cmd(uint32_t& lastIdx)
+{
+	if (_cmd._block != NULL)
+		return "";
+
+	//指令下达者就不需要获取指令了
+	if (_cmd._cmder)
+		return "";
+
+	//说明刚启动，之前的命令全部作废
+	if (lastIdx == UINT32_MAX || lastIdx >= _cmd._block->_readable || _cmd._block->_readable == UINT32_MAX)
+	{
+		lastIdx = _cmd._block->_readable;
+		return "";
+	}
+
+	lastIdx++;
+	return _cmd._block->_commands[lastIdx]._command;
 }
