@@ -19,6 +19,11 @@ bool update_slave(const char* id)
 	return ShareBlocks::one().update_slave(id);
 }
 
+bool release_slave(const char* name)
+{
+	return ShareBlocks::one().release_slave(name);
+}
+
 uint32_t get_sections(const char* domain, FuncGetSections cb)
 {
 	auto ay = ShareBlocks::one().get_sections(domain);
@@ -135,4 +140,19 @@ uint64_t get_uint64(const char* domain, const char* section, const char* key, ui
 double get_double(const char* domain, const char* section, const char* key, double defVal /* = 0 */)
 {
 	return ShareBlocks::one().get_double(domain, section, key, defVal);
+}
+
+bool init_cmder(bool isCmder /* = false */, const char* path /* = "" */)
+{
+	return ShareBlocks::one().init_cmder(isCmder, path);
+}
+
+bool add_cmd(const char* cmd)
+{
+	return ShareBlocks::one().add_cmd(cmd);
+}
+
+const char* get_cmd(uint32_t& lastIdx)
+{
+	return ShareBlocks::one().get_cmd(lastIdx);
 }

@@ -586,9 +586,12 @@ bool ShareBlocks::init_cmder(bool isCmder /* = false */, const char* path /* = "
 	_cmd._domain.reset(new BoostMappingFile);
 	_cmd._domain->map(filename.c_str());
 	_cmd._cmder = isCmder;
+	_cmd._block = (CmdBlock*)_cmd._domain->addr();
+	if(_cmd._block->_capacity == 0)
+		new(_cmd._domain->addr()) CmdBlock();
+
 	if(_cmd._cmder)
 		_cmd._block->_cmdpid = _getpid();
-	_cmd._block = (CmdBlock*)_cmd._domain->addr();
 	
 	//启动的时候都做一下偏移
 	_cmd._block->_writable %= _cmd._block->_capacity;
@@ -604,7 +607,7 @@ bool ShareBlocks::init_cmder(bool isCmder /* = false */, const char* path /* = "
 
 bool ShareBlocks::add_cmd(const char* cmd)
 {
-	if (_cmd._block != NULL)
+	if (_cmd._block == NULL)
 		return false;
 
 	if (_cmd._block->_cmdpid != _getpid())
@@ -624,7 +627,7 @@ bool ShareBlocks::add_cmd(const char* cmd)
 
 const char* ShareBlocks::get_cmd(uint32_t& lastIdx)
 {
-	if (_cmd._block != NULL)
+	if (_cmd._block == NULL)
 		return "";
 
 	//指令下达者就不需要获取指令了
@@ -632,12 +635,23 @@ const char* ShareBlocks::get_cmd(uint32_t& lastIdx)
 		return "";
 
 	//说明刚启动，之前的命令全部作废
-	if (lastIdx == UINT32_MAX || lastIdx >= _cmd._block->_readable || _cmd._block->_readable == UINT32_MAX)
+	if (_cmd._block->_readable == UINT32_MAX)
 	{
-		lastIdx = _cmd._block->_readable;
+		lastIdx = 999;
 		return "";
 	}
-
-	lastIdx++;
-	return _cmd._block->_commands[lastIdx]._command;
+	else if(lastIdx == 999 && _cmd._block->_readable != UINT32_MAX)
+	{
+		lastIdx = 0;
+		return _cmd._block->_commands[lastIdx]._command;
+	}
+	else if(lastIdx >= _cmd._block->_readable)
+	{
+		return "";
+	}
+	else
+	{
+		lastIdx++;
+		return _cmd._block->_commands[lastIdx % _cmd._block->_capacity]._command;
+	}
 }

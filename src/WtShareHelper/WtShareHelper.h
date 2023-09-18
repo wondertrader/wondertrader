@@ -18,6 +18,8 @@ extern "C"
 
 	EXPORT_FLAG	bool	update_slave(const char* id);
 
+	EXPORT_FLAG bool	release_slave(const char* name);
+
 	EXPORT_FLAG	uint32_t	get_sections(const char* domain, FuncGetSections cb);
 
 	EXPORT_FLAG	uint32_t	get_keys(const char* domain, const char* section, FuncGetKeys cb);
@@ -61,6 +63,11 @@ extern "C"
 	EXPORT_FLAG uint64_t	get_uint64(const char* domain, const char* section, const char* key, uint64_t defVal = 0);
 
 	EXPORT_FLAG double		get_double(const char* domain, const char* section, const char* key, double defVal = 0);
+
+
+	EXPORT_FLAG bool		init_cmder(bool isCmder = false, const char* path = "");
+	EXPORT_FLAG bool		add_cmd(const char* cmd);
+	EXPORT_FLAG const char*	get_cmd(uint32_t& lastIdx);
 	
 #ifdef __cplusplus
 }
