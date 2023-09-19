@@ -591,7 +591,12 @@ bool ShareBlocks::init_cmder(bool isCmder /* = false */, const char* path /* = "
 		new(_cmd._domain->addr()) CmdBlock();
 
 	if(_cmd._cmder)
-		_cmd._block->_cmdpid = _getpid();
+#ifdef _MSC_VER
+        _cmd._block->_cmdpid = _getpid();
+#else
+		_cmd._block->_cmdpid = getpid();
+#endif
+  
 	
 	//启动的时候都做一下偏移
 	_cmd._block->_writable %= _cmd._block->_capacity;
@@ -610,7 +615,12 @@ bool ShareBlocks::add_cmd(const char* cmd)
 	if (_cmd._block == NULL)
 		return false;
 
-	if (_cmd._block->_cmdpid != _getpid())
+#ifdef _MSC_VER
+    if (_cmd._block->_cmdpid != _getpid())
+#else
+	if (_cmd._block->_cmdpid != getpid())
+#endif
+	
 		return false;
 
 	/*
