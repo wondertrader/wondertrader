@@ -65,9 +65,9 @@ extern "C"
 	EXPORT_FLAG double		get_double(const char* domain, const char* section, const char* key, double defVal = 0);
 
 
-	EXPORT_FLAG bool		init_cmder(bool isCmder = false, const char* path = "");
-	EXPORT_FLAG bool		add_cmd(const char* cmd);
-	EXPORT_FLAG const char*	get_cmd(uint32_t& lastIdx);
+	EXPORT_FLAG bool		init_cmder(const char* name, bool isCmder = false, const char* path = "");
+	EXPORT_FLAG bool		add_cmd(const char* name, const char* cmd);
+	EXPORT_FLAG const char*	get_cmd(const char* name, uint32_t& lastIdx);
 	
 #ifdef __cplusplus
 }

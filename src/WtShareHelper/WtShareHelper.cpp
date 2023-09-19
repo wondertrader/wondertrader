@@ -142,17 +142,17 @@ double get_double(const char* domain, const char* section, const char* key, doub
 	return ShareBlocks::one().get_double(domain, section, key, defVal);
 }
 
-bool init_cmder(bool isCmder /* = false */, const char* path /* = "" */)
+bool init_cmder(const char* name, bool isCmder /* = false */, const char* path /* = "" */)
 {
-	return ShareBlocks::one().init_cmder(isCmder, path);
+	return ShareBlocks::one().init_cmder(name, isCmder, path);
 }
 
-bool add_cmd(const char* cmd)
+bool add_cmd(const char* name, const char* cmd)
 {
-	return ShareBlocks::one().add_cmd(cmd);
+	return ShareBlocks::one().add_cmd(name, cmd);
 }
 
-const char* get_cmd(uint32_t& lastIdx)
+const char* get_cmd(const char* name, uint32_t& lastIdx)
 {
-	return ShareBlocks::one().get_cmd(lastIdx);
+	return ShareBlocks::one().get_cmd(name, lastIdx);
 }

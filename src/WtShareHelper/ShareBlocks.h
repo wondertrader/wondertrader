@@ -140,9 +140,9 @@ namespace shareblock
 		double		get_double(const char* domain, const char* section, const char* key, double defVal = 0);
 
 	public:
-		bool	init_cmder(bool isCmder = false, const char* path = "");
-		bool	add_cmd(const char* cmd);
-		const char*	get_cmd(uint32_t& lastIdx);
+		bool	init_cmder(const char* name, bool isCmder = false, const char* path = "");
+		bool	add_cmd(const char* name, const char* cmd);
+		const char*	get_cmd(const char* name, uint32_t& lastIdx);
 
 	private:
 		void*	make_valid(const char* domain, const char* section, const char* key, ValueType vType, SecInfo* &secInfo);
@@ -178,6 +178,7 @@ namespace shareblock
 			CmdBlock*		_block;
 			bool			_cmder;
 		} CmdPair;
-		CmdPair			_cmd;
+		typedef wt_hashmap<std::string, CmdPair>	CmdBlockMap;
+		CmdBlockMap		_cmd_blocks;
 	};
 }

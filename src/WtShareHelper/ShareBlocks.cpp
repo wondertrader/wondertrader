@@ -566,9 +566,10 @@ double ShareBlocks::get_double(const char* domain, const char* section, const ch
 	return *(double*)(secInfo->_data + keyInfo->_offset);
 }
 
-bool ShareBlocks::init_cmder(bool isCmder /* = false */, const char* path /* = "" */)
+bool ShareBlocks::init_cmder(const char* name, bool isCmder /* = false */, const char* path /* = "" */)
 {
-	if (_cmd._block != NULL)
+	CmdPair& cmdPair = _cmd_blocks[name];
+	if (cmdPair._block != NULL)
 		return true;
 
 	std::string filename = path;
@@ -583,42 +584,48 @@ bool ShareBlocks::init_cmder(bool isCmder /* = false */, const char* path /* = "
 		bf.close_file();
 	}
 
-	_cmd._domain.reset(new BoostMappingFile);
-	_cmd._domain->map(filename.c_str());
-	_cmd._cmder = isCmder;
-	_cmd._block = (CmdBlock*)_cmd._domain->addr();
-	if(_cmd._block->_capacity == 0)
-		new(_cmd._domain->addr()) CmdBlock();
+	cmdPair._domain.reset(new BoostMappingFile);
+	cmdPair._domain->map(filename.c_str());
+	cmdPair._cmder = isCmder;
+	cmdPair._block = (CmdBlock*)cmdPair._domain->addr();
+	if(cmdPair._block->_capacity == 0)
+		new(cmdPair._domain->addr()) CmdBlock();
 
-	if(_cmd._cmder)
+	if(cmdPair._cmder)
 #ifdef _MSC_VER
-        _cmd._block->_cmdpid = _getpid();
+		cmdPair._block->_cmdpid = _getpid();
 #else
-		_cmd._block->_cmdpid = getpid();
+		cmdPair._block->_cmdpid = getpid();
 #endif
   
 	
 	//启动的时候都做一下偏移
-	_cmd._block->_writable %= _cmd._block->_capacity;
-	if(_cmd._block->_readable != UINT32_MAX)
+	cmdPair._block->_writable %= cmdPair._block->_capacity;
+	if(cmdPair._block->_readable != UINT32_MAX)
 	{
-		_cmd._block->_readable %= _cmd._block->_capacity;
-		if (_cmd._block->_readable > _cmd._block->_writable)
-			_cmd._block->_writable += _cmd._block->_capacity;
+		cmdPair._block->_readable %= cmdPair._block->_capacity;
+		if (cmdPair._block->_readable > cmdPair._block->_writable)
+			cmdPair._block->_writable += cmdPair._block->_capacity;
 	}
 
 	return true;
 }
 
-bool ShareBlocks::add_cmd(const char* cmd)
+bool ShareBlocks::add_cmd(const char* name, const char* cmd)
 {
-	if (_cmd._block == NULL)
+	auto it = _cmd_blocks.find(name);
+	if (it == _cmd_blocks.end())
+		return false;
+
+	CmdPair& cmdPair = it->second;
+
+	if (cmdPair._block == NULL)
 		return false;
 
 #ifdef _MSC_VER
-    if (_cmd._block->_cmdpid != _getpid())
+    if (cmdPair._block->_cmdpid != _getpid())
 #else
-	if (_cmd._block->_cmdpid != getpid())
+	if (cmdPair._block->_cmdpid != getpid())
 #endif
 	
 		return false;
@@ -627,46 +634,52 @@ bool ShareBlocks::add_cmd(const char* cmd)
 	 *	先移动写的下标，然后写入数据
 	 *	写完了以后，再移动读的下标
 	 */
-	uint32_t wIdx = _cmd._block->_writable++;
-	uint32_t realIdx = wIdx % _cmd._block->_capacity;
-	_cmd._block->_commands[realIdx]._state = 0;
-	strcpy(_cmd._block->_commands[realIdx]._command, cmd);
-	_cmd._block->_readable = wIdx;
+	uint32_t wIdx = cmdPair._block->_writable++;
+	uint32_t realIdx = wIdx % cmdPair._block->_capacity;
+	cmdPair._block->_commands[realIdx]._state = 0;
+	strcpy(cmdPair._block->_commands[realIdx]._command, cmd);
+	cmdPair._block->_readable = wIdx;
 	return true;
 }
 
-const char* ShareBlocks::get_cmd(uint32_t& lastIdx)
+const char* ShareBlocks::get_cmd(const char* name, uint32_t& lastIdx)
 {
-	if (_cmd._block == NULL)
+	auto it = _cmd_blocks.find(name);
+	if (it == _cmd_blocks.end())
+		return "";
+
+	CmdPair& cmdPair = it->second;
+
+	if (cmdPair._block == NULL)
 		return "";
 
 	//指令下达者就不需要获取指令了
-	if (_cmd._cmder)
+	if (cmdPair._cmder)
 		return "";
 
 	//说明刚启动，之前的命令全部作废
-	if (_cmd._block->_readable == UINT32_MAX)
+	if (cmdPair._block->_readable == UINT32_MAX)
 	{
 		lastIdx = 999;
 		return "";
 	}
-	else if (lastIdx == UINT32_MAX && _cmd._block->_readable != UINT32_MAX)
+	else if (lastIdx == UINT32_MAX && cmdPair._block->_readable != UINT32_MAX)
 	{
-		lastIdx = _cmd._block->_readable;
+		lastIdx = cmdPair._block->_readable;
 		return "";
 	}
-	else if(lastIdx == 999 && _cmd._block->_readable != UINT32_MAX)
+	else if(lastIdx == 999 && cmdPair._block->_readable != UINT32_MAX)
 	{
 		lastIdx = 0;
-		return _cmd._block->_commands[lastIdx]._command;
+		return cmdPair._block->_commands[lastIdx]._command;
 	}
-	else if(lastIdx >= _cmd._block->_readable)
+	else if(lastIdx >= cmdPair._block->_readable)
 	{
 		return "";
 	}
 	else
 	{
 		lastIdx++;
-		return _cmd._block->_commands[lastIdx % _cmd._block->_capacity]._command;
+		return cmdPair._block->_commands[lastIdx % cmdPair._block->_capacity]._command;
 	}
 }
