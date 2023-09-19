@@ -640,6 +640,11 @@ const char* ShareBlocks::get_cmd(uint32_t& lastIdx)
 		lastIdx = 999;
 		return "";
 	}
+	else if (lastIdx == UINT32_MAX && _cmd._block->_readable != UINT32_MAX)
+	{
+		lastIdx = _cmd._block->_readable;
+		return "";
+	}
 	else if(lastIdx == 999 && _cmd._block->_readable != UINT32_MAX)
 	{
 		lastIdx = 0;
