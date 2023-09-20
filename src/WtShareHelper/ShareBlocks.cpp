@@ -253,7 +253,6 @@ void* ShareBlocks::make_valid(const char* domain, const char* section, const cha
 		secInfo = &shm._block->_sections[shm._block->_count];
 		wt_strcpy(secInfo->_name, section);
 		secInfo->_updatetime = TimeUtils::getLocalTimeNow();
-		secInfo->_state = 1;
 		kvPair = &shm._sections[section];
 		kvPair->_index = shm._block->_count;
 		shm._block->_count++;
@@ -264,6 +263,7 @@ void* ShareBlocks::make_valid(const char* domain, const char* section, const cha
 	}
 
 	secInfo = &shm._block->_sections[kvPair->_index];
+	secInfo->_state = 1;
 
 	auto kit = kvPair->_keys.find(key);
 	if (kit == kvPair->_keys.end())
@@ -362,6 +362,11 @@ std::vector<KeyInfo*> ShareBlocks::get_keys(const char* domain, const char* sect
 		return emptyRet;
 
 	const ShmPair& shm = it->second;
+	if(shm._sections.size() != shm._block->_count)
+	{
+		update_slave(domain, true);
+	}
+
 	auto sit = shm._sections.find(section);
 	if (sit == shm._sections.end())
 		return emptyRet;
