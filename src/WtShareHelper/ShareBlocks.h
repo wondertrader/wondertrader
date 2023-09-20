@@ -44,10 +44,17 @@ namespace shareblock
 	{
 		char		_name[32];
 		KeyInfo		_keys[MAX_KEY_CNT];
-		uint32_t	_count;			//数据条数，即key的个数
+		uint16_t	_count;			//数据条数，即key的个数
+		uint16_t	_state;			//状态：0-无效，1-生效
 		uint32_t	_offset;		//记录下一个可分配地址的偏移量
 		uint64_t	_updatetime;
 		char		_data[1024];
+
+		template<typename T>
+		T* get(uint32_t offset)
+		{
+			return (T*)(_data + offset);
+		}
 
 		_SectionInfo()
 		{
@@ -109,7 +116,7 @@ namespace shareblock
 		bool	init_master(const char* name, const char* path = "");
 		bool	init_slave(const char* name, const char* path = "");
 
-		bool	update_slave(const char* name);
+		bool	update_slave(const char* name, bool bForce);
 		bool	release_slave(const char* name);
 
 		std::vector<std::string>	get_sections(const char* domain);
@@ -117,6 +124,8 @@ namespace shareblock
 
 		uint64_t get_section_updatetime(const char* domain, const char* section);
 		bool	commit_section(const char* domain, const char* section);
+
+		bool	delete_section(const char* domain, const char*section);
 
 		const char* allocate_string(const char* domain, const char* section, const char* key, const char* initVal = "", bool bForceWrite = false);
 		int32_t*	allocate_int32(const char* domain, const char* section, const char* key, int32_t initVal = 0, bool bForceWrite = false);

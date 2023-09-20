@@ -14,9 +14,9 @@ bool init_slave(const char* id, const char* path/* = ""*/)
 	return ShareBlocks::one().init_slave(id, path);
 }
 
-bool update_slave(const char* id)
+bool update_slave(const char* id, bool bForce/* = false*/)
 {
-	return ShareBlocks::one().update_slave(id);
+	return ShareBlocks::one().update_slave(id, bForce);
 }
 
 bool release_slave(const char* name)
@@ -50,6 +50,11 @@ uint64_t get_section_updatetime(const char* domain, const char* section)
 bool commit_section(const char* domain, const char* section)
 {
 	return ShareBlocks::one().commit_section(domain, section);
+}
+
+bool delete_section(const char* domain, const char*section)
+{
+	return ShareBlocks::one().delete_section(domain, section);
 }
 
 const char* allocate_string(const char* domain, const char* section, const char* key, const char* initVal, bool bForceWrite /*= false*/)

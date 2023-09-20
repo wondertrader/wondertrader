@@ -27,7 +27,30 @@ bool ShareBlocks::init_master(const char* name, const char* path/* = ""*/)
 	shm._domain->map(filename.c_str());
 	shm._master = true;
 	shm._block = (ShmBlock*)shm._domain->addr();
-	shm._blocktime = shm._block->_updatetime;
+
+	/*
+	 *	By Wesley @ 2023.09.20
+	 *	这里要做一个清理，如果state为0，则不再保留
+	 */
+	std::vector<SecInfo> aySecs;
+	for (uint32_t i = 0; i < shm._block->_count; i++)
+	{
+		SecInfo& secInfo = shm._block->_sections[i];
+		if (secInfo._count == 0 || secInfo._state != 1)
+			continue;
+
+		aySecs.emplace_back(secInfo);
+	}
+
+	if(aySecs.size() != shm._block->_count)
+	{
+		shm._block->_count = (uint32_t)aySecs.size();
+		memset(shm._block->_sections, 0, sizeof(SecInfo)*MAX_SEC_CNT);
+		if (shm._block->_count > 0)
+			memcpy(shm._block->_sections, aySecs.data(), sizeof(SecInfo)*shm._block->_count);
+
+		shm._blocktime = shm._block->_updatetime;
+	}
 
 	{
 		//这里要做初始化，要把已经有的key加载进去
@@ -36,6 +59,11 @@ bool ShareBlocks::init_master(const char* name, const char* path/* = ""*/)
 			SecInfo& secInfo = shm._block->_sections[i];
 			if (secInfo._count == 0)
 				continue;
+
+			//置零的目的看后面会不会用到
+			//如果不会用到，那么就不会变成1
+			//下次启动就会删掉这个section
+			secInfo._state = 0;
 
 			ShmPair::KVPair& kvPair = shm._sections[secInfo._name];
 			kvPair._index = i;
@@ -76,7 +104,7 @@ bool ShareBlocks::init_slave(const char* name, const char* path/* = ""*/)
 		for (uint32_t i = 0; i < shm._block->_count; i++)
 		{
 			SecInfo& secInfo = shm._block->_sections[i];
-			if (secInfo._count == 0)
+			if (secInfo._count == 0 || secInfo._state != 1)
 				continue;
 
 			ShmPair::KVPair& kvPair = shm._sections[secInfo._name];
@@ -92,13 +120,13 @@ bool ShareBlocks::init_slave(const char* name, const char* path/* = ""*/)
 	return true;
 }
 
-bool ShareBlocks::update_slave(const char* name)
+bool ShareBlocks::update_slave(const char* name, bool bForce)
 {
 	ShmPair& shm = (ShmPair&)_shm_blocks[name];
 	if (shm._block == NULL)
 		return false;
 
-	if (shm._blocktime == shm._block->_updatetime)
+	if (shm._blocktime == shm._block->_updatetime && !bForce)
 		return false;
 
 	{
@@ -180,6 +208,24 @@ bool ShareBlocks::commit_section(const char* domain, const char* section)
 	return true;
 }
 
+bool ShareBlocks::delete_section(const char* domain, const char*section)
+{
+	auto it = _shm_blocks.find(domain);
+	if (it == _shm_blocks.end())
+		return false;
+
+	ShmPair& shm = (ShmPair&)it->second;
+	auto sit = shm._sections.find(section);
+	if (sit == shm._sections.end())
+		return true;
+
+	uint32_t idx = sit->second._index;
+	shm._sections.erase(sit);
+	shm._block->_sections[idx]._state = 2;
+	shm._block->_updatetime = TimeUtils::getLocalTimeNow();
+	return true;
+}
+
 void* ShareBlocks::make_valid(const char* domain, const char* section, const char* key, ValueType vType, SecInfo* &secInfo)
 {
 	auto it = _shm_blocks.find(domain);
@@ -207,6 +253,7 @@ void* ShareBlocks::make_valid(const char* domain, const char* section, const cha
 		secInfo = &shm._block->_sections[shm._block->_count];
 		wt_strcpy(secInfo->_name, section);
 		secInfo->_updatetime = TimeUtils::getLocalTimeNow();
+		secInfo->_state = 1;
 		kvPair = &shm._sections[section];
 		kvPair->_index = shm._block->_count;
 		shm._block->_count++;
@@ -297,6 +344,9 @@ std::vector<std::string> ShareBlocks::get_sections(const char* domain)
 	const ShmPair& shm = it->second;
 	for (uint32_t i = 0; i < shm._block->_count; i++)
 	{
+		if (shm._block->_sections[i]._state != 1)
+			continue;
+
 		ret.emplace_back(shm._block->_sections[i]._name);
 	}
 
@@ -354,10 +404,10 @@ int32_t* ShareBlocks::allocate_int32(const char* domain, const char* section, co
 	{
 		//如果type为0，说明是新分配的，则用初始值填充
 		keyInfo->_type = SMVT_INT32;
-		*((int32_t*)(secInfo->_data + keyInfo->_offset)) = initVal;
+		*secInfo->get<int32_t>(keyInfo->_offset) = initVal;
 	}
 
-	return (int32_t*)(secInfo->_data + keyInfo->_offset);
+	return secInfo->get<int32_t>(keyInfo->_offset);
 }
 
 int64_t* ShareBlocks::allocate_int64(const char* domain, const char* section, const char* key, int64_t initVal /* = 0 */, bool bForceWrite/* = false*/)
@@ -371,10 +421,10 @@ int64_t* ShareBlocks::allocate_int64(const char* domain, const char* section, co
 	{
 		//如果type为0，说明是新分配的，则用初始值填充
 		keyInfo->_type = SMVT_INT64;
-		*((int64_t*)(secInfo->_data + keyInfo->_offset)) = initVal;
+		*secInfo->get<int64_t>(keyInfo->_offset) = initVal;
 	}
 
-	return (int64_t*)(secInfo->_data + keyInfo->_offset);
+	return secInfo->get<int64_t>(keyInfo->_offset);
 }
 
 uint32_t* ShareBlocks::allocate_uint32(const char* domain, const char* section, const char* key, uint32_t initVal /* = 0 */, bool bForceWrite/* = false*/)
@@ -388,10 +438,10 @@ uint32_t* ShareBlocks::allocate_uint32(const char* domain, const char* section, 
 	{
 		//如果type为0，说明是新分配的，则用初始值填充
 		keyInfo->_type = SMVT_UINT32;
-		*((uint32_t*)(secInfo->_data + keyInfo->_offset)) = initVal;
+		*secInfo->get<uint32_t>(keyInfo->_offset) = initVal;
 	}
 
-	return (uint32_t*)(secInfo->_data + keyInfo->_offset);
+	return secInfo->get<uint32_t>(keyInfo->_offset);
 }
 
 uint64_t* ShareBlocks::allocate_uint64(const char* domain, const char* section, const char* key, uint64_t initVal /* = 0 */, bool bForceWrite/* = false*/)
@@ -405,10 +455,10 @@ uint64_t* ShareBlocks::allocate_uint64(const char* domain, const char* section, 
 	{
 		//如果type为0，说明是新分配的，则用初始值填充
 		keyInfo->_type = SMVT_UINT64;
-		*((uint64_t*)(secInfo->_data + keyInfo->_offset)) = initVal;
+		*secInfo->get<uint64_t>(keyInfo->_offset) = initVal;
 	}
 
-	return (uint64_t*)(secInfo->_data + keyInfo->_offset);
+	return secInfo->get<uint64_t>(keyInfo->_offset);
 }
 
 double* ShareBlocks::allocate_double(const char* domain, const char* section, const char* key, double initVal /* = 0 */, bool bForceWrite/* = false*/)
@@ -422,10 +472,10 @@ double* ShareBlocks::allocate_double(const char* domain, const char* section, co
 	{
 		//如果type为0，说明是新分配的，则用初始值填充
 		keyInfo->_type = SMVT_DOUBLE;
-		*((double*)(secInfo->_data + keyInfo->_offset)) = initVal;
+		*secInfo->get<double>(keyInfo->_offset) = initVal;
 	}
 
-	return (double*)(secInfo->_data + keyInfo->_offset);
+	return secInfo->get<double>(keyInfo->_offset);
 }
 
 bool ShareBlocks::set_string(const char* domain, const char* section, const char* key, const char* val)
@@ -449,7 +499,7 @@ bool ShareBlocks::set_int32(const char* domain, const char* section, const char*
 		return false;
 
 	keyInfo->_type = SMVT_INT32;
-	*((int32_t*)(secInfo->_data + keyInfo->_offset)) = val;
+	*secInfo->get<int32_t>(keyInfo->_offset) = val;
 
 	return true;
 }
@@ -462,7 +512,7 @@ bool ShareBlocks::set_int64(const char* domain, const char* section, const char*
 		return false;
 
 	keyInfo->_type = SMVT_INT64;
-	*((int64_t*)(secInfo->_data + keyInfo->_offset)) = val;
+	*secInfo->get<int64_t>(keyInfo->_offset) = val;
 
 	return true;
 }
@@ -475,7 +525,7 @@ bool ShareBlocks::set_uint32(const char* domain, const char* section, const char
 		return false;
 
 	keyInfo->_type = SMVT_UINT32;
-	*((uint32_t*)(secInfo->_data + keyInfo->_offset)) = val;
+	*secInfo->get<uint32_t>(keyInfo->_offset) = val;
 
 	return true;
 }
@@ -488,7 +538,7 @@ bool ShareBlocks::set_uint64(const char* domain, const char* section, const char
 		return false;
 
 	keyInfo->_type = SMVT_UINT64;
-	*((uint64_t*)(secInfo->_data + keyInfo->_offset)) = val;
+	*secInfo->get<uint64_t>(keyInfo->_offset) = val;
 
 	return true;
 }
@@ -501,7 +551,7 @@ bool ShareBlocks::set_double(const char* domain, const char* section, const char
 		return false;
 
 	keyInfo->_type = SMVT_DOUBLE;
-	*((double*)(secInfo->_data + keyInfo->_offset)) = val;
+	*secInfo->get<double>(keyInfo->_offset) = val;
 
 	return true;
 }
