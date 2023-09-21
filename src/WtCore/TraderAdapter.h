@@ -204,7 +204,7 @@ public:
 
 	virtual void onPushTrade(WTSTradeInfo* tradeRecord) override;
 
-	virtual void onTraderError(WTSError* err) override;
+	virtual void onTraderError(WTSError* err, void* pData = NULL) override;
 
 	virtual IBaseDataMgr* getBaseDataMgr() override;
 

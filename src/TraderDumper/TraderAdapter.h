@@ -69,7 +69,7 @@ public:
 
 	virtual void onPushOrder(WTSOrderInfo* orderInfo) override;
 
-	virtual void onTraderError(WTSError* err) override;
+	virtual void onTraderError(WTSError* err, void* pData = NULL) override;
 
 	virtual IBaseDataMgr* getBaseDataMgr() override;
 

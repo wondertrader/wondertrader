@@ -177,7 +177,7 @@ public:
 	/*
 	 *	交易接口错误回报
 	 */
-	virtual void onTraderError(WTSError* err){}
+	virtual void onTraderError(WTSError* err, void* pData = NULL){}
 
 	/*
 	 *	合约状态推送

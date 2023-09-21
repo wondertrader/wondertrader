@@ -724,10 +724,6 @@ int TraderCTPOpt::orderAction(WTSEntrustAction* action)
 	///合约代码
 	strcpy(req.InstrumentID, action->getCode());
 
-	req.LimitPrice = action->getPrice();
-
-	req.VolumeChange = (int32_t)action->getVolume();
-
 	strcpy(req.OrderSysID, action->getOrderID());
 	strcpy(req.ExchangeID, action->getExchg());
 

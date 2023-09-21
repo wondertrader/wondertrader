@@ -155,8 +155,9 @@ private:
 
 	WTSOrderInfo*	makeOrderInfo(CThostFtdcOrderField* orderField);
 	WTSEntrust*		makeEntrust(CThostFtdcInputOrderField *entrustField);
+	WTSEntrustAction*	makeAction(CThostFtdcInputOrderActionField *entrustField);
 	WTSError*		makeError(CThostFtdcRspInfoField* rspInfo, WTSErroCode ec = WEC_NONE);
-	WTSTradeInfo*	makeTradeRecord(CThostFtdcTradeField *tradeField);
+	WTSTradeInfo*	makeTradeInfo(CThostFtdcTradeField *tradeField);
 
 	void			generateEntrustID(char* buffer, uint32_t frontid, uint32_t sessionid, uint32_t orderRef);
 	bool			extractEntrustID(const char* entrustid, uint32_t &frontid, uint32_t &sessionid, uint32_t &orderRef);

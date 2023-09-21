@@ -441,10 +441,6 @@ int TraderCTP::orderAction(WTSEntrustAction* action)
 	///合约代码
 	wt_strcpy(req.InstrumentID, action->getCode());
 
-	req.LimitPrice = action->getPrice();
-
-	req.VolumeChange = (int32_t)action->getVolume();
-
 	wt_strcpy(req.OrderSysID, action->getOrderID());
 	wt_strcpy(req.ExchangeID, action->getExchg());
 
@@ -755,8 +751,15 @@ void TraderCTP::OnRspOrderAction(CThostFtdcInputOrderActionField *pInputOrderAct
 	if (IsErrorRspInfo(pRspInfo))
 	{
 		WTSError* error = WTSError::create(WEC_ORDERCANCEL, pRspInfo->ErrorMsg);
+		WTSEntrustAction* action = makeAction(pInputOrderAction);
 		if (m_sink)
-			m_sink->onTraderError(error);
+			m_sink->onTraderError(error, action);
+
+		if (error)
+			error->release();
+
+		if (action)
+			action->release();
 	}
 }
 
@@ -973,7 +976,7 @@ void TraderCTP::OnRspQryTrade(CThostFtdcTradeField *pTrade, CThostFtdcRspInfoFie
 		if (NULL == m_ayTrades)
 			m_ayTrades = WTSArray::create();
 
-		WTSTradeInfo* trade = makeTradeRecord(pTrade);
+		WTSTradeInfo* trade = makeTradeInfo(pTrade);
 		if (trade)
 		{
 			m_ayTrades->append(trade, false);
@@ -1041,7 +1044,7 @@ void TraderCTP::OnRtnOrder(CThostFtdcOrderField *pOrder)
 
 void TraderCTP::OnRtnTrade(CThostFtdcTradeField *pTrade)
 {
-	WTSTradeInfo *tRecord = makeTradeRecord(pTrade);
+	WTSTradeInfo *tRecord = makeTradeInfo(pTrade);
 	if (tRecord)
 	{
 		if (m_sink)
@@ -1290,13 +1293,26 @@ WTSEntrust* TraderCTP::makeEntrust(CThostFtdcInputOrderField *entrustField)
 	return pRet;
 }
 
+WTSEntrustAction* TraderCTP::makeAction(CThostFtdcInputOrderActionField *actionField)
+{
+	WTSEntrustAction* pRet = WTSEntrustAction::create(actionField->InstrumentID, actionField->ExchangeID);
+
+	generateEntrustID(pRet->getEntrustID(), actionField->FrontID, actionField->SessionID, atoi(actionField->OrderRef));
+
+	const char* usertag = m_eidCache.get(pRet->getEntrustID());
+	if (strlen(usertag) > 0)
+		pRet->setUserTag(usertag);
+
+	return pRet;
+}
+
 WTSError* TraderCTP::makeError(CThostFtdcRspInfoField* rspInfo, WTSErroCode ec /* = WEC_NONE */)
 {
 	WTSError* pRet = WTSError::create(ec, rspInfo->ErrorMsg);
 	return pRet;
 }
 
-WTSTradeInfo* TraderCTP::makeTradeRecord(CThostFtdcTradeField *tradeField)
+WTSTradeInfo* TraderCTP::makeTradeInfo(CThostFtdcTradeField *tradeField)
 {
 	WTSContractInfo* contract = m_bdMgr->getContract(tradeField->InstrumentID, tradeField->ExchangeID);
 	if (contract == NULL)

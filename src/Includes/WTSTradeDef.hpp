@@ -143,9 +143,7 @@ class WTSEntrustAction : public WTSPoolObject<WTSEntrustAction>
 {
 public:
 	WTSEntrustAction()
-		: m_iPrice(0)
-		, m_dVolume(0)
-		, m_actionFlag(WAF_CANCEL)
+		: m_actionFlag(WAF_CANCEL)
 		, m_businessType(BT_CASH)
 	{
 
@@ -154,15 +152,13 @@ public:
 	virtual ~WTSEntrustAction(){}
 
 public:
-	static inline WTSEntrustAction* create(const char* code, const char* exchg = "", double vol = 0, double price = 0, WTSBusinessType bType = BT_CASH)
+	static inline WTSEntrustAction* create(const char* code, const char* exchg = "", WTSBusinessType bType = BT_CASH)
 	{
 		WTSEntrustAction* pRet = WTSEntrustAction::allocate();
 		if(pRet)
 		{
 			wt_strcpy(pRet->m_strExchg, exchg);
 			wt_strcpy(pRet->m_strCode, code);
-			pRet->m_dVolume = vol;
-			pRet->m_iPrice = price;
 			pRet->m_businessType = bType;
 			return pRet;
 		}
@@ -184,12 +180,6 @@ public:
 	}
 
 public:
-	inline void setVolume(double volume){ m_dVolume = volume; }
-	inline void setPrice(double price){ m_iPrice = price; }
-
-	inline double getVolume() const{ return m_dVolume; }
-	inline double getPrice() const{ return m_iPrice; }
-
 	inline const char* getExchg() const { return m_strExchg; }
 	inline const char* getCode() const{return m_strCode;}
 
@@ -211,6 +201,7 @@ public:
 
 	inline void setEntrustID(const char* eid) { wt_strcpy(m_strEnturstID, eid); }
 	inline const char* getEntrustID() const{return m_strEnturstID;}
+	inline char* getEntrustID() { return m_strEnturstID; }
 
 	inline void setOrderID(const char* oid) { wt_strcpy(m_strOrderID, oid); }
 	inline const char* getOrderID() const{return m_strOrderID;}
@@ -218,18 +209,25 @@ public:
 	inline void setBusinessType(WTSBusinessType bType) { m_businessType = bType; }
 	inline WTSBusinessType	getBusinessType() const { return m_businessType; }
 
+	inline void setUserTag(const char* tag) { wt_strcpy(m_strUserTag, tag); }
+	inline const char* getUserTag() const { return m_strUserTag; }
+	inline char* getUserTag() { return m_strUserTag; }
+
+	inline void setContractInfo(WTSContractInfo* cInfo) { m_pContract = cInfo; }
+	inline WTSContractInfo* getContractInfo() const { return m_pContract; }
+
 protected:
 	char			m_strExchg[MAX_EXCHANGE_LENGTH];
 	char			m_strCode[MAX_INSTRUMENT_LENGTH];
-	double			m_dVolume;
-	double			m_iPrice;
 
 	char			m_strEnturstID[64] = { 0 };
 	WTSActionFlag	m_actionFlag;
 
 	char			m_strOrderID[64] = { 0 };
+	char			m_strUserTag[64] = { 0 };
 
 	WTSBusinessType		m_businessType;
+	WTSContractInfo*	m_pContract;
 };
 
 //////////////////////////////////////////////////////////////////////////
