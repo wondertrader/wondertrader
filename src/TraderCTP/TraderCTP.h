@@ -155,6 +155,7 @@ private:
 
 	WTSOrderInfo*	makeOrderInfo(CThostFtdcOrderField* orderField);
 	WTSEntrust*		makeEntrust(CThostFtdcInputOrderField *entrustField);
+	WTSEntrustAction*	makeAction(CThostFtdcInputOrderActionField *entrustField);
 	WTSError*		makeError(CThostFtdcRspInfoField* rspInfo, WTSErroCode ec = WEC_NONE);
 	WTSTradeInfo*	makeTradeRecord(CThostFtdcTradeField *tradeField);
 

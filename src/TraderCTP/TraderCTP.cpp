@@ -441,10 +441,6 @@ int TraderCTP::orderAction(WTSEntrustAction* action)
 	///合约代码
 	wt_strcpy(req.InstrumentID, action->getCode());
 
-	req.LimitPrice = action->getPrice();
-
-	req.VolumeChange = (int32_t)action->getVolume();
-
 	wt_strcpy(req.OrderSysID, action->getOrderID());
 	wt_strcpy(req.ExchangeID, action->getExchg());
 
@@ -754,9 +750,10 @@ void TraderCTP::OnRspOrderAction(CThostFtdcInputOrderActionField *pInputOrderAct
 {
 	if (IsErrorRspInfo(pRspInfo))
 	{
+		WTSEntrustAction* action = makeAction(pInputOrderAction);
 		WTSError* error = WTSError::create(WEC_ORDERCANCEL, pRspInfo->ErrorMsg);
 		if (m_sink)
-			m_sink->onTraderError(error);
+			m_sink->onTraderError(error, action);
 	}
 }
 
@@ -1282,6 +1279,20 @@ WTSEntrust* TraderCTP::makeEntrust(CThostFtdcInputOrderField *entrustField)
 
 	//pRet->setEntrustID(generateEntrustID(m_frontID, m_sessionID, atoi(entrustField->OrderRef)).c_str());
 	generateEntrustID(pRet->getEntrustID(), m_frontID, m_sessionID, atoi(entrustField->OrderRef));
+
+	const char* usertag = m_eidCache.get(pRet->getEntrustID());
+	if (strlen(usertag) > 0)
+		pRet->setUserTag(usertag);
+
+	return pRet;
+}
+
+WTSEntrustAction* TraderCTP::makeAction(CThostFtdcInputOrderActionField *entrustField)
+{
+	WTSEntrustAction* pRet = WTSEntrustAction::create(entrustField->InstrumentID, entrustField->ExchangeID);
+
+	generateEntrustID(pRet->getEntrustID(), entrustField->FrontID, entrustField->SessionID, atoi(entrustField->OrderRef));
+	pRet->setOrderID(entrustField->OrderSysID);
 
 	const char* usertag = m_eidCache.get(pRet->getEntrustID());
 	if (strlen(usertag) > 0)

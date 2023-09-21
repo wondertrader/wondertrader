@@ -406,9 +406,6 @@ int TraderFemas::orderAction( WTSEntrustAction* action )
 	strcpy(req.UserOrderLocalID, action->getEntrustID());
 	fmtutil::format_to(req.UserOrderActionLocalID, "{}{:012d}", m_strSessionID.c_str(), genLocalOrdID());
 	req.ActionFlag = wrapActionFlag(action->getActionFlag());
-	req.LimitPrice = action->getPrice();
-
-	req.VolumeChange = (int32_t)action->getVolume();
 
 	strcpy(req.OrderSysID, action->getOrderID());
 	strcpy(req.ExchangeID, wrapExchg(action->getExchg()));

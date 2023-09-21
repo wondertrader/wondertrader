@@ -1835,7 +1835,7 @@ void TraderAdapter::onPushTrade(WTSTradeInfo* tradeRecord)
 	_trader_api->queryAccount();
 }
 
-void TraderAdapter::onTraderError(WTSError* err)
+void TraderAdapter::onTraderError(WTSError* err, void* ptr /* = NULL */)
 {
 	if(err)
 		WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR,"[{}] Error of trading channel occured: {}", _id.c_str(), err->getMessage());

@@ -310,7 +310,7 @@ void TraderAdapter::onRspPosition(const WTSArray* ayPositions)
 		_trader_api->queryAccount();
 }
 
-void TraderAdapter::onTraderError(WTSError* err)
+void TraderAdapter::onTraderError(WTSError* err, void* ptr/* = NULL*/)
 {
 	if(err)
 		WTSLogger::error("[{}]交易通道出现错误: {}", _id.c_str(), err->getMessage());
