@@ -405,7 +405,7 @@ public:
 			pOldObj = it->second;
 		}
 
-		_map.emplace(std::make_pair(_key, obj));
+		_map[_key] = obj;
 
 		if (pOldObj) pOldObj->release();
 	}
@@ -668,7 +668,7 @@ public:
 			pOldObj = it->second;
 		}
 
-		_map.emplace(std::make_pair(_key, obj));
+		_map[_key] = obj;
 
 		if (pOldObj) pOldObj->release();
 	}
