@@ -55,6 +55,7 @@ public:
 	/*
 	 *	读取数组长度
 	 */
+	inline
 	uint32_t size() const{ return (uint32_t)_vec.size(); }
 
 	/*
@@ -76,6 +77,7 @@ public:
 	 *	不增加数据的引用计数
 	 *	grab接口读取数据以后,增加引用计数
 	 */
+	inline
 	WTSObject* at(uint32_t idx)
 	{
 		if(idx <0 || idx >= _vec.size())
@@ -85,6 +87,7 @@ public:
 		return pRet;
 	}
 
+	inline
 	uint32_t idxOf(WTSObject* obj)
 	{
 		if (obj == NULL)
@@ -102,7 +105,7 @@ public:
 	}
 
 	template<typename T> 
-	T* at(uint32_t idx)
+	inline T* at(uint32_t idx)
 	{
 		if(idx <0 || idx >= _vec.size())
 			return NULL;
@@ -115,6 +118,7 @@ public:
 	 *	[]操作符重载
 	 *	用法同at函数
 	 */
+	inline
 	WTSObject* operator [](uint32_t idx)
 	{
 		if(idx <0 || idx >= _vec.size())
@@ -128,6 +132,7 @@ public:
 	 *	读取数组指定位置的数据
 	 *	增加引用计数
 	 */
+	inline
 	WTSObject*	grab(uint32_t idx)
 	{
 		if(idx <0 || idx >= _vec.size())
@@ -144,6 +149,7 @@ public:
 	 *	数组末尾追加数据
 	 *	数据自动增加引用计数
 	 */
+	inline
 	void append(WTSObject* obj, bool bAutoRetain = true)
 	{
 		if (bAutoRetain && obj)
@@ -157,6 +163,7 @@ public:
 	 *	如果该位置已有数据,则释放掉
 	 *	新数据引用计数增加
 	 */
+	inline
 	void set(uint32_t idx, WTSObject* obj, bool bAutoRetain = true)
 	{
 		if(idx >= _vec.size() || obj == NULL)
@@ -172,6 +179,7 @@ public:
 		_vec[idx] = obj;
 	}
 
+	inline
 	void append(WTSArray* ay)
 	{
 		if(ay == NULL)
@@ -205,6 +213,7 @@ public:
 	 *	不同的是,如果引用计数为1时
 	 *	释放所有数据
 	 */
+
 	virtual void release()
 	{
 		if (m_uRefs == 0)
@@ -228,21 +237,25 @@ public:
 	/*
 	 *	取得数组对象起始位置的迭代器
 	 */
+	inline
 	Iterator begin()
 	{
 		return _vec.begin();
 	}
 
+	inline
 	ConstIterator begin() const
 	{
 		return _vec.begin();
 	}
 
+	inline
 	ReverseIterator rbegin()
 	{
 		return _vec.rbegin();
 	}
 
+	inline
 	ConstReverseIterator rbegin() const
 	{
 		return _vec.rbegin();
@@ -251,26 +264,31 @@ public:
 	/*
 	 *	取得数组对象末尾位置的迭代器
 	 */
+	inline
 	Iterator end()
 	{
 		return _vec.end();
 	}
 
+	inline
 	ConstIterator end() const
 	{
 		return _vec.end();
 	}
 
+	inline
 	ReverseIterator rend()
 	{
 		return _vec.rend();
 	}
 
+	inline
 	ConstReverseIterator rend() const
 	{
 		return _vec.rend();
 	}
 
+	inline
 	void	sort(SortFunc func)
 	{
 		std::sort(_vec.begin(), _vec.end(), func);
@@ -317,6 +335,7 @@ public:
 	/*
 	 *	返回map容器的大小
 	 */
+	inline
 	uint32_t size() const{ return (uint32_t)_map.size(); }
 
 	/*
@@ -324,6 +343,7 @@ public:
 	 *	不增加数据的引用计数
 	 *	没有则返回NULL
 	 */
+	inline
 	WTSObject* get(const T &_key)
 	{
 		Iterator it = _map.find(_key);
@@ -338,6 +358,7 @@ public:
 	 *	[]操作符重载
 	 *	用法同get函数
 	 */
+	inline
 	WTSObject* operator[](const T &_key)
 	{
 		Iterator it = _map.find(_key);
@@ -353,6 +374,7 @@ public:
 	 *	增加数据的引用计数
 	 *	没有则返回NULL
 	 */
+	inline
 	WTSObject* grab(const T &_key)
 	{
 		Iterator it = _map.find(_key);
@@ -370,6 +392,7 @@ public:
 	 *	新增一个数据,并增加数据引用计数
 	 *	如果key存在,则将原有数据释放
 	 */
+	inline
 	void add(T _key, WTSObject* obj, bool bAutoRetain = true)
 	{
 		if(bAutoRetain && obj)
@@ -382,7 +405,7 @@ public:
 			pOldObj = it->second;
 		}
 
-		_map[_key] = obj;
+		_map.emplace(std::make_pair(_key, obj));
 
 		if (pOldObj) pOldObj->release();
 	}
@@ -391,6 +414,7 @@ public:
 	 *	根据key删除一个数据
 	 *	如果key存在,则对应数据引用计数-1
 	 */
+	inline
 	void remove(T _key)
 	{
 		Iterator it = _map.find(_key);
@@ -454,19 +478,34 @@ public:
 		return _map.rend();
 	}
 
+	inline
 	Iterator find(const T& key)
 	{
 		return _map.find(key);
 	}
 
+	inline
 	ConstIterator find(const T& key) const
 	{
 		return _map.find(key);
 	}
 
+	inline
 	void erase(ConstIterator it)
 	{
 		_map.erase(it);
+	}
+
+	inline
+	void erase(Iterator it)
+	{
+		_map.erase(it);
+	}
+
+	inline
+	void erase(T key)
+	{
+		_map.erase(key);
 	}
 
 	Iterator lower_bound(const T& key)
@@ -489,6 +528,7 @@ public:
 		return _map.upper_bound(key);
 	}
 
+	inline
 	WTSObject* last() 
 	{
 		if(_map.empty())
@@ -628,7 +668,7 @@ public:
 			pOldObj = it->second;
 		}
 
-		_map[_key] = obj;
+		_map.emplace(std::make_pair(_key, obj));
 
 		if (pOldObj) pOldObj->release();
 	}
@@ -639,12 +679,7 @@ public:
 	 */
 	inline void remove(const T &_key)
 	{
-		auto it = _map.find(_key);
-		if(it != _map.end())
-		{
-			it->second->release();
-			_map.erase(it);
-		}
+		_map.erase(_key);
 	}
 
 	/*
