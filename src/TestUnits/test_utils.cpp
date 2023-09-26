@@ -1,29 +1,35 @@
 ﻿#include "../Share/TimeUtils.hpp"
 #include "../Share/fmtlib.h"
-#include "../WTSTools/WTSHotMgr.h"
 #include "gtest/gtest/gtest.h"
+#include "../Includes/WTSMarcos.h"
 
-TEST(test_utils, test_hotmgr)
+void run_test(uint32_t times, uint32_t len)
 {
-	WTSHotMgr hotMgr;
-	hotMgr.loadCustomRules("HOT", "common/hots.json");
+	char buffer[512] = { 0 };
 
-	EXPECT_STREQ(hotMgr.getCustomRawCode("HOT", "CFFEX.IF", 0), "IF2206");
-	EXPECT_STREQ(hotMgr.getCustomRawCode("HOT", "CFFEX.IF", 20220106), "IF2201");
+	char fmt[32] = { 0 };
+	sprintf(fmt, "{:0%dd}", len);
 
-	EXPECT_STREQ(hotMgr.getPrevCustomRawCode("HOT", "CFFEX.IF", 0), "IF2205");
-	EXPECT_STREQ(hotMgr.getPrevCustomRawCode("HOT", "CFFEX.IF", 20220106), "IF2112");
+	TimeUtils::Ticker ticker;
+	for (int i = 0; i < times; i++)
+	{
+		wt_strcpy(buffer, fmtutil::format(fmt, i));
+	}
+	uint64_t t1 = ticker.nano_seconds();
 
-	EXPECT_TRUE(hotMgr.isCustomHot("HOT", "CFFEX.IF2206", 0));
-	EXPECT_FALSE(hotMgr.isCustomHot("HOT", "CFFEX.IF2205", 0));
+	ticker.reset();
+	for (int i = 0; i < times; i++)
+	{
+		strcpy(buffer, fmtutil::format(fmt, i));
+	}
+	uint64_t t2 = ticker.nano_seconds();
+	fmt::print("{}-bytes string compare, wt_strcpy: {} - strcpy: {}\n", len, t1, t2);
+}
 
-	EXPECT_FALSE(hotMgr.isCustomHot("HOT", "CFFEX.IF2206", 20220518));
-	EXPECT_TRUE(hotMgr.isCustomHot("HOT", "CFFEX.IF2205", 20220518));
-
-	EXPECT_TRUE(hotMgr.isCustomHot("HOT", "CFFEX.IF2206", 20220519));
-	EXPECT_FALSE(hotMgr.isCustomHot("HOT", "CFFEX.IF2205", 20220519));
-
-	HotSections secs;
-	hotMgr.splitCustomSections("HOT", "CFFEX.IF", 20200101, 20220526, secs);
-	EXPECT_FALSE(secs.empty());
+TEST(test_utils, copy_str)
+{
+	run_test(1000000, 16);
+	run_test(1000000, 32);
+	run_test(1000000, 64);
+	run_test(1000000, 128);
 }
