@@ -2,21 +2,22 @@
 #include "../WtDtHelper/WtDtHelper.h"
 #include "../WtDtPorter/WtDtPorter.h"
 #include "../Includes/WTSDataDef.hpp"
+#include "../Share/fmtlib.h"
 
 void on_get_bar(WTSBarStruct* bar, WtUInt32 count, bool isLast)
 {
-	printf("%u.%llu\r\n", bar->date, bar->time);
+	fmt::print("{}.{}\n", bar->date, bar->time);
 }
 
 void on_bar_cnt(WtUInt32 dataCnt)
 {
-	printf("共%u条K线\r\n", dataCnt);
+	fmt::print("共{}条K线\n", dataCnt);
 }
 
 void on_log(const char* message)
 {
-	printf(message);
-	printf("\r\n");
+	fmt::print(message);
+	fmt::print("\n");
 }
 
 void testDtHelper()

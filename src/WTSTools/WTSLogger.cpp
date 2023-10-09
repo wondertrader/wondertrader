@@ -360,8 +360,8 @@ void WTSLogger::log_raw_by_cat(const char* catName, WTSLogLevel ll, const char* 
 	if (!m_bInited)
 	{
 		print_timetag(true);
-		printf(message);
-		printf("\r\n");
+		fmt::print(message);
+		fmt::print("\n");
 		return;
 	}
 
@@ -402,8 +402,8 @@ void WTSLogger::log_dyn_raw(const char* patttern, const char* catName, WTSLogLev
 	if (!m_bInited)
 	{
 		print_timetag(true);
-		printf(m_buffer);
-		printf("\r\n");
+		fmt::print(m_buffer);
+		fmt::print("\n");
 		return;
 	}
 
