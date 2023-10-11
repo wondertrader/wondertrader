@@ -1405,15 +1405,20 @@ void CtaMocker::stra_exit_long(const char* stdCode, double qty, const char* user
 		return;
 	}
 
-	//读取可平持仓
-	double curQty = stra_get_position(stdCode, true);
+	WTSSessionInfo* sInfo = commInfo->getSessionInfo();
+	uint32_t offTime = sInfo->offsetTime(_replayer->get_min_time(), true);
+	bool isLastBarOfDay = (offTime == sInfo->getCloseTime(true));
+
+	//读取可平持仓,如果是收盘那根bar，则直接读取全部持仓
+	double curQty = stra_get_position(stdCode, !isLastBarOfDay);
 	if (decimal::le(curQty, 0))
 		return;
 
 	if (decimal::eq(limitprice, 0.0) && decimal::eq(stopprice, 0.0))	//如果不是动态下单模式,则直接触发
 	{
 		double maxQty = min(curQty, qty);
-		append_signal(stdCode, curQty - qty, userTag, 0.0, _is_in_schedule ? 0 : 1);
+		double totalQty = stra_get_position(stdCode, false);
+		append_signal(stdCode, totalQty - maxQty, userTag, 0.0, _is_in_schedule ? 0 : 1);
 	}
 	else
 	{
@@ -1423,7 +1428,7 @@ void CtaMocker::stra_exit_long(const char* stdCode, double qty, const char* user
 		strcpy(entrust._code, stdCode);
 		strcpy(entrust._usertag, userTag);
 
-		entrust._qty = qty;
+		entrust._qty = min(curQty, qty);
 		entrust._field = WCF_NEWPRICE;
 		if (!decimal::eq(limitprice))
 		{
@@ -1984,19 +1989,20 @@ double CtaMocker::stra_get_position(const char* stdCode, bool bOnlyValid /* = fa
 {
 	//By Wesley @ 2022.05.22
 	//如果有信号，说明刚下了指令，还没等到下一个tick进来，用户就在读取仓位
-	//但是如果用户读取，还是要返回
+	double totalPos = 0;
 	auto sit = _sig_map.find(stdCode);
 	if (sit != _sig_map.end())
 	{
-		return sit->second._volume;
+		totalPos = sit->second._volume;
 	}
 
 	auto it = _pos_map.find(stdCode);
 	if (it == _pos_map.end())
-		return 0;
+		return totalPos;
 
-	double ret = 0;
 	const PosInfo& pInfo = it->second;
+	totalPos = pInfo._volume;
+
 	if (strlen(userTag) == 0)
 	{
 		if (bOnlyValid)
@@ -2004,19 +2010,21 @@ double CtaMocker::stra_get_position(const char* stdCode, bool bOnlyValid /* = fa
 			//只有userTag为空的时候时候，才会用bOnlyValid
 			//这里理论上，只有多头才会进到这里
 			//其他地方要保证，空头持仓的话，_frozen要为0
-			return pInfo._volume - pInfo._frozen;
+			return totalPos - pInfo._frozen;
 		}
 		else
-			return pInfo._volume;
+			return totalPos;
 	}
-
-	for (auto it = pInfo._details.begin(); it != pInfo._details.end(); it++)
+	else
 	{
-		const DetailInfo& dInfo = (*it);
-		if (strcmp(dInfo._opentag, userTag) != 0)
-			continue;
+		for (auto it = pInfo._details.begin(); it != pInfo._details.end(); it++)
+		{
+			const DetailInfo& dInfo = (*it);
+			if (strcmp(dInfo._opentag, userTag) != 0)
+				continue;
 
-		return dInfo._volume;
+			return dInfo._volume;
+		}
 	}
 
 	return 0;
