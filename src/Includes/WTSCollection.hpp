@@ -679,8 +679,15 @@ public:
 	 */
 	inline void remove(const T &_key)
 	{
-		_map.erase(_key);
+		auto it = _map.find(_key);
+		if (it != _map.end())
+		{
+			WTSObject* obj = it->second;
+			_map.erase(it);
+			if (obj) obj->release();
+		}
 	}
+
 
 	/*
 	 *	获取容器起始位置的迭代器
