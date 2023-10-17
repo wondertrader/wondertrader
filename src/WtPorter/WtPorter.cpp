@@ -492,6 +492,15 @@ void cta_sub_ticks(CtxHandler cHandle, const char* stdCode)
 	ctx->stra_sub_ticks(stdCode);
 }
 
+void cta_sub_bar_events(CtxHandler cHandle, const char* stdCode, const char* period)
+{
+	CtaContextPtr ctx = getRunner().getCtaContext(cHandle);
+	if (ctx == NULL)
+		return;
+
+	ctx->stra_sub_bar_events(stdCode, period);
+}
+
 void cta_set_chart_kline(CtxHandler cHandle, const char* stdCode, const char* period)
 {
 	CtaContextPtr ctx = getRunner().getCtaContext(cHandle);

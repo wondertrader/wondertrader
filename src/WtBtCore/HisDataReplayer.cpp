@@ -1993,6 +1993,8 @@ void HisDataReplayer::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTD
 	//这里应该触发检查
 	uint64_t nowTime = (uint64_t)uDate * 10000 + uTime;
 
+	WTSLogger::log_raw(LL_DEBUG, "replaying klines...");
+
 	for (auto it = _bars_cache.begin(); it != _bars_cache.end(); it++)
 	{
 		BarsListPtr& barsList = (BarsListPtr&)it->second;
@@ -2052,6 +2054,8 @@ void HisDataReplayer::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTD
 		}
 	}
 
+	WTSLogger::debug("{} subscribed klines replayed @ {}.{}...", _bars_cache.size(), uDate, uTime);
+
 	for (auto it = _unbars_cache.begin(); it != _unbars_cache.end(); it++)
 	{
 		BarsListPtr& barsList = (BarsListPtr&)it->second;
@@ -2094,6 +2098,8 @@ void HisDataReplayer::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTD
 			}
 		}
 	}
+
+	WTSLogger::debug("{} ubsubscribed klines replayed @ {}.{}...", _bars_cache.size(), uDate, uTime);
 
 	if (_listener)
 		_listener->handle_schedule(uDate, uTime);

@@ -954,7 +954,8 @@ void CtaMocker::on_bar(const char* stdCode, const char* period, uint32_t times, 
 	KlineTag& tag = _kline_tags[key];
 	tag._closed = true;
 
-	on_bar_close(stdCode, realPeriod, newBar);
+	if(tag._notify)
+		on_bar_close(stdCode, realPeriod, newBar);
 }
 
 void CtaMocker::on_init()
@@ -1799,7 +1800,6 @@ WTSKlineSlice* CtaMocker::stra_get_bars(const char* stdCode, const char* period,
 
 	WTSKlineSlice* kline = _replayer->get_kline_slice(stdCode, basePeriod, count, times, isMain);
 
-	bool bFirst = (_kline_tags.find(key) == _kline_tags.end());
 	KlineTag& tag = _kline_tags[key];
 	tag._closed = false;
 
@@ -1844,6 +1844,15 @@ void CtaMocker::stra_sub_ticks(const char* code)
 	_tick_subs.insert(code);
 
 	_replayer->sub_tick(_context_id, code);
+}
+
+void CtaMocker::stra_sub_bar_events(const char* stdCode, const char* period)
+{
+	thread_local static char key[64] = { 0 };
+	fmtutil::format_to(key, "{}#{}", stdCode, period);
+
+	KlineTag& tag = _kline_tags[key];
+	tag._notify = true;
 }
 
 WTSCommodityInfo* CtaMocker::stra_get_comminfo(const char* stdCode)

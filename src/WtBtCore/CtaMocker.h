@@ -167,6 +167,7 @@ public:
 	virtual WTSTickData*	stra_get_last_tick(const char* stdCode) override;
 
 	virtual void stra_sub_ticks(const char* stdCode) override;
+	virtual void stra_sub_bar_events(const char* stdCode, const char* period) override;
 
 	/*
 	 *	获取分月合约代码
@@ -255,9 +256,10 @@ protected:
 
 	typedef struct _KlineTag
 	{
-		bool			_closed;
+		bool	_closed;
+		bool	_notify;
 
-		_KlineTag() :_closed(false){}
+		_KlineTag() :_closed(false), _notify(false){}
 
 	} KlineTag;
 	typedef wt_hashmap<std::string, KlineTag> KlineTags;

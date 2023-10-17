@@ -163,6 +163,7 @@ public:
 	virtual std::string		stra_get_rawcode(const char* stdCode) override;
 
 	virtual void stra_sub_ticks(const char* stdCode) override;
+	virtual void stra_sub_bar_events(const char* stdCode, const char* period) override;
 
 	virtual void stra_log_info(const char* message) override;
 	virtual void stra_log_debug(const char* message) override;
@@ -224,9 +225,10 @@ protected:
 
 	typedef struct _KlineTag
 	{
-		bool			_closed;
+		bool	_closed;
+		bool	_notify;
 
-		_KlineTag() :_closed(false){}
+		_KlineTag() :_closed(false), _notify(false){}
 
 	} KlineTag;
 	typedef wt_hashmap<std::string, KlineTag> KlineTags;
@@ -341,6 +343,7 @@ protected:
 
 	//tick订阅列表
 	wt_hashset<std::string> _tick_subs;
+	wt_hashset<std::string> _barevt_subs;
 
 	//////////////////////////////////////////////////////////////////////////
 	//图表相关

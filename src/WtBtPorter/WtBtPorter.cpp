@@ -485,6 +485,15 @@ void cta_sub_ticks(CtxHandler cHandle, const char* stdCode)
 	ctx->stra_sub_ticks(stdCode);
 }
 
+void cta_sub_bar_events(CtxHandler cHandle, const char* stdCode, const char* period)
+{
+	CtaMocker* ctx = getRunner().cta_mocker();
+	if (ctx == NULL)
+		return;
+
+	ctx->stra_sub_bar_events(stdCode, period);
+}
+
 bool cta_step(CtxHandler cHandle)
 {
 	//只有异步模式才有意义

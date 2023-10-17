@@ -126,6 +126,8 @@ extern "C"
 
 	EXPORT_FLAG	void		cta_sub_ticks(CtxHandler cHandle, const char* stdCode);
 
+	EXPORT_FLAG	void		cta_sub_bar_events(CtxHandler cHandle, const char* stdCode, const char* period);
+
 	/*
 	 *	设置图表K线
 	 */

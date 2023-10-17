@@ -655,12 +655,13 @@ void CtaStraBaseCtx::on_bar(const char* stdCode, const char* period, uint32_t ti
 	fmtutil::format_to(realPeriod, "{}{}", period, times);
 
 	thread_local static char key[64] = { 0 };
-	fmtutil::format_to(key, "{}#{}", stdCode, realPeriod);
+	fmtutil::format_to(key, "{}#{}{}", stdCode, realPeriod);
 
 	KlineTag& tag = _kline_tags[key];
 	tag._closed = true;
 
-	on_bar_close(stdCode, realPeriod, newBar);
+	if(tag._notify)
+		on_bar_close(stdCode, realPeriod, newBar);
 
 	if(key == _main_key)
 		log_debug("Main KBars {} closed", key);
@@ -1669,6 +1670,15 @@ void CtaStraBaseCtx::stra_sub_ticks(const char* code)
 
 	_engine->sub_tick(_context_id, code);
 	log_info("Market data subscribed: {}", code);
+}
+
+void CtaStraBaseCtx::stra_sub_bar_events(const char* stdCode, const char* period)
+{
+	thread_local static char key[64] = { 0 };
+	fmtutil::format_to(key, "{}#{}", stdCode, period);
+
+	KlineTag& tag = _kline_tags[key];
+	tag._notify = true;
 }
 
 WTSCommodityInfo* CtaStraBaseCtx::stra_get_comminfo(const char* stdCode)

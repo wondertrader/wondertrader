@@ -125,6 +125,8 @@ extern "C"
 
 	EXPORT_FLAG	void		cta_sub_ticks(CtxHandler cHandle, const char* stdCode);
 
+	EXPORT_FLAG	void		cta_sub_bar_events(CtxHandler cHandle, const char* stdCode, const char* period);
+
 	EXPORT_FLAG	bool		cta_step(CtxHandler cHandle);
 
 	/*

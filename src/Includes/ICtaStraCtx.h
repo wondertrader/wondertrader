@@ -123,6 +123,7 @@ public:
 	virtual std::string		stra_get_rawcode(const char* stdCode) = 0;
 
 	virtual void stra_sub_ticks(const char* stdCode) = 0;
+	virtual void stra_sub_bar_events(const char* stdCode, const char* period) = 0;
 
 	virtual void stra_log_info(const char* message) = 0;
 	virtual void stra_log_debug(const char* message) = 0;
