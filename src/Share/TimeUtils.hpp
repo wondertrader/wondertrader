@@ -19,6 +19,7 @@
 #include <string.h>
 #include<chrono>
 #include <thread>
+#include <cmath>
 
 #ifdef _MSC_VER
 #define CTIME_BUF_SIZE 64
@@ -284,29 +285,27 @@ public:
 		return (uint32_t)ret;
 	}
 
-	static uint32_t getNextMonth(uint32_t curMonth, int months = 1)
-	{
-		uint32_t uYear = curMonth/100;
-		uint32_t uMonth = curMonth%100;
-
-		uint32_t uAddYear = months/12;
-		uint32_t uAddMon = months%12;
-
-		uYear += uAddYear;
-		uMonth += uAddMon;
-		if(uMonth > 12)
-		{
-			uYear ++;
-			uMonth -= 12;
-		}
-		else if(uMonth <= 0)
-		{
-			uYear --;
-			uMonth = 12;
-		}
-
-		return uYear*100 + uMonth;
-	}
+    /*
+     * @curMonth: YYYYMM
+     * @return: YYYYMM
+     */
+    static uint32_t getNextMonth(uint32_t curMonth, int months = 1)
+    {
+        int32_t uYear = curMonth / 100;
+        int32_t uMonth = curMonth % 100; // [1, 12]
+     
+        int32_t uAddYear = floor(((float) months)/12.0);
+        int32_t uAddMon = months % 12;
+        if (uAddMon < 0) uAddMon += 12;  // math modulus: [0, 11]
+     
+        uYear += uAddYear;
+        uMonth += uAddMon;
+        if (uMonth > 12) {
+            ++uYear;
+            uMonth -= 12;
+        }
+        return (uint32_t) (uYear*100 + uMonth);
+    }
 
 	static inline uint64_t timeToMinBar(uint32_t uDate, uint32_t uTime)
 	{
