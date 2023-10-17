@@ -224,10 +224,10 @@ public:
 		int millisec = lTimeWithMs%1000;
 		//t.tm_isdst 	
 		time_t ts = mktime(&t);
+		if (ts == -1) return 0;
 		//如果要转成UTC时间，则需要根据时区进行转换
 		if (isToUTC)
 			ts -= getTZOffset() * 3600;
-		if (ts == -1) return 0;
 		return ts * 1000+ millisec;
 	}
 
