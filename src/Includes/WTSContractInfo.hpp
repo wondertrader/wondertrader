@@ -91,6 +91,52 @@ public:
 	inline void		setSessionInfo(WTSSessionInfo* sInfo) { m_pSession = sInfo; }
 	inline WTSSessionInfo* getSessionInfo() const { return m_pSession; }
 
+	inline void		setFeeRates(double open, double close, double closeToday, bool byVolume)
+	{
+		m_dOpenFee = open;
+		m_dCloseFee = close;
+		m_dCloseTFee = closeToday;
+		m_nFeeAlg = byVolume ? 0 : 1;
+	}
+
+	inline void		setMarginRate(double rate) { m_dMarginRate = rate; }
+	inline double	getMarginRate() const { return m_dMarginRate; }
+
+	inline double	calcFee(double price, double qty, uint32_t offset)
+	{
+		if (m_nFeeAlg == -1)
+			return 0.0;
+
+		double ret = 0.0;
+		if (m_nFeeAlg == 0)
+		{
+			switch (offset)
+			{
+			case 0: ret = m_dOpenFee * qty; break;
+			case 1: ret = m_dCloseFee * qty; break;
+			case 2: ret = m_dCloseTFee * qty; break;
+			default: ret = 0.0; break;
+			}
+		}
+		else if(m_nFeeAlg == 1)
+		{
+			double amount = price * qty * m_uVolScale;
+			switch (offset)
+			{
+			case 0: ret = m_dOpenFee * amount; break;
+			case 1: ret = m_dCloseFee * amount; break;
+			case 2: ret = m_dCloseTFee * amount; break;
+			default: ret = 0.0; break;
+			}
+		}
+
+		return (int32_t)(ret * 100 + 0.5) / 100.0;
+	}
+
+protected:
+	WTSCommodityInfo():m_nFeeAlg(-1){}
+	virtual ~WTSCommodityInfo() {}
+
 private:
 	std::string	m_strName;		//品种名称
 	std::string	m_strExchg;		//交易所代码
@@ -102,7 +148,6 @@ private:
 
 	uint32_t	m_uVolScale;	//合约放大倍数
 	double		m_dPriceTick;	//最小价格变动单位
-	//uint32_t	m_uPrecision;	//价格精度
 
 	double		m_dLotTick;		//数量精度
 	double		m_dMinLots;		//最小交易数量
@@ -115,6 +160,12 @@ private:
 	CodeSet				m_setCodes;
 
 	WTSSessionInfo*		m_pSession;
+
+	double	m_dOpenFee;		//开仓手续费
+	double	m_dCloseFee;	//平仓手续费
+	double	m_dCloseTFee;	//平今手续费
+	int		m_nFeeAlg;		//手续费算法，默认为-1，不计算,0是按成交量，1为按成交额
+	double	m_dMarginRate;	//保证金率
 };
 
 class WTSContractInfo :	public WTSObject
