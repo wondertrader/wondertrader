@@ -1882,6 +1882,7 @@ uint64_t HisDataReplayer::replayHftDatasByDay(uint32_t curTDate)
 
 bool HisDataReplayer::replayHftDatas(uint64_t stime, uint64_t etime)
 {	
+	WTSLogger::log_raw(LL_DEBUG, "replaying hft data...");
 	for (;;)
 	{
 		uint64_t nextTime = min(UINT64_MAX, getNextTickTime(_cur_tdate, stime));
@@ -1993,8 +1994,6 @@ void HisDataReplayer::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTD
 	//这里应该触发检查
 	uint64_t nowTime = (uint64_t)uDate * 10000 + uTime;
 
-	WTSLogger::log_raw(LL_DEBUG, "replaying klines...");
-
 	for (auto it = _bars_cache.begin(); it != _bars_cache.end(); it++)
 	{
 		BarsListPtr& barsList = (BarsListPtr&)it->second;
@@ -2054,8 +2053,6 @@ void HisDataReplayer::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTD
 		}
 	}
 
-	WTSLogger::debug("{} subscribed klines replayed @ {}.{}...", _bars_cache.size(), uDate, uTime);
-
 	for (auto it = _unbars_cache.begin(); it != _unbars_cache.end(); it++)
 	{
 		BarsListPtr& barsList = (BarsListPtr&)it->second;
@@ -2098,8 +2095,6 @@ void HisDataReplayer::onMinuteEnd(uint32_t uDate, uint32_t uTime, uint32_t endTD
 			}
 		}
 	}
-
-	WTSLogger::debug("{} ubsubscribed klines replayed @ {}.{}...", _bars_cache.size(), uDate, uTime);
 
 	if (_listener)
 		_listener->handle_schedule(uDate, uTime);
@@ -2279,6 +2274,8 @@ WTSKlineSlice* HisDataReplayer::get_kline_slice(const char* stdCode, const char*
 	{
 		return NULL;
 	}
+
+	_codes_in_subbed.insert(stdCode);
 
 	if (kBlkPair->_cursor == UINT_MAX)
 	{
@@ -3108,35 +3105,17 @@ void HisDataReplayer::checkUnbars()
 {
 	for(const std::string& stdCode : _unsubbed_in_need)
 	{
-		bool bHasBars = false;
-		for (auto& m : _unbars_cache)
-		{
-			const std::string& key = m.first;
-			auto ay = StrUtil::split(key, "#");
-			if (ay[0].compare(stdCode) == 0)
-			{
-				bHasBars = true;
-				break;
-			}
-		}
+		//先检查是否已经在未订阅K线中
+		bool bHasBars = _codes_in_unsubbed.find(stdCode) != _codes_in_unsubbed.end();
 		if(bHasBars)
 			continue;
 
-		for (auto& m : _bars_cache)
-		{
-			const std::string& key = m.first;
-			auto ay = StrUtil::split(key, "#");
-			if (ay[0].compare(stdCode) == 0)
-			{
-				bHasBars = true;
-				break;
-			}
-		}
-
+		//再检查是否在已订阅K线中
+		bHasBars = _codes_in_subbed.find(stdCode) != _codes_in_subbed.end();
 		if (bHasBars)
 			continue;
 
-		//如果订阅了tick,但是没有对应的K线数据,则自动加载1分钟线到内存中
+		//如果订阅了tick,但是没有对应的K线数据,则自动加载主K线周期的数据
 		bool bHasHisData = false;
 		std::string key = fmt::format("{}#{}", stdCode, _main_period);
 
@@ -3184,6 +3163,8 @@ void HisDataReplayer::checkUnbars()
 		WTSSessionInfo* sInfo = get_session_info(stdCode.c_str(), true);
 
 		BarsListPtr& kBlkPair = _unbars_cache[key];
+
+		_codes_in_unsubbed.insert(stdCode);
 		
 		//还没有经过初始定位
 		WTSBarStruct bar;

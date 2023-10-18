@@ -471,6 +471,8 @@ private:
 
 	BarsCache		_bars_cache;	//K线缓存
 	BarsCache		_unbars_cache;	//未订阅的K线缓存
+	wt_hashset<std::string> _codes_in_subbed;
+	wt_hashset<std::string> _codes_in_unsubbed;
 
 	TaskInfoPtr		_task;
 
@@ -492,7 +494,7 @@ private:
 
 	//By Wesley @ 2022.06.01
 	//这个主要是针对不订阅而直接指定合约下单的场景
-	std::set<std::string>		_unsubbed_in_need;	//未订阅但需要的K线
+	wt_hashset<std::string>		_unsubbed_in_need;	//未订阅但需要的K线
 
 	//By Wesley @ 2022.08.15
 	//复权标记，采用位运算表示，1|2|4,1表示成交量复权，2表示成交额复权，4表示总持复权，其他待定
