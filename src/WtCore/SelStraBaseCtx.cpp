@@ -833,7 +833,7 @@ void SelStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 		pInfo._details.push_back(dInfo);
 		pInfo._last_entertime = curTm;
 
-		double fee = _engine->calc_fee(stdCode, trdPx, abs(qty), 0);
+		double fee = commInfo->calcFee(trdPx, abs(qty), 0);
 		_fund_info._total_fees += fee;
 		//_engine->mutate_fund(fee, FFT_Fee);
 		log_trade(stdCode, dInfo._long, true, curTm, trdPx, abs(qty), userTag, fee);
@@ -871,7 +871,7 @@ void SelStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 			pInfo._last_exittime = curTm;
 			_fund_info._total_profit += profit;
 
-			double fee = _engine->calc_fee(stdCode, trdPx, maxQty, dInfo._opentdate == curTDate ? 2 : 1);
+			double fee = commInfo->calcFee(trdPx, maxQty, dInfo._opentdate == curTDate ? 2 : 1);
 			_fund_info._total_fees += fee;
 			//这里写成交记录
 			log_trade(stdCode, dInfo._long, false, curTm, trdPx, maxQty, userTag, fee);
@@ -919,7 +919,7 @@ void SelStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 			pInfo._last_entertime = curTm;
 
 			//这里还需要写一笔成交记录
-			double fee = _engine->calc_fee(stdCode, trdPx, abs(qty), 0);
+			double fee = commInfo->calcFee(trdPx, abs(qty), 0);
 			_fund_info._total_fees += fee;
 			//_engine->mutate_fund(fee, FFT_Fee);
 			log_trade(stdCode, dInfo._long, true, curTm, trdPx, abs(left), userTag, fee);

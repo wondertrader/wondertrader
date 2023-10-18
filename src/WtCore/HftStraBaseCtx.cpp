@@ -817,7 +817,7 @@ void HftStraBaseCtx::do_set_position(const char* stdCode, double qty, double pri
 		wt_strcpy(dInfo._usertag, userTag);
 		pInfo._details.emplace_back(dInfo);
 
-		double fee = _engine->calc_fee(stdCode, trdPx, abs(diff), 0);
+		double fee = commInfo->calcFee(trdPx, abs(diff), 0);
 		_fund_info._total_fees += fee;
 
 		log_trade(stdCode, dInfo._long, true, curTm, trdPx, abs(diff), fee, userTag);
@@ -856,7 +856,7 @@ void HftStraBaseCtx::do_set_position(const char* stdCode, double qty, double pri
 			pInfo._dynprofit = pInfo._dynprofit*dInfo._volume / (dInfo._volume + maxQty);//浮盈也要做等比缩放
 			_fund_info._total_profit += profit;
 
-			double fee = _engine->calc_fee(stdCode, trdPx, maxQty, dInfo._opentdate == curTDate ? 2 : 1);
+			double fee = commInfo->calcFee(trdPx, maxQty, dInfo._opentdate == curTDate ? 2 : 1);
 			_fund_info._total_fees += fee;
 			//这里写成交记录
 			log_trade(stdCode, dInfo._long, false, curTm, trdPx, maxQty, fee, userTag);
@@ -890,7 +890,7 @@ void HftStraBaseCtx::do_set_position(const char* stdCode, double qty, double pri
 			pInfo._details.emplace_back(dInfo);
 
 			//这里还需要写一笔成交记录
-			double fee = _engine->calc_fee(stdCode, trdPx, abs(left), 0);
+			double fee = commInfo->calcFee(trdPx, abs(left), 0);
 			_fund_info._total_fees += fee;
 			//_engine->mutate_fund(fee, FFT_Fee);
 			log_trade(stdCode, dInfo._long, true, curTm, trdPx, abs(left), fee, userTag);

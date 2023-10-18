@@ -852,14 +852,16 @@ void WtEngine::load_fees(const char* filename)
 	}
 
 	auto keys = cfg->memberNames();
-	for (const std::string& key : keys)
+	for (const std::string& fullPid : keys)
 	{
-		WTSVariant* cfgItem = cfg->get(key.c_str());
-		FeeItem& fItem = _fee_map[key];
-		fItem._by_volume = cfgItem->getBoolean("byvolume");
-		fItem._open = cfgItem->getDouble("open");
-		fItem._close = cfgItem->getDouble("close");
-		fItem._close_today = cfgItem->getDouble("closetoday");
+		WTSVariant* cfgItem = cfg->get(fullPid.c_str());
+		const StringVector& ay = StrUtil::split(fullPid, ".");
+		WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(ay[0].c_str(), ay[1].c_str());
+		if (commInfo == NULL)
+			continue;
+
+		commInfo->setFeeRates(cfgItem->getDouble("open"), cfgItem->getDouble("close"), cfgItem->getDouble("closetoday"), cfgItem->getBoolean("byvolume"));
+		commInfo->setMarginRate(cfgItem->getDouble("margin"));
 	}
 
 	cfg->release();
@@ -980,7 +982,7 @@ void WtEngine::do_set_position(const char* stdCode, double qty, double curPx /* 
 		dInfo._opentdate = curTDate;
 		pInfo->_details.emplace_back(dInfo);
 
-		double fee = calc_fee(stdCode, curPx, abs(qty), 0);
+		double fee = commInfo->calcFee(curPx, abs(qty), 0);
 		fundInfo._fees += fee;
 		fundInfo._balance -= fee;
 
@@ -1022,7 +1024,7 @@ void WtEngine::do_set_position(const char* stdCode, double qty, double curPx /* 
 			fundInfo._profit += profit;
 			fundInfo._balance += profit;
 
-			double fee = calc_fee(stdCode, curPx, maxQty, dInfo._opentdate == curTDate ? 2 : 1);
+			double fee = commInfo->calcFee(curPx, maxQty, dInfo._opentdate == curTDate ? 2 : 1);
 			fundInfo._fees += fee;
 			fundInfo._balance -= fee;
 
@@ -1058,7 +1060,7 @@ void WtEngine::do_set_position(const char* stdCode, double qty, double curPx /* 
 			pInfo->_details.emplace_back(dInfo);
 
 			//这里还需要写一笔成交记录
-			double fee = calc_fee(stdCode, curPx, abs(qty), 0);
+			double fee = commInfo->calcFee(curPx, abs(qty), 0);
 			fundInfo._fees += fee;
 			fundInfo._balance -= fee;
 

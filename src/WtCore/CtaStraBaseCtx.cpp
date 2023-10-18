@@ -1464,7 +1464,8 @@ void CtaStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 		pInfo._details.emplace_back(dInfo);
 		pInfo._last_entertime = curTm;
 
-		double fee = _engine->calc_fee(stdCode, trdPx, abs(diff), 0);
+		//double fee = _engine->calc_fee(stdCode, trdPx, abs(diff), 0);
+		double fee = commInfo->calcFee(trdPx, abs(diff), 0);
 		_fund_info._total_fees += fee;
 		log_trade(stdCode, dInfo._long, true, curTm, trdPx, abs(diff), userTag, fee, _last_barno);
 	}
@@ -1510,7 +1511,8 @@ void CtaStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 			_fund_info._total_profit += profit;
 
 			//计算手续费
-			double fee = _engine->calc_fee(stdCode, trdPx, maxQty, dInfo._opentdate == curTDate ? 2 : 1);
+			//double fee = _engine->calc_fee(stdCode, trdPx, maxQty, dInfo._opentdate == curTDate ? 2 : 1);
+			double fee = commInfo->calcFee(trdPx, maxQty, dInfo._opentdate == curTDate ? 2 : 1);
 			_fund_info._total_fees += fee;
 
 			//这里写平仓记录
@@ -1558,7 +1560,7 @@ void CtaStraBaseCtx::do_set_position(const char* stdCode, double qty, const char
 			pInfo._last_entertime = curTm;
 
 			//这里还需要写一笔成交记录
-			double fee = _engine->calc_fee(stdCode, trdPx, abs(left), 0);
+			double fee = commInfo->calcFee(trdPx, abs(left), 0);
 			_fund_info._total_fees += fee;
 			log_trade(stdCode, dInfo._long, true, curTm, trdPx, abs(left), userTag, fee, _last_barno);
 		}
