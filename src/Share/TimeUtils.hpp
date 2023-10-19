@@ -294,7 +294,7 @@ public:
         int32_t uYear = curMonth / 100;
         int32_t uMonth = curMonth % 100; // [1, 12]
      
-        int32_t uAddYear = floor(((float) months)/12.0);
+		int32_t uAddYear = months / 12;
         int32_t uAddMon = months % 12;
         if (uAddMon < 0) uAddMon += 12;  // math modulus: [0, 11]
      
