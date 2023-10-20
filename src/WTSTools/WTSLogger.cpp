@@ -407,26 +407,29 @@ void WTSLogger::log_dyn_raw(const char* patttern, const char* catName, WTSLogLev
 		return;
 	}
 
-	switch (ll)
-	{
-	case LL_DEBUG:
-		debug_imp(logger, message);
-		break;
-	case LL_INFO:
-		info_imp(logger, message);
-		break;
-	case LL_WARN:
-		warn_imp(logger, message);
-		break;
-	case LL_ERROR:
-		error_imp(logger, message);
-		break;
-	case LL_FATAL:
-		fatal_imp(logger, message);
-		break;
-	default:
-		break;
-	}
+	if (logger)
+    {
+        switch (ll)
+        {
+        case LL_DEBUG:
+            debug_imp(logger, message);
+            break;
+        case LL_INFO:
+            info_imp(logger, message);
+            break;
+        case LL_WARN:
+            warn_imp(logger, message);
+            break;
+        case LL_ERROR:
+            error_imp(logger, message);
+            break;
+        case LL_FATAL:
+            fatal_imp(logger, message);
+            break;
+        default:
+            break;
+        }
+    }
 }
 
 
