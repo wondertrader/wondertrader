@@ -78,7 +78,7 @@ WTSCommodityInfo* WTSBaseDataMgr::getCommodity(const char* exchg, const char* pi
 }
 
 
-WTSContractInfo* WTSBaseDataMgr::getContract(const char* code, const char* exchg)
+WTSContractInfo* WTSBaseDataMgr::getContract(const char* code, const char* exchg /* = "" */, uint32_t uDate /* = 0 */)
 {
 	//如果直接找到对应的市场代码,则直接
 	
@@ -94,7 +94,17 @@ WTSContractInfo* WTSBaseDataMgr::getContract(const char* code, const char* exchg
 		if (ayInst == NULL || ayInst->size() == 0)
 			return NULL;
 
-		return (WTSContractInfo*)ayInst->at(0);
+		for(std::size_t i = 0; i < ayInst->size(); i++)
+		{
+			WTSContractInfo* cInfo = (WTSContractInfo*)ayInst->at(i);
+			/*
+			 *	By Wesley @ 2023.10.23
+			 *	if param uDate is not zero, need to check whether contract is valid
+			 */
+			if (uDate == 0 || (cInfo->getOpenDate() <= uDate && cInfo->getExpireDate() >= uDate))
+				return cInfo;
+		}
+		return NULL;
 	}
 	else
 	{
@@ -106,8 +116,16 @@ WTSContractInfo* WTSBaseDataMgr::getContract(const char* code, const char* exchg
 			auto it = contractList->find(lKey);
 			if (it != contractList->end())
 			{
-				return (WTSContractInfo*)it->second;
+				WTSContractInfo* cInfo = (WTSContractInfo*)it->second;
+				/*
+				 *	By Wesley @ 2023.10.23
+				 *	if param uDate is not zero, need to check whether contract is valid
+				 */
+				if (uDate == 0 || (cInfo->getOpenDate() <= uDate && cInfo->getExpireDate() >= uDate))
+					return cInfo;
 			}
+
+			return NULL;
 		}
 
 	}
@@ -115,7 +133,7 @@ WTSContractInfo* WTSBaseDataMgr::getContract(const char* code, const char* exchg
 	return NULL;
 }
 
-WTSArray* WTSBaseDataMgr::getContracts(const char* exchg /* = "" */)
+WTSArray* WTSBaseDataMgr::getContracts(const char* exchg /* = "" */, uint32_t uDate /* = 0 */)
 {
 	WTSArray* ay = WTSArray::create();
 	if(strlen(exchg) > 0)
@@ -127,7 +145,13 @@ WTSArray* WTSBaseDataMgr::getContracts(const char* exchg /* = "" */)
 			auto it2 = contractList->begin();
 			for (; it2 != contractList->end(); it2++)
 			{
-				ay->append(it2->second, true);
+				WTSContractInfo* cInfo = (WTSContractInfo*)it2->second;
+				/*
+				 *	By Wesley @ 2023.10.23
+				 *	if param uDate is not zero, need to check whether contract is valid
+				 */
+				if (uDate == 0 || (cInfo->getOpenDate() <= uDate && cInfo->getExpireDate() >= uDate))
+					ay->append(cInfo, true);
 			}
 		}
 	}
@@ -140,7 +164,13 @@ WTSArray* WTSBaseDataMgr::getContracts(const char* exchg /* = "" */)
 			auto it2 = contractList->begin();
 			for (; it2 != contractList->end(); it2++)
 			{
-				ay->append(it2->second, true);
+				WTSContractInfo* cInfo = (WTSContractInfo*)it2->second;
+				/*
+				 *	By Wesley @ 2023.10.23
+				 *	if param uDate is not zero, need to check whether contract is valid
+				 */
+				if (uDate == 0 || (cInfo->getOpenDate() <= uDate && cInfo->getExpireDate() >= uDate))
+					ay->append(cInfo, true);
 			}
 		}
 	}

@@ -37,8 +37,8 @@ public:
 	virtual WTSCommodityInfo*	getCommodity(const char* exchgpid)						= 0;
 	virtual WTSCommodityInfo*	getCommodity(const char* exchg, const char* pid)		= 0;
 
-	virtual WTSContractInfo*	getContract(const char* code, const char* exchg = "")	= 0;
-	virtual WTSArray*			getContracts(const char* exchg = "")					= 0; 
+	virtual WTSContractInfo*	getContract(const char* code, const char* exchg = "", uint32_t uDate = 0)	= 0;
+	virtual WTSArray*			getContracts(const char* exchg = "", uint32_t uDate = 0)					= 0;
 
 	virtual WTSSessionInfo*		getSession(const char* sid)						= 0;
 	virtual WTSSessionInfo*		getSessionByCode(const char* code, const char* exchg = "") = 0;

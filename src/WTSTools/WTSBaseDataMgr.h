@@ -35,8 +35,8 @@ public:
 	virtual WTSCommodityInfo*	getCommodity(const char* stdPID) override;
 	virtual WTSCommodityInfo*	getCommodity(const char* exchg, const char* pid) override;
 
-	virtual WTSContractInfo*	getContract(const char* code, const char* exchg = "") override;
-	virtual WTSArray*			getContracts(const char* exchg = "") override;
+	virtual WTSContractInfo*	getContract(const char* code, const char* exchg = "", uint32_t uDate = 0) override;
+	virtual WTSArray*			getContracts(const char* exchg = "", uint32_t uDate = 0) override;
 
 	virtual WTSSessionInfo*		getSession(const char* sid) override;
 	virtual WTSSessionInfo*		getSessionByCode(const char* code, const char* exchg = "") override;
@@ -46,8 +46,8 @@ public:
 
 	virtual uint32_t			calcTradingDate(const char* stdPID, uint32_t uDate, uint32_t uTime, bool isSession = false) override;
 	virtual uint64_t			getBoundaryTime(const char* stdPID, uint32_t tDate, bool isSession = false, bool isStart = true) override;
-	void		release();
 
+	void		release();
 
 	bool		loadSessions(const char* filename);
 	bool		loadCommodities(const char* filename);
