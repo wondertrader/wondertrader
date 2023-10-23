@@ -234,6 +234,10 @@ void WTSLogger::init(const char* propFile /* = "logcfg.json" */, bool isFile /* 
 	}
 
 	m_rootLogger = getLogger("root");
+	if(m_rootLogger == NULL)
+	{
+		throw std::runtime_error("root logger can not be null, please check the config file");
+	}
 	spdlog::set_default_logger(m_rootLogger);
 	spdlog::flush_every(std::chrono::seconds(2));
 
