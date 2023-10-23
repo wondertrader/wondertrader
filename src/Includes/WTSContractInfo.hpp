@@ -206,10 +206,11 @@ public:
 		m_expireDate = expireDate;
 	}
 
-	inline void setMarginRatios(double longRatio, double shortRatio)
+	inline void setMarginRatios(double longRatio, double shortRatio, uint32_t flag = 0)
 	{
 		m_lMarginRatio = longRatio;
 		m_sMarginRatio = shortRatio;
+		m_uMarginFlag = flag;
 	}
 
 	inline const char* getCode()	const{return m_strCode.c_str();}
@@ -228,15 +229,67 @@ public:
 	inline uint32_t	getOpenDate() const { return m_openDate; }
 	inline uint32_t	getExpireDate() const { return m_expireDate; }
 
-	inline double	getLongMarginRatio() const { return m_lMarginRatio; }
-	inline double	getShortMarginRatio() const { return m_sMarginRatio; }
+	inline double	getLongMarginRatio() const { 
+		if (m_uMarginFlag == 1)
+			return m_lMarginRatio;
 
+		static double commRate = m_commInfo->getMarginRate();
+		return commRate == 0.0 ? m_lMarginRatio : m_commInfo->getMarginRate();
+	}
+
+	inline double	getShortMarginRatio() const {
+		if (m_uMarginFlag == 1)
+			return m_sMarginRatio;
+
+		static double commRate = m_commInfo->getMarginRate();
+		return commRate == 0.0 ? m_sMarginRatio : m_commInfo->getMarginRate();
+	}
 
 	inline void setCommInfo(WTSCommodityInfo* commInfo) { m_commInfo = commInfo; }
 	inline WTSCommodityInfo* getCommInfo() const { return m_commInfo; }
 
+	inline void		setFeeRates(double open, double close, double closeToday, bool byVolume)
+	{
+		m_dOpenFee = open;
+		m_dCloseFee = close;
+		m_dCloseTFee = closeToday;
+		m_nFeeAlg = byVolume ? 0 : 1;
+	}
+
+	inline double	calcFee(double price, double qty, uint32_t offset)
+	{
+		//如果合约没有手续费率，则调用品种的手续费率
+		if (m_nFeeAlg == -1)
+			return m_commInfo->calcFee(price, qty, offset);
+
+		double ret = 0.0;
+		if (m_nFeeAlg == 0)
+		{
+			switch (offset)
+			{
+			case 0: ret = m_dOpenFee * qty; break;
+			case 1: ret = m_dCloseFee * qty; break;
+			case 2: ret = m_dCloseTFee * qty; break;
+			default: ret = 0.0; break;
+			}
+		}
+		else if (m_nFeeAlg == 1)
+		{
+			double amount = price * qty * m_commInfo->getVolScale();
+			switch (offset)
+			{
+			case 0: ret = m_dOpenFee * amount; break;
+			case 1: ret = m_dCloseFee * amount; break;
+			case 2: ret = m_dCloseTFee * amount; break;
+			default: ret = 0.0; break;
+			}
+		}
+
+		return (int32_t)(ret * 100 + 0.5) / 100.0;
+	}
+
 protected:
-	WTSContractInfo():m_commInfo(NULL), m_openDate(0), m_expireDate(0), m_lMarginRatio(0), m_sMarginRatio(0) {}
+	WTSContractInfo():m_commInfo(NULL), m_openDate(19900101), m_expireDate(30991231), m_lMarginRatio(0), m_sMarginRatio(0), m_nFeeAlg(-1), m_uMarginFlag(0){}
 	virtual ~WTSContractInfo(){}
 
 private:
@@ -255,8 +308,15 @@ private:
 
 	uint32_t	m_openDate;		//上市日期
 	uint32_t	m_expireDate;	//交割日
+
 	double		m_lMarginRatio;	//交易所多头保证金率
 	double		m_sMarginRatio;	//交易所空头保证金率
+	uint32_t	m_uMarginFlag;	//0-合约信息读取的，1-手工设置的
+
+	double		m_dOpenFee;		//开仓手续费
+	double		m_dCloseFee;	//平仓手续费
+	double		m_dCloseTFee;	//平今手续费
+	int			m_nFeeAlg;		//手续费算法，默认为-1，不计算,0是按成交量，1为按成交额
 
 	WTSCommodityInfo*	m_commInfo;
 };
