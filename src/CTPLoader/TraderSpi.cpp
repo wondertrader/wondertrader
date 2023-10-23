@@ -8,6 +8,9 @@
 #include "../Share/fmtlib.h"
 #include "../Share/charconv.hpp"
 #include "../Includes/LoaderDef.hpp"
+#include "../Includes/WTSVariant.hpp"
+
+#include "../WTSUtils/WTSCfgLoader.h"
 
 #include <rapidjson/document.h>
 #include <rapidjson/prettywriter.h>
@@ -144,6 +147,8 @@ void CTraderSpi::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin,
 		///获取当前交易日
 		m_lTradingDate = atoi(pUserApi->GetTradingDay());
 
+		LoadFromJson();
+
 		ReqQryInstrument();
 	}
 }
@@ -191,6 +196,14 @@ void CTraderSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CTho
 	{
 		if (pInstrument)
 		{
+			std::string fullInstId = StrUtil::printf("%s.%s", pInstrument->ExchangeID, pInstrument->InstrumentID);
+			auto it = _contracts.find(fullInstId);
+			if (it != _contracts.end())
+			{
+				std::cerr << "--->>> " << pInstrument->ExchangeID << "." << pInstrument->InstrumentID << " already exists, skipped" << std::endl;
+				return;
+			}
+
 			bool bOption = isOption(pInstrument->ProductClass);
 			bool bFuture = isFuture(pInstrument->ProductClass);
 
@@ -275,8 +288,8 @@ void CTraderSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CTho
 					contract.m_dLongMarginRatio = checkValid(pInstrument->LongMarginRatio);
 					contract.m_dShortMarginRatio = checkValid(pInstrument->ShortMarginRatio);
 
-					std::string key = StrUtil::printf("%s.%s", pInstrument->ExchangeID, pInstrument->ProductID);
-					auto it = _commodities.find(key);
+					std::string fullPid = StrUtil::printf("%s.%s", pInstrument->ExchangeID, pInstrument->ProductID);
+					auto it = _commodities.find(fullPid);
 					if (it == _commodities.end())
 					{
 						//品种名称也转成UTF8
@@ -290,7 +303,7 @@ void CTraderSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CTho
 						commInfo.m_strExchg = pInstrument->ExchangeID;
 						commInfo.m_strCurrency = "CNY";
 
-						commInfo.m_strSession = MAP_SESSION[key];
+						commInfo.m_strSession = MAP_SESSION[fullPid];
 						commInfo.m_ccCategory = wrapCategory(pInstrument->ProductClass);
 
 						commInfo.m_uVolScale = (pInstrument->VolumeMultiple == 0 ? 1 : pInstrument->VolumeMultiple);
@@ -336,11 +349,10 @@ void CTraderSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CTho
 						else
 							commInfo.m_uPrecision = 0;
 
-						_commodities[key] = commInfo;
+						_commodities[fullPid] = commInfo;
 					}
 
-					key = StrUtil::printf("%s.%s", pInstrument->ExchangeID, pInstrument->InstrumentID);
-					_contracts[key] = contract;
+					_contracts[fullInstId] = contract;
 				}
 			} while (false);
 			
@@ -352,6 +364,92 @@ void CTraderSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CTho
 		DumpToJson();
 		exit(0);
 	}
+}
+
+void CTraderSpi::LoadFromJson()
+{
+	std::string path = SAVEPATH;
+	path += COMM_FILE;
+	WTSVariant* root = WTSCfgLoader::load_from_file(path);
+	if(root)
+	{
+		for(const auto& exchg : root->memberNames())
+		{
+			WTSVariant* jExchg = root->get(exchg.c_str());
+			for(const auto& pid : jExchg->memberNames())
+			{
+				WTSVariant* pComm = jExchg->get(pid.c_str());
+				std::string key = fmt::format("{}.{}", exchg, pid);
+
+				Commodity& commInfo = _commodities[key];
+				commInfo.m_strProduct = pid;
+				commInfo.m_strName = pComm->getCString("name");
+				commInfo.m_strExchg = exchg;
+				commInfo.m_strCurrency = "CNY";
+
+				commInfo.m_strSession = MAP_SESSION[key];
+				commInfo.m_ccCategory = (ContractCategory)pComm->getUInt32("category");
+
+				commInfo.m_uVolScale = pComm->getUInt32("volscale");;
+				commInfo.m_fPriceTick = pComm->getDouble("pricetick");
+
+				commInfo.m_coverMode = (CoverMode)pComm->getUInt32("covermode");
+
+				commInfo.m_priceMode = (PriceMode)pComm->getUInt32("pricemode");;
+				commInfo.m_tradeMode = (TradingMode)pComm->getUInt32("trademode");
+
+				commInfo.m_uPrecision = pComm->getUInt32("precision");
+			}
+		}
+
+		root->release();
+	}
+
+	path = SAVEPATH;
+	path += CONT_FILE;
+	root = WTSCfgLoader::load_from_file(path);
+	if (root)
+	{
+		WTSVariant* root = WTSCfgLoader::load_from_file(path);
+		for (const auto& exchg_id : root->memberNames())
+		{
+			WTSVariant* jExchg = root->get(exchg_id.c_str());
+			for (const auto& inst_id : jExchg->memberNames())
+			{
+				WTSVariant* pCont = jExchg->get(inst_id.c_str());
+				std::string key = fmt::format("{}.{}", exchg_id, inst_id);
+
+				Contract& contract = _contracts[key];
+				contract.m_strCode = inst_id;
+				contract.m_strExchg = exchg_id;
+				contract.m_strName = pCont->getCString("name");
+				contract.m_strProduct = pCont->getCString("product");
+
+				contract.m_maxMktQty = pCont->getUInt32("maxmarketqty");
+				contract.m_maxLmtQty = pCont->getUInt32("maxlimitqty");
+				contract.m_minMktQty = pCont->getUInt32("minmarketqty");
+				contract.m_minLmtQty = pCont->getUInt32("minlimitqty");
+
+				if(pCont->has("option"))
+				{
+					contract.m_optType = (OptionType)pCont->getUInt32("optiontype");
+					contract.m_strUnderlying = pCont->getCString("underlying");
+					contract.m_strikePrice = pCont->getDouble("product");
+					contract.m_dUnderlyingScale = pCont->getDouble("underlyingscale");
+				}
+				
+
+				contract.m_uOpenDate = pCont->getUInt32("opendate");
+				contract.m_uExpireDate = pCont->getUInt32("expiredate");
+
+				contract.m_dLongMarginRatio = pCont->getDouble("longmarginratio");
+				contract.m_dShortMarginRatio = pCont->getDouble("shortmarginratio");
+			}
+		}
+
+		root->release();
+	}
+	std::cerr << "--->>> " << "LoadFromJson" << std::endl;
 }
 
 void CTraderSpi::DumpToJson()

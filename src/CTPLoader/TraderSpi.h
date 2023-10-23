@@ -35,6 +35,8 @@ private:
 
 	void DumpToJson();
 
+	void LoadFromJson();
+
 protected:
 	int	m_lTradingDate;
 	int m_ReqCount;
