@@ -253,7 +253,7 @@ void WtStockMinImpactExeUnit::on_tick(WTSTickData* newTick)
 		{
 			_cancel_map.erase(localid);
 			_orders_mon.erase_order(localid);
-			_ctx->writeLog(fmtutil::format("erro order:{} canceled by {} times,erase forcely", localid, _max_cancel_time));
+			_ctx->writeLog(fmtutil::format("error order:{} canceled by {} times,erase forcely", localid, _max_cancel_time));
 		}
 	}
 
@@ -299,7 +299,7 @@ void WtStockMinImpactExeUnit::set_position(const char* stdCode, double newVol)
 
 	if (decimal::lt(newVol, 0))
 	{
-		_ctx->writeLog(fmt::format("{} is a erro stock target position", newVol).c_str());
+		_ctx->writeLog(fmt::format("{} is an error stock target position", newVol).c_str());
 		return;
 	}
 

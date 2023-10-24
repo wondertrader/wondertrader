@@ -557,7 +557,7 @@ void WtStockVWapExeUnit::set_position(const char * stdCode, double newVol)
 		return;
 	if (decimal::lt(newVol, 0))
 	{
-		_ctx->writeLog(fmt::format("{} is a erro stock target position", newVol).c_str());
+		_ctx->writeLog(fmt::format("{} is an error stock target position", newVol).c_str());
 		return;
 	}
 	_target_pos = newVol;

@@ -1041,7 +1041,7 @@ void WtDataWriter::pipeToKlines(WTSContractInfo* ct, WTSTickData* curTick)
 	uint32_t minutes = sInfo->timeToMinutes(curTime, false);
 	if (minutes == INVALID_UINT32)
 	{
-		pipe_writer_log(_sink, LL_WARN, "{}.{} {} {} erro minues trans:{} stop this pipeToKlines", curTick->exchg(), curTick->code(), curTick->actiondate(), curTick->actiontime(), curTime);
+		pipe_writer_log(_sink, LL_WARN, "[pipeToKlines] [{}.{}] {}.{} is invalid timestamp, skip this tick", curTick->exchg(), curTick->code(), curTick->actiondate(), curTick->actiontime(), curTime);
 		return;
 	}
 

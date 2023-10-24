@@ -813,7 +813,7 @@ void TraderHuaX::doLogin()
 	if (ret != 0)
 	{
 		std::string erro_code = std::to_string(ret);
-		write_log(_sink, LL_ERROR, "[TraderHuaX] Login failed: erro code {}", erro_code);
+		write_log(_sink, LL_ERROR, "[TraderHuaX] Login failed: error code {}", erro_code);
 		
 		_state = TS_LOGINFAILED;
 		_asyncio.post([this, erro_code]{
