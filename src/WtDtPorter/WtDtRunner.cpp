@@ -161,6 +161,9 @@ void WtDtRunner::initialize(const char* cfgFile, const char* logCfg, const char*
 
 	_udp_caster.init(config->get("broadcaster"), &_bd_mgr, &_data_mgr);
 
+	if (config->has("shmcaster"))
+		_shm_caster.init(config->get("shmcaster"));
+
 	//By Wesley @ 2021.12.27
 	//全天候模式，不需要再使用状态机
 	bool bAlldayMode = config->getBoolean("allday");

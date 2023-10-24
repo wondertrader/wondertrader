@@ -57,7 +57,6 @@ private:
 	void handle_send_multi(const EndPoint& ep, const boost::system::error_code& error, std::size_t bytes_transferred); 
 
 	void do_receive();
-	void do_send();
 
 	void broadcast(WTSObject* data, uint32_t dataType);
 
