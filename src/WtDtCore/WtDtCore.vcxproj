@@ -30,6 +30,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataManager.h" />
+    <ClInclude Include="IDataCaster.h" />
     <ClInclude Include="IndexFactory.h" />
     <ClInclude Include="IndexWorker.h" />
     <ClInclude Include="ParserAdapter.h" />

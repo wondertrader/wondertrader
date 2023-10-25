@@ -2,6 +2,7 @@
 #include "../WtDtCore/DataManager.h"
 #include "../WtDtCore/StateMonitor.h"
 #include "../WtDtCore/UDPCaster.h"
+#include "../WtDtCore/ShmCaster.h"
 #include "../WtDtCore/WtHelper.h"
 #include "../WtDtCore/IndexFactory.h"
 
@@ -21,6 +22,7 @@ WTSHotMgr		g_hotMgr;
 boost::asio::io_service g_asyncIO;
 StateMonitor	g_stateMon;
 UDPCaster		g_udpCaster;
+ShmCaster		g_shmCaster;
 DataManager		g_dataMgr;
 ParserAdapterMgr g_parsers;
 IndexFactory	g_idxFactory;
@@ -62,7 +64,7 @@ const char* getBinDir()
 void initDataMgr(WTSVariant* config, bool bAlldayMode = false)
 {
 	//如果是全天模式，则不传递状态机给DataManager
-	g_dataMgr.init(config, &g_baseDataMgr, bAlldayMode ? NULL : &g_stateMon, &g_udpCaster);
+	g_dataMgr.init(config, &g_baseDataMgr, bAlldayMode ? NULL : &g_stateMon);
 }
 
 void initParsers(WTSVariant* cfg)
@@ -178,7 +180,18 @@ void initialize()
 		}
 	}
 
-	g_udpCaster.init(config->get("broadcaster"), &g_baseDataMgr, &g_dataMgr);
+	if (config->has("shmcaster"))
+	{
+		g_shmCaster.init(config->get("shmcaster"));
+		g_dataMgr.add_caster(&g_shmCaster);
+	}
+
+	if (config->has("broadcaster"))
+	{
+		g_udpCaster.init(config->get("broadcaster"), &g_baseDataMgr, &g_dataMgr);
+		g_dataMgr.add_caster(&g_udpCaster);
+	}
+
 
 	//By Wesley @ 2021.12.27
 	//全天候模式，不需要再使用状态机

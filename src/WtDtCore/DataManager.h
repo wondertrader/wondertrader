@@ -19,6 +19,7 @@ class WTSOrdQueData;
 class WTSOrdDtlData;
 class WTSTransData;
 class WTSVariant;
+class IDataCaster;
 NS_WTP_END
 
 USING_NS_WTP;
@@ -34,9 +35,17 @@ public:
 	~DataManager();
 
 public:
-	bool init(WTSVariant* params, WTSBaseDataMgr* bdMgr, StateMonitor* stMonitor, UDPCaster* caster = NULL);
+	bool init(WTSVariant* params, WTSBaseDataMgr* bdMgr, StateMonitor* stMonitor);
 
 	void add_ext_dumper(const char* id, IHisDataDumper* dumper);
+
+	inline void add_caster(IDataCaster* caster)
+	{
+		if (caster == NULL)
+			return;
+
+		_casters.emplace_back(caster);
+	}
 
 	void release();
 
@@ -85,6 +94,6 @@ private:
 	FuncDeleteWriter	_remover;
 	WTSBaseDataMgr*		_bd_mgr;
 	StateMonitor*		_state_mon;
-	UDPCaster*			_udp_caster;
+	std::vector<IDataCaster*>	_casters;
 };
 

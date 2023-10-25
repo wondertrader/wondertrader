@@ -159,10 +159,17 @@ void WtDtRunner::initialize(const char* cfgFile, const char* logCfg, const char*
 		}
 	}
 
-	_udp_caster.init(config->get("broadcaster"), &_bd_mgr, &_data_mgr);
-
 	if (config->has("shmcaster"))
+	{
 		_shm_caster.init(config->get("shmcaster"));
+		_data_mgr.add_caster(&_shm_caster);
+	}
+
+	if(config->has("broadcaster"))
+	{
+		_udp_caster.init(config->get("broadcaster"), &_bd_mgr, &_data_mgr);
+		_data_mgr.add_caster(&_udp_caster);
+	}
 
 	//By Wesley @ 2021.12.27
 	//全天候模式，不需要再使用状态机
@@ -233,7 +240,7 @@ void WtDtRunner::initialize(const char* cfgFile, const char* logCfg, const char*
 
 void WtDtRunner::initDataMgr(WTSVariant* config, bool bAlldayMode /* = false */)
 {
-	_data_mgr.init(config, &_bd_mgr, bAlldayMode ? NULL : &_state_mon, &_udp_caster);
+	_data_mgr.init(config, &_bd_mgr, bAlldayMode ? NULL : &_state_mon);
 }
 
 void WtDtRunner::initParsers(WTSVariant* cfg)

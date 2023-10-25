@@ -267,25 +267,25 @@ bool UDPCaster::addMRecver(const char* remote, int port, int sendport, int type 
 
 void UDPCaster::broadcast(WTSTickData* curTick)
 {
-	broadcast(curTick, UDP_MSG_PUSHTICK);
+	do_broadcast(curTick, UDP_MSG_PUSHTICK);
 }
 
 void UDPCaster::broadcast(WTSOrdDtlData* curOrdDtl)
 {
-	broadcast(curOrdDtl, UDP_MSG_PUSHORDDTL);
+	do_broadcast(curOrdDtl, UDP_MSG_PUSHORDDTL);
 }
 
 void UDPCaster::broadcast(WTSOrdQueData* curOrdQue)
 {
-	broadcast(curOrdQue, UDP_MSG_PUSHORDQUE);
+	do_broadcast(curOrdQue, UDP_MSG_PUSHORDQUE);
 }
 
 void UDPCaster::broadcast(WTSTransData* curTrans)
 {
-	broadcast(curTrans, UDP_MSG_PUSHTRANS);
+	do_broadcast(curTrans, UDP_MSG_PUSHTRANS);
 }
 
-void UDPCaster::broadcast(WTSObject* data, uint32_t dataType)
+void UDPCaster::do_broadcast(WTSObject* data, uint32_t dataType)
 {
 	if(m_sktBroadcast == NULL || data == NULL || m_bTerminated)
 		return;

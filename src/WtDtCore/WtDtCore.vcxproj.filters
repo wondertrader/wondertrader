@@ -68,5 +68,8 @@
     <ClInclude Include="ShmCaster.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="IDataCaster.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

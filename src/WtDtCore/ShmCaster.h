@@ -1,20 +1,16 @@
 ﻿#pragma once
+#include "IDataCaster.h"
 #include <stdint.h>
 #include "../Includes/WTSStruct.h"
 #include "../Share/BoostMappingFile.hpp"
 
 NS_WTP_BEGIN
-class WTSTickData;
-class WTSQueue;
 class WTSVariant;
-class WTSOrdDtlData;
-class WTSOrdQueData;
-class WTSTransData;
 NS_WTP_END
 
 USING_NS_WTP;
 
-class ShmCaster
+class ShmCaster : public IDataCaster
 {
 public:
 #pragma pack(push, 8)
@@ -53,10 +49,10 @@ public:
 
 	bool	init(WTSVariant* cfg);
 
-	void	broadcast(WTSTickData* curTick);
-	void	broadcast(WTSOrdQueData* curOrdQue);
-	void	broadcast(WTSOrdDtlData* curOrdDtl);
-	void	broadcast(WTSTransData* curTrans);
+	virtual void	broadcast(WTSTickData* curTick) override;
+	virtual void	broadcast(WTSOrdQueData* curOrdQue) override;
+	virtual void	broadcast(WTSOrdDtlData* curOrdDtl) override;
+	virtual void	broadcast(WTSTransData* curTrans) override;
 
 private:
 	std::string		_path;
