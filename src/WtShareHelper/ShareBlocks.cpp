@@ -715,7 +715,7 @@ const char* ShareBlocks::get_cmd(const char* name, uint32_t& lastIdx)
 	//说明刚启动，之前的命令全部作废
 	if (cmdPair._block->_readable == UINT32_MAX)
 	{
-		lastIdx = 999;
+		lastIdx = 999999;
 		return "";
 	}
 	else if (lastIdx == UINT32_MAX && cmdPair._block->_readable != UINT32_MAX)
@@ -723,7 +723,7 @@ const char* ShareBlocks::get_cmd(const char* name, uint32_t& lastIdx)
 		lastIdx = cmdPair._block->_readable;
 		return "";
 	}
-	else if(lastIdx == 999 && cmdPair._block->_readable != UINT32_MAX)
+	else if(lastIdx == 999999 && cmdPair._block->_readable != UINT32_MAX)
 	{
 		lastIdx = 0;
 		return cmdPair._block->_commands[lastIdx]._command;

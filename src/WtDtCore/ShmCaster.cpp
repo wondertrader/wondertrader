@@ -1,4 +1,4 @@
-#include "ShmCaster.h"
+ï»¿#include "ShmCaster.h"
 #include "../Includes/WTSVariant.hpp"
 #include "../Includes/WTSDataDef.hpp"
 #include "../Share/StdUtils.hpp"
@@ -12,7 +12,7 @@ bool ShmCaster::init(WTSVariant* cfg)
 
 	_path = cfg->getCString("path");
 
-	//Ã¿´ÎÆô¶¯¶¼ÖØÖÃ¸Ã¶ÓÁÐ
+	//æ¯æ¬¡å¯åŠ¨éƒ½é‡ç½®è¯¥é˜Ÿåˆ—
 	{
 		BoostFile bf;
 		bf.create_or_open_file(_path.c_str());
@@ -23,8 +23,7 @@ bool ShmCaster::init(WTSVariant* cfg)
 	_mapfile.reset(new BoostMappingFile);
 	_mapfile->map(_path.c_str());
 	_queue = (CastQueue*)_mapfile->addr();
-	if (_queue->_capacity == 0)
-		new(_mapfile->addr()) CastQueue();
+	new(_mapfile->addr()) CastQueue();
 
 #ifdef _MSC_VER
 	_queue->_pid = _getpid();
@@ -32,15 +31,7 @@ bool ShmCaster::init(WTSVariant* cfg)
 	_queue->_pid = getpid();
 #endif
 
-	//Æô¶¯µÄÊ±ºò¶¼×öÒ»ÏÂÆ«ÒÆ
-	_queue->_writable %= _queue->_capacity;
-	if (_queue->_readable != UINT64_MAX)
-	{
-		_queue->_readable %= _queue->_capacity;
-		if (_queue->_readable > _queue->_writable)
-			_queue->_writable += _queue->_capacity;
-	}
-
+	_inited = true;
 	WTSLogger::info("ShmCaste initialized @ {}", _path.c_str());
 
 	return true;
@@ -48,12 +39,12 @@ bool ShmCaster::init(WTSVariant* cfg)
 
 void ShmCaster::broadcast(WTSTickData* curTick)
 {
-	if (curTick == NULL || _queue == NULL)
+	if (curTick == NULL || _queue == NULL || !_inited)
 		return;
 
 	/*
-	 *	ÏÈÒÆ¶¯Ð´µÄÏÂ±ê£¬È»ºóÐ´ÈëÊý¾Ý
-	 *	Ð´ÍêÁËÒÔºó£¬ÔÙÒÆ¶¯¶ÁµÄÏÂ±ê
+	 *	å…ˆç§»åŠ¨å†™çš„ä¸‹æ ‡ï¼Œç„¶åŽå†™å…¥æ•°æ®
+	 *	å†™å®Œäº†ä»¥åŽï¼Œå†ç§»åŠ¨è¯»çš„ä¸‹æ ‡
 	 */
 	uint64_t wIdx = _queue->_writable++;
 	uint64_t realIdx = wIdx % _queue->_capacity;
@@ -64,12 +55,12 @@ void ShmCaster::broadcast(WTSTickData* curTick)
 
 void ShmCaster::broadcast(WTSOrdQueData* curOrdQue)
 {
-	if (curOrdQue == NULL || _queue == NULL)
+	if (curOrdQue == NULL || _queue == NULL || !_inited)
 		return;
 
 	/*
-	 *	ÏÈÒÆ¶¯Ð´µÄÏÂ±ê£¬È»ºóÐ´ÈëÊý¾Ý
-	 *	Ð´ÍêÁËÒÔºó£¬ÔÙÒÆ¶¯¶ÁµÄÏÂ±ê
+	 *	å…ˆç§»åŠ¨å†™çš„ä¸‹æ ‡ï¼Œç„¶åŽå†™å…¥æ•°æ®
+	 *	å†™å®Œäº†ä»¥åŽï¼Œå†ç§»åŠ¨è¯»çš„ä¸‹æ ‡
 	 */
 	uint64_t wIdx = _queue->_writable++;
 	uint64_t realIdx = wIdx % _queue->_capacity;
@@ -80,12 +71,12 @@ void ShmCaster::broadcast(WTSOrdQueData* curOrdQue)
 
 void ShmCaster::broadcast(WTSOrdDtlData* curOrdDtl)
 {
-	if (curOrdDtl == NULL || _queue == NULL)
+	if (curOrdDtl == NULL || _queue == NULL || !_inited)
 		return;
 
 	/*
-	 *	ÏÈÒÆ¶¯Ð´µÄÏÂ±ê£¬È»ºóÐ´ÈëÊý¾Ý
-	 *	Ð´ÍêÁËÒÔºó£¬ÔÙÒÆ¶¯¶ÁµÄÏÂ±ê
+	 *	å…ˆç§»åŠ¨å†™çš„ä¸‹æ ‡ï¼Œç„¶åŽå†™å…¥æ•°æ®
+	 *	å†™å®Œäº†ä»¥åŽï¼Œå†ç§»åŠ¨è¯»çš„ä¸‹æ ‡
 	 */
 	uint64_t wIdx = _queue->_writable++;
 	uint64_t realIdx = wIdx % _queue->_capacity;
@@ -96,12 +87,12 @@ void ShmCaster::broadcast(WTSOrdDtlData* curOrdDtl)
 
 void ShmCaster::broadcast(WTSTransData* curTrans)
 {
-	if (curTrans == NULL || _queue == NULL)
+	if (curTrans == NULL || _queue == NULL || !_inited)
 		return;
 
 	/*
-	 *	ÏÈÒÆ¶¯Ð´µÄÏÂ±ê£¬È»ºóÐ´ÈëÊý¾Ý
-	 *	Ð´ÍêÁËÒÔºó£¬ÔÙÒÆ¶¯¶ÁµÄÏÂ±ê
+	 *	å…ˆç§»åŠ¨å†™çš„ä¸‹æ ‡ï¼Œç„¶åŽå†™å…¥æ•°æ®
+	 *	å†™å®Œäº†ä»¥åŽï¼Œå†ç§»åŠ¨è¯»çš„ä¸‹æ ‡
 	 */
 	uint64_t wIdx = _queue->_writable++;
 	uint64_t realIdx = wIdx % _queue->_capacity;

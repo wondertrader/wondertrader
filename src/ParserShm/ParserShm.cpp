@@ -86,25 +86,19 @@ void ParserShm::release()
 
 bool ParserShm::connect()
 {
-	if (!StdFile::exists(_path.c_str()))
-		return false;
-
-	_mapfile.reset(new BoostMappingFile);
-	_mapfile->map(_path.c_str());
-	_queue = (CastQueue*)_mapfile->addr();
-	if (_queue->_capacity == 0)
-		new(_mapfile->addr()) CastQueue();
-
-	//启动的时候都做一下偏移
-	_queue->_writable %= _queue->_capacity;
-	if (_queue->_readable != UINT64_MAX)
-	{
-		_queue->_readable %= _queue->_capacity;
-		if (_queue->_readable > _queue->_writable)
-			_queue->_writable += _queue->_capacity;
-	}
-
 	_thrd_parser.reset(new StdThread([this]() {
+
+		while (!StdFile::exists(_path.c_str()))
+		{
+			std::this_thread::sleep_for(std::chrono::milliseconds(2));
+			continue;
+		}
+
+		_mapfile.reset(new BoostMappingFile);
+		_mapfile->map(_path.c_str());
+		_queue = (CastQueue*)_mapfile->addr();
+		uint32_t cast_pid = _queue->_pid;
+
 		if (_sink)
 		{
 			_sink->handleEvent(WPE_Connect, 0);
@@ -114,30 +108,38 @@ bool ParserShm::connect()
 		uint64_t lastIdx = UINT64_MAX;
 		while(!_stopped)
 		{
-			//说明刚启动，之前的命令全部作废
-			if (_queue->_readable == UINT64_MAX)
+			//如果pid不同，说明datakit重启了
+			if(cast_pid != _queue->_pid)
 			{
-				std::this_thread::sleep_for(std::chrono::milliseconds(_check_span));
+				lastIdx = UINT64_MAX;
+				write_log(_sink, LL_WARN, "ShareMemory queue has been reset justnow");
+			}
+			
+			if (_queue->_readable == UINT64_MAX)	//刚分配好，还没数据进来
+			{
+				lastIdx = 999999;
+				std::this_thread::sleep_for(std::chrono::microseconds(_check_span));
 				continue;
 			}
 
-			if (lastIdx == UINT64_MAX && _queue->_readable != UINT64_MAX)
+			if (lastIdx == UINT64_MAX)	//有数据，第一次检查，则直接定位到最后一条数据
 			{
 				lastIdx = _queue->_readable;
+				std::this_thread::sleep_for(std::chrono::microseconds(_check_span));
 				continue;
 			}
-			else if (lastIdx == 999 && _queue->_readable != UINT64_MAX)
+			else if (lastIdx == 999999)	//之前没数据的时候检查了一次，现在有数据了，从0开始读取
 			{
 				lastIdx = 0;
 			}
-			else if (lastIdx >= _queue->_readable)
+			else if (lastIdx >= _queue->_readable)	//没有新的数据进来
 			{
-				std::this_thread::sleep_for(std::chrono::milliseconds(_check_span));
+				std::this_thread::sleep_for(std::chrono::microseconds(_check_span));
 				continue;
 			}
 			else
 			{
-				lastIdx++;
+				lastIdx++;	//普通情况，下标递增
 			}
 
 			DataItem& item = _queue->_items[lastIdx % _queue->_capacity];
@@ -150,7 +152,7 @@ bool ParserShm::connect()
 					_sink->handleQuote(newData, 0);
 				newData->release();
 			}
-				break;
+			break;
 			case 1:
 			{
 				WTSOrdQueData* newData = WTSOrdQueData::create(item._queue);
@@ -158,7 +160,7 @@ bool ParserShm::connect()
 					_sink->handleOrderQueue(newData);
 				newData->release();
 			}
-				break;
+			break;
 			case 2:
 			{
 				WTSOrdDtlData* newData = WTSOrdDtlData::create(item._order);
@@ -166,7 +168,7 @@ bool ParserShm::connect()
 					_sink->handleOrderDetail(newData);
 				newData->release();
 			}
-				break;
+			break;
 			case 3:
 			{
 				WTSTransData* newData = WTSTransData::create(item._trans);
@@ -174,7 +176,7 @@ bool ParserShm::connect()
 					_sink->handleTransaction(newData);
 				newData->release();
 			}
-				break;
+			break;
 			default:
 				break;
 			}

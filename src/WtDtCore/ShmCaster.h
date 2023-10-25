@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <stdint.h>
 #include "../Includes/WTSStruct.h"
 #include "../Share/BoostMappingFile.hpp"
@@ -20,7 +20,7 @@ public:
 #pragma pack(push, 8)
 	typedef struct _DataItem
 	{
-		uint32_t	_type;	//Êı¾İÀàĞÍ£¬ 0-tick,1-Î¯ÍĞ¶ÓÁĞ,2-Öğ±ÊÎ¯ÍĞ,3-Öğ±Ê³É½»
+		uint32_t	_type;	//æ•°æ®ç±»å‹ï¼Œ 0-tick,1-å§”æ‰˜é˜Ÿåˆ—,2-é€ç¬”å§”æ‰˜,3-é€ç¬”æˆäº¤
 		union
 		{
 			WTSTickStruct	_tick;
@@ -49,7 +49,7 @@ public:
 #pragma pack(pop)
 
 public:
-	ShmCaster():_queue(NULL){}
+	ShmCaster():_queue(NULL), _inited(false){}
 
 	bool	init(WTSVariant* cfg);
 
@@ -63,5 +63,6 @@ private:
 	typedef std::shared_ptr<BoostMappingFile> MappedFilePtr;
 	MappedFilePtr	_mapfile;
 	CastQueue*		_queue;
+	bool			_inited;
 };
 
