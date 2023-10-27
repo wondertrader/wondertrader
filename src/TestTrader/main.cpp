@@ -28,12 +28,13 @@ std::set<std::string>	g_blkList;
 template<typename... Args>
 inline void encoding_print(const char* format, const Args& ...args)
 {
-	std::string s = fmtutil::format(format, args...);
-#ifdef _MSC_VER
-	printf(UTF8toChar(s).c_str());
-#else
-	printf(s.c_str());
-#endif
+	fmt::print(format, args...);
+	//printf(fmtutil::format(format, args...));
+//#ifdef _MSC_VER
+//	printf(UTF8toChar(s).c_str());
+//#else
+//	printf(s.c_str());
+//#endif
 }
 
 USING_NS_WTP;
@@ -335,7 +336,7 @@ public:
 		WTSLogger::info("[{}]Canceling [{}]...", m_pParams->getCString("user"), orderid);
 		WTSEntrustAction* action = WTSEntrustAction::create(ordInfo->getCode(), ordInfo->getExchg());
 		action->setEntrustID(ordInfo->getEntrustID());
-		action->setOrderID(orderid.c_str());
+		action->setOrderID(ordInfo->getOrderID());
 		action->setActionFlag(WAF_CANCEL);
 
 		m_pTraderApi->orderAction(action);
@@ -451,7 +452,7 @@ public:
 			WTSOrderInfo* ordInfo = (WTSOrderInfo*)((WTSArray*)ayOrders)->at(i);
 			if (ordInfo->isAlive())
 			{
-				m_mapOrds->add(ordInfo->getOrderID(), ordInfo, true);
+				m_mapOrds->add(StrUtil::trim(ordInfo->getOrderID()), ordInfo, true);
 				WTSLogger::info("[{}] Live order, code: {}, OrderId: {}", m_pParams->getCString("user"), ordInfo->getCode(), ordInfo->getOrderID());
 			}
 		}
@@ -483,17 +484,18 @@ public:
 
 	virtual void onPushOrder(WTSOrderInfo* orderInfo)
 	{
+		std::string orderid = StrUtil::trim(orderInfo->getOrderID());
 		if(orderInfo->getOrderState() != WOS_Canceled)
 		{
-			if(strlen(orderInfo->getOrderID()) > 0)
+			if(!orderid.empty())
 			{
 				if (m_mapOrds == NULL)
 					m_mapOrds = WTSObjectMap::create();
 
-				if (m_mapOrds->find(orderInfo->getOrderID()) == m_mapOrds->end())
+				if (m_mapOrds->find(orderid) == m_mapOrds->end())
 				{
-					WTSLogger::info("[{}] Entrust Success,OrderID: {}",  m_pParams->getCString("user"), orderInfo->getOrderID());
-					m_mapOrds->add(orderInfo->getOrderID(), orderInfo, true);
+					WTSLogger::info("[{}] Entrust Success,OrderID: {}",  m_pParams->getCString("user"), orderid);
+					m_mapOrds->add(orderid, orderInfo, true);
 				}
 
 				StdUniqueLock lock(g_mtxOpt);
@@ -503,9 +505,9 @@ public:
 		else 
 		{
 			if (m_mapOrds)
-				m_mapOrds->remove(orderInfo->getOrderID());
+				m_mapOrds->remove(orderid);
 
-			if (strlen(orderInfo->getOrderID()) == 0)
+			if (orderid.empty())
 			{
 				WTSLogger::info("[{}]Order {} Entrust failed and canceld:{}", m_pParams->getCString("user"), orderInfo->getEntrustID(), orderInfo->getStateMsg());
 				StdUniqueLock lock(g_mtxOpt);
@@ -513,7 +515,7 @@ public:
 			}
 			else
 			{
-				WTSLogger::info("[{}] Order {} canceld:{}", m_pParams->getCString("user"), orderInfo->getOrderID(), orderInfo->getStateMsg());
+				WTSLogger::info("[{}] Order {} canceld:{}", m_pParams->getCString("user"), orderid, orderInfo->getStateMsg());
 				StdUniqueLock lock(g_mtxOpt);
 				g_condOpt.notify_all();
 			}			
