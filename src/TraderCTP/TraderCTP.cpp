@@ -1296,6 +1296,7 @@ WTSEntrust* TraderCTP::makeEntrust(CThostFtdcInputOrderField *entrustField)
 WTSEntrustAction* TraderCTP::makeAction(CThostFtdcInputOrderActionField *actionField)
 {
 	WTSEntrustAction* pRet = WTSEntrustAction::create(actionField->InstrumentID, actionField->ExchangeID);
+	pRet->setOrderID(actionField->OrderSysID);
 
 	generateEntrustID(pRet->getEntrustID(), actionField->FrontID, actionField->SessionID, atoi(actionField->OrderRef));
 
@@ -1308,7 +1309,7 @@ WTSEntrustAction* TraderCTP::makeAction(CThostFtdcInputOrderActionField *actionF
 
 WTSError* TraderCTP::makeError(CThostFtdcRspInfoField* rspInfo, WTSErroCode ec /* = WEC_NONE */)
 {
-	WTSError* pRet = WTSError::create(ec, rspInfo->ErrorMsg);
+	WTSError* pRet = WTSError::create(ec, fmtutil::format("{}({})", rspInfo->ErrorMsg, rspInfo->ErrorID));
 	return pRet;
 }
 
