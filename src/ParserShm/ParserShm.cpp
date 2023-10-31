@@ -88,9 +88,11 @@ bool ParserShm::connect()
 {
 	_thrd_parser.reset(new StdThread([this]() {
 
+		write_log(_sink, LL_INFO, "[ParserShm] loading {} ...", _path);
 		while (!StdFile::exists(_path.c_str()))
 		{
-			std::this_thread::sleep_for(std::chrono::milliseconds(2));
+			write_log(_sink, LL_WARN, "[ParserShm] {} not exist yet, waiting for 2 seconds", _path);
+			std::this_thread::sleep_for(std::chrono::seconds(2));
 			continue;
 		}
 
@@ -104,6 +106,7 @@ bool ParserShm::connect()
 			_sink->handleEvent(WPE_Connect, 0);
 			_sink->handleEvent(WPE_Login, 0);
 		}
+		write_log(_sink, LL_INFO, "[ParserShm] {} loaded, start to receiving", _path);
 
 		uint64_t lastIdx = UINT64_MAX;
 		while(!_stopped)
@@ -113,6 +116,7 @@ bool ParserShm::connect()
 			{
 				lastIdx = UINT64_MAX;
 				write_log(_sink, LL_WARN, "ShareMemory queue has been reset justnow");
+				cast_pid = _queue->_pid;
 			}
 			
 			if (_queue->_readable == UINT64_MAX)	//刚分配好，还没数据进来

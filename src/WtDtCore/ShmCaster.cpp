@@ -10,6 +10,9 @@ bool ShmCaster::init(WTSVariant* cfg)
 	if (cfg == NULL)
 		return false;
 
+	if (!cfg->getBoolean("active"))
+		return false;
+
 	_path = cfg->getCString("path");
 
 	//每次启动都重置该队列
