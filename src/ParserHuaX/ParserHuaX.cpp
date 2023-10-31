@@ -365,7 +365,8 @@ void ParserHuaX::OnFrontDisconnected(int nReason)
 	_loginState = LS_NOTLOGIN;
 }
 
-void ParserHuaX::OnRspUserLogin(CTORATstpRspUserLoginField* pRspUserLoginField, CTORATstpRspInfoField* pRspInfoField, int nRequestID)
+// bool bIsLast is new in lev2 
+void ParserHuaX::OnRspUserLogin(CTORATstpRspUserLoginField* pRspUserLoginField, CTORATstpRspInfoField* pRspInfoField, int nRequestID, bool bIsLast)
 {
 	if (pRspInfoField->ErrorID == 0)
 	{
@@ -386,7 +387,8 @@ void ParserHuaX::OnRspUserLogin(CTORATstpRspUserLoginField* pRspUserLoginField, 
 	}
 }
 
-void ParserHuaX::OnRspSubMarketData(CTORATstpSpecificSecurityField* pSpecificSecurityField, CTORATstpRspInfoField* pRspInfoField)
+// int nRequestID, bool bIsLast are new in lev2
+void ParserHuaX::OnRspSubMarketData(CTORATstpSpecificSecurityField* pSpecificSecurityField, CTORATstpRspInfoField* pRspInfoField, int nRequestID, bool bIsLast)
 {
 	if (pRspInfoField->ErrorID != 0)
 	{
@@ -395,7 +397,8 @@ void ParserHuaX::OnRspSubMarketData(CTORATstpSpecificSecurityField* pSpecificSec
 	}
 }
 
-void ParserHuaX::OnRtnMarketData(CTORATstpMarketDataField* market_data)
+// const int FirstLevelBuyNum, const int FirstLevelBuyOrderVolumes[], const int FirstLevelSellNum, const int FirstLevelSellOrderVolumes[] are new in Lev2
+void ParserHuaX::OnRtnMarketData(CTORATstpLev2MarketDataField* market_data, const int FirstLevelBuyNum, const int FirstLevelBuyOrderVolumes[], const int FirstLevelSellNum, const int FirstLevelSellOrderVolumes[])
 {
 	if (_pBaseDataMgr == NULL)
 	{

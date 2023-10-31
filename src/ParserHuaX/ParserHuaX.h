@@ -10,7 +10,8 @@
 #pragma once
 #include "../Includes/IParserApi.h"
 #include "../Share/DLLHelper.hpp"
-#include "../API/HuaX4.03/parserapi/xfastmdapitest/TORATstpXMdApi.h"
+//#include "../API/HuaX4.03/parserapi/xfastmdapitest/TORATstpXMdApi.h"
+#include "../API/HuaX4.03/parserapi/lev2mdapi/TORATstpLev2MdApi.h"
 #include <map>
 
 #include "../Includes/WTSDataDef.hpp"
@@ -31,15 +32,23 @@ class WTSTickData;
 NS_WTP_END
 
 USING_NS_WTP;
-using namespace TORALEV1API;
+//using namespace TORALEV1API; disable lev1 NS
+using namespace TORALEV2API; 
 
+/*
+Disable lev1 typedef
 typedef CTORATstpXMdSpi HuaXParserSpi;
 typedef CTORATstpXMdApi HuaXParserApi;
+*/
+// For lev2 API AND SPI
+typedef TORALEV2API::CTORATstpLev2MdSpi HuaXParserLev2Spi;
+typedef TORALEV2API::CTORATstpLev2MdApi HuaXParserLev2Api;
+
 
 const char* WT_MKT_SH_A = "SSE";
 const char* WT_MKT_SZ_A = "SZSE";
 
-class ParserHuaX : public HuaXParserSpi, public IParserApi
+class ParserHuaX : public HuaXParserLev2Spi, public IParserApi
 {
 public:
 	ParserHuaX();
@@ -85,11 +94,14 @@ public:
 	///        -9 错误的报文
 	virtual void OnFrontDisconnected(int nReason) override;
 
-	virtual void OnRspUserLogin(CTORATstpRspUserLoginField* pRspUserLoginField, CTORATstpRspInfoField* pRspInfoField, int nRequestID) override;
+	// bool bIsLast is a new parameter in lev2
+	virtual void OnRspUserLogin(CTORATstpRspUserLoginField* pRspUserLoginField, CTORATstpRspInfoField* pRspInfoField, int nRequestID, bool bIsLast) override;
 
-	virtual void OnRspSubMarketData(CTORATstpSpecificSecurityField* pSpecificSecurityField, CTORATstpRspInfoField* pRspInfoField) override;
+	// int nRequestID and bool bIsLast is a new parameter in lev2
+	virtual void OnRspSubMarketData(CTORATstpSpecificSecurityField* pSpecificSecurityField, CTORATstpRspInfoField* pRspInfoField, int nRequestID, bool bIsLast) override;
 
-	virtual void OnRtnMarketData(CTORATstpMarketDataField* pMarketDataField) override;
+	// lev1 : virtual void OnRtnMarketData(CTORATstpMarketDataField* pMarketDataField) override;, lev2 has 4 more parameters
+	virtual void OnRtnMarketData(CTORATstpLev2MarketDataField *pDepthMarketData, const int FirstLevelBuyNum, const int FirstLevelBuyOrderVolumes[], const int FirstLevelSellNum, const int FirstLevelSellOrderVolumes[]);
 
 private:
 	/*
@@ -104,7 +116,7 @@ private:
 private:
 	uint32_t			_uTradingDate;
 	LoginStatus			_loginState;
-	HuaXParserApi*		_api;
+	HuaXParserLev2Api*		_api;
 	std::string			_sub_mode; // TCP连接模式 0  UDP单播模式 1 UDP组播模式 2
 	std::string			_derive_sub_mode; // 延伸功能连接模式
 	std::string			_front;  // tcp://210.14.72.16:9402
@@ -116,12 +128,13 @@ private:
 	CodeSet				_fitSZSubs;
 
 	int					_iRequestID;
+	bool                bIsLast;
 
 	IParserSpi*			_sink;
 	IBaseDataMgr*		_pBaseDataMgr;
 
 	DllHandle			_hInst;
-	typedef HuaXParserApi* (*HuaXCreater)(const TTORATstpMDSubModeType&, const TTORATstpMDSubModeType&);
+	typedef HuaXParserLev2Api* (*HuaXCreater)(const TTORATstpMDSubModeType&, const TTORATstpMDSubModeType&);
 	HuaXCreater			_funcCreator;
 };
 
