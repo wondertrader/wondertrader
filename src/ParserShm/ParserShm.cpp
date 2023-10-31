@@ -155,6 +155,11 @@ bool ParserShm::connect()
 				if (_sink)
 					_sink->handleQuote(newData, 0);
 				newData->release();
+
+				static uint32_t recv_cnt = 0;
+				recv_cnt++;
+				if (recv_cnt % _gpsize == 0)
+					write_log(_sink, LL_DEBUG, "[ParserShm] {} ticks received in total", recv_cnt);
 			}
 			break;
 			case 1:
@@ -163,6 +168,11 @@ bool ParserShm::connect()
 				if (_sink)
 					_sink->handleOrderQueue(newData);
 				newData->release();
+
+				static uint32_t recv_cnt = 0;
+				recv_cnt++;
+				if (recv_cnt % _gpsize == 0)
+					write_log(_sink, LL_DEBUG, "[ParserShm] {} queues received in total", recv_cnt);
 			}
 			break;
 			case 2:
@@ -171,6 +181,11 @@ bool ParserShm::connect()
 				if (_sink)
 					_sink->handleOrderDetail(newData);
 				newData->release();
+
+				static uint32_t recv_cnt = 0;
+				recv_cnt++;
+				if (recv_cnt % _gpsize == 0)
+					write_log(_sink, LL_DEBUG, "[ParserShm] {} orders received in total", recv_cnt);
 			}
 			break;
 			case 3:
@@ -179,6 +194,11 @@ bool ParserShm::connect()
 				if (_sink)
 					_sink->handleTransaction(newData);
 				newData->release();
+
+				static uint32_t recv_cnt = 0;
+				recv_cnt++;
+				if (recv_cnt % _gpsize == 0)
+					write_log(_sink, LL_DEBUG, "[ParserShm] {} transactions received in total", recv_cnt);
 			}
 			break;
 			default:
