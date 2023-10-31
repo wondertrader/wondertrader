@@ -151,54 +151,74 @@ bool ParserShm::connect()
 			{
 			case 0:
 			{
-				WTSTickData* newData = WTSTickData::create(item._tick);
-				if (_sink)
-					_sink->handleQuote(newData, 0);
-				newData->release();
+				const char* fullCode = fmtutil::format("{}.{}", item._tick.exchg, item._tick.code);
+				auto it = _set_subs.find(fullCode);
+				if (it != _set_subs.end())
+				{
+					WTSTickData* newData = WTSTickData::create(item._tick);
+					if (_sink)
+						_sink->handleQuote(newData, 0);
+					newData->release();
 
-				static uint32_t recv_cnt = 0;
-				recv_cnt++;
-				if (recv_cnt % _gpsize == 0)
-					write_log(_sink, LL_DEBUG, "[ParserShm] {} ticks received in total", recv_cnt);
+					static uint32_t recv_cnt = 0;
+					recv_cnt++;
+					if (recv_cnt % _gpsize == 0)
+						write_log(_sink, LL_DEBUG, "[ParserShm] {} ticks received in total", recv_cnt);
+				}
 			}
 			break;
 			case 1:
 			{
-				WTSOrdQueData* newData = WTSOrdQueData::create(item._queue);
-				if (_sink)
-					_sink->handleOrderQueue(newData);
-				newData->release();
+				const char* fullCode = fmtutil::format("{}.{}", item._queue.exchg, item._queue.code);
+				auto it = _set_subs.find(fullCode);
+				if (it != _set_subs.end())
+				{
+					WTSOrdQueData* newData = WTSOrdQueData::create(item._queue);
+					if (_sink)
+						_sink->handleOrderQueue(newData);
+					newData->release();
 
-				static uint32_t recv_cnt = 0;
-				recv_cnt++;
-				if (recv_cnt % _gpsize == 0)
-					write_log(_sink, LL_DEBUG, "[ParserShm] {} queues received in total", recv_cnt);
+					static uint32_t recv_cnt = 0;
+					recv_cnt++;
+					if (recv_cnt % _gpsize == 0)
+						write_log(_sink, LL_DEBUG, "[ParserShm] {} queues received in total", recv_cnt);
+				}
 			}
 			break;
 			case 2:
 			{
-				WTSOrdDtlData* newData = WTSOrdDtlData::create(item._order);
-				if (_sink)
-					_sink->handleOrderDetail(newData);
-				newData->release();
+				const char* fullCode = fmtutil::format("{}.{}", item._order.exchg, item._order.code);
+				auto it = _set_subs.find(fullCode);
+				if (it != _set_subs.end())
+				{
+					WTSOrdDtlData* newData = WTSOrdDtlData::create(item._order);
+					if (_sink)
+						_sink->handleOrderDetail(newData);
+					newData->release();
 
-				static uint32_t recv_cnt = 0;
-				recv_cnt++;
-				if (recv_cnt % _gpsize == 0)
-					write_log(_sink, LL_DEBUG, "[ParserShm] {} orders received in total", recv_cnt);
+					static uint32_t recv_cnt = 0;
+					recv_cnt++;
+					if (recv_cnt % _gpsize == 0)
+						write_log(_sink, LL_DEBUG, "[ParserShm] {} orders received in total", recv_cnt);
+				}
 			}
 			break;
 			case 3:
 			{
-				WTSTransData* newData = WTSTransData::create(item._trans);
-				if (_sink)
-					_sink->handleTransaction(newData);
-				newData->release();
+				const char* fullCode = fmtutil::format("{}.{}", item._trans.exchg, item._trans.code);
+				auto it = _set_subs.find(fullCode);
+				if (it != _set_subs.end())
+				{
+					WTSTransData* newData = WTSTransData::create(item._trans);
+					if (_sink)
+						_sink->handleTransaction(newData);
+					newData->release();
 
-				static uint32_t recv_cnt = 0;
-				recv_cnt++;
-				if (recv_cnt % _gpsize == 0)
-					write_log(_sink, LL_DEBUG, "[ParserShm] {} transactions received in total", recv_cnt);
+					static uint32_t recv_cnt = 0;
+					recv_cnt++;
+					if (recv_cnt % _gpsize == 0)
+						write_log(_sink, LL_DEBUG, "[ParserShm] {} transactions received in total", recv_cnt);
+				}
 			}
 			break;
 			default:

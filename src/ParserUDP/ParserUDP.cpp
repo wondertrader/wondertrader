@@ -355,58 +355,78 @@ void ParserUDP::extract_buffer(uint32_t length, bool isBroad /* = true */)
 	if (header->_type == UDP_MSG_PUSHTICK || header->_type == UDP_MSG_SUBSCRIBE)
 	{
 		UDPTickPacket* packet = (UDPTickPacket*)header;
-		WTSTickData* curTick = WTSTickData::create(packet->_data);
-		if (_sink)
-			_sink->handleQuote(curTick, 0);
+		const char* fullCode = fmtutil::format("{}.{}", packet->_data.exchg, packet->_data.code);
+		auto it = _set_subs.find(fullCode);
+		if (it != _set_subs.end())
+		{
+			WTSTickData* curTick = WTSTickData::create(packet->_data);
+			if (_sink)
+				_sink->handleQuote(curTick, 0);
 
-		curTick->release();
+			curTick->release();
 
-		static uint32_t recv_cnt = 0;
-		recv_cnt++;
-		if (recv_cnt % _gpsize == 0)
-			write_log(_sink, LL_DEBUG, "[ParserUDP] {} ticks received in total", recv_cnt);
+			static uint32_t recv_cnt = 0;
+			recv_cnt++;
+			if (recv_cnt % _gpsize == 0)
+				write_log(_sink, LL_DEBUG, "[ParserUDP] {} ticks received in total", recv_cnt);
+		}
 	}
 	else if (header->_type == UDP_MSG_PUSHORDDTL)
 	{
 		UDPOrdDtlPacket* packet = (UDPOrdDtlPacket*)header;
-		WTSOrdDtlData* curData = WTSOrdDtlData::create(packet->_data);
-		if (_sink)
-			_sink->handleOrderDetail(curData);
+		const char* fullCode = fmtutil::format("{}.{}", packet->_data.exchg, packet->_data.code);
+		auto it = _set_subs.find(fullCode);
+		if (it != _set_subs.end())
+		{
+			WTSOrdDtlData* curData = WTSOrdDtlData::create(packet->_data);
+			if (_sink)
+				_sink->handleOrderDetail(curData);
 
-		curData->release();
+			curData->release();
 
-		static uint32_t recv_cnt = 0;
-		recv_cnt++;
-		if (recv_cnt % _gpsize == 0)
-			write_log(_sink, LL_DEBUG, "[ParserUDP] {} order details received in total", recv_cnt);
+			static uint32_t recv_cnt = 0;
+			recv_cnt++;
+			if (recv_cnt % _gpsize == 0)
+				write_log(_sink, LL_DEBUG, "[ParserUDP] {} order details received in total", recv_cnt);
+		}
 	}
 	else if (header->_type == UDP_MSG_PUSHORDQUE)
 	{
 		UDPOrdQuePacket* packet = (UDPOrdQuePacket*)header;
-		WTSOrdQueData* curData = WTSOrdQueData::create(packet->_data);
-		if (_sink)
-			_sink->handleOrderQueue(curData);
+		const char* fullCode = fmtutil::format("{}.{}", packet->_data.exchg, packet->_data.code);
+		auto it = _set_subs.find(fullCode);
+		if (it != _set_subs.end())
+		{
+			WTSOrdQueData* curData = WTSOrdQueData::create(packet->_data);
+			if (_sink)
+				_sink->handleOrderQueue(curData);
 
-		curData->release();
+			curData->release();
 
-		static uint32_t recv_cnt = 0;
-		recv_cnt++;
-		if (recv_cnt % _gpsize == 0)
-			write_log(_sink, LL_DEBUG, "[ParserUDP] {} order queues received in total", recv_cnt);
+			static uint32_t recv_cnt = 0;
+			recv_cnt++;
+			if (recv_cnt % _gpsize == 0)
+				write_log(_sink, LL_DEBUG, "[ParserUDP] {} order queues received in total", recv_cnt);
+		}
 	}
 	else if (header->_type == UDP_MSG_PUSHTRANS)
 	{
 		UDPTransPacket* packet = (UDPTransPacket*)header;
-		WTSTransData* curData = WTSTransData::create(packet->_data);
-		if (_sink)
-			_sink->handleTransaction(curData);
+		const char* fullCode = fmtutil::format("{}.{}", packet->_data.exchg, packet->_data.code);
+		auto it = _set_subs.find(fullCode);
+		if (it != _set_subs.end())
+		{
+			WTSTransData* curData = WTSTransData::create(packet->_data);
+			if (_sink)
+				_sink->handleTransaction(curData);
 
-		curData->release();
+			curData->release();
 
-		static uint32_t recv_cnt = 0;
-		recv_cnt++;
-		if (recv_cnt % _gpsize == 0)
-			write_log(_sink, LL_DEBUG, "[ParserUDP] {} transactions received in total", recv_cnt);
+			static uint32_t recv_cnt = 0;
+			recv_cnt++;
+			if (recv_cnt % _gpsize == 0)
+				write_log(_sink, LL_DEBUG, "[ParserUDP] {} transactions received in total", recv_cnt);
+		}
 	}
 }
 
