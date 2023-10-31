@@ -58,6 +58,7 @@ ParserShm::ParserShm()
 	: _stopped(false)
 	, _sink(NULL)
 	, _queue(NULL)
+	, _check_span(0)
 {
 }
 
@@ -73,8 +74,6 @@ bool ParserShm::init( WTSVariant* config )
 	if (_gpsize == 0)
 		_gpsize = 1000;
 	_check_span = config->getUInt32("checkspan");
-	if (_check_span == 0)
-		_check_span = 2;
 
 	return true;
 }
@@ -122,14 +121,16 @@ bool ParserShm::connect()
 			if (_queue->_readable == UINT64_MAX)	//刚分配好，还没数据进来
 			{
 				lastIdx = 999999;
-				std::this_thread::sleep_for(std::chrono::microseconds(_check_span));
+				if(_check_span != 0)
+					std::this_thread::sleep_for(std::chrono::microseconds(_check_span));
 				continue;
 			}
 
 			if (lastIdx == UINT64_MAX)	//有数据，第一次检查，则直接定位到最后一条数据
 			{
 				lastIdx = _queue->_readable;
-				std::this_thread::sleep_for(std::chrono::microseconds(_check_span));
+				if (_check_span != 0)
+					std::this_thread::sleep_for(std::chrono::microseconds(_check_span));
 				continue;
 			}
 			else if (lastIdx == 999999)	//之前没数据的时候检查了一次，现在有数据了，从0开始读取
@@ -138,7 +139,8 @@ bool ParserShm::connect()
 			}
 			else if (lastIdx >= _queue->_readable)	//没有新的数据进来
 			{
-				std::this_thread::sleep_for(std::chrono::microseconds(_check_span));
+				if (_check_span != 0)
+					std::this_thread::sleep_for(std::chrono::microseconds(_check_span));
 				continue;
 			}
 			else
