@@ -11,6 +11,13 @@
 #include <vector>
 #include "../Share/StdUtils.hpp"
 #include "../Includes/FasterDefs.h"
+#include "../Includes/WTSMarcos.h"
+
+NS_WTP_BEGIN
+class WTSSessionInfo;
+NS_WTP_END
+
+USING_NS_WTP;
 
 typedef enum tagSimpleState
 {
@@ -31,6 +38,7 @@ typedef struct _StateInfo
 	uint32_t	_close_time;
 	uint32_t	_proc_time;
 	SimpleState	_state;
+	WTSSessionInfo*	_sInfo;
 
 	typedef struct _Section
 	{
@@ -39,7 +47,7 @@ typedef struct _StateInfo
 	} Section;
 	std::vector<Section> _sections;
 
-	bool isInSections(uint32_t curTime)
+	inline bool isInSections(uint32_t curTime)
 	{
 		for (auto it = _sections.begin(); it != _sections.end(); it++)
 		{
@@ -57,6 +65,7 @@ typedef struct _StateInfo
 		_close_time = 0;
 		_proc_time = 0;
 		_state = SS_ORIGINAL;
+		_sInfo = nullptr;
 	}
 } StateInfo;
 
@@ -73,15 +82,45 @@ public:
 	~StateMonitor();
 
 public:
-	bool		initialize(const char* filename, WTSBaseDataMgr* bdMgr, DataManager* dtMgr);
+	bool initialize(const char* filename, WTSBaseDataMgr* bdMgr, DataManager* dtMgr);
+	void run();
+	void stop();
 
-	bool		isAnyInState(SimpleState ss) const;
-	bool		isAllInState(SimpleState ss) const;
+	inline bool	isAnyInState(SimpleState ss) const
+	{
+		auto it = _map.begin();
+		for (; it != _map.end(); it++)
+		{
+			const StatePtr& sInfo = it->second;
+			if (sInfo->_state == ss)
+				return true;
+		}
 
-	bool		isInState(const char* sid, SimpleState ss) const;
+		return false;
+	}
 
-	void		run();
-	void		stop();
+	inline bool	isAllInState(SimpleState ss) const
+	{
+		auto it = _map.begin();
+		for (; it != _map.end(); it++)
+		{
+			const StatePtr& sInfo = it->second;
+			if (sInfo->_state != SS_Holiday && sInfo->_state != ss)
+				return false;
+		}
+
+		return true;
+	}
+
+	inline bool	isInState(const char* sid, SimpleState ss) const
+	{
+		auto it = _map.find(sid);
+		if (it == _map.end())
+			return false;
+
+		const StatePtr& sInfo = it->second;
+		return sInfo->_state == ss;
+	}
 
 private:
 	StateMap		_map;

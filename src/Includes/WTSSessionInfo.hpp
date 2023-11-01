@@ -21,7 +21,20 @@ class WTSSessionInfo : public WTSObject
 {
 public:
 	//交易时段
-	typedef std::pair<uint32_t, uint32_t>	TradingSection;
+	//typedef std::pair<uint32_t, uint32_t>	TradingSection;
+	typedef struct _TradingSection
+	{
+		uint32_t	first_raw;	//原始开始时间
+		uint32_t	first;		//偏移过的开始时间
+
+		uint32_t	second_raw;	//原始结束时间
+		uint32_t	second;		//偏移过的结束时间
+
+		_TradingSection(uint32_t stime, uint32_t etime, uint32_t stime_raw, uint32_t etime_raw)
+			: first(stime), second(etime), first_raw(stime_raw), second_raw(second_raw)
+		{
+		}
+	} TradingSection;
 	typedef std::vector<TradingSection>		TradingTimes;
 
 protected:
@@ -62,33 +75,27 @@ public:
 
 	void addTradingSection(uint32_t sTime, uint32_t eTime)
 	{
-		sTime = offsetTime(sTime, true);
-		eTime = offsetTime(eTime, false);
-		m_tradingTimes.emplace_back(TradingSection(sTime, eTime));
+		m_tradingTimes.emplace_back(TradingSection(offsetTime(sTime, true), offsetTime(eTime, false), sTime, eTime));
 	}
 
 	void setAuctionTime(uint32_t sTime, uint32_t eTime)
 	{
-		sTime = offsetTime(sTime, true);
-		eTime = offsetTime(eTime, false);
-
 		if (m_auctionTimes.empty())
 		{
-			m_auctionTimes.emplace_back(TradingSection(sTime, eTime));
+			m_auctionTimes.emplace_back(TradingSection(offsetTime(sTime, true), offsetTime(eTime, false), sTime, eTime));
 		}
 		else
 		{
-			m_auctionTimes[0].first = sTime;
-			m_auctionTimes[0].second = eTime;
+			m_auctionTimes[0].first_raw = sTime;
+			m_auctionTimes[0].second_raw = eTime;
+			m_auctionTimes[0].first = offsetTime(sTime, true);
+			m_auctionTimes[0].second = offsetTime(eTime, false);
 		}
 	}
 
 	void addAuctionTime(uint32_t sTime, uint32_t eTime)
 	{
-		sTime = offsetTime(sTime, true);
-		eTime = offsetTime(eTime, false);
-
-		m_auctionTimes.emplace_back(TradingSection(sTime, eTime));
+		m_auctionTimes.emplace_back(TradingSection(offsetTime(sTime, true), offsetTime(eTime, false), sTime, eTime));
 	}
 
 	void setOffsetMins(int32_t offset){m_uOffsetMins = offset;}
@@ -325,10 +332,7 @@ public:
 		if(m_tradingTimes.empty())
 			return 0;
 
-		if(bOffseted)
-			return m_tradingTimes[0].first;
-		else
-			return originalTime(m_tradingTimes[0].first);
+		return bOffseted ? m_tradingTimes[0].first : m_tradingTimes[0].first_raw;
 	}
 
 	inline uint32_t getAuctionStartTime(bool bOffseted = false) const
@@ -336,10 +340,7 @@ public:
 		if (m_auctionTimes.empty())
 			return -1;
 
-		if(bOffseted)
-			return m_auctionTimes[0].first;
-		else
-			return originalTime(m_auctionTimes[0].first);
+		return bOffseted?m_auctionTimes[0].first: m_auctionTimes[0].first_raw;
 	}
 
 	inline uint32_t getCloseTime(bool bOffseted = false) const
@@ -347,11 +348,7 @@ public:
 		if(m_tradingTimes.empty())
 			return 0;
 
-		uint32_t ret = 0;
-		if(bOffseted)
-			ret = m_tradingTimes[m_tradingTimes.size()-1].second;
-		else
-			ret = originalTime(m_tradingTimes[m_tradingTimes.size()-1].second);
+		uint32_t ret = bOffseted ? m_tradingTimes[m_tradingTimes.size() - 1].second : m_tradingTimes[m_tradingTimes.size() - 1].second_raw;
 
 		// By Wesley @ 2021.12.25
 		// 如果收盘时间是0点，无法跟开盘时间进行比较，所以这里要做一个修正
@@ -455,12 +452,12 @@ public:
 
 	inline bool	isLastOfSection(uint32_t uTime)
 	{
-		uint32_t offTime = offsetTime(uTime, false);
+		//uint32_t offTime = offsetTime(uTime, false);
 		TradingTimes::iterator it = m_tradingTimes.begin();
 		for(; it != m_tradingTimes.end(); it++)
 		{
 			TradingSection &section = *it;
-			if(section.second == offTime)
+			if(section.second_raw == uTime)
 				return true;
 		}
 
@@ -469,12 +466,12 @@ public:
 
 	inline bool	isFirstOfSection(uint32_t uTime)
 	{
-		uint32_t offTime = offsetTime(uTime, true);
+		//uint32_t offTime = offsetTime(uTime, true);
 		TradingTimes::iterator it = m_tradingTimes.begin();
 		for(; it != m_tradingTimes.end(); it++)
 		{
 			TradingSection &section = *it;
-			if(section.first == offTime)
+			if(section.first_raw == uTime)
 				return true;
 		}
 
@@ -498,7 +495,13 @@ public:
 		return false;
 	}
 
-
+	/*
+	 *	计算偏移时间
+	 *	@uTime		原始时间
+	 *	@bAlignLeft	是否向左对齐，这个主要针对0点结束的情况
+	 *				如果向左对齐，则0点就做0点算
+	 *				如果向右对齐，则0点就做24点算
+	 */
 	inline uint32_t	offsetTime(uint32_t uTime, bool bAlignLeft) const
 	{
 		int32_t curMinute = (uTime/100)*60 + uTime%100;

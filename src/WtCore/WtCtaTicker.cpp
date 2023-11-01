@@ -76,15 +76,30 @@ void WtCtaRtTicker::on_tick(WTSTickData* curTick, uint32_t hotFlag /* = 0 */)
 
 	uint32_t curMin = _time / 100000;
 	uint32_t curSec = _time % 100000;
-	uint32_t minutes = _s_info->timeToMinutes(curMin);
-	bool isSecEnd = _s_info->isLastOfSection(curMin);
-	if (isSecEnd)
+
+
+	static uint32_t prevMin = UINT_MAX;
+	static uint32_t minutes = UINT_MAX;
+	static bool isSecEnd = false;
+	static uint32_t wrapMin = UINT_MAX;
+
+	//By Wesley @ 2023.11.01
+	//如果新的分钟和上一次处理的分钟数不同，才进行处理
+	//否则就不用处理，减少一些开销
+	if(prevMin != curMin)
 	{
-		minutes--;
+		minutes = _s_info->timeToMinutes(curMin);
+		isSecEnd = _s_info->isLastOfSection(curMin);
+		prevMin = curMin;
+
+		if (isSecEnd)
+		{
+			minutes--;
+		}
+		minutes++;
+
+		wrapMin = _s_info->minuteToTime(minutes);
 	}
-	minutes++;
-	uint32_t rawMin = curMin;
-	curMin = _s_info->minuteToTime(minutes);	
 
 	if (_cur_pos == 0)
 	{
@@ -126,7 +141,7 @@ void WtCtaRtTicker::on_tick(WTSTickData* curTick, uint32_t hotFlag /* = 0 */)
 		//无论分钟线是否切换，先修改时间都是对的
 		if (_engine)
 		{
-			_engine->set_date_time(_date, curMin, curSec, rawMin);
+			_engine->set_date_time(_date, wrapMin, curSec, prevMin);
 			_engine->set_trading_date(curTick->tradingdate());
 		}
 		trigger_price(curTick, hotFlag);
@@ -138,7 +153,7 @@ void WtCtaRtTicker::on_tick(WTSTickData* curTick, uint32_t hotFlag /* = 0 */)
 		//如果分钟数还是一致的, 则直接触发行情和时间即可
 		trigger_price(curTick, hotFlag);
 		if (_engine)
-			_engine->set_date_time(_date, curMin, curSec, rawMin);
+			_engine->set_date_time(_date, wrapMin, curSec, prevMin);
 	}
 
 	uint32_t sec = curSec / 1000;
