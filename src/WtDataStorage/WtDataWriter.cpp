@@ -1295,6 +1295,7 @@ WtDataWriter::KBlockPair* WtDataWriter::getKlineBlock(WTSContractInfo* ct, WTSKl
 	KBlockPair* pBlock = NULL;
 	const char* key = ct->getFullCode();
 
+	//读取交易的分钟数
 	uint32_t totalMins = ct->getCommInfo()->getSessionInfo()->getTradingMins();
 
 	KBlockFilesMap* cache_map = NULL;
@@ -1311,7 +1312,7 @@ WtDataWriter::KBlockPair* WtDataWriter::getKlineBlock(WTSContractInfo* ct, WTSKl
 		cache_map = &_rt_min5_blocks;
 		subdir = "min5";
 		bType = BT_RT_Minute5;
-		totalMins /= 5;
+		totalMins /= 5;	//如果是5分钟线，要除以5
 		break;
 	default: break;
 	}
@@ -1348,7 +1349,7 @@ WtDataWriter::KBlockPair* WtDataWriter::getKlineBlock(WTSContractInfo* ct, WTSKl
 
 			pipe_writer_log(_sink, LL_INFO, "Data file {} not exists, initializing...", path);
 
-			uint64_t uSize = sizeof(RTKlineBlock) + sizeof(WTSBarStruct) * totalMins;
+			uint64_t uSize = sizeof(RTKlineBlock) + sizeof(WTSBarStruct) * totalMins;	//预分配按照K线条数分配
 			BoostFile bf;
 			bf.create_new_file(path);
 			bf.truncate_file((uint32_t)uSize);
