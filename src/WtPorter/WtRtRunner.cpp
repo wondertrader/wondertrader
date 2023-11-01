@@ -550,6 +550,25 @@ bool WtRtRunner::config(const char* cfgFile, bool isFile /* = true */)
 		WTSLogger::log_raw(LL_INFO, "Second rules loaded");
 	}
 
+	WTSArray* ayContracts = _bd_mgr.getContracts();
+	for (auto it = ayContracts->begin(); it != ayContracts->end(); it++)
+	{
+		WTSContractInfo* cInfo = (WTSContractInfo*)(*it);
+		bool isHot = _hot_mgr.isHot(cInfo->getExchg(), cInfo->getCode());
+		bool isSecond = _hot_mgr.isSecond(cInfo->getExchg(), cInfo->getCode());
+		
+		std::string hotCode = cInfo->getFullPid();
+		if (isHot)
+			hotCode += ".HOT";
+		else if (isSecond)
+			hotCode += ".2ND";
+		else
+			hotCode = "";
+
+		cInfo->setHotFlag(isHot ? 1 : (isSecond ? 2 : 0), hotCode.c_str());
+	}
+	ayContracts->release();
+
 	if(cfgBF->has("rules"))
 	{
 		auto cfgRules = cfgBF->get("rules");

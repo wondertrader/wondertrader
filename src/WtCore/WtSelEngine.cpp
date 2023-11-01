@@ -61,10 +61,10 @@ void WtSelEngine::on_init()
 		_evt_listener->on_initialize_event();
 }
 
-void WtSelEngine::handle_push_quote(WTSTickData* curTick, uint32_t hotFlag)
+void WtSelEngine::handle_push_quote(WTSTickData* curTick)
 {
 	if (_tm_ticker)
-		_tm_ticker->on_tick(curTick, hotFlag);
+		_tm_ticker->on_tick(curTick);
 }
 
 void WtSelEngine::on_bar(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar)

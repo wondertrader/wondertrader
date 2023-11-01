@@ -8,6 +8,7 @@
 #include "../Share/StrUtil.hpp"
 #include "../Share/IniHelper.hpp"
 #include "../Share/decimal.h"
+#include "../Share/TimeUtils.hpp"
 
 #include "../Includes/IBaseDataMgr.h"
 #include "../WTSUtils/WTSCmpHelper.hpp"
@@ -52,8 +53,7 @@ extern "C"
 };
 
 static const uint32_t CACHE_SIZE_STEP = 200;
-static const uint32_t TICK_SIZE_STEP = 2500;
-static const uint32_t KLINE_SIZE_STEP = 200;
+static const uint32_t HFT_SIZE_STEP = 2500;
 
 const char CMD_CLEAR_CACHE[] = "CMD_CLEAR_CACHE";
 const char MARKER_FILE[] = "marker.ini";
@@ -246,11 +246,13 @@ void WtDataWriter::loadCache()
 	if (_tick_cache_file != NULL)
 		return;
 
+	uint32_t TOTAL_CODES = _bd_mgr->getContractSize("", TimeUtils::getCurDate());
+
 	bool bNew = false;
 	std::string filename = _base_dir + _cache_file;
 	if (!BoostFile::exists(filename.c_str()))
 	{
-		uint64_t uSize = sizeof(RTTickCache) + sizeof(TickCacheItem) * CACHE_SIZE_STEP;
+		uint64_t uSize = sizeof(RTTickCache) + sizeof(TickCacheItem) * TOTAL_CODES;
 		BoostFile bf;
 		bf.create_new_file(filename.c_str());
 		bf.truncate_file((uint32_t)uSize);
@@ -261,14 +263,13 @@ void WtDataWriter::loadCache()
 	_tick_cache_file.reset(new BoostMappingFile);
 	_tick_cache_file->map(filename.c_str());
 	_tick_cache_block = (RTTickCache*)_tick_cache_file->addr();
-
 	_tick_cache_block->_size = min(_tick_cache_block->_size, _tick_cache_block->_capacity);
 
 	if(bNew)
 	{
 		memset(_tick_cache_block, 0, _tick_cache_file->size());
 
-		_tick_cache_block->_capacity = CACHE_SIZE_STEP;
+		_tick_cache_block->_capacity = TOTAL_CODES;
 		_tick_cache_block->_type = BT_RT_Cache;
 		_tick_cache_block->_size = 0;
 		_tick_cache_block->_version = 1;
@@ -416,7 +417,7 @@ bool WtDataWriter::writeOrderQueue(WTSOrdQueData* curOrdQue)
 			if (blk->_size >= blk->_capacity)
 			{
 				pBlockPair->_file->sync();
-				pBlockPair->_block = (RTOrdQueBlock*)resizeRTBlock<RTDayBlockHeader, WTSOrdQueStruct>(pBlockPair->_file, blk->_capacity + TICK_SIZE_STEP);
+				pBlockPair->_block = (RTOrdQueBlock*)resizeRTBlock<RTDayBlockHeader, WTSOrdQueStruct>(pBlockPair->_file, blk->_capacity * 2);
 				blk = pBlockPair->_block;
 			}
 
@@ -513,7 +514,7 @@ bool WtDataWriter::writeOrderDetail(WTSOrdDtlData* curOrdDtl)
 			if (blk->_size >= blk->_capacity)
 			{
 				pBlockPair->_file->sync();
-				pBlockPair->_block = (RTOrdDtlBlock*)resizeRTBlock<RTDayBlockHeader, WTSOrdDtlStruct>(pBlockPair->_file, blk->_capacity + TICK_SIZE_STEP);
+				pBlockPair->_block = (RTOrdDtlBlock*)resizeRTBlock<RTDayBlockHeader, WTSOrdDtlStruct>(pBlockPair->_file, blk->_capacity * 2);
 				blk = pBlockPair->_block;
 			}
 
@@ -569,7 +570,7 @@ bool WtDataWriter::writeTransaction(WTSTransData* curTrans)
 			if (blk->_size >= blk->_capacity)
 			{
 				pBlockPair->_file->sync();
-				pBlockPair->_block = (RTTransBlock*)resizeRTBlock<RTDayBlockHeader, WTSTransStruct>(pBlockPair->_file, blk->_capacity + TICK_SIZE_STEP);
+				pBlockPair->_block = (RTTransBlock*)resizeRTBlock<RTDayBlockHeader, WTSTransStruct>(pBlockPair->_file, blk->_capacity * 2);
 				blk = pBlockPair->_block;
 			}
 
@@ -605,7 +606,7 @@ void WtDataWriter::pipeToTicks(WTSContractInfo* ct, WTSTickData* curTick)
 	if(blk && blk->_size >= blk->_capacity)
 	{
 		pBlockPair->_file->sync();
-		pBlockPair->_block = (RTTickBlock*)resizeRTBlock<RTDayBlockHeader, WTSTickStruct>(pBlockPair->_file, blk->_capacity + TICK_SIZE_STEP);
+		pBlockPair->_block = (RTTickBlock*)resizeRTBlock<RTDayBlockHeader, WTSTickStruct>(pBlockPair->_file, blk->_capacity * 2);
 		blk = pBlockPair->_block;
 		if(blk) pipe_writer_log(_sink, LL_DEBUG, "RT tick block of {} resized to {}", ct->getFullCode(), blk->_capacity);
 	}
@@ -666,7 +667,7 @@ WtDataWriter::OrdQueBlockPair* WtDataWriter::getOrdQueBlock(WTSContractInfo* ct,
 
 			pipe_writer_log(_sink, LL_INFO, "Data file {} not exists, initializing...", path.c_str());
 
-			uint64_t uSize = sizeof(RTDayBlockHeader) + sizeof(WTSOrdQueStruct) * TICK_SIZE_STEP;
+			uint64_t uSize = sizeof(RTDayBlockHeader) + sizeof(WTSOrdQueStruct) * HFT_SIZE_STEP;
 
 			BoostFile bf;
 			bf.create_new_file(path.c_str());
@@ -696,7 +697,7 @@ WtDataWriter::OrdQueBlockPair* WtDataWriter::getOrdQueBlock(WTSContractInfo* ct,
 
 		if (isNew)
 		{
-			pBlock->_block->_capacity = TICK_SIZE_STEP;
+			pBlock->_block->_capacity = HFT_SIZE_STEP;
 			pBlock->_block->_size = 0;
 			pBlock->_block->_version = BLOCK_VERSION_RAW_V2;
 			pBlock->_block->_type = BT_RT_OrdQueue;
@@ -760,7 +761,7 @@ WtDataWriter::OrdDtlBlockPair* WtDataWriter::getOrdDtlBlock(WTSContractInfo* ct,
 
 			pipe_writer_log(_sink, LL_INFO, "Data file {} not exists, initializing...", path.c_str());
 
-			uint64_t uSize = sizeof(RTDayBlockHeader) + sizeof(WTSOrdDtlStruct) * TICK_SIZE_STEP;
+			uint64_t uSize = sizeof(RTDayBlockHeader) + sizeof(WTSOrdDtlStruct) * HFT_SIZE_STEP;
 
 			BoostFile bf;
 			bf.create_new_file(path.c_str());
@@ -790,7 +791,7 @@ WtDataWriter::OrdDtlBlockPair* WtDataWriter::getOrdDtlBlock(WTSContractInfo* ct,
 
 		if (isNew)
 		{
-			pBlock->_block->_capacity = TICK_SIZE_STEP;
+			pBlock->_block->_capacity = HFT_SIZE_STEP;
 			pBlock->_block->_size = 0;
 			pBlock->_block->_version = BLOCK_VERSION_RAW_V2;
 			pBlock->_block->_type = BT_RT_OrdDetail;
@@ -855,7 +856,7 @@ WtDataWriter::TransBlockPair* WtDataWriter::getTransBlock(WTSContractInfo* ct, u
 
 			pipe_writer_log(_sink, LL_INFO, "Data file {} not exists, initializing...", path.c_str());
 
-			uint64_t uSize = sizeof(RTDayBlockHeader) + sizeof(WTSTransStruct) * TICK_SIZE_STEP;
+			uint64_t uSize = sizeof(RTDayBlockHeader) + sizeof(WTSTransStruct) * HFT_SIZE_STEP;
 
 			BoostFile bf;
 			bf.create_new_file(path.c_str());
@@ -885,7 +886,7 @@ WtDataWriter::TransBlockPair* WtDataWriter::getTransBlock(WTSContractInfo* ct, u
 
 		if (isNew)
 		{
-			pBlock->_block->_capacity = TICK_SIZE_STEP;
+			pBlock->_block->_capacity = HFT_SIZE_STEP;
 			pBlock->_block->_size = 0;
 			pBlock->_block->_version = BLOCK_VERSION_RAW_V2;
 			pBlock->_block->_type = BT_RT_Trnsctn;
@@ -951,6 +952,13 @@ WtDataWriter::TickBlockPair* WtDataWriter::getTickBlock(WTSContractInfo* ct, uin
 		path += ct->getCode();
 		path += ".dmb";
 
+		//读取总的交易秒数，作为基础的条数，后面扩展的次数会减少
+		WTSCommodityInfo* commInfo = ct->getCommInfo();
+		WTSSessionInfo *sInfo = commInfo->getSessionInfo();
+		uint32_t totalSeconds = sInfo->getTradingSeconds();
+		if (commInfo->isFuture())	//期货按照1秒2笔来算
+			totalSeconds *= 2;
+
 		bool isNew = false;
 		if (!BoostFile::exists(path.c_str()))
 		{
@@ -958,8 +966,8 @@ WtDataWriter::TickBlockPair* WtDataWriter::getTickBlock(WTSContractInfo* ct, uin
 				return NULL;
 
 			pipe_writer_log(_sink, LL_INFO, "Data file {} not exists, initializing...", path.c_str());
-
-			uint64_t uSize = sizeof(RTTickBlock) + sizeof(WTSTickStruct) * TICK_SIZE_STEP;
+			
+			uint64_t uSize = sizeof(RTTickBlock) + sizeof(WTSTickStruct) * totalSeconds;
 			BoostFile bf;
 			bf.create_new_file(path.c_str());
 			bf.truncate_file((uint32_t)uSize);
@@ -988,7 +996,7 @@ WtDataWriter::TickBlockPair* WtDataWriter::getTickBlock(WTSContractInfo* ct, uin
 
 		if(isNew)
 		{
-			pBlock->_block->_capacity = TICK_SIZE_STEP;
+			pBlock->_block->_capacity = totalSeconds;
 			pBlock->_block->_size = 0;
 			pBlock->_block->_version = BLOCK_VERSION_RAW_V2;
 			pBlock->_block->_type = BT_RT_Ticks;
@@ -1064,7 +1072,7 @@ void WtDataWriter::pipeToKlines(WTSContractInfo* ct, WTSTickData* curTick)
 			if (blk->_size == blk->_capacity)
 			{
 				pBlockPair->_file->sync();
-				pBlockPair->_block = (RTKlineBlock*)resizeRTBlock<RTKlineBlock, WTSBarStruct>(pBlockPair->_file, blk->_capacity + KLINE_SIZE_STEP);
+				pBlockPair->_block = (RTKlineBlock*)resizeRTBlock<RTKlineBlock, WTSBarStruct>(pBlockPair->_file, blk->_capacity * 2);
 				blk = pBlockPair->_block;
 			}
 
@@ -1171,7 +1179,7 @@ void WtDataWriter::pipeToKlines(WTSContractInfo* ct, WTSTickData* curTick)
 			if (blk->_size == blk->_capacity)
 			{
 				pBlockPair->_file->sync();
-				pBlockPair->_block = (RTKlineBlock*)resizeRTBlock<RTKlineBlock, WTSBarStruct>(pBlockPair->_file, blk->_capacity + KLINE_SIZE_STEP);
+				pBlockPair->_block = (RTKlineBlock*)resizeRTBlock<RTKlineBlock, WTSBarStruct>(pBlockPair->_file, blk->_capacity * 2);
 				blk = pBlockPair->_block;
 			}
 
@@ -1287,6 +1295,8 @@ WtDataWriter::KBlockPair* WtDataWriter::getKlineBlock(WTSContractInfo* ct, WTSKl
 	KBlockPair* pBlock = NULL;
 	const char* key = ct->getFullCode();
 
+	uint32_t totalMins = ct->getCommInfo()->getSessionInfo()->getTradingMins();
+
 	KBlockFilesMap* cache_map = NULL;
 	std::string subdir = "";
 	BlockType bType;
@@ -1301,6 +1311,7 @@ WtDataWriter::KBlockPair* WtDataWriter::getKlineBlock(WTSContractInfo* ct, WTSKl
 		cache_map = &_rt_min5_blocks;
 		subdir = "min5";
 		bType = BT_RT_Minute5;
+		totalMins /= 5;
 		break;
 	default: break;
 	}
@@ -1337,7 +1348,7 @@ WtDataWriter::KBlockPair* WtDataWriter::getKlineBlock(WTSContractInfo* ct, WTSKl
 
 			pipe_writer_log(_sink, LL_INFO, "Data file {} not exists, initializing...", path);
 
-			uint64_t uSize = sizeof(RTKlineBlock) + sizeof(WTSBarStruct) * KLINE_SIZE_STEP;
+			uint64_t uSize = sizeof(RTKlineBlock) + sizeof(WTSBarStruct) * totalMins;
 			BoostFile bf;
 			bf.create_new_file(path);
 			bf.truncate_file((uint32_t)uSize);
@@ -1369,7 +1380,7 @@ WtDataWriter::KBlockPair* WtDataWriter::getKlineBlock(WTSContractInfo* ct, WTSKl
 		if (isNew)
 		{
 			//memset(pBlock->_block, 0, pBlock->_file->size());
-			pBlock->_block->_capacity = KLINE_SIZE_STEP;
+			pBlock->_block->_capacity = totalMins;
 			pBlock->_block->_size = 0;
 			pBlock->_block->_version = BLOCK_VERSION_RAW_V2;
 			pBlock->_block->_type = bType;

@@ -422,10 +422,10 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 }
 
 
-void WtCtaEngine::handle_push_quote(WTSTickData* newTick, uint32_t hotFlag)
+void WtCtaEngine::handle_push_quote(WTSTickData* newTick)
 {
 	if (_tm_ticker)
-		_tm_ticker->on_tick(newTick, hotFlag);
+		_tm_ticker->on_tick(newTick);
 }
 
 void WtCtaEngine::handle_pos_change(const char* straName, const char* stdCode, double diffPos)

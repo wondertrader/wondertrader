@@ -28,7 +28,7 @@ public:
 public:
 	//////////////////////////////////////////////////////////////////////////
 	//WtEngine接口
-	virtual void handle_push_quote(WTSTickData* newTick, uint32_t hotFlag) override;
+	virtual void handle_push_quote(WTSTickData* newTick) override;
 
 	virtual void on_tick(const char* stdCode, WTSTickData* curTick) override;
 

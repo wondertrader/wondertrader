@@ -288,8 +288,18 @@ public:
 		return (int32_t)(ret * 100 + 0.5) / 100.0;
 	}
 
+	inline void setHotFlag(uint32_t hotFlag, const char* hotCode = "") 
+	{ 
+		m_uHotFlag = hotFlag; 
+		m_strHotCode = hotCode;
+	}
+	inline bool isFlat() const { return m_uHotFlag == 0; }
+	inline bool isHot() const { return m_uHotFlag == 1; }
+	inline bool isSecond() const { return m_uHotFlag == 2; }
+	inline const char* getHotCode() const { return m_strHotCode.c_str(); }
+
 protected:
-	WTSContractInfo():m_commInfo(NULL), m_openDate(19900101), m_expireDate(30991231), m_lMarginRatio(0), m_sMarginRatio(0), m_nFeeAlg(-1), m_uMarginFlag(0){}
+	WTSContractInfo():m_commInfo(NULL), m_openDate(19900101), m_expireDate(30991231), m_lMarginRatio(0), m_sMarginRatio(0), m_nFeeAlg(-1), m_uMarginFlag(0), m_uHotFlag(0){}
 	virtual ~WTSContractInfo(){}
 
 private:
@@ -319,6 +329,8 @@ private:
 	int			m_nFeeAlg;		//手续费算法，默认为-1，不计算,0是按成交量，1为按成交额
 
 	WTSCommodityInfo*	m_commInfo;
+	uint32_t	m_uHotFlag;
+	std::string	m_strHotCode;
 };
 
 

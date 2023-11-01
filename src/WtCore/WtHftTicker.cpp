@@ -13,6 +13,7 @@
 
 #include "../Share/TimeUtils.hpp"
 #include "../Includes/WTSSessionInfo.hpp"
+#include "../Includes/WTSContractInfo.hpp"
 #include "../Includes/IBaseDataMgr.h"
 #include "../Includes/IHotMgr.h"
 #include "../Share/CodeHelper.hpp"
@@ -46,29 +47,30 @@ void WtHftRtTicker::init(IDataReader* store, const char* sessionID)
 	TimeUtils::getDateTime(_date, _time);
 }
 
-void WtHftRtTicker::trigger_price(WTSTickData* curTick, uint32_t hotFlag /* = 0 */)
+void WtHftRtTicker::trigger_price(WTSTickData* curTick)
 {
 	if (_engine)
 	{
+		WTSContractInfo* cInfo = curTick->getContractInfo();
 		std::string stdCode = curTick->code();
 		_engine->on_tick(stdCode.c_str(), curTick);
 
-		if (hotFlag !=0)
+		if (cInfo->isHot()||cInfo->isSecond())
 		{
 			WTSTickData* hotTick = WTSTickData::create(curTick->getTickStruct());
-			std::string hotCode = (hotFlag == 1) ? CodeHelper::stdCodeToStdHotCode(stdCode.c_str()) : CodeHelper::stdCodeToStd2ndCode(stdCode.c_str());
-			hotTick->setCode(hotCode.c_str(), hotCode.size());
-			_engine->on_tick(hotCode.c_str(), hotTick);
+			const char* hotCode = cInfo->getHotCode();
+			hotTick->setCode(hotCode);
+			_engine->on_tick(hotCode, hotTick);
 			hotTick->release();
 		}
 	}
 }
 
-void WtHftRtTicker::on_tick(WTSTickData* curTick, uint32_t hotFlag/* = 0*/)
+void WtHftRtTicker::on_tick(WTSTickData* curTick)
 {
 	if (_thrd == NULL)
 	{
-		trigger_price(curTick, hotFlag);
+		trigger_price(curTick);
 		return;
 	}
 
@@ -78,7 +80,7 @@ void WtHftRtTicker::on_tick(WTSTickData* curTick, uint32_t hotFlag/* = 0*/)
 	if (_date != 0 && (uDate < _date || (uDate == _date && uTime < _time)))
 	{
 		//WTSLogger::info("行情时间{}小于本地时间{}", uTime, _time);
-		trigger_price(curTick, hotFlag);
+		trigger_price(curTick);
 		return;
 	}
 
@@ -129,7 +131,7 @@ void WtHftRtTicker::on_tick(WTSTickData* curTick, uint32_t hotFlag/* = 0*/)
 			}
 		}
 
-		trigger_price(curTick, hotFlag);
+		trigger_price(curTick);
 		if (_engine)
 		{
 			_engine->set_date_time(_date, curMin, curSec, rawMin);
@@ -141,7 +143,7 @@ void WtHftRtTicker::on_tick(WTSTickData* curTick, uint32_t hotFlag/* = 0*/)
 	else
 	{
 		//如果分钟数还是一致的, 则直接触发行情和时间即可
-		trigger_price(curTick, hotFlag);
+		trigger_price(curTick);
 		if (_engine)
 			_engine->set_date_time(_date, curMin, curSec, rawMin);
 	}

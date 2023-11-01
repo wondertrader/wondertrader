@@ -15,6 +15,7 @@
 #include "../Includes/WTSSessionInfo.hpp"
 #include "../Includes/WTSVariant.hpp"
 #include "../Includes/WTSDataDef.hpp"
+#include "../Includes/WTSContractInfo.hpp"
 
 #include "../Share/StrUtil.hpp"
 

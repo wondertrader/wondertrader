@@ -127,10 +127,46 @@ WTSContractInfo* WTSBaseDataMgr::getContract(const char* code, const char* exchg
 
 			return NULL;
 		}
-
 	}
 
 	return NULL;
+}
+
+uint32_t  WTSBaseDataMgr::getContractSize(const char* exchg /* = "" */, uint32_t uDate /* = 0 */)
+{
+	uint32_t ret = 0;
+	if (strlen(exchg) > 0)
+	{
+		auto it = m_mapExchgContract->find(std::string(exchg));
+		if (it != m_mapExchgContract->end())
+		{
+			WTSContractList* contractList = (WTSContractList*)it->second;
+			auto it2 = contractList->begin();
+			for (; it2 != contractList->end(); it2++)
+			{
+				WTSContractInfo* cInfo = (WTSContractInfo*)it2->second;
+				if (uDate == 0 || (cInfo->getOpenDate() <= uDate && cInfo->getExpireDate() >= uDate))
+					ret++;
+			}
+		}
+	}
+	else
+	{
+		auto it = m_mapExchgContract->begin();
+		for (; it != m_mapExchgContract->end(); it++)
+		{
+			WTSContractList* contractList = (WTSContractList*)it->second;
+			auto it2 = contractList->begin();
+			for (; it2 != contractList->end(); it2++)
+			{
+				WTSContractInfo* cInfo = (WTSContractInfo*)it2->second;
+				if (uDate == 0 || (cInfo->getOpenDate() <= uDate && cInfo->getExpireDate() >= uDate))
+					ret++;
+			}
+		}
+	}
+
+	return ret;
 }
 
 WTSArray* WTSBaseDataMgr::getContracts(const char* exchg /* = "" */, uint32_t uDate /* = 0 */)

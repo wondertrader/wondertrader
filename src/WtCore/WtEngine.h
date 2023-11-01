@@ -150,7 +150,7 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	/// IParserStub接口
-	virtual void handle_push_quote(WTSTickData* newTick, uint32_t hotFlag) override;
+	virtual void handle_push_quote(WTSTickData* newTick) override;
 
 public:
 	virtual void init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtDtMgr* dataMgr, IHotMgr* hotMgr, EventNotifier* notifier);

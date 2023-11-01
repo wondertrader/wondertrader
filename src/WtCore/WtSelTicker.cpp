@@ -13,6 +13,7 @@
 
 #include "../Share/TimeUtils.hpp"
 #include "../Includes/WTSSessionInfo.hpp"
+#include "../Includes/WTSContractInfo.hpp"
 #include "../Includes/IBaseDataMgr.h"
 #include "../Includes/IHotMgr.h"
 #include "../Share/CodeHelper.hpp"
@@ -53,12 +54,13 @@ void WtSelRtTicker::trigger_price(WTSTickData* curTick, uint32_t hotFlag /* = 0 
 		std::string stdCode = curTick->code();
 		_engine->on_tick(stdCode.c_str(), curTick);
 
-		if (hotFlag != 0)
+		WTSContractInfo* cInfo = curTick->getContractInfo();
+		if (!cInfo->isFlat())
 		{
 			WTSTickData* hotTick = WTSTickData::create(curTick->getTickStruct());
-			std::string hotCode = (hotFlag == 1) ? CodeHelper::stdCodeToStdHotCode(stdCode.c_str()) : CodeHelper::stdCodeToStd2ndCode(stdCode.c_str());
-			hotTick->setCode(hotCode.c_str(), hotCode.size());
-			_engine->on_tick(hotCode.c_str(), hotTick);
+			const char* hotCode = cInfo->getHotCode();
+			hotTick->setCode(hotCode);
+			_engine->on_tick(hotCode, hotTick);
 			hotTick->release();
 		}
 	}

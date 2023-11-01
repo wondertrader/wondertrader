@@ -628,38 +628,40 @@ WTSKlineSlice* WtEngine::get_kline_slice(uint32_t sid, const char* stdCode, cons
 }
 
 
-void WtEngine::handle_push_quote(WTSTickData* curTick, uint32_t hotFlag)
+void WtEngine::handle_push_quote(WTSTickData* curTick)
 {
 	std::string stdCode = curTick->code();
 	_data_mgr->handle_push_quote(stdCode.c_str(), curTick);
 	on_tick(stdCode.c_str(), curTick);
 
 	double price = curTick->price();
+	WTSContractInfo* cInfo = curTick->getContractInfo();
 
-	if(hotFlag == 1)
+	//if(hotFlag == 1)
+	if(cInfo->isHot() || cInfo->isSecond())
 	{
-		std::string hotCode = CodeHelper::stdCodeToStdHotCode(stdCode.c_str());
+		const char* hotCode = cInfo->getHotCode();
 		WTSTickData* hotTick = WTSTickData::create(curTick->getTickStruct());
-		hotTick->setCode(hotCode.c_str());
+		hotTick->setCode(hotCode);
 		hotTick->setContractInfo(curTick->getContractInfo());
-		
-		_data_mgr->handle_push_quote(hotCode.c_str(), hotTick);
-		on_tick(hotCode.c_str(), hotTick);
+
+		_data_mgr->handle_push_quote(hotCode, hotTick);
+		on_tick(hotCode, hotTick);
 
 		hotTick->release();
 	}
-	else if (hotFlag == 2)
-	{
-		std::string scndCode = CodeHelper::stdCodeToStd2ndCode(stdCode.c_str());
-		WTSTickData* scndTick = WTSTickData::create(curTick->getTickStruct());
-		scndTick->setCode(scndCode.c_str());
-		scndTick->setContractInfo(curTick->getContractInfo());
+	//else if (hotFlag == 2)
+	//{
+	//	std::string scndCode = CodeHelper::stdCodeToStd2ndCode(stdCode.c_str());
+	//	WTSTickData* scndTick = WTSTickData::create(curTick->getTickStruct());
+	//	scndTick->setCode(scndCode.c_str());
+	//	scndTick->setContractInfo(curTick->getContractInfo());
 
-		_data_mgr->handle_push_quote(scndCode.c_str(), scndTick);
-		on_tick(scndCode.c_str(), scndTick);
+	//	_data_mgr->handle_push_quote(scndCode.c_str(), scndTick);
+	//	on_tick(scndCode.c_str(), scndTick);
 
-		scndTick->release();
-	}
+	//	scndTick->release();
+	//}
 }
 
 double WtEngine::get_cur_price(const char* stdCode)

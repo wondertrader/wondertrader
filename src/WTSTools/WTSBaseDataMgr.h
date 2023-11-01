@@ -43,9 +43,10 @@ public:
 	virtual WTSArray*			getAllSessions() override;
 	virtual bool				isHoliday(const char* stdPID, uint32_t uDate, bool isTpl = false) override;
 
-
 	virtual uint32_t			calcTradingDate(const char* stdPID, uint32_t uDate, uint32_t uTime, bool isSession = false) override;
 	virtual uint64_t			getBoundaryTime(const char* stdPID, uint32_t tDate, bool isSession = false, bool isStart = true) override;
+
+	virtual uint32_t			getContractSize(const char* exchg = "", uint32_t uDate = 0) override;
 
 	void		release();
 

@@ -15,6 +15,7 @@
 #include "../WtCore/WtDiffExecuter.h"
 
 #include "../Includes/WTSVariant.hpp"
+#include "../Includes/WTSContractInfo.hpp"
 #include "../WTSTools/WTSLogger.h"
 #include "../WTSUtils/WTSCfgLoader.h"
 #include "../WTSUtils/SignalHook.hpp"
@@ -126,6 +127,25 @@ bool WtRunner::config()
 
 	if (cfgBF->get("second"))
 		_hot_mgr.loadSeconds(cfgBF->getCString("second"));
+
+	WTSArray* ayContracts = _bd_mgr.getContracts();
+	for (auto it = ayContracts->begin(); it != ayContracts->end(); it++)
+	{
+		WTSContractInfo* cInfo = (WTSContractInfo*)(*it);
+		bool isHot = _hot_mgr.isHot(cInfo->getExchg(), cInfo->getCode());
+		bool isSecond = _hot_mgr.isSecond(cInfo->getExchg(), cInfo->getCode());
+
+		std::string hotCode = cInfo->getFullPid();
+		if (isHot)
+			hotCode += ".HOT";
+		else if (isSecond)
+			hotCode += ".2ND";
+		else
+			hotCode = "";
+
+		cInfo->setHotFlag(isHot ? 1 : (isSecond ? 2 : 0), hotCode.c_str());
+	}
+	ayContracts->release();
 
 	if (cfgBF->has("rules"))
 	{

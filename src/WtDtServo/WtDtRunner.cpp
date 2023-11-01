@@ -135,6 +135,25 @@ void WtDtRunner::initialize(const char* cfgFile, bool isFile /* = true */, const
 		WTSLogger::info("Second rules loaded");
 	}
 
+	WTSArray* ayContracts = _bd_mgr.getContracts();
+	for (auto it = ayContracts->begin(); it != ayContracts->end(); it++)
+	{
+		WTSContractInfo* cInfo = (WTSContractInfo*)(*it);
+		bool isHot = _hot_mgr.isHot(cInfo->getExchg(), cInfo->getCode());
+		bool isSecond = _hot_mgr.isSecond(cInfo->getExchg(), cInfo->getCode());
+
+		std::string hotCode = cInfo->getFullPid();
+		if (isHot)
+			hotCode += ".HOT";
+		else if (isSecond)
+			hotCode += ".2ND";
+		else
+			hotCode = "";
+
+		cInfo->setHotFlag(isHot ? 1 : (isSecond ? 2 : 0), hotCode.c_str());
+	}
+	ayContracts->release();
+
 	initDataMgr(config->get("data"));
 
 	WTSVariant* cfgParser = config->get("parsers");
@@ -421,9 +440,6 @@ void WtDtRunner::proc_tick(WTSTickData* curTick)
 	{
 		//如果是分月合约，则进行主力和次主力的判断
 		stdCode = CodeHelper::rawMonthCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
-		bool bHot = _hot_mgr.isHot(curTick->exchg(), curTick->code(), 0);
-		bool b2nd = _hot_mgr.isSecond(curTick->exchg(), curTick->code(), 0);
-		hotflag = bHot ? 1 : (b2nd ? 2 : 0);
 	}
 	else
 	{
@@ -433,28 +449,28 @@ void WtDtRunner::proc_tick(WTSTickData* curTick)
 
 	trigger_tick(stdCode.c_str(), curTick);
 
-	if (hotflag == 1)
+	if (!cInfo->isFlat())
 	{
-		std::string hotCode = CodeHelper::stdCodeToStdHotCode(stdCode.c_str());
+		const char* hotCode = cInfo->getHotCode();
 		WTSTickData* hotTick = WTSTickData::create(curTick->getTickStruct());
-		hotTick->setCode(hotCode.c_str());
+		hotTick->setCode(hotCode);
 		hotTick->setContractInfo(curTick->getContractInfo());
 
-		trigger_tick(hotCode.c_str(), hotTick);
+		trigger_tick(hotCode, hotTick);
 
 		hotTick->release();
 	}
-	else if (hotflag == 2)
-	{
-		std::string scndCode = CodeHelper::stdCodeToStd2ndCode(stdCode.c_str());
-		WTSTickData* scndTick = WTSTickData::create(curTick->getTickStruct());
-		scndTick->setCode(scndCode.c_str());
-		scndTick->setContractInfo(curTick->getContractInfo());
+	//else if (hotflag == 2)
+	//{
+	//	std::string scndCode = CodeHelper::stdCodeToStd2ndCode(stdCode.c_str());
+	//	WTSTickData* scndTick = WTSTickData::create(curTick->getTickStruct());
+	//	scndTick->setCode(scndCode.c_str());
+	//	scndTick->setContractInfo(curTick->getContractInfo());
 
-		trigger_tick(scndCode.c_str(), scndTick);
+	//	trigger_tick(scndCode.c_str(), scndTick);
 
-		scndTick->release();
-	}
+	//	scndTick->release();
+	//}
 }
 
 void WtDtRunner::trigger_tick(const char* stdCode, WTSTickData* curTick)

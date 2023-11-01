@@ -388,7 +388,7 @@ WTSSessionInfo* WtExecRunner::get_session_info(const char* sid, bool isCode /* =
 	return cInfo->getSessionInfo();
 }
 
-void WtExecRunner::handle_push_quote(WTSTickData* quote, uint32_t hotFlag /* = 0 */)
+void WtExecRunner::handle_push_quote(WTSTickData* quote)
 {
 	if (quote == NULL)
 		return;

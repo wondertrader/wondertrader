@@ -22,7 +22,7 @@ class IHotMgr;
 class IParserStub
 {
 public:
-	virtual void			handle_push_quote(WTSTickData* curTick, uint32_t hotFlag = 0){}
+	virtual void			handle_push_quote(WTSTickData* curTick){}
 
 	virtual void			handle_push_order_detail(WTSOrdDtlData* curOrdDtl){}
 	virtual void			handle_push_order_queue(WTSOrdQueData* curOrdQue) {}
