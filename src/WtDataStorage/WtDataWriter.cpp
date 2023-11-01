@@ -942,13 +942,6 @@ WtDataWriter::TickBlockPair* WtDataWriter::getTickBlock(WTSContractInfo* ct, uin
 		path += ct->getCode();
 		path += ".dmb";
 
-		//读取总的交易秒数，作为基础的条数，后面扩展的次数会减少
-		WTSCommodityInfo* commInfo = ct->getCommInfo();
-		WTSSessionInfo *sInfo = commInfo->getSessionInfo();
-		uint32_t totalSeconds = sInfo->getTradingSeconds();
-		if (commInfo->isFuture())	//期货按照1秒2笔来算
-			totalSeconds *= 2;
-
 		bool isNew = false;
 		if (!BoostFile::exists(path.c_str()))
 		{
@@ -957,7 +950,7 @@ WtDataWriter::TickBlockPair* WtDataWriter::getTickBlock(WTSContractInfo* ct, uin
 
 			pipe_writer_log(_sink, LL_INFO, "Data file {} not exists, initializing...", path.c_str());
 			
-			uint64_t uSize = sizeof(RTTickBlock) + sizeof(WTSTickStruct) * totalSeconds;
+			uint64_t uSize = sizeof(RTTickBlock) + sizeof(WTSTickStruct) * HFT_SIZE_STEP;
 			BoostFile bf;
 			bf.create_new_file(path.c_str());
 			bf.truncate_file((uint32_t)uSize);
@@ -986,7 +979,7 @@ WtDataWriter::TickBlockPair* WtDataWriter::getTickBlock(WTSContractInfo* ct, uin
 
 		if(isNew)
 		{
-			pBlock->_block->_capacity = totalSeconds;
+			pBlock->_block->_capacity = HFT_SIZE_STEP;
 			pBlock->_block->_size = 0;
 			pBlock->_block->_version = BLOCK_VERSION_RAW_V2;
 			pBlock->_block->_type = BT_RT_Ticks;
