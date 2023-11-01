@@ -374,10 +374,11 @@ bool WtDataWriter::writeTick(WTSTickData* curTick, uint32_t procFlag)
 			_sink->broadcastTick(curTick);
 
 			static wt_hashmap<std::string, uint64_t> _tcnt_map;
-			_tcnt_map[curTick->exchg()]++;
-			if (_tcnt_map[curTick->exchg()] % _log_group_size == 0)
+			uint64_t& cnt = _tcnt_map[curTick->exchg()];
+			cnt++;
+			if (cnt % _log_group_size == 0)
 			{
-				pipe_writer_log(_sink, LL_INFO, "{} ticks received from exchange {}", _tcnt_map[curTick->exchg()], curTick->exchg());
+				pipe_writer_log(_sink, LL_INFO, "{} ticks received from exchange {}", cnt, curTick->exchg());
 			}
 		} while (false);
 
@@ -396,10 +397,7 @@ bool WtDataWriter::writeOrderQueue(WTSOrdQueData* curOrdQue)
 
 		do
 		{
-			WTSContractInfo* ct = _bd_mgr->getContract(curOrdQue->code(), curOrdQue->exchg());
-			if (ct == NULL)
-				break;
-
+			WTSContractInfo* ct = curOrdQue->getContractInfo();
 			WTSCommodityInfo* commInfo = ct->getCommInfo();
 
 			//再根据状态过滤
@@ -424,62 +422,19 @@ bool WtDataWriter::writeOrderQueue(WTSOrdQueData* curOrdQue)
 			memcpy(&blk->_queues[blk->_size], &curOrdQue->getOrdQueStruct(), sizeof(WTSOrdQueStruct));
 			blk->_size += 1;
 
-			//TODO: 要广播的
-			//g_udpCaster.broadcast(curTrans);
+			_sink->broadcastOrdQue(curOrdQue);
 
 			static wt_hashmap<std::string, uint64_t> _tcnt_map;
-			_tcnt_map[curOrdQue->exchg()]++;
-			if (_tcnt_map[curOrdQue->exchg()] % _log_group_size == 0)
+			uint64_t& cnt = _tcnt_map[curOrdQue->exchg()];
+			cnt++;
+			if (cnt % _log_group_size == 0)
 			{
-				pipe_writer_log(_sink, LL_INFO, "{} orderques received from exchange {}", _tcnt_map[curOrdQue->exchg()], curOrdQue->exchg());
+				pipe_writer_log(_sink, LL_INFO, "{} queues received from exchange {}", cnt, curOrdQue->exchg());
 			}
 		} while (false);
 		curOrdQue->release();
 	});
 	return true;
-}
-
-void WtDataWriter::pushTask(TaskInfo task)
-{
-	if(_async_proc)
-	{
-		StdUniqueLock lck(_task_mtx);
-		_tasks.push(task);
-		_task_cond.notify_all();
-	}
-	else
-	{
-		task();
-		return;
-	}
-
-	if(_task_thrd == NULL)
-	{
-		_task_thrd.reset(new StdThread([this](){
-			while (!_terminated)
-			{
-				if(_tasks.empty())
-				{
-					StdUniqueLock lck(_task_mtx);
-					_task_cond.wait(_task_mtx);
-					continue;
-				}
-
-				std::queue<TaskInfo> tempQueue;
-				{
-					StdUniqueLock lck(_task_mtx);
-					tempQueue.swap(_tasks);
-				}
-
-				while(!tempQueue.empty())
-				{
-					TaskInfo& curTask = tempQueue.front();
-					curTask();
-					tempQueue.pop();
-				}
-			}
-		}));
-	}
 }
 
 bool WtDataWriter::writeOrderDetail(WTSOrdDtlData* curOrdDtl)
@@ -492,11 +447,7 @@ bool WtDataWriter::writeOrderDetail(WTSOrdDtlData* curOrdDtl)
 
 		do
 		{
-
-			WTSContractInfo* ct = _bd_mgr->getContract(curOrdDtl->code(), curOrdDtl->exchg());
-			if (ct == NULL)
-				break;
-
+			WTSContractInfo* ct = curOrdDtl->getContractInfo();
 			WTSCommodityInfo* commInfo = ct->getCommInfo();
 
 			//再根据状态过滤
@@ -521,14 +472,14 @@ bool WtDataWriter::writeOrderDetail(WTSOrdDtlData* curOrdDtl)
 			memcpy(&blk->_details[blk->_size], &curOrdDtl->getOrdDtlStruct(), sizeof(WTSOrdDtlStruct));
 			blk->_size += 1;
 
-			//TODO: 要广播的
-			//g_udpCaster.broadcast(curTrans);
+			_sink->broadcastOrdDtl(curOrdDtl);
 
 			static wt_hashmap<std::string, uint64_t> _tcnt_map;
-			_tcnt_map[curOrdDtl->exchg()]++;
-			if (_tcnt_map[curOrdDtl->exchg()] % _log_group_size == 0)
+			uint64_t& cnt = _tcnt_map[curOrdDtl->exchg()];
+			cnt++;
+			if (cnt % _log_group_size == 0)
 			{
-				pipe_writer_log(_sink, LL_INFO, "{} orderdetails received from exchange {}", _tcnt_map[curOrdDtl->exchg()], curOrdDtl->exchg());
+				pipe_writer_log(_sink, LL_INFO, "{} orders received from exchange {}", cnt, curOrdDtl->exchg());
 			}
 		} while (false);
 
@@ -548,11 +499,7 @@ bool WtDataWriter::writeTransaction(WTSTransData* curTrans)
 
 		do
 		{
-
-			WTSContractInfo* ct = _bd_mgr->getContract(curTrans->code(), curTrans->exchg());
-			if (ct == NULL)
-				break;
-
+			WTSContractInfo* ct = curTrans->getContractInfo();
 			WTSCommodityInfo* commInfo = ct->getCommInfo();
 
 			//再根据状态过滤
@@ -577,20 +524,63 @@ bool WtDataWriter::writeTransaction(WTSTransData* curTrans)
 			memcpy(&blk->_trans[blk->_size], &curTrans->getTransStruct(), sizeof(WTSTransStruct));
 			blk->_size += 1;
 
-			//TODO: 要广播的
-			//g_udpCaster.broadcast(curTrans);
+			_sink->broadcastTrans(curTrans);
 
 			static wt_hashmap<std::string, uint64_t> _tcnt_map;
-			_tcnt_map[curTrans->exchg()]++;
-			if (_tcnt_map[curTrans->exchg()] % _log_group_size == 0)
+			uint64_t& cnt = _tcnt_map[curTrans->exchg()];
+			cnt++;
+			if (cnt % _log_group_size == 0)
 			{
-				pipe_writer_log(_sink, LL_INFO, "{} transactions received from exchange {}", _tcnt_map[curTrans->exchg()], curTrans->exchg());
+				pipe_writer_log(_sink, LL_INFO, "{} transactions received from exchange {}", cnt, curTrans->exchg());
 			}
 		} while (false);
 
 		curTrans->release();
 	});
 	return true;
+}
+
+void WtDataWriter::pushTask(TaskInfo task)
+{
+	if (_async_proc)
+	{
+		StdUniqueLock lck(_task_mtx);
+		_tasks.push(task);
+		_task_cond.notify_all();
+	}
+	else
+	{
+		task();
+		return;
+	}
+
+	if (_task_thrd == NULL)
+	{
+		_task_thrd.reset(new StdThread([this]() {
+			while (!_terminated)
+			{
+				if (_tasks.empty())
+				{
+					StdUniqueLock lck(_task_mtx);
+					_task_cond.wait(_task_mtx);
+					continue;
+				}
+
+				std::queue<TaskInfo> tempQueue;
+				{
+					StdUniqueLock lck(_task_mtx);
+					tempQueue.swap(_tasks);
+				}
+
+				while (!tempQueue.empty())
+				{
+					TaskInfo& curTask = tempQueue.front();
+					curTask();
+					tempQueue.pop();
+				}
+			}
+		}));
+	}
 }
 
 void WtDataWriter::pipeToTicks(WTSContractInfo* ct, WTSTickData* curTick)

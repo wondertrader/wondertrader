@@ -286,13 +286,14 @@ void ParserAdapter::handleTransaction(WTSTransData* transData)
 	if (_stopped)
 		return;
 
-
 	if (transData->actiondate() == 0 || transData->tradingdate() == 0)
 		return;
 
 	WTSContractInfo* contract = _bd_mgr->getContract(transData->code(), transData->exchg());
 	if (contract == NULL)
 		return;
+
+	transData->setContractInfo(contract);
 
 	_dt_mgr->writeTransaction(transData);
 }
@@ -309,6 +310,8 @@ void ParserAdapter::handleOrderDetail(WTSOrdDtlData* ordDetailData)
 	if (contract == NULL)
 		return;
 
+	ordDetailData->setContractInfo(contract);
+
 	_dt_mgr->writeOrderDetail(ordDetailData);
 }
 
@@ -323,6 +326,8 @@ void ParserAdapter::handleOrderQueue(WTSOrdQueData* ordQueData)
 	WTSContractInfo* contract = _bd_mgr->getContract(ordQueData->code(), ordQueData->exchg());
 	if (contract == NULL)
 		return;
+
+	ordQueData->setContractInfo(contract);
 		
 	_dt_mgr->writeOrderQueue(ordQueData);
 }
