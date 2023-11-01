@@ -638,7 +638,7 @@ void WtEngine::handle_push_quote(WTSTickData* curTick)
 	WTSContractInfo* cInfo = curTick->getContractInfo();
 
 	//if(hotFlag == 1)
-	if(cInfo->isHot() || cInfo->isSecond())
+	if(!cInfo->isFlat())
 	{
 		const char* hotCode = cInfo->getHotCode();
 		WTSTickData* hotTick = WTSTickData::create(curTick->getTickStruct());
