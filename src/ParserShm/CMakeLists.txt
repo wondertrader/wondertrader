@@ -18,18 +18,17 @@ LINK_DIRECTORIES(${LNKS})
 ADD_LIBRARY(ParserShm SHARED ${SRC})
 
 IF(MSVC)
-	SET(LIBS
-		ws2_32
-	)
+	SET(LIBS )
 ELSE(GNUCC)
 	IF (WIN32)
 		SET(LIBS
 			boost_thread
-			ws2_32
+            boost_filesystem
 		)
 	ELSE(UNIX)
 		SET(LIBS
 			boost_thread
+            boost_filesystem
 		)
 	ENDIF()
 ENDIF()
