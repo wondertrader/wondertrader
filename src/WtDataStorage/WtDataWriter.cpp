@@ -58,6 +58,25 @@ static const uint32_t HFT_SIZE_STEP = 2500;
 const char CMD_CLEAR_CACHE[] = "CMD_CLEAR_CACHE";
 const char MARKER_FILE[] = "marker.ini";
 
+WtDataWriter::_TaskInfo::_TaskInfo(WTSObject* data, uint64_t dtype, uint32_t flag/* = 0*/)
+	: _type(dtype), _flag(flag)
+{
+	_obj = data;
+	_obj->retain();
+}
+
+WtDataWriter::_TaskInfo::_TaskInfo(const _TaskInfo& rhs)
+	: _type(rhs._type), _flag(rhs._flag)
+{
+	_obj = rhs._obj;
+	_obj->retain();
+}
+
+WtDataWriter::_TaskInfo::~_TaskInfo() 
+{ 
+	_obj->release(); 
+}
+
 
 WtDataWriter::WtDataWriter()
 	: _terminated(false)
@@ -345,46 +364,49 @@ bool WtDataWriter::writeTick(WTSTickData* curTick, uint32_t procFlag)
 	if (curTick == NULL)
 		return false;
 
-	curTick->retain();
-	pushTask([this, curTick, procFlag](){
+	if (_async_proc)
+		pushTask(TaskInfo(curTick, 0, procFlag));
+	else
+		procTick(curTick, procFlag);
 
-		do
-		{
-			WTSContractInfo* ct = curTick->getContractInfo();
-			if(ct == NULL)
-				break;
-
-			WTSCommodityInfo* commInfo = ct->getCommInfo();
-
-			//再根据状态过滤
-			if (!_sink->canSessionReceive(commInfo->getSession()))
-				break;
-
-			//先更新缓存
-			if (!updateCache(ct, curTick, procFlag))
-				break;
-
-			//写到tick缓存
-			if(!_disable_tick)
-				pipeToTicks(ct, curTick);
-
-			//写到K线缓存
-			pipeToKlines(ct, curTick);
-
-			_sink->broadcastTick(curTick);
-
-			static wt_hashmap<std::string, uint64_t> _tcnt_map;
-			uint64_t& cnt = _tcnt_map[curTick->exchg()];
-			cnt++;
-			if (cnt % _log_group_size == 0)
-			{
-				pipe_writer_log(_sink, LL_INFO, "{} ticks received from exchange {}", cnt, curTick->exchg());
-			}
-		} while (false);
-
-		curTick->release();
-	});
 	return true;
+}
+
+void WtDataWriter::procTick(WTSTickData* curTick, uint32_t procFlag)
+{
+	do
+	{
+		WTSContractInfo* ct = curTick->getContractInfo();
+		if (ct == NULL)
+			break;
+
+		WTSCommodityInfo* commInfo = ct->getCommInfo();
+
+		//再根据状态过滤
+		if (!_sink->canSessionReceive(commInfo->getSession()))
+			break;
+
+		//先更新缓存
+		if (!updateCache(ct, curTick, procFlag))
+			break;
+
+		//写到tick缓存
+		if (!_disable_tick)
+			pipeToTicks(ct, curTick);
+
+		//写到K线缓存
+		pipeToKlines(ct, curTick);
+
+		_sink->broadcastTick(curTick);
+
+		static wt_hashmap<std::string, uint64_t> _tcnt_map;
+		uint64_t& cnt = _tcnt_map[curTick->exchg()];
+		cnt++;
+		if (cnt % _log_group_size == 0)
+		{
+			pipe_writer_log(_sink, LL_INFO, "{} ticks received from exchange {}", cnt, curTick->exchg());
+		}
+	} while (false);
 }
 
 bool WtDataWriter::writeOrderQueue(WTSOrdQueData* curOrdQue)
@@ -392,49 +414,53 @@ bool WtDataWriter::writeOrderQueue(WTSOrdQueData* curOrdQue)
 	if (curOrdQue == NULL || _disable_ordque)
 		return false;
 
-	curOrdQue->retain();
-	pushTask([this, curOrdQue](){
+	if (_async_proc)
+		pushTask(TaskInfo(curOrdQue, 1));
+	else
+		procQueue(curOrdQue);
 
-		do
-		{
-			WTSContractInfo* ct = curOrdQue->getContractInfo();
-			WTSCommodityInfo* commInfo = ct->getCommInfo();
-
-			//再根据状态过滤
-			if (!_sink->canSessionReceive(commInfo->getSession()))
-				break;
-
-			OrdQueBlockPair* pBlockPair = getOrdQueBlock(ct, curOrdQue->tradingdate());
-			if (pBlockPair == NULL)
-				break;
-
-			SpinLock lock(pBlockPair->_mutex);
-
-			//先检查容量够不够,不够要扩
-			RTOrdQueBlock* blk = pBlockPair->_block;
-			if (blk->_size >= blk->_capacity)
-			{
-				pBlockPair->_file->sync();
-				pBlockPair->_block = (RTOrdQueBlock*)resizeRTBlock<RTDayBlockHeader, WTSOrdQueStruct>(pBlockPair->_file, blk->_capacity * 2);
-				blk = pBlockPair->_block;
-			}
-
-			memcpy(&blk->_queues[blk->_size], &curOrdQue->getOrdQueStruct(), sizeof(WTSOrdQueStruct));
-			blk->_size += 1;
-
-			_sink->broadcastOrdQue(curOrdQue);
-
-			static wt_hashmap<std::string, uint64_t> _tcnt_map;
-			uint64_t& cnt = _tcnt_map[curOrdQue->exchg()];
-			cnt++;
-			if (cnt % _log_group_size == 0)
-			{
-				pipe_writer_log(_sink, LL_INFO, "{} queues received from exchange {}", cnt, curOrdQue->exchg());
-			}
-		} while (false);
-		curOrdQue->release();
-	});
 	return true;
+}
+
+void WtDataWriter::procQueue(WTSOrdQueData* curOrdQue)
+{
+	do
+	{
+		WTSContractInfo* ct = curOrdQue->getContractInfo();
+		WTSCommodityInfo* commInfo = ct->getCommInfo();
+
+		//再根据状态过滤
+		if (!_sink->canSessionReceive(commInfo->getSession()))
+			break;
+
+		OrdQueBlockPair* pBlockPair = getOrdQueBlock(ct, curOrdQue->tradingdate());
+		if (pBlockPair == NULL)
+			break;
+
+		SpinLock lock(pBlockPair->_mutex);
+
+		//先检查容量够不够,不够要扩
+		RTOrdQueBlock* blk = pBlockPair->_block;
+		if (blk->_size >= blk->_capacity)
+		{
+			pBlockPair->_file->sync();
+			pBlockPair->_block = (RTOrdQueBlock*)resizeRTBlock<RTDayBlockHeader, WTSOrdQueStruct>(pBlockPair->_file, blk->_capacity * 2);
+			blk = pBlockPair->_block;
+		}
+
+		memcpy(&blk->_queues[blk->_size], &curOrdQue->getOrdQueStruct(), sizeof(WTSOrdQueStruct));
+		blk->_size += 1;
+
+		_sink->broadcastOrdQue(curOrdQue);
+
+		static wt_hashmap<std::string, uint64_t> _tcnt_map;
+		uint64_t& cnt = _tcnt_map[curOrdQue->exchg()];
+		cnt++;
+		if (cnt % _log_group_size == 0)
+		{
+			pipe_writer_log(_sink, LL_INFO, "{} queues received from exchange {}", cnt, curOrdQue->exchg());
+		}
+	} while (false);
 }
 
 bool WtDataWriter::writeOrderDetail(WTSOrdDtlData* curOrdDtl)
@@ -442,117 +468,117 @@ bool WtDataWriter::writeOrderDetail(WTSOrdDtlData* curOrdDtl)
 	if (curOrdDtl == NULL || _disable_orddtl)
 		return false;
 
-	curOrdDtl->retain();
-	pushTask([this, curOrdDtl](){
+	if (_async_proc)
+		pushTask(TaskInfo(curOrdDtl, 2));
+	else
+		procOrder(curOrdDtl);
 
-		do
-		{
-			WTSContractInfo* ct = curOrdDtl->getContractInfo();
-			WTSCommodityInfo* commInfo = ct->getCommInfo();
-
-			//再根据状态过滤
-			if (!_sink->canSessionReceive(commInfo->getSession()))
-				break;
-
-			OrdDtlBlockPair* pBlockPair = getOrdDtlBlock(ct, curOrdDtl->tradingdate());
-			if (pBlockPair == NULL)
-				break;
-
-			SpinLock lock(pBlockPair->_mutex);
-
-			//先检查容量够不够,不够要扩
-			RTOrdDtlBlock* blk = pBlockPair->_block;
-			if (blk->_size >= blk->_capacity)
-			{
-				pBlockPair->_file->sync();
-				pBlockPair->_block = (RTOrdDtlBlock*)resizeRTBlock<RTDayBlockHeader, WTSOrdDtlStruct>(pBlockPair->_file, blk->_capacity * 2);
-				blk = pBlockPair->_block;
-			}
-
-			memcpy(&blk->_details[blk->_size], &curOrdDtl->getOrdDtlStruct(), sizeof(WTSOrdDtlStruct));
-			blk->_size += 1;
-
-			_sink->broadcastOrdDtl(curOrdDtl);
-
-			static wt_hashmap<std::string, uint64_t> _tcnt_map;
-			uint64_t& cnt = _tcnt_map[curOrdDtl->exchg()];
-			cnt++;
-			if (cnt % _log_group_size == 0)
-			{
-				pipe_writer_log(_sink, LL_INFO, "{} orders received from exchange {}", cnt, curOrdDtl->exchg());
-			}
-		} while (false);
-
-		curOrdDtl->release();
-	});
-	
 	return true;
+}
+
+void WtDataWriter::procOrder(WTSOrdDtlData* curOrdDtl)
+{
+	do
+	{
+		WTSContractInfo* ct = curOrdDtl->getContractInfo();
+		WTSCommodityInfo* commInfo = ct->getCommInfo();
+
+		//再根据状态过滤
+		if (!_sink->canSessionReceive(commInfo->getSession()))
+			break;
+
+		OrdDtlBlockPair* pBlockPair = getOrdDtlBlock(ct, curOrdDtl->tradingdate());
+		if (pBlockPair == NULL)
+			break;
+
+		SpinLock lock(pBlockPair->_mutex);
+
+		//先检查容量够不够,不够要扩
+		RTOrdDtlBlock* blk = pBlockPair->_block;
+		if (blk->_size >= blk->_capacity)
+		{
+			pBlockPair->_file->sync();
+			pBlockPair->_block = (RTOrdDtlBlock*)resizeRTBlock<RTDayBlockHeader, WTSOrdDtlStruct>(pBlockPair->_file, blk->_capacity * 2);
+			blk = pBlockPair->_block;
+		}
+
+		memcpy(&blk->_details[blk->_size], &curOrdDtl->getOrdDtlStruct(), sizeof(WTSOrdDtlStruct));
+		blk->_size += 1;
+
+		_sink->broadcastOrdDtl(curOrdDtl);
+
+		static wt_hashmap<std::string, uint64_t> _tcnt_map;
+		uint64_t& cnt = _tcnt_map[curOrdDtl->exchg()];
+		cnt++;
+		if (cnt % _log_group_size == 0)
+		{
+			pipe_writer_log(_sink, LL_INFO, "{} orders received from exchange {}", cnt, curOrdDtl->exchg());
+		}
+	} while (false);
 }
 
 bool WtDataWriter::writeTransaction(WTSTransData* curTrans)
 {
-	if (curTrans == NULL || _disable_trans)
+	if (curTrans == NULL || _disable_orddtl)
 		return false;
 
-	curTrans->retain();
-	pushTask([this, curTrans](){
+	if (_async_proc)
+		pushTask(TaskInfo(curTrans, 3));
+	else
+		procTrans(curTrans);
 
-		do
-		{
-			WTSContractInfo* ct = curTrans->getContractInfo();
-			WTSCommodityInfo* commInfo = ct->getCommInfo();
-
-			//再根据状态过滤
-			if (!_sink->canSessionReceive(commInfo->getSession()))
-				break;
-
-			TransBlockPair* pBlockPair = getTransBlock(ct, curTrans->tradingdate());
-			if (pBlockPair == NULL)
-				break;
-
-			SpinLock lock(pBlockPair->_mutex);
-
-			//先检查容量够不够,不够要扩
-			RTTransBlock* blk = pBlockPair->_block;
-			if (blk->_size >= blk->_capacity)
-			{
-				pBlockPair->_file->sync();
-				pBlockPair->_block = (RTTransBlock*)resizeRTBlock<RTDayBlockHeader, WTSTransStruct>(pBlockPair->_file, blk->_capacity * 2);
-				blk = pBlockPair->_block;
-			}
-
-			memcpy(&blk->_trans[blk->_size], &curTrans->getTransStruct(), sizeof(WTSTransStruct));
-			blk->_size += 1;
-
-			_sink->broadcastTrans(curTrans);
-
-			static wt_hashmap<std::string, uint64_t> _tcnt_map;
-			uint64_t& cnt = _tcnt_map[curTrans->exchg()];
-			cnt++;
-			if (cnt % _log_group_size == 0)
-			{
-				pipe_writer_log(_sink, LL_INFO, "{} transactions received from exchange {}", cnt, curTrans->exchg());
-			}
-		} while (false);
-
-		curTrans->release();
-	});
 	return true;
 }
 
-void WtDataWriter::pushTask(TaskInfo task)
+void WtDataWriter::procTrans(WTSTransData* curTrans)
 {
-	if (_async_proc)
+	do
 	{
-		StdUniqueLock lck(_task_mtx);
-		_tasks.push(task);
-		_task_cond.notify_all();
-	}
-	else
-	{
-		task();
+		WTSContractInfo* ct = curTrans->getContractInfo();
+		WTSCommodityInfo* commInfo = ct->getCommInfo();
+
+		//再根据状态过滤
+		if (!_sink->canSessionReceive(commInfo->getSession()))
+			break;
+
+		TransBlockPair* pBlockPair = getTransBlock(ct, curTrans->tradingdate());
+		if (pBlockPair == NULL)
+			break;
+
+		SpinLock lock(pBlockPair->_mutex);
+
+		//先检查容量够不够,不够要扩
+		RTTransBlock* blk = pBlockPair->_block;
+		if (blk->_size >= blk->_capacity)
+		{
+			pBlockPair->_file->sync();
+			pBlockPair->_block = (RTTransBlock*)resizeRTBlock<RTDayBlockHeader, WTSTransStruct>(pBlockPair->_file, blk->_capacity * 2);
+			blk = pBlockPair->_block;
+		}
+
+		memcpy(&blk->_trans[blk->_size], &curTrans->getTransStruct(), sizeof(WTSTransStruct));
+		blk->_size += 1;
+
+		_sink->broadcastTrans(curTrans);
+
+		static wt_hashmap<std::string, uint64_t> _tcnt_map;
+		uint64_t& cnt = _tcnt_map[curTrans->exchg()];
+		cnt++;
+		if (cnt % _log_group_size == 0)
+		{
+			pipe_writer_log(_sink, LL_INFO, "{} transactions received from exchange {}", cnt, curTrans->exchg());
+		}
+	} while (false);
+}
+
+void WtDataWriter::pushTask(const TaskInfo& task)
+{
+	if (!_async_proc)
 		return;
-	}
+
+	StdUniqueLock lck(_task_mtx);
+	_tasks.emplace(task);
+	_task_cond.notify_all();
 
 	if (_task_thrd == NULL)
 	{
@@ -575,7 +601,15 @@ void WtDataWriter::pushTask(TaskInfo task)
 				while (!tempQueue.empty())
 				{
 					TaskInfo& curTask = tempQueue.front();
-					curTask();
+					switch (curTask._type)
+					{
+					case 0: procTick((WTSTickData*)curTask._obj, curTask._flag); break;
+					case 1: procQueue((WTSOrdQueData*)curTask._obj); break;
+					case 2: procOrder((WTSOrdDtlData*)curTask._obj); break;
+					case 3: procTrans((WTSTransData*)curTask._obj); break;
+					default:
+						break;
+					}
 					tempQueue.pop();
 				}
 			}
@@ -1767,7 +1801,7 @@ bool WtDataWriter::proc_block_data(const char* tag, std::string& content, bool i
 		}
 
 		//将文件头后面的数据进行解压
-		buffer = WTSCmpHelper::uncompress_data(content.data() + BLOCK_HEADERV2_SIZE, blkV2->_size);
+		buffer = WTSCmpHelper::uncompress_data(content.data() + BLOCK_HEADERV2_SIZE, (std::size_t)blkV2->_size);
 	}
 	else
 	{

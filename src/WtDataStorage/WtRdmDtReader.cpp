@@ -719,7 +719,7 @@ WTSOrdQueSlice* WtRdmDtReader::readOrdQueSliceByRange(const char* stdCode, uint6
 			}
 
 			//需要解压
-			std::string buf = WTSCmpHelper::uncompress_data(tBlockV2->_data, tBlockV2->_size);
+			std::string buf = WTSCmpHelper::uncompress_data(tBlockV2->_data, (std::size_t)tBlockV2->_size);
 
 			//将原来的buffer只保留一个头部,并将所有tick数据追加到尾部
 			hisBlkPair._buffer.resize(sizeof(HisOrdQueBlock));
@@ -894,7 +894,7 @@ WTSOrdDtlSlice* WtRdmDtReader::readOrdDtlSliceByRange(const char* stdCode, uint6
 			}
 
 			//需要解压
-			std::string buf = WTSCmpHelper::uncompress_data(tBlockV2->_data, tBlockV2->_size);
+			std::string buf = WTSCmpHelper::uncompress_data(tBlockV2->_data, (std::size_t)tBlockV2->_size);
 
 			//将原来的buffer只保留一个头部,并将所有tick数据追加到尾部
 			hisBlkPair._buffer.resize(sizeof(HisOrdDtlBlock));
@@ -1068,7 +1068,7 @@ WTSTransSlice* WtRdmDtReader::readTransSliceByRange(const char* stdCode, uint64_
 			}
 
 			//需要解压
-			std::string buf = WTSCmpHelper::uncompress_data(tBlockV2->_data, tBlockV2->_size);
+			std::string buf = WTSCmpHelper::uncompress_data(tBlockV2->_data, (std::size_t)tBlockV2->_size);
 
 			//将原来的buffer只保留一个头部,并将所有tick数据追加到尾部
 			hisBlkPair._buffer.resize(sizeof(HisTransBlock));
@@ -1390,7 +1390,7 @@ bool WtRdmDtReader::cacheHisBarsFromFile(void* codeInfo, const std::string& key,
 				if (kBlockV2->_size == 0)
 					break;
 
-				buffer = WTSCmpHelper::uncompress_data(kBlockV2->_data, kBlockV2->_size);
+				buffer = WTSCmpHelper::uncompress_data(kBlockV2->_data, (std::size_t)kBlockV2->_size);
 			}
 			else
 			{
