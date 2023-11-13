@@ -17,14 +17,27 @@ INCLUDE_DIRECTORIES(${INCS})
 LINK_DIRECTORIES(${LNKS})
 ADD_LIBRARY(ParserXTP SHARED ${SRC})
 
-IF (MSVC)
-ELSE (GNUCC)
+IF(MSVC)
 	SET(LIBS
-		boost_filesystem
-		dl
-	)
-	TARGET_LINK_LIBRARIES(ParserXTP ${LIBS})
+		ws2_32
+		)
+ELSE(GNUCC)
+	IF(WIN32)
+		SET(LIBS
+			dl
+			boost_thread
+			boost_filesystem
+			ws2_32
+			)
+	ELSE(UNIX)
+		SET(LIBS
+			dl
+			boost_thread
+			boost_filesystem
+			)
+	ENDIF()
 ENDIF()
+TARGET_LINK_LIBRARIES(ParserXTP ${LIBS})
 
 IF (MSVC)
 ELSE (GNUCC)

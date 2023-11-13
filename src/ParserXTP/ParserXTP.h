@@ -8,10 +8,14 @@
  * \brief 
  */
 #pragma once
+#include <boost/asio/io_service.hpp>
 #include "../Includes/IParserApi.h"
-#include "../Share/DLLHelper.hpp"
 #include "../API/XTP2.2.32.2/xtp_quote_api.h"
-#include <map>
+
+#include "../Share/DLLHelper.hpp"
+#include "../Share/StdUtils.hpp"
+
+
 
 NS_WTP_BEGIN
 class WTSTickData;
@@ -116,5 +120,10 @@ private:
 	typedef XTP::API::QuoteApi* (*XTPCreater)(uint8_t, const char *, XTP_LOG_LEVEL log_level);
 	//typedef CUstpFtdcMduserApi* (*FemasCreator)(const char *);
 	XTPCreater		m_funcCreator;
+
+	boost::asio::io_service		_asyncio;
+	StdThreadPtr				_thrd_worker;
+	typedef std::shared_ptr<boost::asio::io_service::work> BoostWorkerPtr;
+	BoostWorkerPtr				_worker;
 };
 
