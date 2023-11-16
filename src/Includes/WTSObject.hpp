@@ -5,16 +5,17 @@
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief Wt基础Object定义
+ * \brief Wt鍩虹Object瀹氫箟
  */
 #pragma once
 #include <stdint.h>
 #include <atomic>
-#include <boost/smart_ptr/detail/spinlock.hpp>
+
+#include <boost/pool/object_pool.hpp>
+#include <boost/thread.hpp>
 
 #include "WTSMarcos.h"
-#include "../Share/ObjectPool.hpp"
-#include "../Share/SpinMutex.hpp"
+
 
 NS_WTP_BEGIN
 class WTSObject
@@ -57,35 +58,18 @@ template<typename T>
 class WTSPoolObject : public WTSObject
 {
 private:
-	typedef ObjectPool<T> MyPool;
-	MyPool*			_pool;
-	SpinMutex*	_mutex;
+	static boost::thread_specific_ptr<boost::object_pool<T>> pool_;
 
 public:
-	WTSPoolObject():_pool(NULL){}
+	WTSPoolObject(){}
 	virtual ~WTSPoolObject() {}
 
 public:
 	static T*	allocate()
 	{
-		/*
-		 *	By Wesley @ 2022.06.14
-		 *	有用户反馈，这里使用了thread_local，线程销毁的话，内存池也销毁了
-		 *	该用户在Trader里复现了这个bug，如果Trader底层销毁了一个API对象实例
-		 *	那么这里内存池就已经析构了，如果有在系统中存储（retain）Trader创建的对象（WTSOrderInfo等），则会出现访问越界的问题
-		 *	这里如果去掉thread_local，改成纯静态的，可能多线程并发的场景下也会有一些问题
-		 *	总之如果要彻底安全，那么可能需要加一把锁才行，但是这样会带来性能开销
-		 *	所以注释一下，如果有问题的可以参考一下
-		 */
-		thread_local static MyPool		pool;
-		thread_local static SpinMutex	mtx;
-
-		mtx.lock();
-		T* ret = pool.construct();
-		mtx.unlock();
-		ret->_pool = &pool;
-		ret->_mutex = &mtx;
-		return ret;
+		if (!pool_.get())
+			pool_.reset(new boost::object_pool<T>());
+		return pool_->construct();
 	}
 
 public:
@@ -98,11 +82,7 @@ public:
 		{
 			uint32_t cnt = m_uRefs.fetch_sub(1);
 			if (cnt == 1)
-			{
-				_mutex->lock();
-				_pool->destroy((T*)this);
-				_mutex->unlock();
-			}
+				pool_->destroy((T*)this);
 		}
 		catch (...)
 		{
@@ -110,4 +90,7 @@ public:
 		}
 	}
 };
+
+template<typename T>
+boost::thread_specific_ptr<boost::object_pool<T> > WTSPoolObject<T>::pool_;
 NS_WTP_END
