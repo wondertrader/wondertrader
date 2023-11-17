@@ -16,6 +16,7 @@
 #include "../Includes/WTSDataDef.hpp"
 #include "../Includes/WTSVariant.hpp"
 #include "../Includes/IBaseDataMgr.h"
+#include "../Includes/WTSCollection.hpp"
 
 #include "../Share/decimal.h"
 #include "../Share/ModuleHelper.hpp"
@@ -351,7 +352,7 @@ void TraderYD::notifyOrder(const YDOrder *pOrder, const YDInstrument *pInstrumen
 			//如果是平仓委托，需要调整冻结手数
 			if (orderInfo->getOffsetType() != WOT_OPEN)
 			{
-				std::string key = fmt::format("{}-{}", orderInfo->getCode(), orderInfo->getDirection());
+				const char* key = fmtutil::format("{}-{}", orderInfo->getCode(), orderInfo->getDirection());
 				WTSPositionItem* pos = (WTSPositionItem*)m_mapPosition->get(key);
 				double preQty = pos->getPrePosition();
 				double newQty = pos->getNewPosition();
@@ -524,9 +525,18 @@ void TraderYD::notifyCaughtUp()
 	}
 }
 
-void TraderYD::notifyAccount(const YDAccount *pAccount)
+void TraderYD::notifyAccount(const YDAccount *accInfo)
 {
-	
+	if (m_ayFunds == NULL || m_ayFunds->size() == 0)
+		return;
+
+	if (accInfo == NULL)
+		return;
+
+	WTSAccountInfo* accountInfo = static_cast<WTSAccountInfo*>(m_ayFunds->at(0));
+	accountInfo->setPreBalance(accInfo->PreBalance);
+	accountInfo->setDeposit(accInfo->Deposit);
+	accountInfo->setWithdraw(accInfo->Withdraw);
 }
 
 bool TraderYD::init(WTSVariant* config)
