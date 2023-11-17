@@ -192,9 +192,10 @@ void TraderYD::notifyLogin(int errorNo, int maxOrderRef, bool isMonitor)
 		m_orderRef = maxOrderRef;
 		///获取当前交易日
 		m_lDate = m_pUserAPI->getTradingDay();
+		m_preTradingDate =  TimeUtils::getCurDate();
 
-		write_log(m_sink, LL_INFO, "[TraderYD] {} Login succeed, Trading Day: {}",
-			m_strUser.c_str(), m_lDate);
+		write_log(m_sink, LL_INFO, "[TraderYD] {} Login succeed, Trading Day: {}, action Day:{}",
+			m_strUser.c_str(), m_lDate, m_preTradingDate);
 
 		{
 			//初始化委托单缓存器
@@ -890,11 +891,15 @@ WTSOrderInfo* TraderYD::makeOrderInfo(const YDOrder* orderField, const YDInstrum
 	pRet->setCode(contract->getCode());
 	pRet->setExchange(contract->getExchg());
 
-	uint32_t uDate = m_lDate;
 	uint32_t uTime = orderField->InsertTime;
+	uint32_t uDate = m_lDate;
+	if((uTime / 3600 + 17) < 24 ){
+		uDate = m_preTradingDate;
+	}
 	pRet->setOrderDate(uDate);
-	pRet->setOrderTime(TimeUtils::makeTime(uDate, uTime * 1000));
-
+	uint64_t standardTime = ((uTime / 3600 + 17) % 24) * 10000 + uTime / 60 % 60 * 100 + uTime % 60;
+	pRet->setOrderTime(TimeUtils::makeTime(uDate, standardTime * 1000));
+	write_log(m_sink, LL_DEBUG, fmtutil::format("[TraderYD] order:{} uDate:{}, raw uTime:{} uTime:{}, standardTime:{}", orderField->OrderSysID, uDate, uTime, uTime * 1000, standardTime*1000));
 	pRet->setOrderState(wrapOrderState(orderField->OrderStatus));
 	if (orderField->OrderStatus == YD_OS_Rejected)
 		pRet->setError(true);
@@ -977,11 +982,15 @@ WTSTradeInfo* TraderYD::makeTradeRecord(const YDTrade *tradeField, const YDInstr
 	pRet->setPrice(tradeField->Price);
 	fmtutil::format_to(pRet->getTradeID(), "{}", tradeField->TradeID);
 
-	uint32_t uDate = m_lDate;
 	uint32_t uTime = tradeField->TradeTime;
-
+	uint32_t uDate = m_lDate;
+	if((uTime / 3600 + 17) < 24 ){
+		uDate = m_preTradingDate;
+	}
 	pRet->setTradeDate(uDate);
-	pRet->setTradeTime(TimeUtils::makeTime(uDate, uTime * 1000));
+	uint64_t standardTime = ((uTime / 3600 + 17) % 24) * 10000 + uTime / 60 % 60 * 100 + uTime % 60;
+	pRet->setTradeTime(TimeUtils::makeTime(uDate, standardTime * 1000));
+	write_log(m_sink, LL_DEBUG, fmtutil::format("[TraderYD] trader:{} uDate:{}, raw uTime:{} uTime:{}, standardTime:{}", tradeField->OrderSysID, uDate, uTime, uTime * 1000, standardTime*1000));
 
 	WTSDirectionType dType = wrapDirectionType(tradeField->Direction, tradeField->OffsetFlag);
 
