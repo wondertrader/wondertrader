@@ -113,7 +113,7 @@ double WTSHotMgr::getRuleFactor(const char* ruleTag, const char* fullPid, uint32
 
 }
 
-#pragma region "次主力接口"
+#pragma region "主力接口"
 bool WTSHotMgr::loadHots(const char* filename)
 {
 	loadCustomRules("HOT", filename);
