@@ -10,6 +10,7 @@
 #include "../Share/StdUtils.hpp"
 
 #include "../Share/charconv.hpp"
+#include "../Share/fmtlib.h"
 
 #include "../WTSUtils/WTSCfgLoader.h"
 #include "../Includes/WTSVariant.hpp"
@@ -98,9 +99,9 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 		if (MODULE_NAME.empty())
 		{
 #ifdef _WIN32
-			MODULE_NAME = "thosttraderapi_se.dll";
+			MODULE_NAME = "./thosttraderapi_se.dll";
 #else
-			MODULE_NAME = "thosttraderapi_se.so";
+			MODULE_NAME = "./thosttraderapi_se.so";
 #endif
 		}
 
@@ -167,15 +168,15 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 		if(MODULE_NAME.empty())
 		{
 #ifdef _WIN32
-			MODULE_NAME = "thosttraderapi_se.dll";
+			MODULE_NAME = "./thosttraderapi_se.dll";
 #else
-			MODULE_NAME = "thosttraderapi_se.so";
+			MODULE_NAME = "./thosttraderapi_se.so";
 #endif
 		}
 		root->release();
 	}
 	
-	if(!boost::filesystem::exists(MODULE_NAME.c_str()))
+	if(!StdFile::exists(MODULE_NAME.c_str()))
 	{
 		MODULE_NAME = StrUtil::printf("%straders/%s", getBinDir(), MODULE_NAME.c_str());
 	}
@@ -243,7 +244,10 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 #endif
 	if (g_ctpCreator == NULL)
 		printf("Loading CreateFtdcTraderApi failed\r\n");
-	pUserApi = g_ctpCreator("");			// 创建UserApi
+
+	std::string flowPath = fmtutil::format("./CTPFlow/{}/{}/", BROKER_ID, INVESTOR_ID);
+	boost::filesystem::create_directories(flowPath.c_str());
+	pUserApi = g_ctpCreator(flowPath.c_str());
 	CTraderSpi* pUserSpi = new CTraderSpi();
 	pUserApi->RegisterSpi((CThostFtdcTraderSpi*)pUserSpi);			// 注册事件类
 	pUserApi->SubscribePublicTopic(THOST_TERT_QUICK);					// 注册公有流

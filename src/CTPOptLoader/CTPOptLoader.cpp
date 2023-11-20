@@ -8,6 +8,8 @@
 #include "../Share/ModuleHelper.hpp"
 #include "../Share/StdUtils.hpp"
 #include "../Share/DLLHelper.hpp"
+#include "../Share/fmtlib.h"
+
 #include <boost/filesystem.hpp>
 
 #include "../WTSUtils/WTSCfgLoader.h"
@@ -91,14 +93,15 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 			CONT_FILE = "contracts.json";
 
 		map_files = cfg->getCString("mapfiles");
+		ONLYINCFG = ctp->getBoolean("onlyincfg");
 
 		MODULE_NAME = cfg->getCString("module");
 		if (MODULE_NAME.empty())
 		{
 #ifdef _WIN32
-			MODULE_NAME = "soptthosttraderapi_se.dll";
+			MODULE_NAME = "./soptthosttraderapi_se.dll";
 #else
-			MODULE_NAME = "soptthosttraderapi_se.so";
+			MODULE_NAME = "./soptthosttraderapi_se.so";
 #endif
 		}
 
@@ -124,6 +127,7 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 		CONT_FILE = ini.readString("config", "contfile", "contracts.json");
 
 		map_files = ini.readString("config", "mapfiles", "");
+		ONLYINCFG = wt_stricmp(ini.readString("config", "onlyincfg", "false").c_str(), "true") == 0;
 
 #ifdef _WIN32
 		MODULE_NAME = ini.readString("config", "module", "soptthosttraderapi_se.dll");
@@ -164,15 +168,15 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 		if (MODULE_NAME.empty())
 		{
 #ifdef _WIN32
-			MODULE_NAME = "soptthosttraderapi_se.dll";
+			MODULE_NAME = "./soptthosttraderapi_se.dll";
 #else
-			MODULE_NAME = "soptthosttraderapi_se.so";
+			MODULE_NAME = "./soptthosttraderapi_se.so";
 #endif
 		}
 		root->release();
 	}
 
-	if(!boost::filesystem::exists(MODULE_NAME.c_str()))
+	if(!StdFile::exists(MODULE_NAME.c_str()))
 	{
 		MODULE_NAME = getBinDir();
 #ifdef _WIN32
@@ -243,7 +247,10 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 #endif
 	if (g_ctpCreator == NULL)
 		printf("Loading CreateFtdcTraderApi failed\r\n");
-	pUserApi = g_ctpCreator("");			// 创建UserApi	
+
+	std::string flowPath = fmtutil::format("./CTPFlow/{}/{}/", BROKER_ID, INVESTOR_ID);
+	boost::filesystem::create_directories(flowPath.c_str());
+	pUserApi = g_ctpCreator(flowPath.c_str());
 	CTraderSpi* pUserSpi = new CTraderSpi();
 	pUserApi->RegisterSpi((CThostFtdcTraderSpi*)pUserSpi);			// 注册事件类
 	pUserApi->SubscribePublicTopic(THOST_TERT_QUICK);					// 注册公有流
