@@ -172,7 +172,10 @@ bool ParserXTP::disconnect()
 
 void ParserXTP::OnError(XTPRI *error_info)
 {
-	IsErrorRspInfo(error_info);
+	if(IsErrorRspInfo(error_info))
+	{
+		write_log(m_sink, LL_ERROR, "[ParserXTP] Error occured: ({}){}", error_info->error_id, error_info->error_msg);
+	}
 }
 
 void ParserXTP::OnDisconnected(int nReason)
