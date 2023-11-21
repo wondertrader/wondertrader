@@ -14,6 +14,7 @@
 #include "../WTSTools/WTSLogger.h"
 #include "../WTSUtils/WTSCfgLoader.h"
 #include "../Share/StrUtil.hpp"
+#include "../Share/cppcli.hpp"
 
 #include "../WTSUtils/SignalHook.hpp"
 
@@ -93,17 +94,9 @@ void initParsers(WTSVariant* cfg)
 	WTSLogger::info("{} market data parsers loaded in total", g_parsers.size());
 }
 
-void initialize()
+void initialize(const std::string& filename)
 {
 	WtHelper::set_module_dir(getBinDir());
-
-	std::string filename("QFConfig.json");
-	if (!StdFile::exists(filename.c_str()))
-		filename = "QFConfig.yaml";
-	if (!StdFile::exists(filename.c_str()))
-		filename = "dtcfg.json";
-	if (!StdFile::exists(filename.c_str()))
-		filename = "dtcfg.yaml";
 
 	WTSVariant* config = WTSCfgLoader::load_from_file(filename.c_str());
 	if(config == NULL)
@@ -268,12 +261,25 @@ void initialize()
 	});
 }
 
-int main()
+int main(int argc, char* argv[])
 {
-	std::string filename = "logcfgdt.json";
-	if (!StdFile::exists(filename.c_str()))
-		filename = "logcfgdt.yaml";
+	cppcli::Option opt(argc, argv);
 
+	auto cParam = opt("-c", "--config", "configure filepath, dtcfg.yaml as default", false);
+	auto lParam = opt("-l", "--logcfg", "logging configure filepath, logcfgdt.yaml as default", false);
+
+	auto hParam = opt("-h", "--help", "gain help doc", false)->asHelpParam();
+
+	opt.parse();
+
+	if (hParam->exists())
+		return 0;
+
+	std::string filename;
+	if (lParam->exists())
+		filename = lParam->get<std::string>();
+	else
+		filename = "./logcfgdt.yaml";
 	WTSLogger::init(filename.c_str());
 
 #ifdef _MSC_VER
@@ -299,9 +305,21 @@ int main()
 	});
 #endif
 
-	initialize();
+	if (cParam->exists())
+		filename = cParam->get<std::string>();
+	else
+		filename = "./dtcfg.yaml";
+
+	if(!StdFile::exists(filename.c_str()))
+	{
+		fmt::print("confiture {} not exists", filename);
+		return 0;
+	}
+
+	initialize(filename);
 
 	boost::asio::io_service::work work(g_asyncIO);
 	g_asyncIO.run();
+	return 0;
 }
 

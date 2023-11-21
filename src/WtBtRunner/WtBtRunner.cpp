@@ -21,21 +21,35 @@
 #include "../WTSUtils/WTSCfgLoader.h"
 #include "../Includes/WTSVariant.hpp"
 #include "../Share/StdUtils.hpp"
+#include "../Share/cppcli.hpp"
 
 #ifdef _MSC_VER
 #include "../Common/mdump.h"
 #endif
 
-int main()
+int main(int argc, char* argv[])
 {
 #ifdef _MSC_VER
     CMiniDumper::Enable("WtBtRunner.exe", true, WtHelper::getCWD().c_str());
 #endif
 
-	std::string filename = "logcfgbt.json";
-	if (!StdFile::exists(filename.c_str()))
-		filename = "logcfgbt.yaml";
+	cppcli::Option opt(argc, argv);
 
+	auto cParam = opt("-c", "--config", "configure filepath, dtcfg.yaml as default", false);
+	auto lParam = opt("-l", "--logcfg", "logging configure filepath, logcfgbt.yaml as default", false);
+
+	auto hParam = opt("-h", "--help", "gain help doc", false)->asHelpParam();
+
+	opt.parse();
+
+	if (hParam->exists())
+		return 0;
+
+	std::string filename;
+	if (lParam->exists())
+		filename = lParam->get<std::string>();
+	else
+		filename = "./logcfgdt.yaml";
 	WTSLogger::init(filename.c_str());
 
 #if _WIN32
@@ -47,9 +61,16 @@ int main()
 	});
 #endif
 
-	filename = "configbt.json";
-	if(!StdFile::exists(filename.c_str()))
-		filename = "configbt.yaml";
+	if (cParam->exists())
+		filename = cParam->get<std::string>();
+	else
+		filename = "./configbt.yaml";
+
+	if (!StdFile::exists(filename.c_str()))
+	{
+		fmt::print("confiture {} not exists", filename);
+		return 0;
+	}
 
 	WTSVariant* cfg = WTSCfgLoader::load_from_file(filename.c_str());
 	if (cfg == NULL)
