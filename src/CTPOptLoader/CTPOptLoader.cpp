@@ -130,9 +130,9 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 		ONLYINCFG = wt_stricmp(ini.readString("config", "onlyincfg", "false").c_str(), "true") == 0;
 
 #ifdef _WIN32
-		MODULE_NAME = ini.readString("config", "module", "soptthosttraderapi_se.dll");
+		MODULE_NAME = ini.readString("config", "module", "./soptthosttraderapi_se.dll");
 #else
-		MODULE_NAME = ini.readString("config", "module", "soptthosttraderapi_se.so");
+		MODULE_NAME = ini.readString("config", "module", "./soptthosttraderapi_se.so");
 #endif
 	}
 	else

@@ -130,9 +130,9 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 		map_files = ini.readString("config", "mapfiles", "");
 
 #ifdef _WIN32
-		MODULE_NAME = ini.readString("ctp", "module", "thosttraderapi_se.dll");
+		MODULE_NAME = ini.readString("ctp", "module", "./thosttraderapi_se.dll");
 #else
-		MODULE_NAME = ini.readString("ctp", "module", "thosttraderapi_se.so");
+		MODULE_NAME = ini.readString("ctp", "module", "./thosttraderapi_se.so");
 #endif
 	}
 	else
