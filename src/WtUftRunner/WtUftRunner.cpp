@@ -55,28 +55,19 @@ WtUftRunner::~WtUftRunner()
 {
 }
 
-bool WtUftRunner::init()
+void WtUftRunner::init(const std::string& filename)
 {
-	std::string path = "logcfg.json";
-	if(!StdFile::exists(path.c_str()))
-		path = "logcfg.yaml";
-	WTSLogger::init(path.c_str());
+	WTSLogger::init(filename.c_str());
 
 	WtHelper::setInstDir(getBinDir());
-
-	return true;
 }
 
-bool WtUftRunner::config()
+bool WtUftRunner::config(const std::string& filename)
 {
-	std::string cfgFile = "config.json";
-	if (!StdFile::exists(cfgFile.c_str()))
-		cfgFile = "config.yaml";
-
-	_config = WTSCfgLoader::load_from_file(cfgFile);
+	_config = WTSCfgLoader::load_from_file(filename.c_str());
 	if(_config == NULL)
 	{
-		WTSLogger::error("Loading config file {} failed", cfgFile);
+		WTSLogger::error("Loading config file {} failed", filename);
 		return false;
 	}
 

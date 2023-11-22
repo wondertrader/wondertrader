@@ -45,12 +45,9 @@ public:
 	~WtRunner();
 
 public:
-	/*
-	 *	≥ı ºªØ
-	 */
-	bool init();
+	void init(const std::string& filename);
 
-	bool config();
+	bool config(const std::string& filename);
 
 	void run(bool bAsync = false);
 
