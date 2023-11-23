@@ -296,14 +296,13 @@ int main(int argc, char* argv[])
 	CMiniDumper::Enable("QuoteFactory.exe", true);
 #endif
 
-#if _WIN32
-#pragma message("Signal hooks disabled in WIN32")
-#else
-#pragma message("Signal hooks enabled in UNIX")
+	bool bExit = false;
 	install_signal_hooks([](const char* message) {
 		WTSLogger::error(message);
+	}, [&bExit](bool toExit) {
+		bExit = toExit;
+		WTSLogger::info("Exit flag is {}", bExit);
 	});
-#endif
 
 	if (cParam->exists())
 		filename = cParam->get<std::string>();
@@ -318,8 +317,11 @@ int main(int argc, char* argv[])
 
 	initialize(filename);
 
-	boost::asio::io_service::work work(g_asyncIO);
-	g_asyncIO.run();
+	while (!bExit)
+	{
+		std::this_thread::sleep_for(std::chrono::milliseconds(10));
+	}
+	
 	return 0;
 }
 

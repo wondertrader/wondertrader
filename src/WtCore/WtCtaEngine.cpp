@@ -54,7 +54,7 @@ WtCtaEngine::~WtCtaEngine()
 		_cfg->release();
 }
 
-void WtCtaEngine::run(bool bAsync /* = false */)
+void WtCtaEngine::run()
 {
 	_tm_ticker = new WtCtaRtTicker(this);
 	WTSVariant* cfgProd = _cfg->get("product");
@@ -107,11 +107,6 @@ void WtCtaEngine::run(bool bAsync /* = false */)
 	if (_risk_mon)
 		_risk_mon->self()->run();
 
-	if (!bAsync)
-	{
-		boost::asio::io_service::work work(g_asyncIO);
-		g_asyncIO.run();
-	}
 }
 
 void WtCtaEngine::init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtDtMgr* dataMgr, IHotMgr* hotMgr, EventNotifier* notifier /* = NULL */)

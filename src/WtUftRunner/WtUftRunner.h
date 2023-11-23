@@ -72,5 +72,7 @@ private:
 	UftStrategyMgr		_uft_stra_mgr;
 
 	ActionPolicyMgr		_act_policy;
+
+	bool				_to_exit;
 };
 

@@ -155,7 +155,7 @@ public:
 public:
 	virtual void init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtDtMgr* dataMgr, IHotMgr* hotMgr, EventNotifier* notifier);
 
-	virtual void run(bool bAsync = false) = 0;
+	virtual void run() = 0;
 
 	virtual void on_tick(const char* stdCode, WTSTickData* curTick);
 

@@ -20,6 +20,7 @@
 #include <functional>
 
 typedef std::function<void(const char*)> TracerLogCallback;
+typedef std::function<void(int)> ExitHandler;
 
 void print_stack_trace(TracerLogCallback cb);
 

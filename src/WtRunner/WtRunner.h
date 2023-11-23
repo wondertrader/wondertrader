@@ -94,5 +94,7 @@ private:
 
 	bool				_is_hft;
 	bool				_is_sel;
+
+	bool				_to_exit;
 };
 

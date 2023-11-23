@@ -18,6 +18,18 @@ namespace rj = rapidjson;
 
 #include "TraderSpi.h"
 
+inline const char* encode_text(const char* s)
+{
+#ifdef _MSC_VER
+	return s;
+#else
+	static std::string ret;
+	ret = ChartoUTF8(s);
+	return ret.c_str();
+#endif
+}
+
+
 
 USING_NS_WTP;
 
@@ -582,6 +594,6 @@ bool CTraderSpi::IsErrorRspInfo(CThostFtdcRspInfoField *pRspInfo)
 	// 如果ErrorID != 0, 说明收到了错误的响应
 	bool bResult = ((pRspInfo) && (pRspInfo->ErrorID != 0));
 	if (bResult)
-		std::cerr << "--->>> ErrorID=" << pRspInfo->ErrorID << ", ErrorMsg=" << pRspInfo->ErrorMsg << std::endl;
+		std::cerr << "--->>> ErrorID=" << pRspInfo->ErrorID << ", ErrorMsg=" << encode_text(pRspInfo->ErrorMsg) << std::endl;
 	return bResult;
 }

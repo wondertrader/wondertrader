@@ -257,6 +257,7 @@ private:
 
 	bool				_is_hft;
 	bool				_is_sel;
+	bool				_to_exit;
 
 	FuncLoadFnlBars		_ext_fnl_bar_loader;
 	FuncLoadRawBars		_ext_raw_bar_loader;

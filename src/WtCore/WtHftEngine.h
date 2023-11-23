@@ -31,7 +31,7 @@ public:
 	//WtEngine 接口
 	virtual void init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtDtMgr* dataMgr, IHotMgr* hotMgr, EventNotifier* notifier) override;
 
-	virtual void run(bool bAsync = false) override;
+	virtual void run() override;
 
 	virtual void handle_push_quote(WTSTickData* newTick) override;
 	virtual void handle_push_order_detail(WTSOrdDtlData* curOrdDtl) override;

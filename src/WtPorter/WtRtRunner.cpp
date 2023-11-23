@@ -90,15 +90,15 @@ WtRtRunner::WtRtRunner()
 	, _ext_fnl_bar_loader(NULL)
 	, _ext_raw_bar_loader(NULL)
 	, _ext_adj_fct_loader(NULL)
+
+	, _to_exit(false)
 {
-#if _WIN32
-#pragma message("Signal hooks disabled in WIN32")
-#else
-#pragma message("Signal hooks enabled in UNIX")
 	install_signal_hooks([](const char* message) {
 		WTSLogger::error(message);
+	}, [this](bool bStopped) {
+		_to_exit = bStopped;
+		WTSLogger::info("Exit flag is {}", _to_exit);
 	});
-#endif
 }
 
 
@@ -1095,7 +1095,15 @@ void WtRtRunner::run(bool bAsync /* = false */)
 		_parsers.run();
 		_traders.run();
 
-		_engine->run(bAsync);
+		_engine->run();
+
+		if (!bAsync)
+		{
+			while (!_to_exit)
+			{
+				std::this_thread::sleep_for(std::chrono::milliseconds(10));
+			}
+		}
 	}
 	catch (...)
 	{

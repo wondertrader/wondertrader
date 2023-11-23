@@ -347,7 +347,7 @@ namespace hft
 			_parsers.run();
 			_traders.run();
 
-			_engine.run(true);
+			_engine.run();
 
 			theParser->run(_times);
 		}

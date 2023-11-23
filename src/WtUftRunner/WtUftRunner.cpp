@@ -39,15 +39,14 @@ const char* getBinDir()
 
 
 WtUftRunner::WtUftRunner()
+	:_to_exit(false)
 {
-//#if _WIN32
-//#pragma message("Signal hooks disabled in WIN32")
-//#else
-//#pragma message("Signal hooks enabled in UNIX")
-//	install_signal_hooks([](const char* message) {
-//		WTSLogger::error(message);
-//	});
-//#endif
+	install_signal_hooks([](const char* message) {
+		WTSLogger::error(message);
+	}, [this](bool bStopped) {
+		_to_exit = bStopped;
+		WTSLogger::info("Exit flag is {}", _to_exit);
+	});
 }
 
 
@@ -364,14 +363,16 @@ void WtUftRunner::run(bool bAsync /* = false */)
 
 		ShareManager::self().start_watching(2);
 
-		boost::asio::io_service::work work(g_asyncIO);
-		g_asyncIO.run();
+		while(!_to_exit)
+		{
+			std::this_thread::sleep_for(std::chrono::milliseconds(10));
+		}
 	}
 	catch (...)
 	{
-		//print_stack_trace([](const char* message) {
-		//	WTSLogger::error(message);
-		//});
+		print_stack_trace([](const char* message) {
+			WTSLogger::error(message);
+		});
 	}
 }
 

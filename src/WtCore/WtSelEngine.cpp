@@ -319,7 +319,7 @@ void WtSelEngine::on_minute_end(uint32_t curDate, uint32_t curTime)
 	}
 }
 
-void WtSelEngine::run(bool bAsync /*= false*/)
+void WtSelEngine::run()
 {
 	WTSVariant* cfgProd = _cfg->get("product");
 	_tm_ticker = new WtSelRtTicker(this);

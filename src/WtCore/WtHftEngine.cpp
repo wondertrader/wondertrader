@@ -62,7 +62,7 @@ void WtHftEngine::init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtDtMgr* dataMgr, I
 	_cfg->retain();
 }
 
-void WtHftEngine::run(bool bAsync /*= false*/)
+void WtHftEngine::run()
 {
 	for (auto it = _ctx_map.begin(); it != _ctx_map.end(); it++)
 	{
@@ -109,12 +109,6 @@ void WtHftEngine::run(bool bAsync /*= false*/)
 	}
 
 	_tm_ticker->run();
-
-	if (!bAsync)
-	{
-		boost::asio::io_service::work work(g_asyncIO);
-		g_asyncIO.run();
-	}
 }
 
 void WtHftEngine::handle_push_quote(WTSTickData* newTick)

@@ -52,14 +52,9 @@ int main(int argc, char* argv[])
 		filename = "./logcfgdt.yaml";
 	WTSLogger::init(filename.c_str());
 
-#if _WIN32
-#pragma message("Signal hooks disabled in WIN32")
-#else
-#pragma message("Signal hooks enabled in UNIX")
 	install_signal_hooks([](const char* message) {
 		WTSLogger::error(message);
 	});
-#endif
 
 	if (cParam->exists())
 		filename = cParam->get<std::string>();
