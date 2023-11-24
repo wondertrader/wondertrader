@@ -20,7 +20,6 @@
 
 WTSBaseDataMgr	g_baseDataMgr;
 WTSHotMgr		g_hotMgr;
-boost::asio::io_service g_asyncIO;
 StateMonitor	g_stateMon;
 UDPCaster		g_udpCaster;
 ShmCaster		g_shmCaster;
@@ -249,16 +248,14 @@ void initialize(const std::string& filename)
 
 	config->release();
 
-	g_asyncIO.post([bAlldayMode](){
-		g_parsers.run();
+	g_parsers.run();
 
-		//全天候模式，不启动状态机
-		if(!bAlldayMode)
-		{
-			std::this_thread::sleep_for(std::chrono::milliseconds(5));
-			g_stateMon.run();
-		}
-	});
+	//全天候模式，不启动状态机
+	if(!bAlldayMode)
+	{
+		std::this_thread::sleep_for(std::chrono::milliseconds(5));
+		g_stateMon.run();
+	}
 }
 
 int main(int argc, char* argv[])
