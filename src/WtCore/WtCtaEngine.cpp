@@ -31,10 +31,6 @@
 #include <rapidjson/prettywriter.h>
 namespace rj = rapidjson;
 
-#include <boost/asio.hpp>
-
-boost::asio::io_service g_asyncIO;
-
 WtCtaEngine::WtCtaEngine()
 	: _tm_ticker(NULL)
 {

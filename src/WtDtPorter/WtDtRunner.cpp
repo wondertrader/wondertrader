@@ -30,10 +30,8 @@ WtDtRunner::WtDtRunner()
 	, _dumper_for_ordque(NULL)
 	, _dumper_for_orddtl(NULL)
 	, _dumper_for_trans(NULL)
+	, _to_exit(false)
 {
-	install_signal_hooks([](const char* message) {
-		WTSLogger::error(message);
-	});
 }
 
 
@@ -47,6 +45,16 @@ void WtDtRunner::start(bool bAsync /* = false */, bool bAlldayMode /* = false */
 
     if(!bAsync)
     {
+		install_signal_hooks([this](const char* message) {
+			if(!_to_exit)
+				WTSLogger::error(message);
+		}, [this](bool toExit) {
+			if (_to_exit)
+				return;
+			_to_exit = toExit;
+			WTSLogger::info("Exit flag is {}", _to_exit);
+		});
+
 		_async_io.post([this, bAlldayMode]() {
 			if(!bAlldayMode)
 			{
@@ -55,8 +63,15 @@ void WtDtRunner::start(bool bAsync /* = false */, bool bAlldayMode /* = false */
 			}
 		});
 
-        boost::asio::io_service::work work(_async_io);
-        _async_io.run();
+		StdThread trd([this] {
+			while (!_to_exit)
+			{
+				std::this_thread::sleep_for(std::chrono::milliseconds(2));
+				_async_io.run_one();
+			}
+		});
+
+		trd.join();
     }
 	else
 	{

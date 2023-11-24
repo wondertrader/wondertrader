@@ -27,11 +27,6 @@
 #include <rapidjson/prettywriter.h>
 namespace rj = rapidjson;
 
-#include <boost/asio.hpp>
-
-extern boost::asio::io_service g_asyncIO;
-
-
 USING_NS_WTP;
 
 WtHftEngine::WtHftEngine()

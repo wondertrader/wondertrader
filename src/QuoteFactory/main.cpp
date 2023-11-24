@@ -294,9 +294,13 @@ int main(int argc, char* argv[])
 #endif
 
 	bool bExit = false;
-	install_signal_hooks([](const char* message) {
-		WTSLogger::error(message);
+	install_signal_hooks([&bExit](const char* message) {
+		if(!bExit)
+			WTSLogger::error(message);
 	}, [&bExit](bool toExit) {
+		if (bExit)
+			return;
+
 		bExit = toExit;
 		WTSLogger::info("Exit flag is {}", bExit);
 	});

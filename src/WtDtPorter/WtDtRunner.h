@@ -102,5 +102,7 @@ private:
 	typedef std::shared_ptr<ExpDumper> ExpDumperPtr;
 	typedef std::map<std::string, ExpDumperPtr>  ExpDumpers;
 	ExpDumpers		_dumpers;
+
+	bool _to_exit;
 };
 

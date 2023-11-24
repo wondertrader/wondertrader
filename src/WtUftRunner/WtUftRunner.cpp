@@ -19,10 +19,6 @@
 #include "../WTSUtils/SignalHook.hpp"
 #include "../Share/StrUtil.hpp"
 
-#include <boost/asio.hpp>
-
-boost::asio::io_service g_asyncIO;
-
 const char* getBinDir()
 {
 	static std::string basePath;

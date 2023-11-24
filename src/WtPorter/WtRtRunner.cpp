@@ -93,12 +93,6 @@ WtRtRunner::WtRtRunner()
 
 	, _to_exit(false)
 {
-	install_signal_hooks([](const char* message) {
-		WTSLogger::error(message);
-	}, [this](bool bStopped) {
-		_to_exit = bStopped;
-		WTSLogger::info("Exit flag is {}", _to_exit);
-	});
 }
 
 
@@ -1099,6 +1093,16 @@ void WtRtRunner::run(bool bAsync /* = false */)
 
 		if (!bAsync)
 		{
+			install_signal_hooks([this](const char* message) {
+				if (!_to_exit)
+					WTSLogger::error(message);
+			}, [this](bool toExit) {
+				if (_to_exit)
+					return;
+				_to_exit = toExit;
+				WTSLogger::info("Exit flag is {}", _to_exit);
+			});
+
 			while (!_to_exit)
 			{
 				std::this_thread::sleep_for(std::chrono::milliseconds(10));

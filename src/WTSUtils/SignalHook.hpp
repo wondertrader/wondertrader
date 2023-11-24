@@ -14,6 +14,10 @@ void handle_signal(int signum)
 	case SIGINT:          // interrupt
 	case SIGBREAK:        // Ctrl-Break sequence
 		g_cbSignalLog("app interrupted");
+		if (g_exitHandler)
+			g_exitHandler(signum);
+		else
+			exit(signum);
 		break;
 	case SIGTERM:         // Software termination signal from kill
 		g_cbSignalLog("app terminated");
