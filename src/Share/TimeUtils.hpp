@@ -142,10 +142,7 @@ public:
 	{
 		uint64_t ltime = getLocalTimeNow();
 		time_t now = ltime / 1000;
-		uint32_t millitm = ltime % 1000;
-
 		tm * tNow = localtime(&now);
-
 		uint32_t date = (tNow->tm_year+1900)*10000 + (tNow->tm_mon+1)*100 + tNow->tm_mday;
 
 		return date;
@@ -177,10 +174,7 @@ public:
 	{
 		uint64_t ltime = getLocalTimeNow();
 		time_t now = ltime / 1000;
-		uint32_t millitm = ltime % 1000;
-
 		tm * tNow = localtime(&now);
-
 		uint32_t time = tNow->tm_hour*10000 + tNow->tm_min*100 + tNow->tm_sec;
 
 		return time;
