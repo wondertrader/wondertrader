@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file DataManager.cpp
  * \project	WonderTrader
  *
@@ -11,6 +11,7 @@
 #include "StateMonitor.h"
 #include "UDPCaster.h"
 #include "WtHelper.h"
+#include "IDataCaster.h"
 
 #include "../Includes/WTSVariant.hpp"
 #include "../Share/DLLHelper.hpp"
@@ -23,7 +24,6 @@ DataManager::DataManager()
 	: _writer(NULL)
 	, _bd_mgr(NULL)
 	, _state_mon(NULL)
-	, _udp_caster(NULL)
 {
 }
 
@@ -40,11 +40,10 @@ bool DataManager::isSessionProceeded(const char* sid)
 	return _writer->isSessionProceeded(sid);
 }
 
-bool DataManager::init(WTSVariant* params, WTSBaseDataMgr* bdMgr, StateMonitor* stMonitor, UDPCaster* caster /* = NULL */)
+bool DataManager::init(WTSVariant* params, WTSBaseDataMgr* bdMgr, StateMonitor* stMonitor)
 {
 	_bd_mgr = bdMgr;
 	_state_mon = stMonitor;
-	_udp_caster = caster;
 
 	std::string module = params->getCString("module");
 	if (module.empty())
@@ -156,7 +155,7 @@ IBaseDataMgr* DataManager::getBDMgr()
 bool DataManager::canSessionReceive(const char* sid)
 {
 	//By Wesley @ 2021.12.27
-	//Èç¹û×´Ì¬»úÎªNULL£¬ËµÃ÷ÊÇÈ«ÌìºòÄ£Ê½£¬Ö±½Ó·µ»Øtrue¼´¿É
+	//å¦‚æžœçŠ¶æ€æœºä¸ºNULLï¼Œè¯´æ˜Žæ˜¯å…¨å¤©å€™æ¨¡å¼ï¼Œç›´æŽ¥è¿”å›žtrueå³å¯
 	if (_state_mon == NULL)
 		return true;
 
@@ -165,26 +164,26 @@ bool DataManager::canSessionReceive(const char* sid)
 
 void DataManager::broadcastTick(WTSTickData* curTick)
 {
-	if (_udp_caster)
-		_udp_caster->broadcast(curTick);
+	for(IDataCaster* caster : _casters)
+		caster->broadcast(curTick);
 }
 
 void DataManager::broadcastOrdDtl(WTSOrdDtlData* curOrdDtl)
 {
-	if (_udp_caster)
-		_udp_caster->broadcast(curOrdDtl);
+	for (IDataCaster* caster : _casters)
+		caster->broadcast(curOrdDtl);
 }
 
 void DataManager::broadcastOrdQue(WTSOrdQueData* curOrdQue)
 {
-	if (_udp_caster)
-		_udp_caster->broadcast(curOrdQue);
+	for (IDataCaster* caster : _casters)
+		caster->broadcast(curOrdQue);
 }
 
 void DataManager::broadcastTrans(WTSTransData* curTrans)
 {
-	if (_udp_caster)
-		_udp_caster->broadcast(curTrans);
+	for (IDataCaster* caster : _casters)
+		caster->broadcast(curTrans);
 }
 
 CodeSet* DataManager::getSessionComms(const char* sid)

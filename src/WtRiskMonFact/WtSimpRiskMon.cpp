@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file WtSimpRiskMon.cpp
  * \project	WonderTrader
  *
@@ -58,42 +58,42 @@ void WtSimpleRiskMon::run()
 				WTSPortFundInfo* fundInfo = _ctx->getFundInfo();
 				const WTSFundStruct& fs = fundInfo->fundInfo();
 				/*
-				* Ìõ¼þ1: ÕûÌåÅÌ×ÓµÄ¸¡¶¯ÊÕÒæ±ÈÉÏÒ»½»Ò×ÈÕ½áÊøÊ±£¨ÊÕÅÌ¼Û¼Æ£©, Ôö³¤ 1% ÒÔÉÏ
-				*		×éºÏÅÌµÄ¶¯Ì¬È¨Òæ ¡Ý ÉÏÈÕÊÕÅÌÊ±µÄ¶¯Ì¬È¨ÒæµÄ 101%
-				* Ìõ¼þ2: 30minÒÔÄÚ, ´Ó½ñÈÕ¸ßµã»Øµ÷µ½ 80%ÒÔÏÂ
-				*		30minÒÔÄÚ, ½ñÈÕÊÕÒæ´Ó¸ßµã»Øµ÷µ½ 80%ÒÔÏÂ
+				* æ¡ä»¶1: æ•´ä½“ç›˜å­çš„æµ®åŠ¨æ”¶ç›Šæ¯”ä¸Šä¸€äº¤æ˜“æ—¥ç»“æŸæ—¶ï¼ˆæ”¶ç›˜ä»·è®¡ï¼‰, å¢žé•¿ 1% ä»¥ä¸Š
+				*		ç»„åˆç›˜çš„åŠ¨æ€æƒç›Š â‰¥ ä¸Šæ—¥æ”¶ç›˜æ—¶çš„åŠ¨æ€æƒç›Šçš„ 101%
+				* æ¡ä»¶2: 30minä»¥å†…, ä»Žä»Šæ—¥é«˜ç‚¹å›žè°ƒåˆ° 80%ä»¥ä¸‹
+				*		30minä»¥å†…, ä»Šæ—¥æ”¶ç›Šä»Žé«˜ç‚¹å›žè°ƒåˆ° 80%ä»¥ä¸‹
 				*
-				* ¶¯×÷: 
-				* ·½Ê½A:  ËùÓÐÆ·ÖÖ¼õ²Ö£¨¼õÉÙµ½ 30% ²ÖÎ»£©, ÏÂÒ»½»Ò×ÈÕÖØÐÂ°´²ßÂÔÐÂ²ÖÎ»²¹Æë
-				* ·½Ê½B:  ËùÓÐÓ¯ÀûÆ·ÖÖ¶¼ Æ½²Ö, ÏÂÒ»½»Ò×ÈÕÖØÐÂ°´²ßÂÔÐÂ²ÖÎ»²¹Æë
+				* åŠ¨ä½œ: 
+				* æ–¹å¼A:  æ‰€æœ‰å“ç§å‡ä»“ï¼ˆå‡å°‘åˆ° 30% ä»“ä½ï¼‰, ä¸‹ä¸€äº¤æ˜“æ—¥é‡æ–°æŒ‰ç­–ç•¥æ–°ä»“ä½è¡¥é½
+				* æ–¹å¼B:  æ‰€æœ‰ç›ˆåˆ©å“ç§éƒ½ å¹³ä»“, ä¸‹ä¸€äº¤æ˜“æ—¥é‡æ–°æŒ‰ç­–ç•¥æ–°ä»“ä½è¡¥é½
 				*/
 
 				if (_inner_day_active && fs._max_dyn_bal != DBL_MAX)
 				{
-					double predynbal = fundInfo->predynbalance() + _base_amount;	//ÉÏÈÕ¶¯Ì¬È¨Òæ
-					double maxBal = fs._max_dyn_bal + _base_amount;					//µ±ÈÕ×î´ó¶¯Ì¬È¨Òæ
-					double curBal = fs._balance + fs._dynprofit + _base_amount;		//µ±Ç°¶¯Ì¬È¨Òæ
+					double predynbal = fundInfo->predynbalance() + _base_amount;	//ä¸Šæ—¥åŠ¨æ€æƒç›Š
+					double maxBal = fs._max_dyn_bal + _base_amount;					//å½“æ—¥æœ€å¤§åŠ¨æ€æƒç›Š
+					double curBal = fs._balance + fs._dynprofit + _base_amount;		//å½“å‰åŠ¨æ€æƒç›Š
 
 					double rate = 0.0;
 					if(!decimal::eq(maxBal, predynbal))
-						rate = (maxBal - curBal) * 100 / (maxBal - predynbal);	//µ±ÈÕÓ¯Àû»Ø³·±ÈÀý
+						rate = (maxBal - curBal) * 100 / (maxBal - predynbal);	//å½“æ—¥ç›ˆåˆ©å›žæ’¤æ¯”ä¾‹
 
-					//Èç¹ûµ±ÈÕ×î´óÈ¨Òæ³¬¹ýÖ¹Ó¯±ß½çÌõ¼þ
+					//å¦‚æžœå½“æ—¥æœ€å¤§æƒç›Šè¶…è¿‡æ­¢ç›ˆè¾¹ç•Œæ¡ä»¶
 					if (maxBal > (_basic_ratio*predynbal / 100.0))
 					{
 						
 						/*
-						 *	ÕâÀïÒª×ª³ÉÈÕÄÚ·ÖÖÓÊý´¦Àí
-						 *	²»È»Èç¹ûÓöµ½ÎçÅÌÆô¶¯»òÔçÅÌÆô¶¯, 
-						 *	¿ÉÄÜ»áÒòÎªÖÐÍ¾ÐÝÏ¢Ê±¼ä¹ý³¤, ¶ø²»´¥·¢·ç¿Ø
-						 *	µ¼ÖÂ¸ü´ó·çÏÕµÄ·¢Éú
+						 *	è¿™é‡Œè¦è½¬æˆæ—¥å†…åˆ†é’Ÿæ•°å¤„ç†
+						 *	ä¸ç„¶å¦‚æžœé‡åˆ°åˆç›˜å¯åŠ¨æˆ–æ—©ç›˜å¯åŠ¨, 
+						 *	å¯èƒ½ä¼šå› ä¸ºä¸­é€”ä¼‘æ¯æ—¶é—´è¿‡é•¿, è€Œä¸è§¦å‘é£ŽæŽ§
+						 *	å¯¼è‡´æ›´å¤§é£Žé™©çš„å‘ç”Ÿ
 						 */
 						uint32_t maxTime = _ctx->transTimeToMin(fundInfo->max_dynbal_time());	
-						uint32_t curTime = _ctx->transTimeToMin(_ctx->getCurTime());			//×ª³ÉÈÕÄÚ·ÖÖÓÊý
+						uint32_t curTime = _ctx->transTimeToMin(_ctx->getCurTime());			//è½¬æˆæ—¥å†…åˆ†é’Ÿæ•°
 
 						if (rate >= _inner_day_fd && curTime - maxTime <= _risk_span && !_limited)
 						{
-							_ctx->writeRiskLog(fmt::format("Current IDD {:.2f}%, ¡ÝMaxIDD {:.2f}%, Position down to {:.1f}%", rate, _inner_day_fd, _risk_scale).c_str());
+							_ctx->writeRiskLog(fmt::format("Current IDD {:.2f}%, â‰¥MaxIDD {:.2f}%, Position down to {:.1f}%", rate, _inner_day_fd, _risk_scale).c_str());
 							_ctx->setVolScale(_risk_scale);
 							_limited = true;
 						}
@@ -105,7 +105,7 @@ void WtSimpleRiskMon::run()
 					}
 					else
 					{
-						//Èç¹ûµ±ÈÕ×î´óÈ¨ÒæÃ»ÓÐ³¬¹ýÓ¯Àû±ß½çÌõ¼þ
+						//å¦‚æžœå½“æ—¥æœ€å¤§æƒç›Šæ²¡æœ‰è¶…è¿‡ç›ˆåˆ©è¾¹ç•Œæ¡ä»¶
 						_ctx->writeRiskLog(fmt::format("Current Balance Ratio: {:.2f}%", curBal*100.0 / predynbal).c_str());
 						//_limited = false;
 					}

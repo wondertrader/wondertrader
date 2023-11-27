@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "../Includes/IDataWriter.h"
 
 USING_NS_WTP;

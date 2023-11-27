@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "IExecCommand.h"
 #include "../Includes/ExecuteDefs.h"
 #include "../Share/DLLHelper.hpp"
@@ -8,9 +8,9 @@
 NS_WTP_BEGIN
 
 //////////////////////////////////////////////////////////////////////////
-//Ö´ĞĞµ¥Ôª·â×°
-//ÒòÎªÖ´ĞĞµ¥ÔªÊÇdllÀï´´½¨µÄ, Èç¹û²»·â×°µÄ»°, Ö±½Ódelete¿ÉÄÜ»áÓĞÎÊÌâ
-//ËùÒÔÒª°Ñ¹¤³§Ö¸ÕëÒ»Æğ·â×°µ½ÕâÀï, Ö±½Óµ÷ÓÃ¹¤³§ÊµÀıµÄdeleteUnit·½·¨ÊÍ·ÅÖ´ĞĞµ¥Ôª
+//æ‰§è¡Œå•å…ƒå°è£…
+//å› ä¸ºæ‰§è¡Œå•å…ƒæ˜¯dllé‡Œåˆ›å»ºçš„, å¦‚æœä¸å°è£…çš„è¯, ç›´æ¥deleteå¯èƒ½ä¼šæœ‰é—®é¢˜
+//æ‰€ä»¥è¦æŠŠå·¥å‚æŒ‡é’ˆä¸€èµ·å°è£…åˆ°è¿™é‡Œ, ç›´æ¥è°ƒç”¨å·¥å‚å®ä¾‹çš„deleteUnitæ–¹æ³•é‡Šæ”¾æ‰§è¡Œå•å…ƒ
 class ExeUnitWrapper
 {
 public:
@@ -35,7 +35,7 @@ typedef std::shared_ptr<ExeUnitWrapper>	ExecuteUnitPtr;
 typedef wt_hashmap<std::string, ExecuteUnitPtr> ExecuteUnitMap;
 
 //////////////////////////////////////////////////////////////////////////
-//Ö´ĞĞÆ÷¹¤³§Àà
+//æ‰§è¡Œå™¨å·¥å‚ç±»
 class WtExecuterFactory : private boost::noncopyable
 {
 public:

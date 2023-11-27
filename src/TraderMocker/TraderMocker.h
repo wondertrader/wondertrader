@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <atomic>
 
 #include <boost/asio.hpp>
@@ -18,7 +18,7 @@ NS_WTP_END
 USING_NS_WTP;
 
 /*
- *	·ÂÕæ½»Ò×Æ÷
+ *	ä»¿çœŸäº¤æ˜“å™¨
  */
 class TraderMocker : public ITraderApi
 {
@@ -28,7 +28,7 @@ public:
 
 private:
 	/*
-	*	´éºÏ ¶¨Ê±Æ÷
+	*	æ’®åˆ å®šæ—¶å™¨
 	*/
 	int32_t		match_once();
 

@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file ParserAdapter.cpp
  * \project	WonderTrader
  *
@@ -95,7 +95,7 @@ bool ParserAdapter::init(const char* id, WTSVariant* cfg)
 	_cfg->retain();
 
 	{
-		//¼ÓÔØÄ£¿é
+		//åŠ è½½æ¨¡å—
 		if (cfg->getString("module").empty())
 			return false;
 
@@ -166,12 +166,12 @@ bool ParserAdapter::init(const char* id, WTSVariant* cfg)
 		if (_parser_api->init(cfg))
 		{
 			ContractSet contractSet;
-			if (!_code_filter.empty())//ÓÅÏÈÅÐ¶ÏºÏÔ¼¹ýÂËÆ÷
+			if (!_code_filter.empty())//ä¼˜å…ˆåˆ¤æ–­åˆçº¦è¿‡æ»¤å™¨
 			{
 				ExchgFilter::iterator it = _code_filter.begin();
 				for (; it != _code_filter.end(); it++)
 				{
-					//È«´úÂë,ÐÎÊ½ÈçSSE.600000,ÆÚ»õ´úÂëÎªCFFEX.IF2005
+					//å…¨ä»£ç ,å½¢å¼å¦‚SSE.600000,æœŸè´§ä»£ç ä¸ºCFFEX.IF2005
 					std::string code, exchg;
 					auto ay = StrUtil::split((*it).c_str(), ".");
 					if (ay.size() == 1)
@@ -191,7 +191,7 @@ bool ParserAdapter::init(const char* id, WTSVariant* cfg)
 						contractSet.insert(contract->getFullCode());
 					else
 					{
-						//Èç¹ûÊÇÆ·ÖÖID£¬Ôò½«¸ÃÆ·ÖÖÏÂÈ«²¿ºÏÔ¼¶¼¼Óµ½¶©ÔÄÁÐ±í
+						//å¦‚æžœæ˜¯å“ç§IDï¼Œåˆ™å°†è¯¥å“ç§ä¸‹å…¨éƒ¨åˆçº¦éƒ½åŠ åˆ°è®¢é˜…åˆ—è¡¨
 						WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(exchg.c_str(), code.c_str());
 						if (commInfo)
 						{
@@ -286,13 +286,14 @@ void ParserAdapter::handleTransaction(WTSTransData* transData)
 	if (_stopped)
 		return;
 
-
 	if (transData->actiondate() == 0 || transData->tradingdate() == 0)
 		return;
 
 	WTSContractInfo* contract = _bd_mgr->getContract(transData->code(), transData->exchg());
 	if (contract == NULL)
 		return;
+
+	transData->setContractInfo(contract);
 
 	_dt_mgr->writeTransaction(transData);
 }
@@ -309,6 +310,8 @@ void ParserAdapter::handleOrderDetail(WTSOrdDtlData* ordDetailData)
 	if (contract == NULL)
 		return;
 
+	ordDetailData->setContractInfo(contract);
+
 	_dt_mgr->writeOrderDetail(ordDetailData);
 }
 
@@ -323,6 +326,8 @@ void ParserAdapter::handleOrderQueue(WTSOrdQueData* ordQueData)
 	WTSContractInfo* contract = _bd_mgr->getContract(ordQueData->code(), ordQueData->exchg());
 	if (contract == NULL)
 		return;
+
+	ordQueData->setContractInfo(contract);
 		
 	_dt_mgr->writeOrderQueue(ordQueData);
 }

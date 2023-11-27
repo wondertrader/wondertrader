@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * /file WtRunner.cpp
  * /project	WonderTrader
  *
@@ -15,6 +15,7 @@
 #include "../WtCore/WtDiffExecuter.h"
 
 #include "../Includes/WTSVariant.hpp"
+#include "../Includes/WTSContractInfo.hpp"
 #include "../WTSTools/WTSLogger.h"
 #include "../WTSUtils/WTSCfgLoader.h"
 #include "../WTSUtils/SignalHook.hpp"
@@ -40,15 +41,14 @@ WtRunner::WtRunner()
 	: _data_store(NULL)
 	, _is_hft(false)
 	, _is_sel(false)
+	, _to_exit(false)
 {
-#if _WIN32
-#pragma message("Signal hooks disabled in WIN32")
-#else
-#pragma message("Signal hooks enabled in UNIX")
 	install_signal_hooks([](const char* message) {
 		WTSLogger::error(message);
+	}, [this](bool bStopped) {
+		_to_exit = bStopped;
+		WTSLogger::info("Exit flag is {}", _to_exit);
 	});
-#endif
 }
 
 
@@ -56,32 +56,28 @@ WtRunner::~WtRunner()
 {
 }
 
-bool WtRunner::init()
+void WtRunner::init(const std::string& filename)
 {
-	std::string path = "logcfg.json";
-	if(!StdFile::exists(path.c_str()))
-		path = "logcfg.yaml";
-	WTSLogger::init(path.c_str());
+	WTSLogger::init(filename.c_str());
 
 	WtHelper::setInstDir(getBinDir());
 
-	return true;
+	if(!StdFile::exists(filename.c_str()))
+	{
+		WTSLogger::warn("logging configure {} not exists", filename);
+	}
 }
 
-bool WtRunner::config()
+bool WtRunner::config(const std::string& filename)
 {
-	std::string cfgFile = "config.json";
-	if (!StdFile::exists(cfgFile.c_str()))
-		cfgFile = "config.yaml";
-
-	_config = WTSCfgLoader::load_from_file(cfgFile);
+	_config = WTSCfgLoader::load_from_file(filename);
 	if(_config == NULL)
 	{
-		WTSLogger::error("Loading config file {} failed", cfgFile);
+		WTSLogger::error("Loading config file {} failed", filename);
 		return false;
 	}
 
-	//»ù´¡Êý¾ÝÎÄ¼þ
+	//åŸºç¡€æ•°æ®æ–‡ä»¶
 	WTSVariant* cfgBF = _config->get("basefiles");
 	if (cfgBF->get("session"))
 		_bd_mgr.loadSessions(cfgBF->getCString("session"));
@@ -127,6 +123,25 @@ bool WtRunner::config()
 	if (cfgBF->get("second"))
 		_hot_mgr.loadSeconds(cfgBF->getCString("second"));
 
+	WTSArray* ayContracts = _bd_mgr.getContracts();
+	for (auto it = ayContracts->begin(); it != ayContracts->end(); it++)
+	{
+		WTSContractInfo* cInfo = (WTSContractInfo*)(*it);
+		bool isHot = _hot_mgr.isHot(cInfo->getExchg(), cInfo->getCode());
+		bool isSecond = _hot_mgr.isSecond(cInfo->getExchg(), cInfo->getCode());
+
+		std::string hotCode = cInfo->getFullPid();
+		if (isHot)
+			hotCode += ".HOT";
+		else if (isSecond)
+			hotCode += ".2ND";
+		else
+			hotCode = "";
+
+		cInfo->setHotFlag(isHot ? 1 : (isSecond ? 2 : 0), hotCode.c_str());
+	}
+	ayContracts->release();
+
 	if (cfgBF->has("rules"))
 	{
 		auto cfgRules = cfgBF->get("rules");
@@ -138,16 +153,16 @@ bool WtRunner::config()
 		}
 	}
 
-	//³õÊ¼»¯ÔËÐÐ»·¾³
+	//åˆå§‹åŒ–è¿è¡ŒçŽ¯å¢ƒ
 	initEngine();
 
-	//³õÊ¼»¯Êý¾Ý¹ÜÀí
+	//åˆå§‹åŒ–æ•°æ®ç®¡ç†
 	initDataMgr();
 
 	if (!initActionPolicy())
 		return false;
 
-	//³õÊ¼»¯ÐÐÇéÍ¨µÀ
+	//åˆå§‹åŒ–è¡Œæƒ…é€šé“
 	WTSVariant* cfgParser = _config->get("parsers");
 	if (cfgParser)
 	{
@@ -180,7 +195,7 @@ bool WtRunner::config()
 		}
 	}
 
-	//³õÊ¼»¯½»Ò×Í¨µÀ
+	//åˆå§‹åŒ–äº¤æ˜“é€šé“
 	WTSVariant* cfgTraders = _config->get("traders");
 	if (cfgTraders)
 	{
@@ -215,7 +230,7 @@ bool WtRunner::config()
 
 	initEvtNotifier();
 
-	//Èç¹û²»ÊÇ¸ßÆµÒýÇæ,ÔòÐèÒªÅäÖÃÖ´ÐÐÄ£¿é
+	//å¦‚æžœä¸æ˜¯é«˜é¢‘å¼•æ“Ž,åˆ™éœ€è¦é…ç½®æ‰§è¡Œæ¨¡å—
 	if (!_is_hft)
 	{
 		WTSVariant* cfgExec = _config->get("executers");
@@ -427,7 +442,7 @@ bool WtRunner::initParsers(WTSVariant* cfgParser)
 
 		const char* id = cfgItem->getCString("id");
 		// By Wesley @ 2021.12.14
-		// Èç¹ûidÎª¿Õ£¬ÔòÉú³É×Ô¶¯id
+		// å¦‚æžœidä¸ºç©ºï¼Œåˆ™ç”Ÿæˆè‡ªåŠ¨id
 		std::string realid = id;
 		if (realid.empty())
 		{
@@ -570,13 +585,21 @@ void WtRunner::run(bool bAsync /* = false */)
 		_parsers.run();
 		_traders.run();
 
-		_engine->run(bAsync);
+		_engine->run();
+
+		if(!bAsync)
+		{
+			while(!_to_exit)
+			{
+				std::this_thread::sleep_for(std::chrono::milliseconds(10));
+			}
+		}
 	}
 	catch (...)
 	{
-		//print_stack_trace([](const char* message) {
-		//	WTSLogger::error(message);
-		//});
+		print_stack_trace([](const char* message) {
+			WTSLogger::error(message);
+		});
 	}
 }
 

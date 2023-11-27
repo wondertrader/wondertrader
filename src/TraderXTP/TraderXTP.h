@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file TraderXTP.h
  * \project	WonderTrader
  *
@@ -31,16 +31,16 @@ public:
 
 	typedef enum
 	{
-		TS_NOTLOGIN,		//Î´µÇÂ¼
-		TS_LOGINING,		//ÕıÔÚµÇÂ¼
-		TS_LOGINED,			//ÒÑµÇÂ¼
-		TS_LOGINFAILED,		//µÇÂ¼Ê§°Ü
-		TS_ALLREADY			//È«²¿¾ÍĞ÷
+		TS_NOTLOGIN,		//æœªç™»å½•
+		TS_LOGINING,		//æ­£åœ¨ç™»å½•
+		TS_LOGINED,			//å·²ç™»å½•
+		TS_LOGINFAILED,		//ç™»å½•å¤±è´¥
+		TS_ALLREADY			//å…¨éƒ¨å°±ç»ª
 	} TraderState;
 
 public:
 	//////////////////////////////////////////////////////////////////////////
-	//XTP::API::TraderSpi ½Ó¿Ú
+	//XTP::API::TraderSpi æ¥å£
 	virtual void OnDisconnected(uint64_t session_id, int reason) override;
 
 	virtual void OnError(XTPRI *error_info) override;
@@ -61,7 +61,7 @@ public:
 
 public:
 	//////////////////////////////////////////////////////////////////////////
-	//ITraderApi ½Ó¿Ú
+	//ITraderApi æ¥å£
 	virtual bool init(WTSVariant *params) override;
 
 	virtual void release() override;
@@ -135,7 +135,7 @@ private:
 	uint64_t		_sessionid;
 	uint32_t		_tradingday;
 	std::atomic<uint32_t>		_reqid;
-	std::atomic<uint32_t>		_ordref;		//±¨µ¥ÒıÓÃ
+	std::atomic<uint32_t>		_ordref;		//æŠ¥å•å¼•ç”¨
 
 	boost::asio::io_service		_asyncio;
 	StdThreadPtr				_thrd_worker;
@@ -146,9 +146,9 @@ private:
 	typedef XTP::API::TraderApi* (*XTPCreator)(uint8_t, const char*, XTP_LOG_LEVEL);
 	XTPCreator		m_funcCreator;
 
-	//Î¯ÍĞµ¥±ê¼Ç»º´æÆ÷
+	//å§”æ‰˜å•æ ‡è®°ç¼“å­˜å™¨
 	WtKVCache		m_eidCache;
-	//¶©µ¥±ê¼Ç»º´æÆ÷
+	//è®¢å•æ ‡è®°ç¼“å­˜å™¨
 	WtKVCache		m_oidCache;
 };
 

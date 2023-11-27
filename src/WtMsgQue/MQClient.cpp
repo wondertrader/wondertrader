@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file EventCaster.cpp
  * \project	WonderTrader
  *
@@ -138,7 +138,7 @@ void MQClient::start()
 						int64_t elapse = now - m_iCheckTime;
 						if (elapse >= 60 * 1000)
 						{
-							//Ö»Í¨ÖªÒ»´Î£¬·ÀÖ¹ÖØ¸´Í¨Öª
+							//åªé€šçŸ¥ä¸€æ¬¡ï¼Œé˜²æ­¢é‡å¤é€šçŸ¥
 							_cb_message(_id, "TIMEOUT", "", 0);
 							m_bNeedCheck = false;
 						}
@@ -164,7 +164,7 @@ void MQClient::extract_buffer()
 	uint32_t proc_len = 0;
 	for(;;)
 	{
-		//ÏÈ×ö³¤¶È¼ì²é
+		//å…ˆåšé•¿åº¦æ£€æŸ¥
 		if (_buffer.length() - proc_len < sizeof(MQPacket))
 			break;
 

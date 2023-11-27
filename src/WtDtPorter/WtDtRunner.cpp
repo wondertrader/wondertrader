@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file WtDtRunner.cpp
  * \project	WonderTrader
  *
@@ -15,6 +15,7 @@
 #include "../Includes/WTSSessionInfo.hpp"
 #include "../Includes/WTSVariant.hpp"
 #include "../Includes/WTSDataDef.hpp"
+#include "../Includes/WTSContractInfo.hpp"
 
 #include "../Share/StrUtil.hpp"
 
@@ -29,15 +30,8 @@ WtDtRunner::WtDtRunner()
 	, _dumper_for_ordque(NULL)
 	, _dumper_for_orddtl(NULL)
 	, _dumper_for_trans(NULL)
+	, _to_exit(false)
 {
-#if _WIN32
-#pragma message("Signal hooks disabled in WIN32")
-#else
-#pragma message("Signal hooks enabled in UNIX")
-	install_signal_hooks([](const char* message) {
-		WTSLogger::error(message);
-	});
-#endif
 }
 
 
@@ -51,6 +45,16 @@ void WtDtRunner::start(bool bAsync /* = false */, bool bAlldayMode /* = false */
 
     if(!bAsync)
     {
+		install_signal_hooks([this](const char* message) {
+			if(!_to_exit)
+				WTSLogger::error(message);
+		}, [this](bool toExit) {
+			if (_to_exit)
+				return;
+			_to_exit = toExit;
+			WTSLogger::info("Exit flag is {}", _to_exit);
+		});
+
 		_async_io.post([this, bAlldayMode]() {
 			if(!bAlldayMode)
 			{
@@ -59,8 +63,15 @@ void WtDtRunner::start(bool bAsync /* = false */, bool bAlldayMode /* = false */
 			}
 		});
 
-        boost::asio::io_service::work work(_async_io);
-        _async_io.run();
+		StdThread trd([this] {
+			while (!_to_exit)
+			{
+				std::this_thread::sleep_for(std::chrono::milliseconds(2));
+				_async_io.run_one();
+			}
+		});
+
+		trd.join();
     }
 	else
 	{
@@ -89,7 +100,7 @@ void WtDtRunner::initialize(const char* cfgFile, const char* logCfg, const char*
 		return;
 	}
 
-	//»ù´¡Êı¾İÎÄ¼ş
+	//åŸºç¡€æ•°æ®æ–‡ä»¶
 	WTSVariant* cfgBF = config->get("basefiles");
 	if (cfgBF->get("session"))
 	{
@@ -159,10 +170,20 @@ void WtDtRunner::initialize(const char* cfgFile, const char* logCfg, const char*
 		}
 	}
 
-	_udp_caster.init(config->get("broadcaster"), &_bd_mgr, &_data_mgr);
+	if (config->has("shmcaster"))
+	{
+		_shm_caster.init(config->get("shmcaster"));
+		_data_mgr.add_caster(&_shm_caster);
+	}
+
+	if(config->has("broadcaster"))
+	{
+		_udp_caster.init(config->get("broadcaster"), &_bd_mgr, &_data_mgr);
+		_data_mgr.add_caster(&_udp_caster);
+	}
 
 	//By Wesley @ 2021.12.27
-	//È«ÌìºòÄ£Ê½£¬²»ĞèÒªÔÙÊ¹ÓÃ×´Ì¬»ú
+	//å…¨å¤©å€™æ¨¡å¼ï¼Œä¸éœ€è¦å†ä½¿ç”¨çŠ¶æ€æœº
 	bool bAlldayMode = config->getBoolean("allday");
 	if (!bAlldayMode)
 	{
@@ -177,7 +198,7 @@ void WtDtRunner::initialize(const char* cfgFile, const char* logCfg, const char*
 
 	if (config->has("index"))
 	{
-		//Èç¹û´æÔÚÖ¸ÊıÄ£¿éÒª£¬ÅäÖÃÖ¸Êı
+		//å¦‚æœå­˜åœ¨æŒ‡æ•°æ¨¡å—è¦ï¼Œé…ç½®æŒ‡æ•°
 		const char* filename = config->getCString("index");
 		WTSLogger::info("Reading index config from {}...", filename);
 		WTSVariant* var = WTSCfgLoader::load_from_file(filename);
@@ -230,7 +251,7 @@ void WtDtRunner::initialize(const char* cfgFile, const char* logCfg, const char*
 
 void WtDtRunner::initDataMgr(WTSVariant* config, bool bAlldayMode /* = false */)
 {
-	_data_mgr.init(config, &_bd_mgr, bAlldayMode ? NULL : &_state_mon, &_udp_caster);
+	_data_mgr.init(config, &_bd_mgr, bAlldayMode ? NULL : &_state_mon);
 }
 
 void WtDtRunner::initParsers(WTSVariant* cfg)
@@ -244,7 +265,7 @@ void WtDtRunner::initParsers(WTSVariant* cfg)
 		const char* id = cfgItem->getCString("id");
 
 		// By Wesley @ 2021.12.14
-		// Èç¹ûidÎª¿Õ£¬ÔòÉú³É×Ô¶¯id
+		// å¦‚æœidä¸ºç©ºï¼Œåˆ™ç”Ÿæˆè‡ªåŠ¨id
 		std::string realid = id;
 		if (realid.empty())
 		{

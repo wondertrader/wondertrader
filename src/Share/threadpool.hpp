@@ -1,4 +1,4 @@
-/*! \file
+﻿/*! \file
 * \brief Main include.
 *
 * This is the only file you have to include in order to use the 

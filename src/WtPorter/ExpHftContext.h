@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "../WtCore/HftStraBaseCtx.h"
 
 USING_NS_WTP;

@@ -1,11 +1,11 @@
-/*!
+ï»¿/*!
  * \file WTSCmpHelper.hpp
  * \project	WonderTrader
  *
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief Êı¾İÑ¹Ëõ¸¨ÖúÀà,ÀûÓÃzstdlibÑ¹Ëõ
+ * \brief æ•°æ®å‹ç¼©è¾…åŠ©ç±»,åˆ©ç”¨zstdlibå‹ç¼©
  */
 #pragma once
 #include <string>
@@ -16,7 +16,7 @@
 class WTSCmpHelper
 {
 public:
-	static std::string compress_data(const void* data, uint32_t dataLen, uint32_t uLevel = 1)
+	static std::string compress_data(const void* data, size_t dataLen, uint32_t uLevel = 1)
 	{
 		std::string desBuf;
 		std::size_t const desLen = ZSTD_compressBound(dataLen);
@@ -26,7 +26,7 @@ public:
 		return desBuf;
 	}
 
-	static std::string uncompress_data(const void* data, uint32_t dataLen)
+	static std::string uncompress_data(const void* data, size_t dataLen)
 	{
 		std::string desBuf;
 		unsigned long long const desLen = ZSTD_getFrameContentSize(data, dataLen);

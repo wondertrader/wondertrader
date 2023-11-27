@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "../Includes/CtaStrategyDefs.h"
 
 USING_NS_WTP;
@@ -11,26 +11,26 @@ public:
 
 public:
 	/*
-	 *	»ñÈ¡¹¤³§Ãû³Æ
+	 *	è·å–å·¥å‚åç§°
 	 */
 	virtual const char* getName() override;
 
 	/*
-	 *	´´½¨²ßÂÔ
-	 *	@name	²ßÂÔÃû³Æ
-	 *	@id		Òª´´½¨µÄ²ßÂÔ¶ÔÏóµÄID
+	 *	åˆ›å»ºç­–ç•¥
+	 *	@name	ç­–ç•¥åç§°
+	 *	@id		è¦åˆ›å»ºçš„ç­–ç•¥å¯¹è±¡çš„ID
 	 */
 	virtual CtaStrategy* createStrategy(const char* name, const char* id) override;
 
 	/*
-	 *	Ã¶¾Ù²ßÂÔÃû³Æ
-	 *	@cb	Ã¶¾Ù²ßÂÔÃû³ÆµÄ»Øµ÷º¯Êı
+	 *	æšä¸¾ç­–ç•¥åç§°
+	 *	@cb	æšä¸¾ç­–ç•¥åç§°çš„å›è°ƒå‡½æ•°
 	 */
 	virtual void enumStrategy(FuncEnumStrategyCallback cb) override;
 
 	/*
-	 *	É¾³ı²ßÂÔ
-	 *	@stra	²ßÂÔ¶ÔÏóÖ¸Õë
+	 *	åˆ é™¤ç­–ç•¥
+	 *	@stra	ç­–ç•¥å¯¹è±¡æŒ‡é’ˆ
 	 */
 	virtual bool deleteStrategy(CtaStrategy* stra) override;	
 };

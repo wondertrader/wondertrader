@@ -1,7 +1,8 @@
-#pragma once
+﻿#pragma once
 #include <signal.h>
 #include "./StackTracer/StackTracer.h"
 TracerLogCallback g_cbSignalLog = NULL;
+ExitHandler g_exitHandler = NULL;
 
 void handle_signal(int signum)
 {
@@ -13,9 +14,17 @@ void handle_signal(int signum)
 	case SIGINT:          // interrupt
 	case SIGBREAK:        // Ctrl-Break sequence
 		g_cbSignalLog("app interrupted");
+		if (g_exitHandler)
+			g_exitHandler(signum);
+		else
+			exit(signum);
 		break;
 	case SIGTERM:         // Software termination signal from kill
 		g_cbSignalLog("app terminated");
+		if (g_exitHandler)
+			g_exitHandler(signum);
+		else
+			exit(signum);
 		break;
 	case SIGILL:          // illegal instruction - invalid function image
 	case SIGFPE:          // floating point exception
@@ -25,7 +34,10 @@ void handle_signal(int signum)
 		sprintf(buf, "app stopped by signal %d", signum);
 		g_cbSignalLog(buf);
 		print_stack_trace(g_cbSignalLog);
-		exit(signum);
+		if (g_exitHandler)
+			g_exitHandler(signum);
+		else
+			exit(signum);
 		break;
 #else
 	case SIGURG:       // discard signal       urgent condition present on socket
@@ -42,18 +54,35 @@ void handle_signal(int signum)
 	case SIGTTOU:      // stop process         background write attempted to control terminal
 		sprintf(buf, "app stopped by signal %d", signum);
 		g_cbSignalLog(buf);
-		exit(signum);
+		if (g_exitHandler)
+			g_exitHandler(signum);
+		else
+			exit(signum);
+		break;
 	case SIGINT:       // terminate process    interrupt program
 		g_cbSignalLog("app interrupted");
-		exit(signum);
+		if (g_exitHandler)
+			g_exitHandler(signum);
+		else
+			exit(signum);
 		break;
 	case SIGTERM:      // terminate process    software termination signal
 		g_cbSignalLog("app terminated");
+		if (g_exitHandler)
+			g_exitHandler(signum);
+		else
+			exit(signum);
 		break;
 	case SIGKILL:      // terminate process    kill program
 		g_cbSignalLog("app killed");
-		exit(signum);
+		if (g_exitHandler)
+			g_exitHandler(signum);
+		else
+			exit(signum);
+		break;
 	case SIGHUP:       // terminate process    terminal line hangup
+		g_cbSignalLog("app has received SIGHUP");
+		break;
 	case SIGPIPE:      // terminate process    write on a pipe with no reader
 	case SIGALRM:      // terminate process    real-time timer expired
 	case SIGXCPU:      // terminate process    cpu time limit exceeded (see setrlimit(2))
@@ -63,13 +92,21 @@ void handle_signal(int signum)
 		sprintf(buf, "app terminated by signal %d", signum);
 		g_cbSignalLog(buf);
 		print_stack_trace(g_cbSignalLog);
-		exit(signum);
+		if (g_exitHandler)
+			g_exitHandler(signum);
+		else
+			exit(signum);
+		break;
 	case SIGUSR1:      // terminate process    User defined signal 1
 	case SIGUSR2:      // terminate process    User defined signal 2
 		sprintf(buf, "app caught user defined signal %d", signum);
 		g_cbSignalLog(buf);
 		print_stack_trace(g_cbSignalLog);
-		exit(signum);
+		if (g_exitHandler)
+			g_exitHandler(signum);
+		else
+			exit(signum);
+		break;
 	case SIGQUIT:      // create core image    quit program
 	case SIGILL:       // create core image    illegal instruction
 	case SIGTRAP:      // create core image    trace trap
@@ -78,26 +115,40 @@ void handle_signal(int signum)
 	case SIGBUS:       // create core image    bus error
 		g_cbSignalLog("bus error");
 		print_stack_trace(g_cbSignalLog);
-		exit(signum);
+		if (g_exitHandler)
+			g_exitHandler(signum);
+		else
+			exit(signum);
+		break;
 	case SIGSEGV:      // create core image    segmentation violation
 		g_cbSignalLog("segmentation violation");
 		print_stack_trace(g_cbSignalLog);
-		exit(signum);
+		if (g_exitHandler)
+			g_exitHandler(signum);
+		else
+			exit(signum);
+		break;
 	case SIGSYS:       // create core image    non-existent system call invoked
 		sprintf(buf, "app caught unexpected signal %d", signum);
 		g_cbSignalLog(buf);
 		print_stack_trace(g_cbSignalLog);
-		exit(signum);
+		if (g_exitHandler)
+			g_exitHandler(signum);
+		else
+			exit(signum);
+		break;
 #endif // _WINDOWS
 	default:
 		sprintf(buf, "app caught unknown signal %d, signal ignored", signum);
 		g_cbSignalLog(buf);
+		break;
 	}
 }
 
-void install_signal_hooks(TracerLogCallback cb)
+void install_signal_hooks(TracerLogCallback cbLog, ExitHandler sigHandler = NULL)
 {
-	g_cbSignalLog = cb;
+	g_cbSignalLog = cbLog;
+	g_exitHandler = sigHandler;
 	for (int s = 1; s < NSIG; s++)
 	{
 		signal(s, handle_signal);

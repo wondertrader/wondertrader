@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <string>
 #include "../Includes/FasterDefs.h"
 #include "../Includes/WTSMarcos.h"
@@ -15,70 +15,70 @@ public:
 	void		set_notifier(EventNotifier* notifier) { _notifier = notifier; }
 
 	/*
-	 *	¼ÓÔØĞÅºÅ¹ıÂËÆ÷
+	 *	åŠ è½½ä¿¡å·è¿‡æ»¤å™¨
 	 */
 	void		load_filters(const char* fileName = "");
 
 	/*
-	 *	ÊÇ·ñÒòÎª²ßÂÔ±»¹ıÂËµôÁË
-	 *	Èç¹û¹ıÂËÆ÷ÊÇºöÂÔµÄ»°, ¾Í»á·µ»Øtrue, Èç¹ûÊÇÖØ¶¨Ïò²ÖÎ», ¾Í»á·µ»Øfalse, ¶øÄ¿±ê²ÖÎ»ÊÇÒ»¸ö±»¹ıÂËÆ÷¸Ä¹ıµÄÖµ
+	 *	æ˜¯å¦å› ä¸ºç­–ç•¥è¢«è¿‡æ»¤æ‰äº†
+	 *	å¦‚æœè¿‡æ»¤å™¨æ˜¯å¿½ç•¥çš„è¯, å°±ä¼šè¿”å›true, å¦‚æœæ˜¯é‡å®šå‘ä»“ä½, å°±ä¼šè¿”å›false, è€Œç›®æ ‡ä»“ä½æ˜¯ä¸€ä¸ªè¢«è¿‡æ»¤å™¨æ”¹è¿‡çš„å€¼
 	 *
-	 *	@sname		²ßÂÔÃû³Æ
-	 *	@targetPos	Ä¿±ê²ÖÎ», ÒÔ¸ÃÊı¾İÎª×¼
-	 *	@isDiff		ÊÇ·ñÊÇÔöÁ¿
+	 *	@sname		ç­–ç•¥åç§°
+	 *	@targetPos	ç›®æ ‡ä»“ä½, ä»¥è¯¥æ•°æ®ä¸ºå‡†
+	 *	@isDiff		æ˜¯å¦æ˜¯å¢é‡
 	 *
-	 *	return		ÊÇ·ñ¹ıÂËµôÁË, Èç¹û¹ıÂËµôÁË, ¸Ã³Ö²Ö¾Í²»¼ÓÈë×îÖÕ×éºÏÄ¿±ê²ÖÎ»
+	 *	return		æ˜¯å¦è¿‡æ»¤æ‰äº†, å¦‚æœè¿‡æ»¤æ‰äº†, è¯¥æŒä»“å°±ä¸åŠ å…¥æœ€ç»ˆç»„åˆç›®æ ‡ä»“ä½
 	 */
 	bool		is_filtered_by_strategy(const char* straName, double& targetPos, bool isDiff = false);
 
 	/*
-	 *	ÊÇ·ñÒòÎª´úÂë±»¹ıÂËµôÁË
-	 *	Èç¹û¹ıÂËÆ÷ÊÇºöÂÔµÄ»°, ¾Í»á·µ»Øtrue, Èç¹ûÊÇÖØ¶¨Ïò²ÖÎ», ¾Í»á·µ»Øfalse, ¶øÄ¿±ê²ÖÎ»ÊÇÒ»¸ö±»¹ıÂËÆ÷¸Ä¹ıµÄÖµ
+	 *	æ˜¯å¦å› ä¸ºä»£ç è¢«è¿‡æ»¤æ‰äº†
+	 *	å¦‚æœè¿‡æ»¤å™¨æ˜¯å¿½ç•¥çš„è¯, å°±ä¼šè¿”å›true, å¦‚æœæ˜¯é‡å®šå‘ä»“ä½, å°±ä¼šè¿”å›false, è€Œç›®æ ‡ä»“ä½æ˜¯ä¸€ä¸ªè¢«è¿‡æ»¤å™¨æ”¹è¿‡çš„å€¼
 	 *
-	 *	@stdCode	±ê×¼ºÏÔ¼´úÂë
-	 *	@targetPos	Ä¿±ê²ÖÎ», ÒÔ¸ÃÊı¾İÎª×¼
+	 *	@stdCode	æ ‡å‡†åˆçº¦ä»£ç 
+	 *	@targetPos	ç›®æ ‡ä»“ä½, ä»¥è¯¥æ•°æ®ä¸ºå‡†
 	 *
-	 *	return		ÊÇ·ñ¹ıÂËµôÁË, Èç¹û¹ıÂËµôÁË, ¸Ã³Ö²Ö¾Í²»¼ÓÈë×îÖÕ×éºÏÄ¿±ê²ÖÎ»
+	 *	return		æ˜¯å¦è¿‡æ»¤æ‰äº†, å¦‚æœè¿‡æ»¤æ‰äº†, è¯¥æŒä»“å°±ä¸åŠ å…¥æœ€ç»ˆç»„åˆç›®æ ‡ä»“ä½
 	 */
 	bool		is_filtered_by_code(const char* stdCode, double& targetPos);
 
 	/*
-	 *	ÊÇ·ñ±»Ö´ĞĞÆ÷¹ıÂËÆ÷¹ıÂËµôÁË
+	 *	æ˜¯å¦è¢«æ‰§è¡Œå™¨è¿‡æ»¤å™¨è¿‡æ»¤æ‰äº†
 	 *
-	 *	@channelid	½»Ò×Í¨µÀID
+	 *	@channelid	äº¤æ˜“é€šé“ID
 	 * 
-	 *	return		ÊÇ·ñ±»¹ıÂËµôÁË£¬Èç¹û¹ıÂËµôÁË£¬¸ÃÖ´ĞĞÆ÷¾Í²»Ö´ĞĞÈÎºÎĞÅºÅÁË
+	 *	return		æ˜¯å¦è¢«è¿‡æ»¤æ‰äº†ï¼Œå¦‚æœè¿‡æ»¤æ‰äº†ï¼Œè¯¥æ‰§è¡Œå™¨å°±ä¸æ‰§è¡Œä»»ä½•ä¿¡å·äº†
 	 */
 	bool		is_filtered_by_executer(const char* execid);
 
 private:
 	//////////////////////////////////////////////////////////////////////////
-	//ĞÅºÅ¹ıÂËÆ÷
+	//ä¿¡å·è¿‡æ»¤å™¨
 	typedef enum tagFilterAction
 	{
-		FA_Ignore,		//ºöÂÔ, ¼´Î¬³ÖÔ­ÓĞ²ÖÎ»
-		FA_Redirect,	//ÖØ¶¨Ïò³Ö²Ö, ¼´Í¬²½µ½Ö¸¶¨Ä¿±ê²ÖÎ»
+		FA_Ignore,		//å¿½ç•¥, å³ç»´æŒåŸæœ‰ä»“ä½
+		FA_Redirect,	//é‡å®šå‘æŒä»“, å³åŒæ­¥åˆ°æŒ‡å®šç›®æ ‡ä»“ä½
 		FA_None = 99
 	} FilterAction;
 
 	typedef struct _FilterItem
 	{
-		std::string		_key;		//¹Ø¼ü×Ö
-		FilterAction	_action;	//¹ıÂË²Ù×÷
-		double			_target;	//Ä¿±ê²ÖÎ», Ö»ÓĞµ±_actionÎªFA_Redirect²ÅÉúĞ§
+		std::string		_key;		//å…³é”®å­—
+		FilterAction	_action;	//è¿‡æ»¤æ“ä½œ
+		double			_target;	//ç›®æ ‡ä»“ä½, åªæœ‰å½“_actionä¸ºFA_Redirectæ‰ç”Ÿæ•ˆ
 	} FilterItem;
 
 	typedef wt_hashmap<std::string, FilterItem>	FilterMap;
-	FilterMap		_stra_filters;	//²ßÂÔ¹ıÂËÆ÷
+	FilterMap		_stra_filters;	//ç­–ç•¥è¿‡æ»¤å™¨
 
-	FilterMap		_code_filters;	//´úÂë¹ıÂËÆ÷, °üÀ¨ºÏÔ¼´úÂëºÍÆ·ÖÖ´úÂë, Í¬Ò»Ê±¼äÖ»ÓĞÒ»¸öÉúĞ§, ºÏÔ¼´úÂëÓÅÏÈ¼¶¸ßÓÚÆ·ÖÖ´úÂë
+	FilterMap		_code_filters;	//ä»£ç è¿‡æ»¤å™¨, åŒ…æ‹¬åˆçº¦ä»£ç å’Œå“ç§ä»£ç , åŒä¸€æ—¶é—´åªæœ‰ä¸€ä¸ªç”Ÿæ•ˆ, åˆçº¦ä»£ç ä¼˜å…ˆçº§é«˜äºå“ç§ä»£ç 
 
-	//½»Ò×Í¨µÀ¹ıÂËÆ÷
+	//äº¤æ˜“é€šé“è¿‡æ»¤å™¨
 	typedef wt_hashmap<std::string, bool>	ExecuterFilters;
 	ExecuterFilters	_exec_filters;
 
-	std::string		_filter_file;	//¹ıÂËÆ÷ÅäÖÃÎÄ¼ş
-	uint64_t		_filter_timestamp;	//¹ıÂËÆ÷ÎÄ¼şÊ±¼ä´Á
+	std::string		_filter_file;	//è¿‡æ»¤å™¨é…ç½®æ–‡ä»¶
+	uint64_t		_filter_timestamp;	//è¿‡æ»¤å™¨æ–‡ä»¶æ—¶é—´æˆ³
 
 	EventNotifier*	_notifier;
 };

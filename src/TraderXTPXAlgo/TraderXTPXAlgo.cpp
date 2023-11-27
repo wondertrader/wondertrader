@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file TraderXTPXAlgo.cpp
  * \project	WonderTrader
  *
@@ -227,10 +227,10 @@ WTSEntrust* TraderXTPXAlgo::makeEntrust(XTPOrderInfo* order_info)
 
 WTSEntrust* TraderXTPXAlgo::makeEntrust(XTPStrategyInfoStruct *stra_info)
 {
-	uint16_t				m_strategy_type;		///< ²ßÂÔÀàĞÍ
-	XTPStrategyStateType	m_strategy_state;		///< ²ßÂÔ×´Ì¬
-	uint64_t				m_client_strategy_id;	///< ¿Í»§²ßÂÔid
-	uint64_t				m_xtp_strategy_id;		///< xtp²ßÂÔid
+	uint16_t				m_strategy_type;		///< ç­–ç•¥ç±»å‹
+	XTPStrategyStateType	m_strategy_state;		///< ç­–ç•¥çŠ¶æ€
+	uint64_t				m_client_strategy_id;	///< å®¢æˆ·ç­–ç•¥id
+	uint64_t				m_xtp_strategy_id;		///< xtpç­–ç•¥id
 
 	std::string stra_type = std::to_string(stra_info->m_strategy_type);
 	std::string stra_id = std::to_string(stra_info->m_xtp_strategy_id);
@@ -312,8 +312,8 @@ WTSOrderInfo* TraderXTPXAlgo::makeOrderInfo(XTPQueryOrderRsp* order_info)
 
 WTSOrderInfo* TraderXTPXAlgo::makeOrderInfo(XTPStrategyInfoStruct *strategyState)
 {
-	uint16_t stra_type = strategyState->m_strategy_type;  ///< ²ßÂÔÀàĞÍ
-	uint64_t stra_id = strategyState->m_xtp_strategy_id;  ///< xtp²ßÂÔid
+	uint16_t stra_type = strategyState->m_strategy_type;  ///< ç­–ç•¥ç±»å‹
+	uint64_t stra_id = strategyState->m_xtp_strategy_id;  ///< xtpç­–ç•¥id
 	WTSContractInfo* contract = _bd_mgr->getContract(std::to_string(stra_type).c_str(), std::to_string(stra_id).c_str());
 	if (contract == NULL)
 		return NULL;
@@ -395,7 +395,7 @@ void TraderXTPXAlgo::OnDisconnected(uint64_t session_id, int reason)
 	_asyncio.post([this]() {
 		write_log(_sink, LL_WARN, "[TraderXTPXAlgo] Connection lost, relogin in 2 seconds...");
 		std::this_thread::sleep_for(std::chrono::seconds(2));
-		doLogin();  // µÇÂ¼
+		doLogin();  // ç™»å½•
 	});
 }
 
@@ -619,20 +619,20 @@ void TraderXTPXAlgo::OnQueryAsset(XTPQueryAssetRsp *asset, XTPRI *error_info, in
 void TraderXTPXAlgo::OnAlgoDisconnected(int reason)
 {
 	std::cout << "------------------- OnAlgoDisconnected -----------" << std::endl;
-	/// ÓëËã·¨·şÎñÆ÷¶ÏÏß£¬´ËÊ±api»á×Ô¶¯ÓëËã·¨·şÎñÆ÷ÖØÁ¬£¬ÎŞĞèÓÃ»§ÖØÁ¬
+	/// ä¸ç®—æ³•æœåŠ¡å™¨æ–­çº¿ï¼Œæ­¤æ—¶apiä¼šè‡ªåŠ¨ä¸ç®—æ³•æœåŠ¡å™¨é‡è¿ï¼Œæ— éœ€ç”¨æˆ·é‡è¿
 }
 
 void TraderXTPXAlgo::OnAlgoConnected()
 {
 	std::cout << "------------------- OnAlgoConnected -----------" << std::endl;
-	/// ÓëËã·¨·şÎñÆ÷ÖØĞÂ½¨Á¢ÆğÁ¬½Ó£¬½öÔÚ¶ÏÁ¬ÖØÁ¬³É¹¦ºóÍ¨Öª
+	/// ä¸ç®—æ³•æœåŠ¡å™¨é‡æ–°å»ºç«‹èµ·è¿æ¥ï¼Œä»…åœ¨æ–­è¿é‡è¿æˆåŠŸåé€šçŸ¥
 }
 
 void TraderXTPXAlgo::OnQueryStrategy(XTPStrategyInfoStruct* strategy_info, char* strategy_param, XTPRI *error_info, int32_t request_id, bool is_last, uint64_t session_id)
 {
 	std::cout << "------------------- OnQueryStrategy -----------" << std::endl;
 
-	/// Ëã·¨µ¥²éÑ¯½á¹ûÍ¨Öª
+	/// ç®—æ³•å•æŸ¥è¯¢ç»“æœé€šçŸ¥
 	if (error_info->error_id != 0)
 	{
 		write_log(_sink, LL_ERROR, "[TraderXTPXAlgo] Query strategy failed: {}", error_info->error_msg);
@@ -669,9 +669,9 @@ void TraderXTPXAlgo::OnStrategyStateReport(XTPStrategyStateReportStruct* strateg
 {
 	std::cout << "------------------- OnStrategyStateReport -----------" << std::endl;
 
-	/// Èç¹ûÄ¸µ¥Ö´ĞĞ×´Ì¬ÎªSTOPPED£¬´ËÊ±Ö´ĞĞËã·¨Í£Ö¹
-	/// Èç¹ûËã·¨ÌáÇ°Ö´ĞĞÍê±Ï£¬Ôò»á³ÖĞøÍÆËÍµ½Ëã·¨ÉèÖÃµÄ×îÖÕµãÒÔ¸üĞÂ»¬µãĞÅÏ¢µÈ
-	/// ×îºóÍÆËÍÒ»¸ö×îÖÕÌ¬µÄÄ¸µ¥×´Ì¬»Ø±¨
+	/// å¦‚æœæ¯å•æ‰§è¡ŒçŠ¶æ€ä¸ºSTOPPEDï¼Œæ­¤æ—¶æ‰§è¡Œç®—æ³•åœæ­¢
+	/// å¦‚æœç®—æ³•æå‰æ‰§è¡Œå®Œæ¯•ï¼Œåˆ™ä¼šæŒç»­æ¨é€åˆ°ç®—æ³•è®¾ç½®çš„æœ€ç»ˆç‚¹ä»¥æ›´æ–°æ»‘ç‚¹ä¿¡æ¯ç­‰
+	/// æœ€åæ¨é€ä¸€ä¸ªæœ€ç»ˆæ€çš„æ¯å•çŠ¶æ€å›æŠ¥
 	if (strategy_state->m_strategy_info.m_strategy_state == XTP_STRATEGY_STATE_STOPPED)   
 	{
 		std::cout << "------------------ Algo Execution Stopped -----------------" << std::endl;
@@ -713,10 +713,10 @@ void TraderXTPXAlgo::OnStrategyStateReport(XTPStrategyStateReportStruct* strateg
 void TraderXTPXAlgo::OnALGOUserEstablishChannel(char* user, XTPRI* error_info, uint64_t session_id)
 {
 	std::cout << "--------------- OnALGOUserEstablishChannel -----------" << std::endl;
-	/// ½¨Á¢Ëã·¨Í¨µÀµÄÒì²½Í¨Öª
+	/// å»ºç«‹ç®—æ³•é€šé“çš„å¼‚æ­¥é€šçŸ¥
 	if (error_info->error_id == 0)
 	{
-		/// ½¨Á¢Ëã·¨Í¨µÀ³É¹¦ºó£¬¿ÉÒÔÏÂËã·¨Ä¸µ¥
+		/// å»ºç«‹ç®—æ³•é€šé“æˆåŠŸåï¼Œå¯ä»¥ä¸‹ç®—æ³•æ¯å•
 		//std::cout << user << " establish channel success." << std::endl;
 	}
 	else
@@ -729,7 +729,7 @@ void TraderXTPXAlgo::OnInsertAlgoOrder(XTPStrategyInfoStruct* strategy_info, XTP
 {
 	std::cout << "----------------- OnInsertAlgoOrder --------------" << std::endl;
 
-	/// ·¢ËÍËã·¨µ¥ºóµÄÒì²½Í¨Öª
+	/// å‘é€ç®—æ³•å•åçš„å¼‚æ­¥é€šçŸ¥
 	if (error_info->error_id != 0)
 	{
 		write_log(_sink, LL_ERROR, "[TraderXTPXAlgo] Insert algo order failed: {}", error_info->error_msg);
@@ -745,11 +745,11 @@ void TraderXTPXAlgo::OnInsertAlgoOrder(XTPStrategyInfoStruct* strategy_info, XTP
 		return;
 	}
 
-	/// Ëã·¨µ¥½¨Á¢³É¹¦
+	/// ç®—æ³•å•å»ºç«‹æˆåŠŸ
 	std::cout << "Insert algo order success." << std::endl;
 	//std::cout << "strategy:" << strategy_info->m_xtp_strategy_id << ", client id:" << strategy_info->m_client_strategy_id << ", type:" << strategy_info->m_strategy_type << ", status:" << (strategy_info->m_strategy_state - 0) << std::endl;
 	
-	/// ĞèÒª°Ñ²ßÂÔID»º´æÆğÀ´ÒÔ±ã³·µ¥Ê±ÓÃ
+	/// éœ€è¦æŠŠç­–ç•¥IDç¼“å­˜èµ·æ¥ä»¥ä¾¿æ’¤å•æ—¶ç”¨
 	WTSOrderInfo *orderInfo = makeOrderInfo(strategy_info);
 	if (orderInfo)
 	{
@@ -764,7 +764,7 @@ void TraderXTPXAlgo::OnCancelAlgoOrder(XTPStrategyInfoStruct* strategy_info, XTP
 {
 	std::cout << "------------------- OnCancelAlgoOrder-----------" << std::endl;
 
-	/// Ëã·¨µ¥³·Ïú½á¹ûÍ¨Öª
+	/// ç®—æ³•å•æ’¤é”€ç»“æœé€šçŸ¥
 	if (error_info->error_id != 0)
 	{
 		write_log(_sink, LL_ERROR, "[TraderXTPXAlgo] Cancel algo order failed: {}", error_info->error_msg);
@@ -784,7 +784,7 @@ void TraderXTPXAlgo::OnCancelAlgoOrder(XTPStrategyInfoStruct* strategy_info, XTP
 #pragma region "ITraderApi"
 bool TraderXTPXAlgo::init(WTSVariant *params)
 {
-	// ½»Ò×·şÎñÆ÷µÇÂ¼ÉèÖÃ
+	// äº¤æ˜“æœåŠ¡å™¨ç™»å½•è®¾ç½®
 	_user = params->getCString("user");
 	_pass = params->getCString("pass");
 	_host_oms = params->getCString("front_oms");
@@ -792,13 +792,13 @@ bool TraderXTPXAlgo::init(WTSVariant *params)
 
 	_acct_key = params->getCString("account_key");
 
-	// Ëã·¨·şÎñÆ÷µÇÂ½ÉèÖÃ
+	// ç®—æ³•æœåŠ¡å™¨ç™»é™†è®¾ç½®
 	_acct_algo = params->getCString("account_algo");
 	_password_algo = params->getCString("password_algo");
 	_host_algo = params->getCString("front_algo");
 	_port_algo = params->getInt32("port_algo");
 
-	// Ëã·¨²ÎÊıÉèÖÃ
+	// ç®—æ³•å‚æ•°è®¾ç½®
 	_client = params->getInt32("client_id");
 	std::cout << "client: " << _client << std::endl;
 	_client = 1;
@@ -875,7 +875,7 @@ void TraderXTPXAlgo::reconnect()
 	std::stringstream ss;
 	ss << _flowdir << "flows/" << _user << "/";
 	boost::filesystem::create_directories(ss.str().c_str());
-	_api = m_funcCreator(_client, ss.str().c_str(), XTP_LOG_LEVEL_DEBUG);			// ´´½¨UserApi
+	_api = m_funcCreator(_client, ss.str().c_str(), XTP_LOG_LEVEL_DEBUG);			// åˆ›å»ºUserApi
 	if (_api == NULL)
 	{
 		if (_sink)
@@ -892,10 +892,10 @@ void TraderXTPXAlgo::reconnect()
 
 	//_api->SubscribePublicTopic(_quick ? XTP_TERT_QUICK : XTP_TERT_RESUME);
 	_api->SubscribePublicTopic((XTP_TE_RESUME_TYPE)_resume_type);
-	_api->SetSoftwareVersion("1.0.0"); //Éè¶¨´ËÈí¼şµÄ¿ª·¢°æ±¾ºÅ,ÓÃ»§×Ô¶¨Òå
-	_api->SetSoftwareKey(_acct_key.c_str());//Éè¶¨ÓÃ»§µÄ¿ª·¢´úÂë,ÔÚXTPÉêÇë¿ª»§Ê±,ÓÉxtpÈËÔ±Ìá¹©
-	_api->SetHeartBeatInterval(15);//Éè¶¨½»Ò×·şÎñÆ÷³¬Ê±Ê±¼ä,µ¥Î»ÎªÃë,´ËÎª1.1.16ĞÂÔö½Ó¿Ú
-	_api->RegisterSpi(this);						// ×¢²áÊÂ¼ş
+	_api->SetSoftwareVersion("1.0.0"); //è®¾å®šæ­¤è½¯ä»¶çš„å¼€å‘ç‰ˆæœ¬å·,ç”¨æˆ·è‡ªå®šä¹‰
+	_api->SetSoftwareKey(_acct_key.c_str());//è®¾å®šç”¨æˆ·çš„å¼€å‘ä»£ç ,åœ¨XTPç”³è¯·å¼€æˆ·æ—¶,ç”±xtpäººå‘˜æä¾›
+	_api->SetHeartBeatInterval(15);//è®¾å®šäº¤æ˜“æœåŠ¡å™¨è¶…æ—¶æ—¶é—´,å•ä½ä¸ºç§’,æ­¤ä¸º1.1.16æ–°å¢æ¥å£
+	_api->RegisterSpi(this);						// æ³¨å†Œäº‹ä»¶
 
 	const char* version = _api->GetApiVersion();
 	std::cout << "API version is " << version << std::endl;
@@ -934,7 +934,7 @@ bool TraderXTPXAlgo::isConnected()
 
 void TraderXTPXAlgo::genEntrustID(char* buffer, uint32_t orderRef)
 {
-	//ÕâÀï²»ÔÙÊ¹ÓÃsessionid£¬ÒòÎªÃ¿´ÎµÇÂ½»á²»Í¬£¬Èç¹ûÊ¹ÓÃµÄ»°£¬¿ÉÄÜ»áÔì³É²»Î¨Ò»µÄÇé¿ö
+	//è¿™é‡Œä¸å†ä½¿ç”¨sessionidï¼Œå› ä¸ºæ¯æ¬¡ç™»é™†ä¼šä¸åŒï¼Œå¦‚æœä½¿ç”¨çš„è¯ï¼Œå¯èƒ½ä¼šé€ æˆä¸å”¯ä¸€çš„æƒ…å†µ
 	fmtutil::format_to(buffer, "{}#{}#{}", _user, _tradingday, orderRef);
 }
 
@@ -972,7 +972,7 @@ void TraderXTPXAlgo::doLogin()
 {
 	_state = TS_LOGINING;
 
-	// µÇÂ¼XTP½»Ò×·şÎñÆ÷
+	// ç™»å½•XTPäº¤æ˜“æœåŠ¡å™¨
 	std::cout << _user << " begin to login to OMS." << std::endl;
 	uint64_t iResult = _api->Login(_host_oms.c_str(), _port_oms, _user.c_str(), _pass.c_str(), XTP_PROTOCOL_TCP);
 	if (iResult == 0)
@@ -993,7 +993,7 @@ void TraderXTPXAlgo::doLogin()
 			_tradingday = strtoul(_api->GetTradingDay(), NULL, 10);
 
 			{
-				//³õÊ¼»¯Î¯ÍĞµ¥»º´æÆ÷
+				//åˆå§‹åŒ–å§”æ‰˜å•ç¼“å­˜å™¨
 				std::stringstream ss;
 				ss << "./xtpdata/local/";
 				std::string path = StrUtil::standardisePath(ss.str());
@@ -1006,7 +1006,7 @@ void TraderXTPXAlgo::doLogin()
 			}
 
 			{
-				//³õÊ¼»¯¶©µ¥±ê¼Ç»º´æÆ÷
+				//åˆå§‹åŒ–è®¢å•æ ‡è®°ç¼“å­˜å™¨
 				std::stringstream ss;
 				ss << "./xtpdata/local/";
 				std::string path = StrUtil::standardisePath(ss.str());
@@ -1034,7 +1034,7 @@ void TraderXTPXAlgo::doLogin()
 		}
 	}
 
-	// µÇÂ¼AlgoBusËã·¨·şÎñÆ÷
+	// ç™»å½•AlgoBusç®—æ³•æœåŠ¡å™¨
 	std::cout << _acct_algo << " begin to login AlgoBus." << std::endl;
 	int login_ret = 0;
 	login_ret = _api->LoginALGO(_host_algo.c_str(), _port_algo, _acct_algo.c_str(), _password_algo.c_str(), XTP_PROTOCOL_TCP);
@@ -1057,7 +1057,7 @@ void TraderXTPXAlgo::doLogin()
 			_tradingday = strtoul(_api->GetTradingDay(), NULL, 10);
 
 			{
-				//³õÊ¼»¯Î¯ÍĞµ¥»º´æÆ÷
+				//åˆå§‹åŒ–å§”æ‰˜å•ç¼“å­˜å™¨
 				std::stringstream ss;
 				ss << "./xtpdata/local/";
 				std::string path = StrUtil::standardisePath(ss.str());
@@ -1070,7 +1070,7 @@ void TraderXTPXAlgo::doLogin()
 			}
 
 			{
-				//³õÊ¼»¯¶©µ¥±ê¼Ç»º´æÆ÷
+				//åˆå§‹åŒ–è®¢å•æ ‡è®°ç¼“å­˜å™¨
 				std::stringstream ss;
 				ss << "./xtpdata/local/";
 				std::string path = StrUtil::standardisePath(ss.str());
@@ -1097,7 +1097,7 @@ void TraderXTPXAlgo::doLogin()
 			_state = TS_ALLREADY;
 		}
 
-		///ÔÚÓÃ»§³É¹¦µÇÂ¼½»Ò×·şÎñÆ÷ºó£¬Ëã·¨ÓÃ»§½¨Á¢Ëã·¨Í¨µÀ
+		///åœ¨ç”¨æˆ·æˆåŠŸç™»å½•äº¤æ˜“æœåŠ¡å™¨åï¼Œç®—æ³•ç”¨æˆ·å»ºç«‹ç®—æ³•é€šé“
 		if (_sessionid != 0)
 		{
 			std::cout << _user << " begin to establish channel." << std::endl;
@@ -1215,7 +1215,7 @@ int TraderXTPXAlgo::queryPositions()
 
 int TraderXTPXAlgo::queryOrders()
 {
-	int iResult = _api->QueryStrategy(0, 0, 0, _sessionid, genRequestID());  // ²éÑ¯ËùÓĞ
+	int iResult = _api->QueryStrategy(0, 0, 0, _sessionid, genRequestID());  // æŸ¥è¯¢æ‰€æœ‰
 	if (iResult != 0)
 	{
 		auto err_info = _api->GetApiLastError();

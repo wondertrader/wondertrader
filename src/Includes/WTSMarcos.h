@@ -1,11 +1,11 @@
-/*!
+﻿/*!
  * \file WTSMarcos.h
  * \project	WonderTrader
  *
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief WonderTrader�����궨���ļ�
+ * \brief WonderTrader基础宏定义文件
  */
 #pragma once
 #include <limits.h>
@@ -70,7 +70,7 @@
 #endif
 #endif
 
-typedef unsigned long		WtUInt32;
+typedef unsigned int		WtUInt32;
 typedef unsigned long long	WtUInt64;
 typedef const char*			WtString;
 
@@ -82,8 +82,14 @@ typedef const char*			WtString;
 
 /*
  *	By Wesley @ 2022.03.17
- *	��дһ��strcpy
- *	���ĵ�Ҫ����ǲ���strcpy
+ *	重写一个strcpy
+ *	核心的要点就是不用strcpy
+ *	字符串比较长的时候，会优于strcpy
+ */
+/*
+ *	By Wesley @ 2023.10.09
+ *	重新和strcpy进行了性能测试，发现性能上并没有提升，甚至还有一些下降
+ *	可能和早期测试环境有很大关系，用到的地方很多，暂时先保留
  */
 inline size_t wt_strcpy(char* des, const char* src, size_t len = 0)
 {

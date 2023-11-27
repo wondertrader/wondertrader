@@ -1,11 +1,11 @@
-/*!
+ï»¿/*!
  * \file WTSSessionInfo.hpp
  * \project	WonderTrader
  *
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief Wt½»Ò×Ê±¼äÄ£°å¶ÔÏó¶¨Òå
+ * \brief Wtäº¤æ˜“æ—¶é—´æ¨¡æ¿å¯¹è±¡å®šä¹‰
  */
 #pragma once
 #include <vector>
@@ -20,17 +20,30 @@ static const char* DEFAULT_SESSIONID = "TRADING";
 class WTSSessionInfo : public WTSObject
 {
 public:
-	//½»Ò×Ê±¶Î
-	typedef std::pair<uint32_t, uint32_t>	TradingSection;
+	//äº¤æ˜“æ—¶æ®µ
+	//typedef std::pair<uint32_t, uint32_t>	TradingSection;
+	typedef struct _TradingSection
+	{
+		uint32_t	first_raw;	//åŸå§‹å¼€å§‹æ—¶é—´
+		uint32_t	first;		//åç§»è¿‡çš„å¼€å§‹æ—¶é—´
+
+		uint32_t	second_raw;	//åŸå§‹ç»“æŸæ—¶é—´
+		uint32_t	second;		//åç§»è¿‡çš„ç»“æŸæ—¶é—´
+
+		_TradingSection(uint32_t stime, uint32_t etime, uint32_t stime_raw, uint32_t etime_raw)
+			: first(stime), second(etime), first_raw(stime_raw), second_raw(second_raw)
+		{
+		}
+	} TradingSection;
 	typedef std::vector<TradingSection>		TradingTimes;
 
 protected:
 	TradingTimes	m_tradingTimes;
 	/*
 	 *	By Wesley @ 2023.05.17
-	 *	¼¯ºÏ¾º¼ÛÊ±¼ä¸Ä³É¶à¶Î
-	 *	µ«ÊÇºÜ¶àÓÃµ½µÄµØ·½»¹ÊÇÖ»Éæ¼°µÚÒ»¸ö¼¯ºÏ¾º¼ÛÊ±¼ä£¬Ö÷ÒªÊÇÒ»Ğ©×´Ì¬ÅĞ¶Ï
-	 *	°×ÅÌµÄ¼¯ºÏ¾º¼Û»áÔÚ¿ªÅÌÇ°Ò»·ÖÖÓ´éºÏ£¬×´Ì¬»ú»áÍùÇ°ÑÓÉìÒ»·ÖÖÓ£¬ËùÒÔÔ­ÓĞÂß¼­²»ĞèÒªÍØÕ¹
+	 *	é›†åˆç«ä»·æ—¶é—´æ”¹æˆå¤šæ®µ
+	 *	ä½†æ˜¯å¾ˆå¤šç”¨åˆ°çš„åœ°æ–¹è¿˜æ˜¯åªæ¶‰åŠç¬¬ä¸€ä¸ªé›†åˆç«ä»·æ—¶é—´ï¼Œä¸»è¦æ˜¯ä¸€äº›çŠ¶æ€åˆ¤æ–­
+	 *	ç™½ç›˜çš„é›†åˆç«ä»·ä¼šåœ¨å¼€ç›˜å‰ä¸€åˆ†é’Ÿæ’®åˆï¼ŒçŠ¶æ€æœºä¼šå¾€å‰å»¶ä¼¸ä¸€åˆ†é’Ÿï¼Œæ‰€ä»¥åŸæœ‰é€»è¾‘ä¸éœ€è¦æ‹“å±•
 	 */
 	TradingTimes	m_auctionTimes;
 	int32_t			m_uOffsetMins;
@@ -62,33 +75,27 @@ public:
 
 	void addTradingSection(uint32_t sTime, uint32_t eTime)
 	{
-		sTime = offsetTime(sTime, true);
-		eTime = offsetTime(eTime, false);
-		m_tradingTimes.emplace_back(TradingSection(sTime, eTime));
+		m_tradingTimes.emplace_back(TradingSection(offsetTime(sTime, true), offsetTime(eTime, false), sTime, eTime));
 	}
 
 	void setAuctionTime(uint32_t sTime, uint32_t eTime)
 	{
-		sTime = offsetTime(sTime, true);
-		eTime = offsetTime(eTime, false);
-
 		if (m_auctionTimes.empty())
 		{
-			m_auctionTimes.emplace_back(TradingSection(sTime, eTime));
+			m_auctionTimes.emplace_back(TradingSection(offsetTime(sTime, true), offsetTime(eTime, false), sTime, eTime));
 		}
 		else
 		{
-			m_auctionTimes[0].first = sTime;
-			m_auctionTimes[0].second = eTime;
+			m_auctionTimes[0].first_raw = sTime;
+			m_auctionTimes[0].second_raw = eTime;
+			m_auctionTimes[0].first = offsetTime(sTime, true);
+			m_auctionTimes[0].second = offsetTime(eTime, false);
 		}
 	}
 
 	void addAuctionTime(uint32_t sTime, uint32_t eTime)
 	{
-		sTime = offsetTime(sTime, true);
-		eTime = offsetTime(eTime, false);
-
-		m_auctionTimes.emplace_back(TradingSection(sTime, eTime));
+		m_auctionTimes.emplace_back(TradingSection(offsetTime(sTime, true), offsetTime(eTime, false), sTime, eTime));
 	}
 
 	void setOffsetMins(int32_t offset){m_uOffsetMins = offset;}
@@ -96,14 +103,14 @@ public:
 	const TradingTimes&		getTradingSections() const{ return m_tradingTimes; }
 	const TradingTimes&		getAuctionSections() const{ return m_auctionTimes; }
 
-	//ĞèÒªµ¼³öµ½½Å±¾µÄº¯Êı
+	//éœ€è¦å¯¼å‡ºåˆ°è„šæœ¬çš„å‡½æ•°
 public:
 	uint32_t getSectionCount() const{ return (uint32_t)m_tradingTimes.size(); }
 
 	/*
-	 *	¼ÆËãÆ«ÒÆÒÔºóµÄÈÕÆÚ
-	 *	Ö÷ÒªÓÃÓÚ¸÷ÖÖÈÕÆÚ±È½Ï
-	 *	ÈçÒ¹ÅÌµÄÆ«ÒÆÈÕÆÚ¶¼ÊÇÏÂÒ»ÈÕ
+	 *	è®¡ç®—åç§»ä»¥åçš„æ—¥æœŸ
+	 *	ä¸»è¦ç”¨äºå„ç§æ—¥æœŸæ¯”è¾ƒ
+	 *	å¦‚å¤œç›˜çš„åç§»æ—¥æœŸéƒ½æ˜¯ä¸‹ä¸€æ—¥
 	 */
 	uint32_t getOffsetDate(uint32_t uDate = 0, uint32_t uTime = 0)
 	{
@@ -126,11 +133,11 @@ public:
 	}
 
 	/*
-	 *	½«Ê±¼ä×ª»»³É·ÖÖÓÊı
-	 *	@uTime	µ±Ç°Ê±¼ä,¸ñÊ½Èç0910
-	 *	@autoAdjust	ÊÇ·ñ×Ô¶¯µ÷Õû,Èç¹û¿ªÆô,·Ç½»Ò×Ê±¼äÄÚµÄĞĞÇé,»á×Ô¶¯¶ÔÆëµ½ÏÂÒ»¸ö½»Ò×Ê±¼ä,Èç8µã59·ÖµÄĞĞÇé,»á×Ô¶¯Ëã×÷9µã00µÄĞĞÇé
-	 *				»á²»»áÓĞ±ğµÄÓ°Ïì,ÔİÊ±ÎŞ·¨È·¶¨,Ö÷ÒªÊÇµ£ĞÄ·Ç½»Ò×Ê±¼äÀïÊÕµ½´íÎóÊı¾İ
-	 *				µ«ÊÇÓĞ½ÓÊÕÊ±¼ä¿ØÖÆ,Ó¦¸ÃÃ»ÎÊÌâ
+	 *	å°†æ—¶é—´è½¬æ¢æˆåˆ†é’Ÿæ•°
+	 *	@uTime	å½“å‰æ—¶é—´,æ ¼å¼å¦‚0910
+	 *	@autoAdjust	æ˜¯å¦è‡ªåŠ¨è°ƒæ•´,å¦‚æœå¼€å¯,éäº¤æ˜“æ—¶é—´å†…çš„è¡Œæƒ…,ä¼šè‡ªåŠ¨å¯¹é½åˆ°ä¸‹ä¸€ä¸ªäº¤æ˜“æ—¶é—´,å¦‚8ç‚¹59åˆ†çš„è¡Œæƒ…,ä¼šè‡ªåŠ¨ç®—ä½œ9ç‚¹00çš„è¡Œæƒ…
+	 *				ä¼šä¸ä¼šæœ‰åˆ«çš„å½±å“,æš‚æ—¶æ— æ³•ç¡®å®š,ä¸»è¦æ˜¯æ‹…å¿ƒéäº¤æ˜“æ—¶é—´é‡Œæ”¶åˆ°é”™è¯¯æ•°æ®
+	 *				ä½†æ˜¯æœ‰æ¥æ”¶æ—¶é—´æ§åˆ¶,åº”è¯¥æ²¡é—®é¢˜
 	 */
 	uint32_t timeToMinutes(uint32_t uTime, bool autoAdjust = false)
 	{
@@ -156,13 +163,13 @@ public:
 				bFound = true;
 				break;
 			}
-			else if(offTime > section.second)	//´óÓÚÉÏ±ß½ç
+			else if(offTime > section.second)	//å¤§äºä¸Šè¾¹ç•Œ
 			{
 				int32_t hour = section.second/100 - section.first/100;
 				int32_t minute = section.second%100 - section.first%100;
 				offset += hour*60 + minute;
 			} 
-			else //Ğ¡ÓÚÏÂ±ß½ç
+			else //å°äºä¸‹è¾¹ç•Œ
 			{
 				if(autoAdjust)
 				{
@@ -172,7 +179,7 @@ public:
 			}
 		}
 
-		//Ã»ÕÒµ½¾Í·µ»Ø0
+		//æ²¡æ‰¾åˆ°å°±è¿”å›0
 		if(!bFound)
 			return INVALID_UINT32;
 
@@ -204,7 +211,7 @@ public:
 				}
 				else
 				{
-					//¸ÉºÃÎ»ÓÚ¸ÃÇø¼ä
+					//å¹²å¥½ä½äºè¯¥åŒºé—´
 					uint32_t desMin = startMin + offset;
 					if (desMin >= 1440)
 						desMin -= 1440;
@@ -216,7 +223,7 @@ public:
 			{
 				if (startMin + offset < stopMin)
 				{
-					//¸ÉºÃÎ»ÓÚ¸ÃÇø¼ä
+					//å¹²å¥½ä½äºè¯¥åŒºé—´
 					uint32_t desMin = startMin + offset;
 					if (desMin >= 1440)
 						desMin -= 1440;
@@ -238,7 +245,7 @@ public:
 		if(m_tradingTimes.empty())
 			return INVALID_UINT32;
 
-		//Èç¹ûÊÇ¼¯ºÏ¾º¼ÛµÄ¼Û¸ñ,ÔòÈÏÎªÊÇ0Ãë¼Û¸ñ
+		//å¦‚æœæ˜¯é›†åˆç«ä»·çš„ä»·æ ¼,åˆ™è®¤ä¸ºæ˜¯0ç§’ä»·æ ¼
 		if(isInAuctionTime(uTime/100))
 			return 0;
 
@@ -276,7 +283,7 @@ public:
 			}
 		}
 
-		//Ã»ÕÒµ½¾Í·µ»Ø0
+		//æ²¡æ‰¾åˆ°å°±è¿”å›0
 		if(!bFound)
 			return INVALID_UINT32;
 
@@ -307,7 +314,7 @@ public:
 			}
 			else
 			{
-				//¸ÉºÃÎ»ÓÚ¸ÃÇø¼ä
+				//å¹²å¥½ä½äºè¯¥åŒºé—´
 				uint32_t desSecs = startSecs+offset;
 				if(desSecs >= 86400)
 					desSecs -= 86400;
@@ -325,10 +332,7 @@ public:
 		if(m_tradingTimes.empty())
 			return 0;
 
-		if(bOffseted)
-			return m_tradingTimes[0].first;
-		else
-			return originalTime(m_tradingTimes[0].first);
+		return bOffseted ? m_tradingTimes[0].first : m_tradingTimes[0].first_raw;
 	}
 
 	inline uint32_t getAuctionStartTime(bool bOffseted = false) const
@@ -336,10 +340,7 @@ public:
 		if (m_auctionTimes.empty())
 			return -1;
 
-		if(bOffseted)
-			return m_auctionTimes[0].first;
-		else
-			return originalTime(m_auctionTimes[0].first);
+		return bOffseted?m_auctionTimes[0].first: m_auctionTimes[0].first_raw;
 	}
 
 	inline uint32_t getCloseTime(bool bOffseted = false) const
@@ -347,14 +348,10 @@ public:
 		if(m_tradingTimes.empty())
 			return 0;
 
-		uint32_t ret = 0;
-		if(bOffseted)
-			ret = m_tradingTimes[m_tradingTimes.size()-1].second;
-		else
-			ret = originalTime(m_tradingTimes[m_tradingTimes.size()-1].second);
+		uint32_t ret = bOffseted ? m_tradingTimes[m_tradingTimes.size() - 1].second : m_tradingTimes[m_tradingTimes.size() - 1].second_raw;
 
 		// By Wesley @ 2021.12.25
-		// Èç¹ûÊÕÅÌÊ±¼äÊÇ0µã£¬ÎŞ·¨¸ú¿ªÅÌÊ±¼ä½øĞĞ±È½Ï£¬ËùÒÔÕâÀïÒª×öÒ»¸öĞŞÕı
+		// å¦‚æœæ”¶ç›˜æ—¶é—´æ˜¯0ç‚¹ï¼Œæ— æ³•è·Ÿå¼€ç›˜æ—¶é—´è¿›è¡Œæ¯”è¾ƒï¼Œæ‰€ä»¥è¿™é‡Œè¦åšä¸€ä¸ªä¿®æ­£
 		if (ret == 0 && bOffseted)
 			ret = 2400;
 
@@ -377,13 +374,13 @@ public:
 		}
 
 		//By Welsey @ 2021.12.25
-		//ÕâÖÖÖ»ÄÜÊÇÈ«Ììºò½»Ò×Ê±¶Î
+		//è¿™ç§åªèƒ½æ˜¯å…¨å¤©å€™äº¤æ˜“æ—¶æ®µ
 		if (count == 0) count = 1440;
 		return count*60;
 	}
 
 	/*
-	 *	»ñÈ¡½»Ò×µÄ·ÖÖÓÊı
+	 *	è·å–äº¤æ˜“çš„åˆ†é’Ÿæ•°
 	 */
 	inline uint32_t getTradingMins()
 	{
@@ -400,13 +397,13 @@ public:
 			count += hour * 60 + minute;
 		}
 		//By Welsey @ 2021.12.25
-		//ÕâÖÖÖ»ÄÜÊÇÈ«Ììºò½»Ò×Ê±¶Î
+		//è¿™ç§åªèƒ½æ˜¯å…¨å¤©å€™äº¤æ˜“æ—¶æ®µ
 		if (count == 0) count = 1440;
 		return count;
 	}
 
 	/*
-	 *	»ñÈ¡Ğ¡½Ú·ÖÖÓÊıÁĞ±í
+	 *	è·å–å°èŠ‚åˆ†é’Ÿæ•°åˆ—è¡¨
 	 */
 	inline const std::vector<uint32_t>& getSecMinList()
 	{
@@ -436,10 +433,10 @@ public:
 	}
 
 	/*
-	 *	ÊÇ·ñ´¦ÓÚ½»Ò×Ê±¼ä
-	 *	@uTime		Ê±¼ä£¬¸ñÊ½Îªhhmm
-	 *	@bStrict	ÊÇ·ñÑÏ¸ñ¼ì²é£¬Èç¹ûÊÇÑÏ¸ñ¼ì²é
-	 *				ÔòÔÚÃ¿Ò»½»Ò×Ê±¶Î×îºóÒ»·ÖÖÓ£¬Èç1500£¬²»ÊôÓÚ½»Ò×Ê±¼ä
+	 *	æ˜¯å¦å¤„äºäº¤æ˜“æ—¶é—´
+	 *	@uTime		æ—¶é—´ï¼Œæ ¼å¼ä¸ºhhmm
+	 *	@bStrict	æ˜¯å¦ä¸¥æ ¼æ£€æŸ¥ï¼Œå¦‚æœæ˜¯ä¸¥æ ¼æ£€æŸ¥
+	 *				åˆ™åœ¨æ¯ä¸€äº¤æ˜“æ—¶æ®µæœ€åä¸€åˆ†é’Ÿï¼Œå¦‚1500ï¼Œä¸å±äºäº¤æ˜“æ—¶é—´
 	 */
 	bool	isInTradingTime(uint32_t uTime, bool bStrict = false)
 	{
@@ -455,12 +452,12 @@ public:
 
 	inline bool	isLastOfSection(uint32_t uTime)
 	{
-		uint32_t offTime = offsetTime(uTime, false);
+		//uint32_t offTime = offsetTime(uTime, false);
 		TradingTimes::iterator it = m_tradingTimes.begin();
 		for(; it != m_tradingTimes.end(); it++)
 		{
 			TradingSection &section = *it;
-			if(section.second == offTime)
+			if(section.second_raw == uTime)
 				return true;
 		}
 
@@ -469,12 +466,12 @@ public:
 
 	inline bool	isFirstOfSection(uint32_t uTime)
 	{
-		uint32_t offTime = offsetTime(uTime, true);
+		//uint32_t offTime = offsetTime(uTime, true);
 		TradingTimes::iterator it = m_tradingTimes.begin();
 		for(; it != m_tradingTimes.end(); it++)
 		{
 			TradingSection &section = *it;
-			if(section.first == offTime)
+			if(section.first_raw == uTime)
 				return true;
 		}
 
@@ -498,8 +495,13 @@ public:
 		return false;
 	}
 
-	const TradingTimes &getTradingTimes() const{return m_tradingTimes;}
-
+	/*
+	 *	è®¡ç®—åç§»æ—¶é—´
+	 *	@uTime		åŸå§‹æ—¶é—´
+	 *	@bAlignLeft	æ˜¯å¦å‘å·¦å¯¹é½ï¼Œè¿™ä¸ªä¸»è¦é’ˆå¯¹0ç‚¹ç»“æŸçš„æƒ…å†µ
+	 *				å¦‚æœå‘å·¦å¯¹é½ï¼Œåˆ™0ç‚¹å°±åš0ç‚¹ç®—
+	 *				å¦‚æœå‘å³å¯¹é½ï¼Œåˆ™0ç‚¹å°±åš24ç‚¹ç®—
+	 */
 	inline uint32_t	offsetTime(uint32_t uTime, bool bAlignLeft) const
 	{
 		int32_t curMinute = (uTime/100)*60 + uTime%100;
@@ -520,8 +522,6 @@ public:
 		}
 		
 		return (curMinute/60)*100 + curMinute%60;
-
-		return uTime;
 	}
 
 	inline uint32_t	originalTime(uint32_t uTime) const

@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file ParserXTP.cpp
  * \project	WonderTrader
  *
@@ -141,6 +141,20 @@ bool ParserXTP::connect()
 {
 	DoLogin();
 
+	if (_thrd_worker == NULL)
+	{
+		//boost::asio::io_service::work work(_asyncio);
+		_worker.reset(new boost::asio::io_service::work(_asyncio));
+		_thrd_worker.reset(new StdThread([this]() {
+			while (true)
+			{
+				std::this_thread::sleep_for(std::chrono::milliseconds(2));
+				_asyncio.run_one();
+				//m_asyncIO.run();
+			}
+		}));
+	}
+
 	return true;
 }
 
@@ -158,37 +172,11 @@ bool ParserXTP::disconnect()
 
 void ParserXTP::OnError(XTPRI *error_info)
 {
-	IsErrorRspInfo(error_info);
-}
-
-/*
-void ParserXTP::OnFrontConnected()
-{
-	if (m_sink)
+	if(IsErrorRspInfo(error_info))
 	{
-		write_log(m_sink, LL_INFO, "[ParserXTP]CTPĞĞÇé·şÎñÒÑÁ¬½Ó");
-		m_sink->handleEvent(WPE_Connect, 0);
-	}
-
-	ReqUserLogin();
-}
-
-void ParserXTP::OnRspUserLogin( CThostFtdcRspUserLoginField *pRspUserLogin, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast )
-{
-	if(bIsLast && !IsErrorRspInfo(pRspInfo))
-	{
-		m_uTradingDate = strtoul(m_pUserAPI->GetTradingDay(), NULL, 10);
-		
-		if(m_sink)
-		{
-			m_sink->handleEvent(WPE_Login, 0);
-		}
-
-		//¶©ÔÄĞĞÇéÊı¾İ
-		SubscribeMarketData();
+		write_log(m_sink, LL_ERROR, "[ParserXTP] Error occured: ({}){}", error_info->error_id, error_info->error_msg);
 	}
 }
-*/
 
 void ParserXTP::OnDisconnected(int nReason)
 {
@@ -197,6 +185,12 @@ void ParserXTP::OnDisconnected(int nReason)
 		write_log(m_sink, LL_ERROR, "[ParserXTP] Market data server disconnected: {}...", nReason);
 		m_sink->handleEvent(WPE_Close, 0);
 	}
+
+	_asyncio.post([this]() {
+		write_log(m_sink, LL_WARN, "[ParserXTP] Connection lost, relogin in 2 seconds...");
+		std::this_thread::sleep_for(std::chrono::seconds(2));
+		DoLogin();
+	});
 }
 
 void ParserXTP::OnUnSubMarketData(XTPST *ticker, XTPRI *error_info, bool is_last)
@@ -237,6 +231,7 @@ void ParserXTP::OnTickByTick(XTPTBT *tbt_data)
 	if(tbt_data->type == XTP_TBT_ENTRUST)
 	{
 		WTSOrdDtlData *ordDtl = WTSOrdDtlData::create(tbt_data->ticker);
+		ordDtl->setContractInfo(ct);
 		WTSOrdDtlStruct& ts = ordDtl->getOrdDtlStruct();
 		strcpy(ts.exchg, commInfo->getExchg());
 
@@ -259,6 +254,7 @@ void ParserXTP::OnTickByTick(XTPTBT *tbt_data)
 	else if (tbt_data->type == XTP_TBT_TRADE)
 	{
 		WTSTransData *trans = WTSTransData::create(tbt_data->ticker);
+		trans->setContractInfo(ct);
 		WTSTransStruct& ts = trans->getTransStruct();
 		strcpy(ts.exchg, commInfo->getExchg());
 
@@ -343,7 +339,7 @@ void ParserXTP::OnDepthMarketData(XTPMD *market_data, int64_t bid1_qty[], int32_
 
 	quote.pre_close = checkValid(market_data->pre_close_price);	
 
-	//Î¯Âô¼Û¸ñ
+	//å§”å–ä»·æ ¼
 	for (int i = 0; i < 10; i++)
 	{
 		quote.ask_prices[i] = checkValid(market_data->ask[i]);
@@ -356,7 +352,7 @@ void ParserXTP::OnDepthMarketData(XTPMD *market_data, int64_t bid1_qty[], int32_
 	if(m_sink)
 		m_sink->handleQuote(tick, 1);
 
-	//´¦ÀíÖğ±Ê
+	//å¤„ç†é€ç¬”
 	if(bid1_count > 0)
 	{
 		WTSOrdQueData* buyQue = WTSOrdQueData::create(code.c_str());
@@ -456,29 +452,37 @@ void ParserXTP::DoLogin()
 	{
 		if (m_sink)
 		{
+			auto error_info = m_pUserAPI->GetApiLastError();
 			if(iResult == -1)
 			{
-				m_sink->handleEvent(WPE_Connect, iResult);
+				_asyncio.post([this, iResult] {
+					m_sink->handleEvent(WPE_Connect, iResult);
+				});
 
-				write_log(m_sink, LL_ERROR, "[ParserXTP] Connecting server failed: {}", iResult);
+				write_log(m_sink, LL_ERROR, "[ParserXTP] Connecting server failed: {}", error_info->error_msg);
 			}
 			else
 			{
 				m_sink->handleEvent(WPE_Connect, 0);
+				_asyncio.post([this, iResult] {
+					m_sink->handleEvent(WPE_Connect, 0);
+				});
 
-				write_log(m_sink, LL_ERROR, "[ParserXTP] Sending login request failed: {}", iResult);
-			}
-			
+				write_log(m_sink, LL_ERROR, "[ParserXTP] Sending login request failed: {}", error_info->error_msg);
+			}			
 		}
 	}
 	else
 	{
 		m_uTradingDate = strToTime(m_pUserAPI->GetTradingDay());
-		if (m_sink)
-		{
-			m_sink->handleEvent(WPE_Connect, 0);
-			m_sink->handleEvent(WPE_Login, 0);
-		}
+		_asyncio.post([this] {
+			if (m_sink)
+			{
+				m_sink->handleEvent(WPE_Connect, 0);
+				m_sink->handleEvent(WPE_Login, 0);
+			}
+		});
+		
 
 		write_log(m_sink, LL_INFO, "[ParserXTP] Connecting server successed: {}, begin to subscibe data ...", iResult);
 

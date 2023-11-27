@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file WTSBaseDataMgr.cpp
  * \project	WonderTrader
  *
@@ -78,9 +78,9 @@ WTSCommodityInfo* WTSBaseDataMgr::getCommodity(const char* exchg, const char* pi
 }
 
 
-WTSContractInfo* WTSBaseDataMgr::getContract(const char* code, const char* exchg)
+WTSContractInfo* WTSBaseDataMgr::getContract(const char* code, const char* exchg /* = "" */, uint32_t uDate /* = 0 */)
 {
-	//Èç¹ûÖ±½ÓÕÒµ½¶ÔÓ¦µÄÊĞ³¡´úÂë,ÔòÖ±½Ó
+	//å¦‚æœç›´æ¥æ‰¾åˆ°å¯¹åº”çš„å¸‚åœºä»£ç ,åˆ™ç›´æ¥
 	
 	auto lKey = std::string(code);
 
@@ -94,7 +94,17 @@ WTSContractInfo* WTSBaseDataMgr::getContract(const char* code, const char* exchg
 		if (ayInst == NULL || ayInst->size() == 0)
 			return NULL;
 
-		return (WTSContractInfo*)ayInst->at(0);
+		for(std::size_t i = 0; i < ayInst->size(); i++)
+		{
+			WTSContractInfo* cInfo = (WTSContractInfo*)ayInst->at(i);
+			/*
+			 *	By Wesley @ 2023.10.23
+			 *	if param uDate is not zero, need to check whether contract is valid
+			 */
+			if (uDate == 0 || (cInfo->getOpenDate() <= uDate && cInfo->getExpireDate() >= uDate))
+				return cInfo;
+		}
+		return NULL;
 	}
 	else
 	{
@@ -106,19 +116,26 @@ WTSContractInfo* WTSBaseDataMgr::getContract(const char* code, const char* exchg
 			auto it = contractList->find(lKey);
 			if (it != contractList->end())
 			{
-				return (WTSContractInfo*)it->second;
+				WTSContractInfo* cInfo = (WTSContractInfo*)it->second;
+				/*
+				 *	By Wesley @ 2023.10.23
+				 *	if param uDate is not zero, need to check whether contract is valid
+				 */
+				if (uDate == 0 || (cInfo->getOpenDate() <= uDate && cInfo->getExpireDate() >= uDate))
+					return cInfo;
 			}
-		}
 
+			return NULL;
+		}
 	}
 
 	return NULL;
 }
 
-WTSArray* WTSBaseDataMgr::getContracts(const char* exchg /* = "" */)
+uint32_t  WTSBaseDataMgr::getContractSize(const char* exchg /* = "" */, uint32_t uDate /* = 0 */)
 {
-	WTSArray* ay = WTSArray::create();
-	if(strlen(exchg) > 0)
+	uint32_t ret = 0;
+	if (strlen(exchg) > 0)
 	{
 		auto it = m_mapExchgContract->find(std::string(exchg));
 		if (it != m_mapExchgContract->end())
@@ -127,7 +144,9 @@ WTSArray* WTSBaseDataMgr::getContracts(const char* exchg /* = "" */)
 			auto it2 = contractList->begin();
 			for (; it2 != contractList->end(); it2++)
 			{
-				ay->append(it2->second, true);
+				WTSContractInfo* cInfo = (WTSContractInfo*)it2->second;
+				if (uDate == 0 || (cInfo->getOpenDate() <= uDate && cInfo->getExpireDate() >= uDate))
+					ret++;
 			}
 		}
 	}
@@ -140,7 +159,54 @@ WTSArray* WTSBaseDataMgr::getContracts(const char* exchg /* = "" */)
 			auto it2 = contractList->begin();
 			for (; it2 != contractList->end(); it2++)
 			{
-				ay->append(it2->second, true);
+				WTSContractInfo* cInfo = (WTSContractInfo*)it2->second;
+				if (uDate == 0 || (cInfo->getOpenDate() <= uDate && cInfo->getExpireDate() >= uDate))
+					ret++;
+			}
+		}
+	}
+
+	return ret;
+}
+
+WTSArray* WTSBaseDataMgr::getContracts(const char* exchg /* = "" */, uint32_t uDate /* = 0 */)
+{
+	WTSArray* ay = WTSArray::create();
+	if(strlen(exchg) > 0)
+	{
+		auto it = m_mapExchgContract->find(std::string(exchg));
+		if (it != m_mapExchgContract->end())
+		{
+			WTSContractList* contractList = (WTSContractList*)it->second;
+			auto it2 = contractList->begin();
+			for (; it2 != contractList->end(); it2++)
+			{
+				WTSContractInfo* cInfo = (WTSContractInfo*)it2->second;
+				/*
+				 *	By Wesley @ 2023.10.23
+				 *	if param uDate is not zero, need to check whether contract is valid
+				 */
+				if (uDate == 0 || (cInfo->getOpenDate() <= uDate && cInfo->getExpireDate() >= uDate))
+					ay->append(cInfo, true);
+			}
+		}
+	}
+	else
+	{
+		auto it = m_mapExchgContract->begin();
+		for (; it != m_mapExchgContract->end(); it++)
+		{
+			WTSContractList* contractList = (WTSContractList*)it->second;
+			auto it2 = contractList->begin();
+			for (; it2 != contractList->end(); it2++)
+			{
+				WTSContractInfo* cInfo = (WTSContractInfo*)it2->second;
+				/*
+				 *	By Wesley @ 2023.10.23
+				 *	if param uDate is not zero, need to check whether contract is valid
+				 */
+				if (uDate == 0 || (cInfo->getOpenDate() <= uDate && cInfo->getExpireDate() >= uDate))
+					ay->append(cInfo, true);
 			}
 		}
 	}
@@ -378,8 +444,8 @@ bool WTSBaseDataMgr::loadContracts(const char* filename)
 
 			/*
 			 *	By Wesley @ 2021.12.28
-			 *	ÕâÀï×öÒ»¸ö¼æÈİ£¬Èç¹ûproductÎª¿Õ,ÏÈ¼ì²éÊÇ·ñÅäÖÃÁËrulesÊôĞÔ£¬Èç¹ûÅäÖÃÁËrulesÊôĞÔ£¬°ÑºÏÔ¼µ¥¶Àµ±³ÉÆ·ÖÖ×Ô¶¯¼ÓÈë
-			 *	Èç¹ûÃ»ÓĞÅäÖÃrules£¬ÔòÖ±½ÓÌø¹ı¸ÃºÏÔ¼
+			 *	è¿™é‡Œåšä¸€ä¸ªå…¼å®¹ï¼Œå¦‚æœproductä¸ºç©º,å…ˆæ£€æŸ¥æ˜¯å¦é…ç½®äº†ruleså±æ€§ï¼Œå¦‚æœé…ç½®äº†ruleså±æ€§ï¼ŒæŠŠåˆçº¦å•ç‹¬å½“æˆå“ç§è‡ªåŠ¨åŠ å…¥
+			 *	å¦‚æœæ²¡æœ‰é…ç½®rulesï¼Œåˆ™ç›´æ¥è·³è¿‡è¯¥åˆçº¦
 			 */
 			WTSCommodityInfo* commInfo = NULL;
 			std::string pid;
@@ -398,7 +464,7 @@ bool WTSBaseDataMgr::loadContracts(const char* filename)
 				if(jPInfo->has("holiday"))
 					hid = jPInfo->getCString("holiday");
 
-				//ÕâÀï²»ÄÜÏñ½âÎöcommodityÄÇÑù´¦Àí£¬Ö±½Ó¸³ÖµÎªALLDAY
+				//è¿™é‡Œä¸èƒ½åƒè§£æcommodityé‚£æ ·å¤„ç†ï¼Œç›´æ¥èµ‹å€¼ä¸ºALLDAY
 				if (sid.empty())
 					sid = "ALLDAY";
 
@@ -557,7 +623,7 @@ uint64_t WTSBaseDataMgr::getBoundaryTime(const char* stdPID, uint32_t tDate, boo
 			tDate = getPrevTDate(tplid.c_str(), tDate, 1, isTpl);
 	}
 
-	//²»Æ«ÒÆµÄ×î¼òµ¥,Ö»ĞèÒªÖ±½Ó·µ»Ø¿ªÅÌºÍÊÕÅÌÊ±¼ä¼´¿É
+	//ä¸åç§»çš„æœ€ç®€å•,åªéœ€è¦ç›´æ¥è¿”å›å¼€ç›˜å’Œæ”¶ç›˜æ—¶é—´å³å¯
 	if (sInfo->getOffsetMins() == 0)
 	{
 		if (isStart)
@@ -568,8 +634,8 @@ uint64_t WTSBaseDataMgr::getBoundaryTime(const char* stdPID, uint32_t tDate, boo
 
 	if(sInfo->getOffsetMins() < 0)
 	{
-		//ÍùÇ°Æ«ÒÆ,¾ÍÊÇ½»Ò×ÈÕÍÆºó,Ò»°ãÓÃÓÚÍâÅÌ
-		//Õâ¸ö±È½Ï¼òµ¥,Ö»ĞèÒª°´×ÔÈ»ÈÕÈ¡¼´¿É
+		//å¾€å‰åç§»,å°±æ˜¯äº¤æ˜“æ—¥æ¨å,ä¸€èˆ¬ç”¨äºå¤–ç›˜
+		//è¿™ä¸ªæ¯”è¾ƒç®€å•,åªéœ€è¦æŒ‰è‡ªç„¶æ—¥å–å³å¯
 		if (isStart)
 			return (uint64_t)tDate * 10000 + sInfo->getOpenTime();
 		else
@@ -577,14 +643,14 @@ uint64_t WTSBaseDataMgr::getBoundaryTime(const char* stdPID, uint32_t tDate, boo
 	}
 	else
 	{
-		//ÍùºóÆ«ÒÆ,Ò»°ã¹úÄÚÆÚ»õÒ¹ÅÌ¶¼ÊÇÕâ¸ö,¼´Ò¹ÅÌËãÊÇµÚ¶ş¸ö½»Ò×ÈÕ
-		//Õâ¸ö±È½Ï¸´ÔÓ,Ö÷Òª½Ú¼ÙÈÕºóµÚÒ»ÌìµÄ±ß½çºÜÂé·³£¨ÈçÒ»°ãÇé¿öµÄÖÜÒ»£©
-		//ÕâÖÖÇé¿öÎ¨Ò»·½±ãµÄ¾ÍÊÇ,ÊÕÅÌÊ±¼ä²»ĞèÒª´¦Àí
+		//å¾€ååç§»,ä¸€èˆ¬å›½å†…æœŸè´§å¤œç›˜éƒ½æ˜¯è¿™ä¸ª,å³å¤œç›˜ç®—æ˜¯ç¬¬äºŒä¸ªäº¤æ˜“æ—¥
+		//è¿™ä¸ªæ¯”è¾ƒå¤æ‚,ä¸»è¦èŠ‚å‡æ—¥åç¬¬ä¸€å¤©çš„è¾¹ç•Œå¾ˆéº»çƒ¦ï¼ˆå¦‚ä¸€èˆ¬æƒ…å†µçš„å‘¨ä¸€ï¼‰
+		//è¿™ç§æƒ…å†µå”¯ä¸€æ–¹ä¾¿çš„å°±æ˜¯,æ”¶ç›˜æ—¶é—´ä¸éœ€è¦å¤„ç†
 		if(!isStart)
 			return (uint64_t)tDate * 10000 + sInfo->getCloseTime();
 
-		//Ïëµ½Ò»¸ö¼òµ¥µÄ°ì·¨,¾ÍÊÇ²»¹ÜÔõÃ´Ñù,¿ªÊ¼Ê±¼äÒ»¶¨ÊÇÉÏÒ»¸ö½»Ò×ÈÕµÄÍíÉÏ
-		//ËùÒÔÎÒÖ»ĞèÒªÄÃµ½ÉÏÒ»¸ö½»Ò×ÈÕ¼´¿É
+		//æƒ³åˆ°ä¸€ä¸ªç®€å•çš„åŠæ³•,å°±æ˜¯ä¸ç®¡æ€ä¹ˆæ ·,å¼€å§‹æ—¶é—´ä¸€å®šæ˜¯ä¸Šä¸€ä¸ªäº¤æ˜“æ—¥çš„æ™šä¸Š
+		//æ‰€ä»¥æˆ‘åªéœ€è¦æ‹¿åˆ°ä¸Šä¸€ä¸ªäº¤æ˜“æ—¥å³å¯
 		tDate = getPrevTDate(tplid.c_str(), tDate, 1, isTpl);
 		return (uint64_t)tDate * 10000 + sInfo->getOpenTime();
 	}
@@ -620,7 +686,7 @@ uint32_t WTSBaseDataMgr::calcTradingDate(const char* stdPID, uint32_t uDate, uin
 		return uDate;
 	
 	uint32_t offMin = sInfo->offsetTime(uTime, true);
-	//7*24½»Ò×Ê±¼äµ¥¶ÀËã
+	//7*24äº¤æ˜“æ—¶é—´å•ç‹¬ç®—
 	uint32_t total_mins = sInfo->getTradingMins();
 	if(total_mins == 1440)
 	{
@@ -639,41 +705,41 @@ uint32_t WTSBaseDataMgr::calcTradingDate(const char* stdPID, uint32_t uDate, uin
 	uint32_t weekday = TimeUtils::getWeekDay(uDate);
 	if (sInfo->getOffsetMins() > 0)
 	{
-		//Èç¹ûÏòºóÆ«ÒÆ,ÇÒµ±Ç°Ê±¼ä´óÓÚÆ«ÒÆÊ±¼ä,ËµÃ÷Ïòºó¿çÈÕÁË
-		//ÕâÊ±½»Ò×ÈÕ=ÏÂÒ»¸ö½»Ò×ÈÕ
+		//å¦‚æœå‘ååç§»,ä¸”å½“å‰æ—¶é—´å¤§äºåç§»æ—¶é—´,è¯´æ˜å‘åè·¨æ—¥äº†
+		//è¿™æ—¶äº¤æ˜“æ—¥=ä¸‹ä¸€ä¸ªäº¤æ˜“æ—¥
 		if (uTime > offMin)
 		{
-			//Èç,20151016 23:00,Æ«ÒÆ300·ÖÖÓ,Îª5:00
+			//å¦‚,20151016 23:00,åç§»300åˆ†é’Ÿ,ä¸º5:00
 			return getNextTDate(tplid.c_str(), uDate, 1, isTpl);
 		}
 		else if (weekday == 6 || weekday == 0)
 		{
-			//Èç,20151017 1:00,ÖÜÁù,½»Ò×ÈÕÎª20151019
+			//å¦‚,20151017 1:00,å‘¨å…­,äº¤æ˜“æ—¥ä¸º20151019
 			return getNextTDate(tplid.c_str(), uDate, 1, isTpl);
 		}
 	}
 	else if (sInfo->getOffsetMins() < 0)
 	{
-		//Èç¹ûÏòÇ°Æ«ÒÆ,ÇÒµ±Ç°Ê±¼äĞ¡ÓÚÆ«ÒÆÊ±¼ä,ËµÃ÷»¹ÊÇÇ°Ò»¸ö½»Ò×ÈÕ
-		//ÕâÊ±½»Ò×ÈÕ=Ç°Ò»¸ö½»Ò×ÈÕ
+		//å¦‚æœå‘å‰åç§»,ä¸”å½“å‰æ—¶é—´å°äºåç§»æ—¶é—´,è¯´æ˜è¿˜æ˜¯å‰ä¸€ä¸ªäº¤æ˜“æ—¥
+		//è¿™æ—¶äº¤æ˜“æ—¥=å‰ä¸€ä¸ªäº¤æ˜“æ—¥
 		if (uTime < offMin)
 		{
-			//Èç20151017 1:00,Æ«ÒÆ-300·ÖÖÓ,Îª20:00
+			//å¦‚20151017 1:00,åç§»-300åˆ†é’Ÿ,ä¸º20:00
 			return getPrevTDate(tplid.c_str(), uDate, 1, isTpl);
 		}
 		else if (weekday == 6 || weekday == 0)
 		{
-			//ÒòÎªÏòÇ°Æ«ÒÆ,Èç¹ûÔÚÖÜÄ©,ÔòÖ±½Óµ½ÏÂÒ»¸ö½»Ò×ÈÕ
+			//å› ä¸ºå‘å‰åç§»,å¦‚æœåœ¨å‘¨æœ«,åˆ™ç›´æ¥åˆ°ä¸‹ä¸€ä¸ªäº¤æ˜“æ—¥
 			return getNextTDate(tplid.c_str(), uDate, 1, isTpl);
 		}
 	}
 	else if (weekday == 6 || weekday == 0)
 	{
-		//Èç¹ûÃ»ÓĞÆ«ÒÆ,ÇÒÔÚÖÜÄ©,ÔòÖ±½Ó¶ÁÈ¡ÏÂÒ»¸ö½»Ò×ÈÕ
+		//å¦‚æœæ²¡æœ‰åç§»,ä¸”åœ¨å‘¨æœ«,åˆ™ç›´æ¥è¯»å–ä¸‹ä¸€ä¸ªäº¤æ˜“æ—¥
 		return getNextTDate(tplid.c_str(), uDate, 1, isTpl);;
 	}
 
-	//ÆäËûÇé¿ö,½»Ò×ÈÕ=×ÔÈ»ÈÕ
+	//å…¶ä»–æƒ…å†µ,äº¤æ˜“æ—¥=è‡ªç„¶æ—¥
 	return uDate;
 }
 
@@ -699,12 +765,12 @@ uint32_t WTSBaseDataMgr::getTradingDate(const char* pid, uint32_t uOffDate /* = 
 
 	if (weekday == 6 || weekday == 0)
 	{
-		//Èç¹ûÃ»ÓĞÆ«ÒÆ,ÇÒÔÚÖÜÄ©,ÔòÖ±½Ó¶ÁÈ¡ÏÂÒ»¸ö½»Ò×ÈÕ
+		//å¦‚æœæ²¡æœ‰åç§»,ä¸”åœ¨å‘¨æœ«,åˆ™ç›´æ¥è¯»å–ä¸‹ä¸€ä¸ªäº¤æ˜“æ—¥
 		tpl->_cur_tdate = getNextTDate(tplID, uOffDate, 1, true);
 		uOffDate = tpl->_cur_tdate;
 	}
 
-	//ÆäËûÇé¿ö,½»Ò×ÈÕ=×ÔÈ»ÈÕ
+	//å…¶ä»–æƒ…å†µ,äº¤æ˜“æ—¥=è‡ªç„¶æ—¥
 	return uOffDate;
 }
 
@@ -727,7 +793,7 @@ uint32_t WTSBaseDataMgr::getNextTDate(const char* pid, uint32_t uDate, int days 
 		curDate = (newT->tm_year + 1900) * 10000 + (newT->tm_mon + 1) * 100 + newT->tm_mday;
 		if (newT->tm_wday != 0 && newT->tm_wday != 6 && !isHoliday(pid, curDate, isTpl))
 		{
-			//Èç¹û²»ÊÇÖÜÄ©,Ò²²»ÊÇ½Ú¼ÙÈÕ,ÔòÊ£ÓàµÄÌìÊı-1
+			//å¦‚æœä¸æ˜¯å‘¨æœ«,ä¹Ÿä¸æ˜¯èŠ‚å‡æ—¥,åˆ™å‰©ä½™çš„å¤©æ•°-1
 			left--;
 			if (left == 0)
 				return curDate;
@@ -754,7 +820,7 @@ uint32_t WTSBaseDataMgr::getPrevTDate(const char* pid, uint32_t uDate, int days 
 		curDate = (newT->tm_year + 1900) * 10000 + (newT->tm_mon + 1) * 100 + newT->tm_mday;
 		if (newT->tm_wday != 0 && newT->tm_wday != 6 && !isHoliday(pid, curDate, isTpl))
 		{
-			//Èç¹û²»ÊÇÖÜÄ©,Ò²²»ÊÇ½Ú¼ÙÈÕ,ÔòÊ£ÓàµÄÌìÊı-1
+			//å¦‚æœä¸æ˜¯å‘¨æœ«,ä¹Ÿä¸æ˜¯èŠ‚å‡æ—¥,åˆ™å‰©ä½™çš„å¤©æ•°-1
 			left--;
 			if (left == 0)
 				return curDate;

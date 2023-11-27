@@ -1,4 +1,4 @@
-#include "gtest/gtest/gtest.h"
+ï»¿#include "gtest/gtest/gtest.h"
 #include "../Includes/FasterDefs.h"
 #include "../Share/TimeUtils.hpp"
 #include "../Share/fmtlib.h"
@@ -7,9 +7,9 @@ USING_NS_WTP;
 
 /*
  *	By Wesley @ 2023.08.16
- *	ankerlĞ´ÈëËÙ¶È±ÈrobinºÃºÜ¶à£¬´ó¸Å¿ì1/3£¬ÓÈÆäÊı¾İÁ¿ÔÚ40wÒÔÄÚµÄÊ±ºò
- *	µ«ÊÇrobinµÄ¶ÁÈ¡ËÙ¶È±ÈrobinºÃ£¬²»¹ıµ½ÁË30wÌõÊı¾İÒÔÄÚ£¬²î±ğ¾Í²»´ó
- *	°´ÕÕwondertraderµÄ³¡¾°£¬»¹ÊÇankerlÒªºÃºÜ¶à
+ *	ankerlå†™å…¥é€Ÿåº¦æ¯”robinå¥½å¾ˆå¤šï¼Œå¤§æ¦‚å¿«1/3ï¼Œå°¤å…¶æ•°æ®é‡åœ¨40wä»¥å†…çš„æ—¶å€™
+ *	ä½†æ˜¯robinçš„è¯»å–é€Ÿåº¦æ¯”robinå¥½ï¼Œä¸è¿‡åˆ°äº†30wæ¡æ•°æ®ä»¥å†…ï¼Œå·®åˆ«å°±ä¸å¤§
+ *	æŒ‰ç…§wondertraderçš„åœºæ™¯ï¼Œè¿˜æ˜¯ankerlè¦å¥½å¾ˆå¤š
  */
 TEST(test_fastestmap, test_perform)
 {

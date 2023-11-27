@@ -1,11 +1,11 @@
-/*!
+﻿/*!
  * \file CodeHelper.hpp
  * \project	WonderTrader
  *
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief ���븨����,��װ��һ�𷽱�ʹ��
+ * \brief 代码辅助类,封装到一起方便使用
  */
 #pragma once
 #include "fmtlib.h"
@@ -18,16 +18,16 @@
 
 USING_NS_WTP;
 
-//������Լ��׺
+//主力合约后缀
 static const char* SUFFIX_HOT = ".HOT";
 
-//��������Լ��׺
+//次主力合约后缀
 static const char* SUFFIX_2ND = ".2ND";
 
-//ǰ��Ȩ��Լ�����׺
+//前复权合约代码后缀
 static const char SUFFIX_QFQ = '-';
 
-//��Ȩ��Լ�����׺
+//后复权合约代码后缀
 static const char SUFFIX_HFQ = '+';
 
 class CodeHelper
@@ -35,40 +35,40 @@ class CodeHelper
 public:
 	typedef struct _CodeInfo
 	{
-		char _code[MAX_INSTRUMENT_LENGTH];		//��Լ����
-		char _exchg[MAX_INSTRUMENT_LENGTH];		//����������
-		char _product[MAX_INSTRUMENT_LENGTH];	//Ʒ�ִ���
+		char _code[MAX_INSTRUMENT_LENGTH];		//合约代码
+		char _exchg[MAX_INSTRUMENT_LENGTH];		//交易所代码
+		char _product[MAX_INSTRUMENT_LENGTH];	//品种代码
 		char _ruletag[MAX_INSTRUMENT_LENGTH];	//
 		char _fullpid[MAX_INSTRUMENT_LENGTH];	//
 
 		//By Wesley @ 2021.12.25
-		//ȥ����Լ���ͣ����ﲻ�ٽ����ж�
-		//����CodeHelper���ع�
-		//ContractCategory	_category;		//��Լ����
+		//去掉合约类型，这里不再进行判断
+		//整个CodeHelper会重构
+		//ContractCategory	_category;		//合约类型
 		//union
 		//{
-		//	uint8_t	_hotflag;	//������ǣ�0-��������1-������2-������
-		//	uint8_t	_exright;	//�Ƿ��Ǹ�Ȩ����,��SH600000Q: 0-����Ȩ, 1-ǰ��Ȩ, 2-��Ȩ
+		//	uint8_t	_hotflag;	//主力标记，0-非主力，1-主力，2-次主力
+		//	uint8_t	_exright;	//是否是复权代码,如SH600000Q: 0-不复权, 1-前复权, 2-后复权
 		//};
 
 		/*
 		 *	By Wesley @ 2022.03.07
-		 *	ȡ��ԭ����union
-		 *	Ҫ��������Ǻ͸�Ȩ��Ƿֿ�����
-		 *	��Ϊ����Ҫ��������Լ����Ȩ������
+		 *	取消原来的union
+		 *	要把主力标记和复权标记分开处理
+		 *	因为后面要对主力合约做复权处理了
 		 */
-		uint8_t	_exright;	//�Ƿ��Ǹ�Ȩ����,��SH600000Q: 0-����Ȩ, 1-ǰ��Ȩ, 2-��Ȩ
+		uint8_t	_exright;	//是否是复权代码,如SH600000Q: 0-不复权, 1-前复权, 2-后复权
 
-		//�Ƿ��Ǹ�Ȩ����
+		//是否是复权代码
 		inline bool isExright() const { return _exright != 0; }
 
-		//�Ƿ�ǰ��Ȩ����
+		//是否前复权代码
 		inline bool isForwardAdj() const { return _exright == 1; }
 
-		//�Ƿ��Ȩ����
+		//是否后复权代码
 		inline bool isBackwardAdj() const { return _exright == 2; }
 
-		//��׼Ʒ��ID
+		//标准品种ID
 		inline const char* stdCommID()
 		{
 			if (strlen(_fullpid) == 0)
@@ -124,12 +124,12 @@ private:
 
 public:
 	/*
-	 *	�Ƿ����ڻ���Ȩ��Լ����
+	 *	是否是期货期权合约代码
 	 *	CFFEX.IO2007.C.4000
 	 */
 	static bool	isStdChnFutOptCode(const char* code)
 	{
-		/* �����������ʽ */
+		/* 定义正则表达式 */
 		//static cregex reg_stk = cregex::compile("^[A-Z]+.[A-z]+\\d{4}.(C|P).\\d+$");	//CFFEX.IO2007.C.4000
 		//return 	regex_match(code, reg_stk);
 		char state = 0;
@@ -222,21 +222,21 @@ public:
 	}
 
 	/*
-	 *	�Ƿ��Ǳ�׼�����ڻ���Լ����
+	 *	是否是标准分月期货合约代码
 	 *	//CFFEX.IF.2007
 	 */
 	static inline bool	isStdMonthlyFutCode(const char* code)
 	{
 		using namespace boost::xpressive;
-		/* �����������ʽ */
+		/* 定义正则表达式 */
 		static cregex reg_stk = cregex::compile("^[A-Z]+.[A-z]+.\\d{4}$");	//CFFEX.IO.2007
 		return 	regex_match(code, reg_stk);
 	}
 
 	/*
-	 *	��׼����ת��׼Ʒ��ID
-	 *	��SHFE.ag.1912->SHFE.ag
-	 *	����Ǽ򻯵Ĺ�Ʊ���룬��SSE.600000����ת��SSE.STK
+	 *	标准代码转标准品种ID
+	 *	如SHFE.ag.1912->SHFE.ag
+	 *	如果是简化的股票代码，如SSE.600000，则转成SSE.STK
 	 */
 	static inline std::string stdCodeToStdCommID2(const char* stdCode)
 	{
@@ -244,24 +244,24 @@ public:
 		auto idx2 = find(stdCode, '.', false);
 		if (idx != idx2)
 		{
-			//ǰ������.����ͬһ����˵�������εĴ���
-			//��ȡǰ������ΪƷ�ִ���
+			//前后两个.不是同一个，说明是三段的代码
+			//提取前两段作为品种代码
 			return std::string(stdCode, idx);
 		}
 		else
 		{
-			//���εĴ��룬ֱ�ӷ���
-			//��Ҫ���ĳЩ��������ÿ����Լ�Ľ��׹��򶼲�ͬ�����
-			//����������ͰѺ�Լֱ�ӵ���Ʒ������
+			//两段的代码，直接返回
+			//主要针对某些交易所，每个合约的交易规则都不同的情况
+			//这种情况，就把合约直接当成品种来用
 			return stdCode;
 		}		
 	}
 
 	/*
-	 *	�ӻ������º�Լ������ȡ����Ʒ�ִ���
-	 *	��ag1912 -> ag
-	 *	���ֻ�з����ڻ�Ʒ�ֲ�������
-	 *	���������������Լ�Ĵ��봫��������������еĻ����ǵ��õĵط���Bug!
+	 *	从基础分月合约代码提取基础品种代码
+	 *	如ag1912 -> ag
+	 *	这个只有分月期货品种才有意义
+	 *	这个不会有永续合约的代码传到这里来，如果有的话就是调用的地方有Bug!
 	 */
 	static inline std::string rawMonthCodeToRawCommID(const char* code)
 	{
@@ -273,9 +273,9 @@ public:
 	}
 
 	/*
-	 *	�������º�Լ����ת��׼��
-	 *	��ag1912ת��ȫ��
-	 *	���������������Լ�Ĵ��봫��������������еĻ����ǵ��õĵط���Bug!
+	 *	基础分月合约代码转标准码
+	 *	如ag1912转成全码
+	 *	这个不会有永续合约的代码传到这里来，如果有的话就是调用的地方有Bug!
 	 */
 	static inline std::string rawMonthCodeToStdCode(const char* code, const char* exchg, bool isComm = false)
 	{
@@ -330,8 +330,8 @@ public:
 	}
 
 	/*
-	 *	ԭʼ�������ת��׼����
-	 *	������Ҫ��ԷǷ��º�Լ����
+	 *	原始常规代码转标准代码
+	 *	这种主要针对非分月合约而言
 	 */
 	static inline std::string rawFlatCodeToStdCode(const char* code, const char* exchg, const char* pid)
 	{
@@ -368,7 +368,7 @@ public:
 	static inline bool isMonthlyCode(const char* code)
 	{
 		//using namespace boost::xpressive;
-		//���3-6λ�������֣����Ƿ��º�Լ
+		//最后3-6位都是数字，才是分月合约
 		//static cregex reg_stk = cregex::compile("^.*[A-z|-]\\d{3,6}$");	//CFFEX.IO.2007
 		//return 	regex_match(code, reg_stk);
 		auto len = strlen(code);
@@ -430,15 +430,15 @@ public:
 	}
 
 	/*
-	 *	�ڻ���Ȩ�����׼��
-	 *	��׼�ڻ���Ȩ�����ʽΪCFFEX.IO2008.C.4300
-	 *	-- ��ʱû�еط����� --
+	 *	期货期权代码标准化
+	 *	标准期货期权代码格式为CFFEX.IO2008.C.4300
+	 *	-- 暂时没有地方调用 --
 	 */
 	static inline std::string rawFutOptCodeToStdCode(const char* code, const char* exchg)
 	{
 		using namespace boost::xpressive;
-		/* �����������ʽ */
-		static cregex reg_stk = cregex::compile("^[A-z]+\\d{4}-(C|P)-\\d+$");	//�н�������������ʽIO2013-C-4000
+		/* 定义正则表达式 */
+		static cregex reg_stk = cregex::compile("^[A-z]+\\d{4}-(C|P)-\\d+$");	//中金所、大商所格式IO2013-C-4000
 		bool bMatch = regex_match(code, reg_stk);
 		if(bMatch)
 		{
@@ -448,9 +448,9 @@ public:
 		}
 		else
 		{
-			//֣������������Ȩ�����ʽZC010P11600
+			//郑商所上期所期权代码格式ZC010P11600
 
-			//�ȴӺ���ǰ��λ��P��C��λ��
+			//先从后往前定位到P或C的位置
 			std::size_t idx = strlen(code) - 1;
 			for(; idx >= 0; idx--)
 			{
@@ -473,7 +473,7 @@ public:
 	}
 
 	/*
-	 *	��׼��Լ����ת��������
+	 *	标准合约代码转主力代码
 	 */
 	static inline std::string stdCodeToStdHotCode(const char* stdCode)
 	{
@@ -489,7 +489,7 @@ public:
 	}
 
 	/*
-	 *	��׼��Լ����ת����������
+	 *	标准合约代码转次主力代码
 	 */
 	static inline std::string stdCodeToStd2ndCode(const char* stdCode)
 	{
@@ -505,8 +505,8 @@ public:
 	}
 
 	/*
-	 *	��׼�ڻ���Ȩ����תԭ����
-	 *	-- ��ʱû�еط����� --
+	 *	标准期货期权代码转原代码
+	 *	-- 暂时没有地方调用 --
 	 */
 	static inline std::string stdFutOptCodeToRawCode(const char* stdCode)
 	{
@@ -538,7 +538,7 @@ public:
 	}
 
 	/*
-	 *	��ȡ��׼�ڻ���Ȩ�������Ϣ
+	 *	提取标准期货期权代码的信息
 	 */
 	static CodeInfo extractStdChnFutOptCode(const char* stdCode)
 	{
@@ -581,11 +581,11 @@ public:
 	}
 
 	/*
-	 *	�����׼�������Ϣ
+	 *	提起标准代码的信息
 	 */
 	static CodeInfo extractStdCode(const char* stdCode, IHotMgr *hotMgr)
 	{
-		//��Ȩ�Ĵ���������������һ�������Ե����ж�
+		//期权的代码规则和其他都不一样，所以单独判断
 		if(isStdChnFutOptCode(stdCode))
 		{
 			return extractStdChnFutOptCode(stdCode);
@@ -594,10 +594,10 @@ public:
 		{
 			/*
 			 *	By Wesley @ 2021.12.25
-			 *	1���ȿ��ǲ���Q��H��β�ģ�����Ǹ�Ȩ���ȷ���Ժ����һ�γ���-1�����Ƶ�code����SSE.STK.600000Q
-			 *	2���ٿ��ǲ��Ƿ��º�Լ������ǣ���product�ֶ�ƴ���·ݸ�code��֣�������⴦��������CFFEX.IF.2112
-			 *	3����󿴿��ǲ���HOT��2ND��β�ģ�����ǣ���product������code����DCE.m.HOT
-			 *	4����������ǣ���ԭ�����Ƶ����Σ���BINANCE.DC.BTCUSDT/SSE.STK.600000
+			 *	1、先看是不是Q和H结尾的，如果是复权标记确认以后，最后一段长度-1，复制到code，如SSE.STK.600000Q
+			 *	2、再看是不是分月合约，如果是，则将product字段拼接月份给code（郑商所特殊处理），如CFFEX.IF.2112
+			 *	3、最后看看是不是HOT和2ND结尾的，如果是，则将product拷贝给code，如DCE.m.HOT
+			 *	4、如果都不是，则原样复制第三段，如BINANCE.DC.BTCUSDT/SSE.STK.600000
 			 */
 			thread_local static CodeInfo codeInfo;
 			codeInfo.clear();
@@ -610,8 +610,8 @@ public:
 				wt_strcpy(codeInfo._product, stdCode + idx + 1);
 
 				//By Wesley @ 2021.12.29
-				//��������εĺ�Լ���룬��OKEX.BTC-USDT
-				//��Ʒ�ִ���ͺ�Լ����һ��
+				//如果是两段的合约代码，如OKEX.BTC-USDT
+				//则品种代码和合约代码一致
 				wt_strcpy(codeInfo._code, stdCode + idx + 1);
 			}
 			else
@@ -630,10 +630,10 @@ public:
 				
 				if (extlen == 4 && '0' <= lastCh && lastCh <= '9')
 				{
-					//������һ����4λ���֣�˵���Ƿ��º�Լ
-					//TODO: �������жϴ���һ�����裬���һλ�����ֵ�һ�����ڻ����º�Լ���Ժ���ܻ������⣬��ע��һ��
-					//��ôcode�ü���Ʒ��id
-					//֣�����õ�������һ�£����ֻ��hardcode��
+					//如果最后一段是4位数字，说明是分月合约
+					//TODO: 这样的判断存在一个假设，最后一位是数字的一定是期货分月合约，以后可能会有问题，先注释一下
+					//那么code得加上品种id
+					//郑商所得单独处理一下，这个只能hardcode了
 					auto i = wt_strcpy(codeInfo._code, codeInfo._product);
 					if (memcmp(codeInfo._exchg, "CZCE", 4) == 0)
 						wt_strcpy(codeInfo._code + i, ext + 1, extlen-1);

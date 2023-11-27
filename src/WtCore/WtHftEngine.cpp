@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file WtHftEngine.cpp
  * \project	WonderTrader
  *
@@ -26,11 +26,6 @@
 #include <rapidjson/document.h>
 #include <rapidjson/prettywriter.h>
 namespace rj = rapidjson;
-
-#include <boost/asio.hpp>
-
-extern boost::asio::io_service g_asyncIO;
-
 
 USING_NS_WTP;
 
@@ -62,7 +57,7 @@ void WtHftEngine::init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtDtMgr* dataMgr, I
 	_cfg->retain();
 }
 
-void WtHftEngine::run(bool bAsync /*= false*/)
+void WtHftEngine::run()
 {
 	for (auto it = _ctx_map.begin(); it != _ctx_map.end(); it++)
 	{
@@ -74,7 +69,7 @@ void WtHftEngine::run(bool bAsync /*= false*/)
 	WTSVariant* cfgProd = _cfg->get("product");
 	_tm_ticker->init(_data_mgr->reader(), cfgProd->getCString("session"));
 
-	//Æô¶¯Ö®Ç°,ÏÈ°ÑÔËÐÐÖÐµÄ²ßÂÔÂäµØ
+	//å¯åŠ¨ä¹‹å‰,å…ˆæŠŠè¿è¡Œä¸­çš„ç­–ç•¥è½åœ°
 	{
 		rj::Document root(rj::kObjectType);
 		rj::Document::AllocatorType &allocator = root.GetAllocator();
@@ -109,18 +104,12 @@ void WtHftEngine::run(bool bAsync /*= false*/)
 	}
 
 	_tm_ticker->run();
-
-	if (!bAsync)
-	{
-		boost::asio::io_service::work work(g_asyncIO);
-		g_asyncIO.run();
-	}
 }
 
-void WtHftEngine::handle_push_quote(WTSTickData* newTick, uint32_t hotFlag)
+void WtHftEngine::handle_push_quote(WTSTickData* newTick)
 {
 	if (_tm_ticker)
-		_tm_ticker->on_tick(newTick, hotFlag);
+		_tm_ticker->on_tick(newTick);
 }
 
 void WtHftEngine::handle_push_order_detail(WTSOrdDtlData* curOrdDtl)
@@ -133,8 +122,8 @@ void WtHftEngine::handle_push_order_detail(WTSOrdDtlData* curOrdDtl)
 		for (auto it = sids.begin(); it != sids.end(); it++)
 		{
 			//By Wesley @ 2022.02.07
-			//Level2Êý¾ÝÒ»°ãÓÃÓÚHFT³¡¾°£¬ËùÒÔ²»×ö¸´È¨´¦Àí
-			//ËùÒÔ²»¶ÁÈ¡¶©ÔÄ±ê¼Ç
+			//Level2æ•°æ®ä¸€èˆ¬ç”¨äºŽHFTåœºæ™¯ï¼Œæ‰€ä»¥ä¸åšå¤æƒå¤„ç†
+			//æ‰€ä»¥ä¸è¯»å–è®¢é˜…æ ‡è®°
 			uint32_t sid = it->first;
 			auto cit = _ctx_map.find(sid);
 			if (cit != _ctx_map.end())
@@ -156,8 +145,8 @@ void WtHftEngine::handle_push_order_queue(WTSOrdQueData* curOrdQue)
 		for (auto it = sids.begin(); it != sids.end(); it++)
 		{
 			//By Wesley @ 2022.02.07
-			//Level2Êý¾ÝÒ»°ãÓÃÓÚHFT³¡¾°£¬ËùÒÔ²»×ö¸´È¨´¦Àí
-			//ËùÒÔ²»¶ÁÈ¡¶©ÔÄ±ê¼Ç
+			//Level2æ•°æ®ä¸€èˆ¬ç”¨äºŽHFTåœºæ™¯ï¼Œæ‰€ä»¥ä¸åšå¤æƒå¤„ç†
+			//æ‰€ä»¥ä¸è¯»å–è®¢é˜…æ ‡è®°
 			uint32_t sid = it->first;
 			auto cit = _ctx_map.find(sid);
 			if (cit != _ctx_map.end())
@@ -179,8 +168,8 @@ void WtHftEngine::handle_push_transaction(WTSTransData* curTrans)
 		for (auto it = sids.begin(); it != sids.end(); it++)
 		{
 			//By Wesley @ 2022.02.07
-			//Level2Êý¾ÝÒ»°ãÓÃÓÚHFT³¡¾°£¬ËùÒÔ²»×ö¸´È¨´¦Àí
-			//ËùÒÔ²»¶ÁÈ¡¶©ÔÄ±ê¼Ç
+			//Level2æ•°æ®ä¸€èˆ¬ç”¨äºŽHFTåœºæ™¯ï¼Œæ‰€ä»¥ä¸åšå¤æƒå¤„ç†
+			//æ‰€ä»¥ä¸è¯»å–è®¢é˜…æ ‡è®°
 			uint32_t sid = it->first;
 			auto cit = _ctx_map.find(sid);
 			if (cit != _ctx_map.end())
@@ -230,10 +219,10 @@ void WtHftEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 
 	/*
 	 *	By Wesley @ 2022.02.07
-	 *	ÕâÀï×öÁËÒ»¸ö³¹µ×µÄµ÷Õû
-	 *	µÚÒ»£¬¼ì²é¶©ÔÄ±ê¼Ç£¬Èç¹û±ê¼ÇÎª0£¬¼´ÎÞ¸´È¨Ä£Ê½£¬ÔòÖ±½Ó°´ÕÕÔ­Ê¼´úÂë´¥·¢ontick
-	 *	µÚ¶þ£¬Èç¹û±ê¼ÇÎª1£¬¼´Ç°¸´È¨Ä£Ê½£¬Ôò½«´úÂë×ª³Éxxxx-£¬ÔÙ´¥·¢ontick
-	 *	µÚÈý£¬Èç¹û±ê¼ÇÎª2£¬¼´ºó¸´È¨Ä£Ê½£¬Ôò½«´úÂë×ª³Éxxxx+£¬ÔÙ°ÑtickÊý¾Ý×öÒ»¸öÐÞÕý£¬ÔÙ´¥·¢ontick
+	 *	è¿™é‡Œåšäº†ä¸€ä¸ªå½»åº•çš„è°ƒæ•´
+	 *	ç¬¬ä¸€ï¼Œæ£€æŸ¥è®¢é˜…æ ‡è®°ï¼Œå¦‚æžœæ ‡è®°ä¸º0ï¼Œå³æ— å¤æƒæ¨¡å¼ï¼Œåˆ™ç›´æŽ¥æŒ‰ç…§åŽŸå§‹ä»£ç è§¦å‘ontick
+	 *	ç¬¬äºŒï¼Œå¦‚æžœæ ‡è®°ä¸º1ï¼Œå³å‰å¤æƒæ¨¡å¼ï¼Œåˆ™å°†ä»£ç è½¬æˆxxxx-ï¼Œå†è§¦å‘ontick
+	 *	ç¬¬ä¸‰ï¼Œå¦‚æžœæ ‡è®°ä¸º2ï¼Œå³åŽå¤æƒæ¨¡å¼ï¼Œåˆ™å°†ä»£ç è½¬æˆxxxx+ï¼Œå†æŠŠtickæ•°æ®åšä¸€ä¸ªä¿®æ­£ï¼Œå†è§¦å‘ontick
 	 */
 	if(_ready)
 	{
@@ -269,7 +258,7 @@ void WtHftEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 							WTSTickStruct& newTS = newTick->getTickStruct();
 							newTick->setContractInfo(curTick->getContractInfo());
 
-							//ÕâÀï×öÒ»¸ö¸´È¨Òò×ÓµÄ´¦Àí
+							//è¿™é‡Œåšä¸€ä¸ªå¤æƒå› å­çš„å¤„ç†
 							double factor = get_exright_factor(stdCode, curTick->getContractInfo()->getCommInfo());
 							newTS.open *= factor;
 							newTS.high *= factor;
@@ -340,7 +329,7 @@ void WtHftEngine::on_session_end()
 
 void WtHftEngine::on_minute_end(uint32_t curDate, uint32_t curTime)
 {
-	//ÒÑÈ¥µô¸ßÆµ²ßÂÔµÄon_schedule
+	//å·²åŽ»æŽ‰é«˜é¢‘ç­–ç•¥çš„on_schedule
 	//for(auto& cit : _ctx_map)
 	//{
 	//	HftContextPtr& ctx = cit.second;

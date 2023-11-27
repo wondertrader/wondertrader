@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file WtRtRunner.cpp
  * \project	WonderTrader
  *
@@ -33,7 +33,7 @@
 #ifdef _MSC_VER
 #include "../Common/mdump.h"
 #include <boost/filesystem.hpp>
- //Õâ¸öÖ÷ÒªÊÇ¸øMiniDumperÓÃµÄ
+ //è¿™ä¸ªä¸»è¦æ˜¯ç»™MiniDumperç”¨çš„
 const char* getModuleName()
 {
 	static char MODULE_NAME[250] = { 0 };
@@ -90,15 +90,9 @@ WtRtRunner::WtRtRunner()
 	, _ext_fnl_bar_loader(NULL)
 	, _ext_raw_bar_loader(NULL)
 	, _ext_adj_fct_loader(NULL)
+
+	, _to_exit(false)
 {
-#if _WIN32
-#pragma message("Signal hooks disabled in WIN32")
-#else
-#pragma message("Signal hooks enabled in UNIX")
-	install_signal_hooks([](const char* message) {
-		WTSLogger::error(message);
-	});
-#endif
 }
 
 
@@ -492,7 +486,7 @@ bool WtRtRunner::config(const char* cfgFile, bool isFile /* = true */)
 {
 	_config = isFile ? WTSCfgLoader::load_from_file(cfgFile) : WTSCfgLoader::load_from_content(cfgFile, false);
 
-	//»ù´¡Êý¾ÝÎÄ¼þ
+	//åŸºç¡€æ•°æ®æ–‡ä»¶
 	WTSVariant* cfgBF = _config->get("basefiles");
 	if (cfgBF->get("session"))
 	{
@@ -550,6 +544,25 @@ bool WtRtRunner::config(const char* cfgFile, bool isFile /* = true */)
 		WTSLogger::log_raw(LL_INFO, "Second rules loaded");
 	}
 
+	WTSArray* ayContracts = _bd_mgr.getContracts();
+	for (auto it = ayContracts->begin(); it != ayContracts->end(); it++)
+	{
+		WTSContractInfo* cInfo = (WTSContractInfo*)(*it);
+		bool isHot = _hot_mgr.isHot(cInfo->getExchg(), cInfo->getCode());
+		bool isSecond = _hot_mgr.isSecond(cInfo->getExchg(), cInfo->getCode());
+		
+		std::string hotCode = cInfo->getFullPid();
+		if (isHot)
+			hotCode += ".HOT";
+		else if (isSecond)
+			hotCode += ".2ND";
+		else
+			hotCode = "";
+
+		cInfo->setHotFlag(isHot ? 1 : (isSecond ? 2 : 0), hotCode.c_str());
+	}
+	ayContracts->release();
+
 	if(cfgBF->has("rules"))
 	{
 		auto cfgRules = cfgBF->get("rules");
@@ -561,17 +574,17 @@ bool WtRtRunner::config(const char* cfgFile, bool isFile /* = true */)
 		}
 	}
 
-	//³õÊ¼»¯ÔËÐÐ»·¾³
+	//åˆå§‹åŒ–è¿è¡ŒçŽ¯å¢ƒ
 	initEngine();
 
-	//³õÊ¼»¯Êý¾Ý¹ÜÀí
+	//åˆå§‹åŒ–æ•°æ®ç®¡ç†
 	initDataMgr();
 
-	//³õÊ¼»¯¿ªÆ½²ßÂÔ
+	//åˆå§‹åŒ–å¼€å¹³ç­–ç•¥
 	if (!initActionPolicy())
 		return false;
 
-	//³õÊ¼»¯ÐÐÇéÍ¨µÀ
+	//åˆå§‹åŒ–è¡Œæƒ…é€šé“
 	WTSVariant* cfgParser = _config->get("parsers");
 	if (cfgParser)
 	{
@@ -604,7 +617,7 @@ bool WtRtRunner::config(const char* cfgFile, bool isFile /* = true */)
 		}
 	}
 
-	//³õÊ¼»¯½»Ò×Í¨µÀ
+	//åˆå§‹åŒ–äº¤æ˜“é€šé“
 	WTSVariant* cfgTraders = _config->get("traders");
 	if(cfgTraders)
 	{
@@ -637,10 +650,10 @@ bool WtRtRunner::config(const char* cfgFile, bool isFile /* = true */)
 		}
 	}
 
-	//³õÊ¼»¯ÊÂ¼þÍÆËÍÆ÷
+	//åˆå§‹åŒ–äº‹ä»¶æŽ¨é€å™¨
 	initEvtNotifier();
 
-	//Èç¹û²»ÊÇ¸ßÆµÒýÇæ,ÔòÐèÒªÅäÖÃÖ´ÐÐÄ£¿é
+	//å¦‚æžœä¸æ˜¯é«˜é¢‘å¼•æ“Ž,åˆ™éœ€è¦é…ç½®æ‰§è¡Œæ¨¡å—
 	if (!_is_hft)
 	{
 		WTSVariant* cfgExec = _config->get("executers");
@@ -870,7 +883,7 @@ bool WtRtRunner::initDataMgr()
 
 	_data_mgr.regsiter_loader(this);
 
-	_data_mgr.init(cfg, _engine);
+	_data_mgr.init(cfg, _engine, true);
 
 	WTSLogger::log_raw(LL_INFO, "Data manager initialized");
 	return true;
@@ -891,7 +904,7 @@ bool WtRtRunner::initParsers(WTSVariant* cfgParsers)
 		const char* id = cfgItem->getCString("id");
 
 		// By Wesley @ 2021.12.14
-		// Èç¹ûidÎª¿Õ£¬ÔòÉú³É×Ô¶¯id
+		// å¦‚æžœidä¸ºç©ºï¼Œåˆ™ç”Ÿæˆè‡ªåŠ¨id
 		std::string realid = id;
 		if (realid.empty())
 		{
@@ -916,7 +929,7 @@ bool WtRtRunner::initExecuters(WTSVariant* cfgExecuter)
 	if (cfgExecuter == NULL || cfgExecuter->type() != WTSVariant::VT_Array)
 		return false;
 
-	//ÏÈ¼ÓÔØ×Ô´øµÄÖ´ÐÐÆ÷¹¤³§
+	//å…ˆåŠ è½½è‡ªå¸¦çš„æ‰§è¡Œå™¨å·¥åŽ‚
 	std::string path = WtHelper::getInstDir() + "executer//";
 	_exe_factory.loadFactories(path.c_str());
 
@@ -1076,7 +1089,25 @@ void WtRtRunner::run(bool bAsync /* = false */)
 		_parsers.run();
 		_traders.run();
 
-		_engine->run(bAsync);
+		_engine->run();
+
+		if (!bAsync)
+		{
+			install_signal_hooks([this](const char* message) {
+				if (!_to_exit)
+					WTSLogger::error(message);
+			}, [this](bool toExit) {
+				if (_to_exit)
+					return;
+				_to_exit = toExit;
+				WTSLogger::info("Exit flag is {}", _to_exit);
+			});
+
+			while (!_to_exit)
+			{
+				std::this_thread::sleep_for(std::chrono::milliseconds(10));
+			}
+		}
 	}
 	catch (...)
 	{

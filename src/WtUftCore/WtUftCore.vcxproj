@@ -23,7 +23,9 @@
     <ClInclude Include="..\Includes\IUftStraCtx.h" />
     <ClInclude Include="..\Includes\UftStrategyDefs.h" />
     <ClInclude Include="ActionPolicyMgr.h" />
+    <ClInclude Include="EventNotifier.h" />
     <ClInclude Include="ShareManager.h" />
+    <ClInclude Include="UftDataDefs.h" />
     <ClInclude Include="UftStraContext.h" />
     <ClInclude Include="UftStrategyMgr.h" />
     <ClInclude Include="ITrdNotifySink.h" />
@@ -36,6 +38,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ActionPolicyMgr.cpp" />
+    <ClCompile Include="EventNotifier.cpp" />
     <ClCompile Include="ShareManager.cpp" />
     <ClCompile Include="UftStraContext.cpp" />
     <ClCompile Include="UftStrategyMgr.cpp" />

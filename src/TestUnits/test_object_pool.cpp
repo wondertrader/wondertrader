@@ -1,11 +1,11 @@
-#include <boost/pool/pool.hpp>
+ï»¿#include <boost/pool/pool.hpp>
 #include <boost/smart_ptr.hpp>
 #include <boost/bind.hpp>
 #include <boost/thread.hpp>
 #include <boost/thread/null_mutex.hpp>
 
-//Ïß³Ì°²È« boost::mutex
-//·ÇÏß³ÌÊ¹ÓÃ boost::null_mutex
+//çº¿ç¨‹å®‰å…¨ boost::mutex
+//éçº¿ç¨‹ä½¿ç”¨ boost::null_mutex
 template < class obj_type>
 class enable_obj_pool
 {
@@ -31,7 +31,7 @@ public:
 		m_pool.free(pobj);
 	}
 
-	//ÊÖ¶¯ÊÍ·ÅÎ´Ê¹ÓÃµÄÄÚ´æ
+	//æ‰‹åŠ¨é‡Šæ”¾æœªä½¿ç”¨çš„å†…å­˜
 	void release()
 	{
 		m_pool.release_memory();

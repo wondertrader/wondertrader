@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file TraderXTP.cpp
  * \project	WonderTrader
  *
@@ -661,7 +661,7 @@ void TraderXTP::reconnect()
 	std::stringstream ss;
 	ss << _flowdir << "flows/" << _user << "/";
 	boost::filesystem::create_directories(ss.str().c_str());
-	_api = m_funcCreator(_client, ss.str().c_str(), XTP_LOG_LEVEL_DEBUG);			// ´´½¨UserApi
+	_api = m_funcCreator(_client, ss.str().c_str(), XTP_LOG_LEVEL_DEBUG);			// åˆ›å»ºUserApi
 	if (_api == NULL)
 	{
 		if (_sink)
@@ -677,10 +677,10 @@ void TraderXTP::reconnect()
 	}
 
 	_api->SubscribePublicTopic(_quick ? XTP_TERT_QUICK : XTP_TERT_RESUME);
-	_api->SetSoftwareVersion("1.0.0"); //Éè¶¨´ËÈí¼şµÄ¿ª·¢°æ±¾ºÅ,ÓÃ»§×Ô¶¨Òå
-	_api->SetSoftwareKey(_acckey.c_str());//Éè¶¨ÓÃ»§µÄ¿ª·¢´úÂë,ÔÚXTPÉêÇë¿ª»§Ê±,ÓÉxtpÈËÔ±Ìá¹©
-	_api->SetHeartBeatInterval(15);//Éè¶¨½»Ò×·şÎñÆ÷³¬Ê±Ê±¼ä,µ¥Î»ÎªÃë,´ËÎª1.1.16ĞÂÔö½Ó¿Ú
-	_api->RegisterSpi(this);						// ×¢²áÊÂ¼ş
+	_api->SetSoftwareVersion("1.0.0"); //è®¾å®šæ­¤è½¯ä»¶çš„å¼€å‘ç‰ˆæœ¬å·,ç”¨æˆ·è‡ªå®šä¹‰
+	_api->SetSoftwareKey(_acckey.c_str());//è®¾å®šç”¨æˆ·çš„å¼€å‘ä»£ç ,åœ¨XTPç”³è¯·å¼€æˆ·æ—¶,ç”±xtpäººå‘˜æä¾›
+	_api->SetHeartBeatInterval(15);//è®¾å®šäº¤æ˜“æœåŠ¡å™¨è¶…æ—¶æ—¶é—´,å•ä½ä¸ºç§’,æ­¤ä¸º1.1.16æ–°å¢æ¥å£
+	_api->RegisterSpi(this);						// æ³¨å†Œäº‹ä»¶
 
 	if (_sink)
 		_sink->handleEvent(WTE_Connect, 0);
@@ -717,7 +717,7 @@ bool TraderXTP::isConnected()
 
 void TraderXTP::genEntrustID(char* buffer, uint32_t orderRef)
 {
-	//ÕâÀï²»ÔÙÊ¹ÓÃsessionid£¬ÒòÎªÃ¿´ÎµÇÂ½»á²»Í¬£¬Èç¹ûÊ¹ÓÃµÄ»°£¬¿ÉÄÜ»áÔì³É²»Î¨Ò»µÄÇé¿ö
+	//è¿™é‡Œä¸å†ä½¿ç”¨sessionidï¼Œå› ä¸ºæ¯æ¬¡ç™»é™†ä¼šä¸åŒï¼Œå¦‚æœä½¿ç”¨çš„è¯ï¼Œå¯èƒ½ä¼šé€ æˆä¸å”¯ä¸€çš„æƒ…å†µ
 	fmtutil::format_to(buffer, "{}#{}#{}", _user, _tradingday, orderRef);
 }
 
@@ -775,7 +775,7 @@ void TraderXTP::doLogin()
 			_tradingday = strtoul(_api->GetTradingDay(), NULL, 10);
 
 			{
-				//³õÊ¼»¯Î¯ÍĞµ¥»º´æÆ÷
+				//åˆå§‹åŒ–å§”æ‰˜å•ç¼“å­˜å™¨
 				std::stringstream ss;
 				ss << "./xtpdata/local/";
 				std::string path = StrUtil::standardisePath(ss.str());
@@ -788,7 +788,7 @@ void TraderXTP::doLogin()
 			}
 
 			{
-				//³õÊ¼»¯¶©µ¥±ê¼Ç»º´æÆ÷
+				//åˆå§‹åŒ–è®¢å•æ ‡è®°ç¼“å­˜å™¨
 				std::stringstream ss;
 				ss << "./xtpdata/local/";
 				std::string path = StrUtil::standardisePath(ss.str());

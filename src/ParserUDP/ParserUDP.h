@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \file ParserUDP.h
  * \project	WonderTrader
  *
@@ -26,7 +26,7 @@ public:
 	ParserUDP();
 	~ParserUDP();
 
-	//IQuoteParser �ӿ�
+	//IQuoteParser ½Ó¿Ú
 public:
 	virtual bool init(WTSVariant* config) override;
 

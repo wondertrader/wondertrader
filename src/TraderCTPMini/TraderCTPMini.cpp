@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \file TraderCTP.cpp
  * \project	WonderTrader
  *
@@ -168,13 +168,13 @@ void TraderCTPMini::connect()
 	m_pUserAPI->RegisterSpi(this);
 	if (m_bQuickStart)
 	{
-		m_pUserAPI->SubscribePublicTopic(THOST_TERT_QUICK);			// ע�ṫ����
-		m_pUserAPI->SubscribePrivateTopic(THOST_TERT_QUICK);		// ע��˽����
+		m_pUserAPI->SubscribePublicTopic(THOST_TERT_QUICK);			// 注册公有流
+		m_pUserAPI->SubscribePrivateTopic(THOST_TERT_QUICK);		// 注册私有流
 	}
 	else
 	{
-		m_pUserAPI->SubscribePublicTopic(THOST_TERT_RESUME);		// ע�ṫ����
-		m_pUserAPI->SubscribePrivateTopic(THOST_TERT_RESUME);		// ע��˽����
+		m_pUserAPI->SubscribePublicTopic(THOST_TERT_RESUME);		// 注册公有流
+		m_pUserAPI->SubscribePrivateTopic(THOST_TERT_RESUME);		// 注册私有流
 	}
 
 	m_pUserAPI->RegisterFront((char*)m_strFront.c_str());
@@ -328,25 +328,25 @@ int TraderCTPMini::orderInsert(WTSEntrust* entrust)
 
 	CThostFtdcInputOrderField req;
 	memset(&req, 0, sizeof(req));
-	///���͹�˾����
+	///经纪公司代码
 	strcpy(req.BrokerID, m_strBroker.c_str());
-	///Ͷ���ߴ���
+	///投资者代码
 	strcpy(req.InvestorID, m_strUser.c_str());
-	///��Լ����
+	///合约代码
 	strcpy(req.InstrumentID, entrust->getCode());
 
 	strcpy(req.ExchangeID, entrust->getExchg());
 
 	if (strlen(entrust->getUserTag()) == 0)
 	{
-		///��������
+		///报单引用
 		fmt::format_to(req.OrderRef, "{}", m_orderRef.fetch_add(0));
 	}
 	else
 	{
 		uint32_t fid, sid, orderref;
 		extractEntrustID(entrust->getEntrustID(), fid, sid, orderref);
-		///��������
+		///报单引用
 		fmt::format_to(req.OrderRef, "{}", orderref);
 	}
 
@@ -363,19 +363,19 @@ int TraderCTPMini::orderInsert(WTSEntrust* entrust)
 
 	WTSCommodityInfo* commInfo = ct->getCommInfo();
 
-	///�û�����
+	///用户代码
 	//	TThostFtdcUserIDType	UserID;
-	///�����۸�����: �޼�
+	///报单价格条件: 限价
 	req.OrderPriceType = wrapPriceType(entrust->getPriceType(), strcmp(commInfo->getExchg(), "CFFEX") == 0);
-	///��������: 
+	///买卖方向: 
 	req.Direction = wrapDirectionType(entrust->getDirection(), entrust->getOffsetType());
-	///��Ͽ�ƽ��־: ����
+	///组合开平标志: 开仓
 	req.CombOffsetFlag[0] = wrapOffsetType(entrust->getOffsetType());
-	///���Ͷ���ױ���־
+	///组合投机套保标志
 	req.CombHedgeFlag[0] = THOST_FTDC_HF_Speculation;
-	///�۸�
+	///价格
 	req.LimitPrice = entrust->getPrice();
-	///����: 1
+	///数量: 1
 	req.VolumeTotalOriginal = (int)entrust->getVolume();
 
 	if (entrust->getOrderFlag() == WOF_NOR)
@@ -394,19 +394,19 @@ int TraderCTPMini::orderInsert(WTSEntrust* entrust)
 		req.VolumeCondition = THOST_FTDC_VC_CV;
 	}
 
-	///��������: ����
+	///触发条件: 立即
 	req.ContingentCondition = THOST_FTDC_CC_Immediately;
-	///ֹ���
+	///止损价
 	//	TThostFtdcPriceType	StopPrice;
-	///ǿƽԭ��: ��ǿƽ
+	///强平原因: 非强平
 	req.ForceCloseReason = THOST_FTDC_FCC_NotForceClose;
-	///�Զ������־: ��
+	///自动挂起标志: 否
 	req.IsAutoSuspend = 0;
-	///ҵ��Ԫ
+	///业务单元
 	//	TThostFtdcBusinessUnitType	BusinessUnit;
-	///������
+	///请求编号
 	//	TThostFtdcRequestIDType	RequestID;
-	///�û�ǿ����־: ��
+	///用户强评标志: 否
 	req.UserForceClose = 0;
 
 	int iResult = m_pUserAPI->ReqOrderInsert(&req, genRequestID());
@@ -429,25 +429,21 @@ int TraderCTPMini::orderAction(WTSEntrustAction* action)
 
 	CThostFtdcInputOrderActionField req;
 	memset(&req, 0, sizeof(req));
-	///���͹�˾����
+	///经纪公司代码
 	strcpy(req.BrokerID, m_strBroker.c_str());
-	///Ͷ���ߴ���
+	///投资者代码
 	strcpy(req.InvestorID, m_strUser.c_str());
-	///��������
+	///报单引用
 	fmt::format_to(req.OrderRef, "{}", orderref);
-	///������
-	///ǰ�ñ��
+	///请求编号
+	///前置编号
 	req.FrontID = frontid;
-	///�Ự���
+	///会话编号
 	req.SessionID = sessionid;
-	///������־
+	///操作标志
 	req.ActionFlag = wrapActionFlag(action->getActionFlag());
-	///��Լ����
+	///合约代码
 	strcpy(req.InstrumentID, action->getCode());
-
-	req.LimitPrice = action->getPrice();
-
-	req.VolumeChange = (int32_t)action->getVolume();
 
 	strcpy(req.OrderSysID, action->getOrderID());
 	strcpy(req.ExchangeID, action->getExchg());
@@ -562,7 +558,7 @@ void TraderCTPMini::OnFrontConnected()
 
 void TraderCTPMini::OnFrontDisconnected(int nReason)
 {
-	//write_log(m_sink, LL_ERROR, "[TraderCTPMini]CTP���׷������ѶϿ�");
+	//write_log(m_sink, LL_ERROR, "[TraderCTPMini]CTP交易服务器已断开");
 	m_wrapperState = WS_NOTLOGIN;
 	if (m_sink)
 		m_sink->handleEvent(WTE_Close, nReason);
@@ -596,18 +592,18 @@ void TraderCTPMini::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, C
 	{
 		m_wrapperState = WS_LOGINED;
 
-		// ����Ự����
+		// 保存会话参数
 		m_frontID = pRspUserLogin->FrontID;
 		m_sessionID = pRspUserLogin->SessionID;
 		m_orderRef = atoi(pRspUserLogin->MaxOrderRef);
-		///��ȡ��ǰ������
+		///获取当前交易日
 		m_lDate = atoi(m_pUserAPI->GetTradingDay());
 
 		write_log(m_sink, LL_INFO, "[TraderCTPMini][{}-{}] Login succeed, AppID: {}, Sessionid: {}, login time: {}...",
 			m_strBroker.c_str(), m_strUser.c_str(), m_strAppID.c_str(), m_sessionID, pRspUserLogin->LoginTime);
 
 		{
-			//��ʼ��ί�е�������
+			//初始化委托单缓存器
 			std::stringstream ss;
 			ss << m_strFlowDir << "local/" << m_strBroker << "/";
 			std::string path = StrUtil::standardisePath(ss.str());
@@ -620,7 +616,7 @@ void TraderCTPMini::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, C
 		}
 
 		{
-			//��ʼ��������ǻ�����
+			//初始化订单标记缓存器
 			std::stringstream ss;
 			ss << m_strFlowDir << "local/" << m_strBroker << "/";
 			std::string path = StrUtil::standardisePath(ss.str());
@@ -838,7 +834,7 @@ void TraderCTPMini::OnRspQryInvestorPosition(CThostFtdcInvestorPositionField *pI
 
 			if (decimal::lt(pos->getTotalPosition(), 0.0) && decimal::eq(pos->getMargin(), 0.0))
 			{
-				//�в�λ,���Ǳ�֤��Ϊ0,��˵����������Լ,������Լ�Ŀ��óֲ�ȫ����Ϊ0
+				//有仓位,但是保证金为0,则说明是套利合约,单个合约的可用持仓全部置为0
 				pos->setAvailNewPos(0);
 				pos->setAvailPrePos(0);
 			}
@@ -1118,7 +1114,7 @@ WTSOrderInfo* TraderCTPMini::makeOrderInfo(CThostFtdcOrderField* orderField)
 
 	/*
 	 *	By Wesley @ 2021.12.16
-	 *	mini���ص�InsertDate�ǿգ���������Ҫ�ĳ��ý����������㣬����ҹ�̺��鷳��ֻ�ܴ�Ŵ���һ����
+	 *	mini返回的InsertDate是空，所以这里要改成用交易日来重算，但是夜盘很麻烦，只能大概处理一下了
 	 */
 	std::string strTime = orderField->InsertTime;
 	StrUtil::replace(strTime, ":", "");
@@ -1126,13 +1122,13 @@ WTSOrderInfo* TraderCTPMini::makeOrderInfo(CThostFtdcOrderField* orderField)
 
 	uint32_t insertDate = m_lDate;
 	uint32_t uHour = uTime / 10000;
-	//�µ�ʱ����ҹ�̣���ֱ���ý����յ����µ�����
+	//下单时间是夜盘，则直接用交易日倒推下单日期
 	if(uHour >= 21)
 	{
 		uint32_t wd = TimeUtils::getWeekDay(insertDate);
-		//�������һ����ֱ���������������
-		//��Ϊ�ڼ���ǰһ�첻����ҹ�̣�����ֻ����������
-		//���������һ����ֱ����ǰһ�������
+		//如果是周一，则直接用上周五的日期
+		//因为节假日前一天不会有夜盘，所以只可能是周五
+		//如果不是周一，则直接用前一天的日期
 		if(wd == 1)
 			insertDate = TimeUtils::getNextDate(m_lDate, -3);
 		else
@@ -1238,17 +1234,17 @@ WTSTradeInfo* TraderCTPMini::makeTradeRecord(CThostFtdcTradeField *tradeField)
 
 	/*
 	 *	By Wesley @ 2021.12.16
-	 *	mini���ص�InsertDate�ǿգ���������Ҫ�ĳ��ý����������㣬����ҹ�̺��鷳��ֻ�ܴ�Ŵ���һ����
+	 *	mini返回的InsertDate是空，所以这里要改成用交易日来重算，但是夜盘很麻烦，只能大概处理一下了
 	 */
 	uint32_t uDate = m_lDate;
 	uint32_t uHour = uTime / 10000;
-	//�µ�ʱ����ҹ�̣���ֱ���ý����յ����µ�����
+	//下单时间是夜盘，则直接用交易日倒推下单日期
 	if (uHour >= 21)
 	{
 		uint32_t wd = TimeUtils::getWeekDay(uDate);
-		//�������һ����ֱ���������������
-		//��Ϊ�ڼ���ǰһ�첻����ҹ�̣�����ֻ����������
-		//���������һ����ֱ����ǰһ�������
+		//如果是周一，则直接用上周五的日期
+		//因为节假日前一天不会有夜盘，所以只可能是周五
+		//如果不是周一，则直接用前一天的日期
 		if (wd == 1)
 			uDate = TimeUtils::getNextDate(m_lDate, -3);
 		else

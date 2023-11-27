@@ -1,11 +1,11 @@
-/*!
+ï»¿/*!
  * \file StrUtil.hpp
  * \project	WonderTrader
  *
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief ×Ö·û´®´¦ÀíµÄ·â×°
+ * \brief å­—ç¬¦ä¸²å¤„ç†çš„å°è£…
  */
 #pragma once
 #include <string>
@@ -52,7 +52,7 @@ public:
 		return std::move(ret);
 	}
 
-	//È¥µôËùÓĞ¿Õ¸ñ
+	//å»æ‰æ‰€æœ‰ç©ºæ ¼
 	static inline void trimAllSpace(std::string &str)
 	{
 		std::string::iterator destEnd = std::remove_if(str.begin(), str.end(), [](const char& c){
@@ -61,7 +61,7 @@ public:
 		str.resize(destEnd-str.begin());
 	}
 
-	//È¥³ıËùÓĞÌØ¶¨×Ö·û
+	//å»é™¤æ‰€æœ‰ç‰¹å®šå­—ç¬¦
 	//static inline void trimAll(std::string &str,char ch)
 	//{
 	//	std::string::iterator destEnd=std::remove_if(str.begin(),str.end(),std::bind1st(std::equal_to<char>(),ch));
@@ -232,10 +232,10 @@ public:
 	}
 
 	/*
-	 *	¼ì²éÊÇ·ñÒÔÖ¸¶¨µÄ×Ö·û´®¿ªÊ¼
-	 *	@str		Òª¼ì²éµÄ×Ö·û´®
-	 *	@pattern	ÒªÆ¥ÅäµÄÄ£°å
-	 *	@ignroreCaseÊÇ·ñºöÂÔ´óĞ¡Ğ´
+	 *	æ£€æŸ¥æ˜¯å¦ä»¥æŒ‡å®šçš„å­—ç¬¦ä¸²å¼€å§‹
+	 *	@str		è¦æ£€æŸ¥çš„å­—ç¬¦ä¸²
+	 *	@pattern	è¦åŒ¹é…çš„æ¨¡æ¿
+	 *	@ignroreCaseæ˜¯å¦å¿½ç•¥å¤§å°å†™
 	 */
 	static inline bool startsWith(const char* str, const char* pattern, bool ignoreCase = true)
 	{
@@ -259,10 +259,10 @@ public:
 	}
 
 	/*
-	 *	¼ì²éÊÇ·ñÒÔÖ¸¶¨µÄ×Ö·û´®½áÊø
-	 *	@str		Òª¼ì²éµÄ×Ö·û´®
-	 *	@pattern	ÒªÆ¥ÅäµÄÄ£°å
-	 *	@ignroreCaseÊÇ·ñºöÂÔ´óĞ¡Ğ´
+	 *	æ£€æŸ¥æ˜¯å¦ä»¥æŒ‡å®šçš„å­—ç¬¦ä¸²ç»“æŸ
+	 *	@str		è¦æ£€æŸ¥çš„å­—ç¬¦ä¸²
+	 *	@pattern	è¦åŒ¹é…çš„æ¨¡æ¿
+	 *	@ignroreCaseæ˜¯å¦å¿½ç•¥å¤§å°å†™
 	 */
 	static inline bool endsWith(const char* str, const char* pattern, bool ignoreCase = true)
 	{
@@ -405,7 +405,7 @@ public:
 		return std::move(temp);
 	}
 
-	//µØÇòÈË¶¼ÖªµÀ,¶ñĞÄµÄstd::stringÊÇÃ»ÓĞCStringµÄFormatÕâ¸öº¯ÊıµÄ,ËùÒÔÎÒÃÇ×Ô¼ºÔì
+	//åœ°çƒäººéƒ½çŸ¥é“,æ¶å¿ƒçš„std::stringæ˜¯æ²¡æœ‰CStringçš„Formatè¿™ä¸ªå‡½æ•°çš„,æ‰€ä»¥æˆ‘ä»¬è‡ªå·±é€ 
 	static inline std::string printf(const char *pszFormat, ...)
 	{
 		va_list argptr;
@@ -415,7 +415,7 @@ public:
 		return std::move(result);
 	}
 
-	//µØÇòÈË¶¼ÖªµÀ,¶ñĞÄµÄstd::stringÊÇÃ»ÓĞCStringµÄFormatÕâ¸öº¯ÊıµÄ,ËùÒÔÎÒÃÇ×Ô¼ºÔì
+	//åœ°çƒäººéƒ½çŸ¥é“,æ¶å¿ƒçš„std::stringæ˜¯æ²¡æœ‰CStringçš„Formatè¿™ä¸ªå‡½æ•°çš„,æ‰€ä»¥æˆ‘ä»¬è‡ªå·±é€ 
 	static inline std::string printf2(const char *pszFormat, ...)
 	{
 		va_list argptr;
@@ -425,7 +425,7 @@ public:
 		return std::move(result);
 	}
 
-	//µØÇòÈË¶¼ÖªµÀ,¶ñĞÄµÄstd::stringÊÇÃ»ÓĞCStringµÄFormatÕâ¸öº¯ÊıµÄ,ËùÒÔÎÒÃÇ×Ô¼ºÔì
+	//åœ°çƒäººéƒ½çŸ¥é“,æ¶å¿ƒçš„std::stringæ˜¯æ²¡æœ‰CStringçš„Formatè¿™ä¸ªå‡½æ•°çš„,æ‰€ä»¥æˆ‘ä»¬è‡ªå·±é€ 
 	static inline std::string printf2(const char *pszFormat,va_list argptr)
 	{
 		int         size   = 1024;
@@ -476,7 +476,7 @@ public:
 		return std::move(ret);
 	}
 
-	//µØÇòÈË¶¼ÖªµÀ,¶ñĞÄµÄstd::stringÊÇÃ»ÓĞCStringµÄFormatÕâ¸öº¯ÊıµÄ,ËùÒÔÎÒÃÇ×Ô¼ºÔì
+	//åœ°çƒäººéƒ½çŸ¥é“,æ¶å¿ƒçš„std::stringæ˜¯æ²¡æœ‰CStringçš„Formatè¿™ä¸ªå‡½æ•°çš„,æ‰€ä»¥æˆ‘ä»¬è‡ªå·±é€ 
 	static inline std::string printf(const char* pszFormat, va_list argptr)
 	{
 		int size = 1024;
@@ -512,7 +512,7 @@ public:
 		return std::move(ret);
 	}
 
-	//È¡µÃÓÒ±ßµÄN¸ö×Ö·û
+	//å–å¾—å³è¾¹çš„Nä¸ªå­—ç¬¦
 	static inline std::string right(const std::string &src,size_t nCount)
 	{
 		if(nCount>src.length())
@@ -520,7 +520,7 @@ public:
 		return std::move(src.substr(src.length()-nCount,nCount));
 	}
 
-	//È¡×ó±ßµÄN¸ö×Ö·û
+	//å–å·¦è¾¹çš„Nä¸ªå­—ç¬¦
 	static inline std::string left(const std::string &src,size_t nCount)
 	{
 		return std::move(src.substr(0,nCount));

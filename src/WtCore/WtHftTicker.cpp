@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file WtHftTicker.cpp
  * \project	WonderTrader
  *
@@ -13,6 +13,7 @@
 
 #include "../Share/TimeUtils.hpp"
 #include "../Includes/WTSSessionInfo.hpp"
+#include "../Includes/WTSContractInfo.hpp"
 #include "../Includes/IBaseDataMgr.h"
 #include "../Includes/IHotMgr.h"
 #include "../Share/CodeHelper.hpp"
@@ -46,29 +47,30 @@ void WtHftRtTicker::init(IDataReader* store, const char* sessionID)
 	TimeUtils::getDateTime(_date, _time);
 }
 
-void WtHftRtTicker::trigger_price(WTSTickData* curTick, uint32_t hotFlag /* = 0 */)
+void WtHftRtTicker::trigger_price(WTSTickData* curTick)
 {
 	if (_engine)
 	{
+		WTSContractInfo* cInfo = curTick->getContractInfo();
 		std::string stdCode = curTick->code();
 		_engine->on_tick(stdCode.c_str(), curTick);
 
-		if (hotFlag !=0)
+		if (!cInfo->isFlat())
 		{
 			WTSTickData* hotTick = WTSTickData::create(curTick->getTickStruct());
-			std::string hotCode = (hotFlag == 1) ? CodeHelper::stdCodeToStdHotCode(stdCode.c_str()) : CodeHelper::stdCodeToStd2ndCode(stdCode.c_str());
-			hotTick->setCode(hotCode.c_str(), hotCode.size());
-			_engine->on_tick(hotCode.c_str(), hotTick);
+			const char* hotCode = cInfo->getHotCode();
+			hotTick->setCode(hotCode);
+			_engine->on_tick(hotCode, hotTick);
 			hotTick->release();
 		}
 	}
 }
 
-void WtHftRtTicker::on_tick(WTSTickData* curTick, uint32_t hotFlag/* = 0*/)
+void WtHftRtTicker::on_tick(WTSTickData* curTick)
 {
 	if (_thrd == NULL)
 	{
-		trigger_price(curTick, hotFlag);
+		trigger_price(curTick);
 		return;
 	}
 
@@ -77,8 +79,8 @@ void WtHftRtTicker::on_tick(WTSTickData* curTick, uint32_t hotFlag/* = 0*/)
 
 	if (_date != 0 && (uDate < _date || (uDate == _date && uTime < _time)))
 	{
-		//WTSLogger::info("ĞĞÇéÊ±¼ä{}Ğ¡ÓÚ±¾µØÊ±¼ä{}", uTime, _time);
-		trigger_price(curTick, hotFlag);
+		//WTSLogger::info("è¡Œæƒ…æ—¶é—´{}å°äºæœ¬åœ°æ—¶é—´{}", uTime, _time);
+		trigger_price(curTick);
 		return;
 	}
 
@@ -99,19 +101,19 @@ void WtHftRtTicker::on_tick(WTSTickData* curTick, uint32_t hotFlag/* = 0*/)
 
 	if (_cur_pos == 0)
 	{
-		//Èç¹ûµ±Ç°Ê±¼äÊÇ0, ÔòÖ±½Ó¸³Öµ¼´¿É
+		//å¦‚æœå½“å‰æ—¶é—´æ˜¯0, åˆ™ç›´æ¥èµ‹å€¼å³å¯
 		_cur_pos = minutes;
 	}
 	else if (_cur_pos < minutes)
 	{
-		//Èç¹ûÒÑ¼ÇÂ¼µÄ·ÖÖÓĞ¡ÓÚĞÂµÄ·ÖÖÓ, ÔòĞèÒª´¥·¢±ÕºÏÊÂ¼ş
-		//Õâ¸öÊ±ºòÒªÏÈ´¥·¢±ÕºÏ, ÔÙĞŞ¸ÄÆ½Ì¨Ê±¼äºÍ¼Û¸ñ
+		//å¦‚æœå·²è®°å½•çš„åˆ†é’Ÿå°äºæ–°çš„åˆ†é’Ÿ, åˆ™éœ€è¦è§¦å‘é—­åˆäº‹ä»¶
+		//è¿™ä¸ªæ—¶å€™è¦å…ˆè§¦å‘é—­åˆ, å†ä¿®æ”¹å¹³å°æ—¶é—´å’Œä»·æ ¼
 		if (_last_emit_pos < _cur_pos)
 		{
-			//´¥·¢Êı¾İ»Ø·ÅÄ£¿é
+			//è§¦å‘æ•°æ®å›æ”¾æ¨¡å—
 			StdUniqueLock lock(_mtx);
 
-			//ÓÅÏÈĞŞ¸ÄÊ±¼ä±ê¼Ç
+			//ä¼˜å…ˆä¿®æ”¹æ—¶é—´æ ‡è®°
 			_last_emit_pos = _cur_pos;
 
 			uint32_t thisMin = _s_info->minuteToTime(_cur_pos);
@@ -129,7 +131,7 @@ void WtHftRtTicker::on_tick(WTSTickData* curTick, uint32_t hotFlag/* = 0*/)
 			}
 		}
 
-		trigger_price(curTick, hotFlag);
+		trigger_price(curTick);
 		if (_engine)
 		{
 			_engine->set_date_time(_date, curMin, curSec, rawMin);
@@ -140,8 +142,8 @@ void WtHftRtTicker::on_tick(WTSTickData* curTick, uint32_t hotFlag/* = 0*/)
 	}
 	else
 	{
-		//Èç¹û·ÖÖÓÊı»¹ÊÇÒ»ÖÂµÄ, ÔòÖ±½Ó´¥·¢ĞĞÇéºÍÊ±¼ä¼´¿É
-		trigger_price(curTick, hotFlag);
+		//å¦‚æœåˆ†é’Ÿæ•°è¿˜æ˜¯ä¸€è‡´çš„, åˆ™ç›´æ¥è§¦å‘è¡Œæƒ…å’Œæ—¶é—´å³å¯
+		trigger_price(curTick);
 		if (_engine)
 			_engine->set_date_time(_date, curMin, curSec, rawMin);
 	}
@@ -164,7 +166,7 @@ void WtHftRtTicker::run()
 
 	_engine->on_session_begin();
 
-	//ÏÈ¼ì²éµ±Ç°Ê±¼ä, Èç¹û´óÓÚ
+	//å…ˆæ£€æŸ¥å½“å‰æ—¶é—´, å¦‚æœå¤§äº
 	uint32_t offTime = _s_info->offsetTime(_engine->get_min_time(), true);
 
 	_thrd.reset(new StdThread([this, offTime](){
@@ -177,18 +179,18 @@ void WtHftRtTicker::run()
 
 				if (now >= _next_check_time && _last_emit_pos < _cur_pos)
 				{
-					//´¥·¢Êı¾İ»Ø·ÅÄ£¿é
+					//è§¦å‘æ•°æ®å›æ”¾æ¨¡å—
 					StdUniqueLock lock(_mtx);
 
-					//ÓÅÏÈĞŞ¸ÄÊ±¼ä±ê¼Ç
+					//ä¼˜å…ˆä¿®æ”¹æ—¶é—´æ ‡è®°
 					_last_emit_pos = _cur_pos;
 
 					uint32_t thisMin = _s_info->minuteToTime(_cur_pos);
 					_time = thisMin;
 
-					//Èç¹ûthisMinÊÇ0, ËµÃ÷»»ÈÕÁË
-					//ÕâÀïÊÇ±¾µØ¼ÆÊ±µ¼ÖÂµÄ»»ÈÕ, ËµÃ÷ÈÕÆÚÆäÊµ»¹ÊÇÀÏÈÕÆÚ, Òª×Ô¶¯+1
-					//Í¬Ê±ÒòÎªÊ±¼äÊÇ235959xxx, ËùÒÔÒ²ÒªÊÖ¶¯ÖÃÎª0
+					//å¦‚æœthisMinæ˜¯0, è¯´æ˜æ¢æ—¥äº†
+					//è¿™é‡Œæ˜¯æœ¬åœ°è®¡æ—¶å¯¼è‡´çš„æ¢æ—¥, è¯´æ˜æ—¥æœŸå…¶å®è¿˜æ˜¯è€æ—¥æœŸ, è¦è‡ªåŠ¨+1
+					//åŒæ—¶å› ä¸ºæ—¶é—´æ˜¯235959xxx, æ‰€ä»¥ä¹Ÿè¦æ‰‹åŠ¨ç½®ä¸º0
 					if (thisMin == 0)
 					{
 						uint32_t lastDate = _date;
@@ -216,16 +218,16 @@ void WtHftRtTicker::run()
 			}
 			else //if(offTime >= _s_info->getOpenTime(true) && offTime <= _s_info->getCloseTime(true))
 			{
-				//ÊÕÅÌÒÔºó£¬Èç¹û·¢ÏÖÉÏ´Î´¥·¢µÄÎ»ÖÃ²»µÈÓÚ×ÜµÄ·ÖÖÓÊı£¬ËµÃ÷ÉÙÁË×îºóÒ»·ÖÖÓµÄ±ÕºÏÂß¼­
+				//æ”¶ç›˜ä»¥åï¼Œå¦‚æœå‘ç°ä¸Šæ¬¡è§¦å‘çš„ä½ç½®ä¸ç­‰äºæ€»çš„åˆ†é’Ÿæ•°ï¼Œè¯´æ˜å°‘äº†æœ€åä¸€åˆ†é’Ÿçš„é—­åˆé€»è¾‘
 				uint32_t total_mins = _s_info->getTradingMins();
 				if (_time != UINT_MAX && _last_emit_pos != 0 && _last_emit_pos < total_mins && offTime >= _s_info->getCloseTime(true))
 				{
 					WTSLogger::warn("Tradingday {} will be ended forcely, last_emit_pos: {}, time: {}", _engine->getTradingDate(), _last_emit_pos.fetch_add(0), _time);
 
-					//´¥·¢Êı¾İ»Ø·ÅÄ£¿é
+					//è§¦å‘æ•°æ®å›æ”¾æ¨¡å—
 					StdUniqueLock lock(_mtx);
 
-					//ÓÅÏÈĞŞ¸ÄÊ±¼ä±ê¼Ç
+					//ä¼˜å…ˆä¿®æ”¹æ—¶é—´æ ‡è®°
 					_last_emit_pos = total_mins;
 
 					bool bEndingTDate = true;

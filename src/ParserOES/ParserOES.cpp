@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file ParserOES.cpp
  * \project	WonderTrader
  *
@@ -298,7 +298,7 @@ void ParserOES::doOnConnected(MdsAsyncApiChannelT *pAsyncChannel)
 
 		/*
 		 *	By Wesley @ 2022.07.26
-		 *	UDPÄ£Ê½ÏÂ»á³öÏÖ¶à´Îµ÷ÓÃµÄÇé¿ö
+		 *	UDPæ¨¡å¼ä¸‹ä¼šå‡ºç°å¤šæ¬¡è°ƒç”¨çš„æƒ…å†µ
 		 */
 		_inited = true;
 		if (_sink)
@@ -309,14 +309,14 @@ void ParserOES::doOnConnected(MdsAsyncApiChannelT *pAsyncChannel)
 		return;
 	}
 
-	//TCPÄ£Ê½ÏÂ£¬Ö»»áÓĞÒ»´Îµ÷ÓÃ
+	//TCPæ¨¡å¼ä¸‹ï¼Œåªä¼šæœ‰ä¸€æ¬¡è°ƒç”¨
 	if (_sink)
 	{
 		_sink->handleEvent(WPE_Connect, 0);
 		_sink->handleEvent(WPE_Login, 0);
 	}
 
-	/* ¶©ÔÄµÄÊı¾İÀàĞÍ (dataTypes) »áÒÔ×îºóÒ»´Î¶©ÔÄÎª×¼, ËùÒÔÃ¿´Î¶¼ĞèÒªÖ¸¶¨ÎªËùÓĞ´ı¶©ÔÄµÄÊı¾İÀàĞÍ */
+	/* è®¢é˜…çš„æ•°æ®ç±»å‹ (dataTypes) ä¼šä»¥æœ€åä¸€æ¬¡è®¢é˜…ä¸ºå‡†, æ‰€ä»¥æ¯æ¬¡éƒ½éœ€è¦æŒ‡å®šä¸ºæ‰€æœ‰å¾…è®¢é˜…çš„æ•°æ®ç±»å‹ */
 	int32                   dataTypes =
 		MDS_SUB_DATA_TYPE_INDEX_SNAPSHOT
 		| MDS_SUB_DATA_TYPE_OPTION_SNAPSHOT
@@ -326,17 +326,17 @@ void ParserOES::doOnConnected(MdsAsyncApiChannelT *pAsyncChannel)
 		| MDS_SUB_DATA_TYPE_L2_SSE_ORDER
 		| MDS_SUB_DATA_TYPE_L2_TRADE;
 
-	/* ÉèÖÃSubscribeByString½Ó¿ÚÊ¹ÓÃµÄÊı¾İÄ£Ê½ (tickType=1) */
+	/* è®¾ç½®SubscribeByStringæ¥å£ä½¿ç”¨çš„æ•°æ®æ¨¡å¼ (tickType=1) */
 	MdsApi_SetThreadSubscribeTickType(MDS_TICK_TYPE_LATEST_TIMELY);
 
-	/* ÉèÖÃSubscribeByString½Ó¿ÚÊ¹ÓÃµÄÖğ±ÊÊı¾İµÄÊı¾İÖØ½¨±êÊ¶ (ÊµÊ±ĞĞÇé+ÖØ½¨Êı¾İ) */
+	/* è®¾ç½®SubscribeByStringæ¥å£ä½¿ç”¨çš„é€ç¬”æ•°æ®çš„æ•°æ®é‡å»ºæ ‡è¯† (å®æ—¶è¡Œæƒ…+é‡å»ºæ•°æ®) */
 	MdsApi_SetThreadSubscribeTickRebuildFlag(
 		MDS_TICK_REBUILD_FLAG_INCLUDE_REBUILDED);
 
-	/* ÉèÖÃSubscribeByString½Ó¿ÚÊ¹ÓÃµÄ³õÊ¼¿ìÕÕ¶©ÔÄ±êÖ¾ (isRequireInitialMktData) */
+	/* è®¾ç½®SubscribeByStringæ¥å£ä½¿ç”¨çš„åˆå§‹å¿«ç…§è®¢é˜…æ ‡å¿— (isRequireInitialMktData) */
 	MdsApi_SetThreadSubscribeRequireInitMd(FALSE);
 
-	/* ¶©ÔÄËùÓĞÉÏº£¹ÉÆ±/Õ®È¯/»ù½ğµÄ Level-2 ĞĞÇé */
+	/* è®¢é˜…æ‰€æœ‰ä¸Šæµ·è‚¡ç¥¨/å€ºåˆ¸/åŸºé‡‘çš„ Level-2 è¡Œæƒ… */
 	if (!MdsAsyncApi_SubscribeByString(pAsyncChannel,
 		(char *)NULL, (char *)NULL,
 		MDS_EXCH_SSE, MDS_MD_PRODUCT_TYPE_STOCK, MDS_SUB_MODE_SET,
@@ -345,7 +345,7 @@ void ParserOES::doOnConnected(MdsAsyncApiChannelT *pAsyncChannel)
 		write_log(_sink, LL_WARN, "[ParserOES] Subscribe stock quotes of SSE failed");
 	}
 
-	/* ×·¼Ó¶©ÔÄËùÓĞÉÏº£Ö¸ÊıĞĞÇé */
+	/* è¿½åŠ è®¢é˜…æ‰€æœ‰ä¸Šæµ·æŒ‡æ•°è¡Œæƒ… */
 	if (!MdsAsyncApi_SubscribeByString(pAsyncChannel,
 		(char *)NULL, (char *)NULL,
 		MDS_EXCH_SSE, MDS_MD_PRODUCT_TYPE_INDEX, MDS_SUB_MODE_APPEND,
@@ -354,7 +354,7 @@ void ParserOES::doOnConnected(MdsAsyncApiChannelT *pAsyncChannel)
 		write_log(_sink, LL_WARN, "[ParserOES] Subscribe index quotes of SSE failed");
 	}
 
-	/* ×·¼Ó¶©ÔÄËùÓĞÉÏº£ÆÚÈ¨ĞĞÇé */
+	/* è¿½åŠ è®¢é˜…æ‰€æœ‰ä¸Šæµ·æœŸæƒè¡Œæƒ… */
 	if (!MdsAsyncApi_SubscribeByString(pAsyncChannel,
 		(char *)NULL, (char *)NULL,
 		MDS_EXCH_SSE, MDS_MD_PRODUCT_TYPE_OPTION, MDS_SUB_MODE_APPEND,
@@ -363,7 +363,7 @@ void ParserOES::doOnConnected(MdsAsyncApiChannelT *pAsyncChannel)
 		write_log(_sink, LL_WARN, "[ParserOES] Subscribe option quotes of SSE failed");
 	}
 
-	/* ×·¼Ó¶©ÔÄËùÓĞÉîÛÚ¹ÉÆ±/Õ®È¯/»ù½ğµÄ Level-2 ĞĞÇé */
+	/* è¿½åŠ è®¢é˜…æ‰€æœ‰æ·±åœ³è‚¡ç¥¨/å€ºåˆ¸/åŸºé‡‘çš„ Level-2 è¡Œæƒ… */
 	if (!MdsAsyncApi_SubscribeByString(pAsyncChannel,
 		(char *)NULL, (char *)NULL,
 		MDS_EXCH_SZSE, MDS_MD_PRODUCT_TYPE_STOCK, MDS_SUB_MODE_APPEND,
@@ -372,7 +372,7 @@ void ParserOES::doOnConnected(MdsAsyncApiChannelT *pAsyncChannel)
 		write_log(_sink, LL_WARN, "[ParserOES] Subscribe stock quotes of SZSE failed");
 	}
 
-	/* ×·¼Ó¶©ÔÄËùÓĞÉîÛÚÖ¸ÊıĞĞÇé */
+	/* è¿½åŠ è®¢é˜…æ‰€æœ‰æ·±åœ³æŒ‡æ•°è¡Œæƒ… */
 	if (!MdsAsyncApi_SubscribeByString(pAsyncChannel,
 		(char *)NULL, (char *)NULL,
 		MDS_EXCH_SZSE, MDS_MD_PRODUCT_TYPE_INDEX, MDS_SUB_MODE_APPEND,
@@ -381,7 +381,7 @@ void ParserOES::doOnConnected(MdsAsyncApiChannelT *pAsyncChannel)
 		write_log(_sink, LL_WARN, "[ParserOES] Subscribe index quotes of SZSE failed");
 	}
 
-	/* ×·¼Ó¶©ÔÄËùÓĞÉîÛÚÆÚÈ¨ĞĞÇé */
+	/* è¿½åŠ è®¢é˜…æ‰€æœ‰æ·±åœ³æœŸæƒè¡Œæƒ… */
 	if (!MdsAsyncApi_SubscribeByString(pAsyncChannel,
 		(char *)NULL, (char *)NULL,
 		MDS_EXCH_SZSE, MDS_MD_PRODUCT_TYPE_OPTION, MDS_SUB_MODE_APPEND,
@@ -418,10 +418,10 @@ void ParserOES::doOnMessage(SMsgHeadT *pMsgHead, void *pMsgItem)
 
 	MdsMktRspMsgBodyT   *pRspMsg = (MdsMktRspMsgBodyT *)pMsgItem;
 
-	/* ¸ù¾İÏûÏ¢ÀàĞÍ¶ÔĞĞÇéÏûÏ¢½øĞĞ´¦Àí */
+	/* æ ¹æ®æ¶ˆæ¯ç±»å‹å¯¹è¡Œæƒ…æ¶ˆæ¯è¿›è¡Œå¤„ç† */
 	switch (pMsgHead->msgId) {
 	case MDS_MSGTYPE_L2_TRADE:
-		/* ´¦ÀíLevel2Öğ±Ê³É½»ÏûÏ¢ @see MdsL2TradeT */
+		/* å¤„ç†Level2é€ç¬”æˆäº¤æ¶ˆæ¯ @see MdsL2TradeT */
 		{
 			std::string code, exchg;
 			if (pRspMsg->trade.exchId == MDS_EXCH_SSE)
@@ -470,7 +470,7 @@ void ParserOES::doOnMessage(SMsgHeadT *pMsgHead, void *pMsgItem)
 
 	case MDS_MSGTYPE_L2_ORDER:
 	case MDS_MSGTYPE_L2_SSE_ORDER:
-		/* ´¦ÀíLevel2Öğ±ÊÎ¯ÍĞÏûÏ¢ @see MdsL2OrderT */
+		/* å¤„ç†Level2é€ç¬”å§”æ‰˜æ¶ˆæ¯ @see MdsL2OrderT */
 		{
 			std::string code, exchg;
 			if (pRspMsg->order.exchId == MDS_EXCH_SSE)
@@ -516,7 +516,7 @@ void ParserOES::doOnMessage(SMsgHeadT *pMsgHead, void *pMsgItem)
 		break;
 
 	case MDS_MSGTYPE_L2_MARKET_DATA_SNAPSHOT:
-		/* ´¦ÀíLevel2¿ìÕÕĞĞÇéÏûÏ¢ @see MdsL2StockSnapshotBodyT */
+		/* å¤„ç†Level2å¿«ç…§è¡Œæƒ…æ¶ˆæ¯ @see MdsL2StockSnapshotBodyT */
 		{
 			std::string code, exchg;
 			if (pRspMsg->mktDataSnapshot.head.exchId == MDS_EXCH_SSE)
@@ -556,7 +556,7 @@ void ParserOES::doOnMessage(SMsgHeadT *pMsgHead, void *pMsgItem)
 
 			quote.pre_close = wrapPrice(pRspMsg->mktDataSnapshot.l2Stock.PrevClosePx);
 
-			//Î¯Âô¼Û¸ñ
+			//å§”å–ä»·æ ¼
 			for (int i = 0; i < 10; i++)
 			{
 				quote.ask_prices[i] = wrapPrice(pRspMsg->mktDataSnapshot.l2Stock.OfferLevels[i].Price);
@@ -579,7 +579,7 @@ void ParserOES::doOnMessage(SMsgHeadT *pMsgHead, void *pMsgItem)
 		break;
 
 	case MDS_MSGTYPE_L2_BEST_ORDERS_SNAPSHOT:
-		/* ´¦ÀíLevel2Î¯ÍĞ¶ÓÁĞÏûÏ¢(ÂòÒ»£¯ÂôÒ»Ç°ÎåÊ®±ÊÎ¯ÍĞÃ÷Ï¸) @see MdsL2BestOrdersSnapshotBodyT */
+		/* å¤„ç†Level2å§”æ‰˜é˜Ÿåˆ—æ¶ˆæ¯(ä¹°ä¸€ï¼å–ä¸€å‰äº”åç¬”å§”æ‰˜æ˜ç»†) @see MdsL2BestOrdersSnapshotBodyT */
 		{
 			std::string code, exchg;
 			if (pRspMsg->mktDataSnapshot.head.exchId == MDS_EXCH_SSE)
@@ -661,7 +661,7 @@ void ParserOES::doOnMessage(SMsgHeadT *pMsgHead, void *pMsgItem)
 		break;
 
 	case MDS_MSGTYPE_MARKET_DATA_SNAPSHOT_FULL_REFRESH:
-		/* ´¦ÀíLevel1¿ìÕÕĞĞÇéÏûÏ¢ @see MdsStockSnapshotBodyT */
+		/* å¤„ç†Level1å¿«ç…§è¡Œæƒ…æ¶ˆæ¯ @see MdsStockSnapshotBodyT */
 		{
 			std::string code, exchg;
 			if (pRspMsg->mktDataSnapshot.head.exchId == MDS_EXCH_SSE)
@@ -701,7 +701,7 @@ void ParserOES::doOnMessage(SMsgHeadT *pMsgHead, void *pMsgItem)
 
 			quote.pre_close = wrapPrice(pRspMsg->mktDataSnapshot.stock.PrevClosePx);
 
-			//Î¯Âô¼Û¸ñ
+			//å§”å–ä»·æ ¼
 			for (int i = 0; i < 5; i++)
 			{
 				quote.ask_prices[i] = wrapPrice(pRspMsg->mktDataSnapshot.stock.OfferLevels[i].Price);
@@ -724,7 +724,7 @@ void ParserOES::doOnMessage(SMsgHeadT *pMsgHead, void *pMsgItem)
 		break;
 
 	case MDS_MSGTYPE_OPTION_SNAPSHOT_FULL_REFRESH:
-		/* ´¦ÀíÆÚÈ¨¿ìÕÕĞĞÇéÏûÏ¢ @see MdsStockSnapshotBodyT */
+		/* å¤„ç†æœŸæƒå¿«ç…§è¡Œæƒ…æ¶ˆæ¯ @see MdsStockSnapshotBodyT */
 		{
 			std::string code, exchg;
 			if (pRspMsg->mktDataSnapshot.head.exchId == MDS_EXCH_SSE)
@@ -765,7 +765,7 @@ void ParserOES::doOnMessage(SMsgHeadT *pMsgHead, void *pMsgItem)
 			quote.pre_close = wrapPrice(pRspMsg->mktDataSnapshot.option.PrevClosePx);
 			quote.open_interest = (double)pRspMsg->mktDataSnapshot.option.TotalLongPosition;
 
-			//Î¯Âô¼Û¸ñ
+			//å§”å–ä»·æ ¼
 			for (int i = 0; i < 5; i++)
 			{
 				quote.ask_prices[i] = wrapPrice(pRspMsg->mktDataSnapshot.option.OfferLevels[i].Price);
@@ -788,7 +788,7 @@ void ParserOES::doOnMessage(SMsgHeadT *pMsgHead, void *pMsgItem)
 		break;
 
 	case MDS_MSGTYPE_INDEX_SNAPSHOT_FULL_REFRESH:
-		/* ´¦ÀíÖ¸ÊıĞĞÇéÏûÏ¢ @see MdsIndexSnapshotBodyT */
+		/* å¤„ç†æŒ‡æ•°è¡Œæƒ…æ¶ˆæ¯ @see MdsIndexSnapshotBodyT */
 		{
 			std::string code, exchg;
 			if (pRspMsg->mktDataSnapshot.head.exchId == MDS_EXCH_SSE)
@@ -839,29 +839,29 @@ void ParserOES::doOnMessage(SMsgHeadT *pMsgHead, void *pMsgItem)
 		break;
 
 	case MDS_MSGTYPE_SECURITY_STATUS:
-		/* ´¦Àí(ÉîÛÚ)Ö¤È¯×´Ì¬ÏûÏ¢ @see MdsSecurityStatusMsgT */
+		/* å¤„ç†(æ·±åœ³)è¯åˆ¸çŠ¶æ€æ¶ˆæ¯ @see MdsSecurityStatusMsgT */
 		break;
 
 	case MDS_MSGTYPE_TRADING_SESSION_STATUS:
-		/* ´¦Àí(ÉÏÖ¤)ÊĞ³¡×´Ì¬ÏûÏ¢ @see MdsTradingSessionStatusMsgT */
+		/* å¤„ç†(ä¸Šè¯)å¸‚åœºçŠ¶æ€æ¶ˆæ¯ @see MdsTradingSessionStatusMsgT */
 		break;
 
 	case MDS_MSGTYPE_MARKET_DATA_REQUEST:
-		/* ´¦ÀíĞĞÇé¶©ÔÄÇëÇóµÄÓ¦´ğÏûÏ¢ @see MdsMktDataRequestRspT */
+		/* å¤„ç†è¡Œæƒ…è®¢é˜…è¯·æ±‚çš„åº”ç­”æ¶ˆæ¯ @see MdsMktDataRequestRspT */
 		if (pMsgHead->status != 0)
 		{
 			write_log(_sink, LL_ERROR, "recv subscribe-request response, subscription failed! errCode[{} - {}]", pMsgHead->status, pMsgHead->detailStatus);
 		}
 		break;
 	case MDS_MSGTYPE_HEARTBEAT:
-		/* Ö±½ÓºöÂÔĞÄÌøÏûÏ¢¼´¿É */
+		/* ç›´æ¥å¿½ç•¥å¿ƒè·³æ¶ˆæ¯å³å¯ */
 		write_log(_sink, LL_DEBUG, "[ParserOES] Heartbeating");
 		break;
 
 	case MDS_MSGTYPE_COMPRESSED_PACKETS:
-		/* @note ½ÓÊÕµ½ÁËÑ¹ËõºóµÄĞĞÇéÊı¾İ!
-		 * - ¶Ô½ÓÑ¹ËõĞĞÇéĞèÒªÊ¹ÓÃ MdsApi_WaitOnMsgCompressible µÈ Compressible ½Ó¿Ú
-		 * - ¶ÔÓÚÒì²½APIĞèÒª¼ì²éÊÇ·ñ¿ªÆôÁË isCompressible ±êÖ¾
+		/* @note æ¥æ”¶åˆ°äº†å‹ç¼©åçš„è¡Œæƒ…æ•°æ®!
+		 * - å¯¹æ¥å‹ç¼©è¡Œæƒ…éœ€è¦ä½¿ç”¨ MdsApi_WaitOnMsgCompressible ç­‰ Compressible æ¥å£
+		 * - å¯¹äºå¼‚æ­¥APIéœ€è¦æ£€æŸ¥æ˜¯å¦å¼€å¯äº† isCompressible æ ‡å¿—
 		 */
 		break;
 

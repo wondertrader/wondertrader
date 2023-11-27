@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \file PyCtaContext.h
  * \project	WonderTrader
  *

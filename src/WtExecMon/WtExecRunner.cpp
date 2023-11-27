@@ -1,4 +1,4 @@
-#include "WtExecRunner.h"
+ï»¿#include "WtExecRunner.h"
 
 #include "../WtCore/WtHelper.h"
 #include "../WtCore/WtDiffExecuter.h"
@@ -34,14 +34,9 @@ const char* getModuleName()
 
 WtExecRunner::WtExecRunner()
 {
-#if _WIN32
-#pragma message("Signal hooks disabled in WIN32")
-#else
-#pragma message("Signal hooks enabled in UNIX")
 	install_signal_hooks([](const char* message) {
 		WTSLogger::error(message);
 	});
-#endif
 }
 
 bool WtExecRunner::init(const char* logCfg /* = "logcfgexec.json" */, bool isFile /* = true */)
@@ -74,7 +69,7 @@ bool WtExecRunner::config(const char* cfgFile, bool isFile /* = true */)
 		return false;
 	}
 
-	//»ù´¡Êý¾ÝÎÄ¼þ
+	//åŸºç¡€æ•°æ®æ–‡ä»¶
 	WTSVariant* cfgBF = _config->get("basefiles");
 	if (cfgBF->get("session"))
 	{
@@ -121,14 +116,14 @@ bool WtExecRunner::config(const char* cfgFile, bool isFile /* = true */)
 	}
 
 
-	//³õÊ¼»¯Êý¾Ý¹ÜÀí
+	//åˆå§‹åŒ–æ•°æ®ç®¡ç†
 	initDataMgr();
 
-	//³õÊ¼»¯¿ªÆ½²ßÂÔ
+	//åˆå§‹åŒ–å¼€å¹³ç­–ç•¥
 	if (!initActionPolicy())
 		return false;
 
-	//³õÊ¼»¯ÐÐÇéÍ¨µÀ
+	//åˆå§‹åŒ–è¡Œæƒ…é€šé“
 	const char* cfgParser = _config->getCString("parsers");
 	if (StdFile::exists(cfgParser))
 	{
@@ -146,7 +141,7 @@ bool WtExecRunner::config(const char* cfgFile, bool isFile /* = true */)
 		}
 	}
 
-	//³õÊ¼»¯½»Ò×Í¨µÀ
+	//åˆå§‹åŒ–äº¤æ˜“é€šé“
 	const char* cfgTraders = _config->getCString("traders");
 	if (StdFile::exists(cfgTraders))
 	{
@@ -216,7 +211,7 @@ bool WtExecRunner::initParsers(WTSVariant* cfgParser)
 		const char* id = cfgItem->getCString("id");
 
 		// By Wesley @ 2021.12.14
-		// Èç¹ûidÎª¿Õ£¬ÔòÉú³É×Ô¶¯id
+		// å¦‚æžœidä¸ºç©ºï¼Œåˆ™ç”Ÿæˆè‡ªåŠ¨id
 		std::string realid = id;
 		if (realid.empty())
 		{
@@ -242,7 +237,7 @@ bool WtExecRunner::initExecuters(WTSVariant* cfgExecuter)
 	if (cfg == NULL || cfg->type() != WTSVariant::VT_Array)
 		return false;
 
-	//ÏÈ¼ÓÔØ×Ô´øµÄÖ´ÐÐÆ÷¹¤³§
+	//å…ˆåŠ è½½è‡ªå¸¦çš„æ‰§è¡Œå™¨å·¥åŽ‚
 	std::string path = WtHelper::getInstDir() + "executer//";
 	_exe_factory.loadFactories(path.c_str());
 
@@ -388,7 +383,7 @@ WTSSessionInfo* WtExecRunner::get_session_info(const char* sid, bool isCode /* =
 	return cInfo->getSessionInfo();
 }
 
-void WtExecRunner::handle_push_quote(WTSTickData* quote, uint32_t hotFlag /* = 0 */)
+void WtExecRunner::handle_push_quote(WTSTickData* quote)
 {
 	if (quote == NULL)
 		return;

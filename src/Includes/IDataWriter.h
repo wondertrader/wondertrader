@@ -1,11 +1,11 @@
-/*!
+ï»¿/*!
  * \file IDataWriter.h
  * \project	WonderTrader
  *
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief Êı¾İÂäµØ½Ó¿Ú¶¨Òå
+ * \brief æ•°æ®è½åœ°æ¥å£å®šä¹‰
  */
 #pragma once
 #include <stdint.h>
@@ -46,9 +46,9 @@ public:
 	virtual uint32_t getTradingDate(const char* pid) = 0;
 
 	/*
-	*	´¦Àí½âÎöÄ£¿éµÄÈÕÖ¾
-	*	@ll			ÈÕÖ¾¼¶±ğ
-	*	@message	ÈÕÖ¾ÄÚÈİ
+	*	å¤„ç†è§£ææ¨¡å—çš„æ—¥å¿—
+	*	@ll			æ—¥å¿—çº§åˆ«
+	*	@message	æ—¥å¿—å†…å®¹
 	*/
 	virtual void outputLog(WTSLogLevel ll, const char* message) = 0;
 };
@@ -67,7 +67,7 @@ public:
 typedef wt_hashmap<std::string, IHisDataDumper*> ExtDumpers;
 
 /*
- *	Êı¾İÂäµØ½Ó¿Ú
+ *	æ•°æ®è½åœ°æ¥å£
  */
 class IDataWriter
 {
@@ -103,6 +103,6 @@ protected:
 NS_WTP_END
 
 
-//»ñÈ¡IDataWriterµÄº¯ÊıÖ¸ÕëÀàĞÍ
+//è·å–IDataWriterçš„å‡½æ•°æŒ‡é’ˆç±»å‹
 typedef wtp::IDataWriter* (*FuncCreateWriter)();
 typedef void(*FuncDeleteWriter)(wtp::IDataWriter* &writer);

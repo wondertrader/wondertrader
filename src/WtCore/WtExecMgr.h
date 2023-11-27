@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <functional>
 #include "WtLocalExecuter.h"
 
@@ -26,7 +26,7 @@ public:
 	void	handle_tick(const char* stdCode, WTSTickData* curTick);
 
 	/*
-	 *	¼ÓÔØÂ·ÓÉ¹æÔò
+	 *	åŠ è½½è·¯ç”±è§„åˆ™
 	 */
 	bool	load_router_rules(WTSVariant* config);
 
@@ -50,7 +50,7 @@ public:
 	}
 
 	/*
-	 *	Çå³ı»º´æµÄÄ¿±ê²ÖÎ»
+	 *	æ¸…é™¤ç¼“å­˜çš„ç›®æ ‡ä»“ä½
 	 */
 	inline void	clear_cached_targets()
 	{
@@ -58,16 +58,16 @@ public:
 	}
 
 	/*
-	 *	½«Ä¿±ê²ÖÎ»¼ÓÈë»º´æ
-	 *	@stdCode	ºÏÔ¼´úÂë
-	 *	@targetPos	Ä¿±ê²ÖÎ»
-	 *	@execid		Ö´ĞĞÆ÷ID
+	 *	å°†ç›®æ ‡ä»“ä½åŠ å…¥ç¼“å­˜
+	 *	@stdCode	åˆçº¦ä»£ç 
+	 *	@targetPos	ç›®æ ‡ä»“ä½
+	 *	@execid		æ‰§è¡Œå™¨ID
 	 */
 	void	add_target_to_cache(const char* stdCode, double targetPos, const char* execid = "ALL");
 
 	/*
-	 *	Ìá½»»º´æµÄÄ¿±êÍ·´ç
-	 *	@scale	·ç¿ØÏµÊı
+	 *	æäº¤ç¼“å­˜çš„ç›®æ ‡å¤´å¯¸
+	 *	@scale	é£æ§ç³»æ•°
 	 */
 	void	commit_cached_targets(double scale = 1.0);
 

@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <stdint.h>
 #include <string>
 #include <functional>
@@ -189,7 +189,7 @@ public:
 	}
 
 	/*
-	 *	¶ÁÈ¡Ö¸¶¨keyµÄÊı¾İ
+	 *	è¯»å–æŒ‡å®škeyçš„æ•°æ®
 	 */
 	std::string get(void* key, std::size_t klen)
 	{
@@ -214,7 +214,7 @@ public:
 	}
 
 	/*
-	 *	¶ÁÈ¡Çø¼äÊı¾İ
+	 *	è¯»å–åŒºé—´æ•°æ®
 	 */
 	int get_range(const std::string& lower_key, const std::string& upper_key, LMDBQueryCallback cb)
 	{
@@ -246,7 +246,7 @@ public:
 			if(memcmp(lKey.mv_data, rKey.mv_data, lKey.mv_size) > 0)
 				break;
 
-			//»Øµ÷
+			//å›è°ƒ
 			//cb(std::string((char*)lKey.mv_data, lKey.mv_size), std::string((char*)mData.mv_data, mData.mv_size), false);
 			ayKeys.emplace_back(std::string((char*)lKey.mv_data, lKey.mv_size));
 			ayVals.emplace_back(std::string((char*)mData.mv_data, mData.mv_size));
@@ -260,11 +260,11 @@ public:
 	}
 
 	/*
-	 *	¶ÁÈ¡upper_keyÖ®Ç°µÄÊı¾İ£¬´Óupper_keyÍùÇ°ÕÒ£¬ÕÒµ½ÒÔºóÔÚ×öÒ»¸öreverse
-	 *	@lower_key	ÏÂ±ß½ç£¬Õâ¸ö±ØĞëÒªÓĞ£¬ÒòÎªÈç¹û¶à¸öºÏÔ¼´æÒ»¸ö¿âµÄ»°£¬²»¼ÓµÄ»°¿ÉÄÜ»á¶Áµ½±ğµÄºÏÔ¼µÄÊı¾İ
-	 *	@upper_key	ÉÏ±ß½ç
-	 *	@count		Ä¿±êÊı¾İÌõÊı
-	 *	@cb			»Øµ÷º¯Êı
+	 *	è¯»å–upper_keyä¹‹å‰çš„æ•°æ®ï¼Œä»upper_keyå¾€å‰æ‰¾ï¼Œæ‰¾åˆ°ä»¥ååœ¨åšä¸€ä¸ªreverse
+	 *	@lower_key	ä¸‹è¾¹ç•Œï¼Œè¿™ä¸ªå¿…é¡»è¦æœ‰ï¼Œå› ä¸ºå¦‚æœå¤šä¸ªåˆçº¦å­˜ä¸€ä¸ªåº“çš„è¯ï¼Œä¸åŠ çš„è¯å¯èƒ½ä¼šè¯»åˆ°åˆ«çš„åˆçº¦çš„æ•°æ®
+	 *	@upper_key	ä¸Šè¾¹ç•Œ
+	 *	@count		ç›®æ ‡æ•°æ®æ¡æ•°
+	 *	@cb			å›è°ƒå‡½æ•°
 	 */
 	int get_lowers(const std::string& lower_key, const std::string& upper_key, int count, LMDBQueryCallback cb)
 	{
@@ -291,7 +291,7 @@ public:
 
 		for (; _errno != MDB_NOTFOUND;)
 		{
-			//ÍùÇ°²éÕÒ£¬ËùÒÔÈç¹ûÄÃµ½µÄkey£¬±ÈÓÒ±ß½ç´ó£¬ÔòÖ±½ÓÍùÇ°ÍË»ØÒ»Ìõ
+			//å¾€å‰æŸ¥æ‰¾ï¼Œæ‰€ä»¥å¦‚æœæ‹¿åˆ°çš„keyï¼Œæ¯”å³è¾¹ç•Œå¤§ï¼Œåˆ™ç›´æ¥å¾€å‰é€€å›ä¸€æ¡
 			if (memcmp(rKey.mv_data, upper_key.data(), upper_key.size()) > 0)
 			{
 				_errno = mdb_cursor_get(cursor, &rKey, &mData, MDB_PREV);
@@ -302,12 +302,12 @@ public:
 			if (memcmp(rKey.mv_data, lower_key.data(), lower_key.size()) < 0)
 				break;
 
-			//»Øµ÷
+			//å›è°ƒ
 			ayKeys.emplace_back(std::string((char*)rKey.mv_data, rKey.mv_size));
 			ayVals.emplace_back(std::string((char*)mData.mv_data, mData.mv_size));
 			cnt++;
 
-			//Èç¹ûÕÒµ½Ä¿±êÊıÁ¿£¬ÔòÍË³ö
+			//å¦‚æœæ‰¾åˆ°ç›®æ ‡æ•°é‡ï¼Œåˆ™é€€å‡º
 			if(cnt == count)
 				break;
 			
@@ -315,7 +315,7 @@ public:
 			_db.update_errno(_errno);
 		}
 
-		//ÏòÇ°²éÕÒ£¬ÊÇÄæĞòµÄ£¬ĞèÒª×öÒ»¸öreverse
+		//å‘å‰æŸ¥æ‰¾ï¼Œæ˜¯é€†åºçš„ï¼Œéœ€è¦åšä¸€ä¸ªreverse
 		std::reverse(ayKeys.begin(), ayKeys.end());
 		std::reverse(ayVals.begin(), ayVals.end());
 		cb(ayKeys, ayVals);
@@ -324,11 +324,11 @@ public:
 	}
 
 	/*
-	 *	¶ÁÈ¡lower_keyÖ®ºóµÄÊı¾İ£¬´Ólower_keyÍùºóÕÒ
-	 *	@lower_key	ÏÂ±ß½ç
-	 *	@upper_key	ÉÏ±ß½ç£¬Õâ¸ö±ØĞëÒªÓĞ£¬ÒòÎªÈç¹û¶à¸öºÏÔ¼´æÒ»¸ö¿âµÄ»°£¬²»¼ÓµÄ»°¿ÉÄÜ»á¶Áµ½±ğµÄºÏÔ¼µÄÊı¾İ
-	 *	@count		Ä¿±êÊı¾İÌõÊı
-	 *	@cb			»Øµ÷º¯Êı
+	 *	è¯»å–lower_keyä¹‹åçš„æ•°æ®ï¼Œä»lower_keyå¾€åæ‰¾
+	 *	@lower_key	ä¸‹è¾¹ç•Œ
+	 *	@upper_key	ä¸Šè¾¹ç•Œï¼Œè¿™ä¸ªå¿…é¡»è¦æœ‰ï¼Œå› ä¸ºå¦‚æœå¤šä¸ªåˆçº¦å­˜ä¸€ä¸ªåº“çš„è¯ï¼Œä¸åŠ çš„è¯å¯èƒ½ä¼šè¯»åˆ°åˆ«çš„åˆçº¦çš„æ•°æ®
+	 *	@count		ç›®æ ‡æ•°æ®æ¡æ•°
+	 *	@cb			å›è°ƒå‡½æ•°
 	 */
 	int get_uppers(const std::string& lower_key, const std::string& upper_key, int count, LMDBQueryCallback cb)
 	{
@@ -350,12 +350,12 @@ public:
 			if (memcmp(bKey.mv_data, upper_key.data(), upper_key.size()) > 0)
 				break;
 
-			//»Øµ÷
+			//å›è°ƒ
 			ayKeys.emplace_back(std::string((char*)bKey.mv_data, bKey.mv_size));
 			ayVals.emplace_back(std::string((char*)mData.mv_data, mData.mv_size));
 			cnt++;
 
-			//Èç¹ûÕÒµ½Ä¿±êÊıÁ¿£¬ÔòÍË³ö
+			//å¦‚æœæ‰¾åˆ°ç›®æ ‡æ•°é‡ï¼Œåˆ™é€€å‡º
 			if (cnt == count)
 				break;
 

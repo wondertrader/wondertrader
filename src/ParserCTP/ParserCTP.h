@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file ParserCTP.h
  * \project	WonderTrader
  *
@@ -33,7 +33,7 @@ public:
 		LS_LOGINED
 	};
 
-//IQuoteParser ½Ó¿Ú
+//IQuoteParser æ¥å£
 public:
 	virtual bool init(WTSVariant* config) override;
 
@@ -51,7 +51,7 @@ public:
 	virtual void registerSpi(IParserSpi* listener) override;
 
 
-//CThostFtdcMdSpi ½Ó¿Ú
+//CThostFtdcMdSpi æ¥å£
 public:
 	virtual void OnRspError( CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast );
 
@@ -59,7 +59,7 @@ public:
 
 	virtual void OnRspUserLogin( CThostFtdcRspUserLoginField *pRspUserLogin, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast );
 
-	///µÇ³öÇëÇóÏìÓ¦
+	///ç™»å‡ºè¯·æ±‚å“åº”
 	virtual void OnRspUserLogout(CThostFtdcUserLogoutField *pUserLogout, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
 
 	virtual void OnFrontDisconnected( int nReason );
@@ -74,15 +74,15 @@ public:
 
 private:
 	/*
-	 *	·¢ËÍµÇÂ¼ÇëÇó
+	 *	å‘é€ç™»å½•è¯·æ±‚
 	 */
 	void ReqUserLogin();
 	/*
-	 *	¶©ÔÄÆ·ÖÖĞĞÇé
+	 *	è®¢é˜…å“ç§è¡Œæƒ…
 	 */
 	void DoSubscribeMD();
 	/*
-	 *	¼ì²é´íÎóĞÅÏ¢
+	 *	æ£€æŸ¥é”™è¯¯ä¿¡æ¯
 	 */
 	bool IsErrorRspInfo(CThostFtdcRspInfoField *pRspInfo);
 
@@ -96,7 +96,7 @@ private:
 	std::string			m_strUserID;
 	std::string			m_strPassword;
 	std::string			m_strFlowDir;
-	bool 				m_bLocaltime;	//ÊÇ·ñÊ¹ÓÃ±¾µØÊ±¼ä´Á
+	bool 				m_bLocaltime;	//æ˜¯å¦ä½¿ç”¨æœ¬åœ°æ—¶é—´æˆ³
 
 	CodeSet				m_filterSubs;
 

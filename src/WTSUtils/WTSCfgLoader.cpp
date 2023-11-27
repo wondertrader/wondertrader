@@ -1,4 +1,4 @@
-#include "WTSCfgLoader.h"
+ï»¿#include "WTSCfgLoader.h"
 #include "../Share/StrUtil.hpp"
 #include "../Share/StdUtils.hpp"
 
@@ -196,12 +196,12 @@ WTSVariant* WTSCfgLoader::load_from_yaml(const char* content)
 
 WTSVariant* WTSCfgLoader::load_from_content(const std::string& content, bool isYaml /* = false */)
 {
-	//¼ÓÒ»¸ö×Ô¶¯¼ì²â±àÂëµÄÂß¼­
+	//åŠ ä¸€ä¸ªè‡ªåŠ¨æ£€æµ‹ç¼–ç çš„é€»è¾‘
 	bool isUTF8 = EncodingHelper::isUtf8((unsigned char*)content.data(), content.size());
 
 	std::string buffer;
-	//LinuxÏÂµÃÊÇUTF8
-	//WinÏÂµÃÊÇGBK
+	//Linuxä¸‹å¾—æ˜¯UTF8
+	//Winä¸‹å¾—æ˜¯GBK
 #ifdef _WIN32
 	if (isUTF8)
 		buffer = UTF8toChar(content);
@@ -229,12 +229,12 @@ WTSVariant* WTSCfgLoader::load_from_file(const char* filename)
 	if (content.empty())
 		return NULL;
 
-	//¼ÓÒ»¸ö×Ô¶¯¼ì²â±àÂëµÄÂß¼­
+	//åŠ ä¸€ä¸ªè‡ªåŠ¨æ£€æµ‹ç¼–ç çš„é€»è¾‘
 	bool isUTF8 = EncodingHelper::isUtf8((unsigned char*)content.data(), content.size());
 
 	//By Wesley @ 2022.01.07
-	//LinuxÏÂµÃÊÇUTF8
-	//WinÏÂµÃÊÇGBK
+	//Linuxä¸‹å¾—æ˜¯UTF8
+	//Winä¸‹å¾—æ˜¯GBK
 #ifdef _WIN32
 	if(isUTF8)
 		content = UTF8toChar(content);

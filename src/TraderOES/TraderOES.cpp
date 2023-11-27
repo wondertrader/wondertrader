@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file TraderOES.cpp
  * \project	WonderTrader
  *
@@ -555,7 +555,7 @@ void TraderOES::handle_ord_connected(OesAsyncApiChannelT *pAsyncChannel)
 	_state = TS_LOGINED;
 
 	{
-		//³õÊ¼»¯Î¯ÍĞµ¥»º´æÆ÷
+		//åˆå§‹åŒ–å§”æ‰˜å•ç¼“å­˜å™¨
 		std::stringstream ss;
 		ss << "./oesdata/local/";
 		std::string path = StrUtil::standardisePath(ss.str());
@@ -568,7 +568,7 @@ void TraderOES::handle_ord_connected(OesAsyncApiChannelT *pAsyncChannel)
 	}
 
 	{
-		//³õÊ¼»¯¶©µ¥±ê¼Ç»º´æÆ÷
+		//åˆå§‹åŒ–è®¢å•æ ‡è®°ç¼“å­˜å™¨
 		std::stringstream ss;
 		ss << "./oesdata/local/";
 		std::string path = StrUtil::standardisePath(ss.str());
@@ -730,7 +730,7 @@ void TraderOES::handle_rpt_message(SMsgHeadT *pMsgHead, void *pMsgItem)
 	OesRptMsgT*	pRptMsg = &pRspMsg->rptMsg;
 
 	switch (pMsgHead->msgId) {
-	case OESMSG_RPT_ORDER_INSERT:               /* OESÎ¯ÍĞÒÑÉú³É (ÒÑÍ¨¹ı·ç¿Ø¼ì²é) @see OesOrdCnfmT */
+	case OESMSG_RPT_ORDER_INSERT:               /* OESå§”æ‰˜å·²ç”Ÿæˆ (å·²é€šè¿‡é£æ§æ£€æŸ¥) @see OesOrdCnfmT */
 		//printf(">>> Recv OrdInsertRsp: {clSeqNo: %d, " \
 		//	"bsType: %" __SPK_FMT_HH__ "u, " \
 		//	"clEnvId: %" __SPK_FMT_HH__ "d, " \
@@ -750,7 +750,7 @@ void TraderOES::handle_rpt_message(SMsgHeadT *pMsgHead, void *pMsgItem)
 		}
 		break;
 
-	case OESMSG_RPT_BUSINESS_REJECT:            /* OESÒµÎñ¾Ü¾ø (Î´Í¨¹ı·ç¿Ø¼ì²éµÈ) @see OesOrdRejectT */
+	case OESMSG_RPT_BUSINESS_REJECT:            /* OESä¸šåŠ¡æ‹’ç» (æœªé€šè¿‡é£æ§æ£€æŸ¥ç­‰) @see OesOrdRejectT */
 		//printf(">>> Recv OrdRejectRsp: {clSeqNo: %d, " \
 		//	"bsType: %" __SPK_FMT_HH__ "u, " \
 		//	"clEnvId: %" __SPK_FMT_HH__ "d, " \
@@ -779,7 +779,7 @@ void TraderOES::handle_rpt_message(SMsgHeadT *pMsgHead, void *pMsgItem)
 		}
 		break;
 
-	case OESMSG_RPT_ORDER_REPORT:               /* ½»Ò×ËùÎ¯ÍĞ»Ø±¨ (°üÀ¨½»Ò×ËùÎ¯ÍĞ¾Ü¾ø¡¢Î¯ÍĞÈ·ÈÏºÍ³·µ¥Íê³ÉÍ¨Öª) @see OesOrdCnfmT */
+	case OESMSG_RPT_ORDER_REPORT:               /* äº¤æ˜“æ‰€å§”æ‰˜å›æŠ¥ (åŒ…æ‹¬äº¤æ˜“æ‰€å§”æ‰˜æ‹’ç»ã€å§”æ‰˜ç¡®è®¤å’Œæ’¤å•å®Œæˆé€šçŸ¥) @see OesOrdCnfmT */
 		//printf(">>> Recv OrdCnfm: {clSeqNo: %d, " \
 		//	"bsType: %" __SPK_FMT_HH__ "u, " \
 		//	"clEnvId: %" __SPK_FMT_HH__ "d, " \
@@ -801,7 +801,7 @@ void TraderOES::handle_rpt_message(SMsgHeadT *pMsgHead, void *pMsgItem)
 		}
 		break;
 
-	case OESMSG_RPT_TRADE_REPORT:               /* ½»Ò×Ëù³É½»»Ø±¨ @see OesTrdCnfmT */
+	case OESMSG_RPT_TRADE_REPORT:               /* äº¤æ˜“æ‰€æˆäº¤å›æŠ¥ @see OesTrdCnfmT */
 		//printf(">>> Recv TrdCnfm: {clSeqNo: %d, " \
 		//	"bsType: %" __SPK_FMT_HH__ "u, " \
 		//	"clEnvId: %" __SPK_FMT_HH__ "d, " \
@@ -832,7 +832,7 @@ void TraderOES::handle_rpt_message(SMsgHeadT *pMsgHead, void *pMsgItem)
 				trdInfo->release();
 			}
 		}
-		/* @note ³É½»»Ø±¨ÖĞÒÑ¾­°üº¬ÁËÎ¯ÍĞ»Ø±¨µÄÏà¹ØĞÅÏ¢, ¿ÉÒÔÍ¨¹ı¸¨Öú½Ó¿ÚÖ±½Ó´Ó³É½»»Ø±¨ÖĞÌáÈ¡ºÍÉú³ÉÎ¯ÍĞ»Ø±¨Êı¾İ
+		/* @note æˆäº¤å›æŠ¥ä¸­å·²ç»åŒ…å«äº†å§”æ‰˜å›æŠ¥çš„ç›¸å…³ä¿¡æ¯, å¯ä»¥é€šè¿‡è¾…åŠ©æ¥å£ç›´æ¥ä»æˆäº¤å›æŠ¥ä¸­æå–å’Œç”Ÿæˆå§”æ‰˜å›æŠ¥æ•°æ®
 		if (pRptMsg->rptBody.trdCnfm.ordStatus == OES_ORD_STATUS_FILLED) {
 			OesOrdCnfmT ordReport = {NULLOBJ_OES_ORD_CNFM};
 			OesHelper_ExtractOrdReportFromTrd(
@@ -841,14 +841,14 @@ void TraderOES::handle_rpt_message(SMsgHeadT *pMsgHead, void *pMsgItem)
 		*/
 		break;
 
-	case OESMSG_RPT_CASH_ASSET_VARIATION:       /* ×Ê½ğ±ä¶¯ĞÅÏ¢ @see OesCashAssetItemT */
+	case OESMSG_RPT_CASH_ASSET_VARIATION:       /* èµ„é‡‘å˜åŠ¨ä¿¡æ¯ @see OesCashAssetItemT */
 		//printf(">>> Recv CashAsset: {cashAcctId: %s, " \
 		//	"currentAvailableBal: %" __SPK_FMT_LL__ "d}\n",
 		//	pRptMsg->rptBody.cashAssetRpt.cashAcctId,
 		//	pRptMsg->rptBody.cashAssetRpt.currentAvailableBal);
 		break;
 
-	case OESMSG_RPT_MARKET_STATE:               /* ÊĞ³¡×´Ì¬ĞÅÏ¢ @see OesMarketStateInfoT */
+	case OESMSG_RPT_MARKET_STATE:               /* å¸‚åœºçŠ¶æ€ä¿¡æ¯ @see OesMarketStateInfoT */
 		//printf(">>> Recv MktStatusReport: " \
 		//	"{exchId: %" __SPK_FMT_HH__ "u, " \
 		//	"platformId: %" __SPK_FMT_HH__ "u, " \
@@ -860,7 +860,7 @@ void TraderOES::handle_rpt_message(SMsgHeadT *pMsgHead, void *pMsgItem)
 		//	pRspMsg->mktStateRpt.mktState);
 		break;
 
-	case OESMSG_SESS_HEARTBEAT:                 /* ĞÄÌøÏûÏ¢ */
+	case OESMSG_SESS_HEARTBEAT:                 /* å¿ƒè·³æ¶ˆæ¯ */
 		//printf(">>> Recv heartbeat message.\n");
 		break;
 	default:

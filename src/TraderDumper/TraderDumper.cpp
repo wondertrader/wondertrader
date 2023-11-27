@@ -1,4 +1,4 @@
-#include "TraderDumper.h"
+﻿#include "TraderDumper.h"
 #include "Dumper.h"
 
 #include "../Share/ModuleHelper.hpp"

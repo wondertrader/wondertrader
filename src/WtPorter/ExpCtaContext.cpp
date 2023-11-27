@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file PyCtaContext.cpp
  * \project	WonderTrader
  *
@@ -28,7 +28,7 @@ void ExpCtaContext::on_init()
 {
 	CtaStraBaseCtx::on_init();
 
-	//ÏòÍâ²¿»Øµ÷
+	//å‘å¤–éƒ¨å›è°ƒ
 	getRunner().ctx_on_init(_context_id, ET_CTA);
 
 	dump_chart_info();
@@ -38,13 +38,13 @@ void ExpCtaContext::on_session_begin(uint32_t uDate)
 {
 	CtaStraBaseCtx::on_session_begin(uDate);
 
-	//ÏòÍâ²¿»Øµ÷
+	//å‘å¤–éƒ¨å›è°ƒ
 	getRunner().ctx_on_session_event(_context_id, uDate, true, ET_CTA);
 }
 
 void ExpCtaContext::on_session_end(uint32_t uDate)
 {
-	//ÏòÍâ²¿»Øµ÷
+	//å‘å¤–éƒ¨å›è°ƒ
 	getRunner().ctx_on_session_event(_context_id, uDate, false, ET_CTA);
 
 	CtaStraBaseCtx::on_session_end(uDate);
@@ -61,7 +61,7 @@ void ExpCtaContext::on_tick_updated(const char* stdCode, WTSTickData* newTick)
 
 void ExpCtaContext::on_bar_close(const char* stdCode, const char* period, WTSBarStruct* newBar)
 {
-	//ÒªÏòÍâ²¿»Øµ÷
+	//è¦å‘å¤–éƒ¨å›è°ƒ
 	getRunner().ctx_on_bar(_context_id, stdCode, period, newBar, ET_CTA);
 }
 

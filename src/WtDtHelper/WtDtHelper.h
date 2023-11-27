@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file WtDtPorter.h
  * \project	WonderTrader
  *
@@ -29,7 +29,7 @@ typedef void(PORTER_FLAG *FuncGetOrdQueCallback)(WTSOrdQueStruct* item, WtUInt32
 typedef void(PORTER_FLAG *FuncGetTransCallback)(WTSTransStruct* item, WtUInt32 count, bool isLast);
 typedef void(PORTER_FLAG *FuncCountDataCallback)(WtUInt32 dataCnt);
 
-//¸Ä³ÉÖ±½Ó´Ópython´«ÄÚ´æ¿éµÄ·½Ê½
+//æ”¹æˆç›´æ¥ä»pythonä¼ å†…å­˜å—çš„æ–¹å¼
 //typedef bool(PORTER_FLAG *FuncGetBarItem)(WTSBarStruct* curBar,int idx);
 //typedef bool(PORTER_FLAG *FuncGetTickItem)(WTSTickStruct* curTick, int idx);
 
@@ -57,7 +57,7 @@ extern "C"
 	EXPORT_FLAG bool		store_bars(WtString barFile, WTSBarStruct* firstBar, int count, WtString period, FuncLogCallback cbLogger = NULL);
 	EXPORT_FLAG bool		store_ticks(WtString tickFile, WTSTickStruct* firstTick, int count, FuncLogCallback cbLogger = NULL);
 
-	//¹ÉÆ±level2Êı¾İ´æ´¢
+	//è‚¡ç¥¨level2æ•°æ®å­˜å‚¨
 	EXPORT_FLAG bool		store_order_details(WtString tickFile, WTSOrdDtlStruct* firstItem, int count, FuncLogCallback cbLogger = NULL);
 	EXPORT_FLAG bool		store_order_queues(WtString tickFile, WTSOrdQueStruct* firstItem, int count, FuncLogCallback cbLogger = NULL);
 	EXPORT_FLAG bool		store_transactions(WtString tickFile, WTSTransStruct* firstItem, int count, FuncLogCallback cbLogger = NULL);

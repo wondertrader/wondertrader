@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file WtBtRunner.h
  * \project	WonderTrader
  *
@@ -24,9 +24,9 @@ USING_NS_WTP;
 
 typedef enum tagEngineType
 {
-	ET_CTA = 999,	//CTAÒıÇæ	
-	ET_HFT,			//¸ßÆµÒıÇæ
-	ET_SEL			//Ñ¡¹ÉÒıÇæ
+	ET_CTA = 999,	//CTAå¼•æ“	
+	ET_HFT,			//é«˜é¢‘å¼•æ“
+	ET_SEL			//é€‰è‚¡å¼•æ“
 } EngineType;
 
 class SelMocker;
@@ -188,11 +188,11 @@ private:
 
 	FuncEventCallback		_cb_evt;
 
-	FuncLoadFnlBars			_ext_fnl_bar_loader;//×îÖÕKÏß¼ÓÔØÆ÷
-	FuncLoadRawBars			_ext_raw_bar_loader;//Ô­Ê¼KÏß¼ÓÔØÆ÷
-	FuncLoadAdjFactors		_ext_adj_fct_loader;//¸´È¨Òò×Ó¼ÓÔØÆ÷
-	FuncLoadRawTicks		_ext_tick_loader;	//tick¼ÓÔØÆ÷
-	bool					_loader_auto_trans;	//ÊÇ·ñ×Ô¶¯×ª´¢
+	FuncLoadFnlBars			_ext_fnl_bar_loader;//æœ€ç»ˆKçº¿åŠ è½½å™¨
+	FuncLoadRawBars			_ext_raw_bar_loader;//åŸå§‹Kçº¿åŠ è½½å™¨
+	FuncLoadAdjFactors		_ext_adj_fct_loader;//å¤æƒå› å­åŠ è½½å™¨
+	FuncLoadRawTicks		_ext_tick_loader;	//tickåŠ è½½å™¨
+	bool					_loader_auto_trans;	//æ˜¯å¦è‡ªåŠ¨è½¬å‚¨
 
 	CtaMocker*		_cta_mocker;
 	SelMocker*		_sel_mocker;

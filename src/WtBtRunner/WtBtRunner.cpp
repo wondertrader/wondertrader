@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file WtBtRunner.cpp
  * \project	WonderTrader
  *
@@ -21,35 +21,51 @@
 #include "../WTSUtils/WTSCfgLoader.h"
 #include "../Includes/WTSVariant.hpp"
 #include "../Share/StdUtils.hpp"
+#include "../Share/cppcli.hpp"
 
 #ifdef _MSC_VER
 #include "../Common/mdump.h"
 #endif
 
-int main()
+int main(int argc, char* argv[])
 {
 #ifdef _MSC_VER
     CMiniDumper::Enable("WtBtRunner.exe", true, WtHelper::getCWD().c_str());
 #endif
 
-	std::string filename = "logcfgbt.json";
-	if (!StdFile::exists(filename.c_str()))
-		filename = "logcfgbt.yaml";
+	cppcli::Option opt(argc, argv);
 
+	auto cParam = opt("-c", "--config", "configure filepath, dtcfg.yaml as default", false);
+	auto lParam = opt("-l", "--logcfg", "logging configure filepath, logcfgbt.yaml as default", false);
+
+	auto hParam = opt("-h", "--help", "gain help doc", false)->asHelpParam();
+
+	opt.parse();
+
+	if (hParam->exists())
+		return 0;
+
+	std::string filename;
+	if (lParam->exists())
+		filename = lParam->get<std::string>();
+	else
+		filename = "./logcfgdt.yaml";
 	WTSLogger::init(filename.c_str());
 
-#if _WIN32
-#pragma message("Signal hooks disabled in WIN32")
-#else
-#pragma message("Signal hooks enabled in UNIX")
 	install_signal_hooks([](const char* message) {
 		WTSLogger::error(message);
 	});
-#endif
 
-	filename = "configbt.json";
-	if(!StdFile::exists(filename.c_str()))
-		filename = "configbt.yaml";
+	if (cParam->exists())
+		filename = cParam->get<std::string>();
+	else
+		filename = "./configbt.yaml";
+
+	if (!StdFile::exists(filename.c_str()))
+	{
+		fmt::print("confiture {} not exists", filename);
+		return 0;
+	}
 
 	WTSVariant* cfg = WTSCfgLoader::load_from_file(filename.c_str());
 	if (cfg == NULL)
@@ -69,7 +85,7 @@ int main()
 		CtaMocker* mocker = new CtaMocker(&replayer, "cta", slippage);
 		mocker->init_cta_factory(cfg->get("cta"));
 		const char* stra_id = cfg->get("cta")->get("strategy")->getCString("id");
-		// ¼ÓÔØÔöÁ¿»Ø²âµÄ»ù´¡ÀúÊ·»Ø²âÊı¾İ
+		// åŠ è½½å¢é‡å›æµ‹çš„åŸºç¡€å†å²å›æµ‹æ•°æ®
 		const char* incremental_backtest_base = cfg->get("env")->getCString("incremental_backtest_base");
 		if (strlen(incremental_backtest_base) > 0)
 		{

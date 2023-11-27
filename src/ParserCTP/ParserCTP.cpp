@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file ParserCTP.cpp
  * \project	WonderTrader
  *
@@ -9,6 +9,7 @@
  */
 #include "ParserCTP.h"
 
+#include "../Includes/WTSVersion.h"
 #include "../Includes/WTSDataDef.hpp"
 #include "../Includes/WTSContractInfo.hpp"
 #include "../Includes/WTSVariant.hpp"
@@ -103,9 +104,9 @@ bool ParserCTP::init(WTSVariant* config)
 	m_strFlowDir = config->getCString("flowdir");
     /*
      * By Wesley @ 2022.03.09
-     * Õâ¸ö²ÎÊıÖ÷ÒªÊÇ¸ø·Ç±ê×¼CTP»·¾³ÓÃµÄ
-     * ÈçsimnowÈ«ÌìºòĞĞÇé£¬openctpµÈ»·¾³
-     * Èç¹ûÎªtrue£¬¾ÍÓÃ±¾µØÊ±¼ä´Á£¬Ä¬ÈÏÎªfalse
+     * è¿™ä¸ªå‚æ•°ä¸»è¦æ˜¯ç»™éæ ‡å‡†CTPç¯å¢ƒç”¨çš„
+     * å¦‚simnowå…¨å¤©å€™è¡Œæƒ…ï¼Œopenctpç­‰ç¯å¢ƒ
+     * å¦‚æœä¸ºtrueï¼Œå°±ç”¨æœ¬åœ°æ—¶é—´æˆ³ï¼Œé»˜è®¤ä¸ºfalse
      */
     m_bLocaltime = config->getBoolean("localtime");
 
@@ -191,7 +192,7 @@ void ParserCTP::OnRspUserLogin( CThostFtdcRspUserLoginField *pRspUserLogin, CTho
 	{
 		m_uTradingDate = strtoul(m_pUserAPI->GetTradingDay(), NULL, 10);
         //By Wesley @ 2022.03.09
-        //ÕâÀï¼ÓÒ»¸öÅĞ¶Ï£¬µ«ÊÇÕâÑùµÄ½»Ò×ÈÕ²»×¼È·£¬ÔÚÒ¹ÅÌ»á³ö´í
+        //è¿™é‡ŒåŠ ä¸€ä¸ªåˆ¤æ–­ï¼Œä½†æ˜¯è¿™æ ·çš„äº¤æ˜“æ—¥ä¸å‡†ç¡®ï¼Œåœ¨å¤œç›˜ä¼šå‡ºé”™
         if(m_uTradingDate == 0)
             m_uTradingDate = TimeUtils::getCurDate();
 		
@@ -202,7 +203,7 @@ void ParserCTP::OnRspUserLogin( CThostFtdcRspUserLoginField *pRspUserLogin, CTho
 			m_sink->handleEvent(WPE_Login, 0);
 		}
 
-		//¶©ÔÄĞĞÇéÊı¾İ
+		//è®¢é˜…è¡Œæƒ…æ•°æ®
 		DoSubscribeMD();
 	}
 }
@@ -254,24 +255,24 @@ void ParserCTP::OnRtnDepthMarketData( CThostFtdcDepthMarketDataField *pDepthMark
         actHour = actTime / 10000000;
 
         if (actDate == m_uTradingDate && actHour >= 20) {
-            //ÕâÑùµÄÊ±¼äÊÇÓĞÎÊÌâ,ÒòÎªÒ¹ÅÌÊ±·¢ÉúÈÕÆÚ²»¿ÉÄÜµÈÓÚ½»Ò×ÈÕ
-            //Õâ¾ÍĞèÒªÊÖ¶¯ÉèÖÃÒ»ÏÂ
+            //è¿™æ ·çš„æ—¶é—´æ˜¯æœ‰é—®é¢˜,å› ä¸ºå¤œç›˜æ—¶å‘ç”Ÿæ—¥æœŸä¸å¯èƒ½ç­‰äºäº¤æ˜“æ—¥
+            //è¿™å°±éœ€è¦æ‰‹åŠ¨è®¾ç½®ä¸€ä¸‹
             uint32_t curDate, curTime;
             TimeUtils::getDateTime(curDate, curTime);
             uint32_t curHour = curTime / 10000000;
 
-            //ÔçÉÏÆô¶¯ÒÔºó,»áÊÕµ½×òÍí12µãÒÔÇ°ÊÕÅÌµÄĞĞÇé,Õâ¸öÊ±ºò¿ÉÄÜ»áÓĞ·¢ÉúÈÕÆÚ=½»Ò×ÈÕµÄÇé¿ö³öÏÖ
-            //Õâ±ÊÊı¾İÖ±½Ó¶ªµô
+            //æ—©ä¸Šå¯åŠ¨ä»¥å,ä¼šæ”¶åˆ°æ˜¨æ™š12ç‚¹ä»¥å‰æ”¶ç›˜çš„è¡Œæƒ…,è¿™ä¸ªæ—¶å€™å¯èƒ½ä¼šæœ‰å‘ç”Ÿæ—¥æœŸ=äº¤æ˜“æ—¥çš„æƒ…å†µå‡ºç°
+            //è¿™ç¬”æ•°æ®ç›´æ¥ä¸¢æ‰
             if (curHour >= 3 && curHour < 9)
                 return;
 
             actDate = curDate;
 
             if (actHour == 23 && curHour == 0) {
-                //ĞĞÇéÊ±¼äÂıÓÚÏµÍ³Ê±¼ä
+                //è¡Œæƒ…æ—¶é—´æ…¢äºç³»ç»Ÿæ—¶é—´
                 actDate = TimeUtils::getNextDate(curDate, -1);
             } else if (actHour == 0 && curHour == 23) {
-                //ÏµÍ³Ê±¼äÂıÓÚĞĞÇéÊ±¼ä
+                //ç³»ç»Ÿæ—¶é—´æ…¢äºè¡Œæƒ…æ—¶é—´
                 actDate = TimeUtils::getNextDate(curDate, 1);
             }
         }
@@ -315,28 +316,28 @@ void ParserCTP::OnRtnDepthMarketData( CThostFtdcDepthMarketDataField *pDepthMark
 	quote.pre_settle = checkValid(pDepthMarketData->PreSettlementPrice);
 	quote.pre_interest = pDepthMarketData->PreOpenInterest;
 
-	//Î¯Âô¼Û¸ñ
+	//å§”å–ä»·æ ¼
 	quote.ask_prices[0] = checkValid(pDepthMarketData->AskPrice1);
 	quote.ask_prices[1] = checkValid(pDepthMarketData->AskPrice2);
 	quote.ask_prices[2] = checkValid(pDepthMarketData->AskPrice3);
 	quote.ask_prices[3] = checkValid(pDepthMarketData->AskPrice4);
 	quote.ask_prices[4] = checkValid(pDepthMarketData->AskPrice5);
 
-	//Î¯Âò¼Û¸ñ
+	//å§”ä¹°ä»·æ ¼
 	quote.bid_prices[0] = checkValid(pDepthMarketData->BidPrice1);
 	quote.bid_prices[1] = checkValid(pDepthMarketData->BidPrice2);
 	quote.bid_prices[2] = checkValid(pDepthMarketData->BidPrice3);
 	quote.bid_prices[3] = checkValid(pDepthMarketData->BidPrice4);
 	quote.bid_prices[4] = checkValid(pDepthMarketData->BidPrice5);
 
-	//Î¯ÂôÁ¿
+	//å§”å–é‡
 	quote.ask_qty[0] = pDepthMarketData->AskVolume1;
 	quote.ask_qty[1] = pDepthMarketData->AskVolume2;
 	quote.ask_qty[2] = pDepthMarketData->AskVolume3;
 	quote.ask_qty[3] = pDepthMarketData->AskVolume4;
 	quote.ask_qty[4] = pDepthMarketData->AskVolume5;
 
-	//Î¯ÂòÁ¿
+	//å§”ä¹°é‡
 	quote.bid_qty[0] = pDepthMarketData->BidVolume1;
 	quote.bid_qty[1] = pDepthMarketData->BidVolume2;
 	quote.bid_qty[2] = pDepthMarketData->BidVolume3;
@@ -379,7 +380,7 @@ void ParserCTP::ReqUserLogin()
 	strcpy(req.BrokerID, m_strBroker.c_str());
 	strcpy(req.UserID, m_strUserID.c_str());
 	strcpy(req.Password, m_strPassword.c_str());
-	strcpy(req.UserProductInfo, "WonderTrader");
+	strcpy(req.UserProductInfo, WT_PRODUCT);
 	int iResult = m_pUserAPI->ReqUserLogin(&req, ++m_iRequestID);
 	if(iResult != 0)
 	{
@@ -392,7 +393,7 @@ void ParserCTP::DoSubscribeMD()
 {
 	CodeSet codeFilter = m_filterSubs;
 	if(codeFilter.empty())
-	{//Èç¹û¶©ÔÄÀñ°üÖ»¿ÕµÄ,ÔòÈ¡³öÈ«²¿ºÏÔ¼ÁĞ±í
+	{//å¦‚æœè®¢é˜…ç¤¼åŒ…åªç©ºçš„,åˆ™å–å‡ºå…¨éƒ¨åˆçº¦åˆ—è¡¨
 		return;
 	}
 

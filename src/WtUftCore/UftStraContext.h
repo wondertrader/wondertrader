@@ -1,4 +1,4 @@
-/*!
+Ôªø/*!
  * \file HftStraContext.h
  * \project	WonderTrader
  *
@@ -9,9 +9,13 @@
  */
 #pragma once
 #include "ITrdNotifySink.h"
+#include "UftDataDefs.h"
 #include "../Includes/IUftStraCtx.h"
 #include "../Includes/FasterDefs.h"
 #include "../Share/fmtlib.h"
+
+#include "../Share/BoostMappingFile.hpp"
+typedef std::shared_ptr<BoostMappingFile> BoostMFPtr;
 
 class UftStrategy;
 
@@ -22,7 +26,7 @@ class TraderAdapter;
 class UftStraContext : public IUftStraCtx, public ITrdNotifySink
 {
 public:
-	UftStraContext(WtUftEngine* engine, const char* name, bool bDependent = false);
+	UftStraContext(WtUftEngine* engine, const char* name);
 	virtual ~UftStraContext();
 
 	void set_strategy(UftStrategy* stra){ _strategy = stra; }
@@ -49,7 +53,7 @@ public:
 
 	virtual void on_order(uint32_t localid, const char* stdCode, bool isLong, uint32_t offset, double totalQty, double leftQty, double price, bool isCanceled = false) override;
 
-	virtual void on_channel_ready() override;
+	virtual void on_channel_ready(uint32_t tradingday) override;
 
 	virtual void on_channel_lost() override;
 
@@ -64,31 +68,39 @@ public:
 
 
 public:
-	virtual void watch_param(const char* name, const char* val) override;
-	virtual void watch_param(const char* name, double val) override;
-	virtual void watch_param(const char* name, uint32_t val) override;
-	virtual void watch_param(const char* name, uint64_t val) override;
-	virtual void watch_param(const char* name, int32_t val) override;
-	virtual void watch_param(const char* name, int64_t val) override;
+	//virtual void watch_param(const char* name, const char* val) override;
+	//virtual void watch_param(const char* name, double val) override;
+	//virtual void watch_param(const char* name, uint32_t val) override;
+	//virtual void watch_param(const char* name, uint64_t val) override;
+	//virtual void watch_param(const char* name, int32_t val) override;
+	//virtual void watch_param(const char* name, int64_t val) override;
+
+	virtual const char*	watch_param(const char* name, const char* initVal = "") override;
+	virtual double		watch_param(const char* name, double initVal = 0) override;
+	virtual uint32_t	watch_param(const char* name, uint32_t initVal = 0) override;
+	virtual uint64_t	watch_param(const char* name, uint64_t initVal = 0) override;
+	virtual int32_t		watch_param(const char* name, int32_t initVal = 0) override;
+	virtual int64_t		watch_param(const char* name, int64_t initVal = 0) override;
 
 	virtual void commit_param_watcher() override;
 
-	virtual const char*		read_param(const char* name, const char* defVal = "") override;
+	virtual const char*	read_param(const char* name, const char* defVal = "") override;
 	virtual double		read_param(const char* name, double defVal = 0) override;
 	virtual uint32_t	read_param(const char* name, uint32_t defVal = 0) override;
 	virtual uint64_t	read_param(const char* name, uint64_t defVal = 0) override;
 	virtual int32_t		read_param(const char* name, int32_t defVal = 0) override;
 	virtual int64_t		read_param(const char* name, int64_t defVal = 0) override;
 
-	virtual double*		sync_param(const char* name, double initVal = 0) override;
-	virtual uint32_t*	sync_param(const char* name, uint32_t initVal = 0) override;
-	virtual uint64_t*	sync_param(const char* name, uint64_t initVal = 0) override;
-	virtual int32_t*	sync_param(const char* name, int32_t initVal = 0) override;
-	virtual int64_t*	sync_param(const char* name, int64_t initVal = 0) override;
+	virtual const char*	sync_param(const char* name, const char* initVal = "", bool bForceWrite = false) override;
+	virtual double*		sync_param(const char* name, double initVal = 0, bool bForceWrite = false) override;
+	virtual uint32_t*	sync_param(const char* name, uint32_t initVal = 0, bool bForceWrite = false) override;
+	virtual uint64_t*	sync_param(const char* name, uint64_t initVal = 0, bool bForceWrite = false) override;
+	virtual int32_t*	sync_param(const char* name, int32_t initVal = 0, bool bForceWrite = false) override;
+	virtual int64_t*	sync_param(const char* name, int64_t initVal = 0, bool bForceWrite = false) override;
 
 public:
 	//////////////////////////////////////////////////////////////////////////
-	//IHftStraCtx Ω”ø⁄
+	//IHftStraCtx Êé•Âè£
 	virtual uint32_t stra_get_date() override;
 	virtual uint32_t stra_get_time() override;
 	virtual uint32_t stra_get_secs() override;
@@ -98,64 +110,64 @@ public:
 	virtual OrderIDs stra_cancel_all(const char* stdCode) override;
 
 	/*
-	 *	œ¬µ•Ω”ø⁄: ¬Ú»Î
+	 *	‰∏ãÂçïÊé•Âè£: ‰π∞ÂÖ•
 	 *
-	 *	@stdCode	∫œ‘º¥˙¬Î
-	 *	@price		œ¬µ•º€∏Ò£¨0‘Ú « –º€µ•
-	 *	@qty		œ¬µ• ˝¡ø
-	 *	@flag		œ¬µ•±Í÷æ: 0-normal£¨1-fak£¨2-fok£¨ƒ¨»œ0
+	 *	@stdCode	ÂêàÁ∫¶‰ª£Á†Å
+	 *	@price		‰∏ãÂçï‰ª∑Ê†ºÔºå0ÂàôÊòØÂ∏Ç‰ª∑Âçï
+	 *	@qty		‰∏ãÂçïÊï∞Èáè
+	 *	@flag		‰∏ãÂçïÊ†áÂøó: 0-normalÔºå1-fakÔºå2-fokÔºåÈªòËÆ§0
 	 */
 	virtual OrderIDs	stra_buy(const char* stdCode, double price, double qty, int flag = 0) override;
 
 	/*
-	 *	œ¬µ•Ω”ø⁄: ¬Ù≥ˆ
+	 *	‰∏ãÂçïÊé•Âè£: ÂçñÂá∫
 	 *
-	 *	@stdCode	∫œ‘º¥˙¬Î
-	 *	@price		œ¬µ•º€∏Ò£¨0‘Ú « –º€µ•
-	 *	@qty		œ¬µ• ˝¡ø
-	 *	@flag		œ¬µ•±Í÷æ: 0-normal£¨1-fak£¨2-fok£¨ƒ¨»œ0
+	 *	@stdCode	ÂêàÁ∫¶‰ª£Á†Å
+	 *	@price		‰∏ãÂçï‰ª∑Ê†ºÔºå0ÂàôÊòØÂ∏Ç‰ª∑Âçï
+	 *	@qty		‰∏ãÂçïÊï∞Èáè
+	 *	@flag		‰∏ãÂçïÊ†áÂøó: 0-normalÔºå1-fakÔºå2-fokÔºåÈªòËÆ§0
 	 */
 	virtual OrderIDs	stra_sell(const char* stdCode, double price, double qty, int flag = 0) override;
 
 	/*
-	 *	œ¬µ•Ω”ø⁄: ø™∂‡
+	 *	‰∏ãÂçïÊé•Âè£: ÂºÄÂ§ö
 	 *
-	 *	@stdCode	∫œ‘º¥˙¬Î
-	 *	@price		œ¬µ•º€∏Ò£¨0‘Ú « –º€µ•
-	 *	@qty		œ¬µ• ˝¡ø
-	 *	@flag		œ¬µ•±Í÷æ: 0-normal£¨1-fak£¨2-fok
+	 *	@stdCode	ÂêàÁ∫¶‰ª£Á†Å
+	 *	@price		‰∏ãÂçï‰ª∑Ê†ºÔºå0ÂàôÊòØÂ∏Ç‰ª∑Âçï
+	 *	@qty		‰∏ãÂçïÊï∞Èáè
+	 *	@flag		‰∏ãÂçïÊ†áÂøó: 0-normalÔºå1-fakÔºå2-fok
 	 */
 	virtual uint32_t	stra_enter_long(const char* stdCode, double price, double qty, int flag = 0) override;
 
 	/*
-	 *	œ¬µ•Ω”ø⁄: ø™ø’
+	 *	‰∏ãÂçïÊé•Âè£: ÂºÄÁ©∫
 	 *
-	 *	@stdCode	∫œ‘º¥˙¬Î
-	 *	@price		œ¬µ•º€∏Ò£¨0‘Ú « –º€µ•
-	 *	@qty		œ¬µ• ˝¡ø
-	 *	@flag		œ¬µ•±Í÷æ: 0-normal£¨1-fak£¨2-fok
+	 *	@stdCode	ÂêàÁ∫¶‰ª£Á†Å
+	 *	@price		‰∏ãÂçï‰ª∑Ê†ºÔºå0ÂàôÊòØÂ∏Ç‰ª∑Âçï
+	 *	@qty		‰∏ãÂçïÊï∞Èáè
+	 *	@flag		‰∏ãÂçïÊ†áÂøó: 0-normalÔºå1-fakÔºå2-fok
 	 */
 	virtual uint32_t	stra_enter_short(const char* stdCode, double price, double qty, int flag = 0) override;
 
 	/*
-	 *	œ¬µ•Ω”ø⁄: ∆Ω∂‡
+	 *	‰∏ãÂçïÊé•Âè£: Âπ≥Â§ö
 	 *
-	 *	@stdCode	∫œ‘º¥˙¬Î
-	 *	@price		œ¬µ•º€∏Ò£¨0‘Ú « –º€µ•
-	 *	@qty		œ¬µ• ˝¡ø
-	 *	@isToday	 «∑ÒΩÒ≤÷£¨ƒ¨»œfalse
-	 *	@flag		œ¬µ•±Í÷æ: 0-normal£¨1-fak£¨2-fok£¨ƒ¨»œ0
+	 *	@stdCode	ÂêàÁ∫¶‰ª£Á†Å
+	 *	@price		‰∏ãÂçï‰ª∑Ê†ºÔºå0ÂàôÊòØÂ∏Ç‰ª∑Âçï
+	 *	@qty		‰∏ãÂçïÊï∞Èáè
+	 *	@isToday	ÊòØÂê¶‰ªä‰ªìÔºåÈªòËÆ§false
+	 *	@flag		‰∏ãÂçïÊ†áÂøó: 0-normalÔºå1-fakÔºå2-fokÔºåÈªòËÆ§0
 	 */
 	virtual uint32_t	stra_exit_long(const char* stdCode, double price, double qty, bool isToday = false, int flag = 0) override;
 
 	/*
-	 *	œ¬µ•Ω”ø⁄: ∆Ωø’
+	 *	‰∏ãÂçïÊé•Âè£: Âπ≥Á©∫
 	 *
-	 *	@stdCode	∫œ‘º¥˙¬Î
-	 *	@price		œ¬µ•º€∏Ò£¨0‘Ú « –º€µ•
-	 *	@qty		œ¬µ• ˝¡ø
-	 *	@isToday	 «∑ÒΩÒ≤÷£¨ƒ¨»œfalse
-	 *	@flag		œ¬µ•±Í÷æ: 0-normal£¨1-fak£¨2-fok£¨ƒ¨»œ0
+	 *	@stdCode	ÂêàÁ∫¶‰ª£Á†Å
+	 *	@price		‰∏ãÂçï‰ª∑Ê†ºÔºå0ÂàôÊòØÂ∏Ç‰ª∑Âçï
+	 *	@qty		‰∏ãÂçïÊï∞Èáè
+	 *	@isToday	ÊòØÂê¶‰ªä‰ªìÔºåÈªòËÆ§false
+	 *	@flag		‰∏ãÂçïÊ†áÂøó: 0-normalÔºå1-fakÔºå2-fokÔºåÈªòËÆ§0
 	 */
 	virtual uint32_t	stra_exit_short(const char* stdCode, double price, double qty, bool isToday = false, int flag = 0) override;
 
@@ -178,6 +190,9 @@ public:
 	virtual void stra_log_error(const char* message) override;
 
 	virtual double stra_get_position(const char* stdCode, bool bOnlyValid = false, int32_t iFlag = 3) override;
+	virtual double stra_get_local_position(const char* stdCode) override;
+	virtual double stra_get_local_posprofit(const char* stdCode) override;
+	virtual double stra_get_local_closeprofit(const char* stdCode) override;
 	virtual double stra_enum_position(const char* stdCode) override;
 	virtual double stra_get_price(const char* stdCode) override;
 	virtual double stra_get_undone(const char* stdCode) override;
@@ -210,25 +225,106 @@ private:
 		stra_log_error(buffer);
 	}
 
-	inline const char* getOrderTag(uint32_t localid)
+private:
+	typedef struct _PosBlkPair
 	{
-		auto it = _orders.find(localid);
-		if (it == _orders.end())
-			return "";
+		uft::PositionBlock*	_block;
+		BoostMFPtr			_file;
+		SpinMutex			_mutex;
 
-		return it->second.c_str();
+		_PosBlkPair()
+		{
+			_block = NULL;
+			_file = NULL;
+		}
+
+	} PosBlkPair;
+
+	typedef struct _OrdBlkPair
+	{
+		uft::OrderBlock*	_block;
+		BoostMFPtr			_file;
+		SpinMutex			_mutex;
+
+		_OrdBlkPair()
+		{
+			_block = NULL;
+			_file = NULL;
+		}
+
+	} OrdBlkPair;
+
+	typedef struct _TrdBlkPair
+	{
+		uft::TradeBlock*	_block;
+		BoostMFPtr			_file;
+		SpinMutex			_mutex;
+
+		_TrdBlkPair()
+		{
+			_block = NULL;
+			_file = NULL;
+		}
+
+	} TrdBlkPair;
+
+	typedef struct _RndBlkPair
+	{
+		uft::RoundBlock*	_block;
+		BoostMFPtr			_file;
+		SpinMutex			_mutex;
+
+		_RndBlkPair()
+		{
+			_block = NULL;
+			_file = NULL;
+		}
+
+	} RndBlkPair;
+
+	void	load_local_data();
+
+	PosBlkPair		_pos_blk;
+	OrdBlkPair		_ord_blk;
+	TrdBlkPair		_trd_blk;
+	RndBlkPair		_rnd_blk;
+
+	typedef struct _Position
+	{
+		//Â§ö‰ªìÊï∞ÊçÆ
+		double	_volume;
+		double	_opencost;
+		double	_dynprofit;
+
+		double	_total_profit;
+
+		uint32_t _valid_idx;
+
+		std::vector<uft::DetailStruct*> _details;
+
+		_Position():_volume(0),_valid_idx(0), _total_profit(0),
+			_opencost(0),_dynprofit(0)
+		{
+		}
+	} PosInfo;
+
+	wt_hashmap<std::string, PosInfo> _positions;
+
+	wt_hashmap<uint32_t, uft::OrderStruct*> _order_ids;
+
+	inline bool is_my_order(uint32_t localid) const
+	{
+		auto it = _order_ids.find(localid);
+		return it != _order_ids.end();
 	}
-
 
 private:
 	uint32_t		_context_id;
 	WtUftEngine*	_engine;
 	TraderAdapter*	_trader;
-	bool			_dependent;
+	uint32_t		_tradingday;
 
-	typedef wt_hashmap<uint32_t, std::string> OrderMap;
-	OrderMap		_orders;
-	UftStrategy*		_strategy;
+	UftStrategy*	_strategy;
 };
 
 NS_WTP_END

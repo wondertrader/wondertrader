@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file WtDtPorter.cpp
  * \project	WonderTrader
  *
@@ -29,7 +29,7 @@ char PLATFORM_NAME[] = "UNIX";
 #ifdef _MSC_VER
 #include "../Common/mdump.h"
 #include <boost/filesystem.hpp>
- //Õâ¸öÖ÷ÒªÊÇ¸øMiniDumperÓÃµÄ
+ //è¿™ä¸ªä¸»è¦æ˜¯ç»™MiniDumperç”¨çš„
 const char* getModuleName()
 {
 	static char MODULE_NAME[250] = { 0 };
@@ -91,7 +91,7 @@ void write_log(unsigned int level, const char* message, const char* catName)
 	}
 }
 
-#pragma region "À©Õ¹Parser½Ó¿Ú"
+#pragma region "æ‰©å±•Parseræ¥å£"
 
 bool create_ext_parser(const char* id)
 {
@@ -109,9 +109,9 @@ void register_parser_callbacks(FuncParserEvtCallback cbEvt, FuncParserSubCallbac
 }
 
 
-#pragma endregion "À©Õ¹Parser½Ó¿Ú"
+#pragma endregion "æ‰©å±•Parseræ¥å£"
 
-#pragma region "À©Õ¹Dumper½Ó¿Ú"
+#pragma region "æ‰©å±•Dumperæ¥å£"
 bool create_ext_dumper(const char* id)
 {
 	return getRunner().createExtDumper(id);
@@ -126,5 +126,5 @@ void register_extended_hftdata_dumper(FuncDumpOrdQue ordQueDumper, FuncDumpOrdDt
 {
 	getRunner().registerExtHftDataDumper(ordQueDumper, ordDtlDumper, transDumper);
 }
-#pragma endregion "À©Õ¹Dumper½Ó¿Ú"
+#pragma endregion "æ‰©å±•Dumperæ¥å£"
 

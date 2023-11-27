@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file WtExecuter.cpp
  * \project	WonderTrader
  *
@@ -49,7 +49,7 @@ WtDiffExecuter::~WtDiffExecuter()
 void WtDiffExecuter::setTrader(TraderAdapter* adapter)
 {
 	_trader = adapter;
-	//ÉèÖÃµÄÊ±ºò¶ÁÈ¡Ò»ÏÂtraderµÄ×´Ì¬
+	//è®¾ç½®çš„æ—¶å€™è¯»å–ä¸€ä¸‹traderçš„çŠ¶æ€
 	if(_trader)
 		_channel_ready = _trader->isReady();
 }
@@ -79,7 +79,7 @@ bool WtDiffExecuter::init(WTSVariant* params)
 
 void WtDiffExecuter::load_data()
 {
-	//¶ÁÈ¡Ö´ĞĞÆ÷µÄÀíÂÛ²¿Î»£¬ÒÔ¼°´ıÖ´ĞĞµÄ²îÁ¿
+	//è¯»å–æ‰§è¡Œå™¨çš„ç†è®ºéƒ¨ä½ï¼Œä»¥åŠå¾…æ‰§è¡Œçš„å·®é‡
 	std::string filename = WtHelper::getExecDataDir();
 	filename += _name + ".json";
 
@@ -146,7 +146,7 @@ void WtDiffExecuter::save_data()
 	rj::Document root(rj::kObjectType);
 	rj::Document::AllocatorType &allocator = root.GetAllocator();
 
-	{//Ä¿±ê³Ö²ÖÊı¾İ±£´æ
+	{//ç›®æ ‡æŒä»“æ•°æ®ä¿å­˜
 		rj::Value jTarget(rj::kArrayType);
 
 		for (auto& v : _target_pos)
@@ -161,7 +161,7 @@ void WtDiffExecuter::save_data()
 		root.AddMember("targets", jTarget, allocator);
 	}
 
-	{//²îÁ¿³Ö²ÖÊı¾İ±£´æ
+	{//å·®é‡æŒä»“æ•°æ®ä¿å­˜
 		rj::Value jDiff(rj::kArrayType);
 
 		for (auto& v : _diff_pos)
@@ -221,7 +221,7 @@ ExecuteUnitPtr WtDiffExecuter::getUnit(const char* stdCode, bool bAutoCreate /* 
 			_unit_map[stdCode] = unit;
 			unit->self()->init(this, stdCode, cfg);
 
-			//Èç¹ûÍ¨µÀÒÑ¾­¾ÍĞ÷£¬ÔòÖ±½ÓÍ¨ÖªÖ´ĞĞµ¥Ôª
+			//å¦‚æœé€šé“å·²ç»å°±ç»ªï¼Œåˆ™ç›´æ¥é€šçŸ¥æ‰§è¡Œå•å…ƒ
 			if (_channel_ready)
 				unit->self()->on_channel_ready();
 		}
@@ -240,7 +240,7 @@ ExecuteUnitPtr WtDiffExecuter::getUnit(const char* stdCode, bool bAutoCreate /* 
 
 //////////////////////////////////////////////////////////////////////////
 //ExecuteContext
-#pragma region Context»Øµ÷½Ó¿Ú
+#pragma region Contextå›è°ƒæ¥å£
 WTSTickSlice* WtDiffExecuter::getTicks(const char* stdCode, uint32_t count, uint64_t etime /* = 0 */)
 {
 	if (_data_mgr == NULL)
@@ -336,19 +336,19 @@ uint64_t WtDiffExecuter::getCurTime()
 	//return TimeUtils::makeTime(_stub->get_date(), _stub->get_raw_time() * 100000 + _stub->get_secs());
 }
 
-#pragma endregion Context»Øµ÷½Ó¿Ú
+#pragma endregion Contextå›è°ƒæ¥å£
 //ExecuteContext
 //////////////////////////////////////////////////////////////////////////
 
 
-#pragma region Íâ²¿½Ó¿Ú
+#pragma region å¤–éƒ¨æ¥å£
 void WtDiffExecuter::on_position_changed(const char* stdCode, double diffPos)
 {
 	ExecuteUnitPtr unit = getUnit(stdCode, true);
 	if (unit == NULL)
 		return;
 
-	//Èç¹û²îÁ¿Îª0£¬ÔòÖ±½Ó·µ»Ø
+	//å¦‚æœå·®é‡ä¸º0ï¼Œåˆ™ç›´æ¥è¿”å›
 	if (decimal::eq(diffPos, 0))
 		return;
 
@@ -360,7 +360,7 @@ void WtDiffExecuter::on_position_changed(const char* stdCode, double diffPos)
 
 	/*
 	 *	By Sunseeeeeker @ 2023.01.10
-	 *	¸üĞÂ²îÁ¿
+	 *	æ›´æ–°å·®é‡
 	*/
 	double& thisDiff = _diff_pos[stdCode];
 	double prevDiff = thisDiff;
@@ -374,7 +374,7 @@ void WtDiffExecuter::on_position_changed(const char* stdCode, double diffPos)
 		return;
 	}
 
-	//TODO ²îÁ¿Ö´ĞĞ»¹ÒªÔÙ¿´Ò»ÏÂ
+	//TODO å·®é‡æ‰§è¡Œè¿˜è¦å†çœ‹ä¸€ä¸‹
 	if (_pool)
 	{
 		std::string code = stdCode;
@@ -404,7 +404,7 @@ void WtDiffExecuter::set_position(const wt_hashmap<std::string, double>& targets
 		if (decimal::eq(oldVol, newVol))
 			continue;
 
-		//²îÁ¿¸üĞÂ
+		//å·®é‡æ›´æ–°
 		double& thisDiff = _diff_pos[stdCode];
 		double prevDiff = thisDiff;
 		thisDiff += (newVol - oldVol);
@@ -417,7 +417,7 @@ void WtDiffExecuter::set_position(const wt_hashmap<std::string, double>& targets
 			continue;
 		}
 
-		//TODO ²îÁ¿Ö´ĞĞ»¹ÒªÔÙ¿´Ò»ÏÂ
+		//TODO å·®é‡æ‰§è¡Œè¿˜è¦å†çœ‹ä¸€ä¸‹
 		if (_pool)
 		{
 			std::string code = stdCode;
@@ -431,7 +431,7 @@ void WtDiffExecuter::set_position(const wt_hashmap<std::string, double>& targets
 		}
 	}
 
-	//ÔÚÔ­À´µÄÄ¿±êÍ·´çÖĞ£¬µ«ÊÇ²»ÔÚĞÂµÄÄ¿±êÍ·´çÖĞ£¬ÔòĞèÒª×Ô¶¯ÉèÖÃÎª0
+	//åœ¨åŸæ¥çš„ç›®æ ‡å¤´å¯¸ä¸­ï¼Œä½†æ˜¯ä¸åœ¨æ–°çš„ç›®æ ‡å¤´å¯¸ä¸­ï¼Œåˆ™éœ€è¦è‡ªåŠ¨è®¾ç½®ä¸º0
 	for (auto it = _target_pos.begin(); it != _target_pos.end(); it++)
 	{
 		const char* stdCode = it->first.c_str();
@@ -452,7 +452,7 @@ void WtDiffExecuter::set_position(const wt_hashmap<std::string, double>& targets
 			if (unit == NULL)
 				continue;
 
-			//¸üĞÂ²îÁ¿
+			//æ›´æ–°å·®é‡
 			double& thisDiff = _diff_pos[stdCode];
 			double prevDiff = thisDiff;
 
@@ -508,7 +508,7 @@ void WtDiffExecuter::on_trade(uint32_t localid, const char* stdCode, bool isBuy,
 	if (localid == 0)
 		return;
 
-	//Èç¹ûlocalid²»Îª0£¬Ôò¸üĞÂ²îÁ¿
+	//å¦‚æœlocalidä¸ä¸º0ï¼Œåˆ™æ›´æ–°å·®é‡
 	double& curDiff = _diff_pos[stdCode];
 	double prevDiff = curDiff;
 	curDiff -= vol * (isBuy ? 1 : -1);
@@ -666,4 +666,4 @@ void WtDiffExecuter::on_position(const char* stdCode, bool isLong, double prevol
 
 }
 
-#pragma endregion Íâ²¿½Ó¿Ú
+#pragma endregion å¤–éƒ¨æ¥å£

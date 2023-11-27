@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file WtCtaTicker.h
  * \project	WonderTrader
  *
@@ -21,7 +21,7 @@ class WTSTickData;
 
 class WtCtaEngine;
 //////////////////////////////////////////////////////////////////////////
-//Éú²úÊ±¼ä²½½øÆ÷
+//ç”Ÿäº§æ—¶é—´æ­¥è¿›å™¨
 class WtCtaRtTicker
 {
 public:
@@ -38,7 +38,7 @@ public:
 public:
 	void	init(IDataReader* store, const char* sessionID);
 	//void	set_time(uint32_t uDate, uint32_t uTime);
-	void	on_tick(WTSTickData* curTick, uint32_t hotFlag = 0);
+	void	on_tick(WTSTickData* curTick);
 
 	void	run();
 	void	stop();
@@ -47,7 +47,7 @@ public:
 	uint32_t	time_to_mins(uint32_t uTime) const;
 
 private:
-	void	trigger_price(WTSTickData* curTick, uint32_t hotFlag = 0);
+	void	trigger_price(WTSTickData* curTick);
 
 private:
 	WTSSessionInfo*	_s_info;

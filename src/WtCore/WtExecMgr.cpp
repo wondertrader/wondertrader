@@ -1,4 +1,4 @@
-#include "WtExecMgr.h"
+ï»¿#include "WtExecMgr.h"
 #include "WtFilterMgr.h"
 
 #include "../Share/decimal.h"
@@ -35,7 +35,7 @@ void WtExecuterMgr::set_positions(wt_hashmap<std::string, double> target_pos)
 			{
 				if (!decimal::eq(desVol, oldVol))
 				{
-					//Êä³öÈÕÖ¾
+					//è¾“å‡ºæ—¥å¿—
 					WTSLogger::info("[Filters] {} target position reset by code filter: {} -> {}", stdCode.c_str(), oldVol, desVol);
 				}
 
@@ -43,7 +43,7 @@ void WtExecuterMgr::set_positions(wt_hashmap<std::string, double> target_pos)
 			}
 			else
 			{
-				//Êä³öÈÕÖ¾
+				//è¾“å‡ºæ—¥å¿—
 				WTSLogger::info("[Filters] {} target position ignored by filter", stdCode.c_str());
 			}
 		}
@@ -74,15 +74,15 @@ void WtExecuterMgr::handle_pos_change(const char* stdCode, double targetPos, dou
 		{
 			if (!decimal::eq(targetPos, oldVol))
 			{
-				//Êä³öÈÕÖ¾
+				//è¾“å‡ºæ—¥å¿—
 				WTSLogger::info("[Filters] {} target position reset by filter: {} -> {}", stdCode, oldVol, targetPos);
-				//²îÁ¿Ò²ÒªÖØËã
+				//å·®é‡ä¹Ÿè¦é‡ç®—
 				diffPos += (targetPos - oldVol);
 			}
 		}
 		else
 		{
-			//Êä³öÈÕÖ¾
+			//è¾“å‡ºæ—¥å¿—
 			WTSLogger::info("[Filters] {} target position ignored by filter", stdCode);
 			return;
 		}
@@ -132,7 +132,7 @@ void WtExecuterMgr::commit_cached_targets(double scale /* = 1.0 */)
 {
 	for(auto& v : _all_cached_targets)
 	{	
-		//ÏÈ¶Ô×éºÏ½øĞĞËõ·Å
+		//å…ˆå¯¹ç»„åˆè¿›è¡Œç¼©æ”¾
 		const char* execid = v.first.c_str();
 		TargetsMap& target_pos = (TargetsMap&)v.second;
 		for(auto& item : target_pos)
@@ -147,7 +147,7 @@ void WtExecuterMgr::commit_cached_targets(double scale /* = 1.0 */)
 			pos = decimal::rnd(abs(pos)*scale)*symbol;
 		}
 
-		//È»ºó¸ù¾İ¹ıÂËÆ÷µ÷ÕûÄ¿±ê²ÖÎ»
+		//ç„¶åæ ¹æ®è¿‡æ»¤å™¨è°ƒæ•´ç›®æ ‡ä»“ä½
 		if (_filter_mgr != NULL)
 		{
 			TargetsMap des_port;
@@ -162,7 +162,7 @@ void WtExecuterMgr::commit_cached_targets(double scale /* = 1.0 */)
 				{
 					if (!decimal::eq(desVol, oldVol))
 					{
-						//Êä³öÈÕÖ¾
+						//è¾“å‡ºæ—¥å¿—
 						WTSLogger::info("[Filters] {} target position reset by code filter: {} -> {}", stdCode.c_str(), oldVol, desVol);
 					}
 
@@ -170,7 +170,7 @@ void WtExecuterMgr::commit_cached_targets(double scale /* = 1.0 */)
 				}
 				else
 				{
-					//Êä³öÈÕÖ¾
+					//è¾“å‡ºæ—¥å¿—
 					WTSLogger::info("[Filters] {} target position ignored by filter", stdCode.c_str());
 				}
 			}
@@ -179,7 +179,7 @@ void WtExecuterMgr::commit_cached_targets(double scale /* = 1.0 */)
 		}
 	}
 
-	//±éÀúÖ´ĞĞÆ÷
+	//éå†æ‰§è¡Œå™¨
 	for (auto& e : _executers)
 	{
 		ExecCmdPtr& executer = (ExecCmdPtr&)e.second;
@@ -189,10 +189,10 @@ void WtExecuterMgr::commit_cached_targets(double scale /* = 1.0 */)
 			continue;
 		}
 
-		//ÏÈÕÒ×Ô¼º¶ÔÓ¦µÄ×éºÏ
+		//å…ˆæ‰¾è‡ªå·±å¯¹åº”çš„ç»„åˆ
 		auto it = _all_cached_targets.find(executer->name());
 
-		//Èç¹ûÕÒ²»µ½£¬¾ÍÕÒÈ«²¿×éºÏ
+		//å¦‚æœæ‰¾ä¸åˆ°ï¼Œå°±æ‰¾å…¨éƒ¨ç»„åˆ
 		if (it == _all_cached_targets.end())
 			it = _all_cached_targets.find("ALL");
 
@@ -202,7 +202,7 @@ void WtExecuterMgr::commit_cached_targets(double scale /* = 1.0 */)
 		executer->set_position(it->second);
 	}
 
-	//Ìá½»ÍêÁËÒÔºó£¬ÇåÀíµôÈ«²¿»º´æµÄÄ¿±ê²ÖÎ»
+	//æäº¤å®Œäº†ä»¥åï¼Œæ¸…ç†æ‰å…¨éƒ¨ç¼“å­˜çš„ç›®æ ‡ä»“ä½
 	_all_cached_targets.clear();
 }
 

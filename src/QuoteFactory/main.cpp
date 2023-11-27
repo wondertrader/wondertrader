@@ -1,7 +1,8 @@
-#include "../WtDtCore/ParserAdapter.h"
+ï»¿#include "../WtDtCore/ParserAdapter.h"
 #include "../WtDtCore/DataManager.h"
 #include "../WtDtCore/StateMonitor.h"
 #include "../WtDtCore/UDPCaster.h"
+#include "../WtDtCore/ShmCaster.h"
 #include "../WtDtCore/WtHelper.h"
 #include "../WtDtCore/IndexFactory.h"
 
@@ -13,14 +14,15 @@
 #include "../WTSTools/WTSLogger.h"
 #include "../WTSUtils/WTSCfgLoader.h"
 #include "../Share/StrUtil.hpp"
+#include "../Share/cppcli.hpp"
 
 #include "../WTSUtils/SignalHook.hpp"
 
 WTSBaseDataMgr	g_baseDataMgr;
 WTSHotMgr		g_hotMgr;
-boost::asio::io_service g_asyncIO;
 StateMonitor	g_stateMon;
 UDPCaster		g_udpCaster;
+ShmCaster		g_shmCaster;
 DataManager		g_dataMgr;
 ParserAdapterMgr g_parsers;
 IndexFactory	g_idxFactory;
@@ -61,8 +63,8 @@ const char* getBinDir()
 
 void initDataMgr(WTSVariant* config, bool bAlldayMode = false)
 {
-	//Èç¹ûÊÇÈ«ÌìÄ£Ê½£¬Ôò²»´«µÝ×´Ì¬»ú¸øDataManager
-	g_dataMgr.init(config, &g_baseDataMgr, bAlldayMode ? NULL : &g_stateMon, &g_udpCaster);
+	//å¦‚æžœæ˜¯å…¨å¤©æ¨¡å¼ï¼Œåˆ™ä¸ä¼ é€’çŠ¶æ€æœºç»™DataManager
+	g_dataMgr.init(config, &g_baseDataMgr, bAlldayMode ? NULL : &g_stateMon);
 }
 
 void initParsers(WTSVariant* cfg)
@@ -75,7 +77,7 @@ void initParsers(WTSVariant* cfg)
 
 		const char* id = cfgItem->getCString("id");
 		// By Wesley @ 2021.12.14
-		// Èç¹ûidÎª¿Õ£¬ÔòÉú³É×Ô¶¯id
+		// å¦‚æžœidä¸ºç©ºï¼Œåˆ™ç”Ÿæˆè‡ªåŠ¨id
 		std::string realid = id;
 		if (realid.empty())
 		{
@@ -91,17 +93,9 @@ void initParsers(WTSVariant* cfg)
 	WTSLogger::info("{} market data parsers loaded in total", g_parsers.size());
 }
 
-void initialize()
+void initialize(const std::string& filename)
 {
 	WtHelper::set_module_dir(getBinDir());
-
-	std::string filename("QFConfig.json");
-	if (!StdFile::exists(filename.c_str()))
-		filename = "QFConfig.yaml";
-	if (!StdFile::exists(filename.c_str()))
-		filename = "dtcfg.json";
-	if (!StdFile::exists(filename.c_str()))
-		filename = "dtcfg.yaml";
 
 	WTSVariant* config = WTSCfgLoader::load_from_file(filename.c_str());
 	if(config == NULL)
@@ -110,7 +104,7 @@ void initialize()
 		return;
 	}
 
-	//¼ÓÔØÊÐ³¡ÐÅÏ¢
+	//åŠ è½½å¸‚åœºä¿¡æ¯
 	WTSVariant* cfgBF = config->get("basefiles");
 	if (cfgBF->get("session"))
 	{
@@ -178,10 +172,21 @@ void initialize()
 		}
 	}
 
-	g_udpCaster.init(config->get("broadcaster"), &g_baseDataMgr, &g_dataMgr);
+	if (config->has("shmcaster"))
+	{
+		g_shmCaster.init(config->get("shmcaster"));
+		g_dataMgr.add_caster(&g_shmCaster);
+	}
+
+	if (config->has("broadcaster"))
+	{
+		g_udpCaster.init(config->get("broadcaster"), &g_baseDataMgr, &g_dataMgr);
+		g_dataMgr.add_caster(&g_udpCaster);
+	}
+
 
 	//By Wesley @ 2021.12.27
-	//È«ÌìºòÄ£Ê½£¬²»ÐèÒªÔÙÊ¹ÓÃ×´Ì¬»ú
+	//å…¨å¤©å€™æ¨¡å¼ï¼Œä¸éœ€è¦å†ä½¿ç”¨çŠ¶æ€æœº
 	bool bAlldayMode = config->getBoolean("allday");
 	if (!bAlldayMode)
 	{
@@ -195,7 +200,7 @@ void initialize()
 
 	if(config->has("index"))
 	{
-		//Èç¹û´æÔÚÖ¸ÊýÄ£¿éÒª£¬ÅäÖÃÖ¸Êý
+		//å¦‚æžœå­˜åœ¨æŒ‡æ•°æ¨¡å—è¦ï¼Œé…ç½®æŒ‡æ•°
 		const char* filename = config->getCString("index");
 		WTSLogger::info("Reading index config from {}...", filename);
 		WTSVariant* var = WTSCfgLoader::load_from_file(filename);
@@ -243,24 +248,35 @@ void initialize()
 
 	config->release();
 
-	g_asyncIO.post([bAlldayMode](){
-		g_parsers.run();
+	g_parsers.run();
 
-		//È«ÌìºòÄ£Ê½£¬²»Æô¶¯×´Ì¬»ú
-		if(!bAlldayMode)
-		{
-			std::this_thread::sleep_for(std::chrono::milliseconds(5));
-			g_stateMon.run();
-		}
-	});
+	//å…¨å¤©å€™æ¨¡å¼ï¼Œä¸å¯åŠ¨çŠ¶æ€æœº
+	if(!bAlldayMode)
+	{
+		std::this_thread::sleep_for(std::chrono::milliseconds(5));
+		g_stateMon.run();
+	}
 }
 
-int main()
+int main(int argc, char* argv[])
 {
-	std::string filename = "logcfgdt.json";
-	if (!StdFile::exists(filename.c_str()))
-		filename = "logcfgdt.yaml";
+	cppcli::Option opt(argc, argv);
 
+	auto cParam = opt("-c", "--config", "configure filepath, dtcfg.yaml as default", false);
+	auto lParam = opt("-l", "--logcfg", "logging configure filepath, logcfgdt.yaml as default", false);
+
+	auto hParam = opt("-h", "--help", "gain help doc", false)->asHelpParam();
+
+	opt.parse();
+
+	if (hParam->exists())
+		return 0;
+
+	std::string filename;
+	if (lParam->exists())
+		filename = lParam->get<std::string>();
+	else
+		filename = "./logcfgdt.yaml";
 	WTSLogger::init(filename.c_str());
 
 #ifdef _MSC_VER
@@ -277,18 +293,36 @@ int main()
 	CMiniDumper::Enable("QuoteFactory.exe", true);
 #endif
 
-#if _WIN32
-#pragma message("Signal hooks disabled in WIN32")
-#else
-#pragma message("Signal hooks enabled in UNIX")
-	install_signal_hooks([](const char* message) {
-		WTSLogger::error(message);
+	bool bExit = false;
+	install_signal_hooks([&bExit](const char* message) {
+		if(!bExit)
+			WTSLogger::error(message);
+	}, [&bExit](bool toExit) {
+		if (bExit)
+			return;
+
+		bExit = toExit;
+		WTSLogger::info("Exit flag is {}", bExit);
 	});
-#endif
 
-	initialize();
+	if (cParam->exists())
+		filename = cParam->get<std::string>();
+	else
+		filename = "./dtcfg.yaml";
 
-	boost::asio::io_service::work work(g_asyncIO);
-	g_asyncIO.run();
+	if(!StdFile::exists(filename.c_str()))
+	{
+		fmt::print("confiture {} not exists", filename);
+		return 0;
+	}
+
+	initialize(filename);
+
+	while (!bExit)
+	{
+		std::this_thread::sleep_for(std::chrono::milliseconds(10));
+	}
+	
+	return 0;
 }
 

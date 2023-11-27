@@ -1,4 +1,4 @@
-#include "HisDataMgr.h"
+﻿#include "HisDataMgr.h"
 #include "WtHelper.h"
 #include "../Share/DLLHelper.hpp"
 #include "../Includes/WTSVariant.hpp"

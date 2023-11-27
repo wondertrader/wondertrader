@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file ParserHuaX.cpp
  * \project	WonderTrader
  *
@@ -8,6 +8,7 @@
  * \brief
  */
 #include "ParserHuaX.h"
+#include "../Includes/WTSVersion.h"
 
 template<typename... Args>
 inline void write_log(IParserSpi* sink, WTSLogLevel ll, const char* format, const Args&... args)
@@ -113,7 +114,7 @@ bool ParserHuaX::init(WTSVariant* config)
 	const char* creatorName = "?CreateTstpXMdApi@CTORATstpXMdApi@TORALEV1API@@SAPAV12@ABD0@Z";
 #	endif
 #else
-	// TODO linuxÏÂÎ´ÐÞ¸Ä
+	// TODO linuxä¸‹æœªä¿®æ”¹
 	const char* creatorName = "_ZN11TORALEV1API15CTORATstpXMdApi16CreateTstpXMdApiERKcS2_";
 #endif
 	_funcCreator = (HuaXCreater)DLLHelper::get_symbol(_hInst, creatorName);
@@ -157,7 +158,7 @@ void ParserHuaX::DoLogin()
 	CTORATstpReqUserLoginField req_user_login_field;
 	memset(&req_user_login_field, 0, sizeof(req_user_login_field));
 
-	strcpy(req_user_login_field.UserProductInfo, "WonderTrader");
+	strcpy(req_user_login_field.UserProductInfo, WT_PRODUCT);
 
 	int iResult = _api->ReqUserLogin(&req_user_login_field, 1);
 
@@ -455,28 +456,28 @@ void ParserHuaX::OnRtnMarketData(CTORATstpMarketDataField* market_data)
 
 	quote.pre_close = checkValid(market_data->PreClosePrice);
 
-	//Î¯Âô¼Û¸ñ
+	//å§”å–ä»·æ ¼
 	quote.ask_prices[0] = checkValid(market_data->AskPrice1);
 	quote.ask_prices[1] = checkValid(market_data->AskPrice2);
 	quote.ask_prices[2] = checkValid(market_data->AskPrice3);
 	quote.ask_prices[3] = checkValid(market_data->AskPrice4);
 	quote.ask_prices[4] = checkValid(market_data->AskPrice5);
 
-	//Î¯ÂôÁ¿
+	//å§”å–é‡
 	quote.ask_qty[0] = checkValid(market_data->AskVolume1);
 	quote.ask_qty[1] = checkValid(market_data->AskVolume2);
 	quote.ask_qty[2] = checkValid(market_data->AskVolume3);
 	quote.ask_qty[3] = checkValid(market_data->AskVolume4);
 	quote.ask_qty[4] = checkValid(market_data->AskVolume5);
 
-	//Î¯Âò¼Û¸ñ
+	//å§”ä¹°ä»·æ ¼
 	quote.bid_prices[0] = checkValid(market_data->BidPrice1);
 	quote.bid_prices[1] = checkValid(market_data->BidPrice2);
 	quote.bid_prices[2] = checkValid(market_data->BidPrice3);
 	quote.bid_prices[3] = checkValid(market_data->BidPrice4);
 	quote.bid_prices[4] = checkValid(market_data->BidPrice5);
 
-	//Î¯ÂòÁ¿
+	//å§”ä¹°é‡
 	quote.bid_qty[0] = checkValid(market_data->BidVolume1);
 	quote.bid_qty[1] = checkValid(market_data->BidVolume2);
 	quote.bid_qty[2] = checkValid(market_data->BidVolume3);

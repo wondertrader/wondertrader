@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file ParserAdapter.cpp
  * \project	WonderTrader
  *
@@ -55,15 +55,15 @@ bool ParserAdapter::init(const char* id, WTSVariant* cfg, IParserStub* stub, IBa
 	_cfg->retain();
 
 	{
-		//¼ÓÔØÄ£¿é
+		//åŠ è½½æ¨¡å—
 		if (cfg->getString("module").empty())
 			return false;
 
 		std::string module = DLLHelper::wrap_module(cfg->getCString("module"), "lib");;
 
-		//ÏÈ¿´¹¤×÷Ä¿Â¼ÏÂÊÇ·ñÓÐ½»Ò×Ä£¿é
+		//å…ˆçœ‹å·¥ä½œç›®å½•ä¸‹æ˜¯å¦æœ‰äº¤æ˜“æ¨¡å—
 		std::string dllpath = WtHelper::getModulePath(module.c_str(), "parsers", true);
-		//Èç¹ûÃ»ÓÐ,ÔòÔÙ¿´Ä£¿éÄ¿Â¼,¼´dllÍ¬Ä¿Â¼ÏÂ
+		//å¦‚æžœæ²¡æœ‰,åˆ™å†çœ‹æ¨¡å—ç›®å½•,å³dllåŒç›®å½•ä¸‹
 		if (!StdFile::exists(dllpath.c_str()))
 			dllpath = WtHelper::getModulePath(module.c_str(), "parsers", false);
 
@@ -130,7 +130,7 @@ bool ParserAdapter::init(const char* id, WTSVariant* cfg, IParserStub* stub, IBa
 			{
 				WTSContractInfo* cInfo = STATIC_CONVERT(*it, WTSContractInfo*);
 
-				//ÏÈ¼ì²éºÏÔ¼ºÍÆ·ÖÖÊÇ·ñ·ûºÏÌõ¼þ
+				//å…ˆæ£€æŸ¥åˆçº¦å’Œå“ç§æ˜¯å¦ç¬¦åˆæ¡ä»¶
 				if(!_code_filter.empty())
 				{
 					auto cit = _code_filter.find(cInfo->getFullCode());
@@ -142,7 +142,7 @@ bool ParserAdapter::init(const char* id, WTSVariant* cfg, IParserStub* stub, IBa
 					}
 				}
 				
-				//ÔÙ¼ì²é½»Ò×ËùÊÇ·ñ·ûºÏÌõ¼þ
+				//å†æ£€æŸ¥äº¤æ˜“æ‰€æ˜¯å¦ç¬¦åˆæ¡ä»¶
 				if (!_exchg_filter.empty())
 				{
 					auto eit = _exchg_filter.find(cInfo->getExchg());
@@ -201,7 +201,7 @@ bool ParserAdapter::initExt(const char* id, IParserApi* api, IParserStub* stub, 
 			{
 				WTSContractInfo* cInfo = STATIC_CONVERT(*it, WTSContractInfo*);
 
-				//ÏÈ¼ì²éºÏÔ¼ºÍÆ·ÖÖÊÇ·ñ·ûºÏÌõ¼þ
+				//å…ˆæ£€æŸ¥åˆçº¦å’Œå“ç§æ˜¯å¦ç¬¦åˆæ¡ä»¶
 				if (!_code_filter.empty())
 				{
 					auto cit = _code_filter.find(cInfo->getFullCode());
@@ -213,7 +213,7 @@ bool ParserAdapter::initExt(const char* id, IParserApi* api, IParserStub* stub, 
 					}
 				}
 
-				//ÔÙ¼ì²é½»Ò×ËùÊÇ·ñ·ûºÏÌõ¼þ
+				//å†æ£€æŸ¥äº¤æ˜“æ‰€æ˜¯å¦ç¬¦åˆæ¡ä»¶
 				if (!_exchg_filter.empty())
 				{
 					auto eit = _exchg_filter.find(cInfo->getExchg());
@@ -271,7 +271,7 @@ bool ParserAdapter::run()
 
 void ParserAdapter::handleQuote(WTSTickData *quote, uint32_t procFlag)
 {
-	if (quote == NULL || _stopped || quote->actiondate() == 0 || quote->tradingdate() == 0)
+	if (quote == NULL || _stopped || quote->actiondate() == 0)
 		return;
 
 	WTSContractInfo* cInfo = quote->getContractInfo();

@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file WTSHotMgr.cpp
  * \project	WonderTrader
  *
@@ -80,14 +80,14 @@ double WTSHotMgr::getRuleFactor(const char* ruleTag, const char* fullPid, uint32
 	auto it = dtMap->lower_bound(uDate);
 	if(it == dtMap->end())
 	{
-		//ÕÒ²»µ½£¬ËµÃ÷¼ÇÂ¼µÄÈÕÆÚ¶¼±È´«ÈëµÄÈÕÆÚĞ¡£¬ËùÒÔ·µ»Ø×îºóÒ»ÌõµÄ¸´È¨Òò×Ó
+		//æ‰¾ä¸åˆ°ï¼Œè¯´æ˜è®°å½•çš„æ—¥æœŸéƒ½æ¯”ä¼ å…¥çš„æ—¥æœŸå°ï¼Œæ‰€ä»¥è¿”å›æœ€åä¸€æ¡çš„å¤æƒå› å­
 		WTSSwitchItem* pItem = STATIC_CONVERT(dtMap->rbegin()->second, WTSSwitchItem*);
 		return pItem->get_factor();
 	}
 	else
 	{
-		//ÕÒµ½ÁË£¬¾ÍÒª¿´ÇĞ»»ÈÕÆÚÊÇ·ñµÈÓÚ´«ÈëÈÕÆÚ
-		//Èç¹ûÏàµÈ£¬ËµÃ÷¸ÕºÃÇĞ»»£¬ÄÇÃ´¾ÍÖ±½Ó·µ»Ø¸´È¨Òò×Ó
+		//æ‰¾åˆ°äº†ï¼Œå°±è¦çœ‹åˆ‡æ¢æ—¥æœŸæ˜¯å¦ç­‰äºä¼ å…¥æ—¥æœŸ
+		//å¦‚æœç›¸ç­‰ï¼Œè¯´æ˜åˆšå¥½åˆ‡æ¢ï¼Œé‚£ä¹ˆå°±ç›´æ¥è¿”å›å¤æƒå› å­
 		WTSSwitchItem* pItem = STATIC_CONVERT(it->second, WTSSwitchItem*);
 		if (pItem->switch_date() == uDate)
 		{
@@ -95,15 +95,15 @@ double WTSHotMgr::getRuleFactor(const char* ruleTag, const char* fullPid, uint32
 		}
 		else
 		{
-			//Èç¹ûÇĞ»»ÈÕÆÚ´óÓÚ´«ÈëÈÕÆÚ£¬ÔòÒª¿´Ç°Ò»¸ö½×¶Î
-			//Èç¹ûÒÑ¾­ÊÇµÚÒ»¸öÁË£¬ÔòÖ±½Ó·µ»Ø1.0
+			//å¦‚æœåˆ‡æ¢æ—¥æœŸå¤§äºä¼ å…¥æ—¥æœŸï¼Œåˆ™è¦çœ‹å‰ä¸€ä¸ªé˜¶æ®µ
+			//å¦‚æœå·²ç»æ˜¯ç¬¬ä¸€ä¸ªäº†ï¼Œåˆ™ç›´æ¥è¿”å›1.0
 			if (it == dtMap->begin())
 			{
 				return 1.0;
 			}
 			else
 			{
-				//Èç¹û²»ÊÇµÚÒ»¸ö£¬Ôò»ØÍËÒ»¸ö£¬ÔÙ·µ»Ø¼´¿É
+				//å¦‚æœä¸æ˜¯ç¬¬ä¸€ä¸ªï¼Œåˆ™å›é€€ä¸€ä¸ªï¼Œå†è¿”å›å³å¯
 				it--;
 				WTSSwitchItem* pItem = STATIC_CONVERT(it->second, WTSSwitchItem*);
 				return pItem->get_factor();
@@ -113,7 +113,7 @@ double WTSHotMgr::getRuleFactor(const char* ruleTag, const char* fullPid, uint32
 
 }
 
-#pragma region "´ÎÖ÷Á¦½Ó¿Ú"
+#pragma region "æ¬¡ä¸»åŠ›æ¥å£"
 bool WTSHotMgr::loadHots(const char* filename)
 {
 	loadCustomRules("HOT", filename);
@@ -152,9 +152,9 @@ bool WTSHotMgr::splitHotSecions(const char* exchg, const char* pid, uint32_t sDt
 
 	return splitCustomSections("HOT", fullPid, sDt, eDt, sections);
 }
-#pragma endregion "Ö÷Á¦½Ó¿Ú"
+#pragma endregion "ä¸»åŠ›æ¥å£"
 
-#pragma region "´ÎÖ÷Á¦½Ó¿Ú"
+#pragma region "æ¬¡ä¸»åŠ›æ¥å£"
 bool WTSHotMgr::loadSeconds(const char* filename)
 {
 	return loadCustomRules("2ND", filename);
@@ -192,9 +192,9 @@ bool WTSHotMgr::splitSecondSecions(const char* exchg, const char* pid, uint32_t 
 	return splitCustomSections("2ND", fullPid, sDt, eDt, sections);
 }
 
-#pragma endregion "´ÎÖ÷Á¦½Ó¿Ú"
+#pragma endregion "æ¬¡ä¸»åŠ›æ¥å£"
 
-#pragma region "×Ô¶¨ÒåÖ÷Á¦½Ó¿Ú"
+#pragma region "è‡ªå®šä¹‰ä¸»åŠ›æ¥å£"
 bool WTSHotMgr::loadCustomRules(const char* tag, const char* filename)
 {
 	if (!StdFile::exists(filename))
@@ -238,7 +238,7 @@ bool WTSHotMgr::loadCustomRules(const char* tag, const char* filename)
 					jHotItem->getCString("from"), jHotItem->getCString("to"), 
 					jHotItem->getUInt32("date"));
 
-				//¼ÆËã¸´È¨Òò×Ó
+				//è®¡ç®—å¤æƒå› å­
 				double oldclose = jHotItem->getDouble("oldclose");
 				double newclose = jHotItem->getDouble("newclose");
 				factor *= (decimal::eq(oldclose, 0.0) ? 1.0 : (oldclose/ newclose));
@@ -378,8 +378,8 @@ bool WTSHotMgr::isCustomHot(const char* tag, const char* fullCode, uint32_t dt /
 	if (cit != dtMap->end())
 	{
 		WTSSwitchItem* pItem = STATIC_CONVERT(cit->second, WTSSwitchItem*);
-		//ÒòÎªµÇ¼ÇµÄ»»ÔÂÈÕÆÚÊÇ¿ªÊ¼ÉúĞ§µÄ½»Ò×ÈÕ£¬Èç¹ûÊÇÏÂÎçÅÌºóÈ·¶¨Ö÷Á¦µÄ»°
-		//ÄÇÃ´dt¾Í»áÊÇµÚ¶şÌì£¬ËùÒÔ£¬dt±ØĞë´óÓÚµÈÓÚÇĞ»»ÈÕÆÚ
+		//å› ä¸ºç™»è®°çš„æ¢æœˆæ—¥æœŸæ˜¯å¼€å§‹ç”Ÿæ•ˆçš„äº¤æ˜“æ—¥ï¼Œå¦‚æœæ˜¯ä¸‹åˆç›˜åç¡®å®šä¸»åŠ›çš„è¯
+		//é‚£ä¹ˆdtå°±ä¼šæ˜¯ç¬¬äºŒå¤©ï¼Œæ‰€ä»¥ï¼Œdtå¿…é¡»å¤§äºç­‰äºåˆ‡æ¢æ—¥æœŸ
 		if (pItem->switch_date() > dt)
 			cit--;
 
@@ -426,8 +426,8 @@ bool WTSHotMgr::splitCustomSections(const char* tag, const char* fullPid, uint32
 		}
 		else if (leftDate < curDate)
 		{
-			//Èç¹û¿ªÊ¼ÈÕÆÚĞ¡ÓÚµ±Ç°ÇĞ»»µÄÈÕÆÚ,ÔòÌí¼ÓÒ»¶Î
-			if (strlen(hotItem->from()) > 0)//ÕâÀïfromÎª¿Õ,Ö÷ÒªÊÇµÚÒ»Ìõ¹æÔò,Èç¹ûÕæµÄÓöµ½ÕâÖÖÇé¿ö,Ò²Ã»ÓĞÌ«ºÃµÄ°ì·¨,Ö»ÄÜ²»ÒªÕâÒ»¶ÎÊı¾İÁË,Ò»°ãÇé¿öÏÂÊÇ¹»µÄ
+			//å¦‚æœå¼€å§‹æ—¥æœŸå°äºå½“å‰åˆ‡æ¢çš„æ—¥æœŸ,åˆ™æ·»åŠ ä¸€æ®µ
+			if (strlen(hotItem->from()) > 0)//è¿™é‡Œfromä¸ºç©º,ä¸»è¦æ˜¯ç¬¬ä¸€æ¡è§„åˆ™,å¦‚æœçœŸçš„é‡åˆ°è¿™ç§æƒ…å†µ,ä¹Ÿæ²¡æœ‰å¤ªå¥½çš„åŠæ³•,åªèƒ½ä¸è¦è¿™ä¸€æ®µæ•°æ®äº†,ä¸€èˆ¬æƒ…å†µä¸‹æ˜¯å¤Ÿçš„
 			{
 				sections.emplace_back(HotSection(hotItem->from(), leftDate, TimeUtils::getNextDate(curDate, -1), prevFactor));
 			}
@@ -447,7 +447,7 @@ bool WTSHotMgr::splitCustomSections(const char* tag, const char* fullPid, uint32
 
 	return true;
 }
-#pragma endregion "×Ô¶¨ÒåÖ÷Á¦½Ó¿Ú"
+#pragma endregion "è‡ªå®šä¹‰ä¸»åŠ›æ¥å£"
 
 void WTSHotMgr::release()
 {

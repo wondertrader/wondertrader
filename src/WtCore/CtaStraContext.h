@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file CtaStraContext.h
  * \project	WonderTrader
  *
@@ -30,7 +30,7 @@ public:
 	CtaStrategy* get_stragety() { return _strategy; }
 
 public:
-	//»Øµ÷º¯Êý
+	//Â»Ã˜ÂµÃ·ÂºÂ¯ÃŠÃ½
 	virtual void on_init() override;
 	virtual void on_session_begin(uint32_t uTDate) override;
 	virtual void on_session_end(uint32_t uTDate) override;

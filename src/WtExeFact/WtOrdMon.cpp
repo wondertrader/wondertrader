@@ -1,4 +1,4 @@
-#include "WtOrdMon.h"
+ï»¿#include "WtOrdMon.h"
 
 void WtOrdMon::push_order(const uint32_t* ids, uint32_t cnt, uint64_t curTime, bool bCanCancel /* = true */)
 {
@@ -33,7 +33,7 @@ void WtOrdMon::check_orders(uint32_t expiresecs, uint64_t curTime, EnumOrderCall
 	{
 		uint32_t localid = m.first;
 		OrderPair& ordInfo = m.second;
-		if (!ordInfo.second)	//Èç¹û²»ÄÜ³·µ¥£¬ÔòÖ±½ÓÌø¹ı£¨Ò»°ãÕÇµøÍ£¼ÛµÄ¹Òµ¥ÊÇ²»ÄÜ³·µ¥µÄ£©
+		if (!ordInfo.second)	//å¦‚æœä¸èƒ½æ’¤å•ï¼Œåˆ™ç›´æ¥è·³è¿‡ï¼ˆä¸€èˆ¬æ¶¨è·Œåœä»·çš„æŒ‚å•æ˜¯ä¸èƒ½æ’¤å•çš„ï¼‰
 			continue;
 
 		auto entertm = ordInfo.first;

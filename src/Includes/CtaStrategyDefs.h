@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file CtaStrategyDefs.h
  * \project	WonderTrader
  *
@@ -31,59 +31,59 @@ public:
 
 public:
 	/*
-	*	Ö´ĞĞµ¥ÔªÃû³Æ
+	*	æ‰§è¡Œå•å…ƒåç§°
 	*/
 	virtual const char* getName() = 0;
 
 	/*
-	*	ËùÊôÖ´ĞĞÆ÷¹¤³§Ãû³Æ
+	*	æ‰€å±æ‰§è¡Œå™¨å·¥å‚åç§°
 	*/
 	virtual const char* getFactName() = 0;
 
 	/*
-	*	³õÊ¼»¯
+	*	åˆå§‹åŒ–
 	*/
 	virtual bool init(WTSVariant* cfg){ return true; }
 
 	virtual const char* id() const { return _id.c_str(); }
 
 	/*
-	 *	³õÊ¼»¯»Øµ÷
+	 *	åˆå§‹åŒ–å›è°ƒ
 	 */
 	virtual void on_init(ICtaStraCtx* ctx){}
 
 	/*
-	 *	½»Ò×ÈÕ¿ªÊ¼
+	 *	äº¤æ˜“æ—¥å¼€å§‹
 	 */
 	virtual void on_session_begin(ICtaStraCtx* ctx, uint32_t uTDate) {}
 
 	/*
-	 *	½»Ò×ÈÕ½áÊø
+	 *	äº¤æ˜“æ—¥ç»“æŸ
 	 */
 	virtual void on_session_end(ICtaStraCtx* ctx, uint32_t uTDate) {}
 
 	/*
-	 *	Ö÷ÌåÂß¼­Ö´ĞĞÈë¿Ú
+	 *	ä¸»ä½“é€»è¾‘æ‰§è¡Œå…¥å£
 	 */
 	virtual void on_schedule(ICtaStraCtx* ctx, uint32_t uDate, uint32_t uTime){}
 
 	/*
-	 *	Ö÷ÌåÂß¼­Ö´ĞĞÍê³É
+	 *	ä¸»ä½“é€»è¾‘æ‰§è¡Œå®Œæˆ
 	 */
 	virtual void on_schedule_done(ICtaStraCtx* ctx, uint32_t uDate, uint32_t uTime) {}
 
 	/*
-	 *	tickÊı¾İ
+	 *	tickæ•°æ®
 	 */
 	virtual void on_tick(ICtaStraCtx* ctx, const char* stdCode, WTSTickData* newTick){}
 
 	/*
-	 *	KÏß±ÕºÏ
+	 *	Kçº¿é—­åˆ
 	 */
 	virtual void on_bar(ICtaStraCtx* ctx, const char* stdCode, const char* period, WTSBarStruct* newBar){}
 
 	/*
-	 *	Ìõ¼şµ¥´¥·¢
+	 *	æ¡ä»¶å•è§¦å‘
 	 */
 	virtual void on_condition_triggered(ICtaStraCtx* ctx, const char* stdCode, double target, double price, const char* usertag) {}
 
@@ -92,7 +92,7 @@ protected:
 };
 
 //////////////////////////////////////////////////////////////////////////
-//²ßÂÔ¹¤³§½Ó¿Ú
+//ç­–ç•¥å·¥å‚æ¥å£
 typedef void(*FuncEnumStrategyCallback)(const char* factName, const char* straName, bool isLast);
 
 class ICtaStrategyFact
@@ -103,28 +103,28 @@ public:
 
 public:
 	/*
-	 *	»ñÈ¡¹¤³§Ãû
+	 *	è·å–å·¥å‚å
 	 */
 	virtual const char* getName() = 0;
 
 	/*
-	 *	Ã¶¾Ù²ßÂÔ
+	 *	æšä¸¾ç­–ç•¥
 	 */
 	virtual void enumStrategy(FuncEnumStrategyCallback cb) = 0;
 
 	/*
-	 *	¸ù¾İÃû³Æ´´½¨KÏß¼¶±ğ²ßÂÔ
+	 *	æ ¹æ®åç§°åˆ›å»ºKçº¿çº§åˆ«ç­–ç•¥
 	 */
 	virtual CtaStrategy* createStrategy(const char* name, const char* id) = 0;
 
 
 	/*
-	 *	É¾³ı²ßÂÔ
+	 *	åˆ é™¤ç­–ç•¥
 	 */
 	virtual bool deleteStrategy(CtaStrategy* stra) = 0;
 };
 
-//´´½¨Ö´ĞĞ¹¤³§
+//åˆ›å»ºæ‰§è¡Œå·¥å‚
 typedef ICtaStrategyFact* (*FuncCreateStraFact)();
-//É¾³ıÖ´ĞĞ¹¤³§
+//åˆ é™¤æ‰§è¡Œå·¥å‚
 typedef void(*FuncDeleteStraFact)(ICtaStrategyFact* &fact);

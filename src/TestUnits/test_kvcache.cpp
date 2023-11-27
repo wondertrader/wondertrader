@@ -1,4 +1,4 @@
-#include "../Share/WtKVCache.hpp"
+ï»¿#include "../Share/WtKVCache.hpp"
 #include "../Share/IniHelper.hpp"
 #include "../Share/TimeUtils.hpp"
 #include "../Share/fmtlib.h"
@@ -57,7 +57,7 @@ TEST(test_kvcache, test_perform)
 	TimeUtils::Ticker ticker;
 	char buffer[16] = { 0 };
 
-	//ÏÈ²âÊÔsimplecache
+	//Å“Â»â‰¤â€šÂ â€˜simplecache
 	for(uint32_t i = 0; i < times; i++)
 	{
 		char* s = fmt::format_to(buffer, "{}", i);
@@ -73,7 +73,7 @@ TEST(test_kvcache, test_perform)
 	}
 	uint64_t a = ticker.nano_seconds();
 
-	//ÔÙ²âÊÔini
+	//â€˜Å¸â‰¤â€šÂ â€˜ini
 	ticker.reset();
 	for (uint32_t i = 0; i < times; i++)
 	{

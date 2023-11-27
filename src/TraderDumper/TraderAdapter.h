@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \file TraderAdapter.h
  * \project	WonderTrader
  *
@@ -50,7 +50,7 @@ public:
 
 public:
 	//////////////////////////////////////////////////////////////////////////
-	//ITraderSpi�ӿ�
+	//ITraderSpi½Ó¿Ú
 	virtual void handleEvent(WTSTraderEvent e, int32_t ec) override;
 
 	virtual void onLoginResult(bool bSucc, const char* msg, uint32_t tradingdate) override;
@@ -69,7 +69,7 @@ public:
 
 	virtual void onPushOrder(WTSOrderInfo* orderInfo) override;
 
-	virtual void onTraderError(WTSError* err) override;
+	virtual void onTraderError(WTSError* err, void* pData = NULL) override;
 
 	virtual IBaseDataMgr* getBaseDataMgr() override;
 

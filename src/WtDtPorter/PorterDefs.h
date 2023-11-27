@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file PorterDefs.h
  * \project	WonderTrader
  *
@@ -23,18 +23,18 @@ NS_WTP_END
 USING_NS_WTP;
 
 //////////////////////////////////////////////////////////////////////////
-//À©Õ¹Parser»Øµ÷º¯Êı
-static const WtUInt32	EVENT_PARSER_INIT = 1;	//Parser³õÊ¼»¯
-static const WtUInt32	EVENT_PARSER_CONNECT = 2;	//ParserÁ¬½Ó
-static const WtUInt32	EVENT_PARSER_DISCONNECT = 3;	//Parser¶Ï¿ªÁ¬½Ó
-static const WtUInt32	EVENT_PARSER_RELEASE = 4;	//ParserÊÍ·Å
+//æ‰©å±•Parserå›è°ƒå‡½æ•°
+static const WtUInt32	EVENT_PARSER_INIT = 1;	//Parseråˆå§‹åŒ–
+static const WtUInt32	EVENT_PARSER_CONNECT = 2;	//Parserè¿æ¥
+static const WtUInt32	EVENT_PARSER_DISCONNECT = 3;	//Parseræ–­å¼€è¿æ¥
+static const WtUInt32	EVENT_PARSER_RELEASE = 4;	//Parseré‡Šæ”¾
 
 typedef void(PORTER_FLAG *FuncParserEvtCallback)(WtUInt32 evtId, const char* id);
 typedef void(PORTER_FLAG *FuncParserSubCallback)(const char* id, const char* fullCode, bool isForSub);
 
 
 //////////////////////////////////////////////////////////////////////////
-//À©Õ¹Dumper»Øµ÷º¯Êı
+//æ‰©å±•Dumperå›è°ƒå‡½æ•°
 typedef bool(PORTER_FLAG *FuncDumpBars)(const char* id, const char* stdCode, const char* period, WTSBarStruct* bars, WtUInt32 count);
 typedef bool(PORTER_FLAG *FuncDumpTicks)(const char* id, const char* stdCode, WtUInt32 uDate, WTSTickStruct* ticks, WtUInt32 count);
 typedef bool(PORTER_FLAG *FuncDumpOrdQue)(const char* id, const char* stdCode, WtUInt32 uDate, WTSOrdQueStruct* items, WtUInt32 count);

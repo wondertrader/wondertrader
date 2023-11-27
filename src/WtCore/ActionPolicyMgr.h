@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file ActionPolicyMgr.h
  * \project	WonderTrader
  *
@@ -21,19 +21,19 @@ class WTSVariant;
 typedef enum tagActionType
 {
 	AT_Unknown = 8888,
-	AT_Open = 9999,		//¿ª²Ö
-	AT_Close,			//Æ½²Ö
-	AT_CloseToday,		//Æ½½ñ
-	AT_CloseYestoday	//Æ½×ò
+	AT_Open = 9999,		//å¼€ä»“
+	AT_Close,			//å¹³ä»“
+	AT_CloseToday,		//å¹³ä»Š
+	AT_CloseYestoday	//å¹³æ˜¨
 } ActionType;
 
 typedef struct _ActionRule
 {
-	ActionType	_atype;		//¶¯×÷ÀàĞÍ
-	uint32_t	_limit;		//ÊÖÊıÏŞÖÆ
-	uint32_t	_limit_l;	//¶àÍ·ÊÖÊıÏŞÖÆ
-	uint32_t	_limit_s;	//¿ÕÍ·ÊÖÊıÏŞÖÆ
-	bool		_pure;		//Ö÷ÒªÕë¶ÔAT_CloseTodayºÍAT_CloseYestoday£¬ÓÃÓÚÅĞ¶ÏÊÇ·ñÊÇ¾»½ñ²Ö»òÕß¾»×ò²Ö
+	ActionType	_atype;		//åŠ¨ä½œç±»å‹
+	uint32_t	_limit;		//æ‰‹æ•°é™åˆ¶
+	uint32_t	_limit_l;	//å¤šå¤´æ‰‹æ•°é™åˆ¶
+	uint32_t	_limit_s;	//ç©ºå¤´æ‰‹æ•°é™åˆ¶
+	bool		_pure;		//ä¸»è¦é’ˆå¯¹AT_CloseTodayå’ŒAT_CloseYestodayï¼Œç”¨äºåˆ¤æ–­æ˜¯å¦æ˜¯å‡€ä»Šä»“æˆ–è€…å‡€æ˜¨ä»“
 
 	_ActionRule()
 	{
@@ -56,9 +56,9 @@ public:
 
 private:
 	typedef wt_hashmap<std::string, ActionRuleGroup> RulesMap;
-	RulesMap	_rules;	//¹æÔò±í
+	RulesMap	_rules;	//è§„åˆ™è¡¨
 
-	wt_hashmap<std::string, std::string> _comm_rule_map;	//Æ·ÖÖ¹æÔòÓ³Éä
+	wt_hashmap<std::string, std::string> _comm_rule_map;	//å“ç§è§„åˆ™æ˜ å°„
 };
 
 NS_WTP_END

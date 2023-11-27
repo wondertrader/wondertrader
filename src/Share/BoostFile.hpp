@@ -1,11 +1,11 @@
-/*!
+ï»¿/*!
  * \file BoostFile.hpp
  * \project	WonderTrader
  *
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief boost¿âÎÄ¼ş²Ù×÷µÄ¸¨Öú¶ÔÏó
+ * \brief booståº“æ–‡ä»¶æ“ä½œçš„è¾…åŠ©å¯¹è±¡
  */
 #pragma once
 #include <boost/version.hpp>

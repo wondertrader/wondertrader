@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file TraderHTS.cpp
  * \project	WonderTrader
  *
@@ -35,7 +35,7 @@
 
 
 /*
- @brief: ÉèÖÃÈ«¾Ömap£¬ÓÃÓÚ²éÕÒ¶àÊµÀı»¯ºó»Øµ÷ÏàÓ¦µÄTraderHTS¶ÔÏóµÄ½á¹û
+ @brief: è®¾ç½®å…¨å±€mapï¼Œç”¨äºæŸ¥æ‰¾å¤šå®ä¾‹åŒ–åå›è°ƒç›¸åº”çš„TraderHTSå¯¹è±¡çš„ç»“æœ
 */
 std::map<std::string, TraderHTS*> itpdkCallMap;
 
@@ -195,13 +195,13 @@ extern "C"
 std::string SECITPDK_GetLastError()
 {
 	char msg[256];
-	SECITPDK_GetLastError(msg);            //»ñÈ¡´íÎóĞÅÏ¢
+	SECITPDK_GetLastError(msg);            //è·å–é”™è¯¯ä¿¡æ¯
 	return msg;
 }
 
 void ConnCallBack(const char* pKhh, const char* pConnKey, int nEvent, void* pData)
 {
-	std::cout << "Connect event khh: " << pKhh << "event: " << (0 == nEvent ? "»Ö¸´" : "¶Ï¿ª") << std::endl;
+	std::cout << "Connect event khh: " << pKhh << "event: " << (0 == nEvent ? "æ¢å¤" : "æ–­å¼€") << std::endl;
 }
 
 TraderHTS::TraderHTS()
@@ -220,10 +220,10 @@ TraderHTS::TraderHTS()
 {
 	m_mapLives = TradeDataMap::create();
 
-	sShGdh[13] = { 0 };                //ÉÏº£¹É¶«ºÅ
-	sSzGdh[13] = { 0 };                //ÉîÛÚ¹É¶«ºÅ
-	sShZjzh[13] = { 0 };               //×Ê½ğÕËºÅ
-	sSzZjzh[13] = { 0 };               //×Ê½ğÕËºÅ
+	sShGdh[13] = { 0 };                //ä¸Šæµ·è‚¡ä¸œå·
+	sSzGdh[13] = { 0 };                //æ·±åœ³è‚¡ä¸œå·
+	sShZjzh[13] = { 0 };               //èµ„é‡‘è´¦å·
+	sSzZjzh[13] = { 0 };               //èµ„é‡‘è´¦å·
 }
 
 TraderHTS::~TraderHTS()
@@ -233,14 +233,14 @@ TraderHTS::~TraderHTS()
 
 void TraderHTS::InitializeHTS(WTSVariant* params)
 {
-	SECITPDK_SetLogPath("./");            //ÈÕÖ¾Ä¿Â¼
-	SECITPDK_SetProfilePath("./");           //ÅäÖÃÎÄ¼şÄ¿Â¼
+	SECITPDK_SetLogPath("./");            //æ—¥å¿—ç›®å½•
+	SECITPDK_SetProfilePath("./");           //é…ç½®æ–‡ä»¶ç›®å½•
 
 	static bool bInited = false;
-	bInited = g_callback_mgr->init(params);  //³õÊ¼»¯£¬ÔÚËùÓĞ½Ó¿ÚÊ¹ÓÃÇ°µ÷ÓÃ£¬³ıÂ·¾¶ÉèÖÃ½Ó¿ÚÍâ
+	bInited = g_callback_mgr->init(params);  //åˆå§‹åŒ–ï¼Œåœ¨æ‰€æœ‰æ¥å£ä½¿ç”¨å‰è°ƒç”¨ï¼Œé™¤è·¯å¾„è®¾ç½®æ¥å£å¤–
 	if (!bInited)
 	{
-		write_log(m_traderSink, LL_ERROR, "[TraderHTS]³õÊ¼»¯Ê§°Ü!");
+		write_log(m_traderSink, LL_ERROR, "[TraderHTS]åˆå§‹åŒ–å¤±è´¥!");
 		return;
 	}
 }
@@ -293,19 +293,19 @@ bool TraderHTS::init(WTSVariant* params)
 
 	m_hInstDD = DLLHelper::load_library(m_strModule.c_str());
 
-	// ³õÊ¼»¯ÉèÖÃ
+	// åˆå§‹åŒ–è®¾ç½®
 	InitializeHTS(params);
 
-	// ÉèÖÃ»Øµ÷º¯Êı¶©ÔÄĞÅÏ¢
+	// è®¾ç½®å›è°ƒå‡½æ•°è®¢é˜…ä¿¡æ¯
 	try
 	{
-		//g_callback_mgr->setCallbackMsgFunc();  // ¶©ÔÄĞÅÏ¢£¬ÉèÖÃ»Øµ÷º¯Êı
-		g_callback_mgr->setHTSCallPtr(m_strUser.c_str(), this);  // ½«µ±Ç°¶ÔÏóÌí¼Óµ½È«¾ÖÓ³Éä±íÖĞ
+		//g_callback_mgr->setCallbackMsgFunc();  // è®¢é˜…ä¿¡æ¯ï¼Œè®¾ç½®å›è°ƒå‡½æ•°
+		g_callback_mgr->setHTSCallPtr(m_strUser.c_str(), this);  // å°†å½“å‰å¯¹è±¡æ·»åŠ åˆ°å…¨å±€æ˜ å°„è¡¨ä¸­
 	}
 	catch (...)
 	{
 		std::string msg = SECITPDK_GetLastError();
-		write_log(m_traderSink, LL_ERROR, "[TraderHTS]¶©ÔÄ³É½»»Ø±¨Ê§°Ü£º{}({})", msg.c_str(), -1);
+		write_log(m_traderSink, LL_ERROR, "[TraderHTS]è®¢é˜…æˆäº¤å›æŠ¥å¤±è´¥ï¼š{}({})", msg.c_str(), -1);
 	}
 
 	return true;
@@ -322,19 +322,19 @@ void TraderHTS::reconnect()
 	//if (m_traderSink)
 	//{
 	//	m_traderSink->handleEvent(WTE_Connect, -1);
-	//	m_traderSink->handleTraderLog(LL_ERROR, "[TraderHTS]Í¨Ñ¶Á¬½ÓÊ§°Ü");
+	//	m_traderSink->handleTraderLog(LL_ERROR, "[TraderHTS]é€šè®¯è¿æ¥å¤±è´¥");
 	//}
 
 	//StdThreadPtr thrd(new StdThread([this]() {
 	//	std::this_thread::sleep_for(std::chrono::seconds(2));
 	//	if (m_traderSink)
 	//	{
-	//		write_log(m_traderSink, LL_WARN, "[TraderHTS]ÕËºÅ{}ÕıÔÚÖØÁ¬¡­¡­", m_strUser.c_str());  //m_traderSink->handleTraderLog(LL_WARN, "[TraderHTS]ÕËºÅ%sÕıÔÚÖØÁ¬¡­¡­", m_strUser.c_str());
+	//		write_log(m_traderSink, LL_WARN, "[TraderHTS]è´¦å·{}æ­£åœ¨é‡è¿â€¦â€¦", m_strUser.c_str());  //m_traderSink->handleTraderLog(LL_WARN, "[TraderHTS]è´¦å·%sæ­£åœ¨é‡è¿â€¦â€¦", m_strUser.c_str());
 	//	}
 	//	reconnect();
 	//}));
 
-	//registerSpi(this);						// ×¢²áÊÂ¼ş
+	//registerSpi(this);						// æ³¨å†Œäº‹ä»¶
 
 	if (m_traderSink) m_traderSink->handleEvent(WTE_Connect, 0);
 }
@@ -376,13 +376,13 @@ void TraderHTS::disconnect()
 
 void TraderHTS::htsGetCallback(const char* pTime, const char* pMsg, int nType)
 {
-	// ½âÎöÊı¾İ
-	write_log(m_traderSink, LL_INFO, "[TraderHTS] ¿ªÊ¼µ÷ÓÃ»Øµ÷º¯Êı");
+	// è§£ææ•°æ®
+	write_log(m_traderSink, LL_INFO, "[TraderHTS] å¼€å§‹è°ƒç”¨å›è°ƒå‡½æ•°");
 
 	rapidjson::Document document;
 	if (document.Parse(pMsg).HasParseError())
 	{
-		write_log(m_traderSink, LL_ERROR, "[TraderHTS] ½âÎö¶©µ¥Î¯ÍĞÍÆËÍĞÅÏ¢Ê§°Ü!");
+		write_log(m_traderSink, LL_ERROR, "[TraderHTS] è§£æè®¢å•å§”æ‰˜æ¨é€ä¿¡æ¯å¤±è´¥!");
 		return;
 	}
 
@@ -393,34 +393,34 @@ void TraderHTS::htsGetCallback(const char* pTime, const char* pMsg, int nType)
 
 	if (NOTIFY_PUSH_ORDER == nType)
 	{
-		//È·ÈÏ»Ø±¨Êı¾İ
+		//ç¡®è®¤å›æŠ¥æ•°æ®
 		//write_log(m_traderSink, LL_INFO, "[TraderHTS] Insert order confirm callback: WTH = {}, KHH = {},GDH = {},ZQDM = {}", nWTH, sKHH, sGDH, sZQDM);
 
 		OnRtnOrder(pMsg);
 	}
 	else if (NOTIFY_PUSH_MATCH == nType)
 	{
-		//³É½»»Ø±¨Êı¾İ
+		//æˆäº¤å›æŠ¥æ•°æ®
 		//write_log(m_traderSink, LL_INFO, "[TraderHTS] Order match confirm callback: WTH = {}, KHH = {},GDH = {},ZQDM = {}", nWTH, sKHH, sGDH, sZQDM);
 
 		OnRtnTrade(pMsg);
 	}
 	else if (NOTIFY_PUSH_WITHDRAW == nType)
 	{
-		// ³·µ¥»Ø±¨Êı¾İ
+		// æ’¤å•å›æŠ¥æ•°æ®
 		//write_log(m_traderSink, LL_INFO, "[TraderHTS] Cancel order confirm callback: WTH = {}, KHH = {},GDH = {},ZQDM = {}", nWTH, sKHH, sGDH, sZQDM);
 
 		const char* sCXBZ = document["CXBZ"].GetString();
 		int64 iSBJG = document["SBJG"].GetInt();
 		const char* sJGSM = document["JGSM"].GetString();
-		//³·µ¥È·ÈÏ»Ø±¨
+		//æ’¤å•ç¡®è®¤å›æŠ¥
 		//write_log(m_traderSink, LL_DEBUG, "HTSCall cancelling report message: WTH={}, KHH= {}, GDH={}, ZQDM={}, sCXBZ={}, iSBJG={} , sJGSM={}", nWTH, sKHH, sGDH, sZQDM, sCXBZ, iSBJG, sJGSM);
 
 		OnRtnOrder(pMsg);
 	}
 	else if (NOTIFY_PUSH_INVALID == nType)
 	{
-		//·Ïµ¥
+		//åºŸå•
 		write_log(m_traderSink, LL_WARN, "[TraderHTS] Abandoned order confirm callback: WTH = {}, KHH = {},GDH = {},ZQDM = {}", nWTH, sKHH, sGDH, sZQDM);
 	}
 }
@@ -428,18 +428,18 @@ void TraderHTS::htsGetCallback(const char* pTime, const char* pMsg, int nType)
 void TraderHTS::OnRtnOrder(const char* pMsg)
 {
 	rapidjson::Document document;
-	if (document.Parse(pMsg).HasParseError())   //½âÎöÊ§°Ü
+	if (document.Parse(pMsg).HasParseError())   //è§£æå¤±è´¥
 	{
-		write_log(m_traderSink, LL_ERROR, "[TraderHTS]½âÎö¶©µ¥Î¯ÍĞÍÆËÍĞÅÏ¢Ê§°Ü.");
+		write_log(m_traderSink, LL_ERROR, "[TraderHTS]è§£æè®¢å•å§”æ‰˜æ¨é€ä¿¡æ¯å¤±è´¥.");
 		return;
 	}
 
 	std::string code = document["ZQDM"].GetString();
 	std::string exchg = exchgO2I(document["JYS"].GetString());
 
-	bool isCancel = document["CXBZ"].GetString()[0] == 'W';  // ³·µ¥±êÖ¾ÊÇ·ñÊÇW /// O±íÊ¾Î¯ÍĞ
+	bool isCancel = document["CXBZ"].GetString()[0] == 'W';  // æ’¤å•æ ‡å¿—æ˜¯å¦æ˜¯W /// Oè¡¨ç¤ºå§”æ‰˜
 
-	//È·ÈÏÍÆËÍ
+	//ç¡®è®¤æ¨é€
 	//std::cout << "Accept push report message: " << " code: " << code << "  exchg: " << "  wth: " << document["WTH"].GetInt64() << "  kfsbdbh: "  << document["KFSBDBH"].GetInt64() << "  wtjg: " << document["WTJG"].GetDouble() << "  wjsl: " << document["WTSL"].GetDouble() << std::endl;
 
 	WTSContractInfo* contract = m_bdMgr->getContract(code.c_str(), exchg.c_str());
@@ -450,7 +450,7 @@ void TraderHTS::OnRtnOrder(const char* pMsg)
 		if (!isCancel)
 		{
 			char buf[256] = { 0 };
-			strncpy(buf, std::to_string(document["WTH"].GetInt64()).c_str(), sizeof(buf));  /// ÕâÀïÊ¹ÓÃKFSBDBH£¬ Èç¹ûÓĞÎÊÌâÔò¸ÄÎªWTH
+			strncpy(buf, std::to_string(document["WTH"].GetInt64()).c_str(), sizeof(buf));  /// è¿™é‡Œä½¿ç”¨KFSBDBHï¼Œ å¦‚æœæœ‰é—®é¢˜åˆ™æ”¹ä¸ºWTH
 			ordInfo = (WTSOrderInfo*)m_mapLives->grab(buf);
 
 			if (ordInfo == NULL)
@@ -477,7 +477,7 @@ void TraderHTS::OnRtnOrder(const char* pMsg)
 				ordInfo->setOrderID(buf);
 
 				strncpy(buf, std::to_string(document["KFSBDBH"].GetInt64()).c_str(), 256);
-				ordInfo->setEntrustID(buf);  ///Ê¹ÓÃ¿ª·¢ÉÌ±¾µØ±àºÅ
+				ordInfo->setEntrustID(buf);  ///ä½¿ç”¨å¼€å‘å•†æœ¬åœ°ç¼–å·
 
 				std::string usertag = m_iniHelper.readString(ENTRUST_SECTION, ordInfo->getEntrustID(), "");
 				if (usertag.empty())
@@ -526,7 +526,7 @@ void TraderHTS::OnRtnOrder(const char* pMsg)
 		else
 		{
 			char buf[256] = { 0 };
-			strncpy(buf, std::to_string(document["CXWTH"].GetInt64()).c_str(), sizeof(buf));  // ĞèÒªÊ¹ÓÃ³·ÏúÎ¯ÍĞºÅ
+			strncpy(buf, std::to_string(document["CXWTH"].GetInt64()).c_str(), sizeof(buf));  // éœ€è¦ä½¿ç”¨æ’¤é”€å§”æ‰˜å·
 			ordInfo = (WTSOrderInfo*)m_mapLives->grab(buf);
 			if (ordInfo == NULL)
 				return;
@@ -539,7 +539,7 @@ void TraderHTS::OnRtnOrder(const char* pMsg)
 			strncpy(buf, document["JGSM"].GetString(), 256);
 			ordInfo->setStateMsg(buf);
 
-			//std::cout << "cxwth: " << document["CXWTH"].GetInt64() << " wth: " << document["WTH"].GetInt64() << " result_info: " << document["JGSM"].GetString() << std::endl;  // Ê¹ÓÃÎ¯ÍĞºÅ
+			//std::cout << "cxwth: " << document["CXWTH"].GetInt64() << " wth: " << document["WTH"].GetInt64() << " result_info: " << document["JGSM"].GetString() << std::endl;  // ä½¿ç”¨å§”æ‰˜å·
 		}
 
 		if (m_traderSink)
@@ -554,16 +554,16 @@ void TraderHTS::OnRtnTrade(const char* pMsg)
 	write_log(m_traderSink, LL_INFO, "[TraderHTS] Trade Report beginning ...");
 
 	rapidjson::Document document;
-	if (document.Parse(pMsg).HasParseError())   //½âÎöÊ§°Ü
+	if (document.Parse(pMsg).HasParseError())   //è§£æå¤±è´¥
 	{
-		write_log(m_traderSink, LL_ERROR, "[TraderHTS]½âÎö¶©µ¥³É½»»Ø±¨ĞÅÏ¢Ê§°Ü.");
+		write_log(m_traderSink, LL_ERROR, "[TraderHTS]è§£æè®¢å•æˆäº¤å›æŠ¥ä¿¡æ¯å¤±è´¥.");
 		return;
 	}
 
 	std::string code = document["ZQDM"].GetString();
 	std::string exchg = exchgO2I(document["JYS"].GetString());
 
-	//³É½»ÍÆËÍ
+	//æˆäº¤æ¨é€
 	std::string tradeid = document["CJBH"].GetString();
 
 	auto it = m_tradeids.find(tradeid);
@@ -572,7 +572,7 @@ void TraderHTS::OnRtnTrade(const char* pMsg)
 
 	m_tradeids.insert(tradeid);
 
-	//¹ıÂËµô³·µ¥»Ø±¨
+	//è¿‡æ»¤æ‰æ’¤å•å›æŠ¥
 	if (!decimal::eq(document["CDSL"].GetDouble(), 0.0))
 		return;
 
@@ -580,7 +580,7 @@ void TraderHTS::OnRtnTrade(const char* pMsg)
 
 	if (contract != NULL)
 	{
-		std::string orderid = std::to_string(document["WTH"].GetInt64());   // ÕâÀïÊ¹ÓÃÎ¯ÍĞºÅ×÷Îªorderid
+		std::string orderid = std::to_string(document["WTH"].GetInt64());   // è¿™é‡Œä½¿ç”¨å§”æ‰˜å·ä½œä¸ºorderid
 
 		WTSCommodityInfo* commInfo = contract->getCommInfo();
 		WTSTradeInfo *trdInfo = WTSTradeInfo::create(code.c_str(), exchg.c_str());
@@ -691,8 +691,8 @@ void TraderHTS::qryGDNo()
 
 		if (nRet < 0)
 		{
-			string msg = SECITPDK_GetLastError();              //²éÑ¯Ê§°Ü£¬»ñÈ¡´íÎóĞÅÏ¢
-			write_log(m_traderSink, LL_ERROR, "[TraderHTS]²éÑ¯¹É¶«ĞÅÏ¢Ê§°Ü£¬ ´íÎóĞÅÏ¢: {}({}) ", msg.c_str(), nRet);
+			string msg = SECITPDK_GetLastError();              //æŸ¥è¯¢å¤±è´¥ï¼Œè·å–é”™è¯¯ä¿¡æ¯
+			write_log(m_traderSink, LL_ERROR, "[TraderHTS]æŸ¥è¯¢è‚¡ä¸œä¿¡æ¯å¤±è´¥ï¼Œ é”™è¯¯ä¿¡æ¯: {}({}) ", msg.c_str(), nRet);
 			return;
 		}
 
@@ -725,9 +725,9 @@ void TraderHTS::doLogin()
 	m_strandIO->post([this]() {
 		if (m_bUseEX)
 		{
-			strcpy(cusreqinfo.AccountId, m_strUser.c_str());  // ¿Í»§ºÅ
-			strcpy(cusreqinfo.Password, m_strPass.c_str());  // ÃÜÂë
-			strcpy(cusreqinfo.DevelCode, m_strDevName.c_str());  // ¿ª·¢ÉÌĞÅÏ¢
+			strcpy(cusreqinfo.AccountId, m_strUser.c_str());  // å®¢æˆ·å·
+			strcpy(cusreqinfo.Password, m_strPass.c_str());  // å¯†ç 
+			strcpy(cusreqinfo.DevelCode, m_strDevName.c_str());  // å¼€å‘å•†ä¿¡æ¯
 		}
 
 		//std::cout << m_strKey << "  " << m_strUser << "  " << m_strPass << std::endl;
@@ -735,23 +735,23 @@ void TraderHTS::doLogin()
 		int64 nRet = 0;
 		if (m_bUseEX)
 		{
-			nRet = SECITPDK_TradeLoginEx(m_strKey.c_str(), cusreqinfo);     //µÇÂ¼
+			nRet = SECITPDK_TradeLoginEx(m_strKey.c_str(), cusreqinfo);     //ç™»å½•
 		}
 		else
 		{
-			nRet = SECITPDK_TradeLogin(m_strKey.c_str(), m_strUser.c_str(), m_strPass.c_str());     //µÇÂ¼
+			nRet = SECITPDK_TradeLogin(m_strKey.c_str(), m_strUser.c_str(), m_strPass.c_str());     //ç™»å½•
 		}
 
 		if (nRet <= 0)
 		{
 			m_wrapperState = WS_LOGINFAILED;
-			std::string msg = SECITPDK_GetLastError();  //µÇÂ¼Ê§°Ü£¬»ñÈ¡´íÎóĞÅÏ¢
+			std::string msg = SECITPDK_GetLastError();  //ç™»å½•å¤±è´¥ï¼Œè·å–é”™è¯¯ä¿¡æ¯
 			m_traderSink->onLoginResult(false, msg.c_str(), 0);
-			write_log(m_traderSink, LL_ERROR, "[TraderHTS]µÇÂ¼Ê§°Ü, ´íÎóĞÅÏ¢: {}({})", msg.c_str(), nRet);
+			write_log(m_traderSink, LL_ERROR, "[TraderHTS]ç™»å½•å¤±è´¥, é”™è¯¯ä¿¡æ¯: {}({})", msg.c_str(), nRet);
 		}
 		else
 		{
-			write_log(m_traderSink, LL_INFO, "[TraderHTS]µÇÂ¼³É¹¦£¬ Token: {}", nRet);
+			write_log(m_traderSink, LL_INFO, "[TraderHTS]ç™»å½•æˆåŠŸï¼Œ Token: {}", nRet);
 
 			std::stringstream ss;
 			ss << "./HTSData/local/";
@@ -764,13 +764,13 @@ void TraderHTS::doLogin()
 			uint32_t lastDate = m_iniHelper.readUInt("marker", "date", 0);
 			if (lastDate != m_lDate)
 			{
-				//½»Ò×ÈÕ²»Í¬£¬ÇåÀíµôÔ­À´µÄÊı¾İ
+				//äº¤æ˜“æ—¥ä¸åŒï¼Œæ¸…ç†æ‰åŸæ¥çš„æ•°æ®
 				m_iniHelper.removeSection(ENTRUST_SECTION);
 				m_iniHelper.removeSection(ORDER_SECTION);
 				m_iniHelper.writeUInt("marker", "date", m_lDate);
 				m_iniHelper.save();
 
-				write_log(m_traderSink, LL_INFO, "[TraderHTS][%s]½»Ò×ÈÕÒÑÇĞ»»[{} -> {}]£¬Çå¿Õ±¾µØÊı¾İ»º´æ¡­¡­", m_strUser.c_str(), lastDate, m_lDate);
+				write_log(m_traderSink, LL_INFO, "[TraderHTS][%s]äº¤æ˜“æ—¥å·²åˆ‡æ¢[{} -> {}]ï¼Œæ¸…ç©ºæœ¬åœ°æ•°æ®ç¼“å­˜â€¦â€¦", m_strUser.c_str(), lastDate, m_lDate);
 			}
 
 			m_wrapperState = WS_LOGINED;
@@ -778,7 +778,7 @@ void TraderHTS::doLogin()
 
 			//qryGDNo();
 
-			write_log(m_traderSink, LL_INFO, "[TraderHTS]ÕË»§Êı¾İ³õÊ¼»¯Íê³É...");
+			write_log(m_traderSink, LL_INFO, "[TraderHTS]è´¦æˆ·æ•°æ®åˆå§‹åŒ–å®Œæˆ...");
 			m_wrapperState = WS_ALLREADY;
 			m_traderSink->onLoginResult(true, "", m_lDate);
 		}
@@ -799,7 +799,7 @@ void TraderHTS::doLogin()
 int TraderHTS::logout()
 {
 	ScopeGuard OnExit(
-		[]() {SECITPDK_Exit(); }           //ÍË³ö£¬²»ÔÙÊ¹ÓÃITPDK½Ó¿ÚÊ±µ÷ÓÃ
+		[]() {SECITPDK_Exit(); }           //é€€å‡ºï¼Œä¸å†ä½¿ç”¨ITPDKæ¥å£æ—¶è°ƒç”¨
 	);
 
 	return 0;
@@ -860,7 +860,7 @@ int TraderHTS::orderInsert(WTSEntrust* entrust)
 			if (nRet <= 0)
 			{
 				std::string msg = SECITPDK_GetLastError();
-				write_log(m_traderSink, LL_ERROR, "[TraderHTS]Î¯ÍĞÖ¸Áî·¢ËÍÊ§°Ü: {}({})", msg.c_str(), nRet);
+				write_log(m_traderSink, LL_ERROR, "[TraderHTS]å§”æ‰˜æŒ‡ä»¤å‘é€å¤±è´¥: {}({})", msg.c_str(), nRet);
 
 				WTSError* err = WTSError::create(WEC_ORDERINSERT, msg.c_str());
 				m_traderSink->onRspEntrust(entrust, err);
@@ -869,7 +869,7 @@ int TraderHTS::orderInsert(WTSEntrust* entrust)
 			{
 				m_traderSink->onRspEntrust(entrust, NULL);
 
-				//ÕâÀïÊÖ¶¯·¢Ò»±Ê»Ø±¨£¬²»È»»áÓĞÎÊÌâµÄ
+				//è¿™é‡Œæ‰‹åŠ¨å‘ä¸€ç¬”å›æŠ¥ï¼Œä¸ç„¶ä¼šæœ‰é—®é¢˜çš„
 				WTSOrderInfo* ordInfo = WTSOrderInfo::create(entrust);
 				ordInfo->setOrderState(WOS_NotTraded_NotQueuing);
 				ordInfo->setVolTraded(0);
@@ -879,7 +879,7 @@ int TraderHTS::orderInsert(WTSEntrust* entrust)
 
 				ordInfo->setError(false);
 
-				ordInfo->setOrderID(std::to_string(nRet).c_str());  // ´Ë´¦ÊÇÎ¯ÍĞºÅ
+				ordInfo->setOrderID(std::to_string(nRet).c_str());  // æ­¤å¤„æ˜¯å§”æ‰˜å·
 
 				m_iniHelper.writeString(ORDER_SECTION, StrUtil::trim(ordInfo->getOrderID()).c_str(), ordInfo->getUserTag());
 				m_iniHelper.save();
@@ -906,14 +906,14 @@ int TraderHTS::orderAction(WTSEntrustAction* action)
 
 	action->retain();
 	m_strandIO->post([this, action]() {
-		//write_log(m_traderSink, LL_INFO, "[TraderHTS]µ÷ÓÃ³·µ¥½Ó¿Ú");
+		//write_log(m_traderSink, LL_INFO, "[TraderHTS]è°ƒç”¨æ’¤å•æ¥å£");
 
 		bool isSH = strcmp(action->getExchg(), "SSE") == 0;
 		int64 orderID = atol(action->getOrderID());
 		std::string exchg = isSH ? "SH" : "SZ";
 		int64 nRet = 0;
 
-		/// Ê¹ÓÃ¿ª·¢ÉÌ±¾µØ±àºÅ×÷Îª³·µ¥ÒÀ¾İ
+		/// ä½¿ç”¨å¼€å‘å•†æœ¬åœ°ç¼–å·ä½œä¸ºæ’¤å•ä¾æ®
 		if (m_bASync)
 		{
 			if (m_bUseEX)
@@ -939,15 +939,15 @@ int TraderHTS::orderAction(WTSEntrustAction* action)
 		;
 		if (nRet <= 0)
 		{
-			string msg = SECITPDK_GetLastError();          //ÏÂµ¥Ê§°Ü£¬»ñÈ¡´íÎóĞÅÏ¢
-			write_log(m_traderSink, LL_ERROR, "[TraderHTS]³·µ¥Ö¸Áî·¢ËÍÊ§°Ü: {}({})", msg.c_str(), nRet);
+			string msg = SECITPDK_GetLastError();          //ä¸‹å•å¤±è´¥ï¼Œè·å–é”™è¯¯ä¿¡æ¯
+			write_log(m_traderSink, LL_ERROR, "[TraderHTS]æ’¤å•æŒ‡ä»¤å‘é€å¤±è´¥: {}({})", msg.c_str(), nRet);
 
 			WTSError* err = WTSError::create(WEC_ORDERCANCEL, msg.c_str());
 			m_traderSink->onTraderError(err);
 		}
 		else
 		{
-			write_log(m_traderSink, LL_INFO, "[TraderHTS] SECITPDK_OrderWithdraw ³·µ¥³É¹¦£¬ Î¯ÍĞºÅWth = {}", nRet);
+			write_log(m_traderSink, LL_INFO, "[TraderHTS] SECITPDK_OrderWithdraw æ’¤å•æˆåŠŸï¼Œ å§”æ‰˜å·Wth = {}", nRet);
 		}
 
 		action->release();
@@ -977,12 +977,12 @@ int TraderHTS::queryAccount()
 			nRet = (long)SECITPDK_QueryFundInfo(m_strUser.c_str(), argFund);
 		}
 
-		if (nRet < 0)  // ²éÑ¯Ê§°Ü
+		if (nRet < 0)  // æŸ¥è¯¢å¤±è´¥
 		{
 			std::string msg = SECITPDK_GetLastError();
-			write_log(m_traderSink, LL_ERROR, "[TraderHTS]¿ÉÓÃ×Ê½ğ²éÑ¯Ê§°Ü: {}", msg.c_str());
+			write_log(m_traderSink, LL_ERROR, "[TraderHTS]å¯ç”¨èµ„é‡‘æŸ¥è¯¢å¤±è´¥: {}", msg.c_str());
 		}
-		else  // ²éÑ¯³É¹¦
+		else  // æŸ¥è¯¢æˆåŠŸ
 		{
 			WTSArray* ayFunds = WTSArray::create();
 
@@ -992,12 +992,12 @@ int TraderHTS::queryAccount()
 					//itr.AccountId, itr.FundAvl, itr.TotalAsset, itr.MarketValue, itr.CurrentBalance, itr.UnclearProfit, itr.DiluteUnclearProfit, itr.UncomeBalance);
 
 				WTSAccountInfo* fundInfo = WTSAccountInfo::create();
-				fundInfo->setAvailable(itr.FundAvl);   /// ¿ÉÓÃ×Ê½ğ
-				fundInfo->setBalance(itr.CurrentBalance);  /// µ±ÈÕÓà¶î
-				fundInfo->setDynProfit(itr.UnclearProfit);  ///¸¡¶¯Ó¯¿÷
-				fundInfo->setCloseProfit(itr.DateProfit);  /// ±¾ÈÕÓ¯¿÷
-				fundInfo->setCurrency(itr.MoneyType);  /// ±ÒÖÖ
-				fundInfo->setPreBalance(itr.LastBalance);  /// ÉÏÈÕÓà¶î
+				fundInfo->setAvailable(itr.FundAvl);   /// å¯ç”¨èµ„é‡‘
+				fundInfo->setBalance(itr.CurrentBalance);  /// å½“æ—¥ä½™é¢
+				fundInfo->setDynProfit(itr.UnclearProfit);  ///æµ®åŠ¨ç›ˆäº
+				fundInfo->setCloseProfit(itr.DateProfit);  /// æœ¬æ—¥ç›ˆäº
+				fundInfo->setCurrency(itr.MoneyType);  /// å¸ç§
+				fundInfo->setPreBalance(itr.LastBalance);  /// ä¸Šæ—¥ä½™é¢
 
 				ayFunds->append(fundInfo, false);
 			}
@@ -1034,36 +1034,36 @@ int TraderHTS::queryPositions()
 		}
 		else
 		{
-			nRet = SECITPDK_QueryPositions(m_strUser.c_str(), SORT_TYPE_AES, nRows, 0, "", "", "", 1, argHolding);  /// execflag±ØĞë´óÓÚ0
+			nRet = SECITPDK_QueryPositions(m_strUser.c_str(), SORT_TYPE_AES, nRows, 0, "", "", "", 1, argHolding);  /// execflagå¿…é¡»å¤§äº0
 		}
 
 		if (nRet < 0)
 		{
 			std::string msg = SECITPDK_GetLastError();
-			write_log(m_traderSink, LL_ERROR, "[TraderHTS]ÓÃ»§³Ö²Ö²éÑ¯Ê§°Ü: {}({})", msg.c_str(), nRet);
+			write_log(m_traderSink, LL_ERROR, "[TraderHTS]ç”¨æˆ·æŒä»“æŸ¥è¯¢å¤±è´¥: {}({})", msg.c_str(), nRet);
 		}
 		else
 		{
-			// ½«½á¹û±£´æµ½Ò»¸ö×ÜµÄvectorÀï£¬±ãÓÚ·ÖÒ³
+			// å°†ç»“æœä¿å­˜åˆ°ä¸€ä¸ªæ€»çš„vectoré‡Œï¼Œä¾¿äºåˆ†é¡µ
 			std::vector<ITPDK_ZQGL> argTotalHolding(argHolding);
 			int tmp = 200;
 
-			// Èç¹û½á¹ûÌøÊıÊÇ200£¬Ôò·ÖÒ³²éÑ¯
+			// å¦‚æœç»“æœè·³æ•°æ˜¯200ï¼Œåˆ™åˆ†é¡µæŸ¥è¯¢
 			while (nRet >= nRows)
 			{
 				argHolding.clear();
 
-				// Ñ­»·²éÑ¯µÄÊ±ºònBrowindex+1»áÌø¹ıÒ»Ìõ
+				// å¾ªç¯æŸ¥è¯¢çš„æ—¶å€™nBrowindex+1ä¼šè·³è¿‡ä¸€æ¡
 				if (m_bUseEX)
 				{
 					nRet = (long)SECITPDK_QueryPositionsEx(cusreqinfo, SORT_TYPE_AES, nRows, tmp, "", "", "", 1, argHolding);
 				}
 				else
 				{
-					nRet = SECITPDK_QueryPositions(m_strUser.c_str(), SORT_TYPE_AES, nRows, tmp, "", "", "", 1, argHolding);  /// execflag±ØĞë´óÓÚ0
+					nRet = SECITPDK_QueryPositions(m_strUser.c_str(), SORT_TYPE_AES, nRows, tmp, "", "", "", 1, argHolding);  /// execflagå¿…é¡»å¤§äº0
 				}
 
-				// ½«µ¥Ò³²éÑ¯½á¹û²åÈëµ½×ÜµÄ½á¹ûÀï
+				// å°†å•é¡µæŸ¥è¯¢ç»“æœæ’å…¥åˆ°æ€»çš„ç»“æœé‡Œ
 				if (nRet >= 0)
 					argTotalHolding.insert(argTotalHolding.end(), argHolding.begin(), argHolding.end());
 
@@ -1072,7 +1072,7 @@ int TraderHTS::queryPositions()
 
 			WTSArray* ayPositions = WTSArray::create();
 
-			write_log(m_traderSink, LL_INFO, "[TraderHTS]ÓÃ»§³Ö²Ö²éÑ¯³É¹¦£¬·µ»Ø½á¹û£º{}", nRet);
+			write_log(m_traderSink, LL_INFO, "[TraderHTS]ç”¨æˆ·æŒä»“æŸ¥è¯¢æˆåŠŸï¼Œè¿”å›ç»“æœï¼š{}", nRet);
 
 			for (auto& itr : argTotalHolding)
 			{
@@ -1089,19 +1089,19 @@ int TraderHTS::queryPositions()
 					WTSPositionItem* pInfo = WTSPositionItem::create(code, commInfo->getCurrency(), exchg);
 					pInfo->setDirection(WDT_LONG);
 
-					double prevol = itr.PreQty;	//×òÌìµÄ³Ö²Ö£¬½ñÌìÊÇ²»»á±äµÄ
-					double newvol = itr.CurrentQty;	//½ñÌìµÄ³Ö²Ö£¬Õâ¸öÊÇÕæÊµ³Ö²Ö
-					double openvol = itr.RealBuyQty;	//½ñÈÕÂòÈëÊıÁ¿
-					double closevol = itr.RealSellQty;	//½ñÈÕÂô³öÊıÁ¿
+					double prevol = itr.PreQty;	//æ˜¨å¤©çš„æŒä»“ï¼Œä»Šå¤©æ˜¯ä¸ä¼šå˜çš„
+					double newvol = itr.CurrentQty;	//ä»Šå¤©çš„æŒä»“ï¼Œè¿™ä¸ªæ˜¯çœŸå®æŒä»“
+					double openvol = itr.RealBuyQty;	//ä»Šæ—¥ä¹°å…¥æ•°é‡
+					double closevol = itr.RealSellQty;	//ä»Šæ—¥å–å‡ºæ•°é‡
 
 					pInfo->setPrePosition(prevol - closevol);
 					pInfo->setNewPosition(openvol);
 					pInfo->setAvailPrePos(pInfo->getPrePosition());
 
-					pInfo->setAvgPrice(itr.CostPrice);  /// ³Ö²Ö¾ù¼Û
-					pInfo->setDynProfit(itr.UnclearProfit);  /// ¸¡¶¯Ó¯¿÷
+					pInfo->setAvgPrice(itr.CostPrice);  /// æŒä»“å‡ä»·
+					pInfo->setDynProfit(itr.UnclearProfit);  /// æµ®åŠ¨ç›ˆäº
 
-					double cost = itr.CostBalance;  /// ³Ö²Ö³É±¾
+					double cost = itr.CostBalance;  /// æŒä»“æˆæœ¬
 					pInfo->setMargin(cost);
 					pInfo->setPositionCost(cost);
 					if (pInfo->getTotalPosition() > 0)
@@ -1134,7 +1134,7 @@ int TraderHTS::queryOrders()
 	m_queQuery.push([this]() {
 		std::vector<ITPDK_DRWT> argOrders;
 		const int nRows = 200;
-		argOrders.reserve(nRows);  //ĞèÒªÔ¤·ÖÅä×ã¹»¿Õ¼ä£¬²éÑ¯½á¹û×î´ó·µ»Ø200Ìõ£¬¸ü¶àµÄ»°ĞèÒª·­Ò³²éÑ¯
+		argOrders.reserve(nRows);  //éœ€è¦é¢„åˆ†é…è¶³å¤Ÿç©ºé—´ï¼ŒæŸ¥è¯¢ç»“æœæœ€å¤§è¿”å›200æ¡ï¼Œæ›´å¤šçš„è¯éœ€è¦ç¿»é¡µæŸ¥è¯¢
 
 		int64 nRet = 0;
 		if (m_bUseEX)
@@ -1146,23 +1146,23 @@ int TraderHTS::queryOrders()
 			nRet = (long)SECITPDK_QueryOrders(m_strUser.c_str(), 0, SORT_TYPE_AES, nRows, 0, "", "", 0, argOrders);
 		}
 
-		if (nRet < 0)  /// ²éÑ¯Ê§°Ü
+		if (nRet < 0)  /// æŸ¥è¯¢å¤±è´¥
 		{
 			std::string msg = SECITPDK_GetLastError();
-			write_log(m_traderSink, LL_ERROR, "[TraderHTS]ÓÃ»§¶©µ¥²éÑ¯Ê§°Ü: {}({})", msg.c_str(), nRet);
+			write_log(m_traderSink, LL_ERROR, "[TraderHTS]ç”¨æˆ·è®¢å•æŸ¥è¯¢å¤±è´¥: {}({})", msg.c_str(), nRet);
 		}
 		else
 		{
-			// ½«½á¹û±£´æµ½Ò»¸ö×ÜµÄvectorÀï£¬±ãÓÚ·ÖÒ³
+			// å°†ç»“æœä¿å­˜åˆ°ä¸€ä¸ªæ€»çš„vectoré‡Œï¼Œä¾¿äºåˆ†é¡µ
 			std::vector<ITPDK_DRWT> argTotalOrders(argOrders);
 			int tmp = nRows;
 
-			// Èç¹û½á¹ûÌøÊıÊÇ200£¬Ôò·ÖÒ³²éÑ¯
+			// å¦‚æœç»“æœè·³æ•°æ˜¯200ï¼Œåˆ™åˆ†é¡µæŸ¥è¯¢
 			while (nRet >= nRows)
 			{
 				argOrders.clear();
 
-				// Ñ­»·²éÑ¯µÄÊ±ºònBrowindex+1»áÌø¹ıÒ»Ìõ
+				// å¾ªç¯æŸ¥è¯¢çš„æ—¶å€™nBrowindex+1ä¼šè·³è¿‡ä¸€æ¡
 				if (m_bUseEX)
 				{
 					nRet = (long)SECITPDK_QueryOrdersEx(cusreqinfo, 0, SORT_TYPE_AES, nRows, tmp, "", "", 0, argOrders);
@@ -1172,7 +1172,7 @@ int TraderHTS::queryOrders()
 					nRet = (long)SECITPDK_QueryOrders(m_strUser.c_str(), 0, SORT_TYPE_AES, nRows, tmp, "", "", 0, argOrders);
 				}
 
-				// ½«µ¥Ò³²éÑ¯½á¹û²åÈëµ½×ÜµÄ½á¹ûÀï
+				// å°†å•é¡µæŸ¥è¯¢ç»“æœæ’å…¥åˆ°æ€»çš„ç»“æœé‡Œ
 				if (nRet >= 0)
 					argTotalOrders.insert(argTotalOrders.end(), argOrders.begin(), argOrders.end());
 
@@ -1183,7 +1183,7 @@ int TraderHTS::queryOrders()
 
 			for (auto& itr : argTotalOrders)
 			{
-				/*printf("ÕË»§: %s, Î¯ÍĞºÅ: %ld, ¿ª·¢ÉÌ±¾µØ±àºÅ: %ld, Éê±¨Î¯ÍĞºÅ: %s, ´úÂë: %s, ½»Ò×Ëù: %s, ¼Û¸ñ: %f, ÊıÁ¿: %ld, ²éÑ¯Ò³Âë: %ld \n",
+				/*printf("è´¦æˆ·: %s, å§”æ‰˜å·: %ld, å¼€å‘å•†æœ¬åœ°ç¼–å·: %ld, ç”³æŠ¥å§”æ‰˜å·: %s, ä»£ç : %s, äº¤æ˜“æ‰€: %s, ä»·æ ¼: %f, æ•°é‡: %ld, æŸ¥è¯¢é¡µç : %ld \n",
 					itr.AccountId, (long)itr.OrderId, (long)itr.KFSBDBH, itr.SBWTH, itr.StockCode, itr.Market, itr.OrderPrice, (long)itr.OrderQty, (long)itr.BrowIndex);*/
 
 				const char* exchg = exchgO2I(itr.Market);
@@ -1209,9 +1209,9 @@ int TraderHTS::queryOrders()
 					ordInfo->setVolTraded(traded);
 					ordInfo->setVolLeft(total - canceled - traded);
 
-					ordInfo->setOrderDate((uint32_t)itr.EntrustDate);  /// Î¯ÍĞÈÕÆÚ
+					ordInfo->setOrderDate((uint32_t)itr.EntrustDate);  /// å§”æ‰˜æ—¥æœŸ
 
-					uint32_t uTime = strToTime(itr.EntrustTime);   /// Î¯ÍĞÊ±¼ä
+					uint32_t uTime = strToTime(itr.EntrustTime);   /// å§”æ‰˜æ—¶é—´
 					ordInfo->setOrderTime(TimeUtils::makeTime(ordInfo->getOrderDate(), uTime));
 
 					int state = itr.OrderStatus;
@@ -1219,11 +1219,11 @@ int TraderHTS::queryOrders()
 					if (state == 3)
 						ordInfo->setError(true);
 
-					ordInfo->setEntrustID(std::to_string(itr.KFSBDBH).c_str());  /// ÕâÀïÊ¹ÓÃ¿ª·¢ÉÌ±àºÅ 
+					ordInfo->setEntrustID(std::to_string(itr.KFSBDBH).c_str());  /// è¿™é‡Œä½¿ç”¨å¼€å‘å•†ç¼–å· 
 
-					ordInfo->setOrderID(std::to_string(itr.OrderId).c_str());  /// ÕâÀïÊ¹ÓÃÎ¯ÍĞºÅ
+					ordInfo->setOrderID(std::to_string(itr.OrderId).c_str());  /// è¿™é‡Œä½¿ç”¨å§”æ‰˜å·
 
-					ordInfo->setStateMsg(itr.ResultInfo);  /// ½á¹ûËµÃ÷
+					ordInfo->setStateMsg(itr.ResultInfo);  /// ç»“æœè¯´æ˜
 
 					std::string usertag = m_iniHelper.readString(ENTRUST_SECTION, ordInfo->getEntrustID(), "");
 					if (usertag.empty())
@@ -1277,7 +1277,7 @@ int TraderHTS::queryTrades()
 	m_queQuery.push([this]() {
 		std::vector<ITPDK_SSCJ> argTrades;
 		const size_t nRows = 200;
-		argTrades.reserve(nRows);  //ĞèÒªÔ¤·ÖÅä×ã¹»¿Õ¼ä£¬²éÑ¯½á¹û×î´ó·µ»Ø200Ìõ
+		argTrades.reserve(nRows);  //éœ€è¦é¢„åˆ†é…è¶³å¤Ÿç©ºé—´ï¼ŒæŸ¥è¯¢ç»“æœæœ€å¤§è¿”å›200æ¡
 
 		int64 nRet = 0;
 		if (m_bUseEX)
@@ -1292,15 +1292,15 @@ int TraderHTS::queryTrades()
 		if (nRet < 0)
 		{
 			std::string msg = SECITPDK_GetLastError();
-			write_log(m_traderSink, LL_ERROR, "[TraderHTS]ÓÃ»§³É½»²éÑ¯Ê§°Ü: {}({})", msg.c_str(), nRet);
+			write_log(m_traderSink, LL_ERROR, "[TraderHTS]ç”¨æˆ·æˆäº¤æŸ¥è¯¢å¤±è´¥: {}({})", msg.c_str(), nRet);
 		}
 		else
 		{
-			// ½«½á¹û±£´æµ½Ò»¸ö×ÜµÄvectorÀï£¬±ãÓÚ·ÖÒ³
+			// å°†ç»“æœä¿å­˜åˆ°ä¸€ä¸ªæ€»çš„vectoré‡Œï¼Œä¾¿äºåˆ†é¡µ
 			std::vector<ITPDK_SSCJ> argTotalTrades(argTrades);
 			int tmp = 200;
 
-			// Èç¹û½á¹ûÌõÊıÊÇ200£¬Ôò·ÖÒ³²éÑ¯
+			// å¦‚æœç»“æœæ¡æ•°æ˜¯200ï¼Œåˆ™åˆ†é¡µæŸ¥è¯¢
 			while (nRet >= 200)
 			{
 				argTrades.clear();
@@ -1314,7 +1314,7 @@ int TraderHTS::queryTrades()
 					nRet = (long)SECITPDK_QueryMatchs(m_strUser.c_str(), 0, SORT_TYPE_AES, nRows, tmp, "", "", 0, argTrades);
 				}
 
-				// ½«µ¥Ò³²éÑ¯½á¹û²åÈëµ½×ÜµÄ½á¹ûÀï
+				// å°†å•é¡µæŸ¥è¯¢ç»“æœæ’å…¥åˆ°æ€»çš„ç»“æœé‡Œ
 				if (nRet >= 0)
 					argTotalTrades.insert(argTotalTrades.end(), argTrades.begin(), argTrades.end());
 
@@ -1326,7 +1326,7 @@ int TraderHTS::queryTrades()
 			int index = 0;
 			for (auto& itr : argTotalTrades)
 			{
-				//printf("Î¯ÍĞºÅ: %ld, ´úÂë: %s ½»Ò×Ëù: %s, ²éÑ¯Ò³Âë: %ld, ³É½»¼Û¸ñ: %f, ³É½»ÊıÁ¿: %d\n",
+				//printf("å§”æ‰˜å·: %ld, ä»£ç : %s äº¤æ˜“æ‰€: %s, æŸ¥è¯¢é¡µç : %ld, æˆäº¤ä»·æ ¼: %f, æˆäº¤æ•°é‡: %d\n",
 				//	(long)itr.OrderId, itr.StockCode, itr.Market, (long)itr.BrowIndex, itr.MatchPrice, (long)itr.MatchQty);
 				
 				const char* exchg = exchgO2I(itr.Market);
@@ -1339,15 +1339,15 @@ int TraderHTS::queryTrades()
 					WTSTradeInfo *trdInfo = WTSTradeInfo::create(code, exchg);
 					trdInfo->setPrice(itr.MatchPrice);
 					trdInfo->setVolume(itr.MatchQty);
-					trdInfo->setTradeID(itr.MatchSerialNo);  // ÕâÀïÊ¹ÓÃ³É½»±àºÅ
+					trdInfo->setTradeID(itr.MatchSerialNo);  // è¿™é‡Œä½¿ç”¨æˆäº¤ç¼–å·
 
 					trdInfo->setTradeDate(m_lDate);
 					trdInfo->setTradeTime(strToTime(itr.MatchTime));
 
-					// #################### ĞèÒªµ÷Õû###############
+					// #################### éœ€è¦è°ƒæ•´###############
 					trdInfo->setDirection(WDT_LONG);
 					trdInfo->setOffsetType(itr.EntrustType == 1 ? WOT_OPEN : WOT_CLOSE);
-					trdInfo->setRefOrder(std::to_string(itr.KFSBDBH).c_str());  // ÕâÀïÊ¹ÓÃ¿ª·¢ÉÌ±àºÅ
+					trdInfo->setRefOrder(std::to_string(itr.KFSBDBH).c_str());  // è¿™é‡Œä½¿ç”¨å¼€å‘å•†ç¼–å·
 					trdInfo->setTradeType(WTT_Common);
 
 					trdInfo->setAmount(itr.MatchAmt);
@@ -1383,7 +1383,7 @@ void TraderHTS::triggerQuery()
 		if (m_queQuery.empty() || m_bInQuery)
 			return;
 
-		//¶¥µã½Ó¿ÚºÃÏñÃ»ÓĞÁ÷Á¿¿ØÖÆ£¬ÏÈÈ¥µô
+		//é¡¶ç‚¹æ¥å£å¥½åƒæ²¡æœ‰æµé‡æ§åˆ¶ï¼Œå…ˆå»æ‰
 		//uint64_t curTime = TimeUtils::getLocalTimeNow();
 		//if (curTime - m_lastQryTime < 1000)
 		//{
@@ -1421,19 +1421,19 @@ bool HTSCallMgr::init(WTSVariant* params)
 {
 	if (params)
 	{
-		SECITPDK_SetLogPath("./");            //ÈÕÖ¾Ä¿Â¼
-		SECITPDK_SetProfilePath("./");           //ÅäÖÃÎÄ¼şÄ¿Â¼
+		SECITPDK_SetLogPath("./");            //æ—¥å¿—ç›®å½•
+		SECITPDK_SetProfilePath("./");           //é…ç½®æ–‡ä»¶ç›®å½•
 
 		bool b_inited = false;
-		b_inited = SECITPDK_Init(HEADER_VER);  //³õÊ¼»¯£¬ÔÚËùÓĞ½Ó¿ÚÊ¹ÓÃÇ°µ÷ÓÃ£¬³ıÂ·¾¶ÉèÖÃ½Ó¿ÚÍâ
+		b_inited = SECITPDK_Init(HEADER_VER);  //åˆå§‹åŒ–ï¼Œåœ¨æ‰€æœ‰æ¥å£ä½¿ç”¨å‰è°ƒç”¨ï¼Œé™¤è·¯å¾„è®¾ç½®æ¥å£å¤–
 
 		if (b_inited)
 		{
-			SECITPDK_SetWriteLog(true);  // ´òÓ¡ÈÕÖ¾
+			SECITPDK_SetWriteLog(true);  // æ‰“å°æ—¥å¿—
 			SECITPDK_SetFixWriteLog(true);
 
-			SECITPDK_SetWTFS(params->getCString("order_way"));               //ÉèÖÃÎ¯ÍĞ·½Ê½
-			SECITPDK_SetNode(params->getCString("node"));               //ÉèÖÃÕ¾µãĞÅÏ¢
+			SECITPDK_SetWTFS(params->getCString("order_way"));               //è®¾ç½®å§”æ‰˜æ–¹å¼
+			SECITPDK_SetNode(params->getCString("node"));               //è®¾ç½®ç«™ç‚¹ä¿¡æ¯
 
 			char sVer[64] = { 0 };
 			SECITPDK_GetVersion(sVer);
@@ -1451,7 +1451,7 @@ void HTSCallMgr::setHTSCallPtr(std::string khh, TraderHTS *pTrader)
 	if (itpdkCallMap.find(khh) == itpdkCallMap.end())
 	{
 		//std::cout << "Current key not existed, insert it to address map." << std::endl;
-		setCallbackMsgFunc();  // ¶©ÔÄĞÅÏ¢
+		setCallbackMsgFunc();  // è®¢é˜…ä¿¡æ¯
 
 		itpdkCallMap.insert(std::pair<string, TraderHTS *>(khh, pTrader));
 	}
@@ -1459,7 +1459,7 @@ void HTSCallMgr::setHTSCallPtr(std::string khh, TraderHTS *pTrader)
 
 void HTSCallMgr::callbackMsgFunc(const char* pTime, const char* pMsg, int nType)
 {
-	// ÏÈ½øĞĞÊı¾İ½âÎö
+	// å…ˆè¿›è¡Œæ•°æ®è§£æ
 	//std::cout << "HTSCallMgr callbackMsgFunc begins ..." << std::endl;
 
 	rapidjson::Document document;
@@ -1472,7 +1472,7 @@ void HTSCallMgr::callbackMsgFunc(const char* pTime, const char* pMsg, int nType)
 	//long nWTH = (long)document["WTH"].GetInt64();
 	const char* sKHH = document["KHH"].GetString();
 
-	//±éÀúitpdkCallMap
+	//éå†itpdkCallMap
 	for (auto iter = itpdkCallMap.begin(); iter != itpdkCallMap.end(); ++iter) {
 		string sTmp = iter->first;
 		if (strcmp(sTmp.c_str(), sKHH) == 0) {
@@ -1480,7 +1480,7 @@ void HTSCallMgr::callbackMsgFunc(const char* pTime, const char* pMsg, int nType)
 			if (pTrader != NULL) {
 				//std::cout << "HTSCallManage get report message khh: " << iter->first << "  " << iter->second << std::endl;
 
-				//´Ë´¦×îºÃÊÇÉÏÃæµÄ½âÎöÍêµÄÊı¾İ·â×°³ÉÒ»¸ö½á¹¹ÌåºóÔÙ´«ÈëHTSCallÀàÊµÀıÖĞ£¬¾ÍÎŞĞè¶à´Î½âÎö£¬ÀË·Ñ×ÊÔ´£¬´Ë´¦Ö»ÊÇ¼òµ¥Ê¾Àı£¬ËùÒÔÃ»ÓĞ¶¨Òå»Ø±¨½á¹¹Ìå
+				//æ­¤å¤„æœ€å¥½æ˜¯ä¸Šé¢çš„è§£æå®Œçš„æ•°æ®å°è£…æˆä¸€ä¸ªç»“æ„ä½“åå†ä¼ å…¥HTSCallç±»å®ä¾‹ä¸­ï¼Œå°±æ— éœ€å¤šæ¬¡è§£æï¼Œæµªè´¹èµ„æºï¼Œæ­¤å¤„åªæ˜¯ç®€å•ç¤ºä¾‹ï¼Œæ‰€ä»¥æ²¡æœ‰å®šä¹‰å›æŠ¥ç»“æ„ä½“
 				pTrader->htsGetCallback(pTime, pMsg, nType);
 			}
 		}
@@ -1491,28 +1491,28 @@ void HTSCallMgr::callbackConnFunc(const char* pKhh, const char* pConnKey, int nE
 {
 	string sType;
 	if (NOTIFY_CONNEVENT_MGR == nType)
-		sType = "¹ÜÀíÁ¬½Ó";
+		sType = "ç®¡ç†è¿æ¥";
 	if (NOTIFY_CONNEVENT_TRADE == nType)
-		sType = "½»Ò×Á¬½Ó";
+		sType = "äº¤æ˜“è¿æ¥";
 	if (NOTIFY_CONNEVENT_QUERY == nType)
-		sType = "²éÑ¯Á¬½Ó";
+		sType = "æŸ¥è¯¢è¿æ¥";
 	if (NOTIFY_CONNEVENT_SUBS == nType)
-		sType = "¶©ÔÄÁ¬½Ó";
+		sType = "è®¢é˜…è¿æ¥";
 
-	printf("khh=%s, event=%s, type=%s\n", pKhh, (nEvent == 0 ? "»Ö¸´" : "¶Ï¿ª"), sType.c_str());
+	printf("khh=%s, event=%s, type=%s\n", pKhh, (nEvent == 0 ? "æ¢å¤" : "æ–­å¼€"), sType.c_str());
 
 	if (nEvent != 0)
 	{
-		// ¶Ï¿ªÖØÁ¬
-		//±éÀúitpdkCallMap
+		// æ–­å¼€é‡è¿
+		//éå†itpdkCallMap
 		for (auto iter = itpdkCallMap.begin(); iter != itpdkCallMap.end(); ++iter) {
 			string sTmp = iter->first;
 			if (strcmp(sTmp.c_str(), pKhh) == 0) {
 				TraderHTS* pTrader = iter->second;
 				if (pTrader != NULL) {
-					printf("[TraderHTS] ÕıÔÚ³¢ÊÔ»Ö¸´Á¬½Ó, ¿Í»§ºÅ khh: %s\n", iter->first);
+					printf("[TraderHTS] æ­£åœ¨å°è¯•æ¢å¤è¿æ¥, å®¢æˆ·å· khh: %s\n", iter->first);
 
-					//´Ë´¦×îºÃÊÇÉÏÃæµÄ½âÎöÍêµÄÊı¾İ·â×°³ÉÒ»¸ö½á¹¹ÌåºóÔÙ´«ÈëHTSCallÀàÊµÀıÖĞ£¬¾ÍÎŞĞè¶à´Î½âÎö£¬ÀË·Ñ×ÊÔ´£¬´Ë´¦Ö»ÊÇ¼òµ¥Ê¾Àı£¬ËùÒÔÃ»ÓĞ¶¨Òå»Ø±¨½á¹¹Ìå
+					//æ­¤å¤„æœ€å¥½æ˜¯ä¸Šé¢çš„è§£æå®Œçš„æ•°æ®å°è£…æˆä¸€ä¸ªç»“æ„ä½“åå†ä¼ å…¥HTSCallç±»å®ä¾‹ä¸­ï¼Œå°±æ— éœ€å¤šæ¬¡è§£æï¼Œæµªè´¹èµ„æºï¼Œæ­¤å¤„åªæ˜¯ç®€å•ç¤ºä¾‹ï¼Œæ‰€ä»¥æ²¡æœ‰å®šä¹‰å›æŠ¥ç»“æ„ä½“
 					pTrader->connect();
 				}
 			}
@@ -1522,8 +1522,8 @@ void HTSCallMgr::callbackConnFunc(const char* pKhh, const char* pConnKey, int nE
 
 void HTSCallMgr::setCallbackMsgFunc()
 {
-	//ÉèÖÃ»Øµ÷º¯Êı
-	SECITPDK_SetConnEventCallback(&HTSCallMgr::callbackConnFunc);  // ÉèÖÃÁ¬½Ó»Øµ÷
-	SECITPDK_SetMsgCallback(&HTSCallMgr::callbackMsgFunc);  // ÉèÖÃĞÅÏ¢ÍÆËÍ»Øµ÷
-	SECITPDK_SetFuncCallback(&HTSCallMgr::callbackMsgFunc);  // ÉèÖÃÒì²½ÍÆËÍ»Øµ÷
+	//è®¾ç½®å›è°ƒå‡½æ•°
+	SECITPDK_SetConnEventCallback(&HTSCallMgr::callbackConnFunc);  // è®¾ç½®è¿æ¥å›è°ƒ
+	SECITPDK_SetMsgCallback(&HTSCallMgr::callbackMsgFunc);  // è®¾ç½®ä¿¡æ¯æ¨é€å›è°ƒ
+	SECITPDK_SetFuncCallback(&HTSCallMgr::callbackMsgFunc);  // è®¾ç½®å¼‚æ­¥æ¨é€å›è°ƒ
 }

@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file WtCtaEngine.cpp
  * \project	WonderTrader
  *
@@ -31,10 +31,6 @@
 #include <rapidjson/prettywriter.h>
 namespace rj = rapidjson;
 
-#include <boost/asio.hpp>
-
-boost::asio::io_service g_asyncIO;
-
 WtCtaEngine::WtCtaEngine()
 	: _tm_ticker(NULL)
 {
@@ -54,13 +50,13 @@ WtCtaEngine::~WtCtaEngine()
 		_cfg->release();
 }
 
-void WtCtaEngine::run(bool bAsync /* = false */)
+void WtCtaEngine::run()
 {
 	_tm_ticker = new WtCtaRtTicker(this);
 	WTSVariant* cfgProd = _cfg->get("product");
 	_tm_ticker->init(_data_mgr->reader(), cfgProd->getCString("session"));
 
-	//Æô¶¯Ö®Ç°,ÏÈ°ÑÔËÐÐÖÐµÄ²ßÂÔÂäµØ
+	//å¯åŠ¨ä¹‹å‰,å…ˆæŠŠè¿è¡Œä¸­çš„ç­–ç•¥è½åœ°
 	{
 		rj::Document root(rj::kObjectType);
 		rj::Document::AllocatorType &allocator = root.GetAllocator();
@@ -107,11 +103,6 @@ void WtCtaEngine::run(bool bAsync /* = false */)
 	if (_risk_mon)
 		_risk_mon->self()->run();
 
-	if (!bAsync)
-	{
-		boost::asio::io_service::work work(g_asyncIO);
-		g_asyncIO.run();
-	}
 }
 
 void WtCtaEngine::init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtDtMgr* dataMgr, IHotMgr* hotMgr, EventNotifier* notifier /* = NULL */)
@@ -165,7 +156,7 @@ void WtCtaEngine::on_init()
 			{
 				if (!decimal::eq(qty, oldQty))
 				{
-					//Êä³öÈÕÖ¾
+					//è¾“å‡ºæ—¥å¿—
 					WTSLogger::info("[Filters] Target position of {} of strategy {} reset by strategy filter: {} -> {}", 
 						stdCode, ctx->name(), oldQty, qty);
 				}
@@ -183,7 +174,7 @@ void WtCtaEngine::on_init()
 			}
 			else
 			{
-				//Êä³öÈÕÖ¾
+				//è¾“å‡ºæ—¥å¿—
 				WTSLogger::info("[Filters] Target position of {} of strategy {} ignored by strategy filter", stdCode, ctx->name());
 			}
 		}, true);
@@ -196,7 +187,7 @@ void WtCtaEngine::on_init()
 		bRiskEnabled = true;
 	}
 
-	////³õÊ¼»¯²ÖÎ»´òÓ¡³öÀ´
+	////åˆå§‹åŒ–ä»“ä½æ‰“å°å‡ºæ¥
 	//for (auto it = target_pos.begin(); it != target_pos.end(); it++)
 	//{
 	//	const auto& stdCode = it->first;
@@ -249,7 +240,7 @@ void WtCtaEngine::on_session_end()
 
 void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 {
-	//È¥¼ì²éÒ»ÏÂ¹ýÂËÆ÷
+	//åŽ»æ£€æŸ¥ä¸€ä¸‹è¿‡æ»¤å™¨
 	_filter_mgr.load_filters();
 	_exec_mgr.clear_cached_targets();
 	wt_hashmap<std::string, double> target_pos;
@@ -257,10 +248,10 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 	{
 		/*
 		 *	By Wesley @ 2023.06.27
-		 *	Èç¹ûÍ¨¹ýÏß³Ì³Ø²¢·¢
-		 *	ÏÈ²¢·¢ËùÓÐµÄon_schedule
-		 *	È»ºóÔÙwaitËùÓÐÈÎÎñ½áÊø
-		 *	×îºóÔÙÍ³Ò»¶ÁÈ¡È«²¿³Ö²Ö
+		 *	å¦‚æžœé€šè¿‡çº¿ç¨‹æ± å¹¶å‘
+		 *	å…ˆå¹¶å‘æ‰€æœ‰çš„on_schedule
+		 *	ç„¶åŽå†waitæ‰€æœ‰ä»»åŠ¡ç»“æŸ
+		 *	æœ€åŽå†ç»Ÿä¸€è¯»å–å…¨éƒ¨æŒä»“
 		 */
 		for (auto it = _ctx_map.begin(); it != _ctx_map.end(); it++)
 		{
@@ -272,7 +263,7 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 
 		/*
 		 *	By Wesley @ 2023.06.27
-		 *	µÈ´ýÈ«²¿on_scheduleÖ´ÐÐÍê³É
+		 *	ç­‰å¾…å…¨éƒ¨on_scheduleæ‰§è¡Œå®Œæˆ
 		 */
 		_pool->wait();
 		
@@ -288,7 +279,7 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 				{
 					if (!decimal::eq(qty, oldQty))
 					{
-						//Êä³öÈÕÖ¾
+						//è¾“å‡ºæ—¥å¿—
 						WTSLogger::info("[Filters] Target position of {} of strategy {} reset by strategy filter: {} -> {}",
 							stdCode, ctx->name(), oldQty, qty);
 					}
@@ -308,7 +299,7 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 				}
 				else
 				{
-					//Êä³öÈÕÖ¾
+					//è¾“å‡ºæ—¥å¿—
 					WTSLogger::info("[Filters] Target position of {} of strategy {} ignored by strategy filter", stdCode, ctx->name());
 				}
 			}, true);
@@ -330,7 +321,7 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 				{
 					if (!decimal::eq(qty, oldQty))
 					{
-						//Êä³öÈÕÖ¾
+						//è¾“å‡ºæ—¥å¿—
 						WTSLogger::info("[Filters] Target position of {} of strategy {} reset by strategy filter: {} -> {}",
 							stdCode, ctx->name(), oldQty, qty);
 					}
@@ -350,7 +341,7 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 				}
 				else
 				{
-					//Êä³öÈÕÖ¾
+					//è¾“å‡ºæ—¥å¿—
 					WTSLogger::info("[Filters] Target position of {} of strategy {} ignored by strategy filter", stdCode, ctx->name());
 				}
 			}, true);
@@ -365,7 +356,7 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 		bRiskEnabled = true;
 	}
 
-	//´¦Àí×éºÏÀíÂÛ²¿Î»
+	//å¤„ç†ç»„åˆç†è®ºéƒ¨ä½
 	for (auto it = target_pos.begin(); it != target_pos.end(); it++)
 	{
 		const auto& stdCode = it->first;
@@ -385,15 +376,15 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 		const auto& stdCode = m.first;
 		if (target_pos.find(stdCode) == target_pos.end())
 		{
-			if(!decimal::eq(m.second._volume, 0))
+			if(!decimal::eq(m.second->_volume, 0))
 			{
-				//ÕâÀïÊÇÍ¨ÖªWtEngineÈ¥¸üÐÂ×éºÏ³Ö²ÖÊý¾Ý
+				//è¿™é‡Œæ˜¯é€šçŸ¥WtEngineåŽ»æ›´æ–°ç»„åˆæŒä»“æ•°æ®
 				append_signal(stdCode.c_str(), 0, true);
 
 				WTSLogger::error("Instrument {} not in target positions, setup to 0 automatically", stdCode.c_str());
 			}
 
-			//ÒòÎª×éºÏ³Ö²ÖÀï»áÓÐ¹ýÆÚµÄºÏÔ¼´úÂë´æÔÚ£¬ËùÒÔÕâÀïÔÚ¶ª¸øÖ´ÐÐÒÔÇ°Òª×öÒ»¸ö¼ì²é
+			//å› ä¸ºç»„åˆæŒä»“é‡Œä¼šæœ‰è¿‡æœŸçš„åˆçº¦ä»£ç å­˜åœ¨ï¼Œæ‰€ä»¥è¿™é‡Œåœ¨ä¸¢ç»™æ‰§è¡Œä»¥å‰è¦åšä¸€ä¸ªæ£€æŸ¥
 			auto cInfo = get_contract_info(stdCode.c_str());
 			if (cInfo != NULL)
 			{
@@ -407,7 +398,7 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 		update_fund_dynprofit();
 		/*
 		 *	By Wesley @ 2023.01.30
-		 *	Ôö¼ÓÒ»¸ö¶¨Ê±Ë¢ÐÂ½»Ò×ÕËºÅ×Ê½ðµÄÈë¿Ú
+		 *	å¢žåŠ ä¸€ä¸ªå®šæ—¶åˆ·æ–°äº¤æ˜“è´¦å·èµ„é‡‘çš„å…¥å£
 		 */
 		_adapter_mgr->refresh_funds();
 	});
@@ -422,18 +413,18 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 }
 
 
-void WtCtaEngine::handle_push_quote(WTSTickData* newTick, uint32_t hotFlag)
+void WtCtaEngine::handle_push_quote(WTSTickData* newTick)
 {
 	if (_tm_ticker)
-		_tm_ticker->on_tick(newTick, hotFlag);
+		_tm_ticker->on_tick(newTick);
 }
 
 void WtCtaEngine::handle_pos_change(const char* straName, const char* stdCode, double diffPos)
 {
-	//ÕâÀïÊÇ³Ö²ÖÔöÁ¿,ËùÒÔ²»ÓÃ´¦ÀíÎ´¹ýÂËµÄÇé¿ö,ÒòÎªÔöÁ¿Çé¿öÏÂ,²»»á¸Ä±äÄ¿±êdiffQty
+	//è¿™é‡Œæ˜¯æŒä»“å¢žé‡,æ‰€ä»¥ä¸ç”¨å¤„ç†æœªè¿‡æ»¤çš„æƒ…å†µ,å› ä¸ºå¢žé‡æƒ…å†µä¸‹,ä¸ä¼šæ”¹å˜ç›®æ ‡diffQty
 	if(_filter_mgr.is_filtered_by_strategy(straName, diffPos, true))
 	{
-		//Êä³öÈÕÖ¾
+		//è¾“å‡ºæ—¥å¿—
 		WTSLogger::info("[Filters] Target position of {} of strategy {} ignored by strategy filter", stdCode, straName);
 		return;
 	}
@@ -448,9 +439,11 @@ void WtCtaEngine::handle_pos_change(const char* straName, const char* stdCode, d
 	}
 
 	/*
-	 *	ÕâÀï±ØÐëÒªËãÒ»¸ö×ÜµÄÄ¿±ê²ÖÎ»
+	 *	è¿™é‡Œå¿…é¡»è¦ç®—ä¸€ä¸ªæ€»çš„ç›®æ ‡ä»“ä½
 	 */
-	PosInfo& pItem = _pos_map[realCode];	
+	PosInfoPtr& pInfo = _pos_map[realCode];	
+	if (pInfo == NULL)
+		pInfo.reset(new PosInfo);
 
 	bool bRiskEnabled = false;
 	if (!decimal::eq(_risk_volscale, 1.0) && _risk_date == _cur_tdate)
@@ -465,15 +458,15 @@ void WtCtaEngine::handle_pos_change(const char* straName, const char* stdCode, d
 		diffPos = decimal::rnd(abs(diffPos)*_risk_volscale)*symbol;
 	}
 
-	double targetPos = pItem._volume + diffPos;
+	double targetPos = pInfo->_volume + diffPos;
 
 	append_signal(realCode.c_str(), targetPos, false);
 	save_datas();
 
 	/*
-	 *	Èç¹û²ßÂÔ°ó¶¨ÁËÖ´ÐÐÍ¨µÀ
-	 *	ÄÇÃ´¾ÍÖ»Ìá½»ÔöÁ¿
-	 *	Èç¹û²ßÂÔÃ»ÓÐ°ó¶¨Ö´ÐÐÍ¨µÀ£¬¾ÍÌá½»È«Á¿
+	 *	å¦‚æžœç­–ç•¥ç»‘å®šäº†æ‰§è¡Œé€šé“
+	 *	é‚£ä¹ˆå°±åªæäº¤å¢žé‡
+	 *	å¦‚æžœç­–ç•¥æ²¡æœ‰ç»‘å®šæ‰§è¡Œé€šé“ï¼Œå°±æäº¤å…¨é‡
 	 */
 	const auto& exec_ids = _exec_mgr.get_route(straName);
 	for(auto& execid : exec_ids)
@@ -486,23 +479,23 @@ void WtCtaEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 
 	_data_mgr->handle_push_quote(stdCode, curTick);
 
-	//Èç¹ûÊÇÕæÊµ´úÂë, ÔòÒª´«µÝ¸øÖ´ÐÐÆ÷
+	//å¦‚æžœæ˜¯çœŸå®žä»£ç , åˆ™è¦ä¼ é€’ç»™æ‰§è¡Œå™¨
 	/*
-	 *	ÕâÀï²»ÔÙ×öÅÐ¶Ï£¬Ö±½ÓÈ«²¿´«µÝ¸øÖ´ÐÐÆ÷¹ÜÀíÆ÷£¬ÒòÎªÖ´ÐÐÆ÷¿ÉÄÜ»á´¦ÀíÎ´¶©ÔÄµÄºÏÔ¼
-	 *	Ö÷Òª³¡¾°ÎªÖ÷Á¦ºÏÔ¼»»ÔÂÆÚ¼ä
+	 *	è¿™é‡Œä¸å†åšåˆ¤æ–­ï¼Œç›´æŽ¥å…¨éƒ¨ä¼ é€’ç»™æ‰§è¡Œå™¨ç®¡ç†å™¨ï¼Œå› ä¸ºæ‰§è¡Œå™¨å¯èƒ½ä¼šå¤„ç†æœªè®¢é˜…çš„åˆçº¦
+	 *	ä¸»è¦åœºæ™¯ä¸ºä¸»åŠ›åˆçº¦æ¢æœˆæœŸé—´
 	 *	By Wesley @ 2021.08.19
 	 */
 	{
-		//ÊÇ·ñÖ÷Á¦ºÏÔ¼´úÂëµÄ±ê¼Ç, Ö÷ÒªÓÃÓÚ¸øÖ´ÐÐÆ÷·¢Êý¾ÝµÄ
+		//æ˜¯å¦ä¸»åŠ›åˆçº¦ä»£ç çš„æ ‡è®°, ä¸»è¦ç”¨äºŽç»™æ‰§è¡Œå™¨å‘æ•°æ®çš„
 		_exec_mgr.handle_tick(stdCode, curTick);
 	}
 
 	/*
 	 *	By Wesley @ 2022.02.07
-	 *	ÕâÀï×öÁËÒ»¸ö³¹µ×µÄµ÷Õû
-	 *	µÚÒ»£¬¼ì²é¶©ÔÄ±ê¼Ç£¬Èç¹û±ê¼ÇÎª0£¬¼´ÎÞ¸´È¨Ä£Ê½£¬ÔòÖ±½Ó°´ÕÕÔ­Ê¼´úÂë´¥·¢ontick
-	 *	µÚ¶þ£¬Èç¹û±ê¼ÇÎª1£¬¼´Ç°¸´È¨Ä£Ê½£¬Ôò½«´úÂë×ª³Éxxxx-£¬ÔÙ´¥·¢ontick
-	 *	µÚÈý£¬Èç¹û±ê¼ÇÎª2£¬¼´ºó¸´È¨Ä£Ê½£¬Ôò½«´úÂë×ª³Éxxxx+£¬ÔÙ°ÑtickÊý¾Ý×öÒ»¸öÐÞÕý£¬ÔÙ´¥·¢ontick
+	 *	è¿™é‡Œåšäº†ä¸€ä¸ªå½»åº•çš„è°ƒæ•´
+	 *	ç¬¬ä¸€ï¼Œæ£€æŸ¥è®¢é˜…æ ‡è®°ï¼Œå¦‚æžœæ ‡è®°ä¸º0ï¼Œå³æ— å¤æƒæ¨¡å¼ï¼Œåˆ™ç›´æŽ¥æŒ‰ç…§åŽŸå§‹ä»£ç è§¦å‘ontick
+	 *	ç¬¬äºŒï¼Œå¦‚æžœæ ‡è®°ä¸º1ï¼Œå³å‰å¤æƒæ¨¡å¼ï¼Œåˆ™å°†ä»£ç è½¬æˆxxxx-ï¼Œå†è§¦å‘ontick
+	 *	ç¬¬ä¸‰ï¼Œå¦‚æžœæ ‡è®°ä¸º2ï¼Œå³åŽå¤æƒæ¨¡å¼ï¼Œåˆ™å°†ä»£ç è½¬æˆxxxx+ï¼Œå†æŠŠtickæ•°æ®åšä¸€ä¸ªä¿®æ­£ï¼Œå†è§¦å‘ontick
 	 */
 	if(_ready)
 	{
@@ -514,7 +507,7 @@ void WtCtaEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 		WTSTickData* adjTick = nullptr;
 
 		//By Wesley
-		//ÕâÀï×öÒ»¸ö¿½±´£¬ËäÈ»ÓÐµã¿ªÏú£¬µ«ÊÇ¿ÉÒÔ¹æ±ÜµôÒ»Ð©ÎÊÌâ£¬±ÈÈçontickµÄÊ±ºò¶©ÔÄtick
+		//è¿™é‡Œåšä¸€ä¸ªæ‹·è´ï¼Œè™½ç„¶æœ‰ç‚¹å¼€é”€ï¼Œä½†æ˜¯å¯ä»¥è§„é¿æŽ‰ä¸€äº›é—®é¢˜ï¼Œæ¯”å¦‚ontickçš„æ—¶å€™è®¢é˜…tick
 		SubList sids = sit->second;
 		for (auto it = sids.begin(); it != sids.end(); it++)
 		{
@@ -531,7 +524,7 @@ void WtCtaEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 				{
 					/*
 					 *	By Wesley @ 2023.06.27
-					 *	Èç¹ûÊ¹ÓÃÏß³Ì³Ø£¬Ôòµ½Ïß³Ì³ØÀïÈ¥µ÷¶È
+					 *	å¦‚æžœä½¿ç”¨çº¿ç¨‹æ± ï¼Œåˆ™åˆ°çº¿ç¨‹æ± é‡ŒåŽ»è°ƒåº¦
 					 */
 					if(_pool)
 					{
@@ -565,7 +558,7 @@ void WtCtaEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 							WTSTickStruct& adjTS = adjTick->getTickStruct();
 							adjTick->setContractInfo(curTick->getContractInfo());
 
-							//ÕâÀï×öÒ»¸ö¸´È¨Òò×ÓµÄ´¦Àí
+							//è¿™é‡Œåšä¸€ä¸ªå¤æƒå› å­çš„å¤„ç†
 							double factor = get_exright_factor(stdCode);
 							adjTS.open *= factor;
 							adjTS.high *= factor;
@@ -579,7 +572,7 @@ void WtCtaEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 
 							/*
 							 *	By Wesley @ 2022.08.15
-							 *	ÕâÀï¶ÔtickµÄ¸´È¨×öÒ»¸öÍêÉÆ
+							 *	è¿™é‡Œå¯¹tickçš„å¤æƒåšä¸€ä¸ªå®Œå–„
 							 */
 							if (flag & 1)
 							{
@@ -621,7 +614,7 @@ void WtCtaEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 			adjTick->release();
 		/*
 		 *	By Wesley @ 223.06.27
-		 *	ÕâÀïÒ»¶¨ÒªµÈ´ýÏß³Ì³ØÈ«²¿µ÷¶ÈÍê³É
+		 *	è¿™é‡Œä¸€å®šè¦ç­‰å¾…çº¿ç¨‹æ± å…¨éƒ¨è°ƒåº¦å®Œæˆ
 		 */
 		if (_pool)
 			_pool->wait();
@@ -655,7 +648,7 @@ void WtCtaEngine::on_bar(const char* stdCode, const char* period, uint32_t times
 
 	/*
 	 *	By Wesley @ 223.06.27
-	 *	ÕâÀïÒ»¶¨ÒªµÈ´ýÏß³Ì³ØÈ«²¿µ÷¶ÈÍê³É
+	 *	è¿™é‡Œä¸€å®šè¦ç­‰å¾…çº¿ç¨‹æ± å…¨éƒ¨è°ƒåº¦å®Œæˆ
 	 */
 	if (_pool)
 		_pool->wait();

@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file ParserYD.cpp
  * \project	WonderTrader
  *
@@ -91,11 +91,11 @@ void ParserYD::notifyLogin(int errorNo, int maxOrderRef, bool isMonitor)
 			m_sink->handleEvent(WPE_Login, 0);
 		}
 
-		//Èç¹ûAPI³õÊ¼»¯¹ıÁË£¬¾ÍÖ±½Ó¶©ÔÄ
-		//ÕâÖÖÒ»°ãÊÇ¶ÏÏßÖØÁ¬
+		//å¦‚æœAPIåˆå§‹åŒ–è¿‡äº†ï¼Œå°±ç›´æ¥è®¢é˜…
+		//è¿™ç§ä¸€èˆ¬æ˜¯æ–­çº¿é‡è¿
 		if (m_bApiInited)
 		{
-			//¶©ÔÄĞĞÇéÊı¾İ
+			//è®¢é˜…è¡Œæƒ…æ•°æ®
 			DoSubscribe();
 		}
 	}
@@ -110,11 +110,11 @@ void ParserYD::notifyFinishInit(void)
 {
 	if (m_sink) m_sink->handleParserLog(LL_INFO, "[ParserYD] All things ready");
 
-	//Èç¹ûAPIÃ»ÓĞ³õÊ¼»¯¹ı£¬ËµÃ÷Õâ¸ö»Øµ÷ÊÇµÚÒ»´Î´¥·¢
-	//ÔòĞèÒª´¥·¢Ò»Ğ©¶©ÔÄµÈ²Ù×÷
+	//å¦‚æœAPIæ²¡æœ‰åˆå§‹åŒ–è¿‡ï¼Œè¯´æ˜è¿™ä¸ªå›è°ƒæ˜¯ç¬¬ä¸€æ¬¡è§¦å‘
+	//åˆ™éœ€è¦è§¦å‘ä¸€äº›è®¢é˜…ç­‰æ“ä½œ
 	if(!m_bApiInited)
 	{
-		//¶©ÔÄĞĞÇéÊı¾İ
+		//è®¢é˜…è¡Œæƒ…æ•°æ®
 		DoSubscribe();
 		m_bApiInited = true;
 	}
@@ -158,13 +158,13 @@ void ParserYD::notifyMarketData(const YDMarketData *pDepthMarketData)
 	quote.pre_settle = pDepthMarketData->PreSettlementPrice;
 	quote.pre_interest = pDepthMarketData->PreOpenInterest;
 
-	//Î¯Âô¼Û¸ñ
+	//å§”å–ä»·æ ¼
 	quote.ask_prices[0] = pDepthMarketData->AskPrice;
-	//Î¯Âò¼Û¸ñ
+	//å§”ä¹°ä»·æ ¼
 	quote.bid_prices[0] = pDepthMarketData->BidPrice;
-	//Î¯ÂôÁ¿
+	//å§”å–é‡
 	quote.ask_qty[0] = pDepthMarketData->AskVolume;
-	//Î¯ÂòÁ¿
+	//å§”ä¹°é‡
 	quote.bid_qty[0] = pDepthMarketData->BidVolume;
 
 	if (m_sink)
@@ -236,7 +236,7 @@ void ParserYD::DoSubscribe()
 {
 	CodeSet codeFilter = m_filterSubs;
 	if(codeFilter.empty())
-	{//Èç¹û¶©ÔÄÀñ°üÖ»¿ÕµÄ,ÔòÈ¡³öÈ«²¿ºÏÔ¼ÁĞ±í
+	{//å¦‚æœè®¢é˜…ç¤¼åŒ…åªç©ºçš„,åˆ™å–å‡ºå…¨éƒ¨åˆçº¦åˆ—è¡¨
 		return;
 	}
 

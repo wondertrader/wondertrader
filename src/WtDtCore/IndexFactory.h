@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "IndexWorker.h"
 #include "../Share/threadpool.hpp"
 #include <vector>

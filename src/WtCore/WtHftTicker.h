@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \file WtHftTicker.h
  * \project	WonderTrader
  *
@@ -30,13 +30,13 @@ public:
 
 public:
 	void	init(IDataReader* store, const char* sessionID);
-	void	on_tick(WTSTickData* curTick, uint32_t hotFlag = 0);
+	void	on_tick(WTSTickData* curTick);
 
 	void	run();
 	void	stop();
 
 private:
-	void	trigger_price(WTSTickData* curTick, uint32_t hotFlag = 0);
+	void	trigger_price(WTSTickData* curTick);
 
 private:
 	WTSSessionInfo*	_s_info;

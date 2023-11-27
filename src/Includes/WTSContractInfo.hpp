@@ -1,11 +1,11 @@
-/*!
+ï»¿/*!
  * \file WTSContractInfo.hpp
  * \project	WonderTrader
  *
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief WtÆ·ÖÖĞÅÏ¢¡¢ºÏÔ¼ĞÅÏ¢¶¨ÒåÎÄ¼ş
+ * \brief Wtå“ç§ä¿¡æ¯ã€åˆçº¦ä¿¡æ¯å®šä¹‰æ–‡ä»¶
  */
 #pragma once
 #include "WTSObject.hpp"
@@ -91,30 +91,81 @@ public:
 	inline void		setSessionInfo(WTSSessionInfo* sInfo) { m_pSession = sInfo; }
 	inline WTSSessionInfo* getSessionInfo() const { return m_pSession; }
 
+	inline void		setFeeRates(double open, double close, double closeToday, bool byVolume)
+	{
+		m_dOpenFee = open;
+		m_dCloseFee = close;
+		m_dCloseTFee = closeToday;
+		m_nFeeAlg = byVolume ? 0 : 1;
+	}
+
+	inline void		setMarginRate(double rate) { m_dMarginRate = rate; }
+	inline double	getMarginRate() const { return m_dMarginRate; }
+
+	inline double	calcFee(double price, double qty, uint32_t offset)
+	{
+		if (m_nFeeAlg == -1)
+			return 0.0;
+
+		double ret = 0.0;
+		if (m_nFeeAlg == 0)
+		{
+			switch (offset)
+			{
+			case 0: ret = m_dOpenFee * qty; break;
+			case 1: ret = m_dCloseFee * qty; break;
+			case 2: ret = m_dCloseTFee * qty; break;
+			default: ret = 0.0; break;
+			}
+		}
+		else if(m_nFeeAlg == 1)
+		{
+			double amount = price * qty * m_uVolScale;
+			switch (offset)
+			{
+			case 0: ret = m_dOpenFee * amount; break;
+			case 1: ret = m_dCloseFee * amount; break;
+			case 2: ret = m_dCloseTFee * amount; break;
+			default: ret = 0.0; break;
+			}
+		}
+
+		return (int32_t)(ret * 100 + 0.5) / 100.0;
+	}
+
+protected:
+	WTSCommodityInfo():m_nFeeAlg(-1){}
+	virtual ~WTSCommodityInfo() {}
+
 private:
-	std::string	m_strName;		//Æ·ÖÖÃû³Æ
-	std::string	m_strExchg;		//½»Ò×Ëù´úÂë
-	std::string	m_strProduct;	//Æ·ÖÖID
-	std::string	m_strCurrency;	//±ÒÖÖ
-	std::string m_strSession;	//½»Ò×Ê±¼äÄ£°å
-	std::string m_strTrdTpl;	//½Ú¼ÙÈÕÄ£°å
-	std::string m_strFullPid;	//È«Æ·ÖÖID£¬ÈçCFFEX.IF
+	std::string	m_strName;		//å“ç§åç§°
+	std::string	m_strExchg;		//äº¤æ˜“æ‰€ä»£ç 
+	std::string	m_strProduct;	//å“ç§ID
+	std::string	m_strCurrency;	//å¸ç§
+	std::string m_strSession;	//äº¤æ˜“æ—¶é—´æ¨¡æ¿
+	std::string m_strTrdTpl;	//èŠ‚å‡æ—¥æ¨¡æ¿
+	std::string m_strFullPid;	//å…¨å“ç§IDï¼Œå¦‚CFFEX.IF
 
-	uint32_t	m_uVolScale;	//ºÏÔ¼·Å´ó±¶Êı
-	double		m_dPriceTick;	//×îĞ¡¼Û¸ñ±ä¶¯µ¥Î»
-	//uint32_t	m_uPrecision;	//¼Û¸ñ¾«¶È
+	uint32_t	m_uVolScale;	//åˆçº¦æ”¾å¤§å€æ•°
+	double		m_dPriceTick;	//æœ€å°ä»·æ ¼å˜åŠ¨å•ä½
 
-	double		m_dLotTick;		//ÊıÁ¿¾«¶È
-	double		m_dMinLots;		//×îĞ¡½»Ò×ÊıÁ¿
+	double		m_dLotTick;		//æ•°é‡ç²¾åº¦
+	double		m_dMinLots;		//æœ€å°äº¤æ˜“æ•°é‡
 
-	ContractCategory	m_ccCategory;	//Æ·ÖÖ·ÖÀà£¬ÆÚ»õ¡¢¹ÉÆ±¡¢ÆÚÈ¨µÈ
-	CoverMode			m_coverMode;	//Æ½²ÖÀàĞÍ
-	PriceMode			m_priceMode;	//¼Û¸ñÀàĞÍ
-	TradingMode			m_tradeMode;	//½»Ò×ÀàĞÍ
+	ContractCategory	m_ccCategory;	//å“ç§åˆ†ç±»ï¼ŒæœŸè´§ã€è‚¡ç¥¨ã€æœŸæƒç­‰
+	CoverMode			m_coverMode;	//å¹³ä»“ç±»å‹
+	PriceMode			m_priceMode;	//ä»·æ ¼ç±»å‹
+	TradingMode			m_tradeMode;	//äº¤æ˜“ç±»å‹
 
 	CodeSet				m_setCodes;
 
 	WTSSessionInfo*		m_pSession;
+
+	double	m_dOpenFee;		//å¼€ä»“æ‰‹ç»­è´¹
+	double	m_dCloseFee;	//å¹³ä»“æ‰‹ç»­è´¹
+	double	m_dCloseTFee;	//å¹³ä»Šæ‰‹ç»­è´¹
+	int		m_nFeeAlg;		//æ‰‹ç»­è´¹ç®—æ³•ï¼Œé»˜è®¤ä¸º-1ï¼Œä¸è®¡ç®—,0æ˜¯æŒ‰æˆäº¤é‡ï¼Œ1ä¸ºæŒ‰æˆäº¤é¢
+	double	m_dMarginRate;	//ä¿è¯é‡‘ç‡
 };
 
 class WTSContractInfo :	public WTSObject
@@ -155,10 +206,11 @@ public:
 		m_expireDate = expireDate;
 	}
 
-	inline void setMarginRatios(double longRatio, double shortRatio)
+	inline void setMarginRatios(double longRatio, double shortRatio, uint32_t flag = 0)
 	{
 		m_lMarginRatio = longRatio;
 		m_sMarginRatio = shortRatio;
+		m_uMarginFlag = flag;
 	}
 
 	inline const char* getCode()	const{return m_strCode.c_str();}
@@ -177,15 +229,77 @@ public:
 	inline uint32_t	getOpenDate() const { return m_openDate; }
 	inline uint32_t	getExpireDate() const { return m_expireDate; }
 
-	inline double	getLongMarginRatio() const { return m_lMarginRatio; }
-	inline double	getShortMarginRatio() const { return m_sMarginRatio; }
+	inline double	getLongMarginRatio() const { 
+		if (m_uMarginFlag == 1)
+			return m_lMarginRatio;
 
+		static double commRate = m_commInfo->getMarginRate();
+		return commRate == 0.0 ? m_lMarginRatio : m_commInfo->getMarginRate();
+	}
+
+	inline double	getShortMarginRatio() const {
+		if (m_uMarginFlag == 1)
+			return m_sMarginRatio;
+
+		static double commRate = m_commInfo->getMarginRate();
+		return commRate == 0.0 ? m_sMarginRatio : m_commInfo->getMarginRate();
+	}
 
 	inline void setCommInfo(WTSCommodityInfo* commInfo) { m_commInfo = commInfo; }
 	inline WTSCommodityInfo* getCommInfo() const { return m_commInfo; }
 
+	inline void		setFeeRates(double open, double close, double closeToday, bool byVolume)
+	{
+		m_dOpenFee = open;
+		m_dCloseFee = close;
+		m_dCloseTFee = closeToday;
+		m_nFeeAlg = byVolume ? 0 : 1;
+	}
+
+	inline double	calcFee(double price, double qty, uint32_t offset)
+	{
+		//å¦‚æœåˆçº¦æ²¡æœ‰æ‰‹ç»­è´¹ç‡ï¼Œåˆ™è°ƒç”¨å“ç§çš„æ‰‹ç»­è´¹ç‡
+		if (m_nFeeAlg == -1)
+			return m_commInfo->calcFee(price, qty, offset);
+
+		double ret = 0.0;
+		if (m_nFeeAlg == 0)
+		{
+			switch (offset)
+			{
+			case 0: ret = m_dOpenFee * qty; break;
+			case 1: ret = m_dCloseFee * qty; break;
+			case 2: ret = m_dCloseTFee * qty; break;
+			default: ret = 0.0; break;
+			}
+		}
+		else if (m_nFeeAlg == 1)
+		{
+			double amount = price * qty * m_commInfo->getVolScale();
+			switch (offset)
+			{
+			case 0: ret = m_dOpenFee * amount; break;
+			case 1: ret = m_dCloseFee * amount; break;
+			case 2: ret = m_dCloseTFee * amount; break;
+			default: ret = 0.0; break;
+			}
+		}
+
+		return (int32_t)(ret * 100 + 0.5) / 100.0;
+	}
+
+	inline void setHotFlag(uint32_t hotFlag, const char* hotCode = "") 
+	{ 
+		m_uHotFlag = hotFlag; 
+		m_strHotCode = hotCode;
+	}
+	inline bool isFlat() const { return m_uHotFlag == 0; }
+	inline bool isHot() const { return m_uHotFlag == 1; }
+	inline bool isSecond() const { return m_uHotFlag == 2; }
+	inline const char* getHotCode() const { return m_strHotCode.c_str(); }
+
 protected:
-	WTSContractInfo():m_commInfo(NULL), m_openDate(0), m_expireDate(0), m_lMarginRatio(0), m_sMarginRatio(0) {}
+	WTSContractInfo():m_commInfo(NULL), m_openDate(19900101), m_expireDate(30991231), m_lMarginRatio(0), m_sMarginRatio(0), m_nFeeAlg(-1), m_uMarginFlag(0), m_uHotFlag(0){}
 	virtual ~WTSContractInfo(){}
 
 private:
@@ -202,12 +316,21 @@ private:
 	uint32_t	m_minMktQty;
 	uint32_t	m_minLmtQty;
 
-	uint32_t	m_openDate;		//ÉÏÊĞÈÕÆÚ
-	uint32_t	m_expireDate;	//½»¸îÈÕ
-	double		m_lMarginRatio;	//½»Ò×Ëù¶àÍ·±£Ö¤½ğÂÊ
-	double		m_sMarginRatio;	//½»Ò×Ëù¿ÕÍ·±£Ö¤½ğÂÊ
+	uint32_t	m_openDate;		//ä¸Šå¸‚æ—¥æœŸ
+	uint32_t	m_expireDate;	//äº¤å‰²æ—¥
+
+	double		m_lMarginRatio;	//äº¤æ˜“æ‰€å¤šå¤´ä¿è¯é‡‘ç‡
+	double		m_sMarginRatio;	//äº¤æ˜“æ‰€ç©ºå¤´ä¿è¯é‡‘ç‡
+	uint32_t	m_uMarginFlag;	//0-åˆçº¦ä¿¡æ¯è¯»å–çš„ï¼Œ1-æ‰‹å·¥è®¾ç½®çš„
+
+	double		m_dOpenFee;		//å¼€ä»“æ‰‹ç»­è´¹
+	double		m_dCloseFee;	//å¹³ä»“æ‰‹ç»­è´¹
+	double		m_dCloseTFee;	//å¹³ä»Šæ‰‹ç»­è´¹
+	int			m_nFeeAlg;		//æ‰‹ç»­è´¹ç®—æ³•ï¼Œé»˜è®¤ä¸º-1ï¼Œä¸è®¡ç®—,0æ˜¯æŒ‰æˆäº¤é‡ï¼Œ1ä¸ºæŒ‰æˆäº¤é¢
 
 	WTSCommodityInfo*	m_commInfo;
+	uint32_t	m_uHotFlag;
+	std::string	m_strHotCode;
 };
 
 

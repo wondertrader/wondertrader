@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file HftStrategyDefs.h
  * \project	WonderTrader
  *
@@ -33,92 +33,92 @@ public:
 
 public:
 	/*
-	 *	Ö´ĞĞµ¥ÔªÃû³Æ
+	 *	æ‰§è¡Œå•å…ƒåç§°
 	 */
 	virtual const char* getName() = 0;
 
 	/*
-	 *	ËùÊôÖ´ĞĞÆ÷¹¤³§Ãû³Æ
+	 *	æ‰€å±æ‰§è¡Œå™¨å·¥å‚åç§°
 	 */
 	virtual const char* getFactName() = 0;
 
 	/*
-	 *	³õÊ¼»¯
+	 *	åˆå§‹åŒ–
 	 */
 	virtual bool init(WTSVariant* cfg){ return true; }
 
 	virtual const char* id() const { return _id.c_str(); }
 
-	//»Øµ÷º¯Êı
+	//å›è°ƒå‡½æ•°
 
 	/*
-	 *	²ßÂÔ³õÊ¼»¯
+	 *	ç­–ç•¥åˆå§‹åŒ–
 	 */
 	virtual void on_init(IHftStraCtx* ctx) = 0;
 
 	/*
-	 *	½»Ò×ÈÕ¿ªÊ¼
+	 *	äº¤æ˜“æ—¥å¼€å§‹
 	 */
 	virtual void on_session_begin(IHftStraCtx* ctx, uint32_t uTDate) {}
 
 	/*
-	 *	½»Ò×ÈÕ½áÊø
+	 *	äº¤æ˜“æ—¥ç»“æŸ
 	 */
 	virtual void on_session_end(IHftStraCtx* ctx, uint32_t uTDate) {}
 
 	/*
-	 *	tick»Øµ÷
+	 *	tickå›è°ƒ
 	 */
 	virtual void on_tick(IHftStraCtx* ctx, const char* code, WTSTickData* newTick) {}
 
 	/*
-	 *	Î¯ÍĞ¶ÓÁĞ»Øµ÷
+	 *	å§”æ‰˜é˜Ÿåˆ—å›è°ƒ
 	 */
 	virtual void on_order_queue(IHftStraCtx* ctx, const char* code, WTSOrdQueData* newOrdQue) {}
 
 	/*
-	 *	Î¯ÍĞÃ÷Ï¸»Øµ÷
+	 *	å§”æ‰˜æ˜ç»†å›è°ƒ
 	 */
 	virtual void on_order_detail (IHftStraCtx* ctx, const char* code, WTSOrdDtlData* newOrdDtl) {}
 
 	/*
-	 *	Öğ±Ê³É½»»Øµ÷
+	 *	é€ç¬”æˆäº¤å›è°ƒ
 	 */
 	virtual void on_transaction(IHftStraCtx* ctx, const char* code, WTSTransData* newTrans) {}
 
 	/*
-	 *	KÏß±ÕºÏ»Øµ÷
+	 *	Kçº¿é—­åˆå›è°ƒ
 	 */
 	virtual void on_bar(IHftStraCtx* ctx, const char* code, const char* period, uint32_t times, WTSBarStruct* newBar) {}
 
 	/*
-	 *	³É½»»Ø±¨
+	 *	æˆäº¤å›æŠ¥
 	 */
 	virtual void on_trade(IHftStraCtx* ctx, uint32_t localid, const char* stdCode, bool isBuy, double vol, double price, const char* userTag) {}
 
 	/*
-	 *	³Ö²Ö»Ø±¨
-	 *	Ö»ÓĞÔÚ¸ÕÆô¶¯µÄÊ±ºò£¬½»Ò×½Ó¿Ú¾ÍĞ÷Ö®Ç°»á´¥·¢¸Ã»Øµ÷
+	 *	æŒä»“å›æŠ¥
+	 *	åªæœ‰åœ¨åˆšå¯åŠ¨çš„æ—¶å€™ï¼Œäº¤æ˜“æ¥å£å°±ç»ªä¹‹å‰ä¼šè§¦å‘è¯¥å›è°ƒ
 	 */
 	virtual void on_position(IHftStraCtx* ctx, const char* stdCode, bool isLong, double prevol, double preavail, double newvol, double newavail) {}
 
 	/*
-	 *	¶©µ¥»Ø±¨
+	 *	è®¢å•å›æŠ¥
 	 */
 	virtual void on_order(IHftStraCtx* ctx, uint32_t localid, const char* stdCode, bool isBuy, double totalQty, double leftQty, double price, bool isCanceled, const char* userTag) {}
 
 	/*
-	 *	½»Ò×Í¨µÀ¾ÍĞ÷»Øµ÷
+	 *	äº¤æ˜“é€šé“å°±ç»ªå›è°ƒ
 	 */
 	virtual void on_channel_ready(IHftStraCtx* ctx) {}
 
 	/*
-	 *	½»Ò×Í¨µÀ¶Ï¿ª»Øµ÷
+	 *	äº¤æ˜“é€šé“æ–­å¼€å›è°ƒ
 	 */
 	virtual void on_channel_lost(IHftStraCtx* ctx) {}
 
 	/*
-	 *	Î¯ÍĞ»Ø±¨
+	 *	å§”æ‰˜å›æŠ¥
 	 */
 	virtual void on_entrust(uint32_t localid, bool bSuccess, const char* message, const char* userTag) {}
 
@@ -127,7 +127,7 @@ protected:
 };
 
 //////////////////////////////////////////////////////////////////////////
-//²ßÂÔ¹¤³§½Ó¿Ú
+//ç­–ç•¥å·¥å‚æ¥å£
 typedef void(*FuncEnumHftStrategyCallback)(const char* factName, const char* straName, bool isLast);
 
 class IHftStrategyFact
@@ -138,27 +138,27 @@ public:
 
 public:
 	/*
-	 *	»ñÈ¡¹¤³§Ãû
+	 *	è·å–å·¥å‚å
 	 */
 	virtual const char* getName() = 0;
 
 	/*
-	 *	Ã¶¾Ù²ßÂÔ
+	 *	æšä¸¾ç­–ç•¥
 	 */
 	virtual void enumStrategy(FuncEnumHftStrategyCallback cb) = 0;
 
 	/*
-	 *	¸ù¾İÃû³Æ´´½¨Ö´ĞĞµ¥Ôª
+	 *	æ ¹æ®åç§°åˆ›å»ºæ‰§è¡Œå•å…ƒ
 	 */
 	virtual HftStrategy* createStrategy(const char* name, const char* id) = 0;
 
 	/*
-	 *	É¾³ıÖ´ĞĞµ¥Ôª
+	 *	åˆ é™¤æ‰§è¡Œå•å…ƒ
 	 */
 	virtual bool deleteStrategy(HftStrategy* stra) = 0;
 };
 
-//´´½¨Ö´ĞĞ¹¤³§
+//åˆ›å»ºæ‰§è¡Œå·¥å‚
 typedef IHftStrategyFact* (*FuncCreateHftStraFact)();
-//É¾³ıÖ´ĞĞ¹¤³§
+//åˆ é™¤æ‰§è¡Œå·¥å‚
 typedef void(*FuncDeleteHftStraFact)(IHftStrategyFact* &fact);

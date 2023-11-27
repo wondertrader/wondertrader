@@ -1,4 +1,4 @@
-#include <string>
+ï»¿#include <string>
 #include <map>
 
 #include "../API/CTPOpt3.5.8/ThostFtdcTraderApi.h"
@@ -8,6 +8,8 @@
 #include "../Share/ModuleHelper.hpp"
 #include "../Share/StdUtils.hpp"
 #include "../Share/DLLHelper.hpp"
+#include "../Share/fmtlib.h"
+
 #include <boost/filesystem.hpp>
 
 #include "../WTSUtils/WTSCfgLoader.h"
@@ -16,24 +18,24 @@ USING_NS_WTP;
 
 #include "../Share/charconv.hpp"
 
-// UserApi¶ÔÏó
+// UserApiå¯¹è±¡
 CThostFtdcTraderApi* pUserApi;
 
-// ÅäÖÃ²ÎÊı
-std::string	FRONT_ADDR;	// Ç°ÖÃµØÖ·
-std::string	BROKER_ID;	// ¾­¼Í¹«Ë¾´úÂë
-std::string	INVESTOR_ID;// Í¶×ÊÕß´úÂë
-std::string	PASSWORD;	// ÓÃ»§ÃÜÂë
-std::string SAVEPATH;	//±£´æÎ»ÖÃ
+// é…ç½®å‚æ•°
+std::string	FRONT_ADDR;	// å‰ç½®åœ°å€
+std::string	BROKER_ID;	// ç»çºªå…¬å¸ä»£ç 
+std::string	INVESTOR_ID;// æŠ•èµ„è€…ä»£ç 
+std::string	PASSWORD;	// ç”¨æˆ·å¯†ç 
+std::string SAVEPATH;	//ä¿å­˜ä½ç½®
 std::string APPID;
 std::string AUTHCODE;
-uint32_t	CLASSMASK;	//ÆÚÈ¨
-bool		ONLYINCFG;	//Ö»ÂäµØÅäÖÃÎÄ¼şÓĞµÄ
+uint32_t	CLASSMASK;	//æœŸæƒ
+bool		ONLYINCFG;	//åªè½åœ°é…ç½®æ–‡ä»¶æœ‰çš„
 
-std::string COMM_FILE;		//Êä³öµÄÆ·ÖÖÎÄ¼şÃû
-std::string CONT_FILE;		//Êä³öµÄºÏÔ¼ÎÄ¼şÃû
+std::string COMM_FILE;		//è¾“å‡ºçš„å“ç§æ–‡ä»¶å
+std::string CONT_FILE;		//è¾“å‡ºçš„åˆçº¦æ–‡ä»¶å
 
-std::string MODULE_NAME;	//Íâ²¿Ä£¿éÃû
+std::string MODULE_NAME;	//å¤–éƒ¨æ¨¡å—å
 
 typedef std::map<std::string, std::string>	SymbolMap;
 SymbolMap	MAP_NAME;
@@ -42,7 +44,7 @@ SymbolMap	MAP_SESSION;
 typedef CThostFtdcTraderApi* (*CTPCreator)(const char *);
 CTPCreator		g_ctpCreator = NULL;
 
-// ÇëÇó±àºÅ
+// è¯·æ±‚ç¼–å·
 int iRequestID = 0;
 
 #ifdef _MSC_VER
@@ -80,7 +82,7 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 
 		WTSVariant* cfg = root->get("config");
 		SAVEPATH = cfg->getCString("path");
-		CLASSMASK = cfg->getUInt32("mask"); //1-ÆÚ»õ,2-ÆÚÈ¨,4-¹ÉÆ±
+		CLASSMASK = cfg->getUInt32("mask"); //1-æœŸè´§,2-æœŸæƒ,4-è‚¡ç¥¨
 
 		COMM_FILE = cfg->getCString("commfile");
 		if (COMM_FILE.empty())
@@ -91,14 +93,15 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 			CONT_FILE = "contracts.json";
 
 		map_files = cfg->getCString("mapfiles");
+		ONLYINCFG = ctp->getBoolean("onlyincfg");
 
 		MODULE_NAME = cfg->getCString("module");
 		if (MODULE_NAME.empty())
 		{
 #ifdef _WIN32
-			MODULE_NAME = "soptthosttraderapi_se.dll";
+			MODULE_NAME = "./soptthosttraderapi_se.dll";
 #else
-			MODULE_NAME = "soptthosttraderapi_se.so";
+			MODULE_NAME = "./soptthosttraderapi_se.so";
 #endif
 		}
 
@@ -118,17 +121,18 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 		AUTHCODE = ini.readString("ctp", "authcode", "");
 
 		SAVEPATH = ini.readString("config", "path", "");
-		CLASSMASK = ini.readUInt("config", "mask", 1 | 2 | 4); //1-ÆÚ»õ,2-ÆÚÈ¨,4-¹ÉÆ±
+		CLASSMASK = ini.readUInt("config", "mask", 1 | 2 | 4); //1-æœŸè´§,2-æœŸæƒ,4-è‚¡ç¥¨
 
 		COMM_FILE = ini.readString("config", "commfile", "commodities.json");
 		CONT_FILE = ini.readString("config", "contfile", "contracts.json");
 
 		map_files = ini.readString("config", "mapfiles", "");
+		ONLYINCFG = wt_stricmp(ini.readString("config", "onlyincfg", "false").c_str(), "true") == 0;
 
 #ifdef _WIN32
-		MODULE_NAME = ini.readString("config", "module", "soptthosttraderapi_se.dll");
+		MODULE_NAME = ini.readString("config", "module", "./soptthosttraderapi_se.dll");
 #else
-		MODULE_NAME = ini.readString("config", "module", "soptthosttraderapi_se.so");
+		MODULE_NAME = ini.readString("config", "module", "./soptthosttraderapi_se.so");
 #endif
 	}
 	else
@@ -147,7 +151,7 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 
 		WTSVariant* cfg = root->get("config");
 		SAVEPATH = cfg->getCString("path");
-		CLASSMASK = cfg->getUInt32("mask"); //1-ÆÚ»õ,2-ÆÚÈ¨,4-¹ÉÆ±
+		CLASSMASK = cfg->getUInt32("mask"); //1-æœŸè´§,2-æœŸæƒ,4-è‚¡ç¥¨
 
 		COMM_FILE = cfg->getCString("commfile");
 		if (COMM_FILE.empty())
@@ -164,15 +168,15 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 		if (MODULE_NAME.empty())
 		{
 #ifdef _WIN32
-			MODULE_NAME = "soptthosttraderapi_se.dll";
+			MODULE_NAME = "./soptthosttraderapi_se.dll";
 #else
-			MODULE_NAME = "soptthosttraderapi_se.so";
+			MODULE_NAME = "./soptthosttraderapi_se.so";
 #endif
 		}
 		root->release();
 	}
 
-	if(!boost::filesystem::exists(MODULE_NAME.c_str()))
+	if(!StdFile::exists(MODULE_NAME.c_str()))
 	{
 		MODULE_NAME = getBinDir();
 #ifdef _WIN32
@@ -208,7 +212,7 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 				bool isUTF8 = EncodingHelper::isUtf8((unsigned char*)pName.c_str(), pName.size());
 				if (!isUTF8)
 					pName = ChartoUTF8(ayVals[i]);
-				//±£´æµÄÊ±ºòÈ«²¿×ª³ÉUTF8
+				//ä¿å­˜çš„æ—¶å€™å…¨éƒ¨è½¬æˆUTF8
 				MAP_NAME[ayKeys[i]] = pName;
 #ifdef _WIN32
 				printf("Commodity name mapping: %s - %s\r\n", ayKeys[i].c_str(), isUTF8 ? UTF8toChar(ayVals[i]).c_str() : ayVals[i].c_str());
@@ -228,7 +232,7 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 		}
 	}
 
-	// ³õÊ¼»¯UserApi
+	// åˆå§‹åŒ–UserApi
 	DllHandle dllInst = DLLHelper::load_library(MODULE_NAME.c_str());
 	if (dllInst == NULL)
 		printf("Loading module %s failed\r\n", MODULE_NAME.c_str());
@@ -243,15 +247,18 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 #endif
 	if (g_ctpCreator == NULL)
 		printf("Loading CreateFtdcTraderApi failed\r\n");
-	pUserApi = g_ctpCreator("");			// ´´½¨UserApi	
+
+	std::string flowPath = fmtutil::format("./CTPFlow/{}/{}/", BROKER_ID, INVESTOR_ID);
+	boost::filesystem::create_directories(flowPath.c_str());
+	pUserApi = g_ctpCreator(flowPath.c_str());
 	CTraderSpi* pUserSpi = new CTraderSpi();
-	pUserApi->RegisterSpi((CThostFtdcTraderSpi*)pUserSpi);			// ×¢²áÊÂ¼şÀà
-	pUserApi->SubscribePublicTopic(THOST_TERT_QUICK);					// ×¢²á¹«ÓĞÁ÷
-	pUserApi->SubscribePrivateTopic(THOST_TERT_QUICK);					// ×¢²áË½ÓĞÁ÷
+	pUserApi->RegisterSpi((CThostFtdcTraderSpi*)pUserSpi);			// æ³¨å†Œäº‹ä»¶ç±»
+	pUserApi->SubscribePublicTopic(THOST_TERT_QUICK);					// æ³¨å†Œå…¬æœ‰æµ
+	pUserApi->SubscribePrivateTopic(THOST_TERT_QUICK);					// æ³¨å†Œç§æœ‰æµ
 	pUserApi->RegisterFront((char*)FRONT_ADDR.c_str());				// connect
 	pUserApi->Init();
 
-    //Èç¹û²»ÊÇÒì²½£¬ÔòµÈ´ıAPI·µ»Ø
+    //å¦‚æœä¸æ˜¯å¼‚æ­¥ï¼Œåˆ™ç­‰å¾…APIè¿”å›
     if(!bAsync)
         pUserApi->Join();
 

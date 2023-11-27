@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file WTSLogger.cpp
  * \project	WonderTrader
  *
@@ -234,6 +234,10 @@ void WTSLogger::init(const char* propFile /* = "logcfg.json" */, bool isFile /* 
 	}
 
 	m_rootLogger = getLogger("root");
+	if(m_rootLogger == NULL)
+	{
+		throw std::runtime_error("root logger can not be null, please check the config file");
+	}
 	spdlog::set_default_logger(m_rootLogger);
 	spdlog::flush_every(std::chrono::seconds(2));
 
@@ -360,8 +364,8 @@ void WTSLogger::log_raw_by_cat(const char* catName, WTSLogLevel ll, const char* 
 	if (!m_bInited)
 	{
 		print_timetag(true);
-		printf(message);
-		printf("\r\n");
+		fmt::print(message);
+		fmt::print("\n");
 		return;
 	}
 
@@ -402,8 +406,8 @@ void WTSLogger::log_dyn_raw(const char* patttern, const char* catName, WTSLogLev
 	if (!m_bInited)
 	{
 		print_timetag(true);
-		printf(m_buffer);
-		printf("\r\n");
+		fmt::print(m_buffer);
+		fmt::print("\n");
 		return;
 	}
 
@@ -435,7 +439,7 @@ SpdLoggerPtr WTSLogger::getLogger(const char* logger, const char* pattern /* = "
 	SpdLoggerPtr ret = spdlog::get(logger);
 	if (ret == NULL && strlen(pattern) > 0)
 	{
-		//µ±³É¶¯Ì¬µÄÈÕÖ¾À´´¦Àí
+		//å½“æˆåŠ¨æ€çš„æ—¥å¿—æ¥å¤„ç†
 		if (m_mapPatterns == NULL)
 			return SpdLoggerPtr();
 

@@ -14,7 +14,7 @@ broadcaster:                    # UDP广播器配置项
 parsers: mdparsers.yaml
 statemonitor: statemonitor.yaml
 writer:
-    module: WtDtStorage #数据存储模块
+    module: WtDataStorage #数据存储模块
     async: true         #同步落地还是异步落地，期货推荐同步，股票推荐异步
     groupsize: 20       #日志分组大小，主要用于控制日志输出，当订阅合约较多时，推荐1000以上，当订阅的合约数较少时，推荐100以内
     path: ../FUT_Data   #数据存储的路径

@@ -1,11 +1,11 @@
-/*!
+ï»¿/*!
  * \file WTSCollection.hpp
  * \project	WonderTrader
  *
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief Wt¼¯ºÏ×é¼ş¶¨ÒåÎÄ¼ş
+ * \brief Wté›†åˆç»„ä»¶å®šä¹‰æ–‡ä»¶
  */
 #pragma once
 #include "WTSObject.hpp"
@@ -23,17 +23,17 @@ NS_WTP_BEGIN
 //WTSArray
 
 /*
- *	Æ½Ì¨Êı×éÈİÆ÷
- *	ÄÚ²¿Ê¹ÓÃvectorÊµÏÖ
- *	Êı¾İÊ¹ÓÃWTSObjectÖ¸Õë¶ÔÏó
- *	ËùÓĞWTSObjectµÄÅÉÉúÀà¶¼¿ÉÒÔÊ¹ÓÃ
- *	ÓÃÓÚÆ½Ì¨ÄÚÊ¹ÓÃ
+ *	å¹³å°æ•°ç»„å®¹å™¨
+ *	å†…éƒ¨ä½¿ç”¨vectorå®ç°
+ *	æ•°æ®ä½¿ç”¨WTSObjectæŒ‡é’ˆå¯¹è±¡
+ *	æ‰€æœ‰WTSObjectçš„æ´¾ç”Ÿç±»éƒ½å¯ä»¥ä½¿ç”¨
+ *	ç”¨äºå¹³å°å†…ä½¿ç”¨
  */
 class WTSArray : public WTSObject
 {
 public:
 	/*
-	 *	Êı×éµü´úÆ÷
+	 *	æ•°ç»„è¿­ä»£å™¨
 	 */
 	typedef std::vector<WTSObject*>::iterator Iterator;
 	typedef std::vector<WTSObject*>::const_iterator ConstIterator;
@@ -44,7 +44,7 @@ public:
 	typedef std::function<bool(WTSObject*, WTSObject*)>	SortFunc;
 
 	/*
-	 *	´´½¨Êı×é¶ÔÏó
+	 *	åˆ›å»ºæ•°ç»„å¯¹è±¡
 	 */
 	static WTSArray* create()
 	{
@@ -53,14 +53,15 @@ public:
 	}
 
 	/*
-	 *	¶ÁÈ¡Êı×é³¤¶È
+	 *	è¯»å–æ•°ç»„é•¿åº¦
 	 */
+	inline
 	uint32_t size() const{ return (uint32_t)_vec.size(); }
 
 	/*
-	 *	Çå¿ÕÊı×é,²¢ÖØĞÂ·ÖÅä¿Õ¼ä
-	 *	µ÷ÓÃ¸Ãº¯Êı»áÔ¤ÏÈ·ÖÅä³¤¶È
-	 *	Ô¤ÏÈ·ÖÅäºÃµÄÊı¾İ¶¼ÊÇNULL
+	 *	æ¸…ç©ºæ•°ç»„,å¹¶é‡æ–°åˆ†é…ç©ºé—´
+	 *	è°ƒç”¨è¯¥å‡½æ•°ä¼šé¢„å…ˆåˆ†é…é•¿åº¦
+	 *	é¢„å…ˆåˆ†é…å¥½çš„æ•°æ®éƒ½æ˜¯NULL
 	 */
 	void resize(uint32_t _size)
 	{
@@ -71,11 +72,12 @@ public:
 	}
 
 	/*
-	 *	¶ÁÈ¡Êı×éÖ¸¶¨Î»ÖÃµÄÊı¾İ
-	 *	¶Ô±Ègrab½Ó¿Ú,at½Ó¿ÚÖ»È¡µÃÊı¾İ
-	 *	²»Ôö¼ÓÊı¾İµÄÒıÓÃ¼ÆÊı
-	 *	grab½Ó¿Ú¶ÁÈ¡Êı¾İÒÔºó,Ôö¼ÓÒıÓÃ¼ÆÊı
+	 *	è¯»å–æ•°ç»„æŒ‡å®šä½ç½®çš„æ•°æ®
+	 *	å¯¹æ¯”grabæ¥å£,atæ¥å£åªå–å¾—æ•°æ®
+	 *	ä¸å¢åŠ æ•°æ®çš„å¼•ç”¨è®¡æ•°
+	 *	grabæ¥å£è¯»å–æ•°æ®ä»¥å,å¢åŠ å¼•ç”¨è®¡æ•°
 	 */
+	inline
 	WTSObject* at(uint32_t idx)
 	{
 		if(idx <0 || idx >= _vec.size())
@@ -85,6 +87,7 @@ public:
 		return pRet;
 	}
 
+	inline
 	uint32_t idxOf(WTSObject* obj)
 	{
 		if (obj == NULL)
@@ -102,7 +105,7 @@ public:
 	}
 
 	template<typename T> 
-	T* at(uint32_t idx)
+	inline T* at(uint32_t idx)
 	{
 		if(idx <0 || idx >= _vec.size())
 			return NULL;
@@ -112,9 +115,10 @@ public:
 	}
 
 	/*
-	 *	[]²Ù×÷·ûÖØÔØ
-	 *	ÓÃ·¨Í¬atº¯Êı
+	 *	[]æ“ä½œç¬¦é‡è½½
+	 *	ç”¨æ³•åŒatå‡½æ•°
 	 */
+	inline
 	WTSObject* operator [](uint32_t idx)
 	{
 		if(idx <0 || idx >= _vec.size())
@@ -125,9 +129,10 @@ public:
 	}
 
 	/*
-	 *	¶ÁÈ¡Êı×éÖ¸¶¨Î»ÖÃµÄÊı¾İ
-	 *	Ôö¼ÓÒıÓÃ¼ÆÊı
+	 *	è¯»å–æ•°ç»„æŒ‡å®šä½ç½®çš„æ•°æ®
+	 *	å¢åŠ å¼•ç”¨è®¡æ•°
 	 */
+	inline
 	WTSObject*	grab(uint32_t idx)
 	{
 		if(idx <0 || idx >= _vec.size())
@@ -141,9 +146,10 @@ public:
 	}
 
 	/*
-	 *	Êı×éÄ©Î²×·¼ÓÊı¾İ
-	 *	Êı¾İ×Ô¶¯Ôö¼ÓÒıÓÃ¼ÆÊı
+	 *	æ•°ç»„æœ«å°¾è¿½åŠ æ•°æ®
+	 *	æ•°æ®è‡ªåŠ¨å¢åŠ å¼•ç”¨è®¡æ•°
 	 */
+	inline
 	void append(WTSObject* obj, bool bAutoRetain = true)
 	{
 		if (bAutoRetain && obj)
@@ -153,10 +159,11 @@ public:
 	}
 
 	/*
-	 *	ÉèÖÃÖ¸¶¨Î»ÖÃµÄÊı¾İ
-	 *	Èç¹û¸ÃÎ»ÖÃÒÑÓĞÊı¾İ,ÔòÊÍ·Åµô
-	 *	ĞÂÊı¾İÒıÓÃ¼ÆÊıÔö¼Ó
+	 *	è®¾ç½®æŒ‡å®šä½ç½®çš„æ•°æ®
+	 *	å¦‚æœè¯¥ä½ç½®å·²æœ‰æ•°æ®,åˆ™é‡Šæ”¾æ‰
+	 *	æ–°æ•°æ®å¼•ç”¨è®¡æ•°å¢åŠ 
 	 */
+	inline
 	void set(uint32_t idx, WTSObject* obj, bool bAutoRetain = true)
 	{
 		if(idx >= _vec.size() || obj == NULL)
@@ -172,6 +179,7 @@ public:
 		_vec[idx] = obj;
 	}
 
+	inline
 	void append(WTSArray* ay)
 	{
 		if(ay == NULL)
@@ -182,8 +190,8 @@ public:
 	}
 
 	/*
-	 *	Êı×éÇå¿Õ
-	 *	Êı×éÄÚËùÓĞÊı¾İÊÍ·ÅÒıÓÃ
+	 *	æ•°ç»„æ¸…ç©º
+	 *	æ•°ç»„å†…æ‰€æœ‰æ•°æ®é‡Šæ”¾å¼•ç”¨
 	 */
 	void clear()
 	{
@@ -201,10 +209,11 @@ public:
 	}
 
 	/*
-	 *	ÊÍ·ÅÊı×é¶ÔÏó,ÓÃ·¨ÈçWTSObject
-	 *	²»Í¬µÄÊÇ,Èç¹ûÒıÓÃ¼ÆÊıÎª1Ê±
-	 *	ÊÍ·ÅËùÓĞÊı¾İ
+	 *	é‡Šæ”¾æ•°ç»„å¯¹è±¡,ç”¨æ³•å¦‚WTSObject
+	 *	ä¸åŒçš„æ˜¯,å¦‚æœå¼•ç”¨è®¡æ•°ä¸º1æ—¶
+	 *	é‡Šæ”¾æ‰€æœ‰æ•°æ®
 	 */
+
 	virtual void release()
 	{
 		if (m_uRefs == 0)
@@ -226,51 +235,60 @@ public:
 	}
 
 	/*
-	 *	È¡µÃÊı×é¶ÔÏóÆğÊ¼Î»ÖÃµÄµü´úÆ÷
+	 *	å–å¾—æ•°ç»„å¯¹è±¡èµ·å§‹ä½ç½®çš„è¿­ä»£å™¨
 	 */
+	inline
 	Iterator begin()
 	{
 		return _vec.begin();
 	}
 
+	inline
 	ConstIterator begin() const
 	{
 		return _vec.begin();
 	}
 
+	inline
 	ReverseIterator rbegin()
 	{
 		return _vec.rbegin();
 	}
 
+	inline
 	ConstReverseIterator rbegin() const
 	{
 		return _vec.rbegin();
 	}
 
 	/*
-	 *	È¡µÃÊı×é¶ÔÏóÄ©Î²Î»ÖÃµÄµü´úÆ÷
+	 *	å–å¾—æ•°ç»„å¯¹è±¡æœ«å°¾ä½ç½®çš„è¿­ä»£å™¨
 	 */
+	inline
 	Iterator end()
 	{
 		return _vec.end();
 	}
 
+	inline
 	ConstIterator end() const
 	{
 		return _vec.end();
 	}
 
+	inline
 	ReverseIterator rend()
 	{
 		return _vec.rend();
 	}
 
+	inline
 	ConstReverseIterator rend() const
 	{
 		return _vec.rend();
 	}
 
+	inline
 	void	sort(SortFunc func)
 	{
 		std::sort(_vec.begin(), _vec.end(), func);
@@ -286,18 +304,18 @@ protected:
 
 
 /*
- *	mapÈİÆ÷
- *	ÄÚ²¿²ÉÓÃstd:mapÊµÏÖ
- *	Ä£°æÀàĞÍÎªkeyÀàĞÍ
- *	Êı¾İÊ¹ÓÃWTSObjectÖ¸Õë¶ÔÏó
- *	ËùÓĞWTSObjectµÄÅÉÉúÀà¶¼ÊÊÓÃ
+ *	mapå®¹å™¨
+ *	å†…éƒ¨é‡‡ç”¨std:mapå®ç°
+ *	æ¨¡ç‰ˆç±»å‹ä¸ºkeyç±»å‹
+ *	æ•°æ®ä½¿ç”¨WTSObjectæŒ‡é’ˆå¯¹è±¡
+ *	æ‰€æœ‰WTSObjectçš„æ´¾ç”Ÿç±»éƒ½é€‚ç”¨
  */
 template <class T>
 class WTSMap : public WTSObject
 {
 public:
 	/*
-	 *	ÈİÆ÷µü´úÆ÷µÄ¶¨Òå
+	 *	å®¹å™¨è¿­ä»£å™¨çš„å®šä¹‰
 	 */
 	typedef typename std::map<T, WTSObject*>	_MyType;
 	typedef typename _MyType::iterator			Iterator;
@@ -306,7 +324,7 @@ public:
 	typedef typename _MyType::const_reverse_iterator	ConstReverseIterator;
 
 	/*
-	 *	´´½¨mapÈİÆ÷
+	 *	åˆ›å»ºmapå®¹å™¨
 	 */
 	static WTSMap<T>*	create()
 	{
@@ -315,15 +333,17 @@ public:
 	}
 
 	/*
-	 *	·µ»ØmapÈİÆ÷µÄ´óĞ¡
+	 *	è¿”å›mapå®¹å™¨çš„å¤§å°
 	 */
+	inline
 	uint32_t size() const{ return (uint32_t)_map.size(); }
 
 	/*
-	 *	¶ÁÈ¡Ö¸¶¨key¶ÔÓ¦µÄÊı¾İ
-	 *	²»Ôö¼ÓÊı¾İµÄÒıÓÃ¼ÆÊı
-	 *	Ã»ÓĞÔò·µ»ØNULL
+	 *	è¯»å–æŒ‡å®škeyå¯¹åº”çš„æ•°æ®
+	 *	ä¸å¢åŠ æ•°æ®çš„å¼•ç”¨è®¡æ•°
+	 *	æ²¡æœ‰åˆ™è¿”å›NULL
 	 */
+	inline
 	WTSObject* get(const T &_key)
 	{
 		Iterator it = _map.find(_key);
@@ -335,9 +355,10 @@ public:
 	}
 
 	/*
-	 *	[]²Ù×÷·ûÖØÔØ
-	 *	ÓÃ·¨Í¬getº¯Êı
+	 *	[]æ“ä½œç¬¦é‡è½½
+	 *	ç”¨æ³•åŒgetå‡½æ•°
 	 */
+	inline
 	WTSObject* operator[](const T &_key)
 	{
 		Iterator it = _map.find(_key);
@@ -349,10 +370,11 @@ public:
 	}
 
 	/*
-	 *	¶ÁÈ¡Ö¸¶¨key¶ÔÓ¦µÄÊı¾İ
-	 *	Ôö¼ÓÊı¾İµÄÒıÓÃ¼ÆÊı
-	 *	Ã»ÓĞÔò·µ»ØNULL
+	 *	è¯»å–æŒ‡å®škeyå¯¹åº”çš„æ•°æ®
+	 *	å¢åŠ æ•°æ®çš„å¼•ç”¨è®¡æ•°
+	 *	æ²¡æœ‰åˆ™è¿”å›NULL
 	 */
+	inline
 	WTSObject* grab(const T &_key)
 	{
 		Iterator it = _map.find(_key);
@@ -367,9 +389,10 @@ public:
 	}
 
 	/*
-	 *	ĞÂÔöÒ»¸öÊı¾İ,²¢Ôö¼ÓÊı¾İÒıÓÃ¼ÆÊı
-	 *	Èç¹ûkey´æÔÚ,Ôò½«Ô­ÓĞÊı¾İÊÍ·Å
+	 *	æ–°å¢ä¸€ä¸ªæ•°æ®,å¹¶å¢åŠ æ•°æ®å¼•ç”¨è®¡æ•°
+	 *	å¦‚æœkeyå­˜åœ¨,åˆ™å°†åŸæœ‰æ•°æ®é‡Šæ”¾
 	 */
+	inline
 	void add(T _key, WTSObject* obj, bool bAutoRetain = true)
 	{
 		if(bAutoRetain && obj)
@@ -388,9 +411,10 @@ public:
 	}
 
 	/*
-	 *	¸ù¾İkeyÉ¾³ıÒ»¸öÊı¾İ
-	 *	Èç¹ûkey´æÔÚ,Ôò¶ÔÓ¦Êı¾İÒıÓÃ¼ÆÊı-1
+	 *	æ ¹æ®keyåˆ é™¤ä¸€ä¸ªæ•°æ®
+	 *	å¦‚æœkeyå­˜åœ¨,åˆ™å¯¹åº”æ•°æ®å¼•ç”¨è®¡æ•°-1
 	 */
+	inline
 	void remove(T _key)
 	{
 		Iterator it = _map.find(_key);
@@ -403,7 +427,7 @@ public:
 	}
 
 	/*
-	 *	»ñÈ¡ÈİÆ÷ÆğÊ¼Î»ÖÃµÄµü´úÆ÷
+	 *	è·å–å®¹å™¨èµ·å§‹ä½ç½®çš„è¿­ä»£å™¨
 	 */
 	Iterator begin()
 	{
@@ -416,7 +440,7 @@ public:
 	}
 
 	/*
-	 *	»ñÈ¡ÈİÒ×Ä©Î²Î»ÖÃµÄµü´úÆ÷
+	 *	è·å–å®¹æ˜“æœ«å°¾ä½ç½®çš„è¿­ä»£å™¨
 	 */
 	Iterator end()
 	{
@@ -429,7 +453,7 @@ public:
 	}
 
 	/*
-	 *	»ñÈ¡ÈİÆ÷ÆğÊ¼Î»ÖÃµÄµü´úÆ÷
+	 *	è·å–å®¹å™¨èµ·å§‹ä½ç½®çš„è¿­ä»£å™¨
 	 */
 	ReverseIterator rbegin()
 	{
@@ -442,7 +466,7 @@ public:
 	}
 
 	/*
-	 *	»ñÈ¡ÈİÒ×Ä©Î²Î»ÖÃµÄµü´úÆ÷
+	 *	è·å–å®¹æ˜“æœ«å°¾ä½ç½®çš„è¿­ä»£å™¨
 	 */
 	ReverseIterator rend()
 	{
@@ -454,19 +478,34 @@ public:
 		return _map.rend();
 	}
 
+	inline
 	Iterator find(const T& key)
 	{
 		return _map.find(key);
 	}
 
+	inline
 	ConstIterator find(const T& key) const
 	{
 		return _map.find(key);
 	}
 
+	inline
 	void erase(ConstIterator it)
 	{
 		_map.erase(it);
+	}
+
+	inline
+	void erase(Iterator it)
+	{
+		_map.erase(it);
+	}
+
+	inline
+	void erase(T key)
+	{
+		_map.erase(key);
 	}
 
 	Iterator lower_bound(const T& key)
@@ -489,6 +528,7 @@ public:
 		return _map.upper_bound(key);
 	}
 
+	inline
 	WTSObject* last() 
 	{
 		if(_map.empty())
@@ -499,8 +539,8 @@ public:
 	
 
 	/*
-	 *	Çå¿ÕÈİÆ÷
-	 *	ÈİÆ÷ÄÚËùÓĞÊı¾İÒıÓÃ¼ÆÊı-1
+	 *	æ¸…ç©ºå®¹å™¨
+	 *	å®¹å™¨å†…æ‰€æœ‰æ•°æ®å¼•ç”¨è®¡æ•°-1
 	 */
 	void clear()
 	{
@@ -513,8 +553,8 @@ public:
 	}
 
 	/*
-	 *	ÊÍ·ÅÈİÆ÷¶ÔÏó
-	 *	Èç¹ûÈİÆ÷ÒıÓÃ¼ÆÊıÎª1,ÔòÇå¿ÕËùÓĞÊı¾İ
+	 *	é‡Šæ”¾å®¹å™¨å¯¹è±¡
+	 *	å¦‚æœå®¹å™¨å¼•ç”¨è®¡æ•°ä¸º1,åˆ™æ¸…ç©ºæ‰€æœ‰æ•°æ®
 	 */
 	virtual void release()
 	{
@@ -544,11 +584,11 @@ protected:
 };
 
 /*
- *	mapÈİÆ÷
- *	ÄÚ²¿²ÉÓÃstd:mapÊµÏÖ
- *	Ä£°æÀàĞÍÎªkeyÀàĞÍ
- *	Êı¾İÊ¹ÓÃWTSObjectÖ¸Õë¶ÔÏó
- *	ËùÓĞWTSObjectµÄÅÉÉúÀà¶¼ÊÊÓÃ
+ *	mapå®¹å™¨
+ *	å†…éƒ¨é‡‡ç”¨std:mapå®ç°
+ *	æ¨¡ç‰ˆç±»å‹ä¸ºkeyç±»å‹
+ *	æ•°æ®ä½¿ç”¨WTSObjectæŒ‡é’ˆå¯¹è±¡
+ *	æ‰€æœ‰WTSObjectçš„æ´¾ç”Ÿç±»éƒ½é€‚ç”¨
  */
 template <typename T, class Hash = std::hash<T>>
 class WTSHashMap : public WTSObject
@@ -562,13 +602,13 @@ protected:
 
 public:
 	/*
-	 *	ÈİÆ÷µü´úÆ÷µÄ¶¨Òå
+	 *	å®¹å™¨è¿­ä»£å™¨çš„å®šä¹‰
 	 */
 	typedef wt_hashmap<T, WTSObject*, Hash>		_MyType;
 	typedef typename _MyType::const_iterator	ConstIterator;
 
 	/*
-	 *	´´½¨mapÈİÆ÷
+	 *	åˆ›å»ºmapå®¹å™¨
 	 */
 	static WTSHashMap<T, Hash>*	create()
 	{
@@ -577,14 +617,14 @@ public:
 	}
 
 	/*
-	 *	·µ»ØmapÈİÆ÷µÄ´óĞ¡
+	 *	è¿”å›mapå®¹å™¨çš„å¤§å°
 	 */
 	inline uint32_t size() const{return (uint32_t)_map.size();}
 
 	/*
-	 *	¶ÁÈ¡Ö¸¶¨key¶ÔÓ¦µÄÊı¾İ
-	 *	²»Ôö¼ÓÊı¾İµÄÒıÓÃ¼ÆÊı
-	 *	Ã»ÓĞÔò·µ»ØNULL
+	 *	è¯»å–æŒ‡å®škeyå¯¹åº”çš„æ•°æ®
+	 *	ä¸å¢åŠ æ•°æ®çš„å¼•ç”¨è®¡æ•°
+	 *	æ²¡æœ‰åˆ™è¿”å›NULL
 	 */
 	inline WTSObject* get(const T &_key)
 	{
@@ -597,9 +637,9 @@ public:
 	}
 
 	/*
-	 *	¶ÁÈ¡Ö¸¶¨key¶ÔÓ¦µÄÊı¾İ
-	 *	Ôö¼ÓÊı¾İµÄÒıÓÃ¼ÆÊı
-	 *	Ã»ÓĞÔò·µ»ØNULL
+	 *	è¯»å–æŒ‡å®škeyå¯¹åº”çš„æ•°æ®
+	 *	å¢åŠ æ•°æ®çš„å¼•ç”¨è®¡æ•°
+	 *	æ²¡æœ‰åˆ™è¿”å›NULL
 	 */
 	inline WTSObject* grab(const T &_key)
 	{
@@ -613,8 +653,8 @@ public:
 	}
 
 	/*
-	 *	ĞÂÔöÒ»¸öÊı¾İ,²¢Ôö¼ÓÊı¾İÒıÓÃ¼ÆÊı
-	 *	Èç¹ûkey´æÔÚ,Ôò½«Ô­ÓĞÊı¾İÊÍ·Å
+	 *	æ–°å¢ä¸€ä¸ªæ•°æ®,å¹¶å¢åŠ æ•°æ®å¼•ç”¨è®¡æ•°
+	 *	å¦‚æœkeyå­˜åœ¨,åˆ™å°†åŸæœ‰æ•°æ®é‡Šæ”¾
 	 */
 	inline void add(const T &_key, WTSObject* obj, bool bAutoRetain = true)
 	{
@@ -634,21 +674,23 @@ public:
 	}
 
 	/*
-	 *	¸ù¾İkeyÉ¾³ıÒ»¸öÊı¾İ
-	 *	Èç¹ûkey´æÔÚ,Ôò¶ÔÓ¦Êı¾İÒıÓÃ¼ÆÊı-1
+	 *	æ ¹æ®keyåˆ é™¤ä¸€ä¸ªæ•°æ®
+	 *	å¦‚æœkeyå­˜åœ¨,åˆ™å¯¹åº”æ•°æ®å¼•ç”¨è®¡æ•°-1
 	 */
 	inline void remove(const T &_key)
 	{
 		auto it = _map.find(_key);
-		if(it != _map.end())
+		if (it != _map.end())
 		{
-			it->second->release();
+			WTSObject* obj = it->second;
 			_map.erase(it);
+			if (obj) obj->release();
 		}
 	}
 
+
 	/*
-	 *	»ñÈ¡ÈİÆ÷ÆğÊ¼Î»ÖÃµÄµü´úÆ÷
+	 *	è·å–å®¹å™¨èµ·å§‹ä½ç½®çš„è¿­ä»£å™¨
 	 */
 	inline ConstIterator begin() const
 	{
@@ -656,7 +698,7 @@ public:
 	}
 
 	/*
-	 *	»ñÈ¡ÈİÒ×Ä©Î²Î»ÖÃµÄµü´úÆ÷
+	 *	è·å–å®¹æ˜“æœ«å°¾ä½ç½®çš„è¿­ä»£å™¨
 	 */
 	inline ConstIterator end() const
 	{
@@ -669,8 +711,8 @@ public:
 	}
 
 	/*
-	 *	Çå¿ÕÈİÆ÷
-	 *	ÈİÆ÷ÄÚËùÓĞÊı¾İÒıÓÃ¼ÆÊı-1
+	 *	æ¸…ç©ºå®¹å™¨
+	 *	å®¹å™¨å†…æ‰€æœ‰æ•°æ®å¼•ç”¨è®¡æ•°-1
 	 */
 	inline void clear()
 	{
@@ -683,8 +725,8 @@ public:
 	}
 
 	/*
-	 *	ÊÍ·ÅÈİÆ÷¶ÔÏó
-	 *	Èç¹ûÈİÆ÷ÒıÓÃ¼ÆÊıÎª1,ÔòÇå¿ÕËùÓĞÊı¾İ
+	 *	é‡Šæ”¾å®¹å™¨å¯¹è±¡
+	 *	å¦‚æœå®¹å™¨å¼•ç”¨è®¡æ•°ä¸º1,åˆ™æ¸…ç©ºæ‰€æœ‰æ•°æ®
 	 */
 	virtual void release()
 	{
@@ -793,7 +835,7 @@ public:
 	}
 
 	/*
-	 *	È¡µÃÊı×é¶ÔÏóÆğÊ¼Î»ÖÃµÄµü´úÆ÷
+	 *	å–å¾—æ•°ç»„å¯¹è±¡èµ·å§‹ä½ç½®çš„è¿­ä»£å™¨
 	 */
 	Iterator begin()
 	{
@@ -811,7 +853,7 @@ public:
 	}
 
 	/*
-	 *	È¡µÃÊı×é¶ÔÏóÄ©Î²Î»ÖÃµÄµü´úÆ÷
+	 *	å–å¾—æ•°ç»„å¯¹è±¡æœ«å°¾ä½ç½®çš„è¿­ä»£å™¨
 	 */
 	Iterator end()
 	{

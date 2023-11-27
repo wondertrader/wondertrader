@@ -11,6 +11,7 @@ set folder="..\%plat%\%env%\WtPorter\executer\"
 if not exist %folder% md %folder%
 
 xcopy ..\%plat%\%env%\ParserUDP.dll ..\%plat%\%env%\WtPorter\parsers\ /C /Y
+xcopy ..\%plat%\%env%\ParserShm.dll ..\%plat%\%env%\WtPorter\parsers\ /C /Y
 xcopy ..\%plat%\%env%\TraderCTP.dll ..\%plat%\%env%\WtPorter\traders\ /C /Y
 xcopy ..\%plat%\%env%\TraderXTP.dll ..\%plat%\%env%\WtPorter\traders\ /C /Y
 xcopy ..\%plat%\%env%\TraderMocker.dll ..\%plat%\%env%\WtPorter\traders\ /C /Y

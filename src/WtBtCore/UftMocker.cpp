@@ -1012,6 +1012,12 @@ double UftMocker::stra_get_position(const char* stdCode, bool bOnlyValid /* = fa
 		return bOnlyValid ? (posInfo._long.valid() - posInfo._short.valid()) : (posInfo._long.volume() - posInfo._short.volume());
 }
 
+double UftMocker::stra_get_local_position(const char* stdCode)
+{
+	const PosInfo& posInfo = _pos_map[stdCode];
+	return posInfo._long.volume() - posInfo._short.volume();
+}
+
 double UftMocker::stra_enum_position(const char* stdCode)
 {
 	uint32_t tdate = _replayer->get_trading_date();

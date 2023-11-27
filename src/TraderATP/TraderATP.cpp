@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file TraderATP.cpp
  * \project	WonderTrader
  *
@@ -15,6 +15,7 @@
 #include "../Includes/WTSTradeDef.hpp"
 #include "../Includes/WTSError.hpp"
 #include "../Includes/WTSVariant.hpp"
+#include "../Includes/WTSVersion.h"
 
 #include "../Share/ModuleHelper.hpp"
 
@@ -160,19 +161,19 @@ inline ATPOrdTypeType wrapOrdType(WTSPriceType priceType, WTSOrderFlag flag)
 {
 
 	if (WPT_LIMITPRICE == priceType && flag == WOF_NOR)
-		return ATPOrdTypeConst::kFixedNew;  // ÏŞ¼ÛÎ¯ÍĞ¡¢ÔöÇ¿ÏŞ¼Û
+		return ATPOrdTypeConst::kFixedNew;  // é™ä»·å§”æ‰˜ã€å¢å¼ºé™ä»·
 
 	if (WPT_LIMITPRICE == priceType && flag == WOF_FOK)
-		return ATPOrdTypeConst::kFixedFullDealOrCancel;  // ÏŞ¼ÛÈ«¶î³É½»»ò³·Ïú
+		return ATPOrdTypeConst::kFixedFullDealOrCancel;  // é™ä»·å…¨é¢æˆäº¤æˆ–æ’¤é”€
 
 	if (WPT_ANYPRICE == priceType && flag == WOF_NOR)
-		return ATPOrdTypeConst::kMarketTransferFixed;  // ÊĞ¼ÛÊ£Óà×ªÏŞ¼Û
+		return ATPOrdTypeConst::kMarketTransferFixed;  // å¸‚ä»·å‰©ä½™è½¬é™ä»·
 
 	if (WPT_ANYPRICE == priceType && flag == WOF_FAK)
-		return ATPOrdTypeConst::kImmediateDealTransferCancel;  // Á¢¼´³É½»Ê£Óà³·Ïú
+		return ATPOrdTypeConst::kImmediateDealTransferCancel;  // ç«‹å³æˆäº¤å‰©ä½™æ’¤é”€
 
 	if (WPT_ANYPRICE == priceType && flag == WOF_FOK)
-		return ATPOrdTypeConst::kFullDealOrCancel;  // È«¶î³É½»»ò³·Ïú
+		return ATPOrdTypeConst::kFullDealOrCancel;  // å…¨é¢æˆäº¤æˆ–æ’¤é”€
 
 	return ATPOrdTypeConst::kDefault;
 }
@@ -195,11 +196,11 @@ inline ATPLoginModeType wrapLoginMode(int loginMode)
 	switch (loginMode)
 	{
 	case 1:
-		login_mode = ATPCustLoginModeType::kCustIDMode;  // ¿Í»§ºÅµÇÂ¼
+		login_mode = ATPCustLoginModeType::kCustIDMode;  // å®¢æˆ·å·ç™»å½•
 	case 2:
-		login_mode = ATPCustLoginModeType::kFundAccountIDMode;  // ×Ê½ğÕË»§µÇÂ¼Ä£Ê½
+		login_mode = ATPCustLoginModeType::kFundAccountIDMode;  // èµ„é‡‘è´¦æˆ·ç™»å½•æ¨¡å¼
 	case 3:
-		login_mode = ATPCustLoginModeType::kAccountIDMode;  // Ö¤È¯ÕË»§µÇÂ¼
+		login_mode = ATPCustLoginModeType::kAccountIDMode;  // è¯åˆ¸è´¦æˆ·ç™»å½•
 	default:
 		break;
 	}
@@ -423,8 +424,8 @@ WTSTradeInfo* TraderATP::makeTradeRecord(const ATPRspCashAuctionTradeERMsg *cash
 		return NULL;
 
 	WTSTradeInfo *pRet = WTSTradeInfo::create(code.c_str(), exchg.c_str());
-	pRet->setVolume((uint32_t)cash_auction_trade_er->last_qty / 100);  // ³É½»ÊıÁ¿
-	pRet->setPrice(cash_auction_trade_er->last_px / 10000.0);  // ³É½»¼Û¸ñ
+	pRet->setVolume((uint32_t)cash_auction_trade_er->last_qty / 100);  // æˆäº¤æ•°é‡
+	pRet->setPrice(cash_auction_trade_er->last_px / 10000.0);  // æˆäº¤ä»·æ ¼
 	pRet->setTradeID(cash_auction_trade_er->exec_id);
 	pRet->setContractInfo(contract);
 
@@ -440,7 +441,7 @@ WTSTradeInfo* TraderATP::makeTradeRecord(const ATPRspCashAuctionTradeERMsg *cash
 	fmtutil::format_to(pRet->getRefOrder(), "{}", cash_auction_trade_er->cl_ord_id);
 	pRet->setTradeType(WTT_Common);
 
-	double amount = cash_auction_trade_er->total_value_traded / 10000.0;   //³É½»½ğ¶î
+	double amount = cash_auction_trade_er->total_value_traded / 10000.0;   //æˆäº¤é‡‘é¢
 	pRet->setAmount(amount);
 
 	const char* usertag = m_oidCache.get(StrUtil::trim(pRet->getRefOrder()).c_str());
@@ -455,7 +456,7 @@ void TraderATP::OnLogin(const std::string& reason)
 	if (_sink)
 		_sink->handleEvent(WTE_Connect, 0);
 
-	_state = TS_LOGINED;  // ÒÑµÇÂ¼
+	_state = TS_LOGINED;  // å·²ç™»å½•
 	write_log(_sink, LL_WARN, "[TraderATP] {} login success: {}...", _user, reason);
 }
 
@@ -531,7 +532,7 @@ void TraderATP::OnRspCustLoginResp(const ATPRspCustLoginRespOtherMsg &cust_login
 		_cust_id = cust_login_resp.cust_id;
 
 		{
-			//³õÊ¼»¯Î¯ÍĞµ¥»º´æÆ÷
+			//åˆå§‹åŒ–å§”æ‰˜å•ç¼“å­˜å™¨
 			std::stringstream ss;
 			ss << "./atpdata/local/";
 			std::string path = StrUtil::standardisePath(ss.str());
@@ -544,7 +545,7 @@ void TraderATP::OnRspCustLoginResp(const ATPRspCustLoginRespOtherMsg &cust_login
 		}
 
 		{
-			//³õÊ¼»¯¶©µ¥±ê¼Ç»º´æÆ÷
+			//åˆå§‹åŒ–è®¢å•æ ‡è®°ç¼“å­˜å™¨
 			std::stringstream ss;
 			ss << "./atpdata/local/";
 			std::string path = StrUtil::standardisePath(ss.str());
@@ -588,7 +589,7 @@ void TraderATP::OnRspCustLogoutResp(const ATPRspCustLogoutRespOtherMsg &cust_log
 	}
 }
 
-// ¶©µ¥ÏÂ´ïÄÚ²¿ÏìÓ¦
+// è®¢å•ä¸‹è¾¾å†…éƒ¨å“åº”
 void TraderATP::OnRspOrderStatusInternalAck(const ATPRspOrderStatusAckMsg& order_status_ack)
 {
 	write_log(_sink, LL_INFO, "[TraderATP][{}] cl_ord_no: {}, security_id: {}, ord_status: {}, price: {}, order_qty: {}, leaves_qty: {}, cum_qty: {}, cl_ord_id: {}, order_type: {}", order_status_ack.account_id,
@@ -599,9 +600,9 @@ void TraderATP::OnRspOrderStatusInternalAck(const ATPRspOrderStatusAckMsg& order
 	{
 		WTSEntrust* entrust = makeEntrust(&order_status_ack);
 
-		if (order_status_ack.orig_cl_ord_no != 0)  // ¿ÉÒÔ¸ù¾İorig_cl_ord_noÊÇ·ñÎª0À´ÅĞ¶ÏÊÇ·ñÎª³·µ¥Î¯ÍĞ£¬ĞèÒª×¢Òâ³·µ¥´«ÈëµÄorig_cl_ord_no²»ÄÜÎª0
+		if (order_status_ack.orig_cl_ord_no != 0)  // å¯ä»¥æ ¹æ®orig_cl_ord_noæ˜¯å¦ä¸º0æ¥åˆ¤æ–­æ˜¯å¦ä¸ºæ’¤å•å§”æ‰˜ï¼Œéœ€è¦æ³¨æ„æ’¤å•ä¼ å…¥çš„orig_cl_ord_noä¸èƒ½ä¸º0
 		{
-			// ¶ÔÓ¦³·µ¥»Øµ÷
+			// å¯¹åº”æ’¤å•å›è°ƒ
 			write_log(_sink, LL_ERROR, "[TraderATP][{}] Cancelling order error, cl_ord_no: {}, orig_cl_ord_no: {}, reject code: {}, reject reason: {}", order_status_ack.account_id, order_status_ack.cl_ord_no, order_status_ack.orig_cl_ord_no, order_status_ack.reject_reason_code, order_status_ack.ord_rej_reason);
 			WTSError* error = WTSError::create(WEC_ORDERCANCEL, order_status_ack.ord_rej_reason);
 			_sink->onRspEntrust(entrust, error);
@@ -640,11 +641,11 @@ void TraderATP::OnRspOrderStatusInternalAck(const ATPRspOrderStatusAckMsg& order
 		}
 	}
 
-	// ±£´æ»Ø±¨·ÖÇøºÅ¡¢ĞòºÅ£¬ÓÃÓÚ¶ÏÏßÖØÁ¬Ê±Ö¸¶¨ÒÑÊÕµ½×îĞÂ»Ø±¨ĞòºÅ
+	// ä¿å­˜å›æŠ¥åˆ†åŒºå·ã€åºå·ï¼Œç”¨äºæ–­çº¿é‡è¿æ—¶æŒ‡å®šå·²æ”¶åˆ°æœ€æ–°å›æŠ¥åºå·
 	report_sync[order_status_ack.partition] = order_status_ack.index;
 }
 
-// ¶©µ¥ÏÂ´ï½»Ò×ËùÈ·ÈÏ
+// è®¢å•ä¸‹è¾¾äº¤æ˜“æ‰€ç¡®è®¤
 void TraderATP::OnRspOrderStatusAck(const ATPRspOrderStatusAckMsg& order_status_ack)
 {
 	write_log(_sink, LL_INFO, "[OnRspOrderStatusAck][{}] account_id: {}, cl_ord_no: {}, code: {}, price: {}, order_qty: {}, ord_status: {}, side: {}", order_status_ack.account_id, order_status_ack.account_id,
@@ -654,9 +655,9 @@ void TraderATP::OnRspOrderStatusAck(const ATPRspOrderStatusAckMsg& order_status_
 	{
 		WTSEntrust* entrust = makeEntrust(&order_status_ack);
 
-		if (order_status_ack.orig_cl_ord_no != 0)  // ¿ÉÒÔ¸ù¾İorig_cl_ord_noÊÇ·ñÎª0À´ÅĞ¶ÏÊÇ·ñÎª³·µ¥Î¯ÍĞ£¬ĞèÒª×¢Òâ³·µ¥´«ÈëµÄorig_cl_ord_no²»ÄÜÎª0
+		if (order_status_ack.orig_cl_ord_no != 0)  // å¯ä»¥æ ¹æ®orig_cl_ord_noæ˜¯å¦ä¸º0æ¥åˆ¤æ–­æ˜¯å¦ä¸ºæ’¤å•å§”æ‰˜ï¼Œéœ€è¦æ³¨æ„æ’¤å•ä¼ å…¥çš„orig_cl_ord_noä¸èƒ½ä¸º0
 		{
-			// ¶ÔÓ¦³·µ¥»Øµ÷
+			// å¯¹åº”æ’¤å•å›è°ƒ
 			write_log(_sink, LL_ERROR, "[OnRspOrderStatusAck][{}] Cancelling order error, cl_ord_no: {}, orig_cl_ord_no: {}, reject code: {}, reject reason: {}", order_status_ack.account_id, order_status_ack.cl_ord_no, order_status_ack.orig_cl_ord_no, order_status_ack.reject_reason_code, order_status_ack.ord_rej_reason);
 			WTSError* error = WTSError::create(WEC_ORDERCANCEL, order_status_ack.ord_rej_reason);
 			_sink->onRspEntrust(entrust, error);
@@ -695,11 +696,11 @@ void TraderATP::OnRspOrderStatusAck(const ATPRspOrderStatusAckMsg& order_status_
 		}
 	}
 
-	// ±£´æ»Ø±¨·ÖÇøºÅ¡¢ĞòºÅ£¬ÓÃÓÚ¶ÏÏßÖØÁ¬Ê±Ö¸¶¨ÒÑÊÕµ½×îĞÂ»Ø±¨ĞòºÅ
+	// ä¿å­˜å›æŠ¥åˆ†åŒºå·ã€åºå·ï¼Œç”¨äºæ–­çº¿é‡è¿æ—¶æŒ‡å®šå·²æ”¶åˆ°æœ€æ–°å›æŠ¥åºå·
 	report_sync[order_status_ack.partition] = order_status_ack.index;
 }
 
-// ³É½»»Ø±¨
+// æˆäº¤å›æŠ¥
 void TraderATP::OnRspCashAuctionTradeER(const ATPRspCashAuctionTradeERMsg& cash_auction_trade_er)
 {
 	write_log(_sink, LL_INFO, "[OnRspCashAuctionTradeER] code: {}, price: {}, qty: {}, cum_qty: {}, left_qty: {}, order_status: {}, cl_ord_no: {}, order_id: {}, cl_ord_id: {}",
@@ -717,11 +718,11 @@ void TraderATP::OnRspCashAuctionTradeER(const ATPRspCashAuctionTradeERMsg& cash_
 		});
 	}
 
-	// ±£´æ»Ø±¨·ÖÇøºÅ¡¢ĞòºÅ£¬ÓÃÓÚ¶ÏÏßÖØÁ¬Ê±Ö¸¶¨ÒÑÊÕµ½×îĞÂ»Ø±¨ĞòºÅ
+	// ä¿å­˜å›æŠ¥åˆ†åŒºå·ã€åºå·ï¼Œç”¨äºæ–­çº¿é‡è¿æ—¶æŒ‡å®šå·²æ”¶åˆ°æœ€æ–°å›æŠ¥åºå·
 	report_sync[cash_auction_trade_er.partition] = cash_auction_trade_er.index;
 }
 
-// ¶©µ¥ÏÂ´ïÄÚ²¿¾Ü¾ø
+// è®¢å•ä¸‹è¾¾å†…éƒ¨æ‹’ç»
 void TraderATP::OnRspBizRejection(const ATPRspBizRejectionOtherMsg& biz_rejection)
 {
 	if (_sink)
@@ -765,7 +766,7 @@ void TraderATP::OnRspOrderQueryResult(const ATPRspOrderQueryResultMsg &msg)
 		});
 	}
 
-	if ((msg.last_index + 1) == msg.total_num)  // ²éÑ¯Íê±Ï
+	if ((msg.last_index + 1) == msg.total_num)  // æŸ¥è¯¢å®Œæ¯•
 	{
 		_asyncio.post([this] {
 			if (_sink)
@@ -796,11 +797,11 @@ void TraderATP::OnRspTradeOrderQueryResult(const ATPRspTradeOrderQueryResultMsg 
 		});
 	}
 
-	//if ((msg.last_index + 1) == msg.total_num)  // ²éÑ¯Íê±Ï
+	//if ((msg.last_index + 1) == msg.total_num)  // æŸ¥è¯¢å®Œæ¯•
 	//{
 	//	if (!_sz_acctid.empty() && (strcmp(msg.account_id, _sz_acctid.c_str()) == 0))
 	//	{
-	//		// ´ËÊ±·µ»ØÁËËùÓĞ½á¹û
+	//		// æ­¤æ—¶è¿”å›äº†æ‰€æœ‰ç»“æœ
 	//		if (_sink)
 	//			_sink->onRspTrades(ayTrades);
 
@@ -808,7 +809,7 @@ void TraderATP::OnRspTradeOrderQueryResult(const ATPRspTradeOrderQueryResultMsg 
 	//	}
 	//	else if (_sz_acctid.empty())
 	//	{
-	//		// ´ËÊ±·µ»ØÁËËùÓĞ½á¹û
+	//		// æ­¤æ—¶è¿”å›äº†æ‰€æœ‰ç»“æœ
 	//		if (_sink)
 	//			_sink->onRspTrades(ayTrades);
 
@@ -816,7 +817,7 @@ void TraderATP::OnRspTradeOrderQueryResult(const ATPRspTradeOrderQueryResultMsg 
 	//	}
 	//}
 
-	if ((msg.last_index + 1) == msg.total_num)  // ²éÑ¯Íê±Ï
+	if ((msg.last_index + 1) == msg.total_num)  // æŸ¥è¯¢å®Œæ¯•
 	{
 		_asyncio.post([this] {
 			if (_sink)
@@ -856,11 +857,11 @@ void TraderATP::OnRspShareQueryResult(const ATPRspShareQueryResultMsg &msg)
 
 			double tmp = (double)(unit.leaves_qty / 100.0 - unit.init_qty / 100.0);
 
-			pos->setNewPosition((tmp >= 0) ? tmp : 0);  // Ê£Óà¹É·İÊıÁ¿N15(2)£¬°üº¬µ±ÈÕÂòÈë²¿·Ö£¬²ğ·ÖºÏ²¢£¬Éê¹ºÊê»Ø
-			pos->setPrePosition((double)unit.init_qty / 100.0);  // ÈÕ³õ³Ö²ÖÁ¿N15(2)
+			pos->setNewPosition((tmp >= 0) ? tmp : 0);  // å‰©ä½™è‚¡ä»½æ•°é‡N15(2)ï¼ŒåŒ…å«å½“æ—¥ä¹°å…¥éƒ¨åˆ†ï¼Œæ‹†åˆ†åˆå¹¶ï¼Œç”³è´­èµå›
+			pos->setPrePosition((double)unit.init_qty / 100.0);  // æ—¥åˆæŒä»“é‡N15(2)
 
 			pos->setAvailNewPos(0);
-			pos->setAvailPrePos(unit.available_qty / 100.0);   // ¿ÉÓÃ¹É·İÊıÁ¿N15(2)
+			pos->setAvailPrePos(unit.available_qty / 100.0);   // å¯ç”¨è‚¡ä»½æ•°é‡N15(2)
 
 			pos->setMargin(unit.market_value / 10000.0);
 			pos->setDynProfit(unit.profit_loss / 10000.0);
@@ -872,7 +873,7 @@ void TraderATP::OnRspShareQueryResult(const ATPRspShareQueryResultMsg &msg)
 		}
 	}
 
-	if ((msg.last_index + 1) == msg.total_num)  // ²éÑ¯Íê±Ï
+	if ((msg.last_index + 1) == msg.total_num)  // æŸ¥è¯¢å®Œæ¯•
 	{
 		_asyncio.post([this] {
 			WTSArray* ayPos = WTSArray::create();
@@ -932,20 +933,20 @@ bool TraderATP::init(WTSVariant *params)
 	static bool inited = false;
 	if (!inited)
 	{
-		// ³õÊ¼»¯API
-		const std::string station_name = ""; // Õ¾µãĞÅÏ¢£¬¸Ã×Ö¶ÎÒÑ¾­²»Ê¹ÓÃ
-		const std::string cfg_path = ".";      // ÅäÖÃÎÄ¼şÂ·¾¶
-		const std::string log_dir_path = ""; // ÈÕÖ¾Â·¾¶
-		bool record_all_flag = true;         // ÊÇ·ñ¼ÇÂ¼ËùÓĞÎ¯ÍĞĞÅÏ¢
-		//std::tr1::unordered_map<std::string, std::string> encrypt_cfg;  // ¼ÓÃÜ¿âÅäÖÃ
-		//bool connection_retention_flag = false;   // ÊÇ·ñÆôÓÃ»á»°±£³Ö
+		// åˆå§‹åŒ–API
+		const std::string station_name = ""; // ç«™ç‚¹ä¿¡æ¯ï¼Œè¯¥å­—æ®µå·²ç»ä¸ä½¿ç”¨
+		const std::string cfg_path = ".";      // é…ç½®æ–‡ä»¶è·¯å¾„
+		const std::string log_dir_path = ""; // æ—¥å¿—è·¯å¾„
+		bool record_all_flag = true;         // æ˜¯å¦è®°å½•æ‰€æœ‰å§”æ‰˜ä¿¡æ¯
+		//std::tr1::unordered_map<std::string, std::string> encrypt_cfg;  // åŠ å¯†åº“é…ç½®
+		//bool connection_retention_flag = false;   // æ˜¯å¦å¯ç”¨ä¼šè¯ä¿æŒ
 
-		//// encrypt_cfg²ÎÊıÌîĞ´£º
-		//encrypt_cfg["ENCRYPT_SCHEMA"] = "0";              // ×Ö·û 0 ±íÊ¾ ²»¶ÔÏûÏ¢ÖĞµÄËùÓĞ password ¼ÓÃÜ
-		//encrypt_cfg["ATP_ENCRYPT_PASSWORD"] = "";         // ³ıµÇÈë¼°ÃÜÂëĞŞ¸ÄÍâÆäËûÏûÏ¢µÄÃÜÂë×Ö¶Î¼ÓÃÜËã·¨
-		//encrypt_cfg["ATP_LOGIN_ENCRYPT_PASSWORD"] = "";   // µÇÈë¼°ÃÜÂëĞŞ¸ÄÏûÏ¢ÖĞÃÜÂë×Ö¶ÎµÄ¼ÓÃÜËã·¨soÂ·¾¶
-		//encrypt_cfg["GM_SM2_PUBLIC_KEY_PATH"] = "";       // ²ÉÓÃ¹úÃÜËã·¨Ê±£¬Í¨¹ı¸ÃkeyÅäÖÃ GMËã·¨ÅäÖÃ¼ÓÃÜÊ¹ÓÃµÄ¹«Ô¿Â·¾¶
-		//encrypt_cfg["RSA_PUBLIC_KEY_PATH"] = "";          // Èç¹ûÊ¹ÓÃrsaËã·¨¼ÓÃÜ£¬Í¨¹ı¸ÃkeyÅäÖÃ rsaËã·¨ÅäÖÃ¼ÓÃÜÊ¹ÓÃµÄ¹«Ô¿Â·¾¶
+		//// encrypt_cfgå‚æ•°å¡«å†™ï¼š
+		//encrypt_cfg["ENCRYPT_SCHEMA"] = "0";              // å­—ç¬¦ 0 è¡¨ç¤º ä¸å¯¹æ¶ˆæ¯ä¸­çš„æ‰€æœ‰ password åŠ å¯†
+		//encrypt_cfg["ATP_ENCRYPT_PASSWORD"] = "";         // é™¤ç™»å…¥åŠå¯†ç ä¿®æ”¹å¤–å…¶ä»–æ¶ˆæ¯çš„å¯†ç å­—æ®µåŠ å¯†ç®—æ³•
+		//encrypt_cfg["ATP_LOGIN_ENCRYPT_PASSWORD"] = "";   // ç™»å…¥åŠå¯†ç ä¿®æ”¹æ¶ˆæ¯ä¸­å¯†ç å­—æ®µçš„åŠ å¯†ç®—æ³•soè·¯å¾„
+		//encrypt_cfg["GM_SM2_PUBLIC_KEY_PATH"] = "";       // é‡‡ç”¨å›½å¯†ç®—æ³•æ—¶ï¼Œé€šè¿‡è¯¥keyé…ç½® GMç®—æ³•é…ç½®åŠ å¯†ä½¿ç”¨çš„å…¬é’¥è·¯å¾„
+		//encrypt_cfg["RSA_PUBLIC_KEY_PATH"] = "";          // å¦‚æœä½¿ç”¨rsaç®—æ³•åŠ å¯†ï¼Œé€šè¿‡è¯¥keyé…ç½® rsaç®—æ³•é…ç½®åŠ å¯†ä½¿ç”¨çš„å…¬é’¥è·¯å¾„
 
 		ATPRetCodeType ec = ATPTradeAPI::Init(station_name, cfg_path, log_dir_path, record_all_flag);
 
@@ -1012,18 +1013,17 @@ void TraderATP::reconnect()
 	locations.push_back(_front);
 	locations.push_back(_front2);
 
-	// ÉèÖÃÁ¬½ÓĞÅÏ¢
+	// è®¾ç½®è¿æ¥ä¿¡æ¯
 	ATPConnectProperty prop;
-	prop.user = _user;												// Íø¹ØÓÃ»§Ãû
-	prop.password = _pass;											// Íø¹ØÓÃ»§ÃÜÂë
-	prop.locations = locations;										// Íø¹ØÖ÷±¸½ÚµãµÄµØÖ·+¶Ë¿Ú
-	prop.heartbeat_interval_milli = 5000;                           // ·¢ËÍĞÄÌøµÄÊ±¼ä¼ä¸ô£¬µ¥Î»£ººÁÃë
-	prop.connect_timeout_milli = 5000;                              // Á¬½Ó³¬Ê±Ê±¼ä£¬µ¥Î»£ººÁÃë
-	prop.reconnect_time = 10;                                       // ÖØÊÔÁ¬½Ó´ÎÊı
-	prop.client_name = "WonderTrader";                              // ¿Í»§¶Ë³ÌĞòÃû×Ö
-	prop.client_version = "V1.0.0";									// ¿Í»§¶Ë³ÌĞò°æ±¾
-	prop.report_sync = report_sync;									// »Ø±¨Í¬²½Êı¾İ·ÖÇøºÅ+ĞòºÅ£¬Ê×´ÎÊÇ¿Õ£¬¶ÏÏßÖØÁ¬Ê±ÌîÈëµÄÊÇ½ÓÊÜµ½µÄ×îĞÂ·ÖÇøºÅ+ĞòºÅ
-	prop.mode = 0;													// Ä£Ê½0-Í¬²½»Ø±¨Ä£Ê½£¬Ä£Ê½1-¿ìËÙµÇÂ¼Ä£Ê½£¬²»Í¬²½»Ø±¨
+	prop.user = _user;												// ç½‘å…³ç”¨æˆ·å
+	prop.password = _pass;											// ç½‘å…³ç”¨æˆ·å¯†ç 
+	prop.locations = locations;										// ç½‘å…³ä¸»å¤‡èŠ‚ç‚¹çš„åœ°å€+ç«¯å£
+	prop.heartbeat_interval_milli = 5000;                           // å‘é€å¿ƒè·³çš„æ—¶é—´é—´éš”ï¼Œå•ä½ï¼šæ¯«ç§’
+	prop.connect_timeout_milli = 5000;                              // è¿æ¥è¶…æ—¶æ—¶é—´ï¼Œå•ä½ï¼šæ¯«ç§’
+	prop.reconnect_time = 10;                                       // é‡è¯•è¿æ¥æ¬¡æ•°
+	prop.client_name = _product;									// å®¢æˆ·ç«¯ç¨‹åºåå­—
+	prop.report_sync = report_sync;									// å›æŠ¥åŒæ­¥æ•°æ®åˆ†åŒºå·+åºå·ï¼Œé¦–æ¬¡æ˜¯ç©ºï¼Œæ–­çº¿é‡è¿æ—¶å¡«å…¥çš„æ˜¯æ¥å—åˆ°çš„æœ€æ–°åˆ†åŒºå·+åºå·
+	prop.mode = 0;													// æ¨¡å¼0-åŒæ­¥å›æŠ¥æ¨¡å¼ï¼Œæ¨¡å¼1-å¿«é€Ÿç™»å½•æ¨¡å¼ï¼Œä¸åŒæ­¥å›æŠ¥
 
 	ATPRetCodeType ec = _api->Connect(prop, this);
 	if (ec != ErrorCode::kSuccess)
@@ -1062,7 +1062,7 @@ bool TraderATP::isConnected()
 
 void TraderATP::genEntrustID(char* buffer, uint32_t orderRef)
 {
-	//ÕâÀï²»ÔÙÊ¹ÓÃsessionid£¬ÒòÎªÃ¿´ÎµÇÂ½»á²»Í¬£¬Èç¹ûÊ¹ÓÃµÄ»°£¬¿ÉÄÜ»áÔì³É²»Î¨Ò»µÄÇé¿ö
+	//è¿™é‡Œä¸å†ä½¿ç”¨sessionidï¼Œå› ä¸ºæ¯æ¬¡ç™»é™†ä¼šä¸åŒï¼Œå¦‚æœä½¿ç”¨çš„è¯ï¼Œå¯èƒ½ä¼šé€ æˆä¸å”¯ä¸€çš„æƒ…å†µ
 	fmtutil::format_to(buffer, "{}#{}#{}", _user, _tradingday, orderRef);
 }
 
@@ -1100,16 +1100,16 @@ void TraderATP::doLogin(const char* productInfo)
 {
 	_state = TS_LOGINING;
 
-	// ÉèÖÃµÇÈëÏûÏ¢
+	// è®¾ç½®ç™»å…¥æ¶ˆæ¯
 	ATPReqCustLoginOtherMsg login_msg;
 
-	wt_strcpy(login_msg.fund_account_id, _fund_accountid.c_str());           // ×Ê½ğÕË»§ID
-	wt_strcpy(login_msg.password, _accpasswd.c_str());                  // ¿Í»§ºÅÃÜÂë
+	wt_strcpy(login_msg.fund_account_id, _fund_accountid.c_str());           // èµ„é‡‘è´¦æˆ·ID
+	wt_strcpy(login_msg.password, _accpasswd.c_str());                  // å®¢æˆ·å·å¯†ç 
 	strncpy(login_msg.user_info, _user.c_str(), 17);
-	login_msg.login_mode = _loginmode;  //  wrapLoginMode(_loginmode);  // ATPCustLoginModeType::kFundAccountIDMode;	// µÇÂ¼Ä£Ê½£¬×Ê½ğÕËºÅµÇÂ¼
-	login_msg.client_seq_id = genRequestID();							// ¿Í»§ÏµÍ³ÏûÏ¢ºÅ
-	login_msg.order_way = std::to_string(_order_way).at(0); //'0';											// Î¯ÍĞ·½Ê½£¬×ÔÖúÎ¯ÍĞ
-	login_msg.client_feature_code = _node_id;						// ÖÕ¶ËÊ¶±ğÂë
+	login_msg.login_mode = _loginmode;  //  wrapLoginMode(_loginmode);  // ATPCustLoginModeType::kFundAccountIDMode;	// ç™»å½•æ¨¡å¼ï¼Œèµ„é‡‘è´¦å·ç™»å½•
+	login_msg.client_seq_id = genRequestID();							// å®¢æˆ·ç³»ç»Ÿæ¶ˆæ¯å·
+	login_msg.order_way = std::to_string(_order_way).at(0); //'0';											// å§”æ‰˜æ–¹å¼ï¼Œè‡ªåŠ©å§”æ‰˜
+	login_msg.client_feature_code = _node_id;						// ç»ˆç«¯è¯†åˆ«ç 
 
 	strncpy(login_msg.branch_id, _branchid.c_str(), 11);
 
@@ -1142,11 +1142,11 @@ int TraderATP::logout()
 		return -1;
 
 	ATPReqCustLogoutOtherMsg logout_msg;
-	wt_strcpy(logout_msg.fund_account_id, _fund_accountid.c_str());	// ×Ê½ğÕË»§ID
-	logout_msg.client_seq_id = genRequestID();              // ¿Í»§ÏµÍ³ÏûÏ¢ºÅ
-	//logout_msg.client_feature_code = _product;				// ÖÕ¶ËÊ¶±ğÂë
+	wt_strcpy(logout_msg.fund_account_id, _fund_accountid.c_str());	// èµ„é‡‘è´¦æˆ·ID
+	logout_msg.client_seq_id = genRequestID();              // å®¢æˆ·ç³»ç»Ÿæ¶ˆæ¯å·
+	//logout_msg.client_feature_code = _product;				// ç»ˆç«¯è¯†åˆ«ç 
 
-	logout_msg.client_feature_code = _node_id;				// ÖÕ¶ËÊ¶±ğÂë
+	logout_msg.client_feature_code = _node_id;				// ç»ˆç«¯è¯†åˆ«ç 
 
 	ATPRetCodeType ec = _api->ReqCustLogoutOther(&logout_msg);
 	if (ec != ErrorCode::kSuccess)
@@ -1164,7 +1164,7 @@ int TraderATP::orderInsert(WTSEntrust* entrust)
 		return -1;
 	}
 
-	// »¦ÉîÊĞ³¡¹ÉÆ±ÏŞ¼ÛÎ¯ÍĞ
+	// æ²ªæ·±å¸‚åœºè‚¡ç¥¨é™ä»·å§”æ‰˜
 	thread_local static ATPReqCashAuctionOrderMsg p;
 	//ATPReqCashAuctionOrderMsg p;
 	//memset(&p, 0, sizeof(p));
@@ -1174,23 +1174,23 @@ int TraderATP::orderInsert(WTSEntrust* entrust)
 
 	//bool isSh = (strcmp(entrust->getExchg(), "SSE") == 0) ? true : false;
 
-	wt_strcpy(p.security_id, entrust->getCode());                   // Ö¤È¯´úÂë
-	p.market_id = _is_sh ? ATPMarketIDConst::kShangHai : ATPMarketIDConst::kShenZhen;             // ÊĞ³¡ID£¬ÉÏº£
-	wt_strcpy(p.cust_id, _cust_id.c_str());                 // ¿Í»§ºÅID
-	wt_strcpy(p.fund_account_id, _fund_accountid.c_str());       // ×Ê½ğÕË»§ID
+	wt_strcpy(p.security_id, entrust->getCode());                   // è¯åˆ¸ä»£ç 
+	p.market_id = _is_sh ? ATPMarketIDConst::kShangHai : ATPMarketIDConst::kShenZhen;             // å¸‚åœºIDï¼Œä¸Šæµ·
+	wt_strcpy(p.cust_id, _cust_id.c_str());                 // å®¢æˆ·å·ID
+	wt_strcpy(p.fund_account_id, _fund_accountid.c_str());       // èµ„é‡‘è´¦æˆ·ID
 
-	wt_strcpy(p.account_id, _acctid.c_str());                 // ÕË»§ID
+	wt_strcpy(p.account_id, _acctid.c_str());                 // è´¦æˆ·ID
 
-	//p.side = (entrust->getDirection() == WOT_OPEN) ? ATPSideConst::kBuy : ATPSideConst::kSell;      // ÂòÂô·½Ïò£¬Âò
+	//p.side = (entrust->getDirection() == WOT_OPEN) ? ATPSideConst::kBuy : ATPSideConst::kSell;      // ä¹°å–æ–¹å‘ï¼Œä¹°
 	p.side = wrapDirectionType(entrust->getDirection(), entrust->getOffsetType());
-	//p.order_type = ATPOrdTypeConst::kFixedNew;				// ¶©µ¥ÀàĞÍ£¬ÏŞ¼Û
+	//p.order_type = ATPOrdTypeConst::kFixedNew;				// è®¢å•ç±»å‹ï¼Œé™ä»·
 	p.order_type = wrapOrdType(entrust->getPriceType(), entrust->getOrderFlag());
-	p.price = (int32_t)(entrust->getPrice() * 10000);         // Î¯ÍĞ¼Û¸ñ N13(4)£¬21.0000Ôª
-	p.order_qty = (int32_t)(entrust->getVolume() * 100);            // Éê±¨ÊıÁ¿N15(2)£»¹ÉÆ±Îª¹É¡¢»ù½ğÎª·İ¡¢ÉÏº£Õ®È¯Ä¬ÈÏÎªÕÅ£¨Ê¹ÓÃÊ±ÇëÎñ±ØÓëÈ¯ÉÌÈ·ÈÏ£©£¬ÆäËûÎªÕÅ£»1000.00¹É
-	p.client_seq_id = genRequestID();						// ÓÃ»§ÏµÍ³ÏûÏ¢ĞòºÅ
-	p.order_way = std::to_string(_order_way).at(0);  // 0;										// Î¯ÍĞ·½Ê½£¬×ÔÖúÎ¯ÍĞ
-	p.client_feature_code = _node_id;  // ÖÕ¶ËÊ¶±ğÂë
-	strncpy(p.password, _pass.c_str(), 129);							// ¿Í»§ÃÜÂë
+	p.price = (int32_t)(entrust->getPrice() * 10000);         // å§”æ‰˜ä»·æ ¼ N13(4)ï¼Œ21.0000å…ƒ
+	p.order_qty = (int32_t)(entrust->getVolume() * 100);            // ç”³æŠ¥æ•°é‡N15(2)ï¼›è‚¡ç¥¨ä¸ºè‚¡ã€åŸºé‡‘ä¸ºä»½ã€ä¸Šæµ·å€ºåˆ¸é»˜è®¤ä¸ºå¼ ï¼ˆä½¿ç”¨æ—¶è¯·åŠ¡å¿…ä¸åˆ¸å•†ç¡®è®¤ï¼‰ï¼Œå…¶ä»–ä¸ºå¼ ï¼›1000.00è‚¡
+	p.client_seq_id = genRequestID();						// ç”¨æˆ·ç³»ç»Ÿæ¶ˆæ¯åºå·
+	p.order_way = std::to_string(_order_way).at(0);  // 0;										// å§”æ‰˜æ–¹å¼ï¼Œè‡ªåŠ©å§”æ‰˜
+	p.client_feature_code = _node_id;  // ç»ˆç«¯è¯†åˆ«ç 
+	strncpy(p.password, _pass.c_str(), 129);							// å®¢æˆ·å¯†ç 
 	fmt::format_to(p.user_info, "{}", orderref);
 
 	//const int totals = 3000;
@@ -1230,20 +1230,20 @@ int TraderATP::orderAction(WTSEntrustAction* action)
 	//bool isSH = strcmp(action->getExchg(), "SSE") == 0;
 
 	p.market_id = (_is_sh) ? ATPMarketIDConst::kShangHai : ATPMarketIDConst::kShenZhen;
-	wt_strcpy(p.cust_id, _cust_id.c_str());                    // ¿Í»§ºÅID
-	wt_strcpy(p.fund_account_id, _fund_accountid.c_str());          // ×Ê½ğÕË»§ID
-	wt_strcpy(p.user_info, _user.c_str());                   // ÕË»§ID
+	wt_strcpy(p.cust_id, _cust_id.c_str());                    // å®¢æˆ·å·ID
+	wt_strcpy(p.fund_account_id, _fund_accountid.c_str());          // èµ„é‡‘è´¦æˆ·ID
+	wt_strcpy(p.user_info, _user.c_str());                   // è´¦æˆ·ID
 
-	wt_strcpy(p.account_id, _acctid.c_str());  // Ö¤È¯ÕË»§
+	wt_strcpy(p.account_id, _acctid.c_str());  // è¯åˆ¸è´¦æˆ·
 
-	wt_strcpy(p.password, _accpasswd.c_str());  // ½»Ò×ÃÜÂë
+	wt_strcpy(p.password, _accpasswd.c_str());  // äº¤æ˜“å¯†ç 
 	p.client_seq_id = genRequestID();
 	p.order_way = std::to_string(_order_way).at(0);
 	p.orig_cl_ord_no = strtoull(action->getOrderID(), NULL, 10);
 
 	p.client_feature_code = _node_id;
 
-	//write_log(_sink, LL_ERROR, "[TraderATP][{}]ÕË»§³¬³ö³·µ¥ãĞÖµ£¡", p.account_id);
+	//write_log(_sink, LL_ERROR, "[TraderATP][{}]è´¦æˆ·è¶…å‡ºæ’¤å•é˜ˆå€¼ï¼", p.account_id);
 	//return -1;
 
 	ATPRetCodeType ec = _api->ReqCancelOrder(&p);
@@ -1307,9 +1307,9 @@ int TraderATP::queryPositions()
 			}
 			std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-			if (_return_nums > 100)  // ×î´óµ¥Ò³ÈİÁ¿Îª100Ìõ
+			if (_return_nums > 100)  // æœ€å¤§å•é¡µå®¹é‡ä¸º100æ¡
 			{
-				// ĞèÒª¶àÒ³²éÑ¯
+				// éœ€è¦å¤šé¡µæŸ¥è¯¢
 				if (_return_nums % 100 > 0)
 					_return_nums += 100;
 
@@ -1361,7 +1361,7 @@ int TraderATP::queryOrders()
 
 			if (_return_nums > 100)
 			{
-				// ĞèÒª¶àÒ³²éÑ¯
+				// éœ€è¦å¤šé¡µæŸ¥è¯¢
 				if (_return_nums % 100 > 0)
 					_return_nums += 100;
 
@@ -1411,7 +1411,7 @@ int TraderATP::queryTrades()
 
 			if (_return_nums > 100)
 			{
-				// ĞèÒª¶àÒ³²éÑ¯
+				// éœ€è¦å¤šé¡µæŸ¥è¯¢
 				if (_return_nums % 100 > 0)
 					_return_nums += 100;
 

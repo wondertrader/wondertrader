@@ -36,6 +36,9 @@
     <ClCompile Include="IndexWorker.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="ShmCaster.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataManager.h">
@@ -60,6 +63,12 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="IndexWorker.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ShmCaster.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="IDataCaster.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

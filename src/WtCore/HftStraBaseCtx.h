@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file HftStraBaseCtx.h
  * \project	WonderTrader
  *
@@ -33,7 +33,7 @@ public:
 
 public:
 	//////////////////////////////////////////////////////////////////////////
-	//IHftStraCtx ½Ó¿Ú
+	//IHftStraCtx æ¥å£
 	virtual uint32_t id() override;
 
 	virtual void on_init() override;
@@ -57,64 +57,64 @@ public:
 	virtual OrderIDs stra_cancel(const char* stdCode, bool isBuy, double qty) override;
 
 	/*
-	 *	ÏÂµ¥½Ó¿Ú: ÂòÈë
+	 *	ä¸‹å•æ¥å£: ä¹°å…¥
 	 *
-	 *	@stdCode	ºÏÔ¼´úÂë
-	 *	@price		ÏÂµ¥¼Û¸ñ£¬0ÔòÊÇÊĞ¼Ûµ¥
-	 *	@qty		ÏÂµ¥ÊıÁ¿
-	 *	@flag		ÏÂµ¥±êÖ¾: 0-normal£¬1-fak£¬2-fok£¬Ä¬ÈÏ0
+	 *	@stdCode	åˆçº¦ä»£ç 
+	 *	@price		ä¸‹å•ä»·æ ¼ï¼Œ0åˆ™æ˜¯å¸‚ä»·å•
+	 *	@qty		ä¸‹å•æ•°é‡
+	 *	@flag		ä¸‹å•æ ‡å¿—: 0-normalï¼Œ1-fakï¼Œ2-fokï¼Œé»˜è®¤0
 	 */
 	virtual OrderIDs stra_buy(const char* stdCode, double price, double qty, const char* userTag, int flag = 0, bool bForceClose = false) override;
 
 	/*
-	 *	ÏÂµ¥½Ó¿Ú: Âô³ö
+	 *	ä¸‹å•æ¥å£: å–å‡º
 	 *
-	 *	@stdCode	ºÏÔ¼´úÂë
-	 *	@price		ÏÂµ¥¼Û¸ñ£¬0ÔòÊÇÊĞ¼Ûµ¥
-	 *	@qty		ÏÂµ¥ÊıÁ¿
-	 *	@flag		ÏÂµ¥±êÖ¾: 0-normal£¬1-fak£¬2-fok£¬Ä¬ÈÏ0
+	 *	@stdCode	åˆçº¦ä»£ç 
+	 *	@price		ä¸‹å•ä»·æ ¼ï¼Œ0åˆ™æ˜¯å¸‚ä»·å•
+	 *	@qty		ä¸‹å•æ•°é‡
+	 *	@flag		ä¸‹å•æ ‡å¿—: 0-normalï¼Œ1-fakï¼Œ2-fokï¼Œé»˜è®¤0
 	 */
 	virtual OrderIDs stra_sell(const char* stdCode, double price, double qty, const char* userTag, int flag = 0, bool bForceClose = false) override;
 
 	/*
-	 *	ÏÂµ¥½Ó¿Ú: ¿ª¶à
+	 *	ä¸‹å•æ¥å£: å¼€å¤š
 	 *
-	 *	@stdCode	ºÏÔ¼´úÂë
-	 *	@price		ÏÂµ¥¼Û¸ñ£¬0ÔòÊÇÊĞ¼Ûµ¥
-	 *	@qty		ÏÂµ¥ÊıÁ¿
-	 *	@flag		ÏÂµ¥±êÖ¾: 0-normal£¬1-fak£¬2-fok
+	 *	@stdCode	åˆçº¦ä»£ç 
+	 *	@price		ä¸‹å•ä»·æ ¼ï¼Œ0åˆ™æ˜¯å¸‚ä»·å•
+	 *	@qty		ä¸‹å•æ•°é‡
+	 *	@flag		ä¸‹å•æ ‡å¿—: 0-normalï¼Œ1-fakï¼Œ2-fok
 	 */
 	virtual uint32_t	stra_enter_long(const char* stdCode, double price, double qty, const char* userTag, int flag = 0) override;
 
 	/*
-	 *	ÏÂµ¥½Ó¿Ú: ¿ª¿Õ
+	 *	ä¸‹å•æ¥å£: å¼€ç©º
 	 *
-	 *	@stdCode	ºÏÔ¼´úÂë
-	 *	@price		ÏÂµ¥¼Û¸ñ£¬0ÔòÊÇÊĞ¼Ûµ¥
-	 *	@qty		ÏÂµ¥ÊıÁ¿
-	 *	@flag		ÏÂµ¥±êÖ¾: 0-normal£¬1-fak£¬2-fok
+	 *	@stdCode	åˆçº¦ä»£ç 
+	 *	@price		ä¸‹å•ä»·æ ¼ï¼Œ0åˆ™æ˜¯å¸‚ä»·å•
+	 *	@qty		ä¸‹å•æ•°é‡
+	 *	@flag		ä¸‹å•æ ‡å¿—: 0-normalï¼Œ1-fakï¼Œ2-fok
 	 */
 	virtual uint32_t	stra_enter_short(const char* stdCode, double price, double qty, const char* userTag, int flag = 0) override;
 
 	/*
-	 *	ÏÂµ¥½Ó¿Ú: Æ½¶à
+	 *	ä¸‹å•æ¥å£: å¹³å¤š
 	 *
-	 *	@stdCode	ºÏÔ¼´úÂë
-	 *	@price		ÏÂµ¥¼Û¸ñ£¬0ÔòÊÇÊĞ¼Ûµ¥
-	 *	@qty		ÏÂµ¥ÊıÁ¿
-	 *	@isToday	ÊÇ·ñ½ñ²Ö£¬Ä¬ÈÏfalse
-	 *	@flag		ÏÂµ¥±êÖ¾: 0-normal£¬1-fak£¬2-fok£¬Ä¬ÈÏ0
+	 *	@stdCode	åˆçº¦ä»£ç 
+	 *	@price		ä¸‹å•ä»·æ ¼ï¼Œ0åˆ™æ˜¯å¸‚ä»·å•
+	 *	@qty		ä¸‹å•æ•°é‡
+	 *	@isToday	æ˜¯å¦ä»Šä»“ï¼Œé»˜è®¤false
+	 *	@flag		ä¸‹å•æ ‡å¿—: 0-normalï¼Œ1-fakï¼Œ2-fokï¼Œé»˜è®¤0
 	 */
 	virtual uint32_t	stra_exit_long(const char* stdCode, double price, double qty, const char* userTag, bool isToday = false, int flag = 0) override;
 
 	/*
-	 *	ÏÂµ¥½Ó¿Ú: Æ½¿Õ
+	 *	ä¸‹å•æ¥å£: å¹³ç©º
 	 *
-	 *	@stdCode	ºÏÔ¼´úÂë
-	 *	@price		ÏÂµ¥¼Û¸ñ£¬0ÔòÊÇÊĞ¼Ûµ¥
-	 *	@qty		ÏÂµ¥ÊıÁ¿
-	 *	@isToday	ÊÇ·ñ½ñ²Ö£¬Ä¬ÈÏfalse
-	 *	@flag		ÏÂµ¥±êÖ¾: 0-normal£¬1-fak£¬2-fok£¬Ä¬ÈÏ0
+	 *	@stdCode	åˆçº¦ä»£ç 
+	 *	@price		ä¸‹å•ä»·æ ¼ï¼Œ0åˆ™æ˜¯å¸‚ä»·å•
+	 *	@qty		ä¸‹å•æ•°é‡
+	 *	@isToday	æ˜¯å¦ä»Šä»“ï¼Œé»˜è®¤false
+	 *	@flag		ä¸‹å•æ ‡å¿—: 0-normalï¼Œ1-fakï¼Œ2-fokï¼Œé»˜è®¤0
 	 */
 	virtual uint32_t	stra_exit_short(const char* stdCode, double price, double qty, const char* userTag, bool isToday = false, int flag = 0) override;
 
@@ -133,7 +133,7 @@ public:
 	virtual WTSTickData* stra_get_last_tick(const char* stdCode) override;
 
 	/*
-	 *	»ñÈ¡·ÖÔÂºÏÔ¼´úÂë
+	 *	è·å–åˆ†æœˆåˆçº¦ä»£ç 
 	 */
 	virtual std::string		stra_get_rawcode(const char* stdCode) override;
 
@@ -258,14 +258,14 @@ protected:
 	BoostFilePtr	_trade_logs;
 	BoostFilePtr	_fund_logs;
 
-	//ÓÃ»§Êı¾İ
+	//ç”¨æˆ·æ•°æ®
 	typedef wt_hashmap<std::string, std::string> StringHashMap;
 	StringHashMap	_user_datas;
 	bool			_ud_modified;
 
-	bool			_data_agent;	//Êı¾İÍĞ¹Ü
+	bool			_data_agent;	//æ•°æ®æ‰˜ç®¡
 
-	//tick¶©ÔÄÁĞ±í
+	//tickè®¢é˜…åˆ—è¡¨
 	wt_hashset<std::string> _tick_subs;
 
 private:

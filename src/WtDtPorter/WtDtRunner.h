@@ -16,6 +16,7 @@
 #include "../WtDtCore/StateMonitor.h"
 #include "../WtDtCore/UDPCaster.h"
 #include "../WtDtCore/IndexFactory.h"
+#include "../WtDtCore/ShmCaster.h"
 
 #include "../WTSTools/WTSHotMgr.h"
 #include "../WTSTools/WTSBaseDataMgr.h"
@@ -83,6 +84,7 @@ private:
 	boost::asio::io_service _async_io;
 	StateMonitor	_state_mon;
 	UDPCaster		_udp_caster;
+	ShmCaster		_shm_caster;
 	DataManager		_data_mgr;
 	IndexFactory	_idx_factory;
 	ParserAdapterMgr	_parsers;
@@ -100,5 +102,7 @@ private:
 	typedef std::shared_ptr<ExpDumper> ExpDumperPtr;
 	typedef std::map<std::string, ExpDumperPtr>  ExpDumpers;
 	ExpDumpers		_dumpers;
+
+	bool _to_exit;
 };
 

@@ -1,11 +1,11 @@
-/*!
+ï»¿/*!
  * \file ISessionMgr.h
  * \project	WonderTrader
  *
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief ½»Ò×Ê±¼äÄ£°å¹ÜÀíÆ÷½Ó¿Ú¶¨Òå
+ * \brief äº¤æ˜“æ—¶é—´æ¨¡æ¿ç®¡ç†å™¨æŽ¥å£å®šä¹‰
  */
 #pragma once
 
@@ -15,17 +15,17 @@ NS_WTP_BEGIN
 class WTSSessionInfo;
 
 /*
- *	Ê±¼äÄ£°å¹ÜÀíÆ÷½Ó¿Ú
+ *	æ—¶é—´æ¨¡æ¿ç®¡ç†å™¨æŽ¥å£
  */
 class ISessionMgr
 {
 public:
 	/*
-	 *	»ñÈ¡ºÏÔ¼ËùÊôµÄÊ±¼äÄ£°å¶ÔÏóÖ¸Õë
-	 *	@code	ºÏÔ¼´úÂë
-	 *	@exchg	½»Ò×Ëù´úÂë
+	 *	èŽ·å–åˆçº¦æ‰€å±žçš„æ—¶é—´æ¨¡æ¿å¯¹è±¡æŒ‡é’ˆ
+	 *	@code	åˆçº¦ä»£ç 
+	 *	@exchg	äº¤æ˜“æ‰€ä»£ç 
 	 *
-	 *	·µ»ØÖµ	Ê±¼äÄ£°åÖ¸Õë,²»´æÔÚÔòÎªNULL
+	 *	è¿”å›žå€¼	æ—¶é—´æ¨¡æ¿æŒ‡é’ˆ,ä¸å­˜åœ¨åˆ™ä¸ºNULL
 	 */
 	virtual WTSSessionInfo* getSession(const char* code, const char* exchg = "")	= 0;
 };

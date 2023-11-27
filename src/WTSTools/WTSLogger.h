@@ -1,11 +1,11 @@
-/*!
+ï»¿/*!
  * \file WTSLogger.h
  * \project	WonderTrader
  *
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief ÈÕÖ¾Ä£¿é¶¨Òå
+ * \brief æ—¥å¿—æ¨¡å—å®šä¹‰
  */
 #pragma once
 #include "../Includes/WTSTypes.h"
@@ -18,8 +18,8 @@
 #include <set>
 
 //By Wesley @ 2022.01.05
-//spdlogÉı¼¶µ½1.9.2
-//Í¬Ê±Ê¹ÓÃÍâ²¿µÄfmt 8.1.0
+//spdlogå‡çº§åˆ°1.9.2
+//åŒæ—¶ä½¿ç”¨å¤–éƒ¨çš„fmt 8.1.0
 #include <spdlog/spdlog.h>
 
 typedef std::shared_ptr<spdlog::logger> SpdLoggerPtr;
@@ -50,23 +50,23 @@ private:
 
 public:
 	/*
-	 *	Ö±½ÓÊä³ö
+	 *	ç›´æ¥è¾“å‡º
 	 */
 	static void log_raw(WTSLogLevel ll, const char* message);
 
 	/*
-	 *	·ÖÀàÊä³ö
+	 *	åˆ†ç±»è¾“å‡º
 	 */
 	static void log_raw_by_cat(const char* catName, WTSLogLevel ll, const char* message);
 
 	/*
-	 *	¶¯Ì¬·ÖÀàÊä³ö
+	 *	åŠ¨æ€åˆ†ç±»è¾“å‡º
 	 */
 	static void log_dyn_raw(const char* patttern, const char* catName, WTSLogLevel ll, const char* message);
 
 
 //////////////////////////////////////////////////////////////////////////
-//fmt::format·ç¸ñ½Ó¿Ú
+//fmt::formaté£æ ¼æ¥å£
 public:
 	template<typename... Args>
 	static void debug(const char* format, const Args& ...args)
@@ -176,6 +176,20 @@ public:
 	}
 
 	template<typename... Args>
+	static void log_by_cat_prefix(const char* catName, WTSLogLevel ll, const char* format, const Args& ...args)
+	{
+		if (m_logLevel > ll || m_bStopped)
+			return;
+
+		m_buffer[0] = '[';
+		strcpy(m_buffer + 1, catName);
+		auto offset = strlen(catName);
+		m_buffer[offset + 1] = ']';
+		char* s = m_buffer + offset + 2;
+		log_raw_by_cat(catName, ll, m_buffer);
+	}
+
+	template<typename... Args>
 	static void log_dyn(const char* patttern, const char* catName, WTSLogLevel ll, const char* format, const Args& ...args)
 	{
 		if (m_logLevel > ll || m_bStopped)
@@ -183,6 +197,21 @@ public:
 
 		fmtutil::format_to(m_buffer, format, args...);
 
+		log_dyn_raw(patttern, catName, ll, m_buffer);
+	}
+
+	template<typename... Args>
+	static void log_dyn_prefix(const char* patttern, const char* catName, WTSLogLevel ll, const char* format, const Args& ...args)
+	{
+		if (m_logLevel > ll || m_bStopped)
+			return;
+
+		m_buffer[0] = '[';
+		strcpy(m_buffer+1, catName);
+		auto offset = strlen(catName);
+		m_buffer[offset + 1] = ']';
+		char* s = m_buffer + offset + 2;
+		fmtutil::format_to(s, format, args...);
 		log_dyn_raw(patttern, catName, ll, m_buffer);
 	}
 

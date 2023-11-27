@@ -1,28 +1,29 @@
-#define _CRT_SECURE_NO_WARNINGS
+ï»¿#define _CRT_SECURE_NO_WARNINGS
 #include "../WtDtHelper/WtDtHelper.h"
 #include "../WtDtPorter/WtDtPorter.h"
 #include "../Includes/WTSDataDef.hpp"
+#include "../Share/fmtlib.h"
 
 void on_get_bar(WTSBarStruct* bar, WtUInt32 count, bool isLast)
 {
-	printf("%u.%llu\r\n", bar->date, bar->time);
+	fmt::print("{}.{}\n", bar->date, bar->time);
 }
 
 void on_bar_cnt(WtUInt32 dataCnt)
 {
-	printf("¹²%uÌõKÏß\r\n", dataCnt);
+	fmt::print("å…±{}æ¡Kçº¿\n", dataCnt);
 }
 
 void on_log(const char* message)
 {
-	printf(message);
-	printf("\r\n");
+	fmt::print(message);
+	fmt::print("\n");
 }
 
 void testDtHelper()
 {
 	const char* session_str = "{\
-		\"name\":\"¹ÉÆ±°×ÅÌ0930\",\
+		\"name\":\"è‚¡ç¥¨ç™½ç›˜0930\",\
 		\"offset\" : 0,\
 		\"auction\" : {\
 			\"from\": 929,\

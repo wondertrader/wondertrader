@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "../Includes/WTSMarcos.h"
 
 #include <string>

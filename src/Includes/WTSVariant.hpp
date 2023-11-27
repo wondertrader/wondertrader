@@ -1,11 +1,11 @@
-/*!
+ï»¿/*!
  * \file WTSVariant.hpp
  * \project	WonderTrader
  *
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief WtÍ¨ÓÃ±äÁ¿¶ÔÏó¶¨Òå
+ * \brief Wté€šç”¨å˜é‡å¯¹è±¡å®šä¹‰
  */
 #pragma once
 
@@ -30,9 +30,9 @@
 NS_WTP_BEGIN
 
 /*
- *	WTSVariantÊÇÒ»¸öÍ¨ÓÃÊı¾İÈİÆ÷,Éè¼ÆÄ¿±êÊÇJsonµÄValueÀà
- *	ºÍJson²»Í¬µÄµØ·½ÔÚÓÚ,WTSVariantÂú×ãWTÏµÍ³ÄÚµÄÅÉÉú¹ØÏµ
- *	¿ÉÒÔÍ¨¹ıÒıÓÃ¼ÆÊı¹ÜÀíÊı¾İ,´Ó¶ø¼õÉÙÊı¾İ¸´ÖÆ
+ *	WTSVariantæ˜¯ä¸€ä¸ªé€šç”¨æ•°æ®å®¹å™¨,è®¾è®¡ç›®æ ‡æ˜¯Jsonçš„Valueç±»
+ *	å’ŒJsonä¸åŒçš„åœ°æ–¹åœ¨äº,WTSVariantæ»¡è¶³WTç³»ç»Ÿå†…çš„æ´¾ç”Ÿå…³ç³»
+ *	å¯ä»¥é€šè¿‡å¼•ç”¨è®¡æ•°ç®¡ç†æ•°æ®,ä»è€Œå‡å°‘æ•°æ®å¤åˆ¶
  */
 class WTSVariant : public WTSObject
 {

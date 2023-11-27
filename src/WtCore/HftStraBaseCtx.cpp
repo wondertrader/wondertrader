@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file HftStraBaseCtx.cpp
  * \project	WonderTrader
  *
@@ -187,7 +187,7 @@ bool HftStraBaseCtx::stra_cancel(uint32_t localid)
 
 OrderIDs HftStraBaseCtx::stra_cancel(const char* stdCode, bool isBuy, double qty)
 {
-	//³·µ¥ÆµÂÊ¼ì²é
+	//æ’¤å•é¢‘çŽ‡æ£€æŸ¥
 	if (!_trader->checkCancelLimits(stdCode))
 		return OrderIDs();
 
@@ -207,7 +207,7 @@ OrderIDs HftStraBaseCtx::stra_buy(const char* stdCode, double price, double qty,
 {
 	/*
 	 *	By Wesley @ 2022.05.26
-	 *	Èç¹ûÕÒµ½Æ¥Åä×Ô¶¨Òå¹æÔò£¬Ôò½øÐÐÓ³Éä´¦Àí
+	 *	å¦‚æžœæ‰¾åˆ°åŒ¹é…è‡ªå®šä¹‰è§„åˆ™ï¼Œåˆ™è¿›è¡Œæ˜ å°„å¤„ç†
 	 */
 	 //const char* ruleTag = _engine->get_hot_mgr()->getRuleTag(stdCode);
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _engine->get_hot_mgr());
@@ -259,10 +259,10 @@ OrderIDs HftStraBaseCtx::stra_sell(const char* stdCode, double price, double qty
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _engine->get_hot_mgr());
 	WTSCommodityInfo* commInfo = _engine->get_basedata_mgr()->getCommodity(cInfo._exchg, cInfo._product);
 
-	//Èç¹û²»ÄÜ×ö¿Õ£¬ÔòÒª¿´¿ÉÓÃ³Ö²Ö
+	//å¦‚æžœä¸èƒ½åšç©ºï¼Œåˆ™è¦çœ‹å¯ç”¨æŒä»“
 	if (!commInfo->canShort())
 	{
-		double curPos = stra_get_position(stdCode, true);//Ö»¶Á¿ÉÓÃ³Ö²Ö
+		double curPos = stra_get_position(stdCode, true);//åªè¯»å¯ç”¨æŒä»“
 		if (decimal::gt(qty, curPos))
 		{
 			log_error("No enough position of {} to sell", stdCode);
@@ -272,7 +272,7 @@ OrderIDs HftStraBaseCtx::stra_sell(const char* stdCode, double price, double qty
 
 	/*
 	 *	By Wesley @ 2022.05.26
-	 *	Èç¹ûÕÒµ½Æ¥Åä×Ô¶¨Òå¹æÔò£¬Ôò½øÐÐÓ³Éä´¦Àí
+	 *	å¦‚æžœæ‰¾åˆ°åŒ¹é…è‡ªå®šä¹‰è§„åˆ™ï¼Œåˆ™è¿›è¡Œæ˜ å°„å¤„ç†
 	 */
 	
 	if (strlen(cInfo._ruletag) > 0)
@@ -481,8 +481,8 @@ void HftStraBaseCtx::stra_sub_ticks(const char* stdCode)
 {
 	/*
 	 *	By Wesley @ 2022.03.01
-	 *	Ö÷¶¯¶©ÔÄtick»áÔÚ±¾µØ¼ÇÒ»ÏÂ
-	 *	tickÊý¾Ý»Øµ÷µÄÊ±ºòÏÈ¼ì²éÒ»ÏÂ
+	 *	ä¸»åŠ¨è®¢é˜…tickä¼šåœ¨æœ¬åœ°è®°ä¸€ä¸‹
+	 *	tickæ•°æ®å›žè°ƒçš„æ—¶å€™å…ˆæ£€æŸ¥ä¸€ä¸‹
 	 */
 	_tick_subs.insert(stdCode);
 
@@ -557,7 +557,7 @@ void HftStraBaseCtx::on_order(uint32_t localid, const char* stdCode, bool isBuy,
 
 	if(isCanceled || decimal::eq(leftQty, 0))
 	{
-		//¶©µ¥½áÊøÁË£¬Òª°Ñ¶©µ¥ºÅÇåÀíµô£¬²»È»¿ªÏúÌ«´ó
+		//è®¢å•ç»“æŸäº†ï¼Œè¦æŠŠè®¢å•å·æ¸…ç†æŽ‰ï¼Œä¸ç„¶å¼€é”€å¤ªå¤§
 	}
 }
 
@@ -786,7 +786,7 @@ void HftStraBaseCtx::do_set_position(const char* stdCode, double qty, double pri
 	uint64_t curTm = (uint64_t)_engine->get_date() * 1000000000 + (uint64_t)_engine->get_raw_time() * 100000 + _engine->get_secs();
 	uint32_t curTDate = _engine->get_trading_date();
 
-	//ÊÖÊýÏàµÈÔò²»ÓÃ²Ù×÷ÁË
+	//æ‰‹æ•°ç›¸ç­‰åˆ™ä¸ç”¨æ“ä½œäº†
 	if (decimal::eq(pInfo._volume, qty))
 		return;
 
@@ -794,12 +794,12 @@ void HftStraBaseCtx::do_set_position(const char* stdCode, double qty, double pri
 
 	WTSCommodityInfo* commInfo = _engine->get_commodity_info(stdCode);
 
-	//³É½»¼Û
+	//æˆäº¤ä»·
 	double trdPx = curPx;
 
 	double diff = qty - pInfo._volume;
 	bool isBuy = decimal::gt(diff, 0.0);
-	if (decimal::gt(pInfo._volume*diff, 0))//µ±Ç°³Ö²ÖºÍ²ÖÎ»±ä»¯·½ÏòÒ»ÖÂ, Ôö¼ÓÒ»ÌõÃ÷Ï¸, Ôö¼ÓÊýÁ¿¼´¿É
+	if (decimal::gt(pInfo._volume*diff, 0))//å½“å‰æŒä»“å’Œä»“ä½å˜åŒ–æ–¹å‘ä¸€è‡´, å¢žåŠ ä¸€æ¡æ˜Žç»†, å¢žåŠ æ•°é‡å³å¯
 	{
 		pInfo._volume = qty;
 
@@ -817,13 +817,13 @@ void HftStraBaseCtx::do_set_position(const char* stdCode, double qty, double pri
 		wt_strcpy(dInfo._usertag, userTag);
 		pInfo._details.emplace_back(dInfo);
 
-		double fee = _engine->calc_fee(stdCode, trdPx, abs(diff), 0);
+		double fee = commInfo->calcFee(trdPx, abs(diff), 0);
 		_fund_info._total_fees += fee;
 
 		log_trade(stdCode, dInfo._long, true, curTm, trdPx, abs(diff), fee, userTag);
 	}
 	else
-	{//³Ö²Ö·½ÏòºÍ²ÖÎ»±ä»¯·½Ïò²»Ò»ÖÂ,ÐèÒªÆ½²Ö
+	{//æŒä»“æ–¹å‘å’Œä»“ä½å˜åŒ–æ–¹å‘ä¸ä¸€è‡´,éœ€è¦å¹³ä»“
 		double left = abs(diff);
 
 		if (_slippage != 0)
@@ -853,21 +853,21 @@ void HftStraBaseCtx::do_set_position(const char* stdCode, double qty, double pri
 			if (!dInfo._long)
 				profit *= -1;
 			pInfo._closeprofit += profit;
-			pInfo._dynprofit = pInfo._dynprofit*dInfo._volume / (dInfo._volume + maxQty);//¸¡Ó¯Ò²Òª×öµÈ±ÈËõ·Å
+			pInfo._dynprofit = pInfo._dynprofit*dInfo._volume / (dInfo._volume + maxQty);//æµ®ç›ˆä¹Ÿè¦åšç­‰æ¯”ç¼©æ”¾
 			_fund_info._total_profit += profit;
 
-			double fee = _engine->calc_fee(stdCode, trdPx, maxQty, dInfo._opentdate == curTDate ? 2 : 1);
+			double fee = commInfo->calcFee(trdPx, maxQty, dInfo._opentdate == curTDate ? 2 : 1);
 			_fund_info._total_fees += fee;
-			//ÕâÀïÐ´³É½»¼ÇÂ¼
+			//è¿™é‡Œå†™æˆäº¤è®°å½•
 			log_trade(stdCode, dInfo._long, false, curTm, trdPx, maxQty, fee, userTag);
-			//ÕâÀïÐ´Æ½²Ö¼ÇÂ¼
+			//è¿™é‡Œå†™å¹³ä»“è®°å½•
 			log_close(stdCode, dInfo._long, dInfo._opentime, dInfo._price, curTm, trdPx, maxQty, profit, maxProf, maxLoss, pInfo._closeprofit, dInfo._usertag, userTag);
 
 			if (left == 0)
 				break;
 		}
 
-		//ÐèÒªÇåÀíµôÒÑ¾­Æ½²ÖÍêµÄÃ÷Ï¸
+		//éœ€è¦æ¸…ç†æŽ‰å·²ç»å¹³ä»“å®Œçš„æ˜Žç»†
 		while (count > 0)
 		{
 			auto it = pInfo._details.begin();
@@ -875,7 +875,7 @@ void HftStraBaseCtx::do_set_position(const char* stdCode, double qty, double pri
 			count--;
 		}
 
-		//×îºó,Èç¹û»¹ÓÐÊ£ÓàµÄ,ÔòÐèÒª·´ÊÖÁË
+		//æœ€åŽ,å¦‚æžœè¿˜æœ‰å‰©ä½™çš„,åˆ™éœ€è¦åæ‰‹äº†
 		if (left > 0)
 		{
 			left = left * qty / abs(qty);
@@ -889,8 +889,8 @@ void HftStraBaseCtx::do_set_position(const char* stdCode, double qty, double pri
 			wt_strcpy(dInfo._usertag, userTag);
 			pInfo._details.emplace_back(dInfo);
 
-			//ÕâÀï»¹ÐèÒªÐ´Ò»±Ê³É½»¼ÇÂ¼
-			double fee = _engine->calc_fee(stdCode, trdPx, abs(left), 0);
+			//è¿™é‡Œè¿˜éœ€è¦å†™ä¸€ç¬”æˆäº¤è®°å½•
+			double fee = commInfo->calcFee(trdPx, abs(left), 0);
 			_fund_info._total_fees += fee;
 			//_engine->mutate_fund(fee, FFT_Fee);
 			log_trade(stdCode, dInfo._long, true, curTm, trdPx, abs(left), fee, userTag);
@@ -953,8 +953,8 @@ void HftStraBaseCtx::on_session_end(uint32_t uTDate)
 		total_dynprofit += pInfo._dynprofit;
 	}
 
-	//ÕâÀïÒª°Ñµ±ÈÕ½áËãµÄÊý¾ÝÐ´µ½ÈÕÖ¾ÎÄ¼þÀï
-	//¶øÇÒÕâÀï»Ø²âºÍÊµÅÌÐ´·¨²»Í¬, ÏÈÁô×Å, ºóÃæÀ´×ö
+	//è¿™é‡Œè¦æŠŠå½“æ—¥ç»“ç®—çš„æ•°æ®å†™åˆ°æ—¥å¿—æ–‡ä»¶é‡Œ
+	//è€Œä¸”è¿™é‡Œå›žæµ‹å’Œå®žç›˜å†™æ³•ä¸åŒ, å…ˆç•™ç€, åŽé¢æ¥åš
 	if (_fund_logs && _data_agent)
 		_fund_logs->write_file(fmt::format("{},{:.2f},{:.2f},{:.2f},{:.2f}\n", curDate,
 			_fund_info._total_profit, _fund_info._total_dynprofit,

@@ -1,4 +1,4 @@
-#include "../Includes/WTSSessionInfo.hpp"
+﻿#include "../Includes/WTSSessionInfo.hpp"
 #include "gtest/gtest/gtest.h"
 
 USING_NS_WTP;

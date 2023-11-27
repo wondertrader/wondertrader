@@ -1,11 +1,11 @@
-/*!
+ï»¿/*!
  * \file IDataFactory.h
  * \project	WonderTrader
  *
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief Êı¾İÆ´½Ó¹¤³§½Ó¿Ú¶¨Òå
+ * \brief æ•°æ®æ‹¼æ¥å·¥å‚æ¥å£å®šä¹‰
  */
 #pragma once
 #include <stdint.h>
@@ -25,52 +25,52 @@ struct WTSTickStruct;
 class WTSTickSlice;
 
 /*
- *	Êı¾İ¹¤³§
- *	Ö÷ÒªÓÃÓÚ¸÷ÖÖÊı¾İµÄÆ´½Ó
- *	ÕâÀïÖ»¶¨ÒåÒ»¸ö½Ó¿Ú
+ *	æ•°æ®å·¥å‚
+ *	ä¸»è¦ç”¨äºå„ç§æ•°æ®çš„æ‹¼æ¥
+ *	è¿™é‡Œåªå®šä¹‰ä¸€ä¸ªæ¥å£
  */
 class IDataFactory
 {
 public:
 	/*
-	 *	ÀûÓÃtickÊı¾İ¸üĞÂKÏß
-	 *	@klineData	KÏßÊı¾İ
-	 *	@tick		tickÊı¾İ
-	 *	@sInfo		½»Ò×Ê±¼äÄ£°å
+	 *	åˆ©ç”¨tickæ•°æ®æ›´æ–°Kçº¿
+	 *	@klineData	Kçº¿æ•°æ®
+	 *	@tick		tickæ•°æ®
+	 *	@sInfo		äº¤æ˜“æ—¶é—´æ¨¡æ¿
 	 */
 	virtual WTSBarStruct*	updateKlineData(WTSKlineData* klineData, WTSTickData* tick, WTSSessionInfo* sInfo, bool bAlignSec = false)						= 0;
 
 	/*
-	 *	ÀûÓÃ»ù´¡ÖÜÆÚKÏßÊı¾İ¸üĞÂKÏß
-	 *	@klineData		KÏßÊı¾İ
-	 *	@newBasicBar	»ù´¡ÖÜÆÚKÏßÊı¾İ
-	 *	@sInfo			½»Ò×Ê±¼äÄ£°å
+	 *	åˆ©ç”¨åŸºç¡€å‘¨æœŸKçº¿æ•°æ®æ›´æ–°Kçº¿
+	 *	@klineData		Kçº¿æ•°æ®
+	 *	@newBasicBar	åŸºç¡€å‘¨æœŸKçº¿æ•°æ®
+	 *	@sInfo			äº¤æ˜“æ—¶é—´æ¨¡æ¿
 	 */
 	virtual WTSBarStruct*	updateKlineData(WTSKlineData* klineData, WTSBarStruct* newBasicBar, WTSSessionInfo* sInfo, bool bAlignSec = false)				= 0;
 
 	/*
-	 *	´Ó»ù´¡ÖÜÆÚKÏßÊı¾İÌáÈ¡·Ç»ù´¡ÖÜÆÚµÄKÏßÊı¾İ
-	 *	@baseKline	»ù´¡ÖÜÆÚKÏß
-	 *	@period		»ù´¡ÖÜÆÚ£¬m1/m5/day
-	 *	@times		ÖÜÆÚ±¶Êı
-	 *	@sInfo		½»Ò×Ê±¼äÄ£°å
-	 *	@bIncludeOpen	ÊÇ·ñ°üº¬Î´±ÕºÏµÄKÏß
+	 *	ä»åŸºç¡€å‘¨æœŸKçº¿æ•°æ®æå–éåŸºç¡€å‘¨æœŸçš„Kçº¿æ•°æ®
+	 *	@baseKline	åŸºç¡€å‘¨æœŸKçº¿
+	 *	@period		åŸºç¡€å‘¨æœŸï¼Œm1/m5/day
+	 *	@times		å‘¨æœŸå€æ•°
+	 *	@sInfo		äº¤æ˜“æ—¶é—´æ¨¡æ¿
+	 *	@bIncludeOpen	æ˜¯å¦åŒ…å«æœªé—­åˆçš„Kçº¿
 	 */
 	virtual WTSKlineData*	extractKlineData(WTSKlineSlice* baseKline, WTSKlinePeriod period, uint32_t times, WTSSessionInfo* sInfo, bool bIncludeOpen = true, bool bSectionSplit = false) = 0;
 
 	/*
-	 *	´ÓtickÊı¾İÌáÈ¡ÃëÖÜÆÚµÄKÏßÊı¾İ
-	 *	@ayTicks	tickÊı¾İ
-	 *	@seconds	Ä¿±êÖÜÆÚ
-	 *	@sInfo		½»Ò×Ê±¼äÄ£°å
-	 *	@bUnixTime	tickÊ±¼ä´ÁÊÇ·ñÊÇunixtime
+	 *	ä»tickæ•°æ®æå–ç§’å‘¨æœŸçš„Kçº¿æ•°æ®
+	 *	@ayTicks	tickæ•°æ®
+	 *	@seconds	ç›®æ ‡å‘¨æœŸ
+	 *	@sInfo		äº¤æ˜“æ—¶é—´æ¨¡æ¿
+	 *	@bUnixTime	tickæ—¶é—´æˆ³æ˜¯å¦æ˜¯unixtime
 	 */
 	virtual WTSKlineData*	extractKlineData(WTSTickSlice* ayTicks, uint32_t seconds, WTSSessionInfo* sInfo, bool bUnixTime = false, bool bSectionSplit = false) = 0;
 
 	/*
-	 *	ºÏ²¢KÏß
-	 *	@klineData	Ä¿±êKÏß
-	 *	@newKline	´ıºÏ²¢µÄKÏß
+	 *	åˆå¹¶Kçº¿
+	 *	@klineData	ç›®æ ‡Kçº¿
+	 *	@newKline	å¾…åˆå¹¶çš„Kçº¿
 	 */
 	virtual bool			mergeKlineData(WTSKlineData* klineData, WTSKlineData* newKline)											= 0;
 };

@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file WtExecuter.cpp
  * \project	WonderTrader
  *
@@ -43,7 +43,7 @@ WtArbiExecuter::~WtArbiExecuter()
 void WtArbiExecuter::setTrader(TraderAdapter* adapter)
 {
 	_trader = adapter;
-	//ÉèÖÃµÄÊ±ºò¶ÁÈ¡Ò»ÏÂtraderµÄ×´Ì¬
+	//è®¾ç½®çš„æ—¶å€™è¯»å–ä¸€ä¸‹traderçš„çŠ¶æ€
 	if(_trader)
 		_channel_ready = _trader->isReady();
 }
@@ -67,10 +67,10 @@ bool WtArbiExecuter::init(WTSVariant* params)
 
 	/*
 	 *	By Wesley @ 2021.12.14
-	 *	´ÓÅäÖÃÎÄ¼şÖĞ¶ÁÈ¡×Ô¶¯ÇåÀíµÄ²ßÂÔ
-	 *	active: ÊÇ·ñÆôÓÃ
-	 *	includes: °üº¬ÁĞ±í£¬¸ñÊ½ÈçCFFEX.IF
-	 *	excludes: ÅÅ³ıÁĞ±í£¬¸ñÊ½ÈçCFFEX.IF
+	 *	ä»é…ç½®æ–‡ä»¶ä¸­è¯»å–è‡ªåŠ¨æ¸…ç†çš„ç­–ç•¥
+	 *	active: æ˜¯å¦å¯ç”¨
+	 *	includes: åŒ…å«åˆ—è¡¨ï¼Œæ ¼å¼å¦‚CFFEX.IF
+	 *	excludes: æ’é™¤åˆ—è¡¨ï¼Œæ ¼å¼å¦‚CFFEX.IF
 	 */
 	WTSVariant* cfgClear = params->get("clear");
 	if(cfgClear)
@@ -159,7 +159,7 @@ ExecuteUnitPtr WtArbiExecuter::getUnit(const char* stdCode, bool bAutoCreate /* 
 			_unit_map[stdCode] = unit;
 			unit->self()->init(this, stdCode, cfg);
 
-			//Èç¹ûÍ¨µÀÒÑ¾­¾ÍĞ÷£¬ÔòÖ±½ÓÍ¨ÖªÖ´ĞĞµ¥Ôª
+			//å¦‚æœé€šé“å·²ç»å°±ç»ªï¼Œåˆ™ç›´æ¥é€šçŸ¥æ‰§è¡Œå•å…ƒ
 			if (_channel_ready)
 				unit->self()->on_channel_ready();
 		}
@@ -174,7 +174,7 @@ ExecuteUnitPtr WtArbiExecuter::getUnit(const char* stdCode, bool bAutoCreate /* 
 
 //////////////////////////////////////////////////////////////////////////
 //ExecuteContext
-#pragma region Context»Øµ÷½Ó¿Ú
+#pragma region Contextå›è°ƒæ¥å£
 WTSTickSlice* WtArbiExecuter::getTicks(const char* stdCode, uint32_t count, uint64_t etime /* = 0 */)
 {
 	if (_data_mgr == NULL)
@@ -271,12 +271,12 @@ uint64_t WtArbiExecuter::getCurTime()
 	//return TimeUtils::makeTime(_stub->get_date(), _stub->get_raw_time() * 100000 + _stub->get_secs());
 }
 
-#pragma endregion Context»Øµ÷½Ó¿Ú
+#pragma endregion Contextå›è°ƒæ¥å£
 //ExecuteContext
 //////////////////////////////////////////////////////////////////////////
 
 
-#pragma region Íâ²¿½Ó¿Ú
+#pragma region å¤–éƒ¨æ¥å£
 void WtArbiExecuter::on_position_changed(const char* stdCode, double diffPos)
 {
 	ExecuteUnitPtr unit = getUnit(stdCode);
@@ -306,7 +306,7 @@ void WtArbiExecuter::on_position_changed(const char* stdCode, double diffPos)
 void WtArbiExecuter::set_position(const wt_hashmap<std::string, double>& targets)
 {
 	/*
-	 *	ÏÈÒª°ÑÄ¿±êÍ·´ç½øĞĞ×éºÏÆ¥Åä
+	 *	å…ˆè¦æŠŠç›®æ ‡å¤´å¯¸è¿›è¡Œç»„åˆåŒ¹é…
 	 */
 	auto real_targets = targets;
 	for(auto& v : _groups)
@@ -326,7 +326,7 @@ void WtArbiExecuter::set_position(const wt_hashmap<std::string, double>& targets
 			else
 			{
 				bHit = true;
-				//¼ÆËã×îĞ¡µÄ×éºÏµ¥Î»ÊıÁ¿
+				//è®¡ç®—æœ€å°çš„ç»„åˆå•ä½æ•°é‡
 				gpQty = std::min(gpQty, decimal::mod(it->second, unit));
 			}
 		}
@@ -353,7 +353,7 @@ void WtArbiExecuter::set_position(const wt_hashmap<std::string, double>& targets
 
 		double oldVol = _target_pos[stdCode];
 		_target_pos[stdCode] = newVol;
-		// ÕË»§µÄÀíÂÛ³Ö²ÖÒª¾­¹ıĞŞÕı
+		// è´¦æˆ·çš„ç†è®ºæŒä»“è¦ç»è¿‡ä¿®æ­£
 		double traderTarget = round(newVol * _scale);
 
 		if(!decimal::eq(oldVol, newVol))
@@ -380,7 +380,7 @@ void WtArbiExecuter::set_position(const wt_hashmap<std::string, double>& targets
 		}
 	}
 
-	//ÔÚÔ­À´µÄÄ¿±êÍ·´çÖĞ£¬µ«ÊÇ²»ÔÚĞÂµÄÄ¿±êÍ·´çÖĞ£¬ÔòĞèÒª×Ô¶¯ÉèÖÃÎª0
+	//åœ¨åŸæ¥çš„ç›®æ ‡å¤´å¯¸ä¸­ï¼Œä½†æ˜¯ä¸åœ¨æ–°çš„ç›®æ ‡å¤´å¯¸ä¸­ï¼Œåˆ™éœ€è¦è‡ªåŠ¨è®¾ç½®ä¸º0
 	for (auto it = _target_pos.begin(); it != _target_pos.end(); it++)
 	{
 		const char* code = it->first.c_str();
@@ -410,8 +410,8 @@ void WtArbiExecuter::set_position(const wt_hashmap<std::string, double>& targets
 		pos = 0;
 	}
 
-	//Èç¹û¿ªÆôÁËÑÏ¸ñÍ¬²½£¬ÔòĞèÒª¼ì²éÍ¨µÀ³Ö²Ö
-	//Èç¹ûÍ¨µÀ³Ö²Ö²»ÔÚ¹ÜÀíÖĞ£¬ÔòÖ±½ÓÆ½µô
+	//å¦‚æœå¼€å¯äº†ä¸¥æ ¼åŒæ­¥ï¼Œåˆ™éœ€è¦æ£€æŸ¥é€šé“æŒä»“
+	//å¦‚æœé€šé“æŒä»“ä¸åœ¨ç®¡ç†ä¸­ï¼Œåˆ™ç›´æ¥å¹³æ‰
 	if(_strict_sync)
 	{
 		for(const std::string& stdCode : _channel_holds)
@@ -600,22 +600,22 @@ void WtArbiExecuter::on_position(const char* stdCode, bool isLong, double prevol
 
 	/*
 	 *	By Wesley @ 2021.12.14
-	 *	ÏÈ¼ì²é×Ô¶¯ÇåÀí¹ıÆÚÖ÷Á¦ºÏÔ¼µÄ±ê¼ÇÊÇ·ñÎªtrue
-	 *	Èç¹û²»Îªtrue£¬ÔòÖ±½ÓÍË³ö¸ÃÂß¼­
+	 *	å…ˆæ£€æŸ¥è‡ªåŠ¨æ¸…ç†è¿‡æœŸä¸»åŠ›åˆçº¦çš„æ ‡è®°æ˜¯å¦ä¸ºtrue
+	 *	å¦‚æœä¸ä¸ºtrueï¼Œåˆ™ç›´æ¥é€€å‡ºè¯¥é€»è¾‘
 	 */
 	if (!_auto_clear)
 		return;
 
-	//Èç¹û²»ÊÇ·ÖÔÂÆÚ»õºÏÔ¼£¬Ö±½ÓÍË³ö
+	//å¦‚æœä¸æ˜¯åˆ†æœˆæœŸè´§åˆçº¦ï¼Œç›´æ¥é€€å‡º
 	if (!CodeHelper::isStdMonthlyFutCode(stdCode))
 		return;
 
 	IHotMgr* hotMgr = _stub->get_hot_mon();
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, NULL);
-	//»ñÈ¡ÉÏÒ»ÆÚµÄÖ÷Á¦ºÏÔ¼
+	//è·å–ä¸Šä¸€æœŸçš„ä¸»åŠ›åˆçº¦
 	std::string prevCode = hotMgr->getPrevRawCode(cInfo._exchg, cInfo._product, tradingday);
 
-	//Èç¹ûµ±Ç°ºÏÔ¼²»ÊÇÉÏÒ»ÆÚµÄÖ÷Á¦ºÏÔ¼£¬ÔòÖ±½ÓÍË³ö
+	//å¦‚æœå½“å‰åˆçº¦ä¸æ˜¯ä¸Šä¸€æœŸçš„ä¸»åŠ›åˆçº¦ï¼Œåˆ™ç›´æ¥é€€å‡º
 	if (prevCode != cInfo._code)
 		return;
 
@@ -624,8 +624,8 @@ void WtArbiExecuter::on_position(const char* stdCode, bool isLong, double prevol
 	thread_local static char fullPid[64] = { 0 };
 	fmtutil::format_to(fullPid, "{}.{}", cInfo._exchg, cInfo._product);
 
-	//ÏÈ¼ì²éÅÅ³ıÁĞ±í
-	//Èç¹ûÔÚÅÅ³ıÁĞ±íÖĞ£¬ÔòÖ±½ÓÍË³ö
+	//å…ˆæ£€æŸ¥æ’é™¤åˆ—è¡¨
+	//å¦‚æœåœ¨æ’é™¤åˆ—è¡¨ä¸­ï¼Œåˆ™ç›´æ¥é€€å‡º
 	auto it = _clear_excludes.find(fullPid);
 	if(it != _clear_excludes.end())
 	{
@@ -633,8 +633,8 @@ void WtArbiExecuter::on_position(const char* stdCode, bool isLong, double prevol
 		return;
 	}
 
-	//Èç¹û°üº¬ÁĞ±í²»Îª¿Õ£¬ÔÙ¼ì²éÊÇ·ñÔÚ°üº¬ÁĞ±íÖĞ
-	//Èç¹ûÎª¿Õ£¬ÔòÈ«²¿ÇåÀí£¬²»ÔÙ½øÈë¸ÃÂß¼­
+	//å¦‚æœåŒ…å«åˆ—è¡¨ä¸ä¸ºç©ºï¼Œå†æ£€æŸ¥æ˜¯å¦åœ¨åŒ…å«åˆ—è¡¨ä¸­
+	//å¦‚æœä¸ºç©ºï¼Œåˆ™å…¨éƒ¨æ¸…ç†ï¼Œä¸å†è¿›å…¥è¯¥é€»è¾‘
 	if(!_clear_includes.empty())
 	{
 		it = _clear_includes.find(fullPid);
@@ -645,7 +645,7 @@ void WtArbiExecuter::on_position(const char* stdCode, bool isLong, double prevol
 		}
 	}
 
-	//×îºóÔÙ½øĞĞ×Ô¶¯ÇåÀí
+	//æœ€åå†è¿›è¡Œè‡ªåŠ¨æ¸…ç†
 	WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "Position of {}, as prev hot contract, will be cleared", stdCode);
 	ExecuteUnitPtr unit = getUnit(stdCode);
 	if (unit)
@@ -664,4 +664,4 @@ void WtArbiExecuter::on_position(const char* stdCode, bool isLong, double prevol
 	}
 }
 
-#pragma endregion Íâ²¿½Ó¿Ú
+#pragma endregion å¤–éƒ¨æ¥å£

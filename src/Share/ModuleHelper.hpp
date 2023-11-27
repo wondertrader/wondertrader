@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "../Share/StrUtil.hpp"
 
 #ifdef _MSC_VER

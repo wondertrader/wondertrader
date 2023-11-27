@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "DataDefine.h"
 
 #include "../Includes/FasterDefs.h"
@@ -13,6 +13,7 @@
 typedef std::shared_ptr<BoostMappingFile> BoostMFPtr;
 
 NS_WTP_BEGIN
+class WTSObject;
 class WTSContractInfo;
 NS_WTP_END
 
@@ -40,6 +41,11 @@ private:
 	bool	dump_day_data(WTSContractInfo* ct, WTSBarStruct* newBar);
 
 	bool	proc_block_data(const char* tag, std::string& content, bool isBar, bool bKeepHead = true);
+
+	void	procTick(WTSTickData* curTick, uint32_t procFlag);
+	void	procQueue(WTSOrdQueData* curOrdQue);
+	void	procOrder(WTSOrdDtlData* curOrdDetail);
+	void	procTrans(WTSTransData* curTrans);
 
 public:
 	virtual bool init(WTSVariant* params, IDataWriterSink* sink) override;
@@ -160,7 +166,20 @@ private:
 	BoostMFPtr		_tick_cache_file;
 	RTTickCache*	_tick_cache_block;
 
-	typedef std::function<void()> TaskInfo;
+	//typedef std::function<void()> TaskInfo;
+	typedef struct alignas(64) _TaskInfo
+	{
+		WTSObject*	_obj;
+		uint64_t	_type;
+		uint32_t	_flag;		
+
+		_TaskInfo(WTSObject* data, uint64_t dtype, uint32_t flag = 0);
+
+		_TaskInfo(const _TaskInfo& rhs);
+
+		~_TaskInfo();
+
+	} TaskInfo;
 	std::queue<TaskInfo>	_tasks;
 	StdThreadPtr			_task_thrd;
 	StdUniqueMutex			_task_mtx;
@@ -194,7 +213,7 @@ private:
 
 	/*
 	 *	by Wesley @ 2023.05.04
-	 *	·ÖÖÓÏß¼Û¸ñÄ£Ê½£¬0-³£¹æÄ£Ê½£¬1-½«ÂòÂô¼ÛÒ²¼ÇÂ¼ÏÂÀ´£¬Õâ¸öÉè¼ÆÊ±Ö»Õë¶ÔÆÚÈ¨ÕâÖÖ²»»îÔ¾µÄÆ·ÖÖ
+	 *	åˆ†é’Ÿçº¿ä»·æ ¼æ¨¡å¼ï¼Œ0-å¸¸è§„æ¨¡å¼ï¼Œ1-å°†ä¹°å–ä»·ä¹Ÿè®°å½•ä¸‹æ¥ï¼Œè¿™ä¸ªè®¾è®¡æ—¶åªé’ˆå¯¹æœŸæƒè¿™ç§ä¸æ´»è·ƒçš„å“ç§
 	 */
 	uint32_t		_min_price_mode;
 	
@@ -219,6 +238,6 @@ private:
 	template<typename T>
 	void	releaseBlock(T* block);
 
-	void pushTask(TaskInfo task);
+	void pushTask(const TaskInfo& task);
 };
 

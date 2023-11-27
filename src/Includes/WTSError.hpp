@@ -1,11 +1,11 @@
-/*!
+ï»¿/*!
  * \file WTSError.hpp
  * \project	WonderTrader
  *
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief Wt´íÎó¶ÔÏó¶¨Òå
+ * \brief Wté”™è¯¯å¯¹è±¡å®šä¹‰
  */
 #pragma once
 #include "WTSObject.hpp"

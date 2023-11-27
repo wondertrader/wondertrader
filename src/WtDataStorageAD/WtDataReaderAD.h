@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <string>
 #include <stdint.h>
 #include <boost/circular_buffer.hpp>
@@ -37,7 +37,7 @@ private:
 	IBaseDataMgr*	_base_data_mgr;
 	IHotMgr*		_hot_mgr;
 
-	//m1»º´æ
+	//m1ç¼“å­˜
 	typedef struct _RTBarCacheWrapper
 	{
 		StdUniqueMutex	_mtx;
@@ -61,7 +61,7 @@ private:
 		std::string		_exchg;
 		std::string		_code;
 		WTSKlinePeriod	_period;
-		//×îºóÒ»ÌõÊÇ·ñ´Ó»º´æÀï¶ÁÈ¡µÄ£¬Èç¹ûÊÇÏÂ´Î¸üĞÂµÄÊ±ºòÒª´Ólmdb¸üĞÂÒ»´Î£¬×îºóÒ»ÌõÔÙ°´ÕÕÔ­ÓĞÂß¼­´¦Àí
+		//æœ€åä¸€æ¡æ˜¯å¦ä»ç¼“å­˜é‡Œè¯»å–çš„ï¼Œå¦‚æœæ˜¯ä¸‹æ¬¡æ›´æ–°çš„æ—¶å€™è¦ä»lmdbæ›´æ–°ä¸€æ¬¡ï¼Œæœ€åä¸€æ¡å†æŒ‰ç…§åŸæœ‰é€»è¾‘å¤„ç†
 		bool			_last_from_cache;
 		uint64_t		_last_req_time;
 
@@ -91,12 +91,12 @@ private:
 
 private:
 	/*
-	 *	½«ÀúÊ·Êı¾İ·ÅÈë»º´æ
+	 *	å°†å†å²æ•°æ®æ”¾å…¥ç¼“å­˜
 	 */
 	bool	cacheBarsFromStorage(const std::string& key, const char* stdCode, WTSKlinePeriod period, uint32_t count);
 
 	/*
-	 *	´ÓLMDBÖĞ¸üĞÂ»º´æµÄÊı¾İ
+	 *	ä»LMDBä¸­æ›´æ–°ç¼“å­˜çš„æ•°æ®
 	 */
 	void	update_cache_from_lmdb(BarsList& barsList, const char* exchg, const char* code, WTSKlinePeriod period, uint32_t& lastBarTime);
 
@@ -107,9 +107,9 @@ private:
 private:
 	//////////////////////////////////////////////////////////////////////////
 	/*
-	 *	ÕâÀï·ÅLMDBµÄÊı¾İ¿â¶¨Òå
-	 *	KÏßÊı¾İ£¬°´ÕÕÃ¿¸öÊĞ³¡m1/m5/d1Èı¸öÖÜÆÚÒ»¹²Èı¸öÊı¾İ¿â£¬Â·¾¶Èç./m1/CFFEX
-	 *	TickÊı¾İ£¬Ã¿¸öºÏÔ¼Ò»¸öÊı¾İ¿â£¬Â·¾¶Èç./ticks/CFFEX/IF2101
+	 *	è¿™é‡Œæ”¾LMDBçš„æ•°æ®åº“å®šä¹‰
+	 *	Kçº¿æ•°æ®ï¼ŒæŒ‰ç…§æ¯ä¸ªå¸‚åœºm1/m5/d1ä¸‰ä¸ªå‘¨æœŸä¸€å…±ä¸‰ä¸ªæ•°æ®åº“ï¼Œè·¯å¾„å¦‚./m1/CFFEX
+	 *	Tickæ•°æ®ï¼Œæ¯ä¸ªåˆçº¦ä¸€ä¸ªæ•°æ®åº“ï¼Œè·¯å¾„å¦‚./ticks/CFFEX/IF2101
 	 */
 	typedef std::shared_ptr<WtLMDB> WtLMDBPtr;
 	typedef wt_hashmap<std::string, WtLMDBPtr> WtLMDBMap;
@@ -118,7 +118,7 @@ private:
 	WtLMDBMap	_exchg_m5_dbs;
 	WtLMDBMap	_exchg_d1_dbs;
 
-	//ÓÃexchg.code×÷Îªkey£¬ÈçBINANCE.BTCUSDT
+	//ç”¨exchg.codeä½œä¸ºkeyï¼Œå¦‚BINANCE.BTCUSDT
 	WtLMDBMap	_tick_dbs;
 
 	WtLMDBPtr	get_k_db(const char* exchg, WTSKlinePeriod period);

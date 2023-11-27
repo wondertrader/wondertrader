@@ -1,4 +1,4 @@
-#include "../Share/CodeHelper.hpp"
+﻿#include "../Share/CodeHelper.hpp"
 #include "gtest/gtest/gtest.h"
 
 TEST(test_codehelper, test_raw_to_std)

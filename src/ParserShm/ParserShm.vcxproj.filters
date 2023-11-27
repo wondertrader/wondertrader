@@ -13,30 +13,15 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="ctp">
-      <UniqueIdentifier>{661d3ea4-fdb3-4f06-abd7-e8a33123ecfd}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="TraderSpi.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="MiniLoader.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="TraderSpi.h">
+    <ClInclude Include="ParserShm.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\API\CTPMini1.5.8\ThostFtdcTraderApi.h">
-      <Filter>ctp</Filter>
-    </ClInclude>
-    <ClInclude Include="..\API\CTPMini1.5.8\ThostFtdcUserApiDataType.h">
-      <Filter>ctp</Filter>
-    </ClInclude>
-    <ClInclude Include="..\API\CTPMini1.5.8\ThostFtdcUserApiStruct.h">
-      <Filter>ctp</Filter>
-    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ParserShm.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

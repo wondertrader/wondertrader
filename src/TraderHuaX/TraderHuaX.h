@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file TraderHuaX.h
  * \project	WonderTrader
  *
@@ -54,28 +54,28 @@ public:
 
 	typedef enum
 	{
-		TS_NOTLOGIN,		//Î´µÇÂ¼
-		TS_LOGINING,		//ÕıÔÚµÇÂ¼
-		TS_LOGINED,			//ÒÑµÇÂ¼
-		TS_LOGINFAILED,		//µÇÂ¼Ê§°Ü
-		TS_ALLREADY			//È«²¿¾ÍĞ÷
+		TS_NOTLOGIN,		//æœªç™»å½•
+		TS_LOGINING,		//æ­£åœ¨ç™»å½•
+		TS_LOGINED,			//å·²ç™»å½•
+		TS_LOGINFAILED,		//ç™»å½•å¤±è´¥
+		TS_ALLREADY			//å…¨éƒ¨å°±ç»ª
 	} TraderState;
 
 public:
 	//////////////////////////////////////////////////////////////////////////
-	//HuaX::API::TraderSpi ½Ó¿Ú
+	//HuaX::API::TraderSpi æ¥å£
 	virtual void OnFrontConnected() override;
-	///µ±¿Í»§¶ËÓë½»Ò×ºóÌ¨Í¨ĞÅÁ¬½Ó¶Ï¿ªÊ±£¬¸Ã·½·¨±»µ÷ÓÃ¡£µ±·¢ÉúÕâ¸öÇé¿öºó£¬API»á×Ô¶¯ÖØĞÂÁ¬½Ó£¬¿Í»§¶Ë¿É²»×ö´¦Àí¡£
-	///@param nReason ´íÎóÔ­Òò
-	///        -3 Á¬½ÓÒÑ¶Ï¿ª
-	///        -4 ÍøÂç¶ÁÊ§°Ü
-	///        -5 ÍøÂçĞ´Ê§°Ü
-	///        -6 ¶©ÔÄÁ÷´íÎó
-	///        -7 Á÷ĞòºÅ´íÎó
-	///        -8 ´íÎóµÄĞÄÌø±¨ÎÄ
-	///        -9 ´íÎóµÄ±¨ÎÄ
-	///		  -15 ÍøÂç¶ÁÊ§°Ü
-	///		  -16 ÍøÂçĞ´Ê§°Ü
+	///å½“å®¢æˆ·ç«¯ä¸äº¤æ˜“åå°é€šä¿¡è¿æ¥æ–­å¼€æ—¶ï¼Œè¯¥æ–¹æ³•è¢«è°ƒç”¨ã€‚å½“å‘ç”Ÿè¿™ä¸ªæƒ…å†µåï¼ŒAPIä¼šè‡ªåŠ¨é‡æ–°è¿æ¥ï¼Œå®¢æˆ·ç«¯å¯ä¸åšå¤„ç†ã€‚
+	///@param nReason é”™è¯¯åŸå› 
+	///        -3 è¿æ¥å·²æ–­å¼€
+	///        -4 ç½‘ç»œè¯»å¤±è´¥
+	///        -5 ç½‘ç»œå†™å¤±è´¥
+	///        -6 è®¢é˜…æµé”™è¯¯
+	///        -7 æµåºå·é”™è¯¯
+	///        -8 é”™è¯¯çš„å¿ƒè·³æŠ¥æ–‡
+	///        -9 é”™è¯¯çš„æŠ¥æ–‡
+	///		  -15 ç½‘ç»œè¯»å¤±è´¥
+	///		  -16 ç½‘ç»œå†™å¤±è´¥
 	virtual void OnFrontDisconnected(int nReason) override;
 
 	virtual void OnRspError(CTORATstpRspInfoField* pRspInfoField, int nRequestID, bool bIsLast) override;
@@ -106,7 +106,7 @@ public:
 
 public:
 	//////////////////////////////////////////////////////////////////////////
-	//ITraderApi ½Ó¿Ú
+	//ITraderApi æ¥å£
 	virtual bool init(WTSVariant *params) override;
 
 	virtual void release() override;
@@ -171,20 +171,20 @@ private:
 	std::string		_user;
 	std::string		_pass;
 	std::string		_flowdir;
-	bool			_encrypt;  // ÎªÍøÂçÊı¾İÊÇ·ñ¼ÓÃÜ´«Êä£¬¿¼ÂÇÊı¾İ°²È«ĞÔ£¬½¨ÒéÒÔ»¥ÁªÍø·½Ê½½ÓÈëµÄÖÕ¶ËÉèÖÃÎª¼ÓÃÜ´«Êä
-	std::string		_appid; // ÖÕ¶ËÃû³Æ
-	std::string		_sse_share_hold_id; // »¦ÊĞ¹É¶«ºÅ
-	std::string		_szse_share_hold_id; // ÉîÊĞ¹É¶«ºÅ
-	std::string		_terminal; // ÖÕ¶ËÀàĞÍ£¬Ä¬ÈÏPC
-	std::string		_pub_ip; // ¹«ÍøIP
-	std::string		_pub_port; // ¹«ÍøIP¶Ë¿ÚºÅ
-	std::string		_trade_ip; // ÄÚÍø½»Ò×IP
-	std::string		_mac; // MACµØÖ·£¬ÍĞ¹Ü·şÎñÆ÷Íø¿¨MAC
-	std::string		_hard_disk; // Ó²ÅÌĞòÁĞºÅ,ÍĞ¹Ü·şÎñÆ÷Ó²ÅÌĞòÁĞºÅ
+	bool			_encrypt;  // ä¸ºç½‘ç»œæ•°æ®æ˜¯å¦åŠ å¯†ä¼ è¾“ï¼Œè€ƒè™‘æ•°æ®å®‰å…¨æ€§ï¼Œå»ºè®®ä»¥äº’è”ç½‘æ–¹å¼æ¥å…¥çš„ç»ˆç«¯è®¾ç½®ä¸ºåŠ å¯†ä¼ è¾“
+	std::string		_appid; // ç»ˆç«¯åç§°
+	std::string		_sse_share_hold_id; // æ²ªå¸‚è‚¡ä¸œå·
+	std::string		_szse_share_hold_id; // æ·±å¸‚è‚¡ä¸œå·
+	std::string		_terminal; // ç»ˆç«¯ç±»å‹ï¼Œé»˜è®¤PC
+	std::string		_pub_ip; // å…¬ç½‘IP
+	std::string		_pub_port; // å…¬ç½‘IPç«¯å£å·
+	std::string		_trade_ip; // å†…ç½‘äº¤æ˜“IP
+	std::string		_mac; // MACåœ°å€ï¼Œæ‰˜ç®¡æœåŠ¡å™¨ç½‘å¡MAC
+	std::string		_hard_disk; // ç¡¬ç›˜åºåˆ—å·,æ‰˜ç®¡æœåŠ¡å™¨ç¡¬ç›˜åºåˆ—å·
 
-	std::string		_front; // Èçtcp://210.14.72.16:9500
+	std::string		_front; // å¦‚tcp://210.14.72.16:9500
 
-	bool			_quick; // Á÷ÖØ´«·½Ê½
+	bool			_quick; // æµé‡ä¼ æ–¹å¼
 	bool			_inited;
 
 	std::string		_productInfo;
@@ -193,7 +193,7 @@ private:
 
 	uint32_t		_tradingday;
 	std::atomic<uint32_t>		_reqid;
-	std::atomic<int>		_ordref;		//±¨µ¥ÒıÓÃ
+	std::atomic<int>		_ordref;		//æŠ¥å•å¼•ç”¨
 
 	boost::asio::io_service		_asyncio;
 	StdThreadPtr				_thrd_worker;
@@ -202,9 +202,9 @@ private:
 	typedef HuaXTraderApi* (*HuaXCreator)(const char*, bool);
 	HuaXCreator		_funcCreator;
 
-	//Î¯ÍĞµ¥±ê¼Ç»º´æÆ÷
+	//å§”æ‰˜å•æ ‡è®°ç¼“å­˜å™¨
 	WtKVCache		_eidCache;
-	//¶©µ¥±ê¼Ç»º´æÆ÷
+	//è®¢å•æ ‡è®°ç¼“å­˜å™¨
 	WtKVCache		_oidCache;
 };
 

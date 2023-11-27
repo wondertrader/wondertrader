@@ -23,15 +23,18 @@
     <ClCompile Include="IndexFactory.cpp" />
     <ClCompile Include="IndexWorker.cpp" />
     <ClCompile Include="ParserAdapter.cpp" />
+    <ClCompile Include="ShmCaster.cpp" />
     <ClCompile Include="StateMonitor.cpp" />
     <ClCompile Include="UDPCaster.cpp" />
     <ClCompile Include="WtHelper.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataManager.h" />
+    <ClInclude Include="IDataCaster.h" />
     <ClInclude Include="IndexFactory.h" />
     <ClInclude Include="IndexWorker.h" />
     <ClInclude Include="ParserAdapter.h" />
+    <ClInclude Include="ShmCaster.h" />
     <ClInclude Include="StateMonitor.h" />
     <ClInclude Include="StatHelper.hpp" />
     <ClInclude Include="UDPCaster.h" />

@@ -1,4 +1,4 @@
-/*!
+Ôªø/*!
  * \file WtCtaEngine.h
  * \project	WonderTrader
  *
@@ -27,8 +27,8 @@ public:
 
 public:
 	//////////////////////////////////////////////////////////////////////////
-	//WtEngineΩ”ø⁄
-	virtual void handle_push_quote(WTSTickData* newTick, uint32_t hotFlag) override;
+	//WtEngineÊé•Âè£
+	virtual void handle_push_quote(WTSTickData* newTick) override;
 
 	virtual void on_tick(const char* stdCode, WTSTickData* curTick) override;
 
@@ -38,7 +38,7 @@ public:
 	virtual void on_session_begin() override;
 	virtual void on_session_end() override;
 
-	virtual void run(bool bAsync = false) override;
+	virtual void run() override;
 
 	virtual void init(WTSVariant* cfg, IBaseDataMgr* bdMgr, WtDtMgr* dataMgr, IHotMgr* hotMgr, EventNotifier* notifier) override;
 
@@ -46,7 +46,7 @@ public:
 	virtual uint32_t transTimeToMin(uint32_t uTime) override;
 
 	///////////////////////////////////////////////////////////////////////////
-	//IExecuterStub Ω”ø⁄
+	//IExecuterStub Êé•Âè£
 	virtual uint64_t get_real_time() override;
 	virtual WTSCommodityInfo* get_comm_info(const char* stdCode) override;
 	virtual WTSSessionInfo* get_sess_info(const char* stdCode) override;

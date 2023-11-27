@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file ParserAdapter.cpp
  * \project	WonderTrader
  *
@@ -101,15 +101,15 @@ bool ParserAdapter::init(const char* id, WTSVariant* cfg, IParserStub* stub, IBa
 	_check_time = cfg->getBoolean("check_time");
 
 	{
-		//¼ÓÔØÄ£¿é
+		//åŠ è½½æ¨¡å—
 		if (cfg->getString("module").empty())
 			return false;
 
 		std::string module = DLLHelper::wrap_module(cfg->getCString("module"), "lib");;
 
-		//ÏÈ¿´¹¤×÷Ä¿Â¼ÏÂÊÇ·ñÓÐ½»Ò×Ä£¿é
+		//å…ˆçœ‹å·¥ä½œç›®å½•ä¸‹æ˜¯å¦æœ‰äº¤æ˜“æ¨¡å—
 		std::string dllpath = WtHelper::getModulePath(module.c_str(), "parsers", true);
-		//Èç¹ûÃ»ÓÐ,ÔòÔÙ¿´Ä£¿éÄ¿Â¼,¼´dllÍ¬Ä¿Â¼ÏÂ
+		//å¦‚æžœæ²¡æœ‰,åˆ™å†çœ‹æ¨¡å—ç›®å½•,å³dllåŒç›®å½•ä¸‹
 		if (!StdFile::exists(dllpath.c_str()))
 			dllpath = WtHelper::getModulePath(module.c_str(), "parsers", false);
 
@@ -171,12 +171,12 @@ bool ParserAdapter::init(const char* id, WTSVariant* cfg, IParserStub* stub, IBa
 		if (_parser_api->init(cfg))
 		{
 			ContractSet contractSet;
-			if (!_code_filter.empty())//ÓÅÏÈÅÐ¶ÏºÏÔ¼¹ýÂËÆ÷
+			if (!_code_filter.empty())//ä¼˜å…ˆåˆ¤æ–­åˆçº¦è¿‡æ»¤å™¨
 			{
 				ExchgFilter::iterator it = _code_filter.begin();
 				for (; it != _code_filter.end(); it++)
 				{
-					//È«´úÂë,ÐÎÊ½ÈçSSE.600000,ÆÚ»õ´úÂëÎªCFFEX.IF2005
+					//å…¨ä»£ç ,å½¢å¼å¦‚SSE.600000,æœŸè´§ä»£ç ä¸ºCFFEX.IF2005
 					std::string code, exchg;
 					auto ay = StrUtil::split((*it).c_str(), ".");
 					if (ay.size() == 1)
@@ -196,7 +196,7 @@ bool ParserAdapter::init(const char* id, WTSVariant* cfg, IParserStub* stub, IBa
 						contractSet.insert(contract->getFullCode());
 					else
 					{
-						//Èç¹ûÊÇÆ·ÖÖID£¬Ôò½«¸ÃÆ·ÖÖÏÂÈ«²¿ºÏÔ¼¶¼¼Óµ½¶©ÔÄÁÐ±í
+						//å¦‚æžœæ˜¯å“ç§IDï¼Œåˆ™å°†è¯¥å“ç§ä¸‹å…¨éƒ¨åˆçº¦éƒ½åŠ åˆ°è®¢é˜…åˆ—è¡¨
 						WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(exchg.c_str(), code.c_str());
 						if(commInfo)
 						{
@@ -279,7 +279,7 @@ bool ParserAdapter::run()
 	return true;
 }
 
-//ºÏÀíºÁÃëÊýÊ±¼ä²î
+//åˆç†æ¯«ç§’æ•°æ—¶é—´å·®
 const int RESONABLE_MILLISECS = 60 * 60 * 1000;
 void ParserAdapter::handleQuote(WTSTickData *quote, uint32_t procFlag)
 {
@@ -309,9 +309,9 @@ void ParserAdapter::handleQuote(WTSTickData *quote, uint32_t procFlag)
 
 		/*
 		 *	By Wesley @ 2022.04.20
-		 *	Èç¹û×îÐÂµÄtickÊ±¼ä£¬ºÍ±¾µØÊ±¼äÏà²îÌ«´ó
-		 *	ÔòÈÏÎªtickµÄÊ±¼ä´ÁÊÇ´íÎóµÄ
-		 *	ÕâÀïÒªÇó±¾µØÊ±¼äÊÇÒªÊ±³£½øÐÐÐ£×¼µÄ
+		 *	å¦‚æžœæœ€æ–°çš„tickæ—¶é—´ï¼Œå’Œæœ¬åœ°æ—¶é—´ç›¸å·®å¤ªå¤§
+		 *	åˆ™è®¤ä¸ºtickçš„æ—¶é—´æˆ³æ˜¯é”™è¯¯çš„
+		 *	è¿™é‡Œè¦æ±‚æœ¬åœ°æ—¶é—´æ˜¯è¦æ—¶å¸¸è¿›è¡Œæ ¡å‡†çš„
 		 */
 		if (tick_time - local_time > RESONABLE_MILLISECS)
 		{
@@ -320,8 +320,6 @@ void ParserAdapter::handleQuote(WTSTickData *quote, uint32_t procFlag)
 		}
 	}
 
-	uint32_t hotflag = 0;
-
 	std::string stdCode;
 	if (commInfo->getCategoty() == CC_FutOption || commInfo->getCategoty() == CC_SpotOption)
 	{
@@ -329,11 +327,8 @@ void ParserAdapter::handleQuote(WTSTickData *quote, uint32_t procFlag)
 	}
 	else if(CodeHelper::isMonthlyCode(quote->code()))
 	{
-		//Èç¹ûÊÇ·ÖÔÂºÏÔ¼£¬Ôò½øÐÐÖ÷Á¦ºÍ´ÎÖ÷Á¦µÄÅÐ¶Ï
+		//å¦‚æžœæ˜¯åˆ†æœˆåˆçº¦ï¼Œåˆ™è¿›è¡Œä¸»åŠ›å’Œæ¬¡ä¸»åŠ›çš„åˆ¤æ–­
 		stdCode = CodeHelper::rawMonthCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
-		bool bHot = _hot_mgr->isHot(quote->exchg(), quote->code(), 0);
-		bool b2nd = _hot_mgr->isSecond(quote->exchg(), quote->code(), 0);
-		hotflag = bHot ? 1 : (b2nd ? 2 : 0);
 	}
 	else
 	{
@@ -341,7 +336,7 @@ void ParserAdapter::handleQuote(WTSTickData *quote, uint32_t procFlag)
 	}
 	quote->setCode(stdCode.c_str());
 
-	_stub->handle_push_quote(quote, hotflag);
+	_stub->handle_push_quote(quote);
 }
 
 void ParserAdapter::handleOrderQueue(WTSOrdQueData* ordQueData)

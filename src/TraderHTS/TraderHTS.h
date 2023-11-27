@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file TraderHTS.h
  * \project	WonderTrader
  *
@@ -43,35 +43,35 @@ public:
 public:
 	typedef enum
 	{
-		WS_NOTLOGIN,		//Î´µÇÂ¼
-		WS_LOGINING,		//ÕıÔÚµÇÂ¼
-		WS_LOGINED,			//ÒÑµÇÂ¼
-		WS_LOGINFAILED,		//µÇÂ¼Ê§°Ü
-		WS_ALLREADY			//È«²¿¾ÍĞ÷
+		WS_NOTLOGIN,		//æœªç™»å½•
+		WS_LOGINING,		//æ­£åœ¨ç™»å½•
+		WS_LOGINED,			//å·²ç™»å½•
+		WS_LOGINFAILED,		//ç™»å½•å¤±è´¥
+		WS_ALLREADY			//å…¨éƒ¨å°±ç»ª
 	} WrapperState;
 
 private:
 	void doLogin();
 	void InitializeHTS(WTSVariant* params);
-	void qryGDNo();	//²éÑ¯¹É¶«ºÅ
-	//void qryCustInfo();  // ²éÑ¯¿Í»§ĞÅÏ¢
-	//void qryCustNodeInfo();  // ²éÑ¯¿Í»§½ÚµãĞÅÏ¢
+	void qryGDNo();	//æŸ¥è¯¢è‚¡ä¸œå·
+	//void qryCustInfo();  // æŸ¥è¯¢å®¢æˆ·ä¿¡æ¯
+	//void qryCustNodeInfo();  // æŸ¥è¯¢å®¢æˆ·èŠ‚ç‚¹ä¿¡æ¯
 
 	void reconnect();
 
 	void triggerQuery();
 
 public:
-	/* ½ÓÊÕ¶©ÔÄµÄ»Ø±¨Êı¾İ */
+	/* æ¥æ”¶è®¢é˜…çš„å›æŠ¥æ•°æ® */
 	void htsGetCallback(const char* pTime, const char* pMsg, int nType);
 
-	void OnRtnOrder(const char* pMsg);  // Î¯ÍĞĞÅÏ¢
-	void OnRtnTrade(const char* pMsg);  // ³É½»ĞÅÏ¢
+	void OnRtnOrder(const char* pMsg);  // å§”æ‰˜ä¿¡æ¯
+	void OnRtnTrade(const char* pMsg);  // æˆäº¤ä¿¡æ¯
 
 private:
 	
 	//////////////////////////////////////////////////////////////////////////
-	//ITraderApi½Ó¿Ú
+	//ITraderApiæ¥å£
 public:
 	virtual bool init(WTSVariant* params) override;
 
@@ -104,35 +104,35 @@ public:
 	virtual int queryTrades() override;
 
 protected:
-	std::string		m_strUser;  // ¿Í»§ºÅ
-	std::string		m_strPass;  // ÃÜÂë
-	std::string		m_strNode;  // Õ¾µãĞÅÏ¢
+	std::string		m_strUser;  // å®¢æˆ·å·
+	std::string		m_strPass;  // å¯†ç 
+	std::string		m_strNode;  // ç«™ç‚¹ä¿¡æ¯
 
-	char			sShGdh[13];                // ÉÏº£¹É¶«ºÅ
-	char			sSzGdh[13];                // ÉîÛÚ¹É¶«ºÅ
-	char			sShZjzh[13];               // ÉÏº£×Ê½ğÕËºÅ
-	char			sSzZjzh[13];               // ÉîÛÚ×Ê½ğÕËºÅ
+	char			sShGdh[13];                // ä¸Šæµ·è‚¡ä¸œå·
+	char			sSzGdh[13];                // æ·±åœ³è‚¡ä¸œå·
+	char			sShZjzh[13];               // ä¸Šæµ·èµ„é‡‘è´¦å·
+	char			sSzZjzh[13];               // æ·±åœ³èµ„é‡‘è´¦å·
 
-	std::string		m_strWtfs;  // Î¯ÍĞ·½Ê½
-	std::string		m_strKey;  // ÅäÖÃÎÄ¼ş¶ÎÃû
-	std::string		m_strDevName;  // ¿ª·¢ÉÌ´úÂë
+	std::string		m_strWtfs;  // å§”æ‰˜æ–¹å¼
+	std::string		m_strKey;  // é…ç½®æ–‡ä»¶æ®µå
+	std::string		m_strDevName;  // å¼€å‘å•†ä»£ç 
 
 	std::string		m_strTag;
 
-	ITPDK_CusReqInfo cusreqinfo;  // µÇÂ¼ĞÅÏ¢
+	ITPDK_CusReqInfo cusreqinfo;  // ç™»å½•ä¿¡æ¯
 
 	ITraderSpi*		m_traderSink;
 	uint64_t		m_uLastQryTime;
 
-	bool			m_bUseEX;  // Ê¹ÓÃEXºó×º
-	bool			m_bASync;  // ÊÇ·ñÊ¹ÓÃÒì²½
+	bool			m_bUseEX;  // ä½¿ç”¨EXåç¼€
+	bool			m_bASync;  // æ˜¯å¦ä½¿ç”¨å¼‚æ­¥
 
 	typedef WTSHashMap<std::string> TradeDataMap;
 	TradeDataMap*	m_mapLives;
 	std::unordered_set<std::string>	m_tradeids;
 
 	uint32_t					m_lDate;
-	std::atomic<uint32_t>		m_orderRef;		//±¨µ¥ÒıÓÃ
+	std::atomic<uint32_t>		m_orderRef;		//æŠ¥å•å¼•ç”¨
 
 	WrapperState				m_wrapperState;
 

@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file ICtaStraCtx.h
  * \project	WonderTrader
  *
@@ -34,7 +34,7 @@ public:
 public:
 	virtual uint32_t id() = 0;
 
-	//»Øµ÷º¯Êı
+	//å›è°ƒå‡½æ•°
 	virtual void on_init() = 0;
 	virtual void on_session_begin(uint32_t uTDate) = 0;
 	virtual void on_session_end(uint32_t uTDate) = 0;
@@ -42,15 +42,15 @@ public:
 	virtual void on_bar(const char* stdCode, const char* period, uint32_t times, WTSBarStruct* newBar) = 0;
 	virtual bool on_schedule(uint32_t curDate, uint32_t curTime) = 0;
 	/*
-	 *	»Ø²â½áÊøÊÂ¼ş
-	 *	Ö»ÔÚ»Ø²âÏÂ²Å»á´¥·¢
+	 *	å›æµ‹ç»“æŸäº‹ä»¶
+	 *	åªåœ¨å›æµ‹ä¸‹æ‰ä¼šè§¦å‘
 	 */
 	virtual void on_bactest_end() {};
 
 	/*
-	 *	ÖØËã½áÊø
-	 *	Éè¼ÆÄ¿µÄÊÇÒª°Ñon_calculate·Ö³ÉÁ½²½
-	 *	·½±ãÒ»Ğ©Íâ¹ÒµÄÂß¼­½ÓÈë½øÀ´£¬¿ÉÒÔÔÚon_calculate_doneÖ´ĞĞĞÅºÅ
+	 *	é‡ç®—ç»“æŸ
+	 *	è®¾è®¡ç›®çš„æ˜¯è¦æŠŠon_calculateåˆ†æˆä¸¤æ­¥
+	 *	æ–¹ä¾¿ä¸€äº›å¤–æŒ‚çš„é€»è¾‘æ¥å…¥è¿›æ¥ï¼Œå¯ä»¥åœ¨on_calculate_doneæ‰§è¡Œä¿¡å·
 	 */
 	virtual void on_calculate_done(uint32_t curDate, uint32_t curTime) { };
 
@@ -61,30 +61,30 @@ public:
 
 	virtual void enum_position(FuncEnumCtaPosCallBack cb, bool bForExecute = false) = 0;
 
-	//²ßÂÔ½Ó¿Ú
+	//ç­–ç•¥æ¥å£
 	virtual void stra_enter_long(const char* stdCode, double qty, const char* userTag = "", double limitprice = 0.0, double stopprice = 0.0) = 0;
 	virtual void stra_enter_short(const char* stdCode, double qty, const char* userTag = "", double limitprice = 0.0, double stopprice = 0.0) = 0;
 	virtual void stra_exit_long(const char* stdCode, double qty, const char* userTag = "", double limitprice = 0.0, double stopprice = 0.0) = 0;
 	virtual void stra_exit_short(const char* stdCode, double qty, const char* userTag = "", double limitprice = 0.0, double stopprice = 0.0) = 0;
 
 	/*
-	 *	»ñÈ¡µ±Ç°³Ö²Ö
-	 *	@stdCode	ºÏÔ¼´úÂë
-	 *	@userTag	ÏÂµ¥±ê¼Ç£¬Èç¹ûÏÂµ¥±ê¼ÇÎª¿Õ£¬Ôò¶ÁÈ¡³Ö²Ö»ã×Ü£¬Èç¹ûÏÂµ¥±ê¼Ç²»Îª¿Õ£¬Ôò¶ÁÈ¡¶ÔÓ¦µÄ³Ö²ÖÃ÷Ï¸
-	 *	@bOnlyValid	ÊÇ·ñÖ»¶Á¿ÉÓÃ³Ö²Ö£¬Ä¬ÈÏÎªfalse£¬Ö»ÓĞµ±userTagÎª¿ÕÊ±ÉúĞ§£¬Ö÷ÒªÕë¶ÔT+1µÄÆ·ÖÖ
+	 *	è·å–å½“å‰æŒä»“
+	 *	@stdCode	åˆçº¦ä»£ç 
+	 *	@userTag	ä¸‹å•æ ‡è®°ï¼Œå¦‚æœä¸‹å•æ ‡è®°ä¸ºç©ºï¼Œåˆ™è¯»å–æŒä»“æ±‡æ€»ï¼Œå¦‚æœä¸‹å•æ ‡è®°ä¸ä¸ºç©ºï¼Œåˆ™è¯»å–å¯¹åº”çš„æŒä»“æ˜ç»†
+	 *	@bOnlyValid	æ˜¯å¦åªè¯»å¯ç”¨æŒä»“ï¼Œé»˜è®¤ä¸ºfalseï¼Œåªæœ‰å½“userTagä¸ºç©ºæ—¶ç”Ÿæ•ˆï¼Œä¸»è¦é’ˆå¯¹T+1çš„å“ç§
 	 */
 	virtual double stra_get_position(const char* stdCode, bool bOnlyValid = false, const char* userTag = "") = 0;
 	virtual void stra_set_position(const char* stdCode, double qty, const char* userTag = "", double limitprice = 0.0, double stopprice = 0.0) = 0;
 
 	/*
-	 *	»ñÈ¡µ±Ç°¼Û¸ñ
+	 *	è·å–å½“å‰ä»·æ ¼
 	 */
 	virtual double stra_get_price(const char* stdCode) = 0;
 
 	/*
-	 *	¶ÁÈ¡µ±ÈÕ¼Û¸ñ
-	 *	@stdCode	ºÏÔ¼´úÂë
-	 *	@flag		¼Û¸ñ±ê¼Ç£º0-¿ªÅÌ¼Û£¬1-×î¸ß¼Û£¬2-×îµÍ¼Û£¬3-ÊÕÅÌ¼Û/×îĞÂ¼Û
+	 *	è¯»å–å½“æ—¥ä»·æ ¼
+	 *	@stdCode	åˆçº¦ä»£ç 
+	 *	@flag		ä»·æ ¼æ ‡è®°ï¼š0-å¼€ç›˜ä»·ï¼Œ1-æœ€é«˜ä»·ï¼Œ2-æœ€ä½ä»·ï¼Œ3-æ”¶ç›˜ä»·/æœ€æ–°ä»·
 	 */
 	virtual double stra_get_day_price(const char* stdCode, int flag = 0) = 0;
 
@@ -105,10 +105,10 @@ public:
 	virtual double stra_get_detail_cost(const char* stdCode, const char* userTag) = 0;
 
 	/*
-	 *	¶ÁÈ¡³Ö²ÖÃ÷Ï¸µÄ¸¡Ó¯
-	 *	@stdCode	ºÏÔ¼´úÂë
-	 *	@userTag	ÏÂµ¥±ê¼Ç
-	 *	@flag		¸¡Ó¯±êÖ¾£º0-¸¡¶¯Ó¯¿÷£¬1-×î´ó¸¡Ó¯£¬2-×î¸ß¸¡¶¯¼Û¸ñ£¬-1-×î´ó¸¡¿÷£¬-2-×îĞ¡¸¡¶¯¼Û¸ñ
+	 *	è¯»å–æŒä»“æ˜ç»†çš„æµ®ç›ˆ
+	 *	@stdCode	åˆçº¦ä»£ç 
+	 *	@userTag	ä¸‹å•æ ‡è®°
+	 *	@flag		æµ®ç›ˆæ ‡å¿—ï¼š0-æµ®åŠ¨ç›ˆäºï¼Œ1-æœ€å¤§æµ®ç›ˆï¼Œ2-æœ€é«˜æµ®åŠ¨ä»·æ ¼ï¼Œ-1-æœ€å¤§æµ®äºï¼Œ-2-æœ€å°æµ®åŠ¨ä»·æ ¼
 	 */
 	virtual double stra_get_detail_profit(const char* stdCode, const char* userTag, int flag = 0) = 0;
 
@@ -118,11 +118,12 @@ public:
 	virtual WTSTickData*	stra_get_last_tick(const char* stdCode) = 0;
 
 	/*
-	 *	»ñÈ¡·ÖÔÂºÏÔ¼´úÂë
+	 *	è·å–åˆ†æœˆåˆçº¦ä»£ç 
 	 */
 	virtual std::string		stra_get_rawcode(const char* stdCode) = 0;
 
 	virtual void stra_sub_ticks(const char* stdCode) = 0;
+	virtual void stra_sub_bar_events(const char* stdCode, const char* period) = 0;
 
 	virtual void stra_log_info(const char* message) = 0;
 	virtual void stra_log_debug(const char* message) = 0;
@@ -134,50 +135,50 @@ public:
 	virtual const char* stra_load_user_data(const char* key, const char* defVal = "") { return defVal; }
 
 	/*
-	 *	ÉèÖÃÍ¼±íKÏß
+	 *	è®¾ç½®å›¾è¡¨Kçº¿
 	 */
 	virtual void set_chart_kline(const char* stdCode, const char* period) {}
 
 	/*
-	 *	Ìí¼ÓĞÅºÅ
+	 *	æ·»åŠ ä¿¡å·
 	 */
 	virtual void add_chart_mark(double price, const char* icon, const char* tag) {}
 
 	/*
-	 *	Ìí¼ÓÖ¸±ê
-	 *	@idxName	Ö¸±êÃû³Æ
-	 *	@indexType	Ö¸±êÀàĞÍ£º0-Ö÷Í¼Ö¸±ê£¬1-¸±Í¼Ö¸±ê
+	 *	æ·»åŠ æŒ‡æ ‡
+	 *	@idxName	æŒ‡æ ‡åç§°
+	 *	@indexType	æŒ‡æ ‡ç±»å‹ï¼š0-ä¸»å›¾æŒ‡æ ‡ï¼Œ1-å‰¯å›¾æŒ‡æ ‡
 	 */
 	virtual void register_index(const char* idxName, uint32_t indexType) {}
 
 
 	/*
-	 *	Ìí¼ÓÖ¸±êÏß
-	 *	@idxName	Ö¸±êÃû³Æ
-	 *	@lineName	ÏßÌõÃû³Æ
-	 *	@lineType	ÏßĞÔ£¬0-ÇúÏß
+	 *	æ·»åŠ æŒ‡æ ‡çº¿
+	 *	@idxName	æŒ‡æ ‡åç§°
+	 *	@lineName	çº¿æ¡åç§°
+	 *	@lineType	çº¿æ€§ï¼Œ0-æ›²çº¿
 	 */
 	virtual bool register_index_line(const char* idxName, const char* lineName, uint32_t lineType) { return false; }
 
 	/*
-	 *	Ìí¼Ó»ù×¼Ïß
-	 *	@idxName	Ö¸±êÃû³Æ
-	 *	@lineName	ÏßÌõÃû³Æ
-	 *	@val		ÊıÖµ
+	 *	æ·»åŠ åŸºå‡†çº¿
+	 *	@idxName	æŒ‡æ ‡åç§°
+	 *	@lineName	çº¿æ¡åç§°
+	 *	@val		æ•°å€¼
 	 */
 	virtual bool add_index_baseline(const char* idxName, const char* lineName, double val) { return false; }
 
 	/*
-	 *	ÉèÖÃÖ¸±êÖµ
-	 *	@idxName	Ö¸±êÃû³Æ
-	 *	@lineName	ÏßÌõÃû³Æ
-	 *	@val		Ö¸±êÖµ
+	 *	è®¾ç½®æŒ‡æ ‡å€¼
+	 *	@idxName	æŒ‡æ ‡åç§°
+	 *	@lineName	çº¿æ¡åç§°
+	 *	@val		æŒ‡æ ‡å€¼
 	 */
 	virtual bool set_index_value(const char* idxName, const char* lineName, double val) { return false; }
 
 	/*
-	 *	»ñÈ¡×îºóµÄ½ø³¡±ê¼Ç
-	 *	@stdCode	ºÏÔ¼´úÂë
+	 *	è·å–æœ€åçš„è¿›åœºæ ‡è®°
+	 *	@stdCode	åˆçº¦ä»£ç 
 	 */
 	virtual const char* stra_get_last_entertag(const char* stdCode) = 0;
 

@@ -1,4 +1,4 @@
-/*
+ï»¿/*
 * $Id: mdump.cpp 5561 2009-12-25 07:23:59Z wangmeng $
 *
 * this file is part of eMule
@@ -85,7 +85,7 @@ LONG CMiniDumper::TopLevelFilter(struct _EXCEPTION_POINTERS* pExceptionInfo)
 	TCHAR szResult[_MAX_PATH + 1024] = { 0 };
 	MINIDUMPWRITEDUMP pfnMiniDumpWriteDump = NULL;
 	HMODULE hDll = GetDebugHelperDll((FARPROC*)&pfnMiniDumpWriteDump, true);
-	HINSTANCE	hInstCrashReporter = NULL;	//ADDED by fengwen on 2006/11/15 : Ê¹ÓÃĞÂµÄ·¢ËÍ´íÎó±¨¸æ»úÖÆ¡£
+	HINSTANCE	hInstCrashReporter = NULL;	//ADDED by fengwen on 2006/11/15 : ä½¿ç”¨æ–°çš„å‘é€é”™è¯¯æŠ¥å‘Šæœºåˆ¶ã€‚
 
 	if (hDll)
 	{
@@ -94,9 +94,9 @@ LONG CMiniDumper::TopLevelFilter(struct _EXCEPTION_POINTERS* pExceptionInfo)
 			//MessageBox(NULL,"test","test",MB_OK);
 			// Ask user if they want to save a dump file
 			// Do *NOT* localize that string (in fact, do not use MFC to load it)!
-			//COMMENTED by fengwen on 2006/11/15	<begin> : Ê¹ÓÃĞÂµÄ·¢ËÍ´íÎó±¨¸æ»úÖÆ¡£
+			//COMMENTED by fengwen on 2006/11/15	<begin> : ä½¿ç”¨æ–°çš„å‘é€é”™è¯¯æŠ¥å‘Šæœºåˆ¶ã€‚
 			//if (MessageBox(NULL, _T("eMule crashed :-(\r\n\r\nA diagnostic file can be created which will help the author to resolve this problem. This file will be saved on your Disk (and not sent).\r\n\r\nDo you want to create this file now?"), m_szAppName, MB_ICONSTOP | MB_YESNO) == IDYES)
-			//COMMENTED by fengwen on 2006/11/15	<end> : Ê¹ÓÃĞÂµÄ·¢ËÍ´íÎó±¨¸æ»úÖÆ¡£
+			//COMMENTED by fengwen on 2006/11/15	<end> : ä½¿ç”¨æ–°çš„å‘é€é”™è¯¯æŠ¥å‘Šæœºåˆ¶ã€‚
 			{
 				// Create full path for DUMP file
 				TCHAR szDumpPath[_MAX_PATH] = { 0 };
@@ -150,11 +150,11 @@ LONG CMiniDumper::TopLevelFilter(struct _EXCEPTION_POINTERS* pExceptionInfo)
 						_sntprintf(szResult, ARRSIZE(szResult), _T("Saved dump file to \"%s\".\r\n\r\nPlease send this file together with a detailed bug report to bastet.wang@gmail.com !\r\n\r\nThank you for helping to improve Tsts."), szDumpPath);
 						lRetValue = EXCEPTION_EXECUTE_HANDLER;
 
-						//ADDED by fengwen on 2006/11/15	<begin> : Ê¹ÓÃĞÂµÄ·¢ËÍ´íÎó±¨¸æ»úÖÆ¡£
+						//ADDED by fengwen on 2006/11/15	<begin> : ä½¿ç”¨æ–°çš„å‘é€é”™è¯¯æŠ¥å‘Šæœºåˆ¶ã€‚
 						hInstCrashReporter = ShellExecute(NULL, _T("open"), _T("CrashReporter.exe"), szDumpPath, NULL, SW_SHOW);
 						if (hInstCrashReporter <= (HINSTANCE)32)
 							lRetValue = EXCEPTION_CONTINUE_SEARCH;
-						//ADDED by fengwen on 2006/11/15	<end> : Ê¹ÓÃĞÂµÄ·¢ËÍ´íÎó±¨¸æ»úÖÆ¡£
+						//ADDED by fengwen on 2006/11/15	<end> : ä½¿ç”¨æ–°çš„å‘é€é”™è¯¯æŠ¥å‘Šæœºåˆ¶ã€‚
 					}
 					else
 					{
@@ -175,13 +175,13 @@ LONG CMiniDumper::TopLevelFilter(struct _EXCEPTION_POINTERS* pExceptionInfo)
 		pfnMiniDumpWriteDump = NULL;
 	}
 
-	//COMMENTED by fengwen on 2006/11/15	<begin> : Ê¹ÓÃĞÂµÄ·¢ËÍ´íÎó±¨¸æ»úÖÆ¡£
+	//COMMENTED by fengwen on 2006/11/15	<begin> : ä½¿ç”¨æ–°çš„å‘é€é”™è¯¯æŠ¥å‘Šæœºåˆ¶ã€‚
 	//if (szResult[0] != _T('\0'))
 	//	MessageBox(NULL, szResult, m_szAppName, MB_ICONINFORMATION | MB_OK);
-	//COMMENTED by fengwen on 2006/11/15	<end> : Ê¹ÓÃĞÂµÄ·¢ËÍ´íÎó±¨¸æ»úÖÆ¡£
+	//COMMENTED by fengwen on 2006/11/15	<end> : ä½¿ç”¨æ–°çš„å‘é€é”™è¯¯æŠ¥å‘Šæœºåˆ¶ã€‚
 
 #ifndef _DEBUG
-	if (EXCEPTION_EXECUTE_HANDLER == lRetValue)		//ADDED by fengwen on 2006/11/15 : ÓÉ´Ëfilter´¦ÀíÁËÒì³£,²ÅÈ¥ÖĞÖ¹½ø³Ì¡£
+	if (EXCEPTION_EXECUTE_HANDLER == lRetValue)		//ADDED by fengwen on 2006/11/15 : ç”±æ­¤filterå¤„ç†äº†å¼‚å¸¸,æ‰å»ä¸­æ­¢è¿›ç¨‹ã€‚
 	{
 		// Exit the process only in release builds, so that in debug builds the exceptio is passed to a possible
 		// installed debugger

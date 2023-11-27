@@ -1,4 +1,4 @@
-/*!
+Ôªø/*!
  * /file WtRunner.h
  * /project	WonderTrader
  *
@@ -45,12 +45,9 @@ public:
 	~WtRunner();
 
 public:
-	/*
-	 *	≥ı ºªØ
-	 */
-	bool init();
+	void init(const std::string& filename);
 
-	bool config();
+	bool config(const std::string& filename);
 
 	void run(bool bAsync = false);
 
@@ -97,5 +94,7 @@ private:
 
 	bool				_is_hft;
 	bool				_is_sel;
+
+	bool				_to_exit;
 };
 

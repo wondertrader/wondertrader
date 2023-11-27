@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file ParserFemas.h
  * \project	WonderTrader
  *
@@ -33,7 +33,7 @@ public:
 		LS_LOGINED
 	};
 
-//IQuoteParser ½Ó¿Ú
+//IQuoteParser æ¥å£
 public:
 	virtual bool init(WTSVariant* config) override;
 
@@ -51,7 +51,7 @@ public:
 	virtual void registerSpi(IParserSpi* listener) override;
 
 
-//CUstpFtdcMdSpi ½Ó¿Ú
+//CUstpFtdcMdSpi æ¥å£
 public:
 	virtual void OnRspError( CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast );
 
@@ -59,7 +59,7 @@ public:
 
 	virtual void OnRspUserLogin( CUstpFtdcRspUserLoginField *pRspUserLogin, CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast );
 
-	///µÇ³öÇëÇóÏìÓ¦
+	///ç™»å‡ºè¯·æ±‚å“åº”
 	virtual void OnRspUserLogout(CUstpFtdcRspUserLogoutField *pUserLogout, CUstpFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
 
 	virtual void OnFrontDisconnected( int nReason );
@@ -74,15 +74,15 @@ public:
 
 private:
 	/*
-	 *	·¢ËÍµÇÂ¼ÇëÇó
+	 *	å‘é€ç™»å½•è¯·æ±‚
 	 */
 	void ReqUserLogin();
 	/*
-	 *	¶©ÔÄÆ·ÖÖĞĞÇé
+	 *	è®¢é˜…å“ç§è¡Œæƒ…
 	 */
 	void SubscribeMarketData();
 	/*
-	 *	¼ì²é´íÎóĞÅÏ¢
+	 *	æ£€æŸ¥é”™è¯¯ä¿¡æ¯
 	 */
 	bool IsErrorRspInfo(CUstpFtdcRspInfoField *pRspInfo);
 

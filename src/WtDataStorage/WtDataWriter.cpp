@@ -1,4 +1,4 @@
-#include "WtDataWriter.h"
+ï»¿#include "WtDataWriter.h"
 
 #include "../Includes/WTSSessionInfo.hpp"
 #include "../Includes/WTSContractInfo.hpp"
@@ -8,6 +8,7 @@
 #include "../Share/StrUtil.hpp"
 #include "../Share/IniHelper.hpp"
 #include "../Share/decimal.h"
+#include "../Share/TimeUtils.hpp"
 
 #include "../Includes/IBaseDataMgr.h"
 #include "../WTSUtils/WTSCmpHelper.hpp"
@@ -29,7 +30,7 @@ inline void pipe_writer_log(IDataWriterSink* sink, WTSLogLevel ll, const char* f
 }
 
 /*
- *	´¦Àí¿éÊı¾İ
+ *	å¤„ç†å—æ•°æ®
  */
 extern bool proc_block_data(std::string& content, bool isBar, bool bKeepHead = true);
 
@@ -52,11 +53,29 @@ extern "C"
 };
 
 static const uint32_t CACHE_SIZE_STEP = 200;
-static const uint32_t TICK_SIZE_STEP = 2500;
-static const uint32_t KLINE_SIZE_STEP = 200;
+static const uint32_t HFT_SIZE_STEP = 2500;
 
 const char CMD_CLEAR_CACHE[] = "CMD_CLEAR_CACHE";
 const char MARKER_FILE[] = "marker.ini";
+
+WtDataWriter::_TaskInfo::_TaskInfo(WTSObject* data, uint64_t dtype, uint32_t flag/* = 0*/)
+	: _type(dtype), _flag(flag)
+{
+	_obj = data;
+	_obj->retain();
+}
+
+WtDataWriter::_TaskInfo::_TaskInfo(const _TaskInfo& rhs)
+	: _type(rhs._type), _flag(rhs._flag)
+{
+	_obj = rhs._obj;
+	_obj->retain();
+}
+
+WtDataWriter::_TaskInfo::~_TaskInfo() 
+{ 
+	_obj->release(); 
+}
 
 
 WtDataWriter::WtDataWriter()
@@ -108,13 +127,13 @@ bool WtDataWriter::init(WTSVariant* params, IDataWriterSink* sink)
 	_async_proc = params->getBoolean("async");
 	_log_group_size = params->getUInt32("groupsize");
 
-	// Ã»ÓĞ³É½»µÄtickÔÚÓĞĞ©Êı¾İÔ´ÖĞ²»»áÓÃÓÚ¸üĞÂbar,ÕâÀï×öÒ»ÏÂÏ¸·Ö
-	// ¼´±ãÃ»ÓĞ³É½»µÄtick£¬µ«ÈÔÈ»»á²úÉúÒ»¸öbar£¬¼Û¸ñÑÓĞøÇ°Ò»¸öbar£¬²Î¿¼¿ìÆÚ£¬ÍòµÂ
+	// æ²¡æœ‰æˆäº¤çš„tickåœ¨æœ‰äº›æ•°æ®æºä¸­ä¸ä¼šç”¨äºæ›´æ–°bar,è¿™é‡Œåšä¸€ä¸‹ç»†åˆ†
+	// å³ä¾¿æ²¡æœ‰æˆäº¤çš„tickï¼Œä½†ä»ç„¶ä¼šäº§ç”Ÿä¸€ä¸ªbarï¼Œä»·æ ¼å»¶ç»­å‰ä¸€ä¸ªbarï¼Œå‚è€ƒå¿«æœŸï¼Œä¸‡å¾·
 	_skip_notrade_tick = params->getBoolean("skip_notrade_tick");
-	// Èç¹ûÒ»¸öbarÄÚÃ»ÓĞÒ»¸öÓĞ³É½»µÄtick£¬Ôò²»»áÓĞÕâ¸öbar£¬²Î¿¼¾ò½ğ,MC
+	// å¦‚æœä¸€ä¸ªbarå†…æ²¡æœ‰ä¸€ä¸ªæœ‰æˆäº¤çš„tickï¼Œåˆ™ä¸ä¼šæœ‰è¿™ä¸ªbarï¼Œå‚è€ƒæ˜é‡‘,MC
 	_skip_notrade_bar = params->getBoolean("skip_notrade_bar");
 
-	//½ûÓÃÀúÊ·Êı¾İ
+	//ç¦ç”¨å†å²æ•°æ®
 	_disable_his = params->getBoolean("disablehis");
 
 	_disable_tick = params->getBoolean("disabletick");
@@ -197,7 +216,7 @@ void DataManager::preloadRtCaches(const char* exchg)
 	if (!_preload_enable || _preloaded)
 		return;
 
-	pipe_writer_log(_sink, LL_INFO, "¿ªÊ¼Ô¤¼ÓÔØÊµÊ±Êı¾İ»º´æÎÄ¼ş...");
+	pipe_writer_log(_sink, LL_INFO, "å¼€å§‹é¢„åŠ è½½å®æ—¶æ•°æ®ç¼“å­˜æ–‡ä»¶...");
 	TimeUtils::Ticker ticker;
 	uint32_t cnt = 0;
 	uint32_t codecnt = 0;
@@ -236,7 +255,7 @@ void DataManager::preloadRtCaches(const char* exchg)
 
 	if (ayCts != NULL)
 		ayCts->release();
-	pipe_writer_log(_sink, LL_INFO, "Ô¤¼ÓÔØ%¸öÆ·ÖÖµÄÊµÊ±Êı¾İ»º´æÎÄ¼ş{}¸ö,ºÄÊ±{}Î¢Ãë", codecnt, cnt, WTSLogger::fmtInt64(ticker.micro_seconds()));
+	pipe_writer_log(_sink, LL_INFO, "é¢„åŠ è½½%ä¸ªå“ç§çš„å®æ—¶æ•°æ®ç¼“å­˜æ–‡ä»¶{}ä¸ª,è€—æ—¶{}å¾®ç§’", codecnt, cnt, WTSLogger::fmtInt64(ticker.micro_seconds()));
 	_preloaded = true;
 }
 */
@@ -246,11 +265,13 @@ void WtDataWriter::loadCache()
 	if (_tick_cache_file != NULL)
 		return;
 
+	uint32_t TOTAL_CODES = _bd_mgr->getContractSize("", TimeUtils::getCurDate());
+
 	bool bNew = false;
 	std::string filename = _base_dir + _cache_file;
 	if (!BoostFile::exists(filename.c_str()))
 	{
-		uint64_t uSize = sizeof(RTTickCache) + sizeof(TickCacheItem) * CACHE_SIZE_STEP;
+		uint64_t uSize = sizeof(RTTickCache) + sizeof(TickCacheItem) * TOTAL_CODES;
 		BoostFile bf;
 		bf.create_new_file(filename.c_str());
 		bf.truncate_file((uint32_t)uSize);
@@ -261,14 +282,13 @@ void WtDataWriter::loadCache()
 	_tick_cache_file.reset(new BoostMappingFile);
 	_tick_cache_file->map(filename.c_str());
 	_tick_cache_block = (RTTickCache*)_tick_cache_file->addr();
-
 	_tick_cache_block->_size = min(_tick_cache_block->_size, _tick_cache_block->_capacity);
 
 	if(bNew)
 	{
 		memset(_tick_cache_block, 0, _tick_cache_file->size());
 
-		_tick_cache_block->_capacity = CACHE_SIZE_STEP;
+		_tick_cache_block->_capacity = TOTAL_CODES;
 		_tick_cache_block->_type = BT_RT_Cache;
 		_tick_cache_block->_size = 0;
 		_tick_cache_block->_version = 1;
@@ -291,7 +311,7 @@ void* WtDataWriter::resizeRTBlock(BoostMFPtr& mfPtr, uint32_t nCount)
 	if (mfPtr == NULL)
 		return NULL;
 
-	//µ÷ÓÃ¸Ãº¯ÊıÖ®Ç°,Ó¦¸ÃÒÑ¾­ÉêÇëÁËĞ´ËøÁË
+	//è°ƒç”¨è¯¥å‡½æ•°ä¹‹å‰,åº”è¯¥å·²ç»ç”³è¯·äº†å†™é”äº†
 	RTBlockHeader* tBlock = (RTBlockHeader*)mfPtr->addr();
 	if (tBlock->_capacity >= nCount)
 		return mfPtr->addr();
@@ -344,45 +364,49 @@ bool WtDataWriter::writeTick(WTSTickData* curTick, uint32_t procFlag)
 	if (curTick == NULL)
 		return false;
 
-	curTick->retain();
-	pushTask([this, curTick, procFlag](){
+	if (_async_proc)
+		pushTask(TaskInfo(curTick, 0, procFlag));
+	else
+		procTick(curTick, procFlag);
 
-		do
-		{
-			WTSContractInfo* ct = curTick->getContractInfo();
-			if(ct == NULL)
-				break;
-
-			WTSCommodityInfo* commInfo = ct->getCommInfo();
-
-			//ÔÙ¸ù¾İ×´Ì¬¹ıÂË
-			if (!_sink->canSessionReceive(commInfo->getSession()))
-				break;
-
-			//ÏÈ¸üĞÂ»º´æ
-			if (!updateCache(ct, curTick, procFlag))
-				break;
-
-			//Ğ´µ½tick»º´æ
-			if(!_disable_tick)
-				pipeToTicks(ct, curTick);
-
-			//Ğ´µ½KÏß»º´æ
-			pipeToKlines(ct, curTick);
-
-			_sink->broadcastTick(curTick);
-
-			static wt_hashmap<std::string, uint64_t> _tcnt_map;
-			_tcnt_map[curTick->exchg()]++;
-			if (_tcnt_map[curTick->exchg()] % _log_group_size == 0)
-			{
-				pipe_writer_log(_sink, LL_INFO, "{} ticks received from exchange {}", _tcnt_map[curTick->exchg()], curTick->exchg());
-			}
-		} while (false);
-
-		curTick->release();
-	});
 	return true;
+}
+
+void WtDataWriter::procTick(WTSTickData* curTick, uint32_t procFlag)
+{
+	do
+	{
+		WTSContractInfo* ct = curTick->getContractInfo();
+		if (ct == NULL)
+			break;
+
+		WTSCommodityInfo* commInfo = ct->getCommInfo();
+
+		//å†æ ¹æ®çŠ¶æ€è¿‡æ»¤
+		if (!_sink->canSessionReceive(commInfo->getSession()))
+			break;
+
+		//å…ˆæ›´æ–°ç¼“å­˜
+		if (!updateCache(ct, curTick, procFlag))
+			break;
+
+		//å†™åˆ°tickç¼“å­˜
+		if (!_disable_tick)
+			pipeToTicks(ct, curTick);
+
+		//å†™åˆ°Kçº¿ç¼“å­˜
+		pipeToKlines(ct, curTick);
+
+		_sink->broadcastTick(curTick);
+
+		static wt_hashmap<std::string, uint64_t> _tcnt_map;
+		uint64_t& cnt = _tcnt_map[curTick->exchg()];
+		cnt++;
+		if (cnt % _log_group_size == 0)
+		{
+			pipe_writer_log(_sink, LL_INFO, "{} ticks received from exchange {}", cnt, curTick->exchg());
+		}
+	} while (false);
 }
 
 bool WtDataWriter::writeOrderQueue(WTSOrdQueData* curOrdQue)
@@ -390,74 +414,178 @@ bool WtDataWriter::writeOrderQueue(WTSOrdQueData* curOrdQue)
 	if (curOrdQue == NULL || _disable_ordque)
 		return false;
 
-	curOrdQue->retain();
-	pushTask([this, curOrdQue](){
+	if (_async_proc)
+		pushTask(TaskInfo(curOrdQue, 1));
+	else
+		procQueue(curOrdQue);
 
-		do
-		{
-			WTSContractInfo* ct = _bd_mgr->getContract(curOrdQue->code(), curOrdQue->exchg());
-			if (ct == NULL)
-				break;
-
-			WTSCommodityInfo* commInfo = ct->getCommInfo();
-
-			//ÔÙ¸ù¾İ×´Ì¬¹ıÂË
-			if (!_sink->canSessionReceive(commInfo->getSession()))
-				break;
-
-			OrdQueBlockPair* pBlockPair = getOrdQueBlock(ct, curOrdQue->tradingdate());
-			if (pBlockPair == NULL)
-				break;
-
-			SpinLock lock(pBlockPair->_mutex);
-
-			//ÏÈ¼ì²éÈİÁ¿¹»²»¹»,²»¹»ÒªÀ©
-			RTOrdQueBlock* blk = pBlockPair->_block;
-			if (blk->_size >= blk->_capacity)
-			{
-				pBlockPair->_file->sync();
-				pBlockPair->_block = (RTOrdQueBlock*)resizeRTBlock<RTDayBlockHeader, WTSOrdQueStruct>(pBlockPair->_file, blk->_capacity + TICK_SIZE_STEP);
-				blk = pBlockPair->_block;
-			}
-
-			memcpy(&blk->_queues[blk->_size], &curOrdQue->getOrdQueStruct(), sizeof(WTSOrdQueStruct));
-			blk->_size += 1;
-
-			//TODO: Òª¹ã²¥µÄ
-			//g_udpCaster.broadcast(curTrans);
-
-			static wt_hashmap<std::string, uint64_t> _tcnt_map;
-			_tcnt_map[curOrdQue->exchg()]++;
-			if (_tcnt_map[curOrdQue->exchg()] % _log_group_size == 0)
-			{
-				pipe_writer_log(_sink, LL_INFO, "{} orderques received from exchange {}", _tcnt_map[curOrdQue->exchg()], curOrdQue->exchg());
-			}
-		} while (false);
-		curOrdQue->release();
-	});
 	return true;
 }
 
-void WtDataWriter::pushTask(TaskInfo task)
+void WtDataWriter::procQueue(WTSOrdQueData* curOrdQue)
 {
-	if(_async_proc)
+	do
 	{
-		StdUniqueLock lck(_task_mtx);
-		_tasks.push(task);
-		_task_cond.notify_all();
-	}
-	else
-	{
-		task();
-		return;
-	}
+		WTSContractInfo* ct = curOrdQue->getContractInfo();
+		WTSCommodityInfo* commInfo = ct->getCommInfo();
 
-	if(_task_thrd == NULL)
+		//å†æ ¹æ®çŠ¶æ€è¿‡æ»¤
+		if (!_sink->canSessionReceive(commInfo->getSession()))
+			break;
+
+		OrdQueBlockPair* pBlockPair = getOrdQueBlock(ct, curOrdQue->tradingdate());
+		if (pBlockPair == NULL)
+			break;
+
+		SpinLock lock(pBlockPair->_mutex);
+
+		//å…ˆæ£€æŸ¥å®¹é‡å¤Ÿä¸å¤Ÿ,ä¸å¤Ÿè¦æ‰©
+		RTOrdQueBlock* blk = pBlockPair->_block;
+		if (blk->_size >= blk->_capacity)
+		{
+			pBlockPair->_file->sync();
+			pBlockPair->_block = (RTOrdQueBlock*)resizeRTBlock<RTDayBlockHeader, WTSOrdQueStruct>(pBlockPair->_file, blk->_capacity * 2);
+			blk = pBlockPair->_block;
+		}
+
+		memcpy(&blk->_queues[blk->_size], &curOrdQue->getOrdQueStruct(), sizeof(WTSOrdQueStruct));
+		blk->_size += 1;
+
+		_sink->broadcastOrdQue(curOrdQue);
+
+		static wt_hashmap<std::string, uint64_t> _tcnt_map;
+		uint64_t& cnt = _tcnt_map[curOrdQue->exchg()];
+		cnt++;
+		if (cnt % _log_group_size == 0)
+		{
+			pipe_writer_log(_sink, LL_INFO, "{} queues received from exchange {}", cnt, curOrdQue->exchg());
+		}
+	} while (false);
+}
+
+bool WtDataWriter::writeOrderDetail(WTSOrdDtlData* curOrdDtl)
+{
+	if (curOrdDtl == NULL || _disable_orddtl)
+		return false;
+
+	if (_async_proc)
+		pushTask(TaskInfo(curOrdDtl, 2));
+	else
+		procOrder(curOrdDtl);
+
+	return true;
+}
+
+void WtDataWriter::procOrder(WTSOrdDtlData* curOrdDtl)
+{
+	do
 	{
-		_task_thrd.reset(new StdThread([this](){
+		WTSContractInfo* ct = curOrdDtl->getContractInfo();
+		WTSCommodityInfo* commInfo = ct->getCommInfo();
+
+		//å†æ ¹æ®çŠ¶æ€è¿‡æ»¤
+		if (!_sink->canSessionReceive(commInfo->getSession()))
+			break;
+
+		OrdDtlBlockPair* pBlockPair = getOrdDtlBlock(ct, curOrdDtl->tradingdate());
+		if (pBlockPair == NULL)
+			break;
+
+		SpinLock lock(pBlockPair->_mutex);
+
+		//å…ˆæ£€æŸ¥å®¹é‡å¤Ÿä¸å¤Ÿ,ä¸å¤Ÿè¦æ‰©
+		RTOrdDtlBlock* blk = pBlockPair->_block;
+		if (blk->_size >= blk->_capacity)
+		{
+			pBlockPair->_file->sync();
+			pBlockPair->_block = (RTOrdDtlBlock*)resizeRTBlock<RTDayBlockHeader, WTSOrdDtlStruct>(pBlockPair->_file, blk->_capacity * 2);
+			blk = pBlockPair->_block;
+		}
+
+		memcpy(&blk->_details[blk->_size], &curOrdDtl->getOrdDtlStruct(), sizeof(WTSOrdDtlStruct));
+		blk->_size += 1;
+
+		_sink->broadcastOrdDtl(curOrdDtl);
+
+		static wt_hashmap<std::string, uint64_t> _tcnt_map;
+		uint64_t& cnt = _tcnt_map[curOrdDtl->exchg()];
+		cnt++;
+		if (cnt % _log_group_size == 0)
+		{
+			pipe_writer_log(_sink, LL_INFO, "{} orders received from exchange {}", cnt, curOrdDtl->exchg());
+		}
+	} while (false);
+}
+
+bool WtDataWriter::writeTransaction(WTSTransData* curTrans)
+{
+	if (curTrans == NULL || _disable_orddtl)
+		return false;
+
+	if (_async_proc)
+		pushTask(TaskInfo(curTrans, 3));
+	else
+		procTrans(curTrans);
+
+	return true;
+}
+
+void WtDataWriter::procTrans(WTSTransData* curTrans)
+{
+	do
+	{
+		WTSContractInfo* ct = curTrans->getContractInfo();
+		WTSCommodityInfo* commInfo = ct->getCommInfo();
+
+		//å†æ ¹æ®çŠ¶æ€è¿‡æ»¤
+		if (!_sink->canSessionReceive(commInfo->getSession()))
+			break;
+
+		TransBlockPair* pBlockPair = getTransBlock(ct, curTrans->tradingdate());
+		if (pBlockPair == NULL)
+			break;
+
+		SpinLock lock(pBlockPair->_mutex);
+
+		//å…ˆæ£€æŸ¥å®¹é‡å¤Ÿä¸å¤Ÿ,ä¸å¤Ÿè¦æ‰©
+		RTTransBlock* blk = pBlockPair->_block;
+		if (blk->_size >= blk->_capacity)
+		{
+			pBlockPair->_file->sync();
+			pBlockPair->_block = (RTTransBlock*)resizeRTBlock<RTDayBlockHeader, WTSTransStruct>(pBlockPair->_file, blk->_capacity * 2);
+			blk = pBlockPair->_block;
+		}
+
+		memcpy(&blk->_trans[blk->_size], &curTrans->getTransStruct(), sizeof(WTSTransStruct));
+		blk->_size += 1;
+
+		_sink->broadcastTrans(curTrans);
+
+		static wt_hashmap<std::string, uint64_t> _tcnt_map;
+		uint64_t& cnt = _tcnt_map[curTrans->exchg()];
+		cnt++;
+		if (cnt % _log_group_size == 0)
+		{
+			pipe_writer_log(_sink, LL_INFO, "{} transactions received from exchange {}", cnt, curTrans->exchg());
+		}
+	} while (false);
+}
+
+void WtDataWriter::pushTask(const TaskInfo& task)
+{
+	if (!_async_proc)
+		return;
+
+	StdUniqueLock lck(_task_mtx);
+	_tasks.emplace(task);
+	_task_cond.notify_all();
+
+	if (_task_thrd == NULL)
+	{
+		_task_thrd.reset(new StdThread([this]() {
 			while (!_terminated)
 			{
-				if(_tasks.empty())
+				if (_tasks.empty())
 				{
 					StdUniqueLock lck(_task_mtx);
 					_task_cond.wait(_task_mtx);
@@ -470,126 +598,23 @@ void WtDataWriter::pushTask(TaskInfo task)
 					tempQueue.swap(_tasks);
 				}
 
-				while(!tempQueue.empty())
+				while (!tempQueue.empty())
 				{
 					TaskInfo& curTask = tempQueue.front();
-					curTask();
+					switch (curTask._type)
+					{
+					case 0: procTick((WTSTickData*)curTask._obj, curTask._flag); break;
+					case 1: procQueue((WTSOrdQueData*)curTask._obj); break;
+					case 2: procOrder((WTSOrdDtlData*)curTask._obj); break;
+					case 3: procTrans((WTSTransData*)curTask._obj); break;
+					default:
+						break;
+					}
 					tempQueue.pop();
 				}
 			}
 		}));
 	}
-}
-
-bool WtDataWriter::writeOrderDetail(WTSOrdDtlData* curOrdDtl)
-{
-	if (curOrdDtl == NULL || _disable_orddtl)
-		return false;
-
-	curOrdDtl->retain();
-	pushTask([this, curOrdDtl](){
-
-		do
-		{
-
-			WTSContractInfo* ct = _bd_mgr->getContract(curOrdDtl->code(), curOrdDtl->exchg());
-			if (ct == NULL)
-				break;
-
-			WTSCommodityInfo* commInfo = ct->getCommInfo();
-
-			//ÔÙ¸ù¾İ×´Ì¬¹ıÂË
-			if (!_sink->canSessionReceive(commInfo->getSession()))
-				break;
-
-			OrdDtlBlockPair* pBlockPair = getOrdDtlBlock(ct, curOrdDtl->tradingdate());
-			if (pBlockPair == NULL)
-				break;
-
-			SpinLock lock(pBlockPair->_mutex);
-
-			//ÏÈ¼ì²éÈİÁ¿¹»²»¹»,²»¹»ÒªÀ©
-			RTOrdDtlBlock* blk = pBlockPair->_block;
-			if (blk->_size >= blk->_capacity)
-			{
-				pBlockPair->_file->sync();
-				pBlockPair->_block = (RTOrdDtlBlock*)resizeRTBlock<RTDayBlockHeader, WTSOrdDtlStruct>(pBlockPair->_file, blk->_capacity + TICK_SIZE_STEP);
-				blk = pBlockPair->_block;
-			}
-
-			memcpy(&blk->_details[blk->_size], &curOrdDtl->getOrdDtlStruct(), sizeof(WTSOrdDtlStruct));
-			blk->_size += 1;
-
-			//TODO: Òª¹ã²¥µÄ
-			//g_udpCaster.broadcast(curTrans);
-
-			static wt_hashmap<std::string, uint64_t> _tcnt_map;
-			_tcnt_map[curOrdDtl->exchg()]++;
-			if (_tcnt_map[curOrdDtl->exchg()] % _log_group_size == 0)
-			{
-				pipe_writer_log(_sink, LL_INFO, "{} orderdetails received from exchange {}", _tcnt_map[curOrdDtl->exchg()], curOrdDtl->exchg());
-			}
-		} while (false);
-
-		curOrdDtl->release();
-	});
-	
-	return true;
-}
-
-bool WtDataWriter::writeTransaction(WTSTransData* curTrans)
-{
-	if (curTrans == NULL || _disable_trans)
-		return false;
-
-	curTrans->retain();
-	pushTask([this, curTrans](){
-
-		do
-		{
-
-			WTSContractInfo* ct = _bd_mgr->getContract(curTrans->code(), curTrans->exchg());
-			if (ct == NULL)
-				break;
-
-			WTSCommodityInfo* commInfo = ct->getCommInfo();
-
-			//ÔÙ¸ù¾İ×´Ì¬¹ıÂË
-			if (!_sink->canSessionReceive(commInfo->getSession()))
-				break;
-
-			TransBlockPair* pBlockPair = getTransBlock(ct, curTrans->tradingdate());
-			if (pBlockPair == NULL)
-				break;
-
-			SpinLock lock(pBlockPair->_mutex);
-
-			//ÏÈ¼ì²éÈİÁ¿¹»²»¹»,²»¹»ÒªÀ©
-			RTTransBlock* blk = pBlockPair->_block;
-			if (blk->_size >= blk->_capacity)
-			{
-				pBlockPair->_file->sync();
-				pBlockPair->_block = (RTTransBlock*)resizeRTBlock<RTDayBlockHeader, WTSTransStruct>(pBlockPair->_file, blk->_capacity + TICK_SIZE_STEP);
-				blk = pBlockPair->_block;
-			}
-
-			memcpy(&blk->_trans[blk->_size], &curTrans->getTransStruct(), sizeof(WTSTransStruct));
-			blk->_size += 1;
-
-			//TODO: Òª¹ã²¥µÄ
-			//g_udpCaster.broadcast(curTrans);
-
-			static wt_hashmap<std::string, uint64_t> _tcnt_map;
-			_tcnt_map[curTrans->exchg()]++;
-			if (_tcnt_map[curTrans->exchg()] % _log_group_size == 0)
-			{
-				pipe_writer_log(_sink, LL_INFO, "{} transactions received from exchange {}", _tcnt_map[curTrans->exchg()], curTrans->exchg());
-			}
-		} while (false);
-
-		curTrans->release();
-	});
-	return true;
 }
 
 void WtDataWriter::pipeToTicks(WTSContractInfo* ct, WTSTickData* curTick)
@@ -600,12 +625,12 @@ void WtDataWriter::pipeToTicks(WTSContractInfo* ct, WTSTickData* curTick)
 
 	SpinLock lock(pBlockPair->_mutex);
 
-	//ÏÈ¼ì²éÈİÁ¿¹»²»¹»,²»¹»ÒªÀ©
+	//å…ˆæ£€æŸ¥å®¹é‡å¤Ÿä¸å¤Ÿ,ä¸å¤Ÿè¦æ‰©
 	RTTickBlock* blk = pBlockPair->_block;
 	if(blk && blk->_size >= blk->_capacity)
 	{
 		pBlockPair->_file->sync();
-		pBlockPair->_block = (RTTickBlock*)resizeRTBlock<RTDayBlockHeader, WTSTickStruct>(pBlockPair->_file, blk->_capacity + TICK_SIZE_STEP);
+		pBlockPair->_block = (RTTickBlock*)resizeRTBlock<RTDayBlockHeader, WTSTickStruct>(pBlockPair->_file, blk->_capacity * 2);
 		blk = pBlockPair->_block;
 		if(blk) pipe_writer_log(_sink, LL_DEBUG, "RT tick block of {} resized to {}", ct->getFullCode(), blk->_capacity);
 	}
@@ -666,7 +691,7 @@ WtDataWriter::OrdQueBlockPair* WtDataWriter::getOrdQueBlock(WTSContractInfo* ct,
 
 			pipe_writer_log(_sink, LL_INFO, "Data file {} not exists, initializing...", path.c_str());
 
-			uint64_t uSize = sizeof(RTDayBlockHeader) + sizeof(WTSOrdQueStruct) * TICK_SIZE_STEP;
+			uint64_t uSize = sizeof(RTDayBlockHeader) + sizeof(WTSOrdQueStruct) * HFT_SIZE_STEP;
 
 			BoostFile bf;
 			bf.create_new_file(path.c_str());
@@ -696,7 +721,7 @@ WtDataWriter::OrdQueBlockPair* WtDataWriter::getOrdQueBlock(WTSContractInfo* ct,
 
 		if (isNew)
 		{
-			pBlock->_block->_capacity = TICK_SIZE_STEP;
+			pBlock->_block->_capacity = HFT_SIZE_STEP;
 			pBlock->_block->_size = 0;
 			pBlock->_block->_version = BLOCK_VERSION_RAW_V2;
 			pBlock->_block->_type = BT_RT_OrdQueue;
@@ -705,7 +730,7 @@ WtDataWriter::OrdQueBlockPair* WtDataWriter::getOrdQueBlock(WTSContractInfo* ct,
 		}
 		else
 		{
-			//¼ì²é»º´æÎÄ¼şÊÇ·ñÓĞÎÊÌâ,Òª×Ô¶¯»Ö¸´
+			//æ£€æŸ¥ç¼“å­˜æ–‡ä»¶æ˜¯å¦æœ‰é—®é¢˜,è¦è‡ªåŠ¨æ¢å¤
 			do
 			{
 				uint64_t uSize = sizeof(RTDayBlockHeader) + sizeof(WTSOrdQueStruct) * pBlock->_block->_capacity;
@@ -713,8 +738,8 @@ WtDataWriter::OrdQueBlockPair* WtDataWriter::getOrdQueBlock(WTSContractInfo* ct,
 				if (oldSize != uSize)
 				{
 					uint32_t oldCnt = (uint32_t)((oldSize - sizeof(RTDayBlockHeader)) / sizeof(WTSOrdQueStruct));
-					//ÎÄ¼ş´óĞ¡²»Æ¥Åä,Ò»°ãÊÇÒòÎªcapacity¸ÄÁË,µ«ÊÇÊµ¼ÊÃ»À©Èİ
-					//ÕâÊÇ×öÒ»´ÎÀ©Èİ¼´¿É
+					//æ–‡ä»¶å¤§å°ä¸åŒ¹é…,ä¸€èˆ¬æ˜¯å› ä¸ºcapacityæ”¹äº†,ä½†æ˜¯å®é™…æ²¡æ‰©å®¹
+					//è¿™æ˜¯åšä¸€æ¬¡æ‰©å®¹å³å¯
 					pBlock->_block->_capacity = oldCnt;
 					pBlock->_block->_size = oldCnt;
 
@@ -760,7 +785,7 @@ WtDataWriter::OrdDtlBlockPair* WtDataWriter::getOrdDtlBlock(WTSContractInfo* ct,
 
 			pipe_writer_log(_sink, LL_INFO, "Data file {} not exists, initializing...", path.c_str());
 
-			uint64_t uSize = sizeof(RTDayBlockHeader) + sizeof(WTSOrdDtlStruct) * TICK_SIZE_STEP;
+			uint64_t uSize = sizeof(RTDayBlockHeader) + sizeof(WTSOrdDtlStruct) * HFT_SIZE_STEP;
 
 			BoostFile bf;
 			bf.create_new_file(path.c_str());
@@ -790,7 +815,7 @@ WtDataWriter::OrdDtlBlockPair* WtDataWriter::getOrdDtlBlock(WTSContractInfo* ct,
 
 		if (isNew)
 		{
-			pBlock->_block->_capacity = TICK_SIZE_STEP;
+			pBlock->_block->_capacity = HFT_SIZE_STEP;
 			pBlock->_block->_size = 0;
 			pBlock->_block->_version = BLOCK_VERSION_RAW_V2;
 			pBlock->_block->_type = BT_RT_OrdDetail;
@@ -799,7 +824,7 @@ WtDataWriter::OrdDtlBlockPair* WtDataWriter::getOrdDtlBlock(WTSContractInfo* ct,
 		}
 		else
 		{
-			//¼ì²é»º´æÎÄ¼şÊÇ·ñÓĞÎÊÌâ,Òª×Ô¶¯»Ö¸´
+			//æ£€æŸ¥ç¼“å­˜æ–‡ä»¶æ˜¯å¦æœ‰é—®é¢˜,è¦è‡ªåŠ¨æ¢å¤
 			for (;;)
 			{
 				uint64_t uSize = sizeof(RTDayBlockHeader) + sizeof(WTSOrdDtlStruct) * pBlock->_block->_capacity;
@@ -807,8 +832,8 @@ WtDataWriter::OrdDtlBlockPair* WtDataWriter::getOrdDtlBlock(WTSContractInfo* ct,
 				if (oldSize != uSize)
 				{
 					uint32_t oldCnt = (uint32_t)((oldSize - sizeof(RTDayBlockHeader)) / sizeof(WTSOrdDtlStruct));
-					//ÎÄ¼ş´óĞ¡²»Æ¥Åä,Ò»°ãÊÇÒòÎªcapacity¸ÄÁË,µ«ÊÇÊµ¼ÊÃ»À©Èİ
-					//ÕâÊÇ×öÒ»´ÎÀ©Èİ¼´¿É
+					//æ–‡ä»¶å¤§å°ä¸åŒ¹é…,ä¸€èˆ¬æ˜¯å› ä¸ºcapacityæ”¹äº†,ä½†æ˜¯å®é™…æ²¡æ‰©å®¹
+					//è¿™æ˜¯åšä¸€æ¬¡æ‰©å®¹å³å¯
 					pBlock->_block->_capacity = oldCnt;
 					pBlock->_block->_size = oldCnt;
 
@@ -855,7 +880,7 @@ WtDataWriter::TransBlockPair* WtDataWriter::getTransBlock(WTSContractInfo* ct, u
 
 			pipe_writer_log(_sink, LL_INFO, "Data file {} not exists, initializing...", path.c_str());
 
-			uint64_t uSize = sizeof(RTDayBlockHeader) + sizeof(WTSTransStruct) * TICK_SIZE_STEP;
+			uint64_t uSize = sizeof(RTDayBlockHeader) + sizeof(WTSTransStruct) * HFT_SIZE_STEP;
 
 			BoostFile bf;
 			bf.create_new_file(path.c_str());
@@ -885,7 +910,7 @@ WtDataWriter::TransBlockPair* WtDataWriter::getTransBlock(WTSContractInfo* ct, u
 
 		if (isNew)
 		{
-			pBlock->_block->_capacity = TICK_SIZE_STEP;
+			pBlock->_block->_capacity = HFT_SIZE_STEP;
 			pBlock->_block->_size = 0;
 			pBlock->_block->_version = BLOCK_VERSION_RAW_V2;
 			pBlock->_block->_type = BT_RT_Trnsctn;
@@ -894,7 +919,7 @@ WtDataWriter::TransBlockPair* WtDataWriter::getTransBlock(WTSContractInfo* ct, u
 		}
 		else
 		{
-			//¼ì²é»º´æÎÄ¼şÊÇ·ñÓĞÎÊÌâ,Òª×Ô¶¯»Ö¸´
+			//æ£€æŸ¥ç¼“å­˜æ–‡ä»¶æ˜¯å¦æœ‰é—®é¢˜,è¦è‡ªåŠ¨æ¢å¤
 			for (;;)
 			{
 				uint64_t uSize = sizeof(RTDayBlockHeader) + sizeof(WTSTransStruct) * pBlock->_block->_capacity;
@@ -902,8 +927,8 @@ WtDataWriter::TransBlockPair* WtDataWriter::getTransBlock(WTSContractInfo* ct, u
 				if (oldSize != uSize)
 				{
 					uint32_t oldCnt = (uint32_t)((oldSize - sizeof(RTDayBlockHeader)) / sizeof(WTSTransStruct));
-					//ÎÄ¼ş´óĞ¡²»Æ¥Åä,Ò»°ãÊÇÒòÎªcapacity¸ÄÁË,µ«ÊÇÊµ¼ÊÃ»À©Èİ
-					//ÕâÊÇ×öÒ»´ÎÀ©Èİ¼´¿É
+					//æ–‡ä»¶å¤§å°ä¸åŒ¹é…,ä¸€èˆ¬æ˜¯å› ä¸ºcapacityæ”¹äº†,ä½†æ˜¯å®é™…æ²¡æ‰©å®¹
+					//è¿™æ˜¯åšä¸€æ¬¡æ‰©å®¹å³å¯
 					pBlock->_block->_capacity = oldCnt;
 					pBlock->_block->_size = oldCnt;
 
@@ -958,8 +983,8 @@ WtDataWriter::TickBlockPair* WtDataWriter::getTickBlock(WTSContractInfo* ct, uin
 				return NULL;
 
 			pipe_writer_log(_sink, LL_INFO, "Data file {} not exists, initializing...", path.c_str());
-
-			uint64_t uSize = sizeof(RTTickBlock) + sizeof(WTSTickStruct) * TICK_SIZE_STEP;
+			
+			uint64_t uSize = sizeof(RTTickBlock) + sizeof(WTSTickStruct) * HFT_SIZE_STEP;
 			BoostFile bf;
 			bf.create_new_file(path.c_str());
 			bf.truncate_file((uint32_t)uSize);
@@ -988,7 +1013,7 @@ WtDataWriter::TickBlockPair* WtDataWriter::getTickBlock(WTSContractInfo* ct, uin
 
 		if(isNew)
 		{
-			pBlock->_block->_capacity = TICK_SIZE_STEP;
+			pBlock->_block->_capacity = HFT_SIZE_STEP;
 			pBlock->_block->_size = 0;
 			pBlock->_block->_version = BLOCK_VERSION_RAW_V2;
 			pBlock->_block->_type = BT_RT_Ticks;
@@ -997,7 +1022,7 @@ WtDataWriter::TickBlockPair* WtDataWriter::getTickBlock(WTSContractInfo* ct, uin
 		}
 		else
 		{
-			//¼ì²é»º´æÎÄ¼şÊÇ·ñÓĞÎÊÌâ,Òª×Ô¶¯»Ö¸´
+			//æ£€æŸ¥ç¼“å­˜æ–‡ä»¶æ˜¯å¦æœ‰é—®é¢˜,è¦è‡ªåŠ¨æ¢å¤
 			do
 			{
 				uint64_t uSize = sizeof(RTTickBlock) + sizeof(WTSTickStruct) * pBlock->_block->_capacity;
@@ -1009,8 +1034,8 @@ WtDataWriter::TickBlockPair* WtDataWriter::getTickBlock(WTSContractInfo* ct, uin
 					pipe_writer_log(_sink, LL_WARN, "Tick cache file of {} on {} repaired, real capiacity:{}, marked capacity:{}",
 						ct->getCode(), curDate, realCap, markedCap);
 
-					//ÎÄ¼ş´óĞ¡²»Æ¥Åä,Ò»°ãÊÇÒòÎªcapacity¸ÄÁË,µ«ÊÇÊµ¼ÊÃ»À©Èİ
-					//ÕâÊÇ×öÒ»´ÎÀ©Èİ¼´¿É
+					//æ–‡ä»¶å¤§å°ä¸åŒ¹é…,ä¸€èˆ¬æ˜¯å› ä¸ºcapacityæ”¹äº†,ä½†æ˜¯å®é™…æ²¡æ‰©å®¹
+					//è¿™æ˜¯åšä¸€æ¬¡æ‰©å®¹å³å¯
 					pBlock->_block->_capacity = realCap;
 					pBlock->_block->_size = min(realCap,markedCap);
 				}
@@ -1028,7 +1053,7 @@ void WtDataWriter::pipeToKlines(WTSContractInfo* ct, WTSTickData* curTick)
 {
 	bool tickNoTrade = decimal::eq(curTick->turnover(),0);
 
-	// Èç¹ûÎ´³É½»µÄbarÒ²ÒªÌø¹ı£¬ÄÇÃ´¾Í²»ĞèÒª´¦ÀíËùÓĞÎ´³É½»µÄtickÁË£¬·ñÔò¼´±ãÃ»ÓĞ³É½»Ò²Òª·Å½øÀ´±ÕºÏbar
+	// å¦‚æœæœªæˆäº¤çš„barä¹Ÿè¦è·³è¿‡ï¼Œé‚£ä¹ˆå°±ä¸éœ€è¦å¤„ç†æ‰€æœ‰æœªæˆäº¤çš„tickäº†ï¼Œå¦åˆ™å³ä¾¿æ²¡æœ‰æˆäº¤ä¹Ÿè¦æ”¾è¿›æ¥é—­åˆbar
 	if (_skip_notrade_bar && tickNoTrade)
 	{
 		return;
@@ -1041,19 +1066,19 @@ void WtDataWriter::pipeToKlines(WTSContractInfo* ct, WTSTickData* curTick)
 	uint32_t minutes = sInfo->timeToMinutes(curTime, false);
 	if (minutes == INVALID_UINT32)
 	{
-		pipe_writer_log(_sink, LL_WARN, "{}.{} {} {} erro minues trans:{} stop this pipeToKlines", curTick->exchg(), curTick->code(), curTick->actiondate(), curTick->actiontime(), curTime);
+		pipe_writer_log(_sink, LL_WARN, "[pipeToKlines] [{}.{}] {}.{} is invalid timestamp, skip this tick", curTick->exchg(), curTick->code(), curTick->actiondate(), curTick->actiontime(), curTime);
 		return;
 	}
 
-	//µ±ÃëÊıÎª0,Òª×¨ÃÅ´¦Àí,±ÈÈç091500000,Õâ±ÊtickÒªËã×÷0915µÄ
-	//Èç¹ûÊÇĞ¡½Ú½áÊø,ÒªËã×÷Ğ¡½Ú½áÊøÄÇÒ»·ÖÖÓ,ÒòÎª¾­³£»áÓĞ³¬¹ı½áÊøÊ±¼äµÄ¼Û¸ñ½øÀ´,Èç113000500
-	//²»ÄÜÍ¬Ê±´¦Àí,ËùÒÔÓÃor	
+	//å½“ç§’æ•°ä¸º0,è¦ä¸“é—¨å¤„ç†,æ¯”å¦‚091500000,è¿™ç¬”tickè¦ç®—ä½œ0915çš„
+	//å¦‚æœæ˜¯å°èŠ‚ç»“æŸ,è¦ç®—ä½œå°èŠ‚ç»“æŸé‚£ä¸€åˆ†é’Ÿ,å› ä¸ºç»å¸¸ä¼šæœ‰è¶…è¿‡ç»“æŸæ—¶é—´çš„ä»·æ ¼è¿›æ¥,å¦‚113000500
+	//ä¸èƒ½åŒæ—¶å¤„ç†,æ‰€ä»¥ç”¨or	
 	if (sInfo->isLastOfSection(curTime))
 	{
 		minutes--;
 	}
 
-	//¸üĞÂ1·ÖÖÓÏß
+	//æ›´æ–°1åˆ†é’Ÿçº¿
 	if (!_disable_min1)
 	{
 		KBlockPair* pBlockPair = getKlineBlock(ct, KP_Minute1);
@@ -1064,7 +1089,7 @@ void WtDataWriter::pipeToKlines(WTSContractInfo* ct, WTSTickData* curTick)
 			if (blk->_size == blk->_capacity)
 			{
 				pBlockPair->_file->sync();
-				pBlockPair->_block = (RTKlineBlock*)resizeRTBlock<RTKlineBlock, WTSBarStruct>(pBlockPair->_file, blk->_capacity + KLINE_SIZE_STEP);
+				pBlockPair->_block = (RTKlineBlock*)resizeRTBlock<RTKlineBlock, WTSBarStruct>(pBlockPair->_file, blk->_capacity * 2);
 				blk = pBlockPair->_block;
 			}
 
@@ -1074,7 +1099,7 @@ void WtDataWriter::pipeToKlines(WTSContractInfo* ct, WTSTickData* curTick)
 				lastBar = &blk->_bars[blk->_size - 1];
 			}
 
-			//Æ´½Ó1·ÖÖÓÏß
+			//æ‹¼æ¥1åˆ†é’Ÿçº¿
 			uint32_t barMins = minutes + 1;
 			uint64_t barTime = sInfo->minuteToTime(barMins);
 			uint32_t barDate = uDate;
@@ -1107,7 +1132,7 @@ void WtDataWriter::pipeToKlines(WTSContractInfo* ct, WTSTickData* curTick)
 				newBar->money = curTick->turnover();
 				
 				/*
-				 *	Èç¹û·ÖÖÓÏß¼Û¸ñ×ßÊÆÎª1£¬Ôò½«tickµÄ¹Òµ¥¼Û¸ñ¼ÇÂ¼ÏÂÀ´
+				 *	å¦‚æœåˆ†é’Ÿçº¿ä»·æ ¼èµ°åŠ¿ä¸º1ï¼Œåˆ™å°†tickçš„æŒ‚å•ä»·æ ¼è®°å½•ä¸‹æ¥
 				 */
 				if(_min_price_mode == 1)
 				{
@@ -1126,8 +1151,8 @@ void WtDataWriter::pipeToKlines(WTSContractInfo* ct, WTSTickData* curTick)
 
 				/*
 				 *	By Wesley @ 2023.07.05
-				 *	·¢ÏÖÄ³Ğ©Æ·ÖÖ£¬¿ªÅÌÊ±¿ÉÄÜ»áÍÆËÍpriceÎª0µÄtick½øÀ´
-				 *	»áµ¼ÖÂopenºÍlow¶¼ÊÇ0£¬ËùÒÔÒªÔÙ×öÒ»¸öÅĞ¶Ï
+				 *	å‘ç°æŸäº›å“ç§ï¼Œå¼€ç›˜æ—¶å¯èƒ½ä¼šæ¨é€priceä¸º0çš„tickè¿›æ¥
+				 *	ä¼šå¯¼è‡´openå’Œlowéƒ½æ˜¯0ï¼Œæ‰€ä»¥è¦å†åšä¸€ä¸ªåˆ¤æ–­
 				 */
 				if (decimal::eq(newBar->open, 0))
 					newBar->open = curTick->price();
@@ -1144,7 +1169,7 @@ void WtDataWriter::pipeToKlines(WTSContractInfo* ct, WTSTickData* curTick)
 				newBar->money += curTick->turnover();
 
 				/*
-				 *	Èç¹û·ÖÖÓÏß¼Û¸ñ×ßÊÆÎª1£¬Ôò½«tickµÄ¹Òµ¥¼Û¸ñ¼ÇÂ¼ÏÂÀ´
+				 *	å¦‚æœåˆ†é’Ÿçº¿ä»·æ ¼èµ°åŠ¿ä¸º1ï¼Œåˆ™å°†tickçš„æŒ‚å•ä»·æ ¼è®°å½•ä¸‹æ¥
 				 */
 				if (_min_price_mode == 1)
 				{
@@ -1160,7 +1185,7 @@ void WtDataWriter::pipeToKlines(WTSContractInfo* ct, WTSTickData* curTick)
 		}
 	}
 
-	//¸üĞÂ5·ÖÖÓÏß
+	//æ›´æ–°5åˆ†é’Ÿçº¿
 	if (!_disable_min5)
 	{
 		KBlockPair* pBlockPair = getKlineBlock(ct, KP_Minute5);
@@ -1171,7 +1196,7 @@ void WtDataWriter::pipeToKlines(WTSContractInfo* ct, WTSTickData* curTick)
 			if (blk->_size == blk->_capacity)
 			{
 				pBlockPair->_file->sync();
-				pBlockPair->_block = (RTKlineBlock*)resizeRTBlock<RTKlineBlock, WTSBarStruct>(pBlockPair->_file, blk->_capacity + KLINE_SIZE_STEP);
+				pBlockPair->_block = (RTKlineBlock*)resizeRTBlock<RTKlineBlock, WTSBarStruct>(pBlockPair->_file, blk->_capacity * 2);
 				blk = pBlockPair->_block;
 			}
 
@@ -1213,7 +1238,7 @@ void WtDataWriter::pipeToKlines(WTSContractInfo* ct, WTSTickData* curTick)
 				newBar->money = curTick->turnover();
 
 				/*
-				 *	Èç¹û·ÖÖÓÏß¼Û¸ñ×ßÊÆÎª1£¬Ôò½«tickµÄ¹Òµ¥¼Û¸ñ¼ÇÂ¼ÏÂÀ´
+				 *	å¦‚æœåˆ†é’Ÿçº¿ä»·æ ¼èµ°åŠ¿ä¸º1ï¼Œåˆ™å°†tickçš„æŒ‚å•ä»·æ ¼è®°å½•ä¸‹æ¥
 				 */
 				if (_min_price_mode == 1)
 				{
@@ -1232,8 +1257,8 @@ void WtDataWriter::pipeToKlines(WTSContractInfo* ct, WTSTickData* curTick)
 
 				/*
 				 *	By Wesley @ 2023.07.05
-				 *	·¢ÏÖÄ³Ğ©Æ·ÖÖ£¬¿ªÅÌÊ±¿ÉÄÜ»áÍÆËÍpriceÎª0µÄtick½øÀ´
-				 *	»áµ¼ÖÂopenºÍlow¶¼ÊÇ0£¬ËùÒÔÒªÔÙ×öÒ»¸öÅĞ¶Ï
+				 *	å‘ç°æŸäº›å“ç§ï¼Œå¼€ç›˜æ—¶å¯èƒ½ä¼šæ¨é€priceä¸º0çš„tickè¿›æ¥
+				 *	ä¼šå¯¼è‡´openå’Œlowéƒ½æ˜¯0ï¼Œæ‰€ä»¥è¦å†åšä¸€ä¸ªåˆ¤æ–­
 				 */
 				if (decimal::eq(newBar->open, 0))
 					newBar->open = curTick->price();
@@ -1250,7 +1275,7 @@ void WtDataWriter::pipeToKlines(WTSContractInfo* ct, WTSTickData* curTick)
 				newBar->money += curTick->turnover();
 
 				/*
-				 *	Èç¹û·ÖÖÓÏß¼Û¸ñ×ßÊÆÎª1£¬Ôò½«tickµÄ¹Òµ¥¼Û¸ñ¼ÇÂ¼ÏÂÀ´
+				 *	å¦‚æœåˆ†é’Ÿçº¿ä»·æ ¼èµ°åŠ¿ä¸º1ï¼Œåˆ™å°†tickçš„æŒ‚å•ä»·æ ¼è®°å½•ä¸‹æ¥
 				 */
 				if (_min_price_mode == 1)
 				{
@@ -1287,6 +1312,9 @@ WtDataWriter::KBlockPair* WtDataWriter::getKlineBlock(WTSContractInfo* ct, WTSKl
 	KBlockPair* pBlock = NULL;
 	const char* key = ct->getFullCode();
 
+	//è¯»å–äº¤æ˜“çš„åˆ†é’Ÿæ•°
+	uint32_t totalMins = ct->getCommInfo()->getSessionInfo()->getTradingMins();
+
 	KBlockFilesMap* cache_map = NULL;
 	std::string subdir = "";
 	BlockType bType;
@@ -1301,6 +1329,7 @@ WtDataWriter::KBlockPair* WtDataWriter::getKlineBlock(WTSContractInfo* ct, WTSKl
 		cache_map = &_rt_min5_blocks;
 		subdir = "min5";
 		bType = BT_RT_Minute5;
+		totalMins /= 5;	//å¦‚æœæ˜¯5åˆ†é’Ÿçº¿ï¼Œè¦é™¤ä»¥5
 		break;
 	default: break;
 	}
@@ -1317,7 +1346,6 @@ WtDataWriter::KBlockPair* WtDataWriter::getKlineBlock(WTSContractInfo* ct, WTSKl
 
 	if (pBlock->_block == NULL)
 	{
-		//std::string path = StrUtil::printf("%srt/%s/%s/", _base_dir.c_str(), subdir.c_str(), ct->getExchg());
 		thread_local static char path[256] = { 0 };
 		char * s = fmt::format_to(path, "{}rt/{}/{}/", _base_dir, subdir, ct->getExchg());
 		s[0] = '\0';
@@ -1338,7 +1366,7 @@ WtDataWriter::KBlockPair* WtDataWriter::getKlineBlock(WTSContractInfo* ct, WTSKl
 
 			pipe_writer_log(_sink, LL_INFO, "Data file {} not exists, initializing...", path);
 
-			uint64_t uSize = sizeof(RTKlineBlock) + sizeof(WTSBarStruct) * KLINE_SIZE_STEP;
+			uint64_t uSize = sizeof(RTKlineBlock) + sizeof(WTSBarStruct) * totalMins;	//é¢„åˆ†é…æŒ‰ç…§Kçº¿æ¡æ•°åˆ†é…
 			BoostFile bf;
 			bf.create_new_file(path);
 			bf.truncate_file((uint32_t)uSize);
@@ -1370,7 +1398,7 @@ WtDataWriter::KBlockPair* WtDataWriter::getKlineBlock(WTSContractInfo* ct, WTSKl
 		if (isNew)
 		{
 			//memset(pBlock->_block, 0, pBlock->_file->size());
-			pBlock->_block->_capacity = KLINE_SIZE_STEP;
+			pBlock->_block->_capacity = totalMins;
 			pBlock->_block->_size = 0;
 			pBlock->_block->_version = BLOCK_VERSION_RAW_V2;
 			pBlock->_block->_type = bType;
@@ -1443,7 +1471,7 @@ bool WtDataWriter::updateCache(WTSContractInfo* ct, WTSTickData* curTick, uint32
 
 	if (curTick->tradingdate() > item._date)
 	{
-		//ĞÂÊı¾İ½»Ò×ÈÕ´óÓÚÀÏÊı¾İ,ÔòÈÏÎªÊÇĞÂÒ»ÌìµÄÊı¾İ
+		//æ–°æ•°æ®äº¤æ˜“æ—¥å¤§äºè€æ•°æ®,åˆ™è®¤ä¸ºæ˜¯æ–°ä¸€å¤©çš„æ•°æ®
 		item._date = curTick->tradingdate();
 		memcpy(&item._tick, &newTick, sizeof(WTSTickStruct));
 		if (procFlag==1)
@@ -1465,8 +1493,8 @@ bool WtDataWriter::updateCache(WTSContractInfo* ct, WTSTickData* curTick, uint32
 	}
 	else
 	{
-		//Èç¹û»º´æÀïµÄÊı¾İÈÕÆÚ´óÓÚ×îĞÂĞĞÇéµÄÈÕÆÚ
-		//»òÕß»º´æÀïµÄÊ±¼ä´óÓÚµÈÓÚ×îĞÂĞĞÇéµÄÊ±¼ä,Êı¾İ¾Í²»ĞèÒª´¦Àí
+		//å¦‚æœç¼“å­˜é‡Œçš„æ•°æ®æ—¥æœŸå¤§äºæœ€æ–°è¡Œæƒ…çš„æ—¥æœŸ
+		//æˆ–è€…ç¼“å­˜é‡Œçš„æ—¶é—´å¤§äºç­‰äºæœ€æ–°è¡Œæƒ…çš„æ—¶é—´,æ•°æ®å°±ä¸éœ€è¦å¤„ç†
 		WTSSessionInfo* sInfo = ct->getCommInfo()->getSessionInfo();
 		uint32_t tdate = sInfo->getOffsetDate(curTick->actiondate(), curTick->actiontime() / 100000);
 		if (tdate > curTick->tradingdate())
@@ -1481,16 +1509,16 @@ bool WtDataWriter::updateCache(WTSContractInfo* ct, WTSTickData* curTick, uint32
 			return false;
 		}
 
-		//Ê±¼ä´ÁÏàÍ¬,µ«ÊÇ³É½»Á¿´óÓÚµÈÓÚÔ­À´µÄ,ÕâÖÖÇé¿öÒ»°ãÊÇÖ£ÉÌËù,ÕâÀïµÄ´¦Àí·½Ê½¾ÍÊÇÊ±¼ä´Á+200ºÁÃë
+		//æ—¶é—´æˆ³ç›¸åŒ,ä½†æ˜¯æˆäº¤é‡å¤§äºç­‰äºåŸæ¥çš„,è¿™ç§æƒ…å†µä¸€èˆ¬æ˜¯éƒ‘å•†æ‰€,è¿™é‡Œçš„å¤„ç†æ–¹å¼å°±æ˜¯æ—¶é—´æˆ³+200æ¯«ç§’
 		//By Wesley @ 2021.12.21
-		//½ñÌì·¢ÏÖ¾ÓÈ»Ò»Ãë³öÏÖÁË4±Ê£¬ÊµÔÚÊÇÓĞµãÎŞÓï
-		//Ö»ÄÜ°Ñ500ºÁÃëµÄ±ä»¯Á¿¸Ä³É200£¬²¢ÇÒ¸Ä³É·¢ÉúÊ±¼äĞ¡ÓÚµÈÓÚÉÏÒ»±ÊµÄÅĞ¶Ï
+		//ä»Šå¤©å‘ç°å±…ç„¶ä¸€ç§’å‡ºç°äº†4ç¬”ï¼Œå®åœ¨æ˜¯æœ‰ç‚¹æ— è¯­
+		//åªèƒ½æŠŠ500æ¯«ç§’çš„å˜åŒ–é‡æ”¹æˆ200ï¼Œå¹¶ä¸”æ”¹æˆå‘ç”Ÿæ—¶é—´å°äºç­‰äºä¸Šä¸€ç¬”çš„åˆ¤æ–­
 		if(newTick.action_date == item._tick.action_date && newTick.action_time <= item._tick.action_time && newTick.total_volume >= item._tick.total_volume)
 		{
 			newTick.action_time += 200;
 		}
 
-		//ÕâÀï¾ÍÒª¿´Ğè²»ĞèÒªÔ¤´¦ÀíÁË
+		//è¿™é‡Œå°±è¦çœ‹éœ€ä¸éœ€è¦é¢„å¤„ç†äº†
 		if(procFlag == 0)
 		{
 			memcpy(&item._tick, &newTick, sizeof(WTSTickStruct));
@@ -1540,7 +1568,7 @@ void WtDataWriter::transHisData(const char* sid)
 			}
 		}
 
-		_proc_que.push(StrUtil::printf("MARK.%s", sid));
+		_proc_que.push(fmtutil::format("MARK.{}", sid));
 	}
 	else
 	{
@@ -1565,7 +1593,7 @@ void WtDataWriter::check_loop()
 		std::this_thread::sleep_for(std::chrono::seconds(10));
 		/*
 		 *	By Wesley @ 2022.04.18
-		 *	Èç¹ûÊÕÅÌ×÷ÒµÏß³ÌÒÑ¾­Æô¶¯£¬ÔòÖ±½ÓÍË³ö¼ì²éÏß³Ì
+		 *	å¦‚æœæ”¶ç›˜ä½œä¸šçº¿ç¨‹å·²ç»å¯åŠ¨ï¼Œåˆ™ç›´æ¥é€€å‡ºæ£€æŸ¥çº¿ç¨‹
 		 */
 		if(_proc_thrd != NULL)
 			break;
@@ -1648,7 +1676,7 @@ uint32_t WtDataWriter::dump_bars_via_dumper(WTSContractInfo* ct)
 
 	uint32_t count = 0;
 
-	//´Ó»º´æÖĞ¶ÁÈ¡×îĞÂtick,¸üĞÂµ½ÀúÊ·ÈÕÏß
+	//ä»ç¼“å­˜ä¸­è¯»å–æœ€æ–°tick,æ›´æ–°åˆ°å†å²æ—¥çº¿
 	auto it = _tick_cache_idx.find(key);
 	if (it != _tick_cache_idx.end())
 	{
@@ -1686,7 +1714,7 @@ uint32_t WtDataWriter::dump_bars_via_dumper(WTSContractInfo* ct)
 
 	}
 
-	//×ªÒÆÊµÊ±1·ÖÖÓÏß
+	//è½¬ç§»å®æ—¶1åˆ†é’Ÿçº¿
 	KBlockPair* kBlkPair = getKlineBlock(ct, KP_Minute1, false);
 	if (kBlkPair != NULL && kBlkPair->_block->_size > 0)
 	{
@@ -1715,7 +1743,7 @@ uint32_t WtDataWriter::dump_bars_via_dumper(WTSContractInfo* ct)
 	if (kBlkPair)
 		releaseBlock(kBlkPair);
 
-	//µÚËÄ²½,×ªÒÆÊµÊ±5·ÖÖÓÏß
+	//ç¬¬å››æ­¥,è½¬ç§»å®æ—¶5åˆ†é’Ÿçº¿
 	kBlkPair = getKlineBlock(ct, KP_Minute5, false);
 	if (kBlkPair != NULL && kBlkPair->_block->_size > 0)
 	{
@@ -1754,7 +1782,7 @@ bool WtDataWriter::proc_block_data(const char* tag, std::string& content, bool i
 	bool bCmped = header->is_compressed();
 	bool bOldVer = header->is_old_version();
 
-	//Èç¹û¼ÈÃ»ÓĞÑ¹Ëõ£¬Ò²²»ÊÇÀÏ°æ±¾½á¹¹Ìå£¬ÔòÖ±½Ó·µ»Ø
+	//å¦‚æœæ—¢æ²¡æœ‰å‹ç¼©ï¼Œä¹Ÿä¸æ˜¯è€ç‰ˆæœ¬ç»“æ„ä½“ï¼Œåˆ™ç›´æ¥è¿”å›
 	if (!bCmped && !bOldVer)
 	{
 		if (!bKeepHead)
@@ -1772,14 +1800,14 @@ bool WtDataWriter::proc_block_data(const char* tag, std::string& content, bool i
 			return false;
 		}
 
-		//½«ÎÄ¼şÍ·ºóÃæµÄÊı¾İ½øĞĞ½âÑ¹
-		buffer = WTSCmpHelper::uncompress_data(content.data() + BLOCK_HEADERV2_SIZE, (uint32_t)blkV2->_size);
+		//å°†æ–‡ä»¶å¤´åé¢çš„æ•°æ®è¿›è¡Œè§£å‹
+		buffer = WTSCmpHelper::uncompress_data(content.data() + BLOCK_HEADERV2_SIZE, (std::size_t)blkV2->_size);
 	}
 	else
 	{
 		if (!bOldVer)
 		{
-			//Èç¹û²»ÊÇÀÏ°æ±¾£¬Ö±½Ó·µ»Ø
+			//å¦‚æœä¸æ˜¯è€ç‰ˆæœ¬ï¼Œç›´æ¥è¿”å›
 			if (!bKeepHead)
 				content.erase(0, BLOCK_HEADER_SIZE);
 			return true;
@@ -1844,7 +1872,7 @@ bool WtDataWriter::dump_day_data(WTSContractInfo* ct, WTSBarStruct* newBar)
 	ss << _base_dir << "his/day/" << ct->getExchg() << "/";
 	std::string path = ss.str();
 	BoostFile::create_directories(ss.str().c_str());
-	std::string filename = StrUtil::printf("%s%s.dsb", path.c_str(), ct->getCode());
+	std::string filename = fmtutil::format("{}{}.dsb", path, ct->getCode());
 
 	bool bNew = false;
 	if (!BoostFile::exists(filename.c_str()))
@@ -1867,35 +1895,35 @@ bool WtDataWriter::dump_day_data(WTSContractInfo* ct, WTSBarStruct* newBar)
 		}
 		else
 		{
-			//ÈÕÏß±ØĞëÒª¼ì²éÒ»ÏÂ
+			//æ—¥çº¿å¿…é¡»è¦æ£€æŸ¥ä¸€ä¸‹
 			std::string content;
 			BoostFile::read_file_contents(filename.c_str(), content);
 			HisKlineBlock* kBlock = (HisKlineBlock*)content.data();
-			//Èç¹ûÀÏµÄÎÄ¼şÒÑ¾­ÊÇÑ¹Ëõ°æ±¾,»òÕß×îÖÕÊı¾İ´óĞ¡´óÓÚ100Ìõ,Ôò½øĞĞÑ¹Ëõ
+			//å¦‚æœè€çš„æ–‡ä»¶å·²ç»æ˜¯å‹ç¼©ç‰ˆæœ¬,æˆ–è€…æœ€ç»ˆæ•°æ®å¤§å°å¤§äº100æ¡,åˆ™è¿›è¡Œå‹ç¼©
 			bool bCompressed = kBlock->is_compressed();
 
-			//ÏÈÍ³Ò»½âÑ¹³öÀ´
+			//å…ˆç»Ÿä¸€è§£å‹å‡ºæ¥
 			proc_block_data(filename.c_str(), content, true, false);
 			
 			uint32_t barcnt = content.size() / sizeof(WTSBarStruct);
-			//¿ªÊ¼±È½ÏKÏßÊ±¼ä±êÇ©,Ö÷ÒªÎªÁË·ÀÖ¹Êı¾İÖØ¸´Ğ´
+			//å¼€å§‹æ¯”è¾ƒKçº¿æ—¶é—´æ ‡ç­¾,ä¸»è¦ä¸ºäº†é˜²æ­¢æ•°æ®é‡å¤å†™
 			if (barcnt != 0)
 			{
 				WTSBarStruct& oldBS = ((WTSBarStruct*)content.data())[barcnt - 1];
 
 				if (oldBS.date == newBar->date && memcmp(&oldBS, newBar, sizeof(WTSBarStruct)) != 0)
 				{
-					//ÈÕÆÚÏàÍ¬ÇÒÊı¾İ²»Í¬,ÔòÓÃ×îĞÂµÄÌæ»»×îºóÒ»Ìõ
+					//æ—¥æœŸç›¸åŒä¸”æ•°æ®ä¸åŒ,åˆ™ç”¨æœ€æ–°çš„æ›¿æ¢æœ€åä¸€æ¡
 					oldBS = *newBar;
 				}
-				else if (oldBS.date < newBar->date)	//ÀÏµÄKÏßÈÕÆÚĞ¡ÓÚĞÂµÄ,ÔòÖ±½Ó×·¼Óµ½ºóÃæ
+				else if (oldBS.date < newBar->date)	//è€çš„Kçº¿æ—¥æœŸå°äºæ–°çš„,åˆ™ç›´æ¥è¿½åŠ åˆ°åé¢
 				{
 					content.append((char*)newBar, sizeof(WTSBarStruct));
 					barcnt++;
 				}
 			}
 
-			//Èç¹ûÀÏµÄÎÄ¼şÒÑ¾­ÊÇÑ¹Ëõ°æ±¾,»òÕß×îÖÕÊı¾İ´óĞ¡´óÓÚ100Ìõ,Ôò½øĞĞÑ¹Ëõ
+			//å¦‚æœè€çš„æ–‡ä»¶å·²ç»æ˜¯å‹ç¼©ç‰ˆæœ¬,æˆ–è€…æœ€ç»ˆæ•°æ®å¤§å°å¤§äº100æ¡,åˆ™è¿›è¡Œå‹ç¼©
 			bool bNeedCompress = bCompressed || (barcnt > 100);
 			if (bNeedCompress)
 			{
@@ -1942,11 +1970,11 @@ uint32_t WtDataWriter::dump_bars_to_file(WTSContractInfo* ct)
 	if (ct == NULL)
 		return 0;
 
-	std::string key = StrUtil::printf("%s.%s", ct->getExchg(), ct->getCode());
+	std::string key = fmtutil::format("{}.{}", ct->getExchg(), ct->getCode());
 
 	uint32_t count = 0;
 
-	//´Ó»º´æÖĞ¶ÁÈ¡×îĞÂtick,¸üĞÂµ½ÀúÊ·ÈÕÏß
+	//ä»ç¼“å­˜ä¸­è¯»å–æœ€æ–°tick,æ›´æ–°åˆ°å†å²æ—¥çº¿
 	if (!_disable_day)
 	{
 		auto it = _tick_cache_idx.find(key);
@@ -1974,7 +2002,7 @@ uint32_t WtDataWriter::dump_bars_to_file(WTSContractInfo* ct)
 		}
 	}
 
-	//×ªÒÆÊµÊ±1·ÖÖÓÏß
+	//è½¬ç§»å®æ—¶1åˆ†é’Ÿçº¿
 	if (!_disable_min1)
 	{
 		KBlockPair* kBlkPair = getKlineBlock(ct, KP_Minute1, false);
@@ -1989,7 +2017,7 @@ uint32_t WtDataWriter::dump_bars_to_file(WTSContractInfo* ct)
 			BoostFile::create_directories(ss.str().c_str());
 			std::string path = ss.str();
 			BoostFile::create_directories(ss.str().c_str());
-			std::string filename = StrUtil::printf("%s%s.dsb", path.c_str(), ct->getCode());
+			std::string filename = fmtutil::format("{}{}.dsb", path, ct->getCode());
 
 			bool bNew = false;
 			if (!BoostFile::exists(filename.c_str()))
@@ -2010,7 +2038,7 @@ uint32_t WtDataWriter::dump_bars_to_file(WTSContractInfo* ct)
 					buffer.swap(content);
 				}
 
-				//×·¼ÓĞÂµÄÊı¾İ
+				//è¿½åŠ æ–°çš„æ•°æ®
 				buffer.append((const char*)kBlkPair->_block->_bars, sizeof(WTSBarStruct)*size);
 
 				std::string cmpData = WTSCmpHelper::compress_data(buffer.data(), buffer.size());
@@ -2027,7 +2055,7 @@ uint32_t WtDataWriter::dump_bars_to_file(WTSContractInfo* ct)
 				f.write_file(cmpData);
 				count += size;
 
-				//×îºó½«»º´æÇå¿Õ
+				//æœ€åå°†ç¼“å­˜æ¸…ç©º
 				//memset(kBlkPair->_block->_bars, 0, sizeof(WTSBarStruct)*kBlkPair->_block->_size);
 				kBlkPair->_block->_size = 0;
 			}
@@ -2041,7 +2069,7 @@ uint32_t WtDataWriter::dump_bars_to_file(WTSContractInfo* ct)
 			releaseBlock(kBlkPair);
 	}
 
-	//µÚËÄ²½,×ªÒÆÊµÊ±5·ÖÖÓÏß
+	//ç¬¬å››æ­¥,è½¬ç§»å®æ—¶5åˆ†é’Ÿçº¿
 	if (!_disable_min5)
 	{
 		KBlockPair* kBlkPair = getKlineBlock(ct, KP_Minute5, false);
@@ -2056,7 +2084,7 @@ uint32_t WtDataWriter::dump_bars_to_file(WTSContractInfo* ct)
 			BoostFile::create_directories(ss.str().c_str());
 			std::string path = ss.str();
 			BoostFile::create_directories(ss.str().c_str());
-			std::string filename = StrUtil::printf("%s%s.dsb", path.c_str(), ct->getCode());
+			std::string filename = fmtutil::format("{}{}.dsb", path.c_str(), ct->getCode());
 
 			bool bNew = false;
 			if (!BoostFile::exists(filename.c_str()))
@@ -2093,7 +2121,7 @@ uint32_t WtDataWriter::dump_bars_to_file(WTSContractInfo* ct)
 				f.write_file(cmpData);
 				count += size;
 
-				//×îºó½«»º´æÇå¿Õ
+				//æœ€åå°†ç¼“å­˜æ¸…ç©º
 				kBlkPair->_block->_size = 0;
 			}
 			else
@@ -2135,7 +2163,7 @@ void WtDataWriter::proc_loop()
 
 		if (fullcode.compare(CMD_CLEAR_CACHE) == 0)
 		{
-			//ÇåÀí»º´æ
+			//æ¸…ç†ç¼“å­˜
 			SpinLock lock(_lck_tick_cache);
 
 			std::set<std::string> setCodes;
@@ -2175,13 +2203,13 @@ void WtDataWriter::proc_loop()
 				{
 					pipe_writer_log(_sink, LL_WARN, "{}[{}] expired, cache will be cleared", ay[1].c_str(), ay[0].c_str());
 
-					//É¾³ıÒÑ¾­¹ıÆÚ´úÂëµÄÊµÊ±tickÎÄ¼ş
-					std::string path = StrUtil::printf("%srt/ticks/%s/%s.dmb", _base_dir.c_str(), ay[0].c_str(), ay[1].c_str());
+					//åˆ é™¤å·²ç»è¿‡æœŸä»£ç çš„å®æ—¶tickæ–‡ä»¶
+					std::string path = fmtutil::format("{}rt/ticks/{}/{}.dmb", _base_dir, ay[0], ay[1]);
 					BoostFile::delete_file(path.c_str());
 				}
 			}
 
-			//Èç¹ûÁ½×é´úÂë¸öÊı²»Í¬,ËµÃ÷ÓĞ´úÂë¹ıÆÚÁË,±»ÅÅ³ıÁË
+			//å¦‚æœä¸¤ç»„ä»£ç ä¸ªæ•°ä¸åŒ,è¯´æ˜æœ‰ä»£ç è¿‡æœŸäº†,è¢«æ’é™¤äº†
 			if(setCodes.size() != _tick_cache_idx.size())
 			{
 				uint32_t diff = _tick_cache_idx.size() - setCodes.size();
@@ -2214,7 +2242,7 @@ void WtDataWriter::proc_loop()
 					newIdx++;
 				}
 
-				//Ë÷ÒıÌæ»»
+				//ç´¢å¼•æ›¿æ¢
 				_tick_cache_idx = newIdxMap;
 				_tick_cache_file->close();
 				_tick_cache_block = NULL;
@@ -2233,7 +2261,7 @@ void WtDataWriter::proc_loop()
 				pipe_writer_log(_sink, LL_INFO, "{} expired cache cleared totally", diff);
 			}
 
-			//½«µ±ÈÕµÄÈÕÏß¿ìÕÕÂäµØµ½Ò»¸ö¿ìÕÕÎÄ¼ş
+			//å°†å½“æ—¥çš„æ—¥çº¿å¿«ç…§è½åœ°åˆ°ä¸€ä¸ªå¿«ç…§æ–‡ä»¶
 			{
 
 				std::stringstream ss;
@@ -2254,30 +2282,30 @@ void WtDataWriter::proc_loop()
 			{
 				if(try_count >= 5)
 				{
-					pipe_writer_log(_sink, LL_ERROR, "Too many trys to clear rt cache files£¬skip");
+					pipe_writer_log(_sink, LL_ERROR, "Too many trys to clear rt cache filesï¼Œskip");
 					break;
 				}
 
 				try_count++;
 				try
 				{
-					std::string path = StrUtil::printf("%srt/min1/", _base_dir.c_str());
+					std::string path = fmtutil::format("{}rt/min1/", _base_dir);
 					boost::filesystem::remove_all(boost::filesystem::path(path));
-					path = StrUtil::printf("%srt/min5/", _base_dir.c_str());
+					path = fmtutil::format("{}rt/min5/", _base_dir);
 					boost::filesystem::remove_all(boost::filesystem::path(path));
-					path = StrUtil::printf("%srt/ticks/", _base_dir.c_str());
+					path = fmtutil::format("{}rt/ticks/", _base_dir);
 					boost::filesystem::remove_all(boost::filesystem::path(path));
-					path = StrUtil::printf("%srt/orders/", _base_dir.c_str());
+					path = fmtutil::format("{}rt/orders/", _base_dir);
 					boost::filesystem::remove_all(boost::filesystem::path(path));
-					path = StrUtil::printf("%srt/queue/", _base_dir.c_str());
+					path = fmtutil::format("{}rt/queue/", _base_dir);
 					boost::filesystem::remove_all(boost::filesystem::path(path));
-					path = StrUtil::printf("%srt/trans/", _base_dir.c_str());
+					path = fmtutil::format("{}rt/trans/", _base_dir);
 					boost::filesystem::remove_all(boost::filesystem::path(path));
 					break;
 				}
 				catch (...)
 				{
-					pipe_writer_log(_sink, LL_ERROR, "Error occured while clearing rt cache files£¬retry in 300s");
+					pipe_writer_log(_sink, LL_ERROR, "Error occured while clearing rt cache filesï¼Œretry in 300s");
 					std::this_thread::sleep_for(std::chrono::seconds(300));
 					continue;
 				}
@@ -2287,7 +2315,7 @@ void WtDataWriter::proc_loop()
 		}
 		else if (StrUtil::startsWith(fullcode.c_str(), "MARK.", false))
 		{
-			//Èç¹ûÖ¸ÁîÒÔMARK.¿ªÍ·,ËµÃ÷ÊÇ±ê¼ÇÖ¸Áî,ÒªĞ´Ò»Ìõ±ê¼Ç
+			//å¦‚æœæŒ‡ä»¤ä»¥MARK.å¼€å¤´,è¯´æ˜æ˜¯æ ‡è®°æŒ‡ä»¤,è¦å†™ä¸€æ¡æ ‡è®°
 			std::string filename = _base_dir + MARKER_FILE;
 			std::string sid = fullcode.substr(5);
 			uint32_t curDate = TimeUtils::getCurDate();
@@ -2305,13 +2333,13 @@ void WtDataWriter::proc_loop()
 		if (ct == NULL)
 			continue;
 
-		//Èç¹ûÀúÊ·Êı¾İ±»½ûÓÃ£¬Ôò²»ÔÙ½øĞĞÊÕÅÌ×÷Òµ
+		//å¦‚æœå†å²æ•°æ®è¢«ç¦ç”¨ï¼Œåˆ™ä¸å†è¿›è¡Œæ”¶ç›˜ä½œä¸š
 		if (!_disable_his)
 		{
 			uint32_t count = 0;
 
 			uint32_t uDate = _sink->getTradingDate(ct->getFullCode());
-			//×ªÒÆÊµÊ±tickÊı¾İ
+			//è½¬ç§»å®æ—¶tickæ•°æ®
 			if (!_disable_tick)
 			{
 				TickBlockPair *tBlkPair = getTickBlock(ct, uDate, false);
@@ -2343,7 +2371,7 @@ void WtDataWriter::proc_loop()
 							std::string path = ss.str();
 							pipe_writer_log(_sink, LL_INFO, path.c_str());
 							BoostFile::create_directories(ss.str().c_str());
-							std::string filename = StrUtil::printf("%s%s.dsb", path.c_str(), code.c_str());
+							std::string filename = fmtutil::format("{}{}.dsb", path, code);
 
 							bool bNew = false;
 							if (!BoostFile::exists(filename.c_str()))
@@ -2353,7 +2381,7 @@ void WtDataWriter::proc_loop()
 							BoostFile f;
 							if (f.create_new_file(filename.c_str()))
 							{
-								//ÏÈÑ¹ËõÊı¾İ
+								//å…ˆå‹ç¼©æ•°æ®
 								std::string cmp_data = WTSCmpHelper::compress_data(tBlkPair->_block->_ticks, sizeof(WTSTickStruct)*tBlkPair->_block->_size);
 
 								BlockHeaderV2 header;
@@ -2368,7 +2396,7 @@ void WtDataWriter::proc_loop()
 
 								count += tBlkPair->_block->_size;
 
-								//×îºó½«»º´æÇå¿Õ
+								//æœ€åå°†ç¼“å­˜æ¸…ç©º
 								//memset(tBlkPair->_block->_ticks, 0, sizeof(WTSTickStruct)*tBlkPair->_block->_size);
 								tBlkPair->_block->_size = 0;
 							}
@@ -2384,7 +2412,7 @@ void WtDataWriter::proc_loop()
 					releaseBlock<TickBlockPair>(tBlkPair);
 			}
 
-			//×ªÒÆÊµÊ±transÊı¾İ
+			//è½¬ç§»å®æ—¶transæ•°æ®
 			if (!_disable_trans)
 			{
 				TransBlockPair *tBlkPair = getTransBlock(ct, uDate, false);
@@ -2410,7 +2438,7 @@ void WtDataWriter::proc_loop()
 						std::string path = ss.str();
 						pipe_writer_log(_sink, LL_INFO, path.c_str());
 						BoostFile::create_directories(ss.str().c_str());
-						std::string filename = StrUtil::printf("%s%s.dsb", path.c_str(), code.c_str());
+						std::string filename = fmtutil::format("{}{}.dsb", path, code);
 
 						bool bNew = false;
 						if (!BoostFile::exists(filename.c_str()))
@@ -2420,7 +2448,7 @@ void WtDataWriter::proc_loop()
 						BoostFile f;
 						if (f.create_new_file(filename.c_str()))
 						{
-							//ÏÈÑ¹ËõÊı¾İ
+							//å…ˆå‹ç¼©æ•°æ®
 							std::string cmp_data = WTSCmpHelper::compress_data(tBlkPair->_block->_trans, sizeof(WTSTransStruct)*tBlkPair->_block->_size);
 
 							BlockHeaderV2 header;
@@ -2435,7 +2463,7 @@ void WtDataWriter::proc_loop()
 
 							count += tBlkPair->_block->_size;
 
-							//×îºó½«»º´æÇå¿Õ
+							//æœ€åå°†ç¼“å­˜æ¸…ç©º
 							//memset(tBlkPair->_block->_ticks, 0, sizeof(WTSTickStruct)*tBlkPair->_block->_size);
 							tBlkPair->_block->_size = 0;
 						}
@@ -2450,7 +2478,7 @@ void WtDataWriter::proc_loop()
 					releaseBlock<TransBlockPair>(tBlkPair);
 			}
 
-			//×ªÒÆÊµÊ±orderÊı¾İ
+			//è½¬ç§»å®æ—¶orderæ•°æ®
 			if (!_disable_orddtl)
 			{
 				OrdDtlBlockPair *tBlkPair = getOrdDtlBlock(ct, uDate, false);
@@ -2476,7 +2504,7 @@ void WtDataWriter::proc_loop()
 						std::string path = ss.str();
 						pipe_writer_log(_sink, LL_INFO, path.c_str());
 						BoostFile::create_directories(ss.str().c_str());
-						std::string filename = StrUtil::printf("%s%s.dsb", path.c_str(), code.c_str());
+						std::string filename = fmtutil::format("{}{}.dsb", path, code);
 
 						bool bNew = false;
 						if (!BoostFile::exists(filename.c_str()))
@@ -2486,7 +2514,7 @@ void WtDataWriter::proc_loop()
 						BoostFile f;
 						if (f.create_new_file(filename.c_str()))
 						{
-							//ÏÈÑ¹ËõÊı¾İ
+							//å…ˆå‹ç¼©æ•°æ®
 							std::string cmp_data = WTSCmpHelper::compress_data(tBlkPair->_block->_details, sizeof(WTSOrdDtlStruct)*tBlkPair->_block->_size);
 
 							BlockHeaderV2 header;
@@ -2501,7 +2529,7 @@ void WtDataWriter::proc_loop()
 
 							count += tBlkPair->_block->_size;
 
-							//×îºó½«»º´æÇå¿Õ
+							//æœ€åå°†ç¼“å­˜æ¸…ç©º
 							//memset(tBlkPair->_block->_ticks, 0, sizeof(WTSTickStruct)*tBlkPair->_block->_size);
 							tBlkPair->_block->_size = 0;
 						}
@@ -2516,7 +2544,7 @@ void WtDataWriter::proc_loop()
 					releaseBlock<OrdDtlBlockPair>(tBlkPair);
 			}
 
-			//×ªÒÆÊµÊ±queueÊı¾İ
+			//è½¬ç§»å®æ—¶queueæ•°æ®
 			if (!_disable_ordque)
 			{
 				OrdQueBlockPair *tBlkPair = getOrdQueBlock(ct, uDate, false);
@@ -2542,7 +2570,7 @@ void WtDataWriter::proc_loop()
 						std::string path = ss.str();
 						pipe_writer_log(_sink, LL_INFO, path.c_str());
 						BoostFile::create_directories(ss.str().c_str());
-						std::string filename = StrUtil::printf("%s%s.dsb", path.c_str(), code.c_str());
+						std::string filename = fmtutil::format("{}{}.dsb", path, code);
 
 						bool bNew = false;
 						if (!BoostFile::exists(filename.c_str()))
@@ -2552,7 +2580,7 @@ void WtDataWriter::proc_loop()
 						BoostFile f;
 						if (f.create_new_file(filename.c_str()))
 						{
-							//ÏÈÑ¹ËõÊı¾İ
+							//å…ˆå‹ç¼©æ•°æ®
 							std::string cmp_data = WTSCmpHelper::compress_data(tBlkPair->_block->_queues, sizeof(WTSOrdQueStruct)*tBlkPair->_block->_size);
 
 							BlockHeaderV2 header;
@@ -2567,7 +2595,7 @@ void WtDataWriter::proc_loop()
 
 							count += tBlkPair->_block->_size;
 
-							//×îºó½«»º´æÇå¿Õ
+							//æœ€åå°†ç¼“å­˜æ¸…ç©º
 							//memset(tBlkPair->_block->_ticks, 0, sizeof(WTSTickStruct)*tBlkPair->_block->_size);
 							tBlkPair->_block->_size = 0;
 						}
@@ -2582,7 +2610,7 @@ void WtDataWriter::proc_loop()
 					releaseBlock<OrdQueBlockPair>(tBlkPair);
 			}
 
-			//×ªÒÆÀúÊ·KÏß
+			//è½¬ç§»å†å²Kçº¿
 			dump_bars_via_dumper(ct);
 
 			count += dump_bars_to_file(ct);

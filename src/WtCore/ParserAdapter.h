@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file ParserAdapter.h
  * \project	WonderTrader
  *
@@ -22,7 +22,7 @@ class IHotMgr;
 class IParserStub
 {
 public:
-	virtual void			handle_push_quote(WTSTickData* curTick, uint32_t hotFlag = 0){}
+	virtual void			handle_push_quote(WTSTickData* curTick){}
 
 	virtual void			handle_push_order_detail(WTSOrdDtlData* curOrdDtl){}
 	virtual void			handle_push_order_queue(WTSOrdQueData* curOrdQue) {}
@@ -51,27 +51,27 @@ public:
 	virtual void handleSymbolList(const WTSArray* aySymbols) override {}
 
 	/*
-	 *	´¦ÀíÊµÊ±ĞĞÇé
-	 *	@quote		ÊµÊ±ĞĞÇé
-	 *	@bNeedSlice	ÊÇ·ñĞèÒªÇĞÆ¬,Èç¹ûÊÇ´ÓÍâ²¿½ÓÈëµÄ¿ìÕÕĞĞÇéÊı¾İ,ÔòĞèÒªÇĞÆ¬,Èç¹ûÊÇÄÚ²¿¹ã²¥µÄ¾Í²»ĞèÒªÇĞÆ¬
+	 *	å¤„ç†å®æ—¶è¡Œæƒ…
+	 *	@quote		å®æ—¶è¡Œæƒ…
+	 *	@bNeedSlice	æ˜¯å¦éœ€è¦åˆ‡ç‰‡,å¦‚æœæ˜¯ä»å¤–éƒ¨æ¥å…¥çš„å¿«ç…§è¡Œæƒ…æ•°æ®,åˆ™éœ€è¦åˆ‡ç‰‡,å¦‚æœæ˜¯å†…éƒ¨å¹¿æ’­çš„å°±ä¸éœ€è¦åˆ‡ç‰‡
 	 */
 	virtual void handleQuote(WTSTickData *quote, uint32_t procFlag) override;
 
 	/*
-	 *	´¦ÀíÎ¯ÍĞ¶ÓÁĞÊı¾İ£¨¹ÉÆ±level2£©
-	 *	@ordQueData	Î¯ÍĞ¶ÔÀİÊı¾İ
+	 *	å¤„ç†å§”æ‰˜é˜Ÿåˆ—æ•°æ®ï¼ˆè‚¡ç¥¨level2ï¼‰
+	 *	@ordQueData	å§”æ‰˜å¯¹å’æ•°æ®
 	 */
 	virtual void handleOrderQueue(WTSOrdQueData* ordQueData) override;
 
 	/*
-	 *	´¦ÀíÖğ±ÊÎ¯ÍĞÊı¾İ£¨¹ÉÆ±level2£©
-	 *	@ordDetailData	Öğ±ÊÎ¯ÍĞÊı¾İ
+	 *	å¤„ç†é€ç¬”å§”æ‰˜æ•°æ®ï¼ˆè‚¡ç¥¨level2ï¼‰
+	 *	@ordDetailData	é€ç¬”å§”æ‰˜æ•°æ®
 	 */
 	virtual void handleOrderDetail(WTSOrdDtlData* ordDetailData) override;
 
 	/*
-		*	´¦ÀíÖğ±Ê³É½»Êı¾İ
-		*	@transData	Öğ±Ê³É½»Êı¾İ
+		*	å¤„ç†é€ç¬”æˆäº¤æ•°æ®
+		*	@transData	é€ç¬”æˆäº¤æ•°æ®
 		*/
 	virtual void handleTransaction(WTSTransData* transData) override;
 
@@ -87,11 +87,11 @@ private:
 	bool				_stopped;
 
 	/*
-	 *	¼ì²éÊ±¼äÉèÖÃÏî
-	 *	Èç¹ûÎªtrue£¬ÔòÔÚÊÕµ½ĞĞÇéµÄÊ±ºò½øĞĞÊ±¼ä¼ì²é
-	 *	Ö÷ÒªÊÊÓÃÓÚÖ±½Ó´ÓĞĞÇéÔ´½ÓÈë
-	 *	ÒòÎªÖ±½Ó´ÓĞĞÇéÔ´½ÓÈëºÜ¿ÉÄÜ»áÓĞ´íÎóÊ±¼ä´ÁµÄÊı¾İ½øÀ´
-	 *	¸ÃÑ¡ÏîÄ¬ÈÏÎªfalse
+	 *	æ£€æŸ¥æ—¶é—´è®¾ç½®é¡¹
+	 *	å¦‚æœä¸ºtrueï¼Œåˆ™åœ¨æ”¶åˆ°è¡Œæƒ…çš„æ—¶å€™è¿›è¡Œæ—¶é—´æ£€æŸ¥
+	 *	ä¸»è¦é€‚ç”¨äºç›´æ¥ä»è¡Œæƒ…æºæ¥å…¥
+	 *	å› ä¸ºç›´æ¥ä»è¡Œæƒ…æºæ¥å…¥å¾ˆå¯èƒ½ä¼šæœ‰é”™è¯¯æ—¶é—´æˆ³çš„æ•°æ®è¿›æ¥
+	 *	è¯¥é€‰é¡¹é»˜è®¤ä¸ºfalse
 	 */
 	bool				_check_time;
 

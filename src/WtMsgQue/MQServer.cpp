@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file EventCaster.cpp
  * \project	WonderTrader
  *
@@ -123,11 +123,11 @@ void MQServer::publish(const char* topic, const void* data, uint32_t dataLen)
 					StdUniqueLock lock(m_mtxCast);
 					m_bTimeout = true;
 					m_condCast.wait_for(lock, std::chrono::seconds(60));
-					//Èç¹ûÓĞĞÂµÄÊı¾İ½øÀ´£¬timeout»á±»¸ÄÎªfalse
-					//Èç¹ûÃ»ÓĞĞÂµÄÊı¾İ½øÀ´£¬timeout»á±£³ÖÎªtrue
+					//å¦‚æœæœ‰æ–°çš„æ•°æ®è¿›æ¥ï¼Œtimeoutä¼šè¢«æ”¹ä¸ºfalse
+					//å¦‚æœæ²¡æœ‰æ–°çš„æ•°æ®è¿›æ¥ï¼Œtimeoutä¼šä¿æŒä¸ºtrue
 					if (m_bTimeout)
 					{
-						//µÈ´ı³¬Ê±ÒÔºó£¬¹ã²¥ĞÄÌø°ü
+						//ç­‰å¾…è¶…æ—¶ä»¥åï¼Œå¹¿æ’­å¿ƒè·³åŒ…
 						m_dataQue.push(PubData("HEARTBEAT", "", 0));
 					}
 					else

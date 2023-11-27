@@ -1,11 +1,11 @@
-/*!
+ï»¿/*!
  * \file StatHelper.hpp
  * \project	WonderTrader
  *
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief Êı¾İÍ³¼Æ¸¨ÖúÀà
+ * \brief æ•°æ®ç»Ÿè®¡è¾…åŠ©ç±»
  */
 #pragma once
 #include <boost/atomic.hpp>

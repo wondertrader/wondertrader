@@ -1,4 +1,4 @@
-/*
+ï»¿/*
 23.6.2--zhaoyk--StockVWAP
 */
 #include "WtStockVWapExeUnit.h"
@@ -11,7 +11,7 @@ extern const char* FACT_NAME;
 
 WtStockVWapExeUnit::WtStockVWapExeUnit()
 	:_last_tick(NULL)
-	, _comm_info(NULL)//Æ·ÖÖĞÅÏ¢
+	, _comm_info(NULL)//å“ç§ä¿¡æ¯
 	, _ord_sticky(0)
 	, _cancel_cnt(0)
 	, _channel_ready(false)
@@ -49,12 +49,12 @@ inline bool is_clear(double target)
 {
 	return (target == DBL_MAX);
 }
-inline uint32_t calTmSecs(uint32_t begintime, uint32_t endtime) //¼ÆËãÖ´ĞĞÊ±¼ä£ºs
+inline uint32_t calTmSecs(uint32_t begintime, uint32_t endtime) //è®¡ç®—æ‰§è¡Œæ—¶é—´ï¼šs
 {
 	return   ((endtime / 100) * 3600 + (endtime % 100) * 60) - ((begintime / 100) * 3600 + (begintime % 100) * 60);
 
 }
-inline double calTmStamp(uint32_t actiontime) //¼ÆËãtickÊ±¼äÊôÓÚÄÄ¸öÊ±¼äµ¥Ôª
+inline double calTmStamp(uint32_t actiontime) //è®¡ç®—tickæ—¶é—´å±äºå“ªä¸ªæ—¶é—´å•å…ƒ
 {
 	string timestamp = to_string(actiontime);
 	int hour = stoi(timestamp.substr(0, 2));
@@ -80,7 +80,7 @@ inline double calTmStamp(uint32_t actiontime) //¼ÆËãtickÊ±¼äÊôÓÚÄÄ¸öÊ±¼äµ¥Ôª
 	}
 	total_minute += stoi(timestamp.substr(4, 2)) / 60;
 	total_minute += stoi(timestamp.substr(6, 3)) / 60000;
-	return total_minute;//ÕâÀïÓ¦¸Ã+1£¬¶ÔÓ¦vector ËùÒÔÔÙ-1
+	return total_minute;//è¿™é‡Œåº”è¯¥+1ï¼Œå¯¹åº”vector æ‰€ä»¥å†-1
 }
 const char * WtStockVWapExeUnit::getFactName()
 {
@@ -96,27 +96,27 @@ void WtStockVWapExeUnit::init(ExecuteContext * ctx, const char * stdCode, WTSVar
 {
 	ExecuteUnit::init(ctx, stdCode, cfg);
 
-	_comm_info = ctx->getCommodityInfo(stdCode);//»ñÈ¡Æ·ÖÖ²ÎÊı
+	_comm_info = ctx->getCommodityInfo(stdCode);//è·å–å“ç§å‚æ•°
 	if (_comm_info)
 		_comm_info->retain();
 
-	_sess_info = ctx->getSessionInfo(stdCode);//»ñÈ¡½»Ò×Ê±¼äÄ£°åĞÅÏ¢
+	_sess_info = ctx->getSessionInfo(stdCode);//è·å–äº¤æ˜“æ—¶é—´æ¨¡æ¿ä¿¡æ¯
 	if (_sess_info)
 		_sess_info->retain();
 	_begin_time = cfg->getUInt32("begin_time");
 	_end_time = cfg->getUInt32("end_time");
-	_ord_sticky = cfg->getUInt32("ord_sticky");	//¹Òµ¥Ê±ÏŞ
-	_tail_secs = cfg->getUInt32("tail_secs");	//Ö´ĞĞÎ²²¿Ê±¼ä
-	_total_times = cfg->getUInt32("total_times");//×ÜÖ´ĞĞ´ÎÊı
+	_ord_sticky = cfg->getUInt32("ord_sticky");	//æŒ‚å•æ—¶é™
+	_tail_secs = cfg->getUInt32("tail_secs");	//æ‰§è¡Œå°¾éƒ¨æ—¶é—´
+	_total_times = cfg->getUInt32("total_times");//æ€»æ‰§è¡Œæ¬¡æ•°
 	_price_mode = cfg->getUInt32("price_mode");
 	_price_offset = cfg->getUInt32("offset");
-	_order_lots = cfg->getDouble("lots");		//µ¥´Î·¢µ¥ÊÖÊı
+	_order_lots = cfg->getDouble("lots");		//å•æ¬¡å‘å•æ‰‹æ•°
 	if (cfg->has("minopenlots"))
-		_min_open_lots = cfg->getDouble("minopenlots");	//×îĞ¡ÏÂµ¥Êı
-	_fire_span = (_total_secs - _tail_secs) / _total_times;		//µ¥´Î·¢µ¥Ê±¼ä¼ä¸ô,ÒªÈ¥µôÎ²²¿Ê±¼ä¼ÆËã,ÕâÑùµÄ»°,×îºóÊ£ÓàµÄÊıÁ¿¾ÍÓĞÒ»¸ö¶µµ×·¢µ¥µÄ»úÖÆÁË
+		_min_open_lots = cfg->getDouble("minopenlots");	//æœ€å°ä¸‹å•æ•°
+	_fire_span = (_total_secs - _tail_secs) / _total_times;		//å•æ¬¡å‘å•æ—¶é—´é—´éš”,è¦å»æ‰å°¾éƒ¨æ—¶é—´è®¡ç®—,è¿™æ ·çš„è¯,æœ€åå‰©ä½™çš„æ•°é‡å°±æœ‰ä¸€ä¸ªå…œåº•å‘å•çš„æœºåˆ¶äº†
 
-	ctx->writeLog(fmt::format("Ö´ĞĞµ¥ÔªWtStockVWapExeUnit[{}] ³õÊ¼»¯Íê³É,¶©µ¥³¬Ê± {} Ãë,Ö´ĞĞÊ±ÏŞ {} Ãë,ÊÕÎ²Ê±¼ä {} Ãë", stdCode, _ord_sticky, _total_secs, _tail_secs).c_str());
-	_total_secs = calTmSecs(_begin_time, _end_time);//Ö´ĞĞ×ÜÊ±¼ä£ºÃë
+	ctx->writeLog(fmt::format("æ‰§è¡Œå•å…ƒWtStockVWapExeUnit[{}] åˆå§‹åŒ–å®Œæˆ,è®¢å•è¶…æ—¶ {} ç§’,æ‰§è¡Œæ—¶é™ {} ç§’,æ”¶å°¾æ—¶é—´ {} ç§’", stdCode, _ord_sticky, _total_secs, _tail_secs).c_str());
+	_total_secs = calTmSecs(_begin_time, _end_time);//æ‰§è¡Œæ€»æ—¶é—´ï¼šç§’
 
 	int code = std::stoi(StrUtil::split(stdCode, ".")[2]);
 	if (code >= 688000)
@@ -132,7 +132,7 @@ void WtStockVWapExeUnit::init(ExecuteContext * ctx, const char * stdCode, WTSVar
 			_min_open_lots = min(_min_open_lots, _min_hands);
 		}
 	}
-	// È·¶¨T0½»Ò×Ä£Ê½
+	// ç¡®å®šT0äº¤æ˜“æ¨¡å¼
 	if (_comm_info->getTradingMode() == TradingMode::TM_Long)
 		_is_t0 = true;
 	std::string filename = "Vwap_";
@@ -176,7 +176,7 @@ void WtStockVWapExeUnit::on_order(uint32_t localid, const char * stdCode, bool i
 		_cancel_times = 0;
 		_ctx->writeLog(fmtutil::format("Order {} has filled", localid));
 	}
-	//Èç¹ûÈ«²¿¶©µ¥ÒÑ³·Ïú,Õâ¸öÊ±ºòÒ»°ãÊÇÓöµ½Òª³¬Ê±³·µ¥£¨¹Òµ¥³¬Ê±£© 
+	//å¦‚æœå…¨éƒ¨è®¢å•å·²æ’¤é”€,è¿™ä¸ªæ—¶å€™ä¸€èˆ¬æ˜¯é‡åˆ°è¦è¶…æ—¶æ’¤å•ï¼ˆæŒ‚å•è¶…æ—¶ï¼‰ 
 	if (isCanceled && _cancel_cnt == 0)
 	{
 		double realPos = _ctx->getPosition(stdCode);
@@ -184,12 +184,12 @@ void WtStockVWapExeUnit::on_order(uint32_t localid, const char * stdCode, bool i
 		{
 			_ctx->writeLog(fmtutil::format("Order {} of {} canceled, re_fire will be done", localid, stdCode));
 			_cancel_times++;
-			//³·µ¥ÒÔºóÖØ·¢,Ò»°ãÊÇ¼ÓµãÖØ·¢;¶Ô×îĞ¡ÏÂµ¥Á¿µÄĞ£Ñé
+			//æ’¤å•ä»¥åé‡å‘,ä¸€èˆ¬æ˜¯åŠ ç‚¹é‡å‘;å¯¹æœ€å°ä¸‹å•é‡çš„æ ¡éªŒ
 			fire_at_once(max(_min_open_lots, _this_target - realPos));
 		}
 	}
 
-	if (!isCanceled&&_cancel_cnt != 0) {//Ò»°ã³öÏÖÎÊÌâ£¬ĞèÒª·µ»Ø¼ì²é  ´¥·¢³·µ¥ cnt++,onorderÏìÓ¦´¦Àí²Å»á--
+	if (!isCanceled&&_cancel_cnt != 0) {//ä¸€èˆ¬å‡ºç°é—®é¢˜ï¼Œéœ€è¦è¿”å›æ£€æŸ¥  è§¦å‘æ’¤å• cnt++,onorderå“åº”å¤„ç†æ‰ä¼š--
 		_ctx->writeLog(fmtutil::format("Order {} of {}  hasn't canceled, error will be return ", localid, stdCode));
 		return;
 	}
@@ -200,12 +200,12 @@ void WtStockVWapExeUnit::on_channel_ready()
 	_channel_ready = true;
 	double undone = _ctx->getUndoneQty(_code.c_str());
 	if (!decimal::eq(undone, 0) && !_orders_mon.has_order())
-	{//Î´Íê³Éµ¥²»ÔÚ¼à¿ØÖĞ£¬³·µ¥
+	{//æœªå®Œæˆå•ä¸åœ¨ç›‘æ§ä¸­ï¼Œæ’¤å•
 		/*
-		 *	Èç¹ûÎ´Íê³Éµ¥²»Îª0£¬¶øOMSÃ»ÓĞ¶©µ¥
-		 *	ÕâËµÃ÷ÓĞÎ´Íê³Éµ¥²»ÔÚ¼à¿ØÖ®ÖĞ,È«²¿³·Ïúµô
-		 *	ÒòÎªÕâĞ©¶©µ¥Ã»ÓĞ±¾µØ¶©µ¥ºÅ£¬ÎŞ·¨Ö±½Ó½øĞĞ¹ÜÀí
-		 *	ÕâÖÖÇé¿ö£¬¾ÍÊÇ¸ÕÆô¶¯µÄÊ±ºò£¬ÉÏ´ÎµÄÎ´Íê³Éµ¥»òÕßÍâ²¿µÄ¹Òµ¥
+		 *	å¦‚æœæœªå®Œæˆå•ä¸ä¸º0ï¼Œè€ŒOMSæ²¡æœ‰è®¢å•
+		 *	è¿™è¯´æ˜æœ‰æœªå®Œæˆå•ä¸åœ¨ç›‘æ§ä¹‹ä¸­,å…¨éƒ¨æ’¤é”€æ‰
+		 *	å› ä¸ºè¿™äº›è®¢å•æ²¡æœ‰æœ¬åœ°è®¢å•å·ï¼Œæ— æ³•ç›´æ¥è¿›è¡Œç®¡ç†
+		 *	è¿™ç§æƒ…å†µï¼Œå°±æ˜¯åˆšå¯åŠ¨çš„æ—¶å€™ï¼Œä¸Šæ¬¡çš„æœªå®Œæˆå•æˆ–è€…å¤–éƒ¨çš„æŒ‚å•
 		 */
 		_ctx->writeLog(fmt::format("{} unmanaged orders of {},cancel all", undone, _code).c_str());
 
@@ -219,10 +219,10 @@ void WtStockVWapExeUnit::on_channel_ready()
 	else if (decimal::eq(undone, 0) && _orders_mon.has_order())
 	{	/*
 		 *	By Wesey @ 2021.12.13
-		 *	Èç¹ûÎ´Íê³Éµ¥Îª0£¬µ«ÊÇOMSÖĞÊÇÓĞ¶©µ¥µÄ
-		 *	ËµÃ÷OMSÖĞÊÇ´íµ¥£¬ĞèÒªÇåÀíµô£¬²»È»³¬Ê±³·µ¥¾Í»á³ö´í
-		 *	ÕâÖÖÇé¿ö£¬Ò»°ãÊÇ¶ÏÏßÖØÁ¬ÒÔºó£¬Ö®Ç°ÏÂ³öÈ¥µÄ¶©µ¥£¬²¢Ã»ÓĞÕæÕı·¢ËÍµ½¹ñÌ¨
-		 *	ËùÒÔÕâÀïĞèÒªÇåÀíµô±¾µØ¶©µ¥
+		 *	å¦‚æœæœªå®Œæˆå•ä¸º0ï¼Œä½†æ˜¯OMSä¸­æ˜¯æœ‰è®¢å•çš„
+		 *	è¯´æ˜OMSä¸­æ˜¯é”™å•ï¼Œéœ€è¦æ¸…ç†æ‰ï¼Œä¸ç„¶è¶…æ—¶æ’¤å•å°±ä¼šå‡ºé”™
+		 *	è¿™ç§æƒ…å†µï¼Œä¸€èˆ¬æ˜¯æ–­çº¿é‡è¿ä»¥åï¼Œä¹‹å‰ä¸‹å‡ºå»çš„è®¢å•ï¼Œå¹¶æ²¡æœ‰çœŸæ­£å‘é€åˆ°æŸœå°
+		 *	æ‰€ä»¥è¿™é‡Œéœ€è¦æ¸…ç†æ‰æœ¬åœ°è®¢å•
 		 */
 		_ctx->writeLog(fmtutil::format("Local orders of {} not confirmed in trading channel, clear all", _code.c_str()));
 		_orders_mon.clear_orders();
@@ -242,28 +242,28 @@ void WtStockVWapExeUnit::on_tick(WTSTickData * newTick)
 		return;
 
 	bool isFirstTick = false;
-	//Ô­À´tick²»Îª¿Õ ÔòÒªÊÍ·Åµô
+	//åŸæ¥tickä¸ä¸ºç©º åˆ™è¦é‡Šæ”¾æ‰
 	if (_last_tick) {
 		_last_tick->release();
 	}
 	else {
 		isFirstTick = true;
-		//Èç¹ûĞĞÇéÊ±¼ä²»ÔÚ½»Ò×Ê±¼ä,ÕâÖÖÇé¿öÒ»°ãÊÇ¼¯ºÏ¾º¼ÛµÄĞĞÇé½øÀ´,ÏÂµ¥»áÊ§°Ü,ËùÒÔÖ±½Ó¹ıÂËµôÕâ±ÊĞĞÇé
+		//å¦‚æœè¡Œæƒ…æ—¶é—´ä¸åœ¨äº¤æ˜“æ—¶é—´,è¿™ç§æƒ…å†µä¸€èˆ¬æ˜¯é›†åˆç«ä»·çš„è¡Œæƒ…è¿›æ¥,ä¸‹å•ä¼šå¤±è´¥,æ‰€ä»¥ç›´æ¥è¿‡æ»¤æ‰è¿™ç¬”è¡Œæƒ…
 		if (_sess_info != NULL && !_sess_info->isInTradingTime(newTick->actiontime() / 100000))
 			return;
 	}
-	//ĞÂµÄtickÊı¾İĞèÒª±£Áô
+	//æ–°çš„tickæ•°æ®éœ€è¦ä¿ç•™
 	_last_tick = newTick;
 	_last_tick->retain();
 
-	if (isFirstTick)//Èç¹ûÊÇµÚÒ»±Êtick,Ôò¼ì²éÄ¿±ê²ÖÎ»,²»·ûºÏÔòÏÂµ¥
+	if (isFirstTick)//å¦‚æœæ˜¯ç¬¬ä¸€ç¬”tick,åˆ™æ£€æŸ¥ç›®æ ‡ä»“ä½,ä¸ç¬¦åˆåˆ™ä¸‹å•
 	{
 		double newVol = _target_pos;
 		const char* stdCode = _code.c_str();
 		double undone = _ctx->getUndoneQty(stdCode);
 		double realPos = _ctx->getPosition(stdCode);
 		if (!decimal::eq(newVol, undone + realPos))
-		{//Èç¹ûÊÇµÚÒ»±ÊTICK£¬ÇÒÄ¿±êÁ¿==Î´Íê³É+²ÖÎ»£¬ÍË³ö 
+		{//å¦‚æœæ˜¯ç¬¬ä¸€ç¬”TICKï¼Œä¸”ç›®æ ‡é‡==æœªå®Œæˆ+ä»“ä½ï¼Œé€€å‡º 
 			do_calc();
 		}
 	}
@@ -277,7 +277,7 @@ void WtStockVWapExeUnit::on_tick(WTSTickData * newTick)
 				if (_ctx->cancel(localid))
 				{
 					_cancel_cnt++;
-					_ctx->writeLog(fmt::format("Order expired, cancelcnt updated to {}", _cancel_cnt).c_str());//¶©µ¥¹ıÆÚ£¬³·µ¥Á¿¸üĞÂ
+					_ctx->writeLog(fmt::format("Order expired, cancelcnt updated to {}", _cancel_cnt).c_str());//è®¢å•è¿‡æœŸï¼Œæ’¤å•é‡æ›´æ–°
 					hasCancel = true;
 				}
 			});
@@ -291,16 +291,16 @@ void WtStockVWapExeUnit::on_tick(WTSTickData * newTick)
 }
 
 void WtStockVWapExeUnit::on_trade(uint32_t localid, const char * stdCode, bool isBuy, double vol, double price)
-{//ÔÚontickÖĞ´¥·¢
+{//åœ¨ontickä¸­è§¦å‘
 }
 /*
-ÏÂµ¥½á¹û»Ø±¨
+ä¸‹å•ç»“æœå›æŠ¥
 */
 void WtStockVWapExeUnit::on_entrust(uint32_t localid, const char * stdCode, bool bSuccess, const char * message)
 {
 	if (!bSuccess)
 	{
-		//Èç¹û²»ÊÇÎÒ·¢³öÈ¥µÄ¶©µ¥,ÎÒ¾Í²»¹ÜÁË
+		//å¦‚æœä¸æ˜¯æˆ‘å‘å‡ºå»çš„è®¢å•,æˆ‘å°±ä¸ç®¡äº†
 		if (!_orders_mon.has_order(localid))
 			return;
 
@@ -319,9 +319,9 @@ void WtStockVWapExeUnit::do_calc()
 	const char* code = _code.c_str();
 	double undone = _ctx->getUndoneQty(code);
 	double newVol = get_real_target(_target_pos);
-	double realPos = _ctx->getPosition(code);//×Ü²ÖÎ»£¬×ò²Ö + ½ñ²ÖÂòÈëµÄ
-	double vailyPos = _ctx->getPosition(code,false);//¿ÉÓÃ²ÖÎ»  ¼´×ò²Ö
-	double diffQty = newVol - realPos;//Ä¿±ê²î
+	double realPos = _ctx->getPosition(code);//æ€»ä»“ä½ï¼Œæ˜¨ä»“ + ä»Šä»“ä¹°å…¥çš„
+	double vailyPos = _ctx->getPosition(code,false);//å¯ç”¨ä»“ä½  å³æ˜¨ä»“
+	double diffQty = newVol - realPos;//ç›®æ ‡å·®
 	if (!_channel_ready)
 		return;
 	if (_is_finish)
@@ -334,27 +334,27 @@ void WtStockVWapExeUnit::do_calc()
 		_ctx->writeLog(fmtutil::format("{} can sell hold pos not enough, target adjust {}->{}", code, _target_pos, target_pos));
 		_target_pos = target_pos;
 	}
-	//ÓĞÕıÔÚ³·ÏúµÄ¶©µ¥,Ôò²»ÄÜ½øĞĞÏÂÒ»ÂÖ¼ÆËã
+	//æœ‰æ­£åœ¨æ’¤é”€çš„è®¢å•,åˆ™ä¸èƒ½è¿›è¡Œä¸‹ä¸€è½®è®¡ç®—
 	if (_cancel_cnt != 0)
 	{
-		_ctx->writeLog(fmt::format("{}ÉĞÓĞÎ´Íê³ÉµÄ³·µ¥Ö¸Áî£¬ÔİÊ±ÍË³ö±¾ÂÖÖ´ĞĞ", _code).c_str());
+		_ctx->writeLog(fmt::format("{}å°šæœ‰æœªå®Œæˆçš„æ’¤å•æŒ‡ä»¤ï¼Œæš‚æ—¶é€€å‡ºæœ¬è½®æ‰§è¡Œ", _code).c_str());
 		return;
 	}
 	if (decimal::eq(diffQty, 0))
 		return;
-	if (decimal::ge(_start_price, 0)) {//²¹Ò»´Î
+	if (decimal::ge(_start_price, 0)) {//è¡¥ä¸€æ¬¡
 		_start_price = _last_tick->price();
 	}
-	// ÔÚÅĞ¶ÏµÄÊ±ºò£¬ÒªÁ½±ßËÄÉáÎåÈë£¬·ÀÖ¹Ò»Ğ©Ëé¹Éµ¼ÖÂÒ»Ö±ÎŞ·¨Íê³ÉÖ´ĞĞ
+	// åœ¨åˆ¤æ–­çš„æ—¶å€™ï¼Œè¦ä¸¤è¾¹å››èˆäº”å…¥ï¼Œé˜²æ­¢ä¸€äº›ç¢è‚¡å¯¼è‡´ä¸€ç›´æ— æ³•å®Œæˆæ‰§è¡Œ
 	if (decimal::eq(round_hands(target_pos, _min_hands), round_hands(realPos, _min_hands)) && !(target_pos == 0 && realPos < _min_hands && realPos>target_pos))
 	{
 		_ctx->writeLog(fmtutil::format("{}: target position {} set finish", _code.c_str(), _target_pos));
 		_is_finish = true;
 		return;
 	}
-	//Ã¿Ò»´Î·¢µ¥Òª±£ÕÏ³É½»,ËùÒÔÈç¹ûÓĞÎ´Íê³Éµ¥,ËµÃ÷ÉÏÒ»ÂÖÃ»Íê³É
-	//ÓĞÎ´Íê³É¶©µ¥&&ÓëÊµ¼Ê²ÖÎ»±ä¶¯·½ÏòÏà·´
-	//ÔòĞèÒª³·ÏúÏÖÓĞ¶©µ¥
+	//æ¯ä¸€æ¬¡å‘å•è¦ä¿éšœæˆäº¤,æ‰€ä»¥å¦‚æœæœ‰æœªå®Œæˆå•,è¯´æ˜ä¸Šä¸€è½®æ²¡å®Œæˆ
+	//æœ‰æœªå®Œæˆè®¢å•&&ä¸å®é™…ä»“ä½å˜åŠ¨æ–¹å‘ç›¸å
+	//åˆ™éœ€è¦æ’¤é”€ç°æœ‰è®¢å•
 	bool isBuy = decimal::gt(undone, 0);//undone>0,isbuy=1
 	if (decimal::lt(diffQty*undone, 0))
 	{
@@ -363,38 +363,38 @@ void WtStockVWapExeUnit::do_calc()
 		{
 			_orders_mon.push_order(ids.data(), ids.size(), _ctx->getCurTime());
 			_cancel_cnt += ids.size();
-			_ctx->writeLog(fmtutil::format("[{}@{}] live opposite order of {} canceled, cancelcnt -> {}", __FILE__, __LINE__, _code.c_str(), _cancel_cnt));//Ïà·´µÄ¶©µ¥È¡Ïû
+			_ctx->writeLog(fmtutil::format("[{}@{}] live opposite order of {} canceled, cancelcnt -> {}", __FILE__, __LINE__, _code.c_str(), _cancel_cnt));//ç›¸åçš„è®¢å•å–æ¶ˆ
 		}
 		return;
 	}
 	if (!decimal::eq(undone, 0))
 	{
-		_ctx->writeLog(fmt::format("{}ÉÏÒ»ÂÖÓĞ¹Òµ¥Î´Íê³É,ÔİÊ±ÍË³ö±¾ÂÖÖ´ĞĞ", _code).c_str());
+		_ctx->writeLog(fmt::format("{}ä¸Šä¸€è½®æœ‰æŒ‚å•æœªå®Œæˆ,æš‚æ—¶é€€å‡ºæœ¬è½®æ‰§è¡Œ", _code).c_str());
 		return;
 	}
 	if (_last_tick == NULL)
 	{
-		_ctx->writeLog(fmt::format("{}Ã»ÓĞ×îĞÂµÄtickÊı¾İ£¬ÍË³öÖ´ĞĞÂß¼­", _code).c_str());
+		_ctx->writeLog(fmt::format("{}æ²¡æœ‰æœ€æ–°çš„tickæ•°æ®ï¼Œé€€å‡ºæ‰§è¡Œé€»è¾‘", _code).c_str());
 		return;
 	}
 	double curPos = realPos;
 
 	if (decimal::eq(curPos, newVol))
 	{
-		//µ±Ç°²ÖÎ»ºÍ×îĞÂÄ¿±ê²ÖÎ»Æ¥ÅäÊ±£¬Èç¹û²»ÊÇÈ«²¿Çå²ÖµÄĞèÇó£¬ÔòÖ±½ÓÍË³ö¼ÆËãÁË
+		//å½“å‰ä»“ä½å’Œæœ€æ–°ç›®æ ‡ä»“ä½åŒ¹é…æ—¶ï¼Œå¦‚æœä¸æ˜¯å…¨éƒ¨æ¸…ä»“çš„éœ€æ±‚ï¼Œåˆ™ç›´æ¥é€€å‡ºè®¡ç®—äº†
 		if (!is_clear(_target_pos))
 			return;
 
-		//Èç¹ûÊÇÇå²ÖµÄĞèÇó£¬»¹ÒªÔÙ½øĞĞ¶Ô±È
-		//Èç¹û¶àÍ·Îª0£¬ËµÃ÷ÒÑ¾­È«²¿ÇåÀíµôÁË£¬ÔòÖ±½ÓÍË³ö
+		//å¦‚æœæ˜¯æ¸…ä»“çš„éœ€æ±‚ï¼Œè¿˜è¦å†è¿›è¡Œå¯¹æ¯”
+		//å¦‚æœå¤šå¤´ä¸º0ï¼Œè¯´æ˜å·²ç»å…¨éƒ¨æ¸…ç†æ‰äº†ï¼Œåˆ™ç›´æ¥é€€å‡º
 		double lPos = _ctx->getPosition(code, true, 1);
 		if (decimal::eq(lPos, 0))
 			return;
-		//Èç¹û»¹ÓĞ¶àÍ·²ÖÎ»£¬Ôò½«Ä¿±ê²ÖÎ»ÉèÖÃÎª·Ç0£¬Ç¿ÖÆ´¥·¢    
+		//å¦‚æœè¿˜æœ‰å¤šå¤´ä»“ä½ï¼Œåˆ™å°†ç›®æ ‡ä»“ä½è®¾ç½®ä¸ºé0ï¼Œå¼ºåˆ¶è§¦å‘    
 		newVol = -min(lPos, _order_lots);
 		_ctx->writeLog(fmtutil::format("Clearing process triggered, target position of {} has been set to {}", _code.c_str(), newVol));
 	}
-	//Èç¹ûÏà±ÈÉÏ´ÎÃ»ÓĞ¸üĞÂµÄtick½øÀ´£¬ÔòÏÈ²»ÏÂµ¥£¬·ÀÖ¹¿ªÅÌÇ°¼¯ÖĞÏÂµ¥µ¼ÖÂÍ¨µÀ±»·â
+	//å¦‚æœç›¸æ¯”ä¸Šæ¬¡æ²¡æœ‰æ›´æ–°çš„tickè¿›æ¥ï¼Œåˆ™å…ˆä¸ä¸‹å•ï¼Œé˜²æ­¢å¼€ç›˜å‰é›†ä¸­ä¸‹å•å¯¼è‡´é€šé“è¢«å°
 	uint64_t curTickTime = (uint64_t)_last_tick->actiondate() * 1000000000 + _last_tick->actiontime();
 	if (curTickTime <= _last_tick_time)
 	{
@@ -402,12 +402,12 @@ void WtStockVWapExeUnit::do_calc()
 		return;
 	}
 	_last_tick_time = curTickTime;
-	double InminsTm = calTmStamp(_last_tick->actiontime());//µ±Ç°tickÊôÓÚvwap240·ÖÖÓÄÚµÄµÚ¼¸(-1)·ÖÖÓ
-	double aimQty = VwapAim[InminsTm];//È¡µ½¶ÔÓ¦Ê±¿ÌµÄÄ¿±êvwapaim £¨µİÔö£©
+	double InminsTm = calTmStamp(_last_tick->actiontime());//å½“å‰tickå±äºvwap240åˆ†é’Ÿå†…çš„ç¬¬å‡ (-1)åˆ†é’Ÿ
+	double aimQty = VwapAim[InminsTm];//å–åˆ°å¯¹åº”æ—¶åˆ»çš„ç›®æ ‡vwapaim ï¼ˆé€’å¢ï¼‰
 
 	uint32_t leftTimes = _total_times - _fired_times;
-	_ctx->writeLog(fmt::format("µÚ {} ´Î·¢µ¥", _fired_times + 1).c_str());
-	_Vwap_vol = aimQty - curPos;//ÈôÔÚ±¾·ÖÖÓ·¢µ¥£¬¶ÔÓ¦µÄVWapVol
+	_ctx->writeLog(fmt::format("ç¬¬ {} æ¬¡å‘å•", _fired_times + 1).c_str());
+	_Vwap_vol = aimQty - curPos;//è‹¥åœ¨æœ¬åˆ†é’Ÿå‘å•ï¼Œå¯¹åº”çš„VWapVol
 	bool bNeedShowHand = false;
 	double curQty = 0;
 	if (leftTimes == 0 && !decimal::eq(diffQty, 0))
@@ -416,15 +416,15 @@ void WtStockVWapExeUnit::do_calc()
 		curQty = max(diffQty, _min_open_lots);
 	}
 	else {
-		curQty = max(_Vwap_vol, _min_open_lots)* abs(diffQty) / diffQty;//curqty=µ¥Î»Ô¤²âÁ¿sum
+		curQty = max(_Vwap_vol, _min_open_lots)* abs(diffQty) / diffQty;//curqty=å•ä½é¢„æµ‹é‡sum
 	}
 
-	//Âò
+	//ä¹°
 	if (isBuy) {
-		//Èç¹ûÊÇÂòµÄ»°£¬Òª¿¼ÂÇÈ¡ÕûºÍ     
+		//å¦‚æœæ˜¯ä¹°çš„è¯ï¼Œè¦è€ƒè™‘å–æ•´å’Œ     
 		curQty = round_hands(curQty, _min_open_lots);
 	}
-	// ÂôÒª¶ÔËé¹É×ö¼ì²é
+	// å–è¦å¯¹ç¢è‚¡åšæ£€æŸ¥
 	else {
 		if (decimal::lt(vailyPos, _min_open_lots))
 		{
@@ -437,14 +437,14 @@ void WtStockVWapExeUnit::do_calc()
 		curQty = min(vailyPos, _min_open_lots);
 	}
 
-	//Éè¶¨±¾ÂÖÄ¿±ê²ÖÎ»
+	//è®¾å®šæœ¬è½®ç›®æ ‡ä»“ä½
 	_this_target = realPos + curQty;
 
 	WTSTickData* curTick = _last_tick;
 	uint64_t now = TimeUtils::getLocalTimeNow();
 	isBuy = decimal::gt(diffQty, 0);
 	double targetPx = 0;
-	//¸ù¾İ¼Û¸ñÄ£Ê½ÉèÖÃ,È·¶¨Î¯ÍĞ»ù×¼¼Û¸ñ: 0-×îĞÂ¼Û,1-×îÓÅ¼Û,2-¶ÔÊÖ¼Û
+	//æ ¹æ®ä»·æ ¼æ¨¡å¼è®¾ç½®,ç¡®å®šå§”æ‰˜åŸºå‡†ä»·æ ¼: 0-æœ€æ–°ä»·,1-æœ€ä¼˜ä»·,2-å¯¹æ‰‹ä»·
 	if (_price_mode == 0)
 	{
 		targetPx = curTick->price();
@@ -465,23 +465,23 @@ void WtStockVWapExeUnit::do_calc()
 		targetPx += _comm_info->getPriceTick() * _price_offset * (isBuy ? 1 : -1);
 	}
 
-	// Èç¹û×îºó¼Û¸ñÎª0£¬ÔÙ×öÒ»¸öĞŞÕı
+	// å¦‚æœæœ€åä»·æ ¼ä¸º0ï¼Œå†åšä¸€ä¸ªä¿®æ­£
 	if (decimal::eq(targetPx, 0.0))
 		targetPx = decimal::eq(_last_tick->price(), 0.0) ? _last_tick->preclose() : _last_tick->price();
 
-	//¼ì²éÕÇµøÍ£¼Û
+	//æ£€æŸ¥æ¶¨è·Œåœä»·
 	isCanCancel = true;
 	if (isBuy && !decimal::eq(_last_tick->upperlimit(), 0) && decimal::gt(targetPx, _last_tick->upperlimit()))
 	{
 		_ctx->writeLog(fmt::format("Buy price {} of {} modified to upper limit price", targetPx, _code.c_str(), _last_tick->upperlimit()).c_str());
 		targetPx = _last_tick->upperlimit();
-		isCanCancel = false;//Èç¹û¼Û¸ñ±»ĞŞÕıÎªÕÇµøÍ£¼Û£¬¶©µ¥²»¿É³·Ïú
+		isCanCancel = false;//å¦‚æœä»·æ ¼è¢«ä¿®æ­£ä¸ºæ¶¨è·Œåœä»·ï¼Œè®¢å•ä¸å¯æ’¤é”€
 	}
 	if (isBuy != 1 && !decimal::eq(_last_tick->lowerlimit(), 0) && decimal::lt(targetPx, _last_tick->lowerlimit()))
 	{
 		_ctx->writeLog(fmt::format("Sell price {} of {} modified to lower limit price", targetPx, _code.c_str(), _last_tick->lowerlimit()).c_str());
 		targetPx = _last_tick->lowerlimit();
-		isCanCancel = false;	//Èç¹û¼Û¸ñ±»ĞŞÕıÎªÕÇµøÍ£¼Û£¬¶©µ¥²»¿É³·Ïú
+		isCanCancel = false;	//å¦‚æœä»·æ ¼è¢«ä¿®æ­£ä¸ºæ¶¨è·Œåœä»·ï¼Œè®¢å•ä¸å¯æ’¤é”€
 	}
 	OrderIDs ids;
 	if (curQty > 0)
@@ -509,7 +509,7 @@ void WtStockVWapExeUnit::fire_at_once(double qty)
 	bool isBuy = decimal::gt(qty, 0);
 	double targetPx = 0;
 
-	//¸ù¾İ¼Û¸ñÄ£Ê½ÉèÖÃ,È·¶¨Î¯ÍĞ»ù×¼¼Û¸ñ: 0-×îĞÂ¼Û,1-×îÓÅ¼Û,2-¶ÔÊÖ¼Û
+	//æ ¹æ®ä»·æ ¼æ¨¡å¼è®¾ç½®,ç¡®å®šå§”æ‰˜åŸºå‡†ä»·æ ¼: 0-æœ€æ–°ä»·,1-æœ€ä¼˜ä»·,2-å¯¹æ‰‹ä»·
 	if (_price_mode == 0) {
 		targetPx = curTick->price();
 	}
@@ -518,23 +518,23 @@ void WtStockVWapExeUnit::fire_at_once(double qty)
 	}
 	else // if(_price_mode == 2)
 	{
-		targetPx = isBuy ? curTick->askprice(0) : curTick->bidprice(0);//ÂòÈë·½Ïò£ºÂô¼Û£¬Âô³ö·½Ïò£ºÂò¼Û
+		targetPx = isBuy ? curTick->askprice(0) : curTick->bidprice(0);//ä¹°å…¥æ–¹å‘ï¼šå–ä»·ï¼Œå–å‡ºæ–¹å‘ï¼šä¹°ä»·
 	}
 
-	targetPx += _comm_info->getPriceTick()*_cancel_times *(isBuy ? 1 : -1);//Ôö¼Ó¼Û¸ñÆ«ÒÆ
-	//¼ì²éÕÇµøÍ£¼Û
+	targetPx += _comm_info->getPriceTick()*_cancel_times *(isBuy ? 1 : -1);//å¢åŠ ä»·æ ¼åç§»
+	//æ£€æŸ¥æ¶¨è·Œåœä»·
 	isCanCancel = true;
 	if (isBuy && !decimal::eq(_last_tick->upperlimit(), 0) && decimal::gt(targetPx, _last_tick->upperlimit()))
 	{
 		_ctx->writeLog(fmt::format("Buy price {} of {} modified to upper limit price", targetPx, _code.c_str(), _last_tick->upperlimit()).c_str());
 		targetPx = _last_tick->upperlimit();
-		isCanCancel = false;//Èç¹û¼Û¸ñ±»ĞŞÕıÎªÕÇµøÍ£¼Û£¬¶©µ¥²»¿É³·Ïú
+		isCanCancel = false;//å¦‚æœä»·æ ¼è¢«ä¿®æ­£ä¸ºæ¶¨è·Œåœä»·ï¼Œè®¢å•ä¸å¯æ’¤é”€
 	}
 	if (isBuy != 1 && !decimal::eq(_last_tick->lowerlimit(), 0) && decimal::lt(targetPx, _last_tick->lowerlimit()))
 	{
 		_ctx->writeLog(fmt::format("Sell price {} of {} modified to lower limit price", targetPx, _code.c_str(), _last_tick->lowerlimit()).c_str());
 		targetPx = _last_tick->lowerlimit();
-		isCanCancel = false;	//Èç¹û¼Û¸ñ±»ĞŞÕıÎªÕÇµøÍ£¼Û£¬¶©µ¥²»¿É³·Ïú
+		isCanCancel = false;	//å¦‚æœä»·æ ¼è¢«ä¿®æ­£ä¸ºæ¶¨è·Œåœä»·ï¼Œè®¢å•ä¸å¯æ’¤é”€
 	}
 	
 	OrderIDs ids;
@@ -557,7 +557,7 @@ void WtStockVWapExeUnit::set_position(const char * stdCode, double newVol)
 		return;
 	if (decimal::lt(newVol, 0))
 	{
-		_ctx->writeLog(fmt::format("{} is a erro stock target position", newVol).c_str());
+		_ctx->writeLog(fmt::format("{} is an error stock target position", newVol).c_str());
 		return;
 	}
 	_target_pos = newVol;
@@ -570,7 +570,7 @@ void WtStockVWapExeUnit::set_position(const char * stdCode, double newVol)
 		_start_price = tick->price();
 		tick->release();
 	}
-	_fired_times = 0;//ÒÑÖ´ĞĞ´ÎÊı
+	_fired_times = 0;//å·²æ‰§è¡Œæ¬¡æ•°
 
 	do_calc();
 }

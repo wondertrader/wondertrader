@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \file HftStrategyMgr.h
  * \project	WonderTrader
  *

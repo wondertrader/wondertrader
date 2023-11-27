@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <vector>
 #include "../Includes/IDataReader.h"
 #include "../Includes/IDataManager.h"
@@ -62,15 +62,15 @@ private:
 	WTSSessionInfo*	_s_info;
 
 	typedef WTSHashMap<std::string> DataCacheMap;
-	DataCacheMap* _bars_cache;	//KÏß»º´æ
-	DataCacheMap* _rt_tick_map;	//ÊµÊ±tick»º´æ
+	DataCacheMap* _bars_cache;	//Kçº¿ç¼“å­˜
+	DataCacheMap* _rt_tick_map;	//å®æ—¶tickç¼“å­˜
 
-	uint32_t		_cur_date;		//µ±Ç°ÈÕÆÚ,¸ñÊ½ÈçyyyyMMdd
-	uint32_t		_cur_act_time;	//µ±Ç°ÍêÕûÊ±¼ä,¸ñÊ½Èçhhmmssmmm
-	uint32_t		_cur_raw_time;	//µ±Ç°ÕæÊµ·ÖÖÓ,¸ñÊ½Èçhhmm
-	uint32_t		_cur_min_time;	//µ±Ç°1·ÖÖÓÏßÊ±¼ä,¸ñÊ½Èçhhmm
-	uint32_t		_cur_secs;		//µ±Ç°ÃëÊı,¸ñÊ½Èçssmmm
-	uint32_t		_cur_tdate;		//µ±Ç°½»Ò×ÈÕ,¸ñÊ½ÈçyyyyMMdd
+	uint32_t		_cur_date;		//å½“å‰æ—¥æœŸ,æ ¼å¼å¦‚yyyyMMdd
+	uint32_t		_cur_act_time;	//å½“å‰å®Œæ•´æ—¶é—´,æ ¼å¼å¦‚hhmmssmmm
+	uint32_t		_cur_raw_time;	//å½“å‰çœŸå®åˆ†é’Ÿ,æ ¼å¼å¦‚hhmm
+	uint32_t		_cur_min_time;	//å½“å‰1åˆ†é’Ÿçº¿æ—¶é—´,æ ¼å¼å¦‚hhmm
+	uint32_t		_cur_secs;		//å½“å‰ç§’æ•°,æ ¼å¼å¦‚ssmmm
+	uint32_t		_cur_tdate;		//å½“å‰äº¤æ˜“æ—¥,æ ¼å¼å¦‚yyyyMMdd
 
 };
 

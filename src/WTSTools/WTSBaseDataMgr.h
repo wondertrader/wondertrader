@@ -1,11 +1,11 @@
-/*!
+ï»¿/*!
  * \file WTSBaseDataMgr.h
  * \project	WonderTrader
  *
  * \author Wesley
  * \date 2020/03/30
  * 
- * \brief »ù´¡Êı¾İ¹ÜÀíÆ÷ÊµÏÖ
+ * \brief åŸºç¡€æ•°æ®ç®¡ç†å™¨å®ç°
  */
 #pragma once
 #include "../Includes/IBaseDataMgr.h"
@@ -35,19 +35,20 @@ public:
 	virtual WTSCommodityInfo*	getCommodity(const char* stdPID) override;
 	virtual WTSCommodityInfo*	getCommodity(const char* exchg, const char* pid) override;
 
-	virtual WTSContractInfo*	getContract(const char* code, const char* exchg = "") override;
-	virtual WTSArray*			getContracts(const char* exchg = "") override;
+	virtual WTSContractInfo*	getContract(const char* code, const char* exchg = "", uint32_t uDate = 0) override;
+	virtual WTSArray*			getContracts(const char* exchg = "", uint32_t uDate = 0) override;
 
 	virtual WTSSessionInfo*		getSession(const char* sid) override;
 	virtual WTSSessionInfo*		getSessionByCode(const char* code, const char* exchg = "") override;
 	virtual WTSArray*			getAllSessions() override;
 	virtual bool				isHoliday(const char* stdPID, uint32_t uDate, bool isTpl = false) override;
 
-
 	virtual uint32_t			calcTradingDate(const char* stdPID, uint32_t uDate, uint32_t uTime, bool isSession = false) override;
 	virtual uint64_t			getBoundaryTime(const char* stdPID, uint32_t tDate, bool isSession = false, bool isStart = true) override;
-	void		release();
 
+	virtual uint32_t			getContractSize(const char* exchg = "", uint32_t uDate = 0) override;
+
+	void		release();
 
 	bool		loadSessions(const char* filename);
 	bool		loadCommodities(const char* filename);

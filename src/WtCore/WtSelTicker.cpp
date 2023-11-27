@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
 * \file WtHftTicker.cpp
 * \project	WonderTrader
 *
@@ -13,6 +13,7 @@
 
 #include "../Share/TimeUtils.hpp"
 #include "../Includes/WTSSessionInfo.hpp"
+#include "../Includes/WTSContractInfo.hpp"
 #include "../Includes/IBaseDataMgr.h"
 #include "../Includes/IHotMgr.h"
 #include "../Share/CodeHelper.hpp"
@@ -53,12 +54,13 @@ void WtSelRtTicker::trigger_price(WTSTickData* curTick, uint32_t hotFlag /* = 0 
 		std::string stdCode = curTick->code();
 		_engine->on_tick(stdCode.c_str(), curTick);
 
-		if (hotFlag != 0)
+		WTSContractInfo* cInfo = curTick->getContractInfo();
+		if (!cInfo->isFlat())
 		{
 			WTSTickData* hotTick = WTSTickData::create(curTick->getTickStruct());
-			std::string hotCode = (hotFlag == 1) ? CodeHelper::stdCodeToStdHotCode(stdCode.c_str()) : CodeHelper::stdCodeToStd2ndCode(stdCode.c_str());
-			hotTick->setCode(hotCode.c_str(), hotCode.size());
-			_engine->on_tick(hotCode.c_str(), hotTick);
+			const char* hotCode = cInfo->getHotCode();
+			hotTick->setCode(hotCode);
+			_engine->on_tick(hotCode, hotTick);
 			hotTick->release();
 		}
 	}
@@ -77,7 +79,7 @@ void WtSelRtTicker::on_tick(WTSTickData* curTick, uint32_t hotFlag /* = 0 */)
 
 	if (_date != 0 && (uDate < _date || (uDate == _date && uTime < _time)))
 	{
-		//WTSLogger::info("ĞĞÇéÊ±¼ä{}Ğ¡ÓÚ±¾µØÊ±¼ä{}", uTime, _time);
+		//WTSLogger::info("è¡Œæƒ…æ—¶é—´{}å°äºæœ¬åœ°æ—¶é—´{}", uTime, _time);
 		trigger_price(curTick, hotFlag);
 		return;
 	}
@@ -99,19 +101,19 @@ void WtSelRtTicker::on_tick(WTSTickData* curTick, uint32_t hotFlag /* = 0 */)
 
 	if (_cur_pos == 0)
 	{
-		//Èç¹ûµ±Ç°Ê±¼äÊÇ0, ÔòÖ±½Ó¸³Öµ¼´¿É
+		//å¦‚æœå½“å‰æ—¶é—´æ˜¯0, åˆ™ç›´æ¥èµ‹å€¼å³å¯
 		_cur_pos = minutes;
 	}
 	else if (_cur_pos < minutes)
 	{
-		//Èç¹ûÒÑ¼ÇÂ¼µÄ·ÖÖÓĞ¡ÓÚĞÂµÄ·ÖÖÓ, ÔòĞèÒª´¥·¢±ÕºÏÊÂ¼ş
-		//Õâ¸öÊ±ºòÒªÏÈ´¥·¢±ÕºÏ, ÔÙĞŞ¸ÄÆ½Ì¨Ê±¼äºÍ¼Û¸ñ
+		//å¦‚æœå·²è®°å½•çš„åˆ†é’Ÿå°äºæ–°çš„åˆ†é’Ÿ, åˆ™éœ€è¦è§¦å‘é—­åˆäº‹ä»¶
+		//è¿™ä¸ªæ—¶å€™è¦å…ˆè§¦å‘é—­åˆ, å†ä¿®æ”¹å¹³å°æ—¶é—´å’Œä»·æ ¼
 		if (_last_emit_pos < _cur_pos)
 		{
-			//´¥·¢Êı¾İ»Ø·ÅÄ£¿é
+			//è§¦å‘æ•°æ®å›æ”¾æ¨¡å—
 			StdUniqueLock lock(_mtx);
 
-			//ÓÅÏÈĞŞ¸ÄÊ±¼ä±ê¼Ç
+			//ä¼˜å…ˆä¿®æ”¹æ—¶é—´æ ‡è®°
 			_last_emit_pos = _cur_pos;
 
 			uint32_t thisMin = _s_info->minuteToTime(_cur_pos);
@@ -140,7 +142,7 @@ void WtSelRtTicker::on_tick(WTSTickData* curTick, uint32_t hotFlag /* = 0 */)
 	}
 	else
 	{
-		//Èç¹û·ÖÖÓÊı»¹ÊÇÒ»ÖÂµÄ, ÔòÖ±½Ó´¥·¢ĞĞÇéºÍÊ±¼ä¼´¿É
+		//å¦‚æœåˆ†é’Ÿæ•°è¿˜æ˜¯ä¸€è‡´çš„, åˆ™ç›´æ¥è§¦å‘è¡Œæƒ…å’Œæ—¶é—´å³å¯
 		trigger_price(curTick, hotFlag);
 		if (_engine)
 			_engine->set_date_time(_date, curMin, curSec, rawMin);
@@ -164,7 +166,7 @@ void WtSelRtTicker::run()
 
 	_engine->on_session_begin();
 
-	//ÏÈ¼ì²éµ±Ç°Ê±¼ä, Èç¹û´óÓÚ
+	//å…ˆæ£€æŸ¥å½“å‰æ—¶é—´, å¦‚æœå¤§äº
 	//uint32_t offTime = _s_info->offsetTime(_engine->get_min_time());
 
 	_thrd.reset(new StdThread([this](){
@@ -177,18 +179,18 @@ void WtSelRtTicker::run()
 
 				if (now >= _next_check_time && _last_emit_pos < _cur_pos)
 				{
-					//´¥·¢Êı¾İ»Ø·ÅÄ£¿é
+					//è§¦å‘æ•°æ®å›æ”¾æ¨¡å—
 					StdUniqueLock lock(_mtx);
 
-					//ÓÅÏÈĞŞ¸ÄÊ±¼ä±ê¼Ç
+					//ä¼˜å…ˆä¿®æ”¹æ—¶é—´æ ‡è®°
 					_last_emit_pos = _cur_pos;
 
 					uint32_t thisMin = _s_info->minuteToTime(_cur_pos);
 					_time = thisMin;
 
-					//Èç¹ûthisMinÊÇ0, ËµÃ÷»»ÈÕÁË
-					//ÕâÀïÊÇ±¾µØ¼ÆÊ±µ¼ÖÂµÄ»»ÈÕ, ËµÃ÷ÈÕÆÚÆäÊµ»¹ÊÇÀÏÈÕÆÚ, Òª×Ô¶¯+1
-					//Í¬Ê±ÒòÎªÊ±¼äÊÇ235959xxx, ËùÒÔÒ²ÒªÊÖ¶¯ÖÃÎª0
+					//å¦‚æœthisMinæ˜¯0, è¯´æ˜æ¢æ—¥äº†
+					//è¿™é‡Œæ˜¯æœ¬åœ°è®¡æ—¶å¯¼è‡´çš„æ¢æ—¥, è¯´æ˜æ—¥æœŸå…¶å®è¿˜æ˜¯è€æ—¥æœŸ, è¦è‡ªåŠ¨+1
+					//åŒæ—¶å› ä¸ºæ—¶é—´æ˜¯235959xxx, æ‰€ä»¥ä¹Ÿè¦æ‰‹åŠ¨ç½®ä¸º0
 					if (thisMin == 0)
 					{
 						uint32_t lastDate = _date;
@@ -215,7 +217,7 @@ void WtSelRtTicker::run()
 				}
 			}
 			else
-			{//Èç¹û²»ÔÚ½»Ò×Ê±¼ä,ÔòÃ¿¸ô10ºÁÃë¼ì²éÒ»´Î,Èç¹û·ÖÖÓ·¢Éú±ä»¯Ôò´¥·¢
+			{//å¦‚æœä¸åœ¨äº¤æ˜“æ—¶é—´,åˆ™æ¯éš”10æ¯«ç§’æ£€æŸ¥ä¸€æ¬¡,å¦‚æœåˆ†é’Ÿå‘ç”Ÿå˜åŒ–åˆ™è§¦å‘
 				std::this_thread::sleep_for(std::chrono::milliseconds(10));
 				uint32_t curTime = TimeUtils::getCurMin();
 				if (_time != UINT_MAX && curTime != _time)

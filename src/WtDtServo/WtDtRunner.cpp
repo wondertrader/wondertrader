@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file WtDtRunner.cpp
  * \project	WonderTrader
  *
@@ -29,14 +29,9 @@ WtDtRunner::WtDtRunner()
 	: _data_store(NULL)
 	, _is_inited(false)
 {
-#if _WIN32
-#pragma message("Signal hooks disabled in WIN32")
-#else
-#pragma message("Signal hooks enabled in UNIX")
 	install_signal_hooks([](const char* message) {
 		WTSLogger::error(message);
 	});
-#endif
 }
 
 
@@ -77,7 +72,7 @@ void WtDtRunner::initialize(const char* cfgFile, bool isFile /* = true */, const
 		CMiniDumper::Enable(getModuleName(), true, WtHelper::get_cwd());
 #endif
 	}
-	//»ù´¡Êı¾İÎÄ¼ş
+	//åŸºç¡€æ•°æ®æ–‡ä»¶
 	WTSVariant* cfgBF = config->get("basefiles");
 	if (cfgBF->get("session"))
 	{
@@ -134,6 +129,25 @@ void WtDtRunner::initialize(const char* cfgFile, bool isFile /* = true */, const
 		_hot_mgr.loadSeconds(cfgBF->getCString("second"));
 		WTSLogger::info("Second rules loaded");
 	}
+
+	WTSArray* ayContracts = _bd_mgr.getContracts();
+	for (auto it = ayContracts->begin(); it != ayContracts->end(); it++)
+	{
+		WTSContractInfo* cInfo = (WTSContractInfo*)(*it);
+		bool isHot = _hot_mgr.isHot(cInfo->getExchg(), cInfo->getCode());
+		bool isSecond = _hot_mgr.isSecond(cInfo->getExchg(), cInfo->getCode());
+
+		std::string hotCode = cInfo->getFullPid();
+		if (isHot)
+			hotCode += ".HOT";
+		else if (isSecond)
+			hotCode += ".2ND";
+		else
+			hotCode = "";
+
+		cInfo->setHotFlag(isHot ? 1 : (isSecond ? 2 : 0), hotCode.c_str());
+	}
+	ayContracts->release();
 
 	initDataMgr(config->get("data"));
 
@@ -374,7 +388,7 @@ void WtDtRunner::initParsers(WTSVariant* cfg)
 		const char* id = cfgItem->getCString("id");
 
 		// By Wesley @ 2021.12.14
-		// Èç¹ûidÎª¿Õ£¬ÔòÉú³É×Ô¶¯id
+		// å¦‚æœidä¸ºç©ºï¼Œåˆ™ç”Ÿæˆè‡ªåŠ¨id
 		std::string realid = id;
 		if (realid.empty())
 		{
@@ -419,11 +433,8 @@ void WtDtRunner::proc_tick(WTSTickData* curTick)
 	}
 	else if (CodeHelper::isMonthlyCode(curTick->code()))
 	{
-		//Èç¹ûÊÇ·ÖÔÂºÏÔ¼£¬Ôò½øĞĞÖ÷Á¦ºÍ´ÎÖ÷Á¦µÄÅĞ¶Ï
+		//å¦‚æœæ˜¯åˆ†æœˆåˆçº¦ï¼Œåˆ™è¿›è¡Œä¸»åŠ›å’Œæ¬¡ä¸»åŠ›çš„åˆ¤æ–­
 		stdCode = CodeHelper::rawMonthCodeToStdCode(cInfo->getCode(), cInfo->getExchg());
-		bool bHot = _hot_mgr.isHot(curTick->exchg(), curTick->code(), 0);
-		bool b2nd = _hot_mgr.isSecond(curTick->exchg(), curTick->code(), 0);
-		hotflag = bHot ? 1 : (b2nd ? 2 : 0);
 	}
 	else
 	{
@@ -433,28 +444,28 @@ void WtDtRunner::proc_tick(WTSTickData* curTick)
 
 	trigger_tick(stdCode.c_str(), curTick);
 
-	if (hotflag == 1)
+	if (!cInfo->isFlat())
 	{
-		std::string hotCode = CodeHelper::stdCodeToStdHotCode(stdCode.c_str());
+		const char* hotCode = cInfo->getHotCode();
 		WTSTickData* hotTick = WTSTickData::create(curTick->getTickStruct());
-		hotTick->setCode(hotCode.c_str());
+		hotTick->setCode(hotCode);
 		hotTick->setContractInfo(curTick->getContractInfo());
 
-		trigger_tick(hotCode.c_str(), hotTick);
+		trigger_tick(hotCode, hotTick);
 
 		hotTick->release();
 	}
-	else if (hotflag == 2)
-	{
-		std::string scndCode = CodeHelper::stdCodeToStd2ndCode(stdCode.c_str());
-		WTSTickData* scndTick = WTSTickData::create(curTick->getTickStruct());
-		scndTick->setCode(scndCode.c_str());
-		scndTick->setContractInfo(curTick->getContractInfo());
+	//else if (hotflag == 2)
+	//{
+	//	std::string scndCode = CodeHelper::stdCodeToStd2ndCode(stdCode.c_str());
+	//	WTSTickData* scndTick = WTSTickData::create(curTick->getTickStruct());
+	//	scndTick->setCode(scndCode.c_str());
+	//	scndTick->setContractInfo(curTick->getContractInfo());
 
-		trigger_tick(scndCode.c_str(), scndTick);
+	//	trigger_tick(scndCode.c_str(), scndTick);
 
-		scndTick->release();
-	}
+	//	scndTick->release();
+	//}
 }
 
 void WtDtRunner::trigger_tick(const char* stdCode, WTSTickData* curTick)
@@ -485,7 +496,7 @@ void WtDtRunner::trigger_tick(const char* stdCode, WTSTickData* curTick)
 						WTSTickStruct& newTS = newTick->getTickStruct();
 						newTick->setContractInfo(curTick->getContractInfo());
 
-						//ÕâÀï×öÒ»¸ö¸´È¨Òò×ÓµÄ´¦Àí
+						//è¿™é‡Œåšä¸€ä¸ªå¤æƒå› å­çš„å¤„ç†
 						double factor = _data_mgr.get_exright_factor(stdCode, curTick->getContractInfo()->getCommInfo());
 						newTS.open *= factor;
 						newTS.high *= factor;
@@ -533,7 +544,7 @@ void WtDtRunner::trigger_tick(const char* stdCode, WTSTickData* curTick)
 					WTSTickStruct& newTS = newTick->getTickStruct();
 					newTick->setContractInfo(curTick->getContractInfo());
 
-					//ÕâÀï×öÒ»¸ö¸´È¨Òò×ÓµÄ´¦Àí
+					//è¿™é‡Œåšä¸€ä¸ªå¤æƒå› å­çš„å¤„ç†
 					double factor = _data_mgr.get_exright_factor(stdCode, curTick->getContractInfo()->getCommInfo());
 					newTS.open *= factor;
 					newTS.high *= factor;
@@ -584,8 +595,8 @@ void WtDtRunner::sub_tick(const char* codes, bool bReplace, bool bInner /* = fal
 		StringVector ayCodes = StrUtil::split(codes, ",");
 		for (const std::string& code : ayCodes)
 		{
-			//Èç¹ûÊÇÖ÷Á¦ºÏÔ¼´úÂë, ÈçSHFE.ag.HOT, ÄÇÃ´Òª×ª»»³ÉÔ­ºÏÔ¼´úÂë, SHFE.ag.1912
-			//ÒòÎªÖ´ĞĞÆ÷Ö»Ê¶±ğÔ­ºÏÔ¼´úÂë
+			//å¦‚æœæ˜¯ä¸»åŠ›åˆçº¦ä»£ç , å¦‚SHFE.ag.HOT, é‚£ä¹ˆè¦è½¬æ¢æˆåŸåˆçº¦ä»£ç , SHFE.ag.1912
+			//å› ä¸ºæ‰§è¡Œå™¨åªè¯†åˆ«åŸåˆçº¦ä»£ç 
 			const char* stdCode = code.c_str();
 			std::size_t length = strlen(stdCode);
 			uint32_t flag = 0;

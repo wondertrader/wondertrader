@@ -1,4 +1,4 @@
-#include "WtStraDualThrust.h"
+ï»¿#include "WtStraDualThrust.h"
 
 #include "../Includes/ICtaStraCtx.h"
 
@@ -60,7 +60,7 @@ void WtStraDualThrust::on_session_begin(ICtaStraCtx* ctx, uint32_t uTDate)
 			double curPos = ctx->stra_get_position(_moncode.c_str());
 			if (!decimal::eq(curPos, 0))
 			{
-				ctx->stra_log_info(fmt::format("Ö÷Á¦»»ÔÂ,  ÀÏÖ÷Á¦{}[{}]½«»á±»ÇåÀí", _moncode, curPos).c_str());
+				ctx->stra_log_info(fmt::format("ä¸»åŠ›æ¢æœˆ,  è€ä¸»åŠ›{}[{}]å°†ä¼šè¢«æ¸…ç†", _moncode, curPos).c_str());
 				ctx->stra_set_position(_moncode.c_str(), 0, "switchout");
 				ctx->stra_set_position(newMonCode.c_str(), curPos, "switchin");
 			}
@@ -77,7 +77,7 @@ void WtStraDualThrust::on_schedule(ICtaStraCtx* ctx, uint32_t curDate, uint32_t 
 	WTSKlineSlice *kline = ctx->stra_get_bars(code.c_str(), _period.c_str(), _count, true);
 	if(kline == NULL)
 	{
-		//ÕâÀï¿ÉÒÔÊä³öÒ»Ğ©ÈÕÖ¾
+		//è¿™é‡Œå¯ä»¥è¾“å‡ºä¸€äº›æ—¥å¿—
 		return;
 	}
 
@@ -101,14 +101,14 @@ void WtStraDualThrust::on_schedule(ICtaStraCtx* ctx, uint32_t curDate, uint32_t 
 	double hc = closes->maxvalue(-days, -2);
 	double lc = closes->minvalue(-days, -2);
 	double curPx = closes->at(-1);
-	closes->release();///!!!Õâ¸öÊÍ·ÅÒ»¶¨Òª×ö
+	closes->release();///!!!è¿™ä¸ªé‡Šæ”¾ä¸€å®šè¦åš
 
 	double openPx = kline->at(-1)->open;
 
 	double upper_bound = openPx + _k1 * (std::max(hh - lc, hc - ll));
 	double lower_bound = openPx - _k2 * std::max(hh - lc, hc - ll);
 
-	//ÉèÖÃÖ¸±êÖµ
+	//è®¾ç½®æŒ‡æ ‡å€¼
 	ctx->set_index_value("DualThrust", "upper_bound", upper_bound);
 	ctx->set_index_value("DualThrust", "lower_bound", lower_bound);
 
@@ -120,19 +120,19 @@ void WtStraDualThrust::on_schedule(ICtaStraCtx* ctx, uint32_t curDate, uint32_t 
 		if(curPx >= upper_bound)
 		{
 			ctx->stra_enter_long(_moncode.c_str(), 2 * trdUnit, "DT_EnterLong");
-			//ÏòÉÏÍ»ÆÆ
-			ctx->stra_log_info(fmt::format("ÏòÉÏÍ»ÆÆ{}>={},¶à²Ö½ø³¡", curPx, upper_bound).c_str());
+			//å‘ä¸Šçªç ´
+			ctx->stra_log_info(fmt::format("å‘ä¸Šçªç ´{}>={},å¤šä»“è¿›åœº", curPx, upper_bound).c_str());
 
-			//Ìí¼ÓÍ¼±í±ê¼Ç
+			//æ·»åŠ å›¾è¡¨æ ‡è®°
 			ctx->add_chart_mark(curPx, "wt-mark-buy", "DT_EnterLong");
 		}
 		else if (curPx <= lower_bound && !_isstk)
 		{
 			ctx->stra_enter_short(_moncode.c_str(), 2 * trdUnit, "DT_EnterShort");
-			//ÏòÏÂÍ»ÆÆ
-			ctx->stra_log_info(fmt::format("ÏòÏÂÍ»ÆÆ{}<={},¿Õ²Ö½ø³¡", curPx, lower_bound).c_str());
+			//å‘ä¸‹çªç ´
+			ctx->stra_log_info(fmt::format("å‘ä¸‹çªç ´{}<={},ç©ºä»“è¿›åœº", curPx, lower_bound).c_str());
 
-			//Ìí¼ÓÍ¼±í±ê¼Ç
+			//æ·»åŠ å›¾è¡¨æ ‡è®°
 			ctx->add_chart_mark(curPx, "wt-mark-sell", "DT_EnterShort");
 		}
 	}
@@ -141,11 +141,11 @@ void WtStraDualThrust::on_schedule(ICtaStraCtx* ctx, uint32_t curDate, uint32_t 
 	{
 		if(curPx <= lower_bound)
 		{
-			//¶à²Ö³ö³¡
+			//å¤šä»“å‡ºåœº
 			ctx->stra_exit_long(_moncode.c_str(), 2 * trdUnit, "DT_ExitLong");
-			ctx->stra_log_info(fmt::format("ÏòÏÂÍ»ÆÆ{}<={},¶à²Ö³ö³¡", curPx, lower_bound).c_str());
+			ctx->stra_log_info(fmt::format("å‘ä¸‹çªç ´{}<={},å¤šä»“å‡ºåœº", curPx, lower_bound).c_str());
 
-			//Ìí¼ÓÍ¼±í±ê¼Ç
+			//æ·»åŠ å›¾è¡¨æ ‡è®°
 			ctx->add_chart_mark(curPx, "wt-mark-sell", "DT_ExitLong");
 		}
 	}
@@ -154,16 +154,16 @@ void WtStraDualThrust::on_schedule(ICtaStraCtx* ctx, uint32_t curDate, uint32_t 
 	{
 		if (curPx >= upper_bound && !_isstk)
 		{
-			//¿Õ²Ö³ö³¡
+			//ç©ºä»“å‡ºåœº
 			ctx->stra_exit_short(_moncode.c_str(), 2 * trdUnit, "DT_ExitShort");
-			ctx->stra_log_info(fmt::format("ÏòÉÏÍ»ÆÆ{}>={},¿Õ²Ö³ö³¡", curPx, upper_bound).c_str());
+			ctx->stra_log_info(fmt::format("å‘ä¸Šçªç ´{}>={},ç©ºä»“å‡ºåœº", curPx, upper_bound).c_str());
 
-			//Ìí¼ÓÍ¼±í±ê¼Ç
+			//æ·»åŠ å›¾è¡¨æ ‡è®°
 			ctx->add_chart_mark(curPx, "wt-mark-buy", "DT_ExitShort");
 		}
 	}
 
-	//Õâ¸öÊÍ·ÅÒ»¶¨Òª×ö
+	//è¿™ä¸ªé‡Šæ”¾ä¸€å®šè¦åš
 	kline->release();
 }
 
@@ -174,24 +174,24 @@ void WtStraDualThrust::on_init(ICtaStraCtx* ctx)
 	WTSKlineSlice *kline = ctx->stra_get_bars(code.c_str(), _period.c_str(), _count, true);
 	if (kline == NULL)
 	{
-		//ÕâÀï¿ÉÒÔÊä³öÒ»Ğ©ÈÕÖ¾
+		//è¿™é‡Œå¯ä»¥è¾“å‡ºä¸€äº›æ—¥å¿—
 		return;
 	}
 
 	kline->release();
 
-	//×¢²áÖ¸±êºÍÍ¼±íKÏß
+	//æ³¨å†ŒæŒ‡æ ‡å’Œå›¾è¡¨Kçº¿
 	ctx->set_chart_kline(_code.c_str(), _period.c_str());
 
-	//×¢²áÖ¸±ê
+	//æ³¨å†ŒæŒ‡æ ‡
 	ctx->register_index("DualThrust", 0);
 
-	//×¢²áÖ¸±êÏß
+	//æ³¨å†ŒæŒ‡æ ‡çº¿
 	ctx->register_index_line("DualThrust", "upper_bound", 0);
 	ctx->register_index_line("DualThrust", "lower_bound", 0);
 }
 
 void WtStraDualThrust::on_tick(ICtaStraCtx* ctx, const char* stdCode, WTSTickData* newTick)
 {
-	//Ã»ÓĞÊ²Ã´Òª´¦Àí
+	//æ²¡æœ‰ä»€ä¹ˆè¦å¤„ç†
 }

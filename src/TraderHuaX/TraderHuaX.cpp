@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file TraderHuaX.CPP
  * \project	WonderTrader
  *
@@ -446,7 +446,7 @@ void TraderHuaX::OnRspQryPosition(CTORATstpPositionField* pPositionField, CTORAT
 		if (NULL == _positions)
 			_positions = WTSArray::create();
 
-		// »ªöÎÀïÃæ³Ö²ÖÃ»ÓĞÂòÂô·½Ïò£¬ÓÃÖ¤È¯´úÂë×ökey
+		// åé‘«é‡Œé¢æŒä»“æ²¡æœ‰ä¹°å–æ–¹å‘ï¼Œç”¨è¯åˆ¸ä»£ç åškey
 		std::string key = pPositionField->SecurityID;
 		WTSPositionItem* pos = makePositionItem(pPositionField);
 		if (pos)
@@ -557,7 +557,7 @@ void TraderHuaX::OnRspQryShareholderAccount(CTORATstpShareholderAccountField* pS
 		{
 			_tradingday = TimeUtils::getCurDate();
 			{
-				//³õÊ¼»¯Î¯ÍĞµ¥»º´æÆ÷
+				//åˆå§‹åŒ–å§”æ‰˜å•ç¼“å­˜å™¨
 				std::stringstream ss;
 				ss << "./huaxdata/local/";
 				std::string path = StrUtil::standardisePath(ss.str());
@@ -570,7 +570,7 @@ void TraderHuaX::OnRspQryShareholderAccount(CTORATstpShareholderAccountField* pS
 			}
 
 			{
-				//³õÊ¼»¯¶©µ¥±ê¼Ç»º´æÆ÷
+				//åˆå§‹åŒ–è®¢å•æ ‡è®°ç¼“å­˜å™¨
 				std::stringstream ss;
 				ss << "./huaxdata/local/";
 				std::string path = StrUtil::standardisePath(ss.str());
@@ -601,7 +601,7 @@ void TraderHuaX::OnRspQryShareholderAccount(CTORATstpShareholderAccountField* pS
 void TraderHuaX::OnFrontConnected()
 {
 	write_log(_sink, LL_INFO, "[TraderHuaX] Connection success");
-	// »ñÈ¡ÖÕ¶ËĞÅÏ¢
+	// è·å–ç»ˆç«¯ä¿¡æ¯
 	int ret = _api->ReqGetConnectionInfo(genRequestID());
 	if (ret != 0)
 	{
@@ -703,7 +703,7 @@ void TraderHuaX::reconnect()
 	std::stringstream ss;
 	ss << _flowdir << "flows/" << _user << "/";
 	boost::filesystem::create_directories(ss.str().c_str());
-	_api = _funcCreator(ss.str().c_str(), _encrypt);			// ´´½¨UserApi
+	_api = _funcCreator(ss.str().c_str(), _encrypt);			// åˆ›å»ºUserApi
 	if (_api == NULL)
 	{
 		if (_sink)
@@ -718,13 +718,13 @@ void TraderHuaX::reconnect()
 		return;
 	}
 
-	_api->RegisterSpi(this);						// ×¢²áÊÂ¼ş
-	_api->RegisterFront((char*)_front.c_str());						// ×¢²áÊÂ¼ş
-	// ¶©ÔÄ¹«ÓĞÁ÷ºÍË½ÓĞÁ÷
+	_api->RegisterSpi(this);						// æ³¨å†Œäº‹ä»¶
+	_api->RegisterFront((char*)_front.c_str());						// æ³¨å†Œäº‹ä»¶
+	// è®¢é˜…å…¬æœ‰æµå’Œç§æœ‰æµ
 	_api->SubscribePublicTopic(_quick ? TORA_TERT_QUICK : TORA_TERT_RESUME);
 	_api->SubscribePrivateTopic(_quick ? TORA_TERT_QUICK : TORA_TERT_RESUME);
 
-	// Æô¶¯
+	// å¯åŠ¨
 	_api->Init();
 	//_api->Join();
 }
@@ -759,7 +759,7 @@ bool TraderHuaX::isConnected()
 
 void TraderHuaX::genEntrustID(char* buffer, uint32_t orderRef)
 {
-	//ÕâÀï²»ÔÙÊ¹ÓÃsessionid£¬ÒòÎªÃ¿´ÎµÇÂ½»á²»Í¬£¬Èç¹ûÊ¹ÓÃµÄ»°£¬¿ÉÄÜ»áÔì³É²»Î¨Ò»µÄÇé¿ö
+	//è¿™é‡Œä¸å†ä½¿ç”¨sessionidï¼Œå› ä¸ºæ¯æ¬¡ç™»é™†ä¼šä¸åŒï¼Œå¦‚æœä½¿ç”¨çš„è¯ï¼Œå¯èƒ½ä¼šé€ æˆä¸å”¯ä¸€çš„æƒ…å†µ
 	fmtutil::format_to(buffer, "{}#{}#{}", _user, _tradingday, orderRef);
 }
 
@@ -799,13 +799,13 @@ void TraderHuaX::doLogin()
 
 	CTORATstpReqUserLoginField field;
 	memset(&field, 0, sizeof(CTORATstpReqUserLoginField));
-	//ÒÔÓÃ»§´úÂë·½Ê½µÇÂ¼
+	//ä»¥ç”¨æˆ·ä»£ç æ–¹å¼ç™»å½•
 	strcpy_s(field.LogInAccount, _user.c_str());
 	field.LogInAccountType = TORA_TSTP_LACT_UserID;
 	strcpy_s(field.Password, _pass.c_str());
-	// ÖÕ¶Ë²É¼¯  ĞÅÏ¢
+	// ç»ˆç«¯é‡‡é›†  ä¿¡æ¯
 	strcpy_s(field.UserProductInfo, _productInfo.c_str());
-	// °´ÕÕ¼à¹ÜÒªÇóÌîĞ´ÖÕ¶ËĞÅÏ¢
+	// æŒ‰ç…§ç›‘ç®¡è¦æ±‚å¡«å†™ç»ˆç«¯ä¿¡æ¯
 	const char* terminalInfo = fmtutil::format("{};IIP={};IPORT={};LIP={};MAC={};HD={}", _terminal, _pub_ip, _pub_port, _trade_ip, _mac, _hard_disk);
 	strcpy_s(field.TerminalInfo, terminalInfo);
 
@@ -813,7 +813,7 @@ void TraderHuaX::doLogin()
 	if (ret != 0)
 	{
 		std::string erro_code = std::to_string(ret);
-		write_log(_sink, LL_ERROR, "[TraderHuaX] Login failed: erro code {}", erro_code);
+		write_log(_sink, LL_ERROR, "[TraderHuaX] Login failed: error code {}", erro_code);
 		
 		_state = TS_LOGINFAILED;
 		_asyncio.post([this, erro_code]{
@@ -854,7 +854,7 @@ int TraderHuaX::orderInsert(WTSEntrust* entrust)
 		return -1;
 	}
 
-	// ÇëÇó±¨µ¥
+	// è¯·æ±‚æŠ¥å•
 	CTORATstpInputOrderField field;
 	memset(&field, 0, sizeof(CTORATstpInputOrderField));
 	int orderref;
@@ -873,26 +873,26 @@ int TraderHuaX::orderInsert(WTSEntrust* entrust)
 
 	field.Direction = wrapDirectionType(entrust->getDirection());
 	field.VolumeTotalOriginal = (int64_t)entrust->getVolume();
-	// ÉÏ½»ËùÖ§³ÖÏŞ¼ÛÖ¸ÁîºÍ×îÓÅÎåµµÊ£³·¡¢×îÓÅÎåµµÊ£×ªÏŞÁ½ÖÖÊĞ¼ÛÖ¸Áî£¬¶ÔÓÚ¿Æ´´°å¶îÍâÖ§³Ö±¾·½×îÓÅºÍ¶ÔÊÖ·½×îÓÅÁ½ÖÖÊĞ¼ÛÖ¸ÁîºÍÅÌºó¹Ì¶¨¼Û¸ñÉê±¨Ö¸Áî
-	// Éî½»ËùÖ§³ÖÏŞ¼ÛÖ¸ÁîºÍÁ¢¼´³É½»Ê£Óà³·Ïú¡¢È«¶î³É½»»ò³·Ïú¡¢±¾·½×îÓÅ¡¢¶ÔÊÖ·½×îÓÅºÍ×îÓÅÎåµµÊ£³·ÎåÖÖÊĞ¼ÛÖ¸Áî
-	// ÏŞ¼ÛÖ¸ÁîºÍÉÏ½»Ëù¿Æ´´°åÅÌºó¹Ì¶¨¼Û¸ñÉê±¨Ö¸ÁîĞèÌîĞ´±¨µ¥¼Û¸ñ£¬ÆäËüÊĞ¼ÛÖ¸ÁîÎŞĞèÌîĞ´±¨µ¥¼Û¸ñ
-	// ÒÔÏÂÒÔÉÏ½»ËùÏŞ¼ÛÖ¸ÁîÎªÀı£¬ÆäËüÖ¸Áî²Î¿¼¿ª·¢Ö¸ÄÏÏà¹ØËµÃ÷ÌîĞ´OrderPriceType¡¢TimeConditionºÍVolumeConditionÈı¸ö×Ö¶Î:
+	// ä¸Šäº¤æ‰€æ”¯æŒé™ä»·æŒ‡ä»¤å’Œæœ€ä¼˜äº”æ¡£å‰©æ’¤ã€æœ€ä¼˜äº”æ¡£å‰©è½¬é™ä¸¤ç§å¸‚ä»·æŒ‡ä»¤ï¼Œå¯¹äºç§‘åˆ›æ¿é¢å¤–æ”¯æŒæœ¬æ–¹æœ€ä¼˜å’Œå¯¹æ‰‹æ–¹æœ€ä¼˜ä¸¤ç§å¸‚ä»·æŒ‡ä»¤å’Œç›˜åå›ºå®šä»·æ ¼ç”³æŠ¥æŒ‡ä»¤
+	// æ·±äº¤æ‰€æ”¯æŒé™ä»·æŒ‡ä»¤å’Œç«‹å³æˆäº¤å‰©ä½™æ’¤é”€ã€å…¨é¢æˆäº¤æˆ–æ’¤é”€ã€æœ¬æ–¹æœ€ä¼˜ã€å¯¹æ‰‹æ–¹æœ€ä¼˜å’Œæœ€ä¼˜äº”æ¡£å‰©æ’¤äº”ç§å¸‚ä»·æŒ‡ä»¤
+	// é™ä»·æŒ‡ä»¤å’Œä¸Šäº¤æ‰€ç§‘åˆ›æ¿ç›˜åå›ºå®šä»·æ ¼ç”³æŠ¥æŒ‡ä»¤éœ€å¡«å†™æŠ¥å•ä»·æ ¼ï¼Œå…¶å®ƒå¸‚ä»·æŒ‡ä»¤æ— éœ€å¡«å†™æŠ¥å•ä»·æ ¼
+	// ä»¥ä¸‹ä»¥ä¸Šäº¤æ‰€é™ä»·æŒ‡ä»¤ä¸ºä¾‹ï¼Œå…¶å®ƒæŒ‡ä»¤å‚è€ƒå¼€å‘æŒ‡å—ç›¸å…³è¯´æ˜å¡«å†™OrderPriceTypeã€TimeConditionå’ŒVolumeConditionä¸‰ä¸ªå­—æ®µ:
 	field.LimitPrice = entrust->getPrice();
 	field.OrderPriceType = TORA_TSTP_OPT_LimitPrice;
 	field.TimeCondition = TORA_TSTP_TC_GFD;
 	field.VolumeCondition = TORA_TSTP_VC_AV;
-	// OrderRefÎª±¨µ¥ÒıÓÃ£¬ÀàĞÍÎªÕûĞÍ£¬¸Ã×Ö¶Î±¨µ¥Ê±ÎªÑ¡Ìî
-	// Èô²»ÌîĞ´£¬ÔòÏµÍ³»áÎªÃ¿±Ê±¨µ¥×Ô¶¯·ÖÅäÒ»¸ö±¨µ¥ÒıÓÃ
-	// ÈôÌîĞ´£¬ÔòĞè±£Ö¤Í¬Ò»¸öTCP»á»°ÏÂ±¨µ¥ÒıÓÃÑÏ¸ñµ¥µ÷µİÔö£¬²»ÒªÇóÁ¬ĞøµİÔö£¬ÖÁÉÙĞè´Ó1¿ªÊ¼±àºÅ
+	// OrderRefä¸ºæŠ¥å•å¼•ç”¨ï¼Œç±»å‹ä¸ºæ•´å‹ï¼Œè¯¥å­—æ®µæŠ¥å•æ—¶ä¸ºé€‰å¡«
+	// è‹¥ä¸å¡«å†™ï¼Œåˆ™ç³»ç»Ÿä¼šä¸ºæ¯ç¬”æŠ¥å•è‡ªåŠ¨åˆ†é…ä¸€ä¸ªæŠ¥å•å¼•ç”¨
+	// è‹¥å¡«å†™ï¼Œåˆ™éœ€ä¿è¯åŒä¸€ä¸ªTCPä¼šè¯ä¸‹æŠ¥å•å¼•ç”¨ä¸¥æ ¼å•è°ƒé€’å¢ï¼Œä¸è¦æ±‚è¿ç»­é€’å¢ï¼Œè‡³å°‘éœ€ä»1å¼€å§‹ç¼–å·
 	field.OrderRef = orderref;
-	//InvestorIDÎªÑ¡Ìî£¬ÈôÌîĞ´ÔòĞè±£Ö¤ÌîĞ´ÕıÈ·
-	//OperwayÎªÎ¯ÍĞ·½Ê½£¬¸ù¾İÈ¯ÉÌÒªÇóÌîĞ´£¬ÎŞÌØÊâËµÃ÷ÖÃ¿Õ¼´¿É
+	//InvestorIDä¸ºé€‰å¡«ï¼Œè‹¥å¡«å†™åˆ™éœ€ä¿è¯å¡«å†™æ­£ç¡®
+	//Operwayä¸ºå§”æ‰˜æ–¹å¼ï¼Œæ ¹æ®åˆ¸å•†è¦æ±‚å¡«å†™ï¼Œæ— ç‰¹æ®Šè¯´æ˜ç½®ç©ºå³å¯
 
-	// ÖÕ¶Ë×Ô¶¨Òå×Ö¶Î£¬ÖÕ¶Ë¿É¸ù¾İĞèÒªÌîĞ´ÈçÏÂ×Ö¶ÎµÄÖµ£¬¸Ã×Ö¶ÎÖµ²»»á±»¹ñÌ¨ÏµÍ³ĞŞ¸Ä£¬ÔÚ±¨µ¥»Ø±¨ºÍ²éÑ¯±¨µ¥Ê±·µ»Ø¸øÖÕ¶Ë
+	// ç»ˆç«¯è‡ªå®šä¹‰å­—æ®µï¼Œç»ˆç«¯å¯æ ¹æ®éœ€è¦å¡«å†™å¦‚ä¸‹å­—æ®µçš„å€¼ï¼Œè¯¥å­—æ®µå€¼ä¸ä¼šè¢«æŸœå°ç³»ç»Ÿä¿®æ”¹ï¼Œåœ¨æŠ¥å•å›æŠ¥å’ŒæŸ¥è¯¢æŠ¥å•æ—¶è¿”å›ç»™ç»ˆç«¯
 	//strcpy(field.SInfo, entrust->getUserTag());
 	//field.IInfo = orderref;
 
-	//ÆäËü×Ö¶ÎÖÃ¿Õ
+	//å…¶å®ƒå­—æ®µç½®ç©º
 	if (strlen(entrust->getUserTag()) > 0)
 	{
 		_eidCache.put(entrust->getEntrustID(), entrust->getUserTag(), 0, [this](const char* message) {
@@ -926,19 +926,19 @@ int TraderHuaX::orderAction(WTSEntrustAction* action)
 	}
 
 	field.ActionFlag = TORA_TSTP_AF_Delete;
-	// ³·µ¥Ö§³ÖÒÔÏÂÁ½ÖÖ·½Ê½¶¨Î»Ô­Ê¼±¨µ¥£º
-	// £¨1£©±¨µ¥ÒıÓÃ·½Ê½
+	// æ’¤å•æ”¯æŒä»¥ä¸‹ä¸¤ç§æ–¹å¼å®šä½åŸå§‹æŠ¥å•ï¼š
+	// ï¼ˆ1ï¼‰æŠ¥å•å¼•ç”¨æ–¹å¼
 	//field.OrderRef = 1;
 	//field.FrontID = m_front_id;
 	//field.SessionID = m_session_id;
-	// £¨2£©ÏµÍ³±¨µ¥±àºÅ·½Ê½
+	// ï¼ˆ2ï¼‰ç³»ç»ŸæŠ¥å•ç¼–å·æ–¹å¼
 	strcpy(field.OrderSysID, action->getOrderID());
-	// OrderActionRef±¨µ¥²Ù×÷ÒıÓÃ£¬ÓÃ·¨Í¬±¨µ¥ÒıÓÃ£¬¿É¸ù¾İĞèÒªÑ¡Ìî
+	// OrderActionRefæŠ¥å•æ“ä½œå¼•ç”¨ï¼Œç”¨æ³•åŒæŠ¥å•å¼•ç”¨ï¼Œå¯æ ¹æ®éœ€è¦é€‰å¡«
 
-	// ÖÕ¶Ë×Ô¶¨Òå×Ö¶Î£¬ÖÕ¶Ë¿É¸ù¾İĞèÒªÌîĞ´ÈçÏÂ×Ö¶ÎµÄÖµ£¬¸Ã×Ö¶ÎÖµ²»»á±»¹ñÌ¨ÏµÍ³ĞŞ¸Ä£¬ÔÚ²éÑ¯³·µ¥Ê±·µ»Ø¸øÖÕ¶Ë
+	// ç»ˆç«¯è‡ªå®šä¹‰å­—æ®µï¼Œç»ˆç«¯å¯æ ¹æ®éœ€è¦å¡«å†™å¦‚ä¸‹å­—æ®µçš„å€¼ï¼Œè¯¥å­—æ®µå€¼ä¸ä¼šè¢«æŸœå°ç³»ç»Ÿä¿®æ”¹ï¼Œåœ¨æŸ¥è¯¢æ’¤å•æ—¶è¿”å›ç»™ç»ˆç«¯
 	//strcpy(field.SInfo, "sinfo");
 
-	// Î¯ÍĞ·½Ê½×Ö¶Î¸ù¾İÈ¯ÉÌÒªÇóÌîĞ´£¬ÎŞÌØÊâËµÃ÷ÖÃ¿Õ¼´¿É
+	// å§”æ‰˜æ–¹å¼å­—æ®µæ ¹æ®åˆ¸å•†è¦æ±‚å¡«å†™ï¼Œæ— ç‰¹æ®Šè¯´æ˜ç½®ç©ºå³å¯
 	//Operway
 
 	int ret = _api->ReqOrderAction(&field, genRequestID());
@@ -956,7 +956,7 @@ uint32_t TraderHuaX::genRequestID()
 
 int TraderHuaX::queryAccount()
 {
-	// ²éÑ¯×Ê½ğÕË»§
+	// æŸ¥è¯¢èµ„é‡‘è´¦æˆ·
 	CTORATstpQryTradingAccountField field;
 	memset(&field, 0, sizeof(field));
 	int ret = _api->ReqQryTradingAccount(&field, genRequestID());
@@ -969,11 +969,11 @@ int TraderHuaX::queryAccount()
 
 int TraderHuaX::queryPositions()
 {
-	// ²éÑ¯³Ö²Ö
+	// æŸ¥è¯¢æŒä»“
 	CTORATstpQryPositionField field;
 	memset(&field, 0, sizeof(CTORATstpQryPositionField));
 
-	// ÒÔÏÂ×Ö¶Î²»Ìî±íÊ¾²»Éè¹ıÂËÌõ¼ş£¬¼´²éÑ¯ËùÓĞ³Ö²Ö
+	// ä»¥ä¸‹å­—æ®µä¸å¡«è¡¨ç¤ºä¸è®¾è¿‡æ»¤æ¡ä»¶ï¼Œå³æŸ¥è¯¢æ‰€æœ‰æŒä»“
 	//strcpy(field.SecurityID, "600000");
 
 	int ret = _api->ReqQryPosition(&field, genRequestID());
@@ -986,16 +986,16 @@ int TraderHuaX::queryPositions()
 
 int TraderHuaX::queryOrders()
 {
-	// ²éÑ¯±¨µ¥
+	// æŸ¥è¯¢æŠ¥å•
 	CTORATstpQryOrderField field;
 	memset(&field, 0, sizeof(field));
 
-	// ÒÔÏÂ×Ö¶Î²»Ìî±íÊ¾²»Éè¹ıÂËÌõ¼ş£¬¼´²éÑ¯ËùÓĞ±¨µ¥
+	// ä»¥ä¸‹å­—æ®µä¸å¡«è¡¨ç¤ºä¸è®¾è¿‡æ»¤æ¡ä»¶ï¼Œå³æŸ¥è¯¢æ‰€æœ‰æŠ¥å•
 	//strcpy(field.SecurityID, "600000");
 	//strcpy(field.InsertTimeStart, "09:35:00");
 	//strcpy(field.InsertTimeEnd, "10:30:00");
 
-	// IsCancel×Ö¶ÎÌî1±íÊ¾Ö»²éÑ¯¿É³·±¨µ¥
+	// IsCancelå­—æ®µå¡«1è¡¨ç¤ºåªæŸ¥è¯¢å¯æ’¤æŠ¥å•
 	//field.IsCancel = 1;
 
 	int ret = _api->ReqQryOrder(&field, genRequestID());
@@ -1008,7 +1008,7 @@ int TraderHuaX::queryOrders()
 
 int TraderHuaX::queryTrades()
 {
-	// ²éÑ¯³É½»
+	// æŸ¥è¯¢æˆäº¤
 	CTORATstpQryTradeField field;
 	memset(&field, 0, sizeof(field));
 

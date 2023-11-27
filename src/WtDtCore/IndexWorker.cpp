@@ -1,4 +1,4 @@
-#include "IndexWorker.h"
+ï»¿#include "IndexWorker.h"
 #include "IndexFactory.h"
 
 #include "../Includes/IBaseDataMgr.h"
@@ -32,11 +32,11 @@ bool IndexWorker::init(WTSVariant* config)
 	_trigger = config->getCString("trigger");
 	_timeout = config->getUInt32("timeout");
 
-	_stand_scale = config->getDouble("stand_scale");	//±ê×¼»¯ÏµÊı£¬Èç¼ÆËãÖµÎª3000£¬±ê×¼»¯ÒÔºóÎª1000£¬Ôò±ê×¼»¯ÏµÊıÎª0.333333
+	_stand_scale = config->getDouble("stand_scale");	//æ ‡å‡†åŒ–ç³»æ•°ï¼Œå¦‚è®¡ç®—å€¼ä¸º3000ï¼Œæ ‡å‡†åŒ–ä»¥åä¸º1000ï¼Œåˆ™æ ‡å‡†åŒ–ç³»æ•°ä¸º0.333333
 	if (decimal::eq(_stand_scale, 0.0))
 		_stand_scale = 1.0;
 
-	//Èç¹ûÊÇÁ¬ĞøºÏÔ¼£¬Òª×ª³É·ÖÔÂºÏÔ¼£¬ÒòÎªÊÇÊµÊ±´¦ÀíµÄ
+	//å¦‚æœæ˜¯è¿ç»­åˆçº¦ï¼Œè¦è½¬æˆåˆ†æœˆåˆçº¦ï¼Œå› ä¸ºæ˜¯å®æ—¶å¤„ç†çš„
 	IHotMgr* hotMgr = _factor->get_hot_mgr();
 
 	if (_trigger != "time")
@@ -46,7 +46,7 @@ bool IndexWorker::init(WTSVariant* config)
 			_trigger = fmt::format("{}.{}", cInfo._exchg, hotMgr->getCustomRawCode(cInfo._ruletag, cInfo.stdCommID()));
 	}
 
-	//È¨ÖØËã·¨
+	//æƒé‡ç®—æ³•
 	_weight_alg = config->getUInt32("weight_alg");
 
 	WTSVariant* cfgComms = config->get("commodities");
@@ -62,7 +62,7 @@ bool IndexWorker::init(WTSVariant* config)
 			std::string fullPid;
 			double weight = 1.0;
 
-			//Èç¹ûÊÇ¶ÔÏó£¬Ôò»áÓĞscale£¬×÷ÎªÈ¨ÖØËõ·ÅÏµÊı£¬ÕâÖÖÖ÷ÒªÓÃÓÚ¶àÆ·ÖÖ°å¿é£¬²»Í¬Æ·ÖÖÈ¨ÖØ²»Í¬
+			//å¦‚æœæ˜¯å¯¹è±¡ï¼Œåˆ™ä¼šæœ‰scaleï¼Œä½œä¸ºæƒé‡ç¼©æ”¾ç³»æ•°ï¼Œè¿™ç§ä¸»è¦ç”¨äºå¤šå“ç§æ¿å—ï¼Œä¸åŒå“ç§æƒé‡ä¸åŒ
 			if (cfgItem->isObject())
 			{
 				fullPid = cfgItem->getCString("code");
@@ -75,7 +75,7 @@ bool IndexWorker::init(WTSVariant* config)
 				fullPid = cfgItem->asCString();
 			}
 
-			//Í¨¹ıÆ·ÖÖ´úÂëÕÒµ½¶ÔÓ¦µÄºÏÔ¼ÁĞ±í£¬²¢¶©ÔÄ
+			//é€šè¿‡å“ç§ä»£ç æ‰¾åˆ°å¯¹åº”çš„åˆçº¦åˆ—è¡¨ï¼Œå¹¶è®¢é˜…
 			WTSCommodityInfo* commInfo = bdMgr->getCommodity(fullPid.c_str());
 			if (commInfo == NULL)
 				continue;
@@ -87,7 +87,7 @@ bool IndexWorker::init(WTSVariant* config)
 				WeightFactor& wFactor = _weight_scales[fullCode];
 				wFactor._weight = weight;
 
-				//¶©ÔÄµÄÊ±ºò¶ÁÈ¡×îºóµÄ¿ìÕÕ£¬×÷Îª»ù´¡Êı¾İ
+				//è®¢é˜…çš„æ—¶å€™è¯»å–æœ€åçš„å¿«ç…§ï¼Œä½œä¸ºåŸºç¡€æ•°æ®
 				WTSTickData* lastTick = _factor->sub_ticks(fullCode.c_str());
 				if (lastTick)
 				{
@@ -111,7 +111,7 @@ bool IndexWorker::init(WTSVariant* config)
 			std::string fullCode;
 			double weight = 1.0;
 
-			//Èç¹ûÊÇ¶ÔÏó£¬Ôò»áÓĞscale£¬×÷ÎªÈ¨ÖØËõ·ÅÏµÊı£¬ÕâÖÖÖ÷ÒªÓÃÓÚ¶àÆ·ÖÖ°å¿é£¬²»Í¬Æ·ÖÖÈ¨ÖØ²»Í¬
+			//å¦‚æœæ˜¯å¯¹è±¡ï¼Œåˆ™ä¼šæœ‰scaleï¼Œä½œä¸ºæƒé‡ç¼©æ”¾ç³»æ•°ï¼Œè¿™ç§ä¸»è¦ç”¨äºå¤šå“ç§æ¿å—ï¼Œä¸åŒå“ç§æƒé‡ä¸åŒ
 			if (cfgItem->isObject())
 			{
 				std::string fullPid = cfgItem->getCString("code");
@@ -129,12 +129,12 @@ bool IndexWorker::init(WTSVariant* config)
 			std::string code;
 			if(ay.size() == 2)
 			{
-				//ÕâÊÇfullcode¸ñÊ½£¬¼´CFFEX.IF2202
+				//è¿™æ˜¯fullcodeæ ¼å¼ï¼Œå³CFFEX.IF2202
 				code = ay[1];
 			}
 			else
 			{
-				//´óÓÚ2£¬¾ÍÊÇstdCode¸ñÊ½£¬Ö÷Òª¿¼ÂÇCFFEX.IF.HOT
+				//å¤§äº2ï¼Œå°±æ˜¯stdCodeæ ¼å¼ï¼Œä¸»è¦è€ƒè™‘CFFEX.IF.HOT
 				CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(fullCode.c_str(), hotMgr);
 				if (strlen(cInfo._ruletag) > 0)
 				{
@@ -159,7 +159,7 @@ bool IndexWorker::init(WTSVariant* config)
 			WeightFactor& wFactor = _weight_scales[fullCode];
 			wFactor._weight = weight;
 
-			//¶©ÔÄµÄÊ±ºò¶ÁÈ¡×îºóµÄ¿ìÕÕ£¬×÷Îª»ù´¡Êı¾İ
+			//è®¢é˜…çš„æ—¶å€™è¯»å–æœ€åçš„å¿«ç…§ï¼Œä½œä¸ºåŸºç¡€æ•°æ®
 			WTSTickData* lastTick = _factor->sub_ticks(fullCode.c_str());
 			if (lastTick)
 			{
@@ -171,7 +171,7 @@ bool IndexWorker::init(WTSVariant* config)
 		}
 	}
 
-	WTSLogger::info("Block index {}.{} initialized£¬weight algorithm: {}, trigger: {}, timeout: {}", _exchg, _code, WEIGHT_ALGS[_weight_alg], _trigger, _timeout);
+	WTSLogger::info("Block index {}.{} initializedï¼Œweight algorithm: {}, trigger: {}, timeout: {}", _exchg, _code, WEIGHT_ALGS[_weight_alg], _trigger, _timeout);
 
 	return true;
 }
@@ -190,14 +190,14 @@ void IndexWorker::handle_quote(WTSTickData* newTick)
 		memcpy(&wFactor._tick, &newTick->getTickStruct(), sizeof(WTSTickStruct));
 	}
 
-	//Èç¹ûÊ¹ÓÃtime£¬ÄÇÃ´µ±µÚÒ»¸ö³É·ÖºÏÔ¼µÄĞĞÇé½øÀ´ÒÔºó£¬»áÈ¥¸üĞÂÖ¸ÊıÖØËãÊ±¼ä
+	//å¦‚æœä½¿ç”¨timeï¼Œé‚£ä¹ˆå½“ç¬¬ä¸€ä¸ªæˆåˆ†åˆçº¦çš„è¡Œæƒ…è¿›æ¥ä»¥åï¼Œä¼šå»æ›´æ–°æŒ‡æ•°é‡ç®—æ—¶é—´
 	if(_trigger != "time" && _trigger.compare(fullCode) != 0)
 		return;
 
-	//Èç¹ûÊÇ_trigger£¬Ôò¿ªÊ¼×¼±¸´¥·¢ÁË
+	//å¦‚æœæ˜¯_triggerï¼Œåˆ™å¼€å§‹å‡†å¤‡è§¦å‘äº†
 	if(_timeout == 0)
 	{
-		//Èç¹ûÃ»ÓĞÉèÖÃ³¬Ê±Ê±¼ä£¬ÔòÖ±½ÓÉú³ÉÖ¸Êı
+		//å¦‚æœæ²¡æœ‰è®¾ç½®è¶…æ—¶æ—¶é—´ï¼Œåˆ™ç›´æ¥ç”ŸæˆæŒ‡æ•°
 		generate_tick();
 	}
 	else
@@ -213,7 +213,7 @@ void IndexWorker::handle_quote(WTSTickData* newTick)
 						_cond_trigger.wait(_mtx_trigger);
 					}
 
-					//µÈ´ıÒ»¶ÎÊ±¼ä
+					//ç­‰å¾…ä¸€æ®µæ—¶é—´
 					do
 					{
 						uint64_t now = TimeUtils::getLocalTimeNow();
@@ -223,7 +223,7 @@ void IndexWorker::handle_quote(WTSTickData* newTick)
 						std::this_thread::sleep_for(std::chrono::milliseconds(5));
 					} while (true);
 
-					//¿ªÊ¼Éú³ÉÖ¸Êı
+					//å¼€å§‹ç”ŸæˆæŒ‡æ•°
 					generate_tick();
 					_process = false;
 				}
@@ -241,23 +241,23 @@ void IndexWorker::handle_quote(WTSTickData* newTick)
 
 void IndexWorker::generate_tick()
 {
-	//È»ºó¿ªÊ¼¼ÆËãÖ¸Êı
-	double total_base = 0.0;	//È¨ÖØ»ùÊı
-	double total_value = 0.0;	//ÊıÖµÀÛ¼Ó
-	double total_vol = 0.0;		//Ö¸Êı×Ü³É½»Á¿
-	double total_amt = 0.0;		//Ö¸Êı×Ü³É½»¶î
-	double total_hold = 0.0;	//Ö¸Êı×Ü³Ö
-	uint64_t maxTime = 0;		//×îºóÒ»±ÊtickµÄÊ±¼ä
-	uint32_t tDate = 0;			//½»Ò×ÈÕ
+	//ç„¶åå¼€å§‹è®¡ç®—æŒ‡æ•°
+	double total_base = 0.0;	//æƒé‡åŸºæ•°
+	double total_value = 0.0;	//æ•°å€¼ç´¯åŠ 
+	double total_vol = 0.0;		//æŒ‡æ•°æ€»æˆäº¤é‡
+	double total_amt = 0.0;		//æŒ‡æ•°æ€»æˆäº¤é¢
+	double total_hold = 0.0;	//æŒ‡æ•°æ€»æŒ
+	uint64_t maxTime = 0;		//æœ€åä¸€ç¬”tickçš„æ—¶é—´
+	uint32_t tDate = 0;			//äº¤æ˜“æ—¥
 
 	double total_weight = 0;
 
 	{
-		//ÏÈ°ÑÊı¾İËø×¡
+		//å…ˆæŠŠæ•°æ®é”ä½
 		SpinLock lock(_mtx_data);
 		for (const auto& v : _weight_scales)
 		{
-			//Èç¹ûÊı¾İ²»È«£¬Ö±½ÓÍË³ö
+			//å¦‚æœæ•°æ®ä¸å…¨ï¼Œç›´æ¥é€€å‡º
 			const WeightFactor& wFactor = v.second;
 			if (wFactor._tick.action_date == 0)
 				return;
@@ -274,16 +274,16 @@ void IndexWorker::generate_tick()
 
 			switch (_weight_alg)
 			{
-			case 0://¹Ì¶¨È¨ÖØ£¬Ö»¿´±¾ÉíµÄweight
-				total_base = 1;	//ÒòÎªÖ»¿´±¾Éíweight£¬ËùÒÔÈ¨ÖØ»ùÊıÎª1
+			case 0://å›ºå®šæƒé‡ï¼Œåªçœ‹æœ¬èº«çš„weight
+				total_base = 1;	//å› ä¸ºåªçœ‹æœ¬èº«weightï¼Œæ‰€ä»¥æƒé‡åŸºæ•°ä¸º1
 				total_value += wFactor._tick.price * wFactor._weight;
 				break;
-			case 1:	//¶¯Ì¬×Ü³Ö
-				total_base += wFactor._tick.open_interest;	//¶¯Ì¬×Ü³ÖÎªµ±Ç°×Ü³Ö
+			case 1:	//åŠ¨æ€æ€»æŒ
+				total_base += wFactor._tick.open_interest;	//åŠ¨æ€æ€»æŒä¸ºå½“å‰æ€»æŒ
 				total_value += wFactor._tick.open_interest * wFactor._tick.price * wFactor._weight;
 				break;
-			case 2:	//¶¯Ì¬³É½»Á¿
-				total_base += wFactor._tick.total_volume;	//¶¯Ì¬³É½»Á¿
+			case 2:	//åŠ¨æ€æˆäº¤é‡
+				total_base += wFactor._tick.total_volume;	//åŠ¨æ€æˆäº¤é‡
 				total_value += wFactor._tick.total_volume * wFactor._tick.price * wFactor._weight;
 				break;
 			default:
@@ -292,10 +292,10 @@ void IndexWorker::generate_tick()
 		}
 	}
 
-	//Êı¾İ×ö±ê×¼»¯
+	//æ•°æ®åšæ ‡å‡†åŒ–
 	double index = total_value / total_base / total_weight * _stand_scale;
 
-	//Ê±¼ä×öÒ»¸öĞŞÕı
+	//æ—¶é—´åšä¸€ä¸ªä¿®æ­£
 	maxTime += _timeout;
 	TimeUtils::Time32 tm32(maxTime);
 

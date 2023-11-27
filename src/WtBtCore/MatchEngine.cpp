@@ -1,4 +1,4 @@
-#include "MatchEngine.h"
+ï»¿#include "MatchEngine.h"
 #include "../Includes/WTSDataDef.hpp"
 #include "../Includes/WTSVariant.hpp"
 
@@ -32,7 +32,7 @@ void MatchEngine::fire_orders(const char* stdCode, OrderIDs& to_erase)
 		uint32_t localid = v.first;
 		OrderInfo& ordInfo = (OrderInfo&)v.second;
 
-		if (ordInfo._state == 0)	//ĞèÒª¼¤»î
+		if (ordInfo._state == 0)	//éœ€è¦æ¿€æ´»
 		{
 			_sink->handle_entrust(localid, stdCode, true, "", ordInfo._time);
 			_sink->handle_order(localid, stdCode, ordInfo._buy, ordInfo._left, ordInfo._limit, false, ordInfo._time);
@@ -51,14 +51,14 @@ void MatchEngine::match_orders(WTSTickData* curTick, OrderIDs& to_erase)
 		uint32_t localid = v.first;
 		OrderInfo& ordInfo = (OrderInfo&)v.second;
 
-		if (ordInfo._state == 9)//Òª³·µ¥
+		if (ordInfo._state == 9)//è¦æ’¤å•
 		{
 			_sink->handle_order(localid, ordInfo._code, ordInfo._buy, 0, ordInfo._limit, true, ordInfo._time);
 			ordInfo._state = 99;
 
 			to_erase.emplace_back(localid);
 
-			WTSLogger::info("¶©µ¥{}ÒÑ³·Ïú, Ê£ÓàÊıÁ¿: {}", localid, ordInfo._left*(ordInfo._buy ? 1 : -1));
+			WTSLogger::info("è®¢å•{}å·²æ’¤é”€, å‰©ä½™æ•°é‡: {}", localid, ordInfo._left*(ordInfo._buy ? 1 : -1));
 			ordInfo._left = 0;
 			continue;
 		}
@@ -71,7 +71,7 @@ void MatchEngine::match_orders(WTSTickData* curTick, OrderIDs& to_erase)
 			double price;
 			double volume;
 
-			//Ö÷¶¯¶©µ¥¾Í°´ÕÕ¶ÔÊÖ¼Û
+			//ä¸»åŠ¨è®¢å•å°±æŒ‰ç…§å¯¹æ‰‹ä»·
 			if (ordInfo._positive)
 			{
 				price = curTick->askprice(0);
@@ -85,12 +85,12 @@ void MatchEngine::match_orders(WTSTickData* curTick, OrderIDs& to_erase)
 
 			if (decimal::le(price, ordInfo._limit))
 			{
-				//Èç¹û¼Û¸ñÏàµÈ,ĞèÒªÏÈ¿´ÅÅ¶ÓÎ»ÖÃ,Èç¹û¼Û¸ñ²»µÈËµÃ÷ÒÑ¾­È«²¿±»´óµ¥³ÔµôÁË
+				//å¦‚æœä»·æ ¼ç›¸ç­‰,éœ€è¦å…ˆçœ‹æ’é˜Ÿä½ç½®,å¦‚æœä»·æ ¼ä¸ç­‰è¯´æ˜å·²ç»å…¨éƒ¨è¢«å¤§å•åƒæ‰äº†
 				if (!ordInfo._positive && decimal::eq(price, ordInfo._limit))
 				{
 					double& quepos = ordInfo._queue;
 
-					//Èç¹û³É½»Á¿Ğ¡ÓÚÅÅ¶ÓÎ»ÖÃ,Ôò²»ÄÜ³É½»
+					//å¦‚æœæˆäº¤é‡å°äºæ’é˜Ÿä½ç½®,åˆ™ä¸èƒ½æˆäº¤
 					if (volume <= quepos)
 					{
 						quepos -= volume;
@@ -98,7 +98,7 @@ void MatchEngine::match_orders(WTSTickData* curTick, OrderIDs& to_erase)
 					}
 					else if (quepos != 0)
 					{
-						//Èç¹û³É½»Á¿´óÓÚÅÅ¶ÓÎ»ÖÃ,Ôò¿ÉÒÔ³É½»
+						//å¦‚æœæˆäº¤é‡å¤§äºæ’é˜Ÿä½ç½®,åˆ™å¯ä»¥æˆäº¤
 						volume -= quepos;
 						quepos = 0;
 					}
@@ -129,7 +129,7 @@ void MatchEngine::match_orders(WTSTickData* curTick, OrderIDs& to_erase)
 			double price;
 			double volume;
 
-			//Ö÷¶¯¶©µ¥¾Í°´ÕÕ¶ÔÊÖ¼Û
+			//ä¸»åŠ¨è®¢å•å°±æŒ‰ç…§å¯¹æ‰‹ä»·
 			if (ordInfo._positive)
 			{
 				price = curTick->bidprice(0);
@@ -143,12 +143,12 @@ void MatchEngine::match_orders(WTSTickData* curTick, OrderIDs& to_erase)
 
 			if (decimal::ge(price, ordInfo._limit))
 			{
-				//Èç¹û¼Û¸ñÏàµÈ,ĞèÒªÏÈ¿´ÅÅ¶ÓÎ»ÖÃ,Èç¹û¼Û¸ñ²»µÈËµÃ÷ÒÑ¾­È«²¿±»´óµ¥³ÔµôÁË
+				//å¦‚æœä»·æ ¼ç›¸ç­‰,éœ€è¦å…ˆçœ‹æ’é˜Ÿä½ç½®,å¦‚æœä»·æ ¼ä¸ç­‰è¯´æ˜å·²ç»å…¨éƒ¨è¢«å¤§å•åƒæ‰äº†
 				if (!ordInfo._positive && decimal::eq(price, ordInfo._limit))
 				{
 					double& quepos = ordInfo._queue;
 
-					//Èç¹û³É½»Á¿Ğ¡ÓÚÅÅ¶ÓÎ»ÖÃ,Ôò²»ÄÜ³É½»
+					//å¦‚æœæˆäº¤é‡å°äºæ’é˜Ÿä½ç½®,åˆ™ä¸èƒ½æˆäº¤
 					if (volume <= quepos)
 					{
 						quepos -= volume;
@@ -156,7 +156,7 @@ void MatchEngine::match_orders(WTSTickData* curTick, OrderIDs& to_erase)
 					}
 					else if (quepos != 0)
 					{
-						//Èç¹û³É½»Á¿´óÓÚÅÅ¶ÓÎ»ÖÃ,Ôò¿ÉÒÔ³É½»
+						//å¦‚æœæˆäº¤é‡å¤§äºæ’é˜Ÿä½ç½®,åˆ™å¯ä»¥æˆäº¤
 						volume -= quepos;
 						quepos = 0;
 					}
@@ -211,7 +211,7 @@ void MatchEngine::update_lob(WTSTickData* curTick)
 		}
 	}
 
-	//ÂôÒ»ºÍÂòÒ»Ö®¼äµÄ±¨¼Û±ØĞëÈ«²¿Çå³ıµô
+	//å–ä¸€å’Œä¹°ä¸€ä¹‹é—´çš„æŠ¥ä»·å¿…é¡»å…¨éƒ¨æ¸…é™¤æ‰
 	if (!curBook._items.empty())
 	{
 		auto sit = curBook._items.lower_bound(curBook._bid_px);
@@ -241,8 +241,8 @@ OrderIDs MatchEngine::buy(const char* stdCode, double price, double qty, uint64_
 	ordInfo._left = qty;
 	ordInfo._price = lastTick->price();
 
-	//¶©µ¥ÅÅ¶Ó,Èç¹ûÊÇ¶ÔÊÖ¼Û,Ôò°´ÕÕ¶ÔÊÖ¼ÛµÄ¹Òµ¥Á¿À´ÅÅ¶Ó
-	//Èç¹ûÊÇ×îĞÂ¼Û,Ôò°´ÕÕÂòÒ»ÂôÒ»µÄ¼ÓÈ¨Æ½¾ù
+	//è®¢å•æ’é˜Ÿ,å¦‚æœæ˜¯å¯¹æ‰‹ä»·,åˆ™æŒ‰ç…§å¯¹æ‰‹ä»·çš„æŒ‚å•é‡æ¥æ’é˜Ÿ
+	//å¦‚æœæ˜¯æœ€æ–°ä»·,åˆ™æŒ‰ç…§ä¹°ä¸€å–ä¸€çš„åŠ æƒå¹³å‡
 	if (decimal::ge(price, lastTick->askprice(0)))
 		ordInfo._positive = true;
 	else if (decimal::eq(price, lastTick->bidprice(0)))
@@ -250,7 +250,7 @@ OrderIDs MatchEngine::buy(const char* stdCode, double price, double qty, uint64_
 	if (decimal::eq(price, lastTick->price()))
 		ordInfo._queue = (uint32_t)round((lastTick->askqty(0)*lastTick->askprice(0) + lastTick->bidqty(0)*lastTick->bidprice(0)) / (lastTick->askprice(0) + lastTick->bidprice(0)));
 
-	//ÅÅ¶ÓÎ»ÖÃ°´ÕÕÆ½¾ù³·µ¥ÂÊ,³·Ïúµô²¿·Ö
+	//æ’é˜Ÿä½ç½®æŒ‰ç…§å¹³å‡æ’¤å•ç‡,æ’¤é”€æ‰éƒ¨åˆ†
 	ordInfo._queue -= (uint32_t)round(ordInfo._queue*_cancelrate);
 	ordInfo._time = curTime;
 
@@ -276,8 +276,8 @@ OrderIDs MatchEngine::sell(const char* stdCode, double price, double qty, uint64
 	ordInfo._left = qty;
 	ordInfo._price = lastTick->price();
 
-	//¶©µ¥ÅÅ¶Ó,Èç¹ûÊÇ¶ÔÊÖ¼Û,Ôò°´ÕÕ¶ÔÊÖ¼ÛµÄ¹Òµ¥Á¿À´ÅÅ¶Ó
-	//Èç¹ûÊÇ×îĞÂ¼Û,Ôò°´ÕÕÂòÒ»ÂôÒ»µÄ¼ÓÈ¨Æ½¾ù
+	//è®¢å•æ’é˜Ÿ,å¦‚æœæ˜¯å¯¹æ‰‹ä»·,åˆ™æŒ‰ç…§å¯¹æ‰‹ä»·çš„æŒ‚å•é‡æ¥æ’é˜Ÿ
+	//å¦‚æœæ˜¯æœ€æ–°ä»·,åˆ™æŒ‰ç…§ä¹°ä¸€å–ä¸€çš„åŠ æƒå¹³å‡
 	if (decimal::eq(price, lastTick->askprice(0)))
 		ordInfo._queue = lastTick->askqty(0);
 	else if (decimal::le(price, lastTick->bidprice(0)))
@@ -350,10 +350,10 @@ void MatchEngine::handle_tick(const char* stdCode, WTSTickData* curTick)
 	update_lob(curTick);
 
 	OrderIDs to_erase;
-	//¼ì²é¶©µ¥×´Ì¬
+	//æ£€æŸ¥è®¢å•çŠ¶æ€
 	fire_orders(stdCode, to_erase);
 
-	//´éºÏ
+	//æ’®åˆ
 	match_orders(curTick, to_erase);
 
 	for (uint32_t localid : to_erase)

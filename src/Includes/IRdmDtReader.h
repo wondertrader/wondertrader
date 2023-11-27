@@ -1,4 +1,4 @@
-/*!
+ï»¿/*!
  * \file IRdmDtReader.h
  * \project	WonderTrader
  *
@@ -25,32 +25,32 @@ class WTSVariant;
 
 
 /*
- *	@brief Êı¾İ¶ÁÈ¡Ä£¿é»Øµ÷½Ó¿Ú
- *	@details Ö÷ÒªÓÃÓÚÊı¾İ¶ÁÈ¡Ä£¿éÏòµ÷ÓÃÄ£¿é»Øµ÷
+ *	@brief æ•°æ®è¯»å–æ¨¡å—å›è°ƒæ¥å£
+ *	@details ä¸»è¦ç”¨äºæ•°æ®è¯»å–æ¨¡å—å‘è°ƒç”¨æ¨¡å—å›è°ƒ
  */
 class IRdmDtReaderSink
 {
 public:
 	/*
-	 *	@brief	»ñÈ¡»ù´¡Êı¾İ¹ÜÀí½Ó¿ÚÖ¸Õë
+	 *	@brief	è·å–åŸºç¡€æ•°æ®ç®¡ç†æ¥å£æŒ‡é’ˆ
 	 */
 	virtual IBaseDataMgr*	get_basedata_mgr() = 0;
 
 	/*
-	 *	@brief	»ñÈ¡Ö÷Á¦ÇĞ»»¹æÔò¹ÜÀí½Ó¿ÚÖ¸Õë
+	 *	@brief	è·å–ä¸»åŠ›åˆ‡æ¢è§„åˆ™ç®¡ç†æ¥å£æŒ‡é’ˆ
 	 */
 	virtual IHotMgr*		get_hot_mgr() = 0;
 
 	/*
-	 *	@brief	Êä³öÊı¾İ¶ÁÈ¡Ä£¿éµÄÈÕÖ¾
+	 *	@brief	è¾“å‡ºæ•°æ®è¯»å–æ¨¡å—çš„æ—¥å¿—
 	 */
 	virtual void		reader_log(WTSLogLevel ll, const char* message) = 0;
 };
 
 /*
- *	@brief	Ëæ»úÊı¾İ¶ÁÈ¡½Ó¿Ú
+ *	@brief	éšæœºæ•°æ®è¯»å–æ¥å£
  *
- *	ÏòºËĞÄÄ£¿éÌá¹©ĞĞÇéÊı¾İ(tick¡¢KÏß)¶ÁÈ¡½Ó¿Ú
+ *	å‘æ ¸å¿ƒæ¨¡å—æä¾›è¡Œæƒ…æ•°æ®(tickã€Kçº¿)è¯»å–æ¥å£
  */
 class IRdmDtReader
 {
@@ -74,10 +74,10 @@ public:
 	virtual WTSKlineSlice*	readKlineSliceByCount(const char* stdCode, WTSKlinePeriod period, uint32_t count, uint64_t etime = 0) = 0;
 
 	/*
-	 *	@brief »ñÈ¡¸ö¹ÉÖ¸¶¨ÈÕÆÚµÄ¸´È¨Òò×Ó
+	 *	@brief è·å–ä¸ªè‚¡æŒ‡å®šæ—¥æœŸçš„å¤æƒå› å­
 	 *
-	 *	@param	stdCode	±ê×¼Æ·ÖÖ´úÂë,ÈçSSE.600000
-	 *	@param	date	Ö¸¶¨ÈÕÆÚ,¸ñÊ½yyyyMMdd£¬Ä¬ÈÏÎª0£¬Îª0Ôò°´µ±Ç°ÈÕÆÚ´¦Àí
+	 *	@param	stdCode	æ ‡å‡†å“ç§ä»£ç ,å¦‚SSE.600000
+	 *	@param	date	æŒ‡å®šæ—¥æœŸ,æ ¼å¼yyyyMMddï¼Œé»˜è®¤ä¸º0ï¼Œä¸º0åˆ™æŒ‰å½“å‰æ—¥æœŸå¤„ç†
 	 */
 	virtual double		getAdjFactorByDate(const char* stdCode, uint32_t date = 0) { return 1.0; }
 
@@ -87,9 +87,9 @@ protected:
 	IRdmDtReaderSink*	_sink;
 };
 
-//´´½¨Êı¾İ´æ´¢¶ÔÏó
+//åˆ›å»ºæ•°æ®å­˜å‚¨å¯¹è±¡
 typedef IRdmDtReader* (*FuncCreateRdmDtReader)();
-//É¾³ıÊı¾İ´æ´¢¶ÔÏó
+//åˆ é™¤æ•°æ®å­˜å‚¨å¯¹è±¡
 typedef void(*FuncDeleteRdmDtReader)(IRdmDtReader* store);
 
 NS_WTP_END

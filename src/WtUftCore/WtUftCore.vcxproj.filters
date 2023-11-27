@@ -66,6 +66,12 @@
     <ClInclude Include="ShareManager.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="UftDataDefs.h">
+      <Filter>UFT</Filter>
+    </ClInclude>
+    <ClInclude Include="EventNotifier.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TraderAdapter.cpp">
@@ -96,6 +102,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="ShareManager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="EventNotifier.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
