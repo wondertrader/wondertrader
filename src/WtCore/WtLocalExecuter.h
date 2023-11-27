@@ -36,7 +36,7 @@ public:
 	 */
 	bool init(WTSVariant* params);
 
-	void setTrader(TraderAdapter* adapter);
+	void setTrader(TraderAdapter* adapter, const char* exchg = "DEFAULT");
 
 private:
 	ExecuteUnitPtr	getUnit(const char* code, bool bAutoCreate = true);
@@ -118,7 +118,17 @@ public:
 
 private:
 	ExecuteUnitMap		_unit_map;
-	TraderAdapter*		_trader;
+	typedef struct _TraderInfo
+	{
+		TraderAdapter*	_trader;
+		bool			_ready;
+
+		_TraderInfo() {
+			memset(this, 0, sizeof(_TraderInfo));
+		}
+	}TraderInfo;
+	typedef wt_hashmap<std::string, TraderInfo> TraderMap;
+	TraderMap			_traders;
 	WtExecuterFactory*	_factory;
 	IDataManager*		_data_mgr;
 	WTSVariant*			_config;
@@ -126,7 +136,6 @@ private:
 	double				_scale;				//放大倍数
 	bool				_auto_clear;		//是否自动清理上一期的主力合约头寸
 	bool				_strict_sync;		//是否严格同步目标仓位
-	bool				_channel_ready;
 
 	SpinMutex			_mtx_units;
 
@@ -149,6 +158,18 @@ private:
 
 	typedef std::shared_ptr<boost::threadpool::pool> ThreadPoolPtr;
 	ThreadPoolPtr		_pool;
+
+private:
+	inline
+	TraderInfo& getTrader(const char* exchg)
+	{
+		auto it = _traders.find(exchg);
+		if (it != _traders.end())
+			return it->second;
+
+
+		return _traders["DEFAULT"];
+	}
 };
 
 typedef std::shared_ptr<IExecCommand> ExecCmdPtr;
