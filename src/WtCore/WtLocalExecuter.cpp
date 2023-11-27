@@ -26,10 +26,8 @@ WtLocalExecuter::WtLocalExecuter(WtExecuterFactory* factory, const char* name, I
 	: IExecCommand(name)
 	, _factory(factory)
 	, _data_mgr(dataMgr)
-	, _channel_ready(false)
 	, _scale(1.0)
 	, _auto_clear(true)
-	, _trader(NULL)
 {
 }
 
@@ -40,12 +38,21 @@ WtLocalExecuter::~WtLocalExecuter()
 		_pool->wait();
 }
 
-void WtLocalExecuter::setTrader(TraderAdapter* adapter)
+void WtLocalExecuter::setTrader(TraderAdapter* trader, const char* exchg /* = 'DEFAULT' */)
 {
-	_trader = adapter;
-	//设置的时候读取一下trader的状态
-	if(_trader)
-		_channel_ready = _trader->isReady();
+	if(trader == NULL)
+	{
+		throw std::runtime_error("Trader cannot be nullptr");
+	}
+
+	TraderInfo& tInfo = _traders[exchg];
+	if(tInfo._trader != trader)
+	{
+		tInfo._trader = trader;
+		//设置的时候读取一下trader的状态
+		if (trader)
+			tInfo._ready = trader->isReady();
+	}
 }
 
 bool WtLocalExecuter::init(WTSVariant* params)
@@ -135,6 +142,8 @@ ExecuteUnitPtr WtLocalExecuter::getUnit(const char* stdCode, bool bAutoCreate /*
 	CodeHelper::CodeInfo codeInfo = CodeHelper::extractStdCode(stdCode, NULL);
 	std::string commID = codeInfo.stdCommID();
 
+	TraderInfo& tInfo = getTrader(codeInfo._exchg);
+
 	WTSVariant* policy = _config->get("policy");
 	std::string des = commID;
 	if (!policy->has(commID.c_str()))
@@ -160,7 +169,7 @@ ExecuteUnitPtr WtLocalExecuter::getUnit(const char* stdCode, bool bAutoCreate /*
 			unit->self()->init(this, stdCode, cfg);
 
 			//如果通道已经就绪，则直接通知执行单元
-			if (_channel_ready)
+			if (tInfo._ready)
 				unit->self()->on_channel_ready();
 		}
 		return unit;
@@ -193,58 +202,79 @@ WTSTickData* WtLocalExecuter::grabLastTick(const char* stdCode)
 
 double WtLocalExecuter::getPosition(const char* stdCode, bool validOnly /* = true */, int32_t flag /* = 3 */)
 {
-	if (NULL == _trader)
+	CodeHelper::CodeInfo codeInfo = CodeHelper::extractStdCode(stdCode, NULL);
+	TraderInfo& tInfo = getTrader(codeInfo._exchg);
+
+	if (NULL == tInfo._trader)
 		return 0.0;
 
-	return _trader->getPosition(stdCode, validOnly, flag);
+	return tInfo._trader->getPosition(stdCode, validOnly, flag);
 }
 
 double WtLocalExecuter::getUndoneQty(const char* stdCode)
 {
-	if (NULL == _trader)
+	CodeHelper::CodeInfo codeInfo = CodeHelper::extractStdCode(stdCode, NULL);
+	TraderInfo& tInfo = getTrader(codeInfo._exchg);
+
+	if (NULL == tInfo._trader)
 		return 0.0;
 
-	return _trader->getUndoneQty(stdCode);
+	return tInfo._trader->getUndoneQty(stdCode);
 }
 
 OrderMap* WtLocalExecuter::getOrders(const char* stdCode)
 {
-	if (NULL == _trader)
+	CodeHelper::CodeInfo codeInfo = CodeHelper::extractStdCode(stdCode, NULL);
+	TraderInfo& tInfo = getTrader(codeInfo._exchg);
+
+	if (NULL == tInfo._trader)
 		return NULL;
 
-	return _trader->getOrders(stdCode);
+	return tInfo._trader->getOrders(stdCode);
 }
 
 OrderIDs WtLocalExecuter::buy(const char* stdCode, double price, double qty, bool bForceClose/* = false*/)
 {
-	if (!_channel_ready)
+	CodeHelper::CodeInfo codeInfo = CodeHelper::extractStdCode(stdCode, NULL);
+	TraderInfo& tInfo = getTrader(codeInfo._exchg);
+
+	if (!tInfo._ready)
 		return OrderIDs();
 
-	return _trader->buy(stdCode, price, qty, 0, bForceClose);
+	return tInfo._trader->buy(stdCode, price, qty, 0, bForceClose);
 }
 
 OrderIDs WtLocalExecuter::sell(const char* stdCode, double price, double qty, bool bForceClose/* = false*/)
 {
-	if (!_channel_ready)
+	CodeHelper::CodeInfo codeInfo = CodeHelper::extractStdCode(stdCode, NULL);
+	TraderInfo& tInfo = getTrader(codeInfo._exchg);
+
+	if (tInfo._ready)
 		return OrderIDs();
 
-	return _trader->sell(stdCode, price, qty, 0, bForceClose);
+	return tInfo._trader->sell(stdCode, price, qty, 0, bForceClose);
 }
 
 bool WtLocalExecuter::cancel(uint32_t localid)
 {
-	if (!_channel_ready)
+	//CodeHelper::CodeInfo codeInfo = CodeHelper::extractStdCode(stdCode, NULL);
+	TraderInfo& tInfo = getTrader("");
+
+	if (tInfo._ready)
 		return false;
 
-	return _trader->cancel(localid);
+	return tInfo._trader->cancel(localid);
 }
 
 OrderIDs WtLocalExecuter::cancel(const char* stdCode, bool isBuy, double qty)
 {
-	if (!_channel_ready)
+	CodeHelper::CodeInfo codeInfo = CodeHelper::extractStdCode(stdCode, NULL);
+	TraderInfo& tInfo = getTrader(codeInfo._exchg);
+
+	if (tInfo._ready)
 		return OrderIDs();
 
-	return _trader->cancel(stdCode, isBuy, qty);
+	return tInfo._trader->cancel(stdCode, isBuy, qty);
 }
 
 void WtLocalExecuter::writeLog(const char* message)
@@ -283,6 +313,9 @@ void WtLocalExecuter::on_position_changed(const char* stdCode, double diffPos)
 	if (unit == NULL)
 		return;
 
+	CodeHelper::CodeInfo codeInfo = CodeHelper::extractStdCode(stdCode, NULL);
+	TraderInfo& tInfo = getTrader(codeInfo._exchg);
+
 	double oldVol = _target_pos[stdCode];
 	double newVol = oldVol + diffPos;
 	_target_pos[stdCode] = newVol;
@@ -294,7 +327,7 @@ void WtLocalExecuter::on_position_changed(const char* stdCode, double diffPos)
 		WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "Target position of {} changed: {} -> {} : {} with scale:{}", stdCode, oldVol, newVol, traderTarget, _scale);
 	}
 
-	if (_trader && !_trader->checkOrderLimits(stdCode))
+	if (tInfo._trader && !tInfo._trader->checkOrderLimits(stdCode))
 	{
 		WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "{} is disabled", stdCode);
 		return;
@@ -351,6 +384,9 @@ void WtLocalExecuter::set_position(const wt_hashmap<std::string, double>& target
 		if (unit == NULL)
 			continue;
 
+		CodeHelper::CodeInfo codeInfo = CodeHelper::extractStdCode(stdCode, NULL);
+		TraderInfo& tInfo = getTrader(codeInfo._exchg);
+
 		double oldVol = _target_pos[stdCode];
 		_target_pos[stdCode] = newVol;
 		// 账户的理论持仓要经过修正
@@ -361,7 +397,7 @@ void WtLocalExecuter::set_position(const wt_hashmap<std::string, double>& target
 			WTSLogger::log_dyn("executer", _name.c_str(), LL_INFO, "Target position of {} changed: {} -> {} : {} with scale{}", stdCode, oldVol, newVol, traderTarget, _scale);
 		}
 
-		if (_trader && !_trader->checkOrderLimits(stdCode))
+		if (tInfo._trader && !tInfo._trader->checkOrderLimits(stdCode))
 		{
 			WTSLogger::log_dyn("executer", _name.c_str(), LL_WARN, "{} is disabled due to entrust limit control ", stdCode);
 			continue;
@@ -525,7 +561,6 @@ void WtLocalExecuter::on_entrust(uint32_t localid, const char* stdCode, bool bSu
 
 void WtLocalExecuter::on_channel_ready()
 {
-	_channel_ready = true;
 	SpinLock lock(_mtx_units);
 	for (auto it = _unit_map.begin(); it != _unit_map.end(); it++)
 	{
@@ -549,7 +584,6 @@ void WtLocalExecuter::on_channel_ready()
 
 void WtLocalExecuter::on_channel_lost()
 {
-	_channel_ready = false;
 	SpinLock lock(_mtx_units);
 	for (auto it = _unit_map.begin(); it != _unit_map.end(); it++)
 	{
