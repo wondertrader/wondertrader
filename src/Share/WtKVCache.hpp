@@ -35,7 +35,7 @@ private:
 	typedef struct CacheBlock
 	{
 		char		_blk_flag[FLAG_SIZE];
-		uint32_t	_size;
+		volatile uint32_t	_size;
 		uint32_t	_capacity;
 		uint32_t	_date;
 		CacheItem	_items[0];
@@ -182,11 +182,10 @@ public:
 
 	inline void clear()
 	{
-		_lock.lock();
-
 		if (_cache._block == NULL)
 			return;
 
+		_lock.lock();
 		_indice.clear();
 
 		memset(_cache._block->_items, 0, sizeof(CacheItem)*_cache._block->_capacity);
@@ -213,15 +212,17 @@ public:
 		}
 		else
 		{
-			_lock.lock();
-			if(_cache._block->_size == _cache._block->_capacity)
-				resize(_cache._block->_capacity*2, logger);
+			if (_cache._block->_size == _cache._block->_capacity)
+			{
+				_lock.lock();
+				resize(_cache._block->_capacity * 2, logger);
+				_lock.unlock();
+			}
 
-			_indice[key] = _cache._block->_size;
-			wt_strcpy(_cache._block->_items[_cache._block->_size]._key, key);
-			wt_strcpy(_cache._block->_items[_cache._block->_size]._val, val, len);
-			_cache._block->_size += 1;
-			_lock.unlock();
+			uint32_t idx = _cache._block->_size++;
+			wt_strcpy(_cache._block->_items[idx]._key, key);
+			wt_strcpy(_cache._block->_items[idx]._val, val, len);
+			_indice[key] = idx;
 		}
 	}
 
@@ -232,7 +233,7 @@ public:
 
 	inline uint32_t size() const
 	{
-		if (_cache._block == 0)
+		if (_cache._block == NULL)
 			return 0;
 
 		return _cache._block->_size;
@@ -240,7 +241,7 @@ public:
 
 	inline uint32_t capacity() const
 	{
-		if (_cache._block == 0)
+		if (_cache._block == NULL)
 			return 0;
 
 		return _cache._block->_capacity;
