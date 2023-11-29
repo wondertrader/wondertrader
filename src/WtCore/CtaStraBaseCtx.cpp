@@ -655,7 +655,7 @@ void CtaStraBaseCtx::on_bar(const char* stdCode, const char* period, uint32_t ti
 	fmtutil::format_to(realPeriod, "{}{}", period, times);
 
 	thread_local static char key[64] = { 0 };
-	fmtutil::format_to(key, "{}#{}{}", stdCode, realPeriod);
+	fmtutil::format_to(key, "{}#{}", stdCode, realPeriod);
 
 	KlineTag& tag = _kline_tags[key];
 	tag._closed = true;
