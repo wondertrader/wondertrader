@@ -31,7 +31,7 @@ public:
 		uint32_t	second;		//偏移过的结束时间
 
 		_TradingSection(uint32_t stime, uint32_t etime, uint32_t stime_raw, uint32_t etime_raw)
-			: first(stime), second(etime), first_raw(stime_raw), second_raw(second_raw)
+			: first(stime), second(etime), first_raw(stime_raw), second_raw(etime_raw)
 		{
 		}
 	} TradingSection;
@@ -504,6 +504,9 @@ public:
 	 */
 	inline uint32_t	offsetTime(uint32_t uTime, bool bAlignLeft) const
 	{
+		if (m_uOffsetMins == 0)
+			return uTime;
+
 		int32_t curMinute = (uTime/100)*60 + uTime%100;
 		curMinute += m_uOffsetMins;
 		if(bAlignLeft)
@@ -526,6 +529,9 @@ public:
 
 	inline uint32_t	originalTime(uint32_t uTime) const
 	{
+		if (m_uOffsetMins == 0)
+			return uTime;
+
 		int32_t curMinute = (uTime/100)*60 + uTime%100;
 		curMinute -= m_uOffsetMins;
 		if(curMinute >= 1440)
