@@ -307,7 +307,6 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 	}
 	else
 	{
-		wt_hashmap<std::string, double> target_pos;
 		for (auto it = _ctx_map.begin(); it != _ctx_map.end(); it++)
 		{
 			CtaContextPtr& ctx = (CtaContextPtr&)it->second;
