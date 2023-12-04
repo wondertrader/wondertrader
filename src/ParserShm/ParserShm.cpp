@@ -120,7 +120,7 @@ bool ParserShm::connect()
 			
 			if (_queue->_readable == UINT64_MAX)	//刚分配好，还没数据进来
 			{
-				lastIdx = 999999;
+				lastIdx = 9999999999;
 				if(_check_span != 0)
 					std::this_thread::sleep_for(std::chrono::microseconds(_check_span));
 				continue;
@@ -133,7 +133,7 @@ bool ParserShm::connect()
 					std::this_thread::sleep_for(std::chrono::microseconds(_check_span));
 				continue;
 			}
-			else if (lastIdx == 999999)	//之前没数据的时候检查了一次，现在有数据了，从0开始读取
+			else if (lastIdx == 9999999999)	//之前没数据的时候检查了一次，现在有数据了，从0开始读取
 			{
 				lastIdx = 0;
 			}
