@@ -33,6 +33,8 @@ inline void write_log(IParserSpi* sink, WTSLogLevel ll, const char* format, cons
 #define UDP_MSG_PUSHORDDTL	0x202	//委托明细
 #define UDP_MSG_PUSHTRANS	0x203	//逐笔成交
 
+#define NODATA_FLAG 0xfffffffffffffffe
+
 
 extern "C"
 {
@@ -120,7 +122,7 @@ bool ParserShm::connect()
 			
 			if (_queue->_readable == UINT64_MAX)	//刚分配好，还没数据进来
 			{
-				lastIdx = 9999999999;
+				lastIdx = NODATA_FLAG;
 				if(_check_span != 0)
 					std::this_thread::sleep_for(std::chrono::microseconds(_check_span));
 				continue;
@@ -133,7 +135,7 @@ bool ParserShm::connect()
 					std::this_thread::sleep_for(std::chrono::microseconds(_check_span));
 				continue;
 			}
-			else if (lastIdx == 9999999999)	//之前没数据的时候检查了一次，现在有数据了，从0开始读取
+			else if (lastIdx == NODATA_FLAG)	//之前没数据的时候检查了一次，现在有数据了，从0开始读取
 			{
 				lastIdx = 0;
 			}
