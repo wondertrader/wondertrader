@@ -222,7 +222,7 @@ bool WtExecuterMgr::load_router_rules(WTSVariant* config)
 			for(uint32_t k = 0; k < cnt; k++)
 			{
 				const char* execId = itemExec->get(k)->asCString();
-				_router_rules[straName].insert(execId);
+				_router_rules_strategy[straName].insert(execId);
 				WTSLogger::info("Signal of strategy {} will be routed to executer {}", straName, execId);
 				_routed_executers.insert(execId);
 			}
@@ -230,13 +230,13 @@ bool WtExecuterMgr::load_router_rules(WTSVariant* config)
 		else
 		{
 			const char* execId = itemExec->asCString();
-			_router_rules[straName].insert(execId);
+			_router_rules_strategy[straName].insert(execId);
 			WTSLogger::info("Signal of strategy {} will be routed to executer {}", straName, execId);
 			_routed_executers.insert(execId);
 		}
 	}
 
-	WTSLogger::info("{} router rules loaded", _router_rules.size());
+	WTSLogger::info("{} router rules loaded", _router_rules_strategy.size());
 
 	return true;
 }

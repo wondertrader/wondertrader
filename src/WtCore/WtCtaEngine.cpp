@@ -146,7 +146,7 @@ void WtCtaEngine::on_init()
 		CtaContextPtr& ctx = (CtaContextPtr&)it->second;
 		ctx->on_init();
 
-		const auto& exec_ids = _exec_mgr.get_route(ctx->name());
+		const auto& exec_ids = _exec_mgr.get_route_by_strategy(ctx->name());
 
 		ctx->enum_position([this, ctx, exec_ids](const char* stdCode, double qty){
 
@@ -270,7 +270,7 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 		for (auto it = _ctx_map.begin(); it != _ctx_map.end(); it++)
 		{
 			CtaContextPtr& ctx = (CtaContextPtr&)it->second;
-			const auto& exec_ids = _exec_mgr.get_route(ctx->name());
+			const auto& exec_ids = _exec_mgr.get_route_by_strategy(ctx->name());
 			ctx->enum_position([this, ctx, exec_ids, &target_pos](const char* stdCode, double qty) {
 
 				double oldQty = qty;
@@ -311,7 +311,7 @@ void WtCtaEngine::on_schedule(uint32_t curDate, uint32_t curTime)
 		{
 			CtaContextPtr& ctx = (CtaContextPtr&)it->second;
 			ctx->on_schedule(curDate, curTime);
-			const auto& exec_ids = _exec_mgr.get_route(ctx->name());
+			const auto& exec_ids = _exec_mgr.get_route_by_strategy(ctx->name());
 			ctx->enum_position([this, ctx, exec_ids, &target_pos](const char* stdCode, double qty) {
 
 				double oldQty = qty;
@@ -467,7 +467,7 @@ void WtCtaEngine::handle_pos_change(const char* straName, const char* stdCode, d
 	 *	那么就只提交增量
 	 *	如果策略没有绑定执行通道，就提交全量
 	 */
-	const auto& exec_ids = _exec_mgr.get_route(straName);
+	const auto& exec_ids = _exec_mgr.get_route_by_strategy(straName);
 	for(auto& execid : exec_ids)
 		_exec_mgr.handle_pos_change(realCode.c_str(), targetPos, diffPos, execid.c_str());
 }
