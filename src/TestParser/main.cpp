@@ -12,6 +12,7 @@
 #include "../WTSTools/WTSBaseDataMgr.h"
 #include "../WTSTools/WTSLogger.h"
 #include "../WTSUtils/WTSCfgLoader.h"
+#include "../WTSUtils/SignalHook.hpp"
 
 WTSBaseDataMgr	g_bdMgr;
 
@@ -140,7 +141,7 @@ std::string getBaseFolder()
 
 int main()
 {
-	WTSLogger::init("logcfg.yaml");
+	WTSLogger::init("./logcfg.yaml");
 
 	WTSVariant* root = WTSCfgLoader::load_from_file("config.yaml");
 	if (root == NULL)
@@ -170,11 +171,27 @@ int main()
 
 	ParserSpi* parser = new ParserSpi;
 	parser->init(params, module.c_str());
+
 	parser->run();
 
 	root->release();
 
-	getchar();
+	bool bExit = false;
+	install_signal_hooks([&bExit](const char* message) {
+		if (!bExit)
+			WTSLogger::error(message);
+	}, [&bExit](bool toExit) {
+		if (bExit)
+			return;
+
+		bExit = toExit;
+		WTSLogger::info("Exit flag is {}", bExit);
+	});
+
+	while (!bExit)
+	{
+		std::this_thread::sleep_for(std::chrono::milliseconds(10));
+	}
 	
 	//exit(9);
 	parser->release();
