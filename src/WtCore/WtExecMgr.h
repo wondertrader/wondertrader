@@ -33,17 +33,17 @@ public:
 	/*
 	 *	
 	 */
-	inline const wt_hashset<std::string>& get_route(const char* strategyid)
+	inline const wt_hashset<std::string>& get_route_by_strategy(const char* strategyid)
 	{
 		static wt_hashset<std::string> ALL_EXECUTERS;
 		if (ALL_EXECUTERS.empty())
 			ALL_EXECUTERS.insert("ALL");
 
-		if (_router_rules.empty())
+		if (_router_rules_strategy.empty())
 			return ALL_EXECUTERS;
 
-		auto it = _router_rules.find(strategyid);
-		if (it == _router_rules.end())
+		auto it = _router_rules_strategy.find(strategyid);
+		if (it == _router_rules_strategy.end())
 			return ALL_EXECUTERS;
 
 		return it->second;
@@ -80,7 +80,7 @@ private:
 	wt_hashmap<std::string, TargetsMap>	_all_cached_targets;
 
 	typedef wt_hashset<std::string>	ExecuterSet;
-	wt_hashmap<std::string, ExecuterSet>	_router_rules;
+	wt_hashmap<std::string, ExecuterSet>	_router_rules_strategy;
 
 	wt_hashset<std::string>	_routed_executers;
 };

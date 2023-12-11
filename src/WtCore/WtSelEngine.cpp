@@ -457,7 +457,7 @@ void WtSelEngine::handle_pos_change(const char* straName, const char* stdCode, d
 	append_signal(realCode.c_str(), targetPos, false);
 	save_datas();
 
-	const auto& exec_ids = _exec_mgr.get_route(straName);
+	const auto& exec_ids = _exec_mgr.get_route_by_strategy(straName);
 	for (auto& execid : exec_ids)
 		_exec_mgr.handle_pos_change(realCode.c_str(), targetPos, diffQty, execid.c_str());
 }
