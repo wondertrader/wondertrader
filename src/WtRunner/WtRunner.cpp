@@ -43,12 +43,7 @@ WtRunner::WtRunner()
 	, _is_sel(false)
 	, _to_exit(false)
 {
-	install_signal_hooks([](const char* message) {
-		WTSLogger::error(message);
-	}, [this](bool bStopped) {
-		_to_exit = bStopped;
-		WTSLogger::info("Exit flag is {}", _to_exit);
-	});
+	
 }
 
 
@@ -586,6 +581,17 @@ void WtRunner::run(bool bAsync /* = false */)
 		_traders.run();
 
 		_engine->run();
+
+		/*
+		 *	By Wesley @ 2023.12.11 
+		 *	搬到这里来的原因是，用自定义的signal_handler覆盖其他模块的signal_handler
+		 */
+		install_signal_hooks([](const char* message) {
+			WTSLogger::error(message);
+		}, [this](bool bStopped) {
+			_to_exit = bStopped;
+			WTSLogger::info("Exit flag is {}", _to_exit);
+		});
 
 		if(!bAsync)
 		{
