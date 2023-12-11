@@ -293,18 +293,6 @@ int main(int argc, char* argv[])
 	CMiniDumper::Enable("QuoteFactory.exe", true);
 #endif
 
-	bool bExit = false;
-	install_signal_hooks([&bExit](const char* message) {
-		if(!bExit)
-			WTSLogger::error(message);
-	}, [&bExit](bool toExit) {
-		if (bExit)
-			return;
-
-		bExit = toExit;
-		WTSLogger::info("Exit flag is {}", bExit);
-	});
-
 	if (cParam->exists())
 		filename = cParam->get<std::string>();
 	else
@@ -317,6 +305,18 @@ int main(int argc, char* argv[])
 	}
 
 	initialize(filename);
+
+	bool bExit = false;
+	install_signal_hooks([&bExit](const char* message) {
+		if (!bExit)
+			WTSLogger::error(message);
+	}, [&bExit](bool toExit) {
+		if (bExit)
+			return;
+
+		bExit = toExit;
+		WTSLogger::info("Exit flag is {}", bExit);
+	});
 
 	while (!bExit)
 	{
