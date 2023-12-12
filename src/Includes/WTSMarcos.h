@@ -91,7 +91,7 @@ typedef const char*			WtString;
  *	重新和strcpy进行了性能测试，发现性能上并没有提升，甚至还有一些下降
  *	可能和早期测试环境有很大关系，用到的地方很多，暂时先保留
  */
-inline size_t wt_strcpy(char* des, const char* src, size_t len = 0)
+inline size_t wt_strcpy(char* des, const char* src, size_t len = 0) noexcept
 {
 	len = (len == 0) ? strlen(src) : len;
 	memcpy(des, src, len);
