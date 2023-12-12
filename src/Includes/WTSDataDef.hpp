@@ -231,7 +231,7 @@ protected:
 
 
 public:
-	static WTSKlineSlice* create(const char* code, WTSKlinePeriod period, uint32_t times, WTSBarStruct* bars = NULL, int32_t count = 0)
+	static WTSKlineSlice* create(const char* code, WTSKlinePeriod period, uint32_t times, WTSBarStruct* bars = NULL, int32_t count = 0) noexcept
 	{
 		WTSKlineSlice *pRet = new WTSKlineSlice;
 		wt_strcpy(pRet->_code, code);
@@ -321,7 +321,7 @@ public:
 	*	@tail 结束位置
 	*	如果位置超出范围,返回INVALID_VALUE
 	*/
-	double		maxprice(int32_t head, int32_t tail) const
+	inline double	maxprice(int32_t head, int32_t tail) const
 	{
 		head = translateIdx(head);
 		tail = translateIdx(tail);
@@ -343,7 +343,7 @@ public:
 	*	@tail 结束位置
 	*	如果位置超出范围,返回INVALID_VALUE
 	*/
-	double		minprice(int32_t head, int32_t tail) const
+	inline double	minprice(int32_t head, int32_t tail) const
 	{
 		head = translateIdx(head);
 		tail = translateIdx(tail);
@@ -379,7 +379,7 @@ public:
 	*	如果超出范围,则返回NULL
 	*	@type 支持的类型有KT_OPEN、KT_HIGH、KT_LOW、KT_CLOSE,KFT_VOLUME、KT_DATE
 	*/
-	WTSValueArray*	extractData(WTSKlineFieldType type, int32_t head = 0, int32_t tail = -1) const
+	WTSValueArray*	extractData(WTSKlineFieldType type, int32_t head = 0, int32_t tail = -1) const noexcept
 	{
 		if (_count == 0)
 			return NULL;
@@ -478,7 +478,7 @@ public:
 	 *	@code 要创建的合约代码
 	 *	@size 初始分配的数据长度
 	 */
-	static WTSKlineData* create(const char* code, uint32_t size)
+	static WTSKlineData* create(const char* code, uint32_t size) noexcept
 	{
 		WTSKlineData *pRet = new WTSKlineData;
 		pRet->m_vecBarData.resize(size);
@@ -862,7 +862,7 @@ public:
 	 *	创建一个tick数据对象
 	 *	@stdCode 合约代码
 	 */
-	static inline WTSTickData* create(const char* stdCode)
+	static inline WTSTickData* create(const char* stdCode) noexcept
 	{
 		WTSTickData* pRet = WTSTickData::allocate();
 		auto len = strlen(stdCode);
@@ -876,7 +876,7 @@ public:
 	 *	根据tick结构体创建一个tick数据对象
 	 *	@tickData tick结构体
 	 */
-	static inline WTSTickData* create(WTSTickStruct& tickData)
+	static inline WTSTickData* create(WTSTickStruct& tickData) noexcept
 	{
 		WTSTickData* pRet = allocate();
 		memcpy(&pRet->m_tickStruct, &tickData, sizeof(WTSTickStruct));
@@ -1017,19 +1017,19 @@ private:
 	WTSContractInfo*	m_pContract;
 };
 
-class WTSOrdQueData : public WTSObject
+class WTSOrdQueData : public WTSPoolObject< WTSOrdQueData>
 {
 public:
-	static inline WTSOrdQueData* create(const char* code)
+	static inline WTSOrdQueData* create(const char* code) noexcept
 	{
-		WTSOrdQueData* pRet = new WTSOrdQueData;
+		WTSOrdQueData* pRet = WTSOrdQueData::allocate();
 		wt_strcpy(pRet->m_oqStruct.code, code);
 		return pRet;
 	}
 
-	static inline WTSOrdQueData* create(WTSOrdQueStruct& ordQueData)
+	static inline WTSOrdQueData* create(WTSOrdQueStruct& ordQueData) noexcept
 	{
-		WTSOrdQueData* pRet = new WTSOrdQueData;
+		WTSOrdQueData* pRet = WTSOrdQueData::allocate();
 		memcpy(&pRet->m_oqStruct, &ordQueData, sizeof(WTSOrdQueStruct));
 
 		return pRet;
@@ -1053,19 +1053,19 @@ private:
 	WTSContractInfo*	m_pContract;
 };
 
-class WTSOrdDtlData : public WTSObject
+class WTSOrdDtlData : public WTSPoolObject<WTSOrdDtlData>
 {
 public:
-	static inline WTSOrdDtlData* create(const char* code)
+	static inline WTSOrdDtlData* create(const char* code) noexcept
 	{
-		WTSOrdDtlData* pRet = new WTSOrdDtlData;
+		WTSOrdDtlData* pRet = WTSOrdDtlData::allocate();
 		wt_strcpy(pRet->m_odStruct.code, code);
 		return pRet;
 	}
 
-	static inline WTSOrdDtlData* create(WTSOrdDtlStruct& odData)
+	static inline WTSOrdDtlData* create(WTSOrdDtlStruct& odData) noexcept
 	{
-		WTSOrdDtlData* pRet = new WTSOrdDtlData;
+		WTSOrdDtlData* pRet = WTSOrdDtlData::allocate();
 		memcpy(&pRet->m_odStruct, &odData, sizeof(WTSOrdDtlStruct));
 
 		return pRet;
@@ -1090,19 +1090,19 @@ private:
 	WTSContractInfo*	m_pContract;
 };
 
-class WTSTransData : public WTSObject
+class WTSTransData : public WTSPoolObject<WTSTransData>
 {
 public:
-	static inline WTSTransData* create(const char* code)
+	static inline WTSTransData* create(const char* code) noexcept
 	{
-		WTSTransData* pRet = new WTSTransData;
+		WTSTransData* pRet = WTSTransData::allocate();
 		wt_strcpy(pRet->m_tsStruct.code, code);
 		return pRet;
 	}
 
-	static inline WTSTransData* create(WTSTransStruct& transData)
+	static inline WTSTransData* create(WTSTransStruct& transData) noexcept
 	{
-		WTSTransData* pRet = new WTSTransData;
+		WTSTransData* pRet = WTSTransData::allocate();
 		memcpy(&pRet->m_tsStruct, &transData, sizeof(WTSTransStruct));
 
 		return pRet;

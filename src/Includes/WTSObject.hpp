@@ -58,7 +58,7 @@ class WTSPoolObject : public WTSObject
 {
 private:
 	typedef ObjectPool<T> MyPool;
-	MyPool*			_pool;
+	MyPool*		_pool;
 	SpinMutex*	_mutex;
 
 public:
@@ -66,7 +66,7 @@ public:
 	virtual ~WTSPoolObject() {}
 
 public:
-	static T*	allocate()
+	static T*	allocate() noexcept
 	{
 		/*
 		 *	By Wesley @ 2022.06.14
@@ -77,8 +77,8 @@ public:
 		 *	总之如果要彻底安全，那么可能需要加一把锁才行，但是这样会带来性能开销
 		 *	所以注释一下，如果有问题的可以参考一下
 		 */
-		thread_local static MyPool		pool;
-		thread_local static SpinMutex	mtx;
+		static MyPool		pool;
+		static SpinMutex	mtx;
 
 		mtx.lock();
 		T* ret = pool.construct();
