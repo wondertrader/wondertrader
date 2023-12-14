@@ -1,4 +1,12 @@
 ﻿#pragma once
+#if 1
+#include <boost/smart_ptr/detail/spinlock.hpp>
+
+typedef boost::detail::spinlock SpinMutex;
+typedef boost::detail::spinlock::scoped_lock SpinLock;
+
+#else
+
 #include <atomic>
 #ifdef _MSC_VER
 #define WIN32_LEAN_AND_MEAN
@@ -46,3 +54,4 @@ public:
 private:
 	SpinMutex&	_mutex;
 };
+#endif
