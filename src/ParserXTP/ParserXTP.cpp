@@ -250,6 +250,7 @@ void ParserXTP::OnTickByTick(XTPTBT *tbt_data)
 
 		if (m_sink)
 			m_sink->handleOrderDetail(ordDtl);
+		ordDtl->release();
 	}
 	else if (tbt_data->type == XTP_TBT_TRADE)
 	{
@@ -275,6 +276,7 @@ void ParserXTP::OnTickByTick(XTPTBT *tbt_data)
 
 		if (m_sink)
 			m_sink->handleTransaction(trans);
+		trans->release();
 	}
 }
 
