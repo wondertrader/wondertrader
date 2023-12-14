@@ -46,7 +46,7 @@ public:
 	/*
 	 *	创建数组对象
 	 */
-	static WTSArray* create()
+	static WTSArray* create() noexcept
 	{
 		WTSArray* pRet = new WTSArray();
 		return pRet;
@@ -63,7 +63,7 @@ public:
 	 *	调用该函数会预先分配长度
 	 *	预先分配好的数据都是NULL
 	 */
-	void resize(uint32_t _size)
+	void resize(uint32_t _size) noexcept
 	{
 		if(!_vec.empty())
 			clear();
@@ -78,7 +78,7 @@ public:
 	 *	grab接口读取数据以后,增加引用计数
 	 */
 	inline
-	WTSObject* at(uint32_t idx)
+	WTSObject* at(uint32_t idx) noexcept
 	{
 		if(idx <0 || idx >= _vec.size())
 			return NULL;
@@ -88,7 +88,7 @@ public:
 	}
 
 	inline
-	uint32_t idxOf(WTSObject* obj)
+	uint32_t idxOf(WTSObject* obj) noexcept
 	{
 		if (obj == NULL)
 			return -1;
@@ -105,7 +105,7 @@ public:
 	}
 
 	template<typename T> 
-	inline T* at(uint32_t idx)
+	inline T* at(uint32_t idx) noexcept
 	{
 		if(idx <0 || idx >= _vec.size())
 			return NULL;
@@ -119,7 +119,7 @@ public:
 	 *	用法同at函数
 	 */
 	inline
-	WTSObject* operator [](uint32_t idx)
+	WTSObject* operator [](uint32_t idx) noexcept
 	{
 		if(idx <0 || idx >= _vec.size())
 			return NULL;
@@ -133,7 +133,7 @@ public:
 	 *	增加引用计数
 	 */
 	inline
-	WTSObject*	grab(uint32_t idx)
+	WTSObject*	grab(uint32_t idx) noexcept
 	{
 		if(idx <0 || idx >= _vec.size())
 			return NULL;
@@ -150,7 +150,7 @@ public:
 	 *	数据自动增加引用计数
 	 */
 	inline
-	void append(WTSObject* obj, bool bAutoRetain = true)
+	void append(WTSObject* obj, bool bAutoRetain = true) noexcept
 	{
 		if (bAutoRetain && obj)
 			obj->retain();
@@ -164,7 +164,7 @@ public:
 	 *	新数据引用计数增加
 	 */
 	inline
-	void set(uint32_t idx, WTSObject* obj, bool bAutoRetain = true)
+	void set(uint32_t idx, WTSObject* obj, bool bAutoRetain = true) noexcept
 	{
 		if(idx >= _vec.size() || obj == NULL)
 			return;
@@ -180,7 +180,7 @@ public:
 	}
 
 	inline
-	void append(WTSArray* ay)
+	void append(WTSArray* ay) noexcept
 	{
 		if(ay == NULL)
 			return;
@@ -193,7 +193,7 @@ public:
 	 *	数组清空
 	 *	数组内所有数据释放引用
 	 */
-	void clear()
+	void clear() noexcept
 	{
 		{
 			std::vector<WTSObject*>::iterator it = _vec.begin();
@@ -214,7 +214,7 @@ public:
 	 *	释放所有数据
 	 */
 
-	virtual void release()
+	virtual void release() noexcept
 	{
 		if (m_uRefs == 0)
 			return;
@@ -238,25 +238,25 @@ public:
 	 *	取得数组对象起始位置的迭代器
 	 */
 	inline
-	Iterator begin()
+	Iterator begin() noexcept
 	{
 		return _vec.begin();
 	}
 
 	inline
-	ConstIterator begin() const
+	ConstIterator begin() const noexcept
 	{
 		return _vec.begin();
 	}
 
 	inline
-	ReverseIterator rbegin()
+	ReverseIterator rbegin() noexcept
 	{
 		return _vec.rbegin();
 	}
 
 	inline
-	ConstReverseIterator rbegin() const
+	ConstReverseIterator rbegin() const noexcept
 	{
 		return _vec.rbegin();
 	}
@@ -265,25 +265,25 @@ public:
 	 *	取得数组对象末尾位置的迭代器
 	 */
 	inline
-	Iterator end()
+	Iterator end() noexcept
 	{
 		return _vec.end();
 	}
 
 	inline
-	ConstIterator end() const
+	ConstIterator end() const noexcept
 	{
 		return _vec.end();
 	}
 
 	inline
-	ReverseIterator rend()
+	ReverseIterator rend() noexcept
 	{
 		return _vec.rend();
 	}
 
 	inline
-	ConstReverseIterator rend() const
+	ConstReverseIterator rend() const noexcept
 	{
 		return _vec.rend();
 	}
@@ -326,7 +326,7 @@ public:
 	/*
 	 *	创建map容器
 	 */
-	static WTSMap<T>*	create()
+	static WTSMap<T>*	create() noexcept
 	{
 		WTSMap<T>* pRet = new WTSMap<T>();
 		return pRet;
@@ -336,7 +336,7 @@ public:
 	 *	返回map容器的大小
 	 */
 	inline
-	uint32_t size() const{ return (uint32_t)_map.size(); }
+	uint32_t size() const noexcept { return (uint32_t)_map.size(); }
 
 	/*
 	 *	读取指定key对应的数据
@@ -344,7 +344,7 @@ public:
 	 *	没有则返回NULL
 	 */
 	inline
-	WTSObject* get(const T &_key)
+	WTSObject* get(const T &_key) noexcept
 	{
 		Iterator it = _map.find(_key);
 		if(it == _map.end())
@@ -359,7 +359,7 @@ public:
 	 *	用法同get函数
 	 */
 	inline
-	WTSObject* operator[](const T &_key)
+	WTSObject* operator[](const T &_key) noexcept
 	{
 		Iterator it = _map.find(_key);
 		if(it == _map.end())
@@ -375,7 +375,7 @@ public:
 	 *	没有则返回NULL
 	 */
 	inline
-	WTSObject* grab(const T &_key)
+	WTSObject* grab(const T &_key) noexcept
 	{
 		Iterator it = _map.find(_key);
 		if(it == _map.end())
@@ -393,7 +393,7 @@ public:
 	 *	如果key存在,则将原有数据释放
 	 */
 	inline
-	void add(T _key, WTSObject* obj, bool bAutoRetain = true)
+	void add(T _key, WTSObject* obj, bool bAutoRetain = true) noexcept
 	{
 		if(bAutoRetain && obj)
 			obj->retain();
@@ -415,7 +415,7 @@ public:
 	 *	如果key存在,则对应数据引用计数-1
 	 */
 	inline
-	void remove(T _key)
+	void remove(T _key) noexcept
 	{
 		Iterator it = _map.find(_key);
 		if(it != _map.end())
@@ -429,12 +429,12 @@ public:
 	/*
 	 *	获取容器起始位置的迭代器
 	 */
-	Iterator begin()
+	Iterator begin() noexcept
 	{
 		return _map.begin();
 	}
 
-	ConstIterator begin() const
+	ConstIterator begin() const noexcept
 	{
 		return _map.begin();
 	}
@@ -442,12 +442,12 @@ public:
 	/*
 	 *	获取容易末尾位置的迭代器
 	 */
-	Iterator end()
+	Iterator end() noexcept
 	{
 		return _map.end();
 	}
 
-	ConstIterator end() const
+	ConstIterator end() const noexcept
 	{
 		return _map.end();
 	}
@@ -455,12 +455,12 @@ public:
 	/*
 	 *	获取容器起始位置的迭代器
 	 */
-	ReverseIterator rbegin()
+	ReverseIterator rbegin() noexcept
 	{
 		return _map.rbegin();
 	}
 
-	ConstReverseIterator rbegin() const
+	ConstReverseIterator rbegin() const noexcept
 	{
 		return _map.rbegin();
 	}
@@ -468,68 +468,68 @@ public:
 	/*
 	 *	获取容易末尾位置的迭代器
 	 */
-	ReverseIterator rend()
+	ReverseIterator rend() noexcept
 	{
 		return _map.rend();
 	}
 
-	ConstReverseIterator rend() const
+	ConstReverseIterator rend() const noexcept
 	{
 		return _map.rend();
 	}
 
 	inline
-	Iterator find(const T& key)
+	Iterator find(const T& key) noexcept
 	{
 		return _map.find(key);
 	}
 
 	inline
-	ConstIterator find(const T& key) const
+	ConstIterator find(const T& key) const noexcept
 	{
 		return _map.find(key);
 	}
 
 	inline
-	void erase(ConstIterator it)
+	void erase(ConstIterator it) noexcept
 	{
 		_map.erase(it);
 	}
 
 	inline
-	void erase(Iterator it)
+	void erase(Iterator it) noexcept
 	{
 		_map.erase(it);
 	}
 
 	inline
-	void erase(T key)
+	void erase(T key) noexcept
 	{
 		_map.erase(key);
 	}
 
-	Iterator lower_bound(const T& key)
+	Iterator lower_bound(const T& key) noexcept
 	{
 		 return _map.lower_bound(key);
 	}
 
-	ConstIterator lower_bound(const T& key) const
+	ConstIterator lower_bound(const T& key) const noexcept
 	{
 		return _map.lower_bound(key);
 	}
 
-	Iterator upper_bound(const T& key)
+	Iterator upper_bound(const T& key) noexcept
 	{
 	 	 return _map.upper_bound(key);
 	}
 	 
-	ConstIterator upper_bound(const T& key) const
+	ConstIterator upper_bound(const T& key) const noexcept
 	{
 		return _map.upper_bound(key);
 	}
 
 	inline
-	WTSObject* last() 
+	WTSObject* last() noexcept
 	{
 		if(_map.empty())
 			return NULL;
@@ -542,7 +542,7 @@ public:
 	 *	清空容器
 	 *	容器内所有数据引用计数-1
 	 */
-	void clear()
+	void clear() noexcept
 	{
 		Iterator it = _map.begin();
 		for(; it != _map.end(); it++)
@@ -556,7 +556,7 @@ public:
 	 *	释放容器对象
 	 *	如果容器引用计数为1,则清空所有数据
 	 */
-	virtual void release()
+	virtual void release() noexcept
 	{
 		if (m_uRefs == 0)
 			return;
@@ -610,7 +610,7 @@ public:
 	/*
 	 *	创建map容器
 	 */
-	static WTSHashMap<T, Hash>*	create()
+	static WTSHashMap<T, Hash>*	create() noexcept
 	{
 		WTSHashMap<T, Hash>* pRet = new WTSHashMap<T, Hash>();
 		return pRet;
@@ -626,7 +626,7 @@ public:
 	 *	不增加数据的引用计数
 	 *	没有则返回NULL
 	 */
-	inline WTSObject* get(const T &_key)
+	inline WTSObject* get(const T &_key) noexcept
 	{
 		auto it = _map.find(_key);
 		if(it == _map.end())
@@ -641,7 +641,7 @@ public:
 	 *	增加数据的引用计数
 	 *	没有则返回NULL
 	 */
-	inline WTSObject* grab(const T &_key)
+	inline WTSObject* grab(const T &_key) noexcept
 	{
 		auto it = _map.find(_key);
 		if(it == _map.end())
@@ -656,7 +656,7 @@ public:
 	 *	新增一个数据,并增加数据引用计数
 	 *	如果key存在,则将原有数据释放
 	 */
-	inline void add(const T &_key, WTSObject* obj, bool bAutoRetain = true)
+	inline void add(const T &_key, WTSObject* obj, bool bAutoRetain = true) noexcept
 	{
 		if (bAutoRetain && obj)
 			obj->retain();
@@ -677,7 +677,7 @@ public:
 	 *	根据key删除一个数据
 	 *	如果key存在,则对应数据引用计数-1
 	 */
-	inline void remove(const T &_key)
+	inline void remove(const T &_key) noexcept
 	{
 		auto it = _map.find(_key);
 		if (it != _map.end())
@@ -692,7 +692,7 @@ public:
 	/*
 	 *	获取容器起始位置的迭代器
 	 */
-	inline ConstIterator begin() const
+	inline ConstIterator begin() const noexcept
 	{
 		return _map.begin();
 	}
@@ -700,12 +700,12 @@ public:
 	/*
 	 *	获取容易末尾位置的迭代器
 	 */
-	inline ConstIterator end() const
+	inline ConstIterator end() const noexcept
 	{
 		return _map.end();
 	}
 
-	inline ConstIterator find(const T& key) const
+	inline ConstIterator find(const T& key) const noexcept
 	{
 		return _map.find(key);
 	}
@@ -714,7 +714,7 @@ public:
 	 *	清空容器
 	 *	容器内所有数据引用计数-1
 	 */
-	inline void clear()
+	inline void clear() noexcept
 	{
 		ConstIterator it = _map.begin();
 		for(; it != _map.end(); it++)
@@ -728,7 +728,7 @@ public:
 	 *	释放容器对象
 	 *	如果容器引用计数为1,则清空所有数据
 	 */
-	virtual void release()
+	virtual void release() noexcept
 	{
 		if (m_uRefs == 0)
 			return;
@@ -757,18 +757,18 @@ public:
 	typedef std::deque<WTSObject*>::iterator Iterator;
 	typedef std::deque<WTSObject*>::const_iterator ConstIterator;
 
-	static WTSQueue* create()
+	static WTSQueue* create() noexcept
 	{
 		WTSQueue* pRet = new WTSQueue();
 		return pRet;
 	}
 
-	void pop()
+	inline void pop() noexcept
 	{
 		_queue.pop_front();
 	}
 
-	void push(WTSObject* obj, bool bAutoRetain = true)
+	inline void push(WTSObject* obj, bool bAutoRetain = true) noexcept
 	{
 		if (obj && bAutoRetain)
 			obj->retain();
@@ -776,7 +776,7 @@ public:
 		_queue.emplace_back(obj);
 	}
 
-	WTSObject* front(bool bRetain = true)
+	inline WTSObject* front(bool bRetain = true) noexcept
 	{
 		if(_queue.empty())
 			return NULL;
@@ -788,7 +788,7 @@ public:
 		return obj;
 	}
 
-	WTSObject* back(bool bRetain = true)
+	inline WTSObject* back(bool bRetain = true) noexcept
 	{
 		if(_queue.empty())
 			return NULL;
@@ -800,11 +800,11 @@ public:
 		return obj;
 	}
 
-	uint32_t size() const{ return (uint32_t)_queue.size(); }
+	inline uint32_t size() const{ return (uint32_t)_queue.size(); }
 
-	bool	empty() const{return _queue.empty();}
+	inline bool	empty() const{return _queue.empty();}
 
-	void release()
+	void release() noexcept
 	{
 		if (m_uRefs == 0)
 			return;
@@ -824,7 +824,7 @@ public:
 		}
 	}
 
-	void clear()
+	void clear() noexcept
 	{
 		Iterator it = begin();
 		for(; it != end(); it++)
@@ -837,17 +837,17 @@ public:
 	/*
 	 *	取得数组对象起始位置的迭代器
 	 */
-	Iterator begin()
+	inline Iterator begin() noexcept
 	{
 		return _queue.begin();
 	}
 
-	ConstIterator begin() const
+	inline ConstIterator begin() const noexcept
 	{
 		return _queue.begin();
 	}
 
-	void swap(WTSQueue* right)
+	void swap(WTSQueue* right) noexcept
 	{
 		_queue.swap(right->_queue);
 	}
@@ -855,12 +855,12 @@ public:
 	/*
 	 *	取得数组对象末尾位置的迭代器
 	 */
-	Iterator end()
+	inline Iterator end() noexcept
 	{
 		return _queue.end();
 	}
 
-	ConstIterator end() const
+	inline ConstIterator end() const noexcept
 	{
 		return _queue.end();
 	}
