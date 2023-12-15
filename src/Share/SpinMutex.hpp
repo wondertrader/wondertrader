@@ -1,5 +1,10 @@
 ﻿#pragma once
-#if 1
+
+#if 0
+/*
+ *	By Wesley @ 2023.12.15
+ *  boos的spinlock总是会死锁，不知道是不是我的用法
+ */
 #include <boost/smart_ptr/detail/spinlock.hpp>
 
 typedef boost::detail::spinlock SpinMutex;
