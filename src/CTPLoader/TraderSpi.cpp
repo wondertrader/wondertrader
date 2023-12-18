@@ -51,6 +51,7 @@ extern std::string	APPID;
 extern std::string	AUTHCODE;
 extern uint32_t		CLASSMASK;
 extern bool			ONLYINCFG;
+extern bool			INCREMENTAL;//是否增量拉取，默认false
 
 extern std::string COMM_FILE;		//输出的品种文件名
 extern std::string CONT_FILE;		//输出的合约文件名
@@ -380,6 +381,9 @@ void CTraderSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CTho
 
 void CTraderSpi::LoadFromJson()
 {
+	if (!INCREMENTAL)
+		return;
+
 	std::string path = SAVEPATH;
 	path += COMM_FILE;
 	WTSVariant* root = WTSCfgLoader::load_from_file(path);

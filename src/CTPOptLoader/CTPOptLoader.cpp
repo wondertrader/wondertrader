@@ -31,6 +31,7 @@ std::string APPID;
 std::string AUTHCODE;
 uint32_t	CLASSMASK;	//期权
 bool		ONLYINCFG;	//只落地配置文件有的
+bool		INCREMENTAL;//是否增量拉取，默认false
 
 std::string COMM_FILE;		//输出的品种文件名
 std::string CONT_FILE;		//输出的合约文件名
@@ -94,6 +95,7 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 
 		map_files = cfg->getCString("mapfiles");
 		ONLYINCFG = ctp->getBoolean("onlyincfg");
+		INCREMENTAL = ctp->getBoolean("incremental");
 
 		MODULE_NAME = cfg->getCString("module");
 		if (MODULE_NAME.empty())
@@ -128,6 +130,7 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 
 		map_files = ini.readString("config", "mapfiles", "");
 		ONLYINCFG = wt_stricmp(ini.readString("config", "onlyincfg", "false").c_str(), "true") == 0;
+		INCREMENTAL = wt_stricmp(ini.readString("config", "incremental", "false").c_str(), "true") == 0;
 
 #ifdef _WIN32
 		MODULE_NAME = ini.readString("config", "module", "./soptthosttraderapi_se.dll");
@@ -163,6 +166,7 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 
 		map_files = cfg->getCString("mapfiles");
 		ONLYINCFG = ctp->getBoolean("onlyincfg");
+		INCREMENTAL = ctp->getBoolean("incremental");
 
 		MODULE_NAME = cfg->getCString("module");
 		if (MODULE_NAME.empty())
