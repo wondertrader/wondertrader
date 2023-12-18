@@ -32,8 +32,9 @@ private:
 	// 是否收到成功的响应
 	bool IsErrorRspInfo(CThostFtdcRspInfoField *pRspInfo);
 
-
 	void DumpToJson();
+
+	void LoadFromJson();
 
 protected:
 	int	m_lTradingDate;
