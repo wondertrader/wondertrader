@@ -68,7 +68,7 @@ bool MQClient::init(const char* url, FuncMQCallback cb)
 	_sock = nn_socket(AF_SP, NN_SUB);
 	if (_sock < 0)
 	{
-		_mgr->log_client(_id, fmtutil::format("MQClient {} has an error {} while initializing", _id, _sock));
+		_mgr->log_client(_id, fmtutil::format("MQClient {} has an error {} while initializing: {}", _id, _sock, nn_strerror(errno)));
 		return false;
 	}
 
@@ -80,7 +80,7 @@ bool MQClient::init(const char* url, FuncMQCallback cb)
 	m_strURL = url;
 	if (nn_connect(_sock, url) < 0)
 	{
-		_mgr->log_client(_id, fmtutil::format("MQClient {} has an error while connecting url {}", _id, url));
+		_mgr->log_client(_id, fmtutil::format("MQClient {} has an error while connecting url {}: {}", _id, url, nn_strerror(errno)));
 		return false;
 	}
 	else
