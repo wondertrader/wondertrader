@@ -1,6 +1,5 @@
 ﻿#include "MQManager.h"
-
-#include <spdlog/fmt/fmt.h>
+#include "../Share/fmtlib.h"
 
 USING_NS_WTP;
 
@@ -8,12 +7,13 @@ WtUInt32 MQManager::create_server(const char* url, bool confirm)
 {
 	MQServerPtr server(new MQServer(this));
 
-	printf("init server\r\n");
 	server->init(url, confirm);
 
 	auto id = server->id();
 
 	_servers[id] = server;
+
+	log_server(id, fmtutil::format("MQServer {} created", id));
 	return id;
 }
 
@@ -22,12 +22,12 @@ void MQManager::destroy_server(WtUInt32 id)
 	auto it = _servers.find(id);
 	if(it == _servers.end())
 	{
-		log_server(id, fmt::format("MQServer {} not exists", id).c_str());
+		log_server(id, fmtutil::format("MQServer {} not exists", id));
 		return;
 	}
 
 	_servers.erase(it);
-	log_server(id, fmt::format("MQServer {} has been destroyed", id).c_str());
+	log_server(id, fmtutil::format("MQServer {} has been destroyed", id));
 }
 
 void MQManager::publish_message(WtUInt32 id, const char* topic, const void* data, WtUInt32 dataLen)
@@ -35,7 +35,7 @@ void MQManager::publish_message(WtUInt32 id, const char* topic, const void* data
 	auto it = _servers.find(id);
 	if (it == _servers.end())
 	{
-		log_server(id, fmt::format("MQServer {} not exists", id).c_str());
+		log_server(id, fmtutil::format("MQServer {} not exists", id));
 		return;
 	}
 
@@ -71,12 +71,12 @@ void MQManager::destroy_client(WtUInt32 id)
 	auto it = _clients.find(id);
 	if (it == _clients.end())
 	{
-		log_client(id, fmt::format("MQClient {} not exists", id).c_str());
+		log_client(id, fmtutil::format("MQClient {} not exists", id));
 		return;
 	}
 
 	_clients.erase(it);
-	log_client(id, fmt::format("MQClient {} has been destroyed", id).c_str());
+	log_client(id, fmtutil::format("MQClient {} has been destroyed", id));
 }
 
 void MQManager::sub_topic(WtUInt32 id, const char* topic)
@@ -84,7 +84,7 @@ void MQManager::sub_topic(WtUInt32 id, const char* topic)
 	auto it = _clients.find(id);
 	if (it == _clients.end())
 	{
-		log_client(id, fmt::format("MQClient {} not exists", id).c_str());
+		log_client(id, fmtutil::format("MQClient {} not exists", id));
 		return;
 	}
 
@@ -97,7 +97,7 @@ void MQManager::start_client(WtUInt32 id)
 	auto it = _clients.find(id);
 	if (it == _clients.end())
 	{
-		log_client(id, fmt::format("MQClient {} not exists", id).c_str());
+		log_client(id, fmtutil::format("MQClient {} not exists", id));
 		return;
 	}
 

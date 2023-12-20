@@ -31,7 +31,6 @@ void regiter_callbacks(FuncLogCallback cbLog)
 
 WtUInt32 create_server(const char* url, bool confirm)
 {
-	printf("create server\r\n");
 	return getMgr().create_server(url, confirm);
 }
 
