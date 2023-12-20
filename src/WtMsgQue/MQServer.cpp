@@ -12,8 +12,8 @@
 
 #include "../Share/StrUtil.hpp"
 #include "../Share/TimeUtils.hpp"
+#include "../Share/fmtlib.h"
 
-#include <spdlog/fmt/fmt.h>
 #include <atomic>
 
 
@@ -68,7 +68,7 @@ bool MQServer::init(const char* url, bool confirm /* = false */)
 	_sock = nn_socket(AF_SP, NN_PUB);
 	if(_sock < 0)
 	{
-		_mgr->log_server(_id, fmt::format("MQServer {} has an error {} while initializing", _id, _sock).c_str());
+		_mgr->log_server(_id, fmtutil::format("MQServer {} initializing failed: {}", _id, nn_strerror(errno)));
 		return false;
 	}
 
@@ -76,19 +76,20 @@ bool MQServer::init(const char* url, bool confirm /* = false */)
 	nn_setsockopt(_sock, NN_SOL_SOCKET, NN_SNDBUF, &bufsize, sizeof(bufsize));
 
 	_url = url;
-	if(nn_bind(_sock, url) < 0)
+	int ec = nn_bind(_sock, url);
+	if(ec < 0)
 	{
-		_mgr->log_server(_id, fmt::format("MQServer {} has an error while binding url {}", _id, url).c_str());
+		_mgr->log_server(_id, fmtutil::format("MQServer {} binding url {} failed: {}", _id, url, nn_strerror(errno)));
 		return false;
 	}
 	else
 	{
-		_mgr->log_server(_id, fmt::format("MQServer {} has binded to {} ", _id, url).c_str());
+		_mgr->log_server(_id, fmtutil::format("MQServer {} has binded to {} ", _id, url));
 	}
 
 	_ready = true;
 
-	_mgr->log_server(_id, fmt::format("MQServer {} ready", _id).c_str());
+	_mgr->log_server(_id, fmtutil::format("MQServer {} ready", _id));
 	return true;
 }
 
@@ -96,7 +97,7 @@ void MQServer::publish(const char* topic, const void* data, uint32_t dataLen)
 {
 	if(_sock < 0)
 	{
-		_mgr->log_server(_id, fmt::format("MQServer {} has not been initialized yet", _id).c_str());
+		_mgr->log_server(_id, fmtutil::format("MQServer {} has not been initialized yet", _id));
 		return;
 	}
 
@@ -107,7 +108,7 @@ void MQServer::publish(const char* topic, const void* data, uint32_t dataLen)
 		SpinLock lock(m_mtxCast);
 		m_dataQue.emplace_back(PubData(topic, data, dataLen));
 		m_uLastHBTime = TimeUtils::getLocalTimeNow();
-		_mgr->log_server(_id, fmt::format("Message with topic {} and length {} has been pushed to queue", topic, dataLen).c_str());
+		_mgr->log_server(_id, fmtutil::format("Message with topic {} and length {} has been pushed to queue", topic, dataLen));
 	}
 
 	if(m_thrdCast == NULL)
@@ -165,7 +166,7 @@ void MQServer::publish(const char* topic, const void* data, uint32_t dataLen)
 							}
                             else
                             {
-                                _mgr->log_server(_id, fmt::format("Publishing error: {}", bytes).c_str());
+                                _mgr->log_server(_id, fmtutil::format("Publishing error: {}", bytes));
                             }
                             
                             if(bytes_snd == len)
@@ -177,7 +178,7 @@ void MQServer::publish(const char* topic, const void* data, uint32_t dataLen)
 					}
 				} 
 
-				_mgr->log_server(_id, fmt::format("Publishing finished: {}", tmpQue.size()).c_str());
+				_mgr->log_server(_id, fmtutil::format("Publishing finished: {}", tmpQue.size()));
 			}
 		}));
 	}
