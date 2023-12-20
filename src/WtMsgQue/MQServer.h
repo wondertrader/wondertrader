@@ -13,6 +13,7 @@
 
 #include "../Includes/WTSMarcos.h"
 #include "../Share/StdUtils.hpp"
+#include "../Share/SpinMutex.hpp"
 
 NS_WTP_BEGIN
 class MQManager;
@@ -39,10 +40,10 @@ private:
 	bool			_confirm;
 
 	StdThreadPtr	m_thrdCast;
-	StdCondVariable	m_condCast;
-	StdUniqueMutex	m_mtxCast;
+	SpinMutex		m_mtxCast;
 	bool			m_bTerminated;
 	bool			m_bTimeout;
+	uint64_t		m_uLastHBTime;
 
 	typedef struct _PubData
 	{
@@ -58,7 +59,7 @@ private:
 			}
 		}
 	} PubData;
-	typedef std::queue<PubData> PubDataQue;
+	typedef std::vector<PubData> PubDataQue;
 
 	PubDataQue		m_dataQue;
 	std::string		m_sendBuf;

@@ -11,6 +11,7 @@
 #include "MQManager.h"
 
 #include "../Share/StrUtil.hpp"
+#include "../Share/TimeUtils.hpp"
 
 #include <spdlog/fmt/fmt.h>
 #include <atomic>
@@ -50,7 +51,6 @@ MQServer::~MQServer()
 		return;
 
 	m_bTerminated = true;
-	m_condCast.notify_all();
 	if (m_thrdCast)
 		m_thrdCast->join();
 
@@ -104,9 +104,10 @@ void MQServer::publish(const char* topic, const void* data, uint32_t dataLen)
 		return;
 
 	{
-		StdUniqueLock lock(m_mtxCast);
-		m_dataQue.push(PubData(topic, data, dataLen));
-		m_bTimeout = false;
+		SpinLock lock(m_mtxCast);
+		m_dataQue.emplace_back(PubData(topic, data, dataLen));
+		m_uLastHBTime = TimeUtils::getLocalTimeNow();
+		_mgr->log_server(_id, fmt::format("Message with topic {} and length {} has been pushed to queue", topic, dataLen).c_str());
 	}
 
 	if(m_thrdCast == NULL)
@@ -115,37 +116,36 @@ void MQServer::publish(const char* topic, const void* data, uint32_t dataLen)
 
 			if (m_sendBuf.empty())
 				m_sendBuf.resize(1024 * 1024, 0);
+			m_uLastHBTime = TimeUtils::getLocalTimeNow();
 			while (!m_bTerminated)
 			{
 				int cnt = (int)nn_get_statistic(_sock, NN_STAT_CURRENT_CONNECTIONS);
 				if(m_dataQue.empty() || (cnt == 0 && _confirm))
 				{
-					StdUniqueLock lock(m_mtxCast);
+					std::this_thread::sleep_for(std::chrono::milliseconds(2));
+
 					m_bTimeout = true;
-					m_condCast.wait_for(lock, std::chrono::seconds(60));
+					uint64_t now = TimeUtils::getLocalTimeNow();
 					//如果有新的数据进来，timeout会被改为false
 					//如果没有新的数据进来，timeout会保持为true
-					if (m_bTimeout)
+					if (now - m_uLastHBTime > 60*1000)
 					{
 						//等待超时以后，广播心跳包
-						m_dataQue.push(PubData("HEARTBEAT", "", 0));
+						m_dataQue.emplace_back(PubData("HEARTBEAT", "", 0));
+						m_uLastHBTime = now;
 					}
-					else
-					{
-						continue;
-					}
+					
+					continue;
 				}	
 
 				PubDataQue tmpQue;
 				{
-					StdUniqueLock lock(m_mtxCast);
+					SpinLock lock(m_mtxCast);
 					tmpQue.swap(m_dataQue);
 				}
 				
-				while(!tmpQue.empty())
+				for(const PubData& pubData : tmpQue)
 				{
-					const PubData& pubData = tmpQue.front();
-
 					if (!pubData._data.empty())
 					{
 						std::size_t len = sizeof(MQPacket) + pubData._data.size();
@@ -162,21 +162,23 @@ void MQServer::publish(const char* topic, const void* data, uint32_t dataLen)
 							if (bytes >= 0)
 							{
 								bytes_snd += bytes;
-								if(bytes_snd == len)
-									break;
 							}
+                            else
+                            {
+                                _mgr->log_server(_id, fmt::format("Publishing error: {}", bytes).c_str());
+                            }
+                            
+                            if(bytes_snd == len)
+								break;
 							else
 								std::this_thread::sleep_for(std::chrono::milliseconds(1));
 						}
 						
 					}
-					tmpQue.pop();
 				} 
+
+				_mgr->log_server(_id, fmt::format("Publishing finished: {}", tmpQue.size()).c_str());
 			}
 		}));
-	}
-	else
-	{
-		m_condCast.notify_all();
 	}
 }
