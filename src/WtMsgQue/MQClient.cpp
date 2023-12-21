@@ -55,7 +55,7 @@ MQClient::~MQClient()
 	if (m_thrdRecv)
 		m_thrdRecv->join();
 
-	if (_sock != 0)
+	if (_sock >= 0)
 		nn_close(_sock);
 }
 
@@ -68,19 +68,32 @@ bool MQClient::init(const char* url, FuncMQCallback cb)
 	_sock = nn_socket(AF_SP, NN_SUB);
 	if (_sock < 0)
 	{
-		_mgr->log_client(_id, fmtutil::format("MQClient {} has an error {} while initializing: {}", _id, _sock, nn_strerror(errno)));
+		_mgr->log_client(_id, fmtutil::format("MQClient {} initializing failed: {}", _id,  nn_strerror(nn_errno())));
+		_sock = -1;
 		return false;
 	}
 
-	nn_setsockopt(_sock, NN_SUB, NN_SUB_SUBSCRIBE, "", 0);
+	if(nn_setsockopt(_sock, NN_SUB, NN_SUB_SUBSCRIBE, "", 0) < 0)
+	{
+		_mgr->log_client(_id, fmtutil::format("MQClient {} subscribing failed: {}", _id, nn_strerror(nn_errno())));
+		nn_close(_sock);
+		_sock = -1;
+		return false;
+	}
 
 	int bufsize = RECV_BUF_SIZE;
-	nn_setsockopt(_sock, NN_SOL_SOCKET, NN_RCVBUF, &bufsize, sizeof(bufsize));
+	if (nn_setsockopt(_sock, NN_SOL_SOCKET, NN_RCVBUF, &bufsize, sizeof(bufsize)) < 0)
+	{
+		_mgr->log_client(_id, fmtutil::format("MQClient {} setsockopt failed: {}", _id, nn_strerror(nn_errno())));
+		nn_close(_sock);
+		_sock = -1;
+		return false;
+	}
 
 	m_strURL = url;
 	if (nn_connect(_sock, url) < 0)
 	{
-		_mgr->log_client(_id, fmtutil::format("MQClient {} has an error while connecting url {}: {}", _id, url, nn_strerror(errno)));
+		_mgr->log_client(_id, fmtutil::format("MQClient {} connecting url {} failed: {}", _id, url, nn_strerror(nn_errno())));
 		return false;
 	}
 	else
@@ -89,8 +102,6 @@ bool MQClient::init(const char* url, FuncMQCallback cb)
 	}
 
 	m_bReady = true;
-
-	_mgr->log_client(_id, fmtutil::format("MQClient {} inited", _id));
 	return true;
 }
 
