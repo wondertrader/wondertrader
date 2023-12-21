@@ -54,8 +54,8 @@ MQServer::~MQServer()
 	if (m_thrdCast)
 		m_thrdCast->join();
 
-	//if (_sock >= 0)
-	//	nn_close(_sock);
+	if (_sock >= 0)
+		nn_close(_sock);
 }
 
 bool MQServer::init(const char* url, bool confirm /* = false */)
@@ -68,18 +68,27 @@ bool MQServer::init(const char* url, bool confirm /* = false */)
 	_sock = nn_socket(AF_SP, NN_PUB);
 	if(_sock < 0)
 	{
-		_mgr->log_server(_id, fmtutil::format("MQServer {} initializing failed: {}", _id, nn_strerror(errno)));
+		_mgr->log_server(_id, fmtutil::format("MQServer {} initializing failed: {}", _id, nn_strerror(nn_errno())));
+		_sock = -1;
 		return false;
 	}
 
 	int bufsize = 8 * 1024 * 1024;
-	nn_setsockopt(_sock, NN_SOL_SOCKET, NN_SNDBUF, &bufsize, sizeof(bufsize));
+	if(nn_setsockopt(_sock, NN_SOL_SOCKET, NN_SNDBUF, &bufsize, sizeof(bufsize)) < 0)
+	{
+		_mgr->log_server(_id, fmtutil::format("MQServer {} setsockopt failed: {}", _id, nn_strerror(nn_errno())));
+		nn_close(_sock);
+		_sock = -1;
+		return false;
+	}
 
 	_url = url;
 	int ec = nn_bind(_sock, url);
 	if(ec < 0)
 	{
-		_mgr->log_server(_id, fmtutil::format("MQServer {} binding url {} failed: {}", _id, url, nn_strerror(errno)));
+		_mgr->log_server(_id, fmtutil::format("MQServer {} binding url {} failed: {}", _id, url, nn_strerror(nn_errno())));
+		nn_close(_sock);
+		_sock = -1;
 		return false;
 	}
 	else
@@ -89,7 +98,6 @@ bool MQServer::init(const char* url, bool confirm /* = false */)
 
 	_ready = true;
 
-	_mgr->log_server(_id, fmtutil::format("MQServer {} ready", _id));
 	return true;
 }
 
@@ -108,7 +116,6 @@ void MQServer::publish(const char* topic, const void* data, uint32_t dataLen)
 		SpinLock lock(m_mtxCast);
 		m_dataQue.emplace_back(PubData(topic, data, dataLen));
 		m_uLastHBTime = TimeUtils::getLocalTimeNow();
-		_mgr->log_server(_id, fmtutil::format("Message with topic {} and length {} has been pushed to queue", topic, dataLen));
 	}
 
 	if(m_thrdCast == NULL)
@@ -127,16 +134,17 @@ void MQServer::publish(const char* topic, const void* data, uint32_t dataLen)
 
 					m_bTimeout = true;
 					uint64_t now = TimeUtils::getLocalTimeNow();
-					//如果有新的数据进来，timeout会被改为false
-					//如果没有新的数据进来，timeout会保持为true
-					if (now - m_uLastHBTime > 60*1000)
+					//如果有连接，并且超过60s没有新的数据推送，就推送一条心跳包
+					if (now - m_uLastHBTime > 60*1000 && cnt>0)
 					{
 						//等待超时以后，广播心跳包
 						m_dataQue.emplace_back(PubData("HEARTBEAT", "", 0));
 						m_uLastHBTime = now;
 					}
-					
-					continue;
+					else
+					{
+						continue;
+					}
 				}	
 
 				PubDataQue tmpQue;
@@ -166,7 +174,7 @@ void MQServer::publish(const char* topic, const void* data, uint32_t dataLen)
 							}
                             else
                             {
-                                _mgr->log_server(_id, fmtutil::format("Publishing error: {}", bytes));
+                                _mgr->log_server(_id, fmtutil::format("Publishing error: {}", nn_strerror(nn_errno())));
                             }
                             
                             if(bytes_snd == len)
