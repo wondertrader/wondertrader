@@ -137,6 +137,7 @@ protected:
 	uint64_t		m_uLastQryTime;
 
 	uint32_t					m_lDate;
+	uint32_t					m_preTradingDate; // 上一个交易日
 	std::atomic<uint32_t>		m_orderRef;		//报单引用
 
 	WrapperState				m_wrapperState;
