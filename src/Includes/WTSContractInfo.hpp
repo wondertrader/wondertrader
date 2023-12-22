@@ -161,11 +161,11 @@ private:
 
 	WTSSessionInfo*		m_pSession;
 
-	double	m_dOpenFee;		//开仓手续费
-	double	m_dCloseFee;	//平仓手续费
-	double	m_dCloseTFee;	//平今手续费
-	int		m_nFeeAlg;		//手续费算法，默认为-1，不计算,0是按成交量，1为按成交额
-	double	m_dMarginRate;	//保证金率
+	double	m_dOpenFee		= 0.0;	//开仓手续费
+	double	m_dCloseFee		= 0.0;	//平仓手续费
+	double	m_dCloseTFee	= 0.0;	//平今手续费
+	int		m_nFeeAlg		= -1;	//手续费算法，默认为-1，不计算,0是按成交量，1为按成交额
+	double	m_dMarginRate	= 0.0;	//保证金率
 };
 
 class WTSContractInfo :	public WTSObject
@@ -233,7 +233,7 @@ public:
 		if (m_uMarginFlag == 1)
 			return m_lMarginRatio;
 
-		static double commRate = m_commInfo->getMarginRate();
+		double commRate = m_commInfo->getMarginRate();
 		return commRate == 0.0 ? m_lMarginRatio : m_commInfo->getMarginRate();
 	}
 
@@ -241,7 +241,7 @@ public:
 		if (m_uMarginFlag == 1)
 			return m_sMarginRatio;
 
-		static double commRate = m_commInfo->getMarginRate();
+		double commRate = m_commInfo->getMarginRate();
 		return commRate == 0.0 ? m_sMarginRatio : m_commInfo->getMarginRate();
 	}
 
@@ -319,14 +319,14 @@ private:
 	uint32_t	m_openDate;		//上市日期
 	uint32_t	m_expireDate;	//交割日
 
-	double		m_lMarginRatio;	//交易所多头保证金率
-	double		m_sMarginRatio;	//交易所空头保证金率
-	uint32_t	m_uMarginFlag;	//0-合约信息读取的，1-手工设置的
+	double		m_lMarginRatio	= 0.0;	//交易所多头保证金率
+	double		m_sMarginRatio	= 0.0;	//交易所空头保证金率
+	uint32_t	m_uMarginFlag	= 0;	//0-合约信息读取的，1-手工设置的
 
-	double		m_dOpenFee;		//开仓手续费
-	double		m_dCloseFee;	//平仓手续费
-	double		m_dCloseTFee;	//平今手续费
-	int			m_nFeeAlg;		//手续费算法，默认为-1，不计算,0是按成交量，1为按成交额
+	double		m_dOpenFee		= 0.0;	//开仓手续费
+	double		m_dCloseFee		= 0.0;	//平仓手续费
+	double		m_dCloseTFee	= 0.0;	//平今手续费
+	int			m_nFeeAlg		= -1;	//手续费算法，默认为-1，不计算,0是按成交量，1为按成交额
 
 	WTSCommodityInfo*	m_commInfo;
 	uint32_t	m_uHotFlag;
