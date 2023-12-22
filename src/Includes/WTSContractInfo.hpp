@@ -161,11 +161,11 @@ private:
 
 	WTSSessionInfo*		m_pSession;
 
-	double	m_dOpenFee;		//开仓手续费
-	double	m_dCloseFee;	//平仓手续费
-	double	m_dCloseTFee;	//平今手续费
-	int		m_nFeeAlg;		//手续费算法，默认为-1，不计算,0是按成交量，1为按成交额
-	double	m_dMarginRate;	//保证金率
+	double	m_dOpenFee		= 0.0;	//开仓手续费
+	double	m_dCloseFee		= 0.0;	//平仓手续费
+	double	m_dCloseTFee	= 0.0;	//平今手续费
+	int		m_nFeeAlg		= -1;	//手续费算法，默认为-1，不计算,0是按成交量，1为按成交额
+	double	m_dMarginRate	= 0.0;	//保证金率
 };
 
 class WTSContractInfo :	public WTSObject
@@ -233,7 +233,7 @@ public:
 		if (m_uMarginFlag == 1)
 			return m_lMarginRatio;
 
-		static double commRate = m_commInfo->getMarginRate();
+		double commRate = m_commInfo->getMarginRate();
 		return commRate == 0.0 ? m_lMarginRatio : m_commInfo->getMarginRate();
 	}
 
@@ -241,7 +241,7 @@ public:
 		if (m_uMarginFlag == 1)
 			return m_sMarginRatio;
 
-		static double commRate = m_commInfo->getMarginRate();
+		double commRate = m_commInfo->getMarginRate();
 		return commRate == 0.0 ? m_sMarginRatio : m_commInfo->getMarginRate();
 	}
 
@@ -298,18 +298,8 @@ public:
 	inline bool isSecond() const { return m_uHotFlag == 2; }
 	inline const char* getHotCode() const { return m_strHotCode.c_str(); }
 
-	inline void	setTotalIndex(uint32_t idx) noexcept { m_uTotalIdx = idx; }
-	inline uint32_t getTotalIndex() const noexcept { return m_uTotalIdx; }
-
-	inline void setExtData(void* pExtData) noexcept { m_pExtData = pExtData; }
-	template<typename T>
-	inline T*	getExtData() noexcept { return static_cast<T*>(m_pExtData); }
-
 protected:
-	WTSContractInfo()
-		: m_commInfo(NULL), m_openDate(19900101), m_expireDate(30991231)
-		, m_lMarginRatio(0), m_sMarginRatio(0), m_nFeeAlg(-1), m_uMarginFlag(0)
-		, m_uHotFlag(0), m_uTotalIdx(UINT_MAX), m_pExtData(NULL){}
+	WTSContractInfo():m_commInfo(NULL), m_openDate(19900101), m_expireDate(30991231), m_lMarginRatio(0), m_sMarginRatio(0), m_nFeeAlg(-1), m_uMarginFlag(0), m_uHotFlag(0){}
 	virtual ~WTSContractInfo(){}
 
 private:
@@ -329,21 +319,18 @@ private:
 	uint32_t	m_openDate;		//上市日期
 	uint32_t	m_expireDate;	//交割日
 
-	double		m_lMarginRatio;	//交易所多头保证金率
-	double		m_sMarginRatio;	//交易所空头保证金率
-	uint32_t	m_uMarginFlag;	//0-合约信息读取的，1-手工设置的
+	double		m_lMarginRatio	= 0.0;	//交易所多头保证金率
+	double		m_sMarginRatio	= 0.0;	//交易所空头保证金率
+	uint32_t	m_uMarginFlag	= 0;	//0-合约信息读取的，1-手工设置的
 
-	double		m_dOpenFee;		//开仓手续费
-	double		m_dCloseFee;	//平仓手续费
-	double		m_dCloseTFee;	//平今手续费
-	int			m_nFeeAlg;		//手续费算法，默认为-1，不计算,0是按成交量，1为按成交额
+	double		m_dOpenFee		= 0.0;	//开仓手续费
+	double		m_dCloseFee		= 0.0;	//平仓手续费
+	double		m_dCloseTFee	= 0.0;	//平今手续费
+	int			m_nFeeAlg		= -1;	//手续费算法，默认为-1，不计算,0是按成交量，1为按成交额
 
 	WTSCommodityInfo*	m_commInfo;
 	uint32_t	m_uHotFlag;
 	std::string	m_strHotCode;
-
-	uint32_t	m_uTotalIdx;	//合约全局索引，每次启动可能不同，只能在内存里用
-	void*		m_pExtData;		//扩展数据，主要是绑定一些和合约相关的数据，这样可以避免在很多地方建map，导致多次查找
 };
 
 
