@@ -20,7 +20,7 @@ ADD_LIBRARY(TraderCTP SHARED ${SRC})
 IF(MSVC)
 ELSE(GNUCC)
 	SET(LIBS
-		boost_thread
+		pthread
 		boost_filesystem
 		dl
 	)
