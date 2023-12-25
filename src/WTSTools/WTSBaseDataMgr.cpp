@@ -25,6 +25,7 @@ WTSBaseDataMgr::WTSBaseDataMgr()
 	, m_mapSessions(NULL)
 	, m_mapCommodities(NULL)
 	, m_mapContracts(NULL)
+	, m_ayGlobalList(NULL)
 {
 	m_mapExchgContract = WTSExchgContract::create();
 	m_mapSessions = WTSSessionMap::create();
@@ -551,6 +552,27 @@ bool WTSBaseDataMgr::loadContracts(const char* filename)
 
 	WTSLogger::info("Contracts configuration file {} loaded, {} exchanges", filename, m_mapExchgContract->size());
 	root->release();
+
+	//读取全部合约，根据代码排序，并设置全局索引
+	WTSArray* allCodes = getContracts("");
+	if(allCodes != NULL)
+	{
+		std::sort(allCodes->begin(), allCodes->end(), [](WTSObject* left, WTSObject* right) {
+			WTSContractInfo* cInfoA = static_cast<WTSContractInfo*>(left);
+			WTSContractInfo* cInfoB = static_cast<WTSContractInfo*>(right);
+
+			return strcmp(cInfoA->getFullCode(), cInfoB->getFullCode());
+		});
+
+		m_ayGlobalList.resize(allCodes->size());
+		uint32_t idx = 0;
+		for (auto it = allCodes->begin(); it != allCodes->end(); it++, idx++)
+		{
+			WTSContractInfo* cInfo = static_cast<WTSContractInfo*>(*it);
+			cInfo->setTotalIndex(idx);
+			m_ayGlobalList[idx] = cInfo;
+		}	
+	}
 	return true;
 }
 

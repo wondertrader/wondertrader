@@ -48,6 +48,16 @@ public:
 
 	virtual uint32_t			getContractSize(const char* exchg = "", uint32_t uDate = 0) override;
 
+	virtual uint32_t			getGlobalSize() override { return (uint32_t)m_ayGlobalList.size(); }
+
+	virtual WTSContractInfo*	getContractByIndex(uint32_t idx) override
+	{
+		if (idx >= m_ayGlobalList.size())
+			return NULL;
+
+		return m_ayGlobalList[idx];
+	}
+	
 	void		release();
 
 	bool		loadSessions(const char* filename);
@@ -76,5 +86,7 @@ private:
 	WTSSessionMap*		m_mapSessions;
 	WTSCommodityMap*	m_mapCommodities;
 	WTSContractMap*		m_mapContracts;
+
+	std::vector<WTSContractInfo*>			m_ayGlobalList;
 };
 

@@ -50,5 +50,8 @@ public:
 	virtual uint64_t			getBoundaryTime(const char* stdPID, uint32_t tDate, bool isSession = false, bool isStart = true) = 0;
 
 	virtual uint32_t			getContractSize(const char* exchg = "", uint32_t uDate = 0) { return 0; }
+
+	virtual	uint32_t			getGlobalSize() { return 0; }
+	virtual WTSContractInfo*	getContractByIndex(uint32_t idx) { return NULL; }
 };
 NS_WTP_END
