@@ -298,8 +298,18 @@ public:
 	inline bool isSecond() const { return m_uHotFlag == 2; }
 	inline const char* getHotCode() const { return m_strHotCode.c_str(); }
 
+	inline void	setTotalIndex(uint32_t idx) noexcept { m_uTotalIdx = idx; }
+	inline uint32_t getTotalIndex() const noexcept { return m_uTotalIdx; }
+
+	inline void setExtData(void* pExtData) noexcept { m_pExtData = pExtData; }
+	template<typename T>
+	inline T*	getExtData() noexcept { return static_cast<T*>(m_pExtData); }
+
 protected:
-	WTSContractInfo():m_commInfo(NULL), m_openDate(19900101), m_expireDate(30991231), m_lMarginRatio(0), m_sMarginRatio(0), m_nFeeAlg(-1), m_uMarginFlag(0), m_uHotFlag(0){}
+	WTSContractInfo()
+		: m_commInfo(NULL), m_openDate(19900101), m_expireDate(30991231)
+		, m_lMarginRatio(0), m_sMarginRatio(0), m_nFeeAlg(-1), m_uMarginFlag(0)
+		, m_uHotFlag(0), m_uTotalIdx(UINT_MAX), m_pExtData(NULL){}
 	virtual ~WTSContractInfo(){}
 
 private:
@@ -331,6 +341,9 @@ private:
 	WTSCommodityInfo*	m_commInfo;
 	uint32_t	m_uHotFlag;
 	std::string	m_strHotCode;
+
+	uint32_t	m_uTotalIdx;	//合约全局索引，每次启动可能不同，只能在内存里用
+	void*		m_pExtData;		//扩展数据，主要是绑定一些和合约相关的数据，这样可以避免在很多地方建map，导致多次查找
 };
 
 
