@@ -14,32 +14,32 @@ namespace decimal
 {
 	const double EPSINON = 1e-6;
 
-	inline double rnd(double v, int exp = 1)
+	inline double rnd(double v, int exp = 1) 
 	{
 		return round(v*exp) / exp;
 	}
 
-	inline bool eq(double a, double b = 0.0)
+	inline bool eq(double a, double b = 0.0) noexcept
 	{
 		return(fabs(a - b) < EPSINON);
 	}
 
-	inline bool gt(double a, double b = 0.0)
+	inline bool gt(double a, double b = 0.0) noexcept
 	{
 		return a - b > EPSINON;
 	}
 
-	inline bool lt(double a, double b = 0.0)
+	inline bool lt(double a, double b = 0.0) noexcept
 	{
 		return b - a > EPSINON;
 	}
 
-	inline bool ge(double a, double b = 0.0)
+	inline bool ge(double a, double b = 0.0) noexcept
 	{
 		return gt(a, b) || eq(a, b);
 	}
 
-	inline bool le(double a, double b = 0.0)
+	inline bool le(double a, double b = 0.0) noexcept
 	{
 		return lt(a, b) || eq(a, b);
 	}
