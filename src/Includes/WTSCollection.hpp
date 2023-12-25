@@ -610,7 +610,7 @@ public:
 	/*
 	 *	创建map容器
 	 */
-	static WTSHashMap<T, Hash>*	create()
+	static WTSHashMap<T, Hash>*	create() noexcept
 	{
 		WTSHashMap<T, Hash>* pRet = new WTSHashMap<T, Hash>();
 		return pRet;
@@ -619,14 +619,14 @@ public:
 	/*
 	 *	返回map容器的大小
 	 */
-	inline uint32_t size() const{return (uint32_t)_map.size();}
+	inline uint32_t size() const noexcept {return (uint32_t)_map.size();}
 
 	/*
 	 *	读取指定key对应的数据
 	 *	不增加数据的引用计数
 	 *	没有则返回NULL
 	 */
-	inline WTSObject* get(const T &_key)
+	inline WTSObject* get(const T &_key) noexcept
 	{
 		auto it = _map.find(_key);
 		if(it == _map.end())
@@ -641,7 +641,7 @@ public:
 	 *	增加数据的引用计数
 	 *	没有则返回NULL
 	 */
-	inline WTSObject* grab(const T &_key)
+	inline WTSObject* grab(const T &_key) noexcept
 	{
 		auto it = _map.find(_key);
 		if(it == _map.end())
@@ -656,7 +656,7 @@ public:
 	 *	新增一个数据,并增加数据引用计数
 	 *	如果key存在,则将原有数据释放
 	 */
-	inline void add(const T &_key, WTSObject* obj, bool bAutoRetain = true)
+	inline void add(const T &_key, WTSObject* obj, bool bAutoRetain = true) noexcept
 	{
 		if (bAutoRetain && obj)
 			obj->retain();
@@ -677,7 +677,7 @@ public:
 	 *	根据key删除一个数据
 	 *	如果key存在,则对应数据引用计数-1
 	 */
-	inline void remove(const T &_key)
+	inline void remove(const T &_key) noexcept
 	{
 		auto it = _map.find(_key);
 		if (it != _map.end())
@@ -692,7 +692,7 @@ public:
 	/*
 	 *	获取容器起始位置的迭代器
 	 */
-	inline ConstIterator begin() const
+	inline ConstIterator begin() const noexcept
 	{
 		return _map.begin();
 	}
@@ -700,12 +700,12 @@ public:
 	/*
 	 *	获取容易末尾位置的迭代器
 	 */
-	inline ConstIterator end() const
+	inline ConstIterator end() const noexcept
 	{
 		return _map.end();
 	}
 
-	inline ConstIterator find(const T& key) const
+	inline ConstIterator find(const T& key) const noexcept
 	{
 		return _map.find(key);
 	}
@@ -714,7 +714,7 @@ public:
 	 *	清空容器
 	 *	容器内所有数据引用计数-1
 	 */
-	inline void clear()
+	inline void clear() noexcept
 	{
 		ConstIterator it = _map.begin();
 		for(; it != _map.end(); it++)
@@ -728,7 +728,7 @@ public:
 	 *	释放容器对象
 	 *	如果容器引用计数为1,则清空所有数据
 	 */
-	virtual void release()
+	virtual void release() 
 	{
 		if (m_uRefs == 0)
 			return;
