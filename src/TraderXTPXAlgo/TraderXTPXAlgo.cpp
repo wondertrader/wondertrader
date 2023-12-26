@@ -17,6 +17,7 @@
 #include "../Includes/WTSVariant.hpp"
 
 #include "../Share/ModuleHelper.hpp"
+#include "../Share/Converter.hpp"
 
 #include <boost/filesystem.hpp>
 #include <iostream>
@@ -944,7 +945,7 @@ bool TraderXTPXAlgo::extractEntrustID(const char* entrustid, uint32_t &orderRef)
 	if (idx == std::string::npos)
 		return false;
 
-	orderRef = strtoul(entrustid + idx + 1, NULL, 10);
+	orderRef = convert::to_uint32(entrustid + idx + 1);
 
 	return true;
 }
@@ -990,7 +991,7 @@ void TraderXTPXAlgo::doLogin()
 		_sessionid = iResult;
 		if (!_inited)
 		{
-			_tradingday = strtoul(_api->GetTradingDay(), NULL, 10);
+			_tradingday = convert::to_uint32(_api->GetTradingDay());
 
 			{
 				//初始化委托单缓存器
@@ -1054,7 +1055,7 @@ void TraderXTPXAlgo::doLogin()
 		_sessionid = iResult;
 		if (!_inited)
 		{
-			_tradingday = strtoul(_api->GetTradingDay(), NULL, 10);
+			_tradingday = convert::to_uint32(_api->GetTradingDay());
 
 			{
 				//初始化委托单缓存器
@@ -1174,7 +1175,7 @@ int TraderXTPXAlgo::orderAction(WTSEntrustAction* action)
 		return -1;
 	}
 
-	uint64_t iResult = _api->CancelAlgoOrder(true, strtoull(action->getOrderID(), NULL, 10), _sessionid);
+	uint64_t iResult = _api->CancelAlgoOrder(true, convert::to_uint64(action->getOrderID()), _sessionid);
 	if (iResult != 0)
 	{
 		auto error_info = _api->GetApiLastError();

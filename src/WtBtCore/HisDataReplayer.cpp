@@ -22,6 +22,7 @@
 #include "../Share/decimal.h"
 #include "../Share/StrUtil.hpp"
 #include "../Share/TimeUtils.hpp"
+#include "../Share/Converter.hpp"
 
 #include "../WTSTools/WTSLogger.h"
 #include "../WTSTools/WTSDataFactory.h"
@@ -2125,7 +2126,7 @@ WTSKlineSlice* HisDataReplayer::get_kline_slice(const char* stdCode, const char*
 				_ticker_keys[stdCode] = key;
 				_min_period = period;
 			}
-			else if (oldKey.at(0) == period[0] && times < strtoul(oldKey.substr(2).c_str(), NULL, 10))
+			else if (oldKey.at(0) == period[0] && times < convert::to_uint32(oldKey.substr(2).c_str()))
 			{
 				_ticker_keys[stdCode] = key;
 				_min_period = period;
@@ -3120,7 +3121,7 @@ void HisDataReplayer::checkUnbars()
 		std::string key = fmt::format("{}#{}", stdCode, _main_period);
 
 		WTSKlinePeriod kp;
-		uint32_t realTimes = strtoul(_main_period.c_str() + 2, NULL, 10);
+		uint32_t realTimes = convert::to_uint32(_main_period.c_str() + 2);
 		if (_main_period[0] == 'm')
 		{
 			if (realTimes % 5 == 0)
@@ -3207,7 +3208,7 @@ uint32_t strToTime(const char* strTime, bool bHasSec = false)
 		pos++;
 	}
 
-	uint32_t ret = strtoul(str.c_str(), NULL, 10);
+	uint32_t ret = convert::to_uint32(str.c_str());
 	if (str.size() > 4 && !bHasSec)
 		ret /= 100;
 
@@ -3230,7 +3231,7 @@ uint32_t strToDate(const char* strDate)
 	else
 		ss << ay[0];
 
-	return strtoul(ss.str().c_str(), NULL, 10);
+	return convert::to_uint32(ss.str().c_str());
 }
 
 bool HisDataReplayer::cacheRawTicksFromBin(const std::string& key, const char* stdCode, uint32_t uDate)

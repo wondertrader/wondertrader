@@ -18,6 +18,7 @@
 #include "../Share/ModuleHelper.hpp"
 #include "../Share/TimeUtils.hpp"
 #include "../Share/StdUtils.hpp"
+#include "../Share/Converter.hpp"
 
 #include <boost/filesystem.hpp>
 
@@ -70,7 +71,7 @@ inline uint32_t strToTime(const char* strTime)
 	}
 	str[idx] = '\0';
 
-	return strtoul(str, NULL, 10);
+	return convert::to_uint32(str);
 }
 
 inline double checkValid(double val)
@@ -190,7 +191,7 @@ void ParserCTP::OnRspUserLogin( CThostFtdcRspUserLoginField *pRspUserLogin, CTho
 {
 	if(bIsLast && !IsErrorRspInfo(pRspInfo))
 	{
-		m_uTradingDate = strtoul(m_pUserAPI->GetTradingDay(), NULL, 10);
+		m_uTradingDate = convert::to_uint32(m_pUserAPI->GetTradingDay());
         //By Wesley @ 2022.03.09
         //这里加一个判断，但是这样的交易日不准确，在夜盘会出错
         if(m_uTradingDate == 0)
@@ -250,7 +251,7 @@ void ParserCTP::OnRtnDepthMarketData( CThostFtdcDepthMarketDataField *pDepthMark
     }
     else
     {
-        actDate = strtoul(pDepthMarketData->ActionDay, NULL, 10);
+        actDate = convert::to_uint32(pDepthMarketData->ActionDay);
         actTime = strToTime(pDepthMarketData->UpdateTime) * 1000 + pDepthMarketData->UpdateMillisec;
         actHour = actTime / 10000000;
 

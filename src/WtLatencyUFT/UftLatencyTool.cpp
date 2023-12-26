@@ -35,31 +35,6 @@ void test_uft()
 
 namespace uft
 {
-	inline double checkValid(double x)
-	{
-		return ((x == DBL_MAX || x == FLT_MAX) ? 0.0 : x);
-	}
-
-
-	inline uint32_t strToTime(const char* strTime)
-	{
-		static char str[10] = { 0 };
-		const char *pos = strTime;
-		int idx = 0;
-		auto len = strlen(strTime);
-		for (std::size_t i = 0; i < len; i++)
-		{
-			if (strTime[i] != ':')
-			{
-				str[idx] = strTime[i];
-				idx++;
-			}
-		}
-		str[idx] = '\0';
-
-		return strtoul(str, NULL, 10);
-	}
-
 	class TestParser : public IParserApi
 	{
 	public:

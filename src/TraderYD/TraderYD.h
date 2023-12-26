@@ -108,19 +108,21 @@ public:
 	virtual int queryTrades() override;
 
 
-protected:
-	WTSOrderInfo*	makeOrderInfo(const YDOrder* orderField, const YDInstrument* instInfo);
-	WTSEntrust*		makeEntrust(const YDInputOrder *entrustField, const YDInstrument* instInfo);
-	WTSTradeInfo*	makeTradeRecord(const YDTrade *tradeField, const YDInstrument* instInfo);
-	WTSError*		makeError(int errorno, WTSErroCode ec);
+private:
+	 inline WTSOrderInfo*	makeOrderInfo(const YDOrder* orderField, const YDInstrument* instInfo) noexcept;
+	 inline WTSEntrust*		makeEntrust(const YDInputOrder *entrustField, const YDInstrument* instInfo) noexcept;
+	 inline WTSTradeInfo*	makeTradeRecord(const YDTrade *tradeField, const YDInstrument* instInfo) noexcept;
+	 inline WTSError*		makeError(int errorno, WTSErroCode ec) noexcept;
 
-	bool			generateEntrustID(uint32_t orderRef, char* buffer);
-	bool			extractEntrustID(const char* entrustid, uint32_t &orderRef);
+	 inline bool			generateEntrustID(uint32_t orderRef, char* buffer) noexcept;
+	 inline bool			extractEntrustID(const char* entrustid, uint32_t &orderRef) noexcept;
 
-	inline uint32_t		genRequestID()
+	inline uint32_t			genRequestID()
 	{
 		return m_iRequestID.fetch_add(1) + 1;
 	}
+
+	void on_kvcache_message(const char* message);
 
 protected:
 	std::string		m_strCfgFile;
@@ -167,5 +169,6 @@ protected:
 	WtKVCache		m_eidCache;
 	//订单标记缓存器
 	WtKVCache		m_oidCache;
+	CacheLogger		m_cacheLogger;
 };
 

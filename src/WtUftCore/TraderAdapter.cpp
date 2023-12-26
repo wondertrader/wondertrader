@@ -19,6 +19,7 @@
 #include "../Includes/WTSContractInfo.hpp"
 #include "../Includes/IBaseDataMgr.h"
 #include "../Includes/WTSRiskDef.hpp"
+#include "../Share/Converter.hpp"
 
 #include <atomic>
 
@@ -1195,7 +1196,7 @@ void TraderAdapter::onRspEntrust(WTSEntrust* entrust, WTSError *err)
 		{
 			char* userTag = (char*)entrust->getUserTag();
 			userTag += _order_pattern.size() + 1;
-			uint32_t localid = strtoul(userTag, NULL, 10);
+			uint32_t localid = convert::to_uint32(userTag);
 
 			for(auto sink : _sinks)
 				sink->on_entrust(localid, stdCode.c_str(), false, err->getMessage());
@@ -1366,7 +1367,7 @@ void TraderAdapter::onRspOrders(const WTSArray* ayOrders)
 
 			char* userTag = (char*)orderInfo->getUserTag();
 			userTag += _order_pattern.size() + 1;
-			uint32_t localid = strtoul(userTag, NULL, 10);
+			uint32_t localid = convert::to_uint32(userTag);
 
 			{
 				SpinLock lock(_mtx_orders);
@@ -1694,7 +1695,7 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 	{
 		char* userTag = (char*)orderInfo->getUserTag();
 		userTag += _order_pattern.size() + 1;
-		localid = strtoul(userTag, NULL, 10);
+		localid = convert::to_uint32(userTag);
 	}
 
 	//如果是wt发出去的单子则需要更新内部数据
@@ -1756,7 +1757,7 @@ void TraderAdapter::onPushTrade(WTSTradeInfo* tradeRecord)
 	{
 		char* userTag = (char*)tradeRecord->getUserTag();
 		userTag += _order_pattern.size() + 1;
-		localid = strtoul(userTag, NULL, 10);
+		localid = convert::to_uint32(userTag);
 
 		//double oldQty = _undone_qty[stdCode];
 		//double newQty = oldQty - tradeRecord->getVolume()*(isBuy ? 1 : -1);

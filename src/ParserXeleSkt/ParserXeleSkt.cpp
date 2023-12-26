@@ -14,6 +14,7 @@
 #include "../Includes/IBaseDataMgr.h"
 #include "../Includes/WTSContractInfo.hpp"
 #include "../Share/decimal.h"
+#include "../Share/Converter.hpp"
 
 #include <boost/bind.hpp>
 
@@ -48,7 +49,7 @@ inline uint32_t strToTime(const char* strTime)
 	}
 	str[idx] = '\0';
 
-	return strtoul(str, NULL, 10);
+	return convert::to_uint32(str);
 }
 
 inline double checkValid(double val)

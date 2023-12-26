@@ -19,6 +19,7 @@
 
 #include "../Share/ModuleHelper.hpp"
 #include "../Share/decimal.h"
+#include "../Share/Converter.hpp"
 
 #include <boost/filesystem.hpp>
 
@@ -51,7 +52,7 @@ uint32_t strToTime(const char* strTime)
 		pos++;
 	}
 
-	return strtoul(str.c_str(), NULL, 10);
+	return convert::to_uint32(str.c_str());
 }
 
 extern "C"
@@ -1118,7 +1119,7 @@ WTSOrderInfo* TraderCTPMini::makeOrderInfo(CThostFtdcOrderField* orderField)
 	 */
 	std::string strTime = orderField->InsertTime;
 	StrUtil::replace(strTime, ":", "");
-	uint32_t uTime = strtoul(strTime.c_str(), NULL, 10);
+	uint32_t uTime = convert::to_uint32(strTime.c_str());
 
 	uint32_t insertDate = m_lDate;
 	uint32_t uHour = uTime / 10000;
@@ -1136,7 +1137,7 @@ WTSOrderInfo* TraderCTPMini::makeOrderInfo(CThostFtdcOrderField* orderField)
 	}
 	pRet->setOrderDate(insertDate);
 	
-	pRet->setOrderTime(TimeUtils::makeTime(pRet->getOrderDate(), strtoul(strTime.c_str(), NULL, 10) * 1000));
+	pRet->setOrderTime(TimeUtils::makeTime(pRet->getOrderDate(), convert::to_uint32(strTime.c_str()) * 1000));
 
 	pRet->setOrderState(wrapOrderState(orderField->OrderStatus));
 	if (orderField->OrderSubmitStatus >= THOST_FTDC_OSS_InsertRejected)
@@ -1230,7 +1231,7 @@ WTSTradeInfo* TraderCTPMini::makeTradeRecord(CThostFtdcTradeField *tradeField)
 
 	std::string strTime = tradeField->TradeTime;
 	StrUtil::replace(strTime, ":", "");
-	uint32_t uTime = strtoul(strTime.c_str(), NULL, 10);
+	uint32_t uTime = convert::to_uint32(strTime.c_str());
 
 	/*
 	 *	By Wesley @ 2021.12.16
@@ -1284,17 +1285,17 @@ bool TraderCTPMini::extractEntrustID(const char* entrustid, uint32_t &frontid, u
 	if (idx == std::string::npos)
 		return false;
 	s[idx] = '\0';
-	frontid = strtoul(s, NULL, 10);
+	frontid = convert::to_uint32(s);
 	s += idx + 1;
 
 	idx = StrUtil::findFirst(s, '#');
 	if (idx == std::string::npos)
 		return false;
 	s[idx] = '\0';
-	sessionid = strtoul(s, NULL, 10);
+	sessionid = convert::to_uint32(s);
 	s += idx + 1;
 
-	orderRef = strtoul(s, NULL, 10);
+	orderRef = convert::to_uint32(s);
 
 	return true;
 }

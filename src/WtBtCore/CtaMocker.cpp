@@ -20,6 +20,7 @@
 #include "../Share/CodeHelper.hpp"
 #include "../Share/decimal.h"
 #include "../Share/StrUtil.hpp"
+#include "../Share/Converter.hpp"
 
 #include "../WTSTools/WTSLogger.h"
 
@@ -1777,7 +1778,7 @@ WTSKlineSlice* CtaMocker::stra_get_bars(const char* stdCode, const char* period,
 	basePeriod[0] = period[0];
 	uint32_t times = 1;
 	if (strlen(period) > 1)
-		times = strtoul(period + 1, NULL, 10);
+		times = convert::to_uint32(period + 1);
 	else
 		strcat(key, "1");
 

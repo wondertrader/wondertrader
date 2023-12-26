@@ -18,6 +18,7 @@
 #include "../Includes/WTSVersion.h"
 
 #include "../Share/ModuleHelper.hpp"
+#include "../Share/Converter.hpp"
 
 #include <boost/filesystem.hpp>
 #include <iostream>
@@ -1072,7 +1073,7 @@ bool TraderATP::extractEntrustID(const char* entrustid, uint32_t &orderRef)
 	if (idx == std::string::npos)
 		return false;
 
-	orderRef = strtoul(entrustid + idx + 1, NULL, 10);
+	orderRef = convert::to_uint32(entrustid + idx + 1);
 
 	return true;
 }
@@ -1239,7 +1240,7 @@ int TraderATP::orderAction(WTSEntrustAction* action)
 	wt_strcpy(p.password, _accpasswd.c_str());  // 交易密码
 	p.client_seq_id = genRequestID();
 	p.order_way = std::to_string(_order_way).at(0);
-	p.orig_cl_ord_no = strtoull(action->getOrderID(), NULL, 10);
+	p.orig_cl_ord_no = convert::to_uint64(action->getOrderID());
 
 	p.client_feature_code = _node_id;
 

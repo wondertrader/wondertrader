@@ -47,16 +47,8 @@ public:
 		WTSEntrust* pRet = WTSEntrust::allocate();
 		if(pRet)
 		{
-			//wt_strcpy(pRet->m_strExchg, exchg);
-			//wt_strcpy(pRet->m_strCode, code);
-
-			auto len = strlen(exchg);
-			memcpy(pRet->m_strExchg, exchg, len);
-			pRet->m_strExchg[len] = 0;
-
-			len = strlen(code);
-			memcpy(pRet->m_strCode, code, len);
-			pRet->m_strCode[len] = 0;
+			wt_strcpy(pRet->m_strExchg, exchg);
+			wt_strcpy(pRet->m_strCode, code);
 
 			pRet->m_dVolume = vol;
 			pRet->m_iPrice = price;
@@ -72,6 +64,7 @@ public:
 	{
 		wt_strcpy(m_strExchg, exchg, len);
     }
+
 	inline void setCode(const char* code, std::size_t len = 0) noexcept
 	{
 		wt_strcpy(m_strCode, code, len);
@@ -184,16 +177,11 @@ public:
 	inline const char* getCode() const noexcept {return m_strCode;}
 
 	inline void setExchange(const char* exchg, std::size_t len = 0) noexcept {
-		if (len == 0)
-			wt_strcpy(m_strExchg, exchg);
-		else
-			strncpy(m_strExchg, exchg, len);
+		wt_strcpy(m_strExchg, exchg, len);
 	}
+
 	inline void setCode(const char* code, std::size_t len = 0) noexcept {
-		if (len == 0)
-			wt_strcpy(m_strCode, code);
-		else
-			strncpy(m_strCode, code, len);
+		wt_strcpy(m_strCode, code, len);
 	}
 
 	inline void setActionFlag(WTSActionFlag af) noexcept {m_actionFlag = af;}
@@ -278,16 +266,11 @@ public:
 public:
 	//这部分是和WTSEntrust同步的
 	inline void setExchange(const char* exchg, std::size_t len = 0)  noexcept {
-		if (len == 0)
-			wt_strcpy(m_strExchg, exchg);
-		else
-			strncpy(m_strExchg, exchg, len);
+		wt_strcpy(m_strExchg, exchg, len);
 	}
+
 	inline void setCode(const char* code, std::size_t len = 0) noexcept {
-		if (len == 0)
-			wt_strcpy(m_strCode, code);
-		else
-			strncpy(m_strCode, code, len);
+		wt_strcpy(m_strCode, code, len);
 	}
 
 	inline void setDirection(WTSDirectionType dType)  noexcept { m_direction = dType; }
@@ -342,9 +325,9 @@ public:
 	inline double getVolTraded() const noexcept { return m_dVolTraded; }
 	inline double getVolLeft() const noexcept { return m_dVolLeft; }
     
-	inline WTSOrderState		getOrderState() const  noexcept { return m_orderState; }
-	inline WTSOrderType			getOrderType() const  noexcept { return m_orderType; }
-	inline const char*			getOrderID() const  noexcept { return m_strOrderID; }
+	inline WTSOrderState	getOrderState() const  noexcept { return m_orderState; }
+	inline WTSOrderType		getOrderType() const  noexcept { return m_orderType; }
+	inline const char*		getOrderID() const  noexcept { return m_strOrderID; }
 	inline char*			getOrderID()  noexcept { return m_strOrderID; }
 
 	inline void	setStateMsg(const char* msg) noexcept {m_strStateMsg = msg;}

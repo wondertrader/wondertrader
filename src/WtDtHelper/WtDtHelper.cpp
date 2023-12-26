@@ -11,6 +11,7 @@
 #include "../Share/StrUtil.hpp"
 #include "../Share/TimeUtils.hpp"
 #include "../Share/BoostFile.hpp"
+#include "../Share/Converter.hpp"
 
 #include "../WtDataStorage/DataDefine.h"
 #include "../WTSUtils/WTSCmpHelper.hpp"
@@ -131,7 +132,7 @@ uint32_t strToTime(const char* strTime, bool bKeepSec = false)
 		pos++;
 	}
 
-	uint32_t ret = strtoul(str.c_str(), NULL, 10);
+	uint32_t ret = convert::to_uint32(str.c_str());
 	if (ret > 10000 && !bKeepSec)
 		ret /= 100;
 
@@ -154,7 +155,7 @@ uint32_t strToDate(const char* strDate)
 	else
 		ss << ay[0];
 
-	return strtoul(ss.str().c_str(), NULL, 10);
+	return convert::to_uint32(ss.str().c_str());
 }
 
 void dump_bars(WtString binFolder, WtString csvFolder, WtString strFilter /* = "" */, FuncLogCallback cbLogger /* = NULL */)

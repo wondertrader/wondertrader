@@ -19,6 +19,7 @@
 
 #include "../Share/decimal.h"
 #include "../Share/ModuleHelper.hpp"
+#include "../Share/Converter.hpp"
 
 #include <boost/filesystem.hpp>
 
@@ -48,7 +49,7 @@ uint32_t strToTime(const char* strTime)
 		pos++;
 	}
 
-	return strtoul(str.c_str(), NULL, 10);
+	return convert::to_uint32(str.c_str());
 }
 
 extern "C"
@@ -682,7 +683,7 @@ void TraderCTP::OnRspQrySettlementInfoConfirm(CThostFtdcSettlementInfoConfirmFie
 	{
 		if (pSettlementInfoConfirm != NULL)
 		{
-			uint32_t uConfirmDate = strtoul(pSettlementInfoConfirm->ConfirmDate, NULL, 10);
+			uint32_t uConfirmDate = convert::to_uint32(pSettlementInfoConfirm->ConfirmDate);
 			if (uConfirmDate >= m_lDate)
 			{
 				m_wrapperState = WS_CONFIRMED;
@@ -1211,10 +1212,10 @@ WTSOrderInfo* TraderCTP::makeOrderInfo(CThostFtdcOrderField* orderField)
 	pRet->setCode(orderField->InstrumentID);
 	pRet->setExchange(contract->getExchg());
 
-	uint32_t uDate = strtoul(orderField->InsertDate, NULL, 10);
+	uint32_t uDate = convert::to_uint32(orderField->InsertDate);
 	std::string strTime = orderField->InsertTime;
 	StrUtil::replace(strTime, ":", "");
-	uint32_t uTime = strtoul(strTime.c_str(), NULL, 10);
+	uint32_t uTime = convert::to_uint32(strTime.c_str());
 	if (uTime >= 210000 && uDate == m_lDate)
 	{
 		uDate = TimeUtils::getNextDate(uDate, -1);
@@ -1327,8 +1328,8 @@ WTSTradeInfo* TraderCTP::makeTradeInfo(CThostFtdcTradeField *tradeField)
 
 	std::string strTime = tradeField->TradeTime;
 	StrUtil::replace(strTime, ":", "");
-	uint32_t uTime = strtoul(strTime.c_str(), NULL, 10);
-	uint32_t uDate = strtoul(tradeField->TradeDate, NULL, 10);
+	uint32_t uTime = convert::to_uint32(strTime.c_str());
+	uint32_t uDate = convert::to_uint32(tradeField->TradeDate);
 	
 	//如果是夜盘时间，并且成交日期等于交易日，说明成交日期是需要修正
 	//因为夜盘是提前的，成交日期必然小于交易日
@@ -1372,17 +1373,17 @@ bool TraderCTP::extractEntrustID(const char* entrustid, uint32_t &frontid, uint3
 	if (idx == std::string::npos)
 		return false;
 	s[idx] = '\0';
-	frontid = strtoul(s, NULL, 10);
+	frontid = convert::to_uint32(s);
 	s += idx + 1;
 
 	idx = StrUtil::findFirst(s, '#');
 	if (idx == std::string::npos)
 		return false;
 	s[idx] = '\0';
-	sessionid = strtoul(s, NULL, 10);
+	sessionid = convert::to_uint32(s);
 	s += idx + 1;
 
-	orderRef = strtoul(s, NULL, 10);
+	orderRef = convert::to_uint32(s);
 
 	return true;
 }

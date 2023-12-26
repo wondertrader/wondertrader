@@ -17,6 +17,7 @@
 #include "../Includes/WTSVariant.hpp"
 
 #include "../Share/ModuleHelper.hpp"
+#include "../Share/Converter.hpp"
 
 #include <boost/filesystem.hpp>
 
@@ -355,7 +356,7 @@ bool TraderOES::extractEntrustID(const char* entrustid, uint32_t &orderRef)
 	if (idx == std::string::npos)
 		return false;
 
-	orderRef = strtoul(entrustid + idx + 1, NULL, 10);
+	orderRef = convert::to_uint32(entrustid + idx + 1);
 
 	return true;
 }

@@ -31,6 +31,7 @@
 #include "../Share/decimal.h"
 #include "../Share/TimeUtils.hpp"
 #include "../Share/CodeHelper.hpp"
+#include "../Share/Converter.hpp"
 
 #include <exception>
 #include <rapidjson/document.h>
@@ -1487,7 +1488,7 @@ void TraderAdapter::onRspEntrust(WTSEntrust* entrust, WTSError *err)
 		{
 			char* userTag = (char*)entrust->getUserTag();
 			userTag += _order_pattern.size() + 1;
-			uint32_t localid = strtoul(userTag, NULL, 10);
+			uint32_t localid = convert::to_uint32(userTag);
 
 			for(auto sink : _sinks)
 				sink->on_entrust(localid, stdCode.c_str(), false, err->getMessage());
@@ -1690,7 +1691,7 @@ void TraderAdapter::onRspOrders(const WTSArray* ayOrders)
 
 			char* userTag = (char*)orderInfo->getUserTag();
 			userTag += _order_pattern.size() + 1;
-			uint32_t localid = strtoul(userTag, NULL, 10);
+			uint32_t localid = convert::to_uint32(userTag);
 
 			{
 				SpinLock lock(_mtx_orders);
@@ -2077,7 +2078,7 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 	{
 		char* userTag = (char*)orderInfo->getUserTag();
 		userTag += _order_pattern.size() + 1;
-		localid = strtoul(userTag, NULL, 10);
+		localid = convert::to_uint32(userTag);
 
 		//如果订单撤销, 并且是wt的订单, 则要先更新未完成数量
 		if (orderInfo->getOrderState() == WOS_Canceled )
@@ -2230,7 +2231,7 @@ void TraderAdapter::onPushTrade(WTSTradeInfo* tradeRecord)
 	{
 		char* userTag = (char*)tradeRecord->getUserTag();
 		userTag += _order_pattern.size() + 1;
-		localid = strtoul(userTag, NULL, 10);
+		localid = convert::to_uint32(userTag);
 
 		updateUndone(stdCode.c_str(), vol*(isBuy ? -1 : 1), true);
 	}

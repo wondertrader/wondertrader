@@ -19,6 +19,7 @@
 #include "../Includes/WTSCollection.hpp"
 
 #include "../Share/decimal.h"
+#include "../Share/Converter.hpp"
 #include "../Share/ModuleHelper.hpp"
 
 #include <boost/filesystem.hpp>
@@ -29,7 +30,7 @@ const char* ORDER_SECTION = "orders";
 //By Wesley @ 2022.01.05
 #include "../Share/fmtlib.h"
 template<typename... Args>
-inline void write_log(ITraderSpi* sink, WTSLogLevel ll, const char* format, const Args&... args)
+inline void write_log(ITraderSpi* sink, WTSLogLevel ll, const char* format, const Args&... args) noexcept
 {
 	if (sink == NULL)
 		return;
@@ -40,7 +41,7 @@ inline void write_log(ITraderSpi* sink, WTSLogLevel ll, const char* format, cons
 	sink->handleTraderLog(ll, buffer);
 }
 
-inline WTSDirectionType wrapPosDirection(int dirType)
+inline WTSDirectionType wrapPosDirection(int dirType) noexcept
 {
 	if (YD_PD_Long == dirType)
 		return WDT_LONG;
@@ -48,7 +49,7 @@ inline WTSDirectionType wrapPosDirection(int dirType)
 		return WDT_SHORT;
 }
 
-inline WTSDirectionType wrapDirectionType(int dirType, int offsetType)
+inline WTSDirectionType wrapDirectionType(int dirType, int offsetType) noexcept
 {
 	if (YD_D_Buy == dirType)
 		if (offsetType == YD_OF_Open)
@@ -62,7 +63,7 @@ inline WTSDirectionType wrapDirectionType(int dirType, int offsetType)
 			return WDT_LONG;
 }
 
-inline int wrapDirectionType(WTSDirectionType dirType, WTSOffsetType offsetType)
+inline int wrapDirectionType(WTSDirectionType dirType, WTSOffsetType offsetType) noexcept
 {
 	if (WDT_LONG == dirType)
 		if (offsetType == WOT_OPEN)
@@ -76,7 +77,7 @@ inline int wrapDirectionType(WTSDirectionType dirType, WTSOffsetType offsetType)
 			return YD_D_Buy;
 }
 
-inline int wrapPriceType(WTSPriceType pType, WTSOrderFlag oFlag)
+inline int wrapPriceType(WTSPriceType pType, WTSOrderFlag oFlag) noexcept
 {
 	if (WOF_FAK == oFlag)
 		return YD_ODT_FAK;
@@ -93,7 +94,7 @@ inline int wrapPriceType(WTSPriceType pType, WTSOrderFlag oFlag)
 	return YD_ODT_Market;
 }
 
-inline WTSOffsetType wrapOffsetType(int offType)
+inline WTSOffsetType wrapOffsetType(int offType) noexcept
 {
 	if (YD_OF_Open == offType)
 		return WOT_OPEN;
@@ -107,7 +108,7 @@ inline WTSOffsetType wrapOffsetType(int offType)
 		return WOT_FORCECLOSE;
 }
 
-inline int wrapOffsetType(WTSOffsetType offType)
+inline int wrapOffsetType(WTSOffsetType offType) noexcept
 {
 	if (WOT_OPEN == offType)
 		return YD_OF_Open;
@@ -121,7 +122,7 @@ inline int wrapOffsetType(WTSOffsetType offType)
 		return YD_OF_ForceClose;
 }
 
-inline WTSOrderState wrapOrderState(int orderState)
+inline WTSOrderState wrapOrderState(int orderState) noexcept
 {
 	switch (orderState)
 	{
@@ -182,6 +183,10 @@ void TraderYD::notifyReadyForLogin(bool hasLoginFailed)
 		m_sink->handleEvent(WTE_Connect, 0);
 }
 
+void TraderYD::on_kvcache_message(const char* message)
+{
+	write_log(m_sink, LL_WARN, "[TraderYD] WtKVCache message: {}", message);
+}
 
 void TraderYD::notifyLogin(int errorNo, int maxOrderRef, bool isMonitor)
 {
@@ -205,9 +210,7 @@ void TraderYD::notifyLogin(int errorNo, int maxOrderRef, bool isMonitor)
 			if (!StdFile::exists(path.c_str()))
 				boost::filesystem::create_directories(path.c_str());
 			ss << m_strUser << "_eid.sc";
-			m_eidCache.init(ss.str().c_str(), m_lDate, [this](const char* message) {
-				write_log(m_sink, LL_WARN, message);
-			});
+			m_eidCache.init(ss.str().c_str(), m_lDate, m_cacheLogger);
 		}
 
 		{
@@ -218,9 +221,7 @@ void TraderYD::notifyLogin(int errorNo, int maxOrderRef, bool isMonitor)
 			if (!StdFile::exists(path.c_str()))
 				boost::filesystem::create_directories(path.c_str());
 			ss << m_strUser << "_oid.sc";
-			m_oidCache.init(ss.str().c_str(), m_lDate, [this](const char* message) {
-				write_log(m_sink, LL_WARN, message);
-			});
+			m_oidCache.init(ss.str().c_str(), m_lDate, m_cacheLogger);
 		}
 	}
 	else
@@ -298,7 +299,7 @@ void TraderYD::notifyFinishInit()
 			if (contract)
 			{
 				WTSCommodityInfo* commInfo = contract->getCommInfo();
-				std::string key = fmt::format("{}-{}", contract->getCode(), wrapPosDirection(pInfo->PositionDirection));
+				std::string key = fmtutil::format("{}-{}", contract->getCode(), wrapPosDirection(pInfo->PositionDirection));
 				WTSPositionItem* pos = (WTSPositionItem*)m_mapPosition->get(key);
 				if (pos == NULL)
 				{
@@ -327,7 +328,7 @@ void TraderYD::notifyFinishInit()
 				pos->setAvailPrePos(pos->getPrePosition());
 				pos->setAvailNewPos(0);
 
-				write_log(m_sink, LL_INFO, "{} PrePosition of {} updated:{}[{}]", pos->getDirection() == WDT_LONG ? "Long" : "Short", contract->getFullCode(), pos->getTotalPosition(), pos->getAvailPosition());
+				write_log(m_sink, LL_INFO, "[TraderYD] {} PrePosition of {} updated:{}[{}]", pos->getDirection() == WDT_LONG ? "Long" : "Short", contract->getFullCode(), pos->getTotalPosition(), pos->getAvailPosition());
 			}
 		}
 	}
@@ -389,7 +390,7 @@ void TraderYD::notifyOrder(const YDOrder *pOrder, const YDInstrument *pInstrumen
 			//如果是撤单，并且之间订单状态还是有效的，则对平仓委托要释放冻结的手数
 			if(preOrd->isAlive() && orderInfo->getOrderState() == WOS_Canceled && orderInfo->getOffsetType() != WOT_OPEN)
 			{
-				std::string key = fmt::format("{}-{}", orderInfo->getCode(), orderInfo->getDirection());
+				std::string key = fmtutil::format("{}-{}", orderInfo->getCode(), orderInfo->getDirection());
 				WTSPositionItem* pos = (WTSPositionItem*)m_mapPosition->get(key);
 				double preQty = pos->getPrePosition();
 				double newQty = pos->getNewPosition();
@@ -450,7 +451,7 @@ void TraderYD::notifyTrade(const YDTrade *pTrade, const YDInstrument *pInstrumen
 			m_mapTrades->add(tid, trdInfo, false);
 
 			//成交回报，主要更新持仓
-			std::string key = fmt::format("{}-{}", trdInfo->getCode(), trdInfo->getDirection());
+			std::string key = fmtutil::format("{}-{}", trdInfo->getCode(), trdInfo->getDirection());
 			WTSPositionItem* pos = (WTSPositionItem*)m_mapPosition->get(key);
 			if(pos == NULL)
 			{
@@ -554,6 +555,7 @@ bool TraderYD::init(WTSVariant* config)
 	m_hInstYD = DLLHelper::load_library(m_strModule.c_str());
 	m_funcCreator = (YDCreator)DLLHelper::get_symbol(m_hInstYD, "makeYDApi");
 
+	m_cacheLogger = std::bind(&TraderYD::on_kvcache_message, this, std::placeholders::_1);
 	return true;
 }
 
@@ -696,7 +698,8 @@ int TraderYD::orderInsert(WTSEntrust* entrust)
 
 	const YDInstrument* pInst = m_pUserAPI->getInstrumentByID(entrust->getCode());
 
-	YDInputOrder req;
+	thread_local static YDInputOrder req;
+
 	// inputOrder中的所有不用的字段，应当统一清0
 	memset(&req, 0, sizeof(req));
 
@@ -715,9 +718,7 @@ int TraderYD::orderInsert(WTSEntrust* entrust)
 
 	if (strlen(entrust->getUserTag()) > 0)
 	{
-		m_eidCache.put(entrust->getEntrustID(), entrust->getUserTag(), 0, [this](const char* message) {
-			write_log(m_sink, LL_WARN, message);
-		});
+		m_eidCache.put(entrust->getEntrustID(), entrust->getUserTag(), 0, m_cacheLogger);
 	}
 
 	req.Price = entrust->getPrice();
@@ -758,10 +759,10 @@ int TraderYD::orderAction(WTSEntrustAction* action)
 	const YDExchange* pExchg = pInst->m_pExchange;
 	const YDAccount* pAccount = m_pUserAPI->getMyAccount();
 
-	YDCancelOrder req;
+	thread_local static YDCancelOrder req;
 	memset(&req, 0, sizeof(req));
 
-	req.OrderSysID = atoi(action->getOrderID());
+	req.OrderSysID = convert::to_int32(action->getOrderID());
 	req.YDOrderFlag = YD_YOF_Normal;
 	req.ConnectionSelectionType = YD_CS_Any;
 	req.ConnectionID = 0;
@@ -871,7 +872,7 @@ int TraderYD::queryTrades()
 	return 0;
 }
 
-WTSOrderInfo* TraderYD::makeOrderInfo(const YDOrder* orderField, const YDInstrument* instInfo)
+WTSOrderInfo* TraderYD::makeOrderInfo(const YDOrder* orderField, const YDInstrument* instInfo) noexcept
 {
 	const YDExchange* exchgInfo = instInfo->m_pExchange;
 
@@ -910,7 +911,7 @@ WTSOrderInfo* TraderYD::makeOrderInfo(const YDOrder* orderField, const YDInstrum
 		pRet->setError(true);
 
 	generateEntrustID(orderField->OrderRef, pRet->getEntrustID());
-	fmtutil::format_to(pRet->getOrderID(), "{}", orderField->OrderSysID);
+	convert::to_str(pRet->getOrderID(), 64, orderField->OrderSysID);
 	pRet->setStateMsg("");
 
 	const char* usertag = m_eidCache.get(pRet->getEntrustID());
@@ -924,16 +925,14 @@ WTSOrderInfo* TraderYD::makeOrderInfo(const YDOrder* orderField, const YDInstrum
 
 		if (strlen(pRet->getOrderID()) > 0)
 		{
-			m_oidCache.put(StrUtil::trim(pRet->getOrderID()).c_str(), usertag, 0, [this](const char* message) {
-				write_log(m_sink, LL_ERROR, message);
-			});
+			m_oidCache.put(StrUtil::trim(pRet->getOrderID()).c_str(), usertag, 0, m_cacheLogger);
 		}
 	}
 
 	return pRet;
 }
 
-WTSEntrust* TraderYD::makeEntrust(const YDInputOrder *entrustField, const YDInstrument* instInfo)
+WTSEntrust* TraderYD::makeEntrust(const YDInputOrder *entrustField, const YDInstrument* instInfo) noexcept
 {
 	WTSContractInfo* ct = m_bdMgr->getContract(instInfo->InstrumentID, instInfo->m_pExchange->ExchangeID);
 	if (ct == NULL)
@@ -966,13 +965,13 @@ WTSEntrust* TraderYD::makeEntrust(const YDInputOrder *entrustField, const YDInst
 	return pRet;
 }
 
-WTSError* TraderYD::makeError(int errorno, WTSErroCode ec)
+WTSError* TraderYD::makeError(int errorno, WTSErroCode ec) noexcept
 {
-	WTSError* pRet = WTSError::create(ec, fmt::format("ErrorNo: {}", errorno).c_str());
+	WTSError* pRet = WTSError::create(ec, fmtutil::format("ErrorNo: {}", errorno));
 	return pRet;
 }
 
-WTSTradeInfo* TraderYD::makeTradeRecord(const YDTrade *tradeField, const YDInstrument* instInfo)
+WTSTradeInfo* TraderYD::makeTradeRecord(const YDTrade *tradeField, const YDInstrument* instInfo) noexcept
 {
 	WTSContractInfo* contract = m_bdMgr->getContract(instInfo->InstrumentID, instInfo->m_pExchange->ExchangeID);
 	if (contract == NULL)
@@ -1010,13 +1009,13 @@ WTSTradeInfo* TraderYD::makeTradeRecord(const YDTrade *tradeField, const YDInstr
 	return pRet;
 }
 
-bool TraderYD::generateEntrustID(uint32_t orderRef, char* buffer)
+bool TraderYD::generateEntrustID(uint32_t orderRef, char* buffer) noexcept
 {
 	fmtutil::format_to(buffer, "{}#{:010d}", m_strUser.c_str(), orderRef);
 	return true;
 }
 
-bool TraderYD::extractEntrustID(const char* entrustid, uint32_t &orderRef)
+bool TraderYD::extractEntrustID(const char* entrustid, uint32_t &orderRef) noexcept
 {
 	//Market.FrontID.SessionID.OrderRef
 	auto idx = StrUtil::findFirst(entrustid, '#');
@@ -1024,7 +1023,7 @@ bool TraderYD::extractEntrustID(const char* entrustid, uint32_t &orderRef)
 	if (idx != idx2)
 		return false;
 
-	orderRef = strtoul(entrustid + idx + 1, NULL, 10);
+	orderRef = convert::to_uint32(entrustid + idx + 1);
 
 	return true;
 }

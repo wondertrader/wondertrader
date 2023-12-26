@@ -6,6 +6,7 @@
 #include "../Share/StrUtil.hpp"
 #include "../Share/charconv.hpp"
 #include "../Share/fmtlib.h"
+#include "../Share/Converter.hpp"
 
 #include "../Includes/LoaderDef.hpp"
 #include "../Includes/WTSVariant.hpp"
@@ -302,8 +303,8 @@ void CTraderSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CTho
 					contract.m_strikePrice = pInstrument->StrikePrice;
 					contract.m_dUnderlyingScale = pInstrument->UnderlyingMultiple;
 
-					contract.m_uOpenDate = strtoul(pInstrument->OpenDate, NULL, 10);
-					contract.m_uExpireDate = strtoul(pInstrument->ExpireDate, NULL, 10);
+					contract.m_uOpenDate = convert::to_uint32(pInstrument->OpenDate);
+					contract.m_uExpireDate = convert::to_uint32(pInstrument->ExpireDate);
 
 					contract.m_dLongMarginRatio = checkValid(pInstrument->LongMarginRatio);
 					contract.m_dShortMarginRatio = checkValid(pInstrument->ShortMarginRatio);

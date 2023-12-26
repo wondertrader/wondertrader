@@ -8,10 +8,11 @@
  * \brief
  */
 #include "TraderHuaX.h"
+#include "../Share/Converter.hpp"
 
 
 template<typename... Args>
-inline void write_log(ITraderSpi* sink, WTSLogLevel ll, const char* format, const Args&... args)
+inline void write_log(ITraderSpi* sink, WTSLogLevel ll, const char* format, const Args&... args) noexcept
 {
 	if (sink == NULL)
 		return;
@@ -769,7 +770,7 @@ bool TraderHuaX::extractEntrustID(const char* entrustid, int &orderRef)
 	if (idx == std::string::npos)
 		return false;
 
-	orderRef = strtoul(entrustid + idx + 1, NULL, 10);
+	orderRef = convert::to_uint32(entrustid + idx + 1);
 
 	return true;
 }

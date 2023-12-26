@@ -58,7 +58,7 @@ private:
 	wt_hashmap<std::string, uint32_t> _indice;
 
 private:
-	bool	resize(uint32_t newCap, CacheLogger logger = nullptr)
+	bool	resize(uint32_t newCap, CacheLogger logger = nullptr) noexcept
 	{
 		if (_cache._file == NULL)
 			return false;
@@ -113,7 +113,7 @@ private:
 	}
 
 public:
-	bool	init(const char* filename, uint32_t uDate, CacheLogger logger = nullptr)
+	bool	init(const char* filename, uint32_t uDate, CacheLogger logger = nullptr) noexcept
 	{
 		bool isNew = false;
 		if (!BoostFile::exists(filename))
@@ -180,7 +180,7 @@ public:
 		return true;
 	}
 
-	inline void clear()
+	inline void clear() noexcept
 	{
 		if (_cache._block == NULL)
 			return;
@@ -194,7 +194,7 @@ public:
 		_lock.unlock();
 	}
 
-	inline const char*	get(const char* key) const
+	inline const char*	get(const char* key) const  noexcept
 	{
 		auto it = _indice.find(key);
 		if (it == _indice.end())
@@ -203,7 +203,7 @@ public:
 		return _cache._block->_items[it->second]._val;
 	}
 
-	void	put(const char* key, const char*val, std::size_t len = 0, CacheLogger logger = nullptr)
+	void	put(const char* key, const char*val, std::size_t len = 0, CacheLogger logger = nullptr)  noexcept
 	{
 		auto it = _indice.find(key);
 		if (it != _indice.end())
@@ -226,12 +226,12 @@ public:
 		}
 	}
 
-	inline bool	has(const char* key) const 
+	inline bool	has(const char* key) const  noexcept
 	{
 		return (_indice.find(key) != _indice.end());
 	}
 
-	inline uint32_t size() const
+	inline uint32_t size() const noexcept
 	{
 		if (_cache._block == NULL)
 			return 0;
@@ -239,7 +239,7 @@ public:
 		return _cache._block->_size;
 	}
 
-	inline uint32_t capacity() const
+	inline uint32_t capacity() const noexcept
 	{
 		if (_cache._block == NULL)
 			return 0;

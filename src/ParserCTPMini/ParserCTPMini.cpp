@@ -12,6 +12,7 @@
 #include "../Share/StdUtils.hpp"
 #include "../Share/TimeUtils.hpp"
 #include "../Share/ModuleHelper.hpp"
+#include "../Share/Converter.hpp"
 
 #include "../Includes/WTSDataDef.hpp"
 #include "../Includes/WTSContractInfo.hpp"
@@ -67,7 +68,7 @@ uint32_t strToTime(const char* strTime)
 		pos++;
 	}
 
-	return strtoul(str.c_str(), NULL, 10);
+	return convert::to_uint32(str.c_str());
 }
 
 inline double checkValid(double val)
@@ -178,7 +179,7 @@ void ParserCTPMini::OnRspUserLogin( CThostFtdcRspUserLoginField *pRspUserLogin, 
 {
 	if(bIsLast && !IsErrorRspInfo(pRspInfo))
 	{
-		m_uTradingDate = strtoul(m_pUserAPI->GetTradingDay(), NULL, 10);
+		m_uTradingDate = convert::to_uint32(m_pUserAPI->GetTradingDay());
 		
 		if(m_sink)
 		{
@@ -219,7 +220,7 @@ void ParserCTPMini::OnRtnDepthMarketData( CThostFtdcDepthMarketDataField *pDepth
 		return;
 	}
 
-	uint32_t actDate = strtoul(pDepthMarketData->ActionDay, NULL, 10);
+	uint32_t actDate = convert::to_uint32(pDepthMarketData->ActionDay);
 	uint32_t actTime = strToTime(pDepthMarketData->UpdateTime) * 1000 + pDepthMarketData->UpdateMillisec;
 	uint32_t actHour = actTime / 10000000;
 	

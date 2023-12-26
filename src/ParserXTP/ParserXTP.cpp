@@ -16,6 +16,7 @@
 
 #include "../Share/TimeUtils.hpp"
 #include "../Share/ModuleHelper.hpp"
+#include "../Share/Converter.hpp"
 
 #include <boost/filesystem.hpp>
 
@@ -65,7 +66,7 @@ inline uint32_t strToTime(const char* strTime)
 		pos++;
 	}
 
-	return strtoul(str.c_str(), NULL, 10);
+	return convert::to_uint32(str.c_str());
 }
 
 inline double checkValid(double val)

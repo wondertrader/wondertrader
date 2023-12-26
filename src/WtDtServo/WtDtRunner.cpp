@@ -22,6 +22,7 @@
 #include "../Share/StrUtil.hpp"
 #include "../Share/StdUtils.hpp"
 #include "../Share/CodeHelper.hpp"
+#include "../Share/Converter.hpp"
 
 USING_NS_WTP;
 
@@ -213,7 +214,7 @@ WTSKlineSlice* WtDtRunner::get_bars_by_range(const char* stdCode, const char* pe
 	basePeriod[0] = period[0];
 	uint32_t times = 1;
 	if (strlen(period) > 1)
-		times = strtoul(period + 1, NULL, 10);
+		times = convert::to_uint32(period + 1);
 
 	WTSKlinePeriod kp;
 	uint32_t realTimes = times;
@@ -253,7 +254,7 @@ WTSKlineSlice* WtDtRunner::get_bars_by_date(const char* stdCode, const char* per
 	basePeriod[0] = period[0];
 	uint32_t times = 1;
 	if (strlen(period) > 1)
-		times = strtoul(period + 1, NULL, 10);
+		times = convert::to_uint32(period + 1);
 
 	WTSKlinePeriod kp;
 	uint32_t realTimes = times;
@@ -322,7 +323,7 @@ WTSKlineSlice* WtDtRunner::get_bars_by_count(const char* stdCode, const char* pe
 	basePeriod[0] = period[0];
 	uint32_t times = 1;
 	if (strlen(period) > 1)
-		times = strtoul(period + 1, NULL, 10);
+		times = convert::to_uint32(period + 1);
 
 	WTSKlinePeriod kp;
 	uint32_t realTimes = times;
@@ -620,7 +621,7 @@ void WtDtRunner::sub_bar(const char* stdCode, const char* period)
 	basePeriod[0] = period[0];
 	uint32_t times = 1;
 	if (strlen(period) > 1)
-		times = strtoul(period + 1, NULL, 10);
+		times = convert::to_uint32(period + 1);
 
 	WTSKlinePeriod kp;
 	uint32_t realTimes = times;

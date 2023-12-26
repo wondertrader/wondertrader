@@ -17,6 +17,7 @@
 #include "../Share/ModuleHelper.hpp"
 #include "../Share/TimeUtils.hpp"
 #include "../Share/decimal.h"
+#include "../Share/Converter.hpp"
 
 #include <boost/filesystem.hpp>
 
@@ -63,7 +64,7 @@ inline uint32_t strToTime(const char* strTime)
 		pos++;
 	}
 
-	return strtoul(str.c_str(), NULL, 10);
+	return convert::to_uint32(str.c_str());
 }
 
 TraderFemas::TraderFemas()
@@ -989,11 +990,11 @@ WTSOrderInfo* TraderFemas::makeOrderInfo(CUstpFtdcOrderField* orderField)
 
 	pRet->setCode(orderField->InstrumentID);
 
-	pRet->setOrderDate(strtoul(orderField->TradingDay, NULL, 10));
+	pRet->setOrderDate(convert::to_uint32(orderField->TradingDay));
 	std::string strTime = orderField->InsertTime;
 	StrUtil::replace(strTime, ":", "");
-	uint32_t uTime = strtoul(strTime.c_str(), NULL, 10);
-	pRet->setOrderTime(TimeUtils::makeTime(pRet->getOrderDate(), strtoul(strTime.c_str(), NULL, 10)*1000));
+	uint32_t uTime = convert::to_uint32(strTime.c_str());
+	pRet->setOrderTime(TimeUtils::makeTime(pRet->getOrderDate(), convert::to_uint32(strTime.c_str())*1000));
 	pRet->setOrderState(wrapOrderState(orderField->OrderStatus));
 
 	if (atoi(orderField->UserOrderLocalID) != 0)
@@ -1069,8 +1070,8 @@ WTSTradeInfo* TraderFemas::makeTradeRecord(CUstpFtdcTradeField *tradeField)
 
 	std::string strTime = tradeField->TradeTime;
 	StrUtil::replace(strTime, ":", "");
-	uint32_t uTime = strtoul(strTime.c_str(), NULL, 10);
-	uint32_t uDate = strtoul(tradeField->TradingDay, NULL, 10);
+	uint32_t uTime = convert::to_uint32(strTime.c_str());
+	uint32_t uDate = convert::to_uint32(tradeField->TradingDay);
 	//if(uDate == m_pContractMgr->getTradingDate())
 	//{
 	//	//如果当前日期和交易日一致,且时间大于21点,说明是夜盘,也就是实际日期要单独计算

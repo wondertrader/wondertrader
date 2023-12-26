@@ -4,6 +4,7 @@
 
 #include "../Share/StdUtils.hpp"
 #include "../Share/StrUtil.hpp"
+#include "../Share/Converter.hpp"
 
 CsvReader::CsvReader(const char* item_splitter /* = "," */)
 	: _item_splitter(item_splitter)
@@ -78,7 +79,7 @@ int32_t CsvReader::get_int32(int32_t col)
 	if (!check_cell(col))
 		return 0;
 
-	return strtol(_current_cells[col].c_str(), NULL, 10);
+	return convert::to_int32(_current_cells[col].c_str());
 }
 
 uint32_t CsvReader::get_uint32(int32_t col)
@@ -86,7 +87,7 @@ uint32_t CsvReader::get_uint32(int32_t col)
 	if (!check_cell(col))
 		return 0;
 
-	return strtoul(_current_cells[col].c_str(), NULL, 10);
+	return convert::to_uint32(_current_cells[col].c_str());
 }
 
 int64_t CsvReader::get_int64(int32_t col)
@@ -94,7 +95,7 @@ int64_t CsvReader::get_int64(int32_t col)
 	if (!check_cell(col))
 		return 0;
 
-	return strtoll(_current_cells[col].c_str(), NULL, 10);
+	return convert::to_int64(_current_cells[col].c_str());
 }
 
 uint64_t CsvReader::get_uint64(int32_t col)
@@ -102,7 +103,7 @@ uint64_t CsvReader::get_uint64(int32_t col)
 	if (!check_cell(col))
 		return 0;
 
-	return strtoull(_current_cells[col].c_str(), NULL, 10);
+	return convert::to_uint64(_current_cells[col].c_str());
 }
 
 double CsvReader::get_double(int32_t col)
@@ -110,7 +111,7 @@ double CsvReader::get_double(int32_t col)
 	if (!check_cell(col))
 		return 0;
 
-	return strtod(_current_cells[col].c_str(), NULL);
+	return convert::from_str<double>(_current_cells[col].c_str());
 }
 
 const char* CsvReader::get_string(int32_t col)

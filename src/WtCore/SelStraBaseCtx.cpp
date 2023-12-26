@@ -21,6 +21,7 @@
 #include "../Includes/IHotMgr.h"
 #include "../Share/decimal.h"
 #include "../Share/CodeHelper.hpp"
+#include "../Share/Converter.hpp"
 
 #include "../WTSTools/WTSLogger.h"
 
@@ -941,7 +942,7 @@ WTSKlineSlice* SelStraBaseCtx::stra_get_bars(const char* stdCode, const char* pe
 	basePeriod[0] = period[0];
 	uint32_t times = 1;
 	if (strlen(period) > 1)
-		times = strtoul(period + 1, NULL, 10);
+		times = convert::to_uint32(period + 1);
 	
 	uint64_t etime = 0;
 	if (period[0] == 'd')

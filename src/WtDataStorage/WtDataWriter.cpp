@@ -9,6 +9,7 @@
 #include "../Share/IniHelper.hpp"
 #include "../Share/decimal.h"
 #include "../Share/TimeUtils.hpp"
+#include "../Share/Converter.hpp"
 
 #include "../Includes/IBaseDataMgr.h"
 #include "../WTSUtils/WTSCmpHelper.hpp"
@@ -155,7 +156,7 @@ bool WtDataWriter::init(WTSVariant* params, IDataWriterSink* sink)
 		iniHelper.readSecKeyValArray("markers", ayKeys, ayVals);
 		for (uint32_t idx = 0; idx < ayKeys.size(); idx++)
 		{
-			_proc_date[ayKeys[idx].c_str()] = strtoul(ayVals[idx].c_str(), 0, 10);
+			_proc_date[ayKeys[idx].c_str()] = convert::to_uint32(ayVals[idx].c_str());
 		}
 	}
 

@@ -13,6 +13,7 @@
 #include "../Includes/WTSVariant.hpp"
 #include "../Share/TimeUtils.hpp"
 #include "../Share/decimal.h"
+#include "../Share/Converter.hpp"
 #include "../WTSTools/WTSLogger.h"
 
 #include <boost/filesystem.hpp>
@@ -140,7 +141,7 @@ void ExecMocker::handle_init()
 	basePeriod[0] = _period[0];
 	uint32_t times = 1;
 	if (_period.size() > 1)
-		times = strtoul(_period.c_str() + 1, NULL, 10);
+		times = convert::to_uint32(_period.c_str() + 1);
 
 	WTSKlineSlice* kline = _replayer->get_kline_slice(_code.c_str(), basePeriod,  10, times, true);
 	if (kline)

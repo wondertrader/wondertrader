@@ -41,22 +41,6 @@ extern "C"
 	}
 };
 
-inline uint32_t strToTime(const char* strTime)
-{
-	std::string str;
-	const char* pos = strTime;
-	while (strlen(pos) > 0)
-	{
-		if (pos[0] != ':')
-		{
-			str.append(pos, 1);
-		}
-		pos++;
-	}
-
-	return strtoul(str.c_str(), NULL, 10);
-}
-
 inline double checkValid(double val)
 {
 	if (val == DBL_MAX || val == FLT_MAX)
