@@ -70,42 +70,42 @@ public:
 		wt_strcpy(m_strCode, code, len);
     }
 
-	inline void setDirection(WTSDirectionType dType)noexcept {m_direction = dType;}
-	inline void setPriceType(WTSPriceType pType)noexcept {m_priceType = pType;}
-	inline void setOrderFlag(WTSOrderFlag oFlag)noexcept {m_orderFlag = oFlag;}
-	inline void setOffsetType(WTSOffsetType oType)noexcept {m_offsetType = oType;}
+	constexpr inline void setDirection(WTSDirectionType dType)noexcept {m_direction = dType;}
+	constexpr inline void setPriceType(WTSPriceType pType)noexcept {m_priceType = pType;}
+	constexpr inline void setOrderFlag(WTSOrderFlag oFlag)noexcept {m_orderFlag = oFlag;}
+	constexpr inline void setOffsetType(WTSOffsetType oType)noexcept {m_offsetType = oType;}
 
-	inline WTSDirectionType	getDirection() const noexcept {return m_direction;}
-	inline WTSPriceType		getPriceType() const noexcept {return m_priceType;}
-	inline WTSOrderFlag		getOrderFlag() const noexcept {return m_orderFlag;}
-	inline WTSOffsetType	getOffsetType() const noexcept {return m_offsetType;}
+	constexpr inline WTSDirectionType	getDirection() const noexcept {return m_direction;}
+	constexpr inline WTSPriceType		getPriceType() const noexcept {return m_priceType;}
+	constexpr inline WTSOrderFlag		getOrderFlag() const noexcept {return m_orderFlag;}
+	constexpr inline WTSOffsetType	getOffsetType() const noexcept {return m_offsetType;}
 
-	inline void setBusinessType(WTSBusinessType bType) noexcept { m_businessType = bType; }
-	inline WTSBusinessType	getBusinessType() const  noexcept { return m_businessType; }
+	constexpr inline void setBusinessType(WTSBusinessType bType) noexcept { m_businessType = bType; }
+	constexpr inline WTSBusinessType	getBusinessType() const  noexcept { return m_businessType; }
 
-	inline void setVolume(double volume) noexcept { m_dVolume = volume; }
-	inline void setPrice(double price) noexcept { m_iPrice = price; }
+	constexpr inline void setVolume(double volume) noexcept { m_dVolume = volume; }
+	constexpr inline void setPrice(double price) noexcept { m_iPrice = price; }
 
-	inline double getVolume() const noexcept { return m_dVolume; }
-	inline double getPrice() const noexcept { return m_iPrice; }
+	constexpr inline double getVolume() const noexcept { return m_dVolume; }
+	constexpr inline double getPrice() const noexcept { return m_iPrice; }
 
-	inline const char* getCode() const noexcept { return m_strCode; }
-	inline const char* getExchg() const  noexcept { return m_strExchg; }
+	constexpr inline const char* getCode() const noexcept { return m_strCode; }
+	constexpr inline const char* getExchg() const  noexcept { return m_strExchg; }
 
 	inline void setEntrustID(const char* eid) noexcept { wt_strcpy(m_strEntrustID, eid); }
-	inline const char* getEntrustID() const  noexcept { return m_strEntrustID; }
-	inline char* getEntrustID() noexcept { return m_strEntrustID; }
+	constexpr inline const char* getEntrustID() const  noexcept { return m_strEntrustID; }
+	constexpr inline char* getEntrustID() noexcept { return m_strEntrustID; }
 
 	inline void setUserTag(const char* tag)  noexcept { wt_strcpy(m_strUserTag, tag); }
-	inline const char* getUserTag() const  noexcept { return m_strUserTag; }
-	inline char* getUserTag()  noexcept { return m_strUserTag; }
+	constexpr inline const char* getUserTag() const  noexcept { return m_strUserTag; }
+	constexpr inline char* getUserTag()  noexcept { return m_strUserTag; }
 
-	inline void setNetDirection(bool isBuy) noexcept { m_bIsNet = true; m_bIsBuy = isBuy; }
-	inline bool isNet() const  noexcept { return m_bIsNet; }
-	inline bool isBuy() const  noexcept { return m_bIsBuy; }
+	constexpr inline void setNetDirection(bool isBuy) noexcept { m_bIsNet = true; m_bIsBuy = isBuy; }
+	constexpr inline bool isNet() const  noexcept { return m_bIsNet; }
+	constexpr inline bool isBuy() const  noexcept { return m_bIsBuy; }
 
-	inline void setContractInfo(WTSContractInfo* cInfo) noexcept { m_pContract = cInfo; }
-	inline WTSContractInfo* getContractInfo() const  noexcept { return m_pContract; }
+	constexpr inline void setContractInfo(WTSContractInfo* cInfo) noexcept { m_pContract = cInfo; }
+	constexpr inline WTSContractInfo* getContractInfo() const  noexcept { return m_pContract; }
 
 protected:
 	char			m_strExchg[MAX_EXCHANGE_LENGTH];
@@ -173,8 +173,8 @@ public:
 	}
 
 public:
-	inline const char* getExchg() const  noexcept { return m_strExchg; }
-	inline const char* getCode() const noexcept {return m_strCode;}
+	constexpr inline const char* getExchg() const  noexcept { return m_strExchg; }
+	constexpr inline const char* getCode() const noexcept {return m_strCode;}
 
 	inline void setExchange(const char* exchg, std::size_t len = 0) noexcept {
 		wt_strcpy(m_strExchg, exchg, len);
@@ -184,25 +184,25 @@ public:
 		wt_strcpy(m_strCode, code, len);
 	}
 
-	inline void setActionFlag(WTSActionFlag af) noexcept {m_actionFlag = af;}
-	inline WTSActionFlag getActionFlag() const noexcept {return m_actionFlag;}
+	constexpr inline void setActionFlag(WTSActionFlag af) noexcept {m_actionFlag = af;}
+	constexpr inline WTSActionFlag getActionFlag() const noexcept {return m_actionFlag;}
 
 	inline void setEntrustID(const char* eid) noexcept { wt_strcpy(m_strEnturstID, eid); }
-	inline const char* getEntrustID() const noexcept {return m_strEnturstID;}
-	inline char* getEntrustID() noexcept { return m_strEnturstID; }
+	constexpr inline const char* getEntrustID() const noexcept {return m_strEnturstID;}
+	constexpr inline char* getEntrustID() noexcept { return m_strEnturstID; }
 
 	inline void setOrderID(const char* oid) noexcept { wt_strcpy(m_strOrderID, oid); }
-	inline const char* getOrderID() const noexcept {return m_strOrderID;}
+	constexpr inline const char* getOrderID() const noexcept {return m_strOrderID;}
 
-	inline void setBusinessType(WTSBusinessType bType) noexcept { m_businessType = bType; }
-	inline WTSBusinessType	getBusinessType() const  noexcept { return m_businessType; }
+	constexpr inline void setBusinessType(WTSBusinessType bType) noexcept { m_businessType = bType; }
+	constexpr inline WTSBusinessType	getBusinessType() const  noexcept { return m_businessType; }
 
 	inline void setUserTag(const char* tag)  noexcept { wt_strcpy(m_strUserTag, tag); }
-	inline const char* getUserTag() const  noexcept { return m_strUserTag; }
-	inline char* getUserTag()  noexcept { return m_strUserTag; }
+	constexpr inline const char* getUserTag() const  noexcept { return m_strUserTag; }
+	constexpr inline char* getUserTag()  noexcept { return m_strUserTag; }
 
-	inline void setContractInfo(WTSContractInfo* cInfo)  noexcept { m_pContract = cInfo; }
-	inline WTSContractInfo* getContractInfo() const  noexcept { return m_pContract; }
+	constexpr inline void setContractInfo(WTSContractInfo* cInfo)  noexcept { m_pContract = cInfo; }
+	constexpr inline WTSContractInfo* getContractInfo() const  noexcept { return m_pContract; }
 
 protected:
 	char			m_strExchg[MAX_EXCHANGE_LENGTH];
@@ -273,67 +273,67 @@ public:
 		wt_strcpy(m_strCode, code, len);
 	}
 
-	inline void setDirection(WTSDirectionType dType)  noexcept { m_direction = dType; }
-	inline void setPriceType(WTSPriceType pType)  noexcept { m_priceType = pType; }
-	inline void setOrderFlag(WTSOrderFlag oFlag)  noexcept { m_orderFlag = oFlag; }
-	inline void setOffsetType(WTSOffsetType oType) noexcept { m_offsetType = oType; }
+	constexpr inline void setDirection(WTSDirectionType dType)  noexcept { m_direction = dType; }
+	constexpr inline void setPriceType(WTSPriceType pType)  noexcept { m_priceType = pType; }
+	constexpr inline void setOrderFlag(WTSOrderFlag oFlag)  noexcept { m_orderFlag = oFlag; }
+	constexpr inline void setOffsetType(WTSOffsetType oType) noexcept { m_offsetType = oType; }
 
-	inline WTSDirectionType	getDirection() const  noexcept { return m_direction; }
-	inline WTSPriceType		getPriceType() const  noexcept { return m_priceType; }
-	inline WTSOrderFlag		getOrderFlag() const  noexcept { return m_orderFlag; }
-	inline WTSOffsetType	getOffsetType() const  noexcept { return m_offsetType; }
+	constexpr inline WTSDirectionType	getDirection() const  noexcept { return m_direction; }
+	constexpr inline WTSPriceType		getPriceType() const  noexcept { return m_priceType; }
+	constexpr inline WTSOrderFlag		getOrderFlag() const  noexcept { return m_orderFlag; }
+	constexpr inline WTSOffsetType	getOffsetType() const  noexcept { return m_offsetType; }
 
-	inline void setBusinessType(WTSBusinessType bType)  noexcept { m_businessType = bType; }
-	inline WTSBusinessType	getBusinessType() const  noexcept { return m_businessType; }
+	constexpr inline void setBusinessType(WTSBusinessType bType)  noexcept { m_businessType = bType; }
+	constexpr inline WTSBusinessType	getBusinessType() const  noexcept { return m_businessType; }
 
-	inline void setVolume(double volume)  noexcept { m_dVolume = volume; }
-	inline void setPrice(double price)  noexcept { m_iPrice = price; }
+	constexpr inline void setVolume(double volume)  noexcept { m_dVolume = volume; }
+	constexpr inline void setPrice(double price)  noexcept { m_iPrice = price; }
 
-	inline double getVolume() const  noexcept { return m_dVolume; }
-	inline double getPrice() const  noexcept { return m_iPrice; }
+	constexpr inline double getVolume() const  noexcept { return m_dVolume; }
+	constexpr inline double getPrice() const  noexcept { return m_iPrice; }
 
-	inline const char* getCode() const noexcept { return m_strCode; }
-	inline const char* getExchg() const  noexcept { return m_strExchg; }
+	constexpr inline const char* getCode() const noexcept { return m_strCode; }
+	constexpr inline const char* getExchg() const  noexcept { return m_strExchg; }
 
 	inline void setEntrustID(const char* eid)  noexcept { wt_strcpy(m_strEntrustID, eid); }
-	inline const char* getEntrustID() const  noexcept { return m_strEntrustID; }
-	inline char* getEntrustID()  noexcept { return m_strEntrustID; }
+	constexpr inline const char* getEntrustID() const  noexcept { return m_strEntrustID; }
+	constexpr inline char* getEntrustID()  noexcept { return m_strEntrustID; }
 
 	inline void setUserTag(const char* tag)  noexcept { wt_strcpy(m_strUserTag, tag); }
-	inline const char* getUserTag() const  noexcept { return m_strUserTag; }
-	inline char* getUserTag() noexcept { return m_strUserTag; }
+	constexpr inline const char* getUserTag() const  noexcept { return m_strUserTag; }
+	constexpr inline char* getUserTag() noexcept { return m_strUserTag; }
 
-	inline void setNetDirection(bool isBuy)  noexcept { m_bIsNet = true; m_bIsBuy = isBuy; }
-	inline bool isNet() const  noexcept { return m_bIsNet; }
-	inline bool isBuy() const  noexcept { return m_bIsBuy; }
+	constexpr inline void setNetDirection(bool isBuy)  noexcept { m_bIsNet = true; m_bIsBuy = isBuy; }
+	constexpr inline bool isNet() const  noexcept { return m_bIsNet; }
+	constexpr inline bool isBuy() const  noexcept { return m_bIsBuy; }
 
-	inline void setContractInfo(WTSContractInfo* cInfo)  noexcept { m_pContract = cInfo; }
-	inline WTSContractInfo* getContractInfo() const  noexcept { return m_pContract; }
+	constexpr inline void setContractInfo(WTSContractInfo* cInfo)  noexcept { m_pContract = cInfo; }
+	constexpr inline WTSContractInfo* getContractInfo() const  noexcept { return m_pContract; }
 
 public:
-	inline void	setOrderDate(uint32_t uDate) noexcept {m_uInsertDate = uDate;}
-	inline void	setOrderTime(uint64_t uTime) noexcept {m_uInsertTime = uTime;}
-	inline void	setVolTraded(double vol) noexcept { m_dVolTraded = vol; }
-	inline void	setVolLeft(double vol) noexcept { m_dVolLeft = vol; }
+	constexpr inline void	setOrderDate(uint32_t uDate) noexcept {m_uInsertDate = uDate;}
+	constexpr inline void	setOrderTime(uint64_t uTime) noexcept {m_uInsertTime = uTime;}
+	constexpr inline void	setVolTraded(double vol) noexcept { m_dVolTraded = vol; }
+	constexpr inline void	setVolLeft(double vol) noexcept { m_dVolLeft = vol; }
 	
 	inline void	setOrderID(const char* oid) noexcept { wt_strcpy(m_strOrderID, oid); }
-	inline void	setOrderState(WTSOrderState os) noexcept {m_orderState = os;}
-	inline void	setOrderType(WTSOrderType ot) noexcept {m_orderType = ot;}
+	constexpr inline void	setOrderState(WTSOrderState os) noexcept {m_orderState = os;}
+	constexpr inline void	setOrderType(WTSOrderType ot) noexcept {m_orderType = ot;}
 
-	inline uint32_t getOrderDate() const noexcept {return m_uInsertDate;}
-	inline uint64_t getOrderTime() const noexcept {return m_uInsertTime;}
-	inline double getVolTraded() const noexcept { return m_dVolTraded; }
-	inline double getVolLeft() const noexcept { return m_dVolLeft; }
+	constexpr inline uint32_t getOrderDate() const noexcept {return m_uInsertDate;}
+	constexpr inline uint64_t getOrderTime() const noexcept {return m_uInsertTime;}
+	constexpr inline double getVolTraded() const noexcept { return m_dVolTraded; }
+	constexpr inline double getVolLeft() const noexcept { return m_dVolLeft; }
     
-	inline WTSOrderState	getOrderState() const  noexcept { return m_orderState; }
-	inline WTSOrderType		getOrderType() const  noexcept { return m_orderType; }
-	inline const char*		getOrderID() const  noexcept { return m_strOrderID; }
-	inline char*			getOrderID()  noexcept { return m_strOrderID; }
+	constexpr inline WTSOrderState	getOrderState() const  noexcept { return m_orderState; }
+	constexpr inline WTSOrderType	getOrderType() const  noexcept { return m_orderType; }
+	constexpr inline const char*	getOrderID() const  noexcept { return m_strOrderID; }
+	constexpr inline char*			getOrderID()  noexcept { return m_strOrderID; }
 
 	inline void	setStateMsg(const char* msg) noexcept {m_strStateMsg = msg;}
 	inline const char* getStateMsg() const noexcept {return m_strStateMsg.c_str();}
 
-	inline bool	isAlive() const noexcept
+	constexpr inline bool	isAlive() const noexcept
 	{
 		if (m_bIsError)
 			return false;
@@ -348,8 +348,8 @@ public:
 		}
 	}
 
-	inline void	setError(bool bError = true) noexcept { m_bIsError = bError; }
-	inline bool	isError() const noexcept { return m_bIsError; }
+	constexpr inline void	setError(bool bError = true) noexcept { m_bIsError = bError; }
+	constexpr inline bool	isError() const noexcept { return m_bIsError; }
 
 private:
 	//这部分成员和WTSEntrust一致
@@ -413,52 +413,52 @@ public:
 	inline void setTradeID(const char* tradeid) noexcept { wt_strcpy(m_strTradeID, tradeid); }
 	inline void setRefOrder(const char* oid) noexcept { wt_strcpy(m_strRefOrder, oid); }
 	
-	inline void setDirection(WTSDirectionType dType)noexcept {m_direction = dType;}
-	inline void setOffsetType(WTSOffsetType oType)noexcept {m_offsetType = oType;}
-	inline void setOrderType(WTSOrderType ot)noexcept {m_orderType = ot;}
-	inline void setTradeType(WTSTradeType tt)noexcept {m_tradeType = tt;}
+	constexpr inline void setDirection(WTSDirectionType dType)noexcept {m_direction = dType;}
+	constexpr inline void setOffsetType(WTSOffsetType oType)noexcept {m_offsetType = oType;}
+	constexpr inline void setOrderType(WTSOrderType ot)noexcept {m_orderType = ot;}
+	constexpr inline void setTradeType(WTSTradeType tt)noexcept {m_tradeType = tt;}
 
-	inline void setVolume(double volume)noexcept {m_dVolume = volume;}
-	inline void setPrice(double price)noexcept { m_dPrice = price; }
+	constexpr inline void setVolume(double volume)noexcept {m_dVolume = volume;}
+	constexpr inline void setPrice(double price)noexcept { m_dPrice = price; }
 
-	inline void setTradeDate(uint32_t uDate)noexcept {m_uTradeDate = uDate;}
-	inline void setTradeTime(uint64_t uTime)noexcept {m_uTradeTime = uTime;}
+	constexpr inline void setTradeDate(uint32_t uDate)noexcept {m_uTradeDate = uDate;}
+	constexpr inline void setTradeTime(uint64_t uTime)noexcept {m_uTradeTime = uTime;}
 
-	inline void setAmount(double amount) noexcept { m_uAmount = amount; }
+	constexpr inline void setAmount(double amount) noexcept { m_uAmount = amount; }
 
-	inline WTSDirectionType	getDirection() const noexcept {return m_direction;}
-	inline WTSOffsetType	getOffsetType() const noexcept {return m_offsetType;}
-	inline WTSOrderType		getOrderType() const noexcept {return m_orderType;}
-	inline WTSTradeType		getTradeType() const noexcept {return m_tradeType;}
+	constexpr inline WTSDirectionType	getDirection() const noexcept {return m_direction;}
+	constexpr inline WTSOffsetType	getOffsetType() const noexcept {return m_offsetType;}
+	constexpr inline WTSOrderType		getOrderType() const noexcept {return m_orderType;}
+	constexpr inline WTSTradeType		getTradeType() const noexcept {return m_tradeType;}
 
-	inline double getVolume() const { return m_dVolume; }
-	inline double getPrice() const noexcept { return m_dPrice; }
+	constexpr inline double getVolume() const { return m_dVolume; }
+	constexpr inline double getPrice() const noexcept { return m_dPrice; }
 
-	inline const char*	getCode() const noexcept { return m_strCode; }
-	inline const char*	getExchg() const noexcept { return m_strExchg; }
-	inline const char*	getTradeID() const noexcept { return m_strTradeID; }
-	inline const char*	getRefOrder() const noexcept { return m_strRefOrder; }
+	constexpr inline const char*	getCode() const noexcept { return m_strCode; }
+	constexpr inline const char*	getExchg() const noexcept { return m_strExchg; }
+	constexpr inline const char*	getTradeID() const noexcept { return m_strTradeID; }
+	constexpr inline const char*	getRefOrder() const noexcept { return m_strRefOrder; }
 
-	inline char*	getTradeID() noexcept { return m_strTradeID; }
-	inline char*	getRefOrder() noexcept { return m_strRefOrder; }
+	constexpr inline char*	getTradeID() noexcept { return m_strTradeID; }
+	constexpr inline char*	getRefOrder() noexcept { return m_strRefOrder; }
 
-	inline uint32_t getTradeDate() const noexcept {return m_uTradeDate;}
-	inline uint64_t getTradeTime() const noexcept {return m_uTradeTime;}
+	constexpr inline uint32_t getTradeDate() const noexcept {return m_uTradeDate;}
+	constexpr inline uint64_t getTradeTime() const noexcept {return m_uTradeTime;}
 
-	inline double getAmount() const noexcept { return m_uAmount; }
+	constexpr inline double getAmount() const noexcept { return m_uAmount; }
 
 	inline void setUserTag(const char* tag) noexcept { wt_strcpy(m_strUserTag, tag); }
-	inline const char* getUserTag() const noexcept { return m_strUserTag; }
+	constexpr inline const char* getUserTag() const noexcept { return m_strUserTag; }
 
-	inline void setBusinessType(WTSBusinessType bType) noexcept  { m_businessType = bType; }
-	inline WTSBusinessType	getBusinessType() const noexcept { return m_businessType; }
+	constexpr inline void setBusinessType(WTSBusinessType bType) noexcept  { m_businessType = bType; }
+	constexpr inline WTSBusinessType	getBusinessType() const noexcept { return m_businessType; }
 
-	inline void setNetDirection(bool isBuy) noexcept { m_bIsNet = true; m_bIsBuy = isBuy; }
-	inline bool isNet() const noexcept { return m_bIsNet; }
-	inline bool isBuy() const noexcept { return m_bIsBuy; }
+	constexpr inline void setNetDirection(bool isBuy) noexcept { m_bIsNet = true; m_bIsBuy = isBuy; }
+	constexpr inline bool isNet() const noexcept { return m_bIsNet; }
+	constexpr inline bool isBuy() const noexcept { return m_bIsBuy; }
 
-	inline void setContractInfo(WTSContractInfo* cInfo) noexcept { m_pContract = cInfo; }
-	inline WTSContractInfo* getContractInfo() const noexcept { return m_pContract; }
+	constexpr inline void setContractInfo(WTSContractInfo* cInfo) noexcept { m_pContract = cInfo; }
+	constexpr inline WTSContractInfo* getContractInfo() const noexcept { return m_pContract; }
 
 protected:
 	char	m_strExchg[MAX_EXCHANGE_LENGTH];	//市场
@@ -502,43 +502,43 @@ public:
 		return pRet;
 	}
 
-	inline void setDirection(WTSDirectionType dType){m_direction = dType;}
-	inline void setPrePosition(double prePos){ m_dPrePosition = prePos; }
-	inline void setNewPosition(double newPos){ m_dNewPosition = newPos; }
-	inline void setAvailPrePos(double availPos){ m_dAvailPrePos = availPos; }
-	inline void setAvailNewPos(double availPos){ m_dAvailNewPos = availPos; }
-	inline void setPositionCost(double cost){m_dTotalPosCost = cost;}
-	inline void setMargin(double margin){ m_dMargin = margin; }
-	inline void setAvgPrice(double avgPrice){ m_dAvgPrice = avgPrice; }
-	inline void setDynProfit(double profit){ m_dDynProfit = profit; }
+	constexpr inline void setDirection(WTSDirectionType dType) noexcept{m_direction = dType;}
+	constexpr inline void setPrePosition(double prePos) noexcept { m_dPrePosition = prePos; }
+	constexpr inline void setNewPosition(double newPos) noexcept { m_dNewPosition = newPos; }
+	constexpr inline void setAvailPrePos(double availPos) noexcept { m_dAvailPrePos = availPos; }
+	constexpr inline void setAvailNewPos(double availPos) noexcept { m_dAvailNewPos = availPos; }
+	constexpr inline void setPositionCost(double cost) noexcept {m_dTotalPosCost = cost;}
+	constexpr inline void setMargin(double margin) noexcept { m_dMargin = margin; }
+	constexpr inline void setAvgPrice(double avgPrice) noexcept { m_dAvgPrice = avgPrice; }
+	constexpr inline void setDynProfit(double profit) noexcept { m_dDynProfit = profit; }
 
-	inline WTSDirectionType getDirection() const{return m_direction;}
-	inline double	getPrePosition() const{ return m_dPrePosition; }
-	inline double	getNewPosition() const{ return m_dNewPosition; }
-	inline double	getAvailPrePos() const{ return m_dAvailPrePos; }
-	inline double	getAvailNewPos() const{ return m_dAvailNewPos; }
+	constexpr inline WTSDirectionType getDirection() const noexcept {return m_direction;}
+	constexpr inline double	getPrePosition() const noexcept { return m_dPrePosition; }
+	constexpr inline double	getNewPosition() const noexcept { return m_dNewPosition; }
+	constexpr inline double	getAvailPrePos() const noexcept { return m_dAvailPrePos; }
+	constexpr inline double	getAvailNewPos() const noexcept { return m_dAvailNewPos; }
 
-	inline double	getTotalPosition() const{ return m_dPrePosition + m_dNewPosition; }
-	inline double	getAvailPosition() const{ return m_dAvailPrePos + m_dAvailNewPos; }
+	constexpr inline double	getTotalPosition() const noexcept { return m_dPrePosition + m_dNewPosition; }
+	constexpr inline double	getAvailPosition() const noexcept { return m_dAvailPrePos + m_dAvailNewPos; }
 
-	inline double	getFrozenPosition() const{ return getTotalPosition() - getAvailPosition(); }
-	inline double	getFrozenNewPos() const{ return m_dNewPosition - m_dAvailNewPos; }
-	inline double	getFrozenPrePos() const{ return m_dPrePosition - m_dAvailPrePos; }
+	constexpr inline double	getFrozenPosition() const noexcept { return getTotalPosition() - getAvailPosition(); }
+	constexpr inline double	getFrozenNewPos() const noexcept { return m_dNewPosition - m_dAvailNewPos; }
+	constexpr inline double	getFrozenPrePos() const noexcept { return m_dPrePosition - m_dAvailPrePos; }
 
-	inline double		getPositionCost() const{ return m_dTotalPosCost; }
-	inline double		getMargin() const{ return m_dMargin; }
-	inline double		getAvgPrice() const{ return m_dAvgPrice; }
-	inline double		getDynProfit() const{ return m_dDynProfit; }
+	constexpr inline double		getPositionCost() const noexcept { return m_dTotalPosCost; }
+	constexpr inline double		getMargin() const noexcept { return m_dMargin; }
+	constexpr inline double		getAvgPrice() const noexcept { return m_dAvgPrice; }
+	constexpr inline double		getDynProfit() const noexcept { return m_dDynProfit; }
 
-	inline const char* getCode() const{ return m_strCode; }
-	inline const char* getCurrency() const{ return m_strCurrency; }
-	inline const char* getExchg() const{ return m_strExchg; }
+	constexpr inline const char* getCode() const noexcept { return m_strCode; }
+	constexpr inline const char* getCurrency() const noexcept { return m_strCurrency; }
+	constexpr inline const char* getExchg() const noexcept { return m_strExchg; }
 
-	inline void setBusinessType(WTSBusinessType bType) { m_businessType = bType; }
-	inline WTSBusinessType	getBusinessType() const { return m_businessType; }
+	constexpr inline void setBusinessType(WTSBusinessType bType) noexcept { m_businessType = bType; }
+	constexpr inline WTSBusinessType	getBusinessType() const  noexcept { return m_businessType; }
 
-	inline void setContractInfo(WTSContractInfo* cInfo) { m_pContract = cInfo; }
-	inline WTSContractInfo* getContractInfo() const { return m_pContract; }
+	constexpr inline void setContractInfo(WTSContractInfo* cInfo)  noexcept { m_pContract = cInfo; }
+	constexpr inline WTSContractInfo* getContractInfo() const  noexcept { return m_pContract; }
 
 public:
 	WTSPositionItem()
@@ -599,33 +599,33 @@ public:
 public:
 	static inline WTSAccountInfo* create(){return WTSAccountInfo::allocate();}
 
-	inline void	setCurrency(const char* currency){ m_strCurrency = currency; }
+	inline void	setCurrency(const char* currency) noexcept { m_strCurrency = currency; }
 
-	inline void	setBalance(double balance){m_dBalance = balance;}
-	inline void	setPreBalance(double prebalance){m_dPreBalance = prebalance;}
-	inline void	setMargin(double margin){m_uMargin = margin;}
-	inline void	setFrozenMargin(double frozenmargin){m_dFrozenMargin = frozenmargin;}
-	inline void	setCloseProfit(double closeprofit){m_dCloseProfit = closeprofit;}
-	inline void	setDynProfit(double dynprofit){m_dDynProfit = dynprofit;}
-	inline void	setDeposit(double deposit){m_dDeposit = deposit;}
-	inline void	setWithdraw(double withdraw){m_dWithdraw = withdraw;}
-	inline void	setCommission(double commission){m_dCommission = commission;}
-	inline void	setFrozenCommission(double frozencommission){m_dFrozenCommission = frozencommission;}
-	inline void	setAvailable(double available){m_dAvailable = available;}
+	constexpr inline void	setBalance(double balance) noexcept {m_dBalance = balance;}
+	constexpr inline void	setPreBalance(double prebalance) noexcept {m_dPreBalance = prebalance;}
+	constexpr inline void	setMargin(double margin) noexcept {m_uMargin = margin;}
+	constexpr inline void	setFrozenMargin(double frozenmargin) noexcept {m_dFrozenMargin = frozenmargin;}
+	constexpr inline void	setCloseProfit(double closeprofit) noexcept {m_dCloseProfit = closeprofit;}
+	constexpr inline void	setDynProfit(double dynprofit) noexcept {m_dDynProfit = dynprofit;}
+	constexpr inline void	setDeposit(double deposit) noexcept {m_dDeposit = deposit;}
+	constexpr inline void	setWithdraw(double withdraw) noexcept {m_dWithdraw = withdraw;}
+	constexpr inline void	setCommission(double commission) noexcept {m_dCommission = commission;}
+	constexpr inline void	setFrozenCommission(double frozencommission) noexcept {m_dFrozenCommission = frozencommission;}
+	constexpr inline void	setAvailable(double available) noexcept {m_dAvailable = available;}
 
-	inline double	getBalance() const{return m_dBalance;}
-	inline double	getPreBalance() const{return m_dPreBalance;}
-	inline double	getMargin() const{return m_uMargin;}
-	inline double	getFrozenMargin() const{return m_dFrozenMargin;}
-	inline double	getCloseProfit() const{return m_dCloseProfit;}
-	inline double	getDynProfit() const{return m_dDynProfit;}
-	inline double	getDeposit() const{return m_dDeposit;}
-	inline double	getWithdraw() const{return m_dWithdraw;}
-	inline double	getCommission() const{return m_dCommission;}
-	inline double	getFrozenCommission() const{return m_dFrozenCommission;}
-	inline double	getAvailable() const{return m_dAvailable;}
+	constexpr inline double	getBalance() const noexcept {return m_dBalance;}
+	constexpr inline double	getPreBalance() const noexcept {return m_dPreBalance;}
+	constexpr inline double	getMargin() const noexcept {return m_uMargin;}
+	constexpr inline double	getFrozenMargin() const noexcept {return m_dFrozenMargin;}
+	constexpr inline double	getCloseProfit() const noexcept {return m_dCloseProfit;}
+	constexpr inline double	getDynProfit() const noexcept {return m_dDynProfit;}
+	constexpr inline double	getDeposit() const noexcept {return m_dDeposit;}
+	constexpr inline double	getWithdraw() const noexcept {return m_dWithdraw;}
+	constexpr inline double	getCommission() const noexcept {return m_dCommission;}
+	constexpr inline double	getFrozenCommission() const noexcept {return m_dFrozenCommission;}
+	constexpr inline double	getAvailable() const noexcept {return m_dAvailable;}
 
-	inline const char* getCurrency() const{ return m_strCurrency.c_str(); }
+	inline const char* getCurrency() const noexcept { return m_strCurrency.c_str(); }
 
 protected:
 	std::string m_strCurrency;

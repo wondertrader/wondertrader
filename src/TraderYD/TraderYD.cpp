@@ -41,7 +41,7 @@ inline void write_log(ITraderSpi* sink, WTSLogLevel ll, const char* format, cons
 	sink->handleTraderLog(ll, buffer);
 }
 
-inline WTSDirectionType wrapPosDirection(int dirType) noexcept
+constexpr inline WTSDirectionType wrapPosDirection(int dirType) noexcept
 {
 	if (YD_PD_Long == dirType)
 		return WDT_LONG;
@@ -49,7 +49,7 @@ inline WTSDirectionType wrapPosDirection(int dirType) noexcept
 		return WDT_SHORT;
 }
 
-inline WTSDirectionType wrapDirectionType(int dirType, int offsetType) noexcept
+constexpr inline WTSDirectionType wrapDirectionType(int dirType, int offsetType) noexcept
 {
 	if (YD_D_Buy == dirType)
 		if (offsetType == YD_OF_Open)
@@ -63,7 +63,7 @@ inline WTSDirectionType wrapDirectionType(int dirType, int offsetType) noexcept
 			return WDT_LONG;
 }
 
-inline int wrapDirectionType(WTSDirectionType dirType, WTSOffsetType offsetType) noexcept
+constexpr inline int wrapDirectionType(WTSDirectionType dirType, WTSOffsetType offsetType) noexcept
 {
 	if (WDT_LONG == dirType)
 		if (offsetType == WOT_OPEN)
@@ -77,7 +77,7 @@ inline int wrapDirectionType(WTSDirectionType dirType, WTSOffsetType offsetType)
 			return YD_D_Buy;
 }
 
-inline int wrapPriceType(WTSPriceType pType, WTSOrderFlag oFlag) noexcept
+constexpr inline int wrapPriceType(WTSPriceType pType, WTSOrderFlag oFlag) noexcept
 {
 	if (WOF_FAK == oFlag)
 		return YD_ODT_FAK;
@@ -94,7 +94,7 @@ inline int wrapPriceType(WTSPriceType pType, WTSOrderFlag oFlag) noexcept
 	return YD_ODT_Market;
 }
 
-inline WTSOffsetType wrapOffsetType(int offType) noexcept
+constexpr inline WTSOffsetType wrapOffsetType(int offType) noexcept
 {
 	if (YD_OF_Open == offType)
 		return WOT_OPEN;
@@ -108,7 +108,7 @@ inline WTSOffsetType wrapOffsetType(int offType) noexcept
 		return WOT_FORCECLOSE;
 }
 
-inline int wrapOffsetType(WTSOffsetType offType) noexcept
+constexpr inline int wrapOffsetType(WTSOffsetType offType) noexcept
 {
 	if (WOT_OPEN == offType)
 		return YD_OF_Open;
@@ -122,7 +122,7 @@ inline int wrapOffsetType(WTSOffsetType offType) noexcept
 		return YD_OF_ForceClose;
 }
 
-inline WTSOrderState wrapOrderState(int orderState) noexcept
+constexpr inline WTSOrderState wrapOrderState(int orderState) noexcept
 {
 	switch (orderState)
 	{

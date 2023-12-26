@@ -884,12 +884,9 @@ public:
 		return pRet;
 	}
 
-	inline void setCode(const char* code, std::size_t len = 0)
+	inline void setCode(const char* code, std::size_t len = 0) noexcept
 	{
-		len = (len == 0) ? strlen(code) : len;
-
-		memcpy(m_tickStruct.code, code, len);
-		m_tickStruct.code[len] = '\0';
+		wt_strcpy(m_tickStruct.code, code, len);
 	}
 
 	/*
@@ -1007,10 +1004,10 @@ public:
 	/*
 	 *	返回tick结构体的引用
 	 */
-	inline WTSTickStruct&	getTickStruct(){ return m_tickStruct; }
+	constexpr inline WTSTickStruct&	getTickStruct() noexcept{ return m_tickStruct; }
 
-	inline void setContractInfo(WTSContractInfo* cInfo) { m_pContract = cInfo; }
-	inline WTSContractInfo* getContractInfo() const { return m_pContract; }
+	constexpr inline void setContractInfo(WTSContractInfo* cInfo) noexcept { m_pContract = cInfo; }
+	constexpr inline WTSContractInfo* getContractInfo() const noexcept { return m_pContract; }
 
 private:
 	WTSTickStruct		m_tickStruct;
@@ -1035,7 +1032,7 @@ public:
 		return pRet;
 	}
 
-	inline WTSOrdQueStruct& getOrdQueStruct(){return m_oqStruct;}
+	constexpr inline WTSOrdQueStruct& getOrdQueStruct(){return m_oqStruct;}
 
 	inline const char* exchg() const{ return m_oqStruct.exchg; }
 	inline const char* code() const{ return m_oqStruct.code; }
@@ -1045,8 +1042,8 @@ public:
 
 	inline void		setCode(const char* code) { wt_strcpy(m_oqStruct.code, code); }
 
-	inline void setContractInfo(WTSContractInfo* cInfo) { m_pContract = cInfo; }
-	inline WTSContractInfo* getContractInfo() const { return m_pContract; }
+	constexpr inline void setContractInfo(WTSContractInfo* cInfo) noexcept { m_pContract = cInfo; }
+	constexpr inline WTSContractInfo* getContractInfo() const noexcept{ return m_pContract; }
 
 private:
 	WTSOrdQueStruct		m_oqStruct;

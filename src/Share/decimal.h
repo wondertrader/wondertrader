@@ -19,27 +19,28 @@ namespace decimal
 		return round(v*exp) / exp;
 	}
 
-	inline bool eq(double a, double b = 0.0) noexcept
+	constexpr inline bool eq(double a, double b = 0.0) noexcept
 	{
-		return(fabs(a - b) < EPSINON);
+		double diff = a - b;
+		return(-EPSINON < diff && diff < EPSINON);
 	}
 
-	inline bool gt(double a, double b = 0.0) noexcept
+	constexpr inline bool gt(double a, double b = 0.0) noexcept
 	{
 		return a - b > EPSINON;
 	}
 
-	inline bool lt(double a, double b = 0.0) noexcept
+	constexpr inline bool lt(double a, double b = 0.0) noexcept
 	{
 		return b - a > EPSINON;
 	}
 
-	inline bool ge(double a, double b = 0.0) noexcept
+	constexpr inline bool ge(double a, double b = 0.0) noexcept
 	{
 		return gt(a, b) || eq(a, b);
 	}
 
-	inline bool le(double a, double b = 0.0) noexcept
+	constexpr inline bool le(double a, double b = 0.0) noexcept
 	{
 		return lt(a, b) || eq(a, b);
 	}
