@@ -111,7 +111,7 @@ double CsvReader::get_double(int32_t col)
 	if (!check_cell(col))
 		return 0;
 
-	return convert::from_str<double>(_current_cells[col].c_str());
+	return strtod(_current_cells[col].c_str(), NULL);
 }
 
 const char* CsvReader::get_string(int32_t col)
