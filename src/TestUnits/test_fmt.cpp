@@ -105,13 +105,13 @@ TEST(test_fmt, test_itos)
 
 	char buffer[32] = { 0 };
 
-	//先做一个预热
 	TimeUtils::Ticker ticker;
+#ifdef _WIN32	
 	for (int i = 0; i < times; i++)
 	{
 		itoa(num, buffer, 10);
 	}
-
+#endif
 	uint64_t t1 = ticker.nano_seconds();
 
 	ticker.reset();
