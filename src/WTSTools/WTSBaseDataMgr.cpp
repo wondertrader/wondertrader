@@ -561,7 +561,7 @@ bool WTSBaseDataMgr::loadContracts(const char* filename)
 			WTSContractInfo* cInfoA = static_cast<WTSContractInfo*>(left);
 			WTSContractInfo* cInfoB = static_cast<WTSContractInfo*>(right);
 
-			return strcmp(cInfoA->getFullCode(), cInfoB->getFullCode());
+			return strcmp(cInfoA->getFullCode(), cInfoB->getFullCode()) < 0;
 		});
 
 		m_ayGlobalList.resize(allCodes->size());
