@@ -20,11 +20,8 @@
 
 typedef std::vector<std::string> StringVector;
 
-class StrUtil
-{
-public:
-
-	
+namespace StrUtil
+{	
 
 	/** Removes any whitespace characters, be it standard space or
 	TABs and so on.
@@ -33,7 +30,7 @@ public:
 	beginning or the end of the std::string ( the default action is
 	to trim both).
 	*/
-	static inline void trim(std::string& str, const char* delims = " \t\r", bool left = true, bool right = true)
+	inline void trim(std::string& str, const char* delims = " \t\r", bool left = true, bool right = true) noexcept
 	{
 		if(right)
 			str.erase(str.find_last_not_of(delims)+1);
@@ -41,7 +38,7 @@ public:
 			str.erase(0, str.find_first_not_of(delims));
 	}
 
-	static inline std::string trim(const char* str, const char* delims = " \t\r", bool left = true, bool right = true)
+	inline std::string trim(const char* str, const char* delims = " \t\r", bool left = true, bool right = true) noexcept
 	{
 		std::string ret = str;
 		if(right)
@@ -53,7 +50,7 @@ public:
 	}
 
 	//去掉所有空格
-	static inline void trimAllSpace(std::string &str)
+	inline void trimAllSpace(std::string &str) noexcept
 	{
 		std::string::iterator destEnd = std::remove_if(str.begin(), str.end(), [](const char& c){
 			return c == ' ';
@@ -62,13 +59,13 @@ public:
 	}
 
 	//去除所有特定字符
-	//static inline void trimAll(std::string &str,char ch)
+	//inline void trimAll(std::string &str,char ch)
 	//{
 	//	std::string::iterator destEnd=std::remove_if(str.begin(),str.end(),std::bind1st(std::equal_to<char>(),ch));
 	//	str.resize(destEnd-str.begin());
 	//}
 
-	static inline std::size_t findFirst(const char* str, char ch)
+	constexpr inline std::size_t findFirst(const char* str, char ch) noexcept
 	{
 		std::size_t i = 0;
 		for(;;)
@@ -85,7 +82,7 @@ public:
 		return std::string::npos;
 	}
 
-	static inline std::size_t findLast(const char* str, char ch)
+	inline std::size_t findLast(const char* str, char ch) noexcept
 	{
 		auto len = strlen(str);
 		std::size_t i = 0;
@@ -106,7 +103,7 @@ public:
 	maxSplits The maximum number of splits to perform (0 for unlimited splits). If this
 	parameters is > 0, the splitting process will stop after this many splits, left to right.
 	*/
-	static inline StringVector split( const std::string& str, const std::string& delims = "\t\n ", unsigned int maxSplits = 0)
+	inline StringVector split( const std::string& str, const std::string& delims = "\t\n ", unsigned int maxSplits = 0) noexcept
 	{
 		StringVector ret;
 		unsigned int numSplits = 0;
@@ -151,7 +148,7 @@ public:
 	maxSplits The maximum number of splits to perform (0 for unlimited splits). If this
 	parameters is > 0, the splitting process will stop after this many splits, left to right.
 	*/
-	static inline void split(const std::string& str, StringVector& ret, const std::string& delims = "\t\n ", unsigned int maxSplits = 0)
+	inline void split(const std::string& str, StringVector& ret, const std::string& delims = "\t\n ", unsigned int maxSplits = 0) noexcept
 	{
 		unsigned int numSplits = 0;
 
@@ -188,7 +185,7 @@ public:
 
 	/** Upper-cases all the characters in the std::string.
 	*/
-	static inline void toLowerCase( std::string& str )
+	inline void toLowerCase( std::string& str ) noexcept
 	{
 		std::transform(
 			str.begin(),
@@ -200,7 +197,7 @@ public:
 
 	/** Lower-cases all the characters in the std::string.
 	*/
-	static inline void toUpperCase( std::string& str )
+	inline void toUpperCase( std::string& str ) noexcept
 	{
 		std::transform(
 			str.begin(),
@@ -209,7 +206,7 @@ public:
 			(int(*)(int))toupper);
 	}
 
-	static inline std::string makeLowerCase(const char* str)
+	inline std::string makeLowerCase(const char* str)
 	{
 		std::string strRet = str;
 		std::transform(
@@ -220,7 +217,7 @@ public:
 		return std::move(strRet);
 	}
 
-	static inline std::string makeUpperCase(const char* str)
+	inline std::string makeUpperCase(const char* str) noexcept
 	{
 		std::string strRet = str;
 		std::transform(
@@ -237,7 +234,7 @@ public:
 	 *	@pattern	要匹配的模板
 	 *	@ignroreCase是否忽略大小写
 	 */
-	static inline bool startsWith(const char* str, const char* pattern, bool ignoreCase = true)
+	inline bool startsWith(const char* str, const char* pattern, bool ignoreCase = true) noexcept
 	{
 		size_t thisLen = strlen(str);
 		size_t patternLen = strlen(pattern);
@@ -264,7 +261,7 @@ public:
 	 *	@pattern	要匹配的模板
 	 *	@ignroreCase是否忽略大小写
 	 */
-	static inline bool endsWith(const char* str, const char* pattern, bool ignoreCase = true)
+	inline bool endsWith(const char* str, const char* pattern, bool ignoreCase = true) noexcept
 	{
 		size_t thisLen = strlen(str);
 		size_t patternLen = strlen(pattern);
@@ -289,7 +286,7 @@ public:
 
 	/** Method for standardising paths - use forward slashes only, end with slash.
 	*/
-	static inline std::string standardisePath( const std::string &init, bool bIsDir = true)
+	inline std::string standardisePath( const std::string &init, bool bIsDir = true) noexcept
 	{
 		std::string path = init;
 
@@ -305,7 +302,7 @@ public:
 	@remarks
 	Path is standardised as in standardisePath
 	*/
-	static inline void splitFilename(const std::string& qualifiedName,std::string& outBasename, std::string& outPath)
+	inline void splitFilename(const std::string& qualifiedName,std::string& outBasename, std::string& outPath) noexcept
 	{
 		std::string path = qualifiedName;
 		// Replace \ with / first
@@ -330,7 +327,7 @@ public:
 	@param pattern Pattern to match against; can include simple '*' wildcards
 	@param caseSensitive Whether the match is case sensitive or not
 	*/
-	static inline bool match(const std::string& str, const std::string& pattern, bool caseSensitive = true)
+	inline bool match(const std::string& str, const std::string& pattern, bool caseSensitive = true)
 	{
 		std::string tmpStr = str;
 		std::string tmpPattern = pattern;
@@ -399,14 +396,14 @@ public:
 	}
 
 	/// Constant blank std::string, useful for returning by ref where local does not exist
-	static inline const std::string BLANK()
+	inline const std::string BLANK()
 	{
-		static const std::string temp = std::string("");
+		const std::string temp = std::string("");
 		return std::move(temp);
 	}
 
 	//地球人都知道,恶心的std::string是没有CString的Format这个函数的,所以我们自己造
-	static inline std::string printf(const char *pszFormat, ...)
+	inline std::string printf(const char *pszFormat, ...) noexcept
 	{
 		va_list argptr;
 		va_start(argptr, pszFormat);
@@ -416,7 +413,7 @@ public:
 	}
 
 	//地球人都知道,恶心的std::string是没有CString的Format这个函数的,所以我们自己造
-	static inline std::string printf2(const char *pszFormat, ...)
+	inline std::string printf2(const char *pszFormat, ...) noexcept
 	{
 		va_list argptr;
 		va_start(argptr, pszFormat);
@@ -426,7 +423,7 @@ public:
 	}
 
 	//地球人都知道,恶心的std::string是没有CString的Format这个函数的,所以我们自己造
-	static inline std::string printf2(const char *pszFormat,va_list argptr)
+	inline std::string printf2(const char *pszFormat,va_list argptr) noexcept
 	{
 		int         size   = 1024;
 		char*       buffer = new char[size];
@@ -455,7 +452,7 @@ public:
 		}
 	}
 
-	static inline std::string extend(const char* str, uint32_t length)
+	inline std::string extend(const char* str, uint32_t length) noexcept
 	{
 		if(strlen(str) >= length)
 			return str;
@@ -477,7 +474,7 @@ public:
 	}
 
 	//地球人都知道,恶心的std::string是没有CString的Format这个函数的,所以我们自己造
-	static inline std::string printf(const char* pszFormat, va_list argptr)
+	inline std::string printf(const char* pszFormat, va_list argptr) noexcept
 	{
 		int size = 1024;
 		int len=0;
@@ -513,7 +510,7 @@ public:
 	}
 
 	//取得右边的N个字符
-	static inline std::string right(const std::string &src,size_t nCount)
+	inline std::string right(const std::string &src,size_t nCount) noexcept
 	{
 		if(nCount>src.length())
 			return BLANK();
@@ -521,12 +518,12 @@ public:
 	}
 
 	//取左边的N个字符
-	static inline std::string left(const std::string &src,size_t nCount)
+	inline std::string left(const std::string &src,size_t nCount) noexcept
 	{
 		return std::move(src.substr(0,nCount));
 	}
 
-	static inline size_t charCount(const std::string &src,char ch)
+	inline size_t charCount(const std::string &src,char ch) noexcept
 	{
 		size_t result=0;
 		for(size_t i=0;i<src.length();i++)
@@ -536,7 +533,7 @@ public:
 		return result;
 	}
 
-	static inline void replace(std::string& str, const char* src, const char* des)
+	inline void replace(std::string& str, const char* src, const char* des) noexcept
 	{
 		std::string ret = "";
 		std::size_t srcLen = strlen(src);

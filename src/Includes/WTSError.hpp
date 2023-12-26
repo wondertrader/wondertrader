@@ -20,21 +20,21 @@ protected:
 	virtual ~WTSError(){}
 
 public:
-	static WTSError* create(WTSErroCode ec, const char* errmsg)
+	static WTSError* create(WTSErroCode ec, const char* errmsg) noexcept
 	{
 		WTSError* pRet = new WTSError;
 		pRet->m_errCode = ec;
-		pRet->m_strMsg = errmsg;
+		wt_strcpy(pRet->m_strMsg, errmsg);
 
 		return pRet;
 	}
 
-	const char*		getMessage() const{return m_strMsg.c_str();}
-	WTSErroCode		getErrorCode() const{return m_errCode;}
+	constexpr const char*		getMessage() const noexcept{return m_strMsg;}
+	constexpr WTSErroCode		getErrorCode() const noexcept{return m_errCode;}
 
 protected:
 	WTSErroCode		m_errCode;
-	std::string		m_strMsg;
+	char			m_strMsg[128];
 };
 
 

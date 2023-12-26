@@ -12,7 +12,7 @@
 
 namespace decimal
 {
-	const double EPSINON = 1e-6;
+	constexpr double EPSINON = 1e-6;
 
 	inline double rnd(double v, int exp = 1) 
 	{

@@ -3,6 +3,8 @@
 */
 #include "WtVWapExeUnit.h"
 
+#include <sstream>
+
 #include "../Share/TimeUtils.hpp"
 #include "../Includes/WTSVariant.hpp"
 #include "../Includes/WTSContractInfo.hpp"

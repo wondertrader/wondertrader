@@ -892,72 +892,72 @@ public:
 	/*
 	 *	读取合约代码
 	 */
-	inline const char* code() const{ return m_tickStruct.code; }
+	constexpr inline const char* code() const noexcept { return m_tickStruct.code; }
 
 	/*
 	 *	读取市场代码
 	 */
-	inline const char*	exchg() const{ return m_tickStruct.exchg; }
+	constexpr inline const char*	exchg() const noexcept { return m_tickStruct.exchg; }
 
 	/*
 	 *	读取最新价
 	 */
-	inline double	price() const{ return m_tickStruct.price; }
+	constexpr inline double	price() const noexcept { return m_tickStruct.price; }
 
-	inline double	open() const{ return m_tickStruct.open; }
+	constexpr inline double	open() const noexcept { return m_tickStruct.open; }
 
 	/*
 	 *	最高价
 	 */
-	inline double	high() const{ return m_tickStruct.high; }
+	constexpr inline double	high() const noexcept { return m_tickStruct.high; }
 
 	/*
 	 *	最低价
 	 */
-	inline double	low() const{ return m_tickStruct.low; }
+	constexpr inline double	low() const noexcept { return m_tickStruct.low; }
 
 	//昨收价,如果是期货则是昨结算
-	inline double	preclose() const{ return m_tickStruct.pre_close; }
-	inline double	presettle() const{ return m_tickStruct.pre_settle; }
-	inline double	preinterest() const{ return m_tickStruct.pre_interest; }
+	constexpr inline double	preclose() const noexcept { return m_tickStruct.pre_close; }
+	constexpr inline double	presettle() const noexcept { return m_tickStruct.pre_settle; }
+	constexpr inline double	preinterest() const noexcept { return m_tickStruct.pre_interest; }
 
-	inline double	upperlimit() const{ return m_tickStruct.upper_limit; }
-	inline double	lowerlimit() const{ return m_tickStruct.lower_limit; }
+	constexpr inline double	upperlimit() const noexcept { return m_tickStruct.upper_limit; }
+	constexpr inline double	lowerlimit() const noexcept { return m_tickStruct.lower_limit; }
 	//成交量
-	inline double	totalvolume() const{ return m_tickStruct.total_volume; }
+	constexpr inline double	totalvolume() const noexcept { return m_tickStruct.total_volume; }
 
 	//成交量
-	inline double	volume() const{ return m_tickStruct.volume; }
+	constexpr inline double	volume() const noexcept { return m_tickStruct.volume; }
 
 	//结算价
-	inline double	settlepx() const{ return m_tickStruct.settle_price; }
+	constexpr inline double	settlepx() const noexcept { return m_tickStruct.settle_price; }
 
 	//总持
-	inline double	openinterest() const{ return m_tickStruct.open_interest; }
+	constexpr inline double	openinterest() const noexcept { return m_tickStruct.open_interest; }
 
-	inline double	additional() const{ return m_tickStruct.diff_interest; }
-
-	//成交额
-	inline double	totalturnover() const{ return m_tickStruct.total_turnover; }
+	constexpr inline double	additional() const noexcept { return m_tickStruct.diff_interest; }
 
 	//成交额
-	inline double	turnover() const{ return m_tickStruct.turn_over; }
+	constexpr inline double	totalturnover() const noexcept { return m_tickStruct.total_turnover; }
+
+	//成交额
+	constexpr inline double	turnover() const noexcept { return m_tickStruct.turn_over; }
 
 	//交易日
-	inline uint32_t	tradingdate() const{ return m_tickStruct.trading_date; }
+	constexpr inline uint32_t	tradingdate() const noexcept { return m_tickStruct.trading_date; }
 
 	//数据发生日期
-	inline uint32_t	actiondate() const{ return m_tickStruct.action_date; }
+	constexpr inline uint32_t	actiondate() const noexcept { return m_tickStruct.action_date; }
 
 	//数据发生时间
-	inline uint32_t	actiontime() const{ return m_tickStruct.action_time; }
+	constexpr inline uint32_t	actiontime() const noexcept { return m_tickStruct.action_time; }
 
 
 	/*
 	 *	读取指定档位的委买价
 	 *	@idx 0-9
 	 */
-	inline double		bidprice(int idx) const
+	constexpr inline double		bidprice(int idx) const noexcept
 	{
 		if(idx < 0 || idx >= 10) 
 			return -1;
@@ -969,7 +969,7 @@ public:
 	 *	读取指定档位的委卖价
 	 *	@idx 0-9
 	 */
-	inline double		askprice(int idx) const
+	constexpr inline double		askprice(int idx) const noexcept
 	{
 		if(idx < 0 || idx >= 10) 
 			return -1;
@@ -981,7 +981,7 @@ public:
 	 *	读取指定档位的委买量
 	 *	@idx 0-9
 	 */
-	inline double	bidqty(int idx) const
+	constexpr inline double	bidqty(int idx) const noexcept
 	{
 		if(idx < 0 || idx >= 10) 
 			return -1;
@@ -993,7 +993,7 @@ public:
 	 *	读取指定档位的委卖量
 	 *	@idx 0-9
 	 */
-	inline double	askqty(int idx) const
+	constexpr inline double	askqty(int idx) const noexcept
 	{
 		if(idx < 0 || idx >= 10) 
 			return -1;

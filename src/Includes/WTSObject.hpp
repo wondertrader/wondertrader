@@ -24,7 +24,7 @@ public:
 	virtual ~WTSObject(){}
 
 public:
-	inline uint32_t		retain(){ return m_uRefs.fetch_add(1) + 1; }
+	inline uint32_t		retain() noexcept { return m_uRefs.fetch_add(1) + 1; }
 
 	virtual void	release()
 	{
@@ -45,9 +45,9 @@ public:
 		}
 	}
 
-	inline bool			isSingleRefs() { return m_uRefs == 1; }
+	inline bool			isSingleRefs() noexcept { return m_uRefs == 1; }
 
-	inline uint32_t		retainCount() { return m_uRefs; }
+	inline uint32_t		retainCount() noexcept { return m_uRefs; }
 
 protected:
 	volatile std::atomic<uint32_t>	m_uRefs;

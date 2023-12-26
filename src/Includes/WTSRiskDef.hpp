@@ -68,32 +68,32 @@ public:
 		return pRet;
 	}
 
-	inline TradeStatInfo&	statInfo(){ return _trd_stat_info; }
-	inline const TradeStatInfo& statInfo() const{ return _trd_stat_info; }
+	constexpr inline TradeStatInfo&	statInfo() noexcept{ return _trd_stat_info; }
+	constexpr inline const TradeStatInfo& statInfo() const noexcept{ return _trd_stat_info; }
 
-	inline const char* code() const{ return _trd_stat_info._code; }
+	constexpr inline const char* code() const noexcept { return _trd_stat_info._code; }
 
-	inline double open_volume_long() const{ return _trd_stat_info.l_openvol; }
-	inline double close_volume_long() const{ return _trd_stat_info.l_closevol; }
-	inline double closet_volume_long() const{ return _trd_stat_info.l_closetvol; }
-	inline double open_volume_short() const{ return _trd_stat_info.s_openvol; }
-	inline double close_volume_short() const{ return _trd_stat_info.s_closevol; }
-	inline double closet_volume_short() const{ return _trd_stat_info.s_closetvol; }
+	constexpr inline double open_volume_long() const noexcept { return _trd_stat_info.l_openvol; }
+	constexpr inline double close_volume_long() const noexcept { return _trd_stat_info.l_closevol; }
+	constexpr inline double closet_volume_long() const noexcept { return _trd_stat_info.l_closetvol; }
+	constexpr inline double open_volume_short() const noexcept { return _trd_stat_info.s_openvol; }
+	constexpr inline double close_volume_short() const noexcept { return _trd_stat_info.s_closevol; }
+	constexpr inline double closet_volume_short() const noexcept { return _trd_stat_info.s_closetvol; }
 
-	inline uint32_t orders_buy() const{ return _trd_stat_info.b_orders; }
-	inline double ordqty_buy() const{ return _trd_stat_info.b_ordqty; }
-	inline uint32_t orders_sell() const{ return _trd_stat_info.s_orders; }
-	inline double ordqty_sell() const{ return _trd_stat_info.s_ordqty; }
+	constexpr inline uint32_t orders_buy() const noexcept { return _trd_stat_info.b_orders; }
+	constexpr inline double ordqty_buy() const noexcept { return _trd_stat_info.b_ordqty; }
+	constexpr inline uint32_t orders_sell() const noexcept { return _trd_stat_info.s_orders; }
+	constexpr inline double ordqty_sell() const noexcept { return _trd_stat_info.s_ordqty; }
 
-	inline uint32_t cancels_buy() const{ return _trd_stat_info.b_cancels; }
-	inline double cancelqty_buy() const{ return _trd_stat_info.b_canclqty; }
-	inline uint32_t cancels_sell() const{ return _trd_stat_info.s_cancels; }
-	inline double cancelqty_sell() const{ return _trd_stat_info.s_canclqty; }
+	constexpr inline uint32_t cancels_buy() const noexcept { return _trd_stat_info.b_cancels; }
+	constexpr inline double cancelqty_buy() const noexcept { return _trd_stat_info.b_canclqty; }
+	constexpr inline uint32_t cancels_sell() const noexcept { return _trd_stat_info.s_cancels; }
+	constexpr inline double cancelqty_sell() const noexcept { return _trd_stat_info.s_canclqty; }
 
-	inline uint32_t total_cancels() const{ return _trd_stat_info.b_cancels + _trd_stat_info.s_cancels; }
-	inline uint32_t total_orders() const { return _trd_stat_info.b_orders + _trd_stat_info.s_orders; }
+	constexpr inline uint32_t total_cancels() const noexcept { return _trd_stat_info.b_cancels + _trd_stat_info.s_cancels; }
+	constexpr inline uint32_t total_orders() const noexcept { return _trd_stat_info.b_orders + _trd_stat_info.s_orders; }
 
-	inline uint32_t infos() const { return _trd_stat_info._infos; }
+	constexpr inline uint32_t infos() const noexcept { return _trd_stat_info._infos; }
 
 private:
 	TradeStatInfo	_trd_stat_info;

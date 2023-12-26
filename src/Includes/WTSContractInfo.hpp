@@ -12,7 +12,6 @@
 #include "WTSTypes.h"
 #include "FasterDefs.h"
 #include <string>
-#include <sstream>
 
 NS_WTP_BEGIN
 class WTSSessionInfo;
@@ -20,78 +19,76 @@ class WTSSessionInfo;
 class WTSCommodityInfo: public WTSObject
 {
 public:
-	static WTSCommodityInfo* create(const char* pid, const char* name, const char* exchg, const char* session, const char* trdtpl, const char* currency = "CNY")
+	static WTSCommodityInfo* create(const char* pid, const char* name, const char* exchg, const char* session, const char* trdtpl, const char* currency = "CNY") noexcept
 	{
 		WTSCommodityInfo* ret = new WTSCommodityInfo;
-		ret->m_strName = name;
-		ret->m_strExchg = exchg;
-		ret->m_strProduct = pid;
-		ret->m_strCurrency = currency;
-		ret->m_strSession = session;
-		ret->m_strTrdTpl = trdtpl;
+		wt_strcpy(ret->m_strName, name);
+		wt_strcpy(ret->m_strExchg, exchg);
+		wt_strcpy(ret->m_strProduct, pid);
+		wt_strcpy(ret->m_strCurrency, currency);
+		wt_strcpy(ret->m_strSession, session);
+		wt_strcpy(ret->m_strTrdTpl, trdtpl);
 
-		std::stringstream ss;
-		ss << exchg << "." << pid;
-		ret->m_strFullPid = ss.str();
+		sprintf(ret->m_strFullPid, "%s.%s", exchg, pid);
 
 		return ret;
 	}
 
-	inline void	setVolScale(uint32_t volScale){ m_uVolScale = volScale; }
-	inline void	setPriceTick(double pxTick){ m_dPriceTick = pxTick; }
-	inline void	setCategory(ContractCategory cat){ m_ccCategory = cat; }
-	inline void	setCoverMode(CoverMode cm){ m_coverMode = cm; }
-	inline void	setPriceMode(PriceMode pm){ m_priceMode = pm; }
-	inline void	setTradingMode(TradingMode tm) { m_tradeMode = tm; }
+	constexpr inline void	setVolScale(uint32_t volScale) noexcept { m_uVolScale = volScale; }
+	constexpr inline void	setPriceTick(double pxTick) noexcept { m_dPriceTick = pxTick; }
+	constexpr inline void	setCategory(ContractCategory cat) noexcept { m_ccCategory = cat; }
+	constexpr inline void	setCoverMode(CoverMode cm) noexcept { m_coverMode = cm; }
+	constexpr inline void	setPriceMode(PriceMode pm) noexcept { m_priceMode = pm; }
+	constexpr inline void	setTradingMode(TradingMode tm) noexcept { m_tradeMode = tm; }
 
-	inline bool canShort() const { return m_tradeMode == TM_Both; }
-	inline bool isT1() const { return m_tradeMode == TM_LongT1; }
+	constexpr inline bool canShort() const  noexcept { return m_tradeMode == TM_Both; }
+	constexpr inline bool isT1() const  noexcept { return m_tradeMode == TM_LongT1; }
 
-	inline const char* getName()	const{ return m_strName.c_str(); }
-	inline const char* getExchg()	const{ return m_strExchg.c_str(); }
-	inline const char* getProduct()	const{ return m_strProduct.c_str(); }
-	inline const char* getCurrency()	const{ return m_strCurrency.c_str(); }
-	inline const char* getSession()	const{ return m_strSession.c_str(); }
-	inline const char* getTradingTpl()	const{ return m_strTrdTpl.c_str(); }
-	inline const char* getFullPid()	const{ return m_strFullPid.c_str(); }
+	constexpr inline const char* getName()	const noexcept { return m_strName; }
+	constexpr inline const char* getExchg()	const noexcept { return m_strExchg; }
+	constexpr inline const char* getProduct()	const noexcept { return m_strProduct; }
+	constexpr inline const char* getCurrency()	const noexcept { return m_strCurrency; }
+	constexpr inline const char* getSession()	const noexcept { return m_strSession; }
+	constexpr inline const char* getTradingTpl() const noexcept { return m_strTrdTpl; }
+	constexpr inline const char* getFullPid()	const noexcept { return m_strFullPid; }
 
-	inline uint32_t	getVolScale()	const{ return m_uVolScale; }
-	inline double	getPriceTick()	const{ return m_dPriceTick; }
+	constexpr inline uint32_t	getVolScale()	const noexcept { return m_uVolScale; }
+	constexpr inline double	getPriceTick()	const noexcept { return m_dPriceTick; }
 	//inline uint32_t	getPrecision()	const{ return m_uPrecision; }
 
-	inline ContractCategory		getCategoty() const{ return m_ccCategory; }
-	inline CoverMode			getCoverMode() const{ return m_coverMode; }
-	inline PriceMode			getPriceMode() const{ return m_priceMode; }
-	inline TradingMode			getTradingMode() const { return m_tradeMode; }
+	constexpr inline ContractCategory		getCategoty() const noexcept { return m_ccCategory; }
+	constexpr inline CoverMode			getCoverMode() const noexcept { return m_coverMode; }
+	constexpr inline PriceMode			getPriceMode() const noexcept { return m_priceMode; }
+	constexpr inline TradingMode			getTradingMode() const  noexcept { return m_tradeMode; }
 
-	inline void		addCode(const char* code){ m_setCodes.insert(code); }
-	inline const CodeSet& getCodes() const{ return m_setCodes; }
+	inline void		addCode(const char* code) noexcept { m_setCodes.insert(code); }
+	inline const CodeSet& getCodes() const noexcept { return m_setCodes; }
 
-	inline void	setLotsTick(double lotsTick){ m_dLotTick = lotsTick; }
-	inline void	setMinLots(double minLots) { m_dMinLots = minLots; }
+	constexpr inline void	setLotsTick(double lotsTick) noexcept { m_dLotTick = lotsTick; }
+	constexpr inline void	setMinLots(double minLots)  noexcept { m_dMinLots = minLots; }
 
-	inline bool isOption() const
+	constexpr inline bool isOption() const noexcept
 	{
 		return (m_ccCategory == CC_FutOption || m_ccCategory == CC_ETFOption || m_ccCategory == CC_SpotOption);
 	}
 
-	inline bool isFuture() const
+	constexpr inline bool isFuture() const noexcept
 	{
 		return m_ccCategory == CC_Future;
 	}
 
-	inline bool isStock() const
+	constexpr inline bool isStock() const noexcept
 	{
 		return m_ccCategory == CC_Stock;
 	}
 
-	inline double	getLotsTick() const { return m_dLotTick; }
-	inline double	getMinLots() const { return m_dMinLots; }
+	constexpr inline double	getLotsTick() const noexcept { return m_dLotTick; }
+	constexpr inline double	getMinLots() const  noexcept { return m_dMinLots; }
 
-	inline void		setSessionInfo(WTSSessionInfo* sInfo) { m_pSession = sInfo; }
-	inline WTSSessionInfo* getSessionInfo() const { return m_pSession; }
+	constexpr inline void		setSessionInfo(WTSSessionInfo* sInfo) noexcept { m_pSession = sInfo; }
+	constexpr inline WTSSessionInfo* getSessionInfo() const  noexcept { return m_pSession; }
 
-	inline void		setFeeRates(double open, double close, double closeToday, bool byVolume)
+	constexpr inline void		setFeeRates(double open, double close, double closeToday, bool byVolume) noexcept
 	{
 		m_dOpenFee = open;
 		m_dCloseFee = close;
@@ -99,10 +96,10 @@ public:
 		m_nFeeAlg = byVolume ? 0 : 1;
 	}
 
-	inline void		setMarginRate(double rate) { m_dMarginRate = rate; }
-	inline double	getMarginRate() const { return m_dMarginRate; }
+	constexpr inline void	setMarginRate(double rate) noexcept { m_dMarginRate = rate; }
+	constexpr inline double	getMarginRate() const  noexcept { return m_dMarginRate; }
 
-	inline double	calcFee(double price, double qty, uint32_t offset)
+	constexpr inline double	calcFee(double price, double qty, uint32_t offset) noexcept
 	{
 		if (m_nFeeAlg == -1)
 			return 0.0;
@@ -138,13 +135,13 @@ protected:
 	virtual ~WTSCommodityInfo() {}
 
 private:
-	std::string	m_strName;		//品种名称
-	std::string	m_strExchg;		//交易所代码
-	std::string	m_strProduct;	//品种ID
-	std::string	m_strCurrency;	//币种
-	std::string m_strSession;	//交易时间模板
-	std::string m_strTrdTpl;	//节假日模板
-	std::string m_strFullPid;	//全品种ID，如CFFEX.IF
+	char m_strName[64];		//品种名称
+	char m_strExchg[64];		//交易所代码
+	char m_strProduct[64];	//品种ID
+	char m_strCurrency[64];	//币种
+	char m_strSession[64];	//交易时间模板
+	char m_strTrdTpl[64];	//节假日模板
+	char m_strFullPid[64];	//全品种ID，如CFFEX.IF
 
 	uint32_t	m_uVolScale;	//合约放大倍数
 	double		m_dPriceTick;	//最小价格变动单位
@@ -174,24 +171,19 @@ public:
 	static WTSContractInfo* create(const char* code, const char* name, const char* exchg, const char* pid)
 	{
 		WTSContractInfo* ret = new WTSContractInfo;
-		ret->m_strCode = code;
-		ret->m_strName = name;
-		ret->m_strProduct = pid;
-		ret->m_strExchg = exchg;
+		wt_strcpy(ret->m_strCode, code);
+		wt_strcpy(ret->m_strName, name);
+		wt_strcpy(ret->m_strProduct, pid);
+		wt_strcpy(ret->m_strExchg, exchg);
 
-		std::stringstream ss;
-		ss << exchg << "." << code;
-		ret->m_strFullCode = ss.str();
-
-		std::stringstream sss;
-		sss << exchg << "." << pid;
-		ret->m_strFullPid = sss.str();
+		sprintf(ret->m_strFullCode, "%s.%s", exchg, code);
+		sprintf(ret->m_strFullPid, "%s.%s", exchg, pid);
 
 		return ret;
 	}
 
 
-	inline void	setVolumeLimits(uint32_t maxMarketVol, uint32_t maxLimitVol, uint32_t minMarketVol = 1, uint32_t minLimitVol = 1)
+	constexpr inline void	setVolumeLimits(uint32_t maxMarketVol, uint32_t maxLimitVol, uint32_t minMarketVol = 1, uint32_t minLimitVol = 1) noexcept
 	{
 		m_maxMktQty = maxMarketVol;
 		m_maxLmtQty = maxLimitVol;
@@ -200,36 +192,36 @@ public:
 		m_minMktQty = minMarketVol;
 	}
 
-	inline void setDates(uint32_t openDate, uint32_t expireDate)
+	constexpr inline void setDates(uint32_t openDate, uint32_t expireDate) noexcept
 	{
 		m_openDate = openDate;
 		m_expireDate = expireDate;
 	}
 
-	inline void setMarginRatios(double longRatio, double shortRatio, uint32_t flag = 0)
+	constexpr inline void setMarginRatios(double longRatio, double shortRatio, uint32_t flag = 0) noexcept
 	{
 		m_lMarginRatio = longRatio;
 		m_sMarginRatio = shortRatio;
 		m_uMarginFlag = flag;
 	}
 
-	inline const char* getCode()	const{return m_strCode.c_str();}
-	inline const char* getExchg()	const{return m_strExchg.c_str();}
-	inline const char* getName()	const{return m_strName.c_str();}
-	inline const char* getProduct()	const{return m_strProduct.c_str();}
+	constexpr inline const char* getCode()	const noexcept {return m_strCode;}
+	constexpr inline const char* getExchg()	const noexcept {return m_strExchg;}
+	constexpr inline const char* getName()	const noexcept {return m_strName;}
+	constexpr inline const char* getProduct()	const noexcept {return m_strProduct;}
 
-	inline const char* getFullCode()	const{ return m_strFullCode.c_str(); }
-	inline const char* getFullPid()	const{ return m_strFullPid.c_str(); }
+	constexpr inline const char* getFullCode()	const noexcept { return m_strFullCode; }
+	constexpr inline const char* getFullPid()	const noexcept { return m_strFullPid; }
 
-	inline uint32_t	getMaxMktVol() const{ return m_maxMktQty; }
-	inline uint32_t	getMaxLmtVol() const{ return m_maxLmtQty; }
-	inline uint32_t	getMinMktVol() const { return m_minMktQty; }
-	inline uint32_t	getMinLmtVol() const { return m_minLmtQty; }
+	constexpr inline uint32_t	getMaxMktVol() const noexcept { return m_maxMktQty; }
+	constexpr inline uint32_t	getMaxLmtVol() const noexcept { return m_maxLmtQty; }
+	constexpr inline uint32_t	getMinMktVol() const  noexcept { return m_minMktQty; }
+	constexpr inline uint32_t	getMinLmtVol() const  noexcept { return m_minLmtQty; }
 
-	inline uint32_t	getOpenDate() const { return m_openDate; }
-	inline uint32_t	getExpireDate() const { return m_expireDate; }
+	constexpr inline uint32_t	getOpenDate() const  noexcept { return m_openDate; }
+	constexpr inline uint32_t	getExpireDate() const  noexcept { return m_expireDate; }
 
-	inline double	getLongMarginRatio() const { 
+	constexpr inline double	getLongMarginRatio() const noexcept {
 		if (m_uMarginFlag == 1)
 			return m_lMarginRatio;
 
@@ -237,7 +229,7 @@ public:
 		return commRate == 0.0 ? m_lMarginRatio : m_commInfo->getMarginRate();
 	}
 
-	inline double	getShortMarginRatio() const {
+	constexpr inline double	getShortMarginRatio() const noexcept {
 		if (m_uMarginFlag == 1)
 			return m_sMarginRatio;
 
@@ -245,10 +237,10 @@ public:
 		return commRate == 0.0 ? m_sMarginRatio : m_commInfo->getMarginRate();
 	}
 
-	inline void setCommInfo(WTSCommodityInfo* commInfo) { m_commInfo = commInfo; }
-	inline WTSCommodityInfo* getCommInfo() const { return m_commInfo; }
+	constexpr inline void setCommInfo(WTSCommodityInfo* commInfo) noexcept { m_commInfo = commInfo; }
+	constexpr inline WTSCommodityInfo* getCommInfo() const noexcept { return m_commInfo; }
 
-	inline void		setFeeRates(double open, double close, double closeToday, bool byVolume)
+	constexpr inline void		setFeeRates(double open, double close, double closeToday, bool byVolume) noexcept
 	{
 		m_dOpenFee = open;
 		m_dCloseFee = close;
@@ -256,7 +248,7 @@ public:
 		m_nFeeAlg = byVolume ? 0 : 1;
 	}
 
-	inline double	calcFee(double price, double qty, uint32_t offset)
+	constexpr inline double	calcFee(double price, double qty, uint32_t offset) noexcept
 	{
 		//如果合约没有手续费率，则调用品种的手续费率
 		if (m_nFeeAlg == -1)
@@ -288,22 +280,22 @@ public:
 		return (int32_t)(ret * 100 + 0.5) / 100.0;
 	}
 
-	inline void setHotFlag(uint32_t hotFlag, const char* hotCode = "") 
+	inline void setHotFlag(uint32_t hotFlag, const char* hotCode = "") noexcept
 	{ 
 		m_uHotFlag = hotFlag; 
-		m_strHotCode = hotCode;
+		wt_strcpy(m_strHotCode, hotCode);
 	}
-	inline bool isFlat() const { return m_uHotFlag == 0; }
-	inline bool isHot() const { return m_uHotFlag == 1; }
-	inline bool isSecond() const { return m_uHotFlag == 2; }
-	inline const char* getHotCode() const { return m_strHotCode.c_str(); }
+	constexpr inline bool isFlat() const  noexcept { return m_uHotFlag == 0; }
+	constexpr inline bool isHot() const  noexcept { return m_uHotFlag == 1; }
+	constexpr inline bool isSecond() const  noexcept { return m_uHotFlag == 2; }
+	constexpr inline const char* getHotCode() const  noexcept { return m_strHotCode; }
 
-	inline void	setTotalIndex(uint32_t idx) noexcept { m_uTotalIdx = idx; }
-	inline uint32_t getTotalIndex() const noexcept { return m_uTotalIdx; }
+	constexpr inline void	setTotalIndex(uint32_t idx) noexcept { m_uTotalIdx = idx; }
+	constexpr inline uint32_t getTotalIndex() const noexcept { return m_uTotalIdx; }
 
-	inline void setExtData(void* pExtData) noexcept { m_pExtData = pExtData; }
+	constexpr inline void setExtData(void* pExtData) noexcept { m_pExtData = pExtData; }
 	template<typename T>
-	inline T*	getExtData() noexcept { return static_cast<T*>(m_pExtData); }
+	constexpr inline T*	getExtData() noexcept { return static_cast<T*>(m_pExtData); }
 
 protected:
 	WTSContractInfo()
@@ -313,13 +305,13 @@ protected:
 	virtual ~WTSContractInfo(){}
 
 private:
-	std::string	m_strCode;
-	std::string	m_strExchg;
-	std::string	m_strName;
-	std::string	m_strProduct;
+	char	m_strCode[64];
+	char	m_strExchg[64];
+	char	m_strName[64];
+	char	m_strProduct[64];
 
-	std::string m_strFullPid;
-	std::string m_strFullCode;
+	char	m_strFullPid[64];
+	char	m_strFullCode[64];
 
 	uint32_t	m_maxMktQty;
 	uint32_t	m_maxLmtQty;
@@ -340,7 +332,7 @@ private:
 
 	WTSCommodityInfo*	m_commInfo;
 	uint32_t	m_uHotFlag;
-	std::string	m_strHotCode;
+	char		m_strHotCode[64];
 
 	uint32_t	m_uTotalIdx;	//合约全局索引，每次启动可能不同，只能在内存里用
 	void*		m_pExtData;		//扩展数据，主要是绑定一些和合约相关的数据，这样可以避免在很多地方建map，导致多次查找

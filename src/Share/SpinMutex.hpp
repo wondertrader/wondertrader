@@ -24,7 +24,7 @@ private:
 	std::atomic<bool> flag = { false };
 
 public:
-	void lock()
+	inline void lock() noexcept
 	{
 		for (;;)
 		{
@@ -42,7 +42,7 @@ public:
 		}
 	}
 
-	void unlock()
+	inline void unlock() noexcept
 	{
 		flag.store(false, std::memory_order_release);
 	}
@@ -51,10 +51,11 @@ public:
 class SpinLock
 {
 public:
-	SpinLock(SpinMutex& mtx) :_mutex(mtx) { _mutex.lock(); }
+	SpinLock(SpinMutex& mtx) noexcept
+		:_mutex(mtx) { _mutex.lock(); }
 	SpinLock(const SpinLock&) = delete;
 	SpinLock& operator=(const SpinLock&) = delete;
-	~SpinLock() { _mutex.unlock(); }
+	~SpinLock() noexcept { _mutex.unlock(); }
 
 private:
 	SpinMutex&	_mutex;
