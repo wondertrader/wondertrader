@@ -114,10 +114,10 @@ private:
 	 inline WTSTradeInfo*	makeTradeRecord(const YDTrade *tradeField, const YDInstrument* instInfo) noexcept;
 	 inline WTSError*		makeError(int errorno, WTSErroCode ec) noexcept;
 
-	 inline bool			generateEntrustID(uint32_t orderRef, char* buffer) noexcept;
-	 inline bool			extractEntrustID(const char* entrustid, uint32_t &orderRef) noexcept;
+	 inline bool		generateEntrustID(uint32_t orderRef, char* buffer) noexcept;
+	 inline bool		extractEntrustID(const char* entrustid, uint32_t &orderRef) noexcept;
 
-	inline uint32_t			genRequestID()
+	inline uint32_t		genRequestID() noexcept
 	{
 		return m_iRequestID.fetch_add(1) + 1;
 	}
@@ -132,6 +132,13 @@ protected:
 
 	bool			m_bCatchup;
 	bool			m_bApiInited;
+
+	/*
+	 *	By Wesley @ 2023.12.27
+	 *	是否更新本地缓存，默认为false
+	 *	如果开启则会在运行中自动更新本地的成交、订单和持仓缓存
+	 */
+	bool			m_bUpdateCache;
 
 	std::string		m_strUserName;
 

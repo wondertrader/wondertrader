@@ -199,8 +199,8 @@ void TraderYD::notifyLogin(int errorNo, int maxOrderRef, bool isMonitor)
 		///获取当前交易日
 		m_lDate = m_pUserAPI->getTradingDay();
 
-		write_log(m_sink, LL_INFO, "[TraderYD] {} Login succeed, Trading Day: {}",
-			m_strUser.c_str(), m_lDate);
+		write_log(m_sink, LL_INFO, "[TraderYD] {} Login succeed, Trading Day: {}, AutoUpdateCache: {}, YDApi version: {}",
+			m_strUser.c_str(), m_lDate, m_bUpdateCache, m_pUserAPI->getVersion());
 
 		{
 			//初始化委托单缓存器
@@ -328,7 +328,8 @@ void TraderYD::notifyFinishInit()
 				pos->setAvailPrePos(pos->getPrePosition());
 				pos->setAvailNewPos(0);
 
-				write_log(m_sink, LL_INFO, "[TraderYD] {} PrePosition of {} updated:{}[{}]", pos->getDirection() == WDT_LONG ? "Long" : "Short", contract->getFullCode(), pos->getTotalPosition(), pos->getAvailPosition());
+				write_log(m_sink, LL_INFO, "[TraderYD] {} PrePosition of {} updated:{}[{}]", 
+					pos->getDirection() == WDT_LONG ? "Long" : "Short", contract->getFullCode(), pos->getTotalPosition(), pos->getAvailPosition());
 			}
 		}
 	}
@@ -341,88 +342,91 @@ void TraderYD::notifyOrder(const YDOrder *pOrder, const YDInstrument *pInstrumen
 	if (orderInfo)
 	{
 		//先往缓存里丢
-		if (NULL == m_mapOrders)
-			m_mapOrders = DataMap::create();
-
-		const char* oid = orderInfo->getOrderID();
-		auto it = m_mapOrders->find(oid);
-		if(it == m_mapOrders->end())
+		if (!m_bCatchup || m_bUpdateCache)
 		{
-			//如果该订单是第一次被推送
-			//则检查是否是平仓委托
-			//如果是平仓委托，需要调整冻结手数
-			if (orderInfo->getOffsetType() != WOT_OPEN)
+			if (NULL == m_mapOrders)
+				m_mapOrders = DataMap::create();
+
+			const char* oid = orderInfo->getOrderID();
+			auto it = m_mapOrders->find(oid);
+			if (it == m_mapOrders->end())
 			{
-				const char* key = fmtutil::format("{}-{}", orderInfo->getCode(), orderInfo->getDirection());
-				WTSPositionItem* pos = (WTSPositionItem*)m_mapPosition->get(key);
-				double preQty = pos->getPrePosition();
-				double newQty = pos->getNewPosition();
-				double availPre = pos->getAvailPrePos();
-				double availNew = pos->getAvailNewPos();
+				//如果该订单是第一次被推送
+				//则检查是否是平仓委托
+				//如果是平仓委托，需要调整冻结手数
+				if (orderInfo->getOffsetType() != WOT_OPEN)
+				{
+					const char* key = fmtutil::format("{}-{}", orderInfo->getCode(), orderInfo->getDirection());
+					WTSPositionItem* pos = (WTSPositionItem*)m_mapPosition->get(key);
+					double preQty = pos->getPrePosition();
+					double newQty = pos->getNewPosition();
+					double availPre = pos->getAvailPrePos();
+					double availNew = pos->getAvailNewPos();
 
-				WTSCommodityInfo* commInfo = orderInfo->getContractInfo()->getCommInfo();
-				if(commInfo->getCoverMode() == CM_CoverToday)
-				{
-					if (orderInfo->getOffsetType() == WOT_CLOSETODAY)
-						availNew -= orderInfo->getVolume();
-					else
-						availPre -= orderInfo->getVolume();
-				}
-				else
-				{
-					//不区分平昨平今，则先冻结昨仓，再冻结今仓
-					double maxQty = min(availPre, orderInfo->getVolume());
-					availPre -= maxQty;
-					if(decimal::lt(orderInfo->getVolume(), maxQty))
+					WTSCommodityInfo* commInfo = orderInfo->getContractInfo()->getCommInfo();
+					if (commInfo->getCoverMode() == CM_CoverToday)
 					{
-						availNew -= orderInfo->getVolume() - maxQty;
+						if (orderInfo->getOffsetType() == WOT_CLOSETODAY)
+							availNew -= orderInfo->getVolume();
+						else
+							availPre -= orderInfo->getVolume();
 					}
-				}
+					else
+					{
+						//不区分平昨平今，则先冻结昨仓，再冻结今仓
+						double maxQty = std::min(availPre, orderInfo->getVolume());
+						availPre -= maxQty;
+						if (decimal::lt(orderInfo->getVolume(), maxQty))
+						{
+							availNew -= orderInfo->getVolume() - maxQty;
+						}
+					}
 
-				pos->setAvailPrePos(availPre);
-				pos->setAvailNewPos(availNew);
+					pos->setAvailPrePos(availPre);
+					pos->setAvailNewPos(availNew);
+				}
 			}
-		}
-		else
-		{
-			WTSOrderInfo* preOrd = (WTSOrderInfo*)it->second;
-			//如果订单不是第一次被推送，则看是否是撤单
-			//如果是撤单，并且之间订单状态还是有效的，则对平仓委托要释放冻结的手数
-			if(preOrd->isAlive() && orderInfo->getOrderState() == WOS_Canceled && orderInfo->getOffsetType() != WOT_OPEN)
+			else
 			{
-				std::string key = fmtutil::format("{}-{}", orderInfo->getCode(), orderInfo->getDirection());
-				WTSPositionItem* pos = (WTSPositionItem*)m_mapPosition->get(key);
-				double preQty = pos->getPrePosition();
-				double newQty = pos->getNewPosition();
-				double availPre = pos->getAvailPrePos();
-				double availNew = pos->getAvailNewPos();
-
-				double untrade = orderInfo->getVolume() - orderInfo->getVolTraded();
-
-				WTSCommodityInfo* commInfo = orderInfo->getContractInfo()->getCommInfo();
-				if (commInfo->getCoverMode() == CM_CoverToday)
+				WTSOrderInfo* preOrd = (WTSOrderInfo*)it->second;
+				//如果订单不是第一次被推送，则看是否是撤单
+				//如果是撤单，并且之间订单状态还是有效的，则对平仓委托要释放冻结的手数
+				if (preOrd->isAlive() && orderInfo->getOrderState() == WOS_Canceled && orderInfo->getOffsetType() != WOT_OPEN)
 				{
-					if (orderInfo->getOffsetType() == WOT_CLOSETODAY)
-						availNew += untrade;
-					else
-						availPre += untrade;
-				}
-				else
-				{
-					//不区分平昨平今，则先释放今仓，再释放昨仓
-					double maxQty = min(newQty-availNew , untrade);
-					availNew += maxQty;
-					if (decimal::lt(untrade, maxQty))
+					std::string key = fmtutil::format("{}-{}", orderInfo->getCode(), orderInfo->getDirection());
+					WTSPositionItem* pos = (WTSPositionItem*)m_mapPosition->get(key);
+					double preQty = pos->getPrePosition();
+					double newQty = pos->getNewPosition();
+					double availPre = pos->getAvailPrePos();
+					double availNew = pos->getAvailNewPos();
+
+					double untrade = orderInfo->getVolume() - orderInfo->getVolTraded();
+
+					WTSCommodityInfo* commInfo = orderInfo->getContractInfo()->getCommInfo();
+					if (commInfo->getCoverMode() == CM_CoverToday)
 					{
-						availPre += orderInfo->getVolume() - maxQty;
+						if (orderInfo->getOffsetType() == WOT_CLOSETODAY)
+							availNew += untrade;
+						else
+							availPre += untrade;
 					}
-				}
+					else
+					{
+						//不区分平昨平今，则先释放今仓，再释放昨仓
+						double maxQty = std::min(newQty - availNew, untrade);
+						availNew += maxQty;
+						if (decimal::lt(untrade, maxQty))
+						{
+							availPre += orderInfo->getVolume() - maxQty;
+						}
+					}
 
-				pos->setAvailPrePos(availPre);
-				pos->setAvailNewPos(availNew);
+					pos->setAvailPrePos(availPre);
+					pos->setAvailNewPos(availNew);
+				}
 			}
+			m_mapOrders->add(oid, orderInfo, false);
 		}
-		m_mapOrders->add(oid, orderInfo, false);
 
 		//如果已经追上了，则直接主推出去
 		if (m_sink && m_bCatchup)
@@ -438,70 +442,76 @@ void TraderYD::notifyTrade(const YDTrade *pTrade, const YDInstrument *pInstrumen
 	WTSTradeInfo *trdInfo = makeTradeRecord(pTrade, pInstrument);
 	if (trdInfo)
 	{
-		//先往缓存里丢
-		if (NULL == m_mapTrades)
-			m_mapTrades = DataMap::create();
-
-		const char* tid = trdInfo->getTradeID();
-		WTSContractInfo* contract = trdInfo->getContractInfo();
-		WTSCommodityInfo* commInfo = contract->getCommInfo();
-		auto it = m_mapTrades->find(tid);
-		if(it == m_mapTrades->end())
+		/*
+		 *	By Wesley @ 2023.12.27
+		 *	如果没有追上，或者强制要求更新缓存，就更新缓存
+		 */
+		if (!m_bCatchup || m_bUpdateCache)
 		{
-			m_mapTrades->add(tid, trdInfo, false);
+			if (NULL == m_mapTrades)
+				m_mapTrades = DataMap::create();
 
-			//成交回报，主要更新持仓
-			std::string key = fmtutil::format("{}-{}", trdInfo->getCode(), trdInfo->getDirection());
-			WTSPositionItem* pos = (WTSPositionItem*)m_mapPosition->get(key);
-			if(pos == NULL)
+			const char* tid = trdInfo->getTradeID();
+			WTSContractInfo* contract = trdInfo->getContractInfo();
+			WTSCommodityInfo* commInfo = contract->getCommInfo();
+			auto it = m_mapTrades->find(tid);
+			if (it == m_mapTrades->end())
 			{
-				pos = WTSPositionItem::create(contract->getCode(), commInfo->getCurrency(), commInfo->getExchg());
-				pos->setContractInfo(contract);
-				pos->setDirection(trdInfo->getDirection());
-				m_mapPosition->add(key, pos, false);
-			}
+				m_mapTrades->add(tid, trdInfo, false);
 
-			double preQty = pos->getPrePosition();
-			double newQty = pos->getNewPosition();
-			double availPre = pos->getAvailPrePos();
-			double availNew = pos->getAvailNewPos();
-
-			double qty = trdInfo->getVolume();
-
-			if(trdInfo->getOffsetType() == WOT_OPEN)
-			{
-				newQty += qty;
-				availNew += qty;
-
-				//开仓一定是今仓
-				pos->setNewPosition(newQty);
-				pos->setAvailNewPos(availNew);
-			}
-			else
-			{
-				//平仓要区分
-				if (commInfo->getCoverMode() == CM_CoverToday)
+				//成交回报，主要更新持仓
+				std::string key = fmtutil::format("{}-{}", trdInfo->getCode(), trdInfo->getDirection());
+				WTSPositionItem* pos = (WTSPositionItem*)m_mapPosition->get(key);
+				if (pos == NULL)
 				{
-					//平仓不用更新可用持仓
-					//因为可用持仓在订单回报的地方已经更新过了
-					if (trdInfo->getOffsetType() == WOT_CLOSETODAY)
-						newQty -= qty;
-					else
-						preQty -= qty;
+					pos = WTSPositionItem::create(contract->getCode(), commInfo->getCurrency(), commInfo->getExchg());
+					pos->setContractInfo(contract);
+					pos->setDirection(trdInfo->getDirection());
+					m_mapPosition->add(key, pos, false);
+				}
+
+				double preQty = pos->getPrePosition();
+				double newQty = pos->getNewPosition();
+				double availPre = pos->getAvailPrePos();
+				double availNew = pos->getAvailNewPos();
+
+				double qty = trdInfo->getVolume();
+
+				if (trdInfo->getOffsetType() == WOT_OPEN)
+				{
+					newQty += qty;
+					availNew += qty;
+
+					//开仓一定是今仓
+					pos->setNewPosition(newQty);
+					pos->setAvailNewPos(availNew);
 				}
 				else
 				{
-					//不区分平昨平今，则先减掉昨仓，在调整今仓
-					double maxQty = min(preQty, qty);
-					preQty -= maxQty;
-					if (decimal::lt(qty, maxQty))
+					//平仓要区分
+					if (commInfo->getCoverMode() == CM_CoverToday)
 					{
-						newQty -= (qty - maxQty);
+						//平仓不用更新可用持仓
+						//因为可用持仓在订单回报的地方已经更新过了
+						if (trdInfo->getOffsetType() == WOT_CLOSETODAY)
+							newQty -= qty;
+						else
+							preQty -= qty;
 					}
-				}
+					else
+					{
+						//不区分平昨平今，则先减掉昨仓，在调整今仓
+						double maxQty = std::min(preQty, qty);
+						preQty -= maxQty;
+						if (decimal::lt(qty, maxQty))
+						{
+							newQty -= (qty - maxQty);
+						}
+					}
 
-				pos->setNewPosition(newQty);
-				pos->setPrePosition(preQty);
+					pos->setNewPosition(newQty);
+					pos->setPrePosition(preQty);
+				}
 			}
 		}
 
@@ -549,6 +559,8 @@ bool TraderYD::init(WTSVariant* config)
 	std::string module = config->getCString("ydmodule");
 	if (module.empty())
 		module = "yd";
+
+	m_bUpdateCache = config->getBoolean("update_cache");
 
 	m_strModule = getBinDir() + DLLHelper::wrap_module(module.c_str(), "");
 
@@ -925,7 +937,7 @@ WTSOrderInfo* TraderYD::makeOrderInfo(const YDOrder* orderField, const YDInstrum
 
 		if (strlen(pRet->getOrderID()) > 0)
 		{
-			m_oidCache.put(StrUtil::trim(pRet->getOrderID()).c_str(), usertag, 0, m_cacheLogger);
+			m_oidCache.put(pRet->getOrderID(), usertag, 0, m_cacheLogger);
 		}
 	}
 
@@ -984,7 +996,7 @@ WTSTradeInfo* TraderYD::makeTradeRecord(const YDTrade *tradeField, const YDInstr
 	pRet->setContractInfo(contract);
 	pRet->setVolume(tradeField->Volume);
 	pRet->setPrice(tradeField->Price);
-	fmtutil::format_to(pRet->getTradeID(), "{}", tradeField->TradeID);
+	convert::to_str(pRet->getTradeID(), 64, tradeField->TradeID);
 
 	uint32_t uDate = m_lDate;
 	uint32_t uTime = tradeField->TradeTime;
@@ -996,13 +1008,13 @@ WTSTradeInfo* TraderYD::makeTradeRecord(const YDTrade *tradeField, const YDInstr
 
 	pRet->setDirection(dType);
 	pRet->setOffsetType(wrapOffsetType(tradeField->OffsetFlag));
-	fmtutil::format_to(pRet->getRefOrder(), "{}", tradeField->OrderSysID);
+	convert::to_str(pRet->getRefOrder(), 64, tradeField->OrderSysID);
 	pRet->setTradeType(WTT_Common);
 
 	double amount = commInfo->getVolScale()*tradeField->Volume*pRet->getPrice();
 	pRet->setAmount(amount);
 
-	const char* usertag = m_oidCache.get(StrUtil::trim(pRet->getRefOrder()).c_str());
+	const char* usertag = m_oidCache.get(pRet->getRefOrder());
 	if (strlen(usertag))
 		pRet->setUserTag(usertag);
 
