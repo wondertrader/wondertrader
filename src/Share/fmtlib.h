@@ -8,7 +8,7 @@
 namespace fmtutil
 {
 	template<typename... Args>
-	inline char* format_to(char* buffer, const char* format, const Args& ...args)
+	inline char* format_to(char* buffer, const char* format, const Args& ...args) noexcept
 	{
 		char* s = fmt::format_to(buffer, format, args...);
 		s[0] = '\0';
@@ -16,7 +16,7 @@ namespace fmtutil
 	}
 
 	template<int BUFSIZE=512, typename... Args>
-	inline const char* format(const char* format, const Args& ...args)
+	inline const char* format(const char* format, const Args& ...args) noexcept
 	{
 		thread_local static char buffer[BUFSIZE];
 		char* s = fmt::format_to(buffer, format, args...);

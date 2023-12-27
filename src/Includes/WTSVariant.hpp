@@ -282,76 +282,76 @@ public:
 		return false;
 	}
 
-	inline int32_t getInt32(const char* name) const
+	inline int32_t getInt32(const char* name, int32_t defVal = 0) const
 	{
 		WTSVariant* p = get(name);
 		if (p)
 			return p->asInt32();
 
-		return 0;
+		return defVal;
 	}
 
-	inline uint32_t getUInt32(const char* name) const
+	inline uint32_t getUInt32(const char* name, uint32_t defVal = 0) const
 	{
 		WTSVariant* p = get(name);
 		if (p)
 			return p->asUInt32();
 
-		return 0;
+		return defVal;
 	}
 
-	inline int64_t getInt64(const char* name) const
+	inline int64_t getInt64(const char* name, int64_t defVal = 0) const
 	{
 		WTSVariant* p = get(name);
 		if (p)
 			return p->asInt64();
 
-		return 0;
+		return defVal;
 	}
 
-	inline uint64_t getUInt64(const char* name) const
+	inline uint64_t getUInt64(const char* name, uint64_t defVal = 0) const
 	{
 		WTSVariant* p = get(name);
 		if (p)
 			return p->asUInt64();
 
-		return 0;
+		return defVal;
 	}
 
-	inline double getDouble(const char* name) const
+	inline double getDouble(const char* name, double defVal = 0) const
 	{
 		WTSVariant* p = get(name);
 		if (p)
 			return p->asDouble();
 
-		return 0.0;
+		return defVal;
 	}
 
-	inline std::string getString(const char* name) const
+	inline std::string getString(const char* name, const char* defVal = "") const
 	{
 		WTSVariant* p = get(name);
 		if (p)
-			return p->asString();
+			return std::move(p->asString());
 
-		return "";
+		return defVal;
 	}
 
-	inline const char* getCString(const char* name) const
+	inline const char* getCString(const char* name, const char* defVal = "") const
 	{
 		WTSVariant* p = get(name);
 		if (p)
 			return p->asCString();
 
-		return "";
+		return defVal;
 	}
 
-	inline bool getBoolean(const char* name) const
+	inline bool getBoolean(const char* name, bool defVal = false) const
 	{
 		WTSVariant* p = get(name);
 		if (p)
 			return p->asBoolean();
 
-		return false;
+		return defVal;
 	}
 
 	inline WTSVariant* get(const char* name) const
