@@ -25,12 +25,12 @@ WTSBaseDataMgr::WTSBaseDataMgr()
 	, m_mapSessions(NULL)
 	, m_mapCommodities(NULL)
 	, m_mapContracts(NULL)
-	, m_ayGlobalList(NULL)
 {
 	m_mapExchgContract = WTSExchgContract::create();
 	m_mapSessions = WTSSessionMap::create();
 	m_mapCommodities = WTSCommodityMap::create();
 	m_mapContracts = WTSContractMap::create();
+	m_mapFullCodes = WTSContractMap::create();
 }
 
 
@@ -59,11 +59,17 @@ WTSBaseDataMgr::~WTSBaseDataMgr()
 		m_mapContracts->release();
 		m_mapContracts = NULL;
 	}
+
+	if(m_mapFullCodes)
+	{
+		m_mapFullCodes->release();
+		m_mapFullCodes = NULL;
+	}
 }
 
 WTSCommodityInfo* WTSBaseDataMgr::getCommodity(const char* exchgpid)
 {
-	return (WTSCommodityInfo*)m_mapCommodities->get(exchgpid);
+	return static_cast<WTSCommodityInfo*>(m_mapCommodities->get(exchgpid));
 }
 
 
@@ -72,22 +78,18 @@ WTSCommodityInfo* WTSBaseDataMgr::getCommodity(const char* exchg, const char* pi
 	if (m_mapCommodities == NULL)
 		return NULL;
 
-	char key[64] = { 0 };
-	fmt::format_to(key, "{}.{}", exchg, pid);
+	thread_local static char key[64] = { 0 };
+	fmtutil::format_to(key, "{}.{}", exchg, pid);
 
-	return (WTSCommodityInfo*)m_mapCommodities->get(key);
+	return static_cast<WTSCommodityInfo*>(m_mapCommodities->get(key));
 }
-
 
 WTSContractInfo* WTSBaseDataMgr::getContract(const char* code, const char* exchg /* = "" */, uint32_t uDate /* = 0 */)
 {
 	//如果直接找到对应的市场代码,则直接
-	
-	auto lKey = std::string(code);
-
 	if (strlen(exchg) == 0)
 	{
-		auto it = m_mapContracts->find(lKey);
+		auto it = m_mapContracts->find(code);
 		if (it == m_mapContracts->end())
 			return NULL;
 
@@ -97,7 +99,7 @@ WTSContractInfo* WTSBaseDataMgr::getContract(const char* code, const char* exchg
 
 		for(std::size_t i = 0; i < ayInst->size(); i++)
 		{
-			WTSContractInfo* cInfo = (WTSContractInfo*)ayInst->at(i);
+			WTSContractInfo* cInfo = static_cast<WTSContractInfo*>(ayInst->at(i));
 			/*
 			 *	By Wesley @ 2023.10.23
 			 *	if param uDate is not zero, need to check whether contract is valid
@@ -109,24 +111,18 @@ WTSContractInfo* WTSBaseDataMgr::getContract(const char* code, const char* exchg
 	}
 	else
 	{
-		auto sKey = std::string(exchg);
-		auto it = m_mapExchgContract->find(sKey);
-		if (it != m_mapExchgContract->end())
+		thread_local static char key[64] = { 0 };
+		fmtutil::format_to(key, "{}.{}", exchg, code);
+		auto it = m_mapFullCodes->find(key);
+		if (it != m_mapFullCodes->end())
 		{
-			WTSContractList* contractList = (WTSContractList*)it->second;
-			auto it = contractList->find(lKey);
-			if (it != contractList->end())
-			{
-				WTSContractInfo* cInfo = (WTSContractInfo*)it->second;
-				/*
-				 *	By Wesley @ 2023.10.23
-				 *	if param uDate is not zero, need to check whether contract is valid
-				 */
-				if (uDate == 0 || (cInfo->getOpenDate() <= uDate && cInfo->getExpireDate() >= uDate))
-					return cInfo;
-			}
-
-			return NULL;
+			WTSContractInfo* cInfo = static_cast<WTSContractInfo*>(it->second);
+			/*
+			 *	By Wesley @ 2023.10.23
+			 *	if param uDate is not zero, need to check whether contract is valid
+			 */
+			if (uDate == 0 || (cInfo->getOpenDate() <= uDate && cInfo->getExpireDate() >= uDate))
+				return cInfo;
 		}
 	}
 
@@ -141,11 +137,11 @@ uint32_t  WTSBaseDataMgr::getContractSize(const char* exchg /* = "" */, uint32_t
 		auto it = m_mapExchgContract->find(std::string(exchg));
 		if (it != m_mapExchgContract->end())
 		{
-			WTSContractList* contractList = (WTSContractList*)it->second;
+			WTSContractList* contractList = static_cast<WTSContractList*>(it->second);
 			auto it2 = contractList->begin();
 			for (; it2 != contractList->end(); it2++)
 			{
-				WTSContractInfo* cInfo = (WTSContractInfo*)it2->second;
+				WTSContractInfo* cInfo = static_cast<WTSContractInfo*>(it2->second);
 				if (uDate == 0 || (cInfo->getOpenDate() <= uDate && cInfo->getExpireDate() >= uDate))
 					ret++;
 			}
@@ -156,11 +152,11 @@ uint32_t  WTSBaseDataMgr::getContractSize(const char* exchg /* = "" */, uint32_t
 		auto it = m_mapExchgContract->begin();
 		for (; it != m_mapExchgContract->end(); it++)
 		{
-			WTSContractList* contractList = (WTSContractList*)it->second;
+			WTSContractList* contractList = static_cast<WTSContractList*>(it->second);
 			auto it2 = contractList->begin();
 			for (; it2 != contractList->end(); it2++)
 			{
-				WTSContractInfo* cInfo = (WTSContractInfo*)it2->second;
+				WTSContractInfo* cInfo = static_cast<WTSContractInfo*>(it2->second);
 				if (uDate == 0 || (cInfo->getOpenDate() <= uDate && cInfo->getExpireDate() >= uDate))
 					ret++;
 			}
@@ -175,14 +171,14 @@ WTSArray* WTSBaseDataMgr::getContracts(const char* exchg /* = "" */, uint32_t uD
 	WTSArray* ay = WTSArray::create();
 	if(strlen(exchg) > 0)
 	{
-		auto it = m_mapExchgContract->find(std::string(exchg));
+		auto it = m_mapExchgContract->find(exchg);
 		if (it != m_mapExchgContract->end())
 		{
-			WTSContractList* contractList = (WTSContractList*)it->second;
+			WTSContractList* contractList = static_cast<WTSContractList*>(it->second);
 			auto it2 = contractList->begin();
 			for (; it2 != contractList->end(); it2++)
 			{
-				WTSContractInfo* cInfo = (WTSContractInfo*)it2->second;
+				WTSContractInfo* cInfo = static_cast<WTSContractInfo*>(it2->second);
 				/*
 				 *	By Wesley @ 2023.10.23
 				 *	if param uDate is not zero, need to check whether contract is valid
@@ -194,21 +190,16 @@ WTSArray* WTSBaseDataMgr::getContracts(const char* exchg /* = "" */, uint32_t uD
 	}
 	else
 	{
-		auto it = m_mapExchgContract->begin();
-		for (; it != m_mapExchgContract->end(); it++)
+		auto it = m_mapFullCodes->begin();
+		for (; it != m_mapFullCodes->end(); it++)
 		{
-			WTSContractList* contractList = (WTSContractList*)it->second;
-			auto it2 = contractList->begin();
-			for (; it2 != contractList->end(); it2++)
-			{
-				WTSContractInfo* cInfo = (WTSContractInfo*)it2->second;
-				/*
-				 *	By Wesley @ 2023.10.23
-				 *	if param uDate is not zero, need to check whether contract is valid
-				 */
-				if (uDate == 0 || (cInfo->getOpenDate() <= uDate && cInfo->getExpireDate() >= uDate))
-					ay->append(cInfo, true);
-			}
+			WTSContractInfo* cInfo = static_cast<WTSContractInfo*>(it->second);
+			/*
+			 *	By Wesley @ 2023.10.23
+			 *	if param uDate is not zero, need to check whether contract is valid
+			 */
+			if (uDate == 0 || (cInfo->getOpenDate() <= uDate && cInfo->getExpireDate() >= uDate))
+				ay->append(cInfo, true);
 		}
 	}
 
@@ -535,6 +526,8 @@ bool WTSBaseDataMgr::loadContracts(const char* filename)
 				m_mapExchgContract->add(std::string(cInfo->getExchg()), contractList, false);
 			}
 			contractList->add(std::string(cInfo->getCode()), cInfo, false);
+
+			m_mapFullCodes->add(cInfo->getFullCode(), cInfo);
 
 			commInfo->addCode(code.c_str());
 

@@ -86,6 +86,7 @@ private:
 	WTSSessionMap*		m_mapSessions;
 	WTSCommodityMap*	m_mapCommodities;
 	WTSContractMap*		m_mapContracts;
+	WTSContractMap*		m_mapFullCodes;
 
 	std::vector<WTSContractInfo*>			m_ayGlobalList;
 };
