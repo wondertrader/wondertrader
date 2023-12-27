@@ -19,7 +19,7 @@
 namespace convert
 {
 	template <typename T>
-	static const char* to_str(T val)
+	static const char* to_str(T val) noexcept
 	{
 		thread_local static char buffer[64] = { 0 };
 		std::to_chars(buffer, buffer + 64, val);
@@ -27,14 +27,14 @@ namespace convert
 	}
 
 	template <typename T>
-	static const char* to_str(char* buffer, std::size_t len, T val)
+	static const char* to_str(char* buffer, std::size_t len, T val) noexcept
 	{
 		std::to_chars(buffer, buffer + len, val);
 		return buffer;
 	}
 
 	template <typename T>
-	static T from_str(const char* str)
+	static T from_str(const char* str) noexcept
 	{
 		T ret{};
 		std::from_chars(str, str + strlen(str), ret);
@@ -42,7 +42,7 @@ namespace convert
 	}
 
 	template <typename T>
-	static T from_str(std::string& str)
+	static T from_str(std::string& str) noexcept
 	{
 		T ret;
 		std::from_chars(str.begin(), str.end(), ret);

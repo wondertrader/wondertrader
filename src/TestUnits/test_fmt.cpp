@@ -106,7 +106,7 @@ TEST(test_fmt, test_itos)
 	char buffer[32] = { 0 };
 
 	TimeUtils::Ticker ticker;
-#ifdef _WIN32	
+#ifdef _MSVC	
 	for (int i = 0; i < times; i++)
 	{
 		itoa(num, buffer, 10);
