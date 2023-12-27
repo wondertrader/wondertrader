@@ -50,10 +50,8 @@ struct KUSER_SHARED_DATA
 #define TICKSPERSEC        10000000L
 #endif
 
-class TimeUtils 
+namespace TimeUtils 
 {
-	
-public:
 	static inline int64_t getLocalTimeNowOld(void)
 	{
 		thread_local static timeb now;
@@ -64,7 +62,7 @@ public:
 	/*
 	 *	获取本地时间，精确到毫秒
 	 */
-	static inline int64_t getLocalTimeNow(void)
+	static inline int64_t getLocalTimeNow(void) noexcept
 	{
 #ifdef _MSC_VER
 		LARGE_INTEGER SystemTime;
@@ -90,7 +88,7 @@ public:
 #endif
 	}
 
-	static inline std::string getLocalTime(bool bIncludeMilliSec = true)
+	static inline std::string getLocalTime(bool bIncludeMilliSec = true) noexcept
 	{
 		uint64_t ltime = getLocalTimeNow();
 		time_t now = ltime / 1000;
@@ -105,7 +103,7 @@ public:
 		return str;
 	}
 
-	static inline uint64_t getYYYYMMDDhhmmss()
+	static inline uint64_t getYYYYMMDDhhmmss() noexcept
 	{
 		uint64_t ltime = getLocalTimeNow();
 		time_t now = ltime / 1000;
@@ -123,7 +121,7 @@ public:
      * @date    当前日期，格式如20220309
      * @time    当前时间，精确到毫秒，格式如103029500
      */
-	static inline void getDateTime(uint32_t &date, uint32_t &time)
+	static inline void getDateTime(uint32_t &date, uint32_t &time) noexcept
 	{
 		uint64_t ltime = getLocalTimeNow();
 		time_t now = ltime / 1000;
@@ -138,7 +136,7 @@ public:
 		time += millitm;
 	}
 
-	static inline uint32_t getCurDate()
+	static inline uint32_t getCurDate() noexcept
 	{
 		uint64_t ltime = getLocalTimeNow();
 		time_t now = ltime / 1000;
@@ -148,7 +146,7 @@ public:
 		return date;
 	}
 
-	static inline uint32_t getWeekDay(uint32_t uDate = 0)
+	static inline uint32_t getWeekDay(uint32_t uDate = 0) noexcept
 	{
 		time_t ts = 0;
 		if(uDate == 0)
@@ -170,7 +168,7 @@ public:
 		return tNow->tm_wday;
 	}
 
-	static inline uint32_t getCurMin()
+	static inline uint32_t getCurMin() noexcept
 	{
 		uint64_t ltime = getLocalTimeNow();
 		time_t now = ltime / 1000;
@@ -180,7 +178,35 @@ public:
 		return time;
 	}
 
-	static inline int32_t getTZOffset()
+	constexpr static inline int fasttime(const time_t& unix_sec, struct tm* tm, int time_zone) noexcept
+	{
+		constexpr int kHoursInDay = 24;
+		constexpr int kMinutesInHour = 60;
+		constexpr int kDaysFromUnixTime = 2472632;
+		constexpr int kDaysFromYear = 153;
+		constexpr int kMagicUnkonwnFirst = 146097;
+		constexpr int kMagicUnkonwnSec = 1461;
+		tm->tm_sec = unix_sec % kMinutesInHour;
+		int i = (unix_sec / kMinutesInHour);
+		tm->tm_min = i % kMinutesInHour; //nn
+		i /= kMinutesInHour;
+		tm->tm_hour = (i + time_zone) % kHoursInDay; // hh
+		tm->tm_mday = (i + time_zone) / kHoursInDay;
+		int a = tm->tm_mday + kDaysFromUnixTime;
+		int b = (a * 4 + 3) / kMagicUnkonwnFirst;
+		int c = (-b * kMagicUnkonwnFirst) / 4 + a;
+		int d = ((c * 4 + 3) / kMagicUnkonwnSec);
+		int e = -d * kMagicUnkonwnSec;
+		e = e / 4 + c;
+		int m = (5 * e + 2) / kDaysFromYear;
+		tm->tm_mday = -(kDaysFromYear * m + 2) / 5 + e + 1;
+		tm->tm_mon = (-m / 10) * 12 + m + 2;
+		tm->tm_year = b * 100 + d - 6700 + (m / 10);
+		return 0;
+	}
+
+
+	static inline int32_t getTZOffset() noexcept
 	{
 		static int32_t offset = 99;
 		if(offset == 99)
@@ -205,7 +231,7 @@ public:
 	 *	@lTimeWithMs	带毫秒的时间，HHMMSSsss
 	 *	@isToUTC		是否转成UTC时间
 	 */
-	static inline int64_t makeTime(long lDate, long lTimeWithMs, bool isToUTC = false)
+	static inline int64_t makeTime(long lDate, long lTimeWithMs, bool isToUTC = false) noexcept
 	{
 		tm t;	
 		memset(&t,0,sizeof(tm));
@@ -225,7 +251,7 @@ public:
 		return ts * 1000+ millisec;
 	}
 
-	static std::string timeToString(int64_t mytime)
+	static std::string timeToString(int64_t mytime) noexcept
 	{
 		if (mytime == 0) return "";
 		int64_t sec = mytime/1000;
@@ -248,7 +274,7 @@ public:
 		return tm_buf;
 	};
 
-	static uint32_t getNextDate(uint32_t curDate, int days = 1)
+	static uint32_t getNextDate(uint32_t curDate, int days = 1) noexcept
 	{
 		tm t;	
 		memset(&t,0,sizeof(tm));
@@ -263,7 +289,7 @@ public:
 		return (newT->tm_year+1900)*10000 + (newT->tm_mon+1)*100 + newT->tm_mday;
 	}
 
-	static uint32_t getNextMinute(int32_t curTime, int32_t mins = 1)
+	constexpr static uint32_t getNextMinute(int32_t curTime, int32_t mins = 1) noexcept
 	{
 		int32_t curHour = curTime / 100;
 		int32_t curMin = curTime % 100;
@@ -283,7 +309,7 @@ public:
      * @curMonth: YYYYMM
      * @return: YYYYMM
      */
-    static uint32_t getNextMonth(uint32_t curMonth, int months = 1)
+	constexpr static uint32_t getNextMonth(uint32_t curMonth, int months = 1) noexcept
     {
         int32_t uYear = curMonth / 100;
         int32_t uMonth = curMonth % 100; // [1, 12]
@@ -301,22 +327,22 @@ public:
         return (uint32_t) (uYear*100 + uMonth);
     }
 
-	static inline uint64_t timeToMinBar(uint32_t uDate, uint32_t uTime)
+	constexpr static inline uint64_t timeToMinBar(uint32_t uDate, uint32_t uTime) noexcept
 	{
 		return (uint64_t)((uDate-19900000)*10000) + uTime;
 	}
 
-	static inline uint32_t minBarToDate(uint64_t minTime)
+	constexpr static inline uint32_t minBarToDate(uint64_t minTime) noexcept
 	{
 		return (uint32_t)(minTime/10000 + 19900000);
 	}
 
-	static inline uint32_t minBarToTime(uint64_t minTime)
+	constexpr static  inline uint32_t minBarToTime(uint64_t minTime) noexcept
 	{
 		return (uint32_t)(minTime%10000);
 	}
 
-	static inline bool isWeekends(uint32_t uDate)
+	static inline bool isWeekends(uint32_t uDate) noexcept
 	{
 		tm t;	
 		memset(&t,0,sizeof(tm));
@@ -335,7 +361,6 @@ public:
 		return false;
 	}
 
-public:
 	class Time32
 	{
 	public:
@@ -410,33 +435,33 @@ public:
 			_tick = std::chrono::high_resolution_clock::now();
 		}
 
-		void reset()
+		inline void reset() noexcept
 		{
 			_tick = std::chrono::high_resolution_clock::now();
 		}
 
-		inline int64_t seconds() const 
+		inline int64_t seconds() const noexcept
 		{
 			auto now = std::chrono::high_resolution_clock::now();
 			auto td = now - _tick;
 			return std::chrono::duration_cast<std::chrono::seconds>(td).count();
 		}
 
-		inline int64_t milli_seconds() const
+		inline int64_t milli_seconds() const noexcept
 		{
 			auto now = std::chrono::high_resolution_clock::now();
 			auto td = now - _tick;
 			return std::chrono::duration_cast<std::chrono::milliseconds>(td).count();
 		}
 
-		inline int64_t micro_seconds() const
+		inline int64_t micro_seconds() const noexcept
 		{
 			auto now = std::chrono::high_resolution_clock::now();
 			auto td = now - _tick;
 			return std::chrono::duration_cast<std::chrono::microseconds>(td).count();
 		}
 
-		inline int64_t nano_seconds() const
+		inline int64_t nano_seconds() const noexcept
 		{
 			auto now = std::chrono::high_resolution_clock::now();
 			auto td = now - _tick;
