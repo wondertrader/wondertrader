@@ -293,15 +293,17 @@ public:
 	constexpr inline void	setTotalIndex(uint32_t idx) noexcept { m_uTotalIdx = idx; }
 	constexpr inline uint32_t getTotalIndex() const noexcept { return m_uTotalIdx; }
 
-	constexpr inline void setExtData(void* pExtData) noexcept { m_pExtData = pExtData; }
-	template<typename T>
-	constexpr inline T*	getExtData() noexcept { return static_cast<T*>(m_pExtData); }
+	template<uint32_t INDEX = 0>
+	constexpr inline void setExtData(void* pExtData) noexcept { m_pExtData[INDEX] = pExtData; }
+
+	template<typename T, uint32_t INDEX = 0>
+	constexpr inline T*	getExtData() noexcept { return static_cast<T*>(m_pExtData[INDEX]); }
 
 protected:
 	WTSContractInfo()
 		: m_commInfo(NULL), m_openDate(19900101), m_expireDate(30991231)
 		, m_lMarginRatio(0), m_sMarginRatio(0), m_nFeeAlg(-1), m_uMarginFlag(0)
-		, m_uHotFlag(0), m_uTotalIdx(UINT_MAX), m_pExtData(NULL){}
+		, m_uHotFlag(0), m_uTotalIdx(UINT_MAX){}
 	virtual ~WTSContractInfo(){}
 
 private:
@@ -334,8 +336,8 @@ private:
 	uint32_t	m_uHotFlag;
 	char		m_strHotCode[64];
 
-	uint32_t	m_uTotalIdx;	//合约全局索引，每次启动可能不同，只能在内存里用
-	void*		m_pExtData;		//扩展数据，主要是绑定一些和合约相关的数据，这样可以避免在很多地方建map，导致多次查找
+	uint32_t	m_uTotalIdx;				//合约全局索引，每次启动可能不同，只能在内存里用
+	void*		m_pExtData[16] = { 0 };		//扩展数据，主要是绑定一些和合约相关的数据，这样可以避免在很多地方建map，导致多次查找
 };
 
 
