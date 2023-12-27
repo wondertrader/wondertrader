@@ -281,7 +281,25 @@ public:
 	constexpr inline WTSDirectionType	getDirection() const  noexcept { return m_direction; }
 	constexpr inline WTSPriceType		getPriceType() const  noexcept { return m_priceType; }
 	constexpr inline WTSOrderFlag		getOrderFlag() const  noexcept { return m_orderFlag; }
-	constexpr inline WTSOffsetType	getOffsetType() const  noexcept { return m_offsetType; }
+	constexpr inline WTSOffsetType		getOffsetType() const  noexcept { return m_offsetType; }
+
+	constexpr inline uint32_t getOffsetFlag() const noexcept
+	{
+		switch (m_offsetType)
+		{
+		case WOT_OPEN:	return 0;
+		case WOT_CLOSEYESTERDAY:
+		case WOT_CLOSE:
+			return 1;
+		default:
+			return 2;
+		}
+	}
+
+	constexpr inline bool isBuyAction() const noexcept
+	{
+		return (m_direction == WDT_LONG && m_offsetType == WOT_OPEN) || (m_direction == WDT_SHORT && m_offsetType != WOT_OPEN);
+	}
 
 	constexpr inline void setBusinessType(WTSBusinessType bType)  noexcept { m_businessType = bType; }
 	constexpr inline WTSBusinessType	getBusinessType() const  noexcept { return m_businessType; }
@@ -427,9 +445,27 @@ public:
 	constexpr inline void setAmount(double amount) noexcept { m_uAmount = amount; }
 
 	constexpr inline WTSDirectionType	getDirection() const noexcept {return m_direction;}
-	constexpr inline WTSOffsetType	getOffsetType() const noexcept {return m_offsetType;}
+	constexpr inline WTSOffsetType		getOffsetType() const noexcept {return m_offsetType;}
 	constexpr inline WTSOrderType		getOrderType() const noexcept {return m_orderType;}
 	constexpr inline WTSTradeType		getTradeType() const noexcept {return m_tradeType;}
+
+	constexpr inline uint32_t getOffsetFlag() const noexcept
+	{
+		switch (m_offsetType)
+		{
+		case WOT_OPEN:	return 0;
+		case WOT_CLOSEYESTERDAY:
+		case WOT_CLOSE:
+			return 1;
+		default:
+			return 2;
+		}
+	}
+
+	constexpr inline bool isBuyAction() const noexcept
+	{
+		return (m_direction == WDT_LONG && m_offsetType == WOT_OPEN) || (m_direction == WDT_SHORT && m_offsetType != WOT_OPEN);
+	}
 
 	constexpr inline double getVolume() const { return m_dVolume; }
 	constexpr inline double getPrice() const noexcept { return m_dPrice; }
