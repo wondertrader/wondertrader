@@ -365,7 +365,7 @@ bool ParserAdapterMgr::addAdapter(const char* id, ParserAdapterPtr& adapter)
 	auto it = _adapters.find(id);
 	if (it != _adapters.end())
 	{
-		WTSLogger::error(" Same name of parsers: %s", id);
+		WTSLogger::error(" Same name of parsers: {}", id);
 		return false;
 	}
 

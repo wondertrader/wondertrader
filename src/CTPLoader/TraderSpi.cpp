@@ -211,7 +211,7 @@ void CTraderSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CTho
 	{
 		if (pInstrument)
 		{
-			std::string fullInstId = StrUtil::printf("%s.%s", pInstrument->ExchangeID, pInstrument->InstrumentID);
+			std::string fullInstId = fmtutil::format<64>("{}.{}", pInstrument->ExchangeID, pInstrument->InstrumentID);
 			auto it = _contracts.find(fullInstId);
 			if (it != _contracts.end())
 			{
@@ -303,7 +303,7 @@ void CTraderSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CTho
 					contract.m_dLongMarginRatio = checkValid(pInstrument->LongMarginRatio);
 					contract.m_dShortMarginRatio = checkValid(pInstrument->ShortMarginRatio);
 
-					std::string fullPid = StrUtil::printf("%s.%s", pInstrument->ExchangeID, pInstrument->ProductID);
+					std::string fullPid = fmtutil::format<64>("{}.{}", pInstrument->ExchangeID, pInstrument->ProductID);
 					auto it = _commodities.find(fullPid);
 					if (it == _commodities.end())
 					{

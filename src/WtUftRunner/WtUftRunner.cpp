@@ -296,7 +296,7 @@ bool WtUftRunner::initParsers(WTSVariant* cfgParser)
 		if (realid.empty())
 		{
 			static uint32_t auto_parserid = 1000;
-			realid = StrUtil::printf("auto_parser_%u", auto_parserid++);
+			realid = fmtutil::format<64>("auto_parser_{}", auto_parserid++);
 		}
 
 		ParserAdapterPtr adapter(new ParserAdapter);

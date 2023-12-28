@@ -788,7 +788,7 @@ OrderIDs HftMocker::stra_sell(const char* stdCode, double price, double qty, con
 	WTSCommodityInfo* commInfo = _replayer->get_commodity_info(stdCode);
 	if (commInfo == NULL)
 	{
-		log_error("Cannot find corresponding commodity info of %s", stdCode);
+		log_error("Cannot find corresponding commodity info of {}", stdCode);
 		return OrderIDs();
 	}
 

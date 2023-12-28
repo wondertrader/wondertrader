@@ -12,6 +12,7 @@
 #include "../Share/TimeUtils.hpp"
 #include "../Share/BoostFile.hpp"
 #include "../Share/Converter.hpp"
+#include "../Share/fmtlib.h"
 
 #include "../WtDataStorage/DataDefine.h"
 #include "../WTSUtils/WTSCmpHelper.hpp"
@@ -164,7 +165,7 @@ void dump_bars(WtString binFolder, WtString csvFolder, WtString strFilter /* = "
 	if (!BoostFile::exists(srcFolder.c_str()))
 	{
 		if (cbLogger)
-			cbLogger(StrUtil::printf("目录%s不存在", binFolder).c_str());
+			cbLogger(fmtutil::format("目录{}不存在", binFolder));
 		return;
 	}
 
@@ -186,14 +187,14 @@ void dump_bars(WtString binFolder, WtString csvFolder, WtString strFilter /* = "
 		std::string fileCode = iter->path().stem().string();
 
 		if (cbLogger)
-			cbLogger(StrUtil::printf("正在读取数据文件%s...", path.c_str()).c_str());
+			cbLogger(fmtutil::format("正在读取数据文件{}...", path));
 
 		std::string buffer;
 		BoostFile::read_file_contents(path.c_str(), buffer);
 		if (buffer.size() < sizeof(HisKlineBlock))
 		{
 			if (cbLogger)
-				cbLogger(StrUtil::printf("文件%s头部校验失败", binFolder).c_str());
+				cbLogger(fmtutil::format("文件{}头部校验失败", binFolder));
 			continue;
 		}
 
@@ -202,7 +203,7 @@ void dump_bars(WtString binFolder, WtString csvFolder, WtString strFilter /* = "
 		if(bHeader->_type < BT_HIS_Minute1 || bHeader->_type > BT_HIS_Day)
 		{
 			if (cbLogger)
-				cbLogger(StrUtil::printf("文件%s不是K线数据，跳过转换", binFolder).c_str());
+				cbLogger(fmtutil::format("文件{}不是K线数据，跳过转换", binFolder));
 			continue;
 		}
 
@@ -219,7 +220,7 @@ void dump_bars(WtString binFolder, WtString csvFolder, WtString strFilter /* = "
 		filename += ".csv";
 
 		if (cbLogger)
-			cbLogger(StrUtil::printf("正在写入%s...", filename.c_str()).c_str());
+			cbLogger(fmtutil::format("正在写入{}...", filename));
 
 		WTSBarStruct* bars = (WTSBarStruct*)buffer.data();
 
@@ -256,11 +257,11 @@ void dump_bars(WtString binFolder, WtString csvFolder, WtString strFilter /* = "
 		BoostFile::write_file_contents(filename.c_str(), ss.str().c_str(), (uint32_t)ss.str().size());
 
 		if (cbLogger)
-			cbLogger(StrUtil::printf("%s写入完成,共%u条bar", filename.c_str(), kcnt).c_str());
+			cbLogger(fmtutil::format("{}写入完成,共{}条bar", filename, kcnt));
 	}
 
 	if (cbLogger)
-		cbLogger(StrUtil::printf("目录%s全部导出完成...", binFolder).c_str());
+		cbLogger(fmtutil::format("目录{}全部导出完成...", binFolder));
 }
 
 void dump_ticks(WtString binFolder, WtString csvFolder, WtString strFilter /* = "" */, FuncLogCallback cbLogger /* = NULL */)
@@ -269,7 +270,7 @@ void dump_ticks(WtString binFolder, WtString csvFolder, WtString strFilter /* = 
 	if (!BoostFile::exists(srcFolder.c_str()))
 	{
 		if (cbLogger)
-			cbLogger(StrUtil::printf("目录%s不存在", binFolder).c_str());
+			cbLogger(fmtutil::format("目录{}不存在", binFolder));
 		return;
 	}
 
@@ -291,14 +292,14 @@ void dump_ticks(WtString binFolder, WtString csvFolder, WtString strFilter /* = 
 		std::string fileCode = iter->path().stem().string();
 
 		if (cbLogger)
-			cbLogger(StrUtil::printf("正在读取数据文件%s...", path.c_str()).c_str());
+			cbLogger(fmtutil::format("正在读取数据文件{}...", path.c_str()));
 
 		std::string buffer;
 		BoostFile::read_file_contents(path.c_str(), buffer);
 		if (buffer.size() < sizeof(HisTickBlock))
 		{
 			if (cbLogger)
-				cbLogger(StrUtil::printf("文件%s头部校验失败", binFolder).c_str());
+				cbLogger(fmtutil::format("文件{}头部校验失败", binFolder));
 			continue;
 		}
 
@@ -313,7 +314,7 @@ void dump_ticks(WtString binFolder, WtString csvFolder, WtString strFilter /* = 
 		filename += ".csv";
 
 		if (cbLogger)
-			cbLogger(StrUtil::printf("正在写入%s...", filename.c_str()).c_str());
+			cbLogger(fmtutil::format("正在写入{}...", filename.c_str()));
 
 		WTSTickStruct* ticks = (WTSTickStruct*)buffer.data();
 
@@ -362,11 +363,11 @@ void dump_ticks(WtString binFolder, WtString csvFolder, WtString strFilter /* = 
 		BoostFile::write_file_contents(filename.c_str(), ss.str().c_str(), (uint32_t)ss.str().size());
 
 		if (cbLogger)
-			cbLogger(StrUtil::printf("%s写入完成,共%u条tick数据", filename.c_str(), tcnt).c_str());
+			cbLogger(fmtutil::format("{}写入完成,共{}条tick数据", filename.c_str(), tcnt));
 	}
 
 	if (cbLogger)
-		cbLogger(StrUtil::printf("目录%s全部导出完成...", binFolder).c_str());
+		cbLogger(fmtutil::format("目录{}全部导出完成...", binFolder));
 }
 
 void trans_csv_bars(WtString csvFolder, WtString binFolder, WtString period, FuncLogCallback cbLogger /* = NULL */)
@@ -398,13 +399,13 @@ void trans_csv_bars(WtString csvFolder, WtString binFolder, WtString period, Fun
 		const std::string& path = iter->path().string();
 
 		if(cbLogger)
-			cbLogger(StrUtil::printf("正在读取数据文件%s...", path.c_str()).c_str());
+			cbLogger(fmtutil::format("正在读取数据文件{}...", path.c_str()));
 
 		CsvReader reader(",");
 		if(!reader.load_from_file(path.c_str()))
 		{
 			if (cbLogger)
-				cbLogger(StrUtil::printf("读取数据文件%s失败...", path.c_str()).c_str());
+				cbLogger(fmtutil::format("读取数据文件{}失败...", path.c_str()));
 			continue;
 		}
 
@@ -431,11 +432,11 @@ void trans_csv_bars(WtString csvFolder, WtString binFolder, WtString period, Fun
 			if (bars.size() % 1000 == 0)
 			{
 				if (cbLogger)
-					cbLogger(StrUtil::printf("已读取数据%u条", bars.size()).c_str());
+					cbLogger(fmtutil::format("已读取数据{}条", bars.size()));
 			}
 		}
 		if (cbLogger)
-			cbLogger(StrUtil::printf("数据文件%s全部读取完成,共%u条", path.c_str(), bars.size()).c_str());
+			cbLogger(fmtutil::format("数据文件{}全部读取完成,共{}条", path.c_str(), bars.size()));
 
 		BlockType btype;
 		switch (kp)
@@ -465,7 +466,7 @@ void trans_csv_bars(WtString csvFolder, WtString binFolder, WtString period, Fun
 		bf.write_file(cmprsData);
 		bf.close_file();
 		if (cbLogger)
-			cbLogger(StrUtil::printf("数据已转储至%s", filename.c_str()).c_str());
+			cbLogger(fmtutil::format("数据已转储至{}", filename.c_str()));
 	}
 }
 
@@ -593,14 +594,14 @@ WtUInt32 read_dsb_ticks(WtString tickFile, FuncGetTicksCallback cb, FuncCountDat
 	std::string path = tickFile;
 
 	if (cbLogger)
-		cbLogger(StrUtil::printf("正在读取数据文件%s...", path.c_str()).c_str());
+		cbLogger(fmtutil::format("正在读取数据文件{}...", path.c_str()));
 
 	std::string content;
 	BoostFile::read_file_contents(path.c_str(), content);
 	if (content.size() < sizeof(HisTickBlock))
 	{
 		if (cbLogger)
-			cbLogger(StrUtil::printf("文件%s头部校验失败", tickFile).c_str());
+			cbLogger(fmtutil::format("文件{}头部校验失败", tickFile));
 		return 0;
 	}
 
@@ -618,7 +619,7 @@ WtUInt32 read_dsb_ticks(WtString tickFile, FuncGetTicksCallback cb, FuncCountDat
 	cb((WTSTickStruct*)content.data(), tcnt, true);
 
 	if (cbLogger)
-		cbLogger(StrUtil::printf("%s读取完成,共%u条tick数据", tickFile, tcnt).c_str());
+		cbLogger(fmtutil::format("{}读取完成,共{}条tick数据", tickFile, tcnt));
 
 	return (WtUInt32)tcnt;
 }
@@ -628,14 +629,14 @@ WtUInt32 read_dsb_order_details(WtString dataFile, FuncGetOrdDtlCallback cb, Fun
 	std::string path = dataFile;
 
 	if (cbLogger)
-		cbLogger(StrUtil::printf("正在读取数据文件%s...", path.c_str()).c_str());
+		cbLogger(fmtutil::format("正在读取数据文件{}...", path.c_str()));
 
 	std::string content;
 	BoostFile::read_file_contents(path.c_str(), content);
 	if (content.size() < sizeof(HisOrdDtlBlock))
 	{
 		if (cbLogger)
-			cbLogger(StrUtil::printf("文件%s头部校验失败", dataFile).c_str());
+			cbLogger(fmtutil::format("文件{}头部校验失败", dataFile));
 		return 0;
 	}
 
@@ -653,7 +654,7 @@ WtUInt32 read_dsb_order_details(WtString dataFile, FuncGetOrdDtlCallback cb, Fun
 	cb((WTSOrdDtlStruct*)content.data(), tcnt, true);
 
 	if (cbLogger)
-		cbLogger(StrUtil::printf("%s读取完成,共%u条order detail数据", dataFile, tcnt).c_str());
+		cbLogger(fmtutil::format("{}读取完成,共{}条order detail数据", dataFile, tcnt));
 
 	return (WtUInt32)tcnt;
 }
@@ -663,14 +664,14 @@ WtUInt32 read_dsb_order_queues(WtString dataFile, FuncGetOrdQueCallback cb, Func
 	std::string path = dataFile;
 
 	if (cbLogger)
-		cbLogger(StrUtil::printf("正在读取数据文件%s...", path.c_str()).c_str());
+		cbLogger(fmtutil::format("正在读取数据文件{}...", path.c_str()));
 
 	std::string content;
 	BoostFile::read_file_contents(path.c_str(), content);
 	if (content.size() < sizeof(HisOrdQueBlock))
 	{
 		if (cbLogger)
-			cbLogger(StrUtil::printf("文件%s头部校验失败", dataFile).c_str());
+			cbLogger(fmtutil::format("文件{}头部校验失败", dataFile));
 		return 0;
 	}
 
@@ -688,7 +689,7 @@ WtUInt32 read_dsb_order_queues(WtString dataFile, FuncGetOrdQueCallback cb, Func
 	cb((WTSOrdQueStruct*)content.data(), tcnt, true);
 
 	if (cbLogger)
-		cbLogger(StrUtil::printf("%s读取完成,共%u条order queue数据", dataFile, tcnt).c_str());
+		cbLogger(fmtutil::format("{}读取完成,共{}条order queue数据", dataFile, tcnt));
 
 	return (WtUInt32)tcnt;
 }
@@ -698,14 +699,14 @@ WtUInt32 read_dsb_transactions(WtString dataFile, FuncGetTransCallback cb, FuncC
 	std::string path = dataFile;
 
 	if (cbLogger)
-		cbLogger(StrUtil::printf("正在读取数据文件%s...", path.c_str()).c_str());
+		cbLogger(fmtutil::format("正在读取数据文件{}...", path.c_str()));
 
 	std::string content;
 	BoostFile::read_file_contents(path.c_str(), content);
 	if (content.size() < sizeof(HisTransBlock))
 	{
 		if (cbLogger)
-			cbLogger(StrUtil::printf("文件%s头部校验失败", dataFile).c_str());
+			cbLogger(fmtutil::format("文件{}头部校验失败", dataFile));
 		return 0;
 	}
 
@@ -723,7 +724,7 @@ WtUInt32 read_dsb_transactions(WtString dataFile, FuncGetTransCallback cb, FuncC
 	cb((WTSTransStruct*)content.data(), tcnt, true);
 
 	if (cbLogger)
-		cbLogger(StrUtil::printf("%s读取完成,共%u条transaction数据", dataFile, tcnt).c_str());
+		cbLogger(fmtutil::format("{}读取完成,共{}条transaction数据", dataFile, tcnt));
 
 	return (WtUInt32)tcnt;
 }
@@ -732,14 +733,14 @@ WtUInt32 read_dsb_bars(WtString barFile, FuncGetBarsCallback cb, FuncCountDataCa
 {
 	std::string path = barFile;
 	if (cbLogger)
-		cbLogger(StrUtil::printf("正在读取数据文件%s...", path.c_str()).c_str());
+		cbLogger(fmtutil::format("正在读取数据文件{}...", path.c_str()));
 
 	std::string content;
 	BoostFile::read_file_contents(path.c_str(), content);
 	if (content.size() < sizeof(HisKlineBlock))
 	{
 		if (cbLogger)
-			cbLogger(StrUtil::printf("文件%s头部校验失败", barFile).c_str());
+			cbLogger(fmtutil::format("文件{}头部校验失败", barFile));
 		return 0;
 	}
 
@@ -757,7 +758,7 @@ WtUInt32 read_dsb_bars(WtString barFile, FuncGetBarsCallback cb, FuncCountDataCa
 	cb((WTSBarStruct*)content.data(), kcnt, true);
 
 	if (cbLogger)
-		cbLogger(StrUtil::printf("%s读取完成,共%u条bar", barFile, kcnt).c_str());
+		cbLogger(fmtutil::format("{}读取完成,共{}条bar", barFile, kcnt));
 
 	return (WtUInt32)kcnt;
 }
@@ -771,7 +772,7 @@ WtUInt32 read_dmb_bars(WtString barFile, FuncGetBarsCallback cb, FuncCountDataCa
 	if (buffer.size() < sizeof(RTKlineBlock))
 	{
 		if (cbLogger)
-			cbLogger(StrUtil::printf("文件%s头部校验失败", barFile).c_str());
+			cbLogger(fmtutil::format("文件{}头部校验失败", barFile));
 		return 0;
 	}
 
@@ -787,7 +788,7 @@ WtUInt32 read_dmb_bars(WtString barFile, FuncGetBarsCallback cb, FuncCountDataCa
 	cb(tBlock->_bars, kcnt, true);
 
 	if (cbLogger)
-		cbLogger(StrUtil::printf("%s读取完成,共%u条bar", barFile, kcnt).c_str());
+		cbLogger(fmtutil::format("{}读取完成,共{}条bar", barFile, kcnt));
 
 	return (WtUInt32)kcnt;
 }
@@ -797,14 +798,14 @@ WtUInt32 read_dmb_ticks(WtString tickFile, FuncGetTicksCallback cb, FuncCountDat
 	std::string path = tickFile;
 
 	if (cbLogger)
-		cbLogger(StrUtil::printf("正在读取数据文件%s...", path.c_str()).c_str());
+		cbLogger(fmtutil::format("正在读取数据文件{}...", path.c_str()));
 
 	std::string buffer;
 	BoostFile::read_file_contents(path.c_str(), buffer);
 	if (buffer.size() < sizeof(RTTickBlock))
 	{
 		if (cbLogger)
-			cbLogger(StrUtil::printf("文件%s头部校验失败", tickFile).c_str());
+			cbLogger(fmtutil::format("文件{}头部校验失败", tickFile));
 		return 0;
 	}
 
@@ -820,7 +821,7 @@ WtUInt32 read_dmb_ticks(WtString tickFile, FuncGetTicksCallback cb, FuncCountDat
 	cb(tBlock->_ticks, tcnt, true);
 
 	if (cbLogger)
-		cbLogger(StrUtil::printf("%s读取完成,共%u条tick数据", tickFile, tcnt).c_str());
+		cbLogger(fmtutil::format("{}读取完成,共{}条tick数据", tickFile, tcnt));
 
 	return (WtUInt32)tcnt;
 }
@@ -845,7 +846,7 @@ WtUInt32 resample_bars(WtString barFile, FuncGetBarsCallback cb, FuncCountDataCa
 	else
 	{
 		if (cbLogger)
-			cbLogger(StrUtil::printf("周期%s不是基础周期...", period).c_str());
+			cbLogger(fmtutil::format("周期{}不是基础周期...", period));
 		return 0;
 	}
 
@@ -911,14 +912,14 @@ WtUInt32 resample_bars(WtString barFile, FuncGetBarsCallback cb, FuncCountDataCa
 
 	std::string path = barFile;
 	if (cbLogger)
-		cbLogger(StrUtil::printf("正在读取数据文件%s...", path.c_str()).c_str());
+		cbLogger(fmtutil::format("正在读取数据文件{}...", path.c_str()));
 
 	std::string buffer;
 	BoostFile::read_file_contents(path.c_str(), buffer);
 	if (buffer.size() < sizeof(HisKlineBlock))
 	{
 		if (cbLogger)
-			cbLogger(StrUtil::printf("文件%s头部校验失败", barFile).c_str());
+			cbLogger(fmtutil::format("文件{}头部校验失败", barFile));
 		return 0;
 	}
 
@@ -928,7 +929,7 @@ WtUInt32 resample_bars(WtString barFile, FuncGetBarsCallback cb, FuncCountDataCa
 	if (kcnt <= 0)
 	{
 		if (cbLogger)
-			cbLogger(StrUtil::printf("%s数据为空", barFile).c_str());
+			cbLogger(fmtutil::format("{}数据为空", barFile));
 		return 0;
 	}
 
@@ -1009,7 +1010,7 @@ WtUInt32 resample_bars(WtString barFile, FuncGetBarsCallback cb, FuncCountDataCa
 	cb(&kline->getDataRef().at(0),newCnt, true);
 
 	if (cbLogger)
-		cbLogger(StrUtil::printf("%s重采样完成,共将%u条bar重采样为%u条新bar", barFile, hitCnt, newCnt).c_str());
+		cbLogger(fmtutil::format("{}重采样完成,共将{}条bar重采样为{}条新bar", barFile, hitCnt, newCnt));
 
 	
 	kline->release();

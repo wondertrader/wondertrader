@@ -17,7 +17,7 @@
 #endif
 #include <string>
 #include <string.h>
-#include<chrono>
+#include <chrono>
 #include <thread>
 #include <cmath>
 
@@ -52,11 +52,50 @@ struct KUSER_SHARED_DATA
 
 namespace TimeUtils 
 {
-	static inline int64_t getLocalTimeNowOld(void)
+	static inline int32_t getTZOffset() noexcept
 	{
-		thread_local static timeb now;
-		ftime(&now);
-		return now.time * 1000 + now.millitm;
+		static int32_t offset = 99;
+		if (offset == 99)
+		{
+			time_t now = time(NULL);
+			tm tm_ltm = *localtime(&now);
+			tm tm_gtm = *gmtime(&now);
+
+			time_t _gt = mktime(&tm_gtm);
+			tm _gtm2 = *localtime(&_gt);
+
+			offset = (uint32_t)(((now - _gt) + (_gtm2.tm_isdst ? 3600 : 0)) / 60);
+			offset /= 60;
+		}
+
+		return offset;
+	}
+
+	constexpr static inline int fasttime(const time_t& unix_sec, struct tm* tm, int time_zone) noexcept
+	{
+		constexpr int kHoursInDay = 24;
+		constexpr int kMinutesInHour = 60;
+		constexpr int kDaysFromUnixTime = 2472632;
+		constexpr int kDaysFromYear = 153;
+		constexpr int kMagicUnkonwnFirst = 146097;
+		constexpr int kMagicUnkonwnSec = 1461;
+		tm->tm_sec = unix_sec % kMinutesInHour;
+		int i = (unix_sec / kMinutesInHour);
+		tm->tm_min = i % kMinutesInHour; //nn
+		i /= kMinutesInHour;
+		tm->tm_hour = (i + time_zone) % kHoursInDay; // hh
+		tm->tm_mday = (i + time_zone) / kHoursInDay;
+		int a = tm->tm_mday + kDaysFromUnixTime;
+		int b = (a * 4 + 3) / kMagicUnkonwnFirst;
+		int c = (-b * kMagicUnkonwnFirst) / 4 + a;
+		int d = ((c * 4 + 3) / kMagicUnkonwnSec);
+		int e = -d * kMagicUnkonwnSec;
+		e = e / 4 + c;
+		int m = (5 * e + 2) / kDaysFromYear;
+		tm->tm_mday = -(kDaysFromYear * m + 2) / 5 + e + 1;
+		tm->tm_mon = (-m / 10) * 12 + m + 2;
+		tm->tm_year = b * 100 + d - 6700 + (m / 10);
+		return 0;
 	}
 
 	/*
@@ -93,13 +132,15 @@ namespace TimeUtils
 		uint64_t ltime = getLocalTimeNow();
 		time_t now = ltime / 1000;
 		uint32_t millitm = ltime % 1000;
-		tm * tNow = localtime(&now);
+		
+		thread_local static tm tNow;
+		fasttime(now, &tNow, getTZOffset());
 
 		char str[64] = {0};
 		if(bIncludeMilliSec)
-			sprintf(str, "%02d:%02d:%02d,%03d", tNow->tm_hour, tNow->tm_min, tNow->tm_sec, millitm);
+			sprintf(str, "%02d:%02d:%02d,%03d", tNow.tm_hour, tNow.tm_min, tNow.tm_sec, millitm);
 		else
-			sprintf(str, "%02d:%02d:%02d", tNow->tm_hour, tNow->tm_min, tNow->tm_sec);
+			sprintf(str, "%02d:%02d:%02d", tNow.tm_hour, tNow.tm_min, tNow.tm_sec);
 		return str;
 	}
 
@@ -108,11 +149,12 @@ namespace TimeUtils
 		uint64_t ltime = getLocalTimeNow();
 		time_t now = ltime / 1000;
 
-		tm * tNow = localtime(&now);
+		thread_local static tm tNow;
+		fasttime(now, &tNow, getTZOffset());
 
-		uint64_t date = (tNow->tm_year + 1900) * 10000 + (tNow->tm_mon + 1) * 100 + tNow->tm_mday;
+		uint64_t date = (tNow.tm_year + 1900) * 10000 + (tNow.tm_mon + 1) * 100 + tNow.tm_mday;
 
-		uint64_t time = tNow->tm_hour * 10000 + tNow->tm_min * 100 + tNow->tm_sec;
+		uint64_t time = tNow.tm_hour * 10000 + tNow.tm_min * 100 + tNow.tm_sec;
 		return date * 1000000 + time;
 	}
 
@@ -127,11 +169,12 @@ namespace TimeUtils
 		time_t now = ltime / 1000;
 		uint32_t millitm = ltime % 1000;
 
-		tm * tNow = localtime(&now);
+		thread_local static tm tNow;
+		fasttime(now, &tNow, getTZOffset());
 
-		date = (tNow->tm_year+1900)*10000 + (tNow->tm_mon+1)*100 + tNow->tm_mday;
+		date = (tNow.tm_year+1900)*10000 + (tNow.tm_mon+1)*100 + tNow.tm_mday;
 		
-		time = tNow->tm_hour*10000 + tNow->tm_min*100 + tNow->tm_sec;
+		time = tNow.tm_hour*10000 + tNow.tm_min*100 + tNow.tm_sec;
 		time *= 1000;
 		time += millitm;
 	}
@@ -140,8 +183,11 @@ namespace TimeUtils
 	{
 		uint64_t ltime = getLocalTimeNow();
 		time_t now = ltime / 1000;
-		tm * tNow = localtime(&now);
-		uint32_t date = (tNow->tm_year+1900)*10000 + (tNow->tm_mon+1)*100 + tNow->tm_mday;
+
+		thread_local static tm tNow;
+		fasttime(now, &tNow, getTZOffset());
+
+		uint32_t date = (tNow.tm_year+1900)*10000 + (tNow.tm_mon+1)*100 + tNow.tm_mday;
 
 		return date;
 	}
@@ -163,66 +209,21 @@ namespace TimeUtils
 			ts = mktime(&t);
 		}
 
-		tm * tNow = localtime(&ts);
+		thread_local static tm tNow;
+		fasttime(ts, &tNow, getTZOffset());
 	
-		return tNow->tm_wday;
+		return tNow.tm_wday;
 	}
 
 	static inline uint32_t getCurMin() noexcept
 	{
 		uint64_t ltime = getLocalTimeNow();
 		time_t now = ltime / 1000;
-		tm * tNow = localtime(&now);
-		uint32_t time = tNow->tm_hour*10000 + tNow->tm_min*100 + tNow->tm_sec;
+		thread_local static tm tNow;
+		fasttime(now, &tNow, getTZOffset());
+		uint32_t time = tNow.tm_hour*10000 + tNow.tm_min*100 + tNow.tm_sec;
 
 		return time;
-	}
-
-	constexpr static inline int fasttime(const time_t& unix_sec, struct tm* tm, int time_zone) noexcept
-	{
-		constexpr int kHoursInDay = 24;
-		constexpr int kMinutesInHour = 60;
-		constexpr int kDaysFromUnixTime = 2472632;
-		constexpr int kDaysFromYear = 153;
-		constexpr int kMagicUnkonwnFirst = 146097;
-		constexpr int kMagicUnkonwnSec = 1461;
-		tm->tm_sec = unix_sec % kMinutesInHour;
-		int i = (unix_sec / kMinutesInHour);
-		tm->tm_min = i % kMinutesInHour; //nn
-		i /= kMinutesInHour;
-		tm->tm_hour = (i + time_zone) % kHoursInDay; // hh
-		tm->tm_mday = (i + time_zone) / kHoursInDay;
-		int a = tm->tm_mday + kDaysFromUnixTime;
-		int b = (a * 4 + 3) / kMagicUnkonwnFirst;
-		int c = (-b * kMagicUnkonwnFirst) / 4 + a;
-		int d = ((c * 4 + 3) / kMagicUnkonwnSec);
-		int e = -d * kMagicUnkonwnSec;
-		e = e / 4 + c;
-		int m = (5 * e + 2) / kDaysFromYear;
-		tm->tm_mday = -(kDaysFromYear * m + 2) / 5 + e + 1;
-		tm->tm_mon = (-m / 10) * 12 + m + 2;
-		tm->tm_year = b * 100 + d - 6700 + (m / 10);
-		return 0;
-	}
-
-
-	static inline int32_t getTZOffset() noexcept
-	{
-		static int32_t offset = 99;
-		if(offset == 99)
-		{
-			time_t now = time(NULL);
-			tm tm_ltm = *localtime(&now);
-			tm tm_gtm = *gmtime(&now);
-
-			time_t _gt = mktime(&tm_gtm);
-			tm _gtm2 = *localtime(&_gt);
-
-			offset = (uint32_t)(((now - _gt) + (_gtm2.tm_isdst ? 3600 : 0)) / 60);
-			offset /= 60;
-		}
-
-		return offset;
 	}
 
 	/*
@@ -285,8 +286,9 @@ namespace TimeUtils
 		time_t ts = mktime(&t);
 		ts += days*86400;
 
-		tm* newT = localtime(&ts);
-		return (newT->tm_year+1900)*10000 + (newT->tm_mon+1)*100 + newT->tm_mday;
+		thread_local static tm newT;
+		fasttime(ts, &newT, getTZOffset());
+		return (newT.tm_year+1900)*10000 + (newT.tm_mon+1)*100 + newT.tm_mday;
 	}
 
 	constexpr static uint32_t getNextMinute(int32_t curTime, int32_t mins = 1) noexcept
@@ -376,10 +378,10 @@ namespace TimeUtils
 			_msec = msecs;
 		}
 
-		Time32(uint64_t _time)
+		Time32(uint64_t timeWithMSecs)
 		{
-			time_t _t = _time/1000;
-			_msec = (uint32_t)_time%1000;
+			time_t _t = timeWithMSecs/1000;
+			_msec = (uint32_t)timeWithMSecs%1000;
 #ifdef _WIN32
 			localtime_s(&t, &_t);
 #else
@@ -387,10 +389,10 @@ namespace TimeUtils
 #endif
 		}
 
-		void from_local_time(uint64_t _time)
+		void from_local_time(uint64_t timeWithMSecs)
 		{
-			time_t _t = _time/1000;
-			_msec = (uint32_t)(_time%1000);
+			time_t _t = timeWithMSecs/1000;
+			_msec = (uint32_t)(timeWithMSecs%1000);
 #ifdef _WIN32
 			localtime_s(&t, &_t);
 #else

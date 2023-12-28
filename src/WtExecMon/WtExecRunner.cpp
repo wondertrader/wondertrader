@@ -216,7 +216,7 @@ bool WtExecRunner::initParsers(WTSVariant* cfgParser)
 		if (realid.empty())
 		{
 			static uint32_t auto_parserid = 1000;
-			realid = StrUtil::printf("auto_parser_%u", auto_parserid++);
+			realid = fmtutil::format<64>("auto_parser_{}", auto_parserid++);
 		}
 
 		ParserAdapterPtr adapter(new ParserAdapter);
@@ -274,7 +274,7 @@ bool WtExecRunner::initExecuters(WTSVariant* cfgExecuter)
 				}
 				else
 				{
-					WTSLogger::error("Trader {} not exists, cannot configured for executer %s", tid, id);
+					WTSLogger::error("Trader {} not exists, cannot configured for executer {}", tid, id);
 				}
 			}
 
@@ -302,7 +302,7 @@ bool WtExecRunner::initExecuters(WTSVariant* cfgExecuter)
 				}
 				else
 				{
-					WTSLogger::error("Trader {} not exists, cannot configured for executer %s", tid, id);
+					WTSLogger::error("Trader {} not exists, cannot configured for executer {}", tid, id);
 				}
 			}
 

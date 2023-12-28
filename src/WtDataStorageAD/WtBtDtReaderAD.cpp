@@ -148,7 +148,7 @@ WtBtDtReaderAD::WtLMDBPtr WtBtDtReaderAD::get_k_db(const char* exchg, WTSKlinePe
 		return std::move(it->second);
 
 	WtLMDBPtr dbPtr(new WtLMDB(true));
-	std::string path = StrUtil::printf("%s%s/%s/", _base_dir.c_str(), subdir.c_str(), exchg);
+	std::string path = fmtutil::format("{}{}/{}/", _base_dir.c_str(), subdir.c_str(), exchg);
 	if (!StdFile::exists(path.c_str()))
 		return std::move(WtLMDBPtr());
 
@@ -168,13 +168,13 @@ WtBtDtReaderAD::WtLMDBPtr WtBtDtReaderAD::get_k_db(const char* exchg, WTSKlinePe
 
 WtBtDtReaderAD::WtLMDBPtr WtBtDtReaderAD::get_t_db(const char* exchg, const char* code)
 {
-	std::string key = StrUtil::printf("%s.%s", exchg, code);
+	std::string key = fmtutil::format<64>("{}.{}", exchg, code);
 	auto it = _tick_dbs.find(key);
 	if (it != _tick_dbs.end())
 		return std::move(it->second);
 
 	WtLMDBPtr dbPtr(new WtLMDB(true));
-	std::string path = StrUtil::printf("%sticks/%s/%s", _base_dir.c_str(), exchg, code);
+	std::string path = fmtutil::format("{}ticks/{}/{}", _base_dir.c_str(), exchg, code);
 	if (!StdFile::exists(path.c_str()))
 		return std::move(WtLMDBPtr());
 

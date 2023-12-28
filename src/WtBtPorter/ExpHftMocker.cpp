@@ -18,9 +18,9 @@ void ExpHftMocker::on_bar(const char* stdCode, const char* period, uint32_t time
 
 	std::string realPeriod;
 	if (period[0] == 'd')
-		realPeriod = StrUtil::printf("%s%u", period, times);
+		realPeriod = fmtutil::format<64>("{}{}", period, times);
 	else
-		realPeriod = StrUtil::printf("m%u", times);
+		realPeriod = fmtutil::format<64>("m{}", times);
 
 	HftMocker::on_bar(stdCode, period, times, newBar);
 

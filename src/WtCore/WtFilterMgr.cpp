@@ -112,7 +112,7 @@ void WtFilterMgr::load_filters(const char* fileName)
 		for (const std::string& execid : executer_ids)
 		{
 			bool bDisabled = filterExecuters->getBoolean(execid.c_str());
-			WTSLogger::info("Executer {} is %s", execid, bDisabled?"disabled":"enabled");
+			WTSLogger::info("Executer {} is {}", execid, bDisabled?"disabled":"enabled");
 			_exec_filters[execid] = bDisabled;
 		}
 	}

@@ -1,5 +1,6 @@
 ﻿#include "../WTSUtils/WtLMDB.hpp"
 #include "../Share/StrUtil.hpp"
+#include "../Share/fmtlib.h"
 #include "gtest/gtest/gtest.h"
 
 USING_NS_WTP;
@@ -22,8 +23,8 @@ TEST(test_lmdb, test_query)
 		EXPECT_FALSE(db.has_error());
 		for(int i = 0; i < 100; i++)
 		{
-			std::string key = StrUtil::printf("key-%03d", i + 1);
-			std::string val = StrUtil::printf("value-%03d", i + 1);
+			std::string key = fmtutil::format<64>("key-{:03d}", i + 1);
+			std::string val = fmtutil::format<64>("value-{:03d}", i + 1);
 			EXPECT_TRUE(query.put(key, val));
 			if (db.has_error())
 				printf("%s\n", db.errmsg());

@@ -2171,7 +2171,7 @@ WTSKlineSlice* HisDataReplayer::get_kline_slice(const char* stdCode, const char*
 	{
 		if (realTimes != 1)
 		{
-			std::string rawKey = StrUtil::printf("%s#%s#%u", stdCode, period, baseTimes);
+			std::string rawKey = fmtutil::format<64>("{}#{}#{}", stdCode, period, baseTimes);
 			if (_bars_cache.find(rawKey) == _bars_cache.end())
 			{
 				/*
@@ -2242,7 +2242,7 @@ WTSKlineSlice* HisDataReplayer::get_kline_slice(const char* stdCode, const char*
 	bool isClosed = (sInfo->offsetTime(_cur_time, true) >= sInfo->getCloseTime(true));
 	if (realTimes != 1 && !bHasCache)
 	{	
-		std::string rawKey = StrUtil::printf("%s#%s#%u", stdCode, period, baseTimes);
+		std::string rawKey = fmtutil::format<64>("{}#{}#{}", stdCode, period, baseTimes);
 		BarsListPtr& rawBars = _bars_cache[rawKey];
 		WTSKlineSlice* rawKline = WTSKlineSlice::create(stdCode, kp, realTimes, &rawBars->_bars[0], rawBars->_bars.size());
 		rawKline->setCode(stdCode);
@@ -3237,7 +3237,7 @@ uint32_t strToDate(const char* strDate)
 bool HisDataReplayer::cacheRawTicksFromBin(const std::string& key, const char* stdCode, uint32_t uDate)
 {
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, &_hot_mgr);
-	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
+	std::string stdPID = fmtutil::format<64>("{}.{}", cInfo._exchg, cInfo._product);
 	
 	std::string rawCode = cInfo._code;
 	if(strlen(cInfo._ruletag) > 0)
@@ -3253,7 +3253,7 @@ bool HisDataReplayer::cacheRawTicksFromBin(const std::string& key, const char* s
 	if(strlen(ruleTag) > 0)
 	{
 		const char* hot_flag = ruleTag;
-		std::string wrappCode = StrUtil::printf("%s_%s", cInfo._product, hot_flag);
+		std::string wrappCode = fmtutil::format<64>("{}_{}", cInfo._product, hot_flag);
 		bHit = _his_dt_mgr.load_raw_ticks(cInfo._exchg, wrappCode.c_str(), uDate, [&content](std::string& data) {
 			content.swap(data);
 		});
@@ -3676,7 +3676,7 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 {
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, &_hot_mgr);
 	WTSCommodityInfo* commInfo = _bd_mgr.getCommodity(cInfo._exchg, cInfo._product);
-	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
+	std::string stdPID = fmtutil::format<64>("{}.{}", cInfo._exchg, cInfo._product);
 
 	std::string p_suffix;
 	std::string dirname = PERIOD_NAME[period];
@@ -3882,7 +3882,7 @@ bool HisDataReplayer::cacheIntegratedFutBarsFromBin(void* codeInfo, const std::s
 		 *	将直接从文件读取，改成从HisDtMgr读取
 		 */
 		std::string content;
-		std::string wrappCode = StrUtil::printf("%s.%s_%s", cInfo->_exchg, cInfo->_product, ruleTag);
+		std::string wrappCode = fmtutil::format<64>("{}.{}_{}", cInfo->_exchg, cInfo->_product, ruleTag);
 		if (cInfo->isExright())
 			wrappCode += cInfo->_exright == 1 ? SUFFIX_QFQ : SUFFIX_HFQ;
 		bool bSucc = _his_dt_mgr.load_raw_bars(cInfo->_exchg, wrappCode.c_str(), period, [&content](std::string& data) {
@@ -3996,7 +3996,7 @@ bool HisDataReplayer::cacheIntegratedFutBarsFromBin(void* codeInfo, const std::s
 		if (NULL != _bt_loader)
 		{
 			//分月合约代码
-			std::string wCode = StrUtil::printf("%s.%s.%s", cInfo->_exchg, cInfo->_product, (char*)curCode + strlen(cInfo->_product));
+			std::string wCode = fmtutil::format<64>("{}.{}.{}", cInfo->_exchg, cInfo->_product, curCode + strlen(cInfo->_product));
 			bLoaded = _bt_loader->loadRawHisBars(&buffer, wCode.c_str(), period, [](void* obj, WTSBarStruct* bars, uint32_t count) {
 				std::string* buff = (std::string*)obj;
 				buff->resize(sizeof(WTSBarStruct)*count);
@@ -4261,7 +4261,7 @@ bool HisDataReplayer::cacheAdjustedStkBarsFromBin(void* codeInfo, const std::str
 		std::string buffer;
 		if (NULL != _bt_loader)
 		{
-			std::string wCode = StrUtil::printf("%s.%s.%s", cInfo->_exchg, cInfo->_product, curCode);
+			std::string wCode = fmtutil::format<64>("{}.{}.{}", cInfo->_exchg, cInfo->_product, curCode);
 			bLoaded = _bt_loader->loadRawHisBars(&buffer, wCode.c_str(), period, [](void* obj, WTSBarStruct* bars, uint32_t count) {
 				std::string* buff = (std::string*)obj;
 				buff->resize(sizeof(WTSBarStruct)*count);

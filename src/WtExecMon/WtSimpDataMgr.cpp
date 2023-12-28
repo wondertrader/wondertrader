@@ -189,7 +189,7 @@ WTSKlineSlice* WtSimpDataMgr::get_kline_slice(const char* stdCode, WTSKlinePerio
 	if (_reader == NULL)
 		return NULL;
 
-	std::string key = StrUtil::printf("%s-%u", stdCode, period);
+	std::string key = fmtutil::format<64>("{}-{}", stdCode, period);
 
 	if (times == 1)
 	{
@@ -202,7 +202,7 @@ WTSKlineSlice* WtSimpDataMgr::get_kline_slice(const char* stdCode, WTSKlinePerio
 	if (_bars_cache == NULL)
 		_bars_cache = DataCacheMap::create();
 
-	key = StrUtil::printf("%s-%u-%u", stdCode, period, times);
+	key = fmtutil::format<64>("{}-{}-{}", stdCode, period, times);
 
 	WTSKlineData* kData = (WTSKlineData*)_bars_cache->get(key);
 	//如果缓存里的K线条数大于请求的条数, 则直接返回

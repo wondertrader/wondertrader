@@ -112,7 +112,7 @@ bool ParserCTPOpt::init(WTSVariant* config)
 		module = "soptthostmduserapi_se";
 	std::string dllpath = getBinDir() + DLLHelper::wrap_module(module.c_str(), "");
 	m_hInstCTP = DLLHelper::load_library(dllpath.c_str());
-	std::string path = StrUtil::printf("%s/%s/%s/", m_strFlowDir.c_str(), m_strBroker.c_str(), m_strUserID.c_str());
+	std::string path = fmtutil::format("{}/{}/{}/", m_strFlowDir.c_str(), m_strBroker.c_str(), m_strUserID.c_str());
 	if (!StdFile::exists(path.c_str()))
 	{
 		boost::filesystem::create_directories(boost::filesystem::path(path));

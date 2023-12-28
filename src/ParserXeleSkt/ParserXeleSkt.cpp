@@ -517,7 +517,7 @@ void ParserXeleSkt::extract_buffer(uint32_t length)
 			CXeleShfeHeartBeat *p = reinterpret_cast<CXeleShfeHeartBeat *>(data + sizeof(CXeleShfeMarketHead));
 			static std::size_t packLen = sizeof(CXeleShfeMarketHead) + sizeof(CXeleShfeHeartBeat);
 			len += packLen;
-			write_log(_sink, LL_DEBUG, "[ParserXeleSkt] Receiving heartbeat packet, length: %d\n", packLen);
+			write_log(_sink, LL_DEBUG, "[ParserXeleSkt] Receiving heartbeat packet, length: {}\n", packLen);
 		}
 	}
 }

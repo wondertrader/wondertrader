@@ -30,7 +30,7 @@ namespace StrUtil
 	beginning or the end of the std::string ( the default action is
 	to trim both).
 	*/
-	inline void trim(std::string& str, const char* delims = " \t\r", bool left = true, bool right = true) noexcept
+	static inline void trim(std::string& str, const char* delims = " \t\r", bool left = true, bool right = true) noexcept
 	{
 		if(right)
 			str.erase(str.find_last_not_of(delims)+1);
@@ -38,7 +38,7 @@ namespace StrUtil
 			str.erase(0, str.find_first_not_of(delims));
 	}
 
-	inline std::string trim(const char* str, const char* delims = " \t\r", bool left = true, bool right = true) noexcept
+	static inline std::string trim(const char* str, const char* delims = " \t\r", bool left = true, bool right = true) noexcept
 	{
 		std::string ret = str;
 		if(right)
@@ -49,23 +49,7 @@ namespace StrUtil
 		return std::move(ret);
 	}
 
-	//去掉所有空格
-	inline void trimAllSpace(std::string &str) noexcept
-	{
-		std::string::iterator destEnd = std::remove_if(str.begin(), str.end(), [](const char& c){
-			return c == ' ';
-		});
-		str.resize(destEnd-str.begin());
-	}
-
-	//去除所有特定字符
-	//inline void trimAll(std::string &str,char ch)
-	//{
-	//	std::string::iterator destEnd=std::remove_if(str.begin(),str.end(),std::bind1st(std::equal_to<char>(),ch));
-	//	str.resize(destEnd-str.begin());
-	//}
-
-	constexpr inline std::size_t findFirst(const char* str, char ch) noexcept
+	constexpr static inline std::size_t findFirst(const char* str, char ch) noexcept
 	{
 		std::size_t i = 0;
 		for(;;)
@@ -82,7 +66,7 @@ namespace StrUtil
 		return std::string::npos;
 	}
 
-	inline std::size_t findLast(const char* str, char ch) noexcept
+	static inline std::size_t findLast(const char* str, char ch) noexcept
 	{
 		auto len = strlen(str);
 		std::size_t i = 0;
@@ -95,15 +79,7 @@ namespace StrUtil
 		return std::string::npos;
 	}
 
-	/** Returns a std::stringVector that contains all the substd::strings delimited
-	by the characters in the passed <code>delims</code> argument.
-	@param
-	delims A list of delimiter characters to split by
-	@param
-	maxSplits The maximum number of splits to perform (0 for unlimited splits). If this
-	parameters is > 0, the splitting process will stop after this many splits, left to right.
-	*/
-	inline StringVector split( const std::string& str, const std::string& delims = "\t\n ", unsigned int maxSplits = 0) noexcept
+	static inline StringVector split( const std::string& str, const std::string& delims = "\t\n ", unsigned int maxSplits = 0) noexcept
 	{
 		StringVector ret;
 		unsigned int numSplits = 0;
@@ -140,15 +116,7 @@ namespace StrUtil
 		return std::move(ret);
 	}
 
-	/** Returns a std::stringVector that contains all the substd::strings delimited
-	by the characters in the passed <code>delims</code> argument.
-	@param
-	delims A list of delimiter characters to split by
-	@param
-	maxSplits The maximum number of splits to perform (0 for unlimited splits). If this
-	parameters is > 0, the splitting process will stop after this many splits, left to right.
-	*/
-	inline void split(const std::string& str, StringVector& ret, const std::string& delims = "\t\n ", unsigned int maxSplits = 0) noexcept
+	static inline void split(const std::string& str, StringVector& ret, const std::string& delims = "\t\n ", unsigned int maxSplits = 0) noexcept
 	{
 		unsigned int numSplits = 0;
 
@@ -185,7 +153,7 @@ namespace StrUtil
 
 	/** Upper-cases all the characters in the std::string.
 	*/
-	inline void toLowerCase( std::string& str ) noexcept
+	static inline void toLowerCase( std::string& str ) noexcept
 	{
 		std::transform(
 			str.begin(),
@@ -197,7 +165,7 @@ namespace StrUtil
 
 	/** Lower-cases all the characters in the std::string.
 	*/
-	inline void toUpperCase( std::string& str ) noexcept
+	static inline void toUpperCase( std::string& str ) noexcept
 	{
 		std::transform(
 			str.begin(),
@@ -206,7 +174,7 @@ namespace StrUtil
 			(int(*)(int))toupper);
 	}
 
-	inline std::string makeLowerCase(const char* str)
+	static inline std::string makeLowerCase(const char* str)
 	{
 		std::string strRet = str;
 		std::transform(
@@ -217,7 +185,7 @@ namespace StrUtil
 		return std::move(strRet);
 	}
 
-	inline std::string makeUpperCase(const char* str) noexcept
+	static inline std::string makeUpperCase(const char* str) noexcept
 	{
 		std::string strRet = str;
 		std::transform(
@@ -234,7 +202,7 @@ namespace StrUtil
 	 *	@pattern	要匹配的模板
 	 *	@ignroreCase是否忽略大小写
 	 */
-	inline bool startsWith(const char* str, const char* pattern, bool ignoreCase = true) noexcept
+	static inline bool startsWith(const char* str, const char* pattern, bool ignoreCase = true) noexcept
 	{
 		size_t thisLen = strlen(str);
 		size_t patternLen = strlen(pattern);
@@ -261,7 +229,7 @@ namespace StrUtil
 	 *	@pattern	要匹配的模板
 	 *	@ignroreCase是否忽略大小写
 	 */
-	inline bool endsWith(const char* str, const char* pattern, bool ignoreCase = true) noexcept
+	static inline bool endsWith(const char* str, const char* pattern, bool ignoreCase = true) noexcept
 	{
 		size_t thisLen = strlen(str);
 		size_t patternLen = strlen(pattern);
@@ -286,7 +254,7 @@ namespace StrUtil
 
 	/** Method for standardising paths - use forward slashes only, end with slash.
 	*/
-	inline std::string standardisePath( const std::string &init, bool bIsDir = true) noexcept
+	static inline std::string standardisePath( const std::string &init, bool bIsDir = true) noexcept
 	{
 		std::string path = init;
 
@@ -297,243 +265,7 @@ namespace StrUtil
 		return std::move(path);
 	}
 
-	/** Method for splitting a fully qualified filename into the base name
-	and path.
-	@remarks
-	Path is standardised as in standardisePath
-	*/
-	inline void splitFilename(const std::string& qualifiedName,std::string& outBasename, std::string& outPath) noexcept
-	{
-		std::string path = qualifiedName;
-		// Replace \ with / first
-		std::replace( path.begin(), path.end(), '\\', '/' );
-		// split based on final /
-		size_t i = path.find_last_of('/');
-
-		if (i == std::string::npos)
-		{
-			outPath = "";
-			outBasename = qualifiedName;
-		}
-		else
-		{
-			outBasename = path.substr(i+1, path.size() - i - 1);
-			outPath = path.substr(0, i+1);
-		}
-	}
-
-	/** Simple pattern-matching routine allowing a wildcard pattern.
-	@param str std::string to test
-	@param pattern Pattern to match against; can include simple '*' wildcards
-	@param caseSensitive Whether the match is case sensitive or not
-	*/
-	inline bool match(const std::string& str, const std::string& pattern, bool caseSensitive = true)
-	{
-		std::string tmpStr = str;
-		std::string tmpPattern = pattern;
-		if (!caseSensitive)
-		{
-			toLowerCase(tmpStr);
-			toLowerCase(tmpPattern);
-		}
-
-		std::string::const_iterator strIt = tmpStr.begin();
-		std::string::const_iterator patIt = tmpPattern.begin();
-		std::string::const_iterator lastWildCardIt = tmpPattern.end();
-		while (strIt != tmpStr.end() && patIt != tmpPattern.end())
-		{
-			if (*patIt == '*')
-			{
-				lastWildCardIt = patIt;
-				// Skip over looking for next character
-				++patIt;
-				if (patIt == tmpPattern.end())
-				{
-					// Skip right to the end since * matches the entire rest of the string
-					strIt = tmpStr.end();
-				}
-				else
-				{
-					// scan until we find next pattern character
-					while(strIt != tmpStr.end() && *strIt != *patIt)
-						++strIt;
-				}
-			}
-			else
-			{
-				if (*patIt != *strIt)
-				{
-					if (lastWildCardIt != tmpPattern.end())
-					{
-						// The last wildcard can match this incorrect sequence
-						// rewind pattern to wildcard and keep searching
-						patIt = lastWildCardIt;
-						lastWildCardIt = tmpPattern.end();
-					}
-					else
-					{
-						// no wildwards left
-						return false;
-					}
-				}
-				else
-				{
-					++patIt;
-					++strIt;
-				}
-			}
-
-		}
-		// If we reached the end of both the pattern and the string, we succeeded
-		if (patIt == tmpPattern.end() && strIt == tmpStr.end())
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-
-	/// Constant blank std::string, useful for returning by ref where local does not exist
-	inline const std::string BLANK()
-	{
-		const std::string temp = std::string("");
-		return std::move(temp);
-	}
-
-	//地球人都知道,恶心的std::string是没有CString的Format这个函数的,所以我们自己造
-	inline std::string printf(const char *pszFormat, ...) noexcept
-	{
-		va_list argptr;
-		va_start(argptr, pszFormat);
-		std::string result=printf(pszFormat,argptr);
-		va_end(argptr);
-		return std::move(result);
-	}
-
-	//地球人都知道,恶心的std::string是没有CString的Format这个函数的,所以我们自己造
-	inline std::string printf2(const char *pszFormat, ...) noexcept
-	{
-		va_list argptr;
-		va_start(argptr, pszFormat);
-		std::string result=printf2(pszFormat,argptr);
-		va_end(argptr);
-		return std::move(result);
-	}
-
-	//地球人都知道,恶心的std::string是没有CString的Format这个函数的,所以我们自己造
-	inline std::string printf2(const char *pszFormat,va_list argptr) noexcept
-	{
-		int         size   = 1024;
-		char*       buffer = new char[size];
-
-		while (1)
-		{
-#ifdef _MSC_VER
-			int n = _vsnprintf(buffer, size, pszFormat, argptr);
-#else
-			int n = vsnprintf(buffer, size, pszFormat, argptr);
-#endif
-
-			// If that worked, return a string.
-			if (n > -1 && n < size)
-			{
-				std::string s(buffer);
-				delete [] buffer;
-				return s;
-			}
-
-			if (n > -1)     size  = n+1; // ISO/IEC 9899:1999
-			else            size *= 2;   // twice the old size
-
-			delete [] buffer;
-			buffer = new char[size];
-		}
-	}
-
-	inline std::string extend(const char* str, uint32_t length) noexcept
-	{
-		if(strlen(str) >= length)
-			return str;
-
-		std::string ret = str;
-		uint32_t spaces = length - (uint32_t)strlen(str);
-		uint32_t former = spaces/2;
-		uint32_t after = spaces - former;
-		for(uint32_t i = 0; i < former; i++)
-		{
-			ret.insert(0, " ");
-		}
-
-		for(uint32_t i = 0; i < after; i++)
-		{
-			ret += " ";
-		}
-		return std::move(ret);
-	}
-
-	//地球人都知道,恶心的std::string是没有CString的Format这个函数的,所以我们自己造
-	inline std::string printf(const char* pszFormat, va_list argptr) noexcept
-	{
-		int size = 1024;
-		int len=0;
-		std::string ret;
-		for ( ;; )
-		{
-			ret.resize(size + 1,0);
-			char *buf=(char *)ret.c_str();   
-			if ( !buf )
-			{
-				return BLANK();
-			}
-
-			va_list argptrcopy;
-			va_copy(argptrcopy, argptr);
-
-#ifdef _MSC_VER
-			len = _vsnprintf(buf, size, pszFormat, argptrcopy);
-#else
-			len = vsnprintf(buf, size, pszFormat, argptrcopy);
-#endif
-			va_end(argptrcopy);
-
-			if ( len >= 0 && len <= size )
-			{
-				// ok, there was enough space
-				break;
-			}
-			size *= 2;
-		}
-		ret.resize(len);
-		return std::move(ret);
-	}
-
-	//取得右边的N个字符
-	inline std::string right(const std::string &src,size_t nCount) noexcept
-	{
-		if(nCount>src.length())
-			return BLANK();
-		return std::move(src.substr(src.length()-nCount,nCount));
-	}
-
-	//取左边的N个字符
-	inline std::string left(const std::string &src,size_t nCount) noexcept
-	{
-		return std::move(src.substr(0,nCount));
-	}
-
-	inline size_t charCount(const std::string &src,char ch) noexcept
-	{
-		size_t result=0;
-		for(size_t i=0;i<src.length();i++)
-		{
-			if(src[i]==ch)result++;
-		}
-		return result;
-	}
-
-	inline void replace(std::string& str, const char* src, const char* des) noexcept
+	static inline void replace(std::string& str, const char* src, const char* des) noexcept
 	{
 		std::string ret = "";
 		std::size_t srcLen = strlen(src);

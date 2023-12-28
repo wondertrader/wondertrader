@@ -81,7 +81,7 @@ WTSTickSlice* WtRdmDtReaderAD::readTickSliceByRange(const char* stdCode, uint64_
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
 	WTSSessionInfo* sInfo = commInfo->getSessionInfo();
-	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
+	std::string stdPID = fmtutil::format<64>("{}.{}", cInfo._exchg, cInfo._product);
 
 	uint32_t rDate, rTime, rSecs;
 	//20190807124533900
@@ -264,7 +264,7 @@ WTSKlineSlice* WtRdmDtReaderAD::readKlineSliceByRange(const char* stdCode, WTSKl
 {
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
-	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
+	std::string stdPID = fmtutil::format<64>("{}.{}", cInfo._exchg, cInfo._product);
 
 	uint32_t rDate, rTime, lDate, lTime;
 	rDate = (uint32_t)(etime / 10000);
@@ -280,7 +280,7 @@ WTSKlineSlice* WtRdmDtReaderAD::readKlineSliceByRange(const char* stdCode, WTSKl
 	etime = isDay ? endTDate : (etime - 19000000);
 
 	//暂时不考虑HOT之类的，只针对7×24小时品种做一个实现
-	std::string key = StrUtil::printf("%s#%u", stdCode, period);
+	std::string key = fmtutil::format<64>("{}#{}", stdCode, period);
 	BarsList& barsList = _bars_cache[key];
 
 	bool bNeedNewer = (etime > barsList._last_bar_time);
@@ -414,7 +414,7 @@ WtRdmDtReaderAD::WtLMDBPtr WtRdmDtReaderAD::get_k_db(const char* exchg, WTSKline
 		return std::move(it->second);
 
 	WtLMDBPtr dbPtr(new WtLMDB(true));
-	std::string path = StrUtil::printf("%s%s/%s/", _base_dir.c_str(), subdir.c_str(), exchg);
+	std::string path = fmtutil::format("{}{}/{}/", _base_dir.c_str(), subdir.c_str(), exchg);
 	boost::filesystem::create_directories(path);
 	if (!dbPtr->open(path.c_str()))
 	{
@@ -432,13 +432,13 @@ WtRdmDtReaderAD::WtLMDBPtr WtRdmDtReaderAD::get_k_db(const char* exchg, WTSKline
 
 WtRdmDtReaderAD::WtLMDBPtr WtRdmDtReaderAD::get_t_db(const char* exchg, const char* code)
 {
-	std::string key = StrUtil::printf("%s.%s", exchg, code);
+	std::string key = fmtutil::format<64>("{}.{}", exchg, code);
 	auto it = _tick_dbs.find(key);
 	if (it != _tick_dbs.end())
 		return std::move(it->second);
 
 	WtLMDBPtr dbPtr(new WtLMDB(true));
-	std::string path = StrUtil::printf("%sticks/%s/%s", _base_dir.c_str(), exchg, code);
+	std::string path = fmtutil::format("{}ticks/{}/{}", _base_dir.c_str(), exchg, code);
 	boost::filesystem::create_directories(path);
 	if (!dbPtr->open(path.c_str()))
 	{

@@ -86,7 +86,7 @@ bool ParserHuaX::init(WTSVariant* config)
 	if (module.empty())
 		module = "xfastmdapi";
 
-	std::string path = StrUtil::printf("%s/%s/", _strFlowDir.c_str(), _strUser.c_str());
+	std::string path = fmtutil::format("{}/{}/", _strFlowDir.c_str(), _strUser.c_str());
 	boost::filesystem::create_directories(path.c_str());
 
 	std::string dllpath = getBinDir() + DLLHelper::wrap_module(module.c_str(), "lib");;

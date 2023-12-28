@@ -966,7 +966,7 @@ bool WtRtRunner::initExecuters(WTSVariant* cfgExecuter)
 				}
 				else
 				{
-					WTSLogger::error("Trader {} not exists, cannot configured for executer %s", tid, id);
+					WTSLogger::error("Trader {} not exists, cannot configured for executer {}", tid, id);
 				}
 			}
 
@@ -993,7 +993,7 @@ bool WtRtRunner::initExecuters(WTSVariant* cfgExecuter)
 				}
 				else
 				{
-					WTSLogger::error("Trader {} not exists, cannot configured for executer %s", tid, id);
+					WTSLogger::error("Trader {} not exists, cannot configured for executer {}", tid, id);
 				}
 			}
 
@@ -1020,7 +1020,7 @@ bool WtRtRunner::initExecuters(WTSVariant* cfgExecuter)
 				}
 				else
 				{
-					WTSLogger::error("Trader {} not exists, cannot configured for executer %s", tid, id);
+					WTSLogger::error("Trader {} not exists, cannot configured for executer {}", tid, id);
 				}
 			}
 

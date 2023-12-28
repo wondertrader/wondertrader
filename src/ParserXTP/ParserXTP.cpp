@@ -112,7 +112,7 @@ bool ParserXTP::init(WTSVariant* config)
 	if (module.empty())
 		module = "xtpquoteapi";
 
-	std::string path = StrUtil::printf("%s/%s/", m_strFlowDir.c_str(), m_strUser.c_str());
+	std::string path = fmtutil::format("{}/{}/", m_strFlowDir.c_str(), m_strUser.c_str());
 	boost::filesystem::create_directories(path.c_str());
 
 	std::string dllpath = getBinDir() + DLLHelper::wrap_module(module.c_str(), "lib");;

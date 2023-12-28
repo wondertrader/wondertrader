@@ -384,11 +384,11 @@ void SelMocker::on_bar(const char* stdCode, const char* period, uint32_t times, 
 
 	std::string realPeriod;
 	if (period[0] == 'd')
-		realPeriod = StrUtil::printf("%s%u", period, times);
+		realPeriod = fmtutil::format<64>("{}{}", period, times);
 	else
-		realPeriod = StrUtil::printf("m%u", times);
+		realPeriod = fmtutil::format<64>("m{}", times);
 
-	std::string key = StrUtil::printf("%s#%s", stdCode, realPeriod.c_str());
+	std::string key = fmtutil::format<64>("{}#{}", stdCode, realPeriod.c_str());
 	KlineTag& tag = _kline_tags[key];
 	tag._closed = true;
 	tag._count++;

@@ -147,7 +147,7 @@ void WtDataWriterAD::loadCache()
 			for (uint32_t i = 0; i < _tick_cache_block->_size; i++)
 			{
 				const TickCacheItem& item = _tick_cache_block->_items[i];
-				std::string key = StrUtil::printf("%s.%s", item._tick.exchg, item._tick.code);
+				std::string key = fmtutil::format<64>("{}.{}", item._tick.exchg, item._tick.code);
 				_tick_cache_idx[key] = i;
 			}
 		}
@@ -188,7 +188,7 @@ void WtDataWriterAD::loadCache()
 			for (uint32_t i = 0; i < _m1_cache._cache_block->_size; i++)
 			{
 				const BarCacheItem& item = _m1_cache._cache_block->_items[i];
-				std::string key = StrUtil::printf("%s.%s", item._exchg, item._code);
+				std::string key = fmtutil::format<64>("{}.{}", item._exchg, item._code);
 				_m1_cache._idx[key] = i;
 			}
 		}
@@ -229,7 +229,7 @@ void WtDataWriterAD::loadCache()
 			for (uint32_t i = 0; i < _m5_cache._cache_block->_size; i++)
 			{
 				const BarCacheItem& item = _m5_cache._cache_block->_items[i];
-				std::string key = StrUtil::printf("%s.%s", item._exchg, item._code);
+				std::string key = fmtutil::format<64>("{}.{}", item._exchg, item._code);
 				_m5_cache._idx[key] = i;
 			}
 		}
@@ -270,7 +270,7 @@ void WtDataWriterAD::loadCache()
 			for (uint32_t i = 0; i < _d1_cache._cache_block->_size; i++)
 			{
 				const BarCacheItem& item = _d1_cache._cache_block->_items[i];
-				std::string key = StrUtil::printf("%s.%s", item._exchg, item._code);
+				std::string key = fmtutil::format<64>("{}.{}", item._exchg, item._code);
 				_d1_cache._idx[key] = i;
 			}
 		}
@@ -561,7 +561,7 @@ void WtDataWriterAD::updateBarCache(WTSContractInfo* ct, WTSTickData* curTick)
 		minutes--;
 	}
 
-	std::string key = StrUtil::printf("%s.%s", curTick->exchg(), curTick->code());
+	std::string key = fmtutil::format<64>("{}.{}", curTick->exchg(), curTick->code());
 
 	//更新日线
 	if (!_disable_day && _d1_cache._cache_block)
@@ -845,7 +845,7 @@ WTSTickData* WtDataWriterAD::getCurTick(const char* code, const char* exchg/* = 
 	if (ct == NULL)
 		return NULL;
 
-	std::string key = StrUtil::printf("%s.%s", ct->getExchg(), ct->getCode());
+	std::string key = fmtutil::format<64>("{}.{}", ct->getExchg(), ct->getCode());
 	StdUniqueLock lock(_mtx_tick_cache);
 	auto it = _tick_cache_idx.find(key);
 	if (it == _tick_cache_idx.end())
@@ -865,7 +865,7 @@ bool WtDataWriterAD::updateTickCache(WTSContractInfo* ct, WTSTickData* curTick, 
 	}
 
 	StdUniqueLock lock(_mtx_tick_cache);
-	std::string key = StrUtil::printf("%s.%s", curTick->exchg(), curTick->code());
+	std::string key = fmtutil::format<64>("{}.{}", curTick->exchg(), curTick->code());
 	uint32_t idx = 0;
 	if (_tick_cache_idx.find(key) == _tick_cache_idx.end())
 	{
@@ -1037,7 +1037,7 @@ WtDataWriterAD::WtLMDBPtr WtDataWriterAD::get_k_db(const char* exchg, WTSKlinePe
 		return std::move(it->second);
 
 	WtLMDBPtr dbPtr(new WtLMDB(false));
-	std::string path = StrUtil::printf("%s%s/%s/", _base_dir.c_str(), subdir.c_str(), exchg);
+	std::string path = fmtutil::format("{}{}/{}/", _base_dir.c_str(), subdir.c_str(), exchg);
 	boost::filesystem::create_directories(path);
 	if(!dbPtr->open(path.c_str(), _kline_mapsize))
 	{
@@ -1051,17 +1051,17 @@ WtDataWriterAD::WtLMDBPtr WtDataWriterAD::get_k_db(const char* exchg, WTSKlinePe
 
 WtDataWriterAD::WtLMDBPtr WtDataWriterAD::get_t_db(const char* exchg, const char* code)
 {
-	std::string key = StrUtil::printf("%s.%s", exchg, code);
+	std::string key = fmtutil::format<64>("{}.{}", exchg, code);
 	auto it = _tick_dbs.find(key);
 	if (it != _tick_dbs.end())
 		return std::move(it->second);
 
 	WtLMDBPtr dbPtr(new WtLMDB(false));
-	std::string path = StrUtil::printf("%sticks/%s/%s", _base_dir.c_str(), exchg, code);
+	std::string path = fmtutil::format("{}ticks/{}/{}", _base_dir.c_str(), exchg, code);
 	boost::filesystem::create_directories(path);
 	if (!dbPtr->open(path.c_str(), _tick_mapsize))
 	{
-		if (_sink) pipe_writer_log(_sink, LL_ERROR, "Opening tick db at {} failed: %s", path, dbPtr->errmsg());
+		if (_sink) pipe_writer_log(_sink, LL_ERROR, "Opening tick db at {} failed: {}", path, dbPtr->errmsg());
 		return std::move(WtLMDBPtr());
 	}
 

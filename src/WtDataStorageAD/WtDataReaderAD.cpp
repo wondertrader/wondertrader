@@ -78,7 +78,7 @@ WTSTickSlice* WtDataReaderAD::readTickSlice(const char* stdCode, uint32_t count,
 {
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
-	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
+	std::string stdPID = fmtutil::format<64>("{}.{}", cInfo._exchg, cInfo._product);
 
 	uint32_t curDate, curTime, curSecs;
 	if (etime == 0)
@@ -112,7 +112,7 @@ WTSTickSlice* WtDataReaderAD::readTickSlice(const char* stdCode, uint32_t count,
 	}
 
 	uint32_t reload_flag = 0; //重载标记，0-不需要重载，1-加载最新，2-全部重载
-	std::string key = StrUtil::printf("%s.%s", cInfo._exchg, curCode.c_str());
+	std::string key = fmtutil::format<64>("{}.{}", cInfo._exchg, curCode.c_str());
 	//先检查缓存
 	TicksList& tickList = _ticks_cache[key];
 	uint64_t last_access_time = 0;
@@ -228,7 +228,7 @@ bool WtDataReaderAD::cacheBarsFromStorage(const std::string& key, const char* st
 {
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
-	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
+	std::string stdPID = fmtutil::format<64>("{}.{}", cInfo._exchg, cInfo._product);
 
 	BarsList& barList = _bars_cache[key];
 	barList._code = stdCode;
@@ -279,7 +279,6 @@ void WtDataReaderAD::update_cache_from_lmdb(BarsList& barsList, const char* exch
 			const std::string& item = ayVals[idx];
 			const std::string& key = ayKeys[idx];
 			LMDBBarKey* barKey = (LMDBBarKey*)key.data();
-			printf("%u\r\n", reverseEndian(barKey->_bartime));
 			WTSBarStruct* curBar = (WTSBarStruct*)item.data();
 			uint64_t curBarTime = isDay ? curBar->date : curBar->time;
 			if (curBarTime == lastBarTime)
@@ -335,7 +334,7 @@ WTSBarStruct* WtDataReaderAD::get_rt_cache_bar(const char* exchg, const char* co
 				for (uint32_t i = 0; i < wrapper->_cache_block->_size; i++)
 				{
 					const BarCacheItem& item = wrapper->_cache_block->_items[i];
-					wrapper->_idx[StrUtil::printf("%s.%s", item._exchg, item._code)] = i;
+					wrapper->_idx[fmtutil::format<64>("{}.{}", item._exchg, item._code)] = i;
 				}
 			} while (false);
 		}
@@ -347,13 +346,13 @@ WTSBarStruct* WtDataReaderAD::get_rt_cache_bar(const char* exchg, const char* co
 				for (uint32_t i = wrapper->_last_size; i < wrapper->_cache_block->_size; i++)
 				{
 					const BarCacheItem& item = wrapper->_cache_block->_items[i];
-					wrapper->_idx[StrUtil::printf("%s.%s", item._exchg, item._code)] = i;
+					wrapper->_idx[fmtutil::format<64>("{}.{}", item._exchg, item._code)] = i;
 				}
 			}
 		}
 
 		//最后看缓存里有没有改合约对应的K线缓存
-		auto it = wrapper->_idx.find(StrUtil::printf("%s.%s", exchg, code));
+		auto it = wrapper->_idx.find(fmtutil::format<64>("{}.{}", exchg, code));
 		if (it != wrapper->_idx.end())
 		{
 			return &wrapper->_cache_block->_items[it->second]._bar;
@@ -367,7 +366,7 @@ WTSKlineSlice* WtDataReaderAD::readKlineSlice(const char* stdCode, WTSKlinePerio
 {
 	CodeHelper::CodeInfo cInfo = CodeHelper::extractStdCode(stdCode, _hot_mgr);
 	WTSCommodityInfo* commInfo = _base_data_mgr->getCommodity(cInfo._exchg, cInfo._product);
-	std::string stdPID = StrUtil::printf("%s.%s", cInfo._exchg, cInfo._product);
+	std::string stdPID = fmtutil::format<64>("{}.{}", cInfo._exchg, cInfo._product);
 
 	uint32_t curDate, curTime, curSecs;
 	if (etime == 0)
@@ -400,7 +399,7 @@ WTSKlineSlice* WtDataReaderAD::readKlineSlice(const char* stdCode, WTSKlinePerio
 		//	curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, endTDate);
 	}
 
-	std::string key = StrUtil::printf("%s#%u", stdCode, period);
+	std::string key = fmtutil::format<64>("{}#{}", stdCode, period);
 	BarsList& barsList = _bars_cache[key];
 	if (barsList._bars.capacity() < count)
 	{
@@ -576,7 +575,7 @@ WtDataReaderAD::WtLMDBPtr WtDataReaderAD::get_k_db(const char* exchg, WTSKlinePe
 		return std::move(it->second);
 
 	WtLMDBPtr dbPtr(new WtLMDB(true));
-	std::string path = StrUtil::printf("%s%s/%s/", _base_dir.c_str(), subdir.c_str(), exchg);
+	std::string path = fmtutil::format("{}{}/{}/", _base_dir.c_str(), subdir.c_str(), exchg);
 	boost::filesystem::create_directories(path);
 	if (!dbPtr->open(path.c_str()))
 	{
@@ -594,13 +593,13 @@ WtDataReaderAD::WtLMDBPtr WtDataReaderAD::get_k_db(const char* exchg, WTSKlinePe
 
 WtDataReaderAD::WtLMDBPtr WtDataReaderAD::get_t_db(const char* exchg, const char* code)
 {
-	std::string key = StrUtil::printf("%s.%s", exchg, code);
+	std::string key = fmtutil::format<64>("{}.{}", exchg, code);
 	auto it = _tick_dbs.find(key);
 	if (it != _tick_dbs.end())
 		return std::move(it->second);
 
 	WtLMDBPtr dbPtr(new WtLMDB(true));
-	std::string path = StrUtil::printf("%sticks/%s/%s", _base_dir.c_str(), exchg, code);
+	std::string path = fmtutil::format("{}ticks/{}/{}", _base_dir.c_str(), exchg, code);
 	boost::filesystem::create_directories(path);
 	if (!dbPtr->open(path.c_str()))
 	{

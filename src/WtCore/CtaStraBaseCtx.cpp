@@ -1027,7 +1027,7 @@ void CtaStraBaseCtx::on_session_begin(uint32_t uTDate)
 		PosInfo& pInfo = (PosInfo&)it.second;
 		if(pInfo._frozen_date!=0 && pInfo._frozen_date < uTDate && !decimal::eq(pInfo._frozen, 0))
 		{
-			log_debug("{} of %s frozen on {} released on {}", pInfo._frozen, stdCode, pInfo._frozen_date, uTDate);
+			log_debug("{} of {} frozen on {} released on {}", pInfo._frozen, stdCode, pInfo._frozen_date, uTDate);
 
 			pInfo._frozen = 0;
 			pInfo._frozen_date = 0;

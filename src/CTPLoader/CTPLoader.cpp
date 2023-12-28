@@ -182,7 +182,7 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 	
 	if(!StdFile::exists(MODULE_NAME.c_str()))
 	{
-		MODULE_NAME = StrUtil::printf("%straders/%s", getBinDir(), MODULE_NAME.c_str());
+		MODULE_NAME = fmtutil::format("{}traders/{}", getBinDir(), MODULE_NAME.c_str());
 	}
 
 	if(FRONT_ADDR.empty() || BROKER_ID.empty() || INVESTOR_ID.empty() || PASSWORD.empty() || SAVEPATH.empty())
