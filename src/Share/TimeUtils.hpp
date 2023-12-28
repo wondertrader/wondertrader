@@ -209,10 +209,9 @@ namespace TimeUtils
 			ts = mktime(&t);
 		}
 
-		thread_local static tm tNow;
-		fasttime(ts, &tNow, getTZOffset());
+		struct tm* tNow = localtime(&ts);
 	
-		return tNow.tm_wday;
+		return tNow->tm_wday;
 	}
 
 	static inline uint32_t getCurMin() noexcept
