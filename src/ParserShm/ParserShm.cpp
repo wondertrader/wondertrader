@@ -286,7 +286,7 @@ void ParserShm::subscribe( const CodeSet &vecSymbols )
 	for(auto cit = vecSymbols.begin(); cit != vecSymbols.end(); cit++)
 	{
 		const auto &code = *cit;
-		auto& ay = StrUtil::split(code, ".");
+		auto ay = StrUtil::split(code, ".");
 		WTSContractInfo* cInfo = _bd_mgr->getContract(ay[0].c_str(), ay[1].c_str());
 		if(cInfo == NULL)
 			continue;
@@ -300,7 +300,7 @@ void ParserShm::unsubscribe(const CodeSet &setSymbols)
 	for (auto cit = setSymbols.begin(); cit != setSymbols.end(); cit++)
 	{
 		const auto &code = *cit;
-		auto& ay = StrUtil::split(code, ".");
+		auto ay = StrUtil::split(code, ".");
 		WTSContractInfo* cInfo = _bd_mgr->getContract(ay[0].c_str(), ay[1].c_str());
 		if (cInfo == NULL)
 			continue;
