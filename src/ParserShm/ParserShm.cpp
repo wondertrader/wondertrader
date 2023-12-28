@@ -10,13 +10,17 @@
 #include "ParserShm.h"
 #include "../Includes/WTSVariant.hpp"
 #include "../Includes/WTSDataDef.hpp"
+#include "../Includes/IBaseDataMgr.h"
+#include "../Includes/WTSContractInfo.hpp"
+#include "../Share/CpuHelper.hpp"
+#include "../Share/StrUtil.hpp"
 
 #include <boost/bind.hpp>
 
  //By Wesley @ 2022.01.05
 #include "../Share/fmtlib.h"
 template<typename... Args>
-inline void write_log(IParserSpi* sink, WTSLogLevel ll, const char* format, const Args&... args)
+inline void write_log(IParserSpi* sink, WTSLogLevel ll, const char* format, const Args&... args) noexcept
 {
 	if (sink == NULL)
 		return;
@@ -72,17 +76,17 @@ ParserShm::~ParserShm()
 bool ParserShm::init( WTSVariant* config )
 {
 	_path = config->getCString("path");
-	_gpsize = config->getUInt32("gpsize");
-	if (_gpsize == 0)
-		_gpsize = 1000;
-	_check_span = config->getUInt32("checkspan");
-
+	_gpsize = config->getUInt32("gpsize", 1000);
+	_check_span = config->getUInt32("checkspan", 0);
+	_cpu = config->getUInt32("cpu", 0);
 	return true;
 }
 
 void ParserShm::release()
 {
-	
+	disconnect();
+	if (_thrd_parser)
+		_thrd_parser->join();
 }
 
 bool ParserShm::connect()
@@ -108,6 +112,13 @@ bool ParserShm::connect()
 			_sink->handleEvent(WPE_Login, 0);
 		}
 		write_log(_sink, LL_INFO, "[ParserShm] {} loaded, start to receiving", _path);
+
+		/*
+		 *	By Wesley @ 2023.12.28
+		 *	新增一个绑核的逻辑
+		 */
+		if (_cpu > 0)
+			CpuHelper::bind_core(_cpu - 1);
 
 		uint64_t lastIdx = UINT64_MAX;
 		while(!_stopped)
@@ -155,11 +166,16 @@ bool ParserShm::connect()
 			{
 			case 0:
 			{
-				const char* fullCode = fmtutil::format("{}.{}", item._tick.exchg, item._tick.code);
-				auto it = _set_subs.find(fullCode);
-				if (it != _set_subs.end())
+				WTSContractInfo* cInfo = _bd_mgr->getContract(item._tick.code, item._tick.exchg);
+				if(cInfo == NULL)
+					break;
+
+				const char* fullCode = cInfo->getFullCode();
+				bool isSubbed = !_subbed.empty() && _subbed[cInfo->getTotalIndex()] == 1;
+				if (isSubbed)
 				{
 					WTSTickData* newData = WTSTickData::create(item._tick);
+					newData->setContractInfo(cInfo);
 					if (_sink)
 						_sink->handleQuote(newData, 0);
 					newData->release();
@@ -173,11 +189,16 @@ bool ParserShm::connect()
 			break;
 			case 1:
 			{
-				const char* fullCode = fmtutil::format("{}.{}", item._queue.exchg, item._queue.code);
-				auto it = _set_subs.find(fullCode);
-				if (it != _set_subs.end())
+				WTSContractInfo* cInfo = _bd_mgr->getContract(item._queue.code, item._queue.exchg);
+				if (cInfo == NULL)
+					break;
+
+				const char* fullCode = cInfo->getFullCode();
+				bool isSubbed = !_subbed.empty() && _subbed[cInfo->getTotalIndex()] == 1;
+				if (isSubbed)
 				{
 					WTSOrdQueData* newData = WTSOrdQueData::create(item._queue);
+					newData->setContractInfo(cInfo);
 					if (_sink)
 						_sink->handleOrderQueue(newData);
 					newData->release();
@@ -191,11 +212,16 @@ bool ParserShm::connect()
 			break;
 			case 2:
 			{
-				const char* fullCode = fmtutil::format("{}.{}", item._order.exchg, item._order.code);
-				auto it = _set_subs.find(fullCode);
-				if (it != _set_subs.end())
+				WTSContractInfo* cInfo = _bd_mgr->getContract(item._order.code, item._order.exchg);
+				if(cInfo == NULL)
+					break;
+
+				const char* fullCode = cInfo->getFullCode();
+				bool isSubbed = !_subbed.empty() && _subbed[cInfo->getTotalIndex()] == 1;
+				if (isSubbed)
 				{
 					WTSOrdDtlData* newData = WTSOrdDtlData::create(item._order);
+					newData->setContractInfo(cInfo);
 					if (_sink)
 						_sink->handleOrderDetail(newData);
 					newData->release();
@@ -209,11 +235,16 @@ bool ParserShm::connect()
 			break;
 			case 3:
 			{
-				const char* fullCode = fmtutil::format("{}.{}", item._trans.exchg, item._trans.code);
-				auto it = _set_subs.find(fullCode);
-				if (it != _set_subs.end())
+				WTSContractInfo* cInfo = _bd_mgr->getContract(item._trans.code, item._trans.exchg);
+				if (cInfo == NULL)
+					break;
+
+				const char* fullCode = cInfo->getFullCode();
+				bool isSubbed = !_subbed.empty() && _subbed[cInfo->getTotalIndex()] == 1;
+				if (isSubbed)
 				{
 					WTSTransData* newData = WTSTransData::create(item._trans);
+					newData->setContractInfo(cInfo);
 					if (_sink)
 						_sink->handleTransaction(newData);
 					newData->release();
@@ -249,20 +280,33 @@ bool ParserShm::isConnected()
 
 void ParserShm::subscribe( const CodeSet &vecSymbols )
 {
-	auto cit = vecSymbols.begin();
-	for(; cit != vecSymbols.end(); cit++)
+	if (_subbed.empty())
+		_subbed.resize(_bd_mgr->getGlobalSize());
+	
+	for(auto cit = vecSymbols.begin(); cit != vecSymbols.end(); cit++)
 	{
 		const auto &code = *cit;
-		if(_set_subs.find(code) == _set_subs.end())
-		{
-			_set_subs.insert(code);
-		}
+		auto& ay = StrUtil::split(code, ".");
+		WTSContractInfo* cInfo = _bd_mgr->getContract(ay[0].c_str(), ay[1].c_str());
+		if(cInfo == NULL)
+			continue;
+
+		_subbed[cInfo->getTotalIndex()] = 1;
 	}
 }
 
 void ParserShm::unsubscribe(const CodeSet &setSymbols)
 {
+	for (auto cit = setSymbols.begin(); cit != setSymbols.end(); cit++)
+	{
+		const auto &code = *cit;
+		auto& ay = StrUtil::split(code, ".");
+		WTSContractInfo* cInfo = _bd_mgr->getContract(ay[0].c_str(), ay[1].c_str());
+		if (cInfo == NULL)
+			continue;
 
+		_subbed[cInfo->getTotalIndex()] = 0;
+	}
 }
 
 void ParserShm::registerSpi( IParserSpi* listener )
@@ -272,5 +316,11 @@ void ParserShm::registerSpi( IParserSpi* listener )
 	if(bReplaced && _sink)
 	{
 		write_log(_sink, LL_WARN, "Listener is replaced");
+	}
+
+	if (_sink)
+	{
+		_bd_mgr = _sink->getBaseDataMgr();
+		_subbed.resize(_bd_mgr->getGlobalSize(), 0);
 	}
 }
