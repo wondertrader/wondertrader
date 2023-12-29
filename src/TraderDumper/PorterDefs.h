@@ -16,7 +16,7 @@
 *	回调函数定义
 */
 typedef void(PORTER_FLAG *FuncOnAccount)(const char* channelid, WtUInt32 curTDate, const char* currency, double prebalance, double balance, 
-	double dynbalance, double closeprofit, double dynprofit, double fee, double margin, double deposit, double withdraw, bool isLast);
+	double dynbalance, double closeprofit, double dynprofit, double fee, double margin, double deposit, double withdraw, double available, bool isLast);
 
 typedef void(PORTER_FLAG *FuncOnOrder)(const char* channelid, const char* exchg, const char* code, WtUInt32 curTDate, 
 	const char* orderid, WtUInt32 direct, WtUInt32 offset, double volume, double leftover, double traded, double price, WtUInt32 ordertype, 
@@ -27,5 +27,5 @@ typedef void(PORTER_FLAG *FuncOnTrade)(const char* channelid, const char* exchg,
 	double amount, WtUInt32 ordertype, WtUInt32 tradetype, WtUInt64 tradetime, bool isLast);
 
 typedef void(PORTER_FLAG *FuncOnPosition)(const char* channelid, const char* exchg, const char* code, WtUInt32 curTDate, WtUInt32 direct,
-	double volume, double cost, double margin, double avgpx, double dynprofit, WtUInt32 volscale, bool isLast);
+	double volume, double newvol, double cost, double margin, double avgpx, double dynprofit, WtUInt32 volscale, bool isLast);
 

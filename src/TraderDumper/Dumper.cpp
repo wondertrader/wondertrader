@@ -136,17 +136,17 @@ void Dumper::release()
 
 void Dumper::on_account(const char* channelid, uint32_t curTDate, const char* currency, double prebalance, 
 		double balance, double dynbalance, double closeprofit, double dynprofit, double fee, 
-		double margin, double deposit, double withdraw, bool isLast)
+		double margin, double deposit, double withdraw, double available, bool isLast)
 {
 	if (_cb_account)
-		_cb_account(channelid, curTDate, currency, prebalance, balance, dynbalance, closeprofit, dynprofit, fee, margin, deposit, withdraw, isLast);
+		_cb_account(channelid, curTDate, currency, prebalance, balance, dynbalance, closeprofit, dynprofit, fee, margin, deposit, withdraw, available, isLast);
 }
 
 void Dumper::on_position(const char* channelid, const char* exchg, const char* code, uint32_t curTDate, uint32_t direct,
-		double volume, double cost, double margin, double avgpx, double dynprofit, uint32_t volscale, bool isLast)
+		double volume, double newvol, double cost, double margin, double avgpx, double dynprofit, uint32_t volscale, bool isLast)
 {
 	if (_cb_position)
-		_cb_position(channelid, exchg, code, curTDate, direct, volume, cost, margin, avgpx, dynprofit, volscale, isLast);
+		_cb_position(channelid, exchg, code, curTDate, direct, volume, newvol, cost, margin, avgpx, dynprofit, volscale, isLast);
 }
 
 void Dumper::on_trade(const char* channelid, const char* exchg, const char* code, uint32_t curTDate, const char* tradeid, const char* orderid, 

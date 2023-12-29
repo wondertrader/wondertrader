@@ -27,7 +27,7 @@ public:
 	void release();
 
 	void on_account(const char* channelid, uint32_t curTDate, const char* currency, double prebalance, double balance,
-		double dynbalance, double closeprofit, double dynprofit, double fee, double margin, double deposit, double withdraw, bool isLast);
+		double dynbalance, double closeprofit, double dynprofit, double fee, double margin, double deposit, double withdraw, double available, bool isLast);
 
 	void on_order(const char* channelid, const char* exchg, const char* code, uint32_t curTDate,
 		const char* orderid, uint32_t direct, uint32_t offset, double volume, double leftover, double traded, double price, uint32_t ordertype,
@@ -38,7 +38,7 @@ public:
 		double amount, uint32_t ordertype, uint32_t tradetype, WtUInt64 tradetime, bool isLast);
 
 	void on_position(const char* channelid, const char* exchg, const char* code, uint32_t curTDate, uint32_t direct,
-		double volume, double cost, double margin, double avgpx, double dynprofit, uint32_t volscale, bool isLast);
+		double volume, double newvol, double cost, double margin, double avgpx, double dynprofit, uint32_t volscale, bool isLast);
 
 private:
 	FuncOnAccount	_cb_account;
