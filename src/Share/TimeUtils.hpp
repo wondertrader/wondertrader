@@ -80,7 +80,7 @@ namespace TimeUtils
 		constexpr int kMagicUnkonwnFirst = 146097;
 		constexpr int kMagicUnkonwnSec = 1461;
 		tm->tm_sec = unix_sec % kMinutesInHour;
-		int i = (unix_sec / kMinutesInHour);
+		int i = (int)(unix_sec / kMinutesInHour);
 		tm->tm_min = i % kMinutesInHour; //nn
 		i /= kMinutesInHour;
 		tm->tm_hour = (i + time_zone) % kHoursInDay; // hh
