@@ -711,11 +711,11 @@ int TraderYD::orderInsert(WTSEntrust* entrust)
 	const YDInstrument* pInst = m_pUserAPI->getInstrumentByID(entrust->getCode());
 
 	thread_local static YDInputOrder req;
-
-	// inputOrder中的所有不用的字段，应当统一清0
 	memset(&req, 0, sizeof(req));
 
-	if (strlen(entrust->getUserTag()) == 0)
+	const char* userTag = entrust->getUserTag();
+	const char* entrustid = entrust->getEntrustID();
+	if (StrUtil::isEmpty(userTag))
 	{
 		///报单引用
 		req.OrderRef = m_orderRef.fetch_add(0);
@@ -723,14 +723,14 @@ int TraderYD::orderInsert(WTSEntrust* entrust)
 	else
 	{
 		uint32_t orderref;
-		extractEntrustID(entrust->getEntrustID(), orderref);
+		extractEntrustID(entrustid, orderref);
 		///报单引用
 		req.OrderRef = orderref;
 	}
 
-	if (strlen(entrust->getUserTag()) > 0)
+	if (!StrUtil::isEmpty(userTag))
 	{
-		m_eidCache.put(entrust->getEntrustID(), entrust->getUserTag(), 0, m_cacheLogger);
+		m_eidCache.put(entrustid, userTag, 0, m_cacheLogger);
 	}
 
 	req.Price = entrust->getPrice();
@@ -900,13 +900,7 @@ WTSOrderInfo* TraderYD::makeOrderInfo(const YDOrder* orderField, const YDInstrum
 	pRet->setOffsetType(wrapOffsetType(orderField->OffsetFlag));
 
 	pRet->setPriceType(decimal::eq(orderField->Price, 0.0) ? WPT_ANYPRICE : WPT_LIMITPRICE);
-	if (orderField->OrderType == YD_ODT_FAK)
-		pRet->setOrderFlag(WOF_FAK);
-	else if (orderField->OrderType == YD_ODT_FOK)
-		pRet->setOrderFlag(WOF_FOK);
-	else
-		pRet->setOrderFlag(WOF_NOR);
-
+	pRet->setOrderFlag((orderField->OrderType == YD_ODT_FAK) ? WOF_FAK : ((orderField->OrderType == YD_ODT_FOK) ? WOF_FOK : WOF_NOR));
 	pRet->setVolTraded(orderField->TradeVolume);
 	pRet->setVolLeft(orderField->OrderVolume - orderField->TradeVolume);
 
@@ -919,15 +913,14 @@ WTSOrderInfo* TraderYD::makeOrderInfo(const YDOrder* orderField, const YDInstrum
 	pRet->setOrderTime(TimeUtils::makeTime(uDate, uTime * 1000));
 
 	pRet->setOrderState(wrapOrderState(orderField->OrderStatus));
-	if (orderField->OrderStatus == YD_OS_Rejected)
-		pRet->setError(true);
+	pRet->setError(orderField->OrderStatus == YD_OS_Rejected);
 
 	generateEntrustID(orderField->OrderRef, pRet->getEntrustID());
 	convert::to_str(pRet->getOrderID(), 64, orderField->OrderSysID);
 	pRet->setStateMsg("");
 
 	const char* usertag = m_eidCache.get(pRet->getEntrustID());
-	if (strlen(usertag) == 0)
+	if (StrUtil::isEmpty(usertag))
 	{
 		pRet->setUserTag(pRet->getEntrustID());
 	}
@@ -935,9 +928,9 @@ WTSOrderInfo* TraderYD::makeOrderInfo(const YDOrder* orderField, const YDInstrum
 	{
 		pRet->setUserTag(usertag);
 
-		if (strlen(pRet->getOrderID()) > 0)
+		if (!StrUtil::isEmpty(pRet->getOrderID()))
 		{
-			m_oidCache.put(pRet->getOrderID(), usertag, 0, m_cacheLogger);
+			m_oidCache.put_if_none(pRet->getOrderID(), usertag, 0, m_cacheLogger);
 		}
 	}
 
@@ -961,17 +954,11 @@ WTSEntrust* TraderYD::makeEntrust(const YDInputOrder *entrustField, const YDInst
 	pRet->setOffsetType(wrapOffsetType(entrustField->OffsetFlag));
 	
 	pRet->setPriceType(decimal::eq(entrustField->Price, 0.0) ? WPT_ANYPRICE : WPT_LIMITPRICE);
-	if (entrustField->OrderType == YD_ODT_FAK)
-		pRet->setOrderFlag(WOF_FAK);
-	else if (entrustField->OrderType == YD_ODT_FOK)
-		pRet->setOrderFlag(WOF_FOK);
-	else
-		pRet->setOrderFlag(WOF_NOR);
+	pRet->setOrderFlag((entrustField->OrderType == YD_ODT_FAK) ? WOF_FAK : ((entrustField->OrderType == YD_ODT_FOK) ? WOF_FOK : WOF_NOR));
 
 	generateEntrustID(entrustField->OrderRef, pRet->getEntrustID());
-
 	const char* usertag = m_eidCache.get(pRet->getEntrustID());
-	if (strlen(usertag) > 0)
+	if (!StrUtil::isEmpty(usertag))
 		pRet->setUserTag(usertag);
 
 	return pRet;
@@ -1015,7 +1002,7 @@ WTSTradeInfo* TraderYD::makeTradeRecord(const YDTrade *tradeField, const YDInstr
 	pRet->setAmount(amount);
 
 	const char* usertag = m_oidCache.get(pRet->getRefOrder());
-	if (strlen(usertag))
+	if (!StrUtil::isEmpty(usertag))
 		pRet->setUserTag(usertag);
 
 	return pRet;

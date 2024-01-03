@@ -283,4 +283,9 @@ namespace StrUtil
 
 		str = ret;
 	}
+
+	constexpr static inline bool isEmpty(const char* str) noexcept
+	{
+		return *str == '\0';
+	}
 };

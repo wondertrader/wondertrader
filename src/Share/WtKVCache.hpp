@@ -226,6 +226,27 @@ public:
 		}
 	}
 
+	void	put_if_none(const char* key, const char*val, std::size_t len = 0, CacheLogger logger = nullptr)  noexcept
+	{
+		auto it = _indice.find(key);
+		if (it != _indice.end())
+			return;
+
+		{
+			if (_cache._block->_size == _cache._block->_capacity)
+			{
+				_lock.lock();
+				resize(_cache._block->_capacity * 2, logger);
+				_lock.unlock();
+			}
+
+			uint32_t idx = _cache._block->_size++;
+			wt_strcpy(_cache._block->_items[idx]._key, key);
+			wt_strcpy(_cache._block->_items[idx]._val, val, len);
+			_indice[key] = idx;
+		}
+	}
+
 	inline bool	has(const char* key) const  noexcept
 	{
 		return (_indice.find(key) != _indice.end());
