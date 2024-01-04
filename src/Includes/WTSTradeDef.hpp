@@ -348,8 +348,9 @@ public:
 	constexpr inline const char*	getOrderID() const  noexcept { return m_strOrderID; }
 	constexpr inline char*			getOrderID()  noexcept { return m_strOrderID; }
 
-	inline void	setStateMsg(const char* msg) noexcept {m_strStateMsg = msg;}
-	inline const char* getStateMsg() const noexcept {return m_strStateMsg.c_str();}
+	inline void	setStateMsg(const char* msg) noexcept {wt_strcpy(m_strStateMsg, msg);}
+	constexpr inline const char*	getStateMsg() const noexcept {return m_strStateMsg;}
+	constexpr inline char*			getStateMsg() noexcept { return m_strStateMsg; }
 
 	constexpr inline bool	isAlive() const noexcept
 	{
@@ -400,7 +401,7 @@ private:
 	WTSOrderState	m_orderState;
 	WTSOrderType	m_orderType;
 	char			m_strOrderID[64] = { 0 };
-	std::string		m_strStateMsg;
+	char			m_strStateMsg[64] = { 0 };
 };
 
 //////////////////////////////////////////////////////////////////////////

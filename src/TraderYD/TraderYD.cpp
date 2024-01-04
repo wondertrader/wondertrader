@@ -889,7 +889,8 @@ WTSOrderInfo* TraderYD::makeOrderInfo(const YDOrder* orderField, const YDInstrum
 
 	generateEntrustID(orderField->OrderRef, pRet->getEntrustID());
 	convert::to_str(pRet->getOrderID(), 64, orderField->OrderSysID);
-	pRet->setStateMsg("");
+	if(pRet->isError())
+		convert::to_str(pRet->getStateMsg(), 64, orderField->ErrorNo);
 
 	const char* usertag = m_eidCache.get(pRet->getEntrustID());
 	if (StrUtil::isEmpty(usertag))
