@@ -43,83 +43,64 @@ inline void write_log(ITraderSpi* sink, WTSLogLevel ll, const char* format, cons
 
 constexpr inline WTSDirectionType wrapPosDirection(int dirType) noexcept
 {
-	if (YD_PD_Long == dirType)
-		return WDT_LONG;
-	else
-		return WDT_SHORT;
+	return (YD_PD_Long == dirType) ? WDT_LONG : WDT_SHORT;
 }
 
 constexpr inline WTSDirectionType wrapDirectionType(int dirType, int offsetType) noexcept
 {
-	if (YD_D_Buy == dirType)
-		if (offsetType == YD_OF_Open)
-			return WDT_LONG;
-		else
-			return WDT_SHORT;
-	else
-		if (offsetType == YD_OF_Open)
-			return WDT_SHORT;
-		else
-			return WDT_LONG;
+	return (YD_D_Buy == dirType) ? ((offsetType == YD_OF_Open)? WDT_LONG: WDT_SHORT) : ((offsetType == YD_OF_Open) ? WDT_SHORT : WDT_LONG);
 }
 
 constexpr inline int wrapDirectionType(WTSDirectionType dirType, WTSOffsetType offsetType) noexcept
 {
-	if (WDT_LONG == dirType)
-		if (offsetType == WOT_OPEN)
-			return YD_D_Buy;
-		else
-			return YD_D_Sell;
-	else
-		if (offsetType == WOT_OPEN)
-			return YD_D_Sell;
-		else
-			return YD_D_Buy;
+	return (WDT_LONG == dirType) ? ((offsetType == WOT_OPEN)? YD_D_Buy: YD_D_Sell) : ((offsetType == WOT_OPEN) ? YD_D_Sell : YD_D_Buy);
 }
 
 constexpr inline int wrapPriceType(WTSPriceType pType, WTSOrderFlag oFlag) noexcept
 {
-	if (WOF_FAK == oFlag)
-		return YD_ODT_FAK;
+	switch (oFlag)
+	{
+	case WOF_FAK: return YD_ODT_FAK;
+	case WOF_FOK: return YD_ODT_FOK;
+	default:
+		break;
+	}
 
-	if (WOF_FOK == oFlag)
-		return YD_ODT_FOK;
-
-	if (WPT_ANYPRICE == pType)
-		return YD_ODT_Market;
-
-	if (WPT_LIMITPRICE == pType)
-		return YD_ODT_Limit;
-	
-	return YD_ODT_Market;
+	return (pType == WPT_LIMITPRICE) ? YD_ODT_Limit : YD_ODT_Market;	
 }
 
 constexpr inline WTSOffsetType wrapOffsetType(int offType) noexcept
 {
-	if (YD_OF_Open == offType)
+	switch (offType)
+	{
+	case YD_OF_Open: 
 		return WOT_OPEN;
-	else if (YD_OF_Close == offType)
+	case YD_OF_Close: 
 		return WOT_CLOSE;
-	else if (YD_OF_CloseToday == offType)
+	case YD_OF_CloseToday: 
 		return WOT_CLOSETODAY;
-	else if (YD_OF_CloseYesterday == offType)
+	case YD_OF_CloseYesterday: 
 		return WOT_CLOSEYESTERDAY;
-	else
+	default:
 		return WOT_FORCECLOSE;
+	}
 }
 
 constexpr inline int wrapOffsetType(WTSOffsetType offType) noexcept
 {
-	if (WOT_OPEN == offType)
+	switch (offType)
+	{
+	case WOT_OPEN:
 		return YD_OF_Open;
-	else if (WOT_CLOSE == offType)
+	case WOT_CLOSE:
 		return YD_OF_Close;
-	else if (WOT_CLOSETODAY == offType)
+	case WOT_CLOSETODAY:
 		return YD_OF_CloseToday;
-	else if (WOT_CLOSEYESTERDAY == offType)
+	case WOT_CLOSEYESTERDAY:
 		return YD_OF_CloseYesterday;
-	else
+	default:
 		return YD_OF_ForceClose;
+	}
 }
 
 constexpr inline WTSOrderState wrapOrderState(int orderState) noexcept

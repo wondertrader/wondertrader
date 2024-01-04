@@ -135,24 +135,6 @@ public:
 	virtual void OnRtnInstrumentStatus(CThostFtdcInstrumentStatusField *pInstrumentStatus) override;
 
 private:
-	/*
-	*	检查错误信息
-	*/
-	bool IsErrorRspInfo(CThostFtdcRspInfoField *pRspInfo);
-
-	int wrapPriceType(WTSPriceType priceType, bool isCFFEX = false);
-	int wrapDirectionType(WTSDirectionType dirType, WTSOffsetType offType);
-	int wrapOffsetType(WTSOffsetType offType);
-	int	wrapTimeCondition(WTSTimeCondition timeCond);
-	int wrapActionFlag(WTSActionFlag actionFlag);
-
-	WTSPriceType		wrapPriceType(TThostFtdcOrderPriceTypeType priceType);
-	WTSDirectionType	wrapDirectionType(TThostFtdcDirectionType dirType, TThostFtdcOffsetFlagType offType);
-	WTSDirectionType	wrapPosDirection(TThostFtdcPosiDirectionType dirType);
-	WTSOffsetType		wrapOffsetType(TThostFtdcOffsetFlagType offType);
-	WTSTimeCondition	wrapTimeCondition(TThostFtdcTimeConditionType timeCond);
-	WTSOrderState		wrapOrderState(TThostFtdcOrderStatusType orderState);
-
 	WTSOrderInfo*	makeOrderInfo(CThostFtdcOrderField* orderField);
 	WTSEntrust*		makeEntrust(CThostFtdcInputOrderField *entrustField);
 	WTSEntrustAction*	makeAction(CThostFtdcInputOrderActionField *entrustField);
