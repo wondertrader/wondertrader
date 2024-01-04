@@ -302,9 +302,7 @@ WTSOrderInfo* TraderXTPXAlgo::makeOrderInfo(XTPQueryOrderRsp* order_info)
 
 		if (strlen(pRet->getOrderID()) > 0)
 		{
-			m_oidCache.put(StrUtil::trim(pRet->getOrderID()).c_str(), usertag, 0, [this](const char* message) {
-				write_log(_sink, LL_ERROR, message);
-			});
+			m_oidCache.put(StrUtil::trim(pRet->getOrderID()).c_str(), usertag, 0);
 		}
 	}
 
@@ -338,9 +336,7 @@ WTSOrderInfo* TraderXTPXAlgo::makeOrderInfo(XTPStrategyInfoStruct *strategyState
 
 		if (strlen(pRet->getOrderID()) > 0)
 		{
-			m_oidCache.put(StrUtil::trim(pRet->getOrderID()).c_str(), usertag, 0, [this](const char* message) {
-				write_log(_sink, LL_ERROR, message);
-			});
+			m_oidCache.put(StrUtil::trim(pRet->getOrderID()).c_str(), usertag, 0);
 		}
 	}
 
@@ -1152,9 +1148,7 @@ int TraderXTPXAlgo::orderInsert(WTSEntrust* entrust)
 
 	if (strlen(entrust->getUserTag()) > 0)
 	{
-		m_eidCache.put(entrust->getEntrustID(), entrust->getUserTag(), 0, [this](const char* message) {
-			write_log(_sink, LL_WARN, message);
-		});
+		m_eidCache.put(entrust->getEntrustID(), entrust->getUserTag(), 0);
 	}
 
 	std::cout << "Begin to insert algo order." << std::endl;

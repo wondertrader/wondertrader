@@ -617,18 +617,9 @@ bool TraderYD::makeEntrustID(char* buffer, int length)
 	if (buffer == NULL || length == 0)
 		return false;
 
-	try
-	{
-		uint32_t orderref = m_orderRef.fetch_add(1) + 1;
-		fmtutil::format_to(buffer, "{}#{:010d}", m_strUser.c_str(), orderref);
-		return true;
-	}
-	catch (...)
-	{
-
-	}
-
-	return false;
+	uint32_t orderref = m_orderRef.fetch_add(1) + 1;
+	fmtutil::format_to(buffer, "{}#{:010d}", m_strUser.c_str(), orderref);
+	return true;
 }
 
 void TraderYD::registerSpi(ITraderSpi *listener)
@@ -711,7 +702,7 @@ int TraderYD::orderInsert(WTSEntrust* entrust)
 
 	if (!StrUtil::isEmpty(userTag))
 	{
-		m_eidCache.put(entrustid, userTag, 0, m_cacheLogger);
+		m_eidCache.put(entrustid, userTag, 0);
 	}
 
 	req.Price = entrust->getPrice();
@@ -911,7 +902,7 @@ WTSOrderInfo* TraderYD::makeOrderInfo(const YDOrder* orderField, const YDInstrum
 
 		if (!StrUtil::isEmpty(pRet->getOrderID()))
 		{
-			m_oidCache.put_if_none(pRet->getOrderID(), usertag, 0, m_cacheLogger);
+			m_oidCache.put_if_none(pRet->getOrderID(), usertag, 0);
 		}
 	}
 
@@ -982,9 +973,7 @@ WTSTradeInfo* TraderYD::makeTradeRecord(const YDTrade *tradeField, const YDInstr
 	double amount = commInfo->getVolScale()*tradeField->Volume*pRet->getPrice();
 	pRet->setAmount(amount);
 
-	const char* usertag = m_oidCache.get(pRet->getRefOrder());
-	if (!StrUtil::isEmpty(usertag))
-		pRet->setUserTag(usertag);
+	pRet->setUserTag(m_oidCache.get(pRet->getRefOrder()));
 
 	return pRet;
 }

@@ -184,9 +184,7 @@ WTSOrderInfo* TraderHuaX::makeOrderInfo(CTORATstpOrderField* order_info)
 
 		if (strlen(pRet->getOrderID()) > 0)
 		{
-			_oidCache.put(StrUtil::trim(order_info->OrderSysID).c_str(), usertag, 0, [this](const char* message) {
-				write_log(_sink, LL_ERROR, message);
-			});
+			_oidCache.put(StrUtil::trim(order_info->OrderSysID).c_str(), usertag, 0);
 		}
 	}
 	return pRet;
@@ -896,9 +894,7 @@ int TraderHuaX::orderInsert(WTSEntrust* entrust)
 	//其它字段置空
 	if (strlen(entrust->getUserTag()) > 0)
 	{
-		_eidCache.put(entrust->getEntrustID(), entrust->getUserTag(), 0, [this](const char* message) {
-			write_log(_sink, LL_WARN, message);
-		});
+		_eidCache.put(entrust->getEntrustID(), entrust->getUserTag(), 0);
 	}
 	int ret = _api->ReqOrderInsert(&field, genRequestID());
 	if (ret != 0)
