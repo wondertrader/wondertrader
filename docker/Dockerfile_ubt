@@ -12,18 +12,14 @@ RUN apt-get update
 RUN set -e && apt-get install sudo
 
 # 安装编译工具
-RUN apt-get install -y git 
-RUN apt-get install -y gcc-8 
-RUN apt-get install -y g++-8 
-RUN apt-get install -y cmake
+RUN apt-get install -y git gcc-8 g++-8 cmake
 
 # 安装其他工具
 RUN apt-get install -y p7zip-full
 
 # 将gcc符号链接到gcc8
-RUN rm /usr/bin/gcc
-RUN ln -s /usr/bin/gcc-8 /usr/bin/gcc
-RUN ln -s /usr/bin/g++-8 /usr/bin/g++
+RUN ln -sf /usr/bin/gcc-8 /usr/bin/gcc
+RUN ln -sf /usr/bin/g++-8 /usr/bin/g++
 
 # 添加预编译依赖库，并解压
 ADD mydeps_gcc8.4.0.7z /home
