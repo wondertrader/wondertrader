@@ -318,9 +318,9 @@ WTSBarStruct* WTSDataFactory::updateMin5Data(WTSSessionInfo* sInfo, WTSKlineData
 	const WTSBarStruct& curBar = *newBasicBar;
 
 	uint32_t uTradingDate = curBar.date;
-	uint32_t uDate = TimeUtils::minBarToDate(curBar.time);
-	if (uDate == 19900000)
-		uDate = uTradingDate;
+	uint32_t barDate = TimeUtils::minBarToDate(curBar.time);
+	if (barDate == 19900000)
+		barDate = uTradingDate;
 	uint32_t uTime = TimeUtils::minBarToTime(curBar.time);
 	uint32_t uMinute = sInfo->timeToMinutes(uTime);
 	uint32_t uBarMin = 0;
@@ -359,8 +359,8 @@ WTSBarStruct* WTSDataFactory::updateMin5Data(WTSSessionInfo* sInfo, WTSKlineData
 
 	uint64_t uBarTime = sInfo->minuteToTime(uBarMin);
 	if (uBarTime < uTime)
-		uDate = TimeUtils::getNextDate(uDate, 1);
-	uBarTime = TimeUtils::timeToMinBar(uDate, (uint32_t)uBarTime);
+		barDate = TimeUtils::getNextDate(barDate, 1);
+	uBarTime = TimeUtils::timeToMinBar(barDate, (uint32_t)uBarTime);
 
 	WTSBarStruct* lastBar = NULL;
 	if (klineData->size() > 0)
@@ -369,7 +369,7 @@ WTSBarStruct* WTSDataFactory::updateMin5Data(WTSSessionInfo* sInfo, WTSKlineData
 	}
 
 	bool bNewBar = false;
-	if (lastBar == NULL || lastBar->date != uDate || lastBar->time != uBarTime)
+	if (lastBar == NULL || lastBar->time != uBarTime)
 	{
 
 		//只要日期和时间都不符,则认为已经是一条新的bar了
