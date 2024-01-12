@@ -215,8 +215,8 @@ public:
 	virtual uint32_t getAdjustingFlag() override { return _adjust_flag; }
 
 private:
-	std::string		_rt_dir;
-	std::string		_his_dir;
+	std::vector<std::string>	_rt_dir;
+	std::vector<std::string>	_his_dir;
 	IBaseDataMgr*	_base_data_mgr;
 	IHotMgr*		_hot_mgr;
 
