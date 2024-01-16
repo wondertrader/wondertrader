@@ -84,7 +84,7 @@ private:
 	IParserSpi*		_sink;
 	bool			_stopped;
 
-	std::vector<int> _subbed;
+	std::vector<bool> _subbed;
 
 	IBaseDataMgr*	_bd_mgr;
 

@@ -96,6 +96,9 @@ bool ParserShm::connect()
 		write_log(_sink, LL_INFO, "[ParserShm] loading {} ...", _path);
 		while (!StdFile::exists(_path.c_str()))
 		{
+			if (_stopped)
+				return;
+
 			write_log(_sink, LL_WARN, "[ParserShm] {} not exist yet, waiting for 2 seconds", _path);
 			std::this_thread::sleep_for(std::chrono::seconds(2));
 			continue;
@@ -171,7 +174,7 @@ bool ParserShm::connect()
 					break;
 
 				const char* fullCode = cInfo->getFullCode();
-				bool isSubbed = !_subbed.empty() && _subbed[cInfo->getTotalIndex()] == 1;
+				bool isSubbed = !_subbed.empty() && _subbed[cInfo->getTotalIndex()];
 				if (isSubbed)
 				{
 					WTSTickData* newData = WTSTickData::create(item._tick);
@@ -194,7 +197,7 @@ bool ParserShm::connect()
 					break;
 
 				const char* fullCode = cInfo->getFullCode();
-				bool isSubbed = !_subbed.empty() && _subbed[cInfo->getTotalIndex()] == 1;
+				bool isSubbed = !_subbed.empty() && _subbed[cInfo->getTotalIndex()];
 				if (isSubbed)
 				{
 					WTSOrdQueData* newData = WTSOrdQueData::create(item._queue);
@@ -217,7 +220,7 @@ bool ParserShm::connect()
 					break;
 
 				const char* fullCode = cInfo->getFullCode();
-				bool isSubbed = !_subbed.empty() && _subbed[cInfo->getTotalIndex()] == 1;
+				bool isSubbed = !_subbed.empty() && _subbed[cInfo->getTotalIndex()];
 				if (isSubbed)
 				{
 					WTSOrdDtlData* newData = WTSOrdDtlData::create(item._order);
@@ -240,7 +243,7 @@ bool ParserShm::connect()
 					break;
 
 				const char* fullCode = cInfo->getFullCode();
-				bool isSubbed = !_subbed.empty() && _subbed[cInfo->getTotalIndex()] == 1;
+				bool isSubbed = !_subbed.empty() && _subbed[cInfo->getTotalIndex()];
 				if (isSubbed)
 				{
 					WTSTransData* newData = WTSTransData::create(item._trans);
@@ -281,7 +284,7 @@ bool ParserShm::isConnected()
 void ParserShm::subscribe( const CodeSet &vecSymbols )
 {
 	if (_subbed.empty())
-		_subbed.resize(_bd_mgr->getGlobalSize());
+		_subbed.resize(_bd_mgr->getGlobalSize(), false);
 	
 	for(auto cit = vecSymbols.begin(); cit != vecSymbols.end(); cit++)
 	{
@@ -291,7 +294,7 @@ void ParserShm::subscribe( const CodeSet &vecSymbols )
 		if(cInfo == NULL)
 			continue;
 
-		_subbed[cInfo->getTotalIndex()] = 1;
+		_subbed[cInfo->getTotalIndex()] = true;
 	}
 }
 
@@ -305,7 +308,7 @@ void ParserShm::unsubscribe(const CodeSet &setSymbols)
 		if (cInfo == NULL)
 			continue;
 
-		_subbed[cInfo->getTotalIndex()] = 0;
+		_subbed[cInfo->getTotalIndex()] = false;
 	}
 }
 
@@ -321,6 +324,6 @@ void ParserShm::registerSpi( IParserSpi* listener )
 	if (_sink)
 	{
 		_bd_mgr = _sink->getBaseDataMgr();
-		_subbed.resize(_bd_mgr->getGlobalSize(), 0);
+		_subbed.resize(_bd_mgr->getGlobalSize(), false);
 	}
 }
