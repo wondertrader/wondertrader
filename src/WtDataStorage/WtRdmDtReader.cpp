@@ -257,7 +257,7 @@ WTSTickSlice* WtRdmDtReader::readTickSliceByDate(const char* stdCode, uint32_t u
 			if(strlen(ruleTag) > 0)
 			{
 				curCode = _hot_mgr->getCustomRawCode(ruleTag, stdPID, uDate);
-				pipe_rdmreader_log(_sink, LL_INFO, "{} contract on {} confirmed with rule {}: {} -> {}", ruleTag, uDate, stdCode, curCode.c_str());
+				pipe_rdmreader_log(_sink, LL_INFO, "{} contract on {} confirmed: {} -> {}", ruleTag, uDate, stdCode, curCode.c_str());
 				hotCode = cInfo._product;
 				hotCode += "_";
 				hotCode += ruleTag;
@@ -2482,20 +2482,6 @@ WTSTickSlice* WtRdmDtReader::readTickSliceByCount(const char* stdCode, uint32_t 
 				hotCode += ruleTag;
 				pipe_rdmreader_log(_sink, LL_INFO, "{} contract on {} confirmed: {} -> {}", ruleTag, curTDate, stdCode, curCode.c_str());
 			}
-			//else if (cInfo.isHot())
-			//{
-			//	curCode = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, nowTDate);
-			//	hotCode = cInfo._product;
-			//	hotCode += "_HOT";
-			//	pipe_rdmreader_log(_sink, LL_INFO, "Hot contract on {} confirmed: {} -> {}", curTDate, stdCode, curCode.c_str());
-			//}
-			//else if (cInfo.isSecond())
-			//{
-			//	curCode = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, nowTDate);
-			//	hotCode = cInfo._product;
-			//	hotCode += "_2ND";
-			//	pipe_rdmreader_log(_sink, LL_INFO, "Second contract on {} confirmed: {} -> {}", curTDate, stdCode, curCode.c_str());
-			//}
 		}
 		
 
