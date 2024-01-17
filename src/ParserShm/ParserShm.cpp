@@ -304,7 +304,7 @@ void ParserShm::unsubscribe(const CodeSet &setSymbols)
 	{
 		const auto &code = *cit;
 		auto ay = StrUtil::split(code, ".");
-		WTSContractInfo* cInfo = _bd_mgr->getContract(ay[0].c_str(), ay[1].c_str());
+		WTSContractInfo* cInfo = _bd_mgr->getContract(ay[1].c_str(), ay[0].c_str());
 		if (cInfo == NULL)
 			continue;
 
