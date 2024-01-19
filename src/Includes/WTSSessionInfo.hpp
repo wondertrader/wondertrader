@@ -51,6 +51,8 @@ protected:
 	std::string		m_strID;
 	std::string		m_strName;
 
+	std::vector<uint32_t> _minutes;
+
 protected:
 	WTSSessionInfo(int32_t offset)
 	{
@@ -407,8 +409,7 @@ public:
 	 */
 	inline const std::vector<uint32_t>& getSecMinList()
 	{
-		static std::vector<uint32_t> minutes;
-		if(minutes.empty())
+		if(_minutes.empty())
 		{
 			uint32_t total = 0;
 			TradingTimes::iterator it = m_tradingTimes.begin();
@@ -422,14 +423,14 @@ public:
 				uint32_t minute = (e % 100 - s % 100);
 
 				total += hour * 60 + minute;
-				minutes.emplace_back(total);
+				_minutes.emplace_back(total);
 			}
 			
-			if (minutes.empty())
-				minutes.emplace_back(1440);
+			if (_minutes.empty())
+				_minutes.emplace_back(1440);
 		}
 		
-		return minutes;
+		return _minutes;
 	}
 
 	/*
