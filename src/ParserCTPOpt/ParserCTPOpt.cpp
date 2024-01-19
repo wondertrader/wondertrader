@@ -284,7 +284,7 @@ void ParserCTPOpt::OnRtnDepthMarketData( CThostFtdcDepthMarketDataField *pDepthM
 	quote.open = checkValid(pDepthMarketData->OpenPrice);
 	quote.high = checkValid(pDepthMarketData->HighestPrice);
 	quote.low = checkValid(pDepthMarketData->LowestPrice);
-	quote.total_volume = pDepthMarketData->Volume;
+	quote.total_volume = (uint32_t)pDepthMarketData->Volume;
 	quote.trading_date = m_uTradingDate;
 	if(pDepthMarketData->SettlementPrice != DBL_MAX)
 		quote.settle_price = checkValid(pDepthMarketData->SettlementPrice);
