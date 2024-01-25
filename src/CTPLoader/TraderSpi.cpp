@@ -316,6 +316,8 @@ void CTraderSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CTho
 						commInfo.m_strCurrency = "CNY";
 
 						commInfo.m_strSession = MAP_SESSION[fullPid];
+						if (commInfo.m_strSession.empty())
+							std::cerr << "warning: No session configured for " << fullPid << std::endl;						
 						commInfo.m_ccCategory = wrapCategory(pInstrument->ProductClass);
 
 						commInfo.m_uVolScale = (pInstrument->VolumeMultiple == 0 ? 1 : pInstrument->VolumeMultiple);
