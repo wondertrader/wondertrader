@@ -8,8 +8,9 @@
 #include "../Share/fmtlib.h"
 #include "../Share/charconv.hpp"
 #include "../Share/Converter.hpp"
+#include "../Share/TimeUtils.hpp"
+#include "../Share/decimal.h"
 
-#include "../Includes/LoaderDef.hpp"
 #include "../Includes/WTSVariant.hpp"
 
 #include "../WTSUtils/WTSCfgLoader.h"
@@ -37,6 +38,7 @@ USING_NS_WTP;
 
 extern std::map<std::string, std::string>	MAP_NAME;
 extern std::map<std::string, std::string>	MAP_SESSION;
+extern std::set<std::string>				SET_FILTERS;
 
 #pragma warning(disable : 4996)
 
@@ -54,6 +56,7 @@ extern std::string	AUTHCODE;
 extern uint32_t		CLASSMASK;
 extern bool			ONLYINCFG;
 extern bool			INCREMENTAL;//是否增量拉取，默认false
+extern bool			QRYFEES;	//是否查询费率，默认false
 
 extern std::string COMM_FILE;		//输出的品种文件名
 extern std::string CONT_FILE;		//输出的合约文件名
@@ -68,7 +71,8 @@ TThostFtdcOrderRefType	ORDER_REF;	//报单引用
 
 CommodityMap _commodities;
 ContractMap _contracts;
-
+FeeMap		_fees;
+MarginMap	_margins;
 
 std::string extractProductID(const char* instrument)
 {
@@ -160,7 +164,7 @@ void CTraderSpi::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin,
 		iNextOrderRef++;
 		fmtutil::format_to(ORDER_REF, "{}", iNextOrderRef);
 		///获取当前交易日
-		m_lTradingDate = atoi(pUserApi->GetTradingDay());
+		_trading_day = atoi(pUserApi->GetTradingDay());
 
 		LoadFromJson();
 
@@ -170,10 +174,94 @@ void CTraderSpi::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin,
 
 void CTraderSpi::ReqQryInstrument()
 {
-	CThostFtdcQryInstrumentField req;
-	memset(&req, 0, sizeof(req));
-	int iResult = pUserApi->ReqQryInstrument(&req, ++iRequestID);
-	std::cerr << "--->>> Quering instruments: " << ((iResult == 0) ? "succeed" : "failed") << std::endl;
+	AppendQuery([this]() {
+		CThostFtdcQryInstrumentField req;
+		memset(&req, 0, sizeof(req));
+		int iResult = pUserApi->ReqQryInstrument(&req, ++iRequestID);
+		std::cerr << "--->>> Quering instruments: " << ((iResult == 0) ? "succeed" : "failed") << std::endl;
+		return true;
+	});
+}
+
+void CTraderSpi::ReqQryCommission(const Contract& cInfo)
+{
+	AppendQuery([this, &cInfo]() {
+		//auto it = _fees.find(cInfo.m_strProduct);
+		//if (it != _fees.end())
+		//	return false;
+
+		CThostFtdcQryInstrumentCommissionRateField req;
+		memset(&req, 0, sizeof(req));
+		strcpy(req.BrokerID, BROKER_ID.c_str());
+		strcpy(req.InvestorID, INVESTOR_ID.c_str());
+		strcpy(req.InstrumentID, cInfo.m_strCode.c_str());
+		strcpy(req.ExchangeID, cInfo.m_strExchg.c_str());
+		int iResult = pUserApi->ReqQryInstrumentCommissionRate(&req, ++iRequestID);
+		std::cerr << "--->>> Quering commission ratio: " << ((iResult == 0) ? "succeed" : "failed") << std::endl;
+		return true;
+	});
+}
+
+void CTraderSpi::ReqQryMargin(const Contract& cInfo)
+{
+	AppendQuery([this, &cInfo]() {
+		//auto it = _margins.find(cInfo.m_strProduct);
+		//if (it != _margins.end())
+		//	return false;
+
+		CThostFtdcQryInstrumentMarginRateField req;
+		memset(&req, 0, sizeof(req));
+		strcpy(req.BrokerID, BROKER_ID.c_str());
+		strcpy(req.InvestorID, INVESTOR_ID.c_str());
+		strcpy(req.InstrumentID, cInfo.m_strCode.c_str());
+		strcpy(req.ExchangeID, cInfo.m_strExchg.c_str());
+		req.HedgeFlag = THOST_FTDC_HF_Speculation;
+		int iResult = pUserApi->ReqQryInstrumentMarginRate(&req, ++iRequestID);
+		std::cerr << "--->>> Quering margin ratio: " << ((iResult == 0) ? "succeed" : "failed") << std::endl;
+		return true;
+	});
+}
+
+void CTraderSpi::AppendQuery(const QueryTask& task)
+{
+	{
+		SpinLock lock(_mtx);
+		_queries.emplace(task);
+	}
+
+	if(!_worker)
+	{
+		_worker.reset(new StdThread([this]() {
+			uint64_t last_qrytime = 0;
+			while(!_stopped)
+			{
+				while(_queries.empty())
+				{
+					std::this_thread::sleep_for(std::chrono::milliseconds(10));
+				}
+
+				for(;;)
+				{
+					uint64_t now = TimeUtils::getLocalTimeNow();
+					if(now - last_qrytime <= 1010)
+						std::this_thread::sleep_for(std::chrono::milliseconds(10));
+					else
+						break;
+				}
+				
+				{
+					SpinLock lock(_mtx);
+					QueryTask& task = _queries.front();
+					bool ret = task();
+					_queries.pop();
+
+					if(ret)
+						last_qrytime = TimeUtils::getLocalTimeNow();
+					std::cerr << "--->>> Quering queue left: " << _queries.size() << std::endl;
+				}
+			}
+		}));
+	}
 }
 
 inline bool isOption(TThostFtdcProductClassType pClass)
@@ -376,7 +464,67 @@ void CTraderSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CTho
 
 	if (bIsLast)
 	{
+		if(QRYFEES)
+		{
+			for (auto& v : _contracts)
+			{
+				const Contract& cInfo = v.second;
+				if(!SET_FILTERS.empty() && SET_FILTERS.find(cInfo.m_strCode) == SET_FILTERS.end() && SET_FILTERS.find(cInfo.m_strProduct) == SET_FILTERS.end())
+					continue;
+
+				ReqQryCommission(cInfo);
+				ReqQryMargin(cInfo);
+			}
+		}
+		else
+		{
+			DumpToJson();
+			exit(0);
+		}		
+	}
+}
+
+void CTraderSpi::OnRspQryInstrumentCommissionRate(CThostFtdcInstrumentCommissionRateField *pInstrumentCommissionRate, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
+{
+	if(!IsErrorRspInfo(pRspInfo))
+	{
+		FeeInfo& fInfo = _fees[fmt::format("{}.{}", pInstrumentCommissionRate->ExchangeID, pInstrumentCommissionRate->InstrumentID)];
+		fInfo._byvol = decimal::eq(pInstrumentCommissionRate->OpenRatioByMoney, 0);
+		if(fInfo._byvol)
+		{
+			fInfo._open = pInstrumentCommissionRate->OpenRatioByVolume;
+			fInfo._close = pInstrumentCommissionRate->CloseRatioByVolume;
+			fInfo._closet = pInstrumentCommissionRate->CloseTodayRatioByVolume;
+		}
+		else
+		{
+			fInfo._open = pInstrumentCommissionRate->OpenRatioByMoney;
+			fInfo._close = pInstrumentCommissionRate->CloseRatioByMoney;
+			fInfo._closet = pInstrumentCommissionRate->CloseTodayRatioByMoney;
+		}
+	}
+
+	if(_queries.empty() && QRYFEES)
+	{
 		DumpToJson();
+		DumpFees();
+		exit(0);
+	}
+}
+
+void CTraderSpi::OnRspQryInstrumentMarginRate(CThostFtdcInstrumentMarginRateField *pInstrumentMarginRate, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
+{
+	if (!IsErrorRspInfo(pRspInfo))
+	{
+		MarginInfo& mInfo = _margins[fmt::format("{}.{}", pInstrumentMarginRate->ExchangeID, pInstrumentMarginRate->InstrumentID)];
+		mInfo._long = pInstrumentMarginRate->LongMarginRatioByMoney;
+		mInfo._short = pInstrumentMarginRate->ShortMarginRatioByMoney;
+	}
+
+	if (_queries.empty() && QRYFEES)
+	{
+		DumpToJson();
+		DumpFees();
 		exit(0);
 	}
 }
@@ -468,6 +616,47 @@ void CTraderSpi::LoadFromJson()
 		root->release();
 	}
 	std::cerr << "--->>> " << "LoadFromJson" << std::endl;
+}
+
+void CTraderSpi::DumpFees()
+{
+	rj::Document root(rj::kObjectType);
+	rj::Document::AllocatorType &allocator = root.GetAllocator();
+
+	for(auto& v : _margins)
+	{
+		const std::string& fullCode = v.first;
+		const MarginInfo& mInfo = v.second;
+
+		const Contract& cInfo = _contracts[fullCode];
+
+		auto it = _fees.find(fullCode);
+		if (it == _fees.end())
+			it = _fees.find(fmt::format("{}.{}", cInfo.m_strExchg, cInfo.m_strProduct));
+		const FeeInfo& fInfo = it->second;
+
+		rj::Value jFees(rj::kObjectType);
+		jFees.AddMember("open", fInfo._open, allocator);
+		jFees.AddMember("close", fInfo._close, allocator);
+		jFees.AddMember("closetoday", fInfo._closet, allocator);
+		jFees.AddMember("byvolume", fInfo._byvol, allocator);
+		jFees.AddMember("margin", mInfo._long, allocator);
+
+		root.AddMember(rj::Value(fullCode.c_str(), allocator), jFees, allocator);
+	}
+
+	std::ofstream ofs;
+	std::string path = SAVEPATH;
+	path += "fees.json";
+	ofs.open(path);
+	{
+		rj::StringBuffer sb;
+		rj::PrettyWriter<rj::StringBuffer> writer(sb);
+		root.Accept(writer);
+		ofs << sb.GetString();
+	}
+	ofs.close();
+	std::cerr << "--->>> " << _commodities.size() << " fees dumped into : " << path << std::endl;
 }
 
 void CTraderSpi::DumpToJson()

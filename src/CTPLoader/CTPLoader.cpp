@@ -1,5 +1,6 @@
 ﻿#include <string>
 #include <map>
+#include <set>
 //v6.3.15
 #include "../API/CTP6.3.15/ThostFtdcTraderApi.h"
 #include "TraderSpi.h"
@@ -32,6 +33,7 @@ std::string AUTHCODE;
 uint32_t	CLASSMASK;	//期权
 bool		ONLYINCFG;	//只落地配置文件有的
 bool		INCREMENTAL;//是否增量拉取，默认false
+bool		QRYFEES;	//查询费率
 
 std::string COMM_FILE;		//输出的品种文件名
 std::string CONT_FILE;		//输出的合约文件名
@@ -41,6 +43,9 @@ std::string MODULE_NAME;	//外部模块名
 typedef std::map<std::string, std::string>	SymbolMap;
 SymbolMap	MAP_NAME;
 SymbolMap	MAP_SESSION;
+
+std::string FEE_FILTERS;
+std::set<std::string>	SET_FILTERS;
 
 typedef CThostFtdcTraderApi* (*CTPCreator)(const char *);
 CTPCreator		g_ctpCreator = NULL;
@@ -96,6 +101,8 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 		map_files = cfg->getCString("mapfiles");
 		ONLYINCFG = ctp->getBoolean("onlyincfg");
 		INCREMENTAL = ctp->getBoolean("incremental");
+		QRYFEES = ctp->getBoolean("qryfees");
+		FEE_FILTERS = ctp->getCString("feefilter");
 
 		MODULE_NAME = ctp->getCString("module");
 		if (MODULE_NAME.empty())
@@ -126,6 +133,8 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 		CLASSMASK = ini.readUInt("config", "mask", 1 | 2 | 4); //1-期货,2-期权,4-股票
 		ONLYINCFG = wt_stricmp(ini.readString("config", "onlyincfg", "false").c_str(), "true") == 0;
 		INCREMENTAL = wt_stricmp(ini.readString("config", "incremental", "false").c_str(), "true") == 0;
+		QRYFEES = wt_stricmp(ini.readString("config", "qryfees", "false").c_str(), "true") == 0;
+		FEE_FILTERS = ini.readString("config", "feefilter", "");
 
 		COMM_FILE = ini.readString("config", "commfile", "commodities.json");
 		CONT_FILE = ini.readString("config", "contfile", "contracts.json");
@@ -167,6 +176,8 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 		map_files = cfg->getCString("mapfiles");
 		ONLYINCFG = ctp->getBoolean("onlyincfg");
 		INCREMENTAL = ctp->getBoolean("incremental");
+		QRYFEES = ctp->getBoolean("qryfees");
+		FEE_FILTERS = ctp->getCString("feefilter");
 
 		MODULE_NAME = ctp->getCString("module");
 		if(MODULE_NAME.empty())
@@ -192,6 +203,17 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 
 	SAVEPATH = StrUtil::standardisePath(SAVEPATH);
 
+	if(!FEE_FILTERS.empty())
+	{
+		auto& ay = StrUtil::split(FEE_FILTERS, ",");
+		for (auto& s : ay)
+		{
+			if (s.empty())
+				continue;
+
+			SET_FILTERS.insert(s);
+		}
+	}
 	
 	if(!map_files.empty())
 	{
