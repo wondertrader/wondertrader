@@ -7,6 +7,7 @@
 
 #include <functional>
 #include <queue>
+#include <boost/thread.hpp>
 
 typedef std::function<bool()> QueryTask;
 
@@ -14,6 +15,12 @@ class CTraderSpi : public CThostFtdcTraderSpi
 {
 public:
 	CTraderSpi():_stopped(false){}
+	~CTraderSpi()
+	{
+		_stopped = true;
+		if (_worker)
+			_worker->join();
+	}
 
 public:
 	///当客户端与交易后台建立起通信连接时（还未登录前）,该方法被调用。
@@ -64,6 +71,6 @@ private:
 
 	std::queue<QueryTask>	_queries;
 	SpinMutex		_mtx;
-	StdThreadPtr	_worker;
+	std::shared_ptr<boost::thread>	_worker;
 	bool			_stopped;
 };

@@ -96,10 +96,10 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 		FEES_FILE = cfg->getCString("feesfile", "fees.json");
 
 		map_files = cfg->getCString("mapfiles");
-		ONLYINCFG = ctp->getBoolean("onlyincfg");
-		INCREMENTAL = ctp->getBoolean("incremental");
-		QRYFEES = ctp->getBoolean("qryfees");
-		FEE_FILTERS = ctp->getCString("feefilter");
+		ONLYINCFG = cfg->getBoolean("onlyincfg");
+		INCREMENTAL = cfg->getBoolean("incremental");
+		QRYFEES = cfg->getBoolean("qryfees");
+		FEE_FILTERS = cfg->getCString("feefilter");
 
 		MODULE_NAME = ctp->getCString("module");
 		if (MODULE_NAME.empty())
@@ -168,10 +168,10 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 		FEES_FILE = cfg->getCString("feesfile", "fees.json");
 
 		map_files = cfg->getCString("mapfiles");
-		ONLYINCFG = ctp->getBoolean("onlyincfg");
-		INCREMENTAL = ctp->getBoolean("incremental");
-		QRYFEES = ctp->getBoolean("qryfees");
-		FEE_FILTERS = ctp->getCString("feefilter");
+		ONLYINCFG = cfg->getBoolean("onlyincfg");
+		INCREMENTAL = cfg->getBoolean("incremental");
+		QRYFEES = cfg->getBoolean("qryfees");
+		FEE_FILTERS = cfg->getCString("feefilter");
 
 		MODULE_NAME = ctp->getCString("module");
 		if(MODULE_NAME.empty())

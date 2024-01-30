@@ -16,6 +16,8 @@
 
 #include "../WTSUtils/WTSCfgLoader.h"
 
+#include <boost/filesystem.hpp>
+
 #include <rapidjson/document.h>
 #include <rapidjson/prettywriter.h>
 namespace rj = rapidjson;
@@ -32,8 +34,6 @@ inline const char* encode_text(const char* s)
 	return ret.c_str();
 #endif
 }
-
-
 
 USING_NS_WTP;
 
@@ -233,34 +233,37 @@ void CTraderSpi::AppendQuery(const QueryTask& task)
 
 	if(!_worker)
 	{
-		_worker.reset(new StdThread([this]() {
+		_worker.reset(new boost::thread([this]() {
 			uint64_t last_qrytime = 0;
-			while(!_stopped)
+			while (!_stopped)
 			{
-				while(_queries.empty())
+				while (_queries.empty())
 				{
 					std::this_thread::sleep_for(std::chrono::milliseconds(10));
 				}
 
-				for(;;)
+				for (;;)
 				{
 					uint64_t now = TimeUtils::getLocalTimeNow();
-					if(now - last_qrytime <= 1010)
+					if (now - last_qrytime <= 1010)
 						std::this_thread::sleep_for(std::chrono::milliseconds(10));
 					else
 						break;
 				}
-				
+
+
+				QueryTask& task = _queries.front();
+				bool ret = task();
+
 				{
 					SpinLock lock(_mtx);
-					QueryTask& task = _queries.front();
-					bool ret = task();
 					_queries.pop();
 
-					if(ret)
-						last_qrytime = TimeUtils::getLocalTimeNow();
-					std::cerr << "--->>> Quering queue left: " << _queries.size() << std::endl;
 				}
+
+				if (ret)
+					last_qrytime = TimeUtils::getLocalTimeNow();
+				std::cerr << "--->>> Quering queue left: " << _queries.size() << std::endl;
 			}
 		}));
 	}
@@ -644,12 +647,12 @@ void CTraderSpi::DumpFees()
 		jFees.AddMember("byvolume", fInfo._byvol, allocator);
 		jFees.AddMember("margin", mInfo._long, allocator);
 
-		root.AddMember(rj::Value(rawCode.c_str(), allocator), jFees, allocator);
+		root.AddMember(rj::Value(fmt::format("{}.{}", cInfo.m_strExchg, cInfo.m_strCode).c_str(), allocator), jFees, allocator);
 	}
 
 	std::ofstream ofs;
 	std::string path;
-	if (std::filesystem::path(FEES_FILE).is_absolute())
+	if (boost::filesystem::path(FEES_FILE).is_absolute())
 	{
 		path = FEES_FILE;
 	}
