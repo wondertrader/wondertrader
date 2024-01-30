@@ -37,6 +37,7 @@ bool		QRYFEES;	//查询费率
 
 std::string COMM_FILE;		//输出的品种文件名
 std::string CONT_FILE;		//输出的合约文件名
+std::string FEES_FILE;		//输出的费率文件名
 
 std::string MODULE_NAME;	//外部模块名
 
@@ -90,13 +91,9 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 		SAVEPATH = cfg->getCString("path");
 		CLASSMASK = cfg->getUInt32("mask"); //1-期货,2-期权,4-股票
 
-		COMM_FILE = cfg->getCString("commfile");
-		if (COMM_FILE.empty())
-			COMM_FILE = "commodities.json";
-
-		CONT_FILE = cfg->getCString("contfile");
-		if (CONT_FILE.empty())
-			CONT_FILE = "contracts.json";
+		COMM_FILE = cfg->getCString("commfile", "commodities.json");
+		CONT_FILE = cfg->getCString("contfile", "contracts.json");
+		FEES_FILE = cfg->getCString("feesfile", "fees.json");
 
 		map_files = cfg->getCString("mapfiles");
 		ONLYINCFG = ctp->getBoolean("onlyincfg");
@@ -138,6 +135,7 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 
 		COMM_FILE = ini.readString("config", "commfile", "commodities.json");
 		CONT_FILE = ini.readString("config", "contfile", "contracts.json");
+		FEES_FILE = ini.readString("config", "feesfile", "fees.json");
 
 		map_files = ini.readString("config", "mapfiles", "");
 
@@ -165,13 +163,9 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 		SAVEPATH = cfg->getCString("path"); 
 		CLASSMASK = cfg->getUInt32("mask"); //1-期货,2-期权,4-股票
 
-		COMM_FILE = cfg->getCString("commfile");
-		if (COMM_FILE.empty())
-			COMM_FILE = "commodities.json";
-
-		CONT_FILE = cfg->getCString("contfile"); 
-		if(CONT_FILE.empty())
-			CONT_FILE = "contracts.json";
+		COMM_FILE = cfg->getCString("commfile", "commodities.json");
+		CONT_FILE = cfg->getCString("contfile", "contracts.json");
+		FEES_FILE = cfg->getCString("feesfile", "fees.json");
 
 		map_files = cfg->getCString("mapfiles");
 		ONLYINCFG = ctp->getBoolean("onlyincfg");
@@ -205,7 +199,7 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 
 	if(!FEE_FILTERS.empty())
 	{
-		auto& ay = StrUtil::split(FEE_FILTERS, ",");
+		auto ay = StrUtil::split(FEE_FILTERS, ",");
 		for (auto& s : ay)
 		{
 			if (s.empty())

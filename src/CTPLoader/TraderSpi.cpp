@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <fstream>
 #include <exception>
+#include <filesystem>
 
 #include "../Share/StrUtil.hpp"
 #include "../Share/fmtlib.h"
@@ -60,6 +61,7 @@ extern bool			QRYFEES;	//是否查询费率，默认false
 
 extern std::string COMM_FILE;		//输出的品种文件名
 extern std::string CONT_FILE;		//输出的合约文件名
+extern std::string FEES_FILE;		//输出的手续费文件名
 
 // 请求编号
 extern int iRequestID;
@@ -300,7 +302,7 @@ void CTraderSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CTho
 		if (pInstrument)
 		{
 			std::string fullInstId = fmtutil::format<64>("{}.{}", pInstrument->ExchangeID, pInstrument->InstrumentID);
-			auto it = _contracts.find(fullInstId);
+			auto it = _contracts.find(pInstrument->InstrumentID);
 			if (it != _contracts.end())
 			{
 				std::cerr << "--->>> " << pInstrument->ExchangeID << "." << pInstrument->InstrumentID << " already exists, skipped" << std::endl;
@@ -455,7 +457,7 @@ void CTraderSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CTho
 						_commodities[fullPid] = commInfo;
 					}
 
-					_contracts[fullInstId] = contract;
+					_contracts[pInstrument->InstrumentID] = contract;
 				}
 			} while (false);
 			
@@ -488,7 +490,7 @@ void CTraderSpi::OnRspQryInstrumentCommissionRate(CThostFtdcInstrumentCommission
 {
 	if(!IsErrorRspInfo(pRspInfo))
 	{
-		FeeInfo& fInfo = _fees[fmt::format("{}.{}", pInstrumentCommissionRate->ExchangeID, pInstrumentCommissionRate->InstrumentID)];
+		FeeInfo& fInfo = _fees[pInstrumentCommissionRate->InstrumentID];
 		fInfo._byvol = decimal::eq(pInstrumentCommissionRate->OpenRatioByMoney, 0);
 		if(fInfo._byvol)
 		{
@@ -516,7 +518,7 @@ void CTraderSpi::OnRspQryInstrumentMarginRate(CThostFtdcInstrumentMarginRateFiel
 {
 	if (!IsErrorRspInfo(pRspInfo))
 	{
-		MarginInfo& mInfo = _margins[fmt::format("{}.{}", pInstrumentMarginRate->ExchangeID, pInstrumentMarginRate->InstrumentID)];
+		MarginInfo& mInfo = _margins[pInstrumentMarginRate->InstrumentID];
 		mInfo._long = pInstrumentMarginRate->LongMarginRatioByMoney;
 		mInfo._short = pInstrumentMarginRate->ShortMarginRatioByMoney;
 	}
@@ -583,9 +585,9 @@ void CTraderSpi::LoadFromJson()
 			for (const auto& inst_id : jExchg->memberNames())
 			{
 				WTSVariant* pCont = jExchg->get(inst_id.c_str());
-				std::string key = fmt::format("{}.{}", exchg_id, inst_id);
+				//std::string key = fmt::format("{}.{}", exchg_id, inst_id);
 
-				Contract& contract = _contracts[key];
+				Contract& contract = _contracts[inst_id];
 				contract.m_strCode = inst_id;
 				contract.m_strExchg = exchg_id;
 				contract.m_strName = pCont->getCString("name");
@@ -625,14 +627,14 @@ void CTraderSpi::DumpFees()
 
 	for(auto& v : _margins)
 	{
-		const std::string& fullCode = v.first;
+		const std::string& rawCode = v.first;
 		const MarginInfo& mInfo = v.second;
 
-		const Contract& cInfo = _contracts[fullCode];
+		const Contract& cInfo = _contracts[rawCode];
 
-		auto it = _fees.find(fullCode);
+		auto it = _fees.find(rawCode);
 		if (it == _fees.end())
-			it = _fees.find(fmt::format("{}.{}", cInfo.m_strExchg, cInfo.m_strProduct));
+			it = _fees.find(cInfo.m_strProduct);
 		const FeeInfo& fInfo = it->second;
 
 		rj::Value jFees(rj::kObjectType);
@@ -642,12 +644,21 @@ void CTraderSpi::DumpFees()
 		jFees.AddMember("byvolume", fInfo._byvol, allocator);
 		jFees.AddMember("margin", mInfo._long, allocator);
 
-		root.AddMember(rj::Value(fullCode.c_str(), allocator), jFees, allocator);
+		root.AddMember(rj::Value(rawCode.c_str(), allocator), jFees, allocator);
 	}
 
 	std::ofstream ofs;
-	std::string path = SAVEPATH;
-	path += "fees.json";
+	std::string path;
+	if (std::filesystem::path(FEES_FILE).is_absolute())
+	{
+		path = FEES_FILE;
+	}
+	else
+	{
+		path = SAVEPATH;
+		path += "fees.json";
+	}
+
 	ofs.open(path);
 	{
 		rj::StringBuffer sb;
