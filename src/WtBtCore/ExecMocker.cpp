@@ -16,7 +16,8 @@
 #include "../Share/Converter.hpp"
 #include "../WTSTools/WTSLogger.h"
 
-#include <boost/filesystem.hpp>
+#include <filesystem>
+namespace fs = std::filesystem;
 
 #define PRICE_DOUBLE_TO_INT_P(x) ((int32_t)((x)*10000.0 + 0.5))
 #define PRICE_DOUBLE_TO_INT_N(x) ((int32_t)((x)*10000.0 - 0.5))
@@ -357,7 +358,7 @@ void ExecMocker::handle_replay_done()
 {
 	std::string folder = WtHelper::getOutputDir();
 	folder += "exec/";
-	boost::filesystem::create_directories(folder.c_str());
+	fs::create_directories(folder.c_str());
 
 	std::stringstream ss;
 	ss << folder << "trades_" << _id << ".csv";

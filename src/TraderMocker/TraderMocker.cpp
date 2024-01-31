@@ -12,7 +12,8 @@
 #include "../Share/StrUtil.hpp"
 
 #include <boost/bind.hpp>
-#include <boost/filesystem.hpp>
+#include <filesystem>
+namespace fs = std::filesystem;
 
 #include <rapidjson/document.h>
 #include <rapidjson/prettywriter.h>
@@ -538,7 +539,7 @@ bool TraderMocker::init(WTSVariant *params)
 	std::stringstream ss;
 	ss << "./mocker_" << _mocker_id << "/";
 	std::string path = ss.str();
-	boost::filesystem::create_directories(path.c_str());
+	fs::create_directories(path.c_str());
 
 	_pos_file = path;
 	_pos_file += "positions.json";
@@ -548,7 +549,7 @@ bool TraderMocker::init(WTSVariant *params)
 
 void TraderMocker::load_positions()
 {
-	if (!boost::filesystem::exists(_pos_file.c_str()))
+	if (!fs::exists(_pos_file.c_str()))
 		return;
 
 	std::string json;

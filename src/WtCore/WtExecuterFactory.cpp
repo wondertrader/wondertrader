@@ -4,7 +4,8 @@
 #include "../Share/StrUtil.hpp"
 #include "../WTSTools/WTSLogger.h"
 
-#include <boost/filesystem.hpp>
+#include <filesystem>
+namespace fs = std::filesystem;
 
 
 USING_NS_WTP;
@@ -19,11 +20,11 @@ bool WtExecuterFactory::loadFactories(const char* path)
 		return false;
 	}
 
-	boost::filesystem::path myPath(path);
-	boost::filesystem::directory_iterator endIter;
-	for (boost::filesystem::directory_iterator iter(myPath); iter != endIter; iter++)
+	fs::path myPath(path);
+	fs::directory_iterator endIter;
+	for (fs::directory_iterator iter(myPath); iter != endIter; iter++)
 	{
-		if (boost::filesystem::is_directory(iter->path()))
+		if (fs::is_directory(iter->path()))
 			continue;
 
 #ifdef _WIN32

@@ -88,7 +88,7 @@ bool ShareBlocks::init_slave(const char* name, const char* path/* = ""*/)
 	if (filename.empty())
 		filename = name;
 
-	if (!BoostFile::exists(filename.c_str()))
+	if (!StdFile::exists(filename.c_str()))
 		return false;
 
 	shm._domain.reset(new BoostMappingFile);

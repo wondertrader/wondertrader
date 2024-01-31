@@ -1,5 +1,4 @@
 ﻿#include <iostream>
-#include <boost/filesystem.hpp>
 
 #include "../Includes/ITraderApi.h"
 #include "../Includes/WTSVariant.hpp"
@@ -569,18 +568,6 @@ private:
 	bool				m_bLogined;
 };
 
-std::string getBaseFolder()
-{
-	static std::string basePath;
-	if (basePath.empty())
-	{
-		basePath = boost::filesystem::initial_path<boost::filesystem::path>().string();
-
-		basePath = StrUtil::standardisePath(basePath);
-	}
-
-	return basePath.c_str();
-}
 
 int main()
 {

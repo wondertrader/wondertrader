@@ -16,7 +16,8 @@
 
 #include "../WTSUtils/WTSCfgLoader.h"
 
-#include <boost/filesystem.hpp>
+#include <filesystem>
+namespace fs = std::filesystem;
 
 #include <rapidjson/document.h>
 #include <rapidjson/prettywriter.h>
@@ -652,7 +653,7 @@ void CTraderSpi::DumpFees()
 
 	std::ofstream ofs;
 	std::string path;
-	if (boost::filesystem::path(FEES_FILE).is_absolute())
+	if (fs::path(FEES_FILE).is_absolute())
 	{
 		path = FEES_FILE;
 	}

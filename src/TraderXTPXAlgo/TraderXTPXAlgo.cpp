@@ -19,7 +19,9 @@
 #include "../Share/ModuleHelper.hpp"
 #include "../Share/Converter.hpp"
 
-#include <boost/filesystem.hpp>
+#include <filesystem>
+namespace fs = std::filesystem;
+
 #include <iostream>
 
 //#pragma comment(lib, "../API/XTPXAlgo/x64/xtptraderapi_xalgo.lib")
@@ -871,7 +873,7 @@ void TraderXTPXAlgo::reconnect()
 
 	std::stringstream ss;
 	ss << _flowdir << "flows/" << _user << "/";
-	boost::filesystem::create_directories(ss.str().c_str());
+	fs::create_directories(ss.str().c_str());
 	_api = m_funcCreator(_client, ss.str().c_str(), XTP_LOG_LEVEL_DEBUG);			// 创建UserApi
 	if (_api == NULL)
 	{
@@ -995,7 +997,7 @@ void TraderXTPXAlgo::doLogin()
 				ss << "./xtpdata/local/";
 				std::string path = StrUtil::standardisePath(ss.str());
 				if (!StdFile::exists(path.c_str()))
-					boost::filesystem::create_directories(path.c_str());
+					fs::create_directories(path.c_str());
 				ss << _user << "_eid.sc";
 				m_eidCache.init(ss.str().c_str(), _tradingday, [this](const char* message) {
 					write_log(_sink, LL_WARN, message);
@@ -1008,7 +1010,7 @@ void TraderXTPXAlgo::doLogin()
 				ss << "./xtpdata/local/";
 				std::string path = StrUtil::standardisePath(ss.str());
 				if (!StdFile::exists(path.c_str()))
-					boost::filesystem::create_directories(path.c_str());
+					fs::create_directories(path.c_str());
 				ss << _user << "_oid.sc";
 				m_oidCache.init(ss.str().c_str(), _tradingday, [this](const char* message) {
 					write_log(_sink, LL_WARN, message);
@@ -1059,7 +1061,7 @@ void TraderXTPXAlgo::doLogin()
 				ss << "./xtpdata/local/";
 				std::string path = StrUtil::standardisePath(ss.str());
 				if (!StdFile::exists(path.c_str()))
-					boost::filesystem::create_directories(path.c_str());
+					fs::create_directories(path.c_str());
 				ss << _user << "_eid.sc";
 				m_eidCache.init(ss.str().c_str(), _tradingday, [this](const char* message) {
 					write_log(_sink, LL_WARN, message);
@@ -1072,7 +1074,7 @@ void TraderXTPXAlgo::doLogin()
 				ss << "./xtpdata/local/";
 				std::string path = StrUtil::standardisePath(ss.str());
 				if (!StdFile::exists(path.c_str()))
-					boost::filesystem::create_directories(path.c_str());
+					fs::create_directories(path.c_str());
 				ss << _user << "_oid.sc";
 				m_oidCache.init(ss.str().c_str(), _tradingday, [this](const char* message) {
 					write_log(_sink, LL_WARN, message);

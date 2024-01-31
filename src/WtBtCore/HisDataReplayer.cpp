@@ -33,7 +33,8 @@
 
 #include "../Share/CodeHelper.hpp"
 
-#include <boost/filesystem.hpp>
+#include <filesystem>
+namespace fs = std::filesystem;
 
 #include <rapidjson/document.h>
 #include <rapidjson/prettywriter.h>
@@ -548,7 +549,7 @@ void HisDataReplayer::dump_btstate(const char* stdCode, WTSKlinePeriod period, u
 	std::string folder = WtHelper::getOutputDir();
 	folder += _stra_name;
 	folder += "/";
-	boost::filesystem::create_directories(folder.c_str());
+	fs::create_directories(folder.c_str());
 	std::string filename = folder + "btenv.json";
 	StdFile::write_file_content(filename.c_str(), output.c_str(), output.size());
 }
@@ -3414,7 +3415,7 @@ bool HisDataReplayer::cacheRawTicksFromCSV(const std::string& key, const char* s
 	ss << _base_dir << "bin/ticks/";
 	std::string path = ss.str();
 	if (!StdFile::exists(path.c_str()))
-		boost::filesystem::create_directories(path.c_str());
+		fs::create_directories(path.c_str());
 	ss << stdCode << "_tick_" << uDate << ".dsb";
 	std::string filename = ss.str();
 	if (StdFile::exists(filename.c_str()))
@@ -3548,7 +3549,7 @@ bool HisDataReplayer::cacheFinalBarsFromLoader(const std::string& key, const cha
 	std::stringstream ss;
 	ss << _base_dir << "his/" << dirname << "/" << cInfo._exchg << "/";
 	if (!StdFile::exists(ss.str().c_str()))
-        boost::filesystem::create_directories(ss.str().c_str());
+        fs::create_directories(ss.str().c_str());
 
 	const char* ruleTag = cInfo._ruletag;
 
@@ -3695,7 +3696,7 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 
 	//这里自动创建，是因为后面转储需要
 	if (!StdFile::exists(ss.str().c_str()))
-		boost::filesystem::create_directories(ss.str().c_str());
+		fs::create_directories(ss.str().c_str());
 
 	const char* ruleTag = cInfo._ruletag;
 	if (strlen(ruleTag) > 0 && commInfo->isFuture())

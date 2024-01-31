@@ -74,8 +74,8 @@ bool WtDataWriterAD::init(WTSVariant* params, IDataWriterSink* sink)
 	_bd_mgr = sink->getBDMgr();
 
 	_base_dir = StrUtil::standardisePath(params->getCString("path"));
-	if (!BoostFile::exists(_base_dir.c_str()))
-		BoostFile::create_directories(_base_dir.c_str());
+	if (!StdFile::exists(_base_dir.c_str()))
+		StdFile::create_directories(_base_dir.c_str());
 
 	_cache_file_tick = "cache_tick.dmb";
 	_m1_cache._filename = "cache_m1.dmb";
@@ -116,7 +116,7 @@ void WtDataWriterAD::loadCache()
 	{
 		bool bNew = false;
 		std::string filename = _base_dir + _cache_file_tick;
-		if (!BoostFile::exists(filename.c_str()))
+		if (!StdFile::exists(filename.c_str()))
 		{
 			uint64_t uSize = sizeof(RTTickCache) + sizeof(TickCacheItem) * CACHE_SIZE_STEP_AD;
 			BoostFile bf;
@@ -157,7 +157,7 @@ void WtDataWriterAD::loadCache()
 	{
 		bool bNew = false;
 		std::string filename = _base_dir + _m1_cache._filename;
-		if (!BoostFile::exists(filename.c_str()))
+		if (!StdFile::exists(filename.c_str()))
 		{
 			uint64_t uSize = sizeof(RTBarCache) + sizeof(BarCacheItem) * CACHE_SIZE_STEP_AD;
 			BoostFile bf;
@@ -198,7 +198,7 @@ void WtDataWriterAD::loadCache()
 	{
 		bool bNew = false;
 		std::string filename = _base_dir + _m5_cache._filename;
-		if (!BoostFile::exists(filename.c_str()))
+		if (!StdFile::exists(filename.c_str()))
 		{
 			uint64_t uSize = sizeof(RTBarCache) + sizeof(BarCacheItem) * CACHE_SIZE_STEP_AD;
 			BoostFile bf;
@@ -239,7 +239,7 @@ void WtDataWriterAD::loadCache()
 	{
 		bool bNew = false;
 		std::string filename = _base_dir + _d1_cache._filename;
-		if (!BoostFile::exists(filename.c_str()))
+		if (!StdFile::exists(filename.c_str()))
 		{
 			uint64_t uSize = sizeof(RTBarCache) + sizeof(BarCacheItem) * CACHE_SIZE_STEP_AD;
 			BoostFile bf;

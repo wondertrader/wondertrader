@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "SpinMutex.hpp"
 #include "BoostFile.hpp"
+#include "StdUtils.hpp"
 #include "BoostMappingFile.hpp"
 #include "../Includes/FasterDefs.h"
 
@@ -118,7 +119,7 @@ public:
 	{
 		_logger = logger;
 		bool isNew = false;
-		if (!BoostFile::exists(filename))
+		if (!StdFile::exists(filename))
 		{
 			uint64_t uSize = sizeof(CacheBlock) + sizeof(CacheItem) * SIZE_STEP;
 			BoostFile bf;

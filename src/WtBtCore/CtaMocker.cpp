@@ -12,7 +12,8 @@
 #include "EventNotifier.h"
 
 #include <exception>
-#include <boost/filesystem.hpp>
+#include <filesystem>
+namespace fs = std::filesystem;
 
 #include "../Includes/WTSContractInfo.hpp"
 #include "../Includes/WTSSessionInfo.hpp"
@@ -211,7 +212,7 @@ void CtaMocker::dump_stradata()
 		folder += "/";
 
 		if (!StdFile::exists(folder.c_str()))
-			boost::filesystem::create_directories(folder.c_str());
+			fs::create_directories(folder.c_str());
 
 		std::string filename = folder;
 		filename += _name;
@@ -313,7 +314,7 @@ void CtaMocker::dump_chartdata()
 		folder += "/";
 
 		if(!StdFile::exists(folder.c_str()))
-			boost::filesystem::create_directories(folder.c_str());
+			fs::create_directories(folder.c_str());
 
 		std::string filename = folder;
 		filename += "btchart.json";
@@ -345,7 +346,7 @@ void CtaMocker::dump_outputs()
 	std::string folder = WtHelper::getOutputDir();
 	folder += _name;
 	folder += "/";
-	boost::filesystem::create_directories(folder.c_str());
+	fs::create_directories(folder.c_str());
 
 	std::string filename = folder + "trades.csv";
 	std::string content = "code,time,direct,action,price,qty,tag,fee,barno\n";
@@ -458,7 +459,7 @@ void CtaMocker::load_incremental_data(const char* incremental_backtest_base)
 	WTSLogger::info("loading incremental data from: {}", folder);
 
 	std::string tradesFilename = folder + "trades.csv";
-	if (boost::filesystem::exists(tradesFilename))
+	if (fs::exists(tradesFilename))
 	{
 		std::ifstream tradesFile(tradesFilename);
 		std::string str;
@@ -471,7 +472,7 @@ void CtaMocker::load_incremental_data(const char* incremental_backtest_base)
 	}
 
 	std::string closesFilename = folder + "closes.csv";
-	if (boost::filesystem::exists(closesFilename))
+	if (fs::exists(closesFilename))
 	{
 		std::ifstream closesFile(closesFilename);
 		std::string str;
@@ -484,7 +485,7 @@ void CtaMocker::load_incremental_data(const char* incremental_backtest_base)
 	}
 
 	std::string fundsFilename = folder + "funds.csv";
-	if (boost::filesystem::exists(fundsFilename))
+	if (fs::exists(fundsFilename))
 	{
 		std::ifstream fundsFile(fundsFilename);
 		std::string str;
@@ -497,7 +498,7 @@ void CtaMocker::load_incremental_data(const char* incremental_backtest_base)
 	}
 
 	std::string positionsFilename = folder + "positions.csv";
-	if (boost::filesystem::exists(positionsFilename))
+	if (fs::exists(positionsFilename))
 	{
 		std::ifstream positionsFile(positionsFilename);
 		std::string str;
@@ -510,7 +511,7 @@ void CtaMocker::load_incremental_data(const char* incremental_backtest_base)
 	}
 
 	std::string signalsFilename = folder + "signals.csv";
-	if (boost::filesystem::exists(signalsFilename))
+	if (fs::exists(signalsFilename))
 	{
 		std::ifstream signalsFile(signalsFilename);
 		std::string str;
@@ -523,7 +524,7 @@ void CtaMocker::load_incremental_data(const char* incremental_backtest_base)
 	}
 
 	std::string strategyDumpFilename = folder + fmtutil::format("{}.json", incremental_backtest_base);
-	if (boost::filesystem::exists(strategyDumpFilename))
+	if (fs::exists(strategyDumpFilename))
 	{
 		WTSLogger::info("load incremental data json: {}", strategyDumpFilename);
 		FILE* fp = fopen(strategyDumpFilename.c_str(), "rb");

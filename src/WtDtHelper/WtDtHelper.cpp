@@ -13,6 +13,7 @@
 #include "../Share/BoostFile.hpp"
 #include "../Share/Converter.hpp"
 #include "../Share/fmtlib.h"
+#include "../Share/StdUtils.hpp"
 
 #include "../WtDataStorage/DataDefine.h"
 #include "../WTSUtils/WTSCmpHelper.hpp"
@@ -162,21 +163,21 @@ uint32_t strToDate(const char* strDate)
 void dump_bars(WtString binFolder, WtString csvFolder, WtString strFilter /* = "" */, FuncLogCallback cbLogger /* = NULL */)
 {
 	std::string srcFolder = StrUtil::standardisePath(binFolder);
-	if (!BoostFile::exists(srcFolder.c_str()))
+	if (!StdFile::exists(srcFolder.c_str()))
 	{
 		if (cbLogger)
 			cbLogger(fmtutil::format("目录{}不存在", binFolder));
 		return;
 	}
 
-	if (!BoostFile::exists(csvFolder))
-		BoostFile::create_directories(csvFolder);
+	if (!StdFile::exists(csvFolder))
+		StdFile::create_directories(csvFolder);
 
-	boost::filesystem::path myPath(srcFolder);
-	boost::filesystem::directory_iterator endIter;
-	for (boost::filesystem::directory_iterator iter(myPath); iter != endIter; iter++)
+	std::filesystem::path myPath(srcFolder);
+	std::filesystem::directory_iterator endIter;
+	for (std::filesystem::directory_iterator iter(myPath); iter != endIter; iter++)
 	{
-		if (boost::filesystem::is_directory(iter->path()))
+		if (std::filesystem::is_directory(iter->path()))
 			continue;
 
 		if (iter->path().extension() != ".dsb")
@@ -190,7 +191,7 @@ void dump_bars(WtString binFolder, WtString csvFolder, WtString strFilter /* = "
 			cbLogger(fmtutil::format("正在读取数据文件{}...", path));
 
 		std::string buffer;
-		BoostFile::read_file_contents(path.c_str(), buffer);
+		StdFile::read_file_content(path.c_str(), buffer);
 		if (buffer.size() < sizeof(HisKlineBlock))
 		{
 			if (cbLogger)
@@ -254,7 +255,7 @@ void dump_bars(WtString binFolder, WtString csvFolder, WtString strFilter /* = "
 				<< curBar.add << std::endl;
 		}
 
-		BoostFile::write_file_contents(filename.c_str(), ss.str().c_str(), (uint32_t)ss.str().size());
+		StdFile::write_file_content(filename.c_str(), ss.str().c_str(), (uint32_t)ss.str().size());
 
 		if (cbLogger)
 			cbLogger(fmtutil::format("{}写入完成,共{}条bar", filename, kcnt));
@@ -267,21 +268,21 @@ void dump_bars(WtString binFolder, WtString csvFolder, WtString strFilter /* = "
 void dump_ticks(WtString binFolder, WtString csvFolder, WtString strFilter /* = "" */, FuncLogCallback cbLogger /* = NULL */)
 {
 	std::string srcFolder = StrUtil::standardisePath(binFolder);
-	if (!BoostFile::exists(srcFolder.c_str()))
+	if (!StdFile::exists(srcFolder.c_str()))
 	{
 		if (cbLogger)
 			cbLogger(fmtutil::format("目录{}不存在", binFolder));
 		return;
 	}
 
-	if (!BoostFile::exists(csvFolder))
-		BoostFile::create_directories(csvFolder);
+	if (!StdFile::exists(csvFolder))
+		StdFile::create_directories(csvFolder);
 
-	boost::filesystem::path myPath(srcFolder);
-	boost::filesystem::directory_iterator endIter;
-	for (boost::filesystem::directory_iterator iter(myPath); iter != endIter; iter++)
+	std::filesystem::path myPath(srcFolder);
+	std::filesystem::directory_iterator endIter;
+	for (std::filesystem::directory_iterator iter(myPath); iter != endIter; iter++)
 	{
-		if (boost::filesystem::is_directory(iter->path()))
+		if (std::filesystem::is_directory(iter->path()))
 			continue;
 
 		if (iter->path().extension() != ".dsb")
@@ -295,7 +296,7 @@ void dump_ticks(WtString binFolder, WtString csvFolder, WtString strFilter /* = 
 			cbLogger(fmtutil::format("正在读取数据文件{}...", path.c_str()));
 
 		std::string buffer;
-		BoostFile::read_file_contents(path.c_str(), buffer);
+		StdFile::read_file_content(path.c_str(), buffer);
 		if (buffer.size() < sizeof(HisTickBlock))
 		{
 			if (cbLogger)
@@ -360,7 +361,7 @@ void dump_ticks(WtString binFolder, WtString csvFolder, WtString strFilter /* = 
 			ss << std::endl;
 		}
 
-		BoostFile::write_file_contents(filename.c_str(), ss.str().c_str(), (uint32_t)ss.str().size());
+		StdFile::write_file_content(filename.c_str(), ss.str().c_str(), (uint32_t)ss.str().size());
 
 		if (cbLogger)
 			cbLogger(fmtutil::format("{}写入完成,共{}条tick数据", filename.c_str(), tcnt));
@@ -372,11 +373,11 @@ void dump_ticks(WtString binFolder, WtString csvFolder, WtString strFilter /* = 
 
 void trans_csv_bars(WtString csvFolder, WtString binFolder, WtString period, FuncLogCallback cbLogger /* = NULL */)
 {
-	if (!BoostFile::exists(csvFolder))
+	if (!StdFile::exists(csvFolder))
 		return;
 
-	if (!BoostFile::exists(binFolder))
-		BoostFile::create_directories(binFolder);
+	if (!StdFile::exists(binFolder))
+		StdFile::create_directories(binFolder);
 
 	WTSKlinePeriod kp = KP_DAY;
 	if (wt_stricmp(period, "m1") == 0)
@@ -386,11 +387,11 @@ void trans_csv_bars(WtString csvFolder, WtString binFolder, WtString period, Fun
 	else
 		kp = KP_DAY;
 
-	boost::filesystem::path myPath(csvFolder);
-	boost::filesystem::directory_iterator endIter;
-	for (boost::filesystem::directory_iterator iter(myPath); iter != endIter; iter++)
+	std::filesystem::path myPath(csvFolder);
+	std::filesystem::directory_iterator endIter;
+	for (std::filesystem::directory_iterator iter(myPath); iter != endIter; iter++)
 	{
-		if (boost::filesystem::is_directory(iter->path()))
+		if (std::filesystem::is_directory(iter->path()))
 			continue;
 
 		if (iter->path().extension() != ".csv")
@@ -597,7 +598,7 @@ WtUInt32 read_dsb_ticks(WtString tickFile, FuncGetTicksCallback cb, FuncCountDat
 		cbLogger(fmtutil::format("正在读取数据文件{}...", path.c_str()));
 
 	std::string content;
-	BoostFile::read_file_contents(path.c_str(), content);
+	StdFile::read_file_content(path.c_str(), content);
 	if (content.size() < sizeof(HisTickBlock))
 	{
 		if (cbLogger)
@@ -632,7 +633,7 @@ WtUInt32 read_dsb_order_details(WtString dataFile, FuncGetOrdDtlCallback cb, Fun
 		cbLogger(fmtutil::format("正在读取数据文件{}...", path.c_str()));
 
 	std::string content;
-	BoostFile::read_file_contents(path.c_str(), content);
+	StdFile::read_file_content(path.c_str(), content);
 	if (content.size() < sizeof(HisOrdDtlBlock))
 	{
 		if (cbLogger)
@@ -667,7 +668,7 @@ WtUInt32 read_dsb_order_queues(WtString dataFile, FuncGetOrdQueCallback cb, Func
 		cbLogger(fmtutil::format("正在读取数据文件{}...", path.c_str()));
 
 	std::string content;
-	BoostFile::read_file_contents(path.c_str(), content);
+	StdFile::read_file_content(path.c_str(), content);
 	if (content.size() < sizeof(HisOrdQueBlock))
 	{
 		if (cbLogger)
@@ -702,7 +703,7 @@ WtUInt32 read_dsb_transactions(WtString dataFile, FuncGetTransCallback cb, FuncC
 		cbLogger(fmtutil::format("正在读取数据文件{}...", path.c_str()));
 
 	std::string content;
-	BoostFile::read_file_contents(path.c_str(), content);
+	StdFile::read_file_content(path.c_str(), content);
 	if (content.size() < sizeof(HisTransBlock))
 	{
 		if (cbLogger)
@@ -736,7 +737,7 @@ WtUInt32 read_dsb_bars(WtString barFile, FuncGetBarsCallback cb, FuncCountDataCa
 		cbLogger(fmtutil::format("正在读取数据文件{}...", path.c_str()));
 
 	std::string content;
-	BoostFile::read_file_contents(path.c_str(), content);
+	StdFile::read_file_content(path.c_str(), content);
 	if (content.size() < sizeof(HisKlineBlock))
 	{
 		if (cbLogger)
@@ -768,7 +769,7 @@ WtUInt32 read_dmb_bars(WtString barFile, FuncGetBarsCallback cb, FuncCountDataCa
 	std::string path = barFile;
 
 	std::string buffer;
-	BoostFile::read_file_contents(path.c_str(), buffer);
+	StdFile::read_file_content(path.c_str(), buffer);
 	if (buffer.size() < sizeof(RTKlineBlock))
 	{
 		if (cbLogger)
@@ -801,7 +802,7 @@ WtUInt32 read_dmb_ticks(WtString tickFile, FuncGetTicksCallback cb, FuncCountDat
 		cbLogger(fmtutil::format("正在读取数据文件{}...", path.c_str()));
 
 	std::string buffer;
-	BoostFile::read_file_contents(path.c_str(), buffer);
+	StdFile::read_file_content(path.c_str(), buffer);
 	if (buffer.size() < sizeof(RTTickBlock))
 	{
 		if (cbLogger)
@@ -915,7 +916,7 @@ WtUInt32 resample_bars(WtString barFile, FuncGetBarsCallback cb, FuncCountDataCa
 		cbLogger(fmtutil::format("正在读取数据文件{}...", path.c_str()));
 
 	std::string buffer;
-	BoostFile::read_file_contents(path.c_str(), buffer);
+	StdFile::read_file_content(path.c_str(), buffer);
 	if (buffer.size() < sizeof(HisKlineBlock))
 	{
 		if (cbLogger)

@@ -1,5 +1,4 @@
 ﻿#include <iostream>
-#include <boost/filesystem.hpp>
 
 #include "../Includes/IParserApi.h"
 #include "../Includes/WTSVariant.hpp"
@@ -125,19 +124,6 @@ private:
 	std::string			m_strModule;
 	WTSVariant*			m_pParams;
 };
-
-std::string getBaseFolder()
-{
-	static std::string basePath;
-	if (basePath.empty())
-	{
-		basePath = boost::filesystem::initial_path<boost::filesystem::path>().string();
-
-		basePath = StrUtil::standardisePath(basePath);
-	}
-
-	return basePath.c_str();
-}
 
 int main()
 {

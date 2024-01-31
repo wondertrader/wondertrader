@@ -119,8 +119,8 @@ bool WtDataWriter::init(WTSVariant* params, IDataWriterSink* sink)
 	_save_tick_log = params->getBoolean("savelog");
 
 	_base_dir = StrUtil::standardisePath(params->getCString("path"));
-	if (!BoostFile::exists(_base_dir.c_str()))
-		BoostFile::create_directories(_base_dir.c_str());
+	if (!StdFile::exists(_base_dir.c_str()))
+		StdFile::create_directories(_base_dir.c_str());
 	_cache_file = params->getCString("cache");
 	if (_cache_file.empty())
 		_cache_file = "cache.dmb";
@@ -270,7 +270,7 @@ void WtDataWriter::loadCache()
 
 	bool bNew = false;
 	std::string filename = _base_dir + _cache_file;
-	if (!BoostFile::exists(filename.c_str()))
+	if (!StdFile::exists(filename.c_str()))
 	{
 		uint64_t uSize = sizeof(RTTickCache) + sizeof(TickCacheItem) * TOTAL_CODES;
 		BoostFile bf;
@@ -680,12 +680,12 @@ WtDataWriter::OrdQueBlockPair* WtDataWriter::getOrdQueBlock(WTSContractInfo* ct,
 	{
 		std::string path = fmt::format("{}rt/queue/{}/", _base_dir.c_str(), ct->getExchg());
 		if (bAutoCreate)
-			BoostFile::create_directories(path.c_str());
+			StdFile::create_directories(path.c_str());
 		path += ct->getCode();
 		path += ".dmb";
 
 		bool isNew = false;
-		if (!BoostFile::exists(path.c_str()))
+		if (!StdFile::exists(path.c_str()))
 		{
 			if (!bAutoCreate)
 				return NULL;
@@ -774,12 +774,12 @@ WtDataWriter::OrdDtlBlockPair* WtDataWriter::getOrdDtlBlock(WTSContractInfo* ct,
 	{
 		std::string path = fmt::format("{}rt/orders/{}/", _base_dir.c_str(), ct->getExchg());
 		if(bAutoCreate)
-			BoostFile::create_directories(path.c_str());
+			StdFile::create_directories(path.c_str());
 		path += ct->getCode();
 		path += ".dmb";
 
 		bool isNew = false;
-		if (!BoostFile::exists(path.c_str()))
+		if (!StdFile::exists(path.c_str()))
 		{
 			if (!bAutoCreate)
 				return NULL;
@@ -869,12 +869,12 @@ WtDataWriter::TransBlockPair* WtDataWriter::getTransBlock(WTSContractInfo* ct, u
 	{
 		std::string path = fmt::format("{}rt/trans/{}/", _base_dir.c_str(), ct->getExchg());
 		if (bAutoCreate)
-			BoostFile::create_directories(path.c_str());
+			StdFile::create_directories(path.c_str());
 		path += ct->getCode();
 		path += ".dmb";
 
 		bool isNew = false;
-		if (!BoostFile::exists(path.c_str()))
+		if (!StdFile::exists(path.c_str()))
 		{
 			if (!bAutoCreate)
 				return NULL;
@@ -964,7 +964,7 @@ WtDataWriter::TickBlockPair* WtDataWriter::getTickBlock(WTSContractInfo* ct, uin
 	{
 		std::string path = fmt::format("{}rt/ticks/{}/", _base_dir.c_str(), ct->getExchg());
 		if (bAutoCreate)
-			BoostFile::create_directories(path.c_str());
+			StdFile::create_directories(path.c_str());
 
 		if(_save_tick_log)
 		{
@@ -978,7 +978,7 @@ WtDataWriter::TickBlockPair* WtDataWriter::getTickBlock(WTSContractInfo* ct, uin
 		path += ".dmb";
 
 		bool isNew = false;
-		if (!BoostFile::exists(path.c_str()))
+		if (!StdFile::exists(path.c_str()))
 		{
 			if (!bAutoCreate)
 				return NULL;
@@ -1351,7 +1351,7 @@ WtDataWriter::KBlockPair* WtDataWriter::getKlineBlock(WTSContractInfo* ct, WTSKl
 		char * s = fmt::format_to(path, "{}rt/{}/{}/", _base_dir, subdir, ct->getExchg());
 		s[0] = '\0';
 		if (bAutoCreate)
-			BoostFile::create_directories(path);
+			StdFile::create_directories(path);
 
 		wt_strcpy(s, ct->getCode());
 		s += strlen(ct->getCode());
@@ -1360,7 +1360,7 @@ WtDataWriter::KBlockPair* WtDataWriter::getKlineBlock(WTSContractInfo* ct, WTSKl
 		s[0] = '\0';
 
 		bool isNew = false;
-		if (!BoostFile::exists(path))
+		if (!StdFile::exists(path))
 		{
 			if (!bAutoCreate)
 				return NULL;
@@ -1872,11 +1872,11 @@ bool WtDataWriter::dump_day_data(WTSContractInfo* ct, WTSBarStruct* newBar)
 	std::stringstream ss;
 	ss << _base_dir << "his/day/" << ct->getExchg() << "/";
 	std::string path = ss.str();
-	BoostFile::create_directories(ss.str().c_str());
+	StdFile::create_directories(ss.str().c_str());
 	std::string filename = fmtutil::format("{}{}.dsb", path, ct->getCode());
 
 	bool bNew = false;
-	if (!BoostFile::exists(filename.c_str()))
+	if (!StdFile::exists(filename.c_str()))
 		bNew = true;
 
 	BoostFile f;
@@ -1898,7 +1898,7 @@ bool WtDataWriter::dump_day_data(WTSContractInfo* ct, WTSBarStruct* newBar)
 		{
 			//日线必须要检查一下
 			std::string content;
-			BoostFile::read_file_contents(filename.c_str(), content);
+			StdFile::read_file_content(filename.c_str(), content);
 			HisKlineBlock* kBlock = (HisKlineBlock*)content.data();
 			//如果老的文件已经是压缩版本,或者最终数据大小大于100条,则进行压缩
 			bool bCompressed = kBlock->is_compressed();
@@ -2015,13 +2015,13 @@ uint32_t WtDataWriter::dump_bars_to_file(WTSContractInfo* ct)
 
 			std::stringstream ss;
 			ss << _base_dir << "his/min1/" << ct->getExchg() << "/";
-			BoostFile::create_directories(ss.str().c_str());
+			StdFile::create_directories(ss.str().c_str());
 			std::string path = ss.str();
-			BoostFile::create_directories(ss.str().c_str());
+			StdFile::create_directories(ss.str().c_str());
 			std::string filename = fmtutil::format("{}{}.dsb", path, ct->getCode());
 
 			bool bNew = false;
-			if (!BoostFile::exists(filename.c_str()))
+			if (!StdFile::exists(filename.c_str()))
 				bNew = true;
 
 			pipe_writer_log(_sink, LL_INFO, "Openning data storage faile: {}", filename.c_str());
@@ -2034,7 +2034,7 @@ uint32_t WtDataWriter::dump_bars_to_file(WTSContractInfo* ct)
 				if (!bNew)
 				{
 					std::string content;
-					BoostFile::read_file_contents(filename.c_str(), content);
+					StdFile::read_file_content(filename.c_str(), content);
 					proc_block_data(filename.c_str(), content, true, false);
 					buffer.swap(content);
 				}
@@ -2082,13 +2082,13 @@ uint32_t WtDataWriter::dump_bars_to_file(WTSContractInfo* ct)
 
 			std::stringstream ss;
 			ss << _base_dir << "his/min5/" << ct->getExchg() << "/";
-			BoostFile::create_directories(ss.str().c_str());
+			StdFile::create_directories(ss.str().c_str());
 			std::string path = ss.str();
-			BoostFile::create_directories(ss.str().c_str());
+			StdFile::create_directories(ss.str().c_str());
 			std::string filename = fmtutil::format("{}{}.dsb", path.c_str(), ct->getCode());
 
 			bool bNew = false;
-			if (!BoostFile::exists(filename.c_str()))
+			if (!StdFile::exists(filename.c_str()))
 				bNew = true;
 
 			pipe_writer_log(_sink, LL_INFO, "Openning data storage file: {}", filename.c_str());
@@ -2101,7 +2101,7 @@ uint32_t WtDataWriter::dump_bars_to_file(WTSContractInfo* ct)
 				if (!bNew)
 				{
 					std::string content;
-					BoostFile::read_file_contents(filename.c_str(), content);
+					StdFile::read_file_content(filename.c_str(), content);
 					proc_block_data(filename.c_str(), content, true, false);
 					buffer.swap(content);
 				}
@@ -2206,7 +2206,7 @@ void WtDataWriter::proc_loop()
 
 					//删除已经过期代码的实时tick文件
 					std::string path = fmtutil::format("{}rt/ticks/{}/{}.dmb", _base_dir, ay[0], ay[1]);
-					BoostFile::delete_file(path.c_str());
+					StdFile::delete_file(path.c_str());
 				}
 			}
 
@@ -2267,7 +2267,7 @@ void WtDataWriter::proc_loop()
 
 				std::stringstream ss;
 				ss << _base_dir << "his/snapshot/";
-				BoostFile::create_directories(ss.str().c_str());
+				StdFile::create_directories(ss.str().c_str());
 				ss << TimeUtils::getCurDate() << ".csv";
 				std::string path = ss.str();
 
@@ -2291,17 +2291,17 @@ void WtDataWriter::proc_loop()
 				try
 				{
 					std::string path = fmtutil::format("{}rt/min1/", _base_dir);
-					boost::filesystem::remove_all(boost::filesystem::path(path));
+					std::filesystem::remove_all(std::filesystem::path(path));
 					path = fmtutil::format("{}rt/min5/", _base_dir);
-					boost::filesystem::remove_all(boost::filesystem::path(path));
+					std::filesystem::remove_all(std::filesystem::path(path));
 					path = fmtutil::format("{}rt/ticks/", _base_dir);
-					boost::filesystem::remove_all(boost::filesystem::path(path));
+					std::filesystem::remove_all(std::filesystem::path(path));
 					path = fmtutil::format("{}rt/orders/", _base_dir);
-					boost::filesystem::remove_all(boost::filesystem::path(path));
+					std::filesystem::remove_all(std::filesystem::path(path));
 					path = fmtutil::format("{}rt/queue/", _base_dir);
-					boost::filesystem::remove_all(boost::filesystem::path(path));
+					std::filesystem::remove_all(std::filesystem::path(path));
 					path = fmtutil::format("{}rt/trans/", _base_dir);
-					boost::filesystem::remove_all(boost::filesystem::path(path));
+					std::filesystem::remove_all(std::filesystem::path(path));
 					break;
 				}
 				catch (...)
@@ -2371,11 +2371,11 @@ void WtDataWriter::proc_loop()
 							ss << _base_dir << "his/ticks/" << ct->getExchg() << "/" << tBlkPair->_block->_date << "/";
 							std::string path = ss.str();
 							pipe_writer_log(_sink, LL_INFO, path.c_str());
-							BoostFile::create_directories(ss.str().c_str());
+							StdFile::create_directories(ss.str().c_str());
 							std::string filename = fmtutil::format("{}{}.dsb", path, code);
 
 							bool bNew = false;
-							if (!BoostFile::exists(filename.c_str()))
+							if (!StdFile::exists(filename.c_str()))
 								bNew = true;
 
 							pipe_writer_log(_sink, LL_INFO, "Openning data storage file: {}", filename.c_str());
@@ -2438,11 +2438,11 @@ void WtDataWriter::proc_loop()
 						ss << _base_dir << "his/trans/" << ct->getExchg() << "/" << tBlkPair->_block->_date << "/";
 						std::string path = ss.str();
 						pipe_writer_log(_sink, LL_INFO, path.c_str());
-						BoostFile::create_directories(ss.str().c_str());
+						StdFile::create_directories(ss.str().c_str());
 						std::string filename = fmtutil::format("{}{}.dsb", path, code);
 
 						bool bNew = false;
-						if (!BoostFile::exists(filename.c_str()))
+						if (!StdFile::exists(filename.c_str()))
 							bNew = true;
 
 						pipe_writer_log(_sink, LL_INFO, "Openning data storage file: {}", filename.c_str());
@@ -2504,11 +2504,11 @@ void WtDataWriter::proc_loop()
 						ss << _base_dir << "his/orders/" << ct->getExchg() << "/" << tBlkPair->_block->_date << "/";
 						std::string path = ss.str();
 						pipe_writer_log(_sink, LL_INFO, path.c_str());
-						BoostFile::create_directories(ss.str().c_str());
+						StdFile::create_directories(ss.str().c_str());
 						std::string filename = fmtutil::format("{}{}.dsb", path, code);
 
 						bool bNew = false;
-						if (!BoostFile::exists(filename.c_str()))
+						if (!StdFile::exists(filename.c_str()))
 							bNew = true;
 
 						pipe_writer_log(_sink, LL_INFO, "Openning data storage file: {}", filename.c_str());
@@ -2570,11 +2570,11 @@ void WtDataWriter::proc_loop()
 						ss << _base_dir << "his/queue/" << ct->getExchg() << "/" << tBlkPair->_block->_date << "/";
 						std::string path = ss.str();
 						pipe_writer_log(_sink, LL_INFO, path.c_str());
-						BoostFile::create_directories(ss.str().c_str());
+						StdFile::create_directories(ss.str().c_str());
 						std::string filename = fmtutil::format("{}{}.dsb", path, code);
 
 						bool bNew = false;
-						if (!BoostFile::exists(filename.c_str()))
+						if (!StdFile::exists(filename.c_str()))
 							bNew = true;
 
 						pipe_writer_log(_sink, LL_INFO, "Openning data storage file: {}", filename.c_str());

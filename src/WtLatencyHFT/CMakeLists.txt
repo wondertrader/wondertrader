@@ -30,8 +30,8 @@ ELSE(GNUCC)
 	LIST(APPEND LIBS
 		dl
 		pthread
-		boost_filesystem
-		boost_thread)
+		boost_thread
+		stdc++fs)
 	IF(WIN32)
 		LIST(APPEND LIBS
 			ws2_32 iconv)

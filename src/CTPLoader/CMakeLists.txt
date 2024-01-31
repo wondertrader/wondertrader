@@ -21,7 +21,7 @@ LINK_DIRECTORIES(${LNKS})
 SET(LIBS
     boost_thread
     pthread
-	boost_filesystem
+	stdc++fs
 	dl
     WTSUtils
 )

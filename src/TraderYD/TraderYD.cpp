@@ -22,7 +22,8 @@
 #include "../Share/Converter.hpp"
 #include "../Share/ModuleHelper.hpp"
 
-#include <boost/filesystem.hpp>
+#include <filesystem>
+namespace fs = std::filesystem;
 
 const char* ENTRUST_SECTION = "entrusts";
 const char* ORDER_SECTION = "orders";
@@ -189,7 +190,7 @@ void TraderYD::notifyLogin(int errorNo, int maxOrderRef, bool isMonitor)
 			ss <<  "ydlocal/" ;
 			std::string path = StrUtil::standardisePath(ss.str());
 			if (!StdFile::exists(path.c_str()))
-				boost::filesystem::create_directories(path.c_str());
+				fs::create_directories(path.c_str());
 			ss << m_strUser << "_eid.sc";
 			m_eidCache.init(ss.str().c_str(), m_lDate, m_cacheLogger);
 		}
@@ -200,7 +201,7 @@ void TraderYD::notifyLogin(int errorNo, int maxOrderRef, bool isMonitor)
 			ss << "ydlocal/";
 			std::string path = StrUtil::standardisePath(ss.str());
 			if (!StdFile::exists(path.c_str()))
-				boost::filesystem::create_directories(path.c_str());
+				fs::create_directories(path.c_str());
 			ss << m_strUser << "_oid.sc";
 			m_oidCache.init(ss.str().c_str(), m_lDate, m_cacheLogger);
 		}

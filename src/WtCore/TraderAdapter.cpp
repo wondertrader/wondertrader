@@ -240,12 +240,12 @@ void TraderAdapter::initSaveData()
 	std::stringstream ss;
 	ss << WtHelper::getBaseDir() << "traders/" << _id << "//";
 	std::string folder = ss.str();
-	BoostFile::create_directories(folder.c_str());
+	StdFile::create_directories(folder.c_str());
 
 	std::string filename = folder + "trades.csv";
 	_trades_log.reset(new BoostFile());
 	{
-		bool isNewFile = !BoostFile::exists(filename.c_str());
+		bool isNewFile = !StdFile::exists(filename.c_str());
 		_trades_log->create_or_open_file(filename.c_str());
 		if (isNewFile)
 		{
@@ -260,7 +260,7 @@ void TraderAdapter::initSaveData()
 	filename = folder + "orders.csv";
 	_orders_log.reset(new BoostFile());
 	{
-		bool isNewFile = !BoostFile::exists(filename.c_str());
+		bool isNewFile = !StdFile::exists(filename.c_str());
 		_orders_log->create_or_open_file(filename.c_str());
 		if (isNewFile)
 		{

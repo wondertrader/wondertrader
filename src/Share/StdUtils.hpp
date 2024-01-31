@@ -15,6 +15,7 @@
 #include <condition_variable>
 #include <stdint.h>
 #include <string>
+#include <filesystem>
 
 #if _MSC_VER
 #include <io.h>
@@ -92,5 +93,15 @@ public:
 		int ret = access(filename, 0);
 #endif
 		return ret == 0;
+	}
+
+	static inline bool create_directories(const char* folder)
+	{
+		return std::filesystem::create_directories(std::filesystem::path(folder));
+	}
+
+	static bool delete_file(const char *name)
+	{
+		return std::filesystem::remove(std::filesystem::path(name));
 	}
 };

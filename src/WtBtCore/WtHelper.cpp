@@ -10,7 +10,8 @@
 #include "WtHelper.h"
 
 #include "../Share/StrUtil.hpp"
-#include <boost/filesystem.hpp>
+#include <filesystem>
+namespace fs = std::filesystem;
 
 #ifdef _MSC_VER
 #include <direct.h>
@@ -45,7 +46,7 @@ void WtHelper::setOutputDir(const char* out_dir)
 
 const char* WtHelper::getOutputDir()
 {
-	if (!boost::filesystem::exists(_out_dir.c_str()))
-        boost::filesystem::create_directories(_out_dir.c_str());
+	if (!fs::exists(_out_dir.c_str()))
+        fs::create_directories(_out_dir.c_str());
 	return _out_dir.c_str();
 }

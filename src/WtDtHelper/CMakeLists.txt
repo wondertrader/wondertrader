@@ -23,6 +23,7 @@ IF (MSVC)
 ELSE (GNUCC)
 	LIST(APPEND LIBS
 		dl
+		stdc++fs
 		boost_filesystem
 		)
 ENDIF()

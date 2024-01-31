@@ -20,7 +20,8 @@
 #include "../Includes/IBaseDataMgr.h"
 #include "../Includes/WTSVersion.h"
 
-#include <boost/filesystem.hpp>
+#include <filesystem>
+namespace fs = std::filesystem;
 
  //By Wesley @ 2022.01.05
 #include "../Share/fmtlib.h"
@@ -113,8 +114,9 @@ bool ParserCTPMini::init(WTSVariant* config)
 	std::string path = fmtutil::format("{}/{}/{}/", m_strFlowDir.c_str(), m_strBroker.c_str(), m_strUserID.c_str());
 	if (!StdFile::exists(path.c_str()))
 	{
-		boost::filesystem::create_directories(boost::filesystem::path(path));
+		fs::create_directories(fs::path(path));
 	}
+
 #ifdef _WIN32
 #	ifdef _WIN64
 	const char* creatorName = "?CreateFtdcMdApi@CThostFtdcMdApi@@SAPEAV1@PEBD_N1@Z";

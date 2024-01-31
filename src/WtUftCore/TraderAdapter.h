@@ -11,7 +11,6 @@
 
 #include "../Includes/FasterDefs.h"
 #include "../Includes/ITraderApi.h"
-#include "../Share/BoostFile.hpp"
 #include "../Share/StdUtils.hpp"
 #include "../Includes/WTSCollection.hpp"
 #include "../Share/SpinMutex.hpp"

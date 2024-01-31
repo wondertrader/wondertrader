@@ -10,6 +10,10 @@
 #include "ParserHuaX.h"
 #include "../Includes/WTSVersion.h"
 
+#include <filesystem>
+namespace fs = std::filesystem;
+
+
 template<typename... Args>
 inline void write_log(IParserSpi* sink, WTSLogLevel ll, const char* format, const Args&... args)
 {
@@ -87,7 +91,7 @@ bool ParserHuaX::init(WTSVariant* config)
 		module = "xfastmdapi";
 
 	std::string path = fmtutil::format("{}/{}/", _strFlowDir.c_str(), _strUser.c_str());
-	boost::filesystem::create_directories(path.c_str());
+	fs::create_directories(path.c_str());
 
 	std::string dllpath = getBinDir() + DLLHelper::wrap_module(module.c_str(), "lib");;
 	_hInst = DLLHelper::load_library(dllpath.c_str());

@@ -20,7 +20,8 @@
 #include "../Share/StdUtils.hpp"
 #include "../Share/Converter.hpp"
 
-#include <boost/filesystem.hpp>
+#include <filesystem>
+namespace fs = std::filesystem;
 
  //By Wesley @ 2022.01.05
 #include "../Share/fmtlib.h"
@@ -116,7 +117,7 @@ bool ParserCTP::init(WTSVariant* config)
 	std::string path = fmtutil::format("{}{}/{}/", m_strFlowDir, m_strBroker, m_strUserID);
 	if (!StdFile::exists(path.c_str()))
 	{
-		boost::filesystem::create_directories(boost::filesystem::path(path));
+		fs::create_directories(fs::path(path));
 	}	
 #ifdef _WIN32
 #	ifdef _WIN64

@@ -19,7 +19,8 @@
 #include "../Share/ModuleHelper.hpp"
 #include "../Share/Converter.hpp"
 
-#include <boost/filesystem.hpp>
+#include <filesystem>
+namespace fs = std::filesystem;
 
 #ifdef _WIN32
 #ifdef _WIN64
@@ -561,7 +562,7 @@ void TraderOES::handle_ord_connected(OesAsyncApiChannelT *pAsyncChannel)
 		ss << "./oesdata/local/";
 		std::string path = StrUtil::standardisePath(ss.str());
 		if (!StdFile::exists(path.c_str()))
-			boost::filesystem::create_directories(path.c_str());
+			fs::create_directories(path.c_str());
 		ss << _user << "_eid.sc";
 		m_eidCache.init(ss.str().c_str(), _tradingday, [this](const char* message) {
 			write_log(_sink, LL_WARN, message);
@@ -574,7 +575,7 @@ void TraderOES::handle_ord_connected(OesAsyncApiChannelT *pAsyncChannel)
 		ss << "./oesdata/local/";
 		std::string path = StrUtil::standardisePath(ss.str());
 		if (!StdFile::exists(path.c_str()))
-			boost::filesystem::create_directories(path.c_str());
+			fs::create_directories(path.c_str());
 		ss << _user << "_oid.sc";
 		m_oidCache.init(ss.str().c_str(), _tradingday, [this](const char* message) {
 			write_log(_sink, LL_WARN, message);

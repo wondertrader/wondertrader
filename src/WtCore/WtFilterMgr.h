@@ -1,5 +1,8 @@
 ﻿#pragma once
 #include <string>
+#include <filesystem>
+namespace fs = std::filesystem;
+
 #include "../Includes/FasterDefs.h"
 #include "../Includes/WTSMarcos.h"
 
@@ -10,7 +13,7 @@ class EventNotifier;
 class WtFilterMgr
 {
 public:
-	WtFilterMgr():_filter_timestamp(0), _notifier(NULL){}
+	WtFilterMgr():_notifier(NULL), _is_first(true){}
 
 	void		set_notifier(EventNotifier* notifier) { _notifier = notifier; }
 
@@ -77,8 +80,9 @@ private:
 	typedef wt_hashmap<std::string, bool>	ExecuterFilters;
 	ExecuterFilters	_exec_filters;
 
-	std::string		_filter_file;	//过滤器配置文件
-	uint64_t		_filter_timestamp;	//过滤器文件时间戳
+	std::string			_filter_file;	//过滤器配置文件
+	fs::file_time_type	_filter_timestamp;	//过滤器文件时间戳
+	bool				_is_first;
 
 	EventNotifier*	_notifier;
 };

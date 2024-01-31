@@ -21,10 +21,7 @@
 #include "../Share/TimeUtils.hpp"
 #include "../Share/ModuleHelper.hpp"
 
-#include <boost/filesystem.hpp>
 #include "../Share/fmtlib.h"
-
-#define _CRT_SECURE_NO_WARNINGS
 
 NS_WTP_BEGIN
 class WTSTickData;
