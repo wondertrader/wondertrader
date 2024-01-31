@@ -192,12 +192,12 @@ void ParserUDP::subscribe()
 		{
 			StdUniqueLock lock(_mtx_queue);
 			_send_queue.push(data);
-		}
 
-		data.resize(sizeof(UDPReqPacket), 0);
-		req = (UDPReqPacket*)data.data();
-		req->_type = UDP_MSG_SUBSCRIBE;
-		length = 0;
+			data.resize(sizeof(UDPReqPacket), 0);
+			req = (UDPReqPacket*)data.data();
+			req->_type = UDP_MSG_SUBSCRIBE;
+			length = 0;
+		}
 	}
 
 	do_send();
