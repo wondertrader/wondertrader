@@ -1806,12 +1806,14 @@ WTSKlineSlice* WtDataReader::readKlineSlice(const char* stdCode, WTSKlinePeriod 
 				//复权数据是创建副本后修改
 				if (barsList._rt_cursor == UINT_MAX || idx > barsList._rt_cursor)
 				{
+					uitn32_t copyStart = barsList._rt_cursor == UINT_MAX ? 0 : barsList._rt_cursor + 1;
+					uint32_t copyCnt = idx - copyStart + 1;					
 					barsList._rt_cursor = idx;
 					double factor = barsList._factor;
 					uint32_t oldSize = barsList._bars.size();
-					uint32_t newSize = oldSize + curCnt;
+					uint32_t newSize = oldSize + copyCnt;
 					barsList._bars.resize(newSize);
-					memcpy(&barsList._bars[oldSize], &kPair->_block->_bars[sIdx], sizeof(WTSBarStruct)* curCnt);
+					memcpy(&barsList._bars[oldSize], &kPair->_block->_bars[copyStart], sizeof(WTSBarStruct)* copyCnt);
 					for(uint32_t thisIdx = oldSize; thisIdx < newSize; thisIdx++)
 					{
 						WTSBarStruct* pBar = &barsList._bars[thisIdx];
