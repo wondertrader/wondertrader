@@ -1687,6 +1687,8 @@ uint32_t WtDataWriter::dump_bars_via_dumper(WTSContractInfo* ct)
 		const WTSTickStruct& ts = tci._tick;
 
 		WTSBarStruct bsDay;
+		bsDay.date = ts.trading_date;
+		bsDay.time = 0;
 		bsDay.open = ts.open;
 		bsDay.high = ts.high;
 		bsDay.low = ts.low;
@@ -1695,7 +1697,7 @@ uint32_t WtDataWriter::dump_bars_via_dumper(WTSContractInfo* ct)
 		bsDay.vol = ts.total_volume;
 		bsDay.money = ts.total_turnover;
 		bsDay.hold = ts.open_interest;
-		bsDay.add = ts.diff_interest;
+		bsDay.add = ts.open_interest - ts.pre_interest;
 
 		for(auto& item : _dumpers)
 		{
