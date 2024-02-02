@@ -1806,7 +1806,7 @@ WTSKlineSlice* WtDataReader::readKlineSlice(const char* stdCode, WTSKlinePeriod 
 				//复权数据是创建副本后修改
 				if (barsList._rt_cursor == UINT_MAX || idx > barsList._rt_cursor)
 				{
-					uitn32_t copyStart = barsList._rt_cursor == UINT_MAX ? 0 : barsList._rt_cursor + 1;
+					uint32_t copyStart = barsList._rt_cursor == UINT_MAX ? 0 : barsList._rt_cursor + 1;
 					uint32_t copyCnt = idx - copyStart + 1;					
 					barsList._rt_cursor = idx;
 					double factor = barsList._factor;
