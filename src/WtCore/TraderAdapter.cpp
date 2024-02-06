@@ -197,7 +197,7 @@ bool TraderAdapter::init(const char* id, WTSVariant* params, IBaseDataMgr* bdMgr
 
 	if (!_trader_api->init(params))
 	{
-		WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR, "[{}] Entrance function deleteTrader not found", id);
+		WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR, "[{}] Trader initializing failed: api initializing failed...", _id.c_str());
 		return false;
 	}
 
