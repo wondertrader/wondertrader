@@ -15,7 +15,7 @@
 #include "../WtDtCore/ParserAdapter.h"
 #include "../WtDtCore/StateMonitor.h"
 #include "../WtDtCore/UDPCaster.h"
-#include "../WtDtCore/IndexFactory.h"
+#include "../WtDtCore/IndexContext.h"
 #include "../WtDtCore/ShmCaster.h"
 
 #include "../WTSTools/WTSHotMgr.h"

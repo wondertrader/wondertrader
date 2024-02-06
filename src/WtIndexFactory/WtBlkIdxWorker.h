@@ -1,5 +1,6 @@
 ﻿#pragma once
-#include "../Includes/WTSMarcos.h"
+#include "../Includes/IIndexDefs.h"
+
 #include "../Includes/WTSStruct.h"
 #include "../Includes/FasterDefs.h"
 
@@ -13,26 +14,21 @@ class WTSTickData;
 class IHotMgr;
 class IBaseDataMgr;
 class WTSContractInfo;
-NS_WTP_END
 
-USING_NS_WTP;
-
-class IndexFactory;
-
-class IndexWorker
+class WtBlkIdxWorker : public IIndexWorker
 {
 public:
-	IndexWorker(IndexFactory* factor):_factor(factor), _stopped(false), _process(false) {}
+	WtBlkIdxWorker(const char* id):IIndexWorker(id), _stopped(false), _process(false) {}
 
 public:
-	bool	init(WTSVariant* config);
-	void	handle_quote(WTSTickData* newTick);
+	virtual bool		init(WTSVariant* config) override;
+	virtual void		handle_quote(WTSTickData* newTick) override;
+	virtual const char* get_fact_name() override;
 
 private:
 	void	generate_tick();
 
 protected:
-	IndexFactory*	_factor;
 	std::string		_exchg;
 	std::string		_code;
 	std::string		_trigger;
@@ -62,4 +58,4 @@ protected:
 	bool			_process;
 };
 
-typedef std::shared_ptr<IndexWorker> IndexWorkerPtr;
+NS_WTP_END

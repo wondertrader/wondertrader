@@ -1,11 +1,11 @@
-﻿#include "IndexFactory.h"
+﻿#include "IndexContext.h"
 #include "DataManager.h"
 #include "../Includes/WTSVariant.hpp"
 #include "../Includes/WTSDataDef.hpp"
 #include "../Includes/WTSContractInfo.hpp"
 #include "../Share/StrUtil.hpp"
 
-bool IndexFactory::init(WTSVariant* config, IHotMgr* hotMgr, IBaseDataMgr* bdMgr, DataManager* dataMgr)
+bool IndexContext::init(WTSVariant* config, IHotMgr* hotMgr, IBaseDataMgr* bdMgr, DataManager* dataMgr)
 {
 	_hot_mgr = hotMgr;
 	_bd_mgr = bdMgr;
@@ -40,7 +40,7 @@ bool IndexFactory::init(WTSVariant* config, IHotMgr* hotMgr, IBaseDataMgr* bdMgr
 	return true;
 }
 
-void IndexFactory::handle_quote(WTSTickData* newTick)
+void IndexContext::handle_quote(WTSTickData* newTick)
 {
 	if (newTick == NULL)
 		return;
@@ -73,12 +73,12 @@ void IndexFactory::handle_quote(WTSTickData* newTick)
 	}
 }
 
-void IndexFactory::push_tick(WTSTickData* newTick)
+void IndexContext::push_tick(WTSTickData* newTick)
 {
 	_data_mgr->writeTick(newTick, 1);
 }
 
-WTSTickData* IndexFactory::sub_ticks(const char* fullCode)
+WTSTickData* IndexContext::sub_ticks(const char* fullCode)
 {
 	_subbed.insert(fullCode);
 	

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -19,172 +19,160 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{684B21F9-D62C-435D-B9EC-BE5F0FD6A603}</ProjectGuid>
-    <RootNamespace>Share</RootNamespace>
+    <ProjectGuid>{9E99685C-184B-4740-8439-68D4803F629C}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>WtIndexFactory</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <CharacterSet>MultiByte</CharacterSet>
     <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <CharacterSet>MultiByte</CharacterSet>
     <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IncludePath>$(MyDepends141)\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(MyDepends141)\lib\x86;$(LibraryPath)</LibraryPath>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IncludePath>$(MyDepends141)\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(MyDepends141)\lib\x64;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IncludePath>$(MyDepends141)\include;$(IncludePath)</IncludePath>
+    <LibraryWPath>$(WindowsSDK_MetadataPath);</LibraryWPath>
+    <LibraryPath>$(MyDepends141)\lib\x86;$(LibraryPath)</LibraryPath>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IncludePath>$(MyDepends141)\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(MyDepends141)\lib\x64;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
+      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ModuleDefinitionFile>
+      </ModuleDefinitionFile>
+      <DelayLoadDLLs>
+      </DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
+      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ModuleDefinitionFile>
+      </ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
+      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <ModuleDefinitionFile>
+      </ModuleDefinitionFile>
+      <DelayLoadDLLs>
+      </DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
+      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <ModuleDefinitionFile>
+      </ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\FasterLibs\ankerl\unordered_dense.h" />
-    <ClInclude Include="..\FasterLibs\tsl\robin_growth_policy.h" />
-    <ClInclude Include="..\FasterLibs\tsl\robin_hash.h" />
-    <ClInclude Include="..\FasterLibs\tsl\robin_map.h" />
-    <ClInclude Include="..\FasterLibs\tsl\robin_set.h" />
-    <ClInclude Include="..\Includes\ExecuteDefs.h" />
-    <ClInclude Include="..\Includes\FasterDefs.h" />
-    <ClInclude Include="..\Includes\IBaseDataMgr.h" />
-    <ClInclude Include="..\Includes\IBtDtReader.h" />
-    <ClInclude Include="..\Includes\ICtaStraCtx.h" />
-    <ClInclude Include="..\Includes\IDataFactory.h" />
-    <ClInclude Include="..\Includes\IDataManager.h" />
-    <ClInclude Include="..\Includes\IDataReader.h" />
-    <ClInclude Include="..\Includes\IDataWriter.h" />
-    <ClInclude Include="..\Includes\IHftStraCtx.h" />
-    <ClInclude Include="..\Includes\IHotMgr.h" />
-    <ClInclude Include="..\Includes\IIdxWorker.h" />
-    <ClInclude Include="..\Includes\IParserApi.h" />
-    <ClInclude Include="..\Includes\IRdmDtReader.h" />
-    <ClInclude Include="..\Includes\ISelStraCtx.h" />
-    <ClInclude Include="..\Includes\ISessionMgr.h" />
-    <ClInclude Include="..\Includes\ITraderApi.h" />
-    <ClInclude Include="..\Includes\LoaderDef.hpp" />
-    <ClInclude Include="..\Includes\WTSCollection.hpp" />
-    <ClInclude Include="..\Includes\WTSContractInfo.hpp" />
-    <ClInclude Include="..\Includes\WTSDataDef.hpp" />
-    <ClInclude Include="..\Includes\WTSError.hpp" />
-    <ClInclude Include="..\Includes\WTSSwitchItem.hpp" />
-    <ClInclude Include="..\Includes\WTSMarcos.h" />
-    <ClInclude Include="..\Includes\WTSObject.hpp" />
-    <ClInclude Include="..\Includes\WTSRiskDef.hpp" />
-    <ClInclude Include="..\Includes\WTSSessionInfo.hpp" />
-    <ClInclude Include="..\Includes\WTSStruct.h" />
-    <ClInclude Include="..\Includes\WTSTradeDef.hpp" />
-    <ClInclude Include="..\Includes\WTSTypes.h" />
-    <ClInclude Include="..\Includes\WTSVariant.hpp" />
-    <ClInclude Include="..\Includes\WTSVersion.h" />
-    <ClInclude Include="BoostFile.hpp" />
-    <ClInclude Include="BoostMappingFile.hpp" />
-    <ClInclude Include="charconv.hpp" />
-    <ClInclude Include="CodeHelper.hpp" />
-    <ClInclude Include="Converter.hpp" />
-    <ClInclude Include="CpuHelper.hpp" />
-    <ClInclude Include="decimal.h" />
-    <ClInclude Include="DLLHelper.hpp" />
-    <ClInclude Include="fmtlib.h" />
-    <ClInclude Include="ILogHandler.h" />
-    <ClInclude Include="IniFile.hpp" />
-    <ClInclude Include="IniHelper.hpp" />
-    <ClInclude Include="ModuleHelper.hpp" />
-    <ClInclude Include="ObjectPool.hpp" />
-    <ClInclude Include="SpinMutex.hpp" />
-    <ClInclude Include="StdUtils.hpp" />
-    <ClInclude Include="threadpool.hpp" />
-    <ClInclude Include="threadpool\detail\future.hpp" />
-    <ClInclude Include="threadpool\detail\locking_ptr.hpp" />
-    <ClInclude Include="threadpool\detail\pool_core.hpp" />
-    <ClInclude Include="threadpool\detail\scope_guard.hpp" />
-    <ClInclude Include="threadpool\detail\worker_thread.hpp" />
-    <ClInclude Include="threadpool\future.hpp" />
-    <ClInclude Include="threadpool\pool.hpp" />
-    <ClInclude Include="threadpool\pool_adaptors.hpp" />
-    <ClInclude Include="threadpool\scheduling_policies.hpp" />
-    <ClInclude Include="threadpool\shutdown_policies.hpp" />
-    <ClInclude Include="threadpool\size_policies.hpp" />
-    <ClInclude Include="threadpool\task_adaptors.hpp" />
-    <ClInclude Include="StrUtil.hpp" />
-    <ClInclude Include="TimeUtils.hpp" />
-    <ClInclude Include="WtKVCache.hpp" />
-    <ClInclude Include="WtObjectPool.hpp" />
+    <ClCompile Include="WtBlkIdxWorker.cpp" />
+    <ClCompile Include="WtIndexFactory.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="WtBlkIdxWorker.h" />
+    <ClInclude Include="WtIndexFactory.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

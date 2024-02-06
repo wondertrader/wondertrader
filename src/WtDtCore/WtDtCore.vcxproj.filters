@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="index">
+      <UniqueIdentifier>{5ba11a1d-c3e7-4ebc-aa17-f6b509efe7a9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DataManager.cpp">
@@ -30,14 +33,14 @@
     <ClCompile Include="WtHelper.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="IndexFactory.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="IndexWorker.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="ShmCaster.cpp">
       <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="IndexWorkerMgr.cpp">
+      <Filter>index</Filter>
+    </ClCompile>
+    <ClCompile Include="IndexContext.cpp">
+      <Filter>index</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -59,17 +62,17 @@
     <ClInclude Include="WtHelper.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="IndexFactory.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="IndexWorker.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="ShmCaster.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="IDataCaster.h">
       <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="IndexWorkerMgr.h">
+      <Filter>index</Filter>
+    </ClInclude>
+    <ClInclude Include="IndexContext.h">
+      <Filter>index</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

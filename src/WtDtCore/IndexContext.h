@@ -1,14 +1,16 @@
 ﻿#pragma once
-#include "IndexWorker.h"
+#include "../Includes/IIndexDefs.h"
 #include "../Share/threadpool.hpp"
 #include <vector>
 
+USING_NS_WTP;
+
 class DataManager;
 
-class IndexFactory
+class IndexContext : public IIndexContext
 {
 public:
-	IndexFactory():_hot_mgr(NULL), _bd_mgr(NULL){}
+	IndexContext():_hot_mgr(NULL), _bd_mgr(NULL){}
 
 public:
 	bool	init(WTSVariant* config, IHotMgr* hotMgr, IBaseDataMgr* bdMgr, DataManager* dataMgr);

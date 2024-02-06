@@ -4,7 +4,7 @@
 #include "../WtDtCore/UDPCaster.h"
 #include "../WtDtCore/ShmCaster.h"
 #include "../WtDtCore/WtHelper.h"
-#include "../WtDtCore/IndexFactory.h"
+#include "../WtDtCore/IndexContext.h"
 
 #include "../Includes/WTSSessionInfo.hpp"
 #include "../Includes/WTSVariant.hpp"

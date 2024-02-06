@@ -246,5 +246,8 @@
     <ClInclude Include="Converter.hpp">
       <Filter>Utils</Filter>
     </ClInclude>
+    <ClInclude Include="..\Includes\IIdxWorker.h">
+      <Filter>Interfaces</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
