@@ -27,8 +27,7 @@ TEST(test_kvcache, test_usage)
 	{
 		WtKVCache cache;
 		EXPECT_TRUE(cache.init("./simplecache.dat", 20220326, [](const char* msg) {
-			printf(msg);
-			printf("\n");
+			printf("%s\n", msg);
 		}));
 		EXPECT_EQ(cache.size(), 0);
 	}
@@ -38,8 +37,7 @@ TEST(test_kvcache, test_perform)
 {
 	WtKVCache cache;
 	cache.init("./scperform.dat", 20220325, [](const char* msg) {
-		printf(msg);
-		printf("\n");
+		printf("%s\n", msg);
 	});
 	cache.clear();
 
