@@ -105,10 +105,20 @@ IndexWorkerPtr IndexWorkerMgr::createWorker(const char* name, const char* id)
 
 	auto it = _factories.find(factname);
 	if (it == _factories.end())
+	{
+		WTSLogger::error("Creating index worker with name {} failed, factory not exists", name);
 		return IndexWorkerPtr();
+	}
 
 	IdxFactInfo& fInfo = (IdxFactInfo&)it->second;
-	IndexWorkerPtr ret(new IdxWorkerWrapper(fInfo._fact->create_worker(unitname, id), fInfo._fact));
+	IIndexWorker* worker = fInfo._fact->create_worker(unitname, id);
+	if (worker == NULL)
+	{
+		WTSLogger::error("Creating index worker with name {} failed, worker not exists", name);
+		return IndexWorkerPtr();
+	}
+
+	IndexWorkerPtr ret(new IdxWorkerWrapper(worker, fInfo._fact));
 	_workers[id] = ret;
 	return ret;
 }
@@ -141,7 +151,10 @@ bool IndexWorkerMgr::init(WTSVariant* config, IHotMgr* hotMgr, IBaseDataMgr* bdM
 		const char* id = cfgItem->getCString("id");
 		const char* name = cfgItem->getCString("name");
 
-		IndexWorkerPtr& worker = createWorker(name, id);
+		IndexWorkerPtr worker = createWorker(name, id);
+		if (worker == NULL)
+			continue;
+
 		if (!worker->self()->init(cfgItem))
 			continue;
 	}
