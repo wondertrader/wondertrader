@@ -23,7 +23,7 @@ public:
 
 	virtual void			push_tick(WTSTickData* newTick) = 0;
 
-	virtual void			output_log(WTSLogLevel ll, const char* message);
+	virtual void			output_log(WTSLogLevel ll, const char* message) = 0;
 };
 
 class IIndexWorker

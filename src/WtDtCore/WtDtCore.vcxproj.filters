@@ -39,9 +39,6 @@
     <ClCompile Include="IndexWorkerMgr.cpp">
       <Filter>index</Filter>
     </ClCompile>
-    <ClCompile Include="IndexContext.cpp">
-      <Filter>index</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataManager.h">
@@ -69,9 +66,6 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="IndexWorkerMgr.h">
-      <Filter>index</Filter>
-    </ClInclude>
-    <ClInclude Include="IndexContext.h">
       <Filter>index</Filter>
     </ClInclude>
   </ItemGroup>

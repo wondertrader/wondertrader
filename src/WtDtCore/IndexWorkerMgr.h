@@ -18,6 +18,8 @@
 
 USING_NS_WTP;
 
+class DataManager;
+
 class IdxWorkerWrapper
 {
 public:
@@ -49,10 +51,20 @@ public:
 public:
 	bool loadFactories(const char* path);
 
+private:
 	IndexWorkerPtr createWorker(const char* name, const char* id);
-	IndexWorkerPtr createWorker(const char* factname, const char* unitname, const char* id);
 
-	IndexWorkerPtr getWorker(const char* id);
+public:
+	bool	init(WTSVariant* config, IHotMgr* hotMgr, IBaseDataMgr* bdMgr, DataManager* dataMgr);
+	void	handle_quote(WTSTickData* newTick);
+
+public:
+	virtual IHotMgr*		get_hot_mgr() override { return _hot_mgr; }
+	virtual IBaseDataMgr*	get_bd_mgr() override { return _bd_mgr; }
+
+	virtual WTSTickData*	sub_ticks(const char* fullCode) override;
+	virtual void			push_tick(WTSTickData* newTick) override;
+	virtual void			output_log(WTSLogLevel ll, const char* message) override;
 
 private:
 	typedef struct _IdxFactInfo

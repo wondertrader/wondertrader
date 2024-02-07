@@ -18,6 +18,7 @@
 #include "../Includes/WTSContractInfo.hpp"
 
 #include "../Share/StrUtil.hpp"
+#include "../Share/fmtlib.h"
 
 #include "../WTSUtils/WTSCfgLoader.h"
 #include "../WTSTools/WTSLogger.h"
@@ -198,6 +199,9 @@ void WtDtRunner::initialize(const char* cfgFile, const char* logCfg, const char*
 
 	if (config->has("index"))
 	{
+		std::string path = fmt::format("{}index/", WtHelper::get_cwd());
+		_idx_factory.loadFactories(path.c_str());
+
 		//如果存在指数模块要，配置指数
 		const char* filename = config->getCString("index");
 		WTSLogger::info("Reading index config from {}...", filename);

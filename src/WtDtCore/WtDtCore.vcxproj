@@ -20,7 +20,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DataManager.cpp" />
-    <ClCompile Include="IndexContext.cpp" />
     <ClCompile Include="IndexWorkerMgr.cpp" />
     <ClCompile Include="ParserAdapter.cpp" />
     <ClCompile Include="ShmCaster.cpp" />
@@ -31,7 +30,6 @@
   <ItemGroup>
     <ClInclude Include="DataManager.h" />
     <ClInclude Include="IDataCaster.h" />
-    <ClInclude Include="IndexContext.h" />
     <ClInclude Include="IndexWorkerMgr.h" />
     <ClInclude Include="ParserAdapter.h" />
     <ClInclude Include="ShmCaster.h" />
