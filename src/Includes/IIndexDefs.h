@@ -21,6 +21,8 @@ public:
 
 	virtual WTSTickData*	sub_ticks(const char* fullCode) = 0;
 
+	virtual WTSTickData*	get_tick(const char* code, const char* exchg) = 0;
+
 	virtual void			push_tick(WTSTickData* newTick) = 0;
 
 	virtual void			output_log(WTSLogLevel ll, const char* message) = 0;
@@ -39,6 +41,7 @@ public:
 	virtual const char* get_fact_name() = 0;
 
 	virtual bool	init(WTSVariant* config) = 0;
+
 	virtual void	handle_quote(WTSTickData* newTick) = 0;
 
 	void	set_factory(IIndexContext* factory)

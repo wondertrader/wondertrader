@@ -155,6 +155,8 @@ bool IndexWorkerMgr::init(WTSVariant* config, IHotMgr* hotMgr, IBaseDataMgr* bdM
 		if (worker == NULL)
 			continue;
 
+		worker->self()->set_factory(this);
+
 		if (!worker->self()->init(cfgItem))
 			continue;
 	}
@@ -210,7 +212,12 @@ WTSTickData* IndexWorkerMgr::sub_ticks(const char* fullCode)
 	return _data_mgr->getCurTick(ay[1].c_str(), ay[0].c_str());
 }
 
+WTSTickData* IndexWorkerMgr::get_tick(const char* code, const char* exchg)
+{
+	return _data_mgr->getCurTick(code, exchg);
+}
+
 void IndexWorkerMgr::output_log(WTSLogLevel ll, const char* message)
 {
-
+	WTSLogger::log_raw(ll, message);
 }

@@ -63,6 +63,7 @@ public:
 	virtual IBaseDataMgr*	get_bd_mgr() override { return _bd_mgr; }
 
 	virtual WTSTickData*	sub_ticks(const char* fullCode) override;
+	virtual WTSTickData*	get_tick(const char* code, const char* exchg) override;
 	virtual void			push_tick(WTSTickData* newTick) override;
 	virtual void			output_log(WTSLogLevel ll, const char* message) override;
 
