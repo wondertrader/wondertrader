@@ -968,7 +968,7 @@ void HftStraBaseCtx::log_trade(const char* stdCode, bool isLong, bool isOpen, ui
 	{
 		std::stringstream ss;
 		ss << stdCode << "," << curTime << "," << (isLong ? "LONG" : "SHORT") << "," << (isOpen ? "OPEN" : "CLOSE")
-			<< "," << price << "," << qty << "," << fee << "," << userTag << "\n";
+			<< "," << price << "," << qty << "," << userTag << "," << fee << "\n";
 		_trade_logs->write_file(ss.str());
 	}
 }
