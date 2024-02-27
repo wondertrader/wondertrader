@@ -394,6 +394,25 @@ WTSTransSlice* WtDtMgr::get_transaction_slice(const char* stdCode, uint32_t coun
 	return _reader->readTransSlice(stdCode, count, etime);
 }
 
+constexpr inline const char* format_period(WTSKlinePeriod period)
+{
+	switch (period)
+	{
+	case KP_DAY:
+		return "day";
+	case KP_Minute1:
+		return "min1";
+	case KP_Minute5:
+		return "min5";
+	case KP_Week:
+		return "week";
+	case KP_Month:
+		return "month";
+	default:
+		return "unknown";
+	}
+}
+
 WTSKlineSlice* WtDtMgr::get_kline_slice(const char* stdCode, WTSKlinePeriod period, uint32_t times, uint32_t count, uint64_t etime /* = 0 */)
 {
 	if (_reader == NULL)
@@ -407,7 +426,20 @@ WTSKlineSlice* WtDtMgr::get_kline_slice(const char* stdCode, WTSKlinePeriod peri
 	{
 		_subed_basic_bars.insert(key);
 
-		return _reader->readKlineSlice(stdCode, period, count, etime);
+		try
+		{
+			return _reader->readKlineSlice(stdCode, period, count, etime);
+		}
+		catch (const std::exception& ex)
+		{
+			WTSLogger::error("Exception while reading kline of {}({}): {}", stdCode, format_period(period), ex.what());
+			return NULL;
+		}
+		catch (...)
+		{
+			WTSLogger::error("Exception while reading kline of {}({}): unknown", stdCode, format_period(period));
+			return NULL;
+		}
 	}
 
 	//只有非基础周期的会进到下面的步骤
@@ -423,12 +455,37 @@ WTSKlineSlice* WtDtMgr::get_kline_slice(const char* stdCode, WTSKlinePeriod peri
 	if (kData == NULL || kData->size() < count)
 	{
 		uint32_t realCount = times==1 ? count: (count*times + times);
-		WTSKlineSlice* rawData = _reader->readKlineSlice(stdCode, period, realCount, etime);
+		WTSKlineSlice* rawData = nullptr;
+		try
+		{
+			rawData =  _reader->readKlineSlice(stdCode, period, realCount, etime);
+		}
+		catch (const std::exception& ex)
+		{
+			WTSLogger::error("Exception while reading kline of {}({}): {}", stdCode, format_period(period), ex.what());
+		}
+		catch (...)
+		{
+			WTSLogger::error("Exception while reading kline of {}({}): unknown", stdCode, format_period(period));
+		}
+
 		if (rawData != NULL && rawData->size() > 0)
 		{
 			if(times != 1)
 			{
-				kData = g_dataFact.extractKlineData(rawData, period, times, sInfo, true, _align_by_section);
+				try
+				{
+					kData = g_dataFact.extractKlineData(rawData, period, times, sInfo, true, _align_by_section);
+				}
+				catch (const std::exception& ex)
+				{
+					WTSLogger::error("Exception while extracting kline of {}({}): {}", stdCode, format_period(period), ex.what());
+				}
+				catch (...)
+				{
+					WTSLogger::error("Exception while extracting kline of {}({}): unknown", stdCode, format_period(period));
+				}
+				
 			}
 			else
 			{
