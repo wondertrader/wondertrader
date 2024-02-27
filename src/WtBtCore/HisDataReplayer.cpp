@@ -1350,7 +1350,7 @@ void HisDataReplayer::simTicks(uint32_t uDate, uint32_t uTime, uint32_t endTDate
 
 						break;
 					}
-					else if (nextBar.date == endTDate)
+					else if (nextBar.date < endTDate)
 					{
 						barsList->_cursor++;
 
