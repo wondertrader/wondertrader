@@ -1609,7 +1609,7 @@ WTSKlineSlice* CtaStraBaseCtx::stra_get_bars(const char* stdCode, const char* pe
 		times = convert::to_uint32(period + 1);
 
 	WTSKlineSlice* kline = _engine->get_kline_slice(_context_id, stdCode, basePeriod, count, times);
-	if(kline)
+	if(kline && !kline->empty())
 	{
 		//如果K线获取不到,说明也不会有闭合事件发生,所以不更新本地标记
 		bool isFirst = (_kline_tags.find(key) == _kline_tags.end());	//如果没有保存标记,说明是第一次拉取该K线

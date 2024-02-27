@@ -201,7 +201,7 @@ void WtDataReader::init(WTSVariant* cfg, IDataReaderSink* sink, IHisDataLoader* 
 
 	_adjust_flag = cfg->getUInt32("adjust_flag");
 
-	pipe_reader_log(sink, LL_INFO, "WtDataReader initialized, rt dir is {}..., hist dir is {}..., adjust_flag is {}", _rt_dir[0], _his_dir[0], _adjust_flag);
+	pipe_reader_log(sink, LL_INFO, "WtDataReader initialized, rt dir is {}, hist dir is {}, adjust_flag is {}", _rt_dir[0], _his_dir[0], _adjust_flag);
 
 	/*
 	 *	By Wesley @ 2021.12.20
@@ -398,13 +398,17 @@ WTSTickSlice* WtDataReader::readTickSlice(const char* stdCode, uint32_t count, u
 		if(it == _his_tick_map.end())
 		{
 			std::string filename;
+			bool bHit = false;
 			for (const std::string hisdir : _his_dir)
 			{
 				filename = fmtutil::format("{}ticks/{}/{}/{}.dsb", hisdir, cInfo._exchg, endTDate, curCode);
 				if (StdFile::exists(filename.c_str()))
+				{
+					bHit = true;
 					break;
+				}
 			}
-			if (filename.empty())
+			if (!bHit)
 				return NULL;
 
 			HisTBlockPair& tBlkPair = _his_tick_map[key];
@@ -536,13 +540,17 @@ WTSOrdQueSlice* WtDataReader::readOrdQueSlice(const char* stdCode, uint32_t coun
 			//	return NULL;
 
 			std::string filename;
+			bool bHit = false;
 			for (const std::string hisdir : _his_dir)
 			{
 				filename = fmtutil::format("{}queue/{}/{}/{}.dsb", hisdir, cInfo._exchg, endTDate, curCode);
 				if (StdFile::exists(filename.c_str()))
+				{
+					bHit = true;
 					break;
+				}
 			}
-			if (filename.empty())
+			if (!bHit)
 				return NULL;
 
 			HisOrdQueBlockPair& hisBlkPair = _his_ordque_map[key];
@@ -689,13 +697,17 @@ WTSOrdDtlSlice* WtDataReader::readOrdDtlSlice(const char* stdCode, uint32_t coun
 			//	return NULL;
 
 			std::string filename;
+			bool bHit = false;
 			for (const std::string hisdir : _his_dir)
 			{
 				filename = fmtutil::format("{}orders/{}/{}/{}.dsb", hisdir, cInfo._exchg, endTDate, curCode);
 				if (StdFile::exists(filename.c_str()))
+				{
+					bHit = true;
 					break;
+				}
 			}
-			if (filename.empty())
+			if (!bHit)
 				return NULL;
 
 			HisOrdDtlBlockPair& hisBlkPair = _his_orddtl_map[key];
@@ -842,13 +854,17 @@ WTSTransSlice* WtDataReader::readTransSlice(const char* stdCode, uint32_t count,
 			//	return NULL;
 
 			std::string filename;
+			bool bHit = false;
 			for (const std::string hisdir : _his_dir)
 			{
 				filename = fmtutil::format("{}trans/{}/{}/{}.dsb", hisdir, cInfo._exchg, endTDate, curCode);
 				if (StdFile::exists(filename.c_str()))
+				{
+					bHit = true;
 					break;
+				}
 			}
-			if (filename.empty())
+			if (!bHit)
 				return NULL;
 
 			HisTransBlockPair& hisBlkPair = _his_trans_map[key];
@@ -943,6 +959,8 @@ bool WtDataReader::cacheFinalBarsFromLoader(void* codeInfo, const std::string& k
 
 	if(ret)
 		pipe_reader_log(_sink,LL_INFO, "{} items of back {} data of {} loaded via extended loader", barList._bars.size(), pname.c_str(), stdCode);
+	else
+		pipe_reader_log(_sink, LL_INFO, "no back {} data of {} loaded via extended loader", pname.c_str(), stdCode);
 
 	return ret;
 }
@@ -999,20 +1017,25 @@ bool WtDataReader::cacheIntegratedBars(void* codeInfo, const std::string& key, c
 		//	break;
 
 		std::string filename;
+		bool bHit = false;
 		for (const std::string hisdir : _his_dir)
 		{
-			filename = fmtutil::format("{}{}/{}/{}.{}_{}{}.dsb", hisdir, pname, cInfo->_exchg, cInfo->_product, ruleTag, cInfo->isExright()?(cInfo->_exright == 1 ? SUFFIX_QFQ : SUFFIX_HFQ):'\0');
+			std::string filename = fmtutil::format("{}{}/{}.{}_{}{}.dsb", hisdir, pname, cInfo->_exchg, cInfo->_product, ruleTag, cInfo->isExright()?(cInfo->_exright == 1 ? SUFFIX_QFQ_S : SUFFIX_HFQ_S):"");
 			if (StdFile::exists(filename.c_str()))
+			{
+				bHit = true;
 				break;
+			}
 		}
-		if (filename.empty())
+
+		if (!bHit)
 			break;
 
 		std::string content;
 		StdFile::read_file_content(filename.c_str(), content);
 		if (content.size() < sizeof(HisKlineBlock))
 		{
-			pipe_reader_log(_sink, LL_ERROR, "历史K线数据文件{}大小校验失败", filename);
+			pipe_reader_log(_sink, LL_ERROR, u8"历史K线数据文件{}大小校验失败", filename);
 			break;
 		}
 		proc_block_data(content, true, false);
@@ -1125,13 +1148,18 @@ bool WtDataReader::cacheIntegratedBars(void* codeInfo, const std::string& key, c
 			//	continue;
 
 			std::string filename;
+			bool bHit = false;
 			for (const std::string hisdir : _his_dir)
 			{
 				filename = fmtutil::format("{}{}/{}/{}.dsb", hisdir, pname, cInfo->_exchg, curCode);
 				if (StdFile::exists(filename.c_str()))
+				{
+					bHit = true;
 					break;
+				}
 			}
-			if (filename.empty())
+
+			if (!bHit)
 				continue;
 
 			std::string content;
@@ -1297,13 +1325,17 @@ bool WtDataReader::cacheAdjustedStkBars(void* codeInfo, const std::string& key, 
 		//	break;
 
 		std::string filename;
+		bool bHit = false;
 		for (const std::string hisdir : _his_dir)
 		{
 			filename = fmtutil::format("{}{}/{}/{}{}.dsb", hisdir, pname, cInfo->_exchg, cInfo->_code, flag);
 			if (StdFile::exists(filename.c_str()))
+			{
+				bHit = true;
 				break;
+			}
 		}
-		if (filename.empty())
+		if (!bHit)
 			break;
 
 		std::string content;
@@ -1376,13 +1408,17 @@ bool WtDataReader::cacheAdjustedStkBars(void* codeInfo, const std::string& key, 
 			//	continue;
 
 			std::string filename;
+			bool bHit = false;
 			for (const std::string hisdir : _his_dir)
 			{
 				filename = fmtutil::format("{}{}/{}/{}.dsb", hisdir, pname, cInfo->_exchg, cInfo->_code);
 				if (StdFile::exists(filename.c_str()))
+				{
+					bHit = true;
 					break;
+				}
 			}
-			if (filename.empty())
+			if (!bHit)
 				continue;
 
 			std::string content;
@@ -1553,12 +1589,36 @@ bool WtDataReader::cacheHisBarsFromFile(void* codeInfo, const std::string& key, 
 	if (strlen(ruleTag) > 0)
 	{
 		//如果是读取期货主力连续数据
-		return cacheIntegratedBars(cInfo, key, stdCode, period);
+		try
+		{
+			return cacheIntegratedBars(cInfo, key, stdCode, period);
+		}
+		catch (const std::exception& ex)
+		{
+			pipe_reader_log(_sink, LL_ERROR, u8"缓存{}的连续{}数据异常：{}", stdCode, ruleTag, ex.what());
+		}
+		catch(...)
+		{
+			pipe_reader_log(_sink, LL_ERROR, u8"缓存{}的连续{}数据异常", stdCode, ruleTag);
+		}
+		return false;
 	}
 	else if(cInfo->isExright() && commInfo->isStock())
 	{
 		//如果是读取股票复权数据
-		return cacheAdjustedStkBars(cInfo, key, stdCode, period);
+		try
+		{
+			return cacheAdjustedStkBars(cInfo, key, stdCode, period);
+		}
+		catch (const std::exception& ex)
+		{
+			pipe_reader_log(_sink, LL_ERROR, u8"缓存{}的复权数据异常：{}", stdCode, ex.what());
+		}
+		catch (...)
+		{
+			pipe_reader_log(_sink, LL_ERROR, u8"缓存{}的复权{}数据异常", stdCode, ruleTag);
+		}
+		return false;
 	}
 
 	
@@ -1587,21 +1647,25 @@ bool WtDataReader::cacheHisBarsFromFile(void* codeInfo, const std::string& key, 
 		//ss << _his_dir << pname << "/" << cInfo->_exchg << "/" << cInfo->_code << ".dsb";
 
 		std::string filename;
+		bool bHit = false;
 		for (const std::string hisdir : _his_dir)
 		{
 			filename = fmtutil::format("{}{}/{}/{}.dsb", hisdir, pname, cInfo->_exchg, cInfo->_code);
 			if (StdFile::exists(filename.c_str()))
+			{
+				bHit = true;
 				break;
+			}
 		}
 
-		if (!filename.empty())
+		if (bHit)
 		{
 			//如果有格式化的历史数据文件, 则直接读取
 			std::string content;
 			StdFile::read_file_content(filename.c_str(), content);
 			if (content.size() < sizeof(HisKlineBlock))
 			{
-				pipe_reader_log(_sink,LL_ERROR, "历史K线数据文件{}大小校验失败", filename.c_str());
+				pipe_reader_log(_sink,LL_ERROR, u8"历史K线数据文件{}大小校验失败", filename.c_str());
 				return false;
 			}
 
@@ -1676,6 +1740,12 @@ WTSKlineSlice* WtDataReader::readKlineSlice(const char* stdCode, WTSKlinePeriod 
 		bHasHisData = true;
 	}
 
+	if(!bHasHisData)
+	{
+		pipe_reader_log(_sink, LL_DEBUG, "No {} bars of {} loaded", PERIOD_NAME[period], stdCode);
+		return NULL;
+	}
+
 	uint32_t curDate, curTime;
 	if (etime == 0)
 	{
@@ -1723,36 +1793,6 @@ WTSKlineSlice* WtDataReader::readKlineSlice(const char* stdCode, WTSKlinePeriod 
 	{
 		barsList._raw_code = cInfo._code;
 	}
-
-	/*
-	if (commInfo->isFuture())
-	{
-		const char* ruleTag = cInfo._ruletag;
-		if (strlen(ruleTag) > 0)
-		{
-			barsList._raw_code = _hot_mgr->getCustomRawCode(ruleTag, cInfo.stdCommID(), curTDate);
-			pipe_reader_log(_sink, LL_INFO, "{} contract on {} confirmed with rule {}: {} -> {}", ruleTag, curTDate, stdCode, barsList._raw_code.c_str());
-		}
-		//else if (cInfo.isHot())
-		//{
-		//	barsList._raw_code = _hot_mgr->getRawCode(cInfo._exchg, cInfo._product, curTDate);
-		//	pipe_reader_log(_sink, LL_INFO, "Hot contract on {}  confirmed: {} -> {}", curTDate, stdCode, barsList._raw_code.c_str());
-		//}
-		//else if (cInfo.isSecond())
-		//{
-		//	barsList._raw_code = _hot_mgr->getSecondRawCode(cInfo._exchg, cInfo._product, curTDate);
-		//	pipe_reader_log(_sink, LL_INFO, "Second contract on {} confirmed: {} -> {}", curTDate, stdCode, barsList._raw_code.c_str());
-		//}
-		else
-		{
-			barsList._raw_code = cInfo._code;
-		}
-	}
-	else
-	{
-		barsList._raw_code = cInfo._code;
-	}
-	*/
 
 	if (bHasToday)
 	{
@@ -1855,8 +1895,11 @@ WTSKlineSlice* WtDataReader::readKlineSlice(const char* stdCode, WTSKlinePeriod 
 			rtCnt = 0;
 			hisCnt = count;
 			hisCnt = min(hisCnt, (uint32_t)barsList._bars.size());
-			head = &barsList._bars[barsList._bars.size() - hisCnt];
-			slice->appendBlock(head, hisCnt);
+			if(hisCnt != 0)
+			{
+				head = &barsList._bars[barsList._bars.size() - hisCnt];
+				slice->appendBlock(head, hisCnt);
+			}
 		}
 	}
 	else
