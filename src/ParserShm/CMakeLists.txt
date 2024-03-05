@@ -28,6 +28,7 @@ ELSE(GNUCC)
 	ELSE(UNIX)
 		SET(LIBS
 			boost_thread
+			boost_filesystem
             stdc++fs
 		)
 	ENDIF()
