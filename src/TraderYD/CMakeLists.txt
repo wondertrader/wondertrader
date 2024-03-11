@@ -21,6 +21,7 @@ IF(MSVC)
 ELSE(GNUCC)
 	SET(LIBS
 		boost_thread
+        	boost_filesystem
 		stdc++fs
 		dl
 	)
