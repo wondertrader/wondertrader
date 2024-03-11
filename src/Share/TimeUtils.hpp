@@ -26,6 +26,8 @@
 
 #define WIN32_LEAN_AND_MEAN
 
+#pragma warning(disable:4996)
+
 #include <windows.h>
 
 typedef struct _KSYSTEM_TIME

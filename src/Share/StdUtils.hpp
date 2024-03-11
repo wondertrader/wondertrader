@@ -19,6 +19,7 @@
 
 #if _MSC_VER
 #include <io.h>
+#pragma warning(disable:4996)
 #else
 #include <unistd.h>
 #endif
