@@ -20,12 +20,27 @@
 NS_WTP_BEGIN
 class WTSContractInfo;
 
-//////////////////////////////////////////////////////////////////////////
-//委托数据结构,用户客户端向服务端发起
-class WTSEntrust : public WTSPoolObject<WTSEntrust>
+typedef struct _WTSEntrustStruct
 {
-public:
-	WTSEntrust()
+	char			m_strExchg[MAX_EXCHANGE_LENGTH];
+	char			m_strCode[MAX_INSTRUMENT_LENGTH];
+	double			m_dVolume;
+	double			m_iPrice;
+
+	bool			m_bIsNet;
+	bool			m_bIsBuy;
+
+	WTSDirectionType	m_direction;
+	WTSPriceType		m_priceType;
+	WTSOrderFlag		m_orderFlag;
+	WTSOffsetType		m_offsetType;
+
+	char				m_strEntrustID[64] = { 0 };
+	char				m_strUserTag[64] = { 0 };
+
+	WTSBusinessType		m_businessType;
+
+	_WTSEntrustStruct()
 		: m_iPrice(0)
 		, m_dVolume(0)
 		, m_businessType(BT_CASH)
@@ -34,8 +49,17 @@ public:
 		, m_orderFlag(WOF_NOR)
 		, m_offsetType(WOT_OPEN)
 		, m_bIsNet(false)
-		, m_bIsBuy(true)
-		, m_pContract(NULL)
+		, m_bIsBuy(true){}
+
+} WTSEntrustStruct;
+
+//////////////////////////////////////////////////////////////////////////
+//委托数据结构,用户客户端向服务端发起
+class WTSEntrust : public WTSEntrustStruct, public WTSPoolObject<WTSEntrust>
+{
+public:
+	WTSEntrust()
+		: m_pContract(NULL)
 	{
 	}
 
@@ -108,40 +132,33 @@ public:
 	constexpr inline WTSContractInfo* getContractInfo() const  noexcept { return m_pContract; }
 
 protected:
-	char			m_strExchg[MAX_EXCHANGE_LENGTH];
-	char			m_strCode[MAX_INSTRUMENT_LENGTH];
-	double			m_dVolume;
-	double			m_iPrice;
-
-	bool			m_bIsNet;
-	bool			m_bIsBuy;
-
-	WTSDirectionType	m_direction;
-	WTSPriceType		m_priceType;
-	WTSOrderFlag		m_orderFlag;
-	WTSOffsetType		m_offsetType;
-
-	char				m_strEntrustID[64] = { 0 };
-	char				m_strUserTag[64] = { 0 };
-
-	WTSBusinessType		m_businessType;
-
 	WTSContractInfo*	m_pContract;
 };
 
+typedef struct _WTSActionStruct
+{
+	char			m_strExchg[MAX_EXCHANGE_LENGTH];
+	char			m_strCode[MAX_INSTRUMENT_LENGTH];
+
+	char			m_strEnturstID[64] = { 0 };
+	WTSActionFlag	m_actionFlag;
+
+	char			m_strOrderID[64] = { 0 };
+	char			m_strUserTag[64] = { 0 };
+
+	WTSBusinessType		m_businessType;
+
+	_WTSActionStruct()
+		: m_actionFlag(WAF_CANCEL)
+		, m_businessType(BT_CASH)
+	{}
+} WTSActionStruct;
 
 //////////////////////////////////////////////////////////////////////////
 //委托操作: 撤单、改单
-class WTSEntrustAction : public WTSPoolObject<WTSEntrustAction>
+class WTSEntrustAction : public WTSActionStruct, public WTSPoolObject<WTSEntrustAction>
 {
 public:
-	WTSEntrustAction()
-		: m_actionFlag(WAF_CANCEL)
-		, m_businessType(BT_CASH)
-	{
-
-	}
-
 	virtual ~WTSEntrustAction(){}
 
 public:
@@ -205,36 +222,59 @@ public:
 	constexpr inline WTSContractInfo* getContractInfo() const  noexcept { return m_pContract; }
 
 protected:
-	char			m_strExchg[MAX_EXCHANGE_LENGTH];
-	char			m_strCode[MAX_INSTRUMENT_LENGTH];
-
-	char			m_strEnturstID[64] = { 0 };
-	WTSActionFlag	m_actionFlag;
-
-	char			m_strOrderID[64] = { 0 };
-	char			m_strUserTag[64] = { 0 };
-
-	WTSBusinessType		m_businessType;
-	WTSContractInfo*	m_pContract;
+	WTSContractInfo*	m_pContract = NULL;
 };
 
-//////////////////////////////////////////////////////////////////////////
-//订单信息,查看订单状态变化等
-class WTSOrderInfo : public WTSPoolObject<WTSOrderInfo>
+typedef struct _WTSOrderStruct
 {
-public:
-	WTSOrderInfo()
+	char			m_strExchg[MAX_EXCHANGE_LENGTH];
+	char			m_strCode[MAX_INSTRUMENT_LENGTH];
+	double			m_dVolume;
+	double			m_iPrice;
+
+	bool			m_bIsNet;
+	bool			m_bIsBuy;
+
+	WTSDirectionType	m_direction;
+	WTSPriceType		m_priceType;
+	WTSOrderFlag		m_orderFlag;
+	WTSOffsetType		m_offsetType;
+
+	char				m_strEntrustID[64] = { 0 };
+	char				m_strUserTag[64] = { 0 };
+
+	WTSBusinessType		m_businessType;
+
+	//这部分是Order专有的成员
+	uint32_t	m_uInsertDate;
+	uint64_t	m_uInsertTime;
+	double		m_dVolTraded;
+	double		m_dVolLeft;
+	bool		m_bIsError;
+
+	WTSOrderState	m_orderState;
+	WTSOrderType	m_orderType;
+	char			m_strOrderID[64] = { 0 };
+	char			m_strStateMsg[64] = { 0 };
+
+	_WTSOrderStruct()
 		:m_orderState(WOS_Submitting)
-		,m_orderType(WORT_Normal)
-		,m_uInsertDate(0)
-		,m_uInsertTime(0)
-		,m_dVolTraded(0)
-		,m_dVolLeft(0)
-		,m_bIsError(false)
+		, m_orderType(WORT_Normal)
+		, m_uInsertDate(0)
+		, m_uInsertTime(0)
+		, m_dVolTraded(0)
+		, m_dVolLeft(0)
+		, m_bIsError(false)
 	{
 
 	}
+} WTSOrderStruct;
 
+//////////////////////////////////////////////////////////////////////////
+//订单信息,查看订单状态变化等
+class WTSOrderInfo : public WTSOrderStruct, public WTSPoolObject<WTSOrderInfo>
+{
+public:
 	virtual ~WTSOrderInfo(){}
 
 public:
@@ -371,51 +411,48 @@ public:
 	constexpr inline bool	isError() const noexcept { return m_bIsError; }
 
 private:
-	//这部分成员和WTSEntrust一致
-	char			m_strExchg[MAX_EXCHANGE_LENGTH];
-	char			m_strCode[MAX_INSTRUMENT_LENGTH];
-	double			m_dVolume;
-	double			m_iPrice;
-
-	bool			m_bIsNet;
-	bool			m_bIsBuy;
-
-	WTSDirectionType	m_direction;
-	WTSPriceType		m_priceType;
-	WTSOrderFlag		m_orderFlag;
-	WTSOffsetType		m_offsetType;
-
-	char				m_strEntrustID[64] = { 0 };
-	char				m_strUserTag[64] = { 0 };
-
-	WTSBusinessType		m_businessType;
-	WTSContractInfo*	m_pContract;
-
-	//这部分是Order专有的成员
-	uint32_t	m_uInsertDate;
-	uint64_t	m_uInsertTime;
-	double		m_dVolTraded;
-	double		m_dVolLeft;
-	bool		m_bIsError;
-
-	WTSOrderState	m_orderState;
-	WTSOrderType	m_orderType;
-	char			m_strOrderID[64] = { 0 };
-	char			m_strStateMsg[64] = { 0 };
+	WTSContractInfo*	m_pContract = NULL;
 };
 
-//////////////////////////////////////////////////////////////////////////
-class WTSTradeInfo : public WTSPoolObject<WTSTradeInfo>
+typedef struct _WTSTradeStruct
 {
-public:
-	WTSTradeInfo()
+	char	m_strExchg[MAX_EXCHANGE_LENGTH];	//市场
+	char	m_strCode[MAX_INSTRUMENT_LENGTH];	//代码
+	char	m_strTradeID[64] = { 0 };			//成交单号
+	char	m_strRefOrder[64] = { 0 };			//本地委托序列号
+	char	m_strUserTag[64] = { 0 };			//用户标签
+
+	uint32_t	m_uTradeDate;
+	uint64_t	m_uTradeTime;
+	double		m_dVolume;
+	double		m_dPrice;
+
+	bool		m_bIsNet;
+	bool		m_bIsBuy;
+
+	WTSDirectionType	m_direction;
+	WTSOffsetType		m_offsetType;
+	WTSOrderType		m_orderType;
+	WTSTradeType		m_tradeType;
+
+	double		m_uAmount;
+
+	WTSBusinessType		m_businessType;
+
+	_WTSTradeStruct()
 		: m_orderType(WORT_Normal)
 		, m_tradeType(WTT_Common)
 		, m_uAmount(0)
 		, m_dPrice(0)
 		, m_businessType(BT_CASH)
-		, m_pContract(NULL)
 	{}
+}WTSTradeStruct;
+
+//////////////////////////////////////////////////////////////////////////
+class WTSTradeInfo : public WTSTradeStruct, public WTSPoolObject<WTSTradeInfo>
+{
+public:
+	
 	virtual ~WTSTradeInfo(){}
 
 public:
@@ -498,34 +535,44 @@ public:
 	constexpr inline WTSContractInfo* getContractInfo() const noexcept { return m_pContract; }
 
 protected:
-	char	m_strExchg[MAX_EXCHANGE_LENGTH];	//市场
-	char	m_strCode[MAX_INSTRUMENT_LENGTH];	//代码
-	char	m_strTradeID[64] = { 0 };			//成交单号
-	char	m_strRefOrder[64] = { 0 };			//本地委托序列号
-	char	m_strUserTag[64] = { 0 };			//用户标签
+	WTSContractInfo*	m_pContract = NULL;
+};
 
-	uint32_t	m_uTradeDate;
-	uint64_t	m_uTradeTime;
-	double		m_dVolume;
-	double		m_dPrice;
+typedef struct _WTSPositionStruct
+{
+	char			m_strExchg[MAX_EXCHANGE_LENGTH];
+	char			m_strCode[MAX_INSTRUMENT_LENGTH];
+	char			m_strCurrency[8] = { 0 };
 
-	bool		m_bIsNet;
-	bool		m_bIsBuy;
-
-	WTSDirectionType	m_direction;
-	WTSOffsetType		m_offsetType;
-	WTSOrderType		m_orderType;
-	WTSTradeType		m_tradeType;
-
-	double		m_uAmount;
+	WTSDirectionType	m_direction;//多空方向
+	double		m_dPrePosition;		//昨仓
+	double		m_dNewPosition;		//今仓
+	double		m_dAvailPrePos;		//可平昨仓
+	double		m_dAvailNewPos;		//可平今仓
+	double		m_dTotalPosCost;	//持仓总成本
+	double		m_dMargin;			//占用保证金
+	double		m_dAvgPrice;		//持仓均价
+	double		m_dDynProfit;		//浮动盈亏
 
 	WTSBusinessType		m_businessType;
-	WTSContractInfo*	m_pContract;
-};
+
+	_WTSPositionStruct()
+		: m_direction(WDT_LONG)
+		, m_dPrePosition(0)
+		, m_dNewPosition(0)
+		, m_dAvailPrePos(0)
+		, m_dAvailNewPos(0)
+		, m_dMargin(0)
+		, m_dAvgPrice(0)
+		, m_dDynProfit(0)
+		, m_dTotalPosCost(0)
+		, m_businessType(BT_CASH)
+	{}
+}WTSPositionStruct;
 
 //////////////////////////////////////////////////////////////////////////
 //持仓信息
-class WTSPositionItem : public WTSPoolObject<WTSPositionItem>
+class WTSPositionItem : public WTSPositionStruct, public WTSPoolObject<WTSPositionItem>
 {
 public:
 	static inline WTSPositionItem* create(const char* code, const char* currency = "CNY", const char* exchg = "", WTSBusinessType bType = BT_CASH)
@@ -578,46 +625,29 @@ public:
 	constexpr inline WTSContractInfo* getContractInfo() const  noexcept { return m_pContract; }
 
 public:
-	WTSPositionItem()
-		: m_direction(WDT_LONG)
-		, m_dPrePosition(0)
-		, m_dNewPosition(0)
-		, m_dAvailPrePos(0)
-		, m_dAvailNewPos(0)
-		, m_dMargin(0)
-		, m_dAvgPrice(0)
-		, m_dDynProfit(0)
-		, m_dTotalPosCost(0)
-		, m_businessType(BT_CASH)
-		, m_pContract(NULL)
-	{}
 	virtual ~WTSPositionItem(){}
 
 protected:
-	char			m_strExchg[MAX_EXCHANGE_LENGTH];
-	char			m_strCode[MAX_INSTRUMENT_LENGTH];
-	char			m_strCurrency[8] = { 0 };
-
-	WTSDirectionType	m_direction;//多空方向
-	double		m_dPrePosition;		//昨仓
-	double		m_dNewPosition;		//今仓
-	double		m_dAvailPrePos;		//可平昨仓
-	double		m_dAvailNewPos;		//可平今仓
-	double		m_dTotalPosCost;	//持仓总成本
-	double		m_dMargin;			//占用保证金
-	double		m_dAvgPrice;		//持仓均价
-	double		m_dDynProfit;		//浮动盈亏
-
-	WTSBusinessType		m_businessType;
-	WTSContractInfo*	m_pContract;
+	WTSContractInfo*	m_pContract = NULL;
 };
 
-//////////////////////////////////////////////////////////////////////////
-//账户信息
-class WTSAccountInfo : public WTSPoolObject<WTSAccountInfo>
+typedef struct _WTSAccountStruct
 {
-public:
-	WTSAccountInfo()
+	char		m_strCurrency[8];
+
+	double		m_dBalance;					//余额
+	double		m_dPreBalance;				//上次结算准备金
+	double		m_uMargin;					//当前保证金总额
+	double		m_dCommission;				//手续费
+	double		m_dFrozenMargin;			//冻结的保证金
+	double		m_dFrozenCommission;		//冻结的手续费
+	double		m_dCloseProfit;				//平仓盈亏
+	double		m_dDynProfit;				//持仓盈亏
+	double		m_dDeposit;					//入金金额
+	double		m_dWithdraw;				//出金金额
+	double		m_dAvailable;				//可用资金
+
+	_WTSAccountStruct()
 		: m_strCurrency("CNY")
 		, m_dBalance(0)
 		, m_dPreBalance(0)
@@ -631,12 +661,19 @@ public:
 		, m_dAvailable(0)
 	{
 	}
+}WTSAccountStruct;
+//////////////////////////////////////////////////////////////////////////
+//账户信息
+class WTSAccountInfo : public WTSAccountStruct, public WTSPoolObject<WTSAccountInfo>
+{
+public:
+	
 	virtual ~WTSAccountInfo(){}
 
 public:
 	static inline WTSAccountInfo* create(){return WTSAccountInfo::allocate();}
 
-	inline void	setCurrency(const char* currency) noexcept { m_strCurrency = currency; }
+	inline void	setCurrency(const char* currency) noexcept { strcpy(m_strCurrency, currency); }
 
 	constexpr inline void	setBalance(double balance) noexcept {m_dBalance = balance;}
 	constexpr inline void	setPreBalance(double prebalance) noexcept {m_dPreBalance = prebalance;}
@@ -662,22 +699,7 @@ public:
 	constexpr inline double	getFrozenCommission() const noexcept {return m_dFrozenCommission;}
 	constexpr inline double	getAvailable() const noexcept {return m_dAvailable;}
 
-	inline const char* getCurrency() const noexcept { return m_strCurrency.c_str(); }
-
-protected:
-	std::string m_strCurrency;
-
-	double		m_dBalance;					//余额
-	double		m_dPreBalance;				//上次结算准备金
-	double		m_uMargin;					//当前保证金总额
-	double		m_dCommission;				//手续费
-	double		m_dFrozenMargin;			//冻结的保证金
-	double		m_dFrozenCommission;		//冻结的手续费
-	double		m_dCloseProfit;				//平仓盈亏
-	double		m_dDynProfit;				//持仓盈亏
-	double		m_dDeposit;					//入金金额
-	double		m_dWithdraw;				//出金金额
-	double		m_dAvailable;				//可用资金
+	inline const char* getCurrency() const noexcept { return m_strCurrency; }
 };
 
 
