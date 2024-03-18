@@ -21,7 +21,8 @@ IF(MSVC)
 ELSE(GNUCC)
 	SET(LIBS
 		boost_thread
-		boost_filesystem
+        	boost_filesystem
+		stdc++fs
 		dl
 	)
 	TARGET_LINK_LIBRARIES(TraderYD ${LIBS})

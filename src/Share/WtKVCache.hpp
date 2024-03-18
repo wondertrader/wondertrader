@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "SpinMutex.hpp"
 #include "BoostFile.hpp"
+#include "StdUtils.hpp"
 #include "BoostMappingFile.hpp"
 #include "../Includes/FasterDefs.h"
 
@@ -56,9 +57,10 @@ private:
 	CacheBlockPair	_cache;
 	SpinMutex		_lock;
 	wt_hashmap<std::string, uint32_t> _indice;
+	CacheLogger		_logger = nullptr;
 
 private:
-	bool	resize(uint32_t newCap, CacheLogger logger = nullptr) noexcept
+	bool	resize(uint32_t newCap) noexcept
 	{
 		if (_cache._file == NULL)
 			return false;
@@ -83,7 +85,7 @@ private:
 		}
 		catch (std::exception&)
 		{
-			if (logger) logger("Got an exception while resizing cache file");
+			if (_logger) _logger("Got an exception while resizing cache file");
 			return false;
 		}
 
@@ -95,13 +97,13 @@ private:
 			if (!pNewMf->map(filename.c_str()))
 			{
 				delete pNewMf;
-				if (logger) logger("Mapping cache file failed");
+				if (_logger) _logger("Mapping cache file failed");
 				return false;
 			}
 		}
 		catch (std::exception&)
 		{
-			if (logger) logger("Got an exception while mapping cache file");
+			if (_logger) _logger("Got an exception while mapping cache file");
 			return false;
 		}
 
@@ -115,8 +117,9 @@ private:
 public:
 	bool	init(const char* filename, uint32_t uDate, CacheLogger logger = nullptr) noexcept
 	{
+		_logger = logger;
 		bool isNew = false;
-		if (!BoostFile::exists(filename))
+		if (!StdFile::exists(filename))
 		{
 			uint64_t uSize = sizeof(CacheBlock) + sizeof(CacheItem) * SIZE_STEP;
 			BoostFile bf;
@@ -131,7 +134,7 @@ public:
 		if (!_cache._file->map(filename))
 		{
 			_cache._file.reset();
-			if (logger) logger("Mapping cache file failed");
+			if (_logger) _logger("Mapping cache file failed");
 			return false;
 		}
 		_cache._block = (CacheBlock*)_cache._file->addr();
@@ -143,7 +146,7 @@ public:
 
 			memset(& _cache._block->_items, 0, sizeof(CacheItem)* _cache._block->_capacity);
 
-			if (logger) logger("Cache file reset due to a different date");
+			if (_logger) _logger("Cache file reset due to a different date");
 		}
 
 		if (isNew)
@@ -203,7 +206,7 @@ public:
 		return _cache._block->_items[it->second]._val;
 	}
 
-	void	put(const char* key, const char*val, std::size_t len = 0, CacheLogger logger = nullptr)  noexcept
+	void	put(const char* key, const char*val, std::size_t len = 0)  noexcept
 	{
 		auto it = _indice.find(key);
 		if (it != _indice.end())
@@ -215,7 +218,28 @@ public:
 			if (_cache._block->_size == _cache._block->_capacity)
 			{
 				_lock.lock();
-				resize(_cache._block->_capacity * 2, logger);
+				resize(_cache._block->_capacity * 2);
+				_lock.unlock();
+			}
+
+			uint32_t idx = _cache._block->_size++;
+			wt_strcpy(_cache._block->_items[idx]._key, key);
+			wt_strcpy(_cache._block->_items[idx]._val, val, len);
+			_indice[key] = idx;
+		}
+	}
+
+	void	put_if_none(const char* key, const char*val, std::size_t len = 0)  noexcept
+	{
+		auto it = _indice.find(key);
+		if (it != _indice.end())
+			return;
+
+		{
+			if (_cache._block->_size == _cache._block->_capacity)
+			{
+				_lock.lock();
+				resize(_cache._block->_capacity * 2);
 				_lock.unlock();
 			}
 

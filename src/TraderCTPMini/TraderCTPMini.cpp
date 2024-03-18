@@ -21,7 +21,8 @@
 #include "../Share/decimal.h"
 #include "../Share/Converter.hpp"
 
-#include <boost/filesystem.hpp>
+#include <filesystem>
+namespace fs = std::filesystem;
 
 const char* ENTRUST_SECTION = "entrusts";
 const char* ORDER_SECTION = "orders";
@@ -164,7 +165,7 @@ void TraderCTPMini::connect()
 {
 	std::stringstream ss;
 	ss << m_strFlowDir << "flows/" << m_strBroker << "/" << m_strUser << "/";
-	boost::filesystem::create_directories(ss.str().c_str());
+	fs::create_directories(ss.str().c_str());
 	m_pUserAPI = m_funcCreator(ss.str().c_str());
 	m_pUserAPI->RegisterSpi(this);
 	if (m_bQuickStart)
@@ -353,9 +354,7 @@ int TraderCTPMini::orderInsert(WTSEntrust* entrust)
 
 	if (strlen(entrust->getUserTag()) > 0)
 	{
-		m_eidCache.put(entrust->getEntrustID(), entrust->getUserTag(), 0, [this](const char* message) {
-			write_log(m_sink, LL_WARN, message);
-		});
+		m_eidCache.put(entrust->getEntrustID(), entrust->getUserTag(), 0);
 	}
 
 	WTSContractInfo* ct = entrust->getContractInfo();
@@ -609,7 +608,7 @@ void TraderCTPMini::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, C
 			ss << m_strFlowDir << "local/" << m_strBroker << "/";
 			std::string path = StrUtil::standardisePath(ss.str());
 			if (!StdFile::exists(path.c_str()))
-				boost::filesystem::create_directories(path.c_str());
+				fs::create_directories(path.c_str());
 			ss << m_strUser << "_eid.sc";
 			m_eidCache.init(ss.str().c_str(), m_lDate, [this](const char* message) {
 				write_log(m_sink, LL_WARN, message);
@@ -622,7 +621,7 @@ void TraderCTPMini::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, C
 			ss << m_strFlowDir << "local/" << m_strBroker << "/";
 			std::string path = StrUtil::standardisePath(ss.str());
 			if (!StdFile::exists(path.c_str()))
-				boost::filesystem::create_directories(path.c_str());
+				fs::create_directories(path.c_str());
 			ss << m_strUser << "_oid.sc";
 			m_oidCache.init(ss.str().c_str(), m_lDate, [this](const char* message) {
 				write_log(m_sink, LL_WARN, message);
@@ -1160,9 +1159,7 @@ WTSOrderInfo* TraderCTPMini::makeOrderInfo(CThostFtdcOrderField* orderField)
 
 		if (strlen(pRet->getOrderID()) > 0)
 		{
-			m_oidCache.put(StrUtil::trim(pRet->getOrderID()).c_str(), usertag, 0, [this](const char* message) {
-				write_log(m_sink, LL_ERROR, message);
-			});
+			m_oidCache.put(StrUtil::trim(pRet->getOrderID()).c_str(), usertag, 0);
 		}
 	}
 

@@ -20,8 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DataManager.cpp" />
-    <ClCompile Include="IndexFactory.cpp" />
-    <ClCompile Include="IndexWorker.cpp" />
+    <ClCompile Include="IndexWorkerMgr.cpp" />
     <ClCompile Include="ParserAdapter.cpp" />
     <ClCompile Include="ShmCaster.cpp" />
     <ClCompile Include="StateMonitor.cpp" />
@@ -31,8 +30,7 @@
   <ItemGroup>
     <ClInclude Include="DataManager.h" />
     <ClInclude Include="IDataCaster.h" />
-    <ClInclude Include="IndexFactory.h" />
-    <ClInclude Include="IndexWorker.h" />
+    <ClInclude Include="IndexWorkerMgr.h" />
     <ClInclude Include="ParserAdapter.h" />
     <ClInclude Include="ShmCaster.h" />
     <ClInclude Include="StateMonitor.h" />

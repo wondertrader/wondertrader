@@ -55,20 +55,21 @@ public:
 	/*
 	 *	读取数组长度
 	 */
-	inline
-	uint32_t size() const{ return (uint32_t)_vec.size(); }
+	inline uint32_t size() const{ return (uint32_t)_vec.size(); }
+
+	inline bool empty() const noexcept { return _vec.empty(); }
 
 	/*
 	 *	清空数组,并重新分配空间
 	 *	调用该函数会预先分配长度
 	 *	预先分配好的数据都是NULL
 	 */
-	void resize(uint32_t _size) noexcept
+	void resize(uint32_t _size, WTSObject* val = NULL) noexcept
 	{
 		if(!_vec.empty())
 			clear();
 
-		_vec.resize(_size, NULL);
+		_vec.resize(_size, val);
 	}
 
 	/*
@@ -166,10 +167,10 @@ public:
 	inline
 	void set(uint32_t idx, WTSObject* obj, bool bAutoRetain = true) noexcept
 	{
-		if(idx >= _vec.size() || obj == NULL)
+		if(idx >= _vec.size())
 			return;
 
-		if(bAutoRetain)
+		if(bAutoRetain && obj)
 			obj->retain();
 
 		WTSObject* oldObj = _vec.at(idx);

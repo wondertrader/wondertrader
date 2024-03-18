@@ -19,9 +19,11 @@ INCLUDE_DIRECTORIES(${INCS})
 LINK_DIRECTORIES(${LNKS})
 
 SET(LIBS
-	boost_filesystem
-    WTSUtils
+    boost_thread
+    pthread
+	stdc++fs
 	dl
+    WTSUtils
 )
 
 IF(WIN32)

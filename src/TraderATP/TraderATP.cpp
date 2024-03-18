@@ -20,8 +20,8 @@
 #include "../Share/ModuleHelper.hpp"
 #include "../Share/Converter.hpp"
 
-#include <boost/filesystem.hpp>
-#include <iostream>
+#include <filesystem>
+namespace fs = std::filesystem;
 
 #ifdef _WIN32
 #ifdef _WIN64
@@ -311,9 +311,7 @@ WTSOrderInfo* TraderATP::makeOrderInfo(const APIOrderUnit* order_info)
 
 		if (strlen(pRet->getOrderID()) > 0)
 		{
-			m_oidCache.put(StrUtil::trim(pRet->getOrderID()).c_str(), usertag, 0, [this](const char* message) {
-				write_log(_sink, LL_ERROR, message);
-			});
+			m_oidCache.put(StrUtil::trim(pRet->getOrderID()).c_str(), usertag, 0);
 		}
 	}
 
@@ -370,9 +368,7 @@ WTSOrderInfo* TraderATP::makeOrderInfo(const ATPRspOrderStatusAckMsg *order_stat
 
 		if (strlen(pRet->getOrderID()) > 0)
 		{
-			m_oidCache.put(StrUtil::trim(pRet->getOrderID()).c_str(), usertag, 0, [this](const char* message) {
-				write_log(_sink, LL_ERROR, message);
-			});
+			m_oidCache.put(StrUtil::trim(pRet->getOrderID()).c_str(), usertag, 0);
 		}
 	}
 
@@ -538,7 +534,7 @@ void TraderATP::OnRspCustLoginResp(const ATPRspCustLoginRespOtherMsg &cust_login
 			ss << "./atpdata/local/";
 			std::string path = StrUtil::standardisePath(ss.str());
 			if (!StdFile::exists(path.c_str()))
-				boost::filesystem::create_directories(path.c_str());
+				fs::create_directories(path.c_str());
 			ss << _user << "_eid.sc";
 			m_eidCache.init(ss.str().c_str(), _tradingday, [this](const char* message) {
 				write_log(_sink, LL_WARN, message);
@@ -551,7 +547,7 @@ void TraderATP::OnRspCustLoginResp(const ATPRspCustLoginRespOtherMsg &cust_login
 			ss << "./atpdata/local/";
 			std::string path = StrUtil::standardisePath(ss.str());
 			if (!StdFile::exists(path.c_str()))
-				boost::filesystem::create_directories(path.c_str());
+				fs::create_directories(path.c_str());
 			ss << _user << "_oid.sc";
 			m_oidCache.init(ss.str().c_str(), _tradingday, [this](const char* message) {
 				write_log(_sink, LL_WARN, message);
@@ -1201,9 +1197,7 @@ int TraderATP::orderInsert(WTSEntrust* entrust)
 
 		if (strlen(entrust->getUserTag()) > 0)
 		{
-			m_eidCache.put(entrust->getEntrustID(), entrust->getUserTag(), 0, [this](const char* message) {
-				write_log(_sink, LL_WARN, message);
-			});
+			m_eidCache.put(entrust->getEntrustID(), entrust->getUserTag(), 0);
 		}
 
 

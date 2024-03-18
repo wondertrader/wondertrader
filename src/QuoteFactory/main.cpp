@@ -4,7 +4,7 @@
 #include "../WtDtCore/UDPCaster.h"
 #include "../WtDtCore/ShmCaster.h"
 #include "../WtDtCore/WtHelper.h"
-#include "../WtDtCore/IndexFactory.h"
+#include "../WtDtCore/IndexWorkerMgr.h"
 
 #include "../Includes/WTSSessionInfo.hpp"
 #include "../Includes/WTSVariant.hpp"
@@ -25,7 +25,7 @@ UDPCaster		g_udpCaster;
 ShmCaster		g_shmCaster;
 DataManager		g_dataMgr;
 ParserAdapterMgr g_parsers;
-IndexFactory	g_idxFactory;
+IndexWorkerMgr	g_idxFactory;
 
 #ifdef _MSC_VER
 #include "../Common/mdump.h"
@@ -200,6 +200,9 @@ void initialize(const std::string& filename)
 
 	if(config->has("index"))
 	{
+		std::string path = fmt::format("{}index/", WtHelper::get_cwd());
+		g_idxFactory.loadFactories(path.c_str());
+
 		//如果存在指数模块要，配置指数
 		const char* filename = config->getCString("index");
 		WTSLogger::info("Reading index config from {}...", filename);

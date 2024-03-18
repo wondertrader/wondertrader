@@ -1,5 +1,4 @@
-﻿#include "IndexWorker.h"
-#include "IndexFactory.h"
+﻿#include "WtBlkIdxWorker.h"
 
 #include "../Includes/IBaseDataMgr.h"
 #include "../Includes/WTSVariant.hpp"
@@ -10,8 +9,6 @@
 #include "../Share/decimal.h"
 #include "../Share/TimeUtils.hpp"
 
-#include "../WTSTools/WTSLogger.h"
-
 const char* WEIGHT_ALGS[] = 
 {
 	"Fixed",
@@ -19,7 +16,14 @@ const char* WEIGHT_ALGS[] =
 	"DynamicVolume"
 };
 
-bool IndexWorker::init(WTSVariant* config)
+extern const char* FACT_NAME;
+
+const char* WtBlkIdxWorker::get_fact_name()
+{
+	return FACT_NAME;
+}
+
+bool WtBlkIdxWorker::init(WTSVariant* config)
 {
 	if (config == NULL)
 		return false;
@@ -27,7 +31,7 @@ bool IndexWorker::init(WTSVariant* config)
 	_exchg = config->getCString("exchg");
 	_code = config->getCString("code");
 
-	_cInfo = _factor->get_bd_mgr()->getContract(_code.c_str(), _exchg.c_str());
+	_cInfo = _bd_mgr->getContract(_code.c_str(), _exchg.c_str());
 
 	_trigger = config->getCString("trigger");
 	_timeout = config->getUInt32("timeout");
@@ -37,7 +41,7 @@ bool IndexWorker::init(WTSVariant* config)
 		_stand_scale = 1.0;
 
 	//如果是连续合约，要转成分月合约，因为是实时处理的
-	IHotMgr* hotMgr = _factor->get_hot_mgr();
+	IHotMgr* hotMgr = _hot_mgr;
 
 	if (_trigger != "time")
 	{
@@ -53,7 +57,7 @@ bool IndexWorker::init(WTSVariant* config)
 	WTSVariant* cfgCodes = config->get("codes");
 	if (cfgComms != NULL && cfgComms->size() > 0)
 	{
-		IBaseDataMgr* bdMgr = _factor->get_bd_mgr();
+		IBaseDataMgr* bdMgr = _bd_mgr;
 
 		std::size_t cnt = cfgComms->size();
 		for (std::size_t i = 0; i < cnt; i++)
@@ -88,21 +92,21 @@ bool IndexWorker::init(WTSVariant* config)
 				wFactor._weight = weight;
 
 				//订阅的时候读取最后的快照，作为基础数据
-				WTSTickData* lastTick = _factor->sub_ticks(fullCode.c_str());
+				WTSTickData* lastTick = _factory->sub_ticks(fullCode.c_str());
 				if (lastTick)
 				{
 					memcpy(&wFactor._tick, &lastTick->getTickStruct(), sizeof(WTSTickStruct));
 					lastTick->release();
 				}
 
-				WTSLogger::info("Consist {} of block index {}.{} subscribed", fullCode, _exchg, _code);
+				_factory->output_log(LL_INFO, fmtutil::format("[{}] Consist {} of block index {}.{} subscribed", _id, fullCode, _exchg, _code));
 			}
 		}
 	}
 	else if (cfgCodes != NULL && cfgCodes->size() > 0)
 	{
-		IBaseDataMgr* bdMgr = _factor->get_bd_mgr();
-		IHotMgr* hotMgr = _factor->get_hot_mgr();
+		IBaseDataMgr* bdMgr = _bd_mgr;
+		IHotMgr* hotMgr = _hot_mgr;
 
 		std::size_t cnt = cfgCodes->size();
 		for (std::size_t i = 0; i < cnt; i++)
@@ -139,7 +143,7 @@ bool IndexWorker::init(WTSVariant* config)
 				if (strlen(cInfo._ruletag) > 0)
 				{
 					code = hotMgr->getCustomRawCode(cInfo._ruletag, cInfo.stdCommID());
-					WTSLogger::info("{} contract confirmed: {} -> {}.{}", cInfo._ruletag, fullCode, cInfo._exchg, code);
+					_factory->output_log(LL_INFO, fmtutil::format("[{}] {} contract confirmed: {} -> {}.{}", _id, cInfo._ruletag, fullCode, cInfo._exchg, code));
 				}
 				else
 				{
@@ -149,10 +153,10 @@ bool IndexWorker::init(WTSVariant* config)
 				
 			}
 
-			WTSContractInfo* cInfo = _factor->get_bd_mgr()->getContract(code.c_str(), exchg.c_str());
+			WTSContractInfo* cInfo = _bd_mgr->getContract(code.c_str(), exchg.c_str());
 			if(cInfo == NULL)
 			{
-				WTSLogger::error("Consist {} of block index {}.{} not exists", fullCode, _exchg, _code);
+				_factory->output_log(LL_ERROR, fmtutil::format("[{}] Consist {} of block index {}.{} not exists", _id, fullCode, _exchg, _code));
 				continue;
 			}
 
@@ -160,23 +164,23 @@ bool IndexWorker::init(WTSVariant* config)
 			wFactor._weight = weight;
 
 			//订阅的时候读取最后的快照，作为基础数据
-			WTSTickData* lastTick = _factor->sub_ticks(fullCode.c_str());
+			WTSTickData* lastTick = _factory->sub_ticks(fullCode.c_str());
 			if (lastTick)
 			{
 				memcpy(&wFactor._tick, &lastTick->getTickStruct(), sizeof(WTSTickStruct));
 				lastTick->release();
 			}
 
-			WTSLogger::info("Consist {} of block index {}.{} subscribed", fullCode, _exchg, _code);
+			_factory->output_log(LL_INFO, fmtutil::format("[{}] Consist {} of block index {}.{} subscribed", _id, fullCode, _exchg, _code));
 		}
 	}
 
-	WTSLogger::info("Block index {}.{} initialized，weight algorithm: {}, trigger: {}, timeout: {}", _exchg, _code, WEIGHT_ALGS[_weight_alg], _trigger, _timeout);
+	_factory->output_log(LL_INFO, fmtutil::format("[{}] Block index {}.{} initialized，weight algorithm: {}, trigger: {}, timeout: {}", _id, _exchg, _code, WEIGHT_ALGS[_weight_alg], _trigger, _timeout));
 
 	return true;
 }
 
-void IndexWorker::handle_quote(WTSTickData* newTick)
+void WtBlkIdxWorker::handle_quote(WTSTickData* newTick)
 {
 	const char* fullCode = newTick->getContractInfo()->getFullCode();
 
@@ -239,7 +243,7 @@ void IndexWorker::handle_quote(WTSTickData* newTick)
 	}
 }
 
-void IndexWorker::generate_tick()
+void WtBlkIdxWorker::generate_tick()
 {
 	//然后开始计算指数
 	double total_base = 0.0;	//权重基数
@@ -333,7 +337,6 @@ void IndexWorker::generate_tick()
 
 	WTSTickData *newTick = WTSTickData::create(_cache);
 	newTick->setContractInfo(_cInfo);
-	_factor->push_tick(newTick);
-	WTSLogger::debug("{}.{} - {}.{} - {}", _cache.exchg, _cache.code, _cache.action_date, _cache.action_time, _cache.price);
+	_factory->push_tick(newTick);
 	newTick->release();
 }

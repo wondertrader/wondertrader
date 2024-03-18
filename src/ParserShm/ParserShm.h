@@ -79,11 +79,14 @@ private:
 	CastQueue*		_queue;
 	uint32_t		_gpsize;
 	uint32_t		_check_span;
+	uint32_t		_cpu;
 
 	IParserSpi*		_sink;
 	bool			_stopped;
 
-	CodeSet			_set_subs;
+	std::vector<bool> _subbed;
+
+	IBaseDataMgr*	_bd_mgr;
 
 	StdThreadPtr	_thrd_parser;
 };

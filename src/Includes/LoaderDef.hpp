@@ -49,3 +49,20 @@ typedef struct _Commodity
 
 } Commodity;
 typedef std::map<std::string, Commodity> CommodityMap;
+
+
+typedef struct _FeeInfo
+{
+	double	_open;
+	double	_close;
+	double	_closet;
+	bool	_byvol;
+} FeeInfo;
+typedef std::map<std::string, FeeInfo> FeeMap;
+
+typedef struct _MarginInfo
+{
+	double	_long;
+	double	_short;
+} MarginInfo;
+typedef std::map<std::string, MarginInfo> MarginMap;

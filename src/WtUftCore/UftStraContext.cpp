@@ -22,6 +22,7 @@
 #include "../Share/decimal.h"
 #include "../Share/TimeUtils.hpp"
 #include "../Share/Converter.hpp"
+#include "../Share/BoostFile.hpp"
 
 #include "../WTSTools/WTSLogger.h"
 #include "../WTSUtils/WTSCfgLoader.h"
@@ -1031,7 +1032,7 @@ void UftStraContext::load_local_data()
 
 	std::string folder = fmtutil::format("{}{}/", WtHelper::getOutputDir(), _name);
 	if (!StdFile::exists(folder.c_str()))
-		BoostFile::create_directories(folder.c_str());
+		StdFile::create_directories(folder.c_str());
 
 	/*
 	 *	By Wesley @ 2023.09.08
@@ -1119,7 +1120,7 @@ void UftStraContext::load_local_data()
 
 	//不管前面解析的情况如何，文件都重命名
 	if (StdFile::exists(mannualfile.c_str()))
-		boost::filesystem::rename(boost::filesystem::path(mannualfile), boost::filesystem::path(fmtutil::format("{}.{}", mannualfile, TimeUtils::getYYYYMMDDhhmmss())));
+		std::filesystem::rename(std::filesystem::path(mannualfile), std::filesystem::path(fmtutil::format("{}.{}", mannualfile, TimeUtils::getYYYYMMDDhhmmss())));
 
 	if(_pos_blk._block == NULL || _pos_blk._block->_date != _tradingday)
 	{

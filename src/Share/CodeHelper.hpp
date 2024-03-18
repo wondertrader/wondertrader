@@ -30,6 +30,12 @@ static const char SUFFIX_QFQ = '-';
 //后复权合约代码后缀
 static const char SUFFIX_HFQ = '+';
 
+//前复权合约代码后缀
+static const char* SUFFIX_QFQ_S = "-";
+
+//后复权合约代码后缀
+static const char* SUFFIX_HFQ_S = "+";
+
 class CodeHelper
 {
 public:

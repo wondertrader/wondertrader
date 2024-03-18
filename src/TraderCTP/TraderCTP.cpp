@@ -21,12 +21,13 @@
 #include "../Share/ModuleHelper.hpp"
 #include "../Share/Converter.hpp"
 
-#include <boost/filesystem.hpp>
+#include <filesystem>
+namespace fs = std::filesystem;
 
 //By Wesley @ 2022.01.05
 #include "../Share/fmtlib.h"
 template<typename... Args>
-inline void write_log(ITraderSpi* sink, WTSLogLevel ll, const char* format, const Args&... args)
+inline void write_log(ITraderSpi* sink, WTSLogLevel ll, const char* format, const Args&... args) noexcept
 {
 	if (sink == NULL)
 		return;
@@ -36,7 +37,7 @@ inline void write_log(ITraderSpi* sink, WTSLogLevel ll, const char* format, cons
 	sink->handleTraderLog(ll, buffer);
 }
 
-uint32_t strToTime(const char* strTime)
+uint32_t strToTime(const char* strTime) noexcept
 {
 	std::string str;
 	const char *pos = strTime;
@@ -50,6 +51,135 @@ uint32_t strToTime(const char* strTime)
 	}
 
 	return convert::to_uint32(str.c_str());
+}
+
+constexpr static inline bool IsErrorRspInfo(CThostFtdcRspInfoField *pRspInfo) noexcept
+{
+	return (pRspInfo && pRspInfo->ErrorID != 0);
+}
+
+constexpr static inline int wrapDirectionType(WTSDirectionType dirType, WTSOffsetType offsetType) noexcept
+{
+	return (WDT_LONG == dirType) ? ((offsetType == WOT_OPEN) ? THOST_FTDC_D_Buy : THOST_FTDC_D_Sell) : ((offsetType == WOT_OPEN) ? THOST_FTDC_D_Sell : THOST_FTDC_D_Buy);
+}
+
+constexpr static inline WTSDirectionType wrapDirectionType(TThostFtdcDirectionType dirType, TThostFtdcOffsetFlagType offsetType) noexcept
+{
+	return (THOST_FTDC_D_Buy == dirType) ? ((offsetType == THOST_FTDC_OF_Open) ? WDT_LONG : WDT_SHORT) : ((offsetType == THOST_FTDC_OF_Open) ? WDT_SHORT : WDT_LONG);
+}
+
+constexpr static inline WTSDirectionType wrapPosDirection(TThostFtdcPosiDirectionType dirType) noexcept
+{
+	return (THOST_FTDC_PD_Long == dirType) ? WDT_LONG : WDT_SHORT;
+}
+
+constexpr static inline int wrapOffsetType(WTSOffsetType offType) noexcept
+{
+	switch(offType)
+	{
+	case WOT_OPEN:
+		return THOST_FTDC_OF_Open;
+	case WOT_CLOSE:
+		return THOST_FTDC_OF_Close;
+	case WOT_CLOSETODAY:
+		return THOST_FTDC_OF_CloseToday;
+	case WOT_CLOSEYESTERDAY:
+		return THOST_FTDC_OF_Close;
+	default:
+		return THOST_FTDC_OF_ForceClose;
+	}
+}
+
+constexpr static inline WTSOffsetType wrapOffsetType(TThostFtdcOffsetFlagType offType) noexcept
+{
+	switch (offType)
+	{
+	case THOST_FTDC_OF_Open:
+		return WOT_OPEN;
+	case THOST_FTDC_OF_Close:
+		return WOT_CLOSE;
+	case THOST_FTDC_OF_CloseYesterday:
+		return WOT_CLOSEYESTERDAY;
+	case THOST_FTDC_OF_CloseToday:
+		return WOT_CLOSETODAY;
+	default:
+		return WOT_FORCECLOSE;
+	}
+}
+
+constexpr static inline int wrapPriceType(WTSPriceType priceType, bool isCFFEX = false) noexcept
+{
+	switch (priceType)
+	{
+	case WPT_ANYPRICE:
+		return isCFFEX ? THOST_FTDC_OPT_FiveLevelPrice : THOST_FTDC_OPT_AnyPrice;
+	case WPT_LIMITPRICE:
+		return THOST_FTDC_OPT_LimitPrice;
+	case WPT_BESTPRICE:
+		return THOST_FTDC_OPT_BestPrice;
+	default:
+		return THOST_FTDC_OPT_LastPrice;
+	}
+}
+
+constexpr static inline WTSPriceType wrapPriceType(TThostFtdcOrderPriceTypeType priceType) noexcept
+{
+	switch (priceType)
+	{
+	case THOST_FTDC_OPT_AnyPrice:
+	case THOST_FTDC_OPT_FiveLevelPrice:
+		return WPT_ANYPRICE;
+	case THOST_FTDC_OPT_LimitPrice:
+		return WPT_LIMITPRICE;
+	case THOST_FTDC_OPT_BestPrice:
+		return WPT_BESTPRICE;
+	default:
+		return WPT_LASTPRICE;
+	}
+}
+
+constexpr static inline int wrapTimeCondition(WTSTimeCondition timeCond) noexcept
+{
+	switch (timeCond)
+	{
+	case WTC_IOC:
+		return THOST_FTDC_TC_IOC;
+	case WTC_GFD:
+		return THOST_FTDC_TC_GFD;
+	default:
+		return THOST_FTDC_TC_GFS;
+	}
+}
+
+constexpr static inline WTSTimeCondition wrapTimeCondition(TThostFtdcTimeConditionType timeCond) noexcept
+{
+	switch(timeCond)
+	{
+	case THOST_FTDC_TC_IOC:
+		return WTC_IOC;
+	case THOST_FTDC_TC_GFD:
+		return WTC_GFD;
+	default:
+		return WTC_GFS;
+	}
+}
+
+constexpr static inline WTSOrderState wrapOrderState(TThostFtdcOrderStatusType orderState) noexcept
+{
+	switch (orderState)
+	{
+	case THOST_FTDC_OST_PartTradedNotQueueing:
+		return WOS_Canceled;
+	case THOST_FTDC_OST_Unknown:
+		return WOS_Submitting;
+	default:
+		return (WTSOrderState)orderState;
+	}
+}
+
+constexpr static inline int wrapActionFlag(WTSActionFlag actionFlag) noexcept
+{
+	return (WAF_CANCEL == actionFlag) ? THOST_FTDC_AF_Delete : THOST_FTDC_AF_Modify;
 }
 
 extern "C"
@@ -108,9 +238,9 @@ bool TraderCTP::init(WTSVariant* params)
 			}
 		}
 	}
-	m_strBroker = params->get("broker")->asCString();
-	m_strUser = params->get("user")->asCString();
-	m_strPass = params->get("pass")->asCString();
+	m_strBroker = params->getCString("broker");
+	m_strUser = params->getCString("user");
+	m_strPass = params->getCString("pass");
 
 	m_strAppID = params->getCString("appid");
 	m_strAuthCode = params->getCString("authcode");
@@ -172,7 +302,7 @@ void TraderCTP::connect()
 {
 	std::stringstream ss;
 	ss << m_strFlowDir << "flows/" << m_strBroker << "/" << m_strUser << "/";
-	boost::filesystem::create_directories(ss.str().c_str());
+	fs::create_directories(ss.str().c_str());
 	m_pUserAPI = m_funcCreator(ss.str().c_str());
 	m_pUserAPI->RegisterSpi(this);
 	if (m_bQuickStart)
@@ -363,9 +493,7 @@ int TraderCTP::orderInsert(WTSEntrust* entrust)
 
 	if (strlen(entrust->getUserTag()) > 0)
 	{
-		m_eidCache.put(entrust->getEntrustID(), entrust->getUserTag(), 0, [this](const char* message) {
-			write_log(m_sink, LL_WARN, message);
-		});
+		m_eidCache.put(entrust->getEntrustID(), entrust->getUserTag(), 0);
 	}
 
 	///报单价格条件: 限价
@@ -629,7 +757,7 @@ void TraderCTP::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, CThos
 			ss << m_strFlowDir << "local/" << m_strBroker << "/";
 			std::string path = StrUtil::standardisePath(ss.str());
 			if (!StdFile::exists(path.c_str()))
-				boost::filesystem::create_directories(path.c_str());
+				fs::create_directories(path.c_str());
 			ss << m_strUser << "_eid.sc";
 			m_eidCache.init(ss.str().c_str(), m_lDate, [this](const char* message) {
 				write_log(m_sink, LL_WARN, message);
@@ -642,7 +770,7 @@ void TraderCTP::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, CThos
 			ss << m_strFlowDir << "local/" << m_strBroker << "/";
 			std::string path = StrUtil::standardisePath(ss.str());
 			if (!StdFile::exists(path.c_str()))
-				boost::filesystem::create_directories(path.c_str());
+				fs::create_directories(path.c_str());
 			ss << m_strUser << "_oid.sc";
 			m_oidCache.init(ss.str().c_str(), m_lDate, [this](const char* message) {
 				write_log(m_sink, LL_WARN, message);
@@ -1055,130 +1183,6 @@ void TraderCTP::OnRtnTrade(CThostFtdcTradeField *pTrade)
 	}
 }
 
-int TraderCTP::wrapDirectionType(WTSDirectionType dirType, WTSOffsetType offsetType)
-{
-	if (WDT_LONG == dirType)
-		if (offsetType == WOT_OPEN)
-			return THOST_FTDC_D_Buy;
-		else
-			return THOST_FTDC_D_Sell;
-	else
-		if (offsetType == WOT_OPEN)
-			return THOST_FTDC_D_Sell;
-		else
-			return THOST_FTDC_D_Buy;
-}
-
-WTSDirectionType TraderCTP::wrapDirectionType(TThostFtdcDirectionType dirType, TThostFtdcOffsetFlagType offsetType)
-{
-	if (THOST_FTDC_D_Buy == dirType)
-		if (offsetType == THOST_FTDC_OF_Open)
-			return WDT_LONG;
-		else
-			return WDT_SHORT;
-	else
-		if (offsetType == THOST_FTDC_OF_Open)
-			return WDT_SHORT;
-		else
-			return WDT_LONG;
-}
-
-WTSDirectionType TraderCTP::wrapPosDirection(TThostFtdcPosiDirectionType dirType)
-{
-	if (THOST_FTDC_PD_Long == dirType)
-		return WDT_LONG;
-	else
-		return WDT_SHORT;
-}
-
-int TraderCTP::wrapOffsetType(WTSOffsetType offType)
-{
-	if (WOT_OPEN == offType)
-		return THOST_FTDC_OF_Open;
-	else if (WOT_CLOSE == offType)
-		return THOST_FTDC_OF_Close;
-	else if (WOT_CLOSETODAY == offType)
-		return THOST_FTDC_OF_CloseToday;
-	else if (WOT_CLOSEYESTERDAY == offType)
-		return THOST_FTDC_OF_Close;
-	else
-		return THOST_FTDC_OF_ForceClose;
-}
-
-WTSOffsetType TraderCTP::wrapOffsetType(TThostFtdcOffsetFlagType offType)
-{
-	if (THOST_FTDC_OF_Open == offType)
-		return WOT_OPEN;
-	else if (THOST_FTDC_OF_Close == offType)
-		return WOT_CLOSE;
-	else if (THOST_FTDC_OF_CloseToday == offType)
-		return WOT_CLOSETODAY;
-	else
-		return WOT_FORCECLOSE;
-}
-
-int TraderCTP::wrapPriceType(WTSPriceType priceType, bool isCFFEX /* = false */)
-{
-	if (WPT_ANYPRICE == priceType)
-		return isCFFEX ? THOST_FTDC_OPT_FiveLevelPrice : THOST_FTDC_OPT_AnyPrice;
-	else if (WPT_LIMITPRICE == priceType)
-		return THOST_FTDC_OPT_LimitPrice;
-	else if (WPT_BESTPRICE == priceType)
-		return THOST_FTDC_OPT_BestPrice;
-	else
-		return THOST_FTDC_OPT_LastPrice;
-}
-
-WTSPriceType TraderCTP::wrapPriceType(TThostFtdcOrderPriceTypeType priceType)
-{
-	if (THOST_FTDC_OPT_AnyPrice == priceType || THOST_FTDC_OPT_FiveLevelPrice == priceType)
-		return WPT_ANYPRICE;
-	else if (THOST_FTDC_OPT_LimitPrice == priceType)
-		return WPT_LIMITPRICE;
-	else if (THOST_FTDC_OPT_BestPrice == priceType)
-		return WPT_BESTPRICE;
-	else
-		return WPT_LASTPRICE;
-}
-
-int TraderCTP::wrapTimeCondition(WTSTimeCondition timeCond)
-{
-	if (WTC_IOC == timeCond)
-		return THOST_FTDC_TC_IOC;
-	else if (WTC_GFD == timeCond)
-		return THOST_FTDC_TC_GFD;
-	else
-		return THOST_FTDC_TC_GFS;
-}
-
-WTSTimeCondition TraderCTP::wrapTimeCondition(TThostFtdcTimeConditionType timeCond)
-{
-	if (THOST_FTDC_TC_IOC == timeCond)
-		return WTC_IOC;
-	else if (THOST_FTDC_TC_GFD == timeCond)
-		return WTC_GFD;
-	else
-		return WTC_GFS;
-}
-
-WTSOrderState TraderCTP::wrapOrderState(TThostFtdcOrderStatusType orderState)
-{
-	if (orderState == THOST_FTDC_OST_PartTradedNotQueueing)
-		return WOS_Canceled;
-	else if (orderState == THOST_FTDC_OST_Unknown)
-		return WOS_Submitting;
-	else
-		return (WTSOrderState)orderState;
-}
-
-int TraderCTP::wrapActionFlag(WTSActionFlag actionFlag)
-{
-	if (WAF_CANCEL == actionFlag)
-		return THOST_FTDC_AF_Delete;
-	else
-		return THOST_FTDC_AF_Modify;
-}
-
 
 WTSOrderInfo* TraderCTP::makeOrderInfo(CThostFtdcOrderField* orderField)
 {
@@ -1245,9 +1249,7 @@ WTSOrderInfo* TraderCTP::makeOrderInfo(CThostFtdcOrderField* orderField)
 
 		if (strlen(pRet->getOrderID()) > 0)
 		{
-			m_oidCache.put(StrUtil::trim(pRet->getOrderID()).c_str(), usertag, 0, [this](const char* message) {
-				write_log(m_sink, LL_ERROR, message);
-			});
+			m_oidCache.put(StrUtil::trim(pRet->getOrderID()).c_str(), usertag, 0);
 		}
 	}
 
@@ -1386,14 +1388,6 @@ bool TraderCTP::extractEntrustID(const char* entrustid, uint32_t &frontid, uint3
 	orderRef = convert::to_uint32(s);
 
 	return true;
-}
-
-bool TraderCTP::IsErrorRspInfo(CThostFtdcRspInfoField *pRspInfo)
-{
-	if (pRspInfo && pRspInfo->ErrorID != 0)
-		return true;
-
-	return false;
 }
 
 void TraderCTP::OnErrRtnOrderInsert(CThostFtdcInputOrderField *pInputOrder, CThostFtdcRspInfoField *pRspInfo)

@@ -161,7 +161,13 @@ struct WTSTickStruct
 	double		volume;				//成交量
 	double		total_turnover;		//总成交额
 	double		turn_over;			//成交额
-	double		open_interest;		//总持
+
+	union
+	{
+		double	open_interest;		//总持
+		double	sedimentary;		//沉淀资金
+	};
+	
 	double		diff_interest;		//增仓
 
 	uint32_t	trading_date;		//交易日,如20140327
@@ -171,7 +177,11 @@ struct WTSTickStruct
 
 	double		pre_close;			//昨收价
 	double		pre_settle;			//昨结算
-	double		pre_interest;		//上日总持
+	union
+	{
+		double	pre_interest;		//上日总持
+		double	pre_sedimentary;	//上日沉淀资金
+	};
 
 	double		bid_prices[10];		//委买价格
 	double		ask_prices[10];		//委卖价格

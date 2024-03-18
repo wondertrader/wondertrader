@@ -33,7 +33,8 @@
 
 #include "../Share/CodeHelper.hpp"
 
-#include <boost/filesystem.hpp>
+#include <filesystem>
+namespace fs = std::filesystem;
 
 #include <rapidjson/document.h>
 #include <rapidjson/prettywriter.h>
@@ -548,7 +549,7 @@ void HisDataReplayer::dump_btstate(const char* stdCode, WTSKlinePeriod period, u
 	std::string folder = WtHelper::getOutputDir();
 	folder += _stra_name;
 	folder += "/";
-	boost::filesystem::create_directories(folder.c_str());
+	fs::create_directories(folder.c_str());
 	std::string filename = folder + "btenv.json";
 	StdFile::write_file_content(filename.c_str(), output.c_str(), output.size());
 }
@@ -1349,7 +1350,7 @@ void HisDataReplayer::simTicks(uint32_t uDate, uint32_t uTime, uint32_t endTDate
 
 						break;
 					}
-					else if (nextBar.date == endTDate)
+					else if (nextBar.date < endTDate)
 					{
 						barsList->_cursor++;
 
@@ -2169,59 +2170,74 @@ WTSKlineSlice* HisDataReplayer::get_kline_slice(const char* stdCode, const char*
 	bool bHasCache = (it != _bars_cache.end());
 	if (!bHasCache)
 	{
+		std::string cacheKey = key;
 		if (realTimes != 1)
 		{
 			std::string rawKey = fmtutil::format<64>("{}#{}#{}", stdCode, period, baseTimes);
-			if (_bars_cache.find(rawKey) == _bars_cache.end())
-			{
-				/*
-				 *	By Wesley @ 2021.12.20
-				 *	先从extloader加载数据，如果加载不到，再走原来的历史数据存储引擎加载
-				 */
-				if(NULL != _bt_loader)
-					bHasHisData = cacheFinalBarsFromLoader(rawKey, stdCode, kp);
-				
-				if(!bHasHisData)
-				{
-					if (_mode == "csv")
-					{
-						bHasHisData = cacheRawBarsFromCSV(rawKey, stdCode, kp);
-					}
-					else
-					{
-						bHasHisData = cacheRawBarsFromBin(rawKey, stdCode, kp);
-					}
-				}
-				
-			}
-			else
-			{
+			if (_bars_cache.find(rawKey) != _bars_cache.end())
 				bHasHisData = true;
-			}
+			else
+				cacheKey = rawKey;
+
 		}
-		else
+		
+		if(!bHasHisData)
 		{
 			/*
 			 *	By Wesley @ 2021.12.20
 			 *	先从extloader加载数据，如果加载不到，再走原来的历史数据存储引擎加载
-			 */
+			 */			
 			if (NULL != _bt_loader)
 			{
-				bHasHisData = cacheFinalBarsFromLoader(key, stdCode, kp);
+				try
+				{
+					bHasHisData = cacheFinalBarsFromLoader(cacheKey, stdCode, kp);
+				}
+				catch (const std::exception& ex)
+				{
+					WTSLogger::error("Exception while cache finale bars from loader of {}({}): {}", stdCode, period, ex.what());
+				}
+				catch (...)
+				{
+					WTSLogger::error("Exception while cache finale bars from loader of {}({})", stdCode, period);
+				}
 			}
 
-			if(!bHasHisData)
+			if (!bHasHisData)
 			{
 				if (_mode == "csv")
 				{
-					bHasHisData = cacheRawBarsFromCSV(key, stdCode, kp);
+					try
+					{
+						bHasHisData = cacheRawBarsFromCSV(cacheKey, stdCode, kp);
+					}
+					catch (const std::exception& ex)
+					{
+						WTSLogger::error("Exception while cache finale bars from csv of {}({}): {}", stdCode, period, ex.what());
+					}
+					catch (...)
+					{
+						WTSLogger::error("Exception while cache finale bars from loader of {}({})", stdCode, period);
+					}
+
 				}
 				else
 				{
-					bHasHisData = cacheRawBarsFromBin(key, stdCode, kp);
+					try
+					{
+						bHasHisData = cacheRawBarsFromBin(cacheKey, stdCode, kp);
+					}
+					catch (const std::exception& ex)
+					{
+						WTSLogger::error("Exception while cache finale bars from bin of {}({}): {}", stdCode, period, ex.what());
+					}
+					catch (...)
+					{
+						WTSLogger::error("Exception while cache finale bars from bin of {}({})", stdCode, period);
+					}
+
 				}
 			}
-			
 		}
 	}
 	else
@@ -3414,7 +3430,7 @@ bool HisDataReplayer::cacheRawTicksFromCSV(const std::string& key, const char* s
 	ss << _base_dir << "bin/ticks/";
 	std::string path = ss.str();
 	if (!StdFile::exists(path.c_str()))
-		boost::filesystem::create_directories(path.c_str());
+		fs::create_directories(path.c_str());
 	ss << stdCode << "_tick_" << uDate << ".dsb";
 	std::string filename = ss.str();
 	if (StdFile::exists(filename.c_str()))
@@ -3548,7 +3564,7 @@ bool HisDataReplayer::cacheFinalBarsFromLoader(const std::string& key, const cha
 	std::stringstream ss;
 	ss << _base_dir << "his/" << dirname << "/" << cInfo._exchg << "/";
 	if (!StdFile::exists(ss.str().c_str()))
-        boost::filesystem::create_directories(ss.str().c_str());
+        fs::create_directories(ss.str().c_str());
 
 	const char* ruleTag = cInfo._ruletag;
 
@@ -3695,7 +3711,7 @@ bool HisDataReplayer::cacheRawBarsFromCSV(const std::string& key, const char* st
 
 	//这里自动创建，是因为后面转储需要
 	if (!StdFile::exists(ss.str().c_str()))
-		boost::filesystem::create_directories(ss.str().c_str());
+		fs::create_directories(ss.str().c_str());
 
 	const char* ruleTag = cInfo._ruletag;
 	if (strlen(ruleTag) > 0 && commInfo->isFuture())

@@ -58,12 +58,12 @@ void SelStraBaseCtx::init_outputs()
 	std::string folder = WtHelper::getOutputDir();
 	folder += _name;
 	folder += "//";
-	BoostFile::create_directories(folder.c_str());
+	StdFile::create_directories(folder.c_str());
 
 	std::string filename = folder + "trades.csv";
 	_trade_logs.reset(new BoostFile());
 	{
-		bool isNewFile = !BoostFile::exists(filename.c_str());
+		bool isNewFile = !StdFile::exists(filename.c_str());
 		_trade_logs->create_or_open_file(filename.c_str());
 		if (isNewFile)
 		{
@@ -78,7 +78,7 @@ void SelStraBaseCtx::init_outputs()
 	filename = folder + "closes.csv";
 	_close_logs.reset(new BoostFile());
 	{
-		bool isNewFile = !BoostFile::exists(filename.c_str());
+		bool isNewFile = !StdFile::exists(filename.c_str());
 		_close_logs->create_or_open_file(filename.c_str());
 		if (isNewFile)
 		{
@@ -93,7 +93,7 @@ void SelStraBaseCtx::init_outputs()
 	filename = folder + "funds.csv";
 	_fund_logs.reset(new BoostFile());
 	{
-		bool isNewFile = !BoostFile::exists(filename.c_str());
+		bool isNewFile = !StdFile::exists(filename.c_str());
 		_fund_logs->create_or_open_file(filename.c_str());
 		if (isNewFile)
 		{
@@ -108,7 +108,7 @@ void SelStraBaseCtx::init_outputs()
 	filename = folder + "signals.csv";
 	_sig_logs.reset(new BoostFile());
 	{
-		bool isNewFile = !BoostFile::exists(filename.c_str());
+		bool isNewFile = !StdFile::exists(filename.c_str());
 		_sig_logs->create_or_open_file(filename.c_str());
 		if (isNewFile)
 		{
@@ -123,7 +123,7 @@ void SelStraBaseCtx::init_outputs()
 	filename = folder + "positions.csv";
 	_pos_logs.reset(new BoostFile());
 	{
-		bool isNewFile = !BoostFile::exists(filename.c_str());
+		bool isNewFile = !StdFile::exists(filename.c_str());
 		_pos_logs->create_or_open_file(filename.c_str());
 		if (isNewFile)
 		{

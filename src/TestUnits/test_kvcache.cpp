@@ -11,17 +11,13 @@ TEST(test_kvcache, test_usage)
 	{
 		WtKVCache cache;
 		EXPECT_TRUE(cache.init("./simplecache.dat", 20220325, [](const char* msg) {
-			printf(msg);
-			printf("\n");
+			printf("%s\n", msg);
 		}));
 		cache.clear();
 	
 		EXPECT_STREQ(cache.get("test_null"), "");
 	
-		cache.put("test", "this is a test string", 0, [](const char* msg) {
-			printf(msg);
-			printf("\n");
-		});
+		cache.put("test", "this is a test string", 0);
 
 		EXPECT_STREQ(cache.get("test"), "this is a test string");
 	
@@ -31,8 +27,7 @@ TEST(test_kvcache, test_usage)
 	{
 		WtKVCache cache;
 		EXPECT_TRUE(cache.init("./simplecache.dat", 20220326, [](const char* msg) {
-			printf(msg);
-			printf("\n");
+			printf("%s\n", msg);
 		}));
 		EXPECT_EQ(cache.size(), 0);
 	}
@@ -42,8 +37,7 @@ TEST(test_kvcache, test_perform)
 {
 	WtKVCache cache;
 	cache.init("./scperform.dat", 20220325, [](const char* msg) {
-		printf(msg);
-		printf("\n");
+		printf("%s\n", msg);
 	});
 	cache.clear();
 

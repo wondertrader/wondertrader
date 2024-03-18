@@ -18,13 +18,15 @@ namespace shareblock
 	const int MAX_KEY_CNT = 64;
 	const int MAX_CMD_SIZE = 64;
 
-	typedef uint64_t ValueType;
-	const ValueType	SMVT_INT32 = 1;
-	const ValueType	SMVT_UINT32 = 2;
-	const ValueType	SMVT_INT64 = 3;
-	const ValueType	SMVT_UINT64 = 4;
-	const ValueType	SMVT_DOUBLE = 5;
-	const ValueType	SMVT_STRING = 6;
+	typedef enum tagValueType : uint64_t
+	{
+		SMVT_INT32 = 1,
+		SMVT_UINT32 = 2,
+		SMVT_INT64 = 3,
+		SMVT_UINT64 = 4,
+		SMVT_DOUBLE = 5,
+		SMVT_STRING = 6
+	} ValueType;
 
 	const std::size_t SMVT_SIZES[] = { 0,4,4,8,8,8,64 };
 

@@ -6,8 +6,6 @@
 #include "../WTSUtils/WTSCfgLoader.h"
 #include "../WTSTools/WTSLogger.h"
 
-#include <boost/filesystem.hpp>
-
 USING_NS_WTP;
 
 void WtFilterMgr::load_filters(const char* fileName)
@@ -24,12 +22,14 @@ void WtFilterMgr::load_filters(const char* fileName)
 		return;
 	}
 
-	uint64_t lastModTime = boost::filesystem::last_write_time(boost::filesystem::path(_filter_file));
-	if (lastModTime <= _filter_timestamp)
-		return;
+	auto lastModTime = fs::last_write_time(fs::path(_filter_file));
+	
 
-	if (_filter_timestamp != 0)
+	if (!_is_first)
 	{
+		if (lastModTime <= _filter_timestamp)
+			return;
+
 		WTSLogger::info("Filters configuration file {} modified, will be reloaded", _filter_file);
 		if (_notifier)
 			_notifier->notify_event("Filter file has been reloaded");
@@ -118,6 +118,7 @@ void WtFilterMgr::load_filters(const char* fileName)
 	}
 
 	cfg->release();
+	_is_first = false;
 }
 
 bool WtFilterMgr::is_filtered_by_executer(const char* execid)

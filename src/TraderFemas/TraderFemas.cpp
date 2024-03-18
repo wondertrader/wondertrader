@@ -19,7 +19,8 @@
 #include "../Share/decimal.h"
 #include "../Share/Converter.hpp"
 
-#include <boost/filesystem.hpp>
+#include <filesystem>
+namespace fs = std::filesystem;
 
  //By Wesley @ 2022.01.05
 #include "../Share/fmtlib.h"
@@ -170,7 +171,7 @@ void TraderFemas::connect()
 	std::stringstream ss;
 	ss << m_strFlowDir << "flows/" << m_strBroker << "/" << m_strUser << "/";
 	std::string path = ss.str();
-	boost::filesystem::create_directories(path.c_str());
+	fs::create_directories(path.c_str());
 	m_pUserAPI = m_funcCreator(path.c_str());
 	m_pUserAPI->RegisterSpi(this);
 	if(m_bQuickStart)

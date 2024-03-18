@@ -80,6 +80,10 @@ public:
 	constexpr inline double close_volume_short() const noexcept { return _trd_stat_info.s_closevol; }
 	constexpr inline double closet_volume_short() const noexcept { return _trd_stat_info.s_closetvol; }
 
+	constexpr inline double total_trade_volumes() const noexcept { 
+		return _trd_stat_info.l_openvol + _trd_stat_info.l_closevol + _trd_stat_info.l_closetvol + _trd_stat_info.s_openvol + _trd_stat_info.s_closevol + _trd_stat_info.s_closetvol;
+	}
+
 	constexpr inline uint32_t orders_buy() const noexcept { return _trd_stat_info.b_orders; }
 	constexpr inline double ordqty_buy() const noexcept { return _trd_stat_info.b_ordqty; }
 	constexpr inline uint32_t orders_sell() const noexcept { return _trd_stat_info.s_orders; }

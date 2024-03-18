@@ -11,6 +11,10 @@
 #include <limits.h>
 #include <string.h>
 
+#ifndef _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS
+#define _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS
+#endif
+
 #ifndef NOMINMAX
 #define NOMINMAX
 #endif

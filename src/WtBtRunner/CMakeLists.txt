@@ -22,7 +22,8 @@ ELSE(GNUCC)
 	LIST(APPEND LIBS
 		boost_filesystem
 		pthread
-		dl)
+		dl
+		stdc++fs)
 	if(WIN32)
 		LIST(APPEND LIBS iconv)
 	ENDIF()

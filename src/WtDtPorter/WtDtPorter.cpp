@@ -28,7 +28,8 @@ char PLATFORM_NAME[] = "UNIX";
 
 #ifdef _MSC_VER
 #include "../Common/mdump.h"
-#include <boost/filesystem.hpp>
+#include <filesystem>
+namespace fs = std::filesystem;
  //这个主要是给MiniDumper用的
 const char* getModuleName()
 {
@@ -36,7 +37,7 @@ const char* getModuleName()
 	if (strlen(MODULE_NAME) == 0)
 	{
 		GetModuleFileName(g_dllModule, MODULE_NAME, 250);
-		boost::filesystem::path p(MODULE_NAME);
+		fs::path p(MODULE_NAME);
 		strcpy(MODULE_NAME, p.filename().string().c_str());
 	}
 

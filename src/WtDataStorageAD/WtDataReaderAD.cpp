@@ -576,7 +576,7 @@ WtDataReaderAD::WtLMDBPtr WtDataReaderAD::get_k_db(const char* exchg, WTSKlinePe
 
 	WtLMDBPtr dbPtr(new WtLMDB(true));
 	std::string path = fmtutil::format("{}{}/{}/", _base_dir.c_str(), subdir.c_str(), exchg);
-	boost::filesystem::create_directories(path);
+	std::filesystem::create_directories(path);
 	if (!dbPtr->open(path.c_str()))
 	{
 		pipe_reader_log(_sink, LL_ERROR, "Opening {} db if {} failed: {}", subdir, exchg, dbPtr->errmsg());
@@ -600,7 +600,7 @@ WtDataReaderAD::WtLMDBPtr WtDataReaderAD::get_t_db(const char* exchg, const char
 
 	WtLMDBPtr dbPtr(new WtLMDB(true));
 	std::string path = fmtutil::format("{}ticks/{}/{}", _base_dir.c_str(), exchg, code);
-	boost::filesystem::create_directories(path);
+	std::filesystem::create_directories(path);
 	if (!dbPtr->open(path.c_str()))
 	{
 		pipe_reader_log(_sink, LL_ERROR, "Opening tick db of {}.{} failed: {}", exchg, code, dbPtr->errmsg());

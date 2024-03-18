@@ -11,7 +11,7 @@
 #include "DataManager.h"
 #include "StateMonitor.h"
 #include "WtHelper.h"
-#include "IndexFactory.h"
+#include "IndexWorkerMgr.h"
 
 #include "../Share/StrUtil.hpp"
 #include "../Share/DLLHelper.hpp"
@@ -27,7 +27,7 @@
 
 //////////////////////////////////////////////////////////////////////////
 //ParserAdapter
-ParserAdapter::ParserAdapter(WTSBaseDataMgr * bgMgr, DataManager* dtMgr, IndexFactory *idxFactory)
+ParserAdapter::ParserAdapter(WTSBaseDataMgr * bgMgr, DataManager* dtMgr, IndexWorkerMgr *idxFactory)
 	: _parser_api(NULL)
 	, _remover(NULL)
 	, _stopped(false)

@@ -203,7 +203,7 @@ void TraderAdapter::onRspAccount(WTSArray* ayAccounts)
 			WTSAccountInfo* accInfo = (WTSAccountInfo*)ayAccounts->at(idx);
 
 			getDumper().on_account(_id.c_str(), _date, accInfo->getCurrency(), accInfo->getPreBalance(), accInfo->getBalance(), accInfo->getBalance() + accInfo->getDynProfit(),
-				accInfo->getCloseProfit(), accInfo->getDynProfit(), accInfo->getCommission(), accInfo->getMargin(), accInfo->getDeposit(), accInfo->getWithdraw(), idx == ayAccounts->size()-1);
+				accInfo->getCloseProfit(), accInfo->getDynProfit(), accInfo->getCommission(), accInfo->getMargin(), accInfo->getDeposit(), accInfo->getWithdraw(), accInfo->getAvailable(), idx == ayAccounts->size()-1);
 		}
 	}
 
@@ -299,7 +299,7 @@ void TraderAdapter::onRspPosition(const WTSArray* ayPositions)
 			WTSCommodityInfo* commInfo = cInfo->getCommInfo();
 
 			getDumper().on_position(_id.c_str(), cInfo->getExchg(), cInfo->getCode(), _date, (pItem->getDirection() == WDT_LONG ? 0 : 1),
-				pItem->getTotalPosition(), pItem->getPositionCost(), pItem->getMargin(), pItem->getAvgPrice(),
+				pItem->getTotalPosition(), pItem->getNewPosition(), pItem->getPositionCost(), pItem->getMargin(), pItem->getAvgPrice(),
 				pItem->getDynProfit(), commInfo->getVolScale(), idx == ayPositions->size() - 1);
 		}
 	}

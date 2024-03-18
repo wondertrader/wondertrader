@@ -24,7 +24,8 @@
 #include "../Share/StrUtil.hpp"
 #include "../Share/TimeUtils.hpp"
 
-#include <boost/filesystem.hpp>
+#include <filesystem>
+namespace fs = std::filesystem;
 
 #include <spdlog/sinks/daily_file_sink.h>
 #include <spdlog/sinks/basic_file_sink.h>
@@ -111,7 +112,7 @@ inline void checkDirs(const char* filename)
 	pos++;
 
 	if (!StdFile::exists(s.substr(0, pos).c_str()))
-		boost::filesystem::create_directories(s.substr(0, pos).c_str());
+		fs::create_directories(s.substr(0, pos).c_str());
 }
 
 inline void print_timetag(bool bWithSpace = true)

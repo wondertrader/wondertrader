@@ -1,5 +1,6 @@
 ﻿#include <string>
 #include <map>
+#include <set>
 //v6.3.15
 #include "../API/CTP6.3.15/ThostFtdcTraderApi.h"
 #include "TraderSpi.h"
@@ -16,7 +17,8 @@
 #include "../Includes/WTSVariant.hpp"
 USING_NS_WTP;
 
-#include <boost/filesystem.hpp>
+#include <filesystem>
+namespace fs = std::filesystem;
 
 // UserApi对象
 CThostFtdcTraderApi* pUserApi;
@@ -32,15 +34,20 @@ std::string AUTHCODE;
 uint32_t	CLASSMASK;	//期权
 bool		ONLYINCFG;	//只落地配置文件有的
 bool		INCREMENTAL;//是否增量拉取，默认false
+bool		QRYFEES;	//查询费率
 
 std::string COMM_FILE;		//输出的品种文件名
 std::string CONT_FILE;		//输出的合约文件名
+std::string FEES_FILE;		//输出的费率文件名
 
 std::string MODULE_NAME;	//外部模块名
 
 typedef std::map<std::string, std::string>	SymbolMap;
 SymbolMap	MAP_NAME;
 SymbolMap	MAP_SESSION;
+
+std::string FEE_FILTERS;
+std::set<std::string>	SET_FILTERS;
 
 typedef CThostFtdcTraderApi* (*CTPCreator)(const char *);
 CTPCreator		g_ctpCreator = NULL;
@@ -85,17 +92,15 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 		SAVEPATH = cfg->getCString("path");
 		CLASSMASK = cfg->getUInt32("mask"); //1-期货,2-期权,4-股票
 
-		COMM_FILE = cfg->getCString("commfile");
-		if (COMM_FILE.empty())
-			COMM_FILE = "commodities.json";
-
-		CONT_FILE = cfg->getCString("contfile");
-		if (CONT_FILE.empty())
-			CONT_FILE = "contracts.json";
+		COMM_FILE = cfg->getCString("commfile", "commodities.json");
+		CONT_FILE = cfg->getCString("contfile", "contracts.json");
+		FEES_FILE = cfg->getCString("feesfile", "fees.json");
 
 		map_files = cfg->getCString("mapfiles");
-		ONLYINCFG = ctp->getBoolean("onlyincfg");
-		INCREMENTAL = ctp->getBoolean("incremental");
+		ONLYINCFG = cfg->getBoolean("onlyincfg");
+		INCREMENTAL = cfg->getBoolean("incremental");
+		QRYFEES = cfg->getBoolean("qryfees");
+		FEE_FILTERS = cfg->getCString("feefilter");
 
 		MODULE_NAME = ctp->getCString("module");
 		if (MODULE_NAME.empty())
@@ -126,9 +131,12 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 		CLASSMASK = ini.readUInt("config", "mask", 1 | 2 | 4); //1-期货,2-期权,4-股票
 		ONLYINCFG = wt_stricmp(ini.readString("config", "onlyincfg", "false").c_str(), "true") == 0;
 		INCREMENTAL = wt_stricmp(ini.readString("config", "incremental", "false").c_str(), "true") == 0;
+		QRYFEES = wt_stricmp(ini.readString("config", "qryfees", "false").c_str(), "true") == 0;
+		FEE_FILTERS = ini.readString("config", "feefilter", "");
 
 		COMM_FILE = ini.readString("config", "commfile", "commodities.json");
 		CONT_FILE = ini.readString("config", "contfile", "contracts.json");
+		FEES_FILE = ini.readString("config", "feesfile", "fees.json");
 
 		map_files = ini.readString("config", "mapfiles", "");
 
@@ -156,17 +164,15 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 		SAVEPATH = cfg->getCString("path"); 
 		CLASSMASK = cfg->getUInt32("mask"); //1-期货,2-期权,4-股票
 
-		COMM_FILE = cfg->getCString("commfile");
-		if (COMM_FILE.empty())
-			COMM_FILE = "commodities.json";
-
-		CONT_FILE = cfg->getCString("contfile"); 
-		if(CONT_FILE.empty())
-			CONT_FILE = "contracts.json";
+		COMM_FILE = cfg->getCString("commfile", "commodities.json");
+		CONT_FILE = cfg->getCString("contfile", "contracts.json");
+		FEES_FILE = cfg->getCString("feesfile", "fees.json");
 
 		map_files = cfg->getCString("mapfiles");
-		ONLYINCFG = ctp->getBoolean("onlyincfg");
-		INCREMENTAL = ctp->getBoolean("incremental");
+		ONLYINCFG = cfg->getBoolean("onlyincfg");
+		INCREMENTAL = cfg->getBoolean("incremental");
+		QRYFEES = cfg->getBoolean("qryfees");
+		FEE_FILTERS = cfg->getCString("feefilter");
 
 		MODULE_NAME = ctp->getCString("module");
 		if(MODULE_NAME.empty())
@@ -192,6 +198,17 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 
 	SAVEPATH = StrUtil::standardisePath(SAVEPATH);
 
+	if(!FEE_FILTERS.empty())
+	{
+		auto ay = StrUtil::split(FEE_FILTERS, ",");
+		for (auto& s : ay)
+		{
+			if (s.empty())
+				continue;
+
+			SET_FILTERS.insert(s);
+		}
+	}
 	
 	if(!map_files.empty())
 	{
@@ -250,7 +267,7 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 		printf("Loading CreateFtdcTraderApi failed\r\n");
 
 	std::string flowPath = fmtutil::format("./CTPFlow/{}/{}/", BROKER_ID, INVESTOR_ID);
-	boost::filesystem::create_directories(flowPath.c_str());
+	fs::create_directories(flowPath.c_str());
 	pUserApi = g_ctpCreator(flowPath.c_str());
 	CTraderSpi* pUserSpi = new CTraderSpi();
 	pUserApi->RegisterSpi((CThostFtdcTraderSpi*)pUserSpi);			// 注册事件类

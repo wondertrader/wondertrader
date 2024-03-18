@@ -15,7 +15,7 @@
 #include "../WtDtCore/ParserAdapter.h"
 #include "../WtDtCore/StateMonitor.h"
 #include "../WtDtCore/UDPCaster.h"
-#include "../WtDtCore/IndexFactory.h"
+#include "../WtDtCore/IndexWorkerMgr.h"
 #include "../WtDtCore/ShmCaster.h"
 
 #include "../WTSTools/WTSHotMgr.h"
@@ -86,7 +86,7 @@ private:
 	UDPCaster		_udp_caster;
 	ShmCaster		_shm_caster;
 	DataManager		_data_mgr;
-	IndexFactory	_idx_factory;
+	IndexWorkerMgr	_idx_factory;
 	ParserAdapterMgr	_parsers;
 
 	FuncParserEvtCallback	_cb_parser_evt;

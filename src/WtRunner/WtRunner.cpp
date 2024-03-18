@@ -21,6 +21,7 @@
 #include "../WTSUtils/SignalHook.hpp"
 #include "../Share/StrUtil.hpp"
 
+#include <boost/filesystem.hpp>
 
 const char* getBinDir()
 {

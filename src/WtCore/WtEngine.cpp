@@ -321,7 +321,7 @@ void WtEngine::on_session_end()
 		filename += "funds.csv";
 		BoostFilePtr fund_log(new BoostFile());
 		{
-			bool isNewFile = !BoostFile::exists(filename.c_str());
+			bool isNewFile = !StdFile::exists(filename.c_str());
 			fund_log->create_or_open_file(filename.c_str());
 			if (isNewFile)
 			{
@@ -1167,7 +1167,7 @@ void WtEngine::init_outputs()
 	std::string filename = folder + "trades.csv";
 	_trade_logs.reset(new BoostFile());
 	{
-		bool isNewFile = !BoostFile::exists(filename.c_str());
+		bool isNewFile = !StdFile::exists(filename.c_str());
 		_trade_logs->create_or_open_file(filename.c_str());
 		if (isNewFile)
 		{
@@ -1182,7 +1182,7 @@ void WtEngine::init_outputs()
 	filename = folder + "closes.csv";
 	_close_logs.reset(new BoostFile());
 	{
-		bool isNewFile = !BoostFile::exists(filename.c_str());
+		bool isNewFile = !StdFile::exists(filename.c_str());
 		_close_logs->create_or_open_file(filename.c_str());
 		if (isNewFile)
 		{

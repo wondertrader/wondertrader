@@ -26,14 +26,14 @@ ELSE(GNUCC)
 		SET(LIBS
 			dl
 			boost_thread
-			boost_filesystem
+			stdc++fs
 			ws2_32
 			)
 	ELSE(UNIX)
 		SET(LIBS
 			dl
 			boost_thread
-			boost_filesystem
+			stdc++fs
 			)
 	ENDIF()
 ENDIF()

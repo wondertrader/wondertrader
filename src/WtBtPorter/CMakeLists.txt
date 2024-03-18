@@ -33,7 +33,7 @@ ELSE(GNUCC)
 
 		dl
 		pthread
-		boost_filesystem
+		stdc++fs
 	)
 	if(WIN32)
 		LIST(APPEND LIBS iconv)

@@ -17,7 +17,7 @@ SET(LIBS
     WtShareHelper)
 IF (MSVC)
 ELSE(GNUCC)
-    LIST(APPEND LIBS pthread boost_filesystem)
+    LIST(APPEND LIBS pthread stdc++fs)
 	IF(WIN32)
 		LIST(APPEND LIBS iconv)
 	ENDIF()

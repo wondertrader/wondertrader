@@ -1,9 +1,27 @@
 ﻿#pragma once
 //v6.3.15
 #include "../API/CTP6.3.15/ThostFtdcTraderApi.h"
+#include "../Share/StdUtils.hpp"
+#include "../Share/SpinMutex.hpp"
+#include "../Includes/LoaderDef.hpp"
+
+#include <functional>
+#include <queue>
+#include <boost/thread.hpp>
+
+typedef std::function<bool()> QueryTask;
 
 class CTraderSpi : public CThostFtdcTraderSpi
 {
+public:
+	CTraderSpi():_stopped(false){}
+	~CTraderSpi()
+	{
+		_stopped = true;
+		if (_worker)
+			_worker->join();
+	}
+
 public:
 	///当客户端与交易后台建立起通信连接时（还未登录前）,该方法被调用。
 	virtual void OnFrontConnected();
@@ -15,6 +33,10 @@ public:
 	
 	///请求查询合约响应
 	virtual void OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
+
+	virtual void OnRspQryInstrumentCommissionRate(CThostFtdcInstrumentCommissionRateField *pInstrumentCommissionRate, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) override;
+
+	virtual void OnRspQryInstrumentMarginRate(CThostFtdcInstrumentMarginRateField *pInstrumentMarginRate, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast) override;
 
 	///错误应答
 	virtual void OnRspError(CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
@@ -29,15 +51,26 @@ private:
 	///请求查询合约
 	void ReqQryInstrument();
 
+	void ReqQryCommission(const Contract& cInfo);
+
+	void ReqQryMargin(const Contract& cInfo);
+
 	// 是否收到成功的响应
 	bool IsErrorRspInfo(CThostFtdcRspInfoField *pRspInfo);
 
-
 	void DumpToJson();
+
+	void DumpFees();
 
 	void LoadFromJson();
 
-protected:
-	int	m_lTradingDate;
-	int m_ReqCount;
+	void AppendQuery(const QueryTask& task);
+
+private:
+	int		_trading_day;
+
+	std::queue<QueryTask>	_queries;
+	SpinMutex		_mtx;
+	std::shared_ptr<boost::thread>	_worker;
+	bool			_stopped;
 };

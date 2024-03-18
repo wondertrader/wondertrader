@@ -9,6 +9,7 @@
  */
 #pragma once
 #include <boost/asio/io_service.hpp>
+
 #include "../Includes/IParserApi.h"
 #include "../API/XTP2.2.32.2/xtp_quote_api.h"
 

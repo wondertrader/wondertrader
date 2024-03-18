@@ -77,12 +77,12 @@ void CtaStraBaseCtx::init_outputs()
 	std::string folder = WtHelper::getOutputDir();
 	folder += _name;
 	folder += "//";
-	BoostFile::create_directories(folder.c_str());	
+	StdFile::create_directories(folder.c_str());	
 
 	std::string filename = folder + "trades.csv";
 	_trade_logs.reset(new BoostFile());
 	{
-		bool isNewFile = !BoostFile::exists(filename.c_str());
+		bool isNewFile = !StdFile::exists(filename.c_str());
 		_trade_logs->create_or_open_file(filename.c_str());
 		if (isNewFile)
 		{
@@ -97,7 +97,7 @@ void CtaStraBaseCtx::init_outputs()
 	filename = folder + "closes.csv";
 	_close_logs.reset(new BoostFile());
 	{
-		bool isNewFile = !BoostFile::exists(filename.c_str());
+		bool isNewFile = !StdFile::exists(filename.c_str());
 		_close_logs->create_or_open_file(filename.c_str());
 		if (isNewFile)
 		{
@@ -112,7 +112,7 @@ void CtaStraBaseCtx::init_outputs()
 	filename = folder + "funds.csv";
 	_fund_logs.reset(new BoostFile());
 	{
-		bool isNewFile = !BoostFile::exists(filename.c_str());
+		bool isNewFile = !StdFile::exists(filename.c_str());
 		_fund_logs->create_or_open_file(filename.c_str());
 		if (isNewFile)
 		{
@@ -127,7 +127,7 @@ void CtaStraBaseCtx::init_outputs()
 	filename = folder + "signals.csv";
 	_sig_logs.reset(new BoostFile());
 	{
-		bool isNewFile = !BoostFile::exists(filename.c_str());
+		bool isNewFile = !StdFile::exists(filename.c_str());
 		_sig_logs->create_or_open_file(filename.c_str());
 		if (isNewFile)
 		{
@@ -142,7 +142,7 @@ void CtaStraBaseCtx::init_outputs()
 	filename = folder + "positions.csv";
 	_pos_logs.reset(new BoostFile());	
 	{
-		bool isNewFile = !BoostFile::exists(filename.c_str());
+		bool isNewFile = !StdFile::exists(filename.c_str());
 		_pos_logs->create_or_open_file(filename.c_str());
 		if (isNewFile)
 		{
@@ -157,7 +157,7 @@ void CtaStraBaseCtx::init_outputs()
 	filename = folder + "indice.csv";
 	_idx_logs.reset(new BoostFile());
 	{
-		bool isNewFile = !BoostFile::exists(filename.c_str());
+		bool isNewFile = !StdFile::exists(filename.c_str());
 		_idx_logs->create_or_open_file(filename.c_str());
 		if (isNewFile)
 		{
@@ -172,7 +172,7 @@ void CtaStraBaseCtx::init_outputs()
 	filename = folder + "marks.csv";
 	_mark_logs.reset(new BoostFile());
 	{
-		bool isNewFile = !BoostFile::exists(filename.c_str());
+		bool isNewFile = !StdFile::exists(filename.c_str());
 		_mark_logs->create_or_open_file(filename.c_str());
 		if (isNewFile)
 		{
@@ -741,7 +741,7 @@ void CtaStraBaseCtx::dump_chart_info()
 	folder += "/";
 
 	if (!StdFile::exists(folder.c_str()))
-		boost::filesystem::create_directories(folder.c_str());
+		StdFile::create_directories(folder.c_str());
 
 	std::string filename = folder;
 	filename += "rtchart.json";
@@ -1609,7 +1609,7 @@ WTSKlineSlice* CtaStraBaseCtx::stra_get_bars(const char* stdCode, const char* pe
 		times = convert::to_uint32(period + 1);
 
 	WTSKlineSlice* kline = _engine->get_kline_slice(_context_id, stdCode, basePeriod, count, times);
-	if(kline)
+	if(kline && !kline->empty())
 	{
 		//如果K线获取不到,说明也不会有闭合事件发生,所以不更新本地标记
 		bool isFirst = (_kline_tags.find(key) == _kline_tags.end());	//如果没有保存标记,说明是第一次拉取该K线

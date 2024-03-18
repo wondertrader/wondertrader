@@ -26,6 +26,8 @@
 
 #define WIN32_LEAN_AND_MEAN
 
+#pragma warning(disable:4996)
+
 #include <windows.h>
 
 typedef struct _KSYSTEM_TIME
@@ -80,7 +82,7 @@ namespace TimeUtils
 		constexpr int kMagicUnkonwnFirst = 146097;
 		constexpr int kMagicUnkonwnSec = 1461;
 		tm->tm_sec = unix_sec % kMinutesInHour;
-		int i = (unix_sec / kMinutesInHour);
+		int i = (int)(unix_sec / kMinutesInHour);
 		tm->tm_min = i % kMinutesInHour; //nn
 		i /= kMinutesInHour;
 		tm->tm_hour = (i + time_zone) % kHoursInDay; // hh
@@ -209,10 +211,9 @@ namespace TimeUtils
 			ts = mktime(&t);
 		}
 
-		thread_local static tm tNow;
-		fasttime(ts, &tNow, getTZOffset());
+		struct tm* tNow = localtime(&ts);
 	
-		return tNow.tm_wday;
+		return tNow->tm_wday;
 	}
 
 	static inline uint32_t getCurMin() noexcept

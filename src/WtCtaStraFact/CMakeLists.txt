@@ -17,7 +17,7 @@ LINK_DIRECTORIES(${LNKS})
 ADD_LIBRARY(WtCtaStraFact SHARED ${SRCS} ${HDRS})
 
 SET(LIBS
-	boost_filesystem
+	stdc++fs
 	dl
 )
 

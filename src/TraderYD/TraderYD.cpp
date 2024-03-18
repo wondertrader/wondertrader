@@ -8,6 +8,7 @@
  * \brief 
  */
 #include "TraderYD.h"
+#include "../API/yd1.108.360/ydError.h"
 
 #include "../Includes/WTSError.hpp"
 #include "../Includes/WTSContractInfo.hpp"
@@ -22,7 +23,8 @@
 #include "../Share/Converter.hpp"
 #include "../Share/ModuleHelper.hpp"
 
-#include <boost/filesystem.hpp>
+#include <filesystem>
+namespace fs = std::filesystem;
 
 const char* ENTRUST_SECTION = "entrusts";
 const char* ORDER_SECTION = "orders";
@@ -43,83 +45,64 @@ inline void write_log(ITraderSpi* sink, WTSLogLevel ll, const char* format, cons
 
 constexpr inline WTSDirectionType wrapPosDirection(int dirType) noexcept
 {
-	if (YD_PD_Long == dirType)
-		return WDT_LONG;
-	else
-		return WDT_SHORT;
+	return (YD_PD_Long == dirType) ? WDT_LONG : WDT_SHORT;
 }
 
 constexpr inline WTSDirectionType wrapDirectionType(int dirType, int offsetType) noexcept
 {
-	if (YD_D_Buy == dirType)
-		if (offsetType == YD_OF_Open)
-			return WDT_LONG;
-		else
-			return WDT_SHORT;
-	else
-		if (offsetType == YD_OF_Open)
-			return WDT_SHORT;
-		else
-			return WDT_LONG;
+	return (YD_D_Buy == dirType) ? ((offsetType == YD_OF_Open)? WDT_LONG: WDT_SHORT) : ((offsetType == YD_OF_Open) ? WDT_SHORT : WDT_LONG);
 }
 
 constexpr inline int wrapDirectionType(WTSDirectionType dirType, WTSOffsetType offsetType) noexcept
 {
-	if (WDT_LONG == dirType)
-		if (offsetType == WOT_OPEN)
-			return YD_D_Buy;
-		else
-			return YD_D_Sell;
-	else
-		if (offsetType == WOT_OPEN)
-			return YD_D_Sell;
-		else
-			return YD_D_Buy;
+	return (WDT_LONG == dirType) ? ((offsetType == WOT_OPEN)? YD_D_Buy: YD_D_Sell) : ((offsetType == WOT_OPEN) ? YD_D_Sell : YD_D_Buy);
 }
 
 constexpr inline int wrapPriceType(WTSPriceType pType, WTSOrderFlag oFlag) noexcept
 {
-	if (WOF_FAK == oFlag)
-		return YD_ODT_FAK;
+	switch (oFlag)
+	{
+	case WOF_FAK: return YD_ODT_FAK;
+	case WOF_FOK: return YD_ODT_FOK;
+	default:
+		break;
+	}
 
-	if (WOF_FOK == oFlag)
-		return YD_ODT_FOK;
-
-	if (WPT_ANYPRICE == pType)
-		return YD_ODT_Market;
-
-	if (WPT_LIMITPRICE == pType)
-		return YD_ODT_Limit;
-	
-	return YD_ODT_Market;
+	return (pType == WPT_LIMITPRICE) ? YD_ODT_Limit : YD_ODT_Market;	
 }
 
 constexpr inline WTSOffsetType wrapOffsetType(int offType) noexcept
 {
-	if (YD_OF_Open == offType)
+	switch (offType)
+	{
+	case YD_OF_Open: 
 		return WOT_OPEN;
-	else if (YD_OF_Close == offType)
+	case YD_OF_Close: 
 		return WOT_CLOSE;
-	else if (YD_OF_CloseToday == offType)
+	case YD_OF_CloseToday: 
 		return WOT_CLOSETODAY;
-	else if (YD_OF_CloseYesterday == offType)
+	case YD_OF_CloseYesterday: 
 		return WOT_CLOSEYESTERDAY;
-	else
+	default:
 		return WOT_FORCECLOSE;
+	}
 }
 
 constexpr inline int wrapOffsetType(WTSOffsetType offType) noexcept
 {
-	if (WOT_OPEN == offType)
+	switch (offType)
+	{
+	case WOT_OPEN:
 		return YD_OF_Open;
-	else if (WOT_CLOSE == offType)
+	case WOT_CLOSE:
 		return YD_OF_Close;
-	else if (WOT_CLOSETODAY == offType)
+	case WOT_CLOSETODAY:
 		return YD_OF_CloseToday;
-	else if (WOT_CLOSEYESTERDAY == offType)
+	case WOT_CLOSEYESTERDAY:
 		return YD_OF_CloseYesterday;
-	else
+	default:
 		return YD_OF_ForceClose;
+	}
 }
 
 constexpr inline WTSOrderState wrapOrderState(int orderState) noexcept
@@ -137,6 +120,90 @@ constexpr inline WTSOrderState wrapOrderState(int orderState) noexcept
 	}
 }
 
+constexpr inline const char* getErrorMsg(int ydError) noexcept
+{
+	switch (ydError)
+	{
+	case YD_ERROR_NoError: return "NoError";
+	case YD_ERROR_NoPositionToClose: return "NoPositionToClose";
+	case YD_ERROR_NoMoneyToOpen: return "NoMoneyToOpen";
+	case YD_ERROR_SystemNotReady: return "SystemNotReady";
+	case YD_ERROR_OrderFieldError: return "OrderFieldError";
+	case YD_ERROR_MemoryExceed: return "MemoryExceed";
+	case YD_ERROR_NoTradingCodeInExchange: return "NoTradingCodeInExchange";
+	case YD_ERROR_CanNotSendToExchange: return "CanNotSendToExchange";
+	case YD_ERROR_NoTradingRight: return "NoTradingRight";
+	case YD_ERROR_InvalidOrderVolume: return "InvalidOrderVolume";
+	case YD_ERROR_InvalidClientAPP: return "InvalidClientAPP";
+	case YD_ERROR_PositionLimitExceed: return "PositionLimitExceed";
+	case YD_ERROR_TradeVolumeExceed: return "TradeVolumeExceed";
+	case YD_ERROR_OrderCancelLimitExceed: return "OrderCancelLimitExceed";
+	case YD_ERROR_OrderOpenLimitExceed: return "OrderOpenLimitExceed";
+	case YD_ERROR_InvalidConnectionID: return "InvalidConnectionID";
+	case YD_ERROR_AlreadyLogined: return "AlreadyLogined";
+	case YD_ERROR_PasswordError: return "PasswordError";
+	case YD_ERROR_TooManyRequests: return "TooManyRequests";
+	case YD_ERROR_InvalidUsername: return "InvalidUsername";
+	case YD_ERROR_InsertOrderTooFast: return "InsertOrderTooFast";
+	case YD_ERROR_PossibleSelfTrade: return "PossibleSelfTrade";
+	case YD_ERROR_NoAdminRight: return "NoAdminRight";
+	case YD_ERROR_InvalidAddress: return "InvalidAddress";
+	case YD_ERROR_OrderTypeNotSupported: return "OrderTypeNotSupported";
+	case YD_ERROR_CancelOrderFieldError: return "CancelOrderFieldError";
+	case YD_ERROR_InvalidExchange: return "InvalidExchange";
+	case YD_ERROR_OrderNotFound: return "OrderNotFound";
+	case YD_ERROR_OrderNotBelongToAccount: return "OrderNotBelongToAccount";
+	case YD_ERROR_OrderFinished: return "OrderFinished";
+	case YD_ERROR_OnlyLimitOrderCanBeCanceled: return "OnlyLimitOrderCanBeCanceled";
+	case YD_ERROR_ClientReportError: return "ClientReportError";
+	case YD_ERROR_TooManyOrders: return "TooManyOrders";
+	case YD_ERROR_InstrumentCanNotTrade: return "InstrumentCanNotTrade";
+	case YD_ERROR_YDOrderFlagNotSupported: return "YDOrderFlagNotSupported";
+	case YD_ERROR_NotOptionInstrument: return "NotOptionInstrument";
+	case YD_ERROR_PriceOutOfLimit: return "PriceOutOfLimit";
+	case YD_ERROR_CrossPriceInQuote: return "CrossPriceInQuote";
+	case YD_ERROR_QuoteFieldError: return "QuoteFieldError";
+	case YD_ERROR_QuoteVolumeError: return "QuoteVolumeError";
+	case YD_ERROR_QuoteNotFound: return "QuoteNotFound";
+	case YD_ERROR_CancelQuoteFieldError: return "CancelQuoteFieldError";
+	case YD_ERROR_QuoteNotBelongToAccount: return "QuoteNotBelongToAccount";
+	case YD_ERROR_QuoteFinished: return "QuoteFinished";
+	case YD_ERROR_QuoteNotSupported: return "QuoteNotSupported";
+	case YD_ERROR_CannotCancelQuoteDerivedOrder: return "CannotCancelQuoteDerivedOrder";
+	case YD_ERROR_TooManyLogines: return "TooManyLogines";
+	case YD_ERROR_NoEnoughPositiontoMakeCombPosition: return "NoEnoughPositiontoMakeCombPosition";
+	case YD_ERROR_NoEnoughCombPosition: return "NoEnoughCombPosition";
+	case YD_ERROR_NoMoneyForSplitCombPosition: return "NoMoneyForSplitCombPosition";
+	case YD_ERROR_InvalidCombPosition: return "InvalidCombPosition";
+	case YD_ERROR_CannotSelectConnection: return "CannotSelectConnection";
+	case YD_ERROR_SelectConnectionTooFrequently: return "SelectConnectionTooFrequently";
+	case YD_ERROR_InvalidSelectConnection: return "InvalidSelectConnection";
+	case YD_ERROR_TooLowApiVersion: return "TooLowApiVersion";
+	case YD_ERROR_InvalidTradingRight: return "InvalidTradingRight";
+	case YD_ERROR_InvalidProduct: return "InvalidProduct";
+	case YD_ERROR_InvalidAlterMoneyField: return "InvalidAlterMoneyField";
+	case YD_ERROR_TooHighApiVersion: return "TooHighApiVersion";
+	case YD_ERROR_MoneyUsageTooLow: return "MoneyUsageTooLow";
+	case YD_ERROR_InvalidInstrumentPairToExecuteTogether: return "InvalidInstrumentPairToExecuteTogether";
+	case YD_ERROR_NotOnExpireDay: return "NotOnExpireDay";
+	case YD_ERROR_NotProperTime: return "NotProperTime";
+	case YD_ERROR_OptonLongPositionCostLimitExceed: return "OptonLongPositionCostLimitExceed";
+	case YD_ERROR_PriceToTriggerFuse: return "PriceToTriggerFuse";
+	case YD_ERROR_ExchangeDoesNotSupport: return "ExchangeDoesNotSupport";
+
+	/// error numbers generated by ydAPI
+	case YD_ERROR_CannotSend: return "CannotSend";
+	case YD_ERROR_TooManyInMultiOrders: return "TooManyInMultiOrders";
+
+	/// error numbers generated by exchanges
+	case YD_ERROR_ExchangeReportError: return "ExchangeReportError";
+
+	//上期所的错误码
+	case 1028:	return "OrderAllTraded";
+	default:
+		return "Unknown Error";
+	}
+}
 
 extern "C"
 {
@@ -208,7 +275,7 @@ void TraderYD::notifyLogin(int errorNo, int maxOrderRef, bool isMonitor)
 			ss <<  "ydlocal/" ;
 			std::string path = StrUtil::standardisePath(ss.str());
 			if (!StdFile::exists(path.c_str()))
-				boost::filesystem::create_directories(path.c_str());
+				fs::create_directories(path.c_str());
 			ss << m_strUser << "_eid.sc";
 			m_eidCache.init(ss.str().c_str(), m_lDate, m_cacheLogger);
 		}
@@ -219,14 +286,14 @@ void TraderYD::notifyLogin(int errorNo, int maxOrderRef, bool isMonitor)
 			ss << "ydlocal/";
 			std::string path = StrUtil::standardisePath(ss.str());
 			if (!StdFile::exists(path.c_str()))
-				boost::filesystem::create_directories(path.c_str());
+				fs::create_directories(path.c_str());
 			ss << m_strUser << "_oid.sc";
 			m_oidCache.init(ss.str().c_str(), m_lDate, m_cacheLogger);
 		}
 	}
 	else
 	{
-		write_log(m_sink, LL_ERROR, "[TraderYD] {} Login failed: {}", m_strUser.c_str(), errorNo);
+		write_log(m_sink, LL_ERROR, "[TraderYD] {} Login failed: {}", m_strUser.c_str(), getErrorMsg(errorNo));
 		m_wrapperState = WS_LOGINFAILED;
 
 		if (m_sink)
@@ -636,18 +703,9 @@ bool TraderYD::makeEntrustID(char* buffer, int length)
 	if (buffer == NULL || length == 0)
 		return false;
 
-	try
-	{
-		uint32_t orderref = m_orderRef.fetch_add(1) + 1;
-		fmtutil::format_to(buffer, "{}#{:010d}", m_strUser.c_str(), orderref);
-		return true;
-	}
-	catch (...)
-	{
-
-	}
-
-	return false;
+	uint32_t orderref = m_orderRef.fetch_add(1) + 1;
+	fmtutil::format_to(buffer, "{}#{:010d}", m_strUser.c_str(), orderref);
+	return true;
 }
 
 void TraderYD::registerSpi(ITraderSpi *listener)
@@ -711,11 +769,11 @@ int TraderYD::orderInsert(WTSEntrust* entrust)
 	const YDInstrument* pInst = m_pUserAPI->getInstrumentByID(entrust->getCode());
 
 	thread_local static YDInputOrder req;
-
-	// inputOrder中的所有不用的字段，应当统一清0
 	memset(&req, 0, sizeof(req));
 
-	if (strlen(entrust->getUserTag()) == 0)
+	const char* userTag = entrust->getUserTag();
+	const char* entrustid = entrust->getEntrustID();
+	if (StrUtil::isEmpty(userTag))
 	{
 		///报单引用
 		req.OrderRef = m_orderRef.fetch_add(0);
@@ -723,14 +781,14 @@ int TraderYD::orderInsert(WTSEntrust* entrust)
 	else
 	{
 		uint32_t orderref;
-		extractEntrustID(entrust->getEntrustID(), orderref);
+		extractEntrustID(entrustid, orderref);
 		///报单引用
 		req.OrderRef = orderref;
 	}
 
-	if (strlen(entrust->getUserTag()) > 0)
+	if (!StrUtil::isEmpty(userTag))
 	{
-		m_eidCache.put(entrust->getEntrustID(), entrust->getUserTag(), 0, m_cacheLogger);
+		m_eidCache.put(entrustid, userTag, 0);
 	}
 
 	req.Price = entrust->getPrice();
@@ -900,13 +958,7 @@ WTSOrderInfo* TraderYD::makeOrderInfo(const YDOrder* orderField, const YDInstrum
 	pRet->setOffsetType(wrapOffsetType(orderField->OffsetFlag));
 
 	pRet->setPriceType(decimal::eq(orderField->Price, 0.0) ? WPT_ANYPRICE : WPT_LIMITPRICE);
-	if (orderField->OrderType == YD_ODT_FAK)
-		pRet->setOrderFlag(WOF_FAK);
-	else if (orderField->OrderType == YD_ODT_FOK)
-		pRet->setOrderFlag(WOF_FOK);
-	else
-		pRet->setOrderFlag(WOF_NOR);
-
+	pRet->setOrderFlag((orderField->OrderType == YD_ODT_FAK) ? WOF_FAK : ((orderField->OrderType == YD_ODT_FOK) ? WOF_FOK : WOF_NOR));
 	pRet->setVolTraded(orderField->TradeVolume);
 	pRet->setVolLeft(orderField->OrderVolume - orderField->TradeVolume);
 
@@ -919,15 +971,15 @@ WTSOrderInfo* TraderYD::makeOrderInfo(const YDOrder* orderField, const YDInstrum
 	pRet->setOrderTime(TimeUtils::makeTime(uDate, uTime * 1000));
 
 	pRet->setOrderState(wrapOrderState(orderField->OrderStatus));
-	if (orderField->OrderStatus == YD_OS_Rejected)
-		pRet->setError(true);
+	pRet->setError(orderField->OrderStatus == YD_OS_Rejected);
 
 	generateEntrustID(orderField->OrderRef, pRet->getEntrustID());
 	convert::to_str(pRet->getOrderID(), 64, orderField->OrderSysID);
-	pRet->setStateMsg("");
+	if(pRet->isError())
+		fmtutil::format_to(pRet->getStateMsg(), "{}({})", getErrorMsg(orderField->ErrorNo), orderField->ErrorNo);
 
 	const char* usertag = m_eidCache.get(pRet->getEntrustID());
-	if (strlen(usertag) == 0)
+	if (StrUtil::isEmpty(usertag))
 	{
 		pRet->setUserTag(pRet->getEntrustID());
 	}
@@ -935,9 +987,9 @@ WTSOrderInfo* TraderYD::makeOrderInfo(const YDOrder* orderField, const YDInstrum
 	{
 		pRet->setUserTag(usertag);
 
-		if (strlen(pRet->getOrderID()) > 0)
+		if (!StrUtil::isEmpty(pRet->getOrderID()))
 		{
-			m_oidCache.put(pRet->getOrderID(), usertag, 0, m_cacheLogger);
+			m_oidCache.put_if_none(pRet->getOrderID(), usertag, 0);
 		}
 	}
 
@@ -961,17 +1013,11 @@ WTSEntrust* TraderYD::makeEntrust(const YDInputOrder *entrustField, const YDInst
 	pRet->setOffsetType(wrapOffsetType(entrustField->OffsetFlag));
 	
 	pRet->setPriceType(decimal::eq(entrustField->Price, 0.0) ? WPT_ANYPRICE : WPT_LIMITPRICE);
-	if (entrustField->OrderType == YD_ODT_FAK)
-		pRet->setOrderFlag(WOF_FAK);
-	else if (entrustField->OrderType == YD_ODT_FOK)
-		pRet->setOrderFlag(WOF_FOK);
-	else
-		pRet->setOrderFlag(WOF_NOR);
+	pRet->setOrderFlag((entrustField->OrderType == YD_ODT_FAK) ? WOF_FAK : ((entrustField->OrderType == YD_ODT_FOK) ? WOF_FOK : WOF_NOR));
 
 	generateEntrustID(entrustField->OrderRef, pRet->getEntrustID());
-
 	const char* usertag = m_eidCache.get(pRet->getEntrustID());
-	if (strlen(usertag) > 0)
+	if (!StrUtil::isEmpty(usertag))
 		pRet->setUserTag(usertag);
 
 	return pRet;
@@ -979,7 +1025,7 @@ WTSEntrust* TraderYD::makeEntrust(const YDInputOrder *entrustField, const YDInst
 
 WTSError* TraderYD::makeError(int errorno, WTSErroCode ec) noexcept
 {
-	WTSError* pRet = WTSError::create(ec, fmtutil::format("ErrorNo: {}", errorno));
+	WTSError* pRet = WTSError::create(ec, fmtutil::format("{}({})", getErrorMsg(errorno), errorno));
 	return pRet;
 }
 
@@ -1014,9 +1060,7 @@ WTSTradeInfo* TraderYD::makeTradeRecord(const YDTrade *tradeField, const YDInstr
 	double amount = commInfo->getVolScale()*tradeField->Volume*pRet->getPrice();
 	pRet->setAmount(amount);
 
-	const char* usertag = m_oidCache.get(pRet->getRefOrder());
-	if (strlen(usertag))
-		pRet->setUserTag(usertag);
+	pRet->setUserTag(m_oidCache.get(pRet->getRefOrder()));
 
 	return pRet;
 }

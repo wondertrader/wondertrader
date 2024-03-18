@@ -10,6 +10,8 @@
 #include "TraderHuaX.h"
 #include "../Share/Converter.hpp"
 
+#include <filesystem>
+namespace fs = std::filesystem;
 
 template<typename... Args>
 inline void write_log(ITraderSpi* sink, WTSLogLevel ll, const char* format, const Args&... args) noexcept
@@ -184,9 +186,7 @@ WTSOrderInfo* TraderHuaX::makeOrderInfo(CTORATstpOrderField* order_info)
 
 		if (strlen(pRet->getOrderID()) > 0)
 		{
-			_oidCache.put(StrUtil::trim(order_info->OrderSysID).c_str(), usertag, 0, [this](const char* message) {
-				write_log(_sink, LL_ERROR, message);
-			});
+			_oidCache.put(StrUtil::trim(order_info->OrderSysID).c_str(), usertag, 0);
 		}
 	}
 	return pRet;
@@ -563,7 +563,7 @@ void TraderHuaX::OnRspQryShareholderAccount(CTORATstpShareholderAccountField* pS
 				ss << "./huaxdata/local/";
 				std::string path = StrUtil::standardisePath(ss.str());
 				if (!StdFile::exists(path.c_str()))
-					boost::filesystem::create_directories(path.c_str());
+					fs::create_directories(path.c_str());
 				ss << _user << "_eid.sc";
 				_eidCache.init(ss.str().c_str(), _tradingday, [this](const char* message) {
 					write_log(_sink, LL_WARN, message);
@@ -576,7 +576,7 @@ void TraderHuaX::OnRspQryShareholderAccount(CTORATstpShareholderAccountField* pS
 				ss << "./huaxdata/local/";
 				std::string path = StrUtil::standardisePath(ss.str());
 				if (!StdFile::exists(path.c_str()))
-					boost::filesystem::create_directories(path.c_str());
+					fs::create_directories(path.c_str());
 				ss << _user << "_oid.sc";
 				_oidCache.init(ss.str().c_str(), _tradingday, [this](const char* message) {
 					write_log(_sink, LL_WARN, message);
@@ -703,7 +703,7 @@ void TraderHuaX::reconnect()
 
 	std::stringstream ss;
 	ss << _flowdir << "flows/" << _user << "/";
-	boost::filesystem::create_directories(ss.str().c_str());
+	fs::create_directories(ss.str().c_str());
 	_api = _funcCreator(ss.str().c_str(), _encrypt);			// 创建UserApi
 	if (_api == NULL)
 	{
@@ -896,9 +896,7 @@ int TraderHuaX::orderInsert(WTSEntrust* entrust)
 	//其它字段置空
 	if (strlen(entrust->getUserTag()) > 0)
 	{
-		_eidCache.put(entrust->getEntrustID(), entrust->getUserTag(), 0, [this](const char* message) {
-			write_log(_sink, LL_WARN, message);
-		});
+		_eidCache.put(entrust->getEntrustID(), entrust->getUserTag(), 0);
 	}
 	int ret = _api->ReqOrderInsert(&field, genRequestID());
 	if (ret != 0)

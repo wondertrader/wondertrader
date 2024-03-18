@@ -553,7 +553,7 @@ void WtCtaEngine::on_tick(const char* stdCode, WTSTickData* curTick)
 					{
 						if (adjTick == nullptr)
 						{
-							WTSTickData* adjTick = WTSTickData::create(curTick->getTickStruct());
+							adjTick = WTSTickData::create(curTick->getTickStruct());
 							WTSTickStruct& adjTS = adjTick->getTickStruct();
 							adjTick->setContractInfo(curTick->getContractInfo());
 

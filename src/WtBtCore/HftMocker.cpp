@@ -12,7 +12,8 @@
 
 #include <stdarg.h>
 
-#include <boost/filesystem.hpp>
+#include <filesystem>
+namespace fs = std::filesystem;
 
 #include "../Includes/WTSVariant.hpp"
 #include "../Includes/WTSContractInfo.hpp"
@@ -1023,7 +1024,7 @@ void HftMocker::dump_outputs()
 	std::string folder = WtHelper::getOutputDir();
 	folder += _name;
 	folder += "/";
-	boost::filesystem::create_directories(folder.c_str());
+	fs::create_directories(folder.c_str());
 
 	std::string filename = folder + "trades.csv";
 	std::string content = "code,time,direct,action,price,qty,fee,usertag\n";

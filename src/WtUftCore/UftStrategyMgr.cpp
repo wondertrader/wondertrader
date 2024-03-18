@@ -9,7 +9,8 @@
  */
 #include "UftStrategyMgr.h"
 
-#include <boost/filesystem.hpp>
+#include <filesystem>
+namespace fs = std::filesystem;
 
 #include "../Share/StrUtil.hpp"
 #include "../Share/StdUtils.hpp"
@@ -35,11 +36,11 @@ bool UftStrategyMgr::loadFactories(const char* path)
 	}
 
 	uint32_t count = 0;
-	boost::filesystem::path myPath(path);
-	boost::filesystem::directory_iterator endIter;
-	for (boost::filesystem::directory_iterator iter(myPath); iter != endIter; iter++)
+	fs::path myPath(path);
+	fs::directory_iterator endIter;
+	for (fs::directory_iterator iter(myPath); iter != endIter; iter++)
 	{
-		if (boost::filesystem::is_directory(iter->path()))
+		if (fs::is_directory(iter->path()))
 			continue;
 
 #ifdef _WIN32

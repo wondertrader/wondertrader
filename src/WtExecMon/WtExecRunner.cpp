@@ -16,7 +16,8 @@
 
 #ifdef _MSC_VER
 #include "../Common/mdump.h"
-#include <boost/filesystem.hpp>
+#include <filesystem>
+namespace fs = std::filesystem;
 const char* getModuleName()
 {
 	static char MODULE_NAME[250] = { 0 };
@@ -24,7 +25,7 @@ const char* getModuleName()
 	{
 
 		GetModuleFileName(g_dllModule, MODULE_NAME, 250);
-		boost::filesystem::path p(MODULE_NAME);
+		fs::path p(MODULE_NAME);
 		strcpy(MODULE_NAME, p.filename().string().c_str());
 	}
 

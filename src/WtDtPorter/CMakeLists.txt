@@ -31,6 +31,7 @@ ELSE(GNUCC)
 		pthread
 		boost_filesystem
 		boost_thread
+		stdc++fs
 		)
 	IF(WIN32)
 		LIST(APPEND LIBS

@@ -131,6 +131,7 @@
     <ClInclude Include="..\Includes\IDataWriter.h" />
     <ClInclude Include="..\Includes\IHftStraCtx.h" />
     <ClInclude Include="..\Includes\IHotMgr.h" />
+    <ClInclude Include="..\Includes\IIdxWorker.h" />
     <ClInclude Include="..\Includes\IParserApi.h" />
     <ClInclude Include="..\Includes\IRdmDtReader.h" />
     <ClInclude Include="..\Includes\ISelStraCtx.h" />

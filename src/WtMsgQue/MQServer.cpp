@@ -186,7 +186,7 @@ void MQServer::publish(const char* topic, const void* data, uint32_t dataLen)
 					}
 				} 
 
-				_mgr->log_server(_id, fmtutil::format("Publishing finished: {}", tmpQue.size()));
+				//_mgr->log_server(_id, fmtutil::format("Publishing finished: {}", tmpQue.size()));
 			}
 		}));
 	}

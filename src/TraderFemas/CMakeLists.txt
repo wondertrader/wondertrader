@@ -23,13 +23,13 @@ IF(MSVC)
 ELSE(GNUCC)
 	IF (WIN32)
 		SET(LIBS
-			boost_filesystem
+			stdc++fs
 			dl
 			ws2_32
 		)
 	ELSE(UNIX)
 		SET(LIBS
-			boost_filesystem
+			stdc++fs
 			dl
 		)
 	ENDIF()

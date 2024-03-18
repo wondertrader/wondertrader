@@ -20,7 +20,8 @@
 #include "../Share/ModuleHelper.hpp"
 #include "../Share/Converter.hpp"
 
-#include <boost/filesystem.hpp>
+#include <filesystem>
+namespace fs = std::filesystem;
 
  //By Wesley @ 2022.01.05
 #include "../Share/fmtlib.h"
@@ -115,7 +116,7 @@ bool ParserCTPOpt::init(WTSVariant* config)
 	std::string path = fmtutil::format("{}/{}/{}/", m_strFlowDir.c_str(), m_strBroker.c_str(), m_strUserID.c_str());
 	if (!StdFile::exists(path.c_str()))
 	{
-		boost::filesystem::create_directories(boost::filesystem::path(path));
+		fs::create_directories(fs::path(path));
 	}	
 #ifdef _WIN32
 #	ifdef _WIN64
@@ -284,7 +285,7 @@ void ParserCTPOpt::OnRtnDepthMarketData( CThostFtdcDepthMarketDataField *pDepthM
 	quote.open = checkValid(pDepthMarketData->OpenPrice);
 	quote.high = checkValid(pDepthMarketData->HighestPrice);
 	quote.low = checkValid(pDepthMarketData->LowestPrice);
-	quote.total_volume = pDepthMarketData->Volume;
+	quote.total_volume = (uint32_t)pDepthMarketData->Volume;
 	quote.trading_date = m_uTradingDate;
 	if(pDepthMarketData->SettlementPrice != DBL_MAX)
 		quote.settle_price = checkValid(pDepthMarketData->SettlementPrice);

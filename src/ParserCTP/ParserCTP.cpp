@@ -20,12 +20,13 @@
 #include "../Share/StdUtils.hpp"
 #include "../Share/Converter.hpp"
 
-#include <boost/filesystem.hpp>
+#include <filesystem>
+namespace fs = std::filesystem;
 
  //By Wesley @ 2022.01.05
 #include "../Share/fmtlib.h"
 template<typename... Args>
-inline void write_log(IParserSpi* sink, WTSLogLevel ll, const char* format, const Args&... args)
+inline void write_log(IParserSpi* sink, WTSLogLevel ll, const char* format, const Args&... args) noexcept
 {
 	if (sink == NULL)
 		return;
@@ -55,31 +56,29 @@ extern "C"
 };
 
 
-inline uint32_t strToTime(const char* strTime)
+static char tmp_timestr[10] = { 0 };
+constexpr inline uint32_t strToTime(const char* strTime) noexcept
 {
-	static char str[10] = { 0 };
-	const char *pos = strTime;
 	int idx = 0;
-	auto len = strlen(strTime);
-	for(std::size_t i = 0; i < len; i++)
+	char* c = (char*)strTime;
+	while (*c)
 	{
-		if(strTime[i] != ':')
+		if ('0' <= *c && *c <= '9')
 		{
-			str[idx] = strTime[i];
+			tmp_timestr[idx] = *c;
 			idx++;
 		}
-	}
-	str[idx] = '\0';
 
-	return convert::to_uint32(str);
+		c = c + 1;
+	}
+	tmp_timestr[idx] = '\0';
+
+	return convert::to_uint32(tmp_timestr);
 }
 
-inline double checkValid(double val)
+constexpr inline double checkValid(double val) noexcept
 {
-	if (val == DBL_MAX || val == FLT_MAX)
-		return 0;
-
-	return val;
+	return (val == DBL_MAX || val == FLT_MAX) ? 0 : val;
 }
 
 ParserCTP::ParserCTP()
@@ -102,7 +101,7 @@ bool ParserCTP::init(WTSVariant* config)
 	m_strBroker = config->getCString("broker");
 	m_strUserID = config->getCString("user");
 	m_strPassword = config->getCString("pass");
-	m_strFlowDir = config->getCString("flowdir");
+	m_strFlowDir = config->getCString("flowdir", "CTPMDFlow");
     /*
      * By Wesley @ 2022.03.09
      * 这个参数主要是给非标准CTP环境用的
@@ -110,22 +109,15 @@ bool ParserCTP::init(WTSVariant* config)
      * 如果为true，就用本地时间戳，默认为false
      */
     m_bLocaltime = config->getBoolean("localtime");
-
-	if (m_strFlowDir.empty())
-		m_strFlowDir = "CTPMDFlow";
-
 	m_strFlowDir = StrUtil::standardisePath(m_strFlowDir);
 
-	std::string module = config->getCString("ctpmodule");
-	if (module.empty())
-		module = "thostmduserapi_se";
-
-	std::string dllpath = getBinDir() + DLLHelper::wrap_module(module.c_str(), "");
+	const char* module = config->getCString("ctpmodule", "thostmduserapi_se");
+	std::string dllpath = getBinDir() + DLLHelper::wrap_module(module, "");
 	m_hInstCTP = DLLHelper::load_library(dllpath.c_str());
-	std::string path = fmtutil::format("{}{}/{}/", m_strFlowDir.c_str(), m_strBroker.c_str(), m_strUserID.c_str());
+	std::string path = fmtutil::format("{}{}/{}/", m_strFlowDir, m_strBroker, m_strUserID);
 	if (!StdFile::exists(path.c_str()))
 	{
-		boost::filesystem::create_directories(boost::filesystem::path(path));
+		fs::create_directories(fs::path(path));
 	}	
 #ifdef _WIN32
 #	ifdef _WIN64
@@ -294,7 +286,7 @@ void ParserCTP::OnRtnDepthMarketData( CThostFtdcDepthMarketDataField *pDepthMark
 	quote.open = checkValid(pDepthMarketData->OpenPrice);
 	quote.high = checkValid(pDepthMarketData->HighestPrice);
 	quote.low = checkValid(pDepthMarketData->LowestPrice);
-	quote.total_volume = pDepthMarketData->Volume;
+	quote.total_volume = (uint32_t)pDepthMarketData->Volume;
 	quote.trading_date = m_uTradingDate;
 	if(pDepthMarketData->SettlementPrice != DBL_MAX)
 		quote.settle_price = checkValid(pDepthMarketData->SettlementPrice);
