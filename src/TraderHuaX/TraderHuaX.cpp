@@ -168,7 +168,7 @@ WTSOrderInfo* TraderHuaX::makeOrderInfo(CTORATstpOrderField* order_info)
 
 	pRet->setOrderState(wrapOrderState(order_info->OrderStatus));
 	if (order_info->OrderStatus == TORA_TSTP_OST_Rejected)
-		pRet->setError(true);
+		pRet->setError(WOEF_Normal);
 
 	genEntrustID(pRet->getEntrustID(), order_info->OrderRef);
 	pRet->setOrderID(order_info->OrderSysID);

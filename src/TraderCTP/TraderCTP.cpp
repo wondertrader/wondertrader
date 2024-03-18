@@ -1230,7 +1230,7 @@ WTSOrderInfo* TraderCTP::makeOrderInfo(CThostFtdcOrderField* orderField)
 
 	pRet->setOrderState(wrapOrderState(orderField->OrderStatus));
 	if (orderField->OrderSubmitStatus >= THOST_FTDC_OSS_InsertRejected)
-		pRet->setError(true);		
+		pRet->setError(WOEF_Normal);
 
 	generateEntrustID(pRet->getEntrustID(), orderField->FrontID, orderField->SessionID, atoi(orderField->OrderRef));
 	pRet->setOrderID(orderField->OrderSysID);

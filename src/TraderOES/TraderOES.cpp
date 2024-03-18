@@ -643,7 +643,7 @@ WTSOrderInfo* TraderOES::makeOrderInfo(OesOrdCnfmT* pOrdItem)
 	pRet->setOrderState(wrapOrderState(pOrdItem->ordStatus));
 	if (pOrdItem->ordStatus >= __OES_ORD_STATUS_INVALID_MIN)
 	{
-		pRet->setError(true);
+		pRet->setError(WOEF_Normal);
 		pRet->setStateMsg(fmt::format("Rejected: {}", pOrdItem->ordRejReason).c_str());
 	}
 

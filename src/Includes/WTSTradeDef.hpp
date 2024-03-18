@@ -244,13 +244,13 @@ typedef struct _WTSOrderStruct
 	char				m_strUserTag[64] = { 0 };
 
 	WTSBusinessType		m_businessType;
+	WTSOrderErrorFlag	m_uErrorFlag;	//错误标记，没有错误则是WOEF_None，用于标记具体的错单类型，如自成交、资金不足
 
 	//这部分是Order专有的成员
 	uint32_t	m_uInsertDate;
 	uint64_t	m_uInsertTime;
 	double		m_dVolTraded;
 	double		m_dVolLeft;
-	bool		m_bIsError;
 
 	WTSOrderState	m_orderState;
 	WTSOrderType	m_orderType;
@@ -264,7 +264,7 @@ typedef struct _WTSOrderStruct
 		, m_uInsertTime(0)
 		, m_dVolTraded(0)
 		, m_dVolLeft(0)
-		, m_bIsError(false)
+		, m_uErrorFlag(WOEF_None)
 	{
 
 	}
@@ -394,7 +394,7 @@ public:
 
 	constexpr inline bool	isAlive() const noexcept
 	{
-		if (m_bIsError)
+		if (m_uErrorFlag != WOEF_None)
 			return false;
 
 		switch(m_orderState)
@@ -407,8 +407,10 @@ public:
 		}
 	}
 
-	constexpr inline void	setError(bool bError = true) noexcept { m_bIsError = bError; }
-	constexpr inline bool	isError() const noexcept { return m_bIsError; }
+	constexpr inline void	setError(WTSOrderErrorFlag errFlag = WOEF_Normal) noexcept { m_uErrorFlag = errFlag; }
+	constexpr inline bool	isError() const noexcept { return m_uErrorFlag != WOEF_None; }
+	//是否是自成交错误
+	constexpr inline bool	isSelfTrade() const noexcept { return m_uErrorFlag == WOEF_SelfTrade; }
 
 private:
 	WTSContractInfo*	m_pContract = NULL;

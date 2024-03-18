@@ -971,7 +971,14 @@ WTSOrderInfo* TraderYD::makeOrderInfo(const YDOrder* orderField, const YDInstrum
 	pRet->setOrderTime(TimeUtils::makeTime(uDate, uTime * 1000));
 
 	pRet->setOrderState(wrapOrderState(orderField->OrderStatus));
-	pRet->setError(orderField->OrderStatus == YD_OS_Rejected);
+	if(orderField->OrderStatus == YD_OS_Rejected)
+	{
+		pRet->setError(orderField->ErrorNo == YD_ERROR_PossibleSelfTrade ? WOEF_SelfTrade : WOEF_Normal);
+	}
+	else
+	{
+		pRet->setError(WOEF_None);
+	}
 
 	generateEntrustID(orderField->OrderRef, pRet->getEntrustID());
 	convert::to_str(pRet->getOrderID(), 64, orderField->OrderSysID);

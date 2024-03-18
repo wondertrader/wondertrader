@@ -1443,7 +1443,7 @@ WTSOrderInfo* TraderCTPOpt::makeOrderInfo(CThostFtdcOrderField* orderField)
 
 	pRet->setOrderState(wrapOrderState(orderField->OrderStatus));
 	if (orderField->OrderSubmitStatus >= THOST_FTDC_OSS_InsertRejected)
-		pRet->setError(true);		
+		pRet->setError(WOEF_Normal);
 
 	//pRet->setEntrustID(generateEntrustID(orderField->FrontID, orderField->SessionID, atoi(orderField->OrderRef)).c_str());
 	generateEntrustID(pRet->getEntrustID(), orderField->FrontID, orderField->SessionID, atoi(orderField->OrderRef));
@@ -1541,7 +1541,7 @@ WTSOrderInfo* TraderCTPOpt::makeOrderInfo(CThostFtdcExecOrderField* orderField)
 	pRet->setOrderState(WOS_Nottouched);
 	if (orderField->OrderSubmitStatus >= THOST_FTDC_OSS_InsertRejected)
 	{
-		pRet->setError(true);
+		pRet->setError(WOEF_Normal);
 		pRet->setOrderState(WOS_Canceled);
 	}
 

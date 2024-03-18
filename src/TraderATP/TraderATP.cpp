@@ -292,7 +292,7 @@ WTSOrderInfo* TraderATP::makeOrderInfo(const APIOrderUnit* order_info)
 
 	pRet->setOrderState(wrapOrdStatus(order_info->ord_status));
 	if (order_info->ord_status == ATPOrdStatusConst::kReject)
-		pRet->setError(true);
+		pRet->setError(WOEF_Normal);
 
 	genEntrustID(pRet->getEntrustID(), order_info->client_seq_id);
 	//pRet->setEntrustID(genEntrustID(pRet->getEntrustID(), order_info->client_seq_id).c_str());
@@ -348,7 +348,7 @@ WTSOrderInfo* TraderATP::makeOrderInfo(const ATPRspOrderStatusAckMsg *order_stat
 
 	pRet->setOrderState(wrapOrdStatus(order_status_ack->ord_status));
 	if (order_status_ack->ord_status == ATPOrdStatusConst::kReject) {
-		pRet->setError(true);
+		pRet->setError(WOEF_Normal);
 		//pRet->setOrderState(WOS_Canceled);
 	}
 

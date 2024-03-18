@@ -270,7 +270,7 @@ WTSOrderInfo* TraderXTP::makeOrderInfo(XTPQueryOrderRsp* order_info)
 
 	pRet->setOrderState(wrapOrderState(order_info->order_status));
 	if (order_info->order_status >= XTP_ORDER_STATUS_REJECTED)
-		pRet->setError(true);
+		pRet->setError(WOEF_Normal);
 
 	genEntrustID(pRet->getEntrustID(), order_info->order_client_id);
 	fmtutil::format_to(pRet->getOrderID(), "{}", order_info->order_xtp_id);

@@ -17,7 +17,7 @@ NS_WTP_BEGIN
  *	合约分类
  */
 //从CTP复制过来的
-typedef enum tagContractCategory
+typedef enum tagContractCategory : uint32_t
 {
 	CC_Stock,			//股票
 	CC_Future,			//期货
@@ -40,7 +40,7 @@ typedef enum tagContractCategory
 /*
  *	期权类型
  */
-typedef enum tagOptionType
+typedef enum tagOptionType : uint32_t
 {
 	OT_None = 0,
 	OT_Call = '1',		//看涨期权
@@ -50,7 +50,7 @@ typedef enum tagOptionType
 /*
  *	平仓类型
  */
-typedef enum tagCoverMode
+typedef enum tagCoverMode : uint32_t
 {
 	CM_OpenCover,		//开平
 	CM_CoverToday,		//开平昨平今
@@ -61,7 +61,7 @@ typedef enum tagCoverMode
 /*
  *	交易模式
  */
-typedef enum tagTradingMode
+typedef enum tagTradingMode : uint32_t
 {
 	TM_Both,	//多空都支持
 	TM_Long,	//只能做多
@@ -72,7 +72,7 @@ typedef enum tagTradingMode
 /*
 *	价格模式
 */
-typedef enum tagPriceMode
+typedef enum tagPriceMode : uint32_t
 {
 	PM_Both,		//市价限价都支持
 	PM_Limit,		//只支持限价
@@ -84,7 +84,7 @@ typedef enum tagPriceMode
  *	K线数据类型
  *	开、高、低、收、量、额、日期、时间
  */
-typedef enum tagKlineFieldType
+typedef enum tagKlineFieldType : uint32_t
 {
 	KFT_OPEN,
 	KFT_HIGH,
@@ -99,7 +99,7 @@ typedef enum tagKlineFieldType
 /*
  *	K线周期
  */
-typedef enum tagKlinePeriod
+typedef enum tagKlinePeriod : uint32_t
 {
 	KP_Tick,
 	KP_Minute1,
@@ -122,7 +122,7 @@ static const char* PERIOD_NAME[] =
 /*
  *	日志级别
  */
-typedef enum tagLogLevel
+typedef enum tagLogLevel : uint32_t
 {
 	LL_ALL	= 100,
 	LL_DEBUG,
@@ -136,7 +136,7 @@ typedef enum tagLogLevel
 /*
  *	价格类型
  */
-typedef enum tagPriceType
+typedef enum tagPriceType : uint32_t
 {
 	WPT_ANYPRICE	= 0,			//市价单
 	WPT_LIMITPRICE,					//限价单
@@ -169,7 +169,7 @@ typedef enum tagPriceType
 /*
  *	时间条件
  */
-typedef enum tagTimeCondition
+typedef enum tagTimeCondition : uint32_t
 {
 	WTC_IOC		= '1',	//立即完成,否则撤销
 	WTC_GFS,			//本节有效
@@ -179,7 +179,7 @@ typedef enum tagTimeCondition
 /*
  *	订单标志
  */
-typedef enum tagOrderFlag
+typedef enum tagOrderFlag : uint32_t
 {
 	WOF_NOR = '0',		//普通订单
 	WOF_FAK,			//fak
@@ -189,7 +189,7 @@ typedef enum tagOrderFlag
 /*
  *	开平方向
  */
-typedef enum tagOffsetType
+typedef enum tagOffsetType : uint32_t
 {
 	WOT_OPEN			= '0',	//开仓
 	WOT_CLOSE,					//平仓,上期为平昨
@@ -201,7 +201,7 @@ typedef enum tagOffsetType
 /*
  *	多空方向
  */
-typedef enum tagDirectionType
+typedef enum tagDirectionType : uint32_t
 {
 	WDT_LONG			= '0',	//做多
 	WDT_SHORT,					//做空
@@ -211,7 +211,7 @@ typedef enum tagDirectionType
 /*
  *	业务类型
  */
-typedef enum tagBusinessType
+typedef enum tagBusinessType : uint32_t
 {
 	BT_CASH		= '0',	//普通买卖,
 	BT_ETF		= '1',	//ETF申赎
@@ -226,7 +226,7 @@ typedef enum tagBusinessType
 /*
  *	订单操作类型
  */
-typedef enum tagActionFlag
+typedef enum tagActionFlag : uint32_t
 {
 	WAF_CANCEL			= '0',	//撤销
 	WAF_MODIFY			= '3',	//修改
@@ -235,7 +235,7 @@ typedef enum tagActionFlag
 /*
  *	订单状态
  */
-typedef enum tagOrderState
+typedef enum tagOrderState : uint32_t
 {
 	WOS_AllTraded				= '0',	//全部成交
 	WOS_PartTraded_Queuing,				//部分成交,仍在队列中
@@ -251,7 +251,7 @@ typedef enum tagOrderState
 /*
  *	订单类型
  */
-typedef enum tagOrderType
+typedef enum tagOrderType : uint32_t
 {
 	WORT_Normal			= 0,		//正常订单
 	WORT_Exception,					//异常订单
@@ -259,10 +259,18 @@ typedef enum tagOrderType
 	WORT_Hedge						//对冲订单
 } WTSOrderType;
 
+typedef enum tagOrderErrorFlag : uint32_t
+{
+	WOEF_None		= 0,		//无错误
+	WOEF_Normal,				//一般错误
+	WOEF_SelfTrade,				//自成交风险，易达柜台会推送这个错误
+	WOEF_NoEnoughMoney			//可用资金不足
+} WTSOrderErrorFlag;
+
 /*
  *	成交类型
  */
-typedef enum tagTradeType
+typedef enum tagTradeType : uint32_t
 {
 	WTT_Common				= '0',	//普通
 	WTT_OptionExecution		= '1',	//期权执行
@@ -275,7 +283,7 @@ typedef enum tagTradeType
 /*
  *	错误代码
  */
-typedef enum tagErrorCode
+typedef enum tagErrorCode : uint32_t
 {
 	WEC_NONE			=	0,		//没有错误
 	WEC_ORDERINSERT,				//下单错误
@@ -288,7 +296,7 @@ typedef enum tagErrorCode
 /*
  *	比较字段
  */
-typedef enum tagCompareField
+typedef enum tagCompareField : uint32_t
 {
 	WCF_NEWPRICE			=	0,	//最新价
 	WCF_BIDPRICE,					//买一价
@@ -300,7 +308,7 @@ typedef enum tagCompareField
 /*
  *	比较类型
  */
-typedef enum tagCompareType
+typedef enum tagCompareType : uint32_t
 {
 	WCT_Equal			= 0,		//等于
 	WCT_Larger,						//大于
@@ -312,7 +320,7 @@ typedef enum tagCompareType
 /*
  *	行情解析器事件
  */
-typedef enum tagParserEvent
+typedef enum tagParserEvent : uint32_t
 {
 	WPE_Connect			= 0,		//连接事件
 	WPE_Close,						//关闭事件
@@ -323,7 +331,7 @@ typedef enum tagParserEvent
 /*
  *	交易模块事件
  */
-typedef enum tagTraderEvent
+typedef enum tagTraderEvent : uint32_t
 {
 	WTE_Connect			= 0,		//连接事件
 	WTE_Close,						//关闭事件
@@ -334,7 +342,7 @@ typedef enum tagTraderEvent
 /*
  *	交易状态
  */
-typedef enum tagTradeStatus
+typedef enum tagTradeStatus : uint32_t
 {
 	TS_BeforeTrading	= '0',	//开盘前
 	TS_NotTrading		= '1',	//非交易
@@ -348,28 +356,35 @@ typedef enum tagTradeStatus
 /*
  *	买卖方向类型
  */
-typedef uint32_t WTSBSDirectType;
-#define BDT_Buy		'B'	//买入	
-#define BDT_Sell	'S'	//卖出
-#define BDT_Unknown ' '	//未知
-#define BDT_Borrow	'G'	//借入
-#define BDT_Lend	'F'	//借出
+typedef enum tagWTSBSDirectType : uint32_t
+{
+	BDT_Buy		= 'B',	//买入	
+	BDT_Sell	= 'S',	//卖出
+	BDT_Unknown = ' ',	//未知
+	BDT_Borrow	= 'G',	//借入
+	BDT_Lend	= 'F'	//借出
+} WTSBSDirectType;
 
 /*
  *	成交类型
  */
-typedef uint32_t WTSTransType;
-#define TT_Unknown	'U'	//未知类型
-#define TT_Match	'M'	//撮合成交
-#define TT_Cancel	'C'	//撤单
+typedef enum tagWTSTransType : uint32_t
+{
+	TT_Unknown	= 'U',	//未知类型
+	TT_Match	= 'M',	//撮合成交
+	TT_Cancel	= 'C'	//撤单
+}WTSTransType;
+
 
 /*
  *	委托明细类型
  */
-typedef uint32_t WTSOrdDetailType;
-#define ODT_Unknown		0	//未知类型
-#define ODT_BestPrice	'U'	//本方最优
-#define ODT_AnyPrice	'1'	//市价
-#define ODT_LimitPrice	'2'	//限价
+typedef enum tagWTSOrdDetailType : uint32_t
+{
+	ODT_Unknown		= 0,	//未知类型
+	ODT_BestPrice	= 'U',	//本方最优
+	ODT_AnyPrice	= '1',	//市价
+	ODT_LimitPrice	= '2'	//限价
+} WTSOrdDetailType;
 
 NS_WTP_END

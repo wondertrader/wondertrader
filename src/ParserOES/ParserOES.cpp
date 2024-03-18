@@ -450,7 +450,7 @@ void ParserOES::doOnMessage(SMsgHeadT *pMsgHead, void *pMsgItem)
 			ts.action_time = pRspMsg->trade.TransactTime;
 
 			ts.index = pRspMsg->trade.ApplSeqNum;
-			ts.side = wrapTransSide(pRspMsg->trade.TradeBSFlag);
+			ts.side = (WTSBSDirectType)wrapTransSide(pRspMsg->trade.TradeBSFlag);
 			ts.ttype = pRspMsg->trade.ExecType == 'F' ? TT_Match : TT_Cancel;
 
 			ts.price = wrapPrice(pRspMsg->trade.TradePrice);
@@ -499,8 +499,8 @@ void ParserOES::doOnMessage(SMsgHeadT *pMsgHead, void *pMsgItem)
 			ts.action_time = pRspMsg->order.TransactTime;
 
 			ts.index = pRspMsg->order.SseOrderNo;
-			ts.side = wrapOrdDtlSide(pRspMsg->order.Side);
-			ts.otype = pRspMsg->order.OrderType;
+			ts.side = (WTSBSDirectType)wrapOrdDtlSide(pRspMsg->order.Side);
+			ts.otype = (WTSOrdDetailType)pRspMsg->order.OrderType;
 
 			ts.price = wrapPrice(pRspMsg->order.Price);
 			ts.volume = pRspMsg->order.OrderQty;

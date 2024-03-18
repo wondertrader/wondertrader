@@ -244,8 +244,8 @@ void ParserXTP::OnTickByTick(XTPTBT *tbt_data)
 		ts.action_time = actTime;
 
 		ts.index = eInfo.seq;
-		ts.side = eInfo.side;
-		ts.otype = eInfo.ord_type;
+		ts.side = (WTSBSDirectType)eInfo.side;
+		ts.otype = (WTSOrdDetailType)eInfo.ord_type;
 
 		ts.price = eInfo.price;
 		ts.volume = (uint32_t)eInfo.qty;
@@ -268,7 +268,7 @@ void ParserXTP::OnTickByTick(XTPTBT *tbt_data)
 		ts.action_time = actTime;
 
 		ts.index = tInfo.seq;
-		ts.side = tInfo.trade_flag;
+		ts.side = (WTSBSDirectType)tInfo.trade_flag;
 		ts.ttype = tInfo.trade_flag == '4' ? TT_Cancel : TT_Match;
 
 		ts.price = tInfo.price;
