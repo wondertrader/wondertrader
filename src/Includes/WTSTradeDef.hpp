@@ -66,7 +66,7 @@ public:
 	virtual ~WTSEntrust(){}
 
 public:
-	static inline WTSEntrust* create(const char* code, double vol, double price, const char* exchg = "", WTSBusinessType bType = BT_CASH) noexcept
+	static inline WTSEntrust* create(const char* code = "", double vol = 0, double price = 0, const char* exchg = "", WTSBusinessType bType = BT_CASH) noexcept
 	{
 		WTSEntrust* pRet = WTSEntrust::allocate();
 		if(pRet)
@@ -162,7 +162,7 @@ public:
 	virtual ~WTSEntrustAction(){}
 
 public:
-	static inline WTSEntrustAction* create(const char* code, const char* exchg = "", WTSBusinessType bType = BT_CASH) noexcept
+	static inline WTSEntrustAction* create(const char* code = "", const char* exchg = "", WTSBusinessType bType = BT_CASH) noexcept
 	{
 		WTSEntrustAction* pRet = WTSEntrustAction::allocate();
 		if(pRet)

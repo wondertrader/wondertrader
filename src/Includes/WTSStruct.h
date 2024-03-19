@@ -283,7 +283,7 @@ struct WTSTransStruct
 	uint32_t	trading_date;		//交易日,如20140327
 	uint32_t	action_date;		//自然日期,如20140327
 	uint32_t	action_time;		//发生时间,精确到毫秒,如105932000
-	int64_t		index;			//成交编号(从1开始,递增1)
+	uint64_t	index;				//成交编号(从1开始,递增1)
 
 	WTSTransType	ttype;			//成交类型: 'C', 0
 	WTSBSDirectType	side;			//BS标志
