@@ -151,6 +151,43 @@ namespace StrUtil
 		} while (pos != std::string::npos);
 	}
 
+	static inline StringVector split2(const std::string& str, const std::string& delims = "\t\n ", unsigned int maxSplits = 0) noexcept
+	{
+		StringVector ret;
+		unsigned int numSplits = 0;
+
+		// Use STL methods
+		size_t start, pos;
+		start = 0;
+		do
+		{
+			pos = str.find_first_of(delims, start);
+			if (pos == start)
+			{
+				ret.emplace_back("");
+				// Do nothing
+				start = pos + delims.size();
+			}
+			else if (pos == std::string::npos || (maxSplits && numSplits == maxSplits))
+			{
+				// Copy the rest of the std::string
+				ret.emplace_back(str.substr(start));
+				break;
+			}
+			else
+			{
+				// Copy up to delimiter
+				ret.emplace_back(str.substr(start, pos - start));
+				start = pos + delims.size();
+			}
+			// parse up to next real data
+			//start = str.find_first_not_of(delims, start);
+			++numSplits;
+
+		} while (pos != std::string::npos);
+		return std::move(ret);
+	}
+
 	/** Upper-cases all the characters in the std::string.
 	*/
 	static inline void toLowerCase( std::string& str ) noexcept
