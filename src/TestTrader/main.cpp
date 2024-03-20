@@ -236,6 +236,7 @@ public:
 			WTSLogger::info(u8"[{}]下单中, 代码:{}.{}, 价格:{}, 数量:{}, 操作:{}", m_pParams->getCString("user"), exchg, code, price, qty, bs == 0 ? "buy" : "sell");
 
 		entrust->setContractInfo(g_bdMgr.getContract(code, exchg));
+		entrust->setUserTag("test_user_tag");
 		m_pTraderApi->orderInsert(entrust);
 		entrust->release();
 
@@ -493,7 +494,7 @@ public:
 
 				if (m_mapOrds->find(orderid) == m_mapOrds->end())
 				{
-					WTSLogger::info(u8"[{}] 下单成功，订单号: {}",  m_pParams->getCString("user"), orderid);
+					WTSLogger::info(u8"[{}] 下单成功，订单号: {}, 用户标记: {}",  m_pParams->getCString("user"), orderid, orderInfo->getUserTag());
 					m_mapOrds->add(orderid, orderInfo, true);
 				}
 
@@ -508,13 +509,13 @@ public:
 
 			if (orderid.empty())
 			{
-				WTSLogger::info(u8"[{}] 订单{}下单失败并撤销:{}", m_pParams->getCString("user"), orderInfo->getEntrustID(), orderInfo->getStateMsg());
+				WTSLogger::info(u8"[{}] 订单{}下单失败并撤销: {}, 用户标记: {}", m_pParams->getCString("user"), orderInfo->getEntrustID(), orderInfo->getStateMsg(), orderInfo->getUserTag());
 				StdUniqueLock lock(g_mtxOpt);
 				g_condOpt.notify_all();
 			}
 			else
 			{
-				WTSLogger::info(u8"[{}] 订单{}已撤销:{}", m_pParams->getCString("user"), orderid, orderInfo->getStateMsg());
+				WTSLogger::info(u8"[{}] 订单{}已撤销: {}, 用户标记: {}", m_pParams->getCString("user"), orderid, orderInfo->getStateMsg(), orderInfo->getUserTag());
 				StdUniqueLock lock(g_mtxOpt);
 				g_condOpt.notify_all();
 			}			
@@ -523,7 +524,8 @@ public:
 
 	virtual void onPushTrade(WTSTradeInfo* tradeRecord)
 	{
-		WTSLogger::info(u8"[{}] 收到成交回报，代码:{}, 价格:{}, 数量:{}", m_pParams->getCString("user"), tradeRecord->getCode(), tradeRecord->getPrice(), tradeRecord->getVolume());
+		WTSLogger::info(u8"[{}] 收到成交回报，代码:{}, 价格:{}, 数量: {}, 用户标记: {}", 
+			m_pParams->getCString("user"), tradeRecord->getCode(), tradeRecord->getPrice(), tradeRecord->getVolume(), tradeRecord->getUserTag());
 
 		if(g_riskAct)
 		{
@@ -568,9 +570,15 @@ private:
 	bool				m_bLogined;
 };
 
+#ifdef _WIN32
+#include <Windows.h>
+#endif // _WIN32
 
 int main()
 {
+#ifdef _WIN32
+	SetConsoleOutputCP(CP_UTF8);
+#endif // _WIN32
 	WTSLogger::init("logcfg.yaml");
 
 	WTSVariant* root = WTSCfgLoader::load_from_file("config.yaml");
@@ -617,7 +625,7 @@ int main()
 		g_condOpt.wait(lock);
 	}
 	
-	while(true)
+	while(!g_exitNow)
 	{
 		encoding_print(u8"请选择一个操作：\r\n");
 		encoding_print(u8"1. 查询资金\r\n");
