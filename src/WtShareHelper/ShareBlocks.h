@@ -13,10 +13,10 @@ namespace shareblock
 {
 	const char BLK_FLAG[] = "&^%$#@!\0";
 
-	const int FLAG_SIZE = 8;
-	const int MAX_SEC_CNT = 64;
-	const int MAX_KEY_CNT = 64;
-	const int MAX_CMD_SIZE = 64;
+	constexpr int FLAG_SIZE = 8;
+	constexpr int MAX_SEC_CNT = 64;
+	constexpr int MAX_KEY_CNT = 128;
+	constexpr int MAX_CMD_SIZE = 64;
 
 	typedef enum tagValueType : uint64_t
 	{
@@ -50,7 +50,7 @@ namespace shareblock
 		uint16_t	_state;			//状态：0-无效，1-生效
 		uint32_t	_offset;		//记录下一个可分配地址的偏移量
 		uint64_t	_updatetime;
-		char		_data[1024];
+		char		_data[1024];	//极端情况下，128个double，刚好是1024，考虑到还有一些int和string，算下来刚好
 
 		template<typename T>
 		T* get(uint32_t offset)
