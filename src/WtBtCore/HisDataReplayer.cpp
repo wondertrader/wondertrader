@@ -3051,7 +3051,7 @@ void HisDataReplayer::sub_tick(uint32_t sid, const char* stdCode)
 	{
 		length--;
 
-		flag = (stdCode[length - 1] == SUFFIX_QFQ) ? 1 : 2;
+		flag = (stdCode[length] == SUFFIX_QFQ) ? 1 : 2;
 	}
 
 	std::string hitCode(stdCode, length);
@@ -3075,7 +3075,7 @@ void HisDataReplayer::sub_order_detail(uint32_t sid, const char* stdCode)
 	{
 		length--;
 
-		flag = (stdCode[length - 1] == SUFFIX_QFQ) ? 1 : 2;
+		flag = (stdCode[length] == SUFFIX_QFQ) ? 1 : 2;
 	}
 
 	SubList& sids = _orddtl_sub_map[std::string(stdCode, length)];
@@ -3093,7 +3093,7 @@ void HisDataReplayer::sub_order_queue(uint32_t sid, const char* stdCode)
 	{
 		length--;
 
-		flag = (stdCode[length - 1] == SUFFIX_QFQ) ? 1 : 2;
+		flag = (stdCode[length] == SUFFIX_QFQ) ? 1 : 2;
 	}
 
 	SubList& sids = _ordque_sub_map[std::string(stdCode, length)];
@@ -3111,7 +3111,7 @@ void HisDataReplayer::sub_transaction(uint32_t sid, const char* stdCode)
 	{
 		length--;
 
-		flag = (stdCode[length - 1] == SUFFIX_QFQ) ? 1 : 2;
+		flag = (stdCode[length] == SUFFIX_QFQ) ? 1 : 2;
 	}
 
 	SubList& sids = _trans_sub_map[std::string(stdCode, length)];
