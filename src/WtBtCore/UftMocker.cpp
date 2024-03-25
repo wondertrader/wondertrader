@@ -261,8 +261,7 @@ void UftMocker::on_tick(const char* stdCode, WTSTickData* newTick)
 
 			for (uint32_t localid : to_erase)
 			{
-				auto it = _orders.find(localid);
-				_orders.erase(it);
+				_orders.erase(localid);
 			}
 		}
 	}
@@ -281,8 +280,7 @@ void UftMocker::on_tick(const char* stdCode, WTSTickData* newTick)
 
 			for (uint32_t localid : ids)
 			{
-				auto it = _orders.find(localid);
-				_orders.erase(it);
+				_orders.erase(localid);
 			}
 		}
 
@@ -400,10 +398,10 @@ double UftMocker::stra_get_undone(const char* stdCode)
 	double ret = 0;
 	for (auto it = _orders.begin(); it != _orders.end(); it++)
 	{
-		const OrderInfo& ordInfo = it->second;
-		if (strcmp(ordInfo._code, stdCode) == 0)
+		const OrderInfoPtr& ordInfo = it->second;
+		if (strcmp(ordInfo->_code, stdCode) == 0)
 		{
-			ret += ordInfo._left * ordInfo._isLong ? 1 : -1;
+			ret += ordInfo->_left * ordInfo->_isLong ? 1 : -1;
 		}
 	}
 
@@ -413,38 +411,47 @@ double UftMocker::stra_get_undone(const char* stdCode)
 bool UftMocker::stra_cancel(uint32_t localid)
 {
 	postTask([this, localid](){
-		auto it = _orders.find(localid);
-		if (it == _orders.end())
-			return;
 
-		StdLocker<StdRecurMutex> lock(_mtx_ords);
-		OrderInfo& ordInfo = (OrderInfo&)it->second;
-		
-		if (ordInfo._offset != 0)
+		OrderInfoPtr ordInfo;
+
 		{
-			PosInfo& pInfo = _pos_map[ordInfo._code];
-			PosItem& pItem = ordInfo._isLong ? pInfo._long : pInfo._short;
-			WTSCommodityInfo* commInfo = _replayer->get_commodity_info(ordInfo._code);
+			auto it = _orders.find(localid);
+			if (it == _orders.end())
+				return;
+
+			StdLocker<StdRecurMutex> lock(_mtx_ords);
+			ordInfo = it->second;
+		}
+		
+		if (ordInfo->_offset != 0)
+		{
+			PosInfo& pInfo = _pos_map[ordInfo->_code];
+			PosItem& pItem = ordInfo->_isLong ? pInfo._long : pInfo._short;
+			WTSCommodityInfo* commInfo = _replayer->get_commodity_info(ordInfo->_code);
 			if(commInfo->getCoverMode() == CM_CoverToday)
 			{
-				if (ordInfo._offset == 2)
-					pItem._newavail += ordInfo._left;
+				if (ordInfo->_offset == 2)
+					pItem._newavail += ordInfo->_left;
 				else
-					pItem._preavail += ordInfo._left;
+					pItem._preavail += ordInfo->_left;
 			}
 			else
 			{
 				//如果不分平昨平今，则先释放今仓
-				double maxQty = std::min(ordInfo._left, pItem._newvol - pItem._newavail);
+				double maxQty = std::min(ordInfo->_left, pItem._newvol - pItem._newavail);
 				pItem._newavail += maxQty;
-				pItem._preavail += ordInfo._left - maxQty;
+				pItem._preavail += ordInfo->_left - maxQty;
 			}
 		}
 
-		log_debug("Order {} canceled, action: {} {} @ {}({})", ordInfo._localid, OFFSET_NAMES[ordInfo._offset], ordInfo._isLong?"long":"short", ordInfo._total, ordInfo._left);
-		ordInfo._left = 0;
-		on_order(localid, ordInfo._code, ordInfo._isLong, ordInfo._offset, ordInfo._total, ordInfo._left, ordInfo._price, true);
-		_orders.erase(it);
+		log_debug("Order {} canceled, action: {} {} @ {}({})", ordInfo->_localid, OFFSET_NAMES[ordInfo->_offset], ordInfo->_isLong?"long":"short", ordInfo->_total, ordInfo->_left);
+		ordInfo->_left = 0;
+		on_order(localid, ordInfo->_code, ordInfo->_isLong, ordInfo->_offset, ordInfo->_total, ordInfo->_left, ordInfo->_price, true);
+
+		{
+			StdLocker<StdRecurMutex> lock(_mtx_ords); 
+			_orders.erase(localid);
+		}
 	});
 
 	return true;
@@ -456,8 +463,8 @@ OrderIDs UftMocker::stra_cancel_all(const char* stdCode)
 	uint32_t cnt = 0;
 	for (auto it = _orders.begin(); it != _orders.end(); it++)
 	{
-		const OrderInfo& ordInfo = it->second;
-		if(strcmp(ordInfo._code, stdCode) == 0)
+		const OrderInfoPtr& ordInfo = it->second;
+		if(strcmp(ordInfo->_code, stdCode) == 0)
 		{
 			stra_cancel(it->first);
 		}
@@ -608,25 +615,25 @@ uint32_t UftMocker::stra_enter_long(const char* stdCode, double price, double qt
 
 	uint32_t localid = makeLocalOrderID();
 
-	OrderInfo order;
-	order._localid = localid;
-	strcpy(order._code, stdCode);
-	order._isLong = true;
-	order._offset = 0;
-	order._price = price;
-	order._total = qty;
-	order._left = qty;
+	OrderInfoPtr ordInfo(new OrderInfo);
+	ordInfo->_localid = localid;
+	strcpy(ordInfo->_code, stdCode);
+	ordInfo->_isLong = true;
+	ordInfo->_offset = 0;
+	ordInfo->_price = price;
+	ordInfo->_total = qty;
+	ordInfo->_left = qty;
 
 	{
 		_mtx_ords.lock();
-		_orders[localid] = order;
+		_orders[localid] = ordInfo;
 		_mtx_ords.unlock();
 	}
 
 	postTask([this, localid]() {
-		const OrderInfo& ordInfo = _orders[localid];
-		log_debug("order placed: open long of {} @ {} by {}", ordInfo._code, ordInfo._price, ordInfo._total);
-		on_entrust(localid, ordInfo._code, true, "entrust success");
+		const OrderInfoPtr& ordInfo = _orders[localid];
+		log_debug("order placed: open long of {} @ {} by {}", ordInfo->_code, ordInfo->_price, ordInfo->_total);
+		on_entrust(localid, ordInfo->_code, true, "entrust success");
 	});
 
 	return localid;
@@ -649,25 +656,25 @@ uint32_t UftMocker::stra_enter_short(const char* stdCode, double price, double q
 
 	uint32_t localid = makeLocalOrderID();
 
-	OrderInfo order;
-	order._localid = localid;
-	strcpy(order._code, stdCode);
-	order._isLong = false;
-	order._offset = 0;
-	order._price = price;
-	order._total = qty;
-	order._left = qty;
+	OrderInfoPtr ordInfo(new OrderInfo);
+	ordInfo->_localid = localid;
+	strcpy(ordInfo->_code, stdCode);
+	ordInfo->_isLong = false;
+	ordInfo->_offset = 0;
+	ordInfo->_price = price;
+	ordInfo->_total = qty;
+	ordInfo->_left = qty;
 
 	{
 		_mtx_ords.lock();
-		_orders[localid] = order;
+		_orders[localid] = ordInfo;
 		_mtx_ords.unlock();
 	}
 
 	postTask([this, localid]() {
-		const OrderInfo& ordInfo = _orders[localid];
-		log_debug("order placed: open short of {} @ {} by {}", ordInfo._code, ordInfo._price, ordInfo._total);
-		on_entrust(localid, ordInfo._code, true, "entrust success");
+		const OrderInfoPtr& ordInfo = _orders[localid];
+		log_debug("order placed: open short of {} @ {} by {}", ordInfo->_code, ordInfo->_price, ordInfo->_total);
+		on_entrust(localid, ordInfo->_code, true, "entrust success");
 	});
 
 	return localid;
@@ -710,25 +717,25 @@ uint32_t UftMocker::stra_exit_long(const char* stdCode, double price, double qty
 
 	uint32_t localid = makeLocalOrderID();
 
-	OrderInfo order;
-	order._localid = localid;
-	strcpy(order._code, stdCode);
-	order._isLong = true;
-	order._offset = offset;
-	order._price = price;
-	order._total = qty;
-	order._left = qty;
+	OrderInfoPtr ordInfo(new OrderInfo);
+	ordInfo->_localid = localid;
+	strcpy(ordInfo->_code, stdCode);
+	ordInfo->_isLong = true;
+	ordInfo->_offset = offset;
+	ordInfo->_price = price;
+	ordInfo->_total = qty;
+	ordInfo->_left = qty;
 
 	{
 		_mtx_ords.lock();
-		_orders[localid] = order;
+		_orders[localid] = ordInfo;
 		_mtx_ords.unlock();
 	}
 
 	postTask([this, localid]() {
-		const OrderInfo& ordInfo = _orders[localid];
-		log_debug("order placed: {} long of {} @ {} by {}", OFFSET_NAMES[ordInfo._offset], ordInfo._code, ordInfo._price, ordInfo._total);
-		on_entrust(localid, ordInfo._code, true, "entrust success");
+		const OrderInfoPtr& ordInfo = _orders[localid];
+		log_debug("order placed: {} long of {} @ {} by {}", OFFSET_NAMES[ordInfo->_offset], ordInfo->_code, ordInfo->_price, ordInfo->_total);
+		on_entrust(localid, ordInfo->_code, true, "entrust success");
 	});
 
 	return localid;
@@ -771,25 +778,25 @@ uint32_t UftMocker::stra_exit_short(const char* stdCode, double price, double qt
 
 	uint32_t localid = makeLocalOrderID();
 
-	OrderInfo order;
-	order._localid = localid;
-	strcpy(order._code, stdCode);
-	order._isLong = false;
-	order._offset = offset;
-	order._price = price;
-	order._total = qty;
-	order._left = qty;
+	OrderInfoPtr ordInfo(new OrderInfo);
+	ordInfo->_localid = localid;
+	strcpy(ordInfo->_code, stdCode);
+	ordInfo->_isLong = false;
+	ordInfo->_offset = offset;
+	ordInfo->_price = price;
+	ordInfo->_total = qty;
+	ordInfo->_left = qty;
 
 	{
 		_mtx_ords.lock();
-		_orders[localid] = order;
+		_orders[localid] = ordInfo;
 		_mtx_ords.unlock();
 	}
 
 	postTask([this, localid]() {
-		const OrderInfo& ordInfo = _orders[localid];
-		log_debug("order placed: {} short of {} @ {} by {}", OFFSET_NAMES[ordInfo._offset], ordInfo._code, ordInfo._price, ordInfo._total);
-		on_entrust(localid, ordInfo._code, true, "entrust success");
+		const OrderInfoPtr& ordInfo = _orders[localid];
+		log_debug("order placed: {} short of {} @ {} by {}", OFFSET_NAMES[ordInfo->_offset], ordInfo->_code, ordInfo->_price, ordInfo->_total);
+		on_entrust(localid, ordInfo->_code, true, "entrust success");
 	});
 
 	return localid;
@@ -885,36 +892,39 @@ void UftMocker::update_dyn_profit(const char* stdCode, WTSTickData* newTick)
 
 bool UftMocker::procOrder(uint32_t localid)
 {
-	auto it = _orders.find(localid);
-	if (it == _orders.end())
-		return false;
+	OrderInfoPtr ordInfo;
+	{
+		auto it = _orders.find(localid);
+		if (it == _orders.end())
+			return false;
 
-	OrderInfo ordInfo = (OrderInfo&)it->second;
+		ordInfo = it->second;
+	}
 
 	//第一步,如果在撤单概率中,则执行撤单
 	if(_error_rate>0 && genRand(10000)<=_error_rate)
 	{
-		on_order(localid, ordInfo._code, ordInfo._isLong, ordInfo._offset, ordInfo._total, ordInfo._left, ordInfo._price, true);
+		on_order(localid, ordInfo->_code, ordInfo->_isLong, ordInfo->_offset, ordInfo->_total, ordInfo->_left, ordInfo->_price, true);
 		log_info("Random error order: {}", localid);
 		return true;
 	}
 	else
 	{
-		on_order(localid, ordInfo._code, ordInfo._isLong, ordInfo._offset, ordInfo._total, ordInfo._left, ordInfo._price, false);
+		on_order(localid, ordInfo->_code, ordInfo->_isLong, ordInfo->_offset, ordInfo->_total, ordInfo->_left, ordInfo->_price, false);
 	}
 
-	WTSTickData* curTick = stra_get_last_tick(ordInfo._code);
+	WTSTickData* curTick = stra_get_last_tick(ordInfo->_code);
 	if (curTick == NULL)
 		return false;
 
 	double curPx = curTick->price();
-	double orderQty = ordInfo._isLong ? curTick->askqty(0) : curTick->bidqty(0);	//看对手盘的数量
+	double orderQty = ordInfo->_isLong ? curTick->askqty(0) : curTick->bidqty(0);	//看对手盘的数量
 	if (decimal::eq(orderQty, 0.0))
 		return false;
 
 	if (!_use_newpx)
 	{
-		curPx = ordInfo._isLong ? curTick->askprice(0) : curTick->bidprice(0);
+		curPx = ordInfo->_isLong ? curTick->askprice(0) : curTick->bidprice(0);
 		//if (curPx == 0.0)
 		if(decimal::eq(curPx, 0.0))
 		{
@@ -925,15 +935,15 @@ bool UftMocker::procOrder(uint32_t localid)
 	curTick->release();
 
 	//如果没有成交条件,则退出逻辑
-	if(!decimal::eq(ordInfo._price, 0.0))
+	if(!decimal::eq(ordInfo->_price, 0.0))
 	{
-		if(ordInfo._isLong && decimal::gt(curPx, ordInfo._price))
+		if(ordInfo->_isLong && decimal::gt(curPx, ordInfo->_price))
 		{
 			//买单,但是当前价大于限价,不成交
 			return false;
 		}
 
-		if (!ordInfo._isLong && decimal::lt(curPx, ordInfo._price))
+		if (!ordInfo->_isLong && decimal::lt(curPx, ordInfo->_price))
 		{
 			//卖单,但是当前价小于限价,不成交
 			return false;
@@ -943,18 +953,18 @@ bool UftMocker::procOrder(uint32_t localid)
 	/*
 	 *	下面就要模拟成交了
 	 */
-	double maxQty = min(orderQty, ordInfo._left);
+	double maxQty = min(orderQty, ordInfo->_left);
 	auto vols = splitVolume((uint32_t)maxQty);
 	for(uint32_t curQty : vols)
 	{
-		on_trade(ordInfo._localid, ordInfo._code, ordInfo._isLong, ordInfo._offset, curQty, curPx);
+		on_trade(ordInfo->_localid, ordInfo->_code, ordInfo->_isLong, ordInfo->_offset, curQty, curPx);
 
-		ordInfo._left -= curQty;
-		on_order(localid, ordInfo._code, ordInfo._isLong, ordInfo._offset, ordInfo._total, ordInfo._left, ordInfo._price, false);
+		ordInfo->_left -= curQty;
+		on_order(localid, ordInfo->_code, ordInfo->_isLong, ordInfo->_offset, ordInfo->_total, ordInfo->_left, ordInfo->_price, false);
 	}
 
-	//if(ordInfo._left == 0)
-	if(decimal::eq(ordInfo._left, 0.0))
+	//if(ordInfo->_left == 0)
+	if(decimal::eq(ordInfo->_left, 0.0))
 	{
 		return true;
 	}

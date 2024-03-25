@@ -403,8 +403,7 @@ void HftMocker::on_tick(const char* stdCode, WTSTickData* newTick)
 
 			for (uint32_t localid : ids)
 			{
-				auto it = _orders.find(localid);
-				_orders.erase(it);
+				_orders.erase(localid);
 			}
 		}
 
@@ -700,11 +699,14 @@ void HftMocker::update_dyn_profit(const char* stdCode, WTSTickData* newTick)
 
 bool HftMocker::procOrder(uint32_t localid)
 {
-	auto it = _orders.find(localid);
-	if (it == _orders.end())
-		return false;
+	OrderInfoPtr ordInfo;
+	{
+		auto it = _orders.find(localid);
+		if (it == _orders.end())
+			return false;
 
-	OrderInfoPtr ordInfo = it->second;
+		ordInfo = it->second;
+	}
 
 	//第一步,如果在撤单概率中,则执行撤单
 	if(_error_rate>0 && genRand(10000)<=_error_rate)
