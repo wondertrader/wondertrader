@@ -233,6 +233,10 @@ void UftMocker::on_tick(const char* stdCode, WTSTickData* newTick)
 	}
 
 	update_dyn_profit(stdCode, newTick);
+
+	OrderIDs all_ids;
+	for (auto it = _orders.begin(); it != _orders.end(); it++)
+		all_ids.push_back(it->first);
 	
 	//如果开启了同tick撮合，则先触发策略的ontick，再处理订单
 	//如果没开启同tick撮合，则先处理订单，再触发策略的ontick
@@ -244,15 +248,8 @@ void UftMocker::on_tick(const char* stdCode, WTSTickData* newTick)
 
 		if (!_orders.empty())
 		{
-			OrderIDs ids;
-			for (auto it = _orders.begin(); it != _orders.end(); it++)
-			{
-				uint32_t localid = it->first;
-				ids.emplace_back(localid);
-			}
-
 			OrderIDs to_erase;
-			for (uint32_t localid : ids)
+			for (uint32_t localid : all_ids)
 			{
 				bool bNeedErase = procOrder(localid);
 				if (bNeedErase)
@@ -269,16 +266,15 @@ void UftMocker::on_tick(const char* stdCode, WTSTickData* newTick)
 	{
 		if (!_orders.empty())
 		{
-			OrderIDs ids;
-			for (auto it = _orders.begin(); it != _orders.end(); it++)
+			OrderIDs to_erase;
+			for (uint32_t localid : all_ids)
 			{
-				uint32_t localid = it->first;
 				bool bNeedErase = procOrder(localid);
 				if (bNeedErase)
-					ids.emplace_back(localid);
+					to_erase.emplace_back(localid);
 			}
 
-			for (uint32_t localid : ids)
+			for (uint32_t localid : to_erase)
 			{
 				_orders.erase(localid);
 			}
