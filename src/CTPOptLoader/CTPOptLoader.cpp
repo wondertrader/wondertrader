@@ -66,6 +66,10 @@ extern "C"
 
 int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 {
+#ifdef _WIN32
+	SetConsoleOutputCP(CP_UTF8);
+#endif // _WIN32
+
 	std::string map_files;
 
 	if (!isFile)
@@ -219,11 +223,7 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 					pName = ChartoUTF8(ayVals[i]);
 				//保存的时候全部转成UTF8
 				MAP_NAME[ayKeys[i]] = pName;
-#ifdef _WIN32
-				printf("Commodity name mapping: %s - %s\r\n", ayKeys[i].c_str(), isUTF8 ? UTF8toChar(ayVals[i]).c_str() : ayVals[i].c_str());
-#else
-				printf("Commodity name mapping: %s - %s\r\n", ayKeys[i].c_str(), isUTF8 ? ayVals[i].c_str() : ChartoUTF8(ayVals[i]).c_str());
-#endif
+				printf("Commodity name mapping: %s - %s\r\n", ayKeys[i].c_str(), ayVals[i]);
 			}
 
 			ayKeys.clear();

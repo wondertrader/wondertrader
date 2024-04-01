@@ -372,8 +372,12 @@ void CTraderSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CTho
 
 					//合约名称转成UTF8
 					cname = StrUtil::trim(cname.c_str());
-					if (!EncodingHelper::isUtf8((unsigned char*)cname.c_str(), cname.size()))
+
+					if (!EncodingHelper::isGBK((unsigned char*)cname.c_str(), cname.size()))
 						cname = ChartoUTF8(cname);
+
+					if (EncodingHelper::isGBK((unsigned char*)pname.c_str(), pname.size()))
+						pname = ChartoUTF8(pname.c_str());
 
 					Contract contract;
 					contract.m_strCode = pInstrument->InstrumentID;

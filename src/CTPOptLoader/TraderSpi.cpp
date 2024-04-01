@@ -287,6 +287,9 @@ void CTraderSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CTho
 					if (!EncodingHelper::isUtf8((unsigned char*)cname.c_str(), cname.size()))
 						cname = ChartoUTF8(cname);
 
+					if (!EncodingHelper::isUtf8((unsigned char*)pname.c_str(), pname.size()))
+						pname = ChartoUTF8(pname);
+
 					Contract contract;
 					contract.m_strCode = pInstrument->InstrumentID;
 					contract.m_strExchg = pInstrument->ExchangeID;
