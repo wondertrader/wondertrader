@@ -1430,7 +1430,7 @@ WTSOrderInfo* TraderCTPOpt::makeOrderInfo(CThostFtdcOrderField* orderField)
 	}
 
 	pRet->setVolTraded(orderField->VolumeTraded);
-	pRet->setVolLeft(orderField->VolumeTotal);
+	pRet->setVolLeft(orderField->VolumeTotalOriginal - orderField->VolumeTraded);//要保证撤单的时候，剩余数量=挂单总数-已成交
 
 	pRet->setCode(orderField->InstrumentID);
 	pRet->setExchange(contract->getExchg());
