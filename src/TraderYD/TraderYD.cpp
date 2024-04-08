@@ -303,11 +303,13 @@ void TraderYD::notifyLogin(int errorNo, int maxOrderRef, bool isMonitor)
 
 void TraderYD::notifyFailedOrder(const YDInputOrder *pFailedOrder, const YDInstrument *pInstrument, const YDAccount *pAccount)
 {
+	if (!m_bCatchup)
+		return;
+
 	WTSEntrust* entrust = makeEntrust(pFailedOrder, pInstrument);
 	if (entrust)
 	{
 		WTSError *err = makeError(pFailedOrder->ErrorNo, WEC_ORDERINSERT);
-		//g_orderMgr.onRspEntrust(entrust, err);
 		if (m_sink)
 			m_sink->onRspEntrust(entrust, err);
 		entrust->release();
@@ -317,9 +319,19 @@ void TraderYD::notifyFailedOrder(const YDInputOrder *pFailedOrder, const YDInstr
 
 void TraderYD::notifyFailedCancelOrder(const YDFailedCancelOrder *pFailedCancelOrder, const YDExchange *pExchange, const YDAccount *pAccount)
 {
-	WTSError* error = makeError(pFailedCancelOrder->ErrorNo, WEC_ORDERCANCEL);
-	if (m_sink)
-		m_sink->onTraderError(error);
+	if (!m_bCatchup)
+		return;
+
+	if(pFailedCancelOrder->ErrorNo == 1028)
+	{
+		//1028是易达返回的待撤订单已成交的错误信息，可以不用发给系统，直接忽略
+	}
+	else
+	{
+		WTSError* error = makeError(pFailedCancelOrder->ErrorNo, WEC_ORDERCANCEL);
+		if (m_sink)
+			m_sink->onTraderError(error);
+	}	
 }
 
 
