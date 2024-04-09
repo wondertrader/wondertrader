@@ -855,9 +855,12 @@ public:
  */
 class WTSTickData : public WTSPoolObject<WTSTickData>
 {
-public:
+	friend WTSPoolObject<WTSTickData>::PoolType;
+
+protected:
 	WTSTickData() :m_pContract(NULL) {}
 
+public:
 	/*
 	 *	创建一个tick数据对象
 	 *	@stdCode 合约代码
@@ -1013,6 +1016,156 @@ private:
 	WTSTickStruct		m_tickStruct;
 	WTSContractInfo*	m_pContract;
 };
+
+class WTSTickRef : public WTSPoolObject<WTSTickRef>
+{	
+	friend WTSPoolObject<WTSTickRef>::PoolType;
+protected:
+	WTSTickRef() :m_pContract(nullptr), m_tickStruct(nullptr) {}
+
+public:
+	/*
+	 *	创建一个tick数据对象
+	 *	@stdCode 合约代码
+	 */
+	static inline WTSTickRef* create(WTSTickStruct* tickStruct, WTSContractInfo* cInfo = nullptr) noexcept
+	{
+		WTSTickRef* pRet = WTSTickRef::allocate();
+		pRet->m_tickStruct = tickStruct;
+		pRet->m_pContract = cInfo;
+
+		return pRet;
+	}
+
+	/*
+	 *	读取合约代码
+	 */
+	constexpr inline const char* code() const noexcept { return m_tickStruct->code; }
+
+	/*
+	 *	读取市场代码
+	 */
+	constexpr inline const char*	exchg() const noexcept { return m_tickStruct->exchg; }
+
+	/*
+	 *	读取最新价
+	 */
+	constexpr inline double	price() const noexcept { return m_tickStruct->price; }
+
+	constexpr inline double	open() const noexcept { return m_tickStruct->open; }
+
+	/*
+	 *	最高价
+	 */
+	constexpr inline double	high() const noexcept { return m_tickStruct->high; }
+
+	/*
+	 *	最低价
+	 */
+	constexpr inline double	low() const noexcept { return m_tickStruct->low; }
+
+	//昨收价,如果是期货则是昨结算
+	constexpr inline double	preclose() const noexcept { return m_tickStruct->pre_close; }
+	constexpr inline double	presettle() const noexcept { return m_tickStruct->pre_settle; }
+	constexpr inline double	preinterest() const noexcept { return m_tickStruct->pre_interest; }
+
+	constexpr inline double	upperlimit() const noexcept { return m_tickStruct->upper_limit; }
+	constexpr inline double	lowerlimit() const noexcept { return m_tickStruct->lower_limit; }
+	//成交量
+	constexpr inline double	totalvolume() const noexcept { return m_tickStruct->total_volume; }
+
+	//成交量
+	constexpr inline double	volume() const noexcept { return m_tickStruct->volume; }
+
+	//结算价
+	constexpr inline double	settlepx() const noexcept { return m_tickStruct->settle_price; }
+
+	//总持
+	constexpr inline double	openinterest() const noexcept { return m_tickStruct->open_interest; }
+
+	constexpr inline double	additional() const noexcept { return m_tickStruct->diff_interest; }
+
+	//成交额
+	constexpr inline double	totalturnover() const noexcept { return m_tickStruct->total_turnover; }
+
+	//成交额
+	constexpr inline double	turnover() const noexcept { return m_tickStruct->turn_over; }
+
+	//交易日
+	constexpr inline uint32_t	tradingdate() const noexcept { return m_tickStruct->trading_date; }
+
+	//数据发生日期
+	constexpr inline uint32_t	actiondate() const noexcept { return m_tickStruct->action_date; }
+
+	//数据发生时间
+	constexpr inline uint32_t	actiontime() const noexcept { return m_tickStruct->action_time; }
+
+
+	/*
+	 *	读取指定档位的委买价
+	 *	@idx 0-9
+	 */
+	constexpr inline double		bidprice(int idx) const noexcept
+	{
+		if (idx < 0 || idx >= 10)
+			return -1;
+
+		return m_tickStruct->bid_prices[idx];
+	}
+
+	/*
+	 *	读取指定档位的委卖价
+	 *	@idx 0-9
+	 */
+	constexpr inline double		askprice(int idx) const noexcept
+	{
+		if (idx < 0 || idx >= 10)
+			return -1;
+
+		return m_tickStruct->ask_prices[idx];
+	}
+
+	/*
+	 *	读取指定档位的委买量
+	 *	@idx 0-9
+	 */
+	constexpr inline double	bidqty(int idx) const noexcept
+	{
+		if (idx < 0 || idx >= 10)
+			return -1;
+
+		return m_tickStruct->bid_qty[idx];
+	}
+
+	/*
+	 *	读取指定档位的委卖量
+	 *	@idx 0-9
+	 */
+	constexpr inline double	askqty(int idx) const noexcept
+	{
+		if (idx < 0 || idx >= 10)
+			return -1;
+
+		return m_tickStruct->ask_qty[idx];
+	}
+
+	constexpr inline bool valid() const noexcept { return m_tickStruct != nullptr; }
+
+	constexpr inline operator bool() const noexcept { return m_tickStruct != nullptr; }
+
+	/*
+	 *	返回tick结构体的引用
+	 */
+	constexpr inline WTSTickStruct*	getTickStruct() noexcept { return m_tickStruct; }
+
+	constexpr inline void setContractInfo(WTSContractInfo* cInfo) noexcept { m_pContract = cInfo; }
+	constexpr inline WTSContractInfo* getContractInfo() const noexcept { return m_pContract; }
+
+private:
+	WTSTickStruct*		m_tickStruct = nullptr;
+	WTSContractInfo*	m_pContract = nullptr;
+};
+
 
 class WTSOrdQueData : public WTSPoolObject< WTSOrdQueData>
 {
