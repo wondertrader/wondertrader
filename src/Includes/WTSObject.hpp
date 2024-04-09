@@ -56,9 +56,9 @@ protected:
 template<typename T>
 class WTSPoolObject : public WTSObject
 {
-private:
-	typedef ObjectPool<T> MyPool;
-	MyPool*		_pool;
+protected:
+	typedef ObjectPool<T> PoolType;
+	PoolType*		_pool;
 	SpinMutex*	_mutex;
 
 public:
@@ -77,7 +77,7 @@ public:
 		 *	总之如果要彻底安全，那么可能需要加一把锁才行，但是这样会带来性能开销
 		 *	所以注释一下，如果有问题的可以参考一下
 		 */
-		static MyPool		pool;
+		static PoolType		pool;
 		static SpinMutex	mtx;
 
 		mtx.lock();
