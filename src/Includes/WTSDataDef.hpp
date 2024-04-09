@@ -1017,6 +1017,16 @@ private:
 	WTSContractInfo*	m_pContract;
 };
 
+/*
+ *	By Wesley @ 2024.04.09
+ *	Tick数据引用
+ *	该类直接引用已经分配好的WTSTickStruct指针
+ *	而不再自己维护一个拷贝副本
+ *	优点：开销更小
+ *	缺点：如果分配的内存释放了，引用就会成为野指针
+ *	如果使用者要在本地retain，已经要注意这个问题
+ *	推荐只在极短的时间内在本地维护
+ */
 class WTSTickRef : public WTSPoolObject<WTSTickRef>
 {	
 	friend WTSPoolObject<WTSTickRef>::PoolType;
