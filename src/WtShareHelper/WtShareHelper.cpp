@@ -8,7 +8,6 @@ bool init_master(const char* id, const char* path/* = ""*/)
 	return ShareBlocks::one().init_master(id, path);
 }
 
-
 bool init_slave(const char* id, const char* path/* = ""*/)
 {
 	return ShareBlocks::one().init_slave(id, path);
@@ -22,6 +21,11 @@ bool update_slave(const char* id, bool bForce/* = false*/)
 bool release_slave(const char* name)
 {
 	return ShareBlocks::one().release_slave(name);
+}
+
+void register_logger(FuncLogger logger)
+{
+	return ShareBlocks::one().register_logger(logger);
 }
 
 uint32_t get_sections(const char* domain, FuncGetSections cb)
