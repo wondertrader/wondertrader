@@ -2,6 +2,7 @@
 #include "../Share/BoostFile.hpp"
 #include "../Share/TimeUtils.hpp"
 #include "../Share/StdUtils.hpp"
+#include "../Includes/WTSTypes.h"
 
 using namespace shareblock;
 
@@ -44,11 +45,15 @@ bool ShareBlocks::init_master(const char* name, const char* path/* = ""*/)
 
 	if(aySecs.size() != shm._block->_count)
 	{
+		write_log(LL_INFO, "Sections of Domain {} has changed: {} -> {}", name, shm._block->_count, aySecs.size());
 		shm._block->_count = (uint32_t)aySecs.size();
 		memset(shm._block->_sections, 0, sizeof(SecInfo)*MAX_SEC_CNT);
 		if (shm._block->_count > 0)
 			memcpy(shm._block->_sections, aySecs.data(), sizeof(SecInfo)*shm._block->_count);
 
+		//如果加载的section和缓存的section个数不同，则用加载的覆盖
+		//然后把block的updatetime更新到最新
+		shm._block->_updatetime = TimeUtils::getLocalTimeNow();
 		shm._blocktime = shm._block->_updatetime;
 	}
 
@@ -149,6 +154,7 @@ bool ShareBlocks::update_slave(const char* name, bool bForce)
 		}
 	}
 
+	write_log(LL_INFO, "Domain {} reloaded", name);
 	shm._blocktime = shm._block->_updatetime;
 
 	return true;
@@ -242,11 +248,15 @@ void* ShareBlocks::make_valid(const char* domain, const char* section, const cha
 	{
 		//如果不是master，就不能创建
 		if (!shm._master)
+		{
+			write_log(LL_ERROR, "Domain {} is not master", domain);
 			return nullptr;
+		}
 
 		if (shm._block->_count == MAX_SEC_CNT)
 		{
 			//已经没有额外的空间可以分配了
+			write_log(LL_ERROR, "No more space for new section in domain {}", domain);
 			return nullptr;
 		}
 
@@ -263,6 +273,18 @@ void* ShareBlocks::make_valid(const char* domain, const char* section, const cha
 	}
 
 	secInfo = &shm._block->_sections[kvPair->_index];
+
+	if(strcmp(secInfo->_name, section) != 0)
+	{
+		/*
+		 *	By Wesley @ 2024.04.10
+		 *	如果之前存的索引位置的section和目标section名字不同
+		 *	说明master那边做了修改，需要强制update才行
+		 */
+		write_log(LL_ERROR, "Cache block of {}.{} has been overwrote", domain, section);
+		return nullptr;
+	}
+
 	secInfo->_state = 1;
 
 	auto kit = kvPair->_keys.find(key);
@@ -270,13 +292,22 @@ void* ShareBlocks::make_valid(const char* domain, const char* section, const cha
 	{
 		//如果不是master，就不能创建
 		if (!shm._master)
+		{
+			write_log(LL_ERROR, "Domain {} is not master", domain);
 			return nullptr;
+		}
 
 		if (secInfo->_count == MAX_KEY_CNT)
+		{
+			write_log(LL_ERROR, "No more space for new section in secion {}.{}", domain, section);
 			return nullptr;
+		}
 
 		if (secInfo->_offset + len > 1024)
+		{
+			write_log(LL_ERROR, "No enough cache for data {}.{}.{}", domain, section, key);
 			return nullptr;
+		}
 
 		keyInfo = &secInfo->_keys[secInfo->_count];
 		wt_strcpy(keyInfo->_key, key);

@@ -3,6 +3,7 @@
 #include <memory>
 
 #include "../Share/BoostMappingFile.hpp"
+#include "../Share/fmtlib.h"
 #include "../Includes/FasterDefs.h"
 
 USING_NS_WTP;
@@ -15,7 +16,7 @@ namespace shareblock
 
 	constexpr int FLAG_SIZE = 8;
 	constexpr int MAX_SEC_CNT = 64;
-	constexpr int MAX_KEY_CNT = 128;
+	constexpr int MAX_KEY_CNT = 64;
 	constexpr int MAX_CMD_SIZE = 64;
 
 	typedef enum tagValueType : uint64_t
@@ -115,6 +116,22 @@ namespace shareblock
 			return inst;
 		}
 
+		typedef void(*FuncLogger)(uint32_t, const char*);
+		void	register_logger(FuncLogger logger)
+		{
+			_logger = logger;
+		}
+
+		template<typename ...Args>
+		void	write_log(uint32_t lvl, const char* format, const Args&... args) noexcept
+		{
+			if (!_logger)
+				return;
+
+			const char* buffer = fmtutil::format(format, args...);
+			_logger(lvl, buffer);
+		}
+
 		bool	init_master(const char* name, const char* path = "");
 		bool	init_slave(const char* name, const char* path = "");
 
@@ -191,5 +208,7 @@ namespace shareblock
 		} CmdPair;
 		typedef wt_hashmap<std::string, CmdPair>	CmdBlockMap;
 		CmdBlockMap		_cmd_blocks;
+
+		FuncLogger	_logger = nullptr;
 	};
 }

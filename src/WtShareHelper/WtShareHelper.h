@@ -7,6 +7,8 @@ typedef void(PORTER_FLAG *FuncGetSections)(const char*);
 
 typedef void(PORTER_FLAG *FuncGetKeys)(const char*, uint64_t);
 
+typedef void(PORTER_FLAG *FuncLogger)(uint32_t, const char*);
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -19,6 +21,8 @@ extern "C"
 	EXPORT_FLAG	bool	update_slave(const char* id, bool bForce = false);
 
 	EXPORT_FLAG bool	release_slave(const char* name);
+
+	EXPORT_FLAG void	register_logger(FuncLogger logger);
 
 	EXPORT_FLAG	uint32_t	get_sections(const char* domain, FuncGetSections cb);
 
