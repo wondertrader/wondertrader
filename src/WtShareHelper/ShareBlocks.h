@@ -16,7 +16,7 @@ namespace shareblock
 
 	constexpr int FLAG_SIZE = 8;
 	constexpr int MAX_SEC_CNT = 64;
-	constexpr int MAX_KEY_CNT = 64;
+	constexpr int MAX_KEY_CNT = 128;
 	constexpr int MAX_CMD_SIZE = 64;
 
 	typedef enum tagValueType : uint64_t
