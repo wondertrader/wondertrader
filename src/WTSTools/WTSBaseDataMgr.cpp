@@ -21,67 +21,71 @@
 const char* DEFAULT_HOLIDAY_TPL = "CHINA";
 
 WTSBaseDataMgr::WTSBaseDataMgr()
-	: m_mapExchgContract(NULL)
-	, m_mapSessions(NULL)
-	, m_mapCommodities(NULL)
-	, m_mapContracts(NULL)
+	: _session_map(NULL)
 {
-	m_mapExchgContract = WTSExchgContract::create();
-	m_mapSessions = WTSSessionMap::create();
-	m_mapCommodities = WTSCommodityMap::create();
-	m_mapContracts = WTSContractMap::create();
-	m_mapFullCodes = WTSContractMap::create();
+	_session_map = WTSStringMap::create();
+	_code_map = WTSStringMap::create();
+	_fullcode_map = WTSStringMap::create();
+
+	_pid_map = WTSStringMap::create();
+	_fullpid_map = WTSStringMap::create();
+
+	_code_list = WTSArray::create();
+	_comm_list = WTSArray::create();
 }
 
 
 WTSBaseDataMgr::~WTSBaseDataMgr()
 {
-	if (m_mapExchgContract)
+	if (_code_map)
 	{
-		m_mapExchgContract->release();
-		m_mapExchgContract = NULL;
+		_code_map->release();
+		_code_map = NULL;
 	}
 
-	if (m_mapSessions)
+	if (_session_map)
 	{
-		m_mapSessions->release();
-		m_mapSessions = NULL;
+		_session_map->release();
+		_session_map = NULL;
 	}
 
-	if (m_mapCommodities)
+	if (_fullpid_map)
 	{
-		m_mapCommodities->release();
-		m_mapCommodities = NULL;
+		_fullpid_map->release();
+		_fullpid_map = NULL;
 	}
 
-	if(m_mapContracts)
+	if(_pid_map)
 	{
-		m_mapContracts->release();
-		m_mapContracts = NULL;
+		_pid_map->release();
+		_pid_map = NULL;
 	}
 
-	if(m_mapFullCodes)
+	if(_fullpid_map)
 	{
-		m_mapFullCodes->release();
-		m_mapFullCodes = NULL;
+		_fullpid_map->release();
+		_fullpid_map = NULL;
 	}
+
+	if (_code_list) _code_list->release();
+	if (_comm_list) _comm_list->release();
 }
 
-WTSCommodityInfo* WTSBaseDataMgr::getCommodity(const char* exchgpid)
+WTSCommodityInfo* WTSBaseDataMgr::getCommodity(const char* fullPid)
 {
-	return static_cast<WTSCommodityInfo*>(m_mapCommodities->get(exchgpid));
+	return static_cast<WTSCommodityInfo*>(_fullpid_map->get(fullPid));
 }
 
 
 WTSCommodityInfo* WTSBaseDataMgr::getCommodity(const char* exchg, const char* pid)
 {
-	if (m_mapCommodities == NULL)
+	if (_fullpid_map == NULL)
 		return NULL;
 
 	thread_local static char key[64] = { 0 };
 	fmtutil::format_to(key, "{}.{}", exchg, pid);
 
-	return static_cast<WTSCommodityInfo*>(m_mapCommodities->get(key));
+	return static_cast<WTSCommodityInfo*>(_fullpid_map->get(key));
 }
 
 WTSContractInfo* WTSBaseDataMgr::getContract(const char* code, const char* exchg /* = "" */, uint32_t uDate /* = 0 */)
@@ -89,8 +93,8 @@ WTSContractInfo* WTSBaseDataMgr::getContract(const char* code, const char* exchg
 	//如果直接找到对应的市场代码,则直接
 	if (strlen(exchg) == 0)
 	{
-		auto it = m_mapContracts->find(code);
-		if (it == m_mapContracts->end())
+		auto it = _code_map->find(code);
+		if (it == _code_map->end())
 			return NULL;
 
 		WTSArray* ayInst = (WTSArray*)it->second;
@@ -113,8 +117,8 @@ WTSContractInfo* WTSBaseDataMgr::getContract(const char* code, const char* exchg
 	{
 		thread_local static char key[64] = { 0 };
 		fmtutil::format_to(key, "{}.{}", exchg, code);
-		auto it = m_mapFullCodes->find(key);
-		if (it != m_mapFullCodes->end())
+		auto it = _fullcode_map->find(key);
+		if (it != _fullcode_map->end())
 		{
 			WTSContractInfo* cInfo = static_cast<WTSContractInfo*>(it->second);
 			/*
@@ -132,105 +136,48 @@ WTSContractInfo* WTSBaseDataMgr::getContract(const char* code, const char* exchg
 uint32_t  WTSBaseDataMgr::getContractSize(const char* exchg /* = "" */, uint32_t uDate /* = 0 */)
 {
 	uint32_t ret = 0;
-	if (strlen(exchg) > 0)
+	auto it = _code_list->begin();
+	for (; it != _code_list->end(); it++)
 	{
-		auto it = m_mapExchgContract->find(std::string(exchg));
-		if (it != m_mapExchgContract->end())
-		{
-			WTSContractList* contractList = static_cast<WTSContractList*>(it->second);
-			auto it2 = contractList->begin();
-			for (; it2 != contractList->end(); it2++)
-			{
-				WTSContractInfo* cInfo = static_cast<WTSContractInfo*>(it2->second);
-				if (uDate == 0 || (cInfo->getOpenDate() <= uDate && cInfo->getExpireDate() >= uDate))
-					ret++;
-			}
-		}
-	}
-	else
-	{
-		auto it = m_mapExchgContract->begin();
-		for (; it != m_mapExchgContract->end(); it++)
-		{
-			WTSContractList* contractList = static_cast<WTSContractList*>(it->second);
-			auto it2 = contractList->begin();
-			for (; it2 != contractList->end(); it2++)
-			{
-				WTSContractInfo* cInfo = static_cast<WTSContractInfo*>(it2->second);
-				if (uDate == 0 || (cInfo->getOpenDate() <= uDate && cInfo->getExpireDate() >= uDate))
-					ret++;
-			}
-		}
+		WTSContractInfo* cInfo = static_cast<WTSContractInfo*>(*it);
+		if(strlen(exchg) > 0 && strcmp(cInfo->getExchg(), exchg) != 0)
+			continue;
+
+		if (uDate == 0 || (cInfo->getOpenDate() <= uDate && cInfo->getExpireDate() >= uDate))
+			ret++;
 	}
 
 	return ret;
 }
 
+WTSContractInfo* WTSBaseDataMgr::getContractByIndex(uint32_t idx)
+{
+	if (idx >= _code_list->size())
+		return NULL;
+
+	return static_cast<WTSContractInfo*>(_code_list->at(idx));
+}
+
 WTSArray* WTSBaseDataMgr::getContracts(const char* exchg /* = "" */, uint32_t uDate /* = 0 */)
 {
 	WTSArray* ay = WTSArray::create();
-	fastest_hashset<WTSContractInfo*> hits;
-	if(strlen(exchg) > 0)
+	auto it = _code_list->begin();
+	for (; it != _code_list->end(); it++)
 	{
-		auto it = m_mapExchgContract->find(exchg);
-		if (it != m_mapExchgContract->end())
-		{
-			WTSContractList* contractList = static_cast<WTSContractList*>(it->second);
-			auto it2 = contractList->begin();
-			for (; it2 != contractList->end(); it2++)
-			{
-				WTSContractInfo* cInfo = static_cast<WTSContractInfo*>(it2->second);
-				/*
-				 *	By Wesley @ 2023.10.23
-				 *	if param uDate is not zero, need to check whether contract is valid
-				 */
-				if (uDate == 0 || (cInfo->getOpenDate() <= uDate && cInfo->getExpireDate() >= uDate))
-				{
-					/*
-					 *	By Wesley @ 2024.04.12
-					 *	因为用到了altcode，所以这里可能会有重复，要去重
-					 */
-					if(hits.find(cInfo) == hits.end())
-					{
-						hits.insert(cInfo);
-						ay->append(cInfo, true);
-					}
-				}
-			}
-		}
-	}
-	else
-	{
-		auto it = m_mapFullCodes->begin();
-		for (; it != m_mapFullCodes->end(); it++)
-		{
-			WTSContractInfo* cInfo = static_cast<WTSContractInfo*>(it->second);
-			/*
-			 *	By Wesley @ 2023.10.23
-			 *	if param uDate is not zero, need to check whether contract is valid
-			 */
-			if (uDate == 0 || (cInfo->getOpenDate() <= uDate && cInfo->getExpireDate() >= uDate))
-			{
-				/*
-				 *	By Wesley @ 2024.04.12
-				 *	因为用到了altcode，所以这里可能会有重复，要去重
-				 */
-				if (hits.find(cInfo) == hits.end())
-				{
-					hits.insert(cInfo);
-					ay->append(cInfo, true);
-				}
-			}
-		}
-	}
+		WTSContractInfo* cInfo = static_cast<WTSContractInfo*>(*it);
+		if (strlen(exchg) > 0 && strcmp(cInfo->getExchg(), exchg) != 0)
+			continue;
 
+		if (uDate == 0 || (cInfo->getOpenDate() <= uDate && cInfo->getExpireDate() >= uDate))
+			ay->append(cInfo, true);
+	}
 	return ay;
 }
 
 WTSArray* WTSBaseDataMgr::getAllSessions()
 {
 	WTSArray* ay = WTSArray::create();
-	for (auto it = m_mapSessions->begin(); it != m_mapSessions->end(); it++)
+	for (auto it = _session_map->begin(); it != _session_map->end(); it++)
 	{
 		ay->append(it->second, true);
 	}
@@ -239,7 +186,7 @@ WTSArray* WTSBaseDataMgr::getAllSessions()
 
 WTSSessionInfo* WTSBaseDataMgr::getSession(const char* sid)
 {
-	return (WTSSessionInfo*)m_mapSessions->get(sid);
+	return (WTSSessionInfo*)_session_map->get(sid);
 }
 
 WTSSessionInfo* WTSBaseDataMgr::getSessionByCode(const char* code, const char* exchg /* = "" */)
@@ -261,8 +208,8 @@ bool WTSBaseDataMgr::isHoliday(const char* pid, uint32_t uDate, bool isTpl /* = 
 	if (!isTpl)
 		tplid = getTplIDByPID(pid);
 
-	auto it = m_mapTradingDay.find(tplid.c_str());
-	if(it != m_mapTradingDay.end())
+	auto it = _trading_days.find(tplid.c_str());
+	if(it != _trading_days.end())
 	{
 		const TradingDayTpl& tpl = it->second;
 		return (tpl._holidays.find(uDate) != tpl._holidays.end());
@@ -272,26 +219,26 @@ bool WTSBaseDataMgr::isHoliday(const char* pid, uint32_t uDate, bool isTpl /* = 
 }
 
 
-void WTSBaseDataMgr::release()
-{
-	if (m_mapExchgContract)
-	{
-		m_mapExchgContract->release();
-		m_mapExchgContract = NULL;
-	}
-
-	if (m_mapSessions)
-	{
-		m_mapSessions->release();
-		m_mapSessions = NULL;
-	}
-
-	if (m_mapCommodities)
-	{
-		m_mapCommodities->release();
-		m_mapCommodities = NULL;
-	}
-}
+//void WTSBaseDataMgr::release()
+//{
+//	if (m_mapExchgContract)
+//	{
+//		m_mapExchgContract->release();
+//		m_mapExchgContract = NULL;
+//	}
+//
+//	if (_session_map)
+//	{
+//		_session_map->release();
+//		_session_map = NULL;
+//	}
+//
+//	if (m_mapCommodities)
+//	{
+//		m_mapCommodities->release();
+//		m_mapCommodities = NULL;
+//	}
+//}
 
 bool WTSBaseDataMgr::loadSessions(const char* filename)
 {
@@ -342,7 +289,7 @@ bool WTSBaseDataMgr::loadSessions(const char* filename)
 			sInfo->addTradingSection(jSec->getUInt32("from"), jSec->getUInt32("to"));
 		}
 
-		m_mapSessions->add(id.c_str(), sInfo);
+		_session_map->add(id.c_str(), sInfo);
 	}
 
 	root->release();
@@ -411,19 +358,25 @@ bool WTSBaseDataMgr::loadCommodities(const char* filename)
 				continue;
 			}
 
-			WTSCommodityInfo* pCommInfo = WTSCommodityInfo::create(pid.c_str(), name, exchg.c_str(), sid, hid);
-			parseCommodity(pCommInfo, jPInfo);
+			WTSCommodityInfo* commInfo = WTSCommodityInfo::create(pid.c_str(), name, exchg.c_str(), sid, hid);
+			parseCommodity(commInfo, jPInfo);
 
 			WTSSessionInfo* sInfo = getSession(sid);
-			pCommInfo->setSessionInfo(sInfo);
+			commInfo->setSessionInfo(sInfo);
 
-			std::string key = fmt::format("{}.{}", exchg.c_str(), pid.c_str());
-			if (m_mapCommodities == NULL)
-				m_mapCommodities = WTSCommodityMap::create();
+			_comm_list->append(commInfo, false);
 
-			m_mapCommodities->add(key, pCommInfo, false);
+			WTSArray* ayInst = (WTSArray*)_pid_map->get(pid);
+			if (ayInst == NULL)
+			{
+				ayInst = WTSArray::create();
+				_pid_map->add(pid, ayInst);
+			}
+			ayInst->append(commInfo, true);
 
-			m_mapSessionCode[sid].insert(key);
+			_fullpid_map->add(commInfo->getFullPid(), commInfo, true);
+
+			_session_to_pids[sid].insert(commInfo->getFullPid());
 		}
 	}
 
@@ -431,6 +384,7 @@ bool WTSBaseDataMgr::loadCommodities(const char* filename)
 	root->release();
 	return true;
 }
+
 
 bool WTSBaseDataMgr::loadContracts(const char* filename)
 {
@@ -447,11 +401,11 @@ bool WTSBaseDataMgr::loadContracts(const char* filename)
 		return false;
 	}
 
-	for(const std::string& exchg : root->memberNames())
+	for (const std::string& exchg : root->memberNames())
 	{
 		WTSVariant* jExchg = root->get(exchg);
 
-		for(const std::string& code : jExchg->memberNames())
+		for (const std::string& code : jExchg->memberNames())
 		{
 			WTSVariant* jcInfo = jExchg->get(code);
 
@@ -462,19 +416,19 @@ bool WTSBaseDataMgr::loadContracts(const char* filename)
 			 */
 			WTSCommodityInfo* commInfo = NULL;
 			std::string pid;
-			if(jcInfo->has("product"))
+			if (jcInfo->has("product"))
 			{
 				pid = jcInfo->getCString("product");
 				commInfo = getCommodity(jcInfo->getCString("exchg"), pid.c_str());
 			}
-			else if(jcInfo->has("rules"))
+			else if (jcInfo->has("rules"))
 			{
 				pid = code.c_str();
 				WTSVariant* jPInfo = jcInfo->get("rules");
 				const char* name = jcInfo->getCString("name");
 				std::string sid = jPInfo->getCString("session");
 				std::string hid;
-				if(jPInfo->has("holiday"))
+				if (jPInfo->has("holiday"))
 					hid = jPInfo->getCString("holiday");
 
 				//这里不能像解析commodity那样处理，直接赋值为ALLDAY
@@ -486,15 +440,19 @@ bool WTSBaseDataMgr::loadContracts(const char* filename)
 				WTSSessionInfo* sInfo = getSession(sid.c_str());
 				commInfo->setSessionInfo(sInfo);
 
-				std::string key = fmt::format("{}.{}", exchg.c_str(), pid.c_str());
-				if (m_mapCommodities == NULL)
-					m_mapCommodities = WTSCommodityMap::create();
+				_comm_list->append(commInfo, false);
 
-				m_mapCommodities->add(key, commInfo, false);
+				WTSArray* ayInst = (WTSArray*)_pid_map->get(pid);
+				if (ayInst == NULL)
+				{
+					ayInst = WTSArray::create();
+					_pid_map->add(pid, ayInst);
+				}
+				ayInst->append(commInfo, true);
 
-				m_mapSessionCode[sid].insert(key);
+				_fullpid_map->add(commInfo->getFullPid(), commInfo, true);
 
-				WTSLogger::debug("Commodity {} has been automatically added", key.c_str());
+				WTSLogger::debug("Commodity {} has been automatically added", commInfo->getFullPid());
 			}
 
 			if (commInfo == NULL)
@@ -513,7 +471,8 @@ bool WTSBaseDataMgr::loadContracts(const char* filename)
 			 *	如果配置了altcode，则使用配置的altcode
 			 *	如果没有配置altcode，则使用code作为altcode
 			 */
-			if (jcInfo->has("altcode"))
+			bool bHasAltCode = jcInfo->has("altcode") && strlen(jcInfo->getCString("altcode")) > 0;
+			if (bHasAltCode)
 				cInfo->setAltCode(jcInfo->getCString("altcode"));
 			else
 				cInfo->setAltCode(code.c_str());
@@ -550,60 +509,51 @@ bool WTSBaseDataMgr::loadContracts(const char* filename)
 				sMargin = jcInfo->getDouble("shortmarginratio");
 			cInfo->setMarginRatios(lMargin, sMargin);
 
-			WTSContractList* contractList = (WTSContractList*)m_mapExchgContract->get(std::string(cInfo->getExchg()));
-			if (contractList == NULL)
-			{
-				contractList = WTSContractList::create();
-				m_mapExchgContract->add(std::string(cInfo->getExchg()), contractList, false);
-			}
-			contractList->add(cInfo->getCode(), cInfo, false);
-			m_mapFullCodes->add(cInfo->getFullCode(), cInfo);
 			commInfo->addCode(code.c_str());
+			_code_list->append(cInfo, false);
 
-			/*
-			 *	By Wesley @ 2024.04.12
-			 *	如果altcode不为空，则需要按照altcode建查询索引
-			 */
-			if (jcInfo->has("altcode"))
-			{
-				contractList->add(cInfo->getAltCode(), cInfo, true);
-				m_mapFullCodes->add(fmtutil::format("{}.{}", cInfo->getExchg(), cInfo->getAltCode()), cInfo);
-			}
-
-			std::string key = std::string(cInfo->getCode());
-			WTSArray* ayInst = (WTSArray*)m_mapContracts->get(key);
+			WTSArray* ayInst = (WTSArray*)_code_map->get(cInfo->getCode());
 			if(ayInst == NULL)
 			{
 				ayInst = WTSArray::create();
-				m_mapContracts->add(key, ayInst, false);
+				_code_map->add(cInfo->getCode(), ayInst);
 			}
-
 			ayInst->append(cInfo, true);
+			_fullcode_map->add(cInfo->getFullCode(), cInfo, true);
+
+			if(bHasAltCode)
+			{
+				ayInst = (WTSArray*)_code_map->get(cInfo->getAltCode());
+				if (ayInst == NULL)
+				{
+					ayInst = WTSArray::create();
+					_code_map->add(cInfo->getAltCode(), ayInst);
+				}
+				ayInst->append(cInfo, true);
+
+				_fullcode_map->add(cInfo->getFullAltCode(), cInfo, true);
+			}
+			
 		}
 	}
 
-	WTSLogger::info("Contracts configuration file {} loaded, {} exchanges", filename, m_mapExchgContract->size());
+	WTSLogger::info("Contracts configuration file {} loaded, {} contracts", filename, _code_list->size());
 	root->release();
 
-	//读取全部合约，根据代码排序，并设置全局索引
-	WTSArray* allCodes = getContracts("");
-	if(allCodes != NULL)
 	{
-		std::sort(allCodes->begin(), allCodes->end(), [](WTSObject* left, WTSObject* right) {
+		std::sort(_code_list->begin(), _code_list->end(), [](WTSObject* left, WTSObject* right) {
 			WTSContractInfo* cInfoA = static_cast<WTSContractInfo*>(left);
 			WTSContractInfo* cInfoB = static_cast<WTSContractInfo*>(right);
 
 			return strcmp(cInfoA->getFullCode(), cInfoB->getFullCode()) < 0;
 		});
 
-		m_ayGlobalList.resize(allCodes->size());
 		uint32_t idx = 0;
-		for (auto it = allCodes->begin(); it != allCodes->end(); it++, idx++)
+		for (auto it = _code_list->begin(); it != _code_list->end(); it++, idx++)
 		{
 			WTSContractInfo* cInfo = static_cast<WTSContractInfo*>(*it);
 			cInfo->setTotalIndex(idx);
-			m_ayGlobalList[idx] = cInfo;
-		}	
+		}
 	}
 	return true;
 }
@@ -629,7 +579,7 @@ bool WTSBaseDataMgr::loadHolidays(const char* filename)
 		if(!jHolidays->isArray())
 			continue;
 
-		TradingDayTpl& trdDayTpl = m_mapTradingDay[hid];
+		TradingDayTpl& trdDayTpl = _trading_days[hid];
 		for(uint32_t i = 0; i < jHolidays->size(); i++)
 		{
 			WTSVariant* hItem = jHolidays->get(i);
@@ -802,8 +752,8 @@ uint32_t WTSBaseDataMgr::getTradingDate(const char* pid, uint32_t uOffDate /* = 
 	const char* tplID = isTpl ? pid : getTplIDByPID(pid);
 
 	uint32_t curDate = TimeUtils::getCurDate();
-	auto it = m_mapTradingDay.find(tplID);
-	if (it == m_mapTradingDay.end())
+	auto it = _trading_days.find(tplID);
+	if (it == _trading_days.end())
 	{
 		return curDate;
 	}
@@ -899,8 +849,8 @@ void WTSBaseDataMgr::setTradingDate(const char* pid, uint32_t uDate, bool isTpl 
 	if (!isTpl)
 		tplID = getTplIDByPID(pid);
 
-	auto it = m_mapTradingDay.find(tplID);
-	if (it == m_mapTradingDay.end())
+	auto it = _trading_days.find(tplID);
+	if (it == _trading_days.end())
 		return;
 
 	TradingDayTpl* tpl = (TradingDayTpl*)&it->second;
@@ -910,8 +860,8 @@ void WTSBaseDataMgr::setTradingDate(const char* pid, uint32_t uDate, bool isTpl 
 
 CodeSet* WTSBaseDataMgr::getSessionComms(const char* sid)
 {
-	auto it = m_mapSessionCode.find(sid);
-	if (it == m_mapSessionCode.end())
+	auto it = _session_to_pids.find(sid);
+	if (it == _session_to_pids.end())
 		return NULL;
 
 	return (CodeSet*)&it->second;

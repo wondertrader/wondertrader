@@ -16,12 +16,7 @@ USING_NS_WTP;
 
 typedef wt_hashmap<std::string, TradingDayTpl>	TradingDayTplMap;
 
-typedef WTSHashMap<std::string>		WTSContractList;
-typedef WTSHashMap<std::string>		WTSExchgContract;
-typedef WTSHashMap<std::string>		WTSContractMap;
-
-typedef WTSHashMap<std::string>		WTSSessionMap;
-typedef WTSHashMap<std::string>		WTSCommodityMap;
+typedef WTSHashMap<std::string>		WTSStringMap;
 
 typedef wt_hashmap<std::string, CodeSet> SessionCodeMap;
 
@@ -48,22 +43,16 @@ public:
 
 	virtual uint32_t			getContractSize(const char* exchg = "", uint32_t uDate = 0) override;
 
-	virtual uint32_t			getGlobalSize() override { return (uint32_t)m_ayGlobalList.size(); }
+	virtual uint32_t			getGlobalSize() override { return (uint32_t)_code_list->size(); }
 
-	virtual WTSContractInfo*	getContractByIndex(uint32_t idx) override
-	{
-		if (idx >= m_ayGlobalList.size())
-			return NULL;
+	virtual WTSContractInfo*	getContractByIndex(uint32_t idx) override;
 
-		return m_ayGlobalList[idx];
-	}
-	
-	void		release();
 
 	bool		loadSessions(const char* filename);
 	bool		loadCommodities(const char* filename);
-	bool		loadContracts(const char* filename);
 	bool		loadHolidays(const char* filename);
+
+	bool		loadContracts(const char* filename);
 
 public:
 	uint32_t	getTradingDate(const char* stdPID, uint32_t uOffDate = 0, uint32_t uOffMinute = 0, bool isTpl = false);
@@ -78,16 +67,18 @@ private:
 	const char* getTplIDByPID(const char* stdPID);
 
 private:
-	TradingDayTplMap	m_mapTradingDay;
+	TradingDayTplMap	_trading_days;
 
-	SessionCodeMap		m_mapSessionCode;
+	WTSStringMap*		_session_map;
+	SessionCodeMap		_session_to_pids;
 
-	WTSExchgContract*	m_mapExchgContract;
-	WTSSessionMap*		m_mapSessions;
-	WTSCommodityMap*	m_mapCommodities;
-	WTSContractMap*		m_mapContracts;
-	WTSContractMap*		m_mapFullCodes;
+	WTSArray*			_code_list;
+	WTSArray*			_comm_list;
 
-	std::vector<WTSContractInfo*>			m_ayGlobalList;
+	WTSStringMap*		_code_map;
+	WTSStringMap*		_fullcode_map;
+
+	WTSStringMap*		_pid_map;
+	WTSStringMap*		_fullpid_map;
 };
 
