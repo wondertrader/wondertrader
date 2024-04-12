@@ -188,7 +188,7 @@ bool ParserAdapter::init(const char* id, WTSVariant* cfg)
 					}
 					WTSContractInfo* contract = _bd_mgr->getContract(code.c_str(), exchg.c_str());
 					if (contract)
-						contractSet.insert(contract->getFullCode());
+						contractSet.insert(contract->getFullAltCode());
 					else
 					{
 						//如果是品种ID，则将该品种下全部合约都加到订阅列表
@@ -216,7 +216,7 @@ bool ParserAdapter::init(const char* id, WTSVariant* cfg)
 					for (; it != ayContract->end(); it++)
 					{
 						WTSContractInfo* contract = STATIC_CONVERT(*it, WTSContractInfo*);
-						contractSet.insert(contract->getFullCode());
+						contractSet.insert(contract->getFullAltCode());
 					}
 
 					ayContract->release();
@@ -231,7 +231,7 @@ bool ParserAdapter::init(const char* id, WTSVariant* cfg)
 				for (; it != ayContract->end(); it++)
 				{
 					WTSContractInfo* contract = STATIC_CONVERT(*it, WTSContractInfo*);
-					contractSet.insert(contract->getFullCode());
+					contractSet.insert(contract->getFullAltCode());
 				}
 
 				ayContract->release();
