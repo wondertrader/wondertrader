@@ -185,6 +185,7 @@ public:
 	inline void setAltCode(const char* altCode) noexcept
 	{
 		wt_strcpy(m_strAltCode, altCode);
+		sprintf(m_strFullAltCode, "%s.%s", m_strExchg, altCode);
 	}
 
 	constexpr inline void	setVolumeLimits(uint32_t maxMarketVol, uint32_t maxLimitVol, uint32_t minMarketVol = 1, uint32_t minLimitVol = 1) noexcept
@@ -216,6 +217,7 @@ public:
 	constexpr inline const char* getProduct()	const noexcept {return m_strProduct;}
 
 	constexpr inline const char* getFullCode()	const noexcept { return m_strFullCode; }
+	constexpr inline const char* getFullAltCode()	const noexcept { return m_strFullAltCode; }
 	constexpr inline const char* getFullPid()	const noexcept { return m_strFullPid; }
 
 	constexpr inline uint32_t	getMaxMktVol() const noexcept { return m_maxMktQty; }
@@ -321,6 +323,7 @@ private:
 
 	char	m_strFullPid[64];
 	char	m_strFullCode[64];
+	char	m_strFullAltCode[64];
 
 	uint32_t	m_maxMktQty;
 	uint32_t	m_maxLmtQty;
