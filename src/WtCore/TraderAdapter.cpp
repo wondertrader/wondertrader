@@ -489,7 +489,12 @@ uint32_t TraderAdapter::doEntrust(WTSEntrust* entrust)
 	WTSContractInfo* cInfo = entrust->getContractInfo();
 	if (cInfo == NULL) cInfo = getContract(entrust->getCode());
 
-	entrust->setCode(cInfo->getCode());
+	/*
+	 *	By Wesley @ 2024.04.12
+	 *	将AltCode设置为交易code，altcode为交易所原始合约代码
+	 */
+	entrust->setCode(cInfo->getAltCode());
+
 	entrust->setExchange(cInfo->getExchg());
 
 	uint32_t localid = makeLocalOrderID();
@@ -1613,6 +1618,8 @@ void TraderAdapter::onRspOrders(const WTSArray* ayOrders)
 			if (cInfo == NULL)
 				continue;
 
+			orderInfo->setCode(cInfo->getCode());
+
 			bool isBuy = (orderInfo->getDirection() == WDT_LONG && orderInfo->getOffsetType() == WOT_OPEN) || (orderInfo->getDirection() == WDT_SHORT && orderInfo->getOffsetType() != WOT_OPEN);
 
 			WTSCommodityInfo* commInfo = cInfo->getCommInfo();
@@ -1739,6 +1746,8 @@ void TraderAdapter::onRspTrades(const WTSArray* ayTrades)
 			if (cInfo == NULL)
 				continue;
 
+			tInfo->setCode(cInfo->getCode());
+
 			WTSCommodityInfo* commInfo = cInfo->getCommInfo();
 			std::string stdCode;
 			if (commInfo->getCategoty() == CC_Future)
@@ -1864,10 +1873,11 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 	if (orderInfo == NULL)
 		return;
 
-
 	WTSContractInfo* cInfo = orderInfo->getContractInfo();
 	if (cInfo == NULL)
 		return;
+
+	orderInfo->setCode(cInfo->getCode());
 
 	WTSCommodityInfo* commInfo = cInfo->getCommInfo();
 	std::string stdCode;
@@ -2137,6 +2147,8 @@ void TraderAdapter::onPushTrade(WTSTradeInfo* tradeRecord)
 	WTSContractInfo* cInfo = tradeRecord->getContractInfo();
 	if (cInfo == NULL)
 		return;
+
+	tradeRecord->setCode(cInfo->getCode());
 
 	bool isLong = (tradeRecord->getDirection() == WDT_LONG);
 	bool isOpen = (tradeRecord->getOffsetType() == WOT_OPEN);

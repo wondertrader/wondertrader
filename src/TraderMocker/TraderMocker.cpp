@@ -362,7 +362,7 @@ int32_t TraderMocker::match_once()
 				for (auto it = _awaits->begin(); it != _awaits->end(); it++)
 				{
 					WTSOrderInfo* ordInfo = (WTSOrderInfo*)it->second;
-					if (ordInfo->getVolLeft() == 0 || strcmp(ordInfo->getCode(), curTick->code()) != 0)
+					if (ordInfo->getVolLeft() == 0 || strcmp(ct->getCode(), curTick->code()) != 0)
 						continue;
 
 					bool isBuy = (ordInfo->getDirection() == WDT_LONG && ordInfo->getOffsetType() == WOT_OPEN) || (ordInfo->getDirection() != WDT_LONG && ordInfo->getOffsetType() != WOT_OPEN);

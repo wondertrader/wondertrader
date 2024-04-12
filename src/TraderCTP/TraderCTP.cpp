@@ -1186,12 +1186,12 @@ void TraderCTP::OnRtnTrade(CThostFtdcTradeField *pTrade)
 
 WTSOrderInfo* TraderCTP::makeOrderInfo(CThostFtdcOrderField* orderField)
 {
-	WTSContractInfo* contract = m_bdMgr->getContract(orderField->InstrumentID, orderField->ExchangeID);
-	if (contract == NULL)
+	WTSContractInfo* cInfo = m_bdMgr->getContract(orderField->InstrumentID, orderField->ExchangeID);
+	if (cInfo == NULL)
 		return NULL;
 
 	WTSOrderInfo* pRet = WTSOrderInfo::create();
-	pRet->setContractInfo(contract);
+	pRet->setContractInfo(cInfo);
 	pRet->setPrice(orderField->LimitPrice);
 	pRet->setVolume(orderField->VolumeTotalOriginal);
 	pRet->setDirection(wrapDirectionType(orderField->Direction, orderField->CombOffsetFlag[0]));
@@ -1213,8 +1213,8 @@ WTSOrderInfo* TraderCTP::makeOrderInfo(CThostFtdcOrderField* orderField)
 	pRet->setVolTraded(orderField->VolumeTraded);
 	pRet->setVolLeft(orderField->VolumeTotalOriginal - orderField->VolumeTraded);//要保证撤单的时候，剩余数量=挂单总数-已成交
 
-	pRet->setCode(orderField->InstrumentID);
-	pRet->setExchange(contract->getExchg());
+	pRet->setCode(cInfo->getCode());
+	pRet->setExchange(cInfo->getExchg());
 
 	uint32_t uDate = convert::to_uint32(orderField->InsertDate);
 	std::string strTime = orderField->InsertTime;
@@ -1318,15 +1318,15 @@ WTSError* TraderCTP::makeError(CThostFtdcRspInfoField* rspInfo, WTSErroCode ec /
 
 WTSTradeInfo* TraderCTP::makeTradeInfo(CThostFtdcTradeField *tradeField)
 {
-	WTSContractInfo* contract = m_bdMgr->getContract(tradeField->InstrumentID, tradeField->ExchangeID);
-	if (contract == NULL)
+	WTSContractInfo* cInfo = m_bdMgr->getContract(tradeField->InstrumentID, tradeField->ExchangeID);
+	if (cInfo == NULL)
 		return NULL;
 
-	WTSTradeInfo *pRet = WTSTradeInfo::create(tradeField->InstrumentID, contract->getExchg());
+	WTSTradeInfo *pRet = WTSTradeInfo::create(cInfo->getCode(), cInfo->getExchg());
 	pRet->setVolume(tradeField->Volume);
 	pRet->setPrice(tradeField->Price);
 	pRet->setTradeID(tradeField->TradeID);
-	pRet->setContractInfo(contract);
+	pRet->setContractInfo(cInfo);
 
 	std::string strTime = tradeField->TradeTime;
 	StrUtil::replace(strTime, ":", "");
@@ -1351,7 +1351,7 @@ WTSTradeInfo* TraderCTP::makeTradeInfo(CThostFtdcTradeField *tradeField)
 	pRet->setRefOrder(tradeField->OrderSysID);
 	pRet->setTradeType((WTSTradeType)tradeField->TradeType);
 
-	double amount = contract->getCommInfo()->getVolScale()*tradeField->Volume*pRet->getPrice();
+	double amount = cInfo->getCommInfo()->getVolScale()*tradeField->Volume*pRet->getPrice();
 	pRet->setAmount(amount);
 
 	const char* usertag = m_oidCache.get(StrUtil::trim(pRet->getRefOrder()).c_str());

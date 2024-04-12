@@ -1083,12 +1083,12 @@ int TraderCTPMini::wrapActionFlag(WTSActionFlag actionFlag)
 
 WTSOrderInfo* TraderCTPMini::makeOrderInfo(CThostFtdcOrderField* orderField)
 {
-	WTSContractInfo* contract = m_bdMgr->getContract(orderField->InstrumentID);
-	if (contract == NULL)
+	WTSContractInfo* cInfo = m_bdMgr->getContract(orderField->InstrumentID);
+	if (cInfo == NULL)
 		return NULL;
 
 	WTSOrderInfo* pRet = WTSOrderInfo::create();
-	pRet->setContractInfo(contract);
+	pRet->setContractInfo(cInfo);
 	pRet->setPrice(orderField->LimitPrice);
 	pRet->setVolume(orderField->VolumeTotalOriginal);
 	pRet->setDirection(wrapDirectionType(orderField->Direction, orderField->CombOffsetFlag[0]));
@@ -1109,8 +1109,8 @@ WTSOrderInfo* TraderCTPMini::makeOrderInfo(CThostFtdcOrderField* orderField)
 	pRet->setVolTraded(orderField->VolumeTraded);
 	pRet->setVolLeft(orderField->VolumeTotalOriginal - orderField->VolumeTraded);//要保证撤单的时候，剩余数量=挂单总数-已成交
 
-	pRet->setCode(orderField->InstrumentID);
-	pRet->setExchange(contract->getExchg());
+	pRet->setCode(cInfo->getCode());
+	pRet->setExchange(cInfo->getExchg());
 
 	/*
 	 *	By Wesley @ 2021.12.16
@@ -1214,14 +1214,14 @@ WTSError* TraderCTPMini::makeError(CThostFtdcRspInfoField* rspInfo)
 
 WTSTradeInfo* TraderCTPMini::makeTradeRecord(CThostFtdcTradeField *tradeField)
 {
-	WTSContractInfo* contract = m_bdMgr->getContract(tradeField->InstrumentID, tradeField->ExchangeID);
-	if (contract == NULL)
+	WTSContractInfo* cInfo = m_bdMgr->getContract(tradeField->InstrumentID, tradeField->ExchangeID);
+	if (cInfo == NULL)
 		return NULL;
 
-	WTSCommodityInfo* commInfo = contract->getCommInfo();
+	WTSCommodityInfo* commInfo = cInfo->getCommInfo();
 
-	WTSTradeInfo *pRet = WTSTradeInfo::create(tradeField->InstrumentID, commInfo->getExchg());
-	pRet->setContractInfo(contract);
+	WTSTradeInfo *pRet = WTSTradeInfo::create(cInfo->getCode(), commInfo->getExchg());
+	pRet->setContractInfo(cInfo);
 	pRet->setVolume(tradeField->Volume);
 	pRet->setPrice(tradeField->Price);
 	pRet->setTradeID(tradeField->TradeID);

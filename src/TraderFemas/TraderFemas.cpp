@@ -962,8 +962,8 @@ int TraderFemas::wrapActionFlag(WTSActionFlag actionFlag)
 
 WTSOrderInfo* TraderFemas::makeOrderInfo(CUstpFtdcOrderField* orderField)
 {
-	WTSContractInfo* contract = m_bdMgr->getContract(orderField->InstrumentID, orderField->ExchangeID);
-	if(contract == NULL)
+	WTSContractInfo* cInfo = m_bdMgr->getContract(orderField->InstrumentID, orderField->ExchangeID);
+	if(cInfo == NULL)
 		return NULL;
 
 	WTSOrderInfo* pRet = WTSOrderInfo::create();
@@ -972,7 +972,7 @@ WTSOrderInfo* TraderFemas::makeOrderInfo(CUstpFtdcOrderField* orderField)
 	pRet->setDirection(wrapDirectionType(orderField->Direction, orderField->OffsetFlag));
 	pRet->setPriceType(wrapPriceType(orderField->OrderPriceType));
 	pRet->setOffsetType(wrapOffsetType(orderField->OffsetFlag));
-	pRet->setContractInfo(contract);
+	pRet->setContractInfo(cInfo);
 
 	if (orderField->TimeCondition == USTP_FTDC_TC_GFD)
 	{
@@ -989,7 +989,8 @@ WTSOrderInfo* TraderFemas::makeOrderInfo(CUstpFtdcOrderField* orderField)
 	pRet->setVolTraded(orderField->VolumeTraded);
 	pRet->setVolLeft(orderField->VolumeRemain);
 
-	pRet->setCode(orderField->InstrumentID);
+	pRet->setCode(cInfo->getCode());
+	pRet->setExchange(cInfo->getExchg());
 
 	pRet->setOrderDate(convert::to_uint32(orderField->TradingDay));
 	std::string strTime = orderField->InsertTime;
@@ -1057,17 +1058,17 @@ WTSError* TraderFemas::makeError(CUstpFtdcRspInfoField* rspInfo)
 
 WTSTradeInfo* TraderFemas::makeTradeRecord(CUstpFtdcTradeField *tradeField)
 {
-	WTSContractInfo* contract = m_bdMgr->getContract(tradeField->InstrumentID, tradeField->ExchangeID);
-	if(contract == NULL)
+	WTSContractInfo* cInfo = m_bdMgr->getContract(tradeField->InstrumentID, tradeField->ExchangeID);
+	if(cInfo == NULL)
 		return NULL;
 
-	WTSCommodityInfo* mInfo = contract->getCommInfo();
+	WTSCommodityInfo* mInfo = cInfo->getCommInfo();
 
-	WTSTradeInfo *pRet = WTSTradeInfo::create(tradeField->InstrumentID);
+	WTSTradeInfo *pRet = WTSTradeInfo::create(cInfo->getCode(), cInfo->getExchg());
 	pRet->setVolume(tradeField->TradeVolume);
 	pRet->setPrice(tradeField->TradePrice);
 	pRet->setTradeID(tradeField->TradeID);
-	pRet->setContractInfo(contract);
+	pRet->setContractInfo(cInfo);
 
 	std::string strTime = tradeField->TradeTime;
 	StrUtil::replace(strTime, ":", "");

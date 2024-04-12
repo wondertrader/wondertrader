@@ -5,7 +5,7 @@ TEST(test_codehelper, test_raw_to_std)
 {
 	EXPECT_EQ(CodeHelper::rawFutOptCodeToStdCode("IO2301-P-4000", "CFFEX"), "CFFEX.IO2301.P.4000");
 
-	EXPECT_EQ(CodeHelper::rawFutOptCodeToStdCode("TA308P4000", "CZCE"), "CZCE.TA2308.P.4000");
+	EXPECT_EQ(CodeHelper::rawFutOptCodeToStdCode("TA2308P4000", "CZCE"), "CZCE.TA2308.P.4000");
 
 	EXPECT_EQ(CodeHelper::rawFutOptCodeToStdCode("sc2308C400", "INE"), "INE.sc2308.C.400");
 
@@ -16,7 +16,7 @@ TEST(test_codehelper, test_raw_to_std)
 	EXPECT_EQ(CodeHelper::rawFlatCodeToStdCode("510300", "SSE", "ETF"), "SSE.ETF.510300");
 
 	EXPECT_EQ(CodeHelper::rawMonthCodeToStdCode("IF2112", "CFFEX"), "CFFEX.IF.2112");
-	EXPECT_EQ(CodeHelper::rawMonthCodeToStdCode("MA112", "CZCE"), "CZCE.MA.2112");
+	EXPECT_EQ(CodeHelper::rawMonthCodeToStdCode("MA2112", "CZCE"), "CZCE.MA.2112");
 	EXPECT_EQ(CodeHelper::rawMonthCodeToStdCode("v2112", "DCE"), "DCE.v.2112");
 	
 	EXPECT_TRUE(CodeHelper::isMonthlyCode("MA221"));
@@ -100,12 +100,12 @@ TEST(test_codehelper, test_extract)
 
 	c = CodeHelper::extractStdCode("CZCE.CF2007.C.4000", NULL);
 	EXPECT_STREQ(c._exchg, "CZCE");
-	EXPECT_STREQ(c._code, "CF007C4000");
+	EXPECT_STREQ(c._code, "CF2007C4000");
 	EXPECT_STREQ(c._product, "CFC");
 
 	c = CodeHelper::extractStdCode("CZCE.CF2007.P.4000", NULL);
 	EXPECT_STREQ(c._exchg, "CZCE");
-	EXPECT_STREQ(c._code, "CF007P4000");
+	EXPECT_STREQ(c._code, "CF2007P4000");
 	EXPECT_STREQ(c._product, "CFP");
 
 	c = CodeHelper::extractStdCode("DCE.m2007.C.4000", NULL);

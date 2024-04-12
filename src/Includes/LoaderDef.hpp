@@ -8,6 +8,7 @@ USING_NS_WTP;
 typedef struct _Contract
 {
 	std::string	m_strCode;
+	std::string	m_strAltCode;
 	std::string	m_strExchg;
 	std::string	m_strName;
 	std::string	m_strProduct;

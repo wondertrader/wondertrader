@@ -904,9 +904,10 @@ bool UftMocker::procOrder(uint32_t localid)
 		log_info("Random error order: {}", localid);
 		return true;
 	}
-	else
+	else if(!ordInfo->_proced_after_placed)
 	{
 		on_order(localid, ordInfo->_code, ordInfo->_isLong, ordInfo->_offset, ordInfo->_total, ordInfo->_left, ordInfo->_price, false);
+		ordInfo->_proced_after_placed = true;
 	}
 
 	WTSTickData* curTick = stra_get_last_tick(ordInfo->_code);

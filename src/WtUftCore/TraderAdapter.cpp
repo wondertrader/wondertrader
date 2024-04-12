@@ -1284,7 +1284,10 @@ void TraderAdapter::onRspOrders(const WTSArray* ayOrders)
 			if (orderInfo == NULL)
 				continue;
 
-			WTSContractInfo* cInfo = _bd_mgr->getContract(orderInfo->getCode(), orderInfo->getExchg());
+			WTSContractInfo* cInfo = orderInfo->getContractInfo();
+			if(cInfo == NULL)
+				cInfo = _bd_mgr->getContract(orderInfo->getCode(), orderInfo->getExchg());
+
 			if (cInfo == NULL)
 				continue;
 
@@ -1492,20 +1495,20 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 	if (orderInfo == NULL)
 		return;
 
-
-	WTSContractInfo* cInfo = _bd_mgr->getContract(orderInfo->getCode(), orderInfo->getExchg());
+	WTSContractInfo* cInfo = orderInfo->getContractInfo();
+	if(cInfo == NULL) cInfo = _bd_mgr->getContract(orderInfo->getCode(), orderInfo->getExchg());
 	if (cInfo == NULL)
 		return;
 
-	std::string stdCode = cInfo->getFullCode();
+	const char* fullCode = cInfo->getFullCode();
 
 	bool isBuy = (orderInfo->getDirection() == WDT_LONG && orderInfo->getOffsetType() == WOT_OPEN) || (orderInfo->getDirection() == WDT_SHORT && orderInfo->getOffsetType() != WOT_OPEN);
 
-	WTSTradeStateInfo* statInfo = (WTSTradeStateInfo*)_stat_map->get(stdCode.c_str());
+	WTSTradeStateInfo* statInfo = (WTSTradeStateInfo*)_stat_map->get(fullCode);
 	if (statInfo == NULL)
 	{
-		statInfo = WTSTradeStateInfo::create(stdCode.c_str());
-		_stat_map->add(stdCode, statInfo, false);
+		statInfo = WTSTradeStateInfo::create(fullCode);
+		_stat_map->add(fullCode, statInfo, false);
 	}
 	TradeStatInfo& statItem = statInfo->statInfo();
 
@@ -1559,7 +1562,7 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 	}
 
 
-	WTSLogger::log_dyn("trader", _id.c_str(), LL_DEBUG,"[{}] Order notified, instrument: {}, usertag: {}, state: {}", _id.c_str(), stdCode.c_str(), orderInfo->getUserTag(), stateToName(orderInfo->getOrderState()));
+	WTSLogger::log_dyn("trader", _id.c_str(), LL_DEBUG,"[{}] Order notified, instrument: {}, usertag: {}, state: {}", _id.c_str(), fullCode, orderInfo->getUserTag(), stateToName(orderInfo->getOrderState()));
 
 	//如果订单撤销, 并且是wt的订单, 则要先更新未完成数量
 	if (orderInfo->getOrderState() == WOS_Canceled && StrUtil::startsWith(orderInfo->getUserTag(), _order_pattern.c_str(), true))
@@ -1575,10 +1578,10 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 		//double newQty = oldQty - qty*(isBuy ? 1 : -1);
 		//_undone_qty[stdCode] = newQty;
 		//WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO, "[{}] {} qty of undone order updated, {} -> {}", _id.c_str(), stdCode.c_str(), oldQty, newQty);
-		updateUndone(stdCode.c_str(), -qty);
+		updateUndone(fullCode, -qty);
 
 		WTSLogger::log_dyn("trader", _id.c_str(), LL_DEBUG, "[{}] Order {} of {} canceled:{}, action: {}, leftqty: {}",
-			_id.c_str(), orderInfo->getUserTag(), stdCode.c_str(), orderInfo->getStateMsg(),
+			_id.c_str(), orderInfo->getUserTag(), fullCode, orderInfo->getStateMsg(),
 			formatAction(orderInfo->getDirection(), orderInfo->getOffsetType()), qty);
 	}
 
@@ -1601,7 +1604,7 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 				bool isToday = (orderInfo->getOffsetType() == WOT_CLOSETODAY);
 				double qty = orderInfo->getVolume();
 
-				PosItem& pItem = _positions[stdCode];
+				PosItem& pItem = _positions[fullCode];
 				if (isLong)	//平多
 				{
 					if (isToday)
@@ -1640,7 +1643,7 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 							pItem.s_newavail -= min(pItem.s_newavail, left);
 					}
 				}
-				printPosition(stdCode.c_str(), pItem);
+				printPosition(fullCode, pItem);
 			}
 		}
 		else if (orderInfo->getOrderState() == WOS_Canceled && orderInfo->getOffsetType() != WOT_OPEN)
@@ -1651,7 +1654,7 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 			bool isToday = (orderInfo->getOffsetType() == WOT_CLOSETODAY);
 			double qty = orderInfo->getVolume() - orderInfo->getVolTraded();
 
-			PosItem& pItem = _positions[stdCode];
+			PosItem& pItem = _positions[fullCode];
 			if (isLong)	//平多
 			{
 				if (isToday)
@@ -1684,7 +1687,7 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 					}
 				}
 			}
-			printPosition(stdCode.c_str(), pItem);
+			printPosition(fullCode, pItem);
 		}
 	}
 
@@ -1727,7 +1730,7 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 
 		//通知所有监听接口
 		for (auto sink : _sinks)
-			sink->on_order(localid, stdCode.c_str(), orderInfo->getDirection()==WDT_LONG, offset, 
+			sink->on_order(localid, fullCode, orderInfo->getDirection()==WDT_LONG, offset, 
 				orderInfo->getVolume(), orderInfo->getVolLeft(), orderInfo->getPrice(), orderInfo->getOrderState() == WOS_Canceled);
 	}
 }

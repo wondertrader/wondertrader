@@ -45,7 +45,7 @@ bool ShareBlocks::init_master(const char* name, const char* path/* = ""*/)
 
 	if(aySecs.size() != shm._block->_count)
 	{
-		write_log(LL_INFO, "Sections of Domain {} has changed: {} -> {}", name, shm._block->_count, aySecs.size());
+		write_log(LL_INFO, u8"域{}的分区个数以改变: {} -> {}，重新调整缓存", name, shm._block->_count, aySecs.size());
 		shm._block->_count = (uint32_t)aySecs.size();
 		memset(shm._block->_sections, 0, sizeof(SecInfo)*MAX_SEC_CNT);
 		if (shm._block->_count > 0)
@@ -122,6 +122,7 @@ bool ShareBlocks::init_slave(const char* name, const char* path/* = ""*/)
 		}
 	}
 
+	write_log(LL_INFO, u8"域{}初始化成功", name);
 	return true;
 }
 
@@ -154,7 +155,7 @@ bool ShareBlocks::update_slave(const char* name, bool bForce)
 		}
 	}
 
-	write_log(LL_INFO, "Domain {} reloaded", name);
+	write_log(LL_INFO, u8"域{}已重载", name);
 	shm._blocktime = shm._block->_updatetime;
 
 	return true;
@@ -201,16 +202,24 @@ bool ShareBlocks::commit_section(const char* domain, const char* section)
 {
 	auto it = _shm_blocks.find(domain);
 	if (it == _shm_blocks.end())
+	{
+		write_log(LL_ERROR, u8"域{}未初始化", domain);
 		return false;
+	}
 
 	ShmPair& shm = (ShmPair&)it->second;
 	auto sit = shm._sections.find(section);
 	if (sit == shm._sections.end())
+	{
+		write_log(LL_ERROR, u8"{}.{}不存在", domain, section);
 		return false;
+	}
 
 	ShmPair::KVPair& kvPair = (ShmPair::KVPair&)sit->second;
 	SecInfo& secInfo = shm._block->_sections[kvPair._index];
 	secInfo._updatetime = TimeUtils::getLocalTimeNow();
+
+	write_log(LL_INFO, u8"分区{}.{}时间戳已更新", domain, section);
 	return true;
 }
 
@@ -218,17 +227,24 @@ bool ShareBlocks::delete_section(const char* domain, const char*section)
 {
 	auto it = _shm_blocks.find(domain);
 	if (it == _shm_blocks.end())
+	{
+		write_log(LL_ERROR, u8"域{}未初始化", domain);
 		return false;
+	}
 
 	ShmPair& shm = (ShmPair&)it->second;
 	auto sit = shm._sections.find(section);
 	if (sit == shm._sections.end())
+	{
+		write_log(LL_WARN, u8"{}.{}不存在", domain, section);
 		return true;
+	}
 
 	uint32_t idx = sit->second._index;
 	shm._sections.erase(sit);
 	shm._block->_sections[idx]._state = 2;
 	shm._block->_updatetime = TimeUtils::getLocalTimeNow();
+	write_log(LL_INFO, u8"分区{}.{}状态标记为已删除", domain, section);
 	return true;
 }
 
@@ -249,14 +265,14 @@ void* ShareBlocks::make_valid(const char* domain, const char* section, const cha
 		//如果不是master，就不能创建
 		if (!shm._master)
 		{
-			write_log(LL_ERROR, "Domain {} is not master", domain);
+			write_log(LL_ERROR, u8"域{}不是master模式，不能新增分区", domain);
 			return nullptr;
 		}
 
 		if (shm._block->_count == MAX_SEC_CNT)
 		{
 			//已经没有额外的空间可以分配了
-			write_log(LL_ERROR, "No more space for new section in domain {}", domain);
+			write_log(LL_ERROR, u8"域{}中分区已满，不能再新增分区", domain);
 			return nullptr;
 		}
 
@@ -281,7 +297,7 @@ void* ShareBlocks::make_valid(const char* domain, const char* section, const cha
 		 *	如果之前存的索引位置的section和目标section名字不同
 		 *	说明master那边做了修改，需要强制update才行
 		 */
-		write_log(LL_ERROR, "Cache block of {}.{} has been overwrote", domain, section);
+		write_log(LL_ERROR, u8"缓存区{}.{}已被覆盖，禁止写入", domain, section);
 		return nullptr;
 	}
 
@@ -293,19 +309,19 @@ void* ShareBlocks::make_valid(const char* domain, const char* section, const cha
 		//如果不是master，就不能创建
 		if (!shm._master)
 		{
-			write_log(LL_ERROR, "Domain {} is not master", domain);
+			write_log(LL_ERROR, u8"域{}不是master模式，不能新增KV对", domain);
 			return nullptr;
 		}
 
 		if (secInfo->_count == MAX_KEY_CNT)
 		{
-			write_log(LL_ERROR, "No more space for new section in secion {}.{}", domain, section);
+			write_log(LL_ERROR, u8"分区{}.{}中KV对已满，不能再新增KV对", domain, section);
 			return nullptr;
 		}
 
 		if (secInfo->_offset + len > 1024)
 		{
-			write_log(LL_ERROR, "No enough cache for data {}.{}.{}", domain, section, key);
+			write_log(LL_ERROR, u8"没有足够的缓存可以存储{}.{}.{}", domain, section, key);
 			return nullptr;
 		}
 
@@ -369,7 +385,10 @@ std::vector<std::string> ShareBlocks::get_sections(const char* domain)
 
 	auto it = _shm_blocks.find(domain);
 	if (it == _shm_blocks.end())
+	{
+		write_log(LL_INFO, u8"域{}没有初始化", domain);
 		return emptyRet;
+	}
 
 	std::vector<std::string> ret;
 	const ShmPair& shm = it->second;
