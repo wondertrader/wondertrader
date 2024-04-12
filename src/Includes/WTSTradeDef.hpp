@@ -468,6 +468,8 @@ public:
 		return pRet;
 	}
 
+	inline void setCode(const char* code) noexcept { wt_strcpy(m_strCode, code); }
+
 	inline void setTradeID(const char* tradeid) noexcept { wt_strcpy(m_strTradeID, tradeid); }
 	inline void setRefOrder(const char* oid) noexcept { wt_strcpy(m_strRefOrder, oid); }
 	

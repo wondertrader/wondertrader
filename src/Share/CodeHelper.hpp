@@ -467,8 +467,6 @@ public:
 			std::string s = exchg;
 			s.append(".");
 			s.append(code, idx-3);
-			if(strcmp(exchg, "CZCE") == 0)
-				s.append("2");
 			s.append(&code[idx - 3], 3);
 			s.append(".");
 			s.append(&code[idx], 1);
@@ -552,15 +550,17 @@ public:
 
 		StringVector ay = StrUtil::split(stdCode, ".");
 		wt_strcpy(codeInfo._exchg, ay[0].c_str());
-		if(strcmp(codeInfo._exchg, "SHFE") == 0 || strcmp(codeInfo._exchg, "INE") == 0)
+		if(strcmp(codeInfo._exchg, "SHFE") == 0 || strcmp(codeInfo._exchg, "INE") == 0 || strcmp(codeInfo._exchg, "CZCE") == 0)
 		{
 			fmt::format_to(codeInfo._code, "{}{}{}", ay[1], ay[2], ay[3]);
 		}
-		else if (strcmp(codeInfo._exchg, "CZCE") == 0)
-		{
-			std::string& s = ay[1];
-			fmt::format_to(codeInfo._code, "{}{}{}{}", s.substr(0, s.size()-4), s.substr(s.size()-3), ay[2], ay[3]);
-		}
+		// By Wesley @ 2024.04.12
+		// 郑商所代码通过altcode来处理，因子在wt内部和其他交易所一样了
+		//else if (strcmp(codeInfo._exchg, "CZCE") == 0)
+		//{
+		//	std::string& s = ay[1];
+		//	fmt::format_to(codeInfo._code, "{}{}{}{}", s.substr(0, s.size()-4), s.substr(s.size()-4), ay[2], ay[3]);
+		//}
 		else
 		{
 			fmt::format_to(codeInfo._code, "{}-{}-{}", ay[1], ay[2], ay[3]);
@@ -641,10 +641,7 @@ public:
 					//那么code得加上品种id
 					//郑商所得单独处理一下，这个只能hardcode了
 					auto i = wt_strcpy(codeInfo._code, codeInfo._product);
-					if (memcmp(codeInfo._exchg, "CZCE", 4) == 0)
-						wt_strcpy(codeInfo._code + i, ext + 1, extlen-1);
-					else
-						wt_strcpy(codeInfo._code + i, ext, extlen);
+					wt_strcpy(codeInfo._code + i, ext, extlen);
 				}
 				else
 				{

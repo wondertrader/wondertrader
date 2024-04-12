@@ -182,6 +182,10 @@ public:
 		return ret;
 	}
 
+	inline void setAltCode(const char* altCode) noexcept
+	{
+		wt_strcpy(m_strAltCode, altCode);
+	}
 
 	constexpr inline void	setVolumeLimits(uint32_t maxMarketVol, uint32_t maxLimitVol, uint32_t minMarketVol = 1, uint32_t minLimitVol = 1) noexcept
 	{
@@ -206,6 +210,7 @@ public:
 	}
 
 	constexpr inline const char* getCode()	const noexcept {return m_strCode;}
+	constexpr inline const char* getAltCode()	const noexcept { return m_strAltCode; }
 	constexpr inline const char* getExchg()	const noexcept {return m_strExchg;}
 	constexpr inline const char* getName()	const noexcept {return m_strName;}
 	constexpr inline const char* getProduct()	const noexcept {return m_strProduct;}
@@ -307,10 +312,12 @@ protected:
 	virtual ~WTSContractInfo(){}
 
 private:
-	char	m_strCode[64];
-	char	m_strExchg[64];
+	char	m_strCode[32];
+	char	m_strExchg[32];
 	char	m_strName[64];
-	char	m_strProduct[64];
+	char	m_strProduct[32];
+
+	char	m_strAltCode[32];	//别称代码，这个主要针对郑商所的 By Wesley @ 2024.04.12
 
 	char	m_strFullPid[64];
 	char	m_strFullCode[64];

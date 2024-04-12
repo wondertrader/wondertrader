@@ -958,12 +958,12 @@ WTSOrderInfo* TraderYD::makeOrderInfo(const YDOrder* orderField, const YDInstrum
 {
 	const YDExchange* exchgInfo = instInfo->m_pExchange;
 
-	WTSContractInfo* contract = m_bdMgr->getContract(instInfo->InstrumentID, exchgInfo->ExchangeID);
-	if (contract == NULL)
+	WTSContractInfo* cInfo = m_bdMgr->getContract(instInfo->InstrumentID, exchgInfo->ExchangeID);
+	if (cInfo == NULL)
 		return NULL;
 
 	WTSOrderInfo* pRet = WTSOrderInfo::create();
-	pRet->setContractInfo(contract);
+	pRet->setContractInfo(cInfo);
 	pRet->setPrice(orderField->Price);
 	pRet->setVolume(orderField->OrderVolume);
 	pRet->setDirection(wrapDirectionType(orderField->Direction, orderField->OffsetFlag));
@@ -974,8 +974,8 @@ WTSOrderInfo* TraderYD::makeOrderInfo(const YDOrder* orderField, const YDInstrum
 	pRet->setVolTraded(orderField->TradeVolume);
 	pRet->setVolLeft(orderField->OrderVolume - orderField->TradeVolume);
 
-	pRet->setCode(contract->getCode());
-	pRet->setExchange(contract->getExchg());
+	pRet->setCode(cInfo->getCode());
+	pRet->setExchange(cInfo->getExchg());
 
 	uint32_t uDate = m_lDate;
 	uint32_t uTime = orderField->InsertTime;
@@ -1050,15 +1050,15 @@ WTSError* TraderYD::makeError(int errorno, WTSErroCode ec) noexcept
 
 WTSTradeInfo* TraderYD::makeTradeRecord(const YDTrade *tradeField, const YDInstrument* instInfo) noexcept
 {
-	WTSContractInfo* contract = m_bdMgr->getContract(instInfo->InstrumentID, instInfo->m_pExchange->ExchangeID);
-	if (contract == NULL)
+	WTSContractInfo* cInfo = m_bdMgr->getContract(instInfo->InstrumentID, instInfo->m_pExchange->ExchangeID);
+	if (cInfo == NULL)
 		return NULL;
 
-	WTSCommodityInfo* commInfo = contract->getCommInfo();
+	WTSCommodityInfo* commInfo = cInfo->getCommInfo();
 	WTSSessionInfo* sInfo = commInfo->getSessionInfo();
 
-	WTSTradeInfo *pRet = WTSTradeInfo::create(contract->getCode(), commInfo->getExchg());
-	pRet->setContractInfo(contract);
+	WTSTradeInfo *pRet = WTSTradeInfo::create(cInfo->getCode(), commInfo->getExchg());
+	pRet->setContractInfo(cInfo);
 	pRet->setVolume(tradeField->Volume);
 	pRet->setPrice(tradeField->Price);
 	convert::to_str(pRet->getTradeID(), 64, tradeField->TradeID);

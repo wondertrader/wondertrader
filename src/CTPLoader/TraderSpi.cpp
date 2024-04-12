@@ -298,6 +298,45 @@ inline ContractCategory wrapCategory(TThostFtdcProductClassType cType)
 	}
 }
 
+std::string fillCzceCode(const char* code, uint32_t tdate)
+{
+	if (strlen(code) == 0)
+		return code;
+	static uint32_t yearFlag = UINT_MAX;
+	static uint32_t yearPref = UINT_MAX;
+	static uint32_t nextYPref = UINT_MAX;
+	if (yearFlag == UINT_MAX)
+	{
+		yearFlag = tdate / 10000 % 10;
+		yearPref = tdate / 100000 % 10;
+		nextYPref = (yearPref + 1) % 10;
+	}
+
+	std::string ret;
+	uint32_t pid_len = 0;
+	for (;;)
+	{
+		if (isdigit(code[pid_len++]))
+			break;
+	}
+	pid_len--;
+	uint32_t cYFlag = code[pid_len] - 48;
+	if (yearFlag == 0 || (yearPref != 0 && cYFlag >= yearFlag))
+	{
+		ret.append(code, pid_len);
+		ret.append(convert::to_str(yearPref));
+		ret.append(code + pid_len);
+	}
+	else
+	{
+		ret.append(code, pid_len);
+		ret.append(convert::to_str(nextYPref));
+		ret.append(code + pid_len);
+	}
+
+	return std::move(ret);
+}
+
 
 void CTraderSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
@@ -379,8 +418,19 @@ void CTraderSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CTho
 					if (EncodingHelper::isGBK((unsigned char*)pname.c_str(), pname.size()))
 						pname = ChartoUTF8(pname.c_str());
 
+					
+
 					Contract contract;
-					contract.m_strCode = pInstrument->InstrumentID;
+					if(strcmp(pInstrument->ExchangeID, "CZCE") == 0)
+					{
+						contract.m_strCode = fillCzceCode(pInstrument->InstrumentID, _trading_day);
+						contract.m_strAltCode = pInstrument->InstrumentID;
+					}
+					else
+					{
+						contract.m_strCode = pInstrument->InstrumentID;
+					}
+
 					contract.m_strExchg = pInstrument->ExchangeID;
 					contract.m_strName = cname;
 					contract.m_strProduct = pInstrument->ProductID;
@@ -391,7 +441,10 @@ void CTraderSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CTho
 					contract.m_minLmtQty = pInstrument->MinLimitOrderVolume;
 
 					contract.m_optType = bOption ? (OptionType)pInstrument->OptionsType : OT_None;
-					contract.m_strUnderlying = pInstrument->UnderlyingInstrID;
+					if (strcmp(pInstrument->ExchangeID, "CZCE") == 0)
+						contract.m_strUnderlying = fillCzceCode(pInstrument->UnderlyingInstrID, _trading_day);
+					else
+						contract.m_strUnderlying = pInstrument->UnderlyingInstrID;
 					contract.m_strikePrice = pInstrument->StrikePrice;
 					contract.m_dUnderlyingScale = pInstrument->UnderlyingMultiple;
 
@@ -732,6 +785,7 @@ void CTraderSpi::DumpToJson()
 
 			jcInfo.AddMember("name", rj::Value(cInfo.m_strName.c_str(), allocator), allocator);
 			jcInfo.AddMember("code", rj::Value(cInfo.m_strCode.c_str(), allocator), allocator);
+			jcInfo.AddMember("altcode", rj::Value(cInfo.m_strAltCode.c_str(), allocator), allocator);
 			jcInfo.AddMember("exchg", rj::Value(cInfo.m_strExchg.c_str(), allocator), allocator);
 			jcInfo.AddMember("product", rj::Value(cInfo.m_strProduct.c_str(), allocator), allocator);
 

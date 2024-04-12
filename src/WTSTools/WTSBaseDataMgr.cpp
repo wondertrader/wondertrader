@@ -169,6 +169,7 @@ uint32_t  WTSBaseDataMgr::getContractSize(const char* exchg /* = "" */, uint32_t
 WTSArray* WTSBaseDataMgr::getContracts(const char* exchg /* = "" */, uint32_t uDate /* = 0 */)
 {
 	WTSArray* ay = WTSArray::create();
+	fastest_hashset<WTSContractInfo*> hits;
 	if(strlen(exchg) > 0)
 	{
 		auto it = m_mapExchgContract->find(exchg);
@@ -184,7 +185,17 @@ WTSArray* WTSBaseDataMgr::getContracts(const char* exchg /* = "" */, uint32_t uD
 				 *	if param uDate is not zero, need to check whether contract is valid
 				 */
 				if (uDate == 0 || (cInfo->getOpenDate() <= uDate && cInfo->getExpireDate() >= uDate))
-					ay->append(cInfo, true);
+				{
+					/*
+					 *	By Wesley @ 2024.04.12
+					 *	因为用到了altcode，所以这里可能会有重复，要去重
+					 */
+					if(hits.find(cInfo) == hits.end())
+					{
+						hits.insert(cInfo);
+						ay->append(cInfo, true);
+					}
+				}
 			}
 		}
 	}
@@ -199,7 +210,17 @@ WTSArray* WTSBaseDataMgr::getContracts(const char* exchg /* = "" */, uint32_t uD
 			 *	if param uDate is not zero, need to check whether contract is valid
 			 */
 			if (uDate == 0 || (cInfo->getOpenDate() <= uDate && cInfo->getExpireDate() >= uDate))
-				ay->append(cInfo, true);
+			{
+				/*
+				 *	By Wesley @ 2024.04.12
+				 *	因为用到了altcode，所以这里可能会有重复，要去重
+				 */
+				if (hits.find(cInfo) == hits.end())
+				{
+					hits.insert(cInfo);
+					ay->append(cInfo, true);
+				}
+			}
 		}
 	}
 
@@ -487,6 +508,16 @@ bool WTSBaseDataMgr::loadContracts(const char* filename)
 				jcInfo->getCString("exchg"),
 				pid.c_str());
 
+			/*
+			 *	By Wesley @ 2024.04.12
+			 *	如果配置了altcode，则使用配置的altcode
+			 *	如果没有配置altcode，则使用code作为altcode
+			 */
+			if (jcInfo->has("altcode"))
+				cInfo->setAltCode(jcInfo->getCString("altcode"));
+			else
+				cInfo->setAltCode(code.c_str());
+
 			cInfo->setCommInfo(commInfo);
 
 			uint32_t maxMktQty = 1000000;
@@ -525,11 +556,19 @@ bool WTSBaseDataMgr::loadContracts(const char* filename)
 				contractList = WTSContractList::create();
 				m_mapExchgContract->add(std::string(cInfo->getExchg()), contractList, false);
 			}
-			contractList->add(std::string(cInfo->getCode()), cInfo, false);
-
+			contractList->add(cInfo->getCode(), cInfo, false);
 			m_mapFullCodes->add(cInfo->getFullCode(), cInfo);
-
 			commInfo->addCode(code.c_str());
+
+			/*
+			 *	By Wesley @ 2024.04.12
+			 *	如果altcode不为空，则需要按照altcode建查询索引
+			 */
+			if (jcInfo->has("altcode"))
+			{
+				contractList->add(cInfo->getAltCode(), cInfo, true);
+				m_mapFullCodes->add(fmtutil::format("{}.{}", cInfo->getExchg(), cInfo->getAltCode()), cInfo);
+			}
 
 			std::string key = std::string(cInfo->getCode());
 			WTSArray* ayInst = (WTSArray*)m_mapContracts->get(key);
