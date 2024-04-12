@@ -258,7 +258,7 @@ void ParserFemas::OnRtnDepthMarketData( CUstpFtdcDepthMarketDataField *pDepthMar
 
 	WTSCommodityInfo* pCommInfo = contract->getCommInfo();
 
-	WTSTickData* tick = WTSTickData::create(pDepthMarketData->InstrumentID);
+	WTSTickData* tick = WTSTickData::create(contract->getCode());
 	WTSTickStruct& quote = tick->getTickStruct();
 	strcpy(quote.exchg, pCommInfo->getExchg());
 	tick->setContractInfo(contract);

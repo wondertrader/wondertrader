@@ -268,7 +268,7 @@ void ParserCTPOpt::OnRtnDepthMarketData( CThostFtdcDepthMarketDataField *pDepthM
 
 	WTSCommodityInfo* pCommInfo = cInfo->getCommInfo();
 
-	WTSTickData* tick = WTSTickData::create(pDepthMarketData->InstrumentID);
+	WTSTickData* tick = WTSTickData::create(cInfo->getCode());
 	tick->setContractInfo(cInfo);
 	WTSTickStruct& quote = tick->getTickStruct();
 	strcpy(quote.exchg, pCommInfo->getExchg());
