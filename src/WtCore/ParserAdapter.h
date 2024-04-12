@@ -96,8 +96,7 @@ private:
 	bool				_check_time;
 
 	typedef wt_hashset<std::string>	ExchgFilter;
-	ExchgFilter			_exchg_filter;
-	ExchgFilter			_code_filter;
+	ExchgFilter			_filters;
 	IBaseDataMgr*		_bd_mgr;
 	IHotMgr*			_hot_mgr;
 	IParserStub*		_stub;

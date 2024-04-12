@@ -144,18 +144,7 @@ bool ParserAdapter::init(const char* id, WTSVariant* cfg)
 		auto it = ayFilter.begin();
 		for (; it != ayFilter.end(); it++)
 		{
-			_exchg_filter.insert(*it);
-		}
-	}
-
-	std::string strCodes = cfg->getString("code");
-	if (!strCodes.empty())
-	{
-		const StringVector &ayCodes = StrUtil::split(strCodes, ",");
-		auto it = ayCodes.begin();
-		for (; it != ayCodes.end(); it++)
-		{
-			_code_filter.insert(*it);
+			_filters.insert(*it);
 		}
 	}
 
@@ -166,63 +155,25 @@ bool ParserAdapter::init(const char* id, WTSVariant* cfg)
 		if (_parser_api->init(cfg))
 		{
 			ContractSet contractSet;
-			if (!_code_filter.empty())//优先判断合约过滤器
+			if (!_filters.empty())
 			{
-				ExchgFilter::iterator it = _code_filter.begin();
-				for (; it != _code_filter.end(); it++)
+				WTSArray* allContracts = _bd_mgr->getContracts();
+				for (auto it = allContracts->begin(); it != allContracts->end(); it++)
 				{
-					//全代码,形式如SSE.600000,期货代码为CFFEX.IF2005
-					std::string code, exchg;
-					auto ay = StrUtil::split((*it).c_str(), ".");
-					if (ay.size() == 1)
-						code = ay[0];
-					else if (ay.size() == 2)
-					{
-						exchg = ay[0];
-						code = ay[1];
-					}
-					else if (ay.size() == 3)
-					{
-						exchg = ay[0];
-						code = ay[2];
-					}
-					WTSContractInfo* contract = _bd_mgr->getContract(code.c_str(), exchg.c_str());
-					if (contract)
-						contractSet.insert(contract->getFullAltCode());
-					else
-					{
-						//如果是品种ID，则将该品种下全部合约都加到订阅列表
-						WTSCommodityInfo* commInfo = _bd_mgr->getCommodity(exchg.c_str(), code.c_str());
-						if (commInfo)
-						{
-							const auto& codes = commInfo->getCodes();
-							for (const auto& c : codes)
-							{
-								contractSet.insert(fmt::format("{}.{}", exchg, c.c_str()));
-							}
-						}
-					}
-				}
-			}
-			else if (!_exchg_filter.empty())
-			{
-				ExchgFilter::iterator it = _exchg_filter.begin();
-				for (; it != _exchg_filter.end(); it++)
-				{
-					const char* exchg = (*it).c_str();
-					WTSArray* ayContract = _bd_mgr->getContracts(exchg);
-					auto cnt = ayContract->size();
-					WTSArray::Iterator it = ayContract->begin();
-					for (; it != ayContract->end(); it++)
-					{
-						WTSContractInfo* contract = STATIC_CONVERT(*it, WTSContractInfo*);
-						contractSet.insert(contract->getFullAltCode());
-					}
+					WTSContractInfo* cInfo = STATIC_CONVERT(*it, WTSContractInfo*);
+					auto it1 = _filters.find(cInfo->getExchg());
+					auto it2 = _filters.find(cInfo->getCode());
+					auto it3 = _filters.find(cInfo->getFullCode());
+					auto it4 = _filters.find(cInfo->getFullPid());
+					auto it5 = _filters.find(cInfo->getAltCode());
+					auto it6 = _filters.find(cInfo->getFullAltCode());
 
-					ayContract->release();
-
-					WTSLogger::log_dyn("parser", _id.c_str(), LL_INFO, "[{}] {} contracts of {} added to sublist...", _id.c_str(), cnt, exchg);
+					if (it1 != _filters.end() || it2 != _filters.end()
+						|| it3 != _filters.end() || it4 != _filters.end()
+						|| it5 != _filters.end() || it6 != _filters.end())
+						contractSet.insert(cInfo->getFullAltCode());
 				}
+				allContracts->release();
 			}
 			else
 			{

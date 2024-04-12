@@ -62,9 +62,7 @@ private:
 
 	bool				_stopped;
 
-	typedef wt_hashset<std::string>	ExchgFilter;
-	ExchgFilter			_exchg_filter;
-	ExchgFilter			_code_filter;
+	wt_hashset<std::string>			_filters;
 	WTSVariant*			_cfg;
 	std::string			_id;
 };

@@ -103,18 +103,7 @@ bool ParserAdapter::init(const char* id, WTSVariant* cfg, IParserStub* stub, IBa
 		auto it = ayFilter.begin();
 		for (; it != ayFilter.end(); it++)
 		{
-			_exchg_filter.insert(*it);
-		}
-	}
-
-	std::string strCodes = cfg->getString("code");
-	if (!strCodes.empty())
-	{
-		const StringVector &ayCodes = StrUtil::split(strCodes, ",");
-		auto it = ayCodes.begin();
-		for (; it != ayCodes.end(); it++)
-		{
-			_code_filter.insert(*it);
+			_filters.insert(*it);
 		}
 	}
 
@@ -125,43 +114,38 @@ bool ParserAdapter::init(const char* id, WTSVariant* cfg, IParserStub* stub, IBa
 		if (_parser_api->init(cfg))
 		{
 			ContractSet contractSet;
-			WTSArray* ay = _bd_mgr->getContracts();
-			for(auto it = ay->begin(); it != ay->end(); it++)
+			if (!_filters.empty())
 			{
-				WTSContractInfo* cInfo = STATIC_CONVERT(*it, WTSContractInfo*);
-
-				//先检查合约和品种是否符合条件
-				if(!_code_filter.empty())
+				WTSArray* allContracts = _bd_mgr->getContracts();
+				for (auto it = allContracts->begin(); it != allContracts->end(); it++)
 				{
-					auto cit = _code_filter.find(cInfo->getFullCode());
-					auto pit = _code_filter.find(cInfo->getFullPid());
-					if (cit != _code_filter.end() || pit != _code_filter.end())
-					{
-						contractSet.insert(cInfo->getFullCode());
-						continue;
-					}
-				}
-				
-				//再检查交易所是否符合条件
-				if (!_exchg_filter.empty())
-				{
-					auto eit = _exchg_filter.find(cInfo->getExchg());
-					if (eit != _exchg_filter.end())
-					{
-						contractSet.insert(cInfo->getFullCode());
-						continue;
-					}
-					else
-					{
-						continue;
-					}
-				}
+					WTSContractInfo* cInfo = STATIC_CONVERT(*it, WTSContractInfo*);
+					auto it1 = _filters.find(cInfo->getExchg());
+					auto it2 = _filters.find(cInfo->getCode());
+					auto it3 = _filters.find(cInfo->getFullCode());
+					auto it4 = _filters.find(cInfo->getFullPid());
+					auto it5 = _filters.find(cInfo->getAltCode());
+					auto it6 = _filters.find(cInfo->getFullAltCode());
 
-				if(_code_filter.empty() && _exchg_filter.empty())
-					contractSet.insert(cInfo->getFullCode());
-
+					if (it1 != _filters.end() || it2 != _filters.end()
+						|| it3 != _filters.end() || it4 != _filters.end()
+						|| it5 != _filters.end() || it6 != _filters.end())
+						contractSet.insert(cInfo->getFullAltCode());
+				}
+				allContracts->release();
 			}
-			ay->release();
+			else
+			{
+				WTSArray* ayContract = _bd_mgr->getContracts();
+				WTSArray::Iterator it = ayContract->begin();
+				for (; it != ayContract->end(); it++)
+				{
+					WTSContractInfo* contract = STATIC_CONVERT(*it, WTSContractInfo*);
+					contractSet.insert(contract->getFullAltCode());
+				}
+
+				ayContract->release();
+			}
 
 			_parser_api->subscribe(contractSet);
 			contractSet.clear();
@@ -196,43 +180,38 @@ bool ParserAdapter::initExt(const char* id, IParserApi* api, IParserStub* stub, 
 		if (_parser_api->init(NULL))
 		{
 			ContractSet contractSet;
-			WTSArray* ay = _bd_mgr->getContracts();
-			for (auto it = ay->begin(); it != ay->end(); it++)
+			if (!_filters.empty())
 			{
-				WTSContractInfo* cInfo = STATIC_CONVERT(*it, WTSContractInfo*);
-
-				//先检查合约和品种是否符合条件
-				if (!_code_filter.empty())
+				WTSArray* allContracts = _bd_mgr->getContracts();
+				for (auto it = allContracts->begin(); it != allContracts->end(); it++)
 				{
-					auto cit = _code_filter.find(cInfo->getFullCode());
-					auto pit = _code_filter.find(cInfo->getFullPid());
-					if (cit != _code_filter.end() || pit != _code_filter.end())
-					{
-						contractSet.insert(cInfo->getFullCode());
-						continue;
-					}
+					WTSContractInfo* cInfo = STATIC_CONVERT(*it, WTSContractInfo*);
+					auto it1 = _filters.find(cInfo->getExchg());
+					auto it2 = _filters.find(cInfo->getCode());
+					auto it3 = _filters.find(cInfo->getFullCode());
+					auto it4 = _filters.find(cInfo->getFullPid());
+					auto it5 = _filters.find(cInfo->getAltCode());
+					auto it6 = _filters.find(cInfo->getFullAltCode());
+
+					if (it1 != _filters.end() || it2 != _filters.end()
+						|| it3 != _filters.end() || it4 != _filters.end()
+						|| it5 != _filters.end() || it6 != _filters.end())
+						contractSet.insert(cInfo->getFullAltCode());
 				}
-
-				//再检查交易所是否符合条件
-				if (!_exchg_filter.empty())
-				{
-					auto eit = _exchg_filter.find(cInfo->getExchg());
-					if (eit != _code_filter.end())
-					{
-						contractSet.insert(cInfo->getFullCode());
-						continue;
-					}
-					else
-					{
-						continue;
-					}
-				}
-
-				if (_code_filter.empty() && _exchg_filter.empty())
-					contractSet.insert(cInfo->getFullCode());
-
+				allContracts->release();
 			}
-			ay->release();
+			else
+			{
+				WTSArray* ayContract = _bd_mgr->getContracts();
+				WTSArray::Iterator it = ayContract->begin();
+				for (; it != ayContract->end(); it++)
+				{
+					WTSContractInfo* contract = STATIC_CONVERT(*it, WTSContractInfo*);
+					contractSet.insert(contract->getFullAltCode());
+				}
+
+				ayContract->release();
+			}
 
 			_parser_api->subscribe(contractSet);
 			contractSet.clear();
@@ -289,7 +268,7 @@ void ParserAdapter::handleOrderQueue(WTSOrdQueData* ordQueData)
 	if (_stopped)
 		return;
 
-	if (!_exchg_filter.empty() && (_exchg_filter.find(ordQueData->exchg()) == _exchg_filter.end()))
+	if (!_filters.empty() && (_filters.find(ordQueData->exchg()) == _filters.end()))
 		return;
 
 	if (ordQueData->actiondate() == 0 || ordQueData->tradingdate() == 0)
@@ -310,7 +289,7 @@ void ParserAdapter::handleOrderDetail(WTSOrdDtlData* ordDtlData)
 	if (_stopped)
 		return;
 
-	if (!_exchg_filter.empty() && (_exchg_filter.find(ordDtlData->exchg()) == _exchg_filter.end()))
+	if (!_filters.empty() && (_filters.find(ordDtlData->exchg()) == _filters.end()))
 		return;
 
 	if (ordDtlData->actiondate() == 0 || ordDtlData->tradingdate() == 0)
@@ -331,7 +310,7 @@ void ParserAdapter::handleTransaction(WTSTransData* transData)
 	if (_stopped)
 		return;
 
-	if (!_exchg_filter.empty() && (_exchg_filter.find(transData->exchg()) == _exchg_filter.end()))
+	if (!_filters.empty() && (_filters.find(transData->exchg()) == _filters.end()))
 		return;
 
 	if (transData->actiondate() == 0 || transData->tradingdate() == 0)
