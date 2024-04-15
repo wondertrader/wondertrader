@@ -215,7 +215,9 @@ void TraderAdapter::onRspAccount(WTSArray* ayAccounts)
 
 void TraderAdapter::onPushTrade(WTSTradeInfo* tInfo)
 {
-	WTSContractInfo* cInfo = _bd_mgr->getContract(tInfo->getCode(), tInfo->getExchg());
+	WTSContractInfo* cInfo = tInfo->getContractInfo();
+	if (cInfo == NULL)
+		cInfo = _bd_mgr->getContract(tInfo->getCode(), tInfo->getExchg());
 	if (cInfo == NULL)
 		return;
 
@@ -231,7 +233,9 @@ void TraderAdapter::onRspTrades(const WTSArray* ayTrades)
 		for (std::size_t idx = 0; idx < ayTrades->size(); idx++)
 		{
 			WTSTradeInfo* pItem = (WTSTradeInfo*)((WTSArray*)ayTrades)->at(idx);
-			WTSContractInfo* cInfo = _bd_mgr->getContract(pItem->getCode(), pItem->getExchg());
+			WTSContractInfo* cInfo = pItem->getContractInfo();
+			if (cInfo == NULL)
+				cInfo = _bd_mgr->getContract(pItem->getCode(), pItem->getExchg());
 			if (cInfo == NULL)
 				continue;
 
@@ -253,7 +257,9 @@ void TraderAdapter::onRspOrders(const WTSArray* ayOrders)
 		for (std::size_t idx = 0; idx < ayOrders->size(); idx++)
 		{
 			WTSOrderInfo* pItem = (WTSOrderInfo*)((WTSArray*)ayOrders)->at(idx);
-			WTSContractInfo* cInfo = _bd_mgr->getContract(pItem->getCode(), pItem->getExchg());
+			WTSContractInfo* cInfo = pItem->getContractInfo();
+			if (cInfo == NULL)
+				cInfo = _bd_mgr->getContract(pItem->getCode(), pItem->getExchg());
 			if (cInfo == NULL)
 				continue;
 
@@ -270,7 +276,9 @@ void TraderAdapter::onRspOrders(const WTSArray* ayOrders)
 
 void TraderAdapter::onPushOrder(WTSOrderInfo* oInfo)
 {
-	WTSContractInfo* cInfo = _bd_mgr->getContract(oInfo->getCode(), oInfo->getExchg());
+	WTSContractInfo* cInfo = oInfo->getContractInfo();
+	if(cInfo == NULL)
+		cInfo = _bd_mgr->getContract(oInfo->getCode(), oInfo->getExchg());
 	if (cInfo == NULL)
 		return;
 
@@ -293,7 +301,10 @@ void TraderAdapter::onRspPosition(const WTSArray* ayPositions)
 		for (std::size_t idx = 0; idx < ((WTSArray*)ayPositions)->size(); idx++)
 		{
 			WTSPositionItem* pItem = (WTSPositionItem*)(((WTSArray*)ayPositions)->at(idx));
-			WTSContractInfo* cInfo = _bd_mgr->getContract(pItem->getCode());
+
+			WTSContractInfo* cInfo = pItem->getContractInfo();
+			if (cInfo == NULL)
+				cInfo = _bd_mgr->getContract(pItem->getCode(), pItem->getExchg());
 			if (cInfo == NULL)
 				continue;
 			WTSCommodityInfo* commInfo = cInfo->getCommInfo();
