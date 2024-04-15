@@ -16,8 +16,7 @@
 
 #include "../WTSUtils/WTSCfgLoader.h"
 
-#include <filesystem>
-namespace fs = std::filesystem;
+#include <boost/filesystem.hpp>
 
 #include <rapidjson/document.h>
 #include <rapidjson/prettywriter.h>
@@ -197,7 +196,8 @@ void CTraderSpi::ReqQryCommission(const Contract& cInfo)
 		memset(&req, 0, sizeof(req));
 		strcpy(req.BrokerID, BROKER_ID.c_str());
 		strcpy(req.InvestorID, INVESTOR_ID.c_str());
-		strcpy(req.InstrumentID, cInfo.m_strCode.c_str());
+		if(cInfo.m_strAltCode.empty())
+		strcpy(req.InstrumentID, cInfo.m_strAltCode.empty()? cInfo.m_strCode.c_str() :cInfo.m_strAltCode.c_str());
 		strcpy(req.ExchangeID, cInfo.m_strExchg.c_str());
 		int iResult = pUserApi->ReqQryInstrumentCommissionRate(&req, ++iRequestID);
 		std::cerr << "--->>> Quering commission ratio: " << ((iResult == 0) ? "succeed" : "failed") << std::endl;
@@ -216,7 +216,7 @@ void CTraderSpi::ReqQryMargin(const Contract& cInfo)
 		memset(&req, 0, sizeof(req));
 		strcpy(req.BrokerID, BROKER_ID.c_str());
 		strcpy(req.InvestorID, INVESTOR_ID.c_str());
-		strcpy(req.InstrumentID, cInfo.m_strCode.c_str());
+		strcpy(req.InstrumentID, cInfo.m_strAltCode.empty() ? cInfo.m_strCode.c_str() : cInfo.m_strAltCode.c_str());
 		strcpy(req.ExchangeID, cInfo.m_strExchg.c_str());
 		req.HedgeFlag = THOST_FTDC_HF_Speculation;
 		int iResult = pUserApi->ReqQryInstrumentMarginRate(&req, ++iRequestID);
@@ -412,13 +412,8 @@ void CTraderSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CTho
 					//合约名称转成UTF8
 					cname = StrUtil::trim(cname.c_str());
 
-					if (!EncodingHelper::isGBK((unsigned char*)cname.c_str(), cname.size()))
+					if (!EncodingHelper::isUtf8((unsigned char*)cname.c_str(), cname.size()))
 						cname = ChartoUTF8(cname);
-
-					if (EncodingHelper::isGBK((unsigned char*)pname.c_str(), pname.size()))
-						pname = ChartoUTF8(pname.c_str());
-
-					
 
 					Contract contract;
 					if(strcmp(pInstrument->ExchangeID, "CZCE") == 0)
@@ -534,7 +529,8 @@ void CTraderSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CTho
 			for (auto& v : _contracts)
 			{
 				const Contract& cInfo = v.second;
-				if(!SET_FILTERS.empty() && SET_FILTERS.find(cInfo.m_strCode) == SET_FILTERS.end() && SET_FILTERS.find(cInfo.m_strProduct) == SET_FILTERS.end())
+				if(!SET_FILTERS.empty() && SET_FILTERS.find(cInfo.m_strCode) == SET_FILTERS.end() 
+					&& SET_FILTERS.find(cInfo.m_strProduct) == SET_FILTERS.end() && SET_FILTERS.find(cInfo.m_strAltCode) == SET_FILTERS.end())
 					continue;
 
 				ReqQryCommission(cInfo);
@@ -712,7 +708,7 @@ void CTraderSpi::DumpFees()
 
 	std::ofstream ofs;
 	std::string path;
-	if (fs::path(FEES_FILE).is_absolute())
+	if (boost::filesystem::path(FEES_FILE).is_absolute())
 	{
 		path = FEES_FILE;
 	}

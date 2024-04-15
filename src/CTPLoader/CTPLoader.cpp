@@ -17,8 +17,7 @@
 #include "../Includes/WTSVariant.hpp"
 USING_NS_WTP;
 
-#include <filesystem>
-namespace fs = std::filesystem;
+#include <boost/filesystem.hpp>
 
 // UserApi对象
 CThostFtdcTraderApi* pUserApi;
@@ -267,7 +266,7 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 		printf("Loading CreateFtdcTraderApi failed\r\n");
 
 	std::string flowPath = fmtutil::format("./CTPFlow/{}/{}/", BROKER_ID, INVESTOR_ID);
-	fs::create_directories(flowPath.c_str());
+	boost::filesystem::create_directories(flowPath.c_str());
 	pUserApi = g_ctpCreator(flowPath.c_str());
 	CTraderSpi* pUserSpi = new CTraderSpi();
 	pUserApi->RegisterSpi((CThostFtdcTraderSpi*)pUserSpi);			// 注册事件类
