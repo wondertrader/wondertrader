@@ -1875,7 +1875,19 @@ bool WtDataWriter::dump_day_data(WTSContractInfo* ct, WTSBarStruct* newBar)
 	ss << _base_dir << "his/day/" << ct->getExchg() << "/";
 	std::string path = ss.str();
 	StdFile::create_directories(ss.str().c_str());
+
 	std::string filename = fmtutil::format("{}{}.dsb", path, ct->getCode());
+	/*
+	 *	By Wesley @ 2024.04.15
+	 *	如果code和altcode不一样(一般是郑商所)
+	 *	就需要检查altcode的文件名，如果存在则重命名成新的4位月份合约代码对应的文件名
+	 */
+	if (strcmp(ct->getCode(), ct->getAltCode()) != 0 && strlen(ct->getAltCode()) > 0)
+	{
+		std::string altfilename = fmtutil::format("{}{}.dsb", path, ct->getAltCode());
+		if (StdFile::exists(altfilename.c_str()))
+			rename(altfilename.c_str(), filename.c_str());
+	}
 
 	bool bNew = false;
 	if (!StdFile::exists(filename.c_str()))
@@ -2020,7 +2032,19 @@ uint32_t WtDataWriter::dump_bars_to_file(WTSContractInfo* ct)
 			StdFile::create_directories(ss.str().c_str());
 			std::string path = ss.str();
 			StdFile::create_directories(ss.str().c_str());
+
 			std::string filename = fmtutil::format("{}{}.dsb", path, ct->getCode());
+			/*
+			 *	By Wesley @ 2024.04.15
+			 *	如果code和altcode不一样(一般是郑商所)
+			 *	就需要检查altcode的文件名，如果存在则重命名成新的4位月份合约代码对应的文件名
+			 */
+			if(strcmp(ct->getCode(), ct->getAltCode()) != 0 && strlen(ct->getAltCode())>0)
+			{
+				std::string altfilename = fmtutil::format("{}{}.dsb", path, ct->getAltCode());
+				if(StdFile::exists(altfilename.c_str()))
+					rename(altfilename.c_str(), filename.c_str());
+			}
 
 			bool bNew = false;
 			if (!StdFile::exists(filename.c_str()))
@@ -2087,7 +2111,19 @@ uint32_t WtDataWriter::dump_bars_to_file(WTSContractInfo* ct)
 			StdFile::create_directories(ss.str().c_str());
 			std::string path = ss.str();
 			StdFile::create_directories(ss.str().c_str());
-			std::string filename = fmtutil::format("{}{}.dsb", path.c_str(), ct->getCode());
+
+			std::string filename = fmtutil::format("{}{}.dsb", path, ct->getCode());
+			/*
+			 *	By Wesley @ 2024.04.15
+			 *	如果code和altcode不一样(一般是郑商所)
+			 *	就需要检查altcode的文件名，如果存在则重命名成新的4位月份合约代码对应的文件名
+			 */
+			if (strcmp(ct->getCode(), ct->getAltCode()) != 0 && strlen(ct->getAltCode()) > 0)
+			{
+				std::string altfilename = fmtutil::format("{}{}.dsb", path, ct->getAltCode());
+				if (StdFile::exists(altfilename.c_str()))
+					rename(altfilename.c_str(), filename.c_str());
+			}
 
 			bool bNew = false;
 			if (!StdFile::exists(filename.c_str()))
