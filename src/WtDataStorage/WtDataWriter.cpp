@@ -1740,7 +1740,12 @@ uint32_t WtDataWriter::dump_bars_via_dumper(WTSContractInfo* ct)
 		}
 
 		count++;
-		kBlkPair->_block->_size = 0;
+
+		/*
+		 *	By Wesley @ 2024.04.16
+		 *	这里不能清除数据大小，因为后面还要存到文件中
+		 */
+		//kBlkPair->_block->_size = 0;
 	}
 
 	if (kBlkPair)
@@ -1769,7 +1774,12 @@ uint32_t WtDataWriter::dump_bars_via_dumper(WTSContractInfo* ct)
 		}
 
 		count++;
-		kBlkPair->_block->_size = 0;
+
+		/*
+		 *	By Wesley @ 2024.04.16
+		 *	这里不能清除数据大小，因为后面还要存到文件中
+		 */
+		//kBlkPair->_block->_size = 0;
 	}
 
 	if (kBlkPair)
