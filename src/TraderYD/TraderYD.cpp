@@ -199,6 +199,7 @@ constexpr inline const char* getErrorMsg(int ydError) noexcept
 	case YD_ERROR_ExchangeReportError: return "ExchangeReportError";
 
 	//上期所的错误码
+	case 1026:	return "NotInTradingTime";
 	case 1028:	return "OrderAllTraded";
 	default:
 		return "Unknown Error";
