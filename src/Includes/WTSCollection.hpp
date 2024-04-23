@@ -173,11 +173,11 @@ public:
 		if(bAutoRetain && obj)
 			obj->retain();
 
-		WTSObject* oldObj = _vec.at(idx);
-		if(oldObj)
-			oldObj->release();
+		//WTSObject* oldObj = _vec.at(idx);
+		std::swap(_vec.at(idx), obj);
 
-		_vec[idx] = obj;
+		if(obj)
+			obj->release();
 	}
 
 	inline
