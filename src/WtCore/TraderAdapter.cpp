@@ -698,7 +698,28 @@ OrderIDs TraderAdapter::buy(const char* stdCode, double price, double qty, int f
 	double unitQty = (price == 0.0) ? cInfo->getMaxMktVol() : cInfo->getMaxLmtVol();
 	if (decimal::eq(unitQty, 0))
 		unitQty = DBL_MAX;
+	bool _is_net = (commInfo->getCoverMode() == CM_None ? true : false);
+	if (_is_net)
+	{
+		double maxQty = left;
+		double leftQty = maxQty;
+		for (;;)
+		{
+			double curQty = min(leftQty, unitQty);
+			uint32_t localid = openLong(stdCode, price, curQty, flag, cInfo);
+			ret.emplace_back(localid);
 
+			leftQty -= curQty;
+
+			if (decimal::eq(leftQty, 0))
+				break;
+		}
+
+		left -= maxQty;
+
+		WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO,
+			"[{}] Signal of buying {} of quantity {} triggered: Opening long of quantity {}", _id.c_str(), stdCode, qty, maxQty);
+	}
 	for (auto it = ruleGP.begin(); it != ruleGP.end(); it++)
 	{
 		const ActionRule& curRule = (*it);
@@ -990,7 +1011,28 @@ OrderIDs TraderAdapter::sell(const char* stdCode, double price, double qty, int 
 	double unitQty = (price == 0.0) ? cInfo->getMaxMktVol() : cInfo->getMaxLmtVol();
 	if (decimal::eq(unitQty, 0))
 		unitQty = DBL_MAX;
+	bool _is_net = (commInfo->getCoverMode() == CM_None ? true : false);
+	if (_is_net)
+	{
+		double maxQty = left;
+		double leftQty = maxQty;
+		for (;;)
+		{
+			double curQty = min(leftQty, unitQty);
+			uint32_t localid = openShort(stdCode, price, curQty, flag, cInfo);
+			ret.emplace_back(localid);
 
+			leftQty -= curQty;
+
+			if (decimal::eq(leftQty, 0))
+				break;
+		}
+
+		left -= maxQty;
+
+		WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO,
+			"[{}] Signal of selling {} of quantity {} triggered: Opening short of quantity {}", _id.c_str(), stdCode, qty, maxQty);
+	}
 	for (auto it = ruleGP.begin(); it != ruleGP.end(); it++)
 	{
 		const ActionRule& curRule = (*it);
