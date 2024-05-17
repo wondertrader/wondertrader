@@ -316,6 +316,13 @@ void TraderYD::notifyFailedOrder(const YDInputOrder *pFailedOrder, const YDInstr
 		entrust->release();
 		err->release();
 	}
+	else
+	{
+		WTSError* error = makeError(pFailedOrder->ErrorNo, WEC_ORDERINSERT);
+		if (m_sink)
+			m_sink->onTraderError(error);
+		error->release();
+	}
 }
 
 void TraderYD::notifyFailedCancelOrder(const YDFailedCancelOrder *pFailedCancelOrder, const YDExchange *pExchange, const YDAccount *pAccount)
@@ -332,6 +339,7 @@ void TraderYD::notifyFailedCancelOrder(const YDFailedCancelOrder *pFailedCancelO
 		WTSError* error = makeError(pFailedCancelOrder->ErrorNo, WEC_ORDERCANCEL);
 		if (m_sink)
 			m_sink->onTraderError(error);
+		error->release();
 	}	
 }
 
