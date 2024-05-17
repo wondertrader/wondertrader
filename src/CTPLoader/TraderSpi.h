@@ -9,6 +9,8 @@
 #include <queue>
 #include <boost/thread.hpp>
 
+using namespace loader;
+
 typedef std::function<bool()> QueryTask;
 
 class CTraderSpi : public CThostFtdcTraderSpi
