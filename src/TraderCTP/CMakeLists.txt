@@ -22,6 +22,7 @@ ELSE(GNUCC)
 	SET(LIBS
 		pthread
 		stdc++fs
+        boost_filesystem
 		dl
 	)
 	TARGET_LINK_LIBRARIES(TraderCTP ${LIBS})
