@@ -1211,6 +1211,9 @@ bool WtDataReader::cacheIntegratedBars(void* codeInfo, const std::string& key, c
 		uint32_t eIdx = pBar - firstBar;
 		if ((period == KP_DAY && pBar->date > eBar.date) || (period != KP_DAY && pBar->time > eBar.time))
 		{
+			if (eIdx == 0)
+				break;
+
 			pBar--;
 			eIdx--;
 		}
