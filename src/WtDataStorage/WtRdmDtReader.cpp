@@ -497,6 +497,9 @@ WTSTickSlice* WtRdmDtReader::readTickSliceByRange(const char* stdCode, uint64_t 
 			std::size_t eIdx = pTick - tBlock->_ticks;
 			if (pTick->action_date > eTick.action_date || pTick->action_time >= eTick.action_time)
 			{
+				if (eIdx == 0)
+					break;
+
 				pTick--;
 				eIdx--;
 			}
@@ -570,6 +573,9 @@ WTSTickSlice* WtRdmDtReader::readTickSliceByRange(const char* stdCode, uint64_t 
 		//如果光标定位的tick时间比目标时间大, 则全部回退一个
 		if (pTick->action_date > eTick.action_date || pTick->action_time > eTick.action_time)
 		{
+			if (eIdx == 0)
+				break;
+
 			pTick--;
 			eIdx--;
 		}
@@ -1298,6 +1304,7 @@ bool WtRdmDtReader::cacheHisBarsFromFile(void* codeInfo, const std::string& key,
 					continue;
 				}
 
+				pBar = NULL;
 				pBar = std::lower_bound(firstBar + sIdx, firstBar + (barcnt - 1), eBar, [period](const WTSBarStruct& a, const WTSBarStruct& b){
 					if (period == KP_DAY)
 					{
@@ -1312,6 +1319,9 @@ bool WtRdmDtReader::cacheHisBarsFromFile(void* codeInfo, const std::string& key,
 				std::size_t eIdx = pBar - firstBar;
 				if ((period == KP_DAY && pBar->date > eBar.date) || (period != KP_DAY && pBar->time > eBar.time))
 				{
+					if(eIdx == 0)
+						break;
+
 					pBar--;
 					eIdx--;
 				}
@@ -2448,6 +2458,9 @@ WTSTickSlice* WtRdmDtReader::readTickSliceByCount(const char* stdCode, uint32_t 
 		//如果光标定位的tick时间比目标时间大, 则全部回退一个
 		if (pTick->action_date > eTick.action_date || pTick->action_time > eTick.action_time)
 		{
+			if (eIdx == 0)
+				break;
+
 			pTick--;
 			eIdx--;
 		}
@@ -2571,6 +2584,9 @@ WTSTickSlice* WtRdmDtReader::readTickSliceByCount(const char* stdCode, uint32_t 
 			std::size_t eIdx = pTick - tBlock->_ticks;
 			if (pTick->action_date > eTick.action_date || pTick->action_time >= eTick.action_time)
 			{
+				if (eIdx == 0)
+					break;
+
 				pTick--;
 				eIdx--;
 			}
