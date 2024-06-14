@@ -32,6 +32,8 @@ inline const char* encode_text(const char* s)
 
 USING_NS_WTP;
 
+using namespace loader;
+
 extern std::map<std::string, std::string>	MAP_NAME;
 extern std::map<std::string, std::string>	MAP_SESSION;
 
