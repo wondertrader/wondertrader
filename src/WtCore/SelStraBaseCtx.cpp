@@ -25,6 +25,9 @@
 
 #include "../WTSTools/WTSLogger.h"
 
+#include <boost/filesystem.hpp>
+namespace fs = boost::filesystem;
+
 namespace rj = rapidjson;
 
 inline uint32_t makeSelCtxId()
@@ -58,7 +61,7 @@ void SelStraBaseCtx::init_outputs()
 	std::string folder = WtHelper::getOutputDir();
 	folder += _name;
 	folder += "//";
-	StdFile::create_directories(folder.c_str());
+	fs::create_directories(folder.c_str());
 
 	std::string filename = folder + "trades.csv";
 	_trade_logs.reset(new BoostFile());

@@ -12,6 +12,9 @@
 #include "../Includes/IHotMgr.h"
 #include "../Includes/WTSDataDef.hpp"
 
+#include <boost/filesystem.hpp>
+namespace fs = boost::filesystem;
+
 //By Wesley @ 2022.01.05
 #include "../Share/fmtlib.h"
 template<typename... Args>
@@ -415,7 +418,7 @@ WtRdmDtReaderAD::WtLMDBPtr WtRdmDtReaderAD::get_k_db(const char* exchg, WTSKline
 
 	WtLMDBPtr dbPtr(new WtLMDB(true));
 	std::string path = fmtutil::format("{}{}/{}/", _base_dir.c_str(), subdir.c_str(), exchg);
-	std::filesystem::create_directories(path);
+	fs::create_directories(path);
 	if (!dbPtr->open(path.c_str()))
 	{
 		pipe_rdmreader_log(_sink, LL_ERROR, "Opening {} db if {} failed: {}", subdir, exchg, dbPtr->errmsg());
@@ -439,7 +442,7 @@ WtRdmDtReaderAD::WtLMDBPtr WtRdmDtReaderAD::get_t_db(const char* exchg, const ch
 
 	WtLMDBPtr dbPtr(new WtLMDB(true));
 	std::string path = fmtutil::format("{}ticks/{}/{}", _base_dir.c_str(), exchg, code);
-	std::filesystem::create_directories(path);
+	fs::create_directories(path);
 	if (!dbPtr->open(path.c_str()))
 	{
 		pipe_rdmreader_log(_sink, LL_ERROR, "Opening tick db of {}.{} failed: {}", exchg, code, dbPtr->errmsg());

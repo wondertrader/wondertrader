@@ -37,6 +37,9 @@
 #include <rapidjson/document.h>
 #include <rapidjson/prettywriter.h>
 
+#include <boost/filesystem.hpp>
+namespace fs = boost::filesystem;
+
 namespace rj = rapidjson;
 
 uint32_t makeLocalOrderID()
@@ -240,7 +243,7 @@ void TraderAdapter::initSaveData()
 	std::stringstream ss;
 	ss << WtHelper::getBaseDir() << "traders/" << _id << "//";
 	std::string folder = ss.str();
-	StdFile::create_directories(folder.c_str());
+	fs::create_directories(folder.c_str());
 
 	std::string filename = folder + "trades.csv";
 	_trades_log.reset(new BoostFile());

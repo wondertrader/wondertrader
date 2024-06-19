@@ -18,6 +18,11 @@ SET(LIBS
 INCLUDE_DIRECTORIES(${INCS})
 LINK_DIRECTORIES(${LNKS})
 
+LIST(APPEND LIBS
+    dl
+    boost_filesystem
+    )
+
 ADD_EXECUTABLE(TestExecPorter ${SRCS})
 TARGET_LINK_LIBRARIES(TestExecPorter ${LIBS})
 

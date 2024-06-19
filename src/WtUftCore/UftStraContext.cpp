@@ -27,6 +27,9 @@
 #include "../WTSTools/WTSLogger.h"
 #include "../WTSUtils/WTSCfgLoader.h"
 
+#include <boost/filesystem.hpp>
+namespace fs = boost::filesystem;
+
 static const uint32_t DATA_SIZE_STEP = 8000;	//信息量每天最多4000
 
 USING_NS_WTP;
@@ -1032,7 +1035,7 @@ void UftStraContext::load_local_data()
 
 	std::string folder = fmtutil::format("{}{}/", WtHelper::getOutputDir(), _name);
 	if (!StdFile::exists(folder.c_str()))
-		StdFile::create_directories(folder.c_str());
+		fs::create_directories(folder.c_str());
 
 	/*
 	 *	By Wesley @ 2023.09.08
@@ -1120,7 +1123,7 @@ void UftStraContext::load_local_data()
 
 	//不管前面解析的情况如何，文件都重命名
 	if (StdFile::exists(mannualfile.c_str()))
-		std::filesystem::rename(std::filesystem::path(mannualfile), std::filesystem::path(fmtutil::format("{}.{}", mannualfile, TimeUtils::getYYYYMMDDhhmmss())));
+		fs::rename(fs::path(mannualfile), fs::path(fmtutil::format("{}.{}", mannualfile, TimeUtils::getYYYYMMDDhhmmss())));
 
 	if(_pos_blk._block == NULL || _pos_blk._block->_date != _tradingday)
 	{

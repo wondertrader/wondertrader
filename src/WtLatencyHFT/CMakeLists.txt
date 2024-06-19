@@ -31,7 +31,8 @@ ELSE(GNUCC)
 		dl
 		pthread
 		boost_thread
-		stdc++fs)
+		boost_filesystem
+        stdc++fs)
 	IF(WIN32)
 		LIST(APPEND LIBS
 			ws2_32 iconv)

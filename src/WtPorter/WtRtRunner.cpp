@@ -33,8 +33,8 @@
 #ifdef _MSC_VER
 #include "../Common/mdump.h"
 
-#include <filesystem>
-namespace fs = std::filesystem;
+#include <boost/filesystem.hpp>
+namespace fs = boost::filesystem;
 
 
  //这个主要是给MiniDumper用的
