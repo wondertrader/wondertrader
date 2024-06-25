@@ -362,6 +362,11 @@ bool WTSBaseDataMgr::loadCommodities(const char* filename)
 			parseCommodity(commInfo, jPInfo);
 
 			WTSSessionInfo* sInfo = getSession(sid);
+			if(sInfo == NULL)
+			{
+				WTSLogger::error("Session {} of {}.{} not exists", sid, exchg, pid);
+				continue;
+			}
 			commInfo->setSessionInfo(sInfo);
 
 			_comm_list->append(commInfo, false);
