@@ -11,6 +11,9 @@
 
 #include "../Includes/IBaseDataMgr.h"
 
+#include <boost/filesystem.hpp>
+namespace fs = boost::filesystem;
+
 using namespace std;
 
 //By Wesley @ 2022.01.05
@@ -75,7 +78,7 @@ bool WtDataWriterAD::init(WTSVariant* params, IDataWriterSink* sink)
 
 	_base_dir = StrUtil::standardisePath(params->getCString("path"));
 	if (!StdFile::exists(_base_dir.c_str()))
-		StdFile::create_directories(_base_dir.c_str());
+		fs::create_directories(_base_dir.c_str());
 
 	_cache_file_tick = "cache_tick.dmb";
 	_m1_cache._filename = "cache_m1.dmb";

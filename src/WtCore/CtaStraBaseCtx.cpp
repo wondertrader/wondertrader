@@ -24,8 +24,10 @@ namespace rj = rapidjson;
 #include "../Share/decimal.h"
 #include "../Share/CodeHelper.hpp"
 #include "../Share/Converter.hpp"
-
 #include "../WTSTools/WTSLogger.h"
+
+#include <boost/filesystem.hpp>
+namespace fs = boost::filesystem;
 
 const char* CMP_ALG_NAMES[] =
 {
@@ -77,7 +79,7 @@ void CtaStraBaseCtx::init_outputs()
 	std::string folder = WtHelper::getOutputDir();
 	folder += _name;
 	folder += "//";
-	StdFile::create_directories(folder.c_str());	
+	fs::create_directories(folder.c_str());	
 
 	std::string filename = folder + "trades.csv";
 	_trade_logs.reset(new BoostFile());
@@ -741,7 +743,7 @@ void CtaStraBaseCtx::dump_chart_info()
 	folder += "/";
 
 	if (!StdFile::exists(folder.c_str()))
-		StdFile::create_directories(folder.c_str());
+		fs::create_directories(folder.c_str());
 
 	std::string filename = folder;
 	filename += "rtchart.json";

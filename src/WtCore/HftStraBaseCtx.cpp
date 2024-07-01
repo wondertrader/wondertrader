@@ -26,6 +26,10 @@
 #include <rapidjson/prettywriter.h>
 namespace rj = rapidjson;
 
+#include <boost/filesystem.hpp>
+namespace fs = boost::filesystem;
+
+
 USING_NS_WTP;
 
 inline uint32_t makeHftCtxId()
@@ -66,7 +70,7 @@ void HftStraBaseCtx::init_outputs()
 	std::string folder = WtHelper::getOutputDir();
 	folder += _name;
 	folder += "//";
-	StdFile::create_directories(folder.c_str());
+	fs::create_directories(folder.c_str());
 
 	std::string filename = folder + "trades.csv";
 	_trade_logs.reset(new BoostFile());

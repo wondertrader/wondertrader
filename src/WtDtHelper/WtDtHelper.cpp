@@ -23,8 +23,10 @@
 #include "../Includes/WTSDataDef.hpp"
 #include "../Includes/WTSSessionInfo.hpp"
 
-#include <rapidjson/document.h>
+#include <boost/filesystem.hpp>
+namespace fs = boost::filesystem;
 
+#include <rapidjson/document.h>
 namespace rj = rapidjson;
 
 USING_NS_WTP;
@@ -171,13 +173,13 @@ void dump_bars(WtString binFolder, WtString csvFolder, WtString strFilter /* = "
 	}
 
 	if (!StdFile::exists(csvFolder))
-		StdFile::create_directories(csvFolder);
+		fs::create_directories(csvFolder);
 
-	std::filesystem::path myPath(srcFolder);
-	std::filesystem::directory_iterator endIter;
-	for (std::filesystem::directory_iterator iter(myPath); iter != endIter; iter++)
+	fs::path myPath(srcFolder);
+	fs::directory_iterator endIter;
+	for (fs::directory_iterator iter(myPath); iter != endIter; iter++)
 	{
-		if (std::filesystem::is_directory(iter->path()))
+		if (fs::is_directory(iter->path()))
 			continue;
 
 		if (iter->path().extension() != ".dsb")
@@ -276,13 +278,13 @@ void dump_ticks(WtString binFolder, WtString csvFolder, WtString strFilter /* = 
 	}
 
 	if (!StdFile::exists(csvFolder))
-		StdFile::create_directories(csvFolder);
+		fs::create_directories(csvFolder);
 
-	std::filesystem::path myPath(srcFolder);
-	std::filesystem::directory_iterator endIter;
-	for (std::filesystem::directory_iterator iter(myPath); iter != endIter; iter++)
+	fs::path myPath(srcFolder);
+	fs::directory_iterator endIter;
+	for (fs::directory_iterator iter(myPath); iter != endIter; iter++)
 	{
-		if (std::filesystem::is_directory(iter->path()))
+		if (fs::is_directory(iter->path()))
 			continue;
 
 		if (iter->path().extension() != ".dsb")
@@ -377,7 +379,7 @@ void trans_csv_bars(WtString csvFolder, WtString binFolder, WtString period, Fun
 		return;
 
 	if (!StdFile::exists(binFolder))
-		StdFile::create_directories(binFolder);
+		fs::create_directories(binFolder);
 
 	WTSKlinePeriod kp = KP_DAY;
 	if (wt_stricmp(period, "m1") == 0)
@@ -387,11 +389,11 @@ void trans_csv_bars(WtString csvFolder, WtString binFolder, WtString period, Fun
 	else
 		kp = KP_DAY;
 
-	std::filesystem::path myPath(csvFolder);
-	std::filesystem::directory_iterator endIter;
-	for (std::filesystem::directory_iterator iter(myPath); iter != endIter; iter++)
+	fs::path myPath(csvFolder);
+	fs::directory_iterator endIter;
+	for (fs::directory_iterator iter(myPath); iter != endIter; iter++)
 	{
-		if (std::filesystem::is_directory(iter->path()))
+		if (fs::is_directory(iter->path()))
 			continue;
 
 		if (iter->path().extension() != ".csv")

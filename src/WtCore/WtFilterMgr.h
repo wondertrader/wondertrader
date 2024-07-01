@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include <string>
-#include <filesystem>
-namespace fs = std::filesystem;
+#include <boost/filesystem.hpp>
+namespace fs = boost::filesystem;
 
 #include "../Includes/FasterDefs.h"
 #include "../Includes/WTSMarcos.h"
@@ -81,7 +81,7 @@ private:
 	ExecuterFilters	_exec_filters;
 
 	std::string			_filter_file;	//过滤器配置文件
-	fs::file_time_type	_filter_timestamp;	//过滤器文件时间戳
+	time_t				_filter_timestamp;	//过滤器文件时间戳
 	bool				_is_first;
 
 	EventNotifier*	_notifier;
