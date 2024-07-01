@@ -89,11 +89,11 @@ void test_porter()
 #else
 	DLLHelper::load_library("libWtPorter.so");
 #endif
-	init_porter("logcfg.json", true, "./generated");
+	init_porter("logcfg.yaml", true, "./generated");
 
 	reg_hft_factories("./hft");
 
-	config_porter("config.json", true);
+	config_porter("config.yaml", true);
 
 	run_porter(true);
 
