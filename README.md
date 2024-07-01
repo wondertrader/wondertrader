@@ -147,7 +147,7 @@
 #### 写在最后
 * * *
 * 关注公众号`wondertrader`，可以收到`WonderTrader`的实时资讯
-* 用户交流QQ群上线：`610730738`(加入前请先`star`一下, 然后提供`github`用户名)
+* 用户交流QQ群上线：一群`610730738`(已满)   二群`367916500` (加入前请先`star`一下, 然后提供`github`用户名)
 * 更多`WonderTrader`的文档请看<https://docs.wondertrader.com/>
 * `WonderTrader`半官方文档 <https://dumengru.github.io/docs_wondertrader/>
 * @ZzzzHeJ的`WonderTrader`学习笔记<https://zzzzhej.github.io/WonderTrader-Learning-Notes/>
