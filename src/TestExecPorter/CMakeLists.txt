@@ -20,7 +20,6 @@ LINK_DIRECTORIES(${LNKS})
 
 LIST(APPEND LIBS
     dl
-    boost_filesystem
     )
 
 ADD_EXECUTABLE(TestExecPorter ${SRCS})
