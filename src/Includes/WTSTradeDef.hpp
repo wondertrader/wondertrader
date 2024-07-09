@@ -126,7 +126,12 @@ public:
 
 	constexpr inline void setNetDirection(bool isBuy) noexcept { m_bIsNet = true; m_bIsBuy = isBuy; }
 	constexpr inline bool isNet() const  noexcept { return m_bIsNet; }
-	constexpr inline bool isBuy() const  noexcept { return m_bIsBuy; }
+	constexpr inline bool isNetBuy() const  noexcept { return m_bIsBuy; }
+
+	constexpr inline bool isBuyAction() const noexcept
+	{
+		return (m_direction == WDT_LONG && m_offsetType == WOT_OPEN) || (m_direction == WDT_SHORT && m_offsetType != WOT_OPEN);
+	}
 
 	constexpr inline void setContractInfo(WTSContractInfo* cInfo) noexcept { m_pContract = cInfo; }
 	constexpr inline WTSContractInfo* getContractInfo() const  noexcept { return m_pContract; }
@@ -363,7 +368,7 @@ public:
 
 	constexpr inline void setNetDirection(bool isBuy)  noexcept { m_bIsNet = true; m_bIsBuy = isBuy; }
 	constexpr inline bool isNet() const  noexcept { return m_bIsNet; }
-	constexpr inline bool isBuy() const  noexcept { return m_bIsBuy; }
+	constexpr inline bool isNetBuy() const  noexcept { return m_bIsBuy; }
 
 	constexpr inline void setContractInfo(WTSContractInfo* cInfo)  noexcept { m_pContract = cInfo; }
 	constexpr inline WTSContractInfo* getContractInfo() const  noexcept { return m_pContract; }
@@ -429,8 +434,8 @@ typedef struct _WTSTradeStruct
 	double		m_dVolume;
 	double		m_dPrice;
 
-	bool		m_bIsNet;
-	bool		m_bIsBuy;
+	bool		m_bIsNet;		//是否是净头寸模式
+	bool		m_bIsBuy;		//是否是净头寸买
 
 	WTSDirectionType	m_direction;
 	WTSOffsetType		m_offsetType;
@@ -533,7 +538,7 @@ public:
 
 	constexpr inline void setNetDirection(bool isBuy) noexcept { m_bIsNet = true; m_bIsBuy = isBuy; }
 	constexpr inline bool isNet() const noexcept { return m_bIsNet; }
-	constexpr inline bool isBuy() const noexcept { return m_bIsBuy; }
+	constexpr inline bool isNetBuy() const noexcept { return m_bIsBuy; }
 
 	constexpr inline void setContractInfo(WTSContractInfo* cInfo) noexcept { m_pContract = cInfo; }
 	constexpr inline WTSContractInfo* getContractInfo() const noexcept { return m_pContract; }

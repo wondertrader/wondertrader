@@ -1891,7 +1891,7 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 	else
 		stdCode = CodeHelper::rawFlatCodeToStdCode(cInfo->getCode(), cInfo->getExchg(), cInfo->getProduct());
 
-	bool isBuy = (orderInfo->getDirection() == WDT_LONG && orderInfo->getOffsetType() == WOT_OPEN) || (orderInfo->getDirection() == WDT_SHORT && orderInfo->getOffsetType() != WOT_OPEN);
+	bool isBuy = orderInfo->isNet() ? orderInfo->isNetBuy() : orderInfo->isBuyAction();
 	
 	//撤销的话, 要更新统计数据
 	if (orderInfo->getOrderState() == WOS_Canceled)
@@ -1980,64 +1980,67 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 			}
 
 			//只有平仓需要更新可平
-			if (orderInfo->getOffsetType() != WOT_OPEN)
+			if(!orderInfo->isNet())
 			{
-				//const char* code = stdCode.c_str();
-				bool isLong = (orderInfo->getDirection() == WDT_LONG);
-				bool isToday = (orderInfo->getOffsetType() == WOT_CLOSETODAY);
-				double qty = orderInfo->getVolume();
-
-				PosItem& pItem = _positions[stdCode];
-				if (isLong)	//平多
+				if (orderInfo->getOffsetType() != WOT_OPEN)
 				{
-					if (isToday)
-					{
-						pItem.l_newavail -= min(pItem.l_newavail, qty);	//如果是平今, 则只需要更新可平今仓
-					}
-					else
-					{
-						double left = qty;
+					//const char* code = stdCode.c_str();
+					bool isLong = (orderInfo->getDirection() == WDT_LONG);
+					bool isToday = (orderInfo->getOffsetType() == WOT_CLOSETODAY);
+					double qty = orderInfo->getVolume();
 
-						//如果是平仓, 则先更新可平昨仓, 还有剩余, 再更新可平今仓
-						//如果品种区分平昨平今, 也按照这个流程, 因为平昨的总数量不可能超出昨仓
-						double maxQty = min(pItem.l_preavail, qty);
-						pItem.l_preavail -= maxQty;
-						pItem.l_preavail = max(pItem.l_preavail, 0.0);
-						left -= maxQty;
-
-						if (left > 0)
+					PosItem& pItem = _positions[stdCode];
+					if (isLong)	//平多
+					{
+						if (isToday)
 						{
-							pItem.l_newavail -= min(pItem.l_newavail, left);
-							pItem.l_newavail = max(pItem.l_newavail, 0.0);
+							pItem.l_newavail -= min(pItem.l_newavail, qty);	//如果是平今, 则只需要更新可平今仓
+						}
+						else
+						{
+							double left = qty;
+
+							//如果是平仓, 则先更新可平昨仓, 还有剩余, 再更新可平今仓
+							//如果品种区分平昨平今, 也按照这个流程, 因为平昨的总数量不可能超出昨仓
+							double maxQty = min(pItem.l_preavail, qty);
+							pItem.l_preavail -= maxQty;
+							pItem.l_preavail = max(pItem.l_preavail, 0.0);
+							left -= maxQty;
+
+							if (left > 0)
+							{
+								pItem.l_newavail -= min(pItem.l_newavail, left);
+								pItem.l_newavail = max(pItem.l_newavail, 0.0);
+							}
 						}
 					}
-				}
-				else //平空
-				{
-					if (isToday)
+					else //平空
 					{
-						pItem.s_newavail -= min(pItem.s_newavail, qty);
-					}
-					else
-					{
-						double left = qty;
-
-						double maxQty = min(pItem.s_preavail, qty);
-						pItem.s_preavail -= maxQty;
-						pItem.s_preavail = max(pItem.s_preavail, 0.0);
-						left -= maxQty;
-
-						if (left > 0)
+						if (isToday)
 						{
-							pItem.s_newavail -= min(pItem.s_newavail, left);
-							pItem.s_newavail = max(pItem.s_newavail, 0.0);
+							pItem.s_newavail -= min(pItem.s_newavail, qty);
+						}
+						else
+						{
+							double left = qty;
+
+							double maxQty = min(pItem.s_preavail, qty);
+							pItem.s_preavail -= maxQty;
+							pItem.s_preavail = max(pItem.s_preavail, 0.0);
+							left -= maxQty;
+
+							if (left > 0)
+							{
+								pItem.s_newavail -= min(pItem.s_newavail, left);
+								pItem.s_newavail = max(pItem.s_newavail, 0.0);
+							}
 						}
 					}
+					printPosition(stdCode.c_str(), pItem);
 				}
-				printPosition(stdCode.c_str(), pItem);
 			}
 		}
-		else if (orderInfo->getOrderState() == WOS_Canceled && orderInfo->getOffsetType() != WOT_OPEN)
+		else if (orderInfo->getOrderState() == WOS_Canceled && !orderInfo->isNet() && orderInfo->getOffsetType() != WOT_OPEN)
 		{
 			//如果订单不是第一次推送, 且撤销了, 则要更新可平量
 			//const char* code = orderInfo->getCode();
@@ -2102,8 +2105,6 @@ void TraderAdapter::onPushOrder(WTSOrderInfo* orderInfo)
 			bool isToday = (orderInfo->getOffsetType() == WOT_CLOSETODAY);
 			double qty = orderInfo->getVolume() - orderInfo->getVolTraded();
 
-			bool isBuy = (isLong&&isOpen) || (!isLong && !isOpen);
-
 			updateUndone(stdCode.c_str(), qty*(isBuy ? -1 : 1), true);
 
 			WTSLogger::log_dyn("trader", _id.c_str(), LL_INFO, "[{}] Order {} of {} canceled:{}, action: {}, leftqty: {}",
@@ -2153,10 +2154,6 @@ void TraderAdapter::onPushTrade(WTSTradeInfo* tradeRecord)
 
 	tradeRecord->setCode(cInfo->getCode());
 
-	bool isLong = (tradeRecord->getDirection() == WDT_LONG);
-	bool isOpen = (tradeRecord->getOffsetType() == WOT_OPEN);
-	bool isBuy = (tradeRecord->getDirection() == WDT_LONG && tradeRecord->getOffsetType() == WOT_OPEN) || (tradeRecord->getDirection() == WDT_SHORT && tradeRecord->getOffsetType() != WOT_OPEN);
-
 	WTSCommodityInfo* commInfo = cInfo->getCommInfo();
 	std::string stdCode;
 	if (commInfo->getCategoty() == CC_Future)
@@ -2182,62 +2179,133 @@ void TraderAdapter::onPushTrade(WTSTradeInfo* tradeRecord)
 
 	TradeStatInfo& statItem = statInfo->statInfo();
 	double vol = tradeRecord->getVolume();
-	if(isLong)
+	bool isNet = tradeRecord->isNet();
+	bool isBuy = isNet ? tradeRecord->isNetBuy() : tradeRecord->isBuyAction();
+
+	if(!isNet)
 	{
-		if (isOpen)
+		//非净头寸模式
+		bool isLong = (tradeRecord->getDirection() == WDT_LONG);
+		bool isOpen = (tradeRecord->getOffsetType() == WOT_OPEN);
+
+		if (isLong)
 		{
-			pItem.l_newvol += vol;
+			if (isOpen)
+			{
+				pItem.l_newvol += vol;
 
-			if(!commInfo->isT1())	//如果不是T1，则更新可用持仓
-				pItem.l_newavail += vol;
+				if (!commInfo->isT1())	//如果不是T1，则更新可用持仓
+					pItem.l_newavail += vol;
 
-			statItem.l_openvol += vol;
-		}
-		else if (tradeRecord->getOffsetType() == WOT_CLOSETODAY)
-		{
-			pItem.l_newvol -= vol;
+				statItem.l_openvol += vol;
+			}
+			else if (tradeRecord->getOffsetType() == WOT_CLOSETODAY)
+			{
+				pItem.l_newvol -= vol;
 
-			statItem.l_closevol += vol;
+				statItem.l_closevol += vol;
+			}
+			else
+			{
+				double left = vol;
+				double maxVol = min(left, pItem.l_prevol);
+				pItem.l_prevol -= maxVol;
+				left -= maxVol;
+				pItem.l_newvol -= left;
+
+				statItem.l_closevol += vol;
+			}
 		}
 		else
 		{
-			double left = vol;
-			double maxVol = min(left, pItem.l_prevol);
-			pItem.l_prevol -= maxVol;
-			left -= maxVol;
-			pItem.l_newvol -= left;
+			if (isOpen)
+			{
+				pItem.s_newvol += vol;
+				if (!commInfo->isT1())	//如果不是T1，则更新可用持仓
+					pItem.s_newavail += vol;
 
-			statItem.l_closevol += vol;
+				statItem.s_openvol += vol;
+			}
+			else if (tradeRecord->getOffsetType() == WOT_CLOSETODAY)
+			{
+				pItem.s_newvol -= vol;
+
+				statItem.s_closevol += vol;
+			}
+			else
+			{
+				double left = vol;
+				double maxVol = min(left, pItem.s_prevol);
+				pItem.s_prevol -= maxVol;
+				left -= maxVol;
+				pItem.s_newvol -= left;
+
+				statItem.s_closevol += vol;
+			}
 		}
 	}
 	else
 	{
-		if (isOpen)
+		/*
+		 *	By Wesley @ 2024.06.26
+		 *	净头寸模式，则根据买卖方向，先平后开
+		 */
+		double left = vol;
+		if(!isBuy)
 		{
-			pItem.s_newvol += vol;
-			if (!commInfo->isT1())	//如果不是T1，则更新可用持仓
-				pItem.s_newavail += vol;
+			double maxVol = min(left, pItem.l_prevol);
+			if (decimal::lt(maxVol, 0))
+			{
+				pItem.l_prevol -= maxVol;
+				left -= maxVol;
+				statItem.l_closevol += maxVol;
+			}
 
-			statItem.s_openvol += vol;
-		}
-		else if (tradeRecord->getOffsetType() == WOT_CLOSETODAY)
-		{
-			pItem.s_newvol -= vol;
+			maxVol = min(left, pItem.l_newvol);
+			if(decimal::lt(maxVol, 0))
+			{				
+				pItem.l_newvol -= left;
+				left -= maxVol;
+				statItem.l_closevol += maxVol;
+			}
 
-			statItem.s_closevol += vol;
+			if (decimal::lt(left, 0))
+			{
+				pItem.s_newvol += left;
+				statItem.s_openvol += left;
+			}
 		}
 		else
 		{
-			double left = vol;
 			double maxVol = min(left, pItem.s_prevol);
-			pItem.s_prevol -= maxVol;
-			left -= maxVol;
-			pItem.s_newvol -= left;
+			if (decimal::lt(maxVol, 0))
+			{
+				pItem.s_prevol -= maxVol;
+				left -= maxVol;
+				statItem.s_closevol += maxVol;
+			}
 
-			statItem.s_closevol += vol;
+			maxVol = min(left, pItem.s_newvol);
+			if (decimal::lt(maxVol, 0))
+			{
+				pItem.s_newvol -= left;
+				left -= maxVol;
+				statItem.s_closevol += maxVol;
+			}
+
+			if (decimal::lt(left, 0))
+			{
+				pItem.l_newvol += left;
+				statItem.l_openvol += left;
+			}
 		}
-	}
 
+		pItem.l_newavail = pItem.l_newvol;
+		pItem.l_preavail = pItem.l_prevol;
+		pItem.s_newavail = pItem.s_newvol;
+		pItem.s_preavail = pItem.s_prevol;
+	}
+	
 	printPosition(stdCode.c_str(), pItem);
 
 	//如果是自己的订单，则更新未完成单
@@ -2273,7 +2341,7 @@ void TraderAdapter::onTraderError(WTSError* err, void* pData /* = NULL */)
 		WTSLogger::log_dyn("trader", _id.c_str(), LL_ERROR,"[{}] Error of trading channel occured: {}", _id.c_str(), err->getMessage());
 
 	if (_notifier)
-		_notifier->notify(id(), fmt::format("Trading channel error: {}", err->getMessage()).c_str());
+		_notifier->notify(id(), fmtutil::format("Trading channel error: {}", err->getMessage()));
 }
 
 IBaseDataMgr* TraderAdapter::getBaseDataMgr()
