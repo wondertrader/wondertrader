@@ -2254,7 +2254,7 @@ void TraderAdapter::onPushTrade(WTSTradeInfo* tradeRecord)
 		if(!isBuy)
 		{
 			double maxVol = min(left, pItem.l_prevol);
-			if (decimal::lt(maxVol, 0))
+			if (decimal::gt(maxVol, 0))
 			{
 				pItem.l_prevol -= maxVol;
 				left -= maxVol;
@@ -2262,14 +2262,14 @@ void TraderAdapter::onPushTrade(WTSTradeInfo* tradeRecord)
 			}
 
 			maxVol = min(left, pItem.l_newvol);
-			if(decimal::lt(maxVol, 0))
+			if(decimal::gt(maxVol, 0))
 			{				
 				pItem.l_newvol -= left;
 				left -= maxVol;
 				statItem.l_closevol += maxVol;
 			}
 
-			if (decimal::lt(left, 0))
+			if (decimal::gt(left, 0))
 			{
 				pItem.s_newvol += left;
 				statItem.s_openvol += left;
@@ -2278,7 +2278,7 @@ void TraderAdapter::onPushTrade(WTSTradeInfo* tradeRecord)
 		else
 		{
 			double maxVol = min(left, pItem.s_prevol);
-			if (decimal::lt(maxVol, 0))
+			if (decimal::gt(maxVol, 0))
 			{
 				pItem.s_prevol -= maxVol;
 				left -= maxVol;
@@ -2286,14 +2286,14 @@ void TraderAdapter::onPushTrade(WTSTradeInfo* tradeRecord)
 			}
 
 			maxVol = min(left, pItem.s_newvol);
-			if (decimal::lt(maxVol, 0))
+			if (decimal::gt(maxVol, 0))
 			{
 				pItem.s_newvol -= left;
 				left -= maxVol;
 				statItem.s_closevol += maxVol;
 			}
 
-			if (decimal::lt(left, 0))
+			if (decimal::gt(left, 0))
 			{
 				pItem.l_newvol += left;
 				statItem.l_openvol += left;
