@@ -200,6 +200,11 @@ void ParserUDP::subscribe()
 		}
 	}
 
+    if (length > 0) {
+        StdUniqueLock lock(_mtx_queue);
+        _send_queue.push(data);
+    }
+
 	do_send();
 }
 
