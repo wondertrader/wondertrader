@@ -58,7 +58,7 @@ class WTSPoolObject : public WTSObject
 {
 protected:
 	typedef ObjectPool<T> PoolType;
-	PoolType*		_pool;
+	PoolType*	_pool;
 	SpinMutex*	_mutex;
 
 public:

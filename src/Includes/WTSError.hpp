@@ -13,18 +13,18 @@
 
 NS_WTP_BEGIN
 
-class WTSError : public WTSObject
+class WTSError : public WTSPoolObject<WTSError>
 {
-protected:
-	WTSError():m_errCode(WEC_NONE),m_strMsg(""){}
+public:
+	WTSError() :m_errCode(WEC_NONE), m_strMsg("") {}
 	virtual ~WTSError(){}
 
 public:
 	static WTSError* create(WTSErroCode ec, const char* errmsg) noexcept
 	{
-		WTSError* pRet = new WTSError;
+		WTSError* pRet = WTSError::allocate();
 		pRet->m_errCode = ec;
-		wt_strcpy(pRet->m_strMsg, errmsg);
+		strncpy(pRet->m_strMsg, errmsg, 255);
 
 		return pRet;
 	}
@@ -33,8 +33,8 @@ public:
 	constexpr WTSErroCode		getErrorCode() const noexcept{return m_errCode;}
 
 protected:
-	WTSErroCode		m_errCode;
-	char			m_strMsg[128];
+	WTSErroCode		m_errCode = WEC_NONE;
+	char			m_strMsg[256] = { 0 };
 };
 
 
