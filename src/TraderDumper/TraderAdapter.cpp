@@ -16,7 +16,6 @@
 #include "../WTSTools/WTSLogger.h"
 
 #include "../Share/CodeHelper.hpp"
-#include "../Includes/WTSError.hpp"
 #include "../Includes/WTSVariant.hpp"
 #include "../Includes/WTSTradeDef.hpp"
 #include "../Includes/WTSRiskDef.hpp"

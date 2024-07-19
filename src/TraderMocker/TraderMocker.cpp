@@ -5,7 +5,6 @@
 #include "../Includes/WTSTradeDef.hpp"
 #include "../Includes/WTSContractInfo.hpp"
 #include "../Includes/IBaseDataMgr.h"
-#include "../Includes/WTSError.hpp"
 
 #include "../Share/TimeUtils.hpp"
 #include "../Share/decimal.h"

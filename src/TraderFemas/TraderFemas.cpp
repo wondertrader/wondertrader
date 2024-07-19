@@ -9,7 +9,6 @@
  */
 #include "TraderFemas.h"
 
-#include "../Includes/WTSError.hpp"
 #include "../Includes/IBaseDataMgr.h"
 #include "../Includes/WTSTradeDef.hpp"
 #include "../Includes/WTSContractInfo.hpp"

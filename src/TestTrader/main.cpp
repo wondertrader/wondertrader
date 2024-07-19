@@ -3,7 +3,6 @@
 #include "../Includes/ITraderApi.h"
 #include "../Includes/WTSVariant.hpp"
 #include "../Includes/WTSTradeDef.hpp"
-#include "../Includes/WTSError.hpp"
 #include "../Includes/WTSCollection.hpp"
 
 #include "../Share/TimeUtils.hpp"

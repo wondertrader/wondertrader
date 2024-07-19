@@ -10,7 +10,6 @@
 #include "TraderYD.h"
 #include "../API/yd1.108.360/ydError.h"
 
-#include "../Includes/WTSError.hpp"
 #include "../Includes/WTSContractInfo.hpp"
 #include "../Includes/WTSSessionInfo.hpp"
 #include "../Includes/WTSTradeDef.hpp"

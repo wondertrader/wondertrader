@@ -12,7 +12,6 @@
 #include "ITrdNotifySink.h"
 #include "ActionPolicyMgr.h"
 
-#include "../Includes/WTSError.hpp"
 #include "../Includes/WTSVariant.hpp"
 #include "../Includes/WTSTradeDef.hpp"
 #include "../Includes/WTSSessionInfo.hpp"
