@@ -45,7 +45,8 @@ bool ShareBlocks::init_master(const char* name, const char* path/* = ""*/)
 
 	if(aySecs.size() != shm._block->_count)
 	{
-		write_log(LL_INFO, u8"域{}的分区个数以改变: {} -> {}，重新调整缓存", name, shm._block->_count, aySecs.size());
+		write_log(LL_INFO, "Section count of domain {} changed: {} -> {}，cache resized", 
+			name, shm._block->_count, aySecs.size());
 		shm._block->_count = (uint32_t)aySecs.size();
 		memset(shm._block->_sections, 0, sizeof(SecInfo)*MAX_SEC_CNT);
 		if (shm._block->_count > 0)
@@ -122,7 +123,7 @@ bool ShareBlocks::init_slave(const char* name, const char* path/* = ""*/)
 		}
 	}
 
-	write_log(LL_INFO, u8"域{}初始化成功", name);
+	write_log(LL_INFO, "Initialize domain {} succeed", name);
 	return true;
 }
 
@@ -155,7 +156,7 @@ bool ShareBlocks::update_slave(const char* name, bool bForce)
 		}
 	}
 
-	write_log(LL_INFO, u8"域{}已重载", name);
+	write_log(LL_INFO, "Domain {} reloaded", name);
 	shm._blocktime = shm._block->_updatetime;
 
 	return true;
@@ -203,7 +204,7 @@ bool ShareBlocks::commit_section(const char* domain, const char* section)
 	auto it = _shm_blocks.find(domain);
 	if (it == _shm_blocks.end())
 	{
-		write_log(LL_ERROR, u8"域{}未初始化", domain);
+		write_log(LL_ERROR, "Domain {} not initialized", domain);
 		return false;
 	}
 
@@ -211,7 +212,7 @@ bool ShareBlocks::commit_section(const char* domain, const char* section)
 	auto sit = shm._sections.find(section);
 	if (sit == shm._sections.end())
 	{
-		write_log(LL_ERROR, u8"{}.{}不存在", domain, section);
+		write_log(LL_ERROR, "Secion {}.{} not exists", domain, section);
 		return false;
 	}
 
@@ -219,7 +220,7 @@ bool ShareBlocks::commit_section(const char* domain, const char* section)
 	SecInfo& secInfo = shm._block->_sections[kvPair._index];
 	secInfo._updatetime = TimeUtils::getLocalTimeNow();
 
-	write_log(LL_INFO, u8"分区{}.{}时间戳已更新", domain, section);
+	write_log(LL_INFO, "Timestamp of section {}.{} updated", domain, section);
 	return true;
 }
 
@@ -228,7 +229,7 @@ bool ShareBlocks::delete_section(const char* domain, const char*section)
 	auto it = _shm_blocks.find(domain);
 	if (it == _shm_blocks.end())
 	{
-		write_log(LL_ERROR, u8"域{}未初始化", domain);
+		write_log(LL_ERROR, "Domain {} not initialized", domain);
 		return false;
 	}
 
@@ -236,7 +237,7 @@ bool ShareBlocks::delete_section(const char* domain, const char*section)
 	auto sit = shm._sections.find(section);
 	if (sit == shm._sections.end())
 	{
-		write_log(LL_WARN, u8"{}.{}不存在", domain, section);
+		write_log(LL_WARN, "Secion {}.{} not exists", domain, section);
 		return true;
 	}
 
@@ -244,7 +245,7 @@ bool ShareBlocks::delete_section(const char* domain, const char*section)
 	shm._sections.erase(sit);
 	shm._block->_sections[idx]._state = 2;
 	shm._block->_updatetime = TimeUtils::getLocalTimeNow();
-	write_log(LL_INFO, u8"分区{}.{}状态标记为已删除", domain, section);
+	write_log(LL_INFO, "Section {}.{} marked as removed", domain, section);
 	return true;
 }
 
@@ -265,14 +266,14 @@ void* ShareBlocks::make_valid(const char* domain, const char* section, const cha
 		//如果不是master，就不能创建
 		if (!shm._master)
 		{
-			write_log(LL_ERROR, u8"域{}不是master模式，不能新增分区", domain);
+			write_log(LL_ERROR, "Domain {} is not in master mode，cannot add new section", domain);
 			return nullptr;
 		}
 
 		if (shm._block->_count == MAX_SEC_CNT)
 		{
 			//已经没有额外的空间可以分配了
-			write_log(LL_ERROR, u8"域{}中分区已满，不能再新增分区", domain);
+			write_log(LL_ERROR, "No spare slot for new section in domain {}", domain);
 			return nullptr;
 		}
 
@@ -297,7 +298,7 @@ void* ShareBlocks::make_valid(const char* domain, const char* section, const cha
 		 *	如果之前存的索引位置的section和目标section名字不同
 		 *	说明master那边做了修改，需要强制update才行
 		 */
-		write_log(LL_ERROR, u8"缓存区{}.{}已被覆盖，禁止写入", domain, section);
+		write_log(LL_ERROR, "Cache zone {}.{} overwrote, cannot be modified", domain, section);
 		return nullptr;
 	}
 
@@ -309,19 +310,19 @@ void* ShareBlocks::make_valid(const char* domain, const char* section, const cha
 		//如果不是master，就不能创建
 		if (!shm._master)
 		{
-			write_log(LL_ERROR, u8"域{}不是master模式，不能新增KV对", domain);
+			write_log(LL_ERROR, "Domnain {} is not in master mode，cannot create kv pair", domain);
 			return nullptr;
 		}
 
 		if (secInfo->_count == MAX_KEY_CNT)
 		{
-			write_log(LL_ERROR, u8"分区{}.{}中KV对已满，不能再新增KV对", domain, section);
+			write_log(LL_ERROR, "Secion {}.{} has no spare slot for new kv pair", domain, section);
 			return nullptr;
 		}
 
 		if (secInfo->_offset + len > 1024)
 		{
-			write_log(LL_ERROR, u8"没有足够的缓存可以存储{}.{}.{}", domain, section, key);
+			write_log(LL_ERROR, "Secion {}.{} has no enough bytes for new kv pair", domain, section);
 			return nullptr;
 		}
 
@@ -386,7 +387,7 @@ std::vector<std::string> ShareBlocks::get_sections(const char* domain)
 	auto it = _shm_blocks.find(domain);
 	if (it == _shm_blocks.end())
 	{
-		write_log(LL_INFO, u8"域{}没有初始化", domain);
+		write_log(LL_ERROR, "Domain {} not initialized", domain);
 		return emptyRet;
 	}
 
