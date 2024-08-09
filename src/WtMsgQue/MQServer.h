@@ -45,6 +45,9 @@ private:
 	bool			m_bTimeout;
 	uint64_t		m_uLastHBTime;
 
+	uint64_t		m_uTotalPacks = 0;
+	uint64_t		m_uTotalSents = 0;
+
 	typedef struct _PubData
 	{
 		std::string	_topic;

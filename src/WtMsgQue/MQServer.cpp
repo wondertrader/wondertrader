@@ -116,6 +116,7 @@ void MQServer::publish(const char* topic, const void* data, uint32_t dataLen)
 		SpinLock lock(m_mtxCast);
 		m_dataQue.emplace_back(PubData(topic, data, dataLen));
 		m_uLastHBTime = TimeUtils::getLocalTimeNow();
+		m_uTotalPacks++;
 	}
 
 	if(m_thrdCast == NULL)
@@ -153,40 +154,57 @@ void MQServer::publish(const char* topic, const void* data, uint32_t dataLen)
 					tmpQue.swap(m_dataQue);
 				}
 				
-				for(const PubData& pubData : tmpQue)
+				m_sendBuf.clear();
+				std::size_t total_len = 0;
+				for (const PubData& pubData : tmpQue)
 				{
-					if (!pubData._data.empty())
-					{
-						std::size_t len = sizeof(MQPacket) + pubData._data.size();
-						if (m_sendBuf.size() < len)
-							m_sendBuf.resize(m_sendBuf.size() * 2);
-						MQPacket* pack = (MQPacket*)m_sendBuf.data();
-						strncpy(pack->_topic, pubData._topic.c_str(), 32);
-						pack->_length = (uint32_t)pubData._data.size();
-						memcpy(&pack->_data, pubData._data.data(), pubData._data.size());
-						int bytes_snd = 0;
-						for(;;)
-						{
-							int bytes = nn_send(_sock, m_sendBuf.data() + bytes_snd, len - bytes_snd, 0);
-							if (bytes >= 0)
-							{
-								bytes_snd += bytes;
-							}
-                            else
-                            {
-                                _mgr->log_server(_id, fmtutil::format("Publishing error: {}", nn_strerror(nn_errno())));
-                            }
-                            
-                            if(bytes_snd == len)
-								break;
-							else
-								std::this_thread::sleep_for(std::chrono::milliseconds(1));
-						}
-						
-					}
-				} 
+					std::size_t len = sizeof(MQPacket) + pubData._data.size();
+					std::string tmpBuf;
+					tmpBuf.resize(len, 0);
 
-				//_mgr->log_server(_id, fmtutil::format("Publishing finished: {}", tmpQue.size()));
+					MQPacket* pack = (MQPacket*)tmpBuf.data();
+					strncpy(pack->_topic, pubData._topic.c_str(), 32);
+					pack->_length = (uint32_t)pubData._data.size();
+					memcpy(&pack->_data, pubData._data.data(), pubData._data.size());
+
+					m_sendBuf.append(tmpBuf);
+					total_len += len;
+				}
+
+				int bytes_snd = 0;
+				for (;;)
+				{
+					int bytes = nn_send(_sock, m_sendBuf.data() + bytes_snd, total_len - bytes_snd, 0);
+					if (bytes >= 0)
+					{
+						bytes_snd += bytes;
+					}
+					else
+					{
+						_mgr->log_server(_id, fmtutil::format("Publishing error: {}", nn_strerror(nn_errno())));
+					}
+
+					if (bytes_snd == total_len)
+						break;
+					else
+						std::this_thread::sleep_for(std::chrono::milliseconds(1));
+				}
+				m_uTotalSents += tmpQue.size();
+
+				if(m_dataQue.empty())
+				{
+					if(m_uTotalSents != m_uTotalPacks)
+					{
+						_mgr->log_server(_id, fmtutil::format("Total sent packs {} != total packs {}", m_uTotalSents, m_uTotalPacks));
+					}
+					else if(m_uTotalSents % 100 == 0)
+					{
+						_mgr->log_server(_id, fmtutil::format("{} packets published", m_uTotalSents));
+					}
+				}
+
+				if(tmpQue.size() > 1)
+					_mgr->log_server(_id, fmtutil::format("Multi packs published: {}", tmpQue.size()));
 			}
 		}));
 	}
