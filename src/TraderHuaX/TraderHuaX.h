@@ -24,7 +24,6 @@
 #include "../Includes/WTSContractInfo.hpp"
 #include "../Includes/WTSSessionInfo.hpp"
 #include "../Includes/WTSTradeDef.hpp"
-#include "../Includes/WTSError.hpp"
 #include "../Includes/WTSVariant.hpp"
 #include "../Includes/WTSCollection.hpp"
 #include "../Share/TimeUtils.hpp"

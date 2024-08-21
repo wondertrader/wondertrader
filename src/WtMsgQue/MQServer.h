@@ -45,6 +45,9 @@ private:
 	bool			m_bTimeout;
 	uint64_t		m_uLastHBTime;
 
+	std::atomic<uint64_t>		m_uTotalPacks = 0;
+	std::atomic<uint64_t>		m_uTotalSents = 0;
+
 	typedef struct _PubData
 	{
 		std::string	_topic;
@@ -62,7 +65,8 @@ private:
 	typedef std::vector<PubData> PubDataQue;
 
 	PubDataQue		m_dataQue;
-	std::string		m_sendBuf;
+	char*			m_sendBuf = nullptr;
+	std::size_t		m_maxMultiPacks = 0;
 };
 
 NS_WTP_END

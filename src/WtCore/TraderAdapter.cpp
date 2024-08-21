@@ -19,7 +19,6 @@
 
 #include "../WTSTools/WTSLogger.h"
 
-#include "../Includes/WTSError.hpp"
 #include "../Includes/WTSVariant.hpp"
 #include "../Includes/WTSTradeDef.hpp"
 #include "../Includes/WTSRiskDef.hpp"
