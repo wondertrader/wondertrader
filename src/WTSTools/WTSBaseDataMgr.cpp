@@ -506,6 +506,11 @@ bool WTSBaseDataMgr::loadContracts(const char* filename)
 				expiredate = jcInfo->getUInt32("expiredate");
 			cInfo->setDates(opendate, expiredate);
 
+			if (jcInfo->has("volscale"))
+				cInfo->setVolScale(jcInfo->getUInt32("volscale"));
+			else
+				cInfo->setVolScale(commInfo->getVolScale());
+
 			double lMargin = 0;
 			double sMargin = 0;
 			if (jcInfo->has("longmarginratio"))
