@@ -248,7 +248,7 @@ void CTraderSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CTho
 
 					std::cerr << "--->>> OnRspQryInstrument: " << pInstrument->ExchangeID << "." << pInstrument->InstrumentID << std::endl;
 					std::string pid = wrapProductID(pInstrument->ProductID);
-					std::string pname = MAP_NAME[pid];
+					std::string pname = MAP_NAME[pInstrument->ProductID];
 					if(pname.empty())
 					{
 						std::stringstream ss;
