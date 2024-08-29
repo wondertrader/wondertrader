@@ -1519,7 +1519,12 @@ bool WtDataWriter::updateCache(WTSContractInfo* ct, WTSTickData* curTick, uint32
 		//只能把500毫秒的变化量改成200，并且改成发生时间小于等于上一笔的判断
 		if(newTick.action_date == item._tick.action_date && newTick.action_time <= item._tick.action_time && newTick.total_volume >= item._tick.total_volume)
 		{
-			newTick.action_time += 200;
+			/*
+			 *	By Wesley @ 2024.08.29
+			 *	这里对秒数进位做一个规避
+			 */
+			uint32_t left_msecs = (999 - newTick.action_time % 1000) / 50 * 50;
+			newTick.action_time += std::min(left_msecs, (uint32_t)200);
 		}
 
 		//这里就要看需不需要预处理了
