@@ -56,35 +56,35 @@ extern "C"
 };
 
 
-uint32_t strToTime(const char* strTime)
+static char tmp_timestr[10] = { 0 };
+constexpr inline uint32_t strToTime(const char* strTime) noexcept
 {
-	std::string str;
-	const char *pos = strTime;
-	while(strlen(pos) > 0)
+	int idx = 0;
+	char* c = (char*)strTime;
+	while (*c)
 	{
-		if(pos[0] != ':')
+		if ('0' <= *c && *c <= '9')
 		{
-			str.append(pos, 1);
+			tmp_timestr[idx] = *c;
+			idx++;
 		}
-		pos++;
-	}
 
-	return convert::to_uint32(str.c_str());
+		c = c + 1;
+	}
+	tmp_timestr[idx] = '\0';
+
+	return convert::to_uint32(tmp_timestr);
 }
 
-inline double checkValid(double val)
+constexpr inline double checkValid(double val) noexcept
 {
-	if (val == DBL_MAX || val == FLT_MAX)
-		return 0;
-
-	return val;
+	return (val == DBL_MAX || val == FLT_MAX) ? 0 : val;
 }
 
 ParserCTPOpt::ParserCTPOpt()
 	:m_pUserAPI(NULL)
 	,m_iRequestID(0)
 	,m_uTradingDate(0)
-	,m_bLocalTime(false)
 {
 }
 
@@ -100,7 +100,6 @@ bool ParserCTPOpt::init(WTSVariant* config)
 	m_strBroker = config->getCString("broker");
 	m_strUserID = config->getCString("user");
 	m_strPassword = config->getCString("pass");
-	m_bLocalTime = config->getBoolean("localtime");
 	m_strFlowDir = config->getCString("flowdir");
 
 	if (m_strFlowDir.empty())
@@ -223,43 +222,30 @@ void ParserCTPOpt::OnRtnDepthMarketData( CThostFtdcDepthMarketDataField *pDepthM
 		return;
 	}
 
-	uint32_t actDate, actTime;
-	if (m_bLocalTime)
+	uint32_t actDate = convert::to_uint32(pDepthMarketData->ActionDay);
+	uint32_t actTime = strToTime(pDepthMarketData->UpdateTime) * 1000 + pDepthMarketData->UpdateMillisec;
+	/*
+	 *	By Wesley @ 2024.08.29
+	 *	ETF期权行情比较特别，时间戳是最后一笔成交时间
+	 *	因此不活跃的合约的行情时间戳可能是较早时候的时间，甚至是0（如果一直没成交）
+	 *	所以这里对行情时间戳小于已经收到的最大的时间戳的数据做一个处理
+	 *	1、如果第一笔行情时间戳就是0，则直接读取本地时间
+	 *	2、其他情况，则根据记录的最后一笔行情时间，以及当时的本地时间，计算一个最新的时间
+	 */
+	if (actTime == 0 || actTime < m_uLatestTime)
 	{
-		TimeUtils::getDateTime(actDate, actTime);
+		if (m_uLatestTime == 0)
+			TimeUtils::getDateTime(actDate, actTime);
+		else
+		{
+			uint32_t msecs = (uint32_t)(TimeUtils::getLocalTimeNow() - m_iLastTimestamp);
+			actTime = m_uLatestTime + msecs;
+		}
 	}
 	else
 	{
-		actDate = convert::to_uint32(pDepthMarketData->ActionDay);
-		actTime = strToTime(pDepthMarketData->UpdateTime) * 1000 + pDepthMarketData->UpdateMillisec;
-	}
-	uint32_t actHour = actTime / 10000000;
-
-	if (actDate == m_uTradingDate && actHour >= 20)
-	{
-		//这样的时间是有问题,因为夜盘时发生日期不可能等于交易日
-		//这就需要手动设置一下
-		uint32_t curDate, curTime;
-		TimeUtils::getDateTime(curDate, curTime);
-		uint32_t curHour = curTime / 10000000;
-
-		//早上启动以后,会收到昨晚12点以前收盘的行情,这个时候可能会有发生日期=交易日的情况出现
-		//这笔数据直接丢掉
-		if (curHour >= 3 && curHour < 9)
-			return;
-
-		actDate = curDate;
-
-		if (actHour == 23 && curHour == 0)
-		{
-			//行情时间慢于系统时间
-			actDate = TimeUtils::getNextDate(curDate, -1);
-		}
-		else if (actHour == 0 && curHour == 23)
-		{
-			//系统时间慢于行情时间
-			actDate = TimeUtils::getNextDate(curDate, 1);
-		}
+		m_iLastTimestamp = TimeUtils::getLocalTimeNow();
+		m_uLatestTime = actTime;
 	}
 
 	WTSContractInfo* cInfo = m_pBaseDataMgr->getContract(pDepthMarketData->InstrumentID, pDepthMarketData->ExchangeID);
