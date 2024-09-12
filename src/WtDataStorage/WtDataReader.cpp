@@ -1746,7 +1746,6 @@ WTSKlineSlice* WtDataReader::readKlineSlice(const char* stdCode, WTSKlinePeriod 
 	if(!bHasHisData)
 	{
 		pipe_reader_log(_sink, LL_DEBUG, "No {} bars of {} loaded", PERIOD_NAME[period], stdCode);
-		return NULL;
 	}
 
 	uint32_t curDate, curTime;
