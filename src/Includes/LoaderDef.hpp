@@ -21,6 +21,7 @@ namespace loader {
 
 		uint32_t	m_uOpenDate;
 		uint32_t	m_uExpireDate;
+		uint32_t	m_uVolScale = 0;
 
 		double		m_dLongMarginRatio;
 		double		m_dShortMarginRatio;

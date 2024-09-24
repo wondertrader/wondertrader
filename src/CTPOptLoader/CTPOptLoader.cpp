@@ -10,8 +10,8 @@
 #include "../Share/DLLHelper.hpp"
 #include "../Share/fmtlib.h"
 
-#include <filesystem>
-namespace fs = std::filesystem;
+#include <boost/filesystem.hpp>
+namespace fs = boost::filesystem;
 
 #include "../WTSUtils/WTSCfgLoader.h"
 #include "../Includes/WTSVariant.hpp"
@@ -218,12 +218,9 @@ int run(const char* cfgfile, bool bAsync = false, bool isFile = true)
 			for (int i = 0; i < cout; i++)
 			{
 				std::string pName = ayVals[i];
-				bool isUTF8 = EncodingHelper::isUtf8((unsigned char*)pName.c_str(), pName.size());
-				if (!isUTF8)
-					pName = ChartoUTF8(ayVals[i]);
 				//保存的时候全部转成UTF8
 				MAP_NAME[ayKeys[i]] = pName;
-				printf("Commodity name mapping: %s - %s\r\n", ayKeys[i].c_str(), ayVals[i]);
+				printf("Commodity name mapping: %s - %s\r\n", ayKeys[i].c_str(), ayVals[i].c_str());
 			}
 
 			ayKeys.clear();

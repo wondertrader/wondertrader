@@ -313,6 +313,13 @@ void CTraderSpi::OnRspQryInstrument(CThostFtdcInstrumentField *pInstrument, CTho
 
 					contract.m_dLongMarginRatio = checkValid(pInstrument->LongMarginRatio);
 					contract.m_dShortMarginRatio = checkValid(pInstrument->ShortMarginRatio);
+					
+					/*
+					 *	By Wesley @ 2024.08.21
+					 *	ETF期权每个合约的volscale都可能不同，所以需要单独保存
+					 */
+					if (bOption)
+						contract.m_uVolScale = (pInstrument->VolumeMultiple == 0 ? 1 : pInstrument->VolumeMultiple);
 
 					std::string key = fmtutil::format<64>("{}.{}", pInstrument->ExchangeID, pid.c_str());
 					auto it = _commodities.find(key);
@@ -463,6 +470,7 @@ void CTraderSpi::LoadFromJson()
 
 				contract.m_uOpenDate = pCont->getUInt32("opendate");
 				contract.m_uExpireDate = pCont->getUInt32("expiredate");
+				contract.m_uVolScale = pCont->getUInt32("volscale");
 
 				contract.m_dLongMarginRatio = pCont->getDouble("longmarginratio");
 				contract.m_dShortMarginRatio = pCont->getDouble("shortmarginratio");
@@ -537,6 +545,9 @@ void CTraderSpi::DumpToJson()
 
 			jcInfo.AddMember("opendate", cInfo.m_uOpenDate, allocator);
 			jcInfo.AddMember("expiredate", cInfo.m_uExpireDate, allocator);
+
+			if(cInfo.m_uVolScale != 0)
+				jcInfo.AddMember("volscale", cInfo.m_uVolScale, allocator);
 
 			jcInfo.AddMember("longmarginratio", cInfo.m_dLongMarginRatio, allocator);
 			jcInfo.AddMember("shortmarginratio", cInfo.m_dShortMarginRatio, allocator);

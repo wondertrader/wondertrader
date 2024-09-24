@@ -96,7 +96,6 @@ private:
 	std::string			m_strBroker;
 	std::string			m_strUserID;
 	std::string			m_strPassword;
-	bool				m_bLocalTime;
 	std::string			m_strFlowDir;
 
 	CodeSet				m_filterSubs;
@@ -109,5 +108,8 @@ private:
 	DllHandle		m_hInstCTP;
 	typedef CThostFtdcMdApi* (*CTPCreator)(const char *, const bool, const bool);
 	CTPCreator		m_funcCreator;
+
+	uint32_t		m_uLatestTime = 0;
+	int64_t			m_iLastTimestamp = 0;
 };
 

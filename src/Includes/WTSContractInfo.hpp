@@ -182,6 +182,8 @@ public:
 		return ret;
 	}
 
+	constexpr inline void	setVolScale(uint32_t volScale) noexcept { m_uVolScale = volScale; }
+
 	inline void setAltCode(const char* altCode) noexcept
 	{
 		wt_strcpy(m_strAltCode, altCode);
@@ -243,6 +245,8 @@ public:
 		double commRate = m_commInfo->getMarginRate();
 		return commRate == 0.0 ? m_sMarginRatio : m_commInfo->getMarginRate();
 	}
+
+	constexpr inline uint32_t getVolScale() const noexcept { return m_uVolScale; }
 
 	constexpr inline void setCommInfo(WTSCommodityInfo* commInfo) noexcept { m_commInfo = commInfo; }
 	constexpr inline WTSCommodityInfo* getCommInfo() const noexcept { return m_commInfo; }
@@ -324,6 +328,8 @@ private:
 	char	m_strFullPid[64];
 	char	m_strFullCode[64];
 	char	m_strFullAltCode[64];
+
+	uint32_t	m_uVolScale = 0;	//合约放大倍数
 
 	uint32_t	m_maxMktQty;
 	uint32_t	m_maxLmtQty;

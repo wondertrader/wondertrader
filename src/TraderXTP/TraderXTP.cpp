@@ -799,7 +799,7 @@ void TraderXTP::doLogin()
 				});
 			}
 
-			write_log(_sink, LL_INFO, "[TraderXTP] [{}] Login succeed, trading date: {}...", _user.c_str(), _tradingday);
+			write_log(_sink, LL_INFO, "[TraderXTP] [{}] Login succeed, trading date: {}, api version: {}", _user, _tradingday, _api->GetApiVersion());
 
 			_state = TS_LOGINED;
 			_inited = true;
