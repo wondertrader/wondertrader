@@ -152,7 +152,12 @@ struct WTSTickStruct
 	double		open;				//开盘价
 	double		high;				//最高价
 	double		low;				//最低价
-	double		settle_price;		//结算价
+
+	union 
+	{
+		double	settle_price;	//结算价
+		double	iopv;
+	};
 
 	double		upper_limit;		//涨停价
 	double		lower_limit;		//跌停价
