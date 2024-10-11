@@ -105,9 +105,12 @@ typedef enum tagKlinePeriod : uint32_t
 	KP_Minute1,
 	KP_Minute5,
 	KP_DAY,
-	KP_Week,
-	KP_Month
+	KP_Hour,	//小时线
+	KP_Half		//半小时线
 } WTSKlinePeriod;
+
+constexpr static uint32_t PERIOD_TIMES_HOUR = 0xffffffff;
+constexpr static uint32_t PERIOD_TIMES_HALF = 0xfffffffe;
 
 static const char* PERIOD_NAME[] = 
 {
@@ -115,8 +118,8 @@ static const char* PERIOD_NAME[] =
 	"min1",
 	"min5",
 	"day",
-	"week",
-	"month"
+	"hour",
+	"half"
 };
 
 /*

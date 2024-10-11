@@ -199,7 +199,12 @@ void WtDtMgr::on_bar(const char* code, WTSKlinePeriod period, WTSBarStruct* newB
 				WTSBarStruct* lastBar = kData->at(-1);
 				//_engine->on_bar(code, speriod.c_str(), times, lastBar);
 				//更新完K线以后, 统一通知交易引擎
-				_bar_notifies.emplace_back(NotifyItem(code, speriod, times*kData->times(), lastBar));
+				if (kData->period() == KP_Half)
+					_bar_notifies.emplace_back(NotifyItem(code, 'f', 1, lastBar));
+				else if (kData->period() == KP_Hour)
+					_bar_notifies.emplace_back(NotifyItem(code, 'h', 1, lastBar));
+				else
+					_bar_notifies.emplace_back(NotifyItem(code, speriod, times*kData->times(), lastBar));
 			}
 		}
 		else
