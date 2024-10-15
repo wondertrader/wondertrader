@@ -409,10 +409,10 @@ constexpr inline const char* format_period(WTSKlinePeriod period)
 		return "min1";
 	case KP_Minute5:
 		return "min5";
-	case KP_Week:
-		return "week";
-	case KP_Month:
-		return "month";
+	case KP_Half:
+		return "half";
+	case KP_Hour:
+		return "hour";
 	default:
 		return "unknown";
 	}
