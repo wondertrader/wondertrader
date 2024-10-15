@@ -519,14 +519,19 @@ WTSBarStruct* WTSDataFactory::updateHourData(WTSSessionInfo* sInfo, WTSKlineData
 		uYYYYMMDD = uTradingDate;
 	uint32_t uHHMM = TimeUtils::minBarToTime(newBasicBar->time);
 	uint32_t uHH = uHHMM / 100;
-	uHH += 1;
-	if (uHH == 24)
+	uint32_t uMM = uHHMM % 100;
+	if (uMM != 0)
 	{
-		uYYYYMMDD = TimeUtils::getNextDate(uYYYYMMDD);
-		uHH = 0;
+		uHH += 1;
+		if (uHH == 24)
+		{
+			uYYYYMMDD = TimeUtils::getNextDate(uYYYYMMDD);
+			uHH = 0;
+		}
 	}
 
-	uint64_t uBarTime = TimeUtils::timeToMinBar(uYYYYMMDD, uHH * 100);
+	uHHMM = uHH * 100;
+	uint64_t uBarTime = TimeUtils::timeToMinBar(uYYYYMMDD, uHHMM);
 
 	WTSBarStruct* lastBar = NULL;
 	if (klineData->size() > 0)
@@ -590,20 +595,26 @@ WTSBarStruct* WTSDataFactory::updateHalfData(WTSSessionInfo* sInfo, WTSKlineData
 	uint32_t uHHMM = TimeUtils::minBarToTime(newBasicBar->time);
 	uint32_t uHH = uHHMM / 100;
 	uint32_t uMM = uHHMM % 100;
-	if (uMM <= 30)
+	if (0 < uMM && uMM <= 30)
 		uMM = 30;
 	else
 	{
-		uMM = 0;
-		uHH += 1;
-		if (uHH == 24)
+		if (uMM != 0)
 		{
-			uYYYYMMDD = TimeUtils::getNextDate(uYYYYMMDD);
-			uHH = 0;
+			uHH += 1;
+			if (uHH == 24)
+			{
+				uYYYYMMDD = TimeUtils::getNextDate(uYYYYMMDD);
+				uHH = 0;
+			}
 		}
+
+		uMM = 0;
 	}
 
-	uint64_t uBarTime = TimeUtils::timeToMinBar(uYYYYMMDD, uHH * 100 + uMM);
+	uHHMM = uHH * 100 + uMM;
+
+	uint64_t uBarTime = TimeUtils::timeToMinBar(uYYYYMMDD, uHHMM);
 
 	WTSBarStruct* lastBar = NULL;
 	if (klineData->size() > 0)
@@ -1059,11 +1070,15 @@ WTSKlineData* WTSDataFactory::extractHourData(WTSKlineSlice* baseKline, WTSSessi
 			uYYYYMMDD = uTradingDate;
 		uint32_t uHHMM = TimeUtils::minBarToTime(curBar.time);
 		uint32_t uHH = uHHMM / 100;
-		uHH += 1;
-		if(uHH == 24)
+		uint32_t uMM = uHHMM % 100;
+		if (uMM != 0)
 		{
-			uYYYYMMDD = TimeUtils::getNextDate(uYYYYMMDD);
-			uHH = 0;
+			uHH += 1;
+			if (uHH == 24)
+			{
+				uYYYYMMDD = TimeUtils::getNextDate(uYYYYMMDD);
+				uHH = 0;
+			}
 		}
 
 		uint64_t uBarTime = TimeUtils::timeToMinBar(uYYYYMMDD, uHH*100);
@@ -1150,20 +1165,26 @@ WTSKlineData* WTSDataFactory::extractHalfData(WTSKlineSlice* baseKline, WTSSessi
 		uint32_t uHHMM = TimeUtils::minBarToTime(curBar.time);
 		uint32_t uHH = uHHMM / 100;
 		uint32_t uMM = uHHMM % 100;
-		if (uMM <= 30)
+		if (0 < uMM && uMM <= 30)
 			uMM = 30;
 		else
 		{
-			uMM = 0;
-			uHH += 1;
-			if (uHH == 24)
+			if(uMM != 0)
 			{
-				uYYYYMMDD = TimeUtils::getNextDate(uYYYYMMDD);
-				uHH = 0;
+				uHH += 1;
+				if (uHH == 24)
+				{
+					uYYYYMMDD = TimeUtils::getNextDate(uYYYYMMDD);
+					uHH = 0;
+				}
 			}
+
+			uMM = 0;
 		}
 
-		uint64_t uBarTime = TimeUtils::timeToMinBar(uYYYYMMDD, uHH * 100 + uMM);
+		uHHMM = uHH * 100 + uMM;
+
+		uint64_t uBarTime = TimeUtils::timeToMinBar(uYYYYMMDD, uHHMM);
 
 		WTSBarStruct* lastBar = NULL;
 		if (ret->size() > 0)
